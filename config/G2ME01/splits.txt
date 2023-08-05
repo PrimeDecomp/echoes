@@ -1,0 +1,12 @@
+Runtime/__init_cpp_exceptions.cpp:
+	.text       start:0x80345C34 end:0x80345CA4
+	.ctors      start:0x803A54A0 end:0x803A54A4
+	.dtors      start:0x803A56A0 end:0x803A56A8
+	.sdata      start:0x80418CA8 end:0x80418CB0
+
+Runtime/Gecko_ExceptionPPC.cp:
+	.text       start:0x80345CA4 end:0x803470DC
+	.rodata     start:0x803B03B0 end:0x803B0448
+	.data       start:0x803BBFD8 end:0x803BC0C0
+	.bss        start:0x803E0640 end:0x803E0650
+
