@@ -26,10 +26,11 @@ import argparse
 
 from pathlib import Path
 from shutil import which
+import typing
 from tools import ninja_syntax
 
 
-def path(input: list[Path] | Path | None) -> list[str] | None:
+def path(input: typing.Union[typing.List[Path], Path, None]) -> typing.Optional[typing.List[str]]:
     if input is None:
         return None
     elif isinstance(input, list):
