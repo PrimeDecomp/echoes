@@ -12,6 +12,15 @@ LIBS = [
             ["Runtime/Gecko_ExceptionPPC.cp", False],
         ],
     },
+    {
+        "lib": "MetroidPrime",
+        "cflags": "$cflags_retro",
+        "mw_version": "1.3.2",
+        "host": True,
+        "objects": [
+            ["MetroidPrime/Player/CPlayerState.cpp", False],
+        ]
+    }
 ]
 VERSIONS = [
     "G2ME01",  # 0
