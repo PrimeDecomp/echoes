@@ -8,7 +8,7 @@ LIBS = [
         "objects": [
             # TODO: need to remove from FORCEFILES
             ["Runtime/__init_cpp_exceptions.cpp", False],
-            # TODO: need to implement all 
+            # TODO: need to implement all
             ["Runtime/Gecko_ExceptionPPC.cp", False],
         ],
     },
@@ -51,7 +51,7 @@ parser.add_argument(
     dest="build_dir",
     type=Path,
     default=Path("build"),
-    help="base build directory",
+    help="base build directory (default: build)",
 )
 parser.add_argument(
     "--build-dtk",
@@ -64,7 +64,14 @@ parser.add_argument(
     dest="compilers",
     type=Path,
     default=Path("tools/mwcc_compiler"),
-    help="path to compilers",
+    help="path to compilers (default: tools/mwcc_compiler)",
+)
+parser.add_argument(
+    "--orig",
+    dest="orig",
+    type=Path,
+    default=Path("orig"),
+    help="path to retail files (default: orig)",
 )
 parser.add_argument(
     "--map",
@@ -186,8 +193,8 @@ else:
     n.build(
         outputs=path(dtk),
         rule="download_dtk",
-        inputs="dtk_version",
-        implicit=path([download_dtk]),
+        inputs=path(tools_path / "dtk_version"),
+        implicit=path(download_dtk),
     )
 n.newline()
 
@@ -236,6 +243,7 @@ asm_path = Path("asm")
 build_src_path = build_path / "src"
 units_path = build_path / "units.txt"
 
+
 def locate_unit(unit):
     for lib in LIBS:
         for obj in lib["objects"]:
@@ -279,7 +287,7 @@ if units_path.is_file():
 
                     n.comment(f"{unit}: {lib_name} (linked {completed})")
 
-                    base_object = Path(object).with_suffix('')
+                    base_object = Path(object).with_suffix("")
                     src_obj_path = build_src_path / f"{base_object}.o"
                     n.build(
                         outputs=path(src_obj_path),
@@ -288,7 +296,9 @@ if units_path.is_file():
                         variables={
                             "mw_version": mw_version,
                             "cflags": options["cflags"] or lib["cflags"],
-                            "basedir": os.path.dirname(build_src_path / f"{base_object}"),
+                            "basedir": os.path.dirname(
+                                build_src_path / f"{base_object}"
+                            ),
                             "basefile": path(build_src_path / f"{base_object}"),
                         },
                     )
@@ -373,20 +383,20 @@ if units_path.is_file():
 # DOL split
 ###
 n.comment("Generate objects from original DOL")
-dol_path = Path("orig") / version / "sys" / "main.dol"
+dol_path = args.orig / version / "sys" / "main.dol"
 config_path = Path("config") / version
 splits_path = config_path / "splits.txt"
 symbols_path = config_path / "symbols.txt"
 n.rule(
     name="split",
-    command=f"{dtk} dol split $in $out -p $splits -s $symbols",
+    command=f"{dtk} dol split $in $out -p $splits -s $symbols --no-update",
     description="SPLIT $in",
 )
 n.build(
     inputs=path(dol_path),
     outputs=path(build_path),
     rule="split",
-    implicit=path([dtk, "$splits", "$symbols"]),
+    implicit=path([dtk, splits_path, symbols_path]),
     implicit_outputs=path(units_path),
     variables={
         "splits": splits_path,
@@ -409,7 +419,7 @@ n.rule(
 n.build(
     outputs="build.ninja",
     rule="configure",
-    implicit=path([script, tools_path / "ninja_syntax.py"]),
+    implicit=path([script, tools_path / "ninja_syntax.py", build_path]),
 )
 n.newline()
 
