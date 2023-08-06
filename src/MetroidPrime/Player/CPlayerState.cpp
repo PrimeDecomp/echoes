@@ -2,78 +2,82 @@
 
 #include <math.h>
 
-// static const int kPowerUpMax[] = {
-//     1, 1, 1, 1,  250, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-//     1, 1, 1, 14, 1,   0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-// };
+class CFirstPersonCamera;
 
-// static const int kMissileCosts[] = {
-//     5, 10, 10, 10, 1,
-// };
+static const int kPowerUpMax[] = {
+    1, 1, 1, 1,  250, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 14, 1,   0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+};
 
-// static const float kComboAmmoPeriods[] = {
-//     0.2f, 0.1f, 0.2f, 0.2f, 1.f,
-// };
+static const int kMissileCosts[] = {
+    5, 10, 10, 10, 1,
+};
 
-// static const char* kVisorNames[] = {
-//     "CombatVisor",
-//     "XRayVisor",
-//     "ScanVisor",
-//     "ThermalVisor",
-// };
+static const float kComboAmmoPeriods[] = {
+    0.2f, 0.1f, 0.2f, 0.2f, 1.f,
+};
+
+static const char* kVisorNames[] = {
+    "CombatVisor",
+    "XRayVisor",
+    "ScanVisor",
+    "ThermalVisor",
+};
 
 static const float kEnergyTankCapacity = 100.f;
 static const float kBaseHealthCapacity = 99.f;
 
-// static const float kDefaultKnockbackResistance = 50.f;
-// static const float kMaxVisorTransitionFactor = 0.2f;
+static const float kDefaultKnockbackResistance = 50.f;
+static const float kMaxVisorTransitionFactor = 0.2f;
 
 // static inline void do_nothing() {}
 
-// uint CPlayerState::GetBitCount(uint val) {
-//   int bits = 0;
-//   for (; val != 0; val >>= 1) {
-//     bits += 1;
-//   }
-//   return bits;
-// }
+uint CPlayerState::GetBitCount(uint val) {
+  int bits = 0;
+  for (; val != 0; val >>= 1) {
+    bits += 1;
+  }
+  return bits;
+}
 
-// CPlayerState::CPowerUp::CPowerUp(int amount, int capacity)
-// : x0_amount(amount), x4_capacity(capacity) {}
+CPlayerState::CPowerUp::CPowerUp(int amount, int capacity, float timeLeft)
+: x0_amount(amount), x4_capacity(capacity), x8_timeLeft(timeLeft) {}
 
-// CPlayerState::CPlayerState()
-// : x0_24_alive(true)
-// , x0_25_firingComboBeam(false)
-// , x0_26_fusion(false)
-// , x4_enabledItems(0)
-// , x8_currentBeam(kBI_Power)
-// , xc_health(kBaseHealthCapacity, kDefaultKnockbackResistance)
-// , x14_currentVisor(kPV_Combat)
-// , x18_transitioningVisor(x14_currentVisor)
-// , x1c_visorTransitionFactor(kMaxVisorTransitionFactor)
-// , x20_currentSuit(kPS_Power)
+CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
+: playerIndex(playerIndex)
+, alive(true)
+, firingComboBeam(false)
+, enabledItems(0)
+, currentBeam(kBI_Power)
+, healthInfo(kBaseHealthCapacity, kDefaultKnockbackResistance)
+, currentVisor(kPV_Combat)
+, transitioningVisor(currentVisor)
+// TODO: vectorWord
+, chargeBeamFactor(0.0f)
+, chargeAnimStart(0.25f / GetMissileComboChargeFactor())
+, visorTransitionFactor(kMaxVisorTransitionFactor)
+, currentSuit(kPS_Varia)
 // , x24_powerups(CPowerUp(0, 0))
-// , x170_scanTimes()
-// , x180_scanCompletionRateFirst(0)
-// , x184_scanCompletionRateSecond(0)
-// , x188_staticIntf(5) {}
+, unkStruct(s ? *s : UnknownPlayerStateStruct()) {
 
-// CPlayerState::CPlayerState(CInputStream& stream)
-// : x0_24_alive(true)
-// , x0_25_firingComboBeam(false)
-// , x0_26_fusion(false)
-// , x4_enabledItems(0)
-// , x8_currentBeam(kBI_Power)
-// , xc_health(kBaseHealthCapacity, kDefaultKnockbackResistance)
-// , x14_currentVisor(kPV_Combat)
-// , x18_transitioningVisor(x14_currentVisor)
-// , x1c_visorTransitionFactor(kMaxVisorTransitionFactor)
-// , x20_currentSuit(kPS_Power)
-// , x24_powerups()
-// , x170_scanTimes()
-// , x180_scanCompletionRateFirst(0)
-// , x184_scanCompletionRateSecond(0)
-// , x188_staticIntf(5) {
+  // fn_80084928(unkStruct);
+}
+
+CPlayerState::CPlayerState(int playerIndex, CInputStream& stream)
+: playerIndex(playerIndex)
+, alive(true)
+, firingComboBeam(false)
+, enabledItems(0)
+, currentBeam(kBI_Power)
+, healthInfo(kBaseHealthCapacity, kDefaultKnockbackResistance)
+, currentVisor(kPV_Combat)
+, transitioningVisor(currentVisor)
+// TODO: vectorWord
+, chargeBeamFactor(0.0f)
+, chargeAnimStart(0.25f / GetMissileComboChargeFactor())
+, visorTransitionFactor(kMaxVisorTransitionFactor)
+, currentSuit(kPS_Varia)
+{
 //   x4_enabledItems = uint(stream.ReadBits(32));
 
 //   const uint integralHP = uint(stream.ReadBits(32));
@@ -108,9 +112,9 @@ static const float kBaseHealthCapacity = 99.f;
 
 //   x180_scanCompletionRateFirst = uint(stream.ReadBits(GetBitCount(0x100u)));
 //   x184_scanCompletionRateSecond = uint(stream.ReadBits(GetBitCount(0x100u)));
-// }
+}
 
-// void CPlayerState::PutTo(COutputStream& stream) {
+void CPlayerState::PutTo(COutputStream& stream) {
 //   stream.WriteBits(x4_enabledItems, 32);
 
 //   const float realHP = xc_health.GetHP();
@@ -140,14 +144,14 @@ static const float kBaseHealthCapacity = 99.f;
 
 //   stream.WriteBits(x180_scanCompletionRateFirst, GetBitCount(0x100));
 //   stream.WriteBits(x184_scanCompletionRateSecond, GetBitCount(0x100));
-// }
+}
 
-// void CPlayerState::ReInitializePowerUp(CPlayerState::EItemType type, int capacity) {
-//   x24_powerups[uint(type)].x4_capacity = 0;
-//   InitializePowerUp(type, capacity);
-// }
+void CPlayerState::ReInitializePowerUp(CPlayerState::EItemType type, int capacity) {
+  powerups[type].x4_capacity = 0;
+  AddPowerUp(type, capacity);
+}
 
-// void CPlayerState::InitializePowerUp(CPlayerState::EItemType type, int capacity) {
+void CPlayerState::InitializePowerUp(CPlayerState::EItemType type, int capacity) {
 //   if (type < kIT_PowerBeam || type > kIT_Max - 1)
 //     return;
 
@@ -164,105 +168,170 @@ static const float kBaseHealthCapacity = 99.f;
 //     else
 //       x20_currentSuit = kPS_Power;
 //   }
-// }
+}
 
 float CPlayerState::CalculateHealth() {
   return (kEnergyTankCapacity * powerups[kIT_EnergyTanks].x0_amount) + kBaseHealthCapacity;
 }
 
-// void CPlayerState::ResetAndIncrPickUp(CPlayerState::EItemType type, int amount) {
-//   x24_powerups[uint(type)].x0_amount = 0;
-//   IncrPickUp(type, amount);
-// }
+void CPlayerState::IncrementHealth(float delta) {
+  float maximum = CalculateHealth();
+  float newHealth = healthInfo.GetHP() + delta; // TODO: should be healthB
+  // TODO: clamp newHealth with maximum and 0
+  healthInfo.SetHP(newHealth);
+}
 
-// void CPlayerState::IncrPickUp(EItemType type, int amount) {
-//   if (type < 0 || kIT_Max - 1 < type) {
-//     return;
-//   }
+CPlayerState::EPowerUpFieldToQuery CPlayerState::GetPowerUpFieldToQuery(EItemType itemType) const {
+  switch (itemType) {
+  case kIT_MorphBall:
+    if (powerups[0x56].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[0x5c].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[0x5b].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_BoostBall:
+    if (powerups[0x56].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_SpiderBall:
+    if (powerups[0x56].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_MorphBallBombs:
+    if (powerups[0x56].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_SpaceJumpBoots:
+    if (powerups[0x5d].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_Powerbomb:
+    if (powerups[0x5d].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_Missile:
+    if (powerups[0x5a].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[0x51].x0_amount != 0) {
+      return kFQ_Maximum;
+    }
+    break;
+  case kIT_DarkAmmo:
+  case kIT_LightAmmo:
+    if (powerups[0x59].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[0x52].x0_amount != 0) {
+      return kFQ_Maximum;
+    }
+    break;
+  }
+  return kFQ_Actual;
+}
 
-//   if (0 <= amount) {
-//     switch (type) {
-//     case kIT_Missiles:
-//     case kIT_PowerBombs:
-//     case kIT_ChargeBeam:
-//     case kIT_SpaceJumpBoots:
-//     case kIT_EnergyTanks:
-//     case kIT_Truth:
-//     case kIT_Strength:
-//     case kIT_Elder:
-//     case kIT_Wild:
-//     case kIT_Lifegiver:
-//     case kIT_Warrior:
-//     case kIT_Chozo:
-//     case kIT_Nature:
-//     case kIT_Sun:
-//     case kIT_World:
-//     case kIT_Spirit:
-//     case kIT_Newborn: {
-//       x24_powerups[type].Add(amount);
-//       break;
-//     }
-//     case kIT_HealthRefill: {
-//       CHealthInfo* info = &xc_health;
-//       if (info != NULL) {
-//         float newHealth = float(amount) + info->GetHP();
-//         float maxHealth = CalculateHealth();
-//         if (newHealth > maxHealth) {
-//           info->SetHP(maxHealth);
-//         } else {
-//           info->SetHP(newHealth);
-//         }
-//       }
-//     }
-//     }
-//     if (type == kIT_EnergyTanks)
-//       IncrPickUp(kIT_HealthRefill, 9999);
-//   }
-// }
+void CPlayerState::ResetAndIncrPickUp(CPlayerState::EItemType type, int amount) {
+  //   x24_powerups[uint(type)].x0_amount = 0;
+  //   IncrPickUp(type, amount);
+}
 
-// void CPlayerState::DecrPickUp(CPlayerState::EItemType type, int amount) {
-//   if (type < 0 || kIT_Max - 1 < type) {
-//     return;
-//   }
+void CPlayerState::IncrPickUp(EItemType type, int amount) {
+  //   if (type < 0 || kIT_Max - 1 < type) {
+  //     return;
+  //   }
 
-//   switch (type) {
-//   case kIT_Missiles:
-//   case kIT_PowerBombs:
-//   case kIT_Flamethrower:
-//     x24_powerups[type].Dec(amount);
-//   default:
-//     return;
-//   }
-// }
+  //   if (0 <= amount) {
+  //     switch (type) {
+  //     case kIT_Missiles:
+  //     case kIT_PowerBombs:
+  //     case kIT_ChargeBeam:
+  //     case kIT_SpaceJumpBoots:
+  //     case kIT_EnergyTanks:
+  //     case kIT_Truth:
+  //     case kIT_Strength:
+  //     case kIT_Elder:
+  //     case kIT_Wild:
+  //     case kIT_Lifegiver:
+  //     case kIT_Warrior:
+  //     case kIT_Chozo:
+  //     case kIT_Nature:
+  //     case kIT_Sun:
+  //     case kIT_World:
+  //     case kIT_Spirit:
+  //     case kIT_Newborn: {
+  //       x24_powerups[type].Add(amount);
+  //       break;
+  //     }
+  //     case kIT_HealthRefill: {
+  //       CHealthInfo* info = &xc_health;
+  //       if (info != NULL) {
+  //         float newHealth = float(amount) + info->GetHP();
+  //         float maxHealth = CalculateHealth();
+  //         if (newHealth > maxHealth) {
+  //           info->SetHP(maxHealth);
+  //         } else {
+  //           info->SetHP(newHealth);
+  //         }
+  //       }
+  //     }
+  //     }
+  //     if (type == kIT_EnergyTanks)
+  //       IncrPickUp(kIT_HealthRefill, 9999);
+  //   }
+}
 
-// int CPlayerState::GetItemAmount(CPlayerState::EItemType type) const {
-//   if (type < 0 || kIT_Max - 1 < type) {
-//     return 0;
-//   }
+void CPlayerState::DecrPickUp(CPlayerState::EItemType type, int amount) {
+  //   if (type < 0 || kIT_Max - 1 < type) {
+  //     return;
+  //   }
 
-//   switch (type) {
-//   case kIT_SpaceJumpBoots:
-//   case kIT_PowerBombs:
-//   case kIT_Flamethrower:
-//   case kIT_EnergyTanks:
-//   case kIT_Missiles:
-//   case kIT_Truth:
-//   case kIT_Strength:
-//   case kIT_Elder:
-//   case kIT_Wild:
-//   case kIT_Lifegiver:
-//   case kIT_Warrior:
-//   case kIT_Chozo:
-//   case kIT_Nature:
-//   case kIT_Sun:
-//   case kIT_World:
-//   case kIT_Spirit:
-//   case kIT_Newborn:
-//     return x24_powerups[uint(type)].x0_amount;
-//   }
+  //   switch (type) {
+  //   case kIT_Missiles:
+  //   case kIT_PowerBombs:
+  //   case kIT_Flamethrower:
+  //     x24_powerups[type].Dec(amount);
+  //   default:
+  //     return;
+  //   }
+}
 
-//   return 0;
-// }
+int CPlayerState::GetItemAmount(CPlayerState::EItemType type, bool respectFieldToQuery) const {
+  if (type < 0 || kIT_Max - 1 < type) {
+    return 0;
+  }
+
+  EPowerUpFieldToQuery field = respectFieldToQuery ? GetPowerUpFieldToQuery(type) : kFQ_Actual;
+
+  if (field == kFQ_Maximum) {
+    return kPowerUpMax[type];
+  }
+  if (field == kFQ_Minimum) {
+    return 0;
+  }
+  return powerups[type].x0_amount;
+}
+
+void CPlayerState::SetItemAmount(CPlayerState::EItemType type, int amount) {
+  if (type < 0 || kIT_Max - 1 < type) {
+    return;
+  }
+  powerups[type].x0_amount = amount;
+  int newAmount = powerups[type].x0_amount;
+  if (newAmount <= powerups[type].x4_capacity) {
+    return;
+  }
+  powerups[type].x4_capacity = newAmount;
+}
 
 int CPlayerState::GetItemCapacity(CPlayerState::EItemType type) const {
   if (type < 0 || kIT_Max - 1 < type) {
@@ -278,22 +347,51 @@ bool CPlayerState::HasPowerUp(CPlayerState::EItemType type) const {
   return powerups[uint(type)].x4_capacity > 0;
 }
 
-// uint CPlayerState::GetPowerUp(CPlayerState::EItemType type) {
-//   if (type < 0 || kIT_Max - 1 < type) {
-//     return 0;
-//   }
-//   return x24_powerups[uint(type)].x4_capacity;
-// }
+uint CPlayerState::GetPowerUp(CPlayerState::EItemType type) {
+  if (type < 0 || kIT_Max - 1 < type) {
+    return 0;
+  }
+  return powerups[uint(type)].x4_capacity;
+}
 
-// void CPlayerState::EnableItem(CPlayerState::EItemType type) {
-//   if (HasPowerUp(type))
-//     x4_enabledItems |= (1 << uint(type));
-// }
+void CPlayerState::AddPowerUp(CPlayerState::EItemType type, int delta) {
+  if (type < 0 || kIT_Max - 1 < type) {
+    return;
+  }
+  int newCapacity = delta + powerups[type].x4_capacity;
+  if (newCapacity < 0) {
+    newCapacity = 0;
+  } else if (kPowerUpMax[type] < newCapacity) {
+    newCapacity = kPowerUpMax[type];
+  }
+  powerups[type].x4_capacity = newCapacity;
 
-// void CPlayerState::DisableItem(CPlayerState::EItemType type) {
-//   if (HasPowerUp(type))
-//     x4_enabledItems &= ~(1 << uint(type));
-// }
+  int amount = powerups[type].x0_amount;
+  int capacity = powerups[type].x4_capacity;
+  if (capacity < amount) {
+    amount = capacity;
+  }
+  powerups[type].x0_amount = amount;
+  if (kIT_VariaSuit <= type && type <= kIT_LightSuit) {
+    if (HasPowerUp(kIT_LightSuit)) {
+      currentSuit = kPS_Light;
+    } else if (HasPowerUp(kIT_DarkSuit)) {
+      currentSuit = kPS_Dark;
+    } else {
+      currentSuit = kPS_Varia;
+    }
+  }
+}
+
+void CPlayerState::EnableItem(CPlayerState::EItemType type) {
+  if (HasPowerUp(type))
+    enabledItems |= (1 << uint(type));
+}
+
+void CPlayerState::DisableItem(CPlayerState::EItemType type) {
+  if (HasPowerUp(type))
+    enabledItems &= ~(1 << uint(type));
+}
 
 bool CPlayerState::ItemEnabled(CPlayerState::EItemType type) const {
   if (HasPowerUp(type))
@@ -306,72 +404,116 @@ void CPlayerState::ResetVisor() {
   visorTransitionFactor = 0.0f;
 }
 
-// void CPlayerState::StartTransitionToVisor(CPlayerState::EPlayerVisor visor) {
-//   if (visor == x18_transitioningVisor)
-//     return;
+void CPlayerState::StartTransitionToVisor(CPlayerState::EPlayerVisor visor) {
+  if (visor == transitioningVisor)
+    return;
 
-//   x18_transitioningVisor = visor;
+  transitioningVisor = visor;
 
-//   if (x18_transitioningVisor == x14_currentVisor)
-//     return;
-// }
+  if (transitioningVisor == currentVisor)
+    return;
+}
 
-// void CPlayerState::UpdateVisorTransition(float dt) {
-//   if (!GetIsVisorTransitioning())
-//     return;
+void CPlayerState::UpdateVisorTransition(float dt) {
+  if (!GetIsVisorTransitioning())
+    return;
 
-//   if (x14_currentVisor == x18_transitioningVisor) {
-//     x1c_visorTransitionFactor = rstl::min_val(0.2f, x1c_visorTransitionFactor + dt);
-//   } else {
-//     x1c_visorTransitionFactor -= dt;
-//     if (x1c_visorTransitionFactor < 0.f) {
-//       x14_currentVisor = x18_transitioningVisor;
-//       x1c_visorTransitionFactor = fabs(x1c_visorTransitionFactor);
-//       x1c_visorTransitionFactor = rstl::min_val(x1c_visorTransitionFactor, 0.19999f);
-//     }
-//   }
-// }
+  // if (currentVisor == transitioningVisor) {
+  //   x1c_visorTransitionFactor = rstl::min_val(0.2f, x1c_visorTransitionFactor + dt);
+  // } else {
+  //   x1c_visorTransitionFactor -= dt;
+  //   if (x1c_visorTransitionFactor < 0.f) {
+  //     currentVisor = transitioningVisor;
+  //     x1c_visorTransitionFactor = fabs(x1c_visorTransitionFactor);
+  //     x1c_visorTransitionFactor = rstl::min_val(x1c_visorTransitionFactor, 0.19999f);
+  //   }
+  // }
+}
 
-// float CPlayerState::GetVisorTransitionFactor() const {
-//   return x1c_visorTransitionFactor / kMaxVisorTransitionFactor;
-// }
+float CPlayerState::GetVisorTransitionFactor() const {
+  return visorTransitionFactor / kMaxVisorTransitionFactor;
+}
 
-// bool CPlayerState::GetIsVisorTransitioning() const {
-//   return x14_currentVisor != x18_transitioningVisor ||
-//          kMaxVisorTransitionFactor > x1c_visorTransitionFactor;
-// }
+bool CPlayerState::GetIsVisorTransitioning() const {
+  return currentVisor != transitioningVisor || kMaxVisorTransitionFactor > visorTransitionFactor;
+}
 
-// void CPlayerState::InitializeScanTimes() {
-//   if (x170_scanTimes.size())
-//     return;
+void CPlayerState::InitializeScanTimes() {
+  //   if (x170_scanTimes.size())
+  //     return;
 
-//   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
-//   x170_scanTimes.reserve(scanStates.size());
-//   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
-//        it != scanStates.end(); ++it) {
-//     x170_scanTimes.push_back(rstl::pair< CAssetId, float >(it->first, 0.f));
-//   }
-// }
+  //   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
+  //   x170_scanTimes.reserve(scanStates.size());
+  //   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
+  //        it != scanStates.end(); ++it) {
+  //     x170_scanTimes.push_back(rstl::pair< CAssetId, float >(it->first, 0.f));
+  //   }
+}
 
-// float CPlayerState::GetScanTime(CAssetId res) const {
-//   rstl::vector< rstl::pair< CAssetId, float > >::const_iterator it = rstl::find_by_key(x170_scanTimes, res);
-//   return it->second;
-// }
+float CPlayerState::GetScanTime(CAssetId res) const {
+  //   rstl::vector< rstl::pair< CAssetId, float > >::const_iterator it =
+  //   rstl::find_by_key(x170_scanTimes, res); return it->second;
+}
 
-// void CPlayerState::SetScanTime(CAssetId res, float time) {
-//   rstl::vector< rstl::pair< CAssetId, float > >::iterator it = rstl::find_by_key_nc(x170_scanTimes, res);
-//   it->second = time;
-// }
+void CPlayerState::SetScanTime(CAssetId res, float time) {
+  //   rstl::vector< rstl::pair< CAssetId, float > >::iterator it =
+  //   rstl::find_by_key_nc(x170_scanTimes, res); it->second = time;
+}
 
 // void CPlayerState::UpdateStaticInterference(CStateManager& stateMgr, const float& dt) {
 //   x188_staticIntf.Update(stateMgr, dt);
 // }
 
-// CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& stateMgr) const {
-//   const CFirstPersonCamera* cam = TCastToConstPtr< CFirstPersonCamera >(
-//       stateMgr.GetCameraManager()->GetCurrentCamera(stateMgr));
-//   return (cam ? x14_currentVisor : kPV_Combat);
-// }
+CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& stateMgr) const {
+  //   const CFirstPersonCamera* cam = TCastToConstPtr< CFirstPersonCamera >(
+  //       stateMgr.GetCameraManager()->GetCurrentCamera(stateMgr));
+  //   return (cam ? currentVisor : kPV_Combat);
+}
+
+bool CPlayerState::CanVisorSeeFog(const CStateManager& stateMgr) const {
+  EPlayerVisor visor = GetActiveVisor(stateMgr);
+  return visor == kPV_Combat || visor == kPV_Scan;
+}
+
+int CPlayerState::ShouldDrawGravityBoost(const CStateManager& mgr) const {
+  return GetRenderSuit(mgr, *this, currentSuit);
+}
+
+int CPlayerState::GetRenderSuit(const CStateManager& mgr, const CPlayerState& state,
+                                CPlayerState::EPlayerSuit suit) {
+  int result = (int)suit;
+  switch (suit) {
+  case kPS_Dark:
+    if (state.HasPowerUp(kIT_GravityBoost)) {
+      result = 5;
+    }
+
+  case kPS_Light:
+    // TODO: check x294c in mgr
+    result = 4;
+    break;
+  }
+  return result;
+}
+
+bool CPlayerState::ShouldDrawGrapple() const {
+  return HasPowerUp(kIT_GrappleBeam) && currentSuit < kPS_Light;
+}
+
+bool CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
+  switch (visor) {
+  case kPV_Combat:
+    return HasPowerUp(kIT_CombatVisor);
+  case kPV_Echo:
+    return HasPowerUp(kIT_EchoVisor);
+  case kPV_Scan:
+    return HasPowerUp(kIT_ScanVisor);
+  case kPV_Dark:
+    return HasPowerUp(kIT_DarkVisor);
+  default:
+    return false;
+  }
+}
 
 // bool CPlayerState::CanVisorSeeFog(const CStateManager& stateMgr) const {
 //   EPlayerVisor activeVisor = GetActiveVisor(stateMgr);
@@ -385,37 +527,27 @@ void CPlayerState::ResetVisor() {
 //   return x20_currentSuit;
 // }
 
-// bool CPlayerState::GetIsFusionEnabled() const { return x0_26_fusion || false; }
+float CPlayerState::GetBaseHealthCapacity() { return kBaseHealthCapacity; }
 
-// void CPlayerState::SetIsFusionEnabled(bool val) { x0_26_fusion = val; }
+float CPlayerState::GetEnergyTankCapacity() { return kEnergyTankCapacity; }
 
-// int CPlayerState::GetTotalPickupCount() const { return 99; }
+int CPlayerState::GetTotalPickupCount() const {
+  // return gpTweakGame->GetTotalPercentage();
+  return 100;
+}
 
-// int CPlayerState::CalculateItemCollectionRate() const {
-//   int pbCount = GetItemCapacity(kIT_PowerBombs);
-//   return GetItemCapacity(kIT_IceBeam) + GetItemCapacity(kIT_WaveBeam) +
-//          GetItemCapacity(kIT_PlasmaBeam) + GetItemCapacity(kIT_Missiles) / 5 +
-//          GetItemCapacity(kIT_MorphBallBombs) + (pbCount >= 4 ? pbCount - 3 : pbCount) +
-//          GetItemCapacity(kIT_Flamethrower) + GetItemCapacity(kIT_ThermalVisor) +
-//          GetItemCapacity(kIT_ChargeBeam) + GetItemCapacity(kIT_SuperMissile) +
-//          GetItemCapacity(kIT_GrappleBeam) + GetItemCapacity(kIT_XRayVisor) +
-//          GetItemCapacity(kIT_IceSpreader) + GetItemCapacity(kIT_SpaceJumpBoots) +
-//          GetItemCapacity(kIT_MorphBall) + GetItemCapacity(kIT_BoostBall) +
-//          GetItemCapacity(kIT_SpiderBall) + GetItemCapacity(kIT_GravitySuit) +
-//          GetItemCapacity(kIT_VariaSuit) + GetItemCapacity(kIT_EnergyTanks) +
-//          GetItemCapacity(kIT_Truth) + GetItemCapacity(kIT_Strength) + GetItemCapacity(kIT_Elder) +
-//          GetItemCapacity(kIT_Wild) + GetItemCapacity(kIT_Lifegiver) + GetItemCapacity(kIT_Warrior) +
-//          GetItemCapacity(kIT_Chozo) + GetItemCapacity(kIT_Nature) + GetItemCapacity(kIT_Sun) +
-//          GetItemCapacity(kIT_World) + GetItemCapacity(kIT_Spirit) + GetItemCapacity(kIT_Newborn) +
-//          GetItemCapacity(kIT_Wavebuster);
-// }
+int CPlayerState::CalculateItemCollectionRate() const {
+  return GetItemAmount(kIT_ItemPercentage, true);
+}
 
-// int CPlayerState::GetMissileCostForAltAttack() const {
-//   return kMissileCosts[size_t(x8_currentBeam)];
-// }
+int CPlayerState::GetItemPercentageRatio() const {
+  return (CalculateItemCollectionRate() * 100) / GetTotalPickupCount();
+}
+
+int CPlayerState::GetMissileCostForAltAttack() const { return kMissileCosts[int(currentBeam)]; }
 
 // float CPlayerState::GetComboFireAmmoPeriod() const {
 //   return kComboAmmoPeriods[size_t(x8_currentBeam)];
 // }
 
-// float CPlayerState::GetMissileComboChargeFactor() { return 1.8f; }
+float CPlayerState::GetMissileComboChargeFactor() { return 1.8f; }

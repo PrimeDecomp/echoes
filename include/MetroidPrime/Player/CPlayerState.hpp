@@ -2,9 +2,18 @@
 #define _CPLAYERSTATE
 
 #include "types.h"
+
+#include "Kyoto/SObjectTag.hpp"
+
 #include "MetroidPrime/CHealthInfo.hpp"
 
 class CStateManager;
+class CInputStream;
+class COutputStream;
+
+struct UnknownPlayerStateStruct {
+  char pad[0xa4];
+};
 
 class CPlayerState {
 public:
@@ -145,15 +154,22 @@ public:
   };
   enum EChargeStage { kCS_Normal, kCS_Charged };
 
-  CPlayerState();
-  // explicit CPlayerState(CInputStream& stream);
-  // void PutTo(COutputStream& stream);
+  enum EPowerUpFieldToQuery {
+    kFQ_Actual,
+    kFQ_Minimum,
+    kFQ_Maximum,
+  };
+
+  CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
+  explicit CPlayerState(int playerIndex, CInputStream& stream);
+  void PutTo(COutputStream& stream);
 
   int GetMissileCostForAltAttack() const;
   float GetComboFireAmmoPeriod() const;
   static float GetMissileComboChargeFactor();
   int CalculateItemCollectionRate() const;
   int GetTotalPickupCount() const;
+  int GetItemPercentageRatio() const;
 
   EPlayerSuit GetCurrentSuit() const;
   EPlayerSuit GetCurrentSuitRaw() const { return currentSuit; }
@@ -163,11 +179,17 @@ public:
   EPlayerVisor GetCurrentVisor() const { return currentVisor; }
   EPlayerVisor GetTransitioningVisor() const { return transitioningVisor; }
   EPlayerVisor GetActiveVisor(const CStateManager& mgr) const;
+  bool HasVisor(EPlayerVisor) const;
+  int ShouldDrawGravityBoost(const CStateManager& mgr) const;
+  static int GetRenderSuit(const CStateManager&, const CPlayerState&, EPlayerSuit suit);
+  bool ShouldDrawGrapple() const;
+
+  void IncrementHealth(float);
 
   // void UpdateStaticInterference(CStateManager& stateMgr, const float& dt);
-  // void IncreaseScanTime(uint time, float val);
-  // void SetScanTime(CAssetId res, float time);
-  // float GetScanTime(CAssetId time) const;
+  void IncreaseScanTime(uint time, float val);
+  void SetScanTime(CAssetId res, float time);
+  float GetScanTime(CAssetId time) const;
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;
   void UpdateVisorTransition(float dt);
@@ -180,18 +202,28 @@ public:
   void EnableItem(EItemType type);
   bool HasPowerUp(EItemType type) const;
   uint GetPowerUp(EItemType type);
+  
+  void AddPowerUp(EItemType type, int delta);
+  void ReInitializePowerUp(EItemType type, int capacity);
+  void InitializePowerUp(EItemType type, int capacity);
+
   int GetItemCapacity(EItemType type) const;
-  int GetItemAmount(EItemType type) const;
+  int GetItemAmount(EItemType type, bool respectFieldToQuery = true) const;
+  void SetItemAmount(EItemType type, int amount);
+  EPowerUpFieldToQuery GetPowerUpFieldToQuery(EItemType itemType) const;
+
   void DecrPickUp(EItemType type, int amount);
   void IncrPickUp(EItemType type, int amount);
   void ResetAndIncrPickUp(EItemType type, int amount);
+  static float GetEnergyTankCapacity();
+  static float GetBaseHealthCapacity();
   float CalculateHealth();
   // void InitializePowerUp(CPlayerState::EItemType type, int capacity);
   // void ReInitializePowerUp(CPlayerState::EItemType type, int capacity);
 
-  // void InitializeScanTimes();
+  void InitializeScanTimes();
 
-  // static uint GetBitCount(uint);
+  static uint GetBitCount(uint);
 
   // CStaticInterference& StaticInterference() { return x188_staticIntf; }
   // const CStaticInterference& GetStaticInterference() const { return x188_staticIntf; }
@@ -200,9 +232,9 @@ public:
   //   return x170_scanTimes;
   // }
 
-  // CHealthInfo* HealthInfo() { return &xc_health; }
+  CHealthInfo* HealthInfo() { return &healthInfo; }
 
-  // const CHealthInfo& GetHealthInfo() const { return xc_health; }
+  const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
 private:
   struct CPowerUp {
@@ -211,7 +243,7 @@ private:
     float x8_timeLeft;
 
     CPowerUp() : x0_amount(0), x4_capacity(0), x8_timeLeft(0.0f) {}
-    CPowerUp(int amount, int capacity);
+    CPowerUp(int amount, int capacity, float timeLeft);
 
     void Add(int amount) {
       int capacity = x4_capacity;
@@ -244,7 +276,8 @@ private:
   EPlayerSuit currentSuit;
   int powerups_count;  // part of reserved_vector
   CPowerUp powerups[109];  // part of reserved_vector
-  char pad[0xbc];
+  char pad[0x18];
+  UnknownPlayerStateStruct unkStruct;
 };
 // CHECK_SIZEOF(CPlayerState, 0x198)
 
