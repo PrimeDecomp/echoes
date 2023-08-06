@@ -85,6 +85,13 @@ parser.add_argument(
     action="store_true",
     help="build with debug info (non-matching)",
 )
+if os.name != "nt" and not "_NT-" in os.uname().sysname:
+    parser.add_argument(
+        "--wine",
+        dest="wine",
+        type=Path,
+        help="path to wine (or wibo)",
+    )
 args = parser.parse_args()
 
 # On Windows, we need this to use && in commands
