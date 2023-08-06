@@ -3,6 +3,10 @@
 
 #include "types.h"
 
+#include "rstl/reserved_vector.hpp"
+#include "rstl/vector.hpp"
+
+
 #include "Kyoto/SObjectTag.hpp"
 
 #include "MetroidPrime/CHealthInfo.hpp"
@@ -10,10 +14,6 @@
 class CStateManager;
 class CInputStream;
 class COutputStream;
-
-struct UnknownPlayerStateStruct {
-  char pad[0xa4];
-};
 
 class CPlayerState {
 public:
@@ -38,16 +38,16 @@ public:
     kIT_BoostBall = 0x10,
     kIT_SpiderBall = 0x11,
     kIT_MorphBallBombs = 0x12,
-    kIT_Unknown01 = 0x13,
-    kIT_Unknown02 = 0x14,
-    kIT_Unknown03 = 0x15,
+    kIT_DarkBomb = 0x13,
+    kIT_LightBomb = 0x14,
+    kIT_AnnihilatorBomb = 0x15,
     kIT_ChargeBeam = 0x16,
     kIT_GrappleBeam = 0x17,
     kIT_SpaceJumpBoots = 0x18,
     kIT_GravityBoost = 0x19,
     kIT_SeekerLauncher = 0x1a,
     kIT_ScrewAttack = 0x1b,
-    kIT_Unknown04 = 0x1c,
+    kIT_TranslatorUpgrade_TempETM = 0x1c,
     kIT_TempleKey1 = 0x1d,
     kIT_TempleKey2 = 0x1e,
     kIT_TempleKey3 = 0x1f,
@@ -67,15 +67,15 @@ public:
     kIT_DarkAmmo = 0x2d,
     kIT_LightAmmo = 0x2e,
     kIT_ItemPercentage = 0x2f,
-    kIT_Unknown_48 = 0x30,
-    kIT_Unknown_49 = 0x31,
-    kIT_Unknown_50 = 0x32,
-    kIT_Unknown_51 = 0x33,
-    kIT_Unknown_52 = 0x34,
-    kIT_Unknown_53 = 0x35,
-    kIT_Unknown_54 = 0x36,
-    kIT_Unknown_55 = 0x37,
-    kIT_Unknown_56 = 0x38,
+    kIT_Multiplayer_NumPlayersJoined = 0x30,
+    kIT_Multiplayer_NumPlayersInOptionsMenu = 0x31,
+    kIT_MiscCounter3 = 0x32,
+    kIT_Multiplayer_Archenemy = 0x33,
+    kIT_SwitchWeaponPower = 0x34,
+    kIT_SwitchWeaponDark = 0x35,
+    kIT_SwitchWeaponLight = 0x36,
+    kIT_SwitchWeaponAnnihilator = 0x37,
+    kIT_MultiChargeUpgrade = 0x38,
     kIT_Invisibility = 0x39,
     kIT_DoubleDamage = 0x3a,
     kIT_Invincibility = 0x3b,
@@ -83,23 +83,23 @@ public:
     kIT_Unknown_61 = 0x3d,
     kIT_Unknown_62 = 0x3e,
     kIT_Unknown_63 = 0x3f,
-    kIT_Unknown_64 = 0x40,
-    kIT_Unknown_65 = 0x41,
-    kIT_Unknown_66 = 0x42,
-    kIT_Unknown_67 = 0x43,
-    kIT_Unknown_68 = 0x44,
-    kIT_Unknown_69 = 0x45,
-    kIT_Unknown_70 = 0x46,
-    kIT_Unused1 = 0x47,
-    kIT_Unused2 = 0x48,
-    kIT_Unused3 = 0x49,
-    kIT_Unused4 = 0x4a,
-    kIT_Unknown_76 = 0x4b,
-    kIT_Unknown_77 = 0x4c,
-    kIT_Unknown_78 = 0x4d,
-    kIT_Unknown_79 = 0x4e,
-    kIT_Unknown_80 = 0x4f,
-    kIT_Unknown_81 = 0x50,
+    kIT_FragCount = 0x40,
+    kIT_DiedCount = 0x41,
+    kIT_ArchenemyCount = 0x42,
+    kIT_PersistentCounter1 = 0x43,
+    kIT_PersistentCounter2 = 0x44,
+    kIT_PersistentCounter3 = 0x45,
+    kIT_PersistentCounter4 = 0x46,
+    kIT_PersistentCounter5 = 0x47,
+    kIT_PersistentCounter6 = 0x48,
+    kIT_PersistentCounter7 = 0x49,
+    kIT_PersistentCounter8 = 0x4a,
+    kIT_SwitchVisorCombat = 0x4b,
+    kIT_SwitchVisorScan = 0x4c,
+    kIT_SwitchVisorDark = 0x4d,
+    kIT_SwitchVisorEcho = 0x4e,
+    kIT_CoinAmplifier = 0x4f,
+    kIT_CoinCounter = 0x50,
     kIT_UnlimitedMissiles = 0x51,
     kIT_UnlimitedBeamAmmo = 0x52,
     kIT_DarkShield = 0x53,
@@ -107,13 +107,13 @@ public:
     kIT_AbsorbAttack = 0x55,
     kIT_DeathBall = 0x56,
     kIT_ScanVirus = 0x57,
-    kIT_Unknown_88 = 0x58,
-    kIT_DisableBeamAmmo = 0x59,
-    kIT_DisableMissiles = 0x5a,
+    kIT_VisorStatic = 0x58,
+    kIT_BeamWeaponsDisabled = 0x59,
+    kIT_MissileWeaponsDisabled = 0x5a,
     kIT_Unknown_91 = 0x5b,
     kIT_DisableBall = 0x5c,
     kIT_DisableSpaceJump = 0x5d,
-    kIT_Unknown_94 = 0x5e,
+    kIT_ActivateMorphballBoost = 0x5e,
     kIT_HackedEffect = 0x5f,
     kIT_CannonBall = 0x60,
     kIT_VioletTranslator = 0x61,
@@ -160,6 +160,52 @@ public:
     kFQ_Maximum,
   };
 
+  struct CPowerUp {
+    int x0_amount;
+    int x4_capacity;
+    float x8_timeLeft;
+
+    CPowerUp() : x0_amount(0), x4_capacity(0), x8_timeLeft(0.0f) {}
+    CPowerUp(int amount, int capacity, float timeLeft);
+
+    void Add(int amount) {
+      int capacity = x4_capacity;
+      x0_amount += amount;
+      if (x0_amount > capacity) {
+        x0_amount = capacity;
+      }
+    }
+
+    void Dec(int amount) {
+      x0_amount -= amount;
+      if (x0_amount < 0) {
+        x0_amount = 0;
+      }
+    }
+  };
+
+  struct UnknownV {
+    short unk1;
+    float unk2;
+    float unk3;
+  };
+
+  struct UnknownPlayerStateStruct {
+    void operator=(const UnknownPlayerStateStruct&);
+
+    struct Nested {
+      uint unk1;
+      bool b1;
+      bool b2;
+    };
+
+    uint unk1;
+    uint unk2;
+    uint unk3;
+    rstl::vector< Nested > vec;
+    rstl::reserved_vector< CPowerUp, 11 > powerups;
+  };
+
   CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
   explicit CPlayerState(int playerIndex, CInputStream& stream);
   void PutTo(COutputStream& stream);
@@ -190,6 +236,9 @@ public:
   void IncreaseScanTime(uint time, float val);
   void SetScanTime(CAssetId res, float time);
   float GetScanTime(CAssetId time) const;
+  void fn_80084EAC(uint, bool);
+  void fn_80084E84(const CStateManager& mgr, float*);
+
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;
   void UpdateVisorTransition(float dt);
@@ -202,10 +251,10 @@ public:
   void EnableItem(EItemType type);
   bool HasPowerUp(EItemType type) const;
   uint GetPowerUp(EItemType type);
-  
+  int GetItemCapacity2(EItemType type) const;
+
   void AddPowerUp(EItemType type, int delta);
   void ReInitializePowerUp(EItemType type, int capacity);
-  void InitializePowerUp(EItemType type, int capacity);
 
   int GetItemCapacity(EItemType type) const;
   int GetItemAmount(EItemType type, bool respectFieldToQuery = true) const;
@@ -217,9 +266,9 @@ public:
   void ResetAndIncrPickUp(EItemType type, int amount);
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
+  rstl::vector<UnknownPlayerStateStruct::Nested>& fn_800851DC();
+
   float CalculateHealth();
-  // void InitializePowerUp(CPlayerState::EItemType type, int capacity);
-  // void ReInitializePowerUp(CPlayerState::EItemType type, int capacity);
 
   void InitializeScanTimes();
 
@@ -236,31 +285,12 @@ public:
 
   const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
+  void fn_80084B6C();
+  void fn_80084928(const UnknownPlayerStateStruct&);
+  void IncrementChargeBeamFactor(float);
+  void DecrementAmmoAndDisplayAlertIfOut(const CStateManager&, EItemType, int quantity);
+
 private:
-  struct CPowerUp {
-    int x0_amount;
-    int x4_capacity;
-    float x8_timeLeft;
-
-    CPowerUp() : x0_amount(0), x4_capacity(0), x8_timeLeft(0.0f) {}
-    CPowerUp(int amount, int capacity, float timeLeft);
-
-    void Add(int amount) {
-      int capacity = x4_capacity;
-      x0_amount += amount;
-      if (x0_amount > capacity) {
-        x0_amount = capacity;
-      }
-    }
-
-    void Dec(int amount) {
-      x0_amount -= amount;
-      if (x0_amount < 0) {
-        x0_amount = 0;
-      }
-    }
-  };
-
   int playerIndex;
   bool alive : 1;
   bool firingComboBeam : 1;
@@ -274,11 +304,12 @@ private:
   float chargeAnimStart;
   float visorTransitionFactor;
   EPlayerSuit currentSuit;
-  int powerups_count;  // part of reserved_vector
-  CPowerUp powerups[109];  // part of reserved_vector
-  char pad[0x18];
+  rstl::reserved_vector< CPowerUp, 109 > powerups;
+  int unk1;
+  int unk2;
+  rstl::vector<UnknownV> vectorUnk;
   UnknownPlayerStateStruct unkStruct;
 };
-// CHECK_SIZEOF(CPlayerState, 0x198)
+CHECK_SIZEOF(CPlayerState, 0x634)
 
 #endif // _CPLAYERSTATE
