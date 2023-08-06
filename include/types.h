@@ -2,12 +2,12 @@
 #define _TYPES
 
 #ifdef __cplusplus
-// #include "static_assert.hpp"
+#include "static_assert.hpp"
 
 extern "C" {
 #endif
 
-// #include <dolphin/types.h>
+#include <dolphin/types.h>
 
 // Dolphin u32 is unsigned long
 typedef unsigned int uint;
