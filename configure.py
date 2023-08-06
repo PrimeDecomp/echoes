@@ -19,8 +19,8 @@ LIBS = [
         "host": True,
         "objects": [
             ["MetroidPrime/Player/CPlayerState.cpp", False],
-        ]
-    }
+        ],
+    },
 ]
 VERSIONS = [
     "G2ME01",  # 0
@@ -32,6 +32,7 @@ import os
 import io
 import sys
 import argparse
+import json
 
 from pathlib import Path
 from shutil import which
@@ -39,7 +40,9 @@ import typing
 from tools import ninja_syntax
 
 
-def path(input: typing.Union[typing.List[Path], Path, None]) -> typing.Optional[typing.List[str]]:
+def path(
+    input: typing.Union[typing.List[Path], Path, None]
+) -> typing.Optional[typing.List[str]]:
     if input is None:
         return None
     elif isinstance(input, list):
@@ -254,7 +257,7 @@ n.comment("Source files")
 src_path = Path("src")
 asm_path = Path("asm")
 build_src_path = build_path / "src"
-units_path = build_path / "units.txt"
+build_config_path = build_path / "config.json"
 
 
 def locate_unit(unit):
@@ -266,15 +269,16 @@ def locate_unit(unit):
 
 
 has_units = False
-if units_path.is_file():
+if build_config_path.is_file():
     has_units = True
 
     src_path = Path("src")
     link_inputs = []
     used_compiler_versions = set()
-    with open(units_path) as r:
-        for line in r:
-            obj_path, unit = line.rstrip().split(":", 2)
+    with open(build_config_path) as r:
+        data = json.load(r)
+        for unit in data["units"]:
+            obj_path, unit = unit["object"], unit["name"]
             unit_path = src_path / unit
             if unit_path.exists():
                 result = locate_unit(unit)
@@ -396,25 +400,20 @@ if units_path.is_file():
 # DOL split
 ###
 n.comment("Generate objects from original DOL")
-dol_path = args.orig / version / "sys" / "main.dol"
-config_path = Path("config") / version
-splits_path = config_path / "splits.txt"
-symbols_path = config_path / "symbols.txt"
+config_path = Path("config") / version / "config.yml"
 n.rule(
     name="split",
-    command=f"{dtk} dol split $in $out -p $splits -s $symbols --no-update",
+    command=f"{dtk} dol split $in $out_dir",
     description="SPLIT $in",
+    depfile="$out_dir/dep",
+    deps="gcc",
 )
 n.build(
-    inputs=path(dol_path),
-    outputs=path(build_path),
+    inputs=path(config_path),
+    outputs=path(build_config_path),
     rule="split",
-    implicit=path([dtk, splits_path, symbols_path]),
-    implicit_outputs=path(units_path),
-    variables={
-        "splits": splits_path,
-        "symbols": symbols_path,
-    },
+    implicit=path(dtk),
+    variables={"out_dir": path(build_path)},
 )
 n.newline()
 
@@ -432,7 +431,7 @@ n.rule(
 n.build(
     outputs="build.ninja",
     rule="configure",
-    implicit=path([script, tools_path / "ninja_syntax.py", build_path]),
+    implicit=path([script, tools_path / "ninja_syntax.py", build_config_path]),
 )
 n.newline()
 
@@ -443,7 +442,7 @@ n.comment("Default rule")
 if has_units:
     n.default(path(build_path / "main.dol.ok"))
 else:
-    n.default(path(build_path))
+    n.default(path(build_config_path))
 
 ###
 # Write build.ninja

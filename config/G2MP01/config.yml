@@ -1,0 +1,3 @@
+object: orig/G2MP01/sys/main.dol
+splits: config/G2MP01/splits.txt
+symbols: config/G2MP01/symbols.txt

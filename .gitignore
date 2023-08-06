@@ -1,8 +1,8 @@
 __pycache__
 build
 build.ninja
-orig/*
-!orig/*.sha1
+orig/*/*
+!orig/*/.gitkeep
 tools/mwcc_compiler/*
 !tools/mwcc_compiler/.gitkeep
 .ninja_deps

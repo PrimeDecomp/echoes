@@ -1,0 +1,3 @@
+object: orig/G2ME01/sys/main.dol
+splits: config/G2ME01/splits.txt
+symbols: config/G2ME01/symbols.txt
