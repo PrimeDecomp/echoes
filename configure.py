@@ -97,11 +97,7 @@ n.variable("ninja_required_version", "1.3")
 n.newline()
 
 n.comment("The arguments passed to configure.py, for rerunning it.")
-configure_args = sys.argv[1:]
-# Ignore DEVKITPPC env var on Windows
-if os.name != "nt" and "DEVKITPPC" in os.environ and not args.devkitppc:
-    configure_args.extend(["--devkitppc", os.environ["DEVKITPPC"]])
-n.variable("configure_args", configure_args)
+n.variable("configure_args", sys.argv[1:])
 n.variable("python", f'"{sys.executable}"')
 n.newline()
 
