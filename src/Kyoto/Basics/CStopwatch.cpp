@@ -11,7 +11,7 @@ bool CStopwatch::InitGlobalTimer() {
 }
 
 void CStopwatch::Wait(float wait) {
-  if (wait > 0.0010000000474974512f) {
+  if (wait > 1.1920929E-7f) {
     mData.Wait(wait);
   }
 }
