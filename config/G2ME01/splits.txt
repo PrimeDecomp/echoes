@@ -1,6 +1,9 @@
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086410
 
+MetroidPrime/HUD/CHUDMemoParms.cpp:
+	.text       start:0x800BABD4 end:0x800BAC10
+
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
 	.ctors      start:0x803A54A0 end:0x803A54A4
