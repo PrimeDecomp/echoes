@@ -24,6 +24,9 @@ Kyoto/Math/CVector2f.cpp:
 	.sbss       start:0x80419A50 end:0x80419A58
 	.sdata2     start:0x8041E5E8 end:0x8041E5F8
 
+Kyoto/Math/CVector2i.cpp:
+	.text       start:0x802CA5B0 end:0x802CA6EC
+
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
 	.ctors      start:0x803A54A0 end:0x803A54A4
