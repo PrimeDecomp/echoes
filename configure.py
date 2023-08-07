@@ -251,13 +251,30 @@ n.rule(
 )
 n.newline()
 
+n.comment("Host build")
+n.variable("host_cflags", "-I include -Wno-trigraphs")
+n.variable(
+    "host_cppflags",
+    "-std=c++98 -I include -fno-exceptions -fno-rtti -D_CRT_SECURE_NO_WARNINGS -Wno-trigraphs -Wno-c++11-extensions",
+)
+n.rule(
+    name="host_cc",
+    command="clang $host_cflags -c -o $out $in",
+    description="CC $out",
+)
+n.rule(
+    name="host_cpp",
+    command="clang++ $host_cppflags -c -o $out $in",
+    description="CXX $out",
+)
+n.newline()
+
 ###
 # Rules for source files
 ###
 n.comment("Source files")
-src_path = Path("src")
-asm_path = Path("asm")
 build_src_path = build_path / "src"
+build_host_path = build_path / "host"
 build_config_path = build_path / "config.json"
 
 
@@ -276,6 +293,9 @@ if build_config_path.is_file():
     src_path = Path("src")
     link_inputs = []
     used_compiler_versions = set()
+    source_inputs = []
+    host_source_inputs = []
+
     with open(build_config_path) as r:
         data = json.load(r)
         for unit in data["units"]:
@@ -320,6 +340,23 @@ if build_config_path.is_file():
                             "basefile": path(build_src_path / f"{base_object}"),
                         },
                     )
+                    
+                    if lib["host"]:
+                        host_obj_path = build_host_path / f"{base_object}.o"
+                        n.build(
+                            outputs=path(host_obj_path),
+                            rule="host_cc" if unit_path.suffix == ".c" else "host_cpp",
+                            inputs=path(unit_path),
+                            variables={
+                                "basedir": os.path.dirname(build_host_path / f"{base_object}"),
+                                "basefile": path(build_host_path / f"{base_object}"),
+                            },
+                        )
+                        if options["add_to_all"]:
+                            host_source_inputs.append(host_obj_path)
+                    
+                    if options["add_to_all"]:
+                        source_inputs.append(src_obj_path)
 
                     if completed:
                         obj_path = src_obj_path
@@ -361,6 +398,28 @@ if build_config_path.is_file():
             inputs=path(link_inputs),
             implicit=path(ldscript_path),
         )
+    n.newline()
+
+    ###
+    # Helper rule for building all source files
+    ###
+    n.comment("Build all source files")
+    n.build(
+        outputs="all_source",
+        rule="phony",
+        inputs=path(source_inputs),
+    )
+    n.newline()
+
+    ###
+    # Helper rule for building all source files, with a host compiler
+    ###
+    n.comment("Build all source files with a host compiler")
+    n.build(
+        outputs="all_source_host",
+        rule="phony",
+        inputs=path(host_source_inputs),
+    )
     n.newline()
 
     ###
