@@ -18,6 +18,7 @@ LIBS = [
         "mw_version": "1.3.2",
         "host": True,
         "objects": [
+            ["MetroidPrime/CHealthInfo.cpp", False],
             ["MetroidPrime/CEntity.cpp", False],
             ["MetroidPrime/HUD/CHUDMemoParms.cpp", True],
             ["MetroidPrime/Player/CPlayerState.cpp", False],

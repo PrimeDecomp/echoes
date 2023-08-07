@@ -3,27 +3,34 @@
 
 #include "types.h"
 
-class CInputStream;
+#include "MetroidPrime/TGameTypes.hpp"
+
+class CDamageInfo;
+
 class CHealthInfo {
 public:
-  CHealthInfo(float hp, float resist) : healthA(hp), knockbackResistance(resist) {}
-  explicit CHealthInfo(CInputStream&);
+  CHealthInfo(float hp, float resist);
 
   void SetHP(float hp) { healthA = hp; }
   void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
   float GetHP() const { return healthA; }
 
+  void fn_80142094(const CDamageInfo& dmgInfo, TUniqueId, TUniqueId, bool, bool);
+  void fn_8014206C(uint*, TUniqueId, TUniqueId, bool);
+
 private:
   float healthA;
   float healthB;
   float knockbackResistance;
-  uint unkA;
-  short uidA;
-  short uidB;
-  uint unkB;
-  short uidC;
-  short uidD;
-  bool unkC;
+  ushort unkA;
+  ushort unkB;
+  TUniqueId uidA;
+  TUniqueId uidB;
+  uint unkC;
+  TUniqueId uidC;
+  TUniqueId uidD;
+  bool flagA : 1;
+  bool flagB : 1;
 };
 // CHECK_SIZEOF(CHealthInfo, 0x20)
 

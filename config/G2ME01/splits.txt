@@ -4,6 +4,9 @@ MetroidPrime/Player/CPlayerState.cpp:
 MetroidPrime/HUD/CHUDMemoParms.cpp:
 	.text       start:0x800BABD4 end:0x800BAC10
 
+MetroidPrime/CHealthInfo.cpp:
+	.text       start:0x8014206C end:0x80142188
+
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
 	.ctors      start:0x803A55D4 end:0x803A55D8
