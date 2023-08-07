@@ -32,6 +32,7 @@ LIBS = [
         "objects": [
             ["Kyoto/Basics/CStopwatch.cpp", False],
             ["Kyoto/Basics/RAssertDolphin.cpp", False],
+            ["Kyoto/Math/CVector2f.cpp", False],
         ]
     }
 ]

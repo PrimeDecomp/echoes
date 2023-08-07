@@ -17,7 +17,11 @@
 
 extern void InitMetroTRK();
 
+#ifdef __MWERKS__
 u16 Pad3Button : PAD3_BUTTON_ADDR;
+#else
+u16 Pad3Button;
+#endif
 static u8 Debug_BBA = 0;
 
 extern void memset(void*, int, int);

@@ -18,6 +18,12 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.rodata     start:0x803AEAC8 end:0x803AED58
 	.sbss       start:0x8041981C end:0x80419824
 
+Kyoto/Math/CVector2f.cpp:
+	.text       start:0x802CA1C0 end:0x802CA5B0
+	.ctors      start:0x803A5604 end:0x803A5608
+	.sbss       start:0x80419A50 end:0x80419A58
+	.sdata2     start:0x8041E5E8 end:0x8041E5F8
+
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
 	.ctors      start:0x803A54A0 end:0x803A54A4
