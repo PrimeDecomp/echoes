@@ -1,11 +1,14 @@
-MetroidPrime/CEntity.cpp:
-	.text       start:0x80047E5C end:0x800484D4
-
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086410
 
 MetroidPrime/HUD/CHUDMemoParms.cpp:
 	.text       start:0x800BABD4 end:0x800BAC10
+
+Kyoto/Basics/CStopwatch.cpp:
+	.text       start:0x8028BC64 end:0x8028BD3C
+	.ctors      start:0x803A55D4 end:0x803A55D8
+	.sbss       start:0x80419808 end:0x80419810
+	.sdata2     start:0x8041E250 end:0x8041E258
 
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4

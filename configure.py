@@ -23,6 +23,15 @@ LIBS = [
             ["MetroidPrime/Player/CPlayerState.cpp", False],
         ],
     },
+    {
+        "lib": "Kyoto_CW1",
+        "mw_version": "1.3.2",
+        "cflags": "$cflags_retro",
+        "host": True,
+        "objects": [
+            ["Kyoto/Basics/CStopwatch.cpp", False],
+        ]
+    }
 ]
 VERSIONS = [
     "G2ME01",  # 0
