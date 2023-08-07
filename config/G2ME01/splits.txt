@@ -18,6 +18,10 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.rodata     start:0x803AEAC8 end:0x803AED58
 	.sbss       start:0x8041981C end:0x80419824
 
+Kyoto/Math/CTransform4f.cpp:
+	.text       start:0x802C8BB8 end:0x802CA12C
+	.ctors      start:0x803A5600 end:0x803A5604
+
 Kyoto/Math/CVector2f.cpp:
 	.text       start:0x802CA1C0 end:0x802CA5B0
 	.ctors      start:0x803A5604 end:0x803A5608
