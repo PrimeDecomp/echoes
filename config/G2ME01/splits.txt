@@ -37,6 +37,10 @@ Kyoto/Math/CVector3f.cpp:
 	.ctors      start:0x803A560C end:0x803A5610
 	.sdata2     start:0x8041E610 end:0x8041E624
 
+Kyoto/Math/CVector3i.cpp:
+	.text       start:0x802CB124 end:0x802CB330
+	.ctors      start:0x803A5610 end:0x803A5614
+
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
 	.ctors      start:0x803A54A0 end:0x803A54A4

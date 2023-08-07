@@ -114,13 +114,13 @@ protected:
   float mZ;
 
   static CVector3f sZeroVector;
-  static CVector3f sOneVector;
   static CVector3f sUpVector;
   static CVector3f sDownVector;
   static CVector3f sLeftVector;
   static CVector3f sRightVector;
   static CVector3f sForwardVector;
   static CVector3f sBackVector;
+  static CVector3f sOneVector;
 };
 CHECK_SIZEOF(CVector3f, 0xc)
 
