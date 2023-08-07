@@ -35,6 +35,7 @@ LIBS = [
             ["Kyoto/Math/CVector2f.cpp", False],
             ["Kyoto/Math/CVector2i.cpp", True],
             ["Kyoto/Math/CVector3d.cpp", False],
+            ["Kyoto/Math/CVector3f.cpp", False],
         ]
     }
 ]

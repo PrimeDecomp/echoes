@@ -54,12 +54,7 @@ public:
     return CVector3f(x, y, z);
   }
   inline float MagSquared() const { return GetX() * GetX() + GetY() * GetY() + GetZ() * GetZ(); }
-  static CVector3f Cross(const CVector3f& lhs, const CVector3f& rhs) {
-    const float x = (lhs.GetY() * rhs.GetZ()) - (rhs.GetY() * lhs.GetZ());
-    const float y = (lhs.GetZ() * rhs.GetX()) - (rhs.GetZ() * lhs.GetX());
-    const float z = (lhs.GetX() * rhs.GetY()) - (rhs.GetX() * lhs.GetY());
-    return CVector3f(x, y, z);
-  }
+  static CVector3f Cross(const CVector3f& lhs, const CVector3f& rhs);
 
   float& operator[](EDimX dim) { return mX; }
   float& operator[](EDimY dim) { return mY; }
@@ -99,9 +94,7 @@ public:
     return *this;
   }
 
-  CVector2f ToVec2f() const {
-    return CVector2f(mX, mY);
-  }
+  CVector2f ToVec2f() const { return CVector2f(mX, mY); }
 
   static float Dot(const CVector3f& a, const CVector3f& b) {
     return (a.GetX() * b.GetX()) + (a.GetY() * b.GetY()) + (a.GetZ() * b.GetZ());
@@ -121,6 +114,7 @@ protected:
   float mZ;
 
   static CVector3f sZeroVector;
+  static CVector3f sOneVector;
   static CVector3f sUpVector;
   static CVector3f sDownVector;
   static CVector3f sLeftVector;
@@ -133,6 +127,14 @@ CHECK_SIZEOF(CVector3f, 0xc)
 // ClassifyVector__FRC9CVector3f
 // TGetType<9CVector3f>__FRC9CVector3f
 // close_enough__FRC9CVector3fRC9CVector3ff in CloseEnough.cpp
+
+CVector3f CVector3f::Cross(const CVector3f& lhs, const CVector3f& rhs)
+{
+  const float x = (lhs.GetY() * rhs.GetZ()) - (rhs.GetY() * lhs.GetZ());
+  const float y = (lhs.GetZ() * rhs.GetX()) - (rhs.GetZ() * lhs.GetX());
+  const float z = (lhs.GetX() * rhs.GetY()) - (rhs.GetX() * lhs.GetY());
+  return CVector3f(x, y, z);
+}
 
 inline bool operator==(const CVector3f& lhs, const CVector3f& rhs) {
   return lhs.GetX() == rhs.GetX() && lhs.GetY() == rhs.GetY() && lhs.GetZ() == rhs.GetZ();
