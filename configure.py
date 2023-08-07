@@ -15,7 +15,7 @@ LIBS = [
     {
         "lib": "MetroidPrime",
         "cflags": "$cflags_retro",
-        "mw_version": "1.3.2",
+        "mw_version": "2.0",
         "host": True,
         "objects": [
             ["MetroidPrime/CHealthInfo.cpp", False],
@@ -26,7 +26,7 @@ LIBS = [
     },
     {
         "lib": "Kyoto_CW1",
-        "mw_version": "1.3.2",
+        "mw_version": "2.0",
         "cflags": "$cflags_retro",
         "host": True,
         "objects": [
