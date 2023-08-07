@@ -30,6 +30,7 @@ LIBS = [
         "host": True,
         "objects": [
             ["Kyoto/Basics/CStopwatch.cpp", False],
+            ["Kyoto/Basics/RAssertDolphin.cpp", False],
         ]
     }
 ]
