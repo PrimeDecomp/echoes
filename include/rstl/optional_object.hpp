@@ -31,10 +31,10 @@ public:
     }
     return *this;
   }
-  optional_object& operator=(const T& item) {
+  optional_object& operator=(const T& item); /* {
     assign(item);
     return *this;
-  }
+  }*/
 
   T& data() { return *get_ptr(); }
   const T& data() const { return *get_ptr(); }
@@ -51,7 +51,7 @@ public:
 
   T& operator*() { return data(); }
   T* operator->() { return &data(); }
-  
+
   const T& operator*() const { return data(); }
   const T* operator->() const { return &data(); }
 
@@ -68,6 +68,13 @@ private:
     }
   }
 };
+
+template < typename T >
+optional_object< T >& optional_object< T >::operator=(const T& item) {
+  assign(item);
+  return *this;
+}
+
 } // namespace rstl
 
 #endif // _RSTL_OPTIONAL_OBJECT

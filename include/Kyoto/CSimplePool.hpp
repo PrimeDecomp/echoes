@@ -10,6 +10,7 @@
 #include "Kyoto/IObjectStore.hpp"
 
 class IFactory;
+
 class CSimplePool : public IObjectStore {
 public:
   CSimplePool(IFactory& factory) : x18_factory(factory) {}

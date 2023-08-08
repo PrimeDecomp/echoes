@@ -8,6 +8,9 @@
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "dolphin/ar.h"
+
+#include "MetaRender/IRenderer.hpp"
 
 #include "MetroidPrime/CAudioStateWin.hpp"
 #include "MetroidPrime/CConsoleOutputWindow.hpp"
@@ -15,15 +18,20 @@
 #include "MetroidPrime/CGameArchitectureSupport.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CMainFlow.hpp"
+#include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
-
 
 class CCharacterFactoryBuilder;
 class CGameState;
 class CMemoryCard;
 class CInGameTweakManager;
+
+extern "C" void fn_8029EFCC();
+extern "C" void fn_8033CEE8();
+extern "C" char* fn_8034C0D8(char *, ...);
+IRenderer* AllocateRenderer(IObjectStore& store, COsContext& osContext, CMemorySys& memorySys, IFactory& resFactory);
 
 CResFactory* gpResourceFactory;
 CSimplePool* gpSimplePool;
@@ -38,52 +46,61 @@ float sInfiniteLoopTime;
 
 static uchar sMainSpace[sizeof(CMain)];
 
-CMain::CMain()
-// : x0_osContext(true, true)
-// , x6c_unk(this)
-// , x6d_memorySys(x0_osContext, CMemorySys::GetGameAllocator())
+CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
+: osContext(context)
+, x4_unk1(unk1)
+, memorySys(memorySys)
+, xc_unk2(unk2)
 // , xe8_(0.0)
 // , x118_(0.f)
 // , x11c_(0.f)
 // , x120_(0.f)
 // , x124_(0.f)
-// , x128_gameGlobalObjects(nullptr)
-// , x12c_restartMode(kRM_Default)
-// , x130_frameTimes(0xF4240)
-// , x15c_frameTimeIdx(0)
-// , x160_24_finished(false)
-// , x160_25_mfGameBuilt(false)
-// , x160_26_screenFading(false)
-// , x160_27_(false)
-// , x160_28_manageCard(false)
-// , x160_29_(false)
-// , x160_30_(false)
-// , x160_31_cardBusy(false)
-// , x161_24_gameFrameDrawn(false)
-// , x164_(nullptr)
+, frameTimeMinimum(0)
+, x4c(0.0f)
+, gameGlobalObjects(nullptr)
+, restartMode(kRM_StateSetter)  // value must be 6, TODO if the correct enum
+, x5c(1.0f)
+, frameTimes(0xF4240)
+, frameTimeIdx(0)
+, finished(false)
+, mfGameBuilt(false)
+, screenFading(false)
+, x90_27_(false)
+, x90_28_manageCard(false)
+, x90_29_(false)
+, x90_30_(false)
+, x90_31_cardBusy(false)
 {
   gpMain = this;
 }
 
-int main(int argc, char** argv) {
-  DVDSetAutoFatalMessaging(TRUE);
-  SetErrorHandlers();
-  CMain* main = new (&sMainSpace) CMain();
-  gpMain->RsMain(argc, argv);
+extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, void* unk1,
+                            CMemorySys* memorySys, void* unk2) {
+  CMain* main = new (&sMainSpace) CMain(context, unk1, memorySys, unk2);
+  main->RsMain(argc, argv);
   main->~CMain();
-  return 0;
 }
 
 CMain::~CMain() {}
 
-void CMain::InitializeSubsystems() {}
+void CMain::InitializeSubsystems() {
+  ARInit((u32*) 0x803c5ab8, 3);  // (u32*)(&sMainSpace + 0x98)
+  // TODO
+}
 
 void CMain::ShutdownSubsystems() {}
 
 CGameGlobalObjects::CGameGlobalObjects(COsContext& osContext, CMemorySys& memorySys)
 : simplePool(resFactory) {}
 
-void CGameGlobalObjects::PostInitialize(COsContext&, CMemorySys&) {}
+void CGameGlobalObjects::PostInitialize(COsContext& osContext, CMemorySys& memorySys) {
+  AddPaksAndFactories();
+  LoadStringTable();
+  fn_8034C0D8("Initializing renderer...\n");
+  renderer = AllocateRenderer(simplePool, osContext, memorySys, resFactory);                            
+  CEnvFxManager::Initialize();
+}
 
 void CGameGlobalObjects::LoadStringTable() {
   stringTable = gpSimplePool->GetObj("STRG_Main");
@@ -97,9 +114,6 @@ void InfiniteLoopAlarm(OSAlarm* alarm, OSContext* context) {
   }
   sInfiniteLoopTime += alarm->period / OS_TIMER_CLOCK;
 }
-
-extern "C" void fn_8029EFCC();
-extern "C" void fn_8033CEE8();
 
 CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
 : audioSys(0x30, 0x30, 0x30, 0x30, 0x5fc000)

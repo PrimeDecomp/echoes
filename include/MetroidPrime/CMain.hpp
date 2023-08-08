@@ -26,7 +26,7 @@ public:
     kRM_GameExit,
   };
 
-  CMain();
+  CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2);
   ~CMain();
 
   bool LoadAudio();
@@ -70,12 +70,14 @@ public:
   // }
 
 private:
-  COsContext* x0_osContext;
-  float x4;
-  CMemorySys* x8_memorySys;
-  char xc_pad[0x3C];
+  COsContext* osContext;
+  void* x4_unk1;
+  CMemorySys* memorySys;
+  void* xc_unk2;
+  char x10_pad[0x38];
   int frameTimeMinimum;
-  char pad2[8];
+  float x4c;
+  float x50;
   CGameGlobalObjects* gameGlobalObjects;
   ERestartMode restartMode;
   float x5c;
@@ -84,11 +86,11 @@ private:
   bool finished : 1;
   bool mfGameBuilt : 1;
   bool screenFading : 1;
-  // bool x160_27_ : 1;
-  // bool x160_28_manageCard : 1;
-  // bool x160_29_ : 1;
-  // bool x160_30_ : 1;
-  // bool x160_31_cardBusy : 1;
+  bool x90_27_ : 1;
+  bool x90_28_manageCard : 1;
+  bool x90_29_ : 1;
+  bool x90_30_ : 1;
+  bool x90_31_cardBusy : 1;
   // bool x161_24_gameFrameDrawn : 1;
   // CGameArchitectureSupport* x164_;
 };
