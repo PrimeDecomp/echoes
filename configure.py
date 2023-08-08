@@ -10,7 +10,7 @@ LIBS = [
             ["Runtime/__init_cpp_exceptions.cpp", False],
             # TODO: need to implement all
             ["Runtime/Gecko_ExceptionPPC.cp", False],
-            ["Runtime/global_destructor_chain.c", False],
+            ["Runtime/global_destructor_chain.c", True],
         ],
     },
     {

@@ -1,6 +1,5 @@
 #include "Kyoto/Math/CVector3i.hpp"
 
-// .bss        start:0x80417510 end:0x80417570
 CVector3i CVector3i::sZeroVector = CVector3i(0, 0, 0);
 CVector3i CVector3i::sUpVector = CVector3i(0, 0, 1);
 CVector3i CVector3i::sDownVector = CVector3i(0, 0, -1);
