@@ -1,5 +1,5 @@
 MetroidPrime/main.cpp:
-	.text       start:0x800053B8 end:0x80007040
+	.text       start:0x800053B8 end:0x80008B60
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
 MetroidPrime/Player/CPlayerState.cpp:

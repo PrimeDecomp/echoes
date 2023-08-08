@@ -5,6 +5,8 @@
 
 #include "rstl/auto_ptr.hpp"
 #include "rstl/string.hpp"
+#include "rstl/vector.hpp"
+#include "rstl/pair.hpp"
 
 #include "Kyoto/CDvdFile.hpp"
 #include "Kyoto/CResLoader.hpp"
