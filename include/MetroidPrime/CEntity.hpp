@@ -50,5 +50,6 @@ private:
   bool inGraveyard : 1;
   bool scriptingBlocked : 1;
 };
+CHECK_SIZEOF(CEntity, 0x24)
 
 #endif // _CENTITY

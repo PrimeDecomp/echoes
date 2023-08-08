@@ -24,6 +24,7 @@ LIBS = [
             ["MetroidPrime/HUD/CHUDMemoParms.cpp", True],
             ["MetroidPrime/Player/CPlayerState.cpp", False],
             ["MetroidPrime/Player/CGameOptions.cpp", False],
+            ["MetroidPrime/ScriptObjects/CScriptPickup.cpp", False],
         ],
     },
     {
