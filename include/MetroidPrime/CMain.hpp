@@ -60,6 +60,9 @@ public:
   static void EnsureWorldPaksReady();
   static void EnsureWorldPakReady(CAssetId id);
 
+  void Increment_x5c(float f) { x5c + f; }
+  bool GetFinished() const { return finished; }
+
   // // TODO
   // COsContext& InitOsContext() {
   //   OpenWindow();
@@ -78,9 +81,9 @@ private:
   float x5c;
   rstl::reserved_vector< uint, 10 > frameTimes;
   int frameTimeIdx;
-  // bool x160_24_finished : 1;
-  // bool x160_25_mfGameBuilt : 1;
-  bool x160_26_screenFading : 1;
+  bool finished : 1;
+  bool mfGameBuilt : 1;
+  bool screenFading : 1;
   // bool x160_27_ : 1;
   // bool x160_28_manageCard : 1;
   // bool x160_29_ : 1;

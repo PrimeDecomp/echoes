@@ -1,19 +1,24 @@
 #include "MetroidPrime/CMain.hpp"
 
+#include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CPakFile.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
-#include "Kyoto/Audio/CStreamAudioManager.hpp"
 
+#include "MetroidPrime/CAudioStateWin.hpp"
+#include "MetroidPrime/CConsoleOutputWindow.hpp"
+#include "MetroidPrime/CErrorOutputWindow.hpp"
 #include "MetroidPrime/CGameArchitectureSupport.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
+#include "MetroidPrime/CMainFlow.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
-#include "MetroidPrime/CMainFlow.hpp"
+
 
 class CCharacterFactoryBuilder;
 class CGameState;
@@ -99,8 +104,7 @@ extern "C" void fn_8033CEE8();
 CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
 : audioSys(0x30, 0x30, 0x30, 0x30, 0x5fc000)
 , inputGenerator(&osContext, gpTweakPlayerA->GetLeftAnalogMax(),
-                     gpTweakPlayerA->GetRightAnalogMax())
-// , guiSys(gpResourceFactory, gpSimplePool, CGuiSys::kUM_Zero)
+                 gpTweakPlayerA->GetRightAnalogMax())
 , gameFrameCount(0)
 , x68_(0.f)
 , x6c_(0.f)
@@ -118,12 +122,9 @@ CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
   gpMain->SetMaxSpeed(false);
   gpMain->ResetGameState();
   ioWinMgr.AddIOWin(new CMainFlow(), 0, 0);
-  // ioWinMgr.AddIOWin(new CConsoleOutputWindow(8, 5.f, 0.75f), 100, 0);
-  // ioWinMgr.AddIOWin(new CAudioStateWin(), 100, -1);
-  // ioWinMgr.AddIOWin(new CErrorOutputWindow(false), 10000, 100000);
-  // InitializeApplicationUI(guiSys);
-  // CGuiSys::SetGlobalGuiSys(&guiSys);
-  gpController = inputGenerator.GetController();
+  ioWinMgr.AddIOWin(new CConsoleOutputWindow(8, 5.f, 0.75f), 100, 0);
+  ioWinMgr.AddIOWin(new CAudioStateWin(), 100, -1);
+  ioWinMgr.AddIOWin(new CErrorOutputWindow(false), 10000, 100000);
   gpGameState->GameOptions().EnsureOptions();
   sInfiniteLoopTime = 0.f;
   OSSetPeriodicAlarm(&infiniteLoopAlarm, OSGetTime(), (float)OS_TIMER_CLOCK, InfiniteLoopAlarm);
@@ -141,7 +142,44 @@ CGameArchitectureSupport::~CGameArchitectureSupport() {
   // CDSPStreamManager::Shutdown();
 }
 
-bool CGameArchitectureSupport::UpdateTicks() {}
+bool CGameArchitectureSupport::UpdateTicks() {
+  bool result = false;
+  OSDisableInterrupts();
+  float stopwatchTime = stopwatch1.GetElapsedTime();
+  stopwatch1.Reset();
+  OSRestoreInterrupts(1);
+  sInfiniteLoopTime = 0.0f;
+  x68_ += stopwatchTime;
+  if (gpMain->GetFinished()) {
+    x68_ = 0.033333335f;
+  }
+  bool flag = gpMain->fn_80008A1C();
+  if (flag || 0.035 < stopwatchTime) {
+    gpMain->Increment_x5c(-stopwatchTime);
+    x68_ = 0.016666668f;
+  }
+  archQueue.Push(MakeMsg::CreateFrameBegin(kAMT_Game, gameFrameCount));
+
+  bool keepLooping = true;
+  while (keepLooping || x68_ > 0.016666668f) {
+    keepLooping = false;
+    if (!inputGenerator.Update(0.016666668f, archQueue)) {
+      result = true;
+    }
+    archQueue.Push(MakeMsg::CreateTimerTick(kAMT_Game, 0.016666668f));
+    x68_ -= 0.016666668f;
+    ioWinMgr.PumpMessages(archQueue);
+  }
+
+  if (close_enough((x6c_ - x70_) + (x70_ - x68_), 0.0f)) {
+    x68_ = 0.0f;
+  }
+
+  x6c_ = x70_;
+  x70_ = x68_;
+  ioWinMgr.PumpMessages(archQueue);
+  return result;
+}
 
 void CGameArchitectureSupport::Update() {}
 
@@ -151,9 +189,7 @@ void CGameGlobalObjects::AddPaksAndFactories() {}
 
 void CMain::DrawDebugMetrics(double dt, CStopwatch& stopWatch) {}
 
-bool CMain::CheckTerminate() {
-  return false;
-}
+bool CMain::CheckTerminate() { return false; }
 
 extern "C" void fn_800070A4() {}
 
