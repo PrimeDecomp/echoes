@@ -128,13 +128,12 @@ CHECK_SIZEOF(CVector3f, 0xc)
 // TGetType<9CVector3f>__FRC9CVector3f
 // close_enough__FRC9CVector3fRC9CVector3ff in CloseEnough.cpp
 
-CVector3f CVector3f::Cross(const CVector3f& lhs, const CVector3f& rhs)
-{
-  const float x = (lhs.GetY() * rhs.GetZ()) - (rhs.GetY() * lhs.GetZ());
-  const float y = (lhs.GetZ() * rhs.GetX()) - (rhs.GetZ() * lhs.GetX());
-  const float z = (lhs.GetX() * rhs.GetY()) - (rhs.GetX() * lhs.GetY());
-  return CVector3f(x, y, z);
-}
+// CVector3f CVector3f::Cross(const CVector3f& lhs, const CVector3f& rhs) {
+//   const float x = (lhs.GetY() * rhs.GetZ()) - (rhs.GetY() * lhs.GetZ());
+//   const float y = (lhs.GetZ() * rhs.GetX()) - (rhs.GetZ() * lhs.GetX());
+//   const float z = (lhs.GetX() * rhs.GetY()) - (rhs.GetX() * lhs.GetY());
+//   return CVector3f(x, y, z);
+// }
 
 inline bool operator==(const CVector3f& lhs, const CVector3f& rhs) {
   return lhs.GetX() == rhs.GetX() && lhs.GetY() == rhs.GetY() && lhs.GetZ() == rhs.GetZ();

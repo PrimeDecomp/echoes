@@ -1,10 +1,10 @@
 #include "NMWException.h"
 #include "__ppc_eabi_linker.h"
 
-// #if __MWERKS__
-// #pragma exceptions off
-// #pragma internal on
-// #endif
+#if __MWERKS__
+#pragma exceptions off
+#pragma internal on
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,10 +49,10 @@ void __fini_cpp_exceptions(void) {
 }
 
 /* clang-format off */
-__declspec(section ".ctors") static void *const
-    __init_cpp_exceptions_reference = __init_cpp_exceptions;
-__declspec(section ".dtors") static void *const
-    __destroy_global_chain_reference = __destroy_global_chain;
-__declspec(section ".dtors") static void *const
-    __fini_cpp_exceptions_reference = __fini_cpp_exceptions;
+__declspec(section ".ctors$10")
+void *const __init_cpp_exceptions_reference = __init_cpp_exceptions;
+__declspec(section ".dtors$10") 
+void *const __destroy_global_chain_reference = __destroy_global_chain;
+__declspec(section ".dtors$15") 
+void *const __fini_cpp_exceptions_reference = __fini_cpp_exceptions;
 /* clang-format on */

@@ -60,7 +60,7 @@ public:
   // ModF__5CMathFff weak
   static float Deg2Rad(float deg) { return Deg2Rev(deg) * M_2PIF; }
   static float Deg2Rev(float deg) { return deg * (1.f / 360.f); }
-  static float ArcCosineR(float v);
+  static float ArcCosineR(float v) { return acosf(v); }
   // FloorF__5CMathFf global
   // BaryToWorld__5CMathFRC9CVector3fRC9CVector3fRC9CVector3fRC9CVector3f global
   // GetCatmullRomSplinePoint__5CMathFRC9CVector3fRC9CVector3fRC9CVector3fRC9CVector3ff global

@@ -2,7 +2,7 @@
 LIBS = [
     {
         "lib": "MSL_C.PPCEABI.bare.H",
-        "mw_version": "1.3.2",
+        "mw_version": "2.7",
         "cflags": "$cflags_runtime",
         "host": False,
         "objects": [
@@ -10,12 +10,13 @@ LIBS = [
             ["Runtime/__init_cpp_exceptions.cpp", False],
             # TODO: need to implement all
             ["Runtime/Gecko_ExceptionPPC.cp", False],
+            ["Runtime/global_destructor_chain.c", False],
         ],
     },
     {
         "lib": "MetroidPrime",
         "cflags": "$cflags_retro",
-        "mw_version": "2.0",
+        "mw_version": "2.7",
         "host": True,
         "objects": [
             ["MetroidPrime/CHealthInfo.cpp", False],
@@ -26,20 +27,20 @@ LIBS = [
     },
     {
         "lib": "Kyoto_CW1",
-        "mw_version": "2.0",
+        "mw_version": "2.7",
         "cflags": "$cflags_retro",
         "host": True,
         "objects": [
-            ["Kyoto/Basics/CStopwatch.cpp", False],
+            ["Kyoto/Basics/CStopwatch.cpp", True],
             ["Kyoto/Basics/RAssertDolphin.cpp", False],
             ["Kyoto/Math/CTransform4f.cpp", False],
-            ["Kyoto/Math/CVector2f.cpp", False],
+            ["Kyoto/Math/CVector2f.cpp", True],
             ["Kyoto/Math/CVector2i.cpp", True],
             ["Kyoto/Math/CVector3d.cpp", False],
             ["Kyoto/Math/CVector3f.cpp", False],
             ["Kyoto/Math/CVector3i.cpp", False],
-        ]
-    }
+        ],
+    },
 ]
 VERSIONS = [
     "G2ME01",  # 0
@@ -163,8 +164,6 @@ n.variable(
     "$cflags_base -use_lmw_stmw on -str reuse,pool,readonly -gccinc -inline deferred,auto",
 )
 n.variable("cflags_musyx", "$cflags_base -str reuse,pool,readonly -fp_contract off")
-asflags = f"-mgekko -I include --defsym version={version_num} -W --strip-local-absolute -gdwarf-2"
-n.variable("asflags", asflags)
 ldscript_path = build_path / "ldscript.lcf"
 ldflags = f"-fp fmadd -nodefaults -lcf {ldscript_path}"
 if args.map:
@@ -173,7 +172,7 @@ if args.map:
 if args.debug:
     ldflags += " -g"
 n.variable("ldflags", ldflags)
-mw_link_version = "1.3.2"
+mw_link_version = "2.7"
 n.variable("mw_version", mw_link_version)
 if os.name == "nt":
     exe = ".exe"
@@ -184,8 +183,8 @@ else:
         wine = ""
     elif args.wine:
         wine = f"{args.wine} "
-    elif which("wibo") is not None:
-        wine = "wibo "
+    # elif which("wibo") is not None:
+    #     wine = "wibo "
     else:
         wine = "wine "
     exe = ""
@@ -291,9 +290,31 @@ n.newline()
 # Rules for source files
 ###
 n.comment("Source files")
+build_obj_path = build_path / "obj"
 build_src_path = build_path / "src"
 build_host_path = build_path / "host"
 build_config_path = build_path / "config.json"
+
+build_obj_path.mkdir(parents=True, exist_ok=True)
+build_src_path.mkdir(parents=True, exist_ok=True)
+objdiff_config = {
+    "custom_make": "ninja",
+    "target_dir": str(build_obj_path),
+    "base_dir": str(build_src_path),
+    "build_target": False,
+    "watch_patterns": [
+        "*.c",
+        "*.cp",
+        "*.cpp",
+        "*.h",
+        "*.hpp",
+        "*.py",
+        "*.yml",
+        "*.txt",
+        "*.json",
+    ],
+    "units": [],
+}
 
 
 def locate_unit(unit):
@@ -339,6 +360,7 @@ if build_config_path.is_file():
                         object = object[0]
 
                     mw_version = options["mw_version"] or lib["mw_version"]
+                    cflags = options["cflags"] or lib["cflags"]
                     used_compiler_versions.add(mw_version)
 
                     n.comment(f"{unit}: {lib_name} (linked {completed})")
@@ -351,14 +373,14 @@ if build_config_path.is_file():
                         inputs=path(unit_path),
                         variables={
                             "mw_version": mw_version,
-                            "cflags": options["cflags"] or lib["cflags"],
+                            "cflags": cflags,
                             "basedir": os.path.dirname(
                                 build_src_path / f"{base_object}"
                             ),
                             "basefile": path(build_src_path / f"{base_object}"),
                         },
                     )
-                    
+
                     if lib["host"]:
                         host_obj_path = build_host_path / f"{base_object}.o"
                         n.build(
@@ -366,15 +388,25 @@ if build_config_path.is_file():
                             rule="host_cc" if unit_path.suffix == ".c" else "host_cpp",
                             inputs=path(unit_path),
                             variables={
-                                "basedir": os.path.dirname(build_host_path / f"{base_object}"),
+                                "basedir": os.path.dirname(
+                                    build_host_path / f"{base_object}"
+                                ),
                                 "basefile": path(build_host_path / f"{base_object}"),
                             },
                         )
                         if options["add_to_all"]:
                             host_source_inputs.append(host_obj_path)
-                    
+
                     if options["add_to_all"]:
                         source_inputs.append(src_obj_path)
+
+                    objdiff_config["units"].append(
+                        {
+                            "name": unit,
+                            "path": f"{base_object}.o",
+                            "reverse_fn_order": "deferred" in cflags,
+                        }
+                    )
 
                     if completed:
                         obj_path = src_obj_path
@@ -528,3 +560,9 @@ else:
 with open("build.ninja", "w") as f:
     f.write(out.getvalue())
 n.close()
+
+###
+# Write objdiff config
+###
+with open("objdiff.json", "w") as w:
+    json.dump(objdiff_config, w, indent=4)
