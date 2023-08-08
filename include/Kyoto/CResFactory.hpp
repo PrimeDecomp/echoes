@@ -32,7 +32,7 @@ public:
 
   uint ResourceSize(const SObjectTag& tag) const { return x4_resLoader.ResourceSize(tag); }
 
-  void AsyncIdle(uint time);
+  void AsyncIdle(uint time, bool);
 
   CResLoader& GetResLoader() { return x4_resLoader; }
   FourCC GetResourceTypeById(CAssetId id) { return GetResLoader().GetResourceTypeById(id); }

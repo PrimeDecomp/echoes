@@ -25,6 +25,8 @@ public:
   virtual void Flush();
   virtual void ObjectUnreferenced(const SObjectTag& tag);
 
+  void fn_8029c7e8(const SObjectTag& tag);
+
 private:
   uchar x4_;
   uchar x5_;

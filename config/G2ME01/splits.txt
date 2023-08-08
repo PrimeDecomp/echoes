@@ -1,3 +1,7 @@
+MetroidPrime/main.cpp:
+	.text       start:0x800053B8 end:0x80007040
+	.sbss       start:0x80418EA0 end:0x80418EC4
+
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086410
 
