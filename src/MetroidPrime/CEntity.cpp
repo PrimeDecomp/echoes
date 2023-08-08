@@ -12,8 +12,9 @@ CEntity::CEntity(TUniqueId id, const CEntityInfo& info, bool active, const rstl:
 , conns(info.GetConnectionList())
 , active(active)
 , inGraveyard(false)
-// , scriptingBlocked(false)
-, notInArea(areaId == kInvalidAreaId) {}
+, scriptingBlocked(false)
+, notInArea(areaId == kInvalidAreaId)
+{}
 
 CEntity::~CEntity() {}
 
@@ -46,9 +47,9 @@ void CEntity::SendScriptMsgs(EScriptObjectState state, CStateManager& mgr,
                              EScriptObjectMessage skipMsg) {
   rstl::vector< SConnection >::const_iterator it = conns.begin();
   for (; it != conns.end(); ++it) {
-    // if (it->x0_state == state && it->x4_msg != skipMsg) {
-    //   mgr.SendScriptMsg(GetUniqueId(), it->x8_objId, it->x4_msg, state);
-    // }
+    if (it->state == state && it->msg != skipMsg) {
+      //   mgr.SendScriptMsg(GetUniqueId(), it->x8_objId, it->x4_msg, state);
+    }
   }
 }
 
@@ -60,6 +61,4 @@ void CEntity::SetActive(const bool active) { this->active = active; }
 
 TAreaId CEntity::GetAreaId() const { return notInArea ? kInvalidAreaId : areaId; }
 
-TUniqueId CEntity::SearchForSomething(CStateManager&, EScriptObjectState, EScriptObjectMessage) {
-
-}
+TUniqueId CEntity::SearchForSomething(CStateManager&, EScriptObjectState, EScriptObjectMessage) {}
