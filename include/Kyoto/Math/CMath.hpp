@@ -19,6 +19,10 @@ public:
   }
   template < typename T >
   static const T& Clamp(const T& min, const T& val, const T& max); // TODO: weak
+  static inline int ClampI(int min, int val, int max) {
+    return val < min ? min : (val <= max ? val : max);
+  }
+
   static float SqrtF(float v);
   static inline float Limit(float v, float h) { return fabs(v) > h ? h * Sign(v) : v; }
   static inline float Sign(float v) { return FastFSel(v, 1.f, -1.f); }

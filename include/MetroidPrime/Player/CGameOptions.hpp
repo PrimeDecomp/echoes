@@ -1,5 +1,5 @@
-#ifndef _CGAMEOPTIONS_HPP
-#define _CGAMEOPTIONS_HPP
+#ifndef _CGAMEOPTIONS
+#define _CGAMEOPTIONS
 
 #include "types.h"
 
@@ -24,6 +24,10 @@ public:
 
   void InitSoundMode();
   void ResetToDefaults();
+  void ResetExtraFlagsToDefaults();
+  void ResetScreenToDefaults();
+  void ResetSoundToDefaults();
+  void ResetVisorToDefaults();
   void EnsureOptions();
 
   void SetScreenBrightness(int, bool);
@@ -35,21 +39,28 @@ public:
   void SetMusicVolume(int, bool);
   void SetSurroundMode(CAudioSys::ESurroundModes, bool);
 
+  int GetHudAlphaRaw() const;
   float GetHudAlpha() const;
+  void SetHudAlpha(int);
+  int GetHelmetAlphaRaw() const;
   float GetHelmetAlpha() const;
   void SetHelmetAlpha(int);
+
   void SetHUDLag(bool);
   void SetIsHintSystemEnabled(bool);
+  void SetFlag3(bool);
   void SetInvertYAxis(bool);
+  void SetIsRumbleEnabled(bool rumble);
   void ToggleControls(bool);
+
   void ResetControllerAssets(int);
   void SetControls(int);
 
-  void SetIsRumbleEnabled(bool rumble);
-  bool GetIsRumbleEnabled() const { return rumble; }
+  static bool fn_80161C84();
+  static void fn_80161C7C(bool);
 
 private:
-  int soundMode;
+  CAudioSys::ESurroundModes soundMode;
   int screenBrightness;
   int screenXOffset;
   int screenYOffset;
@@ -63,8 +74,10 @@ private:
   bool rumble : 1;
   bool swapBeamsControls : 1;
   bool hintSystem : 1;
-  char pad[28];
+  bool unk : 1;
+  rstl::vector<SObjectTag> vec;
+  char pad[0xc];
 };
 CHECK_SIZEOF(CGameOptions, 0x44)
 
-#endif // _CGAMEOPTIONS_HPP
+#endif // _CGAMEOPTIONS
