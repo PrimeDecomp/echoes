@@ -6,11 +6,14 @@
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "Kyoto/Audio/CStreamAudioManager.hpp"
 
 #include "MetroidPrime/CGameArchitectureSupport.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/CMainFlow.hpp"
 
 class CCharacterFactoryBuilder;
 class CGameState;
@@ -84,52 +87,55 @@ void CGameGlobalObjects::LoadStringTable() {
 
 void InfiniteLoopAlarm(OSAlarm* alarm, OSContext* context) {
   if (sInfiniteLoopTime >= 10.f) {
+    OSCancelAlarm(alarm);
     rs_debugger_printf("INFINITE LOOP");
   }
   sInfiniteLoopTime += alarm->period / OS_TIMER_CLOCK;
 }
 
+extern "C" void fn_8029EFCC();
+extern "C" void fn_8033CEE8();
+
 CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
-: x0_audioSys(0x30, 0x30, 0x30, 0x30, 0x5fc000)
-// , x30_inputGenerator(&osContext, gpTweakPlayer->GetLeftAnalogMax(),
-//                      gpTweakPlayer->GetRightAnalogMax())
-// , x44_guiSys(gpResourceFactory, gpSimplePool, CGuiSys::kUM_Zero)
-, x78_gameFrameCount(0)
-, x7c_(0.f)
-, x80_(0.f)
-, x84_(0.f)
-, x88_(2)
-, xc8_infiniteLoopAlarmSet(false) {
+: audioSys(0x30, 0x30, 0x30, 0x30, 0x5fc000)
+, inputGenerator(&osContext, gpTweakPlayerA->GetLeftAnalogMax(),
+                     gpTweakPlayerA->GetRightAnalogMax())
+// , guiSys(gpResourceFactory, gpSimplePool, CGuiSys::kUM_Zero)
+, gameFrameCount(0)
+, x68_(0.f)
+, x6c_(0.f)
+, x70_(0.f)
+// , x74_(2)
+, infiniteLoopAlarmSet(false) {
   CAudioSys::SysSetVolume(0x7F, 0, 0xFF);
   CAudioSys::SetDefaultVolumeScale(0x75);
   CAudioSys::SetVolumeScale(CAudioSys::GetDefaultVolumeScale());
   // CDSPStreamManager::Initialize();
-  // CStreamAudioManager::SetMusicVolume(0x7F);
+  fn_8029EFCC();
+  fn_8033CEE8();
+  CStreamAudioManager::SetMusicVolume(0x7F);
   CAudioSys::TrkSetSampleRate(kTSR_One);
   gpMain->SetMaxSpeed(false);
   gpMain->ResetGameState();
-  // if (!gpTweakGame->GetSplashScreensDisabled()) {
-  //   x58_ioWinMgr.AddIOWin(new CSplashScreen(CSplashScreen::Nintendo), 1000, 10000);
-  // }
-  // x58_ioWinMgr.AddIOWin(new CMainFlow(), 0, 0);
-  // x58_ioWinMgr.AddIOWin(new CConsoleOutputWindow(8, 5.f, 0.75f), 100, 0);
-  // x58_ioWinMgr.AddIOWin(new CAudioStateWin(), 100, -1);
-  // x58_ioWinMgr.AddIOWin(new CErrorOutputWindow(false), 10000, 100000);
-  // InitializeApplicationUI(x44_guiSys);
-  // CGuiSys::SetGlobalGuiSys(&x44_guiSys);
-  // gpController = x30_inputGenerator.GetController();
-  // gpGameState->GameOptions().EnsureOptions();
+  ioWinMgr.AddIOWin(new CMainFlow(), 0, 0);
+  // ioWinMgr.AddIOWin(new CConsoleOutputWindow(8, 5.f, 0.75f), 100, 0);
+  // ioWinMgr.AddIOWin(new CAudioStateWin(), 100, -1);
+  // ioWinMgr.AddIOWin(new CErrorOutputWindow(false), 10000, 100000);
+  // InitializeApplicationUI(guiSys);
+  // CGuiSys::SetGlobalGuiSys(&guiSys);
+  gpController = inputGenerator.GetController();
+  gpGameState->GameOptions().EnsureOptions();
   sInfiniteLoopTime = 0.f;
-  OSSetPeriodicAlarm(&xa0_infiniteLoopAlarm, OSGetTime(), (float)OS_TIMER_CLOCK, InfiniteLoopAlarm);
-  xc8_infiniteLoopAlarmSet = true;
+  OSSetPeriodicAlarm(&infiniteLoopAlarm, OSGetTime(), (float)OS_TIMER_CLOCK, InfiniteLoopAlarm);
+  infiniteLoopAlarmSet = true;
 }
 
 CGameArchitectureSupport::~CGameArchitectureSupport() {
-  if (xc8_infiniteLoopAlarmSet) {
-    OSCancelAlarm(&xa0_infiniteLoopAlarm);
-    xc8_infiniteLoopAlarmSet = false;
+  if (infiniteLoopAlarmSet) {
+    OSCancelAlarm(&infiniteLoopAlarm);
+    infiniteLoopAlarmSet = false;
   }
-  x58_ioWinMgr.RemoveAllIOWins();
+  ioWinMgr.RemoveAllIOWins();
   UnloadAudio();
   // CSfxManager::Shutdown();
   // CDSPStreamManager::Shutdown();

@@ -51,10 +51,7 @@ public:
   ERestartMode GetRestartMode() const { return restartMode; }
   // void SetCardBusy(bool v) { x160_31_cardBusy = v; }
 
-  void SetMaxSpeed(bool v) {
-    // ?
-    x160_26_screenFading = v;
-  }
+  void SetMaxSpeed(bool v); // {x160_26_screenFading = v; }
 
   bool fn_80008A1C();
 

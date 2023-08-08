@@ -6,6 +6,7 @@
 class CTweakGame {
 public:
   const rstl::string& GetPakFile();
+  bool GetSplashScreensDisabled();
 };
 
 extern CTweakGame* gpTweakGame;

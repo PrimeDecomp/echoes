@@ -5,6 +5,8 @@
 
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "MetroidPrime/Player/CGameOptions.hpp"
+
 class CGameState {
 public:
   CGameState();
@@ -14,8 +16,12 @@ public:
   void PutTo(COutputStream& out) const;
   void WriteSystemOptions(COutputStream& out);
 
+  CGameOptions& GameOptions() { return gameOptions; }
+
 private:
-  char pad[0x2f0];
+  char pad1[0x80];
+  CGameOptions gameOptions;
+  char pad2[0x22c];
 };
 
 CHECK_SIZEOF(CGameState, 0x2f0)
