@@ -35,9 +35,9 @@ LIBS = [
             ["Kyoto/Math/CTransform4f.cpp", False],
             ["Kyoto/Math/CVector2f.cpp", True],
             ["Kyoto/Math/CVector2i.cpp", True],
-            ["Kyoto/Math/CVector3d.cpp", False],
-            ["Kyoto/Math/CVector3f.cpp", False],
-            ["Kyoto/Math/CVector3i.cpp", False],
+            ["Kyoto/Math/CVector3d.cpp", True],
+            ["Kyoto/Math/CVector3f.cpp", True],
+            ["Kyoto/Math/CVector3i.cpp", True],
         ],
     },
 ]
