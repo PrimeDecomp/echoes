@@ -49,8 +49,8 @@ LIBS = [
         "cflags": "$cflags_base",
         "host": False,
         "objects": [
-            ["Dolphin/ar/ar.c", False],
-            ["Dolphin/ar/arq.c", False],
+            ["Dolphin/ar/ar.c", True],
+            ["Dolphin/ar/arq.c", True],
         ],
     },
     {
