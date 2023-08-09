@@ -166,9 +166,9 @@ n.variable(
 n.variable("cflags_musyx", "$cflags_base -str reuse,pool,readonly -fp_contract off")
 ldscript_path = build_path / "ldscript.lcf"
 ldflags = f"-fp fmadd -nodefaults -lcf {ldscript_path}"
+map_path = args.build_dir / f"{version}.MAP"
 if args.map:
-    map_path = args.build_dir / f"{version}.MAP"
-    ldflags += f" -map {map_path}"
+    ldflags += f" -map {map_path} -mapunused -listclosure"
 if args.debug:
     ldflags += " -g"
 n.variable("ldflags", ldflags)
@@ -433,9 +433,10 @@ if build_config_path.is_file():
     # Link
     ###
     n.comment("Link")
+    elf_path = build_path / "main.elf"
     if args.map:
         n.build(
-            outputs=path(build_path / "main.elf"),
+            outputs=path(elf_path),
             rule="link",
             inputs=path(link_inputs),
             implicit=path(ldscript_path),
@@ -443,7 +444,7 @@ if build_config_path.is_file():
         )
     else:
         n.build(
-            outputs=path(build_path / "main.elf"),
+            outputs=path(elf_path),
             rule="link",
             inputs=path(link_inputs),
             implicit=path(ldscript_path),
@@ -476,15 +477,16 @@ if build_config_path.is_file():
     # Generate DOL
     ###
     n.comment("Generate DOL")
+    dol_path = build_path / "main.dol"
     n.rule(
         name="elf2dol",
         command=f"{dtk} elf2dol $in $out",
         description="DOL $out",
     )
     n.build(
-        outputs=path(build_path / "main.dol"),
+        outputs=path(dol_path),
         rule="elf2dol",
-        inputs=path(build_path / "main.elf"),
+        inputs=path(elf_path),
         implicit=path(dtk),
     )
     n.newline()
@@ -493,16 +495,17 @@ if build_config_path.is_file():
     # Check DOL hash
     ###
     n.comment("Check DOL hash")
+    dol_ok_path = str(dol_path) + ".ok"
     n.rule(
         name="check",
         command=f"{dtk} shasum -c $in -o $out",
         description="CHECK $in",
     )
     n.build(
-        outputs=path(build_path / "main.dol.ok"),
+        outputs=path(dol_ok_path),
         rule="check",
         inputs=path(Path("orig") / f"{version}.sha1"),
-        implicit=path([build_path / "main.dol", dtk]),
+        implicit=path([dol_path, dtk]),
     )
     n.newline()
 
@@ -528,6 +531,45 @@ n.build(
 n.newline()
 
 ###
+# Helper tools
+###
+n.comment("Check for mismatching symbols")
+n.rule(
+    name="dol_diff",
+    command=f"{dtk} -L error dol diff $in",
+    description=f"DIFF {elf_path}",
+)
+n.build(
+    inputs=path([config_path, elf_path, map_path]),
+    outputs="dol_diff",
+    rule="dol_diff",
+)
+n.build(
+    outputs="diff",
+    rule="phony",
+    inputs="dol_diff",
+)
+n.newline()
+
+n.comment("Apply symbols from linked ELF")
+n.rule(
+    name="dol_apply",
+    command=f"{dtk} dol apply $in",
+    description=f"APPLY {elf_path}",
+)
+n.build(
+    inputs=path([config_path, elf_path, map_path]),
+    outputs="dol_apply",
+    rule="dol_apply",
+    implicit=path([dol_ok_path])
+)
+n.build(
+    outputs="apply",
+    rule="phony",
+    inputs="dol_apply",
+)
+
+###
 # Regenerate on change
 ###
 n.comment("Reconfigure on change")
@@ -550,7 +592,7 @@ n.newline()
 ###
 n.comment("Default rule")
 if has_units:
-    n.default(path(build_path / "main.dol.ok"))
+    n.default(path(dol_ok_path))
 else:
     n.default(path(build_config_path))
 
