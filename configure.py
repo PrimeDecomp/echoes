@@ -42,7 +42,26 @@ LIBS = [
             ["Kyoto/Math/CVector3f.cpp", False],
             ["Kyoto/Math/CVector3i.cpp", False],
         ]
-    }
+    },
+    {
+        "lib": "ar",
+        "mw_version": "1.2.5n",
+        "cflags": "$cflags_base",
+        "host": False,
+        "objects": [
+            ["Dolphin/ar/ar.c", False],
+            ["Dolphin/ar/arq.c", False],
+        ],
+    },
+    {
+        "lib": "base",
+        "mw_version": "1.2.5",
+        "cflags": "$cflags_base",
+        "host": False,
+        "objects": [
+            ["Dolphin/PPCArch.c", False],
+        ],
+    },
 ]
 VERSIONS = [
     "G2ME01",  # 0
