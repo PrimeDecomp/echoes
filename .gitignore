@@ -7,4 +7,5 @@ tools/mwcc_compiler/*
 !tools/mwcc_compiler/.gitkeep
 .ninja_deps
 .ninja_log
+objdiff.json
 /tools/objdiff.exe

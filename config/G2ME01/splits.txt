@@ -1,3 +1,9 @@
+MetroidPrime/CAxisAngle.cpp:
+	.bss        start:0x8040AD40 end:0x8040AD4C common
+
+MetroidPrime/CEulerAngles.cpp:
+	.bss        start:0x8040AD4C end:0x8040AD58 common
+
 MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80008B60
 	.sbss       start:0x80418EA0 end:0x80418EC4
@@ -26,6 +32,7 @@ MetroidPrime/Player/CGameOptions.cpp:
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
 	.ctors      start:0x803A55D4 end:0x803A55D8
+	.bss        start:0x80411050 end:0x80411068 common
 	.sbss       start:0x80419808 end:0x80419810
 	.sdata2     start:0x8041E250 end:0x8041E258
 
@@ -48,23 +55,31 @@ Kyoto/Math/CVector2i.cpp:
 	.text       start:0x802CA5B0 end:0x802CA6EC
 
 Kyoto/Math/CVector3d.cpp:
-	.text       start:0x802CA728 end:0x802CAB00
+	.text       start:0x802CA6EC end:0x802CAB00
 	.ctors      start:0x803A5608 end:0x803A560C
+	.bss        start:0x80417408 end:0x804174B0 common
 	.sdata2     start:0x8041E5F8 end:0x8041E610
 
 Kyoto/Math/CVector3f.cpp:
 	.text       start:0x802CAB00 end:0x802CB124
 	.ctors      start:0x803A560C end:0x803A5610
-	.sdata2     start:0x8041E610 end:0x8041E624
+	.bss        start:0x804174B0 end:0x80417510 common
+	.sdata2     start:0x8041E610 end:0x8041E628
 
 Kyoto/Math/CVector3i.cpp:
 	.text       start:0x802CB124 end:0x802CB330
 	.ctors      start:0x803A5610 end:0x803A5614
+	.bss        start:0x80417510 end:0x80417570 common
+
+Runtime/global_destructor_chain.c:
+	.text       start:0x80344DD8 end:0x80344E38
+	.sbss       start:0x80419CC0 end:0x80419CC4
 
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
-	.ctors      start:0x803A54A0 end:0x803A54A4
-	.dtors      start:0x803A56A0 end:0x803A56A8
+	.ctors      start:0x803A54A0 end:0x803A54A4 rename:.ctors$10
+	.dtors      start:0x803A56A0 end:0x803A56A4 rename:.dtors$10
+	.dtors      start:0x803A56A4 end:0x803A56A8 rename:.dtors$15
 	.sdata      start:0x80418CA8 end:0x80418CB0
 
 Runtime/Gecko_ExceptionPPC.cp:
