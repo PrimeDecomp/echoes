@@ -216,3 +216,7 @@ CPlayerState::EItemType CScriptPickup::GetItem() const { return itemType; }
 float CScriptPickup::GetPossibility() const { return possibility; }
 
 void CScriptPickup::SetSpawned() { generated = true; }
+
+CScriptPickup* LoadPickup(CStateManager&, CInputStream& input, const CEntity& info) {
+  return nullptr;
+}
