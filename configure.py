@@ -205,8 +205,8 @@ else:
         wine = ""
     elif args.wine:
         wine = f"{args.wine} "
-    # elif which("wibo") is not None:
-    #     wine = "wibo "
+    elif which("wibo") is not None:
+        wine = "wibo "
     else:
         wine = "wine "
     exe = ""
