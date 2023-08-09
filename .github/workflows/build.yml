@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{matrix.version}}.MAP
-        path: build/${{matrix.version}}.MAP
+        path: build/${{matrix.version}}/main.MAP

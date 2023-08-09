@@ -6,8 +6,7 @@ LIBS = [
         "cflags": "$cflags_runtime",
         "host": False,
         "objects": [
-            # TODO: need to remove from FORCEFILES
-            ["Runtime/__init_cpp_exceptions.cpp", False],
+            ["Runtime/__init_cpp_exceptions.cpp", True],
             # TODO: need to implement all
             ["Runtime/Gecko_ExceptionPPC.cp", False],
             ["Runtime/global_destructor_chain.c", True],
@@ -148,6 +147,7 @@ n.comment("Variables")
 version = args.version
 version_num = VERSIONS.index(args.version)
 build_path = args.build_dir / version
+config_path = Path("config") / version / "config.yml"
 
 cflags_base = f"-proc gekko -nodefaults -Cpp_exceptions off -RTTI off -fp hard -fp_contract on -O4,p -maxerrors 1 -enum int -inline auto -str reuse -nosyspath -DVERSION={version_num} -i include -i libc"
 if args.debug:
@@ -166,7 +166,7 @@ n.variable(
 n.variable("cflags_musyx", "$cflags_base -str reuse,pool,readonly -fp_contract off")
 ldscript_path = build_path / "ldscript.lcf"
 ldflags = f"-fp fmadd -nodefaults -lcf {ldscript_path}"
-map_path = args.build_dir / f"{version}.MAP"
+map_path = build_path / f"main.MAP"
 if args.map:
     ldflags += f" -map {map_path} -mapunused -listclosure"
 if args.debug:
@@ -509,11 +509,49 @@ if build_config_path.is_file():
     )
     n.newline()
 
+    ###
+    # Helper tools
+    ###
+    n.comment("Check for mismatching symbols")
+    n.rule(
+        name="dol_diff",
+        command=f"{dtk} -L error dol diff $in",
+        description=f"DIFF {elf_path}",
+    )
+    n.build(
+        inputs=path([config_path, elf_path, map_path]),
+        outputs="dol_diff",
+        rule="dol_diff",
+    )
+    n.build(
+        outputs="diff",
+        rule="phony",
+        inputs="dol_diff",
+    )
+    n.newline()
+
+    n.comment("Apply symbols from linked ELF")
+    n.rule(
+        name="dol_apply",
+        command=f"{dtk} dol apply $in",
+        description=f"APPLY {elf_path}",
+    )
+    n.build(
+        inputs=path([config_path, elf_path, map_path]),
+        outputs="dol_apply",
+        rule="dol_apply",
+        implicit=path([dol_ok_path])
+    )
+    n.build(
+        outputs="apply",
+        rule="phony",
+        inputs="dol_apply",
+    )
+
 ###
 # DOL split
 ###
 n.comment("Generate objects from original DOL")
-config_path = Path("config") / version / "config.yml"
 n.rule(
     name="split",
     command=f"{dtk} dol split $in $out_dir",
@@ -529,45 +567,6 @@ n.build(
     variables={"out_dir": path(build_path)},
 )
 n.newline()
-
-###
-# Helper tools
-###
-n.comment("Check for mismatching symbols")
-n.rule(
-    name="dol_diff",
-    command=f"{dtk} -L error dol diff $in",
-    description=f"DIFF {elf_path}",
-)
-n.build(
-    inputs=path([config_path, elf_path, map_path]),
-    outputs="dol_diff",
-    rule="dol_diff",
-)
-n.build(
-    outputs="diff",
-    rule="phony",
-    inputs="dol_diff",
-)
-n.newline()
-
-n.comment("Apply symbols from linked ELF")
-n.rule(
-    name="dol_apply",
-    command=f"{dtk} dol apply $in",
-    description=f"APPLY {elf_path}",
-)
-n.build(
-    inputs=path([config_path, elf_path, map_path]),
-    outputs="dol_apply",
-    rule="dol_apply",
-    implicit=path([dol_ok_path])
-)
-n.build(
-    outputs="apply",
-    rule="phony",
-    inputs="dol_apply",
-)
 
 ###
 # Regenerate on change
