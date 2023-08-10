@@ -53,7 +53,7 @@ public:
     kSS_Done,
   };
 
-  CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, void*,
+  CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, int,
          const CTransform4f& xf, const CModelData& mData, const CMaterialList& list,
          const CActorParameters& params, TUniqueId nextDrawNode);
   ~CActor() override;

@@ -38,19 +38,38 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
                              int capacityIncrease, int itemPercentageIncrease,
                              CAssetId pickupEffect, bool absoluteValue, bool unknown, bool autoSpin,
                              bool blinkOut, float lifetime, float respawnTime, float fadeTime,
-                             float activateDelay)
-: CActor(uid, name, info, nullptr, xf, mData, CMaterialList(), aParams, kInvalidUniqueId)
+                             float activateDelay, float pickupEffectLifetime, float autoHomeRange,
+                             float delayUntilHome, float homingSpeed, const CVector3f& orbitOffset)
+: CActor(uid, name, info, 0, xf, mData, CMaterialList(), aParams, kInvalidUniqueId)
 , itemType(itemType)
 , amount(amount)
 , capacity(capacity)
-, possibility(possibility)
-, fadeInTime(fadeInTime)
+, percentage(percentage)
 , lifeTime(lifeTime)
-, curTime(0.f)
-, delayTimer(0.0f)
+, respawnTime(respawnTime)
+, x170(0.f)
+, fadeTime(fadeTime)
+, curTime(0.0f)
+, timeLeftToSet(timeLeftToSet)
+, activateDelay(activateDelay)
+, autoHomeRange(autoHomeRange)
+, delayUntilHome(delayUntilHome)
+, homingSpeed(homingSpeed)
+, transformZ(xf.GetTranslation().GetZ())
+, pickupParticleDesc()
+, touchBounds(aabb)
+, x1bc(0)
+, x1c0(0)
+, orbitOffset(orbitOffset)
+, unknownProp(unknown)
 , generated(false)
 , inTractor(false)
-, enableTractorTest(false) {
+, absoluteValue(absoluteValue)
+, enableTractorTest(false)
+, autoSpin(autoSpin)
+, unk2(false)
+, unk3(false)
+, blinkOut(blinkOut) {
   if (pickupEffect != kInvalidAssetId) {
     pickupParticleDesc = gpSimplePool->GetObj(SObjectTag('PART', pickupEffect));
     pickupParticleDesc->Lock();
@@ -60,8 +79,8 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
     // AnimationData()->SetAnimation(CAnimPlaybackParms(0, -1, 1.f, true), false);
   }
 
-  if (fadeInTime) {
-    SetModelFlags(CModelFlags::AlphaBlended(0.f).DepthCompareUpdate(true, false));
+  if (fadeTime) {
+  //   SetModelFlags(CModelFlags::AlphaBlended(0.f).DepthCompareUpdate(true, false));
   }
 }
 
@@ -219,8 +238,6 @@ void CScriptPickup::AddToRenderer(const CFrustumPlanes& a, const CStateManager& 
 
 CPlayerState::EItemType CScriptPickup::GetItem() const { return itemType; }
 
-float CScriptPickup::GetPossibility() const { return possibility; }
-
 void CScriptPickup::SetSpawned() { generated = true; }
 
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
@@ -337,15 +354,16 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntity
   if (sldrPickup.collision_size == CVector3f::Zero()) {
     box = modelData->GetBounds(CTransform4f(LoadEditorTransform(sldrPickup.editor_properties)));
   }
-  return new CScriptPickup(mgr.AllocateUniqueId(), sldrPickup.editor_properties.name,
-                           EntityInfoWithEditorProperties(info, sldrPickup.editor_properties),
-                           LoadEditorTransform(sldrPickup.editor_properties), *modelData,
-                           LoadActorParameters(sldrPickup.actor_information),
-                           LoadEchoParameters(sldrPickup.echo_information), box,
-                           CPlayerState::EItemType(sldrPickup.item_to_give.value),
-                           sldrPickup.amount, sldrPickup.capacity_increase,
-                           sldrPickup.item_percentage_increase, sldrPickup.pickup_effect,
-                           sldrPickup.absolute_value, sldrPickup.unknown, sldrPickup.auto_spin,
-                           sldrPickup.blink_out, sldrPickup.lifetime, sldrPickup.respawn_time,
-                           sldrPickup.fadetime, sldrPickup.activation_delay);
+  return new CScriptPickup(
+      mgr.AllocateUniqueId(), sldrPickup.editor_properties.name,
+      EntityInfoWithEditorProperties(info, sldrPickup.editor_properties),
+      LoadEditorTransform(sldrPickup.editor_properties), *modelData,
+      LoadActorParameters(sldrPickup.actor_information),
+      LoadEchoParameters(sldrPickup.echo_information), box,
+      CPlayerState::EItemType(sldrPickup.item_to_give.value), sldrPickup.amount,
+      sldrPickup.capacity_increase, sldrPickup.item_percentage_increase, sldrPickup.pickup_effect,
+      sldrPickup.absolute_value, sldrPickup.unknown, sldrPickup.auto_spin, sldrPickup.blink_out,
+      sldrPickup.lifetime, sldrPickup.respawn_time, sldrPickup.fadetime,
+      sldrPickup.activation_delay, sldrPickup.pickup_effect_lifetime, sldrPickup.auto_home_range,
+      sldrPickup.delay_until_home, sldrPickup.homing_speed, CVector3f(sldrPickup.orbit_offset));
 }

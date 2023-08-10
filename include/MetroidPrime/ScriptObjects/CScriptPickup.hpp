@@ -13,16 +13,33 @@ class CScriptPickup : public CActor {
   CPlayerState::EItemType itemType; // x158
   int amount;
   int capacity;
-  float possibility;
-  float fadeInTime;
+  int percentage;
   float lifeTime;
+  float respawnTime;
+  float x170;
+  float fadeTime;
   float curTime;
-  float tractorTime;
-  float delayTimer;
+  float x17c;
+  float timeLeftToSet;
+  float activateDelay;
+  float autoHomeRange;
+  float delayUntilHome;
+  float homingSpeed;
+  float transformZ;
   rstl::optional_object< TCachedToken< CGenDescription > > pickupParticleDesc;
-  bool generated : 1;
-  bool inTractor : 1;
-  bool enableTractorTest : 1;
+  CAABox touchBounds;
+  int x1bc;
+  int x1c0;
+  CVector3f orbitOffset;
+  bool unknownProp : 1;
+  bool generated : 1;  // unk
+  bool inTractor : 1;  // unk
+  bool absoluteValue : 1;
+  bool enableTractorTest : 1;  // unk
+  bool autoSpin : 1;
+  bool unk2 : 1;
+  bool unk3 : 1;
+  bool blinkOut : 1;
 
 public:
   CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -30,7 +47,7 @@ public:
                 const CEchoParameters& echo, const CAABox& aabb, CPlayerState::EItemType itemType,
                 int amount, int capacityIncrease, int itemPercentageIncrease, CAssetId pickupEffect,
                 bool absoluteValue, bool unknown, bool autoSpin, bool blinkOut, float lifetime,
-                float respawnTime, float fadeTime, float activateDelay);
+                float respawnTime, float fadeTime, float activateDelay, float, float, float, float, const CVector3f& orbitOffset);
 
   ~CScriptPickup();
 
@@ -44,7 +61,6 @@ public:
   void Render(const CStateManager&) const override;
   void AddToRenderer(const CFrustumPlanes&, const CStateManager&) const override;
 
-  float GetPossibility() const;
   CPlayerState::EItemType GetItem() const;
   void SetSpawned();
   bool IsVisible() const;
