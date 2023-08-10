@@ -27,7 +27,7 @@ public:
   u64 ReadLongLong();
   uint ReadLong();
   ushort ReadShort();
-  bool ReadBool();
+  // bool ReadBool();
   uchar ReadChar();
   uint ReadBits(uint len);
   size_t ReadBytes(void* dest, size_t len);
@@ -43,21 +43,34 @@ public:
   // TODO: this cast to uint fixes regalloc in
   // CIEKeyframeEmitter / rstl::vector(CInputStream&)
   // why?
-  int ReadInt32() { return static_cast< uint >(Get(TType< int >())); }
-  u16 ReadUint16() { return Get<u16>(); }
+  int ReadInt32() {
+    int* result = (int*) ptr;
+    ptr = (uchar*) result + 1;
+    return *result;
+  }
+  u16 ReadUint16() {
+    u16* result = (u16*) ptr;
+    ptr = (uchar*) result + 1;
+    return *result;
+  }
+  bool ReadBool() {
+    uchar* result = (uchar*) ptr;
+    ptr = (uchar*) result + 1;
+    return *result;
+  }
 
-  uint GetBlockOffset() const { return x4_blockOffset; }
+  uint GetBlockOffset() const { return blockOffset; }
 
 private:
   bool GrabAnotherBlock();
   bool InternalReadNext();
 
-  uint x4_blockOffset;
-  uint x8_blockLen;
-  uint xc_len;
-  uchar* x10_ptr;
-  bool x14_owned;
-  uint x18_readPosition;
+  uint blockOffset;
+  // uint blockLen;
+  // uint len;
+  uchar* ptr;
+  bool owned;
+  uint readPosition;
   uint x1c_bitWord;
   uint x20_bitOffset;
 };

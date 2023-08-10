@@ -12,7 +12,6 @@
 
 struct SLdrPickup {
     SLdrPickup();
-    ~SLdrPickup();
 
     SLdrEditorProperties editor_properties;
     CVector3f collision_size;

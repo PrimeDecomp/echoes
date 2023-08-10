@@ -8,10 +8,10 @@ struct SLdrConditionalTest {
     SLdrConditionalTest();
     ~SLdrConditionalTest();
 
-    Choice boolean;
+    int boolean;
     SLdrPlayerItem player_item;
-    Choice amount_or_capacity;
-    Choice condition;
+    int amount_or_capacity;
+    int condition;
     int value;
 };
 

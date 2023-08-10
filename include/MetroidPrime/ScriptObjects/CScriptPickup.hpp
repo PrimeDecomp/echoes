@@ -7,6 +7,7 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
 class CGenDescription;
+class CEchoParameters;
 
 class CScriptPickup : public CActor {
   CPlayerState::EItemType itemType; // x158
@@ -26,9 +27,11 @@ class CScriptPickup : public CActor {
 public:
   CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                 const CTransform4f& xf, const CModelData& mData, const CActorParameters& aParams,
-                const CAABox& aabb, CPlayerState::EItemType itemType, int amount, int capacity,
-                CAssetId pickupEffect, float possibility, float lifeTime, float fadeInTime,
-                float startDelay, bool active);
+                const CEchoParameters& echo, const CAABox& aabb, CPlayerState::EItemType itemType,
+                int amount, int capacityIncrease, int itemPercentageIncrease, CAssetId pickupEffect,
+                bool absoluteValue, bool unknown, bool autoSpin, bool blinkOut, float lifetime,
+                float respawnTime, float fadeTime, float activateDelay);
+
   ~CScriptPickup();
 
   CEntity* TypesMatch(EEntityType) override;
@@ -37,7 +40,7 @@ public:
   void Touch(CActor&, CStateManager&) override;
   rstl::optional_object< CAABox > GetTouchBounds() const override;
   void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
-  
+
   void Render(const CStateManager&) const override;
   void AddToRenderer(const CFrustumPlanes&, const CStateManager&) const override;
 

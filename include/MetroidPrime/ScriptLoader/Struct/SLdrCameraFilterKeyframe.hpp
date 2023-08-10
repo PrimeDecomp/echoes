@@ -12,7 +12,7 @@ struct SLdrCameraFilterKeyframe {
 
     SLdrEditorProperties editor_properties;
     int filter_type;
-    Choice filter_shape;
+    int filter_shape;
     int filter_stage;
     int which_filter_group;
     CColor color;

@@ -4,8 +4,11 @@
 // #include "MetroidPrime/CAnimPlaybackParms.hpp"
 // #include "MetroidPrime/CArtifactDoll.hpp"
 // #include "MetroidPrime/CExplosion.hpp"
+#include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CEchoParameters.hpp"
 #include "MetroidPrime/CModelData.hpp"
-// #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+
 // #include "MetroidPrime/Cameras/CCameraManager.hpp"
 // #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
@@ -16,6 +19,8 @@
 
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 // #include "MetroidPrime/HUD/CSamusHud.hpp"
+
+#include "MetroidPrime/ScriptLoader/Struct/SLdrPickup.hpp"
 
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Math/CAbsAngle.hpp"
@@ -28,11 +33,12 @@ static float skDrawInDistance = 30.f;
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, const CModelData& mData,
-                             const CActorParameters& aParams, const CAABox& aabb,
-                             CPlayerState::EItemType itemType, int amount, int capacity,
-                             CAssetId pickupEffect, float possibility, float lifeTime,
-                             float fadeInTime, float startDelay, bool active)
-
+                             const CActorParameters& aParams, const CEchoParameters& echo,
+                             const CAABox& aabb, CPlayerState::EItemType itemType, int amount,
+                             int capacityIncrease, int itemPercentageIncrease,
+                             CAssetId pickupEffect, bool absoluteValue, bool unknown, bool autoSpin,
+                             bool blinkOut, float lifetime, float respawnTime, float fadeTime,
+                             float activateDelay)
 : CActor(uid, name, info, nullptr, xf, mData, CMaterialList(), aParams, kInvalidUniqueId)
 , itemType(itemType)
 , amount(amount)
@@ -41,7 +47,7 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
 , fadeInTime(fadeInTime)
 , lifeTime(lifeTime)
 , curTime(0.f)
-, delayTimer(startDelay)
+, delayTimer(0.0f)
 , generated(false)
 , inTractor(false)
 , enableTractorTest(false) {
@@ -217,6 +223,129 @@ float CScriptPickup::GetPossibility() const { return possibility; }
 
 void CScriptPickup::SetSpawned() { generated = true; }
 
-CScriptPickup* LoadPickup(CStateManager&, CInputStream& input, const CEntity& info) {
-  return nullptr;
+CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
+                  const CVector3f& collisionOffset);
+CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
+const CEntityInfo& EntityInfoWithEditorProperties(const CEntityInfo&, const SLdrEditorProperties&);
+CActorParameters LoadActorParameters(const SLdrActorParameters&);
+CEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
+
+rstl::optional_object< CModelData > LoadModelData(const CVector3f&, CAssetId asset,
+                                                  const SLdrAnimationParameters&, bool);
+
+CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+  SLdrPickup sldrPickup;
+
+  int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    uint propertyId = (uint)input.ReadInt32();
+    u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x255a4580:
+      LoadTypedefSLdrEditorProperties(sldrPickup.editor_properties, input);
+      break;
+    case 0x3a3e03ba:
+      sldrPickup.collision_size = CVector3f(input);
+      break;
+    case 0x2e686c2a:
+      sldrPickup.collision_offset = CVector3f(input);
+      break;
+    case 0xa02ef0c4:
+      LoadTypedefSLdrPlayerItem(sldrPickup.item_to_give, input);
+      break;
+    case 0x28c71b54:
+      sldrPickup.capacity_increase = input.ReadInt32();
+      break;
+    case 0x165ab069:
+      sldrPickup.item_percentage_increase = input.ReadInt32();
+      break;
+    case 0x94af1445:
+      sldrPickup.amount = input.ReadInt32();
+      break;
+    case 0xf7fbaaa5:
+      sldrPickup.respawn_time = input.ReadFloat();
+      break;
+    case 0xc80fc827:
+      sldrPickup.pickup_effect_lifetime = input.ReadFloat();
+      break;
+    case 0x32dc67f6:
+      sldrPickup.lifetime = input.ReadFloat();
+      break;
+    case 0x56e3ceef:
+      sldrPickup.fadetime = input.ReadFloat();
+      break;
+    case 0xc27ffa8f:
+      sldrPickup.model = input.ReadInt32();
+      break;
+    case 0xe25fb08c:
+      LoadTypedefSLdrAnimationParameters(sldrPickup.animation_information, input);
+      break;
+    case 0x7e397fed:
+      LoadTypedefSLdrActorParameters(sldrPickup.actor_information, input);
+      break;
+    case 0x192b0e70:
+      LoadTypedefSLdrEchoParameters(sldrPickup.echo_information, input);
+      break;
+    case 0xe585f166:
+      sldrPickup.activation_delay = input.ReadFloat();
+      break;
+    case 0xa9fe872a:
+      sldrPickup.pickup_effect = input.ReadInt32();
+      break;
+    case 0xe10bcb96:
+      sldrPickup.absolute_value = input.ReadBool();
+      break;
+    case 0xce33239f:
+      sldrPickup.calculate_visibility = input.ReadBool();
+      break;
+    case 0x2de4a294:
+      sldrPickup.unknown = input.ReadBool();
+      break;
+    case 0xa6ea280d:
+      sldrPickup.auto_home_range = input.ReadFloat();
+      break;
+    case 0xc2b11cfd:
+      sldrPickup.delay_until_home = input.ReadFloat();
+      break;
+    case 0x2db59fcf:
+      sldrPickup.homing_speed = input.ReadFloat();
+      break;
+    case 0x961c0d17:
+      sldrPickup.auto_spin = input.ReadBool();
+      break;
+    case 0xa755eb02:
+      sldrPickup.blink_out = input.ReadBool();
+      break;
+    case 0x850115e4:
+      sldrPickup.orbit_offset = CVector3f(input);
+      break;
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+
+  rstl::optional_object< CModelData > modelData(
+      LoadModelData(sldrPickup.editor_properties.transform.scale, sldrPickup.model,
+                    sldrPickup.animation_information, true));
+  if (!modelData) {
+    return nullptr;
+  }
+
+  CAABox box =
+      LoadCAABox(mgr, info.GetAreaId(), sldrPickup.collision_size, sldrPickup.collision_offset);
+  if (sldrPickup.collision_size == CVector3f::Zero()) {
+    box = modelData->GetBounds(CTransform4f(LoadEditorTransform(sldrPickup.editor_properties)));
+  }
+  return new CScriptPickup(mgr.AllocateUniqueId(), sldrPickup.editor_properties.name,
+                           EntityInfoWithEditorProperties(info, sldrPickup.editor_properties),
+                           LoadEditorTransform(sldrPickup.editor_properties), *modelData,
+                           LoadActorParameters(sldrPickup.actor_information),
+                           LoadEchoParameters(sldrPickup.echo_information), box,
+                           CPlayerState::EItemType(sldrPickup.item_to_give.value),
+                           sldrPickup.amount, sldrPickup.capacity_increase,
+                           sldrPickup.item_percentage_increase, sldrPickup.pickup_effect,
+                           sldrPickup.absolute_value, sldrPickup.unknown, sldrPickup.auto_spin,
+                           sldrPickup.blink_out, sldrPickup.lifetime, sldrPickup.respawn_time,
+                           sldrPickup.fadetime, sldrPickup.activation_delay);
 }

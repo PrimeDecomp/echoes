@@ -10,7 +10,7 @@ struct SLdrRumbleEffect {
 
     SLdrEditorProperties editor_properties;
     float radius;
-    Choice effect;
+    int effect;
     int flags_rumble;
 };
 

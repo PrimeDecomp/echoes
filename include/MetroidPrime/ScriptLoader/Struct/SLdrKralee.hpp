@@ -12,7 +12,7 @@ struct SLdrKralee {
     ~SLdrKralee();
 
     SLdrEditorProperties editor_properties;
-    Choice flavor;
+    int flavor;
     SLdrPatternedAITypedef patterned;
     SLdrActorParameters actor_information;
     float waypoint_approach_distance;

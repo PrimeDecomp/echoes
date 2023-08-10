@@ -11,7 +11,7 @@ struct SLdrSpecialFunction {
     ~SLdrSpecialFunction();
 
     SLdrEditorProperties editor_properties;
-    Choice function;
+    int function;
     rstl::string string_parm;
     float value_parm;
     float value_parm2;

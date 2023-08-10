@@ -12,4 +12,6 @@ struct SLdrAnimationParameters {
   int initial_anim;
 };
 
+void LoadTypedefSLdrAnimationParameters(SLdrAnimationParameters&, CInputStream&);
+
 #endif // _SLDRANIMATIONPARAMETERS

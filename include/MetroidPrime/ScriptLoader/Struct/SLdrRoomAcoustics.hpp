@@ -10,7 +10,7 @@ struct SLdrRoomAcoustics {
 
     SLdrEditorProperties editor_properties;
     int room_volume;
-    Choice priority;
+    int priority;
     bool reverb_hi_enabled;
     bool unknown_0x3263c26e;
     float reverb_hi_time;

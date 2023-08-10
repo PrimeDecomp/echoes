@@ -41,15 +41,15 @@ struct SLdrDebrisExtended {
     CVector3f particle_system1_scale;
     bool particle_system1_uses_global_translation;
     bool particle_system1_wait_for_particles_to_die;
-    Choice particle_system1_orientation;
+    int particle_system1_orientation;
     CAssetId particle2;
     CVector3f particle_system2_scale;
     bool particle_system2_uses_global_translation;
     bool particle_system2_wait_for_particles_to_die;
-    Choice particle_system2_orientation;
+    int particle_system2_orientation;
     CAssetId death_particle;
     CVector3f death_particle_system_scale;
-    Choice death_particle_system_orientation;
+    int death_particle_system_orientation;
     bool is_collider;
     bool is_shootable;
     bool die_on_collision;

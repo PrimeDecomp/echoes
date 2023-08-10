@@ -30,7 +30,7 @@ struct SLdrSpawnPointStruct {
     int light_bomb;
     int dark_bomb;
     int annihilator_bomb;
-    Choice charge_upgrade;
+    int charge_upgrade;
     int grapple_beam;
     int double_jump;
     int gravity_boost;

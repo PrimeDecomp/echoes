@@ -16,8 +16,8 @@ struct SLdrLightParameters {
     float max_shadow_height;
     CColor ambient_color;
     bool unknown_0xa71810e9;
-    Choice world_lighting_options;
-    Choice light_recalculation;
+    int world_lighting_options;
+    int light_recalculation;
     CVector3f lighting_position_offset;
     int num_dynamic_lights;
     int num_area_lights;
