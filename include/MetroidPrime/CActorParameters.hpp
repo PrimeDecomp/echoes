@@ -41,14 +41,14 @@ public:
                    CLightParameters::ELightRecalculationOptions lightRecalcOpts,
                    const CVector3f& lightingPositionOffset, int maxDynamicLights, int maxAreaLights,
                    bool ambChannelOverflow, int useLightSet);
-  virtual ~CLightParameters();
+  ~CLightParameters() {}
 
-  const CColor& GetAmbientColor() const { return x18_ambientColor; }
-  bool ShouldMakeLights() const { return x1c_makeLights; }
-  bool GetAmbientChannelOverflow() const { return x1d_ambientChannelOverflow; }
-  const CVector3f& GetLightingPositionOffset() const { return x2c_lightingPositionOffset; }
-  int GetMaxDynamicLights() const { return x38_maxDynamicLights; }
-  int GetMaxAreaLights() const { return x3c_maxAreaLights; }
+  const CColor& GetAmbientColor() const { return ambientColor; }
+  bool ShouldMakeLights() const { return makeLights; }
+  bool GetAmbientChannelOverflow() const { return ambientChannelOverflow; }
+  const CVector3f& GetLightingPositionOffset() const { return lightingPositionOffset; }
+  int GetMaxDynamicLights() const { return maxDynamicLights; }
+  int GetMaxAreaLights() const { return maxAreaLights; }
 
   static CLightParameters None();
 
@@ -56,22 +56,22 @@ public:
   rstl::auto_ptr< CActorLights > MakeActorLights() const;
 
 private:
-  bool x4_castShadow;
-  float x8_shadowScale;
-  EShadowTessellation xc_shadowTesselation;
-  float x10_shadowAlpha;
-  float x14_maxShadowHeight;
-  CColor x18_ambientColor;
-  bool x1c_makeLights;
-  bool x1d_ambientChannelOverflow;
-  EWorldLightingOptions x20_useWorldLighting;
-  ELightRecalculationOptions x24_lightRecalculation;
-  int x28_useLightSet;
-  CVector3f x2c_lightingPositionOffset;
-  int x38_maxDynamicLights;
-  int x3c_maxAreaLights;
+  bool castShadow; // x0
+  float shadowScale;  // x4
+  EShadowTessellation shadowTesselation; // x8
+  float shadowAlpha; // xc
+  float maxShadowHeight; // x10
+  CColor ambientColor; // x14
+  bool makeLights;
+  bool ambientChannelOverflow;
+  EWorldLightingOptions useWorldLighting; // x1c
+  ELightRecalculationOptions lightRecalculation; // x20
+  int useLightSet; // x24
+  CVector3f lightingPositionOffset; // x28
+  int maxDynamicLights; // x34
+  int maxAreaLights; // x38
 };
-CHECK_SIZEOF(CLightParameters, 0x40)
+CHECK_SIZEOF(CLightParameters, 0x3c)
 
 class CScannableParameters {
 public:
@@ -120,35 +120,36 @@ public:
   CActorParameters HotInThermal(bool hot) const;
   CActorParameters MakeDamageableTriggerActorParms(const CVisorParameters& visorParam) const;
 
-  const CLightParameters& GetLighting() const { return x0_lighting; }
-  const CScannableParameters& GetScannable() const { return x40_scannable; }
-  const rstl::pair< CAssetId, CAssetId >& GetXRay() const { return x44_xrayAssets; }
-  const rstl::pair< CAssetId, CAssetId >& GetInfra() const { return x4c_thermalAssets; }
-  const CVisorParameters& GetVisorParameters() const { return x54_visor; }
-  float GetThermalMag() const { return x64_thermalMag; }
-  bool UseGlobalRenderTime() const { return x58_24_useGlobalRenderTime; }
-  bool IsHotInThermal() const { return x58_25_thermalHeat; }
-  bool ForceRenderUnsorted() const { return x58_26_forceRenderUnsorted; }
-  bool NoSortThermal() const { return x58_27_noSortThermal; }
-  float GetFadeInTime() const { return x5c_fadeInTime; }
-  float GetFadeOutTime() const { return x60_fadeOutTime; }
+  const CLightParameters& GetLighting() const { return lighting; }
+  const CScannableParameters& GetScannable() const { return scannable; }
+  const rstl::pair< CAssetId, CAssetId >& GetXRay() const { return echoAssets; }
+  const rstl::pair< CAssetId, CAssetId >& GetInfra() const { return darkAssets; }
+  const CVisorParameters& GetVisorParameters() const { return visor; }
+  // float GetThermalMag() const { return x64_thermalMag; }
+  bool UseGlobalRenderTime() const { return useGlobalRenderTime; }
+  bool IsHotInThermal() const { return thermalHeat; }
+  bool ForceRenderUnsorted() const { return forceRenderUnsorted; }
+  bool NoSortThermal() const { return noSortThermal; }
+  float GetFadeInTime() const { return fadeInTime; }
+  float GetFadeOutTime() const { return fadeOutTime; }
 
   static CActorParameters None();
 
 private:
-  CLightParameters x0_lighting;
-  CScannableParameters x40_scannable;
-  rstl::pair< CAssetId, CAssetId > x44_xrayAssets;
-  rstl::pair< CAssetId, CAssetId > x4c_thermalAssets;
-  CVisorParameters x54_visor;
-  uchar x58_24_useGlobalRenderTime : 1;
-  uchar x58_25_thermalHeat : 1;
-  uchar x58_26_forceRenderUnsorted : 1;
-  uchar x58_27_noSortThermal : 1;
-  float x5c_fadeInTime;
-  float x60_fadeOutTime;
-  float x64_thermalMag;
+  CLightParameters lighting; // x0
+  CScannableParameters scannable; // x3c
+  rstl::pair< CAssetId, CAssetId > echoAssets; // x40, model/skin
+  rstl::pair< CAssetId, CAssetId > darkAssets; // x48, model/skin
+  CVisorParameters visor; // x50
+  uchar maxVolume;  // x54
+  uchar maxEchoVolume;  // x55
+  uchar useGlobalRenderTime : 1; // x56
+  uchar thermalHeat : 1;
+  uchar forceRenderUnsorted : 1;
+  uchar noSortThermal : 1;
+  float fadeInTime; // x58
+  float fadeOutTime; // x5c
 };
-CHECK_SIZEOF(CActorParameters, 0x68)
+CHECK_SIZEOF(CActorParameters, 0x60)
 
 #endif // _CACTORPARAMETERS
