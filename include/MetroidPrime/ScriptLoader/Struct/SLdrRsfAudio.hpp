@@ -9,12 +9,12 @@ struct SLdrRsfAudio {
     SLdrRsfAudio();
     ~SLdrRsfAudio();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     rstl::string unknown;
-    int loop_start;
-    int loop_end;
-    float fade_in_time;
-    float fade_out_time;
+    int loopStart;
+    int loopEnd;
+    float fadeInTime;
+    float fadeOutTime;
     int volume;
 };
 

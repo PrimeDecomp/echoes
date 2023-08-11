@@ -8,10 +8,10 @@ struct SLdrCounter {
     SLdrCounter();
     ~SLdrCounter();
 
-    SLdrEditorProperties editor_properties;
-    int initial_count;
-    int max_count;
-    bool auto_reset;
+    SLdrEditorProperties editorProperties;
+    int initialCount;
+    int maxCount;
+    bool autoReset;
     bool wrap;
 };
 

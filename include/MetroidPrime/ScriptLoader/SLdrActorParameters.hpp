@@ -13,21 +13,21 @@ struct SLdrActorParameters {
 
     SLdrLightParameters lighting;
     SLdrScannableParameters scannable;
-    CAssetId dark_model;
-    CAssetId dark_skin;
-    CAssetId echo_model;
-    CAssetId echo_skin;
-    bool use_global_render_time;
-    float fade_in_time;
-    float fade_out_time;
+    CAssetId darkModel;
+    CAssetId darkSkin;
+    CAssetId echoModel;
+    CAssetId echoSkin;
+    bool useGlobalRenderTime;
+    float fadeInTime;
+    float fadeOutTime;
     SLdrVisorParameters visor;
     bool unknown_0xcd4c81a1;
-    bool force_render_unsorted;
-    bool takes_projected_shadow;
+    bool forceRenderUnsorted;
+    bool takesProjectedShadow;
     bool unknown_0xf07981e8;
     bool unknown_0x6df33845;
-    int max_volume;
-    int max_echo_volume;
+    int maxVolume;
+    int maxEchoVolume;
 };
 
 void LoadTypedefSLdrActorParameters(SLdrActorParameters&, CInputStream&);

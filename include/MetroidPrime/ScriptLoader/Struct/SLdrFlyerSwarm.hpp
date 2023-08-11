@@ -11,17 +11,17 @@ struct SLdrFlyerSwarm {
     SLdrFlyerSwarm();
     ~SLdrFlyerSwarm();
 
-    SLdrEditorProperties editor_properties;
-    SLdrActorParameters actor_information;
-    SLdrAnimationParameters animation_information;
+    SLdrEditorProperties editorProperties;
+    SLdrActorParameters actorInformation;
+    SLdrAnimationParameters animationInformation;
     bool active;
-    SLdrBasicSwarmProperties basic_swarm_properties;
+    SLdrBasicSwarmProperties basicSwarmProperties;
     float unknown_0x4a85a2da;
     float unknown_0x10cccd3c;
     float unknown_0x1e8e90a4;
     float unknown_0x262e586d;
-    float roll_upright_speed;
-    float roll_upright_min_angle;
+    float rollUprightSpeed;
+    float rollUprightMinAngle;
 };
 
 void LoadTypedefSLdrFlyerSwarm(SLdrFlyerSwarm&, CInputStream&);

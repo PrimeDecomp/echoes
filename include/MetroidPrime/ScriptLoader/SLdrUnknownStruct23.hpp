@@ -8,9 +8,9 @@ struct SLdrUnknownStruct23 {
     SLdrUnknownStruct23();
     ~SLdrUnknownStruct23();
 
-    float loop_duration;
-    int destroy_percentage;
-    SLdrShockWaveInfo shock_wave_info;
+    float loopDuration;
+    int destroyPercentage;
+    SLdrShockWaveInfo shockWaveInfo;
     int sound;
 };
 

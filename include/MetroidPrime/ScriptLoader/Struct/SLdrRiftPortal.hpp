@@ -10,20 +10,20 @@ struct SLdrRiftPortal {
     SLdrRiftPortal();
     ~SLdrRiftPortal();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     CAssetId model;
-    SLdrAnimationParameters animation_information;
-    CAssetId background_model;
-    SLdrAnimationParameters background_animation;
-    CAssetId incandescent_model;
-    SLdrAnimationParameters incandescent_animation;
-    CAssetId line_model;
-    SLdrAnimationParameters line_animation;
-    bool rip_portal;
-    int projectile_attraction;
-    float projectile_box_width;
-    float projectile_angle;
-    float projectile_destruction_radius;
+    SLdrAnimationParameters animationInformation;
+    CAssetId backgroundModel;
+    SLdrAnimationParameters backgroundAnimation;
+    CAssetId incandescentModel;
+    SLdrAnimationParameters incandescentAnimation;
+    CAssetId lineModel;
+    SLdrAnimationParameters lineAnimation;
+    bool ripPortal;
+    int projectileAttraction;
+    float projectileBoxWidth;
+    float projectileAngle;
+    float projectileDestructionRadius;
 };
 
 void LoadTypedefSLdrRiftPortal(SLdrRiftPortal&, CInputStream&);

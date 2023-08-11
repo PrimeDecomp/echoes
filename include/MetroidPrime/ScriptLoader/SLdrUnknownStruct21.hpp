@@ -10,8 +10,8 @@ struct SLdrUnknownStruct21 {
     ~SLdrUnknownStruct21();
 
     CAssetId projectile;
-    SLdrDamageInfo projectile_damage;
-    CAssetId projectile_visor_effect;
+    SLdrDamageInfo projectileDamage;
+    CAssetId projectileVisorEffect;
 };
 
 void LoadTypedefSLdrUnknownStruct21(SLdrUnknownStruct21&, CInputStream&);

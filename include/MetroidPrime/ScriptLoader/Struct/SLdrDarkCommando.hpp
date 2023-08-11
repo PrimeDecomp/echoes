@@ -11,10 +11,10 @@ struct SLdrDarkCommando {
     SLdrDarkCommando();
     ~SLdrDarkCommando();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrDarkCommandoData dark_commando_properties;
+    SLdrActorParameters actorInformation;
+    SLdrDarkCommandoData darkCommandoProperties;
 };
 
 void LoadTypedefSLdrDarkCommando(SLdrDarkCommando&, CInputStream&);

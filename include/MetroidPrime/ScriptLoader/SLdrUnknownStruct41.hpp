@@ -9,9 +9,9 @@ struct SLdrUnknownStruct41 {
     SLdrUnknownStruct41();
     ~SLdrUnknownStruct41();
 
-    SLdrSandBossStructB sand_boss_struct_b_0xb9784f0e;
-    SLdrSandBossStructB sand_boss_struct_b_0xb8ae1bdc;
-    SLdrPlasmaBeamInfo charge_beam_info;
+    SLdrSandBossStructB sandBossStructB_0xb9784f0e;
+    SLdrSandBossStructB sandBossStructB_0xb8ae1bdc;
+    SLdrPlasmaBeamInfo chargeBeamInfo;
 };
 
 void LoadTypedefSLdrUnknownStruct41(SLdrUnknownStruct41&, CInputStream&);

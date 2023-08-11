@@ -12,8 +12,8 @@ struct SLdrTweakTargeting_Charge_Gauge {
     float unknown_0xa118e250;
     float unknown_0xdb1ac8ee;
     float unknown_0xecd100f8;
-    float charge_gauge_scale;
-    CColor charge_gauge_color;
+    float chargeGaugeScale;
+    CColor chargeGaugeColor;
     int unknown_0xed78e6eb;
     float unknown_0x2c3d9e27;
 };

@@ -9,13 +9,13 @@ struct SLdrUnknownStruct42 {
     ~SLdrUnknownStruct42();
 
     float angle;
-    CColor cloud_color1;
-    CColor cloud_color2;
-    CColor add_color1;
-    CColor add_color2;
-    float cloud_scale;
-    float fade_off_size;
-    float open_speed;
+    CColor cloudColor1;
+    CColor cloudColor2;
+    CColor addColor1;
+    CColor addColor2;
+    float cloudScale;
+    float fadeOffSize;
+    float openSpeed;
 };
 
 void LoadTypedefSLdrUnknownStruct42(SLdrUnknownStruct42&, CInputStream&);

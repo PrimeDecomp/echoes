@@ -11,9 +11,9 @@ struct SLdrUnknownStruct26 {
     ~SLdrUnknownStruct26();
 
     CAssetId effect;
-    int portal_open_sound;
-    SLdrDamageInfo projectile_damage;
-    SLdrPlasmaBeamInfo beam_info;
+    int portalOpenSound;
+    SLdrDamageInfo projectileDamage;
+    SLdrPlasmaBeamInfo beamInfo;
 };
 
 void LoadTypedefSLdrUnknownStruct26(SLdrUnknownStruct26&, CInputStream&);

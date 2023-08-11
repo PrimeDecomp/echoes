@@ -10,14 +10,14 @@ struct SLdrTweakAutoMapper_Base {
 
     bool unknown_0xcbe595d8;
     bool unknown_0x8ecb53a6;
-    bool scale_move_speed_with_camera_distance;
+    bool scaleMoveSpeedWithCameraDistance;
     float unknown_0x6bea9324;
     float unknown_0x065dd754;
     float unknown_0x57a46c09;
     float unknown_0xb54255b5;
     float unknown_0x0c64cec4;
     float unknown_0x335ebc7e;
-    float map_screen_area_opacity;
+    float mapScreenAreaOpacity;
     CColor unknown_0x533c5684;
     float unknown_0xeb383668;
     float unknown_0x27151ede;
@@ -42,9 +42,9 @@ struct SLdrTweakAutoMapper_Base {
     float unknown_0x30610062;
     float unknown_0xb6acea88;
     float unknown_0x73de4110;
-    float map_screen_zoom_speed;
-    float map_screen_circle_speed;
-    float map_screen_move_speed;
+    float mapScreenZoomSpeed;
+    float mapScreenCircleSpeed;
+    float mapScreenMoveSpeed;
     CColor unknown_0xab82e268;
     CColor unknown_0x1daacfae;
     CColor unknown_0xdad161a1;
@@ -76,17 +76,17 @@ struct SLdrTweakAutoMapper_Base {
     float unknown_0x62f9ebf6;
     float unknown_0xa9a53853;
     float unknown_0x722b1bc0;
-    CColor player_model_color;
+    CColor playerModelColor;
     CColor unknown_0x5a87c156;
-    CColor player_surface_color;
-    CColor player_outline_color;
-    CColor text_color;
-    CColor text_outline_color;
+    CColor playerSurfaceColor;
+    CColor playerOutlineColor;
+    CColor textColor;
+    CColor textOutlineColor;
     CColor unknown_0x1a4b8068;
-    CColor frame_color;
-    CColor title_color;
-    CColor legend_background_color;
-    CColor legend_gradient_color;
+    CColor frameColor;
+    CColor titleColor;
+    CColor legendBackgroundColor;
+    CColor legendGradientColor;
 };
 
 void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base&, CInputStream&);

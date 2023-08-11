@@ -10,16 +10,16 @@ struct SLdrSpecialFunction {
     SLdrSpecialFunction();
     ~SLdrSpecialFunction();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int function;
-    rstl::string string_parm;
-    float value_parm;
-    float value_parm2;
-    float value_parm3;
-    float value_parm4;
-    int int_parm1;
-    int int_parm2;
-    SLdrPlayerItem inventory_item_parm;
+    rstl::string stringParm;
+    float valueParm;
+    float valueParm2;
+    float valueParm3;
+    float valueParm4;
+    int intParm1;
+    int intParm2;
+    SLdrPlayerItem inventoryItemParm;
     int sound1;
     int sound2;
     int sound3;

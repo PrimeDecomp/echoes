@@ -9,16 +9,16 @@ struct SLdrHUDMemo {
     SLdrHUDMemo();
     ~SLdrHUDMemo();
 
-    SLdrEditorProperties editor_properties;
-    float display_time;
-    bool clear_window;
+    SLdrEditorProperties editorProperties;
+    float displayTime;
+    bool clearWindow;
     bool player1;
     bool player2;
     bool player3;
     bool player4;
-    bool type_out;
-    bool use_originator;
-    int display_type;
+    bool typeOut;
+    bool useOriginator;
+    int displayType;
     CAssetId string;
 };
 

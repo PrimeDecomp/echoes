@@ -9,9 +9,9 @@ struct SLdrGuiWidget {
     SLdrGuiWidget();
     ~SLdrGuiWidget();
 
-    SLdrEditorProperties editor_properties;
-    SLdrGuiWidgetProperties gui_widget_properties;
-    int controller_number;
+    SLdrEditorProperties editorProperties;
+    SLdrGuiWidgetProperties guiWidgetProperties;
+    int controllerNumber;
 };
 
 void LoadTypedefSLdrGuiWidget(SLdrGuiWidget&, CInputStream&);

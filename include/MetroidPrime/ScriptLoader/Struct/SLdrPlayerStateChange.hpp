@@ -8,12 +8,12 @@ struct SLdrPlayerStateChange {
     SLdrPlayerStateChange();
     ~SLdrPlayerStateChange();
 
-    SLdrEditorProperties editor_properties;
-    int item_to_change;
-    int capacity_increase;
+    SLdrEditorProperties editorProperties;
+    int itemToChange;
+    int capacityIncrease;
     int amount;
     int command;
-    int command_action;
+    int commandAction;
 };
 
 void LoadTypedefSLdrPlayerStateChange(SLdrPlayerStateChange&, CInputStream&);

@@ -9,11 +9,11 @@ struct SLdrGuiMenu {
     SLdrGuiMenu();
     ~SLdrGuiMenu();
 
-    SLdrEditorProperties editor_properties;
-    SLdrGuiWidgetProperties gui_widget_properties;
-    int control_direction;
-    bool wrap_selection;
-    int selection_changed_sound;
+    SLdrEditorProperties editorProperties;
+    SLdrGuiWidgetProperties guiWidgetProperties;
+    int controlDirection;
+    bool wrapSelection;
+    int selectionChangedSound;
 };
 
 void LoadTypedefSLdrGuiMenu(SLdrGuiMenu&, CInputStream&);

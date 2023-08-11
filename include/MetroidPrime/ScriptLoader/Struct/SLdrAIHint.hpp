@@ -8,12 +8,12 @@ struct SLdrAIHint {
     SLdrAIHint();
     ~SLdrAIHint();
 
-    SLdrEditorProperties editor_properties;
-    int hint_type;
+    SLdrEditorProperties editorProperties;
+    int hintType;
     float radius;
-    float value_parm;
-    float value_parm2;
-    float value_parm3;
+    float valueParm;
+    float valueParm2;
+    float valueParm3;
 };
 
 void LoadTypedefSLdrAIHint(SLdrAIHint&, CInputStream&);

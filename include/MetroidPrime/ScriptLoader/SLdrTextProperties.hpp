@@ -9,18 +9,18 @@ struct SLdrTextProperties {
     SLdrTextProperties();
     ~SLdrTextProperties();
 
-    int text_bounding_width;
-    int text_bounding_height;
-    float line_spacing;
-    int line_extra_space;
-    int character_extra_space;
-    CColor foreground_color;
-    CColor outline_color;
-    CColor geometry_color;
-    CAssetId default_font;
+    int textBoundingWidth;
+    int textBoundingHeight;
+    float lineSpacing;
+    int lineExtraSpace;
+    int characterExtraSpace;
+    CColor foregroundColor;
+    CColor outlineColor;
+    CColor geometryColor;
+    CAssetId defaultFont;
     int unknown_0x18dd95cd;
     int unknown_0x42091548;
-    bool wrap_text;
+    bool wrapText;
 };
 
 void LoadTypedefSLdrTextProperties(SLdrTextProperties&, CInputStream&);

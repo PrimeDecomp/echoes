@@ -10,14 +10,14 @@ struct SLdrCameraFilterKeyframe {
     SLdrCameraFilterKeyframe();
     ~SLdrCameraFilterKeyframe();
 
-    SLdrEditorProperties editor_properties;
-    int filter_type;
-    int filter_shape;
-    int filter_stage;
-    int which_filter_group;
+    SLdrEditorProperties editorProperties;
+    int filterType;
+    int filterShape;
+    int filterStage;
+    int whichFilterGroup;
     CColor color;
-    float interpolate_in_time;
-    float interpolate_out_time;
+    float interpolateInTime;
+    float interpolateOutTime;
     CAssetId texture;
 };
 

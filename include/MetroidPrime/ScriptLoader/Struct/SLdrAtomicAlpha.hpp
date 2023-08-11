@@ -12,17 +12,17 @@ struct SLdrAtomicAlpha {
     SLdrAtomicAlpha();
     ~SLdrAtomicAlpha();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    CAssetId bomb_weapon;
-    CAssetId bomb_model;
-    SLdrDamageInfo bomb_damage;
-    float bomb_drop_delay;
-    float bomb_reappear_delay;
-    float bomb_reappear_time;
+    SLdrActorParameters actorInformation;
+    CAssetId bombWeapon;
+    CAssetId bombModel;
+    SLdrDamageInfo bombDamage;
+    float bombDropDelay;
+    float bombReappearDelay;
+    float bombReappearTime;
     bool invisible;
-    bool home_while_charging;
+    bool homeWhileCharging;
 };
 
 void LoadTypedefSLdrAtomicAlpha(SLdrAtomicAlpha&, CInputStream&);

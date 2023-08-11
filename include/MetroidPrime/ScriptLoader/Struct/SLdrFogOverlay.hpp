@@ -10,16 +10,16 @@ struct SLdrFogOverlay {
     SLdrFogOverlay();
     ~SLdrFogOverlay();
 
-    SLdrEditorProperties editor_properties;
-    float full_alpha;
-    float fade_down_time;
-    float fade_up_time;
-    bool start_faded_out;
+    SLdrEditorProperties editorProperties;
+    float fullAlpha;
+    float fadeDownTime;
+    float fadeUpTime;
+    bool startFadedOut;
     CColor color;
-    float ambient_radius_x;
-    float ambient_radius_y;
-    float ambient_speed;
-    float ambient_speed_target;
+    float ambientRadiusX;
+    float ambientRadiusY;
+    float ambientSpeed;
+    float ambientSpeedTarget;
     float unknown_0x6a111b96;
     float unknown_0xff226ea3;
     CVector3f unknown_0x2190ab0a;

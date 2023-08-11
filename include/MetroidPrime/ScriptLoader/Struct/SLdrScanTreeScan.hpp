@@ -11,10 +11,10 @@ struct SLdrScanTreeScan {
     SLdrScanTreeScan();
     ~SLdrScanTreeScan();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId name_string_table;
-    rstl::string name_string_name;
-    SLdrScannableParameters scannable_parameters;
+    SLdrEditorProperties editorProperties;
+    CAssetId nameStringTable;
+    rstl::string nameStringName;
+    SLdrScannableParameters scannableParameters;
 };
 
 void LoadTypedefSLdrScanTreeScan(SLdrScanTreeScan&, CInputStream&);

@@ -8,16 +8,16 @@ struct SLdrTweakGuiColors_Multiplayer {
     SLdrTweakGuiColors_Multiplayer();
     ~SLdrTweakGuiColors_Multiplayer();
 
-    CColor score_text_color;
+    CColor scoreTextColor;
     CColor unknown_0xa09caefe;
-    CColor timer_text_color;
-    CColor timer_text_blink_color;
+    CColor timerTextColor;
+    CColor timerTextBlinkColor;
     CColor unknown_0xec4197e3;
     CColor unknown_0x823e2fb3;
     CColor unknown_0x95cc4ed8;
     CColor unknown_0xdb2ca6ff;
-    CColor lockon_indicator_on_color;
-    CColor lockon_indicator_off_color;
+    CColor lockonIndicatorOnColor;
+    CColor lockonIndicatorOffColor;
 };
 
 void LoadTypedefSLdrTweakGuiColors_Multiplayer(SLdrTweakGuiColors_Multiplayer&, CInputStream&);

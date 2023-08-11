@@ -9,15 +9,15 @@ struct SLdrAreaAttributes {
     SLdrAreaAttributes();
     ~SLdrAreaAttributes();
 
-    SLdrEditorProperties editor_properties;
-    bool need_sky;
-    bool dark_world;
-    int environment_effects;
-    int environment_group_sound;
+    SLdrEditorProperties editorProperties;
+    bool needSky;
+    bool darkWorld;
+    int environmentEffects;
+    int environmentGroupSound;
     float density;
-    float normal_lighting;
-    CAssetId override_sky;
-    int phazon_damage;
+    float normalLighting;
+    CAssetId overrideSky;
+    int phazonDamage;
 };
 
 void LoadTypedefSLdrAreaAttributes(SLdrAreaAttributes&, CInputStream&);

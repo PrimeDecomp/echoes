@@ -9,7 +9,7 @@ struct SLdrTBeamInfo {
     ~SLdrTBeamInfo();
 
     float cooldown;
-    SLdrTWeaponDamage damage_info;
+    SLdrTWeaponDamage damageInfo;
 };
 
 void LoadTypedefSLdrTBeamInfo(SLdrTBeamInfo&, CInputStream&);

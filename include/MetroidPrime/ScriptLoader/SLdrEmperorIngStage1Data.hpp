@@ -15,23 +15,23 @@ struct SLdrEmperorIngStage1Data {
     ~SLdrEmperorIngStage1Data();
 
     SLdrEmperorIngStage1TentacleData tentacle;
-    SLdrUnknownStruct20 unknown_struct20;
-    SLdrUnknownStruct21 unknown_struct21;
-    SLdrUnknownStruct22 unknown_struct22;
-    SLdrUnknownStruct23 unknown_struct23;
-    SLdrUnknownStruct24 unknown_struct24;
-    float heart_exposed_time;
+    SLdrUnknownStruct20 unknownStruct20;
+    SLdrUnknownStruct21 unknownStruct21;
+    SLdrUnknownStruct22 unknownStruct22;
+    SLdrUnknownStruct23 unknownStruct23;
+    SLdrUnknownStruct24 unknownStruct24;
+    float heartExposedTime;
     float unknown_0x905938b8;
     float unknown_0xb826317a;
-    SLdrAudioPlaybackParms heart_damage_sound;
-    float turn_speed_accel;
-    float max_turn_speed_normal;
-    float max_turn_speed_melee;
+    SLdrAudioPlaybackParms heartDamageSound;
+    float turnSpeedAccel;
+    float maxTurnSpeedNormal;
+    float maxTurnSpeedMelee;
     float unknown_0xe5a7c358;
-    int vulnerability_change_sound;
-    float taunt_frequency;
-    float attack_interval_min;
-    float attack_interval_max;
+    int vulnerabilityChangeSound;
+    float tauntFrequency;
+    float attackIntervalMin;
+    float attackIntervalMax;
 };
 
 void LoadTypedefSLdrEmperorIngStage1Data(SLdrEmperorIngStage1Data&, CInputStream&);

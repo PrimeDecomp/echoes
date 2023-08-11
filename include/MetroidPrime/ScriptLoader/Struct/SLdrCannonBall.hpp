@@ -9,7 +9,7 @@ struct SLdrCannonBall {
     SLdrCannonBall();
     ~SLdrCannonBall();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     CAssetId effect;
 };
 

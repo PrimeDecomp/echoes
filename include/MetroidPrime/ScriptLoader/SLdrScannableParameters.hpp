@@ -8,7 +8,7 @@ struct SLdrScannableParameters {
     SLdrScannableParameters();
     ~SLdrScannableParameters();
 
-    CAssetId scannable_info0;
+    CAssetId scannableInfo0;
 };
 
 void LoadTypedefSLdrScannableParameters(SLdrScannableParameters&, CInputStream&);

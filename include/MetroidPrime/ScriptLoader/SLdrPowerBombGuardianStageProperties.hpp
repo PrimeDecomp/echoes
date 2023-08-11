@@ -15,7 +15,7 @@ struct SLdrPowerBombGuardianStageProperties {
     int unknown_0xc3e002ac;
     float unknown_0xbb4b6680;
     float unknown_0xd356c997;
-    float double_shot_chance;
+    float doubleShotChance;
     int unknown_0x87cc8ba4;
     int unknown_0x6491357e;
 };

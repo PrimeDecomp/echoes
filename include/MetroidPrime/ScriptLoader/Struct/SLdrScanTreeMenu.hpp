@@ -10,18 +10,18 @@ struct SLdrScanTreeMenu {
     SLdrScanTreeMenu();
     ~SLdrScanTreeMenu();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId name_string_table;
-    rstl::string name_string_name;
+    SLdrEditorProperties editorProperties;
+    CAssetId nameStringTable;
+    rstl::string nameStringName;
     int unknown_0x0261a4e0;
-    CAssetId menu_options_string_table;
-    rstl::string option_1_string_name;
+    CAssetId menuOptionsStringTable;
+    rstl::string option1StringName;
     int unknown_0x50bce632;
-    rstl::string option_2_string_name;
+    rstl::string option2StringName;
     int unknown_0x420949dc;
-    rstl::string option_3_string_name;
+    rstl::string option3StringName;
     int unknown_0xfab52eb9;
-    rstl::string option_4_string_name;
+    rstl::string option4StringName;
     int unknown_0x67621600;
 };
 

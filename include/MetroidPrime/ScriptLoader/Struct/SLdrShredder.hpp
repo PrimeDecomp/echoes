@@ -11,9 +11,9 @@ struct SLdrShredder {
     SLdrShredder();
     ~SLdrShredder();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     SLdrUnknownStruct39 data;
 };
 

@@ -8,11 +8,11 @@ struct SLdrTweakGui_HudColorTypedef {
     SLdrTweakGui_HudColorTypedef();
     ~SLdrTweakGui_HudColorTypedef();
 
-    CColor energy_bar_filled_color;
-    CColor energy_bar_empty_color;
-    CColor energy_bar_shadow_color;
-    CColor energy_tanks_filled_color;
-    CColor energy_tanks_empty_color;
+    CColor energyBarFilledColor;
+    CColor energyBarEmptyColor;
+    CColor energyBarShadowColor;
+    CColor energyTanksFilledColor;
+    CColor energyTanksEmptyColor;
     CColor unknown_0x1fd3d43a;
     CColor unknown_0xe1ff2a4f;
     CColor unknown_0x9cfb8a36;

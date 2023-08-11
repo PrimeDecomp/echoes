@@ -8,9 +8,9 @@ struct SLdrTweakTargeting_LockFire {
     SLdrTweakTargeting_LockFire();
     ~SLdrTweakTargeting_LockFire();
 
-    float lock_fire_reticle_scale;
-    float lock_fire_anim_time;
-    CColor lock_fire_color;
+    float lockFireReticleScale;
+    float lockFireAnimTime;
+    CColor lockFireColor;
 };
 
 void LoadTypedefSLdrTweakTargeting_LockFire(SLdrTweakTargeting_LockFire&, CInputStream&);

@@ -9,9 +9,9 @@ struct SLdrConditionalRelay {
     SLdrConditionalRelay();
     ~SLdrConditionalRelay();
 
-    SLdrEditorProperties editor_properties;
-    bool trigger_on_first_think;
-    int multiplayer_mask_and_negate;
+    SLdrEditorProperties editorProperties;
+    bool triggerOnFirstThink;
+    int multiplayerMaskAndNegate;
     SLdrConditionalTest conditional1;
     SLdrConditionalTest conditional2;
     SLdrConditionalTest conditional3;

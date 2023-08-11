@@ -8,7 +8,7 @@ struct SLdrHealthInfo {
     ~SLdrHealthInfo();
 
     float health;
-    float hi_knock_back_resistance;
+    float hiKnockBackResistance;
 };
 
 void LoadTypedefSLdrHealthInfo(SLdrHealthInfo&, CInputStream&);

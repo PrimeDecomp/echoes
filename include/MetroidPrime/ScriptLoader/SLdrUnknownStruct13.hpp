@@ -11,13 +11,13 @@ struct SLdrUnknownStruct13 {
     ~SLdrUnknownStruct13();
 
     float unknown;
-    float min_attack_range;
-    float max_attack_range;
+    float minAttackRange;
+    float maxAttackRange;
     SLdrDamageInfo damage;
     CAssetId projectile;
-    CAssetId mold_effect;
-    SLdrDamageInfo mold_damage;
-    SLdrAudioPlaybackParms sound_mold;
+    CAssetId moldEffect;
+    SLdrDamageInfo moldDamage;
+    SLdrAudioPlaybackParms soundMold;
 };
 
 void LoadTypedefSLdrUnknownStruct13(SLdrUnknownStruct13&, CInputStream&);

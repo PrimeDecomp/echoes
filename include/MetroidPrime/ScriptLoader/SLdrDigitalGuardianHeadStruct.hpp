@@ -7,9 +7,9 @@ struct SLdrDigitalGuardianHeadStruct {
     SLdrDigitalGuardianHeadStruct();
     ~SLdrDigitalGuardianHeadStruct();
 
-    int first_shot_type;
-    float projectile_telegraph_time;
-    float projectile_attack_time;
+    int firstShotType;
+    float projectileTelegraphTime;
+    float projectileAttackTime;
     float unknown_0xfdfca535;
     float unknown_0xcd03632c;
     float unknown_0xf1548397;

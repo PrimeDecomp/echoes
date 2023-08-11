@@ -8,18 +8,18 @@ struct SLdrTweakAutoMapper_DoorColors {
     SLdrTweakAutoMapper_DoorColors();
     ~SLdrTweakAutoMapper_DoorColors();
 
-    int num_door_colors;
-    CColor blue_door_color;
-    CColor missile_door_color;
-    CColor dark_beam_door_color;
+    int numDoorColors;
+    CColor blueDoorColor;
+    CColor missileDoorColor;
+    CColor darkBeamDoorColor;
     CColor unknown;
-    CColor annihilator_beam_door_color;
-    CColor light_beam_door_color;
-    CColor super_missile_door_color;
-    CColor seeker_door_color;
-    CColor power_bomb_door_color;
-    CColor grey_door_color;
-    CColor white_door_color;
+    CColor annihilatorBeamDoorColor;
+    CColor lightBeamDoorColor;
+    CColor superMissileDoorColor;
+    CColor seekerDoorColor;
+    CColor powerBombDoorColor;
+    CColor greyDoorColor;
+    CColor whiteDoorColor;
 };
 
 void LoadTypedefSLdrTweakAutoMapper_DoorColors(SLdrTweakAutoMapper_DoorColors&, CInputStream&);

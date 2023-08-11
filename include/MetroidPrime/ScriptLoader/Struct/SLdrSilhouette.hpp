@@ -9,11 +9,11 @@ struct SLdrSilhouette {
     SLdrSilhouette();
     ~SLdrSilhouette();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float unknown;
-    CColor silhouette_color;
-    float fade_in_time;
-    float fade_out_time;
+    CColor silhouetteColor;
+    float fadeInTime;
+    float fadeOutTime;
 };
 
 void LoadTypedefSLdrSilhouette(SLdrSilhouette&, CInputStream&);

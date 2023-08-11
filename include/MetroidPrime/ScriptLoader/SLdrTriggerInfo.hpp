@@ -10,8 +10,8 @@ struct SLdrTriggerInfo {
     ~SLdrTriggerInfo();
 
     SLdrDamageInfo damage;
-    CVector3f force_field;
-    int flags_trigger;
+    CVector3f forceField;
+    int flagsTrigger;
 };
 
 void LoadTypedefSLdrTriggerInfo(SLdrTriggerInfo&, CInputStream&);

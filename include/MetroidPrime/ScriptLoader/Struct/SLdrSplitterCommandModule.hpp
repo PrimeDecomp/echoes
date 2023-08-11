@@ -11,10 +11,10 @@ struct SLdrSplitterCommandModule {
     SLdrSplitterCommandModule();
     ~SLdrSplitterCommandModule();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct43 unknown_struct43;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct43 unknownStruct43;
 };
 
 void LoadTypedefSLdrSplitterCommandModule(SLdrSplitterCommandModule&, CInputStream&);

@@ -8,7 +8,7 @@ struct SLdrTweakBall_CannonBall {
     SLdrTweakBall_CannonBall();
     ~SLdrTweakBall_CannonBall();
 
-    SLdrTDamageInfo cannon_ball_damage;
+    SLdrTDamageInfo cannonBallDamage;
 };
 
 void LoadTypedefSLdrTweakBall_CannonBall(SLdrTweakBall_CannonBall&, CInputStream&);

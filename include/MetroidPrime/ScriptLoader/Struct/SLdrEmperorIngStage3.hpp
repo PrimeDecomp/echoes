@@ -11,9 +11,9 @@ struct SLdrEmperorIngStage3 {
     SLdrEmperorIngStage3();
     ~SLdrEmperorIngStage3();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     SLdrEmperorIngStage3Data data;
 };
 

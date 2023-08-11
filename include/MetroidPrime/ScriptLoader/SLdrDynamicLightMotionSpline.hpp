@@ -8,10 +8,10 @@ struct SLdrDynamicLightMotionSpline {
     SLdrDynamicLightMotionSpline();
     ~SLdrDynamicLightMotionSpline();
 
-    bool motion_spline_path_loops;
-    SLdrSplineType motion_spline_type;
-    spline motion_control_spline;
-    float motion_spline_duration;
+    bool motionSplinePathLoops;
+    SLdrSplineType motionSplineType;
+    spline motionControlSpline;
+    float motionSplineDuration;
 };
 
 void LoadTypedefSLdrDynamicLightMotionSpline(SLdrDynamicLightMotionSpline&, CInputStream&);

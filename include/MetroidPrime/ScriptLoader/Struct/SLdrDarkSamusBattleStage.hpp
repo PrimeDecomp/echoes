@@ -9,8 +9,8 @@ struct SLdrDarkSamusBattleStage {
     SLdrDarkSamusBattleStage();
     ~SLdrDarkSamusBattleStage();
 
-    SLdrEditorProperties editor_properties;
-    SLdrUnknownStruct17 unknown_struct17;
+    SLdrEditorProperties editorProperties;
+    SLdrUnknownStruct17 unknownStruct17;
 };
 
 void LoadTypedefSLdrDarkSamusBattleStage(SLdrDarkSamusBattleStage&, CInputStream&);

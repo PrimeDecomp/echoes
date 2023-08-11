@@ -11,10 +11,10 @@ struct SLdrSwampBossStage1 {
     SLdrSwampBossStage1();
     ~SLdrSwampBossStage1();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct37 unknown_struct37;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct37 unknownStruct37;
 };
 
 void LoadTypedefSLdrSwampBossStage1(SLdrSwampBossStage1&, CInputStream&);

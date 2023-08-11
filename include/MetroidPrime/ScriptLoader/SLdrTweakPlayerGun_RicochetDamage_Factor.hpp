@@ -7,11 +7,11 @@ struct SLdrTweakPlayerGun_RicochetDamage_Factor {
     SLdrTweakPlayerGun_RicochetDamage_Factor();
     ~SLdrTweakPlayerGun_RicochetDamage_Factor();
 
-    float power_beam;
-    float dark_beam;
-    float light_beam;
-    float annihilator_beam;
-    float phazon_beam;
+    float powerBeam;
+    float darkBeam;
+    float lightBeam;
+    float annihilatorBeam;
+    float phazonBeam;
     float missile;
 };
 

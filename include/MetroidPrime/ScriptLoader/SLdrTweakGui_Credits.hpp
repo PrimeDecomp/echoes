@@ -11,12 +11,12 @@ struct SLdrTweakGui_Credits {
 
     rstl::string unknown_0x81fc78c2;
     rstl::string unknown_0x2bcd300d;
-    rstl::string alternate_font;
-    CColor font_color;
-    CColor font_outline_color;
-    float total_time;
-    float text_fade_time;
-    float movie_fade_time;
+    rstl::string alternateFont;
+    CColor fontColor;
+    CColor fontOutlineColor;
+    float totalTime;
+    float textFadeTime;
+    float movieFadeTime;
 };
 
 void LoadTypedefSLdrTweakGui_Credits(SLdrTweakGui_Credits&, CInputStream&);

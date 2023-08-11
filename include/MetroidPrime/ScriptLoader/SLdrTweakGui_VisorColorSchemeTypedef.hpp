@@ -8,7 +8,7 @@ struct SLdrTweakGui_VisorColorSchemeTypedef {
     SLdrTweakGui_VisorColorSchemeTypedef();
     ~SLdrTweakGui_VisorColorSchemeTypedef();
 
-    CColor hud_hue;
+    CColor hudHue;
     CColor unknown;
 };
 

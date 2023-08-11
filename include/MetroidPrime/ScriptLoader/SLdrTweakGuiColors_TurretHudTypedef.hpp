@@ -8,12 +8,12 @@ struct SLdrTweakGuiColors_TurretHudTypedef {
     SLdrTweakGuiColors_TurretHudTypedef();
     ~SLdrTweakGuiColors_TurretHudTypedef();
 
-    CColor frame_color;
-    CColor font_color;
-    CColor font_outline_color;
-    CColor energy_bar_fill_color;
-    CColor energy_bar_shadow_color;
-    CColor energy_bar_empty_color;
+    CColor frameColor;
+    CColor fontColor;
+    CColor fontOutlineColor;
+    CColor energyBarFillColor;
+    CColor energyBarShadowColor;
+    CColor energyBarEmptyColor;
 };
 
 void LoadTypedefSLdrTweakGuiColors_TurretHudTypedef(SLdrTweakGuiColors_TurretHudTypedef&, CInputStream&);

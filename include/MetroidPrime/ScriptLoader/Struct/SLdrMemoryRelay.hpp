@@ -8,9 +8,9 @@ struct SLdrMemoryRelay {
     SLdrMemoryRelay();
     ~SLdrMemoryRelay();
 
-    SLdrEditorProperties editor_properties;
-    bool one_shot;
-    bool delayed_action;
+    SLdrEditorProperties editorProperties;
+    bool oneShot;
+    bool delayedAction;
 };
 
 void LoadTypedefSLdrMemoryRelay(SLdrMemoryRelay&, CInputStream&);

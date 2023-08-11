@@ -11,9 +11,9 @@ struct SLdrBehaveChance {
     float unknown;
     float attack;
     float move;
-    float lurk_time;
-    float charge_attack;
-    int num_bolts;
+    float lurkTime;
+    float chargeAttack;
+    int numBolts;
 };
 
 void LoadTypedefSLdrBehaveChance(SLdrBehaveChance&, CInputStream&);

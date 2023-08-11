@@ -16,7 +16,7 @@ struct SLdrTBallTransitionResources {
     spline unknown_0x15b6840d;
     spline unknown_0x23fb0e93;
     spline unknown_0x564262f0;
-    spline movement_control;
+    spline movementControl;
 };
 
 void LoadTypedefSLdrTBallTransitionResources(SLdrTBallTransitionResources&, CInputStream&);

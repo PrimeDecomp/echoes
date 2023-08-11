@@ -8,11 +8,11 @@ struct SLdrTGunResources {
     SLdrTGunResources();
     ~SLdrTGunResources();
 
-    rstl::string power_beam;
-    rstl::string ice_beam;
-    rstl::string wave_beam;
-    rstl::string plasma_beam;
-    rstl::string phazon_beam;
+    rstl::string powerBeam;
+    rstl::string iceBeam;
+    rstl::string waveBeam;
+    rstl::string plasmaBeam;
+    rstl::string phazonBeam;
 };
 
 void LoadTypedefSLdrTGunResources(SLdrTGunResources&, CInputStream&);

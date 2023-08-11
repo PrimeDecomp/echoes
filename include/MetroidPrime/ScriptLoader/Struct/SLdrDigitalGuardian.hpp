@@ -11,10 +11,10 @@ struct SLdrDigitalGuardian {
     SLdrDigitalGuardian();
     ~SLdrDigitalGuardian();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrDigitalGuardianData digital_guardian_data;
+    SLdrActorParameters actorInformation;
+    SLdrDigitalGuardianData digitalGuardianData;
 };
 
 void LoadTypedefSLdrDigitalGuardian(SLdrDigitalGuardian&, CInputStream&);

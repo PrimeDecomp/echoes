@@ -10,13 +10,13 @@ struct SLdrDistanceFog {
     SLdrDistanceFog();
     ~SLdrDistanceFog();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int mode;
     CColor color;
-    SLdrVector2f near_far_plane;
-    float color_rate;
-    SLdrVector2f distance_rate;
-    bool force_settings;
+    SLdrVector2f nearFarPlane;
+    float colorRate;
+    SLdrVector2f distanceRate;
+    bool forceSettings;
 };
 
 void LoadTypedefSLdrDistanceFog(SLdrDistanceFog&, CInputStream&);

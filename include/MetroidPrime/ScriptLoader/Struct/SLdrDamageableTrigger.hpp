@@ -11,11 +11,11 @@ struct SLdrDamageableTrigger {
     SLdrDamageableTrigger();
     ~SLdrDamageableTrigger();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrHealthInfo health;
     SLdrDamageVulnerability vulnerability;
     bool orbitable;
-    bool enable_seeker_lock_on;
+    bool enableSeekerLockOn;
     bool invulnerable;
     SLdrVisorParameters visor;
 };

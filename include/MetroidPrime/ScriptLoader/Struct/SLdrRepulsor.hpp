@@ -8,11 +8,11 @@ struct SLdrRepulsor {
     SLdrRepulsor();
     ~SLdrRepulsor();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int shape;
     float radius;
     float value;
-    int flags_repulsor;
+    int flagsRepulsor;
 };
 
 void LoadTypedefSLdrRepulsor(SLdrRepulsor&, CInputStream&);

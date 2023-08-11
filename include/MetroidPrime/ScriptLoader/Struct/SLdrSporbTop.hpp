@@ -10,9 +10,9 @@ struct SLdrSporbTop {
     SLdrSporbTop();
     ~SLdrSporbTop();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
 };
 
 void LoadTypedefSLdrSporbTop(SLdrSporbTop&, CInputStream&);

@@ -12,20 +12,20 @@ struct SLdrDebris {
     SLdrDebris();
     ~SLdrDebris();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float impulse;
-    CVector3f impulse_variance;
-    CColor fade_out_color;
+    CVector3f impulseVariance;
+    CColor fadeOutColor;
     float mass;
     float unknown_0x417f4a91;
-    float life_time;
-    int scale_type;
-    bool random_spin;
+    float lifeTime;
+    int scaleType;
+    bool randomSpin;
     CAssetId model;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     CAssetId particle;
-    CVector3f particle_system_scale;
-    bool is_collider;
+    CVector3f particleSystemScale;
+    bool isCollider;
     bool unknown_0x4edb1d0e;
 };
 

@@ -9,10 +9,10 @@ struct SLdrMidi {
     SLdrMidi();
     ~SLdrMidi();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId song_file;
-    float fade_in_time;
-    float fade_out_time;
+    SLdrEditorProperties editorProperties;
+    CAssetId songFile;
+    float fadeInTime;
+    float fadeOutTime;
     int volume;
 };
 

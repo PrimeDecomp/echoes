@@ -8,11 +8,11 @@ struct SLdrPlayerHint {
     SLdrPlayerHint();
     ~SLdrPlayerHint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int priority;
     float timer;
     float unknown;
-    int flags_player_hint;
+    int flagsPlayerHint;
 };
 
 void LoadTypedefSLdrPlayerHint(SLdrPlayerHint&, CInputStream&);

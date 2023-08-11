@@ -12,19 +12,19 @@ struct SLdrPuffer {
     SLdrPuffer();
     ~SLdrPuffer();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    float hover_speed;
-    CAssetId cloud_effect;
-    SLdrDamageInfo cloud_damage;
-    CAssetId cloud_steam;
-    float cloud_steam_alpha;
-    bool orbit_interpolant_followed;
-    bool cloud_in_dark;
-    bool cloud_in_echo;
-    SLdrDamageInfo explosion_damage;
-    int sound_turn;
+    SLdrActorParameters actorInformation;
+    float hoverSpeed;
+    CAssetId cloudEffect;
+    SLdrDamageInfo cloudDamage;
+    CAssetId cloudSteam;
+    float cloudSteamAlpha;
+    bool orbitInterpolantFollowed;
+    bool cloudInDark;
+    bool cloudInEcho;
+    SLdrDamageInfo explosionDamage;
+    int soundTurn;
 };
 
 void LoadTypedefSLdrPuffer(SLdrPuffer&, CInputStream&);

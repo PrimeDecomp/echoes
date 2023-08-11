@@ -9,12 +9,12 @@ struct SLdrShadowProjector {
     SLdrShadowProjector();
     ~SLdrShadowProjector();
 
-    SLdrEditorProperties editor_properties;
-    float shadow_scale;
-    CVector3f shadow_offset;
-    float shadow_height;
-    float shadow_alpha;
-    float shadow_fade_time;
+    SLdrEditorProperties editorProperties;
+    float shadowScale;
+    CVector3f shadowOffset;
+    float shadowHeight;
+    float shadowAlpha;
+    float shadowFadeTime;
     bool unknown_0xbca8b742;
     int unknown_0x606e341c;
 };

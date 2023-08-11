@@ -8,20 +8,20 @@ struct SLdrAdvancedCounter {
     SLdrAdvancedCounter();
     ~SLdrAdvancedCounter();
 
-    SLdrEditorProperties editor_properties;
-    int initial_count;
-    int max_count;
-    bool auto_reset;
-    int counter_condition1;
-    int counter_condition2;
-    int counter_condition3;
-    int counter_condition4;
-    int counter_condition5;
-    int counter_condition6;
-    int counter_condition7;
-    int counter_condition8;
-    int counter_condition9;
-    int counter_condition10;
+    SLdrEditorProperties editorProperties;
+    int initialCount;
+    int maxCount;
+    bool autoReset;
+    int counterCondition1;
+    int counterCondition2;
+    int counterCondition3;
+    int counterCondition4;
+    int counterCondition5;
+    int counterCondition6;
+    int counterCondition7;
+    int counterCondition8;
+    int counterCondition9;
+    int counterCondition10;
 };
 
 void LoadTypedefSLdrAdvancedCounter(SLdrAdvancedCounter&, CInputStream&);

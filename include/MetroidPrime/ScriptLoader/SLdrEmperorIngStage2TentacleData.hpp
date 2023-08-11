@@ -7,8 +7,8 @@ struct SLdrEmperorIngStage2TentacleData {
     SLdrEmperorIngStage2TentacleData();
     ~SLdrEmperorIngStage2TentacleData();
 
-    float detection_time;
-    float forget_time;
+    float detectionTime;
+    float forgetTime;
 };
 
 void LoadTypedefSLdrEmperorIngStage2TentacleData(SLdrEmperorIngStage2TentacleData&, CInputStream&);

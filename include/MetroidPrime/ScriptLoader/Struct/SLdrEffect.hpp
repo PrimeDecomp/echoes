@@ -11,10 +11,10 @@ struct SLdrEffect {
     SLdrEffect();
     ~SLdrEffect();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId particle_effect;
+    SLdrEditorProperties editorProperties;
+    CAssetId particleEffect;
     bool unknown_0x3df5a489;
-    bool restart_on_activate;
+    bool restartOnActivate;
     bool unknown_0xee538174;
     float unknown_0xa94b0efd;
     float unknown_0x93756968;
@@ -25,16 +25,16 @@ struct SLdrEffect {
     float unknown_0xa7d7d767;
     float unknown_0xfe69615c;
     bool unknown_0x88d914a6;
-    bool visible_in_dark;
-    bool visible_in_echo;
+    bool visibleInDark;
+    bool visibleInEcho;
     bool unknown_0x6714021c;
     bool unknown_0xbe931927;
-    int render_order;
+    int renderOrder;
     SLdrLightParameters lighting;
-    bool motion_spline_path_loops;
-    SLdrSplineType motion_spline_type;
-    spline motion_control_spline;
-    float motion_spline_duration;
+    bool motionSplinePathLoops;
+    SLdrSplineType motionSplineType;
+    spline motionControlSpline;
+    float motionSplineDuration;
     bool unknown_0x73e63382;
     bool unknown_0x608ecac5;
 };

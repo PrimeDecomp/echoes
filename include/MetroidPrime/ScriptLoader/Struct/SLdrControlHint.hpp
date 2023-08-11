@@ -9,13 +9,13 @@ struct SLdrControlHint {
     SLdrControlHint();
     ~SLdrControlHint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int priority;
     float timer;
-    int cancel_method;
-    int cancel_press_count;
-    float cancel_press_time;
-    float cancel_timer;
+    int cancelMethod;
+    int cancelPressCount;
+    float cancelPressTime;
+    float cancelTimer;
     int unknown;
     SLdrControlHintStruct command1;
     SLdrControlHintStruct command2;

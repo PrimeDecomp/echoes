@@ -7,12 +7,12 @@ struct SLdrAudioPlaybackParms {
     SLdrAudioPlaybackParms();
     ~SLdrAudioPlaybackParms();
 
-    float maximum_distance;
-    float fall_off;
-    int sound_id;
-    int max_volume;
-    int min_volume;
-    bool use_room_acoustics;
+    float maximumDistance;
+    float fallOff;
+    int soundId;
+    int maxVolume;
+    int minVolume;
+    bool useRoomAcoustics;
 };
 
 void LoadTypedefSLdrAudioPlaybackParms(SLdrAudioPlaybackParms&, CInputStream&);

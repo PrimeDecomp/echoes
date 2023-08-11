@@ -11,8 +11,8 @@ struct SLdrDynamicLightParent {
 
     CVector3f unknown_0xddd74295;
     CVector3f unknown_0x88f018b3;
-    rstl::string locator_name;
-    bool use_parent_rotation;
+    rstl::string locatorName;
+    bool useParentRotation;
 };
 
 void LoadTypedefSLdrDynamicLightParent(SLdrDynamicLightParent&, CInputStream&);

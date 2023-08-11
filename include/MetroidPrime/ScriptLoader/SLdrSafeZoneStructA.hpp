@@ -12,9 +12,9 @@ struct SLdrSafeZoneStructA {
     bool enabled;
     int mode;
     CColor color;
-    SLdrVector2f near_far_plane;
-    float color_rate;
-    SLdrVector2f distance_rate;
+    SLdrVector2f nearFarPlane;
+    float colorRate;
+    SLdrVector2f distanceRate;
 };
 
 void LoadTypedefSLdrSafeZoneStructA(SLdrSafeZoneStructA&, CInputStream&);

@@ -9,8 +9,8 @@ struct SLdrRubiksPuzzle {
     SLdrRubiksPuzzle();
     ~SLdrRubiksPuzzle();
 
-    SLdrEditorProperties editor_properties;
-    SLdrUnknownStruct35 unknown_struct35;
+    SLdrEditorProperties editorProperties;
+    SLdrUnknownStruct35 unknownStruct35;
 };
 
 void LoadTypedefSLdrRubiksPuzzle(SLdrRubiksPuzzle&, CInputStream&);

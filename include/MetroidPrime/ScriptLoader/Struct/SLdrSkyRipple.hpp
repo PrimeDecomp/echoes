@@ -8,7 +8,7 @@ struct SLdrSkyRipple {
     SLdrSkyRipple();
     ~SLdrSkyRipple();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
 };
 
 void LoadTypedefSLdrSkyRipple(SLdrSkyRipple&, CInputStream&);

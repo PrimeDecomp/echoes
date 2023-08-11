@@ -7,9 +7,9 @@ struct SLdrScaleSplines {
     SLdrScaleSplines();
     ~SLdrScaleSplines();
 
-    spline x_scale;
-    spline y_scale;
-    spline z_scale;
+    spline xScale;
+    spline yScale;
+    spline zScale;
 };
 
 void LoadTypedefSLdrScaleSplines(SLdrScaleSplines&, CInputStream&);

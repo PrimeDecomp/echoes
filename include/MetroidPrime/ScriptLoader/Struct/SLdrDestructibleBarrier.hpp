@@ -13,17 +13,17 @@ struct SLdrDestructibleBarrier {
     SLdrDestructibleBarrier();
     ~SLdrDestructibleBarrier();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int unknown_0xcd4f7e71;
     int unknown_0xa7f551f7;
     int unknown_0x609c6240;
-    CVector3f chunk_size;
-    CAssetId left_model;
-    CAssetId center_model;
-    CAssetId right_model;
+    CVector3f chunkSize;
+    CAssetId leftModel;
+    CAssetId centerModel;
+    CAssetId rightModel;
     CAssetId unknown_0x396660b4;
     CAssetId unknown_0x48e25884;
-    CAssetId base_model;
+    CAssetId baseModel;
     CAssetId unknown_0x1eb90d06;
     int unknown_0x9d852dfe;
     CAssetId unknown_0x982d7fa8;
@@ -43,7 +43,7 @@ struct SLdrDestructibleBarrier {
     bool unknown_0x4d3109e3;
     SLdrHealthInfo health;
     SLdrDamageVulnerability vulnerability;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
 };
 
 void LoadTypedefSLdrDestructibleBarrier(SLdrDestructibleBarrier&, CInputStream&);

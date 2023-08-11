@@ -8,9 +8,9 @@ struct SLdrPathMeshCtrl {
     SLdrPathMeshCtrl();
     ~SLdrPathMeshCtrl();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int type;
-    int initial_count;
+    int initialCount;
 };
 
 void LoadTypedefSLdrPathMeshCtrl(SLdrPathMeshCtrl&, CInputStream&);

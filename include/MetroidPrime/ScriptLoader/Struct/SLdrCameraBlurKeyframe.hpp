@@ -8,12 +8,12 @@ struct SLdrCameraBlurKeyframe {
     SLdrCameraBlurKeyframe();
     ~SLdrCameraBlurKeyframe();
 
-    SLdrEditorProperties editor_properties;
-    int blur_type;
-    float blur_radius;
-    int which_filter_group;
-    float interpolate_in_time;
-    float interpolate_out_time;
+    SLdrEditorProperties editorProperties;
+    int blurType;
+    float blurRadius;
+    int whichFilterGroup;
+    float interpolateInTime;
+    float interpolateOutTime;
 };
 
 void LoadTypedefSLdrCameraBlurKeyframe(SLdrCameraBlurKeyframe&, CInputStream&);

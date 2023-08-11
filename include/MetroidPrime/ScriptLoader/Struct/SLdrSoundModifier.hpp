@@ -8,13 +8,13 @@ struct SLdrSoundModifier {
     SLdrSoundModifier();
     ~SLdrSoundModifier();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float time;
-    bool auto_reset;
-    bool auto_start;
+    bool autoReset;
+    bool autoStart;
     spline volume;
     spline pan;
-    spline surround_pan;
+    spline surroundPan;
     spline pitch;
 };
 

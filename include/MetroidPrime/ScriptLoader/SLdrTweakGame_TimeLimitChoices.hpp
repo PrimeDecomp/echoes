@@ -7,11 +7,11 @@ struct SLdrTweakGame_TimeLimitChoices {
     SLdrTweakGame_TimeLimitChoices();
     ~SLdrTweakGame_TimeLimitChoices();
 
-    float time_limit0;
-    float time_limit1;
-    float time_limit2;
-    float time_limit3;
-    float time_limit4;
+    float timeLimit0;
+    float timeLimit1;
+    float timeLimit2;
+    float timeLimit3;
+    float timeLimit4;
 };
 
 void LoadTypedefSLdrTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices&, CInputStream&);

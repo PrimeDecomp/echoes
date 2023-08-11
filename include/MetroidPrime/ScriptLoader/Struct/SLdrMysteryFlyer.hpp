@@ -11,10 +11,10 @@ struct SLdrMysteryFlyer {
     SLdrMysteryFlyer();
     ~SLdrMysteryFlyer();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrMysteryFlyerData mystery_flyer_properties;
+    SLdrActorParameters actorInformation;
+    SLdrMysteryFlyerData mysteryFlyerProperties;
 };
 
 void LoadTypedefSLdrMysteryFlyer(SLdrMysteryFlyer&, CInputStream&);

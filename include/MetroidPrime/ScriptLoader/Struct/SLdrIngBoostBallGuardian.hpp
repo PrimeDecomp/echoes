@@ -12,11 +12,11 @@ struct SLdrIngBoostBallGuardian {
     SLdrIngBoostBallGuardian();
     ~SLdrIngBoostBallGuardian();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct28 unknown_struct28;
-    SLdrUnknownStruct29 unknown_struct29;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct28 unknownStruct28;
+    SLdrUnknownStruct29 unknownStruct29;
 };
 
 void LoadTypedefSLdrIngBoostBallGuardian(SLdrIngBoostBallGuardian&, CInputStream&);

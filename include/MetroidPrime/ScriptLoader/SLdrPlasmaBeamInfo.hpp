@@ -10,23 +10,23 @@ struct SLdrPlasmaBeamInfo {
     ~SLdrPlasmaBeamInfo();
 
     int unknown;
-    CAssetId weapon_system;
-    CAssetId contact_effect;
-    CAssetId pulse_effect;
-    CAssetId beam_texture;
-    CAssetId glow_texture;
+    CAssetId weaponSystem;
+    CAssetId contactEffect;
+    CAssetId pulseEffect;
+    CAssetId beamTexture;
+    CAssetId glowTexture;
     float length;
     float radius;
-    float expansion_speed;
-    float life_time;
-    float pulse_speed;
-    float shutdown_time;
-    float contact_effect_scale;
-    float pulse_effect_scale;
-    float travel_speed;
-    CColor inner_color;
-    CColor outer_color;
-    CAssetId beam_streaks;
+    float expansionSpeed;
+    float lifeTime;
+    float pulseSpeed;
+    float shutdownTime;
+    float contactEffectScale;
+    float pulseEffectScale;
+    float travelSpeed;
+    CColor innerColor;
+    CColor outerColor;
+    CAssetId beamStreaks;
 };
 
 void LoadTypedefSLdrPlasmaBeamInfo(SLdrPlasmaBeamInfo&, CInputStream&);

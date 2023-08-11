@@ -14,9 +14,9 @@ struct SLdrSplinter {
     SLdrSplinter();
     ~SLdrSplinter();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     float unknown_0x72edeb7d;
     float unknown_0xb8ed9ffa;
     float unknown_0x5e8d301b;
@@ -24,16 +24,16 @@ struct SLdrSplinter {
     float unknown_0x5feb176e;
     int unknown_0x726cd31d;
     int unknown_0x376e909f;
-    SLdrDamageInfo attack_damage;
+    SLdrDamageInfo attackDamage;
     int unknown_0xb63b810c;
     SLdrAnimationParameters unknown_0x6d752efc;
     SLdrAnimationParameters unknown_0x0d6ab7b5;
     CAssetId part_0x630d93a1;
-    SLdrDamageInfo damage_info_0x4436a388;
-    SLdrIngPossessionData ing_possession_data;
-    bool is_mega_splinter;
+    SLdrDamageInfo damageInfo_0x4436a388;
+    SLdrIngPossessionData ingPossessionData;
+    bool isMegaSplinter;
     CAssetId wpsc;
-    SLdrDamageInfo damage_info_0x02fd0913;
+    SLdrDamageInfo damageInfo_0x02fd0913;
     CAssetId part_0x496f191b;
     float unknown_0x51be00d3;
     float unknown_0xb7deaf32;

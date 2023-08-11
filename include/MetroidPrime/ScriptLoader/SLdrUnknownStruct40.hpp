@@ -16,7 +16,7 @@ struct SLdrUnknownStruct40 {
     CAssetId part_0x8f06342a;
     int sound_0xd8b11129;
     int sound_0xe99e5316;
-    SLdrDamageInfo damage_info;
+    SLdrDamageInfo damageInfo;
     CAssetId part_0x686489fd;
 };
 

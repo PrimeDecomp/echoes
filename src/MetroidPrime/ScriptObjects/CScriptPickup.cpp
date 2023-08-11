@@ -259,31 +259,31 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntity
     u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrPickup.editor_properties, input);
+      LoadTypedefSLdrEditorProperties(sldrPickup.editorProperties, input);
       break;
     case 0x3a3e03ba:
-      sldrPickup.collision_size = CVector3f(input);
+      sldrPickup.collisionSize = CVector3f(input);
       break;
     case 0x2e686c2a:
-      sldrPickup.collision_offset = CVector3f(input);
+      sldrPickup.collisionOffset = CVector3f(input);
       break;
     case 0xa02ef0c4:
-      LoadTypedefSLdrPlayerItem(sldrPickup.item_to_give, input);
+      LoadTypedefSLdrPlayerItem(sldrPickup.itemToGive, input);
       break;
     case 0x28c71b54:
-      sldrPickup.capacity_increase = input.ReadInt32();
+      sldrPickup.capacityIncrease = input.ReadInt32();
       break;
     case 0x165ab069:
-      sldrPickup.item_percentage_increase = input.ReadInt32();
+      sldrPickup.itemPercentageIncrease = input.ReadInt32();
       break;
     case 0x94af1445:
       sldrPickup.amount = input.ReadInt32();
       break;
     case 0xf7fbaaa5:
-      sldrPickup.respawn_time = input.ReadFloat();
+      sldrPickup.respawnTime = input.ReadFloat();
       break;
     case 0xc80fc827:
-      sldrPickup.pickup_effect_lifetime = input.ReadFloat();
+      sldrPickup.pickupEffectLifetime = input.ReadFloat();
       break;
     case 0x32dc67f6:
       sldrPickup.lifetime = input.ReadFloat();
@@ -295,46 +295,46 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntity
       sldrPickup.model = input.ReadInt32();
       break;
     case 0xe25fb08c:
-      LoadTypedefSLdrAnimationParameters(sldrPickup.animation_information, input);
+      LoadTypedefSLdrAnimationParameters(sldrPickup.animationInformation, input);
       break;
     case 0x7e397fed:
-      LoadTypedefSLdrActorParameters(sldrPickup.actor_information, input);
+      LoadTypedefSLdrActorParameters(sldrPickup.actorInformation, input);
       break;
     case 0x192b0e70:
-      LoadTypedefSLdrEchoParameters(sldrPickup.echo_information, input);
+      LoadTypedefSLdrEchoParameters(sldrPickup.echoInformation, input);
       break;
     case 0xe585f166:
-      sldrPickup.activation_delay = input.ReadFloat();
+      sldrPickup.activationDelay = input.ReadFloat();
       break;
     case 0xa9fe872a:
-      sldrPickup.pickup_effect = input.ReadInt32();
+      sldrPickup.pickupEffect = input.ReadInt32();
       break;
     case 0xe10bcb96:
-      sldrPickup.absolute_value = input.ReadBool();
+      sldrPickup.absoluteValue = input.ReadBool();
       break;
     case 0xce33239f:
-      sldrPickup.calculate_visibility = input.ReadBool();
+      sldrPickup.calculateVisibility = input.ReadBool();
       break;
     case 0x2de4a294:
       sldrPickup.unknown = input.ReadBool();
       break;
     case 0xa6ea280d:
-      sldrPickup.auto_home_range = input.ReadFloat();
+      sldrPickup.autoHomeRange = input.ReadFloat();
       break;
     case 0xc2b11cfd:
-      sldrPickup.delay_until_home = input.ReadFloat();
+      sldrPickup.delayUntilHome = input.ReadFloat();
       break;
     case 0x2db59fcf:
-      sldrPickup.homing_speed = input.ReadFloat();
+      sldrPickup.homingSpeed = input.ReadFloat();
       break;
     case 0x961c0d17:
-      sldrPickup.auto_spin = input.ReadBool();
+      sldrPickup.autoSpin = input.ReadBool();
       break;
     case 0xa755eb02:
-      sldrPickup.blink_out = input.ReadBool();
+      sldrPickup.blinkOut = input.ReadBool();
       break;
     case 0x850115e4:
-      sldrPickup.orbit_offset = CVector3f(input);
+      sldrPickup.orbitOffset = CVector3f(input);
       break;
     default:
       input.ReadBytes(nullptr, propertySize);
@@ -343,27 +343,27 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntity
   }
 
   rstl::optional_object< CModelData > modelData(
-      LoadModelData(sldrPickup.editor_properties.transform.scale, sldrPickup.model,
-                    sldrPickup.animation_information, true));
+      LoadModelData(sldrPickup.editorProperties.transform.scale, sldrPickup.model,
+                    sldrPickup.animationInformation, true));
   if (!modelData) {
     return nullptr;
   }
 
   CAABox box =
-      LoadCAABox(mgr, info.GetAreaId(), sldrPickup.collision_size, sldrPickup.collision_offset);
-  if (sldrPickup.collision_size == CVector3f::Zero()) {
-    box = modelData->GetBounds(CTransform4f(LoadEditorTransform(sldrPickup.editor_properties)));
+      LoadCAABox(mgr, info.GetAreaId(), sldrPickup.collisionSize, sldrPickup.collisionOffset);
+  if (sldrPickup.collisionSize == CVector3f::Zero()) {
+    box = modelData->GetBounds(CTransform4f(LoadEditorTransform(sldrPickup.editorProperties)));
   }
   return new CScriptPickup(
-      mgr.AllocateUniqueId(), sldrPickup.editor_properties.name,
-      EntityInfoWithEditorProperties(info, sldrPickup.editor_properties),
-      LoadEditorTransform(sldrPickup.editor_properties), *modelData,
-      LoadActorParameters(sldrPickup.actor_information),
-      LoadEchoParameters(sldrPickup.echo_information), box,
-      CPlayerState::EItemType(sldrPickup.item_to_give.value), sldrPickup.amount,
-      sldrPickup.capacity_increase, sldrPickup.item_percentage_increase, sldrPickup.pickup_effect,
-      sldrPickup.absolute_value, sldrPickup.unknown, sldrPickup.auto_spin, sldrPickup.blink_out,
-      sldrPickup.lifetime, sldrPickup.respawn_time, sldrPickup.fadetime,
-      sldrPickup.activation_delay, sldrPickup.pickup_effect_lifetime, sldrPickup.auto_home_range,
-      sldrPickup.delay_until_home, sldrPickup.homing_speed, CVector3f(sldrPickup.orbit_offset));
+      mgr.AllocateUniqueId(), sldrPickup.editorProperties.name,
+      EntityInfoWithEditorProperties(info, sldrPickup.editorProperties),
+      LoadEditorTransform(sldrPickup.editorProperties), *modelData,
+      LoadActorParameters(sldrPickup.actorInformation),
+      LoadEchoParameters(sldrPickup.echoInformation), box,
+      CPlayerState::EItemType(sldrPickup.itemToGive.value), sldrPickup.amount,
+      sldrPickup.capacityIncrease, sldrPickup.itemPercentageIncrease, sldrPickup.pickupEffect,
+      sldrPickup.absoluteValue, sldrPickup.unknown, sldrPickup.autoSpin, sldrPickup.blinkOut,
+      sldrPickup.lifetime, sldrPickup.respawnTime, sldrPickup.fadetime,
+      sldrPickup.activationDelay, sldrPickup.pickupEffectLifetime, sldrPickup.autoHomeRange,
+      sldrPickup.delayUntilHome, sldrPickup.homingSpeed, CVector3f(sldrPickup.orbitOffset));
 }

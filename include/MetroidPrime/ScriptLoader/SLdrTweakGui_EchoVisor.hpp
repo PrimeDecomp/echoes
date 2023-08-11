@@ -8,9 +8,9 @@ struct SLdrTweakGui_EchoVisor {
     SLdrTweakGui_EchoVisor();
     ~SLdrTweakGui_EchoVisor();
 
-    CColor echo_base_color;
-    CColor echo_outline_color;
-    CColor echo_damage_color;
+    CColor echoBaseColor;
+    CColor echoOutlineColor;
+    CColor echoDamageColor;
     CColor unknown_0xa288fe51;
     int unknown_0xf316c617;
     float unknown_0xb56d2286;
@@ -19,7 +19,7 @@ struct SLdrTweakGui_EchoVisor {
     float unknown_0x5708b903;
     float unknown_0xafc8c571;
     float unknown_0x28bffdc5;
-    CColor echo_ring_color;
+    CColor echoRingColor;
     float unknown_0x99a65ca7;
     float unknown_0x51f19dea;
 };

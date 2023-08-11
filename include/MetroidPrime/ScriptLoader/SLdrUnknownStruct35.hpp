@@ -8,8 +8,8 @@ struct SLdrUnknownStruct35 {
     SLdrUnknownStruct35();
     ~SLdrUnknownStruct35();
 
-    float rotation_speed;
-    CAssetId state_machine;
+    float rotationSpeed;
+    CAssetId stateMachine;
 };
 
 void LoadTypedefSLdrUnknownStruct35(SLdrUnknownStruct35&, CInputStream&);

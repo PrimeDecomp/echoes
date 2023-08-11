@@ -10,9 +10,9 @@ struct SLdrIngPuddle {
     SLdrIngPuddle();
     ~SLdrIngPuddle();
 
-    SLdrEditorProperties editor_properties;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct30 unknown_struct30;
+    SLdrEditorProperties editorProperties;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct30 unknownStruct30;
 };
 
 void LoadTypedefSLdrIngPuddle(SLdrIngPuddle&, CInputStream&);

@@ -7,10 +7,10 @@ struct SLdrDynamicLightFalloff {
     SLdrDynamicLightFalloff();
     ~SLdrDynamicLightFalloff();
 
-    int falloff_type;
-    spline falloff_rate;
-    float falloff_rate_duration;
-    bool falloff_rate_loops;
+    int falloffType;
+    spline falloffRate;
+    float falloffRateDuration;
+    bool falloffRateLoops;
 };
 
 void LoadTypedefSLdrDynamicLightFalloff(SLdrDynamicLightFalloff&, CInputStream&);

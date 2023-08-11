@@ -11,10 +11,10 @@ struct SLdrSplitterMainChassis {
     SLdrSplitterMainChassis();
     ~SLdrSplitterMainChassis();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrSplitterMainChassisData splitter_main_chassis_data;
+    SLdrActorParameters actorInformation;
+    SLdrSplitterMainChassisData splitterMainChassisData;
 };
 
 void LoadTypedefSLdrSplitterMainChassis(SLdrSplitterMainChassis&, CInputStream&);

@@ -8,11 +8,11 @@ struct SLdrAIWaypoint {
     SLdrAIWaypoint();
     ~SLdrAIWaypoint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float speed;
     float pause;
     int unknown_0xc6705a00;
-    int locator_index;
+    int locatorIndex;
     int unknown_0x166979d4;
 };
 

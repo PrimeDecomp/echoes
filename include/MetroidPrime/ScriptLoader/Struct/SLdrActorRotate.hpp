@@ -10,11 +10,11 @@ struct SLdrActorRotate {
     SLdrActorRotate();
     ~SLdrActorRotate();
 
-    SLdrEditorProperties editor_properties;
-    int flags_actor_rotate;
+    SLdrEditorProperties editorProperties;
+    int flagsActorRotate;
     float duration;
-    SLdrRotationSplines rotation_controls;
-    SLdrScaleSplines scale_controls;
+    SLdrRotationSplines rotationControls;
+    SLdrScaleSplines scaleControls;
 };
 
 void LoadTypedefSLdrActorRotate(SLdrActorRotate&, CInputStream&);

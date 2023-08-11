@@ -8,7 +8,7 @@ struct SLdrForgottenObject {
     SLdrForgottenObject();
     ~SLdrForgottenObject();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
 };
 
 void LoadTypedefSLdrForgottenObject(SLdrForgottenObject&, CInputStream&);

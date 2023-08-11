@@ -11,10 +11,10 @@ struct SLdrSandBoss {
     SLdrSandBoss();
     ~SLdrSandBoss();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrSandBossData sand_boss_data;
+    SLdrActorParameters actorInformation;
+    SLdrSandBossData sandBossData;
 };
 
 void LoadTypedefSLdrSandBoss(SLdrSandBoss&, CInputStream&);

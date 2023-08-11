@@ -10,17 +10,17 @@ struct SLdrTweakGui_Completion {
     ~SLdrTweakGui_Completion();
 
     rstl::string unknown_0x81fc78c2;
-    rstl::string main_font;
-    rstl::string secondary_font;
-    CColor main_font_color;
-    CColor main_font_outline_color;
-    CColor stats_font_color;
-    CColor stats_font_outline_color;
-    CColor unlock_font_color;
-    CColor unlock_font_outline_color;
+    rstl::string mainFont;
+    rstl::string secondaryFont;
+    CColor mainFontColor;
+    CColor mainFontOutlineColor;
+    CColor statsFontColor;
+    CColor statsFontOutlineColor;
+    CColor unlockFontColor;
+    CColor unlockFontOutlineColor;
     float unknown_0xb6fe7398;
     float unknown_0x6af2871b;
-    float text_start_delay;
+    float textStartDelay;
 };
 
 void LoadTypedefSLdrTweakGui_Completion(SLdrTweakGui_Completion&, CInputStream&);

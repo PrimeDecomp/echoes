@@ -15,23 +15,23 @@ struct SLdrPlatform {
     SLdrPlatform();
     ~SLdrPlatform();
 
-    SLdrEditorProperties editor_properties;
-    CVector3f collision_box;
-    CVector3f collision_offset;
+    SLdrEditorProperties editorProperties;
+    CVector3f collisionBox;
+    CVector3f collisionOffset;
     CAssetId model;
-    SLdrAnimationParameters animation_information;
-    SLdrActorParameters actor_information;
-    CAssetId collision_model;
+    SLdrAnimationParameters animationInformation;
+    SLdrActorParameters actorInformation;
+    CAssetId collisionModel;
     SLdrHealthInfo health;
     SLdrDamageVulnerability vulnerability;
-    float x_ray_transparency;
-    int maximum_splashes;
-    int splash_generation_rate;
-    bool render_rain_splashes;
+    float xRayTransparency;
+    int maximumSplashes;
+    int splashGenerationRate;
+    bool renderRainSplashes;
     bool unknown_0xf203bc81;
-    SLdrPlatformMotionProperties motion_properties;
+    SLdrPlatformMotionProperties motionProperties;
     CVector3f unknown_0x24fdeea1;
-    float random_animation_offset;
+    float randomAnimationOffset;
 };
 
 void LoadTypedefSLdrPlatform(SLdrPlatform&, CInputStream&);

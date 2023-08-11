@@ -11,9 +11,9 @@ struct SLdrEmperorIngStage2Tentacle {
     SLdrEmperorIngStage2Tentacle();
     ~SLdrEmperorIngStage2Tentacle();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     SLdrEmperorIngStage2TentacleData data;
 };
 

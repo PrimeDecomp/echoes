@@ -13,16 +13,16 @@ struct SLdrAmbientAI {
     SLdrAmbientAI();
     ~SLdrAmbientAI();
 
-    SLdrEditorProperties editor_properties;
-    CVector3f collision_box;
-    CVector3f collision_offset;
+    SLdrEditorProperties editorProperties;
+    CVector3f collisionBox;
+    CVector3f collisionOffset;
     float mass;
     SLdrHealthInfo health;
     SLdrDamageVulnerability vulnerability;
-    SLdrAnimationParameters animation_information;
-    SLdrActorParameters actor_information;
-    float detect_radius;
-    float explode_radius;
+    SLdrAnimationParameters animationInformation;
+    SLdrActorParameters actorInformation;
+    float detectRadius;
+    float explodeRadius;
     int unknown_0xbfe017de;
     int unknown_0xed5f16ac;
 };

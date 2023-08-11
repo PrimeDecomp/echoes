@@ -9,21 +9,21 @@ struct SLdrTweakGuiColors_HUDColorsTypedef {
     ~SLdrTweakGuiColors_HUDColorsTypedef();
 
     CColor unknown_0xc8ddc662;
-    CColor threat_group_active_color;
-    CColor threat_group_inactive_color;
+    CColor threatGroupActiveColor;
+    CColor threatGroupInactiveColor;
     CColor unknown_0xa6609cc5;
-    CColor missile_group_active_color;
-    CColor missile_group_inactive_color;
+    CColor missileGroupActiveColor;
+    CColor missileGroupInactiveColor;
     CColor unknown_0xdcaab836;
-    CColor energy_bar_filled_color;
-    CColor energy_bar_shadow_color;
-    CColor energy_bar_empty_color;
-    CColor energy_tanks_filled_color;
-    CColor energy_tanks_empty_color;
-    CColor radar_widget_color;
-    CColor active_text_foreground_color;
-    CColor inactive_text_foreground_color;
-    CColor text_shadow_outline_color;
+    CColor energyBarFilledColor;
+    CColor energyBarShadowColor;
+    CColor energyBarEmptyColor;
+    CColor energyTanksFilledColor;
+    CColor energyTanksEmptyColor;
+    CColor radarWidgetColor;
+    CColor activeTextForegroundColor;
+    CColor inactiveTextForegroundColor;
+    CColor textShadowOutlineColor;
 };
 
 void LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColorsTypedef&, CInputStream&);

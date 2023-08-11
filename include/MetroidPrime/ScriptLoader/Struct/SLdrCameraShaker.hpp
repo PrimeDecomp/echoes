@@ -9,8 +9,8 @@ struct SLdrCameraShaker {
     SLdrCameraShaker();
     ~SLdrCameraShaker();
 
-    SLdrEditorProperties editor_properties;
-    SLdrCameraShakerData shaker_data;
+    SLdrEditorProperties editorProperties;
+    SLdrCameraShakerData shakerData;
 };
 
 void LoadTypedefSLdrCameraShaker(SLdrCameraShaker&, CInputStream&);

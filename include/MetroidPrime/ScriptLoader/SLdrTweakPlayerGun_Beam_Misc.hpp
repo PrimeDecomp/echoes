@@ -10,10 +10,10 @@ struct SLdrTweakPlayerGun_Beam_Misc {
 
     SLdrTDamageInfo unknown_0x8aacfc27;
     SLdrTDamageInfo unknown_0xa054ff1c;
-    SLdrTDamageInfo imploder_annihilator;
-    float ai_burn_damage;
+    SLdrTDamageInfo imploderAnnihilator;
+    float aiBurnDamage;
     float unknown_0x4848f444;
-    int max_absorbed_phazon_shots;
+    int maxAbsorbedPhazonShots;
     float unknown_0x3ae5d1fa;
 };
 

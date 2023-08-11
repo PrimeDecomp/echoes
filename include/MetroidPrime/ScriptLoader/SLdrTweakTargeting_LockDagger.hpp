@@ -8,12 +8,12 @@ struct SLdrTweakTargeting_LockDagger {
     SLdrTweakTargeting_LockDagger();
     ~SLdrTweakTargeting_LockDagger();
 
-    float lock_dagger_normal_scale;
+    float lockDaggerNormalScale;
     float unknown;
-    CColor lock_dagger_color;
-    float lock_dagger0_angle;
-    float lock_dagger1_angle;
-    float lock_dagger2_angle;
+    CColor lockDaggerColor;
+    float lockDagger0Angle;
+    float lockDagger1Angle;
+    float lockDagger2Angle;
 };
 
 void LoadTypedefSLdrTweakTargeting_LockDagger(SLdrTweakTargeting_LockDagger&, CInputStream&);

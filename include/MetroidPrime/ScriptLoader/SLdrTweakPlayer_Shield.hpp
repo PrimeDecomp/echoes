@@ -7,10 +7,10 @@ struct SLdrTweakPlayer_Shield {
     SLdrTweakPlayer_Shield();
     ~SLdrTweakPlayer_Shield();
 
-    float max_energy;
-    float usage_rate;
-    float recharge_rate;
-    bool allows_motion;
+    float maxEnergy;
+    float usageRate;
+    float rechargeRate;
+    bool allowsMotion;
 };
 
 void LoadTypedefSLdrTweakPlayer_Shield(SLdrTweakPlayer_Shield&, CInputStream&);

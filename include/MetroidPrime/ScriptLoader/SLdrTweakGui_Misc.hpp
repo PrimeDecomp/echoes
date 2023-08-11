@@ -13,7 +13,7 @@ struct SLdrTweakGui_Misc {
     bool unknown_0x2f9d48b8;
     float unknown_0x71b475d0;
     float unknown_0x744165c4;
-    float radar_world_radius;
+    float radarWorldRadius;
     float unknown_0xa585c592;
     float unknown_0x04f4a6fe;
     float unknown_0x3c327181;
@@ -63,7 +63,7 @@ struct SLdrTweakGui_Misc {
     float unknown_0x4dd9d6d1;
     float unknown_0xad4d37cd;
     float unknown_0x95c78e5d;
-    float threat_world_radius;
+    float threatWorldRadius;
     float unknown_0x78174d4b;
     float unknown_0x3cb2115b;
     float unknown_0xfc30bb21;

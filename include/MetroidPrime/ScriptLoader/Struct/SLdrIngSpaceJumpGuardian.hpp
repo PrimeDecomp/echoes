@@ -11,10 +11,10 @@ struct SLdrIngSpaceJumpGuardian {
     SLdrIngSpaceJumpGuardian();
     ~SLdrIngSpaceJumpGuardian();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct32 unknown_struct32;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct32 unknownStruct32;
 };
 
 void LoadTypedefSLdrIngSpaceJumpGuardian(SLdrIngSpaceJumpGuardian&, CInputStream&);

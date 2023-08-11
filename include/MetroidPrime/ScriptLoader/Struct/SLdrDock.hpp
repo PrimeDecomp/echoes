@@ -8,12 +8,12 @@ struct SLdrDock {
     SLdrDock();
     ~SLdrDock();
 
-    SLdrEditorProperties editor_properties;
-    int dock_number;
-    int area_number;
-    bool is_virtual;
-    bool load_connected_immediate;
-    bool show_soft_transition;
+    SLdrEditorProperties editorProperties;
+    int dockNumber;
+    int areaNumber;
+    bool isVirtual;
+    bool loadConnectedImmediate;
+    bool showSoftTransition;
 };
 
 void LoadTypedefSLdrDock(SLdrDock&, CInputStream&);

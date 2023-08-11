@@ -8,7 +8,7 @@ struct SLdrSpiderBallAttractionSurface {
     SLdrSpiderBallAttractionSurface();
     ~SLdrSpiderBallAttractionSurface();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
 };
 
 void LoadTypedefSLdrSpiderBallAttractionSurface(SLdrSpiderBallAttractionSurface&, CInputStream&);

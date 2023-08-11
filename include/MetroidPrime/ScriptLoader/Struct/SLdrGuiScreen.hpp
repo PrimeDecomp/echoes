@@ -9,9 +9,9 @@ struct SLdrGuiScreen {
     SLdrGuiScreen();
     ~SLdrGuiScreen();
 
-    SLdrEditorProperties editor_properties;
-    int which_screen;
-    CAssetId string_table;
+    SLdrEditorProperties editorProperties;
+    int whichScreen;
+    CAssetId stringTable;
 };
 
 void LoadTypedefSLdrGuiScreen(SLdrGuiScreen&, CInputStream&);

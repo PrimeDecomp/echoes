@@ -7,14 +7,14 @@ struct SLdrIngSpiderballGuardianStruct {
     SLdrIngSpiderballGuardianStruct();
     ~SLdrIngSpiderballGuardianStruct();
 
-    float min_patrol_speed;
-    float max_patrol_speed;
-    float linear_acceleration;
-    float angular_speed;
+    float minPatrolSpeed;
+    float maxPatrolSpeed;
+    float linearAcceleration;
+    float angularSpeed;
     float unknown;
-    float stunned_speed;
-    float stunned_time;
-    float max_charge_time;
+    float stunnedSpeed;
+    float stunnedTime;
+    float maxChargeTime;
 };
 
 void LoadTypedefSLdrIngSpiderballGuardianStruct(SLdrIngSpiderballGuardianStruct&, CInputStream&);

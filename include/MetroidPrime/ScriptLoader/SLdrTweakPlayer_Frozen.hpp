@@ -7,9 +7,9 @@ struct SLdrTweakPlayer_Frozen {
     SLdrTweakPlayer_Frozen();
     ~SLdrTweakPlayer_Frozen();
 
-    float frozen_timer;
-    int frozen_jump_counter;
-    float frozen_damage_threshold;
+    float frozenTimer;
+    int frozenJumpCounter;
+    float frozenDamageThreshold;
 };
 
 void LoadTypedefSLdrTweakPlayer_Frozen(SLdrTweakPlayer_Frozen&, CInputStream&);

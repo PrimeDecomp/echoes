@@ -12,11 +12,11 @@ struct SLdrScanTreeInventory {
     SLdrScanTreeInventory();
     ~SLdrScanTreeInventory();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId name_string_table;
-    rstl::string name_string_name;
-    SLdrInventorySlot inventory_slot;
-    SLdrScannableParameters scannable_parameters;
+    SLdrEditorProperties editorProperties;
+    CAssetId nameStringTable;
+    rstl::string nameStringName;
+    SLdrInventorySlot inventorySlot;
+    SLdrScannableParameters scannableParameters;
 };
 
 void LoadTypedefSLdrScanTreeInventory(SLdrScanTreeInventory&, CInputStream&);

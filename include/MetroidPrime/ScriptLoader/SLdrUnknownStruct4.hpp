@@ -7,7 +7,7 @@ struct SLdrUnknownStruct4 {
     SLdrUnknownStruct4();
     ~SLdrUnknownStruct4();
 
-    int behaviour_type;
+    int behaviourType;
 };
 
 void LoadTypedefSLdrUnknownStruct4(SLdrUnknownStruct4&, CInputStream&);

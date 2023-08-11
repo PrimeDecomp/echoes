@@ -10,9 +10,9 @@ struct SLdrScanTreeCategory {
     SLdrScanTreeCategory();
     ~SLdrScanTreeCategory();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId name_string_table;
-    rstl::string name_string_name;
+    SLdrEditorProperties editorProperties;
+    CAssetId nameStringTable;
+    rstl::string nameStringName;
 };
 
 void LoadTypedefSLdrScanTreeCategory(SLdrScanTreeCategory&, CInputStream&);

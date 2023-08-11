@@ -10,14 +10,14 @@ struct SLdrSpankWeed {
     SLdrSpankWeed();
     ~SLdrSpankWeed();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     bool unknown;
-    float wake_up_radius;
-    float search_radius;
-    float attack_radius;
-    float hurt_sleep_delay;
+    float wakeUpRadius;
+    float searchRadius;
+    float attackRadius;
+    float hurtSleepDelay;
 };
 
 void LoadTypedefSLdrSpankWeed(SLdrSpankWeed&, CInputStream&);

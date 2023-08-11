@@ -13,24 +13,24 @@ struct SLdrAtomicBeta {
     SLdrAtomicBeta();
     ~SLdrAtomicBeta();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    CAssetId beam_effect;
+    SLdrActorParameters actorInformation;
+    CAssetId beamEffect;
     CAssetId beam;
-    SLdrDamageInfo beam_damage;
-    CAssetId contact_fx;
-    float beam_fade_time;
-    float beam_radius;
-    float hover_speed;
-    SLdrDamageVulnerability frozen_vulnerability;
-    float normal_rotate_speed;
-    float charging_rotate_speed;
-    float speed_change_rate;
+    SLdrDamageInfo beamDamage;
+    CAssetId contactFx;
+    float beamFadeTime;
+    float beamRadius;
+    float hoverSpeed;
+    SLdrDamageVulnerability frozenVulnerability;
+    float normalRotateSpeed;
+    float chargingRotateSpeed;
+    float speedChangeRate;
     int sound_0x14038b71;
     int sound_0x16a435cb;
     int sound_0x67edefc2;
-    float damage_delay;
+    float damageDelay;
 };
 
 void LoadTypedefSLdrAtomicBeta(SLdrAtomicBeta&, CInputStream&);

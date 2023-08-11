@@ -8,13 +8,13 @@ struct SLdrAIKeyframe {
     SLdrAIKeyframe();
     ~SLdrAIKeyframe();
 
-    SLdrEditorProperties editor_properties;
-    int animation_index;
+    SLdrEditorProperties editorProperties;
+    int animationIndex;
     bool loop;
-    float loop_duration;
+    float loopDuration;
     int unknown_0x58810503;
     int unknown_0x6d62ef74;
-    float playback_rate;
+    float playbackRate;
 };
 
 void LoadTypedefSLdrAIKeyframe(SLdrAIKeyframe&, CInputStream&);

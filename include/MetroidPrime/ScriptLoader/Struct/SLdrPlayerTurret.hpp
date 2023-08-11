@@ -10,18 +10,18 @@ struct SLdrPlayerTurret {
     SLdrPlayerTurret();
     ~SLdrPlayerTurret();
 
-    SLdrEditorProperties editor_properties;
-    int flags_player_turret;
+    SLdrEditorProperties editorProperties;
+    int flagsPlayerTurret;
     float unknown_0x17cd8b2a;
     float unknown_0x1473dad2;
     float unknown_0x3650ce75;
     float unknown_0x78520e6e;
-    float damage_angle;
-    float horiz_speed;
-    float vert_speed;
-    float fire_rate;
-    SLdrDamageInfo weapon_damage;
-    CAssetId weapon_effect;
+    float damageAngle;
+    float horizSpeed;
+    float vertSpeed;
+    float fireRate;
+    SLdrDamageInfo weaponDamage;
+    CAssetId weaponEffect;
     CAssetId wpsc;
     int unknown_0xe7234f72;
     int unknown_0x3e2f7afb;

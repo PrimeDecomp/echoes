@@ -10,16 +10,16 @@ struct SLdrCrystallite {
     SLdrCrystallite();
     ~SLdrCrystallite();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    float waypoint_approach_distance;
-    float wall_turn_speed;
-    float floor_turn_speed;
-    float down_turn_speed;
-    float visible_distance;
-    float forward_moving_priority;
-    float stun_time;
+    SLdrActorParameters actorInformation;
+    float waypointApproachDistance;
+    float wallTurnSpeed;
+    float floorTurnSpeed;
+    float downTurnSpeed;
+    float visibleDistance;
+    float forwardMovingPriority;
+    float stunTime;
 };
 
 void LoadTypedefSLdrCrystallite(SLdrCrystallite&, CInputStream&);

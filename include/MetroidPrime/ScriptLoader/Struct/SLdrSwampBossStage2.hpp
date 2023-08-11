@@ -12,11 +12,11 @@ struct SLdrSwampBossStage2 {
     SLdrSwampBossStage2();
     ~SLdrSwampBossStage2();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrIngPossessionData ing_possession_data;
-    SLdrSwampBossStage2Data swamp_boss_stage2_data;
+    SLdrActorParameters actorInformation;
+    SLdrIngPossessionData ingPossessionData;
+    SLdrSwampBossStage2Data swampBossStage2Data;
 };
 
 void LoadTypedefSLdrSwampBossStage2(SLdrSwampBossStage2&, CInputStream&);

@@ -9,7 +9,7 @@ struct SLdrTweakPlayer_FirstPersonCamera {
     ~SLdrTweakPlayer_FirstPersonCamera();
 
     float unknown_0xba5eb7f5;
-    float camera_elevation;
+    float cameraElevation;
     float unknown_0xb400ebd6;
     float unknown_0xfd26b7b9;
     float unknown_0x97b14dc6;

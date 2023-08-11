@@ -9,10 +9,10 @@ struct SLdrFogVolume {
     SLdrFogVolume();
     ~SLdrFogVolume();
 
-    SLdrEditorProperties editor_properties;
-    float fog_bob_height;
-    float fog_bob_freq;
-    CColor fog_color;
+    SLdrEditorProperties editorProperties;
+    float fogBobHeight;
+    float fogBobFreq;
+    CColor fogColor;
 };
 
 void LoadTypedefSLdrFogVolume(SLdrFogVolume&, CInputStream&);

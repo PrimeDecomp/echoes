@@ -8,8 +8,8 @@ struct SLdrTweakBall_DeathBall {
     SLdrTweakBall_DeathBall();
     ~SLdrTweakBall_DeathBall();
 
-    float death_ball_damage_delay;
-    SLdrTDamageInfo death_ball_damage;
+    float deathBallDamageDelay;
+    SLdrTDamageInfo deathBallDamage;
 };
 
 void LoadTypedefSLdrTweakBall_DeathBall(SLdrTweakBall_DeathBall&, CInputStream&);

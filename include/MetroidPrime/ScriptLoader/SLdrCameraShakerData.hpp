@@ -7,13 +7,13 @@ struct SLdrCameraShakerData {
     SLdrCameraShakerData();
     ~SLdrCameraShakerData();
 
-    int flags_camera_shaker;
-    float attenuation_distance;
-    spline horizontal_motion;
-    spline vertical_motion;
-    spline forward_motion;
+    int flagsCameraShaker;
+    float attenuationDistance;
+    spline horizontalMotion;
+    spline verticalMotion;
+    spline forwardMotion;
     float duration;
-    int audio_effect;
+    int audioEffect;
 };
 
 void LoadTypedefSLdrCameraShakerData(SLdrCameraShakerData&, CInputStream&);

@@ -7,21 +7,21 @@ struct SLdrTweakPlayer_Misc {
     SLdrTweakPlayer_Misc();
     ~SLdrTweakPlayer_Misc();
 
-    float eye_offset;
-    float normal_turn_factor;
-    float free_look_turn_factor;
-    float free_look_max_x;
-    float free_look_max_z;
-    float free_look_speed;
-    float free_look_snap_speed;
-    float free_look_fade_angle;
-    float free_look_min_angle;
-    float free_look_centered_time;
-    float free_look_dampen_factor;
-    bool null_analog_scales;
+    float eyeOffset;
+    float normalTurnFactor;
+    float freeLookTurnFactor;
+    float freeLookMaxX;
+    float freeLookMaxZ;
+    float freeLookSpeed;
+    float freeLookSnapSpeed;
+    float freeLookFadeAngle;
+    float freeLookMinAngle;
+    float freeLookCenteredTime;
+    float freeLookDampenFactor;
+    bool nullAnalogScales;
     float unknown;
-    float left_analog_max;
-    float right_analog_max;
+    float leftAnalogMax;
+    float rightAnalogMax;
 };
 
 void LoadTypedefSLdrTweakPlayer_Misc(SLdrTweakPlayer_Misc&, CInputStream&);

@@ -9,7 +9,7 @@ struct SLdrUnknownStruct24 {
     SLdrUnknownStruct24();
     ~SLdrUnknownStruct24();
 
-    SLdrPlasmaBeamInfo beam_info;
+    SLdrPlasmaBeamInfo beamInfo;
     SLdrDamageInfo damage;
     int sound;
 };

@@ -11,10 +11,10 @@ struct SLdrRezbit {
     SLdrRezbit();
     ~SLdrRezbit();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrRezbitData rezbit_data;
+    SLdrActorParameters actorInformation;
+    SLdrRezbitData rezbitData;
 };
 
 void LoadTypedefSLdrRezbit(SLdrRezbit&, CInputStream&);

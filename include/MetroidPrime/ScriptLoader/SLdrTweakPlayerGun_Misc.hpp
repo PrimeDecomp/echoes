@@ -7,18 +7,18 @@ struct SLdrTweakPlayerGun_Misc {
     SLdrTweakPlayerGun_Misc();
     ~SLdrTweakPlayerGun_Misc();
 
-    float up_look_angle;
-    float down_look_angle;
-    float vertical_spread;
-    float horizontal_spread;
-    float high_vertical_spread;
-    float high_horizontal_spread;
-    float low_vertical_spread;
-    float low_horizontal_spread;
-    float aim_vertical_speed;
-    float aim_horizontal_speed;
-    float hologram_display_time;
-    float gun_transform_time;
+    float upLookAngle;
+    float downLookAngle;
+    float verticalSpread;
+    float horizontalSpread;
+    float highVerticalSpread;
+    float highHorizontalSpread;
+    float lowVerticalSpread;
+    float lowHorizontalSpread;
+    float aimVerticalSpeed;
+    float aimHorizontalSpeed;
+    float hologramDisplayTime;
+    float gunTransformTime;
 };
 
 void LoadTypedefSLdrTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc&, CInputStream&);

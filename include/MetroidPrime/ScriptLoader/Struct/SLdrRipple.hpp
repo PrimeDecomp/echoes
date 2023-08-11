@@ -8,7 +8,7 @@ struct SLdrRipple {
     SLdrRipple();
     ~SLdrRipple();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float energy;
 };
 

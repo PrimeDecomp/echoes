@@ -9,10 +9,10 @@ struct SLdrCameraPitch {
     SLdrCameraPitch();
     ~SLdrCameraPitch();
 
-    SLdrEditorProperties editor_properties;
-    spline forwards_pitch;
-    spline backwards_pitch;
-    SLdrSplineType spline_type;
+    SLdrEditorProperties editorProperties;
+    spline forwardsPitch;
+    spline backwardsPitch;
+    SLdrSplineType splineType;
     bool unknown;
 };
 

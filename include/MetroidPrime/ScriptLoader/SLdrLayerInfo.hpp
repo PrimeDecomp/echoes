@@ -7,11 +7,11 @@ struct SLdrLayerInfo {
     SLdrLayerInfo();
     ~SLdrLayerInfo();
 
-    int motion_type;
+    int motionType;
     float unknown;
     float rotation;
     float amplitude;
-    float texture_scale;
+    float textureScale;
 };
 
 void LoadTypedefSLdrLayerInfo(SLdrLayerInfo&, CInputStream&);

@@ -8,9 +8,9 @@ struct SLdrEnvFxDensityController {
     SLdrEnvFxDensityController();
     ~SLdrEnvFxDensityController();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float density;
-    int fade_speed;
+    int fadeSpeed;
 };
 
 void LoadTypedefSLdrEnvFxDensityController(SLdrEnvFxDensityController&, CInputStream&);

@@ -8,15 +8,15 @@ struct SLdrSandBossStructA {
     SLdrSandBossStructA();
     ~SLdrSandBossStructA();
 
-    CAssetId head_armor;
-    CAssetId armor_piece2;
-    CAssetId armor_piece3;
-    CAssetId armor_piece4;
-    CAssetId armor_piece5;
-    CAssetId armor_piece6;
-    CAssetId armor_piece7;
-    CAssetId tail_armor;
-    CAssetId sound_armor_impact;
+    CAssetId headArmor;
+    CAssetId armorPiece2;
+    CAssetId armorPiece3;
+    CAssetId armorPiece4;
+    CAssetId armorPiece5;
+    CAssetId armorPiece6;
+    CAssetId armorPiece7;
+    CAssetId tailArmor;
+    CAssetId soundArmorImpact;
 };
 
 void LoadTypedefSLdrSandBossStructA(SLdrSandBossStructA&, CInputStream&);

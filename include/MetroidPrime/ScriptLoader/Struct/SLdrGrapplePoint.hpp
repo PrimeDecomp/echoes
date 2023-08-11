@@ -9,8 +9,8 @@ struct SLdrGrapplePoint {
     SLdrGrapplePoint();
     ~SLdrGrapplePoint();
 
-    SLdrEditorProperties editor_properties;
-    SLdrGrappleParameters grapple_info;
+    SLdrEditorProperties editorProperties;
+    SLdrGrappleParameters grappleInfo;
 };
 
 void LoadTypedefSLdrGrapplePoint(SLdrGrapplePoint&, CInputStream&);

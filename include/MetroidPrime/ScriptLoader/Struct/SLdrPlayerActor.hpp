@@ -14,21 +14,21 @@ struct SLdrPlayerActor {
     SLdrPlayerActor();
     ~SLdrPlayerActor();
 
-    SLdrEditorProperties editor_properties;
-    CVector3f collision_box;
-    CVector3f collision_offset;
+    SLdrEditorProperties editorProperties;
+    CVector3f collisionBox;
+    CVector3f collisionOffset;
     float mass;
     float gravity;
     SLdrHealthInfo health;
     SLdrDamageVulnerability vulnerability;
-    CAssetId no_model;
-    SLdrAnimationParameters animation_information;
-    SLdrActorParameters actor_information;
-    bool is_loop;
+    CAssetId noModel;
+    SLdrAnimationParameters animationInformation;
+    SLdrActorParameters actorInformation;
+    bool isLoop;
     bool immovable;
-    bool is_solid;
-    int flags_player_actor;
-    int render_gun_override;
+    bool isSolid;
+    int flagsPlayerActor;
+    int renderGunOverride;
 };
 
 void LoadTypedefSLdrPlayerActor(SLdrPlayerActor&, CInputStream&);

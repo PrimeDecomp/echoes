@@ -8,14 +8,14 @@ struct SLdrPlatformMotionProperties {
     SLdrPlatformMotionProperties();
     ~SLdrPlatformMotionProperties();
 
-    SLdrSplineType motion_spline_type;
-    spline motion_control_spline;
-    float motion_spline_duration;
-    float initial_time;
+    SLdrSplineType motionSplineType;
+    spline motionControlSpline;
+    float motionSplineDuration;
+    float initialTime;
     int unknown;
-    spline roll_control_spline;
-    spline yaw_control_spline;
-    spline pitch_control_spline;
+    spline rollControlSpline;
+    spline yawControlSpline;
+    spline pitchControlSpline;
 };
 
 void LoadTypedefSLdrPlatformMotionProperties(SLdrPlatformMotionProperties&, CInputStream&);

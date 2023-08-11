@@ -7,9 +7,9 @@ struct SLdrRotationSplines {
     SLdrRotationSplines();
     ~SLdrRotationSplines();
 
-    spline x_rotation;
-    spline y_rotation;
-    spline z_rotation;
+    spline xRotation;
+    spline yRotation;
+    spline zRotation;
 };
 
 void LoadTypedefSLdrRotationSplines(SLdrRotationSplines&, CInputStream&);

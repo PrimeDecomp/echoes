@@ -7,8 +7,8 @@ struct SLdrLayerSwitch {
     SLdrLayerSwitch();
     ~SLdrLayerSwitch();
 
-    int area_id;
-    int layer_number;
+    int areaId;
+    int layerNumber;
 };
 
 void LoadTypedefSLdrLayerSwitch(SLdrLayerSwitch&, CInputStream&);

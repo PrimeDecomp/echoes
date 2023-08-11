@@ -8,7 +8,7 @@ struct SLdrSpiderBallWaypoint {
     SLdrSpiderBallWaypoint();
     ~SLdrSpiderBallWaypoint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int flags;
 };
 

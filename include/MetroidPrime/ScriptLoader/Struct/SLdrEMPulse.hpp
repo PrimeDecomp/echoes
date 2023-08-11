@@ -9,13 +9,13 @@ struct SLdrEMPulse {
     SLdrEMPulse();
     ~SLdrEMPulse();
 
-    SLdrEditorProperties editor_properties;
-    float initial_size;
-    float final_size;
+    SLdrEditorProperties editorProperties;
+    float initialSize;
+    float finalSize;
     float duration;
     float unknown_0x96bd6426;
     float unknown_0xd7aa5ba0;
-    float backward_forward_sweep_chance;
+    float backwardForwardSweepChance;
     float unknown_0xce54e50e;
     CAssetId explosion;
 };

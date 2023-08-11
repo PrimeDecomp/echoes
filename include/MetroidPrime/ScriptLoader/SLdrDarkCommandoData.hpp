@@ -12,16 +12,16 @@ struct SLdrDarkCommandoData {
     SLdrDarkCommandoData();
     ~SLdrDarkCommandoData();
 
-    float lurk_chance;
-    float taunt_chance;
+    float lurkChance;
+    float tauntChance;
     float unknown;
-    float charge_beam_attack_chance;
-    SLdrDamageInfo blade_damage;
-    SLdrAudioPlaybackParms sound_impact_rag_doll;
-    SLdrAudioPlaybackParms sound_hurled_death;
-    SLdrUnknownStruct12 unknown_struct12;
-    SLdrUnknownStruct13 unknown_struct13;
-    SLdrUnknownStruct14 unknown_struct14;
+    float chargeBeamAttackChance;
+    SLdrDamageInfo bladeDamage;
+    SLdrAudioPlaybackParms soundImpactRagDoll;
+    SLdrAudioPlaybackParms soundHurledDeath;
+    SLdrUnknownStruct12 unknownStruct12;
+    SLdrUnknownStruct13 unknownStruct13;
+    SLdrUnknownStruct14 unknownStruct14;
 };
 
 void LoadTypedefSLdrDarkCommandoData(SLdrDarkCommandoData&, CInputStream&);

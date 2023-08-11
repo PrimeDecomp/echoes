@@ -11,16 +11,16 @@ struct SLdrPortalTransition {
     SLdrPortalTransition();
     ~SLdrPortalTransition();
 
-    SLdrEditorProperties editor_properties;
-    SLdrAnimationParameters animation_information;
-    CVector3f player_scale;
+    SLdrEditorProperties editorProperties;
+    SLdrAnimationParameters animationInformation;
+    CVector3f playerScale;
     int volume;
     int pan;
     CAssetId agsc_0xe08e2172;
     CAssetId agsc_0xb3e6c4e3;
-    int start_portal;
-    int in_portal1;
-    int in_portal2;
+    int startPortal;
+    int inPortal1;
+    int inPortal2;
     int direction;
 };
 

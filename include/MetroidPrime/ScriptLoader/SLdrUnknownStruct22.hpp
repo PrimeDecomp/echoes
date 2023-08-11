@@ -10,9 +10,9 @@ struct SLdrUnknownStruct22 {
     SLdrUnknownStruct22();
     ~SLdrUnknownStruct22();
 
-    CAssetId portal_effect;
-    SLdrAnimationParameters attack_tip;
-    SLdrDamageInfo stab_damage;
+    CAssetId portalEffect;
+    SLdrAnimationParameters attackTip;
+    SLdrDamageInfo stabDamage;
     int unknown_0xecfab026;
     int unknown_0x94880277;
     int sound_0x1c3e84b6;

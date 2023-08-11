@@ -10,9 +10,9 @@ struct SLdrScanInfoSecondaryModel {
     SLdrScanInfoSecondaryModel();
     ~SLdrScanInfoSecondaryModel();
 
-    CAssetId secondary_static_model;
-    SLdrAnimationParameters secondary_animated_model;
-    rstl::string secondary_model_locator;
+    CAssetId secondaryStaticModel;
+    SLdrAnimationParameters secondaryAnimatedModel;
+    rstl::string secondaryModelLocator;
 };
 
 void LoadTypedefSLdrScanInfoSecondaryModel(SLdrScanInfoSecondaryModel&, CInputStream&);

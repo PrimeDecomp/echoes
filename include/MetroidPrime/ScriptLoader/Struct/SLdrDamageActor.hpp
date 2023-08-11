@@ -9,7 +9,7 @@ struct SLdrDamageActor {
     SLdrDamageActor();
     ~SLdrDamageActor();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrDamageInfo damage;
 };
 

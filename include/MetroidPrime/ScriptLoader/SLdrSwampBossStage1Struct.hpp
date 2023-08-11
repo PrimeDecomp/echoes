@@ -12,10 +12,10 @@ struct SLdrSwampBossStage1Struct {
     float unknown_0x76ba1c18;
     int unknown_0xbb0ffdd6;
     int unknown_0x60b0ae31;
-    int first_attack;
-    int second_attack;
-    int third_attack;
-    int fourth_attack;
+    int firstAttack;
+    int secondAttack;
+    int thirdAttack;
+    int fourthAttack;
 };
 
 void LoadTypedefSLdrSwampBossStage1Struct(SLdrSwampBossStage1Struct&, CInputStream&);

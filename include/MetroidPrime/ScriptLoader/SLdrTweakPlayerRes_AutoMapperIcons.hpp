@@ -8,15 +8,15 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
     SLdrTweakPlayerRes_AutoMapperIcons();
     ~SLdrTweakPlayerRes_AutoMapperIcons();
 
-    rstl::string save_station_icon;
-    rstl::string missile_station_icon;
-    rstl::string elevator_icon_icon;
-    rstl::string portal_icon;
+    rstl::string saveStationIcon;
+    rstl::string missileStationIcon;
+    rstl::string elevatorIconIcon;
+    rstl::string portalIcon;
     rstl::string unknown_0xfbf479ec;
     rstl::string unknown_0x5566b6e4;
     rstl::string unknown_0x51fe3f1f;
     rstl::string unknown_0xa4127a5a;
-    rstl::string translator_door_icon;
+    rstl::string translatorDoorIcon;
 };
 
 void LoadTypedefSLdrTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons&, CInputStream&);

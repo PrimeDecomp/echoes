@@ -8,10 +8,10 @@ struct SLdrTweakPlayerGun_UnknownStruct1 {
     SLdrTweakPlayerGun_UnknownStruct1();
     ~SLdrTweakPlayerGun_UnknownStruct1();
 
-    SLdrTDamageInfo super_missile;
+    SLdrTDamageInfo superMissile;
     SLdrTDamageInfo darkburst;
     SLdrTDamageInfo sunburst;
-    SLdrTDamageInfo sonic_boom;
+    SLdrTDamageInfo sonicBoom;
     SLdrTDamageInfo unknown;
 };
 

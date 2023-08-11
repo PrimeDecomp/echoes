@@ -7,8 +7,8 @@ struct SLdrVisorParameters {
     SLdrVisorParameters();
     ~SLdrVisorParameters();
 
-    bool scan_through;
-    int visor_flags;
+    bool scanThrough;
+    int visorFlags;
 };
 
 void LoadTypedefSLdrVisorParameters(SLdrVisorParameters&, CInputStream&);

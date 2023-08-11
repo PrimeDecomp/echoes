@@ -9,8 +9,8 @@ struct SLdrSpawnPoint {
     SLdrSpawnPoint();
     ~SLdrSpawnPoint();
 
-    SLdrEditorProperties editor_properties;
-    bool first_spawn;
+    SLdrEditorProperties editorProperties;
+    bool firstSpawn;
     bool morphed;
     SLdrSpawnPointStruct amount;
     SLdrSpawnPointStruct capacity;

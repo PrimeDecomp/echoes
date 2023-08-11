@@ -11,20 +11,20 @@ struct SLdrPuddleSpore {
     SLdrPuddleSpore();
     ~SLdrPuddleSpore();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int flavor;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     bool unknown_0x5cdc877d;
-    float charge_time;
-    float time_open;
-    float platform_time;
+    float chargeTime;
+    float timeOpen;
+    float platformTime;
     float unknown_0xf1c2d224;
     float unknown_0x3c6af2ac;
-    float hit_detection_angle;
-    float shock_wave_height;
+    float hitDetectionAngle;
+    float shockWaveHeight;
     int sound;
-    SLdrShockWaveInfo shock_wave_info;
+    SLdrShockWaveInfo shockWaveInfo;
 };
 
 void LoadTypedefSLdrPuddleSpore(SLdrPuddleSpore&, CInputStream&);

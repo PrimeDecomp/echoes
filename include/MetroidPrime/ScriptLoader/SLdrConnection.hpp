@@ -8,8 +8,8 @@ struct SLdrConnection {
     SLdrConnection();
     ~SLdrConnection();
 
-    short connection_index;
-    rstl::vector< float > activation_times;
+    short connectionIndex;
+    rstl::vector< float > activationTimes;
     bool unknown;
 };
 

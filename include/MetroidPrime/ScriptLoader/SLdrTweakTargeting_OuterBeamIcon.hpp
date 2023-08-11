@@ -10,8 +10,8 @@ struct SLdrTweakTargeting_OuterBeamIcon {
 
     float unknown_0x383e2b2d;
     float unknown_0xeaac42d0;
-    float but_settings_color;
-    CColor but_settings_scale;
+    float butSettingsColor;
+    CColor butSettingsScale;
     int unknown_0xe7d57d6a;
 };
 

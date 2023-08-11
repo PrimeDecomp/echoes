@@ -9,9 +9,9 @@ struct SLdrControllerAction {
     SLdrControllerAction();
     ~SLdrControllerAction();
 
-    SLdrEditorProperties editor_properties;
-    SLdrControllerActionStruct controller_action_struct;
-    bool one_shot;
+    SLdrEditorProperties editorProperties;
+    SLdrControllerActionStruct controllerActionStruct;
+    bool oneShot;
 };
 
 void LoadTypedefSLdrControllerAction(SLdrControllerAction&, CInputStream&);

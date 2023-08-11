@@ -14,17 +14,17 @@ struct SLdrMinorIng {
     SLdrMinorIng();
     ~SLdrMinorIng();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrDamageInfo projectile_damage;
+    SLdrActorParameters actorInformation;
+    SLdrDamageInfo projectileDamage;
     CAssetId projectile;
     float unknown_0xa03e450c;
-    float attack_angle_limit;
+    float attackAngleLimit;
     float unknown_0x99bb2559;
     float unknown_0xd6c8eac2;
     float unknown_0x2a5449ba;
-    float hearing_radius;
+    float hearingRadius;
     bool unknown_0x399d1eaa;
     bool unknown_0xbce16644;
     bool unknown_0x142433d3;
@@ -32,8 +32,8 @@ struct SLdrMinorIng {
     bool unknown_0xe601f7bd;
     bool unknown_0x09207f51;
     bool unknown_0x2107e4fb;
-    SLdrUnknownStruct33 unknown_struct33;
-    SLdrUnknownStruct34 unknown_struct34;
+    SLdrUnknownStruct33 unknownStruct33;
+    SLdrUnknownStruct34 unknownStruct34;
 };
 
 void LoadTypedefSLdrMinorIng(SLdrMinorIng&, CInputStream&);

@@ -10,9 +10,9 @@ struct SLdrPickupGenerator {
     SLdrPickupGenerator();
     ~SLdrPickupGenerator();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     CVector3f offset;
-    bool offset_is_local_space;
+    bool offsetIsLocalSpace;
     CAssetId rules;
 };
 

@@ -11,20 +11,20 @@ struct SLdrSporbNeedle {
     SLdrSporbNeedle();
     ~SLdrSporbNeedle();
 
-    SLdrEditorProperties editor_properties;
-    SLdrActorParameters actor_information;
+    SLdrEditorProperties editorProperties;
+    SLdrActorParameters actorInformation;
     CAssetId model;
-    float initial_speed;
+    float initialSpeed;
     float mass;
-    SLdrDamageInfo attack_damage;
-    float fuse_time;
-    CAssetId trail_effect;
-    CAssetId explosion_effect;
-    int launch_sound;
-    int flight_sound;
-    int hit_player_sound;
-    int collision_sound;
-    int explosion_sound;
+    SLdrDamageInfo attackDamage;
+    float fuseTime;
+    CAssetId trailEffect;
+    CAssetId explosionEffect;
+    int launchSound;
+    int flightSound;
+    int hitPlayerSound;
+    int collisionSound;
+    int explosionSound;
 };
 
 void LoadTypedefSLdrSporbNeedle(SLdrSporbNeedle&, CInputStream&);

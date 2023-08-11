@@ -12,19 +12,19 @@ struct SLdrIngBlobSwarm {
     SLdrIngBlobSwarm();
     ~SLdrIngBlobSwarm();
 
-    SLdrEditorProperties editor_properties;
-    SLdrActorParameters actor_information;
-    SLdrAnimationParameters animation_information;
+    SLdrEditorProperties editorProperties;
+    SLdrActorParameters actorInformation;
+    SLdrAnimationParameters animationInformation;
     bool active;
-    SLdrBasicSwarmProperties basic_swarm_properties;
+    SLdrBasicSwarmProperties basicSwarmProperties;
     int unknown_0x7399abbb;
     int unknown_0x734d923b;
-    float max_attack_angle;
-    float into_attack_speed;
-    float attack_speed;
+    float maxAttackAngle;
+    float intoAttackSpeed;
+    float attackSpeed;
     float mass;
-    float max_attack_height;
-    CVector3f attack_aim_offset;
+    float maxAttackHeight;
+    CVector3f attackAimOffset;
 };
 
 void LoadTypedefSLdrIngBlobSwarm(SLdrIngBlobSwarm&, CInputStream&);

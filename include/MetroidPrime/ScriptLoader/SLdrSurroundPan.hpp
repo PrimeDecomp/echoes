@@ -8,7 +8,7 @@ struct SLdrSurroundPan {
     ~SLdrSurroundPan();
 
     float pan;
-    float surround_pan;
+    float surroundPan;
 };
 
 void LoadTypedefSLdrSurroundPan(SLdrSurroundPan&, CInputStream&);

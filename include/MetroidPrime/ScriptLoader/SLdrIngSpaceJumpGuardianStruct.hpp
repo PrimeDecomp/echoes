@@ -7,10 +7,10 @@ struct SLdrIngSpaceJumpGuardianStruct {
     SLdrIngSpaceJumpGuardianStruct();
     ~SLdrIngSpaceJumpGuardianStruct();
 
-    float taunt_chance;
-    float attack_chance;
+    float tauntChance;
+    float attackChance;
     float unknown_0x03698c10;
-    float locomotion_speed;
+    float locomotionSpeed;
     float unknown_0x3e370622;
 };
 

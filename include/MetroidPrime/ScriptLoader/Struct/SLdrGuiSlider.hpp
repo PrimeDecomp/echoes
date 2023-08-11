@@ -9,14 +9,14 @@ struct SLdrGuiSlider {
     SLdrGuiSlider();
     ~SLdrGuiSlider();
 
-    SLdrEditorProperties editor_properties;
-    SLdrGuiWidgetProperties gui_widget_properties;
-    float min_value;
-    float max_value;
+    SLdrEditorProperties editorProperties;
+    SLdrGuiWidgetProperties guiWidgetProperties;
+    float minValue;
+    float maxValue;
     float increment;
-    float slide_speed;
-    int slide_sound;
-    int slide_sound_volume;
+    float slideSpeed;
+    int slideSound;
+    int slideSoundVolume;
 };
 
 void LoadTypedefSLdrGuiSlider(SLdrGuiSlider&, CInputStream&);

@@ -8,7 +8,7 @@ struct SLdrUnknownStruct8 {
     ~SLdrUnknownStruct8();
 
     bool override;
-    float z_offset;
+    float zOffset;
 };
 
 void LoadTypedefSLdrUnknownStruct8(SLdrUnknownStruct8&, CInputStream&);

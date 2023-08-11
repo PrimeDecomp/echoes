@@ -7,8 +7,8 @@ struct SLdrSpindleCameraStruct {
     SLdrSpindleCameraStruct();
     ~SLdrSpindleCameraStruct();
 
-    int interpolant_type;
-    spline interpolant_spline;
+    int interpolantType;
+    spline interpolantSpline;
 };
 
 void LoadTypedefSLdrSpindleCameraStruct(SLdrSpindleCameraStruct&, CInputStream&);

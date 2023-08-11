@@ -11,11 +11,11 @@ struct SLdrSporbProjectile {
     SLdrSporbProjectile();
     ~SLdrSporbProjectile();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    CAssetId ball_spit_particle_effect;
-    CAssetId ball_escape_particle_effect;
+    SLdrActorParameters actorInformation;
+    CAssetId ballSpitParticleEffect;
+    CAssetId ballEscapeParticleEffect;
 };
 
 void LoadTypedefSLdrSporbProjectile(SLdrSporbProjectile&, CInputStream&);

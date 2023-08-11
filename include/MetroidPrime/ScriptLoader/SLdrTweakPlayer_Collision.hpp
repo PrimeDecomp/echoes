@@ -7,11 +7,11 @@ struct SLdrTweakPlayer_Collision {
     SLdrTweakPlayer_Collision();
     ~SLdrTweakPlayer_Collision();
 
-    float player_height;
-    float player_radius;
-    float step_up_height;
-    float step_down_height;
-    float ball_radius;
+    float playerHeight;
+    float playerRadius;
+    float stepUpHeight;
+    float stepDownHeight;
+    float ballRadius;
 };
 
 void LoadTypedefSLdrTweakPlayer_Collision(SLdrTweakPlayer_Collision&, CInputStream&);

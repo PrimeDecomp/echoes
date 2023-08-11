@@ -9,10 +9,10 @@ struct SLdrUnknownStruct38 {
     ~SLdrUnknownStruct38();
 
     float range;
-    float turn_rate;
-    int sound_effect;
-    float warp_scale;
-    CVector3f repel_offset;
+    float turnRate;
+    int soundEffect;
+    float warpScale;
+    CVector3f repelOffset;
 };
 
 void LoadTypedefSLdrUnknownStruct38(SLdrUnknownStruct38&, CInputStream&);

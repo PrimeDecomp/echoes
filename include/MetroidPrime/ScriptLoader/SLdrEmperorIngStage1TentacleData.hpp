@@ -10,12 +10,12 @@ struct SLdrEmperorIngStage1TentacleData {
     ~SLdrEmperorIngStage1TentacleData();
 
     SLdrHealthInfo health;
-    SLdrDamageVulnerability normal_vulnerability;
-    SLdrDamageVulnerability warp_attack_vulnerability;
-    SLdrDamageVulnerability melee_attack_vulnerability;
-    SLdrDamageVulnerability projectile_attack_vulnerability;
-    float stay_retracted_time;
-    int tentacle_damaged_sound;
+    SLdrDamageVulnerability normalVulnerability;
+    SLdrDamageVulnerability warpAttackVulnerability;
+    SLdrDamageVulnerability meleeAttackVulnerability;
+    SLdrDamageVulnerability projectileAttackVulnerability;
+    float stayRetractedTime;
+    int tentacleDamagedSound;
 };
 
 void LoadTypedefSLdrEmperorIngStage1TentacleData(SLdrEmperorIngStage1TentacleData&, CInputStream&);

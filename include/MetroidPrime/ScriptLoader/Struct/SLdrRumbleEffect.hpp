@@ -8,10 +8,10 @@ struct SLdrRumbleEffect {
     SLdrRumbleEffect();
     ~SLdrRumbleEffect();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     float radius;
     int effect;
-    int flags_rumble;
+    int flagsRumble;
 };
 
 void LoadTypedefSLdrRumbleEffect(SLdrRumbleEffect&, CInputStream&);

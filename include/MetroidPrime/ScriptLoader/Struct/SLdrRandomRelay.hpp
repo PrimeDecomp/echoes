@@ -8,11 +8,11 @@ struct SLdrRandomRelay {
     SLdrRandomRelay();
     ~SLdrRandomRelay();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int count;
-    int random_adjust;
-    bool percent_count;
-    bool is_random_chance;
+    int randomAdjust;
+    bool percentCount;
+    bool isRandomChance;
 };
 
 void LoadTypedefSLdrRandomRelay(SLdrRandomRelay&, CInputStream&);

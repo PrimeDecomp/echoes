@@ -12,23 +12,23 @@ struct SLdrLumite {
     SLdrLumite();
     ~SLdrLumite();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
     float unknown_0x2d9ebd7f;
     float unknown_0x6dd1c509;
-    CAssetId small_shot_projectile;
-    SLdrDamageInfo small_shot_damage;
+    CAssetId smallShotProjectile;
+    SLdrDamageInfo smallShotDamage;
     float unknown_0x6d5356bb;
     float unknown_0x2d1c2ecd;
-    CAssetId big_shot_projectile;
-    SLdrDamageInfo big_shot_damage;
-    CAssetId trail_effect;
-    CAssetId sunlight_enter_exit_effect;
+    CAssetId bigShotProjectile;
+    SLdrDamageInfo bigShotDamage;
+    CAssetId trailEffect;
+    CAssetId sunlightEnterExitEffect;
     float unknown_0xe05d93ef;
     float unknown_0x47691396;
-    int phase_in_sound;
-    int phase_out_sound;
+    int phaseInSound;
+    int phaseOutSound;
 };
 
 void LoadTypedefSLdrLumite(SLdrLumite&, CInputStream&);

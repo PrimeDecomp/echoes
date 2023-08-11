@@ -7,22 +7,22 @@ struct SLdrTweakPlayer_AimStuff {
     SLdrTweakPlayer_AimStuff();
     ~SLdrTweakPlayer_AimStuff();
 
-    float aim_min_time;
-    float aim_max_time;
-    float aim_max_distance;
-    float aim_max_angle_left;
-    float aim_max_angle_right;
-    float aim_max_angle_up;
-    float aim_max_angle_down;
-    float aim_angle_per_second;
-    float aim_threshold_distance;
-    float aim_turn_angle_per_second;
+    float aimMinTime;
+    float aimMaxTime;
+    float aimMaxDistance;
+    float aimMaxAngleLeft;
+    float aimMaxAngleRight;
+    float aimMaxAngleUp;
+    float aimMaxAngleDown;
+    float aimAnglePerSecond;
+    float aimThresholdDistance;
+    float aimTurnAnglePerSecond;
     float unknown;
-    float aim_box_width;
-    float aim_box_height;
-    float aim_target_timer;
-    float aim_assist_horizontal_angle;
-    float aim_assist_vertical_angle;
+    float aimBoxWidth;
+    float aimBoxHeight;
+    float aimTargetTimer;
+    float aimAssistHorizontalAngle;
+    float aimAssistVerticalAngle;
 };
 
 void LoadTypedefSLdrTweakPlayer_AimStuff(SLdrTweakPlayer_AimStuff&, CInputStream&);

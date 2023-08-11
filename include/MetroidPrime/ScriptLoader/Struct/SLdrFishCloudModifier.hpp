@@ -8,12 +8,12 @@ struct SLdrFishCloudModifier {
     SLdrFishCloudModifier();
     ~SLdrFishCloudModifier();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     bool active;
     bool unknown;
     bool rotate;
-    float influence_distance;
-    float influence_priority;
+    float influenceDistance;
+    float influencePriority;
 };
 
 void LoadTypedefSLdrFishCloudModifier(SLdrFishCloudModifier&, CInputStream&);

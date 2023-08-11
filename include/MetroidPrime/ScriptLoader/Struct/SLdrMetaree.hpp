@@ -13,17 +13,17 @@ struct SLdrMetaree {
     SLdrMetaree();
     ~SLdrMetaree();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrDamageInfo radius_damage;
-    float drop_height;
+    SLdrActorParameters actorInformation;
+    SLdrDamageInfo radiusDamage;
+    float dropHeight;
     CVector3f unknown;
-    float attack_speed;
-    float drop_delay;
-    float halt_delay;
-    float launch_speed;
-    SLdrAudioPlaybackParms turn_sound;
+    float attackSpeed;
+    float dropDelay;
+    float haltDelay;
+    float launchSpeed;
+    SLdrAudioPlaybackParms turnSound;
 };
 
 void LoadTypedefSLdrMetaree(SLdrMetaree&, CInputStream&);

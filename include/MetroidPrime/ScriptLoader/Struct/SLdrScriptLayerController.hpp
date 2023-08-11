@@ -9,9 +9,9 @@ struct SLdrScriptLayerController {
     SLdrScriptLayerController();
     ~SLdrScriptLayerController();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrLayerSwitch layer;
-    bool is_dynamic;
+    bool isDynamic;
 };
 
 void LoadTypedefSLdrScriptLayerController(SLdrScriptLayerController&, CInputStream&);

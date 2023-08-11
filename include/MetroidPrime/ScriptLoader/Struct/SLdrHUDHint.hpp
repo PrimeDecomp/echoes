@@ -9,13 +9,13 @@ struct SLdrHUDHint {
     SLdrHUDHint();
     ~SLdrHUDHint();
 
-    SLdrEditorProperties editor_properties;
-    CAssetId hud_texture;
+    SLdrEditorProperties editorProperties;
+    CAssetId hudTexture;
     float unknown_0x6078a651;
     float unknown_0xf00bb6bb;
-    float icon_scale;
-    float animation_time;
-    int animation_frames;
+    float iconScale;
+    float animationTime;
+    int animationFrames;
     int unknown_0xd993f97b;
 };
 

@@ -8,7 +8,7 @@ struct SLdrCameraWaypoint {
     SLdrCameraWaypoint();
     ~SLdrCameraWaypoint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
 };
 
 void LoadTypedefSLdrCameraWaypoint(SLdrCameraWaypoint&, CInputStream&);

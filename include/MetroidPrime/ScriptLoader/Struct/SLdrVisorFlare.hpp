@@ -9,15 +9,15 @@ struct SLdrVisorFlare {
     SLdrVisorFlare();
     ~SLdrVisorFlare();
 
-    SLdrEditorProperties editor_properties;
-    int blend_mode;
-    bool constant_scale;
-    float fade_time;
-    float fade_factor;
-    float rotate_factor;
-    int combat_visor_mode;
+    SLdrEditorProperties editorProperties;
+    int blendMode;
+    bool constantScale;
+    float fadeTime;
+    float fadeFactor;
+    float rotateFactor;
+    int combatVisorMode;
     bool unknown;
-    bool no_occlusion_test;
+    bool noOcclusionTest;
     SLdrFlareDef flare1;
     SLdrFlareDef flare2;
     SLdrFlareDef flare3;

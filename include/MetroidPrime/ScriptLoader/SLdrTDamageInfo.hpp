@@ -7,11 +7,11 @@ struct SLdrTDamageInfo {
     SLdrTDamageInfo();
     ~SLdrTDamageInfo();
 
-    int weapon_type;
-    float damage_amount;
-    float radius_damage_amount;
-    float damage_radius;
-    float knock_back_power;
+    int weaponType;
+    float damageAmount;
+    float radiusDamageAmount;
+    float damageRadius;
+    float knockBackPower;
 };
 
 void LoadTypedefSLdrTDamageInfo(SLdrTDamageInfo&, CInputStream&);

@@ -11,16 +11,16 @@ struct SLdrMetareeSwarm {
     SLdrMetareeSwarm();
     ~SLdrMetareeSwarm();
 
-    SLdrEditorProperties editor_properties;
-    SLdrActorParameters actor_information;
-    SLdrAnimationParameters animation_information;
+    SLdrEditorProperties editorProperties;
+    SLdrActorParameters actorInformation;
+    SLdrAnimationParameters animationInformation;
     bool active;
-    SLdrBasicSwarmProperties basic_swarm_properties;
+    SLdrBasicSwarmProperties basicSwarmProperties;
     int unknown_0x7399abbb;
     int unknown_0x734d923b;
-    float max_attack_angle;
-    float into_attack_speed;
-    float attack_speed;
+    float maxAttackAngle;
+    float intoAttackSpeed;
+    float attackSpeed;
 };
 
 void LoadTypedefSLdrMetareeSwarm(SLdrMetareeSwarm&, CInputStream&);

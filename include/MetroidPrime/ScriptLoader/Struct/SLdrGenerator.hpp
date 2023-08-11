@@ -9,14 +9,14 @@ struct SLdrGenerator {
     SLdrGenerator();
     ~SLdrGenerator();
 
-    SLdrEditorProperties editor_properties;
-    int random_count;
-    bool unique_locations;
-    bool keep_orientation;
-    bool use_originator_transform;
+    SLdrEditorProperties editorProperties;
+    int randomCount;
+    bool uniqueLocations;
+    bool keepOrientation;
+    bool useOriginatorTransform;
     CVector3f offset;
-    float random_scale_min;
-    float random_scale_max;
+    float randomScaleMin;
+    float randomScaleMax;
 };
 
 void LoadTypedefSLdrGenerator(SLdrGenerator&, CInputStream&);

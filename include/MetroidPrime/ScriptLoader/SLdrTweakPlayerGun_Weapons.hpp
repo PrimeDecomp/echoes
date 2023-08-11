@@ -12,14 +12,14 @@ struct SLdrTweakPlayerGun_Weapons {
     SLdrTDamageInfo bomb;
     float unknown_0xe8907530;
     float unknown_0x0a9186cb;
-    SLdrTDamageInfo power_bomb;
+    SLdrTDamageInfo powerBomb;
     SLdrTDamageInfo missile;
-    SLdrTBeamInfo power_beam;
-    SLdrTBeamInfo dark_beam;
-    SLdrTDamageInfo dark_beam_blob;
-    SLdrTBeamInfo light_beam;
-    SLdrTBeamInfo annihilator_beam;
-    SLdrTBeamInfo phazon_beam;
+    SLdrTBeamInfo powerBeam;
+    SLdrTBeamInfo darkBeam;
+    SLdrTDamageInfo darkBeamBlob;
+    SLdrTBeamInfo lightBeam;
+    SLdrTBeamInfo annihilatorBeam;
+    SLdrTBeamInfo phazonBeam;
 };
 
 void LoadTypedefSLdrTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons&, CInputStream&);

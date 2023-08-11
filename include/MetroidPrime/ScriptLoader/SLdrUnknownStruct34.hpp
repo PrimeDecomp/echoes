@@ -17,17 +17,17 @@ struct SLdrUnknownStruct34 {
     CAssetId trail;
     float mass;
     float unknown_0x417f4a91;
-    float min_launch_speed;
-    float max_launch_speed;
+    float minLaunchSpeed;
+    float maxLaunchSpeed;
     int unknown_0xfbcdb101;
-    int sound_bounce;
-    int sound_explode;
-    float max_turn_angle;
+    int soundBounce;
+    int soundExplode;
+    float maxTurnAngle;
     float unknown_0x47f99fbc;
-    int min_generation;
-    int max_generation;
+    int minGeneration;
+    int maxGeneration;
     float unknown_0xfbf8ea0a;
-    bool allow_lock_on;
+    bool allowLockOn;
 };
 
 void LoadTypedefSLdrUnknownStruct34(SLdrUnknownStruct34&, CInputStream&);

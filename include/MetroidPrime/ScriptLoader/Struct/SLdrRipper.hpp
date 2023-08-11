@@ -11,11 +11,11 @@ struct SLdrRipper {
     SLdrRipper();
     ~SLdrRipper();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int flavor;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrGrappleParameters grapple_info;
+    SLdrActorParameters actorInformation;
+    SLdrGrappleParameters grappleInfo;
 };
 
 void LoadTypedefSLdrRipper(SLdrRipper&, CInputStream&);

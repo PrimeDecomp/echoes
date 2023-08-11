@@ -8,8 +8,8 @@ struct SLdrDynamicLightIntensity {
     ~SLdrDynamicLightIntensity();
 
     spline intensity;
-    float intensity_duration;
-    bool intensity_loops;
+    float intensityDuration;
+    bool intensityLoops;
 };
 
 void LoadTypedefSLdrDynamicLightIntensity(SLdrDynamicLightIntensity&, CInputStream&);

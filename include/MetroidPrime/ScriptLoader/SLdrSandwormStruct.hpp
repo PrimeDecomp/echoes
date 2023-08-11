@@ -10,7 +10,7 @@ struct SLdrSandwormStruct {
     float unknown_0x98106ee2;
     float unknown_0x95081226;
     float unknown_0xc2064265;
-    float move_speed_multiplier;
+    float moveSpeedMultiplier;
     int unknown_0x59f14d7c;
     int unknown_0x9606b4b0;
     int unknown_0xfc2697dd;

@@ -19,8 +19,8 @@ struct SLdrIngBoostBallGuardianStruct {
     int unknown_0xa6fd6d54;
     int unknown_0xecb314b6;
     int unknown_0xa9b15734;
-    float locomotion_speed_scale;
-    float ing_spot_speed_scale;
+    float locomotionSpeedScale;
+    float ingSpotSpeedScale;
 };
 
 void LoadTypedefSLdrIngBoostBallGuardianStruct(SLdrIngBoostBallGuardianStruct&, CInputStream&);

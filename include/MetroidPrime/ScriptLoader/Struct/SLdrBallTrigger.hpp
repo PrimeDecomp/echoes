@@ -10,14 +10,14 @@ struct SLdrBallTrigger {
     SLdrBallTrigger();
     ~SLdrBallTrigger();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrTriggerInfo trigger;
-    float attraction_force;
-    float attraction_angle;
-    float attraction_distance;
-    CVector3f attraction_direction;
-    bool no_ball_movement;
-    float bounds_size_multiplier;
+    float attractionForce;
+    float attractionAngle;
+    float attractionDistance;
+    CVector3f attractionDirection;
+    bool noBallMovement;
+    float boundsSizeMultiplier;
 };
 
 void LoadTypedefSLdrBallTrigger(SLdrBallTrigger&, CInputStream&);

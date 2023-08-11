@@ -12,18 +12,18 @@ struct SLdrGunTurretTop {
     SLdrGunTurretTop();
     ~SLdrGunTurretTop();
 
-    SLdrEditorProperties editor_properties;
-    float power_up_time;
-    float power_down_time;
+    SLdrEditorProperties editorProperties;
+    float powerUpTime;
+    float powerDownTime;
     CAssetId part_0xbf87e353;
     CAssetId part_0xaf6e671a;
-    int always_ff_0x67c8a8f4;
-    int always_ff_0x68d8b844;
-    CColor light_color;
+    int alwaysFf_0x67c8a8f4;
+    int alwaysFf_0x68d8b844;
+    CColor lightColor;
     int sound_0xe4aeeba4;
     int sound_0x5d9ed447;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
+    SLdrActorParameters actorInformation;
 };
 
 void LoadTypedefSLdrGunTurretTop(SLdrGunTurretTop&, CInputStream&);

@@ -8,8 +8,8 @@ struct SLdrAIJumpPoint {
     SLdrAIJumpPoint();
     ~SLdrAIJumpPoint();
 
-    SLdrEditorProperties editor_properties;
-    float jump_apex;
+    SLdrEditorProperties editorProperties;
+    float jumpApex;
     int type;
 };
 

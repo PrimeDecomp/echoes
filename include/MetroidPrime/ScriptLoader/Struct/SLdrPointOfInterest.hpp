@@ -9,10 +9,10 @@ struct SLdrPointOfInterest {
     SLdrPointOfInterest();
     ~SLdrPointOfInterest();
 
-    SLdrEditorProperties editor_properties;
-    SLdrScannableParameters scan_info;
-    float scan_offset;
-    bool look_at_poi;
+    SLdrEditorProperties editorProperties;
+    SLdrScannableParameters scanInfo;
+    float scanOffset;
+    bool lookAtPoi;
 };
 
 void LoadTypedefSLdrPointOfInterest(SLdrPointOfInterest&, CInputStream&);

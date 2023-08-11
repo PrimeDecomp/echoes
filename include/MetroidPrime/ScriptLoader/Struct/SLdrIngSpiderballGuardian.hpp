@@ -11,10 +11,10 @@ struct SLdrIngSpiderballGuardian {
     SLdrIngSpiderballGuardian();
     ~SLdrIngSpiderballGuardian();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrPatternedAITypedef patterned;
-    SLdrActorParameters actor_information;
-    SLdrUnknownStruct31 unknown_struct31;
+    SLdrActorParameters actorInformation;
+    SLdrUnknownStruct31 unknownStruct31;
 };
 
 void LoadTypedefSLdrIngSpiderballGuardian(SLdrIngSpiderballGuardian&, CInputStream&);

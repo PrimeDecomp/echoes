@@ -8,12 +8,12 @@ struct SLdrActorKeyframe {
     SLdrActorKeyframe();
     ~SLdrActorKeyframe();
 
-    SLdrEditorProperties editor_properties;
-    int animation_index;
+    SLdrEditorProperties editorProperties;
+    int animationIndex;
     bool loop;
-    float loop_duration;
+    float loopDuration;
     int unknown;
-    float playback_rate;
+    float playbackRate;
 };
 
 void LoadTypedefSLdrActorKeyframe(SLdrActorKeyframe&, CInputStream&);

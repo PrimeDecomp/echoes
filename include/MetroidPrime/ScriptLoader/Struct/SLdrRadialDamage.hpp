@@ -9,11 +9,11 @@ struct SLdrRadialDamage {
     SLdrRadialDamage();
     ~SLdrRadialDamage();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrDamageInfo damage;
     float radius;
-    bool auto_action;
-    bool auto_delete;
+    bool autoAction;
+    bool autoDelete;
     bool originator;
 };
 

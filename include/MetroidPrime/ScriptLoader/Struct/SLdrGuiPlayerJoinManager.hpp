@@ -8,7 +8,7 @@ struct SLdrGuiPlayerJoinManager {
     SLdrGuiPlayerJoinManager();
     ~SLdrGuiPlayerJoinManager();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
 };
 
 void LoadTypedefSLdrGuiPlayerJoinManager(SLdrGuiPlayerJoinManager&, CInputStream&);

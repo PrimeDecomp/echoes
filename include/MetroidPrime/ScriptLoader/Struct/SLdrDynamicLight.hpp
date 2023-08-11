@@ -14,14 +14,14 @@ struct SLdrDynamicLight {
     SLdrDynamicLight();
     ~SLdrDynamicLight();
 
-    SLdrEditorProperties editor_properties;
-    int light_type;
-    int light_set;
+    SLdrEditorProperties editorProperties;
+    int lightType;
+    int lightSet;
     CColor color;
     SLdrDynamicLightIntensity intensity;
     SLdrDynamicLightFalloff falloff;
     SLdrDynamicLightSpotlight spotlight;
-    SLdrDynamicLightMotionSpline motion_spline;
+    SLdrDynamicLightMotionSpline motionSpline;
     SLdrDynamicLightParent parent;
 };
 

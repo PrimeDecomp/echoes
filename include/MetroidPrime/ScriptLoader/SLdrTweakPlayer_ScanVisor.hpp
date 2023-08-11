@@ -7,13 +7,13 @@ struct SLdrTweakPlayer_ScanVisor {
     SLdrTweakPlayer_ScanVisor();
     ~SLdrTweakPlayer_ScanVisor();
 
-    float scan_distance;
-    bool scan_retention;
-    bool scan_freezes_game;
-    bool scan_line_of_sight;
-    float scan_max_target_distance;
-    float scan_max_lock_distance;
-    float scan_camera_speed;
+    float scanDistance;
+    bool scanRetention;
+    bool scanFreezesGame;
+    bool scanLineOfSight;
+    float scanMaxTargetDistance;
+    float scanMaxLockDistance;
+    float scanCameraSpeed;
 };
 
 void LoadTypedefSLdrTweakPlayer_ScanVisor(SLdrTweakPlayer_ScanVisor&, CInputStream&);

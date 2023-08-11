@@ -9,15 +9,15 @@ struct SLdrStreamedMovie {
     SLdrStreamedMovie();
     ~SLdrStreamedMovie();
 
-    SLdrEditorProperties editor_properties;
-    rstl::string movie_file;
+    SLdrEditorProperties editorProperties;
+    rstl::string movieFile;
     bool loop;
-    bool video_filter_enabled;
+    bool videoFilterEnabled;
     int unknown;
     int volume;
-    int volume_type;
-    float cache_length;
-    float fade_out_time;
+    int volumeType;
+    float cacheLength;
+    float fadeOutTime;
 };
 
 void LoadTypedefSLdrStreamedMovie(SLdrStreamedMovie&, CInputStream&);

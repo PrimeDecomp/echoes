@@ -9,10 +9,10 @@ struct SLdrAIMannedTurret {
     SLdrAIMannedTurret();
     ~SLdrAIMannedTurret();
 
-    SLdrEditorProperties editor_properties;
-    SLdrUnknownStruct3 unknown_struct3;
-    spline patrol_horiz_spline;
-    spline patrol_vertical_spline;
+    SLdrEditorProperties editorProperties;
+    SLdrUnknownStruct3 unknownStruct3;
+    spline patrolHorizSpline;
+    spline patrolVerticalSpline;
 };
 
 void LoadTypedefSLdrAIMannedTurret(SLdrAIMannedTurret&, CInputStream&);

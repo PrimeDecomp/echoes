@@ -7,10 +7,10 @@ struct SLdrTweakPlayer_GrappleBeam {
     SLdrTweakPlayer_GrappleBeam();
     ~SLdrTweakPlayer_GrappleBeam();
 
-    float travel_speed;
-    float x_wave_amplitude;
-    float z_wave_amplitude;
-    float angle_phase_delta;
+    float travelSpeed;
+    float xWaveAmplitude;
+    float zWaveAmplitude;
+    float anglePhaseDelta;
 };
 
 void LoadTypedefSLdrTweakPlayer_GrappleBeam(SLdrTweakPlayer_GrappleBeam&, CInputStream&);

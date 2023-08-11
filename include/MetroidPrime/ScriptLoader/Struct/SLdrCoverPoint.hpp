@@ -8,12 +8,12 @@ struct SLdrCoverPoint {
     SLdrCoverPoint();
     ~SLdrCoverPoint();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     int unknown;
-    bool should_crouch;
-    float horizontal_safe_angle;
-    float vertical_safe_angle;
-    float lock_time;
+    bool shouldCrouch;
+    float horizontalSafeAngle;
+    float verticalSafeAngle;
+    float lockTime;
 };
 
 void LoadTypedefSLdrCoverPoint(SLdrCoverPoint&, CInputStream&);

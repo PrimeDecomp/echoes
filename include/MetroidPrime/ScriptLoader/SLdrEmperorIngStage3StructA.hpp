@@ -9,9 +9,9 @@ struct SLdrEmperorIngStage3StructA {
     SLdrEmperorIngStage3StructA();
     ~SLdrEmperorIngStage3StructA();
 
-    SLdrPlasmaBeamInfo beam_info;
+    SLdrPlasmaBeamInfo beamInfo;
     SLdrDamageInfo damage;
-    int beam_sound;
+    int beamSound;
 };
 
 void LoadTypedefSLdrEmperorIngStage3StructA(SLdrEmperorIngStage3StructA&, CInputStream&);

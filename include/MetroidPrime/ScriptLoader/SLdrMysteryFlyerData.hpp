@@ -9,11 +9,11 @@ struct SLdrMysteryFlyerData {
     SLdrMysteryFlyerData();
     ~SLdrMysteryFlyerData();
 
-    CAssetId shot_projectile;
-    SLdrDamageInfo shot_damage;
-    float hover_speed;
-    float hover_height;
-    float separation_distance;
+    CAssetId shotProjectile;
+    SLdrDamageInfo shotDamage;
+    float hoverSpeed;
+    float hoverHeight;
+    float separationDistance;
     bool unknown;
 };
 

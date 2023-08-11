@@ -8,20 +8,20 @@ struct SLdrUnknownStruct39 {
     SLdrUnknownStruct39();
     ~SLdrUnknownStruct39();
 
-    int start_state;
-    SLdrDamageInfo explosion_damage;
-    float min_height;
-    float max_height;
-    float min_down_height;
-    float max_down_height;
-    float separation_distance;
-    float min_life_time;
-    float max_life_time;
-    float normal_knockback;
-    float heavy_knockback;
-    float knockback_decline;
-    bool is_dark_shredder;
-    float desired_distance;
+    int startState;
+    SLdrDamageInfo explosionDamage;
+    float minHeight;
+    float maxHeight;
+    float minDownHeight;
+    float maxDownHeight;
+    float separationDistance;
+    float minLifeTime;
+    float maxLifeTime;
+    float normalKnockback;
+    float heavyKnockback;
+    float knockbackDecline;
+    bool isDarkShredder;
+    float desiredDistance;
 };
 
 void LoadTypedefSLdrUnknownStruct39(SLdrUnknownStruct39&, CInputStream&);

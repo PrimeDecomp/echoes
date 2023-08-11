@@ -9,21 +9,21 @@ struct SLdrLightParameters {
     SLdrLightParameters();
     ~SLdrLightParameters();
 
-    bool cast_shadow;
-    float shadow_scale;
+    bool castShadow;
+    float shadowScale;
     int unknown_0xecda4163;
-    float shadow_alpha;
-    float max_shadow_height;
-    CColor ambient_color;
+    float shadowAlpha;
+    float maxShadowHeight;
+    CColor ambientColor;
     bool unknown_0xa71810e9;
-    int world_lighting_options;
-    int light_recalculation;
-    CVector3f lighting_position_offset;
-    int num_dynamic_lights;
-    int num_area_lights;
-    bool use_old_lighting;
-    bool ignore_ambient_lighting;
-    int use_light_set;
+    int worldLightingOptions;
+    int lightRecalculation;
+    CVector3f lightingPositionOffset;
+    int numDynamicLights;
+    int numAreaLights;
+    bool useOldLighting;
+    bool ignoreAmbientLighting;
+    int useLightSet;
 };
 
 void LoadTypedefSLdrLightParameters(SLdrLightParameters&, CInputStream&);

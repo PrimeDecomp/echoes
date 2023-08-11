@@ -9,10 +9,10 @@ struct SLdrAreaDamage {
     SLdrAreaDamage();
     ~SLdrAreaDamage();
 
-    SLdrEditorProperties editor_properties;
+    SLdrEditorProperties editorProperties;
     SLdrDamageInfo damage;
-    float pulse_time;
-    float grace_time;
+    float pulseTime;
+    float graceTime;
 };
 
 void LoadTypedefSLdrAreaDamage(SLdrAreaDamage&, CInputStream&);
