@@ -10,36 +10,36 @@ class CGenDescription;
 class CEchoParameters;
 
 class CScriptPickup : public CActor {
-  CPlayerState::EItemType itemType; // x158
-  int amount;
-  int capacity;
-  int percentage;
-  float lifeTime;
-  float respawnTime;
+  CPlayerState::EItemType m_itemType; // x158
+  int m_amount;
+  int m_capacity;
+  int m_percentageIncrease;
+  float m_lifeTime;
+  float m_respawnTime;
   float x170;
-  float fadeTime;
-  float curTime;
+  float m_fadeTime;
+  float m_curTime;
   float x17c;
-  float timeLeftToSet;
-  float activateDelay;
-  float autoHomeRange;
-  float delayUntilHome;
-  float homingSpeed;
-  float transformZ;
-  rstl::optional_object< TCachedToken< CGenDescription > > pickupParticleDesc;
-  CAABox touchBounds;
+  float m_pickupEffectLifetime;
+  float m_activateDelay;
+  float m_autoHomeRange;
+  float m_delayUntilHome;
+  float m_homingSpeed;
+  float m_transformZ;
+  rstl::optional_object< TCachedToken< CGenDescription > > m_pickupParticleDesc;
+  CAABox m_touchBounds;
   int x1bc;
   int x1c0;
-  CVector3f orbitOffset;
-  bool unknownProp : 1;
-  bool generated : 1;  // unk
-  bool inTractor : 1;  // unk
-  bool absoluteValue : 1;
-  bool enableTractorTest : 1;  // unk
-  bool autoSpin : 1;
-  bool unk2 : 1;
-  bool unk3 : 1;
-  bool blinkOut : 1;
+  CVector3f m_orbitOffset;
+  bool m_unknownProp : 1;
+  bool m_generated : 1;  // unk
+  bool m_inTractor : 1;  // unk
+  bool m_absoluteValue : 1;
+  bool m_enableTractorTest : 1;  // unk
+  bool m_autoSpin : 1;
+  bool m_unk2 : 1;
+  bool m_unk3 : 1;
+  bool m_blinkOut : 1;
 
 public:
   CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,

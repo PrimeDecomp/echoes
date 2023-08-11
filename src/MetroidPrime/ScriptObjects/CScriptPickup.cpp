@@ -32,47 +32,47 @@
 static float skDrawInDistance = 30.f;
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                             const CTransform4f& xf, const CModelData& mData,
+                             const CTransform4f& xf, const CModelData& modelData,
                              const CActorParameters& aParams, const CEchoParameters& echo,
                              const CAABox& aabb, CPlayerState::EItemType itemType, int amount,
                              int capacityIncrease, int itemPercentageIncrease,
                              CAssetId pickupEffect, bool absoluteValue, bool unknown, bool autoSpin,
-                             bool blinkOut, float lifetime, float respawnTime, float fadeTime,
+                             bool blinkOut, float lifeTime, float respawnTime, float fadeTime,
                              float activateDelay, float pickupEffectLifetime, float autoHomeRange,
                              float delayUntilHome, float homingSpeed, const CVector3f& orbitOffset)
-: CActor(uid, name, info, 0, xf, mData, CMaterialList(), aParams, kInvalidUniqueId)
-, itemType(itemType)
-, amount(amount)
-, capacity(capacity)
-, percentage(percentage)
-, lifeTime(lifeTime)
-, respawnTime(respawnTime)
+: CActor(uid, name, info, 0, xf, modelData, CMaterialList(), aParams, kInvalidUniqueId)
+, m_itemType(itemType)
+, m_amount(amount)
+, m_capacity(capacityIncrease)
+, m_percentageIncrease(itemPercentageIncrease)
+, m_lifeTime(lifeTime)
+, m_respawnTime(respawnTime)
 , x170(0.f)
-, fadeTime(fadeTime)
-, curTime(0.0f)
-, timeLeftToSet(timeLeftToSet)
-, activateDelay(activateDelay)
-, autoHomeRange(autoHomeRange)
-, delayUntilHome(delayUntilHome)
-, homingSpeed(homingSpeed)
-, transformZ(xf.GetTranslation().GetZ())
-, pickupParticleDesc()
-, touchBounds(aabb)
+, m_fadeTime(fadeTime)
+, m_curTime(0.0f)
+, m_pickupEffectLifetime(pickupEffectLifetime)
+, m_activateDelay(activateDelay)
+, m_autoHomeRange(autoHomeRange)
+, m_delayUntilHome(delayUntilHome)
+, m_homingSpeed(homingSpeed)
+, m_transformZ(xf.GetTranslation().GetZ())
+, m_pickupParticleDesc()
+, m_touchBounds(aabb)
 , x1bc(0)
 , x1c0(0)
-, orbitOffset(orbitOffset)
-, unknownProp(unknown)
-, generated(false)
-, inTractor(false)
-, absoluteValue(absoluteValue)
-, enableTractorTest(false)
-, autoSpin(autoSpin)
-, unk2(false)
-, unk3(false)
-, blinkOut(blinkOut) {
+, m_orbitOffset(orbitOffset)
+, m_unknownProp(unknown)
+, m_generated(false)
+, m_inTractor(false)
+, m_absoluteValue(absoluteValue)
+, m_enableTractorTest(false)
+, m_autoSpin(autoSpin)
+, m_unk2(false)
+, m_unk3(false)
+, m_blinkOut(blinkOut) {
   if (pickupEffect != kInvalidAssetId) {
-    pickupParticleDesc = gpSimplePool->GetObj(SObjectTag('PART', pickupEffect));
-    pickupParticleDesc->Lock();
+    m_pickupParticleDesc = gpSimplePool->GetObj(SObjectTag('PART', pickupEffect));
+    m_pickupParticleDesc->Lock();
   }
 
   if (HasAnimation()) {
@@ -128,7 +128,7 @@ void CScriptPickup::Think(float dt, CStateManager& mgr) {
   // SetModelFlags(drawFlags);
 
   // if (HasAnimation()) {
-  //   CAdvancementDeltas deltas = UpdateAnimation(dt, mgr, true);
+  //   CAdvancementDeltas deltas = UpdateAnimation(dt, m_gr, true);
   //   MoveToOR(deltas.GetOffsetDelta(), dt);
   //   RotateToOR(deltas.GetOrientationDelta(), dt);
   // }
@@ -180,7 +180,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
   //   if (x27c_pickupParticleDesc) {
   //     if (mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Thermal) {
   //       mgr.AddObject(new CExplosion(
-  //           TLockedToken< CGenDescription >(*x27c_pickupParticleDesc), mgr.AllocateUniqueId(),
+  //           TLockedToken< CGenDescription >(*x27c_pickupParticleDesc), m_gr.AllocateUniqueId(),
   //           true, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, kInvalidEditorId),
   //           rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
   //           CVector3f(1.f, 1.f, 1.f), CColor::White()));
@@ -191,7 +191,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
   //   mgr.PlayerState()->InitializePowerUp(itemType, x260_capacity);
   //   mgr.PlayerState()->IncrPickUp(itemType, x25c_amount);
   //   mgr.FreeScriptObject(GetUniqueId());
-  //   SendScriptMsgs(kSS_Arrived, mgr, kSM_None);
+  //   SendScriptMsgs(kSS_Arrived, m_gr, kSM_None);
 
   //   if (x260_capacity > 0) {
   //     const CPlayerState* playerState = mgr.GetPlayerState();
@@ -236,9 +236,9 @@ void CScriptPickup::AddToRenderer(const CFrustumPlanes& a, const CStateManager& 
   }
 }
 
-CPlayerState::EItemType CScriptPickup::GetItem() const { return itemType; }
+CPlayerState::EItemType CScriptPickup::GetItem() const { return m_itemType; }
 
-void CScriptPickup::SetSpawned() { generated = true; }
+void CScriptPickup::SetSpawned() { m_generated = true; }
 
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
                   const CVector3f& collisionOffset);
