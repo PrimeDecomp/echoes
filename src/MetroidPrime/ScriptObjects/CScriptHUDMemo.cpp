@@ -107,7 +107,10 @@ CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEnti
     }
   }
 
-  int mask = sldrMemo.player1 != false;
+  int mask = 0;
+  if (sldrMemo.player1) {
+    mask |= 1;
+  }
   if (sldrMemo.player2) {
     mask |= 2;
   }
