@@ -1,103 +1,31 @@
 #!/usr/bin/env python3
-LIBS = [
-    {
-        "lib": "MSL_C.PPCEABI.bare.H",
-        "mw_version": "2.7",
-        "cflags": "$cflags_runtime",
-        "host": False,
-        "objects": [
-            ["Runtime/__init_cpp_exceptions.cpp", True],
-            # TODO: need to implement all
-            ["Runtime/Gecko_ExceptionPPC.cp", False],
-            ["Runtime/global_destructor_chain.c", True],
-        ],
-    },
-    {
-        "lib": "MetroidPrime",
-        "cflags": "$cflags_retro",
-        "mw_version": "2.7",
-        "host": True,
-        "objects": [
-            ["MetroidPrime/main.cpp", False],
-            ["MetroidPrime/CHealthInfo.cpp", False],
-            ["MetroidPrime/CEntity.cpp", False],
-            ["MetroidPrime/HUD/CHUDMemoParms.cpp", True],
-            ["MetroidPrime/Player/CPlayerState.cpp", False],
-            ["MetroidPrime/Player/CGameOptions.cpp", False],
-            ["MetroidPrime/ScriptObjects/CScriptPickup.cpp", False],
-        ],
-    },
-    {
-        "lib": "Kyoto_CW1",
-        "mw_version": "2.7",
-        "cflags": "$cflags_retro",
-        "host": True,
-        "objects": [
-            ["Kyoto/Basics/CStopwatch.cpp", True],
-            ["Kyoto/Basics/RAssertDolphin.cpp", False],
-            ["Kyoto/Math/CTransform4f.cpp", False],
-            ["Kyoto/Math/CVector2f.cpp", True],
-            ["Kyoto/Math/CVector2i.cpp", True],
-            ["Kyoto/Math/CVector3d.cpp", True],
-            ["Kyoto/Math/CVector3f.cpp", True],
-            ["Kyoto/Math/CVector3i.cpp", True],
-        ]
-    },
-    {
-        "lib": "ar",
-        "mw_version": "1.2.5n",
-        "cflags": "$cflags_base",
-        "host": False,
-        "objects": [
-            ["Dolphin/ar/ar.c", True],
-            ["Dolphin/ar/arq.c", True],
-        ],
-    },
-    {
-        "lib": "base",
-        "mw_version": "1.2.5",
-        "cflags": "$cflags_base",
-        "host": False,
-        "objects": [
-            ["Dolphin/PPCArch.c", False],
-        ],
-    },
-]
+import os
+import io
+import sys
+import argparse
+import json
+import typing
+
+from pathlib import Path
+from shutil import which
+from tools import ninja_syntax
+
 VERSIONS = [
     "G2ME01",  # 0
     "G2MJ01",  # 1
     "G2MP01",  # 2
 ]
 
-import os
-import io
-import sys
-import argparse
-import json
-
-from pathlib import Path
-from shutil import which
-import typing
-from tools import ninja_syntax
-
-
-def path(
-    input: typing.Union[typing.List[Path], Path, None]
-) -> typing.Optional[typing.List[str]]:
-    if input is None:
-        return None
-    elif isinstance(input, list):
-        return list(map(str, input))
-    else:
-        return [str(input)]
-
+if len(VERSIONS) > 1:
+    versions_str = ", ".join(VERSIONS[:-1]) + f" or {VERSIONS[-1]}"
+else:
+    versions_str = VERSIONS[0]
 
 parser = argparse.ArgumentParser()
-versions_str = ", ".join(VERSIONS)
 parser.add_argument(
     "--version",
     dest="version",
-    default="G2ME01",
+    default=VERSIONS[0],
     help=f"version to build ({versions_str})",
 )
 parser.add_argument(
@@ -121,13 +49,6 @@ parser.add_argument(
     help="path to compilers (default: tools/mwcc_compiler)",
 )
 parser.add_argument(
-    "--orig",
-    dest="orig",
-    type=Path,
-    default=Path("orig"),
-    help="path to retail files (default: orig)",
-)
-parser.add_argument(
     "--map",
     dest="map",
     action="store_true",
@@ -147,6 +68,117 @@ if os.name != "nt" and not "_NT-" in os.uname().sysname:
         help="path to wine (or wibo)",
     )
 args = parser.parse_args()
+
+version = args.version.upper()
+if version not in VERSIONS:
+    sys.exit(f"Invalid version '{version}', expected {versions_str}")
+version_num = VERSIONS.index(version)
+
+CFLAGS_BASE = [
+    "-proc gekko",
+    "-nodefaults",
+    "-Cpp_exceptions off",
+    "-RTTI off",
+    "-fp hard",
+    "-fp_contract on",
+    "-O4,p",
+    "-maxerrors 1",
+    "-enum int",
+    "-inline auto",
+    "-str reuse",
+    "-nosyspath",
+    f"-DVERSION={version_num}",
+    "-i include",
+    "-i libc",
+]
+if args.debug:
+    CFLAGS_BASE.extend(["-sym on", "-D_DEBUG=1"])
+else:
+    CFLAGS_BASE.append("-DNDEBUG=1")
+
+CFLAGS_RETRO = [
+    *CFLAGS_BASE,
+    "-use_lmw_stmw on",
+    "-str reuse,pool,readonly",
+    "-gccinc",
+    "-inline deferred,noauto",
+    "-common on",
+]
+
+CFLAGS_RUNTIME = [
+    *CFLAGS_BASE,
+    "-use_lmw_stmw on",
+    "-str reuse,pool,readonly",
+    "-gccinc",
+    "-inline deferred,auto",
+    "-common off",
+]
+
+LINKER_VERSION = "2.7"
+LIBS = [
+    {
+        "lib": "MSL_C.PPCEABI.bare.H",
+        "mw_version": "2.7",
+        "cflags": CFLAGS_RUNTIME,
+        "host": False,
+        "objects": [
+            ["Runtime/__init_cpp_exceptions.cpp", True],
+            # TODO: need to implement all
+            ["Runtime/Gecko_ExceptionPPC.cp", False],
+            ["Runtime/global_destructor_chain.c", True],
+        ],
+    },
+    {
+        "lib": "MetroidPrime",
+        "cflags": CFLAGS_RETRO,
+        "mw_version": "2.7",
+        "host": True,
+        "objects": [
+            ["MetroidPrime/main.cpp", False],
+            ["MetroidPrime/CHealthInfo.cpp", False],
+            ["MetroidPrime/CEntity.cpp", False],
+            ["MetroidPrime/HUD/CHUDMemoParms.cpp", True],
+            ["MetroidPrime/Player/CPlayerState.cpp", False],
+            ["MetroidPrime/Player/CGameOptions.cpp", False],
+            ["MetroidPrime/ScriptObjects/CScriptPickup.cpp", False],
+        ],
+    },
+    {
+        "lib": "Kyoto_CW1",
+        "mw_version": "2.7",
+        "cflags": CFLAGS_RETRO,
+        "host": True,
+        "objects": [
+            ["Kyoto/Basics/CStopwatch.cpp", True],
+            ["Kyoto/Basics/RAssertDolphin.cpp", False],
+            ["Kyoto/Math/CTransform4f.cpp", False],
+            ["Kyoto/Math/CVector2f.cpp", True],
+            ["Kyoto/Math/CVector2i.cpp", True],
+            ["Kyoto/Math/CVector3d.cpp", True],
+            ["Kyoto/Math/CVector3f.cpp", True],
+            ["Kyoto/Math/CVector3i.cpp", True],
+        ],
+    },
+    {
+        "lib": "ar",
+        "mw_version": "1.2.5n",
+        "cflags": CFLAGS_BASE,
+        "host": False,
+        "objects": [
+            ["Dolphin/ar/ar.c", True],
+            ["Dolphin/ar/arq.c", True],
+        ],
+    },
+    {
+        "lib": "base",
+        "mw_version": "1.2.5",
+        "cflags": CFLAGS_BASE,
+        "host": False,
+        "objects": [
+            ["Dolphin/PPCArch.c", True],
+        ],
+    },
+]
 
 # On Windows, we need this to use && in commands
 chain = "cmd /c " if os.name == "nt" else ""
@@ -171,21 +203,6 @@ version_num = VERSIONS.index(args.version)
 build_path = args.build_dir / version
 config_path = Path("config") / version / "config.yml"
 
-cflags_base = f"-proc gekko -nodefaults -Cpp_exceptions off -RTTI off -fp hard -fp_contract on -O4,p -maxerrors 1 -enum int -inline auto -str reuse -nosyspath -DVERSION={version_num} -i include -i libc"
-if args.debug:
-    cflags_base += " -sym on -D_DEBUG"
-else:
-    cflags_base += " -DNDEBUG"
-n.variable("cflags_base", cflags_base)
-n.variable(
-    "cflags_retro",
-    "$cflags_base -use_lmw_stmw on -str reuse,pool,readonly -gccinc -inline deferred,noauto -common on",
-)
-n.variable(
-    "cflags_runtime",
-    "$cflags_base -use_lmw_stmw on -str reuse,pool,readonly -gccinc -inline deferred,auto",
-)
-n.variable("cflags_musyx", "$cflags_base -str reuse,pool,readonly -fp_contract off")
 ldscript_path = build_path / "ldscript.lcf"
 ldflags = f"-fp fmadd -nodefaults -lcf {ldscript_path}"
 map_path = build_path / f"main.MAP"
@@ -194,8 +211,7 @@ if args.map:
 if args.debug:
     ldflags += " -g"
 n.variable("ldflags", ldflags)
-mw_link_version = "2.7"
-n.variable("mw_version", mw_link_version)
+n.variable("mw_version", LINKER_VERSION)
 if os.name == "nt":
     exe = ".exe"
     wine = ""
@@ -211,6 +227,18 @@ else:
         wine = "wine "
     exe = ""
 n.newline()
+
+
+def path(
+    input: typing.Union[typing.List[Path], Path, None]
+) -> typing.Optional[typing.List[str]]:
+    if input is None:
+        return None
+    elif isinstance(input, list):
+        return list(map(str, input))
+    else:
+        return [str(input)]
+
 
 ###
 # Tooling
@@ -267,8 +295,7 @@ ar_cmd = f"{dtk} ar create $out @$out.rsp"
 
 if os.name != "nt":
     transform_dep = tools_path / "transform-dep.py"
-    transform_dep_cmd = f" && $python {transform_dep} $basefile.d $basefile.d"
-    mwcc_cmd += transform_dep_cmd
+    mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
 
 n.comment("Link ELF file")
 n.rule(
@@ -383,6 +410,10 @@ if build_config_path.is_file():
 
                     mw_version = options["mw_version"] or lib["mw_version"]
                     cflags = options["cflags"] or lib["cflags"]
+                    if type(cflags) is list:
+                        cflags_str = " ".join(cflags)
+                    else:
+                        cflags_str = str(cflags)
                     used_compiler_versions.add(mw_version)
 
                     n.comment(f"{unit}: {lib_name} (linked {completed})")
@@ -395,7 +426,7 @@ if build_config_path.is_file():
                         inputs=path(unit_path),
                         variables={
                             "mw_version": mw_version,
-                            "cflags": cflags,
+                            "cflags": cflags_str,
                             "basedir": os.path.dirname(
                                 build_src_path / f"{base_object}"
                             ),
@@ -422,11 +453,21 @@ if build_config_path.is_file():
                     if options["add_to_all"]:
                         source_inputs.append(src_obj_path)
 
+                    reverse_fn_order = False
+                    if type(cflags) is list:
+                        for flag in cflags:
+                            if not flag.startswith("-inline "):
+                                continue
+                            for value in flag.split(" ")[1].split(","):
+                                if value == "deferred":
+                                    reverse_fn_order = True
+                                elif value == "nodeferred":
+                                    reverse_fn_order = False
                     objdiff_config["units"].append(
                         {
-                            "name": unit,
+                            "name": str(base_object),
                             "path": f"{base_object}.o",
-                            "reverse_fn_order": "deferred" in cflags,
+                            "reverse_fn_order": reverse_fn_order,
                         }
                     )
 
@@ -446,7 +487,7 @@ if build_config_path.is_file():
             exit(1)
 
     # Check if linker exists
-    mw_path = args.compilers / mw_link_version / "mwldeppc.exe"
+    mw_path = args.compilers / LINKER_VERSION / "mwldeppc.exe"
     if not os.path.exists(mw_path):
         print(f"Linker {mw_path} does not exist")
         exit(1)
@@ -562,7 +603,7 @@ if build_config_path.is_file():
         inputs=path([config_path, elf_path, map_path]),
         outputs="dol_apply",
         rule="dol_apply",
-        implicit=path([dol_ok_path])
+        implicit=path([dol_ok_path]),
     )
     n.build(
         outputs="apply",
