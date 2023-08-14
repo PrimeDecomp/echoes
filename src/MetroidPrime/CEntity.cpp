@@ -5,7 +5,7 @@ rstl::vector< SConnection > CEntity::NullConnectionList;
 // CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, TEditorId eid)
 // : x0_areaId(aid), x4_conns(conns), x14_editorId(eid) {}
 
-CEntity::CEntity(TUniqueId id, const CEntityInfo& info, bool active, const rstl::string& name)
+CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, bool active)
 : areaId(info.GetAreaId())
 , uid(id)
 , editorId(info.GetEditorId())

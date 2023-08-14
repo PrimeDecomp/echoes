@@ -6,8 +6,20 @@
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 
 struct SLdrHUDMemo {
-    SLdrHUDMemo();
-    ~SLdrHUDMemo();
+    SLdrHUDMemo()
+    : editorProperties()
+    , displayTime(3.0f)
+    , clearWindow(true)
+    , player1(true)
+    , player2(true)
+    , player3(true)
+    , player4(true)
+    , typeOut(true)
+    , useOriginator(false)
+    , displayType(0)
+    , string(0xffffffff)
+    {}
+    ~SLdrHUDMemo() {}
 
     SLdrEditorProperties editorProperties;
     float displayTime;

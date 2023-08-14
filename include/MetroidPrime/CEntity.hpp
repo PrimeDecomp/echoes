@@ -18,7 +18,7 @@ public:
   virtual void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&);
   virtual void SetActive(const bool active);
 
-  CEntity(TUniqueId id, const CEntityInfo& info, bool active, const rstl::string& name);
+  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, bool active);
 
   void SendScriptMsgs(EScriptObjectState state, CStateManager& mgr, EScriptObjectMessage msg);
   // static inline void SendScriptMsg(CStateManager& mgr, CEntity* to, TUniqueId sender,
