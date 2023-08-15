@@ -18,13 +18,14 @@ MetroidPrime/Player/CPlayerState.cpp:
 MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14
 	.ctors      start:0x803A54E4 end:0x803A54E8
-	.data       start:0x803B3418 end:0x803B3494
+	.data       start:0x803B3418 end:0x803B3498
 
 MetroidPrime/HUD/CHUDMemoParms.cpp:
 	.text       start:0x800BABD4 end:0x800BAC10
 
 MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp:
 	.text       start:0x800BAC10 end:0x800BB4B8
+	.rodata     start:0x803A7F20 end:0x803A7F28
 	.data       start:0x803B3618 end:0x803B3638
 	.sdata      start:0x80418068 end:0x80418070
 	.sdata2     start:0x8041B1F8 end:0x8041B200
@@ -45,7 +46,7 @@ Kyoto/Basics/CStopwatch.cpp:
 Kyoto/Basics/RAssertDolphin.cpp:
 	.text       start:0x8028C28C end:0x8028C9C8
 	.rodata     start:0x803AEAC8 end:0x803AED58
-	.sbss       start:0x8041981C end:0x80419824
+	.sbss       start:0x8041981C end:0x80419828
 
 Kyoto/Math/CTransform4f.cpp:
 	.text       start:0x802C8BB8 end:0x802CA12C
@@ -105,7 +106,7 @@ Dolphin/ar/ar.c:
 Dolphin/ar/arq.c:
 	.text       start:0x80356C7C end:0x80357020
 	.data       start:0x803BCD00 end:0x803BCD48
-	.sdata      start:0x80418D20 end:0x80418D24
+	.sdata      start:0x80418D20 end:0x80418D28
 	.sbss       start:0x80419D88 end:0x80419DB0
 
 Dolphin/PPCArch.c:
