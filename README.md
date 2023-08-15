@@ -29,6 +29,7 @@ Windows:
 - Install [ninja](https://github.com/ninja-build/ninja/releases) and add it to `%PATH%`.
 - Install [Python](https://www.python.org/downloads/) and add it to `%PATH%`.
   - Also available from the [Windows Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K).
+- (Optional) Run `Add-Exclusion.ps1` (Right click -> "Run with PowerShell") to avoid degraded performance from Windows Defender scans.
 
 macOS:
 ------
