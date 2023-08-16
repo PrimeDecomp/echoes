@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#include "__ppc_eabi_linker.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

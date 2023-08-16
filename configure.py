@@ -14,6 +14,9 @@ VERSIONS = [
     "G2ME01",  # 0
     "G2MJ01",  # 1
     "G2MP01",  # 2
+    "R32J01",  # 3
+    "R3ME01",  # 4
+    "R3MP01",  # 5
 ]
 
 if len(VERSIONS) > 1:
@@ -110,15 +113,20 @@ CFLAGS_RUNTIME = [
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-gccinc",
-    "-inline deferred,auto",
     "-common off",
 ]
 
-LINKER_VERSION = "2.7"
+if version_num >= 3:
+    CFLAGS_RUNTIME.append("-inline auto")
+    LINKER_VERSION = "3.0"
+else:
+    CFLAGS_RUNTIME.append("-inline deferred,auto")
+    LINKER_VERSION = "2.7"
+
 LIBS = [
     {
         "lib": "MSL_C.PPCEABI.bare.H",
-        "mw_version": "2.7",
+        "mw_version": LINKER_VERSION,
         "cflags": CFLAGS_RUNTIME,
         "host": False,
         "objects": [

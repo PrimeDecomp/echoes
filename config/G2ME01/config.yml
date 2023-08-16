@@ -2,7 +2,6 @@ object: orig/G2ME01/sys/main.dol
 hash: 6ef9b491d0cc08bc81a124fdedb8bfaec34d0010
 splits: config/G2ME01/splits.txt
 symbols: config/G2ME01/symbols.txt
-auto_force_files: false
 quick_analysis: true
 modules:
   - object: orig/G2ME01/files/RelProd/AIMannedTurret.rel

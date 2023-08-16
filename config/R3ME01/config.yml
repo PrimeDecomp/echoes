@@ -1,0 +1,7 @@
+object: orig/R3ME01/files/rs5mp2_p.dol
+hash: 2375606f4e9429a699cfa02728b0bb1176421226
+selfile: orig/R3ME01/files/MP2/RSO/Production/selfile.sel
+selfile_hash: 521af7e86335e3e9314b7acefbd565444926e631
+splits: config/R3ME01/splits.txt
+symbols: config/R3ME01/symbols.txt
+quick_analysis: true

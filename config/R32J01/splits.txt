@@ -1,0 +1,10 @@
+Runtime/__init_cpp_exceptions.cpp:
+	.text       start:0x802B6974 end:0x802B69E4
+	.ctors      start:0x8049F420 end:0x8049F424 rename:.ctors$10
+	.dtors      start:0x8049F640 end:0x8049F644 rename:.dtors$10
+	.dtors      start:0x8049F644 end:0x8049F648 rename:.dtors$15
+	.sdata      start:0x805CAAC0 end:0x805CAAC8
+
+Runtime/global_destructor_chain.c:
+	.text       start:0x802B6AC8 end:0x802B6B28
+	.sbss       start:0x805CBB60 end:0x805CBB64

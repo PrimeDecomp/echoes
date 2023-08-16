@@ -17,6 +17,9 @@ This repository builds the following DOLs:
 6ef9b491d0cc08bc81a124fdedb8bfaec34d0010  build/G2ME01/main.dol
 7f24a768f7b1a687adb88e56559ad8637ed80589  build/G2MJ01/main.dol
 5a670d5da3d181e86a0df7cf7751c7055eee35fb  build/G2MP01/main.dol
+442947ba57dce414917feab0e75a8227690b3e4b  build/R32J01/main.dol
+2375606f4e9429a699cfa02728b0bb1176421226  build/R3ME01/main.dol
+077712e46eb7cf2488942f337d215636edbc972d  build/R3MP01/main.dol
 ```
 
 <!-- If you'd like to contribute, see [CONTRIBUTING.md](CONTRIBUTING.md). -->
