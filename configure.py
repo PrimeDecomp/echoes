@@ -150,6 +150,7 @@ LIBS = [
             ["MetroidPrime/Player/CGameOptions.cpp", False],
             ["MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp", False],
             ["MetroidPrime/ScriptObjects/CScriptPickup.cpp", False],
+            ["MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp", False],
         ],
     },
     {

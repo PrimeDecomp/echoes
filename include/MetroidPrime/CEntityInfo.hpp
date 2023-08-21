@@ -46,10 +46,14 @@ enum EEntityType {
 enum EScriptObjectState {
   kSS_Active = 0x41435456,
   kSS_Inactive = 0x49435456,
+  kSS_MaxReached = 0x4d415852,
   kSS_InvalidState = 0xffffffff
 };
 
 enum EScriptObjectMessage {
+  kSM_Start = 0x53545254,
+  kSM_Stop = 0x53544f50,
+  kSM_Play = 0x504c4159,
   kSM_Activate = 0x41435456,
   kSM_Deactivate = 0x44435456,
   kSM_ToggleActive = 0x54435456,
@@ -61,6 +65,7 @@ struct SConnection {
   EScriptObjectState state;
   EScriptObjectMessage msg;
   TEditorId objId;
+
   SConnection(EScriptObjectState state, EScriptObjectMessage msg, TEditorId id)
   : state(state), msg(msg), objId(id) {}
 };
@@ -69,28 +74,52 @@ class CEntityInfo {
   TAreaId areaId;
   rstl::vector< SConnection > conns;
   TEditorId editorId;
+  bool active;
 
 public:
-  CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns,
+  CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, bool active,
               TEditorId eid = kInvalidEditorId);
+              
   TAreaId GetAreaId() const { return areaId; }
   const rstl::vector< SConnection >& GetConnectionList() const { return conns; }
   TEditorId GetEditorId() const { return editorId; }
+  bool GetActive() const { return active; }
 };
 
 class CScriptMsg {
 public:
-  TUniqueId GetOriginator() { return originator; }
-  TUniqueId GetId() const { return id; }
-  EScriptObjectMessage GetMessage() const { return msg; }
-  EScriptObjectState GetState() const { return state; }
+  CScriptMsg()
+  : m_unk(kInvalidUniqueId)
+  , m_originator(kInvalidUniqueId)
+  , m_id(kInvalidUniqueId)
+  , m_msg(kSM_None)
+  , m_state(kSS_InvalidState)
+  {}
+
+  CScriptMsg(TUniqueId unk, TUniqueId originator, TUniqueId id, EScriptObjectMessage msg, EScriptObjectState state)
+  : m_unk(unk)
+  , m_originator(originator)
+  , m_id(id)
+  , m_msg(msg)
+  , m_state(state)
+  {}
+
+  TUniqueId GetUnk() { return m_unk; }
+  TUniqueId GetOriginator() { return m_originator; }
+  TUniqueId GetId() const { return m_id; }
+  EScriptObjectMessage GetMessage() const { return m_msg; }
+  EScriptObjectState GetState() const { return m_state; }
+
+  void SetMessage(EScriptObjectMessage msg) {
+    m_msg = msg;
+  }
 
 public:
-  TUniqueId unk;
-  TUniqueId originator;
-  TUniqueId id;
-  EScriptObjectMessage msg;
-  EScriptObjectState state;
+  TUniqueId m_unk;
+  TUniqueId m_originator;
+  TUniqueId m_id;
+  EScriptObjectMessage m_msg;
+  EScriptObjectState m_state;
 };
 
 #endif // _CENTITYINFO

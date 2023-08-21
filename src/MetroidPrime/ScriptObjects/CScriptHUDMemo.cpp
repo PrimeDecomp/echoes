@@ -59,7 +59,7 @@ void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
 const CEntityInfo& EntityInfoWithEditorProperties(const CEntityInfo&, const SLdrEditorProperties&);
 
 CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
-  SLdrHUDMemo sldrMemo;
+  SLdrHUDMemo sldrThis;
 
   int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
@@ -68,37 +68,37 @@ CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEnti
 
     switch (propertyId) {
       case 0x255a4580:
-        LoadTypedefSLdrEditorProperties(sldrMemo.editorProperties, input);
+        LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
         break;
       case 0x1a26c1cc: //('display_time', _decode_display_time),
-        sldrMemo.displayTime = input.ReadFloat();
+        sldrThis.displayTime = input.ReadFloat();
         break;
       case 0x84e2496f:
-        sldrMemo.clearWindow = input.ReadBool();
+        sldrThis.clearWindow = input.ReadBool();
         break;
       case 0xa8fadfa5:
-        sldrMemo.player1 = input.ReadBool();
+        sldrThis.player1 = input.ReadBool();
         break;
       case 0xef5aa575:
-        sldrMemo.player2 = input.ReadBool();
+        sldrThis.player2 = input.ReadBool();
         break;
       case 0xd23a8cc5:
-        sldrMemo.player3 = input.ReadBool();
+        sldrThis.player3 = input.ReadBool();
         break;
       case 0x601a50d5:
-        sldrMemo.player4 = input.ReadBool();
+        sldrThis.player4 = input.ReadBool();
         break;
       case 0xafd0158e:
-        sldrMemo.typeOut = input.ReadBool();
+        sldrThis.typeOut = input.ReadBool();
         break;
       case 0xbd6f7b11:
-        sldrMemo.useOriginator = input.ReadBool();
+        sldrThis.useOriginator = input.ReadBool();
         break;
       case 0x4ab3b95b:
-        sldrMemo.displayType = input.ReadInt32();
+        sldrThis.displayType = input.ReadInt32();
         break;
       case 0x9182250c:
-        sldrMemo.string = input.ReadInt32();
+        sldrThis.string = input.ReadInt32();
         break;
 
     default:
@@ -108,25 +108,25 @@ CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEnti
   }
 
   int mask = 0;
-  if (sldrMemo.player1) {
+  if (sldrThis.player1) {
     mask |= 1;
   }
-  if (sldrMemo.player2) {
+  if (sldrThis.player2) {
     mask |= 2;
   }
-  if (sldrMemo.player3) {
+  if (sldrThis.player3) {
     mask |= 4;
   }
-  if (sldrMemo.player4) {
+  if (sldrThis.player4) {
     mask |= 8;
   }
 
-  return new CScriptHUDMemo(mgr.AllocateUniqueId(), sldrMemo.editorProperties.name,
-                            EntityInfoWithEditorProperties(info, sldrMemo.editorProperties),
-                            CHUDMemoParms(sldrMemo.displayTime, sldrMemo.clearWindow, false, false,
-                                          mask, sldrMemo.typeOut),
-                            sldrMemo.useOriginator,
-                            CScriptHUDMemo::EDisplayType(sldrMemo.displayType), sldrMemo.string
+  return new CScriptHUDMemo(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                            EntityInfoWithEditorProperties(info, sldrThis.editorProperties),
+                            CHUDMemoParms(sldrThis.displayTime, sldrThis.clearWindow, false, false,
+                                          mask, sldrThis.typeOut),
+                            sldrThis.useOriginator,
+                            CScriptHUDMemo::EDisplayType(sldrThis.displayType), sldrThis.string
 
   );
 }

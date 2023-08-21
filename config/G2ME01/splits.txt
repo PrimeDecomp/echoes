@@ -9,8 +9,10 @@ MetroidPrime/main.cpp:
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
 MetroidPrime/CEntity.cpp:
-	.text       start:0x80047E5C end:0x800483A4
+	.text       start:0x80047E5C end:0x8004875C
+	.ctors      start:0x803A54C4 end:0x803A54C8
 	.data       start:0x803B1B40 end:0x803B1B60
+	.bss        start:0x8040D4AC end:0x8040D4D8 common rename:.comm
 
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086410
@@ -35,6 +37,11 @@ MetroidPrime/CHealthInfo.cpp:
 
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
+
+MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
+	.text       start:0x801E1338 end:0x801E2098
+	.data       start:0x803B7588 end:0x803B75A8
+	.sdata2     start:0x8041D3F8 end:0x8041D400
 
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C

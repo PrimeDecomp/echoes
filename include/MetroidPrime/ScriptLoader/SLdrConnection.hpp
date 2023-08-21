@@ -8,7 +8,9 @@ struct SLdrConnection {
     SLdrConnection();
     ~SLdrConnection();
 
-    short connectionIndex;
+    SLdrConnection(CInputStream&);
+
+    int connectionIndex;
     rstl::vector< float > activationTimes;
     bool unknown;
 };
