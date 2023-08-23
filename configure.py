@@ -151,6 +151,7 @@ LIBS = [
             ["MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp", False],
             ["MetroidPrime/ScriptObjects/CScriptPickup.cpp", False],
             ["MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp", False],
+            ["MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp", False],
         ],
     },
     {

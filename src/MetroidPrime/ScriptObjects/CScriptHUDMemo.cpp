@@ -56,8 +56,6 @@ void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
   CEntity::AcceptScriptMsg(mgr, msg);
 }
 
-const CEntityInfo& EntityInfoWithEditorProperties(const CEntityInfo&, const SLdrEditorProperties&);
-
 CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   SLdrHUDMemo sldrThis;
 

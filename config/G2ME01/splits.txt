@@ -32,6 +32,11 @@ MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp:
 	.sdata      start:0x80418068 end:0x80418070
 	.sdata2     start:0x8041B1F8 end:0x8041B200
 
+MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
+	.text       start:0x8013C254 end:0x8013C9B0
+	.data       start:0x803B5118 end:0x803B5138
+	.sdata2     start:0x8041C140 end:0x8041C148
+
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
 
