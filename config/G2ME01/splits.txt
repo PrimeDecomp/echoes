@@ -51,7 +51,6 @@ MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
-	.bss        start:0x803DE138 end:0x803DE6F8 rename:.data
 
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
