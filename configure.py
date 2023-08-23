@@ -143,6 +143,7 @@ LIBS = [
         "host": True,
         "objects": [
             ["MetroidPrime/main.cpp", False],
+            ["MetroidPrime/ScriptLoader.cpp", False],
             ["MetroidPrime/CHealthInfo.cpp", False],
             ["MetroidPrime/CEntity.cpp", False],
             ["MetroidPrime/HUD/CHUDMemoParms.cpp", True],
