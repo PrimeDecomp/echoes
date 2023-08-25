@@ -48,6 +48,10 @@ MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 	.data       start:0x803B7588 end:0x803B75A8
 	.sdata2     start:0x8041D3F8 end:0x8041D400
 
+MetroidPrime/ScriptLoaderRel.cpp:
+	.text       start:0x8021BA60 end:0x8021BFE0
+	.sbss       start:0x80419480 end:0x804194F0
+
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
