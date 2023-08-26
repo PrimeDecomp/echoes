@@ -8,6 +8,9 @@ MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80008B60
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
+MetroidPrime/CStateManager.cpp:
+	.text       start:0x80036200 end:0x80044CA4
+
 MetroidPrime/CEntity.cpp:
 	.text       start:0x80047E5C end:0x8004875C
 	.ctors      start:0x803A54C4 end:0x803A54C8
