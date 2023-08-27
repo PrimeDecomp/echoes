@@ -26,7 +26,7 @@ CScriptHUDMemo::~CScriptHUDMemo() {}
 void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
   CHUDMemoParms parms = m_parms;
   if (m_useOriginator) {
-    if (CastToPlayer(mgr.GetObjectById(msg.GetOriginator()))) {
+    if (CastTo<CPlayer>(mgr.GetObjectById(msg.GetOriginator()))) {
       uint mask = mgr.MaskUIdNumPlayers(msg.GetOriginator());
       parms = CHUDMemoParms(m_parms.GetDisplayTime(), m_parms.IsClearMemoWindow(),
                             m_parms.IsFadeOutOnly(), m_parms.IsHintMemo(), 1 << mask, true);

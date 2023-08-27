@@ -11,7 +11,6 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
 
-
 #include "rstl/auto_ptr.hpp"
 #include "rstl/map.hpp"
 #include "rstl/pair.hpp"
@@ -23,6 +22,7 @@ class CWorld;
 class CArchitectureQueue;
 class CEnvFxManager;
 class CEntity;
+class CActor;
 class CScriptMailbox;
 class CMapWorldInfo;
 class CPlayerState;
@@ -34,6 +34,10 @@ class CSaveGameScreen;
 class CActorModelParticles;
 class CRelayTracker;
 class CWorldLayerState;
+class CStateManagerContainer;
+class CSortedListManager;
+class CWeaponMgr;
+class CFluidPlaneManager;
 
 struct MapWorldInfoAreas {};
 
@@ -55,6 +59,9 @@ class CStateManager {
 
     void Append(const CScriptMsg& msg);
     int fn_8019E69C();
+    const CScriptMsg& fn_8019E6BC() const;
+
+    bool empty() const { return lastIndex == otherIndex; }
   };
 
 public:
@@ -63,6 +70,7 @@ public:
 
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
+  ~CStateManager();
 
   TUniqueId AllocateUniqueId();
   uint MaskUIdNumPlayers(TUniqueId id) const;
@@ -73,6 +81,8 @@ public:
 
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
+  CEntity* GetObjectByIdFromListAll(TUniqueId uid);
+
   TEditorId GetEditorIdForUniqueId(TUniqueId) const;
   TUniqueId GetIdForScript(TEditorId eid) const;
   TIdListResult GetIdListForScript(TEditorId) const;
@@ -85,9 +95,11 @@ public:
   CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *m_objectLists[id]; }
 
+  void UpdateActorInSortedLists(CActor*);
 
-  bool fn_80036F10() const;  // Maybe_CheckIsMultiplayer
-
+  void fn_8003BF84(CEntity*);
+  void fn_800412EC(TUniqueId);
+  bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
   void fn_8003BE54();
 
   // State transitions
@@ -119,19 +131,23 @@ public:
   CFinalInput m_finalInputs[4];
   CPlayerState* m_playerState;
   CCameraManager* m_cameraManager;
-  CWorld* m_world; // 0x1604
-  char pad2[40];
-  CEnvFxManager* m_envFxManager; // 0x1630
+  CWorld* m_world;                                                 // 0x1604
+  rstl::list< rstl::reserved_vector< CEntity*, 32 > > m_graveyard; // 0x1608
+  rstl::single_ptr< CStateManagerContainer > m_stateManagerContainer;
+  CSortedListManager* m_sortedListManager;
+  CWeaponMgr* m_weaponMgr;
+  CFluidPlaneManager* m_fluidPlaneManager;
+  CEnvFxManager* m_envFxManager;               // 0x1630
   CActorModelParticles* m_actorModelParticles; // 0x1634
   void* x1638;
   char pad2_2[0x48];
-  rstl::rc_ptr<CRelayTracker> m_relayTracker;
+  rstl::rc_ptr< CRelayTracker > m_relayTracker;
   int x1684;
   int x1688;
-  rstl::rc_ptr<CWorldTransManager> m_worldTransManager;
+  rstl::rc_ptr< CWorldTransManager > m_worldTransManager;
   CWorldLayerState* m_currentWorldLayerState;
   int* x1698;
-  rstl::single_ptr<CSaveGameScreen> m_saveGameScreen;
+  rstl::single_ptr< CSaveGameScreen > m_saveGameScreen;
 
   char pad3[0xD94];
 

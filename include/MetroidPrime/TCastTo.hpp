@@ -4,6 +4,10 @@
 class CEntity;
 class CPlayer;
 
-const CPlayer* CastToPlayer(const CEntity*);
+template <typename T>
+T* CastTo(CEntity*);
+
+template <typename T>
+const T* CastTo(const CEntity*);
 
 #endif // _TCASTTO

@@ -9,6 +9,8 @@
 #include "MetroidPrime/Player/CHintOptions.hpp"
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
 
+class CGameMode;
+
 class CGameState {
 public:
   CGameState();
@@ -19,6 +21,7 @@ public:
   void WriteSystemOptions(COutputStream& out);
 
   void SetIsDarkWorld(bool);
+  CGameMode& GetGameMode();
 
   CGameOptions& GameOptions() { return gameOptions; }
 
