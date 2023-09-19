@@ -10,4 +10,4 @@
 *.sha1 text eol=lf
 
 # DTK keeps these files with LF
-config/*/*.txt  text eol=lf
+config/**/*.txt  text eol=lf

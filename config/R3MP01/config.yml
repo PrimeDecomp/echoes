@@ -4,4 +4,5 @@ selfile: orig/R3MP01/files/MP2/RSO/Production/selfile.sel
 selfile_hash: 9cac259e14880e23b05c074e57a3b07ea53c23ae
 splits: config/R3MP01/splits.txt
 symbols: config/R3MP01/symbols.txt
-quick_analysis: true
+quick_analysis: true # Faster reruns after full analysis
+mw_comment_version: 15 # GC 3.0 linker

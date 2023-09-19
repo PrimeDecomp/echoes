@@ -1,0 +1,8 @@
+_unresolved = .text:0x00000000; // type:function size:0xC4 scope:global
+_epilog = .text:0x000000C4; // type:function size:0x24 scope:global
+_prolog = .text:0x000000E8; // type:function size:0x24 scope:global
+ModuleDestructors = .text:0x0000010C; // type:function size:0x4C
+ModuleConstructors = .text:0x00000158; // type:function size:0x4C
+_ctors = .ctors:0x00000000; // type:label scope:global data:4byte
+_dtors = .dtors:0x00000000; // type:label scope:global data:4byte
+@stringBase0 = .rodata:0x00000000; // type:object size:0x81 scope:local data:string_table

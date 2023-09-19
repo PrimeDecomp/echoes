@@ -1,5 +1,17 @@
-MetroidPrime/CAxisAngle.cpp:
-	.bss        start:0x8040BF60 end:0x8040BF6C common
+Sections:
+	.init       type:code
+	extab       type:rodata
+	extabindex  type:rodata
+	.text       type:code
+	.ctors      type:rodata
+	.dtors      type:rodata
+	.rodata     type:rodata
+	.data       type:data
+	.bss        type:bss
+	.sdata      type:data
+	.sbss       type:bss
+	.sdata2     type:rodata
+	.sbss2      type:bss
 
 Runtime/global_destructor_chain.c:
 	.text       start:0x80345230 end:0x80345290
@@ -11,3 +23,6 @@ Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x803A5A60 end:0x803A5A64 rename:.dtors$10
 	.dtors      start:0x803A5A64 end:0x803A5A68 rename:.dtors$15
 	.sdata      start:0x80419F98 end:0x80419FA0
+
+MetroidPrime/CAxisAngle.cpp:
+	.bss        start:0x8040BF60 end:0x8040BF6C align:4 common

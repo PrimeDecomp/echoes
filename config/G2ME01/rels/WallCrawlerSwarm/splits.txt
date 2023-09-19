@@ -1,0 +1,9 @@
+Sections:
+	.text       type:code align:8
+	.ctors      type:rodata align:8
+	.dtors      type:rodata align:8
+	.rodata     type:rodata align:8
+
+REL/REL_Setup.cpp:
+	.text       start:0x00000000 end:0x000001A4
+	.rodata     start:0x00000000 end:0x00000084

@@ -2,177 +2,436 @@ object: orig/G2ME01/sys/main.dol
 hash: 6ef9b491d0cc08bc81a124fdedb8bfaec34d0010
 splits: config/G2ME01/splits.txt
 symbols: config/G2ME01/symbols.txt
-quick_analysis: true
+quick_analysis: true # Faster reruns after full analysis
+mw_comment_version: 11 # GC 2.7 linker
 modules:
+  # Module ID 1
   - object: orig/G2ME01/files/RelProd/AIMannedTurret.rel
     hash: 949b8c21caf1112b10d07748dbe8c32d3bd7efac
+    splits: config/G2ME01/rels/AIMannedTurret/splits.txt
+    symbols: config/G2ME01/rels/AIMannedTurret/symbols.txt
+  # Module ID 2
   - object: orig/G2ME01/files/RelProd/AtomicAlpha.rel
     hash: ade8972eb74648c3c5c99caa022ff457ff2b27fd
-  - object: orig/G2ME01/files/RelProd/AtomicBeta.rel
-    hash: c5ea789254e2f3efb4616aea172050f41312d81e
-  - object: orig/G2ME01/files/RelProd/BacteriaSwarm.rel
-    hash: 11859125ea9ab676bf42431cc948ec8d08c86552
-  - object: orig/G2ME01/files/RelProd/Blogg.rel
-    hash: 2def4cc1f6d7898d534976efe607da2cc09708f5
-  - object: orig/G2ME01/files/RelProd/ChozoGhost.rel
-    hash: 28a865286cb639c216cbf083d400b4fe497dcffc
-  - object: orig/G2ME01/files/RelProd/CommandoPirate.rel
-    hash: 81c9c6e8c24e82d585506f5c5faf965ede214b24
+    splits: config/G2ME01/rels/AtomicAlpha/splits.txt
+    symbols: config/G2ME01/rels/AtomicAlpha/symbols.txt
+  # Module ID 3
   - object: orig/G2ME01/files/RelProd/DarkCommando.rel
     hash: d9c41deb88a9f9cbe7b0230c3aa1b1b0f822fd3e
-  - object: orig/G2ME01/files/RelProd/DarkSamus.rel
-    hash: f26b01f0c718dc0200e112d2004912899e4cf510
-  - object: orig/G2ME01/files/RelProd/DarkSamusBattleStage.rel
-    hash: 9fc5ff78c8fbe921198df31dfcd771373b4f63f0
-  - object: orig/G2ME01/files/RelProd/DarkTrooper.rel
-    hash: f216a5cdbf86753fa7d3e8a49b7e0344fbb2dbca
-  - object: orig/G2ME01/files/RelProd/DestructibleBarrier.rel
-    hash: e1744b2c85f29f2821175c332d2399ac8ebf1fac
-  - object: orig/G2ME01/files/RelProd/DigitalGuardian.rel
-    hash: a3798856ec6b175272529f6a6295a29140662bcc
-  - object: orig/G2ME01/files/RelProd/ElitePirate.rel
-    hash: 7dbe7f1b293d81ec0b4ec5279d99c6ed97a801a3
-  - object: orig/G2ME01/files/RelProd/EmperorIngStage1.rel
-    hash: a0a9964016d7569c980c22daf7789bd6f32fc226
-  - object: orig/G2ME01/files/RelProd/EmperorIngStage2Tentacle.rel
-    hash: 7778ffbd26087e172c40d81a9f2255f987c265c6
-  - object: orig/G2ME01/files/RelProd/EmperorIngStage3.rel
-    hash: 775b095db13cb3e1ec6c5bb51a129263f7b0fa18
-  - object: orig/G2ME01/files/RelProd/EyeBall.rel
-    hash: 96c3406ac17b2e275b05b890070c4eeac75baa72
-  - object: orig/G2ME01/files/RelProd/FishCloud.rel
-    hash: 79ae4b2efb35bbb627f3a76d811d5272e6643e62
-  - object: orig/G2ME01/files/RelProd/FlyerSwarm.rel
-    hash: e8205e9220dfe2bacd6173fa095c009ddc56f715
-  - object: orig/G2ME01/files/RelProd/FlyingPirate.rel
-    hash: 86a9aec257ccfe907159552f5e4022c462cb3bc2
-  - object: orig/G2ME01/files/RelProd/FogOverlay.rel
-    hash: 1b3676a0af38a6792c3a14d932c8248d1f622d6a
-  - object: orig/G2ME01/files/RelProd/ForgottenObject.rel
-    hash: 980d20799b04b4bac65ae68aeb211732e2f555dd
-  - object: orig/G2ME01/files/RelProd/GeomBlobV2.rel
-    hash: 6aac53ef251d4fc41f0b07133dc710c7e0f567cc
-  - object: orig/G2ME01/files/RelProd/Glowbug.rel
-    hash: 915607b9c81a5dc87df6cbfddab85b5fd9ab6237
-  - object: orig/G2ME01/files/RelProd/Grenchler.rel
-    hash: de128c91f467b5b61b4de4a2ed6b217044a975c5
-  - object: orig/G2ME01/files/RelProd/GunTurret.rel
-    hash: 3d8f74fa544a2af669eb062576f1daf4bdb86f8c
-  - object: orig/G2ME01/files/RelProd/Ing.rel
-    hash: b859a5eaf8e168279d6b5b1bf359c7ea052ba529
-  - object: orig/G2ME01/files/RelProd/IngBlobSwarm.rel
-    hash: 4a47f098bae715084c61c31f3cc69b753d43120b
-  - object: orig/G2ME01/files/RelProd/IngBoostBallGuardian.rel
-    hash: 956265e8ccf3f489e9cb3a70ec22d0357ce17cca
-  - object: orig/G2ME01/files/RelProd/IngPuddle.rel
-    hash: 312b87acb1dea81e5c03fccd6b87e68366f17a6f
-  - object: orig/G2ME01/files/RelProd/IngSnatchingSwarm.rel
-    hash: c84839632c931841a91b29e2a30dff53bc6f2408
-  - object: orig/G2ME01/files/RelProd/IngSpaceJumpGuardian.rel
-    hash: 96e5208fc681177378fcaf1ed15abe20d436073a
-  - object: orig/G2ME01/files/RelProd/IngSpiderballGuardian.rel
-    hash: 2c171d03c7ee30a71249350731ad43256c96098d
-  - object: orig/G2ME01/files/RelProd/IngSwarm.rel
-    hash: 0be080ff09cbff05cac011ac487cfe15321d4df7
-  - object: orig/G2ME01/files/RelProd/Kralee.rel
-    hash: 0c164f204d45ef195c7a2038cf928e27779d7a51
-  - object: orig/G2ME01/files/RelProd/Krocuss.rel
-    hash: fec35d1d4bd7e6815c37af398be8c1b0ff2864fa
-  - object: orig/G2ME01/files/RelProd/Lumite.rel
-    hash: 1c53f8b7662fc828cddb56d978910533629b5fe9
-  - object: orig/G2ME01/files/RelProd/MediumIng.rel
-    hash: 4ff29124bdf74564c3d33e6ae5948071479d9e61
-  - object: orig/G2ME01/files/RelProd/Metaree.rel
-    hash: aa817d3a343647edab8f50e05e5156863098c4d2
-  - object: orig/G2ME01/files/RelProd/MetareeSwarm.rel
-    hash: e9b5a7bd0c482e1bfecfd104e9d805bf579df554
-  - object: orig/G2ME01/files/RelProd/Metroid.rel
-    hash: c46c7d6e7b24bef74ae279a0f97cbaddfe1ad97f
-  - object: orig/G2ME01/files/RelProd/MinorIng.rel
-    hash: ec3d9157df12bfb18572525a6147b941d9925e53
-  - object: orig/G2ME01/files/RelProd/MysteryFlyer.rel
-    hash: 2770bc0304d6e5511c151e34a89c5e0d57af1bc5
-  - object: orig/G2ME01/files/RelProd/OctapedeSegment.rel
-    hash: 8ed2b5282cbc4b3ab50d046387434e6ec7a04a8f
-  - object: orig/G2ME01/files/RelProd/Parasite.rel
-    hash: dc590460beb40be1d8ab389b0922189008e5f659
-  - object: orig/G2ME01/files/RelProd/PillBug.rel
-    hash: 261c9127510cc69a1ce664e6e07dc4165e9d9aca
-  - object: orig/G2ME01/files/RelProd/PirateRagDoll.rel
-    hash: c43a3088261b9095ba8ce51eb1daea00e48d1e81
-  - object: orig/G2ME01/files/RelProd/PlantScarabSwarm.rel
-    hash: 67240808f42d66482dfaa11daa09a9994cd63e92
-  - object: orig/G2ME01/files/RelProd/PuddleSpore.rel
-    hash: 12149178e88f573d35012b3e923a72501aaa8e0a
-  - object: orig/G2ME01/files/RelProd/Puffer.rel
-    hash: ab46667b99dfb451b3fdb87acfa743b4c3f70a1f
-  - object: orig/G2ME01/files/RelProd/Rezbit.rel
-    hash: 086baae5f79a825626e7b09881c8b65fc124c50c
-  - object: orig/G2ME01/files/RelProd/Ripper.rel
-    hash: f3ab11c967c58f4483a4264fbeb1ba4a837e8719
+    splits: config/G2ME01/rels/DarkCommando/splits.txt
+    symbols: config/G2ME01/rels/DarkCommando/symbols.txt
+  # Module ID 4
   - object: orig/G2ME01/files/RelProd/RubiksPuzzle.rel
     hash: a29343f934616458491a253aad9b340c7bdc4acb
+    splits: config/G2ME01/rels/RubiksPuzzle/splits.txt
+    symbols: config/G2ME01/rels/RubiksPuzzle/symbols.txt
+  # Module ID 5
+  - object: orig/G2ME01/files/RelProd/AtomicBeta.rel
+    hash: c5ea789254e2f3efb4616aea172050f41312d81e
+    splits: config/G2ME01/rels/AtomicBeta/splits.txt
+    symbols: config/G2ME01/rels/AtomicBeta/symbols.txt
+  # Module ID 6
+  - object: orig/G2ME01/files/RelProd/BacteriaSwarm.rel
+    hash: 11859125ea9ab676bf42431cc948ec8d08c86552
+    splits: config/G2ME01/rels/BacteriaSwarm/splits.txt
+    symbols: config/G2ME01/rels/BacteriaSwarm/symbols.txt
+  # Module ID 7
+  - object: orig/G2ME01/files/RelProd/Blogg.rel
+    hash: 2def4cc1f6d7898d534976efe607da2cc09708f5
+    splits: config/G2ME01/rels/Blogg/splits.txt
+    symbols: config/G2ME01/rels/Blogg/symbols.txt
+  # Module ID 8
+  - object: orig/G2ME01/files/RelProd/ChozoGhost.rel
+    hash: 28a865286cb639c216cbf083d400b4fe497dcffc
+    splits: config/G2ME01/rels/ChozoGhost/splits.txt
+    symbols: config/G2ME01/rels/ChozoGhost/symbols.txt
+  # Module ID 9
+  - object: orig/G2ME01/files/RelProd/CommandoPirate.rel
+    hash: 81c9c6e8c24e82d585506f5c5faf965ede214b24
+    splits: config/G2ME01/rels/CommandoPirate/splits.txt
+    symbols: config/G2ME01/rels/CommandoPirate/symbols.txt
+  # Module ID 10
+  - object: orig/G2ME01/files/RelProd/DarkSamus.rel
+    hash: f26b01f0c718dc0200e112d2004912899e4cf510
+    splits: config/G2ME01/rels/DarkSamus/splits.txt
+    symbols: config/G2ME01/rels/DarkSamus/symbols.txt
+  # Module ID 11
+  - object: orig/G2ME01/files/RelProd/DarkSamusBattleStage.rel
+    hash: 9fc5ff78c8fbe921198df31dfcd771373b4f63f0
+    splits: config/G2ME01/rels/DarkSamusBattleStage/splits.txt
+    symbols: config/G2ME01/rels/DarkSamusBattleStage/symbols.txt
+  # Module ID 12
+  - object: orig/G2ME01/files/RelProd/DarkTrooper.rel
+    hash: f216a5cdbf86753fa7d3e8a49b7e0344fbb2dbca
+    splits: config/G2ME01/rels/DarkTrooper/splits.txt
+    symbols: config/G2ME01/rels/DarkTrooper/symbols.txt
+  # Module ID 13
+  - object: orig/G2ME01/files/RelProd/DestructibleBarrier.rel
+    hash: e1744b2c85f29f2821175c332d2399ac8ebf1fac
+    splits: config/G2ME01/rels/DestructibleBarrier/splits.txt
+    symbols: config/G2ME01/rels/DestructibleBarrier/symbols.txt
+  # Module ID 14
+  - object: orig/G2ME01/files/RelProd/DigitalGuardian.rel
+    hash: a3798856ec6b175272529f6a6295a29140662bcc
+    splits: config/G2ME01/rels/DigitalGuardian/splits.txt
+    symbols: config/G2ME01/rels/DigitalGuardian/symbols.txt
+  # Module ID 15
+  - object: orig/G2ME01/files/RelProd/ElitePirate.rel
+    hash: 7dbe7f1b293d81ec0b4ec5279d99c6ed97a801a3
+    splits: config/G2ME01/rels/ElitePirate/splits.txt
+    symbols: config/G2ME01/rels/ElitePirate/symbols.txt
+  # Module ID 16
+  - object: orig/G2ME01/files/RelProd/EmperorIngStage1.rel
+    hash: a0a9964016d7569c980c22daf7789bd6f32fc226
+    splits: config/G2ME01/rels/EmperorIngStage1/splits.txt
+    symbols: config/G2ME01/rels/EmperorIngStage1/symbols.txt
+  # Module ID 17
+  - object: orig/G2ME01/files/RelProd/EmperorIngStage2Tentacle.rel
+    hash: 7778ffbd26087e172c40d81a9f2255f987c265c6
+    splits: config/G2ME01/rels/EmperorIngStage2Tentacle/splits.txt
+    symbols: config/G2ME01/rels/EmperorIngStage2Tentacle/symbols.txt
+  # Module ID 18
+  - object: orig/G2ME01/files/RelProd/EmperorIngStage3.rel
+    hash: 775b095db13cb3e1ec6c5bb51a129263f7b0fa18
+    splits: config/G2ME01/rels/EmperorIngStage3/splits.txt
+    symbols: config/G2ME01/rels/EmperorIngStage3/symbols.txt
+  # Module ID 19
+  - object: orig/G2ME01/files/RelProd/EyeBall.rel
+    hash: 96c3406ac17b2e275b05b890070c4eeac75baa72
+    splits: config/G2ME01/rels/EyeBall/splits.txt
+    symbols: config/G2ME01/rels/EyeBall/symbols.txt
+  # Module ID 20
+  - object: orig/G2ME01/files/RelProd/FishCloud.rel
+    hash: 79ae4b2efb35bbb627f3a76d811d5272e6643e62
+    splits: config/G2ME01/rels/FishCloud/splits.txt
+    symbols: config/G2ME01/rels/FishCloud/symbols.txt
+  # Module ID 21
+  - object: orig/G2ME01/files/RelProd/FlyerSwarm.rel
+    hash: e8205e9220dfe2bacd6173fa095c009ddc56f715
+    splits: config/G2ME01/rels/FlyerSwarm/splits.txt
+    symbols: config/G2ME01/rels/FlyerSwarm/symbols.txt
+  # Module ID 22
+  - object: orig/G2ME01/files/RelProd/FlyingPirate.rel
+    hash: 86a9aec257ccfe907159552f5e4022c462cb3bc2
+    splits: config/G2ME01/rels/FlyingPirate/splits.txt
+    symbols: config/G2ME01/rels/FlyingPirate/symbols.txt
+  # Module ID 23
+  - object: orig/G2ME01/files/RelProd/FogOverlay.rel
+    hash: 1b3676a0af38a6792c3a14d932c8248d1f622d6a
+    splits: config/G2ME01/rels/FogOverlay/splits.txt
+    symbols: config/G2ME01/rels/FogOverlay/symbols.txt
+  # Module ID 24
+  - object: orig/G2ME01/files/RelProd/ForgottenObject.rel
+    hash: 980d20799b04b4bac65ae68aeb211732e2f555dd
+    splits: config/G2ME01/rels/ForgottenObject/splits.txt
+    symbols: config/G2ME01/rels/ForgottenObject/symbols.txt
+  # Module ID 25
+  - object: orig/G2ME01/files/RelProd/GeomBlobV2.rel
+    hash: 6aac53ef251d4fc41f0b07133dc710c7e0f567cc
+    splits: config/G2ME01/rels/GeomBlobV2/splits.txt
+    symbols: config/G2ME01/rels/GeomBlobV2/symbols.txt
+  # Module ID 26
+  - object: orig/G2ME01/files/RelProd/Glowbug.rel
+    hash: 915607b9c81a5dc87df6cbfddab85b5fd9ab6237
+    splits: config/G2ME01/rels/Glowbug/splits.txt
+    symbols: config/G2ME01/rels/Glowbug/symbols.txt
+  # Module ID 27
+  - object: orig/G2ME01/files/RelProd/Grenchler.rel
+    hash: de128c91f467b5b61b4de4a2ed6b217044a975c5
+    splits: config/G2ME01/rels/Grenchler/splits.txt
+    symbols: config/G2ME01/rels/Grenchler/symbols.txt
+  # Module ID 28
+  - object: orig/G2ME01/files/RelProd/GunTurret.rel
+    hash: 3d8f74fa544a2af669eb062576f1daf4bdb86f8c
+    splits: config/G2ME01/rels/GunTurret/splits.txt
+    symbols: config/G2ME01/rels/GunTurret/symbols.txt
+  # Module ID 29
+  - object: orig/G2ME01/files/RelProd/Ing.rel
+    hash: b859a5eaf8e168279d6b5b1bf359c7ea052ba529
+    splits: config/G2ME01/rels/Ing/splits.txt
+    symbols: config/G2ME01/rels/Ing/symbols.txt
+  # Module ID 30
+  - object: orig/G2ME01/files/RelProd/IngBoostBallGuardian.rel
+    hash: 956265e8ccf3f489e9cb3a70ec22d0357ce17cca
+    splits: config/G2ME01/rels/IngBoostBallGuardian/splits.txt
+    symbols: config/G2ME01/rels/IngBoostBallGuardian/symbols.txt
+  # Module ID 31
+  - object: orig/G2ME01/files/RelProd/IngBlobSwarm.rel
+    hash: 4a47f098bae715084c61c31f3cc69b753d43120b
+    splits: config/G2ME01/rels/IngBlobSwarm/splits.txt
+    symbols: config/G2ME01/rels/IngBlobSwarm/symbols.txt
+  # Module ID 32
+  - object: orig/G2ME01/files/RelProd/IngPuddle.rel
+    hash: 312b87acb1dea81e5c03fccd6b87e68366f17a6f
+    splits: config/G2ME01/rels/IngPuddle/splits.txt
+    symbols: config/G2ME01/rels/IngPuddle/symbols.txt
+  # Module ID 33
+  - object: orig/G2ME01/files/RelProd/IngSnatchingSwarm.rel
+    hash: c84839632c931841a91b29e2a30dff53bc6f2408
+    splits: config/G2ME01/rels/IngSnatchingSwarm/splits.txt
+    symbols: config/G2ME01/rels/IngSnatchingSwarm/symbols.txt
+  # Module ID 34
+  - object: orig/G2ME01/files/RelProd/IngSpaceJumpGuardian.rel
+    hash: 96e5208fc681177378fcaf1ed15abe20d436073a
+    splits: config/G2ME01/rels/IngSpaceJumpGuardian/splits.txt
+    symbols: config/G2ME01/rels/IngSpaceJumpGuardian/symbols.txt
+  # Module ID 35
+  - object: orig/G2ME01/files/RelProd/IngSpiderballGuardian.rel
+    hash: 2c171d03c7ee30a71249350731ad43256c96098d
+    splits: config/G2ME01/rels/IngSpiderballGuardian/splits.txt
+    symbols: config/G2ME01/rels/IngSpiderballGuardian/symbols.txt
+  # Module ID 36
+  - object: orig/G2ME01/files/RelProd/IngSwarm.rel
+    hash: 0be080ff09cbff05cac011ac487cfe15321d4df7
+    splits: config/G2ME01/rels/IngSwarm/splits.txt
+    symbols: config/G2ME01/rels/IngSwarm/symbols.txt
+  # Module ID 37
+  - object: orig/G2ME01/files/RelProd/Kralee.rel
+    hash: 0c164f204d45ef195c7a2038cf928e27779d7a51
+    splits: config/G2ME01/rels/Kralee/splits.txt
+    symbols: config/G2ME01/rels/Kralee/symbols.txt
+  # Module ID 38
+  - object: orig/G2ME01/files/RelProd/Krocuss.rel
+    hash: fec35d1d4bd7e6815c37af398be8c1b0ff2864fa
+    splits: config/G2ME01/rels/Krocuss/splits.txt
+    symbols: config/G2ME01/rels/Krocuss/symbols.txt
+  # Module ID 39
+  - object: orig/G2ME01/files/RelProd/Lumite.rel
+    hash: 1c53f8b7662fc828cddb56d978910533629b5fe9
+    splits: config/G2ME01/rels/Lumite/splits.txt
+    symbols: config/G2ME01/rels/Lumite/symbols.txt
+  # Module ID 40
+  - object: orig/G2ME01/files/RelProd/Metroid.rel
+    hash: c46c7d6e7b24bef74ae279a0f97cbaddfe1ad97f
+    splits: config/G2ME01/rels/Metroid/splits.txt
+    symbols: config/G2ME01/rels/Metroid/symbols.txt
+  # Module ID 41
+  - object: orig/G2ME01/files/RelProd/MediumIng.rel
+    hash: 4ff29124bdf74564c3d33e6ae5948071479d9e61
+    splits: config/G2ME01/rels/MediumIng/splits.txt
+    symbols: config/G2ME01/rels/MediumIng/symbols.txt
+  # Module ID 42
+  - object: orig/G2ME01/files/RelProd/Metaree.rel
+    hash: aa817d3a343647edab8f50e05e5156863098c4d2
+    splits: config/G2ME01/rels/Metaree/splits.txt
+    symbols: config/G2ME01/rels/Metaree/symbols.txt
+  # Module ID 43
+  - object: orig/G2ME01/files/RelProd/MetareeSwarm.rel
+    hash: e9b5a7bd0c482e1bfecfd104e9d805bf579df554
+    splits: config/G2ME01/rels/MetareeSwarm/splits.txt
+    symbols: config/G2ME01/rels/MetareeSwarm/symbols.txt
+  # Module ID 44
+  - object: orig/G2ME01/files/RelProd/MinorIng.rel
+    hash: ec3d9157df12bfb18572525a6147b941d9925e53
+    splits: config/G2ME01/rels/MinorIng/splits.txt
+    symbols: config/G2ME01/rels/MinorIng/symbols.txt
+  # Module ID 45
+  - object: orig/G2ME01/files/RelProd/MysteryFlyer.rel
+    hash: 2770bc0304d6e5511c151e34a89c5e0d57af1bc5
+    splits: config/G2ME01/rels/MysteryFlyer/splits.txt
+    symbols: config/G2ME01/rels/MysteryFlyer/symbols.txt
+  # Module ID 46
+  - object: orig/G2ME01/files/RelProd/OctapedeSegment.rel
+    hash: 8ed2b5282cbc4b3ab50d046387434e6ec7a04a8f
+    splits: config/G2ME01/rels/OctapedeSegment/splits.txt
+    symbols: config/G2ME01/rels/OctapedeSegment/symbols.txt
+  # Module ID 47
+  - object: orig/G2ME01/files/RelProd/Parasite.rel
+    hash: dc590460beb40be1d8ab389b0922189008e5f659
+    splits: config/G2ME01/rels/Parasite/splits.txt
+    symbols: config/G2ME01/rels/Parasite/symbols.txt
+  # Module ID 48
+  - object: orig/G2ME01/files/RelProd/PillBug.rel
+    hash: 261c9127510cc69a1ce664e6e07dc4165e9d9aca
+    splits: config/G2ME01/rels/PillBug/splits.txt
+    symbols: config/G2ME01/rels/PillBug/symbols.txt
+  # Module ID 49
+  - object: orig/G2ME01/files/RelProd/PlantScarabSwarm.rel
+    hash: 67240808f42d66482dfaa11daa09a9994cd63e92
+    splits: config/G2ME01/rels/PlantScarabSwarm/splits.txt
+    symbols: config/G2ME01/rels/PlantScarabSwarm/symbols.txt
+  # Module ID 50
+  - object: orig/G2ME01/files/RelProd/PirateRagDoll.rel
+    hash: c43a3088261b9095ba8ce51eb1daea00e48d1e81
+    splits: config/G2ME01/rels/PirateRagDoll/splits.txt
+    symbols: config/G2ME01/rels/PirateRagDoll/symbols.txt
+  # Module ID 51
+  - object: orig/G2ME01/files/RelProd/PuddleSpore.rel
+    hash: 12149178e88f573d35012b3e923a72501aaa8e0a
+    splits: config/G2ME01/rels/PuddleSpore/splits.txt
+    symbols: config/G2ME01/rels/PuddleSpore/symbols.txt
+  # Module ID 52
+  - object: orig/G2ME01/files/RelProd/Puffer.rel
+    hash: ab46667b99dfb451b3fdb87acfa743b4c3f70a1f
+    splits: config/G2ME01/rels/Puffer/splits.txt
+    symbols: config/G2ME01/rels/Puffer/symbols.txt
+  # Module ID 53
+  - object: orig/G2ME01/files/RelProd/Rezbit.rel
+    hash: 086baae5f79a825626e7b09881c8b65fc124c50c
+    splits: config/G2ME01/rels/Rezbit/splits.txt
+    symbols: config/G2ME01/rels/Rezbit/symbols.txt
+  # Module ID 54
+  - object: orig/G2ME01/files/RelProd/Ripper.rel
+    hash: f3ab11c967c58f4483a4264fbeb1ba4a837e8719
+    splits: config/G2ME01/rels/Ripper/splits.txt
+    symbols: config/G2ME01/rels/Ripper/symbols.txt
+  # Module ID 55
   - object: orig/G2ME01/files/RelProd/SandBoss.rel
     hash: 0a28cddbe1a04c8c4ca2bf6a6750d0467b9e805e
+    splits: config/G2ME01/rels/SandBoss/splits.txt
+    symbols: config/G2ME01/rels/SandBoss/symbols.txt
+  # Module ID 56
   - object: orig/G2ME01/files/RelProd/Sandworm.rel
     hash: f818ae142461676bd2532a9efa6e7f7d0a15f7f3
+    splits: config/G2ME01/rels/Sandworm/splits.txt
+    symbols: config/G2ME01/rels/Sandworm/symbols.txt
+  # Module ID 57
   - object: orig/G2ME01/files/RelProd/ScriptCannonBall.rel
     hash: 11be111b8501d4e62ecff72b5c30210fe6aa57eb
+    splits: config/G2ME01/rels/ScriptCannonBall/splits.txt
+    symbols: config/G2ME01/rels/ScriptCannonBall/symbols.txt
+  # Module ID 58
   - object: orig/G2ME01/files/RelProd/ScriptCoin.rel
     hash: 06fbf0e2b013de05a334008cb76e08d6843f4988
+    splits: config/G2ME01/rels/ScriptCoin/splits.txt
+    symbols: config/G2ME01/rels/ScriptCoin/symbols.txt
+  # Module ID 59
   - object: orig/G2ME01/files/RelProd/ScriptFrontEndDataNetwork.rel
     hash: 583529f588a342f34238cea369553ab662762fac
+    splits: config/G2ME01/rels/ScriptFrontEndDataNetwork/splits.txt
+    symbols: config/G2ME01/rels/ScriptFrontEndDataNetwork/symbols.txt
+  # Module ID 60
   - object: orig/G2ME01/files/RelProd/ScriptGui.rel
     hash: 2b58f6d3fc1167976ebb45d3fd23f077cef9d69d
+    splits: config/G2ME01/rels/ScriptGui/splits.txt
+    symbols: config/G2ME01/rels/ScriptGui/symbols.txt
+  # Module ID 61
   - object: orig/G2ME01/files/RelProd/ScriptPlayerActor.rel
     hash: f08e9d0f3a66edb54bb8c67ee413348c328e952d
+    splits: config/G2ME01/rels/ScriptPlayerActor/splits.txt
+    symbols: config/G2ME01/rels/ScriptPlayerActor/symbols.txt
+  # Module ID 62
   - object: orig/G2ME01/files/RelProd/ScriptPlayerProxy.rel
     hash: 19ea68a377b4908848b9d640245842526a8dd968
+    splits: config/G2ME01/rels/ScriptPlayerProxy/splits.txt
+    symbols: config/G2ME01/rels/ScriptPlayerProxy/symbols.txt
+  # Module ID 63
   - object: orig/G2ME01/files/RelProd/ScriptPlayerTurret.rel
     hash: 61be48bcbda1f1de3edf5ef0be4cdbdcc6e0ad7d
+    splits: config/G2ME01/rels/ScriptPlayerTurret/splits.txt
+    symbols: config/G2ME01/rels/ScriptPlayerTurret/symbols.txt
+  # Module ID 64
   - object: orig/G2ME01/files/RelProd/ScriptRiftPortal.rel
     hash: a0fa6c699b0de19db33e3fdab0f1d5650b769014
+    splits: config/G2ME01/rels/ScriptRiftPortal/splits.txt
+    symbols: config/G2ME01/rels/ScriptRiftPortal/symbols.txt
+  # Module ID 65
   - object: orig/G2ME01/files/RelProd/ScriptRsfAudio.rel
     hash: af0941ce5e81230282eda9cfb59e1839dc45443a
+    splits: config/G2ME01/rels/ScriptRsfAudio/splits.txt
+    symbols: config/G2ME01/rels/ScriptRsfAudio/symbols.txt
+  # Module ID 66
   - object: orig/G2ME01/files/RelProd/ScriptSafeZone.rel
     hash: 0c63ccf483d04844250fe193644a09ba16be92b2
+    splits: config/G2ME01/rels/ScriptSafeZone/splits.txt
+    symbols: config/G2ME01/rels/ScriptSafeZone/symbols.txt
+  # Module ID 67
   - object: orig/G2ME01/files/RelProd/ScriptStreamedMovie.rel
     hash: d9b45eae526aa3fb5290599843482512b257aba8
+    splits: config/G2ME01/rels/ScriptStreamedMovie/splits.txt
+    symbols: config/G2ME01/rels/ScriptStreamedMovie/symbols.txt
+  # Module ID 68
   - object: orig/G2ME01/files/RelProd/Shredder.rel
     hash: a70ac4a192c4ea785af74c09179b6fd64c8ed382
+    splits: config/G2ME01/rels/Shredder/splits.txt
+    symbols: config/G2ME01/rels/Shredder/symbols.txt
+  # Module ID 69
   - object: orig/G2ME01/files/RelProd/Shrieker.rel
     hash: 34929da0e094650d473a6db25b6265bbd6d515ba
+    splits: config/G2ME01/rels/Shrieker/splits.txt
+    symbols: config/G2ME01/rels/Shrieker/symbols.txt
+  # Module ID 70
   - object: orig/G2ME01/files/RelProd/SkyRipple.rel
     hash: 968c1df639d81847af32dde5be824e902bd3f337
+    splits: config/G2ME01/rels/SkyRipple/splits.txt
+    symbols: config/G2ME01/rels/SkyRipple/symbols.txt
+  # Module ID 71
   - object: orig/G2ME01/files/RelProd/SnakeWeedSwarm.rel
     hash: f59a2a74718b31bff0e76d9716e39091e1e11bba
+    splits: config/G2ME01/rels/SnakeWeedSwarm/splits.txt
+    symbols: config/G2ME01/rels/SnakeWeedSwarm/symbols.txt
+  # Module ID 72
   - object: orig/G2ME01/files/RelProd/SpacePirate.rel
     hash: 407296db410be8c77d5b3a91a2bef9e6d2aa181b
+    splits: config/G2ME01/rels/SpacePirate/splits.txt
+    symbols: config/G2ME01/rels/SpacePirate/symbols.txt
+  # Module ID 73
   - object: orig/G2ME01/files/RelProd/SpankWeed.rel
     hash: 08c018c8c4b584857c99154348432ffa1bee4364
+    splits: config/G2ME01/rels/SpankWeed/splits.txt
+    symbols: config/G2ME01/rels/SpankWeed/symbols.txt
+  # Module ID 74
   - object: orig/G2ME01/files/RelProd/Splinter.rel
     hash: 39061caefdda8fe33c8b89dc6ac61dbcae83bc82
+    splits: config/G2ME01/rels/Splinter/splits.txt
+    symbols: config/G2ME01/rels/Splinter/symbols.txt
+  # Module ID 75
   - object: orig/G2ME01/files/RelProd/Splitter.rel
     hash: 27f0d2cd85fc1ad0ed0682f6bdd5356693090863
+    splits: config/G2ME01/rels/Splitter/splits.txt
+    symbols: config/G2ME01/rels/Splitter/symbols.txt
+  # Module ID 76
   - object: orig/G2ME01/files/RelProd/Sporb.rel
     hash: b668bd223431f9146cbf81654e57146af047d9d8
+    splits: config/G2ME01/rels/Sporb/splits.txt
+    symbols: config/G2ME01/rels/Sporb/symbols.txt
+  # Module ID 77
   - object: orig/G2ME01/files/RelProd/StoneToad.rel
     hash: f58e5d0a4d99327cde009c110d54381c0060782f
+    splits: config/G2ME01/rels/StoneToad/splits.txt
+    symbols: config/G2ME01/rels/StoneToad/symbols.txt
+  # Module ID 78
   - object: orig/G2ME01/files/RelProd/SwampBossStage1.rel
     hash: ea208a1a6484a28df1261b9418c831a0b00bfc0d
+    splits: config/G2ME01/rels/SwampBossStage1/splits.txt
+    symbols: config/G2ME01/rels/SwampBossStage1/symbols.txt
+  # Module ID 79
   - object: orig/G2ME01/files/RelProd/SwampBossStage2.rel
     hash: a6c4d72b549d4dfa4713fb1470b5d8afe9ecde40
+    splits: config/G2ME01/rels/SwampBossStage2/splits.txt
+    symbols: config/G2ME01/rels/SwampBossStage2/symbols.txt
+  # Module ID 80
   - object: orig/G2ME01/files/RelProd/SwarmBasics.rel
     hash: f9f5b20681489fe376dc175dd206aa3d47297f3f
+    splits: config/G2ME01/rels/SwarmBasics/splits.txt
+    symbols: config/G2ME01/rels/SwarmBasics/symbols.txt
+  # Module ID 81
   - object: orig/G2ME01/files/RelProd/Tryclops.rel
     hash: 535aee6611c3cc1d6986d99d7d33448e6df5e1f6
+    splits: config/G2ME01/rels/Tryclops/splits.txt
+    symbols: config/G2ME01/rels/Tryclops/symbols.txt
+  # Module ID 82
   - object: orig/G2ME01/files/RelProd/Tweaks.rel
     hash: 1c38866b845b17b6c6084d687f5e0d17a28ea72d
+    splits: config/G2ME01/rels/Tweaks/splits.txt
+    symbols: config/G2ME01/rels/Tweaks/symbols.txt
+  # Module ID 83
   - object: orig/G2ME01/files/RelProd/WallCrawler.rel
     hash: c1ddff73d8875c8387924def88a6027a4f4fe41c
+    splits: config/G2ME01/rels/WallCrawler/splits.txt
+    symbols: config/G2ME01/rels/WallCrawler/symbols.txt
+  # Module ID 84
   - object: orig/G2ME01/files/RelProd/WallCrawlerSwarm.rel
     hash: 77454c04b275f7ccf709f73c027ee6e2f8c9007b
+    splits: config/G2ME01/rels/WallCrawlerSwarm/splits.txt
+    symbols: config/G2ME01/rels/WallCrawlerSwarm/symbols.txt
+  # Module ID 85
   - object: orig/G2ME01/files/RelProd/WallWalker.rel
     hash: 9b97939ca1ce96160b587f9efce55c9e91736a4a
+    splits: config/G2ME01/rels/WallWalker/splits.txt
+    symbols: config/G2ME01/rels/WallWalker/symbols.txt
+  # Module ID 86
   - object: orig/G2ME01/files/RelProd/WispTentacle.rel
     hash: 6049b926db0c1f6a6072a234e886075714f9afd0
+    splits: config/G2ME01/rels/WispTentacle/splits.txt
+    symbols: config/G2ME01/rels/WispTentacle/symbols.txt

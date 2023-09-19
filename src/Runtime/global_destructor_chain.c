@@ -18,3 +18,10 @@ void __destroy_global_chain(void) {
     DTORCALL_COMPLETE(iter->destructor, iter->object);
   }
 }
+
+/* clang-format off */
+#pragma section ".dtors$10"
+__declspec(section ".dtors$10")
+__declspec(weak)
+extern void* const __destroy_global_chain_reference = __destroy_global_chain;
+/* clang-format on */

@@ -1,8 +1,17 @@
-MetroidPrime/CAxisAngle.cpp:
-	.bss        start:0x8040AD40 end:0x8040AD4C common
-
-MetroidPrime/CEulerAngles.cpp:
-	.bss        start:0x8040AD4C end:0x8040AD58 common
+Sections:
+	.init       type:code
+	extab       type:rodata
+	extabindex  type:rodata
+	.text       type:code
+	.ctors      type:rodata
+	.dtors      type:rodata
+	.rodata     type:rodata
+	.data       type:data
+	.bss        type:bss
+	.sdata      type:data
+	.sbss       type:bss
+	.sdata2     type:rodata
+	.sbss2      type:bss
 
 MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80008B60
@@ -11,11 +20,17 @@ MetroidPrime/main.cpp:
 MetroidPrime/CStateManager.cpp:
 	.text       start:0x80036200 end:0x80044CA4
 
+MetroidPrime/CAxisAngle.cpp:
+	.bss        start:0x8040AD40 end:0x8040AD4C align:4 common
+
+MetroidPrime/CEulerAngles.cpp:
+	.bss        start:0x8040AD4C end:0x8040AD58 align:4 common
+
 MetroidPrime/CEntity.cpp:
 	.text       start:0x80047E5C end:0x8004875C
 	.ctors      start:0x803A54C4 end:0x803A54C8
 	.data       start:0x803B1B40 end:0x803B1B60
-	.bss        start:0x8040D4AC end:0x8040D4D8 common rename:.comm
+	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common
 
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086410
@@ -62,7 +77,7 @@ MetroidPrime/ScriptLoader.cpp:
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
 	.ctors      start:0x803A55D4 end:0x803A55D8
-	.bss        start:0x80411050 end:0x80411068 common
+	.bss        start:0x80411050 end:0x80411068 align:4 common
 	.sbss       start:0x80419808 end:0x80419810
 	.sdata2     start:0x8041E250 end:0x8041E258
 
@@ -87,19 +102,19 @@ Kyoto/Math/CVector2i.cpp:
 Kyoto/Math/CVector3d.cpp:
 	.text       start:0x802CA6EC end:0x802CAB00
 	.ctors      start:0x803A5608 end:0x803A560C
-	.bss        start:0x80417408 end:0x804174B0 common
+	.bss        start:0x80417408 end:0x804174B0 align:4 common
 	.sdata2     start:0x8041E5F8 end:0x8041E610
 
 Kyoto/Math/CVector3f.cpp:
 	.text       start:0x802CAB00 end:0x802CB124
 	.ctors      start:0x803A560C end:0x803A5610
-	.bss        start:0x804174B0 end:0x80417510 common
+	.bss        start:0x804174B0 end:0x80417510 align:4 common
 	.sdata2     start:0x8041E610 end:0x8041E628
 
 Kyoto/Math/CVector3i.cpp:
 	.text       start:0x802CB124 end:0x802CB330
 	.ctors      start:0x803A5610 end:0x803A5614
-	.bss        start:0x80417510 end:0x80417570 common
+	.bss        start:0x80417510 end:0x80417570 align:4 common
 
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
@@ -134,3 +149,12 @@ Dolphin/ar/arq.c:
 
 Dolphin/PPCArch.c:
 	.text       start:0x80357020 end:0x8035713C
+
+Dolphin/os/OSCache.c:
+	.text       start:0x8036EE9C end:0x8036F514
+
+Dolphin/os/OSContext.c:
+	.text       start:0x8036F514 end:0x8036FCF8
+
+Dolphin/os/OSError.c:
+	.text       start:0x8036FCF8 end:0x803703A4

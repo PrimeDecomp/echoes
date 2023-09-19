@@ -1,3 +1,18 @@
+Sections:
+	.init       type:code
+	extab       type:rodata
+	extabindex  type:rodata
+	.text       type:code
+	.ctors      type:rodata
+	.dtors      type:rodata
+	.rodata     type:rodata
+	.data       type:data
+	.bss        type:bss
+	.sdata      type:data
+	.sbss       type:bss
+	.sdata2     type:rodata
+	.sbss2      type:bss
+
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x802B6974 end:0x802B69E4
 	.ctors      start:0x8049F420 end:0x8049F424 rename:.ctors$10

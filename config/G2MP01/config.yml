@@ -2,7 +2,8 @@ object: orig/G2MP01/sys/main.dol
 hash: 5a670d5da3d181e86a0df7cf7751c7055eee35fb
 splits: config/G2MP01/splits.txt
 symbols: config/G2MP01/symbols.txt
-quick_analysis: true
+quick_analysis: true # Faster reruns after full analysis
+mw_comment_version: 11 # GC 2.7 linker
 modules:
   - object: orig/G2MP01/files/RelProd/AIMannedTurret.rel
     hash: ee8ef187338c6b1c6ccf4adfc9b990f528b04761

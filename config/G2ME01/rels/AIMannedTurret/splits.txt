@@ -1,0 +1,17 @@
+Sections:
+	.text       type:code align:8
+	.ctors      type:rodata align:8
+	.dtors      type:rodata align:8
+	.rodata     type:rodata align:8
+	.data       type:data align:8
+	.bss        type:bss align:8
+
+REL/global_destructor_chain.c:
+	.text       start:0x00005130 end:0x000051A4
+	.dtors      start:0x00000000 end:0x00000004 rename:.dtors$10
+	.dtors      start:0x00000004 end:0x00000008 skip
+	.bss        start:0x00000094 end:0x00000098 align:4 common
+
+REL/REL_Setup.cpp:
+	.text       start:0x000051A4 end:0x00005348
+	.rodata     start:0x00000120 end:0x000001A4

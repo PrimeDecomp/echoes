@@ -48,6 +48,11 @@ void __fini_cpp_exceptions(void) {
   }
 }
 
+#pragma push
+// HACK: When DTK sets all objects to force_active, the linker decides to strip
+// these, for some reason. Set them to force_active as well.
+#pragma force_active on
+
 /* clang-format off */
 #pragma section ".ctors$10"
 __declspec(section ".ctors$10")
@@ -59,3 +64,5 @@ extern void* const __destroy_global_chain_reference = __destroy_global_chain;
 __declspec(section ".dtors$15")
 extern void* const __fini_cpp_exceptions_reference = __fini_cpp_exceptions;
 /* clang-format on */
+
+#pragma pop

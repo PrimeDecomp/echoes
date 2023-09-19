@@ -4,4 +4,5 @@ selfile: orig/R32J01/files/MP2JPN/RSO/Production/selfile.sel
 selfile_hash: 0f06c15513df90668eecaf6c56c071b9b7132774
 splits: config/R32J01/splits.txt
 symbols: config/R32J01/symbols.txt
-quick_analysis: true
+quick_analysis: true # Faster reruns after full analysis
+mw_comment_version: 15 # GC 3.0 linker

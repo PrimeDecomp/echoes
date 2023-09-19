@@ -1,8 +1,8 @@
-#include "__ppc_eabi_linker.h"
 #include "NMWException.h"
+#include "__ppc_eabi_linker.h"
 
 #if __MWERKS__
-#pragma exceptions on 
+#pragma exceptions on
 #endif
 
 typedef struct ProcessInfo {
@@ -25,7 +25,7 @@ int __register_fragment(struct __eti_init_info* info, char* TOC) {
       return i;
     }
   }
-  
+
   return -1;
 }
 
