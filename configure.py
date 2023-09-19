@@ -205,6 +205,10 @@ else:
     cflags_runtime.append("-inline deferred,auto")
     config.linker_version = "GC/2.7"
 
+if version_num > 1:
+    # RELs not yet set up for non-USA versions
+    config.build_rels = False
+
 
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name, objects):
