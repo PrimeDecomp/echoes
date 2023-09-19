@@ -35,12 +35,16 @@ public:
     float x8_fogNearZ;
     float xc_fogFarZ;
     GXColor x10_fogColor;
+    uchar x14_;
+    uchar x15_;
 
     SFogParams() : x0_fogStartZ(0.f), x4_fogEndZ(1.f), x8_fogNearZ(0.1f), xc_fogFarZ(1.f) {
       x10_fogColor.a = 0;
       x10_fogColor.b = 0;
       x10_fogColor.g = 0;
       x10_fogColor.r = 0;
+      x14_ = 0;
+      x15_ = 0;
     }
   };
 
@@ -135,6 +139,7 @@ public:
   static void End();
   static void ResetGXStates();
   static void ResetGXStatesFull(); // name?
+  static void SetDstAlpha(bool enable, uchar alpha);
 
   static inline void LoadTexMtxImm(const float mtx[][4], unsigned long id, GXTexMtxType type) {
     GXLoadTexMtxImm(const_cast< MtxPtr >(mtx), id, type);
@@ -154,19 +159,21 @@ public:
   static inline uint ShiftRightAndMask(uint v, uint m, uint s) { return (v >> s) & m; }
 
 private:
+  static void FlushChanCtrl(GXChannelID chan, ushort flags);
   static void FlushState();
   static void update_fog(uint flags);
   static void apply_fog() {
     static const GXColor black = {0, 0, 0, 0};
-    GXSetFog(static_cast< GXFogType >(sGXState.x53_fogType), sGXState.x24c_fogParams.x0_fogStartZ,
-             sGXState.x24c_fogParams.x4_fogEndZ, sGXState.x24c_fogParams.x8_fogNearZ,
-             sGXState.x24c_fogParams.xc_fogFarZ,
-             (sGXState.x56_blendMode & (7 << 5)) == (GX_BL_ONE << 5)
+    GXSetFog(static_cast< GXFogType >(gpGXState->x53_fogType),
+             gpGXState->x24c_fogParams.x0_fogStartZ, gpGXState->x24c_fogParams.x4_fogEndZ,
+             gpGXState->x24c_fogParams.x8_fogNearZ, gpGXState->x24c_fogParams.xc_fogFarZ,
+             (gpGXState->x56_blendMode & (7 << 5)) == (GX_BL_ONE << 5)
                  ? black
-                 : sGXState.x24c_fogParams.x10_fogColor);
+                 : gpGXState->x24c_fogParams.x10_fogColor);
   }
 
   static SGXState sGXState;
+  static SGXState* gpGXState;
 };
 
 #endif // _CGX

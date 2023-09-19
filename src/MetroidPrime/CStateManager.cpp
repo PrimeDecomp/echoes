@@ -79,7 +79,7 @@ void CStateManager::fn_8003BE54() {
       bool flag = ent->GetActive();
       ent->AcceptScriptMsg(*this, msg);
       if (flag != ent->GetActive()) {
-        if (CActor* actor = CastTo< CActor >(ent)) {
+        if (CActor* actor = TCastToPtr< CActor >(ent)) {
           UpdateActorInSortedLists(actor);
         }
       }

@@ -2,12 +2,21 @@
 #define _TCASTTO
 
 class CEntity;
-class CPlayer;
 
-template <typename T>
-T* CastTo(CEntity*);
+template < class T >
+static T* TCastToPtr(CEntity* p);
 
-template <typename T>
-const T* CastTo(const CEntity*);
+template < class T >
+static T& TCastToPtr(CEntity& p);
+
+template < typename T >
+static inline const T* TCastToConstPtr(const CEntity* p) {
+  return TCastToPtr< T >(const_cast< CEntity* >(p));
+}
+
+template < typename T >
+static inline const T* TCastToConstPtr(const CEntity& p) {
+  return TCastToPtr< T >(const_cast< CEntity& >(p));
+}
 
 #endif // _TCASTTO

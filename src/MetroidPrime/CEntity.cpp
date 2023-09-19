@@ -4,14 +4,12 @@
 
 rstl::vector< SConnection > CEntity::NullConnectionList;
 
-CEntityInfo CEntity::NullEntityInfo(
-  kInvalidAreaId, NullConnectionList, true, kInvalidEditorId
-);
+CEntityInfo CEntity::NullEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
 
 // CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, TEditorId eid)
 // : x0_areaId(aid), x4_conns(conns), x14_editorId(eid) {}
 
-CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, int graveyard)
+CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint graveyard)
 : m_areaId(info.GetAreaId())
 , m_uid(id)
 , m_editorId(info.GetEditorId())
@@ -24,7 +22,7 @@ CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name
 
 CEntity::~CEntity() {}
 
-void CEntity::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
+void CEntity::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Activate:
     if (!m_active) {
@@ -72,6 +70,7 @@ void CEntity::Think(float dt, CStateManager& mgr) {}
 
 void CEntity::SetActive(const bool active) { m_active = active; }
 
-TAreaId CEntity::GetAreaId() const { return m_notInArea ? kInvalidAreaId : m_areaId; }
+TAreaId CEntity::GetAreaIdForPersistence() const { return m_notInArea ? kInvalidAreaId : m_areaId; }
 
-TUniqueId CEntity::SearchForSomething(CStateManager&, EScriptObjectState, EScriptObjectMessage) {}
+TUniqueId CEntity::FindConnectedObject(const CStateManager&, EScriptObjectState,
+                                       EScriptObjectMessage) const {}

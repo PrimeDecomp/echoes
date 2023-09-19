@@ -86,6 +86,13 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.rodata     start:0x803AEAC8 end:0x803AED58
 	.sbss       start:0x8041981C end:0x80419828
 
+Kyoto/Graphics/CGX.cpp:
+	.text       start:0x802BCBEC end:0x802BE31C
+	.ctors      start:0x803A55E4 end:0x803A55E8
+	.rodata     start:0x803AF388 end:0x803AF3B0
+	.bss        start:0x803DF828 end:0x803DFA8C
+	.sdata      start:0x80418AD0 end:0x80418AD4
+
 Kyoto/Math/CTransform4f.cpp:
 	.text       start:0x802C8BB8 end:0x802CA12C
 	.ctors      start:0x803A5600 end:0x803A5604

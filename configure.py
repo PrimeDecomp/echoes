@@ -221,6 +221,17 @@ def DolphinLib(lib_name, objects):
     }
 
 
+# Helper function for REL script objects
+def Rel(lib_name, objects):
+    return {
+        "lib": lib_name,
+        "mw_version": "GC/2.7",
+        "cflags": cflags_rel,
+        "host": True,
+        "objects": objects,
+    }
+
+
 Matching = True
 NonMatching = False
 
@@ -258,6 +269,7 @@ config.libs = [
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
             Object(NonMatching, "Kyoto/Basics/RAssertDolphin.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
             Object(NonMatching, "Kyoto/Math/CTransform4f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2i.cpp"),
@@ -314,6 +326,12 @@ config.libs = [
             ),
         ],
     },
+    Rel(
+        "ForgottenObject",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
+        ],
+    ),
 ]
 
 if args.mode == "configure":

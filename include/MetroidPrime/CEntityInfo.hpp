@@ -46,6 +46,7 @@ enum EEntityType {
 enum EScriptObjectState {
   kSS_Active = 0x41435456,
   kSS_Inactive = 0x49435456,
+  kSS_Zero = 0x5a45524f,
   kSS_MaxReached = 0x4d415852,
   kSS_InvalidState = 0xffffffff
 };
@@ -84,7 +85,7 @@ class CEntityInfo {
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, bool active,
               TEditorId eid = kInvalidEditorId);
-              
+
   TAreaId GetAreaId() const { return areaId; }
   const rstl::vector< SConnection >& GetConnectionList() const { return conns; }
   TEditorId GetEditorId() const { return editorId; }

@@ -5,3 +5,13 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp:
+	.text       start:0x00000000 end:0x00000570
+	.rodata     start:0x00000000 end:0x00000010
+	.data       start:0x00000000 end:0x00000028
+	.bss        start:0x00000000 end:0x00000004
+
+REL/REL_Setup.cpp:
+	.text       start:0x00000570 end:0x00000714
+	.rodata     start:0x00000010 end:0x00000094
