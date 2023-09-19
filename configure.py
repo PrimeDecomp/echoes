@@ -124,7 +124,7 @@ if not is_windows():
 # Tool versions
 config.compilers_tag = "1"
 config.dtk_tag = "v0.5.2"
-config.sjiswrap_tag = "v1.1.0"
+config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.5.1"
 
 # Project
@@ -205,7 +205,7 @@ else:
     cflags_runtime.append("-inline deferred,auto")
     config.linker_version = "GC/2.7"
 
-if version_num > 1:
+if version_num > 0:
     # RELs not yet set up for non-USA versions
     config.build_rels = False
 

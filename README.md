@@ -1,13 +1,14 @@
-Metroid Prime 2: Echoes [![Build Status]][actions] <!-- ![Code Progress] ![Data Progress] -->
+Metroid Prime 2: Echoes  
+[![Build Status]][actions] ![Progress] ![DOL Progress] ![RELs Progress] [![Discord Badge]][discord]
 =============
 
 [Build Status]: https://github.com/PrimeDecomp/echoes/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/PrimeDecomp/echoes/actions/workflows/build.yml
-
-<!--
-[Code Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fechoes%2F0%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode
-[Data Progress]: https://img.shields.io/endpoint?label=Data&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fechoes%2F0%2Fdol%2F%3Fmode%3Dshield%26measure%3Ddata
--->
+[Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fechoes%2FG2ME01%2Fall%2F%3Fmode%3Dshield%26measure%3Dcode
+[DOL Progress]: https://img.shields.io/endpoint?label=DOL&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fechoes%2FG2ME01%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode
+[RELs Progress]: https://img.shields.io/endpoint?label=RELs&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fechoes%2FG2ME01%2Fmodules%2F%3Fmode%3Dshield%26measure%3Dcode
+[Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
+[discord]: https://discord.gg/hKx3FJJgrV
 
 A decompilation of Metroid Prime 2: Echoes.
 
