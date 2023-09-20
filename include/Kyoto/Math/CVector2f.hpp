@@ -11,6 +11,9 @@ public:
 
   float GetX() const { return mX; }
   float GetY() const { return mY; }
+  
+  void SetX(float x) { mX = x; }
+  void SetY(float y) { mY = y; }
 
   CVector2f& operator+=(const CVector2f& rhs);
   CVector2f& operator-=(const CVector2f& rhs);

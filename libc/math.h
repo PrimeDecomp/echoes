@@ -81,6 +81,8 @@ _MATH_INLINE float atan2f(float y, float x) { return (float)atan2((double)y, (do
 _MATH_INLINE float fmodf(float x, float m) { return (float)fmod((double)x, (double)m); }
 float tanf(float x);
 double acos(double x);
+
+double modf( double x, double * intptr );
 _MATH_INLINE float acosf(float x) { return (float)acos((double)x); }
 
 double ldexp(double x, int exp);

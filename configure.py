@@ -304,6 +304,7 @@ config.libs = [
             Object(Matching, "Kyoto/Math/CVector3i.cpp"),
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
+            Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
         ],
     },
     {
