@@ -138,6 +138,7 @@ Kyoto/Input/CDolphinController.cpp:
 
 Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80328B0C end:0x8032A764
+	.sdata2     start:0x8041EBC0 end:0x8041EC28
 
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38

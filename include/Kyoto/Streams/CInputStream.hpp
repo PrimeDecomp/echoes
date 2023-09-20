@@ -53,6 +53,16 @@ public:
     ptr = (uchar*) result + 1;
     return *result;
   }
+  u8 ReadUint8() {
+    u8* result = (u8*) ptr;
+    ptr = (u8*) result + 1;
+    return *result;
+  }
+  char ReadInt8() {
+    char* result = (char*) ptr;
+    ptr = (u8*) result + 1;
+    return *result;
+  }
   bool ReadBool() {
     uchar* result = (uchar*) ptr;
     ptr = (uchar*) result + 1;
@@ -135,8 +145,13 @@ inline rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator
 : x4_count(0), x8_capacity(0), xc_items(nullptr) {
   int count = in.ReadInt32();
   reserve(count);
+
+  iterator out = begin() + x4_count;
   for (int i = 0; i < count; i++) {
-    push_back(in.Get(TType< T >()));
+    // Maybe this got improved?
+    // push_back(in.Get(TType< T >()));
+    out++ = in.Get(TType< T >());
+    ++x4_count;
   }
 }
 

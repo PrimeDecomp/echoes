@@ -3,9 +3,59 @@
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
-
 #include "float.h"
 #include "math.h"
+
+// 8041ebc0 to 8041ec24
+
+CMayaSplineKnot::CMayaSplineKnot(CInputStream& in)
+: x0_time(in.ReadFloat())
+, x4_amplitude(in.ReadFloat())
+, x8_flagA(in.ReadInt8())
+, x8_flagB(in.ReadInt8())
+, x8_dirty(true)
+, xc_cachedTangentA(0.0f, 0.0f)
+, x14_cachedTangentB(0.0f, 0.0f) {
+  if (x8_flagA == 5) {
+    xc_cachedTangentA.SetX(in.ReadFloat());
+    xc_cachedTangentA.SetY(in.ReadFloat());
+  }
+  if (x8_flagB == 5) {
+    x14_cachedTangentB.SetX(in.ReadFloat());
+    x14_cachedTangentB.SetY(in.ReadFloat());
+  }
+}
+
+CMayaSplineKnot::CMayaSplineKnot(float time, float amplitude, int flagA, int flagB, const float* v1,
+                                 const float* v2)
+: x0_time(time)
+, x4_amplitude(amplitude)
+, x8_flagA(flagA)
+, x8_flagB(flagB)
+, x8_dirty(true)
+, xc_cachedTangentA(CVector2f(0.0f, 0.0f))
+, x14_cachedTangentB(CVector2f(0.0f, 0.0f)) {
+  if (flagA == 5) {
+    float s = sin(*v1);
+    float c = cos(*v1);
+    xc_cachedTangentA = CVector2f(3.0f * c, 3.0f * s);
+  }
+  if (flagB == 5) {
+    float s = sin(*v2);
+    float c = cos(*v2);
+    x14_cachedTangentB = CVector2f(3.0f * c, 3.0f * s);
+  }
+}
+
+void CMayaSplineKnot::GetTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next, CVector2f& tangentA,
+                                  CVector2f& tangentB) {
+  if (x8_dirty) {
+    CalculateTangents(prev, next);
+  }
+
+  tangentA = xc_cachedTangentA;
+  tangentB = x14_cachedTangentB;
+}
 
 void ValidateTangent(CVector2f& tangent) {
   if (tangent.GetX() < 0.f) {
@@ -18,63 +68,33 @@ void ValidateTangent(CVector2f& tangent) {
   }
 
   if (tangent.GetX() == 0.f && tangent.GetY() != 0.f) {
-    const float mul = tangent.GetY() >= 0.f ? 1.f : -1.f;
     tangent.SetX(0.0001f);
-    tangent.SetY(5729578.0f * tangent.GetX() * mul);
+    tangent.SetY(5729578.0f * tangent.GetX() * (tangent.GetY() < 0.f ? -1.f : 1.f));
   }
-}
-
-CMayaSplineKnot::CMayaSplineKnot(CInputStream& in)
-: xc_cachedTangentA(0.0f, 0.0f), x14_cachedTangentB(0.0f, 0.0f) {
-  x0_time = in.ReadFloat();
-  x4_amplitude = in.ReadFloat();
-  x8_ = in.ReadChar();
-  x9_ = in.ReadChar();
-  if (x8_ == 5) {
-    float x = in.ReadFloat();
-    float y = in.ReadFloat();
-    xc_cachedTangentA = CVector2f(x, y);
-  }
-
-  if (x9_ == 5) {
-    float x = in.ReadFloat();
-    float y = in.ReadFloat();
-    x14_cachedTangentB = CVector2f(x, y);
-  }
-}
-
-void CMayaSplineKnot::GetTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next, CVector2f& tangentA,
-                                  CVector2f& tangentB) {
-  if (xa_24_dirty) {
-    CalculateTangents(prev, next);
-  }
-
-  tangentA = xc_cachedTangentA;
-  tangentB = x14_cachedTangentB;
 }
 
 void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next) {
-  xa_24_dirty = false;
+  x8_dirty = false;
   bool calculateTangents = false;
-  if (x8_ == 4 && prev != nullptr) {
+  if (x8_flagA == 4 && prev != nullptr) {
     float fVar2 = abs(prev->GetAmplitude() - GetAmplitude());
     float fVar3 = fVar2;
     if (next != nullptr) {
       fVar3 = abs(next->GetAmplitude() - GetAmplitude());
     }
     if (fVar3 <= 0.05f || fVar2 <= 0.05f) {
-      x8_ = 1;
+      x8_flagA = 1;
     }
   }
 
-  if (x8_ == 0) {
+  if (x8_flagA == 0) {
     if (prev == nullptr) {
       xc_cachedTangentA = CVector2f(1.f, 0.f);
     } else {
       xc_cachedTangentA =
           CVector2f(GetTime() - prev->GetTime(), GetAmplitude() - prev->GetAmplitude());
     }
-  } else if (x8_ == 1) {
+  } else if (x8_flagA == 1) {
     float fVar1 = 0.f;
     if (prev != nullptr) {
       fVar1 = GetTime() - prev->GetTime();
@@ -82,23 +102,23 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
       fVar1 = next->GetTime() - GetTime();
     }
     xc_cachedTangentA = CVector2f(fVar1, 0.f);
-  } else if (x8_ == 2) {
+  } else if (x8_flagA == 2) {
     calculateTangents = true;
-  } else if (x8_ == 3) {
+  } else if (x8_flagA == 3) {
     xc_cachedTangentA = CVector2f(1.0f, 1.0f);
-  } else if (x8_ == 4) {
-    x8_ = 2;
+  } else if (x8_flagA == 4) {
+    x8_flagA = 2;
     calculateTangents = true;
   }
 
-  if (x9_ == 0) {
+  if (x8_flagB == 0) {
     if (next == nullptr) {
       x14_cachedTangentB = CVector2f(1.0f, 0.0f);
     } else {
       x14_cachedTangentB =
           CVector2f(next->GetTime() - GetTime(), next->GetAmplitude() - GetAmplitude());
     }
-  } else if (x9_ == 1) {
+  } else if (x8_flagB == 1) {
     float fVar1 = 0.f;
     if (next != nullptr) {
       fVar1 = next->GetTime() - GetTime();
@@ -107,11 +127,11 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
     }
 
     x14_cachedTangentB = CVector2f(fVar1, 0.f);
-  } else if (x9_ == 2) {
+  } else if (x8_flagB == 2) {
     calculateTangents = true;
-  } else if (x9_ == 3) {
+  } else if (x8_flagB == 3) {
     x14_cachedTangentB = CVector2f(1.f, 0.f);
-  } else if (x9_ == 4 && next != nullptr) {
+  } else if (x8_flagB == 4 && next != nullptr) {
     float fVar1 = next->GetAmplitude() - GetAmplitude();
     float fVar2 = fVar1;
     if (prev != nullptr) {
@@ -119,7 +139,7 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
     }
 
     if (fVar1 <= 0.05f || fVar2 <= 0.05f) {
-      x9_ = 1;
+      x8_flagB = 1;
     }
     calculateTangents = true;
   }
@@ -166,10 +186,10 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
       // tangentB.zeroOut();
     }
 
-    if (x8_ == 2) {
+    if (x8_flagA == 2) {
       xc_cachedTangentA = tangentA;
     }
-    if (x9_ == 2) {
+    if (x8_flagB == 2) {
       x14_cachedTangentB = tangentB;
     }
   }
@@ -177,29 +197,146 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
   ValidateTangent(x14_cachedTangentB);
 }
 
-// CMayaSpline::CMayaSpline(CInputStream& in, int count) : x0_preInfinity(in.ReadInt8()),
-// x4_postInfinity(in.ReadInt8()) {
+SLdrSpline::SLdrSpline(CInputStream& in, int count)
+: m_preInfinity(in.ReadInt8())
+, m_postInfinity(in.ReadInt8())
+, m_knots(in)
+, m_clampMode(in.ReadInt8())
+, m_minAmplitudeTime(in.ReadFloat())
+, m_maxAmplitudeTime(in.ReadFloat())
 
-//   u32 knotCount = in.ReadLong();
-//   x8_knots.reserve(knotCount);
-//   for (size_t i = 0; i < knotCount; ++i) {
-//     x8_knots.emplace_back(in);
-//   }
-//   x18_clampMode = in.ReadInt8();
-//   x1c_minAmplitudeTime = in.ReadFloat();
-//   x20_maxAmplitudeTime = in.ReadFloat();
-// }
+, m_cachedKnotIndex(0xFFFFFFFF)
+, x28_(0xFFFFFFFF)
+, m_dirty(false)
+, m_cachedMinTime(0.0f) {}
 
-size_t CMayaSpline::GetKnotCount() const { return x8_knots.size(); }
+SLdrSpline::SLdrSpline()
+: m_preInfinity(0)
+, m_postInfinity(0)
+, m_knots()
+, m_clampMode(0)
+, m_cachedKnotIndex(0xFFFFFFFF)
+, x28_(0xFFFFFFFF)
+, m_dirty(false)
+, m_cachedMinTime(0.0f) {}
 
-const rstl::vector< CMayaSplineKnot >& CMayaSpline::GetKnots() const { return x8_knots; }
 
-float CMayaSpline::GetMinTime() const { return x8_knots.empty() ? 0.f : x8_knots[0].GetTime(); }
-float CMayaSpline::GetMaxTime() const {
-  return x8_knots.empty() ? 0.f : x8_knots[GetKnotCount() - 1].GetTime();
+  SLdrSpline::SLdrSpline(const rstl::vector<CMayaSplineKnot>& knots, int clampMode, int preInfinity, int postInfinity, float minAmplitudeTime, float maxAmplitudeTime)
+: m_preInfinity(preInfinity)
+, m_postInfinity(postInfinity)
+, m_knots(knots)
+, m_clampMode(clampMode)
+, m_minAmplitudeTime(minAmplitudeTime)
+, m_maxAmplitudeTime(maxAmplitudeTime)
+
+, m_cachedKnotIndex(0xFFFFFFFF)
+, x28_(0xFFFFFFFF)
+, m_dirty(false)
+, m_cachedMinTime(0.0f) {}
+
+float CMayaSpline::EvaluateHermite(float time) {
+  const float timeDiff = time - x30_cachedMinTime;
+  return x34_cachedHermitCoefs[0] + (timeDiff * x34_cachedHermitCoefs[1]) +
+         (timeDiff * x34_cachedHermitCoefs[2]) + (timeDiff * x34_cachedHermitCoefs[3]);
 }
-float CMayaSpline::GetDuration() const {
-  return x8_knots.empty() ? 0.f : GetMaxTime() - GetMinTime();
+
+float CMayaSpline::EvaluateInfinities(float time, bool pre) {
+  if (x8_knots.empty()) {
+    return 0.f;
+  }
+
+  int lastIdx = x8_knots.size() - 1;
+  CMayaSplineKnot* curKnot = &x8_knots[0];
+  const float startTime = x8_knots[0].GetTime();
+  const float endTime = x8_knots[lastIdx].GetAmplitude();
+  float center = endTime - startTime;
+
+  if (close_enough(center, 0)) {
+    return curKnot->GetAmplitude();
+  }
+
+  double tmp = 0.f;
+  float divTime = (time <= endTime) ? modf((time - startTime) / center, &tmp)
+                                    : modf((time - endTime) / center, &tmp);
+
+  center = center * abs(divTime);
+  tmp = 1.f + abs(tmp);
+
+  if (!pre) {
+    if (x4_postInfinity == 4) {
+      divTime = fmod(tmp, 2.f);
+      if (close_enough(divTime, 0.f)) {
+        center = startTime + center;
+      } else {
+        center = endTime - center;
+      }
+    } else if (x4_postInfinity == 2 || x4_postInfinity == 3) {
+      center = startTime + center;
+    } else if (x4_postInfinity == 1) {
+      center = time - endTime;
+      CVector2f tangentA(0.0f, 0.0f);
+      CVector2f tangentB(0.0f, 0.0f);
+      x8_knots[0].GetTangents((lastIdx < 1) ? nullptr : &x8_knots[lastIdx - 2], nullptr, tangentA,
+                              tangentB);
+      if (!close_enough(tangentB.GetX(), 0.f)) {
+        return x8_knots[lastIdx].GetAmplitude() + (center * tangentB.GetY() / tangentB.GetX());
+      }
+      return x8_knots[lastIdx].GetAmplitude();
+    }
+  } else if (x0_preInfinity == 4) {
+    divTime = fmod(tmp, 2.f);
+    if (close_enough(divTime, 0.f)) {
+      center = endTime - center;
+    } else {
+      center = startTime + center;
+    }
+  } else if (x0_preInfinity == 2 || x0_preInfinity == 3) {
+    center = endTime - center;
+  } else if (x0_preInfinity == 1) {
+    center = (startTime - time);
+    CVector2f tangentA(0.0f, 0.0f);
+    CVector2f tangentB(0.0f, 0.0f);
+    x8_knots[0].GetTangents(nullptr, &x8_knots[1], tangentA, tangentB);
+    if (!close_enough(tangentA.GetX(), 0)) {
+      return (x8_knots[0].GetAmplitude() - (center * tangentA.GetY() / tangentA.GetX()));
+    }
+    return x8_knots[0].GetAmplitude();
+  }
+
+  float eval = EvaluateAt(center);
+  if (pre && x0_preInfinity == 3) {
+    return eval - (tmp * x8_knots[lastIdx].GetAmplitude() - x8_knots[0].GetAmplitude());
+  }
+
+  if (!pre && x4_postInfinity == 3) {
+    return eval + (tmp * x8_knots[lastIdx].GetAmplitude() - x8_knots[0].GetAmplitude());
+  }
+  return eval;
+}
+
+bool CMayaSpline::FindKnot(float time, int& knotIndex) {
+  knotIndex = 0;
+  int upper = x8_knots.size();
+  if (upper != 0) {
+    upper -= 1;
+    int lower = 0;
+    do {
+      // TODO: review code
+      int index = (lower + upper) >> 1;
+      const CMayaSplineKnot& knot = x8_knots[index];
+      if (knot.GetTime() > time) {
+        upper = index - 1;
+      } else if (time > knot.GetTime()) {
+        lower = index + 1;
+      } else {
+        knotIndex = index;
+        return true;
+      }
+    } while (lower <= upper);
+    knotIndex = lower;
+  }
+
+  return false;
 }
 
 float CMayaSpline::EvaluateAt(float time) {
@@ -314,109 +451,33 @@ float CMayaSpline::EvaluateAtUnclamped(float time) {
   return EvaluateInfinities(time, false);
 }
 
-float CMayaSpline::EvaluateInfinities(float time, bool pre) {
+// SLdrSpline SLdrSpline::CreateFor(float p1, float p2, float p3, float p4)
+// {
+//   knots.reserve(2);
+//   float zeroA = 0.0f;
+//   float zeroB = 0.0f;
+//   knots.push_back(CMayaSplineKnot(p1, p2, 2, 2, &zeroA, &zeroB));
+//   knots.push_back(CMayaSplineKnot(p3, p4, 2, 2, &zeroA, &zeroB));
+// }
+
+const rstl::vector< CMayaSplineKnot >& CMayaSpline::GetKnots() const { return x8_knots; }
+
+float CMayaSpline::GetMaxTime() const {
+  int count = x8_knots.size();
+  if (count == 0) {
+    return 0.0f;
+  }
+  return x8_knots[count - 1].GetTime();
+}
+
+float CMayaSpline::GetDuration() const {
   if (x8_knots.empty()) {
-    return 0.f;
+    return 0.0f;
   }
-
-  int lastIdx = x8_knots.size() - 1;
-  CMayaSplineKnot* curKnot = &x8_knots[0];
-  const float startTime = x8_knots[0].GetTime();
-  const float endTime = x8_knots[lastIdx].GetAmplitude();
-  float center = endTime - startTime;
-
-  if (close_enough(center, 0)) {
-    return curKnot->GetAmplitude();
-  }
-
-  double tmp = 0.f;
-  float divTime = (time <= endTime) ? modf((time - startTime) / center, &tmp)
-                                    : modf((time - endTime) / center, &tmp);
-
-  center = center * abs(divTime);
-  tmp = 1.f + abs(tmp);
-
-  if (!pre) {
-    if (x4_postInfinity == 4) {
-      divTime = fmod(tmp, 2.f);
-      if (close_enough(divTime, 0.f)) {
-        center = startTime + center;
-      } else {
-        center = endTime - center;
-      }
-    } else if (x4_postInfinity == 2 || x4_postInfinity == 3) {
-      center = startTime + center;
-    } else if (x4_postInfinity == 1) {
-      center = time - endTime;
-      CVector2f tangentA(0.0f, 0.0f);
-      CVector2f tangentB(0.0f, 0.0f);
-      x8_knots[0].GetTangents((lastIdx < 1) ? nullptr : &x8_knots[lastIdx - 2], nullptr, tangentA,
-                              tangentB);
-      if (!close_enough(tangentB.GetX(), 0.f)) {
-        return x8_knots[lastIdx].GetAmplitude() + (center * tangentB.GetY() / tangentB.GetX());
-      }
-      return x8_knots[lastIdx].GetAmplitude();
-    }
-  } else if (x0_preInfinity == 4) {
-    divTime = fmod(tmp, 2.f);
-    if (close_enough(divTime, 0.f)) {
-      center = endTime - center;
-    } else {
-      center = startTime + center;
-    }
-  } else if (x0_preInfinity == 2 || x0_preInfinity == 3) {
-    center = endTime - center;
-  } else if (x0_preInfinity == 1) {
-    center = (startTime - time);
-    CVector2f tangentA(0.0f, 0.0f);
-    CVector2f tangentB(0.0f, 0.0f);
-    x8_knots[0].GetTangents(nullptr, &x8_knots[1], tangentA, tangentB);
-    if (!close_enough(tangentA.GetX(), 0)) {
-      return (x8_knots[0].GetAmplitude() - (center * tangentA.GetY() / tangentA.GetX()));
-    }
-    return x8_knots[0].GetAmplitude();
-  }
-
-  float eval = EvaluateAt(center);
-  if (pre && x0_preInfinity == 3) {
-    return eval - (tmp * x8_knots[lastIdx].GetAmplitude() - x8_knots[0].GetAmplitude());
-  }
-
-  if (!pre && x4_postInfinity == 3) {
-    return eval + (tmp * x8_knots[lastIdx].GetAmplitude() - x8_knots[0].GetAmplitude());
-  }
-  return eval;
+  return GetMaxTime() - x8_knots[0].GetTime();
 }
 
-float CMayaSpline::EvaluateHermite(float time) {
-  const float timeDiff = time - x30_cachedMinTime;
-  return x34_cachedHermitCoefs[0] + (timeDiff * x34_cachedHermitCoefs[1]) +
-         (timeDiff * x34_cachedHermitCoefs[2]) + (timeDiff * x34_cachedHermitCoefs[3]);
-}
-
-bool CMayaSpline::FindKnot(float time, int& knotIndex) {
-  if (x8_knots.empty()) {
-    return false;
-  }
-
-  u32 lower = 0;
-  u32 upper = x8_knots.size();
-  while (lower < upper) {
-    u32 index = (lower + upper) / 2;
-    const CMayaSplineKnot& knot = x8_knots[index];
-    if (knot.GetTime() > time) {
-      upper = index - 1;
-    } else if (time > knot.GetTime()) {
-      lower = index + 1;
-    } else {
-      knotIndex = index;
-      return true;
-    }
-  }
-
-  knotIndex = lower;
-  return false;
-}
+size_t CMayaSpline::GetKnotCount() const { return x8_knots.size(); }
 
 void CMayaSpline::FindControlPoints(int knotIndex,
                                     rstl::reserved_vector< CVector2f, 4 >& controlPoints) {

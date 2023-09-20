@@ -9,22 +9,47 @@
 class CMayaSplineKnot {
   float x0_time;
   float x4_amplitude;
-  u8 x8_;
-  u8 x9_;
-  bool xa_24_dirty : 1;
-  u8 xb_;
+  uint x8_flagA : 8;
+  uint x8_flagB : 8;
+  uint x8_dirty : 1;
+  // u8 x8_;
+  // u8 x9_;
+  // bool xa_24_dirty : 1;
+  // u8 xb_;
   CVector2f xc_cachedTangentA;
   CVector2f x14_cachedTangentB;
 
 public:
   CMayaSplineKnot(CInputStream& in);
+  CMayaSplineKnot(float time, float amplitude, int, int, const float*, const float*);
 
   float GetTime() const { return x0_time; }
   float GetAmplitude() const { return x4_amplitude; }
-  u8 GetX8() const { return x8_; }
-  u8 GetX9() const { return x9_; }
+  u8 GetX8() const { return x8_flagA; }
+  u8 GetX9() const { return x8_flagB; }
   void GetTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next, CVector2f& tangentA, CVector2f& tangentB);
   void CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next);
+};
+
+
+struct SLdrSpline {
+  SLdrSpline();
+  SLdrSpline(const rstl::vector<CMayaSplineKnot>& knots, int clampMode, int preInfinity, int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
+  SLdrSpline(CInputStream&, int);
+
+  static SLdrSpline CreateFor(float, float, float, float);
+
+  int m_preInfinity;
+  int m_postInfinity;
+  rstl::vector<CMayaSplineKnot> m_knots;
+  int m_clampMode;
+  float m_minAmplitudeTime;
+  float m_maxAmplitudeTime;
+  uint m_cachedKnotIndex;
+  uint x28_;
+  bool m_dirty : 1;
+  float m_cachedMinTime;
+  float m_cachedHermitCoefs[4];
 };
 
 
@@ -46,7 +71,6 @@ public:
   
   size_t GetKnotCount() const;
   const rstl::vector<CMayaSplineKnot>& GetKnots() const;
-  float GetMinTime() const;
   float GetMaxTime() const;
   float GetDuration() const;
 
