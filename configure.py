@@ -123,9 +123,9 @@ if not is_windows():
 
 # Tool versions
 config.compilers_tag = "1"
-config.dtk_tag = "v0.5.2"
+config.dtk_tag = "v0.5.5"
 config.sjiswrap_tag = "v1.1.1"
-config.wibo_tag = "0.5.1"
+config.wibo_tag = "0.6.3"
 
 # Project
 config.config_path = Path("config") / config.version / "config.yml"

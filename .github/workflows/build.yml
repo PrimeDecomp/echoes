@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [G2ME01, G2MJ01, G2MP01] # R32J01, R3ME01, R3MP01
+        version: [G2ME01, G2MJ01, G2MP01, R32J01, R3ME01, R3MP01]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
