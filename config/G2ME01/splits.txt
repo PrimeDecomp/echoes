@@ -123,6 +123,18 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+Kyoto/Input/DolphinIController.cpp:
+	.text       start:0x8030B4A8 end:0x8030B554
+	.rodata     start:0x803AFD90 end:0x803AFD98
+	.data       start:0x803BB030 end:0x803BB050
+	.sdata2     start:0x8041E9E0 end:0x8041E9F0
+
+Kyoto/Input/CDolphinController.cpp:
+	.text       start:0x8030B554 end:0x8030BF9C
+	.data       start:0x803BB050 end:0x803BB088
+	.sbss       start:0x80419B90 end:0x80419B98
+	.sdata2     start:0x8041E9F0 end:0x8041EA28
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
 	.sbss       start:0x80419CC0 end:0x80419CC4

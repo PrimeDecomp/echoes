@@ -276,6 +276,8 @@ config.libs = [
             Object(Matching, "Kyoto/Math/CVector3d.cpp"),
             Object(Matching, "Kyoto/Math/CVector3f.cpp"),
             Object(Matching, "Kyoto/Math/CVector3i.cpp"),
+            Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
+            Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
         ],
     },
     {

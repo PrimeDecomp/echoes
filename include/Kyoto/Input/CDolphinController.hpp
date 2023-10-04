@@ -25,7 +25,9 @@ private:
   void ReadDevices();
   void ProcessInputData();
   void ProcessAxis(int controller, EJoyAxis axis);
+  void ClearAxis(int controller, EJoyAxis axis);
   void ProcessButtons(int controller);
+  void ClearButtons(int controller);
   void ProcessDigitalButton(int value, CControllerButton& button, ushort mapping);
   void ProcessAnalogButton(float value, CControllerAxis& axis);
   PADStatus x4_status[4];
@@ -33,7 +35,7 @@ private:
   EMotorState x194_motorStates[4];
   uint x1a4_controllerTypes[4];
   uint x1b4_controllerTypePollTime[4];
-  uint x1c4_;
+  uint x1c4_validControllers;
   uint x1c8_invalidControllers;
   uint x1cc_;
 };

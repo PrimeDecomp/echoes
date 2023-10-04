@@ -10,6 +10,9 @@ public:
   void SetDeviceIsPresent(bool present) { x0_present = present; }
   bool DeviceIsPresent() const { return x0_present; }
 
+  void SetDeviceJustDisconnected(bool disconnected) { x1_justDisconnected = disconnected; }
+  bool DeviceJustDisconnected() const { return x1_justDisconnected; }
+
   const CControllerAxis& GetAxis(EJoyAxis axis) const { return x4_axes[axis]; }
   CControllerAxis& GetAxis(EJoyAxis axis) { return x4_axes[axis]; }
 
@@ -23,6 +26,7 @@ public:
 
 private:
   bool x0_present;
+  bool x1_justDisconnected;
   CControllerAxis x4_axes[4];
   CControllerAxis x24_triggers[2];
   CControllerButton x34_buttons[12];
