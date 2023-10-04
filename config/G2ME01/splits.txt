@@ -171,6 +171,7 @@ Dolphin/PPCArch.c:
 
 Dolphin/os/OSCache.c:
 	.text       start:0x8036EE9C end:0x8036F514
+	.data       start:0x803BE7B0 end:0x803BE9E0
 
 Dolphin/os/OSContext.c:
 	.text       start:0x8036F514 end:0x8036FCF8
