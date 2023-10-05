@@ -29,7 +29,7 @@ jobs:
       env:
         PROGRESS_API_KEY: ${{secrets.PROGRESS_API_KEY}}
       run: |
-        python tools/upload_progress.py -b https://progress.deco.mp/ -p echoes -v ${{matrix.version}} \
+        python tools/upload_progress.py -b https://progress.decomp.club/ -p echoes -v ${{matrix.version}} \
           build/${{matrix.version}}/progress.json
     - name: Upload map
       uses: actions/upload-artifact@v3
