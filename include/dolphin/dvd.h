@@ -96,7 +96,7 @@ s32 DVDGetCommandBlockStatus(const DVDCommandBlock* block);
 BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback);
 s32 DVDCancel(DVDCommandBlock* block);
 BOOL DVDCancelAllAsync(DVDCBCallback callback);
-s32 DVDCancelAll(void);
+s32 DVDCancelAll(DVDCBCallback callback);
 BOOL DVDPrepareStreamAsync(DVDFileInfo* fInfo, u32 length, u32 offset, DVDCallback callback);
 s32 DVDPrepareStream(DVDFileInfo* fInfo, u32 length, u32 offset);
 

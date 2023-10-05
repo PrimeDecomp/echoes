@@ -84,7 +84,8 @@ Kyoto/Basics/CStopwatch.cpp:
 Kyoto/Basics/RAssertDolphin.cpp:
 	.text       start:0x8028C28C end:0x8028C9C8
 	.rodata     start:0x803AEAC8 end:0x803AED58
-	.sbss       start:0x8041981C end:0x80419828
+	.sbss       start:0x80419818 end:0x80419828
+	.sdata2     start:0x8041E268 end:0x8041E278
 
 Kyoto/Graphics/CGX.cpp:
 	.text       start:0x802BCBEC end:0x802BE31C
