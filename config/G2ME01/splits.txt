@@ -175,6 +175,15 @@ Dolphin/os/OSCache.c:
 
 Dolphin/os/OSContext.c:
 	.text       start:0x8036F514 end:0x8036FCF8
+	.data       start:0x803BE9E0 end:0x803BEBB8
 
 Dolphin/os/OSError.c:
 	.text       start:0x8036FCF8 end:0x803703A4
+	.data       start:0x803BEBB8 end:0x803BEED8
+	.bss        start:0x803E18F0 end:0x803E1938
+	.sdata      start:0x80418E08 end:0x80418E10
+
+Dolphin/os/OSInterrupt.c:
+	.text       start:0x80372520 end:0x80372D8C
+	.data       start:0x803BF9F8 end:0x803BFA28
+	.sbss       start:0x80419FC0 end:0x80419FD8

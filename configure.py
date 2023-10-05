@@ -309,8 +309,9 @@ config.libs = [
         "os",
         [
             Object(Matching, "Dolphin/os/OSCache.c"),
-            Object(NonMatching, "Dolphin/os/OSContext.c"),
-            Object(NonMatching, "Dolphin/os/OSError.c"),
+            Object(Matching, "Dolphin/os/OSContext.c"),
+            Object(Matching, "Dolphin/os/OSError.c"),
+            Object(Matching, "Dolphin/os/OSInterrupt.c"),
         ],
     ),
     # Begin RELs
