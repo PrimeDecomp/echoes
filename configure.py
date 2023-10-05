@@ -268,7 +268,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
-            Object(NonMatching, "Kyoto/Basics/RAssertDolphin.cpp"),
+            Object(Matching, "Kyoto/Basics/RAssertDolphin.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
             Object(NonMatching, "Kyoto/Math/CTransform4f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2f.cpp"),

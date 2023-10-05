@@ -16,9 +16,9 @@ extern "C" void fn_80362EC4(void*);
 extern "C" void fn_80377118(int);
 extern u32* fn_8033ED24(int);
 
-static char* rs_debugger_buffer;
-static int rs_debugger_size;
 static bool SkipFatal = false;
+static char* rs_debugger_buffer = nullptr;
+static int rs_debugger_size = 0;
 static const GXColor bg = {128, 0, 0, 0};
 static const GXColor fg = {255, 255, 255, 0};
 static const uchar ExitButtons[4] = {PAD_BUTTON_RIGHT, PAD_BUTTON_LEFT, PAD_BUTTON_DOWN,
