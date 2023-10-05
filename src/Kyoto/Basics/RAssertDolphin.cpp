@@ -1,6 +1,5 @@
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 
-#include "dolphin/__start.h"
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"
 #include "dolphin/os/OSMemory.h"
@@ -37,11 +36,9 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
   uint loopExitCriteria;
   PADStatus pads[4];
   uchar local_60[4];
-  u32 iVar2;
   u32* tmp;
-  u32* gpr;
   uint i;
-  uint len;
+  u32* gpr;
 
 
   if (code == 15 && ((dsisr & 0x10) != 0 || ((uint)dar > 0x1800000))) {
@@ -49,7 +46,7 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
   }
 
   OSProtectRange(3, 0, 0, 3);
-  memset((void*)0x81200000, 0, 0x280);
+  memset((void*)0x81200000, 0, (u32)0x280);
   DCFlushRange((void*)0x81200000, 0x280);
   AIRegisterDMACallback(NULL);
   AIInitDMA(0x81200000, 0x280);
@@ -119,7 +116,7 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
   } else {
     buffer[0] = 0;
   }
-  len = strlen(buffer);
+  uint len = strlen(buffer);
   if (len != 0) {
     len += sprintf(buffer + len, " - Production\n");
   } else {
@@ -139,8 +136,8 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
     if (gpr > (void*)0x80000400 && gpr < (void*)0x81800000) {
       if (i >= rs_debugger_size) {
         OSReport("0x%08x:   0x%08x    0x%08x\n", gpr, *gpr, gpr[1]);
-        iVar2 = gpr[1];
-        tmp = fn_8033ED24(iVar2);
+        u32 iVar2 = gpr[1];
+        u32* tmp = fn_8033ED24(iVar2);
         if (tmp == NULL) {
           len += sprintf(buffer + len, "0x%08x: 0x%08x 0x%08x\n", gpr, *gpr, gpr[1]);
         }
