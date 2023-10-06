@@ -26,3 +26,18 @@ Runtime/__init_cpp_exceptions.cpp:
 
 MetroidPrime/CAxisAngle.cpp:
 	.bss        start:0x8040DCE0 end:0x8040DCEC align:4 common
+
+Dolphin/os/OSCache.c:
+	.text       start:0x80371138 end:0x803717B0
+	.data       start:0x803C1750 end:0x803C1980
+
+Dolphin/os/OSError.c:
+	.text       start:0x80371F94 end:0x80372640
+	.data       start:0x803C1B58 end:0x803C1E78
+	.bss        start:0x803E4890 end:0x803E48D8
+	.sdata      start:0x8041BEB0 end:0x8041BEB8
+
+Dolphin/os/OSInterrupt.c:
+	.text       start:0x803747BC end:0x80375028
+	.data       start:0x803C2998 end:0x803C29C8
+	.sbss       start:0x8041D040 end:0x8041D058
