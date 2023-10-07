@@ -147,6 +147,7 @@ cflags_base = [
     "-Cpp_exceptions off",
     # "-W all",
     "-O4,p",
+    #"-g",
     "-inline auto",
     '-pragma "cats off"',
     '-pragma "warn_notinlined off"',
@@ -158,6 +159,31 @@ cflags_base = [
     "-i include",
     "-i libc",
     f"-DVERSION={version_num}",
+    #"-D_DEBUG=1",
+]
+
+cflags_base_dbg = [
+    "-nodefaults",
+    "-proc gekko",
+    "-align powerpc",
+    "-enum int",
+    "-fp hardware",
+    "-Cpp_exceptions off",
+    # "-W all",
+    #"-O4,p",
+    "-g",
+    #"-inline auto",
+    '-pragma "cats off"',
+    '-pragma "warn_notinlined off"',
+    "-maxerrors 1",
+    "-nosyspath",
+    "-RTTI off",
+    "-fp_contract on",
+    "-str reuse",
+    "-i include",
+    "-i libc",
+    f"-DVERSION={version_num}",
+    "-D_DEBUG=1",
 ]
 
 # GC 3.0 and above require -enc SJIS instead of -multibyte
@@ -211,11 +237,11 @@ if version_num > 0:
 
 
 # Helper function for Dolphin libraries
-def DolphinLib(lib_name, objects):
+def DolphinLib(lib_name, objects, debug=False):
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_base,
+        "cflags": cflags_base if not debug else cflags_base_dbg,
         "host": False,
         "objects": objects,
     }
@@ -298,6 +324,32 @@ config.libs = [
             Object(Matching, "Dolphin/ar/ar.c"),
             Object(Matching, "Dolphin/ar/arq.c"),
         ],
+    ),
+    DolphinLib(
+        "card",
+        [
+            Object(Matching, "Dolphin/card/CARDBios.c"),
+            Object(Matching, "Dolphin/card/CARDUnlock.c"),
+            Object(Matching, "Dolphin/card/CARDRdwr.c"),
+            Object(Matching, "Dolphin/card/CARDBlock.c"),
+            Object(Matching, "Dolphin/card/CARDDir.c"),
+            Object(Matching, "Dolphin/card/CARDCheck.c"),
+            Object(Matching, "Dolphin/card/CARDMount.c"),
+            Object(Matching, "Dolphin/card/CARDFormat.c"),
+            Object(Matching, "Dolphin/card/CARDOpen.c"),
+            Object(Matching, "Dolphin/card/CARDCreate.c"),
+            Object(Matching, "Dolphin/card/CARDRead.c"),
+            Object(Matching, "Dolphin/card/CARDWrite.c"),
+            Object(Matching, "Dolphin/card/CARDDelete.c"),
+            Object(Matching, "Dolphin/card/CARDStat.c"),
+            Object(Matching, "Dolphin/card/CARDRename.c"),
+            Object(Matching, "Dolphin/card/CARDStatEx.c"),
+            Object(Matching, "Dolphin/card/CARDRaw.c"),
+            Object(Matching, "Dolphin/card/CARDNet.c"),
+            Object(Matching, "Dolphin/card/CARDErase.c"),
+            Object(Matching, "Dolphin/card/CARDProgram.c"),
+        ],
+        debug=False,
     ),
     DolphinLib(
         "base",

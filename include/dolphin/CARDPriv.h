@@ -102,8 +102,6 @@ typedef struct CARDID {
   u16 checkSumInv;
 } CARDID;
 
-void __CARDDefaultApiCallback(s32 chan, s32 result);
-
 #define CARDIsValidBlockNo(card, iBlock)                                                           \
   (CARD_NUM_SYSTEM_BLOCK <= (iBlock) && (iBlock) < (card)->cBlock)
 #define __CARDGetDirCheck(dir) ((CARDDirCheck*)&(dir)[CARD_MAX_FILE])
@@ -117,7 +115,9 @@ void __CARDExiHandler(s32 chan, OSContext* context);
 void __CARDExtHandler(s32 chan, OSContext* context);
 void __CARDUnlockedHandler(s32 chan, OSContext* context);
 s32 __CARDAccess(CARDControl* card, CARDDir* ent);
-BOOL __CARDIsWritable(CARDDir* ent);
+s32 __CARDIsWritable(CARDControl* card, CARDDir* ent);
+void __CARDDefaultApiCallback(s32 chan, s32 result);
+void __CARDSyncCallback(s32 chan, s32 result);
 
 #define TRUNC(n, a) (((u32)(n)) & ~((a)-1))
 #define OFFSET(n, a) (((u32)(n)) & ((a)-1))
@@ -125,7 +125,18 @@ BOOL __CARDIsWritable(CARDDir* ent);
 extern CARDControl __CARDBlock[2];
 extern DVDDiskID __CARDDiskNone;
 extern u16 __CARDVendorID;
+extern u8 __CARDPermMask;
+#ifdef _DEBUG
+extern u32 __CARDFreq;
+#endif
 
+#define CARD_DIR_PERM_PUBLIC 0x04u
+#define CARD_DIR_PERM_NO_COPY 0x08u
+#define CARD_DIR_PERM_NO_MOVE 0x10u
+#define CARD_DIR_PERM_GLOBAL 0x20u
+#define CARD_DIR_PERM_COMPANY 0x40u
+#define CARD_PROGRAM_SIZE 128
+#define CARD_MAX_SIZE (16u*1024u*1024u)
 #ifdef __cplusplus
 }
 #endif

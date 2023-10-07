@@ -170,6 +170,59 @@ Dolphin/ar/arq.c:
 Dolphin/PPCArch.c:
 	.text       start:0x80357020 end:0x8035713C
 
+Dolphin/card/CARDBios.c:
+	.text       start:0x8035713C end:0x80358660
+	.data       start:0x803BCD48 end:0x803BCDA0
+	.bss        start:0x803E0BE8 end:0x803E0E28
+	.sdata      start:0x80418D28 end:0x80418D30
+	.sbss       start:0x80419DB0 end:0x80419DB8
+
+Dolphin/card/CARDUnlock.c:
+	.text       start:0x80358660 end:0x803598C0
+	.data       start:0x803BCDA0 end:0x803BCF00
+	.sdata      start:0x80418D30 end:0x80418D38
+
+Dolphin/card/CARDRdwr.c:
+	.text       start:0x803598C0 end:0x80359B50
+
+Dolphin/card/CARDBlock.c:
+	.text       start:0x80359B50 end:0x80359F54
+
+Dolphin/card/CARDDir.c:
+	.text       start:0x80359F54 end:0x8035A1B8
+
+Dolphin/card/CARDCheck.c:
+	.text       start:0x8035A1B8 end:0x8035B0F4
+
+Dolphin/card/CARDMount.c:
+	.text       start:0x8035B0F4 end:0x8035BBB0
+	.data       start:0x803BCF00 end:0x803BCF40
+
+Dolphin/card/CARDFormat.c:
+	.text       start:0x8035BBB0 end:0x8035C394
+
+Dolphin/card/CARDOpen.c:
+	.text       start:0x8035C394 end:0x8035C830
+
+Dolphin/card/CARDCreate.c:
+	.text       start:0x8035C830 end:0x8035CB80
+
+Dolphin/card/CARDRead.c:
+	.text       start:0x8035CB80 end:0x8035CFF4
+
+Dolphin/card/CARDWrite.c:
+	.text       start:0x8035CFF4 end:0x8035D328
+
+Dolphin/card/CARDDelete.c:
+	.text       start:0x8035D328 end:0x8035D4F8
+
+Dolphin/card/CARDStat.c:
+	.text       start:0x8035D4F8 end:0x8035D978
+
+Dolphin/card/CARDNet.c:
+	.text       start:0x8035D978 end:0x8035DA3C
+	.sdata      start:0x80418D38 end:0x80418D40
+
 Dolphin/os/OSCache.c:
 	.text       start:0x8036EE9C end:0x8036F514
 	.data       start:0x803BE7B0 end:0x803BE9E0
