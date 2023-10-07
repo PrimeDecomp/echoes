@@ -29,9 +29,9 @@ public:
   CScriptHUDMemo(TUniqueId, const rstl::string&, const CEntityInfo&, const CHUDMemoParms&,
                  bool useOriginator, CScriptHUDMemo::EDisplayType, CAssetId);
   ~CScriptHUDMemo();
-  CEntity* TypesMatch(EEntityType) override;
+  CEntity* TypesMatch(int) const override;
 
-  void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 };
 // CHECK_SIZEOF(CScriptHUDMemo, 0x4c)
 

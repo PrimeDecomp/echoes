@@ -110,8 +110,8 @@ public:
   , m_state(state)
   {}
 
-  TUniqueId GetUnk() { return m_unk; }
-  TUniqueId GetOriginator() { return m_originator; }
+  TUniqueId GetUnk() const { return m_unk; }
+  TUniqueId GetOriginator() const { return m_originator; }
   TUniqueId GetId() const { return m_id; }
   EScriptObjectMessage GetMessage() const { return m_msg; }
   EScriptObjectState GetState() const { return m_state; }

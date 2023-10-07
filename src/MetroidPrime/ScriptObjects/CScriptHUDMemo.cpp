@@ -23,7 +23,7 @@ CScriptHUDMemo::CScriptHUDMemo(TUniqueId uid, const rstl::string& name, const CE
 
 CScriptHUDMemo::~CScriptHUDMemo() {}
 
-void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
+void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CHUDMemoParms parms = m_parms;
   if (m_useOriginator) {
     if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(msg.GetOriginator()))) {

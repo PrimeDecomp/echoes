@@ -58,7 +58,7 @@ public:
          const CActorParameters& params, TUniqueId nextDrawNode);
   ~CActor() override;
 
-  void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
   void SetActive(const bool active) override;
 
   virtual void PreRender(CStateManager&, const CFrustumPlanes&);

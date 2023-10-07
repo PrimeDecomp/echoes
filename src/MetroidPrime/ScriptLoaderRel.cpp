@@ -1,17 +1,17 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 
 FScriptLoader* gLoader_IngSnatchingSwarm;
-SnakeWeedLoaders* gLoader_SnakeWeed;
-FishCloudLoaders* gLoader_FishCloud;
+SSnakeWeedSwarm_FuncPtrs* gLoader_SnakeWeed;
+SFishCloud_FuncPtrs* gLoader_FishCloud;
 FScriptLoader* gLoader_AtomicAlpha;
 FScriptLoader* gLoader_Ripper;
 FScriptLoader* gLoader_Puffer;
 FScriptLoader* gLoader_Metaree;
-PlayerActorFunctions* gLoader_PlayerActor;
-PlayerTurretFunctions* gLoader_PlayerTurret;
+SPlayerActor_FuncPtrs* gLoader_PlayerActor;
+SPlayerTurret_FuncPtrs* gLoader_PlayerTurret;
 FScriptLoader* gLoader_RiftPortal;
-SafeCrystalLoaders* gLoader_SafeZone;
-GUILoaders* gLoader_GUI;
+SSafeZone_FuncPtrs* gLoader_SafeZone;
+SGuiWidget_FuncPtrs* gLoader_GUI;
 FScriptLoader* gLoader_PlayerController;
 FScriptLoader* gLoader_WallWalker;
 
@@ -23,7 +23,8 @@ void SetLoader_PlayerController(FScriptLoader* loader) { gLoader_PlayerControlle
 CEntity* LoadPlayerController(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return (*gLoader_PlayerController)(mgr, input, info);
 }
-void ScriptGUI_SetPtrs(GUILoaders* loaders) { gLoader_GUI = loaders; }
+void SetSGuiWidget_FuncPtrs(SGuiWidget_FuncPtrs* loaders) { gLoader_GUI = loaders; }
+
 CEntity* LoadGuiWidget(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_GUI->guiWidget(mgr, input, info);
 }
@@ -41,7 +42,7 @@ CEntity* LoadGuiPlayerJoinManager(CStateManager& mgr, CInputStream& input,
   return gLoader_GUI->guiPlayerJoinManager(mgr, input, info);
 }
 
-void SetLoader_SafeZone(SafeCrystalLoaders* loader) { gLoader_SafeZone = loader; }
+void SetSSafeZone_FuncPtrs(SSafeZone_FuncPtrs* loader) { gLoader_SafeZone = loader; }
 CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_SafeZone->safeZone(mgr, input, info);
 }
@@ -57,7 +58,7 @@ CEntity* LoadRiftPortal(CStateManager& mgr, CInputStream& input, const CEntityIn
   return (*gLoader_RiftPortal)(mgr, input, info);
 }
 
-void SetLoader_PlayerTurret(PlayerTurretFunctions* loader) { gLoader_PlayerTurret = loader; }
+void SetLoader_PlayerTurret(SPlayerTurret_FuncPtrs* loader) { gLoader_PlayerTurret = loader; }
 CEntity* LoadPlayerTurret(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_PlayerTurret->loader(mgr, input, info);
 }
@@ -81,7 +82,7 @@ TUniqueId PlayerTurret_GetSomeId(CEntity& entity) {
   return (entity.*(gLoader_PlayerTurret->GetSomeId))();
 }
 
-void SetLoader_PlayerActor(PlayerActorFunctions* loader) { gLoader_PlayerActor = loader; }
+void SetLoader_PlayerActor(SPlayerActor_FuncPtrs* loader) { gLoader_PlayerActor = loader; }
 CEntity* LoadPlayerActor(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_PlayerActor->loader(mgr, input, info);
 }
@@ -106,7 +107,7 @@ CEntity* LoadAtomicAlpha(CStateManager& mgr, CInputStream& input, const CEntityI
   return (*gLoader_AtomicAlpha)(mgr, input, info);
 }
 
-void SetLoader_FishCloud(FishCloudLoaders* loader) { gLoader_FishCloud = loader; }
+void SetLoader_FishCloud(SFishCloud_FuncPtrs* loader) { gLoader_FishCloud = loader; }
 CEntity* LoadFishCloud(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_FishCloud->fishCloud(mgr, input, info);
 }
@@ -114,7 +115,7 @@ CEntity* LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, const CE
   return gLoader_FishCloud->fishCloudModifier(mgr, input, info);
 }
 
-void SetLoader_SnakeWeedSwarm(SnakeWeedLoaders* loader) { gLoader_SnakeWeed = loader; }
+void SetLoader_SnakeWeedSwarm(SSnakeWeedSwarm_FuncPtrs* loader) { gLoader_SnakeWeed = loader; }
 CEntity* LoadSnakeWeedSwarm(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return gLoader_SnakeWeed->swarm(mgr, input, info);
 }
