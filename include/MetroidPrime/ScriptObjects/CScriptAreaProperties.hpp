@@ -29,10 +29,10 @@ private:
 public:
   CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float,
                         uint hasSkyBox, bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float, const CColor&);
-  CEntity* TypesMatch(EEntityType) override;
+  CEntity* TypesMatch(int typeId) const override;
   ~CScriptAreaProperties() override;
 
-  void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 };
 CHECK_SIZEOF(CScriptAreaProperties, 0x5c)
 

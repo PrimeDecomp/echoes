@@ -28,7 +28,7 @@ CScriptAreaProperties::CScriptAreaProperties(TUniqueId uid, const CEntityInfo& i
 , x54(unk3)
 , m_color(color) {}
 
-void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
+void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message(msg.GetMessage());
   CEntity::AcceptScriptMsg(mgr, msg);
   if (GetCurrentAreaId() != kInvalidAreaId) {

@@ -224,7 +224,7 @@ rstl::optional_object< CAABox > CScriptPickup::GetTouchBounds() const {
   // return CActor::GetBoundingBox();
 }
 
-void CScriptPickup::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
+void CScriptPickup::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
 }
 

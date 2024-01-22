@@ -92,7 +92,7 @@ void CScriptSequenceTimer::fn_801e1c1c(float changeTo, CStateManager& mgr) {
   }
 }
 
-void CScriptSequenceTimer::AcceptScriptMsg(CStateManager& mgr, CScriptMsg& msg) {
+void CScriptSequenceTimer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   if (GetActive()) {
     switch (msg.GetMessage()) {
     case kSM_Start:

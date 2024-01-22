@@ -11,10 +11,10 @@ private:
 public:
   CScriptSequenceTimer(TUniqueId, const rstl::string&, const CEntityInfo&, const rstl::vector< SLdrConnection >& connections, float startTime, float maxTime, float loopStartTime, bool isAutostart, bool isLoop, bool takeExternalTime);
   ~CScriptSequenceTimer();
-  CEntity* TypesMatch(EEntityType) override;
+  CEntity* TypesMatch(int typeId) const override;
 
   void Think(float dt, CStateManager& mgr) override;
-  void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 
   void fn_801e1c1c(float f, CStateManager& mgr);
 

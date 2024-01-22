@@ -51,12 +51,12 @@ public:
 
   ~CScriptPickup();
 
-  CEntity* TypesMatch(EEntityType) override;
+  CEntity* TypesMatch(int typeId) const override;
 
   void Think(float, CStateManager&) override;
   void Touch(CActor&, CStateManager&) override;
   rstl::optional_object< CAABox > GetTouchBounds() const override;
-  void AcceptScriptMsg(CStateManager& mgr, CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 
   void Render(const CStateManager&) const override;
   void AddToRenderer(const CFrustumPlanes&, const CStateManager&) const override;
