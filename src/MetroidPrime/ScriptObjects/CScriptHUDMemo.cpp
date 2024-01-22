@@ -56,7 +56,7 @@ void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   CEntity::AcceptScriptMsg(mgr, msg);
 }
 
-CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrHUDMemo sldrThis;
 
   int propertyCount = input.ReadUint16();
@@ -119,7 +119,7 @@ CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, const CEnti
   }
 
   return new CScriptHUDMemo(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-                            EntityInfoWithEditorProperties(info, sldrThis.editorProperties),
+                            LdrToEntityInfo(info, sldrThis.editorProperties),
                             CHUDMemoParms(sldrThis.displayTime, sldrThis.clearWindow, false, false,
                                           mask, sldrThis.typeOut),
                             sldrThis.useOriginator,

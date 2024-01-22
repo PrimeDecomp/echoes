@@ -61,7 +61,7 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
 }
 
 CScriptAreaProperties* LoadAreaProperties(CStateManager& mgr, CInputStream& input,
-                                          const CEntityInfo& info) {
+                                          CEntityInfo& info) {
   SLdrAreaAttributes sldrThis;
 
   int propertyCount = input.ReadUint16();
@@ -104,7 +104,7 @@ CScriptAreaProperties* LoadAreaProperties(CStateManager& mgr, CInputStream& inpu
   }
 
   return new CScriptAreaProperties(
-      mgr.AllocateUniqueId(), EntityInfoWithEditorProperties(info, sldrThis.editorProperties),
+      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),
       sldrThis.density, sldrThis.normalLighting, 0.0f, 0.0f, sldrThis.needSky, sldrThis.darkWorld,
       sldrThis.environmentEffects, sldrThis.overrideSky, sldrThis.phazonDamage, 0, CColor::Black());
 }

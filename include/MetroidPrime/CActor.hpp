@@ -112,6 +112,7 @@ public:
     SetTransformDirtySpare(true);
     SetPreRenderHasMoved(true);
   }
+  void SetTransformAlt(const CTransform4f& xf);
   void SetRotation(const CQuaternion& rot) { SetTransform(rot.BuildTransform4f(GetTranslation())); }
   CQuaternion GetRotation() const { return CQuaternion::FromMatrix(GetTransform()); }
   CVector3f GetTranslation() const { return transform.GetTranslation(); }
@@ -203,6 +204,10 @@ public:
   // GetRenderParticleDatabaseInside__6CActorCFv
   // HasModelParticles__6CActorCFv
   void SetVolume(uchar volume);
+
+  void SetNextDrawNode(TUniqueId id) {
+    xc6_nextDrawNode = id;
+  }
 
 private:
   CTransform4f transform;  // x24

@@ -79,6 +79,9 @@ public:
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
 
+  void AddObject(CEntity*);
+  void DeleteObjectRequest(TUniqueId);
+
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
   CEntity* GetObjectByIdFromListAll(TUniqueId uid);
@@ -91,6 +94,10 @@ public:
   const CWorld* GetWorld() const { return m_world; }
   CEnvFxManager* EnvFxManager() { return m_envFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
+  int GetUpdateFrameIdx() const { m_updateFrameIdx; }
+
+  int GetNumPlayers() const { return m_numPlayers; }
+  CPlayer* GetPlayer(int index) { return m_players[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *m_objectLists[id]; }
@@ -147,9 +154,11 @@ public:
   rstl::rc_ptr< CWorldTransManager > m_worldTransManager;
   CWorldLayerState* m_currentWorldLayerState;
   int* x1698;
-  rstl::single_ptr< CSaveGameScreen > m_saveGameScreen;
+  rstl::single_ptr< CSaveGameScreen > m_saveGameScreen; // x169C
 
-  char pad3[0xD94];
+  char pad3[0xC]; // 16A0
+  int m_updateFrameIdx; // 16AC
+  char pad4[0xD84]; // 16B0
 
   CAssetId m_pauseHudMessage; // 0x2434
   float x2438_escapeTotalTime;
@@ -167,7 +176,7 @@ public:
   float x2468;
   int x246c;
   EStateManagerTransition m_deferredTransition;
-  char pad4[0x4C4]; // 0x246c
+  char pad5[0x4C4]; // 0x246c
 
   CVector3f x2938;
   float x2944;

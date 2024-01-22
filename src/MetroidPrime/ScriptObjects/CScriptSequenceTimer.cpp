@@ -123,10 +123,8 @@ void CScriptSequenceTimer::fn_801e1af8(float f, CStateManager& mgr) {
   return;
 }
 
-const CEntityInfo& EntityInfoWithEditorProperties(const CEntityInfo&, const SLdrEditorProperties&);
-
 CScriptSequenceTimer* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
-                                        const CEntityInfo& info) {
+                                        CEntityInfo& info) {
   SLdrSequenceTimer sldrThis;
 
   int propertyCount = input.ReadUint16();
@@ -174,7 +172,7 @@ CScriptSequenceTimer* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
   }
 
   return new CScriptSequenceTimer(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-                                  EntityInfoWithEditorProperties(info, sldrThis.editorProperties),
+                                  LdrToEntityInfo(info, sldrThis.editorProperties),
                                   sldrThis.sequenceConnections.array, sldrThis.startTime,
                                   sldrThis.maxTime, sldrThis.loopStartTime, sldrThis.isAutostart,
                                   sldrThis.isLoop, sldrThis.takeExternalTime);

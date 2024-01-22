@@ -153,7 +153,7 @@ public:
     kBI_Annihilator,
   };
   enum EChargeStage { kCS_Normal, kCS_Charged };
-
+  
   enum EPowerUpFieldToQuery {
     kFQ_Actual,
     kFQ_Minimum,

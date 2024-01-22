@@ -243,14 +243,13 @@ void CScriptPickup::SetSpawned() { m_generated = true; }
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
                   const CVector3f& collisionOffset);
 CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
-const CEntityInfo& EntityInfoWithEditorProperties(const CEntityInfo&, const SLdrEditorProperties&);
 CActorParameters LoadActorParameters(const SLdrActorParameters&);
 CEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
 
 rstl::optional_object< CModelData > LoadModelData(const CVector3f&, CAssetId asset,
                                                   const SLdrAnimationParameters&, bool);
 
-CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPickup sldrPickup;
 
   int propertyCount = input.ReadUint16();
@@ -356,7 +355,7 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, const CEntity
   }
   return new CScriptPickup(
       mgr.AllocateUniqueId(), sldrPickup.editorProperties.name,
-      EntityInfoWithEditorProperties(info, sldrPickup.editorProperties),
+      LdrToEntityInfo(info, sldrPickup.editorProperties),
       LoadEditorTransform(sldrPickup.editorProperties), *modelData,
       LoadActorParameters(sldrPickup.actorInformation),
       LoadEchoParameters(sldrPickup.echoInformation), box,

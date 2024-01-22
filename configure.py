@@ -388,6 +388,12 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
         ],
     ),
+    Rel(
+        "ScriptCannonBall",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCannonBall.cpp"),
+        ],
+    ),
 ]
 
 if args.mode == "configure":

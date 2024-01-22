@@ -107,6 +107,7 @@ public:
   static const CVector3f& Right() { return sRightVector; }
   static const CVector3f& Forward() { return sForwardVector; }
   static const CVector3f& Back() { return sBackVector; }
+  static const CVector3f& One() { return sOneVector; }
 
 protected:
   float mX;
