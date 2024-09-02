@@ -1,33 +1,65 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Tweaks/CTweakGame.hpp"
+
+#include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/COutputStream.hpp"
+
 #include <math.h>
 
 #include "rstl/math.hpp"
-
 
 extern "C" void fn_8013c9b0(rstl::vector< CPlayerState::UnknownV >& v, float f);
 
 class CFirstPersonCamera;
 
 static const int kPowerUpMax[] = {
-    1, 1, 1, 1,  250, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 14, 1,   0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          0,          14,         10,         255,        250,        250,        255,
+    0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 1,          1,          1,          1,
+    2,          1,          1,          1,          0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF,
+    999,        0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF,
+    0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 1,          1,          1,          1,          1,
+    9999,       1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1,          1,          1,          4,
+    1,          1,          1,          1,          1,          1,          1,          1,
+    1,          1,          1,          1,          1
+
 };
+
+static const bool kShouldPersist[] = {
+    true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+    true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+    true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+    true,  true,  false, true,  true,  true,  true,  true,  true,  false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, true,  true,  true,  true,  true,  true,  true,
+    true,  true,  true,  true,  true
+
+};
+
+// static const float kComboAmmoPeriods[] = {
+//     0.2f, 0.1f, 0.2f, 0.2f, 1.f,
+// };
 
 static const int kMissileCosts[] = {
     5, 10, 10, 10, 1,
 };
 
-static const float kComboAmmoPeriods[] = {
-    0.2f, 0.1f, 0.2f, 0.2f, 1.f,
-};
-
-static const char* kVisorNames[] = {
-    "CombatVisor",
-    "XRayVisor",
-    "ScanVisor",
-    "ThermalVisor",
-};
+// static const char* kVisorNames[] = {
+//     "CombatVisor",
+//     "XRayVisor",
+//     "ScanVisor",
+//     "ThermalVisor",
+// };
 
 static const float kEnergyTankCapacity = 100.f;
 static const float kBaseHealthCapacity = 99.f;
@@ -46,6 +78,8 @@ static const CPlayerState::EItemType kItems_803a74bc[11] = {
 
 // static inline void do_nothing() {}
 
+int CPlayerState::GetPowerUpMaxValue(EItemType type) { return kPowerUpMax[type]; }
+
 uint CPlayerState::GetBitCount(uint val) {
   int bits = 0;
   for (; val != 0; val >>= 1) {
@@ -57,6 +91,17 @@ uint CPlayerState::GetBitCount(uint val) {
 CPlayerState::CPowerUp::CPowerUp(int amount, int capacity, float timeLeft)
 : x0_amount(amount), x4_capacity(capacity), x8_timeLeft(timeLeft) {}
 
+CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct()
+: unk1(0), unk2(0), unk3(0), vec(), powerups(CPowerUp(0, 0, 0.0f)) {}
+
+CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct(const UnknownPlayerStateStruct& other)
+: unk1(other.unk1)
+, unk2(other.unk2)
+, unk3(other.unk3)
+, vec(other.vec)
+, powerups(other.powerups)
+{}
+
 CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
 : playerIndex(playerIndex)
 , alive(true)
@@ -66,15 +111,19 @@ CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
 , healthInfo(kBaseHealthCapacity, kDefaultKnockbackResistance)
 , currentVisor(kPV_Combat)
 , transitioningVisor(currentVisor)
-// TODO: vectorWord
+, vectorWord()
 , chargeBeamFactor(0.0f)
 , chargeAnimStart(0.25f / GetMissileComboChargeFactor())
 , visorTransitionFactor(kMaxVisorTransitionFactor)
 , currentSuit(kPS_Varia)
-// , x24_powerups(CPowerUp(0, 0))
-, unkStruct(s ? *s : UnknownPlayerStateStruct()) {
+, powerups(CPowerUp(0, 0, 0.0f))
+, scanCompletionRateFirst(0)
+, scanCompletionRateSecond(0)
+, unkStruct(s ? *s : UnknownPlayerStateStruct())
+, vectorUnk(5) {
 
-  // fn_80084928(unkStruct);
+  fn_80084928(unkStruct);
+  vectorWord.reserve(32);
 }
 
 CPlayerState::CPlayerState(int playerIndex, CInputStream& stream)
@@ -91,28 +140,32 @@ CPlayerState::CPlayerState(int playerIndex, CInputStream& stream)
 , chargeAnimStart(0.25f / GetMissileComboChargeFactor())
 , visorTransitionFactor(kMaxVisorTransitionFactor)
 , currentSuit(kPS_Varia) {
-  //   x4_enabledItems = uint(stream.ReadBits(32));
 
-  //   const uint integralHP = uint(stream.ReadBits(32));
-  //   xc_health.SetHP(*(float*)(&integralHP));
-  //   xc_health.SetKnockbackResistance(kDefaultKnockbackResistance);
+  stream.ReadBits(32);
+  enabledItems = stream.ReadBits(32);
 
-  //   x8_currentBeam = EBeamId(stream.ReadBits(GetBitCount(5)));
-  //   x20_currentSuit = EPlayerSuit(stream.ReadBits(GetBitCount(4)));
+  healthInfo = CHealthInfo((float)stream.ReadBits(32), kDefaultKnockbackResistance);
+  currentBeam = EBeamId(stream.ReadBits(GetBitCount(4)));
+  currentSuit = EPlayerSuit(stream.ReadBits(GetBitCount(3)));
+  unkStruct.unk1 = stream.ReadBits(GetBitCount(4));
+  unkStruct.unk2 = stream.ReadBits(GetBitCount(4));
+  unkStruct.unk3 = stream.ReadBits(GetBitCount(2));
 
-  //   for (int i = 0; i < x24_powerups.capacity(); ++i) {
-  //     int amount = 0;
-  //     int capacity = 0;
+  stream.ReadBits(32);
 
-  //     int maxValue = kPowerUpMax[i];
-  //     if (maxValue != 0) {
-  //       uint bitCount = GetBitCount(maxValue);
-  //       amount = stream.ReadBits(bitCount);
-  //       capacity = stream.ReadBits(bitCount);
-  //     }
-  //     CPowerUp pw(amount, capacity);
-  //     x24_powerups.push_back(pw);
-  //   }
+  CPowerUp* powup = powerups.data();
+  for (int i = 0; i < powerups.capacity(); ++i) {
+    int amount = 0;
+    int capacity = 0;
+    if (kShouldPersist[i]) {
+      int bitCount = GetBitCount(kPowerUpMax[i]);
+      amount = stream.ReadBits(bitCount);
+      capacity = stream.ReadBits(bitCount);
+    }
+    powup[i] = CPowerUp(amount, capacity, 0.0f);
+  }
+
+  stream.ReadBits(32);
 
   //   // Scan
   //   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
@@ -123,26 +176,44 @@ CPlayerState::CPlayerState(int playerIndex, CInputStream& stream)
   //     x170_scanTimes.push_back(rstl::pair< CAssetId, float >(it->first, time));
   //   }
 
-  //   x180_scanCompletionRateFirst = uint(stream.ReadBits(GetBitCount(0x100u)));
-  //   x184_scanCompletionRateSecond = uint(stream.ReadBits(GetBitCount(0x100u)));
+  scanCompletionRateFirst = int(stream.ReadBits(GetBitCount(0x100u)));
+  scanCompletionRateSecond = int(stream.ReadBits(GetBitCount(0x100u)));
+  stream.ReadBits(32);
+  vectorWord.reserve(32);
 }
 
+void CPlayerState::FUN_80085c18(uint v) { unkStruct.unk1 = v; }
+
 void CPlayerState::PutTo(COutputStream& stream) {
-  //   stream.WriteBits(x4_enabledItems, 32);
+  stream.WriteBits(0x504c5354, 32);
+  stream.WriteBits(enabledItems, 32);
 
-  //   const float realHP = xc_health.GetHP();
-  //   stream.WriteBits(*(int*)(&realHP), 32);
-  //   stream.WriteBits(x8_currentBeam, GetBitCount(5));
-  //   stream.WriteBits(x20_currentSuit, GetBitCount(4));
+  const float realHP = healthInfo.GetHP();
+  stream.WriteBits(*(int*)(&realHP), 32);
+  stream.WriteBits(currentBeam, GetBitCount(4));
+  stream.WriteBits(currentSuit, GetBitCount(3));
 
-  //   CPowerUp* powup = x24_powerups.data();
-  //   for (int i = 0; i < x24_powerups.capacity(); ++i) {
-  //     if (0 < kPowerUpMax[i]) {
-  //       int bitCount = GetBitCount(kPowerUpMax[i]);
-  //       stream.WriteBits(powup[i].x0_amount, bitCount);
-  //       stream.WriteBits(powup[i].x4_capacity, bitCount);
-  //     }
-  //   }
+  stream.WriteBits(unkStruct.unk1, GetBitCount(4));
+  stream.WriteBits(unkStruct.unk2, GetBitCount(4));
+  stream.WriteBits(unkStruct.unk3, GetBitCount(2));
+
+  stream.WriteBits(0x50525354, 0x20);
+  CPowerUp* powup = powerups.data();
+  for (int i = 0; i < powerups.capacity(); ++i) {
+    if (kShouldPersist[i]) {
+      int bitCount = GetBitCount(kPowerUpMax[i]);
+      stream.WriteBits(powup[i].x0_amount, bitCount);
+      stream.WriteBits(powup[i].x4_capacity, bitCount);
+    }
+  }
+
+  stream.WriteBits(0x504f5752, 0x20);
+
+  for (rstl::vector< UnknownV >::iterator it = vectorUnk.begin(); it != vectorUnk.end(); ++it) {
+    // TODO
+    stream.WriteBits(it->unk2, 1);
+    stream.WriteBits(2, 1);
+  }
 
   //   for (rstl::vector< rstl::pair< CAssetId, float > >::iterator it = x170_scanTimes.begin();
   //        it != x170_scanTimes.end(); ++it) {
@@ -155,8 +226,9 @@ void CPlayerState::PutTo(COutputStream& stream) {
   //     stream.WriteBits(flag, 1);
   //   }
 
-  //   stream.WriteBits(x180_scanCompletionRateFirst, GetBitCount(0x100));
-  //   stream.WriteBits(x184_scanCompletionRateSecond, GetBitCount(0x100));
+  stream.WriteBits(scanCompletionRateFirst, GetBitCount(0x100));
+  stream.WriteBits(scanCompletionRateSecond, GetBitCount(0x100));
+  stream.WriteBits(0x5343414e, 0x20);
 }
 
 void CPlayerState::ReInitializePowerUp(CPlayerState::EItemType type, int capacity) {
@@ -204,8 +276,8 @@ void CPlayerState::ResetAndIncrPickUp(CPlayerState::EItemType type, int amount) 
 
 void CPlayerState::IncrementHealth(float delta) {
   float maximum = CalculateHealth();
-  float newHealth = healthInfo.GetHP() + delta; // TODO: should be healthB
-  // TODO: clamp newHealth with maximum and 0
+  float newHealth = healthInfo.GetHP() + delta;
+  newHealth = 0.0f > newHealth ? 0.0f : (maximum < newHealth ? maximum : newHealth);
   healthInfo.SetHP(newHealth);
 }
 
@@ -232,18 +304,20 @@ void CPlayerState::IncrPickUp(EItemType type, int amount) {
 }
 
 void CPlayerState::DecrPickUp(CPlayerState::EItemType type, int amount) {
-  //   if (type < 0 || kIT_Max - 1 < type) {
-  //     return;
-  //   }
-
-  //   switch (type) {
-  //   case kIT_Missiles:
-  //   case kIT_PowerBombs:
-  //   case kIT_Flamethrower:
-  //     x24_powerups[type].Dec(amount);
-  //   default:
-  //     return;
-  //   }
+  if (type < 0 || kIT_Max - 1 < type) {
+    return;
+  }
+  if (GetPowerUpFieldToQuery(type) != kFQ_Maximum) {
+    powerups[type].x0_amount -= amount;
+    if (powerups[type].x0_amount < 0) {
+      powerups[type].x0_amount = 0;
+    }
+    switch (type) {
+    case kIT_EnergyTanks:
+      IncrementHealth(0.0f);
+      break;
+    }
+  }
 }
 
 CPlayerState::EPowerUpFieldToQuery CPlayerState::GetPowerUpFieldToQuery(EItemType itemType) const {
@@ -396,16 +470,24 @@ void CPlayerState::UpdateVisorTransition(float dt) {
   if (!GetIsVisorTransitioning())
     return;
 
-  // if (currentVisor == transitioningVisor) {
-  //   x1c_visorTransitionFactor = rstl::min_val(0.2f, x1c_visorTransitionFactor + dt);
-  // } else {
-  //   x1c_visorTransitionFactor -= dt;
-  //   if (x1c_visorTransitionFactor < 0.f) {
-  //     currentVisor = transitioningVisor;
-  //     x1c_visorTransitionFactor = fabs(x1c_visorTransitionFactor);
-  //     x1c_visorTransitionFactor = rstl::min_val(x1c_visorTransitionFactor, 0.19999f);
-  //   }
-  // }
+  if (currentVisor == transitioningVisor) {
+    float newVal = visorTransitionFactor + dt;
+    if (0.2f < newVal) {
+      newVal = 0.2f;
+    }
+    visorTransitionFactor = newVal;
+  } else {
+    visorTransitionFactor -= dt;
+    if (visorTransitionFactor < 0.f) {
+      currentVisor = transitioningVisor;
+      visorTransitionFactor = fabs(visorTransitionFactor);
+      float newVal = visorTransitionFactor;
+      if (0.19999f < newVal) {
+        newVal = 0.19999f;
+      }
+      visorTransitionFactor = newVal;
+    }
+  }
 }
 
 float CPlayerState::GetVisorTransitionFactor() const {
@@ -455,9 +537,9 @@ void CPlayerState::fn_80084E84(const CStateManager& mgr, float* f) { fn_8013c9b0
 // }
 
 CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& stateMgr) const {
-  //   const CFirstPersonCamera* cam = TCastToConstPtr< CFirstPersonCamera >(
-  //       stateMgr.GetCameraManager()->GetCurrentCamera(stateMgr));
-  //   return (cam ? currentVisor : kPV_Combat);
+  const CGameCamera* camera = stateMgr.GetCameraManager(playerIndex)->GetCurrentCamera(stateMgr, 1);
+  const CGameCamera* firstCamera = CCameraManager::CastGameCameratoFirstPersonCamera(camera);
+  return (firstCamera ? currentVisor : kPV_Combat);
 }
 
 bool CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
@@ -513,8 +595,8 @@ bool CPlayerState::ShouldDrawGrapple() const {
 // }
 
 int CPlayerState::GetTotalPickupCount() const {
-  // return gpTweakGame->GetTotalPercentage();
-  return 100;
+  return gpTweakGame->GetTotalPercentage();
+  // return 100;
 }
 
 int CPlayerState::CalculateItemCollectionRate() const {
@@ -563,7 +645,8 @@ void CPlayerState::IncrementChargeBeamFactor(float delta) {
   chargeBeamFactor = chargeBeamFactor + delta;
 }
 
-void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr, CPlayerState::EItemType type, int quantity) {
+void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr,
+                                                     CPlayerState::EItemType type, int quantity) {
   int oldAmount = GetItemAmount(type);
   DecrPickUp(type, quantity);
   if (oldAmount > 0 && GetItemAmount(type) == 0) {

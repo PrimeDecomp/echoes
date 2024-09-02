@@ -33,7 +33,9 @@ MetroidPrime/CEntity.cpp:
 	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common
 
 MetroidPrime/Player/CPlayerState.cpp:
-	.text       start:0x80084864 end:0x80086410
+	.text       start:0x80084864 end:0x80086444
+	.rodata     start:0x803A7288 end:0x803A74E8
+	.sdata2     start:0x8041ABD0 end:0x8041AC00
 
 MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14

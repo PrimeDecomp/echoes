@@ -185,12 +185,17 @@ public:
   };
 
   struct UnknownV {
-    short unk1;
-    float unk2;
-    float unk3;
+    uint unk1;
+    bool unk2;
+    bool unk3;
+    // short unk1;
+    // float unk2;
+    // float unk3;
   };
 
   struct UnknownPlayerStateStruct {
+    UnknownPlayerStateStruct();
+    UnknownPlayerStateStruct(const UnknownPlayerStateStruct&);
     void operator=(const UnknownPlayerStateStruct&);
 
     struct Nested {
@@ -208,6 +213,8 @@ public:
 
   CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
   explicit CPlayerState(int playerIndex, CInputStream& stream);
+
+  void FUN_80085c18(uint);
   void PutTo(COutputStream& stream);
 
   int GetMissileCostForAltAttack() const;
@@ -273,6 +280,7 @@ public:
   void InitializeScanTimes();
 
   static uint GetBitCount(uint);
+  static int GetPowerUpMaxValue(EItemType);
 
   // CStaticInterference& StaticInterference() { return x188_staticIntf; }
   // const CStaticInterference& GetStaticInterference() const { return x188_staticIntf; }
@@ -299,14 +307,14 @@ private:
   CHealthInfo healthInfo;
   EPlayerVisor currentVisor;
   EPlayerVisor transitioningVisor;
-  char vectorWord[0x10]; // pad
+  rstl::vector<TUniqueId> vectorWord;
   float chargeBeamFactor;
   float chargeAnimStart;
   float visorTransitionFactor;
   EPlayerSuit currentSuit;
   rstl::reserved_vector< CPowerUp, 109 > powerups;
-  int unk1;
-  int unk2;
+  int scanCompletionRateFirst;
+  int scanCompletionRateSecond;
   rstl::vector<UnknownV> vectorUnk;
   UnknownPlayerStateStruct unkStruct;
 };

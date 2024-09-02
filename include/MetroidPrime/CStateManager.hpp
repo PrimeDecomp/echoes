@@ -122,6 +122,8 @@ public:
   bool GetWantsToEnterSaveGameScreen() const { return m_deferredTransition == kSMT_SaveGame; }
   bool GetWantsToEnterMessageScreen() const { return m_deferredTransition == kSMT_MessageScreen; }
 
+  const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
+
 public:
   ushort m_nextFreeIndex;
   rstl::reserved_vector< ushort, 1024 > m_objectIndexArray;                // x0x4

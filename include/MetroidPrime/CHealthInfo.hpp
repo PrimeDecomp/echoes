@@ -11,9 +11,9 @@ class CHealthInfo {
 public:
   CHealthInfo(float hp, float resist);
 
-  void SetHP(float hp) { healthA = hp; }
+  void SetHP(float hp) { healthB = hp; }
   void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
-  float GetHP() const { return healthA; }
+  float GetHP() const { return healthB; }
 
   void fn_80142094(const CDamageInfo& dmgInfo, TUniqueId, TUniqueId, bool, bool);
   void fn_8014206C(uint*, TUniqueId, TUniqueId, bool);
