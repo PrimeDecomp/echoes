@@ -6,7 +6,6 @@
 #include "rstl/reserved_vector.hpp"
 #include "rstl/vector.hpp"
 
-
 #include "Kyoto/SObjectTag.hpp"
 
 #include "MetroidPrime/CHealthInfo.hpp"
@@ -153,7 +152,7 @@ public:
     kBI_Annihilator,
   };
   enum EChargeStage { kCS_Normal, kCS_Charged };
-  
+
   enum EPowerUpFieldToQuery {
     kFQ_Actual,
     kFQ_Minimum,
@@ -199,6 +198,8 @@ public:
     void operator=(const UnknownPlayerStateStruct&);
 
     struct Nested {
+      Nested(uint a) : unk1(a), b1(0), b2(false) {}
+
       uint unk1;
       bool b1;
       bool b2;
@@ -273,7 +274,7 @@ public:
   void ResetAndIncrPickUp(EItemType type, int amount);
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
-  rstl::vector<UnknownPlayerStateStruct::Nested>& fn_800851DC();
+  rstl::vector< UnknownPlayerStateStruct::Nested >& fn_800851DC();
 
   float CalculateHealth();
 
@@ -307,7 +308,7 @@ private:
   CHealthInfo healthInfo;
   EPlayerVisor currentVisor;
   EPlayerVisor transitioningVisor;
-  rstl::vector<TUniqueId> vectorWord;
+  rstl::vector< TUniqueId > vectorWord;
   float chargeBeamFactor;
   float chargeAnimStart;
   float visorTransitionFactor;
@@ -315,7 +316,7 @@ private:
   rstl::reserved_vector< CPowerUp, 109 > powerups;
   int scanCompletionRateFirst;
   int scanCompletionRateSecond;
-  rstl::vector<UnknownV> vectorUnk;
+  rstl::vector< UnknownV > vectorUnk;
   UnknownPlayerStateStruct unkStruct;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)

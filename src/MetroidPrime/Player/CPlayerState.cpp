@@ -2,6 +2,7 @@
 
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CMemoryCard.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
 #include "Kyoto/Streams/CInputStream.hpp"
@@ -507,9 +508,13 @@ rstl::vector< CPlayerState::UnknownPlayerStateStruct::Nested >& CPlayerState::fn
 }
 
 void CPlayerState::InitializeScanTimes() {
-  //   if (x170_scanTimes.size())
-  //     return;
+  if (unkStruct.vec.size())
+      return;
 
+  unkStruct.vec.reserve(gpMemoryCard->GetScanStates().size());
+  for (int i = 0; i < 4; ++i) {
+    unkStruct.vec.insert(unkStruct.vec.end(), UnknownPlayerStateStruct::Nested(i));
+  }
   //   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
   //   x170_scanTimes.reserve(scanStates.size());
   //   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
