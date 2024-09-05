@@ -76,7 +76,7 @@ private:
   bool hintSystem : 1;
   bool unk : 1;
   rstl::vector<SObjectTag> vec;
-  char pad[0xc];
+  rstl::reserved_vector<rstl::pair<bool, bool>, 4> unk2;
 };
 CHECK_SIZEOF(CGameOptions, 0x44)
 
