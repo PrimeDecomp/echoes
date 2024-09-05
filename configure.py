@@ -135,7 +135,7 @@ if not config.non_matching:
 # Tool versions
 config.binutils_tag = "2.42-1"
 config.compilers_tag = "20240706"
-config.dtk_tag = "v0.9.4"
+config.dtk_tag = "v0.9.5"
 config.objdiff_tag = "v2.0.0-beta.5"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
@@ -153,7 +153,6 @@ config.asflags = [
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
-    # "-warn off",
     "-listclosure",
 ]
 # Use for any additional files that should cause a re-configure when modified
@@ -178,36 +177,17 @@ cflags_base = [
     "-RTTI off",
     "-fp_contract on",
     "-str reuse",
-    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
     "-i include",
     "-i libc",
     f"-i build/{config.version}/include",
     f"-DVERSION={version_num}",
 ]
 
-cflags_base_dbg = [
-    "-nodefaults",
-    "-proc gekko",
-    "-align powerpc",
-    "-enum int",
-    "-fp hardware",
-    "-Cpp_exceptions off",
-    # "-W all",
-    #"-O4,p",
-    "-g",
-    #"-inline auto",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-RTTI off",
-    "-fp_contract on",
-    "-str reuse",
-    "-i include",
-    "-i libc",
-    f"-DVERSION={version_num}",
-    "-D_DEBUG=1",
-]
+# GC 3.0 and above require -enc SJIS instead of -multibyte
+if version_num >= 3:
+    cflags_base.append("-enc SJIS")
+else:
+    cflags_base.append("-multibyte")
 
 # Debug flags
 if config.debug:
@@ -253,13 +233,13 @@ if version_num > 0:
     # RELs not yet set up for non-USA versions
     config.build_rels = False
 
+
 # Helper function for Dolphin libraries
-def DolphinLib(lib_name: str, objects: List[Object], debug=False) -> Dict[str, Any]:
+def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
         "cflags": cflags_base,
-        "progress_category": "sdk",
         "host": False,
         "objects": objects,
     }
@@ -271,7 +251,6 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "lib": lib_name,
         "mw_version": "GC/1.3.2",
         "cflags": cflags_rel,
-        "progress_category": "game",
         "host": True,
         "objects": objects,
     }
@@ -288,7 +267,6 @@ config.libs = [
         "lib": "MetroidPrime",
         "cflags": cflags_retro,
         "mw_version": "GC/2.7",
-        "progress_category": "game",
         "host": True,
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
@@ -312,7 +290,6 @@ config.libs = [
         "lib": "Kyoto_CW",
         "mw_version": "GC/2.7",
         "cflags": cflags_retro,
-        "progress_category": "game",
         "host": True,
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
@@ -333,7 +310,6 @@ config.libs = [
         "lib": "Runtime.PPCEABI.H",
         "mw_version": config.linker_version,
         "cflags": cflags_runtime,
-        "progress_category": "sdk",  # str | List[str]
         "host": False,
         "objects": [
             Object(Matching, "Runtime/global_destructor_chain.c"),
@@ -373,7 +349,6 @@ config.libs = [
             Object(Matching, "Dolphin/card/CARDErase.c"),
             Object(Matching, "Dolphin/card/CARDProgram.c"),
         ],
-        debug=False,
     ),
     DolphinLib(
         "base",
@@ -420,11 +395,7 @@ config.libs = [
 ]
 
 # Optional extra categories for progress tracking
-# Adjust as desired for your project
-config.progress_categories = [
-    ProgressCategory("game", "Game Code"),
-    ProgressCategory("sdk", "SDK Code"),
-]
+config.progress_categories = []
 config.progress_each_module = args.verbose
 
 if args.mode == "configure":

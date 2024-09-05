@@ -20,7 +20,7 @@ root_dir = os.path.abspath(os.path.join(script_dir, ".."))
 src_dir = os.path.join(root_dir, "src")
 include_dirs = [
     os.path.join(root_dir, "include"),
-    # Add additional include directories here
+    os.path.join(root_dir, "libc"),
 ]
 
 include_pattern = re.compile(r'^#\s*include\s*[<"](.+?)[>"]$')
