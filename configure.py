@@ -224,7 +224,7 @@ cflags_rel = [
 
 if version_num >= 3:
     cflags_runtime.append("-inline auto")
-    config.linker_version = "GC/3.0"
+    config.linker_version = "GC/3.0a5"
 else:
     cflags_runtime.append("-inline deferred,auto")
     config.linker_version = "GC/2.7"
