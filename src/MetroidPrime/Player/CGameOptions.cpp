@@ -4,17 +4,22 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
 #include "Kyoto/Math/CMath.hpp"
-#include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CMemoryStreamOut.hpp"
+
 
 #include "dolphin/os.h"
 
 extern "C" void fn_8029AF00(int, uchar);
-extern "C" rstl::pair<bool, bool> fn_80227694();
-extern "C" void fn_802275B8(rstl::pair<bool, bool>&, CMemoryStreamOut& out);
-extern "C" rstl::pair<bool, bool> fn_80227624(CInputStream& in);
+extern "C" rstl::pair< bool, bool > fn_80227694();
+extern "C" void fn_802275B8(rstl::pair< bool, bool >&, CMemoryStreamOut& out);
+extern "C" rstl::pair< bool, bool > fn_80227624(CInputStream& in);
 
 extern "C" bool lbl_804191E0;
+
+SObjectTag sControllerAssets[] = {
+  SObjectTag(0x2A13423E, 0xF13452F8),
+};
 
 int CGameOptions_CalculateBits(uint v) {
   int iVar1;
@@ -65,7 +70,7 @@ CGameOptions::CGameOptions()
   InitSoundMode();
 }
 
-CGameOptions::CGameOptions(CInputStream& in) 
+CGameOptions::CGameOptions(CInputStream& in)
 
 : soundMode(CAudioSys::kSM_Stereo)
 , screenBrightness(4)
@@ -82,10 +87,9 @@ CGameOptions::CGameOptions(CInputStream& in)
 , swapBeamsControls(false)
 , hintSystem(true)
 , unk(false)
-, vec()
-{
+, vec() {
   in.ReadBits(32);
-  soundMode = (CAudioSys::ESurroundModes) in.ReadBits(CGameOptions_CalculateBits(2));
+  soundMode = (CAudioSys::ESurroundModes)in.ReadBits(CGameOptions_CalculateBits(2));
   screenBrightness = in.ReadBits(CGameOptions_CalculateBits(8));
   screenXOffset = in.ReadBits(CGameOptions_CalculateBits(60)) - 30;
   screenYOffset = in.ReadBits(CGameOptions_CalculateBits(60)) - 30;
@@ -95,14 +99,14 @@ CGameOptions::CGameOptions(CInputStream& in)
   musicVol = in.ReadBits(CGameOptions_CalculateBits(0x69));
   hudAlpha = in.ReadBits(CGameOptions_CalculateBits(0xff));
   helmetAlpha = in.ReadBits(CGameOptions_CalculateBits(0xff));
-  
+
   hudLag = in.ReadBits(1);
   hintSystem = in.ReadBits(1);
   invertY = in.ReadBits(1);
   rumble = in.ReadBits(1);
   swapBeamsControls = in.ReadBits(1);
   unk = in.ReadBits(1);
-  
+
   for (int i = 0; i < 4; ++i) {
     unk2.push_back(fn_80227624(in));
   }
@@ -129,7 +133,7 @@ void CGameOptions::PutTo(CMemoryStreamOut& out) {
   out.WriteBits(unk != 0, 1);
 
   int i = 0;
-  rstl::pair<bool, bool>* data = unk2.data();
+  rstl::pair< bool, bool >* data = unk2.data();
   for (; i < 4; ++i) {
     fn_802275B8(*data, out);
     ++data;
@@ -306,6 +310,20 @@ void CGameOptions::ToggleControls(bool flag) {
   }
 }
 
-void CGameOptions::ResetControllerAssets(int controls) {}
+void CGameOptions::ResetControllerAssets(int controls) {
+  switch (controls) {
+  case 1:
+    vec.reserve(15);
+    for (int i = 0; i < 5; ++i) {
+      vec.push_back(sControllerAssets[i]);
+    }
+    break;
+  case 0:
+    vec = rstl::vector<SObjectTag>();
+    break;
+  default:
+    break;
+  }
+}
 
 void CGameOptions::SetControls(int controls) { ResetControllerAssets(controls); }
