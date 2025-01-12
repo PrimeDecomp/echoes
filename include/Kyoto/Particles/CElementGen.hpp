@@ -56,6 +56,7 @@ public:
   virtual void SetParticleEmission(bool emission) override;
   virtual void SetModulationColor(const CColor& col) override;
   virtual void SetGeneratorRate(float rate) override {}
+
   virtual const CTransform4f& GetOrientation() const override;
   virtual const CVector3f& GetTranslation() const override;
   virtual CTransform4f GetGlobalOrientation() const override;
@@ -63,6 +64,8 @@ public:
   virtual CVector3f GetGlobalScale() const override;
   virtual bool GetParticleEmission() const override;
   virtual CColor GetModulationColor() const override;
+
+  virtual int GetActiveParticleCount() const override;
   virtual bool IsSystemDeletable() const override;
   virtual rstl::optional_object<CAABox> GetBounds() const override;
   virtual int GetParticleCount() const override;

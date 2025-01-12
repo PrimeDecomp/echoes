@@ -28,6 +28,7 @@ public:
   virtual void SetParticleEmission(bool emission) = 0;
   virtual void SetModulationColor(const CColor& col) = 0;
   virtual void SetGeneratorRate(float rate) {}
+
   virtual const CTransform4f& GetOrientation() const = 0;
   virtual const CVector3f& GetTranslation() const = 0;
   virtual CTransform4f GetGlobalOrientation() const = 0;
@@ -36,6 +37,13 @@ public:
   virtual bool GetParticleEmission() const = 0;
   virtual CColor GetModulationColor() const = 0;
   virtual float GetGeneratorRate() const { return 1.f; }
+
+  virtual void UnkA() {}
+  virtual void UnkB() {}
+  virtual void UnkC() {}
+  virtual void UnkD() {}
+
+  virtual int GetActiveParticleCount() const;
   virtual bool IsSystemDeletable() const = 0;
   virtual rstl::optional_object<CAABox> GetBounds() const = 0;
   virtual int GetParticleCount() const = 0;
