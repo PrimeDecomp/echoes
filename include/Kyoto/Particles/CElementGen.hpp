@@ -167,5 +167,6 @@ public:
   static bool sSubtractBlend;
 };
 CHECK_SIZEOF(CElementGen, 0x340)
+// From CPowerBeam::Update, this should be 0x338?
 
 #endif // _CELEMENTGEN

@@ -38,12 +38,16 @@ public:
   virtual void AddStaticGeometry();
   virtual void EnablePVS(const CPVSVisSet& set, int areaIdx);
   virtual void DisablePVS();
+  virtual void UnkA();
   virtual void RemoveStaticGeometry();
   virtual void DrawUnsortedGeometry(int areaIdx, int mask, int targetMask);
   virtual void DrawSortedGeometry(int areaIdx, int mask, int targetMask);
   virtual void DrawStaticGeometry(int areaIdx, int mask, int targetMask);
   virtual void DrawAreaGeometry(int areaIdx, int mask, int targetMask);
   virtual void PostRenderFogs();
+  virtual void UnkB();
+  virtual void UnkC();
+  virtual void UnkD();
   virtual void SetModelMatrix(const CTransform4f& xf);
   virtual void AddParticleGen(const CParticleGen& gen);
   virtual void AddParticleGen2();

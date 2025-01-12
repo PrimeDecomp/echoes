@@ -63,6 +63,10 @@ MetroidPrime/CHealthInfo.cpp:
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
 
+MetroidPrime/Weapons/CPowerBeam.cpp:
+	.text       start:0x801D4FC8 end:0x801D5C70
+	.data       start:0x803B72B0 end:0x803B7310
+
 MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 	.text       start:0x801E1338 end:0x801E2098
 	.data       start:0x803B7588 end:0x803B75A8
