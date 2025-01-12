@@ -94,7 +94,7 @@ public:
   const CWorld* GetWorld() const { return m_world; }
   CEnvFxManager* EnvFxManager() { return m_envFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
-  int GetUpdateFrameIdx() const { m_updateFrameIdx; }
+  int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
 
   int GetNumPlayers() const { return m_numPlayers; }
   CPlayer* GetPlayer(int index) { return m_players[index]; }

@@ -15,6 +15,8 @@ SGuiWidget_FuncPtrs* gLoader_GUI;
 FScriptLoader* gLoader_PlayerController;
 FScriptLoader* gLoader_WallWalker;
 
+FScriptLoader* gLoader_CannonBall;
+
 void SetLoader_WallWalker(FScriptLoader* loader) { gLoader_WallWalker = loader; }
 CEntity* Load_WallWalker(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return (*gLoader_WallWalker)(mgr, input, info);
@@ -127,4 +129,9 @@ void SnakeWeedAlt_8021BA94(CEntity& ent, const CVector3f& v, const CDamageInfo& 
 void SetLoader_IngSnatchingSwarm(FScriptLoader* loader) { gLoader_IngSnatchingSwarm = loader; }
 CEntity* LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return (*gLoader_IngSnatchingSwarm)(mgr, input, info);
+}
+
+void SetLoader_CannonBall(FScriptLoader* loader) { gLoader_CannonBall = loader; }
+CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+  return (*gLoader_CannonBall)(mgr, input, info);
 }

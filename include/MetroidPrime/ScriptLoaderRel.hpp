@@ -59,4 +59,6 @@ struct SScriptForgottenObject_FuncPtrs {
 };
 void SetSScriptForgottenObject_FuncPtrs(SScriptForgottenObject_FuncPtrs*);
 
+void SetLoader_CannonBall(FScriptLoader* loader);
+
 #endif // _SCRIPTLOADERREL

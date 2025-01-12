@@ -7,6 +7,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoader/Struct/SLdrCannonBall.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
@@ -64,6 +65,9 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     m_fields.clear();
     break;
   }
+
+  default:
+    break;
   }
 }
 
@@ -153,7 +157,7 @@ void CScriptCannonBall::TrackedShot::FreeScriptObject(CStateManager& mgr) {
 
 CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
 
-CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* REL_LoadCannonBall(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   SLdrCannonBall sldrThis;
 
   int propertyCount = input.ReadUint16();
@@ -179,4 +183,19 @@ CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& in
                                LoadEditorTransform(sldrThis.editorProperties), sldrThis.effect
 
   );
+}
+
+FScriptLoader REL_loader_CannonBall;
+
+void SetRelLoaderFunctionToLoader() {
+  REL_loader_CannonBall = REL_LoadCannonBall;
+  SetLoader_CannonBall(&REL_loader_CannonBall);
+}
+
+extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
+
+extern "C" void RELExit() { SetLoader_CannonBall(nullptr); }
+
+CHealthInfo* CScriptCannonBall::HealthInfo(CStateManager& mgr) {
+  return this->HealthInfo(mgr); 
 }
