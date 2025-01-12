@@ -115,7 +115,7 @@ public:
   void SetTransformAlt(const CTransform4f& xf);
   void SetRotation(const CQuaternion& rot) { SetTransform(rot.BuildTransform4f(GetTranslation())); }
   CQuaternion GetRotation() const { return CQuaternion::FromMatrix(GetTransform()); }
-  CVector3f GetTranslation() const { return transform.GetTranslation(); }
+  const CVector3f& GetTranslation() const { return position; }
   void SetTranslation(const CVector3f& vec);
   CTransform4f GetLocatorTransform(const rstl::string& segName) const;
   CTransform4f GetScaledLocatorTransform(const rstl::string& segName) const;
@@ -213,6 +213,7 @@ private:
   CTransform4f transform;  // x24
   CVector3f position; // x54
   rstl::single_ptr< CModelData > modelData; // x60
+  int postModelDataFiller;
   CMaterialList material; // x68
   CMaterialFilter x70_materialFilter;
   TSfxId x88_sfxId;
@@ -255,7 +256,9 @@ private:
   uint xe7_29_drawEnabled : 1;
   uint xe7_30_doTargetDistanceTest : 1;
   uint xe7_31_targetable : 1;
+  
+  char actor_padding[108];
 };
-// CHECK_SIZEOF(CActor, 0xe8)  0x158
+CHECK_SIZEOF(CActor, 0x158)  
 
 #endif // _CACTOR

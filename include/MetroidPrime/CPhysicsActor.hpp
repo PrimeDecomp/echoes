@@ -37,11 +37,8 @@ struct SMoverData {
 class CMotionState {
 public:
   CMotionState(const CVector3f& translation, const CNUQuaternion& orientation,
-               const CVector3f& velocity, const CAxisAngle& angularMomentum)
-  : x0_translation(translation)
-  , xc_orientation(orientation)
-  , x1c_velocity(velocity)
-  , x28_angularMomentum(angularMomentum) {}
+               const CVector3f& velocity, const CAxisAngle& angularMomentum);
+  CMotionState(const CMotionState&);
 
   const CVector3f& GetTranslation() const { return x0_translation; }
   const CNUQuaternion& GetOrientation() const { return xc_orientation; }
@@ -58,14 +55,20 @@ CHECK_SIZEOF(CMotionState, 0x34)
 
 class CCollisionInfoList;
 
+struct CPhysicsActorUnkB {
+  ~CPhysicsActorUnkB();
+  int a;
+};
+
 class CPhysicsActor : public CActor {
   static const float kGravityAccel;
 
 public:
   CPhysicsActor(TUniqueId uid, bool active, const rstl::string& name, const CEntityInfo& info,
+                int unk,
                 const CTransform4f& xf, const CModelData& mData, const CMaterialList& matList,
                 const CAABox& aabb, const SMoverData& moverData, const CActorParameters& actParams,
-                float stepUp, float stepDown);
+                float* stepUpDown);
 
   // CActor
   ~CPhysicsActor() override;
@@ -80,10 +83,14 @@ public:
                             CStateManager& mgr);
   virtual float GetStepDownHeight() const;
   virtual float GetStepUpHeight() const;
+  virtual int PhysicsUnkVirtual();
   virtual float GetWeight() const;
   float GetMass() const { return xe8_mass; }
   void SetMass(float mass);
   void SetInertiaTensorScalar(float tensor);
+
+  
+  void SetStepUpHeight(float);
 
   const CAABox& GetBaseBoundingBox() const;
   CAABox GetBoundingBox() const;
@@ -111,12 +118,15 @@ public:
   void Stop();
 
   CVector3f GetPrimitiveOffset() const;
+  const bool IsStandardCollider() const { return xf9_standardCollider; } // name and type?
+  void SetStandardCollider(const bool v) { xf9_standardCollider = v; } // name and type?
   const CVector3f& GetConstantForceWR() const { return xfc_constantForce; }
   void SetConstantForceWR(const CVector3f& force) { xfc_constantForce = force; }
   const CAxisAngle& GetAngularMomentumWR() const { return x108_angularMomentum; }
   void SetAngularMomentumWR(const CAxisAngle& angularMomentum) {
     x108_angularMomentum = angularMomentum;
   }
+  const CVector3f& GetVelocityWR() const { return x138_velocity; }
   const CVector3f& GetMomentumWR() const { return x150_momentum; }
   void SetMomentumWR(const CVector3f& momentum) { x150_momentum = momentum; }
   const CVector3f& GetForceWR() const { return x15c_force; }
@@ -129,13 +139,14 @@ public:
   void SetAngularImpulseWR(const CAxisAngle& angularImpulse) {
     x180_angularImpulse = angularImpulse;
   }
+  void SetLastNonCollidingState(const CMotionState& state) { x1f4_lastNonCollidingState = state; }
 
   float GetCoefficientOfRestitutionModifier() const;
   void SetCoefficientOfRestitutionModifier(float modifier);
   float GetCollisionAccuracyModifier() const;
   void SetCollisionAccuracyModifier(float modifier);
   float GetMaximumCollisionVelocity() const;
-  void SetMaximumCollisionVelocity(float velocity);
+  void SetMaxVelocityAfterCollision(float velocity);
 
   CPhysicsState GetPhysicsState() const;
   void SetPhysicsState(const CPhysicsState& state);
@@ -155,7 +166,7 @@ public:
   CVector3f GetMoveToORImpulseWR(const CVector3f& impulse, float d) const;
   CVector3f GetRotateToORAngularMomentumWR(const CQuaternion& q, float d) const;
   void RotateToWR(const CQuaternion&, float);
-  
+
   void MoveInOneFrameOR(const CVector3f& trans, float d);
   void RotateInOneFrameOR(const CQuaternion&, float);
 
@@ -163,6 +174,7 @@ public:
   void RotateToOR(const CQuaternion&, float);
 
   CVector3f GetTotalForceWR() const;
+  CVector3f GetConstantTotalForceWR() const { return x15c_force + x150_momentum; }
 
   static float GravityConstant() { return kGravityAccel; }
 
@@ -173,7 +185,7 @@ private:
   float xf4_inertiaTensorRecip;
   bool xf8_24_movable : 1;
   bool xf8_25_angularEnabled : 1;
-  bool xf9_standardCollider;
+  uchar xf9_standardCollider;
   CVector3f xfc_constantForce;
   CAxisAngle x108_angularMomentum;
   CMatrix3f x114_;
@@ -187,6 +199,7 @@ private:
   CVector3f x18c_moveImpulse;
   CAxisAngle x198_moveAngularImpulse;
   CAABox x1a4_baseBoundingBox;
+  int unk1;
   CCollidableAABox x1c0_collisionPrimitive;
   CVector3f x1e8_primitiveOffset;
   CMotionState x1f4_lastNonCollidingState;
@@ -198,8 +211,10 @@ private:
   float x248_collisionAccuracyModifier;
   uint x24c_numTicksStuck;
   uint x250_numTicksPartialUpdate;
-  uint x254_;
+  CPhysicsActorUnkB x254_;
+  void* unk2;
+  int unk3;
 };
-// CHECK_SIZEOF(CPhysicsActor, 0x258)  0x2d0
+CHECK_SIZEOF(CPhysicsActor, 0x2d0)
 
 #endif // _CPHYSICSACTOR
