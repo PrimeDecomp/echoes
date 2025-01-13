@@ -39,6 +39,18 @@ public:
   };
 
   struct C3DEmitterParmData {
+    // ????
+    C3DEmitterParmData(const float maxDist = 150.f, const float distComp = 0.1f,
+                       const uint flags = 1, const uchar maxVol = 127, const uchar minVol = 0)
+    : x18_maxDist(maxDist)
+    , x1c_distComp(distComp)
+    , x20_flags(flags)
+    , x24_sfxId(0)
+    , x26_maxVol(maxVol)
+    , x27_minVol(minVol)
+    , x28_important(false)
+    , x29_prio(127) {}
+
     C3DEmitterParmData(const CVector3f& pos, const CVector3f& dir, float maxDist, float distComp,
                        uint flags, ushort sfxId, float maxVol, float minVol, bool important,
                        uchar prio)

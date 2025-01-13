@@ -47,8 +47,12 @@ enum EScriptObjectState {
   kSS_Active = 0x41435456,
   kSS_Inactive = 0x49435456,
   kSS_Zero = 0x5a45524f,
+  kSS_DefaultState = 0x44465354,
   kSS_MaxReached = 0x4d415852,
-  kSS_InvalidState = 0xffffffff
+  kSS_ScanStart = 0x4553434e,
+  kSS_ScanProcessing = 0x4253434e,
+  kSS_ScanDone = 0x53434e44,
+  kSS_InvalidState = 0xffffffff,
 };
 
 enum EScriptObjectMessage {

@@ -95,6 +95,11 @@ public:
   void SetWorldLightFadeLevel() override;
   void Something() override;
   void PrepareDynamicLights(const rstl::vector< CLight >& lights) override;
+  virtual void UnkE();
+  virtual void UnkF();
+  virtual void UnkG();
+  virtual void UnkH(int);
+  virtual void UnkI();
 
   void AllocatePhazonSuitMaskTexture();
 

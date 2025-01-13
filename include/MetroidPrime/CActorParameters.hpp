@@ -99,8 +99,8 @@ public:
 
 private:
   uint x0_mask : 4;
-  uint x0_4_b1 : 1;
   uint x0_5_scanPassthrough : 1;
+  uint x0_4_b1 : 1;
 };
 CHECK_SIZEOF(CVisorParameters, 0x4)
 

@@ -6,9 +6,9 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "Collision/CMaterialList.hpp"
 
+#include "MetroidPrime/ActorCommon.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CModelData.hpp"
-#include "MetroidPrime/ActorCommon.hpp"
 
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
@@ -62,14 +62,15 @@ public:
   void SetActive(const bool active) override;
 
   virtual void PreRender(CStateManager&, const CFrustumPlanes&);
-  virtual void AddToRenderer(const CFrustumPlanes&, const CStateManager&) const;
+  virtual void AddToRenderer(const CStateManager&) const;
   virtual void Render(const CStateManager&) const;
   virtual bool CanRenderUnsorted(const CStateManager&) const;
-  virtual void CalculateRenderBounds();
+  virtual void CalculateRenderBounds(CStateManager& mgr);
   const CHealthInfo* GetHealthInfo(const CStateManager& mgr) const {
     return const_cast< CActor* >(this)->HealthInfo(const_cast< CStateManager& >(mgr));
   }
   virtual CHealthInfo* HealthInfo(CStateManager&);
+  virtual void UnkA(); // must be before GetSortingBounds
   virtual const CDamageVulnerability* GetDamageVulnerability() const;
   virtual const CDamageVulnerability* GetDamageVulnerability(const CVector3f&, const CVector3f&,
                                                              const CDamageInfo&) const;
@@ -96,7 +97,7 @@ public:
 
   void UpdateSfxEmitters();
   void RemoveEmitter();
-  void SetModelData(const CModelData& modelData);
+  void SetModelData(const CModelData& modelData, CStateManager& mgr);
   float GetAverageAnimVelocity(int anim);
   void EnsureRendered(const CStateManager& mgr) const;
   void EnsureRendered(const CStateManager& mgr, const CVector3f& pos, const CAABox& bounds) const;
@@ -105,9 +106,9 @@ public:
   void RenderInternal(const CStateManager& mgr) const;
   void CreateShadow(bool);
 
-  const CTransform4f& GetTransform() const { return transform; }
+  const CTransform4f& GetTransform() const { return m_transform; }
   void SetTransform(const CTransform4f& xf) {
-    transform = xf;
+    m_transform = xf;
     SetTransformDirty(true);
     SetTransformDirtySpare(true);
     SetPreRenderHasMoved(true);
@@ -115,11 +116,17 @@ public:
   void SetTransformAlt(const CTransform4f& xf);
   void SetRotation(const CQuaternion& rot) { SetTransform(rot.BuildTransform4f(GetTranslation())); }
   CQuaternion GetRotation() const { return CQuaternion::FromMatrix(GetTransform()); }
-  const CVector3f& GetTranslation() const { return position; }
+  const CVector3f& GetTranslation() const { return m_position; }
   void SetTranslation(const CVector3f& vec);
   CTransform4f GetLocatorTransform(const rstl::string& segName) const;
   CTransform4f GetScaledLocatorTransform(const rstl::string& segName) const;
   float GetYaw() const;
+  float GetPitch() const;
+  void SetActorLights(rstl::auto_ptr< CActorLights > lights);
+  void SetInFluid(bool b, TUniqueId uid);
+
+  CScannableObjectInfo* GetScannableObjectInfo() const;
+  void MoveScannableObjectInfoToActor(CActor* actor, CStateManager& mgr);
 
   /// ????
   bool NullModel() const { return !GetAnimationData() && !GetModelData()->HasNormalModel(); }
@@ -127,8 +134,8 @@ public:
   bool HasModelData() const {
     return GetModelData() && (GetModelData()->HasAnimation() || GetModelData()->HasNormalModel());
   }
-  CModelData* ModelData() { return modelData.get(); }
-  const CModelData* GetModelData() const { return modelData.get(); }
+  CModelData* ModelData() { return m_modelData.get(); }
+  const CModelData* GetModelData() const { return m_modelData.get(); }
 
   bool HasAnimation() const { return GetModelData() && GetModelData()->HasAnimation(); }
   CAnimData* AnimationData() { return ModelData()->AnimationData(); }
@@ -145,38 +152,40 @@ public:
   const CModelFlags& GetModelFlags() const { return xb4_drawFlags; }
   void SetModelFlags(const CModelFlags& flags) { xb4_drawFlags = flags; }
 
-  const CMaterialList& GetMaterialList() const { return material; }
-  CMaterialList& MaterialList() { return material; }
+  const CMaterialList& GetMaterialList() const { return m_material; }
+  CMaterialList& MaterialList() { return m_material; }
 
   const CMaterialFilter& GetMaterialFilter() const;
   void SetMaterialFilter(const CMaterialFilter& filter);
 
-  bool GetTransformDirty() const { return xe4_27_notInSortedLists; }
-  bool GetTransformDirtySpare() const { return xe4_28_transformDirty; }
-  bool GetPreRenderHasMoved() const { return xe4_29_actorLightsDirty; }
-  bool GetPreRenderClipped() const { return xe4_30_outOfFrustum; }
-  bool GetCalculateLighting() const { return xe4_31_calculateLighting && HasActorLights(); }
-  bool GetDrawShadow() const { return xe5_24_shadowEnabled; }
-  bool GetShadowDirty() const { return xe5_25_shadowDirty; }
-  bool GetMuted() const { return xe5_26_muted; }
-  EThermalFlags GetThermalFlags() const {
-    return static_cast< EThermalFlags >(xe6_27_thermalVisorFlags);
-  }
-  bool GetRenderParticleDatabaseInside() const { return xe6_29_renderParticleDBInside; }
-  bool GetTargetable() const { return xe7_31_targetable; }
+  bool GetTransformDirty() const { return m_notInSortedLists; }
+  bool GetTransformDirtySpare() const { return m_transformDirty; }
+  bool GetPreRenderHasMoved() const { return m_actorLightsDirty; }
+  bool GetPreRenderClipped() const { return m_outOfFrustum; }
+  bool GetCalculateLighting() const { return m_calculateLighting && HasActorLights(); }
+  bool GetDrawShadow() const { return m_shadowEnabled; }
+  bool GetShadowDirty() const { return m_shadowDirty; }
+  bool GetMuted() const { return m_muted; }
+  // EThermalFlags GetThermalFlags() const {
+  //   return static_cast< EThermalFlags >(m_thermalVisorFlags);
+  // }
+  bool GetRenderParticleDatabaseInside() const { return m_renderParticleDBInside; }
+  bool GetTargetable() const { return m_targetable; }
 
-  void SetTransformDirty(bool b) { xe4_27_notInSortedLists = b; }
-  void SetTransformDirtySpare(bool b) { xe4_28_transformDirty = b; }
-  void SetPreRenderHasMoved(bool b) { xe4_29_actorLightsDirty = b; }
-  void SetPreRenderClipped(bool b) { xe4_30_outOfFrustum = b; }
-  void SetCalculateLighting(bool b) { xe4_31_calculateLighting = b; }
-  void SetDrawShadow(bool b) { xe5_24_shadowEnabled = b; }
-  void SetShadowDirty(bool b) { xe5_25_shadowDirty = b; }
-  void SetMuted(bool b) { xe5_26_muted = b; }
-  void SetThermalFlags(EThermalFlags flags) { xe6_27_thermalVisorFlags = flags; }
-  void SetRenderParticleDatabaseInside(bool b) { xe6_29_renderParticleDBInside = b; }
-  void SetTargetable(bool b) { xe7_31_targetable = b; }
+  void SetTransformDirty(bool b) { m_notInSortedLists = b; }
+  void SetTransformDirtySpare(bool b) { m_transformDirty = b; }
+  void SetPreRenderHasMoved(bool b) { m_actorLightsDirty = b; }
+  void SetPreRenderClipped(bool b) { m_outOfFrustum = b; }
+  void SetCalculateLighting(bool b);
+  void SetDrawShadow(bool b) { m_shadowEnabled = b; }
+  void SetShadowDirty(bool b) { m_shadowDirty = b; }
+  void SetMuted(bool b);
+  // void SetThermalFlags(EThermalFlags flags) { m_thermalVisorFlags = flags; }
+  void SetRenderParticleDatabaseInside(bool b) { m_renderParticleDBInside = b; }
+  void SetTargetable(bool b) { m_targetable = b; }
 
+  void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
+                      EMaterialTypes, CStateManager&);
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
                       CStateManager&);
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, CStateManager&);
@@ -188,15 +197,16 @@ public:
   void AddMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, CStateManager&);
   void AddMaterial(EMaterialTypes, EMaterialTypes, CStateManager&);
   void AddMaterial(EMaterialTypes, CStateManager&);
-  void AddMaterial(const CMaterialList& l) { material.Add(l); }
+  void AddMaterial(const CMaterialList& l) { m_material.Add(l); }
+  void SetMaterialList(const CMaterialList& l, CStateManager&);
 
-  const CAABox& GetRenderBoundsCached() const { return renderBounds; }
-  void SetRenderBounds(const CAABox& bounds) { renderBounds = bounds; }
+  const CAABox& GetRenderBoundsCached() const { return m_renderBounds; }
+  void SetRenderBounds(const CAABox& bounds) { m_renderBounds = bounds; }
 
-  // 000c0ec8 00001c 801711a8  4 GetUseInSortedLists__6CActorCFv 	CActor.o
+  bool GetUseInSortedLists() const;
   void SetUseInSortedLists(bool use);
-  // 000c0ef8 00001c 801711d8  4 GetCallTouch__6CActorCFv 	CActor.o
-  void SetCallTouch(bool);
+  bool GetCallTouch() const;
+  void SetCallTouch(bool value);
   // GetOrbitDistanceCheck__6CActorCFv
   // GetCalculateLighting__6CActorCFv
   // GetDrawShadow__6CActorCFv
@@ -204,24 +214,30 @@ public:
   // GetRenderParticleDatabaseInside__6CActorCFv
   // HasModelParticles__6CActorCFv
   void SetVolume(uchar volume);
+  void SetSoundEventPitchBend(int);
+  CSfxHandle GetSfxHandle() const;
+  bool CanDrawStatic() const;
+  bool fn_8004CD00(const CStateManager& mgr) const;
+  int fn_8004CAA0(const CStateManager& mgr) const;
 
-  void SetNextDrawNode(TUniqueId id) {
-    xc6_nextDrawNode = id;
-  }
+  void SetNextDrawNode(TUniqueId id) { xc6_nextDrawNode = id; }
+
+  void SetDirtyFlags();
 
 private:
-  CTransform4f transform;  // x24
-  CVector3f position; // x54
-  rstl::single_ptr< CModelData > modelData; // x60
+  CTransform4f m_transform;                   // x24
+  CVector3f m_position;                       // x54
+  rstl::single_ptr< CModelData > m_modelData; // x60
   int postModelDataFiller;
-  CMaterialList material; // x68
+  CMaterialList m_material; // x68
   CMaterialFilter x70_materialFilter;
   TSfxId x88_sfxId;
   CSfxHandle x8c_loopingSfxHandle;
   rstl::single_ptr< CActorLights > x90_actorLights;
   rstl::single_ptr< CSimpleShadow > x94_simpleShadow;
   rstl::single_ptr< TCachedToken< CScannableObjectInfo > > x98_scanObjectInfo;
-  CAABox renderBounds;
+  CAABox otherBounds;
+  CAABox m_renderBounds;
   CModelFlags xb4_drawFlags;
   float xbc_time;
   uint xc0_pitchBend;
@@ -232,33 +248,33 @@ private:
   float xd0_damageMag;
   uchar xd4_maxVol;
   rstl::reserved_vector< CSfxHandle, 2 > xd8_nonLoopingSfxHandles;
-  uint xe4_24_nextNonLoopingSfxHandle : 3;
-  uint xe4_27_notInSortedLists : 1;
-  uint xe4_28_transformDirty : 1;
-  uint xe4_29_actorLightsDirty : 1;
-  uint xe4_30_outOfFrustum : 1;
-  uint xe4_31_calculateLighting : 1;
-  uint xe5_24_shadowEnabled : 1;
-  uint xe5_25_shadowDirty : 1;
-  uint xe5_26_muted : 1;
-  uint xe5_27_useInSortedLists : 1;
-  uint xe5_28_callTouch : 1;
-  uint xe5_29_globalTimeProvider : 1;
-  uint xe5_30_renderUnsorted : 1;
-  uint xe5_31_pointGeneratorParticles : 1;
-  uint xe6_24_fluidCounter : 3;
-  uint xe6_27_thermalVisorFlags : 2;
-  uint xe6_29_renderParticleDBInside : 1;
-  uint xe6_30_enablePitchBend : 1;
-  uint xe6_31_targetableVisorFlags : 4;
-  uint xe7_27_enableRender : 1;
-  uint xe7_28_worldLightingDirty : 1;
-  uint xe7_29_drawEnabled : 1;
-  uint xe7_30_doTargetDistanceTest : 1;
-  uint xe7_31_targetable : 1;
-  
-  char actor_padding[108];
+  char actor_padding[84];
+  uint m_nextNonLoopingSfxHandle : 3; // xe4_23
+  uint m_notInSortedLists : 1;        // xe4_26
+  uint m_transformDirty : 1;          // xe4_27
+  uint m_actorLightsDirty : 1;        // xe4_28
+  uint m_renderBoundsDirty : 1;       // xe4_29
+  uint m_outOfFrustum : 1;            // xe4_30
+  uint m_calculateLighting : 1;       // xe4_31
+  uint m_shadowEnabled : 1;           // xe5_24
+  uint m_shadowDirty : 1;             // xe5_25
+  uint m_muted : 1;                   // xe5_26 // correct
+  uint m_useInSortedLists : 1;        // xe5_27 // correct
+  uint m_globalTimeProvider : 1;      // xe5_28
+  uint m_callTouch : 1;               // xe5_29 // correct
+  uint m_renderUnsorted : 1;          // xe5_30 // wrong bit, check CanRenderUnsorted
+  uint unk : 1;
+  uint m_pointGeneratorParticles : 1;
+  uint m_fluidCounter : 3;           // xe6_24
+  uint m_renderParticleDBInside : 1; // xe6_29 // wrong bit, check AddToRenderer
+  uint m_enablePitchBend : 1;        // xe6_30
+  uint m_targetableVisorFlags : 3;   // xe6_31
+  uint m_drawEnabled : 1;            // xe7_29
+  uint m_enableRender : 1;           // xe7_27
+  uint m_worldLightingDirty : 1;     // xe7_28
+  uint m_doTargetDistanceTest : 1;   // xe7_30
+  uint m_targetable : 1;             // xe7_31
 };
-CHECK_SIZEOF(CActor, 0x158)  
+CHECK_SIZEOF(CActor, 0x158)
 
 #endif // _CACTOR

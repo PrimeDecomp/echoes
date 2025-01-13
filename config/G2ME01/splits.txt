@@ -32,6 +32,10 @@ MetroidPrime/CEntity.cpp:
 	.data       start:0x803B1B40 end:0x803B1B60
 	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common
 
+MetroidPrime/CActor.cpp:
+	.text       start:0x8004AC98 end:0x8004E448
+	.data       start:0x803B1BC0 end:0x803B1C40
+
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80084864 end:0x80086444
 	.rodata     start:0x803A7288 end:0x803A74E8

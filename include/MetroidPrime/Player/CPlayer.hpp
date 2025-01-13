@@ -2,6 +2,7 @@
 #define _CPLAYER
 
 #include "MetroidPrime/CPhysicsActor.hpp"
+#include "MetroidPrime/CStateManager.hpp"
 
 class CMorphBall;
 class CPlayerState;

@@ -320,6 +320,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CEulerAngles.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CPowerBeam.cpp"),
             Object(NonMatching, "MetroidPrime/CPhysicsActor.cpp"),
+            Object(NonMatching, "MetroidPrime/CActor.cpp"),
         ],
     },
     {

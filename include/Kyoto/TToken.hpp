@@ -34,6 +34,7 @@ class TCachedToken : public TToken< T > {
 public:
   TCachedToken() {}
   TCachedToken(const CToken& token) : TToken< T >(token), x8_item(nullptr) {}
+  TCachedToken(const CToken& token, bool) : TToken< T >(token), x8_item(TToken< T >::GetT()) {}
 
   T* operator*() { return x8_item; }
 

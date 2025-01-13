@@ -1,6 +1,7 @@
 #ifndef _CSTATEMANAGER
 #define _CSTATEMANAGER
 
+#include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "TGameTypes.hpp"
@@ -38,6 +39,7 @@ class CStateManagerContainer;
 class CSortedListManager;
 class CWeaponMgr;
 class CFluidPlaneManager;
+class CAABox;
 
 struct MapWorldInfoAreas {};
 
@@ -81,6 +83,11 @@ public:
 
   void AddObject(CEntity*);
   void DeleteObjectRequest(TUniqueId);
+  void UpdateObjectInLists(CEntity&);
+  
+  bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
+  void SetupParticleHook(const CActor& actor) const;
+  const CActorModelParticles* GetActorModelParticles() const { return m_actorModelParticles; }
 
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
@@ -94,7 +101,11 @@ public:
   const CWorld* GetWorld() const { return m_world; }
   CEnvFxManager* EnvFxManager() { return m_envFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
+  // CRandom16* Random() const { return x900_random; }
   int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
+
+  const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }
+  int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return m_numPlayers; }
   CPlayer* GetPlayer(int index) { return m_players[index]; }
@@ -123,6 +134,11 @@ public:
   bool GetWantsToEnterMessageScreen() const { return m_deferredTransition == kSMT_MessageScreen; }
 
   const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
+  const CPlayerState* GetPlayerState() const { return m_playerState; }
+  const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
+
+  int fn_800366e4(CActor *);
+  int fn_801EDD8C(TUniqueId) const;
 
 public:
   ushort m_nextFreeIndex;
@@ -178,7 +194,10 @@ public:
   float x2468;
   int x246c;
   EStateManagerTransition m_deferredTransition;
-  char pad5[0x4C4]; // 0x246c
+
+  char pad5[4]; // 0x246c
+  CFrustumPlanes m_planes; // 0x2478
+  char pad6[0x460]; // 0x24D0
 
   CVector3f x2938;
   float x2944;
