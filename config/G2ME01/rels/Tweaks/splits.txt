@@ -4,3 +4,7 @@ Sections:
 	.dtors      type:rodata align:4
 	.rodata     type:rodata align:8
 	.bss        type:bss align:8
+
+REL/REL_Setup.cpp:
+	.text       start:0x0001DECC end:0x0001E070
+	.rodata     start:0x00000408 end:0x0000048C
