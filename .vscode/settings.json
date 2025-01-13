@@ -1,16 +1,22 @@
 {
   "[c]": {
-    "files.encoding": "shiftjis",
-    "editor.defaultFormatter": "xaver.clang-format"
+    "files.encoding": "utf8",
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
   },
   "[cpp]": {
-    "files.encoding": "shiftjis",
-    "editor.defaultFormatter": "xaver.clang-format"
+    "files.encoding": "utf8",
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
   },
-  "[python]":{
+  "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "editor.tabSize": 2,
+  "files.associations": {
+    "source_location": "cpp",
+    "*.h": "c",
+    "*.inc": "c",
+    ".clangd": "yaml",
+  },
   "files.autoSave": "onFocusChange",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
@@ -38,5 +44,7 @@
   "C/C++ Include Guard.Auto Update Path Blocklist": [
     "include/zlib"
   ],
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  // Disable C++ intellisense engine, use clangd instead
+  "C_Cpp.intelliSenseEngine": "disabled"
 }
