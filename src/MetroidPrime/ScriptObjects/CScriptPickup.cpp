@@ -232,7 +232,7 @@ void CScriptPickup::Render(const CStateManager& mgr) const { CActor::Render(mgr)
 
 void CScriptPickup::AddToRenderer(const CFrustumPlanes& a, const CStateManager& mgr) const {
   if (IsVisible()) {
-    CActor::AddToRenderer(a, mgr);
+    CActor::AddToRenderer(mgr);
   }
 }
 

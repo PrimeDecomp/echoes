@@ -21,6 +21,7 @@ public:
     float z;
     float d;
   };
+  CFrustumPlanes(); // todo
   CFrustumPlanes(const CTransform4f&, float, float, float, bool, float);
 
   bool BoxInFrustumPlanes(const CAABox& box) const;

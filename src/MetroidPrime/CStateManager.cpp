@@ -23,7 +23,8 @@ CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
                              const rstl::ncrc_ptr< CMapWorldInfo >&,
                              const rstl::ncrc_ptr< CPlayerState >&,
                              const rstl::ncrc_ptr< CWorldTransManager >&)
-: m_nextFreeIndex(0), m_bossId(kInvalidUniqueId), m_uid_setBySpecialFunc(kInvalidUniqueId) {}
+: m_nextFreeIndex(0), m_bossId(kInvalidUniqueId), m_uid_setBySpecialFunc(kInvalidUniqueId),
+m_planes() {}
 
 CStateManager::~CStateManager() {}
 
