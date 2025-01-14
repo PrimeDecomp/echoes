@@ -106,7 +106,7 @@ void LoadTypedefSLdrTweakGame(SLdrTweakGame& sldrThis, CInputStream& input) {
       LoadTypedefSLdrTweakGame_TimeLimitChoices(sldrThis.unknown_0x1533ea4e, input);
       break;
     case 0x40818220:
-      // sldrThis.unknown_0x40818220 = TODO
+      sldrThis.unknown_0x40818220 = SLdrSpline(input, propertySize);
       break;
     default:
       input.ReadBytes(nullptr, propertySize);

@@ -36,6 +36,9 @@ struct SLdrSpline {
   SLdrSpline();
   SLdrSpline(const rstl::vector<CMayaSplineKnot>& knots, int clampMode, int preInfinity, int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
   SLdrSpline(CInputStream&, int);
+  ~SLdrSpline();
+
+  SLdrSpline& operator=(const SLdrSpline&);
 
   static SLdrSpline CreateFor(float, float, float, float);
 
