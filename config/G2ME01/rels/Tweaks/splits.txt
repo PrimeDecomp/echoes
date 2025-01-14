@@ -39,6 +39,15 @@ MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.cpp:
 MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.cpp:
 	.text       start:0x00004128 end:0x00004360
 
+MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerRes.cpp:
+	.text       start:0x00004360 end:0x00004790
+
+MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.cpp:
+	.text       start:0x00004790 end:0x00006378
+
+MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp:
+	.text       start:0x00006378 end:0x000066C8
+
 REL/REL_Setup.cpp:
 	.text       start:0x0001DECC end:0x0001E070
 	.rodata     start:0x00000408 end:0x0000048C

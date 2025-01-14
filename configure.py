@@ -446,6 +446,9 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakGame.cpp"),
             Object(Matching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerRes.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp"),
         ],
     ),
 ]
