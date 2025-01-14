@@ -6,56 +6,9 @@ Sections:
 	.bss        type:bss align:8
 
 MetroidPrime/Tweaks/Tweaks.cpp:
-	.text       start:0x00000000 end:0x00001338
+	.text       start:0x00000000 end:0x000070F0
+	.rodata     start:0x00000000 end:0x00000408
 	.bss        start:0x00000000 end:0x0000000C
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayer.cpp:
-	.text       start:0x00001338 end:0x00001768
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakCameraBob.cpp:
-	.text       start:0x00001768 end:0x00001B3C
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerGun.cpp:
-	.text       start:0x00001B3C end:0x0000244C
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.cpp:
-	.text       start:0x0000244C end:0x00002614
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.cpp:
-	.text       start:0x00002614 end:0x000027DC
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.cpp:
-	.text       start:0x000027DC end:0x00002ABC
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakSlideShow.cpp:
-	.text       start:0x00002ABC end:0x00003070
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakGame.cpp:
-	.text       start:0x00003070 end:0x00003CC0
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.cpp:
-	.text       start:0x00003CC0 end:0x00004128
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.cpp:
-	.text       start:0x00004128 end:0x00004360
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerRes.cpp:
-	.text       start:0x00004360 end:0x00004790
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.cpp:
-	.text       start:0x00004790 end:0x00006378
-
-MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp:
-	.text       start:0x00006378 end:0x000066C8
-
-MetroidPrime/ScriptLoader/SLdrTweakPlayerGun_Weapons.cpp:
-	.text       start:0x000066C8 end:0x00006B34
-
-MetroidPrime/ScriptLoader/SLdrTweakTargeting_VulnerabilityIndicator.cpp:
-	.text       start:0x00006B34 end:0x00006CA8
-
-MetroidPrime/ScriptLoader/SLdrTweakTargeting_Scan.cpp:
-	.text       start:0x00006CA8 end:0x00006EC4
 
 REL/REL_Setup.cpp:
 	.text       start:0x0001DECC end:0x0001E070

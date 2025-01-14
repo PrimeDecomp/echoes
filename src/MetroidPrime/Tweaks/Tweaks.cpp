@@ -7,6 +7,24 @@
 
 #include "dolphin/types.h"
 
+#include "MetroidPrime/ScriptLoader/SLdrTweakTargeting_OuterBeamIcon.cpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakTargeting_Scan.cpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakTargeting_VulnerabilityIndicator.cpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun_Weapons.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerRes.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGame.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakSlideShow.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerGun.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakCameraBob.cpp"
+#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayer.cpp"
+
 STweaks_FuncPtrs REL_loader_Tweaks;
 
 CTweakContents::CTweakContents() {}
