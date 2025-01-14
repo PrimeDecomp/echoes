@@ -45,27 +45,27 @@ public:
   // why?
   int ReadInt32() {
     int* result = (int*) ptr;
-    ptr = (uchar*) result + 1;
+    ptr = (uchar*) (result + 1);
     return *result;
   }
   u16 ReadUint16() {
     u16* result = (u16*) ptr;
-    ptr = (uchar*) result + 1;
+    ptr = (uchar*) (result + 1);
     return *result;
   }
   u8 ReadUint8() {
     u8* result = (u8*) ptr;
-    ptr = (u8*) result + 1;
+    ptr = (u8*) (result + 1);
     return *result;
   }
   char ReadInt8() {
     char* result = (char*) ptr;
-    ptr = (u8*) result + 1;
+    ptr = (u8*) (result + 1);
     return *result;
   }
   bool ReadBool() {
     uchar* result = (uchar*) ptr;
-    ptr = (uchar*) result + 1;
+    ptr = (uchar*) (result + 1);
     return *result;
   }
 
