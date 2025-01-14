@@ -15,7 +15,6 @@ struct SLdrEditorProperties {
     int unknown;
 };
 
-const CEntityInfo& LdrToEntityInfo(const CEntityInfo&, const SLdrEditorProperties&);
 void LoadTypedefSLdrEditorProperties(SLdrEditorProperties&, CInputStream&);
 
 #endif // _SLDREDITORPROPERTIES

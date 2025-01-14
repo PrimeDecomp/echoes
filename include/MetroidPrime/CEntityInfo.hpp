@@ -135,4 +135,7 @@ public:
   EScriptObjectState m_state;
 };
 
+struct SLdrEditorProperties;
+const CEntityInfo& LdrToEntityInfo(const CEntityInfo&, const SLdrEditorProperties&);
+
 #endif // _CENTITYINFO

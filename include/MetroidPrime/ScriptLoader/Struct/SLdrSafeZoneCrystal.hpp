@@ -1,6 +1,7 @@
 #ifndef _SLDRSAFEZONECRYSTAL
 #define _SLDRSAFEZONECRYSTAL
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
@@ -39,7 +40,7 @@ struct SLdrSafeZoneCrystal {
     CVector3f hitRadius;
     CVector3f hitOffset;
     CVector3f effectOffset;
-    spline unknown_0xbbbee60b;
+    SLdrSpline unknown_0xbbbee60b;
 };
 
 void LoadTypedefSLdrSafeZoneCrystal(SLdrSafeZoneCrystal&, CInputStream&);
