@@ -1,6 +1,7 @@
 #ifndef _SLDRSPINDLECAMERASTRUCT
 #define _SLDRSPINDLECAMERASTRUCT
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 struct SLdrSpindleCameraStruct {
@@ -8,7 +9,7 @@ struct SLdrSpindleCameraStruct {
     ~SLdrSpindleCameraStruct();
 
     int interpolantType;
-    spline interpolantSpline;
+    SLdrSpline interpolantSpline;
 };
 
 void LoadTypedefSLdrSpindleCameraStruct(SLdrSpindleCameraStruct&, CInputStream&);

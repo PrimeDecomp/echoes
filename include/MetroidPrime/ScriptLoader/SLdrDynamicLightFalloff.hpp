@@ -1,6 +1,7 @@
 #ifndef _SLDRDYNAMICLIGHTFALLOFF
 #define _SLDRDYNAMICLIGHTFALLOFF
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 struct SLdrDynamicLightFalloff {
@@ -8,7 +9,7 @@ struct SLdrDynamicLightFalloff {
     ~SLdrDynamicLightFalloff();
 
     int falloffType;
-    spline falloffRate;
+    SLdrSpline falloffRate;
     float falloffRateDuration;
     bool falloffRateLoops;
 };

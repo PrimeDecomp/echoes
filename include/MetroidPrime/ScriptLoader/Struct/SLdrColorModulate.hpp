@@ -2,6 +2,7 @@
 #define _SLDRCOLORMODULATE
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 
@@ -25,7 +26,7 @@ struct SLdrColorModulate {
     bool loopForever;
     bool externalTime;
     bool copyModelColorToColorA;
-    spline controlSpline;
+    SLdrSpline controlSpline;
 };
 
 void LoadTypedefSLdrColorModulate(SLdrColorModulate&, CInputStream&);

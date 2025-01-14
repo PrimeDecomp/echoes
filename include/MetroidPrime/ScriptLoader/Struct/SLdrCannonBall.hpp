@@ -6,8 +6,8 @@
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 
 struct SLdrCannonBall {
-    SLdrCannonBall() {}
-    ~SLdrCannonBall() {}
+    SLdrCannonBall();
+    ~SLdrCannonBall();
 
     SLdrEditorProperties editorProperties;
     CAssetId effect;

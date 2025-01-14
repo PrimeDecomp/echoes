@@ -1,6 +1,7 @@
 #ifndef _SLDRSPINDLECAMERA
 #define _SLDRSPINDLECAMERA
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSpindleCameraStruct.hpp"
@@ -30,7 +31,7 @@ struct SLdrSpindleCamera {
     SLdrSpindleCameraStruct spindleCameraStruct_0x6654ae92;
     SLdrSplineType targetSplineType;
     bool unknown_0x33b4f106;
-    spline targetControlSpline;
+    SLdrSpline targetControlSpline;
     SLdrSplineType splineType;
     bool unknown_0x431769c6;
 };

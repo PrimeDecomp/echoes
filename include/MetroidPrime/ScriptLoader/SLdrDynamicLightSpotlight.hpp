@@ -1,13 +1,14 @@
 #ifndef _SLDRDYNAMICLIGHTSPOTLIGHT
 #define _SLDRDYNAMICLIGHTSPOTLIGHT
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 struct SLdrDynamicLightSpotlight {
     SLdrDynamicLightSpotlight();
     ~SLdrDynamicLightSpotlight();
 
-    spline spotlightAngle;
+    SLdrSpline spotlightAngle;
     float spotlightAngleDuration;
     bool spotlightAngleLoops;
 };

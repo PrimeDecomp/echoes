@@ -2,6 +2,7 @@
 #define _SLDRMEDIUMING
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrActorParameters.hpp"
@@ -38,15 +39,15 @@ struct SLdrMediumIng {
     float unknown_0x8f1d597c;
     SLdrAnimationParameters attackTentacle;
     SLdrActorParameters actorParameters;
-    spline attackMotion;
+    SLdrSpline attackMotion;
     SLdrCameraShakerData cameraShakerData;
     SLdrDamageInfo attackTentacleDamage;
     float tauntChance;
     float doubleDashChance;
     CColor lightColor;
     float lightAttenuation;
-    spline unknown_0xb459c3e9;
-    spline dashSpeed;
+    SLdrSpline unknown_0xb459c3e9;
+    SLdrSpline dashSpeed;
     CAssetId ingSpotBlobFx;
     int ingSpotSound;
     float unknown_0x0e3d3708;

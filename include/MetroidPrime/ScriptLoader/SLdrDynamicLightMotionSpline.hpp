@@ -1,6 +1,7 @@
 #ifndef _SLDRDYNAMICLIGHTMOTIONSPLINE
 #define _SLDRDYNAMICLIGHTMOTIONSPLINE
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSplineType.hpp"
 
@@ -10,7 +11,7 @@ struct SLdrDynamicLightMotionSpline {
 
     bool motionSplinePathLoops;
     SLdrSplineType motionSplineType;
-    spline motionControlSpline;
+    SLdrSpline motionControlSpline;
     float motionSplineDuration;
 };
 

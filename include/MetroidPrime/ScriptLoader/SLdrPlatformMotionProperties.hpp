@@ -1,6 +1,7 @@
 #ifndef _SLDRPLATFORMMOTIONPROPERTIES
 #define _SLDRPLATFORMMOTIONPROPERTIES
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSplineType.hpp"
 
@@ -9,13 +10,13 @@ struct SLdrPlatformMotionProperties {
     ~SLdrPlatformMotionProperties();
 
     SLdrSplineType motionSplineType;
-    spline motionControlSpline;
+    SLdrSpline motionControlSpline;
     float motionSplineDuration;
     float initialTime;
     int unknown;
-    spline rollControlSpline;
-    spline yawControlSpline;
-    spline pitchControlSpline;
+    SLdrSpline rollControlSpline;
+    SLdrSpline yawControlSpline;
+    SLdrSpline pitchControlSpline;
 };
 
 void LoadTypedefSLdrPlatformMotionProperties(SLdrPlatformMotionProperties&, CInputStream&);

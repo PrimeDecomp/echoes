@@ -1,13 +1,14 @@
 #ifndef _SLDRDYNAMICLIGHTINTENSITY
 #define _SLDRDYNAMICLIGHTINTENSITY
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 struct SLdrDynamicLightIntensity {
     SLdrDynamicLightIntensity();
     ~SLdrDynamicLightIntensity();
 
-    spline intensity;
+    SLdrSpline intensity;
     float intensityDuration;
     bool intensityLoops;
 };

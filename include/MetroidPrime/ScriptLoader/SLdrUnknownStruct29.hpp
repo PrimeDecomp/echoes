@@ -1,6 +1,7 @@
 #ifndef _SLDRUNKNOWNSTRUCT29
 #define _SLDRUNKNOWNSTRUCT29
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
@@ -15,7 +16,7 @@ struct SLdrUnknownStruct29 {
     CVector3f boostBallScale;
     float boostBallMass;
     float unknown_0xbea96fb7;
-    spline boostBallSpeed;
+    SLdrSpline boostBallSpeed;
     SLdrDamageInfo damageInfo_0x0e1a78bd;
     SLdrDamageInfo damageInfo_0x19c3d263;
     float unknown_0xd8047cba;

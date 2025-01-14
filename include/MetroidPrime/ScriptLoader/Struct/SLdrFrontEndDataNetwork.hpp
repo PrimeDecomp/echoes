@@ -2,6 +2,7 @@
 #define _SLDRFRONTENDDATANETWORK
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
@@ -28,13 +29,13 @@ struct SLdrFrontEndDataNetwork {
     CColor unselectedMaxColor;
     CColor disabledColor;
     int rotationSound;
-    spline transitionShrinkSpline;
+    SLdrSpline transitionShrinkSpline;
     float transitionShrinkTime;
-    spline transitionMoveSpline;
+    SLdrSpline transitionMoveSpline;
     float transitionMoveTime;
-    spline transitionExpandSpline;
+    SLdrSpline transitionExpandSpline;
     float transitionExpandTime;
-    spline transitionMoveInSpline;
+    SLdrSpline transitionMoveInSpline;
     float transitionMoveInTime;
     int rotationSoundVolume;
 };

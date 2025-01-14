@@ -1,6 +1,7 @@
 #ifndef _SLDRCAMERA
 #define _SLDRCAMERA
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSplineType.hpp"
@@ -15,11 +16,11 @@ struct SLdrCamera {
     int unknown_0xd4b29446;
     SLdrSplineType motionSplineType;
     SLdrSplineType targetSplineType;
-    spline motionControlSpline;
-    spline targetControlSpline;
-    spline fovSpline;
-    spline rollSpline;
-    spline slowmoControlSpline;
+    SLdrSpline motionControlSpline;
+    SLdrSpline targetControlSpline;
+    SLdrSpline fovSpline;
+    SLdrSpline rollSpline;
+    SLdrSpline slowmoControlSpline;
 };
 
 void LoadTypedefSLdrCamera(SLdrCamera&, CInputStream&);

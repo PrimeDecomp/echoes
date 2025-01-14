@@ -1,6 +1,7 @@
 #ifndef _SLDREFFECT
 #define _SLDREFFECT
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
@@ -33,7 +34,7 @@ struct SLdrEffect {
     SLdrLightParameters lighting;
     bool motionSplinePathLoops;
     SLdrSplineType motionSplineType;
-    spline motionControlSpline;
+    SLdrSpline motionControlSpline;
     float motionSplineDuration;
     bool unknown_0x73e63382;
     bool unknown_0x608ecac5;
