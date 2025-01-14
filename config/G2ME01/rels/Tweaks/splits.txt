@@ -6,8 +6,17 @@ Sections:
 	.bss        type:bss align:8
 
 MetroidPrime/Tweaks/Tweaks.cpp:
-	.text       start:0x00000000 end:0x0001DECC
+	.text       start:0x00000000 end:0x0000244C
 	.bss        start:0x00000000 end:0x0000000C
+
+MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.cpp:
+	.text       start:0x0000244C end:0x00002614
+
+MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.cpp:
+	.text       start:0x00002614 end:0x000027DC
+
+MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.cpp:
+	.text       start:0x000027DC end:0x00002ABC
 
 REL/REL_Setup.cpp:
 	.text       start:0x0001DECC end:0x0001E070

@@ -436,6 +436,9 @@ config.libs = [
         "Tweaks",
         [
             Object(NonMatching, "MetroidPrime/Tweaks/Tweaks.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.cpp"),
         ],
     ),
 ]
