@@ -1,5 +1,16 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.hpp"
 
+SLdrTweakBall::SLdrTweakBall()
+  : instanceName()
+  , movement()
+  , camera()
+  , misc()
+  , boostBall()
+  , cannonBall()
+  , screwAttack()
+  , deathBall()
+{}
+
 SLdrTweakBall::~SLdrTweakBall() {}
 
 void LoadTypedefSLdrTweakBall(SLdrTweakBall& sldrThis, CInputStream& input) {

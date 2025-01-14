@@ -9,6 +9,10 @@
 
 STweaks_FuncPtrs REL_loader_Tweaks;
 
+CTweakContents::CTweakContents() {}
+
+CTweakContents::~CTweakContents() {}
+
 void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   switch (instanceId) {
 

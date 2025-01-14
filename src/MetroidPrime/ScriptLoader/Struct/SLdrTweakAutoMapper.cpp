@@ -1,5 +1,11 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.hpp"
 
+SLdrTweakAutoMapper::SLdrTweakAutoMapper()
+  : instanceName()
+  , base()
+  , doorColors()
+{}
+
 SLdrTweakAutoMapper::~SLdrTweakAutoMapper() {}
 
 void LoadTypedefSLdrTweakAutoMapper(SLdrTweakAutoMapper& sldrThis, CInputStream& input) {
