@@ -1,6 +1,7 @@
 #ifndef _SLDRCAMERASHAKERDATA
 #define _SLDRCAMERASHAKERDATA
 
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 struct SLdrCameraShakerData {
@@ -9,9 +10,9 @@ struct SLdrCameraShakerData {
 
     int flagsCameraShaker;
     float attenuationDistance;
-    spline horizontalMotion;
-    spline verticalMotion;
-    spline forwardMotion;
+    SLdrSpline horizontalMotion;
+    SLdrSpline verticalMotion;
+    SLdrSpline forwardMotion;
     float duration;
     int audioEffect;
 };

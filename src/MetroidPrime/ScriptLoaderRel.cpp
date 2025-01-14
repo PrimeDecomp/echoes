@@ -16,6 +16,7 @@ FScriptLoader* gLoader_PlayerController;
 FScriptLoader* gLoader_WallWalker;
 
 FScriptLoader* gLoader_CannonBall;
+STweaks_FuncPtrs* gLoader_Tweaks;
 
 void SetLoader_WallWalker(FScriptLoader* loader) { gLoader_WallWalker = loader; }
 CEntity* Load_WallWalker(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
@@ -135,3 +136,5 @@ void SetLoader_CannonBall(FScriptLoader* loader) { gLoader_CannonBall = loader; 
 CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   return (*gLoader_CannonBall)(mgr, input, info);
 }
+
+void SetTweaks_FuncPtrs(STweaks_FuncPtrs* loaders) { gLoader_Tweaks = loaders; }

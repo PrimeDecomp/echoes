@@ -2,6 +2,7 @@
 #define _SLDRTWEAKGUI_MISC
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "rstl/string.hpp"
@@ -130,9 +131,9 @@ struct SLdrTweakGui_Misc {
     float unknown_0x138f1104;
     float unknown_0xd0d1760e;
     float unknown_0xce9f5770;
-    spline unknown_0xeaf17d45;
-    spline unknown_0xd81537b6;
-    spline unknown_0x3ba84552;
+    SLdrSpline unknown_0xeaf17d45;
+    SLdrSpline unknown_0xd81537b6;
+    SLdrSpline unknown_0x3ba84552;
     float unknown_0xeeb7839b;
     float unknown_0x24cf1719;
     float unknown_0xa4adf6ea;

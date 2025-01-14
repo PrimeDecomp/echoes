@@ -2,6 +2,7 @@
 #define _SLDRTWEAKGUI_LOGBOOK
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
@@ -24,15 +25,15 @@ struct SLdrTweakGui_LogBook {
     float textScale;
     float selectedTextScale;
     float transitionTime;
-    spline nodeCollapseMotion;
-    spline selectedNodeCollapseMotion;
-    spline nodeExpandMotion;
+    SLdrSpline nodeCollapseMotion;
+    SLdrSpline selectedNodeCollapseMotion;
+    SLdrSpline nodeExpandMotion;
     float rotationSpeed;
     float nodeScale;
     float selectedNodeScale;
     float selectedTextCursorScale;
     float scanModelScale;
-    spline unknown_0x925b9d4a;
+    SLdrSpline unknown_0x925b9d4a;
     CColor unknown_0x075a0734;
     float unknown_0x8ef43309;
     float fogNear;

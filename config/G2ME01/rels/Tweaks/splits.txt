@@ -5,6 +5,10 @@ Sections:
 	.rodata     type:rodata align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Tweaks/Tweaks.cpp:
+	.text       start:0x00000000 end:0x0001DECC
+	.bss        start:0x00000000 end:0x0000000C
+
 REL/REL_Setup.cpp:
 	.text       start:0x0001DECC end:0x0001E070
 	.rodata     start:0x00000408 end:0x0000048C

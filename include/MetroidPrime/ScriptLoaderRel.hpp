@@ -61,4 +61,11 @@ void SetSScriptForgottenObject_FuncPtrs(SScriptForgottenObject_FuncPtrs*);
 
 void SetLoader_CannonBall(FScriptLoader* loader);
 
+struct STweaks_FuncPtrs {
+  void (*Loader)(CInputStream&);
+  void (*CreateGlobals)();
+  void (*FreeTweaks)();
+};
+void SetTweaks_FuncPtrs(STweaks_FuncPtrs*);
+
 #endif // _SCRIPTLOADERREL

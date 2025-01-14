@@ -432,6 +432,12 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCannonBall.cpp"),
         ],
     ),
+    Rel(
+        "Tweaks",
+        [
+            Object(NonMatching, "MetroidPrime/Tweaks/Tweaks.cpp"),
+        ],
+    ),
 ]
 
 
