@@ -51,6 +51,12 @@ MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp:
 MetroidPrime/ScriptLoader/SLdrTweakPlayerGun_Weapons.cpp:
 	.text       start:0x000066C8 end:0x00006B34
 
+MetroidPrime/ScriptLoader/SLdrTweakTargeting_VulnerabilityIndicator.cpp:
+	.text       start:0x00006B34 end:0x00006CA8
+
+MetroidPrime/ScriptLoader/SLdrTweakTargeting_Scan.cpp:
+	.text       start:0x00006CA8 end:0x00006EC4
+
 REL/REL_Setup.cpp:
 	.text       start:0x0001DECC end:0x0001E070
 	.rodata     start:0x00000408 end:0x0000048C

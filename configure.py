@@ -450,6 +450,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun_Weapons.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakTargeting_VulnerabilityIndicator.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakTargeting_Scan.cpp"),
         ],
     ),
 ]
