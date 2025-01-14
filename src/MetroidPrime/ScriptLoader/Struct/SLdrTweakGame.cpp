@@ -1,31 +1,23 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGame.hpp"
 
-SLdrTweakGame::SLdrTweakGame()
-  : instanceName()
-  , pakFile()
-  , asset()
-  , fieldofView(55.0)
-  , fieldofView2Player(45.0)
-  , disableDebugMenu(false)
-  , unknown_0x7262d27b(true)
-  , developmentMode(true)
-  , unknown_0xa3dcf42a(25.0)
-  , unknown_0xb35c72be(1.0)
-  , unknown_0x4a02103c(30.0)
-  , unknown_0xe1fca71b(125.0)
-  , unknown_0xfbce966a(150.0)
-  , unknown_0x09c6ca10(300.0)
-  , hardModeDamageMultiplier(1.53)
-  , hardModeWeaponMultiplier(0.5)
-  , unknown_0x5ab5812c(0.15000001)
-  , unknown_0x53401390(0.15000001)
-  , totalPercentage(102)
-  , unknown_0x1d627808()
-  , unknown_0xb2e8828d()
-  , unknown_0x06af87bd()
-  , unknown_0x1533ea4e()
-  , unknown_0x40818220()
-{}
+SLdrTweakGame::SLdrTweakGame() {
+  fieldofView = 55.0f;
+  fieldofView2Player = 45.0f;
+  disableDebugMenu = false;
+  unknown_0x7262d27b = true;
+  developmentMode = true;
+  unknown_0xa3dcf42a = 25.0f;
+  unknown_0xb35c72be = 1.0f;
+  unknown_0x4a02103c = 30.0f;
+  unknown_0xe1fca71b = 125.0f;
+  unknown_0xfbce966a = 150.0f;
+  unknown_0x09c6ca10 = 300.0f;
+  hardModeDamageMultiplier = 1.53f;
+  hardModeWeaponMultiplier = 0.5f;
+  unknown_0x5ab5812c = 0.15000001f;
+  unknown_0x53401390 = 0.15000001f;
+  totalPercentage = 102;
+}
 
 SLdrTweakGame::~SLdrTweakGame() {}
 

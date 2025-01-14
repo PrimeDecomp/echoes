@@ -1,25 +1,21 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakSlideShow.hpp"
 
-SLdrTweakSlideShow::SLdrTweakSlideShow()
-  : instanceName()
-  , pakFile()
-  , font()
-  , fontColor(CColor::Black())
-  , fontOutlineColor(CColor::Black())
-  , unknown_0xd398dac2(50.0)
-  , unknown_0x03757d08(50.0)
-  , translationMultiplier(10.0)
-  , scaleMultiplier(10.0)
-  , slideShowDelay(3.0)
-  , helpFrameColor(CColor::Black())
-  , helpTransitionTime(1.0)
-  , slideBlendTime(0.5)
-  , unknown_0x029d2082(3.0)
-  , unknown_0xb187cd9b(0.5)
-  , fadeInTime(0.001)
-  , fadeOutTime(2.0)
-  , unknown_0xc0544bc1()
-{}
+SLdrTweakSlideShow::SLdrTweakSlideShow() {
+  fontColor = CColor::Black();
+  fontOutlineColor = CColor::Black();
+  unknown_0xd398dac2 = 50.0f;
+  unknown_0x03757d08 = 50.0f;
+  translationMultiplier = 10.0f;
+  scaleMultiplier = 10.0f;
+  slideShowDelay = 3.0f;
+  helpFrameColor = CColor::Black();
+  helpTransitionTime = 1.0f;
+  slideBlendTime = 0.5f;
+  unknown_0x029d2082 = 3.0f;
+  unknown_0xb187cd9b = 0.5f;
+  fadeInTime = 0.001f;
+  fadeOutTime = 2.0f;
+}
 
 SLdrTweakSlideShow::~SLdrTweakSlideShow() {}
 

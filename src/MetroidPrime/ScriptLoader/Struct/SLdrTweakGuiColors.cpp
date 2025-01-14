@@ -1,22 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.hpp"
 
-SLdrTweakGuiColors::SLdrTweakGuiColors()
-  : instanceName()
-  , hudColors()
-  , misc()
-  , multiplayer()
-  , combatHudColorScheme()
-  , echoHudColorScheme()
-  , scanHudColorScheme()
-  , darkHudColorScheme()
-  , ballHudColorScheme()
-  , combatHud()
-  , scanHud()
-  , xRayHud()
-  , thermalHud()
-  , ballHud()
-  , turretHud()
-{}
+SLdrTweakGuiColors::SLdrTweakGuiColors() {}
 
 SLdrTweakGuiColors::~SLdrTweakGuiColors() {}
 

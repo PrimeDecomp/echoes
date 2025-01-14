@@ -1,10 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.hpp"
 
-SLdrTweakAutoMapper::SLdrTweakAutoMapper()
-  : instanceName()
-  , base()
-  , doorColors()
-{}
+SLdrTweakAutoMapper::SLdrTweakAutoMapper() {}
 
 SLdrTweakAutoMapper::~SLdrTweakAutoMapper() {}
 

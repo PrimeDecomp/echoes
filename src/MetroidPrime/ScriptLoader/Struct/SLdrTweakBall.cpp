@@ -1,15 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.hpp"
 
-SLdrTweakBall::SLdrTweakBall()
-  : instanceName()
-  , movement()
-  , camera()
-  , misc()
-  , boostBall()
-  , cannonBall()
-  , screwAttack()
-  , deathBall()
-{}
+SLdrTweakBall::SLdrTweakBall() {}
 
 SLdrTweakBall::~SLdrTweakBall() {}
 

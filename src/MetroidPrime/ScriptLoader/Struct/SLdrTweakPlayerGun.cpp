@@ -1,22 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerGun.hpp"
 
-SLdrTweakPlayerGun::SLdrTweakPlayerGun()
-  : instanceName()
-  , misc()
-  , holstering()
-  , position()
-  , armPosition()
-  , weapons()
-  , combos()
-  , beamMisc()
-  , ricochetDamageFactor()
-  , recoil()
-  , comboRecoil()
-  , projectileRecoil()
-  , flameThrower()
-  , waveBuster()
-  , projectileImpact()
-{}
+SLdrTweakPlayerGun::SLdrTweakPlayerGun() {}
 
 SLdrTweakPlayerGun::~SLdrTweakPlayerGun() {}
 

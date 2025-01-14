@@ -1,21 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayer.hpp"
 
-SLdrTweakPlayer::SLdrTweakPlayer()
-  : instanceName()
-  , darkWorld()
-  , grappleBeam()
-  , motion()
-  , misc()
-  , aimStuff()
-  , orbit()
-  , scanVisor()
-  , grapple()
-  , collision()
-  , firstPersonCamera()
-  , shield()
-  , frozen()
-  , suitDamageReduction()
-{}
+SLdrTweakPlayer::SLdrTweakPlayer() {}
 
 SLdrTweakPlayer::~SLdrTweakPlayer() {}
 

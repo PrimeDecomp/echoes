@@ -1,22 +1,21 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakCameraBob.hpp"
 
-SLdrTweakCameraBob::SLdrTweakCameraBob()
-  : instanceName()
-  , cameraBobExtentX(0.07)
-  , cameraBobExtentY(0.14)
-  , cameraBobPeriod(0.38999999)
-  , unknown_0xa27bb5a7(0.76999998)
-  , unknown_0xe3580b2b(0.80000001)
-  , slowSpeedPeriodScale(0.30000001)
-  , targetMagnitudeTrackingRate(0.1)
-  , landingBobSpringConstant(150.0)
-  , viewWanderRadius(0.1)
-  , viewWanderSpeedMin(0.1)
-  , viewWanderSpeedMax(0.40000001)
-  , viewWanderRollVariation(0.30000001)
-  , gunBobMagnitude(0.22)
-  , helmetBobMagnitude(1.0)
-{}
+SLdrTweakCameraBob::SLdrTweakCameraBob() {
+  cameraBobExtentX = 0.07f;
+  cameraBobExtentY = 0.14f;
+  cameraBobPeriod = 0.38999999f;
+  unknown_0xa27bb5a7 = 0.76999998f;
+  unknown_0xe3580b2b = 0.80000001f;
+  slowSpeedPeriodScale = 0.30000001f;
+  targetMagnitudeTrackingRate = 0.1f;
+  landingBobSpringConstant = 150.0f;
+  viewWanderRadius = 0.1f;
+  viewWanderSpeedMin = 0.1f;
+  viewWanderSpeedMax = 0.40000001f;
+  viewWanderRollVariation = 0.30000001f;
+  gunBobMagnitude = 0.22f;
+  helmetBobMagnitude = 1.0f;
+}
 
 SLdrTweakCameraBob::~SLdrTweakCameraBob() {}
 

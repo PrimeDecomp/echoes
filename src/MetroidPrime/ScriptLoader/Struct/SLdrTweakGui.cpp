@@ -1,17 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.hpp"
 
-SLdrTweakGui::SLdrTweakGui()
-  : instanceName()
-  , misc()
-  , scannableObjectDownloadTimes()
-  , unknown()
-  , echoVisor()
-  , scanVisor()
-  , logBook()
-  , credits()
-  , completion()
-  , movieVolumes()
-{}
+SLdrTweakGui::SLdrTweakGui() {}
 
 SLdrTweakGui::~SLdrTweakGui() {}
 

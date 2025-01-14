@@ -1,18 +1,9 @@
 #include "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun_Weapons.hpp"
 
-SLdrTweakPlayerGun_Weapons::SLdrTweakPlayerGun_Weapons()
-  : bomb()
-  , unknown_0xe8907530(2.0)
-  , unknown_0x0a9186cb(0.60000002)
-  , powerBomb()
-  , missile()
-  , powerBeam()
-  , darkBeam()
-  , darkBeamBlob()
-  , lightBeam()
-  , annihilatorBeam()
-  , phazonBeam()
-{}
+SLdrTweakPlayerGun_Weapons::SLdrTweakPlayerGun_Weapons() {
+  unknown_0xe8907530 = 2.0f;
+  unknown_0x0a9186cb = 0.60000002f;
+}
 
 SLdrTweakPlayerGun_Weapons::~SLdrTweakPlayerGun_Weapons() {}
 

@@ -1,124 +1,110 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.hpp"
 
-SLdrTweakTargeting::SLdrTweakTargeting()
-  : instanceName()
-  , unknown_0x5173932f()
-  , unknown_0x23ff4be4()
-  , unknown_0x92e98613()
-  , unknown_0x64833842()
-  , unknown_0x8dfd6e3c()
-  , chargeGauge()
-  , lockFire()
-  , lockDagger()
-  , scan()
-  , unknown_0xc3410560(1)
-  , unknown_0x3eb13041(0.15000001)
-  , unknown_0x5e67cab0(0.30000001)
-  , unknown_0xe0ca98ac(0.15000001)
-  , lockOnConfirmReticleScale(1.0)
-  , unknown_0x9f8d62c1(0.40000001)
-  , unknown_0xff5eeeb9(0.40000001)
-  , unknown_0x0d0b660d(0.2)
-  , seekerTargetReticleScale(0.5)
-  , unknown_0x03efc783(-120.0)
-  , unknown_0xdcbd7bf8(120.0)
-  , unknown_0x2acd6b4b(0.95999998)
-  , unknown_0xb4c6c331(0.46000001)
-  , unknown_0x27d02089(0.17)
-  , unknown_0xae89310e(1.0)
-  , unknown_0xb27644df(1.0)
-  , unknown_0x21e2d1cc(1.0)
-  , orbitPointOccludedOpacity(0.0)
-  , unknown_0x5c489cb5(0.0)
-  , orbitPointZOffset(-0.40000001)
-  , unknown_0x61a6a38e(0.1)
-  , unknown_0xfbdf31f9(0.30000001)
-  , unknown_0xf76f7d0b(0.30000001)
-  , unknown_0x810b3a08(0.0)
-  , unknown_0x73fe1553(1.0)
-  , unknown_0xc8aef6f2(0.0)
-  , unknown_0x69b1e76c(1.0)
-  , unknown_0x8a0dfd23(1.0)
-  , unknown_0x8299e96e(1.0)
-  , unknown_0xa18a3f25(1.0)
-  , unknown_0x23be9bb2(1.0)
-  , unknown_0x8d512b82(0.0)
-  , unknown_0x39f1698d(1.0)
-  , unknown_0xc768c1e9(1.0)
-  , unknown_0x55c47b0e(1.0)
-  , unknown_0xa009aea2(0.40000001)
-  , unknown_0x38080bbf(0.69999999)
-  , unknown_0x71017dbe(0.80000001)
-  , unknown_0x4a996997(0.40000001)
-  , unknown_0x9f9fa6f3(0.30000001)
-  , unknown_0x932fea01(0.30000001)
-  , unknown_0x165f0fa8(2.0)
-  , unknown_0x6bd6b11f(0.0)
-  , unknown_0x42420f6e(CColor::Black())
-  , flowerReticleScale(1.0)
-  , flowerReticleColor(CColor::Black())
-  , unknown_0xb090e147(0.5)
-  , unknown_0x4c73a43d(1.0)
-  , unknown_0x6543d31b(0.89999998)
-  , unknown_0x8cd2d1ce(0.15000001)
-  , missileBracketColor(CColor::Black())
-  , unknown_0x45910e5d(0.5)
-  , unknown_0x07b30fa0(1.0)
-  , unknown_0x13ce8500(CColor::Black())
-  , unknown_0x9829f256(CColor::Black())
-  , unknown_0x77a613b9(CColor::Black())
-  , unknown_0xdfa81287(CColor::Black())
-  , lockOnConfirmReticleColor(CColor::Black())
-  , seekerReticleColor(CColor::Black())
-  , unknown_0x618d150a(160.0)
-  , unknown_0x209a2a8c(240.0)
-  , unknown_0xacb3f8f7(160.0)
-  , unknown_0xeda4c771(240.0)
-  , unknown_0xd3427574(160.0)
-  , unknown_0x92554af2(240.0)
-  , unknown_0x1e134e75(160.0)
-  , unknown_0x5f0471f3(240.0)
-  , unknown_0xe90548ac(160.0)
-  , unknown_0xa812772a(240.0)
-  , unknown_0x2d75c7be(160.0)
-  , unknown_0x6c62f838(240.0)
-  , unknown_0xf98e6242(160.0)
-  , unknown_0xb8995dc4(240.0)
-  , unknown_0x5009c614(160.0)
-  , unknown_0x111ef992(240.0)
-  , grappleIconScale(1.0)
-  , grappleIconScaleInactive(0.5)
-  , unknown_0x498d794a(80.0)
-  , unknown_0x089a46cc(240.0)
-  , grappleIconColor(CColor::Black())
-  , grappleIconColorInactive(CColor::Black())
-  , unknown_0x083b1cc8(CColor::Black())
-  , unknown_0x966982b1(0.5)
-  , unknown_0xf9799f5f(CColor::Black())
-  , unknown_0x9b980788(0.5)
-  , orbitPointModelColor(CColor::Black())
-  , crosshairsColor(CColor::Black())
-  , unknown_0x2ff52290(0.30000001)
-  , unknown_0x8a548cc9(true)
-  , unknown_0x65d449e1(CColor::Black())
-  , unknown_0x42c7fbe4(0.80000001)
-  , unknown_0x13820c03(80.0)
-  , unknown_0x52953385(80.0)
-  , xRaySeekerReticleColor(CColor::Black())
-  , unknown_0xdd8cf478(1.0)
-  , unknown_0xcbac6d52(32.0)
-  , unknown_0x980a75b6(120.0)
-  , unknown_0xcd1e0e91(18.0)
-  , unknown_0xce9cf241(1.4)
-  , unknown_0xb6531e99(0.5)
-  , unknown_0x77e5c6b5(2.0)
-  , unknown_0xfef5668b(8.0)
-  , healthColor(CColor::Black())
-  , powerVulnerabilityIndicator()
-  , lightVulnerabilityIndicator()
-  , darkVulnerabilityIndicator()
-  , annihilatorVulnerabilityIndicator()
-{}
+SLdrTweakTargeting::SLdrTweakTargeting() {
+  unknown_0xc3410560 = 1;
+  unknown_0x3eb13041 = 0.15000001f;
+  unknown_0x5e67cab0 = 0.30000001f;
+  unknown_0xe0ca98ac = 0.15000001f;
+  lockOnConfirmReticleScale = 1.0f;
+  unknown_0x9f8d62c1 = 0.40000001f;
+  unknown_0xff5eeeb9 = 0.40000001f;
+  unknown_0x0d0b660d = 0.2f;
+  seekerTargetReticleScale = 0.5f;
+  unknown_0x03efc783 = -120.0f;
+  unknown_0xdcbd7bf8 = 120.0f;
+  unknown_0x2acd6b4b = 0.95999998f;
+  unknown_0xb4c6c331 = 0.46000001f;
+  unknown_0x27d02089 = 0.17f;
+  unknown_0xae89310e = 1.0f;
+  unknown_0xb27644df = 1.0f;
+  unknown_0x21e2d1cc = 1.0f;
+  orbitPointOccludedOpacity = 0.0f;
+  unknown_0x5c489cb5 = 0.0f;
+  orbitPointZOffset = -0.40000001f;
+  unknown_0x61a6a38e = 0.1f;
+  unknown_0xfbdf31f9 = 0.30000001f;
+  unknown_0xf76f7d0b = 0.30000001f;
+  unknown_0x810b3a08 = 0.0f;
+  unknown_0x73fe1553 = 1.0f;
+  unknown_0xc8aef6f2 = 0.0f;
+  unknown_0x69b1e76c = 1.0f;
+  unknown_0x8a0dfd23 = 1.0f;
+  unknown_0x8299e96e = 1.0f;
+  unknown_0xa18a3f25 = 1.0f;
+  unknown_0x23be9bb2 = 1.0f;
+  unknown_0x8d512b82 = 0.0f;
+  unknown_0x39f1698d = 1.0f;
+  unknown_0xc768c1e9 = 1.0f;
+  unknown_0x55c47b0e = 1.0f;
+  unknown_0xa009aea2 = 0.40000001f;
+  unknown_0x38080bbf = 0.69999999f;
+  unknown_0x71017dbe = 0.80000001f;
+  unknown_0x4a996997 = 0.40000001f;
+  unknown_0x9f9fa6f3 = 0.30000001f;
+  unknown_0x932fea01 = 0.30000001f;
+  unknown_0x165f0fa8 = 2.0f;
+  unknown_0x6bd6b11f = 0.0f;
+  unknown_0x42420f6e = CColor::Black();
+  flowerReticleScale = 1.0f;
+  flowerReticleColor = CColor::Black();
+  unknown_0xb090e147 = 0.5f;
+  unknown_0x4c73a43d = 1.0f;
+  unknown_0x6543d31b = 0.89999998f;
+  unknown_0x8cd2d1ce = 0.15000001f;
+  missileBracketColor = CColor::Black();
+  unknown_0x45910e5d = 0.5f;
+  unknown_0x07b30fa0 = 1.0f;
+  unknown_0x13ce8500 = CColor::Black();
+  unknown_0x9829f256 = CColor::Black();
+  unknown_0x77a613b9 = CColor::Black();
+  unknown_0xdfa81287 = CColor::Black();
+  lockOnConfirmReticleColor = CColor::Black();
+  seekerReticleColor = CColor::Black();
+  unknown_0x618d150a = 160.0f;
+  unknown_0x209a2a8c = 240.0f;
+  unknown_0xacb3f8f7 = 160.0f;
+  unknown_0xeda4c771 = 240.0f;
+  unknown_0xd3427574 = 160.0f;
+  unknown_0x92554af2 = 240.0f;
+  unknown_0x1e134e75 = 160.0f;
+  unknown_0x5f0471f3 = 240.0f;
+  unknown_0xe90548ac = 160.0f;
+  unknown_0xa812772a = 240.0f;
+  unknown_0x2d75c7be = 160.0f;
+  unknown_0x6c62f838 = 240.0f;
+  unknown_0xf98e6242 = 160.0f;
+  unknown_0xb8995dc4 = 240.0f;
+  unknown_0x5009c614 = 160.0f;
+  unknown_0x111ef992 = 240.0f;
+  grappleIconScale = 1.0f;
+  grappleIconScaleInactive = 0.5f;
+  unknown_0x498d794a = 80.0f;
+  unknown_0x089a46cc = 240.0f;
+  grappleIconColor = CColor::Black();
+  grappleIconColorInactive = CColor::Black();
+  unknown_0x083b1cc8 = CColor::Black();
+  unknown_0x966982b1 = 0.5f;
+  unknown_0xf9799f5f = CColor::Black();
+  unknown_0x9b980788 = 0.5f;
+  orbitPointModelColor = CColor::Black();
+  crosshairsColor = CColor::Black();
+  unknown_0x2ff52290 = 0.30000001f;
+  unknown_0x8a548cc9 = true;
+  unknown_0x65d449e1 = CColor::Black();
+  unknown_0x42c7fbe4 = 0.80000001f;
+  unknown_0x13820c03 = 80.0f;
+  unknown_0x52953385 = 80.0f;
+  xRaySeekerReticleColor = CColor::Black();
+  unknown_0xdd8cf478 = 1.0f;
+  unknown_0xcbac6d52 = 32.0f;
+  unknown_0x980a75b6 = 120.0f;
+  unknown_0xcd1e0e91 = 18.0f;
+  unknown_0xce9cf241 = 1.4f;
+  unknown_0xb6531e99 = 0.5f;
+  unknown_0x77e5c6b5 = 2.0f;
+  unknown_0xfef5668b = 8.0f;
+  healthColor = CColor::Black();
+}
 
 SLdrTweakTargeting::~SLdrTweakTargeting() {}
 

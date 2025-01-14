@@ -1,10 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.hpp"
 
-SLdrTweakPlayerControls::SLdrTweakPlayerControls()
-  : instanceName()
-  , unknown_0x3c34dfed()
-  , unknown_0x168a79f1()
-{}
+SLdrTweakPlayerControls::SLdrTweakPlayerControls() {}
 
 SLdrTweakPlayerControls::~SLdrTweakPlayerControls() {}
 

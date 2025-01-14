@@ -1,11 +1,6 @@
 #include "MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.hpp"
 
-SLdrTweakParticle::SLdrTweakParticle()
-  : instanceName()
-  , pakFile()
-  , primaryWeapon()
-  , secondaryWeapon()
-{}
+SLdrTweakParticle::SLdrTweakParticle() {}
 
 SLdrTweakParticle::~SLdrTweakParticle() {}
 
