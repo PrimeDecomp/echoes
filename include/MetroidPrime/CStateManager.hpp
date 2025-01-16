@@ -104,11 +104,16 @@ public:
   // CRandom16* Random() const { return x900_random; }
   int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
 
+  TAreaId GetNextAreaId() const { return m_nextAreaId; }
+  void SetCurrentAreaId(TAreaId);
+  void SetActorAreaId(CActor& actor, TAreaId);
+
   const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }
   int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return m_numPlayers; }
   CPlayer* GetPlayer(int index) { return m_players[index]; }
+  CPlayer* Player(int index) { return m_players[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *m_objectLists[id]; }
@@ -136,6 +141,7 @@ public:
   const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
   const CPlayerState* GetPlayerState() const { return m_playerState; }
   const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
+  CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
 
   int fn_800366e4(CActor *);
   int fn_801EDD8C(TUniqueId) const;
@@ -173,8 +179,8 @@ public:
   CWorldLayerState* m_currentWorldLayerState;
   int* x1698;
   rstl::single_ptr< CSaveGameScreen > m_saveGameScreen; // x169C
-
-  char pad3[0xC]; // 16A0
+  TAreaId m_nextAreaId; // x16a0
+  char pad3[0x8]; // 16A4
   int m_updateFrameIdx; // 16AC
   char pad4[0xD84]; // 16B0
 

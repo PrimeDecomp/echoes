@@ -9,6 +9,7 @@ public:
   const CGameCamera* GetCurrentCamera(const CStateManager&, int) const;
 
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);
+  bool IsInCinematicCamera() const;
 };
 
 #endif // _CCAMERAMANAGER

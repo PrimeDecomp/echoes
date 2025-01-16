@@ -20,6 +20,9 @@ public:
 
   void SetLoadPauseState(bool);
 
+  static void PropogateAreaChain(CGameArea::EOcclusionState occlusionState, CGameArea* area,
+                                 CWorld* world);
+
 private:
   char pad1[0x18];
   rstl::vector< rstl::auto_ptr< CGameArea > > m_areas; // x18

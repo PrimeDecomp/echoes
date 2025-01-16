@@ -63,6 +63,7 @@ enum EScriptObjectMessage {
   kSM_Deactivate = 0x44435456,
   kSM_ToggleActive = 0x54435456,
   kSM_SetToZero = 0x5a45524f,
+  kSM_Reset = 0x52534554,
 
   kSM_Increment = 0x494e4352,
   kSM_Decrement = 0x44454352,
