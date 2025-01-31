@@ -60,15 +60,24 @@ struct CPhysicsActorUnkB {
   int a;
 };
 
+struct StepData {
+  float stepUp;
+  float stepDown;
+  int unk;
+
+  StepData(float up, float down, int u)
+  : stepUp(up), stepDown(down), unk(u) {}
+};
+
 class CPhysicsActor : public CActor {
   static const float kGravityAccel;
 
 public:
-  CPhysicsActor(TUniqueId uid, bool active, const rstl::string& name, const CEntityInfo& info,
-                int unk,
+  CPhysicsActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                uint inGrave,
                 const CTransform4f& xf, const CModelData& mData, const CMaterialList& matList,
                 const CAABox& aabb, const SMoverData& moverData, const CActorParameters& actParams,
-                float* stepUpDown);
+                const StepData& stepData);
 
   // CActor
   ~CPhysicsActor() override;

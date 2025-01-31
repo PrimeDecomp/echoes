@@ -43,7 +43,7 @@ static CMaterialList MakeActorMaterialList(const CMaterialList& in,
   return ret;
 }
 
-CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, int inGrave,
+CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint inGrave,
                const CTransform4f& xf, const CModelData& mData, const CMaterialList& list,
                const CActorParameters& params, TUniqueId nextDrawNode)
 : CEntity(uid, info, name, inGrave | 2)

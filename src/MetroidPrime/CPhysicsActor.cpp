@@ -7,12 +7,12 @@
 
 const float CPhysicsActor::kGravityAccel = 9.81f * 2.5f;
 
-CPhysicsActor::CPhysicsActor(TUniqueId uid, bool active, const rstl::string& name,
-                             const CEntityInfo& info, int unk, const CTransform4f& xf,
+CPhysicsActor::CPhysicsActor(TUniqueId uid, const rstl::string& name,
+                             const CEntityInfo& info, uint inGrave, const CTransform4f& xf,
                              const CModelData& mData, const CMaterialList& matList,
                              const CAABox& aabb, const SMoverData& moverData,
-                             const CActorParameters& actParams, float* stepUpDown)
-: CActor(uid, name, info, unk | 2, xf, mData, matList, actParams, kInvalidUniqueId)
+                             const CActorParameters& actParams, const StepData& stepData)
+: CActor(uid, name, info, inGrave | 2, xf, mData, matList, actParams, kInvalidUniqueId)
 , xe8_mass(moverData.x30_mass)
 , xec_massRecip(moverData.x30_mass > 0.f ? 1.f / moverData.x30_mass : 1.f)
 , xf0_inertiaTensor(0.f)
@@ -39,8 +39,8 @@ CPhysicsActor::CPhysicsActor(TUniqueId uid, bool active, const rstl::string& nam
                              CNUQuaternion::BuildFromMatrix3f(xf.BuildMatrix3f()),
                              CVector3f::Zero(), CAxisAngle::Identity())
 , x238_maximumCollisionVelocity(1000000.0)
-, x23c_stepUpHeight(stepUpDown[0])
-, x240_stepDownHeight(stepUpDown[1])
+, x23c_stepUpHeight(stepData.stepUp)
+, x240_stepDownHeight(stepData.stepDown)
 , x244_restitutionCoefModifier(0.f)
 , x248_collisionAccuracyModifier(1.f)
 , x24c_numTicksStuck(0)
