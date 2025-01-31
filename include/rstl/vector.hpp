@@ -82,6 +82,13 @@ public:
     out = in;
     ++x4_count;
   }
+  
+  // This is likely fake, but the reserve check is really missing
+  void push_back_unsafe(const T& in) {
+    iterator out = begin() + x4_count;
+    ++x4_count;
+    out = in;
+  }
 
   vector& operator=(const vector& other);
 

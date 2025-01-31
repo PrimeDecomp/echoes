@@ -322,6 +322,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CPhysicsActor.cpp"),
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp"),
+            Object(NonMatching, "MetroidPrime/CRuleSet.cpp"),
         ],
     },
     {
