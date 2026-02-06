@@ -12,7 +12,7 @@ namespace rstl {
 template < typename T, typename Vec, typename Alloc >
 class const_pointer_iterator {
 public:
-  typedef ptrdiff_t difference_type;
+  typedef long difference_type;
   typedef random_access_iterator_tag iterator_category;
   typedef T value_type;
 
@@ -37,12 +37,10 @@ public:
     return *this;
   }
   const_pointer_iterator operator+(int v) const {
-    const_pointer_iterator it = *this;
-    return it += v;
+    return const_pointer_iterator(this->current + v);
   }
   const_pointer_iterator operator-(int v) const {
-    const_pointer_iterator it = *this;
-    return it -= v;
+    return const_pointer_iterator(this->current - v);
   }
   difference_type operator-(const const_pointer_iterator& other) const {
     return this->current - other.current;
@@ -77,9 +75,8 @@ public:
   typedef typename base::iterator_category iterator_category;
   typedef typename base::value_type value_type;
 
-  pointer_iterator() : const_pointer_iterator< T, Vec, Alloc >(nullptr) {}
-  pointer_iterator(T* begin) : const_pointer_iterator< T, Vec, Alloc >(begin) {}
-  void operator=(const T& other) { rstl::construct(this->current, other); }
+  pointer_iterator() : base(nullptr) {}
+  pointer_iterator(T* begin) : base(begin) {}
   T& operator*() { return *this->current; }
   // TODO map says const, but breaks CScriptMazeNode::GenerateObjects
   T* operator->() { return this->current; }
@@ -87,9 +84,7 @@ public:
     ++this->current;
     return *this;
   }
-  pointer_iterator operator++(int) {
-    return *this += 1;
-  }
+  pointer_iterator operator++(int) { return *this += 1; }
   pointer_iterator& operator--() {
     --this->current;
     return *this;
@@ -103,14 +98,8 @@ public:
     this->current -= v;
     return *this;
   }
-  pointer_iterator operator+(int v) const {
-    pointer_iterator it = *this;
-    return it += v;
-  }
-  pointer_iterator operator-(int v) const {
-    pointer_iterator it = *this;
-    return it -= v;
-  }
+  pointer_iterator operator+(int v) const { return pointer_iterator(this->current + v); }
+  pointer_iterator operator-(int v) const { return pointer_iterator(this->current - v); }
   // HACK: non-const operator- is required to match vector::insert
   difference_type operator-(const pointer_iterator& other) { return this->current - other.current; }
 };
@@ -121,7 +110,7 @@ struct const_counting_iterator {
   int count;
 
   const_counting_iterator(const T* ptr, int count) : ptr(ptr), count(count) {}
-  
+
   const_counting_iterator& operator++() {
     ++this->count;
     return *this;
@@ -129,12 +118,12 @@ struct const_counting_iterator {
 };
 
 template < typename It >
-inline typename It::difference_type __distance(It first, It last, random_access_iterator_tag) {
+typename It::difference_type __distance(It first, It last, random_access_iterator_tag) {
   return last - first;
 }
 
 template < typename It, typename S >
-inline void __advance(It& it, S count, random_access_iterator_tag) {
+void __advance(It& it, S count, random_access_iterator_tag) {
   it += count;
 }
 
@@ -142,13 +131,13 @@ template < typename T >
 struct iterator_traits {};
 
 template < typename T >
-struct iterator_traits<T*> {
+struct iterator_traits< T* > {
   typedef T value_type;
 };
 
 template < typename T, typename Vec, typename Alloc >
-struct iterator_traits< pointer_iterator<T, Vec, Alloc> > {
-  typedef typename pointer_iterator<T, Vec, Alloc>::value_type value_type;
+struct iterator_traits< pointer_iterator< T, Vec, Alloc > > {
+  typedef typename pointer_iterator< T, Vec, Alloc >::value_type value_type;
 };
 
 } // namespace rstl

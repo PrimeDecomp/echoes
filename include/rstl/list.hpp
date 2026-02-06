@@ -12,11 +12,12 @@ class list {
 public:
   class iterator;
   class const_iterator;
-  iterator erase(const iterator& item);
+  iterator erase(const iterator& item) { return do_erase(item.get_node()); }
 
-private:
+  // private:
+#pragma pack(push, 1)
   struct node;
-  node* erase(node* item);
+#pragma pack(pop)
 
 public:
   list()
@@ -26,16 +27,16 @@ public:
   , x10_empty_next(reinterpret_cast< node* >(&xc_empty_prev))
   , x14_count(0) {}
   ~list();
+  node* do_erase(node* item);
 
+  void push_front(const T& val) { do_insert_before(x4_start, val); }
   void push_back(const T& val) { do_insert_before(x8_end, val); }
   void clear() { erase(begin(), end()); }
 
   size_t size() const { return x14_count; }
   bool empty() const { return x14_count == 0; }
 
-  void pop_front() {
-    erase(x4_start);
-  }
+  void pop_front() { erase(x4_start); }
 
   iterator begin() { return iterator(x4_start); }
   const_iterator begin() const { return const_iterator(x4_start); }
@@ -45,20 +46,21 @@ public:
   iterator erase(const iterator& start, const iterator& end) {
     node* last = end.get_node();
     node* it = start.get_node();
+    for (node* t = it; t != last; t = t->get_next()) {
+    }
+
     while (it != last) {
-      it = erase(it);
+      it = do_erase(it);
     }
     return iterator(it);
   }
 
-private:
   struct node {
     node* x0_prev;
     node* x4_next;
     uchar x8_item[sizeof(T)];
 
     node(node* prev, node* next) : x0_prev(prev), x4_next(next) {}
-    ~node() { get_value()->~T(); }
 
     node* get_prev() const { return x0_prev; }
     node* get_next() const { return x4_next; }
@@ -71,12 +73,12 @@ private:
   node* create_node(node* prev, node* next, const T& val) {
     node* n;
     x0_allocator.allocate(n, 1);
-    new(n) node(prev, next);
-    construct(n->get_value(), val);
+    new (n) node(prev, next);
+    new (n->get_value()) T(val);
     return n;
   }
 
-  void do_insert_before(node* n, const T& val) {
+  node* do_insert_before(node* n, const T& val) {
     node* nn = create_node(n->get_prev(), n, val);
     if (n == x4_start) {
       x4_start = nn;
@@ -84,7 +86,11 @@ private:
     nn->get_prev()->set_next(nn);
     nn->get_next()->set_prev(nn);
     ++x14_count;
+
+    return nn;
   }
+
+  void remove(const T& val);
 
 public:
   class const_iterator {
@@ -92,7 +98,7 @@ public:
     typedef T* value_type;
 
     const_iterator() : current(nullptr) {}
-    const_iterator(const node* begin) : current(begin) {}
+    const_iterator(node* begin) : current(begin) {}
     const_iterator& operator++() {
       this->current = this->current->x4_next;
       return *this;
@@ -109,13 +115,13 @@ public:
     bool operator==(const const_iterator& other) const { return current == other.current; }
     bool operator!=(const const_iterator& other) const { return current != other.current; }
 
-    const node* get_node() const { return current; }
+    node* get_node() const { return current; }
 
   protected:
-    const node* current;
+    node* current;
   };
 
-  class iterator : const_iterator {
+  class iterator : public const_iterator {
   public:
     typedef T* value_type;
 
@@ -135,16 +141,11 @@ public:
       return *this;
     }
     iterator operator--(int) { return iterator(this->curent->x0_prev); }
-    T* get_pointer() const { return current->get_value(); }
-    T& operator*() const { return *current->get_value(); }
-    T* operator->() const { return current->get_value(); }
-    bool operator==(const iterator& other) const { return current == other.current; }
-    bool operator!=(const iterator& other) const { return current != other.current; }
-
-    node* get_node() const { return current; }
-
-  protected:
-    node* current;
+    T* get_pointer() const { return this->current->get_value(); }
+    T& operator*() const { return *this->current->get_value(); }
+    T* operator->() const { return this->current->get_value(); }
+    bool operator==(const iterator& other) const { return this->current == other.current; }
+    bool operator!=(const iterator& other) const { return this->current != other.current; }
   };
 
 private:
@@ -163,21 +164,20 @@ list< T, Alloc >::~list() {
     node* it = cur;
     node* next = cur->get_next();
     cur = next;
-    destroy(it);
+    destroy(it->get_value());
     x0_allocator.deallocate(it);
   }
 }
 
-
 template < typename T, typename Alloc >
-typename list< T, Alloc >::node* list< T, Alloc >::erase(node* node) {
+typename list< T, Alloc >::node* list< T, Alloc >::do_erase(node* node) {
   typename list< T, Alloc >::node* result = node->get_next();
   if (node == x4_start) {
-    x4_start = result;
+    x4_start = node->get_next();
   }
   node->get_prev()->set_next(node->get_next());
   node->get_next()->set_prev(node->get_prev());
-  destroy(node);
+  destroy(node->get_value());
   x0_allocator.deallocate(node);
   x14_count--;
   return result;
