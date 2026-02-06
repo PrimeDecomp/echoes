@@ -17,8 +17,8 @@ CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name
 , m_active(info.GetActive())
 , m_notInArea(m_areaId == kInvalidAreaId)
 , m_inGraveyard(graveyard)
-, m_scriptingBlocked(info.GetActive())
-, m_entityUnknown(info.GetActive()) {}
+, m_scriptingBlocked(info.GetScriptingBlocked())
+, m_entityUnknown(info.GetUnk()) {}
 
 CEntity::~CEntity() {}
 

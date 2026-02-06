@@ -3,6 +3,7 @@
 
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "dolphin/types.h"
 #include "rstl/vector.hpp"
 
 enum EEntityType {
@@ -88,7 +89,9 @@ class CEntityInfo {
   TAreaId areaId;
   rstl::vector< SConnection > conns;
   TEditorId editorId;
-  bool active;
+  bool active : 1;
+  bool scriptingBlocked : 1;
+  bool unk : 1;
 
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, bool active,
@@ -100,6 +103,8 @@ public:
   const rstl::vector< SConnection >& GetConnectionList() const { return conns; }
   TEditorId GetEditorId() const { return editorId; }
   bool GetActive() const { return active; }
+  bool GetScriptingBlocked() const { return scriptingBlocked; }
+  bool GetUnk() const { return unk; }
 };
 
 class CScriptMsg {
