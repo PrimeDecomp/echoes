@@ -4,7 +4,7 @@
 
 rstl::vector< SConnection > CEntity::NullConnectionList;
 
-CEntityInfo CEntity::NullEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
+CEntityInfo CEntity::NullEntityInfo = CEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
 
 // CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, TEditorId eid)
 // : x0_areaId(aid), x4_conns(conns), x14_editorId(eid) {}

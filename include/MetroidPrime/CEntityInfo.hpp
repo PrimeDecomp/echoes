@@ -93,6 +93,8 @@ class CEntityInfo {
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, bool active,
               TEditorId eid = kInvalidEditorId);
+  CEntityInfo(const CEntityInfo&);
+  ~CEntityInfo();
 
   TAreaId GetAreaId() const { return areaId; }
   const rstl::vector< SConnection >& GetConnectionList() const { return conns; }
