@@ -44,7 +44,7 @@
   "C/C++ Include Guard.Auto Update Path Blocklist": [
     "include/zlib"
   ],
-  "search.useIgnoreFiles": false,
+  "search.useIgnoreFiles": true,
   // Disable C++ intellisense engine, use clangd instead
   "C_Cpp.intelliSenseEngine": "disabled"
 }

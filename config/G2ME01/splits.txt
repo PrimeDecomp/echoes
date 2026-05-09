@@ -93,6 +93,9 @@ MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F6638
 
+MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
+	.text       start:0x8020EBF0 end:0x8020EE18
+
 MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0
