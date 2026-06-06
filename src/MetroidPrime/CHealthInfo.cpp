@@ -17,8 +17,8 @@ CHealthInfo::CHealthInfo(float hp, float resist)
 , flagB(false) {}
 
 void CHealthInfo::fn_80142094(const CDamageInfo& dmgInfo, TUniqueId id1, TUniqueId id2, bool a, bool b) {
-  unkA = dmgInfo.weaponMode1;
-  unkB = dmgInfo.weaponMode2;
+  unkA = dmgInfo.GetWeaponMode1();
+  unkB = dmgInfo.GetWeaponMode2();
   uidA = id1;
   uidB = id2;
   flagA = a;

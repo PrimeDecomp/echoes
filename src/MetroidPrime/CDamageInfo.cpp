@@ -1,0 +1,62 @@
+#include "MetroidPrime/CDamageInfo.hpp"
+
+// #include "Kyoto/Streams/CInputStream.hpp"
+// #include "MetroidPrime/CDamageVulnerability.hpp"
+
+#include "MetroidPrime/Player/CPlayerState.hpp"
+
+// CDamageInfo::CDamageInfo(CInputStream& in)
+// : x0_weaponMode(CWeaponMode::Invalid()), x18_24_noImmunity(false) {
+//   in.ReadLong();
+//   x0_weaponMode = CWeaponMode(EWeaponType(in.ReadLong()));
+//   x8_damage = in.ReadFloat();
+//   xc_radiusDamage = x8_damage;
+//   x10_radius = in.ReadFloat();
+//   x14_knockback = in.ReadFloat();
+// }
+
+// float CDamageInfo::GetDamage(const CDamageVulnerability& dVuln) const {
+//   EVulnerability vuln = dVuln.GetVulnerability(x0_weaponMode, false);
+//   if (vuln == kVN_Deflect)
+//     return 0.f;
+//   else if (vuln == kVN_Weak)
+//     return 2.f * x8_damage;
+
+//   return x8_damage;
+// }
+
+// float CDamageInfo::GetRadiusDamage(const CDamageVulnerability& dVuln) const {
+//   EVulnerability vuln = dVuln.GetVulnerability(x0_weaponMode, false);
+//   if (vuln == kVN_Deflect) {
+//     return 0.f;
+//   }
+//   if (vuln == kVN_Weak) {
+//     return 2.f * xc_radiusDamage;
+//   }
+
+//   return xc_radiusDamage;
+// }
+
+// CDamageInfo::CDamageInfo(const CDamageInfo& other, float dt)
+// : x0_weaponMode(other.x0_weaponMode)
+// , x8_damage(other.x8_damage * (60 * dt))
+// , xc_radiusDamage(x8_damage)
+// , x10_radius(other.x10_radius)
+// , x14_knockback(other.x14_knockback)
+// , x18_24_noImmunity(true) {}
+
+// CDamageInfo CDamageInfo::MakeScaledForTime(const float dt) const {
+//   return CDamageInfo(x0_weaponMode, x8_damage * (60.f * dt), x10_radius, x14_knockback, true);
+// }
+
+
+CDamageInfo CDamageInfo::ApplyDoubleDamage(const CPlayerState& state) const {
+  int amount = state.GetItemAmount(CPlayerState::kIT_DoubleDamage, true);
+  if (amount == 0) {
+    return *this;
+  } else {
+    return CDamageInfo(*this, 2.f * amount);
+  }
+
+  return *this;
+}
