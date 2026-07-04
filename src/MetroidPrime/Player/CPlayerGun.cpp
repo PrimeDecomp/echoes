@@ -6,40 +6,43 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 
 static const float kFactorMultiplierForBeamCombo = 1.0f / CPlayerState::GetMissileComboChargeFactor();
-static const float kChargeFactor = 1.0f / CPlayerState::GetMissileComboChargeFactor();
+static const float kChargeDtFactor = 1.0f / CPlayerState::GetMissileComboChargeFactor();
 
 void CPlayerGun::UpdateChargeState(float dt, CStateManager& mgr) {
 
   CPlayerState* playerState = GetPlayerFromAll(mgr)->GetPlayerState();
 
-  if (m_chargePhase == kCP_AnimAndSfx) {
-    m_maybeChargeAnim += dt;
-    if (5.0f <= m_maybeChargeAnim) {
-      m_maybeChargeAnim = 0.0f;
-      CRumbleManager* rumbleMgr = mgr.RumbleManager(mgr.MaskUIdNumPlayers(m_playerUniqueId));
-      if (m_chargeRumbleHandle == -1) {
-        rumbleMgr->StopRumble(-1);
-        m_chargeRumbleHandle = -1;
+  switch (m_chargePhase) {
+    case kCP_AnimAndSfx:
+      m_maybeChargeAnim += dt;
+      if (m_maybeChargeAnim >= 5.0f) {
+        m_maybeChargeAnim = 0.0f;
+        CRumbleManager* rumbleMgr = mgr.RumbleManager(mgr.MaskUIdNumPlayers(GetPlayerUniqueId()));
+        if (m_chargeRumbleHandle == -1) {
+          rumbleMgr->HardStopAll();
+          m_chargeRumbleHandle = -1;
+        }
+        m_chargeRumbleHandle = rumbleMgr->Rumble(mgr, kRFX_PlayerGunCharge, 1.f, kRP_Three);
       }
-      m_chargeRumbleHandle = rumbleMgr->Rumble(mgr, kRFX_PlayerGunCharge, 1.f, kRP_Three);
-    }
-  } else {
-    m_maybeChargeAnim = 0.0f;
+      break;
+    default:
+      m_maybeChargeAnim = 0.0f;
   }
-
-  if (m_chargePhase == kCP_NotCharging) {
-    if (0.0f < playerState->GetChargeBeamFactor()) {
-      playerState->IncrementChargeBeamFactor(-dt);
-    }
-  } else {
-    if (m_chargePhase == kCP_Phase_1 && playerState->GetChargeAnimStart() < playerState->GetChargeBeamFactor()) {
+  
+  // TODO: probably some sort of weird switch case instead
+  if (m_chargePhase != kCP_NotCharging) {
+    if (m_chargePhase == kCP_Phase_1 && playerState->GetChargeAnimStart() > playerState->GetChargeBeamFactor()) {
       m_chargePhase = kCP_Phase_2;
     }
     if (m_chargeSfx && m_seekerChargeState != kSCS_FullyCharged) {
-      CSfxManager::PitchBend(m_chargeSfx, m_0x70f * 0x40 ? 0 : 0x2000);  // FIXME: still wrong
+      CSfxManager::PitchBend(m_chargeSfx, m_0x3ae_b0 ? 0 : 0x2000);
     }
     if (0 < m_chargePhase && m_chargePhase < 4) {
-      playerState->IncrementChargeBeamFactor(dt * kChargeFactor);
+      playerState->IncrementChargeBeamFactor(kChargeDtFactor * dt);
+    }
+  } else {
+    if (playerState->GetChargeBeamFactor() > 0.0f) {
+      playerState->IncrementChargeBeamFactor(-dt);
     }
   }
 }

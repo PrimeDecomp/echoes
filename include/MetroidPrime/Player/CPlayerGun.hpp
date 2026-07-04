@@ -40,6 +40,7 @@ public:
   CPlayerGun(TUniqueId, int);
   ~CPlayerGun();
 
+  TUniqueId GetPlayerUniqueId() const { return m_playerUniqueId; }
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
 
@@ -70,14 +71,25 @@ private:
   float m_gunHolsterRemTime;
   char m_pad0[24];
   EChargeState m_chargeState; // 0x3a4
-  char m_pad1[0x2EC];         // 0x3a8
+  int m_gunHolsterState; // 0x3a8 EGunHolsterState
+  short m_0x3ac;
+  bool m_0x3ae_b0 : 1;
+  bool m_0x3ae_b1 : 1;
+  bool m_0x3ae_b2 : 1;
+  bool m_0x3ae_b3 : 1;
+  bool m_0x3ae_b4 : 1;
+  bool m_0x3ae_b5 : 1;
+  bool m_0x3ae_b6 : 1;
+  bool m_0x3ae_b7 : 1;
+  CTransform4f m_gunWorldXf;  // 0x3b0
+  char m_pad1[0x2B4];         // 0x3e0
   EChargePhase m_chargePhase; // 0x694
   ESeekerChargeState m_seekerChargeState; // 0x698
   float m_timerRelatedToSeekers; // 0x69c
   char m_pad2[0xD0];          // 0x6A0
   int m_0x770;                // 0x770
   char m_pad4[0x2b];          // 0x774
-  unsigned char m_0x70f;      // 0x70f
+  unsigned char m_0x70f : 1;  // 0x70f
   CSfxHandle m_chargeSfx;     // 0x7a0
   CSfxHandle m_sfxForShoot;   // 0x7a4
   short m_chargeRumbleHandle; // 0x7a8
