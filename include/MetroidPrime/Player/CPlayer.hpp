@@ -169,9 +169,9 @@ private:
   int x3d8_unk;                                          // 0x3d8
   TUniqueId m_orbitNextTargetId;                         // 0x3dc
   float x3e0_unk;                                        // 0x3e0
-  rstl::vector< TUniqueId > m_nearbyOrbitObjects;        // 0x3e4
-  rstl::vector< TUniqueId > m_onScreenOrbitObjects;      // 0x468
-  rstl::vector< TUniqueId > m_offScreenOrbitObjects;     // 0x4ec
+  rstl::reserved_vector< TUniqueId, 64 > m_nearbyOrbitObjects;        // 0x3e4
+  rstl::reserved_vector< TUniqueId, 64 > m_onScreenOrbitObjects;      // 0x468
+  rstl::reserved_vector< TUniqueId, 64 > m_offScreenOrbitObjects;     // 0x4ec
   bool m_orbitLockEstablished;                           // 0x570
   float m_orbitPreventionTimer;                          // 0x574
   bool m_sidewaysDashing;                                // 0x578
@@ -233,11 +233,11 @@ private:
   short xeca_unk;                                        // 0xeca
   CColor xecc_unk;                                       // 0xecc
   int xed0_unk;                                          // 0xed0
-  UnkStructA* xed4_unk;                                   // 0xed4
+  UnkStructA* xed4_unk;                                  // 0xed4
   void* xed8_unk;                                        // 0xed8
   UnkStructB xedc_unk;                                   // 0xedc
   int xf6c_unk;                                          // 0xf6c
-  UnkStructC* xf70_unk;                                   // 0xf70
+  UnkStructC* xf70_unk;                                  // 0xf70
   TReservedAverage< float, 20 > m_moveSpeedAvg;          // 0xf74
   float m_moveSpeed;                                     // 0xfc8
   float m_flatMoveSpeed;                                 // 0xfcc
@@ -249,7 +249,9 @@ private:
   char m_pad_5[0x18];                                    // 0x12fc
   CPlayerState* m_playerState;                           // 0x1314
   CCameraManager* m_cameraManager;                       // 0x1318
+  char m_pad_6[0x1A8];                                   // 0x1320
 };
+CHECK_SIZEOF(CPlayer, 0x14c8)
 // size: 0x14c8
 
 #endif // _CPLAYER
