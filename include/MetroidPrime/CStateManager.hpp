@@ -146,6 +146,7 @@ public:
   const CPlayerState* GetPlayerState() const { return m_playerState; }
   const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
+  CRumbleManager* RumbleManager(int playerIndex) { return m_rumbleManagers[playerIndex]; }
 
   int fn_800366e4(CActor *);
   int fn_801EDD8C(TUniqueId) const;

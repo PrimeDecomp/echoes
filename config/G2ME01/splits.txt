@@ -85,7 +85,8 @@ MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
 MetroidPrime/Player/CPlayerGun.cpp:
-	.text       start:0x801C6DF8 end:0x801C8CE8
+	.text       start:0x801C6DF8 end:0x801D2F0C
+	.ctors      start:0x803A5578 end:0x803A557C
 	.sdata2     start:0x8041D11C end:0x8041D124
 
 MetroidPrime/Weapons/CPowerBeam.cpp:

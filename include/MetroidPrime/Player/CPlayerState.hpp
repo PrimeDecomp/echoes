@@ -297,6 +297,7 @@ public:
   void fn_80084B6C();
   void fn_80084928(const UnknownPlayerStateStruct&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
+  float GetChargeAnimStart() const { return chargeAnimStart; }
   void IncrementChargeBeamFactor(float);
   void DecrementAmmoAndDisplayAlertIfOut(const CStateManager&, EItemType, int quantity);
 

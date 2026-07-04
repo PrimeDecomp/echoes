@@ -1,17 +1,24 @@
 #ifndef _CPLAYERGUN
 #define _CPLAYERGUN
 
-#include "MetroidPrime//TGameTypes.hpp"
+#include "MetroidPrime/CEntity.hpp"
 
+#include "Kyoto/Math/CTransform4f.hpp"
+#include "Kyoto/Audio/CSfxHandle.hpp"
+
+#include "MetroidPrime/CActorLights.hpp"
+
+class CWorldTransManager;
 class CStateManager;
 class CPlayer;
+class CWorldShadow;
 
 enum EChargeState {
   kCS_Normal,
   kCS_Charged,
 };
 
-class CPlayerGun {
+class CPlayerGun : public CEntity {
 public:
   enum EChargePhase {
     kCP_NotCharging,
@@ -21,11 +28,20 @@ public:
     kCP_AnimAndSfx,
     kCP_Phase_5,
   };
+  enum ESeekerChargeState {
+    kSCS_NotCharging,
+    kSCS_State_1,
+    kSCS_State_2,
+    kSCS_State_3,
+    kSCS_FullyCharged,
+    // Ghidra has State 9 too
+  };
 
   CPlayerGun(TUniqueId, int);
   ~CPlayerGun();
 
   CPlayer* GetPlayer(CStateManager& mgr) const;
+  CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
 
   void PlayAnim(CStateManager&, int animType, int loop);
 
@@ -34,17 +50,39 @@ public:
   void StopChargeSound(CStateManager&, bool);
   void EnableChargeFx(CStateManager&, bool);
 
+  void UpdateChargeState(float dt, CStateManager& mgr);
 
   void Charging(CStateManager&, int);
 
 private:
-  char m_pad0[0x3a4];         // 0x000
+  CTransform4f m_0x24;
+  CTransform4f m_0x54;
+  float m_0x84;
+  float m_0x88;
+  float m_0x8c;
+  CWorldTransManager *m_worldTransManager;
+  CActorLights m_lights;
+  TUniqueId m_playerUniqueId;
+  TUniqueId m_lightId;
+  CWorldShadow* m_worldShadow;
+  float m_cooldown;
+  float m_0x384;
+  float m_gunHolsterRemTime;
+  char m_pad0[24];
   EChargeState m_chargeState; // 0x3a4
   char m_pad1[0x2EC];         // 0x3a8
   EChargePhase m_chargePhase; // 0x694
-  char m_pad2[0xD8];          // 0x698
-  int m_0x770;
-  char m_pad3[0x9C];          // 0x774
+  ESeekerChargeState m_seekerChargeState; // 0x698
+  float m_timerRelatedToSeekers; // 0x69c
+  char m_pad2[0xD0];          // 0x6A0
+  int m_0x770;                // 0x770
+  char m_pad4[0x2b];          // 0x774
+  unsigned char m_0x70f;      // 0x70f
+  CSfxHandle m_chargeSfx;     // 0x7a0
+  CSfxHandle m_sfxForShoot;   // 0x7a4
+  short m_chargeRumbleHandle; // 0x7a8
+  float m_maybeChargeAnim;    // 0x7ac
+  char m_pad3[0x60];          // 0x7B0
   uint m_0x810_b0 : 1;
   uint m_0x810_b1 : 1;
   uint m_0x810_b2 : 1;
