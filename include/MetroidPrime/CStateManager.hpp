@@ -39,6 +39,7 @@ class CStateManagerContainer;
 class CSortedListManager;
 class CWeaponMgr;
 class CFluidPlaneManager;
+class CDamageInfo;
 class CAABox;
 
 struct MapWorldInfoAreas {};
@@ -120,6 +121,9 @@ public:
 
   void UpdateActorInSortedLists(CActor*);
 
+  bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage, const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& info, int);
+
+  void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
   void fn_8003BF84(CEntity*);
   void fn_800412EC(TUniqueId);
   bool fn_80036F10() const; // Maybe_CheckIsMultiplayer

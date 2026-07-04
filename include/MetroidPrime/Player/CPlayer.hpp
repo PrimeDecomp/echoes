@@ -13,6 +13,7 @@ class CMorphBall;
 class CPlayerState;
 class CCameraManager;
 class CPlayerGun;
+class CTweakPlayer;
 
 namespace NPlayer {
 enum EPlayerMovementState {
@@ -112,8 +113,13 @@ public:
 
   EPlayerMorphBallState GetMorphballTransitionState() const { return m_morphBallState; }
   EPlayerMorphBallState GetSpawnedMorphballState() const { return m_spawnedMorphBallState; }
+  int Get_x12f8() const { return x12f8_unk; }
+
   float fn_8000BE98() const;
   void fn_80019E40(CStateManager&, int);
+  void fn_8000d3ac(const CVector3f&, CStateManager&);
+  bool fn_8000d40c(const CVector3f&, CStateManager&);
+  CTweakPlayer* GetTweakPlayer() const;
 
   void Teleport(const CTransform4f& xf, CStateManager& mgr, bool resetBallCam);
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
@@ -238,7 +244,9 @@ private:
   CVector3f m_lookDir;                                   // 0xfd0
   char m_pad_3[0x198];                                   // 0xFDC
   CMorphBall* m_morphBall;                               // 0x1174
-  char m_pad_4[0x19C];                                   // 0x1178
+  char m_pad_4[0x180];                                   // 0x1178
+  int x12f8_unk;                                         // 0x12f8
+  char m_pad_5[0x18];                                    // 0x12fc
   CPlayerState* m_playerState;                           // 0x1314
   CCameraManager* m_cameraManager;                       // 0x1318
 };

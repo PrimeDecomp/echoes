@@ -27,6 +27,8 @@ public:
 
   u32 GetCardSerialA() const { return cardSerialA; }
   u32 GetCardSerialB() const { return cardSerialB; }
+  float GetHardModeDamageMultiplier() const;
+  bool GetHardModeEnabled() const;
 
 private:
   char pad1[0x80];
