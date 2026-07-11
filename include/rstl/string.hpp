@@ -29,7 +29,7 @@ class basic_string {
   void internal_prepare_to_write(int len, bool);
   void internal_allocate(int size);
   // {
-  //     x4_cow = reinterpret_cast<COWData*>(new uchar[size * sizeof(_CharTp) +
+  //     x4_cow = reinterpret_cast<COWData*>(rs_new uchar[size * sizeof(_CharTp) +
   //     8]); x0_ptr = x4_cow->x8_data; x4_cow->x0_capacity = uint(size);
   //     x4_cow->x4_refCount = 1;
   // }
@@ -47,17 +47,16 @@ public:
 
   basic_string() : x0_ptr(&mNull), x4_cow(nullptr), x8_size(0) {}
 
-  basic_string(literal_t, const _CharTp* data);
-  // {
-  //     x0_ptr = data;
-  //     x4_cow = nullptr;
+  basic_string(literal_t, const _CharTp* data) {
+    x0_ptr = data;
+    x4_cow = nullptr;
 
-  //     const _CharTp* it = data;
-  //     while (*it)
-  //         ++it;
+    const _CharTp* it = data;
+    while (*it)
+      ++it;
 
-  //     x8_size = uint((it - data) / sizeof(_CharTp));
-  // }
+    x8_size = static_cast< uint >(it - data);
+  }
 
   basic_string(const basic_string& str);
   // {
@@ -139,10 +138,14 @@ bool basic_string< _CharTp, Traits, Alloc >::operator<(const basic_string& other
 typedef basic_string< wchar_t > wstring;
 typedef basic_string< char > string;
 
-wstring wstring_l(const wchar_t* data);
-// {
-//     return wstring(wstring::literal_t(), data);
-// }
+#ifdef __MWERKS__
+__declspec(weak) // TODO
+#else
+static
+#endif
+wstring wstring_l(const wchar_t* data) {
+  return wstring(wstring::literal_t(), data);
+}
 
 string string_l(const char* data);
 // {

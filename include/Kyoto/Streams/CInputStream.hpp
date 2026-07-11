@@ -149,8 +149,8 @@ inline rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator
   iterator out = begin() + x4_count;
   for (int i = 0; i < count; i++) {
     // Maybe this got improved?
-    // push_back(in.Get(TType< T >()));
-    out++ = in.Get(TType< T >());
+    push_back(in.Get(TType< T >()));
+    // out++ = in.Get(TType< T >());
     ++x4_count;
   }
 }

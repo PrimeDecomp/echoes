@@ -19,34 +19,29 @@ public:
       construct< T >(m_data, other.data());
     }
   }
-  ~optional_object() {
-    // clear();
-    // Makes ~CScriptHudMemo match
-    if (m_valid) {
-      rstl::destroy(get_ptr());
-    }
-  }
+  ~optional_object() { clear(); }
 
   optional_object& operator=(const optional_object& other) {
-    if (this != &other) {
-      if (other.m_valid) {
-        assign(other.data());
-      } else {
-        clear();
-      }
+    if (this == &other) {
+      return *this;
+    }
+    if (other.m_valid) {
+      assign(other.data());
+    } else {
+      clear();
     }
     return *this;
   }
-  optional_object& operator=(const T& item); /* {
+  optional_object& operator=(const T& item) {
     assign(item);
     return *this;
-  }*/
+  }
 
   T& data() { return *get_ptr(); }
   const T& data() const { return *get_ptr(); }
   T* get_ptr() { return reinterpret_cast< T* >(m_data); }
   const T* get_ptr() const { return reinterpret_cast< const T* >(m_data); }
-  bool valid() const { return m_valid; }
+  const bool valid() const { return m_valid; }
   operator bool() const { return m_valid; } // replace with valid()?
   void clear() {
     if (m_valid) {
@@ -74,13 +69,6 @@ private:
     }
   }
 };
-
-template < typename T >
-optional_object< T >& optional_object< T >::operator=(const T& item) {
-  assign(item);
-  return *this;
-}
-
 } // namespace rstl
 
 #endif // _RSTL_OPTIONAL_OBJECT

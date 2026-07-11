@@ -3,14 +3,18 @@
 
 #include "types.h"
 
+class CInputStream;
 namespace rstl {
 template < typename L, typename R >
 class pair {
 public:
   pair() {}
   pair(const L& first, const R& second) : first(first), second(second) {}
+  pair(CInputStream& in);
 
-  bool operator==(const pair& other) const { return first == other.first && second == other.second; }
+  bool operator==(const pair& other) const {
+    return first == other.first && second == other.second;
+  }
 
   L first;
   R second;
@@ -27,7 +31,6 @@ struct select1st< pair< K, V > > {
 
   const K& operator()(const pair< K, V >& it) const { return it.first; }
 };
-
 
 } // namespace rstl
 

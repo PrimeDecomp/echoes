@@ -18,7 +18,7 @@ public:
   static void* Alloc(size_t len, IAllocator::EHint hint = IAllocator::kHI_None,
                      IAllocator::EScope scope = IAllocator::kSC_Unk1,
                      IAllocator::EType type = IAllocator::kTP_Heap,
-                     const CCallStack& callstack = CCallStack(-1, "??(??)"));
+                     const CCallStack& callstack = CCallStack(-1, "\?\?(\?\?)"));
   static void Free(const void* ptr);
   static void SetOutOfMemoryCallback(IAllocator::FOutOfMemoryCb callback, const void* context);
   static void OffsetFakeStatics(int);
@@ -44,11 +44,11 @@ inline void* operator new(size_t n, void* ptr) { return ptr; };
 #ifdef __MWERKS__
 inline void operator delete(void* ptr) { CMemory::Free(ptr); }
 inline void operator delete[](void* ptr) { CMemory::Free(ptr); }
-#define NEW new ("??(??)", nullptr)
+#define rs_new new ("\?\?(\?\?)", nullptr)
 #else
-__attribute__((weak)) void operator delete(void* ptr) { CMemory::Free(ptr); }
-__attribute__((weak)) void operator delete[](void* ptr) { CMemory::Free(ptr); }
-#define NEW new
+// void operator delete(void* ptr);
+// void operator delete[](void* ptr);
+#define rs_new new
 #endif
 
 #endif // _CMEMORY

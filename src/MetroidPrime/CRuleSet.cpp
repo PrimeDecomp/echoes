@@ -13,7 +13,7 @@ CRuleSet::CRuleSet(CInputStream& input) {
   int ruleCount = input.ReadInt8();
   m_rules.reserve(ruleCount);
   for (int i = 0; i < ruleCount; ++i) {
-    m_rules.push_back_unsafe(CRuleSetRule(input));
+    m_rules.push_back(CRuleSetRule(input));
   }
 }
 
@@ -27,7 +27,7 @@ CRuleSetRule::CRuleSetRule(CInputStream& input) {
   int actionCount = input.ReadInt8();
   m_actions.reserve(actionCount);
   for (int i = 0; i < actionCount; ++i) {
-    m_actions.push_back_unsafe(CRuleAction(input));
+    m_actions.push_back(CRuleAction(input));
   }
 }
 
@@ -38,7 +38,7 @@ CRuleAction::CRuleAction(CInputStream& input) : m_id(input.ReadInt32()) {
   int propCount = input.ReadInt8();
   m_properties.reserve(propCount);
   for (int i = 0; i < propCount; ++i) {
-    m_properties.push_back_unsafe(CRuleValue(3, input));
+    m_properties.push_back(CRuleValue(3, input));
   }
 }
 

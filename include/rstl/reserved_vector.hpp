@@ -7,6 +7,7 @@
 #include "rstl/pointer_iterator.hpp"
 
 class CInputStream;
+class COutputStream;
 
 namespace rstl {
 template < typename T, int N >
@@ -19,6 +20,7 @@ public:
   // typedef const_pointer_iterator< T, reserved_vector< T, N >, void > const_iterator;
   typedef T* iterator;
   typedef const T* const_iterator;
+  typedef T value_type;
 
   inline iterator begin() { return iterator(data()); }
   inline const_iterator begin() const { return const_iterator(data()); }
@@ -42,8 +44,9 @@ public:
     return *this;
   }
   void clear() {
+    T* ptr = data();
     for (int i = 0; i < x0_count; ++i) {
-      destroy(&data()[i]);
+      destroy(&ptr[i]);
     }
     x0_count = 0;
   }
@@ -51,7 +54,7 @@ public:
   ~reserved_vector() { clear(); }
 
   void push_back(const T& in) {
-    construct(&data()[x0_count], in);
+    construct(data() + x0_count, in);
     ++x0_count;
   }
 
@@ -67,28 +70,31 @@ public:
   inline int capacity() const { return N; }
   inline T& front() { return data()[0]; }
   inline const T& front() const { return data()[0]; }
-  inline T& back() { return data()[x0_count - 1]; }
-  inline const T& back() const { return data()[x0_count - 1]; }
+  inline T& back() { return at(x0_count - 1); }
+  inline const T& back() const { return at(x0_count - 1); }
   inline T& operator[](int idx) { return data()[idx]; }
   inline const T& operator[](int idx) const { return data()[idx]; }
-  void erase(iterator it) {
-    if (it < begin()) {
-      return;
-    }
-    if (it < end()) {
+  inline T& at(int idx) { return data()[idx]; }
+  inline const T& at(int idx) const { return data()[idx]; }
+  iterator erase(iterator it) {
+    if (it >= begin() && it < end()) {
       for (iterator j = it; j < end() - 1; ++j) {
         *j = *(j + 1);
       }
       --x0_count;
+      return it;
     }
+    return end();
   }
 
-  void resize(int count, const T& item) {
+  void resize(int count, const T& item = T()) {
     if (size() < count) {
       uninitialized_fill_n(end(), count - size(), item);
       x0_count = count;
     }
   }
+
+  void PutTo(COutputStream& out) const;
 };
 
 template < typename T, int N >
