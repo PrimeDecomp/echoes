@@ -369,6 +369,7 @@ config.libs = [
             Object(Matching, "Kyoto/Math/CVector3i.cpp"),
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
         ],
     },

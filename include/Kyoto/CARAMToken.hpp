@@ -22,6 +22,8 @@ public:
   ~CARAMToken();
   void PostConstruct(void* ptr, uint len, int unk);
   CARAMToken& operator=(const CARAMToken& other);
+  const EStatus GetStatus() const { return x0_status; }
+  int GetSize() const { return xc_dataLen; }
   bool LoadToMRAM();
   bool LoadToARAM();
   bool RefreshStatus();
@@ -31,8 +33,8 @@ public:
   void RemoveFromList();
   void MakeInvalid();
 
-  void* sub_803583d4();
-  void sub_80358388();
+  void* ForceSyncMRAM();
+  void ForceSyncARAM();
 
   void* GetMRAMSafe();
 

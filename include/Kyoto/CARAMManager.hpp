@@ -20,15 +20,17 @@ public:
   static void PreInitializeAlloc(uint size) { mPreInitializeAlloc += size; }
   static void Initialize(uint);
   static void WaitForAllDMAsToComplete();
-  static const void* GetInvalidAlloc() { return (const void*)kInvalidAlloc; }
+  static const void* GetInvalidAlloc();// { return (const void*)kInvalidAlloc; }
   static const uint GetInvalidDMAHandle() { return kInvalidHandle; }
   static bool CancelDMA(uint);
   static void WaitForDMACompletion(uint);
   static bool IsDMACompleted(uint handle);
-  static void* Alloc(uint len);
-  static void Free(const void* ptr);
+  static void* Alloc(uint len, const unkptr = nullptr);
+  static void Free(const void* ptr, const unkptr = nullptr);
   static int DMAToARAM(void*, void*, uint, EDMAPriority);
   static int DMAToMRAM(void*, void*, uint, EDMAPriority);
+  // TODO: Verify name against behavior
+  static bool IsAllocValid(const void* ptr);
 private:
   static uint mPreInitializeAlloc;
   static const int kInvalidAlloc;

@@ -175,6 +175,14 @@ Kyoto/Input/CDolphinController.cpp:
 	.sbss       start:0x80419B90 end:0x80419B98
 	.sdata2     start:0x8041E9F0 end:0x8041EA28
 
+Kyoto/DolphinCDvdFile.cpp:
+	.text       start:0x8030BF9C end:0x8030CC64
+
+Kyoto/CARAMToken.cpp:
+	.text       start:0x8031454C end:0x80314DC4
+	.rodata     start:0x803AFEB0 end:0x803AFEB8
+	.bss        start:0x80417618 end:0x80417634 align:4 common
+
 Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80328B0C end:0x8032A764
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
