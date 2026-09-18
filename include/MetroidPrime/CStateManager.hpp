@@ -128,6 +128,7 @@ public:
   void fn_800412EC(TUniqueId);
   bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
   void fn_8003BE54();
+  void fn_8003C4B8(const CVector3f&, int);
 
   // State transitions
   void DeferStateTransition(EStateManagerTransition t);

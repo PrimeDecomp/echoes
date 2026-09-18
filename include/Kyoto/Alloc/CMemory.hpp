@@ -24,7 +24,7 @@ public:
   static void OffsetFakeStatics(int);
 };
 
-#ifdef __MWERKS__
+#if defined(__MWERKS__) || defined(CLANGD)
 void* operator new(size_t sz, const char*, const char*);
 void* operator new[](size_t sz, const char*, const char*);
 // TODO remove
@@ -45,10 +45,12 @@ inline void* operator new(size_t n, void* ptr) { return ptr; };
 inline void operator delete(void* ptr) { CMemory::Free(ptr); }
 inline void operator delete[](void* ptr) { CMemory::Free(ptr); }
 #define NEW new ("??(??)", nullptr)
+#define rs_new new ("\?\?(\?\?)", nullptr)
 #else
 __attribute__((weak)) void operator delete(void* ptr) { CMemory::Free(ptr); }
 __attribute__((weak)) void operator delete[](void* ptr) { CMemory::Free(ptr); }
 #define NEW new
+#define rs_new new
 #endif
 
 #endif // _CMEMORY
