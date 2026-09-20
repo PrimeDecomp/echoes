@@ -22,6 +22,8 @@ extern "C" {
 
 #else
 
+double __frsqrte(double x);
+
 /* GCC */
 #ifdef __BIG_ENDIAN__
 #define __IEEE_BIG_ENDIAN

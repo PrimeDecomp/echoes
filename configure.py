@@ -517,6 +517,7 @@ config.progress_report_args = [
     # Default is "functionRelocDiffs=none", which is most lenient
     # "--config functionRelocDiffs=data_value",
 ]
+config.extra_clang_flags = ["-DCLANGD"]
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json
