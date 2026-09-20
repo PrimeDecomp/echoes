@@ -9,6 +9,7 @@
 #include "Kyoto/SObjectTag.hpp"
 
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/Player/CStaticInterference.hpp"
 
 class CStateManager;
 class CBitStreamReader;
@@ -183,26 +184,18 @@ public:
     }
   };
 
-  struct UnknownV {
-    uint unk1;
-    bool unk2;
-    bool unk3;
-    // short unk1;
-    // float unk2;
-    // float unk3;
-  };
-
   struct UnknownPlayerStateStruct {
     UnknownPlayerStateStruct();
     UnknownPlayerStateStruct(const UnknownPlayerStateStruct&);
-    void operator=(const UnknownPlayerStateStruct&);
+    UnknownPlayerStateStruct& operator=(const UnknownPlayerStateStruct&);
 
     struct Nested {
-      Nested(uint a) : unk1(a), b1(0), b2(false) {}
+      Nested(CAssetId id, uchar progress = 0, bool flag = false)
+      : assetId(id), progress(progress), flag(flag) {}
 
-      uint unk1;
-      bool b1;
-      bool b2;
+      CAssetId assetId;
+      uchar progress;
+      uchar flag;
     };
 
     uint unk1;
@@ -240,16 +233,21 @@ public:
 
   void IncrementHealth(float);
 
+  const rstl::vector< TUniqueId >& GetIds() const;
+  bool HasId(TUniqueId id) const;
+  void AddId(TUniqueId id);
+  void RemoveId(TUniqueId id);
+
   // void UpdateStaticInterference(CStateManager& stateMgr, const float& dt);
   void IncreaseScanTime(uint time, float val);
   void SetScanTime(CAssetId res, float time);
   float GetScanTime(CAssetId time) const;
-  void fn_80084EAC(uint, bool);
-  void fn_80084E84(const CStateManager& mgr, float*);
+  void SetScanFlag(uint, bool);
+  void UpdateStaticInterference(const CStateManager& mgr, const float& dt);
 
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;
-  void UpdateVisorTransition(float dt);
+  bool UpdateVisorTransition(float dt);
   void StartTransitionToVisor(EPlayerVisor visor);
   void ResetVisor();
   bool IsPlayerAlive() const { return alive; }
@@ -274,7 +272,7 @@ public:
   void ResetAndIncrPickUp(EItemType type, int amount);
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
-  rstl::vector< UnknownPlayerStateStruct::Nested >& fn_800851DC();
+  rstl::vector< UnknownPlayerStateStruct::Nested >& ScanStates();
 
   float CalculateHealth();
 
@@ -294,8 +292,8 @@ public:
 
   const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
-  void fn_80084B6C();
-  void fn_80084928(const UnknownPlayerStateStruct&);
+  UnknownPlayerStateStruct& GetPersistentState();
+  void SetPersistentState(const UnknownPlayerStateStruct&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
   float GetChargeAnimStart() const { return chargeAnimStart; }
   void IncrementChargeBeamFactor(float);
@@ -318,7 +316,7 @@ private:
   rstl::reserved_vector< CPowerUp, 109 > powerups;
   int scanCompletionRateFirst;
   int scanCompletionRateSecond;
-  rstl::vector< UnknownV > vectorUnk;
+  CStaticInterference staticInterference;
   UnknownPlayerStateStruct unkStruct;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)
