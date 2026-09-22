@@ -19,7 +19,9 @@ public:
   const_pointer_iterator() : current(nullptr) {}
   const_pointer_iterator(const T* begin) : current(const_cast< T* >(begin)) {}
   const_pointer_iterator(const Vec* owner, const T* begin) : current(const_cast< T* >(begin)) {}
-  const_pointer_iterator& operator++() { return *this += 1; }
+  const_pointer_iterator& operator++() {
+    return *this += 1;
+  }
   const_pointer_iterator operator++(int) { return const_pointer_iterator(this->current++); }
   const_pointer_iterator& operator--() {
     --this->current;
@@ -92,10 +94,7 @@ public:
     this->current -= v;
     return *this;
   }
-  pointer_iterator operator+(int v) const {
-    pointer_iterator it = *this;
-    return it += v;
-  }
+  pointer_iterator operator+(int v) const { return pointer_iterator(this->current) += v; }
   pointer_iterator operator-(int v) const { return pointer_iterator(this->current - v); }
   difference_type operator-(const base& other) const { return this->current - other.get_pointer(); }
 };
