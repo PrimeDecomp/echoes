@@ -18,7 +18,7 @@ class CDvdFile {
 public:
   CDvdFile(const char* name);
   ~CDvdFile();
-  uint Length() { return x14_size; }
+  uint Length() { return mSize; }
   void HandleDVDInterrupt();
   void HandleARAMInterrupt();
   void PingARAMTransfer();
@@ -34,7 +34,7 @@ public:
   void CloseFile();
   void CalcFileOffset(int offset, ESeekOrigin origin);
   void UpdateFilePos(int pos);
-  const int GetFileSize() const { return x14_size; }
+  const int GetFileSize() const { return mSize; }
 
   static bool FileExists(const char*);
   static void DVDARAMXferCallback(s32, DVDFileInfo*);
@@ -42,14 +42,14 @@ public:
   static void internalCallback(s32, DVDFileInfo*);
 
 private:
-  int x0_fileEntry;
-  uchar* x4_aramBuffer;
-  bool x8_aramAllocated;
-  bool x9_aramPopped;
-  rstl::single_ptr< CDvdFileARAM > xc_aramFile;
-  int x10_offset;
-  int x14_size;
-  rstl::string x18_filename;
+  int mFileEntry;
+  uchar* mARAMBuffer;
+  bool mARAMAllocated;
+  bool mARAMPopped;
+  rstl::single_ptr< CDvdFileARAM > mARAMFile;
+  int mOffset;
+  int mSize;
+  rstl::string mFilename;
 };
 CHECK_SIZEOF(CDvdFile, 0x28)
 
