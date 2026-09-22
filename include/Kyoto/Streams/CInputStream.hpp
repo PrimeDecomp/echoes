@@ -141,7 +141,7 @@ inline rstl::pair< L, R > cinput_stream_helper(const TType< rstl::pair< L, R > >
 
 #include "rstl/vector.hpp"
 template < typename T, typename Alloc >
-inline rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator)
+rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator)
 : x4_count(0), x8_capacity(0), xc_items(nullptr) {
   int count = in.ReadInt32();
   reserve(count);

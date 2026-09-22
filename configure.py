@@ -372,6 +372,7 @@ config.libs = [
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
             Object(NonMatching, "Kyoto/DolphinCDvdFile.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/CCubeMoviePlayer.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
         ],

@@ -90,6 +90,8 @@ public:
   static void SetSurroundMode(ESurroundModes);
   static void TrkSetSampleRate(ETRKSampleRate);
 
+  static short GetScaledVolume(int vol) { return kVolumeTable[vol]; }
+  static const ushort kVolumeTable[];
   static short GetDefaultVolumeScale();
   static bool GetVerbose();
 

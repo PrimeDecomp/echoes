@@ -18,6 +18,7 @@ class CDvdFile {
 public:
   CDvdFile(const char* name);
   ~CDvdFile();
+  const rstl::string& GetFilename() const { return mFilename; }
   uint Length() { return mSize; }
   void HandleDVDInterrupt();
   void HandleARAMInterrupt();
