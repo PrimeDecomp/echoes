@@ -189,6 +189,14 @@ Kyoto/CARAMToken.cpp:
 	.rodata     start:0x803AFEB0 end:0x803AFEB8
 	.bss        start:0x80417618 end:0x80417634 align:4 common
 
+Kyoto/Graphics/CCubeMoviePlayer.cpp:
+	.text       start:0x80317B5C end:0x8031AA68
+	.rodata     start:0x803AFF00 end:0x803AFF68
+	.bss        start:0x803DFEC0 end:0x803E03C0 align:32
+	.sdata      start:0x80418C10 end:0x80418C18
+	.sbss       start:0x80419C00 end:0x80419C18
+	.sdata2     start:0x8041EA88 end:0x8041EAD0
+
 Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80328B0C end:0x8032A764
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
