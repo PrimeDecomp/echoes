@@ -4,7 +4,7 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
 #include "Kyoto/Math/CMath.hpp"
-#include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 
 
@@ -13,7 +13,7 @@
 extern "C" void fn_8029AF00(int, uchar);
 extern "C" rstl::pair< bool, bool > fn_80227694();
 extern "C" void fn_802275B8(rstl::pair< bool, bool >&, CMemoryStreamOut& out);
-extern "C" rstl::pair< bool, bool > fn_80227624(CInputStream& in);
+extern "C" rstl::pair< bool, bool > fn_80227624(CBitStreamReader& in);
 
 extern "C" bool lbl_804191E0;
 
@@ -70,7 +70,7 @@ CGameOptions::CGameOptions()
   InitSoundMode();
 }
 
-CGameOptions::CGameOptions(CInputStream& in)
+CGameOptions::CGameOptions(CBitStreamReader& in)
 
 : soundMode(CAudioSys::kSM_Stereo)
 , screenBrightness(4)
