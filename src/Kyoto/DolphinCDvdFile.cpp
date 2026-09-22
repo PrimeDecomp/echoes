@@ -3,6 +3,8 @@
 
 #include "Kyoto/CARAMManager.hpp"
 
+#include "rstl/math.hpp"
+
 #include "dolphin/os/OSCache.h"
 
 #include "dolphin/arq.h"
@@ -102,7 +104,7 @@ void CDvdFile::PingARAMTransfer() {
     return;
   }
 
-  int length = aramFile->mBufferLen < 65536 ? aramFile->mBufferLen : 65536;
+  int length = rstl::min_val(65536, aramFile->mBufferLen);
   ARQPostRequest(&aramFile->mARQRequest, 0, ARQ_TYPE_MRAM_TO_ARAM, ARQ_PRIORITY_HIGH,
                  reinterpret_cast< u32 >(aramFile->mBuffers[aramFile->mBufferIndex].get()),
                  reinterpret_cast< u32 >(mARAMBuffer + aramFile->mAramOffset), length,
@@ -114,7 +116,7 @@ void CDvdFile::PingARAMTransfer() {
   aramFile->mBufferIndex ^= 1;
 
   if (aramFile->mCurBufferLen != 0) {
-    int length2 = aramFile->mCurBufferLen < 65536 ? aramFile->mCurBufferLen : 65536;
+    int length2 = rstl::min_val(65536, aramFile->mCurBufferLen);
     aramFile->mGotDvdInterrupt = false;
     DVDFastOpen(mFileEntry, &aramFile->mInfo.mDvdFileInfo);
     DVDReadAsync(&aramFile->mInfo.mDvdFileInfo, aramFile->mBuffers[aramFile->mBufferIndex].get(),
@@ -202,7 +204,7 @@ void CDvdFile::StartARAMFileLoad() {
   aramFile->mBuffers.push_back(
       static_cast< uchar* >(CMemory::Alloc(0x10000, IAllocator::kHI_RoundUpLen)));
 
-  int len = mSize > 65536 ? 65536 : mSize;
+  int len = rstl::min_val(mSize, 65536);
   aramFile->mCurBufferLen -= len;
   aramFile->mFileSize2 = len;
   if (!lbl_80419B9C) {
