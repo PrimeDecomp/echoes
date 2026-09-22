@@ -167,6 +167,11 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+Kyoto/Animation/CCharAnimTime.cpp:
+	.text       start:0x8030592C end:0x80306450
+	.sdata      start:0x80418BD0 end:0x80418BE8
+	.sdata2     start:0x8041E9A0 end:0x8041E9A8
+
 Kyoto/Input/DolphinIController.cpp:
 	.text       start:0x8030B4A8 end:0x8030B554
 	.rodata     start:0x803AFD90 end:0x803AFD98
@@ -196,6 +201,10 @@ Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.sdata      start:0x80418C10 end:0x80418C18
 	.sbss       start:0x80419C00 end:0x80419C18
 	.sdata2     start:0x8041EA88 end:0x8041EAD0
+
+Kyoto/Animation/CTimeRemainderAndFraction.cpp:
+	.text       start:0x80327A98 end:0x80327B7C
+	.sdata2     start:0x8041EBB0 end:0x8041EBC0
 
 Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80328B0C end:0x8032A764
