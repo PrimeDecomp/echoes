@@ -386,7 +386,7 @@ config.libs = [
                 "rstl/rstl_strings.cpp",
                 extra_cflags=["-inline deferred"] if config.version == "G2ME01" else [],
             ),
-            Object(MatchingFor("G2ME01"), "rstl/rstl_allocator.cpp"),
+            Object(MatchingFor("G2ME01"), "rstl/rstl_misc.cpp"),
         ],
     },
     {
