@@ -217,6 +217,17 @@ Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.sbss       start:0x80419C00 end:0x80419C18
 	.sdata2     start:0x8041EA88 end:0x8041EAD0
 
+Kyoto/Audio/g721.cpp:
+	.text       start:0x80325C98 end:0x80326614
+	.data       start:0x803BB208 end:0x803BB288
+
+Kyoto/Audio/CStaticAudioPlayer.cpp:
+	.text       start:0x80326614 end:0x803274EC
+	.ctors      start:0x803A566C end:0x803A5670
+	.rodata     start:0x803B00F0 end:0x803B00F8
+	.bss        start:0x803E04C0 end:0x803E04E0
+	.sbss       start:0x80419C38 end:0x80419C48
+
 Kyoto/Animation/CTimeRemainderAndFraction.cpp:
 	.text       start:0x80327A98 end:0x80327B7C
 	.sdata2     start:0x8041EBB0 end:0x8041EBC0

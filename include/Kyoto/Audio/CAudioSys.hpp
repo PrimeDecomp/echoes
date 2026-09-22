@@ -88,6 +88,9 @@ public:
   static void SetDefaultVolumeScale(short);
   static void SetVolumeScale(short);
   static void SetSurroundMode(ESurroundModes);
+  static ESurroundModes GetSurroundMode();
+  static void EnableAICallback(bool enable);
+  static bool IsAICallbackEnabled();
   static void TrkSetSampleRate(ETRKSampleRate);
 
   static short GetScaledVolume(int vol) { return kVolumeTable[vol]; }
