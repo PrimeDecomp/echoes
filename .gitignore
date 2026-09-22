@@ -11,6 +11,12 @@ __pycache__
 # Original files
 orig/*/*
 !orig/*/.gitkeep
+*.dol
+*.rel
+*.elf
+*.o
+*.map
+*.MAP
 
 # Build files
 build/
@@ -28,4 +34,3 @@ compile_commands.json
 # Miscellaneous
 /*.txt
 *.exe
-*.dol
