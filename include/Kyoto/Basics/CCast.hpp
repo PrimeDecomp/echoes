@@ -60,6 +60,7 @@ inline int FtoL(float in) { return static_cast< int >(in); }
 inline float LtoF(int in) { return static_cast< float >(in); }
 #endif
 
+inline uint ToUint32(float in) { return static_cast< uint >(in); }
 inline int ToInt32(float in) { return static_cast< int >(in); }
 inline char ToChar(int c) { return ToUint8(c)  ; }
 } // namespace CCast
