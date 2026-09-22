@@ -381,6 +381,12 @@ config.libs = [
             Object(NonMatching, "Kyoto/Graphics/CCubeMoviePlayer.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
+            Object(
+                MatchingFor("G2ME01"),
+                "rstl/rstl_strings.cpp",
+                extra_cflags=["-inline deferred"] if config.version == "G2ME01" else [],
+            ),
+            Object(MatchingFor("G2ME01"), "rstl/rstl_allocator.cpp"),
         ],
     },
     {

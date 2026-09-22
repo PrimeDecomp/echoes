@@ -172,6 +172,14 @@ Kyoto/Animation/CCharAnimTime.cpp:
 	.sdata      start:0x80418BD0 end:0x80418BE8
 	.sdata2     start:0x8041E9A0 end:0x8041E9A8
 
+rstl/rstl_allocator.cpp:
+	.text       start:0x802FDAB8 end:0x802FDAF4
+	.rodata     start:0x803AFAB0 end:0x803AFAB8
+
+rstl/rstl_strings.cpp:
+	.text       start:0x802FDD90 end:0x802FF3AC
+	.sbss       start:0x80419AE8 end:0x80419AEC
+
 Kyoto/Input/DolphinIController.cpp:
 	.text       start:0x8030B4A8 end:0x8030B554
 	.rodata     start:0x803AFD90 end:0x803AFD98

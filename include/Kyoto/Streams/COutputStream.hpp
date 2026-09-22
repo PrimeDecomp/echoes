@@ -39,7 +39,6 @@ public:
   void WriteLong(int t) { Put(&t, sizeof(int)); }
 
   void WriteChar(u8 c) {
-    FlushShiftRegister();
     if (mUnwrittenLen >= mBufLen) {
       DoFlush();
     }

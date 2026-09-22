@@ -9,14 +9,12 @@ namespace rstl {
 struct rmemory_allocator {
   rmemory_allocator() {}
   rmemory_allocator(const rmemory_allocator&) {}
+  static void* allocate(int size);
+
   template < typename T >
   static void allocate(T*& out, int count) {
     int size = count * sizeof(T);
-    if (size == 0) {
-      out = nullptr;
-    } else {
-      out = reinterpret_cast< T* >(new uchar[size]);
-    }
+    out = reinterpret_cast< T* >(allocate(size));
   }
   // TODO: this fixes a regswap in vector::reserve
   template < typename T >
