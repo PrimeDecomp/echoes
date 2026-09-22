@@ -361,6 +361,7 @@ config.libs = [
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
             Object(Matching, "Kyoto/Basics/RAssertDolphin.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/CDvdRequest.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
             Object(NonMatching, "Kyoto/Math/CTransform4f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2f.cpp"),
@@ -370,6 +371,7 @@ config.libs = [
             Object(Matching, "Kyoto/Math/CVector3i.cpp"),
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
+            Object(NonMatching, "Kyoto/DolphinCDvdFile.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
         ],

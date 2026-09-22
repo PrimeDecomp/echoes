@@ -11,7 +11,6 @@
 
 enum ESeekOrigin { kSO_Set, kSO_Cur, kSO_End };
 
-
 class CDvdFile;
 struct CDvdFileARAM;
 struct DVDFileInfo;
@@ -30,7 +29,7 @@ public:
   void StartARAMFileLoad();
   void StallForARAMFile();
   CDvdRequest* SyncRead(void* buf, uint len);
-  CDvdRequest* SyncSeekRead(void* buf, uint len, ESeekOrigin, int offset);
+  void SyncSeekRead(void* buf, uint len, ESeekOrigin, int offset);
   CDvdRequest* AsyncSeekRead(void* buf, uint len, ESeekOrigin, int offset);
   void CloseFile();
   void CalcFileOffset(int offset, ESeekOrigin origin);
@@ -38,16 +37,16 @@ public:
   const int GetFileSize() const { return x14_size; }
 
   static bool FileExists(const char*);
-  static void DVDARAMXferCallback(long, DVDFileInfo*);
+  static void DVDARAMXferCallback(s32, DVDFileInfo*);
   static void ARAMARAMXferCallback(u32 addr);
   static void internalCallback(s32, DVDFileInfo*);
 
 private:
   int x0_fileEntry;
-  uchar* x4_;
-  bool x8_;
-  bool x9_;
-  rstl::single_ptr< CDvdFileARAM > xc_;
+  uchar* x4_aramBuffer;
+  bool x8_aramAllocated;
+  bool x9_aramPopped;
+  rstl::single_ptr< CDvdFileARAM > xc_aramFile;
   int x10_offset;
   int x14_size;
   rstl::string x18_filename;
