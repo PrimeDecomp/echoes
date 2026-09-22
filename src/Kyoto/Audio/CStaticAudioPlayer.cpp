@@ -185,7 +185,7 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
   while (remSamples != 0) {
     int remTillLoop = x20_loopEndSamp - x18_curSamp;
     int rs = remSamples;
-    int consumed = remTillLoop < rs ? remTillLoop : rs;
+    int consumed = rstl::min_val(rs, remTillLoop);
     x18_curSamp += consumed;
     remSamples -= consumed;
     if (x18_curSamp == x20_loopEndSamp) {
@@ -204,10 +204,10 @@ void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int num
     int rb = remBytes;
     int curBuf = curSample / 0x4000;
     int thisBytes = ((curBuf + 1) * 0x4000) - curSample;
-    thisBytes = thisBytes < rb ? thisBytes : rb;
+    thisBytes = rstl::min_val(rb, thisBytes);
 
     int remTillLoop = sampleEnd - curSample;
-    thisBytes = remTillLoop < thisBytes ? remTillLoop : thisBytes;
+    thisBytes = rstl::min_val(thisBytes, remTillLoop);
 
     uchar* byte = x48_buffers[curBuf].get() + (curSample - (curBuf * 0x4000));
     int i = 0;
