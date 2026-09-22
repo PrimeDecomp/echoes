@@ -7,17 +7,17 @@
 
 namespace rstl {
 template < typename T >
-inline void construct(void* dest, const T& src) {
+static inline void construct(void* dest, const T& src) {
   new (dest) T(src);
 }
 
 template < typename T >
-inline void destroy(T* in) {
+static inline void destroy(T* in) {
   in->~T();
 }
 
 template < typename It >
-inline void destroy(It begin, It end) {
+static inline void destroy(It begin, It end) {
   It cur = begin;
   for (; cur != end; ++cur) {
     destroy(&*cur);
@@ -25,26 +25,33 @@ inline void destroy(It begin, It end) {
 }
 
 template < typename It, typename T >
-inline void uninitialized_copy(It begin, It end, T* out) {
+static inline T uninitialized_copy(It begin, It end, T out) {
+  T tmp = out;
   It cur = begin;
-  for (; cur != end; ++out, ++cur) {
-    construct(out, *cur);
+  for (; cur != end; ++tmp, ++cur) {
+    construct(tmp, *cur);
   }
+
+  return tmp;
 }
 
 template < typename S, typename D >
-inline void uninitialized_copy_n(S src, int n, D dest) {
+static inline D uninitialized_copy_n(S src, int n, D dest) {
+  S it = src;
   D cur = dest;
-  for (int i = 0; i < n; ++cur, ++i, ++src) {
-    construct(&*cur, *src);
+  for (int i = 0; i < n; ++cur, ++i, ++it) {
+    construct(&*cur, *it);
   }
+
+  return cur;
 }
 
 template < typename D, typename S >
-inline void uninitialized_fill_n(D dest, int n, const S& value) {
+static inline void uninitialized_fill_n(D dest, int n, const S& value) {
   D cur = dest;
   for (int i = 0; i < n; ++i, ++cur) {
-    construct(&*cur, value);
+    void* ptr = &*cur;
+    new (ptr) S(value);
   }
 }
 } // namespace rstl
