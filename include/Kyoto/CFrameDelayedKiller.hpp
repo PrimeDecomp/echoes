@@ -5,11 +5,17 @@
 
 class CFrameDelayedKiller {
 public:
+  enum EWhichFrame {
+    kWhichFrame_ThisFrame,
+    kWhichFrame_NextFrame,
+  };
+
   static void Initialize();
   static void ShutDown();
-
-  static void sub_8036cb90();
-  static void sub_8036cc1c(bool unk1, void* unk2);
+  static void FlushAllocationsForFrame();
+  static void ScheduleDeletion(EWhichFrame whichFrame, void* victim);
+  static void FlushAllAllocations();
+  static void StallAndFlushAllAllocations();
 };
 
 #endif // _CFRAMEDELAYEDKILLER
