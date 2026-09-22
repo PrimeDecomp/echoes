@@ -37,10 +37,10 @@ public:
     }
     return *this;
   }
-  optional_object& operator=(const T& item); /* {
+  optional_object& operator=(const T& item) {
     assign(item);
     return *this;
-  }*/
+  }
 
   T& data() { return *get_ptr(); }
   const T& data() const { return *get_ptr(); }
@@ -67,19 +67,13 @@ private:
 
   void assign(const T& item) {
     if (!m_valid) {
-      construct(get_ptr(), item);
+      construct< T >(m_data, item);
       m_valid = true;
     } else {
-      data() = item;
+      *get_ptr() = item;
     }
   }
 };
-
-template < typename T >
-optional_object< T >& optional_object< T >::operator=(const T& item) {
-  assign(item);
-  return *this;
-}
 
 } // namespace rstl
 

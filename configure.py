@@ -326,7 +326,11 @@ config.libs = [
         "progress_category": "game",  # str | List[str]
         "host": True,
         "objects": [
-            Object(NonMatching, "MetroidPrime/main.cpp"),
+            Object(
+                NonMatching,
+                "MetroidPrime/main.cpp",
+                extra_cflags=['-pragma "inline_max_size(125)"'] if config.version == "G2ME01" else [],
+            ),
             Object(NonMatching, "MetroidPrime/CStateManager.cpp"),
             Object(NonMatching, "MetroidPrime/CEntity.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerState.cpp"),
