@@ -11,8 +11,8 @@
 namespace rstl {
 
 enum node_color {
-  kNC_Red,
   kNC_Black,
+  kNC_Red,
 };
 
 void rbtree_rebalance(void*, void*);
