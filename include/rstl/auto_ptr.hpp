@@ -7,7 +7,7 @@ namespace rstl {
 template < typename T >
 class auto_ptr {
   mutable bool x0_has;
-  mutable T* x4_item;
+  T* x4_item;
 
 public:
   auto_ptr() : x0_has(false), x4_item(nullptr) {}
@@ -32,7 +32,9 @@ public:
     }
     return *this;
   }
+  T* get() { return x4_item; }
   T* get() const { return x4_item; }
+  bool owner() const { return x0_has; }
   T* operator->() const { return x4_item; }
   T& operator*() const { return *x4_item; }
   T* release() const {
@@ -40,6 +42,10 @@ public:
     return x4_item;
   }
   bool null() const { return x4_item == nullptr; }
+  void reset() {
+    x0_has = false;
+    x4_item = nullptr;
+  }
 };
 } // namespace rstl
 
