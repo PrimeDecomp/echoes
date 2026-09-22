@@ -361,11 +361,10 @@ bool CMoviePlayer::ContinueLoading() {
     x108_preLoadSeconds = x100_totalSeconds;
     x10c_preLoadFrames = x28_header.mNumFrames;
   } else if (x108_preLoadSeconds > 0.f) {
-    const uint preLoadFrames = x108_preLoadSeconds * x28_header.mFrameRate;
     x10c_preLoadFrames =
-        preLoadFrames < x28_header.mNumFrames ? preLoadFrames : x28_header.mNumFrames;
-    x108_preLoadSeconds =
-        x100_totalSeconds < x108_preLoadSeconds ? x100_totalSeconds : x108_preLoadSeconds;
+        rstl::min_val(static_cast< uint >(x28_header.mNumFrames),
+                      static_cast< uint >(x108_preLoadSeconds * x28_header.mFrameRate));
+    x108_preLoadSeconds = rstl::min_val(x108_preLoadSeconds, x100_totalSeconds);
   }
   if (x10c_preLoadFrames > 0) {
     xa4_requestQueue.reserve(x10c_preLoadFrames);
@@ -565,9 +564,7 @@ void CMoviePlayer::Update(float dt) {
   }
   if (xe0_decodedTexCount < 2 && xfc_playMode == kPM_Playing &&
       xcc_requestFrameWrapped < x10c_preLoadFrames) {
-    const int lastCachedFrame = xa4_requestQueue.size() - 1;
-    const int frame =
-        lastCachedFrame < xcc_requestFrameWrapped ? lastCachedFrame : xcc_requestFrameWrapped;
+    const int frame = rstl::min_val(xcc_requestFrameWrapped, xa4_requestQueue.size() - 1);
     if (frame == -1) {
       return;
     }
@@ -583,8 +580,7 @@ void CMoviePlayer::Update(float dt) {
     if (x110_24_loop) {
       x104_curSeconds = CMath::ModF(x104_curSeconds, x100_totalSeconds);
     } else {
-      const float time = x104_curSeconds;
-      x104_curSeconds = x100_totalSeconds < time ? x100_totalSeconds : time;
+      x104_curSeconds = rstl::min_val(x104_curSeconds, x100_totalSeconds);
     }
     float remainder = xe4_frameRem - dt;
     const float frameDt = 1.f / x28_header.mFrameRate;
@@ -705,8 +701,7 @@ void CMoviePlayer::MixAudio(short* out, const short* in, unsigned long samples) 
     }
     return;
   }
-  const int scaledVolume = x11c_volume * sSfxVolume * 100 >> 14;
-  const uchar volume = scaledVolume < 127 ? scaledVolume : 127;
+  const uchar volume = rstl::min_val(127, x11c_volume * sSfxVolume * 100 >> 14);
   const ushort attenuation =
       sAudioEnabled ? static_cast< ushort >(CAudioSys::GetScaledVolume(volume)) : 0;
   for (int frame = 0; samples != 0 && frame < 3; ++frame) {
@@ -775,13 +770,7 @@ void CMoviePlayer::SetAudioEnabled(bool enabled) { sAudioEnabled = enabled; }
 
 bool CMoviePlayer::GetAudioEnabled() { return sAudioEnabled; }
 
-void CMoviePlayer::SetSfxVolume(uchar volume) {
-  uchar result = 127;
-  if (volume < result) {
-    result = volume;
-  }
-  sSfxVolume = result;
-}
+void CMoviePlayer::SetSfxVolume(uchar volume) { sSfxVolume = rstl::min_val(uchar(127), volume); }
 
 CMoviePlayer::EPlayMode CMoviePlayer::GetPlayMode() const { return xfc_playMode; }
 
