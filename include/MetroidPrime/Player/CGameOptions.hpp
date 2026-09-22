@@ -12,7 +12,7 @@
 #include "MetroidPrime/TGameTypes.hpp"
 
 class CBitStreamReader;
-class CMemoryStreamOut;
+class CBitStreamWriter;
 
 class CGameOptions {
 public:
@@ -20,7 +20,7 @@ public:
   CGameOptions(CBitStreamReader& in);
   ~CGameOptions();
 
-  void PutTo(CMemoryStreamOut&);
+  void PutTo(CBitStreamWriter&);
 
   void InitSoundMode();
   void ResetToDefaults();

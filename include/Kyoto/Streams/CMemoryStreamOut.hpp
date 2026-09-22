@@ -23,4 +23,6 @@ private:
   bool mBufferOwned;
 };
 
+CHECK_SIZEOF(CMemoryStreamOut, 0x84)
+
 #endif // _CMEMORYSTREAMOUT

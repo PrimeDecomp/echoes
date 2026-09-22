@@ -12,7 +12,7 @@
 
 class CStateManager;
 class CBitStreamReader;
-class COutputStream;
+class CBitStreamWriter;
 
 class CPlayerState {
 public:
@@ -216,7 +216,7 @@ public:
   explicit CPlayerState(int playerIndex, CBitStreamReader& stream);
 
   void FUN_80085c18(uint);
-  void PutTo(COutputStream& stream);
+  void PutTo(CBitStreamWriter& stream);
 
   int GetMissileCostForAltAttack() const;
   float GetComboFireAmmoPeriod() const;

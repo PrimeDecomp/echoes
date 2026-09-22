@@ -182,6 +182,15 @@ rstl/RstlExtras.cpp:
 	.text       start:0x802FF4BC end:0x802FFF04
 	.rodata     start:0x803AFAB8 end:0x803AFAD8
 
+Kyoto/Streams/CMemoryStreamOut.cpp:
+	.text       start:0x802FFF84 end:0x803000F0
+	.data       start:0x803BAF38 end:0x803BAF48
+
+Kyoto/Streams/COutputStream.cpp:
+	.text       start:0x803000F0 end:0x80300338
+	.rodata     start:0x803AFAD8 end:0x803AFAE0
+	.data       start:0x803BAF48 end:0x803BAF58
+
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
 	.sdata      start:0x80418BD0 end:0x80418BE8
@@ -225,6 +234,9 @@ Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80327C10 end:0x8032AFC8
 	.sdata      start:0x80418C50 end:0x80418C68
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
+
+Kyoto/Streams/CBitStreamWriter.cpp:
+	.text       start:0x80342B44 end:0x80342D98
 
 Kyoto/Streams/CBitStreamReader.cpp:
 	.text       start:0x80342D98 end:0x80342F6C

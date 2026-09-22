@@ -391,6 +391,9 @@ config.libs = [
             ),
             Object(MatchingFor("G2ME01"), "rstl/rstl_misc.cpp"),
             Object(NonMatching, "rstl/RstlExtras.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Streams/COutputStream.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Streams/CMemoryStreamOut.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamWriter.cpp"),
         ],
     },
     {
