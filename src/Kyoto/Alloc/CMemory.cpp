@@ -80,7 +80,7 @@ void CMemory::SetOutOfMemoryCallback(IAllocator::FOutOfMemoryCb cb, const void* 
   mpAllocator->SetOutOfMemoryCallback(cb, context);
 }
 
-IAllocator::SMetrics CMemory::GetMetrics(int unk1, bool unk2) {
+IAllocator::SMetrics CMemory::GetMetrics(bool unk1, bool unk2) {
   return mpAllocator->GetMetrics(unk1, unk2);
 }
 

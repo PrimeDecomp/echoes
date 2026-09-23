@@ -21,7 +21,7 @@ public:
                      const CCallStack& callstack = CCallStack(-1, "??(??)"));
   static void Free(const void* ptr);
   static void SetOutOfMemoryCallback(IAllocator::FOutOfMemoryCb callback, const void* context);
-  static IAllocator::SMetrics GetMetrics(int unk1, bool unk2);
+  static IAllocator::SMetrics GetMetrics(bool unk1, bool unk2);
   static void OffsetFakeStatics(int);
 };
 
