@@ -6,7 +6,7 @@
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
 #include "Kyoto/Streams/CBitStreamReader.hpp"
-#include "Kyoto/Streams/COutputStream.hpp"
+#include "Kyoto/Streams/CBitStreamWriter.hpp"
 
 #include <math.h>
 
@@ -185,7 +185,7 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
 
 void CPlayerState::FUN_80085c18(uint v) { unkStruct.unk1 = v; }
 
-void CPlayerState::PutTo(COutputStream& stream) {
+void CPlayerState::PutTo(CBitStreamWriter& stream) {
   stream.WriteBits(0x504c5354, 32);
   stream.WriteBits(enabledItems, 32);
 

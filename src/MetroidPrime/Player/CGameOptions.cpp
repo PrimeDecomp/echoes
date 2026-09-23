@@ -5,14 +5,14 @@
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
-#include "Kyoto/Streams/CMemoryStreamOut.hpp"
+#include "Kyoto/Streams/CBitStreamWriter.hpp"
 
 
 #include "dolphin/os.h"
 
 extern "C" void fn_8029AF00(int, uchar);
 extern "C" rstl::pair< bool, bool > fn_80227694();
-extern "C" void fn_802275B8(rstl::pair< bool, bool >&, CMemoryStreamOut& out);
+extern "C" void fn_802275B8(rstl::pair< bool, bool >&, CBitStreamWriter& out);
 extern "C" rstl::pair< bool, bool > fn_80227624(CBitStreamReader& in);
 
 extern "C" bool lbl_804191E0;
@@ -31,7 +31,7 @@ int CGameOptions_CalculateBits(uint v) {
   return iVar1;
 }
 
-inline void WritePackedBits(CMemoryStreamOut& out, uint val, uint m) {
+inline void WritePackedBits(CBitStreamWriter& out, uint val, uint m) {
   out.WriteBits(val, CGameOptions_CalculateBits(m));
 }
 
@@ -114,7 +114,7 @@ CGameOptions::CGameOptions(CBitStreamReader& in)
   InitSoundMode();
 }
 
-void CGameOptions::PutTo(CMemoryStreamOut& out) {
+void CGameOptions::PutTo(CBitStreamWriter& out) {
   out.WriteBits(0x4f50544e, 32);
   WritePackedBits(out, soundMode, 2);
   WritePackedBits(out, screenBrightness, 8);
