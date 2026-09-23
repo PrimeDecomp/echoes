@@ -187,6 +187,7 @@ public:
   struct UnknownPlayerStateStruct {
     UnknownPlayerStateStruct();
     UnknownPlayerStateStruct(const UnknownPlayerStateStruct&);
+    ~UnknownPlayerStateStruct();
     UnknownPlayerStateStruct& operator=(const UnknownPlayerStateStruct&);
 
     struct Nested {
