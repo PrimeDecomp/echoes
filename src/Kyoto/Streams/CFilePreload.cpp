@@ -47,7 +47,7 @@ CFilePreloadData::CFilePreloadData(const rstl::string& path)
 
   int i = 0;
   offset = 0;
-  for (; i < count; ++i, offset += 0x4000) {
+  for (; i < count; offset += 0x4000, ++i) {
     int length = 0x4000;
     const int remaining = x10_size - offset;
     if (remaining <= 0x4000) {
