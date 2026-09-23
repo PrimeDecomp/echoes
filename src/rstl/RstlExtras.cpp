@@ -43,13 +43,13 @@ int CStringExtras::CompareCaseInsensitive(const rstl::string& left, const rstl::
   int commonLength = rstl::min_val(leftLength, rightLength);
 
   for (int idx = 0; idx < commonLength; ++idx) {
-    const int rightUpper = ConvertToUpperCase(right.at(idx));
+    int rightUpper = ConvertToUpperCase(right.at(idx));
     if (ConvertToUpperCase(left.at(idx)) < rightUpper) {
       return -1;
     }
 
-    const int secondRightUpper = ConvertToUpperCase(right.at(idx));
-    if (ConvertToUpperCase(left.at(idx)) > secondRightUpper) {
+    rightUpper = ConvertToUpperCase(right.at(idx));
+    if (ConvertToUpperCase(left.at(idx)) > rightUpper) {
       return 1;
     }
   }
