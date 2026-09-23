@@ -93,10 +93,15 @@ public:
   }
 
   void resize(int count, const T& item = T()) {
-    if (x0_count < count) {
-      uninitialized_fill_n(data() + x0_count, count - x0_count, item);
-      x0_count = count;
+    if (x0_count == count) {
+      return;
     }
+    if (count < x0_count) {
+      destroy(data() + count, data() + x0_count);
+    } else {
+      uninitialized_fill_n(data() + x0_count, count - x0_count, item);
+    }
+    x0_count = count;
   }
 
   void PutTo(COutputStream& out) const;

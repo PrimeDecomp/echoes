@@ -22,8 +22,6 @@ extern "C" {
 
 #else
 
-double __frsqrte(double x);
-
 /* GCC */
 #ifdef __BIG_ENDIAN__
 #define __IEEE_BIG_ENDIAN
@@ -45,22 +43,19 @@ typedef int _INT32;
 typedef unsigned int _UINT32;
 #endif
 
-int abs(int n);
 #ifdef __MWERKS__
-#define abs(n) __abs(n)
-#define labs(n) __labs(n)
-static inline double fabs(double x) { return __fabs(x); }
-#else
-// static inline int abs(int n) {
-//   int mask = n >> 31;
-//   return (n + mask) ^ mask;
-// }
+_MATH_INLINE double fabs(double x) { return __fabs(x); }
 #endif
 
 extern _INT32 __float_huge[];
 extern _INT32 __float_nan[];
 extern _INT32 __double_huge[];
 extern _INT32 __extended_huge[];
+extern _INT32 __extended_min[];
+extern _INT32 __extended_max[];
+extern _INT32 __extended_epsilon[];
+extern _INT32 __double_min[];
+extern _INT32 __double_max[];
 
 #define HUGE_VAL (*(double*)__double_huge)
 #define INFINITY (*(float*)__float_huge)
@@ -70,11 +65,13 @@ extern _INT32 __extended_huge[];
 
 double fabs(double x);
 double fmod(double x, double m);
+double modf(double x, double* intptr);
 double sin(double x);
 double cos(double x);
 double atan(double x);
 double atan2(double y, double x);
 double tan(double x);
+double ceil(double x);
 
 _MATH_INLINE float fabsf(float x) { return (float)fabs((double)x); }
 _MATH_INLINE float sinf(float x) { return (float)sin((double)x); }
@@ -82,10 +79,11 @@ _MATH_INLINE float cosf(float x) { return (float)cos((double)x); }
 _MATH_INLINE float atan2f(float y, float x) { return (float)atan2((double)y, (double)x); }
 _MATH_INLINE float fmodf(float x, float m) { return (float)fmod((double)x, (double)m); }
 float tanf(float x);
+double asin(double x);
 double acos(double x);
-
-double modf( double x, double * intptr );
 _MATH_INLINE float acosf(float x) { return (float)acos((double)x); }
+double log(double x);
+double exp(double x);
 
 double ldexp(double x, int exp);
 
@@ -114,6 +112,34 @@ _MATH_INLINE float powf(float __x, float __y) { return pow(__x, __y); }
 #define __UHI(x) (*(_UINT32*)&x)
 #endif
 
+#define signbit(x)((int)(__HI(x)&0x80000000))
+
+/* The pre-2.4.7 runtime headers use different floating-point classification values. */
+#if !defined(__MWERKS__) || __MWERKS__ >= 0x2407
+#define FP_NAN 0
+#define FP_INFINITE 1
+#define FP_ZERO 3
+#define FP_NORMAL 4
+#define FP_SUBNORMAL 2
+
+static inline int __fpclassifyf(float x) {
+  switch ((*(_INT32*)&x) & 0x7f800000) {
+  case 0:
+    if ((*(_INT32*)&x) & 0x007fffff)
+      return FP_SUBNORMAL;
+    else
+      return FP_ZERO;
+  default:
+    return FP_NORMAL;
+  case 0x7f800000:
+    if ((*(_INT32*)&x) & 0x007fffff)
+      return FP_NAN;
+    else
+      return FP_INFINITE;
+  }
+}
+
+#else
 #define FP_NAN 1
 #define FP_INFINITE 2
 #define FP_ZERO 3
@@ -139,6 +165,8 @@ static inline int __fpclassifyf(float x) {
   }
   return FP_NORMAL;
 }
+
+#endif
 
 static inline int __fpclassifyd(double x) {
   switch (__HI(x) & 0x7ff00000) {
@@ -167,6 +195,7 @@ static inline int __fpclassifyd(double x) {
 #define isinf(x) (fpclassify(x) == FP_INFINITE)
 #define isfinite(x) ((fpclassify(x) > FP_INFINITE))
 
+#ifdef __MWERKS__
 static inline float sqrtf(float x) {
   const double _half = .5;
   const double _three = 3.0;
@@ -186,7 +215,7 @@ static inline float sqrtf(float x) {
   return x;
 }
 
-static inline double sqrt(double x) {
+_MATH_INLINE double sqrt(double x) {
   if (x > 0.0) {
     double guess = __frsqrte(x);                    /* returns an approximation to  */
     guess = .5 * guess * (3.0 - guess * guess * x); /* now have 8 sig bits          */
@@ -201,14 +230,21 @@ static inline double sqrt(double x) {
   }
   return INFINITY;
 }
-
-static inline float ldexpf(float x, int exp) { return (float)ldexp((double)x, exp); }
-static inline double scalbn(double x, int n) { return ldexp(x, n); }
-static inline float scalbnf(float x, int n) { return (float)ldexpf(x, n); }
+#else
+float sqrtf(float x);
+double sqrt(double x);
+#endif
 
 #ifdef __MWERKS__
 #pragma cplusplus reset
 #endif
+
+static inline float ldexpf(float x, int exp) { return (float)ldexp((double)x, exp); }
+double frexp(double, int *exp);
+static inline double scalbn(double x, int n) { return ldexp(x, n); }
+static inline float scalbnf(float x, int n) { return (float)ldexpf(x, n); }
+double nextafter(double, double);
+
 
 #ifdef __cplusplus
 }
