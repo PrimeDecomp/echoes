@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 typedef unsigned long int uintptr_t;
+typedef long int intptr_t;
 
 #ifdef __cplusplus
 }

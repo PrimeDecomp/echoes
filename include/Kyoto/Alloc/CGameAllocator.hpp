@@ -1,8 +1,10 @@
 #ifndef _CGAMEALLOCATOR
 #define _CGAMEALLOCATOR
 
-#include <Kyoto/Alloc/CMediumAllocPool.hpp>
+#include "Kyoto/Alloc/AllocatorCommon.hpp"
 #include <Kyoto/Alloc/IAllocator.hpp>
+
+#include <Kyoto/Alloc/CMediumAllocPool.hpp>
 #include <types.h>
 
 class CSmallAllocPool;
@@ -14,7 +16,7 @@ public:
     friend class CGameAllocator;
 
   public:
-    SGameMemInfo(SGameMemInfo* prev, SGameMemInfo* next, SGameMemInfo* nextFree, uint len,
+    SGameMemInfo(SGameMemInfo* prev, SGameMemInfo* next, SGameMemInfo* nextFree, size_t len,
                  const char* fileAndLine, const char* type)
     : x0_priorGuard(0xefefefef)
     , x4_len(len)
@@ -25,43 +27,85 @@ public:
     , x18_nextFree(nextFree)
     , x1c_postGuard(0xeaeaeaea) {}
 
-    SGameMemInfo* GetPrev() { return (SGameMemInfo*)((size_t)x10_prev & ~31); }
+    SGameMemInfo* GetPrev() const {
+      return reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(x10_prev) &
+                                               ~(kAllocatorPointerBits - 1));
+    }
     void SetPrev(SGameMemInfo* prev) {
       void* ptr = x10_prev;
       x10_prev = prev;
-      x10_prev = (SGameMemInfo*)(((size_t)ptr & 31) | ((size_t)x10_prev & ~31));
+      x10_prev = reinterpret_cast< SGameMemInfo* >(
+          (reinterpret_cast< uintptr_t >(ptr) & (kAllocatorPointerBits - 1)) |
+          (reinterpret_cast< uintptr_t >(x10_prev) & ~(kAllocatorPointerBits - 1)));
     }
-    SGameMemInfo* GetNext() const { return (SGameMemInfo*)((size_t)x14_next & ~31); }
+    SGameMemInfo* GetNext() const {
+      return reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(x14_next) &
+                                               ~(kAllocatorPointerBits - 1));
+    }
     void SetNext(SGameMemInfo* next) {
       void* ptr = x14_next;
       x14_next = next;
-      x14_next = (SGameMemInfo*)(((size_t)ptr & 31) | ((size_t)x14_next & ~31));
+      x14_next = reinterpret_cast< SGameMemInfo* >(
+          (reinterpret_cast< uintptr_t >(ptr) & (kAllocatorPointerBits - 1)) |
+          (reinterpret_cast< uintptr_t >(x14_next) & ~(kAllocatorPointerBits - 1)));
     }
-    uint GetPrevMaskedFlags();
+    uint GetPrevMaskedFlags() const {
+      return reinterpret_cast< uintptr_t >(x10_prev) & (kAllocatorPointerBits - 1);
+    }
+    void SetPrevMaskedFlags(const uint flags) {
+      x10_prev = reinterpret_cast< SGameMemInfo* >(
+          (reinterpret_cast< uintptr_t >(x10_prev) & ~(kAllocatorPointerBits - 1)) | flags);
+    }
+    void SetAllocated(const bool allocated) {
+      if (allocated) {
+        SetPrevMaskedFlags((GetPrevMaskedFlags() & ~1) | 1);
+      } else {
+        x10_prev = reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(x10_prev) & ~1);
+      }
+    }
     uint GetNextMaskedFlags();
-    void SetTopOfHeapAllocated(bool topOfHeap);
+    void SetTopOfHeapAllocated(const bool topOfHeap) {
+      const uint flags = GetPrevMaskedFlags();
+      SGameMemInfo* prev = GetPrev();
+      uint topFlag = 0;
+      if (topOfHeap) {
+        topFlag = 2;
+      }
+      x10_prev = reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(prev) |
+                                                   (topFlag | (flags & ~2)));
+    }
     size_t GetLength() const { return x4_len; }
-    SGameMemInfo* GetNextFree() const { return (SGameMemInfo*)((size_t)x18_nextFree & ~31); }
+    void SetLength(const size_t len) { x4_len = len; }
+    SGameMemInfo* GetNextFree() const {
+      return reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(x18_nextFree) &
+                                               ~(kAllocatorPointerBits - 1));
+    }
     void SetNextFree(SGameMemInfo* info) {
       void* ptr = x18_nextFree;
       x18_nextFree = info;
-      x18_nextFree = (SGameMemInfo*)(((size_t)ptr & 31) | ((size_t)x18_nextFree & ~31));
+      x18_nextFree = reinterpret_cast< SGameMemInfo* >(
+          (reinterpret_cast< uintptr_t >(ptr) & (kAllocatorPointerBits - 1)) |
+          (reinterpret_cast< uintptr_t >(x18_nextFree) & ~(kAllocatorPointerBits - 1)));
     }
 
-    bool IsAllocated() const { return ((size_t)x10_prev) & 1; }
+    bool IsAllocated() const { return reinterpret_cast< uintptr_t >(x10_prev) & 1; }
+    void SetNotAllocated() {
+      void* ptr = x10_prev;
+      x10_prev = reinterpret_cast< SGameMemInfo* >(reinterpret_cast< uintptr_t >(ptr) & ~1);
+    }
 
-    bool IsPostGuardIntact() const { return x1c_postGuard == 0xeaeaeaea; }
-    bool IsPriorGuardIntact() const { return x0_priorGuard == 0xefefefef; }
+    bool IsPostGuardIntact() const { return x1c_postGuard == kAllocatorPostGuard; }
+    bool IsPriorGuardIntact() const { return x0_priorGuard == kAllocatorPriorGuard; }
 
   private:
-    int x0_priorGuard;
+    size_t x0_priorGuard;
     size_t x4_len;
     const char* x8_fileAndLine;
     const char* xc_type;
     SGameMemInfo* x10_prev;
     SGameMemInfo* x14_next;
     SGameMemInfo* x18_nextFree;
-    int x1c_postGuard;
+    size_t x1c_postGuard;
   };
 
   SGameMemInfo* GetMemInfoFromBlockPtr(const void* ptr) const;
@@ -73,7 +117,7 @@ public:
   void* Alloc(size_t size, EHint hint, EScope scope, EType type, const CCallStack& cs) override;
   SGameMemInfo* FindFreeBlock(uint);
   SGameMemInfo* FindFreeBlockFromTopOfHeap(uint);
-  uint FixupAllocPtrs(SGameMemInfo*, uint, uint, EHint, const CCallStack&);
+  uint FixupAllocPtrs(SGameMemInfo*, const uint, uint, EHint, const CCallStack&);
   void UpdateAllocDebugStats(unsigned int, unsigned int, unsigned int);
   bool Free(const void* ptr) override;
   bool FreeNormalAllocation(const void* ptr);
@@ -121,16 +165,17 @@ private:
   uint x8c_;
   uint x90_heapSize2;
   uint x94_;
-  uint x98_;
-  uint x9c_;
+  mutable uint x98_;
+  mutable uint x9c_; // Echoes addition: peak x8c_ since last GetMetrics reset
   uint xa0_;
   uint xa4_;
   uint xa8_;
   uint xac_;
-  mutable uint xb0_;
-  void* xb4_physicalAddr;
-  uint xb8_fakeStatics;
-  uint xbc_;
+  uint xb0_;
+  mutable uint xb4_;
+  void* xb8_physicalAddr;
+  uint xbc_fakeStatics;
+  uint xc0_;
 };
 
 #endif // _CGAMEALLOCATOR

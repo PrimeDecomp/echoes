@@ -243,6 +243,20 @@ Kyoto/DolphinCDvdFile.cpp:
 	.rodata     start:0x803AFD98 end:0x803AFDA8
 	.sbss       start:0x80419B98 end:0x80419BA0
 
+Kyoto/Alloc/CMediumAllocPool.cpp:
+	.text       start:0x8030CD1C end:0x8030D6CC
+	.sbss       start:0x80419BA0 end:0x80419BA8
+
+Kyoto/Alloc/CSmallAllocPool.cpp:
+	.text       start:0x8030D6CC end:0x8030D9E0
+
+Kyoto/Alloc/CGameAllocator.cpp:
+	.text       start:0x8030D9E0 end:0x8030EEE4
+	.rodata     start:0x803AFDA8 end:0x803AFE58
+	.data       start:0x803BB088 end:0x803BB0C8
+	.sbss       start:0x80419BA8 end:0x80419BB8
+	.sdata2     start:0x8041EA28 end:0x8041EA30
+
 Kyoto/CARAMToken.cpp:
 	.text       start:0x8031454C end:0x80314DC4
 	.rodata     start:0x803AFEB0 end:0x803AFEB8
