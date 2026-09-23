@@ -241,7 +241,7 @@ public:
   // void UpdateStaticInterference(CStateManager& stateMgr, const float& dt);
   void IncreaseScanTime(uint time, float val);
   void SetScanTime(CAssetId res, float time);
-  float GetScanTime(CAssetId time) const;
+  float GetScanTime(CAssetId time);
   void SetScanFlag(uint, bool);
   void UpdateStaticInterference(const CStateManager& mgr, const float& dt);
 

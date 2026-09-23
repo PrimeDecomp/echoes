@@ -185,13 +185,14 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
   for (uint i = 0; i < 4; ++i) {
     stream.ReadBits(1);
     stream.ReadBits(1);
-    unkStruct.vec.push_back(UnknownPlayerStateStruct::Nested(i));
+    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(i));
   }
   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
        it != scanStates.end(); ++it) {
     bool complete = stream.ReadBits(1) != 0;
     bool flag = stream.ReadBits(1) != 0;
-    unkStruct.vec.push_back(UnknownPlayerStateStruct::Nested(it->first, complete ? 255 : 0, flag));
+    unkStruct.vec.push_back_unsafe(
+        UnknownPlayerStateStruct::Nested(it->first, complete ? 255 : 0, flag));
   }
 
   scanCompletionRateFirst = int(stream.ReadBits(GetBitCount(0x100u)));
@@ -518,12 +519,12 @@ void CPlayerState::InitializeScanTimes() {
   }
   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
        it != scanStates.end(); ++it) {
-    unkStruct.vec.push_back(UnknownPlayerStateStruct::Nested(it->first));
+    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(it->first));
   }
 }
 
-float CPlayerState::GetScanTime(CAssetId res) const {
-  rstl::vector< UnknownPlayerStateStruct::Nested >::const_iterator it =
+float CPlayerState::GetScanTime(CAssetId res) {
+  rstl::vector< UnknownPlayerStateStruct::Nested >::iterator it =
       rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
   return CCast::ToReal32(it->progress) / 255.f;
 }
