@@ -59,7 +59,7 @@ public:
                              const CVector3f& up = CVector3f::Up());
   // MakeRotationsBasedOnY__12CTransform4fFRC13CUnitVector3f
   CTransform4f MultiplyIgnoreTranslation(const CTransform4f& other) const;
-  // Orthonormalize__12CTransform4fFv
+  void Orthonormalize();
   CVector3f Rotate(const CVector3f& in) const;
   void RotateLocalX(const CRelAngle& angle);
   void RotateLocalY(const CRelAngle& angle);
@@ -71,7 +71,7 @@ public:
   static CTransform4f Scale(float, float, float);
   static CTransform4f Scale(const CVector3f&);
   void ScaleBy(float);
-  // SetRotation__12CTransform4fFRC12CTransform4f
+  void SetRotation(const CTransform4f& rotation);
   // SetRotation__12CTransform4fFRC9CMatrix3f
   CVector3f TransposeMultiply(const CVector3f& in) const {
     return TransposeRotate(CVector3f(in.GetX() - posX, in.GetY() - posY, in.GetZ() - posZ));
