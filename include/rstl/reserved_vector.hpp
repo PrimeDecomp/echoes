@@ -37,15 +37,7 @@ public:
   }
   reserved_vector(CInputStream& in);
 
-  reserved_vector& operator=(const reserved_vector& other) {
-    if (this == &other) {
-      return *this;
-    }
-    clear();
-    uninitialized_copy(other.data(), other.data() + other.size(), data());
-    x0_count = other.x0_count;
-    return *this;
-  }
+  reserved_vector& operator=(const reserved_vector& other);
 
   void clear() {
     T* ptr = data();
@@ -101,6 +93,17 @@ public:
 
   void PutTo(COutputStream& out) const;
 };
+
+template < typename T, int N >
+reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserved_vector& other) {
+  if (this == &other) {
+    return *this;
+  }
+  destroy(data(), data() + x0_count);
+  uninitialized_copy(other.data(), other.data() + other.size(), data());
+  x0_count = other.x0_count;
+  return *this;
+}
 
 template < typename T, int N >
 typename reserved_vector< T, N >::iterator reserved_vector< T, N >::erase(iterator it) {
