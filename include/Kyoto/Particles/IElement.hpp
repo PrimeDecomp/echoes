@@ -11,6 +11,11 @@ class CVector3f;
 
 class IElement {
 public:
+  struct CElementAllocator {
+    static void* Alloc(size_t size, const char* fileAndLine, const char* type);
+    static void Free(void* ptr, size_t size);
+  };
+
   virtual ~IElement(){};
 
   // -> CFrameDelayedKiller

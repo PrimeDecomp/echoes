@@ -237,6 +237,12 @@ Kyoto/Audio/CStaticAudioPlayer.cpp:
 	.bss        start:0x803E04C0 end:0x803E04E0
 	.sbss       start:0x80419C38 end:0x80419C48
 
+Kyoto/CFrameDelayedKiller.cpp:
+	.text       start:0x803274EC end:0x80327A98
+	.ctors      start:0x803A5670 end:0x803A5674
+	.bss        start:0x803E04E0 end:0x803E051C
+	.sbss       start:0x80419C48 end:0x80419C50
+
 Kyoto/Animation/CTimeRemainderAndFraction.cpp:
 	.text       start:0x80327A98 end:0x80327B7C
 	.sdata2     start:0x8041EBB0 end:0x8041EBC0
