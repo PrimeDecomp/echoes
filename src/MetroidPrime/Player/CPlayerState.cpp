@@ -547,7 +547,7 @@ CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& sta
   return (firstCamera ? currentVisor : kPV_Combat);
 }
 
-bool CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
+uchar CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
   bool hasVisor = false;
   switch (visor) {
   case kPV_Combat:

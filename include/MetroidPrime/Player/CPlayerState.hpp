@@ -228,7 +228,7 @@ public:
   EPlayerVisor GetCurrentVisor() const { return currentVisor; }
   EPlayerVisor GetTransitioningVisor() const { return transitioningVisor; }
   EPlayerVisor GetActiveVisor(const CStateManager& mgr) const;
-  bool HasVisor(EPlayerVisor) const;
+  uchar HasVisor(EPlayerVisor) const;
   int ShouldDrawGravityBoost(const CStateManager& mgr) const;
   static int GetRenderSuit(const CStateManager&, const CPlayerState&, EPlayerSuit suit);
   bool ShouldDrawGrapple() const;
