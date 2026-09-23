@@ -515,9 +515,11 @@ void CPlayerState::InitializeScanTimes() {
 
   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
   unkStruct.vec.reserve(scanStates.size() + 4);
-  for (uint i = 0; i < 4; ++i) {
-    unkStruct.vec.push_back(UnknownPlayerStateStruct::Nested(i));
-  }
+  uint i = 0;
+  do {
+    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(i));
+    ++i;
+  } while (i < 4);
   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
        it != scanStates.end(); ++it) {
     unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(it->first));
