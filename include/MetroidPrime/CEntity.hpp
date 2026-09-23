@@ -17,7 +17,7 @@ public:
   virtual void PreThink(float dt, CStateManager& mgr);
   virtual void Think(float dt, CStateManager& mgr);
   virtual void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&);
-  virtual void SendActive(CStateManager& mgr, bool active);
+  void SendActive(CStateManager& mgr, bool active);
   virtual void SetActive(const bool active);
 
   CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint inGrave);
