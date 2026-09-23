@@ -2,6 +2,40 @@
 
 #include "MetroidPrime/CStateManager.hpp"
 
+namespace rstl {
+template <>
+vector< TUniqueId >::vector(const vector< TUniqueId >& other)
+: x0_allocator(other.x0_allocator), x4_count(other.x4_count), x8_capacity(other.x8_capacity) {
+  if (other.x4_count == 0 && other.x8_capacity == 0) {
+    xc_items = nullptr;
+  } else {
+    x0_allocator.allocate(xc_items, x8_capacity);
+    TUniqueId* dst = xc_items;
+    const TUniqueId* src = other.xc_items;
+    int count = x4_count;
+    while (count--) {
+      *dst++ = *src++;
+    }
+  }
+}
+
+template <>
+vector< SConnection >::vector(const vector< SConnection >& other)
+: x0_allocator(other.x0_allocator), x4_count(other.x4_count), x8_capacity(other.x8_capacity) {
+  if (other.x4_count == 0 && other.x8_capacity == 0) {
+    xc_items = nullptr;
+  } else {
+    x0_allocator.allocate(xc_items, x8_capacity);
+    SConnection* dst = xc_items;
+    const SConnection* src = other.xc_items;
+    int count = x4_count;
+    while (count--) {
+      *dst++ = *src++;
+    }
+  }
+}
+} // namespace rstl
+
 rstl::vector< SConnection > CEntity::NullConnectionList;
 
 CEntityInfo CEntity::NullEntityInfo = CEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
