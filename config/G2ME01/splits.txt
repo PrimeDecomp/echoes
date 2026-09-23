@@ -287,6 +287,12 @@ Kyoto/Streams/DolphinCLZOInputStream.cpp:
 	.rodata     start:0x803B0358 end:0x803B0360
 	.data       start:0x803BBFB8 end:0x803BBFC8
 
+Kyoto/Streams/CFilePreload.cpp:
+	.text       start:0x803442B4 end:0x80344D10
+	.ctors      start:0x803A5688 end:0x803A568C
+	.rodata     start:0x803B0360 end:0x803B0368
+	.bss        start:0x803E0618 end:0x803E0640
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
 	.sbss       start:0x80419CC0 end:0x80419CC4
