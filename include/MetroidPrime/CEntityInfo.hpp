@@ -44,6 +44,7 @@ enum EEntityType {
   kET_ScriptWorldTeleporter = 98,
   kET_DarkSamus = 111,
   kET_PowerBomb = 156,
+  kET_ScriptForgottenObject = 160,
 };
 
 enum EScriptObjectState {

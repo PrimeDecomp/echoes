@@ -7,6 +7,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSequenceTimer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
@@ -43,6 +44,7 @@ TYPES_MATCH_IMPL(CScriptEffect, CActor, kET_ScriptEffect)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
+TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 #undef TYPES_MATCH_IMPL
 
@@ -60,6 +62,7 @@ CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_PTR_IMPL(CScriptPickup, kET_ScriptPickup)
 CAST_TO_PTR_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
 CAST_TO_PTR_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
+CAST_TO_PTR_IMPL(CScriptForgottenObject, kET_ScriptForgottenObject)
 
 #undef CAST_TO_PTR_IMPL
 
@@ -77,6 +80,7 @@ CAST_TO_REF_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_REF_IMPL(CScriptPickup, kET_ScriptPickup)
 CAST_TO_REF_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
 CAST_TO_REF_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
+CAST_TO_REF_IMPL(CScriptForgottenObject, kET_ScriptForgottenObject)
 
 #undef CAST_TO_REF_IMPL
 
