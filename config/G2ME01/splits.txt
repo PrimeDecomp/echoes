@@ -80,6 +80,9 @@ MetroidPrime/CHealthInfo.cpp:
 
 MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 	.text       start:0x8015CD4C end:0x8015DDE8
+	.rodata     start:0x803A95F8 end:0x803A9620
+	.data       start:0x803B5430 end:0x803B5450
+	.sdata2     start:0x8041C460 end:0x8041C468
 
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04

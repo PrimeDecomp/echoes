@@ -1,6 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
 
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/CDvdFile.hpp"
 #include "MetroidPrime/CInGameTweakManager.hpp"
 #include "MetroidPrime/CMain.hpp"
@@ -11,6 +12,8 @@
 #include "rstl/StringExtras.hpp"
 
 #include <string.h>
+
+extern "C" void fn_8015DCF0(CScriptStreamedMusic*);
 
 CScriptStreamedMusic::CScriptStreamedMusic(TUniqueId id, const CEntityInfo& info,
                                            const rstl::string& name, const rstl::string& fileName,
@@ -26,7 +29,11 @@ CScriptStreamedMusic::CScriptStreamedMusic(TUniqueId id, const CEntityInfo& info
 , x38_fadeIn(fadeIn)
 , x3c_fadeOut(fadeOut)
 , x40_volume(volume)
-, x44_preload() {}
+, x44_preload() {
+  fn_8015DCF0(this);
+}
+
+extern "C" void fn_8015DCF0(CScriptStreamedMusic*) {}
 
 CScriptStreamedMusic::~CScriptStreamedMusic() {}
 
@@ -75,40 +82,6 @@ rstl::basic_string< char >::basic_string(rstl::basic_string< char >::const_itera
   x8_size = len;
 }
 
-void CScriptStreamedMusic::SetStereoPair() {
-  if (x34_fileIsDsp && x24_fileName.find('|', 0) == -1 && x24_fileName.size() >= 5) {
-    if (CStringExtras::CompareCaseInsensitive(
-            rstl::string_l(x24_fileName.data() + x24_fileName.size() - 5),
-            rstl::string_l("L.dsp")) == 0) {
-      rstl::string right = rstl::string(x24_fileName.begin(), x24_fileName.end() - 5) + "R.dsp";
-      if (CDvdFile::FileExists(right.data())) {
-        x24_fileName = x24_fileName + '|' + right;
-      }
-    }
-  }
-}
-
-void CScriptStreamedMusic::TweakOverride(CStateManager& mgr) {
-  const CWorld* world = mgr.GetWorld();
-  const CGameArea& area = world->GetAreaAlways(GetCurrentAreaId());
-  const rstl::string key =
-      CInGameTweakManager::GetIdentifierForMusicEvent(area.GetAreaAssetId(), rstl::string_l(""));
-  if (gpTweakManager->HasTweakValue(key)) {
-    const CTweakValue::Audio& audio = gpTweakManager->GetTweakValue(key)->GetAudio();
-    const rstl::string fileName(audio.GetFileName());
-    const float fadeIn = audio.GetFadeIn();
-    const char volume = static_cast< char >(audio.GetVolume() * 127.f);
-    const float fadeOut = audio.GetFadeOut();
-
-    x24_fileName = fileName;
-    x34_fileIsDsp = IsDSPFile(x24_fileName);
-    x38_fadeIn = fadeIn;
-    x40_volume = volume;
-    x3c_fadeOut = fadeOut;
-    SetStereoPair();
-  }
-}
-
 template <>
 rstl::string rstl::basic_string< char >::substr(int pos, int count) const {
   const pair< const_iterator, const_iterator > range = range_iterator(pos, count);
@@ -125,6 +98,39 @@ void CScriptStreamedMusic::PreloadMemoryAudio() {
     if (CDvdFile::FileExists(path.data())) {
       x44_preload = CFilePreload(path);
       x34_preloadPending = true;
+    }
+  }
+}
+
+void CScriptStreamedMusic::TweakOverride(CStateManager& mgr) {
+  const rstl::string key = CInGameTweakManager::GetIdentifierForMusicEvent(
+      mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetAreaAssetId(), rstl::string_l(""));
+  if (gpTweakManager->HasTweakValue(key)) {
+    const CTweakValue::Audio& audio = gpTweakManager->GetTweakValue(key)->GetAudio();
+    const rstl::string fileName(audio.GetFileName());
+    const float fadeIn = audio.GetFadeIn();
+    const char volume = CCast::ToInt8(audio.GetVolume() * 127.f);
+    const float fadeOut = audio.GetFadeOut();
+
+    x24_fileName = fileName;
+    x34_fileIsDsp = IsDSPFile(x24_fileName);
+    x38_fadeIn = fadeIn;
+    x40_volume = volume;
+    x3c_fadeOut = fadeOut;
+    fn_8015DCF0(this);
+    SetStereoPair();
+  }
+}
+
+void CScriptStreamedMusic::SetStereoPair() {
+  if (x34_fileIsDsp && x24_fileName.find('|', 0) == -1 && x24_fileName.size() >= 5) {
+    if (CStringExtras::CompareCaseInsensitive(
+            rstl::string_l(x24_fileName.data() + x24_fileName.size() - 5),
+            rstl::string_l("L.dsp")) == 0) {
+      rstl::string right = rstl::string(x24_fileName.begin(), x24_fileName.end() - 5) + "R.dsp";
+      if (CDvdFile::FileExists(right.data())) {
+        x24_fileName = x24_fileName + '|' + right;
+      }
     }
   }
 }
@@ -200,8 +206,8 @@ struct SLdrStreamedAudio {
   : editorProperties()
   , fileName()
   , noStopOnDeactivate(false)
-  , fadeIn(1.f)
-  , fadeOut(1.f)
+  , fadeIn(0.25f)
+  , fadeOut(0.25f)
   , volume(127)
   , loopMode(0)
   , music(true) {
