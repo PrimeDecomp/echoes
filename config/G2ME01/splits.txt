@@ -78,6 +78,9 @@ MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
 
+MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
+	.text       start:0x8015CD4C end:0x8015DDE8
+
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
 
