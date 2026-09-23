@@ -399,6 +399,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamWriter.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CMemoryInStream.cpp"),
             Object(NonMatching, "Kyoto/Streams/DolphinCLZOInputStream.cpp"),
+            Object(NonMatching, "Kyoto/Streams/CFilePreload.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CLZOSupport.cpp", extra_cflags=["-i include/LZO"]),
         ],
     },

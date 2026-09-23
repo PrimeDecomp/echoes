@@ -232,7 +232,7 @@ private:
 };
 
 template < typename T, typename Alloc >
-inline typename list< T, Alloc >::iterator list< T, Alloc >::insert(const iterator& pos,
+typename list< T, Alloc >::iterator list< T, Alloc >::insert(const iterator& pos,
                                                                     const T& val) {
   node* const result = do_insert_before(pos.get_node(), val);
   return iterator(result);
