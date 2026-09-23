@@ -37,11 +37,6 @@ extern "C" void fn_8015DCF0(CScriptStreamedMusic*) {}
 
 CScriptStreamedMusic::~CScriptStreamedMusic() {}
 
-CEntity* CScriptStreamedMusic::TypesMatch(int typeId) const {
-  return typeId == kET_ScriptStreamedMusic ? const_cast< CScriptStreamedMusic* >(this)
-                                           : CEntity::TypesMatch(typeId);
-}
-
 bool CScriptStreamedMusic::IsDSPFile(const rstl::string& fileName) {
   return CStringExtras::CompareCaseInsensitive(fileName, rstl::string_l("sw")) == 0 ||
          CStringExtras::IndexOfSubstring(fileName, rstl::string_l(".dsp")) != -1;

@@ -1,4 +1,4 @@
-#include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
@@ -7,23 +7,7 @@
 #include "REL/REL_Setup.h"
 #include "dolphin/gx.h"
 
-
-class CScriptForgottenObject : public CEntity {
-public:
-  CScriptForgottenObject(TUniqueId uid, const CEntityInfo& info, const rstl::string& name);
-  CEntity* TypesMatch(int typeId) const;
-  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&);
-  ~CScriptForgottenObject() {}
-
-  virtual void Render1(CStateManager& mgr);
-  virtual void Render2(CStateManager& mgr);
-
-private:
-  void RenderInternal(CStateManager& mgr, TUniqueId uid, bool b);
-
-  TUniqueId x24_;
-  TUniqueId x28_;
-};
+CScriptForgottenObject::~CScriptForgottenObject() {}
 
 CScriptForgottenObject::CScriptForgottenObject(TUniqueId uid, const CEntityInfo& info,
                                                const rstl::string& name)

@@ -105,6 +105,7 @@ public:
           const CVector3f& playerScale, float mass, float stepUp, float stepDown, float ballRadius,
           const CMaterialList& ml, CPlayerState*, CCameraManager*, bool, int playerIndex, int,
           int charIdx);
+  CEntity* TypesMatch(int typeId) const override;
 
   int GetPlayerIndex() const;
   const CVector3f& GetLookDir() const { return m_lookDir; };

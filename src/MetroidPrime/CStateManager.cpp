@@ -81,7 +81,7 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
     return true;
   }
 
-  CPlayer* player = TCastToPtr< CPlayer* >(damagee);
+  CPlayer* player = TCastToPtr< CPlayer >(damagee);
 
   if (player && player->Get_x12f8() != 0) {
     if (player->Get_x12f8() != 3) {
