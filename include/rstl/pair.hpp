@@ -4,11 +4,14 @@
 #include "types.h"
 #include "rstl/functional.hpp"
 
+class CInputStream;
+
 namespace rstl {
 template < typename L, typename R >
 class pair {
 public:
   pair() {}
+  pair(CInputStream& in);
   pair(const L& first, const R& second) : first(first), second(second) {}
 
   bool operator==(const pair& other) const {

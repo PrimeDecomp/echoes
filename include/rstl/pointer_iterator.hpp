@@ -71,7 +71,6 @@ public:
   pointer_iterator() : base(nullptr) {}
   pointer_iterator(T* begin) : base(begin) {}
   pointer_iterator(Vec* owner, T* begin) : base(owner, begin) {}
-  void operator=(const T& other) { rstl::construct(this->current, other); }
   T* get_pointer() const { return this->current; }
   T& operator*() const { return *get_pointer(); }
   // TODO map says const, but breaks CScriptMazeNode::GenerateObjects

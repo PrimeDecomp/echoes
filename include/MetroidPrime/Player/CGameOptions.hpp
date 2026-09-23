@@ -11,13 +11,13 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
-class CInputStream;
+class CBitStreamReader;
 class CMemoryStreamOut;
 
 class CGameOptions {
 public:
   CGameOptions();
-  CGameOptions(CInputStream& in);
+  CGameOptions(CBitStreamReader& in);
   ~CGameOptions();
 
   void PutTo(CMemoryStreamOut&);

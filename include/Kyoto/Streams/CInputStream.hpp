@@ -5,6 +5,9 @@
 
 #include "stddef.h"
 
+#include "rstl/auto_ptr.hpp"
+#include "rstl/pair.hpp"
+
 class CInputStream;
 template < typename T >
 struct TType {};
@@ -12,78 +15,63 @@ template < typename T >
 T cinput_stream_helper(const TType< T >& type, CInputStream& in);
 
 template < typename T >
-TType< T > TGetType() {
+inline TType< T > TGetType(const T&) {
   return TType< T >();
 }
 
 class CInputStream {
 public:
-  CInputStream(int len);
-  CInputStream(const void* ptr, int len, bool owned);
+  CInputStream(const void* ptr, unsigned long len);
+  CInputStream(const void* ptr, unsigned long len, bool owned);
+  CInputStream(const rstl::pair< const void*, unsigned long >& buffer, bool owned);
   virtual ~CInputStream();
-  virtual size_t Read(void* dest, size_t len) = 0;
 
   float ReadFloat();
-  u64 ReadLongLong();
-  uint ReadLong();
-  ushort ReadShort();
-  // bool ReadBool();
-  uchar ReadChar();
-  uint ReadBits(uint len);
   size_t ReadBytes(void* dest, size_t len);
   void Get(void* dest, unsigned long len);
+  const void* Get(unsigned long len);
+  rstl::auto_ptr< uchar > ReleaseBuffer();
 
   template < typename T >
-  inline T Get(const TType< T >& type = TType< T >()) {
-    return cinput_stream_helper(type, *this);
+  T Get(const TType< T >& type = TType< T >()) {
+    return cinput_stream_helper(TType< T >(), *this);
   }
 
-  bool ReadPackedBool() { return ReadBits(1) != 0; }
-
-  // TODO: this cast to uint fixes regalloc in
-  // CIEKeyframeEmitter / rstl::vector(CInputStream&)
-  // why?
   int ReadInt32() {
-    int* result = (int*) ptr;
-    ptr = (uchar*) (result + 1);
+    int* result = reinterpret_cast< int* >(x8_ptr);
+    x8_ptr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
   u16 ReadUint16() {
-    u16* result = (u16*) ptr;
-    ptr = (uchar*) (result + 1);
+    u16* result = reinterpret_cast< u16* >(x8_ptr);
+    x8_ptr = reinterpret_cast< uchar* >(result + 1);
+    return *result;
+  }
+  short ReadInt16() {
+    short* result = reinterpret_cast< short* >(x8_ptr);
+    x8_ptr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
   u8 ReadUint8() {
-    u8* result = (u8*) ptr;
-    ptr = (u8*) (result + 1);
+    u8* result = x8_ptr;
+    x8_ptr = result + 1;
     return *result;
   }
   char ReadInt8() {
-    char* result = (char*) ptr;
-    ptr = (u8*) (result + 1);
+    char* result = reinterpret_cast< char* >(x8_ptr);
+    x8_ptr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
-  bool ReadBool() {
-    uchar* result = (uchar*) ptr;
-    ptr = (uchar*) (result + 1);
-    return *result;
-  }
-
-  uint GetBlockOffset() const { return blockOffset; }
+  bool ReadBool() { return ReadUint8() != 0; }
 
 private:
-  bool GrabAnotherBlock();
-  bool InternalReadNext();
-
-  uint blockOffset;
-  // uint blockLen;
-  // uint len;
-  uchar* ptr;
-  bool owned;
-  uint readPosition;
-  uint x1c_bitWord;
-  uint x20_bitOffset;
+  uchar* x4_buffer;
+  uchar* x8_ptr;
+  unsigned long xc_length;
+  bool x10_owned;
 };
+
+CHECK_SIZEOF(CInputStream, 0x14)
 
 template < typename T >
 inline T cinput_stream_helper(const TType< T >& type, CInputStream& in) {
@@ -95,25 +83,30 @@ inline bool cinput_stream_helper(const TType< bool >& type, CInputStream& in) {
 }
 template <>
 inline char cinput_stream_helper(const TType< char >& type, CInputStream& in) {
-  return in.ReadChar();
+  return in.ReadInt8();
 }
 
 template <>
 inline unsigned char cinput_stream_helper(const TType< unsigned char >& type, CInputStream& in) {
-  return in.ReadChar();
+  return in.ReadUint8();
+}
+
+template <>
+inline signed char cinput_stream_helper(const TType< signed char >& type, CInputStream& in) {
+  return in.ReadInt8();
 }
 
 template <>
 inline int cinput_stream_helper(const TType< int >& type, CInputStream& in) {
-  return in.ReadLong();
+  return in.ReadInt32();
 }
 template <>
 inline uint cinput_stream_helper(const TType< uint >& type, CInputStream& in) {
-  return in.ReadLong();
+  return in.ReadInt32();
 }
 template <>
 inline unsigned long cinput_stream_helper(const TType< unsigned long >& type, CInputStream& in) {
-  return in.ReadLong();
+  return in.ReadInt32();
 }
 template <>
 inline float cinput_stream_helper(const TType< float >& type, CInputStream& in) {
@@ -121,23 +114,17 @@ inline float cinput_stream_helper(const TType< float >& type, CInputStream& in) 
 }
 template <>
 inline short cinput_stream_helper(const TType< short >& type, CInputStream& in) {
-  return in.ReadShort();
+  return in.ReadInt16();
 }
 template <>
 inline ushort cinput_stream_helper(const TType< ushort >& type, CInputStream& in) {
-  return in.ReadShort();
+  return in.ReadUint16();
 }
 
 // rstl
-#include "rstl/pair.hpp"
 template < typename L, typename R >
-inline rstl::pair< L, R > cinput_stream_helper(const TType< rstl::pair< L, R > >& type,
-                                               CInputStream& in) {
-  rstl::pair< L, R > result;
-  result.first = in.Get(TType< L >());
-  result.second = in.Get(TType< R >());
-  return result;
-}
+inline rstl::pair< L, R >::pair(CInputStream& in)
+: first(in.Get(TGetType(first))), second(in.Get(TGetType(second))) {}
 
 #include "rstl/vector.hpp"
 template < typename T, typename Alloc >
@@ -145,13 +132,8 @@ rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator)
 : x4_count(0), x8_capacity(0), xc_items(nullptr) {
   int count = in.ReadInt32();
   reserve(count);
-
-  iterator out = begin() + x4_count;
   for (int i = 0; i < count; i++) {
-    // Maybe this got improved?
-    // push_back(in.Get(TType< T >()));
-    out++ = in.Get(TType< T >());
-    ++x4_count;
+    push_back_unsafe(in.Get< T >());
   }
 }
 

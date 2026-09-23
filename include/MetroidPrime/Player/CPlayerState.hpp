@@ -11,7 +11,7 @@
 #include "MetroidPrime/CHealthInfo.hpp"
 
 class CStateManager;
-class CInputStream;
+class CBitStreamReader;
 class COutputStream;
 
 class CPlayerState {
@@ -213,7 +213,7 @@ public:
   };
 
   CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
-  explicit CPlayerState(int playerIndex, CInputStream& stream);
+  explicit CPlayerState(int playerIndex, CBitStreamReader& stream);
 
   void FUN_80085c18(uint);
   void PutTo(COutputStream& stream);

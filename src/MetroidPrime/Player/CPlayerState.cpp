@@ -5,7 +5,7 @@
 #include "MetroidPrime/CMemoryCard.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
-#include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/COutputStream.hpp"
 
 #include <math.h>
@@ -127,7 +127,7 @@ CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
   vectorWord.reserve(32);
 }
 
-CPlayerState::CPlayerState(int playerIndex, CInputStream& stream)
+CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
 : playerIndex(playerIndex)
 , alive(true)
 , firingComboBeam(false)
