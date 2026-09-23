@@ -6,8 +6,14 @@ rstl::vector< SConnection > CEntity::NullConnectionList;
 
 CEntityInfo CEntity::NullEntityInfo = CEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
 
-// CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, TEditorId eid)
-// : x0_areaId(aid), x4_conns(conns), x14_editorId(eid) {}
+CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& connections,
+                         bool isActive, TEditorId eid)
+: areaId(aid)
+, conns(connections)
+, editorId(eid)
+, active(isActive)
+, scriptingBlocked(true)
+, unk(true) {}
 
 CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint castFlags)
 : m_areaId(info.GetAreaId())
@@ -37,10 +43,9 @@ void CEntity::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   case kSM_ToggleActive: {
-    CScriptMsg newMsg(msg);
-    if (!m_active) {
-      newMsg.SetMessage(kSM_Deactivate);
-    }
+    EScriptObjectMessage next = m_active ? kSM_Deactivate : kSM_Activate;
+    CScriptMsg newMsg(msg.GetUnk(), msg.GetOriginator(), msg.GetId(),
+                      next, msg.GetState());
     AcceptScriptMsg(mgr, newMsg);
     break;
   }
@@ -70,7 +75,25 @@ void CEntity::Think(float dt, CStateManager& mgr) {}
 
 void CEntity::SetActive(const bool active) { m_active = active; }
 
+void CEntity::SendActive(CStateManager& mgr, bool active) {
+  if (active != GetActive()) {
+    mgr.SendScriptMsg(this, GetUniqueId(), active ? kSM_Activate : kSM_Deactivate,
+                      kInvalidUniqueId);
+  }
+}
+
 TAreaId CEntity::GetAreaIdForPersistence() const { return m_notInArea ? kInvalidAreaId : m_areaId; }
 
-TUniqueId CEntity::FindConnectedObject(const CStateManager&, EScriptObjectState,
-                                       EScriptObjectMessage) const {}
+TUniqueId CEntity::FindConnectedObject(const CStateManager& mgr, EScriptObjectState state,
+                                       EScriptObjectMessage msg) const {
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        return ids.first->second;
+      }
+    }
+  }
+  return kInvalidUniqueId;
+}
