@@ -38,8 +38,8 @@ int CStringExtras::IndexOfSubstring(const rstl::string& left, const rstl::string
 }
 
 int CStringExtras::CompareCaseInsensitive(const rstl::string& left, const rstl::string& right) {
-  int leftLength = left.length();
   int rightLength = right.length();
+  int leftLength = left.length();
   int commonLength = rstl::min_val(leftLength, rightLength);
 
   for (int idx = 0; idx < commonLength; ++idx) {
