@@ -18,9 +18,9 @@ CInputStream::CInputStream(const void* ptr, unsigned long len, bool owned)
   x8_ptr = x4_buffer;
 }
 
-CInputStream::CInputStream(const rstl::pair< const void*, unsigned long >& buffer, bool owned)
-: x4_buffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(buffer.first)))
-, xc_length(buffer.second)
+CInputStream::CInputStream(const SBufferAndSize& buffer, bool owned)
+: x4_buffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(buffer.x0_buffer)))
+, xc_length(buffer.x4_size)
 , x10_owned(owned) {
   x8_ptr = x4_buffer;
 }

@@ -21,9 +21,16 @@ inline TType< T > TGetType(const T&) {
 
 class CInputStream {
 public:
+  struct SBufferAndSize {
+    const void* x0_buffer;
+    unsigned long x4_size;
+
+    SBufferAndSize(const void* buffer, unsigned long size) : x0_buffer(buffer), x4_size(size) {}
+  };
+
   CInputStream(const void* ptr, unsigned long len);
   CInputStream(const void* ptr, unsigned long len, bool owned);
-  CInputStream(const rstl::pair< const void*, unsigned long >& buffer, bool owned);
+  CInputStream(const SBufferAndSize& buffer, bool owned);
   virtual ~CInputStream();
 
   float ReadFloat();

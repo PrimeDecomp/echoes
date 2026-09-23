@@ -397,6 +397,21 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/COutputStream.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CMemoryStreamOut.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamWriter.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Streams/CMemoryInStream.cpp"),
+            Object(NonMatching, "Kyoto/Streams/DolphinCLZOInputStream.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Streams/CLZOSupport.cpp", extra_cflags=["-i include/LZO"]),
+        ],
+    },
+    {
+        "lib": "LZO",
+        "mw_version": "GC/2.7",
+        "cflags": cflags_runtime + ["-i include/LZO"],
+        "progress_category": "sdk",
+        "host": False,
+        "objects": [
+            Object(MatchingFor("G2ME01"), "LZO/lzo_init.c"),
+            Object(MatchingFor("G2ME01"), "LZO/lzo_ptr.c"),
+            Object(MatchingFor("G2ME01"), "LZO/lzo1x_d1.c"),
         ],
     },
     {

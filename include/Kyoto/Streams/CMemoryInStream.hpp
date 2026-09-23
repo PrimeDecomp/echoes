@@ -15,4 +15,6 @@ public:
   virtual ~CMemoryInStream() override {}
 };
 
+CHECK_SIZEOF(CMemoryInStream, 0x14)
+
 #endif // _CMEMORYINSTREAM
