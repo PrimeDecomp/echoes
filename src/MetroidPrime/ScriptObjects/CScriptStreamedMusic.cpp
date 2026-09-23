@@ -136,11 +136,32 @@ void CScriptStreamedMusic::SetStereoPair() {
   }
 }
 
+void CScriptStreamedMusic::StopNonDsp() {
+  CStreamAudioManager::sub_8036590c(x3c_fadeOut);
+}
+
+void CScriptStreamedMusic::PlayNonDsp() {
+  const char volume = x40_volume;
+  if (x34_noStopOnDeactivate) {
+    CStreamAudioManager::SetDefaultAudio(x24_fileName, x3c_fadeOut, x38_fadeIn, volume);
+  } else {
+    CStreamAudioManager::SetCurrentAudio(x24_fileName, x3c_fadeOut, x38_fadeIn, volume);
+  }
+}
+
 void CScriptStreamedMusic::Stop() {
   if (x34_fileIsDsp) {
     StopStream();
   } else {
-    CStreamAudioManager::sub_8036590c(x3c_fadeOut);
+    StopNonDsp();
+  }
+}
+
+void CScriptStreamedMusic::PlayAudio() {
+  if (x34_fileIsDsp) {
+    StartStream();
+  } else {
+    PlayNonDsp();
   }
 }
 
@@ -151,12 +172,8 @@ void CScriptStreamedMusic::Play(CStateManager& mgr) {
   TweakOverride(mgr);
   if (x34_fileIsDsp) {
     StartStream();
-  } else if (x34_noStopOnDeactivate) {
-    CStreamAudioManager::SetDefaultAudio(x24_fileName, x3c_fadeOut, x38_fadeIn,
-                                         static_cast< uchar >(x40_volume));
   } else {
-    CStreamAudioManager::SetCurrentAudio(x24_fileName, x3c_fadeOut, x38_fadeIn,
-                                         static_cast< uchar >(x40_volume));
+    PlayNonDsp();
   }
 }
 

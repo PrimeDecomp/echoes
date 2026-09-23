@@ -15,6 +15,7 @@ public:
   CEntity* TypesMatch(int typeId) const override;
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
+  void PlayAudio();
 
   static bool IsDSPFile(const rstl::string& fileName);
 
@@ -22,6 +23,8 @@ private:
   static int IsOneShot(bool loop);
   void StartStream();
   void StopStream();
+  void StopNonDsp();
+  void PlayNonDsp();
   void Play(CStateManager& mgr);
   void Stop();
   void TweakOverride(CStateManager& mgr);

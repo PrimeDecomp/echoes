@@ -5811,10 +5811,10 @@ substr__Q24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocat
 Think__20CScriptStreamedMusicFfR13CStateManager = .text:0x8015D814; // type:function size:0x84 align:4
 StopStream__20CScriptStreamedMusicFv = .text:0x8015D898; // type:function size:0x3C align:4
 StartStream__20CScriptStreamedMusicFv = .text:0x8015D8D4; // type:function size:0x70 align:4
-fn_8015D944 = .text:0x8015D944; // type:function size:0x24 align:4
-fn_8015D968 = .text:0x8015D968; // type:function size:0x60
+StopNonDsp__20CScriptStreamedMusicFv = .text:0x8015D944; // type:function size:0x24 align:4
+PlayNonDsp__20CScriptStreamedMusicFv = .text:0x8015D968; // type:function size:0x60
 Stop__20CScriptStreamedMusicFv = .text:0x8015D9C8; // type:function size:0x34 align:4
-fn_8015D9FC = .text:0x8015D9FC; // type:function size:0x34
+PlayAudio__20CScriptStreamedMusicFv = .text:0x8015D9FC; // type:function size:0x34
 Play__20CScriptStreamedMusicFR13CStateManager = .text:0x8015DA30; // type:function size:0x7C align:4
 AcceptScriptMsg__20CScriptStreamedMusicFR13CStateManagerRC10CScriptMsg = .text:0x8015DAAC; // type:function size:0x190 align:4
 IsDSPFile__20CScriptStreamedMusicFRCQ24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator> = .text:0x8015DC3C; // type:function size:0xB4
