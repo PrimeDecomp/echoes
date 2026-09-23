@@ -428,6 +428,26 @@ config.libs = [
         ],
     },
     DolphinLib(
+        "ai",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/ai.c"),
+        ],
+    ),
+    DolphinLib(
+        "si",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/si/SIBios.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/si/SISamplingRate.c"),
+        ],
+    ),
+    DolphinLib(
+        "thp",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/thp/THPDec.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/thp/THPAudio.c"),
+        ],
+    ),
+    DolphinLib(
         "ar",
         [
             Object(Matching, "Dolphin/ar/ar.c"),

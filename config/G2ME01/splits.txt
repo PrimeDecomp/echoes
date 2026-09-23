@@ -392,3 +392,33 @@ Dolphin/os/OSInterrupt.c:
 	.text       start:0x80372520 end:0x80372D8C
 	.data       start:0x803BF9F8 end:0x803BFA28
 	.sbss       start:0x80419FC0 end:0x80419FD8
+
+Dolphin/si/SIBios.c:
+	.text       start:0x803782B4 end:0x80379B14
+	.data       start:0x803BFB90 end:0x803BFCA8
+	.bss        start:0x803E26C0 end:0x803E28C0
+	.sdata      start:0x80418E50 end:0x80418E58
+	.sbss       start:0x8041A058 end:0x8041A068
+
+Dolphin/si/SISamplingRate.c:
+	.text       start:0x80379B14 end:0x80379C1C
+	.data       start:0x803BFCA8 end:0x803BFD40
+	.sbss       start:0x8041A068 end:0x8041A070
+
+Dolphin/thp/THPDec.c:
+	.text       start:0x80379C1C end:0x80381184
+	.rodata     start:0x803B08E8 end:0x803B0978
+	.data       start:0x803BFD40 end:0x803BFD80
+	.bss        start:0x803E28C0 end:0x803E29F0
+	.sdata      start:0x80418E58 end:0x80418E60
+	.sbss       start:0x8041A080 end:0x8041A198
+	.sdata2     start:0x8041F600 end:0x8041F620
+
+Dolphin/thp/THPAudio.c:
+	.text       start:0x80381184 end:0x803816B4
+
+Dolphin/ai.c:
+	.text       start:0x803816B4 end:0x8038201C
+	.data       start:0x803BFD80 end:0x803BFDC8
+	.sdata      start:0x80418E60 end:0x80418E68
+	.sbss       start:0x8041A198 end:0x8041A1D8
