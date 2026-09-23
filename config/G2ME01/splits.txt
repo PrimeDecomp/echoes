@@ -179,7 +179,8 @@ rstl/rstl_strings.cpp:
 	.sbss       start:0x80419AE8 end:0x80419AEC
 
 rstl/RstlExtras.cpp:
-	.text       start:0x802FF784 end:0x802FFF04
+	.text       start:0x802FF4BC end:0x802FFF04
+	.rodata     start:0x803AFAB8 end:0x803AFAD8
 
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
