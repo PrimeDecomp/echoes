@@ -167,6 +167,9 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+rstl/rstl_map.cpp:
+	.text       start:0x802FD3CC end:0x802FDAB8
+
 rstl/rstl_misc.cpp:
 	.text       start:0x802FDAB8 end:0x802FDAF4
 	.rodata     start:0x803AFAB0 end:0x803AFAB8
