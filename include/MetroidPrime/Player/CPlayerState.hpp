@@ -249,7 +249,7 @@ public:
 
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;
-  bool UpdateVisorTransition(float dt);
+  uchar UpdateVisorTransition(float dt);
   void StartTransitionToVisor(EPlayerVisor visor);
   void ResetVisor();
   bool IsPlayerAlive() const { return alive; }

@@ -467,7 +467,7 @@ void CPlayerState::StartTransitionToVisor(CPlayerState::EPlayerVisor visor) {
     return;
 }
 
-bool CPlayerState::UpdateVisorTransition(float dt) {
+uchar CPlayerState::UpdateVisorTransition(float dt) {
   bool changed = false;
   if (GetIsVisorTransitioning()) {
     if (currentVisor == transitioningVisor) {
