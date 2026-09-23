@@ -60,6 +60,21 @@ void CScriptStreamedMusic::StopStream() {
   CStreamAudioManager::Stop(IsOneShot(x34_loop), x24_fileName);
 }
 
+template <>
+template <>
+rstl::basic_string< char >::basic_string(rstl::basic_string< char >::const_iterator first,
+                                         rstl::basic_string< char >::const_iterator last,
+                                         const rstl::rmemory_allocator&) {
+  const int len = last - first;
+  internal_allocate(len + 1);
+  int i = 0;
+  for (const_iterator it = first; it != last; ++it, ++i) {
+    const_cast< char& >(x0_ptr[i]) = *it;
+  }
+  const_cast< char& >(x0_ptr[i]) = char_traits< char >::eos();
+  x8_size = len;
+}
+
 void CScriptStreamedMusic::SetStereoPair() {
   if (x34_fileIsDsp && x24_fileName.find('|', 0) == -1 && x24_fileName.size() >= 5) {
     if (CStringExtras::CompareCaseInsensitive(
@@ -92,6 +107,12 @@ void CScriptStreamedMusic::TweakOverride(CStateManager& mgr) {
     x3c_fadeOut = fadeOut;
     SetStereoPair();
   }
+}
+
+template <>
+rstl::string rstl::basic_string< char >::substr(int pos, int count) const {
+  const pair< const_iterator, const_iterator > range = range_iterator(pos, count);
+  return basic_string(range.first, range.second);
 }
 
 void CScriptStreamedMusic::PreloadMemoryAudio() {
