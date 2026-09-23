@@ -123,7 +123,7 @@ void CScriptStreamedMusic::PreloadMemoryAudio() {
   if (strncmp(x24_fileName.data(), "mem:", 4) == 0) {
     const rstl::string path = x24_fileName.substr(4);
     if (CDvdFile::FileExists(path.data())) {
-      x44_preload = CStreamedMusicPreload(path);
+      x44_preload = CFilePreload(path);
       x34_preloadPending = true;
     }
   }

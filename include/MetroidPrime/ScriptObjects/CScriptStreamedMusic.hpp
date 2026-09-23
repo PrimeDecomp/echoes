@@ -1,24 +1,10 @@
 #ifndef _CSCRIPTSTREAMEDMUSIC
 #define _CSCRIPTSTREAMEDMUSIC
 
+#include "Kyoto/Streams/CFilePreload.hpp"
 #include "MetroidPrime/CEntity.hpp"
 
 #include "rstl/optional_object.hpp"
-
-// The target's four-byte, reference-counted preload handle is not the
-// CStaticAudioPlayer used for RSF playback. Its original type name is unknown.
-class CStreamedMusicPreload {
-public:
-  CStreamedMusicPreload(const rstl::string& path);
-  CStreamedMusicPreload(const CStreamedMusicPreload&);
-  ~CStreamedMusicPreload();
-  CStreamedMusicPreload& operator=(const CStreamedMusicPreload&);
-  bool IsReady() const;
-
-private:
-  void* x0_resource;
-};
-CHECK_SIZEOF(CStreamedMusicPreload, 0x4)
 
 class CScriptStreamedMusic : public CEntity {
 public:
@@ -51,7 +37,7 @@ private:
   float x38_fadeIn;
   float x3c_fadeOut;
   uint x40_volume;
-  rstl::optional_object< CStreamedMusicPreload > x44_preload;
+  rstl::optional_object< CFilePreload > x44_preload;
 };
 CHECK_SIZEOF(CScriptStreamedMusic, 0x4C)
 
