@@ -9,6 +9,7 @@ class CMatrix4f {
 public:
   CMatrix4f(float, float, float, float, float, float, float, float, float, float, float, float,
             float, float, float, float);
+  CMatrix4f(const CMatrix4f& other);
 
   CVector3f operator*(const CVector3f& vec) const;
 
