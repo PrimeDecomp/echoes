@@ -184,14 +184,16 @@ public:
     }
   };
 
-  struct UnknownPlayerStateStruct {
-    UnknownPlayerStateStruct();
-    UnknownPlayerStateStruct(const UnknownPlayerStateStruct&);
-    ~UnknownPlayerStateStruct();
-    UnknownPlayerStateStruct& operator=(const UnknownPlayerStateStruct&);
+  // Guessed name
+  struct SPersistentState {
+    SPersistentState();
+    SPersistentState(const SPersistentState&);
+    ~SPersistentState();
+    SPersistentState& operator=(const SPersistentState&);
 
-    struct Nested {
-      Nested(CAssetId id, uchar progress = 0, bool flag = false)
+    // Guessed name
+    struct SScanState {
+      SScanState(CAssetId id, uchar progress = 0, bool flag = false)
       : assetId(id), progress(progress), flag(flag) {}
 
       CAssetId assetId;
@@ -202,11 +204,11 @@ public:
     uint unk1;
     uint unk2;
     uint unk3;
-    rstl::vector< Nested > vec;
+    rstl::vector< SScanState > vec;
     rstl::reserved_vector< CPowerUp, 11 > powerups;
   };
 
-  CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
+  CPlayerState(int playerIndex, SPersistentState*);
   explicit CPlayerState(int playerIndex, CBitStreamReader& stream);
   ~CPlayerState();
 
@@ -273,7 +275,7 @@ public:
   void ResetAndIncrPickUp(EItemType type, int amount);
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
-  rstl::vector< UnknownPlayerStateStruct::Nested >& ScanStates();
+  rstl::vector< SPersistentState::SScanState >& ScanStates();
 
   float CalculateHealth();
 
@@ -293,8 +295,8 @@ public:
 
   const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
-  UnknownPlayerStateStruct& GetPersistentState();
-  void SetPersistentState(const UnknownPlayerStateStruct&);
+  SPersistentState& GetPersistentState();
+  void SetPersistentState(const SPersistentState&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
   float GetChargeAnimStart() const { return chargeAnimStart; }
   void IncrementChargeBeamFactor(float);
@@ -318,7 +320,7 @@ private:
   int scanCompletionRateFirst;
   int scanCompletionRateSecond;
   CStaticInterference staticInterference;
-  UnknownPlayerStateStruct unkStruct;
+  SPersistentState unkStruct;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)
 

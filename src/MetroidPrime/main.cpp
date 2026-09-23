@@ -283,6 +283,6 @@ void CMain::StreamNewGameState(CInputStream& in, int saveIdx) {
 
 CPlayerState::~CPlayerState() {}
 
-CPlayerState::UnknownPlayerStateStruct::~UnknownPlayerStateStruct() {}
+CPlayerState::SPersistentState::~SPersistentState() {}
 
 CStaticInterference::~CStaticInterference() {}

@@ -16,10 +16,10 @@
 #include "rstl/algorithm.hpp"
 
 struct ScanIdLess {
-  bool operator()(const CPlayerState::UnknownPlayerStateStruct::Nested& scan, CAssetId id) const {
+  bool operator()(const CPlayerState::SPersistentState::SScanState& scan, CAssetId id) const {
     return scan.assetId < id;
   }
-  bool operator()(CAssetId id, const CPlayerState::UnknownPlayerStateStruct::Nested& scan) const {
+  bool operator()(CAssetId id, const CPlayerState::SPersistentState::SScanState& scan) const {
     return id < scan.assetId;
   }
 };
@@ -102,13 +102,13 @@ uint CPlayerState::GetBitCount(uint val) {
 CPlayerState::CPowerUp::CPowerUp(int amount, int capacity, float timeLeft)
 : x0_amount(amount), x4_capacity(capacity), x8_timeLeft(timeLeft) {}
 
-CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct()
+CPlayerState::SPersistentState::SPersistentState()
 : unk1(0), unk2(0), unk3(0), vec(), powerups(CPowerUp(0, 0, 0.0f)) {}
 
-CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct(const UnknownPlayerStateStruct& other)
+CPlayerState::SPersistentState::SPersistentState(const SPersistentState& other)
 : unk1(other.unk1), unk2(other.unk2), unk3(other.unk3), vec(other.vec), powerups(other.powerups) {}
 
-CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
+CPlayerState::CPlayerState(int playerIndex, SPersistentState* s)
 : playerIndex(playerIndex)
 , alive(true)
 , firingComboBeam(false)
@@ -126,7 +126,7 @@ CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
 , scanCompletionRateFirst(0)
 , scanCompletionRateSecond(0)
 , staticInterference(5)
-, unkStruct(s ? *s : UnknownPlayerStateStruct()) {
+, unkStruct(s ? *s : SPersistentState()) {
   if (!s) {
     unkStruct.unk1 = this->playerIndex;
   }
@@ -186,14 +186,14 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
   for (int i = 0; i < 4; ++i) {
     stream.ReadBits(1);
     stream.ReadBits(1);
-    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(i));
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(i));
   }
   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
        it != scanStates.end(); ++it) {
     bool complete = stream.ReadBits(1) != 0;
     bool flag = stream.ReadBits(1) != 0;
     unkStruct.vec.push_back_unsafe(
-        UnknownPlayerStateStruct::Nested(it->first, complete ? 255 : 0, flag));
+        SPersistentState::SScanState(it->first, complete ? 255 : 0, flag));
   }
 
   scanCompletionRateFirst = int(stream.ReadBits(GetBitCount(0x100u)));
@@ -229,7 +229,7 @@ void CPlayerState::PutTo(CBitStreamWriter& stream) {
 
   stream.WriteBits(0x504f5752, 0x20);
 
-  for (rstl::vector< UnknownPlayerStateStruct::Nested >::iterator it = unkStruct.vec.begin();
+  for (rstl::vector< SPersistentState::SScanState >::iterator it = unkStruct.vec.begin();
        it != unkStruct.vec.end(); ++it) {
     int complete = it->progress == 255 ? 1 : 0;
     uchar flag = it->flag;
@@ -498,7 +498,7 @@ float CPlayerState::GetBaseHealthCapacity() { return kBaseHealthCapacity; }
 
 float CPlayerState::GetEnergyTankCapacity() { return kEnergyTankCapacity; }
 
-rstl::vector< CPlayerState::UnknownPlayerStateStruct::Nested >& CPlayerState::ScanStates() {
+rstl::vector< CPlayerState::SPersistentState::SScanState >& CPlayerState::ScanStates() {
   return unkStruct.vec;
 }
 
@@ -510,29 +510,29 @@ void CPlayerState::InitializeScanTimes() {
   unkStruct.vec.reserve(scanStates.size() + 4);
   uint i = 0;
   do {
-    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(i));
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(i));
     ++i;
   } while (i < 4);
   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
        it != scanStates.end(); ++it) {
-    unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(it->first));
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(it->first));
   }
 }
 
 float CPlayerState::GetScanTime(CAssetId res) {
-  rstl::vector< UnknownPlayerStateStruct::Nested >::iterator it =
+  rstl::vector< SPersistentState::SScanState >::iterator it =
       rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
   return CCast::ToReal32(it->progress) / 255.f;
 }
 
 void CPlayerState::SetScanTime(CAssetId res, float time) {
-  rstl::vector< UnknownPlayerStateStruct::Nested >::iterator it =
+  rstl::vector< SPersistentState::SScanState >::iterator it =
       rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
   it->progress = CCast::ToUint8(255.f * time);
 }
 
 void CPlayerState::SetScanFlag(uint res, bool flag) {
-  rstl::vector< UnknownPlayerStateStruct::Nested >::iterator it =
+  rstl::vector< SPersistentState::SScanState >::iterator it =
       rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
   it->flag = flag;
 }
@@ -625,15 +625,15 @@ int CPlayerState::GetMissileCostForAltAttack() const { return kMissileCosts[int(
 
 float CPlayerState::GetMissileComboChargeFactor() { return 1.8f; }
 
-CPlayerState::UnknownPlayerStateStruct& CPlayerState::GetPersistentState() {
+CPlayerState::SPersistentState& CPlayerState::GetPersistentState() {
   for (int i = 0; i < 11; ++i) {
     unkStruct.powerups[i] = powerups[kItems_803a74bc[i]];
   }
   return unkStruct;
 }
 
-CPlayerState::UnknownPlayerStateStruct& CPlayerState::UnknownPlayerStateStruct::operator=(
-    const UnknownPlayerStateStruct& other) {
+CPlayerState::SPersistentState& CPlayerState::SPersistentState::operator=(
+    const SPersistentState& other) {
   unk1 = other.unk1;
   unk2 = other.unk2;
   unk3 = other.unk3;
@@ -642,7 +642,7 @@ CPlayerState::UnknownPlayerStateStruct& CPlayerState::UnknownPlayerStateStruct::
   return *this;
 }
 
-void CPlayerState::SetPersistentState(const CPlayerState::UnknownPlayerStateStruct& s) {
+void CPlayerState::SetPersistentState(const CPlayerState::SPersistentState& s) {
   unkStruct = s;
   for (int i = 0; i < 11; ++i) {
     CPowerUp& otherPowerup = unkStruct.powerups[i];
