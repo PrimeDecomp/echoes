@@ -170,8 +170,9 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
   for (int i = 0; i < powerups.capacity(); ++i) {
     int amount = 0;
     int capacity = 0;
+    const uint maxValue = kPowerUpMax[i];
     if (kShouldPersist[i]) {
-      int bitCount = GetBitCount(kPowerUpMax[i]);
+      int bitCount = GetBitCount(maxValue);
       amount = stream.ReadBits(bitCount);
       capacity = stream.ReadBits(bitCount);
     }
@@ -182,7 +183,7 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
 
   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
   unkStruct.vec.reserve(scanStates.size() + 4);
-  for (uint i = 0; i < 4; ++i) {
+  for (int i = 0; i < 4; ++i) {
     stream.ReadBits(1);
     stream.ReadBits(1);
     unkStruct.vec.push_back_unsafe(UnknownPlayerStateStruct::Nested(i));
@@ -674,7 +675,9 @@ void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr,
 const rstl::vector< TUniqueId >& CPlayerState::GetIds() const { return vectorWord; }
 
 bool CPlayerState::HasId(TUniqueId id) const {
-  return rstl::binary_find(vectorWord.begin(), vectorWord.end(), id) != vectorWord.end();
+  rstl::vector< TUniqueId >::const_iterator it =
+      rstl::binary_find(vectorWord.begin(), vectorWord.end(), id);
+  return it != vectorWord.end();
 }
 
 void CPlayerState::AddId(TUniqueId id) {
