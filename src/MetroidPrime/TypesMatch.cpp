@@ -79,3 +79,35 @@ CAST_TO_REF_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
 CAST_TO_REF_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
 
 #undef CAST_TO_REF_IMPL
+
+template <>
+CActor* TCastToPtr< CActor >(CEntity* entity) {
+  if (entity != nullptr && (entity->GetCastFlags() & 1) != 0) {
+    return static_cast< CActor* >(entity);
+  }
+  return nullptr;
+}
+
+template <>
+CActor* TCastToPtr< CActor >(CEntity& entity) {
+  if ((entity.GetCastFlags() & 1) != 0) {
+    return static_cast< CActor* >(&entity);
+  }
+  return nullptr;
+}
+
+template <>
+CPhysicsActor* TCastToPtr< CPhysicsActor >(CEntity* entity) {
+  if (entity != nullptr && (entity->GetCastFlags() & 2) != 0) {
+    return static_cast< CPhysicsActor* >(entity);
+  }
+  return nullptr;
+}
+
+template <>
+CPhysicsActor* TCastToPtr< CPhysicsActor >(CEntity& entity) {
+  if ((entity.GetCastFlags() & 2) != 0) {
+    return static_cast< CPhysicsActor* >(&entity);
+  }
+  return nullptr;
+}

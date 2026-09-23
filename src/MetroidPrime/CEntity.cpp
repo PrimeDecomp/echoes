@@ -9,14 +9,14 @@ CEntityInfo CEntity::NullEntityInfo = CEntityInfo(kInvalidAreaId, NullConnection
 // CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& conns, TEditorId eid)
 // : x0_areaId(aid), x4_conns(conns), x14_editorId(eid) {}
 
-CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint graveyard)
+CEntity::CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint castFlags)
 : m_areaId(info.GetAreaId())
 , m_uid(id)
 , m_editorId(info.GetEditorId())
 , m_conns(info.GetConnectionList())
 , m_active(info.GetActive())
 , m_notInArea(m_areaId == kInvalidAreaId)
-, m_inGraveyard(graveyard)
+, m_castFlags(castFlags)
 , m_scriptingBlocked(info.GetScriptingBlocked())
 , m_entityUnknown(info.GetUnk()) {}
 

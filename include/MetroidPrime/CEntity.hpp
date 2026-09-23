@@ -20,7 +20,7 @@ public:
   void SendActive(CStateManager& mgr, bool active);
   virtual void SetActive(const bool active);
 
-  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint inGrave);
+  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint castFlags);
 
   void SendScriptMsgs(EScriptObjectState state, CStateManager& mgr, TUniqueId uid,
                       EScriptObjectMessage msg);
@@ -35,6 +35,7 @@ public:
   const bool GetActive() const { return m_active; }
   bool IsScriptingBlocked() const { return m_scriptingBlocked; }
   bool GetEditorFlag2() const { return m_entityUnknown; }
+  uint GetCastFlags() const { return m_castFlags; }
 
   // might be fake?
   rstl::vector< SConnection >& ConnectionList() { return m_conns; }
@@ -63,7 +64,7 @@ private:
   rstl::vector< SConnection > m_conns;  // x10
   uint m_active : 1; // x20
   uint m_notInArea : 1;
-  uint m_inGraveyard : 4;
+  uint m_castFlags : 4;
   uint m_scriptingBlocked : 1;
   uint m_entityUnknown : 1;
 };
