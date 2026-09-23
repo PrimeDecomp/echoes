@@ -89,9 +89,10 @@ char CStringExtras::ConvertToUpperCase(char c) {
   return c;
 }
 
-char CStringExtras::ConvertToLowerCase(char c) {
-  if (c >= CCast::ToChar('A') && c <= CCast::ToChar('Z')) {
-    return (c + CCast::ToChar(' ')) & 0xFF;
+int CStringExtras::ConvertToLowerCase(int c) {
+  const char value = static_cast< char >(c);
+  if (value >= CCast::ToChar('A') && value <= CCast::ToChar('Z')) {
+    return CCast::ToChar(c + CCast::ToChar(' '));
   }
 
   return c;
