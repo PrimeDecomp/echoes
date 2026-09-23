@@ -67,15 +67,24 @@ void CScriptStreamedMusic::StopStream() {
   CStreamAudioManager::Stop(IsOneShot(x34_loop), x24_fileName);
 }
 
+namespace rstl {
+// Keep the iterator-range constructor's distance calculation inline in this TU.
+template <>
+inline long distance< string::const_iterator >(string::const_iterator first,
+                                               string::const_iterator last) {
+  return last - first;
+}
+} // namespace rstl
+
 template <>
 template <>
 rstl::basic_string< char >::basic_string(rstl::basic_string< char >::const_iterator first,
                                          rstl::basic_string< char >::const_iterator last,
                                          const rstl::rmemory_allocator&) {
-  const int len = last - first;
+  const int len = rstl::distance(first, last);
   internal_allocate(len + 1);
   int i = 0;
-  for (const_iterator it = first; it != last; ++it, ++i) {
+  for (const_iterator it = first; it != last; it = it + 1, ++i) {
     const_cast< char& >(x0_ptr[i]) = *it;
   }
   const_cast< char& >(x0_ptr[i]) = char_traits< char >::eos();
