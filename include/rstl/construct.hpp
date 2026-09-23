@@ -70,8 +70,7 @@ template < typename D, typename S >
 static inline void uninitialized_fill_n(D dest, int n, const S& value) {
   D cur = dest;
   for (int i = 0; i < n; ++i, ++cur) {
-    void* ptr = &*cur;
-    new (ptr) S(value);
+    construct(&*cur, value);
   }
 }
 } // namespace rstl

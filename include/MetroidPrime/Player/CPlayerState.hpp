@@ -328,6 +328,12 @@ template <>
 struct is_trivially_destructible< CPlayerState::CPowerUp > {
   enum { value = true };
 };
+
+template <>
+inline void construct< CPlayerState::CPowerUp >(void* dest, const CPlayerState::CPowerUp& src) {
+  *static_cast< CPlayerState::CPowerUp* >(dest) = src;
+}
+
 } // namespace rstl
 
 #endif // _CPLAYERSTATE
