@@ -80,17 +80,7 @@ public:
   inline const T& operator[](int idx) const { return data()[idx]; }
   inline T& at(int idx) { return data()[idx]; }
   inline const T& at(int idx) const { return data()[idx]; }
-  iterator erase(iterator it) {
-    if (it >= begin() && it < end()) {
-      for (iterator j = it; j < end() - 1; ++j) {
-        *j = *(j + 1);
-      }
-      destroy(end() - 1);
-      --x0_count;
-      return it;
-    }
-    return end();
-  }
+  iterator erase(iterator it);
 
   void resize(int count, const T& item = T()) {
     if (x0_count == count) {
@@ -106,6 +96,19 @@ public:
 
   void PutTo(COutputStream& out) const;
 };
+
+template < typename T, int N >
+typename reserved_vector< T, N >::iterator reserved_vector< T, N >::erase(iterator it) {
+  if (it >= begin() && it < end()) {
+    for (iterator j = it; j < end() - 1; ++j) {
+      *j = *(j + 1);
+    }
+    destroy(end() - 1);
+    --x0_count;
+    return it;
+  }
+  return end();
+}
 
 } // namespace rstl
 
