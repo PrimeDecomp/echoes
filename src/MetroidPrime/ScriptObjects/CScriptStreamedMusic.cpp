@@ -186,13 +186,18 @@ void CScriptStreamedMusic::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
       Play(mgr);
     }
     break;
+  case kSM_Load:
+    if (GetActive() && x34_fileIsDsp) {
+      PreloadMemoryAudio();
+    }
+    break;
   case kSM_Stop:
     if (GetActive()) {
       Stop();
     }
     break;
   case kSM_Deactivate:
-    if (x34_fileIsDsp || !x34_noStopOnDeactivate) {
+    if ((!x34_fileIsDsp && !x34_noStopOnDeactivate) || x34_fileIsDsp) {
       Stop();
     }
     break;
@@ -211,10 +216,6 @@ void CScriptStreamedMusic::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
     }
     break;
   default:
-    if (message == static_cast< EScriptObjectMessage >(0x4c4f4144) && GetActive() &&
-        x34_fileIsDsp) {
-      PreloadMemoryAudio();
-    }
     break;
   }
 }
