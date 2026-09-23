@@ -208,6 +208,7 @@ public:
 
   CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
   explicit CPlayerState(int playerIndex, CBitStreamReader& stream);
+  ~CPlayerState();
 
   void FUN_80085c18(uint);
   void PutTo(CBitStreamWriter& stream);
@@ -321,5 +322,12 @@ private:
   UnknownPlayerStateStruct unkStruct;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CPlayerState::CPowerUp > {
+  enum { value = true };
+};
+} // namespace rstl
 
 #endif // _CPLAYERSTATE

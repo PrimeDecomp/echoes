@@ -55,7 +55,12 @@ public:
     x0_count = 0;
   }
 
-  ~reserved_vector() { clear(); }
+  ~reserved_vector() {
+    if (is_trivially_destructible< T >::value) {
+      return;
+    }
+    clear();
+  }
 
   void push_back(const T& in) {
     construct(data() + x0_count, in);
