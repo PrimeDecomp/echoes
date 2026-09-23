@@ -9,6 +9,9 @@ public:
   static int IndexOfSubstring(const rstl::string&, const rstl::string&);
   static int CompareCaseInsensitive(const rstl::string&, const rstl::string&);
   static char ConvertToUpperCase(char c);
+  static int ConvertToLowerCase(int c);
+  static rstl::string ConvertToLowerCase(const rstl::string& str);
+  static rstl::string CreatePrefix(const rstl::string& str, int count);
   static rstl::string CreateFromInteger(int v);
   static rstl::string ConvertToANSI(const rstl::wstring& str);
   static rstl::wstring ConvertToUNICODE(const rstl::string& str);

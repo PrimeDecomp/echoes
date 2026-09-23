@@ -121,7 +121,9 @@ vector< T, Alloc >::vector(const vector& other)
 
 template < typename T, typename Alloc >
 vector< T, Alloc >::~vector() {
-  destroy(begin(), end());
+  iterator first = begin();
+  iterator last = end();
+  destroy(first, last);
   x0_allocator.deallocate(xc_items);
 }
 
