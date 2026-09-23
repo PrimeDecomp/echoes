@@ -30,8 +30,8 @@ from tools.project import (
 DEFAULT_VERSION = 0
 VERSIONS = [
     "G2ME01",  # 0
-    "G2MJ01",  # 1
-    "G2MP01",  # 2
+    "G2MP01",  # 1
+    "G2MJ01",  # 2
     "R32J01",  # 3
     "R3ME01",  # 4
     "R3MP01",  # 5
