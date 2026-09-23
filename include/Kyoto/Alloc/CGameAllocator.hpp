@@ -85,7 +85,7 @@ public:
   void SetOutOfMemoryCallback(FOutOfMemoryCb cb, const void* target) override;
   int EnumAllocations(FEnumAllocationsCb func, const void* ptr, bool b) const override;
   SAllocInfo GetAllocInfo(const void* ptr) const override;
-  SMetrics GetMetrics() const override;
+  SMetrics GetMetrics(int unk1, bool unk2) const override;
   void OffsetFakeStatics(int offset) override;
 
   static uint GetFreeBinEntryForSize(uint);

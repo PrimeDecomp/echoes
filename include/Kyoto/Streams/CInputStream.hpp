@@ -70,6 +70,7 @@ public:
     return *result;
   }
   bool ReadBool() { return ReadUint8() != 0; }
+  uint GetReadPosition() const { return x8_ptr - x4_buffer; }
 
 private:
   uchar* x4_buffer;

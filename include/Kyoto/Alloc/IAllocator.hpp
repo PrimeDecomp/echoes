@@ -48,11 +48,12 @@ public:
     uint x4c_;
     uint x50_mediumTotalAllocated;
     uint x54_fakeStatics;
+    uint x58_; // Echoes addition; position target-unverified
     SMetrics(uint heapSize, uint unk1, uint unk2, uint unk3, uint unk4, uint heapSize2, uint unk5,
              uint unk6, uint unk7, uint unk8, uint unk9, uint smallAllocNumAllocs,
              uint smallAllocAllocatedSize, uint smallAllocRemainingSize, uint mediumAllocNumAllocs,
              uint mediumAllocAllocatedSize, uint mediumAllocBlocksAvailable, uint unk10, uint unk11,
-             uint unk12, uint mediumAllocTotalAllocated, uint fakeStatics);
+             uint unk12, uint mediumAllocTotalAllocated, uint fakeStatics, uint unk13);
     SMetrics(const SMetrics& other);
   };
 
@@ -92,7 +93,7 @@ public:
   virtual int EnumAllocations(FEnumAllocationsCb func, const void* ptr, bool b) const = 0;
   virtual SAllocInfo GetAllocInfo(const void* ptr) const = 0;
   virtual void OffsetFakeStatics(int offset) = 0;
-  virtual SMetrics GetMetrics() const = 0;
+  virtual SMetrics GetMetrics(int unk1, bool unk2) const = 0;
 };
 
 #endif // _IALLOCATOR
