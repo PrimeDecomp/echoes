@@ -17,6 +17,16 @@ inline uchar ToUint8(register float in) {
   return *ptr;
 }
 
+inline char ToInt8(register float in) {
+  char a;
+  register char* ptr = &a;
+
+  asm {
+            psq_st  in, 0(ptr), 1, OS_FASTCAST_S8
+  }
+  return *ptr;
+}
+
 inline uchar ToUint8(int c) { return static_cast<uchar>(c); }
 
 inline float ToReal32(register const uchar& in) {
@@ -52,6 +62,7 @@ inline float LtoF(int in) { return static_cast< float >(in); }
 
 #else
 inline uchar ToUint8(float in) { return static_cast< uchar >(in); }
+inline char ToInt8(float in) { return static_cast< char >(in); }
 inline uchar ToUint8(int c) { return static_cast<uchar>(c); }
 inline float ToReal32(uchar in) { return static_cast< float >(in); }
 inline short FtoS(float in) { return static_cast< short >(in); }

@@ -17,7 +17,7 @@ public:
   virtual void PreThink(float dt, CStateManager& mgr);
   virtual void Think(float dt, CStateManager& mgr);
   virtual void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&);
-  virtual void SendActive(CStateManager& mgr, bool active);
+  void SendActive(CStateManager& mgr, bool active);
   virtual void SetActive(const bool active);
 
   CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint inGrave);
@@ -34,6 +34,7 @@ public:
   TAreaId GetCurrentAreaId() const { return m_areaId; }
   const bool GetActive() const { return m_active; }
   bool IsScriptingBlocked() const { return m_scriptingBlocked; }
+  bool GetEditorFlag2() const { return m_entityUnknown; }
 
   // might be fake?
   rstl::vector< SConnection >& ConnectionList() { return m_conns; }
