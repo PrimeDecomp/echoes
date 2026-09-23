@@ -5,14 +5,24 @@
 #include "MetroidPrime/CMemoryCard.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 
 #include <math.h>
+#include <float.h>
 
 #include "rstl/math.hpp"
+#include "rstl/algorithm.hpp"
 
-extern "C" void fn_8013c9b0(rstl::vector< CPlayerState::UnknownV >& v, float f);
+struct ScanIdLess {
+  bool operator()(const CPlayerState::SPersistentState::SScanState& scan, CAssetId id) const {
+    return scan.assetId < id;
+  }
+  bool operator()(CAssetId id, const CPlayerState::SPersistentState::SScanState& scan) const {
+    return id < scan.assetId;
+  }
+};
 
 class CFirstPersonCamera;
 
@@ -52,7 +62,7 @@ static const bool kShouldPersist[] = {
 // };
 
 static const int kMissileCosts[] = {
-    5, 10, 10, 10, 1,
+    5, 5, 5, 5,
 };
 
 // static const char* kVisorNames[] = {
@@ -92,18 +102,13 @@ uint CPlayerState::GetBitCount(uint val) {
 CPlayerState::CPowerUp::CPowerUp(int amount, int capacity, float timeLeft)
 : x0_amount(amount), x4_capacity(capacity), x8_timeLeft(timeLeft) {}
 
-CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct()
+CPlayerState::SPersistentState::SPersistentState()
 : unk1(0), unk2(0), unk3(0), vec(), powerups(CPowerUp(0, 0, 0.0f)) {}
 
-CPlayerState::UnknownPlayerStateStruct::UnknownPlayerStateStruct(const UnknownPlayerStateStruct& other)
-: unk1(other.unk1)
-, unk2(other.unk2)
-, unk3(other.unk3)
-, vec(other.vec)
-, powerups(other.powerups)
-{}
+CPlayerState::SPersistentState::SPersistentState(const SPersistentState& other)
+: unk1(other.unk1), unk2(other.unk2), unk3(other.unk3), vec(other.vec), powerups(other.powerups) {}
 
-CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
+CPlayerState::CPlayerState(int playerIndex, SPersistentState* s)
 : playerIndex(playerIndex)
 , alive(true)
 , firingComboBeam(false)
@@ -120,10 +125,13 @@ CPlayerState::CPlayerState(int playerIndex, UnknownPlayerStateStruct* s)
 , powerups(CPowerUp(0, 0, 0.0f))
 , scanCompletionRateFirst(0)
 , scanCompletionRateSecond(0)
-, unkStruct(s ? *s : UnknownPlayerStateStruct())
-, vectorUnk(5) {
+, staticInterference(5)
+, unkStruct(s ? *s : SPersistentState()) {
+  if (!s) {
+    unkStruct.unk1 = this->playerIndex;
+  }
 
-  fn_80084928(unkStruct);
+  SetPersistentState(unkStruct);
   vectorWord.reserve(32);
 }
 
@@ -136,16 +144,21 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
 , healthInfo(kBaseHealthCapacity, kDefaultKnockbackResistance)
 , currentVisor(kPV_Combat)
 , transitioningVisor(currentVisor)
-// TODO: vectorWord
+, vectorWord()
 , chargeBeamFactor(0.0f)
 , chargeAnimStart(0.25f / GetMissileComboChargeFactor())
 , visorTransitionFactor(kMaxVisorTransitionFactor)
-, currentSuit(kPS_Varia) {
+, currentSuit(kPS_Varia)
+, powerups()
+, scanCompletionRateFirst(0)
+, scanCompletionRateSecond(0)
+, staticInterference(5) {
 
   stream.ReadBits(32);
   enabledItems = stream.ReadBits(32);
 
-  healthInfo = CHealthInfo((float)stream.ReadBits(32), kDefaultKnockbackResistance);
+  const uint hpBits = stream.ReadBits(32);
+  healthInfo = CHealthInfo(*reinterpret_cast<const float*>(&hpBits), kDefaultKnockbackResistance);
   currentBeam = EBeamId(stream.ReadBits(GetBitCount(4)));
   currentSuit = EPlayerSuit(stream.ReadBits(GetBitCount(3)));
   unkStruct.unk1 = stream.ReadBits(GetBitCount(4));
@@ -154,28 +167,34 @@ CPlayerState::CPlayerState(int playerIndex, CBitStreamReader& stream)
 
   stream.ReadBits(32);
 
-  CPowerUp* powup = powerups.data();
   for (int i = 0; i < powerups.capacity(); ++i) {
     int amount = 0;
     int capacity = 0;
+    const uint maxValue = kPowerUpMax[i];
     if (kShouldPersist[i]) {
-      int bitCount = GetBitCount(kPowerUpMax[i]);
+      int bitCount = GetBitCount(maxValue);
       amount = stream.ReadBits(bitCount);
       capacity = stream.ReadBits(bitCount);
     }
-    powup[i] = CPowerUp(amount, capacity, 0.0f);
+    powerups.push_back(CPowerUp(amount, capacity, 0.0f));
   }
 
   stream.ReadBits(32);
 
-  //   // Scan
-  //   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
-  //   x170_scanTimes.reserve(scanStates.size());
-  //   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
-  //        it != scanStates.end(); ++it) {
-  //     float time = stream.ReadPackedBool() ? 1.f : 0.f;
-  //     x170_scanTimes.push_back(rstl::pair< CAssetId, float >(it->first, time));
-  //   }
+  const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
+  unkStruct.vec.reserve(scanStates.size() + 4);
+  for (int i = 0; i < 4; ++i) {
+    stream.ReadBits(1);
+    stream.ReadBits(1);
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(i));
+  }
+  for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
+       it != scanStates.end(); ++it) {
+    bool complete = stream.ReadBits(1) != 0;
+    bool flag = stream.ReadBits(1) != 0;
+    unkStruct.vec.push_back_unsafe(
+        SPersistentState::SScanState(it->first, complete ? 255 : 0, flag));
+  }
 
   scanCompletionRateFirst = int(stream.ReadBits(GetBitCount(0x100u)));
   scanCompletionRateSecond = int(stream.ReadBits(GetBitCount(0x100u)));
@@ -210,22 +229,13 @@ void CPlayerState::PutTo(CBitStreamWriter& stream) {
 
   stream.WriteBits(0x504f5752, 0x20);
 
-  for (rstl::vector< UnknownV >::iterator it = vectorUnk.begin(); it != vectorUnk.end(); ++it) {
-    // TODO
-    stream.WriteBits(it->unk2, 1);
-    stream.WriteBits(2, 1);
+  for (rstl::vector< SPersistentState::SScanState >::iterator it = unkStruct.vec.begin();
+       it != unkStruct.vec.end(); ++it) {
+    int complete = it->progress == 255 ? 1 : 0;
+    uchar flag = it->flag;
+    stream.WriteBits(complete, 1);
+    stream.WriteBits(flag != 0 ? 1 : 0, 1);
   }
-
-  //   for (rstl::vector< rstl::pair< CAssetId, float > >::iterator it = x170_scanTimes.begin();
-  //        it != x170_scanTimes.end(); ++it) {
-  //     int flag;
-  //     if (it->second >= 1.f) {
-  //       flag = 1;
-  //     } else {
-  //       flag = 0;
-  //     }
-  //     stream.WriteBits(flag, 1);
-  //   }
 
   stream.WriteBits(scanCompletionRateFirst, GetBitCount(0x100));
   stream.WriteBits(scanCompletionRateSecond, GetBitCount(0x100));
@@ -241,20 +251,22 @@ void CPlayerState::AddPowerUp(CPlayerState::EItemType type, int delta) {
   if (type < 0 || kIT_Max - 1 < type) {
     return;
   }
-  int newCapacity = delta + powerups[type].x4_capacity;
+  int maxCapacity = kPowerUpMax[type];
+  CPowerUp& powerup = powerups[type];
+  int newCapacity = delta + powerup.x4_capacity;
   if (newCapacity < 0) {
     newCapacity = 0;
-  } else if (kPowerUpMax[type] < newCapacity) {
-    newCapacity = kPowerUpMax[type];
+  } else if (maxCapacity < newCapacity) {
+    newCapacity = maxCapacity;
   }
-  powerups[type].x4_capacity = newCapacity;
+  powerup.x4_capacity = newCapacity;
 
-  int amount = powerups[type].x0_amount;
-  int capacity = powerups[type].x4_capacity;
+  int amount = powerup.x0_amount;
+  int capacity = powerup.x4_capacity;
   if (capacity < amount) {
     amount = capacity;
   }
-  powerups[type].x0_amount = amount;
+  powerup.x0_amount = amount;
   if (kIT_VariaSuit <= type && type <= kIT_LightSuit) {
     if (HasPowerUp(kIT_LightSuit)) {
       currentSuit = kPS_Light;
@@ -293,11 +305,7 @@ void CPlayerState::IncrPickUp(EItemType type, int amount) {
   if (type == kIT_HealthRefill) {
     IncrementHealth((float)amount);
   } else {
-    int capacity = powerups[type].x4_capacity;
-    powerups[type].x0_amount += amount;
-    if (powerups[type].x0_amount > capacity) {
-      powerups[type].x0_amount = capacity;
-    }
+    powerups[type].Add(amount);
   }
   if (type == kIT_EnergyTanks) {
     IncrPickUp(kIT_HealthRefill, 9999);
@@ -323,57 +331,57 @@ void CPlayerState::DecrPickUp(CPlayerState::EItemType type, int amount) {
 
 CPlayerState::EPowerUpFieldToQuery CPlayerState::GetPowerUpFieldToQuery(EItemType itemType) const {
   switch (itemType) {
-  case kIT_MorphBall:
-    if (powerups[0x56].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    if (powerups[0x5c].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    if (powerups[0x5b].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
-  case kIT_BoostBall:
-    if (powerups[0x56].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
-  case kIT_SpiderBall:
-    if (powerups[0x56].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
-  case kIT_MorphBallBombs:
-    if (powerups[0x56].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
-  case kIT_SpaceJumpBoots:
-    if (powerups[0x5d].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
-  case kIT_Powerbomb:
-    if (powerups[0x5d].x0_amount != 0) {
-      return kFQ_Minimum;
-    }
-    break;
   case kIT_Missile:
-    if (powerups[0x5a].x0_amount != 0) {
+    if (powerups[kIT_MissileWeaponsDisabled].x0_amount != 0) {
       return kFQ_Minimum;
     }
-    if (powerups[0x51].x0_amount != 0) {
+    if (powerups[kIT_UnlimitedMissiles].x0_amount != 0) {
       return kFQ_Maximum;
     }
     break;
   case kIT_DarkAmmo:
   case kIT_LightAmmo:
-    if (powerups[0x59].x0_amount != 0) {
+    if (powerups[kIT_BeamWeaponsDisabled].x0_amount != 0) {
       return kFQ_Minimum;
     }
-    if (powerups[0x52].x0_amount != 0) {
+    if (powerups[kIT_UnlimitedBeamAmmo].x0_amount != 0) {
       return kFQ_Maximum;
+    }
+    break;
+  case kIT_MorphBall:
+    if (powerups[kIT_DeathBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[kIT_DisableBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    if (powerups[kIT_Unknown_91].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_BoostBall:
+    if (powerups[kIT_DeathBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_SpiderBall:
+    if (powerups[kIT_DeathBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_MorphBallBombs:
+    if (powerups[kIT_DeathBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_Powerbomb:
+    if (powerups[kIT_DeathBall].x0_amount != 0) {
+      return kFQ_Minimum;
+    }
+    break;
+  case kIT_SpaceJumpBoots:
+    if (powerups[kIT_DisableSpaceJump].x0_amount != 0) {
+      return kFQ_Minimum;
     }
     break;
   }
@@ -401,11 +409,10 @@ void CPlayerState::SetItemAmount(CPlayerState::EItemType type, int amount) {
     return;
   }
   powerups[type].x0_amount = amount;
-  int newAmount = powerups[type].x0_amount;
-  if (newAmount <= powerups[type].x4_capacity) {
-    return;
+  CPowerUp& powerup = powerups[type];
+  if (powerup.x4_capacity < powerup.x0_amount) {
+    powerup.x4_capacity = powerup.x0_amount;
   }
-  powerups[type].x4_capacity = newAmount;
 }
 
 int CPlayerState::GetItemCapacity(CPlayerState::EItemType type) const {
@@ -423,13 +430,6 @@ bool CPlayerState::HasPowerUp(CPlayerState::EItemType type) const {
 }
 
 int CPlayerState::GetItemCapacity2(CPlayerState::EItemType type) const {
-  if (type < 0 || kIT_Max - 1 < type) {
-    return 0;
-  }
-  return powerups[uint(type)].x4_capacity;
-}
-
-uint CPlayerState::GetPowerUp(CPlayerState::EItemType type) {
   if (type < 0 || kIT_Max - 1 < type) {
     return 0;
   }
@@ -467,28 +467,23 @@ void CPlayerState::StartTransitionToVisor(CPlayerState::EPlayerVisor visor) {
     return;
 }
 
-void CPlayerState::UpdateVisorTransition(float dt) {
-  if (!GetIsVisorTransitioning())
-    return;
-
-  if (currentVisor == transitioningVisor) {
-    float newVal = visorTransitionFactor + dt;
-    if (0.2f < newVal) {
-      newVal = 0.2f;
-    }
-    visorTransitionFactor = newVal;
-  } else {
-    visorTransitionFactor -= dt;
-    if (visorTransitionFactor < 0.f) {
-      currentVisor = transitioningVisor;
-      visorTransitionFactor = fabs(visorTransitionFactor);
-      float newVal = visorTransitionFactor;
-      if (0.19999f < newVal) {
-        newVal = 0.19999f;
+uchar CPlayerState::UpdateVisorTransition(float dt) {
+  bool changed = false;
+  if (GetIsVisorTransitioning()) {
+    if (currentVisor == transitioningVisor) {
+      visorTransitionFactor = rstl::min_val(kMaxVisorTransitionFactor, visorTransitionFactor + dt);
+    } else {
+      visorTransitionFactor -= dt;
+      if (visorTransitionFactor < 0.f) {
+        currentVisor = transitioningVisor;
+        visorTransitionFactor = fabs(visorTransitionFactor);
+        visorTransitionFactor =
+            rstl::min_val(visorTransitionFactor, kMaxVisorTransitionFactor - FLT_EPSILON);
+        changed = true;
       }
-      visorTransitionFactor = newVal;
     }
   }
+  return changed;
 }
 
 float CPlayerState::GetVisorTransitionFactor() const {
@@ -503,43 +498,48 @@ float CPlayerState::GetBaseHealthCapacity() { return kBaseHealthCapacity; }
 
 float CPlayerState::GetEnergyTankCapacity() { return kEnergyTankCapacity; }
 
-rstl::vector< CPlayerState::UnknownPlayerStateStruct::Nested >& CPlayerState::fn_800851DC() {
+rstl::vector< CPlayerState::SPersistentState::SScanState >& CPlayerState::ScanStates() {
   return unkStruct.vec;
 }
 
 void CPlayerState::InitializeScanTimes() {
   if (unkStruct.vec.size())
-      return;
+    return;
 
-  unkStruct.vec.reserve(gpMemoryCard->GetScanStates().size());
-  for (int i = 0; i < 4; ++i) {
-    unkStruct.vec.insert(unkStruct.vec.end(), UnknownPlayerStateStruct::Nested(i));
+  const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
+  unkStruct.vec.reserve(scanStates.size() + 4);
+  uint i = 0;
+  do {
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(i));
+    ++i;
+  } while (i < 4);
+  for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
+       it != scanStates.end(); ++it) {
+    unkStruct.vec.push_back_unsafe(SPersistentState::SScanState(it->first));
   }
-  //   const rstl::vector< CMemoryCard::ScanState >& scanStates = gpMemoryCard->GetScanStates();
-  //   x170_scanTimes.reserve(scanStates.size());
-  //   for (rstl::vector< CMemoryCard::ScanState >::const_iterator it = scanStates.begin();
-  //        it != scanStates.end(); ++it) {
-  //     x170_scanTimes.push_back(rstl::pair< CAssetId, float >(it->first, 0.f));
-  //   }
 }
 
-float CPlayerState::GetScanTime(CAssetId res) const {
-  //   rstl::vector< rstl::pair< CAssetId, float > >::const_iterator it =
-  //   rstl::find_by_key(x170_scanTimes, res); return it->second;
+float CPlayerState::GetScanTime(CAssetId res) {
+  rstl::vector< SPersistentState::SScanState >::iterator it =
+      rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
+  return CCast::ToReal32(it->progress) / 255.f;
 }
 
 void CPlayerState::SetScanTime(CAssetId res, float time) {
-  //   rstl::vector< rstl::pair< CAssetId, float > >::iterator it =
-  //   rstl::find_by_key_nc(x170_scanTimes, res); it->second = time;
+  rstl::vector< SPersistentState::SScanState >::iterator it =
+      rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
+  it->progress = CCast::ToUint8(255.f * time);
 }
 
-void CPlayerState::fn_80084EAC(uint, bool) {}
+void CPlayerState::SetScanFlag(uint res, bool flag) {
+  rstl::vector< SPersistentState::SScanState >::iterator it =
+      rstl::binary_find(unkStruct.vec.begin(), unkStruct.vec.end(), res, ScanIdLess());
+  it->flag = flag;
+}
 
-void CPlayerState::fn_80084E84(const CStateManager& mgr, float* f) { fn_8013c9b0(vectorUnk, *f); }
-
-// void CPlayerState::UpdateStaticInterference(CStateManager& stateMgr, const float& dt) {
-//   x188_staticIntf.Update(stateMgr, dt);
-// }
+void CPlayerState::UpdateStaticInterference(const CStateManager& mgr, const float& dt) {
+  staticInterference.Update(mgr, dt);
+}
 
 CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& stateMgr) const {
   const CGameCamera* camera = stateMgr.GetCameraManager(playerIndex)->GetCurrentCamera(stateMgr, 1);
@@ -547,19 +547,23 @@ CPlayerState::EPlayerVisor CPlayerState::GetActiveVisor(const CStateManager& sta
   return (firstCamera ? currentVisor : kPV_Combat);
 }
 
-bool CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
+uchar CPlayerState::HasVisor(CPlayerState::EPlayerVisor visor) const {
+  bool hasVisor = false;
   switch (visor) {
   case kPV_Combat:
-    return HasPowerUp(kIT_CombatVisor);
+    hasVisor = HasPowerUp(kIT_CombatVisor);
+    break;
   case kPV_Echo:
-    return HasPowerUp(kIT_EchoVisor);
+    hasVisor = HasPowerUp(kIT_EchoVisor);
+    break;
   case kPV_Scan:
-    return HasPowerUp(kIT_ScanVisor);
+    hasVisor = HasPowerUp(kIT_ScanVisor);
+    break;
   case kPV_Dark:
-    return HasPowerUp(kIT_DarkVisor);
-  default:
-    return false;
+    hasVisor = HasPowerUp(kIT_DarkVisor);
+    break;
   }
+  return hasVisor;
 }
 
 bool CPlayerState::CanVisorSeeFog(const CStateManager& stateMgr) const {
@@ -579,10 +583,11 @@ int CPlayerState::GetRenderSuit(const CStateManager& mgr, const CPlayerState& st
     if (state.HasPowerUp(kIT_GravityBoost)) {
       result = 5;
     }
-
+    break;
   case kPS_Light:
-    // TODO: check x294c in mgr
-    result = 4;
+    if (!mgr.GetIsDarkWorld()) {
+      result = 4;
+    }
     break;
   }
   return result;
@@ -620,21 +625,24 @@ int CPlayerState::GetMissileCostForAltAttack() const { return kMissileCosts[int(
 
 float CPlayerState::GetMissileComboChargeFactor() { return 1.8f; }
 
-void CPlayerState::fn_80084B6C() {}
-
-void CPlayerState::UnknownPlayerStateStruct::operator=(
-    const CPlayerState::UnknownPlayerStateStruct& o) {
-
-  // probably should just be default
-
-  unk1 = o.unk1;
-  unk2 = o.unk2;
-  unk3 = o.unk3;
-  vec = o.vec;
-  powerups = o.powerups;
+CPlayerState::SPersistentState& CPlayerState::GetPersistentState() {
+  for (int i = 0; i < 11; ++i) {
+    unkStruct.powerups[i] = powerups[kItems_803a74bc[i]];
+  }
+  return unkStruct;
 }
 
-void CPlayerState::fn_80084928(const CPlayerState::UnknownPlayerStateStruct& s) {
+CPlayerState::SPersistentState& CPlayerState::SPersistentState::operator=(
+    const SPersistentState& other) {
+  unk1 = other.unk1;
+  unk2 = other.unk2;
+  unk3 = other.unk3;
+  vec = other.vec;
+  powerups = other.powerups;
+  return *this;
+}
+
+void CPlayerState::SetPersistentState(const CPlayerState::SPersistentState& s) {
   unkStruct = s;
   for (int i = 0; i < 11; ++i) {
     CPowerUp& otherPowerup = unkStruct.powerups[i];
@@ -646,8 +654,7 @@ void CPlayerState::fn_80084928(const CPlayerState::UnknownPlayerStateStruct& s) 
 }
 
 void CPlayerState::IncrementChargeBeamFactor(float delta) {
-  // TODO: clamp to [0, 1]
-  chargeBeamFactor = chargeBeamFactor + delta;
+  chargeBeamFactor = rstl::min_val(rstl::max_val(chargeBeamFactor + delta, 0.f), 1.f);
 }
 
 void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr,
@@ -655,6 +662,29 @@ void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr,
   int oldAmount = GetItemAmount(type);
   DecrPickUp(type, quantity);
   if (oldAmount > 0 && GetItemAmount(type) == 0) {
-    // mgr.DisplayAlertAboutOutOfAmmo(mgr.GetPlayerState(playerIndex), type);
+    mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(playerIndex), type);
+  }
+}
+
+const rstl::vector< TUniqueId >& CPlayerState::GetIds() const { return vectorWord; }
+
+bool CPlayerState::HasId(TUniqueId id) const {
+  rstl::vector< TUniqueId >::const_iterator it =
+      rstl::binary_find(vectorWord.begin(), vectorWord.end(), id);
+  return it != vectorWord.end();
+}
+
+void CPlayerState::AddId(TUniqueId id) {
+  if (vectorWord.size() == vectorWord.capacity()) {
+    return;
+  }
+  rstl::vector< TUniqueId >::iterator it = rstl::lower_bound(vectorWord.begin(), vectorWord.end(), id);
+  vectorWord.insert(it, id);
+}
+
+void CPlayerState::RemoveId(TUniqueId id) {
+  rstl::vector< TUniqueId >::iterator it = rstl::binary_find(vectorWord.begin(), vectorWord.end(), id);
+  if (it != vectorWord.end()) {
+    vectorWord.erase(it);
   }
 }

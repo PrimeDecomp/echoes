@@ -3,6 +3,7 @@
 
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "TGameTypes.hpp"
 
@@ -79,6 +80,8 @@ public:
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void ShowPausedHUDMemo(CAssetId strg, float time);
   void SetIsDarkWorld(bool);
+  bool GetIsDarkWorld() const { return m_isDarkWorld; }
+  void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
   void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
@@ -115,6 +118,7 @@ public:
 
   int GetNumPlayers() const { return m_numPlayers; }
   CPlayer* GetPlayer(int index) { return m_players[index]; }
+  const CPlayer* GetPlayer(int index) const { return m_players[index]; }
   CPlayer* Player(int index) { return m_players[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
@@ -210,7 +214,7 @@ public:
 
   char pad5[4]; // 0x246c
   CFrustumPlanes m_planes; // 0x2478
-  char pad6[0x460]; // 0x24D0
+  char pad6[0x45C]; // 0x24D0
 
   CVector3f x2938;
   float x2944;

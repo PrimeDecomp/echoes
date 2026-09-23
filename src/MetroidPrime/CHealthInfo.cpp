@@ -1,32 +1,29 @@
 #include "MetroidPrime/CHealthInfo.hpp"
 
-#include "MetroidPrime/CDamageInfo.hpp"
-
 CHealthInfo::CHealthInfo(float hp, float resist)
 : healthA(hp)
 , healthB(hp)
 , knockbackResistance(resist)
-, unkA(0)
-, unkB(0)
+, weaponModeA(CWeaponMode(kWT_None))
 , uidA(kInvalidUniqueId)
 , uidB(kInvalidUniqueId)
-, unkC(0)
+, weaponModeB(CWeaponMode(kWT_None))
 , uidC(kInvalidUniqueId)
 , uidD(kInvalidUniqueId)
 , flagA(false)
 , flagB(false) {}
 
-void CHealthInfo::fn_80142094(const CDamageInfo& dmgInfo, TUniqueId id1, TUniqueId id2, bool a, bool b) {
-  unkA = dmgInfo.GetWeaponMode1();
-  unkB = dmgInfo.GetWeaponMode2();
+void CHealthInfo::SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId id1, TUniqueId id2, bool a,
+                                       bool b) {
+  weaponModeA = mode;
   uidA = id1;
   uidB = id2;
   flagA = a;
   flagB = b;
 }
 
-void CHealthInfo::fn_8014206C(uint* a, TUniqueId id1, TUniqueId id2, bool flag) {
-  unkC = *a;
+void CHealthInfo::fn_8014206C(const CWeaponMode& mode, TUniqueId id1, TUniqueId id2, bool flag) {
+  weaponModeB = mode;
   uidC = id1;
   uidD = id2;
   flagB = flag;

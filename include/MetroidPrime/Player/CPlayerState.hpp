@@ -9,6 +9,7 @@
 #include "Kyoto/SObjectTag.hpp"
 
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/Player/CStaticInterference.hpp"
 
 class CStateManager;
 class CBitStreamReader;
@@ -183,37 +184,33 @@ public:
     }
   };
 
-  struct UnknownV {
-    uint unk1;
-    bool unk2;
-    bool unk3;
-    // short unk1;
-    // float unk2;
-    // float unk3;
-  };
+  // Guessed name
+  struct SPersistentState {
+    SPersistentState();
+    SPersistentState(const SPersistentState&);
+    ~SPersistentState();
+    SPersistentState& operator=(const SPersistentState&);
 
-  struct UnknownPlayerStateStruct {
-    UnknownPlayerStateStruct();
-    UnknownPlayerStateStruct(const UnknownPlayerStateStruct&);
-    void operator=(const UnknownPlayerStateStruct&);
+    // Guessed name
+    struct SScanState {
+      SScanState(CAssetId id, uchar progress = 0, bool flag = false)
+      : assetId(id), progress(progress), flag(flag) {}
 
-    struct Nested {
-      Nested(uint a) : unk1(a), b1(0), b2(false) {}
-
-      uint unk1;
-      bool b1;
-      bool b2;
+      CAssetId assetId;
+      uchar progress;
+      uchar flag;
     };
 
     uint unk1;
     uint unk2;
     uint unk3;
-    rstl::vector< Nested > vec;
+    rstl::vector< SScanState > vec;
     rstl::reserved_vector< CPowerUp, 11 > powerups;
   };
 
-  CPlayerState(int playerIndex, UnknownPlayerStateStruct*);
+  CPlayerState(int playerIndex, SPersistentState*);
   explicit CPlayerState(int playerIndex, CBitStreamReader& stream);
+  ~CPlayerState();
 
   void FUN_80085c18(uint);
   void PutTo(CBitStreamWriter& stream);
@@ -233,23 +230,28 @@ public:
   EPlayerVisor GetCurrentVisor() const { return currentVisor; }
   EPlayerVisor GetTransitioningVisor() const { return transitioningVisor; }
   EPlayerVisor GetActiveVisor(const CStateManager& mgr) const;
-  bool HasVisor(EPlayerVisor) const;
+  uchar HasVisor(EPlayerVisor) const;
   int ShouldDrawGravityBoost(const CStateManager& mgr) const;
   static int GetRenderSuit(const CStateManager&, const CPlayerState&, EPlayerSuit suit);
   bool ShouldDrawGrapple() const;
 
   void IncrementHealth(float);
 
+  const rstl::vector< TUniqueId >& GetIds() const;
+  bool HasId(TUniqueId id) const;
+  void AddId(TUniqueId id);
+  void RemoveId(TUniqueId id);
+
   // void UpdateStaticInterference(CStateManager& stateMgr, const float& dt);
   void IncreaseScanTime(uint time, float val);
   void SetScanTime(CAssetId res, float time);
-  float GetScanTime(CAssetId time) const;
-  void fn_80084EAC(uint, bool);
-  void fn_80084E84(const CStateManager& mgr, float*);
+  float GetScanTime(CAssetId time);
+  void SetScanFlag(uint, bool);
+  void UpdateStaticInterference(const CStateManager& mgr, const float& dt);
 
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;
-  void UpdateVisorTransition(float dt);
+  uchar UpdateVisorTransition(float dt);
   void StartTransitionToVisor(EPlayerVisor visor);
   void ResetVisor();
   bool IsPlayerAlive() const { return alive; }
@@ -258,7 +260,6 @@ public:
   void DisableItem(EItemType type);
   void EnableItem(EItemType type);
   bool HasPowerUp(EItemType type) const;
-  uint GetPowerUp(EItemType type);
   int GetItemCapacity2(EItemType type) const;
 
   void AddPowerUp(EItemType type, int delta);
@@ -274,7 +275,7 @@ public:
   void ResetAndIncrPickUp(EItemType type, int amount);
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
-  rstl::vector< UnknownPlayerStateStruct::Nested >& fn_800851DC();
+  rstl::vector< SPersistentState::SScanState >& ScanStates();
 
   float CalculateHealth();
 
@@ -294,8 +295,8 @@ public:
 
   const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
-  void fn_80084B6C();
-  void fn_80084928(const UnknownPlayerStateStruct&);
+  SPersistentState& GetPersistentState();
+  void SetPersistentState(const SPersistentState&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
   float GetChargeAnimStart() const { return chargeAnimStart; }
   void IncrementChargeBeamFactor(float);
@@ -318,9 +319,22 @@ private:
   rstl::reserved_vector< CPowerUp, 109 > powerups;
   int scanCompletionRateFirst;
   int scanCompletionRateSecond;
-  rstl::vector< UnknownV > vectorUnk;
-  UnknownPlayerStateStruct unkStruct;
+  CStaticInterference staticInterference;
+  SPersistentState unkStruct;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CPlayerState::CPowerUp > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< CPlayerState::CPowerUp >(void* dest, const CPlayerState::CPowerUp& src) {
+  *static_cast< CPlayerState::CPowerUp* >(dest) = src;
+}
+
+} // namespace rstl
 
 #endif // _CPLAYERSTATE

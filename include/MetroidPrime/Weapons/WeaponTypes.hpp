@@ -1,7 +1,7 @@
 #ifndef _WEAPONTYPES
 #define _WEAPONTYPES
 
-// TODO: Echoes stuff
+#include "types.h"
 
 enum EWeaponType {
   kWT_None = -1,
@@ -30,26 +30,28 @@ enum EWeaponType {
 };
 
 class CWeaponMode {
-  EWeaponType x0_weaponType;
-  bool x4_24_charged : 1;
-  bool x4_25_comboed : 1;
-  bool x4_26_instantKill : 1;
+  uint x0_weaponType : 16;
+  uint x2_15_charged : 1;
+  uint x2_14_comboed : 1;
+  uint x2_13_instantKill : 1;
 
 public:
   explicit CWeaponMode(EWeaponType type = kWT_None, const bool charged = false,
                        const bool comboed = false, const bool instaKill = false)
-  : x0_weaponType(type)
-  , x4_24_charged(charged)
-  , x4_25_comboed(comboed)
-  , x4_26_instantKill(instaKill) {}
+  : x0_weaponType(uint(type))
+  , x2_15_charged(charged)
+  , x2_14_comboed(comboed)
+  , x2_13_instantKill(instaKill) {}
 
-  CWeaponMode(int type, int flags) : x0_weaponType(EWeaponType(type)) {}
+  CWeaponMode(int type, int flags) : x0_weaponType(uint(type)) {}
 
-  EWeaponType GetType() const { return x0_weaponType; }
+  EWeaponType GetType() const { return EWeaponType(short(x0_weaponType)); }
+  ushort GetRawType() const { return ushort(x0_weaponType); }
 
-  bool IsCharged() const { return x4_24_charged; }
-  bool IsComboed() const { return x4_25_comboed; }
-  bool IsInstantKill() const { return x4_26_instantKill; }
+  bool IsCharged() const { return x2_15_charged; }
+  bool IsComboed() const { return x2_14_comboed; }
+  bool IsInstantKill() const { return x2_13_instantKill; }
 };
+CHECK_SIZEOF(CWeaponMode, 0x4)
 
 #endif // _WEAPONTYPES

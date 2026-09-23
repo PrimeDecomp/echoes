@@ -20,7 +20,8 @@ MetroidPrime/CEulerAngles.cpp:
 	.bss        start:0x8040AD4C end:0x8040AD58 align:4 common
 
 MetroidPrime/main.cpp:
-	.text       start:0x800053B8 end:0x80008B60
+	.text       start:0x800053B8 end:0x80009880
+	.ctors      start:0x803A54A4 end:0x803A54A8
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
 MetroidPrime/Player/CPlayer.cpp:
@@ -41,8 +42,10 @@ MetroidPrime/CActor.cpp:
 	.data       start:0x803B1BC0 end:0x803B1C40
 
 MetroidPrime/Player/CPlayerState.cpp:
-	.text       start:0x80084864 end:0x80086444
+	.text       start:0x80083FE0 end:0x800866C8
 	.rodata     start:0x803A7288 end:0x803A74E8
+	.data       start:0x803B2878 end:0x803B28F8
+	.sbss       start:0x80419040 end:0x8041904C
 	.sdata2     start:0x8041ABD0 end:0x8041AC00
 
 MetroidPrime/TypesMatch.cpp:
