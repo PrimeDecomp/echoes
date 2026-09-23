@@ -28,9 +28,7 @@ struct rmemory_allocator {
   }
   template < typename T >
   static void deallocate(T* ptr) {
-    if (ptr != nullptr) {
-      delete[] reinterpret_cast< uchar* >(ptr);
-    }
+    delete[] reinterpret_cast< uchar* >(ptr);
   }
 };
 } // namespace rstl
