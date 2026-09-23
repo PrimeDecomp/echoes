@@ -258,7 +258,6 @@ public:
   void DisableItem(EItemType type);
   void EnableItem(EItemType type);
   bool HasPowerUp(EItemType type) const;
-  uint GetPowerUp(EItemType type);
   int GetItemCapacity2(EItemType type) const;
 
   void AddPowerUp(EItemType type, int delta);

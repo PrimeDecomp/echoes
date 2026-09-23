@@ -436,13 +436,6 @@ int CPlayerState::GetItemCapacity2(CPlayerState::EItemType type) const {
   return powerups[uint(type)].x4_capacity;
 }
 
-uint CPlayerState::GetPowerUp(CPlayerState::EItemType type) {
-  if (type < 0 || kIT_Max - 1 < type) {
-    return 0;
-  }
-  return powerups[uint(type)].x4_capacity;
-}
-
 void CPlayerState::EnableItem(CPlayerState::EItemType type) {
   if (HasPowerUp(type))
     enabledItems |= (1 << uint(type));
