@@ -251,8 +251,8 @@ void CPlayerState::AddPowerUp(CPlayerState::EItemType type, int delta) {
   if (type < 0 || kIT_Max - 1 < type) {
     return;
   }
-  CPowerUp& powerup = powerups[type];
   int maxCapacity = kPowerUpMax[type];
+  CPowerUp& powerup = powerups[type];
   int newCapacity = delta + powerup.x4_capacity;
   if (newCapacity < 0) {
     newCapacity = 0;
