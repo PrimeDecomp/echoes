@@ -2,10 +2,16 @@
 #define _RSTL_CONSTRUCT
 
 #include "types.h"
+#include "rstl/iterator.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 
 namespace rstl {
+template < typename T >
+struct is_trivially_destructible {
+  enum { value = false };
+};
+
 template < typename T >
 static inline void construct(void* dest, const T& src) {
   new (dest) T(src);
@@ -18,6 +24,9 @@ static inline void destroy(T* in) {
 
 template < typename It >
 static inline void destroy(It begin, It end) {
+  if (is_trivially_destructible< typename iterator_traits< It >::value_type >::value) {
+    return;
+  }
   It cur = begin;
   for (; cur != end; ++cur) {
     destroy(&*cur);
