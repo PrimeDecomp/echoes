@@ -15,6 +15,7 @@ enum EEntityType {
   kET_Weapon = 6,
   kET_Effect = 7,
   kET_GameProjectile = 8,
+  kET_ScriptSequenceTimer = 12,
   kET_Bomb = 14,
   kET_EnergyProjectile = 19,
   kET_Explosion = 22,

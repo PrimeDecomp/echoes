@@ -29,7 +29,6 @@ private:
 public:
   CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float,
                         uint hasSkyBox, bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float, const CColor&);
-  CEntity* TypesMatch(int typeId) const override;
   ~CScriptAreaProperties() override;
 
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;

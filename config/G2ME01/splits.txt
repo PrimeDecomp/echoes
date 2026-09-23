@@ -45,6 +45,9 @@ MetroidPrime/Player/CPlayerState.cpp:
 	.rodata     start:0x803A7288 end:0x803A74E8
 	.sdata2     start:0x8041ABD0 end:0x8041AC00
 
+MetroidPrime/TypesMatch.cpp:
+	.text       start:0x800972BC end:0x8009D644
+
 MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14
 	.ctors      start:0x803A54E4 end:0x803A54E8
