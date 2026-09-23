@@ -2,6 +2,8 @@
 #include "rstl/math.hpp"
 
 #include "Kyoto/Basics/CCast.hpp"
+#include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 #include <string.h>
@@ -181,4 +183,8 @@ rstl::vector< rstl::string > CStringExtras::TokenizeString(const rstl::string& s
   }
 
   return ret;
+}
+
+CFactoryFnReturn FSTLCFactory(const SObjectTag&, CInputStream& in, const CVParamTransfer&) {
+  return rs_new rstl::vector< rstl::string >(in);
 }
