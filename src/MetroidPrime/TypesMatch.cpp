@@ -57,3 +57,15 @@ CAST_TO_PTR_IMPL(CScriptActor, kET_ScriptActor)
 CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
 
 #undef CAST_TO_PTR_IMPL
+
+#define CAST_TO_REF_IMPL(cls, id)                              \
+  template <>                                                  \
+  cls* TCastToPtr< cls >(CEntity& entity) {                    \
+    return static_cast< cls* >(entity.TypesMatch(id));        \
+  }
+
+CAST_TO_REF_IMPL(CPlayer, kET_Player)
+CAST_TO_REF_IMPL(CScriptActor, kET_ScriptActor)
+CAST_TO_REF_IMPL(CScriptEffect, kET_ScriptEffect)
+
+#undef CAST_TO_REF_IMPL
