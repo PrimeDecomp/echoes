@@ -123,6 +123,37 @@ void CScriptStreamedMusic::TweakOverride(CStateManager& mgr) {
   }
 }
 
+template <>
+template <>
+int rstl::basic_string< char >::internal_search< rstl::string::const_iterator, const char* >(
+    rstl::string::const_iterator first, rstl::string::const_iterator last,
+    const char* searchFirst, const char* searchLast) {
+  if (searchFirst == searchLast) {
+    return 0;
+  }
+  int index = 0;
+  for (const_iterator it = first; it != last; ++it, ++index) {
+    if (char_traits< char >::eq(*it, *searchFirst)) {
+      const_iterator next = it;
+      ++next;
+      const char* search = searchFirst + 1;
+      const char* nextData = &*next;
+      while (search != searchLast && next != last) {
+        if (!char_traits< char >::eq(*nextData, *search)) {
+          break;
+        }
+        ++next;
+        ++nextData;
+        ++search;
+      }
+      if (search == searchLast) {
+        return index;
+      }
+    }
+  }
+  return -1;
+}
+
 void CScriptStreamedMusic::SetStereoPair() {
   if (x34_fileIsDsp && x24_fileName.find('|', 0) == -1 && x24_fileName.size() >= 5) {
     if (CStringExtras::CompareCaseInsensitive(
