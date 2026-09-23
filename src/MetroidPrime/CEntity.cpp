@@ -97,3 +97,97 @@ TUniqueId CEntity::FindConnectedObject(const CStateManager& mgr, EScriptObjectSt
   }
   return kInvalidUniqueId;
 }
+
+TUniqueId CEntity::FindConnectedObject_if(const CStateManager& mgr, EScriptObjectState state,
+                                          EScriptObjectMessage msg,
+                                          const CValidEntityPredicate& predicate) const {
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        if (predicate.IsValid(mgr, ids.first->second)) {
+          return ids.first->second;
+        }
+      }
+    }
+  }
+  return kInvalidUniqueId;
+}
+
+rstl::vector< TUniqueId > CEntity::FindConnectedObjects(const CStateManager& mgr,
+                                                         EScriptObjectState state,
+                                                         EScriptObjectMessage msg) const {
+  rstl::vector< TUniqueId > result;
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        result.reserve(result.size() + rstl::distance(ids.first, ids.second));
+        for (CStateManager::TIdList::const_iterator current = ids.first; current != ids.second;
+             ++current) {
+          result.push_back_unsafe(current->second);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+rstl::vector< TUniqueId > CEntity::FindConnectedObjects_if(
+    const CStateManager& mgr, EScriptObjectState state, EScriptObjectMessage msg,
+    const CValidEntityPredicate& predicate) const {
+  rstl::vector< TUniqueId > result;
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        result.reserve(result.size() + rstl::distance(ids.first, ids.second));
+        for (CStateManager::TIdList::const_iterator current = ids.first; current != ids.second;
+             ++current) {
+          if (predicate.IsValid(mgr, current->second)) {
+            result.push_back_unsafe(current->second);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+TUniqueId CEntity::CheckConnectedObject(const CStateManager& mgr, EScriptObjectState state,
+                                        EScriptObjectMessage msg) const {
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        return ids.first->second;
+      }
+    }
+  }
+  return kInvalidUniqueId;
+}
+
+TUniqueId CEntity::CheckConnectedObject_if(const CStateManager& mgr, EScriptObjectState state,
+                                           EScriptObjectMessage msg,
+                                           const CValidEntityPredicate& predicate) const {
+  for (rstl::vector< SConnection >::const_iterator it = m_conns.begin(); it != m_conns.end(); ++it) {
+    if ((state == kSS_InvalidState || state == it->state) &&
+        (msg == kSM_None || msg == it->msg)) {
+      CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (!(ids.first == ids.second)) {
+        if (predicate.IsValid(mgr, ids.first->second)) {
+          return ids.first->second;
+        }
+      }
+    }
+  }
+  return kInvalidUniqueId;
+}
+
+CValidEntityPredicate::~CValidEntityPredicate() {}
+
+bool CValidEntityPredicate::IsValid(const CStateManager&, TUniqueId) const { return true; }
