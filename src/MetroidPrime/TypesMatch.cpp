@@ -52,9 +52,14 @@ TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
     return static_cast< cls* >(TryCast(entity, id)); \
   }
 
+CAST_TO_PTR_IMPL(CEntity, kET_Entity)
+CAST_TO_PTR_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)
 CAST_TO_PTR_IMPL(CPlayer, kET_Player)
 CAST_TO_PTR_IMPL(CScriptActor, kET_ScriptActor)
 CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
+CAST_TO_PTR_IMPL(CScriptPickup, kET_ScriptPickup)
+CAST_TO_PTR_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
+CAST_TO_PTR_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
 
 #undef CAST_TO_PTR_IMPL
 
@@ -64,8 +69,13 @@ CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
     return static_cast< cls* >(entity.TypesMatch(id));        \
   }
 
+CAST_TO_REF_IMPL(CEntity, kET_Entity)
+CAST_TO_REF_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)
 CAST_TO_REF_IMPL(CPlayer, kET_Player)
 CAST_TO_REF_IMPL(CScriptActor, kET_ScriptActor)
 CAST_TO_REF_IMPL(CScriptEffect, kET_ScriptEffect)
+CAST_TO_REF_IMPL(CScriptPickup, kET_ScriptPickup)
+CAST_TO_REF_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
+CAST_TO_REF_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
 
 #undef CAST_TO_REF_IMPL
