@@ -182,6 +182,9 @@ rstl/RstlExtras.cpp:
 	.text       start:0x802FF4BC end:0x802FFF04
 	.rodata     start:0x803AFAB8 end:0x803AFAD8
 
+Kyoto/Streams/CMemoryInStream.cpp:
+	.text       start:0x802FFF04 end:0x802FFF84
+
 Kyoto/Streams/CMemoryStreamOut.cpp:
 	.text       start:0x802FFF84 end:0x803000F0
 	.data       start:0x803BAF38 end:0x803BAF48
@@ -262,6 +265,27 @@ Kyoto/Streams/CInputStream.cpp:
 	.text       start:0x80342F6C end:0x8034317C
 	.data       start:0x803BBF88 end:0x803BBF98
 	.sbss       start:0x80419CB0 end:0x80419CB8
+
+Kyoto/Streams/CLZOSupport.cpp:
+	.text       start:0x8034370C end:0x803437AC
+
+LZO/lzo_init.c:
+	.text       start:0x803437AC end:0x80343DFC
+	.rodata     start:0x803B0348 end:0x803B0358
+	.bss        start:0x803E0608 end:0x803E0618
+	.sdata      start:0x80418C90 end:0x80418C98
+	.sbss       start:0x80419CB8 end:0x80419CC0
+
+LZO/lzo_ptr.c:
+	.text       start:0x80343DFC end:0x80343E14
+
+LZO/lzo1x_d1.c:
+	.text       start:0x80343E14 end:0x803440CC
+
+Kyoto/Streams/DolphinCLZOInputStream.cpp:
+	.text       start:0x803440CC end:0x803442B4
+	.rodata     start:0x803B0358 end:0x803B0360
+	.data       start:0x803BBFB8 end:0x803BBFC8
 
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
