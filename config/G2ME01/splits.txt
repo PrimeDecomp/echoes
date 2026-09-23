@@ -167,6 +167,14 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+rstl/rstl_misc.cpp:
+	.text       start:0x802FDAB8 end:0x802FDAF4
+	.rodata     start:0x803AFAB0 end:0x803AFAB8
+
+rstl/rstl_strings.cpp:
+	.text       start:0x802FDD90 end:0x802FF3AC
+	.sbss       start:0x80419AE8 end:0x80419AEC
+
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
 	.sdata      start:0x80418BD0 end:0x80418BE8
