@@ -20,7 +20,7 @@
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 // #include "MetroidPrime/HUD/CSamusHud.hpp"
 
-#include "MetroidPrime/ScriptLoader/Struct/SLdrPickup.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPickup.hpp"
 
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Math/CAbsAngle.hpp"
@@ -315,7 +315,7 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrPickup.calculateVisibility = input.ReadBool();
       break;
     case 0x2de4a294:
-      sldrPickup.unknown = input.ReadBool();
+      sldrPickup.canHomeByDefault = input.ReadBool();
       break;
     case 0xa6ea280d:
       sldrPickup.autoHomeRange = input.ReadFloat();
@@ -361,7 +361,8 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       LoadEchoParameters(sldrPickup.echoInformation), box,
       CPlayerState::EItemType(sldrPickup.itemToGive.value), sldrPickup.amount,
       sldrPickup.capacityIncrease, sldrPickup.itemPercentageIncrease, sldrPickup.pickupEffect,
-      sldrPickup.absoluteValue, sldrPickup.unknown, sldrPickup.autoSpin, sldrPickup.blinkOut,
+      sldrPickup.absoluteValue, sldrPickup.canHomeByDefault, sldrPickup.autoSpin,
+      sldrPickup.blinkOut,
       sldrPickup.lifetime, sldrPickup.respawnTime, sldrPickup.fadetime,
       sldrPickup.activationDelay, sldrPickup.pickupEffectLifetime, sldrPickup.autoHomeRange,
       sldrPickup.delayUntilHome, sldrPickup.homingSpeed, CVector3f(sldrPickup.orbitOffset));

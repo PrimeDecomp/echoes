@@ -4,8 +4,8 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrScannableParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrScannableParameters.hpp"
 #include "rstl/string.hpp"
 
 static const CPlayerState::EItemType kInventorySlotToItemType[] = {

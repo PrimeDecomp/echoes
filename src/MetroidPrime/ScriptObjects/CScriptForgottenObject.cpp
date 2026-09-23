@@ -1,6 +1,6 @@
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/TCastTo.hpp"

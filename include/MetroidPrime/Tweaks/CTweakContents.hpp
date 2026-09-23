@@ -3,19 +3,19 @@
 
 #include "rstl/string.hpp"
 
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakAutoMapper.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakBall.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakCameraBob.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGame.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGui.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakGuiColors.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakParticle.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayer.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerControls.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerGun.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakPlayerRes.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakSlideShow.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrTweakTargeting.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakAutoMapper.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakBall.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakCameraBob.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakGame.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakGui.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakGuiColors.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakParticle.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakPlayer.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakPlayerControls.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakPlayerRes.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakSlideShow.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTweakTargeting.hpp"
 
 class CTweakContents {
 public:

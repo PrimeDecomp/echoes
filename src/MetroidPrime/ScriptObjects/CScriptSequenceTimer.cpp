@@ -1,6 +1,6 @@
 #include "MetroidPrime/ScriptObjects/CScriptSequenceTimer.hpp"
 
-#include "MetroidPrime/ScriptLoader/Struct/SLdrSequenceTimer.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.hpp"
 
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CStateManager.hpp"
@@ -60,7 +60,7 @@ void CScriptSequenceTimer::fn_801e1c1c(float changeTo, CStateManager& mgr) {
 
   for (rstl::vector< SLdrConnection >::iterator connection = m_connections.begin();
        connection != m_connections.end(); ++connection) {
-    if (!connection->unknown || !gpMain->fn_80008A1C()) {
+    if (!connection->unknown_0x00000002 || !gpMain->fn_80008A1C()) {
       for (rstl::vector< float >::iterator activation = connection->activationTimes.begin();
            activation != connection->activationTimes.end(); ++activation) {
         bool bVar6 = false;
@@ -138,7 +138,16 @@ CScriptSequenceTimer* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
       break;
 
     case 0xef5c94e9:
-      sldrThis.sequenceConnections = SLdrSequenceConnections(input);
+      {
+        const int count = input.ReadInt32();
+        sldrThis.sequenceConnections.clear();
+        sldrThis.sequenceConnections.reserve(count);
+        for (int connectionIndex = 0; connectionIndex < count; ++connectionIndex) {
+          SLdrConnection connection;
+          LoadTypedefSLdrConnection(connection, input);
+          sldrThis.sequenceConnections.push_back(connection);
+        }
+      }
       break;
 
     case 0xb8bd2175:
@@ -173,7 +182,7 @@ CScriptSequenceTimer* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
 
   return new CScriptSequenceTimer(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
                                   LdrToEntityInfo(info, sldrThis.editorProperties),
-                                  sldrThis.sequenceConnections.array, sldrThis.startTime,
+                                  sldrThis.sequenceConnections, sldrThis.startTime,
                                   sldrThis.maxTime, sldrThis.loopStartTime, sldrThis.isAutostart,
                                   sldrThis.isLoop, sldrThis.takeExternalTime);
 }

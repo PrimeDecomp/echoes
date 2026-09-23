@@ -4,7 +4,7 @@
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrAreaAttributes.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrAreaAttributes.hpp"
 
 CScriptAreaProperties::CScriptAreaProperties(TUniqueId uid, const CEntityInfo& info, float density,
                                              float normalLightning, uint hasSkyBox,
