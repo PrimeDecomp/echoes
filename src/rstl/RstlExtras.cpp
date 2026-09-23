@@ -73,6 +73,14 @@ rstl::string CStringExtras::ConvertToLowerCase(const rstl::string& str) {
   return ret;
 }
 
+rstl::string CStringExtras::CreatePrefix(const rstl::string& str, int count) {
+  const char* data = str.data();
+  if (str.length() < count) {
+    count = str.length();
+  }
+  return rstl::string(data, count);
+}
+
 char CStringExtras::ConvertToUpperCase(char c) {
   if (c >= CCast::ToChar('a') && c <= CCast::ToChar('z')) {
     return (c - CCast::ToChar(' ')) & 0xFF;

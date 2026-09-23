@@ -11,6 +11,7 @@ public:
   static char ConvertToUpperCase(char c);
   static char ConvertToLowerCase(char c);
   static rstl::string ConvertToLowerCase(const rstl::string& str);
+  static rstl::string CreatePrefix(const rstl::string& str, int count);
   static rstl::string CreateFromInteger(int v);
   static rstl::string ConvertToANSI(const rstl::wstring& str);
   static rstl::wstring ConvertToUNICODE(const rstl::string& str);
