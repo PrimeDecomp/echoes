@@ -4,7 +4,7 @@
 class CEntity;
 
 template < class T >
-static T* TCastToPtr(CEntity* p);
+T* TCastToPtr(CEntity* p);
 
 template < class T >
 static T& TCastToPtr(CEntity& p);
