@@ -81,6 +81,7 @@ public:
   void SetIsDarkWorld(bool);
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
+  void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
 
   void AddObject(CEntity*);
   void DeleteObjectRequest(TUniqueId);

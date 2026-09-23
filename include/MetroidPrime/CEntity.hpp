@@ -48,14 +48,15 @@ public:
                                 EScriptObjectMessage) const;
   TUniqueId FindConnectedObject_if(const CStateManager&, EScriptObjectState, EScriptObjectMessage,
                                    const CValidEntityPredicate&) const;
-  void /* TODO */ FindConnectedObjects(const CStateManager&, EScriptObjectState,
-                                       EScriptObjectMessage) const;
-  void /* TODO */ FindConnectedObjects_if(const CStateManager&, EScriptObjectState,
-                                          EScriptObjectMessage, const CValidEntityPredicate&) const;
-  void /* TODO */ CheckConnectedObject(const CStateManager&, EScriptObjectState,
-                                       EScriptObjectMessage) const;
-  void /* TODO */ CheckConnectedObject_if(const CStateManager&, EScriptObjectState,
-                                          EScriptObjectMessage, const CValidEntityPredicate&) const;
+  rstl::vector< TUniqueId > FindConnectedObjects(const CStateManager&, EScriptObjectState,
+                                                 EScriptObjectMessage) const;
+  rstl::vector< TUniqueId > FindConnectedObjects_if(
+      const CStateManager&, EScriptObjectState, EScriptObjectMessage,
+      const CValidEntityPredicate&) const;
+  TUniqueId CheckConnectedObject(const CStateManager&, EScriptObjectState,
+                                 EScriptObjectMessage) const;
+  TUniqueId CheckConnectedObject_if(const CStateManager&, EScriptObjectState,
+                                    EScriptObjectMessage, const CValidEntityPredicate&) const;
 
 private:
   TAreaId m_areaId;  // x4

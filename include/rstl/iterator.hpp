@@ -44,7 +44,7 @@ typename iterator_traits< It >::difference_type __distance(It first, It last,
 }
 
 template < typename It >
-typename iterator_traits< It >::difference_type distance(It first, It last) {
+inline typename iterator_traits< It >::difference_type distance(It first, It last) {
   return __distance(first, last, typename iterator_traits< It >::iterator_category());
 }
 
