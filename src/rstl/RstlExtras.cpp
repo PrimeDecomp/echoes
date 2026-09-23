@@ -60,6 +60,17 @@ int CStringExtras::CompareCaseInsensitive(const rstl::string& left, const rstl::
   }
 }
 
+rstl::string CStringExtras::ConvertToLowerCase(const rstl::string& str) {
+  rstl::string ret(str);
+  for (int i = 0; i < ret.length(); ++i) {
+    const unsigned char* before = reinterpret_cast< const unsigned char* >(ret.data());
+    ret.reserve(ret.length());
+    char* after = const_cast< char* >(ret.data());
+    after[i] = ConvertToLowerCase(before[i]);
+  }
+  return ret;
+}
+
 char CStringExtras::ConvertToUpperCase(char c) {
   if (c >= CCast::ToChar('a') && c <= CCast::ToChar('z')) {
     return (c - CCast::ToChar(' ')) & 0xFF;

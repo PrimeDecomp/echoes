@@ -10,6 +10,7 @@ public:
   static int CompareCaseInsensitive(const rstl::string&, const rstl::string&);
   static char ConvertToUpperCase(char c);
   static char ConvertToLowerCase(char c);
+  static rstl::string ConvertToLowerCase(const rstl::string& str);
   static rstl::string CreateFromInteger(int v);
   static rstl::string ConvertToANSI(const rstl::wstring& str);
   static rstl::wstring ConvertToUNICODE(const rstl::string& str);
