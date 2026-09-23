@@ -34,6 +34,7 @@ public:
   TAreaId GetCurrentAreaId() const { return m_areaId; }
   const bool GetActive() const { return m_active; }
   bool IsScriptingBlocked() const { return m_scriptingBlocked; }
+  bool GetEditorFlag2() const { return m_entityUnknown; }
 
   // might be fake?
   rstl::vector< SConnection >& ConnectionList() { return m_conns; }

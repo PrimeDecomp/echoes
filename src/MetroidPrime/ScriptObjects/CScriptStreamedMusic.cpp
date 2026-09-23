@@ -166,7 +166,7 @@ void CScriptStreamedMusic::PlayAudio() {
 }
 
 void CScriptStreamedMusic::Play(CStateManager& mgr) {
-  if (!GetActive() && gpMain->fn_80008A1C()) {
+  if (!GetEditorFlag2() && gpMain->fn_80008A1C()) {
     return;
   }
   TweakOverride(mgr);
