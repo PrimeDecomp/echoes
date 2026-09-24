@@ -68,6 +68,9 @@ double fmod(double x, double m);
 double modf(double x, double* intptr);
 double sin(double x);
 double cos(double x);
+#ifdef MSL_NO_INLINE_SQRT
+double sqrt(double x);
+#endif
 double atan(double x);
 double atan2(double y, double x);
 double tan(double x);
@@ -114,8 +117,9 @@ _MATH_INLINE float powf(float __x, float __y) { return pow(__x, __y); }
 
 #define signbit(x)((int)(__HI(x)&0x80000000))
 
-/* The pre-2.4.7 runtime headers use different floating-point classification values. */
-#if !defined(__MWERKS__) || __MWERKS__ >= 0x2407
+/* The pre-2.4.7 runtime headers use different floating-point classification values.
+   Echoes' prebuilt MSL_C (built with a newer compiler) still uses them: MSL_OLD_FP_CLASSIFY. */
+#if (!defined(__MWERKS__) || __MWERKS__ >= 0x2407) && !defined(MSL_OLD_FP_CLASSIFY)
 #define FP_NAN 0
 #define FP_INFINITE 1
 #define FP_ZERO 3
@@ -215,6 +219,7 @@ static inline float sqrtf(float x) {
   return x;
 }
 
+#ifndef MSL_NO_INLINE_SQRT
 _MATH_INLINE double sqrt(double x) {
   if (x > 0.0) {
     double guess = __frsqrte(x);                    /* returns an approximation to  */
@@ -230,6 +235,7 @@ _MATH_INLINE double sqrt(double x) {
   }
   return INFINITY;
 }
+#endif
 #else
 float sqrtf(float x);
 double sqrt(double x);

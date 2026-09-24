@@ -32,6 +32,8 @@ struct lconv {
   char int_n_sign_posn;
 };
 
+extern struct lconv __lconv;
+
 #ifdef __cplusplus
 }
 #endif
