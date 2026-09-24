@@ -184,8 +184,6 @@ public:
   void* x1638;
   char pad2_2[0x48];
   rstl::rc_ptr< CRelayTracker > m_relayTracker;
-  int x1684;
-  int x1688;
   rstl::rc_ptr< CWorldTransManager > m_worldTransManager;
   CWorldLayerState* m_currentWorldLayerState;
   int* x1698;

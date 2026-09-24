@@ -35,7 +35,7 @@ private:
   IFactory& x18_factory;
   rstl::rc_ptr< CVParamTransfer > x1c_paramXfr;
 };
-CHECK_SIZEOF(CSimplePool, 0x20)
+CHECK_SIZEOF(CSimplePool, 0x24)
 
 extern CSimplePool* gpSimplePool;
 

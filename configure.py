@@ -386,6 +386,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CNUQuaternion.cpp"),
             Object(NonMatching, "Kyoto/Math/CQuaternion.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CRandom16.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/CObjectReference.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/CToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CTransform4f.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CUnitVector3f.cpp"),
             Object(NonMatching, "Kyoto/Math/CAABox.cpp"),
