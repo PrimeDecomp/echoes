@@ -478,8 +478,18 @@ Dolphin/os/OSMemory.c:
 Dolphin/os/OSMutex.c:
 	.text       start:0x80373B38 end:0x80373BA8
 
+Dolphin/os/OSRtc.c:
+	.text       start:0x80374464 end:0x80375184
+	.bss        start:0x803E1C20 end:0x803E1C78
+
 Dolphin/os/OSSync.c:
 	.text       start:0x80375184 end:0x80375208
+
+Dolphin/os/OSThread.c:
+	.text       start:0x80375208 end:0x80376148
+	.bss        start:0x803E1C78 end:0x803E2670
+	.sdata      start:0x80418E28 end:0x80418E30
+	.sbss       start:0x8041A010 end:0x8041A020
 
 Dolphin/os/OSTime.c:
 	.text       start:0x80376148 end:0x803765C4
