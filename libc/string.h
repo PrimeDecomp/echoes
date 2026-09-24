@@ -9,6 +9,7 @@ extern "C" {
 
 #pragma section code_type ".init"
 void* memcpy(void* dst, const void* src, size_t n);
+void* memmove(void* dst, const void* src, size_t n);
 void* memset(void* dst, int val, size_t n);
 void __fill_mem(void* dst, int val, size_t n);
 #pragma section code_type
