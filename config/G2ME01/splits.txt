@@ -337,6 +337,123 @@ Runtime/mem.c:
 Runtime/string.c:
 	.text       start:0x8034E2CC end:0x8034E5A8
 
+Runtime/e_acos.c:
+	.text       start:0x8034F7A0 end:0x8034F9DC
+	.sdata2     start:0x8041EFC0 end:0x8041F048
+
+Runtime/e_asin.c:
+	.text       start:0x8034F9DC end:0x8034FC14
+	.sdata2     start:0x8041F048 end:0x8041F0D0
+
+Runtime/e_atan2.c:
+	.text       start:0x8034FC14 end:0x8034FEA4
+	.sdata2     start:0x8041F0D0 end:0x8041F128
+
+Runtime/e_fmod.c:
+	.text       start:0x8034FEA4 end:0x803501E0
+	.rodata     start:0x803B05A8 end:0x803B05B8
+
+Runtime/e_log.c:
+	.text       start:0x803501E0 end:0x8035045C
+	.sbss       start:0x80419CF0 end:0x80419CF8
+	.sdata2     start:0x8041F128 end:0x8041F1A8
+
+Runtime/e_log10.c:
+	.text       start:0x8035045C end:0x8035056C
+	.sbss       start:0x80419CF8 end:0x80419D00
+	.sdata2     start:0x8041F1A8 end:0x8041F1D8
+
+Runtime/e_pow.c:
+	.text       start:0x8035056C end:0x80350D9C
+	.rodata     start:0x803B05B8 end:0x803B05E8
+	.sdata2     start:0x8041F1D8 end:0x8041F2E8
+
+Runtime/e_rem_pio2.c:
+	.text       start:0x80350D9C end:0x8035113C
+	.rodata     start:0x803B05E8 end:0x803B0770
+	.sdata2     start:0x8041F2E8 end:0x8041F340
+
+Runtime/k_cos.c:
+	.text       start:0x8035113C end:0x80351230
+	.sdata2     start:0x8041F340 end:0x8041F388
+
+Runtime/k_rem_pio2.c:
+	.text       start:0x80351230 end:0x80352084
+	.rodata     start:0x803B0770 end:0x803B07C0
+	.sdata2     start:0x8041F388 end:0x8041F3C8
+
+Runtime/k_sin.c:
+	.text       start:0x80352084 end:0x80352124
+	.sdata2     start:0x8041F3C8 end:0x8041F400
+
+Runtime/k_tan.c:
+	.text       start:0x80352124 end:0x80352338
+	.rodata     start:0x803B07C0 end:0x803B0828
+	.sdata2     start:0x8041F400 end:0x8041F438
+
+Runtime/s_atan.c:
+	.text       start:0x80352338 end:0x80352550
+	.rodata     start:0x803B0828 end:0x803B08C0
+	.sdata2     start:0x8041F438 end:0x8041F460
+
+Runtime/s_copysign.c:
+	.text       start:0x80352550 end:0x80352578
+
+Runtime/s_cos.c:
+	.text       start:0x80352578 end:0x8035264C
+	.sdata2     start:0x8041F460 end:0x8041F468
+
+Runtime/s_floor.c:
+	.text       start:0x8035264C end:0x80352794
+	.sdata2     start:0x8041F468 end:0x8041F478
+
+Runtime/s_frexp.c:
+	.text       start:0x80352794 end:0x80352820
+	.sdata2     start:0x8041F478 end:0x8041F480
+
+Runtime/s_ldexp.c:
+	.text       start:0x80352820 end:0x803529E4
+	.sdata2     start:0x8041F480 end:0x8041F4A8
+
+Runtime/s_modf.c:
+	.text       start:0x803529E4 end:0x80352AE0
+
+Runtime/s_sin.c:
+	.text       start:0x80352AE0 end:0x80352BB8
+	.sdata2     start:0x8041F4A8 end:0x8041F4B0
+
+Runtime/s_tan.c:
+	.text       start:0x80352BB8 end:0x80352C30
+	.sdata2     start:0x8041F4B0 end:0x8041F4B8
+
+Runtime/w_acos.c:
+	.text       start:0x80352C30 end:0x80352C50
+
+Runtime/w_asin.c:
+	.text       start:0x80352C50 end:0x80352C70
+
+Runtime/w_atan2.c:
+	.text       start:0x80352C70 end:0x80352C90
+
+Runtime/w_fmod.c:
+	.text       start:0x80352C90 end:0x80352CB0
+
+Runtime/w_log10.c:
+	.text       start:0x80352CB0 end:0x80352CD0
+
+Runtime/w_pow.c:
+	.text       start:0x80352CD0 end:0x80352CF0
+
+Runtime/e_sqrt.c:
+	.text       start:0x80352CF0 end:0x80352F14
+	.sdata2     start:0x8041F4B8 end:0x8041F4C0
+
+Runtime/math_ppc.c:
+	.text       start:0x80352F14 end:0x80352F38
+
+Runtime/w_sqrt.c:
+	.text       start:0x80352F38 end:0x80352F58
+
 Dolphin/ar/ar.c:
 	.text       start:0x8035512C end:0x80356C7C
 	.data       start:0x803BCCB8 end:0x803BCD00

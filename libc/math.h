@@ -114,8 +114,9 @@ _MATH_INLINE float powf(float __x, float __y) { return pow(__x, __y); }
 
 #define signbit(x)((int)(__HI(x)&0x80000000))
 
-/* The pre-2.4.7 runtime headers use different floating-point classification values. */
-#if !defined(__MWERKS__) || __MWERKS__ >= 0x2407
+/* The pre-2.4.7 runtime headers use different floating-point classification values.
+   Echoes' prebuilt MSL_C (built with a newer compiler) still uses them: MSL_OLD_FP_CLASSIFY. */
+#if (!defined(__MWERKS__) || __MWERKS__ >= 0x2407) && !defined(MSL_OLD_FP_CLASSIFY)
 #define FP_NAN 0
 #define FP_INFINITE 1
 #define FP_ZERO 3
