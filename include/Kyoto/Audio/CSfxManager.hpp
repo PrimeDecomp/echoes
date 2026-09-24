@@ -103,6 +103,7 @@ public:
                              int areaId = kAllAreas);
   static void SfxSpan(CSfxHandle, uchar);
   static bool IsPlaying(const CSfxHandle& handle);
+  static void SfxStop(CSfxHandle handle);
 
   static void SetChannel(ESfxChannels);
   static void KillAll(ESfxChannels);

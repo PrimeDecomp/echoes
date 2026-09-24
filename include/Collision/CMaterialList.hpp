@@ -63,6 +63,7 @@ enum EMaterialTypes {
   kMT_ExcludeFromLineOfSightTest = 56,
   kMT_ExcludeFromRadar = 57,
   kMT_NoPlayerCollision = 58,
+  kMT_Unknown59 = 59, // Used by the Echoes Morph Ball collision sphere.
   kMT_SixtyThree = 63
 };
 

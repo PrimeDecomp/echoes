@@ -67,31 +67,105 @@ public:
 
   virtual int GetActiveParticleCount() override;
   virtual bool IsSystemDeletable() override;
-  virtual rstl::optional_object<CAABox> GetBounds() override;
+  virtual rstl::optional_object< CAABox > GetBounds() override;
   virtual int GetParticleCount() override;
   virtual bool SystemHasLight() override;
   virtual CLight GetLight() override;
   virtual void DestroyParticles() override;
-
   virtual uint Get4CharId() const override;
 
   int GetEmitterTime() const override;
   int GetSystemCount();
   void EndLifetime();
 
-  bool IsIndirectTextured() const; // { return x28_loadedGenDesc->x54_x40_TEXR && x28_loadedGenDesc->x58_x44_TIND; }
+  int GetCumulativeParticleCount() const { return x258_cumulativeParticles; }
+  bool IsIndirectTextured()
+      const; // { return x2c_loadedGenDesc->x54_x40_TEXR && x2c_loadedGenDesc->x58_x44_TIND; }
   float GetExternalVar(int index) const;
 
   static void Initialize();
   static void ShutDown();
 
   void SetGlobalOrientAndTrans(const CTransform4f& xf);
+  void SetLeaveLightsEnabledForModelRender(bool b) { x265_26_modelsUseLights = b; }
 
   static void SetSubtractBlend(bool subtract) { sSubtractBlend = subtract; }
 
-private:
-  // Echoes layout not yet mapped; Prime's members do not fit the 0x338-byte G2ME01 object.
-  uchar x20_data[0x318];
+public:
+  TLockedToken< CGenDescription > x20_genDesc;
+  CGenDescription* x2c_loadedGenDesc;
+  EModelOrientationType x30_orientType;
+  rstl::vector< CParticle > x34_particles;
+  rstl::vector< CMatrix3f > x44_parentMatrices;
+  rstl::vector< float[8] > x54_advValues;
+  int x64_internalStartFrame;
+  int x68_curFrame;
+  double x70_curSeconds;
+  float x78_timeDeltaScale;
+  int x7c_prevFrame;
+  bool x80_particleEmission;
+  float x84_generatorRemainder;
+  int x88_MAXP;
+  ushort x8c_randomSeed;
+  float x90_generatorRate;
+  float x94_externalVars[16];
+  CVector3f xd4_translation;
+  CVector3f xe0_globalTranslation;
+  CVector3f xec_POFS;
+  CVector3f xf8_globalScale;
+  CTransform4f x104_globalScaleTransform;
+  CTransform4f x134_globalScaleTransformInverse;
+  CVector3f x164_localScale;
+  CTransform4f x170_localScaleTransform;
+  CTransform4f x1a0_localScaleTransformInverse;
+  CTransform4f x1d0_orientation;
+  CMatrix3f x200_orientationInverse;
+  CTransform4f x224_globalOrientation;
+  uint x254_activeParticleCount;
+  uint x258_cumulativeParticles;
+  uint x25c_recursiveParticleCount;
+  int x260_PSLT;
+  bool x264_24_translationDirty : 1;
+  bool x264_25_LIT_ : 1;
+  bool x264_26_AAPH : 1;
+  bool x264_27_ZBUF : 1;
+  bool x264_28_zTest : 1;
+  bool x264_29_ORNT : 1;
+  bool x264_30_MBLR : 1;
+  bool x264_31_LINE : 1;
+  bool x265_24_FXLL : 1;
+  bool x265_25_warmedUp : 1;
+  bool x265_26_modelsUseLights : 1;
+  bool x265_27_enableOPTS : 1;
+  bool x265_28_enableADV : 1;
+  int x268_MBSP;
+  GXLightID x26c_backupLightActive;
+  bool x270_hasVMD[4];
+  CRandom16 x274_randState;
+  CModVectorElement* x278_VELSources[4];
+  rstl::vector< rstl::auto_ptr< CParticleGen > > x288_activePartChildren;
+  int x298_CSSD;
+  int x29c_SISY;
+  int x2a0_PISY;
+  int x2a4_SSSD;
+  CVector3f x2a8_SSPO;
+  int x2b4_SESD;
+  CVector3f x2b8_SEPO;
+  float x2c4_;
+  float x2c8_;
+  CVector3f x2cc_aabbMin;
+  CVector3f x2d8_aabbMax;
+  float x2e4_maxSize;
+  CAABox x2e8_systemBounds;
+  LightType x300_lightType;
+  CColor x304_LCLR;
+  float x308_LINT;
+  CVector3f x30c_LOFF;
+  CVector3f x318_LDIR;
+  EFalloffType x324_falloffType;
+  float x328_LFOR;
+  float x32c_LSLA;
+  CColor x330_moduColor;
 
   static bool sSubtractBlend;
 

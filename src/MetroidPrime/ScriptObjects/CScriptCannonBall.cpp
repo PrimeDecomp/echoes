@@ -28,7 +28,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     if (CPlayer* player =
             TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()))) {
       CMorphBall* morph = player->GetMorphBall();
-      CTransform4f xf = morph->xd28;
+      CTransform4f xf = morph->GetSurfaceToWorld();
       player->SetTransformAlt(
           CTransform4f(xf.BuildMatrix3f(), player->GetTranslation())); // todo use position
       morph->SwitchToTire();
@@ -91,7 +91,7 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
 
   CPlayer* player = mgr.GetPlayer(index);
   if (m_f > 0.0f) {
-    CTransform4f mat = player->GetMorphBall()->Get_800cb764();
+    CTransform4f mat = player->GetMorphBall()->GetBallToWorld();
     effect->SetTransform(
         CTransform4f::LookAt(mat.GetTranslation(), mat.GetTranslation() + player->GetLookDir()));
   }
@@ -104,13 +104,13 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
 
     CMorphBall* morph = player->GetMorphBall();
 
-    int uVar4 = (morph->xc78 - m_updateFrameIdx) < 0;
-    int uVar3 = (morph->xc7c - m_updateFrameIdx) < 0;
+    int uVar4 = (morph->GetLastWallCollisionFrame() - m_updateFrameIdx) < 0;
+    int uVar3 = (morph->GetLastFloorCollisionFrame() - m_updateFrameIdx) < 0;
     if (uVar3 < uVar4) {
       uVar3 = uVar4;
     }
     bool disable = true;
-    if (uVar3 < 6 && morph->xc80_maybe_sa_state != 2) {
+    if (uVar3 < 6 && morph->GetBallState() != CMorphBall::kBS_Spider) {
       CPlayer::EPlayerMorphBallState state = CPlayer::kMS_Unmorphed;
       if (player->GetSpawnedMorphballState() == CPlayer::kMS_Morphed) {
         state = player->GetMorphballTransitionState();
