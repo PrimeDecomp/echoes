@@ -100,8 +100,11 @@ MetroidPrime/Player/CGameOptions.cpp:
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
+MetroidPrime/Player/CFidget.cpp:
+	.text       start:0x801C6B20 end:0x801C6DF0
+
 MetroidPrime/Player/CPlayerGun.cpp:
-	.text       start:0x801C6DF8 end:0x801D2F0C
+	.text       start:0x801C6DF0 end:0x801D2F0C
 	.ctors      start:0x803A5578 end:0x803A557C
 	.sbss       start:0x804192C0 end:0x804192C4
 	.sdata2     start:0x8041D11C end:0x8041D18C
@@ -109,6 +112,9 @@ MetroidPrime/Player/CPlayerGun.cpp:
 MetroidPrime/Weapons/CPowerBeam.cpp:
 	.text       start:0x801D4FC8 end:0x801D5C70
 	.data       start:0x803B72B0 end:0x803B7310
+
+MetroidPrime/Player/CPlayerGunBase.cpp:
+	.text       start:0x801DD6FC end:0x801DE74C
 
 MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 	.text       start:0x801E1338 end:0x801E2098

@@ -11,6 +11,9 @@ struct SWeaponInfo {
 
 class CTweakPlayerGun {
 public:
+  float GetGunTransformTime() const;
+  float GetHoloHoldTime() const;
+  float GetGunExtendDistance() const;
   int GetMaxAbsorbedPhazonShots();
 };
 

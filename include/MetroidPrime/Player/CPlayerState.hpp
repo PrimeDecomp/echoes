@@ -298,6 +298,7 @@ public:
   SPersistentState& GetPersistentState();
   void SetPersistentState(const SPersistentState&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
+  void SetChargeBeamFactor(float factor) { chargeBeamFactor = factor; }
   float GetChargeAnimStart() const { return chargeAnimStart; }
   void IncrementChargeBeamFactor(float);
   void DecrementAmmoAndDisplayAlertIfOut(const CStateManager&, EItemType, int quantity);
