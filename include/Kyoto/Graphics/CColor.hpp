@@ -53,6 +53,9 @@ public:
   uchar GetBlueu8() const { return mB; }
   uchar GetAlphau8() const { return mA; }
   ushort ToRGB5A3() const;
+  // Guessed names; see DolphinCColor.cpp for target evidence.
+  ushort ToRGB565() const;
+  static CColor FromRGB5A3(ushort value);
   uint GetColor_u32() const { return mRgba; }
   const GXColor& GetGXColor() const { return *reinterpret_cast< const GXColor* >(this); }
 
