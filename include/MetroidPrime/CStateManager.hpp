@@ -14,6 +14,7 @@
 #include "Kyoto/TToken.hpp"
 
 #include "rstl/auto_ptr.hpp"
+#include "rstl/list.hpp"
 #include "rstl/map.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/rc_ptr.hpp"

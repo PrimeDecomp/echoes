@@ -3,8 +3,8 @@
 
 #include "types.h"
 
-#include "rstl/hash_map.hpp"
-#include "rstl/rc_ptr.hpp"
+#include "rstl/map.hpp"
+#include "rstl/vector.hpp"
 
 #include "Kyoto/CToken.hpp"
 #include "Kyoto/IObjectStore.hpp"
@@ -12,28 +12,33 @@
 class IFactory;
 
 class CSimplePool : public IObjectStore {
+  struct TagIdLess {
+    bool operator()(const SObjectTag& a, const SObjectTag& b) const { return a.id < b.id; }
+  };
+  typedef rstl::map< SObjectTag, CObjectReference*, TagIdLess > ResourceMap;
+
 public:
-  CSimplePool(IFactory& factory) : x18_factory(factory) {}
+  CSimplePool(IFactory& factory);
   ~CSimplePool();
 
-  virtual CToken GetObj(const SObjectTag& tag, CVParamTransfer xfer);
+  void DebugDumpPool() const;
+  virtual CToken GetObj(const SObjectTag& tag, const CVParamTransfer& xfer);
   virtual CToken GetObj(const SObjectTag& tag);
   virtual CToken GetObj(const char* name);
-  virtual CToken GetObj(const char* name, CVParamTransfer xfer);
+  virtual CToken GetObj(const char* name, const CVParamTransfer& xfer);
   virtual bool HasObject(const SObjectTag& tag);
   virtual bool ObjectIsLive(const SObjectTag& tag);
-  virtual IFactory& GetFactory() { return x18_factory; }
+  virtual IFactory& GetFactory() { return *x18_factory; }
   virtual void Flush();
   virtual void ObjectUnreferenced(const SObjectTag& tag);
+  rstl::vector< SObjectTag > GetReferencedTags();
 
   void fn_8029c7e8(const SObjectTag& tag);
 
 private:
-  uchar x4_;
-  uchar x5_;
-  rstl::hash_map< unkptr, unkptr, void, void > x8_resources;
-  IFactory& x18_factory;
-  rstl::rc_ptr< CVParamTransfer > x1c_paramXfr;
+  ResourceMap x4_resources;
+  IFactory* x18_factory;
+  CVParamTransfer x1c_paramXfr;
 };
 CHECK_SIZEOF(CSimplePool, 0x24)
 
