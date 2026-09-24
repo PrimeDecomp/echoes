@@ -164,7 +164,7 @@ void CPakFile::LoadResourceTable(CMemoryInStream& in) {
   if (x28_24_buildDepList)
     x68_depList.reserve(x4c_resTableCount);
 
-  for (int i = 0; i < x4c_resTableCount; ++i) {
+  for (int i = 0; i < static_cast< int >(x4c_resTableCount); ++i) {
     const uint flags = in.ReadInt32();
     const uint type = in.ReadInt32();
     const uint id = in.ReadInt32();
@@ -175,15 +175,17 @@ void CPakFile::LoadResourceTable(CMemoryInStream& in) {
       x68_depList.push_back_unsafe(id);
   }
 
-  for (int i = 0; i < x4c_resTableCount; ++i) {
-    if (sortedResources[i].GetSize() <= 8192) {
+  for (int i = 0; i < static_cast< int >(x4c_resTableCount); ++i) {
+    SResInfo& info = sortedResources[i];
+    if (info.GetSize() <= 8192) {
       uint groupedSize = 0;
-      for (int j = i + 1; j < x4c_resTableCount &&
-                          groupedSize + sortedResources[j].GetSize() < 8192;
-           ++j) {
-        groupedSize += sortedResources[j].GetSize();
+      for (int j = i + 1; j < static_cast< int >(x4c_resTableCount); ++j) {
+        const uint nextSize = sortedResources[j].GetSize();
+        if (groupedSize + nextSize >= 8192)
+          break;
+        groupedSize += nextSize;
       }
-      sortedResources[i].SetGroupedSize(groupedSize);
+      info.SetGroupedSize(groupedSize);
     }
   }
 
