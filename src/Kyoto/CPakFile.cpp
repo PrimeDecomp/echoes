@@ -301,8 +301,7 @@ void CPakFile::RebuildResourceLists(const rstl::vector< SResInfo >& sortedResour
 
 void CPakFile::EnsureWorldPakReady() {
   if (x28_26_worldPak && x28_27_stashedInARAM) {
-    rstl::vector< SResInfo > resources;
-    resources.resize(x4c_resTableCount, SResInfo(0, 'TXTR', 0, 0, 0, 0));
+    rstl::vector< SResInfo > resources(x4c_resTableCount);
     const uint size = (x4c_resTableCount * sizeof(SResInfo) + 31) & ~31;
     CARAMManager::WaitForDMACompletion(
         CARAMManager::DMAToMRAM(const_cast< void* >(x54_aramBase), resources.data(), size,
@@ -310,8 +309,9 @@ void CPakFile::EnsureWorldPakReady() {
     RebuildResourceLists(resources);
     if (x28_24_buildDepList) {
       x68_depList.reserve(x4c_resTableCount);
-      for (int i = 0; i < x4c_resTableCount; ++i)
-        x68_depList.push_back_unsafe(resources[i].GetId());
+      const SResInfo* info = resources.data();
+      for (int i = 0; i < x4c_resTableCount; ++i, ++info)
+        x68_depList.push_back_unsafe(info->GetId());
     }
     x28_27_stashedInARAM = false;
     UpdateFakeStaticSize();
