@@ -418,6 +418,14 @@ Dolphin/exi/EXIUart.c:
 	.text       start:0x803653D4 end:0x8036598C
 	.sbss       start:0x80419EF0 end:0x80419F00
 
+Dolphin/mtx/mtx.c:
+	.text       start:0x8036D3A0 end:0x8036D5C8
+	.sdata      start:0x80418DE8 end:0x80418DF0
+	.sdata2     start:0x8041F5A0 end:0x8041F5A8
+
+Dolphin/mtx/mtxvec.c:
+	.text       start:0x8036D5C8 end:0x8036D670
+
 Dolphin/mtx/mtx44.c:
 	.text       start:0x8036D670 end:0x8036D918
 	.sdata2     start:0x8041F5A8 end:0x8041F5B8

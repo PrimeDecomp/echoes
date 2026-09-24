@@ -454,7 +454,9 @@ config.libs = [
     DolphinLib(
         "mtx",
         [
-            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx44.c", extra_cflags=["-DGEKKO"]),
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtxvec.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx44.c"),
         ],
     ),
     DolphinLib(
