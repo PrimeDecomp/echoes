@@ -1,8 +1,8 @@
 #ifndef _RSTL_CONSTRUCT
 #define _RSTL_CONSTRUCT
 
-#include "types.h"
 #include "rstl/iterator.hpp"
+#include "types.h"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 
@@ -13,17 +13,30 @@ struct is_trivially_destructible {
 };
 
 template < typename T >
-static inline void construct(void* dest, const T& src) {
+static inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
 }
 
 template < typename T >
-static inline void destroy(T* in) {
+static inline void construct(void* dest, const T& src) {
+  construct_impl(dest, src);
+}
+
+template < typename T >
+static inline void destroy_impl(T* in) {
   in->~T();
 }
 
+template < typename T >
+static inline void destroy(T* in) {
+  destroy_impl(in);
+}
+
 template < typename It >
-static inline void destroy(It begin, It end) {
+static inline void destroy(It begin, It end);
+
+template < typename It >
+static inline void destroy_impl(It begin, It end) {
   if (is_trivially_destructible< typename iterator_traits< It >::value_type >::value) {
     return;
   }
@@ -31,6 +44,11 @@ static inline void destroy(It begin, It end) {
   for (; cur != end; ++cur) {
     destroy(&*cur);
   }
+}
+
+template < typename It >
+static inline void destroy(It begin, It end) {
+  destroy_impl(begin, end);
 }
 
 template < typename It, typename T >
