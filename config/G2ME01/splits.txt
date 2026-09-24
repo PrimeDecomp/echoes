@@ -975,7 +975,7 @@ musyx/runtime/synth_ac.c:
 	.sdata2     start:0x8041F6D8 end:0x8041F6F0
 
 musyx/runtime/synth_dbtab.c:
-	.data       start:0x803C0660 end:0x803C0E00
+	.data       start:0x803C0660 end:0x803C0DE8
 
 musyx/runtime/synth_adsr.c:
 	.text       start:0x80396088 end:0x80396848
@@ -993,7 +993,7 @@ musyx/runtime/s_data.c:
 musyx/runtime/hw_dspctrl.c:
 	.text       start:0x80397EF8 end:0x8039B610
 	.rodata     start:0x803B0978 end:0x803B09B0
-	.data       start:0x803C0E00 end:0x803C2858
+	.data       start:0x803C0E00 end:0x803C2858 align:32
 	.bss        start:0x803FFC98 end:0x80400378
 	.sbss       start:0x8041A2E8 end:0x8041A328
 
