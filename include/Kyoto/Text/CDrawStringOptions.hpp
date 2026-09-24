@@ -2,19 +2,23 @@
 #define _CDRAWSTRINGOPTIONS
 
 #include "Kyoto/Graphics/CColor.hpp"
-#include "rstl/reserved_vector.hpp"
 #include "Kyoto/Text/TextCommon.hpp"
+#include "rstl/reserved_vector.hpp"
 
 class CDrawStringOptions {
 public:
   CDrawStringOptions();
 
-  void SetTextDirection(ETextDirection dir) { x0_direction = dir; }
-  ETextDirection GetTextDirection() const { return x0_direction; }
-  void SetPaletteEntry(int idx, uint color) { x4_colors[idx] = color; }
+  void SetTextDirection(ETextDirection dir) { mDirection = dir; }
+  ETextDirection GetTextDirection() const { return mDirection; }
+  void SetPaletteEntry(int idx, uint color) { mColors[idx] = color; }
+
 private:
-  ETextDirection x0_direction;
-  rstl::reserved_vector<u32, 16> x4_colors;
+  ETextDirection mDirection;
+  rstl::reserved_vector< u32, 16 > mColors;
+  uint x48;
 };
+
+CHECK_SIZEOF(CDrawStringOptions, 0x4c)
 
 #endif // _CDRAWSTRINGOPTIONS
