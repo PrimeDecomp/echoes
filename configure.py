@@ -448,6 +448,7 @@ config.libs = [
     DolphinLib(
         "exi",
         [
+            Object(MatchingFor("G2ME01"), "Dolphin/exi/EXIBios.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/exi/EXIUart.c"),
         ],
     ),

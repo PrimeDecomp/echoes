@@ -419,6 +419,13 @@ Dolphin/dvd/fstload.c:
 	.sdata      start:0x80418D78 end:0x80418D88
 	.sbss       start:0x80419ED8 end:0x80419EE8
 
+Dolphin/exi/EXIBios.c:
+	.text       start:0x803639F8 end:0x803653D4
+	.data       start:0x803BDAF8 end:0x803BDC20
+	.bss        start:0x803E1188 end:0x803E1248
+	.sdata      start:0x80418D88 end:0x80418D90
+	.sbss       start:0x80419EE8 end:0x80419EF0
+
 Dolphin/exi/EXIUart.c:
 	.text       start:0x803653D4 end:0x8036598C
 	.sbss       start:0x80419EF0 end:0x80419F00
