@@ -105,7 +105,7 @@ void CPakFile::InitialHeaderLoad() {
 
   const int version = in.ReadInt32();
   if (version != 0x30005) {
-    char buf[264];
+    char buf[248];
     sprintf(buf, "%s: Incompatible pak file version -- Current version is %x, you're using %x",
             x0_file.GetFilename().data(), 0x30005, version);
     return;
@@ -127,11 +127,12 @@ void CPakFile::InitialHeaderLoad() {
   x2c_asyncLoadPhase = kAP_DataLoad;
 
   const int oldSize = x38_headerData.size();
-  const int newSize = (x48_resTableOffset + x4c_resTableCount * 20 + 31) & ~31;
-  if (oldSize < newSize) {
+  const uint resourceBytes = x4c_resTableCount * 20;
+  const int newSize = (resourceBytes + x48_resTableOffset + 31) & ~31;
+  if (newSize > oldSize) {
     x38_headerData.resize(newSize);
     x30_dvdReq = rstl::auto_ptr< CDvdRequest >(x0_file.AsyncSeekRead(
-        x38_headerData.data() + oldSize, newSize - oldSize, kSO_Set, oldSize));
+        x38_headerData.data() + oldSize, x38_headerData.size() - oldSize, kSO_Set, oldSize));
   } else {
     DataLoad();
   }
