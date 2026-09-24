@@ -217,6 +217,12 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+Kyoto/Math/RMathUtils.cpp:
+	.text       start:0x802CB330 end:0x802CDF8C
+	.ctors      start:0x803A5614 end:0x803A5618
+	.sbss       start:0x80419A58 end:0x80419A60
+	.sdata2     start:0x8041E628 end:0x8041E758
+
 Kyoto/CCrc32.cpp:
 	.text       start:0x802CDF8C end:0x802CE098
 	.rodata     start:0x803AF420 end:0x803AF820

@@ -395,6 +395,7 @@ config.libs = [
             Object(Matching, "Kyoto/Math/CVector3d.cpp"),
             Object(Matching, "Kyoto/Math/CVector3f.cpp"),
             Object(Matching, "Kyoto/Math/CVector3i.cpp"),
+            Object(NonMatching, "Kyoto/Math/RMathUtils.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CCrc32.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CCircularBuffer.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CMemory.cpp"),
