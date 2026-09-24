@@ -6,7 +6,7 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/ScriptLoader/Struct/SLdrCannonBall.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCannonBall.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/TCastTo.hpp"

@@ -3,7 +3,7 @@
 
 #include "MetroidPrime/CEntity.hpp"
 
-#include "MetroidPrime/ScriptLoader/SLdrConnection.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.hpp"
 
 class CScriptSequenceTimer : public CEntity {
 private:

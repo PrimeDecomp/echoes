@@ -8,7 +8,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrStreamedAudio.hpp"
 #include "rstl/StringExtras.hpp"
 
 #include <string.h>
@@ -255,29 +255,6 @@ void CScriptStreamedMusic::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   }
 }
 
-struct SLdrStreamedAudio {
-  SLdrStreamedAudio()
-  : editorProperties()
-  , fileName()
-  , noStopOnDeactivate(false)
-  , fadeIn(0.25f)
-  , fadeOut(0.25f)
-  , volume(127)
-  , loopMode(0)
-  , music(true) {
-    editorProperties.unknown = 3;
-  }
-
-  SLdrEditorProperties editorProperties;
-  rstl::string fileName;
-  bool noStopOnDeactivate;
-  float fadeIn;
-  float fadeOut;
-  uint volume;
-  uint loopMode;
-  bool music;
-};
-
 CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   SLdrStreamedAudio data;
 
@@ -291,26 +268,26 @@ CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, const CEntit
       break;
     case 0xf6f3de1c: {
       const rstl::string value(input);
-      data.fileName = value;
+      data.songFile = value;
       break;
     }
     case 0x34b152c4:
-      data.noStopOnDeactivate = input.ReadBool();
+      data.defaultAudio = input.ReadBool();
       break;
     case 0x90aa341f:
-      data.fadeIn = input.ReadFloat();
+      data.fadeInTime = input.ReadFloat();
       break;
     case 0x7c269ebc:
-      data.fadeOut = input.ReadFloat();
+      data.fadeOutTime = input.ReadFloat();
       break;
     case 0x80c66c37:
       data.volume = input.ReadInt32();
       break;
     case 0x28f82261:
-      data.loopMode = input.ReadInt32();
+      data.softwareChannel = input.ReadInt32();
       break;
     case 0xd3356fe7:
-      data.music = input.ReadBool();
+      data.softwareIsMusic = input.ReadBool();
       break;
     default:
       input.ReadBytes(nullptr, propertySize);
@@ -320,6 +297,6 @@ CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, const CEntit
 
   return new CScriptStreamedMusic(
       mgr.AllocateUniqueId(), LdrToEntityInfo(info, data.editorProperties),
-      data.editorProperties.name, data.fileName, data.noStopOnDeactivate, data.fadeIn, data.fadeOut,
-      data.volume, data.loopMode == 0, data.music);
+      data.editorProperties.name, data.songFile, data.defaultAudio, data.fadeInTime, data.fadeOutTime,
+      data.volume, data.softwareChannel == 0, data.softwareIsMusic);
 }

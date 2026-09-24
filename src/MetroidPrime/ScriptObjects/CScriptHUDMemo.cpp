@@ -5,7 +5,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-#include "MetroidPrime/ScriptLoader/Struct/SLdrHUDMemo.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrHUDMemo.hpp"
 
 #include "Kyoto/Text/CStringTable.hpp"
 
