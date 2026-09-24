@@ -425,9 +425,22 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "Runtime/global_destructor_chain.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/ptmf.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/runtime.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
             # TODO: need to implement all
             Object(NonMatching, "Runtime/Gecko_ExceptionPPC.cp"),
+        ],
+    },
+    {
+        "lib": "MSL_C.PPCEABI.bare.H",
+        "mw_version": config.linker_version,
+        "cflags": cflags_runtime,
+        "progress_category": "sdk",
+        "host": False,
+        "objects": [
+            Object(MatchingFor("G2ME01"), "Runtime/mem.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/string.c"),
         ],
     },
     DolphinLib(
