@@ -2,10 +2,11 @@
 #define _CAABOX
 
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/pair.hpp"
 
 class CInputStream;
-class CLineSeg;
 class CPlane;
+class CQuad;
 class CTransform4f;
 class CTri;
 
@@ -48,8 +49,11 @@ public:
   //   return *this;
   // }
 
-  CLineSeg GetEdge(EBoxEdgeId edge) const;
+  // Guessed name; the G2ME01 target returns two corner indices.
+  static rstl::pair< int, int > GetEdge(EBoxEdgeId edge);
   CTri GetTri(EBoxFaceId face, int windOffset) const;
+  // Guessed name for the G2ME01 four-corner face method.
+  CQuad GetQuad(EBoxFaceId face) const;
   CVector3f ClosestPointAlongVector(const CVector3f& vec) const;
   CVector3f FurthestPointAlongVector(const CVector3f& vec) const;
   CVector3f GetCenterPoint() const;

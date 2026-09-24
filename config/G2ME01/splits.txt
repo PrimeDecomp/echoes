@@ -244,6 +244,21 @@ Kyoto/PVS/CPVSVisOctree.cpp:
 Kyoto/PVS/CPVSVisSet.cpp:
 	.text       start:0x802CEA14 end:0x802CEE6C
 
+Kyoto/Math/CTri.cpp:
+	.text       start:0x802F79EC end:0x802F7A88
+
+Kyoto/Math/CQuad.cpp:
+	.text       start:0x802F7A88 end:0x802F7B28
+
+Kyoto/Math/CAABox.cpp:
+	.text       start:0x802F7C68 end:0x802F8D90
+	.ctors      start:0x803A5638 end:0x803A563C
+	.data       start:0x803BAEB8 end:0x803BAF08
+	.bss        start:0x80417588 end:0x804175B8 align:4 common
+	.sdata      start:0x80418B20 end:0x80418B88
+	.sdata2     start:0x8041E928 end:0x8041E938
+	.sbss2      start:0x8041F8E0 end:0x8041F8E8
+
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
 
