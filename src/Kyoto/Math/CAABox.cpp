@@ -6,15 +6,15 @@
 #include "Kyoto/Math/CTri.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
-// The selected Echoes runtime stores FLT_MAX in MSL data rather than a literal.
+// G2ME01 loads this runtime FLT_MAX bit pattern rather than a literal.
 extern "C" int __float_max[];
-#define ECHOES_FLT_MAX (*reinterpret_cast< const float* >(__float_max))
+static inline const float& RuntimeFloatMax() {
+  return *reinterpret_cast< const float* >(__float_max);
+}
 
-CAABox CAABox::mskInvertedBox(ECHOES_FLT_MAX, ECHOES_FLT_MAX, ECHOES_FLT_MAX, -ECHOES_FLT_MAX,
-                              -ECHOES_FLT_MAX, -ECHOES_FLT_MAX);
+CAABox CAABox::mskInvertedBox(RuntimeFloatMax(), RuntimeFloatMax(), RuntimeFloatMax(),
+                              -RuntimeFloatMax(), -RuntimeFloatMax(), -RuntimeFloatMax());
 CAABox CAABox::mskNullBox(0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-
-#undef ECHOES_FLT_MAX
 
 CAABox::CAABox(CInputStream& in) : min(in), max(in) {}
 
