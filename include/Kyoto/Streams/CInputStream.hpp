@@ -54,21 +54,13 @@ public:
     x8_ptr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
-  short ReadInt16() {
-    short* result = reinterpret_cast< short* >(x8_ptr);
-    x8_ptr = reinterpret_cast< uchar* >(result + 1);
-    return *result;
-  }
+  short ReadInt16() { return static_cast< short >(ReadUint16()); }
   u8 ReadUint8() {
     u8* result = x8_ptr;
     x8_ptr = result + 1;
     return *result;
   }
-  char ReadInt8() {
-    char* result = reinterpret_cast< char* >(x8_ptr);
-    x8_ptr = reinterpret_cast< uchar* >(result + 1);
-    return *result;
-  }
+  char ReadInt8() { return static_cast< char >(ReadUint8()); }
   bool ReadBool() { return ReadUint8() != 0; }
   uint GetReadPosition() const { return x8_ptr - x4_buffer; }
 

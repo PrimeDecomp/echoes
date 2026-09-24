@@ -1,16 +1,22 @@
 #include "MetroidPrime/CRuleSet.hpp"
+#include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+
+CFactoryFnReturn FRuleSetFactory(const SObjectTag& tag, CInputStream& in,
+                                 const CVParamTransfer& xfer) {
+  return rs_new CRuleSet(in);
+}
 
 CRuleSet::CRuleSet(CInputStream& input) {
   input.ReadInt32(); // magic
   input.ReadInt8();  // version
   CAssetId parentRule = static_cast< CAssetId >(input.ReadInt32());
   if (parentRule != kInvalidAssetId) {
-    m_parentRule = gpSimplePool->GetObj(SObjectTag('RULE', parentRule));
+    m_parentRule = TLockedToken< CRuleSet >(gpSimplePool->GetObj(SObjectTag('RULE', parentRule)));
   }
-  int ruleCount = input.ReadInt8();
+  int ruleCount = input.ReadInt16();
   m_rules.reserve(ruleCount);
   for (int i = 0; i < ruleCount; ++i) {
     m_rules.push_back_unsafe(CRuleSetRule(input));
@@ -18,13 +24,13 @@ CRuleSet::CRuleSet(CInputStream& input) {
 }
 
 CRuleSetRule::CRuleSetRule(CInputStream& input) {
-  int conditionCount = input.ReadInt8();
+  int conditionCount = input.ReadInt16();
   m_conditions.reserve(conditionCount);
   for (int i = 0; i < conditionCount; ++i) {
-    m_conditions.push_back(CRuleCondition(input));
+    m_conditions.push_back_unsafe(CRuleCondition(input));
   }
 
-  int actionCount = input.ReadInt8();
+  int actionCount = input.ReadInt16();
   m_actions.reserve(actionCount);
   for (int i = 0; i < actionCount; ++i) {
     m_actions.push_back_unsafe(CRuleAction(input));

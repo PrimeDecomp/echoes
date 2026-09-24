@@ -360,7 +360,11 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp"),
-            Object(NonMatching, "MetroidPrime/CRuleSet.cpp"),
+            Object(
+                NonMatching,
+                "MetroidPrime/CRuleSet.cpp",
+                extra_cflags=['-pragma "inline_max_size(125)"'] if config.version == "G2ME01" else [],
+            ),
             Object(NonMatching, "MetroidPrime/Player/CPlayer.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScanTreeInventory.cpp"),
         ],

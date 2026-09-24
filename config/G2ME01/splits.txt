@@ -112,7 +112,9 @@ MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 	.sdata2     start:0x8041D3F8 end:0x8041D400
 
 MetroidPrime/CRuleSet.cpp:
-	.text       start:0x801F5E04 end:0x801F6638
+	.text       start:0x801F5E04 end:0x801F7304
+	.rodata     start:0x803AC548 end:0x803AC550
+	.data       start:0x803B7AD0 end:0x803B7AE0
 
 MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
 	.text       start:0x8020EBF0 end:0x8020EE18

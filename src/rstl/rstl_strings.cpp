@@ -16,7 +16,7 @@ basic_string< char >::basic_string(CInputStream& in, const rmemory_allocator& al
 : x0_ptr(&mNull), x4_cow(nullptr), x8_size(0), xc_allocator(alloc) {
   char buffer[1025];
   int count = 0;
-  signed char ch = in.ReadInt8();
+  char ch = in.ReadInt8();
   while (ch != '\0') {
     buffer[count++] = ch;
     if (count == 1024) {
