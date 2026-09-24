@@ -1,11 +1,12 @@
+#include <critical_regions.h>
 #include <ansi_files.h>
 #include <stdio.h>
 
 size_t fwrite(const void* ptr, size_t memb_size, size_t num_memb, FILE* file) {
   size_t retval;
-  __begin_critical_region(2);
+  __begin_critical_region(files_access);
   retval = __fwrite(ptr, memb_size, num_memb, file);
-  __end_critical_region(2);
+  __end_critical_region(files_access);
   return (retval);
 }
 
