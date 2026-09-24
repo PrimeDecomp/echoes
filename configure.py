@@ -423,6 +423,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CTimeProvider.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
