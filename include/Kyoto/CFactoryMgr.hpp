@@ -16,16 +16,12 @@ private:
 class CFactoryFnReturn {
 public:
   template < typename T >
-  CFactoryFnReturn(T* ptr);
+  CFactoryFnReturn(T* ptr) : obj(TToken< T >::GetIObjObjectFor(ptr).release()) {}
 
   const rstl::auto_ptr<CObjOwnerDerivedFromIObjUntyped>& GetObjForTransfer() const { return obj; }
 private:
   rstl::auto_ptr< CObjOwnerDerivedFromIObjUntyped > obj;
 };
-
-template < typename T >
-CFactoryFnReturn::CFactoryFnReturn(T* ptr)
-: obj(TToken< T >::GetIObjObjectFor(ptr).release()) {}
 
 CFactoryFnReturn FStringTableFactory(const SObjectTag& tag, CInputStream& in,
                                      const CVParamTransfer& xfer);
