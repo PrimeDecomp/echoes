@@ -21,6 +21,14 @@
 
 class CMath {
 public:
+  // The type name is exported in the MP2 Wii SEL; the value names are guesses.
+  enum EEaseTypes { kET_Sinusoidal, kET_Quadratic };
+
+  static float EaseInOut(float t, EEaseTypes ease, float easeIn, float easeOut, float low,
+                         float high, float scale);
+  static float PhongBlob(float t, float exponent);
+  static bool SolveQuadratic(float a, float b, float c, float& plus, float& minus);
+
   static float FastFmod(float x, float y) {
     int v = static_cast< int >(x * (1.f / y));
     return x - v * y;
