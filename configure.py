@@ -530,6 +530,12 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "dtk",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/dtk.c"),
+        ],
+    ),
+    DolphinLib(
         "dvd",
         [
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdlow.c"),
