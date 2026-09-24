@@ -1,7 +1,6 @@
 #include "ansi_files.h"
 #include "types.h"
 
-#pragma dont_inline on 
 int fclose(FILE* file) {
   int flush_result, close_result;
 
@@ -67,4 +66,3 @@ int fflush(FILE* file) {
   file->buffer_len = 0;
   return 0;
 }
-#pragma dont_inline reset

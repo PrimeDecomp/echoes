@@ -1,3 +1,4 @@
+#include <critical_regions.h>
 #include <string.h>
 
 typedef struct Block {
@@ -432,7 +433,7 @@ static inline Block *__unlink(__mem_pool_obj *pool_obj, Block *bp) {
   return result;
 }
 
-static inline void deallocate_from_var_pools(__mem_pool_obj *pool_obj, void *ptr) {
+static void deallocate_from_var_pools(__mem_pool_obj *pool_obj, void *ptr) {
   SubBlock *sb = SubBlock_from_pointer(ptr);
   SubBlock *_sb;
 
@@ -514,7 +515,7 @@ void deallocate_from_fixed_pools(__mem_pool_obj *pool_obj, void *ptr, unsigned l
   }
 }
 
-static inline void __pool_free(__mem_pool *pool, void *ptr) {
+void __pool_free(__mem_pool *pool, void *ptr) {
   __mem_pool_obj *pool_obj;
   unsigned long size;
 
@@ -532,7 +533,11 @@ static inline void __pool_free(__mem_pool *pool, void *ptr) {
   }
 }
 
-void free(void *ptr) { __pool_free(get_malloc_pool(), ptr); }
+void free(void *ptr) {
+  __begin_critical_region(malloc_pool_access);
+  __pool_free(get_malloc_pool(), ptr);
+  __end_critical_region(malloc_pool_access);
+}
 
 static inline void *__pool_alloc(__mem_pool *pool, unsigned long size) {
   void *ptr;

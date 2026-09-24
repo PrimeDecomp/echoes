@@ -1,3 +1,4 @@
+#include <critical_regions.h>
 // #include <cctype>
 #include <ansi_files.h>
 #include <ansi_fp.h>
@@ -1223,9 +1224,11 @@ int printf(const char* format, ...) {
     return -1;
   }
 
+  __begin_critical_region(files_access);
   va_start(l, format);
   ret = __pformatter(&__FileWrite, (void*)stdout, format, l);
   va_end(l);
+  __end_critical_region(files_access);
   return ret;
 }
 
@@ -1237,13 +1240,15 @@ int fprintf(FILE* file, const char* format, ...) {
   int ret;
   va_list l;
 
-  if (fwide(stdout, -1) >= 0) {
+  if (fwide(file, -1) >= 0) {
     return -1;
   }
 
+  __begin_critical_region(files_access);
   va_start(l, format);
   ret = __pformatter(&__FileWrite, file, format, l);
   va_end(l);
+  __end_critical_region(files_access);
   return ret;
 }
 
@@ -1258,7 +1263,9 @@ int vprintf(const char* pFormat, va_list arg) {
     return -1;
   }
 
+  __begin_critical_region(files_access);
   ret = __pformatter(&__FileWrite, (void*)stdout, pFormat, arg);
+  __end_critical_region(files_access);
   return ret;
 }
 

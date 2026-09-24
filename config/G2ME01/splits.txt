@@ -338,12 +338,12 @@ Runtime/Gecko_ExceptionPPC.cp:
 	.bss        start:0x803E0640 end:0x803E0650
 
 Runtime/abort_exit.c:
-	.text       start:0x803470DC end:0x803471CC
+	.text       start:0x803470DC end:0x80347268
 	.bss        start:0x803E0650 end:0x803E0750
 	.sbss       start:0x80419CC8 end:0x80419CD8
 
 Runtime/alloc.c:
-	.text       start:0x803471CC end:0x8034771C
+	.text       start:0x80347268 end:0x8034771C
 	.rodata     start:0x803B0448 end:0x803B0460
 	.bss        start:0x803E0750 end:0x803E0788
 	.sbss       start:0x80419CD8 end:0x80419CE0
@@ -402,11 +402,14 @@ Runtime/misc_io.c:
 	.text       start:0x8034BEDC end:0x8034BEEC
 
 Runtime/printf.c:
-	.text       start:0x8034BEEC end:0x8034E154
+	.text       start:0x8034BEEC end:0x8034DFE8
 	.rodata     start:0x803B0548 end:0x803B0570
 	.data       start:0x803BC6A0 end:0x803BC8D0
 	.sdata      start:0x80418CC0 end:0x80418CC8
 	.sdata2     start:0x8041EFA0 end:0x8041EFA8
+
+Runtime/qsort.c:
+	.text       start:0x8034DFE8 end:0x8034E154
 
 Runtime/rand.c:
 	.text       start:0x8034E154 end:0x8034E17C
@@ -416,7 +419,10 @@ Runtime/float.c:
 	.sdata      start:0x80418CD0 end:0x80418D00
 
 Runtime/sscanf.c:
-	.text       start:0x8034E17C end:0x8034E2CC
+	.text       start:0x8034E17C end:0x8034E20C
+
+Runtime/signal.c:
+	.text       start:0x8034E20C end:0x8034E2CC
 	.bss        start:0x803E0A88 end:0x803E0AA0
 
 Runtime/string.c:

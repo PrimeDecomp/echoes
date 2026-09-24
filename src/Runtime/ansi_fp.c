@@ -166,6 +166,8 @@ static void __str2dec(decimal* d, const char* s, short exp) {
   if (*s != 0) {
     if (*s < 5)
       return;
+    if (*s > 5)
+      goto round;
     {
       const char* p = s + 1;
       for (; *p != 0; ++p)
@@ -179,7 +181,7 @@ static void __str2dec(decimal* d, const char* s, short exp) {
   }
 }
 
-static void __two_exp(decimal* result, short exp) {
+static void __two_exp(decimal* result, long exp) {
   switch (exp) {
   case -64:
     __str2dec(result, "542101086242752217003726400434970855712890625", -20);
@@ -247,19 +249,15 @@ static void __two_exp(decimal* result, short exp) {
   }
   {
     decimal x2;
-    __two_exp(&x2, (short)(exp / 2));
+    __two_exp(&x2, exp / 2);
     __timesdec(result, &x2, &x2);
-  }
-  if (exp & 1) {
-    decimal temp = *result;
-    if (exp > 0) {
-      decimal two;
-      __str2dec(&two, "2", 0);
-      __timesdec(result, &temp, &two);
-    } else {
-      decimal one_half;
-      __str2dec(&one_half, "5", -1);
-      __timesdec(result, &temp, &one_half);
+    if (exp & 1) {
+      decimal temp = *result;
+      if (exp > 0)
+        __str2dec(&x2, "2", 0);
+      else
+        __str2dec(&x2, "5", -1);
+      __timesdec(result, &temp, &x2);
     }
   }
 }
@@ -431,10 +429,10 @@ static void __num2dec_internal(decimal* d, double x) {
   {
     int exp;
     double frac = frexp(x, &exp);
-    short num_bits_extract = (short)(DBL_MANT_DIG - __count_trailing_zero(frac));
+    int num_bits_extract = DBL_MANT_DIG - __count_trailing_zero(frac);
     double integer;
     decimal int_d, pow2_d;
-    __two_exp(&pow2_d, (short)(exp - num_bits_extract));
+    __two_exp(&pow2_d, exp - num_bits_extract);
     frac = modf(ldexp(frac, num_bits_extract), &integer);
     __ull2dec(&int_d, (unsigned long long)integer);
     __timesdec(d, &int_d, &pow2_d);
@@ -551,7 +549,9 @@ double __dec2num(const decimal* d) {
       if (__less_dec(&feedback1, &dec)) {
 
         decimal feedback2, difflow, diffhigh;
-        double next_guess = nextafter(first_guess, (double)INFINITY);
+        double next_guess = first_guess;
+        unsigned long long* ull = (unsigned long long*)&next_guess;
+        ++*ull;
         if (isinf(next_guess)) {
           first_guess = next_guess;
           goto done;
@@ -560,7 +560,7 @@ double __dec2num(const decimal* d) {
         while (__less_dec(&feedback2, &dec)) {
           feedback1 = feedback2;
           first_guess = next_guess;
-          next_guess = nextafter(next_guess, (double)INFINITY);
+          ++*ull;
           if (isinf(next_guess)) {
             first_guess = next_guess;
             goto done;
@@ -576,12 +576,14 @@ double __dec2num(const decimal* d) {
           first_guess = next_guess;
       } else {
         decimal feedback2, difflow, diffhigh;
-        double next_guess = nextafter(first_guess, (double)(-INFINITY));
+        double next_guess = first_guess;
+        unsigned long long* ull = (unsigned long long*)&next_guess;
+        --*ull;
         __num2dec_internal(&feedback2, next_guess);
         while (__less_dec(&dec, &feedback2)) {
           feedback1 = feedback2;
           first_guess = next_guess;
-          next_guess = nextafter(next_guess, (double)(-INFINITY));
+          --*ull;
           __num2dec_internal(&feedback2, next_guess);
         }
         __minus_dec(&difflow, &dec, &feedback2);
