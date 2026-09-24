@@ -540,6 +540,7 @@ config.libs = [
         [
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdlow.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdfs.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvd.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdqueue.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvderror.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdidutils.c"),

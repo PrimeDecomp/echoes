@@ -51,7 +51,7 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
   AIRegisterDMACallback(NULL);
   AIInitDMA(0x81200000, 0x280);
   AIStartDMA();
-  DVDCancelAll(nullptr);
+  DVDCancelAllAsync(nullptr);
   loopExitCriteria = 0;
   PADControlMotor(0, 0);
   VISetBlack(1);
