@@ -374,6 +374,58 @@ Dolphin/card/CARDNet.c:
 	.text       start:0x8035D978 end:0x8035DA3C
 	.sdata      start:0x80418D38 end:0x80418D40
 
+Dolphin/dsp/dsp.c:
+	.text       start:0x8035DB28 end:0x8035DCE8
+	.data       start:0x803BCF58 end:0x803BCFD8
+	.sdata      start:0x80418D40 end:0x80418D48
+	.sbss       start:0x80419DC0 end:0x80419DC8
+
+Dolphin/dsp/dsp_debug.c:
+	.text       start:0x8035DCE8 end:0x8035DD38
+
+Dolphin/dsp/dsp_task.c:
+	.text       start:0x8035DD38 end:0x8035E5BC
+	.data       start:0x803BCFD8 end:0x803BD118
+	.sbss       start:0x80419DC8 end:0x80419DE0
+
+Dolphin/dvd/dvdqueue.c:
+	.text       start:0x80363204 end:0x803633FC
+	.bss        start:0x803E10F8 end:0x803E1118
+
+Dolphin/dvd/dvderror.c:
+	.text       start:0x803633FC end:0x80363594
+	.data       start:0x803BD690 end:0x803BD6D8
+
+Dolphin/dvd/dvdidutils.c:
+	.text       start:0x80363594 end:0x8036368C
+
+Dolphin/dvd/dvdfatal.c:
+	.text       start:0x8036368C end:0x803637B8
+	.rodata     start:0x803B08C0 end:0x803B08D8
+	.data       start:0x803BD6D8 end:0x803BDA88
+	.sdata      start:0x80418D70 end:0x80418D78
+	.sbss       start:0x80419ED0 end:0x80419ED8
+	.sdata2     start:0x8041F4C0 end:0x8041F4C8
+
+Dolphin/dvd/fstload.c:
+	.text       start:0x803637B8 end:0x803639F8
+	.data       start:0x803BDA88 end:0x803BDAF8
+	.bss        start:0x803E1118 end:0x803E1188
+	.sdata      start:0x80418D78 end:0x80418D88
+	.sbss       start:0x80419ED8 end:0x80419EE8
+
+Dolphin/exi/EXIUart.c:
+	.text       start:0x803653D4 end:0x8036598C
+	.sbss       start:0x80419EF0 end:0x80419F00
+
+Dolphin/mtx/mtx44.c:
+	.text       start:0x8036D670 end:0x8036D918
+	.sdata2     start:0x8041F5A8 end:0x8041F5B8
+
+Dolphin/os/OSAudioSystem.c:
+	.text       start:0x8036EC08 end:0x8036EE9C
+	.data       start:0x803BE730 end:0x803BE7B0
+
 Dolphin/os/OSCache.c:
 	.text       start:0x8036EE9C end:0x8036F514
 	.data       start:0x803BE7B0 end:0x803BE9E0
@@ -392,6 +444,10 @@ Dolphin/os/OSInterrupt.c:
 	.text       start:0x80372520 end:0x80372D8C
 	.data       start:0x803BF9F8 end:0x803BFA28
 	.sbss       start:0x80419FC0 end:0x80419FD8
+
+Dolphin/os/OSTime.c:
+	.text       start:0x80376148 end:0x803765C4
+	.data       start:0x803BFAD8 end:0x803BFB38
 
 Dolphin/si/SIBios.c:
 	.text       start:0x803782B4 end:0x80379B14

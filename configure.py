@@ -428,6 +428,36 @@ config.libs = [
         ],
     },
     DolphinLib(
+        "dsp",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp_debug.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp_task.c"),
+        ],
+    ),
+    DolphinLib(
+        "dvd",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdqueue.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvderror.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdidutils.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdfatal.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/fstload.c"),
+        ],
+    ),
+    DolphinLib(
+        "exi",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/exi/EXIUart.c"),
+        ],
+    ),
+    DolphinLib(
+        "mtx",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx44.c", extra_cflags=["-DGEKKO"]),
+        ],
+    ),
+    DolphinLib(
         "ai",
         [
             Object(MatchingFor("G2ME01"), "Dolphin/ai.c"),
@@ -492,6 +522,8 @@ config.libs = [
             Object(Matching, "Dolphin/os/OSContext.c"),
             Object(Matching, "Dolphin/os/OSError.c"),
             Object(Matching, "Dolphin/os/OSInterrupt.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSAudioSystem.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
         ],
     ),
     # Begin RELs
