@@ -5,7 +5,9 @@
 extern "C" {
 #endif
 
-#define FLT_MAX 3.402823466e+38f
+extern int __float_max[];
+
+#define FLT_MAX (*(float*)__float_max)
 #define FLT_EPSILON 1.192092896e-07f
 #define FLT_MIN 1.175494351e-38f
 

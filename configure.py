@@ -386,7 +386,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/CToken.cpp"),
             Object(NonMatching, "Kyoto/Math/CTransform4f.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CUnitVector3f.cpp"),
-            Object(NonMatching, "Kyoto/Math/CAABox.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Math/CAABox.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CTri.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CQuad.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CPlane.cpp"),
@@ -425,7 +425,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamReader.cpp"),
-            Object(NonMatching, "rstl/rstl_map.cpp"),
+            Object(MatchingFor("G2ME01"), "rstl/rstl_map.cpp"),
             Object(
                 MatchingFor("G2ME01"),
                 "rstl/rstl_strings.cpp",
