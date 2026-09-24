@@ -308,6 +308,11 @@ Kyoto/Animation/CCharAnimTime.cpp:
 	.sdata      start:0x80418BD0 end:0x80418BE8
 	.sdata2     start:0x8041E9A0 end:0x8041E9A8
 
+Kyoto/Graphics/CColor.cpp:
+	.text       start:0x80306F80 end:0x80307030
+	.ctors      start:0x803A564C end:0x803A5650
+	.sbss       start:0x80419B38 end:0x80419B5C
+
 Kyoto/Input/DolphinIController.cpp:
 	.text       start:0x8030B4A8 end:0x8030B554
 	.rodata     start:0x803AFD90 end:0x803AFD98
@@ -351,6 +356,10 @@ Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.sdata      start:0x80418C10 end:0x80418C18
 	.sbss       start:0x80419C00 end:0x80419C18
 	.sdata2     start:0x8041EA88 end:0x8041EAD0
+
+Kyoto/Graphics/DolphinCColor.cpp:
+	.text       start:0x803203DC end:0x803208F0
+	.sdata2     start:0x8041EB40 end:0x8041EB58
 
 Kyoto/Input/CRumbleVoice.cpp:
 	.text       start:0x80324D44 end:0x8032579C

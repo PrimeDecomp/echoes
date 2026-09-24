@@ -407,6 +407,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/PVS/CPVSVisSet.cpp"),
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Graphics/CColor.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/DolphinCColor.cpp"),
             Object(NonMatching, "Kyoto/Input/CRumbleVoice.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Input/RumbleAdsr.cpp"),
             Object(NonMatching, "Kyoto/Input/CRumbleGenerator.cpp"),
