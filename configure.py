@@ -469,6 +469,12 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "vi",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/vi/vi.c"),
+        ],
+    ),
+    DolphinLib(
         "ai",
         [
             Object(MatchingFor("G2ME01"), "Dolphin/ai.c"),

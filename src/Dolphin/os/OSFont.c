@@ -3,8 +3,6 @@
 #include "dolphin/os.h"
 #include "dolphin/vi.h"
 
-#define VI_DTV_STAT 55
-
 BOOL __OSReadROM(void* buffer, s32 length, s32 offset);
 char* OSUTF8to32(const char* utf8, u32* utf32);
 u16* OSUTF16to32(const u16* utf16, u32* utf32);

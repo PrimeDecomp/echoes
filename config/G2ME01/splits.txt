@@ -306,6 +306,13 @@ Runtime/Gecko_ExceptionPPC.cp:
 	.data       start:0x803BBFD8 end:0x803BC0C0
 	.bss        start:0x803E0640 end:0x803E0650
 
+Dolphin/vi/vi.c:
+	.text       start:0x80352F58 end:0x8035512C
+	.data       start:0x803BC8D0 end:0x803BCCB8
+	.bss        start:0x803E0AA0 end:0x803E0BE8
+	.sdata      start:0x80418D08 end:0x80418D18
+	.sbss       start:0x80419D00 end:0x80419D68
+
 Dolphin/ar/ar.c:
 	.text       start:0x8035512C end:0x80356C7C
 	.data       start:0x803BCCB8 end:0x803BCD00
