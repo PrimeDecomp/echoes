@@ -49,7 +49,6 @@ static int is_utf8_complete(const char* s, size_t n) {
     return (-1);
 }
 
-#pragma dont_inline on
 static int unicode_to_UTF8(char* s, wchar_t wchar) {
   int number_of_bytes;
   wchar_t wide_char;
@@ -83,7 +82,6 @@ static int unicode_to_UTF8(char* s, wchar_t wchar) {
 
   return (number_of_bytes);
 }
-#pragma dont_inline reset
 
 int wctomb(char* s, wchar_t wchar) { return (unicode_to_UTF8(s, wchar)); }
 

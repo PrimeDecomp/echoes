@@ -1,3 +1,4 @@
+#include <critical_regions.h>
 #include <ansi_files.h>
 #include <errno.h>
 
@@ -21,13 +22,24 @@ inline fpos_t _ftell(FILE* file) {
     position -= charsInUndoBuffer;
   }
 
+  if (!file->mode.binary_io) {
+    int n = file->buffer_ptr - file->buffer - charsInUndoBuffer;
+    unsigned char* p = (unsigned char*)file->buffer;
+
+    while (n--)
+      if (*p++ == '\n')
+        position++;
+  }
+
   return (position);
 }
 
 long ftell(FILE* file) {
   long retval;
 
+  __begin_critical_region(files_access);
   retval = (long)_ftell(file);
+  __end_critical_region(files_access);
 
   return retval;
 }
@@ -95,7 +107,9 @@ int fseek(FILE * file, long offset, int mode)
 		int retval;		
 		
 		
+		__begin_critical_region(files_access);
 		retval = _fseek(file, real_offset, mode);
+		__end_critical_region(files_access);
 
 
 		return(retval);

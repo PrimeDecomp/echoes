@@ -1,3 +1,4 @@
+#include <critical_regions.h>
 #include "ansi_files.h"
 
 static unsigned char stdin_buff[0x100];
@@ -84,7 +85,7 @@ void __close_all() {
   FILE* p = &__files[0];
   FILE* plast;
 
-  // __begin_critical_region(2);
+  __begin_critical_region(files_access);
 
   while (p != NULL) {
     if (p->mode.file_kind != __closed_file) {
@@ -102,7 +103,7 @@ void __close_all() {
     }
   }
 
-  // __end_critical_region(2);
+  __end_critical_region(files_access);
 }
 
 int __flush_all() {
