@@ -8,7 +8,7 @@
 class CSegId {
 public:
   CSegId() : x0_id(-1) {}
-  CSegId(CInputStream& in) : x0_id(in.ReadInt32()) {}
+  CSegId(CInputStream& in);
 private:
   uchar x0_id;
 };

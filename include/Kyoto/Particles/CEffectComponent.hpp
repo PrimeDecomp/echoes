@@ -3,28 +3,28 @@
 
 #include "Kyoto/Particles/CParticleData.hpp"
 
-#include "rstl/string.hpp"
-
 class CEffectComponent {
 public:
   explicit CEffectComponent(CInputStream& in);
 
-  const rstl::string& GetComponentName() const { return x0_name; }
-  const SObjectTag& GetParticleTag() const { return x10_tag; }
-  const rstl::string& GetSegmentName() const { return x18_boneName; }
-  float GetScale() const { return x28_scale; }
-  CParticleData::EParentedMode GetParentedMode() const { return x2c_parentedMode; }
-  uint GetFlags() const {return x30_flags; }
+  uint GetComponentNameHash() const { return x0_nameHash; }
+  const SObjectTag& GetParticleTag() const { return x4_tag; }
+  CSegId GetSegmentId() const { return xc_bone; }
+  float GetScale() const { return x10_scale; }
+  CParticleData::EParentedMode GetParentedMode() const { return x14_parentedMode; }
+  uint GetFlags() const { return x18_flags; }
 
 private:
   SObjectTag GetSObjectTagFromStream(CInputStream& in);
 
-  rstl::string x0_name;
-  SObjectTag x10_tag;
-  rstl::string x18_boneName;
-  float x28_scale;
-  CParticleData::EParentedMode x2c_parentedMode;
-  uint x30_flags;
+  // Echoes keeps a CPOINode string hash and segment ID instead of Prime's names.
+  uint x0_nameHash;
+  SObjectTag x4_tag;
+  CSegId xc_bone;
+  float x10_scale;
+  CParticleData::EParentedMode x14_parentedMode;
+  uint x18_flags;
 };
+CHECK_SIZEOF(CEffectComponent, 0x1c)
 
 #endif // _CEFFECTCOMPONENT

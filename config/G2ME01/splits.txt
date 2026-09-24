@@ -382,6 +382,12 @@ Kyoto/Particles/CEmitterElement.cpp:
 	.bss        start:0x803DFE90 end:0x803DFEA0
 	.sdata2     start:0x8041EA30 end:0x8041EA50
 
+Kyoto/Particles/CEffectComponent.cpp:
+	.text       start:0x803142F4 end:0x803143D8
+
+Kyoto/Particles/CParticleData.cpp:
+	.text       start:0x803143D8 end:0x80314474
+
 Kyoto/CTimeProvider.cpp:
 	.text       start:0x80314474 end:0x8031454C
 	.sbss       start:0x80419BF8 end:0x80419C00
