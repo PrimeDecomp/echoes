@@ -534,6 +534,7 @@ config.libs = [
             Object(Matching, "Dolphin/os/OSError.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSExec.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSFatal.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSFont.c", extra_cflags=["-char unsigned"]),
             Object(Matching, "Dolphin/os/OSInterrupt.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OS.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAlarm.c"),
