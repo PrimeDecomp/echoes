@@ -497,6 +497,10 @@ Dolphin/os/OSReset.c:
 	.data       start:0x803BFA88 end:0x803BFAD8
 	.sbss       start:0x80419FE0 end:0x80419FF0
 
+Dolphin/os/OSResetSW.c:
+	.text       start:0x803740D8 end:0x80374464
+	.sbss       start:0x80419FF0 end:0x8041A010
+
 Dolphin/os/OSRtc.c:
 	.text       start:0x80374464 end:0x80375184
 	.bss        start:0x803E1C20 end:0x803E1C78
