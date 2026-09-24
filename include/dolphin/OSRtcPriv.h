@@ -30,5 +30,7 @@ OSSram* __OSLockSram();
 OSSramEx* __OSLockSramEx();
 void OSSetWirelessID(s32 chan, u16 id);
 u16 OSGetWirelessID(s32 chan);
+u16 OSGetGbsMode(void);
+void OSSetGbsMode(u16 mode);
 
 #endif // _DOLPHIN_OSRTCPRIV
