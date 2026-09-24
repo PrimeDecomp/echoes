@@ -1,6 +1,8 @@
 #ifndef _CGAMEAREA
 #define _CGAMEAREA
 
+#include "Kyoto/SObjectTag.hpp"
+
 class CScriptAreaProperties;
 class CGameArea {
 public:
@@ -15,6 +17,7 @@ public:
   };
 
   int GetPhase() const { return m_phase; }
+  CAssetId GetAreaAssetId() const { return m_areaAssetId; }
 
   void SetAreaAttributes(CScriptAreaProperties*);
   bool IsLoaded() const { return m_phase == 0x10; }
@@ -23,7 +26,9 @@ public:
   EOcclusionState GetOcclusionState() const { return m_postConstructed->m_occlusionState; }
 
 private:
-  char pad1[0xf4];
+  char pad1[0x54];
+  CAssetId m_areaAssetId;             // 0x54
+  char pad2[0x9c];
   int m_phase;                         // 0xf4;
   CGameArea* m_next;                   // 0xf8
   CGameArea* m_prev;                   // 0xfc

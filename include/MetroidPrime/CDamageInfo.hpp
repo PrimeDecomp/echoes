@@ -33,8 +33,8 @@ public:
 
   CDamageInfo ApplyDoubleDamage(const CPlayerState& state) const;
 
-  ushort GetWeaponMode1() const { return m_weaponMode1; }
-  ushort GetWeaponMode2() const { return m_weaponMode2; }
+  ushort GetWeaponMode1() const { return m_weaponMode.GetRawType(); }
+  const CWeaponMode& GetWeaponMode() const { return m_weaponMode; }
   // void SetWeaponMode(const CWeaponMode& mode) { x0_weaponMode = mode; }
   float GetRadius() const { return m_damageRadius; }
   void SetRadius(float r) { m_damageRadius = r; }
@@ -62,8 +62,7 @@ public:
   }
 
 private:
-  ushort m_weaponMode1;
-  ushort m_weaponMode2;
+  CWeaponMode m_weaponMode;
   float m_damage;
   float m_radiusDamageAmount;
   float m_damageRadius;

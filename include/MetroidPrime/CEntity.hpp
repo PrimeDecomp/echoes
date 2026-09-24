@@ -17,10 +17,10 @@ public:
   virtual void PreThink(float dt, CStateManager& mgr);
   virtual void Think(float dt, CStateManager& mgr);
   virtual void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&);
-  virtual void SendActive(CStateManager& mgr, bool active);
+  void SendActive(CStateManager& mgr, bool active);
   virtual void SetActive(const bool active);
 
-  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint inGrave);
+  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint castFlags);
 
   void SendScriptMsgs(EScriptObjectState state, CStateManager& mgr, TUniqueId uid,
                       EScriptObjectMessage msg);
@@ -34,6 +34,8 @@ public:
   TAreaId GetCurrentAreaId() const { return m_areaId; }
   const bool GetActive() const { return m_active; }
   bool IsScriptingBlocked() const { return m_scriptingBlocked; }
+  bool GetEditorFlag2() const { return m_entityUnknown; }
+  uint GetCastFlags() const { return m_castFlags; }
 
   // might be fake?
   rstl::vector< SConnection >& ConnectionList() { return m_conns; }
@@ -46,14 +48,15 @@ public:
                                 EScriptObjectMessage) const;
   TUniqueId FindConnectedObject_if(const CStateManager&, EScriptObjectState, EScriptObjectMessage,
                                    const CValidEntityPredicate&) const;
-  void /* TODO */ FindConnectedObjects(const CStateManager&, EScriptObjectState,
-                                       EScriptObjectMessage) const;
-  void /* TODO */ FindConnectedObjects_if(const CStateManager&, EScriptObjectState,
-                                          EScriptObjectMessage, const CValidEntityPredicate&) const;
-  void /* TODO */ CheckConnectedObject(const CStateManager&, EScriptObjectState,
-                                       EScriptObjectMessage) const;
-  void /* TODO */ CheckConnectedObject_if(const CStateManager&, EScriptObjectState,
-                                          EScriptObjectMessage, const CValidEntityPredicate&) const;
+  rstl::vector< TUniqueId > FindConnectedObjects(const CStateManager&, EScriptObjectState,
+                                                 EScriptObjectMessage) const;
+  rstl::vector< TUniqueId > FindConnectedObjects_if(
+      const CStateManager&, EScriptObjectState, EScriptObjectMessage,
+      const CValidEntityPredicate&) const;
+  TUniqueId CheckConnectedObject(const CStateManager&, EScriptObjectState,
+                                 EScriptObjectMessage) const;
+  TUniqueId CheckConnectedObject_if(const CStateManager&, EScriptObjectState,
+                                    EScriptObjectMessage, const CValidEntityPredicate&) const;
 
 private:
   TAreaId m_areaId;  // x4
@@ -62,7 +65,7 @@ private:
   rstl::vector< SConnection > m_conns;  // x10
   uint m_active : 1; // x20
   uint m_notInArea : 1;
-  uint m_inGraveyard : 4;
+  uint m_castFlags : 4;
   uint m_scriptingBlocked : 1;
   uint m_entityUnknown : 1;
 };

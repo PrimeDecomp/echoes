@@ -3,15 +3,34 @@
 
 #include "rstl/auto_ptr.hpp"
 
+enum EPVSVisSetState {
+  kVSS_EndOfTree,
+  kVSS_NodeFound,
+  kVSS_OutOfBounds,
+};
+
+class CPVSVisOctree;
+class CVector3f;
 class CPVSVisSet {
 public:
-  static CPVSVisSet Reset(int);
+  CPVSVisSet(int numBits, int numLights, rstl::auto_ptr< const char > leafPtr);
+  CPVSVisSet(EPVSVisSetState state);
+
+  EPVSVisSetState GetVisible(int index) const;
+  EPVSVisSetState GetState() const { return x0_state; }
+  static EPVSVisSetState CombineStates(EPVSVisSetState a, EPVSVisSetState b);
+
+  static inline CPVSVisSet MakeFromMemory(const int numBits, const int numLights,
+                                          const rstl::auto_ptr< const char >& leafPtr) {
+    return CPVSVisSet(numBits, numLights, leafPtr);
+  }
 
 private:
-  int x0_state;
-  uint x4_numBits;
-  uint x8_numLights;
-  rstl::auto_ptr< u8 > x10_ptr;
+  EPVSVisSetState x0_state;
+  int x4_numBits;
+  int x8_numLights;
+  rstl::auto_ptr< const char > xc_ptr;
 };
+CHECK_SIZEOF(CPVSVisSet, 0x14);
 
 #endif // _CPVSVISSET

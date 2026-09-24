@@ -12,6 +12,9 @@ inline uint SwapBytes(uint x) {
 #endif
   return x;
 }
+inline int SwapBytes(int x) { return x; }
+inline short SwapBytes(short x) { return x; }
+inline ushort SwapBytes(ushort x) { return x; }
 inline float SwapBytes(float x) {
   union {
     float f;

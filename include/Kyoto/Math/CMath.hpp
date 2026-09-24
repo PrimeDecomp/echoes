@@ -26,7 +26,9 @@ public:
     return x - v * y;
   }
   template < typename T >
-  static const T& Clamp(const T& min, const T& val, const T& max);
+  static T Clamp(T min, T val, T max) {
+    return min > val ? min : max < val ? max : val;
+  }
   static inline int ClampI(int min, int val, int max) {
     return val < min ? min : (val <= max ? val : max);
   }
@@ -122,11 +124,6 @@ public:
 
   static int FloorPowerOfTwo(int v);
 };
-
-template < typename T >
-const T& CMath::Clamp(const T& min, const T& val, const T& max) {
-  return min > val ? min : max < val ? max : val;
-}
 
 template < typename T >
 const T& CMath::Min(const T& a, const T& b) {

@@ -20,6 +20,7 @@
 #include "MetroidPrime/CMainFlow.hpp"
 #include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
@@ -279,3 +280,9 @@ void CMain::StreamNewGameState(CInputStream& in, int saveIdx) {
   gpGameState = gameGlobalObjects->GameState().get();
   // gpGameState->HintOptions().SetHintNextTime();
 }
+
+CPlayerState::~CPlayerState() {}
+
+CPlayerState::SPersistentState::~SPersistentState() {}
+
+CStaticInterference::~CStaticInterference() {}

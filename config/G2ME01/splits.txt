@@ -20,7 +20,8 @@ MetroidPrime/CEulerAngles.cpp:
 	.bss        start:0x8040AD4C end:0x8040AD58 align:4 common
 
 MetroidPrime/main.cpp:
-	.text       start:0x800053B8 end:0x80008B60
+	.text       start:0x800053B8 end:0x80009880
+	.ctors      start:0x803A54A4 end:0x803A54A8
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
 MetroidPrime/Player/CPlayer.cpp:
@@ -31,9 +32,9 @@ MetroidPrime/CStateManager.cpp:
 	.text       start:0x80036200 end:0x80044CA4
 
 MetroidPrime/CEntity.cpp:
-	.text       start:0x80047E5C end:0x8004875C
+	.text       start:0x800476A8 end:0x8004875C
 	.ctors      start:0x803A54C4 end:0x803A54C8
-	.data       start:0x803B1B40 end:0x803B1B60
+	.data       start:0x803B1B30 end:0x803B1B60
 	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common
 
 MetroidPrime/CActor.cpp:
@@ -41,9 +42,14 @@ MetroidPrime/CActor.cpp:
 	.data       start:0x803B1BC0 end:0x803B1C40
 
 MetroidPrime/Player/CPlayerState.cpp:
-	.text       start:0x80084864 end:0x80086444
+	.text       start:0x80083FE0 end:0x800866C8
 	.rodata     start:0x803A7288 end:0x803A74E8
+	.data       start:0x803B2878 end:0x803B28F8
+	.sbss       start:0x80419040 end:0x8041904C
 	.sdata2     start:0x8041ABD0 end:0x8041AC00
+
+MetroidPrime/TypesMatch.cpp:
+	.text       start:0x800972BC end:0x8009D644
 
 MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14
@@ -77,6 +83,12 @@ MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
+
+MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
+	.text       start:0x8015CD4C end:0x8015DDE8
+	.rodata     start:0x803A95F8 end:0x803A9620
+	.data       start:0x803B5430 end:0x803B5450
+	.sdata2     start:0x8041C460 end:0x8041C468
 
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
@@ -137,9 +149,47 @@ Kyoto/Graphics/CGX.cpp:
 	.bss        start:0x803DF828 end:0x803DFA8C
 	.sdata      start:0x80418AD0 end:0x80418AD4
 
+Kyoto/Math/CloseEnough.cpp:
+	.text       start:0x802C60EC end:0x802C62C4
+	.ctors      start:0x803A55F0 end:0x803A55F4
+	.sbss       start:0x80419A28 end:0x80419A30
+	.sdata2     start:0x8041E560 end:0x8041E568
+
+Kyoto/Math/CMatrix3f.cpp:
+	.text       start:0x802C62C4 end:0x802C6AF0
+	.ctors      start:0x803A55F4 end:0x803A55F8
+	.bss        start:0x80417360 end:0x80417384 align:4 common
+	.sdata2     start:0x8041E568 end:0x8041E570
+
+Kyoto/Math/CMatrix4f.cpp:
+	.text       start:0x802C6AF0 end:0x802C6D24
+	.ctors      start:0x803A55F8 end:0x803A55FC
+	.bss        start:0x80417384 end:0x804173C4 align:4 common
+	.sdata2     start:0x8041E570 end:0x8041E578
+
+Kyoto/Math/CNUQuaternion.cpp:
+	.text       start:0x802C6D24 end:0x802C7380
+	.sdata2     start:0x8041E578 end:0x8041E588
+
+Kyoto/Math/CQuaternion.cpp:
+	.text       start:0x802C7380 end:0x802C89B4
+	.ctors      start:0x803A55FC end:0x803A5600
+	.bss        start:0x804173C4 end:0x804173D4 align:4 common
+	.sbss       start:0x80419A30 end:0x80419A48
+	.sdata2     start:0x8041E588 end:0x8041E5C0
+
+Kyoto/CRandom16.cpp:
+	.text       start:0x802C89B4 end:0x802C8BB8
+	.sbss       start:0x80419A48 end:0x80419A50
+	.sdata2     start:0x8041E5C0 end:0x8041E5D0
+
 Kyoto/Math/CTransform4f.cpp:
 	.text       start:0x802C8BB8 end:0x802CA12C
 	.ctors      start:0x803A5600 end:0x803A5604
+
+Kyoto/Math/CUnitVector3f.cpp:
+	.text       start:0x802CA12C end:0x802CA1C0
+	.sdata2     start:0x8041E5E0 end:0x8041E5E8
 
 Kyoto/Math/CVector2f.cpp:
 	.text       start:0x802CA1C0 end:0x802CA5B0
@@ -166,6 +216,33 @@ Kyoto/Math/CVector3i.cpp:
 	.text       start:0x802CB124 end:0x802CB330
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
+
+Kyoto/CCrc32.cpp:
+	.text       start:0x802CDF8C end:0x802CE098
+	.rodata     start:0x803AF420 end:0x803AF820
+
+Kyoto/Alloc/CCircularBuffer.cpp:
+	.text       start:0x802CE098 end:0x802CE224
+
+Kyoto/Alloc/CMemory.cpp:
+	.text       start:0x802CE224 end:0x802CE72C
+	.ctors      start:0x803A5618 end:0x803A561C
+	.rodata     start:0x803AF820 end:0x803AF850
+	.bss        start:0x803DFBD8 end:0x803DFCA8
+	.sdata      start:0x80418B10 end:0x80418B18
+	.sbss       start:0x80419A60 end:0x80419A70
+
+Kyoto/Alloc/IAllocator.cpp:
+	.text       start:0x802CE72C end:0x802CE814
+	.data       start:0x803BA2B8 end:0x803BA2F8
+
+Kyoto/PVS/CPVSVisOctree.cpp:
+	.text       start:0x802CE814 end:0x802CEA14
+	.rodata     start:0x803AF850 end:0x803AF870
+	.sdata2     start:0x8041E758 end:0x8041E760
+
+Kyoto/PVS/CPVSVisSet.cpp:
+	.text       start:0x802CEA14 end:0x802CEE6C
 
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
@@ -215,6 +292,20 @@ Kyoto/DolphinCDvdFile.cpp:
 	.text       start:0x8030BF9C end:0x8030CD1C
 	.rodata     start:0x803AFD98 end:0x803AFDA8
 	.sbss       start:0x80419B98 end:0x80419BA0
+
+Kyoto/Alloc/CMediumAllocPool.cpp:
+	.text       start:0x8030CD1C end:0x8030D6CC
+	.sbss       start:0x80419BA0 end:0x80419BA8
+
+Kyoto/Alloc/CSmallAllocPool.cpp:
+	.text       start:0x8030D6CC end:0x8030D9E0
+
+Kyoto/Alloc/CGameAllocator.cpp:
+	.text       start:0x8030D9E0 end:0x8030EEE4
+	.rodata     start:0x803AFDA8 end:0x803AFE58
+	.data       start:0x803BB088 end:0x803BB0C8
+	.sbss       start:0x80419BA8 end:0x80419BB8
+	.sdata2     start:0x8041EA28 end:0x8041EA30
 
 Kyoto/CARAMToken.cpp:
 	.text       start:0x8031454C end:0x80314DC4
@@ -287,9 +378,28 @@ Kyoto/Streams/DolphinCLZOInputStream.cpp:
 	.rodata     start:0x803B0358 end:0x803B0360
 	.data       start:0x803BBFB8 end:0x803BBFC8
 
+Kyoto/Streams/CFilePreload.cpp:
+	.text       start:0x803442B4 end:0x80344D10
+	.ctors      start:0x803A5688 end:0x803A568C
+	.rodata     start:0x803B0360 end:0x803B0368
+	.bss        start:0x803E0618 end:0x803E0640
+
+Runtime/__va_arg.c:
+	.text       start:0x80344D10 end:0x80344DD8
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
 	.sbss       start:0x80419CC0 end:0x80419CC4
+
+Runtime/CPlusLibPPC.cpp:
+	.text       start:0x80344E38 end:0x80344E68
+
+Runtime/ptmf.c:
+	.text       start:0x80345424 end:0x803454A4
+
+Runtime/runtime.c:
+	.text       start:0x803454A4 end:0x80345C34
+	.rodata     start:0x803B0398 end:0x803B03B0
 
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x80345C34 end:0x80345CA4
@@ -305,6 +415,220 @@ Runtime/Gecko_ExceptionPPC.cp:
 	.rodata     start:0x803B03B0 end:0x803B0448
 	.data       start:0x803BBFD8 end:0x803BC0C0
 	.bss        start:0x803E0640 end:0x803E0650
+
+Runtime/abort_exit.c:
+	.text       start:0x803470DC end:0x803471CC
+	.bss        start:0x803E0650 end:0x803E0750
+	.sbss       start:0x80419CC8 end:0x80419CD8
+
+Runtime/alloc.c:
+	.text       start:0x803471CC end:0x8034771C
+	.rodata     start:0x803B0448 end:0x803B0460
+	.bss        start:0x803E0750 end:0x803E0788
+	.sbss       start:0x80419CD8 end:0x80419CE0
+
+Runtime/errno.c:
+	.sbss       start:0x80419CE0 end:0x80419CE8
+
+Runtime/ansi_files.c:
+	.text       start:0x8034771C end:0x80347834
+	.data       start:0x803BC0C0 end:0x803BC200
+	.bss        start:0x803E0788 end:0x803E0A88
+
+Runtime/ansi_fp.c:
+	.text       start:0x80347834 end:0x8034AE10
+	.rodata     start:0x803B0460 end:0x803B0540
+	.data       start:0x803BC200 end:0x803BC368
+	.sdata2     start:0x8041EF68 end:0x8041EF98
+
+Runtime/arith.c:
+	.text       start:0x8034AE10 end:0x8034AE20
+
+Runtime/buffer_io.c:
+	.text       start:0x8034AE20 end:0x8034AF18
+
+Runtime/critical_regions.gamecube.c:
+	.text       start:0x8034AF18 end:0x8034AF24
+
+Runtime/ctype.c:
+	.text       start:0x8034AF24 end:0x8034AF48
+	.data       start:0x803BC368 end:0x803BC668
+
+Runtime/locale.c:
+	.rodata     start:0x803B0540 end:0x803B0548
+	.data       start:0x803BC668 end:0x803BC6A0
+
+Runtime/direct_io.c:
+	.text       start:0x8034AF48 end:0x8034B2D0
+
+Runtime/file_io.c:
+	.text       start:0x8034B2D0 end:0x8034B5C4
+
+Runtime/FILE_POS.c:
+	.text       start:0x8034B5C4 end:0x8034B984
+
+Runtime/mbstring.c:
+	.text       start:0x8034B984 end:0x8034BA9C
+	.sdata2     start:0x8041EF98 end:0x8041EFA0
+
+Runtime/mem.c:
+	.text       start:0x8034BA9C end:0x8034BC0C
+
+Runtime/mem_funcs.c:
+	.text       start:0x8034BC0C end:0x8034BEDC
+
+Runtime/misc_io.c:
+	.text       start:0x8034BEDC end:0x8034BEEC
+
+Runtime/printf.c:
+	.text       start:0x8034BEEC end:0x8034E154
+	.rodata     start:0x803B0548 end:0x803B0570
+	.data       start:0x803BC6A0 end:0x803BC8D0
+	.sdata      start:0x80418CC0 end:0x80418CC8
+	.sdata2     start:0x8041EFA0 end:0x8041EFA8
+
+Runtime/rand.c:
+	.text       start:0x8034E154 end:0x8034E17C
+	.sdata      start:0x80418CC8 end:0x80418CD0
+
+Runtime/float.c:
+	.sdata      start:0x80418CD0 end:0x80418D00
+
+Runtime/sscanf.c:
+	.text       start:0x8034E17C end:0x8034E2CC
+	.bss        start:0x803E0A88 end:0x803E0AA0
+
+Runtime/string.c:
+	.text       start:0x8034E2CC end:0x8034E5A8
+
+Runtime/strtold.c:
+	.text       start:0x8034E5A8 end:0x8034F640
+	.rodata     start:0x803B0570 end:0x803B05A8
+	.sdata2     start:0x8041EFA8 end:0x8041EFC0
+
+Runtime/wchar_io.c:
+	.text       start:0x8034F640 end:0x8034F6C8
+
+Runtime/uart_console_io.c:
+	.text       start:0x8034F6C8 end:0x8034F7A0
+	.sbss       start:0x80419CE8 end:0x80419CF0
+
+Runtime/e_acos.c:
+	.text       start:0x8034F7A0 end:0x8034F9DC
+	.sdata2     start:0x8041EFC0 end:0x8041F048
+
+Runtime/e_asin.c:
+	.text       start:0x8034F9DC end:0x8034FC14
+	.sdata2     start:0x8041F048 end:0x8041F0D0
+
+Runtime/e_atan2.c:
+	.text       start:0x8034FC14 end:0x8034FEA4
+	.sdata2     start:0x8041F0D0 end:0x8041F128
+
+Runtime/e_fmod.c:
+	.text       start:0x8034FEA4 end:0x803501E0
+	.rodata     start:0x803B05A8 end:0x803B05B8
+
+Runtime/e_log.c:
+	.text       start:0x803501E0 end:0x8035045C
+	.sbss       start:0x80419CF0 end:0x80419CF8
+	.sdata2     start:0x8041F128 end:0x8041F1A8
+
+Runtime/e_log10.c:
+	.text       start:0x8035045C end:0x8035056C
+	.sbss       start:0x80419CF8 end:0x80419D00
+	.sdata2     start:0x8041F1A8 end:0x8041F1D8
+
+Runtime/e_pow.c:
+	.text       start:0x8035056C end:0x80350D9C
+	.rodata     start:0x803B05B8 end:0x803B05E8
+	.sdata2     start:0x8041F1D8 end:0x8041F2E8
+
+Runtime/e_rem_pio2.c:
+	.text       start:0x80350D9C end:0x8035113C
+	.rodata     start:0x803B05E8 end:0x803B0770
+	.sdata2     start:0x8041F2E8 end:0x8041F340
+
+Runtime/k_cos.c:
+	.text       start:0x8035113C end:0x80351230
+	.sdata2     start:0x8041F340 end:0x8041F388
+
+Runtime/k_rem_pio2.c:
+	.text       start:0x80351230 end:0x80352084
+	.rodata     start:0x803B0770 end:0x803B07C0
+	.sdata2     start:0x8041F388 end:0x8041F3C8
+
+Runtime/k_sin.c:
+	.text       start:0x80352084 end:0x80352124
+	.sdata2     start:0x8041F3C8 end:0x8041F400
+
+Runtime/k_tan.c:
+	.text       start:0x80352124 end:0x80352338
+	.rodata     start:0x803B07C0 end:0x803B0828
+	.sdata2     start:0x8041F400 end:0x8041F438
+
+Runtime/s_atan.c:
+	.text       start:0x80352338 end:0x80352550
+	.rodata     start:0x803B0828 end:0x803B08C0
+	.sdata2     start:0x8041F438 end:0x8041F460
+
+Runtime/s_copysign.c:
+	.text       start:0x80352550 end:0x80352578
+
+Runtime/s_cos.c:
+	.text       start:0x80352578 end:0x8035264C
+	.sdata2     start:0x8041F460 end:0x8041F468
+
+Runtime/s_floor.c:
+	.text       start:0x8035264C end:0x80352794
+	.sdata2     start:0x8041F468 end:0x8041F478
+
+Runtime/s_frexp.c:
+	.text       start:0x80352794 end:0x80352820
+	.sdata2     start:0x8041F478 end:0x8041F480
+
+Runtime/s_ldexp.c:
+	.text       start:0x80352820 end:0x803529E4
+	.sdata2     start:0x8041F480 end:0x8041F4A8
+
+Runtime/s_modf.c:
+	.text       start:0x803529E4 end:0x80352AE0
+
+Runtime/s_sin.c:
+	.text       start:0x80352AE0 end:0x80352BB8
+	.sdata2     start:0x8041F4A8 end:0x8041F4B0
+
+Runtime/s_tan.c:
+	.text       start:0x80352BB8 end:0x80352C30
+	.sdata2     start:0x8041F4B0 end:0x8041F4B8
+
+Runtime/w_acos.c:
+	.text       start:0x80352C30 end:0x80352C50
+
+Runtime/w_asin.c:
+	.text       start:0x80352C50 end:0x80352C70
+
+Runtime/w_atan2.c:
+	.text       start:0x80352C70 end:0x80352C90
+
+Runtime/w_fmod.c:
+	.text       start:0x80352C90 end:0x80352CB0
+
+Runtime/w_log10.c:
+	.text       start:0x80352CB0 end:0x80352CD0
+
+Runtime/w_pow.c:
+	.text       start:0x80352CD0 end:0x80352CF0
+
+Runtime/e_sqrt.c:
+	.text       start:0x80352CF0 end:0x80352F14
+	.sdata2     start:0x8041F4B8 end:0x8041F4C0
+
+Runtime/math_ppc.c:
+	.text       start:0x80352F14 end:0x80352F38
+
+Runtime/w_sqrt.c:
+	.text       start:0x80352F38 end:0x80352F58
 
 Dolphin/vi/vi.c:
 	.text       start:0x80352F58 end:0x8035512C

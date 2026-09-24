@@ -5,6 +5,7 @@
 
 class CScriptActor : public CPhysicsActor {
 public:
+  CEntity* TypesMatch(int typeId) const override;
   bool CheckActorRenderOnly() const;
   // TODO
 };

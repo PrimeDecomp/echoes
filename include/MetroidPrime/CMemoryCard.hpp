@@ -7,10 +7,11 @@
 #include "MetroidPrime/TGameTypes.hpp"
 
 #include "rstl/vector.hpp"
+#include "rstl/pair.hpp"
 
 class CMemoryCard {
 public:
-  struct ScanState {};
+  typedef rstl::pair< CAssetId, uint > ScanState;
 
   ~CMemoryCard();
   // TODO

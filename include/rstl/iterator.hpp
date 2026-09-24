@@ -38,13 +38,13 @@ typename iterator_traits< It >::difference_type __distance(It first, It last,
 }
 
 template < typename It >
-typename iterator_traits< It >::difference_type __distance(It first, It last,
-                                                           random_access_iterator_tag) {
+inline typename iterator_traits< It >::difference_type __distance(It first, It last,
+                                                                  random_access_iterator_tag) {
   return last - first;
 }
 
 template < typename It >
-typename iterator_traits< It >::difference_type distance(It first, It last) {
+inline typename iterator_traits< It >::difference_type distance(It first, It last) {
   return __distance(first, last, typename iterator_traits< It >::iterator_category());
 }
 
@@ -69,12 +69,12 @@ void __advance(It& it, S count, bidirectional_iterator_tag) {
 }
 
 template < typename It, typename S >
-void __advance(It& it, S count, random_access_iterator_tag) {
+inline void __advance(It& it, S count, random_access_iterator_tag) {
   it += count;
 }
 
 template < typename It, typename S >
-void advance(It& it, S count) {
+inline void advance(It& it, S count) {
   __advance(it, count, typename iterator_traits< It >::iterator_category());
 }
 

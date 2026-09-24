@@ -5,6 +5,8 @@
 
 #include "Kyoto/Math/CMayaSpline.hpp"
 
+class CLightParameters;
+
 class CScriptEffect : public CActor {
 public:
   struct ParamStruct {
@@ -25,6 +27,8 @@ public:
                 bool combatVisorVisible, bool thermalVisorVisible, bool xrayVisorVisible,
                 const CLightParameters& lParms, bool, const ParamStruct& param_25, bool, bool, bool,
                 int);
+
+  CEntity* TypesMatch(int typeId) const override;
 
   bool GetFlagAt0x2c8() { return m_flag_0x2c8; }
 

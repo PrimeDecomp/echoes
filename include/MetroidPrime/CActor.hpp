@@ -57,10 +57,12 @@ public:
          const CTransform4f& xf, const CModelData& mData, const CMaterialList& list,
          const CActorParameters& params, TUniqueId nextDrawNode);
   ~CActor() override;
+  CEntity* TypesMatch(int typeId) const override;
 
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
   void SetActive(const bool active) override;
 
+  virtual void UnkVtable20(); // G2ME01 slot +0x20; original name unknown
   virtual void PreRender(CStateManager&, const CFrustumPlanes&);
   virtual void AddToRenderer(const CStateManager&) const;
   virtual void Render(const CStateManager&) const;
@@ -88,12 +90,13 @@ public:
   virtual CAABox GetSortingBounds(const CStateManager&) const;
   virtual void DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
                                float dt);
+  virtual CScannableObjectInfo* GetScannableObjectInfo() const;
+  virtual void ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff, float maxDist,
+                                 uchar minVol, uchar maxVol, const CVector3f& toListener,
+                                 const CVector3f& position, int aid, CStateManager& mgr,
+                                 bool translateId);
 
   CAdvancementDeltas UpdateAnimation(float dt, CStateManager& mgr, bool advTree);
-
-  void ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff, float maxDist,
-                         uchar minVol, uchar maxVol, const CVector3f& toListener,
-                         const CVector3f& position, int aid, CStateManager& mgr, bool translateId);
 
   void UpdateSfxEmitters();
   void RemoveEmitter();
@@ -125,7 +128,6 @@ public:
   void SetActorLights(rstl::auto_ptr< CActorLights > lights);
   void SetInFluid(bool b, TUniqueId uid);
 
-  CScannableObjectInfo* GetScannableObjectInfo() const;
   void MoveScannableObjectInfoToActor(CActor* actor, CStateManager& mgr);
 
   /// ????
