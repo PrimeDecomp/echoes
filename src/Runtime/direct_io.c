@@ -3,7 +3,9 @@
 
 size_t fwrite(const void* ptr, size_t memb_size, size_t num_memb, FILE* file) {
   size_t retval;
+  __begin_critical_region(2);
   retval = __fwrite(ptr, memb_size, num_memb, file);
+  __end_critical_region(2);
   return (retval);
 }
 
@@ -72,9 +74,7 @@ size_t __fwrite(const void* ptr, size_t memb_size, size_t num_memb, FILE* file) 
         file->buffer_ptr += num_bytes;
         file->buffer_len -= num_bytes;
       }
-      if (!file->buffer_len || newline != NULL ||
-          (file->mode.buffer_mode == _IONBF))
-      {
+      if (!file->buffer_len || newline != NULL || (file->mode.buffer_mode == _IONBF)) {
         ioresult = __flush_buffer(file, NULL);
 
         if (ioresult) {
