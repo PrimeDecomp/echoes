@@ -213,8 +213,10 @@ const CPakFile::SResInfo* CPakFile::GetResInfo(uint id) const {
   if (x28_27_stashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
-  rstl::vector< SResInfo >::const_iterator first(x78_resList.data() + x88_bucketOffsets[bucket]);
-  rstl::vector< SResInfo >::const_iterator last(x78_resList.data() + x88_bucketOffsets[bucket + 1]);
+  rstl::vector< SResInfo >::const_iterator first =
+      x78_resList.begin() + x88_bucketOffsets[bucket];
+  rstl::vector< SResInfo >::const_iterator last =
+      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
   rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
@@ -227,22 +229,28 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadDirectionless(uint id) {
   if (x28_27_stashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
-  rstl::vector< SResInfo >::iterator first(x78_resList.data() + x88_bucketOffsets[bucket]);
-  rstl::vector< SResInfo >::iterator last(x78_resList.data() + x88_bucketOffsets[bucket + 1]);
+  rstl::vector< SResInfo >::const_iterator first =
+      x78_resList.begin() + x88_bucketOffsets[bucket];
+  rstl::vector< SResInfo >::const_iterator last =
+      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
-  rstl::vector< SResInfo >::iterator it =
+  rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
   if (it == last || it->GetId() != id)
     return nullptr;
 
   const SResInfo* best = &*it;
   int bestDelta = CMath::AbsI(static_cast< int >(it->GetOffset() - x98_currentSeek));
-  for (++it; it != last && it->GetId() == id; ++it) {
+  ++it;
+  while (it != last) {
+    if (it->GetId() != id)
+      break;
     const int delta = CMath::AbsI(static_cast< int >(it->GetOffset() - x98_currentSeek));
     if (delta < bestDelta) {
       best = &*it;
       bestDelta = delta;
     }
+    ++it;
   }
   x98_currentSeek = best->GetOffset() + best->GetSize();
   return best;
@@ -252,23 +260,29 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadPreferForward(uint id) {
   if (x28_27_stashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
-  rstl::vector< SResInfo >::iterator first(x78_resList.data() + x88_bucketOffsets[bucket]);
-  rstl::vector< SResInfo >::iterator last(x78_resList.data() + x88_bucketOffsets[bucket + 1]);
+  rstl::vector< SResInfo >::const_iterator first =
+      x78_resList.begin() + x88_bucketOffsets[bucket];
+  rstl::vector< SResInfo >::const_iterator last =
+      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
-  rstl::vector< SResInfo >::iterator it =
+  rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
   if (it == last || it->GetId() != id)
     return nullptr;
 
   const SResInfo* best = &*it;
   int bestDelta = x98_currentSeek - static_cast< int >(it->GetOffset());
-  for (++it; it != last && it->GetId() == id; ++it) {
+  ++it;
+  while (it != last) {
+    if (it->GetId() != id)
+      break;
     const int delta = x98_currentSeek - static_cast< int >(it->GetOffset());
     if ((bestDelta < 0 && (delta > 0 || delta > bestDelta)) ||
         (bestDelta >= 0 && delta > 0 && delta < bestDelta)) {
       best = &*it;
       bestDelta = delta;
     }
+    ++it;
   }
   x98_currentSeek = best->GetOffset() + best->GetSize();
   return best;
