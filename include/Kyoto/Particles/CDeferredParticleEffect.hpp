@@ -5,7 +5,7 @@
 #include "rstl/optional_object.hpp"
 #include "rstl/single_ptr.hpp"
 
-// Guessed name. G2ME01 8033ebb4; owns an effect, optional dependency group and lazy generator.
+// Guessed name. Owns an effect, optional dependency group and lazy generator.
 class CDeferredParticleEffect {
 public:
   CDeferredParticleEffect(const TToken< CGenDescription >& effect,

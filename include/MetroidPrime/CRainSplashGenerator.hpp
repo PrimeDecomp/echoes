@@ -9,7 +9,7 @@ struct SSkinningWorkspace;
 class CStateManager;
 class CTransform4f;
 
-// G2ME01 constructor 80182358, destructor 800cef84; nested records follow Prime.
+// Nested records follow Prime.
 class CRainSplashGenerator {
   struct SSplashLine {
     float x0_time;

@@ -22,31 +22,29 @@
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
 
-// Guessed names for TU-local state (G2ME01 80419098 and 8040d568).
+// Guessed names for TU-local state.
 static float sBallCloseToCollisionDistance;
 static rstl::reserved_vector< int, 64 > sWakeEffectForMaterial;
 
-// 800c02a4
 void CMorphBall::DeleteBallShadow() { x1908_shadow = nullptr; }
 
-// 800c02e0
 void CMorphBall::CreateBallShadow() {
   if (!x1908_shadow.get()) {
     x1908_shadow = rs_new CMorphBallShadow(64, 64, gpSimplePool->GetObj("TXTR_BallFade"));
   }
 }
 
-// 800c03dc -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderToShadowTex(CStateManager& mgr) {
   // TODO: Gather shadow receivers and render CMorphBallShadow with the player texture.
 }
 
-// 800c04d4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::DrawBallShadow(CStateManager& mgr) {
   // TODO: Draw the projected ball shadow against the gathered world/actor receivers.
 }
 
-// 800c05cc -- Guessed name.
+// Guessed name.
 void CMorphBall::InitializeWakeEffects() {
   sWakeEffectForMaterial.resize(64, -1);
   sWakeEffectForMaterial[kMT_Phazon] = 0;
@@ -64,36 +62,30 @@ void CMorphBall::InitializeWakeEffects() {
   }
 }
 
-// 800c08c0 -- Guessed name.
+// Guessed name.
 void CMorphBall::ResetScrewAttackExitAnimationTimer() { x18b4_screwAttackExitAnimationFrames = 5; }
 
-// 800c08cc -- Guessed name.
+// Guessed name.
 int CMorphBall::GetScrewAttackGroundedFrames() const { return x18b8_screwAttackGroundedFrames; }
 
-// 800c08d4
 bool CMorphBall::InScrewAttackMode() const {
   return xc80_ballState == kBS_ScrewAttack || xc80_ballState == kBS_ScrewAttackWallJump ||
          xc80_ballState == kBS_ScrewAttackRecovery;
 }
 
-// 800c08fc
 bool CMorphBall::IsProjectile() const { return xc80_ballState == kBS_Projectile; }
 
-// 800c0910
 bool CMorphBall::IsBoostShieldActive() const { return x1024_timeNotInBoost < 1.f; }
 
-// 800c0928
 float CMorphBall::GetBoostChargeTimer() const { return x1020_boostChargeTime; }
 
-// 800c0930
 float CMorphBall::GetTimeNotInBoost() const { return x1024_timeNotInBoost; }
 
-// 800c0938
 bool CMorphBall::IsBoosting() const {
   return xc80_ballState == kBS_Boost || xc80_ballState == kBS_SpiderBoost;
 }
 
-// 800c0958 -- Guessed name; workspace type name is a cross-game hypothesis.
+// Guessed name; workspace type name is a cross-game hypothesis.
 void CMorphBall::PointGenerator(const CSkinnedModel& model, const SSkinningWorkspace& workspace,
                                 void* context) {
   if (context) {
@@ -101,12 +93,11 @@ void CMorphBall::PointGenerator(const CSkinnedModel& model, const SSkinningWorks
   }
 }
 
-// 800c0994 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::StartLandingSfx() {
   // TODO: Choose and play the landing sound from velocity and selected surface material.
 }
 
-// 800c0a68
 void CMorphBall::StopSounds() {
   if (x1890_rollSfx) {
     CSfxManager::SfxStop(x1890_rollSfx);
@@ -126,22 +117,21 @@ void CMorphBall::StopSounds() {
   }
 }
 
-// 800c0b20 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::StartScrewAttackSfx() {
   // TODO: Start the Screw Attack sound with the player's sound-channel settings.
 }
 
-// 800c0ba4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateMorphBallSound(float dt, CStateManager& mgr) {
   // TODO: Maintain the roll, Spider, death-ball and Screw Attack emitters.
 }
 
-// 800c0ff4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::SelectMorphBallSounds(const CMaterialList& material) {
   // TODO: Select roll/landing sound IDs for collision material and multiplayer mode.
 }
 
-// 800c1170
 void CMorphBall::TakeDamage(float damage) {
   if (damage <= 0.f) {
     x18f8_damageEffect = 0.f;
@@ -159,16 +149,12 @@ void CMorphBall::TakeDamage(float damage) {
   x18f8_damageEffect = 1.f;
 }
 
-// 800c11e8
 CMorphBall::EBombJumpState CMorphBall::GetBombJumpState() const { return x18f4_bombJumpState; }
 
-// 800c11f0
 void CMorphBall::SetBallBoostState(EBallBoostState state) { x18f0_boostState = state; }
 
-// 800c11f8
 CMorphBall::EBallBoostState CMorphBall::GetBallBoostState() const { return x18f0_boostState; }
 
-// 800c1200
 void CMorphBall::SetAsProjectile(bool projectile) {
   if (projectile) {
     xc80_ballState = kBS_Projectile;
@@ -177,7 +163,6 @@ void CMorphBall::SetAsProjectile(bool projectile) {
   }
 }
 
-// 800c122c
 void CMorphBall::TouchModel(const CStateManager& mgr) const {
   x58_ballModel->Touch(mgr, x5c_ballModelShader);
   if (x0_player.GetPlayerState()->HasPowerUp(CPlayerState::kIT_SpiderBall) &&
@@ -187,7 +172,6 @@ void CMorphBall::TouchModel(const CStateManager& mgr) const {
   x68_lowPolyBallModel->Touch(mgr, x6c_lowPolyBallModelShader);
 }
 
-// 800c12ac
 CModelData* CMorphBall::GetMorphBallModel(const rstl::string& name, float radius) {
   if (name == rstl::string("")) {
     return nullptr;
@@ -200,17 +184,16 @@ CModelData* CMorphBall::GetMorphBallModel(const rstl::string& name, float radius
   return rs_new CModelData(CAnimRes(tag->id, CAnimRes::kDefaultCharIdx, scale, 0, false));
 }
 
-// 800c13ec -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::LoadMorphBallModel() {
   // TODO: Select normal/spider/boost resources and glow colors for the three Echoes suits.
 }
 
-// 800c1718 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::FluidFXThink(CActor::EFluidState state, CScriptWater& water, CStateManager& mgr) {
   // TODO: Rate-limit water splashes using speed, fluid state and the fluid-plane manager.
 }
 
-// 800c1864
 bool CMorphBall::IsClimbable(const CCollisionInfo& collision) const {
   if (CMath::AbsF(collision.GetNormalLeft().GetZ()) < 0.7f) {
     const float height = GetBallPosition().GetZ() - collision.GetPoint().GetZ();
@@ -219,45 +202,42 @@ bool CMorphBall::IsClimbable(const CCollisionInfo& collision) const {
   return false;
 }
 
-// 800c1908 -- The original body is genuinely empty.
+// The original body is genuinely empty.
 void CMorphBall::Touch(CActor& actor, CStateManager& mgr) {}
 
-// 800c190c -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::ComputeMaxSpeed() const {
   // TODO: Use the surface-restraint tweak or clamp the half-pipe velocity-derived limit.
   return 0.f;
 }
 
-// 800c19a4
 void CMorphBall::SpinToSpeed(float speed, const CVector3f& direction, float dt) {
   const float angularSpeed = x0_player.GetAngularVelocityWR().GetVector().Magnitude();
   x0_player.ApplyTorqueWR(dt * (speed - angularSpeed) * direction);
 }
 
-// 800c1a64
 void CMorphBall::ApplyGravity() {
   x0_player.SetMomentumWR(CVector3f(0.f, 0.f, x0_player.GetMass() * GetGravityAcceleration()));
 }
 
-// 800c1ac0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetGravityAcceleration() const {
   // TODO: Select normal/water/Screw Attack/wall-jump gravity from CTweakBall.
   return 0.f;
 }
 
-// 800c1b50 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::CalculateSurfaceFriction() const {
   // TODO: Use the surface-restraint tweak, attachment state and energy-drain count.
   return 0.f;
 }
 
-// 800c1be8 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ComputeLiftForces(const CVector3f& controlForce, const CVector3f& velocity,
                                    const CStateManager& mgr) {
   // TODO: Update the lift averages and apply the contact-dependent upward force.
 }
 
-// 800c22f8
 CAABox CMorphBall::GetRenderBounds(const CStateManager& mgr) const {
   const CVector3f center = GetBallPosition();
   const CVector3f extent(2.f * xc_radius, 2.f * xc_radius, 2.f * xc_radius);
@@ -272,20 +252,19 @@ CAABox CMorphBall::GetRenderBounds(const CStateManager& mgr) const {
   return bounds;
 }
 
-// 800c2478 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& collisions,
                               CStateManager& mgr) {
   // TODO: Process contact materials/normals, boost damage, half-pipe and Screw Attack collisions.
 }
 
-// 800c3438 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::BallCloseToCollision(const CStateManager& mgr, float distance,
                                       const CMaterialFilter& filter) const {
   // TODO: Test a swept sphere against the world's filtered collision geometry.
   return false;
 }
 
-// 800c36a0
 void CMorphBall::DisableHalfPipeStatus() {
   SetIsInHalfPipeMode(false);
   SetIsInHalfPipeModeInAir(false);
@@ -297,32 +276,26 @@ void CMorphBall::DisableHalfPipeStatus() {
   x1874_halfPipeNormal = CVector3f::Zero();
 }
 
-// 800c3734
 void CMorphBall::SetTouchedHalfPipeRecently(bool touched) {
   x1854_26_touchedHalfPipeRecently = touched;
 }
 
-// 800c3744
 bool CMorphBall::GetTouchedHalfPipeRecently() const { return x1854_26_touchedHalfPipeRecently; }
 
-// 800c3750
 void CMorphBall::SetIsInHalfPipeModeInAir(bool active) { x1854_25_inHalfPipeModeInAir = active; }
 
-// 800c3760
 bool CMorphBall::GetIsInHalfPipeModeInAir() const { return x1854_25_inHalfPipeModeInAir; }
 
-// 800c376c
 void CMorphBall::SetIsInHalfPipeMode(bool active) { x1854_24_inHalfPipeMode = active; }
 
-// 800c377c
 bool CMorphBall::GetIsInHalfPipeMode() const { return x1854_24_inHalfPipeMode; }
 
-// 800c3788 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateHalfPipeStatus(CStateManager& mgr, float dt) {
   // TODO: Expire half-pipe/contact cooldowns and adjust collision accuracy.
 }
 
-// 800c3920 -- Guessed name.
+// Guessed name.
 void CMorphBall::RenderScrewAttackJumpEffects() const {
   if (xe08_screwAttackJumpFlashGen.get()) {
     xe08_screwAttackJumpFlashGen->Render();
@@ -332,20 +305,18 @@ void CMorphBall::RenderScrewAttackJumpEffects() const {
   }
 }
 
-// 800c3980 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderDamageEffects(const CStateManager& mgr,
                                      const CTransform4f& transform) const {
   // TODO: Render the damage overlay using the ball's damage timer and glow color.
 }
 
-// 800c3b78
 void CMorphBall::RenderIceBreakEffect(const CStateManager& mgr) const {
   if (xdfc_morphBallIceBreakGen.get()) {
     xdfc_morphBallIceBreakGen->Render();
   }
 }
 
-// 800c3bb0
 void CMorphBall::UpdateIceBreakEffect(float dt) {
   if (!xdfc_morphBallIceBreakGen.get() && xda0_morphBallIceBreak.HasLock() &&
       xda0_morphBallIceBreak.IsLoaded()) {
@@ -363,23 +334,20 @@ void CMorphBall::UpdateIceBreakEffect(float dt) {
   }
 }
 
-// 800c3d64
 void CMorphBall::ResetMorphBallIceBreak() {
   xda0_morphBallIceBreak.Lock();
   xdfc_morphBallIceBreakGen = nullptr;
 }
 
-// 800c3dbc
 bool CMorphBall::IsMorphBallTransitionFlashValid() const {
   return xdf8_morphBallTransitionFlashGen.get() != nullptr;
 }
 
-// 800c3dd0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderMorphBallTransitionFlash(const CStateManager& mgr) const {
   // TODO: Apply the suit-dependent transition color before rendering the generator.
 }
 
-// 800c3e60
 void CMorphBall::UpdateMorphBallTransitionFlash(float dt) {
   if (!xdf8_morphBallTransitionFlashGen.get() && xd98_morphBallTransitionFlash.HasLock() &&
       xd98_morphBallTransitionFlash.IsLoaded()) {
@@ -397,29 +365,27 @@ void CMorphBall::UpdateMorphBallTransitionFlash(float dt) {
   }
 }
 
-// 800c4014
 void CMorphBall::ResetMorphBallTransitionFlash() {
   xd98_morphBallTransitionFlash.Lock();
   xdf8_morphBallTransitionFlashGen = nullptr;
 }
 
-// 800c406c -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::Render(const CStateManager& mgr, const CActorLights* lights) const {
   // TODO: Render the ball, glass, trails and Echoes Screw Attack/death-ball effects.
 }
 
-// 800c50b4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) {
   // TODO: Prepare model animation, rain-splash point generation, actor lights and the world shadow.
 }
 
-// 800c55dc -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetMinimumAlignmentSpeed() const {
   // TODO: Return zero in Spider mode; otherwise use the alignment-speed tweak.
   return 0.f;
 }
 
-// 800c5614
 void CMorphBall::DampLinearAndAngularVelocities(float linearDamping, float angularDamping,
                                                 float dt) {
   const float frames = 60.f * dt;
@@ -429,7 +395,6 @@ void CMorphBall::DampLinearAndAngularVelocities(float linearDamping, float angul
   x0_player.SetAngularVelocityWR(x0_player.GetAngularVelocityWR() * angularScale);
 }
 
-// 800c5714
 void CMorphBall::ApplyFriction(float friction) {
   CVector3f velocity = x0_player.GetVelocityWR();
   if (velocity.Magnitude() <= friction) {
@@ -440,19 +405,18 @@ void CMorphBall::ApplyFriction(float friction) {
   x0_player.SetVelocityWR(velocity);
 }
 
-// 800c57e4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::UpdateMarbleDynamics(CStateManager& mgr, float dt, const CVector3f& point) {
   // TODO: Apply marble alignment, rolling torque and contact-force response.
   return false;
 }
 
-// 800c5f70 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ApplyBoostBallDamage(CStateManager& mgr, TUniqueId id, const CDamageInfo& damage,
                                       float dt) {
   // TODO: Filter already-hit actors, scale damage and update the cooldown/history.
 }
 
-// 800c65b8
 void CMorphBall::CancelBoosting() {
   x1020_boostChargeTime = 0.f;
   x102c_boostDrainTime = 0.f;
@@ -463,7 +427,6 @@ void CMorphBall::CancelBoosting() {
   }
 }
 
-// 800c6618
 void CMorphBall::LeaveBoosting() {
   if (IsBoosting()) {
     x1020_boostChargeTime = 0.f;
@@ -472,51 +435,49 @@ void CMorphBall::LeaveBoosting() {
   x102c_boostDrainTime = 0.f;
 }
 
-// 800c6664 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
   // TODO: Enter normal/spider boost, optionally apply the impulse, and reset damage history.
 }
 
-// 800c6b78 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
   // TODO: Handle charge, release, draining, Spider Boost direction and damage.
 }
 
-// 800c76ec
 void CMorphBall::SetScrewAttackActive(bool active) { x18a8_31_forcedScrewJumpInput = active; }
 
-// 800c76fc -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
   // TODO: Build the swept contact list and apply Screw Attack damage.
 }
 
-// 800c7a88 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateScrewAttackRecovery(float dt) {
   // TODO: Recover from recoil/collisions and request the player's exit animation.
 }
 
-// 800c7fb8 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ComputeScrewAttackMovement(const CFinalInput& input, CStateManager& mgr,
                                             float dt) {
   // TODO: Handle jump/wall-jump input, speed/height limits and Screw Attack recovery.
 }
 
-// 800c891c -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
   // TODO: Update the multiplayer death-ball effects and per-object damage cooldowns.
 }
 
-// 800c8dc8 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateBallLight(float dt, CStateManager& mgr) {
   // TODO: Update the inner-glow light from the generator and ball lighting state.
 }
 
-// 800c93f8 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateEffects(float dt, CStateManager& mgr) {
   // TODO: Update particle transforms, trail history, wake selection and light intensities.
 }
 
-// 800ca560
 void CMorphBall::StopParticleWakes() {
   xde4_wallSparkGen->SetParticleEmission(false);
   for (int i = 0; i < xe10_wakeEffects.size(); ++i) {
@@ -524,7 +485,6 @@ void CMorphBall::StopParticleWakes() {
   }
 }
 
-// 800ca5cc
 void CMorphBall::LeaveMorphBallState(CStateManager& mgr) {
   LeaveBoosting();
   CancelBoosting();
@@ -533,17 +493,15 @@ void CMorphBall::LeaveMorphBallState(CStateManager& mgr) {
   StopParticleWakes();
 }
 
-// 800ca620 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::EnterMorphBallState(CStateManager& mgr, EBallState state) {
   // TODO: Reset ball/spider/boost state, sounds, averages and lighting for the requested mode.
 }
 
-// 800ca754
 void CMorphBall::SetBallLightActive(CStateManager& mgr, bool active) {
   xe4a_ballLightActive = active;
 }
 
-// 800ca75c
 void CMorphBall::DeleteLight(CStateManager& mgr) {
   if (xe48_ballInnerGlowLight != kInvalidUniqueId) {
     mgr.DeleteObjectRequest(xe48_ballInnerGlowLight);
@@ -551,25 +509,24 @@ void CMorphBall::DeleteLight(CStateManager& mgr) {
   }
 }
 
-// 800ca7b0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
                                  EUserEventType type) {
   // TODO: Handle event 0x1b during morphed Screw Attack recovery through CPlayer.
   return false;
 }
 
-// 800ca808 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   // TODO: Handle Echoes CScriptMsg creation/deletion of the inner-glow light.
 }
 
-// 800ca9a4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::Update(float dt, CStateManager& mgr) {
   // TODO: Update effects, light, death-ball state, tire interpolation, damage decay, rain and
   // sound.
 }
 
-// 800cab68
 void CMorphBall::SwitchToTire() {
   x28_tireMode = true;
   xe64_tireInterpolating = true;
@@ -577,7 +534,6 @@ void CMorphBall::SwitchToTire() {
   xe60_tireInterpolationSpeed = 1.f;
 }
 
-// 800cab88
 void CMorphBall::SwitchToMarble() {
   const CUnitVector3f axis(x0_player.GetTransform().TransposeRotate(x0_player.GetLookDir()));
   const CQuaternion rotation =
@@ -588,18 +544,17 @@ void CMorphBall::SwitchToMarble() {
   xe60_tireInterpolationSpeed = -1.f;
 }
 
-// 800cac74 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateBallDynamics(CStateManager& mgr, float dt) {
   // TODO: Update contact orientation, tire/marble mode, damping and velocity history.
 }
 
-// 800cb50c -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::BallTurnInput(const CFinalInput& input) const {
   // TODO: Use the player's Echoes control mapping: turn-left minus turn-right.
   return 0.f;
 }
 
-// 800cb59c
 bool CMorphBall::CalculateBallContactInfo(CVector3f& normal, CVector3f& point) const {
   if (x74_collisionInfos.GetCount() == 0) {
     return false;
@@ -609,7 +564,6 @@ bool CMorphBall::CalculateBallContactInfo(CVector3f& normal, CVector3f& point) c
   return true;
 }
 
-// 800cb5e8
 CTransform4f CMorphBall::CalculateSurfaceToWorld(const CVector3f& normal, const CVector3f& point,
                                                  const CVector3f& direction) const {
   if (direction.CanBeNormalized()) {
@@ -624,17 +578,14 @@ CTransform4f CMorphBall::CalculateSurfaceToWorld(const CVector3f& normal, const 
   return CTransform4f::Identity();
 }
 
-// 800cb730
 CVector3f CMorphBall::GetBallPosition() const {
   return x0_player.GetTranslation() + CVector3f(0.f, 0.f, xc_radius);
 }
 
-// 800cb764
 CTransform4f CMorphBall::GetBallToWorld() const {
   return CTransform4f::Translate(GetBallPosition()) * x0_player.GetTransform().GetRotation();
 }
 
-// 800cb7f4
 CTransform4f CMorphBall::GetSwooshToWorld() const {
   return CTransform4f::Translate(x0_player.GetTranslation() +
                                  CVector3f(0.f, 0.f, GetBallRadius())) *
@@ -642,24 +593,23 @@ CTransform4f CMorphBall::GetSwooshToWorld() const {
          CTransform4f::RotateY(CRelAngle::FromRadians(x30_ballTiltAngle));
 }
 
-// 800cb8b4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ComputeMarioMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
   // TODO: Compute camera-relative control, friction, lift, torque and contact response.
 }
 
-// 800cc258 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::TransformSpiderBallState(const CQuaternion& rotation,
                                           const CVector3f& translation) {
   // TODO: Rotate the saved physics forces/normals and transform the track point about the ball.
 }
 
-// 800cc470 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::CreateSpiderBallParticles(CStateManager& mgr, const CVector3f& ballPosition,
                                            const CVector3f& trackPoint) {
   // TODO: Emit/update the magnet effect along the ball-to-track segment.
 }
 
-// 800cc67c
 float CMorphBall::GetSpiderBallSwingControllerMovementScalar() const {
   if (xd0c_swingControlTime < 1.2f) {
     return 1.f;
@@ -667,7 +617,6 @@ float CMorphBall::GetSpiderBallSwingControllerMovementScalar() const {
   return rstl::max_val(0.f, (2.4f - xd0c_swingControlTime) / 1.2f);
 }
 
-// 800cc6b4
 void CMorphBall::UpdateSpiderBallSwingControllerMovementTimer(float movement, float dt) {
   if (CMath::AbsF(movement) < 0.05f) {
     ResetSpiderBallSwingControllerMovementTimer();
@@ -679,19 +628,17 @@ void CMorphBall::UpdateSpiderBallSwingControllerMovementTimer(float movement, fl
   }
 }
 
-// 800cc748
 void CMorphBall::ResetSpiderBallSwingControllerMovementTimer() {
   xd08_swingControlDirection = 0.f;
   xd0c_swingControlTime = 0.f;
 }
 
-// 800cc758 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetSpiderBallControllerMovement(const CFinalInput& input) const {
   // TODO: Convert mapped movement axes to signed magnitude with the Echoes angle dead zones.
   return 0.f;
 }
 
-// 800cc89c
 void CMorphBall::SetSpiderBallSwingingState(bool swinging) {
   if (xcc2_spiderBallSwinging != swinging) {
     ResetSpiderBallSwingControllerMovementTimer();
@@ -700,7 +647,7 @@ void CMorphBall::SetSpiderBallSwingingState(bool swinging) {
   xcc2_spiderBallSwinging = swinging;
 }
 
-// 800cc8f0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::FindClosestSpiderBallWaypoint(
     CStateManager& mgr, const CVector3f& center, CVector3f& trackPoint,
     CVector3f& interpolatedDirection, CVector3f& direction, float& distance, CVector3f& normal,
@@ -709,18 +656,17 @@ bool CMorphBall::FindClosestSpiderBallWaypoint(
   return false;
 }
 
-// 800cd550 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::CheckForSwitchToSpiderBallSwinging(CStateManager& mgr) const {
   // TODO: Check Spider surface kind, attachment geometry and the player's movement state.
   return false;
 }
 
-// 800cd6c0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ApplySpiderBallRollForces(const CFinalInput& input, CStateManager& mgr, float dt) {
   // TODO: Find the attachment, project controls and apply Spider roll/attraction forces.
 }
 
-// 800ce0f0
 void CMorphBall::ResetSpiderBallForces() {
   xd10_normalizedSpiderSurfaceForces = CVector2f(0.f, 0.f);
   xd18_spiderTrackForceMagnitude = 0.f;
@@ -728,31 +674,30 @@ void CMorphBall::ResetSpiderBallForces() {
   xd24_spiderForcesReset = true;
 }
 
-// 800ce14c -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 CVector2f CMorphBall::CalculateSpiderBallAttractionSurfaceForces(const CFinalInput& input) const {
   // TODO: Build the mapped two-axis attraction input with movement gating.
   return CVector2f(0.f, 0.f);
 }
 
-// 800ce258 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 CVector3f CMorphBall::TransformSpiderBallForcesXZ(CVector2f& forces, CStateManager& mgr) const {
   // TODO: Transform the XZ force plane using the player's Echoes camera mode.
   return CVector3f::Zero();
 }
 
-// 800ce300 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 CVector3f CMorphBall::TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const {
   // TODO: Transform the XY force plane using the player's Echoes camera mode.
   return CVector3f::Zero();
 }
 
-// 800ce3a8 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 void CMorphBall::ApplySpiderBallSwingingForces(const CFinalInput& input, CStateManager& mgr,
                                                float dt) {
   // TODO: Apply the radial constraint, swing input and gravity about the Spider track.
 }
 
-// 800ce728
 void CMorphBall::UpdateSpiderBall(const CFinalInput& input, CStateManager& mgr, float dt) {
   SetSpiderBallSwingingState(CheckForSwitchToSpiderBallSwinging(mgr));
   if (xcc2_spiderBallSwinging) {
@@ -762,19 +707,16 @@ void CMorphBall::UpdateSpiderBall(const CFinalInput& input, CStateManager& mgr, 
   }
 }
 
-// 800ce7c0
 void CMorphBall::SetDamageTimer(float time) { xd20_damageTimer = time; }
 
-// 800ce7c8
 void CMorphBall::SetDisableSpiderBallTime(float time) { x1038_disableSpiderBallTime = time; }
 
-// 800ce7d0 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 bool CMorphBall::IsMovementAllowed() const {
   // TODO: Check per-player free-look controls, morph transitions and the control cooldown.
   return false;
 }
 
-// 800ce864
 void CMorphBall::ComputeBallMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
   switch (xc80_ballState) {
   case kBS_ScrewAttackRecovery:
@@ -795,26 +737,25 @@ void CMorphBall::ComputeBallMovement(const CFinalInput& input, CStateManager& mg
   }
 }
 
-// 800ce914 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::ForwardInput(const CFinalInput& input) const {
   // TODO: Use the player's Echoes control mapping: forward minus backward, gated by
   // IsMovementAllowed.
   return 0.f;
 }
 
-// 800ce9a4 -- Scaffold, not a reconstructed implementation.
+// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetBallTouchRadius() const {
   // TODO: Use CTweakBall::GetBallTouchRadius once the shared tweak interface is declared.
   return 0.f;
 }
 
-// 800ce9c8
 float CMorphBall::GetBallRadius() const { return x0_player.GetTweakPlayer()->GetBallRadius(); }
 
-// 800ce9f0 -- Ownership cleanup is supplied by the members' destructors.
+// Ownership cleanup is supplied by the members' destructors.
 CMorphBall::~CMorphBall() {}
 
-// 800cf0b0 -- Material 59 has no established semantic name in this checkout.
+// Material 59 has no established semantic name in this checkout.
 CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
 : x0_player(player)
 , x4_loadedModelId(-1)
@@ -972,6 +913,6 @@ CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
   sBallCloseToCollisionDistance = GetBallRadius() + 0.2f;
   InitializeWakeEffects();
   x18e0_deathBallDamageCooldowns.reserve(16);
-  // TODO: recover the single-player material preparation calls at 800e4b20.
+  // TODO: recover the single-player material preparation calls (see research notes).
   x0_player.SetCollisionAccuracyModifier(5.f);
 }

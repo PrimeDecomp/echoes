@@ -5,7 +5,7 @@
 class CDependencyGroup;
 class IObjectStore;
 
-// Guessed name. G2ME01 80320a90 constructs the group token and its dependency tokens.
+// Guessed name. Owns the group token and its dependency tokens.
 class CDependencyGroupToken {
 public:
   CDependencyGroupToken(const TToken< CDependencyGroup >& group, IObjectStore& store);
