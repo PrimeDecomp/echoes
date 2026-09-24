@@ -6,8 +6,11 @@
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
+class CInputStream;
+
 class CPlane {
 public:
+  CPlane(CInputStream& in);
   CPlane(const CVector3f& vec, const CUnitVector3f& normal)
   : x0_normal(normal), xc_constant(CVector3f::Dot(vec, normal)) {}
   CPlane(float constant, const CUnitVector3f& normal) : x0_normal(normal), xc_constant(constant) {}
@@ -19,7 +22,10 @@ public:
   float GetHeight(const CVector3f& pos) const {
     return CVector3f::Dot(GetNormal(), pos) - GetConstant();
   }
-  // IsFacing__6CPlaneCFRC9CVector3f
+  bool IsFacing(const CVector3f& vec) const {
+    return CVector3f::Dot(x0_normal, vec) >= GetConstant();
+  }
+  CVector3f GetClosestPoint(const CVector3f& point) const;
   float ClipLineSegment(const CVector3f& start, const CVector3f& end) const;
   
 private:

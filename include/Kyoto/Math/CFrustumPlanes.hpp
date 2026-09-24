@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+#include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
 #include "rstl/optional_object.hpp"
@@ -14,23 +15,19 @@ class CTransform4f;
 
 class CFrustumPlanes {
 public:
-  class SPlane {
-  private:
-    float x;
-    float y;
-    float z;
-    float d;
-  };
-  CFrustumPlanes(); // todo
+  CFrustumPlanes();
   CFrustumPlanes(const CTransform4f&, float, float, float, bool, float);
 
   bool BoxInFrustumPlanes(const CAABox& box) const;
   bool BoxInFrustumPlanes(const rstl::optional_object< CAABox >& box) const;
+  int BoxFrustumPlanesCheck(const CAABox& box) const;
   bool SphereInFrustumPlanes(const CSphere& sphere) const;
   bool PointInFrustumPlanes(const CVector3f& point) const;
 
 private:
-  rstl::reserved_vector< SPlane, 6 > x0_planes;
+  rstl::reserved_vector< CPlane, 6 > x0_planes;
 };
+
+CHECK_SIZEOF(CFrustumPlanes, 0x64)
 
 #endif // _CFRUSTUMPLANES

@@ -244,11 +244,18 @@ Kyoto/PVS/CPVSVisOctree.cpp:
 Kyoto/PVS/CPVSVisSet.cpp:
 	.text       start:0x802CEA14 end:0x802CEE6C
 
+Kyoto/Math/CPlane.cpp:
+	.text       start:0x802F7728 end:0x802F7938
+	.sdata2     start:0x8041E920 end:0x8041E928
+
 Kyoto/Math/CTri.cpp:
 	.text       start:0x802F79EC end:0x802F7A88
 
 Kyoto/Math/CQuad.cpp:
 	.text       start:0x802F7A88 end:0x802F7B28
+
+Kyoto/Math/CSphere.cpp:
+	.text       start:0x802F7C14 end:0x802F7C68
 
 Kyoto/Math/CAABox.cpp:
 	.text       start:0x802F7C68 end:0x802F8D90
@@ -285,6 +292,10 @@ Kyoto/Streams/COutputStream.cpp:
 	.text       start:0x803000F0 end:0x80300338
 	.rodata     start:0x803AFAD8 end:0x803AFAE0
 	.data       start:0x803BAF48 end:0x803BAF58
+
+Kyoto/Math/CFrustumPlanes.cpp:
+	.text       start:0x80302298 end:0x803029D8
+	.sdata2     start:0x8041E940 end:0x8041E948
 
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
