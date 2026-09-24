@@ -464,6 +464,7 @@ config.libs = [
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(MatchingFor("G2ME01"), "Runtime/__va_arg.c"),
             Object(MatchingFor("G2ME01"), "Runtime/CPlusLibPPC.cpp"),
+            Object(NonMatching, "Runtime/NMWException.cp", extra_cflags=["-RTTI on", "-Cpp_exceptions on"]),
             Object(MatchingFor("G2ME01"), "Runtime/ptmf.c"),
             Object(MatchingFor("G2ME01"), "Runtime/runtime.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
@@ -694,6 +695,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/__ppc_eabi_init.cpp"),
         ],
     ),
     # Begin RELs

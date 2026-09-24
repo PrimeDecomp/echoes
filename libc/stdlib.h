@@ -16,6 +16,9 @@ int rand(void);
 int abs(int n);
 long labs(long n);
 void exit(int status);
+void abort(void);
+void* malloc(size_t size);
+void free(void* ptr);
 size_t wcstombs(char* dest, const wchar_t* src, size_t max);
 
 typedef int (*_compare_function)(const void*, const void*);

@@ -463,6 +463,14 @@ Runtime/global_destructor_chain.c:
 Runtime/CPlusLibPPC.cpp:
 	.text       start:0x80344E38 end:0x80344E68
 
+Runtime/NMWException.cp:
+	extab       start:0x80003640 end:0x800036D8
+	extabindex  start:0x80003760 end:0x800037CC
+	.text       start:0x80344E68 end:0x80345424
+	.rodata     start:0x803B0368 end:0x803B0388
+	.data       start:0x803BBFC8 end:0x803BBFD8
+	.sdata      start:0x80418C98 end:0x80418CA8
+
 Runtime/ptmf.c:
 	.text       start:0x80345424 end:0x803454A4
 
@@ -1035,6 +1043,10 @@ Dolphin/os/OSThread.c:
 Dolphin/os/OSTime.c:
 	.text       start:0x80376148 end:0x803765C4
 	.data       start:0x803BFAD8 end:0x803BFB38
+
+Dolphin/os/__ppc_eabi_init.cpp:
+	.init       start:0x80003538 end:0x80003590
+	.text       start:0x803765C4 end:0x8037665C
 
 Dolphin/pad/PadClamp.c:
 	.text       start:0x8037665C end:0x803768A0
