@@ -221,7 +221,9 @@ CTransform4f CTransform4f::Translate(const CVector3f& v) {
                       CVector3f(0.0f, 0.0f, 1.0f), CVector3f(v.GetX(), v.GetY(), v.GetZ()));
 }
 
-CMatrix3f CTransform4f::BuildMatrix3f() const { return CMatrix3f(m0, m1, m2); }
+CMatrix3f CTransform4f::BuildMatrix3f() const {
+  return CMatrix3f(Get00(), Get01(), Get02(), Get10(), Get11(), Get12(), Get20(), Get21(), Get22());
+}
 
 CTransform4f CTransform4f::operator*(const CTransform4f& vec) const {
   return CTransform4f(

@@ -149,9 +149,47 @@ Kyoto/Graphics/CGX.cpp:
 	.bss        start:0x803DF828 end:0x803DFA8C
 	.sdata      start:0x80418AD0 end:0x80418AD4
 
+Kyoto/Math/CloseEnough.cpp:
+	.text       start:0x802C60EC end:0x802C62C4
+	.ctors      start:0x803A55F0 end:0x803A55F4
+	.sbss       start:0x80419A28 end:0x80419A30
+	.sdata2     start:0x8041E560 end:0x8041E568
+
+Kyoto/Math/CMatrix3f.cpp:
+	.text       start:0x802C62C4 end:0x802C6AF0
+	.ctors      start:0x803A55F4 end:0x803A55F8
+	.bss        start:0x80417360 end:0x80417384 align:4 common
+	.sdata2     start:0x8041E568 end:0x8041E570
+
+Kyoto/Math/CMatrix4f.cpp:
+	.text       start:0x802C6AF0 end:0x802C6D24
+	.ctors      start:0x803A55F8 end:0x803A55FC
+	.bss        start:0x80417384 end:0x804173C4 align:4 common
+	.sdata2     start:0x8041E570 end:0x8041E578
+
+Kyoto/Math/CNUQuaternion.cpp:
+	.text       start:0x802C6D24 end:0x802C7380
+	.sdata2     start:0x8041E578 end:0x8041E588
+
+Kyoto/Math/CQuaternion.cpp:
+	.text       start:0x802C7380 end:0x802C89B4
+	.ctors      start:0x803A55FC end:0x803A5600
+	.bss        start:0x804173C4 end:0x804173D4 align:4 common
+	.sbss       start:0x80419A30 end:0x80419A48
+	.sdata2     start:0x8041E588 end:0x8041E5C0
+
+Kyoto/CRandom16.cpp:
+	.text       start:0x802C89B4 end:0x802C8BB8
+	.sbss       start:0x80419A48 end:0x80419A50
+	.sdata2     start:0x8041E5C0 end:0x8041E5D0
+
 Kyoto/Math/CTransform4f.cpp:
 	.text       start:0x802C8BB8 end:0x802CA12C
 	.ctors      start:0x803A5600 end:0x803A5604
+
+Kyoto/Math/CUnitVector3f.cpp:
+	.text       start:0x802CA12C end:0x802CA1C0
+	.sdata2     start:0x8041E5E0 end:0x8041E5E8
 
 Kyoto/Math/CVector2f.cpp:
 	.text       start:0x802CA1C0 end:0x802CA5B0
