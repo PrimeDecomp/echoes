@@ -230,10 +230,6 @@ private:
   }
 };
 
-static bool kUnknownValueNewRoot = true;
-static bool kUnknownValueEqualKey = false;
-static bool kUnknownValueNewItem = true;
-
 template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
 typename red_black_tree< T, P, U, S, Cmp, Alloc >::iterator
 red_black_tree< T, P, U, S, Cmp, Alloc >::insert_into(node* n, const P& item) {
@@ -242,14 +238,14 @@ red_black_tree< T, P, U, S, Cmp, Alloc >::insert_into(node* n, const P& item) {
     x4_count += 1;
     x8_header.set_leftmost(x8_header.get_root());
     x8_header.set_rightmost(x8_header.get_root());
-    return iterator(x8_header.get_root(), &x8_header, kUnknownValueNewRoot);
+    return iterator(x8_header.get_root(), &x8_header, true);
 
   } else {
     node* newNode = nullptr;
     while (newNode == nullptr) {
       bool firstComp = x2_cmp(x3_selector(*n->get_value()), x3_selector(item));
       if (!firstComp && !x2_cmp(x3_selector(item), x3_selector(*n->get_value()))) {
-        return iterator(n, &x8_header, kUnknownValueEqualKey);
+        return iterator(n, &x8_header, false);
       }
       if (firstComp) {
         if (n->get_left() == nullptr) {
@@ -275,7 +271,7 @@ red_black_tree< T, P, U, S, Cmp, Alloc >::insert_into(node* n, const P& item) {
     }
     x4_count += 1;
     rebalance(newNode);
-    return iterator(newNode, &x8_header, kUnknownValueNewItem);
+    return iterator(newNode, &x8_header, true);
   }
 }
 

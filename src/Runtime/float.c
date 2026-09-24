@@ -15,3 +15,4 @@ _INT32 __extended_epsilon[] = {0x3cb00000, 0};
 _INT32 __extended_tiny[] = {0, 1};
 _INT32 __extended_huge[] = {0x7FF00000, 0};
 _INT32 __extended_nan[] = {0x7FFFFFFF, 0xFFFFFFFF};
+_INT32 __float_max[] = {0x7F7FFFFF};
