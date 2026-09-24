@@ -23,6 +23,8 @@ public:
 
   iterator insert(const value_type& item) { return inner.insert(item); }
 
+  int size() const { return inner.size(); }
+
   const_iterator begin() const { return inner.begin(); }
   const_iterator end() const { return inner.end(); }
 

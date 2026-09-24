@@ -5,7 +5,7 @@
 
 rstl::vector< SObjectTag > CSimplePool::GetReferencedTags() {
   rstl::vector< SObjectTag > tags;
-  tags.reserve(x4_resources.get_inner().size());
+  tags.reserve(x4_resources.size());
   ResourceMap::const_iterator it = x4_resources.begin();
   ResourceMap::const_iterator end = x4_resources.end();
   for (; it != end; ++it) {
@@ -66,7 +66,7 @@ void CSimplePool::ObjectUnreferenced(const SObjectTag& tag) {
 
 CSimplePool::~CSimplePool() {
   Flush();
-  if (x4_resources.get_inner().size() > 0) {
+  if (x4_resources.size() > 0) {
     DebugDumpPool();
   }
 }
