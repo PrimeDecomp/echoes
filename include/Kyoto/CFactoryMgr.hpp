@@ -9,6 +9,8 @@
 
 class CFactoryMgr {
 public:
+  static uint FourCCToTypeIdx(uint fourCC);
+  static uint TypeIdxToFourCC(uint typeIdx);
 private:
   uchar pad[0x38];
 };

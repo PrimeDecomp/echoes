@@ -27,6 +27,7 @@ public:
   void PushARAMFileLoad();
   void PopARAMFileLoad();
   bool IsARAMFileLoaded();
+  bool IsARAMFile() const { return mARAMAllocated; }
   void StartARAMFileLoad();
   void StallForARAMFile();
   CDvdRequest* SyncRead(void* buf, uint len);
