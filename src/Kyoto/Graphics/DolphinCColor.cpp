@@ -95,7 +95,7 @@ ushort CColor::ToRGB565() const {
 CColor CColor::FromRGB5A3(ushort value) {
   if (value & 0x8000) {
     CColor color(0xffffffff);
-    color.mR = ((value >> 10) & 0x1f) << 3 | ((value >> 10) & 0x1f) >> 2;
+    color.mR = ((value & 0x7c00) >> 7) | ((value & 0x7000) >> 13);
     color.mG = ((value >> 5) & 0x1f) << 3 | ((value >> 5) & 0x1f) >> 2;
     color.mB = (value & 0x1f) << 3 | (value & 0x1f) >> 2;
     return color;
