@@ -36,7 +36,12 @@ public:
   const_iterator end() const { return const_iterator(this, data() + size()); }
   vector(const Alloc& alloc = Alloc())
   : x0_allocator(alloc), x4_count(0), x8_capacity(0), xc_items(nullptr) {}
-  vector(int count) : x4_count(0), x8_capacity(0), xc_items(0) { reserve(count); }
+  // The count elements are uninitialized until the caller fills the storage.
+  vector(int count) : x4_count(0), x8_capacity(0), xc_items(0) {
+    if (count > 0)
+      reserve(count);
+    x4_count = count;
+  }
   vector(int count, const T& v, const Alloc& alloc = Alloc())
   : x0_allocator(alloc), x4_count(count), x8_capacity(count) {
     x0_allocator.allocate(xc_items, x4_count);
