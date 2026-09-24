@@ -538,6 +538,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAudioSystem.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSMemory.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSMutex.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSReboot.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSReset.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSRtc.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
