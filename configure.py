@@ -387,6 +387,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Math/CAABox.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CTri.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CQuad.cpp"),
+            Object(NonMatching, "Kyoto/Math/CFrustumPlanes.cpp"),
             Object(Matching, "Kyoto/Math/CVector2f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2i.cpp"),
             Object(Matching, "Kyoto/Math/CVector3d.cpp"),

@@ -286,6 +286,10 @@ Kyoto/Streams/COutputStream.cpp:
 	.rodata     start:0x803AFAD8 end:0x803AFAE0
 	.data       start:0x803BAF48 end:0x803BAF58
 
+Kyoto/Math/CFrustumPlanes.cpp:
+	.text       start:0x80302298 end:0x803029D8
+	.sdata2     start:0x8041E940 end:0x8041E948
+
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
 	.sdata      start:0x80418BD0 end:0x80418BE8
