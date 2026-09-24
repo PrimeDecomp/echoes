@@ -448,6 +448,16 @@ Dolphin/mtx/mtx44.c:
 	.text       start:0x8036D670 end:0x8036D918
 	.sdata2     start:0x8041F5A8 end:0x8041F5B8
 
+Dolphin/os/OSAlarm.c:
+	.text       start:0x8036E3E4 end:0x8036EBBC
+	.data       start:0x803BE720 end:0x803BE730
+	.sbss       start:0x80419F98 end:0x80419FA0
+
+Dolphin/os/OSArena.c:
+	.text       start:0x8036EBBC end:0x8036EC08
+	.sdata      start:0x80418E00 end:0x80418E08
+	.sbss       start:0x80419FA0 end:0x80419FA8
+
 Dolphin/os/OSAudioSystem.c:
 	.text       start:0x8036EC08 end:0x8036EE9C
 	.data       start:0x803BE730 end:0x803BE7B0
