@@ -378,7 +378,7 @@ Kyoto/Graphics/DolphinCColor.cpp:
 	.sdata2     start:0x8041EB40 end:0x8041EB58
 
 Kyoto/CPakFile.cpp:
-	.text       start:0x80323030 end:0x80324D44
+	.text       start:0x80323038 end:0x80324D44
 	.rodata     start:0x803B0098 end:0x803B00F0
 	.sdata      start:0x80418C38 end:0x80418C48
 	.sbss       start:0x80419C28 end:0x80419C38
