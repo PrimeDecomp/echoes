@@ -374,6 +374,11 @@ Dolphin/card/CARDNet.c:
 	.text       start:0x8035D978 end:0x8035DA3C
 	.sdata      start:0x80418D38 end:0x80418D40
 
+Dolphin/db.c:
+	.text       start:0x8035DA3C end:0x8035DB28
+	.data       start:0x803BCF40 end:0x803BCF58
+	.sbss       start:0x80419DB8 end:0x80419DC0
+
 Dolphin/dsp/dsp.c:
 	.text       start:0x8035DB28 end:0x8035DCE8
 	.data       start:0x803BCF58 end:0x803BCFD8
@@ -453,9 +458,23 @@ Dolphin/os/OSInterrupt.c:
 	.data       start:0x803BF9F8 end:0x803BFA28
 	.sbss       start:0x80419FC0 end:0x80419FD8
 
+Dolphin/os/OSMemory.c:
+	.text       start:0x8037379C end:0x80373B38
+	.data       start:0x803BFA78 end:0x803BFA88
+
+Dolphin/os/OSMutex.c:
+	.text       start:0x80373B38 end:0x80373BA8
+
+Dolphin/os/OSSync.c:
+	.text       start:0x80375184 end:0x80375208
+
 Dolphin/os/OSTime.c:
 	.text       start:0x80376148 end:0x803765C4
 	.data       start:0x803BFAD8 end:0x803BFB38
+
+Dolphin/pad/PadClamp.c:
+	.text       start:0x8037665C end:0x803768A0
+	.rodata     start:0x803B08D8 end:0x803B08E8
 
 Dolphin/si/SIBios.c:
 	.text       start:0x803782B4 end:0x80379B14

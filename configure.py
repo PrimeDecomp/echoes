@@ -460,6 +460,12 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "pad",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/pad/PadClamp.c"),
+        ],
+    ),
+    DolphinLib(
         "ai",
         [
             Object(MatchingFor("G2ME01"), "Dolphin/ai.c"),
@@ -515,6 +521,7 @@ config.libs = [
         "base",
         [
             Object(Matching, "Dolphin/PPCArch.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/db.c"),
         ],
     ),
     DolphinLib(
@@ -525,6 +532,9 @@ config.libs = [
             Object(Matching, "Dolphin/os/OSError.c"),
             Object(Matching, "Dolphin/os/OSInterrupt.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAudioSystem.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSMemory.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSMutex.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
         ],
     ),
