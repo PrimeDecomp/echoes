@@ -425,6 +425,8 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "Runtime/global_destructor_chain.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/__va_arg.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/CPlusLibPPC.cpp"),
             Object(MatchingFor("G2ME01"), "Runtime/ptmf.c"),
             Object(MatchingFor("G2ME01"), "Runtime/runtime.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
@@ -439,7 +441,13 @@ config.libs = [
         "progress_category": "sdk",
         "host": False,
         "objects": [
+            Object(MatchingFor("G2ME01"), "Runtime/arith.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/buffer_io.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/critical_regions.gamecube.c"),
             Object(MatchingFor("G2ME01"), "Runtime/mem.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/mem_funcs.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/misc_io.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/wchar_io.c"),
             Object(MatchingFor("G2ME01"), "Runtime/string.c"),
             Object(MatchingFor("G2ME01"), "Runtime/e_acos.c"),
             Object(MatchingFor("G2ME01"), "Runtime/e_asin.c"),

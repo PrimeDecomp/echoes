@@ -305,9 +305,15 @@ Kyoto/Streams/CFilePreload.cpp:
 	.rodata     start:0x803B0360 end:0x803B0368
 	.bss        start:0x803E0618 end:0x803E0640
 
+Runtime/__va_arg.c:
+	.text       start:0x80344D10 end:0x80344DD8
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x80344DD8 end:0x80344E38
 	.sbss       start:0x80419CC0 end:0x80419CC4
+
+Runtime/CPlusLibPPC.cpp:
+	.text       start:0x80344E38 end:0x80344E68
 
 Runtime/ptmf.c:
 	.text       start:0x80345424 end:0x803454A4
@@ -331,11 +337,29 @@ Runtime/Gecko_ExceptionPPC.cp:
 	.data       start:0x803BBFD8 end:0x803BC0C0
 	.bss        start:0x803E0640 end:0x803E0650
 
+Runtime/arith.c:
+	.text       start:0x8034AE10 end:0x8034AE20
+
+Runtime/buffer_io.c:
+	.text       start:0x8034AE20 end:0x8034AF18
+
+Runtime/critical_regions.gamecube.c:
+	.text       start:0x8034AF18 end:0x8034AF24
+
 Runtime/mem.c:
 	.text       start:0x8034BA9C end:0x8034BC0C
 
+Runtime/mem_funcs.c:
+	.text       start:0x8034BC0C end:0x8034BEDC
+
+Runtime/misc_io.c:
+	.text       start:0x8034BEDC end:0x8034BEEC
+
 Runtime/string.c:
 	.text       start:0x8034E2CC end:0x8034E5A8
+
+Runtime/wchar_io.c:
+	.text       start:0x8034F640 end:0x8034F6C8
 
 Runtime/e_acos.c:
 	.text       start:0x8034F7A0 end:0x8034F9DC
