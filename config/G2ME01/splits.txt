@@ -397,6 +397,14 @@ Kyoto/CARAMToken.cpp:
 	.rodata     start:0x803AFEB0 end:0x803AFEB8
 	.bss        start:0x80417618 end:0x80417634 align:4 common
 
+Kyoto/Audio/CMidiManager.cpp:
+	.text       start:0x80314DC4 end:0x803156B8
+	.ctors      start:0x803A5660 end:0x803A5664
+	.rodata     start:0x803AFEB8 end:0x803AFEC0
+	.data       start:0x803BB148 end:0x803BB158
+	.bss        start:0x803DFEA0 end:0x803DFEB0
+	.bss        start:0x80417634 end:0x8041765C align:4 common
+
 Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.text       start:0x80317B5C end:0x8031AA68
 	.rodata     start:0x803AFF00 end:0x803AFF68

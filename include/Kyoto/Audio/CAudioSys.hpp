@@ -11,6 +11,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 
 class CAudioGroupSet;
+struct SND_PLAYPARA;
 
 enum ETRKSampleRate {
   kTSR_Zero,
@@ -92,6 +93,11 @@ public:
   static void EnableAICallback(bool enable);
   static bool IsAICallbackEnabled();
   static void TrkSetSampleRate(ETRKSampleRate);
+
+  static uint SeqPlayEx(const ushort gid, const ushort sid, void* arrfile, SND_PLAYPARA* para,
+                        const uchar studio);
+  static void SeqStop(uint seqId);
+  static void SeqVolume(uchar, ushort, uint, uchar);
 
   static short GetScaledVolume(int vol) { return kVolumeTable[vol]; }
   static const ushort kVolumeTable[];
