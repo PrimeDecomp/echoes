@@ -481,6 +481,10 @@ Dolphin/os/OSInterrupt.c:
 	.data       start:0x803BF9F8 end:0x803BFA28
 	.sbss       start:0x80419FC0 end:0x80419FD8
 
+Dolphin/os/OSLink.c:
+	.text       start:0x80372D8C end:0x8037379C
+	.data       start:0x803BFA28 end:0x803BFA78
+
 Dolphin/os/OSMemory.c:
 	.text       start:0x8037379C end:0x80373B38
 	.data       start:0x803BFA78 end:0x803BFA88

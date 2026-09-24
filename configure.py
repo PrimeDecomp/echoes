@@ -536,6 +536,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAlarm.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSArena.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAudioSystem.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSLink.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSMemory.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSMutex.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSReboot.c"),
