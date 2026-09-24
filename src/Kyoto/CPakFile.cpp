@@ -274,13 +274,15 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadPreferForward(uint id) {
 
 void CPakFile::RebuildResourceLists(const rstl::vector< SResInfo >& sortedResources) {
   rstl::reserved_vector< uint, 256 > bucketCounts(0);
-  for (int i = 0; i < sortedResources.size(); ++i)
-    ++bucketCounts[sortedResources[i].GetId() & 0xff];
 
+  const SResInfo emptyInfo(0, 'TXTR', 0, 0, 0, 0);
   x78_resList.clear();
-  x78_resList.resize(x4c_resTableCount, SResInfo(0, 'TXTR', 0, 0, 0, 0));
+  x78_resList.resize(x4c_resTableCount, emptyInfo);
   x88_bucketOffsets.clear();
   x88_bucketOffsets.reserve(257);
+  for (rstl::vector< SResInfo >::const_iterator it = sortedResources.begin();
+       it != sortedResources.end(); ++it)
+    ++bucketCounts[it->GetId() & 0xff];
   x88_bucketOffsets.push_back_unsafe(0);
   uint offset = 0;
   for (uint i = 0; i < 256; ++i) {
