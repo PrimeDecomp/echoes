@@ -19,36 +19,15 @@ private:
 
 class CVParamTransfer {
 public:
-  CVParamTransfer() : x0_obj(nullptr), x4_refCount(&rstl::CRefData::sNull.x4_refCount) {
-    ++*x4_refCount;
-  }
+  CVParamTransfer() {}
   template < typename T >
-  CVParamTransfer(TObjOwnerParam< T >* obj) : x0_obj(obj), x4_refCount(rs_new int(1)) {}
-  CVParamTransfer(const CVParamTransfer& other)
-  : x0_obj(other.x0_obj), x4_refCount(other.x4_refCount) {
-    ++*x4_refCount;
-  }
-  ~CVParamTransfer() { ReleaseData(); }
-  void ReleaseData();
-  CVParamTransfer& operator=(const CVParamTransfer& other) {
-    if (x4_refCount != other.x4_refCount) {
-      if (--*x4_refCount <= 0) {
-        delete x0_obj;
-        delete x4_refCount;
-      }
-      x0_obj = other.x0_obj;
-      x4_refCount = other.x4_refCount;
-      ++*x4_refCount;
-    }
-    return *this;
-  }
+  CVParamTransfer(TObjOwnerParam< T >* obj) : x0_obj(obj) {}
   static CVParamTransfer Null();
 
   const IVParamObj& operator*() const { return *x0_obj; }
 
 private:
-  IVParamObj* x0_obj;
-  int* x4_refCount;
+  rstl::rc_ptr< IVParamObj > x0_obj;
 };
 
 #endif // _CVPARAMTRANSFER
