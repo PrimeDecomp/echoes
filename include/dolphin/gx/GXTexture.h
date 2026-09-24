@@ -9,8 +9,9 @@ extern "C" {
 #endif
 
 typedef GXTexRegion* (*GXTexRegionCallback)(const GXTexObj* obj, GXTexMapID id);
+typedef GXTlutRegion* (*GXTlutRegionCallback)(u32 idx);
 
-void GXInitTexObj(GXTexObj* obj, const void* data, u16 width, u16 height, u32 format,
+void GXInitTexObj(GXTexObj* obj, const void* data, u16 width, u16 height, GXTexFmt format,
                   GXTexWrapMode wrapS, GXTexWrapMode wrapT, GXBool mipmap);
 void GXInitTexObjCI(GXTexObj* obj, const void* data, u16 width, u16 height, GXCITexFmt format,
                     GXTexWrapMode wrapS, GXTexWrapMode wrapT, GXBool mipmap, u32 tlut);
@@ -23,11 +24,12 @@ u32 GXGetTexBufferSize(u16 width, u16 height, u32 format, GXBool mipmap, u8 max_
 void GXInvalidateTexAll();
 void GXInitTexObjWrapMode(GXTexObj* obj, GXTexWrapMode s, GXTexWrapMode t);
 void GXInitTlutObj(GXTlutObj* obj, const void* data, GXTlutFmt format, u16 entries);
-void GXLoadTlut(const GXTlutObj* obj, GXTlut idx);
+void GXLoadTlut(const GXTlutObj* obj, u32 idx);
 void GXSetTexCoordScaleManually(GXTexCoordID coord, GXBool enable, u16 ss, u16 ts);
 void GXInitTexCacheRegion(GXTexRegion* region, GXBool is_32b_mipmap, u32 tmem_even,
                           GXTexCacheSize size_even, u32 tmem_odd, GXTexCacheSize size_odd);
 GXTexRegionCallback GXSetTexRegionCallback(GXTexRegionCallback callback);
+GXTlutRegionCallback GXSetTlutRegionCallback(GXTlutRegionCallback callback);
 void GXInvalidateTexRegion(const GXTexRegion* region);
 
 #ifdef __cplusplus

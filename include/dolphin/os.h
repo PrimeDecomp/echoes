@@ -212,6 +212,12 @@ BOOL OSRestoreInterrupts(BOOL level);
 #define ASSERTMSG4(exp, msg, param1, param2, param3, param4) ((void)0)
 #endif
 
+#define ASSERTLINE(line, cond) (void)0
+#define ASSERTMSGLINE(line, cond, msg) (void)0
+#define ASSERTMSG1LINE(line, cond, msg, arg1) (void)0
+#define ASSERTMSG2LINE(line, cond, msg, arg1, arg2) (void)0
+#define ASSERTMSGLINEV(line, cond, ...) (void)0
+
 #endif // _DEBUG
 
 void OSReport(const char* msg, ...);

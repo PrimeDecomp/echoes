@@ -884,6 +884,38 @@ typedef enum _GXVCachePerf {
 
 } GXVCachePerf;
 
+typedef enum _GXFBClamp {
+  GX_CLAMP_NONE = 0,
+  GX_CLAMP_TOP = 1,
+  GX_CLAMP_BOTTOM = 2,
+} GXFBClamp;
+
+typedef enum _GXCopyMode {
+  GX_COPY_PROGRESSIVE = 0,
+  GX_COPY_INTLC_EVEN = 2,
+  GX_COPY_INTLC_ODD = 3,
+} GXCopyMode;
+
+typedef enum _GXTlutSize {
+  GX_TLUT_16 = 1,
+  GX_TLUT_32 = 2,
+  GX_TLUT_64 = 4,
+  GX_TLUT_128 = 8,
+  GX_TLUT_256 = 16,
+  GX_TLUT_512 = 32,
+  GX_TLUT_1K = 64,
+  GX_TLUT_2K = 128,
+  GX_TLUT_4K = 256,
+  GX_TLUT_8K = 512,
+  GX_TLUT_16K = 1024,
+} GXTlutSize;
+
+typedef enum _GXAlphaReadMode {
+  GX_READ_00,
+  GX_READ_FF,
+  GX_READ_NONE,
+} GXAlphaReadMode;
+
 #ifdef __cplusplus
 }
 #endif
