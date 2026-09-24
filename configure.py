@@ -468,7 +468,7 @@ config.libs = [
             Object(NonMatching, "Runtime/ansi_fp.c"),
             Object(MatchingFor("G2ME01"), "Runtime/locale.c"),
             Object(MatchingFor("G2ME01"), "Runtime/direct_io.c"),
-            Object(NonMatching, "Runtime/file_io.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/file_io.c"),
             Object(NonMatching, "Runtime/FILE_POS.c"),
             Object(NonMatching, "Runtime/mbstring.c"),
             Object(NonMatching, "Runtime/printf.c"),
