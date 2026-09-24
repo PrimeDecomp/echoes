@@ -8,28 +8,24 @@
 
 class CRumbleGenerator {
 private:
-  static const EMotorState kStopAll[4];
-  CRumbleVoice x0_voices[4];
-  float xc0_periodTime[4];
-  float xd0_onTime[4];
-  EMotorState xe0_commandArray[4];
-  bool xf0_24_disabled : 1;
+  CRumbleVoice x0_voice;
+  float x30_periodTime;
+  float x34_onTime;
+  EMotorState x38_command;
+  EIOPort x3c_inputIndex;
+  bool x40_24_disabled : 1;
 
 public:
-  CRumbleGenerator();
+  CRumbleGenerator(EIOPort inputIndex);
   ~CRumbleGenerator();
 
-  short Rumble(const SAdsrData& adsr, float, ERumblePriority prio, EIOPort port);
-  void Stop(short id, EIOPort port) {
-    if (id == -1)
-      return;
-    CRumbleVoice& vox = x0_voices[size_t(port)];
-    vox.Deactivate(id, false);
-  }
-  void Deactivate(short, bool);
+  short Rumble(const SAdsrData& adsr, float, ERumblePriority prio);
+  void Stop(short id);
   void Update(float);
   void HardStopAll();
   void SetDisabled(const bool disabled);
 };
+
+CHECK_SIZEOF(CRumbleGenerator, 0x44);
 
 #endif // _CRUMBLEGENERATOR
