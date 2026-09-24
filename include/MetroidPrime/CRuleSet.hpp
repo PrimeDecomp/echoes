@@ -3,10 +3,13 @@
 
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
+#include "rstl/optional_object.hpp"
 #include "rstl/vector.hpp"
 #include "types.h"
 
+class CFactoryFnReturn;
 class CInputStream;
+class CVParamTransfer;
 
 class CRuleValue {
 public:
@@ -19,6 +22,7 @@ private:
   int m_type;
   int m_value;
 };
+CHECK_SIZEOF(CRuleValue, 0x8)
 
 class CRuleCondition {
 public:
@@ -29,6 +33,7 @@ private:
   int m_operator;
   CRuleValue m_value;
 };
+CHECK_SIZEOF(CRuleCondition, 0x10)
 
 class CRuleAction {
 public:
@@ -38,6 +43,7 @@ private:
   FourCC m_id;
   rstl::vector< CRuleValue > m_properties;
 };
+CHECK_SIZEOF(CRuleAction, 0x14)
 
 class CRuleSetRule {
 public:
@@ -55,9 +61,11 @@ public:
 
 private:
   rstl::vector< CRuleSetRule > m_rules;
-  TCachedToken< CRuleSet > m_parentRule;
-  char m_pad[0x4];
+  rstl::optional_object< TLockedToken< CRuleSet > > m_parentRule;
 };
 CHECK_SIZEOF(CRuleSet, 0x20)
+
+CFactoryFnReturn FRuleSetFactory(const SObjectTag& tag, CInputStream& in,
+                                 const CVParamTransfer& xfer);
 
 #endif // _CRULESET
