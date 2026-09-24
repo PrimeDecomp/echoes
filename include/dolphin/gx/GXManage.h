@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+typedef void (*GXDrawSyncCallback)(u16 token);
 typedef void (*GXDrawDoneCallback)(void);
 
 GXFifoObj* GXInit(void* base, u32 size);
@@ -16,6 +17,8 @@ void GXSetDrawDone(void);
 void GXFlush(void);
 void GXPixModeSync(void);
 void GXSetMisc(GXMiscToken token, u32 val);
+GXDrawSyncCallback GXSetDrawSyncCallback(GXDrawSyncCallback cb);
+void GXSetDrawSync(u16 token);
 
 #ifdef __cplusplus
 }

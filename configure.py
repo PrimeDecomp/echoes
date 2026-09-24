@@ -556,6 +556,25 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "gx",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXInit.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXFifo.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXAttr.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXMisc.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXGeometry.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXFrameBuf.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXLight.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXTexture.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXBump.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXTev.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXPixel.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXDisplayList.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXTransform.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/gx/GXPerf.c"),
+        ],
+    ),
+    DolphinLib(
         "mtx",
         [
             Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx.c"),

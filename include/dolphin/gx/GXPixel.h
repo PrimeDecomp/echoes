@@ -19,8 +19,8 @@ void GXSetZCompLoc(GXBool before_tex);
 void GXSetPixelFmt(GXPixelFmt pix_fmt, GXZFmt16 z_fmt);
 void GXSetDither(GXBool dither);
 void GXSetDstAlpha(GXBool enable, u8 alpha);
-// ? GXSetFieldMask();
-// ? GXSetFieldMode();
+void GXSetFieldMask(GXBool odd_mask, GXBool even_mask);
+void GXSetFieldMode(GXBool field_mode, GXBool half_aspect_ratio);
 
 #ifdef __cplusplus
 }

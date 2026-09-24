@@ -785,6 +785,70 @@ Dolphin/exi/EXIUart.c:
 	.text       start:0x803653D4 end:0x8036598C
 	.sbss       start:0x80419EF0 end:0x80419F00
 
+Dolphin/gx/GXInit.c:
+	.text       start:0x8036598C end:0x80366D18
+	.data       start:0x803BDC20 end:0x803BDE60
+	.bss        start:0x803E1248 end:0x803E1880
+	.sdata      start:0x80418D90 end:0x80418D98
+	.sbss       start:0x80419F00 end:0x80419F28
+	.sdata2     start:0x8041F4C8 end:0x8041F4F0
+
+Dolphin/gx/GXFifo.c:
+	.text       start:0x80366D18 end:0x80367628
+	.sbss       start:0x80419F28 end:0x80419F48
+
+Dolphin/gx/GXAttr.c:
+	.text       start:0x80367628 end:0x803685A8
+	.data       start:0x803BDE60 end:0x803BE028
+	.sdata      start:0x80418D98 end:0x80418DA8
+
+Dolphin/gx/GXMisc.c:
+	.text       start:0x803685A8 end:0x80368E58
+	.sbss       start:0x80419F48 end:0x80419F60
+
+Dolphin/gx/GXGeometry.c:
+	.text       start:0x80368E58 end:0x80369178
+
+Dolphin/gx/GXFrameBuf.c:
+	.text       start:0x80369178 end:0x80369C20
+	.data       start:0x803BE028 end:0x803BE158
+	.sdata2     start:0x8041F4F0 end:0x8041F4F8
+
+Dolphin/gx/GXLight.c:
+	.text       start:0x80369C20 end:0x8036A13C
+	.data       start:0x803BE158 end:0x803BE178
+	.sdata2     start:0x8041F4F8 end:0x8041F528
+
+Dolphin/gx/GXTexture.c:
+	.text       start:0x8036A13C end:0x8036B2F8
+	.data       start:0x803BE178 end:0x803BE3A0
+	.sdata      start:0x80418DA8 end:0x80418DE8
+	.sdata2     start:0x8041F528 end:0x8041F550
+
+Dolphin/gx/GXBump.c:
+	.text       start:0x8036B2F8 end:0x8036B7D0
+	.sdata2     start:0x8041F550 end:0x8041F558
+
+Dolphin/gx/GXTev.c:
+	.text       start:0x8036B7D0 end:0x8036BEF0
+	.data       start:0x803BE3A0 end:0x803BE418
+
+Dolphin/gx/GXPixel.c:
+	.text       start:0x8036BEF0 end:0x8036C528
+	.data       start:0x803BE418 end:0x803BE438
+	.sdata2     start:0x8041F558 end:0x8041F590
+
+Dolphin/gx/GXDisplayList.c:
+	.text       start:0x8036C528 end:0x8036C598
+
+Dolphin/gx/GXTransform.c:
+	.text       start:0x8036C598 end:0x8036CB48
+	.sdata2     start:0x8041F590 end:0x8041F5A0
+
+Dolphin/gx/GXPerf.c:
+	.text       start:0x8036CB48 end:0x8036D3A0
+	.data       start:0x803BE438 end:0x803BE528
+
 Dolphin/mtx/mtx.c:
 	.text       start:0x8036D3A0 end:0x8036D5C8
 	.sdata      start:0x80418DE8 end:0x80418DF0
