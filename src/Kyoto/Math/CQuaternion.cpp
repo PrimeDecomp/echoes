@@ -148,9 +148,8 @@ CTransform4f CQuaternion::BuildTransform4f() const {
   const float xx = x2 * AxisX();
   const float yy = y2 * AxisY();
   const float zz = z2 * AxisZ();
-  return CTransform4f(CVector3f(1.f - yy - zz, xy - wz, xz + wy),
-                      CVector3f(xy + wz, 1.f - xx - zz, yz - wx),
-                      CVector3f(xz - wy, yz + wx, 1.f - xx - yy), CVector3f(0.f, 0.f, 0.f));
+  return CTransform4f(1.f - yy - zz, xy - wz, xz + wy, 0.f, xy + wz, 1.f - xx - zz, yz - wx, 0.f,
+                      xz - wy, yz + wx, 1.f - xx - yy, 0.f);
 }
 
 CTransform4f CQuaternion::BuildTransform4f(const CVector3f& translation) const {
@@ -166,10 +165,9 @@ CTransform4f CQuaternion::BuildTransform4f(const CVector3f& translation) const {
   const float xx = x2 * AxisX();
   const float yy = y2 * AxisY();
   const float zz = z2 * AxisZ();
-  return CTransform4f(CVector3f(1.f - yy - zz, xy - wz, xz + wy),
-                      CVector3f(xy + wz, 1.f - xx - zz, yz - wx),
-                      CVector3f(xz - wy, yz + wx, 1.f - xx - yy),
-                      CVector3f(translation.GetX(), translation.GetY(), translation.GetZ()));
+  return CTransform4f(1.f - yy - zz, xy - wz, xz + wy, translation.GetX(), xy + wz, 1.f - xx - zz,
+                      yz - wx, translation.GetY(), xz - wy, yz + wx, 1.f - xx - yy,
+                      translation.GetZ());
 }
 
 CQuaternion CQuaternion::Slerp(const CQuaternion& a, const CQuaternion& b, float t) {

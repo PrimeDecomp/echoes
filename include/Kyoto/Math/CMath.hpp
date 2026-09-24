@@ -41,7 +41,7 @@ public:
     return val < min ? min : (val <= max ? val : max);
   }
   static float SqrtF(float v);
-  static float Limit(float v, float h) { return fabs(v) > h ? h * Sign(v) : v; }
+  static float Limit(float v, float h) { return AbsF(v) > h ? h * Sign(v) : v; }
   static float Sign(float v) { return FastFSel(v, 1.f, -1.f); }
 #ifdef __MWERKS__
   static float FastFSel(register float v, register float h, register float l) {
