@@ -346,6 +346,10 @@ Runtime/buffer_io.c:
 Runtime/critical_regions.gamecube.c:
 	.text       start:0x8034AF18 end:0x8034AF24
 
+Runtime/ctype.c:
+	.text       start:0x8034AF24 end:0x8034AF48
+	.data       start:0x803BC368 end:0x803BC668
+
 Runtime/mem.c:
 	.text       start:0x8034BA9C end:0x8034BC0C
 

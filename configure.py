@@ -444,6 +444,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Runtime/arith.c"),
             Object(MatchingFor("G2ME01"), "Runtime/buffer_io.c"),
             Object(MatchingFor("G2ME01"), "Runtime/critical_regions.gamecube.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/ctype.c"),
             Object(MatchingFor("G2ME01"), "Runtime/mem.c"),
             Object(MatchingFor("G2ME01"), "Runtime/mem_funcs.c"),
             Object(MatchingFor("G2ME01"), "Runtime/misc_io.c"),
