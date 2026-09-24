@@ -1,50 +1,61 @@
 #include "Kyoto/CARAMManager.hpp"
 
+#include "Kyoto/Alloc/CMemory.hpp"
+
+#include "rstl/math.hpp"
+
 #include <dolphin/ar.h>
+#include <dolphin/arq.h>
 #include <dolphin/os.h>
 
+class CARAMManager::CAramPool {
+public:
+  CAramPool(uint chunkSize, uint numChunks)
+  : mpARAMStart(ARAlloc(chunkSize * numChunks))
+  , mChunkSize(chunkSize)
+  , mNumChunks(numChunks)
+  , mChunksAllocated(0)
+  , mMaxChunksAllocated(0)
+  , mpBookKeepingMemory((uint*)CMemory::Alloc(numChunks * 4, IAllocator::kHI_None,
+                                              IAllocator::kSC_Unk1, IAllocator::kTP_Heap,
+                                              CCallStack(-1, "\?\?(\?\?)"))) {
+    for (uint i = 0; i < mNumChunks; ++i) {
+      mpBookKeepingMemory[i] = kFreeChunk;
+    }
+    CMemory::OffsetFakeStatics(mNumChunks * 4);
+  }
+  ~CAramPool();
+
+  void* Alloc(uint len);
+  uint FindFreeBlocks(uint start, uint end, uint count);
+  bool Free(const void* ptr);
+
+private:
+  u32 mpARAMStart;
+  uint mChunkSize;
+  uint mNumChunks;
+  uint mChunksAllocated;
+  uint mMaxChunksAllocated;
+  uint* mpBookKeepingMemory;
+};
+
 bool CARAMManager::mbInitialized = false;
-u32 CARAMManager::mpARAMStart = 0;
-uint CARAMManager::mChunkSize = 0;
-uint CARAMManager::mNumChunks = 0;
-uint* CARAMManager::mpBookKeepingMemory;
-uint CARAMManager::mPreInitializeAlloc = 16 * 1024;
 uint CARAMManager::mDMAUniqueID = 0;
-uint CARAMManager::mChunksAllocated = 0;
-const int CARAMManager::kInvalidAlloc = -1;
+CARAMManager::CAramPool* CARAMManager::mPools[2];
+uint CARAMManager::mPreInitializeAlloc = 16 * 1024;
+const uint CARAMManager::kFreeChunk = 0;
 const int CARAMManager::kInvalidHandle = -1;
 
 rstl::list< CARAMManager::SAramDMARequest* > CARAMManager::mActiveDMAs;
 
-bool CARAMManager::Initialize(uint chunkSize) {
-  uint numChunks = (ARGetSize() - mPreInitializeAlloc) / chunkSize;
-  mChunkSize = chunkSize;
-  mNumChunks = numChunks;
-  mpARAMStart = ARAlloc(chunkSize * numChunks);
-  mpBookKeepingMemory = (uint*)CMemory::Alloc(numChunks * 4, IAllocator::kHI_None,
-                                              IAllocator::kSC_Unk1, IAllocator::kTP_Heap,
-                                              CCallStack(-1, "\?\?(\?\?)"));
-  CMemory::OffsetFakeStatics(mNumChunks * 4);
-
-  for (uint i = 0; i < numChunks; ++i) {
-    mpBookKeepingMemory[i] = 0;
-  }
-
-  mDMAUniqueID = 0;
-  mbInitialized = true;
-  return true;
-}
-
-void CARAMManager::Shutdown() {
-  WaitForAllDMAsToComplete();
-  CMemory::Free(mpBookKeepingMemory);
+CARAMManager::CAramPool::~CAramPool() {
   u32 unk = 0;
   CMemory::OffsetFakeStatics(-mNumChunks * 4);
   ARFree(&unk);
-  mbInitialized = false;
+  CMemory::Free(mpBookKeepingMemory);
 }
 
-void* CARAMManager::Alloc(const uint len) {
+void* CARAMManager::CAramPool::Alloc(uint len) {
   uint chunkCount = (mChunkSize - 1 + len) / mChunkSize;
   uint block = FindFreeBlocks(0, mNumChunks, chunkCount);
 
@@ -53,6 +64,7 @@ void* CARAMManager::Alloc(const uint len) {
   }
 
   mChunksAllocated += chunkCount;
+  mMaxChunksAllocated = rstl::max_val(mMaxChunksAllocated, mChunksAllocated);
   uint blockOffset = mpARAMStart + block * mChunkSize;
   mpBookKeepingMemory[block] = chunkCount;
 
@@ -64,41 +76,41 @@ void* CARAMManager::Alloc(const uint len) {
   return (void*)blockOffset;
 }
 
-uint CARAMManager::FindFreeBlocks(uint arg0, uint arg1, uint arg2) {
-  while (arg0 < arg1) {
-    if (mpBookKeepingMemory[arg0] == 0) {
-      if (arg2 == 1) {
-        return arg0;
+uint CARAMManager::CAramPool::FindFreeBlocks(uint start, uint end, uint count) {
+  while (start < end) {
+    if (mpBookKeepingMemory[start] == 0) {
+      if (count == 1) {
+        return start;
       }
 
-      ++arg0;
-      int r8 = 1;
-      while (arg0 < arg1) {
-        uint tmp = mpBookKeepingMemory[arg0];
+      ++start;
+      int found = 1;
+      while (start < end) {
+        uint tmp = mpBookKeepingMemory[start];
         if (tmp != 0) {
-          arg0 += tmp;
+          start += tmp;
           break;
         }
 
-        r8++;
-        if (r8 == arg2) {
-          return arg0 - (arg2 - 1);
+        found++;
+        if (found == count) {
+          return start - (count - 1);
         }
-        ++arg0;
+        ++start;
       }
     } else {
-      arg0 += mpBookKeepingMemory[arg0];
+      start += mpBookKeepingMemory[start];
     }
   }
   return -1;
 }
 
-bool CARAMManager::Free(const void* ptr) {
-  if (GetInvalidAlloc() == ptr) {
+bool CARAMManager::CAramPool::Free(const void* ptr) {
+  if (!IsAllocValid(ptr)) {
     return false;
   }
 
-  uint blockStart = (reinterpret_cast< uintptr_t >(ptr) - mpARAMStart) / mChunkSize;
+  uint blockStart = (reinterpret_cast< u32 >(ptr) - mpARAMStart) / mChunkSize;
   uint blockCount = mpBookKeepingMemory[blockStart];
   mChunksAllocated -= blockCount;
   while (blockCount--) {
@@ -107,15 +119,38 @@ bool CARAMManager::Free(const void* ptr) {
   return true;
 }
 
-uint CARAMManager::DMAToARAM(void* src, void* dest, uint len, EDMAPriority priority) {
-  DCStoreRange(src, len);
+
+bool CARAMManager::Initialize(uint chunkSize, uint size, uint secondChunkSize) {
+  uint aramSize = ARGetSize() - mPreInitializeAlloc;
+  uint numChunks = size / chunkSize;
+  uint secondNumChunks = (aramSize - size) / secondChunkSize;
+  mPools[1] = rs_new CAramPool(chunkSize, numChunks);
+  mPools[0] = rs_new CAramPool(secondChunkSize, secondNumChunks);
+  mDMAUniqueID = 0;
+  mbInitialized = true;
+  return true;
+}
+
+void CARAMManager::Shutdown() {
+  WaitForAllDMAsToComplete();
+  delete mPools[0];
+  delete mPools[1];
+  mbInitialized = false;
+}
+
+void* CARAMManager::Alloc(uint len, int pool) { return mPools[pool]->Alloc(len); }
+
+bool CARAMManager::Free(const void* ptr, int pool) { return mPools[pool]->Free(ptr); }
+
+int CARAMManager::DMAToARAM(void* src, void* dest, uint len, EDMAPriority priority) {
+  DCFlushRange(src, len);
   SAramDMARequest* req = rs_new SAramDMARequest();
   req->mComplete = false;
   req->mUniqueID = mDMAUniqueID;
   mActiveDMAs.push_back(req);
   ARQPostRequest(&req->mRequest, req->mUniqueID, ARQ_TYPE_MRAM_TO_ARAM,
                  (priority == kDMAPrio_One) ? ARQ_PRIORITY_HIGH : ARQ_PRIORITY_LOW,
-                 reinterpret_cast< uintptr_t >(src), reinterpret_cast< uintptr_t >(dest), len,
+                 reinterpret_cast< u32 >(src), reinterpret_cast< u32 >(dest), len,
                  AramManagerDMACallback);
 
   GetAndIncrementUniqueID();
@@ -130,7 +165,7 @@ int CARAMManager::DMAToMRAM(void* src, void* dest, uint len, EDMAPriority priori
   mActiveDMAs.push_back(req);
   ARQPostRequest(&req->mRequest, req->mUniqueID, ARQ_TYPE_ARAM_TO_MRAM,
                  (priority == kDMAPrio_One) ? ARQ_PRIORITY_HIGH : ARQ_PRIORITY_LOW,
-                 reinterpret_cast< uintptr_t >(src), reinterpret_cast< uintptr_t >(dest), len,
+                 reinterpret_cast< u32 >(src), reinterpret_cast< u32 >(dest), len,
                  AramManagerDMACallback);
 
   GetAndIncrementUniqueID();
@@ -186,7 +221,7 @@ bool CARAMManager::CancelDMA(uint handle) {
   return true;
 }
 
-void CARAMManager::AramManagerDMACallback(uintptr_t result) {
+void CARAMManager::AramManagerDMACallback(u32 result) {
   SAramDMARequest* req = reinterpret_cast< SAramDMARequest* >(result);
   req->mComplete = true;
   if (req->mRequest.type == ARQ_TYPE_ARAM_TO_MRAM) {
@@ -206,6 +241,10 @@ void CARAMManager::RefreshActiveDMAList() {
   }
 }
 
-void CARAMManager::CollectGarbage() {
-  RefreshActiveDMAList();
+void CARAMManager::CollectGarbage() { RefreshActiveDMAList(); }
+
+bool CARAMManager::IsAllocValid(const void* ptr) {
+  return reinterpret_cast< const void* >(-1) != ptr;
 }
+
+const void* CARAMManager::GetInvalidAlloc() { return reinterpret_cast< const void* >(-1); }

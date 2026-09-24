@@ -315,6 +315,15 @@ Kyoto/CToken.cpp:
 	.text       start:0x803013D0 end:0x80301710
 	.rodata     start:0x803AFAE8 end:0x803AFAF0
 
+Kyoto/CARAMManager.cpp:
+	.text       start:0x80301710 end:0x80302298
+	.ctors      start:0x803A5640 end:0x803A5644
+	.rodata     start:0x803AFAF0 end:0x803AFAF8
+	.bss        start:0x804175B8 end:0x804175D0 align:4 common
+	.sdata      start:0x80418BA8 end:0x80418BB0
+	.sbss       start:0x80419B00 end:0x80419B10
+	.sdata2     start:0x8041E938 end:0x8041E940
+
 Kyoto/Math/CFrustumPlanes.cpp:
 	.text       start:0x80302298 end:0x803029D8
 	.sdata2     start:0x8041E940 end:0x8041E948
