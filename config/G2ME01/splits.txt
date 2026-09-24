@@ -943,11 +943,11 @@ musyx/runtime/seq_api.c:
 	.text       start:0x80389494 end:0x803896CC
 
 musyx/runtime/snd_synthapi.c:
-	.text       start:0x803896CC end:0x80389C9C
+	.text       start:0x803896CC end:0x80389DA4
 	.sdata2     start:0x8041F680 end:0x8041F698
 
 musyx/runtime/stream.c:
-	.text       start:0x80389C9C end:0x8038D594
+	.text       start:0x80389DA4 end:0x8038D594
 	.bss        start:0x803F1918 end:0x803F3318
 	.sbss       start:0x8041A240 end:0x8041A250
 	.sdata2     start:0x8041F698 end:0x8041F6B0
@@ -1017,14 +1017,14 @@ musyx/runtime/snd_math.c:
 
 musyx/runtime/snd_midictrl.c:
 	.text       start:0x8039E694 end:0x803A09A4
-	.rodata     start:0x803B09B0 end:0x803B0AC8
+	.rodata     start:0x803B09B0 end:0x803B0AC0
 	.data       start:0x803C2A80 end:0x803C2B10
 	.bss        start:0x804015C8 end:0x804083C8
 	.sbss       start:0x8041A348 end:0x8041A350
 
 musyx/runtime/snd_service.c:
 	.text       start:0x803A09A4 end:0x803A0C78
-	.rodata     start:0x803B0AC8 end:0x803B0AF0
+	.rodata     start:0x803B0AC0 end:0x803B0AF0
 	.data       start:0x803C2B10 end:0x803C3320
 	.sdata      start:0x80418E68 end:0x80418E70
 	.sdata2     start:0x8041F7C0 end:0x8041F7C8
