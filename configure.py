@@ -515,6 +515,74 @@ config.libs = [
         ],
     },
     DolphinLib(
+        "dsp",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp_debug.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dsp/dsp_task.c"),
+        ],
+    ),
+    DolphinLib(
+        "dvd",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdlow.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdfs.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdqueue.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvderror.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdidutils.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/dvdfatal.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/dvd/fstload.c"),
+        ],
+    ),
+    DolphinLib(
+        "exi",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/exi/EXIBios.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/exi/EXIUart.c"),
+        ],
+    ),
+    DolphinLib(
+        "mtx",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtxvec.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/mtx/mtx44.c"),
+        ],
+    ),
+    DolphinLib(
+        "pad",
+        [
+            Object(NonMatching, "Dolphin/pad/Pad.c", extra_cflags=["-char unsigned"]),
+            Object(MatchingFor("G2ME01"), "Dolphin/pad/PadClamp.c"),
+        ],
+    ),
+    DolphinLib(
+        "vi",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/vi/vi.c"),
+        ],
+    ),
+    DolphinLib(
+        "ai",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/ai.c"),
+        ],
+    ),
+    DolphinLib(
+        "si",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/si/SIBios.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/si/SISamplingRate.c"),
+        ],
+    ),
+    DolphinLib(
+        "thp",
+        [
+            Object(MatchingFor("G2ME01"), "Dolphin/thp/THPDec.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/thp/THPAudio.c"),
+        ],
+    ),
+    DolphinLib(
         "ar",
         [
             Object(Matching, "Dolphin/ar/ar.c"),
@@ -550,6 +618,7 @@ config.libs = [
         "base",
         [
             Object(Matching, "Dolphin/PPCArch.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/db.c"),
         ],
     ),
     DolphinLib(
@@ -558,7 +627,24 @@ config.libs = [
             Object(Matching, "Dolphin/os/OSCache.c"),
             Object(Matching, "Dolphin/os/OSContext.c"),
             Object(Matching, "Dolphin/os/OSError.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSExec.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSFatal.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSFont.c", extra_cflags=["-char unsigned"]),
             Object(Matching, "Dolphin/os/OSInterrupt.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OS.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSAlarm.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSArena.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSAudioSystem.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSLink.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSMemory.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSMutex.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSReboot.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSReset.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSResetSW.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSRtc.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
         ],
     ),
     # Begin RELs

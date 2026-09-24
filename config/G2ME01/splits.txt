@@ -630,6 +630,13 @@ Runtime/math_ppc.c:
 Runtime/w_sqrt.c:
 	.text       start:0x80352F38 end:0x80352F58
 
+Dolphin/vi/vi.c:
+	.text       start:0x80352F58 end:0x8035512C
+	.data       start:0x803BC8D0 end:0x803BCCB8
+	.bss        start:0x803E0AA0 end:0x803E0BE8
+	.sdata      start:0x80418D08 end:0x80418D18
+	.sbss       start:0x80419D00 end:0x80419D68
+
 Dolphin/ar/ar.c:
 	.text       start:0x8035512C end:0x80356C7C
 	.data       start:0x803BCCB8 end:0x803BCD00
@@ -698,6 +705,107 @@ Dolphin/card/CARDNet.c:
 	.text       start:0x8035D978 end:0x8035DA3C
 	.sdata      start:0x80418D38 end:0x80418D40
 
+Dolphin/db.c:
+	.text       start:0x8035DA3C end:0x8035DB28
+	.data       start:0x803BCF40 end:0x803BCF58
+	.sbss       start:0x80419DB8 end:0x80419DC0
+
+Dolphin/dsp/dsp.c:
+	.text       start:0x8035DB28 end:0x8035DCE8
+	.data       start:0x803BCF58 end:0x803BCFD8
+	.sdata      start:0x80418D40 end:0x80418D48
+	.sbss       start:0x80419DC0 end:0x80419DC8
+
+Dolphin/dsp/dsp_debug.c:
+	.text       start:0x8035DCE8 end:0x8035DD38
+
+Dolphin/dsp/dsp_task.c:
+	.text       start:0x8035DD38 end:0x8035E5BC
+	.data       start:0x803BCFD8 end:0x803BD118
+	.sbss       start:0x80419DC8 end:0x80419DE0
+
+Dolphin/dvd/dvdlow.c:
+	.text       start:0x8035EF60 end:0x8035FDDC
+	.bss        start:0x803E0F78 end:0x803E1060
+	.sdata      start:0x80418D48 end:0x80418D50
+	.sbss       start:0x80419E18 end:0x80419E60
+
+Dolphin/dvd/dvdfs.c:
+	.text       start:0x8035FDDC end:0x80360698
+	.data       start:0x803BD118 end:0x803BD508
+	.sdata      start:0x80418D50 end:0x80418D58
+	.sbss       start:0x80419E60 end:0x80419E80
+
+Dolphin/dvd/dvdqueue.c:
+	.text       start:0x80363204 end:0x803633FC
+	.bss        start:0x803E10F8 end:0x803E1118
+
+Dolphin/dvd/dvderror.c:
+	.text       start:0x803633FC end:0x80363594
+	.data       start:0x803BD690 end:0x803BD6D8
+
+Dolphin/dvd/dvdidutils.c:
+	.text       start:0x80363594 end:0x8036368C
+
+Dolphin/dvd/dvdfatal.c:
+	.text       start:0x8036368C end:0x803637B8
+	.rodata     start:0x803B08C0 end:0x803B08D8
+	.data       start:0x803BD6D8 end:0x803BDA88
+	.sdata      start:0x80418D70 end:0x80418D78
+	.sbss       start:0x80419ED0 end:0x80419ED8
+	.sdata2     start:0x8041F4C0 end:0x8041F4C8
+
+Dolphin/dvd/fstload.c:
+	.text       start:0x803637B8 end:0x803639F8
+	.data       start:0x803BDA88 end:0x803BDAF8
+	.bss        start:0x803E1118 end:0x803E1188
+	.sdata      start:0x80418D78 end:0x80418D88
+	.sbss       start:0x80419ED8 end:0x80419EE8
+
+Dolphin/exi/EXIBios.c:
+	.text       start:0x803639F8 end:0x803653D4
+	.data       start:0x803BDAF8 end:0x803BDC20
+	.bss        start:0x803E1188 end:0x803E1248
+	.sdata      start:0x80418D88 end:0x80418D90
+	.sbss       start:0x80419EE8 end:0x80419EF0
+
+Dolphin/exi/EXIUart.c:
+	.text       start:0x803653D4 end:0x8036598C
+	.sbss       start:0x80419EF0 end:0x80419F00
+
+Dolphin/mtx/mtx.c:
+	.text       start:0x8036D3A0 end:0x8036D5C8
+	.sdata      start:0x80418DE8 end:0x80418DF0
+	.sdata2     start:0x8041F5A0 end:0x8041F5A8
+
+Dolphin/mtx/mtxvec.c:
+	.text       start:0x8036D5C8 end:0x8036D670
+
+Dolphin/mtx/mtx44.c:
+	.text       start:0x8036D670 end:0x8036D918
+	.sdata2     start:0x8041F5A8 end:0x8041F5B8
+
+Dolphin/os/OS.c:
+	.text       start:0x8036D918 end:0x8036E3E4
+	.data       start:0x803BE528 end:0x803BE720
+	.bss        start:0x803E1880 end:0x803E18F0
+	.sdata      start:0x80418DF0 end:0x80418E00
+	.sbss       start:0x80419F60 end:0x80419F98
+
+Dolphin/os/OSAlarm.c:
+	.text       start:0x8036E3E4 end:0x8036EBBC
+	.data       start:0x803BE720 end:0x803BE730
+	.sbss       start:0x80419F98 end:0x80419FA0
+
+Dolphin/os/OSArena.c:
+	.text       start:0x8036EBBC end:0x8036EC08
+	.sdata      start:0x80418E00 end:0x80418E08
+	.sbss       start:0x80419FA0 end:0x80419FA8
+
+Dolphin/os/OSAudioSystem.c:
+	.text       start:0x8036EC08 end:0x8036EE9C
+	.data       start:0x803BE730 end:0x803BE7B0
+
 Dolphin/os/OSCache.c:
 	.text       start:0x8036EE9C end:0x8036F514
 	.data       start:0x803BE7B0 end:0x803BE9E0
@@ -712,7 +820,108 @@ Dolphin/os/OSError.c:
 	.bss        start:0x803E18F0 end:0x803E1938
 	.sdata      start:0x80418E08 end:0x80418E10
 
+Dolphin/os/OSExec.c:
+	.text       start:0x803703A4 end:0x80370D04
+	.data       start:0x803BEED8 end:0x803BEEE8
+	.sdata      start:0x80418E10 end:0x80418E18
+	.sbss       start:0x80419FA8 end:0x80419FB0
+
+Dolphin/os/OSFatal.c:
+	.text       start:0x80370D04 end:0x80371994
+	.bss        start:0x803E1938 end:0x803E1C20
+	.sdata      start:0x80418E18 end:0x80418E20
+	.sdata2     start:0x8041F5B8 end:0x8041F5F8
+
+Dolphin/os/OSFont.c:
+	.text       start:0x80371994 end:0x80372520
+	.data       start:0x803BEEE8 end:0x803BF9F8
+	.sdata      start:0x80418E20 end:0x80418E28
+	.sbss       start:0x80419FB0 end:0x80419FC0
+	.sdata2     start:0x8041F5F8 end:0x8041F600
+
 Dolphin/os/OSInterrupt.c:
 	.text       start:0x80372520 end:0x80372D8C
 	.data       start:0x803BF9F8 end:0x803BFA28
 	.sbss       start:0x80419FC0 end:0x80419FD8
+
+Dolphin/os/OSLink.c:
+	.text       start:0x80372D8C end:0x8037379C
+	.data       start:0x803BFA28 end:0x803BFA78
+
+Dolphin/os/OSMemory.c:
+	.text       start:0x8037379C end:0x80373B38
+	.data       start:0x803BFA78 end:0x803BFA88
+
+Dolphin/os/OSMutex.c:
+	.text       start:0x80373B38 end:0x80373BA8
+
+Dolphin/os/OSReboot.c:
+	.text       start:0x80373BA8 end:0x80373C54
+	.sbss       start:0x80419FD8 end:0x80419FE0
+
+Dolphin/os/OSReset.c:
+	.text       start:0x80373C54 end:0x803740D8
+	.data       start:0x803BFA88 end:0x803BFAD8
+	.sbss       start:0x80419FE0 end:0x80419FF0
+
+Dolphin/os/OSResetSW.c:
+	.text       start:0x803740D8 end:0x80374464
+	.sbss       start:0x80419FF0 end:0x8041A010
+
+Dolphin/os/OSRtc.c:
+	.text       start:0x80374464 end:0x80375184
+	.bss        start:0x803E1C20 end:0x803E1C78
+
+Dolphin/os/OSSync.c:
+	.text       start:0x80375184 end:0x80375208
+
+Dolphin/os/OSThread.c:
+	.text       start:0x80375208 end:0x80376148
+	.bss        start:0x803E1C78 end:0x803E2670
+	.sdata      start:0x80418E28 end:0x80418E30
+	.sbss       start:0x8041A010 end:0x8041A020
+
+Dolphin/os/OSTime.c:
+	.text       start:0x80376148 end:0x803765C4
+	.data       start:0x803BFAD8 end:0x803BFB38
+
+Dolphin/pad/PadClamp.c:
+	.text       start:0x8037665C end:0x803768A0
+	.rodata     start:0x803B08D8 end:0x803B08E8
+
+Dolphin/pad/Pad.c:
+	.text       start:0x803768A0 end:0x803782B4
+	.data       start:0x803BFB38 end:0x803BFB90
+	.bss        start:0x803E2670 end:0x803E26C0
+	.sdata      start:0x80418E30 end:0x80418E50
+	.sbss       start:0x8041A028 end:0x8041A058
+
+Dolphin/si/SIBios.c:
+	.text       start:0x803782B4 end:0x80379B14
+	.data       start:0x803BFB90 end:0x803BFCA8
+	.bss        start:0x803E26C0 end:0x803E28C0
+	.sdata      start:0x80418E50 end:0x80418E58
+	.sbss       start:0x8041A058 end:0x8041A068
+
+Dolphin/si/SISamplingRate.c:
+	.text       start:0x80379B14 end:0x80379C1C
+	.data       start:0x803BFCA8 end:0x803BFD40
+	.sbss       start:0x8041A068 end:0x8041A070
+
+Dolphin/thp/THPDec.c:
+	.text       start:0x80379C1C end:0x80381184
+	.rodata     start:0x803B08E8 end:0x803B0978
+	.data       start:0x803BFD40 end:0x803BFD80
+	.bss        start:0x803E28C0 end:0x803E29F0
+	.sdata      start:0x80418E58 end:0x80418E60
+	.sbss       start:0x8041A080 end:0x8041A198
+	.sdata2     start:0x8041F600 end:0x8041F620
+
+Dolphin/thp/THPAudio.c:
+	.text       start:0x80381184 end:0x803816B4
+
+Dolphin/ai.c:
+	.text       start:0x803816B4 end:0x8038201C
+	.data       start:0x803BFD80 end:0x803BFDC8
+	.sdata      start:0x80418E60 end:0x80418E68
+	.sbss       start:0x8041A198 end:0x8041A1D8

@@ -56,6 +56,7 @@ u32 DSPCheckMailFromDSP();
 u32 DSPGetDMAStatus();
 
 DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
+DSPTaskInfo* DSPCancelTask(DSPTaskInfo* task);
 
 void __DSP_exec_task(DSPTaskInfo* curr, DSPTaskInfo* next);
 void __DSP_boot_task(DSPTaskInfo* task);

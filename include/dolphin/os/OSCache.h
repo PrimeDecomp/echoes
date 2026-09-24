@@ -15,6 +15,7 @@ void DCStoreRangeNoSync(void* addr, u32 nBytes);
 void DCZeroRange(void* addr, u32 nBytes);
 void DCTouchRange(void* addr, u32 nBytes);
 void ICInvalidateRange(void* addr, u32 nBytes);
+void ICFlashInvalidate(void);
 
 #define LC_BASE_PREFIX 0xE000
 #define LC_BASE (LC_BASE_PREFIX << 16)
