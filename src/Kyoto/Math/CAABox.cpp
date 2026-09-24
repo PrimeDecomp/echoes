@@ -6,14 +6,9 @@
 #include "Kyoto/Math/CTri.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
-// G2ME01 loads this runtime FLT_MAX bit pattern rather than a literal.
-extern "C" int __float_max[];
-static inline const float& RuntimeFloatMax() {
-  return *reinterpret_cast< const float* >(__float_max);
-}
+#include "float.h"
 
-CAABox CAABox::mskInvertedBox(RuntimeFloatMax(), RuntimeFloatMax(), RuntimeFloatMax(),
-                              -RuntimeFloatMax(), -RuntimeFloatMax(), -RuntimeFloatMax());
+CAABox CAABox::mskInvertedBox(FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
 CAABox CAABox::mskNullBox(0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
 
 CAABox::CAABox(CInputStream& in) : min(in), max(in) {}
