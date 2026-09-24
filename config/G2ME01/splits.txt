@@ -188,6 +188,8 @@ Kyoto/CRandom16.cpp:
 Kyoto/Math/CTransform4f.cpp:
 	.text       start:0x802C8BB8 end:0x802CA12C
 	.ctors      start:0x803A5600 end:0x803A5604
+	.bss        start:0x804173D4 end:0x80417408 align:4 common
+	.sdata2     start:0x8041E5D0 end:0x8041E5E0
 
 Kyoto/Math/CUnitVector3f.cpp:
 	.text       start:0x802CA12C end:0x802CA1C0
