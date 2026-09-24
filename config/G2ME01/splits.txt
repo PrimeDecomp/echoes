@@ -368,6 +368,17 @@ Kyoto/Alloc/CGameAllocator.cpp:
 	.sbss       start:0x80419BA8 end:0x80419BB8
 	.sdata2     start:0x8041EA28 end:0x8041EA30
 
+Kyoto/Text/CStringTable.cpp:
+	.text       start:0x80312320 end:0x80312BA8
+	.ctors      start:0x803A5658 end:0x803A565C
+	.rodata     start:0x803AFE70 end:0x803AFEB0
+	.sbss       start:0x80419BF0 end:0x80419BF8
+	.sbss2      start:0x8041F8F8 end:0x8041F900
+
+Kyoto/CTimeProvider.cpp:
+	.text       start:0x80314474 end:0x8031454C
+	.sbss       start:0x80419BF8 end:0x80419C00
+
 Kyoto/CARAMToken.cpp:
 	.text       start:0x8031454C end:0x80314DC4
 	.rodata     start:0x803AFEB0 end:0x803AFEB8
