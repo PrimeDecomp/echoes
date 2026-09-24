@@ -109,7 +109,7 @@ protected:
 };
 
 template < typename T, typename Alloc >
-vector< T, Alloc >::vector(const vector& other)
+inline vector< T, Alloc >::vector(const vector& other)
 : x0_allocator(other.x0_allocator), x4_count(other.x4_count), x8_capacity(other.x8_capacity) {
   if (other.x4_count == 0 && other.x8_capacity == 0) {
     xc_items = nullptr;
@@ -120,7 +120,7 @@ vector< T, Alloc >::vector(const vector& other)
 }
 
 template < typename T, typename Alloc >
-vector< T, Alloc >::~vector() {
+inline vector< T, Alloc >::~vector() {
   iterator first = begin();
   iterator last = end();
   destroy(first, last);
