@@ -217,6 +217,33 @@ Kyoto/Math/CVector3i.cpp:
 	.ctors      start:0x803A5610 end:0x803A5614
 	.bss        start:0x80417510 end:0x80417570 align:4 common
 
+Kyoto/CCrc32.cpp:
+	.text       start:0x802CDF8C end:0x802CE098
+	.rodata     start:0x803AF420 end:0x803AF820
+
+Kyoto/Alloc/CCircularBuffer.cpp:
+	.text       start:0x802CE098 end:0x802CE224
+
+Kyoto/Alloc/CMemory.cpp:
+	.text       start:0x802CE224 end:0x802CE72C
+	.ctors      start:0x803A5618 end:0x803A561C
+	.rodata     start:0x803AF820 end:0x803AF850
+	.bss        start:0x803DFBD8 end:0x803DFCA8
+	.sdata      start:0x80418B10 end:0x80418B18
+	.sbss       start:0x80419A60 end:0x80419A70
+
+Kyoto/Alloc/IAllocator.cpp:
+	.text       start:0x802CE72C end:0x802CE814
+	.data       start:0x803BA2B8 end:0x803BA2F8
+
+Kyoto/PVS/CPVSVisOctree.cpp:
+	.text       start:0x802CE814 end:0x802CEA14
+	.rodata     start:0x803AF850 end:0x803AF870
+	.sdata2     start:0x8041E758 end:0x8041E760
+
+Kyoto/PVS/CPVSVisSet.cpp:
+	.text       start:0x802CEA14 end:0x802CEE6C
+
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
 
@@ -265,6 +292,20 @@ Kyoto/DolphinCDvdFile.cpp:
 	.text       start:0x8030BF9C end:0x8030CD1C
 	.rodata     start:0x803AFD98 end:0x803AFDA8
 	.sbss       start:0x80419B98 end:0x80419BA0
+
+Kyoto/Alloc/CMediumAllocPool.cpp:
+	.text       start:0x8030CD1C end:0x8030D6CC
+	.sbss       start:0x80419BA0 end:0x80419BA8
+
+Kyoto/Alloc/CSmallAllocPool.cpp:
+	.text       start:0x8030D6CC end:0x8030D9E0
+
+Kyoto/Alloc/CGameAllocator.cpp:
+	.text       start:0x8030D9E0 end:0x8030EEE4
+	.rodata     start:0x803AFDA8 end:0x803AFE58
+	.data       start:0x803BB088 end:0x803BB0C8
+	.sbss       start:0x80419BA8 end:0x80419BB8
+	.sdata2     start:0x8041EA28 end:0x8041EA30
 
 Kyoto/CARAMToken.cpp:
 	.text       start:0x8031454C end:0x80314DC4

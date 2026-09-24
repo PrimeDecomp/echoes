@@ -37,22 +37,23 @@ public:
     uint x20_;
     uint x24_;
     uint x28_;
-    uint x2c_smallNumAllocs;
-    uint x30_smallAllocatedSize;
-    uint x34_smallRemainingSize;
-    uint x38_mediumNumAllocs;
-    uint x3c_mediumAllocatedSize;
-    uint x40_mediumBlocksAvailable;
-    uint x44_;
+    uint x2c_; // Echoes addition
+    uint x30_smallNumAllocs;
+    uint x34_smallAllocatedSize;
+    uint x38_smallRemainingSize;
+    uint x3c_mediumNumAllocs;
+    uint x40_mediumAllocatedSize;
+    uint x44_mediumBlocksAvailable;
     uint x48_;
     uint x4c_;
-    uint x50_mediumTotalAllocated;
-    uint x54_fakeStatics;
+    uint x50_;
+    uint x54_mediumTotalAllocated;
+    uint x58_fakeStatics;
     SMetrics(uint heapSize, uint unk1, uint unk2, uint unk3, uint unk4, uint heapSize2, uint unk5,
-             uint unk6, uint unk7, uint unk8, uint unk9, uint smallAllocNumAllocs,
+             uint unk6, uint unk7, uint unk8, uint unk9, uint unk10, uint smallAllocNumAllocs,
              uint smallAllocAllocatedSize, uint smallAllocRemainingSize, uint mediumAllocNumAllocs,
-             uint mediumAllocAllocatedSize, uint mediumAllocBlocksAvailable, uint unk10, uint unk11,
-             uint unk12, uint mediumAllocTotalAllocated, uint fakeStatics);
+             uint mediumAllocAllocatedSize, uint mediumAllocBlocksAvailable, uint unk11, uint unk12,
+             uint unk13, uint mediumAllocTotalAllocated, uint fakeStatics);
     SMetrics(const SMetrics& other);
   };
 
@@ -92,7 +93,7 @@ public:
   virtual int EnumAllocations(FEnumAllocationsCb func, const void* ptr, bool b) const = 0;
   virtual SAllocInfo GetAllocInfo(const void* ptr) const = 0;
   virtual void OffsetFakeStatics(int offset) = 0;
-  virtual SMetrics GetMetrics() const = 0;
+  virtual SMetrics GetMetrics(bool unk1, bool unk2) const = 0;
 };
 
 #endif // _IALLOCATOR
