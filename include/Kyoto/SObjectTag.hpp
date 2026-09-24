@@ -1,6 +1,7 @@
 #ifndef _SOBJECTTAG
 #define _SOBJECTTAG
 
+#include "Kyoto/Streams/CInputStream.hpp"
 #include "types.h"
 
 #define kInvalidAssetId 0xFFFFFFFFu
@@ -15,6 +16,7 @@ struct SObjectTag {
   SObjectTag() {}
   SObjectTag(FourCC type, CAssetId id) : type(type), id(id) {}
   SObjectTag(const SObjectTag& other) : type(other.type), id(other.id) {}
+  SObjectTag(CInputStream& in) : type(in.ReadInt32()), id(in.ReadInt32()) {}
 
   static const char* Type2Text(FourCC type);
 };

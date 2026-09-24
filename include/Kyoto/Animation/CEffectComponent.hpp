@@ -1,18 +1,6 @@
-#ifndef _CEFFECTCOMPONENT
-#define _CEFFECTCOMPONENT
+#ifndef _ANIMATION_CEFFECTCOMPONENT
+#define _ANIMATION_CEFFECTCOMPONENT
 
-#include "types.h"
+#include "Kyoto/Particles/CEffectComponent.hpp"
 
-#include "Kyoto/Particles/CParticleData.hpp"
-
-class CEffectComponent {
-private:
-  rstl::string x0_name;
-  SObjectTag x10_tag;
-  rstl::string x18_boneName;
-  float x28_scale;
-  CParticleData::EParentedMode x2c_parentedMode;
-  uint x30_flags;
-};
-
-#endif // _CEFFECTCOMPONENT
+#endif // _ANIMATION_CEFFECTCOMPONENT

@@ -465,6 +465,8 @@ config.libs = [
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CEffectComponent.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleData.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CTimeProvider.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/CPakFile.cpp"),
