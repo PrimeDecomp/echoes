@@ -532,6 +532,7 @@ config.libs = [
             Object(Matching, "Dolphin/os/OSCache.c"),
             Object(Matching, "Dolphin/os/OSContext.c"),
             Object(Matching, "Dolphin/os/OSError.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/OSExec.c"),
             Object(Matching, "Dolphin/os/OSInterrupt.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OS.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSAlarm.c"),
