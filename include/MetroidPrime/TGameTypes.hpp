@@ -79,7 +79,7 @@ inline void construct< TUniqueId >(void* dest, const TUniqueId& src) {
 // CHECK_SIZEOF(TGameScriptId, 0x8)
 
 typedef ushort TSfxId;
-static TSfxId InvalidSfxId = 0xFFFFu;
+const TSfxId InvalidSfxId = 0xFFFFu;
 
 #define ALIGN_UP(x, a) (((x) + (a - 1)) & ~(a - 1))
 
