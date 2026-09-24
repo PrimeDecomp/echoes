@@ -55,7 +55,7 @@ public:
   ~vector();
 
   inline void resize(int size, const T& in = T());
-  inline void assign(int size, const T& in = T());
+  void assign(int size, const T& in = T());
   void reserve(int size);
   iterator insert(iterator it, const T& value);
 
@@ -132,7 +132,7 @@ void vector< T, Alloc >::assign(int size, const T& in) {
   clear();
   reserve(size);
   for (int i = 0; i < size; ++i) {
-    push_back(in);
+    push_back_unsafe(in);
   }
 }
 

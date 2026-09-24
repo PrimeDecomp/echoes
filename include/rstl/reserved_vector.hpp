@@ -47,12 +47,7 @@ public:
     x0_count = 0;
   }
 
-  ~reserved_vector() {
-    if (is_trivially_destructible< T >::value) {
-      return;
-    }
-    clear();
-  }
+  ~reserved_vector() { destroy_elements(); }
 
   void push_back(const T& in) {
     construct(data() + x0_count, in);
@@ -92,16 +87,28 @@ public:
   }
 
   void PutTo(COutputStream& out) const;
+
+private:
+  void destroy_elements() {
+    if (is_trivially_destructible< T >::value) {
+      return;
+    }
+    T* ptr = data();
+    for (int i = 0; i < x0_count; ++i) {
+      destroy(&ptr[i]);
+    }
+  }
 };
+
+
 
 template < typename T, int N >
 reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserved_vector& other) {
-  if (this == &other) {
-    return *this;
+  if (this != &other) {
+    destroy_elements();
+    uninitialized_copy(other.data(), other.data() + other.size(), data());
+    x0_count = other.x0_count;
   }
-  destroy(data(), data() + x0_count);
-  uninitialized_copy(other.data(), other.data() + other.size(), data());
-  x0_count = other.x0_count;
   return *this;
 }
 

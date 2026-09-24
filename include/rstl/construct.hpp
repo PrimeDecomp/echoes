@@ -12,9 +12,28 @@ struct is_trivially_destructible {
   enum { value = false };
 };
 
+template <>
+struct is_trivially_destructible< char > {
+  enum { value = true };
+};
+
+template <>
+struct is_trivially_destructible< uchar > {
+  enum { value = true };
+};
+
 template < typename T >
 static inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
+}
+
+// Echoes copies byte elements without the placement-new null check.
+static inline void construct_impl(void* dest, const char& src) {
+  *static_cast< char* >(dest) = src;
+}
+
+static inline void construct_impl(void* dest, const uchar& src) {
+  *static_cast< uchar* >(dest) = src;
 }
 
 template < typename T >
