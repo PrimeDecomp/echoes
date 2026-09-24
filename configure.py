@@ -244,6 +244,13 @@ elif args.warn == "off":
 elif args.warn == "error":
     cflags_base.append("-W error")
 
+# Dolphin flags
+cflags_dolphin = [
+    *cflags_base,
+    "-multibyte",
+    "-fp_contract off",
+]
+
 # Metrowerks library flags
 cflags_runtime = [
     *cflags_base,
@@ -287,7 +294,7 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_base,
+        "cflags": cflags_dolphin,
         "progress_category": "sdk",
         "host": False,
         "objects": objects,
@@ -552,7 +559,7 @@ config.libs = [
     DolphinLib(
         "pad",
         [
-            Object(NonMatching, "Dolphin/pad/Pad.c", extra_cflags=["-char unsigned"]),
+            Object(MatchingFor("G2ME01"), "Dolphin/pad/Pad.c", extra_cflags=["-char unsigned"]),
             Object(MatchingFor("G2ME01"), "Dolphin/pad/PadClamp.c"),
         ],
     ),
