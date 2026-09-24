@@ -320,6 +320,18 @@ Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.sbss       start:0x80419C00 end:0x80419C18
 	.sdata2     start:0x8041EA88 end:0x8041EAD0
 
+Kyoto/Input/CRumbleVoice.cpp:
+	.text       start:0x80324D44 end:0x8032579C
+	.sdata2     start:0x8041EB88 end:0x8041EB98
+
+Kyoto/Input/RumbleAdsr.cpp:
+	.text       start:0x8032579C end:0x803258C4
+	.sdata2     start:0x8041EB98 end:0x8041EBA0
+
+Kyoto/Input/CRumbleGenerator.cpp:
+	.text       start:0x803258C4 end:0x80325C98
+	.sdata2     start:0x8041EBA0 end:0x8041EBB0
+
 Kyoto/Audio/g721.cpp:
 	.text       start:0x80325C98 end:0x80326614
 	.data       start:0x803BB208 end:0x803BB288

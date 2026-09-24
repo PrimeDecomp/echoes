@@ -1,75 +1,70 @@
 #include "Kyoto/Input/CRumbleGenerator.hpp"
 
-const EMotorState CRumbleGenerator::kStopAll[4] = {
-    kMS_StopHard,
-    kMS_StopHard,
-    kMS_StopHard,
-    kMS_StopHard,
-};
-
-CRumbleGenerator::CRumbleGenerator() : xf0_24_disabled(false) { HardStopAll(); }
+CRumbleGenerator::CRumbleGenerator(EIOPort inputIndex)
+: x3c_inputIndex(inputIndex), x40_24_disabled(false) {
+  HardStopAll();
+}
 
 CRumbleGenerator::~CRumbleGenerator() { HardStopAll(); }
 
-short CRumbleGenerator::Rumble(const SAdsrData& adsr, float gain, ERumblePriority prio,
-                               EIOPort port) {
-  ushort freeChan = x0_voices[port].GetFreeChannel();
-  if (prio >= x0_voices[port].GetPriority(freeChan)) {
-    xc0_periodTime[port] = 0.f;
-    xd0_onTime[port] = 0.f;
-    return x0_voices[port].Activate(adsr, freeChan, gain, prio);
+void CRumbleGenerator::Stop(short id) {
+  if (id != -1)
+    x0_voice.Deactivate(id, false);
+}
+
+short CRumbleGenerator::Rumble(const SAdsrData& adsr, float gain, ERumblePriority prio) {
+  ushort freeChan = x0_voice.GetFreeChannel();
+  if (prio >= x0_voice.GetPriority(freeChan)) {
+    x30_periodTime = 0.f;
+    x34_onTime = 0.f;
+    return x0_voice.Activate(adsr, freeChan, gain, prio);
   }
   return -1;
 }
 
 void CRumbleGenerator::Update(float dt) {
-  if (!xf0_24_disabled) {
+  if (!x40_24_disabled) {
     bool updated = false;
-    for (int i = 0; i < 4; ++i) {
-      const float intensity = x0_voices[i].GetIntensity();
-      if (!x0_voices[i].Update(dt) || intensity <= 0.f) {
-        xc0_periodTime[i] = 0.f;
-        xd0_onTime[i] = 0.f;
-        if (xe0_commandArray[i] != kMS_Stop) {
-          xe0_commandArray[i] = kMS_Stop;
+    const float intensity = x0_voice.GetIntensity();
+    if (!x0_voice.Update(dt) || intensity <= 0.f) {
+      x30_periodTime = 0.f;
+      x34_onTime = 0.f;
+      if (x38_command != kMS_Stop) {
+        x38_command = kMS_Stop;
+        updated = true;
+      }
+    } else {
+      x30_periodTime += dt;
+      if (x30_periodTime >= 1.f / (30.f * intensity)) {
+        x30_periodTime = 0.f;
+        if (x38_command != kMS_Rumble) {
+          x38_command = kMS_Rumble;
           updated = true;
         }
       } else {
-        xc0_periodTime[i] += dt;
-        if (xc0_periodTime[i] >= 1.f / (30.f * intensity)) {
-          xc0_periodTime[i] = 0.f;
-          if (xe0_commandArray[i] != kMS_Rumble) {
-            xe0_commandArray[i] = kMS_Rumble;
+        x34_onTime += dt;
+        if (x34_onTime >= (1.f / 30.f)) {
+          x34_onTime = 0.f;
+          if (x38_command != kMS_Stop) {
+            x38_command = kMS_Stop;
             updated = true;
-          }
-        } else {
-          xd0_onTime[i] += dt;
-          if (xd0_onTime[i] >= (1.f / 30.f)) {
-            xd0_onTime[i] = 0.f;
-            if (xe0_commandArray[i] != kMS_Stop) {
-              xe0_commandArray[i] = kMS_Stop;
-              updated = true;
-            }
           }
         }
       }
     }
     if (updated) {
-      PADControlAllMotors(reinterpret_cast< const u32* >(xe0_commandArray));
+      PADControlMotor(x3c_inputIndex, x38_command);
     }
   }
 }
 
 void CRumbleGenerator::HardStopAll() {
 
-  for (int i = 0; i < 4; ++i) {
-    xc0_periodTime[i] = 0.f;
-    xd0_onTime[i] = 0.f;
-    xe0_commandArray[i] = kMS_Stop;
-    x0_voices[i].HardReset();
-  }
-
-  PADControlAllMotors(reinterpret_cast< const u32* >(kStopAll));
+  x30_periodTime = 0.f;
+  x34_onTime = 0.f;
+  x38_command = kMS_Stop;
+  x0_voice.HardReset();
+  PADControlMotor(x3c_inputIndex, kMS_StopHard);
 }
 
 void CRumbleGenerator::SetDisabled(const bool disabled) {
@@ -77,5 +72,5 @@ void CRumbleGenerator::SetDisabled(const bool disabled) {
     HardStopAll();
   }
 
-  xf0_24_disabled = disabled;
+  x40_24_disabled = disabled;
 }
