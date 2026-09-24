@@ -565,6 +565,13 @@ Dolphin/pad/PadClamp.c:
 	.text       start:0x8037665C end:0x803768A0
 	.rodata     start:0x803B08D8 end:0x803B08E8
 
+Dolphin/pad/Pad.c:
+	.text       start:0x803768A0 end:0x803782B4
+	.data       start:0x803BFB38 end:0x803BFB90
+	.bss        start:0x803E2670 end:0x803E26C0
+	.sdata      start:0x80418E30 end:0x80418E50
+	.sbss       start:0x8041A028 end:0x8041A058
+
 Dolphin/si/SIBios.c:
 	.text       start:0x803782B4 end:0x80379B14
 	.data       start:0x803BFB90 end:0x803BFCA8

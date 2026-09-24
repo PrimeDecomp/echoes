@@ -465,6 +465,7 @@ config.libs = [
     DolphinLib(
         "pad",
         [
+            Object(NonMatching, "Dolphin/pad/Pad.c", extra_cflags=["-char unsigned"]),
             Object(MatchingFor("G2ME01"), "Dolphin/pad/PadClamp.c"),
         ],
     ),
