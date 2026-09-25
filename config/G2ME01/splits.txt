@@ -55,6 +55,41 @@ MetroidPrime/Player/CPlayerState.cpp:
 
 MetroidPrime/TypesMatch.cpp:
 	.text       start:0x800972BC end:0x8009D644
+	.data       start:0x803B2F50 end:0x803B2FCC
+
+MetroidPrime/ScriptObjects/CScriptSound.cpp:
+	.text       start:0x8009DCE8 end:0x8009F4E4
+	.data       start:0x803B3190 end:0x803B3210
+	.sbss       start:0x80419058 end:0x8041905C
+
+MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
+	.text       start:0x800A0200 end:0x800A4850
+	.data       start:0x803B3210 end:0x803B32B0
+
+MetroidPrime/ScriptObjects/CScriptGenerator.cpp:
+	.text       start:0x800A4B20 end:0x800A5474
+	.data       start:0x803B32C0 end:0x803B32E0
+
+MetroidPrime/ScriptObjects/CScriptCameraWaypoint.cpp:
+	.text       start:0x800A5594 end:0x800A5740
+	.data       start:0x803B32E0 end:0x803B3378
+
+MetroidPrime/CGameLight.cpp:
+	.text       start:0x800A5740 end:0x800A5A34
+
+MetroidPrime/CParticleGenInfoGeneric.cpp:
+	.text       start:0x800A5A34 end:0x800A6184
+	.data       start:0x803B3378 end:0x803B33C8
+
+MetroidPrime/CParticleGenInfo.cpp:
+	.text       start:0x800A6184 end:0x800A64A8
+	.data       start:0x803B33C8 end:0x803B3418
+
+MetroidPrime/CParticleDatabase.cpp:
+	.text       start:0x800A64A8 end:0x800ABE1C
+
+MetroidPrime/CTargetReticles.cpp:
+	.text       start:0x800ABE1C end:0x800B3040
 
 MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14

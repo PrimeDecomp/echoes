@@ -8,14 +8,23 @@
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/vector.hpp"
 
+class CActor;
+class CMatrix3f;
+class CScriptGrapplePoint;
 class CModel;
 class CTexture;
 class CStateManager;
+
+enum EReticleState { kRS_Combat, kRS_Scan, kRS_Echo, kRS_Dark, kRS_Four, kRS_Unspecified };
 
 class CTargetReticleRenderState {
 public:
   CTargetReticleRenderState(TUniqueId target, float radius, CVector3f position, float factor,
                             float minimumViewportScale, bool orbitZoneIdlePosition);
+
+  static void InterpolateWithClamp(const CTargetReticleRenderState& a,
+                                   CTargetReticleRenderState& out,
+                                   const CTargetReticleRenderState& b, float t);
 
 private:
   TUniqueId mTarget;
@@ -40,12 +49,38 @@ public:
   CCompoundTargetReticle(const CStateManager& mgr, int playerIndex);
   ~CCompoundTargetReticle();
 
+  void Touch() const;
+  static float CalculateClampedScale(CVector3f position, float scale, float clampMin,
+                                     float clampMax, const CStateManager& mgr, int playerIndex);
+  static bool IsGrappleTarget(TUniqueId id, const CStateManager& mgr);
+  CVector3f CalculateOrbitZoneReticlePosition(const CStateManager& mgr, bool lag) const;
+  CVector3f CalculatePositionWorld(const CActor& actor, const CStateManager& mgr) const;
+  float CalculateRadiusWorld(const CActor& actor, const CStateManager& mgr) const;
+  void UpdateTargetParameters(CTargetReticleRenderState& state, const CStateManager& mgr);
+  void DrawOrbitZoneGroup(const CMatrix3f& rotation, const CStateManager& mgr) const;
+  void DrawNextLockOnGroup(const CMatrix3f& rotation, const CStateManager& mgr) const;
+  void DrawScanTargetGroup(const CMatrix3f& rotation,
+                           const CStateManager& mgr) const;                   // Guessed name
+  void DrawCrosshairs(const CMatrix3f& rotation) const;                       // Guessed name
+  void DrawSeeker(const CMatrix3f& rotation, const CStateManager& mgr) const; // Guessed name
+  void DrawCurrLockOnGroup(const CMatrix3f& rotation, const CStateManager& mgr) const;
+  void DrawGrapplePoint(const CScriptGrapplePoint& point, float factor, const CStateManager& mgr,
+                        const CMatrix3f& rotation, bool zEqual) const;
+  void DrawGrappleGroup(const CMatrix3f& rotation, const CStateManager& mgr, bool hideLockOn) const;
+  void Draw(const CStateManager& mgr, bool hideLockOn) const;
+  void UpdateOrbitZoneGroup(float dt, const CStateManager& mgr);
+  void UpdateNextLockOnGroup(float dt, const CStateManager& mgr);
+  void UpdateCurrLockOnGroup(float dt, const CStateManager& mgr);
+  void Update(float dt, const CStateManager& mgr);
+  EReticleState GetDesiredReticleState(const CStateManager& mgr) const;
+  bool CheckLoadComplete();
+
 private:
   int mPlayerIndex;
   CQuaternion mLeadingOrientation;
   CQuaternion mLaggingOrientation;
-  int mPreviousState;
-  int mNextState;
+  EReticleState mPreviousState;
+  EReticleState mNextState;
   mutable int mNoDrawTicks;
   float mOvershootOffsetHalf;
   float mPremultipliedOvershootOffset;
@@ -91,7 +126,7 @@ private:
   CDamageVulnerability mTargetVulnerability;
   float mCrosshairsScale;
   float mSeekerAngle;
-  float x270;
+  float mCrosshairsDrawScale;
   float x274;
   float x278;
   bool mMissileActive;
@@ -103,8 +138,8 @@ private:
   float x294;
   float mLockFireTimer;
   float mFullChargeFadeTimer;
-  float x2a0;
-  float x2a4;
+  float mScanBracketFactor;
+  float mScanTargetFactor;
   bool mBeamShot : 1;
   bool mMissileShot : 1;
   bool mFullyCharged : 1;
@@ -113,6 +148,11 @@ private:
 class COrbitPointMarker {
 public:
   explicit COrbitPointMarker(int playerIndex);
+
+  void ResetInterpolationTimer(float time);
+  void Draw(const CStateManager& mgr) const;
+  void Update(float dt, const CStateManager& mgr);
+  bool CheckLoadComplete();
 
 private:
   int mPlayerIndex;
@@ -134,6 +174,8 @@ public:
   bool CheckLoadComplete();
   void Update(float dt, const CStateManager& mgr);
   void Draw(const CStateManager& mgr, bool hideLockOn) const;
+
+  void Touch() const;
 
 private:
   int mPlayerIndex;

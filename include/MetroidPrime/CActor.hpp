@@ -56,12 +56,15 @@ public:
   CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint inGrave,
          const CTransform4f& xf, const CModelData& mData, const CMaterialList& list,
          const CActorParameters& params, TUniqueId nextDrawNode);
+
+  // CEntity
   ~CActor() override;
   CEntity* TypesMatch(int typeId) const override;
-
+  void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
   void SetActive(const bool active) override;
 
+  // CActor
   virtual void UnkVtable20(); // G2ME01 slot +0x20; original name unknown
   virtual void PreRender(CStateManager&, const CFrustumPlanes&);
   virtual void AddToRenderer(const CStateManager&) const;
