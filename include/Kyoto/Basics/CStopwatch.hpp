@@ -40,6 +40,7 @@ public:
   inline s64 GetElapsedMicros() const {
     return (mData.GetCPUCycles() - x0_startTime) / mData.GetTimerFreqO1M();
   }
+  s64 GetCurrMicros() const { return mData.GetCPUCycles() / mData.GetTimerFreqO1M(); }
 
   static void Wait(float);
 

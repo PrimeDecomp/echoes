@@ -94,11 +94,14 @@ public:
   static void SetChanMatColor(EChannelId channel, const GXColor& color);
   static void SetChanCtrl(EChannelId channel, GXBool enable, GXColorSrc ambSrc, GXColorSrc matSrc,
                           GXLightID lights, GXDiffuseFn diffFn, GXAttnFn attnFn);
+  static void SetChanCtrl_Compressed(EChannelId channel, GXLightID lights, uint ctrl);
   static void SetTevKColor(GXTevKColorID id, const GXColor& color);
   static void SetTevColorIn(GXTevStageID stageId, GXTevColorArg a, GXTevColorArg b, GXTevColorArg c,
                             GXTevColorArg d);
+  static void SetTevColorIn_Compressed(GXTevStageID stageId, uint flags);
   static void SetTevAlphaIn(GXTevStageID stageId, GXTevAlphaArg a, GXTevAlphaArg b, GXTevAlphaArg c,
                             GXTevAlphaArg d);
+  static void SetTevAlphaIn_Compressed(GXTevStageID stageId, uint flags);
   static void SetTevColorOp(GXTevStageID stageId, GXTevOp op, GXTevBias bias, GXTevScale scale,
                             GXBool clamp, GXTevRegID outReg);
   static void SetTevColorOp_Compressed(GXTevStageID stageId, uint flags);
@@ -118,9 +121,16 @@ public:
                              GXIndTexBiasSel biasSel, GXIndTexMtxID mtxSel, GXIndTexWrap wrapS,
                              GXIndTexWrap wrapT, GXBool addPrev, GXBool indLod,
                              GXIndTexAlphaSel alphaSel);
+  static void SetTevIndWarp(GXTevStageID stageId, GXIndTexStageID indStage, uchar signedOffset,
+                            uchar replaceMode, GXIndTexMtxID mtxSel) {
+    const GXIndTexWrap wrap = replaceMode != 0 ? GX_ITW_0 : GX_ITW_OFF;
+    SetTevIndirect(stageId, indStage, GX_ITF_8, signedOffset != 0 ? GX_ITB_STU : GX_ITB_NONE,
+                   mtxSel, wrap, wrap, GX_FALSE, GX_FALSE, GX_ITBA_OFF);
+  }
   static void SetTevDirect(GXTevStageID stageId);
   static void SetTexCoordGen(GXTexCoordID dstCoord, GXTexGenType fn, GXTexGenSrc src, GXTexMtx mtx,
                              GXBool normalize, GXPTTexMtx postMtx);
+  static void SetTexCoordGen_Compressed(GXTexCoordID dstCoord, uint flags);
   static void SetArray(GXAttr attr, const void* data, uchar stride);
   static void SetFog(GXFogType type, float startZ, float endZ, float nearZ, float farZ,
                      const GXColor& color);
@@ -146,6 +156,10 @@ public:
   }
 
   static GXColor GetChanAmbColor(EChannelId channel);
+  static const GXColor& GetTevKColor(GXTevKColorID id) { return gpGXState->x58_kColors[id]; }
+  static const STevState& GetTevState(GXTevStageID stageId) {
+    return gpGXState->x68_tevStates[stageId];
+  }
   static void GetFog(GXFogType* fogType, float* fogStartZ, float* fogEndZ, float* fogNearZ,
                      float* fogFarZ, GXColor* fogColor);
 

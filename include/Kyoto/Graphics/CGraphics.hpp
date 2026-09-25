@@ -337,6 +337,7 @@ public:
   static const CVector3f& GetViewPoint() { return mViewPoint; }
   static const CTransform4f& GetViewMatrix() { return mViewMatrix; }
   static const CTransform4f& GetModelMatrix() { return mModelMatrix; }
+  static uchar GetLightMask() { return mLightActive; }
   static void SetViewPointMatrix(const CTransform4f&);
   static void SetBrightness(float b) { mBrightness = b; }
   static void SetOrtho(float left, float right, float top, float bottom, float znear, float zfar);
