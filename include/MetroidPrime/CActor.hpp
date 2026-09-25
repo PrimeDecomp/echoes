@@ -65,7 +65,7 @@ public:
   void SetActive(const bool active) override;
 
   // CActor
-  virtual void UnkVtable20(); // G2ME01 slot +0x20; original name unknown
+  virtual void UnkVtable20(CStateManager& mgr); // Original name unknown
   virtual void PreRender(CStateManager&);
   virtual void AddToRenderer(const CStateManager&) const;
   virtual void Render(const CStateManager&) const;

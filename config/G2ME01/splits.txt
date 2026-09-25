@@ -25,7 +25,8 @@ MetroidPrime/main.cpp:
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
 MetroidPrime/Player/CPlayer.cpp:
-	.text       start:0x8001B018 end:0x8001C5E0
+	.text       start:0x8000B8E8 end:0x8001D0CC
+	.ctors      start:0x803A54AC end:0x803A54B0
 	.data       start:0x803B15D0 end:0x803B16AC
 
 MetroidPrime/CStateManager.cpp:
@@ -130,6 +131,10 @@ MetroidPrime/CPhysicsActor.cpp:
 	.data       start:0x803B3A10 end:0x803B3AA8
 	.sdata2     start:0x8041B75C end:0x8041B790
 
+MetroidPrime/Player/CPlayerOrbit.cpp:
+	.text       start:0x8011C3A8 end:0x80123510
+	.ctors      start:0x803A5524 end:0x803A5528
+
 MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 	.text       start:0x8013C254 end:0x8013C9B0
 	.data       start:0x803B5118 end:0x803B5138
@@ -149,6 +154,10 @@ MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
+
+MetroidPrime/Player/CPlayerDynamics.cpp:
+	.text       start:0x80183648 end:0x80189FD4
+	.ctors      start:0x803A5554 end:0x803A5558
 
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
@@ -198,6 +207,9 @@ MetroidPrime/CInGameGuiManager.cpp:
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
+
+MetroidPrime/Player/CPlayerVisor.cpp:
+	.text       start:0x8022AF0C end:0x8022C4C4
 
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
