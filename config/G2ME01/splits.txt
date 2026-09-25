@@ -334,6 +334,11 @@ Kyoto/Particles/CParticleGlobals.cpp:
 	.sbss       start:0x80419AA8 end:0x80419AD0
 	.sdata2     start:0x8041E818 end:0x8041E830
 
+Kyoto/Particles/CParticleSwooshDataFactory.cpp:
+	.text       start:0x802ED1D0 end:0x802EDA48
+	.rodata     start:0x803AF9D0 end:0x803AF9D8
+	.data       start:0x803BA778 end:0x803BA788
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928

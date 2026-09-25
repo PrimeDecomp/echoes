@@ -489,6 +489,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAdditiveAnimPlayback.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleElectricDataFactory.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleElectric.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleSwooshDataFactory.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/g721.cpp"),
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
