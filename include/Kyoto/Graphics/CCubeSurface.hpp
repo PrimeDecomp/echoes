@@ -13,6 +13,7 @@ class CCubeSurface {
     CCubeSurface* mNextSurface;
     uint mExtraSize;
     CVector3f mNormal;
+    uint x2c_;
     CAABox mBounds;
   };
 
