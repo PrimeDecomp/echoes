@@ -34,6 +34,8 @@ public:
   static const CMaterialFilter& GetPassEverything() { return skPassEverything; }
 
   bool Passes(const CMaterialList& other) const;
+  const CMaterialList& GetIncludeList() const { return include; }
+  const CMaterialList& GetExcludeList() const { return exclude; }
 
 private:
   CMaterialList include;

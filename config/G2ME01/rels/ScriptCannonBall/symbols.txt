@@ -1,4 +1,4 @@
-HealthInfo__17CScriptCannonBallFR13CStateManager = .text:0x00000000; // type:function size:0x2C
+GetHealthInfo__6CActorCFv = .text:0x00000000; // type:function size:0x2C scope:weak
 RELExit = .text:0x0000002C; // type:function size:0x24
 RELMain = .text:0x00000050; // type:function size:0x20
 SetRelLoaderFunctionToLoader__Fv = .text:0x00000070; // type:function size:0x30

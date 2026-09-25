@@ -61,6 +61,7 @@ enum EScriptObjectState {
   kSS_ScanStart = 0x4553434e,
   kSS_ScanProcessing = 0x4253434e,
   kSS_ScanDone = 0x53434e44,
+  kSS_Patrol = 0x5054524c,
   kSS_InvalidState = 0xffffffff,
 };
 
@@ -74,6 +75,7 @@ enum EScriptObjectMessage {
   kSM_ToggleActive = 0x54435456,
   kSM_SetToZero = 0x5a45524f,
   kSM_Reset = 0x52534554,
+  kSM_Follow = 0x464f4c57,
 
   kSM_Increment = 0x494e4352,
   kSM_Decrement = 0x44454352,

@@ -11,6 +11,16 @@ class CDamageVulnerability;
 
 class CDamageInfo {
 public:
+  CDamageInfo()
+  : m_weaponMode()
+  , m_damage(0.f)
+  , m_radiusDamageAmount(0.f)
+  , m_damageRadius(0.f)
+  , m_knockbackPower(0.f)
+  , m_x14(-1)
+  , m_x16(-1)
+  , m_x18(-1)
+  , m_noImmunity(false) {}
   // CDamageInfo()
   // : x0_weaponMode(CWeaponMode::Invalid())
   // , x8_damage(0.f)

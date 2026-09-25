@@ -46,12 +46,22 @@ MetroidPrime/HUD/CSamusHud.cpp:
 	.ctors      start:0x803A54CC end:0x803A54D0
 	.data       start:0x803B1F30 end:0x803B1F50
 
+MetroidPrime/Enemies/CPatterned.cpp:
+	.text       start:0x80073938 end:0x8007B0DC
+	.ctors      start:0x803A54D0 end:0x803A54D4
+	.data       start:0x803B2148 end:0x803B263C
+
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80083FE0 end:0x800866C8
 	.rodata     start:0x803A7288 end:0x803A74E8
 	.data       start:0x803B2878 end:0x803B28F8
 	.sbss       start:0x80419040 end:0x8041904C
 	.sdata2     start:0x8041ABD0 end:0x8041AC00
+
+MetroidPrime/Enemies/CAi.cpp:
+	.text       start:0x80096C94 end:0x800972BC
+	.data       start:0x803B29E0 end:0x803B2A98
+	.sdata      start:0x80417FC8 end:0x80417FD8
 
 MetroidPrime/TypesMatch.cpp:
 	.text       start:0x800972BC end:0x8009D644
@@ -127,6 +137,9 @@ MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
+
+MetroidPrime/Enemies/CPatternedAiFunctions.cpp:
+	.text       start:0x80150FE8 end:0x80152950
 
 MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 	.text       start:0x8015CD4C end:0x8015DDE8

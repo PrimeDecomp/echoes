@@ -79,9 +79,11 @@ public:
                 const CAABox& aabb, const SMoverData& moverData, const CActorParameters& actParams,
                 const StepData& stepData);
 
-  // CActor
+  // CEntity
   ~CPhysicsActor() override;
   CEntity* TypesMatch(int typeId) const override;
+
+  // CActor
   void Render(const CStateManager&) const override;
   CVector3f GetOrbitPosition(const CStateManager& mgr) const override;
   CVector3f GetAimPosition(const CStateManager& mgr, float val) const override;
@@ -93,7 +95,7 @@ public:
                             CStateManager& mgr);
   virtual float GetStepDownHeight() const;
   virtual float GetStepUpHeight() const;
-  virtual int PhysicsUnkVirtual();
+  virtual bool IsOnStaticGround() const;
   virtual float GetWeight() const;
   float GetMass() const { return mMass; }
   void SetMass(float mass);
