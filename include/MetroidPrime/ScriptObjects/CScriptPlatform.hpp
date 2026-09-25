@@ -55,9 +55,9 @@ public:
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
   // CActor
-  void PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) override;
+  void PreRender(CStateManager& mgr) override;
   void Render(const CStateManager& mgr) const override;
-  CHealthInfo* HealthInfo(CStateManager& mgr) override;
+  CHealthInfo* HealthInfo() override;
   const CDamageVulnerability* GetDamageVulnerability() const override;
   rstl::optional_object< CAABox > GetTouchBounds() const override;
   CVector3f GetOrbitPosition(const CStateManager& mgr) const override;

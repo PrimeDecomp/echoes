@@ -144,7 +144,7 @@ bool CScriptPlatform::IsInMovedList(TUniqueId id, const TMovedList& moved) {
   return false;
 }
 
-CHealthInfo* CScriptPlatform::HealthInfo(CStateManager& mgr) { return &mHealth; }
+CHealthInfo* CScriptPlatform::HealthInfo() { return &mHealth; }
 
 const CDamageVulnerability* CScriptPlatform::GetDamageVulnerability() const {
   return &mDamageVulnerability;
@@ -248,8 +248,8 @@ CQuaternion CScriptPlatform::Move(float dt, CStateManager& mgr) {
   return CQuaternion::NoRotation();
 }
 
-void CScriptPlatform::PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) {
-  CActor::PreRender(mgr, frustum);
+void CScriptPlatform::PreRender(CStateManager& mgr) {
+  CActor::PreRender(mgr);
   if (mgr.GetObjectById(mBoundsTrigger) == nullptr) {
     mBoundsTrigger = kInvalidUniqueId;
   }
