@@ -5,6 +5,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptRepulsor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
@@ -42,6 +43,7 @@ TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
 TYPES_MATCH_IMPL(CScriptActor, CPhysicsActor, kET_ScriptActor)
 TYPES_MATCH_IMPL(CScriptEffect, CActor, kET_ScriptEffect)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
+TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
