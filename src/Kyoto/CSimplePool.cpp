@@ -6,8 +6,8 @@
 rstl::vector< SObjectTag > CSimplePool::GetReferencedTags() {
   rstl::vector< SObjectTag > tags;
   tags.reserve(mResources.size());
-  ResourceMap::const_iterator it = mResources.begin();
-  ResourceMap::const_iterator end = mResources.end();
+  ResourceMap::iterator it = mResources.begin();
+  ResourceMap::iterator end = mResources.end();
   for (; it != end; ++it) {
     tags.push_back_unsafe(it->first);
   }
@@ -22,16 +22,16 @@ void CSimplePool::DebugDumpPool() const {
 
 void CSimplePool::Flush() {}
 
-bool CSimplePool::ObjectIsLive(const SObjectTag& tag) {
-  ResourceMap::iterator it = mResources.find(tag);
+bool CSimplePool::ObjectIsLive(const SObjectTag& tag) const {
+  ResourceMap::const_iterator it = mResources.find(tag);
   if (it == mResources.end()) {
     return false;
   }
   return it->second->IsLoaded();
 }
 
-bool CSimplePool::HasObject(const SObjectTag& tag) {
-  ResourceMap::iterator it = mResources.find(tag);
+bool CSimplePool::HasObject(const SObjectTag& tag) const {
+  ResourceMap::const_iterator it = mResources.find(tag);
   if (it != mResources.end()) {
     return true;
   }

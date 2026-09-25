@@ -9,7 +9,7 @@
 
 namespace rstl {
 template < typename K, typename V, typename Cmp = less< K >, typename Alloc = rmemory_allocator >
-class map {
+class map : public red_black_tree< K, pair< K, V >, 0, select1st< pair< K, V > >, Cmp, Alloc > {
 public:
   typedef pair< K, V > value_type;
 
@@ -21,21 +21,9 @@ public:
   typedef typename rep_type::iterator iterator;
   typedef typename rep_type::const_iterator const_iterator;
 
-  iterator insert(const value_type& item) { return inner.insert(item); }
-
-  int size() const { return inner.size(); }
-
-  const_iterator begin() const { return inner.begin(); }
-  const_iterator end() const { return inner.end(); }
-
-  iterator find(const K& key) { return inner.find(key); }
-  const_iterator find(const K& key) const { return inner.find(key); }
-
-  void erase(iterator it) { inner.erase(it); }
-
-  rep_type& get_inner() { return inner; }  // hack for CWeaponMgr inlining depth
-private:
-  rep_type inner;
+  explicit map(const Cmp& cmp = Cmp(), const Alloc& alloc = Alloc())
+  : rep_type(select1st< value_type >(), cmp, alloc) {}
+  ~map() {}
 };
 
 typedef map< char, char > unk_map;
