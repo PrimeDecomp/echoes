@@ -28,4 +28,7 @@ private:
 CFactoryFnReturn FStringTableFactory(const SObjectTag& tag, CInputStream& in,
                                      const CVParamTransfer& xfer);
 
+CFactoryFnReturn FDependencyGroupFactory(const SObjectTag& tag, CInputStream& in,
+                                         const CVParamTransfer& xfer);
+
 #endif // _CFACTORYMGR

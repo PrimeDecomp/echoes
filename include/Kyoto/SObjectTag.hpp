@@ -2,6 +2,7 @@
 #define _SOBJECTTAG
 
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "rstl/construct.hpp"
 #include "types.h"
 
 #define kInvalidAssetId 0xFFFFFFFFu
@@ -20,5 +21,12 @@ struct SObjectTag {
 
   static const char* Type2Text(FourCC type);
 };
+
+namespace rstl {
+template <>
+inline void construct< SObjectTag >(void* dest, const SObjectTag& src) {
+  *static_cast< SObjectTag* >(dest) = src;
+}
+} // namespace rstl
 
 #endif // _SOBJECTTAG
