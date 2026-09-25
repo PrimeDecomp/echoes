@@ -3,6 +3,7 @@
 
 class CTweakPlayer {
 public:
+  float GetBallRadius();
   float GetLeftAnalogMax();
   float GetRightAnalogMax();
   float GetVariaSuitDamageReduction();
