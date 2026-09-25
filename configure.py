@@ -450,6 +450,7 @@ config.libs = [
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegIdList.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegId.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Input/CFinalInput.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Graphics/CColor.cpp"),
             Object(NonMatching, "Kyoto/Graphics/DolphinCColor.cpp"),
