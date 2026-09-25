@@ -19,8 +19,8 @@ public:
   private:
     rstl::vector< CAssetId > mPart;
     rstl::vector< CAssetId > mSwhc;
-    rstl::vector< CAssetId > mElsc0;
-    rstl::vector< CAssetId > mElsc1;
+    rstl::vector< CAssetId > mElscA;
+    rstl::vector< CAssetId > mElscB;
   };
 
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }

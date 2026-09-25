@@ -103,7 +103,7 @@ private:
   CRandom16 mRand;
   float x1cc_;
   float x1d0_;
-  float mTSPN0;
+  float mTSPNFloat;
   bool mEmitting : 1;
   bool mAALP : 1;
   bool mForceOneUpdate : 1;
@@ -119,7 +119,7 @@ private:
   float mVMax;
   CTexture* mTex;
   float mUvSpan;
-  int mTSPN1;
+  int mTSPNInt;
   CVector3f mAabbMin;
   CVector3f mAabbMax;
   float mMaxRadius;
