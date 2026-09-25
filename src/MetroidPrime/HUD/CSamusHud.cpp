@@ -19,7 +19,7 @@
 
 // Structure-first scaffold. Unrecovered behavior is marked at each entry point.
 
-CSamusHud* g_CSamusHud[4] = {nullptr, nullptr, nullptr, nullptr};
+CSamusHud* gpSamusHud[4] = {nullptr, nullptr, nullptr, nullptr};
 
 static void StopSound(CSfxHandle& sound) {
   if (sound) {
@@ -48,7 +48,7 @@ void CSamusHud::PrepareScanDisplay(const CStateManager& mgr, int playerIndex) {
 }
 
 CHudDecoInterfaceScan* CSamusHud::GetScanInterface(int playerIndex) {
-  CSamusHud* hud = g_CSamusHud[playerIndex];
+  CSamusHud* hud = gpSamusHud[playerIndex];
   return hud != nullptr ? hud->mScanInterface.get() : nullptr;
 }
 
@@ -191,7 +191,7 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
   // TODO: Initialize camera direction, energy-low state, language and boot-text tint from shared
   // APIs.
   // TODO: Select the multiplayer damage-ring texture.
-  g_CSamusHud[mPlayerIndex] = this;
+  gpSamusHud[mPlayerIndex] = this;
   mDamageRingTexture.Lock();
   if (mgr.fn_80036F10()) {
     mLockedOnIndicator = TCachedToken< CTexture >(gpSimplePool->GetObj("TXTR_LockedOnIndicator"));
@@ -209,7 +209,7 @@ CSamusHud::~CSamusHud() {
   if (mDamageSound) {
     CSfxManager::SfxStop(mDamageSound);
   }
-  g_CSamusHud[mPlayerIndex] = nullptr;
+  gpSamusHud[mPlayerIndex] = nullptr;
 }
 
 CSamusHud::EHudState CSamusHud::GetDesiredHudState(const CStateManager& mgr) const {
@@ -324,16 +324,16 @@ void CSamusHud::InternalDeferHintMemo(CAssetId stringTable, uint index, const CH
 
 void CSamusHud::DisplayHudMemo(const rstl::wstring& text, const CHUDMemoParms& info) {
   for (int i = 0; i < 4; ++i) {
-    if (g_CSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
-      g_CSamusHud[i]->InternalDisplayHudMemo(text, info);
+    if (gpSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
+      gpSamusHud[i]->InternalDisplayHudMemo(text, info);
     }
   }
 }
 
 void CSamusHud::DeferHintMemo(CAssetId stringTable, uint index, const CHUDMemoParms& info) {
   for (int i = 0; i < 4; ++i) {
-    if (g_CSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
-      g_CSamusHud[i]->InternalDeferHintMemo(stringTable, index, info);
+    if (gpSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
+      gpSamusHud[i]->InternalDeferHintMemo(stringTable, index, info);
     }
   }
 }
@@ -531,7 +531,7 @@ bool CSamusHud::IsHudMemoVisible(int playerIndex) {
 }
 
 void CSamusHud::RefreshBeamMenu(const CStateManager& mgr, int playerIndex) {
-  CSamusHud* hud = g_CSamusHud[playerIndex];
+  CSamusHud* hud = gpSamusHud[playerIndex];
   if (hud != nullptr) {
     const rstl::reserved_vector< bool, 4 > enables = hud->BuildPlayerHasBeams(mgr);
     if (!hud->mBeamMenu.null()) {
