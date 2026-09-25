@@ -380,6 +380,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerState.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGun.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerGunBase.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CFidget.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPickup.cpp"),
             Object(Matching, "MetroidPrime/HUD/CHUDMemoParms.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp"),
