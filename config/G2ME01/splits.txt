@@ -285,6 +285,11 @@ Kyoto/PVS/CPVSVisOctree.cpp:
 Kyoto/PVS/CPVSVisSet.cpp:
 	.text       start:0x802CEA14 end:0x802CEE6C
 
+Kyoto/Particles/CParticleGlobals.cpp:
+	.text       start:0x802E8198 end:0x802E82C4
+	.sbss       start:0x80419AA8 end:0x80419AD0
+	.sdata2     start:0x8041E818 end:0x8041E830
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928
