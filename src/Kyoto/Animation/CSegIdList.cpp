@@ -4,6 +4,6 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 CSegIdList::CSegIdList(CInputStream& in)
-: mSegList(in) {
-  CCharAnimMemoryMetrics::AddToTotalSize(mSegList.capacity(), CCharAnimMemoryMetrics::kASS_Two);  
+: x0_segList(in) {
+  CCharAnimMemoryMetrics::AddToTotalSize(x0_segList.capacity(), CCharAnimMemoryMetrics::kASS_Two);  
 }

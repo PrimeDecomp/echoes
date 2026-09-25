@@ -8,202 +8,202 @@ const float CFinalInput::kInput_AnalogOnThreshhold = 0.7f;
 const float CFinalInput::kInput_AnalogTriggerOnThreshhold = 0.05f;
 
 CFinalInput::CFinalInput()
-: mDt(0.f)
-, mControllerIdx(0)
-, mAnaLeftX(0.f)
-, mAnaLeftY(0.f)
-, mAnaRightX(0.f)
-, mAnaRightY(0.f)
-, mAnaLeftTrigger(0.f)
-, mAnaRightTrigger(0.f)
-, mEnableAnaLeftXP(false)
-, mEnableAnaLeftYP(false)
-, mEnableAnaRightXP(false)
-, mEnableAnaRightYP(false)
-, mAnaLeftTriggerP(0.f)
-, mAnaRightTriggerP(0.f)
-, mA(false)
-, mB(false)
-, mX(false)
-, mY(false)
-, mZ(false)
-, mL(false)
-, mR(false)
-, mDPUp(false)
-, mDPRight(false)
-, mDPDown(false)
-, mDPLeft(false)
-, mStart(false)
-, mPA(false)
-, mPB(false)
-, mPX(false)
-, mPY(false)
-, mPZ(false)
-, mPL(false)
-, mPR(false)
-, mPDPUp(false)
-, mPDPRight(false)
-, mPDPDown(false)
-, mPDPLeft(false)
-, mPStart(false) {}
+: x0_dt(0.f)
+, x4_controllerIdx(0)
+, x8_anaLeftX(0.f)
+, xc_anaLeftY(0.f)
+, x10_anaRightX(0.f)
+, x14_anaRightY(0.f)
+, x18_anaLeftTrigger(0.f)
+, x1c_anaRightTrigger(0.f)
+, x28_b24_enableAnaLeftXP(false)
+, x28_b25_enableAnaLeftYP(false)
+, x28_b26_enableAnaRightXP(false)
+, x28_b27_enableAnaRightYP(false)
+, x20_anaLeftTriggerP(0.f)
+, x24_anaRightTriggerP(0.f)
+, x28_b28_A(false)
+, x28_b29_B(false)
+, x28_b30_X(false)
+, x28_b31_Y(false)
+, x29_b24_Z(false)
+, x29_b25_L(false)
+, x29_b26_R(false)
+, x29_b27_DPUp(false)
+, x29_b28_DPRight(false)
+, x29_b29_DPDown(false)
+, x29_b30_DPLeft(false)
+, x29_b31_Start(false)
+, x2a_b24_PA(false)
+, x2a_b25_PB(false)
+, x2a_b26_PX(false)
+, x2a_b27_PY(false)
+, x2a_b28_PZ(false)
+, x2a_b29_PL(false)
+, x2a_b30_PR(false)
+, x2a_b31_PDPUp(false)
+, x2b_b24_PDPRight(false)
+, x2b_b25_PDPDown(false)
+, x2b_b26_PDPLeft(false)
+, x2b_b27_PStart(false) {}
 
 CFinalInput::CFinalInput(int channel, float dt, const CControllerGamepadData& data, float leftDiv,
                          float rightDiv)
-: mDt(dt)
-, mControllerIdx(channel)
-, mAnaLeftX(data.GetAxis(kJA_LeftX).GetAbsoluteValue())
-, mAnaLeftY(data.GetAxis(kJA_LeftY).GetAbsoluteValue())
-, mAnaRightX(data.GetAxis(kJA_RightX).GetAbsoluteValue())
-, mAnaRightY(data.GetAxis(kJA_RightY).GetAbsoluteValue())
-, mAnaLeftTrigger(data.GetAnalogButton(kBA_Left).GetAbsoluteValue())
-, mAnaRightTrigger(data.GetAnalogButton(kBA_Right).GetAbsoluteValue())
-, mAnaLeftTriggerP(data.GetAnalogButton(kBA_Left).GetRelativeValue())
-, mAnaRightTriggerP(data.GetAnalogButton(kBA_Right).GetRelativeValue())
-, mEnableAnaLeftXP(false)
-, mEnableAnaLeftYP(false)
-, mEnableAnaRightXP(false)
-, mEnableAnaRightYP(false)
-, mA(data.GetButton(kBU_A).GetIsPressed())
-, mB(data.GetButton(kBU_B).GetIsPressed())
-, mX(data.GetButton(kBU_X).GetIsPressed())
-, mY(data.GetButton(kBU_Y).GetIsPressed())
-, mZ(data.GetButton(kBU_Z).GetIsPressed())
-, mL(data.GetButton(kBU_L).GetIsPressed())
-, mR(data.GetButton(kBU_R).GetIsPressed())
-, mDPUp(data.GetButton(kBU_Up).GetIsPressed())
-, mDPRight(data.GetButton(kBU_Right).GetIsPressed())
-, mDPDown(data.GetButton(kBU_Down).GetIsPressed())
-, mDPLeft(data.GetButton(kBU_Left).GetIsPressed())
-, mStart(data.GetButton(kBU_Start).GetIsPressed())
-, mPA(data.GetButton(kBU_A).GetPressEvent())
-, mPB(data.GetButton(kBU_B).GetPressEvent())
-, mPX(data.GetButton(kBU_X).GetPressEvent())
-, mPY(data.GetButton(kBU_Y).GetPressEvent())
-, mPZ(data.GetButton(kBU_Z).GetPressEvent())
-, mPL(data.GetButton(kBU_L).GetPressEvent())
-, mPR(data.GetButton(kBU_R).GetPressEvent())
-, mPDPUp(data.GetButton(kBU_Up).GetPressEvent())
-, mPDPRight(data.GetButton(kBU_Right).GetPressEvent())
-, mPDPDown(data.GetButton(kBU_Down).GetPressEvent())
-, mPDPLeft(data.GetButton(kBU_Left).GetPressEvent())
-, mPStart(data.GetButton(kBU_Start).GetPressEvent()) {
+: x0_dt(dt)
+, x4_controllerIdx(channel)
+, x8_anaLeftX(data.GetAxis(kJA_LeftX).GetAbsoluteValue())
+, xc_anaLeftY(data.GetAxis(kJA_LeftY).GetAbsoluteValue())
+, x10_anaRightX(data.GetAxis(kJA_RightX).GetAbsoluteValue())
+, x14_anaRightY(data.GetAxis(kJA_RightY).GetAbsoluteValue())
+, x18_anaLeftTrigger(data.GetAnalogButton(kBA_Left).GetAbsoluteValue())
+, x1c_anaRightTrigger(data.GetAnalogButton(kBA_Right).GetAbsoluteValue())
+, x20_anaLeftTriggerP(data.GetAnalogButton(kBA_Left).GetRelativeValue())
+, x24_anaRightTriggerP(data.GetAnalogButton(kBA_Right).GetRelativeValue())
+, x28_b24_enableAnaLeftXP(false)
+, x28_b25_enableAnaLeftYP(false)
+, x28_b26_enableAnaRightXP(false)
+, x28_b27_enableAnaRightYP(false)
+, x28_b28_A(data.GetButton(kBU_A).GetIsPressed())
+, x28_b29_B(data.GetButton(kBU_B).GetIsPressed())
+, x28_b30_X(data.GetButton(kBU_X).GetIsPressed())
+, x28_b31_Y(data.GetButton(kBU_Y).GetIsPressed())
+, x29_b24_Z(data.GetButton(kBU_Z).GetIsPressed())
+, x29_b25_L(data.GetButton(kBU_L).GetIsPressed())
+, x29_b26_R(data.GetButton(kBU_R).GetIsPressed())
+, x29_b27_DPUp(data.GetButton(kBU_Up).GetIsPressed())
+, x29_b28_DPRight(data.GetButton(kBU_Right).GetIsPressed())
+, x29_b29_DPDown(data.GetButton(kBU_Down).GetIsPressed())
+, x29_b30_DPLeft(data.GetButton(kBU_Left).GetIsPressed())
+, x29_b31_Start(data.GetButton(kBU_Start).GetIsPressed())
+, x2a_b24_PA(data.GetButton(kBU_A).GetPressEvent())
+, x2a_b25_PB(data.GetButton(kBU_B).GetPressEvent())
+, x2a_b26_PX(data.GetButton(kBU_X).GetPressEvent())
+, x2a_b27_PY(data.GetButton(kBU_Y).GetPressEvent())
+, x2a_b28_PZ(data.GetButton(kBU_Z).GetPressEvent())
+, x2a_b29_PL(data.GetButton(kBU_L).GetPressEvent())
+, x2a_b30_PR(data.GetButton(kBU_R).GetPressEvent())
+, x2a_b31_PDPUp(data.GetButton(kBU_Up).GetPressEvent())
+, x2b_b24_PDPRight(data.GetButton(kBU_Right).GetPressEvent())
+, x2b_b25_PDPDown(data.GetButton(kBU_Down).GetPressEvent())
+, x2b_b26_PDPLeft(data.GetButton(kBU_Left).GetPressEvent())
+, x2b_b27_PStart(data.GetButton(kBU_Start).GetPressEvent()) {
   InitializeAnalog(leftDiv, rightDiv);
 }
 
 static bool sIsAnalogPressed[4][4] = {};
 
 void CFinalInput::InitializeAnalog(float leftDiv, float rightDiv) {
-  mAnaLeftX = CMath::Clamp(-1.f, mAnaLeftX / leftDiv, 1.f);
-  mAnaLeftY = CMath::Clamp(-1.f, mAnaLeftY / leftDiv, 1.f);
-  mAnaRightX = CMath::Clamp(-1.f, mAnaRightX / rightDiv, 1.f);
-  mAnaRightY = CMath::Clamp(-1.f, mAnaRightY / rightDiv, 1.f);
+  x8_anaLeftX = CMath::Clamp(-1.f, x8_anaLeftX / leftDiv, 1.f);
+  xc_anaLeftY = CMath::Clamp(-1.f, xc_anaLeftY / leftDiv, 1.f);
+  x10_anaRightX = CMath::Clamp(-1.f, x10_anaRightX / rightDiv, 1.f);
+  x14_anaRightY = CMath::Clamp(-1.f, x14_anaRightY / rightDiv, 1.f);
 
-  if (mAnaLeftY > 0.7f && !sIsAnalogPressed[mControllerIdx][0]) {
-    sIsAnalogPressed[mControllerIdx][0] = true;
-    mEnableAnaLeftYP = true;
-  } else if (mAnaLeftY > 0.7f && sIsAnalogPressed[mControllerIdx][0]) {
-    mEnableAnaLeftYP = false;
-  } else if (mAnaLeftY < -0.7f && !sIsAnalogPressed[mControllerIdx][0]) {
-    mEnableAnaLeftYP = true;
-    sIsAnalogPressed[mControllerIdx][0] = true;
-  } else if (mAnaLeftY < -0.7f && sIsAnalogPressed[mControllerIdx][0]) {
-    mEnableAnaLeftYP = false;
-  } else if (fabsf(mAnaLeftY) < 0.7f) {
-    mEnableAnaLeftYP = false;
-    sIsAnalogPressed[mControllerIdx][0] = false;
+  if (xc_anaLeftY > 0.7f && !sIsAnalogPressed[x4_controllerIdx][0]) {
+    sIsAnalogPressed[x4_controllerIdx][0] = true;
+    x28_b25_enableAnaLeftYP = true;
+  } else if (xc_anaLeftY > 0.7f && sIsAnalogPressed[x4_controllerIdx][0]) {
+    x28_b25_enableAnaLeftYP = false;
+  } else if (xc_anaLeftY < -0.7f && !sIsAnalogPressed[x4_controllerIdx][0]) {
+    x28_b25_enableAnaLeftYP = true;
+    sIsAnalogPressed[x4_controllerIdx][0] = true;
+  } else if (xc_anaLeftY < -0.7f && sIsAnalogPressed[x4_controllerIdx][0]) {
+    x28_b25_enableAnaLeftYP = false;
+  } else if (fabsf(xc_anaLeftY) < 0.7f) {
+    x28_b25_enableAnaLeftYP = false;
+    sIsAnalogPressed[x4_controllerIdx][0] = false;
   }
 
-  if (mAnaLeftX > 0.7f && !sIsAnalogPressed[mControllerIdx][1]) {
-    mEnableAnaLeftXP = true;
-    sIsAnalogPressed[mControllerIdx][1] = true;
-  } else if (mAnaLeftX > 0.7f && sIsAnalogPressed[mControllerIdx][1]) {
-    mEnableAnaLeftXP = false;
-  } else if (mAnaLeftX < -0.7f && !sIsAnalogPressed[mControllerIdx][1]) {
-    sIsAnalogPressed[mControllerIdx][1] = true;
-    mEnableAnaLeftXP = true;
-  } else if (mAnaLeftX < -0.7f && sIsAnalogPressed[mControllerIdx][1]) {
-    mEnableAnaLeftXP = false;
-  } else if (fabsf(mAnaLeftX) < 0.7f) {
-    mEnableAnaLeftXP = false;
-    sIsAnalogPressed[mControllerIdx][1] = false;
+  if (x8_anaLeftX > 0.7f && !sIsAnalogPressed[x4_controllerIdx][1]) {
+    x28_b24_enableAnaLeftXP = true;
+    sIsAnalogPressed[x4_controllerIdx][1] = true;
+  } else if (x8_anaLeftX > 0.7f && sIsAnalogPressed[x4_controllerIdx][1]) {
+    x28_b24_enableAnaLeftXP = false;
+  } else if (x8_anaLeftX < -0.7f && !sIsAnalogPressed[x4_controllerIdx][1]) {
+    sIsAnalogPressed[x4_controllerIdx][1] = true;
+    x28_b24_enableAnaLeftXP = true;
+  } else if (x8_anaLeftX < -0.7f && sIsAnalogPressed[x4_controllerIdx][1]) {
+    x28_b24_enableAnaLeftXP = false;
+  } else if (fabsf(x8_anaLeftX) < 0.7f) {
+    x28_b24_enableAnaLeftXP = false;
+    sIsAnalogPressed[x4_controllerIdx][1] = false;
   }
 
-  if (mAnaRightY > 0.7f && !sIsAnalogPressed[mControllerIdx][2]) {
-    sIsAnalogPressed[mControllerIdx][2] = true;
-    mEnableAnaRightYP = true;
-  } else if (mAnaRightY > 0.7f && sIsAnalogPressed[mControllerIdx][2]) {
-    mEnableAnaRightYP = false;
-  } else if (mAnaRightY < -0.7f && !sIsAnalogPressed[mControllerIdx][2]) {
-    mEnableAnaRightYP = true;
-    sIsAnalogPressed[mControllerIdx][2] = true;
-  } else if (mAnaRightY < -0.7f && sIsAnalogPressed[mControllerIdx][2]) {
-    mEnableAnaRightYP = false;
-  } else if (fabsf(mAnaRightY) < 0.7f) {
-    mEnableAnaRightYP = false;
-    sIsAnalogPressed[mControllerIdx][2] = false;
+  if (x14_anaRightY > 0.7f && !sIsAnalogPressed[x4_controllerIdx][2]) {
+    sIsAnalogPressed[x4_controllerIdx][2] = true;
+    x28_b27_enableAnaRightYP = true;
+  } else if (x14_anaRightY > 0.7f && sIsAnalogPressed[x4_controllerIdx][2]) {
+    x28_b27_enableAnaRightYP = false;
+  } else if (x14_anaRightY < -0.7f && !sIsAnalogPressed[x4_controllerIdx][2]) {
+    x28_b27_enableAnaRightYP = true;
+    sIsAnalogPressed[x4_controllerIdx][2] = true;
+  } else if (x14_anaRightY < -0.7f && sIsAnalogPressed[x4_controllerIdx][2]) {
+    x28_b27_enableAnaRightYP = false;
+  } else if (fabsf(x14_anaRightY) < 0.7f) {
+    x28_b27_enableAnaRightYP = false;
+    sIsAnalogPressed[x4_controllerIdx][2] = false;
   }
 
-  if (mAnaRightX > 0.7f && !sIsAnalogPressed[mControllerIdx][3]) {
-    mEnableAnaRightXP = true;
-    sIsAnalogPressed[mControllerIdx][3] = true;
-  } else if (mAnaRightX > 0.7f && sIsAnalogPressed[mControllerIdx][3]) {
-    mEnableAnaRightXP = false;
-  } else if (mAnaRightX < -0.7f && !sIsAnalogPressed[mControllerIdx][3]) {
-    sIsAnalogPressed[mControllerIdx][3] = true;
-    mEnableAnaRightXP = true;
-  } else if (mAnaRightX < -0.7f && sIsAnalogPressed[mControllerIdx][3]) {
-    mEnableAnaRightXP = false;
-  } else if (fabsf(mAnaRightX) < 0.7f) {
-    mEnableAnaRightXP = false;
-    sIsAnalogPressed[mControllerIdx][3] = false;
+  if (x10_anaRightX > 0.7f && !sIsAnalogPressed[x4_controllerIdx][3]) {
+    x28_b26_enableAnaRightXP = true;
+    sIsAnalogPressed[x4_controllerIdx][3] = true;
+  } else if (x10_anaRightX > 0.7f && sIsAnalogPressed[x4_controllerIdx][3]) {
+    x28_b26_enableAnaRightXP = false;
+  } else if (x10_anaRightX < -0.7f && !sIsAnalogPressed[x4_controllerIdx][3]) {
+    sIsAnalogPressed[x4_controllerIdx][3] = true;
+    x28_b26_enableAnaRightXP = true;
+  } else if (x10_anaRightX < -0.7f && sIsAnalogPressed[x4_controllerIdx][3]) {
+    x28_b26_enableAnaRightXP = false;
+  } else if (fabsf(x10_anaRightX) < 0.7f) {
+    x28_b26_enableAnaRightXP = false;
+    sIsAnalogPressed[x4_controllerIdx][3] = false;
   }
 }
 
 CFinalInput CFinalInput::ScaleAnalogueSticks(float leftDiv, float rightDiv) const {
   CFinalInput ret = *this;
-  ret.mAnaLeftX = CMath::Clamp(-1.f, mAnaLeftX / leftDiv, 1.f);
-  ret.mAnaLeftY = CMath::Clamp(-1.f, mAnaLeftY / leftDiv, 1.f);
-  ret.mAnaRightX = CMath::Clamp(-1.f, mAnaRightX / rightDiv, 1.f);
-  ret.mAnaRightY = CMath::Clamp(-1.f, mAnaRightY / rightDiv, 1.f);
+  ret.x8_anaLeftX = CMath::Clamp(-1.f, x8_anaLeftX / leftDiv, 1.f);
+  ret.xc_anaLeftY = CMath::Clamp(-1.f, xc_anaLeftY / leftDiv, 1.f);
+  ret.x10_anaRightX = CMath::Clamp(-1.f, x10_anaRightX / rightDiv, 1.f);
+  ret.x14_anaRightY = CMath::Clamp(-1.f, x14_anaRightY / rightDiv, 1.f);
   return ret;
 }
 
 CFinalInput::CFinalInput(int channel, float dt, const COsContext& ctx)
-: mDt(dt)
-, mControllerIdx(channel)
-, mAnaLeftX(0.f)
-, mAnaLeftY(0.f)
-, mAnaRightX(0.f)
-, mAnaRightY(0.f)
-, mAnaLeftTrigger(0.f)
-, mAnaRightTrigger(0.f)
-, mEnableAnaLeftXP(false)
-, mEnableAnaLeftYP(false)
-, mEnableAnaRightXP(false)
-, mEnableAnaRightYP(false)
-, mAnaLeftTriggerP(0.f)
-, mAnaRightTriggerP(0.f)
-, mA(ctx.GetOsKeyState(0x6d).IsPressed())
-, mB(ctx.GetOsKeyState(0x6e).IsPressed())
-, mX(ctx.GetOsKeyState(0x84).IsPressed())
-, mY(ctx.GetOsKeyState(0x85).IsPressed())
-, mZ(ctx.GetOsKeyState(0x16).IsPressed())
-, mL(ctx.GetOsKeyState(0x78).IsPressed())
-, mR(ctx.GetOsKeyState(0x7e).IsPressed())
-, mDPUp(ctx.GetOsKeyState(0x1c).IsPressed())
-, mDPRight(ctx.GetOsKeyState(0x1d).IsPressed())
-, mDPDown(ctx.GetOsKeyState(0x1e).IsPressed())
-, mDPLeft(ctx.GetOsKeyState(0x1b).IsPressed())
-, mStart(ctx.GetOsKeyState(5).IsPressed())
-, mPA(ctx.GetOsKeyState(0x6d).JustPressed())
-, mPB(ctx.GetOsKeyState(0x6e).JustPressed())
-, mPX(ctx.GetOsKeyState(0x84).JustPressed())
-, mPY(ctx.GetOsKeyState(0x85).JustPressed())
-, mPZ(ctx.GetOsKeyState(0x16).JustPressed())
-, mPL(ctx.GetOsKeyState(0x78).JustPressed())
-, mPR(ctx.GetOsKeyState(0x7e).JustPressed())
-, mPDPUp(ctx.GetOsKeyState(0x1c).JustPressed())
-, mPDPRight(ctx.GetOsKeyState(0x1d).JustPressed())
-, mPDPDown(ctx.GetOsKeyState(0x1e).JustPressed())
-, mPDPLeft(ctx.GetOsKeyState(0x1b).JustPressed())
-, mPStart(ctx.GetOsKeyState(5).JustPressed()) {}
+: x0_dt(dt)
+, x4_controllerIdx(channel)
+, x8_anaLeftX(0.f)
+, xc_anaLeftY(0.f)
+, x10_anaRightX(0.f)
+, x14_anaRightY(0.f)
+, x18_anaLeftTrigger(0.f)
+, x1c_anaRightTrigger(0.f)
+, x28_b24_enableAnaLeftXP(false)
+, x28_b25_enableAnaLeftYP(false)
+, x28_b26_enableAnaRightXP(false)
+, x28_b27_enableAnaRightYP(false)
+, x20_anaLeftTriggerP(0.f)
+, x24_anaRightTriggerP(0.f)
+, x28_b28_A(ctx.GetOsKeyState(0x6d).IsPressed())
+, x28_b29_B(ctx.GetOsKeyState(0x6e).IsPressed())
+, x28_b30_X(ctx.GetOsKeyState(0x84).IsPressed())
+, x28_b31_Y(ctx.GetOsKeyState(0x85).IsPressed())
+, x29_b24_Z(ctx.GetOsKeyState(0x16).IsPressed())
+, x29_b25_L(ctx.GetOsKeyState(0x78).IsPressed())
+, x29_b26_R(ctx.GetOsKeyState(0x7e).IsPressed())
+, x29_b27_DPUp(ctx.GetOsKeyState(0x1c).IsPressed())
+, x29_b28_DPRight(ctx.GetOsKeyState(0x1d).IsPressed())
+, x29_b29_DPDown(ctx.GetOsKeyState(0x1e).IsPressed())
+, x29_b30_DPLeft(ctx.GetOsKeyState(0x1b).IsPressed())
+, x29_b31_Start(ctx.GetOsKeyState(5).IsPressed())
+, x2a_b24_PA(ctx.GetOsKeyState(0x6d).JustPressed())
+, x2a_b25_PB(ctx.GetOsKeyState(0x6e).JustPressed())
+, x2a_b26_PX(ctx.GetOsKeyState(0x84).JustPressed())
+, x2a_b27_PY(ctx.GetOsKeyState(0x85).JustPressed())
+, x2a_b28_PZ(ctx.GetOsKeyState(0x16).JustPressed())
+, x2a_b29_PL(ctx.GetOsKeyState(0x78).JustPressed())
+, x2a_b30_PR(ctx.GetOsKeyState(0x7e).JustPressed())
+, x2a_b31_PDPUp(ctx.GetOsKeyState(0x1c).JustPressed())
+, x2b_b24_PDPRight(ctx.GetOsKeyState(0x1d).JustPressed())
+, x2b_b25_PDPDown(ctx.GetOsKeyState(0x1e).JustPressed())
+, x2b_b26_PDPLeft(ctx.GetOsKeyState(0x1b).JustPressed())
+, x2b_b27_PStart(ctx.GetOsKeyState(5).JustPressed()) {}
