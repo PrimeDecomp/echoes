@@ -9,7 +9,7 @@ class CSegIdList {
 public:
   CSegIdList(CInputStream& in);
 public:
-  rstl::vector<CSegId> x0_segList;
+  rstl::vector<CSegId> mSegList;
 };
 
 #endif // _CSEGIDLIST
