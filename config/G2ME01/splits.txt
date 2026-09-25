@@ -188,6 +188,9 @@ MetroidPrime/CRuleSet.cpp:
 	.rodata     start:0x803AC548 end:0x803AC550
 	.data       start:0x803B7AD0 end:0x803B7AE0
 
+MetroidPrime/CPauseScreen.cpp:
+	.text       start:0x80201F4C end:0x8020DA7C
+
 MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
 	.text       start:0x8020EBF0 end:0x8020EE18
 
