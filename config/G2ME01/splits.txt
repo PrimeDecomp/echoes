@@ -328,6 +328,17 @@ Kyoto/Math/CFrustumPlanes.cpp:
 	.text       start:0x80302298 end:0x803029D8
 	.sdata2     start:0x8041E940 end:0x8041E948
 
+Kyoto/Graphics/CCubeMaterial.cpp:
+	.text       start:0x803029D8 end:0x803058A8
+	.ctors      start:0x803A5644 end:0x803A5648
+	.rodata     start:0x803AFAF8 end:0x803AFC48
+	.data       start:0x803BAFC0 end:0x803BB010
+	.bss        start:0x803DFE28 end:0x803DFE68
+	.bss        start:0x804175D0 end:0x804175DC align:4 common
+	.sdata      start:0x80418BB0 end:0x80418BD0
+	.sbss       start:0x80419B10 end:0x80419B38
+	.sdata2     start:0x8041E948 end:0x8041E998
+
 Kyoto/Animation/CCharAnimTime.cpp:
 	.text       start:0x8030592C end:0x80306450
 	.sdata      start:0x80418BD0 end:0x80418BE8

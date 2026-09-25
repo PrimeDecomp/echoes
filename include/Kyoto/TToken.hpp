@@ -37,6 +37,7 @@ public:
   TCachedToken(const CToken& token, bool) : TToken< T >(token), x8_item(TToken< T >::GetT()) {}
 
   T* operator*() { return x8_item; }
+  T* GetObject() const { return x8_item; }
 
   bool IsLoaded() {
     if (x8_item != nullptr) {

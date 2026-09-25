@@ -88,9 +88,9 @@ public:
   // GetPointG__6CAABoxCFv weak
   // GetPointH__6CAABoxCFv weak
 
-  // GetWidth__6CAABoxCFv weak
-  // GetDepth__6CAABoxCFv weak
-  // GetHeight__6CAABoxCFv weak
+  float GetWidth() const { return max.GetX() - min.GetX(); }
+  float GetHeight() const { return max.GetY() - min.GetY(); }
+  float GetDepth() const { return max.GetZ() - min.GetZ(); }
   // GetTri__6CAABoxCFii weak
   // GetEdge__6CAABoxCFi weak
 

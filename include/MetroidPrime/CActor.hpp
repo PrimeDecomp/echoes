@@ -250,7 +250,7 @@ private:
   float xd0_damageMag;
   uchar xd4_maxVol;
   rstl::reserved_vector< CSfxHandle, 2 > xd8_nonLoopingSfxHandles;
-  char actor_padding[84];
+  char actor_padding[80];
   uint m_nextNonLoopingSfxHandle : 3; // xe4_23
   uint m_notInSortedLists : 1;        // xe4_26
   uint m_transformDirty : 1;          // xe4_27
