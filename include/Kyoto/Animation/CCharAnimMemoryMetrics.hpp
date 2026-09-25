@@ -11,7 +11,11 @@ public:
     kASS_Two,
   };
 
+  static void SubtractFromTotalSize(uint size, EAnimSubSystem subSystem);
   static void AddToTotalSize(uint size, EAnimSubSystem subSystem);
+
+private:
+  static uint sTotalSize;
 };
 
 #endif // _CCHARANIMMEMORYMETRICS

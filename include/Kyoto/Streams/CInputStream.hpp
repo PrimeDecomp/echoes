@@ -11,8 +11,6 @@
 class CInputStream;
 template < typename T >
 struct TType {};
-template < typename T >
-T cinput_stream_helper(const TType< T >& type, CInputStream& in);
 
 template < typename T >
 inline TType< T > TGetType(const T&) {
@@ -40,9 +38,7 @@ public:
   rstl::auto_ptr< uchar > ReleaseBuffer();
 
   template < typename T >
-  T Get(const TType< T >& type = TType< T >()) {
-    return cinput_stream_helper(TType< T >(), *this);
-  }
+  T Get(const TType< T >& type = TType< T >());
 
   int ReadInt32() {
     int* result = reinterpret_cast< int* >(mPtr);
@@ -74,51 +70,58 @@ private:
 CHECK_SIZEOF(CInputStream, 0x14)
 
 template < typename T >
-inline T cinput_stream_helper(const TType< T >& type, CInputStream& in) {
-  return T(in);
-}
-template <>
-inline bool cinput_stream_helper(const TType< bool >& type, CInputStream& in) {
-  return in.ReadBool();
-}
-template <>
-inline char cinput_stream_helper(const TType< char >& type, CInputStream& in) {
-  return in.ReadInt8();
+inline T CInputStream::Get(const TType< T >& type) {
+  return T(*this);
 }
 
 template <>
-inline unsigned char cinput_stream_helper(const TType< unsigned char >& type, CInputStream& in) {
-  return in.ReadUint8();
+inline bool CInputStream::Get< bool >(const TType< bool >& type) {
+  return ReadBool();
 }
 
 template <>
-inline signed char cinput_stream_helper(const TType< signed char >& type, CInputStream& in) {
-  return in.ReadInt8();
+inline char CInputStream::Get< char >(const TType< char >& type) {
+  return ReadInt8();
 }
 
 template <>
-inline int cinput_stream_helper(const TType< int >& type, CInputStream& in) {
-  return in.ReadInt32();
+inline unsigned char CInputStream::Get< unsigned char >(const TType< unsigned char >& type) {
+  return ReadUint8();
 }
+
 template <>
-inline uint cinput_stream_helper(const TType< uint >& type, CInputStream& in) {
-  return in.ReadInt32();
+inline signed char CInputStream::Get< signed char >(const TType< signed char >& type) {
+  return ReadInt8();
 }
+
 template <>
-inline unsigned long cinput_stream_helper(const TType< unsigned long >& type, CInputStream& in) {
-  return in.ReadInt32();
+inline int CInputStream::Get< int >(const TType< int >& type) {
+  return ReadInt32();
 }
+
 template <>
-inline float cinput_stream_helper(const TType< float >& type, CInputStream& in) {
-  return in.ReadFloat();
+inline uint CInputStream::Get< uint >(const TType< uint >& type) {
+  return ReadInt32();
 }
+
 template <>
-inline short cinput_stream_helper(const TType< short >& type, CInputStream& in) {
-  return in.ReadInt16();
+inline unsigned long CInputStream::Get< unsigned long >(const TType< unsigned long >& type) {
+  return ReadInt32();
 }
+
 template <>
-inline ushort cinput_stream_helper(const TType< ushort >& type, CInputStream& in) {
-  return in.ReadUint16();
+inline float CInputStream::Get< float >(const TType< float >& type) {
+  return ReadFloat();
+}
+
+template <>
+inline short CInputStream::Get< short >(const TType< short >& type) {
+  return ReadInt16();
+}
+
+template <>
+inline ushort CInputStream::Get< ushort >(const TType< ushort >& type) {
+  return ReadUint16();
 }
 
 // rstl
@@ -142,6 +145,17 @@ template < typename T, int N >
 inline rstl::reserved_vector< T, N >::reserved_vector(CInputStream& in) : x0_count(in.ReadInt32()) {
   for (int i = 0; i < x0_count; i++) {
     construct(&data()[i], in.Get(TType< T >()));
+  }
+}
+
+#include "rstl/red_black_tree.hpp"
+template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
+inline rstl::red_black_tree< T, P, U, S, Cmp, Alloc >::red_black_tree(
+    CInputStream& in, const S& selector, const Cmp& cmp, const Alloc& alloc)
+: x0_selector(selector), x1_cmp(cmp), x2_allocator(alloc), x4_count(0) {
+  const int count = in.Get< int >();
+  for (int i = 0; i < count; ++i) {
+    insert(in.Get< P >());
   }
 }
 

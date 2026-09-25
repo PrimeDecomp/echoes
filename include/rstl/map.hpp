@@ -23,6 +23,10 @@ public:
 
   explicit map(const Cmp& cmp = Cmp(), const Alloc& alloc = Alloc())
   : rep_type(select1st< value_type >(), cmp, alloc) {}
+
+  map(CInputStream& in, const Cmp& cmp = Cmp(), const Alloc& alloc = Alloc())
+  : rep_type(in, select1st< value_type >(), cmp, alloc) {}
+
   ~map() {}
 };
 
