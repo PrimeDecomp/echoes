@@ -433,6 +433,10 @@ config.libs = [
         "host": True,
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
+            Object(NonMatching, "Kyoto/Basics/CBasicsDolphin.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CCallStackDolphin.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Basics/COsContextDolphin.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Basics/CSWDataDolphin.cpp"),
             Object(Matching, "Kyoto/Basics/RAssertDolphin.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CDvdRequest.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
