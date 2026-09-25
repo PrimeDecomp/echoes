@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#include "Kyoto/Animation/CEffectComponent.hpp"
+#include "Kyoto/Particles/CEffectComponent.hpp"
 
 #include "Kyoto/Animation/CPASDatabase.hpp"
 #include "Kyoto/IObjectStore.hpp"
