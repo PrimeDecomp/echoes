@@ -140,6 +140,9 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.sbss       start:0x80419818 end:0x80419828
 	.sdata2     start:0x8041E268 end:0x8041E278
 
+Kyoto/Animation/CSegId.cpp:
+	.text       start:0x802B1D10 end:0x802B1D28
+
 Kyoto/CDvdRequest.cpp:
 	.text       start:0x802B3660 end:0x802B38C0
 	.data       start:0x803B9C28 end:0x803B9C60
@@ -392,6 +395,19 @@ Kyoto/Text/CStringTable.cpp:
 	.sbss       start:0x80419BF0 end:0x80419BF8
 	.sbss2      start:0x8041F8F8 end:0x8041F900
 
+Kyoto/Particles/CEmitterElement.cpp:
+	.text       start:0x80312BA8 end:0x803142F4
+	.ctors      start:0x803A565C end:0x803A5660
+	.data       start:0x803BB0E8 end:0x803BB148
+	.bss        start:0x803DFE90 end:0x803DFEA0
+	.sdata2     start:0x8041EA30 end:0x8041EA50
+
+Kyoto/Particles/CEffectComponent.cpp:
+	.text       start:0x803142F4 end:0x803143D8
+
+Kyoto/Particles/CParticleData.cpp:
+	.text       start:0x803143D8 end:0x80314474
+
 Kyoto/CTimeProvider.cpp:
 	.text       start:0x80314474 end:0x8031454C
 	.sbss       start:0x80419BF8 end:0x80419C00
@@ -400,6 +416,18 @@ Kyoto/CARAMToken.cpp:
 	.text       start:0x8031454C end:0x80314DC4
 	.rodata     start:0x803AFEB0 end:0x803AFEB8
 	.bss        start:0x80417618 end:0x80417634 align:4 common
+
+Kyoto/Audio/CMidiManager.cpp:
+	.text       start:0x80314DC4 end:0x803156B8
+	.ctors      start:0x803A5660 end:0x803A5664
+	.rodata     start:0x803AFEB8 end:0x803AFEC0
+	.data       start:0x803BB148 end:0x803BB158
+	.bss        start:0x803DFEA0 end:0x803DFEB0
+	.bss        start:0x80417634 end:0x8041765C align:4 common
+
+Kyoto/Text/CFontImageDef.cpp:
+	.text       start:0x803156B8 end:0x803158D8
+	.sdata2     start:0x8041EA50 end:0x8041EA68
 
 Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.text       start:0x80317B5C end:0x8031AA68
