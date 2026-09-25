@@ -33,14 +33,14 @@ CElectricDescription* CParticleElectricDataFactory::CreateGeneratorDescription(C
 }
 
 void CParticleElectricDataFactory::LoadELSMTokens(CElectricDescription* desc) {
-  if (desc->mSSWH) {
-    desc->mSSWH->ForceCache();
+  if (desc->x48_SSWH) {
+    desc->x48_SSWH->ForceCache();
   }
-  if (desc->mGPSM) {
-    desc->mGPSM->ForceCache();
+  if (desc->x58_GPSM) {
+    desc->x58_GPSM->ForceCache();
   }
-  if (desc->mEPSM) {
-    desc->mEPSM->ForceCache();
+  if (desc->x68_EPSM) {
+    desc->x68_EPSM->ForceCache();
   }
 }
 
@@ -53,41 +53,41 @@ bool CParticleElectricDataFactory::CreateELSM(CElectricDescription* desc, CInput
     const FourCC classId = CParticleDataFactory::GetClassID(in);
     switch (classId) {
     case 'LIFE':
-      desc->mLIFE = CParticleDataFactory::GetIntElement(in);
+      desc->x0_LIFE = CParticleDataFactory::GetIntElement(in);
       break;
     case 'SLIF':
-      desc->mSLIF = CParticleDataFactory::GetIntElement(in);
+      desc->x4_SLIF = CParticleDataFactory::GetIntElement(in);
       break;
     case 'GRAT':
-      desc->mGRAT = CParticleDataFactory::GetRealElement(in);
+      desc->x8_GRAT = CParticleDataFactory::GetRealElement(in);
       break;
     case 'SCNT':
-      desc->mSCNT = CParticleDataFactory::GetIntElement(in);
+      desc->xc_SCNT = CParticleDataFactory::GetIntElement(in);
       break;
     case 'SSEG':
-      desc->mSSEG = CParticleDataFactory::GetIntElement(in);
+      desc->x10_SSEG = CParticleDataFactory::GetIntElement(in);
       break;
     case 'COLR':
-      desc->mCOLR = CParticleDataFactory::GetColorElement(in);
+      desc->x14_COLR = CParticleDataFactory::GetColorElement(in);
       break;
     case 'IEMT':
-      desc->mIEMT = CParticleDataFactory::GetEmitterElement(in);
+      desc->x18_IEMT = CParticleDataFactory::GetEmitterElement(in);
       break;
     case 'FEMT':
-      desc->mFEMT = CParticleDataFactory::GetEmitterElement(in);
+      desc->x1c_FEMT = CParticleDataFactory::GetEmitterElement(in);
       break;
     case 'AMPL':
-      desc->mAMPL = CParticleDataFactory::GetRealElement(in);
+      desc->x20_AMPL = CParticleDataFactory::GetRealElement(in);
       break;
     case 'AMPD':
-      desc->mAMPD = CParticleDataFactory::GetRealElement(in);
+      desc->x24_AMPD = CParticleDataFactory::GetRealElement(in);
       break;
     case 'SSWH': {
       const FourCC childId = CParticleDataFactory::GetClassID(in);
       if (childId != 'NONE') {
         const CAssetId id = in.ReadInt32();
         if (id != 0) {
-          desc->mSSWH = TCachedToken< CSwooshDescription >(pool->GetObj(SObjectTag('SWHC', id)));
+          desc->x48_SSWH = TCachedToken< CSwooshDescription >(pool->GetObj(SObjectTag('SWHC', id)));
         }
       }
       break;
@@ -97,7 +97,7 @@ bool CParticleElectricDataFactory::CreateELSM(CElectricDescription* desc, CInput
       rstl::optional_object< TToken< CGenDescription > > child =
           CParticleDataFactory::GetChildGeneratorDesc(in, pool, resources);
       if (child) {
-        desc->mGPSM = TCachedToken< CGenDescription >(*child);
+        desc->x58_GPSM = TCachedToken< CGenDescription >(*child);
       }
       break;
     }
@@ -106,39 +106,39 @@ bool CParticleElectricDataFactory::CreateELSM(CElectricDescription* desc, CInput
       rstl::optional_object< TToken< CGenDescription > > child =
           CParticleDataFactory::GetChildGeneratorDesc(in, pool, resources);
       if (child) {
-        desc->mEPSM = TCachedToken< CGenDescription >(*child);
+        desc->x68_EPSM = TCachedToken< CGenDescription >(*child);
       }
       break;
     }
     case 'LWD1':
-      desc->mLWD1 = CParticleDataFactory::GetRealElement(in);
+      desc->x28_LWD1 = CParticleDataFactory::GetRealElement(in);
       break;
     case 'LWD2':
-      desc->mLWD2 = CParticleDataFactory::GetRealElement(in);
+      desc->x2c_LWD2 = CParticleDataFactory::GetRealElement(in);
       break;
     case 'LWD3':
-      desc->mLWD3 = CParticleDataFactory::GetRealElement(in);
+      desc->x30_LWD3 = CParticleDataFactory::GetRealElement(in);
       break;
     case 'LCL1':
-      desc->mLCL1 = CParticleDataFactory::GetColorElement(in);
+      desc->x34_LCL1 = CParticleDataFactory::GetColorElement(in);
       break;
     case 'LCL2':
-      desc->mLCL2 = CParticleDataFactory::GetColorElement(in);
+      desc->x38_LCL2 = CParticleDataFactory::GetColorElement(in);
       break;
     case 'LCL3':
-      desc->mLCL3 = CParticleDataFactory::GetColorElement(in);
+      desc->x3c_LCL3 = CParticleDataFactory::GetColorElement(in);
       break;
     case 'ZERY':
-      desc->mZERY = CParticleDataFactory::GetBool(in);
+      desc->x78_ZERY = CParticleDataFactory::GetBool(in);
       break;
     case 'TEXR':
-      desc->mTEXR = CParticleDataFactory::GetTextureElement(in, pool);
+      desc->x40_TEXR = CParticleDataFactory::GetTextureElement(in, pool);
       break;
     case '_END':
       done = true;
       break;
     case 'DFLG':
-      desc->mDFLG = CParticleDataFactory::GetBitflag(in);
+      desc->x44_DFLG = CParticleDataFactory::GetBitflag(in);
       break;
     default:
       return false;
