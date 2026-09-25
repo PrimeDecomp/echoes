@@ -6,6 +6,7 @@
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
+#include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
@@ -56,6 +57,8 @@ CEntity* CEntity::TypesMatch(int typeId) const {
 
 TYPES_MATCH_IMPL(CActor, CEntity, kET_Actor)
 TYPES_MATCH_IMPL(CPhysicsActor, CActor, kET_PhysicsActor)
+TYPES_MATCH_IMPL(CAi, CPhysicsActor, kET_Ai)
+TYPES_MATCH_IMPL(CPatterned, CAi, kET_Patterned)
 TYPES_MATCH_IMPL(CScriptWaypoint, CActor, kET_ScriptWaypoint)
 TYPES_MATCH_IMPL(CScriptSequenceTimer, CEntity, kET_ScriptSequenceTimer)
 TYPES_MATCH_IMPL(CGameLight, CActor, kET_GameLight)

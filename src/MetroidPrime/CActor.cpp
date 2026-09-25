@@ -207,7 +207,7 @@ float CActor::GetAverageAnimVelocity(int anim) {
   return HasAnimation() ? GetAnimationData()->GetAverageVelocity(anim) : 0.f;
 }
 
-void CActor::CalculateRenderBounds(CStateManager& mgr) {
+void CActor::PreRenderAllViewports(CStateManager& mgr) {
   if (HasModelData()) {
     CAABox bounds = GetModelData()->GetBounds(GetTransform());
     SetRenderBounds(bounds);
@@ -243,7 +243,8 @@ void CActor::SetModelData(const CModelData& data, CStateManager& mgr) {
 }
 
 // TODO nonmatching
-void CActor::PreRender(CStateManager& mgr, const CFrustumPlanes& planes) {
+void CActor::PreRender(CStateManager& mgr) {
+  const CFrustumPlanes& planes = mgr.GetFrustumPlanes();
   int x = mgr.fn_800366e4(this);
 
   if (HasModelData()) {
@@ -444,7 +445,7 @@ float CActor::GetYaw() const {
   return 0.f;
 }
 
-CHealthInfo* CActor::HealthInfo(CStateManager& mgr) { return nullptr; }
+CHealthInfo* CActor::HealthInfo() { return nullptr; }
 
 float CActor::GetPitch() const {
   float sq = CMath::SqrtF(m_transform.Get11() * m_transform.Get11() +

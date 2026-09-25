@@ -387,6 +387,6 @@ void CPhysicsActor::SetMaxVelocityAfterCollision(float velocity) {
 
 float CPhysicsActor::GetMaximumCollisionVelocity() const { return mMaximumCollisionVelocity; }
 
-int CPhysicsActor::PhysicsUnkVirtual() {
+bool CPhysicsActor::IsOnStaticGround() const {
   return 0;
 }

@@ -66,16 +66,15 @@ public:
 
   // CActor
   virtual void UnkVtable20(); // G2ME01 slot +0x20; original name unknown
-  virtual void PreRender(CStateManager&, const CFrustumPlanes&);
+  virtual void PreRender(CStateManager&);
   virtual void AddToRenderer(const CStateManager&) const;
   virtual void Render(const CStateManager&) const;
   virtual bool CanRenderUnsorted(const CStateManager&) const;
-  virtual void CalculateRenderBounds(CStateManager& mgr);
-  const CHealthInfo* GetHealthInfo(const CStateManager& mgr) const {
-    return const_cast< CActor* >(this)->HealthInfo(const_cast< CStateManager& >(mgr));
+  virtual void PreRenderAllViewports(CStateManager& mgr);
+  virtual CHealthInfo* HealthInfo();
+  virtual const CHealthInfo* GetHealthInfo() const {
+    return const_cast< CActor* >(this)->HealthInfo();
   }
-  virtual CHealthInfo* HealthInfo(CStateManager&);
-  virtual void UnkA(); // must be before GetSortingBounds
   virtual const CDamageVulnerability* GetDamageVulnerability() const;
   virtual const CDamageVulnerability* GetDamageVulnerability(const CVector3f&, const CVector3f&,
                                                              const CDamageInfo&) const;
@@ -111,6 +110,7 @@ public:
   bool IsModelOpaque(const CStateManager& mgr) const;
   void RenderInternal(const CStateManager& mgr) const;
   void CreateShadow(bool);
+  void fn_8004ab14(); // Allocate the simple shadow if model data is available.
 
   const CTransform4f& GetTransform() const { return m_transform; }
   void SetTransform(const CTransform4f& xf) {

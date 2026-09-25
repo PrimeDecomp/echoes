@@ -70,7 +70,7 @@ void CStateManager::SetIsDarkWorld(bool b) {
 }
 
 bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage, const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& damageInfo, int unkParam) {
-  CHealthInfo* healthInfo = damagee.HealthInfo(*this);
+  CHealthInfo* healthInfo = damagee.HealthInfo();
   if (!healthInfo || damage < 0.0f) {
     return false;
   }

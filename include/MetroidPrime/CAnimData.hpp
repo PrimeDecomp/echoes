@@ -7,13 +7,13 @@
 #include "rstl/optional_object.hpp"
 #include "types.h"
 
+#include "Kyoto/Animation/CAdditiveAnimPlayback.hpp"
 #include "Kyoto/Animation/CBoolPOINode.hpp"
 #include "Kyoto/Animation/CCharacterInfo.hpp"
 #include "Kyoto/Animation/CInt32POINode.hpp"
 #include "Kyoto/Animation/CParticlePOINode.hpp"
 #include "Kyoto/Animation/CSoundPOINode.hpp"
 #include "MetroidPrime/ActorCommon.hpp"
-#include "Kyoto/Animation/CAdditiveAnimPlayback.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
 #include "MetroidPrime/CHierarchyPoseBuilder.hpp"
 #include "MetroidPrime/CParticleDatabase.hpp"
@@ -54,6 +54,9 @@ public:
   }
 
   const TLockedToken< CSkinnedModel >& GetModelData() const { return mModelData; }
+  void SetSkinnedModel(const TLockedToken< CSkinnedModel >& model);
+  CSegId GetLocatorSegId(const rstl::string& name) const;
+  CTransform4f GetLocatorTransform(CSegId id, const CCharAnimTime* time) const;
 
   void SetIsAnimating(bool v) { mAnimating = v; }
   void SetParticleEffectState(const rstl::string& name, const bool active, CStateManager& mgr);

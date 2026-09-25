@@ -93,7 +93,7 @@ public:
                             CStateManager& mgr);
   virtual float GetStepDownHeight() const;
   virtual float GetStepUpHeight() const;
-  virtual int PhysicsUnkVirtual();
+  virtual bool IsOnStaticGround() const;
   virtual float GetWeight() const;
   float GetMass() const { return mMass; }
   void SetMass(float mass);
