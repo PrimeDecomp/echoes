@@ -386,6 +386,10 @@ Kyoto/Animation/CAdditiveAnimPlayback.cpp:
 	.text       start:0x8031AA68 end:0x8031AD0C
 	.sdata2     start:0x8041EAD0 end:0x8041EAE0
 
+Kyoto/Particles/CParticleElectricDataFactory.cpp:
+	.text       start:0x8031AD0C end:0x8031B6BC
+	.rodata     start:0x803AFF68 end:0x803AFF70
+
 Kyoto/Graphics/DolphinCColor.cpp:
 	.text       start:0x803203DC end:0x803208F0
 	.sdata2     start:0x8041EB40 end:0x8041EB58
