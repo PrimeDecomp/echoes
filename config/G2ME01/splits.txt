@@ -252,6 +252,24 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.sbss       start:0x80419818 end:0x80419828
 	.sdata2     start:0x8041E268 end:0x8041E278
 
+Kyoto/Animation/CPASAnimInfo.cpp:
+	.text       start:0x80297020 end:0x80297128
+
+Kyoto/Animation/CPASAnimParm.cpp:
+	.text       start:0x80297128 end:0x8029728C
+
+Kyoto/Animation/CPASAnimState.cpp:
+	.text       start:0x8029728C end:0x80298660
+	.sdata2     start:0x8041E2A0 end:0x8041E2C8
+
+Kyoto/Animation/CPASDatabase.cpp:
+	.text       start:0x80298660 end:0x80299114
+	.sdata      start:0x80418A08 end:0x80418A18
+
+Kyoto/Animation/CPASParmInfo.cpp:
+	.text       start:0x80299114 end:0x802992D0
+	.sdata2     start:0x8041E2C8 end:0x8041E2D0
+
 Kyoto/Audio/CSfxHandle.cpp:
 	.text       start:0x8029AB00 end:0x8029AB1C
 
