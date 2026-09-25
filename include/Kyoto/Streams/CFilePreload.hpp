@@ -18,7 +18,7 @@ public:
   void Read(void* dest, int offset, int length) const;
 
 private:
-  CFilePreloadData* x0_data;
+  CFilePreloadData* mData;
 };
 CHECK_SIZEOF(CFilePreload, 0x4)
 

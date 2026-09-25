@@ -22,31 +22,31 @@ public:
   CAdditiveAnimPlayback(const rstl::ncrc_ptr< CAnimTreeNode >& anim, float weight, bool loop,
                         const CAdditiveAnimationInfo& info, bool fadeOut);
 
-  const rstl::rc_ptr< CAnimTreeNode >& GetAnimationTree() const { return x8_anim; }
-  rstl::ncrc_ptr< CAnimTreeNode >& AnimationTree() { return x8_anim; }
+  const rstl::rc_ptr< CAnimTreeNode >& GetAnimationTree() const { return mAnim; }
+  rstl::ncrc_ptr< CAnimTreeNode >& AnimationTree() { return mAnim; }
 
-  float GetWeight() const { return x10_targetWeight; }
+  float GetWeight() const { return mTargetWeight; }
   void SetWeight(float weight);
 
-  EPlaybackPhase GetFadingMode() const { return x20_phase; }
-  bool IsLoop() const { return x18_active; }
-  void SetLoop(bool loop) { x18_active = loop; }
+  EPlaybackPhase GetFadingMode() const { return mPhase; }
+  bool IsLoop() const { return mActive; }
+  void SetLoop(bool loop) { mActive = loop; }
 
-  bool IsFadeOutWhenAnimOver() const { return x24_needsFadeOut; }
-  void SetFadeOutWhenAnimOver(bool fadeOut) { x24_needsFadeOut = fadeOut; }
+  bool IsFadeOutWhenAnimOver() const { return mNeedsFadeOut; }
+  void SetFadeOutWhenAnimOver(bool fadeOut) { mNeedsFadeOut = fadeOut; }
 
   void FadeOut();
   void Update(float dt);
 
 private:
-  CAdditiveAnimationInfo x0_info;
-  rstl::ncrc_ptr< CAnimTreeNode > x8_anim;
-  float x10_targetWeight;
-  float x14_curWeight;
-  bool x18_active;
-  float x1c_weightTimer;
-  EPlaybackPhase x20_phase;
-  bool x24_needsFadeOut;
+  CAdditiveAnimationInfo mInfo;
+  rstl::ncrc_ptr< CAnimTreeNode > mAnim;
+  float mTargetWeight;
+  float mCurWeight;
+  bool mActive;
+  float mWeightTimer;
+  EPlaybackPhase mPhase;
+  bool mNeedsFadeOut;
 };
 CHECK_SIZEOF(CAdditiveAnimPlayback, 0x28)
 

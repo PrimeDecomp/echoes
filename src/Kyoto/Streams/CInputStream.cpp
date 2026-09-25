@@ -5,54 +5,54 @@
 #include "string.h"
 
 CInputStream::CInputStream(const void* ptr, unsigned long len)
-: x4_buffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
-, xc_length(len)
-, x10_owned(false) {
-  x8_ptr = x4_buffer;
+: mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
+, mLength(len)
+, mOwned(false) {
+  mPtr = mBuffer;
 }
 
 CInputStream::CInputStream(const void* ptr, unsigned long len, bool owned)
-: x4_buffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
-, xc_length(len)
-, x10_owned(owned) {
-  x8_ptr = x4_buffer;
+: mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(ptr)))
+, mLength(len)
+, mOwned(owned) {
+  mPtr = mBuffer;
 }
 
 CInputStream::CInputStream(const SBufferAndSize& buffer, bool owned)
-: x4_buffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(buffer.x0_buffer)))
-, xc_length(buffer.x4_size)
-, x10_owned(owned) {
-  x8_ptr = x4_buffer;
+: mBuffer(const_cast< uchar* >(reinterpret_cast< const uchar* >(buffer.mBuffer)))
+, mLength(buffer.mSize)
+, mOwned(owned) {
+  mPtr = mBuffer;
 }
 
 CInputStream::~CInputStream() {
-  if (x10_owned) {
-    delete[] x4_buffer;
+  if (mOwned) {
+    delete[] mBuffer;
   }
 }
 
 void CInputStream::Get(void* dest, unsigned long len) {
-  memcpy(dest, x8_ptr, len);
-  x8_ptr += len;
+  memcpy(dest, mPtr, len);
+  mPtr += len;
 }
 
 const void* CInputStream::Get(unsigned long len) {
-  const void* result = x8_ptr;
-  x8_ptr += len;
+  const void* result = mPtr;
+  mPtr += len;
   return result;
 }
 
 size_t CInputStream::ReadBytes(void* dest, size_t len) {
-  size_t count = xc_length - (x8_ptr - x4_buffer);
+  size_t count = mLength - (mPtr - mBuffer);
   if (len < count) {
     count = len;
   }
   count = rstl::max_val(size_t(0), count);
   if (count != 0) {
     if (dest != nullptr) {
-      memcpy(dest, x8_ptr, count);
+      memcpy(dest, mPtr, count);
     }
-    x8_ptr += count;
+    mPtr += count;
   }
   return count;
 }
@@ -64,6 +64,6 @@ float CInputStream::ReadFloat() {
 }
 
 rstl::auto_ptr< uchar > CInputStream::ReleaseBuffer() {
-  x10_owned = false;
-  return rstl::auto_ptr< uchar >(x4_buffer);
+  mOwned = false;
+  return rstl::auto_ptr< uchar >(mBuffer);
 }

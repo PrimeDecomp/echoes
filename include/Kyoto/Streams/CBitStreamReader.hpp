@@ -6,9 +6,9 @@
 class CInputStream;
 
 class CBitStreamReader {
-  CInputStream& x0_stream;
-  uint x4_bitWord;
-  uint x8_bitOffset;
+  CInputStream& mStream;
+  uint mBitWord;
+  uint mBitOffset;
 
 public:
   explicit CBitStreamReader(CInputStream& stream);

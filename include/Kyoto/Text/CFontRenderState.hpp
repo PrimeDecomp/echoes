@@ -15,37 +15,37 @@ public:
   void PopState();
   void SetColor(EColorType type, const CTextColor& color);
   void RefreshPalette();
-  CDrawStringOptions& GetOptions() { return x0_state.GetOptions(); }
-  TToken< CRasterFont >& GetFont() { return x0_state.GetFont(); }
-  rstl::vector< CTextColor >& GetColors() { return x0_state.GetColors(); }
-  rstl::vector< bool >& GetOverride() { return x0_state.GetOverride(); }
-  void SetLineSpacing(float spacing) { x0_state.SetLineSpacing(spacing); }
-  void SetExtraLineSpace(int spacing) { x0_state.SetLineExtraSpace(spacing); }
-  const CBlockInstruction* GetBlock() const { return x88_curBlock; }
+  CDrawStringOptions& GetOptions() { return mState.GetOptions(); }
+  TToken< CRasterFont >& GetFont() { return mState.GetFont(); }
+  rstl::vector< CTextColor >& GetColors() { return mState.GetColors(); }
+  rstl::vector< bool >& GetOverride() { return mState.GetOverride(); }
+  void SetLineSpacing(float spacing) { mState.SetLineSpacing(spacing); }
+  void SetExtraLineSpace(int spacing) { mState.SetLineExtraSpace(spacing); }
+  const CBlockInstruction* GetBlock() const { return mCurBlock; }
   void SetBlock(const CBlockInstruction* block) {
-    x88_curBlock = const_cast< CBlockInstruction* >(block);
+    mCurBlock = const_cast< CBlockInstruction* >(block);
   }
-  void SetX(int x) { xd4_curX = x; }
-  int GetX() const { return xd4_curX; }
-  void SetY(int y) { xd8_curY = y; }
-  int GetY() const { return xd8_curY; }
-  const CLineInstruction* GetLine() const { return xdc_currentLineInst; }
-  bool IsFirstWordOnLine() const { return x108_lineInitialized; }
-  void SetFirstWordOnLine(bool v) { x108_lineInitialized = v; }
+  void SetX(int x) { mCurX = x; }
+  int GetX() const { return mCurX; }
+  void SetY(int y) { mCurY = y; }
+  int GetY() const { return mCurY; }
+  const CLineInstruction* GetLine() const { return mCurrentLineInst; }
+  bool IsFirstWordOnLine() const { return mLineInitialized; }
+  void SetFirstWordOnLine(bool v) { mLineInitialized = v; }
 
 private:
-  CSaveableState x0_state;
-  CBlockInstruction* x88_curBlock;
-  CDrawStringOptions x8c_drawOpts;
-  int xd4_curX;
-  int xd8_curY;
-  const CLineInstruction* xdc_currentLineInst;
+  CSaveableState mState;
+  CBlockInstruction* mCurBlock;
+  CDrawStringOptions mDrawOpts;
+  int mCurX;
+  int mCurY;
+  const CLineInstruction* mCurrentLineInst;
   uint xe0_;
   uint xe4_;
   rstl::vector< uint > xe8_;
   rstl::vector< uchar > xf8_;
-  bool x108_lineInitialized;
-  rstl::list< CSaveableState > x10c_pushedStates;
+  bool mLineInitialized;
+  rstl::list< CSaveableState > mPushedStates;
 };
 
 #endif // _CFONTRENDERSTATE

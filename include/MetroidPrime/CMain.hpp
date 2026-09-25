@@ -71,10 +71,10 @@ public:
 
 private:
   COsContext* osContext;
-  void* x4_unk1;
+  void* mUnk1;
   CMemorySys* memorySys;
-  void* xc_unk2;
-  char x10_pad[0x38];
+  void* mUnk2;
+  char mPad[0x38];
   int frameTimeMinimum;
   float x4c;
   float x50;
@@ -87,10 +87,10 @@ private:
   bool mfGameBuilt : 1;
   bool screenFading : 1;
   bool x90_27_ : 1;
-  bool x90_28_manageCard : 1;
+  bool mManageCard : 1;
   bool x90_29_ : 1;
   bool x90_30_ : 1;
-  bool x90_31_cardBusy : 1;
+  bool mCardBusy : 1;
   // bool x161_24_gameFrameDrawn : 1;
   // CGameArchitectureSupport* x164_;
 };

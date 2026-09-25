@@ -13,11 +13,11 @@
 #include <stdint.h>
 
 class CInterruptGuard {
-  bool x0_enabled;
+  bool mEnabled;
 
 public:
-  CInterruptGuard() : x0_enabled(OSDisableInterrupts()) {}
-  ~CInterruptGuard() { OSRestoreInterrupts(x0_enabled); }
+  CInterruptGuard() : mEnabled(OSDisableInterrupts()) {}
+  ~CInterruptGuard() { OSRestoreInterrupts(mEnabled); }
 };
 
 static CStaticAudioPlayer* sCurrentPlayer = nullptr;
@@ -74,23 +74,23 @@ void CStaticAudioPlayer::CancelDMACallback(FAudioCallback callback) {
 
 CStaticAudioPlayer::CStaticAudioPlayer(const rstl::string& filepath, const int loopStart,
                                        const int loopEnd)
-: x0_filepath(filepath)
-, x10_rsfRem(-1)
-, x18_curSamp(0)
-, x1c_loopStartSamp(loopStart & ~1)
-, x20_loopEndSamp(loopEnd & ~1)
-, x24_curBuf(0)
-, x28_dmaBufferA(static_cast< uchar* >(CMemory::Alloc(640, IAllocator::kHI_RoundUpLen)))
-, x30_dmaBufferB(static_cast< uchar* >(CMemory::Alloc(640, IAllocator::kHI_RoundUpLen)))
-, xc0_volume(32768) {
+: mFilepath(filepath)
+, mRsfRem(-1)
+, mCurSamp(0)
+, mLoopStartSamp(loopStart & ~1)
+, mLoopEndSamp(loopEnd & ~1)
+, mCurBuf(0)
+, mDmaBufferA(static_cast< uchar* >(CMemory::Alloc(640, IAllocator::kHI_RoundUpLen)))
+, mDmaBufferB(static_cast< uchar* >(CMemory::Alloc(640, IAllocator::kHI_RoundUpLen)))
+, mVolume(32768) {
   CDvdFile dvdFile(filepath.data());
-  x10_rsfRem = dvdFile.GetFileSize();
-  x14_rsfLength = x10_rsfRem;
-  int bufferCount = ((x10_rsfRem - 1) + 0x4000) / 0x4000;
-  x48_buffers.reserve(bufferCount);
-  x38_dvdRequests.reserve(bufferCount);
+  mRsfRem = dvdFile.GetFileSize();
+  mRsfLength = mRsfRem;
+  int bufferCount = ((mRsfRem - 1) + 0x4000) / 0x4000;
+  mBuffers.reserve(bufferCount);
+  mDvdRequests.reserve(bufferCount);
 
-  for (int i = x10_rsfRem; i > 0; i -= 0x4000) {
+  for (int i = mRsfRem; i > 0; i -= 0x4000) {
     uint bufferSize = 0x4000;
     if (i <= 0x4000) {
       bufferSize = (i + 31) & ~31;
@@ -98,15 +98,15 @@ CStaticAudioPlayer::CStaticAudioPlayer(const rstl::string& filepath, const int l
 
     rstl::auto_ptr< uchar > buf(
         static_cast< uchar* >(CMemory::Alloc(bufferSize, IAllocator::kHI_RoundUpLen)));
-    x48_buffers.push_back_unsafe(buf);
-    x38_dvdRequests.push_back_unsafe(dvdFile.SyncRead(buf.get(), bufferSize));
+    mBuffers.push_back_unsafe(buf);
+    mDvdRequests.push_back_unsafe(dvdFile.SyncRead(buf.get(), bufferSize));
   }
 }
 
 CStaticAudioPlayer::~CStaticAudioPlayer() { StopMixOut(); }
 
 const bool CStaticAudioPlayer::IsReady() const {
-  return !x38_dvdRequests.empty() ? x38_dvdRequests.back()->IsComplete() : true;
+  return !mDvdRequests.empty() ? mDvdRequests.back()->IsComplete() : true;
 }
 
 void CStaticAudioPlayer::StartMixOut() {
@@ -114,10 +114,10 @@ void CStaticAudioPlayer::StartMixOut() {
     return;
   }
 
-  x38_dvdRequests = rstl::vector< rstl::auto_ptr< CDvdRequest > >();
-  x18_curSamp = 0;
-  g72x_init_state(&x58_leftState);
-  g72x_init_state(&x8c_rightState);
+  mDvdRequests = rstl::vector< rstl::auto_ptr< CDvdRequest > >();
+  mCurSamp = 0;
+  g72x_init_state(&mLeftState);
+  g72x_init_state(&mRightState);
   sCurrentPlayer = this;
   RunDMACallback(MixCallback);
 }
@@ -133,9 +133,9 @@ void CStaticAudioPlayer::MixCallback() { sCurrentPlayer->DoMix(); }
 
 void CStaticAudioPlayer::DoMix() {
   const ushort* aiStart = static_cast< const ushort* >(OSPhysicalToCached(AIGetDMAStartAddr()));
-  x24_curBuf ^= 1;
+  mCurBuf ^= 1;
   uintptr_t buf =
-      reinterpret_cast< uintptr_t >(x24_curBuf != 0 ? x30_dmaBufferB.get() : x28_dmaBufferA.get());
+      reinterpret_cast< uintptr_t >(mCurBuf != 0 ? mDmaBufferB.get() : mDmaBufferA.get());
 
   AIInitDMA(buf, 0x280);
   u32 cookie = OSEnableInterrupts();
@@ -167,15 +167,15 @@ static void MixToMono(ushort* data, int numSamples) {
 }
 
 void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
-  int curSamp = x18_curSamp / 2;
-  int loopEndSamp = x20_loopEndSamp / 2;
-  int loopStartSamp = x1c_loopStartSamp / 2;
-  DecodeMonoAndMix(out, in, numSamples, curSamp, loopEndSamp, loopStartSamp, xc0_volume,
-                   x58_leftState);
+  int curSamp = mCurSamp / 2;
+  int loopEndSamp = mLoopEndSamp / 2;
+  int loopStartSamp = mLoopStartSamp / 2;
+  DecodeMonoAndMix(out, in, numSamples, curSamp, loopEndSamp, loopStartSamp, mVolume,
+                   mLeftState);
 
-  int halfLen = x14_rsfLength / 2;
+  int halfLen = mRsfLength / 2;
   DecodeMonoAndMix(out + 1, in + 1, numSamples, curSamp + halfLen, loopEndSamp + halfLen,
-                   loopStartSamp + halfLen, xc0_volume, x8c_rightState);
+                   loopStartSamp + halfLen, mVolume, mRightState);
 
   if (CAudioSys::GetSurroundMode() == CAudioSys::kSM_Mono) {
     MixToMono(out, numSamples);
@@ -183,13 +183,13 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
 
   int remSamples = numSamples;
   while (remSamples != 0) {
-    int remTillLoop = x20_loopEndSamp - x18_curSamp;
+    int remTillLoop = mLoopEndSamp - mCurSamp;
     int rs = remSamples;
     int consumed = rstl::min_val(rs, remTillLoop);
-    x18_curSamp += consumed;
+    mCurSamp += consumed;
     remSamples -= consumed;
-    if (x18_curSamp == x20_loopEndSamp) {
-      x18_curSamp = x1c_loopStartSamp;
+    if (mCurSamp == mLoopEndSamp) {
+      mCurSamp = mLoopStartSamp;
     }
   }
 }
@@ -209,7 +209,7 @@ void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int num
     int remTillLoop = sampleEnd - curSample;
     thisBytes = rstl::min_val(thisBytes, remTillLoop);
 
-    uchar* byte = x48_buffers[curBuf].get() + (curSample - (curBuf * 0x4000));
+    uchar* byte = mBuffers[curBuf].get() + (curSample - (curBuf * 0x4000));
     int i = 0;
     while (i < thisBytes) {
       int samp1 = reinterpret_cast< const short* >(inCursor)[0] +
@@ -255,5 +255,5 @@ void CStaticAudioPlayer::SetVolume(uchar vol) {
   if (static_cast< uchar >(vol) > 127) {
     vol = 127;
   }
-  xc0_volume = CAudioSys::kVolumeTable[static_cast< uchar >(vol)];
+  mVolume = CAudioSys::kVolumeTable[static_cast< uchar >(vol)];
 }

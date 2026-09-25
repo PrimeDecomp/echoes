@@ -17,15 +17,15 @@ public:
   CFilePreloadData(const rstl::string& path);
   ~CFilePreloadData();
 
-  rstl::string GetFilename() const { return x0_path; }
+  rstl::string GetFilename() const { return mPath; }
   bool IsReady();
   void Read(void* dest, int offset, int length);
 
-  rstl::string x0_path;
-  int x10_size;
-  int x14_refCount;
-  rstl::vector< rstl::auto_ptr< uchar > > x18_buffers;
-  rstl::vector< rstl::auto_ptr< CDvdRequest > > x28_requests;
+  rstl::string mPath;
+  int mSize;
+  int mRefCount;
+  rstl::vector< rstl::auto_ptr< uchar > > mBuffers;
+  rstl::vector< rstl::auto_ptr< CDvdRequest > > mRequests;
 };
 CHECK_SIZEOF(CFilePreloadData, 0x38)
 
@@ -37,19 +37,19 @@ static void CopyAndFlush(void* dest, const void* src, int length) {
 }
 
 CFilePreloadData::CFilePreloadData(const rstl::string& path)
-: x0_path(path), x10_size(0), x14_refCount(1), x18_buffers(), x28_requests() {
+: mPath(path), mSize(0), mRefCount(1), mBuffers(), mRequests() {
   CDvdFile file(path.data());
-  x10_size = file.GetFileSize();
+  mSize = file.GetFileSize();
   int offset;
-  const int count = (x10_size + 0x3fff) / 0x4000;
-  x18_buffers.reserve(count);
-  x28_requests.reserve(count);
+  const int count = (mSize + 0x3fff) / 0x4000;
+  mBuffers.reserve(count);
+  mRequests.reserve(count);
 
   int i = 0;
   offset = 0;
   for (; i < count; offset += 0x4000, ++i) {
     int length = 0x4000;
-    const int remaining = x10_size - offset;
+    const int remaining = mSize - offset;
     if (remaining <= 0x4000) {
       length = remaining;
     }
@@ -58,14 +58,14 @@ CFilePreloadData::CFilePreloadData(const rstl::string& path)
         CMemory::Alloc(alignedLength, IAllocator::kHI_RoundUpLen)));
     rstl::auto_ptr< CDvdRequest > request(
         file.AsyncSeekRead(buffer.get(), alignedLength, kSO_Set, offset));
-    x18_buffers.push_back_unsafe(buffer);
-    x28_requests.push_back_unsafe(request);
+    mBuffers.push_back_unsafe(buffer);
+    mRequests.push_back_unsafe(request);
   }
 }
 
 CFilePreloadData::~CFilePreloadData() {
-  for (rstl::vector< rstl::auto_ptr< CDvdRequest > >::iterator it = x28_requests.begin();
-       it != x28_requests.end(); ++it) {
+  for (rstl::vector< rstl::auto_ptr< CDvdRequest > >::iterator it = mRequests.begin();
+       it != mRequests.end(); ++it) {
     if (!(*it)->IsComplete()) {
       (*it)->PostCancelRequest();
     }
@@ -73,11 +73,11 @@ CFilePreloadData::~CFilePreloadData() {
 }
 
 bool CFilePreloadData::IsReady() {
-  if (!x28_requests.empty()) {
-    if (!x28_requests.back()->IsComplete()) {
+  if (!mRequests.empty()) {
+    if (!mRequests.back()->IsComplete()) {
       return false;
     }
-    x28_requests = rstl::vector< rstl::auto_ptr< CDvdRequest > >();
+    mRequests = rstl::vector< rstl::auto_ptr< CDvdRequest > >();
   }
   return true;
 }
@@ -88,7 +88,7 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
   if (length < firstLength) {
     firstLength = length;
   }
-  CopyAndFlush(dest, x18_buffers[chunk].get() + (offset - chunk * 0x4000), firstLength);
+  CopyAndFlush(dest, mBuffers[chunk].get() + (offset - chunk * 0x4000), firstLength);
 
   uchar* output = static_cast< uchar* >(dest) + firstLength;
   int remaining = length - firstLength;
@@ -98,7 +98,7 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
     if (remaining <= 0x4000) {
       count = remaining;
     }
-    CopyAndFlush(output, x18_buffers[nextChunk].get(), count);
+    CopyAndFlush(output, mBuffers[nextChunk].get(), count);
     remaining -= count;
     output += count;
     ++nextChunk;
@@ -123,7 +123,7 @@ static CFilePreloadData* AcquireFile(const rstl::string& path) {
     rstl::auto_ptr< CFilePreloadData > data(rs_new CFilePreloadData(path));
     it = sPreloadedFiles.insert(sPreloadedFiles.end(), data);
   } else {
-    ++(*it)->x14_refCount;
+    ++(*it)->mRefCount;
   }
   return (*it).get();
 }
@@ -131,31 +131,31 @@ static CFilePreloadData* AcquireFile(const rstl::string& path) {
 static void ReleaseFile(const rstl::string& path) {
   rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator it = FindFile(path);
   if (it != sPreloadedFiles.end()) {
-    --(*it)->x14_refCount;
-    if ((*it)->x14_refCount == 0) {
+    --(*it)->mRefCount;
+    if ((*it)->mRefCount == 0) {
       sPreloadedFiles.erase(it);
     }
   }
 }
 
-CFilePreload::CFilePreload(const rstl::string& path) : x0_data(AcquireFile(path)) {}
+CFilePreload::CFilePreload(const rstl::string& path) : mData(AcquireFile(path)) {}
 
-CFilePreload::CFilePreload(const CFilePreload& other) : x0_data(other.x0_data) {
-  ++x0_data->x14_refCount;
+CFilePreload::CFilePreload(const CFilePreload& other) : mData(other.mData) {
+  ++mData->mRefCount;
 }
 
-CFilePreload::~CFilePreload() { ReleaseFile(x0_data->GetFilename()); }
+CFilePreload::~CFilePreload() { ReleaseFile(mData->GetFilename()); }
 
 void CFilePreload::operator=(const CFilePreload& other) {
-  if (x0_data != other.x0_data) {
-    ReleaseFile(x0_data->GetFilename());
-    x0_data = other.x0_data;
-    ++x0_data->x14_refCount;
+  if (mData != other.mData) {
+    ReleaseFile(mData->GetFilename());
+    mData = other.mData;
+    ++mData->mRefCount;
   }
 }
 
-bool CFilePreload::IsReady() const { return x0_data->IsReady(); }
+bool CFilePreload::IsReady() const { return mData->IsReady(); }
 
 void CFilePreload::Read(void* dest, int offset, int length) const {
-  x0_data->Read(dest, offset, length);
+  mData->Read(dest, offset, length);
 }

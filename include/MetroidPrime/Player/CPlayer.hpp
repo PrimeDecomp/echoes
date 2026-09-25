@@ -114,7 +114,7 @@ public:
 
   EPlayerMorphBallState GetMorphballTransitionState() const { return m_morphBallState; }
   EPlayerMorphBallState GetSpawnedMorphballState() const { return m_spawnedMorphBallState; }
-  int Get_x12f8() const { return x12f8_unk; }
+  int Get_x12f8() const { return mUnknown36; }
 
   CSfxHandle PlaySfxForPlayer(uint sfxId, short param_4, TAreaId nextAreaId, bool, int);
 
@@ -141,12 +141,12 @@ private:
   float m_jumpCameraTimer;                               // 0x30c
   int m_jumpPresses;                                     // 0x310
   float m_fallCameraTimer;                               // 0x314
-  float x318_unk;                                        // 0x318
+  float mUnknown0;                                        // 0x318
   bool m_cancelCameraPitch;                              // 0x31c
   float m_timeSinceJump;                                 // 0x320
-  float x324_unk;                                        // 0x324
-  float x328_unk;                                        // 0x328
-  CVector3f x32c_unk;                                    // 0x32c
+  float mUnknown1;                                        // 0x324
+  float mUnknown2;                                        // 0x328
+  CVector3f mUnknown3;                                    // 0x32c
   CVector3f m_lastSpaceJumpPosition;                     // 0x338
   ESurfaceRestraints m_surfaceRestraint;                 // 0x344
   rstl::reserved_vector< float, 6 > m_accelerationTable; // 0x348
@@ -157,9 +157,9 @@ private:
   EPlayerCameraState m_cameraState;                      // 0x388
   EPlayerMorphBallState m_morphBallState;                // 0x38c
   EPlayerMorphBallState m_spawnedMorphBallState;         // 0x390
-  bool x394_unk_sa;                                      // 0x394
-  EPlayerMorphBallState x398_unk_sa_state;               // 0x398
-  EPlayerMorphBallState x39c_unk;                        // 0x39c
+  bool mUnk_sa;                                      // 0x394
+  EPlayerMorphBallState mUnk_sa_state;               // 0x398
+  EPlayerMorphBallState mUnknown4;                        // 0x39c
   float m_fallingTime;                                   // 0x3a0
   EPlayerOrbitState m_orbitState;                        // 0x3a4
   EPlayerOrbitType m_orbitType;                          // 0x3a8
@@ -170,9 +170,9 @@ private:
   float m_orbitModeTimer;                                // 0x3cc
   EPlayerZoneInfo m_orbitZoneMode;                       // 0x3d0
   EPlayerZoneType m_orbitZoneType;                       // 0x3d4
-  int x3d8_unk;                                          // 0x3d8
+  int mUnknown5;                                          // 0x3d8
   TUniqueId m_orbitNextTargetId;                         // 0x3dc
-  float x3e0_unk;                                        // 0x3e0
+  float mUnknown6;                                        // 0x3e0
   rstl::reserved_vector< TUniqueId, 64 > m_nearbyOrbitObjects;        // 0x3e4
   rstl::reserved_vector< TUniqueId, 64 > m_onScreenOrbitObjects;      // 0x468
   rstl::reserved_vector< TUniqueId, 64 > m_offScreenOrbitObjects;     // 0x4ec
@@ -185,12 +185,12 @@ private:
   bool m_doneSidewaysDashing;                            // 0x588
   uint m_orbitSource;                                    // 0x58c
   bool m_orbitingEnemy;                                  // 0x590
-  bool x591_unk;                                         // 0x591
-  float x594_unk;                                        // 0x594
-  int x598_unk;                                          // 0x598
-  int x59c_unk;                                          // 0x59c
-  float x5a0_unk;                                        // 0x5a0
-  float x5a4_unk;                                        // 0x5a4
+  bool mUnknown7;                                         // 0x591
+  float mUnknown8;                                        // 0x594
+  int mUnknown9;                                          // 0x598
+  int mUnknown10;                                          // 0x59c
+  float mUnknown11;                                        // 0x5a0
+  float mUnknown12;                                        // 0x5a4
   float m_dashSpeedMultiplier;                           // 0x5a8
   bool m_noStrafeDashBlend;                              // 0x5ac
   float m_dashDuration;                                  // 0x5b0
@@ -203,16 +203,16 @@ private:
   EGrappleState m_grappleState;                          // 0x5cc
   float m_grappleSwingTimer;                             // 0x5d0
   CVector3f m_grappleSwingAxis;                          // 0x5d4
-  float x5e0_unk;                                        // 0x5e0
-  float x5e4_unk;                                        // 0x5e4
-  float x5e8_unk;                                        // 0x5e8
+  float mUnknown13;                                        // 0x5e0
+  float mUnknown14;                                        // 0x5e4
+  float mUnknown15;                                        // 0x5e8
   float m_grappleJumpTimeout;                            // 0x5ec
-  uchar x5f0_unk;                                        // 0x5f0
+  uchar mUnknown16;                                        // 0x5f0
   bool m_inFreeLook;                                     // 0x5f1
   bool m_lookButtonHeld;                                 // 0x5f2
   bool m_lookAnalogHeld;                                 // 0x5f3
-  bool x5f4_unk;                                         // 0x5f4
-  bool x5f5_unk;                                         // 0x5f5
+  bool mUnknown17;                                         // 0x5f4
+  bool mUnknown18;                                         // 0x5f5
   float m_curFreeLookCenteredTime;                       // 0x5f8
   float m_freeLookYawAngle;                              // 0x5fc
   float m_horizFreeLookAngleVel;                         // 0x600
@@ -223,25 +223,25 @@ private:
   TReservedAverage< CVector3f, 10 > m_aimTargetAverage;  // 0x61c
   CVector3f m_assistedTargetAim;                         // 0x698
   float m_aimTargetTimer;                                // 0x6a4
-  int x6a8_unk;                                          // 0x6a8
-  char x6ac_unk[0x800];                                  // 0x6ac
-  int xeac_unk;                                          // 0xeac
-  int xeb0_unk;                                          // 0xeb0
-  float xeb4_unk;                                        // 0xeb4
-  float xeb8_unk;                                        // 0xeb8
+  int mUnknown19;                                          // 0x6a8
+  char mUnknown20[0x800];                                  // 0x6ac
+  int mUnknown21;                                          // 0xeac
+  int mUnknown22;                                          // 0xeb0
+  float mUnknown23;                                        // 0xeb4
+  float mUnknown24;                                        // 0xeb8
   rstl::single_ptr< CPlayerGun > m_gun;                  // 0xebc
   float m_gunAlpha;                                      // 0xec0
-  int xec4_unk;                                          // 0xec4
-  bool xec8_unk;                                         // 0xec8
-  bool xec9_unk;                                         // 0xec9
-  short xeca_unk;                                        // 0xeca
-  CColor xecc_unk;                                       // 0xecc
-  int xed0_unk;                                          // 0xed0
-  UnkStructA* xed4_unk;                                  // 0xed4
-  void* xed8_unk;                                        // 0xed8
-  UnkStructB xedc_unk;                                   // 0xedc
-  int xf6c_unk;                                          // 0xf6c
-  UnkStructC* xf70_unk;                                  // 0xf70
+  int mUnknown25;                                          // 0xec4
+  bool mUnknown26;                                         // 0xec8
+  bool mUnknown27;                                         // 0xec9
+  short mUnknown28;                                        // 0xeca
+  CColor mUnknown29;                                       // 0xecc
+  int mUnknown30;                                          // 0xed0
+  UnkStructA* mUnknown31;                                  // 0xed4
+  void* mUnknown32;                                        // 0xed8
+  UnkStructB mUnknown33;                                   // 0xedc
+  int mUnknown34;                                          // 0xf6c
+  UnkStructC* mUnknown35;                                  // 0xf70
   TReservedAverage< float, 20 > m_moveSpeedAvg;          // 0xf74
   float m_moveSpeed;                                     // 0xfc8
   float m_flatMoveSpeed;                                 // 0xfcc
@@ -249,7 +249,7 @@ private:
   char m_pad_3[0x198];                                   // 0xFDC
   CMorphBall* m_morphBall;                               // 0x1174
   char m_pad_4[0x180];                                   // 0x1178
-  int x12f8_unk;                                         // 0x12f8
+  int mUnknown36;                                         // 0x12f8
   char m_pad_5[0x18];                                    // 0x12fc
   CPlayerState* m_playerState;                           // 0x1314
   CCameraManager* m_cameraManager;                       // 0x1318

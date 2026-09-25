@@ -11,11 +11,11 @@ public:
   CQuad(const CVector3f& a, const CVector3f& b, const CVector3f& c, const CVector3f& d);
 
 private:
-  CPlane x0_plane;
-  CVector3f x10_a;
-  CVector3f x1c_b;
-  CVector3f x28_c;
-  CVector3f x34_d;
+  CPlane mPlane;
+  CVector3f mA;
+  CVector3f mB;
+  CVector3f mC;
+  CVector3f mD;
 };
 CHECK_SIZEOF(CQuad, 0x40)
 

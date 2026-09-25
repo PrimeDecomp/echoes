@@ -12,13 +12,13 @@ public:
 
   explicit CParticlePOINode(CInputStream& in);
 
-  const CParticleData& GetParticleData() const { return x38_data; }
+  const CParticleData& GetParticleData() const { return mData; }
 
   static CParticlePOINode CopyNodeMinusStartTime(const CParticlePOINode& node,
                                                  const CCharAnimTime& startTime);
 
 private:
-  CParticleData x38_data;
+  CParticleData mData;
 };
 
 #endif // _CPARTICLEPOINODE

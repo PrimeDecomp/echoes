@@ -14,10 +14,10 @@ public:
   void SetParticleEmission(bool emitting);
 
 private:
-  TToken< CGenDescription > x0_effect;
-  SObjectTag x8_tag;
-  rstl::optional_object< CDependencyGroupToken > x10_dependencies;
-  rstl::single_ptr< CElementGen > x34_generator;
+  TToken< CGenDescription > mEffect;
+  SObjectTag mTag;
+  rstl::optional_object< CDependencyGroupToken > mDependencies;
+  rstl::single_ptr< CElementGen > mGenerator;
   float x38_;
   float x3c_;
   bool x40_24_ : 1;

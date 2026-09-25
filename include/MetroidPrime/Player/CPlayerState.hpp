@@ -161,25 +161,25 @@ public:
   };
 
   struct CPowerUp {
-    int x0_amount;
-    int x4_capacity;
-    float x8_timeLeft;
+    int mAmount;
+    int mCapacity;
+    float mTimeLeft;
 
-    CPowerUp() : x0_amount(0), x4_capacity(0), x8_timeLeft(0.0f) {}
+    CPowerUp() : mAmount(0), mCapacity(0), mTimeLeft(0.0f) {}
     CPowerUp(int amount, int capacity, float timeLeft);
 
     void Add(int amount) {
-      int capacity = x4_capacity;
-      x0_amount += amount;
-      if (x0_amount > capacity) {
-        x0_amount = capacity;
+      int capacity = mCapacity;
+      mAmount += amount;
+      if (mAmount > capacity) {
+        mAmount = capacity;
       }
     }
 
     void Dec(int amount) {
-      x0_amount -= amount;
-      if (x0_amount < 0) {
-        x0_amount = 0;
+      mAmount -= amount;
+      if (mAmount < 0) {
+        mAmount = 0;
       }
     }
   };

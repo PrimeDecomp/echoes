@@ -76,31 +76,31 @@ CHECK_SIZEOF(CLightParameters, 0x3c)
 class CScannableParameters {
 public:
   CScannableParameters() {}
-  CScannableParameters(CAssetId scanId) : x0_scanId(scanId) {}
+  CScannableParameters(CAssetId scanId) : mScanId(scanId) {}
 
-  CAssetId GetScannableObject0() const { return x0_scanId; }
+  CAssetId GetScannableObject0() const { return mScanId; }
 
 private:
-  CAssetId x0_scanId;
+  CAssetId mScanId;
 };
 CHECK_SIZEOF(CScannableParameters, 0x4)
 
 class CVisorParameters {
 public:
   CVisorParameters(uchar mask, bool b1, bool scanPassthrough)
-  : x0_mask(mask), x0_4_b1(b1), x0_5_scanPassthrough(scanPassthrough) {}
+  : mMask(mask), mB1(b1), mScanPassthrough(scanPassthrough) {}
 
-  uchar GetMask() const { return x0_mask; }
+  uchar GetMask() const { return mMask; }
   // TODO: GetIsBlockXRay__16CVisorParametersCFv?
-  bool GetBool1() const { return x0_4_b1; }
-  bool GetScanPassthrough() const { return x0_5_scanPassthrough; }
+  bool GetBool1() const { return mB1; }
+  bool GetScanPassthrough() const { return mScanPassthrough; }
 
   static CVisorParameters None() { return CVisorParameters(0xF, false, false); }
 
 private:
-  uint x0_mask : 4;
-  uint x0_5_scanPassthrough : 1;
-  uint x0_4_b1 : 1;
+  uint mMask : 4;
+  uint mScanPassthrough : 1;
+  uint mB1 : 1;
 };
 CHECK_SIZEOF(CVisorParameters, 0x4)
 

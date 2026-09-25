@@ -11,8 +11,8 @@ public:
   CDependencyGroupToken(const TToken< CDependencyGroup >& group, IObjectStore& store);
 
 private:
-  TToken< CDependencyGroup > x0_group;
-  rstl::vector< CToken > x8_dependencies;
+  TToken< CDependencyGroup > mGroup;
+  rstl::vector< CToken > mDependencies;
   uint x18_; // Loading progress/state, precise meaning unresolved.
   bool x1c_24_ : 1;
 };

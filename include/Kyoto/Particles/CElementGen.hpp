@@ -31,14 +31,14 @@ public:
     kLT_Spot = 3,
   };
   struct CParticle {
-    int x0_endFrame;
-    CVector3f x4_pos;
-    CVector3f x10_prevPos;
-    CVector3f x1c_vel;
-    int x28_startFrame;
-    float x2c_lineLengthOrSize;
-    float x30_lineWidthOrRota;
-    CColor x34_color;
+    int mEndFrame;
+    CVector3f mPos;
+    CVector3f mPrevPos;
+    CVector3f mVel;
+    int mStartFrame;
+    float mLineLengthOrSize;
+    float mLineWidthOrRota;
+    CColor mColor;
   };
 
   CElementGen(TToken< CGenDescription >, EModelOrientationType = kMOT_Normal,
@@ -78,7 +78,7 @@ public:
   int GetSystemCount();
   void EndLifetime();
 
-  int GetCumulativeParticleCount() const { return x258_cumulativeParticles; }
+  int GetCumulativeParticleCount() const { return mCumulativeParticles; }
   bool IsIndirectTextured()
       const; // { return x2c_loadedGenDesc->x54_x40_TEXR && x2c_loadedGenDesc->x58_x44_TIND; }
   float GetExternalVar(int index) const;
@@ -87,85 +87,85 @@ public:
   static void ShutDown();
 
   void SetGlobalOrientAndTrans(const CTransform4f& xf);
-  void SetLeaveLightsEnabledForModelRender(bool b) { x265_26_modelsUseLights = b; }
+  void SetLeaveLightsEnabledForModelRender(bool b) { mModelsUseLights = b; }
 
   static void SetSubtractBlend(bool subtract) { sSubtractBlend = subtract; }
 
 public:
-  TLockedToken< CGenDescription > x20_genDesc;
-  CGenDescription* x2c_loadedGenDesc;
-  EModelOrientationType x30_orientType;
-  rstl::vector< CParticle > x34_particles;
-  rstl::vector< CMatrix3f > x44_parentMatrices;
-  rstl::vector< float[8] > x54_advValues;
-  int x64_internalStartFrame;
-  int x68_curFrame;
-  double x70_curSeconds;
-  float x78_timeDeltaScale;
-  int x7c_prevFrame;
-  bool x80_particleEmission;
-  float x84_generatorRemainder;
-  int x88_MAXP;
-  ushort x8c_randomSeed;
-  float x90_generatorRate;
-  float x94_externalVars[16];
-  CVector3f xd4_translation;
-  CVector3f xe0_globalTranslation;
-  CVector3f xec_POFS;
-  CVector3f xf8_globalScale;
-  CTransform4f x104_globalScaleTransform;
-  CTransform4f x134_globalScaleTransformInverse;
-  CVector3f x164_localScale;
-  CTransform4f x170_localScaleTransform;
-  CTransform4f x1a0_localScaleTransformInverse;
-  CTransform4f x1d0_orientation;
-  CMatrix3f x200_orientationInverse;
-  CTransform4f x224_globalOrientation;
-  uint x254_activeParticleCount;
-  uint x258_cumulativeParticles;
-  uint x25c_recursiveParticleCount;
-  int x260_PSLT;
-  bool x264_24_translationDirty : 1;
-  bool x264_25_LIT_ : 1;
-  bool x264_26_AAPH : 1;
-  bool x264_27_ZBUF : 1;
-  bool x264_28_zTest : 1;
-  bool x264_29_ORNT : 1;
-  bool x264_30_MBLR : 1;
-  bool x264_31_LINE : 1;
-  bool x265_24_FXLL : 1;
-  bool x265_25_warmedUp : 1;
-  bool x265_26_modelsUseLights : 1;
-  bool x265_27_enableOPTS : 1;
-  bool x265_28_enableADV : 1;
-  int x268_MBSP;
-  GXLightID x26c_backupLightActive;
-  bool x270_hasVMD[4];
-  CRandom16 x274_randState;
-  CModVectorElement* x278_VELSources[4];
-  rstl::vector< rstl::auto_ptr< CParticleGen > > x288_activePartChildren;
-  int x298_CSSD;
-  int x29c_SISY;
-  int x2a0_PISY;
-  int x2a4_SSSD;
-  CVector3f x2a8_SSPO;
-  int x2b4_SESD;
-  CVector3f x2b8_SEPO;
+  TLockedToken< CGenDescription > mGenDesc;
+  CGenDescription* mLoadedGenDesc;
+  EModelOrientationType mOrientType;
+  rstl::vector< CParticle > mParticles;
+  rstl::vector< CMatrix3f > mParentMatrices;
+  rstl::vector< float[8] > mAdvValues;
+  int mInternalStartFrame;
+  int mCurFrame;
+  double mCurSeconds;
+  float mTimeDeltaScale;
+  int mPrevFrame;
+  bool mParticleEmission;
+  float mGeneratorRemainder;
+  int mMAXP;
+  ushort mRandomSeed;
+  float mGeneratorRate;
+  float mExternalVars[16];
+  CVector3f mTranslation;
+  CVector3f mGlobalTranslation;
+  CVector3f mPOFS;
+  CVector3f mGlobalScale;
+  CTransform4f mGlobalScaleTransform;
+  CTransform4f mGlobalScaleTransformInverse;
+  CVector3f mLocalScale;
+  CTransform4f mLocalScaleTransform;
+  CTransform4f mLocalScaleTransformInverse;
+  CTransform4f mOrientation;
+  CMatrix3f mOrientationInverse;
+  CTransform4f mGlobalOrientation;
+  uint mActiveParticleCount;
+  uint mCumulativeParticles;
+  uint mRecursiveParticleCount;
+  int mPSLT;
+  bool mTranslationDirty : 1;
+  bool mLIT_ : 1;
+  bool mAAPH : 1;
+  bool mZBUF : 1;
+  bool mZTest : 1;
+  bool mORNT : 1;
+  bool mMBLR : 1;
+  bool mLINE : 1;
+  bool mFXLL : 1;
+  bool mWarmedUp : 1;
+  bool mModelsUseLights : 1;
+  bool mEnableOPTS : 1;
+  bool mEnableADV : 1;
+  int mMBSP;
+  GXLightID mBackupLightActive;
+  bool mHasVMD[4];
+  CRandom16 mRandState;
+  CModVectorElement* mVELSources[4];
+  rstl::vector< rstl::auto_ptr< CParticleGen > > mActivePartChildren;
+  int mCSSD;
+  int mSISY;
+  int mPISY;
+  int mSSSD;
+  CVector3f mSSPO;
+  int mSESD;
+  CVector3f mSEPO;
   float x2c4_;
   float x2c8_;
-  CVector3f x2cc_aabbMin;
-  CVector3f x2d8_aabbMax;
-  float x2e4_maxSize;
-  CAABox x2e8_systemBounds;
-  LightType x300_lightType;
-  CColor x304_LCLR;
-  float x308_LINT;
-  CVector3f x30c_LOFF;
-  CVector3f x318_LDIR;
-  EFalloffType x324_falloffType;
-  float x328_LFOR;
-  float x32c_LSLA;
-  CColor x330_moduColor;
+  CVector3f mAabbMin;
+  CVector3f mAabbMax;
+  float mMaxSize;
+  CAABox mSystemBounds;
+  LightType mLightType;
+  CColor mLCLR;
+  float mLINT;
+  CVector3f mLOFF;
+  CVector3f mLDIR;
+  EFalloffType mFalloffType;
+  float mLFOR;
+  float mLSLA;
+  CColor mModuColor;
 
   static bool sSubtractBlend;
 

@@ -12,8 +12,8 @@ public:
   bool GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const;
 
 private:
-  CVectorElement* x4_pos;
-  CVectorElement* x8_vel;
+  CVectorElement* mPos;
+  CVectorElement* mVel;
 };
 
 class CVESphere : public CEmitterElement {
@@ -24,9 +24,9 @@ public:
   bool GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const;
 
 private:
-  CVectorElement* x4_sphereOrigin;
-  CRealElement* x8_sphereRadius;
-  CRealElement* xc_velocityMag;
+  CVectorElement* mSphereOrigin;
+  CRealElement* mSphereRadius;
+  CRealElement* mVelocityMag;
 };
 
 // Echoes ELPS emitter: random point in (or on) a rotated ellipsoid.
@@ -39,11 +39,11 @@ public:
   bool GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const;
 
 private:
-  CVectorElement* x4_origin;
-  CVectorElement* x8_radii;
-  CVectorElement* xc_rotation;
-  CRealElement* x10_velocityMag;
-  bool x14_onSurface;
+  CVectorElement* mOrigin;
+  CVectorElement* mRadii;
+  CVectorElement* mRotation;
+  CRealElement* mVelocityMag;
+  bool mOnSurface;
 };
 
 class CVEAngleSphere : public CEmitterElement {
@@ -56,13 +56,13 @@ public:
   bool GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const;
 
 private:
-  CVectorElement* x4_sphereOrigin;
-  CRealElement* x8_sphereRadius;
-  CRealElement* xc_velocityMag;
-  CRealElement* x10_angleXBias;
-  CRealElement* x14_angleYBias;
-  CRealElement* x18_angleXRange;
-  CRealElement* x1c_angleYRange;
+  CVectorElement* mSphereOrigin;
+  CRealElement* mSphereRadius;
+  CRealElement* mVelocityMag;
+  CRealElement* mAngleXBias;
+  CRealElement* mAngleYBias;
+  CRealElement* mAngleXRange;
+  CRealElement* mAngleYRange;
 };
 
 // Echoes PLNE emitter: random point on a rotated rectangle, with an optional cone spread.
@@ -75,19 +75,19 @@ public:
   bool GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const;
 
 private:
-  CVectorElement* x4_translation;
-  CVectorElement* x8_rotation;
-  CVectorElement* xc_velocity;
-  CRealElement* x10_xRange;
-  CRealElement* x14_yRange;
-  CRealElement* x18_coneAngle;
-  mutable CTransform4f x1c_transform;
-  mutable float x4c_coneAngle;
-  mutable float x50_coneCos;
-  mutable float x54_coneSin;
-  bool x58_24_constantTransform : 1;
-  bool x58_25_hasCone : 1;
-  bool x58_26_constantCone : 1;
+  CVectorElement* mTranslation;
+  CVectorElement* mRotation;
+  CVectorElement* mVelocity;
+  CRealElement* mXRange;
+  CRealElement* mYRange;
+  CRealElement* mConeAngleElement;
+  mutable CTransform4f mTransform;
+  mutable float mConeAngleRadians;
+  mutable float mConeCos;
+  mutable float mConeSin;
+  bool mConstantTransform : 1;
+  bool mHasCone : 1;
+  bool mConstantCone : 1;
 };
 
 #endif // _CEMITTERELEMENT

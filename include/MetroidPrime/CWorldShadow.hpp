@@ -14,15 +14,15 @@ public:
   void ResetBlur();
 
 private:
-  rstl::single_ptr< CTexture > x0_texture;
-  CTransform4f x4_view;
-  CTransform4f x34_model;
-  float x64_objectHalfExtent;
-  CVector3f x68_objectPosition;
-  CVector3f x74_lightPosition;
-  TAreaId x80_area;
-  int x84_lightIndex;
-  bool x88_blurReset;
+  rstl::single_ptr< CTexture > mTexture;
+  CTransform4f mView;
+  CTransform4f mModel;
+  float mObjectHalfExtent;
+  CVector3f mObjectPosition;
+  CVector3f mLightPosition;
+  TAreaId mArea;
+  int mLightIndex;
+  bool mBlurReset;
 };
 CHECK_SIZEOF(CWorldShadow, 0x8c)
 #endif // _CWORLDSHADOW

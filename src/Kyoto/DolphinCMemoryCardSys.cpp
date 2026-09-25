@@ -11,44 +11,44 @@
 static uint RoundUp(uint value, uint align) { return (value + align - 1) & ~(align - 1); }
 
 CMemoryCardSys::CCardFileInfo::Icon::Icon(CAssetId id, int speed, CSimplePool& pool)
-: x0_id(id), x4_speed(speed), x8_tex(pool.GetObj(SObjectTag('TXTR', id))) {}
+: mId(id), mSpeed(speed), mTex(pool.GetObj(SObjectTag('TXTR', id))) {}
 
-CMemoryCardSys::CCardFileInfo::SSaveSlot::SSaveSlot() : x0_generation(0), x4_corrupt(false) {}
+CMemoryCardSys::CCardFileInfo::SSaveSlot::SSaveSlot() : mGeneration(0), mCorrupt(false) {}
 
 void CMemoryCardSys::CCardFileInfo::SSaveSlot::CheckCrc() {
-  const uint* data = reinterpret_cast< const uint* >(x8_data.data());
+  const uint* data = reinterpret_cast< const uint* >(mData.data());
   const uint crc = data[0];
-  x4_corrupt = CCRC32::Calculate(data + 1, x8_data.size() - 4, 0xFFFFFFFF) != crc;
-  x0_generation = data[1];
+  mCorrupt = CCRC32::Calculate(data + 1, mData.size() - 4, 0xFFFFFFFF) != crc;
+  mGeneration = data[1];
 }
 
 CMemoryCardSys::CCardFileInfo::CCardFileInfo(EMemoryCardPort port, const rstl::string& name)
-: x0_slotBlocks(0)
-, x4_slotSize(0)
-, x8_slot(0)
-, xc_generation(0)
-, x10_status(kS_Standby)
-, x14_newFile(false)
-, x2c_fileName(name)
+: mSlotBlocks(0)
+, mSlotSize(0)
+, mSlot(0)
+, mGeneration(0)
+, mStatus(kS_Standby)
+, mNewFile(false)
+, mFileName(name)
 , x4c_(0)
-, x50_bannerTex(kInvalidAssetId)
-, x108_headerBuffer(0x2000, uchar())
-, x118_slots(2, SSaveSlot()) {
-  x18_fileInfo.chan = port;
-  x18_fileInfo.fileNo = -1;
+, mBannerTex(kInvalidAssetId)
+, mHeaderBuffer(0x2000, uchar())
+, mSlots(2, SSaveSlot()) {
+  mFileInfo.chan = port;
+  mFileInfo.fileNo = -1;
 }
 
 CMemoryCardSys::CCardFileInfo::~CCardFileInfo() {
-  if (x18_fileInfo.fileNo != -1) {
-    CARDClose(&x18_fileInfo);
+  if (mFileInfo.fileNo != -1) {
+    CARDClose(&mFileInfo);
   }
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::Open() {
   const EMemoryCardPort port = GetCardPort();
   ECardResult result =
-      static_cast< ECardResult >(CARDOpen(port, x2c_fileName.data(), &x18_fileInfo));
-  x18_fileInfo.chan = port;
+      static_cast< ECardResult >(CARDOpen(port, mFileName.data(), &mFileInfo));
+  mFileInfo.chan = port;
   if (result == kCR_READY) {
     CardStat stat;
     ECardResult statResult = CMemoryCardSys::GetStatus(GetCardPort(), GetFileNo(), stat);
@@ -56,19 +56,19 @@ ECardResult CMemoryCardSys::CCardFileInfo::Open() {
       return statResult;
     }
     const int blocks = stat.GetFileLength() / 0x2000;
-    x0_slotBlocks = (blocks - 1) / 2;
-    x4_slotSize = x0_slotBlocks * 0x2000;
+    mSlotBlocks = (blocks - 1) / 2;
+    mSlotSize = mSlotBlocks * 0x2000;
   }
   return result;
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::CreateFile() {
-  x14_newFile = true;
-  x4_slotSize = RoundUp(x15c_saveBuffer.size(), 0x2000);
-  x0_slotBlocks = x4_slotSize / 0x2000;
+  mNewFile = true;
+  mSlotSize = RoundUp(mSaveBuffer.size(), 0x2000);
+  mSlotBlocks = mSlotSize / 0x2000;
   const int size = GetFileBlocks() * 0x2000;
   return static_cast< ECardResult >(
-      CARDCreateAsync(GetCardPort(), x2c_fileName.data(), size, &x18_fileInfo, nullptr));
+      CARDCreateAsync(GetCardPort(), mFileName.data(), size, &mFileInfo, nullptr));
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::StartRead() {
@@ -78,51 +78,51 @@ ECardResult CMemoryCardSys::CCardFileInfo::StartRead() {
     return result;
   }
   const uint size = stat.GetFileLength();
-  x14c_loadedData = rstl::vector< uchar >();
-  x108_headerBuffer.assign(0x2000);
-  x118_slots[0].x8_data.assign(x4_slotSize);
-  x118_slots[1].x8_data.assign(x4_slotSize);
+  mLoadedData = rstl::vector< uchar >();
+  mHeaderBuffer.assign(0x2000);
+  mSlots[0].mData.assign(mSlotSize);
+  mSlots[1].mData.assign(mSlotSize);
   result =
-      static_cast< ECardResult >(CARDRead(&x18_fileInfo, x108_headerBuffer.data(), 0x2000, 0));
+      static_cast< ECardResult >(CARDRead(&mFileInfo, mHeaderBuffer.data(), 0x2000, 0));
   if (result == kCR_READY) {
-    x10_status = kS_ReadHeader;
+    mStatus = kS_ReadHeader;
   }
   return result;
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::PumpCardRead() {
-  if (x10_status == kS_Standby) {
+  if (mStatus == kS_Standby) {
     return kCR_READY;
   }
   ECardResult result = GetResultCode(GetCardPort());
   if (result != kCR_READY) {
     return result;
   }
-  if (x10_status == kS_ReadHeader || x10_status == kS_RepairHeader) {
-    if (x10_status == kS_ReadHeader && CheckHeaderCrc() != kCR_READY) {
+  if (mStatus == kS_ReadHeader || mStatus == kS_RepairHeader) {
+    if (mStatus == kS_ReadHeader && CheckHeaderCrc() != kCR_READY) {
       BuildHeaderBuffer();
-      x10_status = kS_RepairHeader;
-      void* data = x108_headerBuffer.data();
+      mStatus = kS_RepairHeader;
+      void* data = mHeaderBuffer.data();
       DCStoreRange(data, 0x2000);
-      result = static_cast< ECardResult >(CARDWriteAsync(&x18_fileInfo, data, 0x2000, 0, nullptr));
+      result = static_cast< ECardResult >(CARDWriteAsync(&mFileInfo, data, 0x2000, 0, nullptr));
       if (result == kCR_READY) {
         return kCR_BUSY;
       }
       return result;
     } else {
-      x108_headerBuffer = rstl::vector< uchar, rstl::aligned_allocator >();
-      x10_status = kS_ReadSlotA;
+      mHeaderBuffer = rstl::vector< uchar, rstl::aligned_allocator >();
+      mStatus = kS_ReadSlotA;
       result = static_cast< ECardResult >(
-          CARDRead(&x18_fileInfo, x118_slots[0].x8_data.data(), x4_slotSize, 0x2000));
+          CARDRead(&mFileInfo, mSlots[0].mData.data(), mSlotSize, 0x2000));
       if (result == kCR_READY) {
         return kCR_BUSY;
       }
       return result;
     }
-  } else if (x10_status == kS_ReadSlotA) {
-    x10_status = kS_ReadSlotB;
-    result = static_cast< ECardResult >(CARDRead(&x18_fileInfo, x118_slots[1].x8_data.data(),
-                                                 x4_slotSize, x4_slotSize + 0x2000));
+  } else if (mStatus == kS_ReadSlotA) {
+    mStatus = kS_ReadSlotB;
+    result = static_cast< ECardResult >(CARDRead(&mFileInfo, mSlots[1].mData.data(),
+                                                 mSlotSize, mSlotSize + 0x2000));
     if (result == kCR_READY) {
       return kCR_BUSY;
     }
@@ -133,53 +133,53 @@ ECardResult CMemoryCardSys::CCardFileInfo::PumpCardRead() {
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::WriteSaveSlot(int slot) {
-  void* data = x118_slots[x8_slot].x8_data.data();
-  const int offset = slot * x4_slotSize + 0x2000;
-  DCStoreRange(data, x4_slotSize);
+  void* data = mSlots[mSlot].mData.data();
+  const int offset = slot * mSlotSize + 0x2000;
+  DCStoreRange(data, mSlotSize);
   return static_cast< ECardResult >(
-      CARDWriteAsync(&x18_fileInfo, data, x4_slotSize, offset, nullptr));
+      CARDWriteAsync(&mFileInfo, data, mSlotSize, offset, nullptr));
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::WriteFile() {
   ECardResult result;
   BuildSaveSlot();
-  if (x14_newFile) {
+  if (mNewFile) {
     BuildHeaderBuffer();
-    void* data = x108_headerBuffer.data();
+    void* data = mHeaderBuffer.data();
     DCStoreRange(data, 0x2000);
-    result = static_cast< ECardResult >(CARDWriteAsync(&x18_fileInfo, data, 0x2000, 0, nullptr));
-    x10_status = kS_WriteHeader;
+    result = static_cast< ECardResult >(CARDWriteAsync(&mFileInfo, data, 0x2000, 0, nullptr));
+    mStatus = kS_WriteHeader;
   } else {
-    result = WriteSaveSlot(x8_slot);
-    x10_status = kS_WriteSlot;
+    result = WriteSaveSlot(mSlot);
+    mStatus = kS_WriteSlot;
   }
   return result;
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::PumpCardTransfer() {
-  if (x10_status == kS_Standby) {
+  if (mStatus == kS_Standby) {
     return kCR_READY;
   }
   ECardResult result = GetResultCode(GetCardPort());
   if (result != kCR_READY) {
     return result;
   }
-  if (x10_status == kS_WriteHeader) {
-    x10_status = x14_newFile ? kS_WriteFirstSlot : kS_WriteSlot;
-    result = WriteSaveSlot(x8_slot);
+  if (mStatus == kS_WriteHeader) {
+    mStatus = mNewFile ? kS_WriteFirstSlot : kS_WriteSlot;
+    result = WriteSaveSlot(mSlot);
     if (result == kCR_READY) {
       return kCR_BUSY;
     }
     return result;
-  } else if (x10_status == kS_WriteFirstSlot) {
-    x10_status = kS_WriteSlot;
-    result = WriteSaveSlot(1 - x8_slot);
+  } else if (mStatus == kS_WriteFirstSlot) {
+    mStatus = kS_WriteSlot;
+    result = WriteSaveSlot(1 - mSlot);
     if (result == kCR_READY) {
       return kCR_BUSY;
     }
     return result;
-  } else if (x10_status == kS_WriteSlot) {
-    x10_status = kS_SetStatus;
+  } else if (mStatus == kS_WriteSlot) {
+    mStatus = kS_SetStatus;
     CardStat stat;
     result = GetStatus(stat);
     if (result != kCR_READY) {
@@ -191,37 +191,37 @@ ECardResult CMemoryCardSys::CCardFileInfo::PumpCardTransfer() {
     }
     return result;
   } else {
-    x10_status = kS_Standby;
+    mStatus = kS_Standby;
     return kCR_READY;
   }
 }
 
 CMemoryCardSys::EMemoryCardPort CMemoryCardSys::CCardFileInfo::GetCardPort() {
-  return static_cast< EMemoryCardPort >(x18_fileInfo.chan);
+  return static_cast< EMemoryCardPort >(mFileInfo.chan);
 }
 
-int CMemoryCardSys::CCardFileInfo::GetFileNo() { return x18_fileInfo.fileNo; }
+int CMemoryCardSys::CCardFileInfo::GetFileNo() { return mFileInfo.fileNo; }
 
-int CMemoryCardSys::CCardFileInfo::GetFileBlocks() { return x0_slotBlocks * 2 + 1; }
+int CMemoryCardSys::CCardFileInfo::GetFileBlocks() { return mSlotBlocks * 2 + 1; }
 
 void CMemoryCardSys::CCardFileInfo::ResetHeaderInfo() {
-  x3c_comment = rstl::string();
-  x50_bannerTex = kInvalidAssetId;
-  x54_bannerTok = rstl::optional_object< TLockedToken< CTexture > >();
-  x64_iconToks = rstl::reserved_vector< Icon, 8 >();
+  mComment = rstl::string();
+  mBannerTex = kInvalidAssetId;
+  mBannerTok = rstl::optional_object< TLockedToken< CTexture > >();
+  mIconToks = rstl::reserved_vector< Icon, 8 >();
 }
 
 void CMemoryCardSys::CCardFileInfo::SetComment(const rstl::string& comment) {
-  x3c_comment = comment;
+  mComment = comment;
 }
 
 void CMemoryCardSys::CCardFileInfo::LockBannerToken(CAssetId bannerTxtr, CSimplePool& pool) {
-  x50_bannerTex = bannerTxtr;
-  x54_bannerTok = TLockedToken< CTexture >(pool.GetObj(SObjectTag('TXTR', x50_bannerTex)));
+  mBannerTex = bannerTxtr;
+  mBannerTok = TLockedToken< CTexture >(pool.GetObj(SObjectTag('TXTR', mBannerTex)));
 }
 
 void CMemoryCardSys::CCardFileInfo::LockIconToken(CAssetId iconTxtr, int speed, CSimplePool& pool) {
-  x64_iconToks.push_back(Icon(iconTxtr, speed, pool));
+  mIconToks.push_back(Icon(iconTxtr, speed, pool));
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::GetStatus(CardStat& stat) {
@@ -232,23 +232,23 @@ ECardResult CMemoryCardSys::CCardFileInfo::GetStatus(CardStat& stat) {
   stat.SetCommentAddr(4);
   stat.SetIconAddr(68);
   int bannerFormat;
-  if (x50_bannerTex == kInvalidAssetId) {
+  if (mBannerTex == kInvalidAssetId) {
     bannerFormat = CARD_STAT_BANNER_NONE;
-  } else if ((*x54_bannerTok.data())->GetTexelFormat() == kTF_RGB5A3) {
+  } else if ((*mBannerTok.data())->GetTexelFormat() == kTF_RGB5A3) {
     bannerFormat = CARD_STAT_BANNER_RGB5A3;
   } else {
     bannerFormat = CARD_STAT_BANNER_C8;
   }
   stat.SetBannerFormat(bannerFormat);
-  const int count = x64_iconToks.size();
+  const int count = mIconToks.size();
   int i = 0;
   for (; i < count; ++i) {
     int format = CARD_STAT_ICON_C8;
-    if ((*x64_iconToks[i].x8_tex)->GetTexelFormat() == kTF_RGB5A3) {
+    if ((*mIconToks[i].mTex)->GetTexelFormat() == kTF_RGB5A3) {
       format = CARD_STAT_ICON_RGB5A3;
     }
     stat.SetIconFormat(format, i);
-    stat.SetIconSpeed(x64_iconToks[i].x4_speed, i);
+    stat.SetIconSpeed(mIconToks[i].mSpeed, i);
   }
   if (i < 8) {
     stat.SetIconFormat(CARD_STAT_ICON_NONE, i);
@@ -258,8 +258,8 @@ ECardResult CMemoryCardSys::CCardFileInfo::GetStatus(CardStat& stat) {
 }
 
 void CMemoryCardSys::CCardFileInfo::WriteBannerData(COutputStream& out) {
-  if (x50_bannerTex != kInvalidAssetId) {
-    const CTexture& texture = **x54_bannerTok.data();
+  if (mBannerTex != kInvalidAssetId) {
+    const CTexture& texture = **mBannerTok.data();
     const ETexelFormat format = texture.GetTexelFormat();
     const void* data = texture.GetConstBitMapData(0);
     const uint size = format == kTF_RGB5A3 ? 6144 : 3072;
@@ -272,9 +272,9 @@ void CMemoryCardSys::CCardFileInfo::WriteBannerData(COutputStream& out) {
 
 void CMemoryCardSys::CCardFileInfo::WriteIconData(COutputStream& out) {
   const void* palette = nullptr;
-  const int count = x64_iconToks.size();
+  const int count = mIconToks.size();
   for (int i = 0; i < count; ++i) {
-    const CTexture& texture = **x64_iconToks[i].x8_tex;
+    const CTexture& texture = **mIconToks[i].mTex;
     const ETexelFormat format = texture.GetTexelFormat();
     const void* data = texture.GetConstBitMapData(0);
     const uint size = format == kTF_RGB5A3 ? 2048 : 1024;
@@ -289,13 +289,13 @@ void CMemoryCardSys::CCardFileInfo::WriteIconData(COutputStream& out) {
 }
 
 void CMemoryCardSys::CCardFileInfo::BuildHeaderBuffer() {
-  x108_headerBuffer.assign(0x2000);
-  uint* data = reinterpret_cast< uint* >(x108_headerBuffer.data());
+  mHeaderBuffer.assign(0x2000);
+  uint* data = reinterpret_cast< uint* >(mHeaderBuffer.data());
   {
     CMemoryStreamOut out(data, 0x2000);
     out.WriteInt32(0);
     char comment[64];
-    strncpy(comment, x3c_comment.data(), sizeof(comment));
+    strncpy(comment, mComment.data(), sizeof(comment));
     out.Put(comment, sizeof(comment));
     WriteBannerData(out);
     WriteIconData(out);
@@ -304,72 +304,72 @@ void CMemoryCardSys::CCardFileInfo::BuildHeaderBuffer() {
 }
 
 void CMemoryCardSys::CCardFileInfo::BuildSaveSlot() {
-  SSaveSlot& slot = x118_slots[x8_slot];
-  slot.x8_data.assign(x4_slotSize);
-  uint* data = reinterpret_cast< uint* >(slot.x8_data.data());
-  (memcpy)(data + 2, x15c_saveBuffer.data(), x15c_saveBuffer.size());
-  data[1] = xc_generation;
-  data[0] = CCRC32::Calculate(data + 1, x4_slotSize - 4, 0xFFFFFFFF);
-  x15c_saveBuffer = rstl::vector< uchar >();
+  SSaveSlot& slot = mSlots[mSlot];
+  slot.mData.assign(mSlotSize);
+  uint* data = reinterpret_cast< uint* >(slot.mData.data());
+  (memcpy)(data + 2, mSaveBuffer.data(), mSaveBuffer.size());
+  data[1] = mGeneration;
+  data[0] = CCRC32::Calculate(data + 1, mSlotSize - 4, 0xFFFFFFFF);
+  mSaveBuffer = rstl::vector< uchar >();
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::SelectSaveSlot() {
-  SSaveSlot& slotA = x118_slots[0];
-  SSaveSlot& slotB = x118_slots[1];
+  SSaveSlot& slotA = mSlots[0];
+  SSaveSlot& slotB = mSlots[1];
   slotA.CheckCrc();
   slotB.CheckCrc();
 
   ECardResult result = kCR_READY;
   int slot = -1;
-  if (slotA.x4_corrupt) {
-    if (slotB.x4_corrupt) {
+  if (slotA.mCorrupt) {
+    if (slotB.mCorrupt) {
       result = kCR_CRC_MISMATCH;
     } else {
       slot = 1;
-      xc_generation = slotB.x0_generation;
+      mGeneration = slotB.mGeneration;
     }
-  } else if (slotB.x4_corrupt) {
+  } else if (slotB.mCorrupt) {
     slot = 0;
-    xc_generation = 1 - slotA.x0_generation;
+    mGeneration = 1 - slotA.mGeneration;
   } else {
-    slot = slotA.x0_generation ^ slotB.x0_generation;
-    xc_generation = slot != 0 ? slotB.x0_generation : 1 - slotA.x0_generation;
+    slot = slotA.mGeneration ^ slotB.mGeneration;
+    mGeneration = slot != 0 ? slotB.mGeneration : 1 - slotA.mGeneration;
   }
 
-  x14c_loadedData = rstl::vector< uchar >();
+  mLoadedData = rstl::vector< uchar >();
   if (slot != -1) {
-    x8_slot = 1 - slot;
-    const int size = x4_slotSize - 8;
-    x14c_loadedData.resize(size);
-    (memcpy)(x14c_loadedData.data(), x118_slots[slot].x8_data.data() + 8, size);
+    mSlot = 1 - slot;
+    const int size = mSlotSize - 8;
+    mLoadedData.resize(size);
+    (memcpy)(mLoadedData.data(), mSlots[slot].mData.data() + 8, size);
   }
-  slotA.x8_data = rstl::vector< uchar, rstl::aligned_allocator >();
-  slotB.x8_data = rstl::vector< uchar, rstl::aligned_allocator >();
+  slotA.mData = rstl::vector< uchar, rstl::aligned_allocator >();
+  slotB.mData = rstl::vector< uchar, rstl::aligned_allocator >();
   return result;
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::CheckHeaderCrc() {
-  const uint* data = reinterpret_cast< const uint* >(x108_headerBuffer.data());
+  const uint* data = reinterpret_cast< const uint* >(mHeaderBuffer.data());
   const uint crc = data[0];
   return crc == CCRC32::Calculate(data + 1, 0x2000 - 4, 0xFFFFFFFF) ? kCR_READY
                                                                     : kCR_CRC_MISMATCH;
 }
 
-uint CardStat::GetFileLength() { return x0_stat.length; }
+uint CardStat::GetFileLength() { return mStat.length; }
 
-int CardStat::GetTime() const { return x0_stat.time; }
+int CardStat::GetTime() const { return mStat.time; }
 
-int CardStat::GetCommentAddr() const { return x0_stat.commentAddr; }
+int CardStat::GetCommentAddr() const { return mStat.commentAddr; }
 
-void CardStat::SetBannerFormat(int format) { CARDSetBannerFormat(&x0_stat, format); }
+void CardStat::SetBannerFormat(int format) { CARDSetBannerFormat(&mStat, format); }
 
-void CardStat::SetIconFormat(int format, int idx) { CARDSetIconFormat(&x0_stat, idx, format); }
+void CardStat::SetIconFormat(int format, int idx) { CARDSetIconFormat(&mStat, idx, format); }
 
-void CardStat::SetIconSpeed(int speed, int idx) { CARDSetIconSpeed(&x0_stat, idx, speed); }
+void CardStat::SetIconSpeed(int speed, int idx) { CARDSetIconSpeed(&mStat, idx, speed); }
 
-void CardStat::SetIconAddr(int addr) { CARDSetIconAddress(&x0_stat, addr); }
+void CardStat::SetIconAddr(int addr) { CARDSetIconAddress(&mStat, addr); }
 
-void CardStat::SetCommentAddr(int addr) { CARDSetCommentAddress(&x0_stat, addr); }
+void CardStat::SetCommentAddr(int addr) { CARDSetCommentAddress(&mStat, addr); }
 
 CMemoryCardSys::CMemoryCardSys() {
   Initialize();
@@ -391,8 +391,8 @@ CMemoryCardSys::~CMemoryCardSys() {
 
 ProbeResults CMemoryCardSys::IsMemoryCardInserted(EMemoryCardPort port) {
   ProbeResults result;
-  result.x0_error =
-      static_cast< ECardResult >(CARDProbeEx(port, &result.x4_cardSize, &result.x8_sectorSize));
+  result.mError =
+      static_cast< ECardResult >(CARDProbeEx(port, &result.mCardSize, &result.mSectorSize));
   return result;
 }
 
@@ -440,13 +440,13 @@ ECardResult CMemoryCardSys::GetSerialNo(EMemoryCardPort port, long long& serialO
 ECardResult CMemoryCardSys::GetStatus(EMemoryCardPort port, int fileNo, CardStat& statOut) {
   CARDStat stat;
   ECardResult result = static_cast< ECardResult >(CARDGetStatus(port, fileNo, &stat));
-  memcpy(&statOut.x0_stat, &stat, sizeof(stat));
+  memcpy(&statOut.mStat, &stat, sizeof(stat));
   return result;
 }
 
 ECardResult CMemoryCardSys::SetStatus(EMemoryCardPort port, int fileNo, const CardStat& stat) {
   return static_cast< ECardResult >(
-      CARDSetStatusAsync(port, fileNo, const_cast< CARDStat* >(&stat.x0_stat), nullptr));
+      CARDSetStatusAsync(port, fileNo, const_cast< CARDStat* >(&stat.mStat), nullptr));
 }
 
 bool CMemoryCardSys::mIsInitialized;

@@ -196,7 +196,7 @@ public:
   char pad4[0xD84]; // 16B0
 
   CAssetId m_pauseHudMessage; // 0x2434
-  float x2438_escapeTotalTime;
+  float mEscapeTotalTime;
   float x243c;
   TUniqueId m_bossId; // 0x2440
   float m_bossHealth;

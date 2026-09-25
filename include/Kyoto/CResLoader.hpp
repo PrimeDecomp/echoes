@@ -26,13 +26,13 @@ public:
   uint ResourceSize(const SObjectTag& tag) const;
 
 private:
-  rstl::list< unkptr > x0_aramList;
-  rstl::list< unkptr > x18_pakLoadedList;
-  rstl::list< unkptr > x30_pakLoadingList;
-  unkptr x48_curPak;
-  CAssetId x4c_cachedResId;
-  const CPakFile::SResInfo* x50_cachedResInfo;
-  bool x54_forwardSeek;
+  rstl::list< unkptr > mAramList;
+  rstl::list< unkptr > mPakLoadedList;
+  rstl::list< unkptr > mPakLoadingList;
+  unkptr mCurPak;
+  CAssetId mCachedResId;
+  const CPakFile::SResInfo* mCachedResInfo;
+  bool mForwardSeek;
 };
 
 #endif // _CRESLOADER

@@ -39,45 +39,45 @@ public:
   void ActivateLights() const;
   uint GetActiveLightCount() const;
 
-  bool GetNeedsRelight() const { return x298_24_dirty == TRUE; }
-  bool HasShadowLight() const { return x29c_shadowLightArrIdx != -1; }
-  int GetShadowLightIndex() const { return x2a0_shadowLightIdx; }
+  bool GetNeedsRelight() const { return mDirty == TRUE; }
+  bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
+  int GetShadowLightIndex() const { return mShadowLightIdx; }
 
   void SetAmbientColor(const CColor& color);
-  void SetCastShadows(bool v) { x298_25_castShadows = v; }
-  void SetFindShadowLight(bool v) { x298_27_findShadowLight = v; }
-  void SetShadowDynamicRangeThreshold(float t) { x2d0_shadowDynamicRangeThreshold = t; }
+  void SetCastShadows(bool v) { mCastShadows = v; }
+  void SetFindShadowLight(bool v) { mFindShadowLight = v; }
+  void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
 
 private:
-  rstl::reserved_vector< CLight, 4 > x0_areaLights;
-  rstl::reserved_vector< CLight, 4 > x144_dynamicLights;
-  CVector3f x288_ambientColor;
-  TAreaId x294_aid;
-  bool x298_24_dirty : 1;
-  bool x298_25_castShadows : 1;
-  bool x298_26_hasAreaLights : 1;
-  bool x298_27_findShadowLight : 1;
-  bool x298_28_inArea : 1;
-  bool x298_29_ambienceGenerated : 1;
-  bool x298_30_layer2 : 1;
-  bool x298_31_disableWorldLights : 1;
-  bool x299_24_inBrightLight : 1;
-  bool x299_25_useBrightLightLag : 1;
-  bool x299_26_ambientOnly : 1;
-  bool x29a_findNearestDynamicLights;
-  int x29c_shadowLightArrIdx;
-  int x2a0_shadowLightIdx;
-  uint x2a4_lastUpdateFrame;
-  uint x2a8_areaUpdateFramePeriod;
-  CVector3f x2ac_lightingPositionOffset;
-  int x2b8_maxAreaLights;
-  int x2bc_maxDynamicLights;
-  CVector3f x2c0_lastActorPos;
-  float x2cc_actorPositionDeltaUpdateThreshold;
-  float x2d0_shadowDynamicRangeThreshold;
-  float x2d4_worldLightingLevel;
-  int x2d8_brightLightIdx;
-  uint x2dc_brightLightLag;
+  rstl::reserved_vector< CLight, 4 > mAreaLights;
+  rstl::reserved_vector< CLight, 4 > mDynamicLights;
+  CVector3f mAmbientColor;
+  TAreaId mAid;
+  bool mDirty : 1;
+  bool mCastShadows : 1;
+  bool mHasAreaLights : 1;
+  bool mFindShadowLight : 1;
+  bool mInArea : 1;
+  bool mAmbienceGenerated : 1;
+  bool mLayer2 : 1;
+  bool mDisableWorldLights : 1;
+  bool mInBrightLight : 1;
+  bool mUseBrightLightLag : 1;
+  bool mAmbientOnly : 1;
+  bool mFindNearestDynamicLights;
+  int mShadowLightArrIdx;
+  int mShadowLightIdx;
+  uint mLastUpdateFrame;
+  uint mAreaUpdateFramePeriod;
+  CVector3f mLightingPositionOffset;
+  int mMaxAreaLights;
+  int mMaxDynamicLights;
+  CVector3f mLastActorPos;
+  float mActorPositionDeltaUpdateThreshold;
+  float mShadowDynamicRangeThreshold;
+  float mWorldLightingLevel;
+  int mBrightLightIdx;
+  uint mBrightLightLag;
 
   int prime2addition; // TODO: figure out where this is
 };

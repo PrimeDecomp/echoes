@@ -14,9 +14,9 @@ public:
   CObjectReference(IObjectStore& store, const rstl::auto_ptr< IObj >& obj, const SObjectTag& tag,
                    CVParamTransfer xfer);
 
-  bool IsLoaded() const { return x18_object != nullptr; }
+  bool IsLoaded() const { return mObject != nullptr; }
 
-  void AddReference() { x0_refCount++; }
+  void AddReference() { mRefCount++; }
   int RemoveReference();
   void Lock();
   void Unlock();
@@ -24,16 +24,16 @@ public:
   void Unload();
   void CancelLoad();
   bool IsLoading() const;
-  const SObjectTag& GetTag() const { return xc_objTag; }
+  const SObjectTag& GetTag() const { return mObjTag; }
 
 private:
-  int x0_refCount;
-  int x4_lockCount;
-  int x8_loading;
-  SObjectTag xc_objTag;
-  IObjectStore* x14_objectStore;
-  IObj* x18_object;
-  CVParamTransfer x1c_params;
+  int mRefCount;
+  int mLockCount;
+  int mLoading;
+  SObjectTag mObjTag;
+  IObjectStore* mObjectStore;
+  IObj* mObject;
+  CVParamTransfer mParams;
 };
 CHECK_SIZEOF(CObjectReference, 0x24)
 #endif // _COBJECTREFERENCE

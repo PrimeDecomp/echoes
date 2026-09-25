@@ -9,16 +9,16 @@ class CIntegerTimeAndRemainder {
 public:
   CIntegerTimeAndRemainder(const CCharAnimTime& time, const CCharAnimTime& interval);
 
-  const float& RealTime() const { return x0_realTime; }
+  const float& RealTime() const { return mRealTime; }
 
-  const uint& IntegerTime() const { return x4_integerTime; }
+  const uint& IntegerTime() const { return mIntegerTime; }
 
-  const float& Remainder() const { return x8_remainder; }
+  const float& Remainder() const { return mRemainder; }
 
 private:
-  float x0_realTime;
-  uint x4_integerTime;
-  float x8_remainder;
+  float mRealTime;
+  uint mIntegerTime;
+  float mRemainder;
 };
 CHECK_SIZEOF(CIntegerTimeAndRemainder, 0xc)
 
@@ -26,11 +26,11 @@ class CTimeRemainderAndFraction : public CIntegerTimeAndRemainder {
 public:
   CTimeRemainderAndFraction(const CCharAnimTime& time, const CCharAnimTime& interval);
 
-  const float& FinestSample() const { return x10_finestSample; }
+  const float& FinestSample() const { return mFinestSample; }
 
 private:
-  float xc_fraction;
-  float x10_finestSample;
+  float mFraction;
+  float mFinestSample;
 };
 CHECK_SIZEOF(CTimeRemainderAndFraction, 0x14)
 

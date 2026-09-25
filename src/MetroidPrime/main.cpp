@@ -49,9 +49,9 @@ static uchar sMainSpace[sizeof(CMain)];
 
 CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
 : osContext(context)
-, x4_unk1(unk1)
+, mUnk1(unk1)
 , memorySys(memorySys)
-, xc_unk2(unk2)
+, mUnk2(unk2)
 // , xe8_(0.0)
 // , x118_(0.f)
 // , x11c_(0.f)
@@ -68,10 +68,10 @@ CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
 , mfGameBuilt(false)
 , screenFading(false)
 , x90_27_(false)
-, x90_28_manageCard(false)
+, mManageCard(false)
 , x90_29_(false)
 , x90_30_(false)
-, x90_31_cardBusy(false)
+, mCardBusy(false)
 {
   gpMain = this;
 }

@@ -11,12 +11,12 @@ class CPrimitive {
 public:
   CPrimitive(CInputStream& in);
   void PutTo(COutputStream& out) const;
-  CAssetId GetAnimResId() const { return x0_animId; }
+  CAssetId GetAnimResId() const { return mAnimId; }
 
 private:
-  CAssetId x0_animId;
-  int x4_animIdx;
-  rstl::string x8_animName;
+  CAssetId mAnimId;
+  int mAnimIdx;
+  rstl::string mAnimName;
 };
 
 #endif // _CPRIMITIVE

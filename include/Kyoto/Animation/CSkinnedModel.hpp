@@ -17,19 +17,19 @@ public:
 
   static void ClearPointGeneratorFunc();
 
-  TLockedToken< CModel >& Model() { return x4_model; }
-  const TLockedToken< CModel >& GetModel() const { return x4_model; }
+  TLockedToken< CModel >& Model() { return mModel; }
+  const TLockedToken< CModel >& GetModel() const { return mModel; }
 
   static void SetPointGeneratorFunc(void*, void (*)(void*, const CVector3f*, const CVector3f*, int));
 
 private:
-  TLockedToken< CModel > x4_model;
-  TLockedToken< CSkinRules > x10_skinRules;
-  TLockedToken< CCharLayoutInfo > x1c_layoutInfo;
-  rstl::auto_ptr< float[] > x24_vertWorkspace;
-  rstl::auto_ptr< float[] > x2c_normalWorkspace;
-  bool x34_owned;
-  bool x35_disableWorkspaces;
+  TLockedToken< CModel > mModel;
+  TLockedToken< CSkinRules > mSkinRules;
+  TLockedToken< CCharLayoutInfo > mLayoutInfo;
+  rstl::auto_ptr< float[] > mVertWorkspace;
+  rstl::auto_ptr< float[] > mNormalWorkspace;
+  bool mOwned;
+  bool mDisableWorkspaces;
 };
 
 #endif // _CSKINNEDMODEL

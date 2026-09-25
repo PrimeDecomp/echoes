@@ -14,69 +14,69 @@
 
 CPakFile::SResInfo::SResInfo(uint id, uint fourCC, uint offset, uint size, uint flags,
                             uint groupedSize)
-: x0_id(id) {
+: mId(id) {
   const uint typeIdx = CFactoryMgr::FourCCToTypeIdx(fourCC);
-  x4_data[0] = static_cast< uchar >(typeIdx | (flags != 0 ? 0x80 : 0));
-  x4_data[1] = static_cast< uchar >(offset >> 5);
-  x4_data[2] = static_cast< uchar >(offset >> 13);
-  x4_data[3] = static_cast< uchar >((offset >> 21) | ((size << 2) & 0x80));
-  x4_data[4] = static_cast< uchar >(size >> 6);
-  x4_data[5] = static_cast< uchar >(size >> 14);
-  x4_data[6] = static_cast< uchar >(groupedSize >> 5);
+  mData[0] = static_cast< uchar >(typeIdx | (flags != 0 ? 0x80 : 0));
+  mData[1] = static_cast< uchar >(offset >> 5);
+  mData[2] = static_cast< uchar >(offset >> 13);
+  mData[3] = static_cast< uchar >((offset >> 21) | ((size << 2) & 0x80));
+  mData[4] = static_cast< uchar >(size >> 6);
+  mData[5] = static_cast< uchar >(size >> 14);
+  mData[6] = static_cast< uchar >(groupedSize >> 5);
 }
 
-uint CPakFile::SResInfo::GetType() const { return CFactoryMgr::TypeIdxToFourCC(x4_data[0] & 0x7f); }
+uint CPakFile::SResInfo::GetType() const { return CFactoryMgr::TypeIdxToFourCC(mData[0] & 0x7f); }
 
 uint CPakFile::SResInfo::GetOffset() const {
-  return ((x4_data[1] | (x4_data[2] << 8) | (x4_data[3] << 16)) & 0x7fffff) << 5;
+  return ((mData[1] | (mData[2] << 8) | (mData[3] << 16)) & 0x7fffff) << 5;
 }
 
 uint CPakFile::SResInfo::GetSize() const {
-  return ((x4_data[3] >> 7) | (x4_data[4] << 1) | (x4_data[5] << 9)) << 5;
+  return ((mData[3] >> 7) | (mData[4] << 1) | (mData[5] << 9)) << 5;
 }
 
-bool CPakFile::SResInfo::IsCompressed() const { return (x4_data[0] & ~0x7f) != 0; }
+bool CPakFile::SResInfo::IsCompressed() const { return (mData[0] & ~0x7f) != 0; }
 
-void CPakFile::SResInfo::SetGroupedSize(uint size) { x4_data[6] = static_cast< uchar >(size >> 5); }
+void CPakFile::SResInfo::SetGroupedSize(uint size) { mData[6] = static_cast< uchar >(size >> 5); }
 
-uint CPakFile::SResInfo::GetGroupedSize() const { return x4_data[6] << 5; }
+uint CPakFile::SResInfo::GetGroupedSize() const { return mData[6] << 5; }
 
 CPakFile::CPakFile(const rstl::string& filename, bool buildDepList, bool worldPak)
-: x0_file(filename.data())
-, x28_24_buildDepList(buildDepList)
-, x28_25_aramFile(x0_file.IsARAMFile())
-, x28_26_worldPak(worldPak)
-, x28_27_stashedInARAM(false)
-, x2c_asyncLoadPhase(kAP_Warmup)
-, x48_resTableOffset(0)
-, x4c_resTableCount(0)
-, x50_fakeStaticSize(0)
-, x54_aramBase(CARAMManager::GetInvalidAlloc())
-, x98_currentSeek(-1) {}
+: mFile(filename.data())
+, mBuildDepList(buildDepList)
+, mAramFile(mFile.IsARAMFile())
+, mWorldPak(worldPak)
+, mStashedInARAM(false)
+, mAsyncLoadPhase(kAP_Warmup)
+, mResTableOffset(0)
+, mResTableCount(0)
+, mFakeStaticSize(0)
+, mAramBase(CARAMManager::GetInvalidAlloc())
+, mCurrentSeek(-1) {}
 
 CPakFile::~CPakFile() {
-  while (x2c_asyncLoadPhase != kAP_Loaded) {
+  while (mAsyncLoadPhase != kAP_Loaded) {
     AsyncIdle();
   }
-  CMemory::OffsetFakeStatics(-x50_fakeStaticSize);
-  CARAMManager::Free(x54_aramBase);
+  CMemory::OffsetFakeStatics(-mFakeStaticSize);
+  CARAMManager::Free(mAramBase);
 }
 
 uint CPakFile::GetFakeStaticSize() const {
-  return x4c_resTableCount * sizeof(SResInfo) + x68_depList.size() * sizeof(CAssetId) +
-         x78_resList.size() * sizeof(SResInfo) + x88_bucketOffsets.size() * sizeof(uint);
+  return mResTableCount * sizeof(SResInfo) + mDepList.size() * sizeof(CAssetId) +
+         mResList.size() * sizeof(SResInfo) + mBucketOffsets.size() * sizeof(uint);
 }
 
 void CPakFile::UpdateFakeStaticSize() {
   const int newSize = GetFakeStaticSize();
-  CMemory::OffsetFakeStatics(newSize - x50_fakeStaticSize);
-  x50_fakeStaticSize = newSize;
+  CMemory::OffsetFakeStatics(newSize - mFakeStaticSize);
+  mFakeStaticSize = newSize;
 }
 
 void CPakFile::AsyncIdle() {
-  if (x2c_asyncLoadPhase != kAP_Loaded && x0_file.IsARAMFileLoaded() &&
-      (x30_dvdReq.null() || x30_dvdReq->IsComplete())) {
-    switch (x2c_asyncLoadPhase) {
+  if (mAsyncLoadPhase != kAP_Loaded && mFile.IsARAMFileLoaded() &&
+      (mDvdReq.null() || mDvdReq->IsComplete())) {
+    switch (mAsyncLoadPhase) {
     case kAP_Warmup:
       Warmup();
       break;
@@ -93,93 +93,93 @@ void CPakFile::AsyncIdle() {
 }
 
 void CPakFile::Warmup() {
-  const int length = rstl::min_val< int >(x0_file.Length(), 8192);
-  x38_headerData.resize(length);
-  x30_dvdReq = rstl::auto_ptr< CDvdRequest >(x0_file.SyncRead(x38_headerData.data(), length));
-  x2c_asyncLoadPhase = kAP_InitialHeaderLoad;
+  const int length = rstl::min_val< int >(mFile.Length(), 8192);
+  mHeaderData.resize(length);
+  mDvdReq = rstl::auto_ptr< CDvdRequest >(mFile.SyncRead(mHeaderData.data(), length));
+  mAsyncLoadPhase = kAP_InitialHeaderLoad;
 }
 
 void CPakFile::InitialHeaderLoad() {
-  CMemoryInStream in(x38_headerData.data(), x38_headerData.size());
-  x30_dvdReq = rstl::auto_ptr< CDvdRequest >();
+  CMemoryInStream in(mHeaderData.data(), mHeaderData.size());
+  mDvdReq = rstl::auto_ptr< CDvdRequest >();
 
   const int version = in.ReadInt32();
   if (version != 0x30005) {
     char buf[248];
     sprintf(buf, "%s: Incompatible pak file version -- Current version is %x, you're using %x",
-            x0_file.GetFilename().data(), 0x30005, version);
+            mFile.GetFilename().data(), 0x30005, version);
     return;
   }
 
   in.ReadInt32();
   const int nameCount = in.ReadInt32();
-  x58_nameList.reserve(nameCount);
+  mNameList.reserve(nameCount);
   for (int i = 0; i < nameCount; ++i) {
     const FourCC type = in.ReadInt32();
     const CAssetId id = in.ReadInt32();
     const rstl::string name = CStringExtras::ReadString(in);
-    x58_nameList.push_back_unsafe(
+    mNameList.push_back_unsafe(
         rstl::pair< rstl::string, SObjectTag >(name, SObjectTag(type, id)));
   }
 
-  x4c_resTableCount = in.ReadInt32();
-  x48_resTableOffset = in.GetReadPosition();
-  x2c_asyncLoadPhase = kAP_DataLoad;
+  mResTableCount = in.ReadInt32();
+  mResTableOffset = in.GetReadPosition();
+  mAsyncLoadPhase = kAP_DataLoad;
 
-  const int oldSize = x38_headerData.size();
-  const uint resourceBytes = x4c_resTableCount * 20;
-  const int newSize = (resourceBytes + x48_resTableOffset + 31) & ~31;
+  const int oldSize = mHeaderData.size();
+  const uint resourceBytes = mResTableCount * 20;
+  const int newSize = (resourceBytes + mResTableOffset + 31) & ~31;
   if (newSize > oldSize) {
-    x38_headerData.resize(newSize);
-    x30_dvdReq = rstl::auto_ptr< CDvdRequest >(x0_file.AsyncSeekRead(
-        x38_headerData.data() + oldSize, x38_headerData.size() - oldSize, kSO_Set, oldSize));
+    mHeaderData.resize(newSize);
+    mDvdReq = rstl::auto_ptr< CDvdRequest >(mFile.AsyncSeekRead(
+        mHeaderData.data() + oldSize, mHeaderData.size() - oldSize, kSO_Set, oldSize));
   } else {
     DataLoad();
   }
 }
 
 void CPakFile::DataLoad() {
-  x30_dvdReq = rstl::auto_ptr< CDvdRequest >();
-  CMemoryInStream in(&x38_headerData[x48_resTableOffset],
-                     x38_headerData.size() - x48_resTableOffset);
+  mDvdReq = rstl::auto_ptr< CDvdRequest >();
+  CMemoryInStream in(&mHeaderData[mResTableOffset],
+                     mHeaderData.size() - mResTableOffset);
   LoadResourceTable(in);
-  x2c_asyncLoadPhase = kAP_Loaded;
+  mAsyncLoadPhase = kAP_Loaded;
 
-  if (x28_26_worldPak) {
-    const uint size = (x4c_resTableCount * sizeof(SResInfo) + 31) & ~31;
-    x54_aramBase = CARAMManager::Alloc(size);
-    const uint handle = CARAMManager::DMAToARAM(x78_resList.data(),
-                                                 const_cast< void* >(x54_aramBase), size,
+  if (mWorldPak) {
+    const uint size = (mResTableCount * sizeof(SResInfo) + 31) & ~31;
+    mAramBase = CARAMManager::Alloc(size);
+    const uint handle = CARAMManager::DMAToARAM(mResList.data(),
+                                                 const_cast< void* >(mAramBase), size,
                                                  CARAMManager::kDMAPrio_One);
     CARAMManager::WaitForDMACompletion(handle);
   }
 
-  x38_headerData = rstl::vector< uchar >();
+  mHeaderData = rstl::vector< uchar >();
   UpdateFakeStaticSize();
 }
 
 void CPakFile::LoadResourceTable(CMemoryInStream& in) {
   rstl::vector< SResInfo > sortedResources;
-  sortedResources.reserve(x4c_resTableCount);
-  if (x28_24_buildDepList)
-    x68_depList.reserve(x4c_resTableCount);
+  sortedResources.reserve(mResTableCount);
+  if (mBuildDepList)
+    mDepList.reserve(mResTableCount);
 
-  for (int i = 0; i < static_cast< int >(x4c_resTableCount); ++i) {
+  for (int i = 0; i < static_cast< int >(mResTableCount); ++i) {
     const uint flags = in.ReadInt32();
     const uint type = in.ReadInt32();
     const uint id = in.ReadInt32();
     const uint size = in.ReadInt32();
     const uint offset = in.ReadInt32();
     sortedResources.push_back_unsafe(SResInfo(id, type, offset, size, flags, 0));
-    if (x28_24_buildDepList)
-      x68_depList.push_back_unsafe(id);
+    if (mBuildDepList)
+      mDepList.push_back_unsafe(id);
   }
 
-  for (int i = 0; i < static_cast< int >(x4c_resTableCount); ++i) {
+  for (int i = 0; i < static_cast< int >(mResTableCount); ++i) {
     SResInfo& info = sortedResources[i];
     if (info.GetSize() <= 8192) {
       uint groupedSize = 0;
-      for (int j = i + 1; j < static_cast< int >(x4c_resTableCount); ++j) {
+      for (int j = i + 1; j < static_cast< int >(mResTableCount); ++j) {
         const uint nextSize = sortedResources[j].GetSize();
         if (groupedSize + nextSize >= 8192)
           break;
@@ -195,10 +195,10 @@ void CPakFile::LoadResourceTable(CMemoryInStream& in) {
 }
 
 const SObjectTag* CPakFile::GetResIdByName(const char* name) const {
-  if (!x28_27_stashedInARAM) {
+  if (!mStashedInARAM) {
     for (rstl::vector< rstl::pair< rstl::string, SObjectTag > >::const_iterator it =
-             x58_nameList.begin();
-         it != x58_nameList.end(); ++it) {
+             mNameList.begin();
+         it != mNameList.end(); ++it) {
       const int cmp = CStringExtras::CompareCaseInsensitive(it->first, rstl::string_l(name));
       if (cmp == 0)
         return &it->second;
@@ -210,13 +210,13 @@ const SObjectTag* CPakFile::GetResIdByName(const char* name) const {
 const CPakFile::SResInfo* CPakFile::GetResInfo(uint id) const {
   if (!IsCompletelyLoaded())
     return nullptr;
-  if (x28_27_stashedInARAM)
+  if (mStashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
   rstl::vector< SResInfo >::const_iterator first =
-      x78_resList.begin() + x88_bucketOffsets[bucket];
+      mResList.begin() + mBucketOffsets[bucket];
   rstl::vector< SResInfo >::const_iterator last =
-      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
+      mResList.begin() + mBucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
   rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
@@ -226,13 +226,13 @@ const CPakFile::SResInfo* CPakFile::GetResInfo(uint id) const {
 }
 
 const CPakFile::SResInfo* CPakFile::GetResInfoForLoadDirectionless(uint id) {
-  if (x28_27_stashedInARAM)
+  if (mStashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
   rstl::vector< SResInfo >::const_iterator first =
-      x78_resList.begin() + x88_bucketOffsets[bucket];
+      mResList.begin() + mBucketOffsets[bucket];
   rstl::vector< SResInfo >::const_iterator last =
-      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
+      mResList.begin() + mBucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
   rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
@@ -240,30 +240,30 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadDirectionless(uint id) {
     return nullptr;
 
   const SResInfo* best = &*it;
-  int bestDelta = CMath::AbsI(static_cast< int >(it->GetOffset() - x98_currentSeek));
+  int bestDelta = CMath::AbsI(static_cast< int >(it->GetOffset() - mCurrentSeek));
   ++it;
   while (it != last) {
     if (it->GetId() != id)
       break;
-    const int delta = CMath::AbsI(static_cast< int >(it->GetOffset() - x98_currentSeek));
+    const int delta = CMath::AbsI(static_cast< int >(it->GetOffset() - mCurrentSeek));
     if (delta < bestDelta) {
       best = &*it;
       bestDelta = delta;
     }
     ++it;
   }
-  x98_currentSeek = best->GetOffset() + best->GetSize();
+  mCurrentSeek = best->GetOffset() + best->GetSize();
   return best;
 }
 
 const CPakFile::SResInfo* CPakFile::GetResInfoForLoadPreferForward(uint id) {
-  if (x28_27_stashedInARAM)
+  if (mStashedInARAM)
     return nullptr;
   const uint bucket = id & 0xff;
   rstl::vector< SResInfo >::const_iterator first =
-      x78_resList.begin() + x88_bucketOffsets[bucket];
+      mResList.begin() + mBucketOffsets[bucket];
   rstl::vector< SResInfo >::const_iterator last =
-      x78_resList.begin() + x88_bucketOffsets[bucket + 1];
+      mResList.begin() + mBucketOffsets[bucket + 1];
   static rstl::less< SResInfo > compare;
   rstl::vector< SResInfo >::const_iterator it =
       rstl::lower_bound(first, last, SResInfo(id, 'TXTR', 0, 0, 0, 0), compare);
@@ -271,12 +271,12 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadPreferForward(uint id) {
     return nullptr;
 
   const SResInfo* best = &*it;
-  int bestDelta = x98_currentSeek - static_cast< int >(it->GetOffset());
+  int bestDelta = mCurrentSeek - static_cast< int >(it->GetOffset());
   ++it;
   while (it != last) {
     if (it->GetId() != id)
       break;
-    const int delta = x98_currentSeek - static_cast< int >(it->GetOffset());
+    const int delta = mCurrentSeek - static_cast< int >(it->GetOffset());
     if ((bestDelta < 0 && (delta > 0 || delta > bestDelta)) ||
         (bestDelta >= 0 && delta > 0 && delta < bestDelta)) {
       best = &*it;
@@ -284,7 +284,7 @@ const CPakFile::SResInfo* CPakFile::GetResInfoForLoadPreferForward(uint id) {
     }
     ++it;
   }
-  x98_currentSeek = best->GetOffset() + best->GetSize();
+  mCurrentSeek = best->GetOffset() + best->GetSize();
   return best;
 }
 
@@ -292,54 +292,54 @@ void CPakFile::RebuildResourceLists(const rstl::vector< SResInfo >& sortedResour
   rstl::reserved_vector< uint, 256 > bucketCounts(0);
 
   const SResInfo emptyInfo(0, 'TXTR', 0, 0, 0, 0);
-  x78_resList.clear();
-  x78_resList.resize(x4c_resTableCount, emptyInfo);
-  x88_bucketOffsets.clear();
-  x88_bucketOffsets.reserve(257);
+  mResList.clear();
+  mResList.resize(mResTableCount, emptyInfo);
+  mBucketOffsets.clear();
+  mBucketOffsets.reserve(257);
   for (rstl::vector< SResInfo >::const_iterator it = sortedResources.begin();
        it != sortedResources.end(); ++it)
     ++bucketCounts[it->GetId() & 0xff];
-  x88_bucketOffsets.push_back_unsafe(0);
+  mBucketOffsets.push_back_unsafe(0);
   uint offset = 0;
   for (uint i = 0; i < 256; ++i) {
     offset += bucketCounts[i];
-    x88_bucketOffsets.push_back_unsafe(offset);
+    mBucketOffsets.push_back_unsafe(offset);
     bucketCounts[i] = 0;
   }
 
   for (int i = 0; i < sortedResources.size(); ++i) {
     const SResInfo& info = sortedResources[i];
     const uint bucket = info.GetId() & 0xff;
-    x78_resList[x88_bucketOffsets[bucket] + bucketCounts[bucket]] = info;
+    mResList[mBucketOffsets[bucket] + bucketCounts[bucket]] = info;
     ++bucketCounts[bucket];
   }
 }
 
 void CPakFile::EnsureWorldPakReady() {
-  if (x28_26_worldPak && x28_27_stashedInARAM) {
-    rstl::vector< SResInfo > resources(x4c_resTableCount);
-    const uint size = (x4c_resTableCount * sizeof(SResInfo) + 31) & ~31;
+  if (mWorldPak && mStashedInARAM) {
+    rstl::vector< SResInfo > resources(mResTableCount);
+    const uint size = (mResTableCount * sizeof(SResInfo) + 31) & ~31;
     CARAMManager::WaitForDMACompletion(
-        CARAMManager::DMAToMRAM(const_cast< void* >(x54_aramBase), resources.data(), size,
+        CARAMManager::DMAToMRAM(const_cast< void* >(mAramBase), resources.data(), size,
                                 CARAMManager::kDMAPrio_One));
     RebuildResourceLists(resources);
-    if (x28_24_buildDepList) {
-      x68_depList.reserve(x4c_resTableCount);
+    if (mBuildDepList) {
+      mDepList.reserve(mResTableCount);
       const SResInfo* info = resources.data();
-      for (int i = 0; i < x4c_resTableCount; ++i, ++info)
-        x68_depList.push_back_unsafe(info->GetId());
+      for (int i = 0; i < mResTableCount; ++i, ++info)
+        mDepList.push_back_unsafe(info->GetId());
     }
-    x28_27_stashedInARAM = false;
+    mStashedInARAM = false;
     UpdateFakeStaticSize();
   }
 }
 
 void CPakFile::sub_80323554() {
-  if (x28_26_worldPak) {
-    x28_27_stashedInARAM = true;
-    x68_depList = rstl::vector< CAssetId >();
-    x78_resList = rstl::vector< SResInfo >();
-    x88_bucketOffsets = rstl::vector< uint >();
+  if (mWorldPak) {
+    mStashedInARAM = true;
+    mDepList = rstl::vector< CAssetId >();
+    mResList = rstl::vector< SResInfo >();
+    mBucketOffsets = rstl::vector< uint >();
     UpdateFakeStaticSize();
   }
 }

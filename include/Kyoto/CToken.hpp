@@ -19,20 +19,20 @@ public:
   CObjOwnerDerivedFromIObjUntyped* GetObj();
   void Lock();
   void Unlock();
-  bool IsLoaded() const { return x0_objRef->IsLoaded(); }
+  bool IsLoaded() const { return mObjRef->IsLoaded(); }
   void RemoveRef();
   CToken& operator=(const CToken&);
-  bool HasReference() const { return x0_objRef != nullptr; }
-  const SObjectTag& GetTag() const { return x0_objRef->GetTag(); }
+  bool HasReference() const { return mObjRef != nullptr; }
+  const SObjectTag& GetTag() const { return mObjRef->GetTag(); }
   FourCC GetReferenceType() { return GetTag().type; }
 
-  bool HasLock() { return x4_lockHeld; }
+  bool HasLock() { return mLockHeld; }
 
-  const CObjectReference* GetRef() const { return x0_objRef; }
+  const CObjectReference* GetRef() const { return mObjRef; }
 
 private:
-  CObjectReference* x0_objRef;
-  bool x4_lockHeld;
+  CObjectReference* mObjRef;
+  bool mLockHeld;
 };
 
 #endif // _CTOKEN

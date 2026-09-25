@@ -7,9 +7,9 @@
 class CStateManager;
 
 class CStaticInterferenceSource {
-  TUniqueId x0_id;
-  float x4_magnitude;
-  float x8_timeLeft;
+  TUniqueId mId;
+  float mMagnitude;
+  float mTimeLeft;
 };
 
 class CStaticInterference {

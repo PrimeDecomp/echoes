@@ -22,10 +22,10 @@ inline TType< T > TGetType(const T&) {
 class CInputStream {
 public:
   struct SBufferAndSize {
-    const void* x0_buffer;
-    unsigned long x4_size;
+    const void* mBuffer;
+    unsigned long mSize;
 
-    SBufferAndSize(const void* buffer, unsigned long size) : x0_buffer(buffer), x4_size(size) {}
+    SBufferAndSize(const void* buffer, unsigned long size) : mBuffer(buffer), mSize(size) {}
   };
 
   CInputStream(const void* ptr, unsigned long len);
@@ -45,30 +45,30 @@ public:
   }
 
   int ReadInt32() {
-    int* result = reinterpret_cast< int* >(x8_ptr);
-    x8_ptr = reinterpret_cast< uchar* >(result + 1);
+    int* result = reinterpret_cast< int* >(mPtr);
+    mPtr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
   u16 ReadUint16() {
-    u16* result = reinterpret_cast< u16* >(x8_ptr);
-    x8_ptr = reinterpret_cast< uchar* >(result + 1);
+    u16* result = reinterpret_cast< u16* >(mPtr);
+    mPtr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
   short ReadInt16() { return static_cast< short >(ReadUint16()); }
   u8 ReadUint8() {
-    u8* result = x8_ptr;
-    x8_ptr = result + 1;
+    u8* result = mPtr;
+    mPtr = result + 1;
     return *result;
   }
   char ReadInt8() { return static_cast< char >(ReadUint8()); }
   bool ReadBool() { return ReadUint8() != 0; }
-  uint GetReadPosition() const { return x8_ptr - x4_buffer; }
+  uint GetReadPosition() const { return mPtr - mBuffer; }
 
 private:
-  uchar* x4_buffer;
-  uchar* x8_ptr;
-  unsigned long xc_length;
-  bool x10_owned;
+  uchar* mBuffer;
+  uchar* mPtr;
+  unsigned long mLength;
+  bool mOwned;
 };
 
 CHECK_SIZEOF(CInputStream, 0x14)

@@ -15,14 +15,14 @@ class CPASAnimState {
 public:
   CPASAnimParm GetAnimParmData(int, unsigned int) const;
 
-  pas::EAnimationState GetStateId() const { return x0_id; }
-  bool HasAnims() const { return static_cast< uint >(x14_anims.size()) != 0; }
+  pas::EAnimationState GetStateId() const { return mId; }
+  bool HasAnims() const { return static_cast< uint >(mAnims.size()) != 0; }
 
 private:
-  pas::EAnimationState x0_id;
-  rstl::vector< CPASParmInfo > x4_parms;
-  rstl::vector< CPASAnimInfo > x14_anims;
-  rstl::vector< int > x24_selectionCache;
+  pas::EAnimationState mId;
+  rstl::vector< CPASParmInfo > mParms;
+  rstl::vector< CPASAnimInfo > mAnims;
+  rstl::vector< int > mSelectionCache;
 };
 CHECK_SIZEOF(CPASAnimState, 0x34)
 

@@ -6,13 +6,13 @@
 
 class CCollisionInfoList {
 public:
-  int GetCount() const { return x0_list.size(); }
-  void Clear() { x0_list.clear(); }
-  const CCollisionInfo& operator[](int index) const { return x0_list[index]; }
-  CCollisionInfo& operator[](int index) { return x0_list[index]; }
+  int GetCount() const { return mList.size(); }
+  void Clear() { mList.clear(); }
+  const CCollisionInfo& operator[](int index) const { return mList[index]; }
+  CCollisionInfo& operator[](int index) { return mList[index]; }
 
 private:
-  rstl::reserved_vector< CCollisionInfo, 32 > x0_list;
+  rstl::reserved_vector< CCollisionInfo, 32 > mList;
 };
 CHECK_SIZEOF(CCollisionInfoList, 0xc04)
 

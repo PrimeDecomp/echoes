@@ -11,12 +11,12 @@
 class CPoseAsTransforms {
 public:
 private:
-  CSegId x0_nextId;
-  CSegId x1_count;
+  CSegId mNextId;
+  CSegId mCount;
   // TODO TSegIdMapVariableSize<CPoseAsTransforms::CElementType>
-  rstl::reserved_vector< rstl::pair< CSegId, CSegId >, 100 > x4_links;
-  rstl::single_ptr< CTransform4f > xd0_transformArr;
-  CSegId xd4_lastInserted;
+  rstl::reserved_vector< rstl::pair< CSegId, CSegId >, 100 > mLinks;
+  rstl::single_ptr< CTransform4f > mTransformArr;
+  CSegId mLastInserted;
 };
 CHECK_SIZEOF(CPoseAsTransforms, 0xd8)
 

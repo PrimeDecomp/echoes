@@ -7,23 +7,23 @@ class CEffectComponent {
 public:
   explicit CEffectComponent(CInputStream& in);
 
-  uint GetComponentNameHash() const { return x0_nameHash; }
-  const SObjectTag& GetParticleTag() const { return x4_tag; }
-  CSegId GetSegmentId() const { return xc_bone; }
-  float GetScale() const { return x10_scale; }
-  CParticleData::EParentedMode GetParentedMode() const { return x14_parentedMode; }
-  uint GetFlags() const { return x18_flags; }
+  uint GetComponentNameHash() const { return mNameHash; }
+  const SObjectTag& GetParticleTag() const { return mTag; }
+  CSegId GetSegmentId() const { return mBone; }
+  float GetScale() const { return mScale; }
+  CParticleData::EParentedMode GetParentedMode() const { return mParentedMode; }
+  uint GetFlags() const { return mFlags; }
 
 private:
   SObjectTag GetSObjectTagFromStream(CInputStream& in);
 
   // Echoes keeps a CPOINode string hash and segment ID instead of Prime's names.
-  uint x0_nameHash;
-  SObjectTag x4_tag;
-  CSegId xc_bone;
-  float x10_scale;
-  CParticleData::EParentedMode x14_parentedMode;
-  uint x18_flags;
+  uint mNameHash;
+  SObjectTag mTag;
+  CSegId mBone;
+  float mScale;
+  CParticleData::EParentedMode mParentedMode;
+  uint mFlags;
 };
 CHECK_SIZEOF(CEffectComponent, 0x1c)
 

@@ -28,7 +28,7 @@ class CCubeModel;
 
 class CCubeMaterial {
 public:
-  explicit CCubeMaterial(const void* data) : x0_data(data) {}
+  explicit CCubeMaterial(const void* data) : mData(data) {}
   static void ResetCachedMaterials();
   static void EnsureViewDepStateCached(const CCubeSurface* surface);
   static void EnsureTevsDirect();
@@ -42,7 +42,7 @@ public:
   static uint GetExtraTexCoord();
   static uint GetExtraPostTexMtx();
 
-  const uchar* GetData() const { return static_cast< const uchar* >(x0_data); }
+  const uchar* GetData() const { return static_cast< const uchar* >(mData); }
   uint GetFlags() const { return CBasics::SwapBytes(*reinterpret_cast< const uint* >(GetData())); }
   bool IsFlagSet(const EStateFlags flag) const { return (GetFlags() & flag) != 0; }
   void SetCurrent(const CModelFlags& flags, const CCubeSurface& surface,
@@ -61,7 +61,7 @@ private:
   static const CCubeModel* sRenderingModel;
   static CVector3f sViewingFrom;
 
-  const void* x0_data;
+  const void* mData;
 };
 
 #endif // _CCUBEMATERIAL

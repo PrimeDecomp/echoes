@@ -9,8 +9,8 @@
 #include "rstl/string.hpp"
 
 struct SAdvancementDeltas {
-  CVector3f x0_posDelta;
-  CQuaternion xc_rotDelta;
+  CVector3f mPosDelta;
+  CQuaternion mRotDelta;
 
   static SAdvancementDeltas Interpolate(const SAdvancementDeltas& a, const SAdvancementDeltas& b, float oldWeight,
                                         float newWeight);
@@ -18,41 +18,41 @@ struct SAdvancementDeltas {
 };
 
 struct SAdvancementResults {
-  CCharAnimTime x0_remTime;
-  SAdvancementDeltas x8_deltas;
+  CCharAnimTime mRemTime;
+  SAdvancementDeltas mDeltas;
 };
 
 
 class CSteadyStateAnimInfo {
-  CCharAnimTime x0_duration;
-  CVector3f x8_offset;
-  bool x14_looping;
+  CCharAnimTime mDuration;
+  CVector3f mOffset;
+  bool mLooping;
 
 public:
   CSteadyStateAnimInfo(bool looping, const CCharAnimTime& duration, const CVector3f& offset)
-  : x0_duration(duration), x8_offset(offset), x14_looping(looping) {}
+  : mDuration(duration), mOffset(offset), mLooping(looping) {}
 
-  const CCharAnimTime& GetDuration() const { return x0_duration; }
-  const CVector3f& GetOffset() const { return x8_offset; }
-  bool IsLooping() const { return x14_looping; }
+  const CCharAnimTime& GetDuration() const { return mDuration; }
+  const CVector3f& GetOffset() const { return mOffset; }
+  bool IsLooping() const { return mLooping; }
 };
 
 struct CAnimTreeEffectiveContribution {
-  float x0_contributionWeight;
-  rstl::string x4_name;
-  CSteadyStateAnimInfo x14_ssInfo;
-  CCharAnimTime x2c_remTime;
-  u32 x34_dbIdx;
+  float mContributionWeight;
+  rstl::string mName;
+  CSteadyStateAnimInfo mSsInfo;
+  CCharAnimTime mRemTime;
+  u32 mDbIdx;
 
 public:
   CAnimTreeEffectiveContribution(float cweight, const rstl::string& name, const CSteadyStateAnimInfo& ssInfo,
                                  const CCharAnimTime& remTime, u32 dbIdx)
-  : x0_contributionWeight(cweight), x4_name(name), x14_ssInfo(ssInfo), x2c_remTime(remTime), x34_dbIdx(dbIdx) {}
-  float GetContributionWeight() const { return x0_contributionWeight; }
-  const rstl::string& GetPrimitiveName() const { return x4_name; }
-  const CSteadyStateAnimInfo& GetSteadyStateAnimInfo() const { return x14_ssInfo; }
-  const CCharAnimTime& GetTimeRemaining() const { return x2c_remTime; }
-  u32 GetAnimDatabaseIndex() const { return x34_dbIdx; }
+  : mContributionWeight(cweight), mName(name), mSsInfo(ssInfo), mRemTime(remTime), mDbIdx(dbIdx) {}
+  float GetContributionWeight() const { return mContributionWeight; }
+  const rstl::string& GetPrimitiveName() const { return mName; }
+  const CSteadyStateAnimInfo& GetSteadyStateAnimInfo() const { return mSsInfo; }
+  const CCharAnimTime& GetTimeRemaining() const { return mRemTime; }
+  u32 GetAnimDatabaseIndex() const { return mDbIdx; }
 };
 
 class CSegId;

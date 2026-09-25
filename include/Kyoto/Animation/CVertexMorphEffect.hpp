@@ -13,14 +13,14 @@ public:
   ~CVertexMorphEffect() {}
 
 private:
-  CUnitVector3f x0_dir;
-  CVector3f xc_pos;
-  float x18_duration;
-  float x1c_elapsed;
-  float x20_diagExtent;
-  CRandom16& x24_random;
-  rstl::vector< uint > x28_indices;
-  rstl::vector< float > x38_floats;
+  CUnitVector3f mDir;
+  CVector3f mPos;
+  float mDuration;
+  float mElapsed;
+  float mDiagExtent;
+  CRandom16& mRandom;
+  rstl::vector< uint > mIndices;
+  rstl::vector< float > mFloats;
 };
 
 #endif // _CVERTEXMORPHEFFECT

@@ -8,12 +8,12 @@
 
 class CRumbleGenerator {
 private:
-  CRumbleVoice x0_voice;
-  float x30_periodTime;
-  float x34_onTime;
-  EMotorState x38_command;
-  EIOPort x3c_inputIndex;
-  bool x40_24_disabled : 1;
+  CRumbleVoice mVoice;
+  float mPeriodTime;
+  float mOnTime;
+  EMotorState mCommand;
+  EIOPort mInputIndex;
+  bool mDisabled : 1;
 
 public:
   CRumbleGenerator(EIOPort inputIndex);

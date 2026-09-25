@@ -13,9 +13,9 @@ class CIOWin;
 class CIOWinManager {
 public:
   struct IOWinPQNode {
-    rstl::rc_ptr<CIOWin> x0_iowin;
-    int x4_prio;
-    IOWinPQNode* x8_next;
+    rstl::rc_ptr<CIOWin> mIowin;
+    int mPrio;
+    IOWinPQNode* mNext;
     
     IOWinPQNode(rstl::ncrc_ptr<CIOWin> iowin, int prio, IOWinPQNode* next);
     
@@ -36,12 +36,12 @@ public:
   bool DistributeOneMessage(const CArchitectureMessage& msg, CArchitectureQueue& queue);
   bool OnIOWinMessage(const CArchitectureMessage& msg);
 
-  inline bool IsEmpty() const { return x4_pumpRoot == nullptr && x0_drawRoot == nullptr; }
+  inline bool IsEmpty() const { return mPumpRoot == nullptr && mDrawRoot == nullptr; }
 
 private:
-  IOWinPQNode* x0_drawRoot;
-  IOWinPQNode* x4_pumpRoot;
-  CArchitectureQueue x8_localGatherQueue;
+  IOWinPQNode* mDrawRoot;
+  IOWinPQNode* mPumpRoot;
+  CArchitectureQueue mLocalGatherQueue;
 };
 CHECK_SIZEOF(CIOWinManager, 0x20)
 

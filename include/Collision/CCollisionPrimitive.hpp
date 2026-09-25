@@ -70,7 +70,7 @@ private:
   static MovingComparisonFunc sNullMovingCollider;
 
   uint x4_;
-  CMaterialList x8_material;
+  CMaterialList mMaterial;
 };
 CHECK_SIZEOF(CCollisionPrimitive, 0x10)
 

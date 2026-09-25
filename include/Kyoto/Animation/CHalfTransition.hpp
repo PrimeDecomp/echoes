@@ -10,8 +10,8 @@ public:
   explicit CHalfTransition(CInputStream& in);
 
 private:
-  uint x0_id;
-  rstl::rc_ptr<IMetaTrans> x4_trans;
+  uint mId;
+  rstl::rc_ptr<IMetaTrans> mTrans;
 };
 
 #endif // _CHALFTRANSITION

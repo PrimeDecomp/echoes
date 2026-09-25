@@ -18,30 +18,30 @@ public:
 
   CParticleData(int duration, const SObjectTag& tag, CSegId bone, float scale,
                 EParentedMode mode)
-  : x0_duration(duration)
-  , x4_particle(tag)
-  , xc_bone(bone)
-  , x10_scale(scale)
-  , x14_parentMode(mode) {}
+  : mDuration(duration)
+  , mParticle(tag)
+  , mBone(bone)
+  , mScale(scale)
+  , mParentMode(mode) {}
 
   CParticleData(CInputStream& in);
 
 private:
-  int x0_duration;
-  SObjectTag x4_particle;
+  int mDuration;
+  SObjectTag mParticle;
   // Echoes stores a segment ID where Prime stored the bone name.
-  CSegId xc_bone;
-  float x10_scale;
-  EParentedMode x14_parentMode;
+  CSegId mBone;
+  float mScale;
+  EParentedMode mParentMode;
 };
 CHECK_SIZEOF(CParticleData, 0x18)
 
 class CAuxiliaryParticleData {
 private:
-  uint x0_duration;
-  SObjectTag x4_particle;
-  CVector3f xc_translation;
-  float x18_scale;
+  uint mDuration;
+  SObjectTag mParticle;
+  CVector3f mTranslation;
+  float mScale;
 };
 
 #endif // _CPARTICLEDATA

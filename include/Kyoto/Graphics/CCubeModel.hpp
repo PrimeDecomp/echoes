@@ -24,13 +24,13 @@ public:
   void SetUsingPackedLightmaps(bool v) const;
   static bool IsUsingPackedLightmaps() { return sUsingPackedLightmaps; }
 
-  const rstl::vector< TCachedToken< CTexture > >& GetTextures() const { return *x1c_textures; }
-  const CAABox& GetBoundingBox() const { return x20_bounds; }
+  const rstl::vector< TCachedToken< CTexture > >& GetTextures() const { return *mTextures; }
+  const CAABox& GetBoundingBox() const { return mBounds; }
 
 private:
-  uchar x0_instance[0x1c];
-  rstl::vector< TCachedToken< CTexture > >* x1c_textures;
-  CAABox x20_bounds;
+  uchar mInstance[0x1c];
+  rstl::vector< TCachedToken< CTexture > >* mTextures;
+  CAABox mBounds;
 
   static bool sUsingPackedLightmaps;
 };

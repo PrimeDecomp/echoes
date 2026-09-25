@@ -22,7 +22,7 @@ public:
   const rstl::vector< ScanState >& GetScanStates() const { return scanStates; }
 
 private:
-  uchar x0_pad[0x20];
+  uchar mPad[0x20];
   rstl::vector< ScanState > scanStates;
 };
 

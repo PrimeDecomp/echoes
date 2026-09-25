@@ -49,36 +49,36 @@ public:
 
   void PreRender();
   void EnableLooping(bool v) {
-    x220_25_loop = v;
-    x220_24_animating = true;
+    mLoop = v;
+    mAnimating = true;
   }
 
-  const TLockedToken< CSkinnedModel >& GetModelData() const { return xd8_modelData; }
+  const TLockedToken< CSkinnedModel >& GetModelData() const { return mModelData; }
 
-  void SetIsAnimating(bool v) { x220_24_animating = v; }
+  void SetIsAnimating(bool v) { mAnimating = v; }
   void SetParticleEffectState(const rstl::string& name, const bool active, CStateManager& mgr);
 
-  int GetCharacterIndex() const { return x204_charIdx; }
+  int GetCharacterIndex() const { return mCharIdx; }
   float GetAverageVelocity(int idx) const;
 
   const CBoolPOINode* GetBoolPOIList(int& count) const {
-    count = x20c_passedBoolCount;
+    count = mPassedBoolCount;
     return mBoolPOINodes.data();
   }
   const CInt32POINode* GetInt32POIList(int& count) const {
-    count = x210_passedIntCount;
+    count = mPassedIntCount;
     return mInt32POINodes.data();
   }
   const CParticlePOINode* GetParticlePOIList(int& count) const {
-    count = x214_passedParticleCount;
+    count = mPassedParticleCount;
     return mParticlePOINodes.data();
   }
   const CSoundPOINode* GetSoundPOIList(int& count) const {
-    count = x218_passedSoundCount;
+    count = mPassedSoundCount;
     return mSoundPOINodes.data();
   }
-  CParticleDatabase& GetParticleDB() { return x120_particleDB; }
-  const CParticleDatabase& GetParticleDB() const { return x120_particleDB; }
+  CParticleDatabase& GetParticleDB() { return mParticleDB; }
+  const CParticleDatabase& GetParticleDB() const { return mParticleDB; }
   // SetIsAnimating__9CAnimDataFb
   // SetAnimDir__9CAnimDataFQ29CAnimData8EAnimDir
   CAABox GetBoundingBox() const;
@@ -142,8 +142,8 @@ public:
 
   float GetAdditiveAnimationWeight(uint idx);
 
-  short GetCurrentAnimation() const { return x208_currentAnim; }
-  const CCharacterInfo& GetCharacterInfo() const { return xc_charInfo; }
+  short GetCurrentAnimation() const { return mCurrentAnim; }
+  const CCharacterInfo& GetCharacterInfo() const { return mCharInfo; }
   // GetCharLayoutInfo__9CAnimDataCFv
   // GetDeltaRotation__9CAnimDataCFv
   // GetDeltaOffset__9CAnimDataCFv
@@ -165,7 +165,7 @@ public:
   // CacheInt32PoiList__9CAnimDataFRC13CCharAnimTimeiRCQ24rstl25ncrc_ptr<13CAnimTreeNode>
 
   // GetIceModel__9CAnimDataCFv
-  const CPASDatabase& GetPASDatabase() const { return xc_charInfo.GetPASDatabase(); }
+  const CPASDatabase& GetPASDatabase() const { return mCharInfo.GetPASDatabase(); }
   // EnableLooping__9CAnimDataFb
   // GetSkinnedModel__9CAnimDataCFv
   // GetXRayModel__9CAnimDataCFv
@@ -185,44 +185,44 @@ public:
   static void FreeCache();
 
 private:
-  TLockedToken< CCharacterFactory > x0_charFactory;
-  CCharacterInfo xc_charInfo;
-  TLockedToken< CCharLayoutInfo > xcc_layoutData;
-  TLockedToken< CSkinnedModel > xd8_modelData;
-  rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > > xe4_iceModelData;
-  rstl::rc_ptr< CSkinnedModel > xf4_xrayModel;
-  rstl::rc_ptr< CSkinnedModel > xf8_infraModel;
-  rstl::rc_ptr< CAnimSysContext > xfc_animCtx;
-  rstl::rc_ptr< CAnimationManager > x100_animMgr;
-  EAnimDir x104_animDir;
-  CAABox x108_aabb;
-  CParticleDatabase x120_particleDB; // TODO: should be 0x178
-  CAssetId x1d8_selfId;
-  CVector3f x1dc_alignPos;
-  CQuaternion x1e8_alignRot;
-  rstl::rc_ptr< CAnimTreeNode > x1f8_animRoot;
-  rstl::rc_ptr< CTransitionManager > x1fc_transMgr;
-  float x200_speedScale;
-  int x204_charIdx;
-  short x208_currentAnim;
-  short x20a_padding;
-  int x20c_passedBoolCount;
-  int x210_passedIntCount;
-  int x214_passedParticleCount;
-  int x218_passedSoundCount;
-  int x21c_particleLightIdx;
-  uchar x220_24_animating : 1;
-  uchar x220_25_loop : 1;
-  uchar x220_26_aligningPos : 1;
+  TLockedToken< CCharacterFactory > mCharFactory;
+  CCharacterInfo mCharInfo;
+  TLockedToken< CCharLayoutInfo > mLayoutData;
+  TLockedToken< CSkinnedModel > mModelData;
+  rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > > mIceModelData;
+  rstl::rc_ptr< CSkinnedModel > mXrayModel;
+  rstl::rc_ptr< CSkinnedModel > mInfraModel;
+  rstl::rc_ptr< CAnimSysContext > mAnimCtx;
+  rstl::rc_ptr< CAnimationManager > mAnimMgr;
+  EAnimDir mAnimDir;
+  CAABox mAabb;
+  CParticleDatabase mParticleDB; // TODO: should be 0x178
+  CAssetId mSelfId;
+  CVector3f mAlignPos;
+  CQuaternion mAlignRot;
+  rstl::rc_ptr< CAnimTreeNode > mAnimRoot;
+  rstl::rc_ptr< CTransitionManager > mTransMgr;
+  float mSpeedScale;
+  int mCharIdx;
+  short mCurrentAnim;
+  short mPadding;
+  int mPassedBoolCount;
+  int mPassedIntCount;
+  int mPassedParticleCount;
+  int mPassedSoundCount;
+  int mParticleLightIdx;
+  uchar mAnimating : 1;
+  uchar mLoop : 1;
+  uchar mAligningPos : 1;
   uchar x220_27_ : 1;
   uchar x220_28_ : 1;
-  uchar x220_29_animationJustStarted : 1;
-  uchar x220_30_poseBuilt : 1;
-  uchar x220_31_poseCached : 1;
-  CPoseAsTransforms x224_pose;
-  CHierarchyPoseBuilder x2fc_poseBuilder;
-  CAnimPlaybackParms x40c_playbackParms;
-  rstl::reserved_vector< rstl::pair< int, CAdditiveAnimPlayback >, 8 > x434_additiveAnims;
+  uchar mAnimationJustStarted : 1;
+  uchar mPoseBuilt : 1;
+  uchar mPoseCached : 1;
+  CPoseAsTransforms mPose;
+  CHierarchyPoseBuilder mPoseBuilder;
+  CAnimPlaybackParms mPlaybackParms;
+  rstl::reserved_vector< rstl::pair< int, CAdditiveAnimPlayback >, 8 > mAdditiveAnims;
 
   static rstl::reserved_vector< CBoolPOINode, 8 > mBoolPOINodes;
   static rstl::reserved_vector< CInt32POINode, 16 > mInt32POINodes;

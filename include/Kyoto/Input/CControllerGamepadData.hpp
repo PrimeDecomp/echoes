@@ -7,29 +7,29 @@
 
 class CControllerGamepadData {
 public:
-  void SetDeviceIsPresent(bool present) { x0_present = present; }
-  bool DeviceIsPresent() const { return x0_present; }
+  void SetDeviceIsPresent(bool present) { mPresent = present; }
+  bool DeviceIsPresent() const { return mPresent; }
 
-  void SetDeviceJustDisconnected(bool disconnected) { x1_justDisconnected = disconnected; }
-  bool DeviceJustDisconnected() const { return x1_justDisconnected; }
+  void SetDeviceJustDisconnected(bool disconnected) { mJustDisconnected = disconnected; }
+  bool DeviceJustDisconnected() const { return mJustDisconnected; }
 
-  const CControllerAxis& GetAxis(EJoyAxis axis) const { return x4_axes[axis]; }
-  CControllerAxis& GetAxis(EJoyAxis axis) { return x4_axes[axis]; }
+  const CControllerAxis& GetAxis(EJoyAxis axis) const { return mAxes[axis]; }
+  CControllerAxis& GetAxis(EJoyAxis axis) { return mAxes[axis]; }
 
-  const CControllerButton& GetButton(EButton button) const { return x34_buttons[button]; }
-  CControllerButton& GetButton(EButton button) { return x34_buttons[button]; }
+  const CControllerButton& GetButton(EButton button) const { return mButtons[button]; }
+  CControllerButton& GetButton(EButton button) { return mButtons[button]; }
 
   const CControllerAxis& GetAnalogButton(EAnalogButton button) const {
-    return x24_triggers[button];
+    return mTriggers[button];
   }
-  CControllerAxis& GetAnalogButton(EAnalogButton button) { return x24_triggers[button]; }
+  CControllerAxis& GetAnalogButton(EAnalogButton button) { return mTriggers[button]; }
 
 private:
-  bool x0_present;
-  bool x1_justDisconnected;
-  CControllerAxis x4_axes[4];
-  CControllerAxis x24_triggers[2];
-  CControllerButton x34_buttons[12];
+  bool mPresent;
+  bool mJustDisconnected;
+  CControllerAxis mAxes[4];
+  CControllerAxis mTriggers[2];
+  CControllerButton mButtons[12];
 };
 
 #endif // _CCONTROLLERGAMEPADDATA

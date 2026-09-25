@@ -51,22 +51,22 @@ CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
 , m_position(xf.GetTranslation())
 , m_modelData(mData.IsNull() ? nullptr : new CModelData(mData))
 , m_material(MakeActorMaterialList(list, params))
-, x70_materialFilter(
+, mMaterialFilter(
       CMaterialFilter::MakeIncludeExclude(CMaterialList(SolidMaterial), CMaterialList()))
-, x88_sfxId(InvalidSfxId)
-, x90_actorLights(mData.IsNull() ? nullptr : params.GetLighting().MakeActorLights().release())
+, mSfxId(InvalidSfxId)
+, mActorLights(mData.IsNull() ? nullptr : params.GetLighting().MakeActorLights().release())
 , otherBounds(CAABox::MakeMaxInvertedBox())
 , m_renderBounds(CAABox::MakeMaxInvertedBox())
-, xb4_drawFlags(CModelFlags::Normal())
-, xbc_time(0.f)
-, xc0_pitchBend(8192)
-, xc4_fluidId(kInvalidUniqueId)
-, xc6_nextDrawNode(nextDrawNode)
-, xc8_drawnToken(-1)
-, xcc_addedToken(-1)
+, mDrawFlags(CModelFlags::Normal())
+, mTime(0.f)
+, mPitchBend(8192)
+, mFluidId(kInvalidUniqueId)
+, mNextDrawNode(nextDrawNode)
+, mDrawnToken(-1)
+, mAddedToken(-1)
 // , xd0_damageMag(params.GetThermalMag())
-, xd4_maxVol(CAudioSys::kMaxVolume)
-, xd8_nonLoopingSfxHandles(CSfxHandle())
+, mMaxVol(CAudioSys::kMaxVolume)
+, mNonLoopingSfxHandles(CSfxHandle())
 , m_nextNonLoopingSfxHandle(0)
 , m_notInSortedLists(true)
 , m_transformDirty(true)
@@ -106,7 +106,7 @@ CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
   }
   const CAssetId scanId = params.GetScannable().GetScannableObject0();
   if (scanId != kInvalidAssetId) {
-    x98_scanObjectInfo =
+    mScanObjectInfo =
         new TCachedToken< CScannableObjectInfo >(
           gpSimplePool->GetObj(SObjectTag('SCAN', scanId)),
           true
@@ -189,10 +189,10 @@ CAdvancementDeltas CActor::UpdateAnimation(float dt, CStateManager& mgr, bool ad
 }
 
 void CActor::RemoveEmitter() {
-  if (CSfxHandle handle = x8c_loopingSfxHandle) {
+  if (CSfxHandle handle = mLoopingSfxHandle) {
     CSfxManager::RemoveEmitter(handle);
-    x88_sfxId = -1;
-    x8c_loopingSfxHandle = CSfxHandle();
+    mSfxId = -1;
+    mLoopingSfxHandle = CSfxHandle();
   }
 }
 
@@ -405,7 +405,7 @@ void CActor::Render(const CStateManager& mgr) const {
       if (m_globalTimeProvider) {
         RenderInternal(mgr);
       } else {
-        const float timeSince = CGraphics::GetSecondsMod900() - xbc_time;
+        const float timeSince = CGraphics::GetSecondsMod900() - mTime;
         CTimeProvider tp(CMath::FastFmod(timeSince, 900.f));
         RenderInternal(mgr);
       }
@@ -583,7 +583,7 @@ bool CActor::IsModelOpaque(const CStateManager& mgr) const {
     return false;
   } else if (!HasModelData()) {
     return true;
-  } else if (static_cast< char >(xb4_drawFlags.GetTrans()) > 4) {
+  } else if (static_cast< char >(mDrawFlags.GetTrans()) > 4) {
     return false;
   } else {
     CModelData::EWhichModel which = CModelData::GetRenderingModel(mgr);
@@ -592,20 +592,20 @@ bool CActor::IsModelOpaque(const CStateManager& mgr) const {
 }
 
 void CActor::SetCalculateLighting(bool b) {
-  if (b && x90_actorLights.null()) {
-    x90_actorLights = new CActorLights(8, CVector3f::Zero(), 4, 4);
+  if (b && mActorLights.null()) {
+    mActorLights = new CActorLights(8, CVector3f::Zero(), 4, 4);
   }
   m_calculateLighting = b;
 }
 
 void CActor::SetActorLights(rstl::auto_ptr< CActorLights > lights) {
-  x90_actorLights = lights.release();
+  mActorLights = lights.release();
   m_calculateLighting = true;
 }
 
-const CMaterialFilter& CActor::GetMaterialFilter() const { return x70_materialFilter; }
+const CMaterialFilter& CActor::GetMaterialFilter() const { return mMaterialFilter; }
 
-void CActor::SetMaterialFilter(const CMaterialFilter& filter) { x70_materialFilter = filter; }
+void CActor::SetMaterialFilter(const CMaterialFilter& filter) { mMaterialFilter = filter; }
 
 void CActor::SetActive(const bool active) {
   if (m_drawEnabled != active) {
@@ -625,7 +625,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Activate: {
     if (!GetActive()) {
-      xbc_time = CGraphics::GetSecondsMod900();
+      mTime = CGraphics::GetSecondsMod900();
     }
     break;
   }
@@ -644,7 +644,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   }
   case kSM_XCRT: {
-    if (!x98_scanObjectInfo.null()) {
+    if (!mScanObjectInfo.null()) {
       AddMaterial(kMT_Scannable, mgr);
     } else {
       RemoveMaterial(kMT_Scannable, mgr);
@@ -664,8 +664,8 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
       CEntity* entity = mgr.ObjectById(mgr.GetIdForScript(iter->objId));
       CActor* act = TCastToPtr< CActor >(entity);
-      if (act != nullptr && xc6_nextDrawNode == kInvalidUniqueId) {
-        xc6_nextDrawNode = act->GetUniqueId();
+      if (act != nullptr && mNextDrawNode == kInvalidUniqueId) {
+        mNextDrawNode = act->GetUniqueId();
       }
     }
     break;
@@ -695,7 +695,7 @@ void CActor::OnScanStateChange(EScanState state, CStateManager& mgr) {
 }
 
 CScannableObjectInfo* CActor::GetScannableObjectInfo() const {
-  if (x98_scanObjectInfo.null()) {
+  if (mScanObjectInfo.null()) {
     return nullptr;
   }
 
@@ -711,7 +711,7 @@ void CActor::MoveScannableObjectInfoToActor(CActor* actor, CStateManager& mgr) {
     return;
   }
 
-  actor->x98_scanObjectInfo = x98_scanObjectInfo;
+  actor->mScanObjectInfo = mScanObjectInfo;
   actor->AddMaterial(kMT_Scannable, mgr);
   RemoveMaterial(kMT_Scannable, mgr);
 }
@@ -722,21 +722,21 @@ void CActor::SetMuted(bool b) {
 }
 
 void CActor::SetVolume(uchar volume) {
-  if (CSfxHandle handle = x8c_loopingSfxHandle) {
+  if (CSfxHandle handle = mLoopingSfxHandle) {
     CSfxManager::UpdateEmitter(handle, GetTranslation(), CVector3f::Zero(), volume);
   }
-  xd4_maxVol = volume;
+  mMaxVol = volume;
 }
 
 void CActor::SetSoundEventPitchBend(int v) {
   m_enablePitchBend = true;
-  xc0_pitchBend = v;
-  if (x8c_loopingSfxHandle) {
-    CSfxManager::PitchBend(x8c_loopingSfxHandle, v);
+  mPitchBend = v;
+  if (mLoopingSfxHandle) {
+    CSfxManager::PitchBend(mLoopingSfxHandle, v);
   }
 }
 
-CSfxHandle CActor::GetSfxHandle() const { return x8c_loopingSfxHandle; }
+CSfxHandle CActor::GetSfxHandle() const { return mLoopingSfxHandle; }
 
 // void CActor::SetInFluid(bool in, TUniqueId uid) {
 //   if (in) {
@@ -768,9 +768,9 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
 
   // TODO ctor?
   CAudioSys::C3DEmitterParmData parms(maxDist, fallOff, musyxFlags, maxVol, minVol);
-  parms.x0_pos = position;
-  parms.xc_dir = CVector3f::Zero();
-  parms.x24_sfxId = id;
+  parms.mPos = position;
+  parms.mDir = CVector3f::Zero();
+  parms.mSfxId = id;
 
   bool useAcoustics = (flags & 0x80) == 0;
   bool looping = (sfxId & 0x80000000) != 0;
@@ -781,8 +781,8 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
   // }
 
   if (looping) {
-    ushort curId = x88_sfxId;
-    if (!x8c_loopingSfxHandle) {
+    ushort curId = mSfxId;
+    if (!mLoopingSfxHandle) {
       CSfxHandle handle;
       if (nonEmitter) {
         handle = CSfxManager::SfxStart(id, 1.f, 0.f, true, CSfxManager::kMedPriority, true, aid);
@@ -790,23 +790,23 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
         handle = CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, true, aid);
       }
       if (handle) {
-        x88_sfxId = id;
-        x8c_loopingSfxHandle = handle;
+        mSfxId = id;
+        mLoopingSfxHandle = handle;
         if (m_enablePitchBend) {
-          CSfxManager::PitchBend(handle, xc0_pitchBend);
+          CSfxManager::PitchBend(handle, mPitchBend);
         }
       }
     } else if (curId == id) {
-      CSfxManager::UpdateEmitter(x8c_loopingSfxHandle, parms.x0_pos, parms.xc_dir, maxVol);
+      CSfxManager::UpdateEmitter(mLoopingSfxHandle, parms.mPos, parms.mDir, maxVol);
     } else if (flags & 0x4) {
-      CSfxManager::RemoveEmitter(x8c_loopingSfxHandle);
+      CSfxManager::RemoveEmitter(mLoopingSfxHandle);
       CSfxHandle handle =
           CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, true, aid);
       if (handle) {
-        x88_sfxId = id;
-        x8c_loopingSfxHandle = handle;
+        mSfxId = id;
+        mLoopingSfxHandle = handle;
         if (m_enablePitchBend) {
-          CSfxManager::PitchBend(handle, xc0_pitchBend);
+          CSfxManager::PitchBend(handle, mPitchBend);
         }
       }
     }
@@ -819,12 +819,12 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
       handle = CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, false, aid);
     }
     if ((sfxId & 0x20000000) != 0 /* continuous update */) {
-      xd8_nonLoopingSfxHandles[m_nextNonLoopingSfxHandle] = handle;
-      m_nextNonLoopingSfxHandle = (m_nextNonLoopingSfxHandle + 1) % xd8_nonLoopingSfxHandles.size();
+      mNonLoopingSfxHandles[m_nextNonLoopingSfxHandle] = handle;
+      m_nextNonLoopingSfxHandle = (m_nextNonLoopingSfxHandle + 1) % mNonLoopingSfxHandles.size();
     }
 
     if (m_enablePitchBend) {
-      CSfxManager::PitchBend(handle, xc0_pitchBend);
+      CSfxManager::PitchBend(handle, mPitchBend);
     }
   }
 }

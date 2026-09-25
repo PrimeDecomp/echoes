@@ -15,9 +15,9 @@ class CDvdRequest;
 class CStringTable {
 public:
   struct SReloadData {
-    uint x0_size;
-    rstl::single_ptr< CDvdRequest > x4_request;
-    rstl::auto_ptr< uchar > x8_buffer;
+    uint mSize;
+    rstl::single_ptr< CDvdRequest > mRequest;
+    rstl::auto_ptr< uchar > mBuffer;
 
     SReloadData(CAssetId id, CResFactory& factory);
     ~SReloadData();
@@ -33,21 +33,21 @@ public:
   const wchar_t* GetString(int idx) const;
   const wchar_t* GetString(const char* name) const;
   int GetStringIndex(const char* name) const;
-  int GetStringCount() const { return x0_stringCount; }
+  int GetStringCount() const { return mStringCount; }
 
 private:
   // Echoes STRG files can name strings; names are sorted for binary search.
   struct SStringName {
-    const char* x0_name;
-    int x4_index;
+    const char* mName;
+    int mIndex;
   };
 
-  int x0_stringCount;
-  int x4_nameCount;
-  rstl::single_ptr< uchar > x8_data;
-  SStringName* xc_names;
-  const wchar_t** x10_strings;
-  rstl::single_ptr< SReloadData > x14_reloadData;
+  int mStringCount;
+  int mNameCount;
+  rstl::single_ptr< uchar > mData;
+  SStringName* mNames;
+  const wchar_t** mStrings;
+  rstl::single_ptr< SReloadData > mReloadData;
 };
 CHECK_SIZEOF(CStringTable, 0x18)
 NESTED_CHECK_SIZEOF(CStringTable, SReloadData, 0x10)
