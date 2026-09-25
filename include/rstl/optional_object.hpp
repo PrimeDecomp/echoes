@@ -27,16 +27,7 @@ public:
     }
   }
 
-  optional_object& operator=(const optional_object& other) {
-    if (this != &other) {
-      if (other.m_valid) {
-        assign(other.data());
-      } else {
-        clear();
-      }
-    }
-    return *this;
-  }
+  optional_object& operator=(const optional_object& other);
   optional_object& operator=(const T& item) {
     if (!m_valid) {
       construct< T >(m_data, item);
@@ -79,6 +70,19 @@ private:
     }
   }
 };
+
+template < typename T >
+optional_object< T >& optional_object< T >::operator=(const optional_object& other) {
+  if (this == &other) {
+    return *this;
+  }
+  if (other.m_valid) {
+    assign(other.data());
+  } else {
+    clear();
+  }
+  return *this;
+}
 
 } // namespace rstl
 
