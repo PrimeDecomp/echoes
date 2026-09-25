@@ -42,6 +42,7 @@ struct aligned_allocator {
     out = size == 0 ? nullptr
                     : static_cast< T* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen));
   }
+
   template < typename T >
   static void deallocate(T* ptr) {
     delete[] reinterpret_cast< uchar* >(ptr);

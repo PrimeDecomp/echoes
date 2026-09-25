@@ -462,6 +462,15 @@ Kyoto/Particles/CParticleElectricDataFactory.cpp:
 	.text       start:0x8031AD0C end:0x8031B6BC
 	.rodata     start:0x803AFF68 end:0x803AFF70
 
+Kyoto/Particles/CParticleElectric.cpp:
+	.text       start:0x8031B6BC end:0x803203DC
+	.ctors      start:0x803A5664 end:0x803A5668
+	.rodata     start:0x803AFF70 end:0x803AFFA0
+	.data       start:0x803BB178 end:0x803BB208
+	.bss        start:0x803E03C0 end:0x803E03D0
+	.sdata      start:0x80418C18 end:0x80418C20
+	.sdata2     start:0x8041EAE0 end:0x8041EB40
+
 Kyoto/Graphics/DolphinCColor.cpp:
 	.text       start:0x803203DC end:0x803208F0
 	.sdata2     start:0x8041EB40 end:0x8041EB58

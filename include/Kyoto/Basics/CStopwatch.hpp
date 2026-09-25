@@ -27,6 +27,7 @@ public:
 
   CStopwatch() : x0_startTime(mData.GetCPUCycles()) {}
   static bool InitGlobalTimer();
+  static float GetGlobalTime() { return mGlobalTimer.GetElapsedTime(); }
   static CStopwatch& GetGlobalTimerObj();
   inline void Reset() {
     if (mData.GetTimerFreq() == 0) {
