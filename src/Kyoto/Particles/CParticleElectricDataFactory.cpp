@@ -8,7 +8,7 @@
 
 const CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag& tag, CInputStream& in,
                                               const CVParamTransfer& transfer) {
-  rstl::rc_ptr< IVParamObj > obj = transfer.x0_obj;
+  rstl::rc_ptr< IVParamObj > obj = transfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();
   CElectricDescription* desc = CParticleElectricDataFactory::GetGeneratorDesc(in, pool);
   return desc;
