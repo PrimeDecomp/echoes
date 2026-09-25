@@ -422,6 +422,10 @@ Kyoto/Audio/CMidiManager.cpp:
 	.bss        start:0x803DFEA0 end:0x803DFEB0
 	.bss        start:0x80417634 end:0x8041765C align:4 common
 
+Kyoto/Text/CFontImageDef.cpp:
+	.text       start:0x803156B8 end:0x803158D8
+	.sdata2     start:0x8041EA50 end:0x8041EA68
+
 Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.text       start:0x80317B5C end:0x8031AA68
 	.rodata     start:0x803AFF00 end:0x803AFF68

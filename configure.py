@@ -471,6 +471,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(NonMatching, "Kyoto/CPakFile.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/CMidiManager.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontImageDef.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamReader.cpp"),
