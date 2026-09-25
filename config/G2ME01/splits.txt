@@ -603,6 +603,11 @@ Kyoto/Animation/CPoseAsTransforms_Linear.cpp:
 	.text       start:0x8033D69C end:0x8033E3E8
 	.sdata2     start:0x8041EE10 end:0x8041EE18
 
+Kyoto/Particles/CDeferredParticleEffect.cpp:
+	.text       start:0x8033E3E8 end:0x8033ED24
+	.rodata     start:0x803B0238 end:0x803B0240
+	.sdata2     start:0x8041EE18 end:0x8041EE20
+
 Kyoto/Streams/CBitStreamWriter.cpp:
 	.text       start:0x80342B44 end:0x80342D98
 
