@@ -155,6 +155,15 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.sbss       start:0x80419818 end:0x80419828
 	.sdata2     start:0x8041E268 end:0x8041E278
 
+Kyoto/Animation/CInt32POINode.cpp:
+	.text       start:0x802B1870 end:0x802B1980
+
+Kyoto/Animation/CParticlePOINode.cpp:
+	.text       start:0x802B19BC end:0x802B1AD0
+
+Kyoto/Animation/CPOINode.cpp:
+	.text       start:0x802B1AD0 end:0x802B1D10
+
 Kyoto/Animation/CSegId.cpp:
 	.text       start:0x802B1D10 end:0x802B1D28
 
@@ -537,6 +546,9 @@ Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80327C10 end:0x8032AFC8
 	.sdata      start:0x80418C50 end:0x80418C68
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
+
+Kyoto/Animation/CSoundPOINode.cpp:
+	.text       start:0x8033D420 end:0x8033D69C
 
 Kyoto/Streams/CBitStreamWriter.cpp:
 	.text       start:0x80342B44 end:0x80342D98

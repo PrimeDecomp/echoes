@@ -3,13 +3,15 @@
 
 #include "Kyoto/Animation/CPOINode.hpp"
 
+#include "rstl/string.hpp"
+
 class CInt32POINode : public CPOINode {
 public:
-  CInt32POINode(rstl::string name, ushort type, const CCharAnimTime& time, int index, bool unique,
-                float weight, int charIdx, int flags, int value, const rstl::string& locatorName);
-  /*: CPOINode(name, type, time, index, unique, weight, charIdx, flags)
-  , x38_val(value)
-  , x3c_lctrName(locatorName) {} */
+  CInt32POINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
+                float weight, int charIdx, int flags, int value, const rstl::string& locatorName)
+  : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags)
+  , mVal(value)
+  , mLctrName(locatorName) {}
 
   explicit CInt32POINode(CInputStream& in);
 
@@ -23,5 +25,6 @@ private:
   int mVal;
   rstl::string mLctrName;
 };
+CHECK_SIZEOF(CInt32POINode, 0x40)
 
 #endif // _CINT32POINODE
