@@ -276,7 +276,7 @@ static void HandleAlphaMask(uint vtxDesc, uint& tevCount, uint& texCount, uint& 
   const GXTevStageID stage = static_cast< GXTevStageID >(tevCount);
   const GXTexMapID texMap = static_cast< GXTexMapID >(texCount);
   sAlphaMaskTexCoord = tcgCount;
-  const CTexture& texture = CCubeRenderer::That()->GetTexture25C();
+  const CTexture& texture = CCubeRenderer::That()->GetAlphaMaskRamp();
   sAlphaMaskPostTexMtx = tcgCount * 3 + GX_PTTEXMTX0;
 
   GXTexObj texObj;
@@ -1034,7 +1034,7 @@ void CCubeModel::SetRenderModelBlack(bool v) {
 void CCubeModel::EnableShadowMaps(const CTexture* shadowTex, const CTransform4f& textureProjXf,
                                   unsigned char chan0DisableMask,
                                   unsigned char chan1EnableLightMask) {
-  if (CCubeRenderer::That()->Get558() != 0) {
+  if (CCubeRenderer::That()->GetMaterialMode() != 0) {
     return;
   }
   sbRenderModelShadow = true;
