@@ -61,6 +61,10 @@ public:
   // Include__6CAABoxFRC9CVector3f weak
   // Include__6CAABoxFRC6CAABox weak
   void AccumulateBounds(const CVector3f&);
+  void Include(const CAABox& box) {
+    AccumulateBounds(box.min);
+    AccumulateBounds(box.max);
+  }
   bool Invalid() const;
   bool PointInside(const CVector3f& vec) const;
   bool DoBoundsOverlap(const CAABox&) const;
@@ -107,5 +111,17 @@ private:
   static CAABox mskNullBox;
 };
 CHECK_SIZEOF(CAABox, 0x18)
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CAABox > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< CAABox >(void* dest, const CAABox& src) {
+  *static_cast< CAABox* >(dest) = src;
+}
+} // namespace rstl
 
 #endif // _CAABOX

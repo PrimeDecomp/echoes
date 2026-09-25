@@ -5,6 +5,8 @@
 
 #include "Kyoto/Math/CVector2f.hpp"
 
+#include "rstl/construct.hpp"
+
 #include "float.h"
 
 class CInputStream;
@@ -125,6 +127,18 @@ protected:
   static CVector3f sOneVector;
 };
 CHECK_SIZEOF(CVector3f, 0xc)
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CVector3f > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< CVector3f >(void* dest, const CVector3f& src) {
+  *static_cast< CVector3f* >(dest) = src;
+}
+} // namespace rstl
 
 // ClassifyVector__FRC9CVector3f
 // TGetType<9CVector3f>__FRC9CVector3f

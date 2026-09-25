@@ -38,6 +38,7 @@ public:
 
   T* operator*() { return x8_item; }
   T* GetObject() const { return x8_item; }
+  const CToken& GetToken() const { return *this; }
 
   bool IsLoaded() {
     if (x8_item != nullptr) {
