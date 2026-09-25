@@ -387,6 +387,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/HUD/CSamusHud.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudDecoInterfaceScan.cpp"),
             Object(NonMatching, "MetroidPrime/CQuitGameScreen.cpp"),
+            Object(NonMatching, "MetroidPrime/CPauseScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManager.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRepulsor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSound.cpp"),
