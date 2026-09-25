@@ -8,7 +8,11 @@
 class CSegId {
 public:
   CSegId() : mId(-1) {}
+  explicit CSegId(uchar id) : mId(id) {}
   CSegId(CInputStream& in);
+
+  const uchar val() const { return mId; }
+
 private:
   uchar mId;
 };

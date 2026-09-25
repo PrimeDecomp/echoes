@@ -18,14 +18,15 @@ enum EPOIType {
 };
 
 class CInputStream;
+// Echoes replaces Prime's node name string with a CRC32 hash of it.
 class CPOINode {
 public:
-  CPOINode(const rstl::string& name, ushort type, const CCharAnimTime& time, int index, bool unique,
+  CPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
            float weight, int charIdx, int flags);
   CPOINode(CInputStream& in);
   virtual ~CPOINode() {}
 
-  const rstl::string& GetString() const { return mName; }
+  uint GetNameHash() const { return mNameHash; }
   const EPOIType GetPoiType() const { return static_cast< EPOIType >(mType); }
   const CCharAnimTime& GetTime() const { return mTime; }
   const int GetIndex() const { return mIndex; }
@@ -34,14 +35,14 @@ public:
   const int GetCharacterIndex() const { return mCharIdx; }
   const int GetFlags() const { return mFlags; }
 
-  bool operator>(const CPOINode& other) const;
-  bool operator<(const CPOINode& other) const;
+  bool operator>(const CPOINode& other) const { return mTime > other.mTime; }
+  bool operator<(const CPOINode& other) const { return mTime < other.mTime; }
   static int compare(const void* a, const void* b);
   static uint GetHashForString(const char* str);
 
 protected:
-  ushort x4_;
-  rstl::string mName;
+  ushort mVersion;
+  uint mNameHash;
   ushort mType;
   CCharAnimTime mTime;
   int mIndex;
@@ -50,7 +51,6 @@ protected:
   int mCharIdx;
   int mFlags;
 };
-CHECK_SIZEOF(CPOINode, 0x38)
-
+CHECK_SIZEOF(CPOINode, 0x2c)
 
 #endif // _CPOINODE
