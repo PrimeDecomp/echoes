@@ -490,6 +490,10 @@ Kyoto/Graphics/DolphinCColor.cpp:
 	.text       start:0x803203DC end:0x803208F0
 	.sdata2     start:0x8041EB40 end:0x8041EB58
 
+Kyoto/CDependencyGroup.cpp:
+	.text       start:0x803208F0 end:0x80320FD8
+	.rodata     start:0x803AFFA0 end:0x803AFFA8
+
 Kyoto/CPakFile.cpp:
 	.text       start:0x80323038 end:0x80324D44
 	.rodata     start:0x803B0098 end:0x803B00F0

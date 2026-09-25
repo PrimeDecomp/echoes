@@ -10,11 +10,16 @@ class CDependencyGroupToken {
 public:
   CDependencyGroupToken(const TToken< CDependencyGroup >& group, IObjectStore& store);
 
+  void Lock();
+  void Unlock();
+  bool IsLocked() const;
+  bool IsLoaded();
+
 private:
   TToken< CDependencyGroup > mGroup;
   rstl::vector< CToken > mDependencies;
-  uint x18_; // Loading progress/state, precise meaning unresolved.
-  bool x1c_24_ : 1;
+  uint mLockCount;
+  bool mLoaded : 1;
 };
 CHECK_SIZEOF(CDependencyGroupToken, 0x20)
 #endif // _CDEPENDENCYGROUPTOKEN
