@@ -549,6 +549,11 @@ Kyoto/Math/CMayaSpline.cpp:
 
 Kyoto/Animation/CSoundPOINode.cpp:
 	.text       start:0x8033D420 end:0x8033D69C
+	.sdata2     start:0x8041EE08 end:0x8041EE10
+
+Kyoto/Animation/CPoseAsTransforms_Linear.cpp:
+	.text       start:0x8033D69C end:0x8033E3E8
+	.sdata2     start:0x8041EE10 end:0x8041EE18
 
 Kyoto/Streams/CBitStreamWriter.cpp:
 	.text       start:0x80342B44 end:0x80342D98
