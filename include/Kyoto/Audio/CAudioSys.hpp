@@ -19,8 +19,9 @@ enum ETRKSampleRate {
 };
 
 enum ETRKRepeatMode {
-  kTRM_Zero,
-  kTRM_One,
+  kTRM_NoRepeat,
+  kTRM_RepeatOne,
+  kTRM_RepeatAll,
 };
 
 enum ETRKPlayState {

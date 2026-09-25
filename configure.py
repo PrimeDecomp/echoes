@@ -512,6 +512,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
             Object(NonMatching, "Kyoto/Audio/DolphinCAudioGroupSet.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/DolphinCAudioSys.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Audio/CStreamAudioManager.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
