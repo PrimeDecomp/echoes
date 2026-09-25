@@ -513,6 +513,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CElectricDescription.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CSwooshDescription.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CGenDescription.cpp"),
             Object(NonMatching, "Kyoto/CPakFile.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/CMidiManager.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontImageDef.cpp"),

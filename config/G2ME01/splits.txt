@@ -607,6 +607,10 @@ Kyoto/Particles/CElectricDescription.cpp:
 Kyoto/Particles/CSwooshDescription.cpp:
 	.text       start:0x803228CC end:0x80322C1C
 
+Kyoto/Particles/CGenDescription.cpp:
+	.text       start:0x80322C1C end:0x80323038
+	.rodata     start:0x803AFFB0 end:0x803B0098
+
 Kyoto/CPakFile.cpp:
 	.text       start:0x80323038 end:0x80324D44
 	.rodata     start:0x803B0098 end:0x803B00F0
