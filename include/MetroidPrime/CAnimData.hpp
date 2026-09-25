@@ -13,7 +13,7 @@
 #include "Kyoto/Animation/CParticlePOINode.hpp"
 #include "Kyoto/Animation/CSoundPOINode.hpp"
 #include "MetroidPrime/ActorCommon.hpp"
-#include "MetroidPrime/CAdditiveAnimPlayback.hpp"
+#include "Kyoto/Animation/CAdditiveAnimPlayback.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
 #include "MetroidPrime/CHierarchyPoseBuilder.hpp"
 #include "MetroidPrime/CParticleDatabase.hpp"

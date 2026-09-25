@@ -382,6 +382,10 @@ Kyoto/Graphics/CCubeMoviePlayer.cpp:
 	.sbss       start:0x80419C00 end:0x80419C18
 	.sdata2     start:0x8041EA88 end:0x8041EAD0
 
+Kyoto/Animation/CAdditiveAnimPlayback.cpp:
+	.text       start:0x8031AA68 end:0x8031AD0C
+	.sdata2     start:0x8041EAD0 end:0x8041EAE0
+
 Kyoto/Graphics/DolphinCColor.cpp:
 	.text       start:0x803203DC end:0x803208F0
 	.sdata2     start:0x8041EB40 end:0x8041EB58
