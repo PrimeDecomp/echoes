@@ -40,6 +40,7 @@ public:
 
   int OpenWindow(const char* title, int x, int y, int w, int h, bool fullscreen);
   bool Update();
+  int GetLanguage() const;
   COsKeyState GetOsKeyState(int key) const;
 
   void* AllocFromArena(size_t sz);
@@ -50,26 +51,26 @@ public:
     return ((hiAddr & ~31) - ((loAddr + 31) & ~31));
   }
 
-  void* GetFramebuf1() const { return mFrameBuffer1; }
-  void* GetFramebuf2() const { return mFrameBuffer2; }
   const GXRenderModeObj& GetRenderModeObj() const { return mRenderMode; }
 
   static void SetProgressiveMode(bool progressive) { mProgressiveMode = progressive; }
   static bool GetProgressiveMode() { return mProgressiveMode; }
 
 private:
+  // Echoes moves the console type to 0x10 and stores OSGetLanguage() at 0x14; the
+  // constructor reserves a fixed arena block (0x24/0x2c). Other fields follow Prime.
   int mRight;
   int mBottom;
   int mLeft;
   int mTop;
-  int mFormat;
   int mConsoleType;
+  int mLanguage;
   void* mArenaLo1;
   void* mArenaHi;
   void* mArenaLo2;
-  void* mFrameBuffer1;
-  void* mFrameBuffer2;
-  int mFrameBufferSize;
+  void* mArenaBlock;
+  void* x28_;
+  int mArenaBlockSize;
   GXRenderModeObj mRenderMode;
 };
 CHECK_SIZEOF(COsContext, 0x6c)

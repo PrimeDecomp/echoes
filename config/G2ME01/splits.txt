@@ -197,6 +197,21 @@ Kyoto/Basics/CStopwatch.cpp:
 	.sbss       start:0x80419808 end:0x80419810
 	.sdata2     start:0x8041E250 end:0x8041E258
 
+Kyoto/Basics/CBasicsDolphin.cpp:
+	.text       start:0x8028BD3C end:0x8028BFD8
+	.sbss       start:0x80419810 end:0x80419818
+
+Kyoto/Alloc/CCallStackDolphin.cpp:
+	.text       start:0x8028BFD8 end:0x8028BFF4
+	.rodata     start:0x803AEAB8 end:0x803AEAC8
+
+Kyoto/Basics/COsContextDolphin.cpp:
+	.text       start:0x8028BFF4 end:0x8028C17C
+
+Kyoto/Basics/CSWDataDolphin.cpp:
+	.text       start:0x8028C17C end:0x8028C28C
+	.sdata2     start:0x8041E258 end:0x8041E268
+
 Kyoto/Basics/RAssertDolphin.cpp:
 	.text       start:0x8028C28C end:0x8028C9C8
 	.rodata     start:0x803AEAC8 end:0x803AED58
