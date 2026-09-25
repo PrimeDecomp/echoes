@@ -2,53 +2,53 @@
 
 #include "Kyoto/Alloc/CMemory.hpp"
 
-CToken::CToken(CObjectReference* ref) : x0_objRef(ref), x4_lockHeld(false) {
-  x0_objRef->AddReference();
+CToken::CToken(CObjectReference* ref) : mObjRef(ref), mLockHeld(false) {
+  mObjRef->AddReference();
 }
 
-CToken::CToken(IObj* obj) : x0_objRef(rs_new CObjectReference(obj)), x4_lockHeld(false) {
-  x0_objRef->AddReference();
+CToken::CToken(IObj* obj) : mObjRef(rs_new CObjectReference(obj)), mLockHeld(false) {
+  mObjRef->AddReference();
   Lock();
 }
 
-CToken::CToken(const CToken& other) : x0_objRef(other.x0_objRef), x4_lockHeld(false) {
-  x0_objRef->AddReference();
-  if (other.x4_lockHeld) {
+CToken::CToken(const CToken& other) : mObjRef(other.mObjRef), mLockHeld(false) {
+  mObjRef->AddReference();
+  if (other.mLockHeld) {
     Lock();
   }
 }
 
 CToken::~CToken() {
-  if (x4_lockHeld) {
-    x0_objRef->Unlock();
+  if (mLockHeld) {
+    mObjRef->Unlock();
   }
   RemoveRef();
 }
 
 CObjOwnerDerivedFromIObjUntyped* CToken::GetObj() {
   Lock();
-  return reinterpret_cast< CObjOwnerDerivedFromIObjUntyped* >(x0_objRef->GetObject());
+  return reinterpret_cast< CObjOwnerDerivedFromIObjUntyped* >(mObjRef->GetObject());
 }
 
 void CToken::RemoveRef() {
-  if (x0_objRef->RemoveReference() == 0) {
-    delete x0_objRef;
+  if (mObjRef->RemoveReference() == 0) {
+    delete mObjRef;
   }
 }
 
 void CToken::Lock() {
-  if (!x4_lockHeld) {
-    x0_objRef->Lock();
-    x4_lockHeld = true;
+  if (!mLockHeld) {
+    mObjRef->Lock();
+    mLockHeld = true;
   }
 }
 
 void CToken::Unlock() {
-  if (!x4_lockHeld) {
+  if (!mLockHeld) {
     return;
   }
-  x0_objRef->Unlock();
-  x4_lockHeld = false;
+  mObjRef->Unlock();
+  mLockHeld = false;
 }
 
 CToken& CToken::operator=(const CToken& other) {
@@ -58,9 +58,9 @@ CToken& CToken::operator=(const CToken& other) {
 
   Unlock();
   RemoveRef();
-  x0_objRef = other.x0_objRef;
-  x0_objRef->AddReference();
-  if (other.x4_lockHeld) {
+  mObjRef = other.mObjRef;
+  mObjRef->AddReference();
+  if (other.mLockHeld) {
     Lock();
   }
   return *this;

@@ -4,8 +4,8 @@
 #include "Kyoto/Animation/CPASAnimState.hpp"
 
 class CPASAnimParmData {
-  pas::EAnimationState x0_stateId;
-  rstl::reserved_vector< CPASAnimParm, 8 > x4_parms;
+  pas::EAnimationState mStateId;
+  rstl::reserved_vector< CPASAnimParm, 8 > mParms;
 
 public:
   CPASAnimParmData(pas::EAnimationState stateId,
@@ -31,8 +31,8 @@ public:
   */
   ~CPASAnimParmData() {}
 
-  pas::EAnimationState GetStateId() const { return x0_stateId; }
-  const rstl::reserved_vector< CPASAnimParm, 8 >& GetAnimParmData() const { return x4_parms; }
+  pas::EAnimationState GetStateId() const { return mStateId; }
+  const rstl::reserved_vector< CPASAnimParm, 8 >& GetAnimParmData() const { return mParms; }
 
   static CPASAnimParmData NoParameters(pas::EAnimationState stateId) {
     return CPASAnimParmData(stateId);

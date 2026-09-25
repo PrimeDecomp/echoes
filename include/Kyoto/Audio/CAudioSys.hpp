@@ -43,39 +43,39 @@ public:
     // ????
     C3DEmitterParmData(const float maxDist = 150.f, const float distComp = 0.1f,
                        const uint flags = 1, const uchar maxVol = 127, const uchar minVol = 0)
-    : x18_maxDist(maxDist)
-    , x1c_distComp(distComp)
-    , x20_flags(flags)
-    , x24_sfxId(0)
-    , x26_maxVol(maxVol)
-    , x27_minVol(minVol)
-    , x28_important(false)
-    , x29_prio(127) {}
+    : mMaxDist(maxDist)
+    , mDistComp(distComp)
+    , mFlags(flags)
+    , mSfxId(0)
+    , mMaxVol(maxVol)
+    , mMinVol(minVol)
+    , mImportant(false)
+    , mPrio(127) {}
 
     C3DEmitterParmData(const CVector3f& pos, const CVector3f& dir, float maxDist, float distComp,
                        uint flags, ushort sfxId, float maxVol, float minVol, bool important,
                        uchar prio)
-    : x0_pos(pos)
-    , xc_dir(dir)
-    , x18_maxDist(maxDist)
-    , x1c_distComp(distComp)
-    , x20_flags(flags)
-    , x24_sfxId(sfxId)
-    , x26_maxVol(maxVol)
-    , x27_minVol(minVol)
-    , x28_important(important)
-    , x29_prio(prio) {}
+    : mPos(pos)
+    , mDir(dir)
+    , mMaxDist(maxDist)
+    , mDistComp(distComp)
+    , mFlags(flags)
+    , mSfxId(sfxId)
+    , mMaxVol(maxVol)
+    , mMinVol(minVol)
+    , mImportant(important)
+    , mPrio(prio) {}
 
-    CVector3f x0_pos;
-    CVector3f xc_dir;
-    float x18_maxDist;
-    float x1c_distComp;
-    uint x20_flags;
-    ushort x24_sfxId;
-    float x26_maxVol;
-    float x27_minVol;
-    bool x28_important; // Can't be allocated over, regardless of priority
-    uchar x29_prio;
+    CVector3f mPos;
+    CVector3f mDir;
+    float mMaxDist;
+    float mDistComp;
+    uint mFlags;
+    ushort mSfxId;
+    float mMaxVol;
+    float mMinVol;
+    bool mImportant; // Can't be allocated over, regardless of priority
+    uchar mPrio;
   };
 
   class CTrkData {};

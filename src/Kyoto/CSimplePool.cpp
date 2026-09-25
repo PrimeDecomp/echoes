@@ -5,9 +5,9 @@
 
 rstl::vector< SObjectTag > CSimplePool::GetReferencedTags() {
   rstl::vector< SObjectTag > tags;
-  tags.reserve(x4_resources.size());
-  ResourceMap::const_iterator it = x4_resources.begin();
-  ResourceMap::const_iterator end = x4_resources.end();
+  tags.reserve(mResources.size());
+  ResourceMap::const_iterator it = mResources.begin();
+  ResourceMap::const_iterator end = mResources.end();
   for (; it != end; ++it) {
     tags.push_back_unsafe(it->first);
   }
@@ -15,27 +15,27 @@ rstl::vector< SObjectTag > CSimplePool::GetReferencedTags() {
 }
 
 void CSimplePool::DebugDumpPool() const {
-  ResourceMap::const_iterator it = x4_resources.begin();
-  for (; it != x4_resources.end(); ++it) {
+  ResourceMap::const_iterator it = mResources.begin();
+  for (; it != mResources.end(); ++it) {
   }
 }
 
 void CSimplePool::Flush() {}
 
 bool CSimplePool::ObjectIsLive(const SObjectTag& tag) {
-  ResourceMap::iterator it = x4_resources.find(tag);
-  if (it == x4_resources.end()) {
+  ResourceMap::iterator it = mResources.find(tag);
+  if (it == mResources.end()) {
     return false;
   }
   return it->second->IsLoaded();
 }
 
 bool CSimplePool::HasObject(const SObjectTag& tag) {
-  ResourceMap::iterator it = x4_resources.find(tag);
-  if (it != x4_resources.end()) {
+  ResourceMap::iterator it = mResources.find(tag);
+  if (it != mResources.end()) {
     return true;
   }
-  return x18_factory != nullptr && x18_factory->CanBuild(tag);
+  return mFactory != nullptr && mFactory->CanBuild(tag);
 }
 
 CToken CSimplePool::GetObj(const char* name, const CVParamTransfer& xfer) {
@@ -43,35 +43,35 @@ CToken CSimplePool::GetObj(const char* name, const CVParamTransfer& xfer) {
   return CSimplePool::GetObj(*tag, xfer);
 }
 
-CToken CSimplePool::GetObj(const char* name) { return CSimplePool::GetObj(name, x1c_paramXfr); }
+CToken CSimplePool::GetObj(const char* name) { return CSimplePool::GetObj(name, mParamXfr); }
 
-CToken CSimplePool::GetObj(const SObjectTag& tag) { return CSimplePool::GetObj(tag, x1c_paramXfr); }
+CToken CSimplePool::GetObj(const SObjectTag& tag) { return CSimplePool::GetObj(tag, mParamXfr); }
 
 CToken CSimplePool::GetObj(const SObjectTag& tag, const CVParamTransfer& xfer) {
-  ResourceMap::iterator it = x4_resources.find(tag);
-  if (it != x4_resources.end()) {
+  ResourceMap::iterator it = mResources.find(tag);
+  if (it != mResources.end()) {
     return CToken(it->second);
   }
 
   CObjectReference* ref =
       rs_new CObjectReference(*this, rstl::auto_ptr< IObj >(nullptr), tag, xfer);
   ResourceMap::value_type item(tag, ref);
-  x4_resources.insert(item);
+  mResources.insert(item);
   return CToken(ref);
 }
 
 void CSimplePool::ObjectUnreferenced(const SObjectTag& tag) {
-  x4_resources.erase(x4_resources.find(tag));
+  mResources.erase(mResources.find(tag));
 }
 
 CSimplePool::~CSimplePool() {
   Flush();
-  if (x4_resources.size() > 0) {
+  if (mResources.size() > 0) {
     DebugDumpPool();
   }
 }
 
 CSimplePool::CSimplePool(IFactory& factory)
-: x18_factory(&factory), x1c_paramXfr(CVParamTransfer::Null()) {
-  x1c_paramXfr = CVParamTransfer(rs_new TObjOwnerParam< IObjectStore* >(this));
+: mFactory(&factory), mParamXfr(CVParamTransfer::Null()) {
+  mParamXfr = CVParamTransfer(rs_new TObjOwnerParam< IObjectStore* >(this));
 }

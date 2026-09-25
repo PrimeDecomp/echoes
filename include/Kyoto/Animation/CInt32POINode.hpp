@@ -16,12 +16,12 @@ public:
   static CInt32POINode CopyNodeMinusStartTime(const CInt32POINode& node,
                                               const CCharAnimTime& startTime);
 
-  int GetValue() const { return x38_val; }
-  const rstl::string& GetLocatorName() const { return x3c_lctrName; }
+  int GetValue() const { return mVal; }
+  const rstl::string& GetLocatorName() const { return mLctrName; }
 
 private:
-  int x38_val;
-  rstl::string x3c_lctrName;
+  int mVal;
+  rstl::string mLctrName;
 };
 
 #endif // _CINT32POINODE

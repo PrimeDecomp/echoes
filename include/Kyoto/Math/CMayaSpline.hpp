@@ -8,28 +8,28 @@
 #include "rstl/vector.hpp"
 
 class CMayaSplineKnot {
-  float x0_time;
-  float x4_amplitude;
-  uint x8_flagA : 8;
-  uint x8_flagB : 8;
-  uint x8_dirty : 1;
+  float mTime;
+  float mAmplitude;
+  uint mFlagA : 8;
+  uint mFlagB : 8;
+  uint mDirty : 1;
   // u8 x8_;
   // u8 x9_;
   // bool xa_24_dirty : 1;
   // u8 xb_;
-  CVector2f xc_cachedTangentA;
-  CVector2f x14_cachedTangentB;
+  CVector2f mCachedTangentA;
+  CVector2f mCachedTangentB;
 
 public:
   CMayaSplineKnot(CInputStream& in);
   CMayaSplineKnot(float time, float amplitude, int flagA, int flagB, const float& tangentA = 0.f,
                   const float& tangentB = 0.f);
-  bool operator<(const CMayaSplineKnot& other) const { return x0_time < other.x0_time; }
+  bool operator<(const CMayaSplineKnot& other) const { return mTime < other.mTime; }
 
-  float GetTime() const { return x0_time; }
-  float GetAmplitude() const { return x4_amplitude; }
-  int GetTangentModeA() const { return x8_flagA; }
-  int GetTangentModeB() const { return x8_flagB; }
+  float GetTime() const { return mTime; }
+  float GetAmplitude() const { return mAmplitude; }
+  int GetTangentModeA() const { return mFlagA; }
+  int GetTangentModeB() const { return mFlagB; }
   void GetTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next, CVector2f& tangentA,
                    CVector2f& tangentB);
   void CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next);
@@ -53,24 +53,24 @@ struct SLdrSpline {
   float m_minAmplitudeTime;
   float m_maxAmplitudeTime;
   uint m_cachedKnotIndex;
-  uint x28_cachedSegmentIndex;
+  uint mCachedSegmentIndex;
   bool m_dirty : 1;
   float m_cachedMinTime;
   float m_cachedHermitCoefs[4];
 };
 
 class CMayaSpline {
-  int x0_preInfinity;
-  int x4_postInfinity;
-  rstl::vector< CMayaSplineKnot > x8_knots;
-  int x18_clampMode;
-  float x1c_minAmplitude;
-  float x20_maxAmplitude;
-  int x24_cachedKnotIndex;
-  int x28_cachedSegmentIndex;
-  bool x2c_24_stepSegment : 1;
-  float x30_cachedMinTime;
-  float x34_cachedHermiteCoefs[4];
+  int mPreInfinity;
+  int mPostInfinity;
+  rstl::vector< CMayaSplineKnot > mKnots;
+  int mClampMode;
+  float mMinAmplitude;
+  float mMaxAmplitude;
+  int mCachedKnotIndex;
+  int mCachedSegmentIndex;
+  bool mStepSegment : 1;
+  float mCachedMinTime;
+  float mCachedHermiteCoefs[4];
 
 public:
   CMayaSpline(CInputStream& in, int count);

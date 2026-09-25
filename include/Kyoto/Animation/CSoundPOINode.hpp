@@ -21,9 +21,9 @@ public:
   , x40_maxDist(in.ReadFloat()) {}
   */
 
-  uint GetSoundId() const { return x38_sfxId; }
-  float GetFallOff() const { return x3c_falloff; }
-  float GetMaxDistance() const { return x40_maxDist; }
+  uint GetSoundId() const { return mSfxId; }
+  float GetFallOff() const { return mFalloff; }
+  float GetMaxDistance() const { return mMaxDist; }
 
   static CSoundPOINode CopyNodeMinusStartTime(const CSoundPOINode& node,
                                               const CCharAnimTime& startTime) {
@@ -34,9 +34,9 @@ public:
   }
 
 private:
-  uint x38_sfxId;
-  float x3c_falloff;
-  float x40_maxDist;
+  uint mSfxId;
+  float mFalloff;
+  float mMaxDist;
 };
 
 #endif // _CSOUNDPOINODE

@@ -6,17 +6,17 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 
 struct SSkinWeighting {
-  CSegId x0_id;
-  float x4_weight;
-  explicit SSkinWeighting(CInputStream& in) : x0_id(in), x4_weight(in.ReadFloat()) {}
+  CSegId mId;
+  float mWeight;
+  explicit SSkinWeighting(CInputStream& in) : mId(in), mWeight(in.ReadFloat()) {}
 };
 
 class CPoseAsTransforms;
 class CVirtualBone {
 public:
   explicit CVirtualBone(CInputStream& in);
-  const rstl::reserved_vector< SSkinWeighting, 3 >& GetWeights() const { return x0_weights; }
-  uint GetVertexCount() const { return x1c_vertexCount; }
+  const rstl::reserved_vector< SSkinWeighting, 3 >& GetWeights() const { return mWeights; }
+  uint GetVertexCount() const { return mVertexCount; }
 
   void BuildPoints(const ushort*, volatile void*, int) const;
   void BuildNormals(const ushort*, volatile void*, int) const;
@@ -25,10 +25,10 @@ public:
   void BuildFinalPosMatrix(const CPoseAsTransforms& pose, const CVector3f* points) const;
 
 private:
-  rstl::reserved_vector< SSkinWeighting, 3 > x0_weights;
-  uint x1c_vertexCount;
-  mutable CTransform4f x20_xf;
-  mutable CMatrix3f x50_rotation;
+  rstl::reserved_vector< SSkinWeighting, 3 > mWeights;
+  uint mVertexCount;
+  mutable CTransform4f mXf;
+  mutable CMatrix3f mRotation;
 };
 
 #endif // _CVIRTUALBONE

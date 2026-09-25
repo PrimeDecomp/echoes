@@ -30,16 +30,16 @@ public:
   bool CanBuild(const SObjectTag&);
   const SObjectTag* GetResourceIdByName(const char* name) const;
 
-  uint ResourceSize(const SObjectTag& tag) const { return x4_resLoader.ResourceSize(tag); }
+  uint ResourceSize(const SObjectTag& tag) const { return mResLoader.ResourceSize(tag); }
 
   void AsyncIdle(uint time, bool);
 
-  CResLoader& GetResLoader() { return x4_resLoader; }
+  CResLoader& GetResLoader() { return mResLoader; }
   FourCC GetResourceTypeById(CAssetId id) { return GetResLoader().GetResourceTypeById(id); }
 
 private:
-  CResLoader x4_resLoader;
-  CFactoryMgr x5c_factoryMgr;
+  CResLoader mResLoader;
+  CFactoryMgr mFactoryMgr;
   uint x94_;
   uint x98_;
   uint x9c_;

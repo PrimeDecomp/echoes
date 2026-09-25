@@ -42,20 +42,20 @@ class CVelocityInfo {
 public:
   ~CVelocityInfo();
 
-  CVector3f& Velocity(int i) { return x0_vel[i]; }
-  const CVector3f& GetVelocity(int i) const { return x0_vel[i]; }
-  bool GetTargetHoming(int i) const { return x1c_targetHoming[i]; }
+  CVector3f& Velocity(int i) { return mVel[i]; }
+  const CVector3f& GetVelocity(int i) const { return mVel[i]; }
+  bool GetTargetHoming(int i) const { return mTargetHoming[i]; }
 
   void Clear();
 
-  void AddVelocity(const CVector3f& vel) { x0_vel.push_back(vel); }
-  void AddTargetHoming(const bool& homing) { x1c_targetHoming.push_back(homing); }
-  void AddTrat(const float& trat) { x24_trat.push_back(trat); }
+  void AddVelocity(const CVector3f& vel) { mVel.push_back(vel); }
+  void AddTargetHoming(const bool& homing) { mTargetHoming.push_back(homing); }
+  void AddTrat(const float& trat) { mTrat.push_back(trat); }
 
 private:
-  rstl::reserved_vector< CVector3f, 2 > x0_vel;
-  rstl::reserved_vector< bool, 2 > x1c_targetHoming;
-  rstl::reserved_vector< float, 2 > x24_trat;
+  rstl::reserved_vector< CVector3f, 2 > mVel;
+  rstl::reserved_vector< bool, 2 > mTargetHoming;
+  rstl::reserved_vector< float, 2 > mTrat;
 };
 
 class CGunWeapon {
@@ -99,13 +99,13 @@ public:
   virtual void Unk10();
   virtual void Unk11(CStateManager& mgr);
 
-  const CVelocityInfo& GetVelocityInfo() const { return x1d0_velInfo; }
-  rstl::optional_object< CModelData >& SolidModelData() { return x10_solidModelData; }
-  const CModelData& GetSolidModelData() const { return x10_solidModelData.data(); }
+  const CVelocityInfo& GetVelocityInfo() const { return mVelInfo; }
+  rstl::optional_object< CModelData >& SolidModelData() { return mSolidModelData; }
+  const CModelData& GetSolidModelData() const { return mSolidModelData.data(); }
 
-  EWeaponType GetType() const { return x1c0_weaponType; }
-  TUniqueId GetPlayerId() const { return x1c4_playerId; }
-  EMaterialTypes GetPlayerMaterial() const { return x1c8_playerMaterial; }
+  EWeaponType GetType() const { return mWeaponType; }
+  TUniqueId GetPlayerId() const { return mPlayerId; }
+  EMaterialTypes GetPlayerMaterial() const { return mPlayerMaterial; }
 
   CAABox GetBounds() const;
   CAABox GetBounds(const CTransform4f& xf) const;
@@ -134,45 +134,45 @@ public:
 
 protected:
   // x0 is vtable
-  CVector3f x4_scale;
+  CVector3f mScale;
   rstl::optional_object< CAABox > caabox;
-  rstl::optional_object< CModelData > x10_solidModelData;
-  rstl::optional_object< CModelData > x60_holoModelData;
-  rstl::optional_object< CModelData > xb0_suitArmModelData;
+  rstl::optional_object< CModelData > mSolidModelData;
+  rstl::optional_object< CModelData > mHoloModelData;
+  rstl::optional_object< CModelData > mSuitArmModelData;
   CPlayerState::EPlayerSuit currentPlayerSuit;
-  rstl::single_ptr< CGunController > x100_gunController;
-  TToken< CAnimCharacterSet > x104_gunCharacter;
-  rstl::vector< CToken > x10c_anims;
-  rstl::vector< int > x11c_unk;
-  rstl::vector< CToken > x12c_deps;
+  rstl::single_ptr< CGunController > mGunController;
+  TToken< CAnimCharacterSet > mGunCharacter;
+  rstl::vector< CToken > mAnims;
+  rstl::vector< int > mUnk;
+  rstl::vector< CToken > mDeps;
 
-  TToken< CAnimCharacterSet > x13c_armCharacter;
-  rstl::reserved_vector< TCachedToken< CWeaponDescription >, 2 > x144_weapons;
-  TCachedToken< CGenDescription > x160_xferEffect;
-  rstl::reserved_vector< TCachedToken< CGenDescription >, 2 > x16c_muzzleEffects;
-  rstl::reserved_vector< TCachedToken< CGenDescription >, 2 > x188_frozenEffects;
-  rstl::reserved_vector< rstl::auto_ptr< CElementGen >, 2 > x1a4_muzzleGenerators;
-  rstl::single_ptr< CElementGen > x1b8_frozenGenerator;
-  CRainSplashGenerator* x1bc_rainSplashGenerator;
-  EWeaponType x1c0_weaponType;
-  TUniqueId x1c4_playerId;
-  EMaterialTypes x1c8_playerMaterial;
-  ESecondaryFxType x1cc_enabledSecondaryEffect;  // TODO: at 0x210
-  CVelocityInfo x1d0_velInfo;
-  CPlayerState::EBeamId x200_beamId;
-  EFrozenFxType x204_frozenEffect;
-  uint x208_muzzleEffectIdx;
-  uint x20c_shaderIdx;
+  TToken< CAnimCharacterSet > mArmCharacter;
+  rstl::reserved_vector< TCachedToken< CWeaponDescription >, 2 > mWeapons;
+  TCachedToken< CGenDescription > mXferEffect;
+  rstl::reserved_vector< TCachedToken< CGenDescription >, 2 > mMuzzleEffects;
+  rstl::reserved_vector< TCachedToken< CGenDescription >, 2 > mFrozenEffects;
+  rstl::reserved_vector< rstl::auto_ptr< CElementGen >, 2 > mMuzzleGenerators;
+  rstl::single_ptr< CElementGen > mFrozenGenerator;
+  CRainSplashGenerator* mRainSplashGenerator;
+  EWeaponType mWeaponType;
+  TUniqueId mPlayerId;
+  EMaterialTypes mPlayerMaterial;
+  ESecondaryFxType mEnabledSecondaryEffect;  // TODO: at 0x210
+  CVelocityInfo mVelInfo;
+  CPlayerState::EBeamId mBeamId;
+  EFrozenFxType mFrozenEffect;
+  uint mMuzzleEffectIdx;
+  uint mShaderIdx;
   // 0x1: load request, 0x2: muzzle fx, 0x4: projectile data, 0x8: anims, 0x10: everything else
-  int x210_loadFlags;
-  CAssetId x214_ancsId;
+  int mLoadFlags;
+  CAssetId mAncsId;
   bool x218_24 : 1;
-  bool x218_25_enableCharge : 1;
-  bool x218_26_loaded : 1;
+  bool mEnableCharge : 1;
+  bool mLoaded : 1;
   // Initialize in selected beam's pose, rather than power beam's pose
-  bool x218_27_subtypeBasePose : 1;
-  bool x218_28_suitArmLocked : 1;
-  bool x218_29_drawHologram : 1;
+  bool mSubtypeBasePose : 1;
+  bool mSuitArmLocked : 1;
+  bool mDrawHologram : 1;
 
   char _filler[56];
 

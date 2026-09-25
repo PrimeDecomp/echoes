@@ -33,19 +33,19 @@ template < typename T >
 class TCachedToken : public TToken< T > {
 public:
   TCachedToken() {}
-  TCachedToken(const CToken& token) : TToken< T >(token), x8_item(nullptr) {}
-  TCachedToken(const CToken& token, bool) : TToken< T >(token), x8_item(TToken< T >::GetT()) {}
+  TCachedToken(const CToken& token) : TToken< T >(token), mItem(nullptr) {}
+  TCachedToken(const CToken& token, bool) : TToken< T >(token), mItem(TToken< T >::GetT()) {}
 
-  T* operator*() { return x8_item; }
-  T* GetObject() const { return x8_item; }
+  T* operator*() { return mItem; }
+  T* GetObject() const { return mItem; }
   const CToken& GetToken() const { return *this; }
 
   bool IsLoaded() {
-    if (x8_item != nullptr) {
+    if (mItem != nullptr) {
       return true;
     }
     if (CToken::HasLock() && CToken::IsLoaded()) {
-      x8_item = TToken< T >::GetT();
+      mItem = TToken< T >::GetT();
       return true;
     } else {
       return false;
@@ -53,43 +53,43 @@ public:
   }
 
   void Unlock() {
-    x8_item = nullptr;
+    mItem = nullptr;
     TToken< T >::Unlock();
   }
 
   void ForceCache() {
-    if (x8_item == nullptr) {
-      x8_item = TToken< T >::GetT();
+    if (mItem == nullptr) {
+      mItem = TToken< T >::GetT();
     }
   }
 
 private:
-  T* x8_item;
+  T* mItem;
 };
 
 template < typename T >
 class TLockedToken {
 public:
   TLockedToken() {}
-  TLockedToken(const CToken& token) : x0_token(token), x8_item(*x0_token) {}
-  TLockedToken(const TLockedToken< T >& token) : x0_token(token), x8_item(*token) {
-    x0_token.Lock();
+  TLockedToken(const CToken& token) : mToken(token), mItem(*mToken) {}
+  TLockedToken(const TLockedToken< T >& token) : mToken(token), mItem(*token) {
+    mToken.Lock();
   }
 
   TLockedToken& operator=(const TLockedToken< T >& token) {
-    x0_token = token;
-    x8_item = *token;
+    mToken = token;
+    mItem = *token;
     return *this;
   }
 
-  operator const TToken< T >&() const { return x0_token; }
-  T* operator*() const { return x8_item; }
-  T* operator->() const { return x8_item; }
-  bool IsLoaded() const { return x0_token.IsLoaded(); }
+  operator const TToken< T >&() const { return mToken; }
+  T* operator*() const { return mItem; }
+  T* operator->() const { return mItem; }
+  bool IsLoaded() const { return mToken.IsLoaded(); }
 
 private:
-  TToken< T > x0_token;
-  T* x8_item;
+  TToken< T > mToken;
+  T* mItem;
 };
 
 #endif // _TTOKEN

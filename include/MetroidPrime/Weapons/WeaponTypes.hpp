@@ -30,27 +30,27 @@ enum EWeaponType {
 };
 
 class CWeaponMode {
-  uint x0_weaponType : 16;
-  uint x2_15_charged : 1;
-  uint x2_14_comboed : 1;
-  uint x2_13_instantKill : 1;
+  uint mWeaponType : 16;
+  uint mCharged : 1;
+  uint mComboed : 1;
+  uint mInstantKill : 1;
 
 public:
   explicit CWeaponMode(EWeaponType type = kWT_None, const bool charged = false,
                        const bool comboed = false, const bool instaKill = false)
-  : x0_weaponType(uint(type))
-  , x2_15_charged(charged)
-  , x2_14_comboed(comboed)
-  , x2_13_instantKill(instaKill) {}
+  : mWeaponType(uint(type))
+  , mCharged(charged)
+  , mComboed(comboed)
+  , mInstantKill(instaKill) {}
 
-  CWeaponMode(int type, int flags) : x0_weaponType(uint(type)) {}
+  CWeaponMode(int type, int flags) : mWeaponType(uint(type)) {}
 
-  EWeaponType GetType() const { return EWeaponType(short(x0_weaponType)); }
-  ushort GetRawType() const { return ushort(x0_weaponType); }
+  EWeaponType GetType() const { return EWeaponType(short(mWeaponType)); }
+  ushort GetRawType() const { return ushort(mWeaponType); }
 
-  bool IsCharged() const { return x2_15_charged; }
-  bool IsComboed() const { return x2_14_comboed; }
-  bool IsInstantKill() const { return x2_13_instantKill; }
+  bool IsCharged() const { return mCharged; }
+  bool IsComboed() const { return mComboed; }
+  bool IsInstantKill() const { return mInstantKill; }
 };
 CHECK_SIZEOF(CWeaponMode, 0x4)
 

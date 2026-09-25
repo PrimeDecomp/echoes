@@ -104,22 +104,22 @@ public:
 
   void AllocatePhazonSuitMaskTexture();
 
-  bool GetReflectionFlag() const { return x554_24_reflectionDirty; }
-  void SetReflectionFlag() { x554_24_reflectionDirty = true; }
+  bool GetReflectionFlag() const { return mReflectionDirty; }
+  void SetReflectionFlag() { mReflectionDirty = true; }
   CTexture* GetRealReflection();
   const CTexture& GetTexture25C() const { return x25c_; }
   int Get558() const { return x558_; }
 
   static CCubeRenderer* That() { return sRenderer; }
 
-  uchar x4_pad[0x258];
+  uchar mPad0[0x258];
   CTexture x25c_;
-  uchar x2c4_pad[0x54];
+  uchar mPad1[0x54];
   bool x318_24_ : 1;
   bool x318_25_ : 1;
   bool x318_26_ : 1;
-  uchar x319_pad[0x23b];
-  bool x554_24_reflectionDirty : 1;
+  uchar mPad2[0x23b];
+  bool mReflectionDirty : 1;
   int x558_;
 
   static CCubeRenderer* sRenderer;

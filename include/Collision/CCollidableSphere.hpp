@@ -7,7 +7,7 @@
 class CCollidableSphere : public CCollisionPrimitive {
 public:
   CCollidableSphere(const CSphere& sphere, const CMaterialList& material)
-  : CCollisionPrimitive(material), x10_sphere(sphere) {}
+  : CCollisionPrimitive(material), mSphere(sphere) {}
 
   uint GetTableIndex() const override;
   CAABox CalculateAABox(const CTransform4f& transform) const override;
@@ -15,11 +15,11 @@ public:
   FourCC GetPrimType() const override;
   CRayCastResult CastRayInternal(const CInternalRayCastStructure& ray) const override;
 
-  const CSphere& GetSphere() const { return x10_sphere; }
-  void SetSphere(const CSphere& sphere) { x10_sphere = sphere; }
+  const CSphere& GetSphere() const { return mSphere; }
+  void SetSphere(const CSphere& sphere) { mSphere = sphere; }
 
 private:
-  CSphere x10_sphere;
+  CSphere mSphere;
 };
 CHECK_SIZEOF(CCollidableSphere, 0x20)
 

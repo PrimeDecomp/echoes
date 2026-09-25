@@ -14,8 +14,8 @@ class CInputStream;
 class CAudioGrpSetLoc {
 public:
   CAudioGrpSetLoc(const rstl::auto_ptr< uchar >& data, int length);
-  const rstl::string& GetBaseDirName() const { return x10_baseDirName; }
-  const rstl::string& GetGroupSetName() const { return x20_groupSetName; }
+  const rstl::string& GetBaseDirName() const { return mBaseDirName; }
+  const rstl::string& GetGroupSetName() const { return mGroupSetName; }
   uint AramUsage() const;
   const void* GetPool() const;
   const void* GetProject() const;
@@ -23,10 +23,10 @@ public:
   const void* GetSampleDir() const;
 
 private:
-  rstl::auto_ptr< uchar > x0_data;
+  rstl::auto_ptr< uchar > mData;
   rstl::auto_ptr< uchar > x8_;
-  rstl::string x10_baseDirName;
-  rstl::string x20_groupSetName;
+  rstl::string mBaseDirName;
+  rstl::string mGroupSetName;
   uint x30_;
   uint x34_;
   uint x38_;
@@ -43,9 +43,9 @@ public:
   void FreeAllBuffers();
 
 private:
-  rstl::string x0_baseDir;
-  rstl::string x10_groupSetName;
-  rstl::optional_object< TLockedToken< CAudioGrpSetLoc > > x10_groupSetTok;
+  rstl::string mBaseDir;
+  rstl::string mGroupSetName;
+  rstl::optional_object< TLockedToken< CAudioGrpSetLoc > > mGroupSetTok;
 };
 
 #endif // _CAUDIOGROUPSET

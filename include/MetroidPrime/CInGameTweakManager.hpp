@@ -7,27 +7,27 @@
 class CTweakValue {
 public:
   struct Audio {
-    float GetFadeIn() const { return x0_fadeIn; }
-    float GetFadeOut() const { return x4_fadeOut; }
-    float GetVolume() const { return x8_volume; }
-    const rstl::string& GetFileName() const { return xc_fileName; }
+    float GetFadeIn() const { return mFadeIn; }
+    float GetFadeOut() const { return mFadeOut; }
+    float GetVolume() const { return mVolume; }
+    const rstl::string& GetFileName() const { return mFileName; }
 
   private:
-    float x0_fadeIn;
-    float x4_fadeOut;
-    float x8_volume;
-    rstl::string xc_fileName;
-    CAssetId x1c_resourceId;
+    float mFadeIn;
+    float mFadeOut;
+    float mVolume;
+    rstl::string mFileName;
+    CAssetId mResourceId;
   };
 
-  const Audio& GetAudio() const { return x24_audio; }
+  const Audio& GetAudio() const { return mAudio; }
 
 private:
-  uint x0_type;
-  rstl::string x4_key;
-  rstl::string x14_text;
-  Audio x24_audio;
-  uint x44_value;
+  uint mType;
+  rstl::string mKey;
+  rstl::string mText;
+  Audio mAudio;
+  uint mValue;
 };
 
 NESTED_CHECK_SIZEOF(CTweakValue, Audio, 0x20)

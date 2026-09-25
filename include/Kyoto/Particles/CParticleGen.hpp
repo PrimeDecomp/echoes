@@ -56,7 +56,7 @@ public:
   static uint sDrawMask;
 
 private:
-  rstl::list< CWarp* > x4_modifiersList;
+  rstl::list< CWarp* > mModifiersList;
   uint mDrawFlags;
 };
 

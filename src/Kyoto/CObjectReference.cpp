@@ -5,92 +5,92 @@
 
 CObjectReference::CObjectReference(IObjectStore& store, const rstl::auto_ptr< IObj >& obj,
                                    const SObjectTag& tag, CVParamTransfer xfer)
-: x0_refCount(0)
-, x4_lockCount(0)
-, x8_loading(false)
-, xc_objTag(tag)
-, x14_objectStore(&store)
-, x18_object(obj.release())
-, x1c_params(xfer) {}
+: mRefCount(0)
+, mLockCount(0)
+, mLoading(false)
+, mObjTag(tag)
+, mObjectStore(&store)
+, mObject(obj.release())
+, mParams(xfer) {}
 
 CObjectReference::CObjectReference(const rstl::auto_ptr< IObj >& obj)
-: x0_refCount(0)
-, x4_lockCount(0)
-, x8_loading(false)
-, xc_objTag(kInvalidAssetId, kInvalidAssetId)
-, x14_objectStore(nullptr)
-, x18_object(obj.release())
-, x1c_params(CVParamTransfer::Null()) {}
+: mRefCount(0)
+, mLockCount(0)
+, mLoading(false)
+, mObjTag(kInvalidAssetId, kInvalidAssetId)
+, mObjectStore(nullptr)
+, mObject(obj.release())
+, mParams(CVParamTransfer::Null()) {}
 
 CObjectReference::~CObjectReference() {
-  if (x18_object) {
-    delete x18_object;
-  } else if (x8_loading) {
-    x14_objectStore->GetFactory().CancelBuild(xc_objTag);
+  if (mObject) {
+    delete mObject;
+  } else if (mLoading) {
+    mObjectStore->GetFactory().CancelBuild(mObjTag);
   }
 }
 
 void CObjectReference::Lock() {
-  ++x4_lockCount;
-  if (x18_object == nullptr && !x8_loading) {
-    x14_objectStore->GetFactory().BuildAsync(xc_objTag, x1c_params, &x18_object);
-    x8_loading = true;
+  ++mLockCount;
+  if (mObject == nullptr && !mLoading) {
+    mObjectStore->GetFactory().BuildAsync(mObjTag, mParams, &mObject);
+    mLoading = true;
   }
 }
 
 IObj* CObjectReference::GetObject() {
-  if (x18_object == nullptr) {
-    x18_object = x14_objectStore->GetFactory()
-                     .Build(xc_objTag, x1c_params)
+  if (mObject == nullptr) {
+    mObject = mObjectStore->GetFactory()
+                     .Build(mObjTag, mParams)
                      .GetObjForTransfer()
                      .release();
   }
-  x8_loading = false;
-  return x18_object;
+  mLoading = false;
+  return mObject;
 }
 
 void CObjectReference::Unload() {
-  delete x18_object;
-  x18_object = nullptr;
-  x8_loading = false;
+  delete mObject;
+  mObject = nullptr;
+  mLoading = false;
 }
 
 void CObjectReference::CancelLoad() {
-  if (x14_objectStore == nullptr) {
+  if (mObjectStore == nullptr) {
     return;
   }
   if (!IsLoading()) {
     return;
   }
-  x14_objectStore->GetFactory().CancelBuild(xc_objTag);
-  x8_loading = false;
+  mObjectStore->GetFactory().CancelBuild(mObjTag);
+  mLoading = false;
 }
 
 int CObjectReference::RemoveReference() {
-  --x0_refCount;
-  if (x0_refCount == 0) {
-    if (x18_object != nullptr) {
+  --mRefCount;
+  if (mRefCount == 0) {
+    if (mObject != nullptr) {
       Unload();
     } else if (IsLoading()) {
       CancelLoad();
     }
-    if (x14_objectStore != nullptr) {
-      x14_objectStore->ObjectUnreferenced(xc_objTag);
+    if (mObjectStore != nullptr) {
+      mObjectStore->ObjectUnreferenced(mObjTag);
     }
   }
-  return x0_refCount;
+  return mRefCount;
 }
 
 void CObjectReference::Unlock() {
-  --x4_lockCount;
-  if (x4_lockCount != 0) {
+  --mLockCount;
+  if (mLockCount != 0) {
     return;
   }
-  if (x18_object != nullptr && x14_objectStore != nullptr) {
+  if (mObject != nullptr && mObjectStore != nullptr) {
     Unload();
   } else if (IsLoading()) {
     CancelLoad();
   }
 }
 
-bool CObjectReference::IsLoading() const { return x8_loading && x18_object == nullptr; }
+bool CObjectReference::IsLoading() const { return mLoading && mObject == nullptr; }

@@ -31,16 +31,16 @@ private:
   void PreloadMemoryAudio();
   void SetStereoPair();
 
-  rstl::string x24_fileName;
-  bool x34_noStopOnDeactivate : 1;
-  bool x34_fileIsDsp : 1;
-  bool x34_loop : 1;
-  bool x34_music : 1;
-  bool x34_preloadPending : 1;
-  float x38_fadeIn;
-  float x3c_fadeOut;
-  uint x40_volume;
-  rstl::optional_object< CFilePreload > x44_preload;
+  rstl::string mFileName;
+  bool mNoStopOnDeactivate : 1;
+  bool mFileIsDsp : 1;
+  bool mLoop : 1;
+  bool mMusic : 1;
+  bool mPreloadPending : 1;
+  float mFadeIn;
+  float mFadeOut;
+  uint mVolume;
+  rstl::optional_object< CFilePreload > mPreload;
 };
 CHECK_SIZEOF(CScriptStreamedMusic, 0x4C)
 

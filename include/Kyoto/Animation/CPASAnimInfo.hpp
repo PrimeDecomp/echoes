@@ -10,12 +10,12 @@ public:
   CPASAnimInfo(int id);
   CPASAnimInfo(int id, const rstl::reserved_vector<CPASAnimParm::UParmValue, 8>& parms);
 
-  int GetAnimId() const { return x0_id; }
+  int GetAnimId() const { return mId; }
   CPASAnimParm GetAnimParmData(uint idx, CPASAnimParm::EParmType type) const;
   const CPASAnimParm::UParmValue& GetAnimParmValue(uint idx) const;
 private:
-  uint x0_id;
-  rstl::reserved_vector< CPASAnimParm::UParmValue, 8 > x4_parms;
+  uint mId;
+  rstl::reserved_vector< CPASAnimParm::UParmValue, 8 > mParms;
 };
 
 #endif // _CPASANIMINFO

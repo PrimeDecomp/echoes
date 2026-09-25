@@ -9,7 +9,7 @@ class CCollidableAABox : public CCollisionPrimitive {
 public:
   CCollidableAABox();
   CCollidableAABox(const CAABox& box, const CMaterialList& matList)
-  : CCollisionPrimitive(matList), x10_aabb(box) {}
+  : CCollisionPrimitive(matList), mAabb(box) {}
 
   bool CollideMovingAABox(const CInternalCollisionStructure& collision, const CVector3f& dir,
                           double& dOut, CCollisionInfo& infoOut);
@@ -29,7 +29,7 @@ public:
 private:
   static uint sTableIndex;
 
-  CAABox x10_aabb;
+  CAABox mAabb;
 };
 CHECK_SIZEOF(CCollidableAABox, 0x28)
 

@@ -60,25 +60,25 @@ CParticleElectric::CParticleElectric(TToken< CElectricDescription > desc)
 , mTranslationDirty(false)
 , mOrientationDirty(false)
 , mGlobalScaleDirty(false) {
-  SetDrawFlags(mElecDesc->x44_DFLG);
-  if (mElecDesc->x10_SSEG) {
-    mElecDesc->x10_SSEG->GetValue(mCurrentFrame, mSSEG);
+  SetDrawFlags(mElecDesc->mDFLG);
+  if (mElecDesc->mSSEG) {
+    mElecDesc->mSSEG->GetValue(mCurrentFrame, mSSEG);
   }
-  if (mElecDesc->xc_SCNT) {
-    mElecDesc->xc_SCNT->GetValue(mCurrentFrame, mSCNT);
+  if (mElecDesc->mSCNT) {
+    mElecDesc->mSCNT->GetValue(mCurrentFrame, mSCNT);
   }
   if (mSCNT > 32) {
     mSCNT = 32;
   }
-  if (mElecDesc->x0_LIFE) {
-    mElecDesc->x0_LIFE->GetValue(0, mLIFE);
+  if (mElecDesc->mLIFE) {
+    mElecDesc->mLIFE->GetValue(0, mLIFE);
   } else {
     mLIFE = 0x7fffff;
   }
-  if (mElecDesc->x48_SSWH) {
+  if (mElecDesc->mSSWH) {
     mHaveSSWH = true;
     for (int i = 0; i < mSCNT; ++i) {
-      mSwooshGenerators.push_back(rs_new CParticleSwoosh(mElecDesc->x48_SSWH->GetToken(), mSSEG));
+      mSwooshGenerators.push_back(rs_new CParticleSwoosh(mElecDesc->mSSWH->GetToken(), mSSEG));
       CParticleSwoosh& swoosh = *mSwooshGenerators.back();
       const int count = swoosh.GetSwooshCount();
       for (int j = 0; j < count; ++j) {
@@ -92,23 +92,23 @@ CParticleElectric::CParticleElectric(TToken< CElectricDescription > desc)
                                                                         rstl::aligned_allocator());
   mFractalOffsets = rstl::vector< CVector3f >(mSSEG, CVector3f::Zero(), rstl::rmemory_allocator());
   mFractalMags = rstl::vector< float >(mSSEG, 0.f, rstl::rmemory_allocator());
-  if (mElecDesc->x58_GPSM) {
+  if (mElecDesc->mGPSM) {
     mHaveGPSM = true;
     mGPSMGenerators.reserve(mSCNT);
     for (int i = 0; i < mSCNT; ++i) {
-      mGPSMGenerators.push_back_unsafe(rs_new CElementGen(mElecDesc->x58_GPSM->GetToken()));
+      mGPSMGenerators.push_back_unsafe(rs_new CElementGen(mElecDesc->mGPSM->GetToken()));
       mGPSMGenerators.back()->SetParticleEmission(false);
     }
   }
-  if (mElecDesc->x68_EPSM) {
+  if (mElecDesc->mEPSM) {
     mHaveEPSM = true;
     mEPSMGenerators.reserve(mSCNT);
     for (int i = 0; i < mSCNT; ++i) {
-      mEPSMGenerators.push_back_unsafe(rs_new CElementGen(mElecDesc->x68_EPSM->GetToken()));
+      mEPSMGenerators.push_back_unsafe(rs_new CElementGen(mElecDesc->mEPSM->GetToken()));
       mEPSMGenerators.back()->SetParticleEmission(false);
     }
   }
-  if (mElecDesc->x28_LWD1 || mElecDesc->x2c_LWD2 || mElecDesc->x30_LWD3) {
+  if (mElecDesc->mLWD1 || mElecDesc->mLWD2 || mElecDesc->mLWD3) {
     mHaveLWD = true;
     for (int i = 0; i < mSCNT; ++i) {
       mLineManagers.push_back(rs_new CLineManager);
@@ -123,8 +123,8 @@ void CParticleElectric::CalculatePoints() {
   CVector3f pos = CVector3f::Zero();
   CVector3f vel = CVector3f::Zero();
   CParticleElectricManager& manager = mElectricManagers.back();
-  if (mElecDesc->x18_IEMT) {
-    mElecDesc->x18_IEMT->GetValue(mCurrentFrame, pos, vel);
+  if (mElecDesc->mIEMT) {
+    mElecDesc->mIEMT->GetValue(mCurrentFrame, pos, vel);
   }
   if (mOverrideIPos) {
     pos = *mOverrideIPos;
@@ -143,8 +143,8 @@ void CParticleElectric::CalculatePoints() {
   }
   CVector3f fpos(0.f, 1.f, 0.f);
   CVector3f fvel = CVector3f::Zero();
-  if (mElecDesc->x1c_FEMT) {
-    mElecDesc->x1c_FEMT->GetValue(mCurrentFrame, fpos, fvel);
+  if (mElecDesc->mFEMT) {
+    mElecDesc->mFEMT->GetValue(mCurrentFrame, fpos, fvel);
   }
   if (mOverrideFPos) {
     fpos = *mOverrideFPos;
@@ -195,13 +195,13 @@ void CParticleElectric::CalculatePoints() {
     mFractalMags[i] = 0.f;
   }
   float ampl = 1.f;
-  if (mElecDesc->x20_AMPL) {
-    mElecDesc->x20_AMPL->GetValue(mCurrentFrame, ampl);
+  if (mElecDesc->mAMPL) {
+    mElecDesc->mAMPL->GetValue(mCurrentFrame, ampl);
     ampl *= 2.f;
   }
   float ampd = 0.f;
-  if (mElecDesc->x24_AMPD) {
-    mElecDesc->x24_AMPD->GetValue(mCurrentFrame, ampd);
+  if (mElecDesc->mAMPD) {
+    mElecDesc->mAMPD->GetValue(mCurrentFrame, ampd);
   }
   CalculateFractal(0, mCalculatedVerts.size() - 1, ampl, ampd);
   CVector3f v0 = mCalculatedVerts[0] - mCalculatedVerts[1];
@@ -233,7 +233,7 @@ void CParticleElectric::CalculatePoints() {
   for (int i = 1; i < mCalculatedVerts.size() - 1; ++i) {
     mCalculatedVerts[i] += mFractalOffsets[i];
   }
-  if (mElecDesc->x78_ZERY) {
+  if (mElecDesc->mZERY) {
     for (int i = 0; i < mCalculatedVerts.size(); ++i) {
       mCalculatedVerts[i].SetY(0.f);
     }
@@ -423,10 +423,10 @@ void CParticleElectric::RenderLines() {
                             CTransform4f::Translate(mTranslation) * mOrientation *
                             CTransform4f::Scale(mGlobalScale) * CTransform4f::Scale(mLocalScale));
   CGraphics::SetCullMode(kCM_None);
-  const bool textured = mElecDesc->x40_TEXR != nullptr;
+  const bool textured = mElecDesc->mTEXR != nullptr;
   SetupLineGXMaterial();
   if (textured) {
-    mElecDesc->x40_TEXR->GetValueTexture(0)->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+    mElecDesc->mTEXR->GetValueTexture(0)->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
     for (rstl::list< CParticleElectricManager >::iterator it = mElectricManagers.begin();
          it != mElectricManagers.end(); ++it) {
       CLineManager& line = *mLineManagers[it->mIdx];
@@ -434,14 +434,14 @@ void CParticleElectric::RenderLines() {
       CParticleGlobals::SetParticleLifetime(it->mEndFrame - it->mStartFrame);
       CParticleGlobals::UpdateParticleLifetimeTweenValues(frame);
       SUVElementSet uvs;
-      mElecDesc->x40_TEXR->GetValueUV(frame, uvs);
-      if (mElecDesc->x28_LWD1) {
+      mElecDesc->mTEXR->GetValueUV(frame, uvs);
+      if (mElecDesc->mLWD1) {
         DrawTexturedLineStrip(line.mVerts, line.mWidth1, line.mColor1, uvs);
       }
-      if (mElecDesc->x2c_LWD2) {
+      if (mElecDesc->mLWD2) {
         DrawTexturedLineStrip(line.mVerts, line.mWidth2, line.mColor2, uvs);
       }
-      if (mElecDesc->x30_LWD3) {
+      if (mElecDesc->mLWD3) {
         DrawTexturedLineStrip(line.mVerts, line.mWidth3, line.mColor3, uvs);
       }
     }
@@ -449,13 +449,13 @@ void CParticleElectric::RenderLines() {
     for (rstl::list< CParticleElectricManager >::iterator it = mElectricManagers.begin();
          it != mElectricManagers.end(); ++it) {
       CLineManager& line = *mLineManagers[it->mIdx];
-      if (mElecDesc->x28_LWD1) {
+      if (mElecDesc->mLWD1) {
         DrawLineStrip(line.mVerts, line.mWidth1, line.mColor1);
       }
-      if (mElecDesc->x2c_LWD2) {
+      if (mElecDesc->mLWD2) {
         DrawLineStrip(line.mVerts, line.mWidth2, line.mColor2);
       }
-      if (mElecDesc->x30_LWD3) {
+      if (mElecDesc->mLWD3) {
         DrawLineStrip(line.mVerts, line.mWidth3, line.mColor3);
       }
     }
@@ -468,7 +468,7 @@ void CParticleElectric::RenderLines() {
 }
 
 void CParticleElectric::SetupLineGXMaterial() {
-  if (mElecDesc->x40_TEXR) {
+  if (mElecDesc->mTEXR) {
     static const GXVtxDescList vtxDescTex[] = {
         {GX_VA_POS, GX_DIRECT}, {GX_VA_TEX0, GX_DIRECT}, {GX_VA_NULL, GX_NONE}};
     CGX::SetVtxDescv(vtxDescTex);
@@ -540,8 +540,8 @@ void CParticleElectric::DrawTexturedLineStrip(
 
 void CParticleElectric::AddElectricalEffects() {
   float rate = 0.f;
-  if (mElecDesc->x8_GRAT) {
-    if (mElecDesc->x8_GRAT->GetValue(mCurrentFrame, rate)) {
+  if (mElecDesc->mGRAT) {
+    if (mElecDesc->mGRAT->GetValue(mCurrentFrame, rate)) {
       mElectricManagers.clear();
       for (int i = 0; i < mAllocated.size(); ++i) {
         mAllocated[i] = false;
@@ -585,8 +585,8 @@ void CParticleElectric::CreateNewParticles(int count) {
       }
       mAllocated[allocIdx] = true;
       int lifetime = 1;
-      if (mElecDesc->x4_SLIF) {
-        mElecDesc->x4_SLIF->GetValue(mCurrentFrame, lifetime);
+      if (mElecDesc->mSLIF) {
+        mElecDesc->mSLIF->GetValue(mCurrentFrame, lifetime);
       }
       mElectricManagers.push_back(CParticleElectricManager(allocIdx, lifetime, mCurrentFrame));
       CParticleElectricManager& manager = mElectricManagers.back();
@@ -603,8 +603,8 @@ void CParticleElectric::CreateNewParticles(int count) {
         swoosh.SetGlobalScale(mGlobalScale);
         swoosh.SetLocalScale(mLocalScale);
         CColor color = CColor::White();
-        if (mElecDesc->x14_COLR) {
-          mElecDesc->x14_COLR->GetValue(frame, color);
+        if (mElecDesc->mCOLR) {
+          mElecDesc->mCOLR->GetValue(frame, color);
         }
         swoosh.SetModulationColor(CColor::Modulate(color, mModuColor));
         int curParticle = swoosh.mCurParticle;
@@ -685,8 +685,8 @@ void CParticleElectric::UpdateElectricalEffects() {
     if (mHaveSSWH) {
       CParticleSwoosh& swoosh = *mSwooshGenerators[manager.mIdx];
       CColor color = CColor::White();
-      if (mElecDesc->x14_COLR) {
-        mElecDesc->x14_COLR->GetValue(frame, color);
+      if (mElecDesc->mCOLR) {
+        mElecDesc->mCOLR->GetValue(frame, color);
       }
       swoosh.SetModulationColor(CColor::Modulate(color, mModuColor));
       swoosh.UpdateAllBounds();
@@ -700,26 +700,26 @@ void CParticleElectric::UpdateElectricalEffects() {
 }
 
 void CParticleElectric::UpdateLine(int idx, int frame) {
-  CColorElement* element = mElecDesc->x34_LCL1;
+  CColorElement* element = mElecDesc->mLCL1;
   CLineManager& line = *mLineManagers[idx];
   if (element) {
     element->GetValue(frame, line.mColor1);
   }
-  if (CColorElement* element = mElecDesc->x38_LCL2) {
+  if (CColorElement* element = mElecDesc->mLCL2) {
     element->GetValue(frame, line.mColor2);
   }
-  if (CColorElement* element = mElecDesc->x3c_LCL3) {
+  if (CColorElement* element = mElecDesc->mLCL3) {
     element->GetValue(frame, line.mColor3);
   }
-  if (CRealElement* element = mElecDesc->x28_LWD1) {
+  if (CRealElement* element = mElecDesc->mLWD1) {
     element->GetValue(frame, line.mWidth1);
     line.mWidth1 = rstl::min_val(42.5f, line.mWidth1);
   }
-  if (CRealElement* element = mElecDesc->x2c_LWD2) {
+  if (CRealElement* element = mElecDesc->mLWD2) {
     element->GetValue(frame, line.mWidth2);
     line.mWidth2 = rstl::min_val(42.5f, line.mWidth2);
   }
-  if (CRealElement* element = mElecDesc->x30_LWD3) {
+  if (CRealElement* element = mElecDesc->mLWD3) {
     element->GetValue(frame, line.mWidth3);
     line.mWidth3 = rstl::min_val(42.5f, line.mWidth3);
   }

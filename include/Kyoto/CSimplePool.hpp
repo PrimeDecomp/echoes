@@ -28,7 +28,7 @@ public:
   virtual CToken GetObj(const char* name, const CVParamTransfer& xfer);
   virtual bool HasObject(const SObjectTag& tag);
   virtual bool ObjectIsLive(const SObjectTag& tag);
-  virtual IFactory& GetFactory() { return *x18_factory; }
+  virtual IFactory& GetFactory() { return *mFactory; }
   virtual void Flush();
   virtual void ObjectUnreferenced(const SObjectTag& tag);
   rstl::vector< SObjectTag > GetReferencedTags();
@@ -36,9 +36,9 @@ public:
   void fn_8029c7e8(const SObjectTag& tag);
 
 private:
-  ResourceMap x4_resources;
-  IFactory* x18_factory;
-  CVParamTransfer x1c_paramXfr;
+  ResourceMap mResources;
+  IFactory* mFactory;
+  CVParamTransfer mParamXfr;
 };
 CHECK_SIZEOF(CSimplePool, 0x24)
 

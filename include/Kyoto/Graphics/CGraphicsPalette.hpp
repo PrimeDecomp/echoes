@@ -21,19 +21,19 @@ public:
   CGraphicsPalette(CInputStream& in);
   ~CGraphicsPalette();
 
-  ushort* GetPaletteData() { return xc_entries.get(); }
-  const ushort* GetPaletteData() const { return xc_entries.get(); }
+  ushort* GetPaletteData() { return mEntries.get(); }
+  const ushort* GetPaletteData() const { return mEntries.get(); }
   void Load() const;
   void UnLock();
 
 private:
   static uint sCurrentFrameCount;
-  EPaletteFormat x0_fmt;
-  mutable uint x4_frameLoaded;
-  uint x8_entryCount;
-  rstl::single_ptr<ushort> xc_entries;
-  GXTlutObj x10_tlutObj;
-  bool x1c_locked;
+  EPaletteFormat mFmt;
+  mutable uint mFrameLoaded;
+  uint mEntryCount;
+  rstl::single_ptr<ushort> mEntries;
+  GXTlutObj mTlutObj;
+  bool mLocked;
 };
 
 #endif // _CGRAPHICSPALETTE

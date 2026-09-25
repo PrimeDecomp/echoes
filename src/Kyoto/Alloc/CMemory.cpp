@@ -35,9 +35,9 @@ void CMemory::SetAllocator(COsContext& ctx, IAllocator& allocator) {
 }
 
 static bool cmemory_enum_alloc_cb(const IAllocator::SAllocInfo& info, const void* ptr) {
-  if (info.x8_isAllocated && info.x9_ == 0) {
+  if (info.mIsAllocated && info.x9_ == 0) {
     ++gLeakCount;
-    gLeakBytes += info.x4_len;
+    gLeakBytes += info.mLen;
   }
   return true;
 }
@@ -61,7 +61,7 @@ void* CMemory::Alloc(size_t len, IAllocator::EHint hint, IAllocator::EScope scop
   if (ret == nullptr) {
     const IAllocator::SMetrics metrics = mpAllocator->GetMetrics(0, false);
     rs_debugger_printf("Alloc failed - Size: %d, Used: %d, Free: %d", len, metrics.x10_,
-                       metrics.x14_heapSize2);
+                       metrics.mHeapSize2);
   }
 
   OSRestoreInterrupts(enabled);

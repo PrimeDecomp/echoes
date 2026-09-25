@@ -6,9 +6,9 @@
 class COutputStream;
 
 class CBitStreamWriter {
-  COutputStream& x0_stream;
-  uint x4_shiftRegister;
-  volatile uint x8_shiftRegisterOffset;
+  COutputStream& mStream;
+  uint mShiftRegister;
+  volatile uint mShiftRegisterOffset;
 
 public:
   explicit CBitStreamWriter(COutputStream& stream);

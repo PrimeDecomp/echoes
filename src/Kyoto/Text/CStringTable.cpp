@@ -15,27 +15,27 @@ static const FourCC skLanguages[] = {'ENGL', 'GERM', 'FREN', 'SPAN', 'ITAL', 'DU
 static FourCC mCurrentLanguage = skLanguages[0];
 
 struct SLanguageInfo {
-  FourCC x0_language;
-  uint x4_offset;
-  uint x8_size;
+  FourCC mLanguage;
+  uint mOffset;
+  uint mSize;
 };
 
 struct SStringNameLess {
   template < typename T >
   bool operator()(const T& a, const T& b) const {
-    return strcmp(a.x0_name, b.x0_name) < 0;
+    return strcmp(a.mName, b.mName) < 0;
   }
 };
 
 void CStringTable::SetLanguage(int language) { mCurrentLanguage = skLanguages[language]; }
 
 CStringTable::CStringTable(CInputStream& in)
-: x0_stringCount(0)
-, x4_nameCount(0)
-, x8_data(nullptr)
-, xc_names(nullptr)
-, x10_strings(nullptr)
-, x14_reloadData(nullptr) {
+: mStringCount(0)
+, mNameCount(0)
+, mData(nullptr)
+, mNames(nullptr)
+, mStrings(nullptr)
+, mReloadData(nullptr) {
   Load(in);
 }
 
@@ -45,7 +45,7 @@ void CStringTable::Load(CInputStream& in) {
   in.ReadInt32();
   uint version = in.ReadInt32();
   int langCount = in.Get(TType< int >());
-  x0_stringCount = in.Get(TType< int >());
+  mStringCount = in.Get(TType< int >());
 
   rstl::reserved_vector< SLanguageInfo, 7 > languages;
   for (int i = 0; i < langCount; ++i) {
@@ -56,23 +56,23 @@ void CStringTable::Load(CInputStream& in) {
     languages.push_back(info);
   }
 
-  uint offset = languages[0].x4_offset;
-  uint size = languages[0].x8_size;
+  uint offset = languages[0].mOffset;
+  uint size = languages[0].mSize;
   for (int i = 0; i < langCount; ++i) {
-    if (languages[i].x0_language == mCurrentLanguage) {
-      offset = languages[i].x4_offset;
-      size = languages[i].x8_size;
+    if (languages[i].mLanguage == mCurrentLanguage) {
+      offset = languages[i].mOffset;
+      size = languages[i].mSize;
       break;
     }
   }
 
   if (version != 0) {
-    x4_nameCount = in.Get(TType< int >());
+    mNameCount = in.Get(TType< int >());
     uint namesSize = in.Get(TType< uint >());
-    x8_data = rs_new uchar[namesSize + size];
-    xc_names = reinterpret_cast< SStringName* >(x8_data.get());
-    x10_strings = reinterpret_cast< const wchar_t** >(x8_data.get() + namesSize);
-    in.ReadBytes(xc_names, namesSize);
+    mData = rs_new uchar[namesSize + size];
+    mNames = reinterpret_cast< SStringName* >(mData.get());
+    mStrings = reinterpret_cast< const wchar_t** >(mData.get() + namesSize);
+    in.ReadBytes(mNames, namesSize);
   }
 
   for (uint i = 0; i < offset; ++i) {
@@ -81,40 +81,40 @@ void CStringTable::Load(CInputStream& in) {
 
   if (version == 0) {
     size = in.Get(TType< uint >());
-    x8_data = rs_new uchar[size];
-    x10_strings = reinterpret_cast< const wchar_t** >(x8_data.get());
+    mData = rs_new uchar[size];
+    mStrings = reinterpret_cast< const wchar_t** >(mData.get());
   }
-  in.ReadBytes(x10_strings, size);
+  in.ReadBytes(mStrings, size);
 
   if (version != 0) {
-    SStringName* entry = xc_names;
-    for (int i = 0; i < x4_nameCount; ++i, ++entry) {
-      entry->x0_name += reinterpret_cast< uint >(xc_names);
+    SStringName* entry = mNames;
+    for (int i = 0; i < mNameCount; ++i, ++entry) {
+      entry->mName += reinterpret_cast< uint >(mNames);
     }
   }
 
-  uint* entry = reinterpret_cast< uint* >(x10_strings);
-  for (int i = 0; i < x0_stringCount; ++i, ++entry) {
-    *entry += reinterpret_cast< uint >(x10_strings);
+  uint* entry = reinterpret_cast< uint* >(mStrings);
+  for (int i = 0; i < mStringCount; ++i, ++entry) {
+    *entry += reinterpret_cast< uint >(mStrings);
   }
 }
 
 const wchar_t* CStringTable::GetString(int idx) const {
-  if (idx < 0 || idx >= x0_stringCount) {
+  if (idx < 0 || idx >= mStringCount) {
     return skInvalidString;
   }
-  return x10_strings[idx];
+  return mStrings[idx];
 }
 
 int CStringTable::GetStringIndex(const char* name) const {
-  SStringName* begin = xc_names;
-  if (x4_nameCount > 0 && *name != '\0') {
-    SStringName* end = begin + x4_nameCount;
+  SStringName* begin = mNames;
+  if (mNameCount > 0 && *name != '\0') {
+    SStringName* end = begin + mNameCount;
     SStringName key = {name};
     SStringNameLess cmp;
     SStringName* it = rstl::lower_bound(begin, end, key, cmp);
-    if (it != end && strcmp(it->x0_name, name) == 0) {
-      return it->x4_index;
+    if (it != end && strcmp(it->mName, name) == 0) {
+      return it->mIndex;
     }
   }
   return -1;

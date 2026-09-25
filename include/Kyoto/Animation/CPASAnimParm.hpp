@@ -36,11 +36,11 @@ public:
   bool GetBoolValue() const;
   int GetEnumValue() const;
 
-  UParmValue GetParameter() { return x0_value; }
+  UParmValue GetParameter() { return mValue; }
 
 private:
-  UParmValue x0_value;
-  EParmType x4_type;
+  UParmValue mValue;
+  EParmType mType;
 };
 
 #endif // _CPASANIMPARM

@@ -329,8 +329,8 @@ static bool TryModulateKColor(uint tevCount, uint& kColorCount, const CModelFlag
   }
   if (kColorCount == 1) {
     const CGX::STevState& state = CGX::GetTevState(GX_TEVSTAGE0);
-    if (state.x0_colorInArgs == 0x7b94f &&
-        (state.x4_alphaInArgs == 0x390c7 || state.x4_alphaInArgs == 0x31ce7)) {
+    if (state.mColorInArgs == 0x7b94f &&
+        (state.mAlphaInArgs == 0x390c7 || state.mAlphaInArgs == 0x31ce7)) {
       ModulateKColor(flags);
       sKColorModulated = true;
       return true;
@@ -455,7 +455,7 @@ uint CCubeMaterial::HandleReflection(const GXTexMapID indTexSlot, const int indM
                                      const uint tcgCount, const uint kColorCount) {
   bool usesTevReg2 = false;
   for (uint i = 0; i < tevCount; ++i) {
-    if ((CGX::GetTevState(static_cast< GXTevStageID >(i)).x8_colorOps >> 9 & 3) == GX_TEVREG2) {
+    if ((CGX::GetTevState(static_cast< GXTevStageID >(i)).mColorOps >> 9 & 3) == GX_TEVREG2) {
       usesTevReg2 = true;
       break;
     }
@@ -524,7 +524,7 @@ void CCubeMaterial::EnsureTevsDirect() {
 }
 
 void CCubeMaterial::SetCurrentBlack() const {
-  const uint* data = reinterpret_cast< const uint* >(x0_data);
+  const uint* data = reinterpret_cast< const uint* >(mData);
   const uint texCount = data[1];
   const uint flags = data[0];
   const uint vertexDesc = data[texCount + 2];
@@ -734,7 +734,7 @@ static void HandleThermalTevs(const uint*& materialData, uint firstTev, uint& te
 
 void CCubeMaterial::SetCurrent(const CModelFlags& flags, const CCubeSurface& surface,
                                const CCubeModel& model) const {
-  if (x0_data == sLastMaterialCached) {
+  if (mData == sLastMaterialCached) {
     switch (sMaterialCachedState) {
     case 1:
       if (sLastModelCached == sRenderingModel) {
@@ -860,7 +860,7 @@ void CCubeMaterial::SetCurrent(const CModelFlags& flags, const CCubeSurface& sur
       texCount += 1;
       finalKColorCount += 1;
     } else if (finalTevCount != 0 &&
-               (CGX::GetTevState(static_cast< GXTevStageID >(finalTevCount - 1)).x8_colorOps >>
+               (CGX::GetTevState(static_cast< GXTevStageID >(finalTevCount - 1)).mColorOps >>
                     9 &
                 3) != 0) {
       DoPassthru(finalTevCount);
@@ -988,7 +988,7 @@ void CCubeMaterial::ResetCachedMaterials() {
 }
 
 uint CCubeMaterial::GetCompressedBlend() const {
-  const uint* ptr = reinterpret_cast< const uint* >(x0_data);
+  const uint* ptr = reinterpret_cast< const uint* >(mData);
   const uint flags = ptr[0];
   const uint texCount = ptr[1];
   const uint* blend = ptr + texCount + 6;

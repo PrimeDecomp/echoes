@@ -7,24 +7,24 @@
 
 class CRelAngle {
 public:
-  float AsDegrees() const { return x0_angle * (180.f / M_PIF); }
-  float AsRadians() const { return x0_angle; }
+  float AsDegrees() const { return mAngle * (180.f / M_PIF); }
+  float AsRadians() const { return mAngle; }
   // ArcCosine__9CRelAngleFf weak
 
   CRelAngle& operator+=(const CRelAngle& v) {
-    x0_angle += v.x0_angle;
+    mAngle += v.mAngle;
     return *this;
   }
   CRelAngle& operator-=(const CRelAngle& v) {
-    x0_angle -= v.x0_angle;
+    mAngle -= v.mAngle;
     return *this;
   }
   CRelAngle& operator*=(float v) {
-    x0_angle *= v;
+    mAngle *= v;
     return *this;
   }
   CRelAngle& operator/=(float v) {
-    x0_angle /= v;
+    mAngle /= v;
     return *this;
   }
 
@@ -34,9 +34,9 @@ public:
   static CRelAngle FromRadians(float rad) { return CRelAngle(rad); }
 
 private:
-  CRelAngle(float rad) : x0_angle(rad) {}
+  CRelAngle(float rad) : mAngle(rad) {}
 
-  float x0_angle;
+  float mAngle;
 };
 CHECK_SIZEOF(CRelAngle, 0x4)
 

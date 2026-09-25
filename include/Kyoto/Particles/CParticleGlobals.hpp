@@ -14,13 +14,13 @@ public:
   friend struct SParticleSystem;
   struct SParticleSystem {
     SParticleSystem(FourCC type, CParticleGen* system)
-    : x0_type(type), x4_system(system), mPrev(mCurrentParticleSystem) {
+    : mType(type), mSystem(system), mPrev(mCurrentParticleSystem) {
       mCurrentParticleSystem = this;
     }
     ~SParticleSystem() { mCurrentParticleSystem = mPrev; }
 
-    FourCC x0_type;
-    CParticleGen* x4_system;
+    FourCC mType;
+    CParticleGen* mSystem;
     SParticleSystem* mPrev;
   };
 

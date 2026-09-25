@@ -12,25 +12,25 @@ class CPlane {
 public:
   CPlane(CInputStream& in);
   CPlane(const CVector3f& vec, const CUnitVector3f& normal)
-  : x0_normal(normal), xc_constant(CVector3f::Dot(vec, normal)) {}
-  CPlane(float constant, const CUnitVector3f& normal) : x0_normal(normal), xc_constant(constant) {}
+  : mNormal(normal), mConstant(CVector3f::Dot(vec, normal)) {}
+  CPlane(float constant, const CUnitVector3f& normal) : mNormal(normal), mConstant(constant) {}
   CPlane(const CVector3f&, const CVector3f&, const CVector3f&);
   // TODO
 
-  const CUnitVector3f& GetNormal() const { return x0_normal; }
-  float GetConstant() const { return xc_constant; }
+  const CUnitVector3f& GetNormal() const { return mNormal; }
+  float GetConstant() const { return mConstant; }
   float GetHeight(const CVector3f& pos) const {
     return CVector3f::Dot(GetNormal(), pos) - GetConstant();
   }
   bool IsFacing(const CVector3f& vec) const {
-    return CVector3f::Dot(x0_normal, vec) >= GetConstant();
+    return CVector3f::Dot(mNormal, vec) >= GetConstant();
   }
   CVector3f GetClosestPoint(const CVector3f& point) const;
   float ClipLineSegment(const CVector3f& start, const CVector3f& end) const;
   
 private:
-  CUnitVector3f x0_normal;
-  float xc_constant;
+  CUnitVector3f mNormal;
+  float mConstant;
 };
 CHECK_SIZEOF(CPlane, 0x10)
 

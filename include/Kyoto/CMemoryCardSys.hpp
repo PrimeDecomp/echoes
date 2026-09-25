@@ -35,13 +35,13 @@ enum ECardResult {
 };
 
 struct ProbeResults {
-  ECardResult x0_error;
-  s32 x4_cardSize;   /* in megabits */
-  s32 x8_sectorSize; /* in bytes */
+  ECardResult mError;
+  s32 mCardSize;   /* in megabits */
+  s32 mSectorSize; /* in bytes */
 };
 
 struct CardStat {
-  CARDStat x0_stat;
+  CARDStat mStat;
 
   CardStat() { memset(this, 0, sizeof(CardStat)); }
 
@@ -63,17 +63,17 @@ public:
   // Echoes stores a 0x2000-byte header block followed by two alternating copies of the save data.
   class CCardFileInfo {
     struct Icon {
-      CAssetId x0_id;
-      int x4_speed;
-      TLockedToken< CTexture > x8_tex;
+      CAssetId mId;
+      int mSpeed;
+      TLockedToken< CTexture > mTex;
 
       Icon(CAssetId id, int speed, CSimplePool& pool);
     };
 
     struct SSaveSlot {
-      int x0_generation;
-      bool x4_corrupt;
-      rstl::vector< uchar, rstl::aligned_allocator > x8_data;
+      int mGeneration;
+      bool mCorrupt;
+      rstl::vector< uchar, rstl::aligned_allocator > mData;
 
       SSaveSlot();
       void CheckCrc();
@@ -91,23 +91,23 @@ public:
       kS_SetStatus,
     };
 
-    int x0_slotBlocks;
-    int x4_slotSize;
-    int x8_slot;
-    int xc_generation;
-    EStatus x10_status;
-    bool x14_newFile;
-    CARDFileInfo x18_fileInfo;
-    rstl::string x2c_fileName;
-    rstl::string x3c_comment;
+    int mSlotBlocks;
+    int mSlotSize;
+    int mSlot;
+    int mGeneration;
+    EStatus mStatus;
+    bool mNewFile;
+    CARDFileInfo mFileInfo;
+    rstl::string mFileName;
+    rstl::string mComment;
     int x4c_;
-    CAssetId x50_bannerTex;
-    rstl::optional_object< TLockedToken< CTexture > > x54_bannerTok;
-    rstl::reserved_vector< Icon, 8 > x64_iconToks;
-    rstl::vector< uchar, rstl::aligned_allocator > x108_headerBuffer;
-    rstl::reserved_vector< SSaveSlot, 2 > x118_slots;
-    rstl::vector< uchar > x14c_loadedData;
-    rstl::vector< uchar > x15c_saveBuffer;
+    CAssetId mBannerTex;
+    rstl::optional_object< TLockedToken< CTexture > > mBannerTok;
+    rstl::reserved_vector< Icon, 8 > mIconToks;
+    rstl::vector< uchar, rstl::aligned_allocator > mHeaderBuffer;
+    rstl::reserved_vector< SSaveSlot, 2 > mSlots;
+    rstl::vector< uchar > mLoadedData;
+    rstl::vector< uchar > mSaveBuffer;
 
   public:
     CCardFileInfo(EMemoryCardPort port, const rstl::string& name);
@@ -129,8 +129,8 @@ public:
     int GetFileNo();
     int GetFileBlocks();
 
-    rstl::vector< uchar >& LoadedData() { return x14c_loadedData; }
-    rstl::vector< uchar >& SaveBuffer() { return x15c_saveBuffer; }
+    rstl::vector< uchar >& LoadedData() { return mLoadedData; }
+    rstl::vector< uchar >& SaveBuffer() { return mSaveBuffer; }
 
   private:
     ECardResult CheckHeaderCrc();

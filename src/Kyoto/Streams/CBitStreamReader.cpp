@@ -5,39 +5,39 @@
 #include "Kyoto/Streams/StreamSupport.hpp"
 
 CBitStreamReader::CBitStreamReader(CInputStream& stream)
-: x0_stream(stream), x4_bitWord(0), x8_bitOffset(0) {}
+: mStream(stream), mBitWord(0), mBitOffset(0) {}
 
 CBitStreamReader::~CBitStreamReader() {}
 
 uint CBitStreamReader::ReadBits(uint bitCount) {
-  if (x8_bitOffset >= bitCount) {
+  if (mBitOffset >= bitCount) {
     uint mask = 0xffffffff;
     uint bwShift = 32 - bitCount;
     if (bitCount != 0x20) {
       mask = (1 << bitCount) - 1;
     }
-    uint ret = mask & (x4_bitWord >> bwShift);
+    uint ret = mask & (mBitWord >> bwShift);
 
-    x8_bitOffset -= bitCount;
-    x4_bitWord <<= bitCount;
+    mBitOffset -= bitCount;
+    mBitWord <<= bitCount;
     return ret;
   }
 
-  uint shiftAmt = bitCount - x8_bitOffset;
+  uint shiftAmt = bitCount - mBitOffset;
 
   uint ret = 0;
   {
     uint mask = 0xffffffff;
-    uint bwShift = 32 - x8_bitOffset;
-    if (x8_bitOffset != 0x20) {
-      mask = (1 << x8_bitOffset) - 1;
+    uint bwShift = 32 - mBitOffset;
+    if (mBitOffset != 0x20) {
+      mask = (1 << mBitOffset) - 1;
     }
-    ret = (mask & (x4_bitWord >> bwShift)) << shiftAmt;
+    ret = (mask & (mBitWord >> bwShift)) << shiftAmt;
   }
 
   uint len = min_containing_bytes(shiftAmt);
-  x8_bitOffset = 0;
-  x0_stream.Get(&x4_bitWord, len);
+  mBitOffset = 0;
+  mStream.Get(&mBitWord, len);
 
   {
     uint mask = 0xffffffff;
@@ -45,18 +45,18 @@ uint CBitStreamReader::ReadBits(uint bitCount) {
     if (shiftAmt != 0x20) {
       mask = (1 << shiftAmt) - 1;
     }
-    ret |= ((mask & (x4_bitWord >> bwShift)) << x8_bitOffset);
+    ret |= ((mask & (mBitWord >> bwShift)) << mBitOffset);
   }
 
-  x8_bitOffset = len * 8;
-  x8_bitOffset -= shiftAmt;
-  x4_bitWord <<= shiftAmt;
+  mBitOffset = len * 8;
+  mBitOffset -= shiftAmt;
+  mBitWord <<= shiftAmt;
   return ret;
 }
 
-void CBitStreamReader::Flush() { x8_bitOffset = 0; }
+void CBitStreamReader::Flush() { mBitOffset = 0; }
 
 CInputStream& CBitStreamReader::GetInputStream() {
   Flush();
-  return x0_stream;
+  return mStream;
 }

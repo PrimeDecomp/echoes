@@ -18,11 +18,11 @@ class CCubeSurface {
   };
 
   static const CVector3f skDefaultNormal;
-  const SSurfaceData* x0_data;
+  const SSurfaceData* mData;
 
 public:
   CAABox GetBounds() const;
-  const CVector3f& GetCenter() const { return x0_data->mCenter; }
-  const CVector3f& GetNormalHint() const { return x0_data->mNormal; }
+  const CVector3f& GetCenter() const { return mData->mCenter; }
+  const CVector3f& GetNormalHint() const { return mData->mNormal; }
 };
 #endif // _CCUBESURFACE

@@ -7,10 +7,10 @@
 
 class CSegId {
 public:
-  CSegId() : x0_id(-1) {}
+  CSegId() : mId(-1) {}
   CSegId(CInputStream& in);
 private:
-  uchar x0_id;
+  uchar mId;
 };
 
 #endif // _CSEGID
