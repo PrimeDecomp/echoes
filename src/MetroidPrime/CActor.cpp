@@ -213,7 +213,7 @@ void CActor::CalculateRenderBounds(CStateManager& mgr) {
     SetRenderBounds(bounds);
     if (GetModelData()->HasAnimation()) {
       rstl::optional_object< CAABox > new_bounds =
-          GetModelData()->GetAnimationData()->GetParticleDB().GetBounds();
+          GetModelData()->GetAnimationData()->GetParticleDB().GetTotalBounds();
       if (new_bounds) {
         bounds.AccumulateBounds(new_bounds->GetMinPoint());
         bounds.AccumulateBounds(new_bounds->GetMaxPoint());
@@ -234,7 +234,7 @@ void CActor::CalculateRenderBounds(CStateManager& mgr) {
 void CActor::SetModelData(const CModelData& data, CStateManager& mgr) {
   if (data.IsNull()) {
     if (GetModelData() && GetModelData()->HasAnimation()) {
-      AnimationData()->GetParticleDB().DeleteAllLights(mgr);
+      AnimationData()->GetParticleDB().DeleteAllLights(&mgr);
     }
     m_modelData = nullptr;
   } else {
@@ -636,7 +636,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_XDelete: {
     RemoveEmitter();
     if (HasModelData() && AnimationData() != nullptr) {
-      AnimationData()->GetParticleDB().DeleteAllLights(mgr);
+      AnimationData()->GetParticleDB().DeleteAllLights(&mgr);
     }
     // if (field_0x130) {
     //   (field25_0xa4->vtable[3])(mgr);
