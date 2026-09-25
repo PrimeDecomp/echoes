@@ -172,6 +172,7 @@ public:
   CCameraManager* m_cameraManagers[4];
   CRumbleManager* m_rumbleManagers[4];
   CFinalInput m_finalInputs[4];
+  char pad_finalInputs[0x10]; // Echoes CFinalInput is 0x2C; contents of this 0xC0 region unverified
   CPlayerState* m_playerState;
   CCameraManager* m_cameraManager;
   CWorld* m_world;                                                 // 0x1604

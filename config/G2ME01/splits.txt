@@ -333,6 +333,14 @@ Kyoto/Animation/CCharAnimTime.cpp:
 	.sdata      start:0x80418BD0 end:0x80418BE8
 	.sdata2     start:0x8041E9A0 end:0x8041E9A8
 
+Kyoto/Animation/CSegIdList.cpp:
+	.text       start:0x80306450 end:0x80306490
+
+Kyoto/Input/CFinalInput.cpp:
+	.text       start:0x80306490 end:0x80306F80
+	.data       start:0x803BB010 end:0x803BB020
+	.sdata2     start:0x8041E9A8 end:0x8041E9C8
+
 Kyoto/Graphics/CColor.cpp:
 	.text       start:0x80306F80 end:0x80307030
 	.ctors      start:0x803A564C end:0x803A5650
