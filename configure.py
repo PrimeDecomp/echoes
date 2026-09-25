@@ -526,6 +526,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CSwooshDescription.cpp"),
             Object(NonMatching, "Kyoto/CPakFile.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/CMidiManager.cpp"),
+            Object(NonMatching, "Kyoto/Audio/CSfxHandle.cpp"),
+            Object(NonMatching, "Kyoto/Audio/CSfxManager.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontImageDef.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),

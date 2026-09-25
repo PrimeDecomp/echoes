@@ -166,4 +166,6 @@ public:
   static const uchar kEmitterMedPriority;
 };
 
+NESTED_CHECK_SIZEOF(CAudioSys, C3DEmitterParmData, 0x2c)
+
 #endif // _CAUDIOSYS

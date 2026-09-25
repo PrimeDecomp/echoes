@@ -252,6 +252,15 @@ Kyoto/Basics/RAssertDolphin.cpp:
 	.sbss       start:0x80419818 end:0x80419828
 	.sdata2     start:0x8041E268 end:0x8041E278
 
+Kyoto/Audio/CSfxHandle.cpp:
+	.text       start:0x8029AB00 end:0x8029AB1C
+
+Kyoto/Audio/CSfxManager.cpp:
+	.text       start:0x8029AB1C end:0x802A042C
+	.ctors      start:0x803A55D8 end:0x803A55DC
+	.data       start:0x803B9490 end:0x803B95D8
+	.sdata2     start:0x8041E2E0 end:0x8041E310
+
 Kyoto/Animation/CInt32POINode.cpp:
 	.text       start:0x802B1870 end:0x802B1980
 
