@@ -62,6 +62,8 @@ public:
   void UnLock();
 
   void* GetBitMapData(int);
+  const void* GetConstBitMapData(int) const;
+  const CGraphicsPalette* GetPalette() const { return mGraphicsPalette.get(); }
 
   void InitBitmapBuffers(ETexelFormat fmt, short w, short h, int mips);
   void InitTextureObjects();

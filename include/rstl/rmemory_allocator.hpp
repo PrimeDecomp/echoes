@@ -31,6 +31,22 @@ struct rmemory_allocator {
     delete[] reinterpret_cast< uchar* >(ptr);
   }
 };
+
+struct aligned_allocator {
+  aligned_allocator() {}
+  aligned_allocator(const aligned_allocator&) {}
+
+  template < typename T >
+  static void allocate(T*& out, int count) {
+    const int size = count * sizeof(T);
+    out = size == 0 ? nullptr
+                    : static_cast< T* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen));
+  }
+  template < typename T >
+  static void deallocate(T* ptr) {
+    delete[] reinterpret_cast< uchar* >(ptr);
+  }
+};
 } // namespace rstl
 
 #endif // _RSTL_RMEMORY_ALLOCATOR

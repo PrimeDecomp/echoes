@@ -446,6 +446,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/IAllocator.cpp"),
             Object(NonMatching, "Kyoto/PVS/CPVSVisOctree.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/PVS/CPVSVisSet.cpp"),
+            Object(NonMatching, "Kyoto/DolphinCMemoryCardSys.cpp"),
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegIdList.cpp"),
