@@ -561,6 +561,12 @@ Kyoto/CDependencyGroup.cpp:
 	.text       start:0x803208F0 end:0x80320FD8
 	.rodata     start:0x803AFFA0 end:0x803AFFA8
 
+Kyoto/Particles/CElectricDescription.cpp:
+	.text       start:0x8032257C end:0x803228CC
+
+Kyoto/Particles/CSwooshDescription.cpp:
+	.text       start:0x803228CC end:0x80322C1C
+
 Kyoto/CPakFile.cpp:
 	.text       start:0x80323038 end:0x80324D44
 	.rodata     start:0x803B0098 end:0x803B00F0
