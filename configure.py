@@ -315,6 +315,44 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
+# MusyX flags
+cflags_musyx = [
+    "-proc gekko",
+    "-nodefaults",
+    "-nosyspath",
+    "-i include",
+    "-i libc",
+    "-i extern/musyx/include",
+    "-inline auto,depth=4",
+    "-O4,p",
+    "-fp hard",
+    "-enum int",
+    "-sym on",
+    "-Cpp_exceptions off",
+    "-str reuse,pool,readonly",
+    "-fp_contract off",
+    "-DMUSY_TARGET=MUSY_TARGET_DOLPHIN",
+    "-DM_PI=3.14159265358979323846",
+]
+
+
+# Helper function for MusyX objects
+def MusyX(objects: List[Object], mw_version="GC/1.3.2", major=2, minor=0, patch=3) -> Dict[str, Any]:
+    return {
+        "lib": "musyx",
+        "mw_version": mw_version,
+        "src_dir": "extern/musyx/src",
+        "cflags": [
+            *cflags_musyx,
+            f"-DMUSY_VERSION_MAJOR={major}",
+            f"-DMUSY_VERSION_MINOR={minor}",
+            f"-DMUSY_VERSION_PATCH={patch}",
+        ],
+        "progress_category": "sdk",
+        "host": False,
+        "objects": objects,
+    }
+
 
 Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
@@ -700,6 +738,41 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/__ppc_eabi_init.cpp"),
+        ],
+    ),
+    MusyX(
+        [
+            Object(MatchingFor("G2ME01"), "musyx/runtime/seq.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synth.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/seq_api.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/snd_synthapi.c"),
+            Object(NonMatching, "musyx/runtime/stream.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synthdata.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synthmacros.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synthvoice.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synth_ac.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synth_dbtab.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synth_adsr.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/synth_vsamples.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/s_data.c"),
+            Object(NonMatching, "musyx/runtime/hw_dspctrl.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/hw_volconv.c"),
+            Object(NonMatching, "musyx/runtime/snd3d.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/snd_init.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/snd_math.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/snd_midictrl.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/snd_service.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/hardware.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/hw_aramdma.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/dsp_import.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/hw_dolphin.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/hw_memory.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/CheapReverb/creverb_fx.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/CheapReverb/creverb.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/StdReverb/reverb_fx.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/StdReverb/reverb.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/Delay/delay_fx.c"),
+            Object(MatchingFor("G2ME01"), "musyx/runtime/Chorus/chorus_fx.c"),
         ],
     ),
     # Begin RELs

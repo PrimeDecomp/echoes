@@ -1,0 +1,3 @@
+[submodule "extern/musyx"]
+	path = extern/musyx
+	url = https://github.com/AxioDL/musyx.git
