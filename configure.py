@@ -460,6 +460,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Animation/CParticlePOINode.cpp"),
             Object(NonMatching, "Kyoto/Animation/CPOINode.cpp"),
             Object(NonMatching, "Kyoto/Animation/CSoundPOINode.cpp"),
+            Object(NonMatching, "Kyoto/Animation/CPoseAsTransforms_Linear.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegId.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Input/CFinalInput.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Graphics/CColor.cpp"),
