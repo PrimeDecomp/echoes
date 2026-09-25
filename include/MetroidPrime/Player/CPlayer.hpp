@@ -149,15 +149,21 @@ public:
           const CVector3f& playerScale, float mass, float stepUp, float stepDown, float ballRadius,
           const CMaterialList& ml, CPlayerState*, CCameraManager*, bool, int playerIndex, int,
           int charIdx);
+
+  // CEntity
   ~CPlayer() override;
   CEntity* TypesMatch(int typeId) const override;
   void PreThink(float dt, CStateManager& mgr) override;
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
+
+  // CActor
+  void UnkVtable20(CStateManager& mgr) override;
   void PreRender(CStateManager& mgr) override;
   void PreRenderAllViewports(CStateManager& mgr) override;
   void AddToRenderer(const CStateManager& mgr) const override;
   void Render(const CStateManager& mgr) const override;
+  bool CanRenderUnsorted(const CStateManager& mgr) const override;
   CHealthInfo* HealthInfo() override;
   const CDamageVulnerability* GetDamageVulnerability() const override;
   const CDamageVulnerability* GetDamageVulnerability(const CVector3f& position,
@@ -172,6 +178,8 @@ public:
   void DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
                        float dt) override;
   CScannableObjectInfo* GetScannableObjectInfo() const override;
+
+  // CPhysicsActor
   const CCollisionPrimitive* GetCollisionPrimitive() const override;
   CTransform4f GetPrimitiveTransform() const override;
   void CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
@@ -179,6 +187,8 @@ public:
   float GetStepUpHeight() const override;
   float GetStepDownHeight() const override;
   float GetWeight() const override;
+
+  // CPlayer
   virtual bool UnkVtable98() const;
 
   int GetPlayerIndex() const;
@@ -279,7 +289,6 @@ public:
   float GetEyeHeight() const;
   bool CheckSubmerged() const;
 
-  void UnkVtable20(CStateManager& mgr) override;
   void SkipMorphTransition();
   void StopSounds();
   void fn_8000bbb4(CStateManager& mgr);
@@ -319,7 +328,6 @@ public:
   void fn_80017358(float dt);
   void UpdatePlayerDrawFlags(CStateManager& mgr);
   bool fn_80019e20(const CStateManager& mgr) const;
-  bool CanRenderUnsorted(const CStateManager& mgr) const;
 
   void EndGravityBoost(CStateManager& mgr);
   void ApplyGravityBoost(float dt, CStateManager& mgr);
