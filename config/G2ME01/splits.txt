@@ -138,6 +138,19 @@ MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0
 
+MetroidPrime/HUD/CHudDecoInterfaceScan.cpp:
+	.text       start:0x8021BFE0 end:0x8021DC00
+
+MetroidPrime/CQuitGameScreen.cpp:
+	.text       start:0x802219EC end:0x802221C0
+
+MetroidPrime/CInGameGuiManager.cpp:
+	.text       start:0x80222EC4 end:0x80226B3C
+
+MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
+	.text       start:0x802278C8 end:0x80227ACC
+	.data       start:0x803B84F8 end:0x803B8578
+
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8

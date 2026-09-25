@@ -36,6 +36,7 @@ enum EEntityType {
   kET_ScriptPlayerProxy = 69,
   kET_ScriptPortalTransition = 72,
   kET_Relay = 73,
+  kET_ScriptRepulsor = 74,
   kET_ScriptSpawnPoint = 79,
   kET_ScriptSpecialFunction = 80,
   kET_ScriptStreamedMusic = 84,

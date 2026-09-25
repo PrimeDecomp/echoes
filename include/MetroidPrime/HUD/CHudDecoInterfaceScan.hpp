@@ -5,7 +5,7 @@
 #include "Kyoto/TToken.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/auto_ptr.hpp"
-#include "rstl/single_ptr.hpp"
+#include "rstl/string.hpp"
 #include "rstl/vector.hpp"
 class CGuiFrame;
 class CGuiFrameLoader;
@@ -18,6 +18,7 @@ class CScanDisplay;
 class CStringTable;
 class CStateManager;
 class CFinalInput;
+class CScannableObjectInfo;
 // Guessed name; unlike Prime's decoration interface, this has no virtual base.
 class CHudDecoInterfaceScan {
 public:
@@ -26,9 +27,20 @@ public:
   ~CHudDecoInterfaceScan();
   void ProcessControllerInput(const CFinalInput& input);
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
+  void Draw(const CStateManager& mgr) const;
+  void Update(float dt, const CStateManager& mgr);
+  float GetMessageTextAlpha() const;
 
 private:
-  struct SScanHierarchyNode; // Guessed name; element layout remains to be recovered.
+  // Guessed name
+  struct SScanHierarchyNode {
+    uint x0;
+    rstl::string mName;
+    CAssetId mScan;
+    int mParent;
+    int mTotalScans;
+    int mCompletedScans;
+  };
   // Guessed name
   struct SScanHistoryWidgets {
     CGuiWidget* mRoot;
@@ -38,12 +50,22 @@ private:
     CGuiWidget* mFlash;
     CGuiWidget* mDouble;
   };
+  void InitializeFlatFrame(const CStateManager& mgr);
+  void UpdateScanDisplay(const CStateManager& mgr, float dt);
+  const CScannableObjectInfo* GetCurrScanInfo(const CStateManager& mgr) const;
+  // Guessed names for Echoes' scan-history support.
+  void StartHierarchyLoad();
+  bool CheckHierarchyLoadComplete();
+  void ReadHierarchy(CInputStream& in);
+  void ClearHierarchy();
+  void UpdateHierarchyProgress(const CStateManager& mgr);
+  void BuildScanHistory(CAssetId scan, rstl::vector< SScanHierarchyNode >& history) const;
   int mPlayerIndex;
   rstl::auto_ptr< CGuiFrameLoader > mFrameLoader;
   rstl::auto_ptr< CGuiFrame > mFlatFrame;
   CGuiFrame* mLoadedFlatFrame;
   const TLockedToken< CStringTable >& mStrings;
-  rstl::single_ptr< CScanDisplay > mScanDisplay;
+  CScanDisplay* mScanDisplay; // Owned; construction/destruction awaits its shared interface.
   TUniqueId mLatestHudPoi;
   TUniqueId mLatestScanningObject;
   int mLatestScanState;
