@@ -461,6 +461,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CTimeRemainderAndFraction.cpp"),
             Object(NonMatching, "Kyoto/DolphinCDvdFile.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CCubeMoviePlayer.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAdditiveAnimPlayback.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleElectricDataFactory.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/g721.cpp"),
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),

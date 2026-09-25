@@ -55,6 +55,12 @@ public:
     TToken< T >::Unlock();
   }
 
+  void ForceCache() {
+    if (x8_item == nullptr) {
+      x8_item = TToken< T >::GetT();
+    }
+  }
+
 private:
   T* x8_item;
 };
