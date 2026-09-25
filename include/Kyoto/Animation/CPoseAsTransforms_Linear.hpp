@@ -32,9 +32,9 @@ public:
                        int order);
   void SetRotation(const CCharLayoutInfo& layout, const CSegId& seg, const CMatrix3f& rotation);
   void BuildPose(const CCharLayoutInfo& layout, const CJointData_LinearStorage& data);
-  CTransform4f GetTransform(const CSegId& seg) const;
+  CTransform4f GetTransform(const CSegId& seg);
   const CVector3f& GetOffset(const CSegId& seg) const;
-  CMatrix3f GetRotation(const CSegId& seg) const;
+  CMatrix3f GetRotation(const CSegId& seg);
   const CMatrix3f& GetTransformMinusOffset(const CSegId& seg) const;
 
 private:

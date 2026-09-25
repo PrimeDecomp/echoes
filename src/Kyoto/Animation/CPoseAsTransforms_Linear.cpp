@@ -20,7 +20,7 @@ const CMatrix3f& CPoseAsTransforms_Linear::GetTransformMinusOffset(const CSegId&
   return mElements[seg.val()].mRotation;
 }
 
-CMatrix3f CPoseAsTransforms_Linear::GetRotation(const CSegId& seg) const {
+CMatrix3f CPoseAsTransforms_Linear::GetRotation(const CSegId& seg) {
   if (mScales.size() != 0) {
     return mUnscaledRotations[seg.val()];
   }
@@ -31,7 +31,7 @@ const CVector3f& CPoseAsTransforms_Linear::GetOffset(const CSegId& seg) const {
   return mElements[seg.val()].mOffset;
 }
 
-CTransform4f CPoseAsTransforms_Linear::GetTransform(const CSegId& seg) const {
+CTransform4f CPoseAsTransforms_Linear::GetTransform(const CSegId& seg) {
   const CElementType& elem = mElements[seg.val()];
   if (mScales.size() != 0) {
     return CTransform4f(mUnscaledRotations[seg.val()], elem.mOffset);
