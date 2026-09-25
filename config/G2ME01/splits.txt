@@ -218,6 +218,12 @@ MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
 
+MetaRender/CCubeRenderer.cpp:
+	.text       start:0x80262D3C end:0x80273FAC
+	.ctors      start:0x803A55B4 end:0x803A55B8
+	.data       start:0x803B8C10 end:0x803B8D60
+	.sbss       start:0x80419748 end:0x8041974C
+
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
 	.ctors      start:0x803A55D4 end:0x803A55D8

@@ -361,12 +361,12 @@ void CActor::EnsureRendered(const CStateManager& mgr, const CVector3f& pos,
     const CModelData::EWhichModel which = CModelData::GetRenderingModel(mgr);
     int value = fn_8004CAA0(mgr);
     if (value != -1) {
-      gpRender->UnkH(value);
+      gpRender->SetDestinationAlpha(value);
     }
     GetModelData()->RenderUnsortedParts(which, GetTransform(), GetActorLights(), GetModelFlags());
 
     if (value != -1) {
-      gpRender->UnkI();
+      gpRender->DisableDestinationAlpha();
     }
   }
   mgr.AddDrawableActor(*this, pos, bounds);
@@ -426,12 +426,12 @@ void CActor::RenderInternal(const CStateManager& mgr) const {
   const CModelData::EWhichModel which = CModelData::GetRenderingModel(mgr);
   int value = fn_8004CAA0(mgr);
   if (value != -1) {
-    gpRender->UnkH(value);
+    gpRender->SetDestinationAlpha(value);
   }
   GetModelData()->Render(which, GetTransform(), GetActorLights(), GetModelFlags());
 
   if (value != -1) {
-    gpRender->UnkI();
+    gpRender->DisableDestinationAlpha();
   }
 }
 
