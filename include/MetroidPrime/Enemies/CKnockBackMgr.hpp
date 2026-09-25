@@ -22,8 +22,12 @@ public:
 
   explicit CKnockBackMgr(CAssetId rules);
   ~CKnockBackMgr();
+
+  // CRuleSetEvaluator
   CRuleValue GetConditionValue(FourCC condition) const override;
   bool ExecuteAction(const CRuleAction& action) override;
+
+  // CKnockBackMgr
   virtual void Update(float dt, CStateManager& mgr, CActor& actor);
   virtual void KnockBack(CStateManager& mgr, CActor& actor, const CKnockBackInfo& info);
   // Remaining knockback-specific virtual hooks are not yet reconstructed.

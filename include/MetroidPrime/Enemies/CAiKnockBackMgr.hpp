@@ -8,8 +8,11 @@ class CAiKnockBackMgr : public CKnockBackMgr {
 public:
   explicit CAiKnockBackMgr(CAssetId rules);
   ~CAiKnockBackMgr();
+
+  // CKnockBackMgr
   void Update(float dt, CStateManager& mgr, CActor& actor) override;
   void KnockBack(CStateManager& mgr, CActor& actor, const CKnockBackInfo& info) override;
+
   void SetPhysicsKnockBackType(EPhysicsKnockBackType type);
   void EnableKnockBackPhysics(bool enabled);
   void SetAdditiveFlinchWeight(float weight);

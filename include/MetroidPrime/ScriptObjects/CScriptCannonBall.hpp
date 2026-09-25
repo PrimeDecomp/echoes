@@ -22,8 +22,8 @@ public:
 
   CScriptCannonBall(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                     const CTransform4f& xf, CAssetId effect);
+  // CEntity
   ~CScriptCannonBall();
-
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 

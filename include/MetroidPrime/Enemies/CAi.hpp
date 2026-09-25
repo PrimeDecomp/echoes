@@ -21,10 +21,12 @@ public:
       const CHealthInfo& health, const CDamageVulnerability& vulnerability,
       const CMaterialList& materials, CAssetId stateMachine, CAssetId stateMachine2,
       const CActorParameters& params, float stepUp, float stepDown);
+  // CEntity
   ~CAi() override;
-
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
+
+  // CActor
   CHealthInfo* HealthInfo() override;
   const CDamageVulnerability* GetDamageVulnerability() const override;
   EWeaponCollisionResponseTypes GetCollisionResponseType(const CVector3f& position,
@@ -33,6 +35,7 @@ public:
                                                          int attributes) const override;
   void FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) override;
 
+  // CAi
   virtual void Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) = 0;
   virtual void KnockBack(CStateManager& mgr, const CKnockBackInfo& info) = 0;
   virtual CDamageVulnerability* DamageVulnerability();

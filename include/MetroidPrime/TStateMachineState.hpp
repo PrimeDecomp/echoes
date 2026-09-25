@@ -55,6 +55,8 @@ public:
   typedef typename TStateMachineStateBase< T >::STriggerFunction STriggerFunction;
 
   TStateMachineState();
+
+  // TStateMachineStateBase
   virtual ~TStateMachineState();
   virtual int GetType() const;
   virtual void Reset(CStateManager& mgr, T& owner);
@@ -68,6 +70,7 @@ public:
   virtual float GetTime() const;
   virtual float GetDelay() const;
   virtual void SetDelay(float delay);
+
   void Setup(const CStateMachine& machine);
   float GetRandom() const { return mRandom; }
   float GetFixedRandom() const { return mFixedRandom; }

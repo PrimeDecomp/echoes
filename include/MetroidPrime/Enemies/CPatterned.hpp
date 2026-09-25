@@ -56,12 +56,14 @@ public:
              const CEntityInfo& info, const CTransform4f& xf, const CModelData& modelData,
              const CPatternedInfo& patternedInfo, EMovementType movement, EColliderType collider,
              EBodyType body, const CActorParameters& params);
+  // CEntity
   ~CPatterned() override;
-
   CEntity* TypesMatch(int typeId) const override;
   void PreThink(float dt, CStateManager& mgr) override;
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
+
+  // CActor
   void PreRender(CStateManager& mgr) override;
   void AddToRenderer(const CStateManager& mgr) const override;
   void Render(const CStateManager& mgr) const override;
@@ -82,13 +84,18 @@ public:
   void DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
                        float dt) override;
   CScannableObjectInfo* GetScannableObjectInfo() const override;
+
+  // CPhysicsActor
   void CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
                     CStateManager& mgr) override;
   bool IsOnStaticGround() const override;
+
+  // CAi
   void Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) override;
   void KnockBack(CStateManager& mgr, const CKnockBackInfo& info) override;
   void TakeDamage(const CVector3f&, float) override { mDamageCooldownTimer = skDamageHitTime; }
 
+  // CPatterned
   virtual void RenderSystemsToBeDrawnFirst(const CStateManager& mgr, uint mask, uint target) const;
   virtual void RenderSystemsToBeDrawnLast(const CStateManager& mgr, uint mask, uint target) const;
   virtual void Freeze(CStateManager& mgr, const CVector3f& position, CUnitVector3f direction,
