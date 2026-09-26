@@ -7,6 +7,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSound.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 
 #include "MetroidPrime/CActor.hpp"
@@ -81,6 +82,7 @@ TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
 TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
+TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)

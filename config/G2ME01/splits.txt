@@ -149,6 +149,9 @@ MetroidPrime/BodyState/CBodyController.cpp:
 	.rodata     start:0x803A8BD0 end:0x803A8BE0
 	.sdata2     start:0x8041B920 end:0x8041B940
 
+MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
+	.text       start:0x80100C38 end:0x80109E7C
+
 MetroidPrime/Player/CScanDisplay.cpp:
 	.text       start:0x801123F8 end:0x80116C74
 	.rodata     start:0x803A8C90 end:0x803A8CF0
