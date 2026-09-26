@@ -14,13 +14,18 @@ class CVParamTransfer;
 class CRuleValue {
 public:
   CRuleValue(int type, CInputStream&);
+  explicit CRuleValue(bool value) : m_type(0), mBool(value) {}
   bool GetBool() const;
   int GetInt() const;
   float GetFloat() const;
 
 private:
   int m_type;
-  int m_value;
+  union {
+    int m_value;
+    bool mBool;
+    float mFloat;
+  };
 };
 CHECK_SIZEOF(CRuleValue, 0x8)
 
@@ -38,6 +43,8 @@ CHECK_SIZEOF(CRuleCondition, 0x10)
 class CRuleAction {
 public:
   explicit CRuleAction(CInputStream&);
+  FourCC GetId() const { return m_id; }
+  const CRuleValue& GetProperty(int index) const { return m_properties[index]; }
 
 private:
   FourCC m_id;

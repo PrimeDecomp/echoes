@@ -12,75 +12,63 @@ class CDamageVulnerability;
 class CDamageInfo {
 public:
   CDamageInfo()
-  : m_weaponMode()
-  , m_damage(0.f)
-  , m_radiusDamageAmount(0.f)
-  , m_damageRadius(0.f)
-  , m_knockbackPower(0.f)
-  , m_x14(-1)
-  , m_x16(-1)
-  , m_x18(-1)
-  , m_noImmunity(false) {}
-  // CDamageInfo()
-  // : x0_weaponMode(CWeaponMode::Invalid())
-  // , x8_damage(0.f)
-  // , xc_radiusDamage(0.f)
-  // , x10_radius(0.f)
-  // , x14_knockback(0.f)
-  // , x18_24_noImmunity(false) {}
-
-  // CDamageInfo(const CWeaponMode& mode, const float damage, const float radius,
-  //             const float knockback, const bool noImmunity = false)
-  // : x0_weaponMode(mode)
-  // , x8_damage(damage)
-  // , xc_radiusDamage(x8_damage)
-  // , x10_radius(radius)
-  // , x14_knockback(knockback)
-  // , x18_24_noImmunity(noImmunity) {}
+  : mWeaponMode()
+  , mDamage(0.f)
+  , mRadiusDamageAmount(mDamage)
+  , mDamageRadius(0.f)
+  , mKnockbackPower(0.f)
+  , x14_(0xffff)
+  , x16_(0xffff)
+  , x18_(0xffff)
+  , mNoImmunity(false)
+  , x1a_25_(false) {}
 
   CDamageInfo(CInputStream& in);
   CDamageInfo(const CDamageInfo&, float);
 
   CDamageInfo ApplyDoubleDamage(const CPlayerState& state) const;
 
-  ushort GetWeaponMode1() const { return m_weaponMode.GetRawType(); }
-  const CWeaponMode& GetWeaponMode() const { return m_weaponMode; }
-  // void SetWeaponMode(const CWeaponMode& mode) { x0_weaponMode = mode; }
-  float GetRadius() const { return m_damageRadius; }
-  void SetRadius(float r) { m_damageRadius = r; }
-  float GetKnockBackPower() const { return m_knockbackPower; }
-  void SetKnockBackPower(float k) { m_knockbackPower = k; }
-  float GetDamage() const { return m_damage; }
-  void SetDamage(float d) { m_damage = d; }
-  bool HasNoDamage() const { return m_damage <= 0.0f; }
+  ushort GetWeaponMode1() const { return mWeaponMode.GetRawType(); }
+  const CWeaponMode& GetWeaponMode() const { return mWeaponMode; }
+  float GetRadius() const { return mDamageRadius; }
+  void SetRadius(float r) { mDamageRadius = r; }
+  float GetKnockBackPower() const { return mKnockbackPower; }
+  float GetKnockBackPower(const CDamageVulnerability& vulnerability, float defaultPower) const;
+  bool GetX1a25() const { return x1a_25_; }
+  void SetKnockBackPower(float k) { mKnockbackPower = k; }
+  float GetDamage() const { return mDamage; }
+  void SetDamage(float d) { mDamage = d; }
+  bool HasNoDamage() const { return mDamage <= 0.0f; }
   float GetDamage(const CDamageVulnerability& dVuln) const;
-  float GetRadiusDamage() const { return m_radiusDamageAmount; }
-  void SetRadiusDamage(float r) { m_radiusDamageAmount = r; }
+  float GetRadiusDamage() const { return mRadiusDamageAmount; }
+  void SetRadiusDamage(float r) { mRadiusDamageAmount = r; }
   float GetRadiusDamage(const CDamageVulnerability& dVuln) const;
-  bool NoImmunity() const { return m_noImmunity; }
-  void SetNoImmunity(bool b) { m_noImmunity = b; }
+  bool NoImmunity() const { return mNoImmunity; }
+  void SetNoImmunity(bool b) { mNoImmunity = b; }
   void MultiplyDamage(const float m) {
-    m_damage = m * m_damage;
-    m_radiusDamageAmount = m * m_radiusDamageAmount;
-    m_knockbackPower = m * m_knockbackPower;
+    mDamage = m * mDamage;
+    mRadiusDamageAmount = m * mRadiusDamageAmount;
+    mKnockbackPower = m * mKnockbackPower;
   }
   void MultiplyDamageAndRadius(float m) {
-    m_damage *= m;
-    m_radiusDamageAmount *= m;
-    m_damageRadius *= m;
-    m_knockbackPower *= m;
+    mDamage *= m;
+    mRadiusDamageAmount *= m;
+    mDamageRadius *= m;
+    mKnockbackPower *= m;
   }
 
 private:
-  CWeaponMode m_weaponMode;
-  float m_damage;
-  float m_radiusDamageAmount;
-  float m_damageRadius;
-  float m_knockbackPower;
-  short m_x14;
-  short m_x16;
-  short m_x18;
-  bool m_noImmunity;
+  CWeaponMode mWeaponMode;
+  float mDamage;
+  float mRadiusDamageAmount;
+  float mDamageRadius;
+  float mKnockbackPower;
+  ushort x14_;
+  ushort x16_;
+  ushort x18_;
+  bool mNoImmunity : 1;
+  bool x1a_25_ : 1;
 };
+CHECK_SIZEOF(CDamageInfo, 0x1c)
 
 #endif // _CDAMAGEINFO

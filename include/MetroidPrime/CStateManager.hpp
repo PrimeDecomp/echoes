@@ -9,6 +9,7 @@
 
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
+#include "Kyoto/CRandom16.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
@@ -111,7 +112,7 @@ public:
   const CWorld* GetWorld() const { return m_world; }
   CEnvFxManager* EnvFxManager() { return m_envFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
-  // CRandom16* Random() const { return x900_random; }
+  CRandom16* Random() { return &mRandom; }
   int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
 
   TAreaId GetNextAreaId() const { return m_nextAreaId; }
@@ -198,7 +199,9 @@ public:
   TAreaId m_nextAreaId; // x16a0
   char pad3[0x8]; // 16A4
   int m_updateFrameIdx; // 16AC
-  char pad4[0xD84]; // 16B0
+  char pad4[0x34]; // 16B0
+  CRandom16 mRandom;
+  char x16e8_[0xD4C];
 
   CAssetId m_pauseHudMessage; // 0x2434
   float mEscapeTotalTime;
