@@ -218,6 +218,12 @@ MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
 
+WorldFormat/COBBTree.cpp:
+	.text       start:0x8024DE68 end:0x8024F784
+	.bss        start:0x80410E14 end:0x80410E24 align:4 common
+	.sbss       start:0x80419708 end:0x8041970C
+	.sdata2     start:0x8041DDA8 end:0x8041DDB0
+
 MetaRender/CCubeRenderer.cpp:
 	.text       start:0x80262D3C end:0x80273FAC
 	.ctors      start:0x803A55B4 end:0x803A55B8
