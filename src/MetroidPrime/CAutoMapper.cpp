@@ -1,8 +1,10 @@
 #include "MetroidPrime/CAutoMapper.hpp"
 
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CMapUniverse.hpp"
 #include "MetroidPrime/IWorld.hpp"
 
 // Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
@@ -89,6 +91,40 @@ CAutoMapper::SAutoMapperHintLocation::SAutoMapperHintLocation(uint showBeacon, f
 
 CAutoMapper::~CAutoMapper() { CSfxManager::KillAll(CSfxManager::kSC_PauseScreen); }
 
+bool CAutoMapper::CheckLoadComplete() {
+  switch (mLoadPhase) {
+  case kLP_LoadResources: {
+    for (const CToken* it = mMapIcons.begin(); it != mMapIcons.end(); ++it) {
+      if (!it->IsLoaded()) {
+        return false;
+      }
+    }
+    if (mMiniMapSamus.IsLoaded() && mHintBeacon.IsLoaded() && mCompassModel.IsLoaded() &&
+        mCompassShellModel.IsLoaded()) {
+      mLoadPhase = kLP_LoadUniverse;
+    } else {
+      return false;
+    }
+  }
+  // Fall through after the map resources are ready.
+  case kLP_LoadUniverse:
+    if (mMapu.IsLoaded()) {
+      const int numWorlds = mMapu.GetObject()->GetNumMapWorldDatas();
+      mDummyWorlds =
+          rstl::vector< rstl::auto_ptr< IWorld > >(numWorlds, rstl::auto_ptr< IWorld >());
+      SetCurWorldAssetId(mWorld->IGetWorldAssetId());
+      mLoadPhase = kLP_Done;
+    } else {
+      return false;
+    }
+    // Fall through.
+  case kLP_Done:
+    return true;
+  default:
+    return false;
+  }
+}
+
 void CAutoMapper::SetupTeleportNavigation() {
   mHintSteps.clear();
   mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_SwitchToUniverse, 0));
@@ -107,6 +143,17 @@ void CAutoMapper::UnmuteAllLoopedSounds() {
   CSfxManager::SfxVolume(mPanningSfx, 127);
   CSfxManager::SfxVolume(mRotatingSfx, 127);
   CSfxManager::SfxVolume(mZoomingSfx, 127);
+}
+
+bool CAutoMapper::HasCurrentMapUniverseWorld(const CStateManager& mgr) const {
+  const CMapUniverse* mapu = mMapu.GetObject();
+  const CAssetId worldId = mWorld->IGetWorldAssetId();
+  for (int i = 0; i < mapu->GetNumMapWorldDatas(); ++i) {
+    if (mapu->GetMapWorldData(i).GetWorldAssetId() == worldId) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void CAutoMapper::ResetInterpolationTimer(float duration) {
@@ -172,6 +219,10 @@ void CAutoMapper::LeaveMapScreenState() {
   SetShouldRotatingSoundBePlaying(false);
 }
 
+CVector2i CAutoMapper::GetMapScreenViewportSize() {
+  return CVector2i(CGraphics::GetViewport().mWidth, CGraphics::GetViewport().mHeight);
+}
+
 float CAutoMapper::GetMapAreaMiniMapDrawDepth() { return 2.f; }
 
 bool CAutoMapper::IsInMapperState(EAutoMapperState state) const {
@@ -181,6 +232,66 @@ bool CAutoMapper::IsInMapperState(EAutoMapperState state) const {
 bool CAutoMapper::IsInMapperStateTransition() const { return mState != mNextState; }
 
 bool CAutoMapper::IsRenderStateInterpolating() const { return mInterpTime < mInterpDur; }
+
+void CAutoMapper::TransformRenderStatesWorldToUniverse() {
+  const CTransform4f& xf = mMapu.GetObject()->GetMapWorldData(mWorldIdx).GetWorldTransform();
+  const CQuaternion rot = CQuaternion::FromMatrix(xf);
+  mRenderState2.mCamOrientation *= rot;
+  mRenderState2.mAreaPoint = xf * mRenderState2.mAreaPoint;
+  mRenderState0.mCamOrientation *= rot;
+  mRenderState0.mAreaPoint = xf * mRenderState0.mAreaPoint;
+  mRenderState1.mCamOrientation *= rot;
+  mRenderState1.mAreaPoint = xf * mRenderState1.mAreaPoint;
+}
+
+void CAutoMapper::TransformRenderStatesUniverseToWorld() {
+  const CTransform4f xf =
+      mMapu.GetObject()->GetMapWorldData(mWorldIdx).GetWorldTransform().GetQuickInverse();
+  const CQuaternion rot = CQuaternion::FromMatrix(xf);
+  mRenderState2.mCamOrientation *= rot;
+  mRenderState2.mAreaPoint = xf * mRenderState2.mAreaPoint;
+  mRenderState0.mCamOrientation *= rot;
+  mRenderState0.mAreaPoint = xf * mRenderState0.mAreaPoint;
+  mRenderState1.mCamOrientation *= rot;
+  mRenderState1.mAreaPoint = xf * mRenderState1.mAreaPoint;
+}
+
+void CAutoMapper::TransformRenderStateWorldToUniverse(SAutoMapperRenderState& state) {
+  const CTransform4f& xf = mMapu.GetObject()->GetMapWorldData(mWorldIdx).GetWorldTransform();
+  state.mAreaPoint = xf * mRenderState1.mAreaPoint;
+}
+
+void CAutoMapper::SetCurWorldAssetId(int worldId) {
+  const int numWorlds = mMapu.GetObject()->GetNumMapWorldDatas();
+  for (int i = 0; i < numWorlds; ++i) {
+    if (worldId == mMapu.GetObject()->GetMapWorldData(i).GetWorldAssetId()) {
+      mWorldIdx = i;
+      return;
+    }
+  }
+}
+
+void CAutoMapper::LeaveMapScreen(CStateManager& mgr) {
+  if (mNextState == kAMS_MapScreenUniverse) {
+    const float depth = GetMapAreaMiniMapDrawDepth();
+    mRenderState1.mDrawDepth1 = depth;
+    mRenderState1.mDrawDepth2 = depth;
+    mRenderState0.mDrawDepth1 = depth;
+    mRenderState0.mDrawDepth2 = depth;
+    SetupMiniMapWorld(mgr);
+  } else {
+    mTransitionState = kTS_ReturnToPlayer;
+    mRenderState2 = mRenderState1 = mRenderState0;
+    SetCurAreaId(mWorld->IGetCurrentAreaId().Value());
+    mRenderState1.mAreaPoint = GetAreaPointOfInterest(mgr, mCurAreaId.Value());
+    mRenderState1.mPointEase = SAutoMapperRenderState::kE_Linear;
+    mRenderState1.mDrawDepth1 = GetMapAreaMiniMapDrawDepth();
+    mRenderState1.mDrawDepth2 = GetMapAreaMiniMapDrawDepth();
+    mRenderState1.mDepth1Ease = SAutoMapperRenderState::kE_Linear;
+    mRenderState1.mDepth2Ease = SAutoMapperRenderState::kE_Linear;
+    ResetInterpolationTimer(0.25f);
+  }
+}
 
 void CAutoMapper::SetCurAreaId(int areaId) {
   if (mCurAreaId.Value() != areaId &&
