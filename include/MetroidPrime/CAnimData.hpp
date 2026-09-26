@@ -155,6 +155,8 @@ public:
   void SetAnimDir(EAnimDir dir) { mAnimDir = dir; }
   EAnimDir GetAnimDir() const { return mAnimDir; }
   const TLockedToken< CSkinnedModel >& GetModelData() const { return mModelData; }
+  CSkinnedModel* GetXRayModel() const { return mXrayModel.GetPtr(); }
+  CSkinnedModel* GetInfraModel() const { return mInfraModel.GetPtr(); }
   int GetCharacterIndex() const { return mCharIdx; }
   short GetCurrentAnimation() const { return mCurrentAnim; }
   float GetPlaybackRate() const { return mSpeedScale; }
