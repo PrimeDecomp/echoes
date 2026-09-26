@@ -15,6 +15,8 @@ public:
 
   CVector3f MultiplyOneOverW(const CVector3f& vec) const;
   float MultiplyGetW(const CVector3f& vec) const;
+  CMatrix4f GetInverse() const;
+  float Determinant() const;
 
   static const CMatrix4f& Identity() { return sIdentity; }
   
