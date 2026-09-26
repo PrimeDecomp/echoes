@@ -29,6 +29,10 @@ MetroidPrime/Player/CPlayer.cpp:
 	.ctors      start:0x803A54AC end:0x803A54B0
 	.data       start:0x803B15D0 end:0x803B16AC
 
+MetroidPrime/CAnimData.cpp:
+	.text       start:0x80025D3C end:0x8002F7A8
+	.ctors      start:0x803A54BC end:0x803A54C0
+
 MetroidPrime/CStateManager.cpp:
 	.text       start:0x80036200 end:0x80044CA4
 
