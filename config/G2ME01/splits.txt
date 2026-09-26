@@ -548,6 +548,11 @@ Kyoto/Particles/CParticleSwooshDataFactory.cpp:
 	.rodata     start:0x803AF9D0 end:0x803AF9D8
 	.data       start:0x803BA778 end:0x803BA788
 
+Kyoto/Particles/CSpawnSystemKeyframeData.cpp:
+	.text       start:0x802F27D8 end:0x802F358C
+	.bss        start:0x803DFDE8 end:0x803DFE08
+	.sbss       start:0x80419AD8 end:0x80419AE8
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928

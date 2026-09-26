@@ -534,6 +534,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Particles/CParticleSpawnSystem.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleSpawnRandom.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleSwooshDataFactory.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CSpawnSystemKeyframeData.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/g721.cpp"),
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
             Object(NonMatching, "Kyoto/Audio/DolphinCAudioGroupSet.cpp"),

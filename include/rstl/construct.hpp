@@ -56,6 +56,10 @@ inline void construct_impl(void* dest, const uchar& src) {
   *static_cast< uchar* >(dest) = src;
 }
 
+inline void construct_impl(void* dest, const bool& src) {
+  *static_cast< bool* >(dest) = src;
+}
+
 template < typename T >
 inline void construct_impl(void* dest, T* const& src) {
   *static_cast< T** >(dest) = src;
@@ -117,7 +121,7 @@ template < typename It, typename T >
 static T uninitialized_copy(It begin, It end, T out) {
   T tmp = out;
   It cur = begin;
-  for (; cur != end; ++tmp, ++cur) {
+  for (; cur != end; ++cur, ++tmp) {
     construct(tmp, *cur);
   }
 
@@ -139,7 +143,7 @@ template < typename S, typename D >
 static inline D uninitialized_copy_n(S src, int n, D dest) {
   S it = src;
   D cur = dest;
-  for (int i = 0; i < n; ++cur, ++i, ++it) {
+  for (; n != 0; --n, ++it, ++cur) {
     construct(&*cur, *it);
   }
 
