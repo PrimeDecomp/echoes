@@ -42,7 +42,7 @@ public:
   virtual int GetEmitterTime() const = 0;
   virtual uint GetDrawFlags() const { return mDrawFlags; }
   virtual bool ShouldDraw() const { return (GetDrawFlags() & sDrawMask) == sDrawFlags; }
-  virtual int GetActiveParticleCount() = 0;
+  virtual int GetSystemCount() = 0;
   virtual bool IsSystemDeletable() = 0;
   virtual rstl::optional_object< CAABox > GetBounds() = 0;
   virtual int GetParticleCount() = 0;
@@ -55,8 +55,10 @@ public:
   static uint sDrawFlags;
   static uint sDrawMask;
 
-private:
+protected:
   rstl::list< CWarp* > mModifiersList;
+
+private:
   uint mDrawFlags;
 };
 

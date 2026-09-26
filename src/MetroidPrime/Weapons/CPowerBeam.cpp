@@ -72,7 +72,7 @@ void CPowerBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
           rstl::string_l(CGunWeapon::skMuzzleLocator));
       mShotSmokeGen->SetGlobalTranslation(locator.GetTranslation());
       mShotSmokeGen->Update(dt);
-      if (mSmokeState == kSS_Done && mShotSmokeGen->GetActiveParticleCount() == 0)
+      if (mSmokeState == kSS_Done && mShotSmokeGen->GetSystemCount() == 0)
         mSmokeState = kSS_Inactive;
     } else {
       mSmokeState = kSS_Inactive;

@@ -14,6 +14,7 @@ class CParticleSpawnSystem : public CParticleGen {
 public:
   CParticleSpawnSystem(TToken< CSpawnSystemDescription > desc,
                        CElementGen::EOptionalSystemFlags flags, bool);
+  // CParticleGen
   ~CParticleSpawnSystem() override;
 
   const bool Update(double dt) override;
@@ -34,7 +35,7 @@ public:
   bool GetParticleEmission() const override;
   const CColor& GetModulationColor() const override;
   int GetEmitterTime() const override;
-  int GetActiveParticleCount() override;
+  int GetSystemCount() override;
   bool IsSystemDeletable() override;
   rstl::optional_object< CAABox > GetBounds() override;
   int GetParticleCount() override;
@@ -43,7 +44,16 @@ public:
   void DestroyParticles() override;
   uint Get4CharId() const override;
 
+  // Guessed names: force the initial transforms through nested spawn systems.
+  void ForceSetTranslation(const CVector3f& translation);
+  void ForceSetOrientation(const CTransform4f& orientation);
+  void ForceSetGlobalTranslation(const CVector3f& translation);
+  void ForceSetGlobalOrientation(const CTransform4f& orientation);
+  static ushort GetGlobalSeed() { return sSeed; }
+  static void SetGlobalSeed(ushort seed) { sSeed = seed; }
+
 private:
+  static ushort sSeed; // Guessed name; constructor and child creation share this seed.
   uchar x20_[0x200];
 };
 CHECK_SIZEOF(CParticleSpawnSystem, 0x220)
@@ -56,6 +66,7 @@ class CParticleSpawnRandom : public CParticleGen {
 public:
   CParticleSpawnRandom(TToken< CSpawnRandomDescription > desc,
                        CElementGen::EOptionalSystemFlags flags, bool);
+  // CParticleGen
   ~CParticleSpawnRandom() override;
 
   const bool Update(double dt) override;
@@ -76,7 +87,7 @@ public:
   bool GetParticleEmission() const override;
   const CColor& GetModulationColor() const override;
   int GetEmitterTime() const override;
-  int GetActiveParticleCount() override;
+  int GetSystemCount() override;
   bool IsSystemDeletable() override;
   rstl::optional_object< CAABox > GetBounds() override;
   int GetParticleCount() override;
@@ -85,7 +96,11 @@ public:
   void DestroyParticles() override;
   uint Get4CharId() const override;
 
+  static ushort GetGlobalSeed() { return sSeed; }
+  static void SetGlobalSeed(ushort seed) { sSeed = seed; }
+
 private:
+  static ushort sSeed; // Guessed name; constructor and child creation share this seed.
   uchar x20_[0xb8];
 };
 CHECK_SIZEOF(CParticleSpawnRandom, 0xd8)

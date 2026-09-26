@@ -25,10 +25,11 @@ public:
     }
     void LoadToken(CSimplePool* pool);
     rstl::optional_object< CToken > GetToken() const { return mToken; }
+    uint GetType() const { return mType; }
 
   private:
     uint mId;
-    uint x4_;
+    uint mType;
     uint x8_;
     uint xc_;
     rstl::optional_object< CToken > mToken;

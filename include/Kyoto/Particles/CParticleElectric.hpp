@@ -45,7 +45,7 @@ public:
   const CColor& GetModulationColor() const override;
   float GetGeneratorRate() const override;
   int GetEmitterTime() const override;
-  int GetActiveParticleCount() override;
+  int GetSystemCount() override;
   bool IsSystemDeletable() override;
   rstl::optional_object< CAABox > GetBounds() override;
   int GetParticleCount() override;
@@ -99,6 +99,7 @@ public:
   void SetOverrideFPos(const CVector3f& vec) { mOverrideFPos = vec; }
   void SetOverrideFVel(const CVector3f& vec) { mOverrideFVel = vec; }
   static void SetGlobalSeed(ushort seed) { sSeed = seed; }
+  static ushort GetGlobalSeed() { return sSeed; }
 
 private:
   void SetupLineGXMaterial();

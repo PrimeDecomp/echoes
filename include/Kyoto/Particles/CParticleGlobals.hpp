@@ -41,6 +41,7 @@ public:
   static float* GetParticleAccessParameters() { return mParticleAccessParameters; }
   static SParticleSystem* GetCurrentParticleSystem() { return mCurrentParticleSystem; }
   static void SetCurrentParticle(CElementGen::CParticle* particle) { mCurrentParticle = particle; }
+  static void SetParticleAccessParameters(float* parameters) { mParticleAccessParameters = parameters; }
 
 private:
   static int mParticleLifetime;
