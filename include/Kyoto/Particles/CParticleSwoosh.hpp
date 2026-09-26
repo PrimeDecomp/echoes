@@ -23,6 +23,24 @@ class CParticleSwoosh : public CParticleGen {
 public:
   struct SSwooshData {
     // Prime-derived record layout; internal field names remain cross-game hypotheses.
+    SSwooshData(const CVector3f& translation = CVector3f::Zero(),
+                const CVector3f& offset = CVector3f::Zero(), float irot = 0.f, float rotm = 0.f,
+                int startFrame = 0, bool active = false,
+                const CTransform4f& orient = CTransform4f::Identity(),
+                const CVector3f& velocity = CVector3f::Zero(), float leftRadius = 0.f,
+                float rightRadius = 0.f, const CColor& color = CColor(0.f, 0.f, 0.f, 0.f))
+    : mActive(active)
+    , mLeftRad(leftRadius)
+    , mRightRad(rightRadius)
+    , mTranslation(translation)
+    , mOffset(offset)
+    , mUseOffset(offset)
+    , mInitialRot(irot)
+    , mRotm(rotm)
+    , mOrientation(orient)
+    , mColor(color)
+    , mStartFrame(startFrame)
+    , mVelocity(velocity) {}
 
     bool mActive;
     float mLeftRad;
@@ -44,7 +62,15 @@ public:
 
   const bool Update(double dt) override;
   void Render() override;
+  void Render2SidedNoSplineNoGaps();
+  void Render2SidedNoSplineGaps();
+  void Render2SidedSpline();
+  void Render3SidedSolidNoSplineNoGaps();
+  void Render3SidedSolidSpline();
+  void RenderNSidedNoSpline();
+  void RenderNSidedSpline();
   void SetOrientation(const CTransform4f& orientation) override;
+  void UpdateTranslationAndOrientation();
   void SetTranslation(const CVector3f& translation) override;
   void SetGlobalOrientation(const CTransform4f& orientation) override;
   void SetGlobalTranslation(const CVector3f& translation) override;
@@ -74,6 +100,17 @@ public:
 
   void SetWarmUp() { mForceOneUpdate = true; }
   const int GetSwooshCount() const { return mSwooshes.size(); }
+
+  bool IsLargeEnough() const;
+  void UpdateSwooshTranslation(const CVector3f& translation);
+
+  int WrapIndex(int index);
+  float GetLeftRadius(int index);
+  float GetRightRadius(int index);
+  CVector3f GetSplinePoint(const CVector3f& p0, const CVector3f& p1, const CVector3f& p2,
+                           const CVector3f& p3, float t) const;
+  void UpdateBounds(const CVector3f& pos);
+  void UpdateMaxRadius(float radius);
 
 private:
   // Offsets corroborated by the Echoes constructor/getters; internal effect names follow Prime.
@@ -125,6 +162,8 @@ private:
   CVector3f mAabbMax;
   float mMaxRadius;
   CColor mModuColor;
+
+  static uint mSwooshAliveCount;
 };
 
 CHECK_SIZEOF(CParticleSwoosh, 0x218)
