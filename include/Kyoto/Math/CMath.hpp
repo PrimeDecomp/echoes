@@ -103,6 +103,7 @@ public:
                                const CVector3f& bary);
   // GetCatmullRomSplinePoint__5CMathFRC9CVector3fRC9CVector3fRC9CVector3fRC9CVector3ff global
 #ifdef __MWERKS__
+  static inline float FastInvSqrtF(float x) { return __frsqrte(x); } // Guessed name
   static inline float FastSqrtF(register float x) {
     if (x == 0.f) {
       return 0.f;
@@ -110,6 +111,7 @@ public:
     return x * __frsqrte(x);
   }
 #else
+  static inline float FastInvSqrtF(float x) { return 1.f / sqrtf(x); } // Guessed name
   static inline float FastSqrtF(float x) { return sqrtf(x); }
 #endif
   static double SqrtD(double x);
