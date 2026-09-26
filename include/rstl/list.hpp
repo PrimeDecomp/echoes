@@ -19,34 +19,34 @@ public:
 
 public:
   list(const Alloc& alloc = Alloc())
-  : x0_allocator(alloc)
-  , x4_start(reinterpret_cast< node* >(&xc_empty_prev))
-  , x8_end(reinterpret_cast< node* >(&xc_empty_prev))
-  , xc_empty_prev(reinterpret_cast< node* >(&xc_empty_prev))
-  , x10_empty_next(reinterpret_cast< node* >(&xc_empty_prev))
-  , x14_count(0) {}
+  : mAllocator(alloc)
+  , mStart(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEnd(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEmpty_prev(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEmpty_next(reinterpret_cast< node* >(&mEmpty_prev))
+  , mCount(0) {}
 
   struct destroy_helper {
-    destroy_helper(list* l) : x0_list(l), x4_active(true) {}
+    destroy_helper(list* l) : mList(l), mActive(true) {}
     ~destroy_helper() {
-      if (x4_active) {
-        x0_list->destroy();
+      if (mActive) {
+        mList->destroy();
       }
     }
-    void release() { x4_active = false; }
+    void release() { mActive = false; }
 
   private:
-    list* x0_list;
-    bool x4_active;
+    list* mList;
+    bool mActive;
   };
 
   list(const list& other)
-  : x0_allocator(other.x0_allocator)
-  , x4_start(reinterpret_cast< node* >(&xc_empty_prev))
-  , x8_end(reinterpret_cast< node* >(&xc_empty_prev))
-  , xc_empty_prev(reinterpret_cast< node* >(&xc_empty_prev))
-  , x10_empty_next(reinterpret_cast< node* >(&xc_empty_prev))
-  , x14_count(0) {
+  : mAllocator(other.mAllocator)
+  , mStart(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEnd(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEmpty_prev(reinterpret_cast< node* >(&mEmpty_prev))
+  , mEmpty_next(reinterpret_cast< node* >(&mEmpty_prev))
+  , mCount(0) {
     destroy_helper dh(this);
     insert(end(), other.begin(), other.end());
     dh.release();
@@ -64,45 +64,45 @@ public:
   ~list();
   node* do_erase(node* item);
 
-  void push_front(const T& val) { do_insert_before(x4_start, val); }
+  void push_front(const T& val) { do_insert_before(mStart, val); }
   void push_back(const T& val);
   void clear();
 
-  int size() const { return x14_count; }
-  bool empty() const { return x14_count == 0; }
+  int size() const { return mCount; }
+  bool empty() const { return mCount == 0; }
 
-  T& front() { return *x4_start->get_value(); }
-  T& back() { return *x8_end->get_prev()->get_value(); }
-  const T& front() const { return *x4_start->get_value(); }
+  T& front() { return *mStart->get_value(); }
+  T& back() { return *mEnd->get_prev()->get_value(); }
+  const T& front() const { return *mStart->get_value(); }
 
-  void pop_front() { erase(x4_start); }
+  void pop_front() { erase(mStart); }
 
-  iterator begin() { return iterator(x4_start); }
-  const_iterator begin() const { return const_iterator(x4_start); }
-  iterator end() { return iterator(x8_end); }
-  const_iterator end() const { return const_iterator(x8_end); }
+  iterator begin() { return iterator(mStart); }
+  const_iterator begin() const { return const_iterator(mStart); }
+  iterator end() { return iterator(mEnd); }
+  const_iterator end() const { return const_iterator(mEnd); }
 
   iterator erase(const iterator& item) { return do_erase(item.get_node()); }
   iterator erase(const iterator& start, const iterator& end);
 
   struct node {
-    node* x0_prev;
-    node* x4_next;
-    uchar x8_item[sizeof(T)];
+    node* mPrev;
+    node* mNext;
+    uchar mItem[sizeof(T)];
 
-    node* get_prev() const { return x0_prev; }
-    node* get_next() const { return x4_next; }
-    void set_prev(node* prev) { x0_prev = prev; }
-    void set_next(node* next) { x4_next = next; }
-    T* get_value() { return reinterpret_cast< T* >(&x8_item); }
-    const T* get_value() const { return reinterpret_cast< const T* >(&x8_item); }
+    node* get_prev() const { return mPrev; }
+    node* get_next() const { return mNext; }
+    void set_prev(node* prev) { mPrev = prev; }
+    void set_next(node* next) { mNext = next; }
+    T* get_value() { return reinterpret_cast< T* >(&mItem); }
+    const T* get_value() const { return reinterpret_cast< const T* >(&mItem); }
   };
 
   node* create_node(node* prev, node* next, const T& val) {
     node* n;
-    x0_allocator.allocate(n, 1);
-    n->x0_prev = prev;
-    n->x4_next = next;
+    mAllocator.allocate(n, 1);
+    n->mPrev = prev;
+    n->mNext = next;
     construct(n->get_value(), val);
     return n;
   }
@@ -120,8 +120,8 @@ public:
 
   template < typename Pred >
   void remove_if(Pred pred) {
-    node* it = x4_start;
-    while (it != x8_end) {
+    node* it = mStart;
+    while (it != mEnd) {
       if (pred(*it->get_value())) {
         it = do_erase(it);
       } else {
@@ -162,7 +162,7 @@ public:
     const_iterator() : current(nullptr) {}
     const_iterator(node* const begin) : current(begin) {}
     const_iterator& operator++() {
-      this->current = this->current->x4_next;
+      this->current = this->current->mNext;
       return *this;
     }
     const_iterator operator++(int) {
@@ -171,7 +171,7 @@ public:
       return old;
     }
     const_iterator& operator--() {
-      this->current = this->current->x0_prev;
+      this->current = this->current->mPrev;
       return *this;
     }
     const_iterator operator--(int) {
@@ -198,16 +198,16 @@ public:
     iterator() : const_iterator(nullptr) {}
     iterator(node* const begin) : const_iterator(begin) {}
     iterator& operator++() {
-      this->current = this->current->x4_next;
+      this->current = this->current->mNext;
       return *this;
     }
     iterator operator++(int) {
       node* cur = this->current;
-      this->current = this->current->x4_next;
+      this->current = this->current->mNext;
       return cur;
     }
     iterator& operator--() {
-      this->current = this->current->x0_prev;
+      this->current = this->current->mPrev;
       return *this;
     }
     iterator operator--(int) {
@@ -223,12 +223,12 @@ public:
   };
 
 private:
-  Alloc x0_allocator;
-  node* x4_start;
-  node* x8_end;
-  node* xc_empty_prev;
-  node* x10_empty_next;
-  int x14_count;
+  Alloc mAllocator;
+  node* mStart;
+  node* mEnd;
+  node* mEmpty_prev;
+  node* mEmpty_next;
+  int mCount;
 };
 
 template < typename T, typename Alloc >
@@ -254,27 +254,27 @@ void list< T, Alloc >::remove(const T& val) {
 
 template < typename T, typename Alloc >
 list< T, Alloc >::~list() {
-  node* cur = x4_start;
-  while (cur != x8_end) {
+  node* cur = mStart;
+  while (cur != mEnd) {
     node* it = cur;
     node* next = cur->get_next();
     cur = next;
     it->get_value()->~T();
-    x0_allocator.deallocate(it);
+    mAllocator.deallocate(it);
   }
 }
 
 template < typename T, typename Alloc >
 typename list< T, Alloc >::node* list< T, Alloc >::do_erase(node* node) {
   typename list< T, Alloc >::node* result = node->get_next();
-  if (node == x4_start) {
-    x4_start = node->get_next();
+  if (node == mStart) {
+    mStart = node->get_next();
   }
   node->get_prev()->set_next(node->get_next());
   node->get_next()->set_prev(node->get_prev());
   node->get_value()->~T();
-  x0_allocator.deallocate(node);
-  x14_count--;
+  mAllocator.deallocate(node);
+  mCount--;
   return result;
 }
 
@@ -284,35 +284,35 @@ void list< T, Alloc >::exchange(node* nodeA, node* nodeB) {
     return;
   }
 
-  if (nodeA == this->x4_start) {
-    this->x4_start = nodeB;
-  } else if (nodeB == this->x4_start) {
-    this->x4_start = nodeA;
+  if (nodeA == this->mStart) {
+    this->mStart = nodeB;
+  } else if (nodeB == this->mStart) {
+    this->mStart = nodeA;
   }
 
-  node* nodeANext = nodeA->x4_next;
-  node* nodeAPrev = nodeA->x0_prev;
-  node* nodeBNext = nodeB->x4_next;
-  node* nodeBPrev = nodeB->x0_prev;
+  node* nodeANext = nodeA->mNext;
+  node* nodeAPrev = nodeA->mPrev;
+  node* nodeBNext = nodeB->mNext;
+  node* nodeBPrev = nodeB->mPrev;
 
   if (nodeBNext != nodeA) {
-    nodeBNext->x0_prev = nodeA;
-    nodeA->x4_next = nodeBNext;
-    nodeAPrev->x4_next = nodeB;
-    nodeB->x0_prev = nodeAPrev;
+    nodeBNext->mPrev = nodeA;
+    nodeA->mNext = nodeBNext;
+    nodeAPrev->mNext = nodeB;
+    nodeB->mPrev = nodeAPrev;
   } else {
-    nodeA->x4_next = nodeB;
-    nodeB->x0_prev = nodeA;
+    nodeA->mNext = nodeB;
+    nodeB->mPrev = nodeA;
   }
 
   if (nodeBPrev != nodeA) {
-    nodeBPrev->x4_next = nodeA;
-    nodeA->x0_prev = nodeBPrev;
-    nodeANext->x0_prev = nodeB;
-    nodeB->x4_next = nodeANext;
+    nodeBPrev->mNext = nodeA;
+    nodeA->mPrev = nodeBPrev;
+    nodeANext->mPrev = nodeB;
+    nodeB->mNext = nodeANext;
   } else {
-    nodeB->x4_next = nodeA;
-    nodeA->x0_prev = nodeB;
+    nodeB->mNext = nodeA;
+    nodeA->mPrev = nodeB;
   }
 }
 
@@ -323,7 +323,7 @@ void list< T, Alloc >::clear() {
 
 template < typename T, typename Alloc >
 void list< T, Alloc >::push_back(const T& val) {
-  do_insert_before(x8_end, val);
+  do_insert_before(mEnd, val);
 }
 
 template < typename T, typename Alloc >
@@ -338,13 +338,13 @@ typename list< T, Alloc >::iterator list< T, Alloc >::erase(const iterator& star
 
 template < typename T, typename Alloc >
 typename list< T, Alloc >::node* list< T, Alloc >::do_insert_before(node* n, const T& val) {
-  node* const nn = create_node(n->x0_prev, n, val);
-  if (n == x4_start) {
-    x4_start = nn;
+  node* const nn = create_node(n->mPrev, n, val);
+  if (n == mStart) {
+    mStart = nn;
   }
   nn->get_prev()->set_next(nn);
   nn->get_next()->set_prev(nn);
-  ++x14_count;
+  ++mCount;
 
   return nn;
 }
