@@ -54,6 +54,7 @@ public:
   void UpdatePerspective(float dt, CStateManager& mgr);
 
   TUniqueId GetWatchedObject() const { return mWatchedObject; }
+  void SetWatchedObject(TUniqueId id) { mWatchedObject = id; }
   float GetNearClipDistance() const { return mZnear; }
   float GetFarClipDistance() const { return mZfar; }
   float GetAspectRatio() const { return mAspect; }

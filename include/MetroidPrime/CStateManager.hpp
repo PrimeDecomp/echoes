@@ -26,6 +26,7 @@ class CArchitectureQueue;
 class CEnvFxManager;
 class CEntity;
 class CActor;
+class CMaterialFilter;
 class CScriptMailbox;
 class CMapWorldInfo;
 class CPlayerState;
@@ -98,6 +99,8 @@ public:
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
   CEntity* GetObjectByIdFromListAll(TUniqueId uid);
+  bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
+                       const CMaterialFilter& filter, const CActor* damagee);
 
   TEditorId GetEditorIdForUniqueId(TUniqueId) const;
   TUniqueId GetIdForScript(TEditorId eid) const;
