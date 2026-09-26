@@ -55,6 +55,7 @@ public:
   ~CMapUniverse();
 
   const CMapWorldData& GetMapWorldData(int idx) const { return mWorldDatas[idx]; }
+  const CMapWorldData& GetMapWorldDataByWorldId(CAssetId id);
   int GetNumMapWorldDatas() const { return mWorldDatas.size(); }
   const CVector3f& GetMapUniverseCenterPoint() const { return mUniverseCenter; }
   float GetMapUniverseRadius() const { return mUniverseRadius; }

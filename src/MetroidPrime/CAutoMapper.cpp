@@ -4,6 +4,7 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
@@ -29,7 +30,7 @@
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "rstl/math.hpp"
 
-// Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
+// Work in progress: hint setup, controller input, Update and Draw remain incomplete.
 
 static const char* const skFRME_MapScreen = "FRME_MapScreen";
 static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
@@ -375,6 +376,26 @@ bool CAutoMapper::HasCurrentMapUniverseWorld(const CStateManager& mgr) const {
   return false;
 }
 
+bool CAutoMapper::CanSwitchLightDarkWorld() const {
+  if (IsInMapperState(kAMS_MapScreenUniverse)) {
+    return false;
+  }
+  if (mWorld != nullptr) {
+    const CAssetId worldId = mWorld->IGetWorldAssetId();
+    CMapWorldInfo* info = gpGameState->StateForWorld(worldId).GetMapWorldInfo().GetPtr();
+    const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+    const rstl::vector< int > areas = mapWorld->GetVisibleAreas(*mWorld, *info);
+    const bool inDarkWorld = mDarkWorldBlend >= 0.5f;
+    for (int i = 0; i < areas.size(); ++i) {
+      const bool otherWorld = mapWorld->GetMapArea(areas[i])->IsInDarkWorld() != inDarkWorld;
+      if (otherWorld) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool CAutoMapper::CheckDummyWorldLoad(CStateManager& mgr) {
   const uint worldIdx = mWorldIdx;
   IWorld* dummyWorld = mDummyWorlds[worldIdx].get();
@@ -457,6 +478,180 @@ bool CAutoMapper::SwitchLightDarkWorld() {
     return false;
   }
   return true;
+}
+
+void CAutoMapper::UpdateHintNavigation(float dt, CStateManager& mgr) {
+  SAutoMapperHintStep& nextStep = mHintSteps.front();
+  const SAutoMapperHintStep::Data hintData = nextStep.mData;
+  bool wasProcessing = nextStep.mProcessing;
+  nextStep.mProcessing = true;
+
+  switch (nextStep.mType) {
+  case SAutoMapperHintStep::kHST_PanToArea: {
+    const int areaId = nextStep.mData.mAreaId;
+    const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+    CMapArea* mapArea = mapWorld->GetMapArea(areaId);
+    if (mapArea != nullptr) {
+      if ((mDarkWorldBlend > 0.f) != mapArea->IsInDarkWorld()) {
+        mHintSteps.push_front(
+            SAutoMapperHintStep(SAutoMapperHintStep::kHST_SwitchLightDarkWorld, 0));
+      } else {
+        mRenderState2 = mRenderState0;
+        mRenderState1.mAreaPoint = GetAreaPointOfInterest(mgr, areaId);
+        mRenderState1.ResetInterpolation();
+        mRenderState1.mPointEase = SAutoMapperRenderState::kE_Linear;
+        ResetInterpolationTimer(2.f * gpTweakAutoMapper->GetHintPanTime());
+        mHintSteps.pop_front();
+      }
+    }
+    break;
+  }
+  case SAutoMapperHintStep::kHST_PanToWorld: {
+    const CMapUniverse::CMapWorldData& worldData =
+        mMapu.GetObject()->GetMapWorldDataByWorldId(hintData.mWorldId);
+    const CVector3f centerPoint = worldData.GetWorldCenterPoint();
+    mRenderState2 = mRenderState0;
+    mRenderState1.mAreaPoint = centerPoint;
+    mRenderState1.ResetInterpolation();
+    mRenderState1.mPointEase = SAutoMapperRenderState::kE_Linear;
+    ResetInterpolationTimer(2.f * gpTweakAutoMapper->GetHintPanTime());
+    mHintSteps.pop_front();
+    break;
+  }
+  case SAutoMapperHintStep::kHST_SwitchToUniverse:
+    if (HasCurrentMapUniverseWorld(mgr)) {
+      BeginMapperStateTransition(kAMS_MapScreenUniverse, mgr);
+      mHintSteps.pop_front();
+    } else {
+      mHintSteps.clear();
+    }
+    break;
+  case SAutoMapperHintStep::kHST_SwitchToWorld:
+    mHintSteps.pop_front();
+    mLoadingDummyWorld = true;
+    if (!CheckDummyWorldLoad(mgr)) {
+      mHintSteps.clear();
+    }
+    break;
+  case SAutoMapperHintStep::kHST_ShowBeacon: {
+    SAutoMapperHintStep::Data beaconData(hintData.mFloat);
+    float& beaconTime = beaconData.mFloat;
+    if (!wasProcessing) {
+      if (mCurAreaId == mgr.GetNextAreaId() && mWorld == mgr.GetWorld()) {
+        CSfxManager::SfxStart(0xdae, 127, 64);
+      } else {
+        CSfxManager::SfxStart(0xdaf, 127, 64);
+      }
+    }
+
+    beaconTime = rstl::max_val(0.f, beaconTime - dt);
+    nextStep.mData = beaconData;
+    for (rstl::list< SAutoMapperHintLocation >::iterator it = mHintLocations.begin();
+         it != mHintLocations.end(); ++it) {
+      if (it->mWorldId == mWorld->IGetWorldAssetId() && it->mAreaId == mCurAreaId) {
+        it->mShowBeacon = 1;
+        const float alpha = rstl::min_val(1.f, beaconTime / 0.5f);
+        it->mBeaconAlpha = 1.f - alpha;
+        break;
+      }
+    }
+    if (beaconTime == 0.f) {
+      mHintSteps.pop_front();
+    }
+    break;
+  }
+  case SAutoMapperHintStep::kHST_ZoomOut:
+    mRenderState2 = mRenderState0;
+    if (mMapMode == kMM_Teleport) {
+      mRenderState1.mCamDist = gpTweakAutoMapper->GetMaxUniverseCamDistance();
+    } else {
+      mRenderState1.mCamDist = gpTweakAutoMapper->GetMaxCamDistance();
+    }
+    mRenderState1.ResetInterpolation();
+    mRenderState1.mCamEase = SAutoMapperRenderState::kE_Linear;
+    ResetInterpolationTimer(0.5f);
+    mHintSteps.pop_front();
+    break;
+  case SAutoMapperHintStep::kHST_ZoomIn:
+    mRenderState2 = mRenderState0;
+    mRenderState1.mCamDist = gpTweakAutoMapper->GetCameraDistance();
+    mRenderState1.ResetInterpolation();
+    mRenderState1.mCamEase = SAutoMapperRenderState::kE_Linear;
+    ResetInterpolationTimer(0.5f);
+    mHintSteps.pop_front();
+    break;
+  case SAutoMapperHintStep::kHST_SwitchLightDarkWorld:
+    if (SwitchLightDarkWorld()) {
+      mRenderState2 = mRenderState0;
+      mRenderState1.ResetInterpolation();
+      ResetInterpolationTimer(0.6f);
+      mHintSteps.pop_front();
+    }
+    break;
+  case SAutoMapperHintStep::kHST_LeaveMapScreen:
+    if (TryLeaveMapScreen(mgr)) {
+      mHintSteps.pop_front();
+    }
+    break;
+  default:
+    break;
+  }
+}
+
+void CAutoMapper::ProcessMapScreenInput(const CFinalInput& input, CStateManager& mgr) {
+  const CMatrix3f camRot(mRenderState0.mCamOrientation.BuildTransform());
+  if (mState == kAMS_MapScreen) {
+    if (input.PA() && mTransitionState == kTS_Idle) {
+      if (HasCurrentMapUniverseWorld(mgr)) {
+        BeginMapperStateTransition(kAMS_MapScreenUniverse, mgr);
+      }
+    }
+    if (input.PX() && CanSwitchLightDarkWorld()) {
+      SwitchLightDarkWorld();
+    }
+  } else if (mState == kAMS_MapScreenUniverse) {
+    if (input.PA()) {
+      const CMapUniverse::CMapWorldData& worldData = mMapu.GetObject()->GetMapWorldData(mWorldIdx);
+      const CVector3f& localPoint =
+          worldData.GetWorldTransform().GetQuickInverse() * mRenderState0.mAreaPoint;
+      if (worldData.GetWorldAssetId() != gpGameState->CurrentWorldAssetId()) {
+        mLoadingDummyWorld = true;
+        CheckDummyWorldLoad(mgr);
+      } else if (mMapMode != kMM_Teleport) {
+        mWorld = mgr.World();
+        UpdateTempleKeys(mgr);
+        CMapWorldInfo* info =
+            gpGameState->StateForWorld(mWorld->IGetWorldAssetId()).GetMapWorldInfo().GetPtr();
+        const int areaId = FindClosestVisibleArea(
+            localPoint, CUnitVector3f(camRot.GetColumn(kDY), CUnitVector3f::kN_No), mgr,
+            *mWorld, *info);
+        SetCurAreaId(areaId);
+        BeginMapperStateTransition(kAMS_MapScreen, mgr);
+      }
+    }
+    if (input.PX() && CanSwitchLightDarkWorld() && mMapMode != kMM_Teleport) {
+      SwitchLightDarkWorld();
+    }
+  }
+
+  mAButtonPos = 0;
+  if (input.PA()) {
+    mAButtonPos = 1;
+  }
+
+  if (IsInPlayerControlState()) {
+    mLStickPos = 0;
+    mRStickPos = 0;
+    mLTriggerPos = 0;
+    mRTriggerPos = 0;
+    ProcessMapRotateInput(input, mgr);
+    ProcessMapZoomInput(input, mgr);
+    ProcessMapPanInput(input, mgr);
+  } else {
+    SetShouldPanningSoundBePlaying(false);
+    SetShouldZoomingSoundBePlaying(false);
+    SetShouldRotatingSoundBePlaying(false);
+  }
 }
 
 void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {

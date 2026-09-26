@@ -154,6 +154,10 @@ public:
   float GetInterp() const { return mInterpDur > 0.f ? mInterpTime / mInterpDur : 0.f; }
 
 private:
+  void ProcessMapScreenInput(const CFinalInput& input, CStateManager& mgr);
+  void ProcessMapRotateInput(const CFinalInput& input, const CStateManager& mgr);
+  void ProcessMapZoomInput(const CFinalInput& input, const CStateManager& mgr);
+  void ProcessMapPanInput(const CFinalInput& input, const CStateManager& mgr);
   void SetCurAreaId(int areaId); // Guessed name
   void UpdateTempleKeys(const CStateManager& mgr);
   void SetupMiniMapWorld(CStateManager& mgr);
