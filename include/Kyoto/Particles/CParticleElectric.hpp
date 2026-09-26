@@ -54,6 +54,8 @@ public:
   void DestroyParticles() override;
   uint Get4CharId() const override;
 
+  int GetCumulativeParticleCount() const { return mCumulativeParticles; }
+
   class CLineManager {
     friend class CParticleElectric;
     rstl::vector< CVector3f, rstl::aligned_allocator > mVerts;
@@ -140,7 +142,7 @@ private:
   int mSCNT;
   float mGenRem;
   float mGeneratorRate;
-  int x168_;
+  int mCumulativeParticles;
   CAABox mSystemBounds;
   rstl::optional_object< CVector3f > mOverrideIPos;
   rstl::optional_object< CVector3f > mOverrideIVel;

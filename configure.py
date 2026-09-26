@@ -544,6 +544,8 @@ config.libs = [
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEffectComponent.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CIntElement.cpp"),
+            Object(Matching, "Kyoto/Particles/CModVectorElement.cpp"),
             Object(Matching, "Kyoto/Particles/CParticleDataFactory.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleGen.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleGlobals.cpp"),
