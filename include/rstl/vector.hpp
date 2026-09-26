@@ -126,9 +126,7 @@ inline vector< T, Alloc >::vector(const vector& other)
 
 template < typename T, typename Alloc >
 inline vector< T, Alloc >::~vector() {
-  iterator first = begin();
-  iterator last = end();
-  destroy(first, last);
+  destroy(begin(), end());
   mAllocator.deallocate(mItems);
 }
 
