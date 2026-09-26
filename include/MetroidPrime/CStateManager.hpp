@@ -83,6 +83,7 @@ public:
   void ShowPausedHUDMemo(CAssetId strg, float time);
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return m_isDarkWorld; }
+  void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
@@ -213,7 +214,7 @@ public:
   int m_forPausedHudMemo;     // 0x2460
   CAssetId m_pausedHudMemoAssetId;
   float x2468;
-  int x246c;
+  CAssetId mMapTeleportWorldId; // Guessed name
   EStateManagerTransition m_deferredTransition;
 
   char pad5[4]; // 0x246c

@@ -63,6 +63,15 @@ MetroidPrime/Player/CPlayerState.cpp:
 	.sbss       start:0x80419040 end:0x8041904C
 	.sdata2     start:0x8041ABD0 end:0x8041AC00
 
+MetroidPrime/CAutoMapper.cpp:
+	.text       start:0x80086D9C end:0x80092310
+	.ctors      start:0x803A54DC end:0x803A54E0
+	.rodata     start:0x803A74F0 end:0x803A7BD0
+	.data       start:0x803B2918 end:0x803B29A0
+	.sdata      start:0x80417FB0 end:0x80417FC0
+	.sbss       start:0x80419050 end:0x80419058
+	.sdata2     start:0x8041AC10 end:0x8041ACF0
+
 MetroidPrime/Enemies/CAi.cpp:
 	.text       start:0x80096C94 end:0x800972BC
 	.data       start:0x803B29E0 end:0x803B2A98
