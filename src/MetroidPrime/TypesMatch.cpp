@@ -3,6 +3,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSound.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -70,12 +71,14 @@ TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
 TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
+TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 CAST_TO_REF_IMPL(CEntity, kET_Entity)
 CAST_TO_PTR_IMPL(CEntity, kET_Entity)
+CAST_TO_PTR_IMPL(CScriptTeamAiMgr, kET_ScriptTeamAi)
 CAST_TO_REF_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)
 CAST_TO_PTR_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)
 CAST_TO_PTR_IMPL(CGameLight, kET_GameLight)
@@ -123,6 +126,14 @@ template <>
 CPhysicsActor* TCastToPtr< CPhysicsActor >(CEntity& entity) {
   if ((entity.GetCastFlags() & 2) != 0) {
     return static_cast< CPhysicsActor* >(&entity);
+  }
+  return nullptr;
+}
+
+template <>
+CPatterned* TCastToPtr< CPatterned >(CEntity* entity) {
+  if (entity != nullptr && (entity->GetCastFlags() & 4) != 0) {
+    return static_cast< CPatterned* >(entity);
   }
   return nullptr;
 }
