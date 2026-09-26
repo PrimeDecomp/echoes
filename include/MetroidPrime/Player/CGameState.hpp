@@ -30,6 +30,8 @@ public:
 
   CGameOptions& GameOptions() { return gameOptions; }
 
+  CHintOptions& HintOptions() { return hintOptions; }
+
   CControlMapper& ControlMapper() { return mControlMapper; }
 
   CPersistentOptions& SystemOptions() { return mSystemOptions; }

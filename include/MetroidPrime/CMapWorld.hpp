@@ -11,11 +11,39 @@
 class CInputStream;
 class CMapArea;
 class CMapWorldInfo;
+class CStateManager;
+class CTransform4f;
 class IWorld;
 
 class CMapWorld {
 public:
   enum EMapAreaList { kMAL_Loaded, kMAL_Loading, kMAL_Unloaded };
+
+  class CMapWorldDrawParms {
+  public:
+    CMapWorldDrawParms(float alphaSurfVisited, float alphaOlVisited, float alphaSurfUnvisited,
+                      float alphaOlUnvisited, float alpha, const CStateManager& mgr,
+                      const CTransform4f& modelXf, const CTransform4f& viewXf, const IWorld& world,
+                      const CMapWorldInfo& info, float outlineWidthScale, bool sortDoorSurfs,
+                      float playerFlash, float hintFlash, float objectScale);
+
+  private:
+    float mAlphaSurfVisited;
+    float mAlphaOlVisited;
+    float mAlphaSurfUnvisited;
+    float mAlphaOlUnvisited;
+    float mAlpha;
+    float mOutlineWidthScale;
+    const CStateManager& mMgr;
+    const CTransform4f& mModelXf;
+    const CTransform4f& mViewXf;
+    const IWorld& mWorld;
+    const CMapWorldInfo& mMapWorldInfo;
+    float mPlayerFlashIntensity;
+    float mHintFlashIntensity;
+    float mObjectScale;
+    bool mSortDoorSurfs;
+  };
 
   class CMapAreaData {
   public:
@@ -44,6 +72,8 @@ public:
   bool IsMapAreasStreaming() const;
   void RecalculateWorldSphere(const CMapWorldInfo& info, const IWorld& world) const;
   CVector3f ConstrainToWorldVolume(const CVector3f& point, const CVector3f& lookVec) const;
+  void Draw(const CMapWorldDrawParms& parms, int curArea, int otherArea, float depth1,
+            float depth2, bool inMapScreen) const;
 
 private:
   rstl::vector< CMapAreaData > mAreas;
@@ -54,6 +84,7 @@ private:
   mutable float mWorldSphereHalfDepth;
 };
 NESTED_CHECK_SIZEOF(CMapWorld, CMapAreaData, 0x18)
+NESTED_CHECK_SIZEOF(CMapWorld, CMapWorldDrawParms, 0x3c)
 CHECK_SIZEOF(CMapWorld, 0x44)
 
 #endif // _CMAPWORLD

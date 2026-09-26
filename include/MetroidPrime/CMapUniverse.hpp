@@ -11,9 +11,28 @@
 
 class CInputStream;
 class CMapArea;
+class CStateManager;
 
 class CMapUniverse {
 public:
+  class CMapUniverseDrawParms {
+  public:
+    CMapUniverseDrawParms(float alpha, int worldIdx, CAssetId worldId, int closestHex,
+                         float flashPulse, const CStateManager& mgr, const CTransform4f& model,
+                         const CTransform4f& view, bool teleportMode);
+
+  private:
+    float mAlpha;
+    int mFocusWorldIndex;
+    CAssetId mFocusWorldRes;
+    int mFocusAreaIndex;
+    float mFlashPulse;
+    const CStateManager& mStateManager;
+    const CTransform4f& mPaneProjectionTransform;
+    const CTransform4f& mCameraTransform;
+    bool mTeleportMode; // Guessed name
+  };
+
   class CMapAreaData {
   public:
     explicit CMapAreaData(CInputStream& in);
@@ -53,6 +72,8 @@ public:
 
   CMapUniverse(CInputStream& in, uint version);
   ~CMapUniverse();
+  void Draw(const CMapUniverseDrawParms& parms, const CVector3f& pos, float depth1,
+            float depth2) const;
 
   const CMapWorldData& GetMapWorldData(int idx) const { return mWorldDatas[idx]; }
   const CMapWorldData& GetMapWorldDataByWorldId(CAssetId id);
@@ -68,6 +89,7 @@ private:
   float mUniverseRadius;
 };
 NESTED_CHECK_SIZEOF(CMapUniverse, CMapAreaData, 0x30)
+NESTED_CHECK_SIZEOF(CMapUniverse, CMapUniverseDrawParms, 0x24)
 NESTED_CHECK_SIZEOF(CMapUniverse, CMapWorldData, 0x70)
 CHECK_SIZEOF(CMapUniverse, 0x30)
 

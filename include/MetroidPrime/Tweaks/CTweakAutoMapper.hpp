@@ -5,6 +5,7 @@
 #include "rstl/single_ptr.hpp"
 
 struct SLdrTweakAutoMapper;
+class CColor;
 
 class CTweakAutoMapper {
 public:
@@ -45,6 +46,8 @@ public:
   float GetAutoMapperScaleX() const;
   float GetAutoMapperScaleZ() const;
   float GetCamVerticalOffset() const;
+  CVector2f GetMapPlaneScale() const; // Guessed name
+  CColor GetPlayerModelColor() const; // Guessed name
 
 private:
   const SLdrTweakAutoMapper* mData;
