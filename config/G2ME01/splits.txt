@@ -235,6 +235,12 @@ WorldFormat/COBBTree.cpp:
 	.sbss       start:0x80419708 end:0x8041970C
 	.sdata2     start:0x8041DDA8 end:0x8041DDB0
 
+WorldFormat/CCollidableOBBTree.cpp:
+	.text       start:0x8024F784 end:0x80252988
+	.data       start:0x803B8A30 end:0x803B8A60
+	.sdata      start:0x80418950 end:0x80418958
+	.sdata2     start:0x8041DDB0 end:0x8041DDE0
+
 MetaRender/CCubeRenderer.cpp:
 	.text       start:0x80262D3C end:0x80273FAC
 	.ctors      start:0x803A55B4 end:0x803A55B8

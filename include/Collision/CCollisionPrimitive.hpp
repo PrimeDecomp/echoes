@@ -41,13 +41,14 @@ public:
   CCollisionPrimitive(const CMaterialList& list);
 
   virtual uint GetTableIndex() const = 0;
-  virtual void SetMaterial(const CMaterialList&);
-  virtual const CMaterialList& GetMaterial() const;
   virtual CAABox CalculateAABox(const CTransform4f&) const = 0;
   virtual CAABox CalculateLocalAABox() const = 0;
   virtual FourCC GetPrimType() const = 0;
   virtual ~CCollisionPrimitive();
   virtual CRayCastResult CastRayInternal(const CInternalRayCastStructure&) const = 0;
+
+  void SetMaterial(const CMaterialList& material) { mMaterial = material; }
+  const CMaterialList& GetMaterial() const { return mMaterial; }
 
   static void InitBeginTypes();
   static void InitAddType(const Type& type);

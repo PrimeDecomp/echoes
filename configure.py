@@ -382,6 +382,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/main.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
+            Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),
             Object(NonMatching, "MetroidPrime/CStateManager.cpp"),
             Object(NonMatching, "MetroidPrime/CEntity.cpp"),
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),
