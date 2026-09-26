@@ -59,7 +59,11 @@ enum EAnimationState {
   kAS_AdditiveIdle = 21,
   kAS_AdditiveAim = 22,
   kAS_AdditiveFlinch = 23,
-  kAS_AdditiveReaction = 24
+  kAS_AdditiveReaction = 24,
+  kAS_Unknown25 = 25,
+  kAS_Unknown26 = 26,
+  kAS_Unknown27 = 27,
+  kAS_AdditiveLoopReaction = 28 // Guessed name
 };
 
 enum EHurledState {
@@ -196,10 +200,13 @@ enum EBodyStateCmd {
   kBSC_ExitState,
   kBSC_LeanFromCover,
   kBSC_NextState,
+  kBSC_AbortScripted, // Guessed name
   kBSC_MaintainVelocity,
   kBSC_Generate,
   kBSC_Hurled,
   kBSC_Jump,
+  kBSC_Unknown18,
+  kBSC_Unknown19,
   kBSC_Slide,
   kBSC_Taunt,
   kBSC_Scripted,
@@ -210,7 +217,10 @@ enum EBodyStateCmd {
   kBSC_AdditiveAim,
   kBSC_AdditiveFlinch,
   kBSC_AdditiveReaction,
-  kBSC_StopReaction
+  kBSC_StopReaction,
+  kBSC_AdditiveLoopReaction, // Guessed name
+  kBSC_Unknown32,
+  kBSC_Unknown33
 };
 
 #endif // _CHARACTERCOMMON

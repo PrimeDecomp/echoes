@@ -1,7 +1,8 @@
 #ifndef _CANIMDATA
 #define _CANIMDATA
 
-// TODO: check for Echoes
+// The prefix through the animation flags is recovered for G2ME01.
+// Pose storage and the remaining tail still need Echoes layout recovery.
 
 #include "Kyoto/Math/CAABox.hpp"
 #include "rstl/optional_object.hpp"
@@ -37,6 +38,7 @@ class CTransitionManager;
 class CVertexMorphEffect;
 class CModelFlags;
 class CPrimitive;
+class CSpatialPrimitive; // Guessed name: CSPP resource, inherited Ghidra annotation.
 
 class CAnimData {
 public:
@@ -193,13 +195,14 @@ private:
   TLockedToken< CCharLayoutInfo > mLayoutData;
   TLockedToken< CSkinnedModel > mModelData;
   rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > > mIceModelData;
+  rstl::optional_object< TLockedToken< CSpatialPrimitive > > mSpatialPrimitive;
   rstl::rc_ptr< CSkinnedModel > mXrayModel;
   rstl::rc_ptr< CSkinnedModel > mInfraModel;
   rstl::rc_ptr< CAnimSysContext > mAnimCtx;
   rstl::rc_ptr< CAnimationManager > mAnimMgr;
   EAnimDir mAnimDir;
   CAABox mAabb;
-  CParticleDatabase mParticleDB; // TODO: should be 0x178
+  CParticleDatabase mParticleDB;
   CAssetId mSelfId;
   CVector3f mAlignPos;
   CQuaternion mAlignRot;
@@ -214,6 +217,7 @@ private:
   int mPassedParticleCount;
   int mPassedSoundCount;
   int mParticleLightIdx;
+  int x2a8_;
   uchar mAnimating : 1;
   uchar mLoop : 1;
   uchar mAligningPos : 1;

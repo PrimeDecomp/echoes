@@ -20,6 +20,8 @@ public:
     rstl::vector< CAssetId > mPart;
     rstl::vector< CAssetId > mSwhc;
     rstl::vector< CAssetId > mElscA;
+    rstl::vector< CAssetId > mSpsc;
+    rstl::vector< CAssetId > mSrsc;
     rstl::vector< CAssetId > mElscB;
   };
 
@@ -41,7 +43,10 @@ private:
   uint mCmdlOverlay;
   uint mCksrOverlay;
   rstl::vector< int > mAnimIdxs;
+  CAssetId mSpatialPrimitiveId; // Guessed name: CSPP resource.
+  bool xe4_;
+  rstl::vector< rstl::pair< uint, CAABox > > xe8_;
 };
-CHECK_SIZEOF(CCharacterInfo, 0xc0)
+CHECK_SIZEOF(CCharacterInfo, 0xf8)
 
 #endif // _CCHARACTERINFO

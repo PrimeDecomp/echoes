@@ -66,6 +66,7 @@ enum EScriptObjectState {
   kSS_ScanProcessing = 0x4253434e,
   kSS_ScanDone = 0x53434e44,
   kSS_Patrol = 0x5054524c,
+  kSS_UnFrozen = 0x5546525a,
   kSS_InvalidState = 0xffffffff,
 };
 

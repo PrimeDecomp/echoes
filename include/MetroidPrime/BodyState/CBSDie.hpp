@@ -1,0 +1,24 @@
+#ifndef _CBSDIE
+#define _CBSDIE
+
+#include "MetroidPrime/BodyState/CBodyState.hpp"
+
+class CBSDie : public CBodyState {
+public:
+  CBSDie();
+
+  // CBodyState
+  ~CBSDie() override;
+  bool IsDead() const override;
+  bool IsDying() const override;
+  void Start(CBodyController& bc, CStateManager& mgr) override;
+  pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
+  void Shutdown(CBodyController& bc) override;
+
+private:
+  float mRemTime;
+  bool mIsDead;
+};
+CHECK_SIZEOF(CBSDie, 0xc)
+
+#endif // _CBSDIE

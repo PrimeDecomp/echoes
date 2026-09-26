@@ -135,6 +135,11 @@ MetroidPrime/CPhysicsActor.cpp:
 	.data       start:0x803B3A10 end:0x803B3AA8
 	.sdata2     start:0x8041B75C end:0x8041B790
 
+MetroidPrime/BodyState/CBodyController.cpp:
+	.text       start:0x800F649C end:0x800F794C
+	.rodata     start:0x803A8BD0 end:0x803A8BE0
+	.sdata2     start:0x8041B920 end:0x8041B940
+
 MetroidPrime/Player/CScanDisplay.cpp:
 	.text       start:0x801123F8 end:0x80116C74
 	.rodata     start:0x803A8C90 end:0x803A8CF0
