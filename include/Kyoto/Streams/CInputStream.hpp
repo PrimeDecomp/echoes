@@ -110,6 +110,13 @@ inline unsigned long CInputStream::Get< unsigned long >(const TType< unsigned lo
 }
 
 template <>
+inline u64 CInputStream::Get< u64 >(const TType< u64 >& type) {
+  const uint high = ReadInt32();
+  const uint low = ReadInt32();
+  return (static_cast< u64 >(high) << 32) | low;
+}
+
+template <>
 inline float CInputStream::Get< float >(const TType< float >& type) {
   return ReadFloat();
 }
