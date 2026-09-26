@@ -172,6 +172,11 @@ MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.rodata     start:0x803A9A20 end:0x803A9A30
 	.data       start:0x803B5600 end:0x803B5630
 
+MetroidPrime/CMemoryCard.cpp:
+	.text       start:0x801767BC end:0x8017904C
+	.rodata     start:0x803A9A40 end:0x803A9A58
+	.sdata2     start:0x8041C840 end:0x8041C848
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
