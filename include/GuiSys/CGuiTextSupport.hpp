@@ -32,6 +32,10 @@ public:
   ~CGuiTextSupport();
   void SetText(const rstl::wstring& text, bool multipage = false);
   void SetText(const rstl::string& text, bool multipage = false);
+  void SetFontColor(const CColor& color);
+  void SetOutlineColor(const CColor& color);
+  void SetWordWrap(bool wordWrap);
+  void SetImageBaseline(bool baseline);
   void Update(float dt);
   void Render() const;
 

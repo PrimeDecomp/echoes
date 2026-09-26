@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include "Kyoto/TToken.hpp"
+#include "MetroidPrime/CGameHintInfo.hpp"
 #include "MetroidPrime/CSaveWorldMemory.hpp"
 #include "MetroidPrime/CWorldSaveGameInfo.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
@@ -14,7 +15,6 @@
 #include "rstl/vector.hpp"
 
 class CDummyWorld;
-class CGameHintInfo;
 
 class CSaveWorldIntermediate {
   friend class CMemoryCard;
@@ -52,6 +52,9 @@ public:
   rstl::pair< CAssetId, TAreaId > GetAreaAndWorldIdForSaveId(uint saveId) const;
 
   const rstl::vector< MemoryWorld >& GetMemoryWorlds() const { return mMemoryWorlds; }
+  const rstl::vector< CGameHintInfo::CGameHint >& GetHints() const {
+    return mHints.GetObject()->GetHints();
+  }
   const rstl::vector< ScanState >& GetScanStates() const { return mScanStates; }
   const rstl::vector< EnvironmentVariable >& GetSystemVariables() const { return mSystemVariables; }
   const rstl::vector< EnvironmentVariable >& GetGameVariables() const { return mGameVariables; }

@@ -30,7 +30,9 @@ public:
   CFactoryFnReturn Build(const SObjectTag&, const CVParamTransfer&);
   void BuildAsync(const SObjectTag&, const CVParamTransfer&, IObj**);
   void CancelBuild(const SObjectTag&);
-  bool CanBuild(const SObjectTag&);
+
+  bool CanBuild(const SObjectTag& tag) { return mResLoader.ResourceExists(tag); }
+
   const SObjectTag* GetResourceIdByName(const char* name) const;
 
   uint ResourceSize(const SObjectTag& tag) const { return mResLoader.ResourceSize(tag); }

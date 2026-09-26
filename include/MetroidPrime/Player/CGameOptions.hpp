@@ -48,6 +48,7 @@ public:
 
   void SetHUDLag(bool);
   void SetIsHintSystemEnabled(bool);
+  bool GetIsHintSystemEnabled() const { return hintSystem; }
   void SetFlag3(bool);
   void SetInvertYAxis(bool);
   void SetIsRumbleEnabled(bool rumble);
