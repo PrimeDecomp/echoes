@@ -32,13 +32,16 @@ public:
 
   CControlMapper& ControlMapper() { return mControlMapper; }
 
+  CPersistentOptions& SystemOptions() { return mSystemOptions; }
+
   u32 GetCardSerialA() const { return cardSerialA; }
   u32 GetCardSerialB() const { return cardSerialB; }
   float GetHardModeDamageMultiplier() const;
   bool GetHardModeEnabled() const;
 
 private:
-  char pad1[0x80];
+  char pad1[0x54];
+  CPersistentOptions mSystemOptions;
   CGameOptions gameOptions;
   CHintOptions hintOptions;
   CPersistentOptions persistentOptions;

@@ -21,6 +21,7 @@ public:
     kC_MapMoveRight,
     kC_MapZoomIn,
     kC_MapZoomOut,
+    kC_ExitMap = 68, // Guessed name
     kC_Count = 76
   };
   enum EFilterType { kFT_Filtered, kFT_Unfiltered };
@@ -31,6 +32,8 @@ public:
                        EFilterType filter = kFT_Filtered) const;
   bool GetDigitalInput(ECommands command, const CFinalInput& input,
                        EFilterType filter = kFT_Filtered) const;
+  bool GetPressInput(ECommands command, const CFinalInput& input,
+                     EFilterType filter = kFT_Filtered) const;
 
 private:
   rstl::reserved_vector< bool, kC_Count > mCommandEnabled;
