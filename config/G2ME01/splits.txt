@@ -686,6 +686,14 @@ Kyoto/Math/CMayaSpline.cpp:
 	.sdata      start:0x80418C50 end:0x80418C68
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
 
+Kyoto/Audio/CDSPStreamManager.cpp:
+	.text       start:0x8033B940 end:0x8033D2EC
+	.ctors      start:0x803A5684 end:0x803A5688
+	.rodata     start:0x803B0228 end:0x803B0238
+	.bss        start:0x803E0590 end:0x803E05C8
+	.bss        start:0x804176E0 end:0x80417D64 align:4 common
+	.sbss       start:0x80419C70 end:0x80419C98
+
 Kyoto/Animation/CSoundPOINode.cpp:
 	.text       start:0x8033D420 end:0x8033D69C
 	.sdata2     start:0x8041EE08 end:0x8041EE10

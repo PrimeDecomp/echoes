@@ -40,10 +40,7 @@ public:
   reserved_vector& operator=(const reserved_vector& other);
 
   void clear() {
-    T* ptr = data();
-    for (int i = 0; i < x0_count; ++i) {
-      destroy(&ptr[i]);
-    }
+    destroy_elements();
     x0_count = 0;
   }
 
