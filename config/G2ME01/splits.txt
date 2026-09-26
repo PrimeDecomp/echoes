@@ -42,6 +42,10 @@ MetroidPrime/CActor.cpp:
 	.text       start:0x8004AC98 end:0x8004E448
 	.data       start:0x803B1BC0 end:0x803B1C40
 
+MetroidPrime/CGameArea.cpp:
+	.text       start:0x800536A8 end:0x800609B4
+	.data       start:0x803B1E28 end:0x803B1F30
+
 MetroidPrime/HUD/CSamusHud.cpp:
 	.text       start:0x800609B4 end:0x8006CB00
 	.ctors      start:0x803A54CC end:0x803A54D0

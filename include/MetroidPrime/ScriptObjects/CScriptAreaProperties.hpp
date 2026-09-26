@@ -31,6 +31,9 @@ public:
                         uint hasSkyBox, bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float, const CColor&);
   ~CScriptAreaProperties() override;
 
+  bool GetNeedsSky() const { return m_hasSkybox; }
+  int GetEnvFxType() const { return m_environmentEffects; }
+
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 };
 CHECK_SIZEOF(CScriptAreaProperties, 0x5c)
