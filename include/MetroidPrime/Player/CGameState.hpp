@@ -29,6 +29,7 @@ public:
   CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return gameOptions; }
+  CPersistentOptions& PersistentOptions() { return persistentOptions; }
 
   CHintOptions& HintOptions() { return hintOptions; }
 

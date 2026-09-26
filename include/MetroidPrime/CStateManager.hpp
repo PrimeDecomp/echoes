@@ -81,11 +81,17 @@ public:
 
   TUniqueId AllocateUniqueId();
   uint MaskUIdNumPlayers(TUniqueId id) const;
-  void ShowPausedHUDMemo(CAssetId strg, float time);
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return m_isDarkWorld; }
   void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
+
+  //
+  void ShowPausedHUDMemo(CAssetId strg, float time);
+  void QueueMessage(int frameCount, CAssetId msg, float f1);
+  int GetHUDMessageFrameCount() const { return mHudMessageFrameCount; }
+  // float GetHUDMessageTime() const { return mHudMessageTime; }
+  void IncrementHUDMessageFrameCounter() { ++mHudMessageFrameCount; }
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
   void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
@@ -213,7 +219,7 @@ public:
   TUniqueId m_uid_setBySpecialFunc;
   float m_hudMessageTime;     // 0x2454
   int x2458;                  // unk type
-  int m_hudMessageFrameCount; // 0x245c
+  int mHudMessageFrameCount; // 0x245c
   int m_forPausedHudMemo;     // 0x2460
   CAssetId m_pausedHudMemoAssetId;
   float x2468;
@@ -222,7 +228,7 @@ public:
 
   char pad5[4]; // 0x246c
   CFrustumPlanes m_planes; // 0x2478
-  char pad6[0x45C]; // 0x24D0
+  char pad6[0x2938 - 0x24D0]; // 0x24D0
 
   CVector3f x2938;
   float x2944;

@@ -273,6 +273,7 @@ public:
   void DecrPickUp(EItemType type, int amount);
   void IncrPickUp(EItemType type, int amount);
   void ResetAndIncrPickUp(EItemType type, int amount);
+  void SetTimeLeft(EItemType type, float time) { powerups[type].mTimeLeft = time; }
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
   rstl::vector< SPersistentState::SScanState >& ScanStates();

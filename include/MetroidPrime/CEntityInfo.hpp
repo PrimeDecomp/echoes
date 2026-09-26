@@ -58,6 +58,7 @@ enum EEntityType {
 
 enum EScriptObjectState {
   kSS_Active = 0x41435456,
+  kSS_Arrived = 0x41525256,
   kSS_Inactive = 0x49435456,
   kSS_Entered = 0x454e5452,
   kSS_Exited = 0x45584954,

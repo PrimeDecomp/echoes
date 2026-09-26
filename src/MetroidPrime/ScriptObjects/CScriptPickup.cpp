@@ -4,24 +4,29 @@
 // #include "MetroidPrime/CAnimPlaybackParms.hpp"
 // #include "MetroidPrime/CArtifactDoll.hpp"
 // #include "MetroidPrime/CExplosion.hpp"
+#include "Kyoto/Graphics/CColor.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CEchoParameters.hpp"
+#include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 
 // #include "MetroidPrime/Cameras/CCameraManager.hpp"
 // #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
-// #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 // #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
+#include "MetroidPrime/HUD/CSamusHud.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 // #include "MetroidPrime/HUD/CSamusHud.hpp"
 
 #include "MetroidPrime/ScriptLoader/SLdrPickup.hpp"
 
+#include "Kyoto/CEnvironmentVariable.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Math/CAbsAngle.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -41,38 +46,38 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
                              float activateDelay, float pickupEffectLifetime, float autoHomeRange,
                              float delayUntilHome, float homingSpeed, const CVector3f& orbitOffset)
 : CActor(uid, name, info, 0, xf, modelData, CMaterialList(), aParams, kInvalidUniqueId)
-, m_itemType(itemType)
-, m_amount(amount)
-, m_capacity(capacityIncrease)
-, m_percentageIncrease(itemPercentageIncrease)
-, m_lifeTime(lifeTime)
-, m_respawnTime(respawnTime)
+, mItemType(itemType)
+, mAmount(amount)
+, mCapacity(capacityIncrease)
+, mPercentageIncrease(itemPercentageIncrease)
+, mLifeTime(lifeTime)
+, mRespawnTime(respawnTime)
 , x170(0.f)
-, m_fadeTime(fadeTime)
-, m_curTime(0.0f)
-, m_pickupEffectLifetime(pickupEffectLifetime)
-, m_activateDelay(activateDelay)
-, m_autoHomeRange(autoHomeRange)
-, m_delayUntilHome(delayUntilHome)
-, m_homingSpeed(homingSpeed)
-, m_transformZ(xf.GetTranslation().GetZ())
-, m_pickupParticleDesc()
-, m_touchBounds(aabb)
+, mFadeTime(fadeTime)
+, mCurTime(0.0f)
+, mPickupEffectLifetime(pickupEffectLifetime)
+, mActivateDelay(activateDelay)
+, mAutoHomeRange(autoHomeRange)
+, mDelayUntilHome(delayUntilHome)
+, mHomingSpeed(homingSpeed)
+, mTransformZ(xf.GetTranslation().GetZ())
+, mPickupParticleDesc()
+, mTouchBounds(aabb)
 , x1bc(0)
 , x1c0(0)
-, m_orbitOffset(orbitOffset)
-, m_unknownProp(unknown)
-, m_generated(false)
-, m_inTractor(false)
-, m_absoluteValue(absoluteValue)
-, m_enableTractorTest(false)
-, m_autoSpin(autoSpin)
-, m_unk2(false)
-, m_unk3(false)
-, m_blinkOut(blinkOut) {
+, mOrbitOffset(orbitOffset)
+, mUnknownProp(unknown)
+, mGenerated(false)
+, mInTractor(false)
+, mAbsoluteValue(absoluteValue)
+, mEnableTractorTest(false)
+, mAutoSpin(autoSpin)
+, mUnk2(false)
+, mUnk3(false)
+, mBlinkOut(blinkOut) {
   if (pickupEffect != kInvalidAssetId) {
-    m_pickupParticleDesc = gpSimplePool->GetObj(SObjectTag('PART', pickupEffect));
-    m_pickupParticleDesc->Lock();
+    mPickupParticleDesc = gpSimplePool->GetObj(SObjectTag('PART', pickupEffect));
+    mPickupParticleDesc->Lock();
   }
 
   if (HasAnimation()) {
@@ -86,16 +91,39 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
 
 CScriptPickup::~CScriptPickup() {}
 
-bool CScriptPickup::IsVisible() const { return false; }
+void CScriptPickup::PreRenderAllViewports(CStateManager& mgr) {
+  CActor::PreRenderAllViewports(mgr);
+  if (mUnk2) {
+    mUnk2 = false;
+    x1bc = 0;
+  } else {
+    x1bc += 1;
+  }
+}
+
+void CScriptPickup::PreRender(CStateManager& mgr) {
+  CActor::PreRender(mgr);
+  if (!GetPreRenderClipped()) {
+    mUnk2 = true;
+  }
+}
+
+bool CScriptPickup::IsVisible() const {
+  if (mActivateDelay >= 0.0f) {
+    return false;
+  }
+  return !(x170 > 0.0f);
+}
 
 void CScriptPickup::Think(float dt, CStateManager& mgr) {
+  CActor::Think(dt, mgr);
   if (!GetActive()) {
     return;
   }
 
-  // if (delayTimer >= 0.f) {
-  //   CActor::Stop();
-  //   x278_delayTimer -= dt;
+  // if (mDelayTimer >= 0.f) {
+  //   // CActor::Stop();
+  //   mDelayTimer -= dt;
   //   return;
   // }
 
@@ -168,77 +196,111 @@ void CScriptPickup::Think(float dt, CStateManager& mgr) {
 }
 
 void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
-  // if (GetActive() && !(x278_delayTimer >= 0) && TCastToPtr< CPlayer >(act)) {
-  //   CPlayerState::EItemType itemType = x258_itemType;
-  //   if (itemType >= CPlayerState::kIT_Truth && itemType <= CPlayerState::kIT_Newborn) {
-  //     CAssetId id = CArtifactDoll::GetArtifactHeadScanFromItemType(itemType);
-  //     if (id != kInvalidAssetId) {
-  //       mgr.PlayerState()->SetScanTime(id, 0.5f);
-  //     }
-  //   }
+  if (!GetActive() || !IsVisible()) {
+    return;
+  }
+  if (CPlayer* player = TCastToPtr< CPlayer >(act)) {
+    int playerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
+    CPlayerState* playerState = mgr.PlayerState(playerIndex);
+    if (!playerState->IsPlayerAlive())
+      return;
+    
+    CPlayerState::EItemType itemType = mItemType;
 
-  //   if (x27c_pickupParticleDesc) {
-  //     if (mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Thermal) {
-  //       mgr.AddObject(new CExplosion(
-  //           TLockedToken< CGenDescription >(*x27c_pickupParticleDesc), m_gr.AllocateUniqueId(),
-  //           true, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, kInvalidEditorId),
-  //           rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
-  //           CVector3f(1.f, 1.f, 1.f), CColor::White()));
+    if (mPickupParticleDesc) {
+      // mgr.AddObject(rs_new CExplosion(
+      //     TLockedToken< CGenDescription >(*mPickupParticleDesc), mgr.AllocateUniqueId(),
+      //     true, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, kInvalidEditorId),
+      //     rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
+      //     CVector3f(1.f, 1.f, 1.f), CColor::White())
+      //   );
+    }
 
-  //     }
-  //   }
+    int previousAmount = playerState->GetItemAmount(itemType);
+    playerState->AddPowerUp(CPlayerState::kIT_ItemPercentage, mPercentageIncrease);
+    playerState->IncrPickUp(CPlayerState::kIT_ItemPercentage, mPercentageIncrease);
+    if (!mAbsoluteValue) {
+      playerState->AddPowerUp(itemType, mAmount);
+      playerState->IncrPickUp(itemType, mAmount);
+    } else {
+      playerState->ReInitializePowerUp(itemType, mCapacity);
+      playerState->SetItemAmount(itemType, mAmount);
+    }
+    playerState->SetTimeLeft(itemType, mPickupEffectLifetime);
+    SendScriptMsgs(kSS_Active, mgr, player->GetUniqueId(), kSM_None);
+    if (mRespawnTime == 0.0f) {
+      mEnableTractorTest = true;
+      mgr.DeleteObjectRequest(GetUniqueId());
+    } else {
+      CColor(1.0f, 1.0f, 1.0f, 0.0f); // TODO: Assign this color to where CActor::mTime currently is
+      x170 = mRespawnTime;
+      mCurTime = 0.f;
+      mFadeTime = 0.25f;
+    }
 
-  //   mgr.PlayerState()->InitializePowerUp(itemType, x260_capacity);
-  //   mgr.PlayerState()->IncrPickUp(itemType, x25c_amount);
-  //   mgr.FreeScriptObject(GetUniqueId());
-  //   SendScriptMsgs(kSS_Arrived, m_gr, kSM_None);
+    if (previousAmount < playerState->GetItemAmount(itemType)) {
+      ShowAllKeysCollectedAlert(mgr, playerState, itemType);
+    }
 
-  //   if (x260_capacity > 0) {
-  //     const CPlayerState* playerState = mgr.GetPlayerState();
-  //     int total = playerState->GetTotalPickupCount();
-  //     int colRate = playerState->CalculateItemCollectionRate();
-  //     if (colRate == total) {
-  //       CSystemOptions& opts = gpGameState->SystemOptions();
-  //       CAssetId id =
-  //           gpResourceFactory
-  //               ->GetResourceIdByName(opts.GetAllItemsCollected() ? "STRG_AllPickupsFound_2"
-  //                                                                 : "STRG_AllPickupsFound_1")
-  //               ->id;
-  //       mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
-  //       opts.SetAllItemsCollected(true);
-  //     }
-  //   }
+    if (mPercentageIncrease > 0) {
+      int total = playerState->GetTotalPickupCount();
+      int colRate = playerState->CalculateItemCollectionRate();
+      if (colRate == total) {
+        CAssetId id =
+            gpResourceFactory
+                ->GetResourceIdByName("STRG_AllPickupsFound_2")
+                ->id;
+              
+        mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
+        gpGameState->PersistentOptions().FindEnvironmentVariable("AllPickupsFound")->Set(1);
+      }
+    }
 
-  //   if (itemType == CPlayerState::kIT_PowerBombs) {
-  //     CSystemOptions& opts = gpGameState->SystemOptions();
-  //     if (opts.GetShowPowerBombAmmoMessage()) {
-  //       opts.IncrementPowerBombAmmoCount();
-  //       CSamusHud::DisplayHudMemo(rstl::wstring_l(gpStringTable->GetString(109)),
-  //                                 CHUDMemoParms(5.f, true, false, false));
-  //     }
-  //   }
-  // }
+    if (!mgr.fn_80036F10() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
+      CPersistentOptions& opts = gpGameState->PersistentOptions();
+      if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->Get() == 0) {
+        opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
+        CSamusHud::DisplayHudMemo(
+          rstl::wstring_l(gpStringTable->GetString("FirstPowerBombPickup")),
+          CHUDMemoParms(5.f, true, false, false, 1 << playerIndex, true)
+        );
+      }
+    }
+    switch (itemType) {
+      case CPlayerState::kIT_SwitchVisorCombat:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Combat);
+        break;
+      case CPlayerState::kIT_SwitchVisorScan:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Scan);
+        break;
+      case CPlayerState::kIT_SwitchVisorDark:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Dark);
+        break;
+      case CPlayerState::kIT_SwitchVisorEcho:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Echo);
+        break;
+    }
+  }
 }
 
 rstl::optional_object< CAABox > CScriptPickup::GetTouchBounds() const {
-  // return CActor::GetBoundingBox();
+  const CVector3f& off = GetTranslation();
+  return CAABox(mTouchBounds.GetMinPoint() + off, mTouchBounds.GetMaxPoint() + off);
 }
 
 void CScriptPickup::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
 }
 
-void CScriptPickup::Render(const CStateManager& mgr) const { CActor::Render(mgr); }
-
-void CScriptPickup::AddToRenderer(const CFrustumPlanes& a, const CStateManager& mgr) const {
+void CScriptPickup::AddToRenderer(const CStateManager& mgr) const {
   if (IsVisible()) {
     CActor::AddToRenderer(mgr);
   }
 }
 
-CPlayerState::EItemType CScriptPickup::GetItem() const { return m_itemType; }
+CPlayerState::EItemType CScriptPickup::GetItem() const { return mItemType; }
 
-void CScriptPickup::SetSpawned() { m_generated = true; }
+void CScriptPickup::SetSpawned() { mGenerated = true; }
 
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
                   const CVector3f& collisionOffset);
