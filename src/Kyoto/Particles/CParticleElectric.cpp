@@ -47,7 +47,7 @@ CParticleElectric::CParticleElectric(TToken< CElectricDescription > desc)
 , mSCNT(1)
 , mGenRem(0.f)
 , mGeneratorRate(1.f)
-, x168_(0)
+, mCumulativeParticles(0)
 , mSystemBounds(CAABox::MakeMaxInvertedBox())
 , mModuColor(CColor::White())
 , mAllocated(false)
@@ -657,7 +657,7 @@ void CParticleElectric::CreateNewParticles(int count) {
           }
         }
       }
-      ++x168_;
+      ++mCumulativeParticles;
       break;
     }
   }

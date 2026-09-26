@@ -201,7 +201,7 @@ public:
 
 class CIEGetEmitterTime : public CIntElement {
 public:
-  ~CIEGetEmitterTime() override;
+  ~CIEGetEmitterTime() override {}
   bool GetValue(int frame, int& valOut) const override;
 };
 
