@@ -43,6 +43,7 @@ public:
   bool IsMapAreaValid(const IWorld& world, int areaId, bool checkLoad) const;
   bool IsMapAreasStreaming() const;
   void RecalculateWorldSphere(const CMapWorldInfo& info, const IWorld& world) const;
+  CVector3f ConstrainToWorldVolume(const CVector3f& point, const CVector3f& lookVec) const;
 
 private:
   rstl::vector< CMapAreaData > mAreas;

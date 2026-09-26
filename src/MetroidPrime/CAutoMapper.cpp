@@ -5,6 +5,7 @@
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
+#include "Kyoto/Math/CAbsAngle.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
@@ -654,6 +655,270 @@ void CAutoMapper::ProcessMapScreenInput(const CFinalInput& input, CStateManager&
   }
 }
 
+void CAutoMapper::ProcessMapRotateInput(const CFinalInput& input, const CStateManager& mgr) {
+  float up = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleUp, input);
+  float down = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleDown, input);
+  float left = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
+  float right = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
+
+  int flags = 0;
+  if (up > 0.f)
+    flags += 2;
+  if (down > 0.f)
+    flags += 1;
+  if (left > 0.f)
+    flags += 4;
+  if (right > 0.f)
+    flags += 8;
+
+  switch (flags) {
+  case 1:
+    mLStickPos = 1;
+    break;
+  case 2:
+    mLStickPos = 5;
+    break;
+  case 4:
+    mLStickPos = 3;
+    break;
+  case 5:
+    mLStickPos = 2;
+    break;
+  case 6:
+    mLStickPos = 4;
+    break;
+  case 8:
+    mLStickPos = 7;
+    break;
+  case 9:
+    mLStickPos = 8;
+    break;
+  case 10:
+    mLStickPos = 6;
+    break;
+  default:
+    break;
+  }
+
+  float maxMag = up;
+  int dirSlot = 0;
+  if (down > up) {
+    maxMag = down;
+    dirSlot = 1;
+  }
+  if (left > maxMag) {
+    maxMag = left;
+    dirSlot = 2;
+  }
+  if (right > maxMag) {
+    maxMag = right;
+    dirSlot = 3;
+  }
+
+  left = 0.f;
+  right = 0.f;
+  down = 0.f;
+  up = 0.f;
+  switch (dirSlot) {
+  case 0:
+    up = maxMag;
+    break;
+  case 1:
+    down = maxMag;
+    break;
+  case 2:
+    left = maxMag;
+    break;
+  case 3:
+    right = maxMag;
+    break;
+  default:
+    break;
+  }
+
+  if (up > 0.f || down > 0.f || left > 0.f || right > 0.f) {
+    float deltaFrames = 60.f * input.DeltaTime();
+    SetShouldRotatingSoundBePlaying(true);
+    float minCamRotateX = gpTweakAutoMapper->GetMinCamRotateX();
+    float maxCamRotateX = gpTweakAutoMapper->GetMaxCamRotateX();
+    const CEulerAngles eulers = CEulerAngles::FromQuaternion(mRenderState0.mCamOrientation);
+    CAbsAngle angX = CAbsAngle::FromRadians(eulers.GetX());
+    CAbsAngle angZ = CAbsAngle::FromRadians(eulers.GetZ());
+
+    float dt = deltaFrames * gpTweakAutoMapper->GetRotateDegPerFrame();
+
+    angZ -= CRelAngle::FromDegrees(dt * left);
+    angZ += CRelAngle::FromDegrees(dt * right);
+
+    angX -= CRelAngle::FromDegrees(dt * up);
+    angX += CRelAngle::FromDegrees(dt * down);
+
+    float angXDeg = angX.AsDegrees();
+    if (angXDeg > 180.f)
+      angXDeg -= 360.f;
+    float clampedX = CMath::Clamp(minCamRotateX, angXDeg, maxCamRotateX);
+    angX = CAbsAngle::FromDegrees(clampedX);
+
+    mRenderState0.mCamOrientation = CQuaternion::YXZRotation(
+        CRelAngle::FromRadians(0.f), CRelAngle::FromRadians(angX.AsRadians()), CRelAngle::FromRadians(angZ.AsRadians()));
+  } else {
+    SetShouldRotatingSoundBePlaying(false);
+  }
+}
+
+void CAutoMapper::ProcessMapZoomInput(const CFinalInput& input, const CStateManager& mgr) {
+  bool zoomIn = gpGameState->ControlMapper().GetDigitalInput(CControlMapper::kC_MapZoomIn, input);
+  bool zoomOut = gpGameState->ControlMapper().GetDigitalInput(CControlMapper::kC_MapZoomOut, input);
+
+  EZoomState nextZoomState = kZS_None;
+  float oldDist = mRenderState0.mCamDist;
+  switch (mZoomState) {
+  case kZS_None:
+  case kZS_In:
+    if (zoomIn)
+      nextZoomState = kZS_In;
+    else if (zoomOut)
+      nextZoomState = kZS_Out;
+    break;
+  case kZS_Out:
+    if (zoomOut)
+      nextZoomState = kZS_Out;
+    else if (zoomIn)
+      nextZoomState = kZS_In;
+    break;
+  default:
+    break;
+  }
+
+  mZoomState = nextZoomState;
+
+  float deltaFrames = 60.f * input.DeltaTime();
+  float speedMult = mState == kAMS_MapScreen ? 1.f : 4.f;
+  float delta = gpTweakAutoMapper->GetZoomUnitsPerFrame() * (deltaFrames * speedMult);
+
+  if (mZoomState == kZS_In) {
+    mRenderState0.mCamDist =
+        GetClampedMapScreenCameraDistance(mRenderState0.mCamDist - delta);
+    mRTriggerPos = 1;
+    mZoomState = kZS_In;
+  } else if (mZoomState == kZS_Out) {
+    mRenderState0.mCamDist =
+        GetClampedMapScreenCameraDistance(mRenderState0.mCamDist + delta);
+    mLTriggerPos = 1;
+    mZoomState = kZS_Out;
+  }
+
+  if (oldDist == mRenderState0.mCamDist)
+    SetShouldZoomingSoundBePlaying(false);
+  else
+    SetShouldZoomingSoundBePlaying(true);
+}
+
+void CAutoMapper::ProcessMapPanInput(const CFinalInput& input, const CStateManager& mgr) {
+  float forward = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
+  float back = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
+  float left = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
+  float right = gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
+
+  CMatrix3f camRot = mRenderState0.mCamOrientation.BuildTransform();
+  if (forward > 0.f || back > 0.f || left > 0.f || right > 0.f) {
+    float deltaFrames = 60.f * input.DeltaTime();
+    float speed = GetFinalMapScreenCameraMoveSpeed();
+    int flags = 0;
+    if (forward > 0.f)
+      flags += 1;
+    if (back > 0.f)
+      flags += 2;
+    if (left > 0.f)
+      flags += 4;
+    if (right > 0.f)
+      flags += 8;
+
+    switch (flags) {
+    case 1:
+      mRStickPos = 1;
+      break;
+    case 2:
+      mRStickPos = 5;
+      break;
+    case 4:
+      mRStickPos = 3;
+      break;
+    case 5:
+      mRStickPos = 2;
+      break;
+    case 6:
+      mRStickPos = 4;
+      break;
+    case 8:
+      mRStickPos = 7;
+      break;
+    case 9:
+      mRStickPos = 8;
+      break;
+    case 10:
+      mRStickPos = 6;
+      break;
+    default:
+      break;
+    }
+
+    CVector3f dirVec = speed * (deltaFrames * CVector3f(right - left, 0.f, forward - back));
+    CVector3f newPoint = mRenderState0.mAreaPoint + camRot * dirVec;
+    if ((newPoint - mRenderState0.mAreaPoint).Magnitude() > input.DeltaTime()) {
+      SetShouldPanningSoundBePlaying(true);
+    } else {
+      SetShouldPanningSoundBePlaying(false);
+    }
+
+    if (mState == kAMS_MapScreen) {
+      const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+      mRenderState0.mAreaPoint =
+          mapWorld->ConstrainToWorldVolume(newPoint, camRot.GetColumn(kDY));
+    } else {
+      const CMapUniverse* mapu = mMapu.GetObject();
+      float radius = mapu->GetMapUniverseRadius();
+      CVector3f localPoint = newPoint - mapu->GetMapUniverseCenterPoint();
+      if (localPoint.Magnitude() > radius) {
+        newPoint = mapu->GetMapUniverseCenterPoint() + radius * localPoint.AsNormalized();
+      }
+      mRenderState0.mAreaPoint = newPoint;
+    }
+  } else {
+    SetShouldPanningSoundBePlaying(false);
+    float speed = gpTweakAutoMapper->GetCamPanUnitsPerFrame() * GetBaseMapScreenCameraMoveSpeed();
+    if (mState == kAMS_MapScreen) {
+      const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+      const CMapArea* area = mapWorld->GetMapArea(mCurAreaId.value);
+      CMapArea* transformArea = mapWorld->GetMapArea(mCurAreaId.value);
+      CVector3f worldPoint = transformArea->GetAreaPostTransform(*mWorld, mCurAreaId.value) *
+                             area->GetAreaCenterPoint();
+      CVector3f viewPoint = worldPoint - mRenderState0.mAreaPoint;
+      if (viewPoint.Magnitude() < speed) {
+        mRenderState0.mAreaPoint = worldPoint;
+      } else {
+        mRenderState0.mAreaPoint =
+            mRenderState0.mAreaPoint + speed * viewPoint.AsNormalized();
+      }
+    } else {
+      const CMapUniverse* mapu = mMapu.GetObject();
+      rstl::pair< int, int > result =
+          FindClosestVisibleWorld(mRenderState0.mAreaPoint,
+                                  CUnitVector3f(camRot.GetColumn(kDY), CUnitVector3f::kN_No), mgr);
+      const CTransform4f& hex =
+          mapu->GetMapWorldData(result.first).GetMapAreaData(result.second).GetTransform();
+      CVector3f hexPoint = hex.GetTranslation();
+      CVector3f areaToHex = hexPoint - mRenderState0.mAreaPoint;
+      if (areaToHex.Magnitude() < speed) {
+        mRenderState0.mAreaPoint = hexPoint;
+      } else {
+        mRenderState0.mAreaPoint =
+            mRenderState0.mAreaPoint + speed * areaToHex.AsNormalized();
+      }
+    }
+  }
+}
+
 void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {
   if (state == mNextState) {
     return;
@@ -951,6 +1216,47 @@ int CAutoMapper::FindTeleportArea(const CMapWorld& world) const {
     }
   }
   return -1;
+}
+
+rstl::pair< int, int > CAutoMapper::FindClosestVisibleWorld(const CVector3f& point,
+                                                          const CUnitVector3f& camDir,
+                                                          const CStateManager& mgr) const {
+  const CMapUniverse* const mapu = mMapu.GetObject();
+  int closestWorld = mCurAreaId.value;
+  int closestArea = mCurAreaId.value;
+  float minDistance = 29999.f;
+
+  for (int w = 0; w < mapu->GetNumMapWorldDatas(); ++w) {
+    const CMapUniverse::CMapWorldData& worldData = mapu->GetMapWorldData(w);
+    if (!gpGameState->StateForWorld(worldData.GetWorldAssetId())
+             .GetMapWorldInfo()
+             .GetPtr()
+             ->IsAnythingSet()) {
+      continue;
+    }
+    if (mMapMode == kMM_Teleport && worldData.GetWorldLabel() == "TempleHub") {
+      continue;
+    }
+
+    for (int i = 0; i < worldData.GetNumMapAreaDatas(); ++i) {
+      const CVector3f areaPoint = worldData.GetMapAreaData(i).GetTransform().GetTranslation();
+      const CVector3f pointToArea = areaPoint - point;
+      const CVector3f projectedPoint =
+          pointToArea.CanBeNormalized()
+              ? point +
+                    (pointToArea.Magnitude() * CVector3f::Dot(pointToArea.AsNormalized(), camDir)) *
+                        camDir
+              : point;
+      const float distance = (projectedPoint - areaPoint).Magnitude();
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestWorld = w;
+        closestArea = i;
+      }
+    }
+  }
+
+  return rstl::pair< int, int >(closestWorld, closestArea);
 }
 
 CVector2i CAutoMapper::GetMiniMapViewportSize() {

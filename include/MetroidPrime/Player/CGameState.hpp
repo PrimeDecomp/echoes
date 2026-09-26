@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+#include "MetroidPrime/CControlMapper.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
 #include "MetroidPrime/Player/CGameOptions.hpp"
@@ -16,6 +17,7 @@ class CGameState {
 public:
   CGameState();
   CGameState(CInputStream& in, int saveIdx);
+  ~CGameState();
 
   void ReadSystemOptions(CInputStream& in);
   void PutTo(COutputStream& out) const;
@@ -27,6 +29,8 @@ public:
   CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return gameOptions; }
+
+  CControlMapper& ControlMapper() { return mControlMapper; }
 
   u32 GetCardSerialA() const { return cardSerialA; }
   u32 GetCardSerialB() const { return cardSerialB; }
@@ -41,7 +45,9 @@ private:
   u32 cardSerialA;
   u32 cardSerialB;
 
-  char pad2[0x1E0];
+  char x110_[0xf4];
+  CControlMapper mControlMapper;
+  char x2ec_[4];
 };
 
 CHECK_SIZEOF(CGameState, 0x2f0)
