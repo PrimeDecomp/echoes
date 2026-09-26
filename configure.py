@@ -429,6 +429,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CPlayerDynamics.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerOrbit.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerVisor.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CScanDisplay.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CMorphBall.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScanTreeInventory.cpp"),
         ],

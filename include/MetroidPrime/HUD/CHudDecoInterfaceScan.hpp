@@ -4,6 +4,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/TToken.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
+#include "MetroidPrime/HUD/CScanHistory.hpp"
 #include "rstl/auto_ptr.hpp"
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
@@ -32,24 +33,6 @@ public:
   float GetMessageTextAlpha() const;
 
 private:
-  // Guessed name
-  struct SScanHierarchyNode {
-    uint x0;
-    rstl::string mName;
-    CAssetId mScan;
-    int mParent;
-    int mTotalScans;
-    int mCompletedScans;
-  };
-  // Guessed name
-  struct SScanHistoryWidgets {
-    CGuiWidget* mRoot;
-    CGuiTextPane* mHistory;
-    CGuiTextPane* mNumber;
-    CAuiMeter* mPercent;
-    CGuiWidget* mFlash;
-    CGuiWidget* mDouble;
-  };
   void InitializeFlatFrame(const CStateManager& mgr);
   void UpdateScanDisplay(const CStateManager& mgr, float dt);
   const CScannableObjectInfo* GetCurrScanInfo(const CStateManager& mgr) const;
