@@ -385,6 +385,8 @@ config.libs = [
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),
             Object(NonMatching, "MetroidPrime/CStateManager.cpp"),
             Object(NonMatching, "MetroidPrime/CEntity.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerState.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGun.cpp"),

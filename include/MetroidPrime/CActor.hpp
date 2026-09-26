@@ -188,6 +188,7 @@ public:
   // void SetThermalFlags(EThermalFlags flags) { m_thermalVisorFlags = flags; }
   void SetRenderParticleDatabaseInside(bool b) { m_renderParticleDBInside = b; }
   void SetTargetable(bool b) { m_targetable = b; }
+  void SetDrawEnabled(bool enabled) { m_drawEnabled = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
                       EMaterialTypes, CStateManager&);

@@ -6,6 +6,11 @@ class CStateManager;
 
 class CCameraManager {
 public:
+  static float GetDefaultAspectRatio();
+  static float GetDefaultFirstPersonFarClipDistance();
+  static float GetDefaultFirstPersonNearClipDistance();
+  static float GetDefaultThirdPersonVerticalFOV();
+
   const CGameCamera* GetCurrentCamera(const CStateManager&, int) const;
 
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);

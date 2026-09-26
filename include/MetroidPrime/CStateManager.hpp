@@ -150,6 +150,7 @@ public:
   bool GetWantsToEnterMessageScreen() const { return m_deferredTransition == kSMT_MessageScreen; }
 
   const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
+  CCameraManager* CameraManager(int playerIndex) { return m_cameraManagers[playerIndex]; }
   const CPlayerState* GetPlayerState() const { return m_playerState; }
   const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
