@@ -1,6 +1,7 @@
 #ifndef _CSCRIPTSTREAMEDMUSIC
 #define _CSCRIPTSTREAMEDMUSIC
 
+#include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/Streams/CFilePreload.hpp"
 #include "MetroidPrime/CEntity.hpp"
 
@@ -20,7 +21,7 @@ public:
   static bool IsDSPFile(const rstl::string& fileName);
 
 private:
-  static int IsOneShot(bool loop);
+  static CStreamAudioManager::ESoftwareChannel IsOneShot(bool loop);
   void StartStream();
   void StopStream();
   void StopNonDsp();

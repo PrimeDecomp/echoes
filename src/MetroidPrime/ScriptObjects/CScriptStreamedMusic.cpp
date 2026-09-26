@@ -42,7 +42,9 @@ bool CScriptStreamedMusic::IsDSPFile(const rstl::string& fileName) {
          CStringExtras::IndexOfSubstring(fileName, rstl::string_l(".dsp")) != -1;
 }
 
-int CScriptStreamedMusic::IsOneShot(bool loop) { return loop ? 0 : 1; }
+CStreamAudioManager::ESoftwareChannel CScriptStreamedMusic::IsOneShot(bool loop) {
+  return loop ? CStreamAudioManager::kSC_Default : CStreamAudioManager::kSC_OneShot;
+}
 
 void CScriptStreamedMusic::Think(float dt, CStateManager& mgr) {
   if (mPreloadPending && mPreload->IsReady()) {
@@ -53,13 +55,13 @@ void CScriptStreamedMusic::Think(float dt, CStateManager& mgr) {
 
 void CScriptStreamedMusic::StartStream() {
   if (!mPreload || mPreload->IsReady()) {
-    CStreamAudioManager::Start(IsOneShot(mLoop), mFileName, static_cast< uchar >(mVolume),
-                               mMusic, mFadeIn, mFadeOut);
+    CStreamAudioManager::PlaySoftwareAudio(IsOneShot(mLoop), mFileName, mFadeIn, mFadeOut,
+                                          static_cast< uchar >(mVolume), mMusic);
   }
 }
 
 void CScriptStreamedMusic::StopStream() {
-  CStreamAudioManager::Stop(IsOneShot(mLoop), mFileName);
+  CStreamAudioManager::StopSoftwareAudio(IsOneShot(mLoop), mFileName);
 }
 
 namespace rstl {
@@ -172,7 +174,7 @@ void CScriptStreamedMusic::SetStereoPair() {
 }
 
 void CScriptStreamedMusic::StopNonDsp() {
-  CStreamAudioManager::sub_8036590c(mFadeOut);
+  CStreamAudioManager::FadeBackIn(mFadeOut);
 }
 
 void CScriptStreamedMusic::PlayNonDsp() {
@@ -238,16 +240,16 @@ void CScriptStreamedMusic::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
     break;
   case kSM_Increment:
     if (mFileIsDsp) {
-      CStreamAudioManager::FadeBackIn(IsOneShot(mLoop), mFadeIn);
+      CStreamAudioManager::FadeInSoftwareAudio(IsOneShot(mLoop), mFadeIn);
     } else {
-      CStreamAudioManager::sub_803653f8(mFadeIn);
+      CStreamAudioManager::fn_803653F8(mFadeIn);
     }
     break;
   case kSM_Decrement:
     if (mFileIsDsp) {
-      CStreamAudioManager::TemporaryFadeOut(IsOneShot(mLoop), mFadeOut);
+      CStreamAudioManager::FadeOutSoftwareAudio(IsOneShot(mLoop), mFadeOut);
     } else {
-      CStreamAudioManager::sub_80365424(mFadeOut);
+      CStreamAudioManager::fn_80365424(mFadeOut);
     }
     break;
   default:

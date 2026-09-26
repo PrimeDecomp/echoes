@@ -626,6 +626,16 @@ Kyoto/CDependencyGroup.cpp:
 	.text       start:0x803208F0 end:0x80320FD8
 	.rodata     start:0x803AFFA0 end:0x803AFFA8
 
+Kyoto/Audio/CStreamAudioManager.cpp:
+	.text       start:0x80320FD8 end:0x8032250C
+	.ctors      start:0x803A5668 end:0x803A566C
+	.rodata     start:0x803AFFA8 end:0x803AFFB0
+	.bss        start:0x803E03D0 end:0x803E04C0
+	.bss        start:0x8041765C end:0x8041768C align:4 common
+	.sdata      start:0x80418C20 end:0x80418C38
+	.sbss       start:0x80419C18 end:0x80419C28
+	.sdata2     start:0x8041EB58 end:0x8041EB88
+
 Kyoto/Particles/CElectricDescription.cpp:
 	.text       start:0x8032257C end:0x803228CC
 
