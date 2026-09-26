@@ -8,14 +8,28 @@
 class CPASAnimInfo {
 public:
   CPASAnimInfo(int id);
-  CPASAnimInfo(int id, const rstl::reserved_vector<CPASAnimParm::UParmValue, 8>& parms);
+  CPASAnimInfo(int id, const rstl::reserved_vector< CPASAnimParm::UParmValue, 8 >& parms);
+
+  CPASAnimInfo(const CPASAnimInfo& other) : mId(other.GetAnimId()), mParms(other.mParms) {}
 
   int GetAnimId() const { return mId; }
   CPASAnimParm GetAnimParmData(uint idx, CPASAnimParm::EParmType type) const;
   const CPASAnimParm::UParmValue& GetAnimParmValue(uint idx) const;
+
+  bool operator<(const CPASAnimInfo& rhs) const { return mId < rhs.mId; }
+
 private:
-  uint mId;
+  int mId;
   rstl::reserved_vector< CPASAnimParm::UParmValue, 8 > mParms;
 };
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CPASAnimInfo > {
+  enum { value = true };
+};
+} // namespace rstl
+
+CHECK_SIZEOF(CPASAnimInfo, 0x28)
 
 #endif // _CPASANIMINFO

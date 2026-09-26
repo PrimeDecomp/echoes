@@ -43,21 +43,21 @@ struct is_trivially_destructible< uint > {
 };
 
 template < typename T >
-static inline void construct_impl(void* dest, const T& src) {
+inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
 }
 
 // Echoes copies byte elements without the placement-new null check.
-static inline void construct_impl(void* dest, const char& src) {
+inline void construct_impl(void* dest, const char& src) {
   *static_cast< char* >(dest) = src;
 }
 
-static inline void construct_impl(void* dest, const uchar& src) {
+inline void construct_impl(void* dest, const uchar& src) {
   *static_cast< uchar* >(dest) = src;
 }
 
 template < typename T >
-static inline void construct(void* dest, const T& src) {
+inline void construct(void* dest, const T& src) {
   construct_impl(dest, src);
 }
 
@@ -77,20 +77,23 @@ inline void construct< uint >(void* dest, const uint& src) {
 }
 
 template < typename T >
-static inline void destroy_impl(T* in) {
+inline void destroy_impl(T* in) {
+  if (is_trivially_destructible< T >::value) {
+    return;
+  }
   in->~T();
 }
 
 template < typename T >
-static inline void destroy(T* in) {
+inline void destroy(T* in) {
   destroy_impl(in);
 }
 
 template < typename It >
-static inline void destroy(It begin, It end);
+inline void destroy(It begin, It end);
 
 template < typename It >
-static inline void destroy_impl(It begin, It end) {
+inline void destroy_impl(It begin, It end) {
   if (is_trivially_destructible< typename iterator_traits< It >::value_type >::value) {
     return;
   }
@@ -101,7 +104,7 @@ static inline void destroy_impl(It begin, It end) {
 }
 
 template < typename It >
-static inline void destroy(It begin, It end) {
+inline void destroy(It begin, It end) {
   destroy_impl(begin, end);
 }
 

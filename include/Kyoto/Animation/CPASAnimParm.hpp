@@ -12,7 +12,7 @@ public:
     kPT_Float = 2,
     kPT_Bool = 3,
     kPT_Enum = 4,
- 
+
   };
   union UParmValue {
     int m_int;
@@ -22,7 +22,7 @@ public:
   };
 
   CPASAnimParm(UParmValue value, EParmType type);
-  
+
   static CPASAnimParm NoParameter();
   static CPASAnimParm FromInt32(int value);
   static CPASAnimParm FromUint32(uint value);
@@ -36,11 +36,14 @@ public:
   bool GetBoolValue() const;
   int GetEnumValue() const;
 
-  UParmValue GetParameter() { return mValue; }
+  const UParmValue& GetParameterValue() const { return mValue; }
+  EParmType GetParameterType() const { return mType; }
 
 private:
   UParmValue mValue;
   EParmType mType;
 };
+
+CHECK_SIZEOF(CPASAnimParm, 0x8)
 
 #endif // _CPASANIMPARM

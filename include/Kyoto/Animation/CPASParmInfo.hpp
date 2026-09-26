@@ -2,6 +2,7 @@
 #define _CPASPARMINFO
 
 #include "Kyoto/Animation/CPASAnimParm.hpp"
+#include "rstl/construct.hpp"
 
 class CInputStream;
 class CPASParmInfo {
@@ -18,7 +19,7 @@ public:
 
   CPASAnimParm::EParmType GetParameterType() const { return mType; }
   EWeightFunction GetWeightFunction() const { return mWeightFunction; }
-  float GetWeight() const { return mWeight; }
+  float GetParameterWeight() const { return mWeight; }
   CPASAnimParm::UParmValue GetParameterMinValue() const { return mMin; }
   CPASAnimParm::UParmValue GetParameterMaxValue() const { return mMax; }
 
@@ -29,5 +30,19 @@ private:
   CPASAnimParm::UParmValue mMin;
   CPASAnimParm::UParmValue mMax;
 };
+
+namespace rstl {
+template <>
+struct is_trivially_destructible< CPASParmInfo > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< CPASParmInfo >(void* dest, const CPASParmInfo& src) {
+  *static_cast< CPASParmInfo* >(dest) = src;
+}
+} // namespace rstl
+
+CHECK_SIZEOF(CPASParmInfo, 0x14)
 
 #endif // _CPASPARMINFO
