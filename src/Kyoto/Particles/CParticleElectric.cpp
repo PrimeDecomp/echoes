@@ -831,16 +831,16 @@ int CParticleElectric::GetParticleCount() {
   return count;
 }
 
-int CParticleElectric::GetActiveParticleCount() {
+int CParticleElectric::GetSystemCount() {
   int count = mElectricManagers.size();
   if (mHaveGPSM) {
     for (int i = 0; i < mSCNT; ++i) {
-      count += mGPSMGenerators[i]->GetActiveParticleCount();
+      count += mGPSMGenerators[i]->GetSystemCount();
     }
   }
   if (mHaveEPSM) {
     for (int i = 0; i < mSCNT; ++i) {
-      count += mEPSMGenerators[i]->GetActiveParticleCount();
+      count += mEPSMGenerators[i]->GetSystemCount();
     }
   }
   return count;

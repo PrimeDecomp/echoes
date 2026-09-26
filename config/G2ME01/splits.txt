@@ -485,6 +485,16 @@ Kyoto/PVS/CPVSVisOctree.cpp:
 Kyoto/PVS/CPVSVisSet.cpp:
 	.text       start:0x802CEA14 end:0x802CEE6C
 
+Kyoto/Particles/CElementGen.cpp:
+	.text       start:0x802D0CA4 end:0x802DCAC0
+	.ctors      start:0x803A5620 end:0x803A5624
+	.rodata     start:0x803AF870 end:0x803AF988
+	.data       start:0x803BA3D8 end:0x803BA468
+	.bss        start:0x803DFCB8 end:0x803DFDA8
+	.sdata      start:0x80418B18 end:0x80418B20
+	.sbss       start:0x80419A70 end:0x80419A90
+	.sdata2     start:0x8041E778 end:0x8041E7F0
+
 Kyoto/Particles/CParticleGlobals.cpp:
 	.text       start:0x802E8198 end:0x802E82C4
 	.sbss       start:0x80419AA8 end:0x80419AD0
@@ -796,6 +806,12 @@ Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80327C10 end:0x8032AFC8
 	.sdata      start:0x80418C50 end:0x80418C68
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
+
+Kyoto/Particles/CParticleSpawnSystem.cpp:
+	.sdata      start:0x80418C68 end:0x80418C70
+
+Kyoto/Particles/CParticleSpawnRandom.cpp:
+	.sdata      start:0x80418C70 end:0x80418C78
 
 Kyoto/Audio/CDSPStreamManager.cpp:
 	.text       start:0x8033B940 end:0x8033D2EC

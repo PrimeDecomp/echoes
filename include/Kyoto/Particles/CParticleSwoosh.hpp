@@ -39,6 +39,7 @@ public:
     CVector3f mVelocity;
   };
   CParticleSwoosh(TToken< CSwooshDescription > desc, int leng);
+  // CParticleGen
   ~CParticleSwoosh() override;
 
   const bool Update(double dt) override;
@@ -59,7 +60,7 @@ public:
   bool GetParticleEmission() const override;
   const CColor& GetModulationColor() const override;
   int GetEmitterTime() const override;
-  int GetActiveParticleCount() override;
+  int GetSystemCount() override;
   bool IsSystemDeletable() override;
   rstl::optional_object< CAABox > GetBounds() override;
   int GetParticleCount() override;
