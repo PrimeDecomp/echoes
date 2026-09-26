@@ -494,7 +494,6 @@ private:
   static bool mFirstFrame;
   static GXBool mUseVideoFilter;
   static float mBrightness;
-
 };
 
 NESTED_CHECK_SIZEOF(CGraphics, CClippedScreenQuad, 0x3c)

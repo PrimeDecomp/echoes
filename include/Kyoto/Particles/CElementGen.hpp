@@ -58,6 +58,12 @@ public:
     ushort mPartIdx;
     CVector3f mViewPoint;
   };
+  // Guessed name, correlated with Prime's multi-texture sorting record.
+  struct CTexturedParticleListItem {
+    ushort mTexMapIdx;
+    ushort mPartIdx;
+    CVector3f mViewPoint;
+  };
   struct SModelRenderState {
     bool mModulateAlpha;
     bool mConstantUV;
@@ -93,19 +99,19 @@ public:
   virtual void SetGeneratorRate(float rate) override;
 
   virtual const CTransform4f& GetOrientation() const override;
-  virtual const CVector3f& GetTranslation() const override;
+  virtual const CVector3f& GetTranslation() const override { return mTranslation; }
   virtual const CTransform4f& GetGlobalOrientation() const override;
   virtual const CVector3f& GetGlobalTranslation() const override;
   virtual const CVector3f& GetGlobalScale() const override;
-  virtual bool GetParticleEmission() const override;
+  virtual bool GetParticleEmission() const override { return mParticleEmission; }
   virtual const CColor& GetModulationColor() const override;
   float GetGeneratorRate() const override;
-  int GetEmitterTime() const override;
+  int GetEmitterTime() const override { return mCurFrame; }
 
   int GetSystemCount() override;
   virtual bool IsSystemDeletable() override;
   virtual rstl::optional_object< CAABox > GetBounds() override;
-  virtual int GetParticleCount() override;
+  virtual int GetParticleCount() override { return mActiveParticleCount; }
   virtual bool SystemHasLight() override;
   virtual CLight GetLight() override;
   virtual void DestroyParticles() override;
@@ -139,6 +145,11 @@ public:
   void RenderLines();
   void RenderParticles();
   void RenderParticlesIndirectTexture();
+  static void RenderParticlesFlameThrower(CElementGen* const* gens, int count,
+                                          const CVector3f* globalTranslation,
+                                          const CTransform4f* globalOrientation,
+                                          const CVector3f* globalScale,
+                                          const CTransform4f* localScale);
   // Guessed names, extending Prime's basic-render variants with modulation color.
   void RenderBasicParticlesNoRotTS(const CTransform4f& xf) const;
   void RenderBasicParticlesRotTS(const CTransform4f& xf) const;
