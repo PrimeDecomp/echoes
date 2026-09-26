@@ -10,6 +10,21 @@ public:
   CPlayerKnockBackMgr();
   ~CPlayerKnockBackMgr();
 
+  // CKnockBackMgr
+  void Update(float dt, CStateManager& mgr, CActor& actor) override;
+  void KnockBack(CStateManager& mgr, CActor& actor, const CKnockBackInfo& info) override;
+  bool IsAlive(const CActor& actor) const override;
+  bool IsBall() const override;
+  bool WasFrozen() const override;
+  bool WasOnGround() const override;
+  ECharacterState GetCharacterState(const CActor& actor) const override;
+  bool HasAnimReaction(const CActor& actor, EAnimReaction reaction) const override;
+  void DoKnockBackAnimation(const CVector3f& direction, CStateManager& mgr, CActor& actor,
+                            float magnitude) override;
+  void ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniqueId source, TUniqueId owner) override;
+  void ApplyKnockBackEffects(CActor& actor, CStateManager& mgr,
+                             const CKnockBackInfo& info) override;
+
 private:
   float x64_;
   float x68_;

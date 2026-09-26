@@ -1,6 +1,7 @@
 #ifndef _CAIKNOCKBACKMGR
 #define _CAIKNOCKBACKMGR
 
+#include "Kyoto/Animation/CharacterCommon.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "MetroidPrime/Enemies/CKnockBackMgr.hpp"
 
@@ -12,25 +13,36 @@ public:
   // CKnockBackMgr
   void Update(float dt, CStateManager& mgr, CActor& actor) override;
   void KnockBack(CStateManager& mgr, CActor& actor, const CKnockBackInfo& info) override;
+  bool IsAlive(const CActor& actor) const override;
+  bool IsBall() const override;
+  bool WasFrozen() const override;
+  bool WasOnGround() const override;
+  ECharacterState GetCharacterState(const CActor& actor) const override;
+  bool HasAnimReaction(const CActor& actor, EAnimReaction reaction) const override;
+  void DoKnockBackAnimation(const CVector3f& direction, CStateManager& mgr, CActor& actor,
+                            float magnitude) override;
+  void ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniqueId source, TUniqueId owner) override;
+  void ApplyKnockBackEffects(CActor& actor, CStateManager& mgr,
+                             const CKnockBackInfo& info) override;
 
   void SetPhysicsKnockBackType(EPhysicsKnockBackType type);
   void EnableKnockBackPhysics(bool enabled);
   void SetAdditiveFlinchWeight(float weight);
 
 private:
+  pas::ESeverity mSeverity;
+  int mFlinchType; // Guessed name; enum parameter for the directional flinch animation.
+  float mFlinchRemainingTime;
   EPhysicsKnockBackType mPhysicsKnockBackType;
-  int mImpulseDurationIndex;
-  float x6c_;
-  int x70_;
   CVector3f mImpulseDirection;
+  float mImpulseMagnitude;
   float mImpulseRemainingTime;
-  float x84_;
   float mAdditiveFlinchWeight;
-  float x8c_;
+  float mPhysicsImpulseMagnitude;
   bool mKnockBackPhysicsEnabled : 1;
-  bool mAutoResetImpulse : 1;
-  bool x90_26_ : 1;
-  bool x90_27_ : 1;
+  bool mHurlVelocityEnabled : 1; // Guessed name; selects computed hurl velocity versus zero.
+  bool mWasFrozen : 1;
+  bool mWasOnGround : 1;
 };
 CHECK_SIZEOF(CAiKnockBackMgr, 0x94)
 
