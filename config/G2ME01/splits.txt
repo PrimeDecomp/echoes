@@ -497,6 +497,12 @@ Kyoto/Graphics/CColor.cpp:
 	.ctors      start:0x803A564C end:0x803A5650
 	.sbss       start:0x80419B38 end:0x80419B5C
 
+Kyoto/Audio/DolphinCAudioGroupSet.cpp:
+	.text       start:0x80307030 end:0x8030780C
+	.rodata     start:0x803AFC48 end:0x803AFC78
+	.data       start:0x803BB020 end:0x803BB030
+	.sbss       start:0x80419B60 end:0x80419B68
+
 Kyoto/Audio/DolphinCAudioSys.cpp:
 	.text       start:0x8030780C end:0x80309108
 	.ctors      start:0x803A5650 end:0x803A5654
