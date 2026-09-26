@@ -6,6 +6,7 @@
 
 class CAnimationManager {
 public:
+  ~CAnimationManager();
   //CAnimationManager(const TToken<CAnimationDatabase>& animDB, const CAnimSysContext& sysCtx);
 
 private:

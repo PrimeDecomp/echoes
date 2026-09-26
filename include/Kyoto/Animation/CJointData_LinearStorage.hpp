@@ -6,8 +6,20 @@
 #include "Kyoto/Math/CQuaternion.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
+class CCharLayoutInfo;
+
 class CJointData_LinearStorage {
 public:
+  enum EAllocateFrom {
+    kAF_Pool, // Guessed name: falls back to heap allocation when the pool is exhausted.
+    kAF_Heap, // Guessed name.
+  };
+
+  CJointData_LinearStorage(int count, EAllocateFrom allocateFrom);
+  ~CJointData_LinearStorage();
+  void SetZeroRotation();
+  void SetReferenceOffsets(const CCharLayoutInfo& layout);
+
   const uchar* GetRotations() const { return mRotations; }
   const uchar* GetTranslations() const { return mTranslations; }
   const uchar* GetScales() const { return mScales; }
@@ -27,7 +39,7 @@ public:
   void ResetScales(); // Guessed name.
 
 private:
-  int mAllocationType;
+  EAllocateFrom mAllocationType;
   void* mStorage;
   int mCount;
   bool mHasScales : 1;

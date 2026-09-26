@@ -77,7 +77,14 @@ public:
   void SetSkinnedModel(const TLockedToken< CSkinnedModel >& model);
   void SetXRayModel(const TLockedToken< CModel >& model, const TLockedToken< CSkinRules >& skin);
   void SetInfraModel(const TLockedToken< CModel >& model, const TLockedToken< CSkinRules >& skin);
+  // Guessed names.
+  void CollectAnimationTokens(rstl::vector< CToken >& tokensOut, bool lock) const;
+  void CollectAnimationResources(rstl::vector< SObjectTag >& tagsOut) const;
 
+  // The two floating arguments are dt and a particle-POI weight threshold.
+  CAdvancementDeltas Advance(float dt, float minParticleWeight, const CVector3f& scale,
+                             CStateManager* mgr, CRandom16& random, TAreaId areaId,
+                             bool advanceTree);
   CAdvancementDeltas AdvanceIgnoreParticles(float dt, CRandom16& random, bool advanceTree);
   CAdvancementDeltas DoAdvance(float dt, bool& suspendEffects, CRandom16& random, bool advanceTree);
   void AdvanceAnim(CCharAnimTime& time, CVector3f& offset, CQuaternion& rotation);
@@ -101,11 +108,21 @@ public:
   void MultiplyPlaybackRate(float scale);
   CCharAnimTime GetTimeOfUserEvent(EUserEventType type, const CCharAnimTime& time) const;
   CCharAnimTime GetTimeOfUserEventForAnimation(int anim, EUserEventType type) const;
+  CCharAnimTime GetTimeOfUserEvent(EUserEventType type, const CCharAnimTime& time,
+                                   const rstl::ncrc_ptr< CAnimTreeNode >& tree) const;
+  // Guessed names.
+  int CountUserEventsForAnimation(int anim, EUserEventType type) const;
+  int CountUserEvents(EUserEventType type, const CCharAnimTime& time,
+                      const rstl::ncrc_ptr< CAnimTreeNode >& tree) const;
 
   void InitializeEffects(CStateManager& mgr, TAreaId areaId, const CVector3f& scale);
+  CParticleGenInfo* GetFirstParticleEffect(const rstl::string& name);
+  void SetEffectState(const rstl::string& name, bool active, CStateManager& mgr);
   void SetEffectComponentExternalParam(const rstl::string& name, int index, float value);
   void SetKeepJSPose(bool keep);
   void AddAnimatedScale();
+  void SetModelScale(const CVector3f& scale); // Guessed name.
+  void SetAnimationTreeLimit(int limit);      // Guessed name.
   void SetPhase(float phase);
   void AddAdditiveAnimation(uint idx, float weight, bool active, bool fadeOut);
   void DelAdditiveAnimation(uint idx);
@@ -166,6 +183,10 @@ public:
   static void FreeCache();
 
 private:
+  // Guessed names.
+  rstl::ncrc_ptr< CAnimTreeNode > BuildAnimationTree(const CAnimPlaybackParms& parms) const;
+  rstl::ncrc_ptr< CAnimTreeNode > BuildTransitionTree(const CAnimPlaybackParms& parms) const;
+
   TLockedToken< CCharacterFactory > mCharFactory;
   CCharacterInfo mCharInfo;
   TLockedToken< CCharLayoutInfo > mLayoutData;
