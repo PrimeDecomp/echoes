@@ -77,6 +77,9 @@ public:
   }
 
   void MakeSwappable() const;
+  void LoadToARAM();
+  bool IsARAMTransferInProgress() const;
+  bool LoadToMRAM();
   void CountMemory() const;
   void UncountMemory() const;
   void SetFlag1(bool b) { mLocked = b; }
