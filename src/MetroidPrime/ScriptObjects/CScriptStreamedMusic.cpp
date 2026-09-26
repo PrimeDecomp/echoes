@@ -82,10 +82,10 @@ rstl::basic_string< char >::basic_string(rstl::basic_string< char >::const_itera
   internal_allocate(len + 1);
   int i = 0;
   for (const_iterator it = first; it != last; it = it + 1, ++i) {
-    const_cast< char& >(x0_ptr[i]) = *it;
+    const_cast< char& >(mPtr[i]) = *it;
   }
-  const_cast< char& >(x0_ptr[i]) = char_traits< char >::eos();
-  x8_size = len;
+  const_cast< char& >(mPtr[i]) = char_traits< char >::eos();
+  mSize = len;
 }
 
 template <>

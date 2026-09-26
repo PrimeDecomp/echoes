@@ -127,7 +127,7 @@ rstl::vector< TUniqueId > CEntity::FindConnectedObjects(const CStateManager& mgr
         result.reserve(result.size() + rstl::distance(ids.first, ids.second));
         for (CStateManager::TIdList::const_iterator current = ids.first; current != ids.second;
              ++current) {
-          result.data()[result.x4_count++] = current->second;
+          result.data()[result.mCount++] = current->second;
         }
       }
     }
@@ -148,7 +148,7 @@ rstl::vector< TUniqueId > CEntity::FindConnectedObjects_if(
         for (CStateManager::TIdList::const_iterator current = ids.first; current != ids.second;
              ++current) {
           if (predicate.IsValid(mgr, current->second)) {
-            result.data()[result.x4_count++] = current->second;
+            result.data()[result.mCount++] = current->second;
           }
         }
       }

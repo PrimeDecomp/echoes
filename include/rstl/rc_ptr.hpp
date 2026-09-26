@@ -7,11 +7,11 @@
 namespace rstl {
 class CRefData {
 public:
-  CRefData() : x0_refCount(0) {}
-  int AddRef() { return ++x0_refCount; }
-  int DelRef() { return --x0_refCount; }
+  CRefData() : mRefCount(0) {}
+  int AddRef() { return ++mRefCount; }
+  int DelRef() { return --mRefCount; }
 
-  int x0_refCount;
+  int mRefCount;
 
   static CRefData sNull;
 };
@@ -19,51 +19,51 @@ public:
 template < typename T >
 class rc_ptr {
 public:
-  rc_ptr() : x0_ptr(nullptr), x4_refCount(&CRefData::sNull.x0_refCount) { ++*x4_refCount; }
-  rc_ptr(const T* ptr) : x0_ptr(ptr), x4_refCount(rs_new int(1)) {}
-  rc_ptr(const rc_ptr& other) : x0_ptr(other.x0_ptr), x4_refCount(other.x4_refCount) {
-    ++*x4_refCount;
+  rc_ptr() : mPtr(nullptr), mRefCount(&CRefData::sNull.mRefCount) { ++*mRefCount; }
+  rc_ptr(const T* ptr) : mPtr(ptr), mRefCount(rs_new int(1)) {}
+  rc_ptr(const rc_ptr& other) : mPtr(other.mPtr), mRefCount(other.mRefCount) {
+    ++*mRefCount;
   }
   ~rc_ptr() { ReleaseData(); }
   rc_ptr& operator=(const rc_ptr& other) {
-    if (x4_refCount != other.x4_refCount) {
+    if (mRefCount != other.mRefCount) {
       ReleaseData();
-      x0_ptr = other.x0_ptr;
-      x4_refCount = other.x4_refCount;
-      ++*x4_refCount;
+      mPtr = other.mPtr;
+      mRefCount = other.mRefCount;
+      ++*mRefCount;
     }
     return *this;
   }
-  T* GetPtr() const { return const_cast< T* >(x0_ptr); }
+  T* GetPtr() const { return const_cast< T* >(mPtr); }
   bool IsNull() const { return GetPtr() == nullptr; }
   template < typename U >
   void Assign(const U* ptr) {
     const T* base = ptr;
     ReleaseData();
-    x0_ptr = base;
-    x4_refCount = rs_new int(1);
+    mPtr = base;
+    mRefCount = rs_new int(1);
   }
   void ReleaseData();
   void reset() {
     ReleaseData();
-    x0_ptr = nullptr;
-    x4_refCount = &CRefData::sNull.x0_refCount;
-    ++*x4_refCount;
+    mPtr = nullptr;
+    mRefCount = &CRefData::sNull.mRefCount;
+    ++*mRefCount;
   }
   T* operator->() const { return GetPtr(); }
   T& operator*() const { return *GetPtr(); }
   operator bool() const { return GetPtr() != nullptr; }
 
 private:
-  const T* x0_ptr;
-  int* x4_refCount;
+  const T* mPtr;
+  int* mRefCount;
 };
 
 template < typename T >
 void rc_ptr< T >::ReleaseData() {
-  if (--*x4_refCount <= 0) {
+  if (--*mRefCount <= 0) {
     delete GetPtr();
-    delete x4_refCount;
+    delete mRefCount;
   }
 }
 

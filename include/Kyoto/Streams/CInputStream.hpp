@@ -132,7 +132,7 @@ inline rstl::pair< L, R >::pair(CInputStream& in)
 #include "rstl/vector.hpp"
 template < typename T, typename Alloc >
 rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator)
-: x4_count(0), x8_capacity(0), xc_items(nullptr) {
+: mCount(0), mCapacity(0), mItems(nullptr) {
   int count = in.ReadInt32();
   reserve(count);
   for (int i = 0; i < count; i++) {
@@ -142,8 +142,8 @@ rstl::vector< T, Alloc >::vector(CInputStream& in, const Alloc& allocator)
 
 #include "rstl/reserved_vector.hpp"
 template < typename T, int N >
-inline rstl::reserved_vector< T, N >::reserved_vector(CInputStream& in) : x0_count(in.ReadInt32()) {
-  for (int i = 0; i < x0_count; i++) {
+inline rstl::reserved_vector< T, N >::reserved_vector(CInputStream& in) : mCount(in.ReadInt32()) {
+  for (int i = 0; i < mCount; i++) {
     construct(&data()[i], in.Get(TType< T >()));
   }
 }
@@ -152,7 +152,7 @@ inline rstl::reserved_vector< T, N >::reserved_vector(CInputStream& in) : x0_cou
 template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
 inline rstl::red_black_tree< T, P, U, S, Cmp, Alloc >::red_black_tree(
     CInputStream& in, const S& selector, const Cmp& cmp, const Alloc& alloc)
-: x0_selector(selector), x1_cmp(cmp), x2_allocator(alloc), x4_count(0) {
+: mSelector(selector), mCmp(cmp), mAllocator(alloc), mCount(0) {
   const int count = in.Get< int >();
   for (int i = 0; i < count; ++i) {
     insert(in.Get< P >());
