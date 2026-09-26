@@ -43,9 +43,6 @@
 #include "rstl/StringExtras.hpp"
 #include "rstl/math.hpp"
 
-
-// Work in progress: Update remains incomplete.
-
 static const char* const skFRME_MapScreen = "FRME_MapScreen";
 static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
 
@@ -63,6 +60,26 @@ static const SMapKeyEntry skMapKeys[] = {
     {"", CPlayerState::kIT_HiveKey1, 4},   {"", CPlayerState::kIT_HiveKey2, 4},
     {"", CPlayerState::kIT_HiveKey3, 4},
 };
+
+// Guessed name
+struct SMapLegendEntry {
+  const char* mAcquiredLabel;
+  const char* mMissingLabel;
+  CPlayerState::EItemType mItemType;
+};
+
+static const SMapLegendEntry skMapLegend[] = {
+    {"MapLegendDarkBeamON", "MapLegendDarkBeamOFF", CPlayerState::kIT_DarkBeam},
+    {"MapLegendLightBeamON", "MapLegendLightBeamOFF", CPlayerState::kIT_LightBeam},
+    {"MapLegendAnnihilatorBeamON", "MapLegendAnnihilatorBeamOFF",
+     CPlayerState::kIT_AnnihilatorBeam},
+    {"MapLegendMissileON", "MapLegendMissileOFF", CPlayerState::kIT_Missile},
+    {"MapLegendSuperMissileON", "MapLegendSuperMissileOFF", CPlayerState::kIT_SuperMissile},
+    {"MapLegendSeekerMissileON", "MapLegendSeekerMissileOFF", CPlayerState::kIT_SeekerLauncher},
+    {"MapLegendPowerBombON", "MapLegendPowerBombOFF", CPlayerState::kIT_Powerbomb},
+};
+
+static const CColor skDisabledControlColor(0.3f, 0.3f, 0.3f, 1.f);
 
 static inline float Lerp(float a, float b, float t) { return a * (1.f - t) + b * t; }
 
@@ -1407,6 +1424,518 @@ CAssetId CAutoMapper::GetAreaHintDescriptionString(CAssetId areaId) {
     }
   }
   return kInvalidAssetId;
+}
+
+void CAutoMapper::Update(float dt, CStateManager& mgr) {
+  if (IsFullyOutOfMiniMapState()) {
+    mFlashTimer = static_cast< float >(fmod(mFlashTimer + dt, 0.75));
+    mPlayerFlashPulse =
+        mFlashTimer < 0.375f ? mFlashTimer / 0.375f : (0.75f - mFlashTimer) / 0.375f;
+  }
+
+  if (mFrmeMapScreenBackground.get() != nullptr && mFrmeBackgroundInitialized == nullptr &&
+      mFrmeMapScreenBackground->IsLoaded()) {
+    mFrmeBackgroundInitialized = mFrmeMapScreenBackground->GetObject();
+    mBackgroundHexagons.reserve(100);
+    for (int i = 0; i < 100; ++i) {
+      CGuiWidget* hexagon =
+          mFrmeBackgroundInitialized->FindWidget(CBasics::Stringize("%s%d", "model_hex", i));
+      if (hexagon != nullptr) {
+        mBackgroundHexagons.push_back_unsafe(hexagon);
+        hexagon->SetDepthWrite(false);
+        hexagon->SetDepthTest(false);
+      }
+    }
+  }
+
+  if (mFrmeMapScreen.get() != nullptr && mFrmeInitialized == nullptr &&
+      mFrmeMapScreen->IsLoaded()) {
+    mFrmeInitialized = mFrmeMapScreen->GetObject();
+    mTextpaneLabel = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_label"));
+    mTextpaneLabel->TextSupport().SetFontColor(gpTweakAutoMapper->GetTitleColor());
+    mTextpaneLabel->TextSupport().SetText(rstl::wstring(
+        gpStringTable->GetString(mgr.GetIsDarkWorld() ? "MapScreenTitleDark" : "MapScreenTitle")));
+
+    mTextpaneLeft = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_left"));
+    mTextpaneLeft->TextSupport().SetText(
+        rstl::wstring(gpStringTable->GetString("InstructionsLeftMap")));
+    mTextpaneLeft->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneLeft->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneYicon = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_yicon"));
+    mTextpaneYicon->TextSupport().SetText(
+        rstl::wstring(gpStringTable->GetString("InstructionsMid")));
+    mTextpaneYicon->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneYicon->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneXicon1 = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_xicon1"));
+    mTextpaneXicon1->TextSupport().SetText(
+        rstl::wstring(gpStringTable->GetString("InstructionsXButton")));
+    mTextpaneXicon1->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneXicon1->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneTeleporter =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_teleporter"));
+    mTextpaneTeleporter->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneTeleporter->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+
+    mTextpaneHint = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_hint"));
+    mTextpaneInstructions =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_instructions"));
+    mTextpaneInstructions1 =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_instructions1"));
+    mTextpaneInstructions2 =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_instructions2"));
+    mTextpaneHint->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneHint->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mBasewidgetHintgroup = mFrmeInitialized->FindWidget("basewidget_hintgroup");
+    mBasewidgetHintgroup->SetVisibility(false, kTM_Children);
+    mFrmeInitialized->FindWidget("model_rhs_frame")->SetColor(gpTweakAutoMapper->GetFrameColor());
+    mTextpaneInstructions1->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneInstructions1->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneInstructions->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneInstructions->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneInstructions2->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneInstructions2->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+
+    const wchar_t imagePrefix[] = L"&image=";
+    const wchar_t imageSuffix[] = L";";
+    CStringTable* const stringTable = gpStringTable;
+    rstl::wstring instructions;
+    instructions.reserve(0x100);
+    instructions.append(imagePrefix, -1);
+    instructions.append(CStringExtras::ConvertToUNICODE(
+        rstl::string(CBasics::Stringize("SI,0.6,1.0,%8.8X", gpTweakPlayerRes->mLStick[0]))));
+    instructions.append(imageSuffix, -1);
+    instructions.append(stringTable->GetString("InstructionRotate"), -1);
+    mTextpaneInstructions->TextSupport().SetText(instructions);
+
+    instructions.assign(imagePrefix, -1);
+    instructions.append(CStringExtras::ConvertToUNICODE(
+        rstl::string(CBasics::Stringize("SI,0.6,1.0,%8.8X", gpTweakPlayerRes->mCStick[0]))));
+    instructions.append(imageSuffix, -1);
+    instructions.append(stringTable->GetString("InstructionMove"), -1);
+    mTextpaneInstructions1->TextSupport().SetText(instructions);
+
+    instructions.assign(imagePrefix, -1);
+    instructions.append(CStringExtras::ConvertToUNICODE(
+        rstl::string(CBasics::Stringize("%8.8X", gpTweakPlayerRes->mLTrigger[0]))));
+    instructions.append(imageSuffix, -1);
+    instructions.append(rstl::wstring_l(L" "));
+    instructions.append(imagePrefix, -1);
+    instructions.append(CStringExtras::ConvertToUNICODE(
+        rstl::string(CBasics::Stringize("%8.8X", gpTweakPlayerRes->mRTrigger[0]))));
+    instructions.append(imageSuffix, -1);
+    instructions.append(stringTable->GetString("InstructionZoom"), -1);
+    mTextpaneInstructions2->TextSupport().SetText(instructions);
+
+    mTextpaneMapLegend =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_mapLegend"));
+    mTextpaneMapLegend->TextSupport().SetWordWrap(false);
+    mTextpaneMapLegend->TextSupport().SetImageBaseline(true);
+    mTextpaneMapLegend->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneMapLegend->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    const CPlayerState* playerState = mgr.GetPlayerState(mPlayerIndex);
+    rstl::wstring legend(gpStringTable->GetString("MapLegendText"));
+    for (int i = 0; i < 7; ++i) {
+      const SMapLegendEntry& entry = skMapLegend[i];
+      legend.append(L"\n", -1);
+      const char* label = playerState->GetItemCapacity(entry.mItemType) > 0 ? entry.mAcquiredLabel
+                                                                            : entry.mMissingLabel;
+      legend.append(gpStringTable->GetString(label), -1);
+    }
+    mTextpaneMapLegend->TextSupport().SetText(legend);
+
+    mTextpaneMapLegend1 =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_mapLegend1"));
+    mTextpaneMapLegend1->TextSupport().SetWordWrap(false);
+    mTextpaneMapLegend1->TextSupport().SetImageBaseline(true);
+    mTextpaneMapLegend1->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneMapLegend1->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneMapLegend1->TextSupport().SetText(rstl::wstring(gpStringTable->GetString(
+        mgr.GetPlayerState(0)->GetItemAmount(CPlayerState::kIT_VioletTranslator, true)
+            ? "MapLegendTextRight"
+            : "MapLegendTextRightALT")));
+
+    mTextpaneRight = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_right"));
+    mTextpaneRight3 = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_right3"));
+    mTextpaneRight->TextSupport().SetText(
+        rstl::wstring(gpStringTable->GetString("InstructionsRightUniverse")));
+    mTextpaneRight->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneRight->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneRight3->TextSupport().SetText(
+        rstl::wstring(gpStringTable->GetString("InstructionsAButton")));
+    mTextpaneRight3->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneRight3->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    mTextpaneKeylegend =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_keylegend"));
+    if (mTextpaneKeylegend != nullptr) {
+      mTextpaneKeylegend->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+      mTextpaneKeylegend->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    }
+    UpdateTempleKeys(mgr);
+
+    mTextpaneXicon = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_xicon"));
+    if (mTextpaneXicon != nullptr) {
+      mTextpaneXicon->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+      mTextpaneXicon->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+      if (!(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded())) {
+        mTextpaneXicon->TextSupport().SetText(rstl::wstring(gpStringTable->GetString(
+            mDarkWorldBlend < 0.5f ? "InstructionSwitchMap" : "InstructionSwitchMapLight")));
+      }
+    }
+
+    const CEnvironmentVariable* darkWorldButton =
+        gpGameState->PersistentOptions().FindEnvironmentVariable("AutoMapperDarkWorldButton");
+    if (darkWorldButton != nullptr && darkWorldButton->GetValue() == 0) {
+      if (mTextpaneXicon1 != nullptr) {
+        mTextpaneXicon1->SetVisibility(false, kTM_Children);
+      }
+      if (mTextpaneXicon != nullptr) {
+        mTextpaneXicon->SetVisibility(false, kTM_Children);
+      }
+    }
+
+    const CColor controlColor =
+        CanSwitchLightDarkWorld() ? CColor::White() : skDisabledControlColor;
+    if (mTextpaneXicon1 != nullptr) {
+      mTextpaneXicon1->TextSupport().SetFontColor(
+          CColor::Modulate(gpTweakAutoMapper->GetTextColor(), controlColor));
+      mTextpaneXicon1->TextSupport().SetOutlineColor(
+          CColor::Modulate(gpTweakAutoMapper->GetTextOutlineColor(), controlColor));
+    }
+    if (mTextpaneXicon != nullptr) {
+      mTextpaneXicon->TextSupport().SetFontColor(
+          CColor::Modulate(gpTweakAutoMapper->GetTextColor(), controlColor));
+      mTextpaneXicon->TextSupport().SetOutlineColor(
+          CColor::Modulate(gpTweakAutoMapper->GetTextOutlineColor(), controlColor));
+    }
+
+    mBasewidgetLeftPane = mFrmeInitialized->FindWidget("basewidget_leftPane");
+    mBasewidgetYButtonPane = mFrmeInitialized->FindWidget("basewidget_yButtonPane");
+    mBasewidgetBottomPane = mFrmeInitialized->FindWidget("basewidget_bottomPane");
+    mTextpaneAreaname =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_areaname"));
+    mTextpaneAreaname->SetDepthTest(false);
+    mTextpaneAreaname->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    mTextpaneAreaname->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+
+    CGuiWidget* model = mFrmeInitialized->FindWidget("model_scanlines");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetScanLinesColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_frame");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetFrameColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_lable");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetFrameColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_gradient");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetGradientColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_legend_left");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetFrameColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_legend_center");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetFrameColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_legend_right");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetFrameColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_black_left");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetBlackColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_black_center");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetBlackColor());
+    }
+    model = mFrmeInitialized->FindWidget("model_black_right");
+    if (model != nullptr) {
+      model->SetColor(gpTweakAutoMapper->GetBlackColor());
+    }
+
+    gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->Set(1);
+    mLeftPanePos = 1.f;
+    if (mMapMode == kMM_Teleport) {
+      mTextpaneInstructions1->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneInstructions->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneInstructions2->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneXicon->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneXicon1->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneRight3->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneRight->TextSupport().SetText(rstl::wstring_l(L""));
+      mTextpaneTeleporter->TextSupport().SetText(
+          rstl::wstring(gpStringTable->GetString("Teleport_Destination")));
+    }
+  }
+
+  if (mFrmeInitialized != nullptr) {
+    mFrmeInitialized->Update(dt);
+    rstl::wstring button;
+    if (mState == kAMS_MapScreenUniverse ||
+        (mState == kAMS_MapScreen && HasCurrentMapUniverseWorld(mgr))) {
+      button.reserve(0x100);
+      button.append(L"&image=", -1);
+      button.append(CStringExtras::ConvertToUNICODE(
+          rstl::string(CBasics::Stringize("%8.8X", gpTweakPlayerRes->mAButton[mAButtonPos]))));
+      button.append(L";", -1);
+    }
+    CGuiTextPane* right1 =
+        static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_right1"));
+    right1->TextSupport().SetText(button);
+    right1->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+    right1->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+
+    if (!(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded()) && mMapMode != kMM_Teleport) {
+      mTextpaneRight->TextSupport().SetText(rstl::wstring(
+          gpStringTable->GetString(mState == kAMS_MapScreenUniverse ? "InstructionsRightUniverse"
+                                                                    : "InstructionsRightWorld")));
+      mTextpaneRight->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+      mTextpaneRight->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+      mTextpaneRight3->TextSupport().SetText(
+          rstl::wstring(gpStringTable->GetString("InstructionsAButton")));
+      mTextpaneRight3->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+      mTextpaneRight3->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+
+      const CColor controlColor =
+          CanSwitchLightDarkWorld() ? CColor::White() : skDisabledControlColor;
+      if (mTextpaneXicon1 != nullptr) {
+        mTextpaneXicon1->TextSupport().SetFontColor(
+            CColor::Modulate(gpTweakAutoMapper->GetTextColor(), controlColor));
+        mTextpaneXicon1->TextSupport().SetOutlineColor(
+            CColor::Modulate(gpTweakAutoMapper->GetTextOutlineColor(), controlColor));
+      }
+      if (mTextpaneXicon != nullptr) {
+        mTextpaneXicon->TextSupport().SetFontColor(
+            CColor::Modulate(gpTweakAutoMapper->GetTextColor(), controlColor));
+        mTextpaneXicon->TextSupport().SetOutlineColor(
+            CColor::Modulate(gpTweakAutoMapper->GetTextOutlineColor(), controlColor));
+      }
+    }
+  }
+
+  if (mFrmeBackgroundInitialized != nullptr) {
+    mFrmeBackgroundInitialized->Update(dt);
+    mBackgroundAnimationPhase += dt / gpTweakGui->GetMapBackgroundCycleTime();
+    if (mBackgroundAnimationPhase >= 1.f) {
+      mBackgroundAnimationPhase = 0.f;
+    }
+    const float width = gpTweakGui->GetMapBackgroundPulseWidth();
+    const float center = 1.f - Lerp(mBackgroundAnimationPhase - width,
+                                    mBackgroundAnimationPhase + width, mBackgroundAnimationPhase);
+    for (int i = 0; i < mBackgroundHexagons.size(); ++i) {
+      const float intensity =
+          1.f -
+          rstl::min_val(CMath::AbsF(center - static_cast< float >(i) / mBackgroundHexagons.size()) /
+                            width,
+                        1.f);
+      mBackgroundHexagons[i]->SetColor(CColor::Modulate(
+          gpTweakGui->GetMapBackgroundColor(), CColor(intensity, intensity, intensity, 1.f)));
+    }
+  }
+
+  const float step = 2.f * dt;
+  switch (gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->GetValue()) {
+  case 0:
+    mLeftPanePos -= step;
+    mYButtonPanePos -= step;
+    mBottomPanePos -= step;
+    break;
+  case 1:
+    mLeftPanePos += step;
+    mYButtonPanePos -= step;
+    mBottomPanePos -= step;
+    break;
+  case 2:
+    mLeftPanePos += step;
+    mYButtonPanePos += step;
+    mBottomPanePos += step;
+    break;
+  }
+  mLeftPanePos = rstl::max_val(0.f, rstl::min_val(1.f, mLeftPanePos));
+  mYButtonPanePos = rstl::max_val(0.f, rstl::min_val(1.f, mYButtonPanePos));
+  mBottomPanePos = rstl::max_val(0.f, rstl::min_val(1.f, mBottomPanePos));
+  if (mBasewidgetLeftPane != nullptr) {
+    mBasewidgetLeftPane->SetColor(CColor::White().WithAlphaOf(1.f - mLeftPanePos));
+  }
+  if (mBasewidgetBottomPane != nullptr) {
+    mBasewidgetBottomPane->SetColor(CColor::White().WithAlphaOf(1.f - mBottomPanePos));
+  }
+
+  if (!IsFullyOutOfMiniMapState()) {
+    if (mgr.GetIsDarkWorld()) {
+      mDarkWorldBlend += step;
+    } else {
+      mDarkWorldBlend -= step;
+    }
+  } else {
+    if (!close_enough(mDarkWorldBlend, 0.f) && !close_enough(mDarkWorldBlend, 1.f) &&
+        !(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded())) {
+      mTextpaneXicon->TextSupport().SetText(rstl::wstring(gpStringTable->GetString(
+          mDarkWorldBlend < 0.5f ? "InstructionSwitchMap" : "InstructionSwitchMapLight")));
+    }
+    if (mTransitionState == kTS_SwitchToLightWorld) {
+      mDarkWorldBlend -= step;
+      if (mDarkWorldBlend <= 0.f) {
+        mTransitionState = kTS_Idle;
+      }
+    } else if (mTransitionState == kTS_SwitchToDarkWorld) {
+      mDarkWorldBlend += step;
+      if (mDarkWorldBlend >= 1.f) {
+        mTransitionState = kTS_Idle;
+      }
+    }
+  }
+  mDarkWorldBlend = CMath::Clamp(0.f, mDarkWorldBlend, 1.f);
+
+  if (IsInMapperState(kAMS_MiniMap)) {
+    mRenderState0.mCamOrientation = GetMiniMapCameraOrientation(mgr);
+    const float camDist = mRenderState0.mCamDist;
+    const float desiredDist = GetDesiredMiniMapCameraDistance(mgr);
+    if (CMath::AbsF(camDist - desiredDist) < 3.f) {
+      mRenderState0.mCamDist = desiredDist;
+    } else if (camDist < desiredDist) {
+      mRenderState0.mCamDist = camDist + 3.f;
+    } else {
+      mRenderState0.mCamDist = camDist - 3.f;
+    }
+
+    const TAreaId areaId = mWorld->IGetCurrentAreaId();
+    if (areaId != mCurAreaId) {
+      mRenderState2 = mRenderState0;
+      mRenderState1 = mRenderState0;
+      mOtherAreaId = mCurAreaId;
+      SetCurAreaId(areaId.Value());
+      mRenderState1.mAreaPoint = GetAreaPointOfInterest(mgr, mCurAreaId.Value());
+      mRenderState1.mViewportEase = SAutoMapperRenderState::kE_None;
+      mRenderState1.mCamEase = SAutoMapperRenderState::kE_None;
+      mRenderState1.mPointEase = SAutoMapperRenderState::kE_InOut;
+      mRenderState1.mDepth1Ease = SAutoMapperRenderState::kE_Linear;
+      mRenderState1.mDepth2Ease = SAutoMapperRenderState::kE_Linear;
+      mRenderState1.mAlphaEase = SAutoMapperRenderState::kE_None;
+      mRenderState1.mDrawDepth1 = GetMapAreaMiniMapDrawDepth();
+      mRenderState1.mDrawDepth2 = GetMapAreaMiniMapDrawDepth();
+      mRenderState2.mDrawDepth1 = GetMapAreaMiniMapDrawDepth() - 1.f;
+      mRenderState2.mDrawDepth2 = GetMapAreaMiniMapDrawDepth() - 1.f;
+      ResetInterpolationTimer(gpTweakAutoMapper->GetHintPanTime());
+    }
+    mRenderState0.mAlphaSurfaceVisited = GetMapAreaMiniMapDrawAlphaSurfaceVisited(mgr);
+    mRenderState0.mAlphaOutlineVisited = GetMapAreaMiniMapDrawAlphaOutlineVisited(mgr);
+    mRenderState0.mAlphaSurfaceUnvisited = GetMapAreaMiniMapDrawAlphaSurfaceUnvisited(mgr);
+    mRenderState0.mAlphaOutlineUnvisited = GetMapAreaMiniMapDrawAlphaOutlineUnvisited(mgr);
+  } else if (mNextState == kAMS_MiniMap) {
+    const float camDist = mRenderState1.mCamDist;
+    const float desiredDist = GetDesiredMiniMapCameraDistance(mgr);
+    if (CMath::AbsF(camDist - desiredDist) < 3.f) {
+      mRenderState0.mCamDist = desiredDist;
+    } else if (camDist < desiredDist) {
+      mRenderState1.mCamDist = camDist + 3.f;
+    } else {
+      mRenderState1.mCamDist = camDist - 3.f;
+    }
+  } else if (IsFullyOutOfMiniMapState() && mWorld != nullptr) {
+    const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+    CMapWorldInfo* info =
+        gpGameState->StateForWorld(mWorld->IGetWorldAssetId()).GetMapWorldInfo().GetPtr();
+    mapWorld->RecalculateWorldSphere(*info, *mWorld);
+  }
+
+  if (IsRenderStateInterpolating()) {
+    mInterpTime = rstl::min_val(mInterpDur, mInterpTime + dt);
+    SAutoMapperRenderState::InterpolateWithClamp(mRenderState2, mRenderState0, mRenderState1,
+                                                 mInterpTime / mInterpDur);
+    if (mInterpTime == mInterpDur && mTransitionState == kTS_ReturnToPlayer) {
+      SetupMiniMapWorld(mgr);
+    }
+  } else if (IsInMapperStateTransition()) {
+    CompleteMapperStateTransition(mgr);
+  }
+
+  CAssetId stringId = mMapAreaStringId;
+  rstl::string internalName;
+  if (IsInMapperState(kAMS_MapScreenUniverse)) {
+    IWorld* world = mDummyWorlds[mWorldIdx].get();
+    if (world == nullptr || !world->ICheckWorldComplete()) {
+      world = mWorld;
+    }
+    if (world != nullptr) {
+      stringId = mDarkWorldBlend < 0.5f ? world->IGetStringTableAssetId()
+                                      : world->IGetDarkStringTableAssetId();
+    }
+  } else if (mWorld != nullptr) {
+    const IGameArea* area = mWorld->IGetAreaAlways(mCurAreaId);
+    CMapWorldInfo* info =
+        gpGameState->StateForWorld(mWorld->IGetWorldAssetId()).GetMapWorldInfo().GetPtr();
+    const bool showName = info->IsMapped(mCurAreaId) || info->IsAreaVisited(mCurAreaId);
+    stringId = showName ? area->IGetStringTableAssetId() : kInvalidAssetId;
+    internalName = area->IGetInternalAreaName();
+  }
+  if (stringId != mMapAreaStringId) {
+    mMapAreaStringId = stringId;
+    if (mMapAreaStringId != kInvalidAssetId) {
+      mMapAreaString =
+          TCachedToken< CStringTable >(gpSimplePool->GetObj(SObjectTag('STRG', mMapAreaStringId)));
+      mMapAreaString->Lock();
+    } else {
+      mMapAreaString = rstl::optional_object< TCachedToken< CStringTable > >();
+    }
+  }
+  if (mTextpaneAreaname != nullptr) {
+    if (mMapAreaString.valid()) {
+      if (mMapAreaString->IsLoaded()) {
+        mTextpaneAreaname->TextSupport().SetText(
+            rstl::wstring(mMapAreaString->GetObject()->GetString(0)));
+        mTextpaneAreaname->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+        mTextpaneAreaname->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+      }
+    } else {
+      mTextpaneAreaname->TextSupport().SetText(
+          internalName.size() == 0
+              ? rstl::wstring_l(L"")
+              : rstl::wstring_l(L"!!") + CStringExtras::ConvertToUNICODE(internalName));
+      mTextpaneAreaname->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
+      mTextpaneAreaname->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
+    }
+  }
+
+  if (IsInMapperState(kAMS_MapScreen)) {
+    const IGameArea* area = mWorld->IGetAreaAlways(mCurAreaId);
+    const CAssetId hintDescId = GetAreaHintDescriptionString(area->IGetAreaAssetId());
+    if (hintDescId != mAreaHintDescId) {
+      mAreaHintDescId = hintDescId;
+      if (mAreaHintDescId != kInvalidAssetId) {
+        mAreaHintDesc =
+            TCachedToken< CStringTable >(gpSimplePool->GetObj(SObjectTag('STRG', mAreaHintDescId)));
+        mAreaHintDesc->Lock();
+      } else {
+        mAreaHintDesc = rstl::optional_object< TCachedToken< CStringTable > >();
+      }
+    }
+  } else if (IsInMapperState(kAMS_MapScreenUniverse) && mAreaHintDescId != kInvalidAssetId) {
+    mAreaHintDescId = kInvalidAssetId;
+    mAreaHintDesc = rstl::optional_object< TCachedToken< CStringTable > >();
+  }
+
+  for (rstl::vector< rstl::auto_ptr< IWorld > >::iterator it = mWorldsPendingUnload.begin();
+       it != mWorldsPendingUnload.end();) {
+    if (it->null() || (*it)->ICancelLoad()) {
+      it = mWorldsPendingUnload.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  if (mWorldsPendingUnload.empty() && mWorldsPendingUnload.capacity() > 0) {
+    mWorldsPendingUnload = rstl::vector< rstl::auto_ptr< IWorld > >();
+  }
+  for (int i = 0; i < mDummyWorlds.size(); ++i) {
+    if (!mDummyWorlds[i].null()) {
+      mDummyWorlds[i]->ICheckWorldComplete();
+    }
+  }
 }
 
 void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {

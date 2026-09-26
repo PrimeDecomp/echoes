@@ -36,6 +36,8 @@ public:
 
   CPersistentOptions& SystemOptions() { return mSystemOptions; }
 
+  CPersistentOptions& PersistentOptions() { return persistentOptions; }
+
   u32 GetCardSerialA() const { return cardSerialA; }
   u32 GetCardSerialB() const { return cardSerialB; }
   float GetHardModeDamageMultiplier() const;

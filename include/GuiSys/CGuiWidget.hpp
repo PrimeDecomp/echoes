@@ -70,6 +70,10 @@ public:
   const CTransform4f& GetIdleXform() const { return mTransform; }
   CGuiFrame* GetParentFrame() const { return mFrame; }
 
+  void SetDepthTest(bool enabled) { mDepthTest = enabled; }
+
+  void SetDepthWrite(bool enabled) { mDepthWrite = enabled; }
+
 protected:
   short mSelfId;
   short mParentId;

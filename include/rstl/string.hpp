@@ -311,7 +311,8 @@ typedef basic_string< char > string;
 
 inline bool operator<(const string& lhs, const string& rhs) { return lhs.compare(rhs) < 0; }
 
-bool operator==(const string& lhs, const char* rhs);
+inline bool operator==(const string& lhs, const char* rhs) { return lhs.compare(rhs) == 0; }
+
 bool operator==(const char* lhs, const string& rhs);
 bool operator!=(const string& lhs, const char* rhs);
 

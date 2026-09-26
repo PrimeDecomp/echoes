@@ -49,6 +49,15 @@ public:
   CVector2f GetMapPlaneScale() const; // Guessed name
   CColor GetPlayerModelColor() const; // Guessed name
 
+  // Guessed names
+  const CColor& GetTextColor() const;
+  const CColor& GetTextOutlineColor() const;
+  const CColor& GetTitleColor() const;
+  const CColor& GetScanLinesColor() const;
+  const CColor& GetFrameColor() const;
+  const CColor& GetGradientColor() const;
+  const CColor& GetBlackColor() const;
+
 private:
   const SLdrTweakAutoMapper* mData;
 };

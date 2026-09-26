@@ -24,6 +24,7 @@ public:
 
   FourCC GetResourceTypeById(CAssetId) const;
   uint ResourceSize(const SObjectTag& tag) const;
+  bool ResourceExists(const SObjectTag& tag) const;
 
 private:
   rstl::list< unkptr > mAramList;
