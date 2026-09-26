@@ -192,6 +192,7 @@ public:
   virtual bool UnkVtable98() const;
 
   int GetPlayerIndex() const;
+  float GetGunAlpha() const { return mGunAlpha; }
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }

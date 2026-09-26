@@ -3,14 +3,21 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CEulerAngles.hpp"
 #include "MetroidPrime/CMapArea.hpp"
 #include "MetroidPrime/CMapUniverse.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/IWorld.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
 
 // Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
 
@@ -183,6 +190,47 @@ void CAutoMapper::ResetInterpolationTimer(float duration) {
   mInterpTime = 0.f;
 }
 
+CAutoMapper::SAutoMapperRenderState
+CAutoMapper::BuildMiniMapWorldRenderState(const CStateManager& mgr, const CQuaternion& rot,
+                                         int areaId) const {
+  const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
+  SAutoMapperRenderState ret(
+      GetMiniMapViewportSize(),
+      CQuaternion::MadeLocalToFirst(rot, GetMiniMapCameraOrientation(mgr)),
+      tweak->GetMiniCamDistance(), tweak->GetMiniCamAngle(), GetAreaPointOfInterest(mgr, areaId),
+      GetMapAreaMiniMapDrawDepth(), GetMapAreaMiniMapDrawDepth(),
+      GetMapAreaMiniMapDrawAlphaSurfaceVisited(mgr), GetMapAreaMiniMapDrawAlphaOutlineVisited(mgr),
+      GetMapAreaMiniMapDrawAlphaSurfaceUnvisited(mgr),
+      GetMapAreaMiniMapDrawAlphaOutlineUnvisited(mgr));
+  ret.mViewportEase = SAutoMapperRenderState::kE_Out;
+  ret.mCamEase = SAutoMapperRenderState::kE_Out;
+  ret.mPointEase = SAutoMapperRenderState::kE_Out;
+  ret.mDepth1Ease = SAutoMapperRenderState::kE_Linear;
+  ret.mDepth2Ease = SAutoMapperRenderState::kE_In;
+  ret.mAlphaEase = SAutoMapperRenderState::kE_Linear;
+  return ret;
+}
+
+CAutoMapper::SAutoMapperRenderState
+CAutoMapper::BuildMapScreenWorldRenderState(const CStateManager& mgr, const CQuaternion& rot,
+                                           int areaId, bool doingHint) const {
+  const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
+  const float camDist = doingHint ? tweak->GetMaxCamDistance() : tweak->GetCameraDistance();
+  SAutoMapperRenderState ret(
+      GetMapScreenViewportSize(), rot, camDist, tweak->GetCamAngle(),
+      GetAreaPointOfInterest(mgr, areaId), GetMapAreaMaxDrawDepth(mgr, areaId),
+      GetMapAreaMaxDrawDepth(mgr, areaId), tweak->GetAlphaSurfaceVisited(),
+      tweak->GetAlphaOutlineVisited(), tweak->GetAlphaSurfaceUnvisited(),
+      tweak->GetAlphaOutlineUnvisited());
+  ret.mViewportEase = SAutoMapperRenderState::kE_Out;
+  ret.mCamEase = SAutoMapperRenderState::kE_Linear;
+  ret.mPointEase = SAutoMapperRenderState::kE_Out;
+  ret.mDepth1Ease = SAutoMapperRenderState::kE_Linear;
+  ret.mDepth2Ease = SAutoMapperRenderState::kE_Out;
+  ret.mAlphaEase = SAutoMapperRenderState::kE_Linear;
+  return ret;
+}
+
 CAutoMapper::SAutoMapperRenderState::SAutoMapperRenderState(const SAutoMapperRenderState& other)
 : mViewportSize(other.mViewportSize)
 , mCamOrientation(other.mCamOrientation)
@@ -201,6 +249,23 @@ CAutoMapper::SAutoMapperRenderState::SAutoMapperRenderState(const SAutoMapperRen
 , mDepth1Ease(other.mDepth1Ease)
 , mDepth2Ease(other.mDepth2Ease)
 , mAlphaEase(other.mAlphaEase) {}
+
+CAutoMapper::SAutoMapperRenderState
+CAutoMapper::BuildMapScreenUniverseRenderState(const CStateManager& mgr, const CQuaternion& rot,
+                                              int areaId) const {
+  const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
+  SAutoMapperRenderState ret(
+      GetMapScreenViewportSize(), rot, tweak->GetUniverseCamDistance(), tweak->GetCamAngle(),
+      GetAreaPointOfInterest(mgr, areaId), GetMapAreaMaxDrawDepth(mgr, areaId),
+      GetMapAreaMaxDrawDepth(mgr, areaId), 0.f, 0.f, 0.f, 0.f);
+  ret.mViewportEase = SAutoMapperRenderState::kE_Out;
+  ret.mCamEase = SAutoMapperRenderState::kE_Linear;
+  ret.mPointEase = SAutoMapperRenderState::kE_Out;
+  ret.mDepth1Ease = SAutoMapperRenderState::kE_Linear;
+  ret.mDepth2Ease = SAutoMapperRenderState::kE_Out;
+  ret.mAlphaEase = SAutoMapperRenderState::kE_Linear;
+  return ret;
+}
 
 void CAutoMapper::SetShouldPanningSoundBePlaying(bool shouldBePlaying) {
   if (shouldBePlaying) {
@@ -239,6 +304,15 @@ void CAutoMapper::LeaveMapScreenState() {
   SetShouldPanningSoundBePlaying(false);
   SetShouldZoomingSoundBePlaying(false);
   SetShouldRotatingSoundBePlaying(false);
+}
+
+CQuaternion CAutoMapper::GetMiniMapCameraOrientation(const CStateManager& mgr) const {
+  const float miniCamXAngle = gpTweakAutoMapper->GetMiniCamXAngle();
+  const CGameCamera* camera = mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, 1);
+  const CEulerAngles angles =
+      CEulerAngles::FromQuaternion(CQuaternion::FromMatrix(camera->GetTransform()));
+  return CQuaternion::ZRotation(CRelAngle::FromRadians(CMath::ClampRadians(angles.GetYaw()))) *
+         CQuaternion::XRotation(CRelAngle::FromDegrees(miniCamXAngle));
 }
 
 CVector3f CAutoMapper::GetAreaPointOfInterest(const CStateManager& mgr, int areaId) const {
@@ -287,6 +361,14 @@ int CAutoMapper::FindClosestVisibleArea(const CVector3f& point, const CUnitVecto
   return closestArea != -1 ? closestArea : closestOtherWorldArea;
 }
 
+CVector2i CAutoMapper::GetMiniMapViewportSize() {
+  const float scaleX = static_cast< float >(CGraphics::GetViewport().mWidth) / 640.f;
+  const float scaleY = static_cast< float >(CGraphics::GetViewport().mHeight) / 480.f;
+  const CVector2f size = gpTweakAutoMapper->GetMiniMapViewportSize();
+  return CVector2i(static_cast< int >(scaleX * size.GetX()),
+                   static_cast< int >(scaleY * size.GetY()));
+}
+
 CVector2i CAutoMapper::GetMapScreenViewportSize() {
   return CVector2i(CGraphics::GetViewport().mWidth, CGraphics::GetViewport().mHeight);
 }
@@ -295,6 +377,51 @@ float CAutoMapper::GetMapAreaMiniMapDrawDepth() { return 2.f; }
 
 float CAutoMapper::GetMapAreaMaxDrawDepth(const CStateManager& mgr, int areaId) const {
   return static_cast< float >(mWorld->IGetMapWorld()->GetCurrentMapAreaDepth(*mWorld, areaId));
+}
+
+float CAutoMapper::GetMapAreaMiniMapDrawAlphaSurfaceVisited(const CStateManager& mgr) const {
+  const float interp = gpTweakGui->GetMapAlphaInterpolant();
+  return gpTweakAutoMapper->GetMiniAlphaSurfaceVisited() *
+         ((1.f - interp) * mgr.GetPlayer(mPlayerIndex)->GetGunAlpha() + interp);
+}
+
+float CAutoMapper::GetMapAreaMiniMapDrawAlphaOutlineVisited(const CStateManager& mgr) const {
+  const float interp = gpTweakGui->GetMapAlphaInterpolant();
+  return gpTweakAutoMapper->GetMiniAlphaOutlineVisited() *
+         ((1.f - interp) * mgr.GetPlayer(mPlayerIndex)->GetGunAlpha() + interp);
+}
+
+float CAutoMapper::GetMapAreaMiniMapDrawAlphaSurfaceUnvisited(const CStateManager& mgr) const {
+  const float interp = gpTweakGui->GetMapAlphaInterpolant();
+  return gpTweakAutoMapper->GetMiniAlphaSurfaceUnvisited() *
+         ((1.f - interp) * mgr.GetPlayer(mPlayerIndex)->GetGunAlpha() + interp);
+}
+
+float CAutoMapper::GetMapAreaMiniMapDrawAlphaOutlineUnvisited(const CStateManager& mgr) const {
+  const float interp = gpTweakGui->GetMapAlphaInterpolant();
+  return gpTweakAutoMapper->GetMiniAlphaOutlineUnvisited() *
+         ((1.f - interp) * mgr.GetPlayer(mPlayerIndex)->GetGunAlpha() + interp);
+}
+
+float CAutoMapper::GetClampedMapScreenCameraDistance(float value) const {
+  if (mState == kAMS_MapScreenUniverse) {
+    return CMath::Clamp(gpTweakAutoMapper->GetMinUniverseCamDistance(), value,
+                        gpTweakAutoMapper->GetMaxUniverseCamDistance());
+  }
+  return CMath::Clamp(gpTweakAutoMapper->GetMinCamDistance(), value,
+                      gpTweakAutoMapper->GetMaxCamDistance());
+}
+
+float CAutoMapper::GetBaseMapScreenCameraMoveSpeed() const {
+  return gpTweakAutoMapper->GetBaseMapScreenCameraMoveSpeed();
+}
+
+float CAutoMapper::GetFinalMapScreenCameraMoveSpeed() const {
+  const float speed = GetBaseMapScreenCameraMoveSpeed();
+  if (gpTweakAutoMapper->GetScaleMoveSpeedWithCameraDistance()) {
+    return speed * mRenderState0.mCamDist / gpTweakAutoMapper->GetCameraDistance();
+  }
+  return speed;
 }
 
 bool CAutoMapper::IsInMapperState(EAutoMapperState state) const {
