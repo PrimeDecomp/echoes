@@ -508,6 +508,13 @@ Kyoto/PVS/CPVSVisOctree.cpp:
 Kyoto/PVS/CPVSVisSet.cpp:
 	.text       start:0x802CEA14 end:0x802CEE6C
 
+Kyoto/Particles/CColorElement.cpp:
+	.text       start:0x802CEE6C end:0x802D0CA4
+	.ctors      start:0x803A561C end:0x803A5620
+	.data       start:0x803BA2F8 end:0x803BA3D8
+	.bss        start:0x803DFCA8 end:0x803DFCB8
+	.sdata2     start:0x8041E760 end:0x8041E778
+
 Kyoto/Particles/CElementGen.cpp:
 	.text       start:0x802D0CA4 end:0x802DCAC0
 	.ctors      start:0x803A5620 end:0x803A5624
