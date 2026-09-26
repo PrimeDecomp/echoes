@@ -11,13 +11,18 @@
 #include "MetroidPrime/CMapArea.hpp"
 #include "MetroidPrime/CMapUniverse.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
+#include "MetroidPrime/CMapWorldInfo.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/IWorld.hpp"
+#include "MetroidPrime/IGameArea.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "rstl/math.hpp"
 
 // Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
 
@@ -101,6 +106,17 @@ CAutoMapper::SAutoMapperHintLocation::SAutoMapperHintLocation(uint showBeacon, f
                                                               CAssetId worldId, int areaId)
 : mShowBeacon(showBeacon), mBeaconAlpha(beaconAlpha), mWorldId(worldId), mAreaId(areaId) {}
 
+template < class T >
+void CAutoMapper::SetResLockState(T& list, bool lock) {
+  for (typename T::iterator it = list.begin(); it != list.end(); ++it) {
+    if (lock) {
+      it->Lock();
+    } else {
+      it->Unlock();
+    }
+  }
+}
+
 CAutoMapper::~CAutoMapper() { CSfxManager::KillAll(CSfxManager::kSC_PauseScreen); }
 
 bool CAutoMapper::CheckLoadComplete() {
@@ -183,6 +199,117 @@ bool CAutoMapper::HasCurrentMapUniverseWorld(const CStateManager& mgr) const {
     }
   }
   return false;
+}
+
+void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {
+  if (state == mNextState) {
+    return;
+  }
+
+  if ((state == kAMS_MiniMap && mNextState != kAMS_MiniMap) ||
+      (state != kAMS_MiniMap && mNextState == kAMS_MiniMap)) {
+    CSfxManager::KillAll(CSfxManager::kSC_PauseScreen);
+  }
+
+  mState = mNextState;
+  mNextState = state;
+  mRenderState2 = mRenderState0;
+  mRenderState1 = mRenderState0;
+
+  if (mState == kAMS_MiniMap && state == kAMS_MapScreen) {
+    mRenderState1 = BuildMapScreenWorldRenderState(mgr, mRenderState0.mCamOrientation,
+                                                 mCurAreaId.Value(), false);
+    ResetInterpolationTimer(gpTweakAutoMapper->GetOpenMapScreenTime());
+  } else if (mState == kAMS_MapScreen && state == kAMS_MiniMap) {
+    SetCurAreaId(mWorld->IGetCurrentAreaId().Value());
+    mRenderState1 =
+        BuildMiniMapWorldRenderState(mgr, mRenderState0.mCamOrientation, mCurAreaId.Value());
+    ResetInterpolationTimer(gpTweakAutoMapper->GetCloseMapScreenTime());
+    mHintLocations.clear();
+  } else if (mState == kAMS_MapScreen && state == kAMS_MapScreenUniverse) {
+    CSfxManager::SfxStart(0x679, 127, 64);
+    mRenderState1 =
+        BuildMapScreenUniverseRenderState(mgr, mRenderState0.mCamOrientation, mCurAreaId.Value());
+    TransformRenderStatesWorldToUniverse();
+    ResetInterpolationTimer(gpTweakAutoMapper->GetSwitchToFromUniverseTime());
+  } else if (mState == kAMS_MapScreenUniverse && state == kAMS_MapScreen) {
+    CSfxManager::SfxStart(0x67a, 127, 64);
+    mRenderState1 = BuildMapScreenWorldRenderState(
+        mgr, mRenderState0.mCamOrientation, mCurAreaId.Value(), mHintSteps.size() > 0);
+    TransformRenderStateWorldToUniverse(mRenderState1);
+    ResetInterpolationTimer(gpTweakAutoMapper->GetSwitchToFromUniverseTime());
+    for (int i = 0; i < mDummyWorlds.size(); ++i) {
+      if (mDummyWorlds[i].get() != mWorld || mWorld == mgr.GetWorld()) {
+        mDummyWorlds[i] = rstl::auto_ptr< IWorld >();
+      }
+    }
+  } else if (mState == kAMS_MapScreenUniverse && state == kAMS_MiniMap) {
+    mWorld = mgr.World();
+    SetCurAreaId(mWorld->IGetCurrentAreaId().Value());
+    mRenderState1 =
+        BuildMiniMapWorldRenderState(mgr, mRenderState0.mCamOrientation, mCurAreaId.Value());
+    SetCurWorldAssetId(mWorld->IGetWorldAssetId());
+    TransformRenderStateWorldToUniverse(mRenderState1);
+    ResetInterpolationTimer(gpTweakAutoMapper->GetCloseMapScreenTime());
+    mHintLocations.clear();
+    for (int i = 0; i < mDummyWorlds.size(); ++i) {
+      mDummyWorlds[i] = rstl::auto_ptr< IWorld >();
+    }
+  }
+}
+
+void CAutoMapper::CompleteMapperStateTransition(CStateManager& mgr) {
+  if (mState == kAMS_MapScreenUniverse) {
+    TransformRenderStatesUniverseToWorld();
+  }
+
+  if (mNextState == kAMS_MapScreen) {
+    const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+    mapWorld->IsMapAreasStreaming();
+    CMapWorldInfo* info =
+        gpGameState->StateForWorld(mWorld->IGetWorldAssetId()).GetMapWorldInfo().GetPtr();
+    mapWorld->RecalculateWorldSphere(*info, *mWorld);
+    mFlashTimer = 0.f;
+    mPlayerFlashPulse = 0.f;
+  }
+
+  if (mNextState == kAMS_MiniMap) {
+    mFrmeMapScreen = nullptr;
+    mFrmeInitialized = nullptr;
+    mFrmeMapScreenBackground = nullptr;
+    mFrmeBackgroundInitialized = nullptr;
+    mTextpaneHint = nullptr;
+    mBasewidgetHintgroup = nullptr;
+    mTextpaneInstructions = nullptr;
+    mTextpaneInstructions1 = nullptr;
+    mTextpaneInstructions2 = nullptr;
+    mTextpaneAreaname = nullptr;
+    mTextpaneLabel = nullptr;
+    mTextpaneLeft = nullptr;
+    mTextpaneRight = nullptr;
+    mTextpaneMapLegend = nullptr;
+    mTextpaneMapLegend1 = nullptr;
+    mTextpaneYicon = nullptr;
+    mBasewidgetLeftPane = nullptr;
+    mBasewidgetYButtonPane = nullptr;
+    mBasewidgetBottomPane = nullptr;
+    mTextpaneXicon1 = nullptr;
+    mTextpaneRight3 = nullptr;
+    mTextpaneKeylegend = nullptr;
+    mTextpaneXicon = nullptr;
+    mTextpaneTeleporter = nullptr;
+    mBackgroundHexagons.clear();
+    SetResLockState(mLstick, false);
+    SetResLockState(mCstick, false);
+    SetResLockState(mLtrigger, false);
+    SetResLockState(mRtrigger, false);
+    SetResLockState(mAbutton, false);
+  }
+
+  if (mNextState == kAMS_MapScreenUniverse && mTransitionState == kTS_LeaveViaUniverse) {
+    LeaveMapScreen(mgr);
+  }
+  mState = mNextState;
 }
 
 void CAutoMapper::ResetInterpolationTimer(float duration) {
@@ -410,6 +537,47 @@ float CAutoMapper::GetClampedMapScreenCameraDistance(float value) const {
   }
   return CMath::Clamp(gpTweakAutoMapper->GetMinCamDistance(), value,
                       gpTweakAutoMapper->GetMaxCamDistance());
+}
+
+float CAutoMapper::GetDesiredMiniMapCameraDistance(const CStateManager& mgr) const {
+  CMapWorldInfo* info =
+      gpGameState->StateForWorld(mWorld->IGetWorldAssetId()).GetMapWorldInfo().GetPtr();
+  const CMapWorld* mapWorld = mWorld->IGetMapWorld();
+  CAABox bounds = CAABox::MakeMaxInvertedBox();
+  const IGameArea* area = mWorld->IGetAreaAlways(mCurAreaId);
+  CMapArea* mapArea = mapWorld->GetMapArea(mCurAreaId.Value());
+  const bool oneMiniMapArea = gpTweakAutoMapper->GetShowOneMiniMapArea();
+  for (int i = -1; i < (oneMiniMapArea ? 0 : static_cast< int >(area->IGetNumAttachedAreas()));
+       ++i) {
+    const int areaId = i == -1 ? mCurAreaId.Value() : area->IGetAttachedAreaId(i).Value();
+    CMapArea* attachedArea = mapWorld->GetMapArea(areaId);
+    if (attachedArea->GetIsVisibleToAutoMapper(
+            info->IsWorldVisible(TAreaId(areaId), attachedArea->IsInDarkWorld()),
+            info->IsAreaVisible(TAreaId(areaId)))) {
+      bounds.Include(attachedArea->GetBoundingBox().GetTransformedAABox(
+          attachedArea->GetAreaPostTransform(*mWorld, areaId)));
+    }
+  }
+
+  const CVector3f point = mapArea->GetAreaPostTransform(*mWorld, mCurAreaId.Value()) *
+                         mapArea->GetAreaCenterPoint();
+  const float maxX =
+      rstl::max_val(point.GetX() - bounds.GetMinPoint().GetX(),
+                    bounds.GetMaxPoint().GetX() - point.GetX());
+  const float maxY =
+      rstl::max_val(point.GetY() - bounds.GetMinPoint().GetY(),
+                    bounds.GetMaxPoint().GetY() - point.GetY());
+  const float maxZ =
+      rstl::max_val(point.GetZ() - bounds.GetMinPoint().GetZ(),
+                    bounds.GetMaxPoint().GetZ() - point.GetZ());
+  const CVector3f extent =
+      mapArea->GetBoundingBox().GetMaxPoint() - mapArea->GetBoundingBox().GetMinPoint();
+  const float halfExtent = 0.5f * extent.Magnitude();
+  const CVector3f maxMargin(maxX, maxY, maxZ);
+  float distance = 0.5f * halfExtent + 0.5f * maxMargin.Magnitude();
+  distance *= gpTweakAutoMapper->GetMiniMapCamDistScale();
+  return distance * static_cast< float >(tan(M_PIF / 2.f -
+                                            0.5f * CMath::Deg2Rad(mRenderState0.mCamAngle)));
 }
 
 float CAutoMapper::GetBaseMapScreenCameraMoveSpeed() const {

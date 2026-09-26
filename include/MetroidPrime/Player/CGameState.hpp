@@ -10,6 +10,7 @@
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
 
 class CGameMode;
+class CWorldState;
 
 class CGameState {
 public:
@@ -22,6 +23,7 @@ public:
 
   void SetIsDarkWorld(bool);
   CGameMode& GetGameMode();
+  CWorldState& StateForWorld(CAssetId worldId);
 
   CGameOptions& GameOptions() { return gameOptions; }
 
