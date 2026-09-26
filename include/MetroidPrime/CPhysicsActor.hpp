@@ -41,9 +41,17 @@ public:
   CMotionState(const CMotionState&);
 
   const CVector3f& GetTranslation() const { return mTranslation; }
+  void SetTranslation(const CVector3f& translation) { mTranslation = translation; }
   const CNUQuaternion& GetOrientation() const { return mOrientation; }
   const CVector3f& GetVelocity() const { return mVelocity; }
   const CAxisAngle& GetAngularMomentum() const { return mAngularMomentum; }
+
+  // Guessed name; tests a motion delta, not an identity orientation.
+  bool IsZero() const {
+    return mTranslation.MagSquared() == 0.f && mOrientation.GetScalar() == 0.f &&
+           mOrientation.GetVector().MagSquared() == 0.f && mVelocity.MagSquared() == 0.f &&
+           mAngularMomentum.GetVector().MagSquared() == 0.f;
+  }
 
 private:
   CVector3f mTranslation;

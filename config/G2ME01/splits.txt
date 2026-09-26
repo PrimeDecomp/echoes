@@ -141,6 +141,12 @@ MetroidPrime/Player/CPlayerOrbit.cpp:
 	.text       start:0x8011C3A8 end:0x80123510
 	.ctors      start:0x803A5524 end:0x803A5528
 
+MetroidPrime/CGroundMovement.cpp:
+	.text       start:0x8012878C end:0x8012CA24
+	.sdata      start:0x80418328 end:0x80418338
+	.sbss       start:0x80419190 end:0x804191A8
+	.sdata2     start:0x8041BE48 end:0x8041BED8
+
 MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 	.text       start:0x8013C254 end:0x8013C9B0
 	.data       start:0x803B5118 end:0x803B5138

@@ -3,6 +3,7 @@
 
 #include "Collision/CMaterialList.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "MetroidPrime/TGameTypes.hpp"
 
 class CAABox;
 
@@ -21,10 +22,12 @@ public:
   bool IsValid() const { return mValid; }
   bool HasExtents() const { return mHasExtents; }
   const CVector3f& GetPoint() const { return mPoint; }
+  CVector3f GetExtreme() const;
   const CMaterialList& GetMaterialLeft() const { return mMaterialLeft; }
   const CMaterialList& GetMaterialRight() const { return mMaterialRight; }
   const CVector3f& GetNormalLeft() const { return mNormalLeft; }
   const CVector3f& GetNormalRight() const { return mNormalRight; }
+  TUniqueId GetObjectId() const { return mObjectId; }
   void Swap();
 
 private:
@@ -36,7 +39,7 @@ private:
   CMaterialList mMaterialRight;
   CVector3f mNormalLeft;
   CVector3f mNormalRight;
-  ushort x58_; // Echoes addition; initialized to 0xffff. Meaning not established.
+  TUniqueId mObjectId;
   bool mValid : 1;
   bool mHasExtents : 1;
 };
