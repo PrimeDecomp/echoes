@@ -497,6 +497,16 @@ Kyoto/Graphics/CColor.cpp:
 	.ctors      start:0x803A564C end:0x803A5650
 	.sbss       start:0x80419B38 end:0x80419B5C
 
+Kyoto/Audio/DolphinCAudioSys.cpp:
+	.text       start:0x8030780C end:0x80309108
+	.ctors      start:0x803A5650 end:0x803A5654
+	.rodata     start:0x803AFC78 end:0x803AFD88
+	.bss        start:0x803DFE68 end:0x803DFE78
+	.bss        start:0x804175E8 end:0x804175F8 align:4 common
+	.sdata      start:0x80418BE8 end:0x80418BF8
+	.sbss       start:0x80419B68 end:0x80419B88
+	.sdata2     start:0x8041E9C8 end:0x8041E9E0
+
 Kyoto/DolphinCMemoryCardSys.cpp:
 	.text       start:0x80309108 end:0x8030B4A8
 	.ctors      start:0x803A5654 end:0x803A5658

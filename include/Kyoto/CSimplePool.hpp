@@ -26,8 +26,8 @@ public:
   virtual CToken GetObj(const SObjectTag& tag);
   virtual CToken GetObj(const char* name);
   virtual CToken GetObj(const char* name, const CVParamTransfer& xfer);
-  virtual bool HasObject(const SObjectTag& tag);
-  virtual bool ObjectIsLive(const SObjectTag& tag);
+  virtual bool HasObject(const SObjectTag& tag) const;
+  virtual bool ObjectIsLive(const SObjectTag& tag) const;
   virtual IFactory& GetFactory() { return *mFactory; }
   virtual void Flush();
   virtual void ObjectUnreferenced(const SObjectTag& tag);

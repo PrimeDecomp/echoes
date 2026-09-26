@@ -269,6 +269,11 @@ cflags_retro = [
     "-gccinc",
     "-inline deferred,noauto",
     "-common on",
+    "-i extern/musyx/include",
+    "-DMUSY_TARGET=MUSY_TARGET_DOLPHIN",
+    "-DMUSY_VERSION_MAJOR=2",
+    "-DMUSY_VERSION_MINOR=0",
+    "-DMUSY_VERSION_PATCH=3",
 ]
 
 if config.version == "G2ME01":
@@ -505,6 +510,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleSwooshDataFactory.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Audio/g721.cpp"),
             Object(NonMatching, "Kyoto/Audio/CStaticAudioPlayer.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Audio/DolphinCAudioSys.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
