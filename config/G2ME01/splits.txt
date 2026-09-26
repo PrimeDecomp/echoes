@@ -518,6 +518,17 @@ Kyoto/Particles/CElementGen.cpp:
 	.sbss       start:0x80419A70 end:0x80419A90
 	.sdata2     start:0x8041E778 end:0x8041E7F0
 
+Kyoto/Particles/CParticleDataFactory.cpp:
+	.text       start:0x802E1418 end:0x802E80B4
+	.ctors      start:0x803A5628 end:0x803A562C
+	.rodata     start:0x803AF988 end:0x803AF990
+	.bss        start:0x803DFDB8 end:0x803DFDC8
+	.bss        start:0x80417570 end:0x80417588 align:4 common
+	.sbss       start:0x80419A90 end:0x80419A98
+
+Kyoto/Particles/CParticleGen.cpp:
+	.text       start:0x802E80B4 end:0x802E8198
+
 Kyoto/Particles/CParticleGlobals.cpp:
 	.text       start:0x802E8198 end:0x802E82C4
 	.sbss       start:0x80419AA8 end:0x80419AD0

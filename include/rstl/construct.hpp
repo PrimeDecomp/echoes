@@ -47,13 +47,18 @@ inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
 }
 
-// Echoes copies byte elements without the placement-new null check.
+// Echoes copies byte and pointer elements without the placement-new null check.
 inline void construct_impl(void* dest, const char& src) {
   *static_cast< char* >(dest) = src;
 }
 
 inline void construct_impl(void* dest, const uchar& src) {
   *static_cast< uchar* >(dest) = src;
+}
+
+template < typename T >
+inline void construct_impl(void* dest, T* const& src) {
+  *static_cast< T** >(dest) = src;
 }
 
 template < typename T >

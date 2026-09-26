@@ -8,12 +8,21 @@
 #include "rstl/optional_object.hpp"
 #include "rstl/vector.hpp"
 
+class CElectricDescription;
 class CGenDescription;
 class CInputStream;
+class CModel;
 class CSimplePool;
+class CSwooshDescription;
 
 class CParticleDataFactory {
 public:
+  static CGenDescription* GetGeneratorDesc(CInputStream& in, CSimplePool* pool, uint id);
+  static CGenDescription* CreateGeneratorDescription(CInputStream&, rstl::vector< uint >& assets,
+                                                     uint id, CSimplePool* pool);
+  static void LoadGPSMTokens(CGenDescription* desc);
+  static bool CreateGPSM(CGenDescription* desc, CInputStream& in,
+                         rstl::vector< CAssetId >& resources, CSimplePool* pool);
   static CUVElement* GetTextureElement(CInputStream& in, CSimplePool* resPool);
   static CColorElement* GetColorElement(CInputStream& in);
   static CModVectorElement* GetModVectorElement(CInputStream& in);
@@ -27,9 +36,16 @@ public:
   static bool GetBool(CInputStream& in);
   static int GetBitflag(CInputStream& in);
   static FourCC GetClassID(CInputStream& in);
+  static rstl::optional_object< TToken< CModel > > GetModel(CInputStream& in, CSimplePool* pool);
   static rstl::optional_object< TToken< CGenDescription > >
   GetChildGeneratorDesc(CInputStream& in, CSimplePool* pool,
                         const rstl::vector< CAssetId >& resources);
+  static rstl::optional_object< TToken< CGenDescription > >
+  GetChildGeneratorDesc(CAssetId id, CSimplePool* pool, const rstl::vector< CAssetId >& resources);
+  static rstl::optional_object< TToken< CSwooshDescription > >
+  GetSwooshGeneratorDesc(CInputStream& in, CSimplePool* pool);
+  static rstl::optional_object< TToken< CElectricDescription > >
+  GetElectricGeneratorDesc(CInputStream& in, CSimplePool* pool);
 };
 
 #endif // _CPARTICLEDATAFACTORY

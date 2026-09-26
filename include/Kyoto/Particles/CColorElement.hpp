@@ -94,4 +94,74 @@ public:
   bool GetValue(int frame, CColor& colorOut) const override;
 };
 
+// Echoes additions. FourCC-based class names are placeholders; descriptive names follow
+// Prime/MP3 analogues. Member offsets come from the constructors.
+
+class CCEInitialSwitch : public CColorElement {
+  CColorElement* x4_;
+  CColorElement* x8_;
+
+public:
+  CCEInitialSwitch(CColorElement* a, CColorElement* b);
+  ~CCEInitialSwitch() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
+class CCEKEYF : public CColorElement {
+  int mPercent;
+  int mUnk1;
+  bool mLoop;
+  bool mUnk2;
+  int mLoopEnd;
+  int mLoopStart;
+  float x18_;
+  float x1c_;
+  rstl::vector< CColor > mKeys;
+  CRealElement* x30_;
+
+public:
+  CCEKEYF(CInputStream& in);
+  ~CCEKEYF() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
+class CCEKPIN : public CColorElement {
+  CColorElement* x4_;
+
+public:
+  CCEKPIN(CColorElement* a);
+  ~CCEKPIN() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
+class CCEMDAO : public CColorElement {
+  CColorElement* x4_;
+  CRealElement* x8_;
+
+public:
+  CCEMDAO(CColorElement* a, CRealElement* b);
+  ~CCEMDAO() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
+class CCEMultiply : public CColorElement {
+  CColorElement* x4_;
+  CColorElement* x8_;
+
+public:
+  CCEMultiply(CColorElement* a, CColorElement* b);
+  ~CCEMultiply() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
+class CCEVRTC : public CColorElement {
+  CVectorElement* x4_;
+  CRealElement* x8_;
+
+public:
+  CCEVRTC(CVectorElement* a, CRealElement* b);
+  ~CCEVRTC() override;
+  bool GetValue(int frame, CColor& valOut) const override;
+};
+
 #endif // _CCOLORELEMENT
