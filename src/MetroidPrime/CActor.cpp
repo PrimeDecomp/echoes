@@ -786,9 +786,9 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
     if (!mLoopingSfxHandle) {
       CSfxHandle handle;
       if (nonEmitter) {
-        handle = CSfxManager::SfxStart(id, 1.f, 0.f, true, CSfxManager::kMedPriority, true, aid);
+        handle = CSfxManager::SfxStart(id, 127, 64, aid, true, true, CSfxManager::kMedPriority);
       } else {
-        handle = CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, true, aid);
+        handle = CSfxManager::AddEmitter(parms, aid, useAcoustics, true, CSfxManager::kMedPriority);
       }
       if (handle) {
         mSfxId = id;
@@ -802,7 +802,7 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
     } else if (flags & 0x4) {
       CSfxManager::RemoveEmitter(mLoopingSfxHandle);
       CSfxHandle handle =
-          CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, true, aid);
+          CSfxManager::AddEmitter(parms, aid, useAcoustics, true, CSfxManager::kMedPriority);
       if (handle) {
         mSfxId = id;
         mLoopingSfxHandle = handle;
@@ -815,9 +815,9 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
     CSfxHandle handle;
     if (nonEmitter) {
       handle =
-          CSfxManager::SfxStart(id, 1.f, 0.f, useAcoustics, CSfxManager::kMedPriority, false, aid);
+          CSfxManager::SfxStart(id, 127, 64, aid, useAcoustics, false, CSfxManager::kMedPriority);
     } else {
-      handle = CSfxManager::AddEmitter(parms, useAcoustics, CSfxManager::kMedPriority, false, aid);
+      handle = CSfxManager::AddEmitter(parms, aid, useAcoustics, false, CSfxManager::kMedPriority);
     }
     if ((sfxId & 0x20000000) != 0 /* continuous update */) {
       mNonLoopingSfxHandles[m_nextNonLoopingSfxHandle] = handle;

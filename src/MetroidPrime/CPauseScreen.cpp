@@ -103,8 +103,8 @@ CPauseScreen::CPauseScreen()
       CColor::Black(), CColor::White(), gpSimplePool);
 
   // TODO: read LogbookLegendVisible and populate/lock the two stick-icon sets from player tweaks.
-  CSfxManager::SfxStart(0x21d1, 0x7f, 0x3f, false, CSfxManager::kMedPriority, false,
-                        CSfxManager::kAllAreas);
+  CSfxManager::SfxStart(0x21d1, 0x7f, 0x3f, CSfxManager::kAllAreas, false, false,
+                        CSfxManager::kMedPriority);
 }
 
 CPauseScreen::~CPauseScreen() {}
@@ -187,8 +187,8 @@ void CPauseScreen::ProcessSelectionInput(const CFinalInput&) {
 void CPauseScreen::SetPanSound(bool playing) {
   if (playing) {
     if (mPanSfx == CSfxHandle()) {
-      mPanSfx = CSfxManager::SfxStart(300, 0x7f, 0x3f, false, CSfxManager::kMedPriority, true,
-                                      CSfxManager::kAllAreas);
+      mPanSfx = CSfxManager::SfxStart(300, 0x7f, 0x3f, CSfxManager::kAllAreas, false, true,
+                                    CSfxManager::kMedPriority);
     }
   } else if (mPanSfx != CSfxHandle()) {
     CSfxManager::SfxStop(mPanSfx);
@@ -199,8 +199,8 @@ void CPauseScreen::SetPanSound(bool playing) {
 void CPauseScreen::SetZoomSound(bool playing) {
   if (playing) {
     if (mZoomSfx == CSfxHandle()) {
-      mZoomSfx = CSfxManager::SfxStart(0x78, 0x7f, 0x3f, false, CSfxManager::kMedPriority, true,
-                                       CSfxManager::kAllAreas);
+      mZoomSfx = CSfxManager::SfxStart(0x78, 0x7f, 0x3f, CSfxManager::kAllAreas, false, true,
+                                     CSfxManager::kMedPriority);
     }
   } else if (mZoomSfx != CSfxHandle()) {
     CSfxManager::SfxStop(mZoomSfx);
