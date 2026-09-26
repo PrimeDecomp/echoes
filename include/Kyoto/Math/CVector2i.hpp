@@ -13,6 +13,12 @@ public:
   int& operator[](int idx) { return *(&mX + idx); }
   const int& operator[](int idx) const { return *(&mX + idx); }
 
+  static CVector2i Lerp(const CVector2i& a, const CVector2i& b, float t) {
+    const float inv = 1.f - t;
+    return CVector2i(static_cast< int >(a.GetX() * inv + b.GetX() * t),
+                     static_cast< int >(a.GetY() * inv + b.GetY() * t));
+  }
+
 private:
   int mX;
   int mY;
