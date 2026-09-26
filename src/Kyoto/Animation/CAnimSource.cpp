@@ -212,8 +212,8 @@ void CAnimSource::GetSegStatementSet(const CSegIdList& list, CSegStatementSet& s
   }
 }
 
-void CAnimSource::GetJointData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                               const CCharAnimTime& time) const {
+void CAnimSource::GetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
+                             const CCharAnimTime& time) const {
   uint frame;
   const float weight = GetFrameAndWeight(time, mInterval, frame);
   const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
