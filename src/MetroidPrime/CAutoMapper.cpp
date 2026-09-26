@@ -3,8 +3,13 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CMapArea.hpp"
 #include "MetroidPrime/CMapUniverse.hpp"
+#include "MetroidPrime/CMapWorld.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/IWorld.hpp"
 
 // Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
@@ -131,6 +136,23 @@ void CAutoMapper::SetupTeleportNavigation() {
   mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_ZoomOut, 0));
 }
 
+bool CAutoMapper::CanLeaveMapScreen(const CStateManager& mgr) const {
+  return mTransitionState == kTS_MiniMapReady && CanLeaveMapScreenInternal(mgr);
+}
+
+bool CAutoMapper::CanLeaveMapScreenInternal(const CStateManager& mgr) const {
+  if (!NotHintNavigating(mgr)) {
+    return false;
+  }
+  if (IsRenderStateInterpolating()) {
+    return false;
+  }
+  if (IsInMapperState(kAMS_MapScreenUniverse)) {
+    return true;
+  }
+  return mWorld == mgr.GetWorld() && IsInMapperState(kAMS_MapScreen);
+}
+
 bool CAutoMapper::NotHintNavigating(const CStateManager& mgr) const {
   if (mHintSteps.size() > 0 &&
       mHintSteps.front().mType != SAutoMapperHintStep::kHST_LeaveMapScreen) {
@@ -219,11 +241,61 @@ void CAutoMapper::LeaveMapScreenState() {
   SetShouldRotatingSoundBePlaying(false);
 }
 
+CVector3f CAutoMapper::GetAreaPointOfInterest(const CStateManager& mgr, int areaId) const {
+  const IWorld& world = *mWorld;
+  CMapArea* area = world.IGetMapWorld()->GetMapArea(areaId);
+  return area->GetAreaPostTransform(world, areaId) * area->GetAreaCenterPoint();
+}
+
+int CAutoMapper::FindClosestVisibleArea(const CVector3f& point, const CUnitVector3f& camDir,
+                                        const CStateManager& mgr, const IWorld& world,
+                                        const CMapWorldInfo& info) const {
+  const CMapWorld* mapWorld = world.IGetMapWorld();
+  int closestArea = -1;
+  int closestOtherWorldArea = -1;
+  float minDistance = 3.402823466e+38f;
+  float minOtherWorldDistance = minDistance;
+  const rstl::vector< int > areas = mapWorld->GetVisibleAreas(world, info);
+  const bool inDarkWorld = mDarkWorldBlend >= 0.5f;
+
+  for (int i = 0; i < areas.size(); ++i) {
+    const int areaId = areas[i];
+    CMapArea* area = mapWorld->GetMapArea(areaId);
+    const bool otherWorld = area->IsInDarkWorld() != inDarkWorld;
+    const CTransform4f xf = area->GetAreaPostTransform(world, areaId);
+    const CVector3f areaPoint = xf * area->GetAreaCenterPoint();
+    const CVector3f pointToArea = areaPoint - point;
+    const CVector3f projectedPoint =
+        pointToArea.CanBeNormalized()
+            ? point +
+                  (pointToArea.Magnitude() * CVector3f::Dot(pointToArea.AsNormalized(), camDir)) *
+                      camDir
+            : point;
+    const float distance = (projectedPoint - areaPoint).Magnitude();
+
+    if (otherWorld) {
+      if (distance < minOtherWorldDistance) {
+        closestOtherWorldArea = areaId;
+        minOtherWorldDistance = distance;
+      }
+    } else if (distance < minDistance) {
+      closestArea = areaId;
+      minDistance = distance;
+    }
+  }
+
+  return closestArea != -1 ? closestArea : closestOtherWorldArea;
+}
+
 CVector2i CAutoMapper::GetMapScreenViewportSize() {
   return CVector2i(CGraphics::GetViewport().mWidth, CGraphics::GetViewport().mHeight);
 }
 
 float CAutoMapper::GetMapAreaMiniMapDrawDepth() { return 2.f; }
+
+float CAutoMapper::GetMapAreaMaxDrawDepth(const CStateManager& mgr, int areaId) const {
+  return static_cast< float >(mWorld->IGetMapWorld()->GetCurrentMapAreaDepth(*mWorld, areaId));
+}
 
 bool CAutoMapper::IsInMapperState(EAutoMapperState state) const {
   return state == mState && state == mNextState;
@@ -291,6 +363,12 @@ void CAutoMapper::LeaveMapScreen(CStateManager& mgr) {
     mRenderState1.mDepth2Ease = SAutoMapperRenderState::kE_Linear;
     ResetInterpolationTimer(0.25f);
   }
+}
+
+void CAutoMapper::SetupMiniMapWorld(CStateManager& mgr) {
+  CWorld* world = mgr.World();
+  world->GetMapWorld()->SetWhichMapAreasLoaded(*world, world->GetCurrentAreaId().Value(), 3);
+  mTransitionState = kTS_MiniMapReady;
 }
 
 void CAutoMapper::SetCurAreaId(int areaId) {

@@ -190,6 +190,9 @@ private:
   float GetFinalMapScreenCameraMoveSpeed() const;
   CQuaternion GetMiniMapCameraOrientation(const CStateManager& mgr) const;
   CVector3f GetAreaPointOfInterest(const CStateManager& mgr, int areaId) const;
+  int FindClosestVisibleArea(const CVector3f& point, const CUnitVector3f& camDir,
+                             const CStateManager& mgr, const IWorld& world,
+                             const CMapWorldInfo& info) const;
   SAutoMapperRenderState BuildMiniMapWorldRenderState(const CStateManager& mgr,
                                                       const CQuaternion& rot, int areaId) const;
   SAutoMapperRenderState BuildMapScreenWorldRenderState(const CStateManager& mgr,
