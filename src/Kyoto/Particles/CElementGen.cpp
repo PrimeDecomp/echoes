@@ -1,8 +1,12 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 
 #include "Kyoto/Basics/CStopwatch.hpp"
+#include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
 #include "Kyoto/Particles/CParticleElectric.hpp"
@@ -10,7 +14,10 @@
 #include "Kyoto/Particles/CParticleSpawnSystem.hpp"
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
 #include "Kyoto/Particles/CSpawnSystemKeyframeData.hpp"
+#include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
+
+#include "alloca.h"
 
 #include "dolphin/gx.h"
 
@@ -22,6 +29,17 @@ static const double skTickTime = 1.0 / 60.0;
 ushort CElementGen::sSeed = 99;
 int CElementGen::sParticleAliveCount;
 int CElementGen::sParticleSystemAliveCount;
+bool CElementGen::sSubtractBlend;
+bool CElementGen::sEnableAlphaModulation;
+bool CElementGen::sMoveRedToAlphaBuffer;
+
+// Guessed name, correlated with Prime's back-to-front particle ordering.
+struct CParticleListItemViewPointComp {
+  bool operator()(const CElementGen::CParticleListItem& a,
+                  const CElementGen::CParticleListItem& b) const {
+    return a.mViewPoint.GetY() > b.mViewPoint.GetY();
+  }
+};
 
 CElementGen::CElementGen(TToken< CGenDescription > description, EModelOrientationType orientation,
                          EOptionalSystemFlags flags)
@@ -903,6 +921,532 @@ void CElementGen::SetParticleEmission(bool emission) {
   for (int i = 0; i < mActivePartChildren.size(); ++i) {
     mActivePartChildren[i]->SetParticleEmission(emission);
   }
+}
+
+void CElementGen::RenderModels() {
+  CGlobalRandom gr(mRandState);
+  CParticleGlobals::SetParticleAccessParameters(nullptr);
+  SModelRenderState state;
+  if (IsIndirectTextured()) {
+    if (!mLoadedGenDesc->mPMUS) {
+      return;
+    }
+    BeginIndirectModelRender(state);
+  } else {
+    BeginModelRender(state);
+  }
+
+  CVector3f offset(CVector3f::Zero());
+  CTransform4f orientation(CTransform4f::Identity());
+  if (!mLoadedGenDesc->mPMOO) {
+    orientation = mOrientation;
+  }
+  orientation = orientation * mGlobalOrientation;
+  const bool constantRotation =
+      mLoadedGenDesc->mPMRT != nullptr && mLoadedGenDesc->mPMRT->IsFastConstant();
+  const CVector3f translation =
+      (mGlobalScaleTransformInverse * mLocalScaleTransformInverse) * mGlobalTranslation;
+  CTransform4f rotation(CTransform4f::Identity());
+  if (constantRotation) {
+    CVector3f angles(CVector3f::Zero());
+    mLoadedGenDesc->mPMRT->GetValue(mCurFrame, angles);
+    rotation = CTransform4f::RotateZ(CRelAngle::FromDegrees(angles.GetZ()));
+    rotation.RotateLocalY(CRelAngle::FromDegrees(angles.GetY()));
+    rotation.RotateLocalX(CRelAngle::FromDegrees(angles.GetX()));
+  }
+  rotation = orientation * rotation;
+  CParticleGlobals::SetEmitterTime(mCurFrame);
+
+  CParticleListItem* sortItems = nullptr;
+  CColor color = mModuColor;
+  const bool sorted = mLoadedGenDesc->mSORT;
+  if (sorted) {
+    CTransform4f view(CGraphics::GetViewMatrix());
+    view.SetTranslation(CVector3f::Zero());
+    CTransform4f camera(view.GetQuickInverse() * mGlobalOrientation);
+    const int count = mParticles.size();
+    sortItems = static_cast< CParticleListItem* >(alloca(count * sizeof(CParticleListItem)));
+    for (int i = 0; i < count; ++i) {
+      const CParticle& particle = mParticles[i];
+      sortItems[i].mViewPoint =
+          camera * (mTimeDeltaScale * (particle.mPos - particle.mPrevPos) + particle.mPrevPos);
+      sortItems[i].mPartIdx = static_cast< ushort >(i);
+    }
+    static CParticleListItemViewPointComp comparator;
+    rstl::sort(sortItems, sortItems + count, comparator);
+  }
+
+  for (int i = 0; i < mParticles.size(); ++i) {
+    const int index = sorted ? sortItems[i].mPartIdx : i;
+    CParticle& particle = mParticles[index];
+    if (particle.mEndFrame == -1) {
+      continue;
+    }
+    const int frame = mCurFrame - particle.mStartFrame - 1;
+    CParticleGlobals::SetParticleLifetime(particle.mEndFrame - particle.mStartFrame);
+    CParticleGlobals::UpdateParticleLifetimeTweenValues(frame);
+    CParticleGlobals::SetCurrentParticle(&particle);
+    if (mEnableADV) {
+      CParticleGlobals::SetParticleAccessParameters(mAdvValues[index].mValues);
+    }
+    if (mLoadedGenDesc->mPMOP != nullptr) {
+      mLoadedGenDesc->mPMOP->GetValue(frame, offset);
+    }
+
+    CTransform4f transform = CTransform4f::Translate(
+        translation +
+        mGlobalOrientation.Rotate(mTimeDeltaScale * (particle.mPos - particle.mPrevPos) +
+                                  particle.mPrevPos));
+    if (mOrientType == kMOT_One) {
+      CTransform4f parent(mParentMatrices[index], CVector3f::Zero());
+      transform.AddTranslation((orientation * parent) * offset);
+      transform *= parent;
+    } else {
+      transform.AddTranslation(orientation * offset);
+    }
+    if (mLoadedGenDesc->mPMOV != nullptr) {
+      CVector3f direction(CVector3f::Zero());
+      mLoadedGenDesc->mPMOV->GetValue(frame, direction);
+      transform *= CTransform4f::LookAt(CVector3f::Zero(), direction, CVector3f::Up());
+    }
+    if (constantRotation) {
+      transform *= rotation;
+    } else if (mLoadedGenDesc->mPMRT != nullptr) {
+      CVector3f angles(CVector3f::Zero());
+      mLoadedGenDesc->mPMRT->GetValue(frame, angles);
+      rotation = CTransform4f::RotateZ(CRelAngle::FromDegrees(angles.GetZ()));
+      rotation.RotateLocalY(CRelAngle::FromDegrees(angles.GetY()));
+      rotation.RotateLocalX(CRelAngle::FromDegrees(angles.GetX()));
+      transform *= orientation * rotation;
+    } else {
+      transform *= rotation;
+    }
+    if (mLoadedGenDesc->mPMSC != nullptr) {
+      CVector3f scale(CVector3f::Zero());
+      mLoadedGenDesc->mPMSC->GetValue(frame, scale);
+      transform *= CTransform4f::Scale(scale.GetX(), scale.GetY(), scale.GetZ());
+    }
+    if (mLoadedGenDesc->mPMCL != nullptr) {
+      mLoadedGenDesc->mPMCL->GetValue(frame, color);
+      color = CColor::Modulate(color, mModuColor);
+    }
+    CGraphics::SetModelMatrix(mGlobalScaleTransform * transform * mLocalScaleTransform);
+    if (IsIndirectTextured()) {
+      RenderIndirectModelParticle(state, color, particle);
+    } else {
+      RenderModelParticle(state, color, particle);
+    }
+  }
+
+  if (IsIndirectTextured()) {
+    EndIndirectModelRender();
+  } else {
+    EndModelRender(state);
+  }
+}
+
+void CElementGen::EndIndirectModelRender() {
+  CGraphics::SetCullMode(kCM_Front);
+  CGX::SetNumIndStages(0);
+  CGX::SetTevDirect(GX_TEVSTAGE1);
+  if (sMoveRedToAlphaBuffer) {
+    GXSetAlphaUpdate(GX_TRUE);
+  }
+}
+
+void CElementGen::EndModelRender(const SModelRenderState& state) {
+  if (mModelsUseLights) {
+    CGraphics::DisableAllLights();
+  }
+  CGraphics::SetCullMode(kCM_Front);
+  CTevCombiners::ResetStates();
+  if (state.mModulateAlpha) {
+    GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+  }
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
+  if (sMoveRedToAlphaBuffer) {
+    GXSetAlphaUpdate(GX_TRUE);
+  }
+}
+
+void CElementGen::RenderModelParticle(SModelRenderState& state, const CColor& color,
+                                      const CParticle& particle) {
+  if (mLoadedGenDesc->mPMUS) {
+    SUVElementSet& uvs = state.mUV;
+    if (!state.mConstantUV) {
+      mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - particle.mStartFrame - 1, uvs);
+    }
+    if (state.mModulateAlpha) {
+      CGX::Begin(GX_QUADS, GX_VTXFMT0, 4);
+      GXPosition3f32(0.5f, 0.f, 0.5f);
+      const uint packedColor = color.GetColor_u32();
+      GXColor1u32(packedColor);
+      GXTexCoord2f32(uvs.xMax, uvs.yMax);
+      GXPosition3f32(-0.5f, 0.f, 0.5f);
+      GXColor1u32(packedColor);
+      GXTexCoord2f32(uvs.xMin, uvs.yMax);
+      GXPosition3f32(-0.5f, 0.f, -0.5f);
+      GXColor1u32(packedColor);
+      GXTexCoord2f32(uvs.xMin, uvs.yMin);
+      GXPosition3f32(0.5f, 0.f, -0.5f);
+      GXColor1u32(packedColor);
+      GXTexCoord2f32(uvs.xMax, uvs.yMin);
+      CGX::End();
+    } else {
+      CGraphics::StreamBegin(kP_Quads);
+      CGraphics::StreamColor(color.GetColor_u32());
+      CGraphics::StreamTexcoord(uvs.xMax, uvs.yMax);
+      CGraphics::StreamVertex(0.5f, 0.f, 0.5f);
+      CGraphics::StreamTexcoord(uvs.xMin, uvs.yMax);
+      CGraphics::StreamVertex(-0.5f, 0.f, 0.5f);
+      CGraphics::StreamTexcoord(uvs.xMin, uvs.yMin);
+      CGraphics::StreamVertex(-0.5f, 0.f, -0.5f);
+      CGraphics::StreamTexcoord(uvs.xMax, uvs.yMin);
+      CGraphics::StreamVertex(0.5f, 0.f, -0.5f);
+      CGraphics::StreamEnd();
+    }
+  } else {
+    CModel* model = mLoadedGenDesc->mPMDL->GetObject();
+    if (sSubtractBlend) {
+      model->Draw(CModelFlags::AlphaBlended(0.5f).DepthCompareUpdate(true, false));
+    } else if (mLoadedGenDesc->mPMAB) {
+      model->Draw(CModelFlags::Additive(color).DepthCompareUpdate(true, false));
+    } else if (color.GetAlpha() == 1.f) {
+      model->Draw(CModelFlags(
+          CModelFlags::kT_One, 0,
+          CModelFlags::EFlags(CModelFlags::kF_DepthCompare | CModelFlags::kF_DepthUpdate), color));
+    } else {
+      model->Draw(CModelFlags(CModelFlags::kT_Blend, 0, CModelFlags::kF_DepthCompare, color));
+    }
+  }
+}
+
+void CElementGen::RenderIndirectModelParticle(SModelRenderState& state, const CColor& color,
+                                              const CParticle& particle) {
+  SUVElementSet& uvs = state.mUV;
+  if (!state.mConstantUV) {
+    mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - particle.mStartFrame, uvs);
+  }
+  SUVElementSet& indirectUVs = state.mIndirectUV;
+  if (!state.mConstantIndirectUV) {
+    mLoadedGenDesc->mTIND->GetValueUV(mCurFrame - particle.mStartFrame, indirectUVs);
+  }
+
+  CGraphics::CClippedScreenQuad clip = CGraphics::ClipScreenQuadFromMS(
+      CVector3f(0.5f, 0.f, 0.5f), CVector3f(-0.5f, 0.f, 0.5f), CVector3f(-0.5f, 0.f, -0.5f),
+      CVector3f(0.5f, 0.f, -0.5f), kTF_RGB565);
+  void* dest = CGraphics::GetDolphinSpareBuffer();
+  if (!clip.IsValid()) {
+    return;
+  }
+  const bool halfSize = mLoadedGenDesc->mINDM;
+  GXSetTexCopySrc(clip.GetX(), clip.GetY(), clip.GetWidth(), clip.GetHeight());
+  GXSetTexCopyDst(clip.GetTexWidth() >> halfSize, clip.GetHeight() >> halfSize, GX_TF_RGB565,
+                  halfSize);
+  const size_t bufferSize = CGraphics::GetSpareBufferSize();
+  const size_t textureSize = GXGetTexBufferSize(
+      clip.GetTexWidth() >> halfSize, clip.GetHeight() >> halfSize, GX_TF_RGB565, false, 0);
+  if (textureSize > bufferSize) {
+    return;
+  }
+  const bool useVideoFilter = CGraphics::GetUseVideoFilter();
+  CGraphics::SetUseVideoFilter(false);
+  GXCopyTex(dest, GX_FALSE);
+  CGraphics::SetUseVideoFilter(useVideoFilter);
+  GXPixModeSync();
+  CGraphics::LoadDolphinSpareTexture(clip.GetTexWidth() >> halfSize, clip.GetHeight() >> halfSize,
+                                     GX_TF_RGB565, nullptr, CGraphics::kSpareBufferTexMapID);
+
+  const uint packedColor = color.GetColor_u32();
+  CGX::Begin(GX_QUADS, GX_VTXFMT0, 4);
+  GXPosition3f32(0.5f, 0.f, 0.5f);
+  GXColor1u32(packedColor);
+  GXTexCoord2f32(uvs.xMax, uvs.yMax);
+  GXTexCoord2f32(clip.GetTexCoord(0).GetX(), clip.GetTexCoord(0).GetY());
+  GXTexCoord2f32(indirectUVs.xMax, indirectUVs.yMax);
+  GXPosition3f32(-0.5f, 0.f, 0.5f);
+  GXColor1u32(packedColor);
+  GXTexCoord2f32(uvs.xMin, uvs.yMax);
+  GXTexCoord2f32(clip.GetTexCoord(1).GetX(), clip.GetTexCoord(1).GetY());
+  GXTexCoord2f32(indirectUVs.xMin, indirectUVs.yMax);
+  GXPosition3f32(-0.5f, 0.f, -0.5f);
+  GXColor1u32(packedColor);
+  GXTexCoord2f32(uvs.xMin, uvs.yMin);
+  GXTexCoord2f32(clip.GetTexCoord(2).GetX(), clip.GetTexCoord(2).GetY());
+  GXTexCoord2f32(indirectUVs.xMin, indirectUVs.yMin);
+  GXPosition3f32(0.5f, 0.f, -0.5f);
+  GXColor1u32(packedColor);
+  GXTexCoord2f32(uvs.xMax, uvs.yMin);
+  GXTexCoord2f32(clip.GetTexCoord(3).GetX(), clip.GetTexCoord(3).GetY());
+  GXTexCoord2f32(indirectUVs.xMax, indirectUVs.yMin);
+  CGX::End();
+}
+
+void CElementGen::BeginIndirectModelRender(SModelRenderState& state) {
+  if (sMoveRedToAlphaBuffer) {
+    GXSetAlphaUpdate(GX_FALSE);
+  }
+  CGraphics::SetCullMode(kCM_None);
+  CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+  if (mAAPH) {
+    CGX::SetZMode(true, GX_LEQUAL, false);
+    CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_CLEAR);
+  } else {
+    CGX::SetZMode(true, GX_LEQUAL, mZBUF);
+    CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+  }
+
+  TToken< CTexture > texture =
+      mLoadedGenDesc->mTEXR->GetValueTexture(mCurFrame - mParticles[0].mStartFrame);
+  texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+  mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - mParticles[0].mStartFrame, state.mUV);
+  state.mConstantUV = mLoadedGenDesc->mTEXR->HasConstantUV();
+  TToken< CTexture > indirectTexture =
+      mLoadedGenDesc->mTIND->GetValueTexture(mCurFrame - mParticles[0].mStartFrame);
+  indirectTexture->Load(GX_TEXMAP2, CTexture::kCM_Repeat);
+  state.mConstantIndirectUV = mLoadedGenDesc->mTIND->HasConstantUV();
+  mLoadedGenDesc->mTIND->GetValueUV(mCurFrame - mParticles[0].mStartFrame, state.mIndirectUV);
+
+  CGX::SetNumTexGens(3);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX1, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX2, GX_IDENTITY, false, GX_PTIDENTITY);
+  float indirectMatrix[2][3] = {{0.5f, 0.f, 0.f}, {0.f, 0.5f, 0.f}};
+  GXSetIndTexMtx(GX_ITM_0, indirectMatrix, 1);
+  GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD2, GX_TEXMAP2);
+  CGX::SetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF,
+                      GX_ITW_OFF, false, false, GX_ITBA_OFF);
+  CGX::SetNumIndStages(1);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+  CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, CGraphics::kSpareBufferTexMapID, GX_COLOR0A0);
+  CGX::SetNumTevStages(2);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_8_8);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_8_8);
+  if (mLoadedGenDesc->mCIND) {
+    CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+    CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_ZERO);
+  } else {
+    CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ONE, GX_CC_ZERO);
+    CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_CPREV);
+  }
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_KONST, GX_CA_ZERO);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_APREV, GX_CA_RASA, GX_CA_ZERO);
+  CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+  CGX::SetNumChans(1);
+  CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
+                   GX_AF_NONE);
+  static const GXVtxDescList skDescList[] = {
+      {GX_VA_POS, GX_DIRECT},  {GX_VA_CLR0, GX_DIRECT}, {GX_VA_TEX0, GX_DIRECT},
+      {GX_VA_TEX1, GX_DIRECT}, {GX_VA_TEX2, GX_DIRECT}, {GX_VA_NULL, GX_NONE},
+  };
+  CGX::SetVtxDescv(skDescList);
+}
+
+void CElementGen::BeginModelRender(SModelRenderState& state) {
+  if (sMoveRedToAlphaBuffer) {
+    GXSetAlphaUpdate(GX_FALSE);
+  }
+  if (mModelsUseLights) {
+    CGraphics::SetLightState(mBackupLightActive);
+  } else {
+    CGraphics::SetAmbientColor(CColor::White());
+  }
+  if (!mLoadedGenDesc->mPMUS) {
+    return;
+  }
+
+  state.mModulateAlpha =
+      sEnableAlphaModulation && mLoadedGenDesc->mPMAB && mLoadedGenDesc->mTEXR != nullptr;
+  if (mLoadedGenDesc->mPMAB) {
+    CGraphics::SetDepthWriteMode(true, kE_LEqual, false);
+    if (state.mModulateAlpha) {
+      CGraphics::SetBlendMode(kBM_Blend, kBF_One, kBF_One, kLO_Clear);
+    } else {
+      CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_One, kLO_Clear);
+      CGraphics::SetAlphaCompare(kAF_Greater, 0, kAO_And, kAF_Always, 0);
+    }
+  } else {
+    CGraphics::SetDepthWriteMode(true, kE_LEqual, mZBUF);
+    CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
+    CGraphics::SetAlphaCompare(kAF_Greater, 0, kAO_And, kAF_Always, 0);
+  }
+  CGraphics::SetCullMode(kCM_None);
+
+  if (mLoadedGenDesc->mTEXR != nullptr) {
+    TToken< CTexture > texture =
+        mLoadedGenDesc->mTEXR->GetValueTexture(mCurFrame - mParticles[0].mStartFrame);
+    texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+    CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
+    if (state.mModulateAlpha) {
+      CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_CPREV, GX_CC_APREV, GX_CC_ZERO);
+      CGX::SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+      CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
+      CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
+      GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP1);
+      CGX::SetNumTevStages(2);
+      static const GXVtxDescList skDescList[] = {
+          {GX_VA_POS, GX_DIRECT},
+          {GX_VA_CLR0, GX_DIRECT},
+          {GX_VA_TEX0, GX_DIRECT},
+          {GX_VA_NULL, GX_NONE},
+      };
+      CGX::SetVtxDescv(skDescList);
+      CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
+                       GX_AF_NONE);
+      CGX::SetNumChans(1);
+      CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, false,
+                          GX_PTIDENTITY);
+      CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+      CGX::SetNumTexGens(1);
+    } else {
+      CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+    }
+    mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - mParticles[0].mStartFrame, state.mUV);
+    state.mConstantUV = mLoadedGenDesc->mTEXR->HasConstantUV();
+  } else {
+    CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvPassthru);
+    CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+  }
+}
+
+void CElementGen::RenderLines() {
+  CGlobalRandom gr(mRandState);
+  const bool hasModuColor = mModuColor.GetColor_u32() != 0xffffffff;
+
+  CTransform4f systemViewPointMatrix(CGraphics::GetViewMatrix());
+  systemViewPointMatrix.SetTranslation(CVector3f::Zero());
+  CTransform4f systemCameraMatrix(systemViewPointMatrix.GetQuickInverse() * mGlobalOrientation);
+  systemViewPointMatrix = CTransform4f::Translate(mGlobalTranslation) * mGlobalScaleTransform *
+                          systemViewPointMatrix * mLocalScaleTransform;
+  CGraphics::SetModelMatrix(systemViewPointMatrix);
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
+
+  if (mAAPH) {
+    CGraphics::SetDepthWriteMode(true, kE_LEqual, false);
+    CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_One, kLO_Clear);
+  } else {
+    CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+    CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
+  }
+
+  bool constUVs = true;
+  SUVElementSet uvs;
+  uvs.xMin = 0.f;
+  uvs.xMax = 1.f;
+  uvs.yMin = 0.f;
+  uvs.yMax = 1.f;
+  const bool widtConst = mLoadedGenDesc->mWIDT != nullptr && mLoadedGenDesc->mWIDT->IsConstant();
+
+  if (mLoadedGenDesc->mTEXR != nullptr) {
+    TToken< CTexture > tex =
+        mLoadedGenDesc->mTEXR->GetValueTexture(mCurFrame - mParticles[0].mStartFrame);
+    tex->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+    CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
+
+    if (hasModuColor) {
+      static CTevCombiners::CTevPass ModulatePreviousTEVWithRasColor(
+          CTevCombiners::ColorPass(CTevCombiners::kCS_Zero, CTevCombiners::kCS_PreviousColor,
+                                   CTevCombiners::kCS_RasterColor, CTevCombiners::kCS_Zero),
+          CTevCombiners::AlphaPass(CTevCombiners::kAS_Zero, CTevCombiners::kAS_PreviousAlpha,
+                                   CTevCombiners::kAS_RasterAlpha, CTevCombiners::kAS_Zero));
+      CGraphics::SetTevOp(kTS_Stage1, ModulatePreviousTEVWithRasColor);
+    } else {
+      CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+    }
+
+    mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - mParticles[0].mStartFrame, uvs);
+    constUVs = mLoadedGenDesc->mTEXR->HasConstantUV();
+  } else {
+    CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvPassthru);
+    CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+  }
+
+  static const GXVtxDescList skDescList[] = {
+      {GX_VA_POS, GX_DIRECT},
+      {GX_VA_CLR0, GX_DIRECT},
+      {GX_VA_TEX0, GX_DIRECT},
+      {GX_VA_NULL, GX_NONE},
+  };
+  CGX::SetVtxDescv(skDescList);
+
+  if (hasModuColor) {
+    CGX::SetNumChans(2);
+    CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR1A1);
+    CGX::SetChanMatColor(CGX::Channel1, mModuColor.GetGXColor());
+    CGX::SetChanCtrl(CGX::Channel1, false, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE,
+                     GX_AF_NONE);
+  } else {
+    CGX::SetNumChans(1);
+  }
+  CGX::SetNumTexGens(1);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+  CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
+                   GX_AF_NONE);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+
+  if (widtConst) {
+    float lineWidth = 1.f;
+    mLoadedGenDesc->mWIDT->GetValue(0, lineWidth);
+    if (lineWidth < 0.f) {
+      lineWidth = 0.f;
+    } else if (lineWidth > 42.5f) {
+      lineWidth = 42.5f;
+    }
+    CGX::SetLineWidth(CCast::ToUint8(6.f * lineWidth), GX_TO_ZERO);
+    CGX::Begin(GX_LINES, GX_VTXFMT0, static_cast< ushort >(mParticles.size() * 2));
+  }
+
+  for (int i = 0; i < mParticles.size(); ++i) {
+    CParticle& particle = mParticles[i];
+    if (!constUVs) {
+      mLoadedGenDesc->mTEXR->GetValueUV(mCurFrame - particle.mStartFrame, uvs);
+    }
+
+    CVector3f direction = particle.mPos - particle.mPrevPos;
+    if (mFXLL) {
+      const float magnitude = direction.Magnitude();
+      if (magnitude > 0.f) {
+        direction *= 1.f / magnitude;
+      }
+    }
+    const CVector3f p1 = systemCameraMatrix * particle.mPos;
+    const CVector3f p2 =
+        systemCameraMatrix * (particle.mPos + particle.mLineLengthOrSize * direction);
+
+    if (widtConst) {
+      const uint color = particle.mColor.GetColor_u32();
+      GXPosition3f32(p1[0], p1[1], p1[2]);
+      GXColor1u32(color);
+      GXTexCoord2f32(uvs.xMin, uvs.yMin);
+      GXPosition3f32(p2[0], p2[1], p2[2]);
+      GXColor1u32(color);
+      GXTexCoord2f32(uvs.xMax, uvs.yMax);
+    } else {
+      float lineWidth = particle.mLineWidthOrRota;
+      if (lineWidth < 0.f) {
+        lineWidth = 0.f;
+      } else if (lineWidth > 42.5f) {
+        lineWidth = 42.5f;
+      }
+      CGX::SetLineWidth(CCast::ToUint8(6.f * lineWidth), GX_TO_ZERO);
+      CGX::Begin(GX_LINES, GX_VTXFMT0, 2);
+      const uint color = particle.mColor.GetColor_u32();
+      GXPosition3f32(p1[0], p1[1], p1[2]);
+      GXColor1u32(color);
+      GXTexCoord2f32(uvs.xMin, uvs.yMin);
+      GXPosition3f32(p2[0], p2[1], p2[2]);
+      GXColor1u32(color);
+      GXTexCoord2f32(uvs.xMax, uvs.yMax);
+      CGX::End();
+    }
+  }
+
+  if (widtConst) {
+    CGX::End();
+  }
+  CGraphics::SetLineWidth(1.f, kTO_Zero);
 }
 
 void CElementGen::Render() {

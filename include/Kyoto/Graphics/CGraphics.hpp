@@ -12,6 +12,7 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Math/CVector2i.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/reserved_vector.hpp"
 
 #include "dolphin/gx.h"
 #include "dolphin/mtx.h"
@@ -267,6 +268,33 @@ public:
     float mMaxV;
   };
 
+  // Guessed name; the four-corner counterpart of CClippedScreenRect.
+  class CClippedScreenQuad {
+  public:
+    CClippedScreenQuad() : mValid(false) {}
+    CClippedScreenQuad(int x, int y, int width, int texWidth, int height,
+                       const rstl::reserved_vector< CVector2f, 4 >& texCoords)
+    : mValid(true), mX(x), mY(y), mWidth(width), mHeight(height), mTexWidth(texWidth),
+      mTexCoords(texCoords) {}
+
+    bool IsValid() const { return mValid; }
+    int GetX() const { return mX; }
+    int GetY() const { return mY; }
+    int GetWidth() const { return mWidth; }
+    int GetHeight() const { return mHeight; }
+    int GetTexWidth() const { return mTexWidth; }
+    const CVector2f& GetTexCoord(int index) const { return mTexCoords[index]; }
+
+  private:
+    bool mValid;
+    int mX;
+    int mY;
+    int mWidth;
+    int mHeight;
+    int mTexWidth;
+    rstl::reserved_vector< CVector2f, 4 > mTexCoords;
+  };
+
   static bool Startup(const COsContext& osContext, uint fifoSize, void* fifoBase);
   static GXTexRegion* TexRegionCallback(const GXTexObj* obj, GXTexMapID id);
   static void InitGraphicsVariables();
@@ -304,6 +332,10 @@ public:
                                                  ETexelFormat fmt);
   static CClippedScreenRect ClipScreenRectFromMS(const CVector3f& p1, const CVector3f& p2,
                                                  ETexelFormat fmt);
+  // Guessed name; projects all four model-space corners independently.
+  static CClippedScreenQuad ClipScreenQuadFromMS(const CVector3f& p1, const CVector3f& p2,
+                                                const CVector3f& p3, const CVector3f& p4,
+                                                ETexelFormat fmt);
   static CVector2i ProjectPoint(const CVector3f& point);
 
   static float GetDepthNear() { return mDepthNear; }
@@ -364,6 +396,8 @@ public:
   static bool GetDolphinLastFrameAbove() { return mLastFrameUsedAbove; }
   static GXBool GetUseVideoFilter();
   static int GetFrameCounter();
+  static void* GetDolphinSpareBuffer() { return mpSpareBuffer; }
+  static int GetSpareBufferSize() { return mSpareBufferSize; }
   static void SetProgressiveMode(bool b);
   static bool GetProgressiveMode();
   static bool CanSetProgressiveMode();
@@ -383,6 +417,7 @@ public:
   static CTevCombiners::CTevPass kEnvModulateAlpha;
   static CTevCombiners::CTevPass kEnvModulateColor;
   static CTevCombiners::CTevPass kEnvModulateColorByAlpha;
+  static const GXTexMapID kSpareBufferTexMapID;
 
 private:
   static void UpdateVertexDataStream();
@@ -460,8 +495,8 @@ private:
   static GXBool mUseVideoFilter;
   static float mBrightness;
 
-  // .sdata2
-  static const GXTexMapID kSpareBufferTexMapID;
 };
+
+NESTED_CHECK_SIZEOF(CGraphics, CClippedScreenQuad, 0x3c)
 
 #endif // _CGRAPHICS

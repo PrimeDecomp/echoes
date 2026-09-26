@@ -8,6 +8,7 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/Particles/CParticleGen.hpp"
+#include "Kyoto/Particles/IElement.hpp"
 #include "Kyoto/TToken.hpp"
 
 class CGenDescription;
@@ -50,6 +51,27 @@ public:
   // Guessed type name, based on Prime; Echoes adds ADV9 and VAV1/VAV2/VAV3.
   struct CAdvancedValues {
     float mValues[9];
+  };
+
+  // Guessed names for the sorting record and model-render state.
+  struct CParticleListItem {
+    ushort mPartIdx;
+    CVector3f mViewPoint;
+  };
+  struct SModelRenderState {
+    bool mModulateAlpha;
+    bool mConstantUV;
+    bool mConstantIndirectUV;
+    SUVElementSet mUV;
+    SUVElementSet mIndirectUV;
+
+    SModelRenderState() : mModulateAlpha(false), mConstantUV(true), mConstantIndirectUV(true) {
+      mUV.xMin = 0.f;
+      mUV.yMin = 0.f;
+      mUV.xMax = 1.f;
+      mUV.yMax = 1.f;
+      mIndirectUV = mUV;
+    }
   };
 
   CElementGen(TToken< CGenDescription >, EModelOrientationType = kMOT_Normal,
@@ -105,6 +127,15 @@ public:
   void ForceParticleCreation(int count);
   void UpdateChildParticleSystems(double dt);
   void RenderModels();
+  // Guessed names; Echoes separates model setup, drawing and cleanup.
+  void BeginModelRender(SModelRenderState& state);
+  void BeginIndirectModelRender(SModelRenderState& state);
+  void RenderModelParticle(SModelRenderState& state, const CColor& color,
+                           const CParticle& particle);
+  void RenderIndirectModelParticle(SModelRenderState& state, const CColor& color,
+                                   const CParticle& particle);
+  void EndModelRender(const SModelRenderState& state);
+  static void EndIndirectModelRender();
   void RenderLines();
   void RenderParticles();
   void RenderParticlesIndirectTexture();
@@ -228,6 +259,7 @@ public:
   CColor mModuColor;
 
   static bool sSubtractBlend;
+  static bool sEnableAlphaModulation; // Guessed name; distinct from sMoveRedToAlphaBuffer.
   // Guessed names, correlated with Prime's seed and live-system accounting.
   static ushort sSeed;
   static int sParticleAliveCount;
