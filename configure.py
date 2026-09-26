@@ -437,6 +437,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CPatternedAiFunctions.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBodyController.cpp"),
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
+            Object(NonMatching, "MetroidPrime/CActorModelParticles.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp"),
             Object(NonMatching, "MetroidPrime/CRuleSet.cpp"),
