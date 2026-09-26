@@ -362,6 +362,10 @@ Kyoto/Audio/CSfxManager.cpp:
 	.data       start:0x803B9490 end:0x803B95D8
 	.sdata2     start:0x8041E2E0 end:0x8041E310
 
+Kyoto/Animation/CAnimSource.cpp:
+	.text       start:0x802A0F2C end:0x802A2C94
+	.sdata2     start:0x8041E348 end:0x8041E360
+
 Kyoto/Animation/CCharAnimMemoryMetrics.cpp:
 	.text       start:0x802ABA68 end:0x802ABA94
 	.sbss       start:0x804198D8 end:0x804198E0

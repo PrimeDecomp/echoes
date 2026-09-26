@@ -501,6 +501,7 @@ config.libs = [
             Object(Matching, "Kyoto/Input/DolphinIController.cpp"),
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegIdList.cpp"),
+            Object(NonMatching, "Kyoto/Animation/CAnimSource.cpp"),
             Object(NonMatching, "Kyoto/Animation/CCharLayoutInfo.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CCharAnimMemoryMetrics.cpp"),
             Object(NonMatching, "Kyoto/Animation/CInt32POINode.cpp"),

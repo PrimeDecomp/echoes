@@ -51,6 +51,8 @@ public:
 
   const rstl::vector< CSegId >& GetLinearParents() const { return mLinearParents; }
 
+  const rstl::vector< CVector3f >& GetLinearParentOffsets() const { return mLinearParentOffsets; }
+
   CVector3f GetFromParentUnrotated(const CSegId& id) const {
     const CCharLayoutNode& node = GetSegmentData(id);
     return !mNodes->ContainsDataFor(node.GetParent())
