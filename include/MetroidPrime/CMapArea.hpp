@@ -3,12 +3,13 @@
 
 #include "types.h"
 
+#include "MetroidPrime/CMappableObject.hpp"
+
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "rstl/single_ptr.hpp"
 
 class CInputStream;
-class CMappableObject;
 class IWorld;
 
 class CMapArea {
@@ -41,6 +42,7 @@ public:
   const CAABox& GetBoundingBox() const { return mBox; }
   const CVector3f& GetMapAdjustment() const { return mMapAdjustment; } // Guessed name
   int GetNumMappableObjects() const { return mMappableObjCount; }
+  const CMappableObject& GetMappableObject(int idx) const { return mMoStart[idx]; }
   int GetNumSurfaces() const { return mSurfaceCount; }
   const CMapAreaSurface& GetSurface(int idx) const { return mSurfaceStart[idx]; }
   const CVector3f* GetVertices() const { return mVertexStart; }

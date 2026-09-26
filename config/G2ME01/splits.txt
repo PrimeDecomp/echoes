@@ -66,6 +66,7 @@ MetroidPrime/Player/CPlayerState.cpp:
 MetroidPrime/CAutoMapper.cpp:
 	.text       start:0x80086D9C end:0x80092310
 	.ctors      start:0x803A54DC end:0x803A54E0
+	.rodata     start:0x803A74F0 end:0x803A755C
 	.data       start:0x803B2918 end:0x803B2924
 
 MetroidPrime/Enemies/CAi.cpp:

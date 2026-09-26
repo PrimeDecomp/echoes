@@ -1,5 +1,6 @@
 #include "MetroidPrime/CAutoMapper.hpp"
 
+#include "GuiSys/CGuiTextPane.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
@@ -7,6 +8,7 @@
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CEulerAngles.hpp"
 #include "MetroidPrime/CMain.hpp"
@@ -31,6 +33,25 @@
 
 static const char* const skFRME_MapScreen = "FRME_MapScreen";
 static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
+
+// Guessed name
+struct SMapKeyEntry {
+  const char* mLabel;
+  CPlayerState::EItemType mItemType;
+  int mTempleWorldIndex;
+};
+
+static const SMapKeyEntry skMapKeys[] = {
+    {"", CPlayerState::kIT_AgonKey1, 2},
+    {"", CPlayerState::kIT_AgonKey2, 2},
+    {"", CPlayerState::kIT_AgonKey3, 2},
+    {"", CPlayerState::kIT_TorvusKey1, 3},
+    {"", CPlayerState::kIT_TorvusKey2, 3},
+    {"", CPlayerState::kIT_TorvusKey3, 3},
+    {"", CPlayerState::kIT_HiveKey1, 4},
+    {"", CPlayerState::kIT_HiveKey2, 4},
+    {"", CPlayerState::kIT_HiveKey3, 4},
+};
 
 static inline float Lerp(float a, float b, float t) { return a * (1.f - t) + b * t; }
 
@@ -419,6 +440,25 @@ bool CAutoMapper::TryLeaveMapScreen(CStateManager& mgr) {
   return true;
 }
 
+bool CAutoMapper::SwitchLightDarkWorld() {
+  if (mDarkWorldBlend == 0.f) {
+    mTransitionState = kTS_SwitchToDarkWorld;
+    CSfxManager::SfxStart(0x21fe, 127, 64);
+    if (mTextpaneLabel != nullptr) {
+      mTextpaneLabel->TextSupport().SetText(gpStringTable->GetString("MapScreenTitleDark"));
+    }
+  } else if (mDarkWorldBlend == 1.f) {
+    mTransitionState = kTS_SwitchToLightWorld;
+    CSfxManager::SfxStart(0x21fd, 127, 64);
+    if (mTextpaneLabel != nullptr) {
+      mTextpaneLabel->TextSupport().SetText(gpStringTable->GetString("MapScreenTitle"));
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
+
 void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {
   if (state == mNextState) {
     return;
@@ -706,6 +746,18 @@ int CAutoMapper::FindClosestVisibleArea(const CVector3f& point, const CUnitVecto
   return closestArea != -1 ? closestArea : closestOtherWorldArea;
 }
 
+int CAutoMapper::FindTeleportArea(const CMapWorld& world) const {
+  for (int areaId = 0; areaId < static_cast< int >(world.GetNumAreas()); ++areaId) {
+    const CMapArea* area = world.GetMapArea(areaId);
+    for (int i = 0; i < area->GetNumMappableObjects(); ++i) {
+      if (area->GetMappableObject(i).GetType() == CMappableObject::kMOT_Teleporter) {
+        return areaId;
+      }
+    }
+  }
+  return -1;
+}
+
 CVector2i CAutoMapper::GetMiniMapViewportSize() {
   const float scaleX = static_cast< float >(CGraphics::GetViewport().mWidth) / 640.f;
   const float scaleY = static_cast< float >(CGraphics::GetViewport().mHeight) / 480.f;
@@ -882,6 +934,34 @@ void CAutoMapper::SetupMiniMapWorld(CStateManager& mgr) {
   CWorld* world = mgr.World();
   world->GetMapWorld()->SetWhichMapAreasLoaded(*world, world->GetCurrentAreaId().Value(), 3);
   mTransitionState = kTS_MiniMapReady;
+}
+
+void CAutoMapper::UpdateTempleKeys(const CStateManager& mgr) {
+  if (mTextpaneKeylegend == nullptr) {
+    return;
+  }
+
+  if (mWorld != nullptr) {
+    rstl::wstring text;
+    const int worldIndex = mWorld->IGetTempleKeyWorldIndex();
+    const CPlayerState* playerState = mgr.GetPlayerState(mPlayerIndex);
+    for (uint i = 0; i < 9; ++i) {
+      const SMapKeyEntry& key = skMapKeys[i];
+      if (worldIndex == key.mTempleWorldIndex) {
+        if (playerState->GetItemAmount(key.mItemType) > 0) {
+          text.append(gpStringTable->GetString("TempleKeyFoundIcon"), -1);
+        } else {
+          text.append(gpStringTable->GetString("TempleKeyNotFoundIcon"), -1);
+        }
+        if (key.mLabel[0] != '\0') {
+          text.append(gpStringTable->GetString(key.mLabel), -1);
+        }
+      }
+    }
+    mTextpaneKeylegend->TextSupport().SetText(text);
+  } else {
+    mTextpaneKeylegend->TextSupport().SetText(rstl::string_l(""));
+  }
 }
 
 void CAutoMapper::SetCurAreaId(int areaId) {
