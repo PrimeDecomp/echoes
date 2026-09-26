@@ -126,7 +126,7 @@ class CRELifetimePercent : public CRealElement {
   CRealElement* mPercentVal;
 
 public:
-  CRELifetimePercent(CRealElement* a); // : x4_percentVal(a) {}
+  CRELifetimePercent(CRealElement* a); // : mPercentVal(a) {}
   ~CRELifetimePercent() override;
   bool GetValue(int frame, float& valOut) const override;
 };
@@ -362,6 +362,163 @@ class CREIntTimesReal : public CRealElement {
 public:
   CREIntTimesReal(CIntElement* a, CRealElement* b);
   ~CREIntTimesReal() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+// Echoes additions. FourCC-based class names are placeholders; descriptive names follow
+// Prime/MP3 analogues. Member offsets come from the constructors.
+
+class CREGetCumulativeParticleCount : public CRealElement {
+public:
+  ~CREGetCumulativeParticleCount() override {}
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREKEYF : public CRealElement {
+  int mPercent;
+  int mUnk1;
+  bool mLoop;
+  bool mUnk2;
+  int mLoopEnd;
+  int mLoopStart;
+  float x18_;
+  float x1c_;
+  rstl::vector< float > mKeys;
+  CRealElement* x30_;
+
+public:
+  CREKEYF(CInputStream& in);
+  ~CREKEYF() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREKPIN : public CRealElement {
+  CRealElement* x4_;
+
+public:
+  CREKPIN(CRealElement* a);
+  ~CREKPIN() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREOCSP : public CRealElement {
+  CIntElement* x4_;
+
+public:
+  CREOCSP(CIntElement* a);
+  ~CREOCSP() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPNO1 : public CRealElement {
+  CRealElement* x4_;
+  CRealElement* x8_;
+  CRealElement* xc_;
+  CIntElement* x10_;
+
+public:
+  CREPNO1(CRealElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
+  ~CREPNO1() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPNO2 : public CRealElement {
+  CRealElement* x4_;
+  CRealElement* x8_;
+  CRealElement* xc_;
+  CRealElement* x10_;
+  CIntElement* x14_;
+
+public:
+  CREPNO2(CRealElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
+  ~CREPNO2() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPNO3 : public CRealElement {
+  CVectorElement* x4_;
+  CRealElement* x8_;
+  CRealElement* xc_;
+  CIntElement* x10_;
+
+public:
+  CREPNO3(CVectorElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
+  ~CREPNO3() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPNO4 : public CRealElement {
+  CVectorElement* x4_;
+  CRealElement* x8_;
+  CRealElement* xc_;
+  CRealElement* x10_;
+  CIntElement* x14_;
+
+public:
+  CREPNO4(CVectorElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
+  ~CREPNO4() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPRN1 : public CRealElement {
+  CRealElement* x4_;
+
+public:
+  CREPRN1(CRealElement* a);
+  ~CREPRN1() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPRN2 : public CRealElement {
+  CRealElement* x4_;
+  CRealElement* x8_;
+
+public:
+  CREPRN2(CRealElement* a, CRealElement* b);
+  ~CREPRN2() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPRN3 : public CRealElement {
+  CVectorElement* x4_;
+
+public:
+  CREPRN3(CVectorElement* a);
+  ~CREPRN3() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREPRN4 : public CRealElement {
+  CVectorElement* x4_;
+  CRealElement* x8_;
+
+public:
+  CREPRN4(CVectorElement* a, CRealElement* b);
+  ~CREPRN4() override;
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CREParticleAccessParameter9 : public CRealElement {
+public:
+  ~CREParticleAccessParameter9() override {}
+  bool GetValue(int frame, float& valOut) const override;
+};
+
+class CRETOCS : public CRealElement {
+  CIntElement* x4_;
+  CIntElement* x8_;
+  CIntElement* xc_;
+  bool x10_;
+  int x14_;
+  int x18_;
+  int x1c_;
+  int x20_;
+  int x24_;
+  int x28_;
+
+public:
+  CRETOCS(const bool a, CIntElement* b, CIntElement* c, CIntElement* d);
+  ~CRETOCS() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 

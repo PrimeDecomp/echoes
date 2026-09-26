@@ -142,7 +142,7 @@ class CMVEBounce : public CModVectorElement {
 
 public:
   CMVEBounce(CVectorElement* planePoint, CVectorElement* planeNormal, CRealElement* friction,
-             CRealElement* restitution, bool e);
+             CRealElement* restitution, const bool e);
   ~CMVEBounce() override;
   bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
 };
@@ -153,6 +153,31 @@ class CMVESetPosition : public CModVectorElement {
 public:
   CMVESetPosition(CVectorElement* a);
   ~CMVESetPosition() override;
+  bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
+};
+
+// Echoes additions. FourCC-based class names are placeholders; descriptive names follow
+// Prime/MP3 analogues. Member offsets come from the constructors.
+
+class CMVEBOXV : public CModVectorElement {
+  CVectorElement* x4_;
+  CVectorElement* x8_;
+  CModVectorElement* xc_;
+
+public:
+  CMVEBOXV(CVectorElement* a, CVectorElement* b, CModVectorElement* c);
+  ~CMVEBOXV() override;
+  bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
+};
+
+class CMVESPHV : public CModVectorElement {
+  CVectorElement* x4_;
+  CRealElement* x8_;
+  CModVectorElement* xc_;
+
+public:
+  CMVESPHV(CVectorElement* a, CRealElement* b, CModVectorElement* c);
+  ~CMVESPHV() override;
   bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
 };
 

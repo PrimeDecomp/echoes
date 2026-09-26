@@ -205,4 +205,61 @@ public:
   bool GetValue(int frame, int& valOut) const override;
 };
 
+// Echoes additions. FourCC-based class names are placeholders; descriptive names follow
+// Prime/MP3 analogues. Member offsets come from the constructors.
+
+class CIEDivide : public CIntElement {
+  CIntElement* x4_;
+  CIntElement* x8_;
+
+public:
+  CIEDivide(CIntElement* a, CIntElement* b);
+  ~CIEDivide() override;
+  bool GetValue(int frame, int& valOut) const override;
+};
+
+class CIEInitialSwitch : public CIntElement {
+  CIntElement* x4_;
+  CIntElement* x8_;
+
+public:
+  CIEInitialSwitch(CIntElement* a, CIntElement* b);
+  ~CIEInitialSwitch() override;
+  bool GetValue(int frame, int& valOut) const override;
+};
+
+class CIEKEYF : public CIntElement {
+  int mPercent;
+  int mUnk1;
+  bool mLoop;
+  bool mUnk2;
+  int mLoopEnd;
+  int mLoopStart;
+  float x18_;
+  float x1c_;
+  rstl::vector< int > mKeys;
+  CRealElement* x30_;
+
+public:
+  CIEKEYF(CInputStream& in);
+  ~CIEKEYF() override;
+  bool GetValue(int frame, int& valOut) const override;
+};
+
+class CIEKPIN : public CIntElement {
+  CIntElement* x4_;
+
+public:
+  CIEKPIN(CIntElement* a);
+  ~CIEKPIN() override;
+  bool GetValue(int frame, int& valOut) const override;
+};
+
+// Constructed for both PCRT and PDET.
+class CIEPCRT : public CIntElement {
+public:
+  ~CIEPCRT() override {}
+  bool GetValue(int frame, int& valOut) const override;
+};
+
 #endif // _CINTELEMENT
