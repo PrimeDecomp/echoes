@@ -351,6 +351,7 @@ public:
   static void SetFog(ERglFogMode mode, float startz, float endz, const CColor& color);
 
   static void SetModelMatrix(const CTransform4f& xf);
+  static void SetUseNormalMatrix(bool enabled); // Guessed name
   static void SetAlphaCompare(ERglAlphaFunc comp0, uchar ref0, ERglAlphaOp op, ERglAlphaFunc comp1,
                               uchar ref1);
   static void SetDepthWriteMode(bool test, ERglEnum comp, bool write);

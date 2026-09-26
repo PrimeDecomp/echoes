@@ -139,6 +139,7 @@ public:
     ETevBias GetBias() const { return mBias; }
     ETevScale GetScale() const { return mScale; }
     ETevOutput GetOutput() const { return mOutput; }
+    void SetScale(ETevScale scale) { mScale = scale; } // Guessed name
 
   private:
     bool mClamp;
@@ -159,6 +160,7 @@ public:
     , mAlphaOp(alphaOp) {}
 
     void Execute(int) const;
+    void SetColorScale(ETevScale scale) { mColorOp.SetScale(scale); } // Guessed name
 
   private:
     uint mId;
