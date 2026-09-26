@@ -114,6 +114,11 @@ public:
   static inline float FastInvSqrtF(float x) { return 1.f / sqrtf(x); } // Guessed name
   static inline float FastSqrtF(float x) { return sqrtf(x); }
 #endif
+  // Noise3d is a Wii SEL export; the other arities are guessed from its call pattern.
+  static float Noise1d(float x);
+  static float Noise2d(float x, float y);
+  static float Noise3d(float x, float y, float z);
+  static float Noise4d(float x, float y, float z, float w);
   static double SqrtD(double x);
   static bool IsEpsilon(float x, float y, float epsilon) { return AbsF(x - y) < epsilon; }
   static float FastMin(float a, float b) { return FastFSel(a - b, b, a); }
