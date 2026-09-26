@@ -145,6 +145,12 @@ MetroidPrime/Player/CPlayerOrbit.cpp:
 	.text       start:0x8011C3A8 end:0x80123510
 	.ctors      start:0x803A5524 end:0x803A5528
 
+MetroidPrime/CGroundMovement.cpp:
+	.text       start:0x8012878C end:0x8012CA24
+	.sdata      start:0x80418328 end:0x80418338
+	.sbss       start:0x80419190 end:0x804191A8
+	.sdata2     start:0x8041BE48 end:0x8041BED8
+
 MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 	.text       start:0x8013C254 end:0x8013C9B0
 	.data       start:0x803B5118 end:0x803B5138
@@ -170,12 +176,39 @@ MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.rodata     start:0x803A9A20 end:0x803A9A30
 	.data       start:0x803B5600 end:0x803B5630
 
+MetroidPrime/CMemoryCard.cpp:
+	.text       start:0x801767BC end:0x8017904C
+	.rodata     start:0x803A9A40 end:0x803A9A58
+	.sdata2     start:0x8041C840 end:0x8041C848
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
 
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
+
+MetroidPrime/Cameras/CBallCamera.cpp:
+	.text       start:0x8019E76C end:0x801A8B78
+	.ctors      start:0x803A5560 end:0x803A5564
+	.data       start:0x803B6478 end:0x803B6504
+	.bss        start:0x803DB488 end:0x803DB4A0
+
+MetroidPrime/Cameras/CBallCameraTransitions.cpp:
+	.text       start:0x801A8B78 end:0x801AA4C4
+	.ctors      start:0x803A5564 end:0x803A5568
+
+MetroidPrime/Cameras/CGameCamera.cpp:
+	.text       start:0x801B0500 end:0x801B1A18
+	.data       start:0x803B66A0 end:0x803B6730
+
+MetroidPrime/Cameras/CSpindleCamera.cpp:
+	.text       start:0x801B4F68 end:0x801B730C
+	.data       start:0x803B6868 end:0x803B6900
+
+MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
+	.text       start:0x801B730C end:0x801B73E4
+	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
 
 MetroidPrime/Player/CFidget.cpp:
 	.text       start:0x801C6B20 end:0x801C6DF0
@@ -244,6 +277,15 @@ WorldFormat/CCollidableOBBTree.cpp:
 	.data       start:0x803B8A30 end:0x803B8A60
 	.sdata      start:0x80418950 end:0x80418958
 	.sdata2     start:0x8041DDB0 end:0x8041DDE0
+
+Weapons/CProjectileWeapon.cpp:
+	.text       start:0x802591B4 end:0x8025CA80
+	.rodata     start:0x803AD930 end:0x803AD938
+	.data       start:0x803B8B00 end:0x803B8B40
+	.bss        start:0x803DEE30 end:0x803DEE80
+	.sdata      start:0x80418990 end:0x80418998
+	.sbss       start:0x80419730 end:0x80419738
+	.sdata2     start:0x8041DE20 end:0x8041DE78
 
 MetaRender/CCubeRenderer.cpp:
 	.text       start:0x80262D3C end:0x80273FAC

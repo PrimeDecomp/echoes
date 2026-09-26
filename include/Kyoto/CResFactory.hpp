@@ -4,6 +4,9 @@
 #include "types.h"
 
 #include "rstl/list.hpp"
+#include "rstl/pair.hpp"
+#include "rstl/string.hpp"
+#include "rstl/vector.hpp"
 
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/CResLoader.hpp"
@@ -36,6 +39,7 @@ public:
 
   CResLoader& GetResLoader() { return mResLoader; }
   FourCC GetResourceTypeById(CAssetId id) { return GetResLoader().GetResourceTypeById(id); }
+  rstl::vector< rstl::pair< rstl::string, SObjectTag > > GetResourceIdToNameList() const;
 
 private:
   CResLoader mResLoader;
