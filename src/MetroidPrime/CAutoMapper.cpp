@@ -1,6 +1,7 @@
 #include "MetroidPrime/CAutoMapper.hpp"
 
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
@@ -8,6 +9,7 @@
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CEulerAngles.hpp"
+#include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMapArea.hpp"
 #include "MetroidPrime/CMapUniverse.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
@@ -22,9 +24,13 @@
 #include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "rstl/math.hpp"
 
 // Work in progress: the map-loading, input and drawing bodies are not yet reconstructed.
+
+static const char* const skFRME_MapScreen = "FRME_MapScreen";
+static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
 
 static inline float Lerp(float a, float b, float t) { return a * (1.f - t) + b * t; }
 
@@ -106,6 +112,121 @@ CAutoMapper::SAutoMapperHintLocation::SAutoMapperHintLocation(uint showBeacon, f
                                                               CAssetId worldId, int areaId)
 : mShowBeacon(showBeacon), mBeaconAlpha(beaconAlpha), mWorldId(worldId), mAreaId(areaId) {}
 
+CAutoMapper::CAutoMapper(const CStateManager& mgr, int playerIndex)
+: mPlayerIndex(playerIndex)
+, mLoadPhase(kLP_LoadResources)
+, mMapu(gpSimplePool->GetObj("MAPU_MapUniverse"))
+, mDummyWorlds()
+, mWorldsPendingUnload()
+, mWorld(const_cast< CWorld* >(mgr.GetWorld()))
+, mFrmeMapScreen()
+, mFrmeInitialized(nullptr)
+, mFrmeMapScreenBackground()
+, mFrmeBackgroundInitialized(nullptr)
+, mMiniMapSamus(gpSimplePool->GetObj("CMDL_MiniMapSamus"))
+, mHintBeacon(gpSimplePool->GetObj("TXTR_HintBeacon"))
+, mCompassModel(gpSimplePool->GetObj("CMDL_CompassModel"))
+, mCompassShellModel(gpSimplePool->GetObj("CMDL_CompassShellModel"))
+, mMapIcons()
+, mAreaHintDescId(kInvalidAssetId)
+, mAreaHintDesc()
+, mMapAreaStringId(kInvalidAssetId)
+, mMapAreaString()
+, mWorldIdx(0)
+, mCurAreaId(mWorld->IGetCurrentAreaId())
+, mOtherAreaId(mCurAreaId)
+, mRenderState0(BuildMiniMapWorldRenderState(
+      mgr,
+      CQuaternion::FromMatrix(
+          mgr.GetCameraManager(playerIndex)->GetCurrentCamera(mgr, 1)->GetTransform()),
+      mCurAreaId.value))
+, mRenderState1(mRenderState0)
+, mRenderState2(mRenderState0)
+, mState(kAMS_MiniMap)
+, mNextState(kAMS_MiniMap)
+, mInterpDur(0.f)
+, mInterpTime(0.f)
+, mMapMode(kMM_Normal)
+, mPanningSfx()
+, mRotatingSfx()
+, mZoomingSfx()
+, mFlashTimer(0.f)
+, mPlayerFlashPulse(0.f)
+, mHintSteps()
+, mHintLocations()
+, mLstick()
+, mCstick()
+, mLtrigger()
+, mRtrigger()
+, mAbutton()
+, mLStickPos(0)
+, mRStickPos(0)
+, mLTriggerPos(0)
+, mRTriggerPos(0)
+, mAButtonPos(0)
+, mTextpaneLabel(nullptr)
+, mTextpaneAreaname(nullptr)
+, mTextpaneHint(nullptr)
+, mTextpaneInstructions(nullptr)
+, mTextpaneInstructions1(nullptr)
+, mTextpaneInstructions2(nullptr)
+, mTextpaneLeft(nullptr)
+, mTextpaneRight(nullptr)
+, mTextpaneYicon(nullptr)
+, mTextpaneMapLegend(nullptr)
+, mTextpaneMapLegend1(nullptr)
+, mTextpaneXicon(nullptr)
+, mTextpaneRight3(nullptr)
+, mTextpaneXicon1(nullptr)
+, mTextpaneKeylegend(nullptr)
+, mBasewidgetLeftPane(nullptr)
+, mBasewidgetYButtonPane(nullptr)
+, mBasewidgetBottomPane(nullptr)
+, mBasewidgetHintgroup(nullptr)
+, mBackgroundHexagons()
+, mBackgroundAnimationPhase(0.f)
+, mLeftPanePos(0.f)
+, mYButtonPanePos(0.f)
+, mBottomPanePos(0.f)
+, mDarkWorldBlend(mgr.GetIsDarkWorld() ? 1.f : 0.f)
+, mZoomState(kZS_None)
+, mTransitionState(kTS_Idle)
+, mLoadingDummyWorld(false) {
+  mMapu.Lock();
+  mMiniMapSamus.Lock();
+  mHintBeacon.Lock();
+  mCompassModel.Lock();
+  mCompassShellModel.Lock();
+
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetSaveStationIcon())));
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetMissileStationIcon())));
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetElevatorIcon())));
+  mMapIcons.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetPortalIcon())));
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetDownArrowIcon())));
+  mMapIcons.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetUpArrowIcon())));
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetTranslatorDoorIcon())));
+  for (CToken* it = mMapIcons.begin(); it != mMapIcons.end(); ++it) {
+    it->Lock();
+  }
+
+  for (int i = 0; i < 9; ++i) {
+    mLstick.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->mLStick[i])));
+    mCstick.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->mCStick[i])));
+  }
+  for (int i = 0; i < 2; ++i) {
+    mLtrigger.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->mLTrigger[i])));
+    mRtrigger.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->mRTrigger[i])));
+    mAbutton.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->mAButton[i])));
+  }
+
+  UpdateTempleKeys(mgr);
+}
+
 template < class T >
 void CAutoMapper::SetResLockState(T& list, bool lock) {
   for (typename T::iterator it = list.begin(); it != list.end(); ++it) {
@@ -159,6 +280,38 @@ void CAutoMapper::SetupTeleportNavigation() {
   mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_ZoomOut, 0));
 }
 
+void CAutoMapper::OnNewInGameGuiState(EInGameGuiState state, CStateManager& mgr) {
+  if (state == kIGGS_MapScreen) {
+    CMain::EnsureWorldPaksReady();
+    CWorld* world = mgr.World();
+    world->GetMapWorld()->SetWhichMapAreasLoaded(*world, 0, 9999);
+    if (mMapMode == kMM_Teleport) {
+      SetupTeleportNavigation();
+    } else {
+      SetupHintNavigation();
+    }
+    BeginMapperStateTransition(kAMS_MapScreen, mgr);
+
+    mFrmeMapScreen = rs_new TCachedToken< CGuiFrame >(gpSimplePool->GetObj(skFRME_MapScreen));
+    mFrmeMapScreen->Lock();
+    mFrmeMapScreenBackground =
+        rs_new TCachedToken< CGuiFrame >(gpSimplePool->GetObj(skFRME_MapScreenBackground));
+    mFrmeMapScreenBackground->Lock();
+    SetResLockState(mLstick, true);
+    SetResLockState(mCstick, true);
+    SetResLockState(mLtrigger, true);
+    SetResLockState(mRtrigger, true);
+    SetResLockState(mAbutton, true);
+  } else {
+    CMain::EnsureWorldPakReady(gpGameState->CurrentWorldAssetId());
+    if (mState == kAMS_MapScreenUniverse || mWorld == mgr.GetWorld()) {
+      BeginMapperStateTransition(kAMS_MiniMap, mgr);
+      mTransitionState = kTS_Idle;
+    }
+    LeaveMapScreenState();
+  }
+}
+
 bool CAutoMapper::CanLeaveMapScreen(const CStateManager& mgr) const {
   return mTransitionState == kTS_MiniMapReady && CanLeaveMapScreenInternal(mgr);
 }
@@ -199,6 +352,71 @@ bool CAutoMapper::HasCurrentMapUniverseWorld(const CStateManager& mgr) const {
     }
   }
   return false;
+}
+
+bool CAutoMapper::CheckDummyWorldLoad(CStateManager& mgr) {
+  const uint worldIdx = mWorldIdx;
+  IWorld* dummyWorld = mDummyWorlds[worldIdx].get();
+  const CMapUniverse::CMapWorldData& worldData = mMapu.GetObject()->GetMapWorldData(worldIdx);
+  if (dummyWorld != nullptr) {
+    if (dummyWorld->ICheckWorldComplete()) {
+      const CAssetId worldId = dummyWorld->IGetWorldAssetId();
+      CMapWorldInfo* info = gpGameState->StateForWorld(worldId).GetMapWorldInfo().GetPtr();
+      const CVector3f& localPoint =
+          worldData.GetWorldTransform().GetQuickInverse() * mRenderState0.mAreaPoint;
+      const CMatrix3f camRot(mRenderState0.mCamOrientation.BuildTransform());
+      const CUnitVector3f camDir(camRot.GetColumn(kDY), CUnitVector3f::kN_No);
+      const int areaId = FindClosestVisibleArea(localPoint, camDir, mgr, *dummyWorld, *info);
+      if (areaId != -1) {
+        if (mMapMode == kMM_Teleport) {
+          const int teleportArea = FindTeleportArea(*dummyWorld->IGetMapWorld());
+          if (teleportArea != -1) {
+            SetCurAreaId(teleportArea);
+            mgr.SetMapTeleportWorldId(worldId);
+            dummyWorld->IMapWorld()->RecalculateWorldSphere(*info, *dummyWorld);
+            mWorld = dummyWorld;
+            UpdateTempleKeys(mgr);
+            BeginMapperStateTransition(kAMS_MapScreen, mgr);
+            mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_ShowBeacon, 1.f));
+            mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_LeaveMapScreen, 0));
+          } else {
+            if (!dummyWorld->IGetMapWorld()->IsMapAreasStreaming()) {
+              mLoadingDummyWorld = false;
+            }
+            return false;
+          }
+        } else {
+          SetCurAreaId(areaId);
+          dummyWorld->IMapWorld()->RecalculateWorldSphere(*info, *dummyWorld);
+          mWorld = dummyWorld;
+          UpdateTempleKeys(mgr);
+          BeginMapperStateTransition(kAMS_MapScreen, mgr);
+        }
+        mLoadingDummyWorld = false;
+        return true;
+      }
+      mLoadingDummyWorld = false;
+      return false;
+    }
+    return true;
+  }
+  mLoadingDummyWorld = false;
+  return false;
+}
+
+bool CAutoMapper::TryLeaveMapScreen(CStateManager& mgr) {
+  if (CanLeaveMapScreenInternal(mgr)) {
+    LeaveMapScreen(mgr);
+    if (mMapMode == kMM_Teleport) {
+      mgr.SetMapTeleportWorldId(mgr.GetWorld()->GetWorldAssetId());
+    }
+  } else if (NotHintNavigating(mgr)) {
+    BeginMapperStateTransition(kAMS_MapScreenUniverse, mgr);
+    mTransitionState = kTS_LeaveViaUniverse;
+  } else {
+    return false;
+  }
+  return true;
 }
 
 void CAutoMapper::BeginMapperStateTransition(EAutoMapperState state, CStateManager& mgr) {

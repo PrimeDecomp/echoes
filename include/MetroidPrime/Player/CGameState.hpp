@@ -24,6 +24,7 @@ public:
   void SetIsDarkWorld(bool);
   CGameMode& GetGameMode();
   CWorldState& StateForWorld(CAssetId worldId);
+  CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return gameOptions; }
 
