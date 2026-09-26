@@ -1,4 +1,6 @@
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CCollisionActor.hpp"
+#include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/CGameLight.hpp"
@@ -60,10 +62,12 @@ CEntity* CEntity::TypesMatch(int typeId) const {
 
 TYPES_MATCH_IMPL(CActor, CEntity, kET_Actor)
 TYPES_MATCH_IMPL(CGameCamera, CActor, kET_GameCamera)
+TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_REF_IMPL(CGameCamera, kET_GameCamera)
 TYPES_MATCH_IMPL(CPhysicsActor, CActor, kET_PhysicsActor)
+TYPES_MATCH_IMPL(CCollisionActor, CPhysicsActor, kET_CollisionActor)
 TYPES_MATCH_IMPL(CAi, CPhysicsActor, kET_Ai)
 TYPES_MATCH_IMPL(CPatterned, CAi, kET_Patterned)
 TYPES_MATCH_IMPL(CScriptWaypoint, CActor, kET_ScriptWaypoint)
@@ -84,6 +88,7 @@ TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 CAST_TO_REF_IMPL(CEntity, kET_Entity)
 CAST_TO_PTR_IMPL(CEntity, kET_Entity)
+CAST_TO_PTR_IMPL(CCollisionActor, kET_CollisionActor)
 CAST_TO_PTR_IMPL(CScriptTeamAiMgr, kET_ScriptTeamAi)
 CAST_TO_REF_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)
 CAST_TO_PTR_IMPL(CScriptSequenceTimer, kET_ScriptSequenceTimer)

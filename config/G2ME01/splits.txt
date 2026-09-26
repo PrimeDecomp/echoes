@@ -184,6 +184,16 @@ MetroidPrime/Player/CPlayerDynamics.cpp:
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
+MetroidPrime/Cameras/CBallCamera.cpp:
+	.text       start:0x8019E76C end:0x801A8B78
+	.ctors      start:0x803A5560 end:0x803A5564
+	.data       start:0x803B6478 end:0x803B6504
+	.bss        start:0x803DB488 end:0x803DB4A0
+
+MetroidPrime/Cameras/CBallCameraTransitions.cpp:
+	.text       start:0x801A8B78 end:0x801AA4C4
+	.ctors      start:0x803A5564 end:0x803A5568
+
 MetroidPrime/Cameras/CGameCamera.cpp:
 	.text       start:0x801B0500 end:0x801B1A18
 	.data       start:0x803B66A0 end:0x803B6730
@@ -191,6 +201,10 @@ MetroidPrime/Cameras/CGameCamera.cpp:
 MetroidPrime/Cameras/CSpindleCamera.cpp:
 	.text       start:0x801B4F68 end:0x801B730C
 	.data       start:0x803B6868 end:0x803B6900
+
+MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
+	.text       start:0x801B730C end:0x801B73E4
+	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
 
 MetroidPrime/Player/CFidget.cpp:
 	.text       start:0x801C6B20 end:0x801C6DF0

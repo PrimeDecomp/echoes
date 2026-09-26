@@ -18,6 +18,8 @@ class CVector3f;
 
 class CGameCollision {
 public:
+  static void Move(CStateManager& mgr, CPhysicsActor& actor, float dt,
+                   const rstl::reserved_vector< TUniqueId, 1024 >* nearList);
   static bool IsFloor(const CMaterialList& material, const CVector3f& normal);
   static bool CanBlock(const CMaterialList& material, const CVector3f& normal);
   static bool DetectCollision_Cached(const CStateManager& mgr, CAreaCollisionCache& cache,

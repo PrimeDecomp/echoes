@@ -1,6 +1,8 @@
 #ifndef _CCAMERAMANAGER
 #define _CCAMERAMANAGER
 
+#include "MetroidPrime/TGameTypes.hpp"
+
 class CGameCamera;
 class CStateManager;
 
@@ -15,6 +17,8 @@ public:
 
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);
   bool IsInCinematicCamera() const;
+  void SetPlayerCamera(CStateManager& mgr, TUniqueId uid);
+  void UpdateCameraTriggers(TUniqueId uid, CStateManager& mgr);
 };
 
 #endif // _CCAMERAMANAGER
