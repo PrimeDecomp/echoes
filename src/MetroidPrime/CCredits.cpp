@@ -45,7 +45,7 @@ void CCredits::DrawText(CGuiTextSupport& text, const CTransform4f& transform) {
 
 CCredits::CCredits()
 : CIOWin(rstl::string_l("Credits"))
-, mState(0)
+, mState(kS_LoadText)
 , mCreditsTable(gpSimplePool->GetObj(gpTweakGui->GetCreditsTable().data()))
 , mAudioFile(rstl::string_l("mem:") + skCreditsAudio)
 , mScrollPosition(0.f)
@@ -82,7 +82,7 @@ CIOWin::EMessageReturn CCredits::OnMessage(const CArchitectureMessage& msg,
 
 CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
   switch (mState) {
-  case 0: {
+  case kS_LoadText: {
     if (!mCreditsTable.IsLoaded()) {
       return kMR_Exit;
     }
@@ -122,16 +122,16 @@ CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
     mScrollSpeed = mTotalScrollDistance / (gpTweakGui->GetCreditsTotalTime() -
                                            rstl::max_val(gpTweakGui->GetCreditsMovieFadeTime(),
                                                          gpTweakGui->GetCreditsTextFadeTime()));
-    mState = 1;
+    mState = kS_LoadMovie;
   }
-  case 1: {
+  case kS_LoadMovie: {
     if (mMoviePlayer.null()) {
       const rstl::string movieName = skMovieDirectory + skMovieNames[3] + skMovieExtension;
       mMoviePlayer = rs_new CMoviePlayer(movieName.data(), 0.f, true, true);
     }
-    mState = 2;
+    mState = kS_LoadAudio;
   }
-  case 2: {
+  case kS_LoadAudio: {
     if (mAudioPreload.null()) {
       mAudioPreload = rs_new CFilePreload(rstl::string_l(skCreditsAudio));
     }
@@ -142,9 +142,9 @@ CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
     CStreamAudioManager::PlaySoftwareAudio(CStreamAudioManager::kSC_Default, mAudioFile, 0.f,
                                            gpTweakGui->GetCreditsMovieFadeTime(),
                                            static_cast< uchar >(volume), true);
-    mState = 3;
+    mState = kS_Playing;
   }
-  case 3: {
+  case kS_Playing: {
     if (mMoviePlayer->ContinueLoading()) {
       break;
     }
@@ -200,7 +200,7 @@ CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
 CIOWin::EMessageReturn CCredits::ProcessUserInput(const CFinalInput& input) { return kMR_Exit; }
 
 void CCredits::Draw() const {
-  if (mState != 3) {
+  if (mState != kS_Playing) {
     return;
   }
   DrawVideo();

@@ -33,9 +33,16 @@ public:
   static void DrawText(CGuiTextSupport& text, const CTransform4f& transform);
 
 private:
+  enum EState {
+    kS_LoadText,
+    kS_LoadMovie,
+    kS_LoadAudio,
+    kS_Playing,
+  };
+
   typedef rstl::list< rstl::pair< rstl::ncrc_ptr< CGuiTextSupport >, CVector2i > > TextList;
 
-  int mState;
+  EState mState;
   TToken< CStringTable > mCreditsTable;
   rstl::single_ptr< CMoviePlayer > mMoviePlayer;
   rstl::string mAudioFile;
