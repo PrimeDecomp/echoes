@@ -15,6 +15,20 @@ class CWorldState;
 
 class CGameState {
 public:
+  struct GameFileStateInfo {
+    double mPlayTime;
+    CAssetId mMlvlId;
+    float mHealth;
+    uint mEnergyTanks;
+    uint mTimestamp;
+    uint mItemPercent;
+    float mScanPercent;
+    bool mHardMode;
+    bool x21_;
+  };
+
+  static GameFileStateInfo LoadGameFileState(const void* data);
+
   CGameState();
   CGameState(CInputStream& in, int saveIdx);
   ~CGameState();
@@ -57,6 +71,7 @@ private:
 };
 
 CHECK_SIZEOF(CGameState, 0x2f0)
+NESTED_CHECK_SIZEOF(CGameState, GameFileStateInfo, 0x28)
 
 extern CGameState* gpGameState;
 

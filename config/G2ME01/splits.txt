@@ -213,6 +213,9 @@ MetroidPrime/CMemoryCard.cpp:
 	.rodata     start:0x803A9A40 end:0x803A9A58
 	.sdata2     start:0x8041C840 end:0x8041C848
 
+MetroidPrime/CMemoryCardDriver.cpp:
+	.text       start:0x80179F84 end:0x8017C548
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
