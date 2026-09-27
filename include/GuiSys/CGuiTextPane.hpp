@@ -2,7 +2,7 @@
 #define _CGUITEXTPANE
 
 #include "GuiSys/CGuiPane.hpp"
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 
 class CGuiTextPane : public CGuiPane {
 public:

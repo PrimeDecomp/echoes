@@ -59,6 +59,7 @@ public:
   float GetFarClipDistance() const { return mZfar; }
   float GetAspectRatio() const { return mAspect; }
   int GetControllerNumber() const { return mControllerIdx; }
+  int GetInputIndex() const { return mInputIndex; } // Guessed name
 
 private:
   // Guessed name
@@ -96,7 +97,7 @@ private:
   float mZnear;
   float mZfar;
   float mAspect;
-  int x1d8_; // A second index passed by camera creation; its distinct role is unresolved.
+  int mInputIndex; // Input controller index; distinct from the owning player index below.
   int mControllerIdx;
   SFovInterpolation mFovInterpolation;
   mutable bool mPerspDirty : 1;

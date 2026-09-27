@@ -7,6 +7,7 @@
 #include "Kyoto/TToken.hpp"
 #include "Kyoto/Text/CFontImageDef.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/vector.hpp"
 
@@ -26,6 +27,9 @@ public:
   ~CTextRenderBuffer();
   void AddFontChange(const TToken< CRasterFont >& font);
   void Render(const CColor& color, float time) const;
+  int GetNumPrimitives() const { return mPrimitiveOffsets.size(); }
+  // Guessed name. Returns cached bounds, rebuilding them when dirty.
+  const rstl::pair< CVector2i, CVector2i >& GetTextBounds();
 
 private:
   EMode mMode;

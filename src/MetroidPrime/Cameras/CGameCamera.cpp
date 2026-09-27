@@ -19,7 +19,7 @@ CGameCamera::CGameCamera(TUniqueId uid, const rstl::string& name, const CEntityI
 , mZnear(nearZ)
 , mZfar(farZ)
 , mAspect(aspect)
-, x1d8_(index)
+, mInputIndex(index)
 , mControllerIdx(controllerIdx)
 , mFovInterpolation(0.f, 0.f, 0.f, fov, fov, kInvalidUniqueId)
 , mPerspDirty(true) {
