@@ -218,6 +218,9 @@ public:
 
   float GetSpeed() const { return mSpeed; }
 
+  // Guessed name
+  bool HasBlockingCollision() const { return mBlockingCollision; }
+
   CBodyController* BodyController() { return mBodyController.get(); }
 
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
@@ -229,7 +232,7 @@ private:
   bool mInPosition : 1;
   bool mVerticalMovement : 1;
   bool mSolidCollision : 1;
-  bool x34c_27_ : 1;
+  bool mBlockingCollision : 1; // Guessed name
   bool mOnGround : 1;
   bool mOnStaticGround : 1;
   mutable bool mPrevOnGround : 1;

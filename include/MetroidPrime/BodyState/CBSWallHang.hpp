@@ -10,7 +10,7 @@ public:
   CBSWallHang();
 
   // CBodyState
-  ~CBSWallHang() override;
+  ~CBSWallHang() override {}
   bool IsInAir(const CBodyController& bc) const override;
   bool IsMoving() const override;
   bool ApplyGravity() const override;
@@ -22,6 +22,12 @@ public:
   void Shutdown(CBodyController& bc) override;
 
 private:
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc);
+  void FixInPlace(CBodyController& bc);
+  bool CheckForLand(CBodyController& bc, CStateManager& mgr);
+  bool CheckForWall(CBodyController& bc, CStateManager& mgr);
+  void SetLaunchVelocity(CBodyController& bc);
+
   pas::EWallHangState mState;
   TUniqueId mWpId;
   CVector3f mLaunchVel;

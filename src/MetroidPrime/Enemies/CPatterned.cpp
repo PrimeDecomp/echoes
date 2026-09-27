@@ -39,7 +39,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mInPosition(false)
 , mVerticalMovement(movement == kMT_Flyer)
 , mSolidCollision(false)
-, x34c_27_(false)
+, mBlockingCollision(false)
 , mOnGround(movement != kMT_Flyer)
 , mOnStaticGround(false)
 , mPrevOnGround(true)
