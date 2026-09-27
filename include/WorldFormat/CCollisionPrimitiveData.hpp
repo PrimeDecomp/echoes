@@ -12,6 +12,11 @@ class CVector3f;
 class CCollisionPrimitiveData {
 public:
   CCollisionPrimitiveData();
+  CCollisionPrimitiveData(int materialCount, int vertexCount, int edgeCount, int triangleCount,
+                          const u64* materials, const uchar* vertexMaterials,
+                          const uchar* edgeMaterials, const uchar* surfaceMaterials,
+                          const CCollisionEdge* edges, const ushort* surfaceIndices,
+                          const ushort* extraIndices, const CVector3f* vertices, bool ownsArrays);
   ~CCollisionPrimitiveData();
 
   CCollisionSurface GetTriangle(ushort index) const;

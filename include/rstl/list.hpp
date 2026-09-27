@@ -119,7 +119,10 @@ public:
     return nn;
   }
 
-  iterator insert(const iterator& pos, const T& val);
+  iterator insert(const iterator& pos, const T& val) {
+    node* const result = do_insert_before(pos.get_node(), val);
+    return iterator(result);
+  }
 
   template < typename InputIterator >
   void insert(const iterator& pos, InputIterator first, InputIterator last);
@@ -240,13 +243,6 @@ private:
   node* mEmpty_next;
   int mCount;
 };
-
-template < typename T, typename Alloc >
-typename list< T, Alloc >::iterator list< T, Alloc >::insert(const iterator& pos,
-                                                                    const T& val) {
-  node* const result = do_insert_before(pos.get_node(), val);
-  return iterator(result);
-}
 
 template < typename T, typename Alloc >
 template < typename InputIterator >

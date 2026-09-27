@@ -216,12 +216,22 @@ MetroidPrime/CMemoryCard.cpp:
 	.rodata     start:0x803A9A40 end:0x803A9A58
 	.sdata2     start:0x8041C840 end:0x8041C848
 
+MetroidPrime/CMemoryCardDriver.cpp:
+	.text       start:0x80179F84 end:0x8017C548
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
 
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
+
+MetroidPrime/CProjectedShadow.cpp:
+	.text       start:0x801917F8 end:0x80192708
+
+MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp:
+	.text       start:0x80192864 end:0x8019312C
+	.data       start:0x803B5BC0 end:0x803B5C40
 
 MetroidPrime/Cameras/CBallCamera.cpp:
 	.text       start:0x8019E76C end:0x801A8B78
@@ -306,6 +316,15 @@ MetroidPrime/Player/CPlayerVisor.cpp:
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
+
+WorldFormat/CAreaOctTree_Tests.cpp:
+	.text       start:0x8024569C end:0x802471B0
+
+WorldFormat/CCollisionSurface.cpp:
+	.text       start:0x802471B0 end:0x8024747C
+
+WorldFormat/CAreaOctTree.cpp:
+	.text       start:0x80247704 end:0x80247CC0
 
 WorldFormat/COBBTree.cpp:
 	.text       start:0x8024DE68 end:0x8024F784
@@ -593,6 +612,15 @@ Kyoto/Particles/CParticleGlobals.cpp:
 	.sbss       start:0x80419AA8 end:0x80419AD0
 	.sdata2     start:0x8041E818 end:0x8041E830
 
+Kyoto/Particles/CParticleSwoosh.cpp:
+	.text       start:0x802E82C4 end:0x802ED1D0
+	.ctors      start:0x803A562C end:0x803A5630
+	.rodata     start:0x803AF990 end:0x803AF9D0
+	.data       start:0x803BA6E8 end:0x803BA778
+	.bss        start:0x803DFDC8 end:0x803DFDD8
+	.sbss       start:0x80419AD0 end:0x80419AD8
+	.sdata2     start:0x8041E830 end:0x8041E8B8
+
 Kyoto/Particles/CParticleSwooshDataFactory.cpp:
 	.text       start:0x802ED1D0 end:0x802EDA48
 	.rodata     start:0x803AF9D0 end:0x803AF9D8
@@ -622,18 +650,24 @@ Kyoto/Particles/CVectorElement.cpp:
 	.bss        start:0x803DFE08 end:0x803DFE18
 	.sdata2     start:0x8041E8F0 end:0x8041E920
 
+Kyoto/Math/CCylinder.cpp:
+	.text       start:0x802F74C4 end:0x802F76C4
+
+Kyoto/Math/CLine.cpp:
+	.text       start:0x802F76C4 end:0x802F7728
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928
 
 Kyoto/Math/CTri.cpp:
-	.text       start:0x802F79EC end:0x802F7A88
+	.text       start:0x802F7938 end:0x802F7A88
 
 Kyoto/Math/CQuad.cpp:
 	.text       start:0x802F7A88 end:0x802F7B28
 
 Kyoto/Math/CSphere.cpp:
-	.text       start:0x802F7C14 end:0x802F7C68
+	.text       start:0x802F7B28 end:0x802F7C68
 
 Kyoto/Math/CAABox.cpp:
 	.text       start:0x802F7C68 end:0x802F8D90
@@ -643,6 +677,22 @@ Kyoto/Math/CAABox.cpp:
 	.sdata      start:0x80418B20 end:0x80418B88
 	.sdata2     start:0x8041E928 end:0x8041E938
 	.sbss2      start:0x8041F8E0 end:0x8041F8E8
+
+Kyoto/CFactoryMgr.cpp:
+	.text       start:0x802F8D90 end:0x802F9E08
+	.rodata     start:0x803AF9D8 end:0x803AFA98
+	.sdata      start:0x80418B88 end:0x80418B90
+
+Kyoto/CResFactory.cpp:
+	.text       start:0x802F9E08 end:0x802FB69C
+	.rodata     start:0x803AFA98 end:0x803AFAA0
+	.data       start:0x803BAF08 end:0x803BAF28
+	.sdata      start:0x80418B90 end:0x80418B98
+
+Kyoto/CResLoader.cpp:
+	.text       start:0x802FB69C end:0x802FD3CC
+	.rodata     start:0x803AFAA0 end:0x803AFAB0
+	.sbss2      start:0x8041F8E8 end:0x8041F8F8
 
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
@@ -961,6 +1011,11 @@ Kyoto/Streams/CInputStream.cpp:
 	.text       start:0x80342F6C end:0x8034317C
 	.data       start:0x803BBF88 end:0x803BBF98
 	.sbss       start:0x80419CB0 end:0x80419CB8
+
+Kyoto/Streams/CBufferedDvdRequest.cpp:
+	.text       start:0x8034317C end:0x8034370C
+	.rodata     start:0x803B0340 end:0x803B0348
+	.data       start:0x803BBF98 end:0x803BBFB8
 
 Kyoto/Streams/CLZOSupport.cpp:
 	.text       start:0x8034370C end:0x803437AC
