@@ -10,6 +10,7 @@ enum ELightType {
   kLT_Directional = 2,
   kLT_LocalAmbient = 3,
   kLT_Custom = 4,
+  kLT_Hard = 5, // Name inferred from the Wii BuildHard export and G2ME01 factory.
 };
 
 enum EFalloffType { kFT_Constant, kFT_Linear, kFT_Quadratic };
@@ -23,8 +24,8 @@ class CLight {
 public:
   CLight(ELightType type, const CVector3f& position, const CVector3f& direction,
          const CColor& color, float cutoff);
-  CLight(const CVector3f& pos, const CVector3f& direction, const CColor& color, float distC,
-         float distL, float distQ, float angleC, float angleL, float angleQ);
+  CLight(ELightType type, const CVector3f& pos, const CVector3f& direction, const CColor& color,
+         float distC, float distL, float distQ, float angleC, float angleL, float angleQ);
   CLight(const CLight&);
 
   void SetPosition(const CVector3f& pos);
@@ -33,6 +34,7 @@ public:
   const CVector3f& GetDirection() const { return mDir; }
   void SetColor(const CColor& col);
   void SetAttenuation(float constant, float linear, float quadratic);
+  void SetSpotCutoff(float cutoff); // Guessed name.
   float GetSpotCutoff() const { return mSpotCutoff; }
   float GetAttenuationConstant() const { return mDistC; }
   float GetAttenuationLinear() const { return mDistL; }
@@ -62,6 +64,7 @@ public:
   static CLight BuildCustom(const CVector3f& pos, const CVector3f& dir, const CColor& color,
                             float distC, float distL, float distQ, float angleC, float angleL,
                             float angleQ);
+  static CLight BuildHard(const CVector3f& pos, const CColor& color, float radius);
   static CLight BuildLocalAmbient(const CVector3f& pos, const CColor& color);
 
 private:
