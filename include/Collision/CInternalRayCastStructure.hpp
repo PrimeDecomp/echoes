@@ -8,6 +8,10 @@ class CMaterialFilter;
 
 class CInternalRayCastStructure {
 public:
+  CInternalRayCastStructure(const CVector3f& start, const CVector3f& direction, float length,
+                            const CTransform4f& transform, const CMaterialFilter& filter)
+  : mRay(start, direction, length), mMaxTime(length), mTransform(transform), mFilter(filter) {}
+
   const CMRay& GetRay() const { return mRay; }
   float GetMaxTime() const { return mMaxTime; }
   const CTransform4f& GetTransform() const { return mTransform; }

@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include "Collision/CMaterialList.hpp"
+#include "Collision/CInternalCollisionStructure.hpp"
 
 #include "Kyoto/IObjectStore.hpp"
 #include "Kyoto/Math/CAABox.hpp"
@@ -54,6 +55,15 @@ public:
   static void InitAddType(const Type& type);
   static void InitEndTypes();
   static void Uninitialize();
+
+  static bool Collide(const CInternalCollisionStructure::CPrimDesc& left,
+                      const CInternalCollisionStructure::CPrimDesc& right,
+                      CCollisionInfoList& collisions);
+  static bool CollideBoolean(const CInternalCollisionStructure::CPrimDesc& left,
+                             const CInternalCollisionStructure::CPrimDesc& right);
+  static bool CollideMoving(const CInternalCollisionStructure::CPrimDesc& left,
+                            const CInternalCollisionStructure::CPrimDesc& right,
+                            const CVector3f& direction, double& distance, CCollisionInfo& collision);
 
 private:
   static int sNumTypes;

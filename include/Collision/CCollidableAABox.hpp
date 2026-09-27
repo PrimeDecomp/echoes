@@ -20,6 +20,7 @@ public:
   CAABox CalculateAABox(const CTransform4f&) const;
   CAABox CalculateLocalAABox() const;
   CAABox Transform(const CTransform4f& xf) const;
+  const CAABox& GetBox() const { return mAabb; }
   FourCC GetPrimType() const;
   CRayCastResult CastRayInternal(const CInternalRayCastStructure&) const;
 
