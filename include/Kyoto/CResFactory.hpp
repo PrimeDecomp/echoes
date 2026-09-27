@@ -46,6 +46,7 @@ public:
 private:
   CResLoader mResLoader;
   CFactoryMgr mFactoryMgr;
+  uchar x9c_pad[0x10]; // TODO
   uint x94_;
   uint x98_;
   uint x9c_;

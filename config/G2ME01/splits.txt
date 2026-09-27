@@ -656,6 +656,11 @@ Kyoto/Math/CAABox.cpp:
 	.sdata2     start:0x8041E928 end:0x8041E938
 	.sbss2      start:0x8041F8E0 end:0x8041F8E8
 
+Kyoto/CFactoryMgr.cpp:
+	.text       start:0x802F8D90 end:0x802F9E08
+	.rodata     start:0x803AF9D8 end:0x803AFA98
+	.sdata      start:0x80418B88 end:0x80418B90
+
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
 
