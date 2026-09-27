@@ -1,0 +1,304 @@
+#include "MetroidPrime/CEnvFxManager.hpp"
+
+#include "Kyoto/CRandom16.hpp"
+#include "Kyoto/Math/CTransform4f.hpp"
+
+// The target stores the largest finite single-precision value directly.
+static const float skMaximumBlockingHeight = 3.402823466e+38F;
+
+CEnvFxManagerGrid::CEnvFxManagerGrid(const CVector2i& position, const CVector2i& extent,
+                                     const rstl::vector< CVectorFixed8_8 >& initialParticles,
+                                     int reserve)
+: mBlockDirty(true)
+, mPosition(position)
+, mExtent(extent)
+, mBlock(false, skMaximumBlockingHeight)
+, mParticles(initialParticles) {
+  mParticles.reserve(reserve);
+}
+
+CEnvFxManager::CEnvFxManager()
+: mParticleBounds(CVector3f(-63.5f, -63.5f, -63.5f), CVector3f(63.5f, 63.5f, 63.5f))
+, mFocusCellPosition(CVector3f::Zero())
+, mEnableSplash(false)
+, mFirstSnowForce(0.f)
+, mLastBlockedGridIdx(-1)
+, mFxDensity(0.f)
+, mTargetFxDensity(0.f)
+, mMaxDensityDeltaSpeed(0.f)
+, mRainSoundFade(1.f)
+, mSnowflakeTextureMipBlanked(false)
+, mTxtrEnvGradient(TLockedToken< CTexture >(gpSimplePool->GetObj("TXTR_EnvGradient")))
+, mEnvRainSplash(TLockedToken< CGenDescription >(gpSimplePool->GetObj("PART_EnvRainSplash")))
+, mRainSoundActive(false)
+, mRainSoundsStopped(false)
+, mTxtrSnowFlake(TLockedToken< CTexture >(gpSimplePool->GetObj("TXTR_SnowFlake")))
+, mUnderwaterFlake(TLockedToken< CTexture >(gpSimplePool->GetObj("TXTR_UnderwaterFlake")))
+, mDarkWorldParticleTexture(gpSimplePool->GetObj("TXTR_DarkworldParticleTexture"))
+, mPreviousFxType(kEFX_None) {
+  CRandom16 random(0);
+  for (int i = 0; i < 4; ++i) {
+    mEnvRainSplashIds.push_back(kInvalidUniqueId);
+  }
+
+  for (int row = 0; row < 8; ++row) {
+    for (int column = 0; column < 8; ++column) {
+      mGrids.push_back(CEnvFxManagerGrid(CVector2i(column * 0x800, row * 0x800),
+                                         CVector2i(0x800, 0x800), rstl::vector< CVectorFixed8_8 >(),
+                                         0xab));
+    }
+  }
+
+  for (int i = 15; i >= 0; --i) {
+    mSnowZDeltas.push_back(CVector3f(0.f, 0.f, random.Range(-2.f, -4.f)));
+  }
+}
+
+void CEnvFxManagerGrid::RenderRainParticles(const CTransform4f& camXf) {
+  // TODO: Draw fixed-point rain lines with camera-dependent length.
+}
+
+void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
+  // TODO: Draw camera-facing snow quads.
+}
+
+void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
+  // TODO: Draw the billboards for environment effect 5.
+}
+
+void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
+  // TODO: Interpolate the eight-point histories and fade their line strips.
+}
+
+void CEnvFxManagerGrid::RenderUnderwaterParticles(const CTransform4f& camXf) {
+  // TODO: Draw camera-facing underwater quads.
+}
+
+bool CEnvFxManagerGrid::SetupRender(const CTransform4f& xf, const CTransform4f& invXf,
+                                    const CTransform4f& camXf, float density, EEnvFxType type) {
+  if (mParticles.empty() || !mBlock.first) {
+    return false;
+  }
+
+  // TODO: Set the grid model transform and the blocking-height texture matrix.
+  return false;
+}
+
+void CEnvFxManagerGrid::Render(const CTransform4f& xf, const CTransform4f& invXf,
+                               const CTransform4f& camXf, float density, EEnvFxType type) {
+  if (!SetupRender(xf, invXf, camXf, density, type)) {
+    return;
+  }
+
+  switch (type) {
+  case kEFX_Snow:
+    RenderSnowParticles(camXf);
+    break;
+  case kEFX_Rain:
+    RenderRainParticles(camXf);
+    break;
+  case kEFX_UnderwaterFlake:
+    RenderUnderwaterParticles(camXf);
+    break;
+  case kEFX_Unknown5:
+    RenderDriftingParticles(camXf);
+    break;
+  case kEFX_Unknown6:
+  case kEFX_Unknown7:
+    RenderParticleTrails(type);
+    break;
+  default:
+    break;
+  }
+}
+
+void CEnvFxManagerGrid::RenderDarkWorldParticles(const CTransform4f& xf, const CTransform4f& invXf,
+                                                 const CTransform4f& camXf, float density,
+                                                 const CVectorFixed8_8* offsets,
+                                                 const CVectorFixed8_8* upDeltas,
+                                                 const CVectorFixed8_8* rightDeltas) {
+  // TODO: Draw lifetime-faded quads using the sixteen precomputed corner offsets.
+}
+
+CVector3f CEnvFxManager::GetParticleBoundsToWorldScale() const {
+  return (mParticleBounds.GetMaxPoint() - mParticleBounds.GetMinPoint()) / 127.f;
+}
+
+void CEnvFxManager::MoveWrapCells(EEnvFxType type, int moveX, int moveY) {
+  // TODO: Snapshot blocking heights, wrap the grid positions and dirty exposed cells.
+}
+
+void CEnvFxManager::AsyncLoadResources(CStateManager& mgr) {
+  // TODO: Create and register one persistent visor-rain billboard per player.
+}
+
+void CEnvFxManager::Initialize() {
+  // TODO: Read the 256 pairs of floats from DUMB_SnowForces.
+}
+
+void CEnvFxManager::Cleanup() {
+  mEnvRainSplashIds.clear();
+  mRainSoundActive = false;
+  mLeftRainSound.Clear();
+  mRightRainSound.Clear();
+}
+
+void CEnvFxManager::ClearParticles() {
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    grid.mParticles = rstl::vector< CVectorFixed8_8 >();
+    grid.mParticleLifetimes = rstl::vector< float >();
+    grid.mTrailFrames = rstl::vector< int >();
+  }
+}
+
+void CEnvFxManager::Update(float dt, CStateManager& mgr) {
+  // TODO: Follow effect transitions, density fades, camera movement and particle updates.
+}
+
+void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf) {
+  // TODO: Resize and seed per-grid particles, lifetimes and trail histories for this effect.
+}
+
+void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
+                                        rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
+                                        EEnvFxType type, const CVector3f& inverseScale, float dt) {
+  // TODO: Build the force cycle, with separate dark-world and effect-5 motion.
+}
+
+void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
+                                       const CTransform4f& camXf, const CTransform4f& xf,
+                                       const CTransform4f& invXf) {
+  // TODO: Resolve ceilings, blocker triggers and water surfaces, then update splash visibility.
+}
+
+void CEnvFxManager::UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces) {
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    uint force = static_cast< uint >(mFirstSnowForce);
+    if (!grid.mBlock.first) {
+      continue;
+    }
+
+    for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      particle += snowForces[force];
+      particle.mZ &= 0x3fff;
+      force = (force + 1) & 0xff;
+    }
+  }
+}
+
+void CEnvFxManager::UpdateDriftingParticles(
+    float dt, rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
+    const CTransform4f& invXf) {
+  // The target retains the dt and transform arguments, but uses the snow update body.
+  UpdateSnowParticles(snowForces);
+}
+
+void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) {
+  // TODO: Advance normalized lifetimes, frame counters and eight-point trail histories.
+}
+
+void CEnvFxManager::UpdateDarkWorldParticles(
+    float dt, rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
+    const CTransform4f& invXf) {
+  // TODO: Apply lifetime-dependent forces and respawn particles at the blocking height.
+}
+
+void CEnvFxManager::UpdateRainParticles(const CVectorFixed8_8& zVec, const CVector3f& inverseScale,
+                                        float dt) {
+  // TODO: Apply rainfall speed and camera displacement to visible grids.
+}
+
+void CEnvFxManager::UpdateUnderwaterParticles(const CVectorFixed8_8& zVec) {
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    rstl::vector< CVectorFixed8_8 >& particles = mGrids[i].mParticles;
+    for (int j = particles.size() - 1; j >= 0; --j) {
+      particles[j].mZ = (particles[j].mZ + zVec.GetZ()) & 0x3fff;
+    }
+  }
+}
+
+void CEnvFxManager::UpdateVisorSplash(CStateManager& mgr, float dt, const CTransform4f& camXf) {
+  // TODO: Relocate each player's billboard and derive the rain rate from view and velocity.
+}
+
+void CEnvFxManager::SetSplashEffectRate(float rate, CStateManager& mgr) {
+  // TODO: Set the generator rate on each active visor-rain billboard.
+}
+
+CTransform4f CEnvFxManager::GetParticleBoundsToWorldTransform() const {
+  return CTransform4f::Translate(mFocusCellPosition) *
+         CTransform4f::Translate(CVector3f(-31.75f, -31.75f, -31.75f)) *
+         CTransform4f::Scale(GetParticleBoundsToWorldScale());
+}
+
+void CEnvFxManager::BlankFirstSnowflakeMip(CTexture& tex) {
+  // TODO: Clear and flush the texture's first mip once before rendering.
+}
+
+void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
+  // TODO: Configure snow texture, fog, blending and ceiling clipping.
+}
+
+void CEnvFxManager::SetupDriftingParticleTevs(CStateManager& mgr) {
+  // TODO: Configure the effect-5 snow-texture variant.
+}
+
+void CEnvFxManager::SetupDarkWorldTevs() {
+  // TODO: Configure additive dark-world particle rendering.
+}
+
+void CEnvFxManager::SetupUnderwaterTevs(const CTransform4f& invXf, CStateManager& mgr) {
+  // TODO: Configure underwater texture blending and water-surface clipping.
+}
+
+void CEnvFxManager::SetupDefaultTevSwapMode() {
+  // TODO: Restore the default TEV swap mode after underwater rendering.
+}
+
+void CEnvFxManager::SetupRainTevs() {
+  // TODO: Configure rain line rendering and the environment gradient.
+}
+
+void CEnvFxManager::SetupParticleTrailTevs(CStateManager& mgr) {
+  // TODO: Configure fog, line width, gradient texture and additive trail blending.
+}
+
+void CEnvFxManager::Render(const CStateManager& mgr) {
+  // TODO: Select the effect setup and render the grids in camera space.
+}
+
+static int CalcRainVolume(float density) {
+  if (density < 0.1f) {
+    return static_cast< int >(74.f * (density / 0.1f));
+  }
+  return static_cast< int >(21.f * (density / 0.9f) + 74.f);
+}
+
+static short CalcRainPitch(float density) { return static_cast< short >(8192.f * density); }
+
+void CEnvFxManager::UpdateRainSounds(float dt, CStateManager& mgr) {
+  // TODO: Fade rain audio and maintain the two camera-relative emitters, volume and pitch.
+}
+
+void CEnvFxManager::FadeDensity(float density, int speed) {
+  mTargetFxDensity = density;
+  mMaxDensityDeltaSpeed = speed;
+}
+
+void CEnvFxManager::StopRainSounds() { mRainSoundsStopped = true; }
+
+void CEnvFxManager::PlayRainSounds() { mRainSoundsStopped = false; }
+
+void CEnvFxManager::BuildBlockObjectList(rstl::reserved_vector< TUniqueId, 1024 >& list,
+                                         CStateManager& mgr) {
+  // TODO: Collect triggers with the environment-blocking flag from the object list.
+}
+
+void CEnvFxManager::AreaLoaded() {
+  for (int i = 0; i < mGrids.size(); ++i) {
+    mGrids[i].SetDirty(true);
+  }
+}

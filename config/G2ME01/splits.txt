@@ -233,6 +233,9 @@ MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
 
+MetroidPrime/CEnvFxManager.cpp:
+	.text       start:0x80161FBC end:0x80168598
+
 MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.text       start:0x801727F8 end:0x8017645C
 	.rodata     start:0x803A9A20 end:0x803A9A30

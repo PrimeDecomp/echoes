@@ -39,14 +39,14 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
     case kSM_XALD:
       mgr.World()->Area(GetCurrentAreaId())->SetAreaAttributes(this);
       if (m_environmentEffects) {
-        mgr.EnvFxManager()->SetDensity(m_density, 500);
+        mgr.EnvFxManager()->FadeDensity(m_density, 500);
       }
       break;
     case kSM_Play:
-      mgr.EnvFxManager()->Play_801620A8();
+      mgr.EnvFxManager()->PlayRainSounds();
       break;
     case kSM_Stop:
-      mgr.EnvFxManager()->Stop_801620B4();
+      mgr.EnvFxManager()->StopRainSounds();
       break;
     case kSM_XDelete: {
       if (mgr.World()->Area(GetCurrentAreaId())->GetPhase() == 0x10) {
