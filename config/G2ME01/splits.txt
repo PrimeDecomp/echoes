@@ -184,6 +184,9 @@ MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
 
+MetroidPrime/CActorModelParticles.cpp:
+	.text       start:0x8014B5D8 end:0x8014FDFC
+
 MetroidPrime/Enemies/CPatternedAiFunctions.cpp:
 	.text       start:0x80150FE8 end:0x80152950
 
