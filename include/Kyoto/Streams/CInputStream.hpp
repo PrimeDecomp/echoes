@@ -57,9 +57,8 @@ public:
   }
   short ReadInt16() { return static_cast< short >(ReadUint16()); }
   u8 ReadUint8() {
-    u8* result = mPtr;
-    mPtr = result + 1;
-    return *result;
+    const u8 result = *mPtr++;
+    return result;
   }
   char ReadInt8() { return static_cast< char >(ReadUint8()); }
   bool ReadBool() { return ReadUint8() != 0; }
