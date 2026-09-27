@@ -441,6 +441,13 @@ Kyoto/Animation/CAnimSource.cpp:
 	.text       start:0x802A0F2C end:0x802A2C94
 	.sdata2     start:0x8041E348 end:0x8041E360
 
+Kyoto/Animation/CAnimSourceReader.cpp:
+	.text       start:0x802A2C94 end:0x802A4538
+	.data       start:0x803B95D8 end:0x803B96D8
+
+Kyoto/Animation/CAnimSourceReaderBase.cpp:
+	.text       start:0x802A4538 end:0x802A5D94
+
 Kyoto/Animation/CCharAnimMemoryMetrics.cpp:
 	.text       start:0x802ABA68 end:0x802ABA94
 	.sbss       start:0x804198D8 end:0x804198E0
@@ -463,6 +470,10 @@ Kyoto/Animation/CPOINode.cpp:
 
 Kyoto/Animation/CSegId.cpp:
 	.text       start:0x802B1D10 end:0x802B1D28
+
+Kyoto/Animation/IAnimReader.cpp:
+	.text       start:0x802B2570 end:0x802B286C
+	.data       start:0x803B9BB0 end:0x803B9C18
 
 Kyoto/CDvdRequest.cpp:
 	.text       start:0x802B3660 end:0x802B38C0
