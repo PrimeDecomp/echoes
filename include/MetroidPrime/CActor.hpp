@@ -219,6 +219,7 @@ public:
 
   const CAABox& GetRenderBoundsCached() const { return mRenderBounds; }
   void SetRenderBounds(const CAABox& bounds) { mRenderBounds = bounds; }
+  void SetOtherBounds(const CAABox& bounds) { mOtherBounds = bounds; }
 
   bool GetUseInSortedLists() const;
   void SetUseInSortedLists(bool use);

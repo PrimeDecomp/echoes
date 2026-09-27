@@ -52,6 +52,8 @@ enum EEntityType {
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
   kET_SpindleCamera = 100,
+  kET_BeamProjectile = 109,
+  kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
   kET_PowerBomb = 156,
   kET_ScriptForgottenObject = 160,
