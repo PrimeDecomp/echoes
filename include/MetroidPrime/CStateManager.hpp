@@ -46,7 +46,7 @@ class CStateManager;
 // TODO: identify; an object inside CStateManagerContainer that loads script layers.
 class CScriptObjectLoader {
 public:
-  void fn_80234350(const TAreaId& aid, CInputStream& in, rstl::vector< TEditorId >& ids,
+  void fn_80234350(TAreaId aid, CInputStream& in, rstl::vector< TEditorId >& ids,
                    CStateManager& mgr);
   void fn_80233C4C(rstl::vector< TEditorId >& ids, CStateManager& mgr);
 };

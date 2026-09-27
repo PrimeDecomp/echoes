@@ -80,8 +80,8 @@ public:
   void MoveToChain(CGameArea* area, EChain chain);
   void MoveAreaToChain3(TAreaId aid);
   void TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelType travelType);
-  bool fn_80050BC4(CStateManager& mgr, const TAreaId& aid);
-  void fn_8004F6E8(const TAreaId& aid, const TLayerId& layer);
+  bool fn_80050BC4(CStateManager& mgr, TAreaId& aid);
+  void fn_8004F6E8(TAreaId& aid, TLayerId& layer);
   void Update(float dt);
   void PreRender();
   CMapWorld* MapWorld() { return GetMapWorld(); }

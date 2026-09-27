@@ -108,12 +108,12 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     }
     CMemoryInStream in(mLoadBuf.get(), mBufSize);
     in.ReadInt32();
-    uint version = in.ReadInt32();
+    int version = in.ReadInt32();
     mStrgId = in.ReadInt32();
-    if (version >= 22) {
+    if (static_cast< uint >(version) >= 22) {
       mDarkStrgId = in.ReadInt32();
     }
-    if (version >= 23) {
+    if (static_cast< uint >(version) >= 23) {
       mTempleKeyWorldIndex = in.ReadInt32();
     }
     mSavwId = in.ReadInt32();
@@ -122,17 +122,17 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
       mSkyboxWorld = TCachedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', skyboxId)));
       mSkyboxWorld->Lock();
     }
-    if (version == 17) {
+    if (static_cast< uint >(version) == 17) {
       rstl::vector< CRelay > relays(in);
     }
 
     int areaCount = in.ReadInt32();
-    if (version < 18) {
+    if (static_cast< uint >(version) < 18) {
       in.ReadInt32();
     }
     mAreas.reserve(areaCount);
     for (int i = 0; i < areaCount; ++i) {
-      mAreas.push_back(rs_new CGameArea(in, i, version));
+      mAreas.push_back_unsafe(rs_new CGameArea(in, i, version));
     }
     mChainHeads.resize(5, nullptr);
     for (int i = 0; i < areaCount; ++i) {
@@ -143,7 +143,7 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     mMapWorld =
         rs_new TCachedToken< CMapWorld >(gpSimplePool->GetObj(SObjectTag('MAPW', mMapwId)));
     mMapWorld->Lock();
-    if (mgr && version < 18) {
+    if (mgr && static_cast< uint >(version) < 18) {
       rstl::vector< TEditorId > ids;
       CScriptObjectLoader& loader = mgr->fn_80036210();
       loader.fn_80234350(kInvalidAreaId, in, ids, *mgr);
@@ -152,15 +152,17 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
 
     in.ReadInt32();
     mDefAudioTrack = rstl::string(in);
-    rstl::string trackKey = CInGameTweakManager::GetIdentifierForWorldDefaultMusic(mMlvlId);
-    char volume = 127;
-    if (gpTweakManager->HasTweakValue(trackKey)) {
-      mDefAudioTrack = gpTweakManager->GetTweakValue(trackKey)->GetAudio().GetFileName();
-      volume =
-          CCast::ToInt8(127.f * gpTweakManager->GetTweakValue(trackKey)->GetAudio().GetVolume());
-    }
-    if (!CScriptStreamedMusic::IsDSPFile(mDefAudioTrack)) {
-      CStreamAudioManager::SetDefaultAudio(mDefAudioTrack, 0.f, 0.f, volume);
+    {
+      rstl::string trackKey = CInGameTweakManager::GetIdentifierForWorldDefaultMusic(mMlvlId);
+      char volume = 127;
+      if (gpTweakManager->HasTweakValue(trackKey)) {
+        mDefAudioTrack = gpTweakManager->GetTweakValue(trackKey)->GetAudio().GetFileName();
+        volume =
+            CCast::ToInt8(127.f * gpTweakManager->GetTweakValue(trackKey)->GetAudio().GetVolume());
+      }
+      if (!CScriptStreamedMusic::IsDSPFile(mDefAudioTrack)) {
+        CStreamAudioManager::SetDefaultAudio(mDefAudioTrack, 0.f, 0.f, volume);
+      }
     }
     CWorldLayers::ReadWorldLayers(in, version, mMlvlId);
     mLoadToken = nullptr;
@@ -240,7 +242,7 @@ bool CWorld::ScheduleAreaToLoad(CGameArea* area, CStateManager& mgr) {
   }
 }
 
-bool CWorld::fn_80050BC4(CStateManager& mgr, const TAreaId& aid) {
+bool CWorld::fn_80050BC4(CStateManager& mgr, TAreaId& aid) {
   CFrameDelayedKiller::StallAndFlushAllAllocations();
   bool failed = false;
   for (int i = 0; i < mAreas.size(); ++i) {
@@ -435,28 +437,28 @@ bool CDummyWorld::ICheckWorldComplete() {
 
     CMemoryInStream r(mLoadBuf.get(), mBufSize);
     r.ReadInt32();
-    uint version = r.ReadInt32();
+    int version = r.ReadInt32();
     mStrgId = r.ReadInt32();
-    if (version >= 22) {
+    if (static_cast< uint >(version) >= 22) {
       mDarkStrgId = r.ReadInt32();
     }
-    if (version >= 23) {
+    if (static_cast< uint >(version) >= 23) {
       mTempleKeyWorldIndex = r.ReadInt32();
     }
     mSavwId = r.ReadInt32();
     r.ReadInt32();
-    if (version == 17) {
+    if (static_cast< uint >(version) == 17) {
       rstl::vector< CRelay > relays(r);
     }
 
     int areaCount = r.ReadInt32();
-    if (version < 18) {
+    if (static_cast< uint >(version) < 18) {
       r.ReadInt32();
     }
 
     mAreas.reserve(areaCount);
     for (int i = 0; i < areaCount; ++i) {
-      mAreas.push_back(rs_new CDummyGameArea(r, i, version));
+      mAreas.push_back_unsafe(rs_new CDummyGameArea(r, i, version));
     }
 
     mMapWorldId = r.ReadInt32();
@@ -466,18 +468,20 @@ bool CDummyWorld::ICheckWorldComplete() {
       mMapWorld->Lock();
     }
 
-    if (version < 18) {
+    if (static_cast< uint >(version) < 18) {
       r.ReadUint8();
       r.ReadInt32();
     }
 
     int audioGroupCount = r.ReadInt32();
     for (int i = 0; i < audioGroupCount; ++i) {
-      r.ReadInt32();
-      r.ReadInt32();
+      int groupId = r.ReadInt32();
+      CAssetId agscId = r.ReadInt32();
     }
 
-    rstl::string s(r);
+    {
+      rstl::string s(r);
+    }
 
     CWorldLayers::ReadWorldLayers(r, version, mMlvlId);
 
@@ -568,7 +572,7 @@ void CWorld::TouchSky() const {
   }
 }
 
-void CWorld::fn_8004F6E8(const TAreaId& aid, const TLayerId& layer) {
+void CWorld::fn_8004F6E8(TAreaId& aid, TLayerId& layer) {
   rstl::list< SLayerRelUnload >::iterator it = mPendingLayerRelUnloads.begin();
   while (it != mPendingLayerRelUnloads.end()) {
     if (it->mAreaId == aid && it->mLayerId.Value() == layer.Value()) {
@@ -585,19 +589,16 @@ void CWorld::Update(float dt) {
   bool skyVisible = false;
   int areaCount = 0;
   CAssetId overrideSkyId = kInvalidAssetId;
-  const CScriptAreaProperties* skyAttrs = nullptr;
 
   if (mPendingLayerRelUnloads.size() != 0) {
     rstl::list< SLayerRelUnload >::iterator it = mPendingLayerRelUnloads.begin();
     while (it != mPendingLayerRelUnloads.end()) {
       if (--it->mFramesLeft == 0) {
-        TAreaId aid = it->mAreaId;
-        if (DoesAreaExist(aid) && Area(aid)->IsLoaded()) {
-          const rstl::vector< CRELFileToken >* tokens =
-              Area(aid)->GetLayerRelTokens(it->mLayerId);
+        if (DoesAreaExist(it->mAreaId) && Area(it->mAreaId)->IsLoaded()) {
+          rstl::vector< CRELFileToken >* tokens =
+              Area(it->mAreaId)->GetLayerRelTokens(it->mLayerId);
           if (tokens) {
-            rstl::vector< CRELFileToken > released;
-            released = *tokens;
+            *tokens = rstl::vector< CRELFileToken >();
           }
         }
         it = mPendingLayerRelUnloads.erase(it);
@@ -607,6 +608,7 @@ void CWorld::Update(float dt) {
     }
   }
 
+  const CScriptAreaProperties* skyAttrs = nullptr;
   for (CGameArea::CChainIterator it = ChainHead(kC_Alive); it != skGlobalNonConstEnd;
        ++it, ++areaCount) {
     it->AliveUpdate(dt);
@@ -674,6 +676,7 @@ void CWorld::Update(float dt) {
 }
 
 void CWorld::PreRender() {
+  const CScriptAreaProperties* skyAttrs = nullptr;
   for (CGameArea::CChainIterator it = ChainHead(kC_Alive); it != skGlobalNonConstEnd; ++it) {
     it->PreRender();
   }
@@ -687,17 +690,15 @@ void CWorld::DrawSky(const CTransform4f& xf, bool noFog) const {
     if (mSkyboxFogMode == kRFM_None) {
       CGraphics::SetClearColor(CColor(0));
     } else {
-      CColor clearColor(mSkyboxFogColor);
-      clearColor.SetAlpha(CCast::ToUint8(0.f));
-      CGraphics::SetClearColor(clearColor);
+      CGraphics::SetClearColor(mSkyboxFogColor.WithAlphaOf(0.f));
     }
     CGraphics::DisableAllLights();
     gpRender->SetModelMatrix(xf);
     gpRender->SetAmbientColor(
         CColor(mSkyboxLightingLevel, mSkyboxLightingLevel, mSkyboxLightingLevel, 1.f));
     CGraphics::SetDepthRange(1.f, 1.f);
-    (*(mSkyboxOverride ? mSkyboxOverride : mSkyboxWorldLoaded))
-        ->Draw(CModelFlags::Normal().DepthCompareUpdate(true, false));
+    const CModelFlags& flags = CModelFlags::Normal().DepthCompareUpdate(true, false);
+    (*(mSkyboxOverride ? mSkyboxOverride : mSkyboxWorldLoaded))->Draw(flags);
     CGraphics::SetDepthRange(0.125f, 1.f);
     gpRender->SetModelMatrix(CTransform4f::Identity());
     if (!noFog) {

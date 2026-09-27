@@ -834,7 +834,7 @@ CGameArea::ELayerPhase CGameArea::GetLayerPhase(const TLayerId& layer) const {
   return kLP_Inactive;
 }
 
-const rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId& layer) const {
+rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId& layer) const {
   if (mPostConstructed.get() && layer.Value() >= 0 &&
       layer.Value() < mPostConstructed->mLayerRelTokens.size()) {
     return &mPostConstructed->mLayerRelTokens[layer.Value()];

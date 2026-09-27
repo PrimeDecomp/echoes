@@ -66,8 +66,7 @@ void CScriptSpawnPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
           bool propagateAgain = false;
 
           CGameArea* area = mgr.World()->Area(thisAreaId);
-          CGameArea::EOcclusionState occlusionState =
-              area->IsLoaded() ? area->GetOcclusionState() : CGameArea::kOS_Occluded;
+          CGameArea::EOcclusionState occlusionState = area->GetOcclusionState();
 
           if (occlusionState == CGameArea::kOS_Occluded) {
             while (!area->TryTakingOutOfARAM()) {

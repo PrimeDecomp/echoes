@@ -318,7 +318,7 @@ public:
   // Guessed names for the Echoes dynamic-layer interface.
   int GetTokenCount() const;
   ELayerPhase GetLayerPhase(const TLayerId& layer) const;
-  const rstl::vector< CRELFileToken >* GetLayerRelTokens(const TLayerId& layer) const;
+  rstl::vector< CRELFileToken >* GetLayerRelTokens(const TLayerId& layer) const;
   bool IsValidLayerNumber(CStateManager& mgr, const TLayerId& layer) const;
   void LoadLayerDynamic(CStateManager& mgr, const TLayerId& layer);
   void UnloadLayerDynamic(CStateManager& mgr, const TLayerId& layer);
