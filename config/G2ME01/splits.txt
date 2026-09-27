@@ -276,6 +276,11 @@ MetroidPrime/Player/CScanDisplay.cpp:
 	.data       start:0x803B4C70 end:0x803B4C80
 	.sdata2     start:0x8041BC08 end:0x8041BC68
 
+MetroidPrime/Weapons/CPlasmaProjectile.cpp:
+	.text       start:0x80119598 end:0x8011BFA8
+	.ctors      start:0x803A5520 end:0x803A5524
+	.sbss       start:0x80419160 end:0x80419168
+
 MetroidPrime/Player/CPlayerOrbit.cpp:
 	.text       start:0x8011C3A8 end:0x80123510
 	.ctors      start:0x803A5524 end:0x803A5528
@@ -285,6 +290,10 @@ MetroidPrime/CGroundMovement.cpp:
 	.sdata      start:0x80418328 end:0x80418338
 	.sbss       start:0x80419190 end:0x804191A8
 	.sdata2     start:0x8041BE48 end:0x8041BED8
+
+MetroidPrime/Weapons/CBeamProjectile.cpp:
+	.text       start:0x80131404 end:0x80131DF8
+	.data       start:0x803B4F90 end:0x803B5028
 
 MetroidPrime/CFluidPlaneCPU.cpp:
 	.text       start:0x80131DF8 end:0x801344A8
