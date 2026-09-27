@@ -3,6 +3,7 @@
 
 #include "Kyoto/SObjectTag.hpp"
 
+#include "rstl/StringExtras.hpp"
 #include "rstl/string.hpp"
 
 class CInputStream;
@@ -12,11 +13,18 @@ public:
   CPrimitive(CInputStream& in);
   void PutTo(COutputStream& out) const;
   CAssetId GetAnimResId() const { return mAnimId; }
+  int Compare(const CPrimitive& other) const {
+    return CStringExtras::CompareCaseInsensitive(mAnimName, other.mAnimName);
+  }
 
 private:
   CAssetId mAnimId;
   int mAnimIdx;
   rstl::string mAnimName;
 };
+
+CHECK_SIZEOF(CPrimitive, 0x18)
+
+inline bool operator<(const CPrimitive& a, const CPrimitive& b) { return a.Compare(b) < 0; }
 
 #endif // _CPRIMITIVE

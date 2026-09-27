@@ -28,10 +28,7 @@ It find(It first, It last, const T& val) {
 }
 
 template < typename T >
-#ifndef RSTL_DONT_INLINE_ALGORITHM
-inline
-#endif
-    void swap(T& a, T& b) {
+inline void swap(T& a, T& b) {
   T tmp(a);
   a = b;
   b = tmp;

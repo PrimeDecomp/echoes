@@ -140,6 +140,16 @@ MetroidPrime/HUD/CSamusHud.cpp:
 	.ctors      start:0x803A54CC end:0x803A54D0
 	.data       start:0x803B1F30 end:0x803B1F50
 
+MetroidPrime/CAnimationDatabaseGame.cpp:
+	.text       start:0x8006CB00 end:0x8006D3D0
+	.rodata     start:0x803A70B8 end:0x803A70F0
+	.data       start:0x803B1F50 end:0x803B1F70
+
+MetroidPrime/CTransitionDatabaseGame.cpp:
+	.text       start:0x8006D3D0 end:0x8006EB98
+	.data       start:0x803B1F70 end:0x803B1F80
+	.sbss       start:0x80418FD0 end:0x80418FE0
+
 MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.text       start:0x8007105C end:0x80073474
 	.data       start:0x803B2018 end:0x803B20B0

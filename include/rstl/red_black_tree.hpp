@@ -76,7 +76,7 @@ public:
     : mNode(node), mHeader(header) /*, x8_(b)*/ {}
 
     const P* operator->() const { return mNode->get_value(); }
-    const P* operator*() const { return mNode->get_value(); }
+    const P& operator*() const { return *mNode->get_value(); }
     bool operator==(const const_iterator& other) const {
       return mNode == other.mNode && mHeader == other.mHeader;
     }
@@ -102,7 +102,7 @@ public:
     iterator(node* node, const header* header, bool b) : const_iterator(node, header, b) {}
 
     P* operator->() { return const_iterator::mNode->get_value(); }
-    P* operator*() { return const_iterator::mNode->get_value(); }
+    P& operator*() { return *const_iterator::mNode->get_value(); }
     node* get_node() { return const_iterator::mNode; }
 
     iterator& operator++() {
