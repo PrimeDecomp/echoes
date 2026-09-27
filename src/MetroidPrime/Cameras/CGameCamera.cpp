@@ -226,7 +226,7 @@ void CGameCamera::UnkVtable84() {}
 
 void CGameCamera::UnkVtable88(TUniqueId fluidId) {}
 
-void CGameCamera::UnkVtable20(CStateManager& mgr) {
+void CGameCamera::ClearFluidList(CStateManager& mgr) {
   // TODO: Notify the camera's overlapping triggers before the inherited actor cleanup.
-  CActor::UnkVtable20(mgr);
+  CActor::ClearFluidList(mgr);
 }

@@ -11,6 +11,7 @@
 class CFluidPlaneCPU;
 class CGenDescription;
 class CFluidUVMotion;
+class CPlane;
 
 class CScriptWater : public CScriptTrigger {
 public:
@@ -69,6 +70,7 @@ public:
   void ClearSplashInhabitants(); // Guessed name
   void UpdateSplashInhabitants(CStateManager& mgr);
   const CScriptWater* GetNextConnectedWater(const CStateManager& mgr) const;
+  CPlane GetWRSurfacePlane() const;
 
 private:
   static const float kSplashScales[6];

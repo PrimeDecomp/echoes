@@ -13,6 +13,7 @@ public:
   explicit CParticlePOINode(CInputStream& in);
 
   const CParticleData& GetParticleData() const { return mData; }
+  float GetMaximumDistance() const; // Guessed name
 
   static CParticlePOINode CopyNodeMinusStartTime(const CParticlePOINode& node,
                                                  const CCharAnimTime& startTime);

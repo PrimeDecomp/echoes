@@ -41,7 +41,7 @@ void CFirstPersonCamera::PreThink(float dt, CStateManager& mgr) {}
 void CFirstPersonCamera::Render(const CStateManager& mgr) const {}
 
 void CFirstPersonCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
-  SetTransformAlt(xf);
+  SetTransform(xf);
   SetTranslation(Player(mgr).GetEyePosition());
   mGunFollowXf = GetTransform();
   mPitchId = kInvalidUniqueId;

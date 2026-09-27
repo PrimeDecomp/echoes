@@ -94,7 +94,7 @@ CPhysicsState CPhysicsActor::GetPhysicsState() const {
 
 void CPhysicsActor::SetPhysicsState(const CPhysicsState& state) {
   SetTranslation(state.GetTranslation());
-  SetTransformAlt(state.GetOrientation().BuildTransform4f(GetTranslation()));
+  SetTransform(state.GetOrientation().BuildTransform4f(GetTranslation()));
   SetConstantForceWR(state.GetConstantForceWR());
   SetAngularMomentumWR(state.GetAngularMomentumWR());
   SetMomentumWR(state.GetMomentumWR());
@@ -150,7 +150,7 @@ CMotionState CPhysicsActor::PredictMotion_Internal(float dt) const {
 }
 
 void CPhysicsActor::SetMotionState(const CMotionState& state) {
-  SetTransformAlt(
+  SetTransform(
       CQuaternion::FromNUQuaternion(state.GetOrientation()).BuildTransform4f(GetTranslation()));
   SetTranslation(state.GetTranslation());
 
@@ -167,7 +167,7 @@ CMotionState CPhysicsActor::GetMotionState() const {
 void CPhysicsActor::AddMotionState(const CMotionState& state) {
   CNUQuaternion q(CNUQuaternion::BuildFromQuaternion(CQuaternion::FromMatrix(GetTransform())));
   q += state.GetOrientation();
-  SetTransformAlt(CQuaternion::FromNUQuaternion(q).BuildTransform4f(GetTranslation()));
+  SetTransform(CQuaternion::FromNUQuaternion(q).BuildTransform4f(GetTranslation()));
   SetTranslation(GetTranslation() + state.GetTranslation());
 
   mConstantForce += state.GetVelocity();

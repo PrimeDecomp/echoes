@@ -87,6 +87,13 @@ CHECK_SIZEOF(CScannableParameters, 0x4)
 
 class CVisorParameters {
 public:
+  // Original enum type; individual flag names are inferred from visor order.
+  enum EVisorOrbitableFlags {
+    kVOF_Combat = 1,
+    kVOF_Echo = 2,
+    kVOF_Scan = 4,
+    kVOF_Dark = 8,
+  };
   CVisorParameters(uchar mask, bool b1, bool scanPassthrough)
   : mMask(mask), mB1(b1), mScanPassthrough(scanPassthrough) {}
 
@@ -127,9 +134,10 @@ public:
   const CVisorParameters& GetVisorParameters() const { return visor; }
   // float GetThermalMag() const { return x64_thermalMag; }
   bool UseGlobalRenderTime() const { return useGlobalRenderTime; }
-  bool IsHotInThermal() const { return thermalHeat; }
-  bool ForceRenderUnsorted() const { return forceRenderUnsorted; }
-  bool NoSortThermal() const { return noSortThermal; }
+  bool ForceRenderUnsorted() const { return mForceRenderUnsorted; }
+  bool IsHighlightedInDarkVisor() const { return mHighlightedInDarkVisor; }
+  bool TakesProjectedShadow() const { return mTakesProjectedShadow; }
+  bool UseAlphaSorting() const { return mAlphaSorted; } // Guessed name
   // Guessed name: controls whether Echo rendering includes sorted surfaces.
   bool RenderFullEchoModel() const { return mRenderFullEchoModel; }
   float GetFadeInTime() const { return fadeInTime; }
@@ -144,14 +152,14 @@ private:
   CScannableParameters scannable; // x3c
   rstl::pair< CAssetId, CAssetId > echoAssets; // x40, model/skin
   rstl::pair< CAssetId, CAssetId > darkAssets; // x48, model/skin
-  CVisorParameters visor; // x50
-  uchar maxVolume;  // x54
-  uchar maxEchoVolume;  // x55
-  uchar useGlobalRenderTime : 1; // x56
-  uchar thermalHeat : 1;
-  uchar forceRenderUnsorted : 1;
-  uchar noSortThermal : 1;
-  uchar x56_4_ : 1;
+  CVisorParameters visor;                      // x50
+  uchar maxVolume;                             // x54
+  uchar maxEchoVolume;                         // x55
+  uchar useGlobalRenderTime : 1;               // x56
+  uchar mForceRenderUnsorted : 1;
+  uchar mHighlightedInDarkVisor : 1;
+  uchar mTakesProjectedShadow : 1;
+  uchar mAlphaSorted : 1;
   uchar mRenderFullEchoModel : 1; // Guessed name.
   float fadeInTime; // x58
   float fadeOutTime; // x5c

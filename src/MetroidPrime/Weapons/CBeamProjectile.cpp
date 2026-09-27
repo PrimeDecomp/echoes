@@ -63,7 +63,7 @@ void CBeamProjectile::UpdateFx(const CTransform4f& xf, float dt, CStateManager& 
   if (!GetActive()) {
     return;
   }
-  SetTransformAlt(xf.GetRotation());
+  SetTransform(xf.GetRotation());
   if (mGrowingBeam) {
     mGrowingBeamLength += mTravelSpeed * dt;
     if (mGrowingBeamLength > mMaxLength) {

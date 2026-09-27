@@ -7,10 +7,12 @@
 #include "Collision/CMaterialList.hpp"
 
 #include "MetroidPrime/ActorCommon.hpp"
+#include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CModelData.hpp"
 
 #include "Kyoto/Animation/CSegId.hpp"
+#include "Kyoto/Audio/CAudioSys.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
@@ -25,6 +27,9 @@
 
 class CActorLights;
 class CActorParameters;
+class CEchoEmitter;
+struct SEchoParameters;
+struct SLdrAudioPlaybackParms;
 class CScannableObjectInfo;
 class CSimpleShadow;
 
@@ -38,11 +43,6 @@ class CInt32POINode;
 
 class CActor : public CEntity {
 public:
-  enum EThermalFlags {
-    kTF_None = 0,
-    kTF_Cold = 1,
-    kTF_Hot = 2,
-  };
   enum EFluidState {
     kFS_EnteredFluid,
     kFS_InFluid,
@@ -76,7 +76,7 @@ public:
   void SetActive(const bool active) override;
 
   // CActor
-  virtual void UnkVtable20(CStateManager& mgr); // Original name unknown
+  virtual void ClearFluidList(CStateManager& mgr);
   virtual void PreRender(CStateManager&);
   virtual void AddToRenderer(const CStateManager&) const;
   virtual void Render(const CStateManager&) const;
@@ -105,46 +105,53 @@ public:
                                float dt);
   virtual CScannableObjectInfo* GetScannableObjectInfo() const;
   virtual void ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff, float maxDist,
-                                 uchar minVol, uchar maxVol, const CVector3f& toListener,
-                                 const CVector3f& position, int aid, CStateManager& mgr,
-                                 bool translateId);
+                                 const CSegId& locator, ushort pitchStart, ushort pitchEnd,
+                                 float pitchDuration, uchar minVol, uchar maxVol,
+                                 float distanceSquared, const CVector3f& position, int aid,
+                                 CStateManager& mgr, bool translateId);
 
   CAdvancementDeltas UpdateAnimation(float dt, CStateManager& mgr, bool advTree);
 
-  void UpdateSfxEmitters();
-  void RemoveEmitter();
+  void UpdateSfxEmitters(CStateManager& mgr);
+  void StopLoopedSounds();
+  bool FindLoopedSound(ushort sfxId);
+  void StopLoopedSound(ushort sfxId); // Guessed name.
+  CSfxHandle PlayCustomSound(const CVector3f& position, const CVector3f& direction,
+                             const SLdrAudioPlaybackParms& parameters, bool looped) const;
   void SetModelData(const CModelData& modelData, CStateManager& mgr);
   float GetAverageAnimVelocity(int anim);
   void EnsureRendered(const CStateManager& mgr) const;
   void EnsureRendered(const CStateManager& mgr, const CVector3f& pos, const CAABox& bounds) const;
-  void DrawTouchBounds() const;
   bool IsModelOpaque(const CStateManager& mgr) const;
   void RenderInternal(const CStateManager& mgr) const;
-  void CreateShadow(bool);
-  void fn_8004ab14(); // Allocate the simple shadow if model data is available.
+  void AllocateShadow(); // Guessed name.
+
+  void UpdatePortalSystemState(CStateManager& mgr);
+  // Despite the original name, this returns the minimum squared camera distance.
+  float GetDistanceToCamera(CStateManager& mgr) const;
+  void SetEchoEmitter(bool enabled, CEchoEmitter* emitter);
+  CEchoEmitter* AllocateEchoEmitter(bool enabled, const CAABox& bounds,
+                                    const SEchoParameters& parameters);
+  void SetValidTarget(int playerIndex, bool enabled);
+  void SetVisorOrbitableFlags(CVisorParameters::EVisorOrbitableFlags flags, bool enabled);
 
   const CTransform4f& GetTransform() const { return mTransform; }
-  void SetTransform(const CTransform4f& xf) {
-    mTransform = xf;
-    SetTransformDirty(true);
-    SetTransformDirtySpare(true);
-    SetPreRenderHasMoved(true);
-  }
-  void SetTransformAlt(const CTransform4f& xf);
+  void SetTransform(const CTransform4f& xf);
   void SetRotation(const CQuaternion& rot) { SetTransform(rot.BuildTransform4f(GetTranslation())); }
   CQuaternion GetRotation() const { return CQuaternion::FromMatrix(GetTransform()); }
   const CVector3f& GetTranslation() const { return mPosition; }
   void SetTranslation(const CVector3f& vec);
   CTransform4f GetLocatorTransform(const rstl::string& segName) const;
   CTransform4f GetScaledLocatorTransform(const rstl::string& segName) const;
+  CTransform4f GetScaledLocatorTransform(const CSegId& locator) const;
   float GetYaw() const;
-  float GetPitch() const;
   void SetActorLights(rstl::auto_ptr< CActorLights > lights);
-  void SetInFluid(bool b, TUniqueId uid);
+  void SetInFluid(CStateManager& mgr, bool inFluid, TUniqueId uid);
+  TUniqueId InFluidId() const;
+  // Guessed names.
+  void SetFluidList(const rstl::reserved_vector< TUniqueId, 4 >& fluids);
+  const rstl::reserved_vector< TUniqueId, 4 >& GetFluidList() const;
 
-  void MoveScannableObjectInfoToActor(CActor* actor, CStateManager& mgr);
-
-  /// ????
   bool NullModel() const { return !GetAnimationData() && !GetModelData()->HasNormalModel(); }
 
   bool HasModelData() const {
@@ -182,23 +189,17 @@ public:
   bool GetDrawShadow() const { return mShadowEnabled; }
   bool GetShadowDirty() const { return mShadowDirty; }
   bool GetMuted() const { return mMuted; }
-  // EThermalFlags GetThermalFlags() const {
-  //   return static_cast< EThermalFlags >(mThermalVisorFlags);
-  // }
   bool GetRenderParticleDatabaseInside() const { return mRenderParticleDBInside; }
-  bool GetTargetable() const { return mTargetable; }
 
   void SetTransformDirty(bool b) { mNotInSortedLists = b; }
   void SetTransformDirtySpare(bool b) { mTransformDirty = b; }
   void SetPreRenderHasMoved(bool b) { mActorLightsDirty = b; }
   void SetPreRenderClipped(bool b) { mOutOfFrustum = b; }
   void SetCalculateLighting(bool b);
-  void SetDrawShadow(bool b) { mShadowEnabled = b; }
+  void SetDrawShadow(bool enabled);
   void SetShadowDirty(bool b) { mShadowDirty = b; }
   void SetMuted(bool b);
-  // void SetThermalFlags(EThermalFlags flags) { mThermalVisorFlags = flags; }
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
-  void SetTargetable(bool b) { mTargetable = b; }
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
@@ -225,41 +226,40 @@ public:
   void SetUseInSortedLists(bool use);
   bool GetCallTouch() const;
   void SetCallTouch(bool value);
-  // GetOrbitDistanceCheck__6CActorCFv
-  // GetCalculateLighting__6CActorCFv
-  // GetDrawShadow__6CActorCFv
-  // GetRenderBoundsCached__6CActorCFv
-  // GetRenderParticleDatabaseInside__6CActorCFv
-  // HasModelParticles__6CActorCFv
   void SetVolume(uchar volume);
   void SetSoundEventPitchBend(int);
-  CSfxHandle GetSfxHandle() const;
+  void ClearSoundEventPitchBend();
   bool CanDrawStatic() const;
-  bool fn_8004CD00(const CStateManager& mgr) const;
-  int fn_8004CAA0(const CStateManager& mgr) const;
+  bool ShouldDrawShadow(const CStateManager& mgr) const; // Guessed name.
+  int GetRenderAlphaBufferAlpha(const CStateManager& mgr) const;
 
   void SetNextDrawNode(TUniqueId id) { mNextDrawNode = id; }
 
-  void SetDirtyFlags();
+  void SetTransformDirty();
 
 private:
-  // The component's concrete type and remaining virtual interface are unresolved.
-  class CUnknownComponent {
-  public:
-    virtual ~CUnknownComponent();
-  };
+  // Guessed names.
+  void RemoveInvalidFluidIds(CStateManager& mgr);
+  void RemoveLoopedSoundAt(int index);
+  uchar GetVisorSoundVolume(const CStateManager& mgr) const;
+  void PlayLoopedSound(ushort sfxId, int flags, float fallOff, float maxDist, uchar minVol,
+                       uchar maxVol, bool nonEmitter, int area, bool useAcoustics,
+                       const CSegId& locator, ushort pitchStart, ushort pitchEnd,
+                       float pitchDuration, bool useEchoVolume);
+  void AddLoopedSound(ushort sfxId, bool nonEmitter, int area, bool useAcoustics,
+                      CAudioSys::C3DEmitterParmData& parameters, const CSegId& locator,
+                      ushort pitchStart, ushort pitchEnd, float pitchDuration, bool useEchoVolume);
 
   CTransform4f mTransform;                   // x24
   CVector3f mPosition;                       // x54
   rstl::single_ptr< CModelData > mModelData; // x60
-  int mPostModelDataFiller;
-  CMaterialList mMaterial; // x68
+  CMaterialList mMaterial;                   // x68
   CMaterialFilter mMaterialFilter;
   rstl::reserved_vector< TLoopingSound, 4 > mLoopingSounds; // x88
   rstl::single_ptr< CActorLights > mActorLights;
   rstl::single_ptr< CSimpleShadow > mSimpleShadow;
   rstl::single_ptr< TCachedToken< CScannableObjectInfo > > mScanObjectInfo;
-  rstl::single_ptr< CUnknownComponent > xc8_;
+  rstl::single_ptr< CEchoEmitter > mEchoEmitter;
   CAABox mOtherBounds;
   CAABox mRenderBounds;
   CModelFlags mDrawFlags;
@@ -271,7 +271,7 @@ private:
   TUniqueId mNextDrawNode;
   int mDrawnToken;
   int mAddedToken;
-  int x134_;
+  int mPvsIndex;
   uchar mMaxVol;
   uchar mNormalVolume;
   uchar mEchoVolume;
@@ -287,7 +287,7 @@ private:
   uint mShadowDirty : 1;
   uint mMuted : 1;
   uint mUseInSortedLists : 1;
-  uint x151_5_ : 1;
+  uint mUsePortalVisibility : 1;
   uint mCallTouch : 1;
   uint mGlobalTimeProvider : 1;
   uint mRenderUnsorted : 1; // x152
@@ -299,16 +299,13 @@ private:
   uint mWorldLightingDirty : 1;
   uint mDrawEnabled : 1;
   uint mDoTargetDistanceTest : 1;
-  uint x153_4_ : 1;
-  uint x153_5_ : 1;
-  uint mTargetable : 1;
-  uint x153_7_ : 1;
-  uint x154_0_ : 1;
-  uint x154_1_ : 1;
-  uint x154_2_ : 1;
-  uint x154_3_ : 1;
+  uint mValidTargetPlayers : 4;
+  uint mEchoEmitterEnabled : 1;
+  uint mHighlightedInDarkVisor : 1;
+  uint mDamageHighlight : 1;
+  uint mTakesProjectedShadow : 1;
   uint mLoopingSoundCount : 3;
-  uint x154_7_ : 1;
+  uint mAlphaSorted : 1; // Guessed name
 };
 CHECK_SIZEOF(CActor, 0x158)
 NESTED_CHECK_SIZEOF(CActor, SSound, 0x8)

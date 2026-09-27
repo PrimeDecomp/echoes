@@ -132,7 +132,7 @@ void CModelData::RenderParticles(const CFrustumPlanes& planes) const {
 bool CModelData::IsAnimating() const { return HasAnimation() && mAnimData->IsAnimating(); }
 
 CAdvancementDeltas CModelData::AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid,
-                                                bool advTree, float minParticleWeight) {
+                                                bool advTree, float cameraDistance) {
   // TODO: Delegate to CAnimData::Advance with the manager's embedded random generator.
   // CStateManager's declaration does not yet expose that recovered member.
   return skNullAdvance;

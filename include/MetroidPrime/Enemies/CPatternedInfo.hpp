@@ -4,8 +4,8 @@
 #include "MetroidPrime/CAnimationParameters.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
-#include "MetroidPrime/CEchoParameters.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/SEchoParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.hpp"
 
 class CPatternedInfo {
@@ -61,7 +61,7 @@ private:
   SLdrIngPossessionData mIngPossessionData;
   CAssetId mKnockBackRules;
   int mCreatureSize;
-  CEchoParameters mEchoParameters;
+  SEchoParameters mEchoParameters;
 };
 CHECK_SIZEOF(CPatternedInfo, 0x2b4)
 

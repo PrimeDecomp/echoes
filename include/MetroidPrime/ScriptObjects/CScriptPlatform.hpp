@@ -78,7 +78,7 @@ public:
   void SetTransformExplicitly(const CTransform4f& xf);
   void fn_8009f4e4(const CTransform4f& xf) {
     // TODO: leave the transform unchanged when the active spline controller owns it.
-    CActor::SetTransformAlt(xf);
+    CActor::SetTransform(xf);
     mMotionTransformed = true;
   }
   bool IsSlave(TUniqueId id) const;

@@ -8,12 +8,16 @@ class CSoundPOINode : public CPOINode {
 public:
   CSoundPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
                 float weight, int charIdx, int flags, int sfxId, float fallOff, float maxDist,
-                const CSegId& segId, ushort x3a, ushort x3c, float x40);
+                const CSegId& segId, ushort pitchStart, ushort pitchEnd, float pitchDuration);
   CSoundPOINode(CInputStream& in);
 
   uint GetSoundId() const { return mSfxId; }
   float GetFallOff() const { return mFalloff; }
   float GetMaxDistance() const { return mMaxDist; }
+  const CSegId& GetLocator() const { return mSegId; }
+  ushort GetPitchStart() const { return mPitchStart; }
+  ushort GetPitchEnd() const { return mPitchEnd; }
+  float GetPitchDuration() const { return mPitchDuration; }
 
   static CSoundPOINode CopyNodeMinusStartTime(const CSoundPOINode& node,
                                               const CCharAnimTime& startTime);
@@ -26,9 +30,9 @@ private:
   float mFalloff;
   float mMaxDist;
   CSegId mSegId;
-  ushort x3a_;
-  ushort x3c_;
-  float x40_;
+  ushort mPitchStart;
+  ushort mPitchEnd;
+  float mPitchDuration;
 };
 CHECK_SIZEOF(CSoundPOINode, 0x44)
 

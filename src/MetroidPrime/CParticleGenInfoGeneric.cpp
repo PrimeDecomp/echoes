@@ -47,7 +47,7 @@ void CParticleGenInfoGeneric::SetOrientation(const CTransform4f& xf, CStateManag
 
   if (CGameLight* gl = TCastToPtr< CGameLight >(stateMgr->GetObjectByIdFromListAll(mLightId))) {
     CMatrix3f m1 = xf.BuildMatrix3f();
-    gl->SetTransformAlt(
+    gl->SetTransform(
         CQuaternion::FromMatrix(m1.Orthonormalized()).BuildTransform4f(gl->GetTranslation()));
   }
 }
@@ -73,7 +73,7 @@ void CParticleGenInfoGeneric::SetGlobalOrientation(const CTransform4f& xf,
   }
 
   if (CGameLight* gl = TCastToPtr< CGameLight >(stateMgr->GetObjectByIdFromListAll(mLightId))) {
-    gl->SetTransformAlt(CQuaternion::FromMatrix(xf).BuildTransform4f(gl->GetTranslation()));
+    gl->SetTransform(CQuaternion::FromMatrix(xf).BuildTransform4f(gl->GetTranslation()));
   }
 }
 

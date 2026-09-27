@@ -29,7 +29,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
             TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()))) {
       CMorphBall* morph = player->GetMorphBall();
       CTransform4f xf = morph->GetSurfaceToWorld();
-      player->SetTransformAlt(
+      player->SetTransform(
           CTransform4f(xf.BuildMatrix3f(), player->GetTranslation())); // todo use position
       morph->SwitchToTire();
       m_fields[player->GetPlayerIndex()].OnIncrementMsg(mgr, 1);

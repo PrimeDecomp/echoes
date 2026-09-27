@@ -161,7 +161,7 @@ void CBallCamera::TeleportLookAtStuff(CStateManager& mgr) {
 }
 
 void CBallCamera::TeleportCamera(const CTransform4f& xf, CStateManager& mgr) {
-  SetTransformAlt(xf);
+  SetTransform(xf);
   TeleportCamera(xf.GetTranslation(), mgr);
   CameraManager(mgr).UpdateCameraTriggers(GetUniqueId(), mgr);
 }
@@ -518,7 +518,7 @@ void CBallCamera::UpdateUsingFreeLook(float dt, CStateManager& mgr) {
       }
     } else if (mgr.RayCollideWorld(position, ballPos, skLineOfSightFilter, nullptr)) {
       mDampedPos = position;
-      SetTransformAlt(CTransform4f::LookAt(position, mLookPos));
+      SetTransform(CTransform4f::LookAt(position, mLookPos));
     }
   }
 }
