@@ -53,36 +53,38 @@ CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
 , m_material(MakeActorMaterialList(list, params))
 , mMaterialFilter(
       CMaterialFilter::MakeIncludeExclude(CMaterialList(SolidMaterial), CMaterialList()))
-, mSfxId(InvalidSfxId)
+, mLoopingSounds(4, TLoopingSound(InvalidSfxId, SSound(CSfxHandle(), CSegId::Invalid(), false)))
 , mActorLights(mData.IsNull() ? nullptr : params.GetLighting().MakeActorLights().release())
 , otherBounds(CAABox::MakeMaxInvertedBox())
 , m_renderBounds(CAABox::MakeMaxInvertedBox())
 , mDrawFlags(CModelFlags::Normal())
 , mTime(0.f)
 , mPitchBend(8192)
-, mFluidId(kInvalidUniqueId)
+, mFluidIdsChanged(false)
 , mNextDrawNode(nextDrawNode)
 , mDrawnToken(-1)
 , mAddedToken(-1)
-// , xd0_damageMag(params.GetThermalMag())
+, x134_(-1)
 , mMaxVol(CAudioSys::kMaxVolume)
-, mNonLoopingSfxHandles(CSfxHandle())
+, mNormalVolume(params.GetMaxVolume())
+, mEchoVolume(params.GetMaxEchoVolume())
+, mNonLoopingSounds(2, SSound(CSfxHandle(), CSegId::Invalid(), false))
 , m_nextNonLoopingSfxHandle(0)
 , m_notInSortedLists(true)
 , m_transformDirty(true)
 , m_actorLightsDirty(true)
+, m_renderBoundsDirty(true)
 , m_outOfFrustum(false)
 , m_calculateLighting(true)
 , m_shadowEnabled(false)
 , m_shadowDirty(false)
 , m_muted(false)
 , m_useInSortedLists(true)
+, x151_5_(true)
 , m_callTouch(true)
 , m_globalTimeProvider(params.UseGlobalRenderTime())
-, m_renderUnsorted(params.ForceRenderUnsorted())
+, m_renderUnsorted(params.IsHotInThermal())
 , m_pointGeneratorParticles(false)
-, m_fluidCounter(0)
-// , m_thermalVisorFlags(params.IsHotInThermal() ? kTF_Hot : kTF_Cold)
 , m_renderParticleDBInside(true)
 , m_enablePitchBend(false)
 , m_targetableVisorFlags(params.GetVisorParameters().GetMask())
@@ -90,7 +92,25 @@ CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
 , m_worldLightingDirty(false)
 , m_drawEnabled(true)
 , m_doTargetDistanceTest(true)
-, m_targetable(true) {
+, x153_4_(true)
+, x153_5_(true)
+, m_targetable(true)
+, x153_7_(true)
+, x154_0_(false)
+, x154_1_(params.ForceRenderUnsorted())
+, x154_2_(false)
+, x154_3_(params.NoSortThermal())
+, mLoopingSoundCount(0) {
+  CHECK_SIZEOF(SSound, 0x8)
+  CHECK_SIZEOF(TLoopingSound, 0xc)
+  CHECK_OFFSETOF(CActor, mActorLights, 0xbc)
+  CHECK_OFFSETOF(CActor, m_renderBounds, 0xe4)
+  CHECK_OFFSETOF(CActor, mDrawFlags, 0xfc)
+  CHECK_OFFSETOF(CActor, mTime, 0x108)
+  CHECK_OFFSETOF(CActor, mFluidIds, 0x110)
+  CHECK_OFFSETOF(CActor, mNextDrawNode, 0x12a)
+  CHECK_OFFSETOF(CActor, mNonLoopingSounds, 0x13c)
+
   if (!m_modelData.null()) {
     if (params.GetXRay().first != 0) {
       m_modelData->SetEchoModel(params.GetXRay());
@@ -189,11 +209,15 @@ CAdvancementDeltas CActor::UpdateAnimation(float dt, CStateManager& mgr, bool ad
 }
 
 void CActor::RemoveEmitter() {
-  if (CSfxHandle handle = mLoopingSfxHandle) {
-    CSfxManager::RemoveEmitter(handle);
-    mSfxId = -1;
-    mLoopingSfxHandle = CSfxHandle();
+  for (uint i = 0; i < mLoopingSoundCount; ++i) {
+    TLoopingSound& sound = mLoopingSounds[i];
+    if (const CSfxHandle& handle = sound.second.mHandle) {
+      CSfxManager::RemoveEmitter(handle);
+      sound.first = InvalidSfxId;
+      sound.second = SSound(CSfxHandle(), CSegId::Invalid(), false);
+    }
   }
+  mLoopingSoundCount = 0;
 }
 
 void CActor::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
@@ -723,8 +747,10 @@ void CActor::SetMuted(bool b) {
 }
 
 void CActor::SetVolume(uchar volume) {
-  if (CSfxHandle handle = mLoopingSfxHandle) {
-    CSfxManager::UpdateEmitter(handle, GetTranslation(), CVector3f::Zero(), volume);
+  for (uint i = 0; i < mLoopingSoundCount; ++i) {
+    if (const CSfxHandle& handle = mLoopingSounds[i].second.mHandle) {
+      CSfxManager::UpdateEmitter(handle, GetTranslation(), CVector3f::Zero(), volume);
+    }
   }
   mMaxVol = volume;
 }
@@ -732,12 +758,15 @@ void CActor::SetVolume(uchar volume) {
 void CActor::SetSoundEventPitchBend(int v) {
   m_enablePitchBend = true;
   mPitchBend = v;
-  if (mLoopingSfxHandle) {
-    CSfxManager::PitchBend(mLoopingSfxHandle, v);
+  for (uint i = 0; i < mLoopingSoundCount; ++i) {
+    TLoopingSound& sound = mLoopingSounds[i];
+    if (sound.second.mHandle) {
+      CSfxManager::PitchBend(sound.second.mHandle, v);
+    }
   }
 }
 
-CSfxHandle CActor::GetSfxHandle() const { return mLoopingSfxHandle; }
+CSfxHandle CActor::GetSfxHandle() const { return mLoopingSounds[0].second.mHandle; }
 
 // void CActor::SetInFluid(bool in, TUniqueId uid) {
 //   if (in) {
@@ -782,8 +811,11 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
   // }
 
   if (looping) {
-    ushort curId = mSfxId;
-    if (!mLoopingSfxHandle) {
+    // TODO: Recover the Echoes ProcessSoundEvent signature and looping-sound helper.
+    // This inherited implementation still handles only the first looping sound.
+    TLoopingSound& sound = mLoopingSounds[0];
+    ushort curId = sound.first;
+    if (!sound.second.mHandle) {
       CSfxHandle handle;
       if (nonEmitter) {
         handle = CSfxManager::SfxStart(id, 127, 64, aid, true, true, CSfxManager::kMedPriority);
@@ -791,21 +823,22 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
         handle = CSfxManager::AddEmitter(parms, aid, useAcoustics, true, CSfxManager::kMedPriority);
       }
       if (handle) {
-        mSfxId = id;
-        mLoopingSfxHandle = handle;
+        sound.first = id;
+        sound.second.mHandle = handle;
+        mLoopingSoundCount = 1;
         if (m_enablePitchBend) {
           CSfxManager::PitchBend(handle, mPitchBend);
         }
       }
     } else if (curId == id) {
-      CSfxManager::UpdateEmitter(mLoopingSfxHandle, parms.mPos, parms.mDir, maxVol);
+      CSfxManager::UpdateEmitter(sound.second.mHandle, parms.mPos, parms.mDir, maxVol);
     } else if (flags & 0x4) {
-      CSfxManager::RemoveEmitter(mLoopingSfxHandle);
+      CSfxManager::RemoveEmitter(sound.second.mHandle);
       CSfxHandle handle =
           CSfxManager::AddEmitter(parms, aid, useAcoustics, true, CSfxManager::kMedPriority);
       if (handle) {
-        mSfxId = id;
-        mLoopingSfxHandle = handle;
+        sound.first = id;
+        sound.second.mHandle = handle;
         if (m_enablePitchBend) {
           CSfxManager::PitchBend(handle, mPitchBend);
         }
@@ -820,8 +853,8 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
       handle = CSfxManager::AddEmitter(parms, aid, useAcoustics, false, CSfxManager::kMedPriority);
     }
     if ((sfxId & 0x20000000) != 0 /* continuous update */) {
-      mNonLoopingSfxHandles[m_nextNonLoopingSfxHandle] = handle;
-      m_nextNonLoopingSfxHandle = (m_nextNonLoopingSfxHandle + 1) % mNonLoopingSfxHandles.size();
+      mNonLoopingSounds[m_nextNonLoopingSfxHandle] = SSound(handle, CSegId::Invalid(), false);
+      m_nextNonLoopingSfxHandle = (m_nextNonLoopingSfxHandle + 1) % mNonLoopingSounds.size();
     }
 
     if (m_enablePitchBend) {
@@ -844,3 +877,6 @@ void CActor::SetTranslation(const CVector3f& vec) {
   SetTransformDirtySpare(true);
   SetPreRenderHasMoved(true);
 }
+
+CActor::SSound::SSound(const CSfxHandle& handle, const CSegId& locator, bool useEchoVolume)
+: mHandle(handle), mLocator(locator), mUseEchoVolume(useEchoVolume) {}

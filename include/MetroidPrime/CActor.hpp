@@ -10,6 +10,7 @@
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CModelData.hpp"
 
+#include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
@@ -231,55 +232,82 @@ public:
   void SetDirtyFlags();
 
 private:
+  // Echoes sound records include a locator and a volume-selection flag.
+  struct SSound {
+    SSound(const CSfxHandle& handle, const CSegId& locator, bool useEchoVolume);
+
+    CSfxHandle mHandle;
+    CSegId mLocator;
+    bool mUseEchoVolume : 1;
+  };
+  typedef rstl::pair< TSfxId, SSound > TLoopingSound;
+
+  // The component's concrete type and remaining virtual interface are unresolved.
+  class CUnknownComponent {
+  public:
+    virtual ~CUnknownComponent();
+  };
+
   CTransform4f m_transform;                   // x24
   CVector3f m_position;                       // x54
   rstl::single_ptr< CModelData > m_modelData; // x60
   int postModelDataFiller;
   CMaterialList m_material; // x68
   CMaterialFilter mMaterialFilter;
-  TSfxId mSfxId;
-  CSfxHandle mLoopingSfxHandle;
+  rstl::reserved_vector< TLoopingSound, 4 > mLoopingSounds; // x88
   rstl::single_ptr< CActorLights > mActorLights;
   rstl::single_ptr< CSimpleShadow > mSimpleShadow;
   rstl::single_ptr< TCachedToken< CScannableObjectInfo > > mScanObjectInfo;
+  rstl::single_ptr< CUnknownComponent > xc8_;
   CAABox otherBounds;
   CAABox m_renderBounds;
-  CModelFlags mDrawFlags;
-  float mTime;
+  CModelFlags mDrawFlags; // xfc; color is at x104, not the render timer.
+  float mTime;            // x108
   uint mPitchBend;
-  TUniqueId mFluidId;
+  rstl::reserved_vector< TUniqueId, 4 > mFluidIds;
+  rstl::reserved_vector< TUniqueId, 4 > mPreviousFluidIds;
+  bool mFluidIdsChanged : 1;
   TUniqueId mNextDrawNode;
   int mDrawnToken;
   int mAddedToken;
-  float mDamageMag;
+  int x134_;
   uchar mMaxVol;
-  rstl::reserved_vector< CSfxHandle, 2 > mNonLoopingSfxHandles;
-  char actor_padding[80];
-  uint m_nextNonLoopingSfxHandle : 3; // xe4_23
-  uint m_notInSortedLists : 1;        // xe4_26
-  uint m_transformDirty : 1;          // xe4_27
-  uint m_actorLightsDirty : 1;        // xe4_28
-  uint m_renderBoundsDirty : 1;       // xe4_29
-  uint m_outOfFrustum : 1;            // xe4_30
-  uint m_calculateLighting : 1;       // xe4_31
-  uint m_shadowEnabled : 1;           // xe5_24
-  uint m_shadowDirty : 1;             // xe5_25
-  uint m_muted : 1;                   // xe5_26 // correct
-  uint m_useInSortedLists : 1;        // xe5_27 // correct
-  uint m_globalTimeProvider : 1;      // xe5_28
-  uint m_callTouch : 1;               // xe5_29 // correct
-  uint m_renderUnsorted : 1;          // xe5_30 // wrong bit, check CanRenderUnsorted
-  uint unk : 1;
+  uchar mNormalVolume;
+  uchar mEchoVolume;
+  rstl::reserved_vector< SSound, 2 > mNonLoopingSounds; // x13c
+  uint m_nextNonLoopingSfxHandle : 3;                   // x150
+  uint m_notInSortedLists : 1;
+  uint m_transformDirty : 1;
+  uint m_actorLightsDirty : 1;
+  uint m_renderBoundsDirty : 1;
+  uint m_outOfFrustum : 1;
+  uint m_calculateLighting : 1; // x151
+  uint m_shadowEnabled : 1;
+  uint m_shadowDirty : 1;
+  uint m_muted : 1;
+  uint m_useInSortedLists : 1;
+  uint x151_5_ : 1;
+  uint m_callTouch : 1;
+  uint m_globalTimeProvider : 1;
+  uint m_renderUnsorted : 1; // x152
   uint m_pointGeneratorParticles : 1;
-  uint m_fluidCounter : 3;           // xe6_24
-  uint m_renderParticleDBInside : 1; // xe6_29 // wrong bit, check AddToRenderer
-  uint m_enablePitchBend : 1;        // xe6_30
-  uint m_targetableVisorFlags : 3;   // xe6_31
-  uint m_drawEnabled : 1;            // xe7_29
-  uint m_enableRender : 1;           // xe7_27
-  uint m_worldLightingDirty : 1;     // xe7_28
-  uint m_doTargetDistanceTest : 1;   // xe7_30
-  uint m_targetable : 1;             // xe7_31
+  uint m_renderParticleDBInside : 1;
+  uint m_enablePitchBend : 1;
+  uint m_targetableVisorFlags : 4;
+  uint m_enableRender : 1; // x153
+  uint m_worldLightingDirty : 1;
+  uint m_drawEnabled : 1;
+  uint m_doTargetDistanceTest : 1;
+  uint x153_4_ : 1;
+  uint x153_5_ : 1;
+  uint m_targetable : 1;
+  uint x153_7_ : 1;
+  uint x154_0_ : 1;
+  uint x154_1_ : 1;
+  uint x154_2_ : 1;
+  uint x154_3_ : 1;
+  uint mLoopingSoundCount : 3;
+  uint x154_7_ : 1;
 };
 CHECK_SIZEOF(CActor, 0x158)
 

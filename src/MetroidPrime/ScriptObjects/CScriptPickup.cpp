@@ -232,7 +232,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       mEnableTractorTest = true;
       mgr.DeleteObjectRequest(GetUniqueId());
     } else {
-      CColor(1.0f, 1.0f, 1.0f, 0.0f); // TODO: Assign this color to where CActor::mTime currently is
+      SetModelFlags(CModelFlags::AlphaBlended(0.f).DepthCompareUpdate(true, false));
       x170 = mRespawnTime;
       mCurTime = 0.f;
       mFadeTime = 0.25f;
