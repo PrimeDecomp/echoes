@@ -10,11 +10,10 @@
 #include "string.h"
 
 static const uint sTypeTable[] = {
-    'CLSN', 'CSPP', 'CMDL', 'CSKR', 'ANIM', 'CINF', 'TXTR', 'PLTT', 'FONT', 'ANCS',
-    'ANMS', 'MADF', 'MLVL', 'MREA', 'MAPW', 'MAPA', 'SAVW', 'SAVA', 'PART', 'WPSC',
-    'SWHC', 'DPSC', 'ELSC', 'CRSC', 'SPSC', 'SRSC', 'AFSM', 'DCLN', 'AGSC', 'ATBL',
-    'CSNG', 'STRG', 'SCAN', 'PATH', 'DGRP', 'HMAP', 'PTLA', 'STLC', 'EGMC', 'RULE',
-    'FSM2', 'CTWK', 'FRME', 'HINT', 'MAPU', 'DUMB',
+    'CLSN', 'CSPP', 'CMDL', 'CSKR', 'ANIM', 'CINF', 'TXTR', 'PLTT', 'FONT', 'ANCS', 'ANMS', 'MADF',
+    'MLVL', 'MREA', 'MAPW', 'MAPA', 'SAVW', 'SAVA', 'PART', 'WPSC', 'SWHC', 'DPSC', 'ELSC', 'CRSC',
+    'SPSC', 'SRSC', 'AFSM', 'DCLN', 'AGSC', 'ATBL', 'CSNG', 'STRG', 'SCAN', 'PATH', 'DGRP', 'HMAP',
+    'PTLA', 'STLC', 'EGMC', 'RULE', 'FSM2', 'CTWK', 'FRME', 'HINT', 'MAPU', 'DUMB',
 };
 
 CFactoryMgr::CFactoryMgr() {}
@@ -41,15 +40,16 @@ bool CFactoryMgr::CanMakeMemory(const SObjectTag& tag) const {
   return mMemFactories.find(tag.type) != mMemFactories.end();
 }
 
-rstl::auto_ptr< CObjOwnerDerivedFromIObjUntyped >
-CFactoryMgr::MakeObject(const SObjectTag& tag, CInputStream& in, const CVParamTransfer& params) {
+rstl::auto_ptr< IObj > CFactoryMgr::MakeObject(const SObjectTag& tag, CInputStream& in,
+                                               const CVParamTransfer& params) {
   rstl::map< int, FFactoryFunc >::iterator it = mFactories.find(tag.type);
   return it->second(tag, in, params).GetObjForTransfer();
 }
 
-rstl::auto_ptr< CObjOwnerDerivedFromIObjUntyped >
-CFactoryMgr::MakeObjectFromMemory(const SObjectTag& tag, const rstl::auto_ptr< uchar >& buffer,
-                                  int size, bool compressed, const CVParamTransfer& params) {
+rstl::auto_ptr< IObj > CFactoryMgr::MakeObjectFromMemory(const SObjectTag& tag,
+                                                         const rstl::auto_ptr< uchar >& buffer,
+                                                         int size, bool compressed,
+                                                         const CVParamTransfer& params) {
   rstl::map< int, FMemFactoryFunc >::const_iterator memIt = mMemFactories.find(tag.type);
   if (memIt != mMemFactories.end()) {
     FMemFactoryFunc factory = memIt->second;
