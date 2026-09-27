@@ -12,6 +12,8 @@
 #include "rstl/string.hpp"
 
 class CGuiTextProperties {
+  friend class CGuiTextSupport;
+
 public:
   CGuiTextProperties(bool wordWrap, EJustification justification,
                      EVerticalJustification verticalJustification,
@@ -32,16 +34,33 @@ public:
   ~CGuiTextSupport();
   void SetText(const rstl::wstring& text, bool multipage = false);
   void SetText(const rstl::string& text, bool multipage = false);
+  void AddText(const rstl::wstring& text);
   void SetFontColor(const CColor& color);
   void SetOutlineColor(const CColor& color);
+  void SetGeometryColor(const CColor& color);
+  void SetControlTXTRMap(const rstl::vector< rstl::pair< CAssetId, CAssetId > >* textureMap);
   void SetWordWrap(bool wordWrap);
   void SetImageBaseline(bool baseline);
+  void SetTypeWriteEffectOptions(bool enable, float fadeTime, float rate);
   void Update(float dt);
   void Render() const;
+  void CheckAndRebuildTextBuffer() const;
+  bool CheckAndRebuildRenderBuffer() const;
+  void ClearRenderBuffer();
+  bool GetIsTextSupportFinishedLoading() const;
+  float GetTotalAnimationTime() const;
+  float GetNumCharactersPrinted() const;
+  float GetCurrentAnimationOverAge() const;
+  int GetTotalPageCount();
+  void SetPage(int page);
+  const CTextRenderBuffer* GetCurrentPageRenderBuffer() const;
+  const rstl::pair< CVector2i, CVector2i >& GetBounds();
 
 private:
+  bool _GetIsTextSupportFinishedLoading() const;
+
   CSimplePool* mPool;
-  CTextExecuteBuffer mExecuteBuffer;
+  mutable CTextExecuteBuffer mExecuteBuffer;
   rstl::wstring mText;
   float mCurrentTimeMod900;
   CGuiTextProperties mProperties;

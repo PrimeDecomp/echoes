@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/CTargetReticles.hpp"

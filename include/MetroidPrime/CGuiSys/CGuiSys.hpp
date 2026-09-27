@@ -6,7 +6,7 @@
 #include "rstl/rc_ptr.hpp"
 #include "rstl/single_ptr.hpp"
 
-// #include "GuiSys/CGuiTextSupport.hpp"
+// #include "Kyoto/Text/CGuiTextSupport.hpp"
 
 class IFactory;
 class CSimplePool;

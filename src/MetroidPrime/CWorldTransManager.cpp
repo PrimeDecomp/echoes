@@ -1,6 +1,6 @@
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Graphics/CLight.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
