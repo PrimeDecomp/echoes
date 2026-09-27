@@ -570,6 +570,13 @@ WorldFormat/CCollidableOBBTree.cpp:
 	.sdata      start:0x80418950 end:0x80418958
 	.sdata2     start:0x8041DDB0 end:0x8041DDE0
 
+WorldFormat/CCollidableOBBTreeGroup.cpp:
+	.text       start:0x80252988 end:0x802548B4
+	.rodata     start:0x803AD880 end:0x803AD8A0
+	.data       start:0x803B8A60 end:0x803B8A90
+	.sdata      start:0x80418958 end:0x80418960
+	.sdata2     start:0x8041DDE0 end:0x8041DDF0
+
 Weapons/CProjectileWeapon.cpp:
 	.text       start:0x802591B4 end:0x8025CA80
 	.rodata     start:0x803AD930 end:0x803AD938

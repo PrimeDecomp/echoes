@@ -7,7 +7,7 @@
 CScriptPlatform::CScriptPlatform(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CModelData& model, const CActorParameters& params, const CAABox& bounds,
-    const rstl::optional_object< TLockedToken< CCollidableOBBTreeGroupContainer > >& dcln,
+    const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
     const CHealthInfo& health, const CDamageVulnerability& vulnerability,
     const CMaterialList& materials, bool detectCollision, uint maxRainSplashes, uint rainGenRate,
     const SPlatformMotionSpline& motionSpline, uint motionFlags, const CVector3f& conveyorVelocity,

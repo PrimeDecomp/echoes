@@ -392,6 +392,7 @@ config.libs = [
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),
+            Object(NonMatching, "WorldFormat/CCollidableOBBTreeGroup.cpp"),
             Object(NonMatching, "WorldFormat/CAreaOctTree.cpp"),
             Object(NonMatching, "WorldFormat/CMetroidAreaCollider.cpp"),
             Object(NonMatching, "WorldFormat/CAreaOctTree_Tests.cpp"),

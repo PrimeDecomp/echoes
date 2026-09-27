@@ -8,7 +8,7 @@
 #include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
 
-class CCollidableOBBTreeGroupContainer;
+class COBBTreeGroup;
 class CFluidPlane;
 
 // Guessed name: an owned control spline, its timing parameters and mode.
@@ -39,7 +39,7 @@ public:
   CScriptPlatform(
       TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
       const CModelData& model, const CActorParameters& params, const CAABox& bounds,
-      const rstl::optional_object< TLockedToken< CCollidableOBBTreeGroupContainer > >& dcln,
+      const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
       const CHealthInfo& health, const CDamageVulnerability& vulnerability,
       const CMaterialList& materials, bool detectCollision, uint maxRainSplashes, uint rainGenRate,
       const SPlatformMotionSpline& motionSpline, uint motionFlags,
@@ -125,7 +125,7 @@ private:
   CHealthInfo mInitialHealth;
   CHealthInfo mHealth;
   CDamageVulnerability mDamageVulnerability;
-  rstl::optional_object< TLockedToken< CCollidableOBBTreeGroupContainer > > mTreeGroupContainer;
+  rstl::optional_object< TLockedToken< COBBTreeGroup > > mTreeGroupContainer;
   rstl::single_ptr< CCollisionPrimitive > mTreeGroup;
   rstl::vector< SRiders > mRiders;
   rstl::vector< SRiders > mStaticSlaves;

@@ -16,6 +16,9 @@ public:
   CRayCastResult CastRayInternal(const CInternalRayCastStructure& ray) const override;
 
   const CSphere& GetSphere() const { return mSphere; }
+  CSphere Transform(const CTransform4f& xf) const {
+    return CSphere(xf * mSphere.GetCenter(), mSphere.GetRadius());
+  }
   void SetSphere(const CSphere& sphere) { mSphere = sphere; }
 
 private:
