@@ -114,4 +114,27 @@ CGX_INLINE void CGX::SetNumIndStages(uchar num) {
   }
 }
 
+CGX_INLINE void CGX::SetArray(GXAttr attr, const void* data, uchar stride) {
+  if (data == nullptr) {
+    return;
+  }
+  if (attr >= GX_VA_POS && attr < GX_POS_MTX_ARRAY) {
+    uint idx = attr - GX_VA_POS;
+    if (gpGXState->mArrayPtrs[idx] == data) {
+      return;
+    }
+    gpGXState->mArrayPtrs[idx] = data;
+  }
+  GXSetArray(attr, data, stride);
+}
+
+CGX_INLINE void CGX::Begin(GXPrimitive prim, GXVtxFmt fmt, ushort numVtx) {
+  if (gpGXState->mChanFlags != 0) {
+    FlushState();
+  }
+  GXBegin(prim, fmt, numVtx);
+}
+
+CGX_INLINE void CGX::End() {}
+
 #endif // _CGX_IMPL

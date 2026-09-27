@@ -28,6 +28,19 @@ class CCubeModel {
 public:
   class ModelInstance {
   public:
+    ModelInstance(rstl::vector< void* >& surfaces, const void* materialData, const void* positions,
+                  const void* normals, const void* colors, const void* uvs, const void* packedTexCoords)
+    : mSurfacePtrs(surfaces)
+    , mMaterialData(materialData)
+    , mPositions(positions)
+    , mNormals(normals)
+    , mColors(colors)
+    , mTexCoords(uvs)
+    , mPackedTexCoords(packedTexCoords) {}
+
+    rstl::vector< void* >& Surfaces() { return mSurfacePtrs; }
+    const void* GetMaterialPointer() const { return mMaterialData; }
+    void SetMaterialPointer(const void* data) { mMaterialData = data; }
     const void* GetVertexPointer() const { return mPositions; }
     const void* GetNormalPointer() const { return mNormals; }
     const void* GetColorPointer() const { return mColors; }
@@ -70,7 +83,14 @@ public:
   void DrawNormal(const CModelFlags& flags) const;
   void DrawAlpha(const CModelFlags& flags) const;
   void SetArraysCurrent() const;
+  void SetStaticArraysCurrent() const;
   void DrawSurface(const CCubeSurface& surface, const CModelFlags& flags) const;
+  void DrawSurfaceWireframe(const CCubeSurface& surface) const;
+  void DrawSurfaceFlat(const CCubeSurface& surface) const; // Guessed name.
+  void DrawSurfaces(const CModelFlags& flags) const;
+  void DrawSurfaces(u64 mask, const CModelFlags& flags) const;
+  void DrawNormalSurfaces(const CModelFlags& flags) const;
+  void DrawAlphaSurfaces(const CModelFlags& flags) const;
 
   void SetUsingPackedLightmaps(bool v) const;
   static bool IsUsingPackedLightmaps() { return sUsingPackedLightmaps; }
@@ -99,6 +119,8 @@ public:
   }
 
 private:
+  void CacheMaterialData(); // Guessed name; caches the offsets and material payload.
+
   ModelInstance mInstance;
   rstl::vector< TCachedToken< CTexture > >* mTextures;
   CAABox mBounds;
@@ -106,6 +128,7 @@ private:
   CCubeSurface mFirstSorted;
   mutable bool mLoadTextures : 1;
   bool mVisible : 1;
+  uchar x40_ : 6;
   uchar mVisorFlags;
   int mIdx;
   const uint* mMaterialOffsets;

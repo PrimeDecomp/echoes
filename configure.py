@@ -522,6 +522,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Basics/CSWDataDolphin.cpp"),
             Object(Matching, "Kyoto/Basics/RAssertDolphin.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CDvdRequest.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/CCubeModel.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CloseEnough.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CMatrix3f.cpp"),
