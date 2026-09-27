@@ -22,16 +22,24 @@ private:
 };
 CHECK_SIZEOF(CBodyStateCmd, 0x8)
 
-// Command storage recovered from CBodyStateCmdMgr. Constructors and additional
-// delivery overloads remain with the command-manager TU.
-
 class CBCGetupCmd : public CBodyStateCmd {
+public:
+  explicit CBCGetupCmd(pas::EGetupType type) : CBodyStateCmd(kBSC_Getup), mType(type) {}
+
 private:
   pas::EGetupType mType;
 };
 CHECK_SIZEOF(CBCGetupCmd, 0xc)
 
 class CBCStepCmd : public CBodyStateCmd {
+public:
+  CBCStepCmd(pas::EStepDirection dir, pas::EStepType type)
+  : CBodyStateCmd(kBSC_Step)
+  , mDir(dir)
+  , mType(type)
+  , mTargetPos(CVector3f::Zero())
+  , mHasTargetPos(false) {}
+
 private:
   pas::EStepDirection mDir;
   pas::EStepType mType;
@@ -41,6 +49,10 @@ private:
 CHECK_SIZEOF(CBCStepCmd, 0x20)
 
 class CBCKnockDownCmd : public CBodyStateCmd {
+public:
+  CBCKnockDownCmd(const CVector3f& dir, pas::ESeverity severity)
+  : CBodyStateCmd(kBSC_KnockDown), mDir(dir), mSeverity(severity), x18_(false) {}
+
 private:
   CVector3f mDir;
   pas::ESeverity mSeverity;
@@ -49,6 +61,10 @@ private:
 CHECK_SIZEOF(CBCKnockDownCmd, 0x1c)
 
 class CBCKnockBackCmd : public CBodyStateCmd {
+public:
+  CBCKnockBackCmd(const CVector3f& dir, pas::ESeverity severity)
+  : CBodyStateCmd(kBSC_KnockBack), mDir(dir), mSeverity(severity), x18_(-1), x1c_(false) {}
+
 private:
   CVector3f mDir;
   pas::ESeverity mSeverity;
@@ -58,6 +74,13 @@ private:
 CHECK_SIZEOF(CBCKnockBackCmd, 0x20)
 
 class CBCMeleeAttackCmd : public CBodyStateCmd {
+public:
+  explicit CBCMeleeAttackCmd(pas::ESeverity severity)
+  : CBodyStateCmd(kBSC_MeleeAttack)
+  , mSeverity(severity)
+  , mTargetPos(CVector3f::Zero())
+  , mHasTargetPos(false) {}
+
 private:
   pas::ESeverity mSeverity;
   CVector3f mTargetPos;
@@ -66,6 +89,13 @@ private:
 CHECK_SIZEOF(CBCMeleeAttackCmd, 0x1c)
 
 class CBCProjectileAttackCmd : public CBodyStateCmd {
+public:
+  CBCProjectileAttackCmd(pas::ESeverity severity, const CVector3f& target, bool blendAnims)
+  : CBodyStateCmd(kBSC_ProjectileAttack)
+  , mSeverity(severity)
+  , mTarget(target)
+  , mBlendAnims(blendAnims) {}
+
 private:
   pas::ESeverity mSeverity;
   CVector3f mTarget;
@@ -74,6 +104,13 @@ private:
 CHECK_SIZEOF(CBCProjectileAttackCmd, 0x1c)
 
 class CBCLoopAttackCmd : public CBodyStateCmd {
+public:
+  CBCLoopAttackCmd(pas::ELoopAttackType type, bool waitForAnimOver = false)
+  : CBodyStateCmd(kBSC_LoopAttack)
+  , mType(type)
+  , mWaitForAnimOver(waitForAnimOver)
+  , mSkipInto(false) {}
+
 private:
   pas::ELoopAttackType mType;
   int mWaitForAnimOver;
@@ -82,18 +119,36 @@ private:
 CHECK_SIZEOF(CBCLoopAttackCmd, 0x14)
 
 class CBCLoopReactionCmd : public CBodyStateCmd {
+public:
+  explicit CBCLoopReactionCmd(pas::EReactionType type)
+  : CBodyStateCmd(kBSC_LoopReaction), mType(type) {}
+
 private:
   pas::EReactionType mType;
 };
 CHECK_SIZEOF(CBCLoopReactionCmd, 0xc)
 
 class CBCLoopHitReactionCmd : public CBodyStateCmd {
+public:
+  explicit CBCLoopHitReactionCmd(pas::EReactionType type)
+  : CBodyStateCmd(kBSC_LoopHitReaction), mType(type) {}
+
 private:
   pas::EReactionType mType;
 };
 CHECK_SIZEOF(CBCLoopHitReactionCmd, 0xc)
 
 class CBCGenerateCmd : public CBodyStateCmd {
+public:
+  CBCGenerateCmd(pas::EGenerateType type, int animId)
+  : CBodyStateCmd(kBSC_Generate)
+  , mType(type)
+  , mTargetPos(CVector3f::Zero())
+  , mAnimId(animId)
+  , mTargetTransform(false)
+  , mOverrideAnim(animId != -1)
+  , x1c_2_(false) {}
+
 private:
   pas::EGenerateType mType;
   CVector3f mTargetPos;
@@ -105,6 +160,13 @@ private:
 CHECK_SIZEOF(CBCGenerateCmd, 0x20)
 
 class CBCHurledCmd : public CBodyStateCmd {
+public:
+  CBCHurledCmd(const CVector3f& dir, const CVector3f& launchVel, bool startInLoop = false)
+  : CBodyStateCmd(kBSC_Hurled)
+  , mDirection(dir)
+  , mLaunchVel(launchVel)
+  , mStartInKnockLoop(startInLoop) {}
+
 private:
   CVector3f mDirection;
   CVector3f mLaunchVel;
@@ -113,6 +175,18 @@ private:
 CHECK_SIZEOF(CBCHurledCmd, 0x24)
 
 class CBCJumpCmd : public CBodyStateCmd {
+public:
+  CBCJumpCmd(const CVector3f& waypoint, pas::EJumpType type, pas::EJumpState initialState,
+             int unknown1, int unknown2)
+  : CBodyStateCmd(kBSC_Jump)
+  , mType(type)
+  , xc_(unknown1)
+  , mWaypoint1(waypoint)
+  , mWaypoint2(CVector3f::Zero())
+  , mInitialState(initialState)
+  , x2c_(unknown2)
+  , mWallJump(false) {}
+
 private:
   pas::EJumpType mType;
   int xc_;
@@ -126,13 +200,19 @@ CHECK_SIZEOF(CBCJumpCmd, 0x34)
 
 // Guessed name
 class CBCUnknown18Cmd : public CBodyStateCmd {
+public:
+  CBCUnknown18Cmd() : CBodyStateCmd(kBSC_Unknown18), x8_(0) {}
+
 private:
   int x8_;
 };
 CHECK_SIZEOF(CBCUnknown18Cmd, 0xc)
 
 // Guessed name
-class CBCUnknown19Cmd : public CBodyStateCmd {};
+class CBCUnknown19Cmd : public CBodyStateCmd {
+public:
+  CBCUnknown19Cmd() : CBodyStateCmd(kBSC_Unknown19) {}
+};
 CHECK_SIZEOF(CBCUnknown19Cmd, 0x8)
 
 class CBCSlideCmd : public CBodyStateCmd {
@@ -150,12 +230,23 @@ private:
 CHECK_SIZEOF(CBCSlideCmd, 0x18)
 
 class CBCTauntCmd : public CBodyStateCmd {
+public:
+  explicit CBCTauntCmd(pas::ETauntType type) : CBodyStateCmd(kBSC_Taunt), mType(type) {}
+
 private:
   pas::ETauntType mType;
 };
 CHECK_SIZEOF(CBCTauntCmd, 0xc)
 
 class CBCScriptedCmd : public CBodyStateCmd {
+public:
+  CBCScriptedCmd(int animId, bool isLooped, bool useLoopDuration, float loopDuration)
+  : CBodyStateCmd(kBSC_Scripted)
+  , mAnimId(animId)
+  , mIsLooped(isLooped)
+  , mUseLoopDuration(useLoopDuration)
+  , mLoopDuration(loopDuration) {}
+
 private:
   int mAnimId;
   bool mIsLooped : 1;
@@ -165,6 +256,10 @@ private:
 CHECK_SIZEOF(CBCScriptedCmd, 0x14)
 
 class CBCCoverCmd : public CBodyStateCmd {
+public:
+  CBCCoverCmd(pas::ECoverDirection dir, const CVector3f& target, const CVector3f& alignDir)
+  : CBodyStateCmd(kBSC_Cover), mDir(dir), mTargetPos(target), mAlignDir(alignDir) {}
+
 private:
   pas::ECoverDirection mDir;
   CVector3f mTargetPos;
@@ -173,18 +268,28 @@ private:
 CHECK_SIZEOF(CBCCoverCmd, 0x24)
 
 class CBCWallHangCmd : public CBodyStateCmd {
+public:
+  explicit CBCWallHangCmd(TUniqueId uid) : CBodyStateCmd(kBSC_WallHang), mWpId(uid) {}
+
 private:
   TUniqueId mWpId;
 };
 CHECK_SIZEOF(CBCWallHangCmd, 0xc)
 
 class CBCAdditiveAimCmd : public CBodyStateCmd {
+public:
+  CBCAdditiveAimCmd() : CBodyStateCmd(kBSC_AdditiveAim), x8_(0) {}
+
 private:
   int x8_;
 };
 CHECK_SIZEOF(CBCAdditiveAimCmd, 0xc)
 
 class CBCAdditiveFlinchCmd : public CBodyStateCmd {
+public:
+  explicit CBCAdditiveFlinchCmd(float weight)
+  : CBodyStateCmd(kBSC_AdditiveFlinch), mWeight(weight), xc_(-1) {}
+
 private:
   float mWeight;
   int xc_;
@@ -211,6 +316,10 @@ CHECK_SIZEOF(CBCAdditiveReactionCmd, 0x14)
 
 // Guessed name
 class CBCAdditiveLoopReactionCmd : public CBodyStateCmd {
+public:
+  CBCAdditiveLoopReactionCmd(int type, float weight)
+  : CBodyStateCmd(kBSC_AdditiveLoopReaction), mWeight(weight), mType(type) {}
+
 private:
   float mWeight;
   int mType;
@@ -219,10 +328,31 @@ CHECK_SIZEOF(CBCAdditiveLoopReactionCmd, 0x10)
 
 // Guessed name
 class CBCUnknown32Cmd : public CBodyStateCmd {
+public:
+  CBCUnknown32Cmd() : CBodyStateCmd(kBSC_Unknown32), x8_(0.f) {}
+
 private:
   float x8_;
 };
 CHECK_SIZEOF(CBCUnknown32Cmd, 0xc)
+
+class CBCLocomotionCmd {
+public:
+  CBCLocomotionCmd(const CVector3f& move, const CVector3f& face, float weight)
+  : mMove(move), mFace(face), mWeight(weight) {}
+
+  const CVector3f& GetMoveVector() const { return mMove; }
+
+  const CVector3f& GetFaceVector() const { return mFace; }
+
+  float GetWeight() const { return mWeight; }
+
+private:
+  CVector3f mMove;
+  CVector3f mFace;
+  float mWeight;
+};
+CHECK_SIZEOF(CBCLocomotionCmd, 0x1c)
 
 class CBodyStateCmdMgr {
 public:
@@ -230,6 +360,7 @@ public:
   ~CBodyStateCmdMgr();
 
   void DeliverCmd(const CBodyStateCmd& cmd);
+  void DeliverCmd(const CBCLocomotionCmd& cmd);
   void DeliverCmd(EBodyStateCmd cmd);
   void DeliverCmd(const CBCAdditiveReactionCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
@@ -237,6 +368,8 @@ public:
   }
 
   void BlendSteeringCmds();
+  void ClearLocomotionCmds();
+  void SetSteeringSpeedRange(float minimum, float maximum);
   void Reset();
   CBodyStateCmd* GetCmd(EBodyStateCmd cmd);
   const CBodyStateCmd* GetCmd(EBodyStateCmd cmd) const;

@@ -247,6 +247,11 @@ MetroidPrime/CFluidPlane.cpp:
 	.text       start:0x800EC978 end:0x800ECCDC
 	.data       start:0x803B3AA8 end:0x803B3AC0
 
+MetroidPrime/BodyState/CBodyStateCmdMgr.cpp:
+	.text       start:0x800EE0A0 end:0x800EF908
+	.data       start:0x803B3BC0 end:0x803B3CC0
+	.sdata2     start:0x8041B820 end:0x8041B830
+
 MetroidPrime/BodyState/CBSLocomotion.cpp:
 	.text       start:0x800F2BC4 end:0x800F5004
 	.ctors      start:0x803A5514 end:0x803A5518
