@@ -1026,7 +1026,7 @@ u32 VIGetTvFormat(void) {
 
 // NONMATCHING
 u32 VIGetScanMode(void) {
-    u32 scanMode;
+    u32 scanMode = 0;
     BOOL enabled = OSDisableInterrupts();
 
     if ((u32)(__VIRegs[54] & 1) == 1) {

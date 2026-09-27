@@ -8,11 +8,10 @@ static rstl::vector< CSegId >::const_iterator ConnectedPartsEnd(const CCharLayou
                                                                 const CSegId& seg);
 
 CPoseAsTransforms_Linear::CPoseAsTransforms_Linear(int count, int withScale, int withOffsets)
-: mElements(count, CElementType(CMatrix3f::sIdentity, CVector3f::sZeroVector,
-                                CVector3f::sZeroVector))
-, mScales(withScale == 1 ? count : 0, CVector3f::sOneVector)
-, mUnscaledRotations(withScale == 1 ? count : 0, CMatrix3f::sIdentity)
-, x30_(withOffsets == 1 ? count : 0, CVector3f::sZeroVector)
+: mElements(count, CElementType(CMatrix3f::Identity(), CVector3f::Zero(), CVector3f::Zero()))
+, mScales(withScale == 1 ? count : 0, CVector3f::One())
+, mUnscaledRotations(withScale == 1 ? count : 0, CMatrix3f::Identity())
+, x30_(withOffsets == 1 ? count : 0, CVector3f::Zero())
 , x40_24_(false)
 , mUniformScale(0) {}
 
@@ -51,10 +50,10 @@ void CPoseAsTransforms_Linear::BuildPose(const CCharLayoutInfo& layout,
     const CSegId* parent = layout.GetLinearParents().data();
     CMatrix3f* unscaled = mUnscaledRotations.data();
     CVector3f* scale = mScales.data();
-    elem->mRotation = CMatrix3f::sIdentity;
-    elem->mOffset = CVector3f::sZeroVector;
-    *unscaled = CMatrix3f::sIdentity;
-    *scale = CVector3f::sOneVector;
+    elem->mRotation = CMatrix3f::Identity();
+    elem->mOffset = CVector3f::Zero();
+    *unscaled = CMatrix3f::Identity();
+    *scale = CVector3f::One();
     const uchar* scaleBase = scales;
     rotations += stride;
     translations += stride;
@@ -73,11 +72,9 @@ void CPoseAsTransforms_Linear::BuildPose(const CCharLayoutInfo& layout,
           parentRotation * reinterpret_cast< const CQuaternion* >(rotations)->BuildTransform();
       elem->mRotation = *unscaled * CMatrix3f::Scale(scale->GetX(), scale->GetY(), scale->GetZ());
       elem->mLocalOffset = *reinterpret_cast< const CVector3f* >(translations);
-      elem->mOffset =
-          parentElem.mOffset +
-          parentRotation *
-              (elem->mLocalOffset *
-               *reinterpret_cast< const CVector3f* >(scaleBase + stride * parentId));
+      elem->mOffset = parentElem.mOffset +
+                      parentRotation * (elem->mLocalOffset * *reinterpret_cast< const CVector3f* >(
+                                                                 scaleBase + stride * parentId));
       rotations += stride;
       translations += stride;
       scales += stride;
@@ -89,8 +86,8 @@ void CPoseAsTransforms_Linear::BuildPose(const CCharLayoutInfo& layout,
   } else {
     CElementType* elem = mElements.data();
     const CSegId* parent = layout.GetLinearParents().data();
-    elem->mRotation = CMatrix3f::sIdentity;
-    elem->mOffset = CVector3f::sZeroVector;
+    elem->mRotation = CMatrix3f::Identity();
+    elem->mOffset = CVector3f::Zero();
     rotations += stride;
     translations += stride;
     ++parent;
@@ -98,8 +95,8 @@ void CPoseAsTransforms_Linear::BuildPose(const CCharLayoutInfo& layout,
     int count = mElements.size();
     for (int i = 1; i < count; ++i) {
       const CElementType& parentElem = mElements[parent->val()];
-      elem->mRotation =
-          parentElem.mRotation * reinterpret_cast< const CQuaternion* >(rotations)->BuildTransform();
+      elem->mRotation = parentElem.mRotation *
+                        reinterpret_cast< const CQuaternion* >(rotations)->BuildTransform();
       elem->mLocalOffset = *reinterpret_cast< const CVector3f* >(translations);
       elem->mOffset = parentElem.mOffset + parentElem.mRotation * elem->mLocalOffset;
       rotations += stride;
@@ -130,7 +127,7 @@ void CPoseAsTransforms_Linear::RotateHierarchy(const CCharLayoutInfo& layout, co
     }
     elem.mRotation = elem.mRotation.Orthonormalized();
   } else {
-    CMatrix3f unscaled(CMatrix3f::sIdentity);
+    CMatrix3f unscaled(CMatrix3f::Identity());
     if (order == 1) {
       unscaled = rotation * elem.mRotation;
     } else {
@@ -142,11 +139,12 @@ void CPoseAsTransforms_Linear::RotateHierarchy(const CCharLayoutInfo& layout, co
   }
 
   if (layout.GetSegmentData(seg).GetNumConnectedParts() >= 2) {
-    rstl::vector< CSegId >::const_iterator it = layout.GetSegmentData(seg).GetConnectedParts().begin();
+    rstl::vector< CSegId >::const_iterator it =
+        layout.GetSegmentData(seg).GetConnectedParts().begin();
     rstl::vector< CSegId >::const_iterator end = ConnectedPartsEnd(layout, seg);
     ++it;
     bool hasScale = mScales.size() != 0;
-    const CVector3f& scale = hasScale ? mScales[id] : CVector3f::sOneVector;
+    const CVector3f& scale = hasScale ? mScales[id] : CVector3f::One();
     const CMatrix3f& parentRotation = hasScale ? mUnscaledRotations[id] : elem.mRotation;
     for (; it != end; ++it) {
       CElementType& child = mElements[it->val()];
@@ -162,6 +160,6 @@ static rstl::vector< CSegId >::const_iterator ConnectedPartsEnd(const CCharLayou
 }
 
 void CPoseAsTransforms_Linear::AllocateScale() {
-  mScales.resize(mElements.size(), CVector3f::sOneVector);
-  mUnscaledRotations.resize(mElements.size(), CMatrix3f::sIdentity);
+  mScales.resize(mElements.size(), CVector3f::Zero());
+  mUnscaledRotations.resize(mElements.size(), CMatrix3f::Identity());
 }
