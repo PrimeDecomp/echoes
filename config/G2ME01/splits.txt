@@ -261,6 +261,11 @@ MetroidPrime/BodyState/CBodyStateCmdMgr.cpp:
 	.data       start:0x803B3BC0 end:0x803B3CC0
 	.sdata2     start:0x8041B820 end:0x8041B830
 
+MetroidPrime/BodyState/CBodyStateInfo.cpp:
+	.text       start:0x800EF908 end:0x800F128C
+	.data       start:0x803B3CC0 end:0x803B3D60
+	.sdata2     start:0x8041B830 end:0x8041B840
+
 MetroidPrime/BodyState/CBSLocomotion.cpp:
 	.text       start:0x800F2BC4 end:0x800F5004
 	.ctors      start:0x803A5514 end:0x803A5518

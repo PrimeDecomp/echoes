@@ -184,7 +184,8 @@ enum EBodyType {
   kBT_Pitchable,
   kBT_RestrictedFlyer,
   kBT_WallWalker,
-  kBT_NewFlyer
+  kBT_NewFlyer,
+  kBT_Blended // Guessed name
 };
 
 enum EBodyStateCmd {
