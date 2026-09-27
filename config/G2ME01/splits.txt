@@ -819,6 +819,11 @@ Kyoto/Text/CDrawStringOptions.cpp:
 Kyoto/Text/CFontRenderState.cpp:
 	.text       start:0x802B3CB8 end:0x802B4914
 
+Kyoto/Text/CLineInstruction.cpp:
+	.text       start:0x802B49A8 end:0x802B4D88
+	.data       start:0x803B9CE0 end:0x803B9D28
+	.sdata2     start:0x8041E438 end:0x8041E440
+
 Kyoto/Text/CRasterFont.cpp:
 	.text       start:0x802B4FB0 end:0x802B6AC8
 	.rodata     start:0x803AEE68 end:0x803AEE88
@@ -832,8 +837,21 @@ Kyoto/Text/CSaveableState.cpp:
 Kyoto/Text/CTextExecuteBuffer.cpp:
 	.text       start:0x802B6D90 end:0x802B90D0
 
+Kyoto/Text/CTextInstruction.cpp:
+	.text       start:0x802B90D0 end:0x802B9368
+	.rodata     start:0x803AEE90 end:0x803AEE98
+	.data       start:0x803B9DA8 end:0x803B9DC8
+
 Kyoto/Text/CTextParser.cpp:
 	.text       start:0x802B9368 end:0x802BA7E0
+
+Kyoto/Text/CWordInstruction.cpp:
+	.text       start:0x802BA95C end:0x802BAB4C
+	.data       start:0x803B9F80 end:0x803B9FA0
+
+Kyoto/Text/CBlockInstruction.cpp:
+	.text       start:0x802BAB4C end:0x802BAD08
+	.data       start:0x803B9FA0 end:0x803B9FE8
 
 Kyoto/Graphics/CLight.cpp:
 	.text       start:0x802BAD94 end:0x802BB3D8
