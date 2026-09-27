@@ -6,6 +6,11 @@
 
 class CCollisionInfoList {
 public:
+  void Add(const CCollisionInfo& info) {
+    if (mList.size() < 32) {
+      mList.push_back(info);
+    }
+  }
   int GetCount() const { return mList.size(); }
   void Clear() { mList.clear(); }
   const CCollisionInfo& operator[](int index) const { return mList[index]; }

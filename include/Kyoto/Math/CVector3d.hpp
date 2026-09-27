@@ -18,6 +18,8 @@ public:
   double GetX() const { return mX; }
   double GetY() const { return mY; }
   double GetZ() const { return mZ; }
+  double& operator[](int index) { return (&mX)[index]; }
+  const double& operator[](int index) const { return (&mX)[index]; }
 
   static double Dot(const CVector3d& a, const CVector3d& b);
   static CVector3d Cross(const CVector3d& a, const CVector3d& b);
@@ -37,5 +39,6 @@ private:
 };
 
 CVector3d operator+(const CVector3d& other);
+CVector3d operator-(const CVector3d& lhs, const CVector3d& rhs);
 
 #endif // _CVECTOR3D
