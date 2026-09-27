@@ -1,6 +1,7 @@
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/CGameLight.hpp"
@@ -71,6 +72,7 @@ TYPES_MATCH_IMPL(CWeapon, CActor, kET_Weapon)
 TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)
 TYPES_MATCH_IMPL(CGameCamera, CActor, kET_GameCamera)
 TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
+TYPES_MATCH_IMPL(CFirstPersonCamera, CGameCamera, kET_FirstPersonCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_REF_IMPL(CGameCamera, kET_GameCamera)
