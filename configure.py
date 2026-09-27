@@ -513,6 +513,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Alloc/CMediumAllocPool.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CSmallAllocPool.cpp"),
             Object(NonMatching, "Kyoto/Alloc/CGameAllocator.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/DolphinCModel.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/IAllocator.cpp"),
             Object(NonMatching, "Kyoto/PVS/CPVSVisOctree.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/PVS/CPVSVisSet.cpp"),

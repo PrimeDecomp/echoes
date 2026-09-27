@@ -396,6 +396,10 @@ public:
   static bool GetDolphinLastFrameAbove() { return mLastFrameUsedAbove; }
   static GXBool GetUseVideoFilter();
   static int GetFrameCounter();
+  static const CTransform4f& GetGXModelView() {
+    return *reinterpret_cast< const CTransform4f* >(mGxModelView);
+  }
+  static const Mtx& GetGXModelViewInvXpose() { return mGxModelViewInvXpose; }
   static void* GetDolphinSpareBuffer() { return mpSpareBuffer; }
   static int GetSpareBufferSize() { return mSpareBufferSize; }
   static void SetProgressiveMode(bool b);
@@ -482,6 +486,7 @@ private:
   static Mtx mGXViewPointMatrix;
   static Mtx mGXModelMatrix;
   static Mtx mGxModelView;
+  static Mtx mGxModelViewInvXpose;
   static Mtx mCameraMtx;
 
   // .sdata

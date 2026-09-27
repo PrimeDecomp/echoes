@@ -839,6 +839,13 @@ Kyoto/Alloc/CGameAllocator.cpp:
 	.sbss       start:0x80419BA8 end:0x80419BB8
 	.sdata2     start:0x8041EA28 end:0x8041EA30
 
+Kyoto/Graphics/DolphinCModel.cpp:
+	.text       start:0x80310F38 end:0x80312320
+	.rodata     start:0x803AFE68 end:0x803AFE70
+	.data       start:0x803BB0D8 end:0x803BB0E8
+	.sdata      start:0x80418C00 end:0x80418C08
+	.sbss       start:0x80419BD8 end:0x80419BF0
+
 Kyoto/Text/CStringTable.cpp:
 	.text       start:0x80312320 end:0x80312BA8
 	.ctors      start:0x803A5658 end:0x803A565C
