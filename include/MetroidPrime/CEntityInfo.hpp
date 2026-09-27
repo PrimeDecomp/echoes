@@ -49,6 +49,7 @@ enum EEntityType {
   kET_ScriptStreamedMusic = 84,
   kET_ScriptTeamAi = 88,
   kET_ScriptTrigger = 92,
+  kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
   kET_SpindleCamera = 100,
   kET_DarkSamus = 111,
