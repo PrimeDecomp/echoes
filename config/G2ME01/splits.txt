@@ -639,7 +639,7 @@ Kyoto/Math/CPlane.cpp:
 	.sdata2     start:0x8041E920 end:0x8041E928
 
 Kyoto/Math/CTri.cpp:
-	.text       start:0x802F79EC end:0x802F7A88
+	.text       start:0x802F7938 end:0x802F7A88
 
 Kyoto/Math/CQuad.cpp:
 	.text       start:0x802F7A88 end:0x802F7B28
