@@ -13,12 +13,6 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:4
 
-MetroidPrime/CAxisAngle.cpp:
-	.bss        start:0x8040AD40 end:0x8040AD4C align:4 common
-
-MetroidPrime/CEulerAngles.cpp:
-	.bss        start:0x8040AD4C end:0x8040AD58 align:4 common
-
 MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80009880
 	.ctors      start:0x803A54A4 end:0x803A54A8
@@ -40,6 +34,34 @@ MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B8E8 end:0x8001D0CC
 	.ctors      start:0x803A54AC end:0x803A54B0
 	.data       start:0x803B15D0 end:0x803B16AC
+
+MetroidPrime/CAxisAngle.cpp:
+	.text       start:0x8001D0CC end:0x8001D430
+	.ctors      start:0x803A54B0 end:0x803A54B4
+	.bss        start:0x8040AD40 end:0x8040AD4C align:4 common
+	.sdata2     start:0x8041A5F0 end:0x8041A600
+
+MetroidPrime/CEulerAngles.cpp:
+	.text       start:0x8001D430 end:0x8001D7B0
+	.ctors      start:0x803A54B4 end:0x803A54B8
+	.bss        start:0x8040AD4C end:0x8040AD58 align:4 common
+	.sdata2     start:0x8041A600 end:0x8041A628
+
+MetroidPrime/CMatrix3f_Ext.cpp:
+	.text       start:0x8001D7B0 end:0x8001D7D8
+
+MetroidPrime/CArchMsgParmUserInput.cpp:
+	.text       start:0x8001D7D8 end:0x8001D888
+	.data       start:0x803B1760 end:0x803B1770
+
+MetroidPrime/CInputGenerator.cpp:
+	.text       start:0x8001D888 end:0x8001DAF4
+
+MetroidPrime/CMainFlow.cpp:
+	.text       start:0x8001DAF4 end:0x8001E070
+	.rodata     start:0x803A60A0 end:0x803A60B0
+	.data       start:0x803B1770 end:0x803B17D0
+	.sdata      start:0x80417DE0 end:0x80417DF8
 
 MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8

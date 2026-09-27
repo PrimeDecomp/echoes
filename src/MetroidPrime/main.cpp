@@ -60,7 +60,7 @@ CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
 , frameTimeMinimum(0)
 , x4c(0.0f)
 , gameGlobalObjects(nullptr)
-, restartMode(kRM_StateSetter)  // value must be 6, TODO if the correct enum
+, restartMode(kRM_Default)
 , x5c(1.0f)
 , frameTimes(0xF4240)
 , frameTimeIdx(0)
@@ -272,11 +272,11 @@ void CMain::EnsureWorldPaksReady() {
   }
 }
 
-void CMain::StreamNewGameState(CInputStream& in, int saveIdx) {
+void CMain::StreamNewGameState(bool) {
   // TODO
   gameGlobalObjects->GameState() = nullptr;
   gpGameState = nullptr;
-  gameGlobalObjects->GameState() = new CGameState(in, saveIdx);
+  gameGlobalObjects->GameState() = new CGameState();
   gpGameState = gameGlobalObjects->GameState().get();
   // gpGameState->HintOptions().SetHintNextTime();
 }
