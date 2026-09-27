@@ -104,6 +104,16 @@ public:
     P* operator->() { return const_iterator::mNode->get_value(); }
     P* operator*() { return const_iterator::mNode->get_value(); }
     node* get_node() { return const_iterator::mNode; }
+
+    iterator& operator++() {
+      const_iterator::operator++();
+      return *this;
+    }
+    iterator operator++(int) {
+      iterator result = *this;
+      const_iterator::operator++();
+      return result;
+    }
   };
 
   red_black_tree(const S& selector = S(), const Cmp& cmp = Cmp(), const Alloc& alloc = Alloc())
@@ -150,11 +160,24 @@ public:
         n = n->get_right();
       }
     }
-    bool noResult = false;
-    if (needle == nullptr || mCmp(key, mSelector(*needle->get_value()))) {
-      noResult = true;
-    }
-    return noResult ? nullptr : needle;
+    return (needle == nullptr || mCmp(key, mSelector(*needle->get_value()))) ? nullptr : needle;
+  }
+
+  iterator lower_bound(const T& key) { return iterator(find_lower_bound(key), &mHeader, false); }
+  const_iterator lower_bound(const T& key) const {
+    return const_iterator(find_lower_bound(key), &mHeader, false);
+  }
+
+  iterator upper_bound(const T& key) { return iterator(find_upper_bound(key), &mHeader, false); }
+  const_iterator upper_bound(const T& key) const {
+    return const_iterator(find_upper_bound(key), &mHeader, false);
+  }
+
+  pair< iterator, iterator > equal_range(const T& key) {
+    return pair< iterator, iterator >(lower_bound(key), upper_bound(key));
+  }
+  pair< const_iterator, const_iterator > equal_range(const T& key) const {
+    return pair< const_iterator, const_iterator >(lower_bound(key), upper_bound(key));
   }
 
   iterator erase(iterator it) {
@@ -163,6 +186,16 @@ public:
     free_node(rebalance_for_erase(node));
     mCount--;
     return it;
+  }
+
+  int erase(const T& key) {
+    pair< iterator, iterator > range = equal_range(key);
+    int count = rstl::distance(range.first, range.second);
+    iterator it = range.first;
+    while (it != range.second) {
+      erase(it++);
+    }
+    return count;
   }
 
   void clear() {
@@ -179,6 +212,34 @@ public:
   int size() const { return mCount; }
 
 private:
+  node* find_lower_bound(const T& key) const {
+    node* n = mHeader.get_root();
+    node* result = nullptr;
+    while (n != nullptr) {
+      if (!mCmp(mSelector(*n->get_value()), key)) {
+        result = n;
+        n = n->get_left();
+      } else {
+        n = n->get_right();
+      }
+    }
+    return result;
+  }
+
+  node* find_upper_bound(const T& key) const {
+    node* n = mHeader.get_root();
+    node* result = nullptr;
+    while (n != nullptr) {
+      if (mCmp(key, mSelector(*n->get_value()))) {
+        result = n;
+        n = n->get_left();
+      } else {
+        n = n->get_right();
+      }
+    }
+    return result;
+  }
+
   S mSelector;
   Cmp mCmp;
   Alloc mAllocator;

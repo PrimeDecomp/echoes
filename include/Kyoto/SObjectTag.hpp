@@ -19,6 +19,16 @@ struct SObjectTag {
   SObjectTag(const SObjectTag& other) : type(other.type), id(other.id) {}
   SObjectTag(CInputStream& in) : type(in.ReadInt32()), id(in.ReadInt32()) {}
 
+  bool operator<(const SObjectTag& other) const {
+    if (type == other.type) {
+      return id < other.id;
+    }
+    return type < other.type;
+  }
+
+  FourCC GetType() const { return type; }
+  CAssetId GetId() const { return id; }
+
   static const char* Type2Text(FourCC type);
 };
 

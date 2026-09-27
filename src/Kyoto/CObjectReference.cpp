@@ -40,10 +40,7 @@ void CObjectReference::Lock() {
 
 IObj* CObjectReference::GetObject() {
   if (mObject == nullptr) {
-    mObject = mObjectStore->GetFactory()
-                     .Build(mObjTag, mParams)
-                     .GetObjForTransfer()
-                     .release();
+    mObject = mObjectStore->GetFactory().Build(mObjTag, mParams).release();
   }
   mLoading = false;
   return mObject;

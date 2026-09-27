@@ -65,7 +65,9 @@ public:
   iterator insert(iterator it, const T& value);
 
   template < typename from_iterator >
-  inline void insert(iterator it, from_iterator begin, from_iterator end);
+  void insert(iterator it, from_iterator begin, from_iterator end) {
+    insert_into(it, rstl::distance(begin, end), begin);
+  }
 
   // iterator erase(iterator it);
   // iterator erase(iterator first, iterator last);
@@ -110,7 +112,7 @@ public:
 
 protected:
   template < typename In >
-  void insert_into(iterator at, int n, In in);
+  inline void insert_into(iterator at, int n, In in);
 };
 
 template < typename T, typename Alloc >
@@ -176,12 +178,6 @@ typename vector< T, Alloc >::iterator vector< T, Alloc >::insert(iterator it, co
 }
 
 template < typename T, typename Alloc >
-template < typename from_iterator >
-void vector< T, Alloc >::insert(iterator it, from_iterator begin, from_iterator end) {
-  insert_into(it, rstl::distance(begin, end), begin);
-}
-
-template < typename T, typename Alloc >
 template < typename In >
 void vector< T, Alloc >::insert_into(iterator at, int n, In in) {
   T* oldData = mItems;
@@ -193,7 +189,8 @@ void vector< T, Alloc >::insert_into(iterator at, int n, In in) {
     int i = moveCount - 1;
     for (; i >= 0; --i) {
       construct(oldData + atIdx + n + i, data()[atIdx + i]);
-      destroy(oldData + atIdx + i);
+      T* const item = oldData + atIdx + i;
+      destroy(item);
     }
     for (i = 0; i < n; ++input, ++i) {
       construct(oldData + atIdx + i, *input);
@@ -208,15 +205,16 @@ void vector< T, Alloc >::insert_into(iterator at, int n, In in) {
     T* newData;
     mAllocator.allocate(newData, newCapacity);
     long atIdx = at - begin();
+    T* const newItems = newData;
     int newIdx = 0;
     for (int i = 0; i < atIdx; ++newIdx, ++i) {
-      construct(newData + newIdx, data()[i]);
+      construct(newItems + newIdx, data()[i]);
     }
     for (int i = 0; i < n; ++input, ++newIdx, ++i) {
-      construct(newData + newIdx, *input);
+      construct(newItems + newIdx, *input);
     }
     for (int i = atIdx; i < size(); ++newIdx, ++i) {
-      construct(newData + newIdx, data()[i]);
+      construct(newItems + newIdx, data()[i]);
     }
 
     destroy(oldData, oldData + size());

@@ -486,6 +486,9 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CLine.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CPlane.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CSphere.cpp"),
+            Object(NonMatching, "Kyoto/CFactoryMgr.cpp"),
+            Object(NonMatching, "Kyoto/CResFactory.cpp"),
+            Object(Matching, "Kyoto/CResLoader.cpp"),
             Object(NonMatching, "Kyoto/CARAMManager.cpp"),
             Object(NonMatching, "Kyoto/Math/CFrustumPlanes.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CCubeMaterial.cpp"),
@@ -582,6 +585,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontImageDef.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
+            Object(Matching, "Kyoto/Streams/CBufferedDvdRequest.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamReader.cpp"),
             Object(MatchingFor("G2ME01"), "rstl/rstl_map.cpp"),
             Object(

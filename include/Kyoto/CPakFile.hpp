@@ -41,12 +41,17 @@ public:
   CDvdFile& DvdFile() { return mFile; }
   const CDvdFile& GetDvdFile() const { return mFile; }
   void AsyncIdle();
+  bool IsARAMPak() const { return mAramFile; }
   bool IsWorldPak() const { return mWorldPak; }
+  bool IsStashedInARAM() const { return mStashedInARAM; }
   bool IsCompletelyLoaded() const { return mAsyncLoadPhase == kAP_Loaded; }
   void EnsureWorldPakReady();
   void sub_80323554();
 
   rstl::vector< rstl::pair< rstl::string, SObjectTag > >& NameList() { return mNameList; }
+  const rstl::vector< rstl::pair< rstl::string, SObjectTag > >& GetStringToObjectList() const {
+    return mNameList;
+  }
   const SObjectTag* GetResIdByName(const char* name) const;
   const SResInfo* GetResInfo(uint id) const;
   const SResInfo* GetResInfoForLoadDirectionless(uint id);

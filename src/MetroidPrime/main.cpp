@@ -265,7 +265,7 @@ void CMain::AddWorldPaks() {
 void CMain::EnsureWorldPaksReady() {
   CResLoader& resLoader = gpResourceFactory->GetResLoader();
   for (int i = 0; i < resLoader.GetPakCount(); ++i) {
-    CPakFile& file = resLoader.GetPakFile(i);
+    CPakFile& file = *resLoader.GetPakFile(i);
     if (file.IsWorldPak()) {
       file.EnsureWorldPakReady();
     }

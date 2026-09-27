@@ -656,6 +656,22 @@ Kyoto/Math/CAABox.cpp:
 	.sdata2     start:0x8041E928 end:0x8041E938
 	.sbss2      start:0x8041F8E0 end:0x8041F8E8
 
+Kyoto/CFactoryMgr.cpp:
+	.text       start:0x802F8D90 end:0x802F9E08
+	.rodata     start:0x803AF9D8 end:0x803AFA98
+	.sdata      start:0x80418B88 end:0x80418B90
+
+Kyoto/CResFactory.cpp:
+	.text       start:0x802F9E08 end:0x802FB69C
+	.rodata     start:0x803AFA98 end:0x803AFAA0
+	.data       start:0x803BAF08 end:0x803BAF28
+	.sdata      start:0x80418B90 end:0x80418B98
+
+Kyoto/CResLoader.cpp:
+	.text       start:0x802FB69C end:0x802FD3CC
+	.rodata     start:0x803AFAA0 end:0x803AFAB0
+	.sbss2      start:0x8041F8E8 end:0x8041F8F8
+
 rstl/rstl_map.cpp:
 	.text       start:0x802FD3CC end:0x802FDAB8
 
@@ -973,6 +989,11 @@ Kyoto/Streams/CInputStream.cpp:
 	.text       start:0x80342F6C end:0x8034317C
 	.data       start:0x803BBF88 end:0x803BBF98
 	.sbss       start:0x80419CB0 end:0x80419CB8
+
+Kyoto/Streams/CBufferedDvdRequest.cpp:
+	.text       start:0x8034317C end:0x8034370C
+	.rodata     start:0x803B0340 end:0x803B0348
+	.data       start:0x803BBF98 end:0x803BBFB8
 
 Kyoto/Streams/CLZOSupport.cpp:
 	.text       start:0x8034370C end:0x803437AC
