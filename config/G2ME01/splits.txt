@@ -67,6 +67,10 @@ MetroidPrime/HUD/CSamusHud.cpp:
 	.ctors      start:0x803A54CC end:0x803A54D0
 	.data       start:0x803B1F30 end:0x803B1F50
 
+MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
+	.text       start:0x8007105C end:0x80073474
+	.data       start:0x803B2018 end:0x803B20B0
+
 MetroidPrime/Enemies/CPatterned.cpp:
 	.text       start:0x80073938 end:0x8007B0DC
 	.ctors      start:0x803A54D0 end:0x803A54D4
