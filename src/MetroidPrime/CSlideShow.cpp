@@ -1,6 +1,6 @@
 #include "MetroidPrime/CSlideShow.hpp"
 
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStaticAudioPlayer.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
