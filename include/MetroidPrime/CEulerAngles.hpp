@@ -3,6 +3,7 @@
 
 #include "Kyoto/Math/CVector3f.hpp"
 
+class CMatrix3f;
 class CQuaternion;
 class CTransform4f;
 
@@ -13,6 +14,11 @@ public:
   static CEulerAngles FromQuaternion(const CQuaternion& quat);
   static CEulerAngles FromTransform(const CTransform4f& xf);
   float GetYaw() const { return GetZ(); }
+
+private:
+  static CEulerAngles FromMatrix(const CMatrix3f& mtx); // Echoes helper; name inferred
+
+  static CEulerAngles sIdentity;
 };
 CHECK_SIZEOF(CEulerAngles, 0xc)
 

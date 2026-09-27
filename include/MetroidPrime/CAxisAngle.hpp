@@ -8,6 +8,8 @@
 
 #include <math.h>
 
+class CQuaternion;
+
 class CAxisAngle {
   static const CAxisAngle sIdentity;
   friend CAxisAngle operator+(const CAxisAngle&, const CAxisAngle&);
@@ -19,7 +21,8 @@ public:
   explicit CAxisAngle(const CVector3f& vec);
   explicit CAxisAngle(const CUnitVector3f& vec, float);
   CAxisAngle(float x, float y, float z) : mVector(x, y, z) {}
-  void FromVector(const CVector3f& angle);
+  static CAxisAngle FromVector(const CVector3f& angle);
+  static CAxisAngle FromQuaternion(const CQuaternion& quat); // Echoes addition; name inferred
 
   static const CAxisAngle& Identity();
   float GetAngle() const;
