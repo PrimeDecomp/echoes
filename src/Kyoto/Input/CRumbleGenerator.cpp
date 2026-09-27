@@ -7,11 +7,6 @@ CRumbleGenerator::CRumbleGenerator(EIOPort inputIndex)
 
 CRumbleGenerator::~CRumbleGenerator() { HardStopAll(); }
 
-void CRumbleGenerator::Stop(short id) {
-  if (id != -1)
-    mVoice.Deactivate(id, false);
-}
-
 short CRumbleGenerator::Rumble(const SAdsrData& adsr, float gain, ERumblePriority prio) {
   ushort freeChan = mVoice.GetFreeChannel();
   if (prio >= mVoice.GetPriority(freeChan)) {
@@ -73,4 +68,9 @@ void CRumbleGenerator::SetDisabled(const bool disabled) {
   }
 
   mDisabled = disabled;
+}
+
+void CRumbleGenerator::Stop(short id) {
+  if (id != -1)
+    mVoice.Deactivate(id, false);
 }

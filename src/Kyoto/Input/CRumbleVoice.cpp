@@ -73,15 +73,8 @@ bool CRumbleVoice::UpdateChannel(SAdsrDelta& delta, const SAdsrData& data, float
     break;
   case SAdsrDelta::kP_Decay:
     if (data.mHasSustain) {
-      if (delta.mDecayTime >= data.mDecayDur) {
-        delta.mCurIntensity = delta.mSustainIntensity;
-        delta.mPhase = SAdsrDelta::kP_Sustain;
-      } else {
-        float t = delta.mDecayTime / data.mDecayDur;
-        delta.mCurIntensity =
-            EnvelopeLerp(t, delta.mAttackIntensity, delta.mSustainIntensity);
-        delta.mDecayTime += dt;
-      }
+      UpdateStage(delta.mPhase, delta.mCurIntensity, delta.mDecayTime, delta.mAttackIntensity,
+                  delta.mSustainIntensity, data.mDecayDur, SAdsrDelta::kP_Sustain, dt);
     } else {
       UpdateStage(delta.mPhase, delta.mCurIntensity, delta.mDecayTime,
                   delta.mAttackIntensity, 0.f, data.mDecayDur, SAdsrDelta::kP_Stop, dt);

@@ -51,6 +51,11 @@ struct is_trivially_destructible< uint > {
   enum { value = true };
 };
 
+template <>
+struct is_trivially_destructible< ushort > {
+  enum { value = true };
+};
+
 template < typename T >
 inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
@@ -92,6 +97,11 @@ inline void construct< int >(void* dest, const int& src) {
 template <>
 inline void construct< uint >(void* dest, const uint& src) {
   *static_cast< uint* >(dest) = src;
+}
+
+template <>
+inline void construct< ushort >(void* dest, const ushort& src) {
+  *static_cast< ushort* >(dest) = src;
 }
 
 template < typename T >

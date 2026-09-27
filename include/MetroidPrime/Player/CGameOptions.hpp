@@ -52,6 +52,9 @@ public:
   void SetFlag3(bool);
   void SetInvertYAxis(bool);
   void SetIsRumbleEnabled(bool rumble);
+  bool GetIsRumbleEnabled() const { return rumble; }
+  // Guessed name
+  bool GetIsPlayerRumbleEnabled(int player) const { return unk2[player].first; }
   void ToggleControls(bool);
 
   void ResetControllerAssets(int);
