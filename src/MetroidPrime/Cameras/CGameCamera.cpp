@@ -224,7 +224,7 @@ rstl::optional_object< CAABox > CGameCamera::GetTouchBounds() const {
 
 void CGameCamera::UnkVtable84() {}
 
-void CGameCamera::UnkVtable88() {}
+void CGameCamera::UnkVtable88(TUniqueId fluidId) {}
 
 void CGameCamera::UnkVtable20(CStateManager& mgr) {
   // TODO: Notify the camera's overlapping triggers before the inherited actor cleanup.

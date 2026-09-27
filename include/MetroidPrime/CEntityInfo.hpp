@@ -23,6 +23,7 @@ enum EEntityType {
   kET_CollisionActor = 18,
   kET_EnergyProjectile = 19,
   kET_Explosion = 22,
+  kET_FirstPersonCamera = 23,
   kET_GameLight = 26,
   kET_HUDBillboardEffect = 28,
   kET_Player = 32,
