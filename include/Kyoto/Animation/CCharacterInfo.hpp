@@ -31,6 +31,13 @@ public:
 
   explicit CCharacterInfo(CInputStream& in);
 
+  CAssetId GetModelId() const { return mCmdl; }
+  CAssetId GetSkinRulesId() const { return mCksr; }
+  CAssetId GetCharLayoutInfoId() const { return mCinf; }
+  CAssetId GetIceModelId() const { return mCmdlOverlay; }
+  CAssetId GetIceSkinRulesId() const { return mCksrOverlay; }
+  CAssetId GetSpatialPrimitiveId() const { return mSpatialPrimitiveId; }
+  bool GetAnimatedScale() const { return mAnimatedScale; }
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }
   const CParticleResData& GetParticleResData() const { return mPartRes; }
   const TEffectList& GetEffects() const { return mEffects; }

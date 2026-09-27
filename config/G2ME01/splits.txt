@@ -76,6 +76,16 @@ MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
 	.ctors      start:0x803A54BC end:0x803A54C0
 
+MetroidPrime/Factories/CCharacterFactory.cpp:
+	.text       start:0x8002F7A8 end:0x80031E60
+	.rodata     start:0x803A64A0 end:0x803A64A8
+	.data       start:0x803B1948 end:0x803B1A10
+
+MetroidPrime/Factories/CAssetFactory.cpp:
+	.text       start:0x80031E60 end:0x800324A4
+	.rodata     start:0x803A64A8 end:0x803A64B0
+	.data       start:0x803B1A10 end:0x803B1A40
+
 MetroidPrime/Weapons/CGameProjectile.cpp:
 	.text       start:0x80032C3C end:0x80036200
 	.data       start:0x803B1A40 end:0x803B1ACC
