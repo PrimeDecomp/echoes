@@ -194,6 +194,9 @@ MetroidPrime/CActorModelParticles.cpp:
 MetroidPrime/Enemies/CPatternedAiFunctions.cpp:
 	.text       start:0x80150FE8 end:0x80152950
 
+MetroidPrime/CWorldTransManager.cpp:
+	.text       start:0x801576FC end:0x8015C634
+
 MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 	.text       start:0x8015CD4C end:0x8015DDE8
 	.rodata     start:0x803A95F8 end:0x803A9620
