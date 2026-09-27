@@ -45,6 +45,20 @@ public:
   const uchar* GetData() const { return static_cast< const uchar* >(mData); }
   uint GetFlags() const { return CBasics::SwapBytes(*reinterpret_cast< const uint* >(GetData())); }
   bool IsFlagSet(const EStateFlags flag) const { return (GetFlags() & flag) != 0; }
+  uint GetTextureCount() const { return CBasics::SwapBytes(static_cast< const uint* >(mData)[1]); }
+
+  uint GetVertexDesc() const {
+    const uchar* data = GetData();
+    data += GetTextureCount() * sizeof(uint);
+    data += sizeof(uint) + sizeof(uint);
+    return CBasics::SwapBytes(*reinterpret_cast< const uint* >(data));
+  }
+
+  // Guessed name. Echoes material masks follow the compressed vertex descriptor.
+  u64 GetMaterialMask() const {
+    return *reinterpret_cast< const u64* >(static_cast< const uint* >(mData) + GetTextureCount() + 3);
+  }
+
   void SetCurrent(const CModelFlags& flags, const CCubeSurface& surface,
                   const CCubeModel& model) const;
   void SetCurrentBlack() const;

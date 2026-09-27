@@ -1106,6 +1106,11 @@ Kyoto/Alloc/CGameAllocator.cpp:
 	.sbss       start:0x80419BA8 end:0x80419BB8
 	.sdata2     start:0x8041EA28 end:0x8041EA30
 
+Kyoto/Animation/DolphinCSkinnedModel.cpp:
+	.text       start:0x8030EEE4 end:0x8030FE20
+	.rodata     start:0x803AFE58 end:0x803AFE60
+	.sbss       start:0x80419BB8 end:0x80419BD0
+
 Kyoto/Animation/DolphinCSkinRules.cpp:
 	.text       start:0x8030FE20 end:0x80310838
 	.rodata     start:0x803AFE60 end:0x803AFE68
