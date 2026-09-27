@@ -67,9 +67,10 @@ class CPFAreaOctree {
 public:
   void Fixup(CPFArea& area);
   uint GetChildIndex(const CVector3f& point) const;
-  prereserved_vector< CPFRegion* >* GetRegionList(const CVector3f& point);
-  void GetRegionListList(rstl::reserved_vector< prereserved_vector< CPFRegion* >*, 32 >& lists,
-                         const CVector3f& point, float padding);
+  rstl::prereserved_vector< CPFRegion* >* GetRegionList(const CVector3f& point);
+  void
+  GetRegionListList(rstl::reserved_vector< rstl::prereserved_vector< CPFRegion* >*, 32 >& lists,
+                    const CVector3f& point, float padding);
   bool IsPointInsidePaddedAABox(const CVector3f& point, float padding) const {
     return point[kDX] >= mBounds.GetMinPoint()[kDX] - padding &&
            point[kDX] <= mBounds.GetMaxPoint()[kDX] + padding &&
@@ -84,7 +85,7 @@ private:
   CAABox mBounds;
   CVector3f mCenter;
   CPFAreaOctree* mChildren[8];
-  prereserved_vector< CPFRegion* > mRegions;
+  rstl::prereserved_vector< CPFRegion* > mRegions;
 };
 CHECK_SIZEOF(CPFAreaOctree, 0x50)
 
@@ -125,7 +126,7 @@ public:
   CPFRegionData& GetRegionData(int index) { return mRegionData[index]; }
   CPFAreaOctree& GetOctree(int index) { return mOctree[index]; }
   CPFRegion*& GetOctreeRegionPtrs(int index) { return mOctreeRegions[index]; }
-  prereserved_vector< CPFRegion* >* GetOctreeRegionList(const CVector3f& point);
+  rstl::prereserved_vector< CPFRegion* >* GetOctreeRegionList(const CVector3f& point);
   CPFOpenList& OpenList() { return mOpenList; }
   CPFBitSet& ClosedSet() { return mClosedSet; }
   int FindRegions(rstl::reserved_vector< CPFRegion*, 8 >& regions, const CVector3f& point,
@@ -141,7 +142,7 @@ private:
   float mBestPointDistSq;
   CVector3f mClosestPoint;
   rstl::vector< CVector3f > mPolyPoints;
-  prereserved_vector< CPFRegion* >* mCachedRegionList;
+  rstl::prereserved_vector< CPFRegion* >* mCachedRegionList;
   CVector3f mCachedRegionListPoint;
   bool mHasCachedRegionList;
   int mRegionFindCookie;
@@ -150,17 +151,17 @@ private:
   rstl::single_ptr< CPFPointSearchState > mPointSearchState;
   int mVersion;
   rstl::single_ptr< uchar > mData;
-  prereserved_vector< CPFNode > mNodes;
-  prereserved_vector< CPFLink > mLinks;
-  prereserved_vector< CPFRegion > mRegions;
-  prereserved_vector< CPFAreaOctree > mOctree;
-  prereserved_vector< CPFRegion* > mOctreeRegions;
-  prereserved_vector< uint > mConnectionsGround;
-  prereserved_vector< uint > mConnectionsFlyers;
-  prereserved_vector< CPFPoint > mPoints;
-  prereserved_vector< int > mPointLinks;
-  prereserved_vector< uint > mPointConnections;
-  prereserved_vector< uint > mPointLinkData; // Guessed name; encoding unresolved.
+  rstl::prereserved_vector< CPFNode > mNodes;
+  rstl::prereserved_vector< CPFLink > mLinks;
+  rstl::prereserved_vector< CPFRegion > mRegions;
+  rstl::prereserved_vector< CPFAreaOctree > mOctree;
+  rstl::prereserved_vector< CPFRegion* > mOctreeRegions;
+  rstl::prereserved_vector< uint > mConnectionsGround;
+  rstl::prereserved_vector< uint > mConnectionsFlyers;
+  rstl::prereserved_vector< CPFPoint > mPoints;
+  rstl::prereserved_vector< int > mPointLinks;
+  rstl::prereserved_vector< uint > mPointConnections;
+  rstl::prereserved_vector< uint > mPointLinkData; // Guessed name; encoding unresolved.
   rstl::vector< CPFRegionData > mRegionData;
   CTransform4f mTransform;
 };

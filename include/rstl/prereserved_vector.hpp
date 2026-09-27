@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+namespace rstl {
+
 template < typename T >
 class prereserved_vector {
 public:
@@ -19,5 +21,7 @@ private:
   int mSize;
   T* mData;
 };
+
+} // namespace rstl
 
 #endif // _RSTL_PRERESERVED_VECTOR

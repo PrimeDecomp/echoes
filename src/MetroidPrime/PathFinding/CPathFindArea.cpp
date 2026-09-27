@@ -46,7 +46,8 @@ inline uint CPFAreaOctree::GetChildIndex(const CVector3f& point) const {
   return index;
 }
 
-inline prereserved_vector< CPFRegion* >* CPFAreaOctree::GetRegionList(const CVector3f& point) {
+inline rstl::prereserved_vector< CPFRegion* >*
+CPFAreaOctree::GetRegionList(const CVector3f& point) {
   if (mIsLeaf) {
     return &mRegions;
   }
@@ -54,8 +55,8 @@ inline prereserved_vector< CPFRegion* >* CPFAreaOctree::GetRegionList(const CVec
 }
 
 inline void CPFAreaOctree::GetRegionListList(
-    rstl::reserved_vector< prereserved_vector< CPFRegion* >*, 32 >& lists, const CVector3f& point,
-    float padding) {
+    rstl::reserved_vector< rstl::prereserved_vector< CPFRegion* >*, 32 >& lists,
+    const CVector3f& point, float padding) {
   if (lists.size() >= lists.capacity()) {
     return;
   }
@@ -148,7 +149,7 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
   }
 }
 
-prereserved_vector< CPFRegion* >* CPFArea::GetOctreeRegionList(const CVector3f& point) {
+rstl::prereserved_vector< CPFRegion* >* CPFArea::GetOctreeRegionList(const CVector3f& point) {
   if (mHasCachedRegionList && close_enough(point, mCachedRegionListPoint)) {
     return mCachedRegionList;
   }
@@ -157,7 +158,7 @@ prereserved_vector< CPFRegion* >* CPFArea::GetOctreeRegionList(const CVector3f& 
 
 int CPFArea::FindRegions(rstl::reserved_vector< CPFRegion*, 8 >& regions, const CVector3f& point,
                          uint flags, uint indexMask, bool ignoreObstructions) {
-  prereserved_vector< CPFRegion* >* list = GetOctreeRegionList(point);
+  rstl::prereserved_vector< CPFRegion* >* list = GetOctreeRegionList(point);
   for (int i = 0; i < list->size(); ++i) {
     CPFRegion* region = (*list)[i];
     if ((region->GetFlags() & 0xff & flags) && ((region->GetFlags() >> 16) & 0xff & indexMask) &&
@@ -191,7 +192,7 @@ int CPFArea::FindRegions(rstl::reserved_vector< CPFRegion*, 8 >& regions, const 
 
 CPFRegion* CPFArea::FindClosestRegion(const CVector3f& point, uint flags, uint indexMask,
                                       float padding) {
-  rstl::reserved_vector< prereserved_vector< CPFRegion* >*, 32 > lists;
+  rstl::reserved_vector< rstl::prereserved_vector< CPFRegion* >*, 32 > lists;
   CPFRegion* result = nullptr;
   OSGetTick();
   int i, j;
@@ -199,7 +200,7 @@ CPFRegion* CPFArea::FindClosestRegion(const CVector3f& point, uint flags, uint i
   mOctree.back().GetRegionListList(lists, point, padding);
   OSGetTick();
   for (i = 0; i < lists.size(); ++i) {
-    prereserved_vector< CPFRegion* >* list = lists[i];
+    rstl::prereserved_vector< CPFRegion* >* list = lists[i];
     for (j = 0; j < list->size(); ++j) {
       CPFRegion* region = (*list)[j];
       if (region->Data()->GetCookie() != mRegionFindCookie) {
