@@ -5,10 +5,13 @@
 
 class CVector2i {
 public:
+  CVector2i() : mX(0), mY(0) {}
   CVector2i(int, int);
 
   int GetX() const { return mX; }
   int GetY() const { return mY; }
+  void SetX(int x) { mX = x; }
+  void SetY(int y) { mY = y; }
 
   int& operator[](int idx) { return *(&mX + idx); }
   const int& operator[](int idx) const { return *(&mX + idx); }
