@@ -336,7 +336,7 @@ void CPatterned::InitializeStateMachine(CStateManager& mgr) {
     if (!machine) {
       return;
     }
-    static_cast< TStateMachineState< CPatterned >* >(mStateMachine.get())->Setup(*machine);
+    static_cast< TStateMachineState< CPatterned >* >(mStateMachine.get())->Setup(machine);
   }
   SetupStateMachine(mgr);
   mStateMachine->SetState(mgr, *this, rstl::string("Start"));

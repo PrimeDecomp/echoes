@@ -444,7 +444,7 @@ void CPlayerGun::InitializeStateMachine(CStateManager& mgr) {
       {"MissileClosing", &CPlayerGun::MissileClosing},
       {"EventHandler", &CPlayerGun::EventHandler},
   };
-  mStateMachine.Setup(*GetStateMachine());
+  mStateMachine.Setup(GetStateMachine());
   mStateMachine.SetTriggerFunctions(triggers, ARRAY_SIZE(triggers));
   mStateMachine.SetStateFunctions(states, ARRAY_SIZE(states));
   ResetStateMachine(mgr);
