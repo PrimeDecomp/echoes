@@ -16,5 +16,6 @@ private:
   rstl::string mName;
   rstl::rc_ptr< IMetaAnim > mAnim;
 };
+CHECK_SIZEOF(CAnimation, 0x18)
 
 #endif // _CANIMATION

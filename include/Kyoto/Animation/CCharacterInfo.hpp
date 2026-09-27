@@ -17,6 +17,9 @@ class CCharacterInfo {
 public:
   typedef rstl::vector< rstl::pair< rstl::string, rstl::vector< CEffectComponent > > > TEffectList;
   class CParticleResData {
+  public:
+    CParticleResData(CInputStream& in, ushort tableCount);
+
   private:
     rstl::vector< CAssetId > mPart;
     rstl::vector< CAssetId > mSwhc;
@@ -25,6 +28,8 @@ public:
     rstl::vector< CAssetId > mSrsc;
     rstl::vector< CAssetId > mElscB;
   };
+
+  explicit CCharacterInfo(CInputStream& in);
 
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }
   const CParticleResData& GetParticleResData() const { return mPartRes; }
@@ -46,16 +51,17 @@ private:
   rstl::vector< rstl::pair< int, rstl::pair< rstl::string, rstl::string > > > mAnimInfo;
   CPASDatabase mPasDatabase;
   CParticleResData mPartRes;
-  uint mUnk;
+  uint xa4_;
   rstl::vector< rstl::pair< rstl::string, CAABox > > mAabbs;
   TEffectList mEffects;
-  uint mCmdlOverlay;
-  uint mCksrOverlay;
+  CAssetId mCmdlOverlay;
+  CAssetId mCksrOverlay;
   rstl::vector< int > mAnimIdxs;
   CAssetId mSpatialPrimitiveId; // Guessed name: CSPP resource.
-  bool xe4_;
+  bool mAnimatedScale;          // Guessed name.
   rstl::vector< rstl::pair< uint, CAABox > > mAnimBoundsById;
 };
 CHECK_SIZEOF(CCharacterInfo, 0xf8)
+NESTED_CHECK_SIZEOF(CCharacterInfo, CParticleResData, 0x60)
 
 #endif // _CCHARACTERINFO
