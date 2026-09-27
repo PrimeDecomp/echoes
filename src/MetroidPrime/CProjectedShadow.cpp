@@ -15,7 +15,7 @@ CProjectedShadow::CProjectedShadow(int width, int height, uchar persistent, int 
 , mProjectOnActors(projectionMode == 0)
 , mNextShadow(nullptr) {}
 
-CProjectedShadow::~CProjectedShadow() { mTexture.sub_8030e10c(); }
+CProjectedShadow::~CProjectedShadow() { mTexture.ScheduleDeletion(); }
 
 void CProjectedShadow::ExpandBoundsForTexture() {
   const float texelScale = 3.f / (mTexture.GetWidth() - 2);

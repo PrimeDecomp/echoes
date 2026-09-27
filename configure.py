@@ -487,6 +487,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CPlayerVisor.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CScanDisplay.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CMorphBall.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CMorphBallShadow.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScanTreeInventory.cpp"),
         ],
     },
