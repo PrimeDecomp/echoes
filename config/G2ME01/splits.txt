@@ -323,6 +323,10 @@ MetroidPrime/Player/CScanDisplay.cpp:
 	.data       start:0x803B4C70 end:0x803B4C80
 	.sdata2     start:0x8041BC08 end:0x8041BC68
 
+MetroidPrime/CBoneTracking.cpp:
+	.text       start:0x80117614 end:0x80118294
+	.sdata2     start:0x8041BC90 end:0x8041BCA8
+
 MetroidPrime/Weapons/CPlasmaProjectile.cpp:
 	.text       start:0x80119598 end:0x8011BFA8
 	.ctors      start:0x803A5520 end:0x803A5524

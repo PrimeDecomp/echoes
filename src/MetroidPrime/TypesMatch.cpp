@@ -167,6 +167,14 @@ CPatterned* TCastToPtr< CPatterned >(CEntity* entity) {
   return nullptr;
 }
 
+template <>
+CPatterned* TCastToPtr< CPatterned >(CEntity& entity) {
+  if ((entity.GetCastFlags() & 4) != 0) {
+    return static_cast< CPatterned* >(&entity);
+  }
+  return nullptr;
+}
+
 #undef TYPES_MATCH_IMPL
 #undef CAST_TO_PTR_IMPL
 #undef CAST_TO_REF_IMPL

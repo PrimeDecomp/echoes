@@ -92,6 +92,10 @@ public:
   void GetAnimationPrimitives(const CAnimPlaybackParms& parms,
                               rstl::set< CPrimitive >& primsOut) const;
 
+  const CCharLayoutInfo* GetCharLayoutInfo() const { return *mLayoutData; }
+  CPoseAsTransforms_Linear& Pose() { return mPose; } // Guessed name.
+  void SetPoseBuilt(bool built) { mPoseBuilt = built; } // Guessed name.
+
   void BuildPoseIfNecessary() const;
   void BuildPose() const;
   void PreRender();

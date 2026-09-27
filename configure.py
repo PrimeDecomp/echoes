@@ -462,6 +462,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CStaticInterference.cpp"),
             Object(NonMatching, "MetroidPrime/CHealthInfo.cpp"),
+            Object(NonMatching, "MetroidPrime/CBoneTracking.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGameOptions.cpp"),
             Object(NonMatching, "MetroidPrime/CEnvFxManager.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRumbleManager.cpp"),
