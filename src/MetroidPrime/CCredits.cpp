@@ -50,11 +50,6 @@ static const CVector3f skTextOffset1 = CVector3f::Zero();
 static const CVector3f skTextOffset2 = CVector3f::Zero();
 static const CVector3f skTextOffset3 = CVector3f::Zero();
 
-static void QueueIOWin(CArchitectureQueue& queue, CIOWin* win) {
-  queue.Push(MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kFrontEndUIMsgPriority,
-                                        kFrontEndUIDrawPriority, win));
-}
-
 static const char* const skCreditsAudio = "Audio/echoes-end1-32.dsp";
 static const char* const skCompletionAudio = "Audio/samusjak_edit.dsp";
 
@@ -87,6 +82,11 @@ void CCredits::DrawText(CGuiTextSupport& text, const CTransform4f& transform) {
   gpRender->SetModelMatrix(transform);
   CGraphics::SetDepthWriteMode(false, kE_Always, false);
   text.Render();
+}
+
+static void QueueIOWin(CArchitectureQueue& queue, CIOWin* win) {
+  queue.Push(MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kFrontEndUIMsgPriority,
+                                        kFrontEndUIDrawPriority, win));
 }
 
 CPlayMovie::CPlayMovie(int which)
@@ -605,8 +605,8 @@ CIOWin::EMessageReturn CCredits::Update(float dt, CArchitectureQueue& queue) {
     }
     const int volume = gpTweakGui->GetCreditsVolume();
     CStreamAudioManager::PlaySoftwareAudio(CStreamAudioManager::kSC_Default, mAudioFile, 0.f,
-                                           gpTweakGui->GetCreditsMovieFadeTime(),
-                                           static_cast< uchar >(volume), true);
+                                           gpTweakGui->GetCreditsMovieFadeTime(), volume & 0xff,
+                                           true);
     mState = kS_Playing;
   }
   case kS_Playing: {
