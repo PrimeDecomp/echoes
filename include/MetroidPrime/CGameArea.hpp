@@ -33,6 +33,42 @@ struct TLayerId;
 
 class CGameArea : public IGameArea {
 public:
+  class CChainIterator {
+  protected:
+    CGameArea* m_area;
+
+  public:
+    CChainIterator() : m_area(nullptr) {}
+    explicit CChainIterator(CGameArea* area) : m_area(area) {}
+    CGameArea& operator*() const { return *m_area; }
+    CGameArea* operator->() const { return m_area; }
+    CChainIterator& operator++() {
+      m_area = m_area->GetNext();
+      return *this;
+    }
+    bool operator!=(const CChainIterator& other) const { return other.m_area != m_area; }
+    bool operator==(const CChainIterator& other) const { return m_area == other.m_area; }
+  };
+
+  class CConstChainIterator : protected CChainIterator {
+  public:
+    CConstChainIterator() {}
+    explicit CConstChainIterator(const CGameArea* area)
+    : CChainIterator(const_cast< CGameArea* >(area)) {}
+    const CGameArea& operator*() const { return CChainIterator::operator*(); }
+    const CGameArea* operator->() const { return CChainIterator::operator->(); }
+    CConstChainIterator& operator++() {
+      CChainIterator::operator++();
+      return *this;
+    }
+    bool operator!=(const CConstChainIterator& other) const {
+      return !CChainIterator::operator==(other);
+    }
+    bool operator==(const CConstChainIterator& other) const {
+      return CChainIterator::operator==(other);
+    }
+  };
+
   enum EOcclusionState { kOS_Occluded, kOS_Visible };
   enum EARAMTransfer { kAT_Blocking, kAT_Async };
   // Guessed phase names, derived from the streaming switch.
@@ -208,8 +244,18 @@ public:
 
   int GetPhase() const { return mPhase; }
   CAssetId GetAreaAssetId() const { return mAreaAssetId; }
+  int GetAreaSaveId() const { return mAreaSaveId; }
   bool IsLoaded() const { return mPhase == kP_Loaded; }
-  EOcclusionState GetOcclusionState() const { return mPostConstructed->mOcclusionState; }
+  EOcclusionState GetOcclusionState() const {
+    return IsLoaded() ? mPostConstructed->mOcclusionState : kOS_Occluded;
+  }
+  CPostConstructed* GetPostConstructed() { return mPostConstructed.get(); }
+  const CPostConstructed* GetPostConstructed() const { return mPostConstructed.get(); }
+  CGameArea* GetNext() const { return mNext; }
+  int GetCurChain() const { return mCurrentChain; }
+  bool IsActive() const { return mActive; }
+  bool GetX108_3() const { return x108_3_; }
+  int GetDockCount() const { return mDocks.size(); }
   const CTransform4f& GetTM() const { return mTransform; }
   TAreaId GetId() const { return mSelfIdx; }
   const CAABox& GetAABB() const { return mBounds; }

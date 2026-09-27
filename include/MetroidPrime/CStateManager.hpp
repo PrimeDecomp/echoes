@@ -40,6 +40,16 @@ class CActorModelParticles;
 class CRelayTracker;
 class CWorldLayerState;
 class CStateManagerContainer;
+class CInputStream;
+class CStateManager;
+
+// TODO: identify; an object inside CStateManagerContainer that loads script layers.
+class CScriptObjectLoader {
+public:
+  void fn_80234350(const TAreaId& aid, CInputStream& in, rstl::vector< TEditorId >& ids,
+                   CStateManager& mgr);
+  void fn_80233C4C(rstl::vector< TEditorId >& ids, CStateManager& mgr);
+};
 namespace SL {
 class CSortedListManager;
 }
@@ -82,6 +92,7 @@ public:
   ~CStateManager();
 
   TUniqueId AllocateUniqueId();
+  CScriptObjectLoader& fn_80036210();
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return m_isDarkWorld; }

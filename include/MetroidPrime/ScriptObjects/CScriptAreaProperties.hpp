@@ -6,6 +6,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
 
 #include "rstl/optional_object.hpp"
 
@@ -33,6 +34,12 @@ public:
 
   bool GetNeedsSky() const { return m_hasSkybox; }
   int GetEnvFxType() const { return m_environmentEffects; }
+  CAssetId GetSkyModel() const { return m_skyBoxAssetId; }
+  // Guessed names
+  ERglFogMode GetSkyFogMode() const { return static_cast< ERglFogMode >(x4c); }
+  float GetSkyFogStart() const { return x50; }
+  float GetSkyFogEnd() const { return x54; }
+  const CColor& GetSkyFogColor() const { return m_color; }
 
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 };

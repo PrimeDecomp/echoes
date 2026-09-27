@@ -15,7 +15,7 @@ public:
   virtual void v9();
   virtual void v10();
   virtual void v11();
-  virtual void v12();
+  virtual bool v12();
   virtual void v13();
   virtual void v14();
   virtual int v15();

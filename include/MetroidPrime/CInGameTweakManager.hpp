@@ -37,6 +37,7 @@ class CInGameTweakManager {
 public:
   bool HasTweakValue(const rstl::string& key) const;
   const CTweakValue* GetTweakValue(const rstl::string& key) const;
+  static rstl::string GetIdentifierForWorldDefaultMusic(CAssetId world);
   static rstl::string GetIdentifierForMusicEvent(CAssetId areaId, const rstl::string& name);
 };
 

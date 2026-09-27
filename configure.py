@@ -411,6 +411,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Decode.cpp"),
             Object(NonMatching, "MetroidPrime/CIOWinManager.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CIOWin.cpp"),
+            Object(NonMatching, "MetroidPrime/CWorld.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CArchMsgParmControllerStatus.cpp"),
             Object(NonMatching, "MetroidPrime/CGameArea.cpp"),
             Object(NonMatching, "MetroidPrime/CMemoryCard.cpp"),

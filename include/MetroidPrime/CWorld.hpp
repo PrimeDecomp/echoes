@@ -15,13 +15,42 @@
 #include "rstl/vector.hpp"
 
 class CDvdRequest;
+class CInputStream;
 class CModel;
+class CStateManager;
 class CResFactory;
 class IFactory;
 class IObjectStore;
 
+class CRelay {
+public:
+  explicit CRelay(CInputStream& in);
+  const TEditorId& GetRelayId() const { return mRelay; }
+  const TEditorId& GetTargetId() const { return mTarget; }
+  const ushort& GetMessage() const { return mMsg; }
+  bool GetActive() const { return mActive; }
+
+private:
+  TEditorId mRelay;
+  TEditorId mTarget;
+  ushort mMsg;
+  bool mActive;
+};
+CHECK_SIZEOF(CRelay, 0xc)
+
 class CWorld : public IWorld {
 public:
+  enum EChain {
+    kC_Invalid = -1,
+    kC_ToDeallocate,
+    kC_Deallocated,
+    kC_Loading,
+    kC_Alive,
+    kC_AliveJudgement,
+  };
+
+  enum EAreaTravelType { kATT_LoadAdjacent, kATT_SkipAdjacent };
+
   CWorld(IObjectStore& objStore, CResFactory& resFactory, CAssetId mlvlId);
 
   // IWorld
@@ -41,25 +70,69 @@ public:
   uint IGetTempleKeyWorldIndex() const override;
   bool ICancelLoad() override;
 
+  bool CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId);
+  void SetLoadPauseState(bool);
+  void PauseAndUnpauseAreaLoading();
+  void TouchSky() const;
+  void DrawSky(const CTransform4f& xf, bool noFog) const;
+  void StopSounds();
+  bool ScheduleAreaToLoad(CGameArea* area, CStateManager& mgr);
+  void MoveToChain(CGameArea* area, EChain chain);
+  void MoveAreaToChain3(TAreaId aid);
+  void TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelType travelType);
+  bool fn_80050BC4(CStateManager& mgr, const TAreaId& aid);
+  void fn_8004F6E8(const TAreaId& aid, const TLayerId& layer);
+  void Update(float dt);
+  void PreRender();
+  CMapWorld* MapWorld() { return GetMapWorld(); }
+  TAreaId GetAreaIdForSaveId(uint saveId) const;
+  TAreaId GetAreaId(CAssetId assetId) const;
+  bool AreSkyNeedsMet() const;
+  void StopGlobalSound(ushort soundId);
+  void AddGlobalSound(ushort soundId, CSfxHandle handle);
+  bool HasGlobalSound(ushort soundId) const;
+
+  CGameArea::CChainIterator ChainHead(EChain chain) const {
+    return CGameArea::CChainIterator(mChainHeads[size_t(chain)]);
+  }
+  CGameArea::CConstChainIterator GetChainHead(EChain chain) const {
+    return CGameArea::CConstChainIterator(mChainHeads[size_t(chain)]);
+  }
+  static CGameArea::CConstChainIterator skGlobalEnd;
+
   const CGameArea& GetAreaAlways(TAreaId id) const { return *mAreas[id.Value()]; }
   CGameArea* Area(TAreaId id) { return mAreas[id.Value()].get(); }
   const CGameArea* GetArea(TAreaId id) const { return mAreas[id.Value()].get(); }
   bool IsAreaValid(TAreaId id) const { return mAreas[id.Value()]->IsLoaded(); }
+  bool DoesAreaExist(TAreaId id) const { return id.Value() >= 0 && id.Value() < mAreas.size(); }
   CAssetId GetWorldAssetId() const { return mMlvlId; }
   TAreaId GetCurrentAreaId() const { return mCurAreaId; }
   int GetNeededEnvFx() const { return mNeededEnvFx; }
   CMapWorld* GetMapWorld() const;
 
-  void SetLoadPauseState(bool);
 
   static void PropogateAreaChain(CGameArea::EOcclusionState occlusionState, CGameArea* area,
                                  CWorld* world);
 
 private:
-  // Guessed name; recover the complete payload before defining world cleanup.
-  struct SLayerRelUnload;
+  static CGameArea::CChainIterator skGlobalNonConstEnd;
 
-  uint mLoadPhase;
+  enum EPhase {
+    kP_Loading,
+    kP_LoadingMap,
+    kP_LoadingMapAreas,
+    kP_LoadingSkyBox,
+    kP_Done,
+  };
+
+  // Guessed name
+  struct SLayerRelUnload {
+    TAreaId mAreaId;
+    TLayerId mLayerId;
+    uchar mFramesLeft;
+  };
+
+  EPhase mLoadPhase;
   CAssetId mMlvlId;
   CAssetId mStrgId;
   CAssetId mDarkStrgId;

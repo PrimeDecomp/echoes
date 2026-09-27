@@ -11,9 +11,11 @@
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
 
 #include "rstl/auto_ptr.hpp"
+#include "rstl/rc_ptr.hpp"
 
 class CGameMode;
 class CWorldState;
+class CWorldTransManager;
 
 class CGameState {
 public:
@@ -44,6 +46,7 @@ public:
   void SetGameMode(CGameMode* mode); // name inferred
   int GetGameModeType() const { return mGameModeType; } // name inferred
   CWorldState& StateForWorld(CAssetId worldId);
+  rstl::rc_ptr< CWorldTransManager >& WorldTransitionManager();
   CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return gameOptions; }

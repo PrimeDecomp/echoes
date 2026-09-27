@@ -34,6 +34,7 @@ public:
     void fn_80056EE0(int other, bool value);
     bool fn_80056EA0(int other) const;
 
+    const rstl::vector< SDockReference >& GetDockRefs() const { return mDockReferences; }
     const rstl::reserved_vector< CVector3f, 4 >& GetPlaneVertices() const { return mPlaneVertices; }
 
   private:
