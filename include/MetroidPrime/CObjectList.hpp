@@ -5,6 +5,8 @@
 
 class CEntity;
 
+#define kMaxObjects 1024
+
 enum EGameObjectList {
   kOL_Invalid = -1,
   kOL_All,
@@ -19,19 +21,39 @@ enum EGameObjectList {
 };
 
 class CObjectList {
-public:
-  CObjectList(EGameObjectList list, bool flag);
-  virtual uchar IsQualified(const CEntity& entity);
-  CEntity* fn_8000B538(TUniqueId id) const;
-
-private:
   struct SObjectListEntry {
     CEntity* mEntity;
     short mNext;
     short mPrev;
+    SObjectListEntry() : mEntity(nullptr), mNext(-1), mPrev(-1) {}
   };
 
-  SObjectListEntry mObjects[1024];
+public:
+  CObjectList(EGameObjectList list, bool flag);
+  virtual uchar IsQualified(const CEntity& entity);
+
+  // Echoes names below are inferred from Prime and their implementations.
+  void Clear();
+  void AddObject(CEntity& entity);
+  void AddObjectIfAbsent(CEntity& entity);
+  void RemoveObject(TUniqueId uid);
+  CEntity* GetObjectById(TUniqueId uid);
+  const CEntity* GetObjectById(TUniqueId uid) const;
+  CEntity* operator[](int idx);
+  const CEntity* operator[](int idx) const;
+
+  int size() const { return mCount; }
+  int GetFirstObjectIndex() const { return mFirstId; }
+  int GetNextObjectIndex(int idx) const {
+    if (idx != -1) {
+      return mObjects[idx].mNext;
+    } else {
+      return -1;
+    }
+  }
+
+private:
+  SObjectListEntry mObjects[kMaxObjects];
   EGameObjectList mListType;
   short mFirstId;
   short mCount;

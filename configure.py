@@ -381,6 +381,7 @@ config.libs = [
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
             Object(NonMatching, "MetroidPrime/CControlMapper.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CObjectList.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),

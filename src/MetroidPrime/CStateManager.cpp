@@ -61,7 +61,7 @@ TUniqueId CStateManager::AllocateUniqueId() {
 }
 
 const CEntity* CStateManager::GetObjectById(TUniqueId uid) const {
-  return GetObjectListById(kOL_All).fn_8000B538(uid);
+  return GetObjectListById(kOL_All).GetObjectById(uid);
 }
 
 void CStateManager::SetIsDarkWorld(bool b) {
