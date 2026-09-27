@@ -12,6 +12,7 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 #include "rstl/math.hpp"
 #include <float.h>
 #include <math.h>
@@ -938,12 +939,19 @@ CColor CPlayer::GetDarkAetherDamageColor(const CStateManager& mgr, int view) con
 }
 
 CTweakPlayer* CPlayer::GetTweakPlayer() const {
-  return mControlScheme == 1 ? gpTweakPlayerB : gpTweakPlayerA;
+  CTweakPlayer* tweak = gpTweakPlayerA;
+  if (mControlScheme == 1) {
+    tweak = gpTweakPlayerB;
+  }
+  return tweak;
 }
 
 CTweakPlayerControls* CPlayer::GetTweakPlayerControls() const {
-  // TODO: Expose the two control-tweak globals through their shared declaration.
-  return nullptr;
+  CTweakPlayerControls* tweak = gpTweakPlayerControlsA;
+  if (mControlScheme == 1) {
+    tweak = gpTweakPlayerControlsB;
+  }
+  return tweak;
 }
 
 float CPlayer::GetDarkAetherDamage() const { return mDarkAetherDamage; }

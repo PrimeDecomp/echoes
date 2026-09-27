@@ -24,6 +24,14 @@ MetroidPrime/main.cpp:
 	.ctors      start:0x803A54A4 end:0x803A54A8
 	.sbss       start:0x80418EA0 end:0x80418EC4
 
+MetroidPrime/CControlMapper.cpp:
+	.text       start:0x80009880 end:0x8000B518
+	.ctors      start:0x803A54A8 end:0x803A54AC
+	.rodata     start:0x803A5880 end:0x803A5CC8
+	.data       start:0x803B0DE0 end:0x803B15C0
+	.sdata      start:0x80417D90 end:0x80417D98
+	.sdata2     start:0x8041A430 end:0x8041A438
+
 MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B8E8 end:0x8001D0CC
 	.ctors      start:0x803A54AC end:0x803A54B0
@@ -1064,6 +1072,7 @@ Runtime/NMWException.cp:
 
 Runtime/ptmf.c:
 	.text       start:0x80345424 end:0x803454A4
+	.rodata     start:0x803B0388 end:0x803B0398
 
 Runtime/runtime.c:
 	.text       start:0x803454A4 end:0x80345C34
