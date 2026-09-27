@@ -6,7 +6,7 @@
 
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"

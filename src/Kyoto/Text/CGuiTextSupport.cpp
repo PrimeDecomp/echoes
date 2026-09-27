@@ -1,4 +1,4 @@
-#include "GuiSys/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"

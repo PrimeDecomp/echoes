@@ -620,7 +620,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
             Object(NonMatching, "Kyoto/Text/CTextExecuteBuffer.cpp"),
-            Object(NonMatching, "GuiSys/CGuiTextSupport.cpp"),
+            Object(NonMatching, "Kyoto/Text/CGuiTextSupport.cpp"),
             Object(NonMatching, "Kyoto/Text/CTextParser.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEffectComponent.cpp"),
