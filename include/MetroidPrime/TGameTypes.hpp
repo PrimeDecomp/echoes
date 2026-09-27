@@ -41,6 +41,7 @@ struct TEditorId {
 
   bool operator==(const TEditorId& other) const { return Value() == other.Value(); }
   bool operator!=(const TEditorId& other) const { return Value() != other.Value(); }
+  bool operator<(const TEditorId& other) const { return Value() < other.Value(); }
 };
 CHECK_SIZEOF(TEditorId, 0x4)
 

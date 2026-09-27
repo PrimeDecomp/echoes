@@ -11,11 +11,11 @@ class bit_vector {
 public:
   typedef Alloc allocator_type;
 
-  class bit_reference {
+  class reference {
   public:
-    bit_reference(typename storage_type::iterator word, int bit) : mWord(word), mMask(1 << bit) {}
+    reference(typename storage_type::iterator word, int bit) : mWord(word), mMask(1 << bit) {}
     operator bool() const { return (mMask & *mWord.get_pointer()) != 0; }
-    bit_reference& operator=(bool value) {
+    reference& operator=(bool value) {
       if (value) {
         *mWord |= mMask;
       } else {
@@ -26,7 +26,7 @@ public:
 
   private:
     typename storage_type::iterator mWord;
-    int mMask;
+    uint mMask;
   };
 
   class const_iterator {
@@ -50,10 +50,7 @@ public:
   };
 
   bit_vector() : mSize(0) {}
-  bit_vector(int count, bool value) : mSize(0) {
-    reserve(count);
-    insert(begin(), count, value);
-  }
+  bit_vector(int count, bool value);
 
   bit_vector& operator=(const bit_vector& other) {
     mSize = other.mSize;
@@ -62,26 +59,13 @@ public:
   }
 
   int size() const { return mSize; }
-  iterator begin() { return iterator(mData.begin(), 0, 0); }
-  iterator end() { return iterator(mData.begin(), mSize, 0); }
+  iterator begin();
+  iterator end();
   void reserve(int count) { mData.reserve(get_data_size(count)); }
-  bit_reference at(int bit) {
-    return bit_reference(mData.begin() + get_real_index(bit), bit % 32);
-  }
-  bit_reference operator[](int bit) { return at(bit); }
-  void push_back(bool value) {
-    if (mSize % 32 == 0) {
-      mData.push_back(0u);
-    }
-    set_bit(mSize++, value);
-  }
-  void insert(iterator at, int count, bool value) {
-    int bit = at.get_current_bit();
-    make_room(bit, count);
-    while (count-- > 0) {
-      set_bit(bit++, value);
-    }
-  }
+  reference at(int bit);
+  reference operator[](int bit);
+  void push_back(bool value);
+  void insert(iterator at, int count, bool value);
 
   bool get_bit(int bit) { return (mData[get_real_index(bit)] & get_real_bit_mask(bit)) != 0; }
   void set_bit(int bit, bool value) {
@@ -94,17 +78,7 @@ public:
   int get_real_index(int bit) { return bit / 32; }
   uint get_real_bit_mask(int bit) { return 1 << (bit % 32); }
   int get_data_size(int count) { return count / 32 + (count % 32 ? 1 : 0); }
-  void make_room(int bit, int count) {
-    int available = mData.size() * 32 - mSize;
-    while (available < count) {
-      mData.push_back(0u);
-      available += 32;
-    }
-    for (int i = mSize - 1; i >= bit; --i) {
-      set_bit(i + count, get_bit(i));
-    }
-    mSize += count;
-  }
+  void make_room(int bit, int count);
 
   void PutTo(COutputStream& out) const { mData.PutTo(out); }
 
@@ -112,5 +86,61 @@ private:
   int mSize;
   storage_type mData;
 };
+
+template < typename Alloc >
+bit_vector< Alloc >::bit_vector(int count, bool value) : mSize(0) {
+  reserve(count);
+  insert(begin(), count, value);
+}
+
+template < typename Alloc >
+typename bit_vector< Alloc >::iterator bit_vector< Alloc >::begin() {
+  return iterator(mData.begin(), 0, 0);
+}
+
+template < typename Alloc >
+typename bit_vector< Alloc >::iterator bit_vector< Alloc >::end() {
+  return iterator(mData.begin(), mSize, 0);
+}
+
+template < typename Alloc >
+typename bit_vector< Alloc >::reference bit_vector< Alloc >::at(int bit) {
+  return reference(mData.begin() + get_real_index(bit), bit % 32);
+}
+
+template < typename Alloc >
+typename bit_vector< Alloc >::reference bit_vector< Alloc >::operator[](int bit) {
+  return at(bit);
+}
+
+template < typename Alloc >
+void bit_vector< Alloc >::push_back(bool value) {
+  if (mSize % 32 == 0) {
+    mData.push_back_unsafe(0u);
+  }
+  set_bit(mSize++, value);
+}
+
+template < typename Alloc >
+void bit_vector< Alloc >::insert(iterator at, int count, bool value) {
+  int bit = at.get_current_bit();
+  make_room(bit, count);
+  while (count-- > 0) {
+    set_bit(bit++, value);
+  }
+}
+
+template < typename Alloc >
+void bit_vector< Alloc >::make_room(int bit, int count) {
+  int available = mData.size() * 32 - mSize;
+  while (available < count) {
+    mData.push_back(0u);
+    available += 32;
+  }
+  for (int i = mSize - 1; i >= bit; --i) {
+    set_bit(i + count, get_bit(i));
+  }
+  mSize += count;
+}
 } // namespace rstl
 #endif // _RSTL_BIT_VECTOR

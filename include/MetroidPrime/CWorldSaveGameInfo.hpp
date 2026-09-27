@@ -36,6 +36,8 @@ public:
   explicit CWorldSaveGameInfo(CInputStream& in);
 
   uint GetAreaCount() const { return mAreaCount; }
+  const rstl::vector< TEditorId >& GetDoors() const { return mDoors; }
+  const rstl::vector< TEditorId >& GetUnmappableObjects() const { return mUnmappableObjects; }
   const rstl::vector< ScanState >& GetScans() const { return mScans; }
   const rstl::vector< SEnvironmentVariable >& GetSystemVariables() const {
     return mSystemVariables;
