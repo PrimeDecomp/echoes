@@ -87,6 +87,7 @@ public:
   bool GetIsDarkWorld() const { return m_isDarkWorld; }
   void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
+  rstl::pair< int, int > CalculateScanCompletionRate() const;
 
   //
   void ShowPausedHUDMemo(CAssetId strg, float time);

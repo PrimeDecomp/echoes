@@ -392,6 +392,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CWorldTransManager.cpp"),
             Object(NonMatching, "MetroidPrime/CSortedLists.cpp"),
             Object(NonMatching, "MetroidPrime/CProjectedShadow.cpp"),
+            Object(NonMatching, "MetroidPrime/CSlideShow.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp"),
             Object(NonMatching, "MetroidPrime/CSteeringBehaviors.cpp"),
             Object(NonMatching, "MetroidPrime/CEntity.cpp"),

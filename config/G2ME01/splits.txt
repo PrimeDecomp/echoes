@@ -348,6 +348,11 @@ MetroidPrime/CDamageInfo.cpp:
 MetroidPrime/Player/CMorphBallShadow.cpp:
 	.text       start:0x8018A9CC end:0x8018BDF0
 
+MetroidPrime/CSlideShow.cpp:
+	.text       start:0x8018C4A8 end:0x801917F8
+	.ctors      start:0x803A5558 end:0x803A555C
+	.data       start:0x803B5B58 end:0x803B5BA0
+
 MetroidPrime/CProjectedShadow.cpp:
 	.text       start:0x801917F8 end:0x80192708
 
