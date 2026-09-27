@@ -97,6 +97,7 @@ public:
   void IncrementHUDMessageFrameCounter() { ++mHudMessageFrameCount; }
 
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
+  void DeliverScriptMsg(const CScriptMsg& msg); // Guessed name
   void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
 
   void AddObject(CEntity*);
