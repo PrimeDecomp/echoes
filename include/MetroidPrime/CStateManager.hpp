@@ -40,7 +40,9 @@ class CActorModelParticles;
 class CRelayTracker;
 class CWorldLayerState;
 class CStateManagerContainer;
+namespace SL {
 class CSortedListManager;
+}
 class CWeaponMgr;
 class CFluidPlaneManager;
 class CDamageInfo;
@@ -190,7 +192,7 @@ public:
   CWorld* m_world;                                                 // 0x1604
   rstl::list< rstl::reserved_vector< CEntity*, 32 > > m_graveyard; // 0x1608
   rstl::single_ptr< CStateManagerContainer > m_stateManagerContainer;
-  CSortedListManager* m_sortedListManager;
+  SL::CSortedListManager* m_sortedListManager;
   CWeaponMgr* m_weaponMgr;
   CFluidPlaneManager* m_fluidPlaneManager;
   CEnvFxManager* m_envFxManager;               // 0x1630
