@@ -307,6 +307,15 @@ MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
 
+WorldFormat/CAreaOctTree_Tests.cpp:
+	.text       start:0x8024569C end:0x802471B0
+
+WorldFormat/CCollisionSurface.cpp:
+	.text       start:0x802471B0 end:0x8024747C
+
+WorldFormat/CAreaOctTree.cpp:
+	.text       start:0x80247704 end:0x80247CC0
+
 WorldFormat/COBBTree.cpp:
 	.text       start:0x8024DE68 end:0x8024F784
 	.bss        start:0x80410E14 end:0x80410E24 align:4 common
