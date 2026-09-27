@@ -208,7 +208,7 @@ CCubeRenderer::~CCubeRenderer() {
   sRenderer = nullptr;
   Buckets::Shutdown();
   if (mSilhouetteMask.get()) {
-    mSilhouetteMask->sub_8030e10c();
+    mSilhouetteMask->ScheduleDeletion();
   }
 }
 

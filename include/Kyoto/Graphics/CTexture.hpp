@@ -55,8 +55,7 @@ public:
   CTexture(CInputStream& stream, EAutoMipmap mip, EBlackKey bk);
   ~CTexture();
 
-  // Used in certain destructors
-  void sub_8030e10c();
+  void ScheduleDeletion();
 
   void Load(GXTexMapID texMapId, EClampMode clampMode) const;
   void UnLock();
