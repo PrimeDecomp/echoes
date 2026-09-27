@@ -164,6 +164,11 @@ MetroidPrime/CPhysicsActor.cpp:
 	.data       start:0x803B3A10 end:0x803B3AA8
 	.sdata2     start:0x8041B75C end:0x8041B790
 
+MetroidPrime/BodyState/CBSLocomotion.cpp:
+	.text       start:0x800F2BC4 end:0x800F5004
+	.ctors      start:0x803A5514 end:0x803A5518
+	.data       start:0x803B3F10 end:0x803B41C8
+
 MetroidPrime/BodyState/CBodyController.cpp:
 	.text       start:0x800F649C end:0x800F794C
 	.rodata     start:0x803A8BD0 end:0x803A8BE0
