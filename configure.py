@@ -399,6 +399,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CMemoryCard.cpp"),
             Object(NonMatching, "MetroidPrime/CMemoryCardDriver.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerData.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitions.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),

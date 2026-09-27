@@ -1,0 +1,83 @@
+#include "MetroidPrime/Cameras/CCameraShakerData.hpp"
+
+#include "Kyoto/Math/CMath.hpp"
+#include "rstl/algorithm.hpp"
+#include "rstl/math.hpp"
+
+CCameraShakerData::CCameraShakerData(float attenuationDistance, float duration, uint flags,
+                                     const CVector3f& position, const CMayaSpline& horizontalMotion,
+                                     const CMayaSpline& verticalMotion,
+                                     const CMayaSpline& forwardMotion, int audioEffect)
+: mFlags(flags)
+, mDuration(duration)
+, mAttenuationDistance(attenuationDistance)
+, mPosition(position)
+, mHorizontalMotion(horizontalMotion)
+, mForwardMotion(forwardMotion)
+, mVerticalMotion(verticalMotion)
+, mAudioEffect(audioEffect)
+, mMaxAmplitude(0.f)
+, mLastThresholdTime(duration)
+, mFirstThresholdTime(0.f) {
+  if ((mFlags & kF_ExplicitDuration) == 0) {
+    mDuration = mHorizontalMotion.GetMaxTime();
+    mDuration = rstl::max_val(mVerticalMotion.GetMaxTime(), mDuration);
+    mDuration = rstl::max_val(mForwardMotion.GetMaxTime(), mDuration);
+  }
+  mMaxAmplitude = GetMaxAmplitude();
+}
+
+// Guessed name
+void CCameraShakerData::UpdateThresholdTimes() {
+  mFirstThresholdTime = FindFirstIntersection(0.2f);
+  mLastThresholdTime = FindLastIntersection(0.2f);
+}
+
+CVector3f CCameraShakerData::GetPoint(float time) {
+  time = CMath::Clamp(0.f, time, mDuration);
+  const float x = mHorizontalMotion.EvaluateAt(time);
+  const float y = mForwardMotion.EvaluateAt(time);
+  const float z = mVerticalMotion.EvaluateAt(time);
+  return CVector3f(x, y, z);
+}
+
+CCameraShakerData CCameraShakerData::NewTranslation(const CVector3f& position) const {
+  return CCameraShakerData(mAttenuationDistance, mDuration, mFlags, position, mHorizontalMotion,
+                           mVerticalMotion, mForwardMotion, mAudioEffect);
+}
+
+float CCameraShakerData::GetMaxAmplitude() {
+  const float horizontal = mHorizontalMotion.FindMaximumAmplitude().second;
+  const float vertical = mVerticalMotion.FindMaximumAmplitude().second;
+  const float forward = mForwardMotion.FindMaximumAmplitude().second;
+  return rstl::max_val(forward, rstl::max_val(vertical, horizontal));
+}
+
+// Guessed name
+float CCameraShakerData::FindLastIntersection(float amplitude) {
+  const float horizontal = rstl::max_val(mHorizontalMotion.FindLastIntersection(-amplitude),
+                                         mHorizontalMotion.FindLastIntersection(amplitude));
+  const float vertical = rstl::max_val(mVerticalMotion.FindLastIntersection(-amplitude),
+                                       mVerticalMotion.FindLastIntersection(amplitude));
+  const float forward = rstl::max_val(mForwardMotion.FindLastIntersection(-amplitude),
+                                      mForwardMotion.FindLastIntersection(amplitude));
+  const float time = rstl::max_val(forward, rstl::max_val(vertical, horizontal));
+  return time < 0.f ? mDuration : time;
+}
+
+// Guessed name
+float CCameraShakerData::FindFirstIntersection(float amplitude) {
+  float times[] = {mHorizontalMotion.FindFirstIntersection(amplitude),
+                   mHorizontalMotion.FindFirstIntersection(-amplitude),
+                   mVerticalMotion.FindFirstIntersection(amplitude),
+                   mVerticalMotion.FindFirstIntersection(-amplitude),
+                   mForwardMotion.FindFirstIntersection(amplitude),
+                   mForwardMotion.FindFirstIntersection(-amplitude)};
+  rstl::sort(times, times + 6);
+  for (int i = 0; i < 6; ++i) {
+    if (times[i] >= 0.f) {
+      return times[i];
+    }
+  }
+  return 0.f;
+}

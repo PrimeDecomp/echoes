@@ -162,6 +162,10 @@ MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
 
+MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp:
+	.text       start:0x800D50B8 end:0x800D56A8
+	.data       start:0x803B37A0 end:0x803B37C0
+
 MetroidPrime/ScriptObjects/CScriptWater.cpp:
 	.text       start:0x800D79D8 end:0x800DAE94
 	.rodata     start:0x803A8A00 end:0x803A8A18
@@ -341,6 +345,10 @@ MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
 	.text       start:0x801E1338 end:0x801E2098
 	.data       start:0x803B7588 end:0x803B75A8
 	.sdata2     start:0x8041D3F8 end:0x8041D400
+
+MetroidPrime/Cameras/CCameraShakerData.cpp:
+	.text       start:0x801E70F0 end:0x801E782C
+	.sdata2     start:0x8041D460 end:0x8041D46C
 
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F7304
