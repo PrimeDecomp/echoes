@@ -399,6 +399,7 @@ public:
   CREKPIN(CRealElement* a);
   ~CREKPIN() override;
   bool GetValue(int frame, float& valOut) const override;
+  bool IsConstant() const override { return true; }
 };
 
 class CREOCSP : public CRealElement {
@@ -512,9 +513,9 @@ class CRETOCS : public CRealElement {
   int x14_;
   int x18_;
   int x1c_;
-  int x20_;
-  int x24_;
-  int x28_;
+  mutable int x20_;
+  mutable int x24_;
+  mutable int x28_;
 
 public:
   CRETOCS(const bool a, CIntElement* b, CIntElement* c, CIntElement* d);
