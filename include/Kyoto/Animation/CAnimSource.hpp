@@ -3,6 +3,7 @@
 
 #include "Kyoto/Animation/CCharAnimTime.hpp"
 #include "Kyoto/Animation/CSegId.hpp"
+#include "Kyoto/Animation/IAnimReader.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
 #include "rstl/auto_ptr.hpp"
 #include "rstl/vector.hpp"
@@ -66,6 +67,9 @@ public:
   bool HasScale(const CSegId& seg) const;
   CVector3f GetOffset(const CSegId& seg, const CCharAnimTime& time) const;
   CQuaternion GetRotation(const CSegId& seg, const CCharAnimTime& time) const;
+  CSteadyStateAnimInfo GetSteadyStateAnimInfo(const CCharAnimTime& time) const {
+    return CSteadyStateAnimInfo(false, mDuration, GetOffset(mRoot, time));
+  }
   void CalcAverageVelocity();
   void GetSegStatementSet(const CSegIdList& list, CSegStatementSet& set,
                           const CCharAnimTime& time) const;
@@ -77,6 +81,8 @@ public:
   const CCharAnimTime& GetTimePerFrame() const { return mInterval; }
   CSegId GetPrimaryOffsetChannel() const { return mRoot; }
   float GetAverageVelocity() const { return mAverageVelocity; }
+  // Guessed name.
+  bool HasScaleData() const { return !mScales.empty(); }
 
 private:
   // Guessed names.
