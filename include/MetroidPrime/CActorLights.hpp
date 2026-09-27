@@ -1,8 +1,6 @@
 #ifndef _CACTORLIGHTS
 #define _CACTORLIGHTS
 
-// TODO: look for Echoes differences
-
 #include "types.h"
 
 #include "MetroidPrime/TGameTypes.hpp"
@@ -20,30 +18,30 @@ class CAABox;
 
 class CActorLights {
 public:
-  static const float kDefaultPositionUpdateThreshold;
+  static const float kDefaultMinPosChange;
 
   CActorLights(const uint areaUpdateFramePeriod, CVector3f lightingPositionOffset,
                const int maxDynamicLights, const int maxAreaLights,
-               float positionUpdateThreshold = kDefaultPositionUpdateThreshold,
+               float positionUpdateThreshold = kDefaultMinPosChange,
                const bool ambientChannelOverflow = false, const bool useLightSet2 = false,
-               const bool disableWorldLights = false, const bool unk = false);
+               const bool disableWorldLights = false, const bool disableAmbientLights = false);
   ~CActorLights();
 
-  void BuildConstantAmbientLighting();
-  void BuildConstantAmbientLighting(const CColor&);
+  void BuildConstantAmbientLighting(const CColor& color);
   bool BuildAreaLightList(const CStateManager& mgr, const CGameArea& area, const CAABox& bounds);
   void BuildDynamicLightList(const CStateManager& mgr, const CAABox& bounds);
-  void BuildFakeLightList(const rstl::vector< CLight >&, const CColor&);
-  void BuildFaceLightList(const CStateManager& mgr, const CGameArea& area, const CAABox& aabb);
+  void BuildFakeLightList(const rstl::vector< CLight >& lights, const CColor& color);
+  void BuildFaceLightList(const CStateManager& mgr, const CGameArea& area, const CAABox& aabb,
+                          int playerIndex);
 
   void ActivateLights() const;
   uint GetActiveLightCount() const;
+  const CLight& GetLight(uint idx) const;
 
   bool GetNeedsRelight() const { return mDirty == TRUE; }
   bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
   int GetShadowLightIndex() const { return mShadowLightIdx; }
 
-  void SetAmbientColor(const CColor& color);
   void SetCastShadows(bool v) { mCastShadows = v; }
   void SetFindShadowLight(bool v) { mFindShadowLight = v; }
   void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
@@ -51,7 +49,11 @@ public:
 private:
   rstl::reserved_vector< CLight, 4 > mAreaLights;
   rstl::reserved_vector< CLight, 4 > mDynamicLights;
-  CVector3f mAmbientColor;
+  // Guessed name: explicit light objects considered before the manager's dynamic list.
+  rstl::reserved_vector< TUniqueId, 4 > mExplicitLightIds;
+  CColor mAmbientColor;
+  // Guessed name.
+  CColor mDynamicAmbientColor;
   TAreaId mAid;
   bool mDirty : 1;
   bool mCastShadows : 1;
@@ -64,14 +66,17 @@ private:
   bool mInBrightLight : 1;
   bool mUseBrightLightLag : 1;
   bool mAmbientOnly : 1;
-  bool mFindNearestDynamicLights;
+  bool mFindNearestDynamicLights : 1;
+  // Guessed names.
+  bool mDisableAmbientLights : 1;
+  bool mExcludeSpecialDynamicLights : 1;
   int mShadowLightArrIdx;
   int mShadowLightIdx;
   uint mLastUpdateFrame;
   uint mAreaUpdateFramePeriod;
   CVector3f mLightingPositionOffset;
-  int mMaxAreaLights;
-  int mMaxDynamicLights;
+  short mMaxAreaLights;
+  short mMaxDynamicLights;
   CVector3f mLastActorPos;
   float mActorPositionDeltaUpdateThreshold;
   float mShadowDynamicRangeThreshold;
@@ -79,7 +84,16 @@ private:
   int mBrightLightIdx;
   uint mBrightLightLag;
 
-  int prime2addition; // TODO: figure out where this is
+  void UpdateBrightLight();
+  void MultiplyLightingLevels(float level);
+  void MoveAmbienceToLights(const CVector3f& color);
+  void AddOverflowToLights(const CLight& light, const CVector3f& color, float mag);
+  static void MergeOverflowLight(CLight& out, CVector3f& color, const CLight& in, float mag);
+  // Guessed name: rejects a light entity when it is disabled for the selected light layer.
+  bool IsLightExcluded(const CStateManager& mgr, TUniqueId id) const;
+
+  static const int kInvalidShadowLightIndex;
+  static int sFrameSchedulerCount;
 };
 CHECK_SIZEOF(CActorLights, 0x2e4)
 

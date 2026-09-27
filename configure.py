@@ -432,6 +432,7 @@ config.libs = [
             Object(NonMatching, "Weapons/CProjectileWeapon.cpp"),
             Object(NonMatching, "MetroidPrime/CPhysicsActor.cpp"),
             Object(NonMatching, "MetroidPrime/CModelData.cpp"),
+            Object(NonMatching, "MetroidPrime/CActorLights.cpp"),
             Object(NonMatching, "MetroidPrime/CGroundMovement.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAi.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CKnockBackMgr.cpp"),

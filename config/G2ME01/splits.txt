@@ -142,6 +142,10 @@ MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
 
+MetroidPrime/CActorLights.cpp:
+	.text       start:0x800DC37C end:0x800DED98
+	.sdata2     start:0x8041B604 end:0x8041B608 align:4
+
 MetroidPrime/CModelData.cpp:
 	.text       start:0x800E4A58 end:0x800E6CEC
 	.ctors      start:0x803A5504 end:0x803A5508
