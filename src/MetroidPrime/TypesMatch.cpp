@@ -23,6 +23,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CGameProjectile.hpp"
+#include "MetroidPrime/Weapons/CWeapon.hpp"
 
 #define TYPES_MATCH_IMPL(cls, parent, id)                                                          \
   CEntity* cls::TypesMatch(int typeId) const {                                                     \
@@ -62,6 +64,8 @@ CEntity* CEntity::TypesMatch(int typeId) const {
 }
 
 TYPES_MATCH_IMPL(CActor, CEntity, kET_Actor)
+TYPES_MATCH_IMPL(CWeapon, CActor, kET_Weapon)
+TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)
 TYPES_MATCH_IMPL(CGameCamera, CActor, kET_GameCamera)
 TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
