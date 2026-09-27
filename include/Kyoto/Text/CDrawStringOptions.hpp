@@ -11,6 +11,7 @@ public:
 
   void SetTextDirection(ETextDirection dir) { mDirection = dir; }
   ETextDirection GetTextDirection() const { return mDirection; }
+  uint GetPaletteEntry(int idx) const { return mColors[idx]; }
   void SetPaletteEntry(int idx, uint color) { mColors[idx] = color; }
   // Guessed names
   void SetCharacterExtraSpace(int spacing) { mCharacterExtraSpace = spacing; }

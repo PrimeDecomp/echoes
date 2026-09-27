@@ -650,6 +650,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CDSPStreamManager.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
+            Object(NonMatching, "Kyoto/Text/CRasterFont.cpp"),
             Object(NonMatching, "Kyoto/Text/CTextExecuteBuffer.cpp"),
             Object(NonMatching, "Kyoto/Text/CGuiTextSupport.cpp"),
             Object(NonMatching, "Kyoto/Text/CTextParser.cpp"),

@@ -44,12 +44,7 @@ public:
     return *this;
   }
   optional_object& operator=(const T& item) {
-    if (!m_valid) {
-      construct< T >(m_data, item);
-      m_valid = true;
-    } else {
-      *get_ptr() = item;
-    }
+    assign(item);
     return *this;
   }
 
@@ -78,7 +73,7 @@ private:
 
   void assign(const T& item) {
     if (!m_valid) {
-      construct< T >(m_data, item);
+      construct_impl(m_data, item);
       m_valid = true;
     } else {
       *get_ptr() = item;
