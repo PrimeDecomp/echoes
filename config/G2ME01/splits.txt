@@ -223,6 +223,13 @@ MetroidPrime/Player/CPlayerDynamics.cpp:
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
+MetroidPrime/CProjectedShadow.cpp:
+	.text       start:0x801917F8 end:0x80192708
+
+MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp:
+	.text       start:0x80192864 end:0x8019312C
+	.data       start:0x803B5BC0 end:0x803B5C40
+
 MetroidPrime/Cameras/CBallCamera.cpp:
 	.text       start:0x8019E76C end:0x801A8B78
 	.ctors      start:0x803A5560 end:0x803A5564
