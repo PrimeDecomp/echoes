@@ -1,6 +1,7 @@
 #ifndef _CGAMEHINTINFO
 #define _CGAMEHINTINFO
 
+#include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
@@ -39,6 +40,9 @@ public:
   };
 
   CGameHintInfo(CInputStream& in, int version);
+
+  static int FindHintIndex(const rstl::string& name);
+  static const float skHintTextTime;
 
   const rstl::vector< CGameHint >& GetHints() const { return mHints; }
 
