@@ -297,7 +297,7 @@ inline int basic_string< _CharTp, Traits, Alloc >::compare(const basic_string& o
 }
 
 template < typename _CharTp, typename Traits, typename Alloc >
-bool basic_string< _CharTp, Traits, Alloc >::operator==(const basic_string& other) const {
+inline bool basic_string< _CharTp, Traits, Alloc >::operator==(const basic_string& other) const {
   return compare(other) == 0;
 }
 

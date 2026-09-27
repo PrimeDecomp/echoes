@@ -23,7 +23,7 @@ public:
     , mMaximum(in.ReadInt32())
     , mDefaultValue(in.ReadInt32()) {}
 
-    bool operator==(const SEnvironmentVariable& other) const { return mName == other.mName; }
+    bool operator==(const SEnvironmentVariable& other) const;
 
     rstl::string mName;
     int mMinimum;

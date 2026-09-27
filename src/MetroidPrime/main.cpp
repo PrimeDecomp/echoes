@@ -14,6 +14,7 @@
 
 #include "MetroidPrime/CAudioStateWin.hpp"
 #include "MetroidPrime/CConsoleOutputWindow.hpp"
+#include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/CErrorOutputWindow.hpp"
 #include "MetroidPrime/CGameArchitectureSupport.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
