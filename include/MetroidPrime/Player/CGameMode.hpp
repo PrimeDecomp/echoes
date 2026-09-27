@@ -15,10 +15,10 @@ public:
   virtual void v9();
   virtual void v10();
   virtual void v11();
-  virtual bool v12();
+  virtual bool IsGameOver(); // Guessed name
   virtual void v13();
   virtual void v14();
-  virtual int v15();
+  virtual int GetGameModeType(); // Guessed name
   virtual void GiveScore();
   virtual void GetItemAmount();
   virtual void v18();

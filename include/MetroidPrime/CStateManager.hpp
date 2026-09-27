@@ -43,12 +43,12 @@ class CStateManagerContainer;
 class CInputStream;
 class CStateManager;
 
-// TODO: identify; an object inside CStateManagerContainer that loads script layers.
-class CScriptObjectLoader {
+// Partial interface; class name corroborated by Echoes Wii exports.
+class CScriptObjectLoaderHelper {
 public:
-  void fn_80234350(TAreaId aid, CInputStream& in, rstl::vector< TEditorId >& ids,
-                   CStateManager& mgr);
-  void fn_80233C4C(rstl::vector< TEditorId >& ids, CStateManager& mgr);
+  void LoadScriptObjects(TAreaId aid, CInputStream& in, rstl::vector< TEditorId >& ids,
+                         CStateManager& mgr);                                 // Guessed name
+  void InitScriptObjects(rstl::vector< TEditorId >& ids, CStateManager& mgr); // Guessed name
 };
 namespace SL {
 class CSortedListManager;
@@ -92,7 +92,7 @@ public:
   ~CStateManager();
 
   TUniqueId AllocateUniqueId();
-  CScriptObjectLoader& fn_80036210();
+  CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return m_isDarkWorld; }

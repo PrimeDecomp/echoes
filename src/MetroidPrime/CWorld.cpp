@@ -110,10 +110,10 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     in.ReadInt32();
     int version = in.ReadInt32();
     mStrgId = in.ReadInt32();
-    if (static_cast< uint >(version) >= 22) {
+    if (version >= 22u) {
       mDarkStrgId = in.ReadInt32();
     }
-    if (static_cast< uint >(version) >= 23) {
+    if (version >= 23u) {
       mTempleKeyWorldIndex = in.ReadInt32();
     }
     mSavwId = in.ReadInt32();
@@ -122,12 +122,12 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
       mSkyboxWorld = TCachedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', skyboxId)));
       mSkyboxWorld->Lock();
     }
-    if (static_cast< uint >(version) == 17) {
+    if (version == 17u) {
       rstl::vector< CRelay > relays(in);
     }
 
     int areaCount = in.ReadInt32();
-    if (static_cast< uint >(version) < 18) {
+    if (version < 18u) {
       in.ReadInt32();
     }
     mAreas.reserve(areaCount);
@@ -143,11 +143,11 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     mMapWorld =
         rs_new TCachedToken< CMapWorld >(gpSimplePool->GetObj(SObjectTag('MAPW', mMapwId)));
     mMapWorld->Lock();
-    if (mgr && static_cast< uint >(version) < 18) {
+    if (mgr && version < 18u) {
       rstl::vector< TEditorId > ids;
-      CScriptObjectLoader& loader = mgr->fn_80036210();
-      loader.fn_80234350(kInvalidAreaId, in, ids, *mgr);
-      loader.fn_80233C4C(ids, *mgr);
+      CScriptObjectLoaderHelper& loader = mgr->ScriptObjectLoaderHelper();
+      loader.LoadScriptObjects(kInvalidAreaId, in, ids, *mgr);
+      loader.InitScriptObjects(ids, *mgr);
     }
 
     in.ReadInt32();
@@ -217,9 +217,9 @@ CWorld::~CWorld() {
   if (transManager->GetTransType() != CWorldTransManager::kTT_Disabled &&
       gpMain->GetRestartMode() == CMain::kRM_None) {
     CStreamAudioManager::StopOneShot();
-  } else if ((gpGameState->GetGameMode().v15() != 'DTHM' &&
-              gpGameState->GetGameMode().v15() != 'COIN') ||
-             !gpGameState->GetGameMode().v12()) {
+  } else if ((gpGameState->GetGameMode().GetGameModeType() != 'DTHM' &&
+              gpGameState->GetGameMode().GetGameModeType() != 'COIN') ||
+             !gpGameState->GetGameMode().IsGameOver()) {
     CStreamAudioManager::StopAll();
   }
 }
@@ -439,20 +439,20 @@ bool CDummyWorld::ICheckWorldComplete() {
     r.ReadInt32();
     int version = r.ReadInt32();
     mStrgId = r.ReadInt32();
-    if (static_cast< uint >(version) >= 22) {
+    if (version >= 22u) {
       mDarkStrgId = r.ReadInt32();
     }
-    if (static_cast< uint >(version) >= 23) {
+    if (version >= 23u) {
       mTempleKeyWorldIndex = r.ReadInt32();
     }
     mSavwId = r.ReadInt32();
     r.ReadInt32();
-    if (static_cast< uint >(version) == 17) {
+    if (version == 17u) {
       rstl::vector< CRelay > relays(r);
     }
 
     int areaCount = r.ReadInt32();
-    if (static_cast< uint >(version) < 18) {
+    if (version < 18u) {
       r.ReadInt32();
     }
 
@@ -468,7 +468,7 @@ bool CDummyWorld::ICheckWorldComplete() {
       mMapWorld->Lock();
     }
 
-    if (static_cast< uint >(version) < 18) {
+    if (version < 18u) {
       r.ReadUint8();
       r.ReadInt32();
     }
