@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "rstl/construct.hpp"
+#include "rstl/pair.hpp"
 
 class CInputStream;
 class COutputStream;
@@ -70,6 +71,16 @@ struct is_trivially_destructible< TUniqueId > {
 template <>
 inline void construct< TUniqueId >(void* dest, const TUniqueId& src) {
   *static_cast< TUniqueId* >(dest) = src;
+}
+
+template <>
+struct is_trivially_destructible< pair< TEditorId, bool > > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< pair< TEditorId, bool > >(void* dest, const pair< TEditorId, bool >& src) {
+  *static_cast< pair< TEditorId, bool >* >(dest) = src;
 }
 } // namespace rstl
 

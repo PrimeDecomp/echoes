@@ -37,16 +37,4 @@ private:
 };
 CHECK_SIZEOF(CMapWorldInfo, 0x4c)
 
-namespace rstl {
-template <>
-struct is_trivially_destructible< pair< TEditorId, bool > > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< pair< TEditorId, bool > >(void* dest, const pair< TEditorId, bool >& src) {
-  *static_cast< pair< TEditorId, bool >* >(dest) = src;
-}
-} // namespace rstl
-
 #endif // _CMAPWORLDINFO
