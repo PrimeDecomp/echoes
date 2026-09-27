@@ -7,7 +7,7 @@
 #include "rstl/rc_ptr.hpp"
 #include "rstl/single_ptr.hpp"
 
-class CCollidableOBBTreeGroupContainer;
+class COBBTreeGroup;
 class CCollidableOBBTreeGroup;
 class CCollidableAABox;
 class CCollidableSphere;
@@ -51,7 +51,7 @@ private:
   TUniqueId mOwner;
   CVector3f mBoxSize;
   CVector3f mCenter;
-  rstl::single_ptr< CCollidableOBBTreeGroupContainer > mObbContainer;
+  rstl::single_ptr< COBBTreeGroup > mObbContainer;
   rstl::single_ptr< CCollidableOBBTreeGroup > mObbTreeGroupPrimitive;
   rstl::single_ptr< CCollidableAABox > mAaboxPrimitive;
   rstl::single_ptr< CCollidableSphere > mSpherePrimitive;
