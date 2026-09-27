@@ -589,6 +589,8 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CDSPStreamManager.cpp"),
             Object(NonMatching, "Kyoto/CFrameDelayedKiller.cpp"),
             Object(NonMatching, "Kyoto/Text/CStringTable.cpp"),
+            Object(NonMatching, "Kyoto/Text/CTextExecuteBuffer.cpp"),
+            Object(NonMatching, "Kyoto/Text/CTextParser.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEmitterElement.cpp"),
             Object(NonMatching, "Kyoto/Particles/CEffectComponent.cpp"),
             Object(NonMatching, "Kyoto/Particles/CIntElement.cpp"),

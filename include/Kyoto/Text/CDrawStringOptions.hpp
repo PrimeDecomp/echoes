@@ -12,11 +12,14 @@ public:
   void SetTextDirection(ETextDirection dir) { mDirection = dir; }
   ETextDirection GetTextDirection() const { return mDirection; }
   void SetPaletteEntry(int idx, uint color) { mColors[idx] = color; }
+  // Guessed names
+  void SetCharacterExtraSpace(int spacing) { mCharacterExtraSpace = spacing; }
+  int GetCharacterExtraSpace() const { return mCharacterExtraSpace; }
 
 private:
   ETextDirection mDirection;
   rstl::reserved_vector< u32, 16 > mColors;
-  uint x48;
+  int mCharacterExtraSpace; // Guessed name
 };
 
 CHECK_SIZEOF(CDrawStringOptions, 0x4c)
