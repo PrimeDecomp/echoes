@@ -186,7 +186,7 @@ void CTexture::LoadMipLevel(int mip, GXTexMapID tex, EClampMode clamp) const {
 
 void CTexture::UnloadBitmapData(CAssetId textureId) const {
   if (!mBitmapReloader.null()) {
-    bool loadToARAM = mBitmapReloader->ShouldLoadToARAM();
+    bool loadToARAM = mBitmapReloader->GetShouldBeInARAM();
     mBitmapReloader = rs_new CDumpedBitmapDataReloader(textureId, mMemoryAllocated, loadToARAM);
   } else {
     bool complete = mARAMToken.GetStatus() == CARAMToken::kS_Zero ||
@@ -208,7 +208,7 @@ bool CTexture::TryReloadBitmapData(CResFactory& factory) const {
   mBitmapReloader->BeginReloadBitmapData(factory);
   uchar* ptr = static_cast< uchar* >(mBitmapReloader->TryBuildReloadedBitmapData(factory));
   if (ptr != nullptr) {
-    bool loadToARAM = mBitmapReloader->ShouldLoadToARAM();
+    bool loadToARAM = mBitmapReloader->GetShouldBeInARAM();
     mBitmapReloader = nullptr;
 
     mARAMToken.PostConstruct(ptr, mMemoryAllocated, 1);
@@ -254,7 +254,7 @@ CTexture::CDumpedBitmapDataReloader::CDumpedBitmapDataReloader(CAssetId textureI
 , mTextureId(textureId)
 , mResourceSize(0)
 , mBitmapSize(bitmapSize)
-, mLoadToARAM(loadToARAM) {}
+, mShouldBeInARAM(loadToARAM) {}
 
 void CTexture::CDumpedBitmapDataReloader::BeginReloadBitmapData(CResFactory& factory) {
   if (mState != 0) {

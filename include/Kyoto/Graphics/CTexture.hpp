@@ -37,7 +37,7 @@ public:
     CAssetId mTextureId;
     int mResourceSize;
     uint mBitmapSize;
-    bool mLoadToARAM;
+    bool mShouldBeInARAM;
     rstl::single_ptr< CDvdRequest > mRequest;
     rstl::single_ptr< uchar > mData;
 
@@ -48,7 +48,7 @@ public:
     void* TryBuildReloadedBitmapData(CResFactory& factory);
     int GetStatus() const { return mState; }
 
-    const bool ShouldLoadToARAM() const { return mLoadToARAM; } // Guessed name.
+    const bool GetShouldBeInARAM() const { return mShouldBeInARAM; } // Guessed name.
   };
 
   enum EClampMode {
