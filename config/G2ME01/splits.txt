@@ -464,6 +464,41 @@ Kyoto/Animation/CAnimSourceReader.cpp:
 Kyoto/Animation/CAnimSourceReaderBase.cpp:
 	.text       start:0x802A4538 end:0x802A5D94
 
+Kyoto/Animation/CAnimTreeAnimReaderContainer.cpp:
+	.text       start:0x802A5D94 end:0x802A6428
+	.data       start:0x803B96D8 end:0x803B9750
+
+Kyoto/Animation/CAnimTreeBlend.cpp:
+	.text       start:0x802A6428 end:0x802A6C00
+	.data       start:0x803B9750 end:0x803B97D8
+
+Kyoto/Animation/CAnimTreeDoubleChild.cpp:
+	.text       start:0x802A6C00 end:0x802A7C78
+	.data       start:0x803B97D8 end:0x803B9858
+
+Kyoto/Animation/CAnimTreeNode.cpp:
+	.text       start:0x802A7C78 end:0x802A7E20
+	.data       start:0x803B9858 end:0x803B98D0
+
+Kyoto/Animation/CAnimTreeSingleChild.cpp:
+	.text       start:0x802A7E20 end:0x802A81F0
+	.data       start:0x803B98D0 end:0x803B9948
+
+Kyoto/Animation/CAnimTreeTimeScale.cpp:
+	.text       start:0x802A81F0 end:0x802A981C
+	.data       start:0x803B9948 end:0x803B99C0
+
+Kyoto/Animation/CAnimTreeTransition.cpp:
+	.text       start:0x802A981C end:0x802AA750
+	.data       start:0x803B99C0 end:0x803B9A48
+	.sbss       start:0x804198B8 end:0x804198C0
+	.sdata2     start:0x8041E3A0 end:0x8041E3A8
+
+Kyoto/Animation/CAnimTreeTweenBase.cpp:
+	.text       start:0x802AA750 end:0x802ABA00
+	.data       start:0x803B9A48 end:0x803B9AD0
+	.sbss       start:0x804198C0 end:0x804198D8
+
 Kyoto/Animation/CCharAnimMemoryMetrics.cpp:
 	.text       start:0x802ABA68 end:0x802ABA94
 	.sbss       start:0x804198D8 end:0x804198E0
