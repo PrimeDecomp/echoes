@@ -227,52 +227,12 @@ public:
     float mFar;
   };
 
-  class CClippedScreenRect {
-  public:
-    CClippedScreenRect() : mValid(false) {}
-    CClippedScreenRect(int x, int y, int width, int height, int texWidth, float minU, float maxU,
-                       float minV, float maxV)
-    : mValid(true)
-    , mX(x)
-    , mY(y)
-    , mWidth(width)
-    , mHeight(height)
-    , mTexWidth(texWidth)
-    , mMinU(minU)
-    , mMaxU(maxU)
-    , mMinV(minV)
-    , mMaxV(maxV) {}
-
-    bool IsValid() const { return mValid; }
-    int GetX() const { return mX; }
-    int GetY() const { return mY; }
-    int GetWidth() const { return mWidth; }
-    int GetHeight() const { return mHeight; }
-    int GetTexWidth() const { return mTexWidth; }
-    float GetMinU() const { return mMinU; }
-    float GetMaxU() const { return mMaxU; }
-    float GetMinV() const { return mMinV; }
-    float GetMaxV() const { return mMaxV; }
-
-  private:
-    bool mValid;
-    int mX;
-    int mY;
-    int mWidth;
-    int mHeight;
-    int mTexWidth;
-    float mMinU;
-    float mMaxU;
-    float mMinV;
-    float mMaxV;
-  };
-
-  // Guessed name; the four-corner counterpart of CClippedScreenRect.
+  // Guessed name; clipped screen bounds and texture coordinates for four corners.
   class CClippedScreenQuad {
   public:
     CClippedScreenQuad() : mValid(false) {}
     CClippedScreenQuad(int x, int y, int width, int texWidth, int height,
-                       const rstl::reserved_vector< CVector2f, 4 >& texCoords)
+                       rstl::reserved_vector< CVector2f, 4 > texCoords)
     : mValid(true)
     , mX(x)
     , mY(y)
@@ -335,10 +295,6 @@ public:
   static void TickRenderTimings();
   static const CProjectionState& GetProjectionState();
   static void SetProjectionState(const CProjectionState& proj);
-  static CClippedScreenRect ClipScreenRectFromVS(const CVector3f& p1, const CVector3f& p2,
-                                                 ETexelFormat fmt);
-  static CClippedScreenRect ClipScreenRectFromMS(const CVector3f& p1, const CVector3f& p2,
-                                                 ETexelFormat fmt);
   // Guessed name; projects all four model-space corners independently.
   static CClippedScreenQuad ClipScreenQuadFromMS(const CVector3f& p1, const CVector3f& p2,
                                                  const CVector3f& p3, const CVector3f& p4,
@@ -358,6 +314,7 @@ public:
   static void EndScene();
   static void SwapBuffers();
   static void SetTevOp(ERglTevStage stage, const CTevCombiners::CTevPass& pass);
+  static void SetTevRegisterColor(int index, const CColor& color); // Guessed name
   static void StreamBegin(ERglPrimitive primitive);
   static void StreamColor(uint color);
   static void StreamColor(float r, float g, float b, float a);
@@ -395,7 +352,8 @@ public:
   static void SetFog(ERglFogMode mode, float startz, float endz, const CColor& color);
 
   static void SetModelMatrix(const CTransform4f& xf);
-  static void SetUseNormalMatrix(bool enabled); // Guessed name
+  static void SetUseNormalMatrix(bool enabled);      // Guessed name
+  static void SetUseStreamVertexDelay(bool enabled); // Guessed name
   static void SetAlphaCompare(ERglAlphaFunc comp0, uchar ref0, ERglAlphaOp op, ERglAlphaFunc comp1,
                               uchar ref1);
   static void SetDepthWriteMode(bool test, ERglEnum comp, bool write);
@@ -436,10 +394,12 @@ public:
   static const GXTexMapID kSpareBufferTexMapID;
 
 private:
+  static void ConfigureVideo(bool initial, bool progressive); // Guessed name
   static void UpdateVertexDataStream();
   static void ResetVertexDataStream(bool initial);
   static void FlushStream();
   static void FullRender();
+  static void FullRenderWithVertexDelay(); // Guessed name
 
   static CRenderState mRenderState;
   static VecPtr mVertexBuffer;

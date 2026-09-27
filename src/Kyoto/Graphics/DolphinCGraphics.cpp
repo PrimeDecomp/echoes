@@ -1,9 +1,10 @@
-// In-progress G2ME01 scaffold. Startup, shutdown, frame recovery and stream dispatch remain.
+// G2ME01 scaffold remaining identity and code-generation questions are recorded in research.
 #include "Kyoto/Graphics/CGraphics.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Basics/COsContext.hpp"
 #include "Kyoto/Basics/CStopwatch.hpp"
+#include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGraphicsSys.hpp"
@@ -20,7 +21,21 @@
 
 bool CGraphicsSys::mGraphicsInitialized;
 static CStopwatch sFPSTimer;
-// Lifecycle and arena allocation are still being reconstructed.
+static bool sGXAborted;
+static bool sUseStreamVertexDelay;
+static int sSpareAllocationSize;
+static void* sSpareAllocation;
+static bool sIs50Hz;
+static float sFrameWaitFraction;
+static float sPreviousFrameWaitFraction;
+static int sGraphicsArenaSize;
+static int sGraphicsArenaOffset;
+static uchar* sGraphicsArena;
+
+// Buffer ownership is unresolved; also used by the skinned-model workspace allocator.
+extern "C" void fn_8032F6EC(void* buffer, uint size);
+// Unnamed TEV-combiner dependency; the register index is relative to GX_TEVREG0.
+extern "C" void fn_802BE368(int index, const CColor& color);
 
 // clang-format off
 CTevCombiners::CTevPass CGraphics::kEnvModulateConstColor(
@@ -265,6 +280,7 @@ GXBool CGraphics::mUseVideoFilter = GX_TRUE;
 float CGraphics::mBrightness = 1.f;
 
 const GXTexMapID CGraphics::kSpareBufferTexMapID = GX_TEXMAP7;
+
 void CGraphics::InitGraphicsFifo(GXFifoObj* obj, void* fifo, uint fifoSize) {
   GXFifoObj fifoObj;
   GXInitFifoBase(&fifoObj, fifo, fifoSize);
@@ -273,6 +289,108 @@ void CGraphics::InitGraphicsFifo(GXFifoObj* obj, void* fifo, uint fifoSize) {
   GXInitFifoLimits(obj, fifoSize - 0x4000, fifoSize - 0x10000);
   GXSetCPUFifo(obj);
   GXSetGPFifo(obj);
+}
+
+// Guessed names for the graphics arena helpers.
+static void InitializeGraphicsArena(void* base, int size) {
+  sGraphicsArena = static_cast< uchar* >(base);
+  sGraphicsArenaSize = size;
+  sGraphicsArenaOffset = 0;
+}
+
+static void* AllocateGraphicsArena(int size) {
+  void* result = sGraphicsArena + sGraphicsArenaOffset;
+  sGraphicsArenaOffset += size;
+  return result;
+}
+
+static void ResetGraphicsArena() { sGraphicsArenaOffset = 0; }
+
+bool CGraphics::Startup(const COsContext& osContext, bool progressive) {
+  InitializeGraphicsArena(osContext.GetArenaBlock(), osContext.GetArenaBlockSize());
+  VIInit();
+  VISetBlack(TRUE);
+  ConfigureVideo(true, progressive);
+  CGX::ResetGXStates();
+  InitGraphicsVariables();
+  ConfigureFrameBuffer();
+  for (int i = 0; i < ARRAY_SIZE(mTexRegions); ++i) {
+    GXInitTexCacheRegion(&mTexRegions[i], false, 0x8000 * i, GX_TEXCACHE_32K, 0x80000 + 0x8000 * i,
+                         GX_TEXCACHE_32K);
+  }
+  for (int i = 0; i < ARRAY_SIZE(mTexRegionsCI); ++i) {
+    GXInitTexCacheRegion(&mTexRegionsCI[i], false, (8 + 2 * i) << 15, GX_TEXCACHE_32K,
+                         (9 + 2 * i) << 15, GX_TEXCACHE_32K);
+  }
+  mGXDefaultTexRegionCallback = GXSetTexRegionCallback(TexRegionCallback);
+  mSpareBufferSize = sSpareAllocationSize;
+  mpSpareBuffer = sSpareAllocation;
+  mSpareBufferTexCacheSize = 0x10000;
+  return true;
+}
+
+// Guessed name.
+static void SetProgressiveFilter(GXRenderModeObj& mode) {
+  const u8 filter[7] = {4, 4, 16, 16, 16, 4, 4};
+  memcpy(mode.vfilter, filter, sizeof(filter));
+}
+
+void CGraphics::ConfigureVideo(bool initial, bool progressive) {
+  if (!initial) {
+    CFrameDelayedKiller::StallAndFlushAllAllocations();
+  }
+  GXRenderModeObj* mode = nullptr;
+  switch (VIGetTvFormat()) {
+  case VI_NTSC:
+    mode = progressive ? &GXNtsc480Prog : &GXNtsc480IntDf;
+    break;
+  case VI_MPAL:
+    mode = progressive ? &GXNtsc480Prog : &GXMpal480IntDf;
+    break;
+  case VI_PAL:
+  case VI_EURGB60:
+    rs_debugger_printf("PAL TV Format not compatible with NTSC build");
+    break;
+  }
+  GXAdjustForOverscan(mode, &mRenderModeObj, 0, 16);
+  mRenderModeObj.viWidth += 20;
+  mRenderModeObj.viXOrigin -= 10;
+  mPixelAspectRatio = 1.f;
+  sIs50Hz = false;
+  if (progressive) {
+    SetProgressiveFilter(mRenderModeObj);
+  }
+  mpFrameBuf1 = nullptr;
+  mpFrameBuf2 = nullptr;
+  mpFifo = nullptr;
+  sSpareAllocation = nullptr;
+  fn_8032F6EC(nullptr, 0);
+  ResetGraphicsArena();
+  const int frameBufferSize = ((mRenderModeObj.fbWidth + 15) & ~15) * mRenderModeObj.xfbHeight * 2;
+  mpFrameBuf1 = AllocateGraphicsArena(frameBufferSize);
+  mpFrameBuf2 = AllocateGraphicsArena(frameBufferSize);
+  mFifoSize = 0x60000;
+  sSpareAllocationSize = 0x46000;
+  mpFifo = AllocateGraphicsArena(mFifoSize);
+  sSpareAllocation = AllocateGraphicsArena(sSpareAllocationSize);
+  fn_8032F6EC(AllocateGraphicsArena(0x40000), 0x40000);
+  mSpareBufferSize = sSpareAllocationSize;
+  mpSpareBuffer = sSpareAllocation;
+  if (!initial) {
+    mRenderModeObj.viWidth += mScreenStretch * 2;
+    mRenderModeObj.viXOrigin += mScreenPositionX - mScreenStretch;
+    mRenderModeObj.viYOrigin += mScreenPositionY;
+    VIWaitForRetrace();
+    VIWaitForRetrace();
+  }
+  VIConfigure(&mRenderModeObj);
+  VIFlush();
+  if (initial) {
+    mpFifoObj = GXInit(mpFifo, mFifoSize);
+  }
+  InitGraphicsFifo(mpFifoObj, mpFifo, mFifoSize);
+  GXSetCopyFilter(mRenderModeObj.aa, mRenderModeObj.sample_pattern, GX_TRUE,
+                  mRenderModeObj.vfilter);
 }
 
 GXTexRegion* CGraphics::TexRegionCallback(const GXTexObj* obj, GXTexMapID id) {
@@ -316,6 +434,17 @@ void CGraphics::InitGraphicsVariables() {
   mRenderState.ResetFlushAll();
 }
 
+void CGraphics::Shutdown() {
+  GXSetTexRegionCallback(mGXDefaultTexRegionCallback);
+  CFrameDelayedKiller::StallAndFlushAllAllocations();
+  mpFrameBuf1 = nullptr;
+  mpFrameBuf2 = nullptr;
+  mpFifo = nullptr;
+  sSpareAllocation = nullptr;
+  fn_8032F6EC(nullptr, 0);
+  ResetGraphicsArena();
+}
+
 void CGraphics::InitGraphicsDefaults() {
   SetDepthRange(0.f, 1.f);
   mIsGXModelMatrixIdentity = false;
@@ -328,6 +457,29 @@ void CGraphics::InitGraphicsDefaults() {
   CTevCombiners::Init();
   DisableAllLights();
   SetDefaultVtxAttrFmt();
+}
+
+void CGraphics::ConfigureFrameBuffer() {
+  VIConfigure(&mRenderModeObj);
+  VISetNextFrameBuffer(mpFrameBuf1);
+  mpCurrenFrameBuf = mpFrameBuf2;
+  GXSetViewport(0.f, 0.f, static_cast< float >(mRenderModeObj.fbWidth),
+                static_cast< float >(mRenderModeObj.efbHeight), 0.f, 1.f);
+  GXSetScissor(0, 0, mRenderModeObj.fbWidth, mRenderModeObj.efbHeight);
+  GXSetDispCopySrc(0, 0, mRenderModeObj.fbWidth, mRenderModeObj.efbHeight);
+  GXSetDispCopyDst(mRenderModeObj.fbWidth, mRenderModeObj.efbHeight);
+  GXSetDispCopyYScale(static_cast< float >(mRenderModeObj.xfbHeight) / mRenderModeObj.efbHeight);
+  GXSetCopyFilter(mRenderModeObj.aa, mRenderModeObj.sample_pattern, GX_ENABLE,
+                  mRenderModeObj.vfilter);
+  GXSetPixelFmt(mRenderModeObj.aa ? GX_PF_RGB565_Z16 : GX_PF_RGB8_Z24, GX_ZC_LINEAR);
+  GXSetDispCopyGamma(GX_GM_1_0);
+  GXCopyDisp(mpCurrenFrameBuf, true);
+  VIFlush();
+  VIWaitForRetrace();
+  VIWaitForRetrace();
+  mViewport.mWidth = mRenderModeObj.fbWidth;
+  mViewport.mHeight = mRenderModeObj.efbHeight;
+  InitGraphicsDefaults();
 }
 
 void CGraphics::EnableLight(ERglLight light) {
@@ -574,12 +726,12 @@ void CGraphics::SetViewport(int left, int bottom, int width, int height) {
                 mDepthNear, mDepthFar);
 }
 
-void CGraphics::SetScissor(int left, int bottom, int width, int height) {
-  GXSetScissor(left, mRenderModeObj.efbHeight - (bottom + height), width, height);
-}
-
 int CGraphics::GetViewportTop(int bottom) {
   return mRenderModeObj.efbHeight - (bottom + mViewport.mHeight);
+}
+
+void CGraphics::SetScissor(int left, int bottom, int width, int height) {
+  GXSetScissor(left, mRenderModeObj.efbHeight - (bottom + height), width, height);
 }
 
 void CGraphics::SetAmbientColor(const CColor& color) {
@@ -612,11 +764,55 @@ void CGraphics::ClearBackAndDepthBuffers() {
   GXInvalidateVtxCache();
 }
 
+static const GXVtxDescList skPosColorTexDirect[] = {
+    {GX_VA_POS, GX_DIRECT},
+    {GX_VA_CLR0, GX_DIRECT},
+    {GX_VA_TEX0, GX_DIRECT},
+    {GX_VA_NULL, GX_NONE},
+};
+
 void CGraphics::BeginScene() { ClearBackAndDepthBuffers(); }
 
 void CGraphics::SwapBuffers() {
   GXDisableBreakPt();
   mFlippingState = 1;
+}
+
+void CGraphics::VideoPreCallback(u32 retraceCount) {
+  if (mNumBreakpointsWaiting != 0 && mFlippingState == 1) {
+    if (mFirstFrame) {
+      VISetBlack(FALSE);
+      mFirstFrame = false;
+    }
+    VISetNextFrameBuffer(mpCurrenFrameBuf);
+    VIFlush();
+    mpCurrenFrameBuf = mpCurrenFrameBuf == mpFrameBuf1 ? mpFrameBuf2 : mpFrameBuf1;
+    mFlippingState = 2;
+  }
+
+  static int stalledRetraces = 0;
+  static u32 lastOverflowCount = 0;
+  GXBool overHighWaterMark;
+  GXBool ignored;
+  GXGetGPStatus(&overHighWaterMark, &ignored, &ignored, &ignored, &ignored);
+  const u32 overflowCount = GXGetOverflowCount();
+  if (overHighWaterMark && lastOverflowCount == overflowCount) {
+    if (++stalledRetraces >= 10) {
+      GXAbortFrame();
+      OSResumeThread(GXGetCurrentGXThread());
+      GXFifoObj fifo;
+      GXInitFifoBase(&fifo, mpFifo, mFifoSize);
+      GXSetCPUFifo(&fifo);
+      GXSetGPFifo(&fifo);
+      GXSetCPUFifo(mpFifoObj);
+      GXSetGPFifo(mpFifoObj);
+      sGXAborted = true;
+      stalledRetraces = 0;
+    }
+  } else {
+    stalledRetraces = 0;
+    lastOverflowCount = overflowCount;
+  }
 }
 
 void CGraphics::VideoPostCallback(u32 retraceCount) {
@@ -632,6 +828,85 @@ void CGraphics::VideoPostCallback(u32 retraceCount) {
       mInterruptLastFrameUsedAbove = VIGetNextField() == 1;
     }
   }
+}
+
+void CGraphics::EndScene() {
+  const OSTime start = OSGetTime();
+  if (!sGXAborted) {
+    CStopwatch waitTimer;
+    while (mNumBreakpointsWaiting > 0 && !sGXAborted) {
+      OSYieldThread();
+      if (OSTicksToMilliseconds(OSGetTime() - start) > 250) {
+        const BOOL interrupts = OSDisableInterrupts();
+        GXAbortFrame();
+        sGXAborted = true;
+        OSRestoreInterrupts(interrupts != FALSE);
+      }
+    }
+    const float elapsedMs = static_cast< float >(waitTimer.GetElapsedMicros() / 1000);
+    const float framePeriod = sIs50Hz ? 20.f : 16.6666667f;
+    sPreviousFrameWaitFraction = sFrameWaitFraction;
+    sFrameWaitFraction = (framePeriod - elapsedMs) / framePeriod;
+  } else {
+    GXAbortFrame();
+  }
+  if (sGXAborted) {
+    mNumBreakpointsWaiting = 0;
+    sGXAborted = false;
+    mpFifoObj = GXInit(mpFifo, mFifoSize);
+    InitGraphicsFifo(mpFifoObj, mpFifo, mFifoSize);
+    SetDefaultVtxAttrFmt();
+    CGX::ResetGXStatesFull();
+    InitGraphicsVariables();
+  }
+  ++mNumBreakpointsWaiting;
+
+  Mtx44 projection;
+  MTXOrtho(projection, mViewport.mHeight / 2, -mViewport.mHeight / 2, -mViewport.mWidth / 2,
+           mViewport.mWidth / 2, -1.f, -10.f);
+  GXSetProjection(projection, GX_ORTHOGRAPHIC);
+  Mtx model;
+  MTXIdentity(model);
+  GXLoadPosMtxImm(model, GX_PNMTX0);
+  CGX::SetZMode(true, GX_LEQUAL, false);
+  CGX::SetVtxDescv(skPosColorTexDirect);
+  CGX::Begin(GX_TRIANGLES, GX_VTXFMT0, 288);
+  for (int i = 0; i < 96; ++i) {
+    GXPosition3f32(0.f, 1.f, 1.f);
+    GXColor1u32(0);
+    GXTexCoord2f32(0.f, 0.f);
+    GXPosition3f32(0.f, 0.f, 1.f);
+    GXColor1u32(0);
+    GXTexCoord2f32(0.f, 0.f);
+    GXPosition3f32(1.f, 0.f, 1.f);
+    GXColor1u32(0);
+    GXTexCoord2f32(0.f, 0.f);
+  }
+  CGX::End();
+  CGX::SetZMode(true, GX_LEQUAL, true);
+
+  const float brightness = CMath::Clamp(0.f, mBrightness, 2.f);
+  static const u8 unfiltered[7] = {0, 0, 21, 22, 21, 0, 0};
+  const u8* filter = mUseVideoFilter ? mRenderModeObj.vfilter : unfiltered;
+  u8 adjustedFilter[7];
+  for (int i = 0; i < 7; ++i) {
+    adjustedFilter[i] = static_cast< u8 >(brightness * filter[i]);
+  }
+  GXSetCopyFilter(mRenderModeObj.aa, mRenderModeObj.sample_pattern, GX_TRUE, adjustedFilter);
+  GXCopyDisp(mpCurrenFrameBuf, mIsBeginSceneClearFb);
+  GXSetCopyFilter(mRenderModeObj.aa, mRenderModeObj.sample_pattern, mUseVideoFilter,
+                  mRenderModeObj.vfilter);
+  GXSetBreakPtCallback(SwapBuffers);
+  VISetPreRetraceCallback(VideoPreCallback);
+  VISetPostRetraceCallback(VideoPostCallback);
+  GXFlush();
+  void* readPtr;
+  void* writePtr;
+  GXGetFifoPtrs(GXGetGPFifo(), &readPtr, &writePtr);
+  GXEnableBreakPt(writePtr);
+  mLastFrameUsedAbove = mInterruptLastFrameUsedAbove;
+  ++mFrameCounter;
+  CFrameDelayedKiller::FlushAllocationsForFrame();
 }
 
 void CGraphics::SetDepthWriteMode(const bool test, ERglEnum comp, const bool write) {
@@ -657,12 +932,7 @@ void CGraphics::SetAlphaCompare(ERglAlphaFunc comp0, uchar ref0, ERglAlphaOp op,
                        static_cast< uchar >(ref1));
 }
 
-static const GXVtxDescList skPosColorTexDirect[] = {
-    {GX_VA_POS, GX_DIRECT},
-    {GX_VA_CLR0, GX_DIRECT},
-    {GX_VA_TEX0, GX_DIRECT},
-    {GX_VA_NULL, GX_NONE},
-};
+;
 
 void CGraphics::Render2D(const CTexture& tex, int x, int y, int w, int h, const CColor& col) {
   Render2D(&tex, x, y, w, h, col);
@@ -922,7 +1192,33 @@ void CGraphics::ResetVertexDataStream(bool initial) {
   mJustReset = 1;
 }
 
-// TODO: reconstruct both native streaming paths before defining FlushStream.
+void CGraphics::FlushStream() {
+  GXVtxDescList descriptors[10];
+  GXVtxDescList* next = descriptors;
+  const GXVtxDescList position = {GX_VA_POS, GX_DIRECT};
+  *next++ = position;
+  if ((vtxDescr.mStreamFlags & kHasNormals) != 0) {
+    const GXVtxDescList normal = {GX_VA_NRM, GX_DIRECT};
+    *next++ = normal;
+  }
+  if ((vtxDescr.mStreamFlags & kHasColor) != 0) {
+    const GXVtxDescList color = {GX_VA_CLR0, GX_DIRECT};
+    *next++ = color;
+  }
+  if ((vtxDescr.mStreamFlags & kHasTexture) != 0) {
+    const GXVtxDescList texture = {GX_VA_TEX0, GX_DIRECT};
+    *next++ = texture;
+  }
+  const GXVtxDescList end = {GX_VA_NULL, GX_NONE};
+  *next = end;
+  CGX::SetVtxDescv(descriptors);
+  SetTevStates(vtxDescr.mStreamFlags);
+  if (sUseStreamVertexDelay) {
+    FullRenderWithVertexDelay();
+  } else {
+    FullRender();
+  }
+}
 
 void CGraphics::SetTevStates(uchar flags) {
   switch (flags) {
@@ -966,6 +1262,103 @@ void CGraphics::SetTevStates(uchar flags) {
   CGX::SetChanCtrl(CGX::Channel0, light ? GX_ENABLE : GX_DISABLE, GX_SRC_REG,
                    (flags & kHasColor) ? GX_SRC_VTX : GX_SRC_REG, static_cast< GXLightID >(light),
                    diffFn, attnFn);
+}
+
+// Guessed name. The alternate path deliberately delays every vertex by eight instructions.
+static inline void DelayStreamVertex() {
+  asm {
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+  }
+}
+
+void CGraphics::FullRenderWithVertexDelay() {
+  CGX::Begin(static_cast< GXPrimitive >(mCurrentPrimitive), GX_VTXFMT0, mNumPrimitives);
+  switch (vtxDescr.mStreamFlags) {
+  case 0:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasNormals:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      const Vec& nrm = mNormalBuffer[i];
+      GXNormal3f32(nrm.x, nrm.y, nrm.z);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasColor:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      GXColor1u32(mColorBuffer[i]);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasTexture:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      const Vec2& uv = mTexCoordBuffer0[i];
+      GXTexCoord2f32(uv.x, uv.y);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasNormals | kHasTexture:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      const Vec& nrm = mNormalBuffer[i];
+      GXNormal3f32(nrm.x, nrm.y, nrm.z);
+      const Vec2& uv = mTexCoordBuffer0[i];
+      GXTexCoord2f32(uv.x, uv.y);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasNormals | kHasColor:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      const Vec& nrm = mNormalBuffer[i];
+      GXNormal3f32(nrm.x, nrm.y, nrm.z);
+      GXColor1u32(mColorBuffer[i]);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasColor | kHasTexture:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      GXColor1u32(mColorBuffer[i]);
+      const Vec2& uv = mTexCoordBuffer0[i];
+      GXTexCoord2f32(uv.x, uv.y);
+      DelayStreamVertex();
+    }
+    break;
+  case kHasNormals | kHasColor | kHasTexture:
+    for (int i = 0; i < mNumPrimitives; i++) {
+      const Vec& vtx = mVertexBuffer[i];
+      GXPosition3f32(vtx.x, vtx.y, vtx.z);
+      const Vec& nrm = mNormalBuffer[i];
+      GXNormal3f32(nrm.x, nrm.y, nrm.z);
+      GXColor1u32(mColorBuffer[i]);
+      const Vec2& uv = mTexCoordBuffer0[i];
+      GXTexCoord2f32(uv.x, uv.y);
+      DelayStreamVertex();
+    }
+    break;
+  }
+  CGX::End();
 }
 
 void CGraphics::FullRender() {
@@ -1058,6 +1451,8 @@ static inline GXTevStageID get_texture_unit(const ERglTevStage stage) {
 void CGraphics::SetTevOp(ERglTevStage stage, const CTevCombiners::CTevPass& pass) {
   CTevCombiners::SetupPass(get_texture_unit(stage), pass);
 }
+
+void CGraphics::SetTevRegisterColor(int index, const CColor& color) { fn_802BE368(index, color); }
 
 void CGraphics::SetFog(ERglFogMode mode, float startz, float endz, const CColor& color) {
   CGX::SetFog(static_cast< GXFogType >(mode), startz, endz, mProj.GetNear(), mProj.GetFar(),
@@ -1229,15 +1624,6 @@ CGraphics::ClipScreenQuadFromMS(const CVector3f& p1, const CVector3f& p2, const 
                               mViewMatrix.TransposeMultiply(mModelMatrix * p4), fmt);
 }
 
-void CGraphics::SetUseNormalMatrix(bool enabled) {
-  if (mUseNormalMatrix != enabled) {
-    mUseNormalMatrix = enabled;
-    if (enabled) {
-      SetViewMatrix();
-    }
-  }
-}
-
 float CGraphics::GetFPS() {
   BOOL level = OSDisableInterrupts();
   float value = rstl::min_val(mFramesPerSecond, mLastFramesPerSecond);
@@ -1279,8 +1665,7 @@ void CGraphics::SetProgressiveMode(bool b) {
   if (b) {
     mRenderModeObj.viTVmode = VI_TVMODE_NTSC_PROG;
     mRenderModeObj.xFBmode = VI_XFBMODE_SF;
-    const u8 vfilter[7] = {0x04, 0x04, 0x10, 0x10, 0x10, 0x04, 0x04};
-    memcpy(mRenderModeObj.vfilter, vfilter, 7);
+    SetProgressiveFilter(mRenderModeObj);
   } else {
     mRenderModeObj.viTVmode = VI_TVMODE_NTSC_INT;
     mRenderModeObj.xFBmode = VI_XFBMODE_DF;
@@ -1338,6 +1723,17 @@ void CGraphics::SetScreenPosition(int stretch, int xOffset, int yOffset) {
 }
 
 void CGraphics::SetIsBeginSceneClearFb(bool b) { mIsBeginSceneClearFb = b; }
+
+void CGraphics::SetUseNormalMatrix(bool enabled) {
+  if (mUseNormalMatrix != enabled) {
+    mUseNormalMatrix = enabled;
+    if (enabled) {
+      SetViewMatrix();
+    }
+  }
+}
+
+void CGraphics::SetUseStreamVertexDelay(bool enabled) { sUseStreamVertexDelay = enabled; }
 
 CGraphicsSys::CGraphicsSys(const COsContext& osContext, const CMemorySys& memorySys,
                            bool progressive) {
