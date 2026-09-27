@@ -32,7 +32,12 @@ public:
       return *this;
     }
     if (other.valid()) {
-      assign(other.data());
+      if (!m_valid) {
+        construct< T >(m_data, other.data());
+        m_valid = true;
+      } else {
+        *get_ptr() = other.data();
+      }
     } else {
       clear();
     }

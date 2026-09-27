@@ -15,6 +15,7 @@
 
 class CGameMode;
 class CWorldState;
+class CWorldTransManager;
 class CPlayerState;
 
 class CGameState {
@@ -46,6 +47,7 @@ public:
   void SetGameMode(CGameMode* mode); // name inferred
   int GetGameModeType() const { return mGameModeType; } // name inferred
   CWorldState& StateForWorld(CAssetId worldId);
+  rstl::rc_ptr< CWorldTransManager >& WorldTransitionManager();
   CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return gameOptions; }

@@ -42,22 +42,19 @@ public:
   : mBlendMode(blendMode), mMatSetIdx(shadIdx), mFlags(flags), mColor(col) {}
 
   CModelFlags(const CModelFlags& flags, uint otherFlags)
-  : x0_(flags.x0_)
-  , mBlendMode(flags.mBlendMode)
+  : mBlendMode(flags.mBlendMode)
   , mMatSetIdx(flags.mMatSetIdx)
   , mFlags(otherFlags)
   , mColor(flags.mColor) {}
   CModelFlags(const CModelFlags& flags, bool b /* TODO what's this? */, int shaderSet)
-  : x0_(flags.x0_)
-  , mBlendMode(flags.mBlendMode)
+  : mBlendMode(flags.mBlendMode)
   , mMatSetIdx(shaderSet)
   , mFlags(flags.mFlags)
   , mColor(flags.mColor) {}
 
   // ?
   CModelFlags(const CModelFlags& flags, ETrans trans, CColor color)
-  : x0_(flags.x0_)
-  , mBlendMode(trans)
+  : mBlendMode(trans)
   , mMatSetIdx(flags.mMatSetIdx)
   , mFlags(flags.mFlags)
   , mColor(color) {}

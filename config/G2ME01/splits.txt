@@ -119,8 +119,20 @@ MetroidPrime/CIOWin.cpp:
 	.data       start:0x803B1BA0 end:0x803B1BC0
 
 MetroidPrime/CActor.cpp:
-	.text       start:0x8004AC98 end:0x8004E448
+	.text       start:0x8004AC98 end:0x8004E84C
 	.data       start:0x803B1BC0 end:0x803B1C40
+
+MetroidPrime/CWorld.cpp:
+	.text       start:0x8004E84C end:0x80052880
+	.ctors      start:0x803A54C8 end:0x803A54CC
+	.rodata     start:0x803A6828 end:0x803A6830
+	.data       start:0x803B1C40 end:0x803B1D10
+	.sbss       start:0x80418FB8 end:0x80418FC8
+	.sdata2     start:0x8041A8F0 end:0x8041A900
+
+MetroidPrime/CArchMsgParmControllerStatus.cpp:
+	.text       start:0x80052880 end:0x80052900
+	.data       start:0x803B1D10 end:0x803B1D20
 
 MetroidPrime/CGameArea.cpp:
 	.text       start:0x800536A8 end:0x800609B4

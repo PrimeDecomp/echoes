@@ -232,7 +232,7 @@ void CStateManager::SendScriptMsg_fn_80037100(const CScriptMsg& msg) {
 }
 
 bool CStateManager::fn_80036F10() const {
-  int v = gpGameState->GetGameMode().v15();
+  int v = gpGameState->GetGameMode().GetGameModeType();
   return v != 'SNGL' && v != 'FRND';
 }
 

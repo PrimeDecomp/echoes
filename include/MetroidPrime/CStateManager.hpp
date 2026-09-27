@@ -40,6 +40,16 @@ class CActorModelParticles;
 class CRelayTracker;
 class CWorldLayerState;
 class CStateManagerContainer;
+class CInputStream;
+class CStateManager;
+
+// Partial interface; class name corroborated by Echoes Wii exports.
+class CScriptObjectLoaderHelper {
+public:
+  void LoadScriptObjects(TAreaId aid, CInputStream& in, rstl::vector< TEditorId >& ids,
+                         CStateManager& mgr);                                 // Guessed name
+  void InitScriptObjects(rstl::vector< TEditorId >& ids, CStateManager& mgr); // Guessed name
+};
 namespace SL {
 class CSortedListManager;
 }
@@ -82,6 +92,7 @@ public:
   ~CStateManager();
 
   TUniqueId AllocateUniqueId();
+  CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return m_isDarkWorld; }

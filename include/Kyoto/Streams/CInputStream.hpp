@@ -45,6 +45,11 @@ public:
     mPtr = reinterpret_cast< uchar* >(result + 1);
     return *result;
   }
+  u64 ReadInt64() {
+    u64* result = reinterpret_cast< u64* >(mPtr);
+    mPtr = reinterpret_cast< uchar* >(result + 1);
+    return *result;
+  }
   u16 ReadUint16() {
     u16* result = reinterpret_cast< u16* >(mPtr);
     mPtr = reinterpret_cast< uchar* >(result + 1);

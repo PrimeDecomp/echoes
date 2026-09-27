@@ -64,6 +64,7 @@ CHECK_SIZEOF(TUniqueId, 0x2)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TUniqueId)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TEditorId)
 
 template <>
 struct is_trivially_destructible< pair< TEditorId, bool > > {
