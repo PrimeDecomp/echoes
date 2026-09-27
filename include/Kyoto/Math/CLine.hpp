@@ -12,6 +12,8 @@ public:
 
   const CVector3f& GetRefPoint() const { return mOrigin; }
   const CUnitVector3f& GetNormal() const { return mDir; }
+  // Guessed name (target-derived: projects a point onto the line).
+  CVector3f GetClosestPoint(const CVector3f& point) const;
 
 private:
   CVector3f mOrigin;

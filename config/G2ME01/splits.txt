@@ -628,6 +628,12 @@ Kyoto/Particles/CVectorElement.cpp:
 	.bss        start:0x803DFE08 end:0x803DFE18
 	.sdata2     start:0x8041E8F0 end:0x8041E920
 
+Kyoto/Math/CCylinder.cpp:
+	.text       start:0x802F74C4 end:0x802F76C4
+
+Kyoto/Math/CLine.cpp:
+	.text       start:0x802F76C4 end:0x802F7728
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928
@@ -639,7 +645,7 @@ Kyoto/Math/CQuad.cpp:
 	.text       start:0x802F7A88 end:0x802F7B28
 
 Kyoto/Math/CSphere.cpp:
-	.text       start:0x802F7C14 end:0x802F7C68
+	.text       start:0x802F7B28 end:0x802F7C68
 
 Kyoto/Math/CAABox.cpp:
 	.text       start:0x802F7C68 end:0x802F8D90
