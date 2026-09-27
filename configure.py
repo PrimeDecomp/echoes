@@ -380,6 +380,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
+            Object(NonMatching, "MetroidPrime/CControlMapper.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),
