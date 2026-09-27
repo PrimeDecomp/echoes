@@ -161,6 +161,9 @@ MetroidPrime/BodyState/CBodyController.cpp:
 	.rodata     start:0x803A8BD0 end:0x803A8BE0
 	.sdata2     start:0x8041B920 end:0x8041B940
 
+MetroidPrime/CSteeringBehaviors.cpp:
+	.text       start:0x800F90C0 end:0x800FA754
+
 MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 	.text       start:0x80100C38 end:0x80109E7C
 
