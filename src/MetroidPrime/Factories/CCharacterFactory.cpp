@@ -13,8 +13,7 @@
 #include "Kyoto/CVParamTransfer.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 
-inline CTransitionManager::CTransitionManager(const CAnimSysContext& context)
-: mContext(context) {}
+inline CTransitionManager::CTransitionManager(const CAnimSysContext& context) : mContext(context) {}
 
 rstl::auto_ptr< IObj > CCharacterFactory::CDummyFactory::Build(const SObjectTag& tag,
                                                                const CVParamTransfer& params) {
@@ -49,8 +48,7 @@ void CCharacterFactory::CDummyFactory::BuildAsync(const SObjectTag& tag,
 void CCharacterFactory::CDummyFactory::CancelBuild(const SObjectTag&) {}
 
 CCharacterFactory::CCharacterFactory(CSimplePool& store,
-                                     const TLockedToken< CAnimCharacterSet >& ancs,
-                                     CAssetId selfId)
+                                     const TLockedToken< CAnimCharacterSet >& ancs, CAssetId selfId)
 : mCharInfoDB(GetCharacterInfoDB(**ancs))
 , mCharLayoutInfoDB(GetCharLayoutInfoDB(store, mCharInfoDB))
 , mAdditiveInfo(ancs->GetAnimationSet().GetAdditiveAnimInfoList())

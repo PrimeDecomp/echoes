@@ -37,15 +37,14 @@ public:
   ~CCharacterFactory() override;
 
   rstl::auto_ptr< CAnimData > CreateCharacter(int charIdx, bool loop,
-                                             const TLockedToken< CCharacterFactory >& factory,
-                                             int defaultAnim) const;
+                                              const TLockedToken< CCharacterFactory >& factory,
+                                              int defaultAnim) const;
   const CCharacterInfo& GetCharInfo(int charIdx) const;
-  const rstl::vector< rstl::pair< uint, CAdditiveAnimationInfo > >& GetAdditiveAnimInfoList() const {
+  const rstl::vector< rstl::pair< uint, CAdditiveAnimationInfo > >&
+  GetAdditiveAnimInfoList() const {
     return mAdditiveInfo;
   }
-  const CAdditiveAnimationInfo& GetDefaultAdditiveAnimInfo() const {
-    return mDefaultAdditiveInfo;
-  }
+  const CAdditiveAnimationInfo& GetDefaultAdditiveAnimInfo() const { return mDefaultAdditiveInfo; }
 
   static rstl::vector< CCharacterInfo > GetCharacterInfoDB(const CAnimCharacterSet& ancs);
   static rstl::vector< TToken< CCharLayoutInfo > >
