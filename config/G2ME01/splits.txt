@@ -810,6 +810,15 @@ Kyoto/Graphics/CGX.cpp:
 	.bss        start:0x803DF828 end:0x803DFA8C
 	.sdata      start:0x80418AD0 end:0x80418AD4
 
+Kyoto/Graphics/DolphinCTexture.cpp:
+	.text       start:0x802C416C end:0x802C60EC
+	.rodata     start:0x803AF408 end:0x803AF420
+	.data       start:0x803BA060 end:0x803BA0B8
+	.bss        start:0x803DFBB8 end:0x803DFBD8
+	.sdata      start:0x80418B08 end:0x80418B10
+	.sbss       start:0x80419A18 end:0x80419A28
+	.sdata2     start:0x8041E550 end:0x8041E560
+
 Kyoto/Math/CloseEnough.cpp:
 	.text       start:0x802C60EC end:0x802C62C4
 	.ctors      start:0x803A55F0 end:0x803A55F4

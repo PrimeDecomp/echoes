@@ -4,10 +4,13 @@
 #include "types.h"
 
 #include "Kyoto/CARAMToken.hpp"
+#include "Kyoto/SObjectTag.hpp"
 #include "rstl/single_ptr.hpp"
 
-#include <dolphin/gx.h>
+#include "dolphin/gx/GXEnum.h"
+#include "dolphin/gx/GXStruct.h"
 
+class CResFactory;
 class CDvdRequest;
 class CInputStream;
 class CGraphicsPalette;
@@ -30,13 +33,22 @@ enum ETexelFormat {
 class CTexture {
 public:
   class CDumpedBitmapDataReloader {
-    int x0_;
-    uint x4_;
-    int x8_;
-    uint xc_;
-    bool x10_;
-    rstl::single_ptr< CDvdRequest > x14_;
-    rstl::single_ptr< uchar > x18_;
+    int mState;
+    CAssetId mTextureId;
+    int mResourceSize;
+    uint mBitmapSize;
+    bool mLoadToARAM;
+    rstl::single_ptr< CDvdRequest > mRequest;
+    rstl::single_ptr< uchar > mData;
+
+  public:
+    CDumpedBitmapDataReloader(CAssetId textureId, uint bitmapSize, bool loadToARAM);
+
+    void BeginReloadBitmapData(CResFactory& factory);
+    void* TryBuildReloadedBitmapData(CResFactory& factory);
+    int GetStatus() const { return mState; }
+
+    const bool ShouldLoadToARAM() const { return mLoadToARAM; } // Guessed name.
   };
 
   enum EClampMode {
@@ -56,19 +68,23 @@ public:
   ~CTexture();
 
   void ScheduleDeletion();
-
+  void LoadMipLevel(int, GXTexMapID tex, EClampMode) const;
   void Load(GXTexMapID texMapId, EClampMode clampMode) const;
-  void UnLock();
+  bool HasPalette() const { return IsCITextureFormat(mTexelFormat); }
 
+  const void* GetConstBitMapData(const int mip) const;
   void* GetBitMapData(int);
-  const void* GetConstBitMapData(int) const;
-  const CGraphicsPalette* GetPalette() const { return mGraphicsPalette.get(); }
-
-  void InitBitmapBuffers(ETexelFormat fmt, short w, short h, int mips);
-  void InitTextureObjects();
   ETexelFormat GetTexelFormat() const { return mTexelFormat; }
+
   short GetWidth() const { return mWidth; }
+
   short GetHeight() const { return mHeight; }
+
+  int GetNumberOfMipMaps() const { return mNumMips; }
+
+  uint GetMemoryAllocated() const { return mMemoryAllocated; }
+
+  bool GetNoSwap() const { return mNoSwap; }
 
   void* Lock() {
     mLocked = true;
@@ -76,42 +92,60 @@ public:
   }
 
   void MakeSwappable() const;
-  void LoadToARAM();
-  bool IsARAMTransferInProgress() const;
-  bool LoadToMRAM();
   void CountMemory() const;
   void UncountMemory() const;
   void SetFlag1(bool b) { mLocked = b; }
 
-  static uint TexelFormatBitsPerPixel(ETexelFormat fmt);
+  void MangleMipmap(int mip);
+  const char GetBitsPerPixel() const { return mBitsPerPixel; }
+
+  void UnloadBitmapData(CAssetId textureId) const;
+  bool TryReloadBitmapData(CResFactory& factory) const;
+  int GetBitmapDataStatus() const; // Guessed name.
+  bool LoadToMRAM() const;
+  bool LoadToARAM() const;
+  bool IsARAMTransferInProgress() const;
+  static int TexelFormatBitsPerPixel(ETexelFormat fmt);
+  void InitBitmapBuffers(const ETexelFormat fmt, const short w, const short h, const int mips);
+  void InitTextureObjects();
+  void UnLock();
+  CGraphicsPalette* GetPalette() { return mGraphicsPalette.get(); }
+
+  const CGraphicsPalette* GetPalette() const { return mGraphicsPalette.get(); }
+
   static void InvalidateTexmap(GXTexMapID id);
+  static bool IsCITextureFormat(ETexelFormat fmt) {
+    return fmt == kTF_C4 ? true : fmt == kTF_C8 ? true : fmt == kTF_C14X2 ? true : false;
+  }
 
   static int sCurrentFrameCount;
   static int sTotalAllocatedMemory;
   static bool sMangleMips;
 
 private:
-  ETexelFormat mTexelFormat; // TODO: Enum
+  void InvalidateTexmaps() const; // Guessed name: clears cache entries for this texture.
+
+  ETexelFormat mTexelFormat;
   short mWidth;
   short mHeight;
-  uchar mNumMips;
-  uchar mBitsPerPixel;
+  char mNumMips;
+  char mBitsPerPixel;
   bool mLocked : 1;
-  bool mCanLoadPalette : 1;
   bool mIsPowerOfTwo : 1;
   mutable bool mNoSwap : 1;
   mutable bool mCounted : 1;
-  uchar mCanLoadObj : 1;
+  mutable bool mCanLoadObj : 1;
   uint mMemoryAllocated;
   rstl::single_ptr< CGraphicsPalette > mGraphicsPalette;
-  rstl::single_ptr< CDumpedBitmapDataReloader > mBitmapReloader;
-  uint mNativeFormat;
-  uint mNativeCIFormat;
-  GXTexObj mTexObj;
-  EClampMode mClampMode;
-  CARAMToken mARAMToken;
-  uint mFrameAllocated;
+  mutable rstl::single_ptr< CDumpedBitmapDataReloader > mBitmapReloader;
+  GXTexFmt mNativeFormat;
+  GXCITexFmt mNativeCIFormat;
+  mutable GXTexObj mTexObj;
+  mutable EClampMode mClampMode;
+  mutable CARAMToken mARAMToken;
+  mutable uint mFrameAllocated;
 };
 CHECK_SIZEOF(CTexture, 0x68)
+NESTED_CHECK_SIZEOF(CTexture, CDumpedBitmapDataReloader, 0x1c)
 
 #endif // _CTEXTURE
