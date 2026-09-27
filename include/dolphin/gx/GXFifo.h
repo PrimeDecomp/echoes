@@ -18,6 +18,8 @@ void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr);
 void GXGetFifoPtrs(GXFifoObj* fifo, void** readPtr, void** writePtr);
 GXFifoObj* GXGetCPUFifo(void);
 GXFifoObj* GXGetGPFifo(void);
+struct OSThread* GXGetCurrentGXThread(void);
+u32 GXGetOverflowCount(void);
 void GXSetCPUFifo(GXFifoObj* fifo);
 void GXSetGPFifo(GXFifoObj* fifo);
 void GXSaveCPUFifo(GXFifoObj* fifo);

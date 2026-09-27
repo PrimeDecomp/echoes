@@ -190,7 +190,6 @@ public:
     void ResetFlushAll();
     int SetVtxState(const float* pos, const float* nrm, const uint* clr);
 
-    // In map this takes two args, but x4 is unused?
     void Set(int v0) { x0_ = v0; }
 
   private:
@@ -228,54 +227,19 @@ public:
     float mFar;
   };
 
-  class CClippedScreenRect {
+  // Guessed name; clipped screen bounds and texture coordinates for four corners.
+  class CClippedScreenQuad {
   public:
-    CClippedScreenRect() : mValid(false) {}
-    CClippedScreenRect(int x, int y, int width, int height, int texWidth, float minU, float maxU,
-                       float minV, float maxV)
+    CClippedScreenQuad() : mValid(false) {}
+    CClippedScreenQuad(int x, int y, int width, int texWidth, int height,
+                       rstl::reserved_vector< CVector2f, 4 > texCoords)
     : mValid(true)
     , mX(x)
     , mY(y)
     , mWidth(width)
     , mHeight(height)
     , mTexWidth(texWidth)
-    , mMinU(minU)
-    , mMaxU(maxU)
-    , mMinV(minV)
-    , mMaxV(maxV) {}
-
-    bool IsValid() const { return mValid; }
-    int GetX() const { return mX; }
-    int GetY() const { return mY; }
-    int GetWidth() const { return mWidth; }
-    int GetHeight() const { return mHeight; }
-    int GetTexWidth() const { return mTexWidth; }
-    float GetMinU() const { return mMinU; }
-    float GetMaxU() const { return mMaxU; }
-    float GetMinV() const { return mMinV; }
-    float GetMaxV() const { return mMaxV; }
-
-  private:
-    bool mValid;
-    int mX;
-    int mY;
-    int mWidth;
-    int mHeight;
-    int mTexWidth;
-    float mMinU;
-    float mMaxU;
-    float mMinV;
-    float mMaxV;
-  };
-
-  // Guessed name; the four-corner counterpart of CClippedScreenRect.
-  class CClippedScreenQuad {
-  public:
-    CClippedScreenQuad() : mValid(false) {}
-    CClippedScreenQuad(int x, int y, int width, int texWidth, int height,
-                       const rstl::reserved_vector< CVector2f, 4 >& texCoords)
-    : mValid(true), mX(x), mY(y), mWidth(width), mHeight(height), mTexWidth(texWidth),
-      mTexCoords(texCoords) {}
+    , mTexCoords(texCoords) {}
 
     bool IsValid() const { return mValid; }
     int GetX() const { return mX; }
@@ -295,12 +259,13 @@ public:
     rstl::reserved_vector< CVector2f, 4 > mTexCoords;
   };
 
-  static bool Startup(const COsContext& osContext, uint fifoSize, void* fifoBase);
+  static bool Startup(const COsContext& osContext, bool progressive);
+  static void InitGraphicsFifo(GXFifoObj* obj, void* base, uint fifoSize);
   static GXTexRegion* TexRegionCallback(const GXTexObj* obj, GXTexMapID id);
   static void InitGraphicsVariables();
   static void Shutdown();
   static void InitGraphicsDefaults();
-  static void ConfigureFrameBuffer(const COsContext& osContext);
+  static void ConfigureFrameBuffer();
   static void EnableLight(ERglLight light);
   static void LoadLight(ERglLight light, const CLight& info);
   static void SetLightState(uchar lights);
@@ -315,6 +280,8 @@ public:
   static void SetPerspective(float fovy, float aspect, float znear, float zfar);
   static void SetCopyClear(const CColor& color, float depth);
   static void SetClearColor(const CColor& color);
+  static CColor GetClearColor();         // Guessed name.
+  static int GetViewportTop(int bottom); // Guessed name.
   static void SetDepthRange(float near, float far);
   static void FlushProjection();
   static void SetDefaultVtxAttrFmt();
@@ -328,14 +295,14 @@ public:
   static void TickRenderTimings();
   static const CProjectionState& GetProjectionState();
   static void SetProjectionState(const CProjectionState& proj);
-  static CClippedScreenRect ClipScreenRectFromVS(const CVector3f& p1, const CVector3f& p2,
-                                                 ETexelFormat fmt);
-  static CClippedScreenRect ClipScreenRectFromMS(const CVector3f& p1, const CVector3f& p2,
-                                                 ETexelFormat fmt);
   // Guessed name; projects all four model-space corners independently.
   static CClippedScreenQuad ClipScreenQuadFromMS(const CVector3f& p1, const CVector3f& p2,
-                                                const CVector3f& p3, const CVector3f& p4,
-                                                ETexelFormat fmt);
+                                                 const CVector3f& p3, const CVector3f& p4,
+                                                 ETexelFormat fmt);
+  // Guessed name; the view-space counterpart of ClipScreenQuadFromMS.
+  static CClippedScreenQuad ClipScreenQuadFromVS(const CVector3f& p1, const CVector3f& p2,
+                                                 const CVector3f& p3, const CVector3f& p4,
+                                                 ETexelFormat fmt);
   static CVector2i ProjectPoint(const CVector3f& point);
 
   static float GetDepthNear() { return mDepthNear; }
@@ -347,6 +314,7 @@ public:
   static void EndScene();
   static void SwapBuffers();
   static void SetTevOp(ERglTevStage stage, const CTevCombiners::CTevPass& pass);
+  static void SetTevRegisterColor(int index, const CColor& color); // Guessed name
   static void StreamBegin(ERglPrimitive primitive);
   static void StreamColor(uint color);
   static void StreamColor(float r, float g, float b, float a);
@@ -359,6 +327,7 @@ public:
   static void StreamNormal(const float* nrm);
   static void StreamEnd();
   static void Render2D(const CTexture& tex, int x, int y, int w, int h, const CColor& col);
+  static void Render2D(const CTexture* tex, int x, int y, int w, int h, const CColor& col);
   static void DrawPrimitive(ERglPrimitive primitive, const float* pos, const CVector3f& normal,
                             const CColor& col, int numVerts);
 
@@ -366,7 +335,7 @@ public:
   static void VideoPostCallback(u32 retraceCount);
 
   static const CViewport& GetViewport() { return mViewport; }
-  static const CVector3f& GetViewPoint() { return mViewPoint; }
+  static CVector3f GetViewPoint() { return mViewMatrix.GetTranslation(); }
   static const CTransform4f& GetViewMatrix() { return mViewMatrix; }
   static const CTransform4f& GetModelMatrix() { return mModelMatrix; }
   static uchar GetLightMask() { return mLightActive; }
@@ -383,7 +352,8 @@ public:
   static void SetFog(ERglFogMode mode, float startz, float endz, const CColor& color);
 
   static void SetModelMatrix(const CTransform4f& xf);
-  static void SetUseNormalMatrix(bool enabled); // Guessed name
+  static void SetUseNormalMatrix(bool enabled);      // Guessed name
+  static void SetUseStreamVertexDelay(bool enabled); // Guessed name
   static void SetAlphaCompare(ERglAlphaFunc comp0, uchar ref0, ERglAlphaOp op, ERglAlphaFunc comp1,
                               uchar ref1);
   static void SetDepthWriteMode(bool test, ERglEnum comp, bool write);
@@ -424,17 +394,19 @@ public:
   static const GXTexMapID kSpareBufferTexMapID;
 
 private:
+  static void ConfigureVideo(bool initial, bool progressive); // Guessed name
   static void UpdateVertexDataStream();
   static void ResetVertexDataStream(bool initial);
   static void FlushStream();
   static void FullRender();
+  static void FullRenderWithVertexDelay(); // Guessed name
 
-  static CRenderState sRenderState;
-  static VecPtr vtxBuffer;
-  static VecPtr nrmBuffer;
-  static Vec2Ptr txtBuffer0;
-  static Vec2Ptr txtBuffer1;
-  static uint* clrBuffer;
+  static CRenderState mRenderState;
+  static VecPtr mVertexBuffer;
+  static VecPtr mNormalBuffer;
+  static Vec2Ptr mTexCoordBuffer0;
+  static Vec2Ptr mTexCoordBuffer1;
+  static uint* mColorBuffer;
   static bool mJustReset;
   static ERglCullMode mCullMode;
   static int mNumLightsActive;
@@ -463,6 +435,7 @@ private:
   static GXTexRegionCallback mGXDefaultTexRegionCallback;
   static void* mpFifo;
   static GXFifoObj* mpFifoObj;
+  static uint mFifoSize;
   static uint mRenderTimings;
   static float mSecondsMod900;
   static CTimeProvider* mpExternalTimeProvider;
@@ -476,7 +449,6 @@ private:
   static CTransform4f mViewMatrix;
   static CTransform4f mModelMatrix;
   static CColor mClearColor;
-  static CVector3f mViewPoint;
   static CViewport mViewport;
   static ELightType mLightTypes[8];
   static GXLightObj mLightObj[8];
@@ -484,7 +456,6 @@ private:
   static GXTexRegion mTexRegionsCI[GX_MAX_TEXMAP / 2];
   static GXRenderModeObj mRenderModeObj;
   static Mtx mGXViewPointMatrix;
-  static Mtx mGXModelMatrix;
   static Mtx mGxModelView;
   static Mtx mGxModelViewInvXpose;
   static Mtx mCameraMtx;
@@ -495,6 +466,8 @@ private:
   static ERglPrimitive mCurrentPrimitive;
   static float mDepthFar;
   static u32 mClearDepthValue; // = GX_MAX_Z24
+  static float mPixelAspectRatio;
+  static bool mUseNormalMatrix;
   static bool mIsGXModelMatrixIdentity;
   static bool mFirstFrame;
   static GXBool mUseVideoFilter;

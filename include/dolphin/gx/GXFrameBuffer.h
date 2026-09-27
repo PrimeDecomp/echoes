@@ -15,7 +15,7 @@ extern "C" {
 extern GXRenderModeObj GXNtsc480IntDf;
 // extern GXRenderModeObj GXNtsc480Int;
 // extern GXRenderModeObj GXNtsc480IntAa;
-// extern GXRenderModeObj GXNtsc480Prog;
+extern GXRenderModeObj GXNtsc480Prog;
 // extern GXRenderModeObj GXNtsc480ProgSoft;
 // extern GXRenderModeObj GXNtsc480ProgAa;
 // extern GXRenderModeObj GXMpal240Ds;

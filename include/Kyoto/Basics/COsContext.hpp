@@ -52,6 +52,8 @@ public:
   }
 
   const GXRenderModeObj& GetRenderModeObj() const { return mRenderMode; }
+  void* GetArenaBlock() const { return mArenaBlock; }
+  int GetArenaBlockSize() const { return mArenaBlockSize; }
 
   static void SetProgressiveMode(bool progressive) { mProgressiveMode = progressive; }
   static bool GetProgressiveMode() { return mProgressiveMode; }
