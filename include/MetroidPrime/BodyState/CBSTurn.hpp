@@ -31,7 +31,7 @@ public:
   CBSFlyerTurn();
 
   // CBodyState
-  ~CBSFlyerTurn() override;
+  ~CBSFlyerTurn() override {}
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
 };
@@ -43,7 +43,7 @@ public:
   CBSPitchableFlyerTurn();
 
   // CBodyState
-  ~CBSPitchableFlyerTurn() override;
+  ~CBSPitchableFlyerTurn() override {}
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
 
