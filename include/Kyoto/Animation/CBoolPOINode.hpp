@@ -5,9 +5,9 @@
 
 class CBoolPOINode : public CPOINode {
 public:
-  CBoolPOINode(rstl::string name, ushort type, const CCharAnimTime& time, int index, bool unique,
-               float weight, int charIdx, int flags, bool value);
-  // : CPOINode(name, type, time, index, unique, weight, charIdx, flags), x38_val(value) {}
+  CBoolPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
+               float weight, int charIdx, int flags, bool value)
+  : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags), mVal(value) {}
 
   CBoolPOINode(CInputStream& in);
   static CBoolPOINode CopyNodeMinusStartTime(const CBoolPOINode& node,

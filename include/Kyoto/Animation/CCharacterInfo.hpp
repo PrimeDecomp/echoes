@@ -15,6 +15,7 @@
 
 class CCharacterInfo {
 public:
+  typedef rstl::vector< rstl::pair< rstl::string, rstl::vector< CEffectComponent > > > TEffectList;
   class CParticleResData {
   private:
     rstl::vector< CAssetId > mPart;
@@ -26,7 +27,15 @@ public:
   };
 
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }
-  const rstl::vector< rstl::pair< rstl::string, CAABox > >& GetAnimBBoxList() const { return mAabbs; }
+  const CParticleResData& GetParticleResData() const { return mPartRes; }
+  const TEffectList& GetEffects() const { return mEffects; }
+  const rstl::vector< int >& GetAnimationIndexList() const { return mAnimIdxs; }
+  const rstl::vector< rstl::pair< rstl::string, CAABox > >& GetAnimBBoxList() const {
+    return mAabbs;
+  }
+  const rstl::vector< rstl::pair< uint, CAABox > >& GetAnimBoundsById() const {
+    return mAnimBoundsById;
+  }
 
 private:
   ushort mTableCount;
@@ -39,13 +48,13 @@ private:
   CParticleResData mPartRes;
   uint mUnk;
   rstl::vector< rstl::pair< rstl::string, CAABox > > mAabbs;
-  rstl::vector< rstl::pair< rstl::string, rstl::vector< CEffectComponent > > > mEffects;
+  TEffectList mEffects;
   uint mCmdlOverlay;
   uint mCksrOverlay;
   rstl::vector< int > mAnimIdxs;
   CAssetId mSpatialPrimitiveId; // Guessed name: CSPP resource.
   bool xe4_;
-  rstl::vector< rstl::pair< uint, CAABox > > xe8_;
+  rstl::vector< rstl::pair< uint, CAABox > > mAnimBoundsById;
 };
 CHECK_SIZEOF(CCharacterInfo, 0xf8)
 

@@ -28,6 +28,7 @@ public:
   CPoseAsTransforms_Linear(int count, int withScale, int withOffsets);
 
   void AllocateScale();
+  void SetUniformScale(bool uniform) { mUniformScale = uniform; } // Guessed name.
   void RotateHierarchy(const CCharLayoutInfo& layout, const CSegId& seg, const CMatrix3f& rotation,
                        int order);
   void SetRotation(const CCharLayoutInfo& layout, const CSegId& seg, const CMatrix3f& rotation);
@@ -43,7 +44,7 @@ private:
   rstl::vector< CMatrix3f > mUnscaledRotations;
   rstl::vector< CVector3f > x30_;
   bool x40_24_ : 1;
-  uchar x41_;
+  uchar mUniformScale;
 };
 CHECK_SIZEOF(CPoseAsTransforms_Linear, 0x44)
 

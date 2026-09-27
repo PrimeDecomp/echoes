@@ -14,7 +14,7 @@ CPoseAsTransforms_Linear::CPoseAsTransforms_Linear(int count, int withScale, int
 , mUnscaledRotations(withScale == 1 ? count : 0, CMatrix3f::sIdentity)
 , x30_(withOffsets == 1 ? count : 0, CVector3f::sZeroVector)
 , x40_24_(false)
-, x41_(0) {}
+, mUniformScale(0) {}
 
 const CMatrix3f& CPoseAsTransforms_Linear::GetTransformMinusOffset(const CSegId& seg) const {
   return mElements[seg.val()].mRotation;
