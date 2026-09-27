@@ -6,10 +6,19 @@
 
 #include "Kyoto/Alloc/CMemory.hpp"
 
+// Release rstl keeps its precondition checks as empty statements. They still count
+// toward MWCC's inline size limit, which decides where uninitialized_copy is outlined.
+#define RSTL_PRECONDITION(cond) ((void)0)
+
 namespace rstl {
 template < typename T >
 struct is_trivially_destructible {
   enum { value = false };
+};
+
+template < typename T >
+struct is_trivially_destructible< T* > {
+  enum { value = true };
 };
 
 template <>
@@ -118,7 +127,9 @@ inline void destroy(It begin, It end) {
 }
 
 template < typename It, typename T >
-static T uninitialized_copy(It begin, It end, T out) {
+static inline T uninitialized_copy(It begin, It end, T out) {
+  RSTL_PRECONDITION(begin <= end);
+  RSTL_PRECONDITION(begin == end || out != nullptr);
   T tmp = out;
   It cur = begin;
   for (; cur != end; ++cur, ++tmp) {

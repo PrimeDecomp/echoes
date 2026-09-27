@@ -118,7 +118,7 @@ public:
 private:
   uint x0_;
   uchar mBlendMode;
-  uchar mMatSetIdx;
+  char mMatSetIdx;
   ushort mFlags;
   CColor mColor;
 };

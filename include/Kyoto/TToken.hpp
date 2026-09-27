@@ -40,6 +40,7 @@ public:
   T* GetObject() const { return mItem; }
   const CToken& GetToken() const { return *this; }
 
+  bool IsLoaded() const { return mItem != nullptr || CToken::IsLoaded(); }
   bool IsLoaded() {
     if (mItem != nullptr) {
       return true;
