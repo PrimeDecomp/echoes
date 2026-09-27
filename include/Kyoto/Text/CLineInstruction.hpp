@@ -23,7 +23,7 @@ public:
 
   // CInstruction
   void Invoke(CFontRenderState& state, CTextRenderBuffer* buffer) const override;
-  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buffer) const override {}
+  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buffer) const override;
   bool IsLineInstruction() const override { return true; }
 
   void InvokeTTB(CFontRenderState& state) const;

@@ -5,9 +5,11 @@
 
 class CWordInstruction : public CInstruction {
 public:
-  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
-  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
+  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
+  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
   void InvokeLTR(CFontRenderState& state) const;
 };
+
+CHECK_SIZEOF(CWordInstruction, 0x4)
 
 #endif // _CWORDINSTRUCTION
