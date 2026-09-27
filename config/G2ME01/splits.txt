@@ -728,6 +728,12 @@ Kyoto/Text/CTextExecuteBuffer.cpp:
 Kyoto/Text/CTextParser.cpp:
 	.text       start:0x802B9368 end:0x802BA7E0
 
+Kyoto/Graphics/CCubeModel.cpp:
+	.text       start:0x802BB3D8 end:0x802BCBEC
+	.rodata     start:0x803AF378 end:0x803AF388
+	.sdata      start:0x80418AC8 end:0x80418AD0
+	.sbss       start:0x804198F8 end:0x80419910
+
 Kyoto/Graphics/CGX.cpp:
 	.text       start:0x802BCBEC end:0x802BE31C
 	.ctors      start:0x803A55E4 end:0x803A55E8

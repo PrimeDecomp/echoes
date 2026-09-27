@@ -5,6 +5,8 @@
 
 class CCubeModel;
 class CCubeSurface {
+  friend class CCubeModel;
+
   struct SSurfaceData {
     CVector3f mCenter;
     uint mMaterialIndex;
