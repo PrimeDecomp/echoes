@@ -81,7 +81,7 @@ public:
   void MoveAreaToChain3(TAreaId aid);
   void TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelType travelType);
   bool UnloadAllAreasExcept(CStateManager& mgr, TAreaId& aid); // Guessed name
-  void fn_8004F6E8(TAreaId& aid, TLayerId& layer);
+  void CancelLayerRelUnload(TAreaId& aid, TLayerId& layer); // Guessed name
   void Update(float dt);
   void PreRender();
   CMapWorld* MapWorld() { return GetMapWorld(); }

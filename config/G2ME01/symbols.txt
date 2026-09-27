@@ -1523,7 +1523,7 @@ __as__Q24rstl40optional_object<21TLockedToken<6CModel>>FRC21TLockedToken<6CModel
 __as__Q24rstl50vector<13CRELFileToken,Q24rstl17rmemory_allocator>FRCQ24rstl50vector<13CRELFileToken,Q24rstl17rmemory_allocator> = .text:0x8004F518; // type:function size:0xB4 align:4
 clear__Q24rstl50vector<13CRELFileToken,Q24rstl17rmemory_allocator>Fv = .text:0x8004F5CC; // type:function size:0x7C
 __dt__Q24rstl50vector<13CRELFileToken,Q24rstl17rmemory_allocator>Fv = .text:0x8004F648; // type:function size:0xA0 align:4
-fn_8004F6E8__6CWorldFR7TAreaIdR8TLayerId = .text:0x8004F6E8; // type:function size:0x88 align:4
+CancelLayerRelUnload__6CWorldFR7TAreaIdR8TLayerId = .text:0x8004F6E8; // type:function size:0x88 align:4
 TouchSky__6CWorldCFv = .text:0x8004F770; // type:function size:0x58 align:4
 ICancelLoad__11CDummyWorldFv = .text:0x8004F7C8; // type:function size:0x74 align:4
 IGetTempleKeyWorldIndex__11CDummyWorldCFv = .text:0x8004F83C; // type:function size:0x8 align:4

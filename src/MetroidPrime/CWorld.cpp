@@ -572,7 +572,7 @@ void CWorld::TouchSky() const {
   }
 }
 
-void CWorld::fn_8004F6E8(TAreaId& aid, TLayerId& layer) {
+void CWorld::CancelLayerRelUnload(TAreaId& aid, TLayerId& layer) {
   rstl::list< SLayerRelUnload >::iterator it = mPendingLayerRelUnloads.begin();
   while (it != mPendingLayerRelUnloads.end()) {
     if (it->mAreaId == aid && it->mLayerId.Value() == layer.Value()) {
