@@ -422,6 +422,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitions.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCameraManager.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),

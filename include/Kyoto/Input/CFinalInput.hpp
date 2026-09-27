@@ -41,6 +41,8 @@ public:
 
   float DeltaTime() const { return mDt; }
 
+  uint ControllerNumber() const { return mControllerIdx; }
+
   float ALAUp() const { return mAnaLeftY > 0.f ? mAnaLeftY : 0.f; }
 
   float ALADown() const { return mAnaLeftY < 0.f ? -mAnaLeftY : 0.f; }

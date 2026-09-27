@@ -392,6 +392,9 @@ MetroidPrime/Cameras/CBallCameraTransitions.cpp:
 	.text       start:0x801A8B78 end:0x801AA4C4
 	.ctors      start:0x803A5564 end:0x803A5568
 
+MetroidPrime/Cameras/CCameraManager.cpp:
+	.text       start:0x801AA4C4 end:0x801AD944
+
 MetroidPrime/Cameras/CGameCamera.cpp:
 	.text       start:0x801B0500 end:0x801B1A18
 	.data       start:0x803B66A0 end:0x803B6730
