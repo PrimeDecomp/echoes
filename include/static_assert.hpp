@@ -25,7 +25,7 @@ typedef unsigned long size_t;
 #define CHECK_SIZEOF(cls, size) extern int cls##_check[check_sizeof< cls, size >::value];
 #define NESTED_CHECK_SIZEOF(parent, cls, size) extern int cls##_check[check_sizeof< parent::cls, size >::value];
 #define CHECK_OFFSETOF(cls, member, offset)                                                        \
-  extern int cls##_##member##_check_offset[_n_is_equal< offsetof(cls, member), offset >::value];
+  extern int cls##_check_offset##[_n_is_equal< offsetof(cls, member), offset >::value];
 #else
 #define CHECK_SIZEOF(cls, size)
 #define NESTED_CHECK_SIZEOF(parent, cls, size)
