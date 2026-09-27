@@ -15,6 +15,7 @@ public:
   float GetHoloHoldTime() const;
   float GetGunExtendDistance() const;
   int GetMaxAbsorbedPhazonShots();
+  const SWeaponInfo& GetBeamInfo(int beam) const;
 };
 
 extern CTweakPlayerGun* gpTweakPlayerGun;

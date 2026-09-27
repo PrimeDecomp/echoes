@@ -30,7 +30,9 @@ class CTransform4f;
 class CModelFlags;
 class CActorLights;
 class SWeaponInfo;
-class SShotParam;
+class CPlayer;
+class CSkinnedModel;
+struct SSkinningWorkspace;
 
 enum EFrozenFxType {
   kFFT_None,
@@ -40,7 +42,7 @@ enum EFrozenFxType {
 
 class CVelocityInfo {
 public:
-  ~CVelocityInfo();
+  ~CVelocityInfo() {}
 
   CVector3f& Velocity(int i) { return mVel[i]; }
   const CVector3f& GetVelocity(int i) const { return mVel[i]; }
@@ -60,7 +62,7 @@ private:
 
 class CGunWeapon {
 public:
-  CGunWeapon(EWeaponType type, TUniqueId playerId, const CVector3f& scale, int);
+  CGunWeapon(EWeaponType type, TUniqueId playerId, const CVector3f& scale, int flags);
   virtual ~CGunWeapon();
 
   enum ESecondaryFxType {
@@ -73,31 +75,36 @@ public:
   // Virtual Methods
   virtual void Reset(CStateManager& mgr);
   virtual void PlayAnim(NWeaponTypes::EGunAnimType type, bool loop);
-  virtual void PreRenderGunFx(const CStateManager& mgr, const CTransform4f& xf);
+  virtual void PreRenderGunFx(const CStateManager& mgr, const CTransform4f& xf) {}
   virtual void PostRenderGunFx(const CStateManager& mgr, const CTransform4f& xf);
   virtual void UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
                            const CTransform4f& xf);
-  virtual void Fire(CToken& token, bool underwater, float dt, CPlayerState::EChargeStage chargeState,
-                      const CTransform4f& xf, CStateManager& mgr, TUniqueId homingTarget,
-                      int unk1, ushort unk2, TUniqueId id, CSfxHandle sfx, float chargeFactor1, float chargeFactor2);
-  virtual void EnableFx(bool enable);
-  virtual void EnableSecondaryFx(ESecondaryFxType type);
-  virtual void Draw(bool drawSuitArm, const CStateManager& mgr, const CTransform4f& xf,
-                    const CModelFlags& flags, const CActorLights* lights) const;
+  virtual void Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater, float dt,
+                    CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
+                    CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
+                    ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
+                    float chargeFactor1, float chargeFactor2);
+  virtual void EnableFx(bool enable) {}
+  virtual void EnableSecondaryFx(ESecondaryFxType type) { mEnabledSecondaryEffect = type; }
+  virtual void Draw(bool drawSuitArm, int playerIndex, const CStateManager& mgr,
+                    const CTransform4f& xf, const CModelFlags& flags,
+                    const CActorLights* lights) const;
   virtual void DrawMuzzleFx(const CStateManager& mgr) const;
   virtual void Update(float dt, CStateManager& mgr);
-  
-  virtual void Unk7();
-  virtual void ActivateCharge();
-  virtual void Unk8();
-  virtual void Unk9(CStateManager& mgr);
+
+  virtual void UpdateMuzzleFx(float dt, const CVector3f& scale, const CVector3f& pos,
+                              bool emitting);
+  virtual void ActivateCharge(bool enable, bool resetEffect);
+  virtual void Unk8() {}
+  virtual void InitializeResources(CStateManager& mgr); // Guessed name
 
   virtual void Load(CStateManager& mgr, bool subtypeBasePose);
   virtual void Unload(CStateManager& mgr);
   virtual bool IsLoaded() const;
 
-  virtual void Unk10();
-  virtual void Unk11(CStateManager& mgr);
+  virtual void ReleaseResources(CStateManager& mgr); // Guessed name
+  // Guessed name
+  virtual void SetModelTouchEnabled(bool enabled) { mModelTouchEnabled = enabled; }
 
   const CVelocityInfo& GetVelocityInfo() const { return mVelInfo; }
   rstl::optional_object< CModelData >& SolidModelData() { return mSolidModelData; }
@@ -110,19 +117,16 @@ public:
   CAABox GetBounds() const;
   CAABox GetBounds(const CTransform4f& xf) const;
   const SWeaponInfo& GetWeaponInfo() const;
-  void ActivateCharge(bool enable, bool resetEffect);
-  bool PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr, float angle);
+  void EnterComboFire(CStateManager& mgr); // Guessed name
   bool IsChargeAnimOver() const;
-  void UpdateMuzzleFx(float dt, const CVector3f& scale, const CVector3f& pos, bool emitting);
-  CElementGen* GetChargeMuzzleFx() const;
+  CElementGen* GetMuzzleFx(int index) const; // Guessed name
   void DrawHologram(const CStateManager& mgr, const CTransform4f& xf,
                     const CModelFlags& flags) const;
-  void ReturnToDefault(CStateManager& mgr);
-  bool ComboFireOver() const;
-  void EnterFidget(CStateManager& mgr, SamusGun::EFidgetType type, int parm2);
+  void ReturnToDefault(CStateManager& mgr, bool reset);
+  void EnterFidget(CStateManager& mgr, SamusGun::EFidgetType type, int animSet);
   void Touch(const CStateManager& mgr);
   void TouchHolo(const CStateManager& mgr);
-  void AsyncLoadSuitArm(CStateManager& mgr);
+  void AsyncLoadSuitArm();
   void AsyncLoadFidget(CStateManager& mgr, SamusGun::EFidgetType type, int animSet);
   void UnLoadFidget();
   bool IsFidgetLoaded();
@@ -130,23 +134,27 @@ public:
 
   CDamageInfo GetDamageInfo(CStateManager& mgr, CPlayerState::EChargeStage chargeState,
                             float chargeFactor);
-  CDamageInfo GetShotDamageInfo(const SShotParam& shotParam, CStateManager& mgr) const;
+  float GetAnimDuration(NWeaponTypes::EGunAnimType type) const; // Guessed name
+  CPlayer* GetPlayer(CStateManager& mgr) const;
+  CPlayer* GetPlayerFromAll(CStateManager& mgr) const; // Guessed name
 
 protected:
   // x0 is vtable
   CVector3f mScale;
-  rstl::optional_object< CAABox > caabox;
+  mutable rstl::optional_object< CAABox > mBounds;
   rstl::optional_object< CModelData > mSolidModelData;
   rstl::optional_object< CModelData > mHoloModelData;
   rstl::optional_object< CModelData > mSuitArmModelData;
-  CPlayerState::EPlayerSuit currentPlayerSuit;
+  CPlayerState::EPlayerSuit mCurrentPlayerSuit;
   rstl::single_ptr< CGunController > mGunController;
-  TToken< CAnimCharacterSet > mGunCharacter;
+  rstl::optional_object< TToken< CAnimCharacterSet > > mGunCharacter;
   rstl::vector< CToken > mAnims;
-  rstl::vector< int > mUnk;
+  rstl::vector< CToken > x140_;
   rstl::vector< CToken > mDeps;
+  rstl::vector< int > mAnimIds;
+  rstl::vector< int > mShootAnimIds;
 
-  TToken< CAnimCharacterSet > mArmCharacter;
+  TToken< CModel > mArmModel;
   rstl::reserved_vector< TCachedToken< CWeaponDescription >, 2 > mWeapons;
   TCachedToken< CGenDescription > mXferEffect;
   rstl::reserved_vector< TCachedToken< CGenDescription >, 2 > mMuzzleEffects;
@@ -157,7 +165,7 @@ protected:
   EWeaponType mWeaponType;
   TUniqueId mPlayerId;
   EMaterialTypes mPlayerMaterial;
-  ESecondaryFxType mEnabledSecondaryEffect;  // TODO: at 0x210
+  ESecondaryFxType mEnabledSecondaryEffect;
   CVelocityInfo mVelInfo;
   CPlayerState::EBeamId mBeamId;
   EFrozenFxType mFrozenEffect;
@@ -166,36 +174,43 @@ protected:
   // 0x1: load request, 0x2: muzzle fx, 0x4: projectile data, 0x8: anims, 0x10: everything else
   int mLoadFlags;
   CAssetId mAncsId;
-  bool x218_24 : 1;
+  short mSoundVolume;
+  float mAnimationTimer;         // Guessed name
+  CVector3f mRainSplashPosition; // Guessed name
+  bool x270_24 : 1;
   bool mEnableCharge : 1;
   bool mLoaded : 1;
   // Initialize in selected beam's pose, rather than power beam's pose
   bool mSubtypeBasePose : 1;
   bool mSuitArmLocked : 1;
   bool mDrawHologram : 1;
-
-  char _filler[56];
+  bool mResourcesAllocated : 1;      // Guessed name
+  bool mSpecialAnimationPlaying : 1; // Guessed name
+  bool mSpeedUpAnimation : 1;        // Guessed name
+  bool mModelTouchEnabled : 1;       // Guessed name
+  bool x271_26 : 1;
 
   static const char* skMuzzleLocator;
   static const char* skElbowLocator;
-  static const int skShootAnim[2];
 
   void AllocResPools(CPlayerState::EBeamId beam);
   void FreeResPools();
   static void FillTokenVector(const rstl::vector< SObjectTag >& tags,
                               rstl::vector< CToken >& objects, bool includeTxtr);
   void BuildDependencyList(CPlayerState::EBeamId beam);
-  void LoadSuitArm(CStateManager& mgr);
-  void LoadGunModels(CStateManager& mgr);
+  void LoadSuitArm();
+  void LoadGunModels();
+  void BuildAnimationIdList(const CAnimData& animData); // Guessed name
   void LoadAnimations();
   bool IsAnimsLoaded() const;
   void LoadMuzzleFx(float dt);
   void LoadProjectileData(CStateManager& mgr);
   void LoadFxIdle(float dt, CStateManager& mgr);
-  void LockTokens(CStateManager& mgr);
+  void LockTokens();
   void UnlockTokens();
 
-  static void PointGenerator(void*, const CVector3f*, const CVector3f*, int);
+  static void PointGenerator(const CSkinnedModel& model, const SSkinningWorkspace& workspace,
+                             void* context);
 };
 CHECK_SIZEOF(CGunWeapon, 0x274)
 

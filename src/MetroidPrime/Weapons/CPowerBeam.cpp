@@ -68,8 +68,8 @@ void CPowerBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
     // [[fallthrough]];
   case kSS_Done:
     if (!mShotSmokeGen.null()) {
-      CTransform4f locator = mSolidModelData->GetScaledLocatorTransform(
-          rstl::string_l(CGunWeapon::skMuzzleLocator));
+      CTransform4f locator =
+          mSolidModelData->GetScaledLocatorTransform(rstl::string_l(CGunWeapon::skMuzzleLocator));
       mShotSmokeGen->SetGlobalTranslation(locator.GetTranslation());
       mShotSmokeGen->Update(dt);
       if (mSmokeState == kSS_Done && mShotSmokeGen->GetSystemCount() == 0)
@@ -103,17 +103,19 @@ void CPowerBeam::Update(float dt, CStateManager& mgr) {
   }
 }
 
-void CPowerBeam::Fire(CToken& token, bool underwater, float dt,
-                      CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
-                      CStateManager& mgr, TUniqueId homingTarget, int unk1, ushort unk2,
-                      TUniqueId id, CSfxHandle sfx, float chargeFactor1, float chargeFactor2) {
+void CPowerBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
+                      float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
+                      CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
+                      ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
+                      float chargeFactor1, float chargeFactor2) {
 
-  if (unk2 == lbl_8041E2E6) {
+  if (soundId == lbl_8041E2E6) {
     mgr.fn_80036F10();
   }
 
-  CGunWeapon::Fire(token, underwater, dt, chargeState, xf, mgr, homingTarget, unk1, unk2, id, sfx,
-                   chargeFactor1, chargeFactor2);
+  CGunWeapon::Fire(projectile, underwater, dt, chargeState, xf, mgr, homingTarget,
+                   projectileAttributes, soundId, projectileId, soundHandle, chargeFactor1,
+                   chargeFactor2);
 }
 
 void CPowerBeam::Load(CStateManager& mgr, bool subtypeBasePose) {
@@ -131,8 +133,8 @@ void CPowerBeam::Unload(CStateManager& mgr) {
   ReInitVariables();
 }
 
-void CPowerBeam::Unk11(CStateManager& mgr) {
-  CGunWeapon::Unk11(mgr);
+void CPowerBeam::ReleaseResources(CStateManager& mgr) {
+  CGunWeapon::ReleaseResources(mgr);
   if (!mgr.fn_80036F10()) {
     mPower2nd1->Unlock();
     mShotSmoke->Unlock();
@@ -165,9 +167,9 @@ void CPowerBeam::EnableSecondaryFx(ESecondaryFxType type) {
   }
 }
 
-void CPowerBeam::Unk9(CStateManager& mgr) {
+void CPowerBeam::InitializeResources(CStateManager& mgr) {
   if (mSubtypeBasePose == 0) {
-    CGunWeapon::Unk9(mgr);
+    CGunWeapon::InitializeResources(mgr);
     mShotSmoke = gpSimplePool->GetObj("ShotSmoke");
     mPower2nd1 = gpSimplePool->GetObj("Power2nd_1");
   }
