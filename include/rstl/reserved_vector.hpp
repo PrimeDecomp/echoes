@@ -100,7 +100,7 @@ private:
 
 
 template < typename T, int N >
-reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserved_vector& other) {
+inline reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserved_vector& other) {
   if (this != &other) {
     destroy_elements();
     uninitialized_copy(other.data(), other.data() + other.size(), data());

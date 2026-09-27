@@ -21,6 +21,8 @@ public:
     return *this;
   }
 
+  uint GetRGBA() const { return mRgba; }
+
 private:
   union {
     struct {
