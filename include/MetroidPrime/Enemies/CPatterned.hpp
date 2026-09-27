@@ -35,6 +35,8 @@ enum EPatternedAI {
 
 template <>
 struct TStateMachineFunctionTypes< CPatterned > {
+  typedef EStateMsg StateMsg;
+  typedef CTriggerData TriggerArg;
   typedef void (CPatterned::*StateFunc)(CStateManager&, EStateMsg, float);
   typedef bool (CPatterned::*TriggerFunc)(CStateManager&, const CTriggerData&) const;
 };
