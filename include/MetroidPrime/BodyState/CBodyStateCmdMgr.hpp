@@ -298,6 +298,8 @@ class CBCWallHangCmd : public CBodyStateCmd {
 public:
   explicit CBCWallHangCmd(TUniqueId uid) : CBodyStateCmd(kBSC_WallHang), mWpId(uid) {}
 
+  TUniqueId GetTarget() const { return mWpId; }
+
 private:
   TUniqueId mWpId;
 };

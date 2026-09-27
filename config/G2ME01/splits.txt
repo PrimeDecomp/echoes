@@ -325,6 +325,11 @@ MetroidPrime/CGroundMovement.cpp:
 	.sbss       start:0x80419190 end:0x804191A8
 	.sdata2     start:0x8041BE48 end:0x8041BED8
 
+MetroidPrime/BodyState/CBSWallHang.cpp:
+	.text       start:0x8012CD10 end:0x8012DDFC
+	.data       start:0x803B4EA8 end:0x803B4F10
+	.sdata2     start:0x8041BEE0 end:0x8041BF00
+
 MetroidPrime/Weapons/CBeamProjectile.cpp:
 	.text       start:0x80131404 end:0x80131DF8
 	.data       start:0x803B4F90 end:0x803B5028
