@@ -45,9 +45,4 @@ private:
   rstl::rc_ptr< IArchitectureMessageParm > mParm;
 };
 
-namespace MakeMsg {
-  static CArchitectureMessage CreateFrameBegin(EArchMsgTarget target, int);
-  static CArchitectureMessage CreateTimerTick(EArchMsgTarget target, const float&);
-}
-
 #endif // _CARCHITECTUREMESSAGE

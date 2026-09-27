@@ -66,7 +66,7 @@ public:
 
   void push_front(const T& val) { do_insert_before(mStart, val); }
   void push_back(const T& val) { do_insert_before(mEnd, val); }
-  void clear();
+  void clear() { erase(begin(), end()); }
 
   int size() const { return mCount; }
   bool empty() const { return mCount == 0; }
@@ -323,13 +323,8 @@ void list< T, Alloc >::exchange(node* nodeA, node* nodeB) {
 }
 
 template < typename T, typename Alloc >
-void list< T, Alloc >::clear() {
-  erase(begin(), end());
-}
-
-template < typename T, typename Alloc >
-typename list< T, Alloc >::iterator list< T, Alloc >::erase(const iterator& start,
-                                                            const iterator& end) {
+inline typename list< T, Alloc >::iterator list< T, Alloc >::erase(const iterator& start,
+                                                                   const iterator& end) {
   iterator it = start;
   while (it != end) {
     it = erase(it);

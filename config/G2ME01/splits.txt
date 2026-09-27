@@ -58,6 +58,34 @@ MetroidPrime/CEntity.cpp:
 	.data       start:0x803B1B30 end:0x803B1B60
 	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common
 
+MetroidPrime/CArchMsgParmInt32.cpp:
+	.text       start:0x800487B8 end:0x80048834
+	.data       start:0x803B1B60 end:0x803B1B70
+
+MetroidPrime/CArchMsgParmInt32Int32VoidPtr.cpp:
+	.text       start:0x80048834 end:0x800488B8
+	.data       start:0x803B1B70 end:0x803B1B80
+
+MetroidPrime/CArchMsgParmNull.cpp:
+	.text       start:0x800488B8 end:0x80048930
+	.data       start:0x803B1B80 end:0x803B1B90
+
+MetroidPrime/CArchMsgParmReal32.cpp:
+	.text       start:0x80048930 end:0x800489AC
+	.data       start:0x803B1B90 end:0x803B1BA0
+
+MetroidPrime/Decode.cpp:
+	.text       start:0x800489AC end:0x80048F78
+	.rodata     start:0x803A67D8 end:0x803A67E0
+
+MetroidPrime/CIOWinManager.cpp:
+	.text       start:0x80048F78 end:0x80049E10
+	.rodata     start:0x803A67E0 end:0x803A6820
+
+MetroidPrime/CIOWin.cpp:
+	.text       start:0x80049E10 end:0x80049ED8
+	.data       start:0x803B1BA0 end:0x803B1BC0
+
 MetroidPrime/CActor.cpp:
 	.text       start:0x8004AC98 end:0x8004E448
 	.data       start:0x803B1BC0 end:0x803B1C40

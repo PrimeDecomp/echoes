@@ -85,7 +85,7 @@ public:
 };
 
 template < typename T >
-bool operator==(const rc_ptr< T >& left, const rc_ptr< T >& right) {
+inline bool operator==(const rc_ptr< T >& left, const rc_ptr< T >& right) {
   return left.GetPtr() == right.GetPtr();
 }
 
