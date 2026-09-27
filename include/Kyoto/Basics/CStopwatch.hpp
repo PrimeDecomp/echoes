@@ -44,6 +44,7 @@ public:
   s64 GetCurrMicros() const { return mData.GetCPUCycles() / mData.GetTimerFreqO1M(); }
 
   static void Wait(float);
+  static s64 GetGlobalMicros() { return mGlobalTimer.GetElapsedMicros(); }
 
 private:
   static CSWData mData;

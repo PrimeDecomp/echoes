@@ -566,6 +566,7 @@ config.libs = [
             Object(Matching, "Kyoto/Particles/CParticleDataFactory.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleGen.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleGlobals.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CParticleSwoosh.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleData.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CTimeProvider.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMToken.cpp"),
