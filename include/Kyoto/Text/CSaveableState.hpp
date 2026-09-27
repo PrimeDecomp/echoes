@@ -11,7 +11,7 @@
 class CSaveableState {
 public:
   CSaveableState();
-  bool IsFinishedLoading();
+  bool IsFinishedLoading() const;
 
   CDrawStringOptions& GetOptions() { return mDrawStringOptions; }
   TToken< CRasterFont >& GetFont() { return *mFont; }

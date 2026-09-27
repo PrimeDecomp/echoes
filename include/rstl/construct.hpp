@@ -50,6 +50,7 @@ RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(bool)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(float)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(int)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(uint)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(unsigned long)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(short)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(ushort)
 
@@ -107,7 +108,7 @@ template < typename S, typename T >
 static inline T uninitialized_copy(S* begin, S* end, T out) {
   T tmp = out;
   S* cur = begin;
-  for (; cur != end; ++tmp, ++cur) {
+  for (; cur != end; ++cur, ++tmp) {
     construct(tmp, *cur);
   }
 
@@ -119,7 +120,7 @@ static inline D uninitialized_copy_n(S src, int n, D dest) {
   RSTL_PRECONDITION(n >= 0);
   S it = src;
   D cur = dest;
-  for (; n != 0; --n, ++it, ++cur) {
+  for (int remaining = n; remaining != 0; --remaining, ++it, ++cur) {
     construct(&*cur, *it);
   }
 

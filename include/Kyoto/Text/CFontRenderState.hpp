@@ -4,17 +4,21 @@
 #include "Kyoto/Text/CDrawStringOptions.hpp"
 #include "Kyoto/Text/CSaveableState.hpp"
 #include "Kyoto/Text/TextCommon.hpp"
+#include "rstl/list.hpp"
 
 class CBlockInstruction;
 class CLineInstruction;
 
 class CFontRenderState {
 public:
+  CFontRenderState();
+  void RefreshColor(EColorType type);
   uint ConvertToTextureSpace(const CTextColor& color) const;
   void PushState();
   void PopState();
   void SetColor(EColorType type, const CTextColor& color);
   void RefreshPalette();
+  bool IsFinishedLoading() { return mState.IsFinishedLoading(); }
   CDrawStringOptions& GetOptions() { return mState.GetOptions(); }
   TToken< CRasterFont >& GetFont() { return mState.GetFont(); }
   rstl::vector< CTextColor >& GetColors() { return mState.GetColors(); }
@@ -40,12 +44,14 @@ private:
   int mCurX;
   int mCurY;
   const CLineInstruction* mCurrentLineInst;
-  uint xe0_;
-  uint xe4_;
-  rstl::vector< uint > xe8_;
-  rstl::vector< uchar > xf8_;
+  uint xe8_;
+  uint xec_;
+  rstl::vector< uint > xf0_;
+  rstl::vector< uchar > x100_;
   bool mLineInitialized;
   rstl::list< CSaveableState > mPushedStates;
 };
+
+CHECK_SIZEOF(CFontRenderState, 0x12c)
 
 #endif // _CFONTRENDERSTATE
