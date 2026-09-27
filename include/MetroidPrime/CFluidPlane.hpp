@@ -7,11 +7,27 @@
 #include "rstl/optional_object.hpp"
 
 class CTexture;
+class CStateManager;
+class CAABox;
+class CTransform4f;
+class CVector2f;
 
-// Ownership/layout declaration. The remaining fluid virtual interface is not yet recovered.
 class CFluidPlane {
 public:
+  CFluidPlane(CAssetId colorMap, CAssetId colorWarpMap, CAssetId glossMap, float alpha,
+              int fluidType, float viscosity, const CFluidUVMotion& motion);
   virtual ~CFluidPlane();
+  // TODO: recover the name and parameters of this empty, inherited virtual slot.
+  virtual void UnkVtable0C();
+  virtual void Render(const CStateManager& mgr, float alpha, const CAABox& bounds,
+                      const CTransform4f& xf, const CTransform4f& areaXf, TUniqueId waterId,
+                      const char* gridFlags, int gridDimX, int gridDimY) const;
+  virtual void PreRender(const CStateManager& mgr, const CVector2f& extent) = 0; // Guessed name
+
+  float GetAlpha() const { return mAlpha; }
+  int GetFluidType() const { return mFluidType; }
+  float GetViscosity() const { return mViscosity; }
+  const CFluidUVMotion& GetUVMotion() const { return mUvMotion; }
 
 protected:
   CAssetId mColorMapId;
