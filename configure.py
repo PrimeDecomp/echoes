@@ -488,6 +488,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CSphere.cpp"),
             Object(NonMatching, "Kyoto/CFactoryMgr.cpp"),
             Object(NonMatching, "Kyoto/CResFactory.cpp"),
+            Object(Matching, "Kyoto/CResLoader.cpp"),
             Object(NonMatching, "Kyoto/CARAMManager.cpp"),
             Object(NonMatching, "Kyoto/Math/CFrustumPlanes.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CCubeMaterial.cpp"),
