@@ -533,6 +533,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Graphics/CLight.cpp"),  # Float literal order
             Object(NonMatching, "Kyoto/Graphics/CCubeModel.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/DolphinCTexture.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CloseEnough.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CMatrix3f.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CMatrix4f.cpp"),
