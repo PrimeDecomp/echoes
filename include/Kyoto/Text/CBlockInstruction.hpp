@@ -22,10 +22,12 @@ public:
   , mLineY(0)
   , mLineCount(0) {}
 
-  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
+  // CInstruction
+  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
+  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
+
   void SetupPositionLTR(CFontRenderState& state) const;
   void TestLargestFont(int monoW, int monoH, int baseline);
-  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
 
   int GetOutputX() const { return mOffsetX; }
   int GetOutputY() const { return mOffsetY; }
@@ -39,6 +41,9 @@ public:
   int GetLineX() const { return mLineX; }
   int GetLineY() const { return mLineY; }
   int GetLines() const { return mLineCount; }
+  void IncLines() { ++mLineCount; }
+  void AddHeight(int height) { mLineY += height; }
+  void SetWidth(int width) { mLineX = width; }
 
 private:
   int mOffsetX;
@@ -55,5 +60,7 @@ private:
   int mLineY;
   int mLineCount;
 };
+
+CHECK_SIZEOF(CBlockInstruction, 0x38)
 
 #endif // _CBLOCKINSTRUCTION

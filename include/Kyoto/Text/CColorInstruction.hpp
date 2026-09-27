@@ -6,12 +6,13 @@
 #include "Kyoto/Text/CTextColor.hpp"
 #include "Kyoto/Text/TextCommon.hpp"
 
-class CColorInstruction : CInstruction {
+class CColorInstruction : public CInstruction {
 public:
   CColorInstruction(EColorType type, const CTextColor& color) : mType(type), mColor(color) {}
 
-  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
-  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const;
+  // CInstruction
+  void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
+  void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const override;
 
 private:
   EColorType mType;

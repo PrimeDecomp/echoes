@@ -12,11 +12,14 @@ class CTextRenderBuffer;
 
 class CInstruction {
 public:
-  virtual ~CInstruction() {}
+  virtual ~CInstruction() = 0;
   virtual void Invoke(CFontRenderState& state, CTextRenderBuffer* buf) const = 0;
   virtual void PageInvoke(CFontRenderState& state, CTextRenderBuffer* buf) const {}
   virtual void GetAssets(rstl::vector< CToken >& assetsOut) const {}
   virtual uint GetAssetCount() const { return 0; }
+  virtual bool IsLineInstruction() const { return false; }
 };
+
+inline CInstruction::~CInstruction() {}
 
 #endif // _CINSTRUCTION

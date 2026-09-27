@@ -104,6 +104,9 @@ public:
   ~CRasterFont();
 
   EFontMode GetMode() const;
+  int GetMonoWidth() const { return mMonoWidth; }
+  int GetCarriageAdvance() const;
+  int GetBaseLine() const { return mBaseline; }
   void GetSize(const CDrawStringOptions&, int&, int&, const wchar_t*, int) const;
   void SetTexture(TToken< CTexture > token) { mTexture = token; }
   bool IsFinishedLoading();
