@@ -130,6 +130,8 @@ public:
   bool IsHotInThermal() const { return thermalHeat; }
   bool ForceRenderUnsorted() const { return forceRenderUnsorted; }
   bool NoSortThermal() const { return noSortThermal; }
+  // Guessed name: controls whether Echo rendering includes sorted surfaces.
+  bool RenderFullEchoModel() const { return mRenderFullEchoModel; }
   float GetFadeInTime() const { return fadeInTime; }
   float GetFadeOutTime() const { return fadeOutTime; }
 
@@ -147,6 +149,8 @@ private:
   uchar thermalHeat : 1;
   uchar forceRenderUnsorted : 1;
   uchar noSortThermal : 1;
+  uchar x56_4_ : 1;
+  uchar mRenderFullEchoModel : 1; // Guessed name.
   float fadeInTime; // x58
   float fadeOutTime; // x5c
 };

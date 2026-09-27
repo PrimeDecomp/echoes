@@ -93,16 +93,16 @@ CActor::CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
 , m_targetable(true) {
   if (!m_modelData.null()) {
     if (params.GetXRay().first != 0) {
-      m_modelData->SetXRayModel(params.GetXRay());
+      m_modelData->SetEchoModel(params.GetXRay());
     }
     if (params.GetInfra().first != 0) {
-      m_modelData->SetInfraModel(params.GetInfra());
+      m_modelData->SetDarkModel(params.GetInfra());
     }
     const CLightParameters& lighting = params.GetLighting();
     if (!lighting.ShouldMakeLights() || lighting.GetMaxAreaLights() == 0) {
       m_modelData->SetAmbientColor(lighting.GetAmbientColor());
     }
-    m_modelData->SetSortThermal(!params.NoSortThermal());
+    m_modelData->SetRenderFullEchoModel(params.RenderFullEchoModel());
   }
   const CAssetId scanId = params.GetScannable().GetScannableObject0();
   if (scanId != kInvalidAssetId) {
