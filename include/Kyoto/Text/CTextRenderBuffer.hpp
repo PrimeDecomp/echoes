@@ -1,6 +1,7 @@
 #ifndef _CTEXTRENDERBUFFER
 #define _CTEXTRENDERBUFFER
 
+#include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CGraphicsPalette.hpp"
 #include "Kyoto/Math/CVector2i.hpp"
 #include "Kyoto/TToken.hpp"
@@ -24,6 +25,7 @@ public:
   explicit CTextRenderBuffer(EMode mode);
   ~CTextRenderBuffer();
   void AddFontChange(const TToken< CRasterFont >& font);
+  void Render(const CColor& color, float time) const;
 
 private:
   EMode mMode;

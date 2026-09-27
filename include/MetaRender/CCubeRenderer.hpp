@@ -189,6 +189,7 @@ public:
   void SetDestinationAlpha(int alpha) override;
   void DisableDestinationAlpha() override;
   bool IsRGBA6Current() const override { return mCurrentRGBA6; }
+  void SetRequestRGBA6(bool req) { mRequestRGBA6 = req; }
   // Guessed name
   void DrawDarkWorldTransition(const CColor& color0, const CColor& color1, const CColor& color2,
                                const CColor& color3, const CVector2i& offset,

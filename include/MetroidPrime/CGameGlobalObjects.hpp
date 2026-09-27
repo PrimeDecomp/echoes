@@ -46,4 +46,9 @@ private:
   rstl::single_ptr< CInGameTweakManager > inGameTweakManager;
 };
 
+class IController;
+
+extern const TToken< CRasterFont >* gpDefaultFont;
+extern IController* gpController;
+
 #endif // _CGAMEGLOBALOBJECTS

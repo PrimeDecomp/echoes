@@ -297,6 +297,13 @@ MetroidPrime/CGameHintInfo.cpp:
 	.data       start:0x803B5900 end:0x803B5910
 	.sdata2     start:0x8041C8D8 end:0x8041C900
 
+MetroidPrime/CErrorOutputWindow.cpp:
+	.text       start:0x80180E94 end:0x80181750
+	.rodata     start:0x803A9F38 end:0x803A9F4C
+	.data       start:0x803B5910 end:0x803B5B20
+	.sbss       start:0x80419238 end:0x80419240
+	.sdata2     start:0x8041C900 end:0x8041C920
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
