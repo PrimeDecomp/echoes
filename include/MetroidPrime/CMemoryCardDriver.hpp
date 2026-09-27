@@ -82,6 +82,7 @@ public:
   EState GetState() const { return mState; }
   EError GetError() const { return mError; }
   u64 GetCardSerial() const { return mCardSerial; }
+  int GetSaveIdx() const { return mSaveIdx; }
 
   void InitializeFileInfo();
   void Update();

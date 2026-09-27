@@ -12,6 +12,7 @@ class CGuiWidgetDrawParms;
 class CGuiFrameAnimationDatabase; // Guessed name
 class CSimplePool;
 class CInputStream;
+class CFinalInput;
 class CGuiFrame {
 public:
   CGuiFrame(CInputStream& in, CSimplePool* pool);
@@ -19,6 +20,7 @@ public:
   CGuiWidget* FindWidget(const char* name) const;
   bool GetIsFinishedLoading() const;
   void Update(float dt);
+  void ProcessUserInput(const CFinalInput& input);
   void Draw(const CGuiWidgetDrawParms& parms) const;
   CGuiCamera* GetFrameCamera() const { return mCamera; }
 

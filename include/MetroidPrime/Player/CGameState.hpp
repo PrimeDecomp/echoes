@@ -53,6 +53,11 @@ public:
 
   u32 GetCardSerialA() const { return cardSerialA; }
   u32 GetCardSerialB() const { return cardSerialB; }
+  u64 GetCardSerial() const { return (u64(cardSerialA) << 32) | cardSerialB; }
+  void SetCardSerial(u64 serial) {
+    cardSerialA = serial >> 32;
+    cardSerialB = serial;
+  }
   float GetHardModeDamageMultiplier() const;
   bool GetHardModeEnabled() const;
 
