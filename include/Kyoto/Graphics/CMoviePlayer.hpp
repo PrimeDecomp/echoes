@@ -76,6 +76,7 @@ public:
   bool GetIsFullyCached() const;
   bool GetIsMovieFinishedPlaying() const;
   void DisableLoop() { mLoop = false; }
+  void SetVolume(uchar volume) { mVolume = volume; }
   bool IsLooping() const { return mLoop; }
 
 private:

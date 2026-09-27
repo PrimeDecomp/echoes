@@ -36,6 +36,7 @@ public:
   void SetScreenPositionY(int, bool);
   void SetScreenStretch(int, bool);
   void SetSfxVolume(int, bool);
+  uint GetSfxVolume() const { return sfxVol; }
   void SetMusicVolume(int, bool);
   void SetSurroundMode(CAudioSys::ESurroundModes, bool);
 

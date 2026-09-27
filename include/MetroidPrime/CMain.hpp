@@ -32,6 +32,7 @@ public:
   void RegisterResourceTweaks();
   void ResetGameState();
   void StreamNewGameState(bool);
+  int GetLanguage() const; // Guessed name
   void RefreshGameState();
   void AddWorldPaks();
   void AsyncIdle(uint time);

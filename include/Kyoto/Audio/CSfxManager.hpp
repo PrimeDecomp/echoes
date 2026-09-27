@@ -193,7 +193,7 @@ public:
   static void Update(float dt);
   static CSfxHandle SfxStart(ushort id, short volume, short pan, int area = kAllAreas,
                              bool useAcoustics = false, bool looped = false,
-                             short priority = kMedPriority);
+                             const short priority = kMedPriority);
   static CSfxHandle AddEmitter(ushort id, const CVector3f& position, int area = kAllAreas,
                                bool useAcoustics = false, bool looped = false,
                                short priority = kMedPriority);

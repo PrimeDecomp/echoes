@@ -30,7 +30,7 @@ void CQuitGameScreen::Draw() const {
   // TODO: draw the type-specific backdrop and frame through shared GUI draw parameters.
 }
 
-EQuitAction CQuitGameScreen::Update() {
+EQuitAction CQuitGameScreen::Update(float dt) {
   if (mLoadedFrame == nullptr && mFrame.IsLoaded()) {
     FinishedLoading();
   }
