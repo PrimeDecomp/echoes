@@ -416,6 +416,11 @@ MetroidPrime/CActorModelParticles.cpp:
 MetroidPrime/Enemies/CPatternedAiFunctions.cpp:
 	.text       start:0x80150FE8 end:0x80152950
 
+MetroidPrime/ScriptObjects/CScriptColorModulate.cpp:
+	.text       start:0x80152950 end:0x801545F0
+	.data       start:0x803B53E0 end:0x803B5400
+	.sdata2     start:0x8041C308 end:0x8041C318 align:4
+
 MetroidPrime/CWorldTransManager.cpp:
 	.text       start:0x801576FC end:0x8015C634
 
