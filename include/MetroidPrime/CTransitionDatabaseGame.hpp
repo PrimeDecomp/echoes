@@ -21,8 +21,7 @@ public:
 
 private:
   rstl::rc_ptr< IMetaTrans > mDefaultTrans;
-  rstl::vector< rstl::pair< rstl::pair< uint, uint >, rstl::rc_ptr< IMetaTrans > > >
-      mTransitions;
+  rstl::vector< rstl::pair< rstl::pair< uint, uint >, rstl::rc_ptr< IMetaTrans > > > mTransitions;
   rstl::vector< rstl::pair< uint, rstl::rc_ptr< IMetaTrans > > > mHalfTransitions;
 };
 CHECK_SIZEOF(CTransitionDatabaseGame, 0x38)
