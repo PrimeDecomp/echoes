@@ -209,7 +209,7 @@ void CStateManager::DeferStateTransition(EStateManagerTransition t) {
       m_deferredTransition = t;
       if (m_deferredTransition == kSMT_Unk) {
         m_saveGameScreen =
-            new CSaveGameScreen(1, gpGameState->GetCardSerialB(), gpGameState->GetCardSerialA());
+            new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
       }
     }
   }

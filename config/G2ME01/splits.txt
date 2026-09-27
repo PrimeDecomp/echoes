@@ -291,6 +291,9 @@ MetroidPrime/CMemoryCard.cpp:
 MetroidPrime/CMemoryCardDriver.cpp:
 	.text       start:0x80179F84 end:0x8017C548
 
+MetroidPrime/CSaveGameScreen.cpp:
+	.text       start:0x8017C548 end:0x8017DFBC
+
 MetroidPrime/CGameHintInfo.cpp:
 	.text       start:0x8017F988 end:0x80180E94
 	.rodata     start:0x803A9F30 end:0x803A9F38
