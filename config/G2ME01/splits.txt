@@ -270,6 +270,10 @@ MetroidPrime/Player/CGameOptions.cpp:
 MetroidPrime/CEnvFxManager.cpp:
 	.text       start:0x80161FBC end:0x80168598
 
+MetroidPrime/CRumbleManager.cpp:
+	.text       start:0x8016DC58 end:0x8016DF3C
+	.sdata2     start:0x8041C788 end:0x8041C798
+
 MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.text       start:0x801727F8 end:0x8017645C
 	.rodata     start:0x803A9A20 end:0x803A9A30
@@ -1065,6 +1069,7 @@ Kyoto/CPakFile.cpp:
 
 Kyoto/Input/CRumbleVoice.cpp:
 	.text       start:0x80324D44 end:0x8032579C
+	.sdata      start:0x80418C48 end:0x80418C50
 	.sdata2     start:0x8041EB88 end:0x8041EB98
 
 Kyoto/Input/RumbleAdsr.cpp:
