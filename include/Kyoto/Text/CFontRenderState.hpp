@@ -21,6 +21,7 @@ public:
   void RefreshPalette();
   bool IsFinishedLoading() { return mState.IsFinishedLoading(); }
   CDrawStringOptions& GetOptions() { return mState.GetOptions(); }
+  void SetFont(const TToken< CRasterFont >& font) { mState.SetFont(font); }
   TToken< CRasterFont >& GetFont() { return mState.GetFont(); }
   rstl::vector< CTextColor >& GetColors() { return mState.GetColors(); }
   rstl::vector< bool >& GetOverride() { return mState.GetOverride(); }

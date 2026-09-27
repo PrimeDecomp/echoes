@@ -817,22 +817,54 @@ Kyoto/CDvdRequest.cpp:
 	.text       start:0x802B3660 end:0x802B38C0
 	.data       start:0x803B9C28 end:0x803B9C60
 
+Kyoto/Text/CColorInstruction.cpp:
+	.text       start:0x802B38C0 end:0x802B3978
+	.data       start:0x803B9C60 end:0x803B9C80
+
+Kyoto/Text/CColorOverrideInstruction.cpp:
+	.text       start:0x802B3978 end:0x802B3A60
+	.data       start:0x803B9C80 end:0x803B9CA0
+
 Kyoto/Text/CDrawStringOptions.cpp:
 	.text       start:0x802B3A60 end:0x802B3AD0
 	.sdata      start:0x80418AB8 end:0x80418AC0
 
+Kyoto/Text/CFontInstruction.cpp:
+	.text       start:0x802B3AD0 end:0x802B3CB8
+	.data       start:0x803B9CA0 end:0x803B9CC0
+
 Kyoto/Text/CFontRenderState.cpp:
 	.text       start:0x802B3CB8 end:0x802B4914
+
+Kyoto/Text/CLineExtraSpaceInstruction.cpp:
+	.text       start:0x802B4914 end:0x802B49A8
+	.data       start:0x803B9CC0 end:0x803B9CE0
 
 Kyoto/Text/CLineInstruction.cpp:
 	.text       start:0x802B49A8 end:0x802B4D88
 	.data       start:0x803B9CE0 end:0x803B9D28
 	.sdata2     start:0x8041E438 end:0x8041E440
 
+Kyoto/Text/CLineSpacingInstruction.cpp:
+	.text       start:0x802B4D88 end:0x802B4E1C
+	.data       start:0x803B9D28 end:0x803B9D48
+
+Kyoto/Text/CPopStateInstruction.cpp:
+	.text       start:0x802B4E1C end:0x802B4F04
+	.data       start:0x803B9D48 end:0x803B9D68
+
+Kyoto/Text/CPushStateInstruction.cpp:
+	.text       start:0x802B4F04 end:0x802B4FB0
+	.data       start:0x803B9D68 end:0x803B9D88
+
 Kyoto/Text/CRasterFont.cpp:
 	.text       start:0x802B4FB0 end:0x802B6AC8
 	.rodata     start:0x803AEE68 end:0x803AEE88
 	.sdata2     start:0x8041E440 end:0x8041E448
+
+Kyoto/Text/CRemoveColorOverrideInstruction.cpp:
+	.text       start:0x802B6AC8 end:0x802B6B84
+	.data       start:0x803B9D88 end:0x803B9DA8
 
 Kyoto/Text/CSaveableState.cpp:
 	.text       start:0x802B6B84 end:0x802B6D90
@@ -1323,6 +1355,10 @@ Kyoto/Audio/CMidiManager.cpp:
 Kyoto/Text/CFontImageDef.cpp:
 	.text       start:0x803156B8 end:0x803158D8
 	.sdata2     start:0x8041EA50 end:0x8041EA68
+
+Kyoto/Text/CImageInstruction.cpp:
+	.text       start:0x803158D8 end:0x80315B3C
+	.data       start:0x803BB158 end:0x803BB178
 
 Kyoto/Text/CTextRenderBuffer.cpp:
 	.text       start:0x80315B3C end:0x80317B5C
