@@ -8,11 +8,11 @@ class CMemorySys;
 
 class CGraphicsSys {
 public:
-  CGraphicsSys(const COsContext& osContext, const CMemorySys& memorySys, uint, void*);
+  CGraphicsSys(const COsContext& osContext, const CMemorySys& memorySys, bool progressive);
   ~CGraphicsSys();
 
 private:
-  uint pad;
+  uint x0_;
 
   static bool mGraphicsInitialized;
 };
