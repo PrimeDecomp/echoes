@@ -39,6 +39,8 @@ public:
 
   void SetBodyController(CBodyController* controller) { mBodyController = controller; }
 
+  const float& GetMaximumPitch() const { return mMaxPitch; }
+
   pas::EAnimationState GetCurrentStateId() const { return mState; }
 
   pas::EAnimationState GetCurrentAdditiveStateId() const { return mAdditiveState; }

@@ -216,6 +216,8 @@ public:
 
   bool IsInCollision() const { return mSolidCollision; }
 
+  float GetSpeed() const { return mSpeed; }
+
   CBodyController* BodyController() { return mBodyController.get(); }
 
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
