@@ -60,6 +60,7 @@ public:
   const CAABox& GetAABB() const;
   const float* GetPositions() const;
   const float* GetNormals() const;
+  const CCubeModel* GetModelInstance() const { return mModelInstance.get(); }
   void UpdateLastFrame() const;
   void VerifyCurrentShader(int shader) const;
   // Retail buffer relocation methods; names are inferred from their implementations.

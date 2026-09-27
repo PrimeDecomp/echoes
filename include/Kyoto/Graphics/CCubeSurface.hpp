@@ -10,10 +10,11 @@ class CCubeSurface {
     uint mMaterialIndex;
     uint mDisplayListSizeAndNormalHint;
     CCubeModel* mParent;
-    CCubeSurface* mNextSurface;
+    const void* mNextSurface;
     uint mExtraSize;
     CVector3f mNormal;
-    uint x2c_;
+    short mMatrixBank;
+    short x2e_;
     CAABox mBounds;
   };
 
@@ -21,8 +22,21 @@ class CCubeSurface {
   const SSurfaceData* mData;
 
 public:
+  explicit CCubeSurface(const void* data) : mData(static_cast< const SSurfaceData* >(data)) {}
+
   CAABox GetBounds() const;
   const CVector3f& GetCenter() const { return mData->mCenter; }
   const CVector3f& GetNormalHint() const { return mData->mNormal; }
+  uint GetMaterialIndex() const { return mData->mMaterialIndex; }
+  short GetMatrixBank() const { return mData->mMatrixBank; } // Guessed name.
+  uint GetDisplayListSize() const { return mData->mDisplayListSizeAndNormalHint & 0x7fffffff; }
+  uint GetSurfaceHeaderSize() const { return (sizeof(SSurfaceData) + 7 + mData->mExtraSize) & ~31; }
+  const void* GetDisplayList() const {
+    return reinterpret_cast< const uchar* >(mData) + GetSurfaceHeaderSize();
+  }
+  CCubeSurface GetNextSurface() const { return CCubeSurface(mData->mNextSurface); }
+  bool IsValid() const { return mData != nullptr; }
 };
+CHECK_SIZEOF(CCubeSurface, 4)
+
 #endif // _CCUBESURFACE
