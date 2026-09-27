@@ -332,6 +332,10 @@ MetroidPrime/Player/CPlayerOrbit.cpp:
 	.text       start:0x8011C3A8 end:0x80123510
 	.ctors      start:0x803A5524 end:0x803A5528
 
+MetroidPrime/CGameCollision.cpp:
+	.text       start:0x80123510 end:0x801285DC
+	.ctors      start:0x803A5528 end:0x803A552C
+
 MetroidPrime/CGroundMovement.cpp:
 	.text       start:0x8012878C end:0x8012CA24
 	.sdata      start:0x80418328 end:0x80418338
