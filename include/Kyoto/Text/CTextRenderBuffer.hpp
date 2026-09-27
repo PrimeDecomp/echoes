@@ -6,12 +6,12 @@
 #include "Kyoto/Math/CVector2i.hpp"
 #include "Kyoto/TToken.hpp"
 #include "Kyoto/Text/CFontImageDef.hpp"
+#include "Kyoto/Text/CRasterFont.hpp"
 #include "rstl/auto_ptr.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/vector.hpp"
 
-class CRasterFont;
 class CTextRenderBuffer {
 public:
   enum EMode { kM_AllocTally, kM_BufferFill };
@@ -25,6 +25,8 @@ public:
 
   explicit CTextRenderBuffer(EMode mode);
   ~CTextRenderBuffer();
+  void AddPaletteChange(const CGraphicsPalette& palette, EFontMode mode);
+  void AddCharacter(const CVector2i& offset, short chr, uint color);
   void AddFontChange(const TToken< CRasterFont >& font);
   void Render(const CColor& color, float time) const;
   int GetNumPrimitives() const { return mPrimitiveOffsets.size(); }

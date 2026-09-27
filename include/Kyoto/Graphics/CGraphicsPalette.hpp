@@ -24,6 +24,10 @@ public:
   ushort* GetPaletteData() { return mEntries.get(); }
   const ushort* GetPaletteData() const { return mEntries.get(); }
   void Load() const;
+  void* Lock() {
+    mLocked = true;
+    return mEntries.get();
+  }
   void UnLock();
 
 private:

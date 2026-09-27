@@ -12,6 +12,7 @@
 
 class CTexture;
 class CDrawStringOptions;
+class CTextRenderBuffer;
 class IObjectStore;
 
 class CFontInfo {
@@ -29,10 +30,14 @@ private:
   char mName[64];
 };
 
+CHECK_SIZEOF(CFontInfo, 0x4c)
+
 class CKernPair {
 public:
-  CKernPair(wchar_t first, wchar_t second, int howMuch)
-  : mFirst(first), mSecond(second), mHowMuch(howMuch) {}
+  CKernPair(const wchar_t first, const wchar_t second, const int howMuch) : mHowMuch(howMuch) {
+    mSecond = second;
+    mFirst = first;
+  }
 
   wchar_t GetFirst() const { return mFirst; }
   wchar_t GetSecond() const { return mSecond; }
@@ -46,8 +51,9 @@ private:
 
 class CGlyph {
 public:
-  CGlyph(int a, int b, int c, float startU, float startV, float endU, float endV, int cellWidth,
-         int cellHeight, int baseline, int kernStart)
+  CGlyph(const int a, const int b, const int c, const float startU, const float startV,
+         const float endU, const float endV, const int layer, const int cellWidth,
+         const int cellHeight, const int baseline, const int kernStart)
   : mA(a)
   , mB(b)
   , mC(c)
@@ -55,11 +61,11 @@ public:
   , mStartV(startV)
   , mEndU(endU)
   , mEndV(endV)
+  , mLayer(layer)
   , mCellWidth(cellWidth)
   , mCellHeight(cellHeight)
   , mBaseline(baseline)
-  , mKernStart(kernStart)
-   {}
+  , mKernStart(kernStart) {}
 
   short GetA() const { return mA; }
   short GetB() const { return mB; }
@@ -68,11 +74,11 @@ public:
   float GetStartV() const { return mStartV; }
   float GetEndU() const { return mEndU; }
   float GetEndV() const { return mEndV; }
-  short GetCellWidth() const { return mCellWidth; }
-  short GetCellHeight() const { return mCellHeight; }
-  short GetBaseline() const { return mBaseline; }
-  short GetKernStart() const { return mKernStart; }
-  //short GetLayer() const { return x20_layer; }
+  uchar GetCellWidth() const { return mCellWidth; }
+  uchar GetCellHeight() const { return mCellHeight; }
+  uchar GetBaseline() const { return mBaseline; }
+  int GetKernStart() const { return mKernStart; }
+  uchar GetLayer() const { return mLayer; }
 
 private:
   short mA;
@@ -82,12 +88,14 @@ private:
   float mStartV;
   float mEndU;
   float mEndV;
-  short mCellWidth;
-  short mCellHeight;
-  short mBaseline;
+  uchar mLayer;
+  uchar mCellWidth;
+  uchar mCellHeight;
+  uchar mBaseline;
   short mKernStart;
-  //short x20_layer;
 };
+
+CHECK_SIZEOF(CGlyph, 0x20)
 
 enum EFontMode {
   kFM_None = -1,
@@ -107,8 +115,17 @@ public:
   int GetCarriageAdvance() const;
   int GetBaseLine() const { return mBaseline; }
   void GetSize(const CDrawStringOptions&, int&, int&, const wchar_t*, int) const;
-  void SetTexture(TToken< CTexture > token) { mTexture = token; }
+  void SetTexture(TToken< CTexture > token);
   bool IsFinishedLoading();
+  const CGlyph* GetGlyph(wchar_t chr) const { return InternalGetGlyph(chr); }
+  bool HasGlyph(wchar_t chr) const { return GetGlyph(chr) != nullptr; }
+  void DrawString(const CDrawStringOptions& options, int x, int y, int& xOut, int& yOut,
+                  CTextRenderBuffer* buffer, const wchar_t* str, int length) const;
+  void DrawSpace(const CDrawStringOptions& options, int x, int y, int& xOut, int& yOut,
+                 int length) const;
+  void SinglePassDrawString(const CDrawStringOptions& options, int x, int y, int& xOut, int& yOut,
+                            CTextRenderBuffer* buffer, const wchar_t* str, int length) const;
+  void SetupRenderState();
 
 private:
   bool mInitialized;
@@ -121,6 +138,9 @@ private:
   rstl::optional_object< TToken< CTexture > > mTexture;
   int mBaseline;
   int mLineMargin;
+
+  static int KernLookup(const rstl::vector< CKernPair >& kerning, int start, int chr);
+  const CGlyph* InternalGetGlyph(wchar_t chr) const;
 };
 CHECK_SIZEOF(CRasterFont, 0x94)
 
