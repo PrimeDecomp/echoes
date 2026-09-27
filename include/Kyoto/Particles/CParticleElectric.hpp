@@ -93,6 +93,10 @@ public:
 
   public:
     CParticleElectricManager(uint idx, uint slif, uint startFrame);
+    const CVector3f& GetInitialPos() const { return mInitialPos; }
+    const CVector3f& GetInitialVel() const { return mInitialVel; }
+    const CVector3f& GetFinalPos() const { return mFinalPos; }
+    const CVector3f& GetFinalVel() const { return mFinalVel; }
   };
 
   void ForceParticleCreation(int count);

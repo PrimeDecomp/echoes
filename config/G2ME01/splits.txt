@@ -568,6 +568,18 @@ Kyoto/Particles/CSpawnSystemKeyframeData.cpp:
 	.bss        start:0x803DFDE8 end:0x803DFE08
 	.sbss       start:0x80419AD8 end:0x80419AE8
 
+Kyoto/Particles/CUVElement.cpp:
+	.text       start:0x802F358C end:0x802F3E30
+	.data       start:0x803BABB0 end:0x803BABE8
+	.sdata2     start:0x8041E8E0 end:0x8041E8F0
+
+Kyoto/Particles/CVectorElement.cpp:
+	.text       start:0x802F3E30 end:0x802F74C4
+	.ctors      start:0x803A5634 end:0x803A5638
+	.data       start:0x803BABE8 end:0x803BAEB8
+	.bss        start:0x803DFE08 end:0x803DFE18
+	.sdata2     start:0x8041E8F0 end:0x8041E920
+
 Kyoto/Math/CPlane.cpp:
 	.text       start:0x802F7728 end:0x802F7938
 	.sdata2     start:0x8041E920 end:0x8041E928
