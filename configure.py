@@ -482,6 +482,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CAABox.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CTri.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CQuad.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Math/CCylinder.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Math/CLine.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CPlane.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CSphere.cpp"),
             Object(NonMatching, "Kyoto/CARAMManager.cpp"),

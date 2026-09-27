@@ -2,6 +2,7 @@
 #define _CQUAD
 
 #include "Kyoto/Math/CPlane.hpp"
+#include "Kyoto/Math/CTri.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "types.h"
 
@@ -9,6 +10,9 @@
 class CQuad {
 public:
   CQuad(const CVector3f& a, const CVector3f& b, const CVector3f& c, const CVector3f& d);
+
+  // Guessed name; defined ahead of CTri's constructor in the target (CTri.cpp).
+  CTri GetTri(int index) const;
 
 private:
   CPlane mPlane;
