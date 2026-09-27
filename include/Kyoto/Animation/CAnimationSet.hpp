@@ -9,6 +9,7 @@
 #include "Kyoto/Animation/IMetaAnim.hpp"
 #include "Kyoto/Animation/IMetaTrans.hpp"
 
+#include "rstl/construct.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/vector.hpp"
 
@@ -48,5 +49,9 @@ private:
   EventSetList mEventSets; // Guessed name: embedded animation event data.
 };
 CHECK_SIZEOF(CAnimationSet, 0x64)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CAnimationSet::AdditiveAnimationList::value_type)
+}
 
 #endif // _CANIMATIONSET

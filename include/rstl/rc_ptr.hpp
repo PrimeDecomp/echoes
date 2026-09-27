@@ -26,7 +26,7 @@ public:
   }
   ~rc_ptr() { ReleaseData(); }
   rc_ptr& operator=(const rc_ptr& other) {
-    if (mRefCount != other.mRefCount) {
+    if (mPtr != other.mPtr) {
       ReleaseData();
       mPtr = other.mPtr;
       mRefCount = other.mRefCount;

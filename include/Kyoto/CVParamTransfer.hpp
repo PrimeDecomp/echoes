@@ -22,7 +22,7 @@ public:
   CVParamTransfer() {}
   template < typename T >
   CVParamTransfer(TObjOwnerParam< T >* obj) : mObj(obj) {}
-  static CVParamTransfer Null();
+  static CVParamTransfer Null() { return CVParamTransfer(); }
 
   const IVParamObj& operator*() const { return *mObj; }
   const rstl::rc_ptr< IVParamObj >& GetObj() const { return mObj; }
