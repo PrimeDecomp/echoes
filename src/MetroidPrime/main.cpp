@@ -39,7 +39,6 @@ CSimplePool* gpSimplePool;
 CCharacterFactoryBuilder* gpCharacterFactoryBuilder;
 CStringTable* gpStringTable;
 CMain* gpMain;
-unkptr gpController;
 CGameState* gpGameState;
 CMemoryCard* gpMemoryCard;
 CInGameTweakManager* gpTweakManager;
@@ -139,7 +138,7 @@ CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
   ioWinMgr.AddIOWin(new CMainFlow(), 0, 0);
   ioWinMgr.AddIOWin(new CConsoleOutputWindow(8, 5.f, 0.75f), 100, 0);
   ioWinMgr.AddIOWin(new CAudioStateWin(), 100, -1);
-  ioWinMgr.AddIOWin(new CErrorOutputWindow(false), 10000, 100000);
+  ioWinMgr.AddIOWin(new CErrorOutputWindow(CErrorOutputWindow::kF_Zero), 10000, 100000);
   gpGameState->GameOptions().EnsureOptions();
   sInfiniteLoopTime = 0.f;
   OSSetPeriodicAlarm(&infiniteLoopAlarm, OSGetTime(), (float)OS_TIMER_CLOCK, InfiniteLoopAlarm);
