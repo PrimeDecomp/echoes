@@ -74,6 +74,22 @@ class CMayaSpline {
 
 public:
   CMayaSpline(CInputStream& in, int count);
+  // The serialized/runtime type distinction is inherited; the target copies this record.
+  explicit CMayaSpline(const SLdrSpline& spline)
+  : mPreInfinity(spline.m_preInfinity)
+  , mPostInfinity(spline.m_postInfinity)
+  , mKnots(spline.m_knots)
+  , mClampMode(spline.m_clampMode)
+  , mMinAmplitude(spline.m_minAmplitudeTime)
+  , mMaxAmplitude(spline.m_maxAmplitudeTime)
+  , mCachedKnotIndex(spline.m_cachedKnotIndex)
+  , mCachedSegmentIndex(spline.mCachedSegmentIndex)
+  , mStepSegment(spline.m_dirty)
+  , mCachedMinTime(spline.m_cachedMinTime) {
+    for (int i = 0; i < 4; ++i) {
+      mCachedHermiteCoefs[i] = spline.m_cachedHermitCoefs[i];
+    }
+  }
 
   size_t GetKnotCount() const;
   const rstl::vector< CMayaSplineKnot >& GetKnots() const;
