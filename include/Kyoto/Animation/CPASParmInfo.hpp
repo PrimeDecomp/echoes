@@ -32,15 +32,7 @@ private:
 };
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CPASParmInfo > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CPASParmInfo >(void* dest, const CPASParmInfo& src) {
-  *static_cast< CPASParmInfo* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPASParmInfo)
 } // namespace rstl
 
 CHECK_SIZEOF(CPASParmInfo, 0x14)

@@ -83,15 +83,7 @@ private:
 CHECK_SIZEOF(CQuaternion, 0x10)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CQuaternion > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CQuaternion >(void* dest, const CQuaternion& src) {
-  *static_cast< CQuaternion* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CQuaternion)
 } // namespace rstl
 
 #endif // _CQUATERNION

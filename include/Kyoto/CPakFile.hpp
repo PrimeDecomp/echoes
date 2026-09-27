@@ -88,15 +88,7 @@ CHECK_SIZEOF(CPakFile, 0x9c)
 NESTED_CHECK_SIZEOF(CPakFile, SResInfo, 0xb)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CPakFile::SResInfo > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CPakFile::SResInfo >(void* dest, const CPakFile::SResInfo& src) {
-  *static_cast< CPakFile::SResInfo* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPakFile::SResInfo)
 } // namespace rstl
 
 #endif // _CPAKFILE

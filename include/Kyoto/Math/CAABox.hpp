@@ -113,15 +113,7 @@ private:
 CHECK_SIZEOF(CAABox, 0x18)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CAABox > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CAABox >(void* dest, const CAABox& src) {
-  *static_cast< CAABox* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CAABox)
 } // namespace rstl
 
 #endif // _CAABOX

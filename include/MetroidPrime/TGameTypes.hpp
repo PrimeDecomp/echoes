@@ -63,15 +63,7 @@ private:
 CHECK_SIZEOF(TUniqueId, 0x2)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< TUniqueId > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< TUniqueId >(void* dest, const TUniqueId& src) {
-  *static_cast< TUniqueId* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TUniqueId)
 
 template <>
 struct is_trivially_destructible< pair< TEditorId, bool > > {

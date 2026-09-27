@@ -10,6 +10,18 @@
 // toward MWCC's inline size limit, which decides where uninitialized_copy is outlined.
 #define RSTL_PRECONDITION(cond) ((void)0)
 
+#define RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(T) \
+  template <> \
+  struct is_trivially_destructible< T > { \
+    enum { value = true }; \
+  };
+
+#define RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(T) \
+  RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(T) \
+  inline void construct_impl(void* dest, const T& src) { \
+    *static_cast< T* >(dest) = src; \
+  }
+
 namespace rstl {
 template < typename T >
 struct is_trivially_destructible {
@@ -21,57 +33,9 @@ struct is_trivially_destructible< T* > {
   enum { value = true };
 };
 
-template <>
-struct is_trivially_destructible< char > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< uchar > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< bool > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< float > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< int > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< uint > {
-  enum { value = true };
-};
-
-template <>
-struct is_trivially_destructible< ushort > {
-  enum { value = true };
-};
-
 template < typename T >
 inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
-}
-
-// Echoes copies byte and pointer elements without the placement-new null check.
-inline void construct_impl(void* dest, const char& src) {
-  *static_cast< char* >(dest) = src;
-}
-
-inline void construct_impl(void* dest, const uchar& src) {
-  *static_cast< uchar* >(dest) = src;
-}
-
-inline void construct_impl(void* dest, const bool& src) {
-  *static_cast< bool* >(dest) = src;
 }
 
 template < typename T >
@@ -79,29 +43,17 @@ inline void construct_impl(void* dest, T* const& src) {
   *static_cast< T** >(dest) = src;
 }
 
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(char)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(uchar)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(bool)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(float)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(int)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(uint)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(ushort)
+
 template < typename T >
 inline void construct(void* dest, const T& src) {
   construct_impl(dest, src);
-}
-
-template <>
-inline void construct< float >(void* dest, const float& src) {
-  *static_cast< float* >(dest) = src;
-}
-
-template <>
-inline void construct< int >(void* dest, const int& src) {
-  *static_cast< int* >(dest) = src;
-}
-
-template <>
-inline void construct< uint >(void* dest, const uint& src) {
-  *static_cast< uint* >(dest) = src;
-}
-
-template <>
-inline void construct< ushort >(void* dest, const ushort& src) {
-  *static_cast< ushort* >(dest) = src;
 }
 
 template < typename T >

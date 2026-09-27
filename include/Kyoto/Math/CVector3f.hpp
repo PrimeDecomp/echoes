@@ -129,15 +129,7 @@ protected:
 CHECK_SIZEOF(CVector3f, 0xc)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CVector3f > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CVector3f >(void* dest, const CVector3f& src) {
-  *static_cast< CVector3f* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CVector3f)
 } // namespace rstl
 
 // ClassifyVector__FRC9CVector3f

@@ -33,15 +33,7 @@ private:
 CHECK_SIZEOF(CSegId, 0x1)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CSegId > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CSegId >(void* dest, const CSegId& src) {
-  *static_cast< CSegId* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CSegId)
 
 template <>
 struct is_trivially_destructible< pair< CSegId, CSegId > > {

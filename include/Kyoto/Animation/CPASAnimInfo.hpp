@@ -24,10 +24,7 @@ private:
 };
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CPASAnimInfo > {
-  enum { value = true };
-};
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CPASAnimInfo)
 } // namespace rstl
 
 CHECK_SIZEOF(CPASAnimInfo, 0x28)

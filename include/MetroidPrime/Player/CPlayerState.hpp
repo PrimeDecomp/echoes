@@ -327,16 +327,7 @@ private:
 CHECK_SIZEOF(CPlayerState, 0x634)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CPlayerState::CPowerUp > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CPlayerState::CPowerUp >(void* dest, const CPlayerState::CPowerUp& src) {
-  *static_cast< CPlayerState::CPowerUp* >(dest) = src;
-}
-
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPlayerState::CPowerUp)
 } // namespace rstl
 
 #endif // _CPLAYERSTATE

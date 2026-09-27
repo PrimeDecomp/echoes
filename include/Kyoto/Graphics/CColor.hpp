@@ -103,15 +103,7 @@ private:
 CHECK_SIZEOF(CColor, 0x4)
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CColor > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< CColor >(void* dest, const CColor& src) {
-  *static_cast< CColor* >(dest) = src;
-}
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CColor)
 } // namespace rstl
 
 #ifdef __MWERKS__

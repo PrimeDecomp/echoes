@@ -24,10 +24,7 @@ private:
 };
 
 namespace rstl {
-template <>
-struct is_trivially_destructible< CStaticInterferenceSource > {
-  enum { value = true };
-};
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CStaticInterferenceSource)
 } // namespace rstl
 
 class CStaticInterference {
