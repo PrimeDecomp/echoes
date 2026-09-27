@@ -13,17 +13,15 @@ class CMemorySys;
 class CMain {
 public:
   enum ERestartMode {
+    // Echoes values; 1-5 end the game (names inferred from CMainFlow's handling)
     kRM_None,
-    kRM_WinBad,
-    kRM_WinGood,
-    kRM_WinBest,
-    kRM_LoseGame,
+    kRM_Credits1,
+    kRM_Credits2,
+    kRM_EndMovie1,
+    kRM_EndAutoSave,
+    kRM_EndMovie2,
     kRM_Default,
     kRM_StateSetter,
-    kRM_PreFrontEnd,
-    kRM_FrontEnd,
-    kRM_Game,
-    kRM_GameExit,
   };
 
   CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2);
@@ -33,7 +31,7 @@ public:
   void UpdateStreamedAudio();
   void RegisterResourceTweaks();
   void ResetGameState();
-  void StreamNewGameState(CInputStream& in, int saveIdx);
+  void StreamNewGameState(bool);
   void RefreshGameState();
   void AddWorldPaks();
   void AsyncIdle(uint time);
@@ -55,7 +53,7 @@ public:
 
   bool fn_80008A1C();
 
-  // void SetX30(bool v) { x160_30_ = v; }
+  void SetX30(bool v) { x90_30_ = v; }
 
   static void EnsureWorldPaksReady();
   static void EnsureWorldPakReady(CAssetId id);

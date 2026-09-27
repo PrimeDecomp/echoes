@@ -10,6 +10,8 @@
 #include "MetroidPrime/Player/CHintOptions.hpp"
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
 
+#include "rstl/auto_ptr.hpp"
+
 class CGameMode;
 class CWorldState;
 
@@ -39,6 +41,8 @@ public:
 
   void SetIsDarkWorld(bool);
   CGameMode& GetGameMode();
+  void SetGameMode(CGameMode* mode); // name inferred
+  int GetGameModeType() const { return mGameModeType; } // name inferred
   CWorldState& StateForWorld(CAssetId worldId);
   CAssetId CurrentWorldAssetId() const;
 
@@ -70,7 +74,10 @@ private:
   u32 cardSerialA;
   u32 cardSerialB;
 
-  char x110_[0xf4];
+  char x110_[0x88];
+  rstl::auto_ptr< CGameMode > mGameMode;
+  int mGameModeType;
+  char x1a4_[0x60];
   CControlMapper mControlMapper;
   char x2ec_[4];
 };
@@ -79,5 +86,9 @@ CHECK_SIZEOF(CGameState, 0x2f0)
 NESTED_CHECK_SIZEOF(CGameState, GameFileStateInfo, 0x28)
 
 extern CGameState* gpGameState;
+
+// Unidentified game-flow helpers in the CGameState text range.
+void fn_80143884();
+void fn_80143E88();
 
 #endif // _CGAMESTATE

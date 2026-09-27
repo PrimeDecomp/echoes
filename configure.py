@@ -387,6 +387,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CMatrix3f_Ext.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CArchMsgParmUserInput.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CInputGenerator.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CMainFlow.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),

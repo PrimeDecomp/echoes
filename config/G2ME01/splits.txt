@@ -57,6 +57,12 @@ MetroidPrime/CArchMsgParmUserInput.cpp:
 MetroidPrime/CInputGenerator.cpp:
 	.text       start:0x8001D888 end:0x8001DAF4
 
+MetroidPrime/CMainFlow.cpp:
+	.text       start:0x8001DAF4 end:0x8001E070
+	.rodata     start:0x803A60A0 end:0x803A60B0
+	.data       start:0x803B1770 end:0x803B17D0
+	.sdata      start:0x80417DE0 end:0x80417DF8
+
 MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
 	.ctors      start:0x803A54BC end:0x803A54C0
