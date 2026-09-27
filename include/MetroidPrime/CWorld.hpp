@@ -47,6 +47,7 @@ public:
   bool IsAreaValid(TAreaId id) const { return mAreas[id.Value()]->IsLoaded(); }
   CAssetId GetWorldAssetId() const { return mMlvlId; }
   TAreaId GetCurrentAreaId() const { return mCurAreaId; }
+  int GetNeededEnvFx() const { return mNeededEnvFx; }
   CMapWorld* GetMapWorld() const;
 
   void SetLoadPauseState(bool);

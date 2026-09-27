@@ -335,6 +335,9 @@ MetroidPrime/CErrorOutputWindow.cpp:
 	.sbss       start:0x80419238 end:0x80419240
 	.sdata2     start:0x8041C900 end:0x8041C920
 
+MetroidPrime/CRainSplashGenerator.cpp:
+	.text       start:0x80181750 end:0x80182830
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
