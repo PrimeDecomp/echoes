@@ -990,6 +990,11 @@ Kyoto/Streams/CInputStream.cpp:
 	.data       start:0x803BBF88 end:0x803BBF98
 	.sbss       start:0x80419CB0 end:0x80419CB8
 
+Kyoto/Streams/CBufferedDvdRequest.cpp:
+	.text       start:0x8034317C end:0x8034370C
+	.rodata     start:0x803B0340 end:0x803B0348
+	.data       start:0x803BBF98 end:0x803BBFB8
+
 Kyoto/Streams/CLZOSupport.cpp:
 	.text       start:0x8034370C end:0x803437AC
 
