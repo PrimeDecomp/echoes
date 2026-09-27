@@ -37,6 +37,7 @@ public:
   const CVector3f& GetOffset(const CSegId& seg) const;
   CMatrix3f GetRotation(const CSegId& seg);
   const CMatrix3f& GetTransformMinusOffset(const CSegId& seg) const;
+  const rstl::vector< CElementType >& GetElements() const { return mElements; }
 
 private:
   rstl::vector< CElementType > mElements;
