@@ -346,6 +346,10 @@ MetroidPrime/Weapons/CPowerBeam.cpp:
 	.text       start:0x801D4FC8 end:0x801D5C70
 	.data       start:0x803B72B0 end:0x803B7310
 
+MetroidPrime/Weapons/CGunWeapon.cpp:
+	.text       start:0x801D8254 end:0x801DC1B8
+	.data       start:0x803B7370 end:0x803B73D0
+
 MetroidPrime/Player/CPlayerGunBase.cpp:
 	.text       start:0x801DD6FC end:0x801DE74C
 

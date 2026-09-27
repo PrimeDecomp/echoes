@@ -71,12 +71,12 @@ void CPlayerGun::UpdateNormalShotCycle(float dt, CStateManager& mgr) {
     CTransform4f xf = mGunWorldXf;
 
     if (mAbsorbedPhazonShots == gpTweakPlayerGun->GetMaxAbsorbedPhazonShots()) {
-      CToken phazonBallToken = gpSimplePool->GetObj("PhazonBall");
+      TCachedToken< CWeaponDescription > phazonBallToken(gpSimplePool->GetObj("PhazonBall"), true);
 
       TUniqueId homingTarget = targetHoming ? GetTargetId(mgr) : kInvalidUniqueId;
-      mCurrentBeam->Fire(phazonBallToken, mUnderwater, dt, chargeState, xf, mgr, homingTarget, 0,
-                         0x1c4, kInvalidUniqueId, CSfxHandle::NullHandle(), chargeFactor1,
-                         chargeFactor1);
+      mCurrentBeam->CGunWeapon::Fire(phazonBallToken, mUnderwater, dt, chargeState, xf, mgr,
+                                    homingTarget, 0, 0x1c4, nullptr, nullptr, chargeFactor1,
+                                    chargeFactor1);
 
     } else {
       // TODO: Fire the selected beam using its normal projectile token.

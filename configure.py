@@ -451,6 +451,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CAxisAngle.cpp"),
             Object(NonMatching, "MetroidPrime/CEulerAngles.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CPowerBeam.cpp"),
+            Object(NonMatching, "MetroidPrime/Weapons/CGunWeapon.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CWeapon.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CGameProjectile.cpp"),
             Object(NonMatching, "Weapons/CProjectileWeapon.cpp"),
