@@ -98,6 +98,9 @@ enum EScriptObjectMessage {
   kSM_XALD = 0x58414c44,
   kSM_XDelete = 0x5844454c,
   kSM_LandOnNotFloor = 0x5846414c,
+  kSM_Falling = 0x584f4646,
+  kSM_Jumped = 0x584c4155,
+  kSM_OnFloor = 0x584c4e44,
 
   kSM_None = 0xffffffff,
 };

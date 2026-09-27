@@ -94,7 +94,7 @@ enum EAdditiveReactionType {
   kART_Seven
 };
 
-enum EJumpType { kJT_Normal, kJT_One, kJT_Ambush };
+enum EJumpType { kJT_Invalid = -1, kJT_Normal, kJT_One, kJT_Ambush };
 
 enum EJumpState {
   kJS_Invalid = -1,
@@ -103,7 +103,8 @@ enum EJumpState {
   kJS_Loop,
   kJS_OutOfJump,
   kJS_WallBounceLeft,
-  kJS_WallBounceRight
+  kJS_WallBounceRight,
+  kJS_ExitJump // Guessed name
 };
 
 enum EStepDirection {

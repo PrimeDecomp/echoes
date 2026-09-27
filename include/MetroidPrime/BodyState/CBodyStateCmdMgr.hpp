@@ -167,6 +167,8 @@ public:
   , mLaunchVel(launchVel)
   , mStartInKnockLoop(startInLoop) {}
 
+  void SetSkipLaunchState(bool skip) { mStartInKnockLoop = skip; }
+
 private:
   CVector3f mDirection;
   CVector3f mLaunchVel;
@@ -176,24 +178,41 @@ CHECK_SIZEOF(CBCHurledCmd, 0x24)
 
 class CBCJumpCmd : public CBodyStateCmd {
 public:
+  // Guessed names
+  enum EFacingFlags { kFF_IntoJump = 1, kFF_AmbushJump = 2 };
+
   CBCJumpCmd(const CVector3f& waypoint, pas::EJumpType type, pas::EJumpState initialState,
-             int unknown1, int unknown2)
+             int animationVariant, int facingFlags)
   : CBodyStateCmd(kBSC_Jump)
   , mType(type)
-  , xc_(unknown1)
+  , mAnimationVariant(animationVariant)
   , mWaypoint1(waypoint)
   , mWaypoint2(CVector3f::Zero())
   , mInitialState(initialState)
-  , x2c_(unknown2)
+  , mFacingFlags(facingFlags)
   , mWallJump(false) {}
+
+  pas::EJumpType GetJumpType() const { return mType; }
+
+  const CVector3f& GetJumpTarget() const { return mWaypoint1; }
+
+  const CVector3f& GetSecondJumpTarget() const { return mWaypoint2; }
+
+  bool IsWallJump() const { return mWallJump; }
+
+  pas::EJumpState GetInitialState() const { return mInitialState; }
+
+  int GetAnimationVariant() const { return mAnimationVariant; } // Guessed name
+
+  int GetFacingFlags() const { return mFacingFlags; } // Guessed name
 
 private:
   pas::EJumpType mType;
-  int xc_;
+  int mAnimationVariant; // Guessed name
   CVector3f mWaypoint1;
   CVector3f mWaypoint2;
   pas::EJumpState mInitialState; // Guessed name
-  int x2c_;
+  int mFacingFlags; // Guessed name
   bool mWallJump : 1;
 };
 CHECK_SIZEOF(CBCJumpCmd, 0x34)
@@ -201,10 +220,12 @@ CHECK_SIZEOF(CBCJumpCmd, 0x34)
 // Guessed name
 class CBCUnknown18Cmd : public CBodyStateCmd {
 public:
-  CBCUnknown18Cmd() : CBodyStateCmd(kBSC_Unknown18), x8_(0) {}
+  CBCUnknown18Cmd() : CBodyStateCmd(kBSC_Unknown18), mAnimationVariant(0) {}
+
+  int GetAnimationVariant() const { return mAnimationVariant; } // Guessed name
 
 private:
-  int x8_;
+  int mAnimationVariant; // Guessed name
 };
 CHECK_SIZEOF(CBCUnknown18Cmd, 0xc)
 

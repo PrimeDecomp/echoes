@@ -213,7 +213,11 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+
+  bool IsInCollision() const { return mSolidCollision; }
+
   CBodyController* BodyController() { return mBodyController.get(); }
+
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
 
 private:
