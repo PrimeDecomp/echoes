@@ -676,6 +676,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CSfxHandle.cpp"),
             Object(NonMatching, "Kyoto/Audio/CSfxManager.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontImageDef.cpp"),
+            Object(NonMatching, "Kyoto/Text/CTextRenderBuffer.cpp"),
             Object(NonMatching, "Kyoto/Math/CMayaSpline.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
             Object(Matching, "Kyoto/Streams/CBufferedDvdRequest.cpp"),
