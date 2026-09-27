@@ -169,6 +169,12 @@ public:
 
   void SetSkipLaunchState(bool skip) { mStartInKnockLoop = skip; }
 
+  bool GetSkipLaunchState() const { return mStartInKnockLoop; }
+
+  const CVector3f& GetHitDirection() const { return mDirection; }
+
+  const CVector3f& GetLaunchVelocity() const { return mLaunchVel; }
+
 private:
   CVector3f mDirection;
   CVector3f mLaunchVel;

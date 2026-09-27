@@ -274,6 +274,11 @@ MetroidPrime/BodyState/CBodyController.cpp:
 MetroidPrime/CSteeringBehaviors.cpp:
 	.text       start:0x800F90C0 end:0x800FA754
 
+MetroidPrime/BodyState/CBSHurled.cpp:
+	.text       start:0x800FAFE8 end:0x800FBF68
+	.data       start:0x803B4468 end:0x803B44C8
+	.sdata2     start:0x8041BA10 end:0x8041BA58
+
 MetroidPrime/BodyState/CBSJump.cpp:
 	.text       start:0x800FBF68 end:0x800FD21C
 	.data       start:0x803B44C8 end:0x803B4508

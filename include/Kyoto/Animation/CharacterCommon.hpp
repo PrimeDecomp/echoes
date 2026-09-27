@@ -74,8 +74,8 @@ enum EHurledState {
   kHS_StrikeWall,
   kHS_StrikeWallFallLoop,
   kHS_OutOfStrikeWall,
-  kHS_Six,
-  kHS_Seven
+  kHS_RecoverFromKnockLoop, // Guessed name
+  kHS_RecoverFromStrikeWall // Guessed name
 };
 
 enum EFallState { kFS_Invalid = -1, kFS_Zero, kFS_One, kFS_Two };
