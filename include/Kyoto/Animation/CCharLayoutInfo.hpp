@@ -51,6 +51,10 @@ public:
 
   const rstl::vector< CSegId >& GetLinearParents() const { return mLinearParents; }
 
+  const rstl::vector< CVector3f >& GetLinearReferenceStanceOffsets() const {
+    return mLinearReferenceStanceOffsets;
+  }
+
   const rstl::vector< CVector3f >& GetLinearParentOffsets() const { return mLinearParentOffsets; }
 
   CVector3f GetFromParentUnrotated(const CSegId& id) const {
