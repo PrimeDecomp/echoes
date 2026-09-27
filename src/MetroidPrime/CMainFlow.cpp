@@ -9,9 +9,9 @@
 #include "MetroidPrime/CPlayMovie.hpp"
 #include "MetroidPrime/CPreFrontEnd.hpp"
 #include "MetroidPrime/Decode.hpp"
+#include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
-#include "MetroidPrime/Player/CSinglePlayerGameMode.hpp"
 
 #include "MetroidPrime/CMain.hpp"
 
@@ -117,7 +117,7 @@ void CMainFlow::SetGameState(EClientFlowStates state, CArchitectureQueue& queue)
       if (gpMain->GetRestartMode() == CMain::kRM_StateSetter) {
         gpMain->SetRestartMode(CMain::kRM_Default);
         gpMain->StreamNewGameState(false);
-        gpGameState->SetGameMode(rs_new CSinglePlayerGameMode());
+        gpGameState->SetGameMode(rs_new CGMSinglePlayer());
         gpGameState->HintOptions().EnsureHintNextTime();
       } else {
         fn_80143E88();
