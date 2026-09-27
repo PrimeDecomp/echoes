@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+#include "Kyoto/Graphics/CCubeMaterial.hpp"
+#include "Kyoto/Graphics/CCubeSurface.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/TToken.hpp"
 
@@ -67,6 +69,8 @@ public:
   void Draw(u64 mask, const CModelFlags& flags) const;
   void DrawNormal(const CModelFlags& flags) const;
   void DrawAlpha(const CModelFlags& flags) const;
+  void SetArraysCurrent() const;
+  void DrawSurface(const CCubeSurface& surface, const CModelFlags& flags) const;
 
   void SetUsingPackedLightmaps(bool v) const;
   static bool IsUsingPackedLightmaps() { return sUsingPackedLightmaps; }
@@ -81,19 +85,31 @@ public:
   const rstl::vector< TCachedToken< CTexture > >& GetTextures() const { return *mTextures; }
   const rstl::vector< TCachedToken< CTexture > >* GetTexturesPtr() const { return mTextures; }
   const CAABox& GetBoundingBox() const { return mBounds; }
+  const CCubeSurface& GetNormalSurfaces() const { return mFirstUnsorted; }
+  const CCubeSurface& GetAlphaSurfaces() const { return mFirstSorted; }
+
+  // Guessed name; the target passes a surface handle by value for material lookup.
+  CCubeMaterial GetMaterial(CCubeSurface surface) const {
+    return GetMaterialByIndex(surface.GetMaterialIndex());
+  }
+
+  CCubeMaterial GetMaterialByIndex(int index) const {
+    const uint offset = index != 0 ? CBasics::SwapBytes(mMaterialOffsets[index - 1]) : 0;
+    return CCubeMaterial(mMaterialData + offset);
+  }
 
 private:
   ModelInstance mInstance;
   rstl::vector< TCachedToken< CTexture > >* mTextures;
   CAABox mBounds;
-  CCubeSurface* mFirstUnsorted;
-  CCubeSurface* mFirstSorted;
+  CCubeSurface mFirstUnsorted;
+  CCubeSurface mFirstSorted;
   mutable bool mLoadTextures : 1;
   bool mVisible : 1;
   uchar mVisorFlags;
   int mIdx;
-  uint x48_;
-  uint x4c_;
+  const uint* mMaterialOffsets;
+  const uchar* mMaterialData;
 
   static bool sUsingPackedLightmaps;
 };

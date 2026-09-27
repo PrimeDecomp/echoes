@@ -29,6 +29,8 @@
 #include "rstl/vector.hpp"
 
 class CActor;
+class CBSLocomotion;
+class CBSTurn;
 
 class CBodyStateInfo {
 public:
@@ -37,6 +39,8 @@ public:
 
   void SetBodyController(CBodyController* controller) { mBodyController = controller; }
 
+  const float& GetMaximumPitch() const { return mMaxPitch; }
+
   pas::EAnimationState GetCurrentStateId() const { return mState; }
 
   pas::EAnimationState GetCurrentAdditiveStateId() const { return mAdditiveState; }
@@ -44,15 +48,22 @@ public:
   void SetState(pas::EAnimationState state);
   const CBodyState* GetCurrentState() const;
   CBodyState* GetCurrentState();
+  bool ApplyHeadTracking() const;
   void SetAdditiveState(pas::EAnimationState state);
   CAdditiveBodyState* GetCurrentAdditiveState();
+  float GetMaxSpeed() const;
+  float GetLocomotionSpeed(pas::ELocomotionAnim anim) const;
 
 private:
+  // Guessed names: register embedded states and select the two owned states.
+  void SetupBodyStates(CActor& actor, EBodyType type);
+  void SetupLocomotionStates(CActor& actor, EBodyType type);
+
   rstl::vector< CBodyState* > mStates;
   pas::EAnimationState mState;
   pas::EAnimationState mAdditiveState;
-  rstl::single_ptr< CBodyState > mLocomotion;
-  rstl::single_ptr< CBodyState > mTurn;
+  rstl::single_ptr< CBSLocomotion > mLocomotion;
+  rstl::single_ptr< CBSTurn > mTurn;
   CBSFall mFall;
   CBSGetup mGetup;
   CBSLieOnGround mLieOnGround;

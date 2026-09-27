@@ -64,13 +64,14 @@ MetroidPrime/CMainFlow.cpp:
 	.sdata      start:0x80417DE0 end:0x80417DF8
 
 MetroidPrime/CCredits.cpp:
-	.text       start:0x80020214 end:0x80023FFC
+	.text       start:0x8001FF7C end:0x80023FFC
 	.ctors      start:0x803A54B8 end:0x803A54BC
 	.rodata     start:0x803A6130 end:0x803A62F0
-	.data       start:0x803B18A0 end:0x803B18BC
+	.data       start:0x803B1850 end:0x803B18D8
 	.bss        start:0x803C6548 end:0x803C6790
 	.sdata      start:0x80417E00 end:0x80417E08
-	.sdata2     start:0x8041A650 end:0x8041A68C
+	.sbss       start:0x80418F10 end:0x80418F18
+	.sdata2     start:0x8041A650 end:0x8041A6C0
 
 MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
@@ -273,10 +274,20 @@ MetroidPrime/BodyState/CBodyStateCmdMgr.cpp:
 	.data       start:0x803B3BC0 end:0x803B3CC0
 	.sdata2     start:0x8041B820 end:0x8041B830
 
+MetroidPrime/BodyState/CBodyStateInfo.cpp:
+	.text       start:0x800EF908 end:0x800F128C
+	.data       start:0x803B3CC0 end:0x803B3D60
+	.sdata2     start:0x8041B830 end:0x8041B840
+
 MetroidPrime/BodyState/CBSLocomotion.cpp:
 	.text       start:0x800F2BC4 end:0x800F5004
 	.ctors      start:0x803A5514 end:0x803A5518
 	.data       start:0x803B3F10 end:0x803B41C8
+
+MetroidPrime/BodyState/CBSTurn.cpp:
+	.text       start:0x800F5430 end:0x800F649C
+	.data       start:0x803B4208 end:0x803B42C8
+	.sdata2     start:0x8041B908 end:0x8041B920
 
 MetroidPrime/BodyState/CBodyController.cpp:
 	.text       start:0x800F649C end:0x800F794C
@@ -326,6 +337,11 @@ MetroidPrime/CGroundMovement.cpp:
 	.sdata      start:0x80418328 end:0x80418338
 	.sbss       start:0x80419190 end:0x804191A8
 	.sdata2     start:0x8041BE48 end:0x8041BED8
+
+MetroidPrime/BodyState/CBSWallHang.cpp:
+	.text       start:0x8012CD10 end:0x8012DDFC
+	.data       start:0x803B4EA8 end:0x803B4F10
+	.sdata2     start:0x8041BEE0 end:0x8041BF00
 
 MetroidPrime/Weapons/CBeamProjectile.cpp:
 	.text       start:0x80131404 end:0x80131DF8
@@ -1102,6 +1118,20 @@ Kyoto/Alloc/CGameAllocator.cpp:
 	.data       start:0x803BB088 end:0x803BB0C8
 	.sbss       start:0x80419BA8 end:0x80419BB8
 	.sdata2     start:0x8041EA28 end:0x8041EA30
+
+Kyoto/Animation/DolphinCSkinnedModel.cpp:
+	.text       start:0x8030EEE4 end:0x8030FE20
+	.rodata     start:0x803AFE58 end:0x803AFE60
+	.sbss       start:0x80419BB8 end:0x80419BD0
+
+Kyoto/Animation/DolphinCSkinRules.cpp:
+	.text       start:0x8030FE20 end:0x80310838
+	.rodata     start:0x803AFE60 end:0x803AFE68
+	.data       start:0x803BB0C8 end:0x803BB0D8
+	.sbss       start:0x80419BD0 end:0x80419BD8
+
+Kyoto/Animation/DolphinCVirtualBone.cpp:
+	.text       start:0x80310838 end:0x80310E8C
 
 Kyoto/Graphics/DolphinCModel.cpp:
 	.text       start:0x80310F38 end:0x80312320

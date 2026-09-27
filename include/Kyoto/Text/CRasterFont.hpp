@@ -101,7 +101,6 @@ enum EFontMode {
 class CRasterFont {
 public:
   CRasterFont(CInputStream& in, IObjectStore* store);
-  ~CRasterFont();
 
   EFontMode GetMode() const;
   int GetMonoWidth() const { return mMonoWidth; }

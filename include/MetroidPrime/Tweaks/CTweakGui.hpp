@@ -28,6 +28,26 @@ public:
   float GetCreditsMovieFadeTime() const;
   int GetCreditsVolume() const;
 
+  // Guessed names, recovered from the completion screen and movie consumers.
+  rstl::string GetCompletionScreenTable() const;
+  rstl::string GetCompletionScreenTitleFont() const;
+  rstl::string GetCompletionScreenBodyFont() const;
+  CColor GetCompletionScreenTitleFontColor() const;
+  CColor GetCompletionScreenTitleOutlineColor() const;
+  CColor GetCompletionScreenStatsFontColor() const;
+  CColor GetCompletionScreenStatsOutlineColor() const;
+  CColor GetCompletionScreenUnlockFontColor() const;
+  CColor GetCompletionScreenUnlockOutlineColor() const;
+  float GetCompletionScreenTextDelay() const;
+  float GetCompletionScreenPulseTime() const;
+  int GetCompletionScreenVolume() const;
+  int GetEndingPart2Volume() const;
+  int GetEndingPart2BVolume() const;
+  int GetEndingPart3Volume() const;
+  int GetResultsMovieVolume() const;
+  int GetSpecialEndingVolume() const;
+  int GetDeathMovieVolume() const;
+
 private:
   const SLdrTweakGui* mData;
 };

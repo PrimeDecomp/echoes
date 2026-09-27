@@ -20,7 +20,7 @@ public:
   void FinishedLoading();
   void DoSelectionChange(CGuiTableGroup* caller, int oldSelection);
   void DoAdvance(CGuiTableGroup* caller);
-  EQuitAction Update();
+  EQuitAction Update(float dt);
   void Draw() const;
   void ProcessUserInput(const CFinalInput& input);
 

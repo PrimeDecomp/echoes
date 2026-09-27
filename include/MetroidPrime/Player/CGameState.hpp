@@ -16,6 +16,7 @@
 class CGameMode;
 class CWorldState;
 class CWorldTransManager;
+class CPlayerState;
 
 class CGameState {
 public:
@@ -66,10 +67,14 @@ public:
     cardSerialB = serial;
   }
   float GetHardModeDamageMultiplier() const;
-  bool GetHardModeEnabled() const;
+  bool GetHardModeEnabled() const { return mHardMode; }
+  double GetTotalPlayTime() const { return mTotalPlayTime; }
+  rstl::rc_ptr< CPlayerState > GetPlayerState() const;
 
 private:
-  char pad1[0x54];
+  char pad1[0x48];
+  double mTotalPlayTime;
+  float mEscapeTime;
   CPersistentOptions mSystemOptions;
   CGameOptions gameOptions;
   CHintOptions hintOptions;
@@ -82,7 +87,8 @@ private:
   int mGameModeType;
   char x1a4_[0x60];
   CControlMapper mControlMapper;
-  char x2ec_[4];
+  bool mHardMode : 1;
+  uchar x2ed_[3];
 };
 
 CHECK_SIZEOF(CGameState, 0x2f0)

@@ -69,6 +69,8 @@ public:
 
   int GetCurrentAnimId() const { return mCurAnim; }
 
+  float GetTimeScale() const { return mTimeScale; } // Guessed name
+
   bool IsAnimationOver() const { return mAnimationOver; }
 
   bool GetIsActive() const { return mActive; }
