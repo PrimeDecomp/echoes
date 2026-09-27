@@ -348,6 +348,22 @@ MetroidPrime/Player/CStaticInterference.cpp:
 	.text       start:0x8013C9B0 end:0x8013CE68
 	.sdata2     start:0x8041C148 end:0x8041C158
 
+MetroidPrime/PathFinding/CPathFindSearch.cpp:
+	.text       start:0x8013CE68 end:0x8013E93C
+	.sdata2     start:0x8041C158 end:0x8041C178
+
+MetroidPrime/PathFinding/CPathFindRegion.cpp:
+	.text       start:0x8013E93C end:0x8013FDB8
+	.sdata2     start:0x8041C178 end:0x8041C188
+
+MetroidPrime/PathFinding/CPathFindArea.cpp:
+	.text       start:0x8013FDB8 end:0x801419C4
+	.sdata2     start:0x8041C188 end:0x8041C198
+
+MetroidPrime/PathFinding/CPathFindSpline.cpp:
+	.text       start:0x801419C4 end:0x8014206C
+	.sdata2     start:0x8041C198 end:0x8041C1A4
+
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
 
