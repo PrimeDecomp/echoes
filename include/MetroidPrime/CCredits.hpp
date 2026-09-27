@@ -3,17 +3,64 @@
 
 #include "types.h"
 
+#include "Kyoto/Math/CVector2i.hpp"
+#include "Kyoto/TToken.hpp"
 #include "MetroidPrime/CIOWin.hpp"
+#include "rstl/list.hpp"
+#include "rstl/pair.hpp"
+#include "rstl/rc_ptr.hpp"
+#include "rstl/single_ptr.hpp"
+
+class CFilePreload;
+class CFinalInput;
+class CGuiTextSupport;
+class CMoviePlayer;
+class CStringTable;
+class CTransform4f;
 
 class CCredits : public CIOWin {
 public:
   CCredits();
 
+  // CIOWin
   ~CCredits() override;
-  EMessageReturn OnMessage(const CArchitectureMessage&, CArchitectureQueue&) override;
+  EMessageReturn OnMessage(const CArchitectureMessage& msg, CArchitectureQueue& queue) override;
+  bool GetIsContinueDraw() const override;
+  void Draw() const override;
+
+  EMessageReturn Update(float dt, CArchitectureQueue& queue);
+  EMessageReturn ProcessUserInput(const CFinalInput& input);
+  static void DrawText(CGuiTextSupport& text, const CTransform4f& transform);
 
 private:
-  char x14_[0x54];
+  enum EState {
+    kS_LoadText,
+    kS_LoadMovie,
+    kS_LoadAudio,
+    kS_Playing,
+  };
+
+  typedef rstl::list< rstl::pair< rstl::ncrc_ptr< CGuiTextSupport >, CVector2i > > TextList;
+
+  EState mState;
+  TToken< CStringTable > mCreditsTable;
+  rstl::single_ptr< CMoviePlayer > mMoviePlayer;
+  rstl::string mAudioFile;
+  rstl::single_ptr< CFilePreload > mAudioPreload;
+  TextList mText;
+  float mScrollPosition;
+  float mTotalScrollDistance;
+  float mScrollSpeed;
+  float mTextFadeRemaining;
+  float mVideoFadeTime;
+  bool mFinished : 1;
+  bool mVideoFaded : 1;
+  bool mTextFaded : 1;
+  bool mFadingIn : 1;
+  bool mFadingOut : 1;
+
+  void DrawVideo() const;
+  void DrawText() const;
 };
 CHECK_SIZEOF(CCredits, 0x68)
 

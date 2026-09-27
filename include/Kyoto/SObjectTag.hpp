@@ -27,7 +27,7 @@ struct SObjectTag {
   }
 
   FourCC GetType() const { return type; }
-  CAssetId GetId() const { return id; }
+  const CAssetId& GetId() const { return id; }
 
   static const char* Type2Text(FourCC type);
 };

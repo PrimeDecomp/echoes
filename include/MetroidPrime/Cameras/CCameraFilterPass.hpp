@@ -38,6 +38,8 @@ public:
   void DisableFilter(float time);
   void Update(float dt);
   void Draw() const;
+  static void DrawFilter(EFilterType type, EFilterShape shape, const CColor& color,
+                         const CTexture* texture, float lod);
 
 private:
   EFilterType mCurrentType;

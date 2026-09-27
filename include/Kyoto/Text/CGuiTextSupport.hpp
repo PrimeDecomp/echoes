@@ -56,6 +56,18 @@ public:
   const CTextRenderBuffer* GetCurrentPageRenderBuffer() const;
   const rstl::pair< CVector2i, CVector2i >& GetBounds();
 
+  int GetTextBoundingWidth() const { return mExtentX; }
+
+  void SetExtentX(int extent) {
+    mExtentX = extent;
+    ClearRenderBuffer();
+  }
+
+  void SetExtentY(int extent) {
+    mExtentY = extent;
+    ClearRenderBuffer();
+  }
+
 private:
   bool _GetIsTextSupportFinishedLoading() const;
 
