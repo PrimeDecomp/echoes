@@ -134,6 +134,8 @@ public:
   bool RenderFullEchoModel() const { return mRenderFullEchoModel; }
   float GetFadeInTime() const { return fadeInTime; }
   float GetFadeOutTime() const { return fadeOutTime; }
+  uchar GetMaxVolume() const { return maxVolume; }
+  uchar GetMaxEchoVolume() const { return maxEchoVolume; }
 
   static CActorParameters None();
 

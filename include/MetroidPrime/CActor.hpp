@@ -10,6 +10,7 @@
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CModelData.hpp"
 
+#include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
@@ -52,6 +53,16 @@ public:
     kSS_Processing,
     kSS_Done,
   };
+
+  // Echoes sound records include a locator and a volume-selection flag.
+  struct SSound {
+    SSound(const CSfxHandle& handle, const CSegId& locator, bool useEchoVolume);
+
+    CSfxHandle mHandle;
+    CSegId mLocator;
+    bool mUseEchoVolume : 1;
+  };
+  typedef rstl::pair< TSfxId, SSound > TLoopingSound;
 
   CActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint inGrave,
          const CTransform4f& xf, const CModelData& mData, const CMaterialList& list,
@@ -112,9 +123,9 @@ public:
   void CreateShadow(bool);
   void fn_8004ab14(); // Allocate the simple shadow if model data is available.
 
-  const CTransform4f& GetTransform() const { return m_transform; }
+  const CTransform4f& GetTransform() const { return mTransform; }
   void SetTransform(const CTransform4f& xf) {
-    m_transform = xf;
+    mTransform = xf;
     SetTransformDirty(true);
     SetTransformDirtySpare(true);
     SetPreRenderHasMoved(true);
@@ -122,7 +133,7 @@ public:
   void SetTransformAlt(const CTransform4f& xf);
   void SetRotation(const CQuaternion& rot) { SetTransform(rot.BuildTransform4f(GetTranslation())); }
   CQuaternion GetRotation() const { return CQuaternion::FromMatrix(GetTransform()); }
-  const CVector3f& GetTranslation() const { return m_position; }
+  const CVector3f& GetTranslation() const { return mPosition; }
   void SetTranslation(const CVector3f& vec);
   CTransform4f GetLocatorTransform(const rstl::string& segName) const;
   CTransform4f GetScaledLocatorTransform(const rstl::string& segName) const;
@@ -139,8 +150,8 @@ public:
   bool HasModelData() const {
     return GetModelData() && (GetModelData()->HasAnimation() || GetModelData()->HasNormalModel());
   }
-  CModelData* ModelData() { return m_modelData.get(); }
-  const CModelData* GetModelData() const { return m_modelData.get(); }
+  CModelData* ModelData() { return mModelData.get(); }
+  const CModelData* GetModelData() const { return mModelData.get(); }
 
   bool HasAnimation() const { return GetModelData() && GetModelData()->HasAnimation(); }
   CAnimData* AnimationData() { return ModelData()->AnimationData(); }
@@ -157,38 +168,38 @@ public:
   const CModelFlags& GetModelFlags() const { return mDrawFlags; }
   void SetModelFlags(const CModelFlags& flags) { mDrawFlags = flags; }
 
-  const CMaterialList& GetMaterialList() const { return m_material; }
-  CMaterialList& MaterialList() { return m_material; }
+  const CMaterialList& GetMaterialList() const { return mMaterial; }
+  CMaterialList& MaterialList() { return mMaterial; }
 
   const CMaterialFilter& GetMaterialFilter() const;
   void SetMaterialFilter(const CMaterialFilter& filter);
 
-  bool GetTransformDirty() const { return m_notInSortedLists; }
-  bool GetTransformDirtySpare() const { return m_transformDirty; }
-  bool GetPreRenderHasMoved() const { return m_actorLightsDirty; }
-  bool GetPreRenderClipped() const { return m_outOfFrustum; }
-  bool GetCalculateLighting() const { return m_calculateLighting && HasActorLights(); }
-  bool GetDrawShadow() const { return m_shadowEnabled; }
-  bool GetShadowDirty() const { return m_shadowDirty; }
-  bool GetMuted() const { return m_muted; }
+  bool GetTransformDirty() const { return mNotInSortedLists; }
+  bool GetTransformDirtySpare() const { return mTransformDirty; }
+  bool GetPreRenderHasMoved() const { return mActorLightsDirty; }
+  bool GetPreRenderClipped() const { return mOutOfFrustum; }
+  bool GetCalculateLighting() const { return mCalculateLighting && HasActorLights(); }
+  bool GetDrawShadow() const { return mShadowEnabled; }
+  bool GetShadowDirty() const { return mShadowDirty; }
+  bool GetMuted() const { return mMuted; }
   // EThermalFlags GetThermalFlags() const {
-  //   return static_cast< EThermalFlags >(m_thermalVisorFlags);
+  //   return static_cast< EThermalFlags >(mThermalVisorFlags);
   // }
-  bool GetRenderParticleDatabaseInside() const { return m_renderParticleDBInside; }
-  bool GetTargetable() const { return m_targetable; }
+  bool GetRenderParticleDatabaseInside() const { return mRenderParticleDBInside; }
+  bool GetTargetable() const { return mTargetable; }
 
-  void SetTransformDirty(bool b) { m_notInSortedLists = b; }
-  void SetTransformDirtySpare(bool b) { m_transformDirty = b; }
-  void SetPreRenderHasMoved(bool b) { m_actorLightsDirty = b; }
-  void SetPreRenderClipped(bool b) { m_outOfFrustum = b; }
+  void SetTransformDirty(bool b) { mNotInSortedLists = b; }
+  void SetTransformDirtySpare(bool b) { mTransformDirty = b; }
+  void SetPreRenderHasMoved(bool b) { mActorLightsDirty = b; }
+  void SetPreRenderClipped(bool b) { mOutOfFrustum = b; }
   void SetCalculateLighting(bool b);
-  void SetDrawShadow(bool b) { m_shadowEnabled = b; }
-  void SetShadowDirty(bool b) { m_shadowDirty = b; }
+  void SetDrawShadow(bool b) { mShadowEnabled = b; }
+  void SetShadowDirty(bool b) { mShadowDirty = b; }
   void SetMuted(bool b);
-  // void SetThermalFlags(EThermalFlags flags) { m_thermalVisorFlags = flags; }
-  void SetRenderParticleDatabaseInside(bool b) { m_renderParticleDBInside = b; }
-  void SetTargetable(bool b) { m_targetable = b; }
-  void SetDrawEnabled(bool enabled) { m_drawEnabled = enabled; }
+  // void SetThermalFlags(EThermalFlags flags) { mThermalVisorFlags = flags; }
+  void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
+  void SetTargetable(bool b) { mTargetable = b; }
+  void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
                       EMaterialTypes, CStateManager&);
@@ -203,11 +214,11 @@ public:
   void AddMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, CStateManager&);
   void AddMaterial(EMaterialTypes, EMaterialTypes, CStateManager&);
   void AddMaterial(EMaterialTypes, CStateManager&);
-  void AddMaterial(const CMaterialList& l) { m_material.Add(l); }
+  void AddMaterial(const CMaterialList& l) { mMaterial.Add(l); }
   void SetMaterialList(const CMaterialList& l, CStateManager&);
 
-  const CAABox& GetRenderBoundsCached() const { return m_renderBounds; }
-  void SetRenderBounds(const CAABox& bounds) { m_renderBounds = bounds; }
+  const CAABox& GetRenderBoundsCached() const { return mRenderBounds; }
+  void SetRenderBounds(const CAABox& bounds) { mRenderBounds = bounds; }
 
   bool GetUseInSortedLists() const;
   void SetUseInSortedLists(bool use);
@@ -231,56 +242,75 @@ public:
   void SetDirtyFlags();
 
 private:
-  CTransform4f m_transform;                   // x24
-  CVector3f m_position;                       // x54
-  rstl::single_ptr< CModelData > m_modelData; // x60
-  int postModelDataFiller;
-  CMaterialList m_material; // x68
+  // The component's concrete type and remaining virtual interface are unresolved.
+  class CUnknownComponent {
+  public:
+    virtual ~CUnknownComponent();
+  };
+
+  CTransform4f mTransform;                   // x24
+  CVector3f mPosition;                       // x54
+  rstl::single_ptr< CModelData > mModelData; // x60
+  int mPostModelDataFiller;
+  CMaterialList mMaterial; // x68
   CMaterialFilter mMaterialFilter;
-  TSfxId mSfxId;
-  CSfxHandle mLoopingSfxHandle;
+  rstl::reserved_vector< TLoopingSound, 4 > mLoopingSounds; // x88
   rstl::single_ptr< CActorLights > mActorLights;
   rstl::single_ptr< CSimpleShadow > mSimpleShadow;
   rstl::single_ptr< TCachedToken< CScannableObjectInfo > > mScanObjectInfo;
-  CAABox otherBounds;
-  CAABox m_renderBounds;
+  rstl::single_ptr< CUnknownComponent > xc8_;
+  CAABox mOtherBounds;
+  CAABox mRenderBounds;
   CModelFlags mDrawFlags;
   float mTime;
   uint mPitchBend;
-  TUniqueId mFluidId;
+  rstl::reserved_vector< TUniqueId, 4 > mFluidIds;
+  rstl::reserved_vector< TUniqueId, 4 > mPreviousFluidIds;
+  bool mFluidIdsChanged : 1;
   TUniqueId mNextDrawNode;
   int mDrawnToken;
   int mAddedToken;
-  float mDamageMag;
+  int x134_;
   uchar mMaxVol;
-  rstl::reserved_vector< CSfxHandle, 2 > mNonLoopingSfxHandles;
-  char actor_padding[80];
-  uint m_nextNonLoopingSfxHandle : 3; // xe4_23
-  uint m_notInSortedLists : 1;        // xe4_26
-  uint m_transformDirty : 1;          // xe4_27
-  uint m_actorLightsDirty : 1;        // xe4_28
-  uint m_renderBoundsDirty : 1;       // xe4_29
-  uint m_outOfFrustum : 1;            // xe4_30
-  uint m_calculateLighting : 1;       // xe4_31
-  uint m_shadowEnabled : 1;           // xe5_24
-  uint m_shadowDirty : 1;             // xe5_25
-  uint m_muted : 1;                   // xe5_26 // correct
-  uint m_useInSortedLists : 1;        // xe5_27 // correct
-  uint m_globalTimeProvider : 1;      // xe5_28
-  uint m_callTouch : 1;               // xe5_29 // correct
-  uint m_renderUnsorted : 1;          // xe5_30 // wrong bit, check CanRenderUnsorted
-  uint unk : 1;
-  uint m_pointGeneratorParticles : 1;
-  uint m_fluidCounter : 3;           // xe6_24
-  uint m_renderParticleDBInside : 1; // xe6_29 // wrong bit, check AddToRenderer
-  uint m_enablePitchBend : 1;        // xe6_30
-  uint m_targetableVisorFlags : 3;   // xe6_31
-  uint m_drawEnabled : 1;            // xe7_29
-  uint m_enableRender : 1;           // xe7_27
-  uint m_worldLightingDirty : 1;     // xe7_28
-  uint m_doTargetDistanceTest : 1;   // xe7_30
-  uint m_targetable : 1;             // xe7_31
+  uchar mNormalVolume;
+  uchar mEchoVolume;
+  rstl::reserved_vector< SSound, 2 > mNonLoopingSounds; // x13c
+  uint mNextNonLoopingSfxHandle : 3;                    // x150
+  uint mNotInSortedLists : 1;
+  uint mTransformDirty : 1;
+  uint mActorLightsDirty : 1;
+  uint mRenderBoundsDirty : 1;
+  uint mOutOfFrustum : 1;
+  uint mCalculateLighting : 1; // x151
+  uint mShadowEnabled : 1;
+  uint mShadowDirty : 1;
+  uint mMuted : 1;
+  uint mUseInSortedLists : 1;
+  uint x151_5_ : 1;
+  uint mCallTouch : 1;
+  uint mGlobalTimeProvider : 1;
+  uint mRenderUnsorted : 1; // x152
+  uint mPointGeneratorParticles : 1;
+  uint mRenderParticleDBInside : 1;
+  uint mEnablePitchBend : 1;
+  uint mTargetableVisorFlags : 4;
+  uint mEnableRender : 1; // x153
+  uint mWorldLightingDirty : 1;
+  uint mDrawEnabled : 1;
+  uint mDoTargetDistanceTest : 1;
+  uint x153_4_ : 1;
+  uint x153_5_ : 1;
+  uint mTargetable : 1;
+  uint x153_7_ : 1;
+  uint x154_0_ : 1;
+  uint x154_1_ : 1;
+  uint x154_2_ : 1;
+  uint x154_3_ : 1;
+  uint mLoopingSoundCount : 3;
+  uint x154_7_ : 1;
 };
 CHECK_SIZEOF(CActor, 0x158)
+NESTED_CHECK_SIZEOF(CActor, SSound, 0x8)
+NESTED_CHECK_SIZEOF(CActor, TLoopingSound, 0xc)
 
 #endif // _CACTOR
