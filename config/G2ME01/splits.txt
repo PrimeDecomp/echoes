@@ -483,6 +483,9 @@ WorldFormat/CCollisionSurface.cpp:
 WorldFormat/CAreaOctTree.cpp:
 	.text       start:0x80247704 end:0x80247CC0
 
+WorldFormat/CMetroidAreaCollider.cpp:
+	.text       start:0x80247CC0 end:0x8024DAFC
+
 WorldFormat/COBBTree.cpp:
 	.text       start:0x8024DE68 end:0x8024F784
 	.bss        start:0x80410E14 end:0x80410E24 align:4 common
