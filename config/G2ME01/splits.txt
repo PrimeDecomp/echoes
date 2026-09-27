@@ -635,6 +635,13 @@ MetaRender/CCubeRenderer.cpp:
 Kyoto/Text/CGuiTextSupport.cpp:
 	.text       start:0x8027B184 end:0x8027D7B0
 
+Collision/CollisionUtil.cpp:
+	.text       start:0x8028385C end:0x80288300
+	.ctors      start:0x803A55C8 end:0x803A55CC
+	.rodata     start:0x803AEA58 end:0x803AEA98
+	.bss        start:0x803DF500 end:0x803DF548
+	.sdata2     start:0x8041E190 end:0x8041E220
+
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
 	.ctors      start:0x803A55D4 end:0x803A55D8
