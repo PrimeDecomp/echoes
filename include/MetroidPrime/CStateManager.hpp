@@ -3,13 +3,13 @@
 
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
-#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/CObjectList.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "TGameTypes.hpp"
 
+#include "Kyoto/CRandom16.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
-#include "Kyoto/CRandom16.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
@@ -114,7 +114,7 @@ public:
   void AddObject(CEntity*);
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
-  
+
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void SetupParticleHook(const CActor& actor) const;
   const CActorModelParticles* GetActorModelParticles() const { return m_actorModelParticles; }
@@ -178,12 +178,12 @@ public:
   const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
   CCameraManager* CameraManager(int playerIndex) { return m_cameraManagers[playerIndex]; }
   const CPlayerState* GetPlayerState() const { return m_playerState; }
+  const CPlayer* GetCurrentRenderPlayer() const { return mCurrentRenderPlayer; } // Guessed name
   const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return m_rumbleManagers[playerIndex]; }
 
-  int fn_800366e4(CActor *);
-  int fn_801EDD8C(TUniqueId) const;
+  int fn_800366e4(CActor*);
 
 public:
   ushort m_nextFreeIndex;
@@ -199,7 +199,8 @@ public:
   CCameraManager* m_cameraManagers[4];
   CRumbleManager* m_rumbleManagers[4];
   CFinalInput m_finalInputs[4];
-  char pad_finalInputs[0x10]; // Echoes CFinalInput is 0x2C; contents of this 0xC0 region unverified
+  char x15ec_[0xc];
+  CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
   CPlayerState* m_playerState;
   CCameraManager* m_cameraManager;
   CWorld* m_world;                                                 // 0x1604

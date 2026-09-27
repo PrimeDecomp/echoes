@@ -80,7 +80,7 @@ public:
   ~CModelData();
 
   CAdvancementDeltas AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid, bool advTree,
-                                      float minParticleWeight = 0.f);
+                                      float cameraDistance = 0.f);
   CAdvancementDeltas AdvanceAnimation(float dt, CRandom16& random, bool advTree);
   void AdvanceParticles(const CTransform4f& xf, float dt, CStateManager& mgr);
   void RenderParticles(const CFrustumPlanes& planes) const;

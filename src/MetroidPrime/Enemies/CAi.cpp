@@ -24,7 +24,7 @@ CAi::CAi(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint 
   }
   mStateMachine->Lock();
 
-  fn_8004ab14();
+  AllocateShadow();
   if (HasShadow()) {
     SetDrawShadow(true);
     Shadow()->SetAlwaysCalculateRadius(false);

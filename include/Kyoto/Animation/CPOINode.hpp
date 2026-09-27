@@ -15,6 +15,7 @@ enum EPOIType {
   kPT_UserEvent = 6,
   kPT_RandRate = 7,
   kPT_Sound = 8,
+  kPT_StopLoopedSound = 9, // Guessed name
 };
 
 class CInputStream;

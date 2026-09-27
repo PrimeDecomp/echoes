@@ -152,7 +152,7 @@ void CGameProjectile::UpdateProjectileMovement(float dt, CStateManager& mgr) {
   const float useDt = mWaterUpdate ? 37.5f * (dt * dt) : dt;
   mPreviousPos = GetTranslation();
   mProjectile.Update(useDt);
-  SetTransformAlt(mProjectile.GetTransform());
+  SetTransform(mProjectile.GetTransform());
   SetTranslation(mProjectile.GetTranslation());
   UpdateHoming(dt, mgr);
   // TODO: cross touched docks and remove projectiles left in occluded areas.

@@ -7,13 +7,13 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
 class CGenDescription;
-class CEchoParameters;
+struct SEchoParameters;
 
 class CScriptPickup : public CActor {
 public:
   CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                 const CTransform4f& xf, const CModelData& mData, const CActorParameters& aParams,
-                const CEchoParameters& echo, const CAABox& aabb, CPlayerState::EItemType itemType,
+                const SEchoParameters& echo, const CAABox& aabb, CPlayerState::EItemType itemType,
                 int amount, int capacityIncrease, int itemPercentageIncrease, CAssetId pickupEffect,
                 bool absoluteValue, bool unknown, bool autoSpin, bool blinkOut, float lifetime,
                 float respawnTime, float fadeTime, float activateDelay, float, float, float, float, const CVector3f& orbitOffset);
@@ -67,7 +67,6 @@ private:
   bool mUnk2 : 1;
   bool mUnk3 : 1;
   bool mBlinkOut : 1;
-
 };
 
 #endif // _CSCRIPTPICKUP

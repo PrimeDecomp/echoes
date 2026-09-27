@@ -6,20 +6,20 @@
 // #include "MetroidPrime/CExplosion.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
-#include "MetroidPrime/CEchoParameters.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/SEchoParameters.hpp"
 
 // #include "MetroidPrime/Cameras/CCameraManager.hpp"
 // #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 // #include "MetroidPrime/Player/CPlayerGun.hpp"
-#include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/HUD/CSamusHud.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 // #include "MetroidPrime/HUD/CSamusHud.hpp"
@@ -38,7 +38,7 @@ static float skDrawInDistance = 30.f;
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, const CModelData& modelData,
-                             const CActorParameters& aParams, const CEchoParameters& echo,
+                             const CActorParameters& aParams, const SEchoParameters& echo,
                              const CAABox& aabb, CPlayerState::EItemType itemType, int amount,
                              int capacityIncrease, int itemPercentageIncrease,
                              CAssetId pickupEffect, bool absoluteValue, bool unknown, bool autoSpin,
@@ -204,7 +204,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
     CPlayerState* playerState = mgr.PlayerState(playerIndex);
     if (!playerState->IsPlayerAlive())
       return;
-    
+
     CPlayerState::EItemType itemType = mItemType;
 
     if (mPickupParticleDesc) {
@@ -306,7 +306,7 @@ CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& co
                   const CVector3f& collisionOffset);
 CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
 CActorParameters LoadActorParameters(const SLdrActorParameters&);
-CEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
+SEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
 
 rstl::optional_object< CModelData > LoadModelData(const CVector3f&, CAssetId asset,
                                                   const SLdrAnimationParameters&, bool);

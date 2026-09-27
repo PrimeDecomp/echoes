@@ -12,6 +12,7 @@
 
 class CToken;
 class CSimplePool;
+class CSfxPitchBend;
 struct SObjectTag;
 
 class CSfxManager {
@@ -212,6 +213,7 @@ public:
   static void SfxPan(CSfxHandle handle, uchar pan);
   static void SfxSpan(CSfxHandle handle, uchar span);
   static void PitchBend(CSfxHandle handle, int pitch);
+  static void AddPitchBend(const CSfxPitchBend& pitchBend); // Guessed name
   static void SetDuration(CSfxHandle handle, float duration);
   static bool IsPlaying(CSfxHandle handle);
   static bool IsQueued(CSfxHandle handle);
@@ -253,8 +255,8 @@ public:
   static bool ShouldApplyLowPass(CBaseSfxWrapper* sound);     // Guessed name
   static int GetLowPassFrequency(CBaseSfxWrapper* sound);     // Guessed name
 
-  // TODO: identify the shared pitch-ramp and auxiliary-effect types before declaring
-  // their registration/update methods and the eight effect-parameter overloads.
+  // TODO: identify the auxiliary-effect types before declaring their registration/update
+  // methods and the eight effect-parameter overloads.
 
 private:
   static CSfxChannel mChannels[4];

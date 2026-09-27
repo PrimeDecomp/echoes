@@ -1003,7 +1003,7 @@ void CPlayer::fn_8000ba60(float dt, CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::UnkVtable20(CStateManager& mgr) {
+void CPlayer::ClearFluidList(CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 

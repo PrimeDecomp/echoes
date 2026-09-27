@@ -21,7 +21,7 @@ public:
   void SetActive(bool active) override;
 
   // CActor
-  void UnkVtable20(CStateManager& mgr) override;
+  void ClearFluidList(CStateManager& mgr) override;
   rstl::optional_object< CAABox > GetTouchBounds() const override;
   CVector3f GetScanObjectIndicatorPosition(const CStateManager& mgr) const override;
 

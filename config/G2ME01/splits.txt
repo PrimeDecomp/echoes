@@ -129,8 +129,10 @@ MetroidPrime/CIOWin.cpp:
 	.data       start:0x803B1BA0 end:0x803B1BC0
 
 MetroidPrime/CActor.cpp:
-	.text       start:0x8004AC98 end:0x8004E84C
+	.text       start:0x80049ED8 end:0x8004E84C
+	.rodata     start:0x803A6820 end:0x803A6828
 	.data       start:0x803B1BC0 end:0x803B1C40
+	.sdata2     start:0x8041A8B8 end:0x8041A8F0
 
 MetroidPrime/CWorld.cpp:
 	.text       start:0x8004E84C end:0x80052880
@@ -780,7 +782,7 @@ Kyoto/Animation/CInt32POINode.cpp:
 	.text       start:0x802B1870 end:0x802B1980
 
 Kyoto/Animation/CParticlePOINode.cpp:
-	.text       start:0x802B19BC end:0x802B1AD0
+	.text       start:0x802B1980 end:0x802B1AD0
 
 Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1AD0 end:0x802B1D10

@@ -158,7 +158,7 @@ public:
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
   // CActor
-  void UnkVtable20(CStateManager& mgr) override;
+  void ClearFluidList(CStateManager& mgr) override;
   void PreRender(CStateManager& mgr) override;
   void PreRenderAllViewports(CStateManager& mgr) override;
   void AddToRenderer(const CStateManager& mgr) const override;
@@ -198,6 +198,8 @@ public:
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   CMorphBall* GetMorphBall() { return mMorphBall; }
   CPlayerState* GetPlayerState() { return mPlayerState; }
+  const CPlayerState* GetPlayerState() const { return mPlayerState; }
+  const CPlayerTargeting* GetTargeting() const { return mTargeting; }
 
   EPlayerMorphBallState GetMorphballTransitionState() const { return mMorphBallState; }
   EPlayerMorphBallState GetSpawnedMorphballState() const { return mSpawnedMorphBallState; }
