@@ -528,15 +528,15 @@ bool IGameArea::Dock::GetShouldLoadOther(int other) const {
   return false;
 }
 
-void IGameArea::Dock::fn_80056EE0(int other, bool value) {
+void IGameArea::Dock::SetLoadOtherBlocked(int other, bool blocked) {
   if (other < mDockReferences.size()) {
-    mDockReferences[other].x6_1_ = value;
+    mDockReferences[other].mLoadOtherBlocked = blocked;
   }
 }
 
-bool IGameArea::Dock::fn_80056EA0(int other) const {
+bool IGameArea::Dock::GetLoadOtherBlocked(int other) const {
   if (other < mDockReferences.size()) {
-    return mDockReferences[other].x6_1_;
+    return mDockReferences[other].mLoadOtherBlocked;
   }
   return false;
 }

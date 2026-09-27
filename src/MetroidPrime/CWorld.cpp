@@ -242,7 +242,7 @@ bool CWorld::ScheduleAreaToLoad(CGameArea* area, CStateManager& mgr) {
   }
 }
 
-bool CWorld::fn_80050BC4(CStateManager& mgr, TAreaId& aid) {
+bool CWorld::UnloadAllAreasExcept(CStateManager& mgr, TAreaId& aid) {
   CFrameDelayedKiller::StallAndFlushAllAllocations();
   bool failed = false;
   for (int i = 0; i < mAreas.size(); ++i) {
@@ -302,11 +302,11 @@ void CWorld::TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelTyp
       IGameArea::Dock& dock = const_cast< IGameArea::Dock& >(area->GetDock(i));
       const int dockRefCount = dock.GetDockRefs().size();
       for (int j = 0; j < dockRefCount; ++j) {
-        if (!dock.fn_80056EA0(j))
+        if (!dock.GetLoadOtherBlocked(j))
           continue;
         CGameArea* cArea = Area(dock.GetConnectedAreaId(j));
         if (cArea->GetPhase() == CGameArea::kP_Allocate && cArea->GetCurChain() == kC_Deallocated) {
-          dock.fn_80056EE0(j, false);
+          dock.SetLoadOtherBlocked(j, false);
         }
         if (loadedCount < maxLoaded) {
           loadedIds[loadedCount++] = cArea->GetId();
@@ -318,7 +318,7 @@ void CWorld::TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelTyp
       const IGameArea::Dock& dock = area->GetDock(i);
       const int dockRefCount = dock.GetDockRefs().size();
       for (int j = 0; j < dockRefCount; ++j) {
-        if (!dock.GetShouldLoadOther(j) || dock.fn_80056EA0(j))
+        if (!dock.GetShouldLoadOther(j) || dock.GetLoadOtherBlocked(j))
           continue;
         CGameArea* cArea = Area(dock.GetConnectedAreaId(j));
         bool alreadyLoaded = false;

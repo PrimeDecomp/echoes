@@ -16,10 +16,10 @@ public:
       TAreaId mArea;
       short mDock;
       short mLoadOther : 1;
-      short x6_1_ : 1;
+      short mLoadOtherBlocked : 1; // Guessed name
 
       SDockReference(TAreaId area, short dock)
-      : mArea(area), mDock(dock), mLoadOther(false), x6_1_(false) {}
+      : mArea(area), mDock(dock), mLoadOther(false), mLoadOtherBlocked(false) {}
     };
 
     Dock(CInputStream& in, const CTransform4f& xf);
@@ -30,9 +30,8 @@ public:
     int GetOtherDockNumber(int other) const;
     void SetShouldLoadOther(int other, bool should);
     bool GetShouldLoadOther(int other) const;
-    // TODO: identify the second per-reference flag.
-    void fn_80056EE0(int other, bool value);
-    bool fn_80056EA0(int other) const;
+    void SetLoadOtherBlocked(int other, bool blocked); // Guessed name
+    bool GetLoadOtherBlocked(int other) const;        // Guessed name
 
     const rstl::vector< SDockReference >& GetDockRefs() const { return mDockReferences; }
     const rstl::reserved_vector< CVector3f, 4 >& GetPlaneVertices() const { return mPlaneVertices; }

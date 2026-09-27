@@ -80,7 +80,7 @@ public:
   void MoveToChain(CGameArea* area, EChain chain);
   void MoveAreaToChain3(TAreaId aid);
   void TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelType travelType);
-  bool fn_80050BC4(CStateManager& mgr, TAreaId& aid);
+  bool UnloadAllAreasExcept(CStateManager& mgr, TAreaId& aid); // Guessed name
   void fn_8004F6E8(TAreaId& aid, TLayerId& layer);
   void Update(float dt);
   void PreRender();
