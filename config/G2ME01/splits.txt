@@ -77,6 +77,16 @@ MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
 	.ctors      start:0x803A54BC end:0x803A54C0
 
+MetroidPrime/Factories/CCharacterFactory.cpp:
+	.text       start:0x8002F7A8 end:0x80031E60
+	.rodata     start:0x803A64A0 end:0x803A64A8
+	.data       start:0x803B1948 end:0x803B1A10
+
+MetroidPrime/Factories/CAssetFactory.cpp:
+	.text       start:0x80031E60 end:0x800324A4
+	.rodata     start:0x803A64A8 end:0x803A64B0
+	.data       start:0x803B1A10 end:0x803B1A40
+
 MetroidPrime/Weapons/CGameProjectile.cpp:
 	.text       start:0x80032C3C end:0x80036200
 	.data       start:0x803B1A40 end:0x803B1ACC
@@ -142,6 +152,16 @@ MetroidPrime/HUD/CSamusHud.cpp:
 	.text       start:0x800609B4 end:0x8006CB00
 	.ctors      start:0x803A54CC end:0x803A54D0
 	.data       start:0x803B1F30 end:0x803B1F50
+
+MetroidPrime/CAnimationDatabaseGame.cpp:
+	.text       start:0x8006CB00 end:0x8006D3D0
+	.rodata     start:0x803A70B8 end:0x803A70F0
+	.data       start:0x803B1F50 end:0x803B1F70
+
+MetroidPrime/CTransitionDatabaseGame.cpp:
+	.text       start:0x8006D3D0 end:0x8006EB98
+	.data       start:0x803B1F70 end:0x803B1F80
+	.sbss       start:0x80418FD0 end:0x80418FE0
 
 MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.text       start:0x8007105C end:0x80073474

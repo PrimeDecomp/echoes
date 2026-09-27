@@ -1,24 +1,28 @@
 #ifndef _CANIMSYSCONTEXT
 #define _CANIMSYSCONTEXT
 
+#include "Kyoto/Animation/CAnimationSet.hpp"
 #include "Kyoto/TToken.hpp"
 
 #include "rstl/rc_ptr.hpp"
 
-class CTransitionDatabaseGame;
+class CTransitionDatabase;
 class CRandom16;
 class CSimplePool;
 
 class CAnimSysContext {
 public:
-  CAnimSysContext(const TToken< CTransitionDatabaseGame >& transDb,
-                  const rstl::ncrc_ptr< CRandom16 >& random, CSimplePool& store)
-  : mTransDb(transDb), mRandom(random), mStore(store) {}
+  CAnimSysContext(const TToken< CTransitionDatabase >& transDb,
+                  const rstl::ncrc_ptr< CRandom16 >& random, CSimplePool& store,
+                  const CAnimationSet::EventSetList& eventSets)
+  : mTransDb(transDb), mRandom(random), mStore(store), mEventSets(eventSets) {}
 
 private:
-  TToken< CTransitionDatabaseGame > mTransDb;
-  rstl::rc_ptr< CRandom16 > mRandom;
+  TToken< CTransitionDatabase > mTransDb;
+  rstl::ncrc_ptr< CRandom16 > mRandom;
   CSimplePool& mStore;
+  const CAnimationSet::EventSetList& mEventSets; // Guessed name.
 };
+CHECK_SIZEOF(CAnimSysContext, 0x18)
 
 #endif // _CANIMSYSCONTEXT
