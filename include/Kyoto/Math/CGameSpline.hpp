@@ -11,6 +11,18 @@ class CGameSpline {
 public:
   virtual ~CGameSpline();
 
+  // Guessed accessor names, recovered from the script-camera callers.
+  uint GetPositionKnotCount() const;
+  uint GetLookAtKnotCount() const;
+  CMotionSpline& PositionSpline();
+  CMotionSpline& LookAtSpline();
+  CVector3f GetPositionByTime(float time);
+  CVector3f GetPositionByLength(float distance);
+  CVector3f GetLookAtByTime(float time);
+  CVector3f GetLookAtByLength(float distance);
+  CQuaternion GetOrientationByTime(float time);
+  CQuaternion GetOrientationByLength(float distance);
+
 protected:
   CMotionSpline mPositionSpline;
   CMayaSpline mPositionTimeSpline;

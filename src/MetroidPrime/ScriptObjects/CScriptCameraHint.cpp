@@ -5,6 +5,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CCameraOverrideInfo::CCameraOverrideInfo(
@@ -130,6 +131,7 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
 }
 
 void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateManager& mgr) const {
-  // TODO: recover CScriptPathCamera and its position-spline interface. The native method
-  // looks up mDelegatedCameraId, casts to that script actor, and updates its three splines.
+  if (CScriptPathCamera* camera = TCastToPtr< CScriptPathCamera >(mgr.ObjectById(mDelegatedCameraId))) {
+    camera->TranslateSplines(position);
+  }
 }
