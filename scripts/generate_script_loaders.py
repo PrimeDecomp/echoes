@@ -538,7 +538,7 @@ class Generator:
                 seen_names.add(member)
                 prop = self.make_field(child, member, name[4:])
                 if pid in G2ME01_ABSENT_PROPERTIES.get(name, frozenset()):
-                    prop = replace(prop, condition="!defined(VERSION_G2ME01)")
+                    prop = replace(prop, condition="VERSION != VERSION_G2ME01")
                 struct.fields.append(prop)
         self.loading.remove(name)
         self.structs[name] = struct

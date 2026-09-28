@@ -1,0 +1,11 @@
+#ifndef _GAME_VERSIONS_H
+#define _GAME_VERSIONS_H
+
+#define VERSION_G2ME01 0
+#define VERSION_G2MJ01 1
+#define VERSION_G2MP01 2
+#define VERSION_R32J01 3
+#define VERSION_R3ME01 4
+#define VERSION_R3MP01 5
+
+#endif // _GAME_VERSIONS_H

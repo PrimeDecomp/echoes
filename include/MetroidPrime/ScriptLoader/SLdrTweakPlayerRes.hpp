@@ -19,7 +19,7 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
   rstl::string unknown_0x51fe3f1f; // 0x51fe3f1f
   rstl::string unknown_0xa4127a5a; // 0xa4127a5a
   rstl::string translatorDoorIcon; // 0xf8403d18
-#if !defined(VERSION_G2ME01)
+#if VERSION != VERSION_G2ME01
   rstl::string mapIconG; // 0x5096bfa5
   rstl::string mapIconM; // 0xf4e6e0eb
   rstl::string mapIconR; // 0x65700ccc

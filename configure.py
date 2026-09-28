@@ -220,7 +220,7 @@ cflags_base = [
     "-i libc",
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
-    f"-DVERSION_{config.version}",
+    f"-DVERSION={version_num}",
 ]
 
 # GC 3.0 and above require -enc SJIS instead of -multibyte
