@@ -744,6 +744,9 @@ WorldFormat/CAreaOctTree_Tests.cpp:
 WorldFormat/CCollisionSurface.cpp:
 	.text       start:0x802471B0 end:0x8024747C
 
+WorldFormat/CMetroidModelInstance.cpp:
+	.text       start:0x802474B4 end:0x802476DC
+
 WorldFormat/CAreaOctTree.cpp:
 	.text       start:0x80247704 end:0x80247CC0
 
