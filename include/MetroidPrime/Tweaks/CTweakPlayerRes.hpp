@@ -56,7 +56,7 @@ private:
   SLdrSpline mBallTransitionSpline2;
   SLdrSpline mBallTransitionSpline3;
   SLdrSpline mBallTransitionSpline4;
-  SLdrSpline mMovementControlSpline;    // Guessed name
+  SLdrSpline mMovementControlSpline; // Guessed name
   const SLdrTweakPlayerRes* mData;
 };
 CHECK_SIZEOF(CTweakPlayerRes, 0x25c)

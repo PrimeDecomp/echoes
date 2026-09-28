@@ -17,4 +17,3 @@ CHECK_SIZEOF(CTweakTargeting, 0x4)
 extern rstl::single_ptr< CTweakTargeting > gpTweakTargeting;
 
 #endif // _CTWEAKTARGETING
-

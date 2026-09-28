@@ -17,4 +17,3 @@ CHECK_SIZEOF(CTweakSlideShow, 0x4)
 extern rstl::single_ptr< CTweakSlideShow > gpTweakSlideShow;
 
 #endif // _CTWEAKSLIDESHOW
-

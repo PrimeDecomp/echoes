@@ -15,7 +15,7 @@ struct SLdrTweakCameraBob;
 
 class CPlayerCameraBob {
 public:
-  static void ReadTweaks(const SLdrTweakCameraBob& data);
+  static void ReadTweaks(const SLdrTweakCameraBob& data); // Guessed name
 
   // Guessed names; values and roles follow the G2ME01 motion paths.
   enum ECameraBobType {

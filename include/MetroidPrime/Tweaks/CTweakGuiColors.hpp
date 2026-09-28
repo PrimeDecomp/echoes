@@ -17,4 +17,3 @@ CHECK_SIZEOF(CTweakGuiColors, 0x4)
 extern rstl::single_ptr< CTweakGuiColors > gpTweakGuiColors;
 
 #endif // _CTWEAKGUICOLORS
-

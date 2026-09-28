@@ -1,8 +1,8 @@
 #ifndef _CTWEAKGAME
 #define _CTWEAKGAME
 
-#include "rstl/string.hpp"
 #include "rstl/single_ptr.hpp"
+#include "rstl/string.hpp"
 
 struct SLdrTweakGame;
 

@@ -77,8 +77,8 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   case 0x54575447:
     LoadTypedefSLdrTweakTargeting(gpTweakContents->TweakTargeting, input);
     break;
-    default:
-      break;
+  default:
+    break;
   }
 }
 
