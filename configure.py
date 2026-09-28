@@ -621,7 +621,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Animation/CAnimCharacterSet.cpp"),
             Object(NonMatching, "Kyoto/Animation/CCharacterInfo.cpp"),
             Object(NonMatching, "Kyoto/Animation/CCharacterSet.cpp"),
-            Object(NonMatching, "Kyoto/Animation/CAnimPOIData.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAnimPOIData.cpp"),
             Object(NonMatching, "Kyoto/Animation/CCharLayoutInfo.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CHierarchyPoseBuilder.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CMetaAnimBlend.cpp"),

@@ -869,6 +869,7 @@ Kyoto/Audio/CSfxManager.cpp:
 
 Kyoto/Animation/CAnimPOIData.cpp:
 	.text       start:0x802A0B38 end:0x802A0F2C
+	.sbss       start:0x804198A8 end:0x804198B8
 
 Kyoto/Animation/CAnimSource.cpp:
 	.text       start:0x802A0F2C end:0x802A2C94
