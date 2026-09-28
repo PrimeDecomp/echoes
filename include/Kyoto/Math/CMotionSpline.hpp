@@ -26,10 +26,15 @@ public:
   CVector3f GetInterpolatedSplinePointByTime(float time) const;
   float FindClosestLengthOnSpline(float start, const CVector3f& position) const;
   float ValidateLength(float distance) const;
+  // Guessed names; time is mapped through arc length rather than segment parameterization.
+  CVector3f GetPositionByTime(float time) const;
+  void CalculateLength();
+  void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
   int GetControlPointCount() const { return mControlPoints.size(); }
+  int GetKnotCount() const { return mKnots.size(); }
   bool IsClosedLoop() const { return mClosedLoop; }
 
 private:

@@ -4,6 +4,7 @@
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "MetroidPrime/CGameArea.hpp"
+#include "MetroidPrime/Cameras/CInterpolationCamera.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/optional_object.hpp"
 #include "rstl/reserved_vector.hpp"
@@ -17,7 +18,6 @@ class CFirstPersonCamera;
 class CFixedCamera; // Guessed name
 class CGameCamera;
 class CHintManager;
-class CInterpolationCamera;
 class CMaterialFilter;
 class CMaterialList;
 class CMotionSpline;
@@ -32,6 +32,7 @@ public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
   CHintManager* HintManager() { return mCameraHintManager; }
+  CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
 
   float GetFirstPersonFOV() const;
@@ -77,9 +78,12 @@ public:
   bool ShouldBypassInterpolationCamera() const;
   bool IsBallCameraTransitioning(const CStateManager& mgr) const; // Guessed name
   void SetPlayerCamera(CStateManager& mgr, TUniqueId uid);
-  void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to, bool sinusoidal,
-                          int mode1, int mode2, CStateManager& mgr, bool flag, float duration,
-                          float fov); // The two mode types and final flag are unresolved.
+  // The final flag is unresolved.
+  void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
+                          bool interpolateRotation,
+                          CInterpolationCamera::EPositionMode positionMode,
+                          CInterpolationCamera::ERotationMode rotationMode,
+                          CStateManager& mgr, bool flag, float duration, float fov);
   void CinematicCut(CStateManager& mgr);
   void SetPathCamera(TUniqueId uid, CStateManager& mgr);
   void ClearPathCamera(); // Guessed name
