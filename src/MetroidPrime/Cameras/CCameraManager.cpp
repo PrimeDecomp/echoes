@@ -3,10 +3,12 @@
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
+#include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CInterpolationCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 // NonMatching scaffold: camera creation and the separate hint/shake subsystems remain TODO.
@@ -90,8 +92,7 @@ void CCameraManager::UpdateFogState() {
 
 TUniqueId CCameraManager::GetCurrentCameraId(bool selector) const {
   if (IsInCinematicCamera()) {
-    // TODO: return the runtime cinematic camera's ID, not the script actor's ID.
-    return kInvalidUniqueId;
+    return mCinematicCamera ? mCinematicCamera->GetUniqueId() : kInvalidUniqueId;
   }
   return mCurCameraId;
 }
@@ -157,7 +158,12 @@ void CCameraManager::ProcessInput(const CFinalInput& input, CStateManager& mgr) 
 }
 
 void CCameraManager::SetCinematicCameraId(CStateManager& mgr, TUniqueId uid) {
-  // TODO: notify the previous script cinematic actor before replacing its ID.
+  if (mCinematicCameraId != kInvalidUniqueId && mCinematicCameraId != uid) {
+    if (CScriptCamera* camera =
+            TCastToPtr< CScriptCamera >(mgr.GetObjectByIdFromListAll(mCinematicCameraId))) {
+      camera->MarkViewed(mgr);
+    }
+  }
   mCinematicCameraId = uid;
 }
 
@@ -173,8 +179,10 @@ void CCameraManager::StopCinematics(CStateManager& mgr) {
   // TODO: deactivate the cinematic camera and restore player/camera/pause state.
 }
 
-void CCameraManager::fn_801ABEC0(bool flag) {
-  // TODO: recover the meaning of the runtime cinematic camera's flag.
+void CCameraManager::SetCinematicPaused(bool paused) {
+  if (mCinematicCamera) {
+    mCinematicCamera->SetPaused(paused);
+  }
 }
 
 CTransform4f CCameraManager::GetCurrentCameraTransform(const CStateManager& mgr,

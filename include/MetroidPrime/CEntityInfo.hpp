@@ -20,6 +20,7 @@ enum EEntityType {
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
   kET_Bomb = 14,
+  kET_CinematicCamera = 17,
   kET_CollisionActor = 18,
   kET_EnergyProjectile = 19,
   kET_Explosion = 22,
