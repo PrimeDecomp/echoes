@@ -73,13 +73,11 @@ class TLockedToken {
 public:
   TLockedToken() {}
   TLockedToken(const CToken& token) : mToken(token), mItem(*mToken) {}
-  TLockedToken(const TLockedToken< T >& token) : mToken(token), mItem(*token) {
-    mToken.Lock();
-  }
+  TLockedToken(const TLockedToken< T >& token) : mToken(token), mItem(*token) { mToken.Lock(); }
 
   TLockedToken& operator=(const TLockedToken< T >& token) {
-    mToken = token;
-    mItem = *token;
+    mToken = token.mToken;
+    mItem = token.mItem;
     return *this;
   }
 

@@ -73,11 +73,11 @@ private:
 
   void assign(const T& item) {
     if (!m_valid) {
-      construct_impl(m_data, item);
+      construct< T >(m_data, item);
       m_valid = true;
-    } else {
-      *get_ptr() = item;
+      return;
     }
+    *get_ptr() = item;
   }
 };
 
