@@ -174,6 +174,12 @@ public:
 
   static inline void SetColorUpdate(const bool update) { GXSetColorUpdate(update); }
 
+  static inline void SetAlphaUpdate(const bool update) { GXSetAlphaUpdate(update); }
+
+  static inline void SetTevSwapMode(GXTevStageID stage, GXTevSwapSel rasSel, GXTevSwapSel texSel) {
+    GXSetTevSwapMode(stage, rasSel, texSel);
+  }
+
 private:
   static void FlushChanCtrl(GXChannelID chan, ushort flags);
   static void FlushState();

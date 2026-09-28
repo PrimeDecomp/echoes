@@ -110,7 +110,7 @@ void CDecal::RenderQuad(CQuadDecal& decal, const CDecalDescription::SQuadDescr& 
 
   bool redToAlpha = CDecal::mMoveRedToAlphaBuffer && desc.mADD && !desc.mTEX.null();
   if (mDisableAlphaUpdate) {
-    GXSetAlphaUpdate(false);
+    CGX::SetAlphaUpdate(false);
   }
   if (desc.mADD) {
     CGraphics::SetDepthWriteMode(true, kE_LEqual, false);
@@ -143,7 +143,7 @@ void CDecal::RenderQuad(CQuadDecal& decal, const CDecalDescription::SQuadDescr& 
       CGX::SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
       CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
       CGX::SetAlphaCompare(GX_GREATER, 0, GX_AOP_OR, GX_NEVER, 0);
-      GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP1);
+      CGX::SetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP1);
     } else {
       CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
     }
@@ -219,11 +219,11 @@ void CDecal::RenderQuad(CQuadDecal& decal, const CDecalDescription::SQuadDescr& 
     CGX::End();
   }
   if (redToAlpha) {
-    GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
+    CGX::SetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
     CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
   }
   if (mDisableAlphaUpdate) {
-    GXSetAlphaUpdate(true);
+    CGX::SetAlphaUpdate(true);
   }
   CGraphics::SetCullMode(kCM_Front);
 }
