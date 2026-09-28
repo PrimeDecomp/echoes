@@ -265,6 +265,13 @@ MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp:
 	.sdata      start:0x80418068 end:0x80418070
 	.sdata2     start:0x8041B1F8 end:0x8041B200
 
+MetroidPrime/Player/CPlayerCameraBob.cpp:
+	.text       start:0x800BC178 end:0x800BCFC4
+	.ctors      start:0x803A54EC end:0x803A54F0
+	.sdata      start:0x80418070 end:0x804180C0
+	.sbss       start:0x80419080 end:0x80419090
+	.sdata2     start:0x8041B230 end:0x8041B278
+
 MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
