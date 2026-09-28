@@ -430,6 +430,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitions.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CFirstPersonCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraManager.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCinematicCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCamera.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),

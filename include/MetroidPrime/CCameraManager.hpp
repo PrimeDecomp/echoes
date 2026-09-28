@@ -34,6 +34,7 @@ public:
   CHintManager* HintManager() { return mCameraHintManager; }
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
+  const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }
 
   float GetFirstPersonFOV() const;
   void SetFirstPersonFOV(float fov);
@@ -65,7 +66,7 @@ public:
   void AddCinemaCamera(TUniqueId uid, CStateManager& mgr);
   void EnterCinematic(CStateManager& mgr);
   void StopCinematics(CStateManager& mgr);
-  void fn_801ABEC0(bool flag); // Cinematic-camera flag; meaning unresolved.
+  void SetCinematicPaused(bool paused); // Guessed name
   CTransform4f GetCurrentCameraTransform(const CStateManager& mgr, bool selector) const;
   CVector3f GetGlobalCameraTranslation(const CStateManager& mgr, bool selector) const;
 
