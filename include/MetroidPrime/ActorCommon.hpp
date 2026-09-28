@@ -97,6 +97,14 @@ enum EWeaponCollisionResponseTypes {
   kWCR_AtomicBetaReflect,
   kWCR_AtomicAlphaReflect,
   kWCR_Unknown107 = 107, // Last response in Echoes's extended reflection range.
+  // Guessed names: target-derived fallback ranges, not individual enemy identities.
+  kWCR_EnemyNormalFirst = 19,
+  kWCR_EnemyNormalLast = 47,
+  kWCR_EnemySpecialFirst = 49,
+  kWCR_EnemySpecialLast = 77,
+  kWCR_EnemyShieldedFirst = 79,
+  kWCR_EnemyShieldedLast = 107,
+  kWCR_Count = 109,
 };
 enum EProjectileAttrib {
   kPA_None = 0,
