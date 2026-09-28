@@ -57,6 +57,8 @@ public:
   const rstl::pair< CVector2i, CVector2i >& GetBounds();
 
   int GetTextBoundingWidth() const { return mExtentX; }
+  int GetTextBoundingHeight() const { return mExtentY; }
+  CAssetId GetFontID() const { return mFontId; }
 
   void SetExtentX(int extent) {
     mExtentX = extent;

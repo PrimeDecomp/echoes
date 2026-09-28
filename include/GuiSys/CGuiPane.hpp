@@ -5,9 +5,11 @@
 #include "Kyoto/Math/CVector2f.hpp"
 
 class COutputStream;
+class CSimplePool;
 
 class CGuiPane : public CGuiWidget {
 public:
+  static CGuiWidget* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
   CGuiPane(const CGuiWidgetParms& parms, float width, float height, const CVector3f& scaleCenter);
 
   // CGuiObject

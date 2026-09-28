@@ -392,6 +392,8 @@ config.libs = [
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrameFactory.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrame.cpp"),
+            Object(NonMatching, "GuiSys/CGuiPane.cpp"),
+            Object(NonMatching, "GuiSys/CGuiTextPane.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTree.cpp"),
             Object(NonMatching, "WorldFormat/CCollidableOBBTreeGroup.cpp"),

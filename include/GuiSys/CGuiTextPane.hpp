@@ -8,12 +8,18 @@ class CGuiTextPane : public CGuiPane {
 public:
   // Guessed name
   struct SFontInfo {
+    SFontInfo(int extentX, int extentY, const CColor& fontColor, const CColor& outlineColor,
+              CAssetId fontId);
+    explicit SFontInfo(CInputStream& in);
+
     int mExtentX;
     int mExtentY;
     CColor mFontColor;
     CColor mOutlineColor;
     CAssetId mFontId;
   };
+
+  static CGuiWidget* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
 
   CGuiTextPane(const CGuiWidgetParms& parms, CSimplePool* pool, float width, float height,
                const CVector3f& scaleCenter, const CGuiTextProperties& properties,
@@ -39,6 +45,7 @@ public:
   const CGuiTextSupport& GetTextSupport() const { return mTextSupport; }
 
 private:
+  static bool sDrawPaneRects;
   mutable CGuiTextSupport mTextSupport;
   SFontInfo mFontInfo;          // Guessed name
   SFontInfo mAlternateFontInfo; // Guessed name
