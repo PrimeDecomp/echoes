@@ -30,6 +30,7 @@ public:
   uint GetNameHash() const { return mNameHash; }
   const EPOIType GetPoiType() const { return static_cast< EPOIType >(mType); }
   const CCharAnimTime& GetTime() const { return mTime; }
+  void SetTime(const CCharAnimTime& time) { mTime = time; }
   const int GetIndex() const { return mIndex; }
   const bool GetSaveState() const { return mUnique; }
   const float GetWeight() const { return mWeight; }

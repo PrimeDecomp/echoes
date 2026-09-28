@@ -838,6 +838,21 @@ Kyoto/Animation/CPASParmInfo.cpp:
 Kyoto/Animation/CPrimitive.cpp:
 	.text       start:0x802992D0 end:0x802993A0
 
+Kyoto/Animation/CSequenceHelper.cpp:
+	.text       start:0x802993A0 end:0x8029A340
+	.rodata     start:0x803AEDB8 end:0x803AEDC0
+	.sdata      start:0x80418A18 end:0x80418A28
+	.sdata2     start:0x8041E2D0 end:0x8041E2E0
+
+Kyoto/Animation/CTransition.cpp:
+	.text       start:0x8029A340 end:0x8029A3D8
+
+Kyoto/Animation/CTransitionManager.cpp:
+	.text       start:0x8029A3D8 end:0x8029A458
+
+Kyoto/Animation/CTreeUtils.cpp:
+	.text       start:0x8029A458 end:0x8029A64C
+
 Kyoto/Animation/IMetaAnim.cpp:
 	.text       start:0x8029A64C end:0x8029AB00
 	.data       start:0x803B9470 end:0x803B9490

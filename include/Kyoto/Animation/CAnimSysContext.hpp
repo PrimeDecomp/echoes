@@ -17,6 +17,7 @@ public:
                   const CAnimationSet::EventSetList& eventSets)
   : mTransDb(transDb), mRandom(random), mStore(store), mEventSets(eventSets) {}
 
+  const TToken< CTransitionDatabase >& GetTransitionDatabase() const { return mTransDb; }
   CRandom16& GetRandomNumberGenerator() const { return *mRandom; }
   CSimplePool& GetSimplePool() const { return mStore; }
   const CAnimPOIData* GetEventData(int animIdx) const { return &mEventSets[animIdx]; } // Guessed name.
