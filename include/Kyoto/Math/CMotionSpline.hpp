@@ -4,6 +4,8 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "rstl/vector.hpp"
 
+class CQuaternion;
+
 class CMotionSpline {
 public:
   // Guessed enumerator names, based on the interpolation formulas.
@@ -19,6 +21,8 @@ public:
   virtual ~CMotionSpline();
 
   void Initialise(const rstl::vector< CVector3f >& points);
+  void Translate(const CVector3f& offset);
+  void Rotate(const CQuaternion& rotation, const CVector3f& origin);
   CVector3f GetInterpolatedSplinePointByTime(float time) const;
 
   float GetLength() const { return mLength; }

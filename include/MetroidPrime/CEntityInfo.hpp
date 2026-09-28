@@ -40,6 +40,7 @@ enum EEntityType {
   kET_ScriptDoor = 56,
   kET_ScriptEffect = 58,
   kET_ScriptLayerController = 64,
+  kET_ScriptPathCamera = 65,
   kET_ScriptPickup = 66,
   kET_ScriptPlayerProxy = 69,
   kET_ScriptPlatform = 70,
@@ -80,6 +81,9 @@ enum EScriptObjectState {
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
   kSS_CameraTarget = 0x43544754,
+  kSS_CameraPath = 0x43505448,
+  kSS_CameraPlayer = 0x43504c52,
+  kSS_CameraTime = 0x4354494d,
   kSS_UnFrozen = 0x5546525a,
   kSS_InvalidState = 0xffffffff,
 };

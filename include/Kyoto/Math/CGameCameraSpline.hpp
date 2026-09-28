@@ -6,6 +6,11 @@
 // Guessed name.
 class CGameCameraSpline : public CGameSpline {
 public:
+  CGameCameraSpline(float duration, uint flags, const CMayaSpline& positionTimeSpline,
+                    const CMayaSpline& lookAtTimeSpline, const CMayaSpline& fovSpline,
+                    const CMayaSpline& secondScalarSpline, CMotionSpline::ESplineType positionType,
+                    CMotionSpline::ESplineType lookAtType);
+
   // CGameSpline
   ~CGameCameraSpline() override;
 
