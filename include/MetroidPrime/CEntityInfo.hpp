@@ -113,6 +113,7 @@ enum EScriptObjectMessage {
   kSM_InternalMessage00 = 0x494d3030,
 
   kSM_XCRT = 0x58435254,
+  kSM_XClear = 0x58434c52, // Guessed name: clear an effect's particles.
   kSM_XALD = 0x58414c44,
   kSM_XDelete = 0x5844454c,
   kSM_XHIT = 0x58484954,
