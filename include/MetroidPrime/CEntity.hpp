@@ -20,7 +20,7 @@ public:
   void SendActive(CStateManager& mgr, bool active);
   virtual void SetActive(const bool active);
 
-  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, uint castFlags);
+  CEntity(TUniqueId id, const CEntityInfo& info, const rstl::string& name, const uint castFlags);
 
   void SendScriptMsgs(EScriptObjectState state, CStateManager& mgr, TUniqueId uid,
                       EScriptObjectMessage msg);

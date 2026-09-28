@@ -1,4 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
+
+#include "Kyoto/Graphics/CGX.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
@@ -7,21 +10,19 @@
 #include "REL/REL_Setup.h"
 #include "dolphin/gx.h"
 
-CScriptForgottenObject::~CScriptForgottenObject() {}
-
-CScriptForgottenObject::CScriptForgottenObject(TUniqueId uid, const CEntityInfo& info,
+static const float skDefaultAlpha = 1.f;
+CScriptForgottenObject::CScriptForgottenObject(const TUniqueId uid, const CEntityInfo& info,
                                                const rstl::string& name)
-: CEntity(uid, info, name, false), x24_(kInvalidUniqueId), x28_(kInvalidUniqueId) {}
+: CEntity(uid, info, name, 0), x24_(kInvalidUniqueId), x28_(kInvalidUniqueId) {}
 
-extern "C" TUniqueId fn_24_478(CScriptForgottenObject* self, CStateManager& mgr,
-                               EScriptObjectState state);
-
-TUniqueId fn_24_478(CScriptForgottenObject* self, CStateManager& mgr, EScriptObjectState state) {
-  TUniqueId id = self->FindConnectedObject(mgr, state, kSM_None);
-  CScriptActor* entity = TCastToPtr< CScriptActor >(mgr.ObjectById(id));
-  if (entity && entity->CheckActorRenderOnly()) {
-    // TODO
-    return id;
+TUniqueId CScriptForgottenObject::DisableTargetRendering(CStateManager& mgr,
+                                                         const EScriptObjectState state) const {
+  const TUniqueId id = FindConnectedObject(mgr, state, kSM_None);
+  if (CScriptActor* entity = TCastToPtr< CScriptActor >(mgr.ObjectById(id))) {
+    if (entity->CheckActorRenderOnly()) {
+      entity->SetSkipRendering(true);
+      return id;
+    }
   }
   return kInvalidUniqueId;
 }
@@ -29,8 +30,8 @@ TUniqueId fn_24_478(CScriptForgottenObject* self, CStateManager& mgr, EScriptObj
 void CScriptForgottenObject::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CEntity::AcceptScriptMsg(mgr, msg);
   if (msg.GetMessage() == kSM_XALD) {
-    x24_ = fn_24_478(this, mgr, kSS_Zero);
-    x28_ = fn_24_478(this, mgr, kSS_MaxReached);
+    x24_ = DisableTargetRendering(mgr, kSS_Zero);
+    x28_ = DisableTargetRendering(mgr, kSS_MaxReached);
   }
 }
 
@@ -38,34 +39,42 @@ void CScriptForgottenObject::Render1(CStateManager& mgr) { RenderInternal(mgr, x
 
 void CScriptForgottenObject::Render2(CStateManager& mgr) { RenderInternal(mgr, x28_, true); }
 
-void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid, bool b) {
+void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid, bool b) const {
+  if (!GetActive()) {
+    return;
+  }
   const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(uid));
-  GXSetColorUpdate(GX_FALSE);
-  const CModelData* data = actor->GetModelData();
-  if (b) {
-    // TODO
-  } else {
-    // TODO
+  CGX::SetColorUpdate(false);
+  if (actor && !actor->GetPreRenderClipped()) {
+    const CModelData* data = actor->GetModelData();
+    if (b) {
+      gpRender->SetDestinationAlpha(255);
+    } else {
+      gpRender->DisableDestinationAlpha();
+    }
+    data->Render(mgr, actor->GetTransform(), nullptr, CModelFlags::Normal());
+    if (b) {
+      gpRender->DisableDestinationAlpha();
+    }
   }
-  CModelFlags flags(CModelFlags::kT_Opaque, 1.f);
-  data->Render(mgr, actor->GetTransform(), nullptr, flags);
-  if (b) {
-    // TODO
-  }
-  GXSetColorUpdate(GX_TRUE);
+  CGX::SetColorUpdate(GX_TRUE);
 }
 
+struct SLdrForgottenObject {
+  SLdrEditorProperties editorProperties;
+};
+
 CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
-  SLdrEditorProperties props();
-  // TODO
+  SLdrForgottenObject properties;
 }
 
 static void SetFuncPtrs() {
-  static SScriptForgottenObject_FuncPtrs ptrs;
-  ptrs.loader = &LoadForgottenObject;
-  SetSScriptForgottenObject_FuncPtrs(&ptrs);
+  static SScriptForgottenObject_FuncPtrs funcPtrs;
+  funcPtrs.loader = &LoadForgottenObject;
+  SetSScriptForgottenObject_FuncPtrs(&funcPtrs);
 }
 
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSScriptForgottenObject_FuncPtrs(nullptr); }
+CScriptForgottenObject::~CScriptForgottenObject() {}

@@ -9,12 +9,12 @@ public:
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
   ~CScriptForgottenObject() override;
-
+  TUniqueId DisableTargetRendering(CStateManager& mgr, EScriptObjectState state) const;
   virtual void Render1(CStateManager& mgr);
   virtual void Render2(CStateManager& mgr);
 
 private:
-  void RenderInternal(CStateManager& mgr, TUniqueId uid, bool b);
+  void RenderInternal(CStateManager& mgr, TUniqueId uid, bool b) const;
 
   TUniqueId x24_;
   TUniqueId x28_;

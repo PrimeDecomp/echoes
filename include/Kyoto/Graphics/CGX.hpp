@@ -172,15 +172,17 @@ public:
   static inline uint MaskAndShiftLeft(uint v, uint m, uint s) { return (v & m) << s; }
   static inline uint ShiftRightAndMask(uint v, uint m, uint s) { return (v >> s) & m; }
 
+  static inline void SetColorUpdate(const bool update) { GXSetColorUpdate(update); }
+
 private:
   static void FlushChanCtrl(GXChannelID chan, ushort flags);
   static void FlushState();
   static void update_fog(uint flags);
   static void apply_fog() {
     static const GXColor black = {0, 0, 0, 0};
-    GXSetFog(static_cast< GXFogType >(gpGXState->mFogType),
-             gpGXState->mFogParams.mFogStartZ, gpGXState->mFogParams.mFogEndZ,
-             gpGXState->mFogParams.mFogNearZ, gpGXState->mFogParams.mFogFarZ,
+    GXSetFog(static_cast< GXFogType >(gpGXState->mFogType), gpGXState->mFogParams.mFogStartZ,
+             gpGXState->mFogParams.mFogEndZ, gpGXState->mFogParams.mFogNearZ,
+             gpGXState->mFogParams.mFogFarZ,
              (gpGXState->mBlendMode & (7 << 5)) == (GX_BL_ONE << 5)
                  ? black
                  : gpGXState->mFogParams.mFogColor);

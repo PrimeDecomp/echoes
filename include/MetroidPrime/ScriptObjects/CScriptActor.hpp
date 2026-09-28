@@ -47,7 +47,16 @@ public:
 
   bool CheckActorRenderOnly() const;
   void SetPortalPlane(const CPlane& plane); // Guessed name
+
+  void SetDead(bool dead) { mDead = dead; }
+  bool IsAnimating() const { return mAnimating; }
+  void SetAnimating(const bool animating) { mAnimating = animating; }
+  bool GetProcessmodelFlags() const { return mProcessModelFlags; }
+  void SetProcessmodelFlags(const bool processModelFlags) { mProcessModelFlags = processModelFlags; }
   bool IsPlayerActor() const { return mIsPlayerActor; }
+  void SetPlayerActor(const bool playerActor) { mIsPlayerActor = playerActor; }
+  bool IsSkipRendering() const { return mSkipRendering; }
+  void SetSkipRendering(const bool skipRendering) { mSkipRendering = skipRendering; }
 
 private:
   void FireProjectile(CStateManager& mgr, const rstl::string& locator); // Guessed name
