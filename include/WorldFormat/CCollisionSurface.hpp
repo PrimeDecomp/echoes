@@ -6,6 +6,14 @@
 
 class CCollisionSurface {
 public:
+  CCollisionSurface() {}
+  CCollisionSurface(const CVector3f& a, const CVector3f& b, const CVector3f& c, u64 flags)
+  : mFlags(flags) {
+    mVertices[0] = a;
+    mVertices[1] = b;
+    mVertices[2] = c;
+  }
+
   CUnitVector3f GetNormal() const;
   CPlane GetPlane() const;
   CPlane GetEdgePlane(int edge) const; // Guessed name

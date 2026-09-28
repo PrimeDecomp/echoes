@@ -30,7 +30,7 @@ class CMemorySys;
 struct SAreaSurface {
   CAABox mBounds;
   short mModelIndex;
-  ushort mSurfaceIndex;
+  short mSurfaceGroupIndex; // Guessed name; selects a model's group of surface indices.
   uint x1c_;
 };
 CHECK_SIZEOF(SAreaSurface, 0x20)

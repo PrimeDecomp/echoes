@@ -7,15 +7,19 @@ CUnitVector3f CCollisionSurface::GetNormal() const {
 }
 
 CPlane CCollisionSurface::GetPlane() const {
-  // TODO: Form the surface plane using CUnitVector3f's zero-safe normalization.
-  return CPlane(0.f, CVector3f::Right());
+  const CVector3f surfaceNormal = GetNormal();
+  const CUnitVector3f normal(surfaceNormal);
+  return CPlane(CVector3f::Dot(normal, mVertices[0]), normal);
 }
 
 // Guessed name
 CPlane CCollisionSurface::GetEdgePlane(int edge) const {
-  // TODO: Cross the normalized surface normal with the edge direction, normalize
-  // with zero fallback and form a plane through that edge's first vertex.
-  return CPlane(0.f, CVector3f::Right());
+  const CVector3f surfaceNormal = GetNormal();
+  const CUnitVector3f normal(surfaceNormal);
+  const int nextVertex[] = {1, 2, 0};
+  const CVector3f edgeDirection = mVertices[nextVertex[edge]] - mVertices[edge];
+  const CUnitVector3f edgeNormal(CVector3f::Cross(normal, edgeDirection));
+  return CPlane(CVector3f::Dot(edgeNormal, mVertices[edge]), edgeNormal);
 }
 
 // Guessed name

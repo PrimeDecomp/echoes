@@ -7,6 +7,8 @@
 class CAreaRenderOctTree {
 public:
   explicit CAreaRenderOctTree(const rstl::auto_ptr< const uchar >& buffer);
+  uint GetBitmapWordCount() const { return mBitmapWordCount; }
+  void FindOverlappingModels(uint* bitmap, const CAABox& bounds) const;
 
 private:
   rstl::auto_ptr< const uchar > mBuffer;
