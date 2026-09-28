@@ -42,7 +42,7 @@ public:
 
   int ReadInt32() {
     int* result = reinterpret_cast< int* >(mPtr);
-    mPtr = reinterpret_cast< uchar* >(result + 1);
+    mPtr += sizeof(int);
     return *result;
   }
   u64 ReadInt64() {
