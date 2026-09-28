@@ -10,9 +10,9 @@ struct SLdrConnection {
   SLdrConnection();
   ~SLdrConnection();
 
-  short connectionIndex; // non-matching name, 0x00000000
-  rstl::vector< float > activationTimes; // non-matching name, 0x00000001
-  bool unknown_0x00000002; // 0x00000002
+  short connectionIndex;
+  rstl::vector< float > activationTimes;
+  bool unknown_0x00000002;
 };
 
 void LoadTypedefSLdrConnection(SLdrConnection& data, CInputStream& input);

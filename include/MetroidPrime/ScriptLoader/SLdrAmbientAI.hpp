@@ -24,8 +24,8 @@ struct SLdrAmbientAI {
   SLdrActorParameters actorInformation; // 0x7e397fed
   float detectRadius; // 0xa7d00780
   float explodeRadius; // 0xd4d52631
-  int animation_React; // non-matching name, 0xbfe017de
-  int animation_Damaged; // non-matching name, 0xed5f16ac
+  int animation_React; // 0xbfe017de
+  int animation_Damaged; // 0xed5f16ac
 };
 
 void LoadTypedefSLdrAmbientAI(SLdrAmbientAI& data, CInputStream& input);

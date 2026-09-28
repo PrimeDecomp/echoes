@@ -18,8 +18,8 @@ struct SLdrIngBlobSwarm {
   SLdrAnimationParameters animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
-  int intoAttackAnimation; // non-matching name, 0x7399abbb
-  int attackAnimation; // non-matching name, 0x734d923b
+  int intoAttackAnimation; // 0x7399abbb
+  int attackAnimation; // 0x734d923b
   float maxAttackAngle; // 0xf11f7384
   float intoAttackSpeed; // 0xca761dcd
   float attackSpeed; // 0x6c0a2bc8
