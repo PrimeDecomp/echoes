@@ -179,6 +179,8 @@ public:
   CCameraManager* CameraManager(int playerIndex) { return m_cameraManagers[playerIndex]; }
   const CPlayerState* GetPlayerState() const { return m_playerState; }
   const CPlayer* GetCurrentRenderPlayer() const { return mCurrentRenderPlayer; } // Guessed name
+  int GetCurrentRenderPlayerIndex() const { return mCurrentRenderPlayerIndex; } // Guessed name
+  const CCameraManager* GetCurrentRenderCameraManager() const { return m_cameraManager; } // Guessed name
   const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return m_rumbleManagers[playerIndex]; }
@@ -244,7 +246,8 @@ public:
 
   char pad5[4]; // 0x246c
   CFrustumPlanes m_planes; // 0x2478
-  char pad6[0x2938 - 0x24D0]; // 0x24D0
+  int mCurrentRenderPlayerIndex; // Guessed name
+  char pad6[0x464]; // Remaining unresolved storage; preserve the existing tail layout.
 
   CVector3f x2938;
   float x2944;

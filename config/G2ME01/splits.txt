@@ -427,6 +427,11 @@ MetroidPrime/CMapUniverse.cpp:
 	.data       start:0x803B5400 end:0x803B5410
 	.sdata2     start:0x8041C318 end:0x8041C350
 
+MetroidPrime/CVisorFlare.cpp:
+	.text       start:0x801561A0 end:0x801576FC
+	.sdata      start:0x80418408 end:0x80418418 align:4
+	.sdata2     start:0x8041C350 end:0x8041C388
+
 MetroidPrime/CWorldTransManager.cpp:
 	.text       start:0x801576FC end:0x8015C634
 

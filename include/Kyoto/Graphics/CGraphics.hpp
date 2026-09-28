@@ -335,6 +335,7 @@ public:
   static void VideoPostCallback(u32 retraceCount);
 
   static const CViewport& GetViewport() { return mViewport; }
+  static const GXRenderModeObj& GetRenderMode() { return mRenderModeObj; }
   static CVector3f GetViewPoint() { return mViewMatrix.GetTranslation(); }
   static const CTransform4f& GetViewMatrix() { return mViewMatrix; }
   static const CTransform4f& GetModelMatrix() { return mModelMatrix; }
