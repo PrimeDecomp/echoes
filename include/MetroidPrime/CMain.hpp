@@ -61,6 +61,8 @@ public:
 
   void Increment_x5c(float f) { x5c + f; }
   bool GetFinished() const { return finished; }
+  float GetAverageTickTime() const { return mAverageTickTime; }
+  float GetAverageDrawTime() const { return mAverageDrawTime; }
 
   // // TODO
   // COsContext& InitOsContext() {
@@ -73,7 +75,9 @@ private:
   void* mUnk1;
   CMemorySys* memorySys;
   void* mUnk2;
-  char mPad[0x38];
+  char mPad[0x30];
+  float mAverageTickTime;
+  float mAverageDrawTime;
   int frameTimeMinimum;
   float x4c;
   float x50;
