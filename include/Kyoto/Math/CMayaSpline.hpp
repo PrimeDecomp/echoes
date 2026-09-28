@@ -35,14 +35,26 @@ public:
   void CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next);
 };
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMayaSplineKnot)
+}
+
 struct SLdrSpline {
+  struct SCache {
+    SCache() : mKnotIndex(0xFFFFFFFF), mSegmentIndex(0xFFFFFFFF), mStepSegment(false), mMinTime(0.f) {}
+
+    uint mKnotIndex;
+    uint mSegmentIndex;
+    bool mStepSegment : 1;
+    float mMinTime;
+    float mHermiteCoefs[4];
+  };
+
   SLdrSpline();
   SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
              int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
   SLdrSpline(CInputStream&, int);
-  ~SLdrSpline();
-
-  SLdrSpline& operator=(const SLdrSpline&);
+  ~SLdrSpline() {}
 
   static SLdrSpline CreateFor(float, float, float, float);
 
@@ -52,11 +64,7 @@ struct SLdrSpline {
   int m_clampMode;
   float m_minAmplitudeTime;
   float m_maxAmplitudeTime;
-  uint m_cachedKnotIndex;
-  uint mCachedSegmentIndex;
-  bool m_dirty : 1;
-  float m_cachedMinTime;
-  float m_cachedHermitCoefs[4];
+  mutable SCache mCache;
 };
 
 class CMayaSpline {
@@ -82,12 +90,12 @@ public:
   , mClampMode(spline.m_clampMode)
   , mMinAmplitude(spline.m_minAmplitudeTime)
   , mMaxAmplitude(spline.m_maxAmplitudeTime)
-  , mCachedKnotIndex(spline.m_cachedKnotIndex)
-  , mCachedSegmentIndex(spline.mCachedSegmentIndex)
-  , mStepSegment(spline.m_dirty)
-  , mCachedMinTime(spline.m_cachedMinTime) {
+  , mCachedKnotIndex(spline.mCache.mKnotIndex)
+  , mCachedSegmentIndex(spline.mCache.mSegmentIndex)
+  , mStepSegment(spline.mCache.mStepSegment)
+  , mCachedMinTime(spline.mCache.mMinTime) {
     for (int i = 0; i < 4; ++i) {
-      mCachedHermiteCoefs[i] = spline.m_cachedHermitCoefs[i];
+      mCachedHermiteCoefs[i] = spline.mCache.mHermiteCoefs[i];
     }
   }
 

@@ -27,8 +27,8 @@ public:
   typedef int size_type;
   typedef T value_type;
 
-  iterator begin() { return iterator(mItems); }
-  const_iterator begin() const { return const_iterator(mItems); }
+  iterator begin() { return iterator(this, mItems); }
+  const_iterator begin() const { return const_iterator(this, mItems); }
   iterator end() {
     T* const end = data() + mCount;
     return iterator(end);
@@ -92,7 +92,7 @@ public:
 
   inline vector& operator=(const vector& other);
 
-  void clear();
+  inline void clear();
 
   T* data() { return mItems; }
   const T* data() const { return mItems; }
@@ -265,7 +265,7 @@ typename vector< T, Alloc >::iterator vector< T, Alloc >::erase(iterator first, 
   return first;
 }
 template < typename T, typename Alloc >
-void vector< T, Alloc >::clear() {
+inline void vector< T, Alloc >::clear() {
   destroy(begin(), end());
   mCount = 0;
 }

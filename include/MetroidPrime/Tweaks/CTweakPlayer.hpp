@@ -1,8 +1,14 @@
 #ifndef _CTWEAKPLAYER
 #define _CTWEAKPLAYER
 
+#include "rstl/single_ptr.hpp"
+
+struct SLdrTweakPlayer;
+
 class CTweakPlayer {
 public:
+  explicit CTweakPlayer(const SLdrTweakPlayer& data) : mData(&data) {}
+
   float GetBallRadius();
   float GetEyeOffset() const;
   float GetLeftAnalogMax();
@@ -14,9 +20,13 @@ public:
   float GetGrappleBeamXWaveAmplitude() const;
   float GetGrappleBeamZWaveAmplitude() const;
   float GetGrappleBeamAnglePhaseDelta() const;
-};
 
-extern CTweakPlayer* gpTweakPlayerA;
-extern CTweakPlayer* gpTweakPlayerB;
+private:
+  const SLdrTweakPlayer* mData;
+};
+CHECK_SIZEOF(CTweakPlayer, 0x4)
+
+extern rstl::single_ptr< CTweakPlayer > gpTweakPlayerA;
+extern rstl::single_ptr< CTweakPlayer > gpTweakPlayerB;
 
 #endif // _CTWEAKPLAYER

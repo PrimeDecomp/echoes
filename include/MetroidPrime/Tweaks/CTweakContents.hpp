@@ -39,6 +39,9 @@ public:
   SLdrTweakSlideShow TweakSlideShow;
   SLdrTweakTargeting TweakTargeting;
 };
+#if VERSION == VERSION_G2ME01
+CHECK_SIZEOF(CTweakContents, 0x31f4)
+#endif
 
 extern CTweakContents* gpTweakContents;
 

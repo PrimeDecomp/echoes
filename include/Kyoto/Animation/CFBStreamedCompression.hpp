@@ -253,10 +253,10 @@ public:
   typedef rstl::pair< const uint*, uint > FrameIterator;
 
   explicit CFBKeyFrameReductionPerChannel_HeaderForAll(CInputStream& in)
-  : mBitCount(in.ReadInt32()) {
+  : mBitCount(in.Get< uint >()) {
     uint* data = &mBitCount + 1;
     for (uint i = 0; i < Uint32sForBitCount(mBitCount); ++i) {
-      data[i] = in.ReadInt32();
+      data[i] = in.Get< uint >();
     }
   }
   static uint Uint32sForBitCount(uint bits) { return bits / 32 + (bits % 32 != 0); }
