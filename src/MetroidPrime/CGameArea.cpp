@@ -81,7 +81,7 @@ CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)
 , mLoadPaused(false)
 , mValidationPaused(false)
 , mActive(true)
-, x108_3_(false) {
+, mUnloading(false) {
   mBounds = mBounds.GetTransformedAABox(mTransform);
   mLayerDependencyOffsets = rstl::vector< uint >(in);
 
@@ -490,7 +490,9 @@ bool CGameArea::StartStreamIn(CStateManager& mgr) {
 }
 
 void CGameArea::Validate(CStateManager& mgr) {
-  // TODO: Drive StartStreamIn while servicing the resource factory.
+  while (!StartStreamIn(mgr)) {
+    gpResourceFactory->AsyncIdle(5000, false);
+  }
 }
 
 void CGameArea::CullDeadAreaRequests() {
@@ -502,8 +504,77 @@ void CGameArea::CullDeadAreaRequests() {
 }
 
 bool CGameArea::Invalidate(CStateManager* mgr) {
-  // TODO: Cancel pending requests and unload area state and script objects.
+  mUnloading = true;
+  if (mPhase == kP_Allocate) {
+    ClearTokenList();
+  } else if (mPhase < kP_LoadScriptObjects) {
+    if (mPostConstructed->mDependencyDmaHandle != CARAMManager::GetInvalidDMAHandle()) {
+      if (CARAMManager::IsDMACompleted(mPostConstructed->mDependencyDmaHandle)) {
+        mPostConstructed->mDependencyDmaHandle = CARAMManager::GetInvalidDMAHandle();
+        mPostConstructed->mSerializedDependencies = nullptr;
+      } else {
+        return false;
+      }
+    }
+
+    ClearTokenList();
+    for (rstl::list< rstl::auto_ptr< CDvdRequest > >::iterator it =
+             mPostConstructed->mLoadTransactions.begin();
+         it != mPostConstructed->mLoadTransactions.end();) {
+      rstl::list< rstl::auto_ptr< CDvdRequest > >::iterator cur = it;
+      ++it;
+      if (!(*cur)->IsComplete()) {
+        (*cur)->PostCancelRequest();
+      } else {
+        mPostConstructed->mLoadTransactions.erase(cur);
+      }
+    }
+    if (!mPostConstructed->mLoadTransactions.empty()) {
+      return false;
+    }
+
+    for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator it =
+             mPostConstructed->mLayerLoadTransactions.begin();
+         it != mPostConstructed->mLayerLoadTransactions.end();) {
+      rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator cur = it;
+      ++it;
+      if (!cur->second->IsComplete()) {
+        cur->second->PostCancelRequest();
+      } else {
+        mPostConstructed->mLayerLoadTransactions.erase(cur);
+      }
+    }
+    if (!mPostConstructed->mLayerLoadTransactions.empty()) {
+      return false;
+    }
+
+    mPostConstructed = nullptr;
+    mPhase = kP_Allocate;
+    ResetLayerData();
+  } else {
+    if (mgr != nullptr) {
+      if (mPhase != kP_Loaded && !StartStreamIn(*mgr)) {
+        return false;
+      }
+      mgr->PrepareAreaUnload(GetId());
+    }
+    RemoveStaticGeometry();
+    mPostConstructed = nullptr;
+    mPhase = kP_Allocate;
+    ResetLayerData();
+    ClearTokenList();
+    if (mgr != nullptr) {
+      mgr->AreaUnloaded(GetId());
+    }
+    fn_80054F74();
+  }
+  mUnloading = false;
   return true;
+}
+
+void CGameArea::ResetLayerData() {
+  mLayerPhases = rstl::vector< ELayerPhase >();
+  mDependencies2 = rstl::vector< rstl::pair< CAssetId, uint > >();
 }
 
 char* CGameArea::AllocNewAreaData(int offset, int size) {
@@ -1670,7 +1741,13 @@ void CGameArea::SortTextureDependencies() {
 }
 
 void CGameArea::DisableDocks(CStateManager& mgr) {
-  // TODO: Mark docks disabled and free their script objects.
+  if (!mPostConstructed->mDockIds.empty()) {
+    mPostConstructed->mDocksDisabled = true;
+    for (rstl::list< TUniqueId >::const_iterator it = mPostConstructed->mDockIds.begin();
+         it != mPostConstructed->mDockIds.end(); ++it) {
+      mgr.SendScriptMsg(*it, kInvalidUniqueId, kSM_SetToZero, kInvalidUniqueId);
+    }
+  }
 }
 
 void CGameArea::EnableDocks() {
