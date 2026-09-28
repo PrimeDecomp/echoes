@@ -112,7 +112,7 @@ void CMainFlow::SetGameState(EClientFlowStates state, CArchitectureQueue& queue)
   case kCFS_FrontEnd: {
     const CMain::ERestartMode mode = gpMain->GetRestartMode();
     if (gpGameState->GetGameMode().GetGameModeType() == 'FRND') {
-      fn_80143884();
+      StartGameFromFrontEnd();
     } else if (mode != CMain::kRM_None) {
       if (gpMain->GetRestartMode() == CMain::kRM_StateSetter) {
         gpMain->SetRestartMode(CMain::kRM_Default);

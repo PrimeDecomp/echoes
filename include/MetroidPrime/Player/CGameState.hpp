@@ -177,7 +177,7 @@ NESTED_CHECK_SIZEOF(CGameState, SPreviousGameResults, 0x54)
 extern CGameState* gpGameState;
 
 // Unidentified game-flow helpers in the CGameState text range.
-void fn_80143884();
+void StartGameFromFrontEnd(); // Guessed name
 void ConfigureGameModeLayers(); // Guessed name
 void fn_80143E88();
 

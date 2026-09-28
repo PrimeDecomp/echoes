@@ -397,7 +397,8 @@ void ConfigureGameModeLayers() {
   }
 }
 
-void fn_80143884() {
+// Guessed name
+void StartGameFromFrontEnd() {
   const CGMFrontEnd config = static_cast< const CGMFrontEnd& >(gpGameState->GetGameMode());
   CGameMode* mode = nullptr;
   switch (config.GetSelectedGameMode()) {
