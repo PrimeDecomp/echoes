@@ -18,7 +18,7 @@ public:
   void ForceRemoveHint(TUniqueId hint, CStateManager& mgr, TUniqueId sender);
 
 private:
-  struct SHint; // Guessed name: priority followed by a runtime CGameHint, stride 0x70.
+  struct SHint; // Guessed name: priority followed by a runtime CHintState, stride 0x70.
   typedef rstl::pair< TUniqueId, TUniqueId > THintSender;
 
   int mPlayerIndex;

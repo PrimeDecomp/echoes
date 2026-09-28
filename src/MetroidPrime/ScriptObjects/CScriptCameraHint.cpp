@@ -45,8 +45,8 @@ CScriptCameraHint::CScriptCameraHint(TUniqueId uid, const rstl::string& name,
                                      float interpolateOnTime, float interpolateOffTime,
                                      float controlInterpDur, int interpolateOnType,
                                      int interpolationMode, int interpolateOffType, int acrossAreas)
-: CScriptHint(uid, name, info, xf, priority, timer, acrossAreas, 0, 0, 0, 0.f, SCallback(),
-              SCallback(), 0.f)
+: CGameHint(uid, name, info, xf, priority, timer, acrossAreas, 0, 0, 0, 0.f, SCallback(),
+            SCallback(), 0.f)
 , mOverrideInfo(flags, overrideFlags, behaviour, minDist, maxDist, backwardsDist, lookAtOffset,
                 worldOffset, fov, attitudeRange, azimuthRange, anglePerSecond, elevation,
                 interpolateOnTime, interpolateOffTime, controlInterpDur, interpolateOnType,
@@ -126,7 +126,7 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     mDelegatedCameraId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     mCameraTargetId = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
   }
-  CScriptHint::AcceptScriptMsg(mgr, msg);
+  CGameHint::AcceptScriptMsg(mgr, msg);
 }
 
 void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateManager& mgr) const {

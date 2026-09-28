@@ -624,7 +624,7 @@ MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 MetroidPrime/Player/CPlayerVisor.cpp:
 	.text       start:0x8022AF0C end:0x8022C4C4
 
-MetroidPrime/ScriptObjects/CScriptHint.cpp:
+MetroidPrime/CGameHint.cpp:
 	.text       start:0x8022D1EC end:0x8022D548
 
 MetroidPrime/ScriptLoader.cpp:

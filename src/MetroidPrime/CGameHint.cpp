@@ -1,15 +1,14 @@
-#include "MetroidPrime/ScriptObjects/CScriptHint.hpp"
+#include "MetroidPrime/CGameHint.hpp"
 
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-CScriptHint::CScriptHint(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                         const CTransform4f& xf, int priority, float timer, int acrossAreas,
-                         int breakType, uint deleteOnRemoval, uint requiredPresses,
-                         float unknown16c, const SCallback& onExpire, const SCallback& onBreak,
-                         float breakDelay)
+CGameHint::CGameHint(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                     const CTransform4f& xf, int priority, float timer, int acrossAreas,
+                     int breakType, uint deleteOnRemoval, uint requiredPresses, float unknown16c,
+                     const SCallback& onExpire, const SCallback& onBreak, float breakDelay)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
          CActorParameters(), kInvalidUniqueId)
 , mPriority(priority)
@@ -23,9 +22,9 @@ CScriptHint::CScriptHint(TUniqueId uid, const rstl::string& name, const CEntityI
 , mBreakDelay(breakDelay)
 , mAcrossAreas(acrossAreas) {}
 
-CScriptHint::~CScriptHint() {}
+CGameHint::~CGameHint() {}
 
-void CScriptHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+void CGameHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   if (!mgr.fn_80036F10()) {
     CActor::AcceptScriptMsg(mgr, msg);
     return;

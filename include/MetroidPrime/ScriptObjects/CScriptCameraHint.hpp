@@ -1,10 +1,10 @@
 #ifndef _CSCRIPTCAMERAHINT
 #define _CSCRIPTCAMERAHINT
 
+#include "MetroidPrime/CGameHint.hpp"
 #include "MetroidPrime/Cameras/CCameraOverrideInfo.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptHint.hpp"
 
-class CScriptCameraHint : public CScriptHint {
+class CScriptCameraHint : public CGameHint {
 public:
   CScriptCameraHint(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                     const CTransform4f& xf, int priority, float timer,
