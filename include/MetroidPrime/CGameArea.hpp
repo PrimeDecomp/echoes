@@ -230,9 +230,9 @@ public:
     rstl::list< SDecompressionRequest > mDecompressionRequests;
     rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > > mMreaSectionBuffers;
     int mMreaSize;
-    int mLoadedSectionCount;
+    uint mLoadedSectionCount;
     int mLoadedBlockCount;
-    int mMreaDataOffset;
+    uint mMreaDataOffset;
     int mFirstScriptSection;
     rstl::vector< bool > mActiveLayers;
     rstl::vector< uint > mLayerFileOffsets;

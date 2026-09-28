@@ -155,6 +155,7 @@ public:
 
   TAreaId GetNextAreaId() const { return m_nextAreaId; }
   void SetCurrentAreaId(TAreaId);
+  void AreaLoaded(TAreaId area); // Guessed name, corresponding to Prime's area-load notification.
   void SetActorAreaId(CActor& actor, TAreaId);
 
   const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }

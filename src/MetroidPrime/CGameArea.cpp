@@ -295,8 +295,259 @@ bool CGameArea::UnloadAllloadedTextures() {
 }
 
 bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
-  // TODO: Restore the dependency, section-read, decompression, and script-loading state machine.
-  return IsLoaded();
+  switch (mPhase) {
+  case kP_Allocate:
+    mPostConstructed = rs_new CPostConstructed(*this);
+    mPhase = kP_ReadDependencies;
+    mPostConstructed->mSerializedDependencies = static_cast< uchar* >(
+        CMemory::Alloc(mSerializedDependencySize, IAllocator::kHI_RoundUpLen));
+    mPostConstructed->mDependencyDmaHandle = CARAMManager::DMAToMRAM(
+        mDependenciesInAram, mPostConstructed->mSerializedDependencies.get(),
+        mSerializedDependencySize, CARAMManager::kDMAPrio_One);
+    break;
+  case kP_ReadDependencies:
+    if (!CARAMManager::IsDMACompleted(mPostConstructed->mDependencyDmaHandle)) {
+      break;
+    }
+    {
+      CMemoryInStream in(mPostConstructed->mSerializedDependencies.get(), mSerializedDependencySize,
+                         CMemoryInStream::kOS_NotOwned);
+      mDependencies2 = rstl::vector< rstl::pair< CAssetId, uint > >(in);
+    }
+    mPostConstructed->mSerializedDependencies = nullptr;
+    mPostConstructed->mDependencyDmaHandle = CARAMManager::GetInvalidDMAHandle();
+    mPhase = kP_PrepareDependencies;
+    // Fall through.
+  case kP_PrepareDependencies:
+    VerifyTokenList(mgr);
+    mPhase = kP_WaitForDependencies;
+    mPostConstructed->mStreamingDelay = 4;
+    break;
+  case kP_WaitForDependencies:
+    if (!UpdateDependencyLoading(mgr)) {
+      break;
+    }
+    mPhase = kP_LoadHeader;
+    // Fall through.
+  case kP_LoadHeader:
+    mPostConstructed->mMreaSectionBuffers.reserve(3);
+    AllocNewAreaData(0, 0x80);
+    mPhase = kP_LoadSectionSizes;
+    // Fall through.
+  case kP_LoadSectionSizes: {
+    CullDeadAreaRequests();
+    if (!mPostConstructed->mLoadTransactions.empty()) {
+      break;
+    }
+    mPostConstructed->mMreaVersion = VerifyHeader();
+    const int sectionBytes = ALIGN_UP(GetNumPartSizes() * 4, 32);
+    const int headerBytes = mPostConstructed->mMreaSectionBuffers[0].second;
+    AllocNewAreaData(headerBytes, sectionBytes);
+    if (mPostConstructed->mMreaVersion >= 24) {
+      AllocNewAreaData(headerBytes + sectionBytes, ALIGN_UP(GetNumCompressedBlocks() * 16, 32));
+    }
+    mPhase = kP_ReserveSections;
+    break;
+  }
+  case kP_ReserveSections: {
+    CullDeadAreaRequests();
+    if (!mPostConstructed->mLoadTransactions.empty()) {
+      break;
+    }
+    const int partCount = GetNumPartSizes();
+    mPostConstructed->mMreaSectionBuffers.reserve(partCount + 3);
+    int offset = mPostConstructed->mMreaSectionBuffers[0].second;
+    offset += mPostConstructed->mMreaSectionBuffers[1].second;
+    if (mPostConstructed->mMreaVersion >= 24) {
+      offset += mPostConstructed->mMreaSectionBuffers[2].second;
+    }
+    mPostConstructed->mLoadedSectionCount = 0;
+    mPostConstructed->mLoadedBlockCount = 0;
+    mPostConstructed->mMreaDataOffset = offset;
+    mPhase = kP_LoadDataSections;
+    break;
+  }
+  case kP_LoadDataSections: {
+    CullDeadAreaRequests();
+    if (mPostConstructed->mMreaVersion < 24) {
+      const int firstSection = mPostConstructed->mLoadedSectionCount;
+      int totalSize = 0;
+      const int partCount = GetNumPartSizes();
+      const int* sizes =
+          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[1].first.get());
+      const SObjectTag tag('MREA', mAreaAssetId);
+      bool load = true;
+      const int scriptStart = GetSectionIndex(1) - 2;
+      const int scriptCount =
+          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[0].first.get())[15];
+      int endSection = firstSection;
+      if (firstSection >= scriptStart && firstSection < scriptStart + scriptCount) {
+        const int layer = firstSection - scriptStart;
+        if (mPostConstructed->mFirstScriptSection == -1) {
+          mPostConstructed->mFirstScriptSection = mPostConstructed->mMreaSectionBuffers.size();
+        }
+        if (!mPostConstructed->mActiveLayers[layer]) {
+          load = false;
+        }
+        totalSize = sizes[firstSection];
+        endSection = firstSection + 1;
+        if (scriptCount != mPostConstructed->mLayerFileOffsets.capacity()) {
+          mPostConstructed->mLayerFileOffsets.reserve(scriptCount);
+        }
+        mPostConstructed->mLayerFileOffsets.push_back_unsafe(mPostConstructed->mMreaDataOffset);
+      } else {
+        for (endSection = firstSection; endSection < partCount; ++endSection) {
+          const int size = sizes[endSection];
+          const bool isScript = endSection >= scriptStart && endSection < scriptStart + scriptCount;
+          if (endSection != firstSection && (isScript || size + totalSize > 0x20000)) {
+            break;
+          }
+          totalSize += size;
+        }
+      }
+
+      rstl::auto_ptr< char > buffer(
+          load ? static_cast< char* >(CMemory::Alloc(totalSize, IAllocator::kHI_RoundUpLen))
+               : nullptr);
+      if (load) {
+        mPostConstructed->mLoadTransactions.push_back(
+            gpResourceFactory->GetResLoader().LoadResourcePartAsync(
+                tag, mPostConstructed->mMreaDataOffset, totalSize, buffer.get()));
+      }
+      mPostConstructed->mMreaDataOffset += totalSize;
+      const int firstSize = sizes[firstSection];
+      int offset = firstSize;
+      mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+          rstl::pair< rstl::auto_ptr< char >, int >(buffer, firstSize));
+      for (int i = firstSection + 1; i < endSection; ++i) {
+        rstl::auto_ptr< char > section(buffer.get() + offset);
+        section.release();
+        const int size = sizes[i];
+        mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+            rstl::pair< rstl::auto_ptr< char >, int >(section, size));
+        offset += size;
+      }
+      mPostConstructed->mLoadedSectionCount = endSection;
+      if (endSection == partCount) {
+        mPostConstructed->mMreaSize = mPostConstructed->mMreaDataOffset;
+        mPhase = kP_WaitForData;
+      }
+    } else {
+      const int* sizes =
+          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[1].first.get());
+      const SObjectTag tag('MREA', mAreaAssetId);
+      const SMreaCompressedBlock& block = reinterpret_cast< const SMreaCompressedBlock* >(
+          mPostConstructed->mMreaSectionBuffers[2]
+              .first.get())[mPostConstructed->mLoadedBlockCount];
+      bool load = true;
+      if (block.mSectionCount == 1) {
+        const uint scriptStart = GetSectionIndex(1) - 2;
+        const uint section = mPostConstructed->mLoadedSectionCount;
+        const int scriptCount = reinterpret_cast< const int* >(
+            mPostConstructed->mMreaSectionBuffers[0].first.get())[15];
+        if (section >= scriptStart && section < scriptStart + scriptCount) {
+          const int layer = section - scriptStart;
+          if (mPostConstructed->mFirstScriptSection == -1) {
+            mPostConstructed->mFirstScriptSection = mPostConstructed->mMreaSectionBuffers.size();
+          }
+          if (scriptCount != mPostConstructed->mLayerFileOffsets.size()) {
+            mPostConstructed->mLayerFileOffsets.resize(scriptCount, 0u);
+          }
+          if (!mPostConstructed->mActiveLayers[layer]) {
+            load = false;
+          }
+          mPostConstructed->mLayerFileOffsets[layer] = mPostConstructed->mMreaDataOffset;
+        }
+      }
+
+      char* memory;
+      if (load) {
+        const int bufferSize = block.mBufferSize;
+        memory = static_cast< char* >(CMemory::Alloc(bufferSize, IAllocator::kHI_RoundUpLen));
+      } else {
+        memory = nullptr;
+      }
+      rstl::auto_ptr< char > buffer(memory);
+      const int compressedSize = ALIGN_UP(block.mCompressedSize, 32);
+      const int readSize = compressedSize ? compressedSize : ALIGN_UP(block.mDecompressedSize, 32);
+      if (load) {
+        mPostConstructed->mLoadTransactions.push_back(
+            gpResourceFactory->GetResLoader().LoadResourcePartAsync(
+                tag, mPostConstructed->mMreaDataOffset, readSize,
+                buffer.get() + block.mBufferSize - readSize));
+        if (compressedSize != 0) {
+          mPostConstructed->mDecompressionRequests.push_back(
+              SDecompressionRequest(mPostConstructed->mLoadTransactions.back().get(),
+                                    reinterpret_cast< uchar* >(buffer.get()),
+                                    reinterpret_cast< const uchar* >(
+                                        buffer.get() + block.mBufferSize - block.mCompressedSize),
+                                    block.mCompressedSize, block.mDecompressedSize));
+        }
+      }
+      mPostConstructed->mMreaDataOffset += readSize;
+      const int firstSize = sizes[mPostConstructed->mLoadedSectionCount];
+      int offset = firstSize;
+      mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+          rstl::pair< rstl::auto_ptr< char >, int >(buffer, firstSize));
+      for (int i = 1; i < block.mSectionCount; ++i) {
+        rstl::auto_ptr< char > section(buffer.get() + offset);
+        section.release();
+        const int size = sizes[mPostConstructed->mLoadedSectionCount + i];
+        mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+            rstl::pair< rstl::auto_ptr< char >, int >(section, size));
+        offset += size;
+      }
+      mPostConstructed->mLoadedSectionCount += block.mSectionCount;
+      ++mPostConstructed->mLoadedBlockCount;
+      if (mPostConstructed->mLoadedSectionCount == GetNumPartSizes()) {
+        mPostConstructed->mMreaSize = mPostConstructed->mMreaDataOffset;
+        mPhase = kP_WaitForData;
+      }
+    }
+    break;
+  }
+  case kP_WaitForData:
+    CullDeadAreaRequests();
+    DecompressAreaData();
+    if (mPostConstructed->mLoadTransactions.empty() &&
+        mPostConstructed->mDecompressionRequests.empty()) {
+      mPhase = kP_WaitForValidation;
+    }
+    break;
+  case kP_WaitForValidation:
+    if (!mValidationPaused) {
+      mPhase = kP_FinishDependencies;
+    }
+    break;
+  case kP_FinishDependencies:
+    FinishDependencyLoading(mgr);
+    mPhase = kP_PostConstruct;
+    break;
+  case kP_PostConstruct:
+    PostConstructArea();
+    PrepareScriptObjects(mgr);
+    mPhase = kP_LoadScriptObjects;
+    break;
+  case kP_LoadScriptObjects:
+    if (LoadScriptObjects(mgr)) {
+      mPhase = kP_FinishScriptObjects;
+    }
+    break;
+  case kP_FinishScriptObjects:
+    mPhase = kP_Loaded;
+    FinishScriptObjects(mgr);
+    if (mSelfIdx != kInvalidAreaId) {
+      mgr.World()->MoveAreaToChain3(mSelfIdx);
+    }
+    mgr.AreaLoaded(GetId());
+    return true;
+  case kP_Unknown14:
+    mPhase = kP_Unknown15;
+    break;
+  case kP_Loaded:
+    return true;
+  }
+  return false;
 }
 
 void CGameArea::DecompressAreaData() {
