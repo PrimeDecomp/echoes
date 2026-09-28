@@ -10,6 +10,10 @@ public:
   float GetVariaSuitDamageReduction();
   float GetDarkSuitDamageReduction();
   float GetLightSuitDamageReduction();
+  float GetGrappleBeamSpeed() const;
+  float GetGrappleBeamXWaveAmplitude() const;
+  float GetGrappleBeamZWaveAmplitude() const;
+  float GetGrappleBeamAnglePhaseDelta() const;
 };
 
 extern CTweakPlayer* gpTweakPlayerA;

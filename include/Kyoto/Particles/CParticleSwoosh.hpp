@@ -100,6 +100,8 @@ public:
 
   void SetWarmUp() { mForceOneUpdate = true; }
   const int GetSwooshCount() const { return mSwooshes.size(); }
+  const rstl::vector< SSwooshData >& GetSwooshes() const { return mSwooshes; }
+  rstl::vector< SSwooshData >& Swooshes() { return mSwooshes; }
 
   bool IsLargeEnough() const;
   void UpdateSwooshTranslation(const CVector3f& translation);

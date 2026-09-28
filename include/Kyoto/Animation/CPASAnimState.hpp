@@ -26,6 +26,7 @@ public:
 
   pas::EAnimationState GetStateId() const { return mId; }
   bool HasAnims() const { return static_cast< uint >(mAnims.size()) != 0; }
+  int GetNumAnims() const { return mAnims.size(); }
 
   bool operator<(const CPASAnimState& rhs) const { return mId < rhs.mId; }
 
