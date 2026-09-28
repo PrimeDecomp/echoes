@@ -427,6 +427,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CRainSplashGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerData.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCameraFilter.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitions.cpp"),
