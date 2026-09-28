@@ -380,7 +380,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
-            Object(NonMatching, "MetroidPrime/CControlMapper.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CControlMapper.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CObjectList.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CAxisAngle.cpp"),
             Object(NonMatching, "MetroidPrime/CEulerAngles.cpp"),

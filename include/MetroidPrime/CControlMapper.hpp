@@ -127,10 +127,10 @@ public:
 
   float GetAnalogInput(ECommands command, const CFinalInput& input,
                        EFilterType filter = kFT_Filtered) const;
-  bool GetDigitalInput(ECommands command, const CFinalInput& input,
-                       EFilterType filter = kFT_Filtered) const;
-  bool GetPressInput(ECommands command, const CFinalInput& input,
-                     EFilterType filter = kFT_Filtered) const;
+  const bool GetDigitalInput(ECommands command, const CFinalInput& input,
+                             EFilterType filter = kFT_Filtered) const;
+  const bool GetPressInput(ECommands command, const CFinalInput& input,
+                           EFilterType filter = kFT_Filtered) const;
 
   // Echoes method names below are inferred from their implementations.
   void Reset();

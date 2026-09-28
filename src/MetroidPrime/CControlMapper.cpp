@@ -295,8 +295,8 @@ float CControlMapper::GetAnalogInput(ECommands command, const CFinalInput& input
   return result;
 }
 
-bool CControlMapper::GetDigitalInput(ECommands command, const CFinalInput& input,
-                                     EFilterType filter) const {
+const bool CControlMapper::GetDigitalInput(ECommands command, const CFinalInput& input,
+                                           EFilterType filter) const {
   bool result = false;
   EFunctionList mapping = GetMapping(command);
   if (gDigitalInputs[mapping] != nullptr) {
@@ -307,8 +307,8 @@ bool CControlMapper::GetDigitalInput(ECommands command, const CFinalInput& input
   return result;
 }
 
-bool CControlMapper::GetPressInput(ECommands command, const CFinalInput& input,
-                                   EFilterType filter) const {
+const bool CControlMapper::GetPressInput(ECommands command, const CFinalInput& input,
+                                         EFilterType filter) const {
   bool result = false;
   EFunctionList mapping = GetMapping(command);
   if (gPressInputs[mapping] != nullptr) {
