@@ -769,6 +769,31 @@ Kyoto/Animation/CMetaAnimSequence.cpp:
 	.rodata     start:0x803AED90 end:0x803AED98
 	.data       start:0x803B93F0 end:0x803B9410
 
+Kyoto/Animation/CMetaTransFactory.cpp:
+	.text       start:0x80295FD8 end:0x802961D0
+	.rodata     start:0x803AED98 end:0x803AEDA0
+
+Kyoto/Animation/CMetaTransMetaAnim.cpp:
+	.text       start:0x802961D0 end:0x8029640C
+	.rodata     start:0x803AEDA0 end:0x803AEDA8
+	.data       start:0x803B9410 end:0x803B9428
+
+Kyoto/Animation/CMetaTransPhaseTrans.cpp:
+	.text       start:0x8029640C end:0x80296CAC
+	.rodata     start:0x803AEDA8 end:0x803AEDB0
+	.data       start:0x803B9428 end:0x803B9440
+	.sdata      start:0x80418A00 end:0x80418A08
+	.sdata2     start:0x8041E298 end:0x8041E2A0
+
+Kyoto/Animation/CMetaTransSnap.cpp:
+	.text       start:0x80296CAC end:0x80296D38
+	.data       start:0x803B9440 end:0x803B9458
+
+Kyoto/Animation/CMetaTransTrans.cpp:
+	.text       start:0x80296D38 end:0x80297020
+	.rodata     start:0x803AEDB0 end:0x803AEDB8
+	.data       start:0x803B9458 end:0x803B9470
+
 Kyoto/Animation/CPASAnimInfo.cpp:
 	.text       start:0x80297020 end:0x80297128
 

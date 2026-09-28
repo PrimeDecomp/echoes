@@ -1,9 +1,9 @@
 #ifndef _IMETATRANS
 #define _IMETATRANS
 
+#include "Kyoto/Animation/CAnimTreeNode.hpp"
 #include "rstl/rc_ptr.hpp"
 
-class CAnimTreeNode;
 class CAnimSysContext;
 class COutputStream;
 
