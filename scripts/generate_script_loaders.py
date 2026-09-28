@@ -33,6 +33,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
+from binascii import crc32
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path, PurePosixPath
@@ -121,6 +122,8 @@ KEYWORDS: set[str] = {
     "xor",
 }
 
+def is_matching(name: str, hash_value: int):
+    return (crc32(name.encode()) ^ 0xFFFFFFFF) == hash_value
 
 @dataclass(frozen=True)
 class Primitive:
@@ -147,6 +150,21 @@ PRIMITIVES: dict[str, Primitive] = {
         "SLdrSpline", "SLdrSpline(input, propertySize)", "Kyoto/Math/CMayaSpline.hpp"
     ),
 }
+pwe_type_lookup = {
+    "Bool": "bool",
+    "Short": "short",
+    "Int": "int",
+    "Choice": "choice",
+    "Sound": "sound",
+    "Float": "float",
+    "Asset": "asset",
+    "String": "string",
+    "Spline": "spline",
+    "Array": "array",
+    "Guid": "guid",
+    "Enum": "enum",
+}
+
 
 
 class TemplateError(ValueError):
@@ -286,6 +304,7 @@ class Field:
     name: str
     node: ET.Element
     cpp: str
+    matching_name: bool | None
     dependency: str | None = None
     item: Field | None = None
 
@@ -384,12 +403,17 @@ class Generator:
                 children.insert(index, self.resolve(child, trail))
         return node
 
-    def member_name(self, node: ET.Element) -> str:
+    def raw_name(self, node: ET.Element) -> str | None:
         pid = property_id(node) if "ID" in node.attrib else 0
         name = node.findtext("Name")
         if not name:
             kind = node.get("Archetype", node.attrib["Type"]).lower()
-            name = self.names.get((pid, kind), "")
+            name = self.names.get((pid, kind))
+        return name
+
+    def member_name(self, node: ET.Element) -> str:
+        pid = property_id(node) if "ID" in node.attrib else 0
+        name = self.raw_name(node) or ""
         if not name or name.lower().startswith("unknown"):
             return f"unknown_0x{pid:08x}"
         name = identifier(name)
@@ -397,13 +421,30 @@ class Generator:
 
     def make_field(self, node: ET.Element, name: str, owner: str) -> Field:
         kind = node.attrib["Type"]
+        archetype = node.get("Archetype")
+
+        matching_name = False
+
+        raw_name = self.raw_name(node)
+
+        if raw_name is not None:
+            matching_type_name = kind
+            if matching_type_name in pwe_type_lookup:
+                matching_type_name = pwe_type_lookup[matching_type_name]
+            elif archetype:
+                matching_type_name = archetype
+            
+            if matching_type_name is not None:
+                hashable_name = f"{raw_name}{matching_type_name}"
+                matching_name = is_matching(hashable_name, property_id(node))
+
         if kind == "Array":
             item_node = node.find("ItemArchetype")
             if item_node is None:
                 raise TemplateError("Array has no ItemArchetype: " + owner)
             item = self.make_field(self.resolve(item_node), "item", owner + "_Item")
-            return Field(name, node, "rstl::vector< " + item.cpp + " >", item=item)
-        archetype = node.get("Archetype")
+            return Field(name, node, "rstl::vector< " + item.cpp + " >", item=item, matching_name=matching_name)
+        
         if kind == "Struct" or archetype:
             if archetype:
                 cpp = "SLdr" + identifier(archetype)
@@ -413,15 +454,16 @@ class Generator:
             else:
                 cpp = "SLdr" + identifier(owner + "_" + name)
                 self.add_struct(cpp, node, "inline " + owner)
-            return Field(name, node, cpp, cpp)
+            return Field(name, node, cpp, matching_name, cpp)
         if kind == "AnimationSet":
             self.uses_animation_parameters = True
             return Field(
-                name, node, "SLdrAnimationParameters", "SLdrAnimationParameters"
+                name, node, "SLdrAnimationParameters", matching_name, "SLdrAnimationParameters",
             )
         if kind not in PRIMITIVES:
             raise TemplateError("Unsupported property type " + kind + " in " + owner)
-        return Field(name, node, PRIMITIVES[kind].cpp_type)
+
+        return Field(name, node, PRIMITIVES[kind].cpp_type, matching_name=matching_name)
 
     def add_struct(
         self, name: str, node: ET.Element, path: str, is_object: bool = False
@@ -445,7 +487,7 @@ class Generator:
         if struct.scalar:
             if kind not in PRIMITIVES:
                 raise TemplateError("Unsupported scalar archetype: " + kind)
-            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type))
+            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=False))
         else:
             seen_ids: set[int] = set()
             seen_names: set[str] = set()
@@ -536,7 +578,7 @@ class Generator:
                     and ET.tostring(actual_default) == ET.tostring(inherited)
                 ):
                     return []
-                scalar = Field("value", prop.node, struct.fields[0].cpp)
+                scalar = Field("value", prop.node, struct.fields[0].cpp, matching_name=False)
                 return self.defaults(scalar, target + ".value")
             children = {
                 property_id(child): child
@@ -672,9 +714,13 @@ class Generator:
                 "",
             ]
             for prop in member.fields:
-                comment = (
-                    f" // 0x{property_id(prop.node):08x}" if not member.scalar else ""
-                )
+                comment_entries = []
+                if not member.scalar:
+                    if not prop.matching_name and not prop.name.startswith("unknown_"):
+                        comment_entries.append("non-matching name")
+                    comment_entries.append(f"0x{property_id(prop.node):08x}")
+
+                comment = " // " + ", ".join(comment_entries) if comment_entries else ""
                 header.append("  " + prop.cpp + " " + prop.name + ";" + comment)
             header += [
                 "};",
