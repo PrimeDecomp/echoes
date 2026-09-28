@@ -153,6 +153,7 @@ public:
   int GetRenderFrameIndex() const { return mRenderFrameIndex; } // Guessed name
 
   TAreaId GetNextAreaId() const { return m_nextAreaId; }
+  TAreaId GetPreviousAreaId() const { return mPreviousAreaId; }
   void SetCurrentAreaId(TAreaId);
   void AreaLoaded(TAreaId area); // Guessed name, corresponding to Prime's area-load notification.
   void PrepareAreaUnload(TAreaId area); // Guessed name from Prime.
@@ -241,7 +242,7 @@ public:
   int* x1698;
   rstl::single_ptr< CSaveGameScreen > m_saveGameScreen; // x169C
   TAreaId m_nextAreaId; // x16a0
-  char x16a4_[4];
+  TAreaId mPreviousAreaId;
   int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
   int m_updateFrameIdx; // 16AC
   char pad4[0x34]; // 16B0

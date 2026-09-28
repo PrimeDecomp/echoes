@@ -147,6 +147,7 @@ public:
   CTransform4f GetScaledLocatorTransform(const CSegId& locator) const;
   float GetYaw() const;
   void SetActorLights(rstl::auto_ptr< CActorLights > lights);
+  void SetWorldLightingDirty(bool dirty) { mWorldLightingDirty = dirty; }
   void SetInFluid(CStateManager& mgr, bool inFluid, TUniqueId uid);
   TUniqueId InFluidId() const;
   // Guessed names.

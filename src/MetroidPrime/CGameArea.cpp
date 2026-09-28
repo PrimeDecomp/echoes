@@ -21,7 +21,9 @@
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/PathFinding/CPathFindArea.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "WorldFormat/CAreaBspTree.hpp"
 #include "WorldFormat/CAreaOctTree.hpp"
@@ -1794,7 +1796,47 @@ void CGameArea::SetWeaponWorldLighting(float speed, float target) {
 }
 
 void CGameArea::UpdateWeaponWorldLighting(float dt) {
-  // TODO: Blend x-ray and weapon lighting, then mark area actors' lighting dirty.
+  float lighting = mPostConstructed->mWorldLightingLevel;
+  if (0.f != mPostConstructed->mXraySpeed) {
+    float delta = dt * mPostConstructed->mXraySpeed;
+    if (CMath::AbsF(mPostConstructed->mXrayTarget - lighting) < delta) {
+      lighting = mPostConstructed->mXrayTarget;
+      mPostConstructed->mWeaponWorldLightingSpeed = 0.f;
+    } else if (mPostConstructed->mXrayTarget < lighting) {
+      lighting -= delta;
+    } else {
+      lighting += delta;
+    }
+  }
+
+  if (0.f != mPostConstructed->mWeaponWorldLightingSpeed) {
+    float weaponLighting = mPostConstructed->mWorldLightingLevel;
+    float delta = dt * mPostConstructed->mWeaponWorldLightingSpeed;
+    if (CMath::AbsF(mPostConstructed->mWeaponWorldLightingTarget - lighting) < delta) {
+      weaponLighting = mPostConstructed->mWeaponWorldLightingTarget;
+      mPostConstructed->mWeaponWorldLightingSpeed = 0.f;
+    } else if (mPostConstructed->mWeaponWorldLightingTarget < weaponLighting) {
+      weaponLighting -= delta;
+    } else {
+      weaponLighting += delta;
+    }
+    if (mPostConstructed->mXraySpeed != 0.f) {
+      lighting = rstl::min_val(weaponLighting, lighting);
+    } else {
+      lighting = weaponLighting;
+    }
+  }
+
+  float epsilon = 0.00001f;
+  if (!(CMath::AbsF(mPostConstructed->mWorldLightingLevel - lighting) < epsilon)) {
+    mPostConstructed->mWorldLightingLevel = lighting;
+    CObjectList& objects = *mPostConstructed->mAreaObjectList;
+    for (int i = objects.GetFirstObjectIndex(); i != -1; i = objects.GetNextObjectIndex(i)) {
+      if (CActor* actor = TCastToPtr< CActor >(objects[i])) {
+        actor->SetWorldLightingDirty(true);
+      }
+    }
+  }
 }
 
 uint CGameArea::Get1stPVSLightFeature(uint index) const {
@@ -1819,11 +1861,101 @@ uint CGameArea::Get2ndPVSLightFeature(uint index) const {
 }
 
 void CGameArea::InitializeDocks(CStateManager& mgr) {
-  // TODO: Filter dock IDs and initialize connected-area loading.
+  bool hasUnloadedDock = false;
+  for (rstl::list< TUniqueId >::iterator it = mPostConstructed->mDockIds.begin();
+       it != mPostConstructed->mDockIds.end();) {
+    const CScriptDock* dock = TCastToConstPtr< CScriptDock >(mgr.GetObjectById(*it));
+    rstl::list< TUniqueId >::iterator current = it;
+    ++it;
+    if (dock && !mDocks[dock->GetDockId()].GetDockRefs().empty()) {
+      if (dock->IsVirtual()) {
+        mPostConstructed->mDockIds.erase(current);
+      } else if (!dock->GetLoadConnected()) {
+        hasUnloadedDock = true;
+      }
+    } else {
+      mPostConstructed->mDockIds.erase(current);
+    }
+  }
+
+  bool loadDynamically = true;
+  if (hasUnloadedDock) {
+    loadDynamically = false;
+  }
+  for (rstl::list< TUniqueId >::iterator it = mPostConstructed->mDockIds.begin();
+       it != mPostConstructed->mDockIds.end(); ++it) {
+    if (CScriptDock* dock = TCastToPtr< CScriptDock >(mgr.ObjectById(*it))) {
+      if (loadDynamically) {
+        dock->SetLoadConnected(false);
+      }
+      dock->InitializeConnectedArea(mgr);
+    }
+  }
+  if (!loadDynamically) {
+    mPostConstructed->mDockIds.clear();
+  }
 }
 
 void CGameArea::UpdateDocks(CStateManager& mgr) {
-  // TODO: Select nearby docks and send Echoes script messages.
+  if (mPostConstructed->mDockIds.empty() || mPostConstructed->mDocksDisabled) {
+    return;
+  }
+
+  float nearestDistance = 3.402823466e+38f;
+  float secondDistance = 3.402823466e+38f;
+  CScriptDock* nearest = nullptr;
+  CScriptDock* second = nullptr;
+  const CPlayer& player = *mgr.GetPlayer(0);
+  const TAreaId previousArea = mgr.GetPreviousAreaId();
+  for (rstl::list< TUniqueId >::iterator it = mPostConstructed->mDockIds.begin();
+       it != mPostConstructed->mDockIds.end(); ++it) {
+    if (CScriptDock* dock = TCastToPtr< CScriptDock >(mgr.ObjectById(*it))) {
+      float distance = (player.GetTranslation() - dock->GetTranslation()).MagSquared();
+      const Dock& areaDock = mDocks[dock->GetDockId()];
+      if (areaDock.GetConnectedAreaId(areaDock.GetReferenceCount()) == previousArea) {
+        distance *= 1.5f;
+      }
+      if (distance < nearestDistance) {
+        secondDistance = nearestDistance;
+        second = nearest;
+        nearestDistance = distance;
+        nearest = dock;
+      } else if (distance < secondDistance) {
+        second = dock;
+        secondDistance = distance;
+      }
+    }
+  }
+
+  const Dock& nearestDock = mDocks[nearest->GetDockId()];
+  if (nearestDock.GetShouldLoadOther(nearestDock.GetReferenceCount())) {
+    return;
+  }
+  if (second) {
+    const Dock& secondDock = mDocks[second->GetDockId()];
+    if (secondDock.GetShouldLoadOther(nearestDock.GetReferenceCount())) {
+      float nearestLength = CMath::SqrtF(nearestDistance);
+      float secondLength = CMath::SqrtF(secondDistance);
+      float difference = CMath::AbsF(nearestLength - secondLength);
+      if (difference < 2.f ||
+          (rstl::max_val(nearestLength, secondLength) > 20.f && difference < 5.f)) {
+        return;
+      }
+    }
+  }
+
+  for (rstl::list< TUniqueId >::iterator it = mPostConstructed->mDockIds.begin();
+       it != mPostConstructed->mDockIds.end(); ++it) {
+    if (const CScriptDock* dock = TCastToConstPtr< CScriptDock >(mgr.GetObjectById(*it))) {
+      if (dock != nearest) {
+        mgr.SendScriptMsg_fn_80037100(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
+                                                 dock->GetUniqueId(), kSM_SetToZero,
+                                                 kSS_InvalidState));
+      }
+    }
+  }
+  mgr.SendScriptMsg_fn_80037100(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
+                                           nearest->GetUniqueId(), kSM_SetToMax, kSS_InvalidState));
 }
 
 void CGameArea::fn_80054F74() {}
