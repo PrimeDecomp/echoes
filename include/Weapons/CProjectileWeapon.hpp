@@ -53,6 +53,11 @@ public:
   static float GetTickTime();
   static void SetGlobalSeed(uint seed);
   void SetParticleTranslationOffset(const CVector3f& offset); // Guessed name
+  TLockedToken< CWeaponDescription > GetWeaponDescription() const { return mWeaponDesc; }
+  CElementGen* GetAttachedPS1() const { return mAPSMGen; }
+  double GameTime() const { return mCurTime; }
+  int GetCurrentFrame() const { return mCurFrame; }
+  int GetLifetime() const { return mLifetime; }
 
 private:
   // Guessed names: Echoes-only billboard/trail evaluation and rendering.

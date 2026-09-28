@@ -102,6 +102,7 @@ public:
     Add(m5);
   }
   explicit CMaterialList(u64 value) : value(value) {}
+  u64 GetValue() const { return value; }
 
   void Add(EMaterialTypes material) { value |= u64(1) << material; }
   void Add(const CMaterialList& material) { value |= material.value; }

@@ -28,6 +28,7 @@ public:
   GetDecalDescription(EWeaponCollisionResponseTypes type) const;
   float GetAudibleRange() const;
   float GetAudibleFallOff() const;
+  static EWeaponCollisionResponseTypes GetWorldCollisionResponseType(int material);
 
 private:
   GeneratorListType mGeneratorTokens;

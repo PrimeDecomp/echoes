@@ -204,7 +204,7 @@ MetroidPrime/Enemies/CAi.cpp:
 
 MetroidPrime/TypesMatch.cpp:
 	.text       start:0x800972BC end:0x8009D644
-	.data       start:0x803B2ED4 end:0x803B2FCC
+	.data       start:0x803B2ED4 end:0x803B3068
 
 MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.text       start:0x8009DCE8 end:0x8009F4E4
@@ -468,7 +468,16 @@ MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
 
 MetroidPrime/CEnvFxManager.cpp:
-	.text       start:0x80161FBC end:0x80168598
+	.text       start:0x80161FBC end:0x801685E4
+	.ctors      start:0x803A5540 end:0x803A5544
+
+MetroidPrime/Weapons/CEnergyProjectile.cpp:
+	.text       start:0x801685E4 end:0x8016B7B0
+	.ctors      start:0x803A5544 end:0x803A5548
+	.rodata     start:0x803A9790 end:0x803A9848
+	.bss        start:0x803DB3E0 end:0x803DB410
+	.sbss       start:0x80419210 end:0x80419220
+	.sdata2     start:0x8041C624 end:0x8041C680
 
 MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
