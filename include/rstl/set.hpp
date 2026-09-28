@@ -31,6 +31,7 @@ public:
   const_iterator find(const T& key) const { return inner.find(key); }
 
   void erase(iterator it) { inner.erase(it); }
+  int erase(const T& key) { return inner.erase(key); }
   int size() const { return inner.size(); }
   
 private:
