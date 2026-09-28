@@ -7,6 +7,9 @@
 
 class CInputStream;
 class CWorldLight {
+  static const CVector3f kDefaultPosition;
+  static const CVector3f kDefaultDirection;
+
 public:
   enum EWorldLightType {
     kWLT_LocalAmbient,
