@@ -91,6 +91,9 @@ public:
   typedef rstl::map< TEditorId, TUniqueId > TIdList;
   typedef rstl::pair< TIdList::const_iterator, TIdList::const_iterator > TIdListResult;
 
+  // Guessed phase names, derived from world initialization.
+  enum EInitPhase { kIP_LoadAudioGroups, kIP_LoadWorld, kIP_LoadFirstArea, kIP_Done };
+
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
   ~CStateManager();
@@ -147,6 +150,7 @@ public:
 
   CWorld* World() { return m_world; }
   const CWorld* GetWorld() const { return m_world; }
+  bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
   CEnvFxManager* EnvFxManager() { return m_envFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
   CRandom16* Random() { return &mRandom; }
@@ -245,7 +249,9 @@ public:
   int m_updateFrameIdx; // 16AC
   char pad4[0x34]; // 16B0
   CRandom16 mRandom;
-  char x16e8_[0xD4C];
+  char x16e8_[8];
+  EInitPhase mInitPhase;
+  char x16f4_[0xD40];
 
   CAssetId m_pauseHudMessage; // 0x2434
   float mEscapeTotalTime;

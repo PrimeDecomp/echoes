@@ -29,6 +29,7 @@ class CPortalArea;
 class CStaticGeometryMap;
 class CScriptAreaProperties;
 class CStateManager;
+class CWorldLayerState;
 struct TLayerId;
 
 class CGameArea : public IGameArea {
@@ -298,7 +299,7 @@ public:
   void ReadCompressedLayer(const int offset, rstl::auto_ptr< CDvdRequest >& request,
                            rstl::auto_ptr< char >& buffer);
   void SortTextureDependencies();
-  void SortRelTokens();
+  void SortRelTokens(const CWorldLayerState& layers);
   bool UpdateDependencyLoading(CStateManager& mgr);
   void AddLayerTokens(int layer, rstl::vector< CToken >& tokens);
   void FinishDependencyLoading(CStateManager& mgr);
