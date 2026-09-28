@@ -7,8 +7,8 @@
 class CParticlePOINode : public CPOINode {
 public:
   CParticlePOINode(uint nameHash = -1, EPOIType type = kPT_Particle,
-                   const CCharAnimTime& time = CCharAnimTime(), int index = -1, bool unique = false,
-                   float weight = 1.f, int charIdx = -1, int flags = 0,
+                   const CCharAnimTime& time = CCharAnimTime(), int index = -1,
+                   const bool unique = false, float weight = 1.f, int charIdx = -1, int flags = 0,
                    const CParticleData& data = CParticleData())
   : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags), mData(data) {}
 
