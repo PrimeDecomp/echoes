@@ -32,6 +32,7 @@ public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
   CHintManager* HintManager() { return mCameraHintManager; }
+  const CBallCamera* GetBallCamera() const { return mBallCamera; }
 
   float GetFirstPersonFOV() const;
   void SetFirstPersonFOV(float fov);

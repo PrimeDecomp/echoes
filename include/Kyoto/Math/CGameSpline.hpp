@@ -16,6 +16,13 @@ public:
   uint GetLookAtKnotCount() const;
   CMotionSpline& PositionSpline();
   CMotionSpline& LookAtSpline();
+  const CMotionSpline& GetPositionSpline() const;
+  const CMotionSpline& GetLookAtSpline() const;
+  CMayaSpline& PositionTimeSpline();
+  CMayaSpline& LookAtTimeSpline();
+  float GetLength() const;
+  float FindClosestLengthOnSpline(float start, const CVector3f& position) const;
+  float ValidateLength(float distance) const;
   CVector3f GetPositionByTime(float time);
   CVector3f GetPositionByLength(float distance);
   CVector3f GetLookAtByTime(float time);
