@@ -226,7 +226,7 @@ CWorld::~CWorld() {
 
 bool CWorld::ScheduleAreaToLoad(CGameArea* area, CStateManager& mgr) {
   if (!area->IsLoaded()) {
-    if (area->GetX108_3()) {
+    if (area->IsUnloading()) {
       return false;
     }
     MoveToChain(area, kC_Loading);

@@ -271,7 +271,7 @@ public:
   CGameArea* GetNext() const { return mNext; }
   int GetCurChain() const { return mCurrentChain; }
   bool IsActive() const { return mActive; }
-  bool GetX108_3() const { return x108_3_; }
+  bool IsUnloading() const { return mUnloading; }
   int GetDockCount() const { return mDocks.size(); }
   const CTransform4f& GetTM() const { return mTransform; }
   TAreaId GetId() const { return mSelfIdx; }
@@ -286,6 +286,7 @@ public:
   bool StartStreamIn(CStateManager& mgr);
   bool StartStreamingMainArea(CStateManager& mgr);
   bool Invalidate(CStateManager* mgr);
+  void ResetLayerData(); // Guessed name.
   char* AllocNewAreaData(int offset, int size);
   int VerifyHeader() const;
   int GetNumPartSizes() const;
@@ -383,7 +384,7 @@ private:
   bool mLoadPaused : 1;
   bool mValidationPaused : 1;
   bool mActive : 1;
-  bool x108_3_ : 1;
+  bool mUnloading : 1;
 };
 CHECK_SIZEOF(CGameArea, 0x10c)
 NESTED_CHECK_SIZEOF(CGameArea, CPostConstructed, 0x2d0)

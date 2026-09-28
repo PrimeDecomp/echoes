@@ -110,6 +110,8 @@ public:
   void SendScriptMsg_fn_80037100(const CScriptMsg&);
   void DeliverScriptMsg(const CScriptMsg& msg); // Guessed name
   void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
+  void SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
+                     TUniqueId actor); // Guessed overload name.
 
   void AddObject(CEntity*);
   void DeleteObjectRequest(TUniqueId);
@@ -153,6 +155,8 @@ public:
   TAreaId GetNextAreaId() const { return m_nextAreaId; }
   void SetCurrentAreaId(TAreaId);
   void AreaLoaded(TAreaId area); // Guessed name, corresponding to Prime's area-load notification.
+  void PrepareAreaUnload(TAreaId area); // Guessed name from Prime.
+  void AreaUnloaded(TAreaId area);      // Guessed name from Prime.
   void SetActorAreaId(CActor& actor, TAreaId);
 
   const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }
