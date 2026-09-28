@@ -5,6 +5,8 @@
 #include "rstl/single_ptr.hpp"
 
 struct SLdrTweakBall;
+class CDamageInfo;
+class CRelAngle;
 
 class CTweakBall {
 public:
@@ -50,7 +52,55 @@ public:
   float GetBallCameraBoostSpringMax() const;
   float GetBallCameraBoostSpringTardis() const;
 
+  // Guessed names for newly recovered accessors.
+  float GetMaxBallTranslationAcceleration(int surface) const;
+  float GetBallTranslationFriction(int surface) const;
+  float GetBallForwardBrakingAcceleration(int surface) const;
+  float GetBallSlipFactor(int surface) const;
+  float GetBallCameraControlDistance() const;
+  float GetBallGravity() const;
+  float GetBallWaterGravity() const;
+  float GetMinimumAlignmentSpeed() const;
+  float GetTireness() const;
+  float GetLeftStickDivisor() const;
+  float GetRightStickDivisor() const;
+  CRelAngle GetMaxLeanAngle() const;
+  float GetTireToMarbleThresholdSpeed() const;
+  float GetMarbleToTireThresholdSpeed() const;
+  float GetForceToLeanGain() const;
+  float GetLeanTrackingGain() const;
+  float GetBallTouchRadius() const;
+  float GetBoostBallDrainTime() const;
+  float GetBoostBallMaxChargeTime() const;
+  float GetBoostBallMinChargeTime() const;
+  float GetBoostBallMinRelativeSpeedForDamage() const;
+  float GetSpiderBallBoostScalar() const;
+  CDamageInfo GetBoostBallDamage() const;
+  CDamageInfo GetCannonBallDamage() const;
+  float GetBoostBallCollisionKnockBackSpeed() const;
+  float GetBoostBallHitPlayerBallKnockBackSpeed() const;
+  float GetBoostBallHitPlayerFPKnockBackSpeed() const;
+  float GetScrewAttackGravity() const;
+  float GetScrewAttackInitialDropLimit() const;
+  float GetScrewAttackFinalDropLimit() const;
+  int GetScrewAttackDropLimitJumpCount() const;
+  float GetScrewAttackVerticalJumpVelocity() const;
+  float GetScrewAttackHorizontalJumpVelocity() const;
+  CRelAngle GetScrewAttackMaxSteeringAngle() const;
+  float GetScrewAttackIntoBallTransitionTime() const;
+  float GetScrewAttackOutOfBallTransitionTime() const;
+  float GetScrewAttackWallJumpMaxTime() const;
+  float GetScrewAttackWallJumpVerticalVelocity() const;
+  float GetScrewAttackWallJumpHorizontalVelocity() const;
+  float GetScrewAttackWallJumpGravity() const;
+  CDamageInfo GetScrewAttackDamage() const;
+  float GetDeathBallDamageDelay() const;
+  CDamageInfo GetDeathBallDamage() const;
+  float GetBoostBallChargeTimeTable(int index) const;
+  float GetBoostBallIncrementalSpeedTable(int index) const;
+
 private:
+  // Borrowed settings record.
   const SLdrTweakBall* mData;
 };
 CHECK_SIZEOF(CTweakBall, 0x4)

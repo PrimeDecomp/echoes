@@ -2,6 +2,7 @@
 #define _CTWEAKAUTOMAPPER
 
 #include "Kyoto/Math/CVector2f.hpp"
+#include "MetroidPrime/CMappableObject.hpp"
 #include "rstl/single_ptr.hpp"
 
 struct SLdrTweakAutoMapper;
@@ -10,6 +11,13 @@ class CColor;
 class CTweakAutoMapper {
 public:
   explicit CTweakAutoMapper(const SLdrTweakAutoMapper& data) : mData(&data) {}
+
+  // Guessed names, recovered from the runtime accessors.
+  CColor GetDoorColor(CMappableObject::EMappableObjectType type) const;
+  const CColor& GetDarkBeamDoorOutlineColor() const;
+  float GetDoorHalfHeight() const;
+  float GetDoorHalfWidth() const;
+  float GetDoorHalfDepth() const;
 
   bool GetShowOneMiniMapArea() const;
   bool GetScaleMoveSpeedWithCameraDistance() const;
@@ -78,6 +86,7 @@ public:
   const CColor& GetBlackColor() const;
 
 private:
+  // Borrowed settings record.
   const SLdrTweakAutoMapper* mData;
 };
 CHECK_SIZEOF(CTweakAutoMapper, 0x4)

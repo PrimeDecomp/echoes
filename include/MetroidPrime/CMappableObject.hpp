@@ -10,6 +10,15 @@ class CMapWorldInfo;
 class CMappableObject {
 public:
   enum EMappableObjectType {
+    // Guessed names; values are the map door-color selectors.
+    kMOT_BlueDoor = 0,
+    kMOT_MissileDoor = 1,
+    kMOT_DarkBeamDoor = 2,
+    kMOT_AnnihilatorBeamDoor = 3,
+    kMOT_LightBeamDoor = 4,
+    kMOT_SuperMissileDoor = 5,
+    kMOT_SeekerDoor = 6,
+    kMOT_PowerBombDoor = 7,
     kMOT_Teleporter = 22 // Guessed name
   };
 
