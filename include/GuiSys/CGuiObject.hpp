@@ -8,13 +8,18 @@ public:
   CGuiObject();
   virtual ~CGuiObject();
 
+  void MoveInWorld(const CVector3f& offset);
+
   const CTransform4f& GetWorldTransform() const;
   CVector3f GetWorldPosition() const;
   const CTransform4f& GetO2PTransform() const { return mLocalXF; }
   CVector3f GetLocalPosition() const;
   void SetLocalPosition(const CVector3f& pos);
   void SetO2PTransform(const CTransform4f& xf);
+  void SetO2WTransform(const CTransform4f& xf);
   void RotateReset();
+  CVector3f RotateW2O(const CVector3f& vec) const;
+  CVector3f RotateTranslateW2O(const CVector3f& vec) const;
   void MultiplyO2P(const CTransform4f& xf);
   void RecalculateTransforms();
 

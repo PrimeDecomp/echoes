@@ -801,6 +801,11 @@ GuiSys/CGuiFrame.cpp:
 	.rodata     start:0x803AE4F8 end:0x803AE500
 	.data       start:0x803B8E30 end:0x803B8E70
 
+GuiSys/CGuiObject.cpp:
+	.text       start:0x8027799C end:0x8027855C
+	.data       start:0x803B8F08 end:0x803B8F18
+	.sdata2     start:0x8041E048 end:0x8041E050
+
 GuiSys/CGuiPane.cpp:
 	.text       start:0x8027855C end:0x80278BF8
 	.rodata     start:0x803AE558 end:0x803AE560
@@ -815,6 +820,10 @@ GuiSys/CGuiTextPane.cpp:
 
 Kyoto/Text/CGuiTextSupport.cpp:
 	.text       start:0x8027B184 end:0x8027D7B0
+
+GuiSys/CGuiWidget.cpp:
+	.text       start:0x8027D7B0 end:0x8027E1E4
+	.data       start:0x803B9040 end:0x803B9080
 
 Collision/CollisionUtil.cpp:
 	.text       start:0x8028385C end:0x80288300
