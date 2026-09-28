@@ -24,6 +24,11 @@ public:
   void PostConstruct();
   bool GetIsVisibleToAutoMapper(bool worldVis, const CMapWorldInfo& info) const;
   CTransform4f AdjustTransformForType() const;
+  void Draw(int curAreaId, const CMapWorldInfo& info, float alpha, bool needsVtxLoad) const;
+  void DrawDoorSurface(int curAreaId, const CMapWorldInfo& info, float alpha, int surfaceIdx,
+                       bool needsVtxLoad) const;
+  CVector3f BuildSurfaceCenterPoint(int surfaceIdx) const;
+  static bool IsDoorType(EMappableObjectType type) { return type >= 0 && type < 8; }
 
   EMappableObjectType GetType() const { return mType; }
   TEditorId GetObjId() const { return mObjId; }

@@ -1232,7 +1232,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
                                         mapAlpha, mgr, planeXf * preXf, camXf, *mWorld, info, 2.f,
                                         true, mPlayerFlashPulse, hintFlash, objectScale),
           mCurAreaId.value, mCurAreaId.value, mRenderState0.mDrawDepth1, mRenderState0.mDrawDepth2,
-          true);
+          mDarkWorldBlend, true);
     }
     if (mBasewidgetHintgroup != nullptr) {
       mBasewidgetHintgroup->SetColor(CColor::White().WithAlphaOf(1.f - universeInterp));
@@ -1248,7 +1248,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
                                                  mapAlpha, mgr, planeXf, camXf, *mWorld, info, 1.f,
                                                  false, 0.f, 0.f, objectScale),
                    mCurAreaId.value, mOtherAreaId.value, mRenderState0.mDrawDepth1,
-                   mRenderState0.mDrawDepth2, false);
+                   mRenderState0.mDrawDepth2, mDarkWorldBlend, false);
   } else {
     const CMapWorld* mapWorld = mWorld->IGetMapWorld();
     const CMapWorldInfo& info =
@@ -1260,7 +1260,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
                                                  mapAlpha, mgr, planeXf * preXf, camXf, *mWorld,
                                                  info, 2.f, true, 0.f, 0.f, objectScale),
                    mCurAreaId.value, mCurAreaId.value, mRenderState0.mDrawDepth1,
-                   mRenderState0.mDrawDepth2, false);
+                   mRenderState0.mDrawDepth2, mDarkWorldBlend, false);
   }
 
   if (universeInterp > 0.f) {

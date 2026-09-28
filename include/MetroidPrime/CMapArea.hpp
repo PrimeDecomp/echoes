@@ -43,6 +43,10 @@ public:
   bool IsInDarkWorld() const; // Guessed name
   CVector3f GetAreaCenterPoint() const;
   CTransform4f GetAreaPostTransform(const IWorld& world, int areaId);
+  // Guessed names for the prepared surface/outline/door rendering path.
+  static void SetupLighting(const CTransform4f& cameraXf);
+  void Draw(const CColor& surfaceColor, const CColor& outlineColor, const CTransform4f& areaXf,
+            const CTransform4f& modelXf, int selArea, const CMapWorldInfo& info, float alpha) const;
   const CAABox& GetBoundingBox() const { return mBox; }
   const CVector3f& GetMapAdjustment() const { return mMapAdjustment; } // Guessed name
   int GetNumMappableObjects() const { return mMappableObjCount; }
