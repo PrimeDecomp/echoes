@@ -1,10 +1,12 @@
 #ifndef _RSTL_PAIR
 #define _RSTL_PAIR
 
-#include "types.h"
+#include "rstl/construct.hpp"
 #include "rstl/functional.hpp"
+#include "types.h"
 
 class CInputStream;
+class COutputStream;
 
 namespace rstl {
 template < typename L, typename R >
@@ -13,6 +15,7 @@ public:
   pair() {}
   pair(CInputStream& in);
   pair(const L& first, const R& second) : first(first), second(second) {}
+  void PutTo(COutputStream& out) const;
 
   bool operator==(const pair& other) const {
     return first == other.first && second == other.second;
@@ -29,6 +32,15 @@ public:
   L first;
   R second;
 };
+
+template <>
+struct is_trivially_destructible< pair< uint, uint > > {
+  enum { value = true };
+};
+
+inline void construct_impl(void* dest, const pair< uint, uint >& src) {
+  *static_cast< pair< uint, uint >* >(dest) = src;
+}
 
 template < typename P >
 struct select1st : unary_function< P, P > {
