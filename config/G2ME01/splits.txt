@@ -723,11 +723,36 @@ Kyoto/Animation/CCharacterInfo.cpp:
 Kyoto/Animation/CCharacterSet.cpp:
 	.text       start:0x80293C98 end:0x80294044
 
+Kyoto/Animation/CMetaAnimBlend.cpp:
+	.text       start:0x80294044 end:0x80294514
+	.rodata     start:0x803AED70 end:0x803AED78
+	.data       start:0x803B9350 end:0x803B9370
+
+Kyoto/Animation/CMetaAnimFactory.cpp:
+	.text       start:0x80294514 end:0x80294788
+	.rodata     start:0x803AED78 end:0x803AED80
+
+Kyoto/Animation/CMetaAnimPhaseBlend.cpp:
+	.text       start:0x80294788 end:0x80294F18
+	.rodata     start:0x803AED80 end:0x803AED88
+	.data       start:0x803B9370 end:0x803B93B0
+	.sdata      start:0x804189E8 end:0x804189F8
+	.sdata2     start:0x8041E290 end:0x8041E298
+
 Kyoto/Animation/CMetaAnimPlay.cpp:
 	.text       start:0x80294F18 end:0x80295428
 	.rodata     start:0x803AED88 end:0x803AED90
 	.data       start:0x803B93B0 end:0x803B93D0
 	.sdata      start:0x804189F8 end:0x80418A00
+
+Kyoto/Animation/CMetaAnimRandom.cpp:
+	.text       start:0x80295428 end:0x80295B20
+	.data       start:0x803B93D0 end:0x803B93F0
+
+Kyoto/Animation/CMetaAnimSequence.cpp:
+	.text       start:0x80295B20 end:0x80295FD8
+	.rodata     start:0x803AED90 end:0x803AED98
+	.data       start:0x803B93F0 end:0x803B9410
 
 Kyoto/Animation/CPASAnimInfo.cpp:
 	.text       start:0x80297020 end:0x80297128

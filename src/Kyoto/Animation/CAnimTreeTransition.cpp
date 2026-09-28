@@ -1,6 +1,6 @@
 #include "Kyoto/Animation/CAnimTreeTransition.hpp"
 
-CAnimTreeTransition::CAnimTreeTransition(bool characterSpaceBlend,
+CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& b,
                                          const CCharAnimTime& duration, bool runA, int flags,
@@ -12,7 +12,7 @@ CAnimTreeTransition::CAnimTreeTransition(bool characterSpaceBlend,
 , mLoopA(a->VGetBoolPOIState(GetLoopPOIHash()))
 , mInitialized(false) {}
 
-CAnimTreeTransition::CAnimTreeTransition(bool characterSpaceBlend,
+CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& b,
                                          const CCharAnimTime& duration,
@@ -70,8 +70,9 @@ CCharAnimTime CAnimTreeTransition::VGetTimeRemaining() const {
 
 CSteadyStateAnimInfo CAnimTreeTransition::VGetSteadyStateAnimInfo() const {
   CSteadyStateAnimInfo info = mB->VGetSteadyStateAnimInfo();
-  return CSteadyStateAnimInfo(info.IsLooping(), rstl::max_val(mTransDur, info.GetDuration()),
-                              info.GetOffset());
+  return CSteadyStateAnimInfo(
+      info.IsLooping(), rstl::max_val< const CCharAnimTime& >(mTransDur, info.GetDuration()),
+      info.GetOffset());
 }
 
 rstl::string CAnimTreeTransition::CreatePrimitiveName(const rstl::ncrc_ptr< CAnimTreeNode >& a,

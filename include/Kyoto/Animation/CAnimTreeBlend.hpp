@@ -5,7 +5,7 @@
 
 class CAnimTreeBlend : public CAnimTreeTweenBase {
 public:
-  CAnimTreeBlend(bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
+  CAnimTreeBlend(const bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
                  const rstl::ncrc_ptr< CAnimTreeNode >& b, float weight, const rstl::string& name)
   : CAnimTreeTweenBase(characterSpaceBlend, a, b, kBlendRoot_Offset | kBlendRoot_Rotation, name)
   , mBlendWeight(weight) {}

@@ -8,7 +8,7 @@ public:
   static const int kBlendRoot_Offset;
   static const int kBlendRoot_Rotation;
 
-  CAnimTreeTweenBase(bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
+  CAnimTreeTweenBase(const bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
                      const rstl::ncrc_ptr< CAnimTreeNode >& b, int flags, const rstl::string& name);
 
   // IAnimReader
