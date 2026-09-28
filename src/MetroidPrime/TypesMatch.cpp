@@ -8,6 +8,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
+#include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraShaker.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptColorModulate.hpp"
@@ -91,6 +92,7 @@ TYPES_MATCH_IMPL(CPatterned, CAi, kET_Patterned)
 TYPES_MATCH_IMPL(CScriptWaypoint, CActor, kET_ScriptWaypoint)
 TYPES_MATCH_IMPL(CScriptSpindleCamera, CActor, kET_ScriptSpindleCamera)
 TYPES_MATCH_IMPL(CScriptPathCamera, CEntity, kET_ScriptPathCamera)
+TYPES_MATCH_IMPL(CPathCamera, CGameCamera, kET_PathCamera)
 TYPES_MATCH_IMPL(CScriptSequenceTimer, CEntity, kET_ScriptSequenceTimer)
 TYPES_MATCH_IMPL(CGameLight, CActor, kET_GameLight)
 TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)

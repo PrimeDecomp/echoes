@@ -24,10 +24,13 @@ public:
   void Translate(const CVector3f& offset);
   void Rotate(const CQuaternion& rotation, const CVector3f& origin);
   CVector3f GetInterpolatedSplinePointByTime(float time) const;
+  float FindClosestLengthOnSpline(float start, const CVector3f& position) const;
+  float ValidateLength(float distance) const;
 
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
   int GetControlPointCount() const { return mControlPoints.size(); }
+  bool IsClosedLoop() const { return mClosedLoop; }
 
 private:
   rstl::vector< CVector3f > mControlPoints;

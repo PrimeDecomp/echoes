@@ -14,6 +14,10 @@ public:
   // CGameSpline
   ~CGameCameraSpline() override;
 
+  // Guessed names, established by the runtime path-camera caller.
+  float GetFovByLength(float distance);
+  float GetFovByTime(float time);
+
 private:
   CMayaSpline mFovSpline;
   CMayaSpline x170_; // The second scalar channel's meaning is unresolved.

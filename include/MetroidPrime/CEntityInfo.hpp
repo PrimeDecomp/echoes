@@ -26,6 +26,7 @@ enum EEntityType {
   kET_FirstPersonCamera = 23,
   kET_GameLight = 26,
   kET_HUDBillboardEffect = 28,
+  kET_PathCamera = 31,
   kET_Player = 32,
   kET_GameHint = 33, // Guessed name.
   kET_ScriptActor = 34,

@@ -26,17 +26,29 @@ public:
   void TranslateSplines(const CVector3f& offset);
   void RotateSplines(const CQuaternion& rotation, const CVector3f& origin);
 
+  // Evaluation updates spline caches, not the scripted settings.
+  CScriptCameraSpline& GetSpline() const { return mSpline; }
+  const CMotionSpline& GetPlayerSpline() const { return mPlayerSpline; }
+  CMayaSpline& GetSpeedControlSpline() const { return mSpeedControlSpline; }
+  CMayaSpline& GetPerpendicularDistanceControlSpline() const {
+    return mPerpendicularDistanceControlSpline;
+  }
+  float GetDistance() const { return mDistance; }
+  float GetSpeed() const { return mSpeed; }
+  float GetDampenDistance() const { return mDampenDistance; }
+  uint GetFlags() const { return mFlags; }
+
 private:
-  CScriptCameraSpline mSpline;
+  mutable CScriptCameraSpline mSpline;
   CMotionSpline mPlayerSpline;
-  CMayaSpline mSpeedControlSpline;
+  mutable CMayaSpline mSpeedControlSpline;
   float mDistance;
   float mSpeed;
   float mDampenDistance;
   float mAngularSpeed;
   int mInitialPosition;
   uint mFlags;
-  CMayaSpline mPerpendicularDistanceControlSpline;
+  mutable CMayaSpline mPerpendicularDistanceControlSpline;
   CMayaSpline mPerpendicularInterpControlSpline;
   TUniqueId mTimeKeyframeId;
 };
