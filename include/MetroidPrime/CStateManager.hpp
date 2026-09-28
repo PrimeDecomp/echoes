@@ -52,6 +52,7 @@ public:
   void LoadScriptObjects(TAreaId aid, CInputStream& in, rstl::vector< TEditorId >& ids,
                          CStateManager& mgr);                                 // Guessed name
   void InitScriptObjects(rstl::vector< TEditorId >& ids, CStateManager& mgr); // Guessed name
+  void RemoveLayerObjects(TAreaId area, TLayerId layer, CStateManager& mgr);  // Guessed name
 };
 namespace SL {
 class CSortedListManager;
