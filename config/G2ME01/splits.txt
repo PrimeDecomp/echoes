@@ -801,6 +801,18 @@ GuiSys/CGuiFrame.cpp:
 	.rodata     start:0x803AE4F8 end:0x803AE500
 	.data       start:0x803B8E30 end:0x803B8E70
 
+GuiSys/CGuiPane.cpp:
+	.text       start:0x8027855C end:0x80278BF8
+	.rodata     start:0x803AE558 end:0x803AE560
+	.data       start:0x803B8F18 end:0x803B8F68
+	.sdata2     start:0x8041E050 end:0x8041E068
+
+GuiSys/CGuiTextPane.cpp:
+	.text       start:0x8027A1B8 end:0x8027AE64
+	.data       start:0x803B8FE8 end:0x803B9040
+	.sbss       start:0x804197D8 end:0x804197E0
+	.sdata2     start:0x8041E078 end:0x8041E0B0
+
 Kyoto/Text/CGuiTextSupport.cpp:
 	.text       start:0x8027B184 end:0x8027D7B0
 

@@ -8,6 +8,7 @@
 class CFinalInput;
 class CGuiFrame;
 class CGuiWidgetDrawParms;
+class CInputStream;
 
 enum ETraversalMode { kTM_ChildrenAndSiblings = 0, kTM_Children = 1, kTM_Single = 2 };
 
@@ -46,6 +47,8 @@ public:
   };
 
   explicit CGuiWidget(const CGuiWidgetParms& parms);
+  static CGuiWidgetParms ReadWidgetHeader(CGuiFrame* frame, CInputStream& in);
+  void ParseBaseInfo(CGuiFrame* frame, CInputStream& in, const CGuiWidgetParms& parms, uint version);
 
   // CGuiObject
   ~CGuiWidget() override;
