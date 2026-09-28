@@ -119,6 +119,7 @@ public:
   const CGameArea* GetArea(TAreaId id) const { return mAreas[id.Value()].get(); }
   bool IsAreaValid(TAreaId id) const { return mAreas[id.Value()]->IsLoaded(); }
   bool DoesAreaExist(TAreaId id) const { return id.Value() >= 0 && id.Value() < mAreas.size(); }
+  int GetNumAreas() const { return mAreas.size(); }
   CAssetId GetWorldAssetId() const { return mMlvlId; }
   TAreaId GetCurrentAreaId() const { return mCurAreaId; }
   int GetNeededEnvFx() const { return mNeededEnvFx; }

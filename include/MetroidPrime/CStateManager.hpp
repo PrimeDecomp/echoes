@@ -28,6 +28,7 @@ extern const int gkPVSEnabled;
 #include "rstl/single_ptr.hpp"
 
 class CWorld;
+class CPortalTransition;
 class CArchitectureQueue;
 class CEnvFxManager;
 class CEntity;
@@ -161,6 +162,13 @@ public:
   void PrepareAreaUnload(TAreaId area); // Guessed name from Prime.
   void AreaUnloaded(TAreaId area);      // Guessed name from Prime.
   void SetActorAreaId(CActor& actor, TAreaId);
+  // Guessed names.
+  void SetPortalTransition(rstl::single_ptr< CPortalTransition >& transition);
+  void SetPendingDockTransition(TAreaId area, int dock, bool showSoftTransition) {
+    mPendingDockArea = area;
+    mPendingDock = dock;
+    mShowSoftTransition = showSoftTransition;
+  }
 
   const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }
   int Get0x244c() const { return x244c; }
@@ -280,7 +288,11 @@ public:
   char pad5[4]; // 0x246c
   CFrustumPlanes m_planes; // 0x2478
   int mCurrentRenderPlayerIndex; // Guessed name
-  char pad6[0x2938 - 0x24e0];
+  char pad6[0x28f8 - 0x24e0];
+  TAreaId mPendingDockArea; // Guessed name.
+  int mPendingDock; // Guessed name.
+  rstl::single_ptr< CPortalTransition > mPortalTransition; // Guessed name.
+  char x2904_[0x2938 - 0x2904];
 
   CVector3f x2938;
   float x2944;
@@ -293,7 +305,7 @@ public:
   bool mCinematicPause : 1;
   bool m_unkFlagA7 : 1;
   bool m_isDarkWorld : 1; // 0x294c
-  bool m_unkFlagB1 : 1;
+  bool mShowSoftTransition : 1; // Guessed name.
   bool m_unkFlagB2 : 1;
   bool m_unkFlagB3 : 1;
   bool m_unkFlagB4 : 1;
