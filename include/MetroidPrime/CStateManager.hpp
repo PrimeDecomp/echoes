@@ -117,6 +117,11 @@ public:
   void AddObject(CEntity*);
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
+  void AddWeaponId(TUniqueId owner, EWeaponType type);
+  void RemoveWeaponId(TUniqueId owner, EWeaponType type);
+  void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
+                          const CDamageInfo& damage, const CMaterialFilter& filter);
+  void DrawSpaceWarp(const CVector3f& position, float strength) const;
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void SetupParticleHook(const CActor& actor) const;
@@ -143,6 +148,7 @@ public:
   const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
   CRandom16* Random() { return &mRandom; }
   int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
+  int GetRenderFrameIndex() const { return mRenderFrameIndex; } // Guessed name
 
   TAreaId GetNextAreaId() const { return m_nextAreaId; }
   void SetCurrentAreaId(TAreaId);
@@ -230,7 +236,8 @@ public:
   int* x1698;
   rstl::single_ptr< CSaveGameScreen > m_saveGameScreen; // x169C
   TAreaId m_nextAreaId; // x16a0
-  char pad3[0x8]; // 16A4
+  char x16a4_[4];
+  int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
   int m_updateFrameIdx; // 16AC
   char pad4[0x34]; // 16B0
   CRandom16 mRandom;

@@ -96,6 +96,7 @@ enum EWeaponCollisionResponseTypes {
   kWCR_Unknown91,
   kWCR_AtomicBetaReflect,
   kWCR_AtomicAlphaReflect,
+  kWCR_Unknown107 = 107, // Last response in Echoes's extended reflection range.
 };
 enum EProjectileAttrib {
   kPA_None = 0,

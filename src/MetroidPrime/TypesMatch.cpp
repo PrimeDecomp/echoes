@@ -35,6 +35,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
+#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Weapons/CBeamProjectile.hpp"
 #include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
@@ -65,6 +66,8 @@
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CGameLight::~CGameLight() {}
 
+CEnergyProjectile::~CEnergyProjectile() {}
+
 CEntity* TryCast(CEntity* entity, int typeId) {
   if (entity != nullptr) {
     return entity->TypesMatch(typeId);
@@ -79,6 +82,8 @@ CEntity* CEntity::TypesMatch(int typeId) const {
 TYPES_MATCH_IMPL(CActor, CEntity, kET_Actor)
 TYPES_MATCH_IMPL(CWeapon, CActor, kET_Weapon)
 TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)
+TYPES_MATCH_IMPL(CEnergyProjectile, CGameProjectile, kET_EnergyProjectile)
+CAST_TO_REF_IMPL(CEnergyProjectile, kET_EnergyProjectile)
 TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
 TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
 TYPES_MATCH_IMPL(CGameCamera, CActor, kET_GameCamera)

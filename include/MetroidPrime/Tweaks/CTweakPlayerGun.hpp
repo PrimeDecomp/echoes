@@ -9,6 +9,8 @@ struct SWeaponInfo {
   CDamageInfo m_charged;
 };
 
+class CCameraShakerData;
+
 class CTweakPlayerGun {
 public:
   float GetGunTransformTime() const;
@@ -16,6 +18,7 @@ public:
   float GetGunExtendDistance() const;
   int GetMaxAbsorbedPhazonShots();
   const SWeaponInfo& GetBeamInfo(int beam) const;
+  CCameraShakerData GetCameraShakerData6() const; // Guessed name: sixth shaker preset.
 };
 
 extern CTweakPlayerGun* gpTweakPlayerGun;
