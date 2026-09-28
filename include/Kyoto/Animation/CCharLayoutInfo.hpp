@@ -49,6 +49,8 @@ public:
 
   const CSegIdList& GetBodyPartSegIds() const { return mSegIdList; }
 
+  CSegId GetOriginalParent(const CSegId& seg) const { return GetSegmentData(seg).GetParent(); }
+
   const rstl::vector< CSegId >& GetLinearParents() const { return mLinearParents; }
 
   const rstl::vector< CVector3f >& GetLinearReferenceStanceOffsets() const {
@@ -59,7 +61,8 @@ public:
 
   CVector3f GetFromParentUnrotated(const CSegId& id) const {
     const CCharLayoutNode& node = GetSegmentData(id);
-    return !mNodes->ContainsDataFor(node.GetParent())
+    const CSegId parent = node.GetParent();
+    return !mNodes->ContainsDataFor(parent)
                ? node.GetReferenceStanceOffset()
                : node.GetReferenceStanceOffset() -
                      GetSegmentData(node.GetParent()).GetReferenceStanceOffset();

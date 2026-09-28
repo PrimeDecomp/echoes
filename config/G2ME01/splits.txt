@@ -797,6 +797,10 @@ Kyoto/Animation/CFBStreamedCompression.cpp:
 	.rodata     start:0x803AEE20 end:0x803AEE28
 	.sdata2     start:0x8041E3E8 end:0x8041E400
 
+Kyoto/Animation/CHierarchyPoseBuilder.cpp:
+	.text       start:0x802B0FDC end:0x802B1870
+	.rodata     start:0x803AEE28 end:0x803AEE30
+
 Kyoto/Animation/CInt32POINode.cpp:
 	.text       start:0x802B1870 end:0x802B1980
 

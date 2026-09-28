@@ -8,6 +8,8 @@
 class CInputStream;
 class CSegIdList {
 public:
+  typedef rstl::vector< CSegId >::const_iterator const_iterator;
+
   CSegIdList(CInputStream& in);
   ~CSegIdList() {
     CCharAnimMemoryMetrics::SubtractFromTotalSize(mSegList.capacity(),
@@ -15,6 +17,10 @@ public:
   }
 
   int GetCount() const { return mSegList.size(); }
+
+  const_iterator begin() const { return mSegList.begin(); }
+
+  const_iterator end() const { return mSegList.end(); }
 
   rstl::vector< CSegId > mSegList;
 };
