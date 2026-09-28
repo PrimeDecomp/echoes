@@ -219,6 +219,7 @@ public:
   void Teleport(const CTransform4f& xf, CStateManager& mgr, bool resetBallCam);
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
+  bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
 
   void Update(float dt, CStateManager& mgr);
   void PostUpdate(float dt, CStateManager& mgr);
