@@ -461,7 +461,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.cpp"),
             Object(NonMatching, "MetroidPrime/CGameLight.cpp"),
             Object(NonMatching, "MetroidPrime/CParticleGenInfoGeneric.cpp"),
-            Object(NonMatching, "MetroidPrime/CParticleGenInfo.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CParticleGenInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CParticleDatabase.cpp"),
             Object(NonMatching, "MetroidPrime/CAnimData.cpp"),
             Object(NonMatching, "MetroidPrime/Factories/CCharacterFactory.cpp"),

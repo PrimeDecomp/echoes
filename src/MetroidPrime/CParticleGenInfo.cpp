@@ -19,21 +19,21 @@ CParticleGenInfo::CParticleGenInfo(const SObjectTag& part, int frameCount, CSegI
 , mFinishTime(0.f)
 , mGrabInitialData(false)
 , mTransform(CTransform4f::Identity())
-, mOffset(CVector3f::Zero())
+, mOffset(0.f, 0.f, 0.f)
 , mType(type) {}
 
 TUniqueId _initializeLight(const rstl::ncrc_ptr< CParticleGen >& system, CStateManager* mgr,
                            TAreaId areaId, uint lightId) {
-  if (!system->SystemHasLight() || mgr == nullptr) {
-    return kInvalidUniqueId;
-  }
+  if (system->SystemHasLight() && mgr != nullptr) {
 
-  TUniqueId id = mgr->AllocateUniqueId();
-  mgr->AddObject(rs_new CGameLight(
-      id, areaId, false, rstl::string_l("ParticleLight"),
-      CTransform4f(system->GetOrientation().BuildMatrix3f(), system->GetTranslation()),
-      kInvalidUniqueId, system->GetLight(), lightId, 0, 0.f));
-  return id;
+    TUniqueId id = mgr->AllocateUniqueId();
+    mgr->AddObject(rs_new CGameLight(
+        id, areaId, false, rstl::string_l("ParticleLight"),
+        CTransform4f(system->GetOrientation().BuildMatrix3f(), system->GetTranslation()),
+        kInvalidUniqueId, system->GetLight(), lightId, 0, 0.f));
+    return id;
+  }
+  return kInvalidUniqueId;
 }
 
 CParticleGenInfo::~CParticleGenInfo() {}
