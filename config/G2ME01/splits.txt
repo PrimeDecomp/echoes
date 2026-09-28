@@ -307,6 +307,15 @@ MetroidPrime/CModelData.cpp:
 	.text       start:0x800E4A58 end:0x800E6CEC
 	.ctors      start:0x803A5504 end:0x803A5508
 
+MetroidPrime/CDecalManager.cpp:
+	.text       start:0x800E6CEC end:0x800E8C8C
+	.ctors      start:0x803A5508 end:0x803A550C
+	.data       start:0x803B3970 end:0x803B3988
+	.bss        start:0x8040D66C end:0x80410974 align:4 common
+	.sdata      start:0x80418228 end:0x80418238
+	.sbss       start:0x80419100 end:0x80419120
+	.sdata2     start:0x8041B730 end:0x8041B740
+
 MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C1C end:0x800EBD40
 	.ctors      start:0x803A5510 end:0x803A5514
@@ -725,6 +734,14 @@ Weapons/CProjectileWeapon.cpp:
 	.sdata      start:0x80418990 end:0x80418998
 	.sbss       start:0x80419730 end:0x80419738
 	.sdata2     start:0x8041DE20 end:0x8041DE78
+
+Weapons/CDecal.cpp:
+	.text       start:0x8026041C end:0x8026258C
+	.ctors      start:0x803A55B0 end:0x803A55B4
+	.rodata     start:0x803ADD70 end:0x803ADD90
+	.sdata      start:0x804189A0 end:0x804189A8
+	.sbss       start:0x80419740 end:0x80419748
+	.sdata2     start:0x8041DE88 end:0x8041DEB8
 
 MetaRender/CCubeRenderer.cpp:
 	.text       start:0x80262D3C end:0x80273FAC
