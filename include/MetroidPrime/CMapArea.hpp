@@ -10,6 +10,7 @@
 #include "rstl/single_ptr.hpp"
 
 class CInputStream;
+class CColor;
 class IWorld;
 
 class CMapArea {
@@ -18,6 +19,9 @@ public:
     friend class CMapArea;
 
   public:
+    static void SetupGXMaterial();
+    void Draw(const CVector3f* verts, const CColor& surfColor, const CColor& lineColor,
+              float lineWidth) const;
     void PostConstruct(const void* buf);
     CVector3f GetNormal() const { return mNormal; }
     CVector3f GetCenterPosition() const { return mCentroid; }

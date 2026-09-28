@@ -10,16 +10,49 @@
 #include "rstl/vector.hpp"
 
 class CInputStream;
+class CFactoryFnReturn;
+class CVParamTransfer;
 class CMapArea;
 class CStateManager;
 
 class CMapUniverse {
 public:
+  class CMapObjectSortInfo {
+  public:
+    CMapObjectSortInfo(float zDistance, int worldIndex, int areaIndex, int objectIndex,
+                       CColor surfaceColor, CColor outlineColor);
+
+    float GetZDistance() const { return mZDistance; }
+    int GetWorldIndex() const { return mWorldIndex; }
+    int GetAreaIndex() const { return mAreaIndex; }
+    int GetObjectIndex() const { return mObjectIndex; }
+    CColor GetSurfaceColor() const { return mSurfaceColor; }
+    CColor GetOutlineColor() const { return mOutlineColor; }
+
+  private:
+    float mZDistance;
+    int mWorldIndex;
+    int mAreaIndex;
+    int mObjectIndex;
+    CColor mSurfaceColor;
+    CColor mOutlineColor;
+  };
+
   class CMapUniverseDrawParms {
   public:
     CMapUniverseDrawParms(float alpha, int worldIdx, CAssetId worldId, int closestHex,
-                         float flashPulse, const CStateManager& mgr, const CTransform4f& model,
-                         const CTransform4f& view, bool teleportMode);
+                          float flashPulse, const CStateManager& mgr, const CTransform4f& model,
+                          const CTransform4f& view, bool teleportMode);
+
+    float GetAlpha() const { return mAlpha; }
+    int GetFocusWorldIndex() const { return mFocusWorldIndex; }
+    CAssetId GetFocusWorldRes() const { return mFocusWorldRes; }
+    int GetFocusAreaIndex() const { return mFocusAreaIndex; }
+    float GetFlashPulse() const { return mFlashPulse; }
+    const CStateManager& GetStateManager() const { return mStateManager; }
+    const CTransform4f& GetPaneProjectionTransform() const { return mPaneProjectionTransform; }
+    const CTransform4f& GetCameraTransform() const { return mCameraTransform; }
+    bool GetTeleportMode() const { return mTeleportMode; } // Guessed name
 
   private:
     float mAlpha;
@@ -89,8 +122,12 @@ private:
   float mUniverseRadius;
 };
 NESTED_CHECK_SIZEOF(CMapUniverse, CMapAreaData, 0x30)
+NESTED_CHECK_SIZEOF(CMapUniverse, CMapObjectSortInfo, 0x18)
 NESTED_CHECK_SIZEOF(CMapUniverse, CMapUniverseDrawParms, 0x24)
 NESTED_CHECK_SIZEOF(CMapUniverse, CMapWorldData, 0x70)
 CHECK_SIZEOF(CMapUniverse, 0x30)
+
+CFactoryFnReturn FMapUniverseFactory(const SObjectTag& tag, CInputStream& in,
+                                     const CVParamTransfer& xfer);
 
 #endif // _CMAPUNIVERSE

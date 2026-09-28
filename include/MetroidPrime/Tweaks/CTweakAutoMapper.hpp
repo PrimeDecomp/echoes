@@ -48,6 +48,11 @@ public:
   float GetCamVerticalOffset() const;
   CVector2f GetMapPlaneScale() const; // Guessed name
   CColor GetPlayerModelColor() const; // Guessed name
+  const CColor& GetSurfaceVisitedSelectColor() const;
+  const CColor& GetOutlineVisitedSelectColor() const;
+  CColor GetAreaFlashPulseColor() const;
+  float GetMapSurfaceNormColorLinear() const;
+  float GetMapSurfaceNormColorConstant() const;
 
   // Guessed names
   const CColor& GetTextColor() const;
