@@ -8,6 +8,8 @@ public:
   const rstl::string& GetPakFile();
   bool GetSplashScreensDisabled();
   int GetTotalPercentage();
+  float GetHardModeDamageMultiplier() const;
+  float GetHardModeWeaponMultiplier() const;
 };
 
 extern CTweakGame* gpTweakGame;

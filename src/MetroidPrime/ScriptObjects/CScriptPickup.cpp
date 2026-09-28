@@ -26,7 +26,7 @@
 
 #include "MetroidPrime/ScriptLoader/SLdrPickup.hpp"
 
-#include "Kyoto/CEnvironmentVariable.hpp"
+#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Math/CAbsAngle.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -252,13 +252,13 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
                 ->id;
               
         mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
-        gpGameState->PersistentOptions().FindEnvironmentVariable("AllPickupsFound")->Set(1);
+        gpGameState->SystemOptions().FindEnvironmentVariable("AllPickupsFound")->Set(1);
       }
     }
 
     if (!mgr.fn_80036F10() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
-      CPersistentOptions& opts = gpGameState->PersistentOptions();
-      if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->Get() == 0) {
+      CPersistentOptions& opts = gpGameState->SystemOptions();
+      if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
         opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
         CSamusHud::DisplayHudMemo(
           rstl::wstring_l(gpStringTable->GetString("FirstPowerBombPickup")),

@@ -2,20 +2,27 @@
 #define _CPERSISTENTOPTIONS
 
 #include "Kyoto/SObjectTag.hpp"
+#include "MetroidPrime/Player/CGameStateEnvVarManager.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
+#include "rstl/pair.hpp"
+#include "rstl/vector.hpp"
 
-class CEnvironmentVariable;
-
-class CPersistentOptions {
+// Guessed name. The system-wide options include cinematics and the selected save slot.
+class CPersistentOptions : public CGameStateEnvVarManager {
 public:
+  CPersistentOptions();
+  explicit CPersistentOptions(CBitStreamReader& in);
+  void InitializeMemoryState();
+  void PutTo(CBitStreamWriter& out) const;
   bool GetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId) const;
   void SetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId, bool state);
-  CEnvironmentVariable* FindEnvironmentVariable(const char* name); // Guessed name
-  void SetSaveIdx(int idx) { mSaveIdx = idx; }                     // Guessed name
+  void SetSaveIdx(int idx) { mSaveIdx = idx; } // Guessed name
+  int GetSaveIdx() const { return mSaveIdx; }
 
 private:
-  char x0_[0x28];
+  rstl::vector< rstl::pair< CAssetId, TEditorId > > mCinematicStates;
   int mSaveIdx;
 };
+CHECK_SIZEOF(CPersistentOptions, 0x2c)
 
 #endif // _CPERSISTENTOPTIONS

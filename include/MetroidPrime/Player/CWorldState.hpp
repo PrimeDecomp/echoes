@@ -6,12 +6,16 @@
 
 class CRelayTracker;
 class CWorldLayerState;
+class CBitStreamReader;
+class CBitStreamWriter;
 
 class CWorldState {
 public:
   explicit CWorldState(CAssetId worldId);
+  CWorldState(CBitStreamReader& in, CAssetId worldId, const CWorldSaveGameInfo& saveWorld);
   ~CWorldState();
 
+  void PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveWorld) const;
   CAssetId GetWorldAssetId() const;
   TAreaId GetCurrentArea() const;
   void SetAreaId(TAreaId areaId);
@@ -20,6 +24,7 @@ public:
   rstl::rc_ptr< CMapWorldInfo > GetMapWorldInfo() const;
   rstl::ncrc_ptr< CMapWorldInfo >& MapWorldInfo();
   rstl::ncrc_ptr< CWorldLayerState >& GetLayerState();
+  rstl::ncrc_ptr< CRelayTracker >& RelayTracker(); // Guessed name
 
 private:
   CAssetId mWorldId;

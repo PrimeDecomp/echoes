@@ -56,6 +56,7 @@ public:
   bool GetIsRumbleEnabled() const { return rumble; }
   // Guessed name
   bool GetIsPlayerRumbleEnabled(int player) const { return unk2[player].first; }
+  rstl::pair< bool, bool >& PlayerOptions(int player) { return unk2[player]; } // Guessed name
   void ToggleControls(bool);
 
   void ResetControllerAssets(int);

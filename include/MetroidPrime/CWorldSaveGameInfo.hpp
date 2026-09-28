@@ -36,6 +36,8 @@ public:
   explicit CWorldSaveGameInfo(CInputStream& in);
 
   uint GetAreaCount() const { return mAreaCount; }
+  int GetCinematicCount() const { return mCinematics.size(); }
+  const rstl::vector< TEditorId >& GetCinematics() const { return mCinematics; }
   const rstl::vector< TEditorId >& GetDoors() const { return mDoors; }
   const rstl::vector< TEditorId >& GetUnmappableObjects() const { return mUnmappableObjects; }
   const rstl::vector< ScanState >& GetScans() const { return mScans; }
