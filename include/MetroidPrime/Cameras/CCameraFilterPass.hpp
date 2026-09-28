@@ -30,6 +30,8 @@ public:
     kFS_ScanLinesEven,
     kFS_ScanLinesOdd,
     kFS_RandomStatic,
+    kFS_DialogBox,
+    kFS_CinematicPlaceholderLabel,
     kFS_CookieCutterDepthRandomStatic
   };
   CCameraFilterPass();
@@ -38,6 +40,23 @@ public:
   void DisableFilter(float time);
   void Update(float dt);
   void Draw() const;
+  float GetT(bool invert) const;
+  // Guessed names; visible screen proportions during cinema-bar transitions.
+  float GetWidthScale() const;
+  float GetHeightScale() const;
+
+  static void DrawWideScreen(const CColor& color, const CTexture* texture, float lod);
+  static void DrawFilterShape(EFilterShape shape, const CColor& color, const CTexture* texture,
+                              float lod);
+  static void DrawFullScreenColoredQuad(const CColor& color);
+  static void DrawFullScreenTexturedQuad(const CColor& color, const CTexture* texture, float lod);
+  static void DrawFullScreenTexturedQuadQuarters(const CColor& color, const CTexture* texture,
+                                                 float lod);
+  static void DrawScanLines(const CColor& color, bool even);
+  static void DrawRandomStatic(const CColor& color, float alpha, bool cookieCutterDepth);
+  // Guessed method names; shape names are present in the original debug strings.
+  static void DrawDialogBox(const CColor& color, const CTexture* texture, float alpha);
+  static void DrawCinematicPlaceholderLabel();
   static void DrawFilter(EFilterType type, EFilterShape shape, const CColor& color,
                          const CTexture* texture, float lod);
 
