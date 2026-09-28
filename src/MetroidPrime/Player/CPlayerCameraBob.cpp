@@ -7,30 +7,30 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "rstl/math.hpp"
 
-float CPlayerCameraBob::kCameraBobExtentX = 0.071f;
-float CPlayerCameraBob::kCameraBobExtentY = 0.142f;
-float CPlayerCameraBob::kCameraBobPeriod = 0.47f;
-float CPlayerCameraBob::kOrbitBobScale = 0.77f;
-float CPlayerCameraBob::kMaxOrbitBobScale = 0.8f;
-float CPlayerCameraBob::kSlowSpeedPeriodScale = 0.3f;
-float CPlayerCameraBob::kTargetMagnitudeTrackingRate = 0.1f;
-float CPlayerCameraBob::kLandingBobSpringConstant = 150.f;
-float CPlayerCameraBob::kPeakNegativeVerticalSpeedForHeavyLanding = -30.f;
-float CPlayerCameraBob::kMaxNegativeVerticalSpeedConsidered = -35.f;
-float CPlayerCameraBob::kHeavyLandingBobSpringConstant = 40.f;
-float CPlayerCameraBob::kHeavyLandingHelmetBobSpringConstant = 80.f;
-float CPlayerCameraBob::kViewWanderRadius = 0.03f;
-float CPlayerCameraBob::kViewWanderSpeedMin = 0.1f;
-float CPlayerCameraBob::kViewWanderSpeedMax = 0.3f;
-float CPlayerCameraBob::kViewWanderRollVariation = 0.3f;
-float CPlayerCameraBob::kGunBobMagnitude = 0.3f;
-float CPlayerCameraBob::kHelmetBobMagnitude = 2.f;
-float CPlayerCameraBob::kHeavyLandingViewDip = 2.f;
-float CPlayerCameraBob::kLandingBobDamping = CMath::SqrtF(kLandingBobSpringConstant) * 2.f;
-float CPlayerCameraBob::kHeavyLandingBobDamping =
-    CMath::SqrtF(kHeavyLandingBobSpringConstant) * 4.f;
-float CPlayerCameraBob::kHeavyLandingHelmetBobDamping =
-    CMath::SqrtF(kHeavyLandingHelmetBobSpringConstant) * 6.f;
+float CPlayerCameraBob::mCameraBobExtentX = 0.071f;
+float CPlayerCameraBob::mCameraBobExtentY = 0.142f;
+float CPlayerCameraBob::mCameraBobPeriod = 0.47f;
+float CPlayerCameraBob::mOrbitBobScale = 0.77f;
+float CPlayerCameraBob::mMaxOrbitBobScale = 0.8f;
+float CPlayerCameraBob::mSlowSpeedPeriodScale = 0.3f;
+float CPlayerCameraBob::mTargetMagnitudeTrackingRate = 0.1f;
+float CPlayerCameraBob::mLandingBobSpringConstant = 150.f;
+float CPlayerCameraBob::mPeakNegativeVerticalSpeedForHeavyLanding = -30.f;
+float CPlayerCameraBob::mMaxNegativeVerticalSpeedConsidered = -35.f;
+float CPlayerCameraBob::mHeavyLandingBobSpringConstant = 40.f;
+float CPlayerCameraBob::mHeavyLandingHelmetBobSpringConstant = 80.f;
+float CPlayerCameraBob::mViewWanderRadius = 0.03f;
+float CPlayerCameraBob::mViewWanderSpeedMin = 0.1f;
+float CPlayerCameraBob::mViewWanderSpeedMax = 0.3f;
+float CPlayerCameraBob::mViewWanderRollVariation = 0.3f;
+float CPlayerCameraBob::mGunBobMagnitude = 0.3f;
+float CPlayerCameraBob::mHelmetBobMagnitude = 2.f;
+float CPlayerCameraBob::mHeavyLandingViewDip = 2.f;
+float CPlayerCameraBob::mLandingBobDamping = CMath::SqrtF(mLandingBobSpringConstant) * 2.f;
+float CPlayerCameraBob::mHeavyLandingBobDamping =
+    CMath::SqrtF(mHeavyLandingBobSpringConstant) * 4.f;
+float CPlayerCameraBob::mHeavyLandingHelmetBobDamping =
+    CMath::SqrtF(mHeavyLandingHelmetBobSpringConstant) * 6.f;
 
 CPlayerCameraBob::CPlayerCameraBob(ECameraBobType type, const CVector2f& extent, float bobPeriod)
 : mType(type)
@@ -52,7 +52,7 @@ CPlayerCameraBob::CPlayerCameraBob(ECameraBobType type, const CVector2f& extent,
 , mCamVelocity(0.f)
 , mCamTranslation(0.f)
 , mWanderTime(0.f)
-, mViewWanderSpeed(kViewWanderSpeedMin)
+, mViewWanderSpeed(mViewWanderSpeedMin)
 , mWanderIndex(0)
 , mViewWanderXf(CTransform4f::Identity())
 , mWanderMagnitude(FLT_EPSILON)
@@ -68,17 +68,17 @@ CPlayerCameraBob::CPlayerCameraBob(ECameraBobType type, const CVector2f& extent,
 void CPlayerCameraBob::Update(float dt, CStateManager& mgr, const CPlayer& player) {
   mBobTime += dt * mBobTimeScale;
   if (mApplyLandingTrans) {
-    float damping = kLandingBobDamping;
-    float spring = kLandingBobSpringConstant;
+    float damping = mLandingBobDamping;
+    float spring = mLandingBobSpringConstant;
     if (mHardLand) {
-      damping = kHeavyLandingBobDamping;
-      spring = kHeavyLandingBobSpringConstant;
+      damping = mHeavyLandingBobDamping;
+      spring = mHeavyLandingBobSpringConstant;
     }
 
     mLandingVelocity += dt * (-(damping * mLandingVelocity) - spring * mLandingTranslation);
     mLandingTranslation += mLandingVelocity * dt;
-    mCamVelocity += dt * (-(kHeavyLandingHelmetBobDamping * mCamVelocity) -
-                          kHeavyLandingHelmetBobSpringConstant * mCamTranslation);
+    mCamVelocity += dt * (-(mHeavyLandingHelmetBobDamping * mCamVelocity) -
+                          mHeavyLandingHelmetBobSpringConstant * mCamTranslation);
     mCamTranslation += mCamVelocity * dt;
     if (CMath::AbsF(mLandingVelocity) < 0.005f && CMath::AbsF(mLandingTranslation) < 0.005f &&
         CMath::AbsF(mCamVelocity) < 0.005f && CMath::AbsF(mCamTranslation) < 0.005f) {
@@ -104,15 +104,15 @@ void CPlayerCameraBob::Update(float dt, CStateManager& mgr, const CPlayer& playe
     mTargetWanderMagnitude *= 0.2f;
   }
 
-  mWanderMagnitude += kTargetMagnitudeTrackingRate * (mTargetWanderMagnitude - mWanderMagnitude);
+  mWanderMagnitude += mTargetMagnitudeTrackingRate * (mTargetWanderMagnitude - mWanderMagnitude);
   if (mWanderMagnitude < 0.f) {
     mWanderMagnitude = 0.f;
   }
-  mBobMagnitude += kTargetMagnitudeTrackingRate * (mTargetBobMagnitude - mBobMagnitude);
+  mBobMagnitude += mTargetMagnitudeTrackingRate * (mTargetBobMagnitude - mBobMagnitude);
   UpdateViewWander(dt, mgr);
   mCameraBobTransform = CalculateCameraBobTransformation() * GetViewWanderTransform() *
                         CTransform4f::LookAt(CVector3f::Zero(),
-                                             CVector3f(0.f, kHeavyLandingViewDip, mCamTranslation));
+                                             CVector3f(0.f, mHeavyLandingViewDip, mCamTranslation));
 }
 
 void CPlayerCameraBob::SetBobTimeScale(const float scale) {
@@ -142,11 +142,11 @@ CTransform4f CPlayerCameraBob::GetCameraBobTransformation() const { return mCame
 
 CTransform4f CPlayerCameraBob::GetGunBobTransformation() const {
   return CTransform4f(
-      CTransform4f::Translate(GetCameraBobTranslation() * (kGunBobMagnitude + 1.f)));
+      CTransform4f::Translate(GetCameraBobTranslation() * (mGunBobMagnitude + 1.f)));
 }
 
 CVector3f CPlayerCameraBob::GetHelmetBobTranslation() const {
-  return kHelmetBobMagnitude *
+  return mHelmetBobMagnitude *
          (mCameraBobTransform.GetTranslation() - CVector3f(0.f, 0.f, mCamTranslation));
 }
 
@@ -189,8 +189,8 @@ void CPlayerCameraBob::SetState(ECameraBobState state, CStateManager& mgr) {
 
   if (mOldState == kCBS_InAir) {
     mApplyLandingTrans = true;
-    mPlayerPeakFallVel = rstl::max_val(mPlayerPeakFallVel, kMaxNegativeVerticalSpeedConsidered);
-    mHardLand = mPlayerPeakFallVel < kPeakNegativeVerticalSpeedForHeavyLanding;
+    mPlayerPeakFallVel = rstl::max_val(mPlayerPeakFallVel, mMaxNegativeVerticalSpeedConsidered);
+    mHardLand = mPlayerPeakFallVel < mPeakNegativeVerticalSpeedForHeavyLanding;
     if (mHardLand) {
       mCamVelocity += mPlayerPeakFallVel;
     }
@@ -218,19 +218,19 @@ void CPlayerCameraBob::InitViewWander(CStateManager& mgr) {
   mWanderPitches[2] = mWanderPitches[0];
   mWanderPitches[3] = CalculateRandomViewWanderPitch(mgr);
   mViewWanderSpeed =
-      (kViewWanderSpeedMax - kViewWanderSpeedMin) * mgr.Random()->Float() + kViewWanderSpeedMin;
+      (mViewWanderSpeedMax - mViewWanderSpeedMin) * mgr.Random()->Float() + mViewWanderSpeedMin;
   mWanderTime = 0.f;
   mWanderIndex = 0;
 }
 
 CVector3f CPlayerCameraBob::CalculateRandomViewWanderPosition(CStateManager& mgr) {
   float angle = 2.f * (M_PIF * mgr.Random()->Float());
-  float radius = kViewWanderRadius * mgr.Random()->Float();
+  float radius = mViewWanderRadius * mgr.Random()->Float();
   return CVector3f(radius * sinf(angle), 1.f, radius * cosf(angle));
 }
 
 float CPlayerCameraBob::CalculateRandomViewWanderPitch(CStateManager& mgr) {
-  return CRelAngle::FromDegrees(2.f * (mgr.Random()->Float() - 0.5f) * kViewWanderRollVariation)
+  return CRelAngle::FromDegrees(2.f * (mgr.Random()->Float() - 0.5f) * mViewWanderRollVariation)
       .AsRadians();
 }
 
@@ -250,7 +250,7 @@ void CPlayerCameraBob::UpdateViewWander(float dt, CStateManager& mgr) {
     mWanderPoints[mWanderIndex] = CalculateRandomViewWanderPosition(mgr);
     mWanderPitches[mWanderIndex] = CalculateRandomViewWanderPitch(mgr);
     mViewWanderSpeed =
-        (kViewWanderSpeedMax - kViewWanderSpeedMin) * mgr.Random()->Float() + kViewWanderSpeedMin;
+        (mViewWanderSpeedMax - mViewWanderSpeedMin) * mgr.Random()->Float() + mViewWanderSpeedMin;
     ++mWanderIndex;
     mWanderIndex %= 4;
     mWanderTime -= 1.f;

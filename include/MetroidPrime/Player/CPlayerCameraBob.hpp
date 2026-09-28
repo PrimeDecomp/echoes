@@ -31,32 +31,32 @@ public:
     kCBS_Unspecified,
   };
 
-  static float kCameraBobExtentX;
-  static float kCameraBobExtentY;
-  static float kCameraBobPeriod;
-  static float kOrbitBobScale;
-  static float kMaxOrbitBobScale;
-  static float kSlowSpeedPeriodScale;
-  static float kTargetMagnitudeTrackingRate;
-  static float kLandingBobSpringConstant;
-  static float kPeakNegativeVerticalSpeedForHeavyLanding;
-  static float kMaxNegativeVerticalSpeedConsidered;
-  static float kHeavyLandingBobSpringConstant;
-  static float kHeavyLandingHelmetBobSpringConstant;
-  static float kViewWanderRadius;
-  static float kViewWanderSpeedMin;
-  static float kViewWanderSpeedMax;
-  static float kViewWanderRollVariation;
-  static float kGunBobMagnitude;
-  static float kHelmetBobMagnitude;
-  static float kHeavyLandingViewDip;
-  static float kLandingBobDamping;
-  static float kHeavyLandingBobDamping;
-  static float kHeavyLandingHelmetBobDamping;
+  static float mCameraBobExtentX;
+  static float mCameraBobExtentY;
+  static float mCameraBobPeriod;
+  static float mOrbitBobScale;
+  static float mMaxOrbitBobScale;
+  static float mSlowSpeedPeriodScale;
+  static float mTargetMagnitudeTrackingRate;
+  static float mLandingBobSpringConstant;
+  static float mPeakNegativeVerticalSpeedForHeavyLanding;
+  static float mMaxNegativeVerticalSpeedConsidered;
+  static float mHeavyLandingBobSpringConstant;
+  static float mHeavyLandingHelmetBobSpringConstant;
+  static float mViewWanderRadius;
+  static float mViewWanderSpeedMin;
+  static float mViewWanderSpeedMax;
+  static float mViewWanderRollVariation;
+  static float mGunBobMagnitude;
+  static float mHelmetBobMagnitude;
+  static float mHeavyLandingViewDip;
+  static float mLandingBobDamping;
+  static float mHeavyLandingBobDamping;
+  static float mHeavyLandingHelmetBobDamping;
 
   CPlayerCameraBob(ECameraBobType type,
-                   const CVector2f& extent = CVector2f(kCameraBobExtentX, kCameraBobExtentY),
-                   float bobPeriod = kCameraBobPeriod);
+                   const CVector2f& extent = CVector2f(mCameraBobExtentX, mCameraBobExtentY),
+                   float bobPeriod = mCameraBobPeriod);
 
   CVector3f GetCameraBobTranslation() const { return mCameraBobTransform.GetTranslation(); }
   const CTransform4f& GetViewWanderTransform() const;
@@ -80,14 +80,14 @@ public:
 
   const float& GetViewWanderMagnitude() const { return mWanderMagnitude; }
 
-  static float GetCameraBobExtentX() { return kCameraBobExtentX; }
-  static float GetCameraBobExtentY() { return kCameraBobExtentY; }
-  static float GetCameraBobPeriod() { return kCameraBobPeriod; }
-  static float GetOrbitBobScale() { return kOrbitBobScale; }
-  static float GetMaxOrbitBobScale() { return kMaxOrbitBobScale; }
-  static float GetSlowSpeedPeriodScale() { return kSlowSpeedPeriodScale; }
+  static float GetCameraBobExtentX() { return mCameraBobExtentX; }
+  static float GetCameraBobExtentY() { return mCameraBobExtentY; }
+  static float GetCameraBobPeriod() { return mCameraBobPeriod; }
+  static float GetOrbitBobScale() { return mOrbitBobScale; }
+  static float GetMaxOrbitBobScale() { return mMaxOrbitBobScale; }
+  static float GetSlowSpeedPeriodScale() { return mSlowSpeedPeriodScale; }
   static float GetMaxNegativeVerticalSpeedConsidered() {
-    return kMaxNegativeVerticalSpeedConsidered;
+    return mMaxNegativeVerticalSpeedConsidered;
   }
 
 private:
