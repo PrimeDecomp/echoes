@@ -23,15 +23,15 @@ struct SLdrTIcon_Configurations {
   SLdrTIcon_Configurations();
   ~SLdrTIcon_Configurations();
 
-  float something0Angle; // 0x3058aff2
-  float something1Angle; // 0xf1d67032
-  float something2Angle; // 0x68341633
-  float something3Angle; // 0xa9bac9f3
-  float something4Angle; // 0x8081dc70
-  float something5Angle; // 0x410f03b0
-  float something6Angle; // 0xd8ed65b1
-  float something7Angle; // 0x1963ba71
-  float something8Angle; // 0x8a9b4eb7
+  float something0Angle; // non-matching name, 0x3058aff2
+  float something1Angle; // non-matching name, 0xf1d67032
+  float something2Angle; // non-matching name, 0x68341633
+  float something3Angle; // non-matching name, 0xa9bac9f3
+  float something4Angle; // non-matching name, 0x8081dc70
+  float something5Angle; // non-matching name, 0x410f03b0
+  float something6Angle; // non-matching name, 0xd8ed65b1
+  float something7Angle; // non-matching name, 0x1963ba71
+  float something8Angle; // non-matching name, 0x8a9b4eb7
 };
 
 void LoadTypedefSLdrTIcon_Configurations(SLdrTIcon_Configurations& data, CInputStream& input);

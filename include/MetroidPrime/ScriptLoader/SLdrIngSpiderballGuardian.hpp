@@ -29,21 +29,21 @@ struct SLdrIngSpiderballGuardianData {
   SLdrIngSpiderballGuardianData();
   ~SLdrIngSpiderballGuardianData();
 
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct; // 0x152db484
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x2d163ff7; // 0x2d163ff7
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x8c2fbb19; // 0x8c2fbb19
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x5d612911; // 0x5d612911
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xfc58adff; // 0xfc58adff
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xc463268c; // 0xc463268c
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct; // non-matching name, 0x152db484
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x2d163ff7; // non-matching name, 0x2d163ff7
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x8c2fbb19; // non-matching name, 0x8c2fbb19
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x5d612911; // non-matching name, 0x5d612911
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xfc58adff; // non-matching name, 0xfc58adff
+  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xc463268c; // non-matching name, 0xc463268c
   float damageRadius; // 0x0f598739
   SLdrDamageInfo proximityDamage; // 0xba78d281
   float unknown_0x32133b39; // 0x32133b39
-  SLdrAudioPlaybackParms audioPlaybackParms; // 0xaed23abc
+  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0xaed23abc
   SLdrAudioPlaybackParms sound_SpiderballRolling; // 0x3a5e2f52
   SLdrAudioPlaybackParms sound_SpiderballSlowRolling; // 0xcee38f10
   SLdrAudioPlaybackParms sound_SpiderballFastRolling; // 0x796fa303
   SLdrAudioPlaybackParms sound_EnterStunned; // 0xd5f3e9c4
-  SLdrAudioPlaybackParms audioPlaybackParms_0x44c1f241; // 0x44c1f241
+  SLdrAudioPlaybackParms audioPlaybackParms_0x44c1f241; // non-matching name, 0x44c1f241
 };
 
 void LoadTypedefSLdrIngSpiderballGuardianData(SLdrIngSpiderballGuardianData& data, CInputStream& input);

@@ -59,8 +59,8 @@ struct SLdrEmperorIngStage1WarpAttackData {
   SLdrDamageInfo stabDamage; // 0x946016a9
   int unknown_0xecfab026; // 0xecfab026
   int unknown_0x94880277; // 0x94880277
-  int sound; // 0x1c3e84b6
-  int sound_0xa93f0198; // 0xa93f0198
+  int sound; // non-matching name, 0x1c3e84b6
+  int sound_0xa93f0198; // non-matching name, 0xa93f0198
 };
 
 void LoadTypedefSLdrEmperorIngStage1WarpAttackData(SLdrEmperorIngStage1WarpAttackData& data, CInputStream& input);

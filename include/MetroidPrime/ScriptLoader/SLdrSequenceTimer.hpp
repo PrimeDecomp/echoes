@@ -10,9 +10,9 @@ struct SLdrConnection {
   SLdrConnection();
   ~SLdrConnection();
 
-  short connectionIndex; // 0x00000000
-  rstl::vector< float > activationTimes; // 0x00000001
-  bool unknown_0x00000002; // 0x00000002
+  short connectionIndex;
+  rstl::vector< float > activationTimes;
+  bool unknown_0x00000002;
 };
 
 void LoadTypedefSLdrConnection(SLdrConnection& data, CInputStream& input);
@@ -22,7 +22,7 @@ struct SLdrSequenceTimer {
   ~SLdrSequenceTimer();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::vector< SLdrConnection > sequenceConnections; // 0xef5c94e9
+  rstl::vector< SLdrConnection > sequenceConnections; // non-matching name, 0xef5c94e9
   float startTime; // 0xb8bd2175
   float maxTime; // 0x03e7b2b4
   float loopStartTime; // 0xacf9ca5f

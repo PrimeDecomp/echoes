@@ -89,10 +89,10 @@ struct SLdrEmperorIngStage3Data {
   CAssetId lightSwarmEffect; // 0x4f82b9e5
   SLdrBasicSwarmProperties lightSwarmProperties; // 0x043e9c2e
   SLdrAudioPlaybackParms lightSwarmDeathSound; // 0x91001508
-  SLdrAudioPlaybackParms audioPlaybackParms; // 0x03552953
+  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x03552953
   SLdrEmperorIngStage3PortalAttackData portalAttack; // 0xaf7e3033
   SLdrShockWaveInfo jumpAttackShockWaveInfo; // 0xab4ed456
-  int sound; // 0x985f72fd
+  int sound; // non-matching name, 0x985f72fd
   SLdrEmperorIngStage3Stage stage1; // 0xe843417f
   SLdrEmperorIngStage3Stage stage2; // 0xd13bec3f
   SLdrEmperorIngStage3Stage stage3; // 0xc61388ff

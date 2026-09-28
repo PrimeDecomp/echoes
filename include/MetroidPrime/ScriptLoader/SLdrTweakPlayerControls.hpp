@@ -109,9 +109,9 @@ struct SLdrTweakPlayerControls_Booleans {
   bool unknown_0xbdc01c71; // 0xbdc01c71
   bool fixedVerticalAim; // 0x1c30f1a6
   bool unknown_0xda97bbcd; // 0xda97bbcd
-  bool orbitAroundEnemies; // 0x83583abd
+  bool orbitAroundEnemies; // non-matching name, 0x83583abd
   bool unknown_0xc224d966; // 0xc224d966
-  bool addGrenadeAlert; // 0x1fcfaf3f
+  bool addGrenadeAlert; // non-matching name, 0x1fcfaf3f
   bool unknown_0x3fb16819; // 0x3fb16819
   bool unknown_0x4fcf4b70; // 0x4fcf4b70
   bool unknown_0x07bb06a6; // 0x07bb06a6

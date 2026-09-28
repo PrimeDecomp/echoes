@@ -36,9 +36,9 @@ struct SLdrChozoGhost {
   float attackDelay; // 0x1b67981a
   float freezeTime; // 0x1e8722c7
   CAssetId unknown_0x54151870; // 0x54151870
-  SLdrDamageInfo damageInfo; // 0xffcda1f8
+  SLdrDamageInfo damageInfo; // non-matching name, 0xffcda1f8
   CAssetId unknown_0x3a58089c; // 0x3a58089c
-  SLdrDamageInfo damageInfo_0x1ff047a9; // 0x1ff047a9
+  SLdrDamageInfo damageInfo_0x1ff047a9; // non-matching name, 0x1ff047a9
   SLdrGhostBehave far; // 0xe832241f
   SLdrGhostBehave mid; // 0x1e2c8483
   SLdrGhostBehave near; // 0x78d76034

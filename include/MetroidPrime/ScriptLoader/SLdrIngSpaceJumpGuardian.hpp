@@ -30,11 +30,11 @@ struct SLdrIngSpaceJumpGuardianData {
   ~SLdrIngSpaceJumpGuardianData();
 
   CAssetId ingSpotBlobEffect; // 0xcc5a4918
-  int sound; // 0x46e902e8
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct; // 0x5e1d1931
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0x6b08e2e5; // 0x6b08e2e5
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xf223aa76; // 0xf223aa76
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xd0db5f7a; // 0xd0db5f7a
+  int sound; // non-matching name, 0x46e902e8
+  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct; // non-matching name, 0x5e1d1931
+  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0x6b08e2e5; // non-matching name, 0x6b08e2e5
+  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xf223aa76; // non-matching name, 0xf223aa76
+  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xd0db5f7a; // non-matching name, 0xd0db5f7a
   CColor lightColor; // 0xbd3efe7d
   float lightAttenuation; // 0xd24b888f
   CAssetId miniPortalEffect; // 0xa926f8a8

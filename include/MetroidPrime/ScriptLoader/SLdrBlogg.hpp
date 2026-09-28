@@ -15,8 +15,8 @@ struct SLdrBloggStruct {
   SLdrBloggStruct();
   ~SLdrBloggStruct();
 
-  int min_________________________; // 0x3e505ddb
-  int max_________________________; // 0x118f1e46
+  int min_________________________; // non-matching name, 0x3e505ddb
+  int max_________________________; // non-matching name, 0x118f1e46
   float unknown_0x6e603df2; // 0x6e603df2
   float unknown_0x1e74f1ec; // 0x1e74f1ec
   float unknown_0xecba9fb2; // 0xecba9fb2
@@ -66,9 +66,9 @@ struct SLdrBlogg {
   bool isMegaBlogg; // 0x4fc9dfe4
   float projectileBlurRadius; // 0x2dd3662e
   float projectileBlurTime; // 0x6f41bbe7
-  SLdrBloggStruct bloggStruct; // 0x3874576d
-  SLdrBloggStruct bloggStruct_0x97dd1aa7; // 0x97dd1aa7
-  SLdrBloggStruct bloggStruct_0xf2ba21e1; // 0xf2ba21e1
+  SLdrBloggStruct bloggStruct; // non-matching name, 0x3874576d
+  SLdrBloggStruct bloggStruct_0x97dd1aa7; // non-matching name, 0x97dd1aa7
+  SLdrBloggStruct bloggStruct_0xf2ba21e1; // non-matching name, 0xf2ba21e1
 };
 
 void LoadTypedefSLdrBlogg(SLdrBlogg& data, CInputStream& input);

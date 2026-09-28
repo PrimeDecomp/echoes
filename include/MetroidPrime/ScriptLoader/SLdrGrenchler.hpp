@@ -23,7 +23,7 @@ struct SLdrGrenchler {
   float tailDestroyedHealth; // 0x04d51e3a
   bool isGrappleGuardian; // 0x33408e7f
   bool hasHealthBar; // 0x67b6ea0b
-  SLdrDamageVulnerability damageVulnerability; // 0x0a7326a3
+  SLdrDamageVulnerability damageVulnerability; // non-matching name, 0x0a7326a3
   SLdrAnimationParameters tail; // 0xa18f626b
   SLdrAnimationParameters tailWhenUnderwater; // 0x0abef809
   CAssetId taillessModel; // 0x4f3a4566
@@ -62,7 +62,7 @@ struct SLdrGrenchler {
   CAssetId surfaceRingsEffect; // 0x30b81a7e
   CAssetId shallowWaterRing; // 0xbf4daae6
   CAssetId shallowWaterSplash; // 0x70247a6e
-  CAssetId pART; // 0xffcee1a9
+  CAssetId pART; // non-matching name, 0xffcee1a9
   CAssetId grappleSwoosh; // 0xae1f2a26
   CAssetId grappleBeamPart; // 0x0dabf0af
   CAssetId grappleHitFx; // 0xe51746d1
@@ -74,9 +74,9 @@ struct SLdrGrenchler {
   float unknown_0x13e5b580; // 0x13e5b580
   float unknown_0xfc6f199d; // 0xfc6f199d
   CAssetId grappleVisorEffect; // 0xf6502596
-  SLdrDamageInfo damageInfo; // 0x6ec26414
-  CAssetId pART_0x54b6bfa1; // 0x54b6bfa1
-  SLdrAudioPlaybackParms audioPlaybackParms; // 0x5cf705f2
+  SLdrDamageInfo damageInfo; // non-matching name, 0x6ec26414
+  CAssetId pART_0x54b6bfa1; // non-matching name, 0x54b6bfa1
+  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x5cf705f2
   CAssetId grappleGuardianEyeGlow; // 0xb9f9f4f2
   CAssetId alternateScannableInfo; // 0xf60ac5cc
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed

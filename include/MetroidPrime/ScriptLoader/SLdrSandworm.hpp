@@ -63,8 +63,8 @@ struct SLdrSandworm {
   float pursuitFrustrationRadius; // 0x49f36a3f
   bool canLinkTransfer; // 0xb47dd18f
   CAssetId eyeGlow; // 0x0ca82d3c
-  CAssetId pART; // 0x3221407e
-  CAssetId pART_0x8b2a15ee; // 0x8b2a15ee
+  CAssetId pART; // non-matching name, 0x3221407e
+  CAssetId pART_0x8b2a15ee; // non-matching name, 0x8b2a15ee
   CAssetId ingBossBombFX; // 0x526c6956
   CAssetId ingBossBombExplosionFX; // 0xd24a1751
   SLdrDamageInfo ingBossBombDamage; // 0x4461a8ad
@@ -73,11 +73,11 @@ struct SLdrSandworm {
   int bombExplodeSound; // 0x8649fe53
   float unknown_0x547f9400; // 0x547f9400
   float unknown_0xefef7b45; // 0xefef7b45
-  SLdrSandwormStruct sandwormStruct; // 0xb8c15f15
-  SLdrSandwormStruct sandwormStruct_0xce246628; // 0xce246628
-  SLdrSandwormStruct sandwormStruct_0x55578cfc; // 0x55578cfc
-  SLdrSandwormStruct sandwormStruct_0x23ee1452; // 0x23ee1452
-  SLdrSandwormStruct sandwormStruct_0xb89dfe86; // 0xb89dfe86
+  SLdrSandwormStruct sandwormStruct; // non-matching name, 0xb8c15f15
+  SLdrSandwormStruct sandwormStruct_0xce246628; // non-matching name, 0xce246628
+  SLdrSandwormStruct sandwormStruct_0x55578cfc; // non-matching name, 0x55578cfc
+  SLdrSandwormStruct sandwormStruct_0x23ee1452; // non-matching name, 0x23ee1452
+  SLdrSandwormStruct sandwormStruct_0xb89dfe86; // non-matching name, 0xb89dfe86
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
 };
 

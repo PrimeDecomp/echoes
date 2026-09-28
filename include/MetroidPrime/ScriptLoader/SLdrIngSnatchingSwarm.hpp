@@ -30,7 +30,7 @@ struct SLdrIngSnatchingSwarm {
   float unknown_0x4e79f717; // 0x4e79f717
   float unknown_0xe8e0b5a6; // 0xe8e0b5a6
   float beginSnatchingRange; // 0xfcd8057b
-  CAssetId pART; // 0x2d2afc26
+  CAssetId pART; // non-matching name, 0x2d2afc26
   SLdrDamageInfo impactDamage; // 0xb16d553e
   int sound_Impact; // 0x1bb16ea5
   int sound_Idle; // 0xaf38968e

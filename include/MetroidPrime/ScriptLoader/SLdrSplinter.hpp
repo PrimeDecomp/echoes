@@ -29,8 +29,8 @@ struct SLdrSplinter {
   int unknown_0xb63b810c; // 0xb63b810c
   SLdrAnimationParameters unknown_0x6d752efc; // 0x6d752efc
   SLdrAnimationParameters unknown_0x0d6ab7b5; // 0x0d6ab7b5
-  CAssetId pART; // 0x630d93a1
-  SLdrDamageInfo damageInfo; // 0x4436a388
+  CAssetId pART; // non-matching name, 0x630d93a1
+  SLdrDamageInfo damageInfo; // non-matching name, 0x4436a388
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
   bool isMegaSplinter; // 0x7dc82f46
   CAssetId megaSplinterSpitProjectile; // 0x42518359

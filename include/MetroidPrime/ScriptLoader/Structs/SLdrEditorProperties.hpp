@@ -10,9 +10,9 @@ struct SLdrTransform {
   SLdrTransform();
   ~SLdrTransform();
 
-  CVector3f position; // 0x00000000
-  CVector3f rotation; // 0x00000001
-  CVector3f scale; // 0x00000002
+  CVector3f position;
+  CVector3f rotation;
+  CVector3f scale;
 };
 
 void LoadTypedefSLdrTransform(SLdrTransform& data, CInputStream& input);

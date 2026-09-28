@@ -23,11 +23,11 @@ struct SLdrDarkSamus {
   int glideSound; // 0x1f468967
   int missileRicochetSound; // 0x1a08aadc
   bool startsInTheAir; // 0x6689925b
-  CAssetId tXTR; // 0x3863160b
+  CAssetId tXTR; // non-matching name, 0x3863160b
   float unknown_0x2c6a3344; // 0x2c6a3344
   SLdrDamageInfo meleeAttackDamage; // 0x4d790ee9
   CAssetId meleeAttackFX; // 0x6d40aa56
-  CAssetId pART; // 0x9603a544
+  CAssetId pART; // non-matching name, 0x9603a544
   SLdrDamageInfo diveAttackDamage; // 0x8688f535
   float diveAttackImpulseVertical; // 0x4aa5dd62
   float diveAttackImpulseHorizontal; // 0x1ad7dc21
@@ -59,18 +59,18 @@ struct SLdrDarkSamus {
   SLdrDamageInfo boostBallDamage; // 0xe18dc6fc
   CAssetId boostBallGlow; // 0xac43ba34
   CAssetId boostBallTrailSwoosh; // 0x449aa4aa
-  CAssetId sWHC; // 0x0345fa17
+  CAssetId sWHC; // non-matching name, 0x0345fa17
   int boostBallRollSound; // 0x2c72576b
   int boostBallHitPlayerSound; // 0x9e02691c
   CAssetId boostBallCollision; // 0x3433bc8b
   SLdrAudioPlaybackParms boostBallCollisionSound_OneShot; // 0x4841182b
   CAssetId iceSpreadFX; // 0xa6c42023
   int iceSpreadSound; // 0xd3593630
-  CAssetId pART_0x908b06e9; // 0x908b06e9
-  CAssetId pART_0x494de4a4; // 0x494de4a4
-  int sound; // 0xa861649f
-  SLdrDamageInfo damageInfo; // 0x18402aa9
-  CAssetId pART_0xe701daea; // 0xe701daea
+  CAssetId pART_0x908b06e9; // non-matching name, 0x908b06e9
+  CAssetId pART_0x494de4a4; // non-matching name, 0x494de4a4
+  int sound; // non-matching name, 0xa861649f
+  SLdrDamageInfo damageInfo; // non-matching name, 0x18402aa9
+  CAssetId pART_0xe701daea; // non-matching name, 0xe701daea
   CAssetId phazonProjectile; // 0xbf62b633
   CAssetId phazonSuperMissileProjectile; // 0x8d123fe9
   SLdrDamageInfo phazonSuperMissileDamage; // 0x58769eb2

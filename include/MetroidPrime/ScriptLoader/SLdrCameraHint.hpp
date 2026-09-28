@@ -108,16 +108,16 @@ struct SLdrCameraHint {
   SLdrCameraOffset lookAtOffset; // 0x8d0a9113
   CVector3f worldOffset; // 0xefebe838
   SLdrCameraFOV fieldOfView; // 0xf71c36f2
-  SLdrCameraHintStructC cameraHintStructB; // 0x664c450a
-  SLdrCameraHintStructC cameraHintStructB_0xc82395fa; // 0xc82395fa
+  SLdrCameraHintStructC cameraHintStructB; // non-matching name, 0x664c450a
+  SLdrCameraHintStructC cameraHintStructB_0xc82395fa; // non-matching name, 0xc82395fa
   SLdrCameraSpeed angularSpeed; // 0x645eb009
   SLdrCameraZOffset zOffset; // 0x80cfbb54
   float interpolateOffTime; // 0x2ae08be1
   float interpolateOnTime; // 0x4361d075
   float interpolateControlTime; // 0xc91ef813
-  SLdrCameraHintStructA cameraHintStructA1; // 0x934e392c
+  SLdrCameraHintStructA cameraHintStructA1; // non-matching name, 0x934e392c
   SLdrUnknownStruct9 unknown_0x9e8631f1; // 0x9e8631f1
-  SLdrCameraHintStructA cameraHintStructA; // 0x138729a7
+  SLdrCameraHintStructA cameraHintStructA; // non-matching name, 0x138729a7
 };
 
 void LoadTypedefSLdrCameraHint(SLdrCameraHint& data, CInputStream& input);

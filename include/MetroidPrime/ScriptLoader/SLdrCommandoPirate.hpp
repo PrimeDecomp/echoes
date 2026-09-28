@@ -69,7 +69,7 @@ struct SLdrCommandoPirate {
   SLdrPatternedAITypedef patterned; // 0xb3774750
   SLdrActorParameters actorInformation; // 0x7e397fed
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
-  int sound; // 0x7abed4ce
+  int sound; // non-matching name, 0x7abed4ce
   float aggressiveness; // 0x9579b1f2
   float coverCheck; // 0xf89ab419
   float searchRadius; // 0xed9bf5a3
@@ -77,8 +77,8 @@ struct SLdrCommandoPirate {
   int sound_Impact; // 0x1bb16ea5
   int sound_Hurled; // 0x3bb37a8f
   int sound_Death; // 0xe160b593
-  int alwaysFF; // 0xfca76593
-  int alwaysFF_0x467c3d94; // 0x467c3d94
+  int alwaysFF; // non-matching name, 0xfca76593
+  int alwaysFF_0x467c3d94; // non-matching name, 0x467c3d94
   SLdrDamageInfo bladeDamage; // 0xa5912430
   CAssetId projectile; // 0xef485db9
   SLdrDamageInfo projectileDamage; // 0x553b1339

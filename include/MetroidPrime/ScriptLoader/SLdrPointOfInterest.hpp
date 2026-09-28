@@ -13,7 +13,7 @@ struct SLdrPointOfInterest {
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrScannableParameters scanInfo; // 0xbdbec295
   float scanOffset; // 0x87271632
-  bool lookAtPOI; // 0x01f9c5bb
+  bool lookAtPOI; // non-matching name, 0x01f9c5bb
 };
 
 void LoadTypedefSLdrPointOfInterest(SLdrPointOfInterest& data, CInputStream& input);
