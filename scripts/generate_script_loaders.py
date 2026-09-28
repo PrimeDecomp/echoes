@@ -124,8 +124,10 @@ KEYWORDS: set[str] = {
     "xor",
 }
 
-def is_matching(name: str, hash_value: int):
+
+def is_matching(name: str, hash_value: int) -> bool:
     return (crc32(name.encode()) ^ 0xFFFFFFFF) == hash_value
+
 
 @dataclass(frozen=True)
 class Primitive:
@@ -166,7 +168,6 @@ pwe_type_lookup = {
     "Guid": "guid",
     "Enum": "enum",
 }
-
 
 
 class TemplateError(ValueError):
@@ -438,11 +439,7 @@ class Generator:
 
     def _get_other_type(self, node: ET.Element) -> str | None:
         pid = property_id(node)
-        all_types = [
-            ptype
-            for prop_id, ptype in self.names
-            if prop_id == pid
-        ]
+        all_types = [ptype for prop_id, ptype in self.names if prop_id == pid]
         if len(all_types) > 1:
             return all_types[-1]
         return None
@@ -461,7 +458,7 @@ class Generator:
                 matching_type_name = pwe_type_lookup[matching_type_name]
             elif archetype:
                 matching_type_name = archetype
-            
+
             if matching_type_name is not None:
                 hashable_name = f"{raw_name}{matching_type_name}"
                 matching_name = is_matching(hashable_name, property_id(node))
@@ -476,8 +473,14 @@ class Generator:
             if item_node is None:
                 raise TemplateError("Array has no ItemArchetype: " + owner)
             item = self.make_field(self.resolve(item_node), "item", owner + "_Item")
-            return Field(name, node, "rstl::vector< " + item.cpp + " >", item=item, matching_name=matching_name)
-        
+            return Field(
+                name,
+                node,
+                "rstl::vector< " + item.cpp + " >",
+                item=item,
+                matching_name=matching_name,
+            )
+
         if kind == "Struct" or archetype:
             if archetype:
                 cpp = "SLdr" + identifier(archetype)
@@ -492,7 +495,11 @@ class Generator:
         if kind == "AnimationSet":
             self.uses_animation_parameters = True
             return Field(
-                name, node, "SLdrAnimationParameters", matching_name, "SLdrAnimationParameters",
+                name,
+                node,
+                "SLdrAnimationParameters",
+                matching_name,
+                "SLdrAnimationParameters",
             )
         if kind not in PRIMITIVES:
             raise TemplateError("Unsupported property type " + kind + " in " + owner)
@@ -521,7 +528,9 @@ class Generator:
         if struct.scalar:
             if kind not in PRIMITIVES:
                 raise TemplateError("Unsupported scalar archetype: " + kind)
-            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=None))
+            struct.fields.append(
+                Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=None)
+            )
         else:
             seen_ids: set[int] = set()
             seen_names: set[str] = set()
@@ -615,7 +624,9 @@ class Generator:
                     and ET.tostring(actual_default) == ET.tostring(inherited)
                 ):
                     return []
-                scalar = Field("value", prop.node, struct.fields[0].cpp, matching_name=None)
+                scalar = Field(
+                    "value", prop.node, struct.fields[0].cpp, matching_name=None
+                )
                 return self.defaults(scalar, target + ".value")
             children = {
                 property_id(child): child
