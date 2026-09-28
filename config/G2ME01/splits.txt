@@ -181,6 +181,13 @@ MetroidPrime/Enemies/CPatterned.cpp:
 	.ctors      start:0x803A54D0 end:0x803A54D4
 	.data       start:0x803B2148 end:0x803B263C
 
+MetroidPrime/ScriptObjects/CScriptEffect.cpp:
+	.text       start:0x800802D4 end:0x80082EE8
+	.ctors      start:0x803A54D8 end:0x803A54DC
+	.data       start:0x803B2768 end:0x803B27F8
+	.sbss       start:0x80419030 end:0x80419038
+	.sdata2     start:0x8041AB60 end:0x8041ABA8
+
 MetroidPrime/Player/CPlayerState.cpp:
 	.text       start:0x80083FE0 end:0x800866C8
 	.rodata     start:0x803A7288 end:0x803A74E8

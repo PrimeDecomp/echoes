@@ -125,6 +125,7 @@ public:
 
   CActorParameters Scannable(const CScannableParameters& sParms) const;
   CActorParameters HotInThermal(bool hot) const;
+  CActorParameters WithAlphaSorting(bool enabled) const; // Guessed name.
   CActorParameters MakeDamageableTriggerActorParms(const CVisorParameters& visorParam) const;
 
   const CLightParameters& GetLighting() const { return lighting; }

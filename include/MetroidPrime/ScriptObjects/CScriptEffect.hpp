@@ -3,40 +3,97 @@
 
 #include "MetroidPrime/CActor.hpp"
 
-#include "Kyoto/Math/CMayaSpline.hpp"
+#include "Kyoto/Math/CGameSpline.hpp"
+#include "Kyoto/Math/CGameSplineDesc.hpp"
 
-class CLightParameters;
+class CParticleGen;
 
 class CScriptEffect : public CActor {
 public:
-  struct ParamStruct {
-    ParamStruct(const SLdrSpline& spline, int unk1, float unk2, bool unk3);
-    ~ParamStruct();
-
-    SLdrSpline m_spline;
-    int m_unk1;
-    float m_unk2;
-    bool m_unk3 : 1;
-  };
+  // Original enum type from Wii; enumerator names are guessed. The two special
+  // queues' positions in the renderer are not yet recovered.
+  enum ERenderOrder { kRO_Normal, kRO_Queue1, kRO_Queue2 };
 
   CScriptEffect(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                const CTransform4f& xf, const CVector3f& scale, CAssetId elscId, int, int, int, int,
-                float rateInverseCamDist, float rateInverseCamDistRate, float duration,
-                float durationResetWhileVisible, bool useRateCamDistRange,
+                const CTransform4f& xf, const CVector3f& scale, CAssetId effectId,
+                bool noTimerUnlessAreaOccluded, bool rebuildSystemsOnActivate, bool emitting,
+                bool useRateInverseCamDist, float rateInverseCamDist, float rateInverseCamDistRate,
+                float duration, float durationResetWhileVisible, bool useRateCamDistRange,
                 float rateCamDistRangeMin, float rateCamDistRangeMax, float rateCamDistRangeFarRate,
-                bool combatVisorVisible, bool thermalVisorVisible, bool xrayVisorVisible,
-                const CLightParameters& lParms, bool, const ParamStruct& param_25, bool, bool, bool,
-                int);
+                bool combatVisorVisible, bool darkVisorVisible, bool echoVisorVisible,
+                const CLightParameters& lightParameters, bool dieWhenSystemsDone,
+                const CGameSplineDesc& spline, bool useLocalTranslation,
+                bool destroyParticlesOnDeactivate, bool orientToSpline, ERenderOrder renderOrder);
 
+  // CEntity
+  ~CScriptEffect() override;
   CEntity* TypesMatch(int typeId) const override;
+  void Think(float dt, CStateManager& mgr) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
+  void SetActive(bool active) override;
 
-  bool GetFlagAt0x2c8() { return m_flag_0x2c8; }
+  // CActor
+  void PreRender(CStateManager& mgr) override;
+  void AddToRenderer(const CStateManager& mgr) const override;
+  void Render(const CStateManager& mgr) const override;
+  bool CanRenderUnsorted(const CStateManager& mgr) const override;
+  void PreRenderAllViewports(CStateManager& mgr) override;
+  CAABox GetSortingBounds(const CStateManager& mgr) const override;
+
+  void SetGlobalTranslation(const CVector3f& translation);
+  void SetGlobalScale(const CVector3f& scale);
+  CVector3f GetGlobalScale() const;             // Guessed name.
+  bool IsEmitting() const { return mEmitting; } // Guessed name; independent of GetActive().
+  static void ResetParticleCounts();
 
 private:
-  char m_pad1[0x170]; // 0x158
-  bool m_flag_0x2c8;  // 0x2c8
-};
+  // Guessed names for Echoes-specific operations.
+  void UpdateSpline(float dt);
+  void CreateSystem(const CVector3f& scale, const CColor& color);
+  void UpdateGeneratorRate(CStateManager& mgr);
+  void UpdateModelLighting();
+  bool IsSystemDeletable() const;
 
-CScriptEffect::ParamStruct::~ParamStruct() {}
+  static uint mNumParticlesDrawing;
+  static uint mNumParticlesUpdating;
+
+  rstl::single_ptr< CToken > mDescription;
+  rstl::single_ptr< CParticleGen > mParticleSystem;
+  TUniqueId mLightId;
+  CAssetId mEffectId;
+  float mRateInverseCamDist;
+  float mRateInverseCamDistSq;
+  float mRateInverseCamDistRate;
+  float mRateCamDistRangeMin;
+  float mRateCamDistRangeMax;
+  float mRateCamDistRangeFarRate;
+  float mRemTime;
+  float mDuration;
+  float mDurationResetWhileVisible;
+  rstl::single_ptr< CActorLights > mEffectLights;
+  TUniqueId mTriggerId;
+  float mDestroyDelayTimer;
+  CGameSpline mSpline;
+  float mSplineTime;
+  uint mEmitting : 1;
+  uint mEnable : 1;
+  uint mNoTimerUnlessAreaOccluded : 1;
+  uint mRebuildSystemsOnActivate : 1;
+  uint mUseRateInverseCamDist : 1;
+  uint mCombatVisorVisible : 1;
+  uint mDarkVisorVisible : 1;
+  uint mEchoVisorVisible : 1;
+  uint mAnyVisorVisible : 1;
+  uint mUseRateCamDistRange : 1;
+  uint mDieWhenSystemsDone : 1;
+  uint mCanRender : 1;
+  uint mLoopSpline : 1;
+  uint mHasSpline : 1;
+  uint mUseLocalTranslation : 1;
+  uint mDestroyParticlesOnDeactivate : 1;
+  uint mOrientToSpline : 1;
+  ERenderOrder mRenderOrder : 2;
+};
+CHECK_SIZEOF(CScriptEffect, 0x2d0)
 
 #endif // _CSCRIPTEFFECT

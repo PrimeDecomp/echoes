@@ -221,6 +221,7 @@ public:
 
   const CAABox& GetRenderBoundsCached() const { return mRenderBounds; }
   void SetRenderBounds(const CAABox& bounds) { mRenderBounds = bounds; }
+  const CAABox& GetOtherBounds() const { return mOtherBounds; }
   void SetOtherBounds(const CAABox& bounds) { mOtherBounds = bounds; }
 
   bool GetUseInSortedLists() const;

@@ -9,6 +9,9 @@
 // Guessed name. Runtime spline, distinct from the serialized CGameSplineDesc.
 class CGameSpline {
 public:
+  CGameSpline(float duration, uint flags, const SLdrSpline& positionTimeSpline,
+              const SLdrSpline& lookAtTimeSpline, CMotionSpline::ESplineType positionType,
+              CMotionSpline::ESplineType lookAtType);
   virtual ~CGameSpline();
 
   // Guessed accessor names, recovered from the script-camera callers.
@@ -21,6 +24,7 @@ public:
   CMayaSpline& PositionTimeSpline();
   CMayaSpline& LookAtTimeSpline();
   float GetLength() const;
+  float GetDuration() const;
   float FindClosestLengthOnSpline(float start, const CVector3f& position) const;
   float ValidateLength(float distance) const;
   CVector3f GetPositionByTime(float time);

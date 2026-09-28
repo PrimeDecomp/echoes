@@ -28,6 +28,7 @@ public:
   float ValidateLength(float distance) const;
   // Guessed names; time is mapped through arc length rather than segment parameterization.
   CVector3f GetPositionByTime(float time) const;
+  CVector3f GetTangentByTime(float time) const; // Guessed name.
   void CalculateLength();
   void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
