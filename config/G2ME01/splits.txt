@@ -710,6 +710,12 @@ Kyoto/Animation/CCharacterInfo.cpp:
 Kyoto/Animation/CCharacterSet.cpp:
 	.text       start:0x80293C98 end:0x80294044
 
+Kyoto/Animation/CMetaAnimPlay.cpp:
+	.text       start:0x80294F18 end:0x80295428
+	.rodata     start:0x803AED88 end:0x803AED90
+	.data       start:0x803B93B0 end:0x803B93D0
+	.sdata      start:0x804189F8 end:0x80418A00
+
 Kyoto/Animation/CPASAnimInfo.cpp:
 	.text       start:0x80297020 end:0x80297128
 
@@ -727,6 +733,14 @@ Kyoto/Animation/CPASDatabase.cpp:
 Kyoto/Animation/CPASParmInfo.cpp:
 	.text       start:0x80299114 end:0x802992D0
 	.sdata2     start:0x8041E2C8 end:0x8041E2D0
+
+Kyoto/Animation/CPrimitive.cpp:
+	.text       start:0x802992D0 end:0x802993A0
+
+Kyoto/Animation/IMetaAnim.cpp:
+	.text       start:0x8029A64C end:0x8029AB00
+	.data       start:0x803B9470 end:0x803B9490
+	.sdata      start:0x80418A28 end:0x80418A30
 
 Kyoto/Audio/CSfxHandle.cpp:
 	.text       start:0x8029AB00 end:0x8029AB1C
@@ -827,6 +841,12 @@ Kyoto/Animation/CSegId.cpp:
 Kyoto/Animation/IAnimReader.cpp:
 	.text       start:0x802B2570 end:0x802B286C
 	.data       start:0x803B9BB0 end:0x803B9C18
+
+Kyoto/Animation/CAllFormatsAnimSource.cpp:
+	.text       start:0x802B2F74 end:0x802B3660
+	.rodata     start:0x803AEE60 end:0x803AEE68
+	.data       start:0x803B9C18 end:0x803B9C28
+	.sdata2     start:0x8041E430 end:0x8041E438
 
 Kyoto/CDvdRequest.cpp:
 	.text       start:0x802B3660 end:0x802B38C0

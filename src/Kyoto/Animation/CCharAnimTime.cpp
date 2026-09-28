@@ -83,17 +83,6 @@ float CCharAnimTime::operator/(const CCharAnimTime& other) const {
   return mTime / other.mTime;
 }
 
-CCharAnimTime CCharAnimTime::ZeroSignScale(float other) const {
-  if (other > 0.f) {
-    return *this;
-  } else if (other < 0.f) {
-    return CCharAnimTime(ZeroTypeFromOrdering(-ZeroOrdering()), 0.f);
-  }
-  return ZeroFlat();
-}
-
-inline CCharAnimTime CCharAnimTime::ZeroFlat() { return CCharAnimTime(kT_ZeroSteady, 0.f); }
-
 CCharAnimTime CCharAnimTime::operator*(const float& other) const {
   if (other == 0.f) {
     return ZeroFlat();
