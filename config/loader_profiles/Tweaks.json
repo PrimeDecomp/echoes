@@ -69,24 +69,24 @@
     "SLdrTweakGui.cpp",
     "SLdrTweakTargeting.cpp",
     "SLdrTweakPlayerRes.cpp",
-    "SLdrTweakPlayerControls_Duplicate.cpp",
+    "SLdrTweakPlayerControls2.cpp",
     "SLdrTweakParticle.cpp",
     "SLdrTweakGuiColors.cpp",
     "SLdrTweakGame.cpp",
-    "SLdrTweakPlayer_Duplicate.cpp",
+    "SLdrTweakPlayer2.cpp",
     "SLdrTweakSlideShow.cpp",
     "SLdrTweakBall.cpp",
     "SLdrTweakAutoMapper.cpp",
     "SLdrTweakPlayerControls.cpp",
-    "SLdrTweakPlayerGun_Duplicate.cpp",
+    "SLdrTweakPlayerGun2.cpp",
     "SLdrTweakPlayerGun.cpp",
     "SLdrTweakCameraBob.cpp",
     "SLdrTweakPlayer.cpp"
   ],
   "aggregate": "Tweaks.cpp",
   "duplicates": {
-    "SLdrTweakPlayer_Duplicate": "SLdrTweakPlayer",
-    "SLdrTweakPlayerGun_Duplicate": "SLdrTweakPlayerGun",
-    "SLdrTweakPlayerControls_Duplicate": "SLdrTweakPlayerControls"
+    "SLdrTweakPlayer2": "SLdrTweakPlayer",
+    "SLdrTweakPlayerGun2": "SLdrTweakPlayerGun",
+    "SLdrTweakPlayerControls2": "SLdrTweakPlayerControls"
   }
 }

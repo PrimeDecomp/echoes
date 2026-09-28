@@ -348,10 +348,9 @@ struct SLdrTweakPlayer {
 
 void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input);
 
-// Duplicate native record; original type name unknown.
-struct SLdrTweakPlayer_Duplicate {
-  SLdrTweakPlayer_Duplicate();
-  ~SLdrTweakPlayer_Duplicate();
+struct SLdrTweakPlayer2 {
+  SLdrTweakPlayer2();
+  ~SLdrTweakPlayer2();
 
   rstl::string instanceName; // 0x7fda1466
   SLdrTweakPlayer_DarkWorld darkWorld; // 0xdfd08eba
@@ -369,6 +368,6 @@ struct SLdrTweakPlayer_Duplicate {
   SLdrTweakPlayer_SuitDamageReduction suitDamageReduction; // 0xaeaff210
 };
 
-void LoadTypedefSLdrTweakPlayer_Duplicate(SLdrTweakPlayer_Duplicate& data, CInputStream& input);
+void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input);
 
 #endif

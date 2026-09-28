@@ -7977,12 +7977,12 @@ void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input
   }
 }
 
-SLdrTweakPlayerControls_Duplicate::SLdrTweakPlayerControls_Duplicate() : instanceName(), controls(), booleans() {
+SLdrTweakPlayerControls2::SLdrTweakPlayerControls2() : instanceName(), controls(), booleans() {
 }
 
-SLdrTweakPlayerControls_Duplicate::~SLdrTweakPlayerControls_Duplicate() {}
+SLdrTweakPlayerControls2::~SLdrTweakPlayerControls2() {}
 
-void LoadTypedefSLdrTweakPlayerControls_Duplicate(SLdrTweakPlayerControls_Duplicate& data, CInputStream& input) {
+void LoadTypedefSLdrTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8249,12 +8249,12 @@ void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input) {
   }
 }
 
-SLdrTweakPlayer_Duplicate::SLdrTweakPlayer_Duplicate() : instanceName(), darkWorld(), grappleBeam(), motion(), misc(), aimStuff(), orbit(), scanVisor(), grapple(), collision(), firstPersonCamera(), shield(), frozen(), suitDamageReduction() {
+SLdrTweakPlayer2::SLdrTweakPlayer2() : instanceName(), darkWorld(), grappleBeam(), motion(), misc(), aimStuff(), orbit(), scanVisor(), grapple(), collision(), firstPersonCamera(), shield(), frozen(), suitDamageReduction() {
 }
 
-SLdrTweakPlayer_Duplicate::~SLdrTweakPlayer_Duplicate() {}
+SLdrTweakPlayer2::~SLdrTweakPlayer2() {}
 
-void LoadTypedefSLdrTweakPlayer_Duplicate(SLdrTweakPlayer_Duplicate& data, CInputStream& input) {
+void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8537,7 +8537,7 @@ void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStr
   }
 }
 
-SLdrTweakPlayerGun_Duplicate::SLdrTweakPlayerGun_Duplicate() : instanceName(), misc(), holstering(), position(), arm_Position(), weapons(), beam_Combo(), beam_Misc(), ricochetDamage_Factor(), recoil(), comboRecoil(), projectileRecoil(), flameThrower(), waveBuster(), projectileImpact() {
+SLdrTweakPlayerGun2::SLdrTweakPlayerGun2() : instanceName(), misc(), holstering(), position(), arm_Position(), weapons(), beam_Combo(), beam_Misc(), ricochetDamage_Factor(), recoil(), comboRecoil(), projectileRecoil(), flameThrower(), waveBuster(), projectileImpact() {
   recoil.flagsCameraShaker = 0x00000010u;
   comboRecoil.flagsCameraShaker = 0x00000010u;
   projectileRecoil.flagsCameraShaker = 0x00000010u;
@@ -8546,9 +8546,9 @@ SLdrTweakPlayerGun_Duplicate::SLdrTweakPlayerGun_Duplicate() : instanceName(), m
   projectileImpact.flagsCameraShaker = 0x00000013u;
 }
 
-SLdrTweakPlayerGun_Duplicate::~SLdrTweakPlayerGun_Duplicate() {}
+SLdrTweakPlayerGun2::~SLdrTweakPlayerGun2() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Duplicate(SLdrTweakPlayerGun_Duplicate& data, CInputStream& input) {
+void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();

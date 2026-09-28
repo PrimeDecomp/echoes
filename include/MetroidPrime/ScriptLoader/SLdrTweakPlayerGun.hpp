@@ -165,10 +165,9 @@ struct SLdrTweakPlayerGun {
 
 void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input);
 
-// Duplicate native record; original type name unknown.
-struct SLdrTweakPlayerGun_Duplicate {
-  SLdrTweakPlayerGun_Duplicate();
-  ~SLdrTweakPlayerGun_Duplicate();
+struct SLdrTweakPlayerGun2 {
+  SLdrTweakPlayerGun2();
+  ~SLdrTweakPlayerGun2();
 
   rstl::string instanceName; // 0x7fda1466
   SLdrTweakPlayerGun_Misc misc; // 0xb82ed424
@@ -187,6 +186,6 @@ struct SLdrTweakPlayerGun_Duplicate {
   SLdrCameraShakerData projectileImpact; // 0x12f14c5a
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Duplicate(SLdrTweakPlayerGun_Duplicate& data, CInputStream& input);
+void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input);
 
 #endif

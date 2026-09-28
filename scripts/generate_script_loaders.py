@@ -834,10 +834,8 @@ class Generator:
         header += ['#include "' + h + '"' for h in sorted(headers)]
         for member in ordered:
             member_name = member.name
-            header.append("")
-            if member.is_object and member_name != name:
-                header.append("// Duplicate native record; original type name unknown.")
             header += [
+                "",
                 "struct " + member_name + " {",
                 "  " + member_name + "();",
                 "  ~" + member_name + "();",
