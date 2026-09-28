@@ -371,7 +371,7 @@ private:
   rstl::vector< uint > mLayerDependencyOffsets;
   rstl::vector< Dock > mDocks;
   rstl::vector< rstl::string > mRelModules;
-  rstl::vector< uint > mRelOffsets;
+  rstl::vector< int > mRelOffsets;
   rstl::string mInternalAreaName;
   rstl::vector< ELayerPhase > mLayerPhases;
   uint mSerializedDependencySize;
@@ -416,7 +416,7 @@ private:
   rstl::vector< ushort > mAttachedAreaIndices;
   rstl::vector< Dock > mDocks;
   rstl::vector< rstl::string > mRelModules;
-  rstl::vector< uint > mRelOffsets;
+  rstl::vector< int > mRelOffsets;
   rstl::string mInternalAreaName;
 };
 CHECK_SIZEOF(CDummyGameArea, 0x94)

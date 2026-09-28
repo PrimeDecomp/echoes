@@ -120,8 +120,16 @@ inline void coutput_stream_helper(const bool& t, COutputStream& out) {
   out.WriteChar(static_cast< u8 >(t));
 }
 
+#include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
+#include "rstl/vector.hpp"
 namespace rstl {
+template < typename L, typename R >
+inline void pair< L, R >::PutTo(COutputStream& out) const {
+  out.Put(first);
+  out.Put(second);
+}
+
 template < typename Iter >
 inline void StreamObjects(COutputStream& out, const Iter& begin, const Iter& end, int) {
   Iter iterEnd = end;
@@ -134,6 +142,13 @@ template < typename T, int N >
 inline void reserved_vector< T, N >::PutTo(COutputStream& out) const {
   out.Put(size());
   StreamObjects(out, begin(), end(), size());
+}
+
+template < typename T, typename Alloc >
+inline void vector< T, Alloc >::PutTo(COutputStream& out) const {
+  const int count = size();
+  out.Put(count);
+  StreamObjects(out, begin(), end(), count);
 }
 } // namespace rstl
 

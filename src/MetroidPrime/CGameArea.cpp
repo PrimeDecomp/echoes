@@ -36,6 +36,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace {
+// Guessed name: sorts dependency indices by their resource offsets.
+class CTextureDependencySorter {
+public:
+  explicit CTextureDependencySorter(const rstl::vector< uint >& offsets) : mOffsets(offsets) {}
+
+  bool operator()(const int& a, const int& b) const { return mOffsets[a] < mOffsets[b]; }
+
+private:
+  const rstl::vector< uint >& mOffsets;
+};
+} // namespace
+
 // The complex loading paths below remain scaffolds. This TU is NonMatching.
 
 rstl::string CGameArea::IGetInternalAreaName() const { return mInternalAreaName; }
@@ -96,16 +109,16 @@ CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)
   const int dockCount = in.ReadInt32();
   mDocks.reserve(dockCount);
   for (int i = 0; i < dockCount; ++i) {
-    mDocks.push_back(Dock(in, mTransform));
+    mDocks.push_back_unsafe(Dock(in, mTransform));
   }
 
   if (mlvlVersion > 18) {
     mRelModules = rstl::vector< rstl::string >(in);
     if (mlvlVersion > 20) {
-      mRelOffsets = rstl::vector< uint >(in);
+      mRelOffsets = rstl::vector< int >(in);
     }
   }
-  if (mlvlVersion > 19) {
+  if (mlvlVersion >= 20) {
     const rstl::string name(in);
     if (mNameSTRG == kInvalidAssetId) {
       mInternalAreaName = name;
@@ -116,18 +129,17 @@ CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)
   mSerializedDependencySize = CalculateDependencyListByteCount();
   mDependenciesInAram = CARAMManager::Alloc(mSerializedDependencySize);
   {
-    rstl::auto_ptr< uchar > buffer(static_cast< uchar* >(
-        CMemory::Alloc(mSerializedDependencySize, IAllocator::kHI_RoundUpLen)));
+    void* buffer = CMemory::Alloc(mSerializedDependencySize, IAllocator::kHI_RoundUpLen);
     {
-      CMemoryStreamOut out(buffer.get(), mSerializedDependencySize, CMemoryStreamOut::kOS_NotOwned,
-                           64);
+      CMemoryStreamOut out(buffer, mSerializedDependencySize, CMemoryStreamOut::kOS_NotOwned, 64);
       mDependencies2.PutTo(out);
     }
 
     const uint handle = CARAMManager::DMAToARAM(
-        buffer.get(), mDependenciesInAram, mSerializedDependencySize, CARAMManager::kDMAPrio_One);
+        buffer, mDependenciesInAram, mSerializedDependencySize, CARAMManager::kDMAPrio_One);
     mDependencies2 = rstl::vector< rstl::pair< CAssetId, uint > >();
     CARAMManager::WaitForDMACompletion(handle);
+    CMemory::Free(buffer);
   }
 
   ClearTokenList();
@@ -1699,15 +1711,15 @@ CDummyGameArea::CDummyGameArea(CInputStream& in, int index, int mlvlVersion)
   const int dockCount = in.ReadInt32();
   mDocks.reserve(dockCount);
   for (int i = 0; i < dockCount; ++i) {
-    mDocks.push_back(Dock(in, mTransform));
+    mDocks.push_back_unsafe(Dock(in, mTransform));
   }
   if (mlvlVersion > 18) {
     mRelModules = rstl::vector< rstl::string >(in);
     if (mlvlVersion > 20) {
-      mRelOffsets = rstl::vector< uint >(in);
+      mRelOffsets = rstl::vector< int >(in);
     }
   }
-  if (mlvlVersion > 19) {
+  if (mlvlVersion >= 20) {
     const rstl::string name(in);
     if (mNameSTRG == kInvalidAssetId) {
       mInternalAreaName = name;
@@ -2154,7 +2166,44 @@ void CGameArea::LoadLayerRelModules(CStateManager& mgr, const TLayerId layer) {
 }
 
 void CGameArea::SortTextureDependencies() {
-  // TODO: Sort contiguous TXTR runs within each layer by resource offset.
+  rstl::vector< int > indices;
+  rstl::vector< uint > offsets;
+  const rstl::vector< rstl::pair< CAssetId, uint > > dependencies(mDependencies2);
+  const SObjectTag areaTag('MREA', mAreaAssetId);
+  indices.reserve(mDependencies2.size());
+  offsets.reserve(mDependencies2.size());
+
+  for (int layer = 0; layer < mLayerDependencyOffsets.size(); ++layer) {
+    const int first = mLayerDependencyOffsets[layer];
+    const int last = layer + 1 < mLayerDependencyOffsets.size() ? mLayerDependencyOffsets[layer + 1]
+                                                                : mDependencies2.size();
+    for (int i = first; i < last; ++i) {
+      const rstl::pair< CAssetId, uint >& dependency = mDependencies2[i];
+      if (dependency.second == 'TXTR') {
+        int end = i + 1;
+        for (; end < last; ++end) {
+          if (mDependencies2[end].second != 'TXTR') {
+            break;
+          }
+        }
+        if (end - i > 1) {
+          for (int j = i; j < end; ++j) {
+            gpResourceFactory->GetResLoader().FindResource(areaTag);
+            const SObjectTag tag(mDependencies2[j].second, mDependencies2[j].first);
+            indices.push_back_unsafe(j - i);
+            offsets.push_back_unsafe(gpResourceFactory->GetResLoader().GetResourceOffset(tag));
+          }
+          rstl::sort(indices.begin(), indices.end(), CTextureDependencySorter(offsets));
+          for (int j = i; j < end; ++j) {
+            mDependencies2[j] = dependencies[i + indices[j - i]];
+          }
+          offsets.clear();
+          indices.clear();
+          i = end - 1;
+        }
+      }
+    }
+  }
 }
 
 void CGameArea::DisableDocks(CStateManager& mgr) {
