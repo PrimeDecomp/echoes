@@ -148,10 +148,10 @@ MetroidPrime/CArchMsgParmControllerStatus.cpp:
 	.data       start:0x803B1D10 end:0x803B1D20
 
 MetroidPrime/CGameArea.cpp:
-	.text       start:0x800536A8 end:0x800609B4
+	.text       start:0x80053688 end:0x800609B4
 	.rodata     start:0x803A6838 end:0x803A6858
 	.data       start:0x803B1E28 end:0x803B1F30
-	.sdata      start:0x80417EB8 end:0x80417ECC
+	.sdata      start:0x80417EB8 end:0x80417ED0
 	.sdata2     start:0x8041A928 end:0x8041A960
 
 MetroidPrime/HUD/CSamusHud.cpp:
@@ -623,12 +623,27 @@ MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp:
 	.text       start:0x80192864 end:0x8019312C
 	.data       start:0x803B5BC0 end:0x803B5C40
 
+MetroidPrime/Player/CGMDeathMatch.cpp:
+	.text       start:0x801931F4 end:0x80193BD4
+	.data       start:0x803B5C40 end:0x803B5CB0
+	.sdata2     start:0x8041CB00 end:0x8041CB08
+
 MetroidPrime/Factories/CStateMachineFactory.cpp:
 	.text       start:0x8019405C end:0x8019448C
 	.data       start:0x803B5DA0 end:0x803B5DB0
 
 MetroidPrime/Enemies/CStateMachine.cpp:
 	.text       start:0x8019448C end:0x80195D54
+
+MetroidPrime/Player/CGMCoin.cpp:
+	.text       start:0x80195D54 end:0x80196528
+	.data       start:0x803B5DB0 end:0x803B5E40
+	.sdata2     start:0x8041CB20 end:0x8041CB30
+
+MetroidPrime/Player/CGMMultiplayer.cpp:
+	.text       start:0x80196528 end:0x80197978
+	.data       start:0x803B5E40 end:0x803B5EB0
+	.sdata2     start:0x8041CB30 end:0x8041CB40
 
 MetroidPrime/Cameras/CBallCamera.cpp:
 	.text       start:0x8019E76C end:0x801A8B78

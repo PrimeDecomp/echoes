@@ -297,6 +297,9 @@ public:
   const CHealthInfo& GetHealthInfo() const { return healthInfo; }
 
   SPersistentState& GetPersistentState();
+  uint GetPlayerSelection() const { return unkStruct.unk1; } // Guessed name
+  const CPowerUp& GetPowerUp(EItemType type) const { return powerups[type]; }
+  CPowerUp& PowerUp(EItemType type) { return powerups[type]; }
   void SetPersistentState(const SPersistentState&);
   float GetChargeBeamFactor() const { return chargeBeamFactor; }
   void SetChargeBeamFactor(float factor) { chargeBeamFactor = factor; }

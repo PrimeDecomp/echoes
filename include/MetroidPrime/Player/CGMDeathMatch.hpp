@@ -4,23 +4,34 @@
 #include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "rstl/vector.hpp"
 
-// Guessed name. Partial interface required by CGameState's game-start routine.
+// Guessed name
 class CGMDeathMatch : public CGMMultiplayer {
 public:
   // Guessed name
   struct SPlayerState {
-    float x0_;
-    bool x4_;
-    int x8_;
-    int xc_;
-    int x10_;
+    SPlayerState()
+    : mRespawnTimer(0.f), mDead(false), mScore(0), mDeaths(0), mPlayerSelection(-1) {}
+    float mRespawnTimer;
+    bool mDead;
+    int mScore;
+    int mDeaths;
+    int mPlayerSelection;
   };
 
-  CGMDeathMatch(int playerCount, int fragLimit, float timeLimit, bool flag1, bool flag2);
+  CGMDeathMatch(int playerCount, int fragLimit, float timeLimit, bool awardFrags, bool flag);
 
   // CGameMode
   ~CGMDeathMatch() override;
-  // TODO: recover the remaining virtual signatures before emitting this class's vtable.
+  void PutTo(COutputStream& out) const override;
+  void Update(float dt, CStateManager& mgr) override;
+  void OnPlayerKilled(CStateManager& mgr, TUniqueId victim, TUniqueId killer) override;
+  uint GetNumPlayers() const override;
+  bool IsGameOver() override;
+  void EndGame(int resultIndex, CStateManager& mgr) override;
+  int GetGameModeType() override;
+  void GiveScore(CStateManager& mgr, uint playerIndex, uint amount) override;
+  int GetItemAmount(const CStateManager& mgr, uint playerIndex) const override;
+  bool IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const override;
 
 private:
   int mPlayerCount;
@@ -28,8 +39,8 @@ private:
   bool x40_24_ : 1;
   bool mHasFragLimit : 1;
   bool mHasTimeLimit : 1;
-  bool x40_27_ : 1;
-  bool x40_28_ : 1;
+  bool mAwardFrags : 1;
+  bool mFragLimitReached : 1;
   rstl::vector< SPlayerState > mPlayers;
 };
 

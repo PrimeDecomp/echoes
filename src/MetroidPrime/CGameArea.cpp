@@ -36,6 +36,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace {
+// Guessed name: sorts dependency indices by their resource offsets.
+class CTextureDependencySorter {
+public:
+  explicit CTextureDependencySorter(const rstl::vector< uint >& offsets) : mOffsets(offsets) {}
+
+  bool operator()(const int& a, const int& b) const { return mOffsets[a] < mOffsets[b]; }
+
+private:
+  const rstl::vector< uint >& mOffsets;
+};
+} // namespace
+
 // The complex loading paths below remain scaffolds. This TU is NonMatching.
 
 rstl::string CGameArea::IGetInternalAreaName() const { return mInternalAreaName; }
@@ -44,8 +57,8 @@ IGameArea::~IGameArea() {}
 
 int CGameArea::VerifyHeader() const {
   if (!mPostConstructed->mMreaSectionBuffers.empty()) {
-    const uint* header =
-        reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+    const int* header =
+        reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
     if (header[0] == 0xdeadbeef && header[1] >= 23 && header[1] <= 25) {
       return header[1];
     }
@@ -54,17 +67,32 @@ int CGameArea::VerifyHeader() const {
 }
 
 int CGameArea::GetSectionIndex(int section) const {
-  if (VerifyHeader() < 11) {
-    return -1;
-  }
-
-  const uint* header =
-      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
-  if (section >= 0 && section < 8) {
-    return header[17 + section] + 2;
-  }
-  if (section == 8 || section == 9) {
-    return header[26 + section - 8] + 2;
+  const int version = VerifyHeader();
+  const int* header =
+      reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+  if (version >= 11) {
+    switch (section) {
+    case 0:
+      return header[17] + 2;
+    case 1:
+      return header[18] + 2;
+    case 2:
+      return header[19] + 2;
+    case 3:
+      return header[20] + 2;
+    case 4:
+      return header[21] + 2;
+    case 5:
+      return header[22] + 2;
+    case 6:
+      return header[23] + 2;
+    case 7:
+      return header[24] + 2;
+    case 8:
+      return header[26] + 2;
+    case 9:
+      return header[27] + 2;
+    }
   }
   return -1;
 }
@@ -96,16 +124,16 @@ CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)
   const int dockCount = in.ReadInt32();
   mDocks.reserve(dockCount);
   for (int i = 0; i < dockCount; ++i) {
-    mDocks.push_back(Dock(in, mTransform));
+    mDocks.push_back_unsafe(Dock(in, mTransform));
   }
 
   if (mlvlVersion > 18) {
     mRelModules = rstl::vector< rstl::string >(in);
     if (mlvlVersion > 20) {
-      mRelOffsets = rstl::vector< uint >(in);
+      mRelOffsets = rstl::vector< int >(in);
     }
   }
-  if (mlvlVersion > 19) {
+  if (mlvlVersion >= 20) {
     const rstl::string name(in);
     if (mNameSTRG == kInvalidAssetId) {
       mInternalAreaName = name;
@@ -116,18 +144,17 @@ CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)
   mSerializedDependencySize = CalculateDependencyListByteCount();
   mDependenciesInAram = CARAMManager::Alloc(mSerializedDependencySize);
   {
-    rstl::auto_ptr< uchar > buffer(static_cast< uchar* >(
-        CMemory::Alloc(mSerializedDependencySize, IAllocator::kHI_RoundUpLen)));
+    void* buffer = CMemory::Alloc(mSerializedDependencySize, IAllocator::kHI_RoundUpLen);
     {
-      CMemoryStreamOut out(buffer.get(), mSerializedDependencySize, CMemoryStreamOut::kOS_NotOwned,
-                           64);
+      CMemoryStreamOut out(buffer, mSerializedDependencySize, CMemoryStreamOut::kOS_NotOwned, 64);
       mDependencies2.PutTo(out);
     }
 
     const uint handle = CARAMManager::DMAToARAM(
-        buffer.get(), mDependenciesInAram, mSerializedDependencySize, CARAMManager::kDMAPrio_One);
+        buffer, mDependenciesInAram, mSerializedDependencySize, CARAMManager::kDMAPrio_One);
     mDependencies2 = rstl::vector< rstl::pair< CAssetId, uint > >();
     CARAMManager::WaitForDMACompletion(handle);
+    CMemory::Free(buffer);
   }
 
   ClearTokenList();
@@ -763,7 +790,8 @@ bool CGameArea::StartStreamIn(CStateManager& mgr) {
   if (mLoadPaused) {
     return false;
   }
-  return StartStreamingMainArea(mgr);
+  const bool loaded = StartStreamingMainArea(mgr);
+  return loaded;
 }
 
 void CGameArea::Validate(CStateManager& mgr) {
@@ -1239,21 +1267,23 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
 
   bool finished = true;
   int part = mPostConstructed->mFirstAramSection;
-  for (int i = 0; i < mPostConstructed->mAramTokens.size(); ++i) {
-    rstl::pair< CARAMToken, int >& entry = mPostConstructed->mAramTokens[i];
-    if (entry.first.GetStatus() != CARAMToken::kS_One) {
-      mPostConstructed->mAramBytes -= entry.first.GetSize();
+  for (rstl::vector< rstl::pair< CARAMToken, int > >::iterator it =
+           mPostConstructed->mAramTokens.begin();
+       it != mPostConstructed->mAramTokens.end(); ++it) {
+    if (it->first.GetStatus() != CARAMToken::kS_One) {
+      mPostConstructed->mAramBytes -= it->first.GetSize();
     }
-    if (mode == kAT_Async && !entry.first.LoadToMRAM()) {
+    if (mode == kAT_Async && !it->first.LoadToMRAM()) {
       finished = false;
     } else if (finished) {
-      char* buffer = static_cast< char* >(entry.first.GetMRAMSafe());
+      char* buffer = static_cast< char* >(it->first.GetMRAMSafe());
       int offset = 0;
-      for (int j = 0; j < entry.second; ++j) {
+      for (int j = 0; j < it->second; ++j) {
         rstl::auto_ptr< char > section(buffer + offset);
         section.release();
         offset += mPostConstructed->mMreaSectionBuffers[part].second;
-        mPostConstructed->mMreaSectionBuffers[part++].first = section;
+        mPostConstructed->mMreaSectionBuffers[part].first = section;
+        ++part;
       }
     }
   }
@@ -1264,11 +1294,14 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
 bool CGameArea::TransferTokensToARAM() {
   bool finished = true;
   int part = mPostConstructed->mFirstAramSection;
+  rstl::vector< rstl::pair< CARAMToken, int > >::iterator it =
+      mPostConstructed->mAramTokens.begin();
   rstl::auto_ptr< char > empty;
-  for (int i = 0; i < mPostConstructed->mAramTokens.size(); ++i) {
-    rstl::pair< CARAMToken, int >& entry = mPostConstructed->mAramTokens[i];
+  for (; it != mPostConstructed->mAramTokens.end(); ++it) {
+    rstl::pair< CARAMToken, int >& entry = *it;
     for (int j = 0; j < entry.second; ++j) {
-      mPostConstructed->mMreaSectionBuffers[part++].first = empty;
+      mPostConstructed->mMreaSectionBuffers[part].first = empty;
+      ++part;
     }
     const CARAMToken::EStatus oldStatus = entry.first.GetStatus();
     entry.first.LoadToARAM();
@@ -1294,10 +1327,11 @@ void CGameArea::AddStaticGeometry() {
       FillInStaticGeometry();
     }
     CPostConstructed& post = *mPostConstructed;
-    gpRender->AddStaticGeometry(
-        &post.mModelInstances,
-        post.mRenderOctTree.valid() ? post.mRenderOctTree.get_ptr() : nullptr, &post.mSurfaces,
-        &post.mAmbientLightIds, &post.mAmbientLightIndices, mSelfIdx.Value());
+    const int areaIdx = mSelfIdx.Value();
+    const CAreaRenderOctTree* tree =
+        post.mRenderOctTree.valid() ? post.mRenderOctTree.get_ptr() : nullptr;
+    gpRender->AddStaticGeometry(&post.mModelInstances, tree, &post.mSurfaces,
+                                &post.mAmbientLightIds, &post.mAmbientLightIndices, areaIdx);
   }
 }
 
@@ -1491,7 +1525,7 @@ IGameArea::Dock::Dock(CInputStream& in, const CTransform4f& xf)
   for (int i = 0; i < count; ++i) {
     const TAreaId area(in.ReadInt32());
     const short dock = in.ReadInt32();
-    mDockReferences.push_back(SDockReference(area, dock));
+    mDockReferences.push_back_unsafe(SDockReference(area, dock));
   }
   const int vertexCount = in.ReadInt32();
   for (int i = 0; i < vertexCount; ++i) {
@@ -1594,26 +1628,43 @@ CColor CGameArea::CAreaFog::GetColor() const {
 }
 
 void CGameArea::CAreaFog::Update(float dt) {
-  if (mFogMode == kRFM_None || (mColorDelta <= 0.f && mRangeDelta == CVector2f(0.f, 0.f))) {
+  if (mFogMode == kRFM_None) {
     return;
   }
 
-  const float current[5] = {mColorCur.GetX(), mColorCur.GetY(), mColorCur.GetZ(), mRangeCur.GetX(),
-                            mRangeCur.GetY()};
-  const float target[5] = {mColorTarget.GetX(), mColorTarget.GetY(), mColorTarget.GetZ(),
-                           mRangeTarget.GetX(), mRangeTarget.GetY()};
-  const float step[5] = {mColorDelta * dt, mColorDelta * dt, mColorDelta * dt,
-                         dt * mRangeDelta.GetX(), dt * mRangeDelta.GetY()};
-  float result[5];
-  int finished = 0;
+  if (!(mColorDelta > 0.f) && mRangeDelta == CVector2f(0.f, 0.f)) {
+    return;
+  }
 
+  float current[5];
+  float target[5];
+  float result[5];
+  float step[5] = {0.f, 0.f, 0.f, 0.f, 0.f};
+  step[2] = step[1] = step[0] = mColorDelta * dt;
+  step[3] = dt * mRangeDelta.GetX();
+  step[4] = dt * mRangeDelta.GetY();
+  current[0] = mColorCur.GetX();
+  target[0] = mColorTarget.GetX();
+  current[1] = mColorCur.GetY();
+  target[1] = mColorTarget.GetY();
+  current[2] = mColorCur.GetZ();
+  target[2] = mColorTarget.GetZ();
+  current[3] = mRangeCur.GetX();
+  current[4] = mRangeCur.GetY();
+  target[3] = mRangeTarget.GetX();
+  target[4] = mRangeTarget.GetY();
+
+  int finished = 0;
   for (int i = 0; i < 5; ++i) {
-    const float delta = target[i] - current[i];
-    if (step[i] < CMath::AbsF(delta)) {
-      result[i] = current[i] + CMath::FastFSel(delta, step[i], -step[i]);
-    } else {
-      result[i] = target[i];
+    const float cur = current[i];
+    const float tar = target[i];
+    const float delta = tar - cur;
+    const float amount = step[i];
+    if (CMath::AbsF(delta) <= amount) {
+      result[i] = tar;
       ++finished;
+    } else {
+      result[i] = cur + CMath::FastFSel(delta, amount, -amount);
     }
   }
 
@@ -1642,15 +1693,23 @@ void CGameArea::UpdateFog(float dt) {
 }
 
 bool CGameArea::DoesAreaNeedSkyNow() const {
-  if (mPostConstructed.get() && mPostConstructed->mAreaAttributes) {
+  if (!mPostConstructed.get()) {
+    return false;
+  }
+  if (mPostConstructed->mAreaAttributes) {
     return mPostConstructed->mAreaAttributes->GetNeedsSky();
   }
   return false;
 }
 
 int CGameArea::DoesAreaNeedEnvFx() const {
-  if (!mPostConstructed.get() || !mPostConstructed->mAreaAttributes ||
-      mPostConstructed->mOcclusionState != kOS_Visible) {
+  if (!mPostConstructed.get()) {
+    return 0;
+  }
+  if (!mPostConstructed->mAreaAttributes) {
+    return 0;
+  }
+  if (mPostConstructed->mOcclusionState != kOS_Visible) {
     return 0;
   }
   return mPostConstructed->mAreaAttributes->GetEnvFxType();
@@ -1699,15 +1758,15 @@ CDummyGameArea::CDummyGameArea(CInputStream& in, int index, int mlvlVersion)
   const int dockCount = in.ReadInt32();
   mDocks.reserve(dockCount);
   for (int i = 0; i < dockCount; ++i) {
-    mDocks.push_back(Dock(in, mTransform));
+    mDocks.push_back_unsafe(Dock(in, mTransform));
   }
   if (mlvlVersion > 18) {
     mRelModules = rstl::vector< rstl::string >(in);
     if (mlvlVersion > 20) {
-      mRelOffsets = rstl::vector< uint >(in);
+      mRelOffsets = rstl::vector< int >(in);
     }
   }
-  if (mlvlVersion > 19) {
+  if (mlvlVersion >= 20) {
     const rstl::string name(in);
     if (mNameSTRG == kInvalidAssetId) {
       mInternalAreaName = name;
@@ -1732,7 +1791,10 @@ CAssetId CDummyGameArea::IGetAreaAssetId() const { return mAreaAssetId; }
 int CDummyGameArea::IGetAreaSaveId() const { return mAreaSaveId; }
 
 bool CGameArea::IsFinishedOccluding() const {
-  return mPostConstructed->mOcclusionState != kOS_Occluded || mPostConstructed->mFinishedOccluding;
+  if (mPostConstructed->mOcclusionState == kOS_Occluded) {
+    return mPostConstructed->mFinishedOccluding;
+  }
+  return true;
 }
 
 rstl::pair< const uchar*, int > CGameArea::GetLayerScriptBuffer(const TLayerId layer) const {
@@ -1759,14 +1821,14 @@ int CGameArea::GetLayerScriptSize(const TLayerId layer) const {
 }
 
 void CGameArea::SetLoadPauseState(bool paused) {
-  bool loading = false;
+  bool ready = true;
   for (int i = 0; i < mLayerPhases.size(); ++i) {
     if (mLayerPhases[i] == kLP_Loading) {
-      loading = true;
+      ready = false;
       break;
     }
   }
-  if (loading) {
+  if (!ready) {
     mLoadPaused = paused;
     if (paused) {
       for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
@@ -2154,7 +2216,44 @@ void CGameArea::LoadLayerRelModules(CStateManager& mgr, const TLayerId layer) {
 }
 
 void CGameArea::SortTextureDependencies() {
-  // TODO: Sort contiguous TXTR runs within each layer by resource offset.
+  rstl::vector< int > indices;
+  rstl::vector< uint > offsets;
+  const rstl::vector< rstl::pair< CAssetId, uint > > dependencies(mDependencies2);
+  const SObjectTag areaTag('MREA', mAreaAssetId);
+  indices.reserve(mDependencies2.size());
+  offsets.reserve(mDependencies2.size());
+
+  for (int layer = 0; layer < mLayerDependencyOffsets.size(); ++layer) {
+    const int first = mLayerDependencyOffsets[layer];
+    const int last = layer + 1 < mLayerDependencyOffsets.size() ? mLayerDependencyOffsets[layer + 1]
+                                                                : mDependencies2.size();
+    for (int i = first; i < last; ++i) {
+      const rstl::pair< CAssetId, uint >& dependency = mDependencies2[i];
+      if (dependency.second == 'TXTR') {
+        int end = i + 1;
+        for (; end < last; ++end) {
+          if (mDependencies2[end].second != 'TXTR') {
+            break;
+          }
+        }
+        if (end - i > 1) {
+          for (int j = i; j < end; ++j) {
+            gpResourceFactory->GetResLoader().FindResource(areaTag);
+            const SObjectTag tag(mDependencies2[j].second, mDependencies2[j].first);
+            indices.push_back_unsafe(j - i);
+            offsets.push_back_unsafe(gpResourceFactory->GetResLoader().GetResourceOffset(tag));
+          }
+          rstl::sort(indices.begin(), indices.end(), CTextureDependencySorter(offsets));
+          for (int j = i; j < end; ++j) {
+            mDependencies2[j] = dependencies[i + indices[j - i]];
+          }
+          offsets.clear();
+          indices.clear();
+          i = end - 1;
+        }
+      }
+    }
+  }
 }
 
 void CGameArea::DisableDocks(CStateManager& mgr) {
