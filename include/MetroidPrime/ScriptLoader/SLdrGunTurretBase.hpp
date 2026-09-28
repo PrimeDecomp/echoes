@@ -41,9 +41,9 @@ struct SLdrGunTurretBase {
   bool unknown_0x5cf12e9a; // 0x5cf12e9a
   bool unknown_0x479d8dc4; // 0x479d8dc4
   bool isPirateTurret; // 0x701d65cd
-  CAssetId cRSC; // 0xa33d1c6d
+  CAssetId cRSC; // non-matching name, 0xa33d1c6d
   CAssetId pirateProjectileEffect; // 0x2d1c5515
-  int alwaysFF; // 0x45b71390
+  int alwaysFF; // non-matching name, 0x45b71390
   int gFFireShotSound; // 0x23316032
   int pirateFireShotSound; // 0xa3b39766
   int lockOnSound; // 0x9674eff1

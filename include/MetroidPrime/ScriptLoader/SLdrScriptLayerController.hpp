@@ -9,8 +9,8 @@ struct SLdrMasterLayer {
   SLdrMasterLayer();
   ~SLdrMasterLayer();
 
-  int areaID; // 0x00000000
-  int layer; // 0x00000001
+  int areaID; // non-matching name, 0x00000000
+  int layer; // non-matching name, 0x00000001
 };
 
 void LoadTypedefSLdrMasterLayer(SLdrMasterLayer& data, CInputStream& input);

@@ -103,11 +103,11 @@ struct SLdrSandBossData {
   CAssetId headArmorExplosion; // 0xc49086d9
   SLdrSandBossStampedeData stampedeProperties; // 0x95371a32
   SLdrUnknownStruct41 unknown_0x7619e561; // 0x7619e561
-  SLdrSandBossStructA sandBossStructA; // 0x8b452a19
-  SLdrSandBossStructA sandBossStructA_0x0cf8c54c; // 0x0cf8c54c
+  SLdrSandBossStructA sandBossStructA; // non-matching name, 0x8b452a19
+  SLdrSandBossStructA sandBossStructA_0x0cf8c54c; // non-matching name, 0x0cf8c54c
   CAssetId withTailArmorModel; // 0xbbd84681
   CAssetId withTailArmorSkinRules; // 0xdf6da1a2
-  SLdrDamageVulnerability damageVulnerability; // 0xb7ecdcf9
+  SLdrDamageVulnerability damageVulnerability; // non-matching name, 0xb7ecdcf9
   SLdrDamageVulnerability stampedeVulnerability; // 0x844ed79c
   SLdrDamageVulnerability suckAirVulnerability; // 0x77210167
 };

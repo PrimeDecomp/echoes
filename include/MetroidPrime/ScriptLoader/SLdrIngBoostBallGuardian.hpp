@@ -34,11 +34,11 @@ struct SLdrIngBoostBallGuardianData {
   int sound_HitNormalDamage; // 0xb392943a
   int sound_HitHeavyDamage; // 0x24ecc1e9
   int sound_IngSpotDeath; // 0x4489935e
-  CAssetId pART; // 0x3c2d681e
-  CAssetId sRSC; // 0xd576f379
-  CAssetId pART_0x3da219c7; // 0x3da219c7
+  CAssetId pART; // non-matching name, 0x3c2d681e
+  CAssetId sRSC; // non-matching name, 0xd576f379
+  CAssetId pART_0x3da219c7; // non-matching name, 0x3da219c7
   float unknown_0x23271976; // 0x23271976
-  CAssetId pART_0x081e9e6c; // 0x081e9e6c
+  CAssetId pART_0x081e9e6c; // non-matching name, 0x081e9e6c
   float unknown_0xcb39eccb; // 0xcb39eccb
   float unknown_0x587ca175; // 0x587ca175
   float unknown_0x0bd7d5a9; // 0x0bd7d5a9
@@ -46,7 +46,7 @@ struct SLdrIngBoostBallGuardianData {
   int sound_InsideHost; // 0x5650366a
   int sound_ExitHost; // 0xb09af706
   int sound_ExitHostSafeZone; // 0x0c13c5a8
-  int sound; // 0x148b81e4
+  int sound; // non-matching name, 0x148b81e4
   float unknown_0x5d0d2c40; // 0x5d0d2c40
   float unknown_0xc620183a; // 0xc620183a
   float frustrationTime; // 0x7d19c3ca
@@ -118,7 +118,7 @@ struct SLdrBoostBallGuardianData {
   int sound_Bounce; // 0x6758bf01
   int sound_IntoBall; // 0x8d9e014f
   int sound_OutofBall; // 0xe35ae4be
-  int sound; // 0x9f7372b3
+  int sound; // non-matching name, 0x9f7372b3
   int sound_Boost; // 0xdd69a116
   int sound_Rolling; // 0xbf42c3ec
   SLdrDamageVulnerability boostBallVulnerability; // 0x42eca523
@@ -128,12 +128,12 @@ struct SLdrBoostBallGuardianData {
   float unknown_0xb0e85d53; // 0xb0e85d53
   SLdrDamageInfo ingSpotDamageToMorphBall; // 0x5616d5f1
   SLdrDamageInfo ingSpotDamageToFirstPerson; // 0xed685533
-  CAssetId pART; // 0xd771ec43
-  CAssetId pART_0x2009a977; // 0x2009a977
-  CAssetId pART_0x62ab33a2; // 0x62ab33a2
-  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct; // 0xbab98497
-  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xfe18a18f; // 0xfe18a18f
-  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xc2784287; // 0xc2784287
+  CAssetId pART; // non-matching name, 0xd771ec43
+  CAssetId pART_0x2009a977; // non-matching name, 0x2009a977
+  CAssetId pART_0x62ab33a2; // non-matching name, 0x62ab33a2
+  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct; // non-matching name, 0xbab98497
+  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xfe18a18f; // non-matching name, 0xfe18a18f
+  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xc2784287; // non-matching name, 0xc2784287
 };
 
 void LoadTypedefSLdrBoostBallGuardianData(SLdrBoostBallGuardianData& data, CInputStream& input);

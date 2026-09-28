@@ -20,7 +20,7 @@ struct SLdrPillBug {
   float stickRadius; // 0x5a3a30f4
   float waypointApproachDistance; // 0x733bd27c
   float visibleDistance; // 0xa72530e8
-  SLdrDamageVulnerability damageVulnerability; // 0x5d84ed71
+  SLdrDamageVulnerability damageVulnerability; // non-matching name, 0x5d84ed71
   SLdrDamageVulnerability wanderVulnerability; // 0xf382dff7
   float crawlRadius; // 0xad98e16d
   float rollRadius; // 0x81d699b0

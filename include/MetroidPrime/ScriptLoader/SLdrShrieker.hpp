@@ -20,8 +20,8 @@ struct SLdrShrieker {
   SLdrActorParameters actorInformation; // 0x7e397fed
   SLdrDamageVulnerability buriedVulnerability; // 0xd7732923
   float hostileAccumulatePriority; // 0x281ce55d
-  SLdrDamageInfo damageInfo; // 0x5c072fd0
-  CAssetId pART; // 0x0f676bd9
+  SLdrDamageInfo damageInfo; // non-matching name, 0x5c072fd0
+  CAssetId pART; // non-matching name, 0x0f676bd9
   SLdrDamageInfo projectileDamage; // 0x553b1339
   CAssetId projectile; // 0xef485db9
   int combatVisorMaxVolume; // 0x6d465cc2

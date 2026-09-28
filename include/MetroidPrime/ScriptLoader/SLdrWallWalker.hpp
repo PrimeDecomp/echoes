@@ -36,7 +36,7 @@ struct SLdrWallWalker {
   float projectileStopHomingRange; // 0x723542bb
   CAssetId projectile; // 0xef485db9
   SLdrDamageInfo projectileDamage; // 0x553b1339
-  CAssetId pART; // 0x68dc4d11
+  CAssetId pART; // non-matching name, 0x68dc4d11
   SLdrCameraShakerData projectileExplosionShaker; // 0x22bbdd0a
 };
 

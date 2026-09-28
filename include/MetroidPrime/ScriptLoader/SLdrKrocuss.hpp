@@ -35,7 +35,7 @@ struct SLdrKrocuss {
   float unknown_0xbbebed9e; // 0xbbebed9e
   SLdrDamageVulnerability shellClosedVulnerability; // 0x6bd144c8
   CColor wingLightColor; // 0x4d20624b
-  CAssetId dPSC; // 0xc3566114
+  CAssetId dPSC; // non-matching name, 0xc3566114
   int shellOpenSound; // 0x6a11338f
   int shellCloseSound; // 0xf64ca627
   float maxAudibleDistance; // 0x214e48a0

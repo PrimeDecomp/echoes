@@ -52,7 +52,7 @@ struct SLdrSplitterMainChassis {
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrPatternedAITypedef patterned; // 0xb3774750
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrSplitterMainChassisData splitterMainChassisData; // 0x15e03a2f
+  SLdrSplitterMainChassisData splitterMainChassisData; // non-matching name, 0x15e03a2f
 };
 
 void LoadTypedefSLdrSplitterMainChassis(SLdrSplitterMainChassis& data, CInputStream& input);

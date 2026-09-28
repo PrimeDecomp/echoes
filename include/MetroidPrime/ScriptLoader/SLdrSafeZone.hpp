@@ -88,8 +88,8 @@ struct SLdrSafeZone {
   CVector3f mobileLightOffset; // 0xa7963e03
   CColor unknown_0xe71b43e1; // 0xe71b43e1
   float unknown_0x9f638987; // 0x9f638987
-  SLdrSafeZoneStructA safeZoneStructA; // 0x8a09f99a
-  SLdrSafeZoneStructA safeZoneStructA_0xafb855b8; // 0xafb855b8
+  SLdrSafeZoneStructA safeZoneStructA; // non-matching name, 0x8a09f99a
+  SLdrSafeZoneStructA safeZoneStructA_0xafb855b8; // non-matching name, 0xafb855b8
   SLdrEchoParameters echoParameters; // 0x4476bed8
 };
 

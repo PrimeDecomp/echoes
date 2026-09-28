@@ -11,7 +11,7 @@ struct SLdrConditionalTest {
   ~SLdrConditionalTest();
 
   int boolean; // 0xde3e40a3
-  SLdrPlayerItem playerItem; // 0xd3af8d72
+  SLdrPlayerItem playerItem; // non-matching name, 0xd3af8d72
   int amountOrCapacity; // 0x03bdea98
   int condition; // 0x70729364
   int value; // 0x8db9398a
@@ -25,7 +25,7 @@ struct SLdrConditionalRelay {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   bool setToZeroOnAreaLoaded; // 0x44db8af2
-  int multiplayerMaskandNegate; // 0x2cc54e77
+  int multiplayerMaskandNegate; // non-matching name, 0x2cc54e77
   SLdrConditionalTest conditional1; // 0xcec16932
   SLdrConditionalTest conditional2; // 0xe709ddc0
   SLdrConditionalTest conditional3; // 0x49614c51

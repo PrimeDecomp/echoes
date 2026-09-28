@@ -132,7 +132,7 @@ struct SLdrTweakPlayer_Misc {
   float freeLookMinAngle; // 0x2c1da0ec
   float freeLookCenteredTime; // 0xe11788e4
   float freeLookDampenFactor; // 0xc982754e
-  bool nullAnalogScales; // 0xfb5c81a9
+  bool nullAnalogScales; // non-matching name, 0xfb5c81a9
   float unknown_0xfb909bc3; // 0xfb909bc3
   float leftAnalogMax; // 0xf1f038de
   float rightAnalogMax; // 0x2b1f5094
@@ -206,7 +206,7 @@ struct SLdrTweakPlayer_Orbit {
   float orbitMinCameraPitchDistance; // 0x141ed3b9
   float orbitMaxCameraPitchDistance; // 0x72fbb5cd
   float unknown_0x478c15f9; // 0x478c15f9
-  float orbitZRange; // 0x93b712ba
+  float orbitZRange; // non-matching name, 0x93b712ba
   float orbitSelectionCloseAngle; // 0x7b4688ce
   float orbitSelectionMaxAngle; // 0x2e0cf3cd
   float unknown_0x90b71b2e; // 0x90b71b2e

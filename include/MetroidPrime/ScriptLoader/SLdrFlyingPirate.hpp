@@ -24,7 +24,7 @@ struct SLdrFlyingPirate {
   int sound_Projectile; // 0xeac27605
   CAssetId missile; // 0xca294811
   SLdrDamageInfo missileDamage; // 0x258cfb4d
-  CAssetId wPSC; // 0x1d510c6c
+  CAssetId wPSC; // non-matching name, 0x1d510c6c
   float hurlRecoverTime; // 0x96feb75d
   float hoverHeight; // 0xc75998aa
   CAssetId rocketPackExplosion; // 0x6475fc6f

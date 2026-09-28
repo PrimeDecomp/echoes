@@ -51,8 +51,8 @@ struct SLdrElitePirate {
   float energyAbsorbDuration; // 0x6d1425d8
   float energyAbsorbVariance; // 0xe47334ae
   float energyAttractionForce; // 0x3dad897b
-  int alwaysFF; // 0x06cf4324
-  int alwaysFF_0x23f5e1ee; // 0x23f5e1ee
+  int alwaysFF; // non-matching name, 0x06cf4324
+  int alwaysFF_0x23f5e1ee; // non-matching name, 0x23f5e1ee
   SLdrActorParameters rocketLauncherActorInfo; // 0x62c744cd
   SLdrAnimationParameters rocketLauncherAnimInfo; // 0xb92b481d
   SLdrAnimationParameters unknown_0x7e6e0d38; // 0x7e6e0d38

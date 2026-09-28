@@ -48,7 +48,7 @@ struct SLdrSpacePirate {
   float fallBackCheck; // 0xc3a27cf8
   float fallBackRadius; // 0xf0cf5dd7
   float hearingRadius; // 0xed69488f
-  uint flags; // 0xa64ab9b8
+  uint flags; // non-matching name, 0xa64ab9b8
   bool unknown_0xce670970; // 0xce670970
   CAssetId projectile; // 0xef485db9
   SLdrDamageInfo projectileDamage; // 0x553b1339

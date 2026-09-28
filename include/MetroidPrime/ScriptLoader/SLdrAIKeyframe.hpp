@@ -10,7 +10,7 @@ struct SLdrAIKeyframe {
   ~SLdrAIKeyframe();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int animation; // 0x1ccd0586
+  int animation; // non-matching name, 0x1ccd0586
   bool loop; // 0xeda47ff6
   float loopDuration; // 0xcee68723
   int unknown_0x58810503; // 0x58810503

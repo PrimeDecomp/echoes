@@ -59,8 +59,8 @@ struct SLdrSwampBossStage1Data {
   CAssetId tongueParticleEffect; // 0x762cd5b7
   CAssetId tongueParticleModel; // 0xd8ab76f0
   CAssetId tongueTipModel; // 0x145debea
-  SLdrDamageInfo damageInfo; // 0xd0b0f21f
-  CAssetId pART; // 0x0a078586
+  SLdrDamageInfo damageInfo; // non-matching name, 0xd0b0f21f
+  CAssetId pART; // non-matching name, 0x0a078586
   float unknown_0x78755da3; // 0x78755da3
   float unknown_0x74e1a041; // 0x74e1a041
   float unknown_0x1f4e7c2c; // 0x1f4e7c2c
@@ -74,9 +74,9 @@ struct SLdrSwampBossStage1Data {
   int sound_SpitVisor; // 0xf3af8417
   float spitProjectileRadius; // 0xdadc5bc9
   SLdrSwampBossStage1Sounds sounds; // 0xd402095f
-  SLdrSwampBossStage1Struct swampBossStage1Struct; // 0x4500f774
-  SLdrSwampBossStage1Struct swampBossStage1Struct_0x3e1e7597; // 0x3e1e7597
-  SLdrSwampBossStage1Struct swampBossStage1Struct_0xa1c4f609; // 0xa1c4f609
+  SLdrSwampBossStage1Struct swampBossStage1Struct; // non-matching name, 0x4500f774
+  SLdrSwampBossStage1Struct swampBossStage1Struct_0x3e1e7597; // non-matching name, 0x3e1e7597
+  SLdrSwampBossStage1Struct swampBossStage1Struct_0xa1c4f609; // non-matching name, 0xa1c4f609
 };
 
 void LoadTypedefSLdrSwampBossStage1Data(SLdrSwampBossStage1Data& data, CInputStream& input);

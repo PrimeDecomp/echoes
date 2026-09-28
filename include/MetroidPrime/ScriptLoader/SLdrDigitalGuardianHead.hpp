@@ -49,7 +49,7 @@ struct SLdrDigitalGuardianHeadData {
   SLdrAudioPlaybackParms sound_RaiseShields; // 0x50baee63
   SLdrAudioPlaybackParms sound_DropShields; // 0xa5e1ec03
   SLdrAudioPlaybackParms sound_EjectSplitter; // 0x8d6053cb
-  CAssetId pART; // 0xc91ef399
+  CAssetId pART; // non-matching name, 0xc91ef399
   float echoTargetHP; // 0x7d3d44af
   CAssetId echoTargets; // 0x2fa93722
   CAssetId echoTargetEmitterFx; // 0x342ae844
@@ -71,7 +71,7 @@ struct SLdrDigitalGuardianHeadData {
   SLdrDamageInfo annihilatorChargeDamage; // 0x41177ac6
   float unknown_0xff7688bf; // 0xff7688bf
   int unknown_0x12ebb390; // 0x12ebb390
-  CAssetId fRME; // 0xad151546
+  CAssetId fRME; // non-matching name, 0xad151546
   SLdrPlasmaBeamInfo lockOnBeams; // 0xc7cf5db1
   CAssetId lockOnMissiles; // 0xd187f05c
   SLdrDamageInfo lockOnMissilesDamage; // 0xa8c6106b
@@ -82,12 +82,12 @@ struct SLdrDigitalGuardianHeadData {
   float machineGunSweepDuration; // 0x81a8474f
   float machineGunChargeDuration; // 0x71c406ac
   float machineGunFireTime; // 0xe5bc88b7
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct; // 0x8f6732ea
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x8e128141; // 0x8e128141
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0xea54b390; // 0xea54b390
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0xbbd3e7a7; // 0xbbd3e7a7
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x2dd88764; // 0x2dd88764
-  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x48b46e55; // 0x48b46e55
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct; // non-matching name, 0x8f6732ea
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x8e128141; // non-matching name, 0x8e128141
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0xea54b390; // non-matching name, 0xea54b390
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0xbbd3e7a7; // non-matching name, 0xbbd3e7a7
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x2dd88764; // non-matching name, 0x2dd88764
+  SLdrDigitalGuardianHeadStruct digitalGuardianHeadStruct_0x48b46e55; // non-matching name, 0x48b46e55
   SLdrDamageVulnerability bombPitVulnerability; // 0x7352d60a
   SLdrDamageVulnerability echoTargetVulnerability; // 0x1b2aa049
 };

@@ -36,11 +36,11 @@ struct SLdrIng {
   int sound_HitNormalDamage; // 0xb392943a
   int sound_HitHeavyDamage; // 0x24ecc1e9
   int sound_IngSpotDeath; // 0x4489935e
-  CAssetId pART; // 0x3c2d681e
-  CAssetId sRSC; // 0xd576f379
-  CAssetId pART_0x3da219c7; // 0x3da219c7
+  CAssetId pART; // non-matching name, 0x3c2d681e
+  CAssetId sRSC; // non-matching name, 0xd576f379
+  CAssetId pART_0x3da219c7; // non-matching name, 0x3da219c7
   float unknown_0x23271976; // 0x23271976
-  CAssetId pART_0x081e9e6c; // 0x081e9e6c
+  CAssetId pART_0x081e9e6c; // non-matching name, 0x081e9e6c
   float unknown_0xcb39eccb; // 0xcb39eccb
   float unknown_0x587ca175; // 0x587ca175
   float unknown_0x0bd7d5a9; // 0x0bd7d5a9
@@ -48,7 +48,7 @@ struct SLdrIng {
   int sound_InsideHost; // 0x5650366a
   int sound_ExitHost; // 0xb09af706
   int sound_ExitHostSafeZone; // 0x0c13c5a8
-  int sound; // 0x148b81e4
+  int sound; // non-matching name, 0x148b81e4
   float unknown_0x5d0d2c40; // 0x5d0d2c40
   float unknown_0xc620183a; // 0xc620183a
   float frustrationTime; // 0x7d19c3ca

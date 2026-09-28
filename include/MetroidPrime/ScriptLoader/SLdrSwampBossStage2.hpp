@@ -59,10 +59,10 @@ struct SLdrSwampBossStage2Data {
   CAssetId wingGrowthRF; // 0x26439458
   CAssetId wingGrowthRB; // 0xbdd2d64e
   float wingGrowthHealth; // 0xcabe6b96
-  SLdrSwampBossStage2Struct swampBossStage2Struct; // 0x7fa9256a
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0x8b884b8e; // 0x8b884b8e
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0x04b7a789; // 0x04b7a789
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0xf096c96d; // 0xf096c96d
+  SLdrSwampBossStage2Struct swampBossStage2Struct; // non-matching name, 0x7fa9256a
+  SLdrSwampBossStage2Struct swampBossStage2Struct_0x8b884b8e; // non-matching name, 0x8b884b8e
+  SLdrSwampBossStage2Struct swampBossStage2Struct_0x04b7a789; // non-matching name, 0x04b7a789
+  SLdrSwampBossStage2Struct swampBossStage2Struct_0xf096c96d; // non-matching name, 0xf096c96d
   float stunTime; // 0x7e192395
   int unknown_0x96ce7897; // 0x96ce7897
   CAssetId spitProjectile; // 0xcfe37ebf
@@ -97,17 +97,17 @@ struct SLdrSwampBossStage2Data {
   float blowPush; // 0x77f97080
   float breakStunDamage; // 0x6d67c284
   SLdrAudioPlaybackParms stunnedSound; // 0x87b30e02
-  SLdrAudioPlaybackParms audioPlaybackParms; // 0x427a116a
-  SLdrAudioPlaybackParms audioPlaybackParms_0xc05d5c7a; // 0xc05d5c7a
-  SLdrAudioPlaybackParms audioPlaybackParms_0x2b3c923a; // 0x2b3c923a
+  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x427a116a
+  SLdrAudioPlaybackParms audioPlaybackParms_0xc05d5c7a; // non-matching name, 0xc05d5c7a
+  SLdrAudioPlaybackParms audioPlaybackParms_0x2b3c923a; // non-matching name, 0x2b3c923a
   float unknown_0x8fe0bf01; // 0x8fe0bf01
   SLdrAudioPlaybackParms flinchSound; // 0x23087520
   float flinchSoundChance; // 0xa3131519
   SLdrAudioPlaybackParms stunnedFlinchSound; // 0xb53087cc
   SLdrAudioPlaybackParms stunnedReelSound; // 0x878a6522
   float stunnedFlinchSoundDamageThreshold; // 0x19849710
-  SLdrAudioPlaybackParms audioPlaybackParms_0x692fa63c; // 0x692fa63c
-  SLdrAudioPlaybackParms audioPlaybackParms_0xbe3d39aa; // 0xbe3d39aa
+  SLdrAudioPlaybackParms audioPlaybackParms_0x692fa63c; // non-matching name, 0x692fa63c
+  SLdrAudioPlaybackParms audioPlaybackParms_0xbe3d39aa; // non-matching name, 0xbe3d39aa
 };
 
 void LoadTypedefSLdrSwampBossStage2Data(SLdrSwampBossStage2Data& data, CInputStream& input);

@@ -16,7 +16,7 @@ struct SLdrDamageableTrigger {
   SLdrHealthInfo health; // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   bool orbitable; // 0x704b5369
-  bool enableSeekerLockOn; // 0x5dfd7820
+  bool enableSeekerLockOn; // non-matching name, 0x5dfd7820
   bool invulnerable; // 0x6652bdd7
   SLdrVisorParameters visor; // 0x05ad250e
 };
