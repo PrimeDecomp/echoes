@@ -13,6 +13,8 @@ public:
   CPrimitive(CInputStream& in);
   void PutTo(COutputStream& out) const;
   CAssetId GetAnimResId() const { return mAnimId; }
+  int GetAnimDatabaseIndex() const { return mAnimIdx; }
+  const rstl::string& GetName() const { return mAnimName; }
   int Compare(const CPrimitive& other) const {
     return CStringExtras::CompareCaseInsensitive(mAnimName, other.mAnimName);
   }

@@ -5,8 +5,9 @@
 
 class CBoolPOINode : public CPOINode {
 public:
-  CBoolPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
-               float weight, int charIdx, int flags, bool value)
+  CBoolPOINode(uint nameHash = -1, ushort type = kPT_EmptyBool,
+               const CCharAnimTime& time = CCharAnimTime(), int index = -1, bool unique = false,
+               float weight = 1.f, int charIdx = -1, int flags = 0, bool value = false)
   : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags), mVal(value) {}
 
   CBoolPOINode(CInputStream& in);

@@ -62,12 +62,23 @@ public:
 
   CCharAnimTime ZeroSignScale(float other) const;
 
-private:
   static CCharAnimTime ZeroFlat();
 
+private:
   float mTime;
   EType mType;
 };
 CHECK_SIZEOF(CCharAnimTime, 0x8)
+
+inline CCharAnimTime CCharAnimTime::ZeroSignScale(float other) const {
+  if (other > 0.f) {
+    return *this;
+  } else if (other < 0.f) {
+    return CCharAnimTime(ZeroTypeFromOrdering(-ZeroOrdering()), 0.f);
+  }
+  return ZeroFlat();
+}
+
+inline CCharAnimTime CCharAnimTime::ZeroFlat() { return CCharAnimTime(kT_ZeroSteady, 0.f); }
 
 #endif // _CCHARANIMTIME
