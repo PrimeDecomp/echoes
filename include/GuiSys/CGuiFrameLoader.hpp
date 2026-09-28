@@ -12,6 +12,7 @@ class CGuiFrameLoader {
 public:
   CGuiFrameLoader(CAssetId asset, CResFactory& factory, CSimplePool& pool);
   ~CGuiFrameLoader();
+  bool IsFinishedLoading() const; // Guessed name
   CGuiFrame* CreateFrame();
 
 private:
