@@ -7,8 +7,13 @@ class CTransform4f;
 
 class CMRay {
 public:
+  CMRay(const CVector3f& start, const CVector3f& end);
+  CMRay(const CVector3f& start, const CVector3f& end, float length, float invLength);
   CMRay(const CVector3f& start, const CVector3f& direction, float length);
   CMRay GetInvUnscaledTransformRay(const CTransform4f& xf) const;
+
+  // Guessed name: interpolate using the full start-to-end delta.
+  CVector3f GetPoint(float t) const { return mStart + t * mDelta; }
 
   const CVector3f& GetStart() const { return mStart; }
   const CVector3f& GetDelta() const { return mDelta; }
