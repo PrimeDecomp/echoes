@@ -2,7 +2,7 @@
 #include "MetroidPrime/ScriptLoader/SLdrTweakPlayerRes.hpp"
 
 SLdrTweakPlayerRes::SLdrTweakPlayerRes() : instanceName(), autoMapperIcons(), mapScreenIcons(), ballTransitionResources(), cinematicResources() {
-  unknown_0x36ad9d19 = -0.0f;
+  unknown_0x36ad9d19 = 5.0f;
 }
 
 SLdrTweakPlayerRes::~SLdrTweakPlayerRes() {}

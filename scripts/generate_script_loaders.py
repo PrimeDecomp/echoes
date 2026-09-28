@@ -303,7 +303,12 @@ class Source:
                     "Default override property not found: " + path + ":" + key
                 )
             axes = {"Vector": "XYZ", "Color": "RGBA"}.get(prop.get("Type", ""))
-            if axes is None or (
+            if prop.get("Type") == "Float":
+                if type(components) not in (int, float) or not math.isfinite(
+                    components
+                ):
+                    raise TemplateError("Invalid float default: " + path + ":" + key)
+            elif axes is None or (
                 components is not None
                 and (
                     not isinstance(components, dict)
@@ -320,8 +325,11 @@ class Source:
                 prop.remove(old)
             if components is not None:
                 default = ET.SubElement(prop, "DefaultValue")
-                for axis in axes:
-                    ET.SubElement(default, axis).text = str(components[axis])
+                if axes is None:
+                    default.text = str(components)
+                else:
+                    for axis in axes:
+                        ET.SubElement(default, axis).text = str(components[axis])
         return root
 
 

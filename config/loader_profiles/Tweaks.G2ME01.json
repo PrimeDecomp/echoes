@@ -1,4 +1,7 @@
 {
+  "MP2/Misc/TweakPlayerRes.xml": {
+    "0x36AD9D19": 5.0
+  },
   "MP2/Structs/TweakTargeting_OuterBeamIcon.xml": {
     "0x52F1D0D7": {"R": 0.294117987, "G": 0.494118005, "B": 0.639216006, "A": 0.627451003}
   },
