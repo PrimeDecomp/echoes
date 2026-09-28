@@ -19,4 +19,6 @@ private:
   CTextColor mColor;
 };
 
+CHECK_SIZEOF(CColorInstruction, 0xc)
+
 #endif // _CCOLORINSTRUCTION
