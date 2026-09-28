@@ -419,16 +419,27 @@ class Generator:
         name = identifier(name)
         return identifier(name[0].lower() + name[1:])
 
+    def _get_other_type(self, node: ET.Element) -> str | None:
+        pid = property_id(node)
+        all_types = [
+            ptype
+            for prop_id, ptype in self.names
+            if prop_id == pid
+        ]
+        if len(all_types) > 1:
+            return all_types[-1]
+        return None
+
     def make_field(self, node: ET.Element, name: str, owner: str) -> Field:
-        kind = node.attrib["Type"]
+        kind: str = node.attrib["Type"]
         archetype = node.get("Archetype")
 
         matching_name = False
 
         raw_name = self.raw_name(node)
 
-        if raw_name is not None:
-            matching_type_name = kind
+        if raw_name is not None and not raw_name.lower().startswith("unknown"):
+            matching_type_name = self._get_other_type(node) or kind
             if matching_type_name in pwe_type_lookup:
                 matching_type_name = pwe_type_lookup[matching_type_name]
             elif archetype:
@@ -437,6 +448,11 @@ class Generator:
             if matching_type_name is not None:
                 hashable_name = f"{raw_name}{matching_type_name}"
                 matching_name = is_matching(hashable_name, property_id(node))
+        else:
+            matching_name = None
+
+        if owner == "EditorProperties":
+            matching_name = None
 
         if kind == "Array":
             item_node = node.find("ItemArchetype")
@@ -455,6 +471,7 @@ class Generator:
                 cpp = "SLdr" + identifier(owner + "_" + name)
                 self.add_struct(cpp, node, "inline " + owner)
             return Field(name, node, cpp, matching_name, cpp)
+
         if kind == "AnimationSet":
             self.uses_animation_parameters = True
             return Field(
@@ -487,7 +504,7 @@ class Generator:
         if struct.scalar:
             if kind not in PRIMITIVES:
                 raise TemplateError("Unsupported scalar archetype: " + kind)
-            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=False))
+            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=None))
         else:
             seen_ids: set[int] = set()
             seen_names: set[str] = set()
@@ -578,7 +595,7 @@ class Generator:
                     and ET.tostring(actual_default) == ET.tostring(inherited)
                 ):
                     return []
-                scalar = Field("value", prop.node, struct.fields[0].cpp, matching_name=False)
+                scalar = Field("value", prop.node, struct.fields[0].cpp, matching_name=None)
                 return self.defaults(scalar, target + ".value")
             children = {
                 property_id(child): child
@@ -715,8 +732,8 @@ class Generator:
             ]
             for prop in member.fields:
                 comment_entries = []
-                if not member.scalar:
-                    if not prop.matching_name and not prop.name.startswith("unknown_"):
+                if not member.scalar and not member.atomic:
+                    if prop.matching_name is False:
                         comment_entries.append("non-matching name")
                     comment_entries.append(f"0x{property_id(prop.node):08x}")
 
