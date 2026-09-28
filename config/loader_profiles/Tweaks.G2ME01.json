@@ -1,4 +1,21 @@
 {
+  "MP2/Misc/TweakPlayerGun.xml": {
+    "0xFFDB4BB7/0xC3E75C5F": 16,
+    "0x937A35BD/0xC3E75C5F": 16,
+    "0x26196738/0xC3E75C5F": 16,
+    "0xF40808C9/0xC3E75C5F": 16,
+    "0x9A6D7A31/0xC3E75C5F": 16
+  },
+  "MP2/Structs/TweakPlayerGun_Beam_Combo.xml": {
+    "0xC713ACF9/0x4D577910": 0
+  },
+  "MP2/Structs/TweakBall_BoostBall.xml": {
+    "0x17E38E7E/0x4D577910": 0
+  },
+  "MP2/Structs/TWeaponDamage.xml": {
+    "0x8AC4278A/0x4D577910": 0,
+    "0xC9AC01D2/0x4D577910": 0
+  },
   "MP2/Misc/TweakPlayerRes.xml": {
     "0x36AD9D19": 5.0
   },

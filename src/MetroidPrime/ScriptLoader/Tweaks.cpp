@@ -58,8 +58,10 @@ void LoadTypedefSLdrTDamageInfo(SLdrTDamageInfo& sldrThis, CInputStream& input) 
 }
 
 SLdrTWeaponDamage::SLdrTWeaponDamage() : normal(), charged() {
+  normal.weaponType = 0;
   normal.damageAmount = 50.0f;
   normal.radiusDamageAmount = 25.0f;
+  charged.weaponType = 0;
   charged.damageAmount = 50.0f;
   charged.radiusDamageAmount = 25.0f;
 }
@@ -3200,6 +3202,7 @@ SLdrTweakBall_BoostBall::SLdrTweakBall_BoostBall() : boostBallDamage() {
   boostBallIncrementalSpeed2 = 35.0f;
   boostBallIncrementalSpeed3 = 35.0f;
   spiderBallBoostScalar = 1.7f;
+  boostBallDamage.weaponType = 0;
   boostBallDamage.damageAmount = 25.0f;
   boostBallDamage.radiusDamageAmount = 25.0f;
   boostBallDamage.damageRadius = 2.0f;
@@ -6632,6 +6635,7 @@ void LoadTypedefSLdrTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position&
 }
 
 SLdrTweakPlayerGun_Beam_Combo::SLdrTweakPlayerGun_Beam_Combo() : superMissile_Power(), darkCombo_Dark(), lightCombo_Light(), annihilatorCombo_Annihilator(), unknown_0x42885c6c() {
+  superMissile_Power.weaponType = 0;
   superMissile_Power.damageAmount = 180.0f;
   superMissile_Power.radiusDamageAmount = 120.0f;
   superMissile_Power.damageRadius = 8.0f;
@@ -8430,6 +8434,11 @@ void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStr
 }
 
 SLdrTweakPlayerGun::SLdrTweakPlayerGun() : instanceName(), misc(), holstering(), position(), arm_Position(), weapons(), beam_Combo(), beam_Misc(), ricochetDamage_Factor(), recoil(), comboRecoil(), projectileRecoil(), flameThrower(), waveBuster(), projectileImpact() {
+  recoil.flagsCameraShaker = 0x00000010u;
+  comboRecoil.flagsCameraShaker = 0x00000010u;
+  projectileRecoil.flagsCameraShaker = 0x00000010u;
+  flameThrower.flagsCameraShaker = 0x00000010u;
+  waveBuster.flagsCameraShaker = 0x00000010u;
   projectileImpact.flagsCameraShaker = 0x00000013u;
 }
 

@@ -292,18 +292,28 @@ class Source:
             raise TemplateError(
                 "Default overrides must map property IDs to values: " + path
             )
-        properties = {
-            property_id(prop): prop
-            for prop in root.findall("./*/SubProperties/Element")
-        }
         for key, components in overrides.items():
-            prop = properties.get(int(key, 16))
-            if prop is None:
-                raise TemplateError(
-                    "Default override property not found: " + path + ":" + key
-                )
+            parent = root.find("Properties")
+            if parent is None:
+                parent = root.find("PropertyArchetype")
+            if parent is None:
+                raise TemplateError("Default override requires a template: " + path)
+            for part in key.split("/"):
+                prop = self._override_property(parent, int(part, 16))
+                children = parent.find("SubProperties")
+                if children is None:
+                    children = ET.SubElement(parent, "SubProperties")
+                if prop not in children:
+                    prop = ET.SubElement(children, "Element", prop.attrib)
+                parent = prop
+            # Retain explicit nested assignments even when the value equals the base.
+            if "/" in key:
+                prop.set("NativeDefault", path + ":" + key)
             axes = {"Vector": "XYZ", "Color": "RGBA"}.get(prop.get("Type", ""))
-            if prop.get("Type") == "Float":
+            if prop.get("Type") in {"Choice", "Flags", "Int"}:
+                if type(components) is not int:
+                    raise TemplateError("Invalid integer default: " + path + ":" + key)
+            elif prop.get("Type") == "Float":
                 if type(components) not in (int, float) or not math.isfinite(
                     components
                 ):
@@ -331,6 +341,25 @@ class Source:
                     for axis in axes:
                         ET.SubElement(default, axis).text = str(components[axis])
         return root
+
+    def _override_property(
+        self, parent: ET.Element, pid: int, trail: tuple[str, ...] = ()
+    ) -> ET.Element:
+        for prop in parent.findall("SubProperties/Element"):
+            if property_id(prop) == pid:
+                return prop
+        archetype = parent.get("Archetype")
+        if archetype and archetype not in trail:
+            game = ET.fromstring(self.read("MP2/Game.xml"))
+            for entry in game.findall("PropertyArchetypes/Element"):
+                value = entry.find("Value")
+                if entry.findtext("Key") != archetype or value is None:
+                    continue
+                base = ET.fromstring(self.read("MP2/" + value.attrib["Path"]))
+                node = base.find("PropertyArchetype")
+                if node is not None:
+                    return self._override_property(node, pid, trail + (archetype,))
+        raise TemplateError(f"Default override property not found: 0x{pid:08x}")
 
 
 def merge(base: ET.Element, override: ET.Element) -> ET.Element:
