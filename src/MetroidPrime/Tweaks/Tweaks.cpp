@@ -2,6 +2,7 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "REL/REL_Setup.h"
 
+#include "Kyoto/Alloc/CMemory.hpp"
 #include "MetroidPrime/CMappableObject.hpp"
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
@@ -83,25 +84,34 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
 }
 
 void REL_LoadTweaks(CInputStream& input) {
-  if ((uint)input.ReadInt32() == 0x4e54574b && input.ReadInt8() == 1) {
-    gpTweakContents = new CTweakContents();
+  if (static_cast< uint >(input.ReadInt32()) == 0x4e54574b && input.ReadUint8() == 1) {
+    gpTweakContents = rs_new CTweakContents();
+    int instanceCount = input.ReadInt32();
+    while (instanceCount--) {
+      const uint instanceType = input.ReadInt32();
+      const u16 serializedSize = input.ReadUint16();
+      input.ReadInt32(); // Instance ID.
+      uint instanceSize = serializedSize - 6;
 
-    for (int instanceCount = input.ReadInt32(); instanceCount != 0; --instanceCount) {
-      uint instanceType = (uint)input.ReadInt32();
-      u16 instanceSize = input.ReadUint16();
-      input.ReadInt32(); // skip instance id
-      instanceSize -= 6;
-
-      for (int connectionCount = input.ReadInt32(); connectionCount != 0; connectionCount--) {
-        instanceSize -= 0xc;
+      ushort connectionCount = input.ReadUint16();
+      while (connectionCount--) {
+        instanceSize -= 12;
         input.ReadInt32();
         input.ReadInt32();
         input.ReadInt32();
       }
 
-      // Record current position of input
+      const uint position = input.GetReadPosition();
+      input.ReadInt32(); // Root property ID and size precede its field count.
+      input.ReadUint16();
       DecodeAnyTweak(instanceType, input);
-      // Read instanceSize - (current position - old position)
+      instanceSize -= input.GetReadPosition() - position;
+      if (instanceSize != 0) {
+        uint remaining = instanceSize;
+        while (remaining--) {
+          input.ReadUint8();
+        }
+      }
     }
   }
 }
