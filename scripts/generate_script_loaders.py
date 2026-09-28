@@ -7,7 +7,7 @@
 
 Generate into a staging directory and review the diff before replacing tracked files.
 Make corrections in the generator or templates so regeneration preserves them.
-The Tweaks profile selects sources and restores native defaults absent from the XML.
+The Tweaks profile pins the templates and selects the module's sources.
 Register new translation units in configure.py.
 """
 
@@ -222,17 +222,9 @@ class Source:
         self,
         local: str | Path | None = None,
         ref: str = "main",
-        defaults: Path | None = None,
     ) -> None:
         self.root: Path | None = None
         self.files: dict[str, bytes] = {}
-        self.defaults = (
-            json.loads(defaults.read_text(encoding="utf-8")) if defaults else {}
-        )
-        if not isinstance(self.defaults, dict):
-            raise TemplateError(
-                "Default overrides must map template paths to properties"
-            )
         if local is not None:
             root = Path(local).resolve()
             if root.name == "Game.xml":
@@ -244,8 +236,6 @@ class Source:
         else:
             self.files = self._download_snapshot(ref)
             self.description = "https://github.com/" + REPOSITORY + "/tree/" + ref
-        for path in self.defaults:
-            self.xml(path)
 
     @staticmethod
     def _download_snapshot(ref: str) -> dict[str, bytes]:
@@ -286,80 +276,7 @@ class Source:
         return self.files[path]
 
     def xml(self, path: str) -> ET.Element:
-        root = ET.fromstring(self.read(path))
-        overrides = self.defaults.get(path, {})
-        if not isinstance(overrides, dict):
-            raise TemplateError(
-                "Default overrides must map property IDs to values: " + path
-            )
-        for key, components in overrides.items():
-            parent = root.find("Properties")
-            if parent is None:
-                parent = root.find("PropertyArchetype")
-            if parent is None:
-                raise TemplateError("Default override requires a template: " + path)
-            for part in key.split("/"):
-                prop = self._override_property(parent, int(part, 16))
-                children = parent.find("SubProperties")
-                if children is None:
-                    children = ET.SubElement(parent, "SubProperties")
-                if prop not in children:
-                    prop = ET.SubElement(children, "Element", prop.attrib)
-                parent = prop
-            # Retain explicit nested assignments even when the value equals the base.
-            if "/" in key:
-                prop.set("NativeDefault", path + ":" + key)
-            axes = {"Vector": "XYZ", "Color": "RGBA"}.get(prop.get("Type", ""))
-            if prop.get("Type") in {"Choice", "Flags", "Int"}:
-                if type(components) is not int:
-                    raise TemplateError("Invalid integer default: " + path + ":" + key)
-            elif prop.get("Type") == "Float":
-                if type(components) not in (int, float) or not math.isfinite(
-                    components
-                ):
-                    raise TemplateError("Invalid float default: " + path + ":" + key)
-            elif axes is None or (
-                components is not None
-                and (
-                    not isinstance(components, dict)
-                    or set(components) != set(axes)
-                    or any(
-                        type(value) not in (int, float) or not math.isfinite(value)
-                        for value in components.values()
-                    )
-                )
-            ):
-                raise TemplateError("Invalid vector/color default: " + path + ":" + key)
-            old = prop.find("DefaultValue")
-            if old is not None:
-                prop.remove(old)
-            if components is not None:
-                default = ET.SubElement(prop, "DefaultValue")
-                if axes is None:
-                    default.text = str(components)
-                else:
-                    for axis in axes:
-                        ET.SubElement(default, axis).text = str(components[axis])
-        return root
-
-    def _override_property(
-        self, parent: ET.Element, pid: int, trail: tuple[str, ...] = ()
-    ) -> ET.Element:
-        for prop in parent.findall("SubProperties/Element"):
-            if property_id(prop) == pid:
-                return prop
-        archetype = parent.get("Archetype")
-        if archetype and archetype not in trail:
-            game = ET.fromstring(self.read("MP2/Game.xml"))
-            for entry in game.findall("PropertyArchetypes/Element"):
-                value = entry.find("Value")
-                if entry.findtext("Key") != archetype or value is None:
-                    continue
-                base = ET.fromstring(self.read("MP2/" + value.attrib["Path"]))
-                node = base.find("PropertyArchetype")
-                if node is not None:
-                    return self._override_property(node, pid, trail + (archetype,))
-        raise TemplateError(f"Default override property not found: 0x{pid:08x}")
+        return ET.fromstring(self.read(path))
 
 
 def merge(base: ET.Element, override: ET.Element) -> ET.Element:
@@ -1069,7 +986,7 @@ class Generator:
 
 def read_profile(
     path: Path,
-) -> tuple[str, list[str], Path | None, str | None, dict[str, str]]:
+) -> tuple[str, list[str], str | None, dict[str, str]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise TemplateError("Profile must contain template_ref and sources")
@@ -1086,9 +1003,6 @@ def read_profile(
         raise TemplateError("Profile sources must be a nonempty list of C++ paths")
     if len(set(sources)) != len(sources):
         raise TemplateError("Duplicate profile sources")
-    defaults = data.get("defaults")
-    if defaults is not None and not isinstance(defaults, str):
-        raise TemplateError("Profile defaults must name an override file")
     aggregate = data.get("aggregate")
     if aggregate is not None and (
         not isinstance(aggregate, str)
@@ -1106,7 +1020,6 @@ def read_profile(
     return (
         ref,
         sources,
-        path.parent / defaults if defaults is not None else None,
         aggregate,
         duplicates,
     )
@@ -1249,12 +1162,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.check and args.force:
         parser.error("--check cannot be combined with --force")
     try:
-        ref, sources, defaults, aggregate, duplicates = (
+        ref, sources, aggregate, duplicates = (
             read_profile(args.profile)
             if args.profile
-            else (args.ref or "main", [], None, None, {})
+            else (args.ref or "main", [], None, {})
         )
-        generator = Generator(Source(args.templates, ref, defaults))
+        generator = Generator(Source(args.templates, ref))
         # Profiles select output, not input: shared-header ownership must agree with
         # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
