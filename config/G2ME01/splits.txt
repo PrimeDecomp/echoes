@@ -93,6 +93,7 @@ MetroidPrime/Weapons/CGameProjectile.cpp:
 
 MetroidPrime/CStateManager.cpp:
 	.text       start:0x80036200 end:0x80044CA4
+	.sdata2     start:0x8041A808 end:0x8041A80C
 
 MetroidPrime/CEntity.cpp:
 	.text       start:0x800476A8 end:0x8004875C
@@ -272,6 +273,16 @@ MetroidPrime/Weapons/CWeapon.cpp:
 MetroidPrime/CActorLights.cpp:
 	.text       start:0x800DC37C end:0x800DED98
 	.sdata2     start:0x8041B604 end:0x8041B608 align:4
+
+MetroidPrime/CSimpleShadow.cpp:
+	.text       start:0x800DF268 end:0x800DFA60
+	.sdata      start:0x80418210 end:0x80418218
+	.sdata2     start:0x8041B668 end:0x8041B680
+
+MetroidPrime/CWorldShadow.cpp:
+	.text       start:0x800E17E4 end:0x800E24D0
+	.sbss       start:0x804190E8 end:0x804190F8
+	.sdata2     start:0x8041B690 end:0x8041B6D0
 
 MetroidPrime/CModelData.cpp:
 	.text       start:0x800E4A58 end:0x800E6CEC

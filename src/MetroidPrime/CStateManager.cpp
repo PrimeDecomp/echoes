@@ -18,6 +18,8 @@
 
 #include "rstl/vector.hpp"
 
+const int gkPVSEnabled = 1;
+
 struct queryOutput {
   int* unk0;
   int unk4;

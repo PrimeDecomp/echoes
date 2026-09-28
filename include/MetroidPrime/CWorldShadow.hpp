@@ -11,6 +11,13 @@ class CWorldShadow {
 public:
   CWorldShadow(uint width, uint height, bool rgba8);
   ~CWorldShadow();
+  // Guessed name: Echoes disables these shadows in multiplayer, Dark Aether, and other visors.
+  static bool CanRender(const CStateManager& mgr);
+  void BuildLightShadowTexture(const CStateManager& mgr, TAreaId area, uint lightIndex,
+                               const CAABox& bounds, bool motionBlur, bool lighten);
+  void EnableModelProjectedShadow(const CTransform4f& transform, uint lightIndex,
+                                  float scale) const;
+  void DisableModelProjectedShadow() const;
   void ResetBlur();
 
 private:

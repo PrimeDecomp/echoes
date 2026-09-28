@@ -18,6 +18,7 @@ public:
 
   explicit CWorldLight(CInputStream& in);
   CLight GetAsCGraphicsLight() const;
+  const CVector3f& GetPosition() const { return mPosition; }
 
 private:
   EWorldLightType mType;
