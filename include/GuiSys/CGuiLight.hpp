@@ -13,7 +13,7 @@ public:
 
   // CGuiWidget
   FourCC GetWidgetTypeID() const override;
-  int GetWidgetUsageFlags() const override;
+  EWidgetUsageFlags GetWidgetUsageFlags() const override;
 
   virtual void SetIsVisible(bool visible);
 

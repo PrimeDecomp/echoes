@@ -9,7 +9,7 @@ public:
 
   // CGuiWidget
   FourCC GetWidgetTypeID() const override { return 'HWIG'; }
-  int GetWidgetUsageFlags() const override { return kWUF_None; }
+  EWidgetUsageFlags GetWidgetUsageFlags() const override { return kWUF_None; }
 };
 CHECK_SIZEOF(CGuiHeadWidget, 0xbc)
 

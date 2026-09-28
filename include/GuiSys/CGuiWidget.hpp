@@ -51,7 +51,7 @@ public:
   ~CGuiWidget() override;
 
   virtual FourCC GetWidgetTypeID() const;
-  virtual int GetWidgetUsageFlags() const; // Guessed name
+  virtual EWidgetUsageFlags GetWidgetUsageFlags() const; // Guessed name
   virtual bool AddWorkerWidget(CGuiWidget* worker);
   virtual bool GetIsActive() const;
   virtual bool GetIsVisible() const;

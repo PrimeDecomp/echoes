@@ -33,7 +33,7 @@ public:
 
   // CGuiWidget
   FourCC GetWidgetTypeID() const override;
-  int GetWidgetUsageFlags() const override;
+  EWidgetUsageFlags GetWidgetUsageFlags() const override;
   void Draw(const CGuiWidgetDrawParms& parms) const override;
 
   CVector3f ConvertToScreenSpace(const CVector3f& point) const;
