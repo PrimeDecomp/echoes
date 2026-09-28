@@ -32,6 +32,7 @@ public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
   CHintManager* HintManager() { return mCameraHintManager; }
+  CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
 
   float GetFirstPersonFOV() const;
@@ -77,9 +78,10 @@ public:
   bool ShouldBypassInterpolationCamera() const;
   bool IsBallCameraTransitioning(const CStateManager& mgr) const; // Guessed name
   void SetPlayerCamera(CStateManager& mgr, TUniqueId uid);
-  void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to, bool sinusoidal,
-                          int mode1, int mode2, CStateManager& mgr, bool flag, float duration,
-                          float fov); // The two mode types and final flag are unresolved.
+  // Original mode enum types and final flag are unresolved.
+  void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
+                          bool interpolateRotation, int positionMode, int rotationMode,
+                          CStateManager& mgr, bool flag, float duration, float fov);
   void CinematicCut(CStateManager& mgr);
   void SetPathCamera(TUniqueId uid, CStateManager& mgr);
   void ClearPathCamera(); // Guessed name

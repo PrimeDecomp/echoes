@@ -3,7 +3,9 @@
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Cameras/CInterpolationCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
@@ -197,13 +199,11 @@ bool CCameraManager::fn_801ABD68() const {
 bool CCameraManager::IsInBallCamera() const { return mCurCameraId == mBallCamera->GetUniqueId(); }
 
 bool CCameraManager::IsInFPCamera() const {
-  // TODO: compare mCurCameraId with mFpCamera's ID once CFirstPersonCamera is declared.
-  return false;
+  return mCurCameraId == mFpCamera->GetUniqueId();
 }
 
 bool CCameraManager::IsInterpolationCameraActive() const {
-  // TODO: query mInterpCamera's active flag once CInterpolationCamera is declared.
-  return false;
+  return mInterpCamera->GetActive();
 }
 
 bool CCameraManager::ShouldBypassInterpolationCamera() const { return false; }
@@ -218,9 +218,14 @@ void CCameraManager::SetPlayerCamera(CStateManager& mgr, TUniqueId uid) {
 }
 
 void CCameraManager::SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
-                                        bool sinusoidal, int mode1, int mode2, CStateManager& mgr,
-                                        bool flag, float duration, float fov) {
-  // TODO: configure the runtime interpolation camera unless the first-person camera is selected.
+                                        bool interpolateRotation, int positionMode,
+                                        int rotationMode, CStateManager& mgr, bool flag,
+                                        float duration, float fov) {
+  if (!IsInFPCamera()) {
+    mInterpCamera->SetInterpolation(xf, from, to, interpolateRotation, positionMode, rotationMode,
+                                    mgr, flag, duration, fov);
+    SetCurrentCameraId(mInterpCamera->GetUniqueId());
+  }
 }
 
 void CCameraManager::CinematicCut(CStateManager& mgr) {
