@@ -939,17 +939,17 @@ CColor CPlayer::GetDarkAetherDamageColor(const CStateManager& mgr, int view) con
 }
 
 CTweakPlayer* CPlayer::GetTweakPlayer() const {
-  CTweakPlayer* tweak = gpTweakPlayerA;
+  CTweakPlayer* tweak = gpTweakPlayerA.get();
   if (mControlScheme == 1) {
-    tweak = gpTweakPlayerB;
+    tweak = gpTweakPlayerB.get();
   }
   return tweak;
 }
 
 CTweakPlayerControls* CPlayer::GetTweakPlayerControls() const {
-  CTweakPlayerControls* tweak = gpTweakPlayerControlsA;
+  CTweakPlayerControls* tweak = gpTweakPlayerControlsA.get();
   if (mControlScheme == 1) {
-    tweak = gpTweakPlayerControlsB;
+    tweak = gpTweakPlayerControlsB.get();
   }
   return tweak;
 }

@@ -31,6 +31,7 @@ public:
   };
 
   void PostConstruct();
+  static void ReadAutomapperTweaks();
   bool GetIsVisibleToAutoMapper(bool worldVis, const CMapWorldInfo& info) const;
   CTransform4f AdjustTransformForType() const;
   void Draw(int curAreaId, const CMapWorldInfo& info, float alpha, bool needsVtxLoad) const;

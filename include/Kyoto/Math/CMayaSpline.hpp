@@ -35,12 +35,16 @@ public:
   void CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next);
 };
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CMayaSplineKnot)
+}
+
 struct SLdrSpline {
   SLdrSpline();
   SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
              int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
   SLdrSpline(CInputStream&, int);
-  ~SLdrSpline();
+  ~SLdrSpline() {}
 
   SLdrSpline& operator=(const SLdrSpline&);
 

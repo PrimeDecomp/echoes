@@ -2,8 +2,21 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "REL/REL_Setup.h"
 
+#include "MetroidPrime/CMappableObject.hpp"
+#include "MetroidPrime/Player/CPlayerCameraBob.hpp"
+#include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
+#include "MetroidPrime/Tweaks/CTweakBall.hpp"
 #include "MetroidPrime/Tweaks/CTweakContents.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
+#include "MetroidPrime/Tweaks/CTweakParticle.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
+#include "MetroidPrime/Tweaks/CTweakSlideShow.hpp"
+#include "MetroidPrime/Tweaks/CTweakTargeting.hpp"
 
 #include "dolphin/types.h"
 
@@ -93,11 +106,46 @@ void REL_LoadTweaks(CInputStream& input) {
   }
 }
 
-void REL_CreateTweakGlobals() {}
+void REL_CreateTweakGlobals() {
+  gpTweakAutoMapper = rs_new CTweakAutoMapper(gpTweakContents->TweakAutoMapper);
+  gpTweakBall = rs_new CTweakBall(gpTweakContents->TweakBall);
+  gpTweakGame = rs_new CTweakGame(gpTweakContents->TweakGame);
+  gpTweakGui = rs_new CTweakGui(gpTweakContents->TweakGui);
+  gpTweakGuiColors = rs_new CTweakGuiColors(gpTweakContents->TweakGuiColors);
+  gpTweakParticle = rs_new CTweakParticle(gpTweakContents->TweakParticle);
+  gpTweakPlayerB = rs_new CTweakPlayer(gpTweakContents->TweakPlayer2);
+  gpTweakPlayerA = rs_new CTweakPlayer(gpTweakContents->TweakPlayer);
+  gpTweakPlayerControlsB = rs_new CTweakPlayerControls(gpTweakContents->TweakPlayerControls2);
+  gpTweakPlayerControlsA = rs_new CTweakPlayerControls(gpTweakContents->TweakPlayerControls);
+  gpTweakPlayerGunMulti = rs_new CTweakPlayerGun(gpTweakContents->TweakPlayerGunMuli);
+  gpTweakPlayerGunSingle = rs_new CTweakPlayerGun(gpTweakContents->TweakPlayerGun);
+  gpTweakPlayerRes = rs_new CTweakPlayerRes(gpTweakContents->TweakPlayerRes);
+  gpTweakSlideShow = rs_new CTweakSlideShow(gpTweakContents->TweakSlideShow);
+  gpTweakTargeting = rs_new CTweakTargeting(gpTweakContents->TweakTargeting);
+
+  gpTweakPlayerGun = gpTweakPlayerGunSingle.get();
+  CPlayerCameraBob::ReadTweaks(gpTweakContents->TweakCameraBob);
+  CMappableObject::ReadAutomapperTweaks();
+}
 
 void REL_FreeTweaks() {
-  delete gpTweakGame;
+  delete gpTweakContents;
+  gpTweakContents = nullptr;
+  gpTweakAutoMapper = nullptr;
+  gpTweakBall = nullptr;
   gpTweakGame = nullptr;
+  gpTweakGui = nullptr;
+  gpTweakGuiColors = nullptr;
+  gpTweakParticle = nullptr;
+  gpTweakPlayerB = nullptr;
+  gpTweakPlayerA = nullptr;
+  gpTweakPlayerControlsB = nullptr;
+  gpTweakPlayerControlsA = nullptr;
+  gpTweakPlayerGunMulti = nullptr;
+  gpTweakPlayerGunSingle = nullptr;
+  gpTweakPlayerRes = nullptr;
+  gpTweakSlideShow = nullptr;
+  gpTweakTargeting = nullptr;
 }
 
 void TweaksInit() {

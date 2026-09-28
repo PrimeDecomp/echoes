@@ -10,8 +10,8 @@ struct SLdrTweakPlayerRes;
 
 class CTweakPlayerRes {
 public:
-  explicit CTweakPlayerRes(const SLdrTweakPlayerRes& data);
-  ~CTweakPlayerRes();
+  explicit CTweakPlayerRes(const SLdrTweakPlayerRes& data) : mData(&data) { ResolveResources(); }
+  ~CTweakPlayerRes() {}
 
   CAssetId GetSaveStationIcon() const { return mSaveStationIcon; }
   CAssetId GetMissileStationIcon() const { return mMissileStationIcon; }
@@ -22,6 +22,8 @@ public:
   CAssetId GetUpArrowIcon() const { return mUpArrowIcon; }     // Guessed name
 
 private:
+  void ResolveResources(); // Guessed name
+
   CAssetId mSaveStationIcon;
   CAssetId mMissileStationIcon;
   CAssetId mElevatorIcon;
@@ -50,7 +52,10 @@ private:
   CAssetId mCineGun[4];
   CAssetId mCinematicGrapple;
   float mCinematicMoveOutofIntoPlayerDistance;
-  SLdrSpline mBallTransitionSplines[4]; // Guessed name
+  SLdrSpline mBallTransitionSpline1; // Guessed names
+  SLdrSpline mBallTransitionSpline2;
+  SLdrSpline mBallTransitionSpline3;
+  SLdrSpline mBallTransitionSpline4;
   SLdrSpline mMovementControlSpline;    // Guessed name
   const SLdrTweakPlayerRes* mData;
 };
