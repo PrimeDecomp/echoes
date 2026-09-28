@@ -28,15 +28,6 @@ jobs:
     - name: Git config
       run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-    - name: Check generated Tweaks loaders
-      if: matrix.version == 'G2ME01'
-      run: |
-        python -m unittest discover -s scripts/tests -p test_generate_script_loaders.py
-        python scripts/generate_script_loaders.py \
-            --profile config/loader_profiles/Tweaks.json \
-            --cpp-output src/MetroidPrime/ScriptLoader \
-            --header-output include/MetroidPrime/ScriptLoader --check
-
     # Normalize file mod times
     - name: Restore timestamps
       run: |

@@ -17,7 +17,6 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-from tools.loader_profile import LoaderProfile
 from tools.project import (
     Object,
     ProgressCategory,
@@ -192,9 +191,7 @@ if args.map:
     # config.ldflags.append("-listclosure") # For Wii linkers
 
 # Use for any additional files that should cause a re-configure when modified
-loader_profile_path = Path("config/loader_profiles/Tweaks.json")
-tweaks_loaders = LoaderProfile.read(loader_profile_path)
-config.reconfig_deps = [loader_profile_path, Path("tools/loader_profile.py")]
+config.reconfig_deps = []
 
 # Optional numeric ID for decomp.me preset
 # Can be overridden in libraries or objects
@@ -1119,13 +1116,22 @@ config.libs = [
         "Tweaks",
         [
             Object(NonMatching, "MetroidPrime/Tweaks/Tweaks.cpp"),
-            *[
-                Object(
-                    source in {"SLdrTweakPlayer.cpp", "SLdrTweakGuiColors.cpp"},
-                    f"MetroidPrime/ScriptLoader/{source}",
-                )
-                for source in tweaks_loaders.sources
-            ],
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakAutoMapper.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakBall.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerControls.cpp"),
+            Object(Matching,    "MetroidPrime/ScriptLoader/SLdrTweakPlayer.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakCameraBob.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakSlideShow.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakGame.cpp"),
+            Object(Matching,    "MetroidPrime/ScriptLoader/SLdrTweakGuiColors.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakParticle.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerRes.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakTargeting.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakGui.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakPlayerGun_Weapons.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_VulnerabilityIndicator.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_Scan.cpp"),
         ],
     ),
 ]

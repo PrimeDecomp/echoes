@@ -3,26 +3,11 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Generate Echoes SLdr types, readers, and LoadX factory adapters.
-
-Usage:
-```sh
-uv run --script scripts/generate_script_loaders.py --header-output build/loader-headers --cpp-output build/loader-sources
-uv run --script scripts/generate_script_loaders.py --ref <commit-sha> --object Counter --object STAU --header-output build/loader-headers
-```
-
-Or use a local checkout, with no network access:
-
-```sh
-uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates --header-output include/MetroidPrime/ScriptLoader
-uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates/MP2 --object Counter --header-output build/loader-headers
-```
-
-Generate the reviewed Tweaks REL sources with a pinned template revision:
-
-```sh
-uv run scripts/generate_script_loaders.py --profile config/loader_profiles/Tweaks.json --cpp-output build/tweaks-loaders
-```
+"""Generate Echoes SLdr headers and readers from XML templates.
+Usage: uv run scripts/generate_script_loaders.py --profile config/loader_profiles/Tweaks.json --cpp-output build/loaders
+Use --templates PATH for local XMLs; otherwise fetch --ref (default: main, or profile pin).
+--header-output DIR emits headers; --object NAME selects objects without a profile.
+--check compares without writing; --force replaces differing files. Register new sources in configure.py manually.
 """
 
 from __future__ import annotations
@@ -45,9 +30,6 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path, PurePosixPath
 from textwrap import dedent
 from typing import Protocol
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from tools.loader_profile import LoaderProfile
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
 KEYWORDS: set[str] = {
@@ -905,15 +887,35 @@ class Generator:
         return files
 
 
-def profile_files(files: dict[str, str], profile: LoaderProfile) -> dict[str, str]:
+def read_profile(path: Path) -> tuple[str, list[str]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise TemplateError("Profile must contain template_ref and sources")
+    ref, sources = data.get("template_ref"), data.get("sources")
+    if not isinstance(ref, str) or not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise TemplateError("Profile must pin a template commit")
+    if (
+        not isinstance(sources, list)
+        or not sources
+        or any(
+            not isinstance(name, str) or not name.endswith(".cpp") for name in sources
+        )
+    ):
+        raise TemplateError("Profile sources must be a nonempty list of C++ paths")
+    if len(set(sources)) != len(sources):
+        raise TemplateError("Duplicate profile sources")
+    return ref, sources
+
+
+def profile_files(files: dict[str, str], sources: Sequence[str]) -> dict[str, str]:
     """Select reviewed sources and their headers from the complete ownership graph."""
-    missing = set(profile.sources) - files.keys()
+    missing = set(sources) - files.keys()
     if missing:
         raise TemplateError(
             "Profile sources not generated: " + ", ".join(sorted(missing))
         )
     selected: dict[str, str] = {}
-    pending = list(profile.sources)
+    pending = list(sources)
     while pending:
         name = pending.pop()
         if name in selected:
@@ -1020,15 +1022,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.check and args.force:
         parser.error("--check cannot be combined with --force")
     try:
-        profile = LoaderProfile.read(args.profile) if args.profile else None
-        ref = profile.template_ref if profile else args.ref or "main"
+        ref, sources = (
+            read_profile(args.profile) if args.profile else (args.ref or "main", [])
+        )
         generator = Generator(Source(args.templates, ref))
         # Profiles select output, not input: shared-header ownership must agree with
         # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
         files = generator.render()
-        if profile:
-            files = profile_files(files, profile)
+        if sources:
+            files = profile_files(files, sources)
         outputs: list[tuple[Path, dict[str, str]]] = []
         if args.header_output:
             outputs.append(

@@ -1,6 +1,4 @@
 {
-  "version": 1,
-  "name": "Tweaks",
   "template_ref": "22b58bd63d229c7db6bf207acf1f25308186483a",
   "sources": [
     "SLdrTweakPlayer.cpp",
