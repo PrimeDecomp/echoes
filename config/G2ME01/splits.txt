@@ -741,6 +741,14 @@ MetroidPrime/CPauseScreen.cpp:
 MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
 	.text       start:0x8020EBF0 end:0x8020EE18
 
+MetroidPrime/Tweaks/CTweakBall.cpp:
+	.text       start:0x80216DF8 end:0x802175B4
+	.data       start:0x803B818C end:0x803B822C align:4
+
+MetroidPrime/Tweaks/CTweakAutoMapper.cpp:
+	.text       start:0x802175B4 end:0x802179C0
+	.data       start:0x803B822C end:0x803B824C align:4
+
 MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0

@@ -8,6 +8,7 @@
 #include "MetroidPrime/Weapons/WeaponTypes.hpp"
 
 class CDamageVulnerability;
+struct SLdrTDamageInfo;
 
 class CDamageInfo {
 public:
@@ -24,6 +25,8 @@ public:
   , x1a_25_(false) {}
 
   CDamageInfo(CInputStream& in);
+  CDamageInfo(const SLdrTDamageInfo& data, bool charged = false, bool comboed = false,
+              bool noImmunity = false, bool flag = false);
   CDamageInfo(const CDamageInfo&, float);
 
   CDamageInfo ApplyDoubleDamage(const CPlayerState& state) const;
