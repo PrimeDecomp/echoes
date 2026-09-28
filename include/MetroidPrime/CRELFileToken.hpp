@@ -10,8 +10,9 @@ public:
   CRELFileToken(const CRELFileToken& other);
   ~CRELFileToken();
 
-  void Load();           // Guessed name
-  bool IsLoaded() const; // Guessed name
+  void Load();                             // Guessed name
+  bool IsLoaded() const;                   // Guessed name
+  const rstl::string& GetFileName() const; // Guessed name
 
 private:
   CRelFile* mFile;

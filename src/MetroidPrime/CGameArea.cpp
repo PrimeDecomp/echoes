@@ -11,11 +11,15 @@
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CRELFileManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
+#include "rstl/algorithm.hpp"
 
+#include <alloca.h>
+#include <dolphin/dvd.h>
 #include <dolphin/os/OSCache.h>
 #include <stdlib.h>
 #include <string.h>
@@ -157,16 +161,164 @@ void CGameArea::AddLayerTokens(int layer, rstl::vector< CToken >& tokens) {
 }
 
 bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
-  // TODO: Poll active layers, throttle outstanding resources, and load sorted REL tokens.
-  return false;
+  bool finished = true;
+  for (int layer = 0; layer < mLayerDependencyOffsets.size(); ++layer) {
+    if (mLayerPhases[layer] == kLP_Loading) {
+      finished = false;
+      break;
+    }
+  }
+  if (!finished) {
+    const bool loadTexturesToAram = mgr.IsFullyInitialized();
+    int pending = 0;
+    for (int i = 0; i < mPostConstructed->mLayerTokens.size(); ++i) {
+      const int layer = i != 0 ? i - 1 : mPostConstructed->mLayerTokens.size() - 1;
+      const int priorPending = pending;
+      if (mLayerPhases[layer] == kLP_Loading) {
+        rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+        for (int j = 0; j < tokens.size(); ++j) {
+          CToken& token = tokens[j];
+          if (token.IsLoaded()) {
+            token.Lock();
+            if (token.GetReferenceType() == 'TXTR') {
+              TToken< CTexture > texture(token);
+              CTexture* resource = texture.GetT();
+              resource->MakeSwappable();
+              if (loadTexturesToAram) {
+                resource->LoadToARAM();
+              }
+            }
+          } else {
+            if (!token.HasLock()) {
+              const SObjectTag tag('MREA', mAreaAssetId);
+              gpResourceFactory->GetResLoader().FindResource(tag);
+              token.Lock();
+            }
+            ++pending;
+          }
+        }
+        if (pending > 80) {
+          return false;
+        }
+
+        for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::const_iterator it =
+                 mPostConstructed->mLayerLoadTransactions.begin();
+             it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
+          if (it->first == layer) {
+            ++pending;
+            break;
+          }
+        }
+        if (layer < mPostConstructed->mLayerRelTokens.size()) {
+          rstl::vector< CRELFileToken >& rels = mPostConstructed->mLayerRelTokens[layer];
+          for (int j = 0; j < rels.size(); ++j) {
+            if (!rels[j].IsLoaded()) {
+              ++pending;
+            }
+          }
+        }
+        if (pending == priorPending) {
+          mLayerPhases[layer] = kLP_Ready;
+        }
+      }
+    }
+
+    for (int i = 0; i < mPostConstructed->mSortedRelTokens.size(); ++i) {
+      mPostConstructed->mSortedRelTokens[i]->Load();
+      if (!mPostConstructed->mSortedRelTokens[i]->IsLoaded()) {
+        ++pending;
+      }
+    }
+    if (pending != 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void CGameArea::VerifyTokenList(CStateManager& mgr) {
-  // TODO: Initialize layer phases, active-layer masks, resource tokens, and REL tokens.
+  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  if (GetTokenCount() == 0) {
+    ClearTokenList();
+    mLayerPhases.resize(mLayerDependencyOffsets.size(), kLP_Inactive);
+    mPostConstructed->mActiveLayers.resize(layers.GetAreaLayerCount(mSelfIdx), false);
+    mPostConstructed->mLayerTokens.resize(mLayerDependencyOffsets.size(), rstl::vector< CToken >());
+
+    for (int layer = 0; layer < mLayerDependencyOffsets.size(); ++layer) {
+      rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+      const int first = mLayerDependencyOffsets[layer];
+      const int last = layer + 1 < mLayerDependencyOffsets.size()
+                           ? mLayerDependencyOffsets[layer + 1]
+                           : mDependencies2.size();
+      tokens.clear();
+      tokens.reserve(last - first);
+    }
+
+    if (!mDependencies2.empty()) {
+      for (int layer = mLayerDependencyOffsets.size() - 1; layer >= 0; --layer) {
+        if (layers.IsLayerActive(mSelfIdx, TLayerId(layer))) {
+          AddLayerTokens(layer, mPostConstructed->mLayerTokens[layer]);
+        }
+      }
+      for (uint layer = 0; layer < layers.GetAreaLayerCount(mSelfIdx); ++layer) {
+        mPostConstructed->mActiveLayers[layer] = layers.IsLayerActive(mSelfIdx, TLayerId(layer));
+      }
+    }
+  }
+
+  const int relLayerCount = mRelOffsets.size() / 2;
+  if (relLayerCount != mPostConstructed->mLayerRelTokens.size()) {
+    mPostConstructed->mLayerRelTokens.resize(relLayerCount, rstl::vector< CRELFileToken >());
+  }
+  if (!mRelModules.empty() && mPostConstructed->mSortedRelTokens.empty()) {
+    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
+      if (mPostConstructed->mActiveLayers[layer]) {
+        LoadLayerRelModules(mgr, TLayerId(layer));
+      }
+    }
+    SortRelTokens(layers);
+  }
 }
 
-void CGameArea::SortRelTokens() {
-  // TODO: Sort pending REL tokens by file size.
+void CGameArea::SortRelTokens(const CWorldLayerState& layers) {
+  if (mRelModules.empty()) {
+    return;
+  }
+
+  const int layerCount = mPostConstructed->mLayerRelTokens.size();
+  int count = 0;
+  for (int layer = 0; layer < layerCount; ++layer) {
+    if (mLayerPhases[layer] == kLP_Loading) {
+      count += mPostConstructed->mLayerRelTokens[layer].size();
+    }
+  }
+
+  typedef rstl::pair< uint, CRELFileToken* > SRelLocation;
+  SRelLocation* locations = static_cast< SRelLocation* >(alloca(count * sizeof(SRelLocation)));
+  int cursor = 0;
+  for (int layer = 0; layer < layerCount; ++layer) {
+    if (mLayerPhases[layer] == kLP_Loading) {
+      rstl::vector< CRELFileToken >& tokens = mPostConstructed->mLayerRelTokens[layer];
+      for (int i = 0; i < tokens.size(); ++i, ++cursor) {
+        CRELFileToken& token = tokens[i];
+        uint offset = 0;
+        DVDFileInfo info;
+        if (DVDOpen(const_cast< char* >(token.GetFileName().data()), &info)) {
+          offset = info.startAddr;
+          DVDClose(&info);
+        }
+        locations[cursor] = SRelLocation(offset, &token);
+      }
+    }
+  }
+  rstl::sort(locations, locations + count,
+             rstl::pair_sorter_finder< SRelLocation, rstl::less< uint > >(rstl::less< uint >()));
+
+  mPostConstructed->mSortedRelTokens.clear();
+  mPostConstructed->mSortedRelTokens.reserve(count);
+  for (int i = 0; i < count; ++i) {
+    mPostConstructed->mSortedRelTokens.push_back_unsafe(locations[i].second);
+  }
 }
 
 void CGameArea::FillInStaticGeometry() {
@@ -179,7 +331,68 @@ void CGameArea::PostConstructArea() {
 }
 
 void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
-  // TODO: Wait for outstanding requests, decompression, REL modules, and resource tokens.
+  if (IsLoaded()) {
+    return;
+  }
+
+  for (rstl::list< rstl::auto_ptr< CDvdRequest > >::iterator it =
+           mPostConstructed->mLoadTransactions.begin();
+       it != mPostConstructed->mLoadTransactions.end(); ++it) {
+    if (it->get()) {
+      if (!(*it)->IsComplete()) {
+        (*it)->WaitUntilComplete();
+      }
+      ClearDecompressionRequest(it->get());
+    }
+  }
+  for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator it =
+           mPostConstructed->mLayerLoadTransactions.begin();
+       it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
+    if (it->second.get()) {
+      if (!it->second->IsComplete()) {
+        it->second->WaitUntilComplete();
+      }
+      ClearDecompressionRequest(it->second.get());
+    }
+  }
+  while (!mPostConstructed->mDecompressionRequests.empty()) {
+    DecompressAreaData();
+  }
+
+  if (!mPostConstructed->mLayerRelTokens.empty()) {
+    for (int layer = 0; layer < mPostConstructed->mLayerRelTokens.size(); ++layer) {
+      for (int i = 0; i < mPostConstructed->mLayerRelTokens[layer].size(); ++i) {
+        mPostConstructed->mLayerRelTokens[layer][i].Load();
+        while (!mPostConstructed->mLayerRelTokens[layer][i].IsLoaded()) {
+          gpRelFileManager->Update();
+        }
+      }
+    }
+  }
+
+  if (GetTokenCount() == 0) {
+    VerifyTokenList(mgr);
+    for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
+      for (rstl::vector< CToken >::iterator it = mPostConstructed->mLayerTokens[layer].begin();
+           it != mPostConstructed->mLayerTokens[layer].end(); ++it) {
+        it->Lock();
+      }
+    }
+    for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
+      for (rstl::vector< CToken >::iterator it = mPostConstructed->mLayerTokens[layer].begin();
+           it != mPostConstructed->mLayerTokens[layer].end(); ++it) {
+        it->GetObj();
+      }
+    }
+    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
+      if (mPostConstructed->mActiveLayers[layer]) {
+        mLayerPhases[layer] = kLP_Ready;
+      }
+    }
+    mLayerPhases[mLayerDependencyOffsets.size() - 1] = kLP_Ready;
+  }
+  mPostConstructed->mLoadTransactions.clear();
+  mPostConstructed->mLayerLoadTransactions.clear();
 }
 
 void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
