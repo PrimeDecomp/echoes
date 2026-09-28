@@ -5,6 +5,7 @@
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "Kyoto/Streams/CLZOSupport.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
@@ -13,12 +14,17 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CMain.hpp"
+#include "MetroidPrime/CPortalArea.hpp"
 #include "MetroidPrime/CRELFileManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CStaticGeometryMap.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
+#include "MetroidPrime/PathFinding/CPathFindArea.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "WorldFormat/CAreaBspTree.hpp"
+#include "WorldFormat/CAreaOctTree.hpp"
 #include "WorldFormat/CPVSAreaSet.hpp"
 #include "rstl/algorithm.hpp"
 
@@ -371,9 +377,236 @@ void CGameArea::FillInStaticGeometry() {
   mPostConstructed->mModelsConstructed = true;
 }
 
+// The header prefix used during post-construction; later version fields follow it.
+struct SMreaHeader {
+  uint magic;
+  uint version;
+  CTransform4f transform;
+  int modelCount;
+  int layerCount;
+  int sectionCount;
+  int sectionIndices[8];
+  int renderOctreeSection;
+};
+
+static inline CVector3f SwapVectorBytes(CVector3f vector) {
+  return CVector3f(CBasics::SwapBytes(vector.GetX()), CBasics::SwapBytes(vector.GetY()),
+                   CBasics::SwapBytes(vector.GetZ()));
+}
+
 void CGameArea::PostConstructArea() {
-  // TODO: Decode MREA sections and construct collision, geometry, lights, PVS, paths, portals, and
-  // object lists.
+  mPostConstructed->mMreaVersion = VerifyHeader();
+  rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >::const_iterator section =
+      mPostConstructed->mMreaSectionBuffers.begin();
+  const SMreaHeader* header = reinterpret_cast< const SMreaHeader* >(section->first.get());
+  for (int i = 0; i < 3; ++i) {
+    CVector3f row = SwapVectorBytes(header->transform.GetRow(i));
+    close_enough(mTransform.GetRow(i), row, 0.001f);
+  }
+  CVector3f translation = SwapVectorBytes(header->transform.GetTranslation());
+  close_enough(mTransform.GetTranslation(), translation, 0.001f);
+
+  const int modelCount = CBasics::SwapBytes(header->modelCount);
+  section += 2;
+  if (header->version >= 24) {
+    ++section;
+  }
+  int firstGeometry = section - mPostConstructed->mMreaSectionBuffers.begin();
+  mPostConstructed->mFirstMaterialSection = firstGeometry;
+  ++section;
+  mPostConstructed->mModelInstances.reserve(modelCount);
+  for (int i = 0; i < modelCount; ++i) {
+    int surfaces = *reinterpret_cast< const int* >((section + 6)->first.get());
+    section += 7;
+    section += surfaces;
+    section += 2;
+  }
+  long geometryEnd = section - mPostConstructed->mMreaSectionBuffers.begin();
+  if (header->renderOctreeSection != -1) {
+    rstl::auto_ptr< const uchar > buffer(reinterpret_cast< const uchar* >(section->first.get()));
+    buffer.release();
+    mPostConstructed->mRenderOctTree = CAreaRenderOctTree(buffer);
+    ++section;
+  }
+  ++section;
+  if (mPostConstructed->mMreaVersion >= 22) {
+    ++section;
+  }
+
+  const int layerCount = header->layerCount;
+  mPostConstructed->mLayerScriptBuffers.reserve(layerCount);
+  mPostConstructed->mLayerScriptSizes.reserve(layerCount);
+  for (int i = 0; i < layerCount; ++i) {
+    mPostConstructed->mLayerScriptBuffers.push_back_unsafe(section->first.get());
+    mPostConstructed->mLayerScriptBuffers.back().release();
+    mPostConstructed->mLayerScriptSizes.push_back_unsafe(section->second);
+    ++section;
+  }
+  mPostConstructed->mGeneratedScriptBuffer = section->first.get();
+  mPostConstructed->mGeneratedScriptBuffer.release();
+  mPostConstructed->mGeneratedScriptSize = section->second;
+  ++section;
+
+  char* collisionData = section->first.get();
+  ++collisionData;
+  while (reinterpret_cast< uintptr_t >(collisionData) & 3) {
+    ++collisionData;
+  }
+  uint collisionSize = *reinterpret_cast< const uint* >(collisionData);
+  collisionData += 4;
+  CAreaOctTree* collision = nullptr;
+  bool collisionOwned = false;
+  CAreaOctTree::MakeFromMemory(collisionData, collisionSize, &collision, &collisionOwned);
+  mPostConstructed->mCollision = collision;
+  if (!collisionOwned) {
+    mPostConstructed->mCollision.release();
+  }
+  mPostConstructed->mCollisionSize = collisionSize;
+  collisionData += collisionSize;
+  if (mPostConstructed->mMreaVersion < 25) {
+    const uint count = *reinterpret_cast< const uint* >(collisionData);
+    CMemoryInStream stream(collisionData + 4, count * sizeof(CAABox) + 8);
+    stream.ReadFloat();
+    stream.ReadFloat();
+    for (uint i = 0; i < count; ++i) {
+      stream.Get< CAABox >();
+    }
+  }
+  ++section;
+  {
+    CMemoryInStream stream(section->first.get(), section->second);
+    mPostConstructed->mBspTree = rs_new CAreaBspTree(stream, mTransform);
+  }
+
+  ++section;
+  {
+    CMemoryInStream stream(section->first.get(), section->second);
+    const uint magic = stream.ReadInt32();
+    const bool twoLayers = magic == 0xbabedead;
+    int count = twoLayers ? stream.ReadInt32() : magic;
+    mPostConstructed->mLightsA.clear();
+    mPostConstructed->mLightsA.reserve(count);
+    mPostConstructed->mGfxLightsA.clear();
+    mPostConstructed->mGfxLightsA.reserve(count);
+    for (int i = 0; i < count; ++i) {
+      mPostConstructed->mLightsA.push_back_unsafe(CWorldLight(stream));
+      mPostConstructed->mGfxLightsA.push_back_unsafe(
+          mPostConstructed->mLightsA[i].GetAsCGraphicsLight());
+    }
+    if (twoLayers) {
+      const int countB = stream.Get< int >();
+      if (countB != 0) {
+        mPostConstructed->mLightsB.reserve(countB);
+        mPostConstructed->mGfxLightsB.reserve(countB);
+        for (int i = 0; i < countB; ++i) {
+          mPostConstructed->mLightsB.push_back_unsafe(CWorldLight(stream));
+          mPostConstructed->mGfxLightsB.push_back_unsafe(
+              mPostConstructed->mLightsB[i].GetAsCGraphicsLight());
+        }
+      }
+    }
+    const CPostConstructed* post = mPostConstructed.get();
+    if (post->mLightsB.size() == 0) {
+      mPostConstructed->mLightsB = mPostConstructed->mLightsA;
+      mPostConstructed->mGfxLightsB = mPostConstructed->mGfxLightsA;
+    }
+  }
+
+  ++section;
+  {
+    const int size = section->second;
+    if (size > 64) {
+      const char* const buffer = section->first.get();
+      CMemoryInStream stream(buffer, size);
+      if (stream.ReadInt32() == 'VISI') {
+        int pvsVersion = stream.ReadInt32();
+        mPostConstructed->mPvsVersion = pvsVersion;
+        if (mPostConstructed->mPvsVersion == 2) {
+          mPostConstructed->mPvsHasActors = stream.ReadBool();
+          mPostConstructed->mPvsHasLights = stream.ReadBool();
+          mPostConstructed->mPvs = CPVSAreaSet::MakeAreaSet(buffer + stream.GetReadPosition(),
+                                                            size - stream.GetReadPosition())
+                                       .release();
+        }
+      }
+    }
+  }
+  ++section;
+  {
+    CMemoryInStream stream(section->first.get(), section->second);
+    CAssetId pathId = stream.ReadInt32();
+    if (pathId != kInvalidAssetId) {
+      mPostConstructed->mPathToken =
+          TLockedToken< CPFArea >(gpSimplePool->GetObj(SObjectTag('PATH', pathId)));
+      mPostConstructed->mPathArea = **mPostConstructed->mPathToken;
+      mPostConstructed->mPathArea->SetTransform(mTransform);
+    }
+  }
+  ++section;
+  {
+    CMemoryInStream stream(section->first.get(), section->second);
+    CAssetId portalId = stream.ReadInt32();
+    if (portalId != kInvalidAssetId) {
+      mPostConstructed->mPortalArea = rs_new CPortalArea(
+          TLockedToken< CPortalAreaData >(gpSimplePool->GetObj(SObjectTag('PTLA', portalId))));
+    }
+  }
+  ++section;
+  {
+    CMemoryInStream stream(section->first.get(), section->second);
+    CAssetId mapId = stream.ReadInt32();
+    if (mapId != kInvalidAssetId) {
+      mPostConstructed->mStaticGeometryMap = rs_new CStaticGeometryMap(
+          TLockedToken< CStaticGeometryMapData >(gpSimplePool->GetObj(SObjectTag('EGMC', mapId))));
+    }
+  }
+
+  int firstAram = firstGeometry;
+  for (; firstAram < mPostConstructed->mMreaSectionBuffers.size(); ++firstAram) {
+    if (mPostConstructed->mMreaSectionBuffers[firstAram].first.owner()) {
+      break;
+    }
+  }
+  int lastAram = geometryEnd;
+  for (; firstAram < lastAram; --lastAram) {
+    if (mPostConstructed->mMreaSectionBuffers[lastAram].first.owner()) {
+      break;
+    }
+  }
+  if (firstAram < lastAram) {
+    mPostConstructed->mFirstAramSection = firstAram;
+    int bufferCount = 0;
+    for (int i = firstAram; i < lastAram; ++i) {
+      if (mPostConstructed->mMreaSectionBuffers[i].first.owner()) {
+        ++bufferCount;
+      }
+    }
+    mPostConstructed->mAramTokens.reserve(bufferCount);
+    for (int part = firstAram; part < lastAram;) {
+      int start = part;
+      int size = mPostConstructed->mMreaSectionBuffers[part++].second;
+      for (; part < lastAram && !mPostConstructed->mMreaSectionBuffers[part].first.owner();
+           ++part) {
+        size += mPostConstructed->mMreaSectionBuffers[part].second;
+      }
+      mPostConstructed->mAramTokens.push_back_unsafe(rstl::pair< CARAMToken, int >(
+          CARAMToken(mPostConstructed->mMreaSectionBuffers[start].first.release(), size, 1),
+          part - start));
+      if (GetOcclusionState() == kOS_Occluded) {
+        CARAMToken& token = mPostConstructed->mAramTokens.back().first;
+        token.LoadToARAM();
+        if (token.GetStatus() != CARAMToken::kS_One) {
+          mPostConstructed->mAramBytes += size;
+        }
+      }
+    }
+    mPostConstructed->mModelsInMram = GetOcclusionState() != kOS_Occluded;
+  }
+
+  mPostConstructed->mAreaObjectList = rs_new CAreaObjectList(mSelfIdx);
+  mPostConstructed->xfc_ = rs_new CAreaObjectList(mSelfIdx);
+  mPostConstructed->mAreaFog = rs_new CAreaFog;
+  fn_80054F74();
 }
 
 void CGameArea::FinishDependencyLoading(CStateManager& mgr) {

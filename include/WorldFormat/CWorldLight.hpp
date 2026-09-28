@@ -3,6 +3,7 @@
 
 #include "Kyoto/Graphics/CLight.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/construct.hpp"
 
 class CInputStream;
 class CWorldLight {
@@ -35,5 +36,9 @@ private:
   uint x44_;
 };
 CHECK_SIZEOF(CWorldLight, 0x48)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CWorldLight)
+}
 
 #endif // _CWORLDLIGHT
