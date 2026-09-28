@@ -5,6 +5,7 @@
 class CGuiWidgetIdDB {
 public:
   CGuiWidgetIdDB();
+  short AddWidget(const rstl::string& name);
   short FindWidgetID(const rstl::string& name) const;
 
 private:

@@ -9,6 +9,7 @@ class CFinalInput;
 class CGuiFrame;
 class CGuiWidgetDrawParms;
 class CInputStream;
+class CSimplePool;
 
 enum ETraversalMode { kTM_ChildrenAndSiblings = 0, kTM_Children = 1, kTM_Single = 2 };
 
@@ -33,6 +34,10 @@ public:
 
   class CGuiWidgetParms {
   public:
+    CGuiWidgetParms(CGuiFrame* frame, short selfId, short parentId, const CColor& color,
+                    EGuiModelDrawFlags drawFlags, bool cullFaces, bool defaultVisible,
+                    bool defaultActive, bool depthTest, bool depthWrite, bool depthGreater);
+
     CGuiFrame* mFrame;
     short mSelfId;
     short mParentId;
@@ -47,24 +52,29 @@ public:
   };
 
   explicit CGuiWidget(const CGuiWidgetParms& parms);
+  static CGuiWidget* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
+  // Guessed name: the legacy GRUP factory now constructs an ordinary widget.
+  static CGuiWidget* CreateGroup(CGuiFrame* frame, CInputStream& in, CSimplePool* pool,
+                                 uint version);
   static CGuiWidgetParms ReadWidgetHeader(CGuiFrame* frame, CInputStream& in);
-  void ParseBaseInfo(CGuiFrame* frame, CInputStream& in, const CGuiWidgetParms& parms, uint version);
+  void ParseBaseInfo(CGuiFrame* frame, CInputStream& in, const CGuiWidgetParms& parms,
+                     uint version);
 
   // CGuiObject
   ~CGuiWidget() override;
 
-  virtual FourCC GetWidgetTypeID() const;
-  virtual EWidgetUsageFlags GetWidgetUsageFlags() const; // Guessed name
-  virtual bool AddWorkerWidget(CGuiWidget* worker);
-  virtual bool GetIsActive() const;
-  virtual bool GetIsVisible() const;
+  virtual FourCC GetWidgetTypeID() const { return 'BWIG'; }
+  virtual EWidgetUsageFlags GetWidgetUsageFlags() const { return kWUF_None; } // Guessed name
+  virtual bool AddWorkerWidget(CGuiWidget* worker) { return false; }
+  virtual bool GetIsActive() const { return mIsActive; }
+  virtual bool GetIsVisible() const { return mIsVisible; }
   virtual void Update(float dt);
   virtual void Draw(const CGuiWidgetDrawParms& parms) const;
   virtual void ProcessUserInput(const CFinalInput& input);
   virtual CGuiWidget* GetWorkerWidget(int workerId);
   virtual void OnVisible();
   virtual void OnActivate();
-  virtual void Initialize();
+  virtual void Initialize() {}
 
   void SetIsVisible(bool visible);
   void SetIsActive(bool active);
@@ -74,6 +84,8 @@ public:
   void DispatchInitialize();
   void ReapplyXform();
   void SetIdleXform(const CTransform4f& xf, bool reapply = true);
+  CVector3f GetIdlePosition() const;
+  void AddChildWidget(CGuiWidget* widget, bool makeWorldLocal, bool atEnd);
   CGuiWidget* FindWidget(short id);
 
   short GetWidgetID() const { return mSelfId; }
@@ -88,6 +100,8 @@ public:
   void SetDepthWrite(bool enabled) { mDepthWrite = enabled; }
 
 protected:
+  void ReadUnusedThing(CInputStream& in);
+
   short mSelfId;
   short mParentId;
   CTransform4f mTransform;
