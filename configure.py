@@ -471,6 +471,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSound.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlatform.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptActor.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDoor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEffect.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTrigger.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptWater.cpp"),

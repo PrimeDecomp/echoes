@@ -14,6 +14,7 @@
 class CAreaRenderOctTree;
 class CMetroidModelInstance;
 class CModel;
+struct SModelRenderData;
 class CModelFlags;
 class CParticleGen;
 class CPVSVisSet;
@@ -148,8 +149,8 @@ public:
                                      const CColor& color, float amount) = 0;
   virtual void DrawModelFlat(const CModel& model, const CModelFlags& flags, bool unsortedOnly) = 0;
   // Guessed name
-  virtual void DrawModelProjectedShadow(const CModel& model, const CTexture& texture,
-                                        const CVector3f& direction, const CColor& color,
+  virtual void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
+                                        const CVector3f& origin, const CColor& color,
                                         float scale) = 0;
   // Guessed name
   virtual void DrawModelNoise(const CModel& model, const CColor& color, bool additive) = 0;

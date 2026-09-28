@@ -7,6 +7,9 @@
 class CScriptDock : public CPhysicsActor {
 public:
   int GetDockId() const { return mDock; }
+  TAreaId GetAreaId() const { return mArea; }
+  int GetDockReference(const CStateManager& mgr) const;
+  TUniqueId GetConnectedScriptDockId(const CStateManager& mgr) const;
   bool IsVirtual() const { return mIsVirtual; }
   bool GetLoadConnected() const { return mLoadConnected; }
   void SetLoadConnected(bool load) { mLoadConnected = load; }
