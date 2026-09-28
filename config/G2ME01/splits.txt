@@ -505,6 +505,15 @@ MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp:
 	.data       start:0x803B5430 end:0x803B5450
 	.sdata2     start:0x8041C460 end:0x8041C468
 
+MetroidPrime/CRagDoll.cpp:
+	.text       start:0x8015DDE8 end:0x80160C20
+	.ctors      start:0x803A553C end:0x803A5540
+	.data       start:0x803B5450 end:0x803B5468
+	.bss        start:0x804109B0 end:0x80410B40 align:4 common
+	.sdata      start:0x80418420 end:0x80418448
+	.sbss       start:0x804191D0 end:0x804191E0
+	.sdata2     start:0x8041C468 end:0x8041C4F0
+
 MetroidPrime/Player/CGameOptions.cpp:
 	.text       start:0x80160C20 end:0x80161D04
 

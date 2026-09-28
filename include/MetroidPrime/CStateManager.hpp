@@ -137,6 +137,8 @@ public:
   void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                      const CVector3f& position, const CVector3f& direction, float length,
                      const CMaterialFilter& filter, const CActor* ignoreActor) const;
+  void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CAABox& bounds,
+                     const CMaterialFilter& filter, const CActor* ignoreActor) const;
 
   TEditorId GetEditorIdForUniqueId(TUniqueId) const;
   TUniqueId GetIdForScript(TEditorId eid) const;

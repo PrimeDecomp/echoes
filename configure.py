@@ -405,6 +405,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CStateManager.cpp"),
             Object(NonMatching, "MetroidPrime/CVisorFlare.cpp"),
             Object(NonMatching, "MetroidPrime/CWorldTransManager.cpp"),
+            Object(NonMatching, "MetroidPrime/CRagDoll.cpp"),
             Object(NonMatching, "MetroidPrime/CSortedLists.cpp"),
             Object(NonMatching, "MetroidPrime/CProjectedShadow.cpp"),
             Object(NonMatching, "MetroidPrime/CSlideShow.cpp"),
