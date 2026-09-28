@@ -2,8 +2,8 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
-CSoundPOINode::CSoundPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index,
-                             bool unique, float weight, int charIdx, int flags, int sfxId,
+CSoundPOINode::CSoundPOINode(uint nameHash, EPOIType type, const CCharAnimTime& time, int index,
+                             const bool unique, float weight, int charIdx, int flags, int sfxId,
                              float fallOff, float maxDist, const CSegId& segId, ushort pitchStart,
                              ushort pitchEnd, float pitchDuration)
 : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags)

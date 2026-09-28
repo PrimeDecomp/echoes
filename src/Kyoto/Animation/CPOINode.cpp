@@ -15,8 +15,9 @@ static uint ReadNameHash(ushort version, CInputStream& in) {
   return CPOINode::GetHashForString(name.data());
 }
 
-CPOINode::CPOINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
-                   float weight, int charIdx, int flags)
+CPOINode::CPOINode(const uint nameHash, const EPOIType type, const CCharAnimTime& time,
+                   const int index, const bool unique, const float weight, const int charIdx,
+                   const int flags)
 : mVersion(2)
 , mNameHash(nameHash)
 , mType(type)
