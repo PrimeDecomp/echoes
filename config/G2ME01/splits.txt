@@ -515,6 +515,12 @@ MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
 
+MetroidPrime/CWorldLayerState.cpp:
+	.text       start:0x80171DC4 end:0x801724CC
+	.ctors      start:0x803A5550 end:0x803A5554
+	.rodata     start:0x803A9A18 end:0x803A9A20
+	.bss        start:0x803DB430 end:0x803DB450
+
 MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.text       start:0x801727F8 end:0x8017645C
 	.rodata     start:0x803A9A20 end:0x803A9A30
