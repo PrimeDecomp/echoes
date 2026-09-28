@@ -130,6 +130,7 @@ public:
   // Despite the original name, this returns the minimum squared camera distance.
   float GetDistanceToCamera(CStateManager& mgr) const;
   void SetEchoEmitter(bool enabled, CEchoEmitter* emitter);
+  CEchoEmitter* EchoEmitter() { return mEchoEmitter.get(); }
   CEchoEmitter* AllocateEchoEmitter(bool enabled, const CAABox& bounds,
                                     const SEchoParameters& parameters);
   void SetValidTarget(int playerIndex, bool enabled);
