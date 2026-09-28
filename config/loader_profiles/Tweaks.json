@@ -1,6 +1,7 @@
 {
   "template_ref": "6dd2270c50fd326feaf2c94a2a0a080f367867f5",
   "sources": [
+    "TweaksArchive.inc",
     "Structs/SLdrTDamageInfo.cpp",
     "Structs/SLdrTWeaponDamage.cpp",
     "Structs/SLdrTBeamInfo.cpp",

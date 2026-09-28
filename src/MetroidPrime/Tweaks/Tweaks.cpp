@@ -82,29 +82,7 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   }
 }
 
-void REL_LoadTweaks(CInputStream& input) {
-  if ((uint)input.ReadInt32() == 0x4e54574b && input.ReadInt8() == 1) {
-    gpTweakContents = new CTweakContents();
-
-    for (int instanceCount = input.ReadInt32(); instanceCount != 0; --instanceCount) {
-      uint instanceType = (uint)input.ReadInt32();
-      u16 instanceSize = input.ReadUint16();
-      input.ReadInt32(); // skip instance id
-      instanceSize -= 6;
-
-      for (int connectionCount = input.ReadInt32(); connectionCount != 0; connectionCount--) {
-        instanceSize -= 0xc;
-        input.ReadInt32();
-        input.ReadInt32();
-        input.ReadInt32();
-      }
-
-      // Record current position of input
-      DecodeAnyTweak(instanceType, input);
-      // Read instanceSize - (current position - old position)
-    }
-  }
-}
+#include "../ScriptLoader/TweaksArchive.inc"
 
 void REL_CreateTweakGlobals() {
   gpTweakAutoMapper = rs_new CTweakAutoMapper(gpTweakContents->TweakAutoMapper);
