@@ -18,7 +18,7 @@ public:
       short mLoadOther : 1;
       short mLoadOtherBlocked : 1; // Guessed name
 
-      SDockReference(TAreaId area, short dock)
+      SDockReference(const TAreaId& area, short dock)
       : mArea(area), mDock(dock), mLoadOther(false), mLoadOtherBlocked(false) {}
     };
 

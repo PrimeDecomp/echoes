@@ -790,7 +790,8 @@ bool CGameArea::StartStreamIn(CStateManager& mgr) {
   if (mLoadPaused) {
     return false;
   }
-  return StartStreamingMainArea(mgr);
+  const bool loaded = StartStreamingMainArea(mgr);
+  return loaded;
 }
 
 void CGameArea::Validate(CStateManager& mgr) {
@@ -1524,7 +1525,7 @@ IGameArea::Dock::Dock(CInputStream& in, const CTransform4f& xf)
   for (int i = 0; i < count; ++i) {
     const TAreaId area(in.ReadInt32());
     const short dock = in.ReadInt32();
-    mDockReferences.push_back(SDockReference(area, dock));
+    mDockReferences.push_back_unsafe(SDockReference(area, dock));
   }
   const int vertexCount = in.ReadInt32();
   for (int i = 0; i < vertexCount; ++i) {
@@ -1627,26 +1628,43 @@ CColor CGameArea::CAreaFog::GetColor() const {
 }
 
 void CGameArea::CAreaFog::Update(float dt) {
-  if (mFogMode == kRFM_None || (mColorDelta <= 0.f && mRangeDelta == CVector2f(0.f, 0.f))) {
+  if (mFogMode == kRFM_None) {
     return;
   }
 
-  const float current[5] = {mColorCur.GetX(), mColorCur.GetY(), mColorCur.GetZ(), mRangeCur.GetX(),
-                            mRangeCur.GetY()};
-  const float target[5] = {mColorTarget.GetX(), mColorTarget.GetY(), mColorTarget.GetZ(),
-                           mRangeTarget.GetX(), mRangeTarget.GetY()};
-  const float step[5] = {mColorDelta * dt, mColorDelta * dt, mColorDelta * dt,
-                         dt * mRangeDelta.GetX(), dt * mRangeDelta.GetY()};
-  float result[5];
-  int finished = 0;
+  if (!(mColorDelta > 0.f) && mRangeDelta == CVector2f(0.f, 0.f)) {
+    return;
+  }
 
+  float current[5];
+  float target[5];
+  float result[5];
+  float step[5] = {0.f, 0.f, 0.f, 0.f, 0.f};
+  step[2] = step[1] = step[0] = mColorDelta * dt;
+  step[3] = dt * mRangeDelta.GetX();
+  step[4] = dt * mRangeDelta.GetY();
+  current[0] = mColorCur.GetX();
+  target[0] = mColorTarget.GetX();
+  current[1] = mColorCur.GetY();
+  target[1] = mColorTarget.GetY();
+  current[2] = mColorCur.GetZ();
+  target[2] = mColorTarget.GetZ();
+  current[3] = mRangeCur.GetX();
+  current[4] = mRangeCur.GetY();
+  target[3] = mRangeTarget.GetX();
+  target[4] = mRangeTarget.GetY();
+
+  int finished = 0;
   for (int i = 0; i < 5; ++i) {
-    const float delta = target[i] - current[i];
-    if (step[i] < CMath::AbsF(delta)) {
-      result[i] = current[i] + CMath::FastFSel(delta, step[i], -step[i]);
-    } else {
-      result[i] = target[i];
+    const float cur = current[i];
+    const float tar = target[i];
+    const float delta = tar - cur;
+    const float amount = step[i];
+    if (CMath::AbsF(delta) <= amount) {
+      result[i] = tar;
       ++finished;
+    } else {
+      result[i] = cur + CMath::FastFSel(delta, amount, -amount);
     }
   }
 
@@ -1803,14 +1821,14 @@ int CGameArea::GetLayerScriptSize(const TLayerId layer) const {
 }
 
 void CGameArea::SetLoadPauseState(bool paused) {
-  bool loading = false;
+  bool ready = true;
   for (int i = 0; i < mLayerPhases.size(); ++i) {
     if (mLayerPhases[i] == kLP_Loading) {
-      loading = true;
+      ready = false;
       break;
     }
   }
-  if (loading) {
+  if (!ready) {
     mLoadPaused = paused;
     if (paused) {
       for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
