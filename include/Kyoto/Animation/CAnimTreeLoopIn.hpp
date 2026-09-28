@@ -34,7 +34,7 @@ public:
                   const rstl::ncrc_ptr< CAnimTreeNode >& c, const CAnimSysContext& animCtx,
                   const rstl::string& name);
   CAnimTreeLoopIn(const rstl::ncrc_ptr< CAnimTreeNode >& a,
-                  const rstl::ncrc_ptr< CAnimTreeNode >& b, bool didLoopIn,
+                  const rstl::ncrc_ptr< CAnimTreeNode >& b, const bool didLoopIn,
                   const CAnimSysContext& animCtx, const rstl::string& name,
                   const CSequenceFundamentals& fundamentals, const CCharAnimTime& time);
 

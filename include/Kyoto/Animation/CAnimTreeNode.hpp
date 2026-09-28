@@ -11,7 +11,7 @@ public:
   explicit CAnimTreeNode(const rstl::string& name);
 
   // IAnimReader
-  ~CAnimTreeNode() override {}
+  ~CAnimTreeNode() override;
   bool IsCAnimTreeNode() const override;
 
   virtual uint Depth() const = 0;

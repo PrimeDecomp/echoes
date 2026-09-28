@@ -10,6 +10,7 @@ public:
                 float weight, int charIdx, int flags, int sfxId, float fallOff, float maxDist,
                 const CSegId& segId, ushort pitchStart, ushort pitchEnd, float pitchDuration);
   CSoundPOINode(CInputStream& in);
+  ~CSoundPOINode() override;
 
   uint GetSoundId() const { return mSfxId; }
   float GetFallOff() const { return mFalloff; }
