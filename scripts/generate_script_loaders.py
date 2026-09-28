@@ -28,11 +28,21 @@ import zipfile
 from binascii import crc32
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
+from itertools import groupby
 from pathlib import Path, PurePosixPath
 from textwrap import dedent
 from typing import Protocol
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
+
+# The XML labels these as PAL additions. G2ME01's native record has nine icons;
+# retain the existing layout for other builds until their binaries are checked.
+G2ME01_ABSENT_PROPERTIES: dict[str, frozenset[int]] = {
+    "SLdrTweakPlayerRes_AutoMapperIcons": frozenset(
+        {0x5096BFA5, 0xF4E6E0EB, 0x65700CCC, 0xA0D73242, 0x5291EB5F}
+    ),
+}
+
 KEYWORDS: set[str] = {
     "alignas",
     "alignof",
@@ -299,6 +309,21 @@ class Field:
     matching_name: bool | None
     dependency: str | None = None
     item: Field | None = None
+    condition: str | None = None
+
+
+def conditional_lines(chunks: Sequence[tuple[str | None, list[str]]]) -> list[str]:
+    """Group adjacent fields under their shared build condition."""
+    result: list[str] = []
+    nonempty = (chunk for chunk in chunks if chunk[1])
+    for condition, group in groupby(nonempty, key=lambda chunk: chunk[0]):
+        if condition:
+            result.append("#if " + condition)
+        for _, lines in group:
+            result.extend(lines)
+        if condition:
+            result.append("#endif")
+    return result
 
 
 @dataclass
@@ -511,7 +536,10 @@ class Generator:
                 if member in seen_names:
                     raise TemplateError("C++ member collision in " + name)
                 seen_names.add(member)
-                struct.fields.append(self.make_field(child, member, name[4:]))
+                prop = self.make_field(child, member, name[4:])
+                if pid in G2ME01_ABSENT_PROPERTIES.get(name, frozenset()):
+                    prop = replace(prop, condition="!defined(VERSION_G2ME01)")
+                struct.fields.append(prop)
         self.loading.remove(name)
         self.structs[name] = struct
 
@@ -722,6 +750,7 @@ class Generator:
                 "  ~" + member_name + "();",
                 "",
             ]
+            declarations: list[tuple[str | None, list[str]]] = []
             for prop in member.fields:
                 comment_entries = []
                 if not member.scalar and not member.atomic:
@@ -730,7 +759,13 @@ class Generator:
                     comment_entries.append(f"0x{property_id(prop.node):08x}")
 
                 comment = " // " + ", ".join(comment_entries) if comment_entries else ""
-                header.append("  " + prop.cpp + " " + prop.name + ";" + comment)
+                declarations.append(
+                    (
+                        prop.condition,
+                        ["  " + prop.cpp + " " + prop.name + ";" + comment],
+                    )
+                )
+            header += conditional_lines(declarations)
             header += [
                 "};",
                 "",
@@ -750,10 +785,31 @@ class Generator:
         source = [
             f'#include "{self._include_path_for(name)}"',
             "",
-            f"{name}::{name}()" + (" : " + initializers if initializers else "") + " {",
         ]
-        for prop in struct.fields:
-            source += ["  " + line for line in self.defaults(prop, prop.name)]
+        if any(prop.condition for prop in struct.fields):
+            source.append(f"{name}::{name}()")
+            source += conditional_lines(
+                [
+                    (prop.condition, [(": " if i == 0 else ", ") + prop.name + "()"])
+                    for i, prop in enumerate(struct.fields)
+                ]
+            )
+            source.append("{")
+        else:
+            source.append(
+                f"{name}::{name}()"
+                + (" : " + initializers if initializers else "")
+                + " {"
+            )
+        source += conditional_lines(
+            [
+                (
+                    prop.condition,
+                    ["  " + line for line in self.defaults(prop, prop.name)],
+                )
+                for prop in struct.fields
+            ]
+        )
         source += [
             "}",
             "",
@@ -774,11 +830,18 @@ class Generator:
         return "\n".join(source)
 
     def render_sequential_reader(self, struct: Struct, parameter: str) -> list[str]:
-        return [
-            "  " + line
-            for prop in struct.fields
-            for line in self.read_field(prop, parameter + "." + prop.name)
-        ]
+        return conditional_lines(
+            [
+                (
+                    prop.condition,
+                    [
+                        "  " + line
+                        for line in self.read_field(prop, parameter + "." + prop.name)
+                    ],
+                )
+                for prop in struct.fields
+            ]
+        )
 
     def render_tagged_reader(self, struct: Struct, parameter: str) -> list[str]:
         lines = [
@@ -788,15 +851,18 @@ class Generator:
             "    const u16 propertySize = input.ReadUint16();",
             "    switch (propertyId) {",
         ]
+        cases: list[tuple[str | None, list[str]]] = []
         for prop in struct.fields:
-            lines.append(f"    case 0x{property_id(prop.node):08x}: {{")
-            lines.extend(
+            case = [f"    case 0x{property_id(prop.node):08x}: {{"]
+            case.extend(
                 "      " + line
                 for line in self.read_field(
                     prop, parameter + "." + prop.name, "propertySize"
                 )
             )
-            lines.extend(["      break;", "    }"])
+            case.extend(["      break;", "    }"])
+            cases.append((prop.condition, case))
+        lines.extend(conditional_lines(cases))
         lines.extend(
             [
                 "    default:",
