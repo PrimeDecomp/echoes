@@ -218,21 +218,14 @@ SLdrSpline::SLdrSpline(CInputStream& in, int count)
 , m_clampMode(in.ReadInt8())
 , m_minAmplitudeTime(in.ReadFloat())
 , m_maxAmplitudeTime(in.ReadFloat())
-
-, m_cachedKnotIndex(0xFFFFFFFF)
-, mCachedSegmentIndex(0xFFFFFFFF)
-, m_dirty(false)
-, m_cachedMinTime(0.0f) {}
+, mCache() {}
 
 SLdrSpline::SLdrSpline()
 : m_preInfinity(0)
 , m_postInfinity(0)
 , m_knots()
 , m_clampMode(0)
-, m_cachedKnotIndex(0xFFFFFFFF)
-, mCachedSegmentIndex(0xFFFFFFFF)
-, m_dirty(false)
-, m_cachedMinTime(0.0f) {}
+, mCache() {}
 
 SLdrSpline::SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
                        int postInfinity, float minAmplitudeTime, float maxAmplitudeTime)
@@ -242,11 +235,7 @@ SLdrSpline::SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMo
 , m_clampMode(clampMode)
 , m_minAmplitudeTime(minAmplitudeTime)
 , m_maxAmplitudeTime(maxAmplitudeTime)
-
-, m_cachedKnotIndex(0xFFFFFFFF)
-, mCachedSegmentIndex(0xFFFFFFFF)
-, m_dirty(false)
-, m_cachedMinTime(0.0f) {
+, mCache() {
   rstl::sort(m_knots.begin(), m_knots.end(), rstl::less< CMayaSplineKnot >());
 }
 
