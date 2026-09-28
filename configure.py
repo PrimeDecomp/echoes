@@ -477,7 +477,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindSearch.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindRegion.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindArea.cpp"),
-            Object(NonMatching, "MetroidPrime/PathFinding/CPathFindSpline.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/PathFinding/CPathFindSpline.cpp"),
             Object(NonMatching, "MetroidPrime/CHealthInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CBoneTracking.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGameOptions.cpp"),

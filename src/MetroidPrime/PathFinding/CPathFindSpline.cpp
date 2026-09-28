@@ -4,7 +4,7 @@
 
 #include "rstl/math.hpp"
 
-bool CPathFindSearch::SegmentOver(const CVector3f& pos) const {
+const bool CPathFindSearch::SegmentOver(const CVector3f& pos) const {
   bool over = true;
   const int count = mWaypoints.size();
   if (count > 1 && mCurWaypoint < count - 1) {

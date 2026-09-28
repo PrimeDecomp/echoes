@@ -47,7 +47,7 @@ public:
   EResult GetResult() const { return mResult; }
 
   void Advance() { ++mCurWaypoint; }
-  bool SegmentOver(const CVector3f& pos) const;
+  const bool SegmentOver(const CVector3f& pos) const;
   void GetSplinePointWithLookahead(CVector3f& point, const CVector3f& pos, float lookahead) const;
   int GetCurrentWaypoint() const { return mCurWaypoint; }
   bool IsOver() const { return mCurWaypoint >= mWaypoints.size() - 1; }
