@@ -198,7 +198,7 @@ MetroidPrime/Enemies/CAi.cpp:
 
 MetroidPrime/TypesMatch.cpp:
 	.text       start:0x800972BC end:0x8009D644
-	.data       start:0x803B2F50 end:0x803B2FCC
+	.data       start:0x803B2ED4 end:0x803B2FCC
 
 MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.text       start:0x8009DCE8 end:0x8009F4E4
@@ -240,6 +240,10 @@ MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.text       start:0x800B389C end:0x800B5F14
 	.ctors      start:0x803A54E4 end:0x803A54E8
 	.data       start:0x803B3418 end:0x803B3498
+
+MetroidPrime/ScriptObjects/CScriptCameraHint.cpp:
+	.text       start:0x800B8098 end:0x800B88D4
+	.data       start:0x803B3530 end:0x803B35B8
 
 MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp:
 	.text       start:0x800B9214 end:0x800BA234
@@ -619,6 +623,9 @@ MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 
 MetroidPrime/Player/CPlayerVisor.cpp:
 	.text       start:0x8022AF0C end:0x8022C4C4
+
+MetroidPrime/ScriptObjects/CScriptHint.cpp:
+	.text       start:0x8022D1EC end:0x8022D548
 
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4

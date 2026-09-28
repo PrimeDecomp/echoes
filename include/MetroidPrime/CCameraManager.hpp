@@ -31,6 +31,8 @@ class CCameraManager {
 public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
+  CHintManager* HintManager() { return mCameraHintManager; }
+
   float GetFirstPersonFOV() const;
   void SetFirstPersonFOV(float fov);
   static float GetDefaultAspectRatio();

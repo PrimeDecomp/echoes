@@ -3,6 +3,8 @@
 
 class CEntity;
 
+CEntity* TryCast(CEntity* entity, int typeId);
+
 template < class T >
 T* TCastToPtr(CEntity* p);
 

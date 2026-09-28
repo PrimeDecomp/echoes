@@ -27,8 +27,10 @@ enum EEntityType {
   kET_GameLight = 26,
   kET_HUDBillboardEffect = 28,
   kET_Player = 32,
+  kET_ScriptHint = 33, // Guessed name.
   kET_ScriptActor = 34,
   kET_ScriptActorKeyframe = 35,
+  kET_ScriptCameraHint = 40,
   kET_ScriptCameraShaker = 41,
   kET_ScriptCameraWaypoint = 43,
   kET_ScriptCamera = 44,
@@ -47,6 +49,7 @@ enum EEntityType {
   kET_ScriptSound = 77,
   kET_ScriptSpawnPoint = 79,
   kET_ScriptSpecialFunction = 80,
+  kET_ScriptSpindleCamera = 83,
   kET_ScriptStreamedMusic = 84,
   kET_ScriptTeamAi = 88,
   kET_ScriptTrigger = 92,
@@ -75,6 +78,8 @@ enum EScriptObjectState {
   kSS_ScanDone = 0x53434e44,
   kSS_Patrol = 0x5054524c,
   kSS_Play = 0x504c4159,
+  kSS_Connect = 0x434f4e4e,
+  kSS_CameraTarget = 0x43544754,
   kSS_UnFrozen = 0x5546525a,
   kSS_InvalidState = 0xffffffff,
 };
@@ -90,6 +95,7 @@ enum EScriptObjectMessage {
   kSM_SetToZero = 0x5a45524f,
   kSM_Reset = 0x52534554,
   kSM_Follow = 0x464f4c57,
+  kSM_Attach = 0x41544348,
 
   kSM_Increment = 0x494e4352,
   kSM_Decrement = 0x44454352,
