@@ -24,14 +24,14 @@ CScriptSpawnPoint::~CScriptSpawnPoint() {}
 
 const CTransform4f& CScriptSpawnPoint::GetTransform() const { return m_xf; }
 
-int CScriptSpawnPoint::GetItemAmount(const CPlayerState::EItemType& type) const {
+int CScriptSpawnPoint::GetItemAmount(CPlayerState::EItemType type) const {
   if (CPlayerState::kIT_Max <= type || type < 0) {
     return m_amountForItem.front();
   }
   return m_amountForItem[type];
 }
 
-int CScriptSpawnPoint::GetItemCapacity(const CPlayerState::EItemType& type) const {
+int CScriptSpawnPoint::GetItemCapacity(CPlayerState::EItemType type) const {
   if (CPlayerState::kIT_Max <= type || type < 0) {
     return m_amountForItem.front();
   }
@@ -41,6 +41,10 @@ int CScriptSpawnPoint::GetItemCapacity(const CPlayerState::EItemType& type) cons
     return capacity;
   }
   return amount;
+}
+
+void CScriptSpawnPoint::SendSpawnMessage(CStateManager& mgr, CEntity& player) {
+  SendScriptMsgs(kSS_Zero, mgr, player.GetUniqueId(), kSM_None);
 }
 
 void CScriptSpawnPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {

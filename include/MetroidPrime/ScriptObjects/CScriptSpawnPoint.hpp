@@ -26,8 +26,11 @@ public:
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
 
   const CTransform4f& GetTransform() const;
-  int GetItemAmount(const CPlayerState::EItemType&) const;
-  int GetItemCapacity(const CPlayerState::EItemType&) const;
+  int GetItemAmount(CPlayerState::EItemType) const;
+  int GetItemCapacity(CPlayerState::EItemType) const;
+  bool IsFirstSpawn() const { return m_firstSpawn; }
+  bool IsMorphed() const { return m_morphed; }
+  void SendSpawnMessage(CStateManager& mgr, CEntity& player); // Guessed name
 };
 
 #endif // _CSCRIPTSPAWNPOINT

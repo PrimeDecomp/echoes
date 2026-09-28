@@ -4,30 +4,44 @@
 #include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "rstl/vector.hpp"
 
-// Guessed name. Partial interface required by CGameState's game-start routine.
+// Guessed name
 class CGMCoin : public CGMMultiplayer {
 public:
   // Guessed name
   struct SPlayerState {
-    bool x0_24_ : 1;
-    bool x0_25_ : 1;
-    float x4_;
-    int x8_;
-    int xc_;
+    SPlayerState()
+    : mDead(false), mCanRespawn(true), mRespawnTimer(0.f), mScore(0), mPlayerSelection(-1) {}
+    bool mDead : 1;
+    bool mCanRespawn : 1;
+    float mRespawnTimer;
+    int mScore;
+    int mPlayerSelection;
   };
 
   CGMCoin(int playerCount, int coinLimit, float timeLimit, bool flag);
 
   // CGameMode
   ~CGMCoin() override;
-  // TODO: recover the remaining virtual signatures before emitting this class's vtable.
+  void Update(float dt, CStateManager& mgr) override;
+  void RespawnPlayer(CStateManager& mgr, uint playerIndex) override;
+  void OnPlayerSpawned(CStateManager& mgr, uint playerIndex) override;
+  uint GetNumPlayers() const override;
+  bool IsGameOver() override;
+  void EndGame(int resultIndex, CStateManager& mgr) override;
+  int GetGameModeType() override;
+  void GiveScore(CStateManager& mgr, uint playerIndex, uint amount) override;
+  int GetItemAmount(const CStateManager& mgr, uint playerIndex) const override;
+  bool IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const override;
+
+  bool IsNearTimeLimit() const;
+  int GetCoinLimit() const;
 
 private:
   bool x38_;
   int mPlayerCount;
   int mCoinLimit;
   rstl::vector< SPlayerState > mPlayers;
-  int x54_;
+  bool mCoinLimitReached;
 };
 
 CHECK_SIZEOF(CGMCoin, 0x58)
