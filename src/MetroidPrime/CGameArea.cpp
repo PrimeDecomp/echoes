@@ -6,6 +6,7 @@
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CLZOSupport.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
@@ -14,6 +15,10 @@
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
+
+#include <dolphin/os/OSCache.h>
+#include <stdlib.h>
+#include <string.h>
 
 // The complex loading paths below remain scaffolds. This TU is NonMatching.
 
@@ -222,8 +227,14 @@ bool CGameArea::Invalidate(CStateManager* mgr) {
 }
 
 char* CGameArea::AllocNewAreaData(int offset, int size) {
-  // TODO: Allocate a section buffer and queue its asynchronous MREA read.
-  return nullptr;
+  char* buffer = static_cast< char* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen));
+  rstl::pair< rstl::auto_ptr< char >, int > section(buffer, size);
+  mPostConstructed->mMreaSectionBuffers.push_back_unsafe(section);
+
+  const SObjectTag tag('MREA', mAreaAssetId);
+  mPostConstructed->mLoadTransactions.push_back(
+      gpResourceFactory->GetResLoader().LoadResourcePartAsync(tag, offset, size, buffer));
+  return buffer;
 }
 
 uint CGameArea::CalculateDependencyListByteCount() const {
@@ -289,7 +300,36 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
 }
 
 void CGameArea::DecompressAreaData() {
-  // TODO: Process completed requests and decompress at most the target frame budget.
+  if (mPostConstructed->mDecompressionRequests.empty()) {
+    return;
+  }
+
+  uint decompressed = 0;
+  while (!mPostConstructed->mDecompressionRequests.empty() && decompressed + 0x4000 <= 0x18000) {
+    SDecompressionRequest& request = mPostConstructed->mDecompressionRequests.front();
+    if (request.mRequest) {
+      break;
+    }
+
+    const short chunkSize = *reinterpret_cast< const short* >(request.mInput);
+    uint outputSize = request.mRemainingSize;
+    if (chunkSize < 0) {
+      const int uncompressedSize = -chunkSize;
+      memcpy(request.mOutput, request.mInput + 2, uncompressedSize);
+      outputSize = uncompressedSize;
+    } else {
+      CLZOSupport::Inflate(request.mInput + 2, chunkSize, request.mOutput, outputSize);
+    }
+    DCFlushRange(request.mOutput, outputSize);
+
+    request.mOutput += outputSize;
+    request.mRemainingSize -= outputSize;
+    request.mInput += abs(chunkSize) + 2;
+    decompressed += outputSize;
+    if (request.mRemainingSize == 0) {
+      mPostConstructed->mDecompressionRequests.pop_front();
+    }
+  }
 }
 
 int CGameArea::SetChain(CGameArea* next, int chain) {
@@ -1118,9 +1158,43 @@ void CGameArea::ClearDecompressionRequest(CDvdRequest* request) {
   }
 }
 
-void CGameArea::ReadCompressedLayer(int offset, rstl::auto_ptr< CDvdRequest >& request,
+void CGameArea::ReadCompressedLayer(const int offset, rstl::auto_ptr< CDvdRequest >& request,
                                     rstl::auto_ptr< char >& buffer) {
-  // TODO: Locate the compressed block and queue the read/decompression request.
+  const uint* header =
+      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+  if (mPostConstructed->mMreaVersion < 24) {
+    return;
+  }
+
+  const SMreaCompressedBlock* blocks = reinterpret_cast< const SMreaCompressedBlock* >(
+      mPostConstructed->mMreaSectionBuffers[2].first.get());
+  uint blockOffset = 0;
+  for (int i = 0; i < 3; ++i) {
+    blockOffset += mPostConstructed->mMreaSectionBuffers[i].second;
+  }
+  const int blockCount = header[28];
+  for (int i = 0; i < blockCount; ++i) {
+    const SMreaCompressedBlock& block = blocks[i];
+    const int readSize =
+        ALIGN_UP(block.mCompressedSize ? block.mCompressedSize : block.mBufferSize, 32);
+    if (offset == blockOffset) {
+      const int bufferSize = block.mBufferSize;
+      buffer = rstl::auto_ptr< char >(
+          static_cast< char* >(CMemory::Alloc(bufferSize, IAllocator::kHI_RoundUpLen)));
+      const SObjectTag tag('MREA', mAreaAssetId);
+      request = gpResourceFactory->GetResLoader().LoadResourcePartAsync(
+          tag, offset, readSize, buffer.get() + block.mBufferSize - readSize);
+      if (block.mCompressedSize) {
+        mPostConstructed->mDecompressionRequests.push_back(
+            SDecompressionRequest(request.get(), reinterpret_cast< uchar* >(buffer.get()),
+                                  reinterpret_cast< const uchar* >(
+                                      buffer.get() + block.mBufferSize - block.mCompressedSize),
+                                  block.mCompressedSize, block.mDecompressedSize));
+      }
+      break;
+    }
+    blockOffset += readSize;
+  }
 }
 
 rstl::string CDummyGameArea::IGetInternalAreaName() const { return mInternalAreaName; }
