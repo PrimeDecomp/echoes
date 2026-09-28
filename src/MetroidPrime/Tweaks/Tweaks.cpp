@@ -2,6 +2,7 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "REL/REL_Setup.h"
 
+#include "Kyoto/Alloc/CMemory.hpp"
 #include "MetroidPrime/CMappableObject.hpp"
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
@@ -82,7 +83,38 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   }
 }
 
-#include "../ScriptLoader/TweaksArchive.inc"
+void REL_LoadTweaks(CInputStream& input) {
+  if (static_cast< uint >(input.ReadInt32()) == 0x4e54574b && input.ReadUint8() == 1) {
+    gpTweakContents = rs_new CTweakContents();
+    int instanceCount = input.ReadInt32();
+    while (instanceCount--) {
+      const uint instanceType = input.ReadInt32();
+      const u16 serializedSize = input.ReadUint16();
+      input.ReadInt32(); // Instance ID.
+      uint instanceSize = serializedSize - 6;
+
+      ushort connectionCount = input.ReadUint16();
+      while (connectionCount--) {
+        instanceSize -= 12;
+        input.ReadInt32();
+        input.ReadInt32();
+        input.ReadInt32();
+      }
+
+      const uint position = input.GetReadPosition();
+      input.ReadInt32(); // Root property ID and size precede its field count.
+      input.ReadUint16();
+      DecodeAnyTweak(instanceType, input);
+      instanceSize -= input.GetReadPosition() - position;
+      if (instanceSize != 0) {
+        uint remaining = instanceSize;
+        while (remaining--) {
+          input.ReadUint8();
+        }
+      }
+    }
+  }
+}
 
 void REL_CreateTweakGlobals() {
   gpTweakAutoMapper = rs_new CTweakAutoMapper(gpTweakContents->TweakAutoMapper);
