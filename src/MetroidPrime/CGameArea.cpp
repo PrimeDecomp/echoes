@@ -57,8 +57,8 @@ IGameArea::~IGameArea() {}
 
 int CGameArea::VerifyHeader() const {
   if (!mPostConstructed->mMreaSectionBuffers.empty()) {
-    const uint* header =
-        reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+    const int* header =
+        reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
     if (header[0] == 0xdeadbeef && header[1] >= 23 && header[1] <= 25) {
       return header[1];
     }
@@ -67,17 +67,32 @@ int CGameArea::VerifyHeader() const {
 }
 
 int CGameArea::GetSectionIndex(int section) const {
-  if (VerifyHeader() < 11) {
-    return -1;
-  }
-
-  const uint* header =
-      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
-  if (section >= 0 && section < 8) {
-    return header[17 + section] + 2;
-  }
-  if (section == 8 || section == 9) {
-    return header[26 + section - 8] + 2;
+  const int version = VerifyHeader();
+  const int* header =
+      reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+  if (version >= 11) {
+    switch (section) {
+    case 0:
+      return header[17] + 2;
+    case 1:
+      return header[18] + 2;
+    case 2:
+      return header[19] + 2;
+    case 3:
+      return header[20] + 2;
+    case 4:
+      return header[21] + 2;
+    case 5:
+      return header[22] + 2;
+    case 6:
+      return header[23] + 2;
+    case 7:
+      return header[24] + 2;
+    case 8:
+      return header[26] + 2;
+    case 9:
+      return header[27] + 2;
+    }
   }
   return -1;
 }
@@ -1251,21 +1266,23 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
 
   bool finished = true;
   int part = mPostConstructed->mFirstAramSection;
-  for (int i = 0; i < mPostConstructed->mAramTokens.size(); ++i) {
-    rstl::pair< CARAMToken, int >& entry = mPostConstructed->mAramTokens[i];
-    if (entry.first.GetStatus() != CARAMToken::kS_One) {
-      mPostConstructed->mAramBytes -= entry.first.GetSize();
+  for (rstl::vector< rstl::pair< CARAMToken, int > >::iterator it =
+           mPostConstructed->mAramTokens.begin();
+       it != mPostConstructed->mAramTokens.end(); ++it) {
+    if (it->first.GetStatus() != CARAMToken::kS_One) {
+      mPostConstructed->mAramBytes -= it->first.GetSize();
     }
-    if (mode == kAT_Async && !entry.first.LoadToMRAM()) {
+    if (mode == kAT_Async && !it->first.LoadToMRAM()) {
       finished = false;
     } else if (finished) {
-      char* buffer = static_cast< char* >(entry.first.GetMRAMSafe());
+      char* buffer = static_cast< char* >(it->first.GetMRAMSafe());
       int offset = 0;
-      for (int j = 0; j < entry.second; ++j) {
+      for (int j = 0; j < it->second; ++j) {
         rstl::auto_ptr< char > section(buffer + offset);
         section.release();
         offset += mPostConstructed->mMreaSectionBuffers[part].second;
-        mPostConstructed->mMreaSectionBuffers[part++].first = section;
+        mPostConstructed->mMreaSectionBuffers[part].first = section;
+        ++part;
       }
     }
   }
@@ -1276,11 +1293,14 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
 bool CGameArea::TransferTokensToARAM() {
   bool finished = true;
   int part = mPostConstructed->mFirstAramSection;
+  rstl::vector< rstl::pair< CARAMToken, int > >::iterator it =
+      mPostConstructed->mAramTokens.begin();
   rstl::auto_ptr< char > empty;
-  for (int i = 0; i < mPostConstructed->mAramTokens.size(); ++i) {
-    rstl::pair< CARAMToken, int >& entry = mPostConstructed->mAramTokens[i];
+  for (; it != mPostConstructed->mAramTokens.end(); ++it) {
+    rstl::pair< CARAMToken, int >& entry = *it;
     for (int j = 0; j < entry.second; ++j) {
-      mPostConstructed->mMreaSectionBuffers[part++].first = empty;
+      mPostConstructed->mMreaSectionBuffers[part].first = empty;
+      ++part;
     }
     const CARAMToken::EStatus oldStatus = entry.first.GetStatus();
     entry.first.LoadToARAM();
@@ -1306,10 +1326,11 @@ void CGameArea::AddStaticGeometry() {
       FillInStaticGeometry();
     }
     CPostConstructed& post = *mPostConstructed;
-    gpRender->AddStaticGeometry(
-        &post.mModelInstances,
-        post.mRenderOctTree.valid() ? post.mRenderOctTree.get_ptr() : nullptr, &post.mSurfaces,
-        &post.mAmbientLightIds, &post.mAmbientLightIndices, mSelfIdx.Value());
+    const int areaIdx = mSelfIdx.Value();
+    const CAreaRenderOctTree* tree =
+        post.mRenderOctTree.valid() ? post.mRenderOctTree.get_ptr() : nullptr;
+    gpRender->AddStaticGeometry(&post.mModelInstances, tree, &post.mSurfaces,
+                                &post.mAmbientLightIds, &post.mAmbientLightIndices, areaIdx);
   }
 }
 
@@ -1654,15 +1675,23 @@ void CGameArea::UpdateFog(float dt) {
 }
 
 bool CGameArea::DoesAreaNeedSkyNow() const {
-  if (mPostConstructed.get() && mPostConstructed->mAreaAttributes) {
+  if (!mPostConstructed.get()) {
+    return false;
+  }
+  if (mPostConstructed->mAreaAttributes) {
     return mPostConstructed->mAreaAttributes->GetNeedsSky();
   }
   return false;
 }
 
 int CGameArea::DoesAreaNeedEnvFx() const {
-  if (!mPostConstructed.get() || !mPostConstructed->mAreaAttributes ||
-      mPostConstructed->mOcclusionState != kOS_Visible) {
+  if (!mPostConstructed.get()) {
+    return 0;
+  }
+  if (!mPostConstructed->mAreaAttributes) {
+    return 0;
+  }
+  if (mPostConstructed->mOcclusionState != kOS_Visible) {
     return 0;
   }
   return mPostConstructed->mAreaAttributes->GetEnvFxType();
@@ -1744,7 +1773,10 @@ CAssetId CDummyGameArea::IGetAreaAssetId() const { return mAreaAssetId; }
 int CDummyGameArea::IGetAreaSaveId() const { return mAreaSaveId; }
 
 bool CGameArea::IsFinishedOccluding() const {
-  return mPostConstructed->mOcclusionState != kOS_Occluded || mPostConstructed->mFinishedOccluding;
+  if (mPostConstructed->mOcclusionState == kOS_Occluded) {
+    return mPostConstructed->mFinishedOccluding;
+  }
+  return true;
 }
 
 rstl::pair< const uchar*, int > CGameArea::GetLayerScriptBuffer(const TLayerId layer) const {
