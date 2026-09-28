@@ -50,6 +50,20 @@ public:
   CColor GetPlayerModelColor() const; // Guessed name
   const CColor& GetSurfaceVisitedSelectColor() const;
   const CColor& GetOutlineVisitedSelectColor() const;
+  const CColor& GetSurfaceUnvisitedSelectColor() const;
+  const CColor& GetOutlineUnvisitedSelectColor() const;
+  const CColor& GetSurfaceVisitedColor() const;
+  const CColor& GetSurfaceUnvisitedColor() const;
+  const CColor& GetOutlineVisitedColor() const;
+  const CColor& GetOutlineUnvisitedColor() const;
+  const CColor& GetSurfaceDarkVisitedSelectColor() const;
+  const CColor& GetOutlineDarkVisitedSelectColor() const;
+  const CColor& GetSurfaceDarkUnvisitedSelectColor() const;
+  const CColor& GetOutlineDarkUnvisitedSelectColor() const;
+  const CColor& GetSurfaceDarkVisitedColor() const;
+  const CColor& GetSurfaceDarkUnvisitedColor() const;
+  const CColor& GetOutlineDarkVisitedColor() const;
+  const CColor& GetOutlineDarkUnvisitedColor() const;
   CColor GetAreaFlashPulseColor() const;
   float GetMapSurfaceNormColorLinear() const;
   float GetMapSurfaceNormColorConstant() const;

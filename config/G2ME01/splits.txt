@@ -204,6 +204,12 @@ MetroidPrime/CAutoMapper.cpp:
 	.sbss       start:0x80419050 end:0x80419058
 	.sdata2     start:0x8041AC10 end:0x8041ACF0
 
+MetroidPrime/CMapWorld.cpp:
+	.text       start:0x80092918 end:0x80096C94
+	.data       start:0x803B29C0 end:0x803B29E0
+	.sdata      start:0x80417FC0 end:0x80417FC8
+	.sdata2     start:0x8041ACF0 end:0x8041AD38
+
 MetroidPrime/Enemies/CAi.cpp:
 	.text       start:0x80096C94 end:0x800972BC
 	.data       start:0x803B29E0 end:0x803B2A98
@@ -217,6 +223,9 @@ MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.text       start:0x8009DCE8 end:0x8009F4E4
 	.data       start:0x803B3190 end:0x803B3210
 	.sbss       start:0x80419058 end:0x8041905C
+
+MetroidPrime/CMemoryDrawEnum.cpp:
+	.sbss       start:0x80419078 end:0x8041907C
 
 MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
 	.text       start:0x800A0200 end:0x800A4850
