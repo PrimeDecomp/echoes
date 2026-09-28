@@ -165,4 +165,28 @@ struct SLdrTweakPlayerGun {
 
 void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input);
 
+// Duplicate native record; original type name unknown.
+struct SLdrTweakPlayerGun_Duplicate {
+  SLdrTweakPlayerGun_Duplicate();
+  ~SLdrTweakPlayerGun_Duplicate();
+
+  rstl::string instanceName; // 0x7fda1466
+  SLdrTweakPlayerGun_Misc misc; // 0xb82ed424
+  SLdrTweakPlayerGun_Holstering holstering; // 0x6b6bdc47
+  SLdrTweakPlayerGun_Position position; // 0x87882cb0
+  SLdrTweakPlayerGun_Arm_Position arm_Position; // 0x255007ad
+  SLdrTweakPlayerGun_Weapons weapons; // 0x83d758ab
+  SLdrTweakPlayerGun_Beam_Combo beam_Combo; // 0x888c8775
+  SLdrTweakPlayerGun_Beam_Misc beam_Misc; // 0xaaebb73e
+  SLdrTweakPlayerGun_RicochetDamage_Factor ricochetDamage_Factor; // 0x8da058fe
+  SLdrCameraShakerData recoil; // 0xffdb4bb7
+  SLdrCameraShakerData comboRecoil; // 0x937a35bd
+  SLdrCameraShakerData projectileRecoil; // 0x26196738
+  SLdrCameraShakerData flameThrower; // 0xf40808c9
+  SLdrCameraShakerData waveBuster; // 0x9a6d7a31
+  SLdrCameraShakerData projectileImpact; // 0x12f14c5a
+};
+
+void LoadTypedefSLdrTweakPlayerGun_Duplicate(SLdrTweakPlayerGun_Duplicate& data, CInputStream& input);
+
 #endif

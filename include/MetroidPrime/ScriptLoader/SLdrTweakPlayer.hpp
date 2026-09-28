@@ -348,4 +348,27 @@ struct SLdrTweakPlayer {
 
 void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input);
 
+// Duplicate native record; original type name unknown.
+struct SLdrTweakPlayer_Duplicate {
+  SLdrTweakPlayer_Duplicate();
+  ~SLdrTweakPlayer_Duplicate();
+
+  rstl::string instanceName; // 0x7fda1466
+  SLdrTweakPlayer_DarkWorld darkWorld; // 0xdfd08eba
+  SLdrTweakPlayer_GrappleBeam grappleBeam; // 0x45171a96
+  SLdrTweakPlayer_Motion motion; // 0x82cf4cf1
+  SLdrTweakPlayer_Misc misc; // 0x56a720c8
+  SLdrTweakPlayer_AimStuff aimStuff; // 0x42a17438
+  SLdrTweakPlayer_Orbit orbit; // 0x243ae038
+  SLdrTweakPlayer_ScanVisor scanVisor; // 0x20124c3d
+  SLdrTweakPlayer_Grapple grapple; // 0x30412440
+  SLdrTweakPlayer_Collision collision; // 0xc4d32ae5
+  SLdrTweakPlayer_FirstPersonCamera firstPersonCamera; // 0xd6155d4b
+  SLdrTweakPlayer_Shield shield; // 0xbcca767e
+  SLdrTweakPlayer_Frozen frozen; // 0x4d3b20b7
+  SLdrTweakPlayer_SuitDamageReduction suitDamageReduction; // 0xaeaff210
+};
+
+void LoadTypedefSLdrTweakPlayer_Duplicate(SLdrTweakPlayer_Duplicate& data, CInputStream& input);
+
 #endif

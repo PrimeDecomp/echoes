@@ -128,4 +128,16 @@ struct SLdrTweakPlayerControls {
 
 void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStream& input);
 
+// Duplicate native record; original type name unknown.
+struct SLdrTweakPlayerControls_Duplicate {
+  SLdrTweakPlayerControls_Duplicate();
+  ~SLdrTweakPlayerControls_Duplicate();
+
+  rstl::string instanceName; // 0x7fda1466
+  SLdrTweakPlayerControls_Controls controls; // 0x3c34dfed
+  SLdrTweakPlayerControls_Booleans booleans; // 0x168a79f1
+};
+
+void LoadTypedefSLdrTweakPlayerControls_Duplicate(SLdrTweakPlayerControls_Duplicate& data, CInputStream& input);
+
 #endif

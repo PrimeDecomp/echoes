@@ -660,6 +660,17 @@ class Generator:
             self.loaders.append(Loader(name, cpp, tuple(keys)))
         self._assign_header_owners()
 
+    def add_duplicates(self, duplicates: dict[str, str]) -> None:
+        """Reconstruct duplicate native root records without duplicating helpers."""
+        for name, original in duplicates.items():
+            if name in self.structs:
+                raise TemplateError("Duplicate record name collision: " + name)
+            struct = self.structs.get(original)
+            if struct is None or not struct.is_object or original in duplicates:
+                raise TemplateError("Duplicate source must be an object: " + original)
+            self.structs[name] = replace(struct, name=name)
+            self.header_owners[name] = self.header_owners[original]
+
     @staticmethod
     def _field_dependencies(prop: Field) -> set[str]:
         if prop.item is not None:
@@ -811,6 +822,8 @@ class Generator:
             ordered.append(member)
 
         visit(struct)
+        for member in members.values():
+            visit(member)
         headers = {"Kyoto/Streams/CInputStream.hpp"}
         own_header = self._include_path_for(name)
         for member in ordered:
@@ -821,8 +834,10 @@ class Generator:
         header += ['#include "' + h + '"' for h in sorted(headers)]
         for member in ordered:
             member_name = member.name
+            header.append("")
+            if member.is_object and member_name != name:
+                header.append("// Duplicate native record; original type name unknown.")
             header += [
-                "",
                 "struct " + member_name + " {",
                 "  " + member_name + "();",
                 "  ~" + member_name + "();",
@@ -1051,7 +1066,9 @@ class Generator:
         return files
 
 
-def read_profile(path: Path) -> tuple[str, list[str], Path | None, str | None]:
+def read_profile(
+    path: Path,
+) -> tuple[str, list[str], Path | None, str | None, dict[str, str]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise TemplateError("Profile must contain template_ref and sources")
@@ -1077,11 +1094,20 @@ def read_profile(path: Path) -> tuple[str, list[str], Path | None, str | None]:
         or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\.cpp", aggregate)
     ):
         raise TemplateError("Profile aggregate must be a C++ filename")
+    duplicates = data.get("duplicates", {})
+    if not isinstance(duplicates, dict) or any(
+        not isinstance(name, str)
+        or not re.fullmatch(r"SLdr[A-Za-z0-9_]+", name)
+        or not isinstance(original, str)
+        for name, original in duplicates.items()
+    ):
+        raise TemplateError("Profile duplicates must map SLdr names to object types")
     return (
         ref,
         sources,
         path.parent / defaults if defaults is not None else None,
         aggregate,
+        duplicates,
     )
 
 
@@ -1222,15 +1248,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.check and args.force:
         parser.error("--check cannot be combined with --force")
     try:
-        ref, sources, defaults, aggregate = (
+        ref, sources, defaults, aggregate, duplicates = (
             read_profile(args.profile)
             if args.profile
-            else (args.ref or "main", [], None, None)
+            else (args.ref or "main", [], None, None, {})
         )
         generator = Generator(Source(args.templates, ref, defaults))
         # Profiles select output, not input: shared-header ownership must agree with
         # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
+        generator.add_duplicates(duplicates)
         files = generator.render()
         if sources:
             files = profile_files(files, sources, aggregate)

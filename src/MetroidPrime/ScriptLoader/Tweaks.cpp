@@ -7977,6 +7977,36 @@ void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input
   }
 }
 
+SLdrTweakPlayerControls_Duplicate::SLdrTweakPlayerControls_Duplicate() : instanceName(), controls(), booleans() {
+}
+
+SLdrTweakPlayerControls_Duplicate::~SLdrTweakPlayerControls_Duplicate() {}
+
+void LoadTypedefSLdrTweakPlayerControls_Duplicate(SLdrTweakPlayerControls_Duplicate& data, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x7fda1466: {
+      data.instanceName = rstl::string(input);
+      break;
+    }
+    case 0x3c34dfed: {
+      LoadTypedefSLdrTweakPlayerControls_Controls(data.controls, input);
+      break;
+    }
+    case 0x168a79f1: {
+      LoadTypedefSLdrTweakPlayerControls_Booleans(data.booleans, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
 SLdrTweakParticle::SLdrTweakParticle() : instanceName(), pakFile(), primary_Weapon(), secondary_Weapon() {
 }
 
@@ -8219,6 +8249,80 @@ void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input) {
   }
 }
 
+SLdrTweakPlayer_Duplicate::SLdrTweakPlayer_Duplicate() : instanceName(), darkWorld(), grappleBeam(), motion(), misc(), aimStuff(), orbit(), scanVisor(), grapple(), collision(), firstPersonCamera(), shield(), frozen(), suitDamageReduction() {
+}
+
+SLdrTweakPlayer_Duplicate::~SLdrTweakPlayer_Duplicate() {}
+
+void LoadTypedefSLdrTweakPlayer_Duplicate(SLdrTweakPlayer_Duplicate& data, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x7fda1466: {
+      data.instanceName = rstl::string(input);
+      break;
+    }
+    case 0xdfd08eba: {
+      LoadTypedefSLdrTweakPlayer_DarkWorld(data.darkWorld, input);
+      break;
+    }
+    case 0x45171a96: {
+      LoadTypedefSLdrTweakPlayer_GrappleBeam(data.grappleBeam, input);
+      break;
+    }
+    case 0x82cf4cf1: {
+      LoadTypedefSLdrTweakPlayer_Motion(data.motion, input);
+      break;
+    }
+    case 0x56a720c8: {
+      LoadTypedefSLdrTweakPlayer_Misc(data.misc, input);
+      break;
+    }
+    case 0x42a17438: {
+      LoadTypedefSLdrTweakPlayer_AimStuff(data.aimStuff, input);
+      break;
+    }
+    case 0x243ae038: {
+      LoadTypedefSLdrTweakPlayer_Orbit(data.orbit, input);
+      break;
+    }
+    case 0x20124c3d: {
+      LoadTypedefSLdrTweakPlayer_ScanVisor(data.scanVisor, input);
+      break;
+    }
+    case 0x30412440: {
+      LoadTypedefSLdrTweakPlayer_Grapple(data.grapple, input);
+      break;
+    }
+    case 0xc4d32ae5: {
+      LoadTypedefSLdrTweakPlayer_Collision(data.collision, input);
+      break;
+    }
+    case 0xd6155d4b: {
+      LoadTypedefSLdrTweakPlayer_FirstPersonCamera(data.firstPersonCamera, input);
+      break;
+    }
+    case 0xbcca767e: {
+      LoadTypedefSLdrTweakPlayer_Shield(data.shield, input);
+      break;
+    }
+    case 0x4d3b20b7: {
+      LoadTypedefSLdrTweakPlayer_Frozen(data.frozen, input);
+      break;
+    }
+    case 0xaeaff210: {
+      LoadTypedefSLdrTweakPlayer_SuitDamageReduction(data.suitDamageReduction, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
 SLdrTweakSlideShow::SLdrTweakSlideShow() : instanceName(), pakFile(), font(), fontColor(CColor::Green()), fontOutlineColor(CColor::Green()), helpFrameColor(CColor::Green()), stringResName() {
   fontColor = CColor(0.549019992f, 0.800000012f, 1.0f, 1.0f);
   fontOutlineColor = CColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -8424,6 +8528,90 @@ void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStr
     }
     case 0x168a79f1: {
       LoadTypedefSLdrTweakPlayerControls_Booleans(data.booleans, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrTweakPlayerGun_Duplicate::SLdrTweakPlayerGun_Duplicate() : instanceName(), misc(), holstering(), position(), arm_Position(), weapons(), beam_Combo(), beam_Misc(), ricochetDamage_Factor(), recoil(), comboRecoil(), projectileRecoil(), flameThrower(), waveBuster(), projectileImpact() {
+  recoil.flagsCameraShaker = 0x00000010u;
+  comboRecoil.flagsCameraShaker = 0x00000010u;
+  projectileRecoil.flagsCameraShaker = 0x00000010u;
+  flameThrower.flagsCameraShaker = 0x00000010u;
+  waveBuster.flagsCameraShaker = 0x00000010u;
+  projectileImpact.flagsCameraShaker = 0x00000013u;
+}
+
+SLdrTweakPlayerGun_Duplicate::~SLdrTweakPlayerGun_Duplicate() {}
+
+void LoadTypedefSLdrTweakPlayerGun_Duplicate(SLdrTweakPlayerGun_Duplicate& data, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x7fda1466: {
+      data.instanceName = rstl::string(input);
+      break;
+    }
+    case 0xb82ed424: {
+      LoadTypedefSLdrTweakPlayerGun_Misc(data.misc, input);
+      break;
+    }
+    case 0x6b6bdc47: {
+      LoadTypedefSLdrTweakPlayerGun_Holstering(data.holstering, input);
+      break;
+    }
+    case 0x87882cb0: {
+      LoadTypedefSLdrTweakPlayerGun_Position(data.position, input);
+      break;
+    }
+    case 0x255007ad: {
+      LoadTypedefSLdrTweakPlayerGun_Arm_Position(data.arm_Position, input);
+      break;
+    }
+    case 0x83d758ab: {
+      LoadTypedefSLdrTweakPlayerGun_Weapons(data.weapons, input);
+      break;
+    }
+    case 0x888c8775: {
+      LoadTypedefSLdrTweakPlayerGun_Beam_Combo(data.beam_Combo, input);
+      break;
+    }
+    case 0xaaebb73e: {
+      LoadTypedefSLdrTweakPlayerGun_Beam_Misc(data.beam_Misc, input);
+      break;
+    }
+    case 0x8da058fe: {
+      LoadTypedefSLdrTweakPlayerGun_RicochetDamage_Factor(data.ricochetDamage_Factor, input);
+      break;
+    }
+    case 0xffdb4bb7: {
+      LoadTypedefSLdrCameraShakerData(data.recoil, input);
+      break;
+    }
+    case 0x937a35bd: {
+      LoadTypedefSLdrCameraShakerData(data.comboRecoil, input);
+      break;
+    }
+    case 0x26196738: {
+      LoadTypedefSLdrCameraShakerData(data.projectileRecoil, input);
+      break;
+    }
+    case 0xf40808c9: {
+      LoadTypedefSLdrCameraShakerData(data.flameThrower, input);
+      break;
+    }
+    case 0x9a6d7a31: {
+      LoadTypedefSLdrCameraShakerData(data.waveBuster, input);
+      break;
+    }
+    case 0x12f14c5a: {
+      LoadTypedefSLdrCameraShakerData(data.projectileImpact, input);
       break;
     }
     default:
