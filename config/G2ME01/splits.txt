@@ -477,6 +477,14 @@ MetroidPrime/PathFinding/CPathFindSpline.cpp:
 MetroidPrime/CHealthInfo.cpp:
 	.text       start:0x8014206C end:0x80142188
 
+MetroidPrime/Player/CGameState.cpp:
+	.text       start:0x80142188 end:0x801468C4
+	.ctors      start:0x803A5534 end:0x803A5538
+	.rodata     start:0x803A9208 end:0x803A93D0
+	.bss        start:0x80410998 end:0x804109B0 align:4 common
+	.sdata      start:0x804183D8 end:0x804183E4 align:4
+	.sdata2     start:0x8041C1A8 end:0x8041C1C8
+
 MetroidPrime/BodyState/CABSIdle.cpp:
 	.text       start:0x8014A5DC end:0x8014A69C
 	.data       start:0x803B52C0 end:0x803B5300

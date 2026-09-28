@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+#include "rstl/construct.hpp"
 #include "rstl/functional.hpp"
 #include "rstl/iterator.hpp"
 #include "rstl/pair.hpp"
@@ -43,6 +44,8 @@ private:
     void set_left(node* n) { mLeft = n; }
     node* get_right() { return mRight; }
     void set_right(node* n) { mRight = n; }
+    node_color get_color() const { return mColor; }
+    void set_parent(node* n) { mParent = n; }
   };
   class header {
   public:
@@ -120,6 +123,29 @@ public:
   : mSelector(selector), mCmp(cmp), mAllocator(alloc), mCount(0) {}
   red_black_tree(CInputStream& in, const S& selector = S(), const Cmp& cmp = Cmp(),
                  const Alloc& alloc = Alloc());
+  red_black_tree(const red_black_tree& other)
+  : mSelector(other.mSelector)
+  , mCmp(other.mCmp)
+  , mAllocator(other.mAllocator)
+  , mCount(other.mCount) {
+    node* root = copy_from(other.mHeader.get_root());
+    mHeader.set_leftmost(leftmost(root));
+    mHeader.set_rightmost(rightmost(root));
+    mHeader.set_root(root);
+  }
+
+  red_black_tree& operator=(const red_black_tree& other) {
+    if (this != &other) {
+      clear();
+      node* root = copy_from(other.mHeader.get_root());
+      mHeader.set_leftmost(leftmost(root));
+      mHeader.set_rightmost(rightmost(root));
+      mHeader.set_root(root);
+      mCount = other.mCount;
+    }
+    return *this;
+  }
+
   ~red_black_tree() { clear(); }
 
   pair< iterator, bool > insert_into(node* n, const P& item);
@@ -246,6 +272,24 @@ private:
   int mCount;
   header mHeader;
 
+  node* leftmost(node* n) {
+    if (n != nullptr) {
+      while (n->get_left() != nullptr) {
+        n = n->get_left();
+      }
+    }
+    return n;
+  }
+
+  node* rightmost(node* n) {
+    if (n != nullptr) {
+      while (n->get_right() != nullptr) {
+        n = n->get_right();
+      }
+    }
+    return n;
+  }
+
   node* create_node(node* left, node* right, node* parent, node_color color, const P& value) {
     node* n;
     Alloc::allocate(n, 1);
@@ -254,6 +298,7 @@ private:
   }
 
   void free_node_and_sub_nodes(node* n);
+  node* copy_from(node* n);
 
   void free_node(node* n) {
     n->~node();
@@ -266,6 +311,30 @@ private:
     return static_cast< node* >(rbtree_rebalance_for_erase(&mHeader, n));
   }
 };
+
+template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
+typename red_black_tree< T, P, U, S, Cmp, Alloc >::node*
+red_black_tree< T, P, U, S, Cmp, Alloc >::copy_from(node* n) {
+  if (n == nullptr) {
+    return nullptr;
+  }
+  node* left = nullptr;
+  node* right = nullptr;
+  if (n->get_left() != nullptr) {
+    left = copy_from(n->get_left());
+  }
+  if (n->get_right() != nullptr) {
+    right = copy_from(n->get_right());
+  }
+  node* const result = create_node(left, right, nullptr, n->get_color(), *n->get_value());
+  if (left != nullptr) {
+    left->set_parent(result);
+  }
+  if (right != nullptr) {
+    right->set_parent(result);
+  }
+  return result;
+}
 
 template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
 void red_black_tree< T, P, U, S, Cmp, Alloc >::free_node_and_sub_nodes(node* n) {

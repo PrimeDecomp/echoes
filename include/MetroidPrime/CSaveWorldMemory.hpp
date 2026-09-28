@@ -29,6 +29,10 @@ public:
   const rstl::vector< CWorldLayers::Area >& GetDefaultLayerStates() const {
     return mDefaultLayerStates;
   }
+  const rstl::rc_ptr< rstl::vector< rstl::string > >& GetLayerNames() const { return mLayerNames; }
+  const rstl::rc_ptr< rstl::vector< int > >& GetLayerNameOffsets() const {
+    return mAreaLayerNameOffsets;
+  }
   const wchar_t* GetFrontEndName() const;
   const wchar_t* GetDarkFrontEndName() const; // Guessed name
 
