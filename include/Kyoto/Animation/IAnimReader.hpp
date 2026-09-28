@@ -7,6 +7,7 @@
 #include "Kyoto/Animation/CCharAnimTime.hpp"
 #include "Kyoto/Particles/CParticleData.hpp"
 
+#include "rstl/math.hpp"
 #include "rstl/optional_object.hpp"
 #include "rstl/ownership_transfer.hpp"
 #include "rstl/string.hpp"
@@ -65,6 +66,9 @@ public:
   const CSteadyStateAnimInfo& GetSteadyStateAnimInfo() const { return mSsInfo; }
   const CCharAnimTime& GetTimeRemaining() const { return mRemTime; }
   u32 GetAnimDatabaseIndex() const { return mDbIdx; }
+  float GetPhase() const {
+    return rstl::min_val(rstl::max_val(1.f - mRemTime / mSsInfo.GetDuration(), 0.f), 1.f);
+  }
 };
 
 class CSegId;
@@ -110,6 +114,9 @@ public:
   virtual void VSetPhase(float phase) = 0;
   virtual SAdvancementResults VGetAdvancementResults(const CCharAnimTime& time,
                                                      const CCharAnimTime& startOffset) const;
+
+  CCharAnimTime GetTimeRemaining() const { return VGetTimeRemaining(); }
+  CSteadyStateAnimInfo GetSteadyStateAnimInfo() const { return VGetSteadyStateAnimInfo(); }
 
   uint GetBoolPOIList(const CCharAnimTime& time, CBoolPOINode* listOut, uint capacity,
                       uint iterator, int additive) const;

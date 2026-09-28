@@ -22,7 +22,7 @@ public:
   , mTimeScale(timeScale)
   , mCurAccelTime(0.f)
   , mTargetAccelTime(time)
-  , mInitialTime(node->VGetSteadyStateAnimInfo().GetDuration() - node->VGetTimeRemaining()) {}
+  , mInitialTime(node->GetSteadyStateAnimInfo().GetDuration() - node->GetTimeRemaining()) {}
 
   // IAnimReader
   ~CAnimTreeTimeScale() override {}
