@@ -135,13 +135,29 @@ public:
     TAreaId mAreaId;
   };
 
+  // Guessed name. Serialized block descriptor in MREA version 24 and later.
+  struct SMreaCompressedBlock {
+    int mBufferSize;
+    int mDecompressedSize;
+    int mCompressedSize;
+    int mSectionCount;
+  };
+
   // Guessed name. One pending compressed MREA block, including its disk request.
   struct SDecompressionRequest {
     uchar* mOutput;
     const uchar* mInput;
     uint mCompressedSize;
-    uint mRemainingSize;
+    int mRemainingSize;
     CDvdRequest* mRequest;
+
+    SDecompressionRequest(CDvdRequest* const request, uchar* const output, const uchar* const input,
+                          const uint compressedSize, const int remainingSize)
+    : mOutput(output)
+    , mInput(input)
+    , mCompressedSize(compressedSize)
+    , mRemainingSize(remainingSize)
+    , mRequest(request) {}
   };
 
   // These auxiliary types still need their payload layouts recovered.
@@ -214,9 +230,9 @@ public:
     rstl::list< SDecompressionRequest > mDecompressionRequests;
     rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > > mMreaSectionBuffers;
     int mMreaSize;
-    int mLoadedSectionCount;
+    uint mLoadedSectionCount;
     int mLoadedBlockCount;
-    int mMreaDataOffset;
+    uint mMreaDataOffset;
     int mFirstScriptSection;
     rstl::vector< bool > mActiveLayers;
     rstl::vector< uint > mLayerFileOffsets;
@@ -279,7 +295,7 @@ public:
   void CullDeadAreaRequests();
   void DecompressAreaData();
   void ClearDecompressionRequest(CDvdRequest* request);
-  void ReadCompressedLayer(int offset, rstl::auto_ptr< CDvdRequest >& request,
+  void ReadCompressedLayer(const int offset, rstl::auto_ptr< CDvdRequest >& request,
                            rstl::auto_ptr< char >& buffer);
   void SortTextureDependencies();
   void SortRelTokens();
@@ -372,6 +388,8 @@ CHECK_SIZEOF(CGameArea, 0x10c)
 NESTED_CHECK_SIZEOF(CGameArea, CPostConstructed, 0x2d0)
 NESTED_CHECK_SIZEOF(CGameArea, CAreaFog, 0x38)
 NESTED_CHECK_SIZEOF(CGameArea, CAreaObjectList, 0x2014)
+NESTED_CHECK_SIZEOF(CGameArea, SMreaCompressedBlock, 0x10)
+NESTED_CHECK_SIZEOF(CGameArea, SDecompressionRequest, 0x14)
 
 class CDummyGameArea : public IGameArea {
 public:
