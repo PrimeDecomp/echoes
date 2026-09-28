@@ -1,6 +1,8 @@
 #ifndef _CSTATEMANAGER
 #define _CSTATEMANAGER
 
+extern const int gkPVSEnabled;
+
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CObjectList.hpp"
@@ -28,6 +30,7 @@ class CEnvFxManager;
 class CEntity;
 class CActor;
 class CMaterialFilter;
+class CRayCastResult;
 class CScriptMailbox;
 class CMapWorldInfo;
 class CPlayerState;
@@ -124,6 +127,11 @@ public:
   CEntity* GetObjectByIdFromListAll(TUniqueId uid);
   bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
                        const CMaterialFilter& filter, const CActor* damagee);
+  CRayCastResult RayStaticIntersection(const CVector3f& position, const CVector3f& direction,
+                                       float length, const CMaterialFilter& filter) const;
+  void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                     const CVector3f& position, const CVector3f& direction, float length,
+                     const CMaterialFilter& filter, const CActor* ignoreActor) const;
 
   TEditorId GetEditorIdForUniqueId(TUniqueId) const;
   TUniqueId GetIdForScript(TEditorId eid) const;
@@ -247,7 +255,7 @@ public:
   char pad5[4]; // 0x246c
   CFrustumPlanes m_planes; // 0x2478
   int mCurrentRenderPlayerIndex; // Guessed name
-  char pad6[0x464]; // Remaining unresolved storage; preserve the existing tail layout.
+  char pad6[0x2938 - 0x24e0];
 
   CVector3f x2938;
   float x2944;

@@ -38,4 +38,6 @@ private:
   bool mRadiusCalculated : 1;
 };
 
+CHECK_SIZEOF(CSimpleShadow, 0x4c)
+
 #endif // _CSIMPLESHADOW
