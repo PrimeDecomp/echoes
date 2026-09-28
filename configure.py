@@ -15,7 +15,7 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from tools.project import (
     Object,
@@ -313,11 +313,13 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
 
 
 # Helper function for REL script objects
-def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+def Rel(
+    lib_name: str, objects: List[Object], extra_cflags: Optional[List[str]] = None
+) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": retro_mw_version,
-        "cflags": cflags_rel,
+        "cflags": cflags_rel + (extra_cflags or []),
         "progress_category": "game",
         "host": True,
         "objects": objects,
@@ -1133,6 +1135,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_VulnerabilityIndicator.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_Scan.cpp"),
         ],
+        # Native generated constructors address each float constant separately.
+        extra_cflags=["-pool off"],
     ),
 ]
 
