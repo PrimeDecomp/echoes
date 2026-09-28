@@ -194,18 +194,18 @@ public:
     // Guessed name
     struct SScanState {
       SScanState(CAssetId id, uchar progress = 0, bool flag = false)
-      : assetId(id), progress(progress), flag(flag) {}
+      : mAssetId(id), mProgress(progress), mViewedInLogbook(flag) {}
 
-      CAssetId assetId;
-      uchar progress;
-      uchar flag;
+      CAssetId mAssetId;
+      uchar mProgress;
+      uchar mViewedInLogbook; // Guessed name
     };
 
-    uint unk1;
-    uint unk2;
-    uint unk3;
-    rstl::vector< SScanState > vec;
-    rstl::reserved_vector< CPowerUp, 11 > powerups;
+    uint mPlayerSelection; // Guessed name
+    uint mTeamIndex;       // Guessed name
+    uint mControlScheme;   // Guessed name
+    rstl::vector< SScanState > mScanStates;
+    rstl::reserved_vector< CPowerUp, 11 > mPowerups;
   };
 
   CPlayerState(int playerIndex, SPersistentState*);
@@ -223,12 +223,12 @@ public:
   int GetItemPercentageRatio() const;
 
   EPlayerSuit GetCurrentSuit() const;
-  EPlayerSuit GetCurrentSuitRaw() const { return currentSuit; }
-  EBeamId GetCurrentBeam() const { return currentBeam; }
-  void SetCurrentBeam(EBeamId beam) { currentBeam = beam; }
+  EPlayerSuit GetCurrentSuitRaw() const { return mCurrentSuit; }
+  EBeamId GetCurrentBeam() const { return mCurrentBeam; }
+  void SetCurrentBeam(EBeamId beam) { mCurrentBeam = beam; }
   bool CanVisorSeeFog(const CStateManager& stateMgr) const;
-  EPlayerVisor GetCurrentVisor() const { return currentVisor; }
-  EPlayerVisor GetTransitioningVisor() const { return transitioningVisor; }
+  EPlayerVisor GetCurrentVisor() const { return mCurrentVisor; }
+  EPlayerVisor GetTransitioningVisor() const { return mTransitioningVisor; }
   EPlayerVisor GetActiveVisor(const CStateManager& mgr) const;
   uchar HasVisor(EPlayerVisor) const;
   int ShouldDrawGravityBoost(const CStateManager& mgr) const;
@@ -242,7 +242,6 @@ public:
   void AddId(TUniqueId id);
   void RemoveId(TUniqueId id);
 
-  // void UpdateStaticInterference(CStateManager& stateMgr, const float& dt);
   void IncreaseScanTime(uint time, float val);
   void SetScanTime(CAssetId res, float time);
   float GetScanTime(CAssetId time);
@@ -254,7 +253,7 @@ public:
   uchar UpdateVisorTransition(float dt);
   void StartTransitionToVisor(EPlayerVisor visor);
   void ResetVisor();
-  bool IsPlayerAlive() const { return alive; }
+  bool IsPlayerAlive() const { return mAlive; }
 
   bool ItemEnabled(EItemType type) const;
   void DisableItem(EItemType type);
@@ -273,7 +272,7 @@ public:
   void DecrPickUp(EItemType type, int amount);
   void IncrPickUp(EItemType type, int amount);
   void ResetAndIncrPickUp(EItemType type, int amount);
-  void SetTimeLeft(EItemType type, float time) { powerups[type].mTimeLeft = time; }
+  void SetTimeLeft(EItemType type, float time) { mPowerups[type].mTimeLeft = time; }
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
   rstl::vector< SPersistentState::SScanState >& ScanStates();
@@ -285,47 +284,40 @@ public:
   static uint GetBitCount(uint);
   static int GetPowerUpMaxValue(EItemType);
 
-  // CStaticInterference& StaticInterference() { return x188_staticIntf; }
-  // const CStaticInterference& GetStaticInterference() const { return x188_staticIntf; }
+  CHealthInfo* HealthInfo() { return &mHealth; }
 
-  // const rstl::vector< rstl::pair< CAssetId, float > >& GetScanTimes() const {
-  //   return x170_scanTimes;
-  // }
-
-  CHealthInfo* HealthInfo() { return &healthInfo; }
-
-  const CHealthInfo& GetHealthInfo() const { return healthInfo; }
+  const CHealthInfo& GetHealthInfo() const { return mHealth; }
 
   SPersistentState& GetPersistentState();
-  uint GetPlayerSelection() const { return unkStruct.unk1; } // Guessed name
-  const CPowerUp& GetPowerUp(EItemType type) const { return powerups[type]; }
-  CPowerUp& PowerUp(EItemType type) { return powerups[type]; }
+  uint GetPlayerSelection() const { return mPersistentState.mPlayerSelection; } // Guessed name
+  const CPowerUp& GetPowerUp(EItemType type) const { return mPowerups[type]; }
+  CPowerUp& PowerUp(EItemType type) { return mPowerups[type]; }
   void SetPersistentState(const SPersistentState&);
-  float GetChargeBeamFactor() const { return chargeBeamFactor; }
-  void SetChargeBeamFactor(float factor) { chargeBeamFactor = factor; }
-  float GetChargeAnimStart() const { return chargeAnimStart; }
+  float GetChargeBeamFactor() const { return mChargeBeamFactor; }
+  void SetChargeBeamFactor(float factor) { mChargeBeamFactor = factor; }
+  float GetChargeAnimStart() const { return mChargeAnimStart; }
   void IncrementChargeBeamFactor(float);
   void DecrementAmmoAndDisplayAlertIfOut(const CStateManager&, EItemType, int quantity);
 
 private:
-  int playerIndex;
-  bool alive : 1;
-  bool firingComboBeam : 1;
-  uint enabledItems;
-  EBeamId currentBeam;
-  CHealthInfo healthInfo;
-  EPlayerVisor currentVisor;
-  EPlayerVisor transitioningVisor;
-  rstl::vector< TUniqueId > vectorWord;
-  float chargeBeamFactor;
-  float chargeAnimStart;
-  float visorTransitionFactor;
-  EPlayerSuit currentSuit;
-  rstl::reserved_vector< CPowerUp, 109 > powerups;
-  int scanCompletionRateFirst;
-  int scanCompletionRateSecond;
-  CStaticInterference staticInterference;
-  SPersistentState unkStruct;
+  int mPlayerIndex;
+  bool mAlive : 1;
+  bool mFiringComboBeam : 1;
+  uint mEnabledItems;
+  EBeamId mCurrentBeam;
+  CHealthInfo mHealth;
+  EPlayerVisor mCurrentVisor;
+  EPlayerVisor mTransitioningVisor;
+  rstl::vector< TUniqueId > mHudHintIds; // Guessed name
+  float mChargeBeamFactor;
+  float mChargeAnimStart;
+  float mVisorTransitionFactor;
+  EPlayerSuit mCurrentSuit;
+  rstl::reserved_vector< CPowerUp, 109 > mPowerups;
+  int mScanCompletionRateFirst;
+  int mScanCompletionRateSecond;
+  CStaticInterference mStaticIntf;
+  SPersistentState mPersistentState;
 };
 CHECK_SIZEOF(CPlayerState, 0x634)
 
