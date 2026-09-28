@@ -35,7 +35,7 @@ public:
   bool GreaterThanZero() const;
   bool EqualsZero() const;
   void PutTo(COutputStream& out) const;
-  static CCharAnimTime Infinity() { return CCharAnimTime(kT_Infinity, 1.0f); }
+  static CCharAnimTime Infinity();
   static CCharAnimTime ZeroPlus() { return CCharAnimTime(kT_ZeroIncreasing, 0.f); }
   static CCharAnimTime ZeroMinus() { return CCharAnimTime(kT_ZeroDecreasing, 0.f); }
 
@@ -80,5 +80,7 @@ inline CCharAnimTime CCharAnimTime::ZeroSignScale(float other) const {
 }
 
 inline CCharAnimTime CCharAnimTime::ZeroFlat() { return CCharAnimTime(kT_ZeroSteady, 0.f); }
+
+inline CCharAnimTime CCharAnimTime::Infinity() { return CCharAnimTime(kT_Infinity, 1.f); }
 
 #endif // _CCHARANIMTIME

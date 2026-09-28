@@ -13,7 +13,7 @@ public:
   , mTimeScale(rs_new CConstantAnimationTimeScale(scale))
   , mCurAccelTime(0.f)
   , mTargetAccelTime(CCharAnimTime::Infinity())
-  , mInitialTime(CCharAnimTime::kT_ZeroSteady, 0.f) {}
+  , mInitialTime(CCharAnimTime::ZeroFlat()) {}
 
   CAnimTreeTimeScale(const rstl::ncrc_ptr< CAnimTreeNode >& node,
                      const rstl::ownership_transfer< IVaryingAnimationTimeScale >& timeScale,

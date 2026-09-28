@@ -6,10 +6,10 @@
 
 class CAnimTreeTransition : public CAnimTreeTweenBase {
 public:
-  CAnimTreeTransition(bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
+  CAnimTreeTransition(const bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
                       const rstl::ncrc_ptr< CAnimTreeNode >& b, const CCharAnimTime& duration,
                       bool runA, int flags, const rstl::string& name);
-  CAnimTreeTransition(bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
+  CAnimTreeTransition(const bool characterSpaceBlend, const rstl::ncrc_ptr< CAnimTreeNode >& a,
                       const rstl::ncrc_ptr< CAnimTreeNode >& b, const CCharAnimTime& duration,
                       const CCharAnimTime& timeInTrans, bool runA, bool loopA, int flags,
                       const rstl::string& name, bool initialized);

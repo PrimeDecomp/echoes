@@ -42,9 +42,9 @@ public:
   CSteadyStateAnimInfo(bool looping, const CCharAnimTime& duration, const CVector3f& offset)
   : mDuration(duration), mOffset(offset), mLooping(looping) {}
 
-  const CCharAnimTime& GetDuration() const { return mDuration; }
-  const CVector3f& GetOffset() const { return mOffset; }
-  bool IsLooping() const { return mLooping; }
+  CCharAnimTime GetDuration() const { return mDuration; }
+  CVector3f GetOffset() const { return mOffset; }
+  const bool IsLooping() const { return mLooping; }
 };
 CHECK_SIZEOF(CSteadyStateAnimInfo, 0x18)
 

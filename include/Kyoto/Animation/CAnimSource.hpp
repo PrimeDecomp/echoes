@@ -67,8 +67,11 @@ public:
   bool HasScale(const CSegId& seg) const;
   CVector3f GetOffset(const CSegId& seg, const CCharAnimTime& time) const;
   CQuaternion GetRotation(const CSegId& seg, const CCharAnimTime& time) const;
+  CVector3f GetOverallOffset(const CCharAnimTime& time) const {
+    return GetOffset(GetPrimaryOffsetChannel(), time);
+  }
   CSteadyStateAnimInfo GetSteadyStateAnimInfo(const CCharAnimTime& time) const {
-    return CSteadyStateAnimInfo(false, mDuration, GetOffset(mRoot, time));
+    return CSteadyStateAnimInfo(false, GetAnimationDuration(), GetOverallOffset(time));
   }
   void CalcAverageVelocity();
   void GetSegStatementSet(const CSegIdList& list, CSegStatementSet& set,
