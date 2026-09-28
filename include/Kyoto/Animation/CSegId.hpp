@@ -19,6 +19,8 @@ public:
 
   static CSegId Null() { return CSegId(99); }
 
+  static CSegId Character() { return CSegId(97); }
+
   static CSegId Invalid() { return CSegId(255); }
 
   bool operator==(const CSegId& other) const { return mId == other.mId; }

@@ -15,7 +15,7 @@ public:
   template < typename A >
   void build(const A& arg) {
     makeValid();
-    rstl::construct(get_ptr(), arg);
+    new (get_ptr()) T(arg);
   }
   void clear() {
     if (valid()) {

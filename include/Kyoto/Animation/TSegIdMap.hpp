@@ -11,6 +11,8 @@
 template < typename T >
 class TSegIdMap {
 public:
+  TSegIdMap(uchar count);
+
   TSegIdMap(CInputStream& in)
   : mBoneCount(0)
   , mCapacity(in.Get< uint >())
@@ -35,7 +37,7 @@ public:
 
   const T& AccessElement(int index) const { return mNodes[index]; }
 
-  bool ContainsDataFor(CSegId id) const {
+  bool ContainsDataFor(const CSegId& id) const {
     return mIndirectionMap[id.val()] !=
            rstl::pair< CSegId, CSegId >(CSegId::Null(), CSegId::Null());
   }
@@ -51,6 +53,17 @@ private:
 };
 typedef TSegIdMap< uchar > TSegIdMapSizeCheck;
 CHECK_SIZEOF(TSegIdMapSizeCheck, 0xd8)
+
+template < typename T >
+TSegIdMap< T >::TSegIdMap(uchar count)
+: mBoneCount(0)
+, mCapacity(count)
+, mIndirectionMap(100, rstl::pair< CSegId, CSegId >(CSegId::Null(), CSegId::Null()))
+, mNodes(nullptr)
+, mCurPrevBone(CSegId::Null()) {
+  mNodes = reinterpret_cast< T* >(rs_new uchar[count * sizeof(T)]);
+  CCharAnimMemoryMetrics::AddToTotalSize(mCapacity, CCharAnimMemoryMetrics::kASS_Two);
+}
 
 template < typename T >
 TSegIdMap< T >::~TSegIdMap() {
