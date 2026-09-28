@@ -15,7 +15,7 @@ public:
 
   // CGuiWidget
   FourCC GetWidgetTypeID() const override;
-  int GetWidgetTypeIndex() const override;
+  int GetWidgetUsageFlags() const override;
   void Draw(const CGuiWidgetDrawParms& parms) const override;
 
   virtual void ScaleDimensions(const CVector3f& scale);

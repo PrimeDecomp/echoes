@@ -13,6 +13,15 @@ enum ETraversalMode { kTM_ChildrenAndSiblings = 0, kTM_Children = 1, kTM_Single 
 
 class CGuiWidget : public CGuiObject {
 public:
+  // Guessed names: select the frame's independent widget lists.
+  enum EWidgetUsageFlags {
+    kWUF_None = 0,
+    kWUF_Draw = 1,
+    kWUF_Update = 2,
+    kWUF_Input = 4,
+    kWUF_PreDraw = 8
+  };
+
   enum EGuiModelDrawFlags {
     kGMDF_Shadeless = 0,
     kGMDF_Opaque = 1,
@@ -42,7 +51,7 @@ public:
   ~CGuiWidget() override;
 
   virtual FourCC GetWidgetTypeID() const;
-  virtual int GetWidgetTypeIndex() const; // Guessed name
+  virtual int GetWidgetUsageFlags() const; // Guessed name
   virtual bool AddWorkerWidget(CGuiWidget* worker);
   virtual bool GetIsActive() const;
   virtual bool GetIsVisible() const;
@@ -59,6 +68,7 @@ public:
   void SetColor(const CColor& color);
   void SetVisibility(bool visible, ETraversalMode mode);
   void RecalcWidgetColor(ETraversalMode mode);
+  void DispatchInitialize();
   void ReapplyXform();
   void SetIdleXform(const CTransform4f& xf, bool reapply = true);
   CGuiWidget* FindWidget(short id);

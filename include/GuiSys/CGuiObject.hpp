@@ -9,6 +9,7 @@ public:
   virtual ~CGuiObject();
 
   const CTransform4f& GetWorldTransform() const;
+  CVector3f GetWorldPosition() const;
   const CTransform4f& GetO2PTransform() const { return mLocalXF; }
   CVector3f GetLocalPosition() const;
   void SetLocalPosition(const CVector3f& pos);

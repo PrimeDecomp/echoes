@@ -24,7 +24,7 @@ public:
 
   // CGuiWidget
   FourCC GetWidgetTypeID() const override;
-  int GetWidgetTypeIndex() const override;
+  int GetWidgetUsageFlags() const override;
   void Update(float dt) override;
   void Draw(const CGuiWidgetDrawParms& parms) const override;
   void Initialize() override;
