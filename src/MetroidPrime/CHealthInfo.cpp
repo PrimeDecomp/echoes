@@ -13,8 +13,8 @@ CHealthInfo::CHealthInfo(float hp, float resist)
 , flagA(false)
 , flagB(false) {}
 
-void CHealthInfo::SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId id1, TUniqueId id2, bool a,
-                                       bool b) {
+void CHealthInfo::SetCauseOfDeathWeapon(const CWeaponMode mode, const TUniqueId id1,
+                                        const TUniqueId id2, const bool a, const bool b) {
   weaponModeA = mode;
   uidA = id1;
   uidB = id2;
@@ -22,7 +22,8 @@ void CHealthInfo::SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId id1, TUnique
   flagB = b;
 }
 
-void CHealthInfo::fn_8014206C(const CWeaponMode& mode, TUniqueId id1, TUniqueId id2, bool flag) {
+void CHealthInfo::fn_8014206C(const CWeaponMode& mode, const TUniqueId id1, const TUniqueId id2,
+                              const bool flag) {
   weaponModeB = mode;
   uidC = id1;
   uidD = id2;
