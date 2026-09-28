@@ -652,7 +652,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Animation/CPASAnimState.cpp"),
             Object(NonMatching, "Kyoto/Animation/CPASDatabase.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CPASParmInfo.cpp"),
-            Object(NonMatching, "Kyoto/Animation/CPOINode.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CPOINode.cpp"),
             Object(NonMatching, "Kyoto/Animation/CSoundPOINode.cpp"),
             Object(NonMatching, "Kyoto/Animation/CPoseAsTransforms_Linear.cpp"),
             Object(NonMatching, "Kyoto/Particles/CColorElement.cpp"),

@@ -1,13 +1,13 @@
 #include "Kyoto/Animation/CPOINode.hpp"
 
-#include "Kyoto/Streams/CInputStream.hpp"
 #include "Kyoto/CCrc32.hpp"
+#include "Kyoto/Streams/CInputStream.hpp"
 #include "rstl/string.hpp"
 
 static uint ReadNameHash(ushort version, CInputStream& in) {
   if (version >= 3) {
     // Skip the stored name; the hash follows it.
-    while (in.ReadBool()) {
+    while (in.ReadUint8()) {
     }
     return in.ReadInt32();
   }
