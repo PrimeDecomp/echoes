@@ -183,13 +183,13 @@ public:
     int mPvsVersion;
     rstl::optional_object< TLockedToken< CPFArea > > mPathToken;
     CPFArea* mPathArea;
-    rstl::single_ptr< TLockedToken< CStaticGeometryMap > > mStaticGeometryMap;
+    rstl::single_ptr< CStaticGeometryMap > mStaticGeometryMap;
     rstl::single_ptr< CPortalArea > mPortalArea;
     rstl::single_ptr< CAreaObjectList > mAreaObjectList;
     rstl::single_ptr< CAreaObjectList > xfc_;
     rstl::single_ptr< CAreaFog > mAreaFog;
     rstl::vector< rstl::auto_ptr< char > > mLayerScriptBuffers;
-    rstl::vector< uint > mLayerScriptSizes;
+    rstl::vector< int > mLayerScriptSizes;
     rstl::auto_ptr< char > mGeneratedScriptBuffer;
     uint mGeneratedScriptSize;
     rstl::single_ptr< CScriptObjectLoaderHelper::SLoadContext > mScriptLoadState;

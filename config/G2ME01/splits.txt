@@ -700,6 +700,9 @@ MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
 
+MetroidPrime/CStaticGeometryMap.cpp:
+	.text       start:0x801EFA00 end:0x801EFA4C
+
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F7304
 	.rodata     start:0x803AC548 end:0x803AC550
@@ -746,6 +749,9 @@ WorldFormat/CCollisionSurface.cpp:
 
 WorldFormat/CMetroidModelInstance.cpp:
 	.text       start:0x802474B4 end:0x802476DC
+
+WorldFormat/CAreaBspTree.cpp:
+	.text       start:0x802476DC end:0x80247704
 
 WorldFormat/CAreaOctTree.cpp:
 	.text       start:0x80247704 end:0x80247CC0
