@@ -758,6 +758,9 @@ class Generator:
             return [f"LoadTypedef{prop.cpp}({target}, input);"]
         if kind == "Array":
             return self.read_array(prop, target, depth)
+        if kind == "String" and size is not None:
+            # Tagged properties provide a case scope for the owning string local.
+            return ["const rstl::string value(input);", f"{target} = value;"]
         if kind == "Spline" and size is None:
             raise TemplateError("Spline without a property-size boundary")
         expression = PRIMITIVES[kind].read_expression

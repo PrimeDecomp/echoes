@@ -191,23 +191,28 @@ void LoadTypedefSLdrTGunResources(SLdrTGunResources& sldrThis, CInputStream& inp
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x2705318d: {
-      sldrThis.power_Beam = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.power_Beam = value;
       break;
     }
     case 0x7cc2879f: {
-      sldrThis.ice_Beam = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.ice_Beam = value;
       break;
     }
     case 0x382765b0: {
-      sldrThis.wave_Beam = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.wave_Beam = value;
       break;
     }
     case 0xcb269ac8: {
-      sldrThis.plasma_Beam = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.plasma_Beam = value;
       break;
     }
     case 0xa3890335: {
-      sldrThis.phazon_Beam = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.phazon_Beam = value;
       break;
     }
     default:
@@ -229,7 +234,8 @@ void LoadTypedefSLdrTBallTransitionResources(SLdrTBallTransitionResources& sldrT
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xd48e4124: {
-      sldrThis.suitANCS = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.suitANCS = value;
       break;
     }
     case 0x01e12c84: {
@@ -1396,60 +1402,74 @@ void LoadTypedefSLdrTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapper
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xe7014cda: {
-      sldrThis.saveStationIcon = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.saveStationIcon = value;
       break;
     }
     case 0x33c94749: {
-      sldrThis.missileStationIcon = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.missileStationIcon = value;
       break;
     }
     case 0x9b36949e: {
-      sldrThis.elevatorIconIcon = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.elevatorIconIcon = value;
       break;
     }
     case 0xafa1b87c: {
-      sldrThis.portalIcon = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.portalIcon = value;
       break;
     }
     case 0xfbf479ec: {
-      sldrThis.unknown_0xfbf479ec = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0xfbf479ec = value;
       break;
     }
     case 0x5566b6e4: {
-      sldrThis.unknown_0x5566b6e4 = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0x5566b6e4 = value;
       break;
     }
     case 0x51fe3f1f: {
-      sldrThis.unknown_0x51fe3f1f = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0x51fe3f1f = value;
       break;
     }
     case 0xa4127a5a: {
-      sldrThis.unknown_0xa4127a5a = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0xa4127a5a = value;
       break;
     }
     case 0xf8403d18: {
-      sldrThis.translatorDoorIcon = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.translatorDoorIcon = value;
       break;
     }
 #if VERSION != VERSION_G2ME01
     case 0x5096bfa5: {
-      sldrThis.mapIconG = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mapIconG = value;
       break;
     }
     case 0xf4e6e0eb: {
-      sldrThis.mapIconM = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mapIconM = value;
       break;
     }
     case 0x65700ccc: {
-      sldrThis.mapIconR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mapIconR = value;
       break;
     }
     case 0xa0d73242: {
-      sldrThis.mapIconU = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mapIconU = value;
       break;
     }
     case 0x5291eb5f: {
-      sldrThis.mapIconL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mapIconL = value;
       break;
     }
 #endif
@@ -1472,131 +1492,163 @@ void LoadTypedefSLdrTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIc
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x2c770bb8: {
-      sldrThis.lStickN = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickN = value;
       break;
     }
     case 0x49aec38c: {
-      sldrThis.lStickU = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickU = value;
       break;
     }
     case 0xa86af8c2: {
-      sldrThis.lStickUL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickUL = value;
       break;
     }
     case 0xbbe81a91: {
-      sldrThis.lStickL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickL = value;
       break;
     }
     case 0x187bc977: {
-      sldrThis.lStickDL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickDL = value;
       break;
     }
     case 0x880754f6: {
-      sldrThis.lStickD = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickD = value;
       break;
     }
     case 0x2f9a2ee4: {
-      sldrThis.lStickDR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickDR = value;
       break;
     }
     case 0x8c09fd02: {
-      sldrThis.lStickR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickR = value;
       break;
     }
     case 0x9f8b1f51: {
-      sldrThis.lStickUR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lStickUR = value;
       break;
     }
     case 0x0b07de8d: {
-      sldrThis.cStickN = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickN = value;
       break;
     }
     case 0x6ede16b9: {
-      sldrThis.cStickU = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickU = value;
       break;
     }
     case 0xfefe4c34: {
-      sldrThis.cStickUL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickUL = value;
       break;
     }
     case 0x9c98cfa4: {
-      sldrThis.cStickL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickL = value;
       break;
     }
     case 0x4eef7d81: {
-      sldrThis.cStickDL = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickDL = value;
       break;
     }
     case 0xaf7781c3: {
-      sldrThis.cStickD = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickD = value;
       break;
     }
     case 0x790e9a12: {
-      sldrThis.cStickDR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickDR = value;
       break;
     }
     case 0xab792837: {
-      sldrThis.cStickR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickR = value;
       break;
     }
     case 0xc91faba7: {
-      sldrThis.cStickUR = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.cStickUR = value;
       break;
     }
     case 0x40c21e1e: {
-      sldrThis.lTriggerOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lTriggerOut = value;
       break;
     }
     case 0x120368b8: {
-      sldrThis.lTriggerIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.lTriggerIn = value;
       break;
     }
     case 0x16b77ff5: {
-      sldrThis.rTriggerOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.rTriggerOut = value;
       break;
     }
     case 0xd4a6a08d: {
-      sldrThis.rTriggerIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.rTriggerIn = value;
       break;
     }
     case 0x272f08b4: {
-      sldrThis.startButtonOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.startButtonOut = value;
       break;
     }
     case 0x225f0e23: {
-      sldrThis.startButtonIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.startButtonIn = value;
       break;
     }
     case 0x1c208ab1: {
-      sldrThis.aButtonOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.aButtonOut = value;
       break;
     }
     case 0x43fdc303: {
-      sldrThis.aButtonIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.aButtonIn = value;
       break;
     }
     case 0x35e83e43: {
-      sldrThis.bButtonOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.bButtonOut = value;
       break;
     }
     case 0x5280a97a: {
-      sldrThis.bButtonIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.bButtonIn = value;
       break;
     }
     case 0x277cbaf1: {
-      sldrThis.xButtonOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.xButtonOut = value;
       break;
     }
     case 0x71ed4b23: {
-      sldrThis.xButtonIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.xButtonIn = value;
       break;
     }
     case 0x89142b60: {
-      sldrThis.yButtonOut = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.yButtonOut = value;
       break;
     }
     case 0xc81690cb: {
-      sldrThis.yButtonIn = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.yButtonIn = value;
       break;
     }
     default:
@@ -4738,15 +4790,18 @@ void LoadTypedefSLdrTweakGui_Completion(SLdrTweakGui_Completion& sldrThis, CInpu
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x81fc78c2: {
-      sldrThis.unknown_0x81fc78c2 = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0x81fc78c2 = value;
       break;
     }
     case 0x5e7f85c7: {
-      sldrThis.mainFont = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.mainFont = value;
       break;
     }
     case 0x0a0d69d0: {
-      sldrThis.secondaryFont = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.secondaryFont = value;
       break;
     }
     case 0x5a24a7e4: {
@@ -4851,15 +4906,18 @@ void LoadTypedefSLdrTweakGui_Credits(SLdrTweakGui_Credits& sldrThis, CInputStrea
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x81fc78c2: {
-      sldrThis.unknown_0x81fc78c2 = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.unknown_0x81fc78c2 = value;
       break;
     }
     case 0x2bcd300d: {
-      sldrThis.englishFont = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.englishFont = value;
       break;
     }
     case 0xcef90c00: {
-      sldrThis.alternateFont = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.alternateFont = value;
       break;
     }
     case 0x1a96ec67: {
@@ -6182,23 +6240,28 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0x3db45f6a: {
-      sldrThis.threatWarningMessage = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.threatWarningMessage = value;
       break;
     }
     case 0x471f1217: {
-      sldrThis.threatDamageMessage = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.threatDamageMessage = value;
       break;
     }
     case 0xf8b84c58: {
-      sldrThis.energyWarningMessage = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.energyWarningMessage = value;
       break;
     }
     case 0xbc2c8de6: {
-      sldrThis.missileWarningMessage = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.missileWarningMessage = value;
       break;
     }
     case 0x54203510: {
-      sldrThis.missileEmptyWarning = rstl::string(input);
+      const rstl::string value(input);
+      sldrThis.missileEmptyWarning = value;
       break;
     }
     case 0xcf9fd47e: {
@@ -7273,7 +7336,8 @@ void LoadTypedefSLdrTweakGui(SLdrTweakGui& data, CInputStream& input) {
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xd45f7663: {
@@ -7460,7 +7524,8 @@ void LoadTypedefSLdrTweakTargeting(SLdrTweakTargeting& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x5173932f: {
@@ -7947,7 +8012,8 @@ void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x357741e0: {
@@ -7989,7 +8055,8 @@ void LoadTypedefSLdrTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputS
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x3c34dfed: {
@@ -8019,19 +8086,23 @@ void LoadTypedefSLdrTweakParticle(SLdrTweakParticle& data, CInputStream& input) 
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x2bd13ab3: {
-      data.pakFile = rstl::string(input);
+      const rstl::string value(input);
+      data.pakFile = value;
       break;
     }
     case 0x5e15868a: {
-      data.primary_Weapon = rstl::string(input);
+      const rstl::string value(input);
+      data.primary_Weapon = value;
       break;
     }
     case 0xbc401445: {
-      data.secondary_Weapon = rstl::string(input);
+      const rstl::string value(input);
+      data.secondary_Weapon = value;
       break;
     }
     default:
@@ -8053,7 +8124,8 @@ void LoadTypedefSLdrTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xcb737724: {
@@ -8147,15 +8219,18 @@ void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input) {
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x2bd13ab3: {
-      data.pakFile = rstl::string(input);
+      const rstl::string value(input);
+      data.pakFile = value;
       break;
     }
     case 0xf8be005a: {
-      data.asset = rstl::string(input);
+      const rstl::string value(input);
+      data.asset = value;
       break;
     }
     case 0xfc93ceb8: {
@@ -8261,7 +8336,8 @@ void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input) {
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xdfd08eba: {
@@ -8349,15 +8425,18 @@ void LoadTypedefSLdrTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x2bd13ab3: {
-      data.pakFile = rstl::string(input);
+      const rstl::string value(input);
+      data.pakFile = value;
       break;
     }
     case 0xfe31fba0: {
-      data.font = rstl::string(input);
+      const rstl::string value(input);
+      data.font = value;
       break;
     }
     case 0x1a96ec67: {
@@ -8417,7 +8496,8 @@ void LoadTypedefSLdrTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input
       break;
     }
     case 0xc0544bc1: {
-      data.stringResName = rstl::string(input);
+      const rstl::string value(input);
+      data.stringResName = value;
       break;
     }
     default:
@@ -8439,7 +8519,8 @@ void LoadTypedefSLdrTweakBall(SLdrTweakBall& data, CInputStream& input) {
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x0def1ffb: {
@@ -8489,7 +8570,8 @@ void LoadTypedefSLdrTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& inp
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x18b2f423: {
@@ -8519,7 +8601,8 @@ void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStr
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0x3c34dfed: {
@@ -8555,7 +8638,8 @@ void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& inp
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xb82ed424: {
@@ -8639,7 +8723,8 @@ void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xb82ed424: {
@@ -8731,7 +8816,8 @@ void LoadTypedefSLdrTweakCameraBob(SLdrTweakCameraBob& data, CInputStream& input
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xe2a0b6f1: {
@@ -8809,7 +8895,8 @@ void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input) {
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x7fda1466: {
-      data.instanceName = rstl::string(input);
+      const rstl::string value(input);
+      data.instanceName = value;
       break;
     }
     case 0xdfd08eba: {
