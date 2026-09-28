@@ -10,7 +10,7 @@ CColor::CColor(CInputStream& in) {
   Set(r, g, b, in.ReadFloat());
 }
 
-CColor::CColor(float r, float g, float b, float a) {
+CColor::CColor(const float r, const float g, const float b, const float a) {
   mR = r * 255.f;
   mG = g * 255.f;
   mB = b * 255.f;

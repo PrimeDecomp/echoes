@@ -18,7 +18,7 @@ public:
   CColor() { Set(255, 0, 255); }
   CColor(uint col) { Set(col); }
   CColor(CInputStream& in);
-  CColor(float r, float g, float b, float a = 1.f);
+  CColor(const float r, const float g, const float b, const float a = 1.f);
   CColor(uchar r, uchar g, uchar b, uchar a = 255) {
     mR = r;
     mG = g;
