@@ -1,5 +1,6 @@
 {
   "template_ref": "22b58bd63d229c7db6bf207acf1f25308186483a",
+  "defaults": "Tweaks.G2ME01.json",
   "sources": [
     "SLdrTweakPlayer.cpp",
     "SLdrTweakCameraBob.cpp",

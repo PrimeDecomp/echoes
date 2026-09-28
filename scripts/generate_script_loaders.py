@@ -7,7 +7,7 @@
 
 Generate into a staging directory and review the diff before replacing tracked files.
 Make corrections in the generator or templates so regeneration preserves them.
-The Tweaks profile selects its existing loaders without changing shared-header ownership.
+The Tweaks profile selects sources and restores native defaults absent from the XML.
 Adding a new source still requires a manual entry in configure.py.
 """
 
@@ -218,9 +218,21 @@ class TemplateSource(Protocol):
 class Source:
     """One local tree or one remote archive snapshot; never extract archive paths."""
 
-    def __init__(self, local: str | Path | None = None, ref: str = "main") -> None:
+    def __init__(
+        self,
+        local: str | Path | None = None,
+        ref: str = "main",
+        defaults: Path | None = None,
+    ) -> None:
         self.root: Path | None = None
         self.files: dict[str, bytes] = {}
+        self.defaults = (
+            json.loads(defaults.read_text(encoding="utf-8")) if defaults else {}
+        )
+        if not isinstance(self.defaults, dict):
+            raise TemplateError(
+                "Default overrides must map template paths to properties"
+            )
         if local is not None:
             root = Path(local).resolve()
             if root.name == "Game.xml":
@@ -232,6 +244,8 @@ class Source:
         else:
             self.files = self._download_snapshot(ref)
             self.description = "https://github.com/" + REPOSITORY + "/tree/" + ref
+        for path in self.defaults:
+            self.xml(path)
 
     @staticmethod
     def _download_snapshot(ref: str) -> dict[str, bytes]:
@@ -272,7 +286,51 @@ class Source:
         return self.files[path]
 
     def xml(self, path: str) -> ET.Element:
-        return ET.fromstring(self.read(path))
+        root = ET.fromstring(self.read(path))
+        overrides = self.defaults.get(path, {})
+        if not isinstance(overrides, dict):
+            raise TemplateError(
+                "Default overrides must map property IDs to values: " + path
+            )
+        properties = {
+            property_id(prop): prop
+            for prop in root.findall("./*/SubProperties/Element")
+        }
+        for key, components in overrides.items():
+            prop = properties.get(int(key, 16))
+            if prop is None:
+                raise TemplateError(
+                    "Default override property not found: " + path + ":" + key
+                )
+            axes = {"Vector": "XYZ", "Color": "RGBA"}.get(prop.get("Type", ""))
+            if prop.get("Type") == "Float":
+                if type(components) not in (int, float) or not math.isfinite(
+                    components
+                ):
+                    raise TemplateError("Invalid float default: " + path + ":" + key)
+            elif axes is None or (
+                components is not None
+                and (
+                    not isinstance(components, dict)
+                    or set(components) != set(axes)
+                    or any(
+                        type(value) not in (int, float) or not math.isfinite(value)
+                        for value in components.values()
+                    )
+                )
+            ):
+                raise TemplateError("Invalid vector/color default: " + path + ":" + key)
+            old = prop.find("DefaultValue")
+            if old is not None:
+                prop.remove(old)
+            if components is not None:
+                default = ET.SubElement(prop, "DefaultValue")
+                if axes is None:
+                    default.text = str(components)
+                else:
+                    for axis in axes:
+                        ET.SubElement(default, axis).text = str(components[axis])
+        return root
 
 
 def merge(base: ET.Element, override: ET.Element) -> ET.Element:
@@ -792,24 +850,43 @@ class Generator:
     def render_struct_source(self, struct: Struct) -> str:
         name = struct.name
         parameter = "data" if struct.is_object else "sldrThis"
-        initializers = ", ".join(p.name + "()" for p in struct.fields)
+        initializers: list[tuple[str | None, str]] = []
+        for prop in struct.fields:
+            kind = prop.node.attrib["Type"]
+            value = ""
+            if not prop.dependency:
+                if kind == "Color":
+                    value = "CColor::Green()"
+                elif kind == "Vector":
+                    value = "CVector3f::Zero()"
+                elif (
+                    kind not in ("String", "Array", "Spline")
+                    and prop.node.find("DefaultValue") is not None
+                ):
+                    # Native generated constructors assign scalar defaults once.
+                    continue
+            initializers.append((prop.condition, prop.name + "(" + value + ")"))
         source = [
             f'#include "{self._include_path_for(name)}"',
             "",
         ]
-        if any(prop.condition for prop in struct.fields):
+        if any(condition for condition, _ in initializers):
             source.append(f"{name}::{name}()")
             source += conditional_lines(
                 [
-                    (prop.condition, [(": " if i == 0 else ", ") + prop.name + "()"])
-                    for i, prop in enumerate(struct.fields)
+                    (condition, [(": " if i == 0 else ", ") + initializer])
+                    for i, (condition, initializer) in enumerate(initializers)
                 ]
             )
             source.append("{")
         else:
             source.append(
                 f"{name}::{name}()"
-                + (" : " + initializers if initializers else "")
+                + (
+                    " : " + ", ".join(value for _, value in initializers)
+                    if initializers
+                    else ""
+                )
                 + " {"
             )
         source += conditional_lines(
@@ -965,7 +1042,7 @@ class Generator:
         return files
 
 
-def read_profile(path: Path) -> tuple[str, list[str]]:
+def read_profile(path: Path) -> tuple[str, list[str], Path | None]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise TemplateError("Profile must contain template_ref and sources")
@@ -982,7 +1059,10 @@ def read_profile(path: Path) -> tuple[str, list[str]]:
         raise TemplateError("Profile sources must be a nonempty list of C++ paths")
     if len(set(sources)) != len(sources):
         raise TemplateError("Duplicate profile sources")
-    return ref, sources
+    defaults = data.get("defaults")
+    if defaults is not None and not isinstance(defaults, str):
+        raise TemplateError("Profile defaults must name an override file")
+    return ref, sources, path.parent / defaults if defaults is not None else None
 
 
 def profile_files(files: dict[str, str], sources: Sequence[str]) -> dict[str, str]:
@@ -1100,10 +1180,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.check and args.force:
         parser.error("--check cannot be combined with --force")
     try:
-        ref, sources = (
-            read_profile(args.profile) if args.profile else (args.ref or "main", [])
+        ref, sources, defaults = (
+            read_profile(args.profile)
+            if args.profile
+            else (args.ref or "main", [], None)
         )
-        generator = Generator(Source(args.templates, ref))
+        generator = Generator(Source(args.templates, ref, defaults))
         # Profiles select output, not input: shared-header ownership must agree with
         # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
