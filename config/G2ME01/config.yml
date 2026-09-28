@@ -416,6 +416,21 @@ modules:
     hash: 1c38866b845b17b6c6084d687f5e0d17a28ea72d
     splits: config/G2ME01/rels/Tweaks/splits.txt
     symbols: config/G2ME01/rels/Tweaks/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - LoadTypedefSLdrTweakPlayer2__FR16SLdrTweakPlayer2R12CInputStream
+      - LoadTypedefSLdrTweakPlayerControls2__FR24SLdrTweakPlayerControls2R12CInputStream
+      - LoadTypedefSLdrTweakPlayerGun2__FR19SLdrTweakPlayerGun2R12CInputStream
+      - __ct__16SLdrTweakPlayer2Fv
+      - __ct__19SLdrTweakPlayerGun2Fv
+      - __ct__24SLdrTweakPlayerControls2Fv
+      - __dt__16SLdrTweakPlayer2Fv
+      - __dt__19SLdrTweakPlayerGun2Fv
+      - __dt__24SLdrTweakPlayerControls2Fv
+      - __dt__Q24rstl21reserved_vector<Ui,2>Fv
+      - __dt__Q24rstl21reserved_vector<Ui,9>Fv
+      - __dt__Q24rstl32reserved_vector<11SWeaponInfo,4>Fv
+      - __dt__Q24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>Fv
   # Module ID 83
   - object: files/RelProd/WallCrawler.rel
     hash: c1ddff73d8875c8387924def88a6027a4f4fe41c
