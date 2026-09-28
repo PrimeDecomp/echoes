@@ -588,7 +588,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/CCrc32.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CCircularBuffer.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CMemory.cpp"),
-            Object(NonMatching, "Kyoto/Alloc/CMediumAllocPool.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CMediumAllocPool.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CSmallAllocPool.cpp"),
             Object(NonMatching, "Kyoto/Alloc/CGameAllocator.cpp"),
             Object(NonMatching, "Kyoto/Animation/DolphinCSkinnedModel.cpp"),
