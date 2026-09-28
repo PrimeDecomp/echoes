@@ -4,10 +4,11 @@
 # dependencies = []
 # ///
 """Generate Echoes SLdr headers and readers from XML templates.
-Usage: uv run scripts/generate_script_loaders.py --profile config/loader_profiles/Tweaks.json --cpp-output build/loaders
-Use --templates PATH for local XMLs; otherwise fetch --ref (default: main, or profile pin).
---header-output DIR emits headers; --object NAME selects objects without a profile.
---check compares without writing; --force replaces differing files. Register new sources in configure.py manually.
+
+Generate into a staging directory and review the diff before replacing tracked files.
+Make corrections in the generator or templates so regeneration preserves them.
+The Tweaks profile selects its existing loaders without changing shared-header ownership.
+Adding a new source still requires a manual entry in configure.py.
 """
 
 from __future__ import annotations
