@@ -184,6 +184,15 @@ MetroidPrime/Enemies/CPatterned.cpp:
 	.ctors      start:0x803A54D0 end:0x803A54D4
 	.data       start:0x803B2148 end:0x803B263C
 
+MetroidPrime/ScriptObjects/CScriptDoor.cpp:
+	.text       start:0x8007B0DC end:0x8007E32C
+	.ctors      start:0x803A54D4 end:0x803A54D8
+	.data       start:0x803B2698 end:0x803B2730
+	.bss        start:0x803DA880 end:0x803DA900
+	.sdata      start:0x80417F50 end:0x80417F70
+	.sbss       start:0x80419020 end:0x80419030
+	.sdata2     start:0x8041AB28 end:0x8041AB40
+
 MetroidPrime/ScriptObjects/CScriptEffect.cpp:
 	.text       start:0x800802D4 end:0x80082EE8
 	.ctors      start:0x803A54D8 end:0x803A54DC

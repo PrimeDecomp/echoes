@@ -150,8 +150,8 @@ public:
                              float amount) override;
   void DrawModelFlat(const CModel& model, const CModelFlags& flags, bool unsortedOnly) override;
   // Guessed name
-  void DrawModelProjectedShadow(const CModel& model, const CTexture& texture,
-                                const CVector3f& direction, const CColor& color,
+  void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
+                                const CVector3f& origin, const CColor& color,
                                 float scale) override;
   // Guessed name
   void DrawModelNoise(const CModel& model, const CColor& color, bool additive) override;

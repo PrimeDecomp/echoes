@@ -26,6 +26,7 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
@@ -111,6 +112,7 @@ TYPES_MATCH_IMPL(CScriptActor, CPhysicsActor, kET_ScriptActor)
 TYPES_MATCH_IMPL(CScriptCameraShaker, CEntity, kET_ScriptCameraShaker)
 TYPES_MATCH_IMPL(CScriptCameraWaypoint, CScriptWaypoint, kET_ScriptCameraWaypoint)
 TYPES_MATCH_IMPL(CScriptColorModulate, CEntity, kET_ScriptColorModulate)
+TYPES_MATCH_IMPL(CScriptDoor, CPhysicsActor, kET_ScriptDoor)
 TYPES_MATCH_IMPL(CScriptEffect, CActor, kET_ScriptEffect)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
@@ -139,6 +141,8 @@ CAST_TO_PTR_IMPL(CScriptCameraWaypoint, kET_ScriptCameraWaypoint)
 CAST_TO_PTR_IMPL(CScriptWaypoint, kET_ScriptWaypoint)
 CAST_TO_PTR_IMPL(CScriptPathCamera, kET_ScriptPathCamera)
 CAST_TO_PTR_IMPL(CScriptCamera, kET_ScriptCamera)
+CAST_TO_REF_IMPL(CScriptDoor, kET_ScriptDoor)
+CAST_TO_PTR_IMPL(CScriptDoor, kET_ScriptDoor)
 CAST_TO_REF_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_REF_IMPL(CScriptPickup, kET_ScriptPickup)

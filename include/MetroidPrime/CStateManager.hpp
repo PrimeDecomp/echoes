@@ -5,6 +5,7 @@ extern const int gkPVSEnabled;
 
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
+#include "MetroidPrime/CFilteredObjectList.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
@@ -18,6 +19,7 @@ extern const int gkPVSEnabled;
 #include "Kyoto/TToken.hpp"
 
 #include "rstl/auto_ptr.hpp"
+#include "rstl/bit_vector.hpp"
 #include "rstl/list.hpp"
 #include "rstl/map.hpp"
 #include "rstl/pair.hpp"
@@ -55,7 +57,7 @@ class CFluidPlaneManager;
 class CDamageInfo;
 class CAABox;
 
-struct MapWorldInfoAreas {};
+typedef rstl::bit_vector<> MapWorldInfoAreas;
 
 enum EStateManagerTransition {
   kSMT_InGame,
@@ -170,6 +172,9 @@ public:
 
   CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *m_objectLists[id]; }
+  // Guessed names. The first filtered list qualifies only CScriptDoor objects.
+  const rstl::list< CEntity* >& GetDoorList() const { return mFilteredObjectLists[0]->GetObjects(); }
+  CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
 
@@ -211,9 +216,12 @@ public:
 public:
   ushort m_nextFreeIndex;
   rstl::reserved_vector< ushort, 1024 > m_objectIndexArray;                // x0x4
-  rstl::reserved_vector< rstl::auto_ptr< CObjectList >, 9 > m_objectLists; // 0x808
+  rstl::reserved_vector< rstl::auto_ptr< CObjectList >, 8 > m_objectLists; // 0x808
+  rstl::reserved_vector< CObjectList*, 8 > mDynamicObjectLists;
+  rstl::reserved_vector< rstl::auto_ptr< CFilteredObjectList >, 6 > mFilteredObjectLists;
+  rstl::reserved_vector< CFilteredObjectList*, 6 > mDynamicFilteredObjectLists;
   MapWorldInfoAreas mapWorldInfoAreas;
-  char pad1[0x94]; // 0x408
+  char x8d4_[0x18];
   ScriptMsgArray m_scriptMsgs;
   CArchitectureQueue* m_archQueue;
   int m_numPlayers;
@@ -235,8 +243,9 @@ public:
   CEnvFxManager* m_envFxManager;               // 0x1630
   CActorModelParticles* m_actorModelParticles; // 0x1634
   void* x1638;
-  char pad2_2[0x48];
+  char pad2_2[0x40];
   rstl::rc_ptr< CRelayTracker > m_relayTracker;
+  rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
   rstl::rc_ptr< CWorldTransManager > m_worldTransManager;
   CWorldLayerState* m_currentWorldLayerState;
   int* x1698;

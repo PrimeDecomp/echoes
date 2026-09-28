@@ -824,8 +824,8 @@ void CCubeRenderer::DisablePVS(int areaId) {
   }
 }
 
-void CCubeRenderer::DrawModelProjectedShadow(const CModel& model, const CTexture& texture,
-                                             const CVector3f& direction, const CColor& color,
+void CCubeRenderer::DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
+                                             const CVector3f& origin, const CColor& color,
                                              float scale) {
   // TODO: reconstruct this rendering pass.
 }

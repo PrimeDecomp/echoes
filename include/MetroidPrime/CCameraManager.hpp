@@ -34,6 +34,7 @@ public:
   CHintManager* HintManager() { return mCameraHintManager; }
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
+  CBallCamera* BallCamera() { return mBallCamera; }
   const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }
 
   float GetFirstPersonFOV() const;
