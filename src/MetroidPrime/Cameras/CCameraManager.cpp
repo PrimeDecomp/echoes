@@ -218,8 +218,10 @@ void CCameraManager::SetPlayerCamera(CStateManager& mgr, TUniqueId uid) {
 }
 
 void CCameraManager::SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
-                                        bool interpolateRotation, int positionMode,
-                                        int rotationMode, CStateManager& mgr, bool flag,
+                                        bool interpolateRotation,
+                                        CInterpolationCamera::EPositionMode positionMode,
+                                        CInterpolationCamera::ERotationMode rotationMode,
+                                        CStateManager& mgr, bool flag,
                                         float duration, float fov) {
   if (!IsInFPCamera()) {
     mInterpCamera->SetInterpolation(xf, from, to, interpolateRotation, positionMode, rotationMode,

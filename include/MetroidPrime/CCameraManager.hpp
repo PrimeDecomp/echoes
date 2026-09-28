@@ -4,6 +4,7 @@
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "MetroidPrime/CGameArea.hpp"
+#include "MetroidPrime/Cameras/CInterpolationCamera.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/optional_object.hpp"
 #include "rstl/reserved_vector.hpp"
@@ -17,7 +18,6 @@ class CFirstPersonCamera;
 class CFixedCamera; // Guessed name
 class CGameCamera;
 class CHintManager;
-class CInterpolationCamera;
 class CMaterialFilter;
 class CMaterialList;
 class CMotionSpline;
@@ -78,9 +78,11 @@ public:
   bool ShouldBypassInterpolationCamera() const;
   bool IsBallCameraTransitioning(const CStateManager& mgr) const; // Guessed name
   void SetPlayerCamera(CStateManager& mgr, TUniqueId uid);
-  // Original mode enum types and final flag are unresolved.
+  // The final flag is unresolved.
   void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
-                          bool interpolateRotation, int positionMode, int rotationMode,
+                          bool interpolateRotation,
+                          CInterpolationCamera::EPositionMode positionMode,
+                          CInterpolationCamera::ERotationMode rotationMode,
                           CStateManager& mgr, bool flag, float duration, float fov);
   void CinematicCut(CStateManager& mgr);
   void SetPathCamera(TUniqueId uid, CStateManager& mgr);

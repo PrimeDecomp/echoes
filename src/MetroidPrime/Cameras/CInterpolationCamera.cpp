@@ -34,8 +34,8 @@ CInterpolationCamera::CInterpolationCamera(TUniqueId uid, const CTransform4f& xf
 , mInitialDistance(0.f)
 , mInitialAngle(0.f)
 , mAngularSpeed(M_PIF)
-, mPositionMode(0)
-, mRotationMode(1)
+, mPositionMode(kPM_Direct)
+, mRotationMode(kRM_LinearSlerp)
 , mSpline(false, 1.f, CMotionSpline::kST_Bezier)
 , x2a0_(0.f)
 , mInterpolateRotation(false)
@@ -58,26 +58,26 @@ CTransform4f CInterpolationCamera::CalculateOrientation(float dt, const CVector3
 
     float remaining;
     switch (mRotationMode) {
-    case 0:
-    case 1:
+    case kRM_Linear:
+    case kRM_LinearSlerp:
       remaining = CMath::Clamp(0.f, 1.f - mTime / mDuration, 1.f);
       break;
-    case 2:
+    case kRM_Sine:
       remaining = CMath::Clamp(0.f, 1.f - sinf((M_PIF * 0.5f * mTime) / mDuration), 1.f);
       break;
-    case 3:
+    case kRM_SinusoidalEase:
       remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
                                          CMath::kET_Sinusoidal, 0.25f, 0.75f, 0.f, 1.f, 2.f);
       break;
-    case 4:
+    case kRM_SinusoidalEaseFull:
       remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f),
                                          CMath::kET_Sinusoidal, 0.f, 1.f, 0.f, 1.f, 2.f);
       break;
-    case 5:
+    case kRM_QuadraticEase:
       remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f), CMath::kET_Quadratic,
                                          0.25f, 0.75f, 0.f, 1.f, 2.f);
       break;
-    case 6:
+    case kRM_QuadraticEaseFull:
       remaining = 1.f - CMath::EaseInOut(CMath::Limit(mTime / mDuration, 1.f), CMath::kET_Quadratic,
                                          0.f, 1.f, 0.f, 1.f, 2.f);
       break;
@@ -102,7 +102,7 @@ CTransform4f CInterpolationCamera::CalculateOrientation(float dt, const CVector3
       } else {
         const CRelAngle angle = CRelAngle::FromRadians(mInitialAngle * remaining);
         CVector3f rotated;
-        if (mRotationMode == 1) {
+        if (mRotationMode == kRM_LinearSlerp) {
           rotated = CVector3f::Slerp(direction, mStartTransform.GetForward(), angle);
         } else {
           const CQuaternion rotation =
@@ -187,9 +187,9 @@ bool CInterpolationCamera::InterpolateSpline(float dt, CTransform4f& xf, const C
 }
 
 void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
-                                            bool interpolateRotation, int positionMode,
-                                            int rotationMode, CStateManager& mgr, bool flag,
-                                            float duration, float fov) {
+                                            bool interpolateRotation, EPositionMode positionMode,
+                                            ERotationMode rotationMode, CStateManager& mgr,
+                                            bool flag, float duration, float fov) {
   SetActive(true);
   SetTransform(xf);
   mStartTransform = xf;
@@ -229,7 +229,7 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
   }
 }
 
-void CInterpolationCamera::EndInterpolation(int reason, CStateManager& mgr) {
+void CInterpolationCamera::EndInterpolation(EEndReason reason, CStateManager& mgr) {
   SetActive(false);
   CCameraManager& cameraManager = CameraManager(mgr);
   CGameCamera* target = TCastToPtr< CGameCamera >(mgr.ObjectById(mTargetId));
@@ -237,7 +237,7 @@ void CInterpolationCamera::EndInterpolation(int reason, CStateManager& mgr) {
     return;
   }
   if (target->GetActive()) {
-    if (reason == 0) {
+    if (reason == kER_Completed) {
       cameraManager.TransferCameraState(*this, *target, mgr);
     }
     cameraManager.SetCurrentCameraId(mTargetId);
@@ -245,14 +245,15 @@ void CInterpolationCamera::EndInterpolation(int reason, CStateManager& mgr) {
     const CPlayer::EPlayerMorphBallState state = GetPlayer(mgr).GetMorphballTransitionState();
     if (state == CPlayer::kMS_Unmorphed || state == CPlayer::kMS_Unmorphing) {
       CFirstPersonCamera* camera = cameraManager.FirstPersonCamera();
-      if (reason == 0) {
+      if (reason == kER_Completed) {
         cameraManager.TransferCameraState(*this, *camera, mgr);
       }
       cameraManager.SetCurrentCameraId(camera->GetUniqueId());
     } else {
       const CBallCamera* camera = cameraManager.GetBallCamera();
       cameraManager.SetupInterpolation(GetTransform(), GetUniqueId(), camera->GetUniqueId(), false,
-                                       0, 1, mgr, true, 1.f, camera->GetFov());
+                                       kPM_Direct, kRM_LinearSlerp, mgr, true, 1.f,
+                                       camera->GetFov());
     }
   }
 }
@@ -269,7 +270,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
   CTransform4f xf = GetTransform();
   const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(mTargetId));
   if (!target || !target->GetActive()) {
-    EndInterpolation(3, mgr);
+    EndInterpolation(kER_TargetUnavailable, mgr);
     return;
   }
 
@@ -277,18 +278,18 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
   mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
   bool done = true;
   switch (mPositionMode) {
-  case 0:
+  case kPM_Direct:
     done = InterpolatePosition(dt, xf, position, mgr);
     break;
-  case 1:
+  case kPM_Spline:
     done = InterpolateSpline(dt, xf, position, mgr);
     break;
   }
   xf = ValidateCameraTransform(xf, oldXf);
   SetTransform(xf);
   if (done) {
-    EndInterpolation(0, mgr);
-  } else if (mPositionMode == 0 ||
+    EndInterpolation(kER_Completed, mgr);
+  } else if (mPositionMode == kPM_Direct ||
              target->GetUniqueId() == GetCameraManager(mgr).GetBallCamera()->GetUniqueId()) {
     if ((target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
       CVector3f direction = xf.GetTranslation() - oldXf.GetTranslation();
@@ -299,7 +300,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
       }
       if (mgr.RayStaticIntersection(GetTranslation(), direction, 3.f, skCollisionFilter)
               .IsValid()) {
-        EndInterpolation(2, mgr);
+        EndInterpolation(kER_Obstruction, mgr);
         CameraManager(mgr).StartScreenFlash();
       }
     }

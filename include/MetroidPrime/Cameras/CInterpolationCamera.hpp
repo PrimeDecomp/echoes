@@ -6,6 +6,28 @@
 
 class CInterpolationCamera : public CGameCamera {
 public:
+  // Guessed names; values and behavior are recovered from the interpolation paths.
+  enum EPositionMode {
+    kPM_Direct = 0,
+    kPM_Spline = 1,
+  };
+
+  enum ERotationMode {
+    kRM_Linear = 0,
+    kRM_LinearSlerp = 1,
+    kRM_Sine = 2,
+    kRM_SinusoidalEase = 3,
+    kRM_SinusoidalEaseFull = 4,
+    kRM_QuadraticEase = 5,
+    kRM_QuadraticEaseFull = 6,
+  };
+
+  enum EEndReason {
+    kER_Completed = 0,
+    kER_Obstruction = 2,
+    kER_TargetUnavailable = 3,
+  };
+
   CInterpolationCamera(TUniqueId uid, const CTransform4f& xf, int index, int controllerIdx);
 
   // CEntity
@@ -21,9 +43,10 @@ public:
   void Reset(const CTransform4f& xf, CStateManager& mgr) override;
 
   void SetInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
-                        bool interpolateRotation, int positionMode, int rotationMode,
-                        CStateManager& mgr, bool flag, float duration, float fov);
-  void EndInterpolation(int reason, CStateManager& mgr);
+                        bool interpolateRotation, EPositionMode positionMode,
+                        ERotationMode rotationMode, CStateManager& mgr, bool flag, float duration,
+                        float fov);
+  void EndInterpolation(EEndReason reason, CStateManager& mgr);
   void SetSpline(const CMotionSpline& spline); // Guessed name
 
 private:
@@ -43,8 +66,8 @@ private:
   float mInitialDistance;
   float mInitialAngle;
   float mAngularSpeed;
-  int mPositionMode;
-  int mRotationMode;
+  EPositionMode mPositionMode;
+  ERotationMode mRotationMode;
   CMotionSpline mSpline;
   float x2a0_; // Reset to zero; no consumer established.
   bool mInterpolateRotation : 1;
