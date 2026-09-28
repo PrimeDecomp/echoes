@@ -66,6 +66,23 @@ struct SLdrForgottenObject {
 
 CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
   SLdrForgottenObject properties;
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.ReadInt32();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x255a4580:
+      LoadTypedefSLdrEditorProperties(properties.editorProperties, input);
+      break;
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+
+  return rs_new CScriptForgottenObject(mgr.AllocateUniqueId(),
+                                       LdrToEntityInfo(info, properties.editorProperties),
+                                       properties.editorProperties.name);
 }
 
 static void SetFuncPtrs() {
