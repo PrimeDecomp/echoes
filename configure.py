@@ -441,6 +441,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CAutoMapper.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGun.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGunBase.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CGrappleArm.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CFidget.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPickup.cpp"),
             Object(Matching, "MetroidPrime/HUD/CHUDMemoParms.cpp"),

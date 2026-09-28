@@ -595,6 +595,11 @@ MetroidPrime/Enemies/CKnockBackMgr.cpp:
 	.data       start:0x803B6A80 end:0x803B6AFC
 	.sdata2     start:0x8041CF60 end:0x8041CF78
 
+MetroidPrime/Player/CGrappleArm.cpp:
+	.text       start:0x801C316C end:0x801C6B20
+	.ctors      start:0x803A5574 end:0x803A5578
+	.data       start:0x803B6CE0 end:0x803B6D08
+
 MetroidPrime/Player/CFidget.cpp:
 	.text       start:0x801C6B20 end:0x801C6DF0
 

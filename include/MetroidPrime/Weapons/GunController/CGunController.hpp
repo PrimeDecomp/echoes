@@ -15,6 +15,10 @@ public:
   ~CGunController() {}
 
   void Reset();
+  bool Update(float dt, CStateManager& mgr);
+  void EnterIdle(CStateManager& mgr);
+  void EnterFreeLook(CStateManager& mgr, int gunId, int setId);
+  void EnterStruck(CStateManager& mgr, float angle, bool bigStrike, bool notInFreeLook);
   void ReturnToDefault(CStateManager& mgr, float delay, bool reset);
   void EnterComboFire(CStateManager& mgr, int gunId);
   void EnterFidget(CStateManager& mgr, int type, int gunId, int animSet);
