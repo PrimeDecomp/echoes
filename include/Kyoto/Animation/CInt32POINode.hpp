@@ -7,8 +7,10 @@
 
 class CInt32POINode : public CPOINode {
 public:
-  CInt32POINode(uint nameHash, ushort type, const CCharAnimTime& time, int index, bool unique,
-                float weight, int charIdx, int flags, int value, const rstl::string& locatorName)
+  CInt32POINode(uint nameHash = -1, ushort type = kPT_EmptyInt32,
+                const CCharAnimTime& time = CCharAnimTime(), int index = -1, bool unique = false,
+                float weight = 1.f, int charIdx = -1, int flags = 0, int value = 0,
+                const rstl::string& locatorName = rstl::string_l("root"))
   : CPOINode(nameHash, type, time, index, unique, weight, charIdx, flags)
   , mVal(value)
   , mLctrName(locatorName) {}

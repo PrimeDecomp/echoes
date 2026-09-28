@@ -21,7 +21,9 @@ public:
 
   rstl::ncrc_ptr< CAnimTreeNode > GetTransitionTree(const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                                     const rstl::ncrc_ptr< CAnimTreeNode >& b,
-                                                    const CAnimSysContext& animSys) const;
+                                                    const CAnimSysContext& animSys) const {
+    return VGetTransitionTree(a, b, animSys);
+  }
 };
 
 inline IMetaTrans::~IMetaTrans() {}
