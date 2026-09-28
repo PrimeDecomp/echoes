@@ -32,6 +32,8 @@ CSoundPOINode::CSoundPOINode(CInputStream& in)
   }
 }
 
+CSoundPOINode::~CSoundPOINode() {}
+
 CSoundPOINode CSoundPOINode::CopyNodeMinusStartTime(const CSoundPOINode& node,
                                                     const CCharAnimTime& startTime) {
   return CSoundPOINode(node.GetNameHash(), node.GetPoiType(), node.GetTime() - startTime,

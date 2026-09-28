@@ -34,6 +34,9 @@ struct is_trivially_destructible< T* > {
 };
 
 template < typename T >
+void construct_impl(void* dest, const T& src);
+
+template < typename T >
 inline void construct_impl(void* dest, const T& src) {
   new (dest) T(src);
 }

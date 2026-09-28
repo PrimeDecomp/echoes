@@ -16,6 +16,10 @@ struct SAdvancementDeltas {
   CVector3f mPosDelta;
   CQuaternion mRotDelta;
 
+  SAdvancementDeltas() {}
+  SAdvancementDeltas(const CVector3f& posDelta, const CQuaternion& rotDelta)
+  : mPosDelta(posDelta), mRotDelta(rotDelta) {}
+
   static SAdvancementDeltas Interpolate(const SAdvancementDeltas& a, const SAdvancementDeltas& b,
                                         float oldWeight, float newWeight);
   static SAdvancementDeltas Blend(const SAdvancementDeltas& a, const SAdvancementDeltas& b,
@@ -27,6 +31,10 @@ struct SAdvancementResults {
   SAdvancementDeltas mDeltas;
 
   SAdvancementResults() {}
+  SAdvancementResults(const CCharAnimTime& time, const SAdvancementDeltas& deltas)
+  : mRemTime(time), mDeltas(deltas) {}
+
+  const CCharAnimTime& GetRemainder() const { return mRemTime; }
   explicit SAdvancementResults(const CCharAnimTime& time) : mRemTime(time) {
     mDeltas.mPosDelta = CVector3f::Zero();
     mDeltas.mRotDelta = CQuaternion::NoRotation();
@@ -115,6 +123,11 @@ public:
   virtual SAdvancementResults VGetAdvancementResults(const CCharAnimTime& time,
                                                      const CCharAnimTime& startOffset) const;
 
+  rstl::ownership_transfer< IAnimReader > Clone() const { return VClone(); }
+  rstl::optional_object< rstl::ownership_transfer< IAnimReader > > Simplified() {
+    return VSimplified();
+  }
+  SAdvancementResults AdvanceView(const CCharAnimTime& time) { return VAdvanceView(time); }
   CCharAnimTime GetTimeRemaining() const { return VGetTimeRemaining(); }
   CSteadyStateAnimInfo GetSteadyStateAnimInfo() const { return VGetSteadyStateAnimInfo(); }
 

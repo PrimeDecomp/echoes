@@ -3,6 +3,8 @@
 
 CAnimTreeNode::CAnimTreeNode(const rstl::string& name) : mName(name) {}
 
+CAnimTreeNode::~CAnimTreeNode() {}
+
 rstl::ncrc_ptr< CAnimTreeNode > Cast(const rstl::ownership_transfer< IAnimReader >& ptr) {
   IAnimReader* reader = ptr.take_ownership();
   if (reader->IsCAnimTreeNode()) {
