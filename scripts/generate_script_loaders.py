@@ -3,20 +3,12 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Generate Echoes SLdr types, readers, and LoadX factory adapters.
+"""Generate Echoes SLdr headers and readers from XML templates.
 
-Usage:
-```sh
-uv run --script scripts/generate_script_loaders.py --header-output build/loader-headers --cpp-output build/loader-sources
-uv run --script scripts/generate_script_loaders.py --ref <commit-sha> --object Counter --object STAU --header-output build/loader-headers
-```
-
-Or use a local checkout, with no network access:
-
-```sh
-uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates --header-output include/MetroidPrime/ScriptLoader
-uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates/MP2 --object Counter --header-output build/loader-headers
-```
+Generate into a staging directory and review the diff before replacing tracked files.
+Make corrections in the generator or templates so regeneration preserves them.
+The Tweaks profile selects its existing loaders without changing shared-header ownership.
+Adding a new source still requires a manual entry in configure.py.
 """
 
 from __future__ import annotations
@@ -36,11 +28,21 @@ import zipfile
 from binascii import crc32
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
+from itertools import groupby
 from pathlib import Path, PurePosixPath
 from textwrap import dedent
 from typing import Protocol
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
+
+# The XML labels these as PAL additions. G2ME01's native record has nine icons;
+# retain the existing layout for other builds until their binaries are checked.
+G2ME01_ABSENT_PROPERTIES: dict[str, frozenset[int]] = {
+    "SLdrTweakPlayerRes_AutoMapperIcons": frozenset(
+        {0x5096BFA5, 0xF4E6E0EB, 0x65700CCC, 0xA0D73242, 0x5291EB5F}
+    ),
+}
+
 KEYWORDS: set[str] = {
     "alignas",
     "alignof",
@@ -122,8 +124,10 @@ KEYWORDS: set[str] = {
     "xor",
 }
 
-def is_matching(name: str, hash_value: int):
+
+def is_matching(name: str, hash_value: int) -> bool:
     return (crc32(name.encode()) ^ 0xFFFFFFFF) == hash_value
+
 
 @dataclass(frozen=True)
 class Primitive:
@@ -164,7 +168,6 @@ pwe_type_lookup = {
     "Guid": "guid",
     "Enum": "enum",
 }
-
 
 
 class TemplateError(ValueError):
@@ -307,6 +310,21 @@ class Field:
     matching_name: bool | None
     dependency: str | None = None
     item: Field | None = None
+    condition: str | None = None
+
+
+def conditional_lines(chunks: Sequence[tuple[str | None, list[str]]]) -> list[str]:
+    """Group adjacent fields under their shared build condition."""
+    result: list[str] = []
+    nonempty = (chunk for chunk in chunks if chunk[1])
+    for condition, group in groupby(nonempty, key=lambda chunk: chunk[0]):
+        if condition:
+            result.append("#if " + condition)
+        for _, lines in group:
+            result.extend(lines)
+        if condition:
+            result.append("#endif")
+    return result
 
 
 @dataclass
@@ -421,11 +439,7 @@ class Generator:
 
     def _get_other_type(self, node: ET.Element) -> str | None:
         pid = property_id(node)
-        all_types = [
-            ptype
-            for prop_id, ptype in self.names
-            if prop_id == pid
-        ]
+        all_types = [ptype for prop_id, ptype in self.names if prop_id == pid]
         if len(all_types) > 1:
             return all_types[-1]
         return None
@@ -444,7 +458,7 @@ class Generator:
                 matching_type_name = pwe_type_lookup[matching_type_name]
             elif archetype:
                 matching_type_name = archetype
-            
+
             if matching_type_name is not None:
                 hashable_name = f"{raw_name}{matching_type_name}"
                 matching_name = is_matching(hashable_name, property_id(node))
@@ -459,8 +473,14 @@ class Generator:
             if item_node is None:
                 raise TemplateError("Array has no ItemArchetype: " + owner)
             item = self.make_field(self.resolve(item_node), "item", owner + "_Item")
-            return Field(name, node, "rstl::vector< " + item.cpp + " >", item=item, matching_name=matching_name)
-        
+            return Field(
+                name,
+                node,
+                "rstl::vector< " + item.cpp + " >",
+                item=item,
+                matching_name=matching_name,
+            )
+
         if kind == "Struct" or archetype:
             if archetype:
                 cpp = "SLdr" + identifier(archetype)
@@ -475,7 +495,11 @@ class Generator:
         if kind == "AnimationSet":
             self.uses_animation_parameters = True
             return Field(
-                name, node, "SLdrAnimationParameters", matching_name, "SLdrAnimationParameters",
+                name,
+                node,
+                "SLdrAnimationParameters",
+                matching_name,
+                "SLdrAnimationParameters",
             )
         if kind not in PRIMITIVES:
             raise TemplateError("Unsupported property type " + kind + " in " + owner)
@@ -504,7 +528,9 @@ class Generator:
         if struct.scalar:
             if kind not in PRIMITIVES:
                 raise TemplateError("Unsupported scalar archetype: " + kind)
-            struct.fields.append(Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=None))
+            struct.fields.append(
+                Field("value", node, PRIMITIVES[kind].cpp_type, matching_name=None)
+            )
         else:
             seen_ids: set[int] = set()
             seen_names: set[str] = set()
@@ -519,7 +545,10 @@ class Generator:
                 if member in seen_names:
                     raise TemplateError("C++ member collision in " + name)
                 seen_names.add(member)
-                struct.fields.append(self.make_field(child, member, name[4:]))
+                prop = self.make_field(child, member, name[4:])
+                if pid in G2ME01_ABSENT_PROPERTIES.get(name, frozenset()):
+                    prop = replace(prop, condition="VERSION != VERSION_G2ME01")
+                struct.fields.append(prop)
         self.loading.remove(name)
         self.structs[name] = struct
 
@@ -595,7 +624,9 @@ class Generator:
                     and ET.tostring(actual_default) == ET.tostring(inherited)
                 ):
                     return []
-                scalar = Field("value", prop.node, struct.fields[0].cpp, matching_name=None)
+                scalar = Field(
+                    "value", prop.node, struct.fields[0].cpp, matching_name=None
+                )
                 return self.defaults(scalar, target + ".value")
             children = {
                 property_id(child): child
@@ -730,6 +761,7 @@ class Generator:
                 "  ~" + member_name + "();",
                 "",
             ]
+            declarations: list[tuple[str | None, list[str]]] = []
             for prop in member.fields:
                 comment_entries = []
                 if not member.scalar and not member.atomic:
@@ -738,7 +770,13 @@ class Generator:
                     comment_entries.append(f"0x{property_id(prop.node):08x}")
 
                 comment = " // " + ", ".join(comment_entries) if comment_entries else ""
-                header.append("  " + prop.cpp + " " + prop.name + ";" + comment)
+                declarations.append(
+                    (
+                        prop.condition,
+                        ["  " + prop.cpp + " " + prop.name + ";" + comment],
+                    )
+                )
+            header += conditional_lines(declarations)
             header += [
                 "};",
                 "",
@@ -753,14 +791,36 @@ class Generator:
 
     def render_struct_source(self, struct: Struct) -> str:
         name = struct.name
+        parameter = "data" if struct.is_object else "sldrThis"
         initializers = ", ".join(p.name + "()" for p in struct.fields)
         source = [
             f'#include "{self._include_path_for(name)}"',
             "",
-            f"{name}::{name}()" + (" : " + initializers if initializers else "") + " {",
         ]
-        for prop in struct.fields:
-            source += ["  " + line for line in self.defaults(prop, prop.name)]
+        if any(prop.condition for prop in struct.fields):
+            source.append(f"{name}::{name}()")
+            source += conditional_lines(
+                [
+                    (prop.condition, [(": " if i == 0 else ", ") + prop.name + "()"])
+                    for i, prop in enumerate(struct.fields)
+                ]
+            )
+            source.append("{")
+        else:
+            source.append(
+                f"{name}::{name}()"
+                + (" : " + initializers if initializers else "")
+                + " {"
+            )
+        source += conditional_lines(
+            [
+                (
+                    prop.condition,
+                    ["  " + line for line in self.defaults(prop, prop.name)],
+                )
+                for prop in struct.fields
+            ]
+        )
         source += [
             "}",
             "",
@@ -770,24 +830,31 @@ class Generator:
             + name
             + "("
             + name
-            + "& sldrThis, CInputStream& input) {",
+            + f"& {parameter}, CInputStream& input) {{",
         ]
         source += (
-            self.render_sequential_reader(struct)
+            self.render_sequential_reader(struct, parameter)
             if struct.atomic or struct.scalar
-            else self.render_tagged_reader(struct)
+            else self.render_tagged_reader(struct, parameter)
         )
         source += ["}", ""]
         return "\n".join(source)
 
-    def render_sequential_reader(self, struct: Struct) -> list[str]:
-        return [
-            "  " + line
-            for prop in struct.fields
-            for line in self.read_field(prop, "sldrThis." + prop.name)
-        ]
+    def render_sequential_reader(self, struct: Struct, parameter: str) -> list[str]:
+        return conditional_lines(
+            [
+                (
+                    prop.condition,
+                    [
+                        "  " + line
+                        for line in self.read_field(prop, parameter + "." + prop.name)
+                    ],
+                )
+                for prop in struct.fields
+            ]
+        )
 
-    def render_tagged_reader(self, struct: Struct) -> list[str]:
+    def render_tagged_reader(self, struct: Struct, parameter: str) -> list[str]:
         lines = [
             "  const int propertyCount = input.ReadUint16();",
             "  for (int i = 0; i < propertyCount; ++i) {",
@@ -795,15 +862,18 @@ class Generator:
             "    const u16 propertySize = input.ReadUint16();",
             "    switch (propertyId) {",
         ]
+        cases: list[tuple[str | None, list[str]]] = []
         for prop in struct.fields:
-            lines.append(f"    case 0x{property_id(prop.node):08x}: {{")
-            lines.extend(
+            case = [f"    case 0x{property_id(prop.node):08x}: {{"]
+            case.extend(
                 "      " + line
                 for line in self.read_field(
-                    prop, "sldrThis." + prop.name, "propertySize"
+                    prop, parameter + "." + prop.name, "propertySize"
                 )
             )
-            lines.extend(["      break;", "    }"])
+            case.extend(["      break;", "    }"])
+            cases.append((prop.condition, case))
+        lines.extend(conditional_lines(cases))
         lines.extend(
             [
                 "    default:",
@@ -895,6 +965,63 @@ class Generator:
         return files
 
 
+def read_profile(path: Path) -> tuple[str, list[str]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise TemplateError("Profile must contain template_ref and sources")
+    ref, sources = data.get("template_ref"), data.get("sources")
+    if not isinstance(ref, str) or not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise TemplateError("Profile must pin a template commit")
+    if (
+        not isinstance(sources, list)
+        or not sources
+        or any(
+            not isinstance(name, str) or not name.endswith(".cpp") for name in sources
+        )
+    ):
+        raise TemplateError("Profile sources must be a nonempty list of C++ paths")
+    if len(set(sources)) != len(sources):
+        raise TemplateError("Duplicate profile sources")
+    return ref, sources
+
+
+def profile_files(files: dict[str, str], sources: Sequence[str]) -> dict[str, str]:
+    """Select reviewed sources and their headers from the complete ownership graph."""
+    missing = set(sources) - files.keys()
+    if missing:
+        raise TemplateError(
+            "Profile sources not generated: " + ", ".join(sorted(missing))
+        )
+    selected: dict[str, str] = {}
+    pending = list(sources)
+    while pending:
+        name = pending.pop()
+        if name in selected:
+            continue
+        if name not in files:
+            raise TemplateError("Generated header not found: " + name)
+        selected[name] = files[name]
+        pending.extend(
+            re.findall(
+                r'^#include "MetroidPrime/ScriptLoader/([^"\n]+)"',
+                files[name],
+                re.MULTILINE,
+            )
+        )
+    return selected
+
+
+def output_differences(files: dict[str, str], output: Path) -> list[str]:
+    """List missing or stale generated files without modifying the destination."""
+    return [
+        name
+        for name, content in sorted(files.items())
+        if not (output / name).is_file()
+        or (output / name).read_bytes().replace(b"\r\n", b"\n")
+        != content.encode("utf-8")
+    ]
+
+
 def write_output(
     files: dict[str, str], output: str | Path, force: bool = False
 ) -> None:
@@ -935,8 +1062,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         help="local repository root, MP2 directory, or MP2/Game.xml (offline)",
     )
+    parser.add_argument("--ref", help="remote branch, tag or commit (default: main)")
     parser.add_argument(
-        "--ref", default="main", help="remote branch, tag or commit (default: main)"
+        "--profile",
+        type=Path,
+        help="reviewed module source list and pinned template commit",
     )
     parser.add_argument(
         "--header-output",
@@ -957,34 +1087,63 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="replace differing generated files in the output directory",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="report missing/stale outputs without writing",
+    )
     args = parser.parse_args(argv)
     if not args.header_output and not args.cpp_output:
         parser.error("provide --header-output and/or --cpp-output")
+    if args.profile and (args.object or args.ref):
+        parser.error("--profile cannot be combined with --object or --ref")
+    if args.check and args.force:
+        parser.error("--check cannot be combined with --force")
     try:
-        generator = Generator(Source(args.templates, args.ref))
+        ref, sources = (
+            read_profile(args.profile) if args.profile else (args.ref or "main", [])
+        )
+        generator = Generator(Source(args.templates, ref))
+        # Profiles select output, not input: shared-header ownership must agree with
+        # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
         files = generator.render()
+        if sources:
+            files = profile_files(files, sources)
+        outputs: list[tuple[Path, dict[str, str]]] = []
         if args.header_output:
-            write_output(
-                {
-                    name: content
-                    for name, content in files.items()
-                    if name.endswith(".hpp")
-                },
-                args.header_output,
-                args.force,
+            outputs.append(
+                (
+                    args.header_output,
+                    {n: c for n, c in files.items() if n.endswith(".hpp")},
+                )
             )
         if args.cpp_output:
-            write_output(
-                {
-                    name: content
-                    for name, content in files.items()
-                    if name.endswith(".cpp")
-                },
-                args.cpp_output,
-                args.force,
+            outputs.append(
+                (
+                    args.cpp_output,
+                    {n: c for n, c in files.items() if n.endswith(".cpp")},
+                )
             )
+        if args.check:
+            stale = [
+                str(path / name)
+                for path, output in outputs
+                for name in output_differences(output, path)
+            ]
+            if stale:
+                print(
+                    "Missing or stale generated files:\n" + "\n".join(stale),
+                    file=sys.stderr,
+                )
+                return 1
+            print("Generated files are up to date")
+            return 0
+        for path, output in outputs:
+            write_output(output, path, args.force)
     except (
+        ValueError,
+        OSError,
         ET.ParseError,
         zipfile.BadZipFile,
         urllib.error.URLError,

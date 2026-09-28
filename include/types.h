@@ -1,6 +1,8 @@
 #ifndef _TYPES
 #define _TYPES
 
+#include "GameVersions.h"
+
 #ifdef __cplusplus
 #include "static_assert.hpp"
 

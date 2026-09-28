@@ -220,7 +220,7 @@ cflags_base = [
     "-i libc",
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
-    f"-DVERSION_{config.version}",
+    f"-DVERSION={version_num}",
 ]
 
 # GC 3.0 and above require -enc SJIS instead of -multibyte
@@ -261,6 +261,9 @@ cflags_runtime = [
     # "-inline auto",
 ]
 
+# Main-game and game REL sources use the same Retro compiler and base flags.
+retro_mw_version = "GC/2.7"
+
 # Retro flags
 cflags_retro = [
     *cflags_base,
@@ -279,7 +282,7 @@ cflags_retro = [
 if config.version == "G2ME01":
     cflags_retro.append('-pragma "inline_max_size(125)"')
 
-# REL flags
+# Relocatable code cannot use the DOL's small-data bases.
 cflags_rel = [
     *cflags_retro,
     "-sdata 0",
@@ -313,7 +316,7 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
 def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
-        "mw_version": "GC/2.7",
+        "mw_version": retro_mw_version,
         "cflags": cflags_rel,
         "progress_category": "game",
         "host": True,
@@ -375,7 +378,7 @@ config.libs = [
     {
         "lib": "MetroidPrime",
         "cflags": cflags_retro,
-        "mw_version": "GC/2.7",
+        "mw_version": retro_mw_version,
         "progress_category": "game",  # str | List[str]
         "host": True,
         "objects": [
