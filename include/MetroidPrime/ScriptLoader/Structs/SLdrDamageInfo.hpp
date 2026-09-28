@@ -4,20 +4,11 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
-struct SLdrWeaponType {
-  SLdrWeaponType();
-  ~SLdrWeaponType();
-
-  int value;
-};
-
-void LoadTypedefSLdrWeaponType(SLdrWeaponType& data, CInputStream& input);
-
 struct SLdrDamageInfo {
   SLdrDamageInfo();
   ~SLdrDamageInfo();
 
-  SLdrWeaponType unknown_0x119fbd31; // 0x119fbd31
+  int unknown_0x119fbd31; // 0x119fbd31
   float dI_Damage; // 0xf2d02613
   float dI_Radius; // 0xee1be914
   float dI_KnockBackPower; // 0x555ff80a

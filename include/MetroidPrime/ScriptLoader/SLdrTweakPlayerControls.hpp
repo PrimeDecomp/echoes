@@ -5,94 +5,85 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "rstl/string.hpp"
 
-struct SLdrControllerMapping {
-  SLdrControllerMapping();
-  ~SLdrControllerMapping();
-
-  int value;
-};
-
-void LoadTypedefSLdrControllerMapping(SLdrControllerMapping& data, CInputStream& input);
-
 struct SLdrTweakPlayerControls_Controls {
   SLdrTweakPlayerControls_Controls();
   ~SLdrTweakPlayerControls_Controls();
 
-  SLdrControllerMapping unknown_0xaf03e16c; // 0xaf03e16c
-  SLdrControllerMapping unknown_0xcfa71717; // 0xcfa71717
-  SLdrControllerMapping unknown_0x91532a8c; // 0x91532a8c
-  SLdrControllerMapping unknown_0x07acc58d; // 0x07acc58d
-  SLdrControllerMapping unknown_0xacc575a2; // 0xacc575a2
-  SLdrControllerMapping unknown_0xdb475e1d; // 0xdb475e1d
-  SLdrControllerMapping unknown_0xa900887a; // 0xa900887a
-  SLdrControllerMapping unknown_0x534ac106; // 0x534ac106
-  SLdrControllerMapping unknown_0x0d723723; // 0x0d723723
-  SLdrControllerMapping unknown_0x5c46b025; // 0x5c46b025
-  SLdrControllerMapping unknown_0xf836180a; // 0xf836180a
-  SLdrControllerMapping unknown_0xfe16f98d; // 0xfe16f98d
-  SLdrControllerMapping unknown_0xfd59aa9f; // 0xfd59aa9f
-  SLdrControllerMapping unknown_0x7e76f1f4; // 0x7e76f1f4
-  SLdrControllerMapping unknown_0x93dd818b; // 0x93dd818b
-  SLdrControllerMapping unknown_0x258402ec; // 0x258402ec
-  SLdrControllerMapping unknown_0xb7a20cda; // 0xb7a20cda
-  SLdrControllerMapping unknown_0x5b9a9219; // 0x5b9a9219
-  SLdrControllerMapping unknown_0x82a717cd; // 0x82a717cd
-  SLdrControllerMapping unknown_0xa7d5c15a; // 0xa7d5c15a
-  SLdrControllerMapping unknown_0x33731936; // 0x33731936
-  SLdrControllerMapping unknown_0xb72565ff; // 0xb72565ff
-  SLdrControllerMapping unknown_0xc592ca02; // 0xc592ca02
-  SLdrControllerMapping unknown_0x5228272c; // 0x5228272c
-  SLdrControllerMapping unknown_0x901ac820; // 0x901ac820
-  SLdrControllerMapping unknown_0x4ecea0c0; // 0x4ecea0c0
-  SLdrControllerMapping unknown_0xa4f35804; // 0xa4f35804
-  SLdrControllerMapping unknown_0x919d7de0; // 0x919d7de0
-  SLdrControllerMapping unknown_0x5200b48b; // 0x5200b48b
-  SLdrControllerMapping unknown_0x49c493a3; // 0x49c493a3
-  SLdrControllerMapping unknown_0xeb38a36b; // 0xeb38a36b
-  SLdrControllerMapping unknown_0xc60f66d2; // 0xc60f66d2
-  SLdrControllerMapping unknown_0x1d97cc2b; // 0x1d97cc2b
-  SLdrControllerMapping unknown_0xc449ae1d; // 0xc449ae1d
-  SLdrControllerMapping unknown_0x80f17cdb; // 0x80f17cdb
-  SLdrControllerMapping unknown_0xabc5a6aa; // 0xabc5a6aa
-  SLdrControllerMapping unknown_0x310f9642; // 0x310f9642
-  SLdrControllerMapping unknown_0xc4923775; // 0xc4923775
-  SLdrControllerMapping unknown_0xf57a2de8; // 0xf57a2de8
-  SLdrControllerMapping unknown_0xba4fb516; // 0xba4fb516
-  SLdrControllerMapping unknown_0x9f45c8db; // 0x9f45c8db
-  SLdrControllerMapping unknown_0x5344d2f7; // 0x5344d2f7
-  SLdrControllerMapping unknown_0x018c157d; // 0x018c157d
-  SLdrControllerMapping unknown_0xad1e8de5; // 0xad1e8de5
-  SLdrControllerMapping unknown_0x5858b5ba; // 0x5858b5ba
-  SLdrControllerMapping unknown_0xc8df5b8b; // 0xc8df5b8b
-  SLdrControllerMapping unknown_0x8d86d7b5; // 0x8d86d7b5
-  SLdrControllerMapping unknown_0xab429ebd; // 0xab429ebd
-  SLdrControllerMapping unknown_0x31111d41; // 0x31111d41
-  SLdrControllerMapping unknown_0xe2d939b7; // 0xe2d939b7
-  SLdrControllerMapping unknown_0xb06d1b60; // 0xb06d1b60
-  SLdrControllerMapping unknown_0x26293e7c; // 0x26293e7c
-  SLdrControllerMapping unknown_0x649b0835; // 0x649b0835
-  SLdrControllerMapping unknown_0x5b1e0e7c; // 0x5b1e0e7c
-  SLdrControllerMapping unknown_0xb35d2cca; // 0xb35d2cca
-  SLdrControllerMapping unknown_0x5a7e4dfc; // 0x5a7e4dfc
-  SLdrControllerMapping unknown_0x76faf77e; // 0x76faf77e
-  SLdrControllerMapping unknown_0x9ba498f6; // 0x9ba498f6
-  SLdrControllerMapping unknown_0x2b9a4a7f; // 0x2b9a4a7f
-  SLdrControllerMapping unknown_0xd6fb0bf9; // 0xd6fb0bf9
-  SLdrControllerMapping unknown_0x08fe3abe; // 0x08fe3abe
-  SLdrControllerMapping unknown_0xc3f4f3ef; // 0xc3f4f3ef
-  SLdrControllerMapping unknown_0x53e56da8; // 0x53e56da8
-  SLdrControllerMapping unknown_0x29293fb1; // 0x29293fb1
-  SLdrControllerMapping unknown_0x02c06b91; // 0x02c06b91
-  SLdrControllerMapping unknown_0xbaa185cf; // 0xbaa185cf
-  SLdrControllerMapping unknown_0x6cdd19a4; // 0x6cdd19a4
-  SLdrControllerMapping unknown_0xe08f6c6f; // 0xe08f6c6f
-  SLdrControllerMapping unknown_0x1230759b; // 0x1230759b
-  SLdrControllerMapping unknown_0x5b9b4285; // 0x5b9b4285
-  SLdrControllerMapping unknown_0xbf218f4f; // 0xbf218f4f
-  SLdrControllerMapping unknown_0x05ef2422; // 0x05ef2422
-  SLdrControllerMapping unknown_0xced85a1b; // 0xced85a1b
-  SLdrControllerMapping unknown_0x39cf6e72; // 0x39cf6e72
-  SLdrControllerMapping unknown_0x64003596; // 0x64003596
+  int unknown_0xaf03e16c; // 0xaf03e16c
+  int unknown_0xcfa71717; // 0xcfa71717
+  int unknown_0x91532a8c; // 0x91532a8c
+  int unknown_0x07acc58d; // 0x07acc58d
+  int unknown_0xacc575a2; // 0xacc575a2
+  int unknown_0xdb475e1d; // 0xdb475e1d
+  int unknown_0xa900887a; // 0xa900887a
+  int unknown_0x534ac106; // 0x534ac106
+  int unknown_0x0d723723; // 0x0d723723
+  int unknown_0x5c46b025; // 0x5c46b025
+  int unknown_0xf836180a; // 0xf836180a
+  int unknown_0xfe16f98d; // 0xfe16f98d
+  int unknown_0xfd59aa9f; // 0xfd59aa9f
+  int unknown_0x7e76f1f4; // 0x7e76f1f4
+  int unknown_0x93dd818b; // 0x93dd818b
+  int unknown_0x258402ec; // 0x258402ec
+  int unknown_0xb7a20cda; // 0xb7a20cda
+  int unknown_0x5b9a9219; // 0x5b9a9219
+  int unknown_0x82a717cd; // 0x82a717cd
+  int unknown_0xa7d5c15a; // 0xa7d5c15a
+  int unknown_0x33731936; // 0x33731936
+  int unknown_0xb72565ff; // 0xb72565ff
+  int unknown_0xc592ca02; // 0xc592ca02
+  int unknown_0x5228272c; // 0x5228272c
+  int unknown_0x901ac820; // 0x901ac820
+  int unknown_0x4ecea0c0; // 0x4ecea0c0
+  int unknown_0xa4f35804; // 0xa4f35804
+  int unknown_0x919d7de0; // 0x919d7de0
+  int unknown_0x5200b48b; // 0x5200b48b
+  int unknown_0x49c493a3; // 0x49c493a3
+  int unknown_0xeb38a36b; // 0xeb38a36b
+  int unknown_0xc60f66d2; // 0xc60f66d2
+  int unknown_0x1d97cc2b; // 0x1d97cc2b
+  int unknown_0xc449ae1d; // 0xc449ae1d
+  int unknown_0x80f17cdb; // 0x80f17cdb
+  int unknown_0xabc5a6aa; // 0xabc5a6aa
+  int unknown_0x310f9642; // 0x310f9642
+  int unknown_0xc4923775; // 0xc4923775
+  int unknown_0xf57a2de8; // 0xf57a2de8
+  int unknown_0xba4fb516; // 0xba4fb516
+  int unknown_0x9f45c8db; // 0x9f45c8db
+  int unknown_0x5344d2f7; // 0x5344d2f7
+  int unknown_0x018c157d; // 0x018c157d
+  int unknown_0xad1e8de5; // 0xad1e8de5
+  int unknown_0x5858b5ba; // 0x5858b5ba
+  int unknown_0xc8df5b8b; // 0xc8df5b8b
+  int unknown_0x8d86d7b5; // 0x8d86d7b5
+  int unknown_0xab429ebd; // 0xab429ebd
+  int unknown_0x31111d41; // 0x31111d41
+  int unknown_0xe2d939b7; // 0xe2d939b7
+  int unknown_0xb06d1b60; // 0xb06d1b60
+  int unknown_0x26293e7c; // 0x26293e7c
+  int unknown_0x649b0835; // 0x649b0835
+  int unknown_0x5b1e0e7c; // 0x5b1e0e7c
+  int unknown_0xb35d2cca; // 0xb35d2cca
+  int unknown_0x5a7e4dfc; // 0x5a7e4dfc
+  int unknown_0x76faf77e; // 0x76faf77e
+  int unknown_0x9ba498f6; // 0x9ba498f6
+  int unknown_0x2b9a4a7f; // 0x2b9a4a7f
+  int unknown_0xd6fb0bf9; // 0xd6fb0bf9
+  int unknown_0x08fe3abe; // 0x08fe3abe
+  int unknown_0xc3f4f3ef; // 0xc3f4f3ef
+  int unknown_0x53e56da8; // 0x53e56da8
+  int unknown_0x29293fb1; // 0x29293fb1
+  int unknown_0x02c06b91; // 0x02c06b91
+  int unknown_0xbaa185cf; // 0xbaa185cf
+  int unknown_0x6cdd19a4; // 0x6cdd19a4
+  int unknown_0xe08f6c6f; // 0xe08f6c6f
+  int unknown_0x1230759b; // 0x1230759b
+  int unknown_0x5b9b4285; // 0x5b9b4285
+  int unknown_0xbf218f4f; // 0xbf218f4f
+  int unknown_0x05ef2422; // 0x05ef2422
+  int unknown_0xced85a1b; // 0xced85a1b
+  int unknown_0x39cf6e72; // 0x39cf6e72
+  int unknown_0x64003596; // 0x64003596
 };
 
 void LoadTypedefSLdrTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& data, CInputStream& input);
