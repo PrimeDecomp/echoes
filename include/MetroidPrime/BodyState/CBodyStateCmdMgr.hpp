@@ -307,21 +307,27 @@ CHECK_SIZEOF(CBCWallHangCmd, 0xc)
 
 class CBCAdditiveAimCmd : public CBodyStateCmd {
 public:
-  CBCAdditiveAimCmd() : CBodyStateCmd(kBSC_AdditiveAim), x8_(0) {}
+  CBCAdditiveAimCmd() : CBodyStateCmd(kBSC_AdditiveAim), mAimType(0) {}
+
+  int GetAimType() const { return mAimType; } // Guessed name
 
 private:
-  int x8_;
+  int mAimType;
 };
 CHECK_SIZEOF(CBCAdditiveAimCmd, 0xc)
 
 class CBCAdditiveFlinchCmd : public CBodyStateCmd {
 public:
   explicit CBCAdditiveFlinchCmd(float weight)
-  : CBodyStateCmd(kBSC_AdditiveFlinch), mWeight(weight), xc_(-1) {}
+  : CBodyStateCmd(kBSC_AdditiveFlinch), mWeight(weight), mAnim(-1) {}
+
+  float GetWeight() const { return mWeight; }
+
+  int GetAnim() const { return mAnim; }
 
 private:
   float mWeight;
-  int xc_;
+  int mAnim;
 };
 CHECK_SIZEOF(CBCAdditiveFlinchCmd, 0x10)
 
@@ -356,14 +362,16 @@ private:
 CHECK_SIZEOF(CBCAdditiveLoopReactionCmd, 0x10)
 
 // Guessed name
-class CBCUnknown32Cmd : public CBodyStateCmd {
+class CBCAdditiveWeightCmd : public CBodyStateCmd {
 public:
-  CBCUnknown32Cmd() : CBodyStateCmd(kBSC_Unknown32), x8_(0.f) {}
+  CBCAdditiveWeightCmd() : CBodyStateCmd(kBSC_AdditiveWeight), mWeight(0.f) {}
+
+  float GetWeight() const { return mWeight; }
 
 private:
-  float x8_;
+  float mWeight;
 };
-CHECK_SIZEOF(CBCUnknown32Cmd, 0xc)
+CHECK_SIZEOF(CBCAdditiveWeightCmd, 0xc)
 
 class CBCLocomotionCmd {
 public:
@@ -456,7 +464,7 @@ private:
   CBCAdditiveReactionCmd mAdditiveReaction;
   CBodyStateCmd mStopReaction;
   CBCAdditiveLoopReactionCmd mAdditiveLoopReaction;
-  CBCUnknown32Cmd x354_;
+  CBCAdditiveWeightCmd mAdditiveWeight;
   CBodyStateCmd x360_;
 };
 CHECK_SIZEOF(CBodyStateCmdMgr, 0x368)

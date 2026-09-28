@@ -8,14 +8,17 @@ public:
   CABSFlinch();
 
   // CBodyState
-  ~CABSFlinch() override;
+  ~CABSFlinch() override {}
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
   void Shutdown(CBodyController& bc) override;
 
 private:
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc) const;
+  void UpdateWeight(CBodyController& bc); // Guessed name
+
   float mWeight;
-  uint mAnim;
+  int mAnim;
 };
 CHECK_SIZEOF(CABSFlinch, 0xc)
 

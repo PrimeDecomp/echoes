@@ -221,7 +221,7 @@ enum EBodyStateCmd {
   kBSC_AdditiveReaction,
   kBSC_StopReaction,
   kBSC_AdditiveLoopReaction, // Guessed name
-  kBSC_Unknown32,
+  kBSC_AdditiveWeight, // Guessed name
   kBSC_Unknown33
 };
 

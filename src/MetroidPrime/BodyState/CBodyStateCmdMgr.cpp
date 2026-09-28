@@ -78,7 +78,7 @@ CBodyStateCmdMgr::CBodyStateCmdMgr()
   mCommandTable[kBSC_AdditiveReaction] = &mAdditiveReaction;
   mCommandTable[kBSC_StopReaction] = &mStopReaction;
   mCommandTable[kBSC_AdditiveLoopReaction] = &mAdditiveLoopReaction;
-  mCommandTable[kBSC_Unknown32] = &x354_;
+  mCommandTable[kBSC_AdditiveWeight] = &mAdditiveWeight;
   mCommandTable[kBSC_Unknown33] = &x360_;
 }
 
