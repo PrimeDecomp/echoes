@@ -10,12 +10,16 @@
 #include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CRELFileManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
+#include "MetroidPrime/TCastTo.hpp"
+#include "WorldFormat/CPVSAreaSet.hpp"
 #include "rstl/algorithm.hpp"
 
 #include <alloca.h>
@@ -396,16 +400,79 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
 }
 
 void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
-  // TODO: Allocate per-layer editor IDs and the script-loading context.
+  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  const int count = layers.GetAreaLayerCount(mSelfIdx);
+  mPostConstructed->mLayerEditorIds.clear();
+  mPostConstructed->mLayerEditorIds.resize(count);
+  mPostConstructed->mScriptLoadState = rs_new CScriptObjectLoaderHelper::SLoadContext(mSelfIdx);
 }
 
 bool CGameArea::LoadScriptObjects(CStateManager& mgr) {
-  // TODO: Incrementally instantiate active script layers within the frame budget.
-  return false;
+  CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
+  CScriptObjectLoaderHelper::SLoadContext& context = *mPostConstructed->mScriptLoadState;
+  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
+    const TLayerId layer(i);
+    if (context.mLayerIndex != layer.Value()) {
+      continue;
+    }
+    if (mPostConstructed->mActiveLayers[i]) {
+      if (context.mRemainingObjects == 0) {
+        const rstl::pair< const uchar*, int > buffer = GetLayerScriptBuffer(layer);
+        rstl::auto_ptr< CInputStream > stream(rs_new CMemoryInStream(buffer.first, buffer.second));
+        rstl::vector< TEditorId >& ids = mPostConstructed->mLayerEditorIds[i];
+        loader.BeginLayerLoad(context, stream, ids);
+      }
+      uint timeBudget = 4000;
+      if (gpMain->GetAverageDrawTime() + gpMain->GetAverageTickTime() > 0.8f) {
+        timeBudget = 1000;
+      }
+      if (loader.ContinueLayerLoad(context, timeBudget, mgr)) {
+        mLayerPhases[i] = kLP_Active;
+        ++context.mLayerIndex;
+        return false;
+      }
+    } else {
+      ++context.mLayerIndex;
+    }
+  }
+  const bool complete = context.mLayerIndex == mPostConstructed->mActiveLayers.size();
+  return complete;
 }
 
 void CGameArea::FinishScriptObjects(CStateManager& mgr) {
-  // TODO: Initialize script objects and generated objects, docks, and actor PVS IDs.
+  CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
+  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
+    mPostConstructed->mMreaSectionBuffers[i + mPostConstructed->mFirstScriptSection].first =
+        rstl::auto_ptr< char >();
+    mPostConstructed->mLayerScriptBuffers[i] = rstl::auto_ptr< char >();
+  }
+  mPostConstructed->mScriptObjectsInitialized = false;
+
+  const rstl::pair< const uchar*, int > buffer = GetGeneratedScriptBuffer();
+  CMemoryInStream stream(buffer.first, buffer.second);
+  if (stream.Get< uint >() == 'SCGN') {
+    stream.ReadUint8();
+    loader.LoadGeneratedScriptObjects(GetId(), stream);
+  }
+  loader.RegisterScriptObjects(mPostConstructed->mScriptLoadState->mObjects, mgr);
+  InitializeDocks(mgr);
+
+  if (mPostConstructed->mPvs.get() && mPostConstructed->mPvsHasActors) {
+    for (int i = 0; i < mPostConstructed->mPvs->GetNumActors(); ++i) {
+      const CPostConstructed* post = mPostConstructed.get();
+      const TEditorId editorId(post->mPvs->GetEntityIdByIndex(i) | (mSelfIdx.Value() << 16));
+      const TUniqueId id = mgr.GetIdForScript(editorId);
+      if (id != kInvalidUniqueId) {
+        const CPVSAreaSet* pvs = mPostConstructed->mPvs.get();
+        const int index = i + (pvs->GetNumFeatures() - pvs->GetNumActors());
+        if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
+          actor->SetPvsIndex(index);
+        }
+      }
+    }
+  }
+  mPostConstructed->mScriptObjectsInitialized = true;
+  mPostConstructed->mScriptLoadState = nullptr;
 }
 
 bool CGameArea::StartStreamIn(CStateManager& mgr) {

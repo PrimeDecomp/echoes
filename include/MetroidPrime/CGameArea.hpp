@@ -11,6 +11,7 @@
 #include "MetaRender/IRenderer.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CRELFileToken.hpp"
+#include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
 #include "MetroidPrime/IGameArea.hpp"
 #include "WorldFormat/CAreaRenderOctTree.hpp"
 #include "WorldFormat/CMetroidModelInstance.hpp"
@@ -162,7 +163,6 @@ public:
   };
 
   // These auxiliary types still need their payload layouts recovered.
-  struct SScriptLoadState;
   struct SUnresolvedListEntry;
 
   struct CPostConstructed {
@@ -192,7 +192,7 @@ public:
     rstl::vector< uint > mLayerScriptSizes;
     rstl::auto_ptr< char > mGeneratedScriptBuffer;
     uint mGeneratedScriptSize;
-    rstl::single_ptr< SScriptLoadState > mScriptLoadState;
+    rstl::single_ptr< CScriptObjectLoaderHelper::SLoadContext > mScriptLoadState;
     const uchar* mFirstMaterial;
     const CScriptAreaProperties* mAreaAttributes;
     EOcclusionState mOcclusionState;

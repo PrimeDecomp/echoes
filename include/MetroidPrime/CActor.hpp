@@ -236,6 +236,7 @@ public:
   int GetRenderAlphaBufferAlpha(const CStateManager& mgr) const;
 
   void SetNextDrawNode(TUniqueId id) { mNextDrawNode = id; }
+  void SetPvsIndex(int index) { mPvsIndex = index; }
 
   void SetTransformDirty();
 
