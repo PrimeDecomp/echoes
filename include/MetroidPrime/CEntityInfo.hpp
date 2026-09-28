@@ -102,6 +102,7 @@ enum EScriptObjectMessage {
   kSM_Stop = 0x53544f50,
   kSM_Play = 0x504c4159,
   kSM_Load = 0x4c4f4144,
+  kSM_Unload = 0x554c4f44,
   kSM_Activate = 0x41435456,
   kSM_Deactivate = 0x44435456,
   kSM_ToggleActive = 0x54435456,
@@ -123,6 +124,7 @@ enum EScriptObjectMessage {
   kSM_XCRT = 0x58435254,
   kSM_XClear = 0x58434c52, // Guessed name: clear an effect's particles.
   kSM_XALD = 0x58414c44,
+  kSM_XWLD = 0x58574c44,
   kSM_XDelete = 0x5844454c,
   kSM_XHIT = 0x58484954,
   kSM_XXDG = 0x58584447,

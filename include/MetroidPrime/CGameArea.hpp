@@ -277,6 +277,11 @@ public:
   TAreaId GetId() const { return mSelfIdx; }
   const CAABox& GetAABB() const { return mBounds; }
   const Dock& GetDock(int index) const { return mDocks[index]; }
+  Dock& DockNC(int index) { return mDocks[index]; }
+  void SetActive(bool active) { mActive = active; }
+  void SetValidationPaused(bool paused) { mValidationPaused = paused; }
+  const CObjectList* ObjectList() const { return mPostConstructed->mAreaObjectList.get(); }
+  void AddDock(TUniqueId uid); // Guessed name.
 
   void ClearTokenList();
   void VerifyTokenList(CStateManager& mgr);

@@ -2,6 +2,7 @@
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
@@ -32,8 +33,13 @@ CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
                              const rstl::ncrc_ptr< CMapWorldInfo >&,
                              const rstl::ncrc_ptr< CPlayerState >&,
                              const rstl::ncrc_ptr< CWorldTransManager >&)
-: m_nextFreeIndex(0), m_bossId(kInvalidUniqueId), m_uid_setBySpecialFunc(kInvalidUniqueId),
-m_planes() {}
+: m_nextFreeIndex(0)
+, m_bossId(kInvalidUniqueId)
+, m_uid_setBySpecialFunc(kInvalidUniqueId)
+, m_planes()
+, mPendingDockArea(kInvalidAreaId)
+, mPendingDock(0)
+, mShowSoftTransition(true) {}
 
 CStateManager::~CStateManager() {}
 
