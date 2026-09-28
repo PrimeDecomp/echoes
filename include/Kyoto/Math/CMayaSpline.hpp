@@ -36,7 +36,7 @@ public:
 };
 
 namespace rstl {
-RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CMayaSplineKnot)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMayaSplineKnot)
 }
 
 struct SLdrSpline {
@@ -45,8 +45,6 @@ struct SLdrSpline {
              int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
   SLdrSpline(CInputStream&, int);
   ~SLdrSpline() {}
-
-  SLdrSpline& operator=(const SLdrSpline&);
 
   static SLdrSpline CreateFor(float, float, float, float);
 
