@@ -786,6 +786,12 @@ WorldFormat/CAreaOctTree.cpp:
 WorldFormat/CMetroidAreaCollider.cpp:
 	.text       start:0x80247CC0 end:0x8024DAFC
 
+WorldFormat/CWorldLight.cpp:
+	.text       start:0x8024DAFC end:0x8024DE68
+	.ctors      start:0x803A55A8 end:0x803A55AC
+	.bss        start:0x80410DFC end:0x80410E14 align:4 common
+	.sdata2     start:0x8041DD88 end:0x8041DDA8
+
 WorldFormat/COBBTree.cpp:
 	.text       start:0x8024DE68 end:0x8024F784
 	.bss        start:0x80410E14 end:0x80410E24 align:4 common
