@@ -326,7 +326,49 @@ void CGameArea::SortRelTokens(const CWorldLayerState& layers) {
 }
 
 void CGameArea::FillInStaticGeometry() {
-  // TODO: Construct model instances, surface records, and ambient-light lookup arrays.
+  rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >::const_iterator section =
+      mPostConstructed->mMreaSectionBuffers.begin() + mPostConstructed->mFirstMaterialSection;
+  mPostConstructed->mFirstMaterial = reinterpret_cast< const uchar* >(section->first.get());
+  mPostConstructed->mModelInstances.clear();
+  ++section;
+  const int modelCount = mPostConstructed->mModelInstances.capacity();
+  rstl::vector< void* > surfaces;
+  for (int model = 0; model < modelCount; ++model) {
+    const void* header = section->first.get();
+    const void* positions = (++section)->first.get();
+    const void* normals = (++section)->first.get();
+    const void* colors = (++section)->first.get();
+    const void* texCoords = (++section)->first.get();
+    const void* packedTexCoords = (++section)->first.get();
+    const uint surfaceCount =
+        CBasics::SwapBytes(*reinterpret_cast< const uint* >((++section)->first.get()));
+    ++section;
+    if (surfaceCount != 0) {
+      surfaces.reserve(surfaceCount);
+      for (uint surface = 0; surface < surfaceCount; ++surface) {
+        surfaces.push_back_unsafe(section->first.get());
+        ++section;
+      }
+      const void* section1 = section->first.get();
+      const void* section2 = (++section)->first.get();
+      ++section;
+      mPostConstructed->mModelInstances.push_back_unsafe(
+          CMetroidModelInstance(header, mPostConstructed->mFirstMaterial, positions, normals,
+                                colors, texCoords, packedTexCoords, surfaces, section1, section2));
+      surfaces.clear();
+    }
+  }
+
+  {
+    CMemoryInStream in((section + 1)->first.get(), (section + 1)->second);
+    mPostConstructed->mSurfaces = rstl::vector< SAreaSurface >(in);
+  }
+  if (mPostConstructed->mMreaVersion >= 22) {
+    CMemoryInStream in((section + 2)->first.get(), (section + 2)->second);
+    mPostConstructed->mAmbientLightIds = rstl::vector< uint >(in);
+    mPostConstructed->mAmbientLightIndices = rstl::vector< signed char >(in);
+  }
+  mPostConstructed->mModelsConstructed = true;
 }
 
 void CGameArea::PostConstructArea() {
@@ -1523,13 +1565,24 @@ void CGameArea::UpdateWeaponWorldLighting(float dt) {
 }
 
 uint CGameArea::Get1stPVSLightFeature(uint index) const {
-  // TODO: Resolve first-set light feature indices through CPVSAreaSet.
-  return uint(-1);
+  const CPVSAreaSet* pvs = mPostConstructed->mPvs.get();
+  if (!pvs || pvs->GetNumLights() == 0) {
+    return uint(-1);
+  }
+  if (static_cast< int >(index) >= pvs->GetNumLights() - pvs->GetNum2ndLights()) {
+    return uint(-1);
+  }
+  const int& count = pvs->GetNumFeatures();
+  return count + pvs->GetNum2ndLights() + index;
 }
 
 uint CGameArea::Get2ndPVSLightFeature(uint index) const {
-  // TODO: Resolve second-set light feature indices through CPVSAreaSet.
-  return uint(-1);
+  const CPVSAreaSet* pvs = mPostConstructed->mPvs.get();
+  if (!mPostConstructed->mPvsHasLights || !pvs) {
+    return uint(-1);
+  }
+  const int& count = pvs->GetNumFeatures();
+  return count + index;
 }
 
 void CGameArea::InitializeDocks(CStateManager& mgr) {

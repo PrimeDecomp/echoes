@@ -14,6 +14,7 @@ public:
   CPVSVisOctree& GetVisOctree() const;
 
   int GetNum2ndLights() const { return mNum2ndLights; }
+  int GetNumLights() const { return mNumLights; }
   int GetNumFeatures() const { return mNumFeatures; }
   int GetNumActors() const { return mNumActors; }
   int GetLightIndexCount() const { return mLightIndexCount; } // Guessed name
