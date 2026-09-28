@@ -191,7 +191,7 @@ public:
     rstl::vector< rstl::auto_ptr< char > > mLayerScriptBuffers;
     rstl::vector< int > mLayerScriptSizes;
     rstl::auto_ptr< char > mGeneratedScriptBuffer;
-    uint mGeneratedScriptSize;
+    int mGeneratedScriptSize;
     rstl::single_ptr< CScriptObjectLoaderHelper::SLoadContext > mScriptLoadState;
     const uchar* mFirstMaterial;
     const CScriptAreaProperties* mAreaAttributes;

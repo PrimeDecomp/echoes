@@ -151,7 +151,7 @@ MetroidPrime/CGameArea.cpp:
 	.text       start:0x800536A8 end:0x800609B4
 	.rodata     start:0x803A6838 end:0x803A6858
 	.data       start:0x803B1E28 end:0x803B1F30
-	.sdata      start:0x80417EB8 end:0x80417ECC
+	.sdata      start:0x80417EB8 end:0x80417ED0
 	.sdata2     start:0x8041A928 end:0x8041A960
 
 MetroidPrime/HUD/CSamusHud.cpp:
