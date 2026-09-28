@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
+from tools.loader_profile import LoaderProfile
 from tools.project import (
     Object,
     ProgressCategory,
@@ -191,7 +192,9 @@ if args.map:
     # config.ldflags.append("-listclosure") # For Wii linkers
 
 # Use for any additional files that should cause a re-configure when modified
-config.reconfig_deps = []
+loader_profile_path = Path("config/loader_profiles/Tweaks.json")
+tweaks_loaders = LoaderProfile.read(loader_profile_path)
+config.reconfig_deps = [loader_profile_path, Path("tools/loader_profile.py")]
 
 # Optional numeric ID for decomp.me preset
 # Can be overridden in libraries or objects
@@ -261,6 +264,9 @@ cflags_runtime = [
     # "-inline auto",
 ]
 
+# Main-game and game REL sources use the same Retro compiler and base flags.
+retro_mw_version = "GC/2.7"
+
 # Retro flags
 cflags_retro = [
     *cflags_base,
@@ -279,7 +285,7 @@ cflags_retro = [
 if config.version == "G2ME01":
     cflags_retro.append('-pragma "inline_max_size(125)"')
 
-# REL flags
+# Relocatable code cannot use the DOL's small-data bases.
 cflags_rel = [
     *cflags_retro,
     "-sdata 0",
@@ -313,7 +319,7 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
 def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
-        "mw_version": "GC/2.7",
+        "mw_version": retro_mw_version,
         "cflags": cflags_rel,
         "progress_category": "game",
         "host": True,
@@ -375,7 +381,7 @@ config.libs = [
     {
         "lib": "MetroidPrime",
         "cflags": cflags_retro,
-        "mw_version": "GC/2.7",
+        "mw_version": retro_mw_version,
         "progress_category": "game",  # str | List[str]
         "host": True,
         "objects": [
@@ -1113,22 +1119,13 @@ config.libs = [
         "Tweaks",
         [
             Object(NonMatching, "MetroidPrime/Tweaks/Tweaks.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakAutoMapper.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakBall.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerControls.cpp"),
-            Object(Matching,    "MetroidPrime/ScriptLoader/SLdrTweakPlayer.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakCameraBob.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerGun.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakSlideShow.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakGame.cpp"),
-            Object(Matching,    "MetroidPrime/ScriptLoader/SLdrTweakGuiColors.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakParticle.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakPlayerRes.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakTargeting.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/SLdrTweakGui.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakPlayerGun_Weapons.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_VulnerabilityIndicator.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrTweakTargeting_Scan.cpp"),
+            *[
+                Object(
+                    source in {"SLdrTweakPlayer.cpp", "SLdrTweakGuiColors.cpp"},
+                    f"MetroidPrime/ScriptLoader/{source}",
+                )
+                for source in tweaks_loaders.sources
+            ],
         ],
     ),
 ]

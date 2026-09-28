@@ -17,6 +17,12 @@ Or use a local checkout, with no network access:
 uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates --header-output include/MetroidPrime/ScriptLoader
 uv run --script scripts/generate_script_loaders.py --templates ../retro-script-object-templates/MP2 --object Counter --header-output build/loader-headers
 ```
+
+Generate the reviewed Tweaks REL sources with a pinned template revision:
+
+```sh
+uv run scripts/generate_script_loaders.py --profile config/loader_profiles/Tweaks.json --cpp-output build/tweaks-loaders
+```
 """
 
 from __future__ import annotations
@@ -39,6 +45,9 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path, PurePosixPath
 from textwrap import dedent
 from typing import Protocol
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from tools.loader_profile import LoaderProfile
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
 KEYWORDS: set[str] = {
@@ -753,6 +762,7 @@ class Generator:
 
     def render_struct_source(self, struct: Struct) -> str:
         name = struct.name
+        parameter = "data" if struct.is_object else "sldrThis"
         initializers = ", ".join(p.name + "()" for p in struct.fields)
         source = [
             f'#include "{self._include_path_for(name)}"',
@@ -770,24 +780,24 @@ class Generator:
             + name
             + "("
             + name
-            + "& sldrThis, CInputStream& input) {",
+            + f"& {parameter}, CInputStream& input) {{",
         ]
         source += (
-            self.render_sequential_reader(struct)
+            self.render_sequential_reader(struct, parameter)
             if struct.atomic or struct.scalar
-            else self.render_tagged_reader(struct)
+            else self.render_tagged_reader(struct, parameter)
         )
         source += ["}", ""]
         return "\n".join(source)
 
-    def render_sequential_reader(self, struct: Struct) -> list[str]:
+    def render_sequential_reader(self, struct: Struct, parameter: str) -> list[str]:
         return [
             "  " + line
             for prop in struct.fields
-            for line in self.read_field(prop, "sldrThis." + prop.name)
+            for line in self.read_field(prop, parameter + "." + prop.name)
         ]
 
-    def render_tagged_reader(self, struct: Struct) -> list[str]:
+    def render_tagged_reader(self, struct: Struct, parameter: str) -> list[str]:
         lines = [
             "  const int propertyCount = input.ReadUint16();",
             "  for (int i = 0; i < propertyCount; ++i) {",
@@ -800,7 +810,7 @@ class Generator:
             lines.extend(
                 "      " + line
                 for line in self.read_field(
-                    prop, "sldrThis." + prop.name, "propertySize"
+                    prop, parameter + "." + prop.name, "propertySize"
                 )
             )
             lines.extend(["      break;", "    }"])
@@ -895,6 +905,43 @@ class Generator:
         return files
 
 
+def profile_files(files: dict[str, str], profile: LoaderProfile) -> dict[str, str]:
+    """Select reviewed sources and their headers from the complete ownership graph."""
+    missing = set(profile.sources) - files.keys()
+    if missing:
+        raise TemplateError(
+            "Profile sources not generated: " + ", ".join(sorted(missing))
+        )
+    selected: dict[str, str] = {}
+    pending = list(profile.sources)
+    while pending:
+        name = pending.pop()
+        if name in selected:
+            continue
+        if name not in files:
+            raise TemplateError("Generated header not found: " + name)
+        selected[name] = files[name]
+        pending.extend(
+            re.findall(
+                r'^#include "MetroidPrime/ScriptLoader/([^"\n]+)"',
+                files[name],
+                re.MULTILINE,
+            )
+        )
+    return selected
+
+
+def output_differences(files: dict[str, str], output: Path) -> list[str]:
+    """List missing or stale generated files without modifying the destination."""
+    return [
+        name
+        for name, content in sorted(files.items())
+        if not (output / name).is_file()
+        or (output / name).read_bytes().replace(b"\r\n", b"\n")
+        != content.encode("utf-8")
+    ]
+
+
 def write_output(
     files: dict[str, str], output: str | Path, force: bool = False
 ) -> None:
@@ -935,8 +982,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         help="local repository root, MP2 directory, or MP2/Game.xml (offline)",
     )
+    parser.add_argument("--ref", help="remote branch, tag or commit (default: main)")
     parser.add_argument(
-        "--ref", default="main", help="remote branch, tag or commit (default: main)"
+        "--profile",
+        type=Path,
+        help="reviewed module source list and pinned template commit",
     )
     parser.add_argument(
         "--header-output",
@@ -957,34 +1007,62 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="replace differing generated files in the output directory",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="report missing/stale outputs without writing",
+    )
     args = parser.parse_args(argv)
     if not args.header_output and not args.cpp_output:
         parser.error("provide --header-output and/or --cpp-output")
+    if args.profile and (args.object or args.ref):
+        parser.error("--profile cannot be combined with --object or --ref")
+    if args.check and args.force:
+        parser.error("--check cannot be combined with --force")
     try:
-        generator = Generator(Source(args.templates, args.ref))
+        profile = LoaderProfile.read(args.profile) if args.profile else None
+        ref = profile.template_ref if profile else args.ref or "main"
+        generator = Generator(Source(args.templates, ref))
+        # Profiles select output, not input: shared-header ownership must agree with
+        # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
         files = generator.render()
+        if profile:
+            files = profile_files(files, profile)
+        outputs: list[tuple[Path, dict[str, str]]] = []
         if args.header_output:
-            write_output(
-                {
-                    name: content
-                    for name, content in files.items()
-                    if name.endswith(".hpp")
-                },
-                args.header_output,
-                args.force,
+            outputs.append(
+                (
+                    args.header_output,
+                    {n: c for n, c in files.items() if n.endswith(".hpp")},
+                )
             )
         if args.cpp_output:
-            write_output(
-                {
-                    name: content
-                    for name, content in files.items()
-                    if name.endswith(".cpp")
-                },
-                args.cpp_output,
-                args.force,
+            outputs.append(
+                (
+                    args.cpp_output,
+                    {n: c for n, c in files.items() if n.endswith(".cpp")},
+                )
             )
+        if args.check:
+            stale = [
+                str(path / name)
+                for path, output in outputs
+                for name in output_differences(output, path)
+            ]
+            if stale:
+                print(
+                    "Missing or stale generated files:\n" + "\n".join(stale),
+                    file=sys.stderr,
+                )
+                return 1
+            print("Generated files are up to date")
+            return 0
+        for path, output in outputs:
+            write_output(output, path, args.force)
     except (
+        ValueError,
+        OSError,
         ET.ParseError,
         zipfile.BadZipFile,
         urllib.error.URLError,
