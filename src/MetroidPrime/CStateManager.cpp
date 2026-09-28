@@ -223,7 +223,7 @@ void CStateManager::ShowPausedHUDMemo(CAssetId strg, float time) {
   DeferStateTransition(kSMT_MessageScreen);
 }
 
-void CStateManager::SendScriptMsg_fn_80037100(const CScriptMsg& msg) {
+void CStateManager::SendScriptMsg(const CScriptMsg& msg) {
   m_scriptMsgs.Append(msg);
   int v = m_scriptMsgs.fn_8019E69C();
   if (0x80 < v && !m_unkFlagB3) {

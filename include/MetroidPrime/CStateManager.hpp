@@ -107,7 +107,7 @@ public:
   // float GetHUDMessageTime() const { return mHudMessageTime; }
   void IncrementHUDMessageFrameCounter() { ++mHudMessageFrameCount; }
 
-  void SendScriptMsg_fn_80037100(const CScriptMsg&);
+  void SendScriptMsg(const CScriptMsg& msg);
   void DeliverScriptMsg(const CScriptMsg& msg); // Guessed name
   void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
   void SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
