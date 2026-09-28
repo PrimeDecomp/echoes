@@ -10,6 +10,9 @@ public:
   CRELFileToken(const CRELFileToken& other);
   ~CRELFileToken();
 
+  void Load();           // Guessed name
+  bool IsLoaded() const; // Guessed name
+
 private:
   CRelFile* mFile;
   bool mLoaded;

@@ -2,12 +2,17 @@
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/CARAMManager.hpp"
+#include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
 
 // The complex loading paths below remain scaffolds. This TU is NonMatching.
@@ -128,7 +133,22 @@ void CGameArea::ClearTokenList() {
 }
 
 void CGameArea::AddLayerTokens(int layer, rstl::vector< CToken >& tokens) {
-  // TODO: Populate this layer's dependency tokens, including the missing-AGSC fallback.
+  if (mDependencies2.empty()) {
+    return;
+  }
+
+  const int first = mLayerDependencyOffsets[layer];
+  const int last = layer + 1 < mLayerDependencyOffsets.size() ? mLayerDependencyOffsets[layer + 1]
+                                                              : mDependencies2.size();
+  for (int i = first; i < last; ++i) {
+    const SObjectTag tag(mDependencies2[i].second, mDependencies2[i].first);
+    if (tag.type == 'AGSC' && !gpSimplePool->HasObject(SObjectTag(tag))) {
+      tokens.push_back_unsafe(TToken< int >(rs_new int));
+    } else {
+      tokens.push_back_unsafe(gpSimplePool->GetObj(tag));
+    }
+  }
+  mLayerPhases[layer] = kLP_Loading;
 }
 
 bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
@@ -396,13 +416,15 @@ void CGameArea::AliveUpdate(float dt) {
 
 void CGameArea::UpdateDynamicLayers(CStateManager& mgr) {
   typedef rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > TRequests;
-  TRequests& requests = mPostConstructed->mLayerLoadTransactions;
-  for (TRequests::iterator it = requests.begin(); it != requests.end();) {
-    if (it->second->IsComplete()) {
-      ClearDecompressionRequest(it->second.get());
-      it = requests.erase(it);
-    } else {
-      ++it;
+  if (!mPostConstructed->mLayerLoadTransactions.empty()) {
+    for (TRequests::iterator it = mPostConstructed->mLayerLoadTransactions.begin();
+         it != mPostConstructed->mLayerLoadTransactions.end();) {
+      if (it->second->IsComplete()) {
+        ClearDecompressionRequest(it->second.get());
+        it = mPostConstructed->mLayerLoadTransactions.erase(it);
+      } else {
+        ++it;
+      }
     }
   }
   DecompressAreaData();
@@ -418,28 +440,88 @@ bool CGameArea::HasPendingLayerLoads() const {
     return true;
   }
   for (int i = 0; i < mPostConstructed->mLayerTokens.size(); ++i) {
-    const ELayerPhase phase = mLayerPhases[i];
-    if (phase != kLP_Inactive && phase != kLP_Ready && phase != kLP_Active) {
+    switch (mLayerPhases[i]) {
+    case kLP_Inactive:
+    case kLP_Ready:
+    case kLP_Active:
+      break;
+    default:
       return true;
     }
   }
   return false;
 }
 
-int CGameArea::GetLayerRequestCount(const TLayerId& layer) const {
+int CGameArea::GetLayerRequestCount(const TLayerId layer) const {
+  const int layerIdx = layer.Value();
   int count = 0;
   typedef rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > TRequests;
-  const TRequests& requests = mPostConstructed->mLayerLoadTransactions;
-  for (TRequests::const_iterator it = requests.begin(); it != requests.end(); ++it) {
-    if (it->first == layer.Value()) {
+  for (TRequests::iterator it = mPostConstructed->mLayerLoadTransactions.begin();
+       it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
+    if (it->first == layerIdx) {
       ++count;
     }
   }
   return count;
 }
 
-void CGameArea::UpdateLayerLoading(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Advance cancellation/restart/loading phases, polling resources and REL tokens.
+void CGameArea::UpdateLayerLoading(CStateManager& mgr, const TLayerId layer) {
+  const int layerIdx = layer.Value();
+  const int requestCount = GetLayerRequestCount(layer);
+  switch (mLayerPhases[layerIdx]) {
+  case kLP_RestartPending:
+    if (requestCount == 0) {
+      StartLayerLoad(mgr, layer);
+    }
+    break;
+  case kLP_CancelPending:
+    if (requestCount == 0) {
+      ClearLayer(mgr, layer);
+    }
+    break;
+  case kLP_Loading: {
+    int pending = 0;
+    rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layerIdx];
+    for (int i = 0; i < tokens.size(); ++i) {
+      CToken& token = tokens[i];
+      if (token.IsLoaded()) {
+        token.Lock();
+        if (token.GetReferenceType() == 'TXTR') {
+          TToken< CTexture > texture(token);
+          CTexture* resource = texture.GetT();
+          resource->MakeSwappable();
+          if (mPostConstructed->mOcclusionState == kOS_Occluded) {
+            resource->LoadToARAM();
+          }
+        }
+      } else {
+        if (!token.HasLock()) {
+          gpResourceFactory->GetResLoader().FindResource(SObjectTag('MREA', mAreaAssetId));
+          token.Lock();
+        }
+        ++pending;
+      }
+    }
+
+    if (pending <= 80) {
+      rstl::vector< CRELFileToken >& rels = mPostConstructed->mLayerRelTokens[layerIdx];
+      for (int i = 0; i < rels.size(); ++i) {
+        rels[i].Load();
+        if (!rels[i].IsLoaded()) {
+          ++pending;
+        }
+      }
+      pending += requestCount;
+      pending += mPostConstructed->mDecompressionRequests.size();
+      if (pending == 0) {
+        mLayerPhases[layerIdx] = kLP_Ready;
+      }
+    }
+    break;
+  }
+  default:
+    break;
+  }
 }
 
 void CGameArea::PreRender() {
@@ -734,13 +816,14 @@ bool CGameArea::IsFinishedOccluding() const {
   return mPostConstructed->mOcclusionState != kOS_Occluded || mPostConstructed->mFinishedOccluding;
 }
 
-rstl::pair< const uchar*, int > CGameArea::GetLayerScriptBuffer(const TLayerId& layer) const {
-  if (mPhase < kP_WaitForValidation) {
-    return rstl::pair< const uchar*, int >(nullptr, 0);
+rstl::pair< const uchar*, int > CGameArea::GetLayerScriptBuffer(const TLayerId layer) const {
+  if (mPhase > kP_WaitForData) {
+    return rstl::pair< const uchar*, int >(
+        reinterpret_cast< const uchar* >(
+            mPostConstructed->mLayerScriptBuffers[layer.Value()].get()),
+        GetLayerScriptSize(layer));
   }
-  return rstl::pair< const uchar*, int >(
-      reinterpret_cast< const uchar* >(mPostConstructed->mLayerScriptBuffers[layer.Value()].get()),
-      GetLayerScriptSize(layer));
+  return rstl::pair< const uchar*, int >(nullptr, 0);
 }
 
 rstl::pair< const uchar*, int > CGameArea::GetGeneratedScriptBuffer() const {
@@ -752,7 +835,7 @@ rstl::pair< const uchar*, int > CGameArea::GetGeneratedScriptBuffer() const {
   return rstl::pair< const uchar*, int >(nullptr, 0);
 }
 
-int CGameArea::GetLayerScriptSize(const TLayerId& layer) const {
+int CGameArea::GetLayerScriptSize(const TLayerId layer) const {
   return mPhase > kP_WaitForData ? mPostConstructed->mLayerScriptSizes[layer.Value()] : 0;
 }
 
@@ -827,14 +910,14 @@ int CGameArea::GetTokenCount() const {
   return count;
 }
 
-CGameArea::ELayerPhase CGameArea::GetLayerPhase(const TLayerId& layer) const {
-  if (layer.Value() >= 0 && layer.Value() < mLayerPhases.size()) {
+CGameArea::ELayerPhase CGameArea::GetLayerPhase(const TLayerId layer) const {
+  if (layer.Value() < mLayerPhases.size() && layer.Value() >= 0) {
     return mLayerPhases[layer.Value()];
   }
   return kLP_Inactive;
 }
 
-rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId& layer) const {
+rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId layer) const {
   if (mPostConstructed.get() && layer.Value() >= 0 &&
       layer.Value() < mPostConstructed->mLayerRelTokens.size()) {
     return &mPostConstructed->mLayerRelTokens[layer.Value()];
@@ -842,37 +925,173 @@ rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId& laye
   return nullptr;
 }
 
-bool CGameArea::IsValidLayerNumber(CStateManager& mgr, const TLayerId& layer) const {
-  // TODO: Check the world-layer manager's area layer count.
+bool CGameArea::IsValidLayerNumber(CStateManager& mgr, const TLayerId layer) const {
+  const int layerCount = mgr.m_currentWorldLayerState->GetAreaLayerCount(mSelfIdx);
+  if (layer.Value() < layerCount && layer.Value() >= 0) {
+    return true;
+  }
   return false;
 }
 
-void CGameArea::LoadLayerDynamic(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Check world-layer activation before starting or resuming a load.
+void CGameArea::LoadLayerDynamic(CStateManager& mgr, const TLayerId layer) {
+  CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  if (!IsValidLayerNumber(mgr, layer)) {
+    return;
+  }
+  if (!layers.IsLayerActive(mSelfIdx, layer)) {
+    return;
+  }
+
+  const int layerIdx = layer.Value();
+  const ELayerPhase phase = mLayerPhases[layerIdx];
+  switch (phase) {
+  case kLP_Inactive:
+    StartLayerLoad(mgr, layer);
+    break;
+  case kLP_CancelPending:
+    mLayerPhases[layerIdx] = kLP_RestartPending;
+    break;
+  default:
+    break;
+  }
 }
 
-void CGameArea::StartLayerLoad(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Queue the layer's script read, resource tokens, and REL modules.
+void CGameArea::StartLayerLoad(CStateManager& mgr, const TLayerId layer) {
+  if (!IsValidLayerNumber(mgr, layer)) {
+    return;
+  }
+
+  const int layerIdx = layer.Value();
+  const int first = mLayerDependencyOffsets[layerIdx];
+  const int last = layerIdx + 1 < mLayerDependencyOffsets.size()
+                       ? mLayerDependencyOffsets[layerIdx + 1]
+                       : mDependencies2.size();
+  const int count = last - first;
+  rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layerIdx];
+  if (tokens.capacity() == 0) {
+    tokens.reserve(count);
+  }
+  AddLayerTokens(layerIdx, mPostConstructed->mLayerTokens[layerIdx]);
+
+  if (mPostConstructed->mMreaVersion < 24) {
+    const SObjectTag tag('MREA', mAreaAssetId);
+    const int size = GetLayerScriptSize(layer);
+    rstl::auto_ptr< char > buffer(
+        static_cast< char* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen)));
+    mPostConstructed->mLayerLoadTransactions.push_back(
+        rstl::pair< int, rstl::auto_ptr< CDvdRequest > >(
+            layer.Value(),
+            gpResourceFactory->GetResLoader().LoadResourcePartAsync(
+                tag, mPostConstructed->mLayerFileOffsets[layerIdx], size, buffer.get())));
+    mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection] =
+        rstl::pair< rstl::auto_ptr< char >, int >(buffer, size);
+    mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >(buffer.get());
+    mPostConstructed->mLayerScriptBuffers[layerIdx].release();
+  } else {
+    rstl::auto_ptr< char > buffer;
+    rstl::auto_ptr< CDvdRequest > request;
+    const int size = GetLayerScriptSize(layer);
+    ReadCompressedLayer(mPostConstructed->mLayerFileOffsets[layerIdx], request, buffer);
+    mPostConstructed->mLayerLoadTransactions.push_back(
+        rstl::pair< int, rstl::auto_ptr< CDvdRequest > >(layer.Value(), request));
+    mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection] =
+        rstl::pair< rstl::auto_ptr< char >, int >(buffer, size);
+    mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >(buffer.get());
+    mPostConstructed->mLayerScriptBuffers[layerIdx].release();
+  }
+
+  mgr.World()->CancelLayerRelUnload(mSelfIdx, layer);
+  LoadLayerRelModules(mgr, layer);
 }
 
-void CGameArea::RemoveLayerObjects(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Remove script objects and queue the world's layer-unload notification.
+void CGameArea::RemoveLayerObjects(CStateManager& mgr, const TLayerId layer) {
+  CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
+  loader.RemoveLayerObjects(mSelfIdx, layer, mgr);
+  mgr.World()->QueueLayerRelUnload(CWorld::SLayerRelUnload(mSelfIdx, layer, 2));
 }
 
-void CGameArea::ClearLayer(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Release layer objects, resources, and script buffers.
+void CGameArea::ClearLayer(CStateManager& mgr, const TLayerId layer) {
+  if (!IsValidLayerNumber(mgr, layer)) {
+    return;
+  }
+
+  const int layerIdx = layer.Value();
+  RemoveLayerObjects(mgr, layer);
+  mPostConstructed->mLayerTokens[layerIdx] = rstl::vector< CToken >();
+  mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection].first =
+      rstl::auto_ptr< char >();
+  mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >();
+  mLayerPhases[layerIdx] = kLP_Inactive;
 }
 
-void CGameArea::UnloadLayerDynamic(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Cancel loading or clear an activated layer.
+void CGameArea::UnloadLayerDynamic(CStateManager& mgr, const TLayerId layer) {
+  if (!IsValidLayerNumber(mgr, layer)) {
+    return;
+  }
+
+  const int layerIdx = layer.Value();
+  const ELayerPhase phase = mLayerPhases[layerIdx];
+  bool cleared = false;
+  switch (phase) {
+  case kLP_RestartPending:
+  case kLP_Loading:
+    mLayerPhases[layerIdx] = kLP_CancelPending;
+    break;
+  case kLP_Ready:
+  case kLP_Active:
+    ClearLayer(mgr, layer);
+    cleared = true;
+    break;
+  default:
+    break;
+  }
+  if (!cleared) {
+    RemoveLayerObjects(mgr, layer);
+  }
 }
 
-void CGameArea::ActivateLayerDynamic(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Instantiate and initialize this layer, then release its serialized script buffer.
+void CGameArea::ActivateLayerDynamic(CStateManager& mgr, const TLayerId layer) {
+  if (!IsValidLayerNumber(mgr, layer)) {
+    return;
+  }
+
+  CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
+  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  if (!layers.IsLayerActive(mSelfIdx, layer)) {
+    return;
+  }
+
+  const int layerIdx = layer.Value();
+  layers.GetAreaLayerCount(mSelfIdx);
+  rstl::vector< TEditorId >& ids = mPostConstructed->mLayerEditorIds[layerIdx];
+  ids = rstl::vector< TEditorId >();
+  const rstl::pair< const uchar*, int > buffer = GetLayerScriptBuffer(layer);
+  CMemoryInStream in(buffer.first, buffer.second);
+  mPostConstructed->mScriptObjectsInitialized = false;
+  loader.LoadScriptObjects(GetId(), in, ids, mgr);
+  loader.InitScriptObjects(ids, mgr);
+  mPostConstructed->mScriptObjectsInitialized = true;
+
+  mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection].first =
+      rstl::auto_ptr< char >();
+  mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >();
+  mLayerPhases[layerIdx] = kLP_Active;
 }
 
-void CGameArea::LoadLayerRelModules(CStateManager& mgr, const TLayerId& layer) {
-  // TODO: Build the layer's REL tokens from its pair of module offsets.
+void CGameArea::LoadLayerRelModules(CStateManager& mgr, const TLayerId layer) {
+  const int layerIdx = layer.Value();
+  const int first = mRelOffsets[layerIdx * 2];
+  const int last = mRelOffsets[layerIdx * 2 + 1];
+  const int count = last - first;
+  rstl::vector< CRELFileToken >& tokens = mPostConstructed->mLayerRelTokens[layerIdx];
+  if (count > 0 && count != tokens.size()) {
+    mLayerPhases[layerIdx] = kLP_Loading;
+    tokens.clear();
+    tokens.reserve(count);
+    for (int i = first; i < last; ++i) {
+      tokens.push_back_unsafe(CRELFileToken(mRelModules[i], 1));
+    }
+  }
 }
 
 void CGameArea::SortTextureDependencies() {
@@ -900,7 +1119,7 @@ void CGameArea::ClearDecompressionRequest(CDvdRequest* request) {
 }
 
 void CGameArea::ReadCompressedLayer(int offset, rstl::auto_ptr< CDvdRequest >& request,
-                                    rstl::auto_ptr< uchar >& buffer) {
+                                    rstl::auto_ptr< char >& buffer) {
   // TODO: Locate the compressed block and queue the read/decompression request.
 }
 

@@ -280,7 +280,7 @@ public:
   void DecompressAreaData();
   void ClearDecompressionRequest(CDvdRequest* request);
   void ReadCompressedLayer(int offset, rstl::auto_ptr< CDvdRequest >& request,
-                           rstl::auto_ptr< uchar >& buffer);
+                           rstl::auto_ptr< char >& buffer);
   void SortTextureDependencies();
   void SortRelTokens();
   bool UpdateDependencyLoading(CStateManager& mgr);
@@ -317,22 +317,22 @@ public:
 
   // Guessed names for the Echoes dynamic-layer interface.
   int GetTokenCount() const;
-  ELayerPhase GetLayerPhase(const TLayerId& layer) const;
-  rstl::vector< CRELFileToken >* GetLayerRelTokens(const TLayerId& layer) const;
-  bool IsValidLayerNumber(CStateManager& mgr, const TLayerId& layer) const;
-  void LoadLayerDynamic(CStateManager& mgr, const TLayerId& layer);
-  void UnloadLayerDynamic(CStateManager& mgr, const TLayerId& layer);
-  void ActivateLayerDynamic(CStateManager& mgr, const TLayerId& layer);
-  void StartLayerLoad(CStateManager& mgr, const TLayerId& layer);
-  void RemoveLayerObjects(CStateManager& mgr, const TLayerId& layer);
-  void ClearLayer(CStateManager& mgr, const TLayerId& layer);
-  void LoadLayerRelModules(CStateManager& mgr, const TLayerId& layer);
-  void UpdateLayerLoading(CStateManager& mgr, const TLayerId& layer);
-  int GetLayerRequestCount(const TLayerId& layer) const;
+  ELayerPhase GetLayerPhase(const TLayerId layer) const;
+  rstl::vector< CRELFileToken >* GetLayerRelTokens(const TLayerId layer) const;
+  bool IsValidLayerNumber(CStateManager& mgr, const TLayerId layer) const;
+  void LoadLayerDynamic(CStateManager& mgr, const TLayerId layer);
+  void UnloadLayerDynamic(CStateManager& mgr, const TLayerId layer);
+  void ActivateLayerDynamic(CStateManager& mgr, const TLayerId layer);
+  void StartLayerLoad(CStateManager& mgr, const TLayerId layer);
+  void RemoveLayerObjects(CStateManager& mgr, const TLayerId layer);
+  void ClearLayer(CStateManager& mgr, const TLayerId layer);
+  void LoadLayerRelModules(CStateManager& mgr, const TLayerId layer);
+  void UpdateLayerLoading(CStateManager& mgr, const TLayerId layer);
+  int GetLayerRequestCount(const TLayerId layer) const;
   bool HasPendingLayerLoads() const;
   void UpdateDynamicLayers(CStateManager& mgr);
-  int GetLayerScriptSize(const TLayerId& layer) const;
-  rstl::pair< const uchar*, int > GetLayerScriptBuffer(const TLayerId& layer) const;
+  int GetLayerScriptSize(const TLayerId layer) const;
+  rstl::pair< const uchar*, int > GetLayerScriptBuffer(const TLayerId layer) const;
   rstl::pair< const uchar*, int > GetGeneratedScriptBuffer() const;
   void UpdateDocks(CStateManager& mgr);
   void InitializeDocks(CStateManager& mgr);

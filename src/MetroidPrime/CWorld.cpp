@@ -572,7 +572,7 @@ void CWorld::TouchSky() const {
   }
 }
 
-void CWorld::CancelLayerRelUnload(TAreaId& aid, TLayerId& layer) {
+void CWorld::CancelLayerRelUnload(TAreaId aid, TLayerId layer) {
   rstl::list< SLayerRelUnload >::iterator it = mPendingLayerRelUnloads.begin();
   while (it != mPendingLayerRelUnloads.end()) {
     if (it->mAreaId == aid && it->mLayerId.Value() == layer.Value()) {
@@ -595,8 +595,8 @@ void CWorld::Update(float dt) {
     while (it != mPendingLayerRelUnloads.end()) {
       if (--it->mFramesLeft == 0) {
         if (DoesAreaExist(it->mAreaId) && Area(it->mAreaId)->IsLoaded()) {
-          rstl::vector< CRELFileToken >* tokens =
-              Area(it->mAreaId)->GetLayerRelTokens(it->mLayerId);
+          CGameArea* area = Area(it->mAreaId);
+          rstl::vector< CRELFileToken >* tokens = area->GetLayerRelTokens(it->mLayerId);
           if (tokens) {
             *tokens = rstl::vector< CRELFileToken >();
           }
