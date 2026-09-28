@@ -166,6 +166,12 @@ MetroidPrime/CTransitionDatabaseGame.cpp:
 	.data       start:0x803B1F70 end:0x803B1F80
 	.sbss       start:0x80418FD0 end:0x80418FE0
 
+MetroidPrime/ScriptObjects/CScriptActor.cpp:
+	.text       start:0x8006EB98 end:0x80070DB4
+	.rodata     start:0x803A70F0 end:0x803A7108
+	.data       start:0x803B1F80 end:0x803B2018
+	.sdata2     start:0x8041AA78 end:0x8041AA90
+
 MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.text       start:0x8007105C end:0x80073474
 	.data       start:0x803B2018 end:0x803B20B0

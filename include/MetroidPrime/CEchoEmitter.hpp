@@ -17,6 +17,7 @@ public:
   virtual void Render(const CStateManager& mgr) const;
 
   void CreateEmitter(CStateManager& mgr);
+  void TriggerDamageEcho(); // Guessed name; starts the configured damage-echo decay.
   void SetBounds(const CAABox& bounds) { mBounds = bounds; }
   void SetParameters(const SEchoParameters& parameters) { mParameters = parameters; }
   bool IsPendingDeletion() const { return mPendingDeletion; }

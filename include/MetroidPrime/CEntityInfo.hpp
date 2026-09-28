@@ -87,6 +87,9 @@ enum EScriptObjectState {
   kSS_CameraPlayer = 0x43504c52,
   kSS_CameraTime = 0x4354494d,
   kSS_UnFrozen = 0x5546525a,
+  kSS_Dead = 0x44454144,
+  kSS_InheritBounds = 0x49424e44,
+  kSS_ScanSource = 0x53434e53,
   kSS_InvalidState = 0xffffffff,
 };
 
@@ -105,6 +108,8 @@ enum EScriptObjectMessage {
 
   kSM_Increment = 0x494e4352,
   kSM_Decrement = 0x44454352,
+  kSM_Kill = 0x4b494c4c,
+  kSM_InternalMessage00 = 0x494d3030,
 
   kSM_XCRT = 0x58435254,
   kSM_XALD = 0x58414c44,
