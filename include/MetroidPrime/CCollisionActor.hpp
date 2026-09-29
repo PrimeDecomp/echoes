@@ -17,6 +17,10 @@ class CCollisionActor : public CPhysicsActor {
 public:
   enum EPrimitiveType { kPT_OBBTreeGroup, kPT_AABox, kPT_Sphere };
 
+  CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner, const CVector3f& extent,
+                  const CVector3f& center, bool active, float mass);
+  CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner, const CVector3f& boxSize,
+                  bool active, float mass);
   CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner, bool active, float radius,
                   float mass);
 
