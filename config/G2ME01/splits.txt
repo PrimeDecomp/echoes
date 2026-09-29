@@ -989,6 +989,12 @@ GuiSys/CAuiEnergyBarT01.cpp:
 	.data       start:0x803B9080 end:0x803B90C0
 	.sdata2     start:0x8041E100 end:0x8041E118
 
+GuiSys/CAuiImagePane.cpp:
+	.text       start:0x8027EF10 end:0x802802B8
+	.rodata     start:0x803AE998 end:0x803AE9B8
+	.data       start:0x803B90C0 end:0x803B9100
+	.sdata2     start:0x8041E118 end:0x8041E140
+
 Collision/CCollidableAABox.cpp:
 	.text       start:0x80281490 end:0x80281EF0
 	.ctors      start:0x803A55C0 end:0x803A55C4
