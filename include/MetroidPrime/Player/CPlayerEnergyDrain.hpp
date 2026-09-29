@@ -11,7 +11,8 @@ class CStateManager;
 
 class CEnergyDrainSource {
 public:
-  CEnergyDrainSource(TUniqueId src, float intensity);
+  CEnergyDrainSource(TUniqueId src, float intensity) : mSource(src), mIntensity(intensity) {}
+  bool operator<(const CEnergyDrainSource& other) const { return mSource < other.mSource; }
   TUniqueId GetEnergyDrainSourceId() const { return mSource; }
   void SetEnergyDrainIntensity(float in) { mIntensity = in; }
   float GetEnergyDrainIntensity() const { return mIntensity; }
@@ -20,14 +21,20 @@ private:
   TUniqueId mSource;
   float mIntensity;
 };
+CHECK_SIZEOF(CEnergyDrainSource, 0x8)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CEnergyDrainSource)
+}
 
 class CPlayerEnergyDrain {
 public:
   CPlayerEnergyDrain(uint numSources);
 
-  void AddEnergyDrainSource(TUniqueId id, float intensity);
+  // Guessed name: clears the sources and elapsed drain time.
+  void Clear();
+  bool AddEnergyDrainSource(TUniqueId id, float intensity);
   void RemoveEnergyDrainSource(TUniqueId id);
-  float GetEnergyDrainIntensity() const;
   const rstl::vector< CEnergyDrainSource >& GetEnergyDrainSources() const { return mSources; }
   float GetEnergyDrainTime() const { return mEnergyDrainTime; }
   void ProcessEnergyDrain(const CStateManager& mgr, float dt);
