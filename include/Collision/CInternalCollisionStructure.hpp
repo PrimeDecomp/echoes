@@ -27,6 +27,10 @@ public:
   CInternalCollisionStructure(const CPrimDesc& left, const CPrimDesc& right)
   : mLeft(left), mRight(right) {}
 
+  CInternalCollisionStructure GetSwapped() const {
+    return CInternalCollisionStructure(mRight, mLeft);
+  }
+
   const CPrimDesc& GetLeft() const { return mLeft; }
   const CPrimDesc& GetRight() const { return mRight; }
 

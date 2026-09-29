@@ -3,14 +3,16 @@
 
 #include "types.h"
 
-#include "Collision/CMaterialList.hpp"
 #include "Collision/CInternalCollisionStructure.hpp"
+#include "Collision/CMaterialList.hpp"
 
 #include "Kyoto/IObjectStore.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
+
+#include <string.h>
 
 class CRayCastResult;
 class CCollisionInfoList;
@@ -39,6 +41,51 @@ public:
     const char* mInfo;
   };
 
+  class Comparison {
+  public:
+    Comparison(ComparisonFunc collider, const char* type1, const char* type2)
+    : mCollider(collider), mType1(type1), mType2(type2) {}
+
+    ComparisonFunc GetCollider() const { return mCollider; }
+    const char* GetType1() const { return mType1; }
+    const char* GetType2() const { return mType2; }
+
+  private:
+    ComparisonFunc mCollider;
+    const char* mType1;
+    const char* mType2;
+  };
+
+  class BooleanComparison {
+  public:
+    BooleanComparison(BooleanComparisonFunc collider, const char* type1, const char* type2)
+    : mCollider(collider), mType1(type1), mType2(type2) {}
+
+    BooleanComparisonFunc GetCollider() const { return mCollider; }
+    const char* GetType1() const { return mType1; }
+    const char* GetType2() const { return mType2; }
+
+  private:
+    BooleanComparisonFunc mCollider;
+    const char* mType1;
+    const char* mType2;
+  };
+
+  class MovingComparison {
+  public:
+    MovingComparison(MovingComparisonFunc collider, const char* type1, const char* type2)
+    : mCollider(collider), mType1(type1), mType2(type2) {}
+
+    MovingComparisonFunc GetCollider() const { return mCollider; }
+    const char* GetType1() const { return mType1; }
+    const char* GetType2() const { return mType2; }
+
+  private:
+    MovingComparisonFunc mCollider;
+    const char* mType1;
+    const char* mType2;
+  };
+
   CCollisionPrimitive(const CMaterialList& list);
 
   virtual uint GetTableIndex() const = 0;
@@ -54,6 +101,14 @@ public:
   static void InitBeginTypes();
   static void InitAddType(const Type& type);
   static void InitEndTypes();
+  static void InitBeginColliders();
+  static void InitAddCollider(const Comparison& comp);
+  static void InitAddBooleanCollider(const BooleanComparison& comp);
+  static void InitAddMovingCollider(const MovingComparison& comp);
+  static void InitAddCollider(ComparisonFunc comp, const char*, const char*);
+  static void InitAddBooleanCollider(BooleanComparisonFunc comp, const char*, const char*);
+  static void InitAddMovingCollider(MovingComparisonFunc comp, const char*, const char*);
+  static void InitEndColliders();
   static void Uninitialize();
 
   static bool Collide(const CInternalCollisionStructure::CPrimDesc& left,
@@ -63,7 +118,24 @@ public:
                              const CInternalCollisionStructure::CPrimDesc& right);
   static bool CollideMoving(const CInternalCollisionStructure::CPrimDesc& left,
                             const CInternalCollisionStructure::CPrimDesc& right,
-                            const CVector3f& direction, double& distance, CCollisionInfo& collision);
+                            const CVector3f& direction, double& distance,
+                            CCollisionInfo& collision);
+
+  static int TypeIndexFromTypeInfo(const char* name) {
+    rstl::vector< Type >::const_iterator iter = sCollisionTypeList->begin();
+
+    for (int i = 0; i < sCollisionTypeList->size(); ++i) {
+      if (strcmp(sCollisionTypeList->at(i).GetInfo(), name) == 0) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  static ComparisonFunc* ColliderFromTable(const int index1, const int index2);
+  static BooleanComparisonFunc* BooleanColliderFromTable(const int index1, const int index2);
+  static MovingComparisonFunc* MovingColliderFromTable(const int index1, const int index2);
 
 private:
   static int sNumTypes;
@@ -76,9 +148,10 @@ private:
   static rstl::single_ptr< ComparisonFunc > sTableOfCollidables;
   static rstl::single_ptr< BooleanComparisonFunc > sTableOfBooleanCollidables;
   static rstl::single_ptr< MovingComparisonFunc > sTableOfMovingCollidables;
-  static ComparisonFunc sNullCollider;
-  static BooleanComparisonFunc sNullBooleanCollider;
-  static MovingComparisonFunc sNullMovingCollider;
+  static bool InternalCollide(const CInternalCollisionStructure&, CCollisionInfoList&);
+  static bool InternalCollideMoving(const CInternalCollisionStructure&, const CVector3f&, double&,
+                                    CCollisionInfo&);
+  static bool InternalCollideBoolean(const CInternalCollisionStructure&);
 
   uint x4_;
   CMaterialList mMaterial;

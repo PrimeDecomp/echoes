@@ -9,7 +9,10 @@ class CAABox;
 
 class CCollisionInfo {
 public:
-  CCollisionInfo();
+  // Original Wii export; the native invalid constructor ignores the tag.
+  enum EInvalid { kI_Invalid, kI_Valid };
+
+  CCollisionInfo(EInvalid = kI_Invalid);
   CCollisionInfo(const CVector3f& point, const CMaterialList& rightMaterial,
                  const CMaterialList& leftMaterial, const CVector3f& normal, ushort value);
   CCollisionInfo(const CVector3f& point, const CMaterialList& rightMaterial,
@@ -44,5 +47,9 @@ private:
   bool mHasExtents : 1;
 };
 CHECK_SIZEOF(CCollisionInfo, 0x60)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CCollisionInfo)
+}
 
 #endif // _CCOLLISIONINFO

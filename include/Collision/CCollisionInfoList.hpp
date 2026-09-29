@@ -12,6 +12,12 @@ public:
     }
     mList.push_back(info);
   }
+  void Swap(int start) {
+    for (int i = start; i < GetCount(); ++i) {
+      mList[i].Swap();
+    }
+  }
+
   int GetCount() const { return mList.size(); }
   void Clear() { mList.clear(); }
   const CCollisionInfo& operator[](int index) const { return mList[index]; }

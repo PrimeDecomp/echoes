@@ -992,6 +992,26 @@ Collision/CCollidableAABox.cpp:
 	.sdata      start:0x804189C8 end:0x804189D0
 	.sdata2     start:0x8041E170 end:0x8041E188
 
+Collision/CCollidableCollisionSurface.cpp:
+	.text       start:0x80281EF0 end:0x80281F14
+	.rodata     start:0x803AEA08 end:0x803AEA28
+	.sdata      start:0x804189D0 end:0x804189D8
+
+Collision/CCollisionInfo.cpp:
+	.text       start:0x80281F14 end:0x80282308
+	.sdata2     start:0x8041E188 end:0x8041E190
+
+Collision/InternalColliders.cpp:
+	.text       start:0x80282308 end:0x8028246C
+	.rodata     start:0x803AEA28 end:0x803AEA50
+
+Collision/CCollisionPrimitive.cpp:
+	.text       start:0x8028246C end:0x80283750
+	.ctors      start:0x803A55C4 end:0x803A55C8
+	.rodata     start:0x803AEA50 end:0x803AEA58
+	.bss        start:0x803DF4D0 end:0x803DF500 align:4
+	.sbss       start:0x804197E0 end:0x80419808
+
 Collision/CollisionUtil.cpp:
 	.text       start:0x8028385C end:0x80288300
 	.ctors      start:0x803A55C8 end:0x803A55CC
