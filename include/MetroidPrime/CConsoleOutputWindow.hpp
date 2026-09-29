@@ -9,21 +9,26 @@
 
 class CConsoleOutputWindow : public CIOWin {
   static CConsoleOutputWindow* mInstance;
-public:
-  CConsoleOutputWindow(int, float, float);
 
+public:
+  CConsoleOutputWindow(int lineCount, float duration, float fontScale);
+
+  // CIOWin
   ~CConsoleOutputWindow() override;
   EMessageReturn OnMessage(const CArchitectureMessage&, CArchitectureQueue&) override;
+  void Draw() const override;
+
   void Update(float);
-  void Draw() const;
+
 private:
   CFont mFont;
-  float mUnk;
-  rstl::vector<rstl::string> mText;
-  rstl::vector<float> mUnkFloats;
-  int x40_;
-  int x44_;
-  int x48_;
+  float mUnresolvedFloat;
+  rstl::vector< rstl::string > mLines;
+  rstl::vector< float > mLineTimers;
+  int mCharsPerLine;
+  int mLineIndex;
+  int mUnresolvedCounter;
 };
+CHECK_SIZEOF(CConsoleOutputWindow, 0x4c)
 
 #endif // _CCONSOLEOUTPUTWINDOW
