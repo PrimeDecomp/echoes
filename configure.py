@@ -484,6 +484,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptColorModulate.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptActorRotate.cpp"),
             Object(NonMatching, "MetroidPrime/CMapWorldInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CMapWorld.cpp"),
             Object(NonMatching, "MetroidPrime/CMemoryDrawEnum.cpp"),
