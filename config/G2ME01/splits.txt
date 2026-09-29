@@ -331,6 +331,12 @@ MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp:
 	.text       start:0x800D50B8 end:0x800D56A8
 	.data       start:0x803B37A0 end:0x803B37C0
 
+MetroidPrime/ScriptObjects/CScriptActorKeyframe.cpp:
+	.text       start:0x800D56A8 end:0x800D61A4
+	.rodata     start:0x803A89E0 end:0x803A89E8
+	.data       start:0x803B37C0 end:0x803B37F0
+	.sdata2     start:0x8041B558 end:0x8041B560
+
 MetroidPrime/ScriptObjects/CScriptWater.cpp:
 	.text       start:0x800D79D8 end:0x800DAE94
 	.rodata     start:0x803A8A00 end:0x803A8A18
