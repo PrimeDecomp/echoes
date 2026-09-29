@@ -319,6 +319,14 @@ MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
 
+MetroidPrime/ScriptObjects/CScriptDebris.cpp:
+	.text       start:0x800D1060 end:0x800D50B8
+	.ctors      start:0x803A54FC end:0x803A5500
+	.data       start:0x803B3708 end:0x803B37A0
+	.sdata      start:0x80418170 end:0x804181D8
+	.sbss       start:0x804190C8 end:0x804190D0
+	.sdata2     start:0x8041B4F4 end:0x8041B558
+
 MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp:
 	.text       start:0x800D50B8 end:0x800D56A8
 	.data       start:0x803B37A0 end:0x803B37C0

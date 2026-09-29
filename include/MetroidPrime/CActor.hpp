@@ -203,6 +203,7 @@ public:
   void SetMuted(bool b);
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
+  void SetDoTargetDistanceTest(bool enabled) { mDoTargetDistanceTest = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
                       EMaterialTypes, CStateManager&);
