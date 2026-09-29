@@ -722,7 +722,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Particles/CParticleSpawnSystem.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleSpawnRandom.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleSwooshDataFactory.cpp"),
-            Object(NonMatching, "Kyoto/Particles/CRealElement.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CRealElement.cpp"),
             Object(NonMatching, "Kyoto/Particles/CSpawnSystemKeyframeData.cpp"),
             Object(NonMatching, "Kyoto/Particles/CUVElement.cpp"),
             Object(NonMatching, "Kyoto/Particles/CVectorElement.cpp"),

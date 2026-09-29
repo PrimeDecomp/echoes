@@ -390,6 +390,9 @@ public:
   CREKEYF(CInputStream& in);
   ~CREKEYF() override;
   bool GetValue(int frame, float& valOut) const override;
+
+  const int GetLoopStart() const { return mLoopStart; }
+  const int GetLoopEnd() const { return mLoopEnd; }
 };
 
 class CREKPIN : public CRealElement {
