@@ -399,6 +399,7 @@ config.libs = [
             Object(NonMatching, "GuiSys/CGuiFrame.cpp"),
             Object(NonMatching, "GuiSys/CGuiObject.cpp"),
             Object(NonMatching, "GuiSys/CGuiWidget.cpp"),
+            Object(NonMatching, "GuiSys/CAuiEnergyBarT01.cpp"),
             Object(NonMatching, "GuiSys/CGuiPane.cpp"),
             Object(NonMatching, "GuiSys/CGuiTextPane.cpp"),
             Object(NonMatching, "WorldFormat/COBBTree.cpp"),
