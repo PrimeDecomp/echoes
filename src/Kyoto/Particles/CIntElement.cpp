@@ -31,6 +31,8 @@ static inline int GetKeyframeTime(float value, float start, float rate) {
   return rstl::max_val(0, CCast::ToInt32(rate * (value - start)));
 }
 
+
+CIEParticleCreationTime::~CIEParticleCreationTime() {}
 CIEConstant::CIEConstant(int val) : mVal(val) {}
 
 CIEConstant::~CIEConstant() {}
@@ -323,7 +325,7 @@ bool CIEKeyframeEmitter::GetValue(int frame, int& valOut) const {
   }
 }
 
-CIEKEYF::CIEKEYF(CInputStream& in)
+CIEKeyframeInput::CIEKeyframeInput(CInputStream& in)
 : mPercent(in.ReadInt32())
 , mUnk1(in.ReadInt32())
 , mLoop(in.ReadBool())
@@ -335,13 +337,13 @@ CIEKEYF::CIEKEYF(CInputStream& in)
 , mKeys(in)
 , x30_(CParticleDataFactory::GetRealElement(in)) {}
 
-CIEKEYF::~CIEKEYF() { delete x30_; }
+CIEKeyframeInput::~CIEKeyframeInput() { delete x30_; }
 
-bool CIEKEYF::GetValue(int frame, int& valOut) const {
+bool CIEKeyframeInput::GetValue(int frame, int& valOut) const {
   if (mPercent == 2) {
     float in = 0.0f;
     x30_->GetValue(frame, in);
-    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, mLoopStart, mLoopEnd);
+    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, GetLoopStart(), GetLoopEnd());
     bool lerp = idx > 0 && idx < mLoopEnd - 1;
     if (lerp) {
       float t = CMath::Clamp(0.0f, (in - x18_) - static_cast< float >(idx) / x1c_, 1.0f);
@@ -427,18 +429,18 @@ bool CIEInitialSwitch::GetValue(int frame, int& valOut) const {
   return false;
 }
 
-CIEKPIN::CIEKPIN(CIntElement* a) : x4_(a) {}
+CIEKeepInitial::CIEKeepInitial(CIntElement* a) : x4_(a) {}
 
-CIEKPIN::~CIEKPIN() { delete x4_; }
+CIEKeepInitial::~CIEKeepInitial() { delete x4_; }
 
-bool CIEKPIN::GetValue(int frame, int& valOut) const {
+bool CIEKeepInitial::GetValue(int frame, int& valOut) const {
   if (frame == 0) {
     x4_->GetValue(0, valOut);
   }
   return false;
 }
 
-bool CIEPCRT::GetValue(int frame, int& valOut) const {
+bool CIEParticleCreationTime::GetValue(int frame, int& valOut) const {
   valOut = CParticleGlobals::GetCurrentParticle()->mStartFrame;
   return false;
 }

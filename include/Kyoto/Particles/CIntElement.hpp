@@ -9,6 +9,7 @@
 
 class CInputStream;
 
+
 class CIEConstant : public CIntElement {
   int mVal;
 
@@ -228,7 +229,7 @@ public:
   bool GetValue(int frame, int& valOut) const override;
 };
 
-class CIEKEYF : public CIntElement {
+class CIEKeyframeInput : public CIntElement {
   int mPercent;
   int mUnk1;
   bool mLoop;
@@ -241,25 +242,29 @@ class CIEKEYF : public CIntElement {
   CRealElement* x30_;
 
 public:
-  CIEKEYF(CInputStream& in);
-  ~CIEKEYF() override;
+  CIEKeyframeInput(CInputStream& in);
+  ~CIEKeyframeInput() override;
   bool GetValue(int frame, int& valOut) const override;
-};
-
-class CIEKPIN : public CIntElement {
-  CIntElement* x4_;
-
-public:
-  CIEKPIN(CIntElement* a);
-  ~CIEKPIN() override;
-  bool GetValue(int frame, int& valOut) const override;
+  int GetLoopStart() const { return mLoopStart; }
+  int GetLoopEnd() const { return mLoopEnd; }
 };
 
 // Constructed for both PCRT and PDET.
-class CIEPCRT : public CIntElement {
+class CIEParticleCreationTime : public CIntElement {
 public:
-  ~CIEPCRT() override {}
+  ~CIEParticleCreationTime() override;
   bool GetValue(int frame, int& valOut) const override;
 };
+
+class CIEKeepInitial : public CIntElement {
+  CIntElement* x4_;
+
+public:
+  CIEKeepInitial(CIntElement* a);
+  ~CIEKeepInitial() override;
+  bool GetValue(int frame, int& valOut) const override;
+};
+
+
 
 #endif // _CINTELEMENT
