@@ -373,16 +373,16 @@ bool CMVESetPosition::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) cons
   return false;
 }
 
-CMVESPHV::CMVESPHV(CVectorElement* a, CRealElement* b, CModVectorElement* c)
+CMVESphereVolume::CMVESphereVolume(CVectorElement* a, CRealElement* b, CModVectorElement* c)
 : x4_(a), x8_(b), xc_(c) {}
 
-CMVESPHV::~CMVESPHV() {
+CMVESphereVolume::~CMVESphereVolume() {
   delete x4_;
   delete x8_;
   delete xc_;
 }
 
-bool CMVESPHV::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const {
+bool CMVESphereVolume::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const {
   CVector3f center(CVector3f::Zero());
   x4_->GetValue(frame, center);
   float radius = 0.0f;
@@ -394,16 +394,16 @@ bool CMVESPHV::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const {
   return false;
 }
 
-CMVEBOXV::CMVEBOXV(CVectorElement* a, CVectorElement* b, CModVectorElement* c)
+CMVEBoxVolume::CMVEBoxVolume(CVectorElement* a, CVectorElement* b, CModVectorElement* c)
 : x4_(a), x8_(b), xc_(c) {}
 
-CMVEBOXV::~CMVEBOXV() {
+CMVEBoxVolume::~CMVEBoxVolume() {
   delete x4_;
   delete x8_;
   delete xc_;
 }
 
-bool CMVEBOXV::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const {
+bool CMVEBoxVolume::GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const {
   CVector3f center(CVector3f::Zero());
   x4_->GetValue(frame, center);
   CVector3f extents(CVector3f::Zero());

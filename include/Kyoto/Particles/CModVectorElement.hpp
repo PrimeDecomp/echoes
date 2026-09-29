@@ -159,25 +159,25 @@ public:
 // Echoes additions. FourCC-based class names are placeholders; descriptive names follow
 // Prime/MP3 analogues. Member offsets come from the constructors.
 
-class CMVEBOXV : public CModVectorElement {
+class CMVEBoxVolume : public CModVectorElement {
   CVectorElement* x4_;
   CVectorElement* x8_;
   CModVectorElement* xc_;
 
 public:
-  CMVEBOXV(CVectorElement* a, CVectorElement* b, CModVectorElement* c);
-  ~CMVEBOXV() override;
+  CMVEBoxVolume(CVectorElement* a, CVectorElement* b, CModVectorElement* c);
+  ~CMVEBoxVolume() override;
   bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
 };
 
-class CMVESPHV : public CModVectorElement {
+class CMVESphereVolume : public CModVectorElement {
   CVectorElement* x4_;
   CRealElement* x8_;
   CModVectorElement* xc_;
 
 public:
-  CMVESPHV(CVectorElement* a, CRealElement* b, CModVectorElement* c);
-  ~CMVESPHV() override;
+  CMVESphereVolume(CVectorElement* a, CRealElement* b, CModVectorElement* c);
+  ~CMVESphereVolume() override;
   bool GetValue(int frame, CVector3f& pVel, CVector3f& pPos) const override;
 };
 
