@@ -47,7 +47,7 @@ private:
   CGSFreeLook mFreeLook;
   CGSComboFire mComboFire;
   CGSFidget mFidget;
-  uchar mPadding[4];
+  uchar mUnresolvedStorage[4]; // Unaccessed here; ownership and purpose remain unknown.
   EGunState mGunState;
   int mCurAnimId;
   bool mAnimDone : 1;
