@@ -76,9 +76,9 @@ public:
   void* GetBitMapData(int);
   ETexelFormat GetTexelFormat() const { return mTexelFormat; }
 
-  short GetWidth() const { return mWidth; }
+  const short GetWidth() const { return mWidth; }
 
-  short GetHeight() const { return mHeight; }
+  const short GetHeight() const { return mHeight; }
 
   int GetNumberOfMipMaps() const { return mNumMips; }
 
