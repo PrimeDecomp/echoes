@@ -8,7 +8,9 @@ public:
   CFont(float scale);
   ~CFont();
   int CharWidth(char) const;
+  int GetFontSize() const { return mFontSize; }
   void DrawString(const char* str, long x, long y, const CColor& col) const;
+
 private:
   int mFontSize;
   float mScale;
