@@ -59,8 +59,8 @@ bool CVESphere::GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const {
   return false;
 }
 
-CVEEllipsoid::CVEEllipsoid(CVectorElement* origin, CVectorElement* radii,
-                           CVectorElement* rotation, CRealElement* velocityMag, bool onSurface)
+CVEEllipsoid::CVEEllipsoid(CVectorElement* origin, CVectorElement* radii, CVectorElement* rotation,
+                           CRealElement* velocityMag, bool onSurface)
 : mOrigin(origin)
 , mRadii(radii)
 , mRotation(rotation)
@@ -93,9 +93,9 @@ bool CVEEllipsoid::GetValue(int frame, CVector3f& pPos, CVector3f& pVel) const {
     dir.Normalize();
   }
   if (!mOnSurface) {
-    radii.SetX(CRandom16::GetRandomNumber()->Range(0.f, radii.GetX()));
-    radii.SetY(CRandom16::GetRandomNumber()->Range(0.f, radii.GetY()));
-    radii.SetZ(CRandom16::GetRandomNumber()->Range(0.f, radii.GetZ()));
+    radii[kDX] = CRandom16::GetRandomNumber()->Range(0.f, radii[kDX]);
+    radii[kDY] = CRandom16::GetRandomNumber()->Range(0.f, radii[kDY]);
+    radii[kDZ] = CRandom16::GetRandomNumber()->Range(0.f, radii[kDZ]);
   }
   dir = dir * radii;
 
@@ -185,8 +185,8 @@ CEEPlaneEmitter::CEEPlaneEmitter(CVectorElement* translation, CVectorElement* ro
 , mConstantTransform(false)
 , mHasCone(true)
 , mConstantCone(false) {
-  if (mTranslation != nullptr && mRotation != nullptr &&
-      mTranslation->IsFastConstant() && mRotation->IsFastConstant()) {
+  if (mTranslation != nullptr && mRotation != nullptr && mTranslation->IsFastConstant() &&
+      mRotation->IsFastConstant()) {
     mConstantTransform = true;
     CVector3f trans = CVector3f::Zero();
     CVector3f rot = CVector3f::Zero();
@@ -239,8 +239,9 @@ bool CEEPlaneEmitter::GetValue(int frame, CVector3f& pPos, CVector3f& pVel) cons
     mTransform.AddTranslation(trans);
   }
 
-  CVector3f pos(CRandom16::GetRandomNumber()->Range(-xRange, xRange),
-                CRandom16::GetRandomNumber()->Range(-yRange, yRange), 0.f);
+  const float x = CRandom16::GetRandomNumber()->Range(-xRange, xRange);
+  const float y = CRandom16::GetRandomNumber()->Range(-yRange, yRange);
+  CVector3f pos = CVector3f(x, y, 0.f);
   if (mHasCone) {
     if (!mConstantCone) {
       mConeAngleElement->GetValue(frame, mConeAngleRadians);
