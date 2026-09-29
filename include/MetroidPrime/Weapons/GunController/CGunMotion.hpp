@@ -4,7 +4,7 @@
 #include "types.h"
 
 #include "MetroidPrime/CModelData.hpp"
-// #include "MetroidPrime/Weapons/GunController/CGunController.hpp"
+#include "MetroidPrime/Weapons/GunController/CGunController.hpp"
 
 #include "Kyoto/CObjectReference.hpp"
 #include "Kyoto/CToken.hpp"
@@ -41,21 +41,23 @@ public:
   void Update(float, CStateManager&);
   void Draw(const CStateManager&, const CTransform4f&) const;
   void ReturnToDefault(CStateManager& mgr, bool);
-  int GetFreeLookSetId() const;
+  int GetFreeLookSetId() const { return mGunController.GetFreeLookSetId(); }
   void BasePosition(bool bigStrikeReset);
   void EnterFidget(CStateManager&, SamusGun::EFidgetType, int);
   void LoadAnimations();
 
   CModelData& GetModelData() { return mModelData; }
   const CModelData& GetModelData() const { return mModelData; }
+  CGunController& GunController() { return mGunController; }
+  const CGunController& GunController() const { return mGunController; }
   bool IsAnimPlaying() const { return mAnimPlaying; }
 
 private:
   CModelData mModelData;
-  // CGunController x4c_gunController;
+  CGunController mGunController;
   rstl::vector< CToken > mAnims;
   bool mAnimPlaying : 1;
 };
-// CHECK_SIZEOF(CGunMotion, 0xbc)
+CHECK_SIZEOF(CGunMotion, 0xbc)
 
 #endif // _CGUNMOTION
