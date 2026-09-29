@@ -235,7 +235,7 @@ CRayCastResult CCollidableOBBTree::LineIntersectsTree(const CMRay& ray,
                           ray.GetStart() + info.GetMagnitude() * ray.GetDirection(), plane,
                           info.GetMaterial());
   }
-  return CRayCastResult();
+  return CRayCastResult::MakeInvalid();
 }
 
 bool CCollidableOBBTree::LineIntersectsOBBTree(const COBBTree::CNode* node,
