@@ -374,7 +374,7 @@ public:
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREKEYF : public CRealElement {
+class CREKeyframeInput : public CRealElement {
   int mPercent;
   int mUnk1;
   bool mLoop;
@@ -387,46 +387,46 @@ class CREKEYF : public CRealElement {
   CRealElement* x30_;
 
 public:
-  CREKEYF(CInputStream& in);
-  ~CREKEYF() override;
+  CREKeyframeInput(CInputStream& in);
+  ~CREKeyframeInput() override;
   bool GetValue(int frame, float& valOut) const override;
 
   const int GetLoopStart() const { return mLoopStart; }
   const int GetLoopEnd() const { return mLoopEnd; }
 };
 
-class CREKPIN : public CRealElement {
+class CREKeepInitial : public CRealElement {
   CRealElement* x4_;
 
 public:
-  CREKPIN(CRealElement* a);
-  ~CREKPIN() override;
+  CREKeepInitial(CRealElement* a);
+  ~CREKeepInitial() override;
   bool GetValue(int frame, float& valOut) const override;
   bool IsConstant() const override { return true; }
 };
 
-class CREOCSP : public CRealElement {
+class CREOscillatingSweep : public CRealElement {
   CIntElement* x4_;
 
 public:
-  CREOCSP(CIntElement* a);
-  ~CREOCSP() override;
+  CREOscillatingSweep(CIntElement* a);
+  ~CREOscillatingSweep() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPNO1 : public CRealElement {
+class CREPerlinNoiseOctave1d : public CRealElement {
   CRealElement* x4_;
   CRealElement* x8_;
   CRealElement* xc_;
   CIntElement* x10_;
 
 public:
-  CREPNO1(CRealElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
-  ~CREPNO1() override;
+  CREPerlinNoiseOctave1d(CRealElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
+  ~CREPerlinNoiseOctave1d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPNO2 : public CRealElement {
+class CREPerlinNoiseOctave2d : public CRealElement {
   CRealElement* x4_;
   CRealElement* x8_;
   CRealElement* xc_;
@@ -434,24 +434,24 @@ class CREPNO2 : public CRealElement {
   CIntElement* x14_;
 
 public:
-  CREPNO2(CRealElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
-  ~CREPNO2() override;
+  CREPerlinNoiseOctave2d(CRealElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
+  ~CREPerlinNoiseOctave2d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPNO3 : public CRealElement {
+class CREPerlinNoiseOctave3d : public CRealElement {
   CVectorElement* x4_;
   CRealElement* x8_;
   CRealElement* xc_;
   CIntElement* x10_;
 
 public:
-  CREPNO3(CVectorElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
-  ~CREPNO3() override;
+  CREPerlinNoiseOctave3d(CVectorElement* a, CRealElement* b, CRealElement* c, CIntElement* d);
+  ~CREPerlinNoiseOctave3d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPNO4 : public CRealElement {
+class CREPerlinNoiseOctave4d : public CRealElement {
   CVectorElement* x4_;
   CRealElement* x8_;
   CRealElement* xc_;
@@ -459,46 +459,46 @@ class CREPNO4 : public CRealElement {
   CIntElement* x14_;
 
 public:
-  CREPNO4(CVectorElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
-  ~CREPNO4() override;
+  CREPerlinNoiseOctave4d(CVectorElement* a, CRealElement* b, CRealElement* c, CRealElement* d, CIntElement* e);
+  ~CREPerlinNoiseOctave4d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPRN1 : public CRealElement {
+class CREPerlinNoise1d : public CRealElement {
   CRealElement* x4_;
 
 public:
-  CREPRN1(CRealElement* a);
-  ~CREPRN1() override;
+  CREPerlinNoise1d(CRealElement* a);
+  ~CREPerlinNoise1d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPRN2 : public CRealElement {
+class CREPerlinNoise2d : public CRealElement {
   CRealElement* x4_;
   CRealElement* x8_;
 
 public:
-  CREPRN2(CRealElement* a, CRealElement* b);
-  ~CREPRN2() override;
+  CREPerlinNoise2d(CRealElement* a, CRealElement* b);
+  ~CREPerlinNoise2d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPRN3 : public CRealElement {
+class CREPerlinNoise3d : public CRealElement {
   CVectorElement* x4_;
 
 public:
-  CREPRN3(CVectorElement* a);
-  ~CREPRN3() override;
+  CREPerlinNoise3d(CVectorElement* a);
+  ~CREPerlinNoise3d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CREPRN4 : public CRealElement {
+class CREPerlinNoise4d : public CRealElement {
   CVectorElement* x4_;
   CRealElement* x8_;
 
 public:
-  CREPRN4(CVectorElement* a, CRealElement* b);
-  ~CREPRN4() override;
+  CREPerlinNoise4d(CVectorElement* a, CRealElement* b);
+  ~CREPerlinNoise4d() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 
@@ -508,7 +508,7 @@ public:
   bool GetValue(int frame, float& valOut) const override;
 };
 
-class CRETOCS : public CRealElement {
+class CRETimeOscillatingSweep : public CRealElement {
   CIntElement* x4_;
   CIntElement* x8_;
   CIntElement* xc_;
@@ -521,8 +521,8 @@ class CRETOCS : public CRealElement {
   mutable int x28_;
 
 public:
-  CRETOCS(const bool a, CIntElement* b, CIntElement* c, CIntElement* d);
-  ~CRETOCS() override;
+  CRETimeOscillatingSweep(const bool a, CIntElement* b, CIntElement* c, CIntElement* d);
+  ~CRETimeOscillatingSweep() override;
   bool GetValue(int frame, float& valOut) const override;
 };
 

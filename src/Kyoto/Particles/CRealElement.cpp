@@ -298,7 +298,7 @@ bool CREKeyframeEmitter::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREKEYF::CREKEYF(CInputStream& in)
+CREKeyframeInput::CREKeyframeInput(CInputStream& in)
 : mPercent(in.ReadInt32())
 , mUnk1(in.ReadInt32())
 , mLoop(in.ReadBool())
@@ -310,9 +310,9 @@ CREKEYF::CREKEYF(CInputStream& in)
 , mKeys(in)
 , x30_(CParticleDataFactory::GetRealElement(in)) {}
 
-CREKEYF::~CREKEYF() { delete x30_; }
+CREKeyframeInput::~CREKeyframeInput() { delete x30_; }
 
-bool CREKEYF::GetValue(int frame, float& valOut) const {
+bool CREKeyframeInput::GetValue(int frame, float& valOut) const {
   if (mPercent == 2) {
     float in = 0.0f;
     x30_->GetValue(frame, in);
@@ -619,22 +619,22 @@ bool CREGetCumulativeParticleCount::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREKPIN::CREKPIN(CRealElement* a) : x4_(a) {}
+CREKeepInitial::CREKeepInitial(CRealElement* a) : x4_(a) {}
 
-CREKPIN::~CREKPIN() { delete x4_; }
+CREKeepInitial::~CREKeepInitial() { delete x4_; }
 
-bool CREKPIN::GetValue(int frame, float& valOut) const {
+bool CREKeepInitial::GetValue(int frame, float& valOut) const {
   if (frame == 0) {
     x4_->GetValue(0, valOut);
   }
   return false;
 }
 
-CREOCSP::CREOCSP(CIntElement* a) : x4_(a) {}
+CREOscillatingSweep::CREOscillatingSweep(CIntElement* a) : x4_(a) {}
 
-CREOCSP::~CREOCSP() { delete x4_; }
+CREOscillatingSweep::~CREOscillatingSweep() { delete x4_; }
 
-bool CREOCSP::GetValue(int frame, float& valOut) const {
+bool CREOscillatingSweep::GetValue(int frame, float& valOut) const {
   int count = static_cast< CElementGen* >(CParticleGlobals::GetCurrentParticleSystem()->mSystem)
                   ->GetCumulativeParticleCount();
   int period;
@@ -648,7 +648,7 @@ bool CREOCSP::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CRETOCS::CRETOCS(const bool a, CIntElement* b, CIntElement* c, CIntElement* d)
+CRETimeOscillatingSweep::CRETimeOscillatingSweep(const bool a, CIntElement* b, CIntElement* c, CIntElement* d)
 : x4_(b), x8_(c), xc_(d), x10_(a), x14_(0), x18_(0), x1c_(0), x20_(0), x24_(0), x28_(-1) {
   if (x4_) {
     x4_->GetValue(0, x14_);
@@ -661,13 +661,13 @@ CRETOCS::CRETOCS(const bool a, CIntElement* b, CIntElement* c, CIntElement* d)
   }
 }
 
-CRETOCS::~CRETOCS() {
+CRETimeOscillatingSweep::~CRETimeOscillatingSweep() {
   delete x4_;
   delete x8_;
   delete xc_;
 }
 
-bool CRETOCS::GetValue(int frame, float& valOut) const {
+bool CRETimeOscillatingSweep::GetValue(int frame, float& valOut) const {
   if (x28_ != frame) {
     x28_ = frame;
     if (x20_ > 0) {
@@ -698,25 +698,25 @@ bool CRETOCS::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPRN1::CREPRN1(CRealElement* a) : x4_(a) {}
+CREPerlinNoise1d::CREPerlinNoise1d(CRealElement* a) : x4_(a) {}
 
-CREPRN1::~CREPRN1() { delete x4_; }
+CREPerlinNoise1d::~CREPerlinNoise1d() { delete x4_; }
 
-bool CREPRN1::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoise1d::GetValue(int frame, float& valOut) const {
   float x = 0.f;
   x4_->GetValue(frame, x);
   valOut = CMath::Noise1d(x);
   return false;
 }
 
-CREPRN2::CREPRN2(CRealElement* a, CRealElement* b) : x4_(a), x8_(b) {}
+CREPerlinNoise2d::CREPerlinNoise2d(CRealElement* a, CRealElement* b) : x4_(a), x8_(b) {}
 
-CREPRN2::~CREPRN2() {
+CREPerlinNoise2d::~CREPerlinNoise2d() {
   delete x4_;
   delete x8_;
 }
 
-bool CREPRN2::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoise2d::GetValue(int frame, float& valOut) const {
   float x = 0.f;
   x4_->GetValue(frame, x);
   float y = 0.f;
@@ -725,25 +725,25 @@ bool CREPRN2::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPRN3::CREPRN3(CVectorElement* a) : x4_(a) {}
+CREPerlinNoise3d::CREPerlinNoise3d(CVectorElement* a) : x4_(a) {}
 
-CREPRN3::~CREPRN3() { delete x4_; }
+CREPerlinNoise3d::~CREPerlinNoise3d() { delete x4_; }
 
-bool CREPRN3::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoise3d::GetValue(int frame, float& valOut) const {
   CVector3f v = CVector3f::Zero();
   x4_->GetValue(frame, v);
   valOut = CMath::Noise3d(v.GetX(), v.GetY(), v.GetZ());
   return false;
 }
 
-CREPRN4::CREPRN4(CVectorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
+CREPerlinNoise4d::CREPerlinNoise4d(CVectorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
 
-CREPRN4::~CREPRN4() {
+CREPerlinNoise4d::~CREPerlinNoise4d() {
   delete x4_;
   delete x8_;
 }
 
-bool CREPRN4::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoise4d::GetValue(int frame, float& valOut) const {
   CVector3f v = CVector3f::Zero();
   x4_->GetValue(frame, v);
   float w = 0.f;
@@ -752,17 +752,17 @@ bool CREPRN4::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPNO1::CREPNO1(CRealElement* a, CRealElement* b, CRealElement* c, CIntElement* d)
+CREPerlinNoiseOctave1d::CREPerlinNoiseOctave1d(CRealElement* a, CRealElement* b, CRealElement* c, CIntElement* d)
 : x4_(a), x8_(b), xc_(c), x10_(d) {}
 
-CREPNO1::~CREPNO1() {
+CREPerlinNoiseOctave1d::~CREPerlinNoiseOctave1d() {
   delete x4_;
   delete x8_;
   delete xc_;
   delete x10_;
 }
 
-bool CREPNO1::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoiseOctave1d::GetValue(int frame, float& valOut) const {
   float x = 0.f;
   x4_->GetValue(frame, x);
   float freq = 1.f;
@@ -782,11 +782,11 @@ bool CREPNO1::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPNO2::CREPNO2(CRealElement* a, CRealElement* b, CRealElement* c, CRealElement* d,
+CREPerlinNoiseOctave2d::CREPerlinNoiseOctave2d(CRealElement* a, CRealElement* b, CRealElement* c, CRealElement* d,
                  CIntElement* e)
 : x4_(a), x8_(b), xc_(c), x10_(d), x14_(e) {}
 
-CREPNO2::~CREPNO2() {
+CREPerlinNoiseOctave2d::~CREPerlinNoiseOctave2d() {
   delete x4_;
   delete x8_;
   delete xc_;
@@ -794,7 +794,7 @@ CREPNO2::~CREPNO2() {
   delete x14_;
 }
 
-bool CREPNO2::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoiseOctave2d::GetValue(int frame, float& valOut) const {
   float x = 0.f;
   x4_->GetValue(frame, x);
   float y = 0.f;
@@ -816,17 +816,17 @@ bool CREPNO2::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPNO3::CREPNO3(CVectorElement* a, CRealElement* b, CRealElement* c, CIntElement* d)
+CREPerlinNoiseOctave3d::CREPerlinNoiseOctave3d(CVectorElement* a, CRealElement* b, CRealElement* c, CIntElement* d)
 : x4_(a), x8_(b), xc_(c), x10_(d) {}
 
-CREPNO3::~CREPNO3() {
+CREPerlinNoiseOctave3d::~CREPerlinNoiseOctave3d() {
   delete x4_;
   delete x8_;
   delete xc_;
   delete x10_;
 }
 
-bool CREPNO3::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoiseOctave3d::GetValue(int frame, float& valOut) const {
   CVector3f v = CVector3f::Zero();
   x4_->GetValue(frame, v);
   float freq = 1.f;
@@ -846,11 +846,11 @@ bool CREPNO3::GetValue(int frame, float& valOut) const {
   return false;
 }
 
-CREPNO4::CREPNO4(CVectorElement* a, CRealElement* b, CRealElement* c, CRealElement* d,
+CREPerlinNoiseOctave4d::CREPerlinNoiseOctave4d(CVectorElement* a, CRealElement* b, CRealElement* c, CRealElement* d,
                  CIntElement* e)
 : x4_(a), x8_(b), xc_(c), x10_(d), x14_(e) {}
 
-CREPNO4::~CREPNO4() {
+CREPerlinNoiseOctave4d::~CREPerlinNoiseOctave4d() {
   delete x4_;
   delete x8_;
   delete xc_;
@@ -858,7 +858,7 @@ CREPNO4::~CREPNO4() {
   delete x14_;
 }
 
-bool CREPNO4::GetValue(int frame, float& valOut) const {
+bool CREPerlinNoiseOctave4d::GetValue(int frame, float& valOut) const {
   CVector3f v = CVector3f::Zero();
   x4_->GetValue(frame, v);
   float w = 0.f;
