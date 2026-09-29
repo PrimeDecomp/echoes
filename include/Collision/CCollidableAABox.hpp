@@ -11,18 +11,21 @@ public:
   CCollidableAABox(const CAABox& box, const CMaterialList& matList)
   : CCollisionPrimitive(matList), mAabb(box) {}
 
-  bool CollideMovingAABox(const CInternalCollisionStructure& collision, const CVector3f& dir,
-                          double& dOut, CCollisionInfo& infoOut);
-  bool CollideMovingSphere(const CInternalCollisionStructure& collision, const CVector3f& dir,
-                           double& dOut, CCollisionInfo& infoOut);
+  static bool CollideMovingAABox(const CInternalCollisionStructure& collision, const CVector3f& dir,
+                                 double& dOut, CCollisionInfo& infoOut);
+  static bool CollideMovingSphere(const CInternalCollisionStructure& collision,
+                                  const CVector3f& dir, double& dOut, CCollisionInfo& infoOut);
 
-  uint GetTableIndex() const;
-  CAABox CalculateAABox(const CTransform4f&) const;
-  CAABox CalculateLocalAABox() const;
+  // CCollisionPrimitive
+  uint GetTableIndex() const override;
+  CAABox CalculateAABox(const CTransform4f&) const override;
+  CAABox CalculateLocalAABox() const override;
+  FourCC GetPrimType() const override;
+  ~CCollidableAABox() override;
+  CRayCastResult CastRayInternal(const CInternalRayCastStructure&) const override;
+
   CAABox Transform(const CTransform4f& xf) const;
   const CAABox& GetBox() const { return mAabb; }
-  FourCC GetPrimType() const;
-  CRayCastResult CastRayInternal(const CInternalRayCastStructure&) const;
 
   static void SetStaticTableIndex(uint idx);
   static CCollisionPrimitive::Type GetType();
