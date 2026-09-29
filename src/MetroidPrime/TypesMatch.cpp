@@ -27,6 +27,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDebris.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
@@ -96,6 +97,8 @@ TYPES_MATCH_IMPL(CFirstPersonCamera, CGameCamera, kET_FirstPersonCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_REF_IMPL(CGameCamera, kET_GameCamera)
+CAST_TO_PTR_IMPL(CGameProjectile, kET_GameProjectile)
+CAST_TO_REF_IMPL(CGameProjectile, kET_GameProjectile)
 TYPES_MATCH_IMPL(CPhysicsActor, CActor, kET_PhysicsActor)
 TYPES_MATCH_IMPL(CCollisionActor, CPhysicsActor, kET_CollisionActor)
 TYPES_MATCH_IMPL(CAi, CPhysicsActor, kET_Ai)
@@ -117,6 +120,7 @@ TYPES_MATCH_IMPL(CScriptDock, CPhysicsActor, kET_ScriptDock)
 TYPES_MATCH_IMPL(CScriptDoor, CPhysicsActor, kET_ScriptDoor)
 TYPES_MATCH_IMPL(CScriptEffect, CActor, kET_ScriptEffect)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
+TYPES_MATCH_IMPL(CScriptDebris, CPhysicsActor, kET_ScriptDebris)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
 TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)

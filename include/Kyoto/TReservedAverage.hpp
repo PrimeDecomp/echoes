@@ -8,6 +8,18 @@
 #include "rstl/optional_object.hpp"
 #include "rstl/reserved_vector.hpp"
 
+template < typename T >
+T GetMaxValue(const T* values, int count) {
+  const T* end = values + count;
+  T maximum = *values++;
+  for (; values < end; ++values) {
+    if (maximum < *values) {
+      maximum = *values;
+    }
+  }
+  return maximum;
+}
+
 template < typename T, int N >
 class TReservedAverage : public rstl::reserved_vector< T, N > {
 public:
@@ -23,6 +35,13 @@ public:
     this->operator[](0) = value;
   }
   rstl::optional_object< T > GetAverage() const;
+  rstl::optional_object< T > GetMax() const {
+    if (this->empty()) {
+      return rstl::optional_object_null();
+    }
+
+    return GetMaxValue(this->data(), this->size());
+  }
 };
 
 #endif // _TRESERVEDAVERAGE

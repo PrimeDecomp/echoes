@@ -115,6 +115,7 @@ public:
   const CAABox& GetBaseBoundingBox() const;
   CAABox GetBoundingBox() const;
   void SetBoundingBox(const CAABox& box);
+  void SetCollisionPrimitive(const CCollidableAABox& primitive);
   CAABox GetMotionVolume(float dt) const;
 
   void ApplyImpulseWR(const CVector3f& impulse, const CAxisAngle& angularImpulse);
