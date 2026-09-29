@@ -431,6 +431,9 @@ MetroidPrime/CSortedLists.cpp:
 MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 	.text       start:0x80100C38 end:0x80109E7C
 
+MetroidPrime/ScriptObjects/CScriptActorRotate.cpp:
+	.text       start:0x80109E7C end:0x8010B2C0
+
 MetroidPrime/CMapWorldInfo.cpp:
 	.text       start:0x8010F084 end:0x80110B18
 	.sdata      start:0x804182B8 end:0x804182C0

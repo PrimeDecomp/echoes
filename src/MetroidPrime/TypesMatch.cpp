@@ -26,6 +26,7 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptActorRotate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDebris.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
@@ -113,6 +114,7 @@ TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
 TYPES_MATCH_IMPL(CGameHint, CActor, kET_GameHint)
 TYPES_MATCH_IMPL(CScriptCameraHint, CGameHint, kET_ScriptCameraHint)
 TYPES_MATCH_IMPL(CScriptActor, CPhysicsActor, kET_ScriptActor)
+TYPES_MATCH_IMPL(CScriptActorRotate, CEntity, kET_ScriptActorRotate)
 TYPES_MATCH_IMPL(CScriptCameraShaker, CEntity, kET_ScriptCameraShaker)
 TYPES_MATCH_IMPL(CScriptCameraWaypoint, CScriptWaypoint, kET_ScriptCameraWaypoint)
 TYPES_MATCH_IMPL(CScriptColorModulate, CEntity, kET_ScriptColorModulate)

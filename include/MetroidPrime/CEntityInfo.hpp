@@ -32,6 +32,7 @@ enum EEntityType {
   kET_GameHint = 33, // Guessed name.
   kET_ScriptActor = 34,
   kET_ScriptActorKeyframe = 35,
+  kET_ScriptActorRotate = 36,
   kET_ScriptCameraHint = 40,
   kET_ScriptCameraShaker = 41,
   kET_ScriptCameraWaypoint = 43,
@@ -101,6 +102,7 @@ enum EScriptObjectState {
 
 enum EScriptObjectMessage {
   kSM_Action = 0x4143544e,
+  kSM_Next = 0x4e455854,
   kSM_Start = 0x53545254,
   kSM_Stop = 0x53544f50,
   kSM_Play = 0x504c4159,
