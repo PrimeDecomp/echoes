@@ -32,6 +32,8 @@ public:
   void AddToRenderer(const CStateManager&) const override;
 
   CPlayerState::EItemType GetItem() const;
+  int GetAmount() const { return mAmount; }
+  int GetCapacity() const { return mCapacity; }
   void SetSpawned();
   bool IsVisible() const;
   void ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* playerState, CPlayerState::EItemType itemType);

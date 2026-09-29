@@ -15,6 +15,8 @@ class CRuleValue {
 public:
   CRuleValue(int type, CInputStream&);
   explicit CRuleValue(bool value) : m_type(0), mBool(value) {}
+  explicit CRuleValue(float value) : m_type(1), mFloat(value) {}
+  explicit CRuleValue(int value) : m_type(2), m_value(value) {}
   bool GetBool() const;
   int GetInt() const;
   float GetFloat() const;
@@ -44,6 +46,7 @@ class CRuleAction {
 public:
   explicit CRuleAction(CInputStream&);
   FourCC GetId() const { return m_id; }
+  int GetPropertyCount() const { return m_properties.size(); }
   const CRuleValue& GetProperty(int index) const { return m_properties[index]; }
 
 private:

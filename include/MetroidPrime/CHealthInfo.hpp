@@ -13,6 +13,8 @@ public:
   void SetHP(float hp) { healthB = hp; }
   void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
   float GetHP() const { return healthB; }
+  const CWeaponMode& GetCauseOfDeathWeapon() const { return weaponModeA; } // Guessed name.
+  bool GetDamageFlag() const { return flagA; } // Guessed name; the flag's role is unresolved.
 
   void SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId, TUniqueId, bool, bool);
   void fn_8014206C(const CWeaponMode&, TUniqueId, TUniqueId, bool);
