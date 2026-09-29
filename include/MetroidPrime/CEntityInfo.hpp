@@ -98,6 +98,7 @@ enum EScriptObjectState {
 };
 
 enum EScriptObjectMessage {
+  kSM_Action = 0x4143544e,
   kSM_Start = 0x53545254,
   kSM_Stop = 0x53544f50,
   kSM_Play = 0x504c4159,
