@@ -17,6 +17,8 @@ public:
 
   virtual void SetIsVisible(bool visible);
 
+  static CGuiLight* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
+
   CLight BuildLight() const;
   int GetLightIndex() const { return mLightId; }
   const CColor& GetAmbientContribution() const { return mAmbientColor; }

@@ -28,13 +28,12 @@ public:
   CGuiCamera(const CGuiWidgetParms& parms, float left, float right, float top, float bottom,
              float znear, float zfar);
 
-  // CGuiObject
-  ~CGuiCamera() override;
-
   // CGuiWidget
-  FourCC GetWidgetTypeID() const override;
-  EWidgetUsageFlags GetWidgetUsageFlags() const override;
+  FourCC GetWidgetTypeID() const override { return 'CAMR'; }
+  EWidgetUsageFlags GetWidgetUsageFlags() const override { return kWUF_None; }
   void Draw(const CGuiWidgetDrawParms& parms) const override;
+
+  static CGuiWidget* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
 
   CVector3f ConvertToScreenSpace(const CVector3f& point) const;
 
