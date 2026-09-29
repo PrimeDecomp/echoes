@@ -2,6 +2,7 @@
 #define _CFONT
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "types.h"
 
 class CFont {
 public:
@@ -15,5 +16,6 @@ private:
   int mFontSize;
   float mScale;
 };
+CHECK_SIZEOF(CFont, 0x8)
 
 #endif // _CFONT
