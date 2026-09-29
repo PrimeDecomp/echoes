@@ -3,10 +3,19 @@
 
 #include "types.h"
 
+class CAnimData;
+class CStateManager;
+
 class CGSComboFire {
 public:
   CGSComboFire();
   bool IsComboOver() const { return mOver; }
+  bool Update(CAnimData& data, float dt, CStateManager& mgr);
+  int SetAnim(CAnimData& data, int gunId, int loopState, CStateManager& mgr, float delay);
+  int GetGunId() const { return mGunId; }
+  int GetLoopState() const { return mLoopState; }
+  void SetLoopState(int state) { mLoopState = state; }
+  void SetIdle(bool idle) { mIdle = idle; }
 
 private:
   float mDelay;

@@ -12,6 +12,13 @@ class CStateManager;
 // Partial interface; class name corroborated by Echoes Wii exports.
 class CScriptObjectLoaderHelper {
 public:
+  // Guessed name: result returned when a Generate connection creates an object.
+  struct SGeneratedObject {
+    TEditorId mEditorId;
+    TUniqueId mUniqueId;
+    CEntity* mEntity;
+  };
+
   // Guessed name. Shared context for incremental loading of an area's layers.
   struct SLoadContext {
     explicit SLoadContext(TAreaId area);
@@ -35,7 +42,9 @@ public:
   bool ContinueLayerLoad(SLoadContext& context, uint timeBudget, CStateManager& mgr);
   void LoadGeneratedScriptObjects(TAreaId area, CInputStream& in);
   void RegisterScriptObjects(rstl::vector< CEntity* > objects, CStateManager& mgr);
+  SGeneratedObject GenerateObject(const TEditorId& editorId, CStateManager& mgr);
 };
+NESTED_CHECK_SIZEOF(CScriptObjectLoaderHelper, SGeneratedObject, 0xc)
 NESTED_CHECK_SIZEOF(CScriptObjectLoaderHelper, SLoadContext, 0x2c)
 
 #endif // _CSCRIPTOBJECTLOADERHELPER

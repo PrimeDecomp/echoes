@@ -319,9 +319,23 @@ MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
 
+MetroidPrime/ScriptObjects/CScriptDebris.cpp:
+	.text       start:0x800D1060 end:0x800D50B8
+	.ctors      start:0x803A54FC end:0x803A5500
+	.data       start:0x803B3708 end:0x803B37A0
+	.sdata      start:0x80418170 end:0x804181D8
+	.sbss       start:0x804190C8 end:0x804190D0
+	.sdata2     start:0x8041B4F4 end:0x8041B558
+
 MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp:
 	.text       start:0x800D50B8 end:0x800D56A8
 	.data       start:0x803B37A0 end:0x803B37C0
+
+MetroidPrime/ScriptObjects/CScriptActorKeyframe.cpp:
+	.text       start:0x800D56A8 end:0x800D61A4
+	.rodata     start:0x803A89E0 end:0x803A89E8
+	.data       start:0x803B37C0 end:0x803B37F0
+	.sdata2     start:0x8041B558 end:0x8041B560
 
 MetroidPrime/ScriptObjects/CScriptWater.cpp:
 	.text       start:0x800D79D8 end:0x800DAE94
@@ -732,9 +746,34 @@ MetroidPrime/Weapons/CPowerBeam.cpp:
 	.text       start:0x801D4FC8 end:0x801D5C70
 	.data       start:0x803B72B0 end:0x803B7310
 
+MetroidPrime/Weapons/GunController/CGunMotion.cpp:
+	.text       start:0x801D6BDC end:0x801D72D0
+	.sdata2     start:0x8041D280 end:0x8041D288
+
 MetroidPrime/Weapons/CGunWeapon.cpp:
 	.text       start:0x801D8254 end:0x801DC1B8
 	.data       start:0x803B7370 end:0x803B73D0
+
+MetroidPrime/Weapons/GunController/CGunController.cpp:
+	.text       start:0x801DC1B8 end:0x801DCC68
+	.rodata     start:0x803AABF8 end:0x803AAC08
+	.data       start:0x803B73D0 end:0x803B73F8
+	.sdata2     start:0x8041D308 end:0x8041D318
+
+MetroidPrime/Weapons/GunController/CGSComboFire.cpp:
+	.text       start:0x801DCC68 end:0x801DCFF0
+	.rodata     start:0x803AAC08 end:0x803AAC18
+	.sdata2     start:0x8041D318 end:0x8041D328
+
+MetroidPrime/Weapons/GunController/CGSFidget.cpp:
+	.text       start:0x801DCFF0 end:0x801DD360
+	.rodata     start:0x803AAC18 end:0x803AAC28
+	.sdata2     start:0x8041D328 end:0x8041D330
+
+MetroidPrime/Weapons/GunController/CGSFreeLook.cpp:
+	.text       start:0x801DD360 end:0x801DD6FC
+	.rodata     start:0x803AAC28 end:0x803AAC38
+	.sdata2     start:0x8041D330 end:0x8041D340
 
 MetroidPrime/Player/CPlayerGunBase.cpp:
 	.text       start:0x801DD6FC end:0x801DE74C

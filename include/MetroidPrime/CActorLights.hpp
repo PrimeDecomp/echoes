@@ -41,9 +41,12 @@ public:
   bool GetNeedsRelight() const { return mDirty == TRUE; }
   bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
   int GetShadowLightIndex() const { return mShadowLightIdx; }
+  uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
 
   void SetCastShadows(bool v) { mCastShadows = v; }
   void SetFindShadowLight(bool v) { mFindShadowLight = v; }
+  void SetFramesBetweenRecalculation(uint frames) { mAreaUpdateFramePeriod = frames; }
+  void SetAmbienceGenerated(bool generated) { mAmbienceGenerated = generated; }
   void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
 
 private:
