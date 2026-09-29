@@ -140,8 +140,9 @@ inline void StreamObjects(COutputStream& out, const Iter& begin, const Iter& end
 
 template < typename T, int N >
 inline void reserved_vector< T, N >::PutTo(COutputStream& out) const {
-  out.Put(size());
-  StreamObjects(out, begin(), end(), size());
+  const int count = size();
+  out.Put(count);
+  StreamObjects(out, begin(), end(), count);
 }
 
 template < typename T, typename Alloc >

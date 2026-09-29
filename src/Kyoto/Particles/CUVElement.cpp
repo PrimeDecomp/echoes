@@ -40,8 +40,8 @@ CUVEAnimTexture::CUVEAnimTexture(TToken< CTexture > tex, CIntElement* tileW, CIn
 
   mCycleFrames = cycleFrames;
 
-  const int height = mTex->GetHeight();
   const int width = mTex->GetWidth();
+  const int height = mTex->GetHeight();
   const int xTiles = rstl::max_val(1, width / mStrideW);
   const int yTiles = rstl::max_val(1, height / mStrideH);
 
