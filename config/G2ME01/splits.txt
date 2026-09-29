@@ -1321,6 +1321,10 @@ Kyoto/Text/CBlockInstruction.cpp:
 	.text       start:0x802BAB4C end:0x802BAD08
 	.data       start:0x803B9FA0 end:0x803B9FE8
 
+Kyoto/Text/CFont.cpp:
+	.text       start:0x802BAD08 end:0x802BAD94
+	.sdata2     start:0x8041E470 end:0x8041E478
+
 Kyoto/Graphics/CLight.cpp:
 	.text       start:0x802BAD94 end:0x802BB3D8
 	.ctors      start:0x803A55E0 end:0x803A55E4

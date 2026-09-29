@@ -771,6 +771,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CDrawStringOptions.cpp"),
             Object(NonMatching, "Kyoto/Text/CFontRenderState.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CBlockInstruction.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Text/CFont.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CLineInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CWordInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CTextInstruction.cpp"),
