@@ -983,6 +983,12 @@ GuiSys/CGuiWidget.cpp:
 	.text       start:0x8027D7B0 end:0x8027E1E4
 	.data       start:0x803B9040 end:0x803B9080
 
+GuiSys/CAuiEnergyBarT01.cpp:
+	.text       start:0x8027E3F8 end:0x8027EF10
+	.rodata     start:0x803AE968 end:0x803AE998
+	.data       start:0x803B9080 end:0x803B90C0
+	.sdata2     start:0x8041E100 end:0x8041E118
+
 Collision/CCollidableAABox.cpp:
 	.text       start:0x80281490 end:0x80281EF0
 	.ctors      start:0x803A55C0 end:0x803A55C4
