@@ -188,11 +188,11 @@ bool CVECircle::GetValue(int frame, CVector3f& valOut) const {
   return false;
 }
 
-CVERNDV::CVERNDV(CRealElement* a) : x4_(a) {}
+CVERandomVector::CVERandomVector(CRealElement* a) : x4_(a) {}
 
-CVERNDV::~CVERNDV() { delete x4_; }
+CVERandomVector::~CVERandomVector() { delete x4_; }
 
-bool CVERNDV::GetValue(int frame, CVector3f& valOut) const {
+bool CVERandomVector::GetValue(int frame, CVector3f& valOut) const {
   float mag = 1.f;
   x4_->GetValue(frame, mag);
   float x = 2.f * CRandom16::GetRandomNumber()->Float() - 1.f;
@@ -396,7 +396,7 @@ bool CVEKeyframeEmitter::GetValue(int frame, CVector3f& valOut) const {
   return false;
 }
 
-CVEKEYF::CVEKEYF(CInputStream& in)
+CVEKeyframeInput::CVEKeyframeInput(CInputStream& in)
 : mPercent(in.ReadInt32())
 , mUnk1(in.ReadInt32())
 , mLoop(in.ReadBool())
@@ -408,13 +408,13 @@ CVEKEYF::CVEKEYF(CInputStream& in)
 , mKeys(in)
 , x30_(CParticleDataFactory::GetRealElement(in)) {}
 
-CVEKEYF::~CVEKEYF() { delete x30_; }
+CVEKeyframeInput::~CVEKeyframeInput() { delete x30_; }
 
-bool CVEKEYF::GetValue(int frame, CVector3f& valOut) const {
+bool CVEKeyframeInput::GetValue(int frame, CVector3f& valOut) const {
   if (mPercent == 2) {
     float in = 0.0f;
     x30_->GetValue(frame, in);
-    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, mLoopStart, mLoopEnd);
+    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, GetLoopStart(), GetLoopEnd());
     bool lerp = idx > 0 && idx < mLoopEnd - 1;
     if (lerp) {
       float t = CMath::Clamp(0.0f, (in - x18_) - static_cast< float >(idx) / x1c_, 1.0f);
@@ -520,7 +520,7 @@ bool CVEParticleAccessParameter3::GetValue(int frame, CVector3f& valOut) const {
   return false;
 }
 
-bool CVEPNCV::GetValue(int frame, CVector3f& valOut) const {
+bool CVENormalizedCompensatedVelocity::GetValue(int frame, CVector3f& valOut) const {
   const CElementGen::CParticle* particle = CParticleGlobals::GetCurrentParticle();
   float velMagSq = particle->mVel.MagSquared();
   if (velMagSq > FLT_EPSILON) {
@@ -548,41 +548,41 @@ bool CVENormalize::GetValue(int frame, CVector3f& valOut) const {
   return false;
 }
 
-bool CVEPINV::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleInitialNormalizedVelocity::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetInitialVel().AsNormalized();
   return false;
 }
 
-bool CVEPIVL::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleInitialVelocity::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetInitialVel();
   return false;
 }
 
-bool CVEPITR::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleInitialTranslation::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetInitialPos();
   return false;
 }
 
-bool CVEPENV::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleEndNormalizedVelocity::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetFinalVel().AsNormalized();
   return false;
 }
 
-bool CVEPEVL::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleEndVelocity::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetFinalVel();
   return false;
 }
 
-bool CVEPETR::GetValue(int frame, CVector3f& valOut) const {
+bool CVEParticleEndTranslation::GetValue(int frame, CVector3f& valOut) const {
   valOut = GetCurrentElectricManager()->GetFinalPos();
   return false;
 }
 
-CVEKPIN::CVEKPIN(CVectorElement* a) : x4_(a) {}
+CVEKeepInitial::CVEKeepInitial(CVectorElement* a) : x4_(a) {}
 
-CVEKPIN::~CVEKPIN() { delete x4_; }
+CVEKeepInitial::~CVEKeepInitial() { delete x4_; }
 
-bool CVEKPIN::GetValue(int frame, CVector3f& valOut) const {
+bool CVEKeepInitial::GetValue(int frame, CVector3f& valOut) const {
   if (frame == 0) {
     x4_->GetValue(0, valOut);
   }

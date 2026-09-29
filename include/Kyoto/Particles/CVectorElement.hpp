@@ -248,7 +248,7 @@ public:
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEKEYF : public CVectorElement {
+class CVEKeyframeInput : public CVectorElement {
   int mPercent;
   int mUnk1;
   bool mLoop;
@@ -261,17 +261,20 @@ class CVEKEYF : public CVectorElement {
   CRealElement* x30_;
 
 public:
-  CVEKEYF(CInputStream& in);
-  ~CVEKEYF() override;
+  CVEKeyframeInput(CInputStream& in);
+  ~CVEKeyframeInput() override;
   bool GetValue(int frame, CVector3f& valOut) const override;
+  
+  const int GetLoopStart() const { return mLoopStart; }
+  const int GetLoopEnd() const { return mLoopEnd; }
 };
 
-class CVEKPIN : public CVectorElement {
+class CVEKeepInitial : public CVectorElement {
   CVectorElement* x4_;
 
 public:
-  CVEKPIN(CVectorElement* a);
-  ~CVEKPIN() override;
+  CVEKeepInitial(CVectorElement* a);
+  ~CVEKeepInitial() override;
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
@@ -284,45 +287,45 @@ public:
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPENV : public CVectorElement {
+class CVEParticleEndNormalizedVelocity : public CVectorElement {
 public:
-  ~CVEPENV() override {}
+  ~CVEParticleEndNormalizedVelocity() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPETR : public CVectorElement {
+class CVEParticleEndTranslation : public CVectorElement {
 public:
-  ~CVEPETR() override {}
+  ~CVEParticleEndTranslation() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPEVL : public CVectorElement {
+class CVEParticleEndVelocity : public CVectorElement {
 public:
-  ~CVEPEVL() override {}
+  ~CVEParticleEndVelocity() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPINV : public CVectorElement {
+class CVEParticleInitialNormalizedVelocity : public CVectorElement {
 public:
-  ~CVEPINV() override {}
+  ~CVEParticleInitialNormalizedVelocity() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPITR : public CVectorElement {
+class CVEParticleInitialTranslation : public CVectorElement {
 public:
-  ~CVEPITR() override {}
+  ~CVEParticleInitialTranslation() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPIVL : public CVectorElement {
+class CVEParticleInitialVelocity : public CVectorElement {
 public:
-  ~CVEPIVL() override {}
+  ~CVEParticleInitialVelocity() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVEPNCV : public CVectorElement {
+class CVENormalizedCompensatedVelocity : public CVectorElement {
 public:
-  ~CVEPNCV() override {}
+  ~CVENormalizedCompensatedVelocity() override {}
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
@@ -344,12 +347,12 @@ public:
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 
-class CVERNDV : public CVectorElement {
+class CVERandomVector : public CVectorElement {
   CRealElement* x4_;
 
 public:
-  CVERNDV(CRealElement* a);
-  ~CVERNDV() override;
+  CVERandomVector(CRealElement* a);
+  ~CVERandomVector() override;
   bool GetValue(int frame, CVector3f& valOut) const override;
 };
 

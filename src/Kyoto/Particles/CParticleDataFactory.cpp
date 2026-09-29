@@ -903,7 +903,7 @@ CVectorElement* CParticleDataFactory::GetVectorElement(CInputStream& in) {
     ret = rs_new CVEKeyframeEmitter(in);
     break;
   case SBIG('KEYF'): {
-    ret = rs_new CVEKEYF(in);
+    ret = rs_new CVEKeyframeInput(in);
     break;
   }
   case SBIG('ANGC'): {
@@ -932,7 +932,7 @@ CVectorElement* CParticleDataFactory::GetVectorElement(CInputStream& in) {
   }
   case SBIG('RNDV'): {
     CRealElement* a = GetRealElement(in);
-    ret = rs_new CVERNDV(a);
+    ret = rs_new CVERandomVector(a);
     break;
   }
   case SBIG('CCLU'): {
@@ -1017,7 +1017,7 @@ CVectorElement* CParticleDataFactory::GetVectorElement(CInputStream& in) {
     break;
   }
   case SBIG('PNCV'): {
-    ret = rs_new CVEPNCV();
+    ret = rs_new CVENormalizedCompensatedVelocity();
     break;
   }
   case SBIG('NORM'): {
@@ -1045,31 +1045,31 @@ CVectorElement* CParticleDataFactory::GetVectorElement(CInputStream& in) {
   }
   case SBIG('KPIN'): {
     CVectorElement* a = GetVectorElement(in);
-    ret = rs_new CVEKPIN(a);
+    ret = rs_new CVEKeepInitial(a);
     break;
   }
   case SBIG('PIVL'): {
-    ret = rs_new CVEPIVL();
+    ret = rs_new CVEParticleInitialVelocity();
     break;
   }
   case SBIG('PINV'): {
-    ret = rs_new CVEPINV();
+    ret = rs_new CVEParticleInitialNormalizedVelocity();
     break;
   }
   case SBIG('PITR'): {
-    ret = rs_new CVEPITR();
+    ret = rs_new CVEParticleInitialTranslation();
     break;
   }
   case SBIG('PEVL'): {
-    ret = rs_new CVEPEVL();
+    ret = rs_new CVEParticleEndVelocity();
     break;
   }
   case SBIG('PENV'): {
-    ret = rs_new CVEPENV();
+    ret = rs_new CVEParticleEndNormalizedVelocity();
     break;
   }
   case SBIG('PETR'): {
-    ret = rs_new CVEPETR();
+    ret = rs_new CVEParticleEndTranslation();
     break;
   }
   default:
