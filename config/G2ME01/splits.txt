@@ -488,6 +488,13 @@ MetroidPrime/CCollisionActorManager.cpp:
 	.sbss       start:0x804191A8 end:0x804191B0
 	.sdata2     start:0x8041C09C end:0x8041C0C0
 
+MetroidPrime/CCollisionActor.cpp:
+	.text       start:0x801375EC end:0x8013894C
+	.ctors      start:0x803A5530 end:0x803A5534
+	.rodata     start:0x803A9188 end:0x803A91A0
+	.sbss       start:0x804191B0 end:0x804191B8
+	.sdata2     start:0x8041C0C0 end:0x8041C0D0
+
 MetroidPrime/Player/CPlayerEnergyDrain.cpp:
 	.text       start:0x80138DB0 end:0x801399A8
 	.sdata2     start:0x8041C0F0 end:0x8041C0F8

@@ -11,7 +11,16 @@ class COBBTreeGroup;
 class CCollidableOBBTreeGroup;
 class CCollidableAABox;
 class CCollidableSphere;
-class CCollisionActorResponse; // Guessed name: shared damage/weapon-response delegate.
+// Name exported by the Echoes Wii build; the virtual method names are inferred from G2ME01 calls.
+class CNonUniformVulnerability {
+public:
+  virtual ~CNonUniformVulnerability();
+  virtual const CDamageVulnerability*
+  GetDamageVulnerability(const CDamageVulnerability*, const CVector3f&, const CVector3f&,
+                         const CDamageInfo&) const = 0; // Guessed name
+  virtual bool GetCollisionResponseType(const CVector3f&, const CVector3f&, const CWeaponMode&, int,
+                                        EWeaponCollisionResponseTypes&) const = 0; // Guessed name
+};
 
 class CCollisionActor : public CPhysicsActor {
 public:
@@ -46,6 +55,8 @@ public:
   CTransform4f GetPrimitiveTransform() const override;
 
   void SetDamageVulnerability(const CDamageVulnerability& vulnerability);
+  void SetNonUniformVulnerability(rstl::ncrc_ptr< CNonUniformVulnerability >& vulnerability);
+  void ResetNonUniformVulnerability();
   TUniqueId GetLastTouchedObject() const;
   float GetSphereRadius() const;
   void SetSphereRadius(float radius);
@@ -65,7 +76,7 @@ private:
   TUniqueId mLastTouched;
   EWeaponCollisionResponseTypes mResponseType;
   CVector3f mExtendedTouchBounds;
-  rstl::rc_ptr< CCollisionActorResponse > mCollisionResponse;
+  rstl::ncrc_ptr< CNonUniformVulnerability > mNonUniformVulnerability;
 };
 CHECK_SIZEOF(CCollisionActor, 0x370)
 
