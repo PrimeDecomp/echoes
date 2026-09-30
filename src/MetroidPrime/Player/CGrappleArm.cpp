@@ -51,7 +51,7 @@ static const TStateMachineState< CGrappleArm >::SStateFunction kStateFunctions[]
     {"Grappling", &CGrappleArm::Grappling}};
 
 CGrappleArm::CGrappleArm(const CVector3f& scale, TUniqueId playerId, bool multiplayer)
-: CEntity(kInvalidUniqueId, CEntity::NullEntityInfo, rstl::string_l("SamusArm"), 0)
+: CEntity(kInvalidUniqueId, CEntity::mNullEntityInfo, rstl::string_l("SamusArm"), 0)
 , mCurrentSuit(CPlayerState::kPS_Varia)
 , mLoadedSuit(CPlayerState::kPS_Invalid)
 , mArmModel(

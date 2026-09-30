@@ -13,7 +13,7 @@
 CPathCamera::CPathCamera(TUniqueId uid, const CTransform4f& xf, bool active, int index,
                          int controllerIdx)
 : CGameCamera(uid, rstl::string("Path Camera"),
-              CEntityInfo(kInvalidAreaId, NullConnectionList, active), xf,
+              CEntityInfo(kInvalidAreaId, mNullConnectionList, active), xf,
               CCameraManager::GetDefaultThirdPersonVerticalFOV(),
               CCameraManager::GetDefaultFirstPersonNearClipDistance(),
               CCameraManager::GetDefaultFirstPersonFarClipDistance(),

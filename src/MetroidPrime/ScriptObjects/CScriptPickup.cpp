@@ -210,7 +210,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
     if (mPickupParticleDesc) {
       // mgr.AddObject(rs_new CExplosion(
       //     TLockedToken< CGenDescription >(*mPickupParticleDesc), mgr.AllocateUniqueId(),
-      //     true, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, kInvalidEditorId),
+      //     true, CEntityInfo(GetCurrentAreaId(), CEntity::mNullConnectionList, kInvalidEditorId),
       //     rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
       //     CVector3f(1.f, 1.f, 1.f), CColor::White())
       //   );

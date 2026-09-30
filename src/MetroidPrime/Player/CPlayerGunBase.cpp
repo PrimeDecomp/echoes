@@ -9,7 +9,7 @@
 
 CPlayerGunBase::CPlayerGunBase(const rstl::string& name, TUniqueId playerId, const CVector3f& scale,
                                int maxSplashes)
-: CEntity(kInvalidUniqueId, NullEntityInfo, name, 0)
+: CEntity(kInvalidUniqueId, mNullEntityInfo, name, 0)
 , mTransform(CTransform4f::Identity())
 , mAssistAimXf(CTransform4f::Identity())
 , mScale(scale)

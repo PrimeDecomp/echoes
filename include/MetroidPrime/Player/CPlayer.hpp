@@ -259,6 +259,7 @@ public:
   float GetPrevDamageAmount() const;
   CVector3f GetDamageLocationWR() const;
   float GetDeathAlpha() const;
+  float GetDeathTime() const { return mDeathTime; }
   bool IsEnergyLow() const;
   void PushSustainedDamage();
   void PopSustainedDamage();

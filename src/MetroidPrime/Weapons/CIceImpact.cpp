@@ -100,7 +100,7 @@ CVector3f CMarkerGrid::GetWorldPositionForCell(uint x, uint y, uint z) const {
 CIceImpact::CIceImpact(const TLockedToken< CGenDescription >& particle, TUniqueId uid, TAreaId aid,
                        TUniqueId ownerId, bool active, const rstl::string& name,
                        const CTransform4f& xf, uint flags, const CVector3f& scale, float boundScale)
-: CEffect(uid, CEntityInfo(aid, CEntity::NullConnectionList, active), name, xf)
+: CEffect(uid, CEntityInfo(aid, CEntity::mNullConnectionList, active), name, xf)
 , mElementGen(rs_new CElementGen(TToken< CGenDescription >(particle), CElementGen::kMOT_One,
                                  CElementGen::kOSF_One))
 , mLightId(kInvalidUniqueId)

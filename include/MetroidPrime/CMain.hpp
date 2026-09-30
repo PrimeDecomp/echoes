@@ -50,16 +50,16 @@ public:
   ERestartMode GetRestartMode() const { return restartMode; }
   // void SetCardBusy(bool v) { x160_31_cardBusy = v; }
 
-  void SetMaxSpeed(bool v); // {x160_26_screenFading = v; }
+  void SetMaxSpeed(bool enabled);
 
-  bool fn_80008A1C();
+  bool GetMaxSpeed();
 
   void SetX30(bool v) { x90_30_ = v; }
 
   static void EnsureWorldPaksReady();
   static void EnsureWorldPakReady(CAssetId id);
 
-  void Increment_x5c(float f) { x5c + f; }
+  void DecrementMaxSpeedDrawTimer(float dt) { mMaxSpeedDrawTimer -= dt; }
   bool GetFinished() const { return finished; }
   float GetAverageTickTime() const { return mAverageTickTime; }
   float GetAverageDrawTime() const { return mAverageDrawTime; }
@@ -83,12 +83,12 @@ private:
   float x50;
   CGameGlobalObjects* gameGlobalObjects;
   ERestartMode restartMode;
-  float x5c;
+  float mMaxSpeedDrawTimer; // Guessed name.
   rstl::reserved_vector< uint, 10 > frameTimes;
   int frameTimeIdx;
   bool finished : 1;
   bool mfGameBuilt : 1;
-  bool screenFading : 1;
+  bool mMaxSpeed : 1; // Guessed name: cinematic-skip fast-forward.
   bool x90_27_ : 1;
   bool mManageCard : 1;
   bool x90_29_ : 1;

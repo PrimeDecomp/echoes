@@ -3,6 +3,7 @@
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Basics/RAssertDolphin.hpp"
+#include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CPakFile.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
@@ -61,12 +62,12 @@ CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
 , x4c(0.0f)
 , gameGlobalObjects(nullptr)
 , restartMode(kRM_Default)
-, x5c(1.0f)
+, mMaxSpeedDrawTimer(1.0f)
 , frameTimes(0xF4240)
 , frameTimeIdx(0)
 , finished(false)
 , mfGameBuilt(false)
-, screenFading(false)
+, mMaxSpeed(false)
 , x90_27_(false)
 , mManageCard(false)
 , x90_29_(false)
@@ -84,6 +85,16 @@ extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, void* un
 }
 
 CMain::~CMain() {}
+
+bool CMain::GetMaxSpeed() { return mMaxSpeed; }
+
+void CMain::SetMaxSpeed(const bool enabled) {
+  if (enabled && !mMaxSpeed) {
+    CFrameDelayedKiller::StallAndFlushAllAllocations();
+  }
+  mMaxSpeedDrawTimer = 1.f;
+  mMaxSpeed = enabled;
+}
 
 void CMain::InitializeSubsystems() {
   ARInit((u32*) 0x803c5ab8, 3);  // (u32*)(&sMainSpace + 0x98)
@@ -168,9 +179,9 @@ bool CGameArchitectureSupport::UpdateTicks() {
   if (gpMain->GetFinished()) {
     x68_ = 0.033333335f;
   }
-  bool flag = gpMain->fn_80008A1C();
+  bool flag = gpMain->GetMaxSpeed();
   if (flag || 0.035 < stopwatchTime) {
-    gpMain->Increment_x5c(-stopwatchTime);
+    gpMain->DecrementMaxSpeedDrawTimer(stopwatchTime);
     x68_ = 0.016666668f;
   }
   archQueue.Push(MakeMsg::CreateFrameBegin(kAMT_Game, gameFrameCount));
@@ -241,7 +252,7 @@ void CMain::AsyncIdle(uint time) {
     time = frameTimeMinimum;
   }
   frameTimeMinimum = 0;
-  bool flag = fn_80008A1C();
+  bool flag = GetMaxSpeed();
   if (flag) {
     time = 1000000;
   }

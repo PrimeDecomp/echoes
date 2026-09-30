@@ -17,6 +17,7 @@ MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80009880
 	.ctors      start:0x803A54A4 end:0x803A54A8
 	.sbss       start:0x80418EA0 end:0x80418EC4
+	.sdata2     start:0x8041A3C0 end:0x8041A430
 
 MetroidPrime/CControlMapper.cpp:
 	.text       start:0x80009880 end:0x8000B518
@@ -93,7 +94,7 @@ MetroidPrime/Weapons/CGameProjectile.cpp:
 
 MetroidPrime/CStateManager.cpp:
 	.text       start:0x80036200 end:0x80044CA4
-	.sdata2     start:0x8041A808 end:0x8041A80C
+	.sdata2     start:0x8041A808 end:0x8041A8B8
 
 MetroidPrime/CEntity.cpp:
 	.text       start:0x800476A8 end:0x8004875C

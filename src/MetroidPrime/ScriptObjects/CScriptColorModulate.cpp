@@ -46,7 +46,7 @@ TUniqueId CScriptColorModulate::FadeInHelper(CStateManager& mgr, TUniqueId obj, 
   const uint depthFlags = flags.GetOtherFlags();
   const TUniqueId uid = mgr.AllocateUniqueId();
   CScriptColorModulate* mod = rs_new CScriptColorModulate(
-      uid, rstl::string(), CEntityInfo(area, NullConnectionList, true), CColor(1.f, 1.f, 1.f, 0.f),
+      uid, rstl::string(), CEntityInfo(area, mNullConnectionList, true), CColor(1.f, 1.f, 1.f, 0.f),
       CColor::White(), kBM_Alpha, fadeTime, 0.f, false, true,
       (depthFlags & CModelFlags::kF_DepthCompare) != 0,
       (depthFlags & CModelFlags::kF_DepthUpdate) != 0,
@@ -68,7 +68,7 @@ TUniqueId CScriptColorModulate::FadeOutHelper(CStateManager& mgr, TUniqueId obj,
   const uint depthFlags = flags.GetOtherFlags();
   const TUniqueId uid = mgr.AllocateUniqueId();
   CScriptColorModulate* mod = rs_new CScriptColorModulate(
-      uid, rstl::string(), CEntityInfo(area, NullConnectionList, true), CColor::White(),
+      uid, rstl::string(), CEntityInfo(area, mNullConnectionList, true), CColor::White(),
       CColor(1.f, 1.f, 1.f, 0.f), kBM_Alpha, fadeTime, 0.f, false, true,
       (depthFlags & CModelFlags::kF_DepthCompare) != 0,
       (depthFlags & CModelFlags::kF_DepthUpdate) != 0,

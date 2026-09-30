@@ -26,7 +26,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
                  CCameraManager* cameraManager, bool multiplayer, int playerIndex,
                  int controlScheme, int charIdx)
 : CPhysicsActor(uid, CBasics::Stringize("CPlayer (%d)", playerIndex),
-                CEntityInfo(kInvalidAreaId, CEntity::NullConnectionList, true), 0, xf,
+                CEntityInfo(kInvalidAreaId, CEntity::mNullConnectionList, true), 0, xf,
                 CAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), 0, true), ml, aabb,
                 SMoverData(mass), CActorParameters::None(), StepData(stepUp, stepDown, 1))
 

@@ -276,7 +276,7 @@ bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
 }
 
 void CGameArea::VerifyTokenList(CStateManager& mgr) {
-  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  const CWorldLayerState& layers = *mgr.mCurrentWorldLayerState;
   if (GetTokenCount() == 0) {
     ClearTokenList();
     mLayerPhases.resize(mLayerDependencyOffsets.size(), kLP_Inactive);
@@ -704,7 +704,7 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
 }
 
 void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
-  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  const CWorldLayerState& layers = *mgr.mCurrentWorldLayerState;
   const int count = layers.GetAreaLayerCount(mSelfIdx);
   mPostConstructed->mLayerEditorIds.clear();
   mPostConstructed->mLayerEditorIds.resize(count);
@@ -2047,7 +2047,7 @@ rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId layer
 }
 
 bool CGameArea::IsValidLayerNumber(CStateManager& mgr, const TLayerId layer) const {
-  const int layerCount = mgr.m_currentWorldLayerState->GetAreaLayerCount(mSelfIdx);
+  const int layerCount = mgr.mCurrentWorldLayerState->GetAreaLayerCount(mSelfIdx);
   if (layer.Value() < layerCount && layer.Value() >= 0) {
     return true;
   }
@@ -2055,7 +2055,7 @@ bool CGameArea::IsValidLayerNumber(CStateManager& mgr, const TLayerId layer) con
 }
 
 void CGameArea::LoadLayerDynamic(CStateManager& mgr, const TLayerId layer) {
-  CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  CWorldLayerState& layers = *mgr.mCurrentWorldLayerState;
   if (!IsValidLayerNumber(mgr, layer)) {
     return;
   }
@@ -2177,7 +2177,7 @@ void CGameArea::ActivateLayerDynamic(CStateManager& mgr, const TLayerId layer) {
   }
 
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
-  const CWorldLayerState& layers = *mgr.m_currentWorldLayerState;
+  const CWorldLayerState& layers = *mgr.mCurrentWorldLayerState;
   if (!layers.IsLayerActive(mSelfIdx, layer)) {
     return;
   }

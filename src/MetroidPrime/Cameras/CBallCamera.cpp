@@ -22,7 +22,7 @@ const CMaterialFilter skLineOfSightFilter = CMaterialFilter::MakeIncludeExclude(
 CBallCamera::CBallCamera(TUniqueId uid, TUniqueId watchedId, const CTransform4f& xf, float fovY,
                          float nearZ, float farZ, float aspect, int index, int controllerIdx)
 : CGameCamera(uid, rstl::string("Ball Camera"),
-              CEntityInfo(kInvalidAreaId, NullConnectionList, true), xf, fovY, nearZ, farZ, aspect,
+              CEntityInfo(kInvalidAreaId, mNullConnectionList, true), xf, fovY, nearZ, farZ, aspect,
               watchedId, index, controllerIdx)
 , mBehaviour(kBCB_Default)
 , x204_24_(true)

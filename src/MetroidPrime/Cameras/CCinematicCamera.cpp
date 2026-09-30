@@ -14,7 +14,7 @@ CCinematicCamera::CCinematicCamera(TUniqueId uid, const CTransform4f& xf, bool a
                                    float nearZ, float farZ, float aspect, int index,
                                    int controllerIdx)
 : CGameCamera(uid, rstl::string("Cinematic Camera"),
-              CEntityInfo(kInvalidAreaId, NullConnectionList, active), xf, fov, nearZ, farZ, aspect,
+              CEntityInfo(kInvalidAreaId, mNullConnectionList, active), xf, fov, nearZ, farZ, aspect,
               kInvalidUniqueId, index, controllerIdx)
 , mTime(0.f)
 , mMoveIntoEyePos(CVector3f::Zero())
