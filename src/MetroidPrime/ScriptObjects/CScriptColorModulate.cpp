@@ -143,35 +143,55 @@ void CScriptColorModulate::End(CStateManager& mgr) {
   }
 }
 
-CModelFlags CScriptColorModulate::CalculateFlags(const CColor& color) const {
-  CModelFlags::ETrans trans;
+CModelFlags CScriptColorModulate::CalculateFlags(const CColor& col) const {
+  if (mDepthBackwards) {
+    switch (mBlendMode) {
+    case kBM_Alpha:
+      return CModelFlags::AlphaBlended(col)
+          .DepthCompareUpdate(mDepthCompare, mDepthUpdate)
+          .DepthBackwards();
+    case kBM_Additive:
+      return CModelFlags::Additive(col)
+          .DepthCompareUpdate(mDepthCompare, mDepthUpdate)
+          .DepthBackwards();
+    case kBM_Additive2:
+      return CModelFlags(CModelFlags::kT_Additive2, col)
+          .DepthCompareUpdate(mDepthCompare, mDepthUpdate)
+          .DepthBackwards();
+    case kBM_Opaque:
+      return CModelFlags(CModelFlags::kT_One, col)
+          .DepthCompareUpdate(mDepthCompare, mDepthUpdate)
+          .DepthBackwards();
+    case kBM_OpaqueAdd:
+      return CModelFlags(CModelFlags::kT_Two, col)
+          .DepthCompareUpdate(mDepthCompare, mDepthUpdate)
+          .DepthBackwards();
+    }
+  }
   switch (mBlendMode) {
   case kBM_Alpha:
-    trans = !mDepthBackwards && color == CColor::White() ? CModelFlags::kT_Opaque
-                                                         : CModelFlags::kT_Blend;
-    break;
+    if (col == CColor::White()) {
+      const bool update = mDepthUpdate;
+      const bool compare = mDepthCompare;
+      return CModelFlags::Normal().DepthCompareUpdate(compare, update);
+    }
+    return CModelFlags::AlphaBlended(col).DepthCompareUpdate(mDepthCompare, mDepthUpdate);
   case kBM_Additive:
-    trans = CModelFlags::kT_Additive;
-    break;
+    return CModelFlags::Additive(col).DepthCompareUpdate(mDepthCompare, mDepthUpdate);
   case kBM_Additive2:
-    trans = CModelFlags::kT_Additive2;
-    break;
+    return CModelFlags(CModelFlags::kT_Additive2, col)
+        .DepthCompareUpdate(mDepthCompare, mDepthUpdate);
   case kBM_Opaque:
-    trans =
-        !mDepthBackwards && color == CColor::White() ? CModelFlags::kT_Opaque : CModelFlags::kT_One;
-    break;
+    if (col == CColor::White()) {
+      const bool update = mDepthUpdate;
+      const bool compare = mDepthCompare;
+      return CModelFlags::Normal().DepthCompareUpdate(compare, update);
+    }
+    return CModelFlags(CModelFlags::kT_One, col).DepthCompareUpdate(mDepthCompare, mDepthUpdate);
   case kBM_OpaqueAdd:
-    trans = CModelFlags::kT_Two;
-    break;
-  default:
-    return CModelFlags::Normal();
+    return CModelFlags(CModelFlags::kT_Two, col).DepthCompareUpdate(mDepthCompare, mDepthUpdate);
   }
-  CModelFlags flags = CModelFlags(trans, color).DepthCompareUpdate(mDepthCompare, mDepthUpdate);
-  if (mDepthBackwards) {
-    flags = CModelFlags(flags, flags.GetOtherFlags() | CModelFlags::kF_DepthGreater |
-                                   CModelFlags::kF_Unknown200);
-  }
-  return flags;
+  return CModelFlags::Normal();
 }
 
 void CScriptColorModulate::Think(float dt, CStateManager& mgr) {

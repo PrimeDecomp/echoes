@@ -528,7 +528,7 @@ void CMapWorld::RecalculateWorldSphere(const CMapWorldInfo& mwInfo, const IWorld
         CAABox box = area->GetBoundingBox().GetTransformedAABox(area->GetAreaPostTransform(wld, i));
         for (int j = 0; j < 8; ++j) {
           const CVector3f point = box.GetPoint(j);
-          coords.push_back(CVector2f(point.GetX(), point.GetY()));
+          coords.push_back_unsafe(CVector2f(point.GetX(), point.GetY()));
           zMin = rstl::min_val(zMin, point.GetZ());
           zMax = rstl::max_val(zMax, point.GetZ());
         }

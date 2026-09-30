@@ -24,6 +24,7 @@ public:
     kF_DrawNormal = 0x20,
     kF_ThermalUnsortedOnly = 0x40,
     kF_Unknown80 = 0x80,
+    kF_Unknown100 = 0x100,
     kF_Unknown200 = 0x200,
     kF_Unknown400 = 0x400,
   };
@@ -33,11 +34,8 @@ public:
   , mMatSetIdx(0)
   , mFlags(kF_DepthCompare | kF_DepthUpdate)
   , mColor(1.f, 1.f, 1.f, rgba) {}
-  CModelFlags(ETrans trans, CColor color)
-  : mBlendMode(trans)
-  , mMatSetIdx(0)
-  , mFlags(kF_DepthCompare | kF_DepthUpdate)
-  , mColor(color) {}
+  CModelFlags(ETrans trans, const CColor& color)
+  : mBlendMode(trans), mMatSetIdx(0), mFlags(kF_DepthCompare | kF_DepthUpdate), mColor(color) {}
 
   CModelFlags(ETrans blendMode, uchar shadIdx, EFlags flags, const CColor& col)
   : mBlendMode(blendMode), mMatSetIdx(shadIdx), mFlags(flags), mColor(col) {}
@@ -78,18 +76,12 @@ public:
   CModelFlags DontLoadTextures() const {
     return CModelFlags(*this, GetOtherFlags() | kF_NoTextureLock);
   }
-  CModelFlags DepthCompareUpdate(bool compare, bool update) const {
-    uint newFlags = 0;
-    if (compare) {
-      newFlags |= kF_DepthCompare;
-    }
-    if (update) {
-      newFlags |= kF_DepthUpdate;
-    }
+  CModelFlags DepthCompareUpdate(const bool compare, const bool update) const {
+    const uint newFlags = static_cast< uint >(compare) | (static_cast< uint >(update) << 1);
     return CModelFlags(*this, (mFlags & ~(kF_DepthCompare | kF_DepthUpdate)) | newFlags);
   }
   CModelFlags DepthBackwards() const {
-    return CModelFlags(*this, GetOtherFlags() | kF_DepthGreater);
+    return CModelFlags(*this, (GetOtherFlags() & ~kF_Unknown100) | kF_DepthGreater | kF_Unknown200);
   }
 
   ETrans GetTrans() const { return static_cast< ETrans >(mBlendMode); }
@@ -109,7 +101,9 @@ public:
   static CModelFlags AlphaBlended(float alpha) { return CModelFlags(kT_Blend, alpha); }
   static CModelFlags AlphaBlended(const CColor& color) { return CModelFlags(kT_Blend, color); }
   static CModelFlags Additive(float f) { return CModelFlags(CModelFlags::kT_Additive, f); }
-  static CModelFlags Additive(const CColor& color) { return CModelFlags(CModelFlags::kT_Additive, color); }
+  static CModelFlags Additive(const CColor& color) {
+    return CModelFlags(CModelFlags::kT_Additive, color);
+  }
   static CModelFlags AdditiveRGB(const CColor& color);
   static CModelFlags ColorModulate(const CColor& color);
 

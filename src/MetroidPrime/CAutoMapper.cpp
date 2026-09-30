@@ -1314,9 +1314,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
       const CModelFlags flags =
           CModelFlags::AlphaBlended(gpTweakAutoMapper->GetPlayerModelColor().WithAlphaModulatedBy(
               worldAlpha * colorAlpha * mapAlpha));
-      mMiniMapSamus.GetObject()->Draw(CModelFlags(flags, CModelFlags::kF_DepthCompare |
-                                                             CModelFlags::kF_DepthGreater |
-                                                             CModelFlags::kF_Unknown200));
+      mMiniMapSamus.GetObject()->Draw(flags.DepthBackwards().DepthCompareUpdate(true, false));
     }
 
     if (IsInMapperState(kAMS_MapScreen)) {

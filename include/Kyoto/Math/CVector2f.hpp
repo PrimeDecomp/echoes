@@ -47,8 +47,8 @@ public:
   }
 
   void PutTo(COutputStream& out) const {
-    out.Put(GetX());
-    out.Put(GetY());
+    out.Put(mX);
+    out.Put(mY);
   }
 
 private:
@@ -62,5 +62,9 @@ bool operator==(const CVector2f& lhs, const CVector2f& rhs);
 CVector2f operator*(const CVector2f& lhs, const float& rhs);
 CVector2f operator*(const float& lhs, const CVector2f& rhs);
 CVector2f operator/(const CVector2f& lhs, const float& rhs);
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CVector2f)
+} // namespace rstl
 
 #endif // _CVECTOR2F
