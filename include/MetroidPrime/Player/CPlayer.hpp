@@ -53,8 +53,8 @@ public:
     kSR_Ice,
     kSR_Organic,
     kSR_Water,
-    kSR_Lava,
     kSR_Phazon,
+    kSR_Lava,
     kSR_Shrubbery,
   };
   enum EPlayerCameraState {

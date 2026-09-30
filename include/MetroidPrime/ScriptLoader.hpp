@@ -5,6 +5,10 @@ class CEntity;
 class CInputStream;
 class CStateManager;
 class CEntityInfo;
+class CDamageInfo;
+struct SLdrDamageInfo;
+
+CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data); // Guessed name.
 
 typedef CEntity* (*FScriptLoader)(CStateManager& mgr, CInputStream& input, const CEntityInfo& info);
 

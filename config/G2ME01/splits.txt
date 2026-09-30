@@ -839,6 +839,11 @@ MetroidPrime/Tweaks/CTweakAutoMapper.cpp:
 	.text       start:0x802175B4 end:0x802179C0
 	.data       start:0x803B822C end:0x803B824C align:4
 
+MetroidPrime/Tweaks/CTweakPlayer.cpp:
+	.text       start:0x802179C0 end:0x80218698
+	.data       start:0x803B824C end:0x803B830C align:4
+	.sdata2     start:0x8041D928 end:0x8041D940 align:4
+
 MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0
