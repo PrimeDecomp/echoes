@@ -120,6 +120,7 @@ public:
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
+  int GetWeaponIdCount(TUniqueId owner, EWeaponType type);
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
@@ -174,6 +175,7 @@ public:
   int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return m_numPlayers; }
+  uint ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
   CPlayer* GetPlayer(int index) { return m_players[index]; }
   const CPlayer* GetPlayer(int index) const { return m_players[index]; }
   CPlayer* Player(int index) { return m_players[index]; }

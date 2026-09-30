@@ -20,6 +20,7 @@ public:
     kPA_Dark = 1 << 18,
     kPA_Light = 1 << 19,
     kPA_Annihilator = 1 << 20,
+    kPA_Bombs = 1 << 25, // Guessed name, based on CBomb construction.
   };
 
   CWeapon(TUniqueId uid, TAreaId areaId, bool active, TUniqueId owner, EWeaponType type,
