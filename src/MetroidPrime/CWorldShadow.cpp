@@ -30,7 +30,7 @@ CWorldShadow::~CWorldShadow() {
 
 // Guessed name
 bool CWorldShadow::CanRender(const CStateManager& mgr) {
-  if (mgr.fn_80036F10())
+  if (mgr.IsMultiplayer())
     return false;
   return !mgr.GetIsDarkWorld() &&
          mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Combat;

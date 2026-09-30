@@ -256,7 +256,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       }
     }
 
-    if (!mgr.fn_80036F10() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
+    if (!mgr.IsMultiplayer() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
       CPersistentOptions& opts = gpGameState->SystemOptions();
       if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
         opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);

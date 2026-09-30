@@ -41,6 +41,7 @@ class CMapWorldInfo;
 class CPlayerState;
 class CWorldTransManager;
 class CPlayer;
+class CPatterned;
 class CCameraManager;
 class CRumbleManager;
 class CSaveGameScreen;
@@ -73,15 +74,15 @@ enum EStateManagerTransition {
 
 class CStateManager {
   struct ScriptMsgArray {
-    CScriptMsg msgs[192];
-    int lastIndex;
-    int otherIndex;
+    CScriptMsg mMessages[192];
+    int mWriteIndex;
+    int mReadIndex;
 
     void Append(const CScriptMsg& msg);
     int fn_8019E69C();
     const CScriptMsg& fn_8019E6BC() const;
 
-    bool empty() const { return lastIndex == otherIndex; }
+    bool empty() const { return mWriteIndex == mReadIndex; }
   };
 
 public:
@@ -90,6 +91,8 @@ public:
 
   // Guessed phase names, derived from world initialization.
   enum EInitPhase { kIP_LoadAudioGroups, kIP_LoadWorld, kIP_LoadFirstArea, kIP_Done };
+  // Guessed names, based on the update dispatch and Prime's corresponding state.
+  enum EGameState { kGS_Running, kGS_SoftPaused };
 
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
@@ -99,7 +102,7 @@ public:
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
-  bool GetIsDarkWorld() const { return m_isDarkWorld; }
+  bool GetIsDarkWorld() const { return mIsDarkWorld; }
   void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
   rstl::pair< int, int > CalculateScanCompletionRate() const;
@@ -129,18 +132,18 @@ public:
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void SetupParticleHook(const CActor& actor) const;
-  const CActorModelParticles* GetActorModelParticles() const { return m_actorModelParticles; }
+  const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
 
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
   CEntity* GetObjectByIdFromListAll(TUniqueId uid);
-  bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
-                       const CMaterialFilter& filter, const CActor* damagee);
+  bool RayCollideWorld(const CVector3f& start, const CVector3f& end, const CMaterialFilter& filter,
+                       const CActor* damagee);
   CRayCastResult RayStaticIntersection(const CVector3f& position, const CVector3f& direction,
                                        float length, const CMaterialFilter& filter) const;
-  void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
-                     const CVector3f& position, const CVector3f& direction, float length,
-                     const CMaterialFilter& filter, const CActor* ignoreActor) const;
+  void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CVector3f& position,
+                     const CVector3f& direction, float length, const CMaterialFilter& filter,
+                     const CActor* ignoreActor) const;
   void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CAABox& bounds,
                      const CMaterialFilter& filter, const CActor* ignoreActor) const;
 
@@ -148,16 +151,16 @@ public:
   TUniqueId GetIdForScript(TEditorId eid) const;
   TIdListResult GetIdListForScript(TEditorId) const;
 
-  CWorld* World() { return m_world; }
-  const CWorld* GetWorld() const { return m_world; }
+  CWorld* World() { return mWorld; }
+  const CWorld* GetWorld() const { return mWorld; }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
-  CEnvFxManager* EnvFxManager() { return m_envFxManager; }
-  const CEnvFxManager* GetEnvFxManager() const { return m_envFxManager; }
+  CEnvFxManager* EnvFxManager() { return mEnvFxManager; }
+  const CEnvFxManager* GetEnvFxManager() const { return mEnvFxManager; }
   CRandom16* Random() { return &mRandom; }
-  int GetUpdateFrameIdx() const { return m_updateFrameIdx; }
+  int GetUpdateFrameIdx() const { return mUpdateFrameIdx; }
   int GetRenderFrameIndex() const { return mRenderFrameIndex; } // Guessed name
 
-  TAreaId GetNextAreaId() const { return m_nextAreaId; }
+  TAreaId GetNextAreaId() const { return mNextAreaId; }
   TAreaId GetPreviousAreaId() const { return mPreviousAreaId; }
   void SetCurrentAreaId(TAreaId);
   void AreaLoaded(TAreaId area); // Guessed name, corresponding to Prime's area-load notification.
@@ -172,31 +175,39 @@ public:
     mShowSoftTransition = showSoftTransition;
   }
 
-  const CFrustumPlanes& GetFrustumPlanes() const { return m_planes; }
+  const CFrustumPlanes& GetFrustumPlanes() const { return mPlanes; }
   int Get0x244c() const { return x244c; }
 
-  int GetNumPlayers() const { return m_numPlayers; }
+  int GetNumPlayers() const { return mNumPlayers; }
   uint ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
-  CPlayer* GetPlayer(int index) { return m_players[index]; }
-  const CPlayer* GetPlayer(int index) const { return m_players[index]; }
-  CPlayer* Player(int index) { return m_players[index]; }
+  CPlayer* GetPlayer(int index) { return mPlayers[index]; }
+  const CPlayer* GetPlayer(int index) const { return mPlayers[index]; }
+  CPlayer* Player(int index) { return mPlayers[index]; }
 
-  CObjectList& ObjectListById(EGameObjectList id) { return *m_objectLists[id]; }
-  const CObjectList& GetObjectListById(EGameObjectList id) const { return *m_objectLists[id]; }
+  CObjectList& ObjectListById(EGameObjectList id) { return *mObjectLists[id]; }
+  const CObjectList& GetObjectListById(EGameObjectList id) const { return *mObjectLists[id]; }
   // Guessed names. The first filtered list qualifies only CScriptDoor objects.
-  const rstl::list< CEntity* >& GetDoorList() const { return mFilteredObjectLists[0]->GetObjects(); }
+  const rstl::list< CEntity* >& GetDoorList() const {
+    return mFilteredObjectLists[0]->GetObjects();
+  }
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
 
-  bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage, const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& info, int);
+  bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
+                        const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& info, int);
 
   void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
   void fn_8003BF84(CEntity*);
   void fn_800412EC(TUniqueId);
-  bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
+  bool IsMultiplayer() const; // Guessed name
   void fn_8003BE54();
   void InformListeners(const CVector3f& position, EListenNoiseType type);
+  void Think(float dt);
+  void MoveActors(float dt);
+  // Guessed helper names, recovered from their update-loop consumers.
+  bool ShouldUpdatePatterned(const CPatterned& actor);
+  void ThinkEntity(float dt, CEntity& entity);
 
   // State transitions
   void DeferStateTransition(EStateManagerTransition t);
@@ -205,119 +216,124 @@ public:
   void EnterLogBookScreen() { DeferStateTransition(kSMT_LogBook); }
   void EnterSaveGameScreen() { DeferStateTransition(kSMT_SaveGame); }
   void EnterMessageScreen(uint, float);
-  bool GetWantsToEnterMapScreen() const { return m_deferredTransition == kSMT_MapScreen; }
-  bool GetWantsToEnterPauseScreen() const { return m_deferredTransition == kSMT_PauseGame; }
+  bool GetWantsToEnterMapScreen() const { return mDeferredTransition == kSMT_MapScreen; }
+  bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
-  bool GetWantsToEnterLogBookScreen() const { return m_deferredTransition == kSMT_LogBook; }
-  bool GetWantsToEnterSaveGameScreen() const { return m_deferredTransition == kSMT_SaveGame; }
-  bool GetWantsToEnterMessageScreen() const { return m_deferredTransition == kSMT_MessageScreen; }
+  bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
+  bool GetWantsToEnterSaveGameScreen() const { return mDeferredTransition == kSMT_SaveGame; }
+  bool GetWantsToEnterMessageScreen() const { return mDeferredTransition == kSMT_MessageScreen; }
 
-  const CCameraManager* GetCameraManager(int playerIndex) const { return m_cameraManagers[playerIndex]; }
-  CCameraManager* CameraManager(int playerIndex) { return m_cameraManagers[playerIndex]; }
-  const CPlayerState* GetPlayerState() const { return m_playerState; }
+  const CCameraManager* GetCameraManager(int playerIndex) const {
+    return mCameraManagers[playerIndex];
+  }
+  CCameraManager* CameraManager(int playerIndex) { return mCameraManagers[playerIndex]; }
+  const CPlayerState* GetPlayerState() const { return mPlayerState; }
   const CPlayer* GetCurrentRenderPlayer() const { return mCurrentRenderPlayer; } // Guessed name
-  int GetCurrentRenderPlayerIndex() const { return mCurrentRenderPlayerIndex; } // Guessed name
-  const CCameraManager* GetCurrentRenderCameraManager() const { return m_cameraManager; } // Guessed name
-  const CPlayerState* GetPlayerState(int playerIndex) const { return m_playerStates[playerIndex]; }
-  CPlayerState* PlayerState(int playerIndex) { return m_playerStates[playerIndex]; }
-  CRumbleManager* RumbleManager(int playerIndex) { return m_rumbleManagers[playerIndex]; }
+  int GetCurrentRenderPlayerIndex() const { return mCurrentRenderPlayerIndex; }  // Guessed name
+  const CCameraManager* GetCurrentRenderCameraManager() const {
+    return mCameraManager;
+  } // Guessed name
+  const CPlayerState* GetPlayerState(int playerIndex) const { return mPlayerStates[playerIndex]; }
+  CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
+  CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
 
   int fn_800366e4(CActor*);
 
 public:
-  ushort m_nextFreeIndex;
-  rstl::reserved_vector< ushort, 1024 > m_objectIndexArray;                // x0x4
-  rstl::reserved_vector< rstl::auto_ptr< CObjectList >, 8 > m_objectLists; // 0x808
+  ushort mNextFreeIndex;
+  rstl::reserved_vector< ushort, 1024 > mObjectIndexArray;                // x0x4
+  rstl::reserved_vector< rstl::auto_ptr< CObjectList >, 8 > mObjectLists; // 0x808
   rstl::reserved_vector< CObjectList*, 8 > mDynamicObjectLists;
   rstl::reserved_vector< rstl::auto_ptr< CFilteredObjectList >, 6 > mFilteredObjectLists;
   rstl::reserved_vector< CFilteredObjectList*, 6 > mDynamicFilteredObjectLists;
-  MapWorldInfoAreas mapWorldInfoAreas;
+  MapWorldInfoAreas mAllocatedObjectIndices;
   char x8d4_[0x18];
-  ScriptMsgArray m_scriptMsgs;
-  CArchitectureQueue* m_archQueue;
-  int m_numPlayers;
-  CPlayer* m_players[4];
-  CPlayerState* m_playerStates[4];
-  CCameraManager* m_cameraManagers[4];
-  CRumbleManager* m_rumbleManagers[4];
-  CFinalInput m_finalInputs[4];
+  ScriptMsgArray mScriptMsgs;
+  CArchitectureQueue* mArchQueue;
+  int mNumPlayers;
+  CPlayer* mPlayers[4];
+  CPlayerState* mPlayerStates[4];
+  CCameraManager* mCameraManagers[4];
+  CRumbleManager* mRumbleManagers[4];
+  CFinalInput mFinalInputs[4];
   char x15ec_[0xc];
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
-  CPlayerState* m_playerState;
-  CCameraManager* m_cameraManager;
-  CWorld* m_world;                                                 // 0x1604
-  rstl::list< rstl::reserved_vector< CEntity*, 32 > > m_graveyard; // 0x1608
-  rstl::single_ptr< CStateManagerContainer > m_stateManagerContainer;
-  SL::CSortedListManager* m_sortedListManager;
-  CWeaponMgr* m_weaponMgr;
-  CFluidPlaneManager* m_fluidPlaneManager;
-  CEnvFxManager* m_envFxManager;               // 0x1630
-  CActorModelParticles* m_actorModelParticles; // 0x1634
+  CPlayerState* mPlayerState;
+  CCameraManager* mCameraManager;
+  CWorld* mWorld;                                                 // 0x1604
+  rstl::list< rstl::reserved_vector< CEntity*, 32 > > mGraveyard; // 0x1608
+  rstl::single_ptr< CStateManagerContainer > mStateManagerContainer;
+  SL::CSortedListManager* mSortedListManager;
+  CWeaponMgr* mWeaponMgr;
+  CFluidPlaneManager* mFluidPlaneManager;
+  CEnvFxManager* mEnvFxManager;               // 0x1630
+  CActorModelParticles* mActorModelParticles; // 0x1634
   void* x1638;
-  char pad2_2[0x40];
-  rstl::rc_ptr< CRelayTracker > m_relayTracker;
+  char mUnknownData1[0x40];
+  rstl::rc_ptr< CRelayTracker > mRelayTracker;
   rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
-  rstl::rc_ptr< CWorldTransManager > m_worldTransManager;
-  CWorldLayerState* m_currentWorldLayerState;
+  rstl::rc_ptr< CWorldTransManager > mWorldTransManager;
+  CWorldLayerState* mCurrentWorldLayerState;
   int* x1698;
-  rstl::single_ptr< CSaveGameScreen > m_saveGameScreen; // x169C
-  TAreaId m_nextAreaId; // x16a0
+  rstl::single_ptr< CSaveGameScreen > mSaveGameScreen; // x169C
+  TAreaId mNextAreaId;                                 // x16a0
   TAreaId mPreviousAreaId;
   int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
-  int m_updateFrameIdx; // 16AC
-  char pad4[0x34]; // 16B0
+  int mUpdateFrameIdx;   // 16AC
+  char mUnknownData2[0x34];
   CRandom16 mRandom;
-  char x16e8_[8];
+  char x16e8_[4];
+  EGameState mGameState;
   EInitPhase mInitPhase;
   char x16f4_[0xD40];
 
-  CAssetId m_pauseHudMessage; // 0x2434
+  CAssetId mPauseHudMessage; // 0x2434
   float mEscapeTotalTime;
   float x243c;
-  TUniqueId m_bossId; // 0x2440
-  float m_bossHealth;
-  uint m_bossLanguageTableIndex;
+  TUniqueId mBossId; // 0x2440
+  float mBossHealth;
+  uint mBossLanguageTableIndex;
   int x244c; // unk type
-  TUniqueId m_uid_setBySpecialFunc;
-  float m_hudMessageTime;     // 0x2454
-  int x2458;                  // unk type
-  int mHudMessageFrameCount; // 0x245c
-  int m_forPausedHudMemo;     // 0x2460
-  CAssetId m_pausedHudMemoAssetId;
+  TUniqueId mSpecialFunctionId;
+  float mHudMessageTime;        // 0x2454
+  int x2458;                    // unk type
+  int mHudMessageFrameCount;    // 0x245c
+  int mPausedHudMemoFrameCount; // 0x2460
+  CAssetId mPausedHudMemoAssetId;
   float x2468;
   CAssetId mMapTeleportWorldId; // Guessed name
-  EStateManagerTransition m_deferredTransition;
+  EStateManagerTransition mDeferredTransition;
 
-  char pad5[4]; // 0x246c
-  CFrustumPlanes m_planes; // 0x2478
+  char mUnknownData3[4];
+  CFrustumPlanes mPlanes;        // 0x2478
   int mCurrentRenderPlayerIndex; // Guessed name
-  char pad6[0x28f8 - 0x24e0];
-  TAreaId mPendingDockArea; // Guessed name.
-  int mPendingDock; // Guessed name.
+  char mUnknownData4[0x28f8 - 0x24e0];
+  TAreaId mPendingDockArea;                                // Guessed name.
+  int mPendingDock;                                        // Guessed name.
   rstl::single_ptr< CPortalTransition > mPortalTransition; // Guessed name.
   char x2904_[0x2938 - 0x2904];
 
   CVector3f x2938;
   float x2944;
   CColor x2948;
-  bool m_unkFlagA1 : 1;
-  bool m_unkFlagA2 : 1;
-  bool m_unkFlagA3 : 1;
-  bool m_unkFlagA4 : 1;
-  bool m_unkFlagA5 : 1;
+  bool mUnkFlagA1 : 1;
+  bool mUnkFlagA2 : 1;
+  bool mUnkFlagA3 : 1;
+  bool mUnkFlagA4 : 1;
+  bool mUnkFlagA5 : 1;
   bool mCinematicPause : 1;
-  bool m_unkFlagA7 : 1;
-  bool m_isDarkWorld : 1; // 0x294c
+  bool mUnkFlagA7 : 1;
+  bool mIsDarkWorld : 1;        // 0x294c
   bool mShowSoftTransition : 1; // Guessed name.
-  bool m_unkFlagB2 : 1;
-  bool m_unkFlagB3 : 1;
-  bool m_unkFlagB4 : 1;
-  bool m_unkFlagB5 : 1;
-  bool m_unkFlagB6 : 1;
-  bool m_unkFlagB7 : 1;
-  bool m_unkFlagB8 : 1;
+  bool mUnkFlagB2 : 1;
+  bool mDispatchingScriptMessages : 1;
+  bool mUnkFlagB4 : 1;
+  bool mUnkFlagB5 : 1;
+  bool mUnkFlagB6 : 1;
+  bool mUnkFlagB7 : 1;
+  bool mUnkFlagB8 : 1;
 };
-// CHECK_OFFSETOF(CStateManager, m_world, 0x1604)
-// CHECK_OFFSETOF(CStateManager, m_envFxManager, 0x1630)
+// CHECK_OFFSETOF(CStateManager, mWorld, 0x1604)
+// CHECK_OFFSETOF(CStateManager, mEnvFxManager, 0x1630)
 
 #endif // _CSTATEMANAGER

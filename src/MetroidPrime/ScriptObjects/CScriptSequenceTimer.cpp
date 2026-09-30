@@ -60,7 +60,7 @@ void CScriptSequenceTimer::fn_801e1c1c(float changeTo, CStateManager& mgr) {
 
   for (rstl::vector< SLdrConnection >::iterator connection = m_connections.begin();
        connection != m_connections.end(); ++connection) {
-    if (!connection->unknown_0x00000002 || !gpMain->fn_80008A1C()) {
+    if (!connection->unknown_0x00000002 || !gpMain->GetMaxSpeed()) {
       for (rstl::vector< float >::iterator activation = connection->activationTimes.begin();
            activation != connection->activationTimes.end(); ++activation) {
         bool bVar6 = false;

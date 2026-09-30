@@ -93,7 +93,7 @@ void CScanDisplay::StartScan(TUniqueId uid, const CScannableObjectInfo& info, CG
         gpSimplePool->GetObj(SObjectTag('STRG', info.GetStringTableId())));
     mScanString->Lock();
   }
-  if (!mgr.fn_80036F10()) {
+  if (!mgr.IsMultiplayer()) {
     mHistoryRoot = historyRoot;
     mHistoryRight = historyRight;
     mHistory = history;

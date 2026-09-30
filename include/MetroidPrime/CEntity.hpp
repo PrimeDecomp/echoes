@@ -28,18 +28,18 @@ public:
   //                                  EScriptObjectMessage msg) {
   //   mgr.SendScriptMsg(to, sender, msg);
   // }
-  TUniqueId GetUniqueId() const { return m_uid; }
-  TEditorId GetEditorId() const { return m_editorId; }
+  TUniqueId GetUniqueId() const { return mUniqueId; }
+  TEditorId GetEditorId() const { return mEditorId; }
   TAreaId GetAreaIdForPersistence() const;
-  TAreaId GetCurrentAreaId() const { return m_areaId; }
-  const bool GetActive() const { return m_active; }
-  bool IsScriptingBlocked() const { return m_scriptingBlocked; }
-  bool GetEditorFlag2() const { return m_entityUnknown; }
-  uint GetCastFlags() const { return m_castFlags; }
+  TAreaId GetCurrentAreaId() const { return mAreaId; }
+  const bool GetActive() const { return mActive; }
+  bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
+  bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }
+  uint GetCastFlags() const { return mCastFlags; }
 
   // might be fake?
-  rstl::vector< SConnection >& ConnectionList() { return m_conns; }
-  const rstl::vector< SConnection >& GetConnectionList() const { return m_conns; }
+  rstl::vector< SConnection >& ConnectionList() { return mConnections; }
+  const rstl::vector< SConnection >& GetConnectionList() const { return mConnections; }
 
   static rstl::vector< SConnection > NullConnectionList;
   static CEntityInfo NullEntityInfo;
@@ -50,24 +50,25 @@ public:
                                    const CValidEntityPredicate&) const;
   rstl::vector< TUniqueId > FindConnectedObjects(const CStateManager&, EScriptObjectState,
                                                  EScriptObjectMessage) const;
-  rstl::vector< TUniqueId > FindConnectedObjects_if(
-      const CStateManager&, EScriptObjectState, EScriptObjectMessage,
-      const CValidEntityPredicate&) const;
+  rstl::vector< TUniqueId > FindConnectedObjects_if(const CStateManager&, EScriptObjectState,
+                                                    EScriptObjectMessage,
+                                                    const CValidEntityPredicate&) const;
   TUniqueId CheckConnectedObject(const CStateManager&, EScriptObjectState,
                                  EScriptObjectMessage) const;
-  TUniqueId CheckConnectedObject_if(const CStateManager&, EScriptObjectState,
-                                    EScriptObjectMessage, const CValidEntityPredicate&) const;
+  TUniqueId CheckConnectedObject_if(const CStateManager&, EScriptObjectState, EScriptObjectMessage,
+                                    const CValidEntityPredicate&) const;
 
 private:
-  TAreaId m_areaId;  // x4
-  TUniqueId m_uid;  // x8
-  TEditorId m_editorId;  // xc
-  rstl::vector< SConnection > m_conns;  // x10
-  uint m_active : 1; // x20
-  uint m_notInArea : 1;
-  uint m_castFlags : 4;
-  uint m_scriptingBlocked : 1;
-  uint m_entityUnknown : 1;
+  TAreaId mAreaId;
+  TUniqueId mUniqueId;
+  TEditorId mEditorId;
+  rstl::vector< SConnection > mConnections;
+  uint mActive : 1;
+  uint mNotInArea : 1;
+  uint mCastFlags : 4;
+  // Guessed names, based on the update dispatch.
+  uint mUpdateWhileOccluded : 1;
+  uint mUpdateDuringCinematicSkip : 1;
 };
 CHECK_SIZEOF(CEntity, 0x24)
 

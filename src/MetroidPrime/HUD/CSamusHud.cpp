@@ -193,7 +193,7 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
   // TODO: Select the multiplayer damage-ring texture.
   gpSamusHud[mPlayerIndex] = this;
   mDamageRingTexture.Lock();
-  if (mgr.fn_80036F10()) {
+  if (mgr.IsMultiplayer()) {
     mLockedOnIndicator = TCachedToken< CTexture >(gpSimplePool->GetObj("TXTR_LockedOnIndicator"));
     mLockedOnIndicator->Lock();
   }

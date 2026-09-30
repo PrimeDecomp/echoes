@@ -215,7 +215,7 @@ void CEnergyProjectile::Think(float dt, CStateManager& mgr) {
     }
   }
 
-  mUseCombatVisorVolume = mEchoVisorMaxVolume == 0 || mgr.fn_80036F10() ||
+  mUseCombatVisorVolume = mEchoVisorMaxVolume == 0 || mgr.IsMultiplayer() ||
                           mgr.GetPlayerState(0)->GetActiveVisor(mgr) != CPlayerState::kPV_Echo;
   if (mSfx) {
     CSfxManager::UpdateEmitter(mSfx, mProjectile.GetTranslation(), mProjectile.GetVelocity(),
@@ -338,7 +338,7 @@ void CEnergyProjectile::SetCameraShakerData(const CCameraShakerData& data) {
 }
 
 void CEnergyProjectile::InitializeMuzzleOffset(float duration, CStateManager& mgr) {
-  if (mgr.fn_80036F10()) {
+  if (mgr.IsMultiplayer()) {
     if (const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetOwnerId()))) {
       const CTransform4f muzzle = player->GetTransform() * player->GetScaledLocatorTransform(
                                                                player->GetGunParticleLocator());
