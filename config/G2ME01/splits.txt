@@ -447,6 +447,14 @@ MetroidPrime/CMapWorldInfo.cpp:
 	.text       start:0x8010F084 end:0x80110B18
 	.sdata      start:0x804182B8 end:0x804182C0
 
+MetroidPrime/Factories/CScannableObjectInfo.cpp:
+	.text       start:0x80110B18 end:0x801123F8
+	.rodata     start:0x803A8C88 end:0x803A8C90
+	.data       start:0x803B4C60 end:0x803B4C70
+	.bss        start:0x803DAB00 end:0x803DAB28
+	.sbss       start:0x80419158 end:0x80419160
+	.sdata2     start:0x8041BBF8 end:0x8041BC08
+
 MetroidPrime/Player/CScanDisplay.cpp:
 	.text       start:0x801123F8 end:0x80116C74
 	.rodata     start:0x803A8C90 end:0x803A8CF0
