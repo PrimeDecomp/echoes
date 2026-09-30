@@ -199,6 +199,7 @@ public:
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   TUniqueId GetOrbitTargetId() const { return mOrbitTargetId; }
   CMorphBall* GetMorphBall() { return mMorphBall; }
+  const CMorphBall* GetMorphBall() const { return mMorphBall; }
   CPlayerState* GetPlayerState() { return mPlayerState; }
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
   const CPlayerTargeting* GetTargeting() const { return mTargeting; }

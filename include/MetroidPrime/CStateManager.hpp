@@ -8,6 +8,7 @@ extern const int gkPVSEnabled;
 #include "MetroidPrime/CFilteredObjectList.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
+#include "MetroidPrime/Enemies/EListenNoiseType.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "TGameTypes.hpp"
 
@@ -120,6 +121,7 @@ public:
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
+  int GetWeaponIdCount(TUniqueId owner, EWeaponType type);
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
@@ -174,6 +176,7 @@ public:
   int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return m_numPlayers; }
+  uint ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
   CPlayer* GetPlayer(int index) { return m_players[index]; }
   const CPlayer* GetPlayer(int index) const { return m_players[index]; }
   CPlayer* Player(int index) { return m_players[index]; }
@@ -193,7 +196,7 @@ public:
   void fn_800412EC(TUniqueId);
   bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
   void fn_8003BE54();
-  void fn_8003C4B8(const CVector3f&, int);
+  void InformListeners(const CVector3f& position, EListenNoiseType type);
 
   // State transitions
   void DeferStateTransition(EStateManagerTransition t);
