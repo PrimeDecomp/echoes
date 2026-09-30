@@ -831,6 +831,11 @@ MetroidPrime/CPauseScreen.cpp:
 MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
 	.text       start:0x8020EBF0 end:0x8020EE18
 
+MetroidPrime/Tweaks/CTweakTargeting.cpp:
+	.text       start:0x80213CC0 end:0x802142A0
+	.data       start:0x803B8038 end:0x803B805C align:4
+	.sdata2     start:0x8041D8F0 end:0x8041D8FC align:4
+
 MetroidPrime/Tweaks/CTweakPlayerGun.cpp:
 	.text       start:0x80214B5C end:0x80215424
 
