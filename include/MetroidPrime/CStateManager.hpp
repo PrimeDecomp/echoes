@@ -8,6 +8,7 @@ extern const int gkPVSEnabled;
 #include "MetroidPrime/CFilteredObjectList.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
+#include "MetroidPrime/Enemies/EListenNoiseType.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "TGameTypes.hpp"
 
@@ -195,7 +196,7 @@ public:
   void fn_800412EC(TUniqueId);
   bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
   void fn_8003BE54();
-  void fn_8003C4B8(const CVector3f&, int);
+  void InformListeners(const CVector3f& position, EListenNoiseType type);
 
   // State transitions
   void DeferStateTransition(EStateManagerTransition t);

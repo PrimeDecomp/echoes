@@ -61,7 +61,7 @@ void CBomb::Explode(CStateManager& mgr, const rstl::optional_object< CVector3f >
   mgr.ApplyDamageToWorld(GetOwnerId(), *this, GetTranslation(), mCurDamageInfo, GetFilter());
   AddEmitter(*this, mgr.ReturnFirstIfSingleElseSecond(skExplosionSfx[0], skExplosionSfx[1]), true,
              false, CSfxManager::kMedPriority, 127, 20, 150.f, 1.f);
-  mgr.fn_8003C4B8(explosionPosition, 1);
+  mgr.InformListeners(explosionPosition, kLNT_BombExplode);
 
   if (const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetOwnerId()))) {
     if (player->GetPlayerState()->GetItemAmount(CPlayerState::kIT_DoubleDamage, true)) {
@@ -175,7 +175,7 @@ void CBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mgr.AddWeaponId(GetOwnerId(), GetType());
     AddEmitter(*this, mgr.ReturnFirstIfSingleElseSecond(skPlacementSfx[0], skPlacementSfx[1]), true,
                false, CSfxManager::kMedPriority, 127, 20, 150.f, 1.f);
-    mgr.fn_8003C4B8(GetTranslation(), 1);
+    mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     break;
   case kSM_XDelete:
     if (mLightId != kInvalidUniqueId) {
