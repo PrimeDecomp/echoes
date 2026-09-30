@@ -40,7 +40,7 @@ CEnergyProjectile::CEnergyProjectile(bool active, const TToken< CWeaponDescripti
 , mInitialDirectionMagnitude(mInitialDirection.Magnitude())
 , mLifetime(0.f)
 , mChargeFactor(chargeFactor)
-, mCameraShaker(gpTweakPlayerGun->GetCameraShakerData6())
+, mCameraShaker(gpTweakPlayerGun->GetProjectileImpactCameraShakerData())
 , mCollisionCooldowns(0.08f)
 , mMuzzleOffset(CVector3f::Zero())
 , mMuzzleOffsetDuration(0.f)
