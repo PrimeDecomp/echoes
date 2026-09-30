@@ -21,7 +21,9 @@ void CTweakPlayerGun::BuildCache() {
                   CDamageInfo(mData->weapons.annihilator_Beam.damageInfo.charged, true)));
 }
 
-const SWeaponInfo& CTweakPlayerGun::GetBeamInfo(int beam) const { return mBeamInfo[beam]; }
+const SWeaponInfo& CTweakPlayerGun::GetBeamInfo(CPlayerState::EBeamId beam) const {
+  return mBeamInfo[beam];
+}
 
 CDamageInfo CTweakPlayerGun::GetDarkBeamBlobDamage() const {
   return CDamageInfo(mData->weapons.dark_Beam_Blob);
@@ -94,16 +96,16 @@ float CTweakPlayerGun::GetHoloHoldTime() const { return mData->misc.hologramDisp
 
 float CTweakPlayerGun::GetGunTransformTime() const { return mData->misc.gunTransformTime; }
 
-CDamageInfo CTweakPlayerGun::GetComboDamage(int beam) const {
+CDamageInfo CTweakPlayerGun::GetComboDamage(CPlayerState::EBeamId beam) const {
   switch (beam) {
   default:
-  case 0:
+  case CPlayerState::kBI_Power:
     return CDamageInfo(mData->beam_Combo.superMissile_Power, false, true);
-  case 1:
+  case CPlayerState::kBI_Dark:
     return CDamageInfo(mData->beam_Combo.darkCombo_Dark, false, true);
-  case 2:
+  case CPlayerState::kBI_Light:
     return CDamageInfo(mData->beam_Combo.lightCombo_Light, false, true);
-  case 3:
+  case CPlayerState::kBI_Annihilator:
     return CDamageInfo(mData->beam_Combo.annihilatorCombo_Annihilator, false, true);
   }
 }

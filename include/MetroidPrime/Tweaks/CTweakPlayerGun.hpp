@@ -3,6 +3,7 @@
 
 #include "Kyoto/Math/CVector3f.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/single_ptr.hpp"
 
@@ -25,7 +26,7 @@ public:
   CCameraShakerData GetProjectileImpactCameraShakerData() const;
   CCameraShakerData GetProjectileRecoilCameraShakerData() const;
   CCameraShakerData GetRecoilCameraShakerData() const;
-  CDamageInfo GetComboDamage(int beam) const;
+  CDamageInfo GetComboDamage(CPlayerState::EBeamId beam) const;
   float GetGunTransformTime() const;
   float GetHoloHoldTime() const;
   float GetBombDropDelayTime() const;
@@ -48,7 +49,7 @@ public:
   CDamageInfo GetMissileDamage() const;
   SWeaponInfo GetPhazonBeamInfo() const;
   CDamageInfo GetDarkBeamBlobDamage() const;
-  const SWeaponInfo& GetBeamInfo(int beam) const;
+  const SWeaponInfo& GetBeamInfo(CPlayerState::EBeamId beam) const;
 
 private:
   void BuildCache();
