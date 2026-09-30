@@ -2,10 +2,10 @@
 
 #include "MetroidPrime/CStateManager.hpp"
 
-rstl::vector< SConnection > CEntity::mNullConnectionList;
+rstl::vector< SConnection > CEntity::NullConnectionList;
 
-CEntityInfo CEntity::mNullEntityInfo =
-    CEntityInfo(kInvalidAreaId, mNullConnectionList, true, kInvalidEditorId);
+CEntityInfo CEntity::NullEntityInfo =
+    CEntityInfo(kInvalidAreaId, NullConnectionList, true, kInvalidEditorId);
 
 CEntityInfo::CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& connections, bool isActive,
                          TEditorId eid)

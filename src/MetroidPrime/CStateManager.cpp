@@ -215,7 +215,7 @@ void CStateManager::fn_8003BE54() {
 }
 
 void CStateManager::DeferStateTransition(EStateManagerTransition t) {
-  if (!fn_80036F10()) {
+  if (!IsMultiplayer()) {
     if (t == kSMT_InGame) {
       if (mDeferredTransition != kSMT_InGame) {
         mWorld->SetLoadPauseState(false);
@@ -247,7 +247,7 @@ void CStateManager::SendScriptMsg(const CScriptMsg& msg) {
   }
 }
 
-bool CStateManager::fn_80036F10() const {
+bool CStateManager::IsMultiplayer() const {
   int v = gpGameState->GetGameMode().GetGameModeType();
   return v != 'SNGL' && v != 'FRND';
 }
@@ -304,7 +304,7 @@ bool CStateManager::ShouldUpdatePatterned(const CPatterned& actor) {
 }
 
 void CStateManager::Think(float dt) {
-  if (!fn_80036F10() && mPlayers[0]->GetDeathTime() > 0.f) {
+  if (!IsMultiplayer() && mPlayers[0]->GetDeathTime() > 0.f) {
     mPlayers[0]->DoThink(dt, *this);
     return;
   }

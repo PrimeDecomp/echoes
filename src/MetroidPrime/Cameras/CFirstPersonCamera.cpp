@@ -7,7 +7,7 @@ CFirstPersonCamera::CFirstPersonCamera(const TUniqueId& uid, const CTransform4f&
                                        float nearZ, float farZ, float aspect, int index,
                                        int controllerIdx)
 : CGameCamera(uid, rstl::string("First Person Camera"),
-              CEntityInfo(kInvalidAreaId, mNullConnectionList, true), xf, fov, nearZ, farZ, aspect,
+              CEntityInfo(kInvalidAreaId, NullConnectionList, true), xf, fov, nearZ, farZ, aspect,
               watchedId, index, controllerIdx)
 , mOrbitCameraSpeed(orbitCameraSpeed)
 , mLockCamera(false)

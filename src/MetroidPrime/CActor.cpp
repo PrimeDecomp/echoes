@@ -152,7 +152,7 @@ CActor::~CActor() { StopLoopedSounds(); }
 
 CAdvancementDeltas CActor::UpdateAnimation(float dt, CStateManager& mgr, bool advTree) {
   float cameraDistance = 0.f;
-  if (!mgr.fn_80036F10()) {
+  if (!mgr.IsMultiplayer()) {
     const CGameCamera* camera = mgr.GetCameraManager(0)->GetCurrentCamera(mgr, false);
     cameraDistance = (camera->GetTranslation() - GetTranslation()).Magnitude();
   }
@@ -904,7 +904,7 @@ void CActor::ClearFluidList(CStateManager& mgr) {
 }
 
 uchar CActor::GetVisorSoundVolume(const CStateManager& mgr) const {
-  if (mgr.fn_80036F10()) {
+  if (mgr.IsMultiplayer()) {
     return mMaxVol;
   }
   return mgr.GetPlayer(0)->GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo

@@ -200,7 +200,7 @@ public:
   void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
   void fn_8003BF84(CEntity*);
   void fn_800412EC(TUniqueId);
-  bool fn_80036F10() const; // Maybe_CheckIsMultiplayer
+  bool IsMultiplayer() const; // Guessed name
   void fn_8003BE54();
   void InformListeners(const CVector3f& position, EListenNoiseType type);
   void Think(float dt);

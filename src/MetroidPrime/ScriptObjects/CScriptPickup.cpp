@@ -210,7 +210,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
     if (mPickupParticleDesc) {
       // mgr.AddObject(rs_new CExplosion(
       //     TLockedToken< CGenDescription >(*mPickupParticleDesc), mgr.AllocateUniqueId(),
-      //     true, CEntityInfo(GetCurrentAreaId(), CEntity::mNullConnectionList, kInvalidEditorId),
+      //     true, CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, kInvalidEditorId),
       //     rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
       //     CVector3f(1.f, 1.f, 1.f), CColor::White())
       //   );
@@ -256,7 +256,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       }
     }
 
-    if (!mgr.fn_80036F10() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
+    if (!mgr.IsMultiplayer() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
       CPersistentOptions& opts = gpGameState->SystemOptions();
       if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
         opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);

@@ -25,7 +25,7 @@ CGameHint::CGameHint(TUniqueId uid, const rstl::string& name, const CEntityInfo&
 CGameHint::~CGameHint() {}
 
 void CGameHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (!mgr.fn_80036F10()) {
+  if (!mgr.IsMultiplayer()) {
     CActor::AcceptScriptMsg(mgr, msg);
     return;
   }

@@ -110,7 +110,7 @@ void CPowerBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
                       float chargeFactor1, float chargeFactor2) {
 
   if (soundId == lbl_8041E2E6) {
-    mgr.fn_80036F10();
+    mgr.IsMultiplayer();
   }
 
   CGunWeapon::Fire(projectile, underwater, dt, chargeState, xf, mgr, homingTarget,
@@ -126,7 +126,7 @@ void CPowerBeam::Load(CStateManager& mgr, bool subtypeBasePose) {
 
 void CPowerBeam::Unload(CStateManager& mgr) {
   CGunWeapon::Unload(mgr);
-  if (!mgr.fn_80036F10()) {
+  if (!mgr.IsMultiplayer()) {
     mPower2nd1->Unlock();
     mShotSmoke->Unlock();
   }
@@ -135,7 +135,7 @@ void CPowerBeam::Unload(CStateManager& mgr) {
 
 void CPowerBeam::ReleaseResources(CStateManager& mgr) {
   CGunWeapon::ReleaseResources(mgr);
-  if (!mgr.fn_80036F10()) {
+  if (!mgr.IsMultiplayer()) {
     mPower2nd1->Unlock();
     mShotSmoke->Unlock();
   }

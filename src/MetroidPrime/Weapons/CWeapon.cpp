@@ -6,7 +6,7 @@ CWeapon::CWeapon(TUniqueId uid, TAreaId areaId, bool active, TUniqueId owner, EW
                  const rstl::string& name, const CTransform4f& xf, const CMaterialFilter& filter,
                  const CMaterialList& materials, const CDamageInfo& damageInfo, int attribs,
                  const CModelData& modelData)
-: CActor(uid, name, CEntityInfo(areaId, CEntity::mNullConnectionList, active), 0, xf, modelData,
+: CActor(uid, name, CEntityInfo(areaId, CEntity::NullConnectionList, active), 0, xf, modelData,
          materials, CActorParameters(), kInvalidUniqueId)
 , mProjectileAttribs(attribs)
 , mOwnerId(owner)

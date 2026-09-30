@@ -41,8 +41,8 @@ public:
   rstl::vector< SConnection >& ConnectionList() { return mConnections; }
   const rstl::vector< SConnection >& GetConnectionList() const { return mConnections; }
 
-  static rstl::vector< SConnection > mNullConnectionList;
-  static CEntityInfo mNullEntityInfo;
+  static rstl::vector< SConnection > NullConnectionList;
+  static CEntityInfo NullEntityInfo;
 
   TUniqueId FindConnectedObject(const CStateManager&, EScriptObjectState,
                                 EScriptObjectMessage) const;

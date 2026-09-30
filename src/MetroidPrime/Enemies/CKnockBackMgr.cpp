@@ -74,7 +74,7 @@ void CKnockBackMgr::SetAnimReactionRange(EAnimReaction minimum, EAnimReaction ma
 }
 
 void CKnockBackMgr::KnockBack(CStateManager& mgr, CActor& actor, const CKnockBackInfo& info) {
-  mIsMultiplayer = mgr.fn_80036F10();
+  mIsMultiplayer = mgr.IsMultiplayer();
   SelectDamageState(actor, info);
   const CVector3f direction = GetKnockBackDirection(info.GetDirection(), actor);
   DoKnockBackAnimation(

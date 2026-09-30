@@ -19,7 +19,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
                                  const CVector3f& extent, const CVector3f& center, bool active,
                                  float mass)
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
-                CEntityInfo(areaId, mNullConnectionList, active), 0, CTransform4f::Identity(),
+                CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
                 SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_OBBTreeGroup)
@@ -45,7 +45,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
 CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
                                  const CVector3f& boxSize, bool active, float mass)
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
-                CEntityInfo(areaId, mNullConnectionList, active), 0, CTransform4f::Identity(),
+                CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
                 SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_AABox)
@@ -72,7 +72,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
 CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner, bool active,
                                  float radius, float mass)
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
-                CEntityInfo(areaId, mNullConnectionList, active), 0, CTransform4f::Identity(),
+                CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
                 SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_Sphere)
