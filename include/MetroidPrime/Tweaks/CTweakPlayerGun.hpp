@@ -1,32 +1,57 @@
 #ifndef _CTWEAKPLAYERGUN
 #define _CTWEAKPLAYERGUN
 
+#include "Kyoto/Math/CVector3f.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/single_ptr.hpp"
 
 struct SWeaponInfo {
-  float m_coolDown;
-  CDamageInfo m_normal;
-  CDamageInfo m_charged;
+  SWeaponInfo(float coolDown, const CDamageInfo& normal, const CDamageInfo& charged);
+
+  float mCoolDown;
+  CDamageInfo mNormal;
+  CDamageInfo mCharged;
 };
+CHECK_SIZEOF(SWeaponInfo, 0x3c)
 
 class CCameraShakerData;
 struct SLdrTweakPlayerGun;
 
 class CTweakPlayerGun {
 public:
-  explicit CTweakPlayerGun(const SLdrTweakPlayerGun& data) : mData(&data) { InitBeamInfo(); }
+  explicit CTweakPlayerGun(const SLdrTweakPlayerGun& data) : mData(&data) { BuildCache(); }
 
+  CCameraShakerData GetProjectileImpactCameraShakerData() const;
+  CCameraShakerData GetProjectileRecoilCameraShakerData() const;
+  CCameraShakerData GetRecoilCameraShakerData() const;
+  CDamageInfo GetComboDamage(int beam) const;
   float GetGunTransformTime() const;
   float GetHoloHoldTime() const;
-  float GetGunExtendDistance() const;
-  int GetMaxAbsorbedPhazonShots();
+  float GetBombDropDelayTime() const;
+  float GetBombTriggerRadius() const; // Guessed name.
+  float GetFixedVerticalAim() const;
+  float GetGunNotFiringTime() const;
+  float GetGunHolsterTime() const;
+  CVector3f GetGrapplingArmPosition() const;
+  CVector3f GetGunPosition() const;
+  float GetGunExtendDistance() const; // Guessed name.
+  float GetPhazonShotAbsorbRadius() const;
+  int GetMaxAbsorbedPhazonShots() const;
+  float GetPlayerBurnDamage() const;
+  float GetAIBurnDamage() const;
+  CDamageInfo GetImploderDamage() const;
+  CDamageInfo GetSunBurstRaysDamage() const;
+  CDamageInfo GetBlackHoleDamage() const;
+  CDamageInfo GetPowerBombInfo() const;
+  CDamageInfo GetBombInfo() const;
+  CDamageInfo GetMissileDamage() const;
+  SWeaponInfo GetPhazonBeamInfo() const;
+  CDamageInfo GetDarkBeamBlobDamage() const;
   const SWeaponInfo& GetBeamInfo(int beam) const;
-  CCameraShakerData GetCameraShakerData6() const; // Guessed name: sixth shaker preset.
 
 private:
-  void InitBeamInfo(); // Guessed name
+  void BuildCache();
 
   const SLdrTweakPlayerGun* mData;
   rstl::reserved_vector< SWeaponInfo, 4 > mBeamInfo;

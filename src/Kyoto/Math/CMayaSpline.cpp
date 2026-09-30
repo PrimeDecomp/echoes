@@ -211,40 +211,36 @@ void CMayaSplineKnot::CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* 
   ValidateTangent(mCachedTangentB);
 }
 
-SLdrSpline::SLdrSpline(CInputStream& in, int count)
-: m_preInfinity(in.ReadInt8())
-, m_postInfinity(in.ReadInt8())
-, m_knots(in)
-, m_clampMode(in.ReadInt8())
-, m_minAmplitudeTime(in.ReadFloat())
-, m_maxAmplitudeTime(in.ReadFloat())
+CMayaSpline::CMayaSpline(CInputStream& in, int count)
+: mPreInfinity(in.ReadInt8())
+, mPostInfinity(in.ReadInt8())
+, mKnots(in)
+, mClampMode(in.ReadInt8())
+, mMinAmplitude(in.ReadFloat())
+, mMaxAmplitude(in.ReadFloat())
 , mCache() {}
 
-SLdrSpline::SLdrSpline()
-: m_preInfinity(0)
-, m_postInfinity(0)
-, m_knots()
-, m_clampMode(0)
-, mCache() {}
+CMayaSpline::CMayaSpline() : mPreInfinity(0), mPostInfinity(0), mKnots(), mClampMode(0), mCache() {}
 
-SLdrSpline::SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
-                       int postInfinity, float minAmplitudeTime, float maxAmplitudeTime)
-: m_preInfinity(preInfinity)
-, m_postInfinity(postInfinity)
-, m_knots(knots)
-, m_clampMode(clampMode)
-, m_minAmplitudeTime(minAmplitudeTime)
-, m_maxAmplitudeTime(maxAmplitudeTime)
+CMayaSpline::CMayaSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode,
+                         int preInfinity, int postInfinity, float minAmplitudeTime,
+                         float maxAmplitudeTime)
+: mPreInfinity(preInfinity)
+, mPostInfinity(postInfinity)
+, mKnots(knots)
+, mClampMode(clampMode)
+, mMinAmplitude(minAmplitudeTime)
+, mMaxAmplitude(maxAmplitudeTime)
 , mCache() {
-  rstl::sort(m_knots.begin(), m_knots.end(), rstl::less< CMayaSplineKnot >());
+  rstl::sort(mKnots.begin(), mKnots.end(), rstl::less< CMayaSplineKnot >());
 }
 
 float CMayaSpline::EvaluateHermite(float time) {
-  const float timeDiff = time - mCachedMinTime;
-  return ((timeDiff * mCachedHermiteCoefs[0] + mCachedHermiteCoefs[1]) * timeDiff +
-          mCachedHermiteCoefs[2]) *
+  const float timeDiff = time - mCache.mMinTime;
+  return ((timeDiff * mCache.mHermiteCoefs[0] + mCache.mHermiteCoefs[1]) * timeDiff +
+          mCache.mHermiteCoefs[2]) *
              timeDiff +
-         mCachedHermiteCoefs[3];
+         mCache.mHermiteCoefs[3];
 }
 
 float CMayaSpline::EvaluateInfinities(float time, bool pre) {
@@ -306,8 +302,8 @@ float CMayaSpline::EvaluateInfinities(float time, bool pre) {
       center = time - endTime;
       CVector2f tangentA(0.0f, 0.0f);
       CVector2f tangentB(0.0f, 0.0f);
-      mKnots[lastIdx].GetTangents(lastIdx > 0 ? &mKnots[lastIdx - 1] : nullptr, nullptr,
-                                    tangentA, tangentB);
+      mKnots[lastIdx].GetTangents(lastIdx > 0 ? &mKnots[lastIdx - 1] : nullptr, nullptr, tangentA,
+                                  tangentB);
       const float amplitude = mKnots[lastIdx].GetAmplitude();
       return !CMath::IsEpsilon(tangentB.GetX(), 0.f, 1.e-5f)
                  ? amplitude + center * tangentB.GetY() / tangentB.GetX()
@@ -405,7 +401,7 @@ float CMayaSpline::EvaluateAtUnclamped(float time) {
   } else if (mKnots[lastIdx].GetTime() >= time) {
     segmentKnown = false;
     int nextKnotIndex = -1;
-    int cachedKnotIndex = mCachedKnotIndex;
+    int cachedKnotIndex = mCache.mKnotIndex;
     if (cachedKnotIndex != -1) {
       if (lastIdx <= cachedKnotIndex || mKnots[lastIdx].GetTime() >= time) {
         if (cachedKnotIndex > 0 && mKnots[cachedKnotIndex].GetTime() > time) {
@@ -415,15 +411,15 @@ float CMayaSpline::EvaluateAtUnclamped(float time) {
             nextKnotIndex = cachedKnotIndex;
           }
           if (mKnots[previousKnotIndex].GetTime() == time) {
-            mCachedKnotIndex = previousKnotIndex;
-            return mKnots[mCachedKnotIndex].GetAmplitude();
+            mCache.mKnotIndex = previousKnotIndex;
+            return mKnots[mCache.mKnotIndex].GetAmplitude();
           }
         }
       } else {
         nextTime = mKnots[cachedKnotIndex + 1].GetTime();
         if (nextTime == time) {
-          mCachedKnotIndex = lastIdx;
-          return mKnots[mCachedKnotIndex].GetAmplitude();
+          mCache.mKnotIndex = lastIdx;
+          return mKnots[mCache.mKnotIndex].GetAmplitude();
         }
 
         if (nextTime > time) {
@@ -435,32 +431,32 @@ float CMayaSpline::EvaluateAtUnclamped(float time) {
 
     if (!segmentKnown && (FindKnot(time, nextKnotIndex))) {
       if (nextKnotIndex == 0) {
-        mCachedKnotIndex = 0;
+        mCache.mKnotIndex = 0;
         return mKnots[0].GetAmplitude();
       }
       if (nextKnotIndex == mKnots.size()) {
-        mCachedKnotIndex = 0;
+        mCache.mKnotIndex = 0;
         return mKnots[lastIdx].GetAmplitude();
       }
     }
 
     lastIdx = nextKnotIndex - 1;
-    if (mCachedSegmentIndex != lastIdx) {
-      mCachedKnotIndex = lastIdx;
-      mCachedSegmentIndex = lastIdx;
-      if (mKnots[mCachedKnotIndex].GetTangentModeB() == 3) {
-        mStepSegment = true;
+    if (mCache.mSegmentIndex != lastIdx) {
+      mCache.mKnotIndex = lastIdx;
+      mCache.mSegmentIndex = lastIdx;
+      if (mKnots[mCache.mKnotIndex].GetTangentModeB() == 3) {
+        mCache.mStepSegment = true;
       } else {
-        mStepSegment = false;
+        mCache.mStepSegment = false;
         rstl::reserved_vector< CVector2f, 4 > points;
-        FindControlPoints(mCachedKnotIndex, points);
-        CalculateHermiteCoefficients(points, mCachedHermiteCoefs);
-        mCachedMinTime = points[0].GetX();
+        FindControlPoints(mCache.mKnotIndex, points);
+        CalculateHermiteCoefficients(points, mCache.mHermiteCoefs);
+        mCache.mMinTime = points[0].GetX();
       }
     }
 
-    if (mStepSegment) {
-      return mKnots[mCachedKnotIndex].GetAmplitude();
+    if (mCache.mStepSegment) {
+      return mKnots[mCache.mKnotIndex].GetAmplitude();
     } else {
       return EvaluateHermite(time);
     }
@@ -473,12 +469,12 @@ float CMayaSpline::EvaluateAtUnclamped(float time) {
   return EvaluateInfinities(time, false);
 }
 
-SLdrSpline SLdrSpline::CreateFor(float timeA, float amplitudeA, float timeB, float amplitudeB) {
+CMayaSpline CMayaSpline::CreateFor(float timeA, float amplitudeA, float timeB, float amplitudeB) {
   rstl::vector< CMayaSplineKnot > knots;
   knots.reserve(2);
   knots.push_back_unsafe(CMayaSplineKnot(timeA, amplitudeA, 2, 2, 0.f, 0.f));
   knots.push_back_unsafe(CMayaSplineKnot(timeB, amplitudeB, 2, 2, 0.f, 0.f));
-  return SLdrSpline(knots, 0, 0, 0, -FLT_MAX, FLT_MAX);
+  return CMayaSpline(knots, 0, 0, 0, -FLT_MAX, FLT_MAX);
 }
 
 const rstl::vector< CMayaSplineKnot >& CMayaSpline::GetKnots() const { return mKnots; }

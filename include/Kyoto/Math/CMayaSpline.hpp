@@ -39,65 +39,34 @@ namespace rstl {
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMayaSplineKnot)
 }
 
-struct SLdrSpline {
+class CMayaSpline {
   struct SCache {
-    SCache() : mKnotIndex(0xFFFFFFFF), mSegmentIndex(0xFFFFFFFF), mStepSegment(false), mMinTime(0.f) {}
+    SCache()
+    : mKnotIndex(-1), mSegmentIndex(-1), mStepSegment(false), mMinTime(0.f) {}
 
-    uint mKnotIndex;
-    uint mSegmentIndex;
+    int mKnotIndex;
+    int mSegmentIndex;
     bool mStepSegment : 1;
     float mMinTime;
     float mHermiteCoefs[4];
   };
 
-  SLdrSpline();
-  SLdrSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
-             int postInfinity, float minAmplitudeTime, float maxAmplitudeTime);
-  SLdrSpline(CInputStream&, int);
-  ~SLdrSpline() {}
-
-  static SLdrSpline CreateFor(float, float, float, float);
-
-  int m_preInfinity;
-  int m_postInfinity;
-  rstl::vector< CMayaSplineKnot > m_knots;
-  int m_clampMode;
-  float m_minAmplitudeTime;
-  float m_maxAmplitudeTime;
-  mutable SCache mCache;
-};
-
-class CMayaSpline {
   int mPreInfinity;
   int mPostInfinity;
   rstl::vector< CMayaSplineKnot > mKnots;
   int mClampMode;
   float mMinAmplitude;
   float mMaxAmplitude;
-  int mCachedKnotIndex;
-  int mCachedSegmentIndex;
-  bool mStepSegment : 1;
-  float mCachedMinTime;
-  float mCachedHermiteCoefs[4];
+  mutable SCache mCache;
 
 public:
+  CMayaSpline();
+  CMayaSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode, int preInfinity,
+              int postInfinity, float minAmplitude, float maxAmplitude);
   CMayaSpline(CInputStream& in, int count);
-  // The serialized/runtime type distinction is inherited; the target copies this record.
-  explicit CMayaSpline(const SLdrSpline& spline)
-  : mPreInfinity(spline.m_preInfinity)
-  , mPostInfinity(spline.m_postInfinity)
-  , mKnots(spline.m_knots)
-  , mClampMode(spline.m_clampMode)
-  , mMinAmplitude(spline.m_minAmplitudeTime)
-  , mMaxAmplitude(spline.m_maxAmplitudeTime)
-  , mCachedKnotIndex(spline.mCache.mKnotIndex)
-  , mCachedSegmentIndex(spline.mCache.mSegmentIndex)
-  , mStepSegment(spline.mCache.mStepSegment)
-  , mCachedMinTime(spline.mCache.mMinTime) {
-    for (int i = 0; i < 4; ++i) {
-      mCachedHermiteCoefs[i] = spline.mCache.mHermiteCoefs[i];
-    }
-  }
+  ~CMayaSpline() {}
+
+  static CMayaSpline CreateFor(float timeA, float amplitudeA, float timeB, float amplitudeB);
 
   size_t GetKnotCount() const;
   const rstl::vector< CMayaSplineKnot >& GetKnots() const;
@@ -127,6 +96,9 @@ public:
   void CalculateHermiteCoefficients(const rstl::reserved_vector< CVector2f, 4 >& controlPoits,
                                     float* coefs);
 };
+
+// Compatibility name used by generated script-loader declarations.
+typedef CMayaSpline SLdrSpline;
 
 CHECK_SIZEOF(CMayaSplineKnot, 0x1c)
 CHECK_SIZEOF(CMayaSpline, 0x44)
