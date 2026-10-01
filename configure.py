@@ -385,6 +385,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
+            Object(NonMatching, "MetroidPrime/Startup.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CControlMapper.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CObjectList.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CAxisAngle.cpp"),
@@ -1198,6 +1199,26 @@ config.progress_report_args = [
     # "--config functionRelocDiffs=data_value",
 ]
 config.extra_clang_flags = ["-DCLANGD"]
+
+# Embedded startup resources are extracted locally; no original binary data is committed.
+if config.version == "G2ME01":
+    config.custom_build_rules = [
+        {
+            "name": "startup_font",
+            "command": "$python tools/extract_startup_font.py $in $out",
+            "description": "EXTRACT startup font",
+        },
+    ]
+    config.custom_build_steps = {
+        "pre-compile": [
+            {
+                "rule": "startup_font",
+                "inputs": "orig/G2ME01/sys/main.dol",
+                "implicit": "tools/extract_startup_font.py",
+                "outputs": "build/G2ME01/include/MetroidPrime/StartupFont.inc",
+            },
+        ],
+    }
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json
