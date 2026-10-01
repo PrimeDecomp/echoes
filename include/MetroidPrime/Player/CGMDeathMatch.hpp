@@ -21,7 +21,6 @@ public:
   CGMDeathMatch(int playerCount, int fragLimit, float timeLimit, bool awardFrags, bool flag);
 
   // CGameMode
-  ~CGMDeathMatch() override;
   void PutTo(COutputStream& out) const override;
   void Update(float dt, CStateManager& mgr) override;
   void OnPlayerKilled(CStateManager& mgr, TUniqueId victim, TUniqueId killer) override;

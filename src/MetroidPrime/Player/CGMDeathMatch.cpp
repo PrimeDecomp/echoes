@@ -33,22 +33,23 @@ void CGMDeathMatch::Update(float dt, CStateManager& mgr) {
     EndGame(GetResultIndex(), mgr);
   }
 
-  for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     CPlayerState& state = *mgr.PlayerState(i);
     SPlayerState& player = mPlayers[i];
+    CPlayer* playerObj = mgr.GetPlayer(i);
     if (!state.IsPlayerAlive()) {
-      if (!player.mDead) {
+      if (player.mDead) {
+        player.mRespawnTimer -= dt;
+        if (player.mRespawnTimer < 0.f && playerObj->fn_80019e20(mgr)) {
+          RespawnPlayer(mgr, i);
+          player.mDead = false;
+        }
+      } else {
         player.mDead = true;
         state.AddPowerUp(CPlayerState::kIT_DiedCount, 1);
         state.IncrPickUp(CPlayerState::kIT_DiedCount, 1);
         player.mRespawnTimer = 1.f;
         player.mDeaths = state.GetItemAmount(CPlayerState::kIT_DiedCount);
-      } else {
-        player.mRespawnTimer -= dt;
-        if (player.mRespawnTimer < 0.f && mgr.GetPlayer(i)->fn_80019e20(mgr)) {
-          RespawnPlayer(mgr, i);
-          player.mDead = false;
-        }
       }
     }
     if (mHasFragLimit && state.GetItemAmount(CPlayerState::kIT_FragCount) >= mFragLimit) {
@@ -78,9 +79,10 @@ void CGMDeathMatch::EndGame(int resultIndex, CStateManager& mgr) {
   CGMMultiplayer::EndGame(resultIndex, mgr);
   for (int i = 0; i < mPlayerCount; ++i) {
     const CPlayerState& state = *mgr.GetPlayerState(i);
-    mPlayers[i].mScore = state.GetItemAmount(CPlayerState::kIT_FragCount);
-    mPlayers[i].mDeaths = state.GetItemAmount(CPlayerState::kIT_DiedCount);
-    mPlayers[i].mPlayerSelection = state.GetPlayerSelection();
+    SPlayerState& player = mPlayers[i];
+    player.mScore = state.GetItemAmount(CPlayerState::kIT_FragCount);
+    player.mDeaths = state.GetItemAmount(CPlayerState::kIT_DiedCount);
+    player.mPlayerSelection = state.GetPlayerSelection();
   }
 }
 
@@ -95,11 +97,9 @@ int CGMDeathMatch::GetItemAmount(const CStateManager& mgr, uint playerIndex) con
 }
 
 bool CGMDeathMatch::IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const {
-  return mFragLimit - GetItemAmount(mgr, playerIndex) < 2 && mFragLimit > 1;
+  return mFragLimit - GetItemAmount(mgr, playerIndex) <= 1 && mFragLimit > 1;
 }
 
 int CGMDeathMatch::GetGameModeType() { return 'DTHM'; }
 
 uint CGMDeathMatch::GetNumPlayers() const { return mPlayerCount; }
-
-CGMDeathMatch::~CGMDeathMatch() {}
