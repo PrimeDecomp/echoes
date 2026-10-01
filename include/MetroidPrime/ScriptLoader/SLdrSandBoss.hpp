@@ -18,7 +18,7 @@ struct SLdrSandBossStampedeData {
   float unknown_0xbed8a4ba; // 0xbed8a4ba
   float unknown_0xc2b98161; // 0xc2b98161
   float unknown_0x5fb66017; // 0x5fb66017
-  float unknown_0xbab42316; // 0xbab42316
+  float breakStampedeHP; // 0xbab42316
   CAssetId stampedeArmorExplosion; // 0x8f06342a
   int sound_StampedeArmorExplode; // 0xd8b11129
   int sound_StampedeArmorExplodePain; // 0xe99e5316
@@ -62,9 +62,9 @@ struct SLdrUnknownStruct41 {
 
 void LoadTypedefSLdrUnknownStruct41(SLdrUnknownStruct41& data, CInputStream& input);
 
-struct SLdrSandBossStructA {
-  SLdrSandBossStructA();
-  ~SLdrSandBossStructA();
+struct SLdrSandBossArmorData {
+  SLdrSandBossArmorData();
+  ~SLdrSandBossArmorData();
 
   CAssetId headArmor; // 0x07d8cc4f
   CAssetId armorPiece2; // 0xae30ae06
@@ -77,7 +77,7 @@ struct SLdrSandBossStructA {
   int sound_ArmorImpact; // 0xdcc2bf11
 };
 
-void LoadTypedefSLdrSandBossStructA(SLdrSandBossStructA& data, CInputStream& input);
+void LoadTypedefSLdrSandBossArmorData(SLdrSandBossArmorData& data, CInputStream& input);
 
 struct SLdrSandBossData {
   SLdrSandBossData();
@@ -103,8 +103,8 @@ struct SLdrSandBossData {
   CAssetId headArmorExplosion; // 0xc49086d9
   SLdrSandBossStampedeData stampedeProperties; // 0x95371a32
   SLdrUnknownStruct41 unknown_0x7619e561; // 0x7619e561
-  SLdrSandBossStructA sandBossStructA; // non-matching name, 0x8b452a19
-  SLdrSandBossStructA sandBossStructA_0x0cf8c54c; // non-matching name, 0x0cf8c54c
+  SLdrSandBossArmorData attachedArmor; // 0x8b452a19
+  SLdrSandBossArmorData stampedeArmor; // 0x0cf8c54c
   CAssetId withTailArmorModel; // 0xbbd84681
   CAssetId withTailArmorSkinRules; // 0xdf6da1a2
   SLdrDamageVulnerability damageVulnerability; // non-matching name, 0xb7ecdcf9

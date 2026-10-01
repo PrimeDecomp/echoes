@@ -43,19 +43,27 @@ float CTweakGui::GetPauseBlurFactor() const { return mData->misc.unknown_0x74416
 
 float CTweakGui::GetRadarWorldRadius() const { return mData->misc.radarWorldRadius; }
 
-float CTweakGui::GetRadarZRadius() const { return mData->misc.unknown_0x68d88e25; }
+float CTweakGui::GetRadarWorldHalfHeight() const { return mData->misc.radarWorldHalfHeight; }
 
 float CTweakGui::GetRadarZCloseRadius() const { return mData->misc.unknown_0x889ef9ea; }
 
-float CTweakGui::GetEnergyBarFilledSpeed() const { return mData->misc.unknown_0x04510638; }
+float CTweakGui::GetEnergyBarFilledDrainSpeed() const {
+  return mData->misc.energyBarFilledDrainSpeed;
+}
 
-float CTweakGui::GetEnergyBarShadowSpeed() const { return mData->misc.unknown_0x7a48c3b1; }
+float CTweakGui::GetEnergyBarShadowDrainSpeed() const {
+  return mData->misc.energyBarShadowDrainSpeed;
+}
 
-float CTweakGui::GetEnergyBarDrainDelay() const { return mData->misc.unknown_0x0d257063; }
+float CTweakGui::GetEnergyBarShadowDrainDelay() const {
+  return mData->misc.energyBarShadowDrainDelay;
+}
 
 bool CTweakGui::GetEnergyBarAlwaysResetDelay() const { return mData->misc.unknown_0x2821bbca; }
 
-float CTweakGui::GetHudDamageRingRadiusScale() const { return mData->misc.unknown_0x3ac94cf1; }
+float CTweakGui::GetHUDDamageIndicatorRadius() const {
+  return mData->misc.hudDamageIndicatorRadius;
+}
 
 float CTweakGui::GetHUDFlashMagnitudeConstant() const {
   return mData->misc.hudFlashMagnitudeConstant;
@@ -199,16 +207,16 @@ float CTweakGui::GetScanSidesEndTime() const {
 
 float CTweakGui::GetScanObjectModelScale() const { return mData->misc.scanObjectModelScale; }
 
-const CMayaSpline& CTweakGui::GetScanDisplayModelPositionSpline() const {
-  return mData->misc.unknown_0xeaf17d45;
+const CMayaSpline& CTweakGui::GetScanObjectTranslateTransitionSpline() const {
+  return mData->misc.scanObjectTranslateTransitionSpline;
 }
 
-const CMayaSpline& CTweakGui::GetScanDisplayModelRotationSpline() const {
-  return mData->misc.unknown_0xd81537b6;
+const CMayaSpline& CTweakGui::GetScanObjectRotationTransitionSpline() const {
+  return mData->misc.scanObjectRotationTransitionSpline;
 }
 
-const CMayaSpline& CTweakGui::GetScanDisplayModelScaleSpline() const {
-  return mData->misc.unknown_0x3ba84552;
+const CMayaSpline& CTweakGui::GetScanObjectScaleTransitionSpline() const {
+  return mData->misc.scanObjectScaleTransitionSpline;
 }
 
 float CTweakGui::GetBallViewportYReduction() const { return mData->misc.unknown_0xeeb7839b; }
@@ -511,12 +519,12 @@ const CColor& CTweakGui::GetLogBookMainWindowSelectedTextColor() const {
   return mData->logBook.mainWindowSelectedTextColor;
 }
 
-const CColor& CTweakGui::GetLogBookUnviewedNodeColor() const {
-  return mData->logBook.unknown_0xfe98f30e;
+const CColor& CTweakGui::GetLogBookMainWindowUnviewedColor() const {
+  return mData->logBook.mainWindowUnviewedColor;
 }
 
-const CColor& CTweakGui::GetLogBookSelectedUnviewedNodeColor() const {
-  return mData->logBook.unknown_0x39e57ac0;
+const CColor& CTweakGui::GetLogBookMainWindowUnviewedSelectedColor() const {
+  return mData->logBook.mainWindowUnviewedSelectedColor;
 }
 
 const CColor& CTweakGui::GetLogBookNodeColor() const { return mData->logBook.nodeColor; }
@@ -661,9 +669,7 @@ const CColor& CTweakGui::GetLogBookHistoryPercentBarBackgroundUnselected() const
 
 const CColor& CTweakGui::GetLogBookFrameColor() const { return mData->logBook.frameColor; }
 
-const CColor& CTweakGui::GetLogBookScanLinesColor() const {
-  return mData->logBook.unknown_0x1a4b8068;
-}
+const CColor& CTweakGui::GetLogBookScanlineColor() const { return mData->logBook.scanlineColor; }
 
 const CColor& CTweakGui::GetLogBookSliderBackgroundColor() const {
   return mData->logBook.sliderBackgroundColor;
@@ -703,12 +709,12 @@ float CTweakGui::GetLogBookMenuOptionArrowScale() const {
   return mData->logBook.menuOptionArrowScale;
 }
 
-float CTweakGui::GetLogBookModelMinPitchDegrees() const {
-  return mData->logBook.unknown_0x60914b79;
+float CTweakGui::GetLogBookModelRotationClampLowerLimit() const {
+  return mData->logBook.modelRotationClampLowerLimit;
 }
 
-float CTweakGui::GetLogBookModelMaxPitchDegrees() const {
-  return mData->logBook.unknown_0x1fd44d9b;
+float CTweakGui::GetLogBookModelRotationClampUpperLimit() const {
+  return mData->logBook.modelRotationClampUpperLimit;
 }
 
 const CVector3f& CTweakGui::GetLogBookModelLight1Position() const {

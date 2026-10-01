@@ -20,19 +20,19 @@ struct SLdrTweakGui_Misc {
   float unknown_0x04f4a6fe; // 0x04f4a6fe
   float unknown_0x3c327181; // 0x3c327181
   float unknown_0xa581be26; // 0xa581be26
-  float unknown_0x68d88e25; // 0x68d88e25
+  float radarWorldHalfHeight; // 0x68d88e25
   float unknown_0x889ef9ea; // 0x889ef9ea
-  float unknown_0xb68ff81a; // 0xb68ff81a
-  float unknown_0x04510638; // 0x04510638
-  float unknown_0x7a48c3b1; // 0x7a48c3b1
-  float unknown_0x0d257063; // 0x0d257063
+  float energyBarLowThreshold; // 0xb68ff81a
+  float energyBarFilledDrainSpeed; // 0x04510638
+  float energyBarShadowDrainSpeed; // 0x7a48c3b1
+  float energyBarShadowDrainDelay; // 0x0d257063
   bool unknown_0x2821bbca; // 0x2821bbca
-  float unknown_0x5fdcf3d9; // 0x5fdcf3d9
+  float energyBarTankSwitchTime; // 0x5fdcf3d9
   float hudFlashMagnitudeConstant; // 0xc4dd4d5b
   float hudFlashMagnitudeLinear; // 0x6031503e
   float hudFlashTimeConstant; // 0x9f5ebba2
   float hudFlashTimeScaleLinear; // 0x2930d57f
-  float unknown_0x3ac94cf1; // 0x3ac94cf1
+  float hudDamageIndicatorRadius; // 0x3ac94cf1
   float unknown_0x55b323e5; // 0x55b323e5
   float unknown_0x411a705e; // 0x411a705e
   float unknown_0x0a9d701d; // 0x0a9d701d
@@ -132,9 +132,9 @@ struct SLdrTweakGui_Misc {
   float unknown_0x138f1104; // 0x138f1104
   float unknown_0xd0d1760e; // 0xd0d1760e
   float scanObjectModelScale; // 0xce9f5770
-  SLdrSpline unknown_0xeaf17d45; // 0xeaf17d45
-  SLdrSpline unknown_0xd81537b6; // 0xd81537b6
-  SLdrSpline unknown_0x3ba84552; // 0x3ba84552
+  SLdrSpline scanObjectTranslateTransitionSpline; // 0xeaf17d45
+  SLdrSpline scanObjectRotationTransitionSpline; // 0xd81537b6
+  SLdrSpline scanObjectScaleTransitionSpline; // 0x3ba84552
   float unknown_0xeeb7839b; // 0xeeb7839b
   float unknown_0x24cf1719; // 0x24cf1719
   float unknown_0xa4adf6ea; // 0xa4adf6ea
@@ -255,8 +255,8 @@ struct SLdrTweakGui_LogBook {
   CColor mainWindowBorderColor; // 0xba5a65c8
   CColor mainWindowTextColor; // 0xbff0e37b
   CColor mainWindowSelectedTextColor; // 0x28b49a88
-  CColor unknown_0xfe98f30e; // 0xfe98f30e
-  CColor unknown_0x39e57ac0; // 0x39e57ac0
+  CColor mainWindowUnviewedColor; // 0xfe98f30e
+  CColor mainWindowUnviewedSelectedColor; // 0x39e57ac0
   CColor legendBackgroundColor; // 0xa6b633fa
   CColor nodeColor; // 0xac80013b
   CColor selectedNodeColor; // 0x5946b439
@@ -306,7 +306,7 @@ struct SLdrTweakGui_LogBook {
   CColor historyPercentBarBackgroundSelected; // 0xdc1abb82
   CColor historyPercentBarBackgroundUnselected; // 0x306b2b24
   CColor frameColor; // 0xa485372c
-  CColor unknown_0x1a4b8068; // 0x1a4b8068
+  CColor scanlineColor; // 0x1a4b8068
   CColor sliderBackgroundColor; // 0xcc2f25f1
   CColor sliderSelectionColor; // 0xcb8d5caf
   float sliderScale; // 0x3f44254f
@@ -319,8 +319,8 @@ struct SLdrTweakGui_LogBook {
   float menuOptionScale; // 0xfc54f555
   float menuOptionArrowScale; // 0xef549530
   float modelRotationSpeed; // 0xfa7a92b8
-  float unknown_0x60914b79; // 0x60914b79
-  float unknown_0x1fd44d9b; // 0x1fd44d9b
+  float modelRotationClampLowerLimit; // 0x60914b79
+  float modelRotationClampUpperLimit; // 0x1fd44d9b
   CVector3f modelLight1Position; // 0x06c93afa
   CColor modelLight1Color; // 0x33924afb
   CVector3f modelLight2Position; // 0x17b45083

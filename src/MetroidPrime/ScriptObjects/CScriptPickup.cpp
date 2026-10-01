@@ -307,6 +307,8 @@ CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& co
 CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
 CActorParameters LoadActorParameters(const SLdrActorParameters&);
 SEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
+// Guessed name; the native reader stores a single item index.
+void ReadPlayerItem(int& item, CInputStream& input);
 
 rstl::optional_object< CModelData > LoadModelData(const CVector3f&, CAssetId asset,
                                                   const SLdrAnimationParameters&, bool);
@@ -329,7 +331,7 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrPickup.collisionOffset = CVector3f(input);
       break;
     case 0xa02ef0c4:
-      LoadTypedefSLdrPlayerItem(sldrPickup.itemToGive, input);
+      ReadPlayerItem(sldrPickup.itemToGive, input);
       break;
     case 0x28c71b54:
       sldrPickup.capacityIncrease = input.ReadInt32();
@@ -421,7 +423,7 @@ CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       LoadEditorTransform(sldrPickup.editorProperties), *modelData,
       LoadActorParameters(sldrPickup.actorInformation),
       LoadEchoParameters(sldrPickup.echoInformation), box,
-      CPlayerState::EItemType(sldrPickup.itemToGive.value), sldrPickup.amount,
+      CPlayerState::EItemType(sldrPickup.itemToGive), sldrPickup.amount,
       sldrPickup.capacityIncrease, sldrPickup.itemPercentageIncrease, sldrPickup.pickupEffect,
       sldrPickup.absoluteValue, sldrPickup.canHomeByDefault, sldrPickup.autoSpin,
       sldrPickup.blinkOut,

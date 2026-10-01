@@ -7,15 +7,6 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
 #include "rstl/string.hpp"
 
-struct SLdrScanSpeed {
-  SLdrScanSpeed();
-  ~SLdrScanSpeed();
-
-  int value;
-};
-
-void LoadTypedefSLdrScanSpeed(SLdrScanSpeed& data, CInputStream& input);
-
 struct SLdrScanInfoSecondaryModel {
   SLdrScanInfoSecondaryModel();
   ~SLdrScanInfoSecondaryModel();
@@ -32,7 +23,7 @@ struct SLdrScannableObjectInfo {
   ~SLdrScannableObjectInfo();
 
   CAssetId scanInfoTextStringTable; // 0x2f5b6423
-  SLdrScanSpeed unknown_0xc308a322; // 0xc308a322
+  int unknown_0xc308a322; // 0xc308a322
   bool critical; // 0x7b714814
   bool unknown_0x1733b1ec; // 0x1733b1ec
   CAssetId scanTextureInHud; // 0x53336141

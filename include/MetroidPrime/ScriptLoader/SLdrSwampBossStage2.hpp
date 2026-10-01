@@ -13,9 +13,9 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrPatternedAITypedef.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrShockWaveInfo.hpp"
 
-struct SLdrSwampBossStage2Struct {
-  SLdrSwampBossStage2Struct();
-  ~SLdrSwampBossStage2Struct();
+struct SLdrSwampBossStage2Phase {
+  SLdrSwampBossStage2Phase();
+  ~SLdrSwampBossStage2Phase();
 
   float minTimeBetweenAttacks; // 0x95e7a2c2
   float maxTimeBetweenAttacks; // 0x76ba1c18
@@ -34,7 +34,7 @@ struct SLdrSwampBossStage2Struct {
   int unknown_0x2b0bfd51; // 0x2b0bfd51
 };
 
-void LoadTypedefSLdrSwampBossStage2Struct(SLdrSwampBossStage2Struct& data, CInputStream& input);
+void LoadTypedefSLdrSwampBossStage2Phase(SLdrSwampBossStage2Phase& data, CInputStream& input);
 
 struct SLdrUnknownStruct38 {
   SLdrUnknownStruct38();
@@ -59,10 +59,10 @@ struct SLdrSwampBossStage2Data {
   CAssetId wingGrowthRF; // 0x26439458
   CAssetId wingGrowthRB; // 0xbdd2d64e
   float wingGrowthHealth; // 0xcabe6b96
-  SLdrSwampBossStage2Struct swampBossStage2Struct; // non-matching name, 0x7fa9256a
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0x8b884b8e; // non-matching name, 0x8b884b8e
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0x04b7a789; // non-matching name, 0x04b7a789
-  SLdrSwampBossStage2Struct swampBossStage2Struct_0xf096c96d; // non-matching name, 0xf096c96d
+  SLdrSwampBossStage2Phase lightFlyer1; // 0x7fa9256a
+  SLdrSwampBossStage2Phase darkFlyer1; // 0x8b884b8e
+  SLdrSwampBossStage2Phase lightFlyer2; // 0x04b7a789
+  SLdrSwampBossStage2Phase darkFlyer2; // 0xf096c96d
   float stunTime; // 0x7e192395
   int unknown_0x96ce7897; // 0x96ce7897
   CAssetId spitProjectile; // 0xcfe37ebf

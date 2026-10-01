@@ -10,6 +10,8 @@ class CColor;
 
 class CTweakAutoMapper {
 public:
+  // Guessed accessor spellings remain reconstructed; renamed SLdr field roles
+  // are verified unless their property comment explicitly says non-matching.
   explicit CTweakAutoMapper(const SLdrTweakAutoMapper& data) : mData(&data) {}
 
   // Guessed names, recovered from the runtime accessors.
@@ -45,14 +47,14 @@ public:
   float GetMiniAlphaOutlineUnvisited() const;
   float GetAlphaOutlineUnvisited() const;
   CVector2f GetMiniMapViewportSize() const; // Guessed name
-  float GetMiniMapCamDistScale() const;
-  float GetUniverseCamDistance() const;
-  float GetMinUniverseCamDistance() const;
-  float GetMaxUniverseCamDistance() const;
+  float GetMiniMapDynamicCameraDistanceScalar() const;
+  float GetMapScreenMapUniverseDefaultCameraDistance() const;
+  float GetMapScreenMapUniverseMinCameraDistance() const;
+  float GetMapScreenMapUniverseMaxCameraDistance() const;
   float GetSwitchToFromUniverseTime() const;
   float GetCamPanUnitsPerFrame() const;
-  float GetAutoMapperScaleX() const;
-  float GetAutoMapperScaleZ() const;
+  float GetMapScreenClipWindowScaleX() const;
+  float GetMapScreenClipWindowScaleY() const;
   float GetCamVerticalOffset() const;
   CVector2f GetMapPlaneScale() const; // Guessed name
   CColor GetPlayerModelColor() const; // Guessed name
@@ -80,7 +82,7 @@ public:
   const CColor& GetTextColor() const;
   const CColor& GetTextOutlineColor() const;
   const CColor& GetTitleColor() const;
-  const CColor& GetScanLinesColor() const;
+  const CColor& GetScanlineColor() const;
   const CColor& GetFrameColor() const;
   const CColor& GetGradientColor() const;
   const CColor& GetBlackColor() const;

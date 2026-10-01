@@ -2381,7 +2381,7 @@ SLdrTweakPlayer_Orbit::SLdrTweakPlayer_Orbit() {
   orbitLowerCameraAngle = 25.0f;
   orbitMaxTargetDistance = 100.0f;
   orbitMaxLockDistance = 100.0f;
-  unknown_0x55f7d145 = 0.0f;
+  orbitBreakOnOccludedTime = 0.0f;
   orbitDistanceThreshold = 2.0f;
   orbitZoneWidth = 180;
   orbitZoneHeight = 180;
@@ -2499,7 +2499,7 @@ void LoadTypedefSLdrTweakPlayer_Orbit(SLdrTweakPlayer_Orbit& sldrThis, CInputStr
       break;
     }
     case 0x55f7d145: {
-      sldrThis.unknown_0x55f7d145 = input.ReadFloat();
+      sldrThis.orbitBreakOnOccludedTime = input.ReadFloat();
       break;
     }
     case 0xf034335c: {
@@ -2753,7 +2753,7 @@ void LoadTypedefSLdrTweakPlayer_SuitDamageReduction(SLdrTweakPlayer_SuitDamageRe
   }
 }
 
-SLdrTweakAutoMapper_Base::SLdrTweakAutoMapper_Base() : mapScreenBGColor(CColor::Green()), miniMapBGColor(CColor::Green()), mapVisitedSurfaceColor(CColor::Green()), mapVisitedOutlineColor(CColor::Green()), mapUnvisitedSurfaceColor(CColor::Green()), mapUnvisitedOutlineColor(CColor::Green()), mapVisitedFocusAreaSurfaceColor(CColor::Green()), mapVisitedFocusAreaOutlineColor(CColor::Green()), darkMapVisitedSurfaceColor(CColor::Green()), darkMapVisitedOutlineColor(CColor::Green()), darkMapUnvisitedSurfaceColor(CColor::Green()), darkMapUnvisitedOutlineColor(CColor::Green()), darkMapVisitedFocusAreaSurfaceColor(CColor::Green()), darkMapVisitedFocusAreaOutlineColor(CColor::Green()), mapUnvisitedFocusAreaSurfaceColor(CColor::Green()), mapUnvisitedFocusAreaOutlineColor(CColor::Green()), darkMapUnvisitedFocusAreaSurfaceColor(CColor::Green()), darkMapUnvisitedFocusAreaOutlineColor(CColor::Green()), playerModelColor(CColor::Green()), playerFlashedColor(CColor::Green()), playerSurfaceColor(CColor::Green()), playerOutlineColor(CColor::Green()), textColor(CColor::Green()), textOutlineColor(CColor::Green()), unknown_0x1a4b8068(CColor::Green()), frameColor(CColor::Green()), titleColor(CColor::Green()), legendBackgroundColor(CColor::Green()), legendGradientColor(CColor::Green()) {
+SLdrTweakAutoMapper_Base::SLdrTweakAutoMapper_Base() : mapScreenBGColor(CColor::Green()), miniMapBGColor(CColor::Green()), mapVisitedSurfaceColor(CColor::Green()), mapVisitedOutlineColor(CColor::Green()), mapUnvisitedSurfaceColor(CColor::Green()), mapUnvisitedOutlineColor(CColor::Green()), mapVisitedFocusAreaSurfaceColor(CColor::Green()), mapVisitedFocusAreaOutlineColor(CColor::Green()), darkMapVisitedSurfaceColor(CColor::Green()), darkMapVisitedOutlineColor(CColor::Green()), darkMapUnvisitedSurfaceColor(CColor::Green()), darkMapUnvisitedOutlineColor(CColor::Green()), darkMapVisitedFocusAreaSurfaceColor(CColor::Green()), darkMapVisitedFocusAreaOutlineColor(CColor::Green()), mapUnvisitedFocusAreaSurfaceColor(CColor::Green()), mapUnvisitedFocusAreaOutlineColor(CColor::Green()), darkMapUnvisitedFocusAreaSurfaceColor(CColor::Green()), darkMapUnvisitedFocusAreaOutlineColor(CColor::Green()), playerModelColor(CColor::Green()), playerFlashedColor(CColor::Green()), playerSurfaceColor(CColor::Green()), playerOutlineColor(CColor::Green()), textColor(CColor::Green()), textOutlineColor(CColor::Green()), scanlineColor(CColor::Green()), frameColor(CColor::Green()), titleColor(CColor::Green()), legendBackgroundColor(CColor::Green()), legendGradientColor(CColor::Green()) {
   unknown_0xcbe595d8 = true;
   unknown_0x8ecb53a6 = true;
   scaleMoveSpeedWithCameraDistance = true;
@@ -2809,17 +2809,17 @@ SLdrTweakAutoMapper_Base::SLdrTweakAutoMapper_Base() : mapScreenBGColor(CColor::
   miniMapViewportPositionY = 348.0f;
   miniMapViewportWidth = 152.0f;
   miniMapViewportHeight = 114.0f;
-  unknown_0x3315d22b = 0.85000002f;
+  miniMapDynamicCameraDistanceScalar = 0.85000002f;
   miniMapWidgetHalfWidth = 1.85f;
   miniMapWidgetHalfHeight = 1.36f;
   unknown_0x2b97d64c = false;
-  unknown_0xbdc57ce0 = 800.0f;
-  unknown_0x7d59c854 = 400.0f;
-  unknown_0x3c4ef7d2 = 2000.0f;
+  mapScreenMapUniverseDefaultCameraDistance = 800.0f;
+  mapScreenMapUniverseMinCameraDistance = 400.0f;
+  mapScreenMapUniverseMaxCameraDistance = 2000.0f;
   mapScreenToMapUniverseTime = 0.5f;
   unknown_0x706f52fe = 5.0f;
-  unknown_0x62f9ebf6 = 1.0f;
-  unknown_0xa9a53853 = 0.63499999f;
+  mapScreenClipWindowScaleX = 1.0f;
+  mapScreenClipWindowScaleY = 0.63499999f;
   mapScreenMove2DHoverDepth = -0.050000001f;
   playerModelColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   playerFlashedColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2827,7 +2827,7 @@ SLdrTweakAutoMapper_Base::SLdrTweakAutoMapper_Base() : mapScreenBGColor(CColor::
   playerOutlineColor = CColor(1.0f, 0.392156988f, 0.392156988f, 0.78125f);
   textColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   textOutlineColor = CColor(0.0f, 0.0f, 0.0f, 1.0f);
-  unknown_0x1a4b8068 = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  scanlineColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   frameColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   titleColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   legendBackgroundColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -3067,7 +3067,7 @@ void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CIn
       break;
     }
     case 0x3315d22b: {
-      sldrThis.unknown_0x3315d22b = input.ReadFloat();
+      sldrThis.miniMapDynamicCameraDistanceScalar = input.ReadFloat();
       break;
     }
     case 0x9e4007b6: {
@@ -3083,15 +3083,15 @@ void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CIn
       break;
     }
     case 0xbdc57ce0: {
-      sldrThis.unknown_0xbdc57ce0 = input.ReadFloat();
+      sldrThis.mapScreenMapUniverseDefaultCameraDistance = input.ReadFloat();
       break;
     }
     case 0x7d59c854: {
-      sldrThis.unknown_0x7d59c854 = input.ReadFloat();
+      sldrThis.mapScreenMapUniverseMinCameraDistance = input.ReadFloat();
       break;
     }
     case 0x3c4ef7d2: {
-      sldrThis.unknown_0x3c4ef7d2 = input.ReadFloat();
+      sldrThis.mapScreenMapUniverseMaxCameraDistance = input.ReadFloat();
       break;
     }
     case 0x2b483e9f: {
@@ -3103,11 +3103,11 @@ void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CIn
       break;
     }
     case 0x62f9ebf6: {
-      sldrThis.unknown_0x62f9ebf6 = input.ReadFloat();
+      sldrThis.mapScreenClipWindowScaleX = input.ReadFloat();
       break;
     }
     case 0xa9a53853: {
-      sldrThis.unknown_0xa9a53853 = input.ReadFloat();
+      sldrThis.mapScreenClipWindowScaleY = input.ReadFloat();
       break;
     }
     case 0x722b1bc0: {
@@ -3139,7 +3139,7 @@ void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CIn
       break;
     }
     case 0x1a4b8068: {
-      sldrThis.unknown_0x1a4b8068 = CColor(input);
+      sldrThis.scanlineColor = CColor(input);
       break;
     }
     case 0xa485372c: {
@@ -3731,7 +3731,7 @@ void LoadTypedefSLdrTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& sldrThis, C
   }
 }
 
-SLdrTweakGuiColors_HUDColorsTypedef::SLdrTweakGuiColors_HUDColorsTypedef() : hUDDecorativeColor(CColor::Green()), threatGroupActiveColor(CColor::Green()), threatGroupInactiveColor(CColor::Green()), freeLookBarColor(CColor::Green()), missileGroupActiveColor(CColor::Green()), missileGroupInactiveColor(CColor::Green()), unknown_0xdcaab836(CColor::Green()), energyBarFilledColor(CColor::Green()), energyBarShadowColor(CColor::Green()), energyBarEmptyColor(CColor::Green()), energyTanksFilledColor(CColor::Green()), energyTanksEmptyColor(CColor::Green()), radarWidgetColor(CColor::Green()), activeTextForegroundColor(CColor::Green()), inactiveTextForegroundColor(CColor::Green()), textShadowOutlineColor(CColor::Green()) {
+SLdrTweakGuiColors_HUDColorsTypedef::SLdrTweakGuiColors_HUDColorsTypedef() : hUDDecorativeColor(CColor::Green()), threatGroupActiveColor(CColor::Green()), threatGroupInactiveColor(CColor::Green()), freeLookBarColor(CColor::Green()), missileGroupActiveColor(CColor::Green()), missileGroupInactiveColor(CColor::Green()), missileGroupChangeFlash(CColor::Green()), energyBarFilledColor(CColor::Green()), energyBarShadowColor(CColor::Green()), energyBarEmptyColor(CColor::Green()), energyTanksFilledColor(CColor::Green()), energyTanksEmptyColor(CColor::Green()), radarWidgetColor(CColor::Green()), activeTextForegroundColor(CColor::Green()), inactiveTextForegroundColor(CColor::Green()), textShadowOutlineColor(CColor::Green()) {
   hUDDecorativeColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.627451003f);
   threatGroupActiveColor = CColor(0.537254989f, 0.839215994f, 1.0f, 1.0f);
   threatGroupInactiveColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.400000006f);
@@ -3782,7 +3782,7 @@ void LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColors
       break;
     }
     case 0xdcaab836: {
-      sldrThis.unknown_0xdcaab836 = CColor(input);
+      sldrThis.missileGroupChangeFlash = CColor(input);
       break;
     }
     case 0xacf62d93: {
@@ -3828,13 +3828,13 @@ void LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColors
   }
 }
 
-SLdrTweakGuiColors_Misc::SLdrTweakGuiColors_Misc() : pauseScreenBGModulateColor(CColor::Green()), unknown_0x166c22e0(CColor::Green()), unknown_0xcec78e81(CColor::Green()), unknown_0x91338f72(CColor::Green()), unknown_0x0d24ae6b(CColor::Green()), unknown_0xddc561eb(CColor::Green()), unknown_0x9be28150(CColor::Green()), hUDMemoTextForegroundColor(CColor::Green()), hUDMemoTextOutlineColor(CColor::Green()), hUDDecorativeColor(CColor::Green()), hUDGlowColor(CColor::Green()), hUDEnergyDecoColor(CColor::Green()), unknown_0xdefca700(CColor::Green()), selectedVisorBeamColor(CColor::Green()), unselectedVisorBeamColor(CColor::Green()), energyBarLowFilledColor(CColor::Green()), energyBarLowShadowColor(CColor::Green()), energyBarLowEmptyColor(CColor::Green()), hUDDamageModulateColor(CColor::Green()), damageIndicatorColor(CColor::Green()), hudTitleForegroundColor(CColor::Green()), hudTitleOutlineColor(CColor::Green()), visorMenuTitleForegroundColor(CColor::Green()), visorMenuTitleOutlineColor(CColor::Green()), beamMenuTitleForegroundColor(CColor::Green()), beamMenuTitleOutlineColor(CColor::Green()), visorBeamMenuIconSelectedColor(CColor::Green()), visorBeamMenuIconUnselectedColor(CColor::Green()), visorMenuIconColor0(CColor::Green()), visorMenuIconColor1(CColor::Green()), visorMenuIconColor2(CColor::Green()), visorMenuIconColor3(CColor::Green()), beamMenuIconColor0(CColor::Green()), beamMenuIconColor1(CColor::Green()), beamMenuIconColor2(CColor::Green()), beamMenuIconColor3(CColor::Green()), energyWarningColor(CColor::Green()), threatWarningColor(CColor::Green()), missileWarningColor(CColor::Green()), missleDepletionColor(CColor::Green()), threatBarFilledColor(CColor::Green()), threatBarShadowColor(CColor::Green()), threatBarEmptyColor(CColor::Green()), missileBarFilledColor(CColor::Green()), missileBarShadowColor(CColor::Green()), missileBarEmptyColor(CColor::Green()), threatGroupColor(CColor::Green()), freeLookBarColor(CColor::Green()), hudBarDecoColor(CColor::Green()), unknown_0xf4379cf4(CColor::Green()), threatGroupInactiveColor(CColor::Green()), missileGroupInactiveColor(CColor::Green()), missileGroupComboChargeColor(CColor::Green()), missileGroupNonComboChargeColor(CColor::Green()), missileGroupComboActivatedColor(CColor::Green()), freeLookTickColor(CColor::Green()), freeLookDigitsForegroundColor(CColor::Green()), freeLookDigitsOutlineColor(CColor::Green()), unknown_0x8b0a4c90(CColor::Green()), energyWarningOutlineColor(CColor::Green()), threatWarningOutlineColor(CColor::Green()), missileWarningOutlineColor(CColor::Green()), helmetLightAmbientColor(CColor::Green()), flashPassColor(CColor::Green()), scanWindowFrameBaseColor(CColor::Green()), scanWindowFrameActiveColor(CColor::Green()), unknown_0xc54fa7bc(CColor::Green()), unknown_0x18717fa7(CColor::Green()), unknown_0x8b7d7378(CColor::Green()), unknown_0x867b01a2(CColor::Green()), scanHudHierarchyFrameColor(CColor::Green()), scanHudHierarchyInactiveFrameColor(CColor::Green()), scanHudHierarchyTextFrameColor(CColor::Green()), scanHudHierarchyFinalTextFrameColor(CColor::Green()), scanHudHierarchyFlashIconColor(CColor::Green()), scanHudHierarchyCompleteFlashIconColor(CColor::Green()), scanHudHierarchyFlashFlashIconColor(CColor::Green()), scanHudHierarchyTextColor(CColor::Green()), scanHudHierarchyFinalTextColor(CColor::Green()), scanHudHierarchyPercentTextColor(CColor::Green()), scanHudHierarchyBarMeterColor(CColor::Green()), unknown_0xeb7eb756(CColor::Green()), metroidSuckPulseColor(CColor::Green()), unknown_0xce7c9d8d(CColor::Green()), energyBarDamageColor(CColor::Green()), xRayClampsColor(CColor::Green()), xRayHoloGridColor(CColor::Green()), xRaySeekerColor(CColor::Green()), xRaySeekerTicksColor(CColor::Green()), xRaySeekerTicksOuterColor(CColor::Green()), xRayTopPuzzleColor(CColor::Green()), xRayBottomPuzzleColor(CColor::Green()), xRayLeftPuzzleColor(CColor::Green()), xRayRightPuzzleColor(CColor::Green()), xRayCornerColor(CColor::Green()), xRayThreatDigitsForegroundColor(CColor::Green()), xRayThreatDigitsOutlineColor(CColor::Green()), xRayMissileDigitsForegroundColor(CColor::Green()), xRayMissileDigitsOutlineColor(CColor::Green()), xRayThreatBarFilledColor(CColor::Green()), xRayThreatBarEmptyColor(CColor::Green()), xRayMissileBarFilledColor(CColor::Green()), xRayMissileBarEmptyColor(CColor::Green()), scanDownloadSquareColor(CColor::Green()), scanDotColor(CColor::Green()), morphBallPowerBombDigitsForegroundColor(CColor::Green()), morphBallPowerBombDigitsOutlineColor(CColor::Green()), morphBallEnergyWordColor(CColor::Green()), morphBallBombCounterFilledColor(CColor::Green()), morphBallBombCounterEmptyColor(CColor::Green()), morphBallPowerBombIconColor(CColor::Green()), morphBallBombWordColor(CColor::Green()), morphBallEnergyDecoColor(CColor::Green()), morphBallBombDecoColor(CColor::Green()), unknown_0x5368a35f(CColor::Green()), morphBallEmptyPowerBombDigitsOutlineColor(CColor::Green()), morphBallEmptyPowerBombIconColor(CColor::Green()), scanPanelColor(CColor::Green()), unknown_0x96f650c3(CColor::Green()), scanImagesColor(CColor::Green()), unknown_0xd3bafaf5(CColor::Green()), threatGroupDamageColor(CColor::Green()), coundownForegroundColor(CColor::Green()), coundownOutlineColor(CColor::Green()), unknown_0xc1ec3637(CColor::Green()), unknown_0xb6a61e34(CColor::Green()), unknown_0xfdcd9589(CColor::Green()), unknown_0xb0253266(CColor::Green()), scanSeekerColor(CColor::Green()), thermalThreatDigitsOutlineColor(CColor::Green()), thermalMissileDigitsOutlineColor(CColor::Green()), combatMissileDigitsForegroundColor(CColor::Green()), combatMissileDigitsOutlineColor(CColor::Green()), thermalDecoColor(CColor::Green()), thermalDecoOutlineColor(CColor::Green()), unknown_0xe846d37f(CColor::Green()), thermalLockColor(CColor::Green()), logBookColor(CColor::Green()), inventoryEquippedColor(CColor::Green()), darkVisorDecoColor(CColor::Green()), lightAmmoTankFullSelectedColor(CColor::Green()), lightAmmoTankFullUnselectedColor(CColor::Green()), lightAmmoTankEmptylSelectedColor(CColor::Green()), lightAmmoTankEmptyUnselectedColor(CColor::Green()), lightAmmoMeterSelectedFillColor(CColor::Green()), lightAmmoMeterSelectedShadowColor(CColor::Green()), lightAmmoMeterUnselectedFillColor(CColor::Green()), lightAmmoMeterUnselectedShadowColor(CColor::Green()), lightAmmoIconSelectedColor(CColor::Green()), lightAmmoIconUnselectedColor(CColor::Green()), lightAmmoDigitsOutlineColor(CColor::Green()), lightAmmoDigitsSelectedColor(CColor::Green()), lightAmmoDigitsUnselectedColor(CColor::Green()), lightAmmoChangeFlash(CColor::Green()), lightAmmoTankWarningColor(CColor::Green()), lightAmmoMeterWarningColor(CColor::Green()), lightAmmoDigitWarningColor(CColor::Green()), lightAmmoDepletionColor(CColor::Green()), lightAmmoEmptyTankWarningColor(CColor::Green()), darkAmmoTankFullSelectedColor(CColor::Green()), darkAmmoTankFullUnselectedColor(CColor::Green()), darkAmmoTankEmptylSelectedColor(CColor::Green()), darkAmmoTankEmptyUnselectedColor(CColor::Green()), darkAmmoMeterSelectedFillColor(CColor::Green()), darkAmmoMeterSelectedShadowColor(CColor::Green()), darkAmmoMeterUnselectedFillColor(CColor::Green()), darkAmmoMeterUnselectedShadowColor(CColor::Green()), darkAmmoIconSelectedColor(CColor::Green()), darkAmmoIconUnselectedColor(CColor::Green()), darkAmmoDigitsOutlineColor(CColor::Green()), darkAmmoDigitsSelectedColor(CColor::Green()), darkAmmoDigitsUnselectedColor(CColor::Green()), darkAmmoChangeFlash(CColor::Green()), darkAmmoTankWarningColor(CColor::Green()), darkAmmoMeterWarningColor(CColor::Green()), darkAmmoDigitWarningColor(CColor::Green()), darkAmmoDepletionColor(CColor::Green()), darkAmmoEmptyTankWarningColor(CColor::Green()) {
+SLdrTweakGuiColors_Misc::SLdrTweakGuiColors_Misc() : pauseScreenBGModulateColor(CColor::Green()), unknown_0x166c22e0(CColor::Green()), radarPlayerPaintColor(CColor::Green()), radarEnemyPaintColor(CColor::Green()), unknown_0x0d24ae6b(CColor::Green()), radarFriendTeamPaintColor(CColor::Green()), radarEnemyTeamPaintColor(CColor::Green()), hUDMemoTextForegroundColor(CColor::Green()), hUDMemoTextOutlineColor(CColor::Green()), hUDDecorativeColor(CColor::Green()), hUDGlowColor(CColor::Green()), hUDEnergyDecoColor(CColor::Green()), unknown_0xdefca700(CColor::Green()), selectedVisorBeamColor(CColor::Green()), unselectedVisorBeamColor(CColor::Green()), energyBarLowFilledColor(CColor::Green()), energyBarLowShadowColor(CColor::Green()), energyBarLowEmptyColor(CColor::Green()), hUDDamageModulateColor(CColor::Green()), damageIndicatorColor(CColor::Green()), hudTitleForegroundColor(CColor::Green()), hudTitleOutlineColor(CColor::Green()), visorMenuTitleForegroundColor(CColor::Green()), visorMenuTitleOutlineColor(CColor::Green()), beamMenuTitleForegroundColor(CColor::Green()), beamMenuTitleOutlineColor(CColor::Green()), visorBeamMenuIconSelectedColor(CColor::Green()), visorBeamMenuIconUnselectedColor(CColor::Green()), visorMenuIconColor0(CColor::Green()), visorMenuIconColor1(CColor::Green()), visorMenuIconColor2(CColor::Green()), visorMenuIconColor3(CColor::Green()), beamMenuIconColor0(CColor::Green()), beamMenuIconColor1(CColor::Green()), beamMenuIconColor2(CColor::Green()), beamMenuIconColor3(CColor::Green()), energyWarningColor(CColor::Green()), threatWarningColor(CColor::Green()), missileWarningColor(CColor::Green()), missleDepletionColor(CColor::Green()), threatBarFilledColor(CColor::Green()), threatBarShadowColor(CColor::Green()), threatBarEmptyColor(CColor::Green()), missileBarFilledColor(CColor::Green()), missileBarShadowColor(CColor::Green()), missileBarEmptyColor(CColor::Green()), threatGroupColor(CColor::Green()), freeLookBarColor(CColor::Green()), hudBarDecoColor(CColor::Green()), unknown_0xf4379cf4(CColor::Green()), threatGroupInactiveColor(CColor::Green()), missileGroupInactiveColor(CColor::Green()), missileGroupComboChargeColor(CColor::Green()), missileGroupNonComboChargeColor(CColor::Green()), missileGroupComboActivatedColor(CColor::Green()), freeLookTickColor(CColor::Green()), freeLookDigitsForegroundColor(CColor::Green()), freeLookDigitsOutlineColor(CColor::Green()), unknown_0x8b0a4c90(CColor::Green()), energyWarningOutlineColor(CColor::Green()), threatWarningOutlineColor(CColor::Green()), missileWarningOutlineColor(CColor::Green()), helmetLightAmbientColor(CColor::Green()), flashPassColor(CColor::Green()), scanWindowFrameBaseColor(CColor::Green()), scanWindowFrameActiveColor(CColor::Green()), scanWindowFrameFlashAddColor(CColor::Green()), unknown_0x18717fa7(CColor::Green()), unknown_0x8b7d7378(CColor::Green()), unknown_0x867b01a2(CColor::Green()), scanHudHierarchyFrameColor(CColor::Green()), scanHudHierarchyInactiveFrameColor(CColor::Green()), scanHudHierarchyTextFrameColor(CColor::Green()), scanHudHierarchyFinalTextFrameColor(CColor::Green()), scanHudHierarchyFlashIconColor(CColor::Green()), scanHudHierarchyCompleteFlashIconColor(CColor::Green()), scanHudHierarchyFlashFlashIconColor(CColor::Green()), scanHudHierarchyTextColor(CColor::Green()), scanHudHierarchyFinalTextColor(CColor::Green()), scanHudHierarchyPercentTextColor(CColor::Green()), scanHudHierarchyBarMeterColor(CColor::Green()), darkVisorHelmetLightModulateColor(CColor::Green()), metroidSuckPulseColor(CColor::Green()), unknown_0xce7c9d8d(CColor::Green()), energyBarDamageColor(CColor::Green()), xRayClampsColor(CColor::Green()), xRayHoloGridColor(CColor::Green()), xRaySeekerColor(CColor::Green()), xRaySeekerTicksColor(CColor::Green()), xRaySeekerTicksOuterColor(CColor::Green()), xRayTopPuzzleColor(CColor::Green()), xRayBottomPuzzleColor(CColor::Green()), xRayLeftPuzzleColor(CColor::Green()), xRayRightPuzzleColor(CColor::Green()), xRayCornerColor(CColor::Green()), xRayThreatDigitsForegroundColor(CColor::Green()), xRayThreatDigitsOutlineColor(CColor::Green()), xRayMissileDigitsForegroundColor(CColor::Green()), xRayMissileDigitsOutlineColor(CColor::Green()), xRayThreatBarFilledColor(CColor::Green()), xRayThreatBarEmptyColor(CColor::Green()), xRayMissileBarFilledColor(CColor::Green()), xRayMissileBarEmptyColor(CColor::Green()), scanDownloadSquareColor(CColor::Green()), scanDotColor(CColor::Green()), morphBallPowerBombDigitsForegroundColor(CColor::Green()), morphBallPowerBombDigitsOutlineColor(CColor::Green()), morphBallEnergyWordColor(CColor::Green()), morphBallBombCounterFilledColor(CColor::Green()), morphBallBombCounterEmptyColor(CColor::Green()), morphBallPowerBombIconColor(CColor::Green()), morphBallBombWordColor(CColor::Green()), morphBallEnergyDecoColor(CColor::Green()), morphBallBombDecoColor(CColor::Green()), unknown_0x5368a35f(CColor::Green()), morphBallEmptyPowerBombDigitsOutlineColor(CColor::Green()), morphBallEmptyPowerBombIconColor(CColor::Green()), scanPanelColor(CColor::Green()), unknown_0x96f650c3(CColor::Green()), scanImagesColor(CColor::Green()), unknown_0xd3bafaf5(CColor::Green()), threatGroupDamageColor(CColor::Green()), coundownForegroundColor(CColor::Green()), coundownOutlineColor(CColor::Green()), unknown_0xc1ec3637(CColor::Green()), unknown_0xb6a61e34(CColor::Green()), unknown_0xfdcd9589(CColor::Green()), unknown_0xb0253266(CColor::Green()), scanSeekerColor(CColor::Green()), thermalThreatDigitsOutlineColor(CColor::Green()), thermalMissileDigitsOutlineColor(CColor::Green()), combatMissileDigitsForegroundColor(CColor::Green()), combatMissileDigitsOutlineColor(CColor::Green()), thermalDecoColor(CColor::Green()), thermalDecoOutlineColor(CColor::Green()), unknown_0xe846d37f(CColor::Green()), thermalLockColor(CColor::Green()), logBookColor(CColor::Green()), inventoryEquippedColor(CColor::Green()), darkVisorDecoColor(CColor::Green()), lightAmmoTankFullSelectedColor(CColor::Green()), lightAmmoTankFullUnselectedColor(CColor::Green()), lightAmmoTankEmptylSelectedColor(CColor::Green()), lightAmmoTankEmptyUnselectedColor(CColor::Green()), lightAmmoMeterSelectedFillColor(CColor::Green()), lightAmmoMeterSelectedShadowColor(CColor::Green()), lightAmmoMeterUnselectedFillColor(CColor::Green()), lightAmmoMeterUnselectedShadowColor(CColor::Green()), lightAmmoIconSelectedColor(CColor::Green()), lightAmmoIconUnselectedColor(CColor::Green()), lightAmmoDigitsOutlineColor(CColor::Green()), lightAmmoDigitsSelectedColor(CColor::Green()), lightAmmoDigitsUnselectedColor(CColor::Green()), lightAmmoChangeFlash(CColor::Green()), lightAmmoTankWarningColor(CColor::Green()), lightAmmoMeterWarningColor(CColor::Green()), lightAmmoDigitWarningColor(CColor::Green()), lightAmmoDepletionColor(CColor::Green()), lightAmmoEmptyTankWarningColor(CColor::Green()), darkAmmoTankFullSelectedColor(CColor::Green()), darkAmmoTankFullUnselectedColor(CColor::Green()), darkAmmoTankEmptylSelectedColor(CColor::Green()), darkAmmoTankEmptyUnselectedColor(CColor::Green()), darkAmmoMeterSelectedFillColor(CColor::Green()), darkAmmoMeterSelectedShadowColor(CColor::Green()), darkAmmoMeterUnselectedFillColor(CColor::Green()), darkAmmoMeterUnselectedShadowColor(CColor::Green()), darkAmmoIconSelectedColor(CColor::Green()), darkAmmoIconUnselectedColor(CColor::Green()), darkAmmoDigitsOutlineColor(CColor::Green()), darkAmmoDigitsSelectedColor(CColor::Green()), darkAmmoDigitsUnselectedColor(CColor::Green()), darkAmmoChangeFlash(CColor::Green()), darkAmmoTankWarningColor(CColor::Green()), darkAmmoMeterWarningColor(CColor::Green()), darkAmmoDigitWarningColor(CColor::Green()), darkAmmoDepletionColor(CColor::Green()), darkAmmoEmptyTankWarningColor(CColor::Green()) {
   pauseScreenBGModulateColor = CColor(1.0f, 0.709803998f, 0.396077991f, 1.0f);
   unknown_0x166c22e0 = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.627451003f);
-  unknown_0xcec78e81 = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.400000006f);
-  unknown_0x91338f72 = CColor(1.0f, 0.403921992f, 0.0196080003f, 0.784313977f);
-  unknown_0xddc561eb = CColor(0.0f, 0.0f, 1.0f, 0.782999992f);
-  unknown_0x9be28150 = CColor(1.0f, 0.0f, 0.0f, 0.782999992f);
+  radarPlayerPaintColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.400000006f);
+  radarEnemyPaintColor = CColor(1.0f, 0.403921992f, 0.0196080003f, 0.784313977f);
+  radarFriendTeamPaintColor = CColor(0.0f, 0.0f, 1.0f, 0.782999992f);
+  radarEnemyTeamPaintColor = CColor(1.0f, 0.0f, 0.0f, 0.782999992f);
   hUDMemoTextForegroundColor = CColor(0.537254989f, 0.839215994f, 1.0f, 1.0f);
   hUDMemoTextOutlineColor = CColor(0.0f, 0.0f, 0.0f, 1.0f);
   hUDDecorativeColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.627451003f);
@@ -3893,7 +3893,7 @@ SLdrTweakGuiColors_Misc::SLdrTweakGuiColors_Misc() : pauseScreenBGModulateColor(
   flashPassColor = CColor(1.0f, 0.403921992f, 0.0196080003f, 0.705882013f);
   scanWindowFrameBaseColor = CColor(0.286274999f, 0.482353002f, 0.623529017f, 0.466666996f);
   scanWindowFrameActiveColor = CColor(0.537254989f, 0.839215994f, 1.0f, 1.0f);
-  unknown_0xc54fa7bc = CColor(0.337255001f, 0.431373f, 0.737254977f, 0.0f);
+  scanWindowFrameFlashAddColor = CColor(0.337255001f, 0.431373f, 0.737254977f, 0.0f);
   unknown_0x18717fa7 = CColor(0.709803998f, 0.709803998f, 0.709803998f, 0.584313989f);
   unknown_0x8b7d7378 = CColor(0.392156988f, 0.392156988f, 0.392156988f, 0.584313989f);
   unknown_0x867b01a2 = CColor(0.200000003f, 0.200000003f, 0.200000003f, 0.0f);
@@ -3908,7 +3908,7 @@ SLdrTweakGuiColors_Misc::SLdrTweakGuiColors_Misc() : pauseScreenBGModulateColor(
   scanHudHierarchyFinalTextColor = CColor(1.0f, 0.400000006f, 0.400000006f, 1.0f);
   scanHudHierarchyPercentTextColor = CColor(1.0f, 0.400000006f, 0.400000006f, 1.0f);
   scanHudHierarchyBarMeterColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
-  unknown_0xeb7eb756 = CColor(1.0f, 0.400000006f, 0.400000006f, 1.0f);
+  darkVisorHelmetLightModulateColor = CColor(1.0f, 0.400000006f, 0.400000006f, 1.0f);
   metroidSuckPulseColor = CColor(0.419607997f, 0.0f, 0.0f, 0.392156988f);
   unknown_0xce7c9d8d = CColor(1.0f, 0.699999988f, 0.400000006f, 1.0f);
   energyBarDamageColor = CColor(1.0f, 0.403921992f, 0.0196080003f, 1.0f);
@@ -3987,11 +3987,11 @@ void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInpu
       break;
     }
     case 0xcec78e81: {
-      sldrThis.unknown_0xcec78e81 = CColor(input);
+      sldrThis.radarPlayerPaintColor = CColor(input);
       break;
     }
     case 0x91338f72: {
-      sldrThis.unknown_0x91338f72 = CColor(input);
+      sldrThis.radarEnemyPaintColor = CColor(input);
       break;
     }
     case 0x0d24ae6b: {
@@ -3999,11 +3999,11 @@ void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInpu
       break;
     }
     case 0xddc561eb: {
-      sldrThis.unknown_0xddc561eb = CColor(input);
+      sldrThis.radarFriendTeamPaintColor = CColor(input);
       break;
     }
     case 0x9be28150: {
-      sldrThis.unknown_0x9be28150 = CColor(input);
+      sldrThis.radarEnemyTeamPaintColor = CColor(input);
       break;
     }
     case 0x2df1eb03: {
@@ -4243,7 +4243,7 @@ void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInpu
       break;
     }
     case 0xc54fa7bc: {
-      sldrThis.unknown_0xc54fa7bc = CColor(input);
+      sldrThis.scanWindowFrameFlashAddColor = CColor(input);
       break;
     }
     case 0x18717fa7: {
@@ -4303,7 +4303,7 @@ void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInpu
       break;
     }
     case 0xeb7eb756: {
-      sldrThis.unknown_0xeb7eb756 = CColor(input);
+      sldrThis.darkVisorHelmetLightModulateColor = CColor(input);
       break;
     }
     case 0xe4c1bbeb: {
@@ -5318,12 +5318,12 @@ void LoadTypedefSLdrTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& s
   }
 }
 
-SLdrTweakGui_LogBook::SLdrTweakGui_LogBook() : mainWindowBorderColor(CColor::Green()), mainWindowTextColor(CColor::Green()), mainWindowSelectedTextColor(CColor::Green()), unknown_0xfe98f30e(CColor::Green()), unknown_0x39e57ac0(CColor::Green()), legendBackgroundColor(CColor::Green()), nodeColor(CColor::Green()), selectedNodeColor(CColor::Green()), parentNodeColor(CColor::Green()), unknown_0x56843943(CColor::Green()), selectedTextCursorColor(CColor::Green()), nodeCollapseMotion(), selectedNodeCollapseMotion(), nodeExpandMotion(), scanObjectFadeInSpline(), scanObjectFadeInFlashColor(CColor::Green()), fogColor(CColor::Green()), backgroundSweepColor(CColor::Green()), scanTextWindowBackgroundColor(CColor::Green()), scanTextWindowBorderColor(CColor::Green()), scanTextWindowFontColor(CColor::Green()), legendWindowBackgroundColor(CColor::Green()), legendWindowBorderColor(CColor::Green()), legendWindowFontColor(CColor::Green()), historyUnselectedTitle(CColor::Green()), historyUnselectedFrame(CColor::Green()), historySelectedTitle(CColor::Green()), historySelectedFrame(CColor::Green()), historyCursorColor(CColor::Green()), historyPercentBarUnselected(CColor::Green()), historyPercentBarSelected(CColor::Green()), historyPercentBarBackgroundSelected(CColor::Green()), historyPercentBarBackgroundUnselected(CColor::Green()), frameColor(CColor::Green()), unknown_0x1a4b8068(CColor::Green()), sliderBackgroundColor(CColor::Green()), sliderSelectionColor(CColor::Green()), menuOptionColor(CColor::Green()), menuOptionEnabledArrowColor(CColor::Green()), menuOptionDisabledArrowColor(CColor::Green()), modelLight1Position(CVector3f::Zero()), modelLight1Color(CColor::Green()), modelLight2Position(CVector3f::Zero()), modelLight2Color(CColor::Green()), modelAmbientLightColor(CColor::Green()) {
+SLdrTweakGui_LogBook::SLdrTweakGui_LogBook() : mainWindowBorderColor(CColor::Green()), mainWindowTextColor(CColor::Green()), mainWindowSelectedTextColor(CColor::Green()), mainWindowUnviewedColor(CColor::Green()), mainWindowUnviewedSelectedColor(CColor::Green()), legendBackgroundColor(CColor::Green()), nodeColor(CColor::Green()), selectedNodeColor(CColor::Green()), parentNodeColor(CColor::Green()), unknown_0x56843943(CColor::Green()), selectedTextCursorColor(CColor::Green()), nodeCollapseMotion(), selectedNodeCollapseMotion(), nodeExpandMotion(), scanObjectFadeInSpline(), scanObjectFadeInFlashColor(CColor::Green()), fogColor(CColor::Green()), backgroundSweepColor(CColor::Green()), scanTextWindowBackgroundColor(CColor::Green()), scanTextWindowBorderColor(CColor::Green()), scanTextWindowFontColor(CColor::Green()), legendWindowBackgroundColor(CColor::Green()), legendWindowBorderColor(CColor::Green()), legendWindowFontColor(CColor::Green()), historyUnselectedTitle(CColor::Green()), historyUnselectedFrame(CColor::Green()), historySelectedTitle(CColor::Green()), historySelectedFrame(CColor::Green()), historyCursorColor(CColor::Green()), historyPercentBarUnselected(CColor::Green()), historyPercentBarSelected(CColor::Green()), historyPercentBarBackgroundSelected(CColor::Green()), historyPercentBarBackgroundUnselected(CColor::Green()), frameColor(CColor::Green()), scanlineColor(CColor::Green()), sliderBackgroundColor(CColor::Green()), sliderSelectionColor(CColor::Green()), menuOptionColor(CColor::Green()), menuOptionEnabledArrowColor(CColor::Green()), menuOptionDisabledArrowColor(CColor::Green()), modelLight1Position(CVector3f::Zero()), modelLight1Color(CColor::Green()), modelLight2Position(CVector3f::Zero()), modelLight2Color(CColor::Green()), modelAmbientLightColor(CColor::Green()) {
   mainWindowBorderColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   mainWindowTextColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   mainWindowSelectedTextColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
-  unknown_0xfe98f30e = CColor(0.0f, 0.0f, 1.0f, 1.0f);
-  unknown_0x39e57ac0 = CColor(1.0f, 0.0f, 1.0f, 1.0f);
+  mainWindowUnviewedColor = CColor(0.0f, 0.0f, 1.0f, 1.0f);
+  mainWindowUnviewedSelectedColor = CColor(1.0f, 0.0f, 1.0f, 1.0f);
   legendBackgroundColor = CColor(0.0f, 0.400000006f, 0.699999988f, 0.0f);
   nodeColor = CColor(0.800000012f, 0.800000012f, 0.800000012f, 0.800000012f);
   selectedNodeColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -5369,7 +5369,7 @@ SLdrTweakGui_LogBook::SLdrTweakGui_LogBook() : mainWindowBorderColor(CColor::Gre
   historyPercentBarBackgroundSelected = CColor(0.300000012f, 0.300000012f, 0.300000012f, 1.0f);
   historyPercentBarBackgroundUnselected = CColor(0.300000012f, 0.300000012f, 0.300000012f, 1.0f);
   frameColor = CColor(0.0f, 0.300000012f, 0.300000012f, 0.0f);
-  unknown_0x1a4b8068 = CColor(0.0f, 0.300000012f, 0.300000012f, 0.0f);
+  scanlineColor = CColor(0.0f, 0.300000012f, 0.300000012f, 0.0f);
   sliderBackgroundColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   sliderSelectionColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   sliderScale = 0.1f;
@@ -5382,8 +5382,8 @@ SLdrTweakGui_LogBook::SLdrTweakGui_LogBook() : mainWindowBorderColor(CColor::Gre
   menuOptionScale = 1.0f;
   menuOptionArrowScale = 0.1f;
   modelRotationSpeed = 120.0f;
-  unknown_0x60914b79 = -80.0f;
-  unknown_0x1fd44d9b = 80.0f;
+  modelRotationClampLowerLimit = -80.0f;
+  modelRotationClampUpperLimit = 80.0f;
   modelLight1Position = CVector3f(10.0f, 0.0f, 10.0f);
   modelLight1Color = CColor(0.5f, 0.5f, 0.5f, 1.0f);
   modelLight2Position = CVector3f(10.0f, 0.0f, 10.0f);
@@ -5412,11 +5412,11 @@ void LoadTypedefSLdrTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStrea
       break;
     }
     case 0xfe98f30e: {
-      sldrThis.unknown_0xfe98f30e = CColor(input);
+      sldrThis.mainWindowUnviewedColor = CColor(input);
       break;
     }
     case 0x39e57ac0: {
-      sldrThis.unknown_0x39e57ac0 = CColor(input);
+      sldrThis.mainWindowUnviewedSelectedColor = CColor(input);
       break;
     }
     case 0xa6b633fa: {
@@ -5616,7 +5616,7 @@ void LoadTypedefSLdrTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStrea
       break;
     }
     case 0x1a4b8068: {
-      sldrThis.unknown_0x1a4b8068 = CColor(input);
+      sldrThis.scanlineColor = CColor(input);
       break;
     }
     case 0xcc2f25f1: {
@@ -5668,11 +5668,11 @@ void LoadTypedefSLdrTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStrea
       break;
     }
     case 0x60914b79: {
-      sldrThis.unknown_0x60914b79 = input.ReadFloat();
+      sldrThis.modelRotationClampLowerLimit = input.ReadFloat();
       break;
     }
     case 0x1fd44d9b: {
-      sldrThis.unknown_0x1fd44d9b = input.ReadFloat();
+      sldrThis.modelRotationClampUpperLimit = input.ReadFloat();
       break;
     }
     case 0x06c93afa: {
@@ -5760,7 +5760,7 @@ void LoadTypedefSLdrTweakGui_MovieVolumes(SLdrTweakGui_MovieVolumes& sldrThis, C
   }
 }
 
-SLdrTweakGui_Misc::SLdrTweakGui_Misc() : unknown_0x50812f49(CVector3f::Zero()), unknown_0x7edc2474(CVector3f::Zero()), threatWarningMessage(), threatDamageMessage(), energyWarningMessage(), missileWarningMessage(), missileEmptyWarning(), unknown_0xeaf17d45(), unknown_0xd81537b6(), unknown_0x3ba84552(), helmetBaseAmbientColorCombatLightWorld(CColor::Green()), helmetBaseAmbientColorEchoLightWorld(CColor::Green()), helmetBaseAmbientColorScanLightWorld(CColor::Green()), helmetBaseAmbientColorDarkLightWorld(CColor::Green()), helmetBaseAmbientColorCombatDarkWorld(CColor::Green()), helmetBaseAmbientColorEchoDarkWorld(CColor::Green()), helmetBaseAmbientColorScanDarkWorld(CColor::Green()), helmetBaseAmbientColorDarkDarkWorld(CColor::Green()), helmetLightAmbientModCombatLightWorld(CColor::Green()), helmetLightAmbientModEchoLightWorld(CColor::Green()), helmetLightAmbientModScanLightWorld(CColor::Green()), helmetLightAmbientModDarkLightWorld(CColor::Green()), helmetLightAmbientModCombatDarkWorld(CColor::Green()), helmetLightAmbientModEchoDarkWorld(CColor::Green()), helmetLightAmbientModScanDarkWorld(CColor::Green()), helmetLightAmbientModDarkDarkWorld(CColor::Green()), unknown_0x70638eaa(CColor::Green()), unknown_0x19c5f88b(CColor::Green()), unknown_0xd84b274b(CColor::Green()), unknown_0x41a9414a(CColor::Green()), unknown_0x80279e8a(CColor::Green()), unknown_0x98d8e1ba(CColor::Green()) {
+SLdrTweakGui_Misc::SLdrTweakGui_Misc() : unknown_0x50812f49(CVector3f::Zero()), unknown_0x7edc2474(CVector3f::Zero()), threatWarningMessage(), threatDamageMessage(), energyWarningMessage(), missileWarningMessage(), missileEmptyWarning(), scanObjectTranslateTransitionSpline(), scanObjectRotationTransitionSpline(), scanObjectScaleTransitionSpline(), helmetBaseAmbientColorCombatLightWorld(CColor::Green()), helmetBaseAmbientColorEchoLightWorld(CColor::Green()), helmetBaseAmbientColorScanLightWorld(CColor::Green()), helmetBaseAmbientColorDarkLightWorld(CColor::Green()), helmetBaseAmbientColorCombatDarkWorld(CColor::Green()), helmetBaseAmbientColorEchoDarkWorld(CColor::Green()), helmetBaseAmbientColorScanDarkWorld(CColor::Green()), helmetBaseAmbientColorDarkDarkWorld(CColor::Green()), helmetLightAmbientModCombatLightWorld(CColor::Green()), helmetLightAmbientModEchoLightWorld(CColor::Green()), helmetLightAmbientModScanLightWorld(CColor::Green()), helmetLightAmbientModDarkLightWorld(CColor::Green()), helmetLightAmbientModCombatDarkWorld(CColor::Green()), helmetLightAmbientModEchoDarkWorld(CColor::Green()), helmetLightAmbientModScanDarkWorld(CColor::Green()), helmetLightAmbientModDarkDarkWorld(CColor::Green()), unknown_0x70638eaa(CColor::Green()), unknown_0x19c5f88b(CColor::Green()), unknown_0xd84b274b(CColor::Green()), unknown_0x41a9414a(CColor::Green()), unknown_0x80279e8a(CColor::Green()), unknown_0x98d8e1ba(CColor::Green()) {
   skipFrontEnd = false;
   minHUDAlpha = 0.30000001f;
   unknown_0x744165c4 = 4.0f;
@@ -5769,19 +5769,19 @@ SLdrTweakGui_Misc::SLdrTweakGui_Misc() : unknown_0x50812f49(CVector3f::Zero()), 
   unknown_0x04f4a6fe = 1.0f;
   unknown_0x3c327181 = 1.0f;
   unknown_0xa581be26 = 0.75f;
-  unknown_0x68d88e25 = 30.0f;
+  radarWorldHalfHeight = 30.0f;
   unknown_0x889ef9ea = 10.0f;
-  unknown_0xb68ff81a = 30.0f;
-  unknown_0x04510638 = 99.0f;
-  unknown_0x7a48c3b1 = 20.0f;
-  unknown_0x0d257063 = 0.69999999f;
+  energyBarLowThreshold = 30.0f;
+  energyBarFilledDrainSpeed = 99.0f;
+  energyBarShadowDrainSpeed = 20.0f;
+  energyBarShadowDrainDelay = 0.69999999f;
   unknown_0x2821bbca = false;
-  unknown_0x5fdcf3d9 = 0.5f;
+  energyBarTankSwitchTime = 0.5f;
   hudFlashMagnitudeConstant = 0.0f;
   hudFlashMagnitudeLinear = 0.2f;
   hudFlashTimeConstant = 0.0f;
   hudFlashTimeScaleLinear = 0.30000001f;
-  unknown_0x3ac94cf1 = 2.5f;
+  hudDamageIndicatorRadius = 2.5f;
   unknown_0x55b323e5 = 50.0f;
   unknown_0x411a705e = 0.0f;
   unknown_0x0a9d701d = 1.0f;
@@ -5952,7 +5952,7 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0x68d88e25: {
-      sldrThis.unknown_0x68d88e25 = input.ReadFloat();
+      sldrThis.radarWorldHalfHeight = input.ReadFloat();
       break;
     }
     case 0x889ef9ea: {
@@ -5960,19 +5960,19 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0xb68ff81a: {
-      sldrThis.unknown_0xb68ff81a = input.ReadFloat();
+      sldrThis.energyBarLowThreshold = input.ReadFloat();
       break;
     }
     case 0x04510638: {
-      sldrThis.unknown_0x04510638 = input.ReadFloat();
+      sldrThis.energyBarFilledDrainSpeed = input.ReadFloat();
       break;
     }
     case 0x7a48c3b1: {
-      sldrThis.unknown_0x7a48c3b1 = input.ReadFloat();
+      sldrThis.energyBarShadowDrainSpeed = input.ReadFloat();
       break;
     }
     case 0x0d257063: {
-      sldrThis.unknown_0x0d257063 = input.ReadFloat();
+      sldrThis.energyBarShadowDrainDelay = input.ReadFloat();
       break;
     }
     case 0x2821bbca: {
@@ -5980,7 +5980,7 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0x5fdcf3d9: {
-      sldrThis.unknown_0x5fdcf3d9 = input.ReadFloat();
+      sldrThis.energyBarTankSwitchTime = input.ReadFloat();
       break;
     }
     case 0xc4dd4d5b: {
@@ -6000,7 +6000,7 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0x3ac94cf1: {
-      sldrThis.unknown_0x3ac94cf1 = input.ReadFloat();
+      sldrThis.hudDamageIndicatorRadius = input.ReadFloat();
       break;
     }
     case 0x55b323e5: {
@@ -6405,15 +6405,15 @@ void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& inp
       break;
     }
     case 0xeaf17d45: {
-      sldrThis.unknown_0xeaf17d45 = SLdrSpline(input, propertySize);
+      sldrThis.scanObjectTranslateTransitionSpline = SLdrSpline(input, propertySize);
       break;
     }
     case 0xd81537b6: {
-      sldrThis.unknown_0xd81537b6 = SLdrSpline(input, propertySize);
+      sldrThis.scanObjectRotationTransitionSpline = SLdrSpline(input, propertySize);
       break;
     }
     case 0x3ba84552: {
-      sldrThis.unknown_0x3ba84552 = SLdrSpline(input, propertySize);
+      sldrThis.scanObjectScaleTransitionSpline = SLdrSpline(input, propertySize);
       break;
     }
     case 0xeeb7839b: {
@@ -6821,12 +6821,12 @@ void LoadTypedefSLdrTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& sldrT
 SLdrTweakPlayer_FirstPersonCamera::SLdrTweakPlayer_FirstPersonCamera() : darkLightScale(CVector3f::Zero()) {
   firstPersonCameraSpeed = 60.0f;
   cameraElevation = 0.0f;
-  unknown_0xb400ebd6 = 0.1f;
-  unknown_0xfd26b7b9 = 4.0f;
-  unknown_0x97b14dc6 = 73.0f;
-  unknown_0xeb59925a = 0.30000001f;
-  unknown_0xa1d73380 = 4.0f;
-  unknown_0xc8e8344a = 73.0f;
+  jumpCameraPitchDownStart = 0.1f;
+  jumpCameraPitchDownFull = 4.0f;
+  jumpCameraPitchDownAngle = 73.0f;
+  fallCameraPitchDownStart = 0.30000001f;
+  fallCameraPitchDownFull = 4.0f;
+  fallCameraPitchDownAngle = 73.0f;
   darkLightPitch = 10.0f;
   darkLightScale = CVector3f(20.0f, 25.0f, 20.0f);
 }
@@ -6848,27 +6848,27 @@ void LoadTypedefSLdrTweakPlayer_FirstPersonCamera(SLdrTweakPlayer_FirstPersonCam
       break;
     }
     case 0xb400ebd6: {
-      sldrThis.unknown_0xb400ebd6 = input.ReadFloat();
+      sldrThis.jumpCameraPitchDownStart = input.ReadFloat();
       break;
     }
     case 0xfd26b7b9: {
-      sldrThis.unknown_0xfd26b7b9 = input.ReadFloat();
+      sldrThis.jumpCameraPitchDownFull = input.ReadFloat();
       break;
     }
     case 0x97b14dc6: {
-      sldrThis.unknown_0x97b14dc6 = input.ReadFloat();
+      sldrThis.jumpCameraPitchDownAngle = input.ReadFloat();
       break;
     }
     case 0xeb59925a: {
-      sldrThis.unknown_0xeb59925a = input.ReadFloat();
+      sldrThis.fallCameraPitchDownStart = input.ReadFloat();
       break;
     }
     case 0xa1d73380: {
-      sldrThis.unknown_0xa1d73380 = input.ReadFloat();
+      sldrThis.fallCameraPitchDownFull = input.ReadFloat();
       break;
     }
     case 0xc8e8344a: {
-      sldrThis.unknown_0xc8e8344a = input.ReadFloat();
+      sldrThis.fallCameraPitchDownAngle = input.ReadFloat();
       break;
     }
     case 0xd40c480e: {

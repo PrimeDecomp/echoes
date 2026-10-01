@@ -8,15 +8,6 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrScannableParameters.hpp"
 #include "rstl/string.hpp"
 
-struct SLdrInventorySlot {
-  SLdrInventorySlot();
-  ~SLdrInventorySlot();
-
-  int value;
-};
-
-void LoadTypedefSLdrInventorySlot(SLdrInventorySlot& data, CInputStream& input);
-
 struct SLdrScanTreeInventory {
   SLdrScanTreeInventory();
   ~SLdrScanTreeInventory();
@@ -24,7 +15,7 @@ struct SLdrScanTreeInventory {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CAssetId nodeName; // 0x46219bac
   rstl::string stringName; // 0x32698bd6
-  SLdrInventorySlot unknown_0x3d326f90; // 0x3d326f90
+  int unknown_0x3d326f90; // 0x3d326f90
   SLdrScannableParameters scannableInfo; // 0x2da1ec33
 };
 

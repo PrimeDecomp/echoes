@@ -646,7 +646,7 @@ void CAutoMapper::UpdateHintNavigation(float dt, CStateManager& mgr) {
   case SAutoMapperHintStep::kHST_ZoomOut:
     mRenderState2 = mRenderState0;
     if (mMapMode == kMM_Teleport) {
-      mRenderState1.mCamDist = gpTweakAutoMapper->GetMaxUniverseCamDistance();
+      mRenderState1.mCamDist = gpTweakAutoMapper->GetMapScreenMapUniverseMaxCameraDistance();
     } else {
       mRenderState1.mCamDist = gpTweakAutoMapper->GetMaxCamDistance();
     }
@@ -1617,7 +1617,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
 
     CGuiWidget* model = mFrmeInitialized->FindWidget("model_scanlines");
     if (model != nullptr) {
-      model->SetColor(gpTweakAutoMapper->GetScanLinesColor());
+      model->SetColor(gpTweakAutoMapper->GetScanlineColor());
     }
     model = mFrmeInitialized->FindWidget("model_frame");
     if (model != nullptr) {
@@ -2116,7 +2116,7 @@ CAutoMapper::SAutoMapperRenderState
 CAutoMapper::BuildMapScreenUniverseRenderState(const CStateManager& mgr, const CQuaternion& rot,
                                                int areaId) const {
   const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
-  SAutoMapperRenderState ret(GetMapScreenViewportSize(), rot, tweak->GetUniverseCamDistance(),
+  SAutoMapperRenderState ret(GetMapScreenViewportSize(), rot, tweak->GetMapScreenMapUniverseDefaultCameraDistance(),
                              tweak->GetCamAngle(), GetAreaPointOfInterest(mgr, areaId),
                              GetMapAreaMaxDrawDepth(mgr, areaId),
                              GetMapAreaMaxDrawDepth(mgr, areaId), 0.f, 0.f, 0.f, 0.f);
@@ -2320,8 +2320,8 @@ float CAutoMapper::GetMapAreaMiniMapDrawAlphaOutlineUnvisited(const CStateManage
 
 float CAutoMapper::GetClampedMapScreenCameraDistance(float value) const {
   if (mState == kAMS_MapScreenUniverse) {
-    return CMath::Clamp(gpTweakAutoMapper->GetMinUniverseCamDistance(), value,
-                        gpTweakAutoMapper->GetMaxUniverseCamDistance());
+    return CMath::Clamp(gpTweakAutoMapper->GetMapScreenMapUniverseMinCameraDistance(), value,
+                        gpTweakAutoMapper->GetMapScreenMapUniverseMaxCameraDistance());
   }
   return CMath::Clamp(gpTweakAutoMapper->GetMinCamDistance(), value,
                       gpTweakAutoMapper->GetMaxCamDistance());
@@ -2360,7 +2360,7 @@ float CAutoMapper::GetDesiredMiniMapCameraDistance(const CStateManager& mgr) con
   const float halfExtent = 0.5f * extent.Magnitude();
   const CVector3f maxMargin(maxX, maxY, maxZ);
   float distance = 0.5f * halfExtent + 0.5f * maxMargin.Magnitude();
-  distance *= gpTweakAutoMapper->GetMiniMapCamDistScale();
+  distance *= gpTweakAutoMapper->GetMiniMapDynamicCameraDistanceScalar();
   return distance *
          static_cast< float >(tan(M_PIF / 2.f - 0.5f * CMath::Deg2Rad(mRenderState0.mCamAngle)));
 }
