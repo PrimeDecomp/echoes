@@ -4,6 +4,7 @@
 #include "Kyoto/Basics/COsContext.hpp"
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CDvdFile.hpp"
+#include "Kyoto/CDvdRequestManager.hpp"
 #include "Kyoto/Graphics/CGraphicsSys.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
@@ -18,13 +19,15 @@
 #include "MetroidPrime/DefaultFontData.inc"
 #include "MetroidPrime/DefaultFontTexture.inc"
 
+extern const char MetroidBuildInfo[] = BUILD_INFO;
+
 class CCubeRenderer;
 class IController;
 
 extern "C" void OSGetSavedRegion(void** start, void** end);
 extern "C" void OSSetSaveRegion(void* start, void* end);
-extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, void* saveRegion,
-                            CMemorySys* memorySys, void* unknownSubsystem);
+extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, CSaveRegion* saveRegion,
+                            CMemorySys* memorySys, CDvdRequestSys* dvdRequestSys);
 
 void* CSaveRegion::mSaveBuffer;
 const void* CSaveRegion::mNonVolatileSettingsBuf;
@@ -32,9 +35,6 @@ CCubeRenderer* gpRender;
 const TToken< CRasterFont >* gpDefaultFont;
 IController* gpController;
 bool COsContext::mProgressiveMode;
-
-// The native startup toggles this flag around graphics/main lifetime. Its owner is unknown.
-static bool sUnknownSubsystemInitialized;
 
 // Guessed name. The string-table buffer is retained by the OS until process exit.
 class CRelDebugSupport {
@@ -58,7 +58,9 @@ static CRasterFont* LoadDefaultFont() {
   CLZOInputStream textureStream(
       rs_new CMemoryInStream(sDefaultFontTexture, sizeof(sDefaultFontTexture)),
       sizeof(sDefaultFontTexture), 0xa34);
-  font->SetTexture(rs_new CTexture(textureStream, CTexture::kAM_Zero, CTexture::kBK_Zero));
+  TToken< CTexture > texture(
+      rs_new CTexture(textureStream, CTexture::kAM_Zero, CTexture::kBK_Zero));
+  font->SetTexture(texture);
   return font;
 }
 
@@ -77,12 +79,12 @@ CRelDebugSupport::CRelDebugSupport() : mRequest(nullptr), mStringTable(nullptr),
 
 void CRelDebugSupport::Update() {
   if (!mLoaded && mRequest.null()) {
-    if (CDvdFile::FileExists("_MetroidR.CWP.str")) {
-      CDvdFile file("_MetroidR.CWP.str");
+    if (CDvdFile::FileExists("/MetroidR_CWP.str")) {
+      CDvdFile file("/MetroidR_CWP.str");
       const uint size = (file.Length() + 31) & ~31;
       mStringTable = CMemory::Alloc(size, IAllocator::kHI_RoundUpLen, IAllocator::kSC_Unk1,
                                     IAllocator::kTP_Heap,
-                                    CCallStack(-1, "MetroWerks REL Debug Support", "__Ignore"));
+                                    CCallStack(-1, "MetroWerks REL Debug Support", " - Ignore"));
       mRequest = file.SyncRead(mStringTable, size);
     } else {
       mLoaded = true;
@@ -116,24 +118,15 @@ int main(int argc, char** argv) {
   CSaveRegion saveRegion(context);
   CMemorySys memorySys(RestoreProgressiveMode(context), CMemorySys::GetGameAllocator());
 
-  // Only its address is passed; the native code never initializes this object's storage.
-  uchar unknownSubsystem;
-  if (sUnknownSubsystemInitialized != true) {
-    sUnknownSubsystemInitialized = true;
+  CDvdRequestSys dvdRequestSys;
+  CGraphicsSys graphicsSys(context, memorySys, COsContext::GetProgressiveMode());
+  TToken< CRasterFont > defaultFont(LoadDefaultFont());
+  gpDefaultFont = &defaultFont;
+  CRelDebugSupport debugSupport;
+  while (!debugSupport.IsLoaded()) {
+    debugSupport.Update();
   }
-  {
-    CGraphicsSys graphicsSys(context, memorySys, COsContext::GetProgressiveMode());
-    TToken< CRasterFont > defaultFont(LoadDefaultFont());
-    gpDefaultFont = &defaultFont;
-    CRelDebugSupport debugSupport;
-    while (!debugSupport.IsLoaded()) {
-      debugSupport.Update();
-    }
 
-    InvokeCMain(argc, argv, &context, &saveRegion, &memorySys, &unknownSubsystem);
-  }
-  if (sUnknownSubsystemInitialized == true) {
-    sUnknownSubsystemInitialized = false;
-  }
+  InvokeCMain(argc, argv, &context, &saveRegion, &memorySys, &dvdRequestSys);
   return 0;
 }

@@ -385,7 +385,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(NonMatching, "MetroidPrime/main.cpp"),
-            Object(NonMatching, "MetroidPrime/Startup.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Startup.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CControlMapper.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CObjectList.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CAxisAngle.cpp"),
@@ -634,6 +634,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Basics/CSWDataDolphin.cpp"),
             Object(Matching, "Kyoto/Basics/RAssertDolphin.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CDvdRequest.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/CDvdRequestManager.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CLight.cpp"),  # Float literal order
             Object(NonMatching, "Kyoto/Graphics/CCubeModel.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CGX.cpp"),

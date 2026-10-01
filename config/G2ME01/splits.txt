@@ -848,7 +848,8 @@ MetroidPrime/CStaticGeometryMap.cpp:
 
 MetroidPrime/Startup.cpp:
 	.text       start:0x801EFB00 end:0x801F0254
-	.rodata     start:0x803AB1C0 end:0x803AC3B0
+	.rodata     start:0x803AB1C0 end:0x803AC430
+	.data       start:0x803B78E0 end:0x803B78F0
 	.sbss       start:0x804192F0 end:0x80419308
 
 MetroidPrime/CRELFileToken.cpp:
@@ -1357,6 +1358,9 @@ Kyoto/Animation/CCharLayoutInfo.cpp:
 	.data       start:0x803B9AD0 end:0x803B9AE0
 	.sdata      start:0x80418AA0 end:0x80418AA8
 	.sbss       start:0x804198E0 end:0x804198E8
+
+Kyoto/CDvdRequestManager.cpp:
+	.sbss       start:0x804198E8 end:0x804198F0
 
 Kyoto/Animation/CFBStreamedAnimReader.cpp:
 	.text       start:0x802ACD44 end:0x802B03F4

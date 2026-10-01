@@ -10,6 +10,8 @@
 class CStopwatch;
 class CGameGlobalObjects;
 class CMemorySys;
+class CDvdRequestSys;
+class CSaveRegion;
 class COsContext;
 class CGameArchitectureSupport;
 
@@ -27,7 +29,8 @@ public:
     kRM_StateSetter,
   };
 
-  CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2);
+  CMain(COsContext* context, CSaveRegion* saveRegion, CMemorySys* memorySys,
+        CDvdRequestSys* dvdRequestSys);
   ~CMain();
 
   bool LoadAudio();
@@ -74,9 +77,9 @@ public:
 
 private:
   COsContext* mOsContext;
-  void* x4_; // Supplied by InvokeCMain; pointee identity unresolved.
+  CSaveRegion* mSaveRegion;
   CMemorySys* mMemorySys;
-  void* xc_; // Supplied by InvokeCMain; pointee identity unresolved.
+  CDvdRequestSys* mDvdRequestSys;
   double x10_;
   TReservedAverage< float, 4 > mTickTimes;
   TReservedAverage< float, 4 > mDrawTimes;
