@@ -3,6 +3,7 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
+#include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMemoryCard.hpp"
@@ -18,6 +19,7 @@
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
 #include "dolphin/os.h"
+#include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
 
 #include <string.h>
@@ -400,11 +402,18 @@ void ConfigureGameModeLayers() {
 // Guessed name
 void StartGameFromFrontEnd() {
   const CFrontEndGameMode config = static_cast< const CFrontEndGameMode& >(gpGameState->GetGameMode());
+
+  for (int i = 0; i < config.GetPlayerCount(); ++i) {
+    config.GetPlayer(i);
+  }
+
   CGameMode* mode = nullptr;
+
   switch (config.GetSelectedGameMode()) {
   case CFrontEndGameMode::kSGM_SinglePlayer:
     mode = rs_new CGMSinglePlayer;
     break;
+    
   case CFrontEndGameMode::kSGM_DeathMatch: {
     CGMDeathMatch* deathMatch = rs_new CGMDeathMatch(config.GetPlayerCount(), config.GetFragLimit(),
                                                      config.GetTimeLimit(), true, false);
@@ -471,27 +480,22 @@ void CGameState::PutTo(CBitStreamWriter& out) {
   out.WriteBits(mIsDarkWorld ? 1 : 0, 1);
   out.WriteBits(mDesiredWorldId, 32);
 
-  union {
-    double value;
-    u64 bits;
-  } playTime;
-  playTime.value = mTotalPlayTime;
-  out.WriteBits(playTime.bits >> 32, 32);
-  out.WriteBits(playTime.bits, 32);
+  u64 time = *reinterpret_cast< const u64* >(&mTotalPlayTime);
+  out.WriteBits(time >> 32, 32);
+  out.WriteBits(time & 0xffffffff, 32);
 
   for (int i = 0; i < mPlayerStates.size(); ++i) {
     mPlayerStates[i]->PutTo(out);
   }
   mHintOptions.PutTo(out);
   mPreviousGameResults.PutTo(out);
+  const rstl::vector< CMemoryCard::MemoryWorld >& worlds = gpMemoryCard->GetMemoryWorlds();
   out.GetOutputStream().WriteReal32(mEscapeTime);
   mPersistentOptions.PutTo(out);
 
-  const rstl::vector< CMemoryCard::MemoryWorld >& worlds = gpMemoryCard->GetMemoryWorlds();
   out.GetOutputStream().WriteUint8(worlds.size());
   rstl::auto_ptr< uchar > buffer(rs_new uchar[0x400]);
-  for (rstl::vector< CMemoryCard::MemoryWorld >::const_iterator it = worlds.begin();
-       it != worlds.end(); ++it) {
+  for (AUTO(it, worlds.begin()); it != worlds.end(); ++it) {
     TLockedToken< CWorldSaveGameInfo > saveWorld =
         gpSimplePool->GetObj(SObjectTag('SAVW', it->second.GetSaveWorldAssetId()));
     CWorldState& state = StateForWorld(it->first);
@@ -588,6 +592,18 @@ void CGameState::CopyCompressedMultiplayerOptions(const void* data) {
   memcpy(mCompressedMultiplayerOptions.data(), data, 0x20);
 }
 
+void CGameState::LoadCompressedGameOptions(int slot) {
+  CMemoryInStream input(mCompressedGameOptions[slot].data(), mCompressedGameOptions[slot].capacity());
+  CBitStreamReader reader(input);
+  mGameOptions = CGameOptions(reader);
+}
+
+void CGameState::LoadCompressedMultiplayerOptions() {
+  CMemoryInStream input(mCompressedMultiplayerOptions.data(), mCompressedMultiplayerOptions.capacity());
+  CBitStreamReader reader(input);
+  mGameOptions = CGameOptions(reader);
+}
+
 void CGameState::SetCompressedGameOptions(
     const rstl::reserved_vector< rstl::vector< uchar >, 3 >& options) {
   mCompressedGameOptions = options;
@@ -598,16 +614,20 @@ void CGameState::SetCompressedMultiplayerOptions(const rstl::vector< uchar >& op
 }
 
 CWorldState& CGameState::StateForWorld(CAssetId worldId) {
-  for (rstl::vector< CWorldState >::iterator it = mWorldStates.begin(); it != mWorldStates.end();
-       ++it) {
+  AUTO(it, mWorldStates.begin());
+  for (; it != mWorldStates.end(); ++it) {
     if (it->GetWorldAssetId() == worldId) {
-      return *it;
+      break;
     }
   }
 
-  mWorldStates.reserve(mWorldStates.size() + 1);
-  mWorldStates.push_back(CWorldState(worldId));
-  return mWorldStates.back();
+  if (it != mWorldStates.end()) {
+    return *it;
+  } else {
+    mWorldStates.reserve(mWorldStates.size() + 1);
+    mWorldStates.push_back(CWorldState(worldId));
+    return mWorldStates.back();
+  }
 }
 
 CAssetId CGameState::CurrentWorldAssetId() const { return mWorldId; }
@@ -660,9 +680,7 @@ CGameMode& CGameState::GetGameMode() { return *mGameMode; }
 void CGameState::SetGameMode(CGameMode* mode) { mGameMode = rstl::auto_ptr< CGameMode >(mode); }
 
 bool CPersistentOptions::GetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId) const {
-  for (rstl::vector< rstl::pair< CAssetId, TEditorId > >::const_iterator it =
-           mCinematicStates.begin();
-       it != mCinematicStates.end(); ++it) {
+  for (AUTO(it, mCinematicStates.begin()); it != mCinematicStates.end(); ++it) {
     if (*it == cinematicId) {
       return true;
     }
@@ -670,10 +688,8 @@ bool CPersistentOptions::GetCinematicState(rstl::pair< CAssetId, TEditorId > cin
   return false;
 }
 
-void CPersistentOptions::SetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId,
-                                           bool state) {
-  for (rstl::vector< rstl::pair< CAssetId, TEditorId > >::iterator it = mCinematicStates.begin();
-       it != mCinematicStates.end(); ++it) {
+void CPersistentOptions::SetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId, bool state) {
+  for (AUTO(it, mCinematicStates.begin()); it != mCinematicStates.end(); ++it) {
     if (*it == cinematicId) {
       if (!state) {
         mCinematicStates.erase(it);
@@ -683,6 +699,6 @@ void CPersistentOptions::SetCinematicState(rstl::pair< CAssetId, TEditorId > cin
   }
   if (state) {
     mCinematicStates.reserve(mCinematicStates.size() + 1);
-    mCinematicStates.push_back(cinematicId);
+    mCinematicStates.push_back_unsafe(cinematicId);
   }
 }
