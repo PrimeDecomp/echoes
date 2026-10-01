@@ -339,6 +339,7 @@ public:
   static const GXRenderModeObj& GetRenderMode() { return mRenderModeObj; }
   static CVector3f GetViewPoint() { return mViewMatrix.GetTranslation(); }
   static const CTransform4f& GetViewMatrix() { return mViewMatrix; }
+  static const Mtx& GetCameraMtx() { return mCameraMtx; }
   static const CTransform4f& GetModelMatrix() { return mModelMatrix; }
   static uchar GetLightMask() { return mLightActive; }
   static void SetViewPointMatrix(const CTransform4f&);

@@ -194,6 +194,14 @@ MetroidPrime/ScriptObjects/CScriptDoor.cpp:
 	.sbss       start:0x80419020 end:0x80419030
 	.sdata2     start:0x8041AB28 end:0x8041AB40
 
+MetroidPrime/CMapArea.cpp:
+	.text       start:0x8007E32C end:0x800802D4
+	.rodata     start:0x803A7248 end:0x803A7270
+	.data       start:0x803B2730 end:0x803B2768
+	.bss        start:0x8040D4D8 end:0x8040D508 align:4 common
+	.sdata      start:0x80417F70 end:0x80417F78
+	.sdata2     start:0x8041AB40 end:0x8041AB60
+
 MetroidPrime/ScriptObjects/CScriptEffect.cpp:
 	.text       start:0x800802D4 end:0x80082EE8
 	.ctors      start:0x803A54D8 end:0x803A54DC

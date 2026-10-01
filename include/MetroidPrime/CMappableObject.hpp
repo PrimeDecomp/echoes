@@ -30,7 +30,7 @@ public:
     kVM_Visit = 4
   };
 
-  void PostConstruct();
+  void PostConstruct(const void* buf);
   static void ReadAutomapperTweaks(); // Guessed name
   bool GetIsVisibleToAutoMapper(bool worldVis, const CMapWorldInfo& info) const;
   CTransform4f AdjustTransformForType() const;
@@ -38,11 +38,14 @@ public:
   void DrawDoorSurface(int curAreaId, const CMapWorldInfo& info, float alpha, int surfaceIdx,
                        bool needsVtxLoad) const;
   CVector3f BuildSurfaceCenterPoint(int surfaceIdx) const;
-  static bool IsDoorType(EMappableObjectType type) { return type >= 0 && type < 8; }
+  static bool IsDoorType(EMappableObjectType type) { return type >= 0 && type <= 7; }
+  void fn_800BB898(int curAreaId, const CMapWorldInfo& info, float alpha) const;
 
   EMappableObjectType GetType() const { return mType; }
   TEditorId GetObjId() const { return mObjId; }
   const CTransform4f& GetTransform() const { return mTransform; }
+
+  static CVector3f skDoorVerts[8];
 
 private:
   EMappableObjectType mType;

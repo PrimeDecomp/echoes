@@ -10,6 +10,7 @@
 #include "rstl/single_ptr.hpp"
 
 class CInputStream;
+class CMapWorldInfo;
 class CColor;
 class IWorld;
 
@@ -39,10 +40,12 @@ public:
   ~CMapArea();
 
   void PostConstruct();
+  void fn_8007F374();
   bool GetIsVisibleToAutoMapper(bool worldVis, bool areaVis) const;
   bool IsInDarkWorld() const; // Guessed name
   CVector3f GetAreaCenterPoint() const;
   CTransform4f GetAreaPostTransform(const IWorld& world, int areaId);
+  const CVector3f& GetAreaPostTranslate(const IWorld& world);
   // Guessed names for the prepared surface/outline/door rendering path.
   static void SetupLighting(const CTransform4f& cameraXf);
   void Draw(const CColor& surfaceColor, const CColor& outlineColor, const CTransform4f& areaXf,
@@ -74,9 +77,9 @@ private:
   // Guessed names: prepared rendering storage and its non-owning sections.
   rstl::single_ptr< uchar > mRenderBuf;
   uint mRenderBufSize;
-  CVector3f* mDoorVertices;
+  uchar* mDoorVertices;
   uint mDoorVerticesSize;
-  CVector3f* mSurfaceNormals;
+  uchar* mSurfaceNormals;
   uint mSurfaceNormalsSize;
   uchar* mSurfaceDisplayList;
   uint mSurfaceDisplayListSize;
