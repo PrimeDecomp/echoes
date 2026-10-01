@@ -832,7 +832,7 @@ CSfxManager::CSfxWrapper::~CSfxWrapper() {}
 
 bool CSfxManager::CSfxWrapper::IsEmitter() const { return false; }
 
-const CFactoryFnReturn FAudioTranslationTableFactory(const SObjectTag&, CInputStream& in,
+CFactoryFnReturn FAudioTranslationTableFactory(const SObjectTag&, CInputStream& in,
                                                      const CVParamTransfer&) {
   return rs_new rstl::vector< short >(in);
 }

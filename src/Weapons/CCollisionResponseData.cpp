@@ -252,7 +252,7 @@ EWeaponCollisionResponseTypes CCollisionResponseData::GetWorldCollisionResponseT
   return kWCR_Default;
 }
 
-const CFactoryFnReturn FCollisionResponseDataFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FCollisionResponseDataFactory(const SObjectTag& tag, CInputStream& in,
                                                      const CVParamTransfer& xfer) {
   rstl::rc_ptr< IVParamObj > obj = xfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();

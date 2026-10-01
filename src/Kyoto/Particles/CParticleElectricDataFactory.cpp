@@ -6,7 +6,7 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "Kyoto/CVParamTransfer.hpp"
 
-const CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag& tag, CInputStream& in,
                                               const CVParamTransfer& transfer) {
   rstl::rc_ptr< IVParamObj > obj = transfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();

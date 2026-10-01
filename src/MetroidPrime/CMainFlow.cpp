@@ -53,7 +53,7 @@ void CMainFlow::AdvanceGameState(CArchitectureQueue& queue) {
     if (gpMain->GetRestartMode() != CMain::kRM_None &&
         gpMain->GetRestartMode() != CMain::kRM_StateSetter) {
       if (gpGameState->GetGameModeType() == 'SNGL') {
-        gpMain->SetX30(true);
+        gpMain->SetGameExitReset(true);
       } else {
         gpMain->ResetGameState();
       }

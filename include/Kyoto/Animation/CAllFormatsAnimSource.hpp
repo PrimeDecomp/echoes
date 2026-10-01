@@ -68,7 +68,7 @@ inline TSubAnimTypeToken< T >::TSubAnimTypeToken(const TLockedToken< CAllFormats
   mToken->GetFormatPointer(mSource);
 }
 
-const CFactoryFnReturn AnimSourceFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn AnimSourceFactory(const SObjectTag& tag, CInputStream& in,
                                          const CVParamTransfer& param);
 
 #endif // _CALLFORMATSANIMSOURCE

@@ -29,7 +29,7 @@ static void* UploadCallback(u32 offset, u32 bytes) {
   return sUploadBuffer;
 }
 
-const CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag& tag,
+CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag& tag,
                                                     const rstl::auto_ptr< uchar >& data, int length,
                                                     const CVParamTransfer& xfer) {
   return rs_new CAudioGrpSetLoc(data, length);

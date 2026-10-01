@@ -11,6 +11,7 @@ public:
   ~CRELFileToken();
 
   void Load();                             // Guessed name
+  void Unload();                           // Guessed name; releases the load request.
   bool IsLoaded() const;                   // Guessed name
   const rstl::string& GetFileName() const; // Guessed name
 

@@ -22,7 +22,7 @@ private:
 };
 CHECK_SIZEOF(CAnimCharacterSet, 0x7c)
 
-const CFactoryFnReturn FAnimCharacterSet(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FAnimCharacterSet(const SObjectTag& tag, CInputStream& in,
                                          const CVParamTransfer& xfer);
 
 #endif // _CANIMCHARACTERSET

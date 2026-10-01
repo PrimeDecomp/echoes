@@ -282,7 +282,7 @@ int CPFArea::GetPointIndex(const CPFPoint& point) const { return &point - &mPoin
 
 CPFArea::~CPFArea() {}
 
-const CFactoryFnReturn FPathFindAreaFactory(const SObjectTag& tag,
+CFactoryFnReturn FPathFindAreaFactory(const SObjectTag& tag,
                                             const rstl::auto_ptr< uchar >& data, int size,
                                             const CVParamTransfer& xfer) {
   return rs_new CPFArea(data, size);

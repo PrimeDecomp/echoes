@@ -7,15 +7,10 @@
 #include "Kyoto/Basics/COsContext.hpp"
 #include "Kyoto/Basics/CStopwatch.hpp"
 #include "Kyoto/TOneStatic.hpp"
-#include "CGuiSys/CGuiSys.hpp"
 
 #include "MetroidPrime/CArchitectureQueue.hpp"
 #include "MetroidPrime/CIOWinManager.hpp"
 #include "MetroidPrime/CInputGenerator.hpp"
-
-#include "rstl/vector.hpp"
-
-class CToken;
 
 class CGameArchitectureSupport : public TOneStatic< CGameArchitectureSupport > {
 public:
@@ -27,28 +22,28 @@ public:
   void Update();
   void UnloadAudio();
 
-  inline CStopwatch& GetStopwatch1() { return stopwatch1; }
-  inline CStopwatch& GetStopwatch2() { return stopwatch2; }
-  inline CIOWinManager& GetIOWinManager() { return ioWinMgr; }
-  inline int& GetFramesDrawn() { return gameFrameCount; }
+  inline CStopwatch& GetStopwatch1() { return mTickStopwatch; }
+  inline CStopwatch& GetStopwatch2() { return mDrawStopwatch; }
+  inline CIOWinManager& GetIOWinManager() { return mIoWinMgr; }
+  inline int& GetFramesDrawn() { return mGameFrameCount; }
+  OSAlarm& GetInfiniteLoopAlarm() { return mInfiniteLoopAlarm; }
+  bool IsInfiniteLoopAlarmSet() const { return mInfiniteLoopAlarmSet; }
+  void SetInfiniteLoopAlarmSet(bool set) { mInfiniteLoopAlarmSet = set; }
 
 private:
-  CAudioSys audioSys;
-  CArchitectureQueue archQueue;
-  CStopwatch stopwatch1;
-  CStopwatch stopwatch2;
-  CInputGenerator inputGenerator;
-  CIOWinManager ioWinMgr;
-  // CGuiSys guiSys;
-  int gameFrameCount;
-  float x68_;
-  float x6c_;
-  float x70_;
-  uint x74_;
-  // rstl::vector< CToken > x90_;
-  OSAlarm infiniteLoopAlarm;
-  bool infiniteLoopAlarmSet;
+  CAudioSys mAudioSys;
+  CArchitectureQueue mArchQueue;
+  CStopwatch mTickStopwatch;
+  CStopwatch mDrawStopwatch;
+  CInputGenerator mInputGenerator;
+  CIOWinManager mIoWinMgr;
+  int mGameFrameCount;
+  float mTickRemainder;
+  float mPreviousTickRemainder2;
+  float mPreviousTickRemainder;
+  OSAlarm mInfiniteLoopAlarm;
+  bool mInfiniteLoopAlarmSet;
 };
-// CHECK_SIZEOF(CGameArchitectureSupport, 0xd0)
+CHECK_SIZEOF(CGameArchitectureSupport, 0xa8)
 
 #endif // _CGAMEARCHITECTURESUPPORT

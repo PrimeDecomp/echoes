@@ -34,7 +34,12 @@ public:
     }
     this->operator[](0) = value;
   }
-  rstl::optional_object< T > GetAverage() const;
+  rstl::optional_object< T > GetAverage() const {
+    if (this->empty()) {
+      return rstl::optional_object_null();
+    }
+    return GetAverageValue(this->data(), this->size());
+  }
   rstl::optional_object< T > GetMax() const {
     if (this->empty()) {
       return rstl::optional_object_null();
