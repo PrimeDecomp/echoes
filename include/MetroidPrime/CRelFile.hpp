@@ -3,13 +3,22 @@
 
 #include "types.h"
 
+#include "Kyoto/CRelFileDebugInfo.hpp"
+
+#include "rstl/single_ptr.hpp"
 #include "rstl/string.hpp"
+
+class CDvdRequest;
+struct OSModuleHeader;
 
 // Guessed class and method names. A reference-counted REL module on disc.
 class CRelFile {
 public:
   enum EState {
-    kS_Unloaded = 3,
+    kS_Loading,
+    kS_Loaded,
+    kS_Cancelling,
+    kS_Unloaded,
   };
 
   CRelFile(const rstl::string& name);
@@ -27,15 +36,20 @@ public:
   int GetLoadRequestCount() const { return mLoadRequestCount; }
 
 private:
+  void FreeData();
+  bool StartLoad();
+  void Unlink();
+  void Link();
+
   rstl::string mName;
-  void* x10_;
-  void* x14_;
-  uint x18_;
-  uint x1c_;
+  rstl::single_ptr< CDvdRequest > mDvdRequest;
+  rstl::single_ptr< uchar > mData;
+  uint mDataSize;
+  OSModuleHeader* mModule;
   short mReferenceCount;
   short mLoadRequestCount;
-  int mState;
-  uchar x28_[0x14];
+  EState mState;
+  CRelFileDebugInfo mDebugInfo;
 };
 CHECK_SIZEOF(CRelFile, 0x3c)
 

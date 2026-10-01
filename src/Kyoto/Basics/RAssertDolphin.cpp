@@ -1,4 +1,5 @@
 #include "Kyoto/Basics/RAssertDolphin.hpp"
+#include "Kyoto/CRelFileDebugInfo.hpp"
 
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"
@@ -14,7 +15,6 @@
 extern "C" void fn_803816B4(int);
 extern "C" void fn_80362EC4(void*);
 extern "C" void fn_80377118(int);
-extern u32* fn_8033ED24(int);
 
 static bool SkipFatal = false;
 static char* rs_debugger_buffer = nullptr;
@@ -137,14 +137,14 @@ void ErrorHandler(OSError code, OSContext* context, int dsisr, uint dar) {
       if (i >= rs_debugger_size) {
         OSReport("0x%08x:   0x%08x    0x%08x\n", gpr, *gpr, gpr[1]);
         u32 iVar2 = gpr[1];
-        u32* tmp = fn_8033ED24(iVar2);
+        const CRelFileDebugInfo* tmp = CRelFileDebugInfo::FindByAddress(iVar2);
         if (tmp == NULL) {
           len += sprintf(buffer + len, "0x%08x: 0x%08x 0x%08x\n", gpr, *gpr, gpr[1]);
         }
 
         if (tmp != NULL) {
-          OSReport("RFO:0x%08x: %s\n", iVar2 - tmp[1], *tmp);
-          len += sprintf(buffer + len, "RFO:0x%08x: %s\n", iVar2 - tmp[1], *tmp);
+          OSReport("RFO:0x%08x: %s\n", iVar2 - tmp->GetStart(), tmp->GetName());
+          len += sprintf(buffer + len, "RFO:0x%08x: %s\n", iVar2 - tmp->GetStart(), tmp->GetName());
         }
       }
     } else {
