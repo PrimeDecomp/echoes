@@ -542,6 +542,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakTargeting.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakGuiColors.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakGui.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Player/CFrontEndGameMode.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGMDeathMatch.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGMCoin.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGMMultiplayer.cpp"),

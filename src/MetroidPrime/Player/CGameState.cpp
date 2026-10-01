@@ -10,7 +10,7 @@
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/Player/CGMCoin.hpp"
 #include "MetroidPrime/Player/CGMDeathMatch.hpp"
-#include "MetroidPrime/Player/CGMFrontEnd.hpp"
+#include "MetroidPrime/Player/CFrontEndGameMode.hpp"
 #include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
@@ -399,37 +399,37 @@ void ConfigureGameModeLayers() {
 
 // Guessed name
 void StartGameFromFrontEnd() {
-  const CGMFrontEnd config = static_cast< const CGMFrontEnd& >(gpGameState->GetGameMode());
+  const CFrontEndGameMode config = static_cast< const CFrontEndGameMode& >(gpGameState->GetGameMode());
   CGameMode* mode = nullptr;
   switch (config.GetSelectedGameMode()) {
-  case CGMFrontEnd::kSGM_SinglePlayer:
+  case CFrontEndGameMode::kSGM_SinglePlayer:
     mode = rs_new CGMSinglePlayer;
     break;
-  case CGMFrontEnd::kSGM_DeathMatch: {
+  case CFrontEndGameMode::kSGM_DeathMatch: {
     CGMDeathMatch* deathMatch = rs_new CGMDeathMatch(config.GetPlayerCount(), config.GetFragLimit(),
                                                      config.GetTimeLimit(), true, false);
     deathMatch->SetMusicIndex(config.GetMusicIndex());
     mode = deathMatch;
     break;
   }
-  case CGMFrontEnd::kSGM_Coin: {
+  case CFrontEndGameMode::kSGM_Coin: {
     CGMCoin* coin =
         rs_new CGMCoin(config.GetPlayerCount(), config.GetCoinLimit(), config.GetTimeLimit(), true);
     coin->SetMusicIndex(config.GetMusicIndex());
     mode = coin;
     break;
   }
-  case CGMFrontEnd::kSGM_FrontEnd:
-    mode = rs_new CGMFrontEnd;
+  case CFrontEndGameMode::kSGM_FrontEnd:
+    mode = rs_new CFrontEndGameMode;
     break;
   }
 
   const CGameState::SPreviousGameResults results = gpGameState->PreviousGameResults();
   gpMain->StreamNewGameState(false);
-  if (config.GetSelectedGameMode() == CGMFrontEnd::kSGM_Coin ||
-      config.GetSelectedGameMode() == CGMFrontEnd::kSGM_DeathMatch) {
+  if (config.GetSelectedGameMode() == CFrontEndGameMode::kSGM_Coin ||
+      config.GetSelectedGameMode() == CFrontEndGameMode::kSGM_DeathMatch) {
     gpGameState->LoadCompressedMultiplayerOptions();
-  } else if (config.GetSelectedGameMode() == CGMFrontEnd::kSGM_SinglePlayer) {
+  } else if (config.GetSelectedGameMode() == CFrontEndGameMode::kSGM_SinglePlayer) {
     gpGameState->LoadCompressedGameOptions(gpGameState->SystemOptions().GetSaveIdx());
   }
   gpGameState->GameOptions().EnsureOptions();
@@ -437,11 +437,9 @@ void StartGameFromFrontEnd() {
   gpGameState->PreviousGameResults() = results;
 
   for (int i = 0; i < config.GetPlayerCount(); ++i) {
-    const CGMFrontEnd::SPlayerConfig& player = config.GetPlayer(i);
+    const CFrontEndPlayerData& player = config.GetPlayer(i);
     gpGameState->PlayerState(i)->FUN_80085c18(player.mPlayerSelection);
-    rstl::pair< bool, bool >& options = gpGameState->GameOptions().PlayerOptions(i);
-    options.first = player.mRumbleEnabled;
-    options.second = player.x5_;
+    gpGameState->GameOptions().PlayerOptions(i) = player.mOptions;
   }
   ConfigureGameModeLayers();
   gpGameState->WriteBackupBuf();

@@ -1,13 +1,22 @@
-#ifndef _CGMFRONTEND
-#define _CGMFRONTEND
+#ifndef _CFRONTENDGAMEMODE
+#define _CFRONTENDGAMEMODE
 
 #include "types.h"
 
 #include "MetroidPrime/Player/CGameMode.hpp"
+#include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 
-// Guessed name. Partial interface used when starting a game from the front end.
-class CGMFrontEnd : public CGameMode {
+// Class name from the Wii MP2 SEL (SetPlayerData__17CFrontEndGameMode...). Members are guessed.
+class CFrontEndPlayerData {
+public:
+  uint mPlayerSelection;
+  rstl::pair< bool, bool > mOptions; // Rumble enabled; second meaning unresolved.
+};
+CHECK_SIZEOF(CFrontEndPlayerData, 8)
+
+// Class and SetNextGame*/SetPlayerData names from the Wii MP2 SEL; the rest is guessed.
+class CFrontEndGameMode : public CGameMode {
 public:
   // Guessed names
   enum ESelectedGameMode {
@@ -17,18 +26,10 @@ public:
     kSGM_FrontEnd = 'FRND'
   };
 
-  // Guessed name
-  struct SPlayerConfig {
-    uint mPlayerSelection;
-    bool mRumbleEnabled;
-    bool x5_; // Second controller option; meaning unresolved.
-  };
-
-  CGMFrontEnd();
-  CGMFrontEnd(const CGMFrontEnd& other);
+  CFrontEndGameMode();
 
   // CGameMode
-  ~CGMFrontEnd() override;
+  ~CFrontEndGameMode() override {}
   void PutTo(COutputStream& out) const override;
   void Update(float dt, CStateManager& mgr) override;
   void OnPlayerKilled(CStateManager& mgr, TUniqueId victim, TUniqueId killer) override;
@@ -40,21 +41,28 @@ public:
   void OnPlayerDamaged(CStateManager& mgr, TUniqueId victim, TUniqueId attacker,
                        float damage) override;
   void NotifyStop(CStateManager& mgr, TUniqueId player) override;
-  uint GetNumPlayers() const override;
+  uint GetNumPlayers() const override { return 1; }
   bool IsGameOver() override;
   void EndGame(int resultIndex, CStateManager& mgr) override;
   int GetResultIndex() const override;
-  int GetGameModeType() override;
+  int GetGameModeType() override { return kSGM_FrontEnd; }
   void GiveScore(CStateManager& mgr, uint playerIndex, uint amount) override;
   int GetItemAmount(const CStateManager& mgr, uint playerIndex) const override;
   bool IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const override;
   void AddListener(CGameModeListener& listener, uint playerIndex) override;
   void RemoveListener(CGameModeListener& listener, uint playerIndex) override;
   bool v21() const override;
-  float GetElapsedTime() const override;
-  float GetMatchTimeLimit() const override;
+  float GetElapsedTime() const override { return -1.f; }
+  float GetMatchTimeLimit() const override { return -1.f; }
 
-  const SPlayerConfig& GetPlayer(int player) const;
+  void SetNextGameType4CC(uint type);
+  void SetNextGameFragLimit(int limit);
+  void SetNextGameCoinLimit(int limit);
+  void SetNextGameTimeLimit(float limit);
+  void SetNextGameMusicIndex(int index);
+  void SetPlayerData(const rstl::reserved_vector< CFrontEndPlayerData, 4 >& players);
+
+  const CFrontEndPlayerData& GetPlayer(int player) const;
   int GetPlayerCount() const;
   float GetTimeLimit() const { return mTimeLimit; }
   ESelectedGameMode GetSelectedGameMode() const { return mSelectedGameMode; }
@@ -63,17 +71,16 @@ public:
   int GetMusicIndex() const { return mMusicIndex; }
 
 private:
-  bool x4_;
-  int x8_;
+  bool mGameOver;
+  int mResultIndex;
   ESelectedGameMode mSelectedGameMode;
   int mFragLimit;
   int mCoinLimit;
   float mTimeLimit;
   int mMusicIndex;
-  rstl::reserved_vector< SPlayerConfig, 4 > mPlayers;
+  rstl::reserved_vector< CFrontEndPlayerData, 4 > mPlayers;
 };
 
-CHECK_SIZEOF(CGMFrontEnd, 0x44)
-NESTED_CHECK_SIZEOF(CGMFrontEnd, SPlayerConfig, 8)
+CHECK_SIZEOF(CFrontEndGameMode, 0x44)
 
-#endif // _CGMFRONTEND
+#endif // _CFRONTENDGAMEMODE

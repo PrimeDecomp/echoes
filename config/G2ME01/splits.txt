@@ -923,6 +923,11 @@ MetroidPrime/CQuitGameScreen.cpp:
 MetroidPrime/CInGameGuiManager.cpp:
 	.text       start:0x80222EC4 end:0x80226B3C
 
+MetroidPrime/Player/CFrontEndGameMode.cpp:
+	.text       start:0x80226B3C end:0x80226D30
+	.data       start:0x803B8490 end:0x803B84F8
+	.sdata2     start:0x8041DAC0 end:0x8041DAC8
+
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
