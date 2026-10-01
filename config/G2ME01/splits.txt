@@ -317,6 +317,14 @@ MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp:
 	.sdata      start:0x80418068 end:0x80418070
 	.sdata2     start:0x8041B1F8 end:0x8041B200
 
+MetroidPrime/CMappableObject.cpp:
+	.text       start:0x800BB4B8 end:0x800BC178
+	.ctors      start:0x803A54E8 end:0x803A54EC
+	.rodata     start:0x803A7F40 end:0x803A8020
+	.data       start:0x803B3638 end:0x803B3660
+	.bss        start:0x8040D508 end:0x8040D568 align:4 common
+	.sdata2     start:0x8041B200 end:0x8041B230
+
 MetroidPrime/Player/CPlayerCameraBob.cpp:
 	.text       start:0x800BC178 end:0x800BCFC4
 	.ctors      start:0x803A54EC end:0x803A54F0
