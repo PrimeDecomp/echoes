@@ -372,6 +372,12 @@ MetroidPrime/Weapons/CWeapon.cpp:
 	.text       start:0x800DAE94 end:0x800DB3B0
 	.data       start:0x803B38A8 end:0x803B3924
 
+MetroidPrime/CDamageVulnerability.cpp:
+	.text       start:0x800DB3B0 end:0x800DC37C
+	.ctors      start:0x803A5500 end:0x803A5504
+	.bss        start:0x803DA988 end:0x803DAA88
+	.sdata2     start:0x8041B5F0 end:0x8041B600
+
 MetroidPrime/CActorLights.cpp:
 	.text       start:0x800DC37C end:0x800DED98
 	.sdata2     start:0x8041B604 end:0x8041B608 align:4

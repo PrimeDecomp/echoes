@@ -585,6 +585,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CDecalManager.cpp"),
             Object(NonMatching, "MetroidPrime/CPhysicsActor.cpp"),
             Object(NonMatching, "MetroidPrime/CModelData.cpp"),
+            Object(NonMatching, "MetroidPrime/CDamageVulnerability.cpp"),
             Object(NonMatching, "MetroidPrime/CActorLights.cpp"),
             Object(NonMatching, "MetroidPrime/CGroundMovement.cpp"),
             Object(NonMatching, "MetroidPrime/CGameCollision.cpp"),
