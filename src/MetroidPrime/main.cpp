@@ -1,5 +1,10 @@
 #include "MetroidPrime/CMain.hpp"
 
+#include "Kyoto/Alloc/LockedCache.hpp"
+#include "MetroidPrime/CDamageVulnerability.hpp"
+#include "MetroidPrime/CSaveRegion.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
+
 #include "Kyoto/Audio/CDSPStreamManager.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
@@ -68,35 +73,41 @@ CFactoryFnReturn FParticleSwooshDataFactory(const SObjectTag&, CInputStream&,
 CFactoryFnReturn FParticleFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag&, CInputStream&,
                                               const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_8032B5DC(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_8032F0D4(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_8025DB38(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+// Guessed names, supported by native resource tags and constructed/parsed types.
+CFactoryFnReturn FSpawnParticleSystemDataFactory(const SObjectTag&, CInputStream&,
+                                                 const CVParamTransfer&);
+CFactoryFnReturn FSortedParticleSystemDataFactory(const SObjectTag&, CInputStream&,
+                                                  const CVParamTransfer&);
+CFactoryFnReturn FProjectileWeaponDataFactory(const SObjectTag&, CInputStream&,
+                                              const CVParamTransfer&);
 CFactoryFnReturn RGuiFrameFactoryInGame(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FRasterFontFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FScannableObjectInfoFactory(const SObjectTag&, CInputStream&,
                                              const CVParamTransfer&);
 CFactoryFnReturn FAiFiniteStateMachineFactory(const SObjectTag&, CInputStream&,
                                               const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_801FD314(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FAiStateMachine2Factory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag&, const rstl::auto_ptr< uchar >&,
                                               int, const CVParamTransfer&);
 CFactoryFnReturn FCollidableOBBTreeGroupFactory(const SObjectTag&, CInputStream&,
                                                 const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_802601D0(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FDecalDataFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FAudioTranslationTableFactory(const SObjectTag&, CInputStream&,
                                                const CVParamTransfer&);
 CFactoryFnReturn FPathFindAreaFactory(const SObjectTag&, const rstl::auto_ptr< uchar >&, int,
                                       const CVParamTransfer&);
 CFactoryFnReturn FMapWorldFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_8007E32C(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FMapAreaFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FMapUniverseFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FMidiDataFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_80182830(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FSaveWorldFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FHintFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_8028B1F4(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_80255600(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FSpatialPrimitivesFactory(const SObjectTag&, CInputStream&,
+                                           const CVParamTransfer&);
+CFactoryFnReturn FPortalAreaDataFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FSTLCFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-extern "C" CFactoryFnReturn fn_801EF598(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag&, CInputStream&,
+                                                        const CVParamTransfer&);
 CFactoryFnReturn FRuleSetFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 
 class CCharacterFactoryBuilder;
@@ -104,12 +115,6 @@ class CGameState;
 class CMemoryCard;
 class CInGameTweakManager;
 
-extern "C" void fn_800DC0B0();
-extern "C" void fn_800DC03C();
-extern "C" uint fn_8033D2EC();
-extern "C" void fn_80218760();
-extern "C" void fn_8021878C();
-extern "C" void fn_802187B8(CInputStream&);
 extern "C" BOOL __PADDisableRecalibration(BOOL);
 extern "C" void OSSetSaveRegion(void*, void*);
 extern "C" void sndQuit();
@@ -131,9 +136,9 @@ float sInfiniteLoopTime;
 uint gARAMAllocationSize = (0x8f00 * 28 / 8) * 4;
 CIOWinManager* gpIOWinManager;
 CRELFileManager* gpRelFileManager;
-extern void* lbl_804192F0;
-extern const void* lbl_804192F4;
-extern bool lbl_80417D80;
+extern bool sProgressiveModePrompt; // Prime-correlated name; shared with CSplashScreen.
+
+#define UNUSED_STACK_VAL 0x7337D00D
 
 static uchar sMainSpace[sizeof(CMain)];
 static u32 sARAMMemArray[3];
@@ -178,8 +183,8 @@ CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
 }
 
 extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, void* unk1,
-                            CMemorySys* mMemorySys, void* unk2) {
-  CMain* main = new (&sMainSpace) CMain(context, unk1, mMemorySys, unk2);
+                            CMemorySys* memorySys, void* unk2) {
+  CMain* main = new (&sMainSpace) CMain(context, unk1, memorySys, unk2);
   main->RsMain(argc, argv);
   main->~CMain();
 }
@@ -199,7 +204,7 @@ void CMain::InitializeSubsystems() {
   uchar* stackBase = thread->stackBase;
   OSProtectRange(OS_PROTECT_CHAN3, stackEnd, 0x400, OS_PROTECT_CONTROL_NONE);
   for (uchar* ptr = stackEnd + 0x400; ptr < stackBase - 0x2000; ptr += sizeof(uint)) {
-    *reinterpret_cast< uint* >(ptr) = 0x7337d00d;
+    *reinterpret_cast< uint* >(ptr) = UNUSED_STACK_VAL;
   }
   DCFlushRange(stackEnd + 0x400, stackBase - 0x2000 - (stackEnd + 0x400));
   printf("Stack: 0x%8.8x down to 0x%8.8x\n", thread->stackBase, thread->stackEnd);
@@ -208,7 +213,7 @@ void CMain::InitializeSubsystems() {
   CAnimData::InitializeCache();
   CARAMManager::Initialize(0x800, 0x600000, 0x1000);
   CDecalManager::Initialize();
-  fn_800DC0B0();
+  CDamageVulnerability::Initialize();
   CFrameDelayedKiller::Initialize();
 }
 
@@ -223,18 +228,18 @@ void CMain::ShutdownSubsystems() {
     while (!tweaks.IsLoaded()) {
       gpRelFileManager->Update();
     }
-    fn_80218760();
+    FreeTweaks();
     tweaks.Unload();
   }
   gpRelFileManager->WaitForAllFiles();
-  fn_800DC03C();
+  CDamageVulnerability::Shutdown();
 
   OSThread* thread = OSGetCurrentThread();
   uchar* stackEnd =
       reinterpret_cast< uchar* >((reinterpret_cast< uint >(thread->stackEnd) + 0x3ff) & ~0x3ff);
   uchar* ptr = stackEnd + 0x400;
   for (; ptr < thread->stackBase - 0x2000; ptr += sizeof(uint)) {
-    if (*reinterpret_cast< uint* >(ptr) != 0x7337d00d) {
+    if (*reinterpret_cast< uint* >(ptr) != UNUSED_STACK_VAL) {
       break;
     }
   }
@@ -276,9 +281,9 @@ void InfiniteLoopAlarm(OSAlarm* alarm, OSContext* context) {
   sInfiniteLoopTime += alarm->period / OS_TIMER_CLOCK;
 }
 
-CGameArchitectureSupport::CGameArchitectureSupport(COsContext& mOsContext)
+CGameArchitectureSupport::CGameArchitectureSupport(COsContext& osContext)
 : mAudioSys(0x30, 0x30, 0x30, 0x30, gARAMAllocationSize)
-, mInputGenerator(&mOsContext, gpTweakPlayerA->GetLeftAnalogMax(),
+, mInputGenerator(&osContext, gpTweakPlayerA->GetLeftAnalogMax(),
                   gpTweakPlayerA->GetRightAnalogMax())
 , mGameFrameCount(0)
 , mTickRemainder(0.f)
@@ -425,8 +430,8 @@ void CGameGlobalObjects::AddPaksAndFactories(COsContext& context) {
   gpController = nullptr;
   {
     CMemoryInStream stream(tweakData.get(), tweakFile.Length(), CMemoryInStream::kOS_NotOwned);
-    fn_802187B8(stream);
-    fn_8021878C();
+    LoadTweaks(stream);
+    CreateTweakGlobals();
     tweaks.Unload();
   }
 
@@ -442,30 +447,30 @@ void CGameGlobalObjects::AddPaksAndFactories(COsContext& context) {
   factories.AddFactory('SWHC', FParticleSwooshDataFactory);
   factories.AddFactory('PART', FParticleFactory);
   factories.AddFactory('ELSC', FParticleElectricDataFactory);
-  factories.AddFactory('SPSC', fn_8032B5DC);
-  factories.AddFactory('SRSC', fn_8032F0D4);
-  factories.AddFactory('WPSC', fn_8025DB38);
+  factories.AddFactory('SPSC', FSpawnParticleSystemDataFactory);
+  factories.AddFactory('SRSC', FSortedParticleSystemDataFactory);
+  factories.AddFactory('WPSC', FProjectileWeaponDataFactory);
   factories.AddFactory('FRME', RGuiFrameFactoryInGame);
   factories.AddFactory('FONT', FRasterFontFactory);
   factories.AddFactory('SCAN', FScannableObjectInfoFactory);
   factories.AddFactory('AFSM', FAiFiniteStateMachineFactory);
-  factories.AddFactory('FSM2', fn_801FD314);
+  factories.AddFactory('FSM2', FAiStateMachine2Factory);
   factories.AddFactory('AGSC', FAudioGroupSetLocDataFactory);
   factories.AddFactory('DCLN', FCollidableOBBTreeGroupFactory);
-  factories.AddFactory('DPSC', fn_802601D0);
+  factories.AddFactory('DPSC', FDecalDataFactory);
   factories.AddFactory('ATBL', FAudioTranslationTableFactory);
   factories.AddFactory('PATH', FPathFindAreaFactory);
   factories.AddFactory('MAPW', FMapWorldFactory);
-  factories.AddFactory('MAPA', fn_8007E32C);
+  factories.AddFactory('MAPA', FMapAreaFactory);
   factories.AddFactory('MAPU', FMapUniverseFactory);
   factories.AddFactory('CSNG', FMidiDataFactory);
   factories.AddFactory('DGRP', FDependencyGroupFactory);
-  factories.AddFactory('SAVW', fn_80182830);
+  factories.AddFactory('SAVW', FSaveWorldFactory);
   factories.AddFactory('HINT', FHintFactory);
-  factories.AddFactory('CSPP', fn_8028B1F4);
-  factories.AddFactory('PTLA', fn_80255600);
+  factories.AddFactory('CSPP', FSpatialPrimitivesFactory);
+  factories.AddFactory('PTLA', FPortalAreaDataFactory);
   factories.AddFactory('STLC', FSTLCFactory);
-  factories.AddFactory('EGMC', fn_801EF598);
+  factories.AddFactory('EGMC', FEditorGeometryToStaticGeometryFactory);
   factories.AddFactory('RULE', FRuleSetFactory);
 }
 
@@ -529,14 +534,14 @@ bool CMain::CheckReset() {
     __PADDisableRecalibration(true);
   }
   {
-    CMemoryStreamOut stream(lbl_804192F0, 128);
+    CMemoryStreamOut stream(CSaveRegion::GetSaveBuffer(), CSaveRegion::kSaveBufferSize);
     CBitStreamWriter writer(stream);
     writer.WriteBits(CGraphics::GetProgressiveMode(), 1);
     gpGameState->GameOptions().PutTo(writer);
     gpGameState->PreviousGameResults().PutTo(writer);
-    writer.WriteBits(lbl_80417D80, 1);
+    writer.WriteBits(sProgressiveModePrompt, 1);
     writer.FlushAll();
-    if (writer.GetOutputStream().GetWrittenBytes() < 128) {
+    if (writer.GetOutputStream().GetWrittenBytes() < CSaveRegion::kSaveBufferSize) {
       OSReport("Wrote: %d", writer.GetOutputStream().GetWrittenBytes());
     } else {
       rs_debugger_printf("Reset failed! Tried %d", stream.GetWrittenBytes());
@@ -554,10 +559,10 @@ bool CMain::CheckReset() {
     if (CAudioSys::mInitialized) {
       sndQuit();
     }
-    void* savedOptions = reinterpret_cast< void* >(0x811fff80);
-    memcpy(savedOptions, lbl_804192F0, 128);
-    DCFlushRange(savedOptions, 128);
-    OSSetSaveRegion(savedOptions, reinterpret_cast< void* >(0x81200000));
+    void* savedOptions = CSaveRegion::GetSaveRegionStart();
+    memcpy(savedOptions, CSaveRegion::GetSaveBuffer(), CSaveRegion::kSaveBufferSize);
+    DCFlushRange(savedOptions, CSaveRegion::kSaveBufferSize);
+    OSSetSaveRegion(savedOptions, CSaveRegion::GetSaveRegionEnd());
     OSResetSystem(OS_RESET_RESTART, 0, false);
   } else {
     OSResetSystem(OS_RESET_HOTRESET, 0, false);
@@ -580,7 +585,7 @@ CGameGlobalObjects::~CGameGlobalObjects() {}
 int CMain::RsMain(int argc, const char* const* argv) {
   PPCSetFpIEEEMode();
   CStopwatch startupTimer;
-  if (fn_8033D2EC() == 0xe0000000) {
+  if (GetLockedCacheAllocationBase() == LCGetBase()) {
     LCEnable();
   }
   rstl::single_ptr< CGameGlobalObjects > globalObjects(
@@ -609,14 +614,15 @@ int CMain::RsMain(int argc, const char* const* argv) {
         rs_new CGameArchitectureSupport(*mOsContext));
     mArchSupport = architecture.get();
     srand(startupTimer.GetElapsedMicros());
-    if (lbl_804192F4 != nullptr) {
-      CMemoryInStream stream(lbl_804192F4, 128);
+    if (CSaveRegion::GetNonVolatileSettingsBuffer() != nullptr) {
+      CMemoryInStream stream(CSaveRegion::GetNonVolatileSettingsBuffer(),
+                             CSaveRegion::kSaveBufferSize);
       CBitStreamReader reader(stream);
       reader.ReadBits(1);
       gpGameState->GameOptions() = CGameOptions(reader);
       gpGameState->PreviousGameResults() = CGameState::SPreviousGameResults(reader);
       gpGameState->GameOptions().EnsureOptions();
-      lbl_80417D80 = reader.ReadPackedBool();
+      sProgressiveModePrompt = reader.ReadPackedBool();
     }
     const int gameMode = gpGameState->GetGameModeType();
     if (gameMode != 'COIN' && gameMode != 'DTHM') {

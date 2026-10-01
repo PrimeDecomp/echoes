@@ -1,4 +1,5 @@
 #include "Kyoto/Basics/CBasics.hpp"
+#include "Kyoto/Alloc/LockedCache.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
 #include <Kyoto/Graphics/CMoviePlayer.hpp>
@@ -24,7 +25,6 @@
 
 extern bool lbl_804199CC;
 extern bool lbl_80419B9D;
-extern "C" void* fn_8033D2EC();
 
 static rstl::string SelectMoviePath(const char* path) {
   rstl::string name(path);
@@ -38,7 +38,7 @@ static rstl::string SelectMoviePath(const char* path) {
 }
 
 static bool ShouldEnableLockedCache() {
-  return reinterpret_cast< void* >(0xe0000000) != fn_8033D2EC();
+  return LCGetBase() != GetLockedCacheAllocationBase();
 }
 
 class CInterruptGuard {

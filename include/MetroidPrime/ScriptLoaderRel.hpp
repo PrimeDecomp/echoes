@@ -68,4 +68,9 @@ struct STweaks_FuncPtrs {
 };
 void SetTweaks_FuncPtrs(STweaks_FuncPtrs*);
 
+// Guessed names; dispatch through the currently loaded Tweaks REL's function table.
+void LoadTweaks(CInputStream&);
+void CreateTweakGlobals();
+void FreeTweaks();
+
 #endif // _SCRIPTLOADERREL
