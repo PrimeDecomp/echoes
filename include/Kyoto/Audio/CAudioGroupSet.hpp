@@ -28,7 +28,7 @@ private:
 };
 CHECK_SIZEOF(CAudioGrpSetLoc, 0x18)
 
-const CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag& tag,
+CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag& tag,
                                                     const rstl::auto_ptr< uchar >& data, int length,
                                                     const CVParamTransfer& xfer);
 

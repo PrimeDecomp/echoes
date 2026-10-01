@@ -412,7 +412,7 @@ void CMapArea::Draw(const CColor& surfColor, const CColor& outlineColor,
 
 static CAssetId gHackAssetId = kInvalidAssetId;
 
-const CFactoryFnReturn FMapAreaFactory(const SObjectTag& objTag, CInputStream& in,
+CFactoryFnReturn FMapAreaFactory(const SObjectTag& objTag, CInputStream& in,
                                        const CVParamTransfer&) {
   gHackAssetId = objTag.GetId();
   return rs_new CMapArea(in, gpResourceFactory->ResourceSize(objTag));

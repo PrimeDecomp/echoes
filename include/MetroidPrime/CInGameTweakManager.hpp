@@ -3,6 +3,7 @@
 
 #include "Kyoto/SObjectTag.hpp"
 #include "rstl/string.hpp"
+#include "rstl/vector.hpp"
 
 class CTweakValue {
 public:
@@ -35,11 +36,18 @@ CHECK_SIZEOF(CTweakValue, 0x48)
 
 class CInGameTweakManager {
 public:
+  CInGameTweakManager();
+  ~CInGameTweakManager();
+  bool ReadFromMemoryCard(const rstl::string& name);
   bool HasTweakValue(const rstl::string& key) const;
   const CTweakValue* GetTweakValue(const rstl::string& key) const;
   static rstl::string GetIdentifierForWorldDefaultMusic(CAssetId world);
   static rstl::string GetIdentifierForMusicEvent(CAssetId areaId, const rstl::string& name);
+
+private:
+  rstl::vector< CTweakValue > mValues;
 };
+CHECK_SIZEOF(CInGameTweakManager, 0x10)
 
 extern CInGameTweakManager* gpTweakManager;
 

@@ -72,7 +72,7 @@ void IElement::CElementAllocator::Free(void* ptr, size_t) {
   }
 }
 
-const CFactoryFnReturn FParticleFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FParticleFactory(const SObjectTag& tag, CInputStream& in,
                                   const CVParamTransfer& xfer) {
   rstl::rc_ptr< IVParamObj > obj = xfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();

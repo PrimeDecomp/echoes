@@ -122,6 +122,6 @@ CMidiManager::CMidiData::CMidiData(CInputStream& in)
   in.Get(mData.get(), len);
 }
 
-const CFactoryFnReturn FMidiDataFactory(const SObjectTag& tag, CInputStream& in, const CVParamTransfer&) {
+CFactoryFnReturn FMidiDataFactory(const SObjectTag& tag, CInputStream& in, const CVParamTransfer&) {
   return rs_new CMidiManager::CMidiData(in);
 }

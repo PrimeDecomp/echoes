@@ -17,7 +17,7 @@ private:
   static bool CreateELSM(CElectricDescription* desc, CInputStream& in, CSimplePool* pool);
 };
 
-const CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag& tag, CInputStream& in,
                                               const CVParamTransfer& transfer);
 
 #endif // _CPARTICLEELECTRICDATAFACTORY

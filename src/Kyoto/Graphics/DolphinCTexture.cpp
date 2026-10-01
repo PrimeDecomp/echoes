@@ -435,7 +435,7 @@ void CTexture::UnLock() {
   DCFlushRange(mARAMToken.GetMRAMSafe(), OSRoundUp32B(mMemoryAllocated));
 }
 
-const CFactoryFnReturn FTextureFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FTextureFactory(const SObjectTag& tag, CInputStream& in,
                                        const CVParamTransfer& xfer) {
   return rs_new CTexture(in, CTexture::kAM_Zero, CTexture::kBK_Zero);
 }

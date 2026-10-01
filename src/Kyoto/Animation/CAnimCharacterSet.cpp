@@ -6,7 +6,7 @@
 CAnimCharacterSet::CAnimCharacterSet(CInputStream& in)
 : mVersion(in.Get< ushort >()), mCharacterSet(in), mAnimationSet(in) {}
 
-const CFactoryFnReturn FAnimCharacterSet(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FAnimCharacterSet(const SObjectTag& tag, CInputStream& in,
                                          const CVParamTransfer& xfer) {
   return rs_new CAnimCharacterSet(in);
 }

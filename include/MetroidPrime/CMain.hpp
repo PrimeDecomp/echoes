@@ -2,6 +2,7 @@
 #define _CMAIN
 
 #include "Kyoto/SObjectTag.hpp"
+#include "Kyoto/TReservedAverage.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
 #include "rstl/reserved_vector.hpp"
@@ -9,6 +10,8 @@
 class CStopwatch;
 class CGameGlobalObjects;
 class CMemorySys;
+class COsContext;
+class CGameArchitectureSupport;
 
 class CMain {
 public:
@@ -46,57 +49,59 @@ public:
   bool CheckTerminate();
   bool CheckReset();
   void OpenWindow();
-  void SetRestartMode(ERestartMode s) { restartMode = s; }
-  ERestartMode GetRestartMode() const { return restartMode; }
-  // void SetCardBusy(bool v) { x160_31_cardBusy = v; }
+  void SetRestartMode(ERestartMode mode) { mRestartMode = mode; }
+  ERestartMode GetRestartMode() const { return mRestartMode; }
 
   void SetMaxSpeed(bool enabled);
 
   bool GetMaxSpeed();
 
-  void SetX30(bool v) { x90_30_ = v; }
+  void SetGameExitReset(bool reset) { mGameExitReset = reset; }
+  void SetGameFrameDrawn(bool drawn) { mGameFrameDrawn = drawn; }
+  // Guessed names; the native flag forces two ticks and a 30-FPS frame wait.
+  void SetThirtyFps(bool enabled);
+  bool GetThirtyFps() const { return mThirtyFps; }
+  // Guessed name; minimum asynchronous resource budget for the next frame.
+  void SetFrameTimeMinimum(uint time);
 
   static void EnsureWorldPaksReady();
   static void EnsureWorldPakReady(CAssetId id);
 
   void DecrementMaxSpeedDrawTimer(float dt) { mMaxSpeedDrawTimer -= dt; }
-  bool GetFinished() const { return finished; }
+  bool GetFinished() const { return mFinished; }
   float GetAverageTickTime() const { return mAverageTickTime; }
   float GetAverageDrawTime() const { return mAverageDrawTime; }
 
-  // // TODO
-  // COsContext& InitOsContext() {
-  //   OpenWindow();
-  //   return x0_osContext;
-  // }
-
 private:
-  COsContext* osContext;
-  void* mUnk1;
-  CMemorySys* memorySys;
-  void* mUnk2;
-  char mPad[0x30];
+  COsContext* mOsContext;
+  void* x4_; // Supplied by InvokeCMain; pointee identity unresolved.
+  CMemorySys* mMemorySys;
+  void* xc_; // Supplied by InvokeCMain; pointee identity unresolved.
+  double x10_;
+  TReservedAverage< float, 4 > mTickTimes;
+  TReservedAverage< float, 4 > mDrawTimes;
   float mAverageTickTime;
   float mAverageDrawTime;
-  int frameTimeMinimum;
-  float x4c;
-  float x50;
-  CGameGlobalObjects* gameGlobalObjects;
-  ERestartMode restartMode;
+  uint mFrameTimeMinimum;
+  float mSoftResetHoldTime;
+  float mResetInputDelay;
+  CGameGlobalObjects* mGameGlobalObjects;
+  ERestartMode mRestartMode;
   float mMaxSpeedDrawTimer; // Guessed name.
-  rstl::reserved_vector< uint, 10 > frameTimes;
-  int frameTimeIdx;
-  bool finished : 1;
-  bool mfGameBuilt : 1;
-  bool mMaxSpeed : 1; // Guessed name: cinematic-skip fast-forward.
-  bool x90_27_ : 1;
+  rstl::reserved_vector< uint, 10 > mFrameTimes;
+  int mFrameTimeIdx;
+  bool mFinished : 1;
+  bool mMfGameBuilt : 1; // Inherited name; no semantic use identified in this TU.
+  bool mMaxSpeed : 1;    // Guessed name: cinematic-skip fast-forward.
+  bool mResetButtonHeld : 1;
   bool mManageCard : 1;
-  bool x90_29_ : 1;
-  bool x90_30_ : 1;
-  bool mCardBusy : 1;
-  // bool x161_24_gameFrameDrawn : 1;
-  // CGameArchitectureSupport* x164_;
+  bool mResetRequested : 1;
+  bool mGameExitReset : 1;
+  bool mGameFrameDrawn : 1;
+  bool mThirtyFps : 1;
+  CGameArchitectureSupport* mArchSupport;
 };
+CHECK_SIZEOF(CMain, 0x98)
 
 extern CMain* gpMain;
 

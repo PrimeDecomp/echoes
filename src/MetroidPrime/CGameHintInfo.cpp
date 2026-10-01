@@ -244,7 +244,7 @@ void CHintOptions::DismissDisplayedHint() {
   }
 }
 
-const CFactoryFnReturn FHintFactory(const SObjectTag& tag, CInputStream& in,
+CFactoryFnReturn FHintFactory(const SObjectTag& tag, CInputStream& in,
                                     const CVParamTransfer& params) {
   in.ReadInt32();
   const int version = in.ReadInt32();
