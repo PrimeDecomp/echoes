@@ -11,6 +11,7 @@ public:
 
   ~CPreFrontEnd() override;
   EMessageReturn OnMessage(const CArchitectureMessage&, CArchitectureQueue&) override;
+  void Draw() const override;
 };
 CHECK_SIZEOF(CPreFrontEnd, 0x14)
 

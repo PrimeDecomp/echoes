@@ -695,6 +695,11 @@ MetroidPrime/CSlideShow.cpp:
 MetroidPrime/CProjectedShadow.cpp:
 	.text       start:0x801917F8 end:0x80192708
 
+MetroidPrime/CPreFrontEnd.cpp:
+	.text       start:0x80192708 end:0x80192864
+	.rodata     start:0x803AA210 end:0x803AA228
+	.data       start:0x803B5BA0 end:0x803B5BC0
+
 MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp:
 	.text       start:0x80192864 end:0x8019312C
 	.data       start:0x803B5BC0 end:0x803B5C40
@@ -917,6 +922,11 @@ MetroidPrime/CQuitGameScreen.cpp:
 
 MetroidPrime/CInGameGuiManager.cpp:
 	.text       start:0x80222EC4 end:0x80226B3C
+
+MetroidPrime/Player/CFrontEndGameMode.cpp:
+	.text       start:0x80226B3C end:0x80226D30
+	.data       start:0x803B8490 end:0x803B84F8
+	.sdata2     start:0x8041DAC0 end:0x8041DAC8
 
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC

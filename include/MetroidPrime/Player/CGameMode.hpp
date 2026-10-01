@@ -10,7 +10,7 @@ class CStateManager;
 // Method names are guessed from the GameCube virtual interface.
 class CGameMode {
 public:
-  virtual ~CGameMode();
+  virtual ~CGameMode() {}
   virtual void PutTo(COutputStream& out) const = 0;
   virtual void Update(float dt, CStateManager& mgr) = 0;
   virtual void OnPlayerKilled(CStateManager& mgr, TUniqueId victim, TUniqueId killer) = 0;
