@@ -40,7 +40,7 @@ public:
   ~CMapArea();
 
   void PostConstruct();
-  void fn_8007F374();
+  void BuildDisplayLists(); // Guessed name
   bool GetIsVisibleToAutoMapper(bool worldVis, bool areaVis) const;
   bool IsInDarkWorld() const; // Guessed name
   CVector3f GetAreaCenterPoint() const;

@@ -154,6 +154,9 @@ public:
   static inline void LoadTexMtxImm(const float mtx[][4], unsigned long id, GXTexMtxType type) {
     GXLoadTexMtxImm(const_cast< MtxPtr >(mtx), id, type);
   }
+  static inline void LoadNrmMtxImm(const float mtx[][4], unsigned long id) {
+    GXLoadNrmMtxImm(const_cast< MtxPtr >(mtx), id);
+  }
 
   static GXColor GetChanAmbColor(EChannelId channel);
   static const GXColor& GetTevKColor(GXTevKColorID id) { return gpGXState->mKColors[id]; }

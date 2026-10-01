@@ -41,7 +41,7 @@ CMapArea::CMapArea(CInputStream& in, uint size)
   mBuf = rs_new uchar[mSize];
   in.Get(mBuf.get(), mSize);
   PostConstruct();
-  fn_8007F374();
+  BuildDisplayLists();
 
   DCFlushRange(mVertexStart, mVertexCount * 0xc);
   CMemoryDrawEnum::AddWorldMemory(sizeof(*this) + mSize + mRenderBufSize);
@@ -74,7 +74,7 @@ void CMapArea::PostConstruct() {
   }
 }
 
-void CMapArea::fn_8007F374() {
+void CMapArea::BuildDisplayLists() {
   mSurfaceDisplayListSize = 0;
   mOutlineDisplayListSize = 0;
 
@@ -306,7 +306,7 @@ static GXVtxDescList sLitVtxDescList[3] = {
     {GX_VA_NULL, GX_NONE},
 };
 
-static void fn_8007EAB4() {
+static void SetupLitGXMaterial() {
   CGX::SetVtxDescv(sLitVtxDescList);
   CGX::SetNumChans(1);
   CGX::SetNumTexGens(0);
@@ -318,7 +318,7 @@ static void fn_8007EAB4() {
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
 }
 
-static void fn_8007E9B0() {
+static void SetupOutlineGXMaterial() {
   const GXVtxDescList list[2] = {
       {GX_VA_POS, GX_INDEX8},
       {GX_VA_NULL, GX_NONE},
@@ -371,7 +371,7 @@ static GXVtxDescList sOutlineVtxDescList[2] = {
 void CMapArea::Draw(const CColor& surfColor, const CColor& outlineColor,
                            const CTransform4f& areaXf, const CTransform4f& modelXf, int curArea,
                            const CMapWorldInfo& mwInfo, float alpha) const {
-  fn_8007EAB4();
+  SetupLitGXMaterial();
   CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_Or, kAF_Always, 0);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
   CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
@@ -384,7 +384,7 @@ void CMapArea::Draw(const CColor& surfColor, const CColor& outlineColor,
   PSMTXConcat(sViewMtx, areaXf.GetCStyleMatrix(), modelView);
   Mtx normalMtx;
   PSMTXInvXpose(modelView, normalMtx);
-  GXLoadNrmMtxImm(normalMtx, GX_PNMTX0);
+  CGX::LoadNrmMtxImm(normalMtx, GX_PNMTX0);
   CGraphics::SetModelMatrix(modelXf * areaXf);
   CGraphics::EnableLight(kLight0);
   CGX::CallDisplayList(mSurfaceDisplayList, mSurfaceDisplayListSize);
@@ -395,7 +395,7 @@ void CMapArea::Draw(const CColor& surfColor, const CColor& outlineColor,
   CGX::SetTevKColor(GX_KCOLOR0, outlineColor.GetGXColor());
   CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
                    GX_AF_NONE);
-  fn_8007E9B0();
+  SetupOutlineGXMaterial();
   CGX::CallDisplayList(mOutlineDisplayList, mOutlineDisplayListSize);
 
   CGraphics::SetModelMatrix(modelXf);
@@ -404,7 +404,7 @@ void CMapArea::Draw(const CColor& surfColor, const CColor& outlineColor,
     const CMappableObject& obj = mMoStart[i];
     if (CMappableObject::IsDoorType(obj.GetType())) {
       CGX::SetArray(GX_VA_POS, mDoorVertices + doorOffset, sizeof(CVector3f));
-      obj.fn_800BB898(curArea, mwInfo, alpha);
+      obj.DrawDoor(curArea, mwInfo, alpha);
       doorOffset += 8 * sizeof(CVector3f);
     }
   }

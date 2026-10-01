@@ -39,7 +39,7 @@ public:
                        bool needsVtxLoad) const;
   CVector3f BuildSurfaceCenterPoint(int surfaceIdx) const;
   static bool IsDoorType(EMappableObjectType type) { return type >= 0 && type <= 7; }
-  void fn_800BB898(int curAreaId, const CMapWorldInfo& info, float alpha) const;
+  void DrawDoor(int curAreaId, const CMapWorldInfo& info, float alpha) const; // Guessed name
 
   EMappableObjectType GetType() const { return mType; }
   TEditorId GetObjId() const { return mObjId; }
