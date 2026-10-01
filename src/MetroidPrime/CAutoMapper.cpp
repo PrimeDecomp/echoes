@@ -1149,6 +1149,10 @@ void CAutoMapper::ProcessMapPanInput(const CFinalInput& input, const CStateManag
   }
 }
 
+static inline CMapArea* GetMapArea(const IWorld& world, int aid) {
+  return world.IGetMapWorld()->GetMapArea(aid);
+}
+
 void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float alpha) const {
   float drawAlpha = alpha * gpGameState->GameOptions().GetHudAlpha();
   gpRender->SetBlendMode_AlphaBlended();
@@ -1301,7 +1305,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
           mgr.GetCameraManager(mPlayerIndex)->GetCurrentCameraTransform(mgr, 1));
       const float angle = CMath::ClampRadians(eulers.GetYaw());
       const CVector3f playerPos =
-          mWorld->IGetMapWorld()->GetMapArea(mgr.GetNextAreaId().value)->GetMapAdjustment() +
+          GetMapArea(*mWorld, mgr.GetNextAreaId().value)->GetAreaPostTranslate(*mWorld) +
           mgr.GetPlayer(mPlayerIndex)->GetTranslation();
       gpRender->SetModelMatrix(
           mapXf * CTransform4f(CMatrix3f::RotateZ(CRelAngle::FromRadians(angle)), playerPos) *
