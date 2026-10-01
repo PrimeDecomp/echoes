@@ -15,7 +15,8 @@
 #include "rstl/single_ptr.hpp"
 #include "string.h"
 
-#include "MetroidPrime/StartupFont.inc"
+#include "MetroidPrime/DefaultFontData.inc"
+#include "MetroidPrime/DefaultFontTexture.inc"
 
 class CCubeRenderer;
 class IController;
