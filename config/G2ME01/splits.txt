@@ -867,6 +867,10 @@ MetroidPrime/CPauseScreen.cpp:
 MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
 	.text       start:0x8020EBF0 end:0x8020EE18
 
+MetroidPrime/CRelFile.cpp:
+	.text       start:0x80213650 end:0x80213C08
+	.rodata     start:0x803ACBE0 end:0x803ACBE8
+
 MetroidPrime/Tweaks/CTweakTargeting.cpp:
 	.text       start:0x80213CC0 end:0x802142A0
 	.data       start:0x803B8038 end:0x803B805C align:4
@@ -2068,6 +2072,10 @@ Kyoto/Particles/CDeferredParticleEffect.cpp:
 	.text       start:0x8033E3E8 end:0x8033ED24
 	.rodata     start:0x803B0238 end:0x803B0240
 	.sdata2     start:0x8041EE18 end:0x8041EE20
+
+Kyoto/CRelFileDebugInfo.cpp:
+	.text       start:0x8033ED24 end:0x8033EE98
+	.sbss       start:0x80419CA8 end:0x80419CB0
 
 Kyoto/Streams/CBitStreamWriter.cpp:
 	.text       start:0x80342B44 end:0x80342D98
