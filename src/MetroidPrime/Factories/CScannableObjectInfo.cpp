@@ -23,7 +23,7 @@ void CScannableObjectInfo::ReadProperties(CInputStream& in) {
       data.scanInfoTextStringTable = in.ReadInt32();
       break;
     case 0xc308a322:
-      data.unknown_0xc308a322.value = in.ReadInt32();
+      data.unknown_0xc308a322 = in.ReadInt32();
       break;
     case 0x7b714814:
       data.critical = in.ReadBool();
@@ -86,7 +86,7 @@ void CScannableObjectInfo::ReadProperties(CInputStream& in) {
   }
 
   mStringTableId = data.scanInfoTextStringTable;
-  mTotalDownloadTime = gpTweakGui->GetScanSpeed(data.unknown_0xc308a322.value);
+  mTotalDownloadTime = gpTweakGui->GetScanSpeed(data.unknown_0xc308a322);
   mCritical = data.critical;
   mUseScanModel = data.unknown_0x1733b1ec;
   mScanTextureId = data.scanTextureInHud;

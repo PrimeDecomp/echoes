@@ -83,8 +83,8 @@ struct SLdrIngBoostBallGuardianStruct {
 
   float boostPuddleModeTime; // 0x25d02bc5
   float unknown_0xabe99de0; // 0xabe99de0
-  float unknown_0xe2b23f03; // 0xe2b23f03
-  float unknown_0x2f845006; // 0x2f845006
+  float breakBoostPuddleModeDamage; // 0xe2b23f03
+  float breakBoostModeDamage; // 0x2f845006
   float nextBoostTimeMin; // 0x5d1626fb
   float nextBoostTimeMax; // 0xbb76891a
   int unknown_0x285d67ad; // 0x285d67ad
@@ -128,9 +128,9 @@ struct SLdrBoostBallGuardianData {
   float unknown_0xb0e85d53; // 0xb0e85d53
   SLdrDamageInfo ingSpotDamageToMorphBall; // 0x5616d5f1
   SLdrDamageInfo ingSpotDamageToFirstPerson; // 0xed685533
-  CAssetId pART; // non-matching name, 0xd771ec43
-  CAssetId pART_0x2009a977; // non-matching name, 0x2009a977
-  CAssetId pART_0x62ab33a2; // non-matching name, 0x62ab33a2
+  CAssetId boostIngSpotBlobEffect; // 0xd771ec43
+  CAssetId boostIngSpotHitNormalDamage; // 0x2009a977
+  CAssetId boostIngSpotHitHeavyDamage; // 0x62ab33a2
   SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct; // non-matching name, 0xbab98497
   SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xfe18a18f; // non-matching name, 0xfe18a18f
   SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xc2784287; // non-matching name, 0xc2784287

@@ -16,7 +16,7 @@ struct SLdrTweakGuiColors_HUDColorsTypedef {
   CColor freeLookBarColor; // 0xa6609cc5
   CColor missileGroupActiveColor; // 0xcbb3fb76
   CColor missileGroupInactiveColor; // 0xd110a12f
-  CColor unknown_0xdcaab836; // 0xdcaab836
+  CColor missileGroupChangeFlash; // 0xdcaab836
   CColor energyBarFilledColor; // 0xacf62d93
   CColor energyBarShadowColor; // 0xb9a9fc6e
   CColor energyBarEmptyColor; // 0x37e381c2
@@ -36,11 +36,11 @@ struct SLdrTweakGuiColors_Misc {
 
   CColor pauseScreenBGModulateColor; // 0x8ed04c36
   CColor unknown_0x166c22e0; // 0x166c22e0
-  CColor unknown_0xcec78e81; // 0xcec78e81
-  CColor unknown_0x91338f72; // 0x91338f72
+  CColor radarPlayerPaintColor; // 0xcec78e81
+  CColor radarEnemyPaintColor; // 0x91338f72
   CColor unknown_0x0d24ae6b; // 0x0d24ae6b
-  CColor unknown_0xddc561eb; // 0xddc561eb
-  CColor unknown_0x9be28150; // 0x9be28150
+  CColor radarFriendTeamPaintColor; // 0xddc561eb
+  CColor radarEnemyTeamPaintColor; // 0x9be28150
   CColor hUDMemoTextForegroundColor; // 0x2df1eb03
   CColor hUDMemoTextOutlineColor; // 0xb5da30f4
   CColor hUDDecorativeColor; // 0xc8ddc662
@@ -100,7 +100,7 @@ struct SLdrTweakGuiColors_Misc {
   CColor flashPassColor; // 0x6a839a97
   CColor scanWindowFrameBaseColor; // 0x79ea6f12
   CColor scanWindowFrameActiveColor; // 0xdc901206
-  CColor unknown_0xc54fa7bc; // 0xc54fa7bc
+  CColor scanWindowFrameFlashAddColor; // 0xc54fa7bc
   CColor unknown_0x18717fa7; // 0x18717fa7
   CColor unknown_0x8b7d7378; // 0x8b7d7378
   CColor unknown_0x867b01a2; // 0x867b01a2
@@ -115,7 +115,7 @@ struct SLdrTweakGuiColors_Misc {
   CColor scanHudHierarchyFinalTextColor; // 0xef1ec40e
   CColor scanHudHierarchyPercentTextColor; // 0x0ca7beb2
   CColor scanHudHierarchyBarMeterColor; // 0x87d3ce8a
-  CColor unknown_0xeb7eb756; // 0xeb7eb756
+  CColor darkVisorHelmetLightModulateColor; // 0xeb7eb756
   CColor metroidSuckPulseColor; // 0xe4c1bbeb
   CColor unknown_0xce7c9d8d; // 0xce7c9d8d
   CColor energyBarDamageColor; // 0x13490420

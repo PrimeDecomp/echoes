@@ -66,17 +66,17 @@ struct SLdrTweakAutoMapper_Base {
   float miniMapViewportPositionY; // 0x9980db64
   float miniMapViewportWidth; // 0x23f59057
   float miniMapViewportHeight; // 0xad3d5a3f
-  float unknown_0x3315d22b; // 0x3315d22b
+  float miniMapDynamicCameraDistanceScalar; // 0x3315d22b
   float miniMapWidgetHalfWidth; // 0x9e4007b6
   float miniMapWidgetHalfHeight; // 0x7a8d3d46
   bool unknown_0x2b97d64c; // 0x2b97d64c
-  float unknown_0xbdc57ce0; // 0xbdc57ce0
-  float unknown_0x7d59c854; // 0x7d59c854
-  float unknown_0x3c4ef7d2; // 0x3c4ef7d2
+  float mapScreenMapUniverseDefaultCameraDistance; // 0xbdc57ce0
+  float mapScreenMapUniverseMinCameraDistance; // 0x7d59c854
+  float mapScreenMapUniverseMaxCameraDistance; // 0x3c4ef7d2
   float mapScreenToMapUniverseTime; // 0x2b483e9f
   float unknown_0x706f52fe; // 0x706f52fe
-  float unknown_0x62f9ebf6; // 0x62f9ebf6
-  float unknown_0xa9a53853; // 0xa9a53853
+  float mapScreenClipWindowScaleX; // 0x62f9ebf6
+  float mapScreenClipWindowScaleY; // 0xa9a53853
   float mapScreenMove2DHoverDepth; // 0x722b1bc0
   CColor playerModelColor; // 0x4c3fc933
   CColor playerFlashedColor; // 0x5a87c156
@@ -84,7 +84,7 @@ struct SLdrTweakAutoMapper_Base {
   CColor playerOutlineColor; // 0x2a247ede
   CColor textColor; // 0x44303a9c
   CColor textOutlineColor; // 0xf2e13506
-  CColor unknown_0x1a4b8068; // 0x1a4b8068
+  CColor scanlineColor; // 0x1a4b8068
   CColor frameColor; // 0xa485372c
   CColor titleColor; // 0x536647d5
   CColor legendBackgroundColor; // 0xa6b633fa

@@ -9,6 +9,8 @@ class CDamageInfo;
 
 class CTweakPlayer {
 public:
+  // Guessed accessor spellings remain reconstructed; renamed SLdr field roles
+  // are verified unless their property comment explicitly says non-matching.
   explicit CTweakPlayer(const SLdrTweakPlayer& data) : mData(&data) {}
 
   float GetNormalGravAccel() const;
@@ -57,7 +59,7 @@ public:
   float GetOrbitLowerAngle() const;
   float GetOrbitHorizAngle() const;
   float GetOrbitMaxLockDistance() const;
-  float GetOrbitInvalidTargetTime() const; // Guessed name.
+  float GetOrbitBreakOnOccludedTime() const; // Guessed name.
   float GetOrbitMaxTargetDistance() const;
   float GetOrbitDistanceThreshold() const;
   int GetOrbitZoneWidth(CPlayer::EPlayerZoneInfo zone) const;
@@ -116,12 +118,12 @@ public:
   float GetStepDownHeight() const;
   float GetBallRadius() const;
   float GetFirstPersonCameraSpeed() const;
-  float GetJumpCameraPitchDownStart() const;    // Guessed name.
-  float GetJumpCameraPitchDownDuration() const; // Guessed name.
-  float GetJumpCameraPitchDownAngle() const;    // Guessed name.
-  float GetFallCameraPitchDownStart() const;    // Guessed name.
-  float GetFallCameraPitchDownDuration() const; // Guessed name.
-  float GetFallCameraPitchDownAngle() const;    // Guessed name.
+  float GetJumpCameraPitchDownStart() const; // Guessed name.
+  float GetJumpCameraPitchDownFull() const;  // Guessed name.
+  float GetJumpCameraPitchDownAngle() const; // Guessed name.
+  float GetFallCameraPitchDownStart() const; // Guessed name.
+  float GetFallCameraPitchDownFull() const;  // Guessed name.
+  float GetFallCameraPitchDownAngle() const; // Guessed name.
   float GetFrozenTimeout() const;
   int GetIceBreakJumpCount() const;
   float GetFrozenDamageThreshold() const;

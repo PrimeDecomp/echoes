@@ -5,36 +5,36 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
-struct SLdrUnknownStruct16 {
-  SLdrUnknownStruct16();
-  ~SLdrUnknownStruct16();
+struct SLdrDSMissiles {
+  SLdrDSMissiles();
+  ~SLdrDSMissiles();
 
   float unknown_0x7ee77018; // 0x7ee77018
   float unknown_0xbfb7ca5c; // 0xbfb7ca5c
   float unknown_0x1e2debc6; // 0x1e2debc6
 };
 
-void LoadTypedefSLdrUnknownStruct16(SLdrUnknownStruct16& data, CInputStream& input);
+void LoadTypedefSLdrDSMissiles(SLdrDSMissiles& data, CInputStream& input);
 
-struct SLdrUnknownStruct17 {
-  SLdrUnknownStruct17();
-  ~SLdrUnknownStruct17();
+struct SLdrDSStageInfo {
+  SLdrDSStageInfo();
+  ~SLdrDSStageInfo();
 
   float unknown_0xb5af7831; // 0xb5af7831
   float minTimeBetweenActions; // 0xac65eb7a
   float maxTimeBetweenActions; // 0x4f3855a0
-  float unknown_0x08c0b02c; // 0x08c0b02c
-  float unknown_0x695f68c7; // 0x695f68c7
+  float minTimeBetweenActionsWhenInvisible; // 0x08c0b02c
+  float maxTimeBetweenActionsWhenInvisible; // 0x695f68c7
   float unknown_0xd061ff99; // 0xd061ff99
   float pauseDurationMin; // 0x97dbd42a
   float pauseDurationMax; // 0x71bb7bcb
   float chanceToDoubleDash; // 0xb751778b
-  SLdrUnknownStruct16 unknown_0xd6740348; // 0xd6740348
+  SLdrDSMissiles missiles; // 0xd6740348
   bool unknown_0x3ff87a8c; // 0x3ff87a8c
   bool unknown_0x49b9936d; // 0x49b9936d
   bool unknown_0xc96b8223; // 0xc96b8223
   bool unknown_0x53fdcb5b; // 0x53fdcb5b
-  bool unknown_0x0d7ef013; // 0x0d7ef013
+  bool usesAlternateScannableInfo; // 0x0d7ef013
   bool unknown_0xaa85c885; // 0xaa85c885
   float pause; // 0x80f7e605
   float taunt; // 0x479f6a4f
@@ -49,8 +49,8 @@ struct SLdrUnknownStruct17 {
   float normalMissile; // 0x6847efa7
   float missileJump; // 0x083fd602
   float superMissile; // 0xdb21402f
-  float unknown_0xe63286eb; // 0xe63286eb
-  float unknown_0x4aae6186; // 0x4aae6186
+  float freezeBeamWhenInvisible; // 0xe63286eb
+  float normalMissileWhenInvisible; // 0x4aae6186
   float sweepBeam; // 0x2bd1c15b
   float boostBall; // 0xb53693fa
   bool unknown_0x2d7551e6; // 0x2d7551e6
@@ -59,14 +59,14 @@ struct SLdrUnknownStruct17 {
   bool unknown_0x911a2476; // 0x911a2476
 };
 
-void LoadTypedefSLdrUnknownStruct17(SLdrUnknownStruct17& data, CInputStream& input);
+void LoadTypedefSLdrDSStageInfo(SLdrDSStageInfo& data, CInputStream& input);
 
 struct SLdrDarkSamusBattleStage {
   SLdrDarkSamusBattleStage();
   ~SLdrDarkSamusBattleStage();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrUnknownStruct17 unknown_0xd83caab6; // 0xd83caab6
+  SLdrDSStageInfo stage; // 0xd83caab6
 };
 
 void LoadTypedefSLdrDarkSamusBattleStage(SLdrDarkSamusBattleStage& data, CInputStream& input);

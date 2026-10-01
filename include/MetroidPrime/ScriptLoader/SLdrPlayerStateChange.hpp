@@ -4,14 +4,13 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrPlayerItem.hpp"
 
 struct SLdrPlayerStateChange {
   SLdrPlayerStateChange();
   ~SLdrPlayerStateChange();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPlayerItem itemToChange; // 0x4a3491bd
+  int itemToChange; // 0x4a3491bd
   int capacityIncrease; // 0x28c71b54
   int amount; // 0x94af1445
   int command; // 0x94ba5737

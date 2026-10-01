@@ -114,7 +114,7 @@ const CColor& CTweakAutoMapper::GetOutlineDarkUnvisitedSelectColor() const {
   return mData->base.darkMapUnvisitedFocusAreaOutlineColor;
 }
 
-const CColor& CTweakAutoMapper::GetScanLinesColor() const { return mData->base.unknown_0x1a4b8068; }
+const CColor& CTweakAutoMapper::GetScanlineColor() const { return mData->base.scanlineColor; }
 
 const CColor& CTweakAutoMapper::GetFrameColor() const { return mData->base.frameColor; }
 
@@ -166,17 +166,25 @@ CVector2f CTweakAutoMapper::GetMiniMapViewportSize() const {
   return CVector2f(mData->base.miniMapViewportWidth, mData->base.miniMapViewportHeight);
 }
 
-float CTweakAutoMapper::GetMiniMapCamDistScale() const { return mData->base.unknown_0x3315d22b; }
+float CTweakAutoMapper::GetMiniMapDynamicCameraDistanceScalar() const {
+  return mData->base.miniMapDynamicCameraDistanceScalar;
+}
 
 CVector2f CTweakAutoMapper::GetMapPlaneScale() const {
   return CVector2f(mData->base.miniMapWidgetHalfWidth, mData->base.miniMapWidgetHalfHeight);
 }
 
-float CTweakAutoMapper::GetUniverseCamDistance() const { return mData->base.unknown_0xbdc57ce0; }
+float CTweakAutoMapper::GetMapScreenMapUniverseDefaultCameraDistance() const {
+  return mData->base.mapScreenMapUniverseDefaultCameraDistance;
+}
 
-float CTweakAutoMapper::GetMinUniverseCamDistance() const { return mData->base.unknown_0x7d59c854; }
+float CTweakAutoMapper::GetMapScreenMapUniverseMinCameraDistance() const {
+  return mData->base.mapScreenMapUniverseMinCameraDistance;
+}
 
-float CTweakAutoMapper::GetMaxUniverseCamDistance() const { return mData->base.unknown_0x3c4ef7d2; }
+float CTweakAutoMapper::GetMapScreenMapUniverseMaxCameraDistance() const {
+  return mData->base.mapScreenMapUniverseMaxCameraDistance;
+}
 
 float CTweakAutoMapper::GetSwitchToFromUniverseTime() const {
   return mData->base.mapScreenToMapUniverseTime;
@@ -184,9 +192,13 @@ float CTweakAutoMapper::GetSwitchToFromUniverseTime() const {
 
 float CTweakAutoMapper::GetCamPanUnitsPerFrame() const { return mData->base.unknown_0x706f52fe; }
 
-float CTweakAutoMapper::GetAutoMapperScaleX() const { return mData->base.unknown_0x62f9ebf6; }
+float CTweakAutoMapper::GetMapScreenClipWindowScaleX() const {
+  return mData->base.mapScreenClipWindowScaleX;
+}
 
-float CTweakAutoMapper::GetAutoMapperScaleZ() const { return mData->base.unknown_0xa9a53853; }
+float CTweakAutoMapper::GetMapScreenClipWindowScaleY() const {
+  return mData->base.mapScreenClipWindowScaleY;
+}
 
 float CTweakAutoMapper::GetCamVerticalOffset() const {
   return mData->base.mapScreenMove2DHoverDepth;

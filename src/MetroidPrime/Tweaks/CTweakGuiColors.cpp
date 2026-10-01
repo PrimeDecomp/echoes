@@ -25,8 +25,8 @@ const CColor& CTweakGuiColors::GetMissileGroupInactiveColor() const {
   return mData->hUDColors.missileGroupInactiveColor;
 }
 
-const CColor& CTweakGuiColors::GetMissileGroupPulseColor() const {
-  return mData->hUDColors.unknown_0xdcaab836;
+const CColor& CTweakGuiColors::GetMissileGroupChangeFlash() const {
+  return mData->hUDColors.missileGroupChangeFlash;
 }
 
 const CColor& CTweakGuiColors::GetEnergyBarFilledColor() const {
@@ -70,19 +70,19 @@ const CColor& CTweakGuiColors::GetPauseScreenBGModulateColor() const {
 }
 
 const CColor& CTweakGuiColors::GetRadarPlayerPaintColor() const {
-  return mData->misc.unknown_0xcec78e81;
+  return mData->misc.radarPlayerPaintColor;
 }
 
 const CColor& CTweakGuiColors::GetRadarEnemyPaintColor() const {
-  return mData->misc.unknown_0x91338f72;
+  return mData->misc.radarEnemyPaintColor;
 }
 
-const CColor& CTweakGuiColors::GetRadarFriendlyPlayerPaintColor() const {
-  return mData->misc.unknown_0x9be28150;
+const CColor& CTweakGuiColors::GetRadarEnemyTeamPaintColor() const {
+  return mData->misc.radarEnemyTeamPaintColor;
 }
 
-const CColor& CTweakGuiColors::GetRadarEnemyPlayerPaintColor() const {
-  return mData->misc.unknown_0xddc561eb;
+const CColor& CTweakGuiColors::GetRadarFriendTeamPaintColor() const {
+  return mData->misc.radarFriendTeamPaintColor;
 }
 
 const CColor& CTweakGuiColors::GetRadarEchoPulseColor() const {
@@ -211,8 +211,8 @@ const CColor& CTweakGuiColors::GetScanWindowFrameActiveColor() const {
   return mData->misc.scanWindowFrameActiveColor;
 }
 
-const CColor& CTweakGuiColors::GetScanWindowFrameImpulseColor() const {
-  return mData->misc.unknown_0xc54fa7bc;
+const CColor& CTweakGuiColors::GetScanWindowFrameFlashAddColor() const {
+  return mData->misc.scanWindowFrameFlashAddColor;
 }
 
 const CColor& CTweakGuiColors::GetScanVisorHUDLightMultiply() const {
@@ -271,8 +271,8 @@ const CColor& CTweakGuiColors::GetScanHudHierarchyBarMeterColor() const {
   return mData->misc.scanHudHierarchyBarMeterColor;
 }
 
-const CColor& CTweakGuiColors::GetDarkVisorHUDLightMultiply() const {
-  return mData->misc.unknown_0xeb7eb756;
+const CColor& CTweakGuiColors::GetDarkVisorHelmetLightModulateColor() const {
+  return mData->misc.darkVisorHelmetLightModulateColor;
 }
 
 const CColor& CTweakGuiColors::GetMetroidSuckPulseColor() const {

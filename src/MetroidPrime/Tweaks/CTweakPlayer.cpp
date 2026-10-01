@@ -158,7 +158,9 @@ float CTweakPlayer::GetOrbitHorizAngle() const {
 
 float CTweakPlayer::GetOrbitMaxLockDistance() const { return mData->orbit.orbitMaxLockDistance; }
 
-float CTweakPlayer::GetOrbitInvalidTargetTime() const { return mData->orbit.unknown_0x55f7d145; }
+float CTweakPlayer::GetOrbitBreakOnOccludedTime() const {
+  return mData->orbit.orbitBreakOnOccludedTime;
+}
 
 float CTweakPlayer::GetOrbitMaxTargetDistance() const {
   return mData->orbit.orbitMaxTargetDistance;
@@ -345,27 +347,27 @@ float CTweakPlayer::GetFirstPersonCameraSpeed() const {
 }
 
 float CTweakPlayer::GetJumpCameraPitchDownStart() const {
-  return mData->firstPersonCamera.unknown_0xb400ebd6;
+  return mData->firstPersonCamera.jumpCameraPitchDownStart;
 }
 
-float CTweakPlayer::GetJumpCameraPitchDownDuration() const {
-  return mData->firstPersonCamera.unknown_0xfd26b7b9;
+float CTweakPlayer::GetJumpCameraPitchDownFull() const {
+  return mData->firstPersonCamera.jumpCameraPitchDownFull;
 }
 
 float CTweakPlayer::GetJumpCameraPitchDownAngle() const {
-  return CRelAngle::FromDegrees(mData->firstPersonCamera.unknown_0x97b14dc6).AsRadians();
+  return CRelAngle::FromDegrees(mData->firstPersonCamera.jumpCameraPitchDownAngle).AsRadians();
 }
 
 float CTweakPlayer::GetFallCameraPitchDownStart() const {
-  return mData->firstPersonCamera.unknown_0xeb59925a;
+  return mData->firstPersonCamera.fallCameraPitchDownStart;
 }
 
-float CTweakPlayer::GetFallCameraPitchDownDuration() const {
-  return mData->firstPersonCamera.unknown_0xa1d73380;
+float CTweakPlayer::GetFallCameraPitchDownFull() const {
+  return mData->firstPersonCamera.fallCameraPitchDownFull;
 }
 
 float CTweakPlayer::GetFallCameraPitchDownAngle() const {
-  return CRelAngle::FromDegrees(mData->firstPersonCamera.unknown_0xc8e8344a).AsRadians();
+  return CRelAngle::FromDegrees(mData->firstPersonCamera.fallCameraPitchDownAngle).AsRadians();
 }
 
 float CTweakPlayer::GetFrozenTimeout() const { return mData->frozen.frozenTimer; }

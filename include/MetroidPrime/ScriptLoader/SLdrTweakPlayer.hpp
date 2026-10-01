@@ -187,7 +187,7 @@ struct SLdrTweakPlayer_Orbit {
   float orbitLowerCameraAngle; // 0x48c63796
   float orbitMaxTargetDistance; // 0x598beb71
   float orbitMaxLockDistance; // 0x30b2f98e
-  float unknown_0x55f7d145; // 0x55f7d145
+  float orbitBreakOnOccludedTime; // 0x55f7d145
   float orbitDistanceThreshold; // 0xf034335c
   int orbitZoneWidth; // 0x40ae584e
   int orbitZoneHeight; // 0x111e9dec
@@ -280,12 +280,12 @@ struct SLdrTweakPlayer_FirstPersonCamera {
 
   float firstPersonCameraSpeed; // 0xba5eb7f5
   float cameraElevation; // 0x0d41e3ba
-  float unknown_0xb400ebd6; // 0xb400ebd6
-  float unknown_0xfd26b7b9; // 0xfd26b7b9
-  float unknown_0x97b14dc6; // 0x97b14dc6
-  float unknown_0xeb59925a; // 0xeb59925a
-  float unknown_0xa1d73380; // 0xa1d73380
-  float unknown_0xc8e8344a; // 0xc8e8344a
+  float jumpCameraPitchDownStart; // 0xb400ebd6
+  float jumpCameraPitchDownFull; // 0xfd26b7b9
+  float jumpCameraPitchDownAngle; // 0x97b14dc6
+  float fallCameraPitchDownStart; // 0xeb59925a
+  float fallCameraPitchDownFull; // 0xa1d73380
+  float fallCameraPitchDownAngle; // 0xc8e8344a
   float darkLightPitch; // 0xd40c480e
   CVector3f darkLightScale; // 0x7960c3a0
 };

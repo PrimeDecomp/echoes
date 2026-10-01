@@ -4,20 +4,11 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
-struct SLdrControllerActionCommand {
-  SLdrControllerActionCommand();
-  ~SLdrControllerActionCommand();
-
-  int value;
-};
-
-void LoadTypedefSLdrControllerActionCommand(SLdrControllerActionCommand& data, CInputStream& input);
-
 struct SLdrCommand {
   SLdrCommand();
   ~SLdrCommand();
 
-  SLdrControllerActionCommand unknown_0x94ba5737; // 0x94ba5737
+  int unknown_0x94ba5737; // 0x94ba5737
 };
 
 void LoadTypedefSLdrCommand(SLdrCommand& data, CInputStream& input);

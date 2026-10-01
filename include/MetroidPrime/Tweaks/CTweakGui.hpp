@@ -13,6 +13,8 @@ class CMayaSpline;
 
 class CTweakGui {
 public:
+  // Accessor spellings are reconstructed. Named SLdr fields without a non-matching
+  // annotation have verified property identities, including the renamed accessors.
   explicit CTweakGui(const SLdrTweakGui& data) : mData(&data) {}
 
   // Guessed names; reconstructed from native consumers and Prime's interface.
@@ -27,14 +29,14 @@ public:
   float GetMapAlphaInterpolant() const;
 
   // Guessed names; native lock-on, damage-ring, face-light and logbook consumers.
-  const CColor& GetLogBookScanLinesColor() const;
+  const CColor& GetLogBookScanlineColor() const;
   const CColor& GetLockOnIndicatorColor() const;
   float GetLockOnIndicatorScale() const;
   float GetLockOnIndicatorVerticalOffset() const;
   float GetFaceReflectionLightFalloffMultQuadratic() const;
   float GetFaceReflectionLightFalloffMultLinear() const;
   float GetFaceReflectionLightFalloffMultConstant() const;
-  float GetHudDamageRingRadiusScale() const;
+  float GetHUDDamageIndicatorRadius() const;
   const CColor& GetPlayerLockOnIndicatorColor(int playerSelection) const;
   float GetEchoPulseRadiusScale() const;
   float GetBallViewportYReduction() const;
@@ -51,7 +53,7 @@ public:
 
   // Guessed names; native radar, pause-screen and menu consumers establish their roles.
   float GetPauseBlurFactor() const;
-  float GetRadarZRadius() const;
+  float GetRadarWorldHalfHeight() const;
   float GetRadarZCloseRadius() const;
   float GetBeamVisorMenuAnimTime() const;
   float GetVisorBeamMenuItemActiveScale() const;
@@ -68,8 +70,8 @@ public:
   int GetFaceReflectionOrthoHeightDebugValue() const;
 
   // Guessed names, recovered from pause-screen model, camera and slider consumers.
-  float GetLogBookModelMinPitchDegrees() const;
-  float GetLogBookModelMaxPitchDegrees() const;
+  float GetLogBookModelRotationClampLowerLimit() const;
+  float GetLogBookModelRotationClampUpperLimit() const;
   float GetLogBookSliderTextWidthScale() const;
   float GetLogBookSliderTextHeightScale() const;
   float GetLogBookModelXOffset() const;
@@ -79,9 +81,9 @@ public:
   float GetLogBookCameraDistance() const;
 
   // Guessed names; native energy-bar and free-look sound consumers corroborate Prime.
-  float GetEnergyBarFilledSpeed() const;
-  float GetEnergyBarShadowSpeed() const;
-  float GetEnergyBarDrainDelay() const;
+  float GetEnergyBarFilledDrainSpeed() const;
+  float GetEnergyBarShadowDrainSpeed() const;
+  float GetEnergyBarShadowDrainDelay() const;
   bool GetEnergyBarAlwaysResetDelay() const;
   float GetFreeLookSfxPitchScale() const;
   bool GetNoAbsoluteFreeLookSfxPitch() const;
@@ -107,9 +109,9 @@ public:
   float GetScanWindowActiveWidth() const;
   float GetScanWindowIdleHeight() const;
   float GetScanWindowIdleWidth() const;
-  const CMayaSpline& GetScanDisplayModelScaleSpline() const;
-  const CMayaSpline& GetScanDisplayModelRotationSpline() const;
-  const CMayaSpline& GetScanDisplayModelPositionSpline() const;
+  const CMayaSpline& GetScanObjectScaleTransitionSpline() const;
+  const CMayaSpline& GetScanObjectRotationTransitionSpline() const;
+  const CMayaSpline& GetScanObjectTranslateTransitionSpline() const;
   float GetScanSidesEndTime() const;
   float GetScanSidesStartTime() const;
   float GetScanSidesDuration() const;
@@ -224,10 +226,11 @@ public:
   const CColor& GetLogBookMainWindowTextColor() const;
   const CColor& GetLogBookMainWindowSelectedTextColor() const;
   const CColor& GetLogBookNodeColor() const;
-  // Guessed names; style-zero background and nodes with unviewed logbook content.
+  // Guessed name; the style-zero logbook background.
   const CColor& GetLogBookNodeBackgroundColor() const;
-  const CColor& GetLogBookSelectedUnviewedNodeColor() const;
-  const CColor& GetLogBookUnviewedNodeColor() const;
+  // Guessed accessor spellings; main-window roles are verified SLdr field names.
+  const CColor& GetLogBookMainWindowUnviewedSelectedColor() const;
+  const CColor& GetLogBookMainWindowUnviewedColor() const;
   const CColor& GetLogBookSelectedNodeColor() const;
   const CColor& GetLogBookLegendBackgroundColor() const;
   float GetLogBookBranchLength() const;

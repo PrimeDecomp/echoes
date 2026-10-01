@@ -10,6 +10,8 @@ struct SLdrTweakGui_VisorColorSchemeTypedef;
 
 class CTweakGuiColors {
 public:
+  // Accessor spellings are reconstructed; named SLdr field roles are verified
+  // unless their property comment explicitly says non-matching.
   // Guessed name; a borrowed view of one visor's color scheme.
   class SVisorColorScheme {
   public:
@@ -30,7 +32,7 @@ public:
   const CColor& GetMissileGroupActiveColor() const;
   const CColor& GetMissileGroupInactiveColor() const;
   // Guessed name.
-  const CColor& GetMissileGroupPulseColor() const;
+  const CColor& GetMissileGroupChangeFlash() const;
   const CColor& GetEnergyBarFilledColor() const;
   const CColor& GetEnergyBarShadowColor() const;
   const CColor& GetEnergyBarEmptyColor() const;
@@ -46,9 +48,9 @@ public:
   // Guessed name.
   const CColor& GetRadarEnemyPaintColor() const;
   // Guessed name.
-  const CColor& GetRadarFriendlyPlayerPaintColor() const;
+  const CColor& GetRadarEnemyTeamPaintColor() const;
   // Guessed name.
-  const CColor& GetRadarEnemyPlayerPaintColor() const;
+  const CColor& GetRadarFriendTeamPaintColor() const;
   // Guessed name.
   const CColor& GetRadarEchoPulseColor() const;
   const CColor& GetHUDMemoTextForegroundColor() const;
@@ -84,7 +86,7 @@ public:
   const CColor& GetScanWindowFrameBaseColor() const;
   const CColor& GetScanWindowFrameActiveColor() const;
   // Guessed name.
-  const CColor& GetScanWindowFrameImpulseColor() const;
+  const CColor& GetScanWindowFrameFlashAddColor() const;
   // Guessed name.
   const CColor& GetScanVisorHUDLightMultiply() const;
   // Guessed name.
@@ -103,7 +105,7 @@ public:
   const CColor& GetScanHudHierarchyPercentTextColor() const;
   const CColor& GetScanHudHierarchyBarMeterColor() const;
   // Guessed name.
-  const CColor& GetDarkVisorHUDLightMultiply() const;
+  const CColor& GetDarkVisorHelmetLightModulateColor() const;
   const CColor& GetMetroidSuckPulseColor() const;
   // Guessed name.
   const CColor& GetDamageAmbientPulseColor() const;

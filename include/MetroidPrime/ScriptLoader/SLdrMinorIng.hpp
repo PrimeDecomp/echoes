@@ -80,11 +80,11 @@ struct SLdrMinorIng {
   float unknown_0xd6c8eac2; // 0xd6c8eac2
   float unknown_0x2a5449ba; // 0x2a5449ba
   float hearingRadius; // 0xed69488f
-  bool unknown_0x399d1eaa; // 0x399d1eaa
+  bool allowProjectileDuringAttackPattern; // 0x399d1eaa
   bool unknown_0xbce16644; // 0xbce16644
   bool unknown_0x142433d3; // 0x142433d3
-  bool unknown_0xb6cc0063; // 0xb6cc0063
-  bool unknown_0xe601f7bd; // 0xe601f7bd
+  bool stayOnPointPathFinding; // 0xb6cc0063
+  bool allowProjectileDuringStayOnPointPathFinding; // 0xe601f7bd
   bool unknown_0x09207f51; // 0x09207f51
   bool allowPuddleLockOn; // 0x2107e4fb
   SLdrMinorIngIngSpot ingSpot; // 0x07e9d446

@@ -9,7 +9,6 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEchoParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrPlayerItem.hpp"
 
 struct SLdrPickup {
   SLdrPickup();
@@ -18,7 +17,7 @@ struct SLdrPickup {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CVector3f collisionSize; // 0x3a3e03ba
   CVector3f collisionOffset; // 0x2e686c2a
-  SLdrPlayerItem itemToGive; // 0xa02ef0c4
+  int itemToGive; // 0xa02ef0c4
   int capacityIncrease; // 0x28c71b54
   int itemPercentageIncrease; // 0x165ab069
   int amount; // 0x94af1445
