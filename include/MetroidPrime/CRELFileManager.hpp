@@ -11,6 +11,7 @@ class CRELFileManager {
 public:
   CRELFileManager();
   ~CRELFileManager();
+  CRelFile* GetFile(const rstl::string& name); // Guessed name.
   void Update();
   void WaitForAllFiles(); // Guessed name.
 

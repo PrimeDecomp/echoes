@@ -846,6 +846,16 @@ MetroidPrime/Cameras/CCameraShakerData.cpp:
 MetroidPrime/CStaticGeometryMap.cpp:
 	.text       start:0x801EFA00 end:0x801EFA4C
 
+MetroidPrime/CRELFileToken.cpp:
+	.text       start:0x801F0254 end:0x801F0518
+	.rodata     start:0x803AC430 end:0x803AC440
+	.sbss       start:0x80419308 end:0x80419310
+
+MetroidPrime/CRELFileManager.cpp:
+	.text       start:0x801F0518 end:0x801F0D24
+	.rodata     start:0x803AC440 end:0x803AC448
+	.sdata      start:0x80418738 end:0x80418740
+
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F7304
 	.rodata     start:0x803AC548 end:0x803AC550

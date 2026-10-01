@@ -420,6 +420,8 @@ config.libs = [
             Object(NonMatching, "WorldFormat/CAreaRenderOctTree.cpp"),
             Object(MatchingFor("G2ME01"), "WorldFormat/CWorldLight.cpp"),
             Object(NonMatching, "MetroidPrime/CStaticGeometryMap.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileToken.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileManager.cpp"),
             Object(NonMatching, "Collision/CCollidableAABox.cpp"),
             Object(NonMatching, "Collision/CCollidableSphere.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollidableCollisionSurface.cpp"),

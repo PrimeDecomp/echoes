@@ -333,6 +333,12 @@ inline string operator+(const string& a, char c) {
   return result;
 }
 
+inline string operator+(const char* a, const string& b) {
+  string result(a);
+  result.append(b);
+  return result;
+}
+
 inline string operator+(const string& a, const char* c) {
   string result(a);
   result.append(c, -1);
