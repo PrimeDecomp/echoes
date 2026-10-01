@@ -3,10 +3,14 @@
 
 #include "types.h"
 
+class COsContext;
+
 // Prime-correlated name; the native constructor allocates and restores the save buffer.
 class CSaveRegion {
 public:
   enum { kSaveBufferSize = 128 };
+
+  explicit CSaveRegion(COsContext& context);
 
   static void* GetSaveBuffer() { return mSaveBuffer; }
 

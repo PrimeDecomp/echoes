@@ -12,8 +12,6 @@ public:
   ~CGraphicsSys();
 
 private:
-  uint x0_;
-
   static bool mGraphicsInitialized;
 };
 

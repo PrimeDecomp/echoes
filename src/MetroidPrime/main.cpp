@@ -155,11 +155,12 @@ void CMain::SetMaxSpeed(const bool enabled) {
 
 void CMain::SetThirtyFps(bool enabled) { mThirtyFps = enabled; }
 
-CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
+CMain::CMain(COsContext* context, CSaveRegion* saveRegion, CMemorySys* memorySys,
+             CDvdRequestSys* dvdRequestSys)
 : mOsContext(context)
-, x4_(unk1)
+, mSaveRegion(saveRegion)
 , mMemorySys(memorySys)
-, xc_(unk2)
+, mDvdRequestSys(dvdRequestSys)
 , x10_(0.0)
 , mAverageTickTime(0.f)
 , mAverageDrawTime(0.f)
@@ -182,9 +183,9 @@ CMain::CMain(COsContext* context, void* unk1, CMemorySys* memorySys, void* unk2)
   gpMain = this;
 }
 
-extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, void* unk1,
-                            CMemorySys* memorySys, void* unk2) {
-  CMain* main = new (&sMainSpace) CMain(context, unk1, memorySys, unk2);
+extern "C" void InvokeCMain(int argc, char** argv, COsContext* context, CSaveRegion* saveRegion,
+                            CMemorySys* memorySys, CDvdRequestSys* dvdRequestSys) {
+  CMain* main = new (&sMainSpace) CMain(context, saveRegion, memorySys, dvdRequestSys);
   main->RsMain(argc, argv);
   main->~CMain();
 }

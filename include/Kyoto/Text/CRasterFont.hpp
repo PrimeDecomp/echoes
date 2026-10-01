@@ -115,7 +115,7 @@ public:
   int GetCarriageAdvance() const;
   int GetBaseLine() const { return mBaseline; }
   void GetSize(const CDrawStringOptions&, int&, int&, const wchar_t*, int) const;
-  void SetTexture(TToken< CTexture > token);
+  void SetTexture(const TToken< CTexture >& token);
   const TToken< CTexture >& GetTexture() const { return mTexture.data(); }
   bool IsFinishedLoading();
   const CGlyph* GetGlyph(wchar_t chr) const { return InternalGetGlyph(chr); }

@@ -258,7 +258,7 @@ void CRasterFont::SetupRenderState() {
 
 bool CRasterFont::IsFinishedLoading() { return mTexture && mTexture->IsLoaded(); }
 
-void CRasterFont::SetTexture(TToken< CTexture > texture) {
+void CRasterFont::SetTexture(const TToken< CTexture >& texture) {
   mTexture = texture;
   mTexture->Lock();
 }
