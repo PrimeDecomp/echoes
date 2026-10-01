@@ -105,7 +105,7 @@ CFactoryFnReturn FHintFactory(const SObjectTag&, CInputStream&, const CVParamTra
 CFactoryFnReturn FSpatialPrimitivesFactory(const SObjectTag&, CInputStream&,
                                            const CVParamTransfer&);
 CFactoryFnReturn FPortalAreaDataFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
-CFactoryFnReturn FSTLCFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+CFactoryFnReturn FStringListFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag&, CInputStream&,
                                                         const CVParamTransfer&);
 CFactoryFnReturn FRuleSetFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
@@ -469,7 +469,7 @@ void CGameGlobalObjects::AddPaksAndFactories(COsContext& context) {
   factories.AddFactory('HINT', FHintFactory);
   factories.AddFactory('CSPP', FSpatialPrimitivesFactory);
   factories.AddFactory('PTLA', FPortalAreaDataFactory);
-  factories.AddFactory('STLC', FSTLCFactory);
+  factories.AddFactory('STLC', FStringListFactory);
   factories.AddFactory('EGMC', FEditorGeometryToStaticGeometryFactory);
   factories.AddFactory('RULE', FRuleSetFactory);
 }

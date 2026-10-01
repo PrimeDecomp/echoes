@@ -194,6 +194,6 @@ rstl::vector< rstl::string > CStringExtras::TokenizeString(const rstl::string& s
   return ret;
 }
 
-CFactoryFnReturn FSTLCFactory(const SObjectTag&, CInputStream& in, const CVParamTransfer&) {
+CFactoryFnReturn FStringListFactory(const SObjectTag&, CInputStream& in, const CVParamTransfer&) {
   return rs_new rstl::vector< rstl::string >(in);
 }
