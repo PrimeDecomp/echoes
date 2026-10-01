@@ -695,6 +695,11 @@ MetroidPrime/CSlideShow.cpp:
 MetroidPrime/CProjectedShadow.cpp:
 	.text       start:0x801917F8 end:0x80192708
 
+MetroidPrime/CPreFrontEnd.cpp:
+	.text       start:0x80192708 end:0x80192864
+	.rodata     start:0x803AA210 end:0x803AA228
+	.data       start:0x803B5BA0 end:0x803B5BC0
+
 MetroidPrime/ScriptObjects/CScriptProjectedShadow.cpp:
 	.text       start:0x80192864 end:0x8019312C
 	.data       start:0x803B5BC0 end:0x803B5C40
