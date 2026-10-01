@@ -3,7 +3,10 @@
 
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
+
+#include "rstl/pair.hpp"
 
 class CMapWorldInfo;
 
@@ -19,7 +22,14 @@ public:
     kMOT_SuperMissileDoor = 5,
     kMOT_SeekerDoor = 6,
     kMOT_PowerBombDoor = 7,
-    kMOT_Teleporter = 22 // Guessed name
+    kMOT_Elevator = 16,
+    kMOT_SaveStation = 17,
+    kMOT_MissileStation = 20,
+    kMOT_Portal = 21,
+    kMOT_Teleporter = 22, // Guessed name
+    kMOT_TranslatorDoor = 23,
+    kMOT_UpArrow = 24,
+    kMOT_DownArrow = 25
   };
 
   enum EVisMode {
@@ -40,6 +50,8 @@ public:
   CVector3f BuildSurfaceCenterPoint(int surfaceIdx) const;
   static bool IsDoorType(EMappableObjectType type) { return type >= 0 && type <= 7; }
   void DrawDoor(int curAreaId, const CMapWorldInfo& info, float alpha) const; // Guessed name
+  rstl::pair< CColor, CColor > GetDoorColors(int curAreaId, const CMapWorldInfo& info,
+                                             float alpha) const;
 
   EMappableObjectType GetType() const { return mType; }
   TEditorId GetObjId() const { return mObjId; }
@@ -48,6 +60,10 @@ public:
   static CVector3f skDoorVerts[8];
 
 private:
+  // Guessed name
+  void DrawDoorSurface(const CColor& surfaceColor, const CColor& outlineColor, int surfaceIdx,
+                       bool needsVtxLoad) const;
+
   EMappableObjectType mType;
   EVisMode mVisibilityMode;
   TEditorId mObjId;
