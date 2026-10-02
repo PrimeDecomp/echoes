@@ -12,12 +12,11 @@ enum EGameObjectList {
   kOL_All,
   kOL_Actor,
   kOL_PhysicsActor,
-  kOL_GameCamera,
   kOL_GameLight,
   kOL_ListeningAi,
   kOL_AiWaypoint,
-  kOL_PlatformAndDoor,
-  kOL_Unk,
+  kOL_Platform,
+  kOL_Trigger,
 };
 
 class CObjectList {

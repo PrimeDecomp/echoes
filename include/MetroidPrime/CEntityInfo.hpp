@@ -33,6 +33,7 @@ enum EEntityType {
   kET_ScriptActor = 34,
   kET_ScriptActorKeyframe = 35,
   kET_ScriptActorRotate = 36,
+  kET_ScriptAIHint = 37, // Id of the Wii SEL's CScriptAIHint; cast target from CAiWaypointList.
   kET_ScriptAiJumpPoint = 38,
   kET_ScriptCameraHint = 40,
   kET_ScriptCameraShaker = 41,
