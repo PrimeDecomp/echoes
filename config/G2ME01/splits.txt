@@ -356,6 +356,12 @@ MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp:
 	.text       start:0x800B9214 end:0x800BA234
 	.data       start:0x803B35D8 end:0x803B35F8
 
+MetroidPrime/ScriptObjects/CScriptRandomRelay.cpp:
+	.text       start:0x800BA234 end:0x800BABD4
+	.rodata     start:0x803A7F18 end:0x803A7F20
+	.data       start:0x803B35F8 end:0x803B3618
+	.sdata2     start:0x8041B1E0 end:0x8041B1F8
+
 MetroidPrime/HUD/CHUDMemoParms.cpp:
 	.text       start:0x800BABD4 end:0x800BAC10
 
