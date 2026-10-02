@@ -184,6 +184,13 @@ ENUM_RECORDS = frozenset({"PlayerItem"})
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
 # Record -> member -> statements appended after that member's template defaults.
 NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
+    # SLdrAmbientAI, G2ME01 0x801795D8: two actor defaults, no editor re-store.
+    "SLdrAmbientAI": {
+        "actorInformation": (
+            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
+            "visor.visorFlags = 0x0000000fu;",
+        ),
+    },
     "SLdrWorldTeleporter": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
     },

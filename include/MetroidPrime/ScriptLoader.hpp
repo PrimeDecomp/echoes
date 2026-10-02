@@ -12,6 +12,19 @@ class CDamageInfo;
 class CTransform4f;
 class CScannableParameters;
 class CVector2f;
+class CVector3f;
+class CAABox;
+class TAreaId;
+class CModelData;
+class CHealthInfo;
+class CDamageVulnerability;
+namespace rstl {
+template < class T >
+class optional_object;
+}
+struct SLdrHealthInfo;
+struct SLdrDamageVulnerability;
+struct SLdrAnimationSet;
 struct SEchoParameters;
 struct SLdrActorParameters;
 struct SLdrDamageInfo;
@@ -22,6 +35,15 @@ struct SLdrVector2f;
 
 // Names from the Echoes Wii SEL exports.
 CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data);
+CHealthInfo LdrToHealthInfo(const SLdrHealthInfo& data);
+CDamageVulnerability LdrToDamageVulnerability(const SLdrDamageVulnerability& data);
+rstl::optional_object< CModelData > LdrToModelData(const CVector3f& scale, CAssetId model,
+                                               const SLdrAnimationSet& animation,
+                                               bool useAnimation);
+// Reconstructed name, correlated with Prime and verified Echoes loader callers.
+CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
+                 const CVector3f& collisionOffset);
+// Names from the Echoes Wii SEL exports.
 CTransform4f LdrToTransform4f(const SLdrEditorProperties& data);
 CVector2f LdrToVector2f(const SLdrVector2f& data);
 ERglFogMode FogSelectionToFogMode(int selection);
@@ -69,8 +91,7 @@ CEntity* LoadCounter(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
 CEntity* LoadCoverPoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadCrystallite(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadDamageableTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadDamageableTriggerOriented(CStateManager& mgr, CInputStream& input,
-                                       CEntityInfo& info);
+CEntity* LoadDamageableTriggerOriented(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadDamageActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadDarkSamus(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
@@ -87,12 +108,10 @@ CEntity* LoadDoor(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadElitePirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadEmperorIngStage1(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input,
-                                      CEntityInfo& info);
+CEntity* LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadEmperorIngStage3(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadEMPulse(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadEnvFxDensityController(CStateManager& mgr, CInputStream& input,
-                                    CEntityInfo& info);
+CEntity* LoadEnvFxDensityController(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadEyeBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadFishCloud(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
@@ -121,8 +140,7 @@ CEntity* LoadIngBoostBallGuardian(CStateManager& mgr, CInputStream& input, CEnti
 CEntity* LoadIngPuddle(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadIngSpiderBallGuardian(CStateManager& mgr, CInputStream& input,
-                                   CEntityInfo& info);
+CEntity* LoadIngSpiderBallGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadKralee(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadKrocus(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadDynamicLight(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
@@ -168,8 +186,7 @@ CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info
 CEntity* LoadSafeZoneCrystal(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSandBoss(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSandworm(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadScriptLayerController(CStateManager& mgr, CInputStream& input,
-                                   CEntityInfo& info);
+CEntity* LoadScriptLayerController(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadRelay(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSequenceTimer(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadShadowProjector(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
@@ -190,8 +207,7 @@ CEntity* LoadSpiderBallWaypoint(CStateManager& mgr, CInputStream& input, CEntity
 CEntity* LoadSpindleCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSpinner(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSplinter(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadSplitterCommandModule(CStateManager& mgr, CInputStream& input,
-                                   CEntityInfo& info);
+CEntity* LoadSplitterCommandModule(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSplitterMainChassis(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSporbBase(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadSporbNeedle(CStateManager& mgr, CInputStream& input, CEntityInfo& info);

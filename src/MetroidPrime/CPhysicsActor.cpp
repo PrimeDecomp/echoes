@@ -6,6 +6,7 @@
 #include "rstl/math.hpp"
 
 const float CPhysicsActor::kGravityAccel = 9.81f * 2.5f;
+const StepData CPhysicsActor::skDefaultStepData(0.3f, 0.3f, 0);
 
 CPhysicsActor::CPhysicsActor(TUniqueId uid, const rstl::string& name,
                              const CEntityInfo& info, uint inGrave, const CTransform4f& xf,

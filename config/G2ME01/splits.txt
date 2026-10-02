@@ -514,6 +514,7 @@ MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C1C end:0x800EBD40
 	.ctors      start:0x803A5510 end:0x803A5514
 	.data       start:0x803B3A10 end:0x803B3AA8
+	.bss        start:0x80410974 end:0x80410980 align:4 common
 	.sdata2     start:0x8041B75C end:0x8041B790
 
 MetroidPrime/CFluidUVMotion.cpp:
@@ -1019,6 +1020,13 @@ MetroidPrime/CMemoryCard.cpp:
 	.text       start:0x801767BC end:0x8017904C
 	.rodata     start:0x803A9A40 end:0x803A9A58
 	.sdata2     start:0x8041C840 end:0x8041C848
+
+MetroidPrime/Enemies/CAmbientAI.cpp:
+	.text       start:0x8017904C end:0x80179F84
+	.rodata     start:0x803A9A58 end:0x803A9A70
+	.data       start:0x803B5650 end:0x803B56E8
+	.sdata      start:0x80418528 end:0x80418530
+	.sdata2     start:0x8041C848 end:0x8041C868
 
 MetroidPrime/CMemoryCardDriver.cpp:
 	.text       start:0x80179F84 end:0x8017C548
