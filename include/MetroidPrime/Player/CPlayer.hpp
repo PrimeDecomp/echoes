@@ -264,6 +264,8 @@ public:
   void BreakFrozenState(CStateManager& mgr, EBreakFrozenState state, bool playSound);
   void SetVisorSteam(float targetAlpha, float alphaInDuration, float alphaOutDuration,
                      CAssetId texture);
+  const CVisorSteam& GetVisorSteam() const { return mVisorSteam; }
+  float GetVisorSteamAlpha() const { return mVisorSteam.GetAlpha(); }
   static const float skDefaultHudFadeOutSpeed;
   static const float skDefaultHudFadeInSpeed;
   void SetHudDisable(float staticTimer, float fadeOutSpeed = skDefaultHudFadeOutSpeed,
