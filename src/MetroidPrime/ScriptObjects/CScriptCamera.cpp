@@ -19,7 +19,7 @@ CScriptCamera::CScriptCamera(TUniqueId uid, const rstl::string& name, const CEnt
                              CMotionSpline::ESplineType lookAtType,
                              const CMayaSpline& slowMotionSpline)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
-         CActorParameters(), kInvalidUniqueId)
+         CActorParameters::None(), kInvalidUniqueId)
 , mSpline(duration, splineFlags, positionTimeSpline, lookAtTimeSpline, fovSpline, rollSpline,
           positionType, lookAtType)
 , mDuration(duration)

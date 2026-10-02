@@ -11,7 +11,7 @@
 CGameCamera::CGameCamera(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                          const CTransform4f& xf, float fov, float nearZ, float farZ, float aspect,
                          TUniqueId watchedId, int index, int controllerIdx)
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_NoStepLogic), CActorParameters(),
+: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_NoStepLogic), CActorParameters::None(),
          kInvalidUniqueId)
 , mWatchedObject(watchedId)
 , mPerspectiveMatrix(CMatrix4f::Identity())

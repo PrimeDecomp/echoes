@@ -5,7 +5,7 @@
 CScriptRepulsor::CScriptRepulsor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                  const CTransform4f& transform, float radius, float strength,
                                  EShape shape, uint flags)
-: CActor(uid, name, info, 0, transform, CModelData(), CMaterialList(kMT_Pillar), CActorParameters(),
+: CActor(uid, name, info, 0, transform, CModelData::CModelDataNull(), CMaterialList(kMT_Pillar), CActorParameters::None(),
          kInvalidUniqueId)
 , mRadius(radius)
 , mStrength(strength)

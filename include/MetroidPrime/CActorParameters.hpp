@@ -121,7 +121,6 @@ public:
                    bool renderUnsorted, bool highlightedInDarkVisor, bool takesProjectedShadow,
                    bool alphaSorted, bool renderFullEchoModel, uchar maxVolume,
                    uchar maxEchoVolume, float fadeInTime, float fadeOutTime);
-  ~CActorParameters() {}
 
   CActorParameters Scannable(const CScannableParameters& sParms) const;
   CActorParameters HotInThermal(bool hot) const;
