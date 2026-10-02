@@ -8,7 +8,7 @@ public:
   CBSDie();
 
   // CBodyState
-  ~CBSDie() override;
+  ~CBSDie() override {}
   bool IsDead() const override;
   bool IsDying() const override;
   void Start(CBodyController& bc, CStateManager& mgr) override;

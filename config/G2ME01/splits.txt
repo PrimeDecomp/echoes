@@ -472,6 +472,11 @@ MetroidPrime/BodyState/CBSAttack.cpp:
 	.sdata      start:0x80418250 end:0x80418258
 	.sdata2     start:0x8041B840 end:0x8041B850
 
+MetroidPrime/BodyState/CBSDie.cpp:
+	.text       start:0x800F1A10 end:0x800F1C44
+	.data       start:0x803B3DA0 end:0x803B3DE0
+	.sdata2     start:0x8041B850 end:0x8041B860
+
 MetroidPrime/BodyState/CBSFall.cpp:
 	.text       start:0x800F1C44 end:0x800F20D4
 	.data       start:0x803B3DE0 end:0x803B3E20
@@ -519,6 +524,11 @@ MetroidPrime/BodyState/CBSLoopReaction.cpp:
 
 MetroidPrime/CSteeringBehaviors.cpp:
 	.text       start:0x800F90C0 end:0x800FA754
+
+MetroidPrime/BodyState/CBSGroundHit.cpp:
+	.text       start:0x800FA754 end:0x800FAC18
+	.data       start:0x803B43E8 end:0x803B4428
+	.sdata2     start:0x8041B9B8 end:0x8041B9E8
 
 MetroidPrime/BodyState/CBSHurled.cpp:
 	.text       start:0x800FAFE8 end:0x800FBF68
