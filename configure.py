@@ -531,6 +531,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CAnimationDatabaseGame.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CTransitionDatabaseGame.cpp"),
             Object(NonMatching, "MetroidPrime/CTargetReticles.cpp"),
+            Object(NonMatching, "MetroidPrime/CWeaponMgr.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerEnergyDrain.cpp"),
