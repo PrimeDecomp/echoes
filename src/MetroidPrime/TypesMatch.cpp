@@ -17,6 +17,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptRoomAcoustics.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
@@ -83,6 +84,8 @@
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CGameLight::~CGameLight() {}
 
+CScriptRoomAcoustics::~CScriptRoomAcoustics() {}
+
 CEnergyProjectile::~CEnergyProjectile() {}
 
 CEntity* TryCast(CEntity* entity, int typeId) {
@@ -131,6 +134,7 @@ TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
 TYPES_MATCH_IMPL(CGameHint, CActor, kET_GameHint)
 TYPES_MATCH_IMPL(CScriptCameraHint, CGameHint, kET_ScriptCameraHint)
 TYPES_MATCH_IMPL(CScriptPlayerHint, CGameHint, kET_ScriptPlayerHint)
+TYPES_MATCH_IMPL(CScriptRoomAcoustics, CEntity, kET_ScriptRoomAcoustics)
 CAST_TO_PTR_IMPL(CScriptPlayerHint, kET_ScriptPlayerHint)
 CAST_TO_PTR_IMPL(CGameHint, kET_GameHint)
 TYPES_MATCH_IMPL(CScriptActor, CPhysicsActor, kET_ScriptActor)
