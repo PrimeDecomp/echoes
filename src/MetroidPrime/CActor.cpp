@@ -42,6 +42,9 @@
 
 #include <float.h>
 
+// TODO: how else would they end up in .data?
+static EMaterialTypes SolidMaterial = kMT_Solid;
+
 // Guessed name; sorts fluid volumes by their world-space surface height.
 class CFluidHeightCompare {
 public:

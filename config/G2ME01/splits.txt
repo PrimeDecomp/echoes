@@ -996,6 +996,10 @@ MetroidPrime/Weapons/CEnergyProjectile.cpp:
 	.sbss       start:0x80419210 end:0x80419220
 	.sdata2     start:0x8041C624 end:0x8041C680
 
+MetroidPrime/Weapons/CProjectileInfo.cpp:
+	.text       start:0x8016B7B0 end:0x8016BBF4
+	.sdata2     start:0x8041C680 end:0x8041C690
+
 MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
