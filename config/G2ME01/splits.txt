@@ -806,6 +806,13 @@ MetroidPrime/Player/CPlayerEnergyDrain.cpp:
 	.text       start:0x80138DB0 end:0x801399A8
 	.sdata2     start:0x8041C0F0 end:0x8041C0F8
 
+MetroidPrime/Weapons/CIceImpact.cpp:
+	.text       start:0x801399A8 end:0x8013BEB4
+	.rodata     start:0x803A91A0 end:0x803A91A8
+	.data       start:0x803B5040 end:0x803B50C0
+	.sdata      start:0x804183B0 end:0x804183D8
+	.sdata2     start:0x8041C0F8 end:0x8041C140
+
 MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 	.text       start:0x8013C254 end:0x8013C9B0
 	.data       start:0x803B5118 end:0x803B5138

@@ -1,11 +1,25 @@
 #include "MetroidPrime/Weapons/CIceImpact.hpp"
 
+#include "Collision/CMaterialFilter.hpp"
 #include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CTri.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/BodyState/CBodyController.hpp"
+#include "MetroidPrime/CDamageInfo.hpp"
+#include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
+#include "MetroidPrime/TCastTo.hpp"
+#include "WorldFormat/CCollidableOBBTreeGroup.hpp"
+#include "WorldFormat/CCollisionSurface.hpp"
+#include "WorldFormat/COBBTree.hpp"
 
 #include "rstl/math.hpp"
 
@@ -152,23 +166,126 @@ void CIceImpact::AddToRenderer(const CStateManager& mgr) const {
 
 void CIceImpact::Think(float dt, CStateManager& mgr) {
   mLifeTimer += dt;
-  // TODO: generate the collision-surface particles for the expanding spheres.
+  if (mLifeTimer < 0.8f && mElementGen->GetParticleCount() < 400) {
+    for (int i = 0; i < mImpactSpheres.size(); ++i) {
+      SImpactSphere& sphere = mImpactSpheres[i];
+      if (sphere.mRadius > sphere.mMaxRadius) {
+        const rstl::optional_object< SImpactSphere > newSphere = GenerateNewSphere();
+        if (newSphere) {
+          sphere = *newSphere;
+        }
+      }
+    }
+    for (int i = 0; i < mImpactSpheres.size(); ++i) {
+      SImpactSphere& sphere = mImpactSpheres[i];
+      if (!(sphere.mRadius > sphere.mMaxRadius)) {
+        sphere.mPreviousRadius = sphere.mRadius;
+        sphere.mRadius += sphere.mRadiusStep;
+        const CSphere outer(sphere.mPos, sphere.mRadius);
+        const CSphere inner(sphere.mPos, sphere.mPreviousRadius);
+        const CVector3f& pos = outer.GetCenter();
+        const float radius = outer.GetRadius();
+        const CAABox bounds(
+            CVector3f(pos.GetX() - radius, pos.GetY() - radius, pos.GetZ() - radius),
+            CVector3f(pos.GetX() + radius, pos.GetY() + radius, pos.GetZ() + radius));
+        mParticleRemainder = 0.f;
+        GenerateParticlesAgainstActors(mgr, bounds, outer, inner);
+        CAreaCollisionCache cache(bounds);
+        CGameCollision::BuildAreaCollisionCache(mgr, cache);
+        for (int j = 0; j < static_cast< int >(cache.GetNumCaches()); ++j) {
+          GenerateParticlesAgainstWorld(mgr, cache.GetOctreeLeafCache(j), outer, inner);
+        }
+      }
+    }
+  }
+
   mElementGen->SetOrientation(CTransform4f::Identity());
   mElementGen->Update(dt);
+
+  if (mLightId != kInvalidUniqueId) {
+    if (CGameLight* light = TCastToPtr< CGameLight >(mgr.ObjectById(mLightId))) {
+      if (GetActive()) {
+        light->SetLight(mElementGen->GetLight());
+      }
+    }
+  }
+
+  if (mFollowPlayerArea) {
+    mgr.SetActorAreaId(*this, mgr.GetPlayer(0)->GetCurrentAreaId());
+  }
+
   if (mElementGen->IsSystemDeletable()) {
     mgr.DeleteObjectRequest(GetUniqueId());
   }
 }
 
 void CIceImpact::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: register and remove the generator's dynamic light.
+  const EScriptObjectMessage message = msg.GetMessage();
+  const TUniqueId sender = msg.GetUnk();
+  switch (message) {
+  case kSM_XCRT:
+    if (mElementGen->SystemHasLight()) {
+      mLightId = mgr.AllocateUniqueId();
+      const CAssetId sourceId = mGenAssetId;
+      mgr.AddObject(rs_new CGameLight(mLightId, GetCurrentAreaId(), GetActive(), rstl::string_l(""),
+                                      GetTransform(), GetUniqueId(), mElementGen->GetLight(),
+                                      sourceId, 1, 0.f));
+    }
+    break;
+  case kSM_XDelete:
+    if (mLightId != kInvalidUniqueId) {
+      mgr.DeleteObjectRequest(mLightId);
+      mLightId = kInvalidUniqueId;
+    }
+    break;
+  default:
+    break;
+  }
   CActor::AcceptScriptMsg(mgr, msg);
+  if (mLightId != kInvalidUniqueId) {
+    mgr.SendScriptMsg(mLightId, sender, message, kInvalidUniqueId);
+  }
 }
 
 rstl::optional_object< CAABox > CIceImpact::GetTouchBounds() const { return mGrid.GetBounds(); }
 
 void CIceImpact::Touch(CActor& actor, CStateManager& mgr) {
-  // TODO: apply the ice damage/freeze effect to actors intersecting marked cells.
+  if (mLifeTimer > mLatestDamageTime) {
+    return;
+  }
+  if (actor.GetUniqueId() != mOwnerId) {
+    const rstl::optional_object< CAABox > touchBounds = actor.GetTouchBounds();
+    if (!touchBounds) {
+      return;
+    }
+
+    const CDamageInfo damageInfo(CWeaponMode(kWT_Dark, true), 1.6666666f, 0.1f, 1.f);
+    if (CPatterned* patterned = TCastToPtr< CPatterned >(&actor)) {
+      const CAABox expanded(touchBounds->GetMinPoint() - CVector3f(0.f, 0.f, 0.5f),
+                            touchBounds->GetMaxPoint() + CVector3f(0.f, 0.f, 0.5f));
+      if (mGrid.AABoxTouchesData(expanded, 1)) {
+        if (patterned->BodyController()->GetPercentageFrozen() == 0.f) {
+          mgr.ApplyRadiusDamage(*this, expanded.GetCenterPoint(), actor, kInvalidUniqueId,
+                                damageInfo);
+        } else {
+          patterned->BodyController()->Freeze(0.f, 8.f, 0.f);
+        }
+      }
+    }
+
+    if (TCastToPtr< CScriptDamageableTrigger >(&actor) != nullptr) {
+      if (mGrid.AABoxTouchesData(*touchBounds, 1)) {
+        mgr.ApplyDamage(
+            GetUniqueId(), actor.GetUniqueId(), kInvalidUniqueId, damageInfo,
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+            CVector3f::Zero());
+      }
+    }
+
+    if (CPlayer* player = TCastToPtr< CPlayer >(&actor)) {
+      mgr.SendScriptMsg(player->GetUniqueId(), kInvalidUniqueId, kSM_XINS, kInvalidUniqueId);
+    }
+  }
 }
 
 static bool pointInSphere(const CSphere& sphere, const CVector3f& point) {
@@ -201,14 +318,64 @@ rstl::optional_object< CIceImpact::SImpactSphere > CIceImpact::GenerateNewSphere
 bool CIceImpact::GenerateParticlesAgainstWorld(CStateManager& mgr,
                                                const CMetroidAreaCollider::COctreeLeafCache& cache,
                                                const CSphere& outer, const CSphere& inner) {
-  // TODO: traverse the area-octree triangles and subdivide their surfaces.
+  CMetroidAreaCollider::ResetInternalCounters();
+  const CMaterialFilter filter =
+      CMaterialFilter::MakeExclude(CMaterialList(kMT_NoPlatformCollision));
+  for (int n = 0; n < cache.GetNumLeaves(); ++n) {
+    const CAreaOctTree::Node& leaf = cache.GetLeaf(n);
+    const CAreaOctTree::TriListReference triangles = leaf.GetTriangleArray();
+    const CAreaOctTree& owner = leaf.GetOwner();
+    const int triangleCount = triangles.GetSize();
+    bool done = false;
+    for (int i = 0; i < triangleCount && !done; ++i) {
+      int index = triangles.GetAt(i);
+      if (CMetroidAreaCollider::DupTriangleListValue(index) !=
+          CMetroidAreaCollider::GetDupPrimitiveCheckCount()) {
+        CMetroidAreaCollider::DupTriangleListValue(index) =
+            CMetroidAreaCollider::GetDupPrimitiveCheckCount();
+        const CCollisionSurface surface(owner.GetTriangle(index));
+        if (filter.Passes(CMaterialList(surface.GetSurfaceFlags()))) {
+          const CVector3f a = surface.GetVert(0);
+          const CVector3f b = surface.GetVert(1);
+          const CVector3f c = surface.GetVert(2);
+          done = SubdivideAndGenerateParticles(mgr, a, b, c, outer, inner);
+        }
+      }
+    }
+  }
   return false;
 }
 
 bool CIceImpact::GenerateParticlesAgainstActors(CStateManager& mgr, const CAABox& bounds,
                                                 const CSphere& outer, const CSphere& inner) {
-  // TODO: traverse nearby collision actors, including OBB tree groups.
-  return false;
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  mgr.BuildNearList(
+      nearList, bounds,
+      CMaterialFilter::MakeExclude(CMaterialList(kMT_Character, kMT_Player, kMT_Projectile,
+                                                 kMT_NoPlatformCollision, kMT_AIJoint)),
+      this);
+  for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    CActor* actor = static_cast< CActor* >(mgr.ObjectById(*it));
+    CPhysicsActor* physActor = TCastToPtr< CPhysicsActor >(actor);
+    if (physActor != nullptr && physActor->GetCollisionPrimitive()->GetPrimType() == 'OBTG') {
+      const CCollidableOBBTreeGroup* group =
+          static_cast< const CCollidableOBBTreeGroup* >(physActor->GetCollisionPrimitive());
+      for (int i = 0; i < group->GetContainer()->NumTrees(); ++i) {
+        GenerateParticlesAgainstOBBTree(mgr, *group->GetOBBTree(i),
+                                        physActor->GetPrimitiveTransform(), outer, inner);
+      }
+    } else if (actor != nullptr) {
+      if (actor->GetMaterialList().HasMaterial(kMT_Unknown59) ||
+          TCastToPtr< CScriptWater >(actor) != nullptr) {
+        const rstl::optional_object< CAABox > touchBounds = actor->GetTouchBounds();
+        if (touchBounds) {
+          GenerateParticlesAgainstAABox(mgr, *touchBounds, outer, inner);
+        }
+      }
+    }
+  }
+  return true;
 }
 
 bool CIceImpact::GenerateParticlesAgainstAABox(CStateManager& mgr, const CAABox& bounds,
@@ -226,7 +393,17 @@ bool CIceImpact::GenerateParticlesAgainstAABox(CStateManager& mgr, const CAABox&
 bool CIceImpact::GenerateParticlesAgainstOBBTree(CStateManager& mgr, const COBBTree& tree,
                                                  const CTransform4f& xf, const CSphere& outer,
                                                  const CSphere& inner) {
-  // TODO: traverse the OBB tree's collision surfaces.
+  const CMaterialFilter filter =
+      CMaterialFilter::MakeExclude(CMaterialList(kMT_NoPlatformCollision));
+  const int triangleCount = tree.GetTriangleCount();
+  for (short i = 0; i < triangleCount; ++i) {
+    const CCollisionSurface surface(tree.GetTriangle(i, &xf));
+    if (filter.Passes(CMaterialList(surface.GetSurfaceFlags())) &&
+        SubdivideAndGenerateParticles(mgr, surface.GetVert(0), surface.GetVert(1),
+                                      surface.GetVert(2), outer, inner)) {
+      break;
+    }
+  }
   return false;
 }
 
