@@ -16,6 +16,7 @@
 #include "MetroidPrime/ScriptLoader/SLdrWorldTeleporter.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include "Kyoto/CSimplePool.hpp"
@@ -164,8 +165,12 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINF, kSM_None)));
     const CScriptCamera* secondPass = TCastToConstPtr< CScriptCamera >(
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINB, kSM_None)));
-    // TODO: the connected dark-world volume (kSS_Connect) is not read yet.
+    const CScriptSafeZone* safeZone = TCastToConstPtr< CScriptSafeZone >(
+        mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_None)));
     const CDarkWorldInfo* darkWorldInfo = nullptr;
+    if (safeZone != nullptr) {
+      darkWorldInfo = &safeZone->GetDarkWorldInfo();
+    }
 
     rstl::optional_object< CToken > soundGroup;
     if (mSoundGroup != kInvalidAssetId) {

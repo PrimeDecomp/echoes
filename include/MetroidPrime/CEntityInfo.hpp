@@ -60,6 +60,8 @@ enum EEntityType {
   kET_ScriptTeamAi = 88,
   kET_ScriptSwitch = 86,
   kET_ScriptTrigger = 92,
+  kET_ScriptTriggerOrientated = 93,
+  kET_ScriptSafeZone = 95, // Guessed name; REL ScriptSafeZone.
   kET_ScriptVisorFlare = 96,
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
