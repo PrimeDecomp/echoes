@@ -174,7 +174,6 @@ public:
   void fn_80077aac(CStateManager& mgr, const CVector3f& direction, int followUp, float magnitude,
                    float duration, TUniqueId projectile);
   void fn_8007850c(CStateManager& mgr);
-  bool fn_80073938(CStateManager& mgr, TUniqueId id) const;
 
   void Start(CStateManager& mgr, EStateMsg msg, float dt);
   void Patrol(CStateManager& mgr, EStateMsg msg, float dt);

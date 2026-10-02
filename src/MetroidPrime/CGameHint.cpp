@@ -10,7 +10,7 @@ CGameHint::CGameHint(TUniqueId uid, const rstl::string& name, const CEntityInfo&
                      int breakType, uint deleteOnRemoval, uint requiredPresses, float unknown16c,
                      const SCallback& onExpire, const SCallback& onBreak, float breakDelay)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
-         CActorParameters(), kInvalidUniqueId)
+         CActorParameters::None(), kInvalidUniqueId)
 , mPriority(priority)
 , mTimer(timer)
 , mBreakType(breakType)

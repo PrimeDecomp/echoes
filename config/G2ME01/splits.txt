@@ -180,8 +180,15 @@ MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.text       start:0x8007105C end:0x80073474
 	.data       start:0x803B2018 end:0x803B20B0
 
+MetroidPrime/ScriptObjects/CScriptWaypoint.cpp:
+	.text       start:0x80073474 end:0x80073978
+	.rodata     start:0x803A7110 end:0x803A7118
+	.data       start:0x803B20B0 end:0x803B2148
+	.sdata      start:0x80417EF0 end:0x80417EF8
+	.sdata2     start:0x8041AAA8 end:0x8041AAB8
+
 MetroidPrime/Enemies/CPatterned.cpp:
-	.text       start:0x80073938 end:0x8007B0DC
+	.text       start:0x80073978 end:0x8007B0DC
 	.ctors      start:0x803A54D0 end:0x803A54D4
 	.data       start:0x803B2148 end:0x803B263C
 
@@ -422,6 +429,12 @@ MetroidPrime/CDecalManager.cpp:
 	.sdata      start:0x80418228 end:0x80418238
 	.sbss       start:0x80419100 end:0x80419120
 	.sdata2     start:0x8041B730 end:0x8041B740
+
+MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.cpp:
+	.text       start:0x800E8C8C end:0x800E9BDC
+	.rodata     start:0x803A8B90 end:0x803A8B98
+	.data       start:0x803B3988 end:0x803B3A10
+	.sdata2     start:0x8041B740 end:0x8041B750
 
 MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C1C end:0x800EBD40
