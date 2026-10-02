@@ -889,6 +889,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFont.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CLineInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CWordInstruction.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Text/CWordBreakTables.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CTextInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CFontInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CImageInstruction.cpp"),

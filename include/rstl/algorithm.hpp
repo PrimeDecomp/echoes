@@ -116,10 +116,9 @@ void sort(It first, It last, Cmp cmp) {
 template < typename It, typename T, typename Cmp >
 It lower_bound(It start, It end, const T& value, Cmp cmp) {
   int dist = distance(start, end);
-  It it = start;
   while (dist > 0) {
     int halfDist = dist / 2;
-    it = start;
+    It it = start;
     advance(it, halfDist);
     if (cmp(*it, value)) {
       start = it;
