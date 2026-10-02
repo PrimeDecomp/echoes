@@ -491,6 +491,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CPauseScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManager.cpp"),
             Object(NonMatching, "MetroidPrime/CSimpleShadow.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CActorParameters.cpp"),
             Object(NonMatching, "MetroidPrime/CWorldShadow.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRepulsor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSound.cpp"),

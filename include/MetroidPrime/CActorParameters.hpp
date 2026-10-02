@@ -40,36 +40,36 @@ public:
                    CLightParameters::EWorldLightingOptions useWorldLighting,
                    CLightParameters::ELightRecalculationOptions lightRecalcOpts,
                    const CVector3f& lightingPositionOffset, int maxDynamicLights, int maxAreaLights,
-                   bool ambChannelOverflow, int useLightSet);
-  ~CLightParameters() {}
+                   bool ambChannelOverflow, int useLightSet, bool disableAmbientLights);
 
-  const CColor& GetAmbientColor() const { return ambientColor; }
-  bool ShouldMakeLights() const { return makeLights; }
-  bool GetAmbientChannelOverflow() const { return ambientChannelOverflow; }
-  const CVector3f& GetLightingPositionOffset() const { return lightingPositionOffset; }
-  int GetMaxDynamicLights() const { return maxDynamicLights; }
-  int GetMaxAreaLights() const { return maxAreaLights; }
+  const CColor& GetAmbientColor() const { return mAmbientColor; }
+  bool ShouldMakeLights() const { return mMakeLights; }
+  bool GetAmbientChannelOverflow() const { return mAmbientChannelOverflow; }
+  const CVector3f& GetLightingPositionOffset() const { return mLightingPositionOffset; }
+  int GetMaxDynamicLights() const { return mMaxDynamicLights; }
+  int GetMaxAreaLights() const { return mMaxAreaLights; }
 
-  static CLightParameters None();
+  static CLightParameters None() { return CLightParameters(); }
 
   static uint GetFramesBetweenRecalculation(ELightRecalculationOptions opts);
   rstl::auto_ptr< CActorLights > MakeActorLights() const;
 
 private:
-  bool castShadow; // x0
-  float shadowScale;  // x4
-  EShadowTessellation shadowTesselation; // x8
-  float shadowAlpha; // xc
-  float maxShadowHeight; // x10
-  CColor ambientColor; // x14
-  bool makeLights;
-  bool ambientChannelOverflow;
-  EWorldLightingOptions useWorldLighting; // x1c
-  ELightRecalculationOptions lightRecalculation; // x20
-  int useLightSet; // x24
-  CVector3f lightingPositionOffset; // x28
-  int maxDynamicLights; // x34
-  int maxAreaLights; // x38
+  bool mCastShadow;                               // x0
+  float mShadowScale;                             // x4
+  EShadowTessellation mShadowTesselation;         // x8
+  float mShadowAlpha;                             // xc
+  float mMaxShadowHeight;                         // x10
+  CColor mAmbientColor;                           // x14
+  bool mMakeLights : 1;                           // x18
+  bool mAmbientChannelOverflow : 1;
+  bool mDisableAmbientLights : 1; // Guessed name
+  EWorldLightingOptions mUseWorldLighting;        // x1c
+  ELightRecalculationOptions mLightRecalculation; // x20
+  int mUseLightSet;                               // x24
+  CVector3f mLightingPositionOffset;              // x28
+  int mMaxDynamicLights;                          // x34
+  int mMaxAreaLights;                             // x38
 };
 CHECK_SIZEOF(CLightParameters, 0x3c)
 
@@ -94,15 +94,15 @@ public:
     kVOF_Scan = 4,
     kVOF_Dark = 8,
   };
-  CVisorParameters(uchar mask, bool b1, bool scanPassthrough)
-  : mMask(mask), mB1(b1), mScanPassthrough(scanPassthrough) {}
+  CVisorParameters(uchar mask, bool scanPassthrough)
+  : mMask(mask), mScanPassthrough(scanPassthrough) {}
 
   uchar GetMask() const { return mMask; }
   // TODO: GetIsBlockXRay__16CVisorParametersCFv?
   bool GetBool1() const { return mB1; }
   bool GetScanPassthrough() const { return mScanPassthrough; }
 
-  static CVisorParameters None() { return CVisorParameters(0xF, false, false); }
+  static CVisorParameters None() { return CVisorParameters(0xF, false); }
 
 private:
   uint mMask : 4;
@@ -117,10 +117,10 @@ public:
   CActorParameters(const CLightParameters& lightParms, const CScannableParameters& scanParms,
                    const rstl::pair< CAssetId, CAssetId >& xrayAssets,
                    const rstl::pair< CAssetId, CAssetId >& thermalAssets,
-                   const CVisorParameters& visorParms, bool globalTimeProvider, bool thermalHeat,
-                   bool renderUnsorted, bool noSortThermal, float fadeInTime, float fadeOutTime,
-                   float thermalMag);
-  CActorParameters(const CActorParameters&);
+                   const CVisorParameters& visorParms, bool globalTimeProvider,
+                   bool renderUnsorted, bool highlightedInDarkVisor, bool takesProjectedShadow,
+                   bool alphaSorted, bool renderFullEchoModel, uchar maxVolume,
+                   uchar maxEchoVolume, float fadeInTime, float fadeOutTime);
   ~CActorParameters() {}
 
   CActorParameters Scannable(const CScannableParameters& sParms) const;
@@ -128,42 +128,42 @@ public:
   CActorParameters WithAlphaSorting(bool enabled) const; // Guessed name.
   CActorParameters MakeDamageableTriggerActorParms(const CVisorParameters& visorParam) const;
 
-  const CLightParameters& GetLighting() const { return lighting; }
-  const CScannableParameters& GetScannable() const { return scannable; }
-  const rstl::pair< CAssetId, CAssetId >& GetXRay() const { return echoAssets; }
-  const rstl::pair< CAssetId, CAssetId >& GetInfra() const { return darkAssets; }
-  const CVisorParameters& GetVisorParameters() const { return visor; }
+  const CLightParameters& GetLighting() const { return mLighting; }
+  const CScannableParameters& GetScannable() const { return mScannable; }
+  const rstl::pair< CAssetId, CAssetId >& GetXRay() const { return mEchoAssets; }
+  const rstl::pair< CAssetId, CAssetId >& GetInfra() const { return mDarkAssets; }
+  const CVisorParameters& GetVisorParameters() const { return mVisor; }
   // float GetThermalMag() const { return x64_thermalMag; }
-  bool UseGlobalRenderTime() const { return useGlobalRenderTime; }
+  bool UseGlobalRenderTime() const { return mUseGlobalRenderTime; }
   bool ForceRenderUnsorted() const { return mForceRenderUnsorted; }
   bool IsHighlightedInDarkVisor() const { return mHighlightedInDarkVisor; }
   bool TakesProjectedShadow() const { return mTakesProjectedShadow; }
   bool UseAlphaSorting() const { return mAlphaSorted; } // Guessed name
   // Guessed name: controls whether Echo rendering includes sorted surfaces.
   bool RenderFullEchoModel() const { return mRenderFullEchoModel; }
-  float GetFadeInTime() const { return fadeInTime; }
-  float GetFadeOutTime() const { return fadeOutTime; }
-  uchar GetMaxVolume() const { return maxVolume; }
-  uchar GetMaxEchoVolume() const { return maxEchoVolume; }
+  float GetFadeInTime() const { return mFadeInTime; }
+  float GetFadeOutTime() const { return mFadeOutTime; }
+  uchar GetMaxVolume() const { return mMaxVolume; }
+  uchar GetMaxEchoVolume() const { return mMaxEchoVolume; }
 
-  static CActorParameters None();
+  static CActorParameters None() { return CActorParameters(); }
 
 private:
-  CLightParameters lighting; // x0
-  CScannableParameters scannable; // x3c
-  rstl::pair< CAssetId, CAssetId > echoAssets; // x40, model/skin
-  rstl::pair< CAssetId, CAssetId > darkAssets; // x48, model/skin
-  CVisorParameters visor;                      // x50
-  uchar maxVolume;                             // x54
-  uchar maxEchoVolume;                         // x55
-  uchar useGlobalRenderTime : 1;               // x56
+  CLightParameters mLighting; // x0
+  CScannableParameters mScannable; // x3c
+  rstl::pair< CAssetId, CAssetId > mEchoAssets; // x40, model/skin
+  rstl::pair< CAssetId, CAssetId > mDarkAssets; // x48, model/skin
+  CVisorParameters mVisor;                      // x50
+  uchar mMaxVolume;                             // x54
+  uchar mMaxEchoVolume;                         // x55
+  uchar mUseGlobalRenderTime : 1;               // x56
   uchar mForceRenderUnsorted : 1;
   uchar mHighlightedInDarkVisor : 1;
   uchar mTakesProjectedShadow : 1;
   uchar mAlphaSorted : 1;
   uchar mRenderFullEchoModel : 1; // Guessed name.
-  float fadeInTime; // x58
-  float fadeOutTime; // x5c
+  float mFadeInTime; // x58
+  float mFadeOutTime; // x5c
 };
 CHECK_SIZEOF(CActorParameters, 0x60)
 
