@@ -633,6 +633,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSProjectileAttack.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBSTurn.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBSWallHang.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptVisorFlare.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptVisorGoo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptControllerAction.cpp"),

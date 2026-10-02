@@ -60,6 +60,7 @@ enum EEntityType {
   kET_ScriptTeamAi = 88,
   kET_ScriptSwitch = 86,
   kET_ScriptTrigger = 92,
+  kET_ScriptVisorFlare = 96,
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
   kET_SpindleCamera = 100,
