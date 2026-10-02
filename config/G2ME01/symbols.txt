@@ -4755,9 +4755,9 @@ __sort3<Q24rstl18pair<9TEditorId,b>,Q24rstl73pair_sorter_finder<Q24rstl18pair<9T
 __insertion_sort<Q24rstl144pointer_iterator<Q24rstl18pair<9TEditorId,b>,Q24rstl62vector<Q24rstl18pair<9TEditorId,b>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>,Q24rstl73pair_sorter_finder<Q24rstl18pair<9TEditorId,b>,Q24rstl16less<9TEditorId>>>__4rstlFQ24rstl144pointer_iterator<Q24rstl18pair<9TEditorId,b>,Q24rstl62vector<Q24rstl18pair<9TEditorId,b>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl144pointer_iterator<Q24rstl18pair<9TEditorId,b>,Q24rstl62vector<Q24rstl18pair<9TEditorId,b>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl73pair_sorter_finder<Q24rstl18pair<9TEditorId,b>,Q24rstl16less<9TEditorId>> = .text:0x80110A7C; // type:function size:0x9C scope:weak
 FScannableObjectInfoFactory__FRC10SObjectTagR12CInputStreamRC15CVParamTransfer = .text:0x80110B18; // type:function size:0x78 align:4
 __ct<20CScannableObjectInfo>__16CFactoryFnReturnFP20CScannableObjectInfo = .text:0x80110B90; // type:function size:0xA4 scope:local
-GetNewDerivedObject__48TObjOwnerDerivedFromIObj<20CScannableObjectInfo>FRCQ24rstl32auto_ptr<20CScannableObjectInfo> = .text:0x80110C34; // type:function size:0x90 scope:weak align:4
+__dt__48TObjOwnerDerivedFromIObj<20CScannableObjectInfo>Fv = .text:0x80110C34; // type:function size:0x90 scope:weak align:4
 GetIObjObjectFor__30TToken<20CScannableObjectInfo>FRCQ24rstl32auto_ptr<20CScannableObjectInfo> = .text:0x80110CC4; // type:function size:0x2C scope:weak
-__dt__48TObjOwnerDerivedFromIObj<20CScannableObjectInfo>Fv = .text:0x80110CF0; // type:function size:0x9C scope:weak
+GetNewDerivedObject__48TObjOwnerDerivedFromIObj<20CScannableObjectInfo>FRCQ24rstl32auto_ptr<20CScannableObjectInfo> = .text:0x80110CF0; // type:function size:0x9C scope:weak
 __dt__Q24rstl32auto_ptr<20CScannableObjectInfo>Fv = .text:0x80110D8C; // type:function size:0x64 scope:weak
 GetModelLocator__20CScannableObjectInfoCFi = .text:0x80110DF0; // type:function size:0x10 align:4
 GetTotalDownloadTime__20CScannableObjectInfoCFv = .text:0x80110E00; // type:function size:0x8
