@@ -846,6 +846,10 @@ MetroidPrime/Weapons/CIceImpact.cpp:
 	.sdata      start:0x804183B0 end:0x804183D8
 	.sdata2     start:0x8041C0F8 end:0x8041C140
 
+MetroidPrime/GameObjectLists.cpp:
+	.text       start:0x8013BEB4 end:0x8013C254
+	.data       start:0x803B50C0 end:0x803B5118
+
 MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp:
 	.text       start:0x8013C254 end:0x8013C9B0
 	.data       start:0x803B5118 end:0x803B5138

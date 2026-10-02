@@ -114,7 +114,7 @@ public:
   virtual CDamageInfo GetContactDamage() const;
   virtual void UpdateHitDamageTime(float dt);
   virtual void SetupStateMachine(CStateManager& mgr);
-  virtual bool fn_800358e0() const { return false; }
+  virtual bool IsListening() const { return false; }
   virtual bool CanBeIngPossessed(CStateManager& mgr) const;
   virtual bool CanBeUnPossessed(CStateManager& mgr) const;
   virtual void SetIngPossessed(bool possessed, CStateManager& mgr);

@@ -559,6 +559,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CTargetReticles.cpp"),
             Object(NonMatching, "MetroidPrime/CWeaponMgr.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptHUDMemo.cpp"),
+            Object(NonMatching, "MetroidPrime/GameObjectLists.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerEnergyDrain.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CIceImpact.cpp"),
