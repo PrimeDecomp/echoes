@@ -58,6 +58,7 @@ public:
   bool GetIsPlayerRumbleEnabled(int player) const { return unk2[player].first; }
   rstl::pair< bool, bool >& PlayerOptions(int player) { return unk2[player]; } // Guessed name
   void ToggleControls(bool);
+  bool GetSwapBeamControls() const { return swapBeamsControls; }
 
   void ResetControllerAssets(int);
   void SetControls(int);
