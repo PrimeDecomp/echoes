@@ -21,12 +21,6 @@
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 
-namespace {
-// Guessed: the connected object holding the CDarkWorldInfo is entity type 95.
-const int kDarkWorldInfoHolderType = 95;
-const uint kDarkWorldInfoOffset = 0x264;
-} // namespace
-
 CScriptWorldTeleporter::CScriptWorldTeleporter(
     const TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CAssetId worldId,
     const CAssetId areaId, const CAssetId playerAncs, const int defaultAnim, const int charIdx,
@@ -170,14 +164,8 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINF, kSM_None)));
     const CScriptCamera* secondPass = TCastToConstPtr< CScriptCamera >(
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINB, kSM_None)));
-    const CEntity* darkWorldHolder = TryCast(
-        const_cast< CEntity* >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_None))),
-        kDarkWorldInfoHolderType);
+    // TODO: the connected dark-world volume (kSS_Connect) is not read yet.
     const CDarkWorldInfo* darkWorldInfo = nullptr;
-    if (darkWorldHolder != nullptr) {
-      darkWorldInfo = reinterpret_cast< const CDarkWorldInfo* >(
-          reinterpret_cast< const uchar* >(darkWorldHolder) + kDarkWorldInfoOffset);
-    }
 
     rstl::optional_object< CToken > soundGroup;
     if (mSoundGroup != kInvalidAssetId) {
