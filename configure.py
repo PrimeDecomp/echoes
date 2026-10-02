@@ -576,6 +576,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakBall.cpp"),
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakPlayer.cpp"),
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakPlayerGun.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakPlayerRes.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRelFile.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakTargeting.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakGuiColors.cpp"),

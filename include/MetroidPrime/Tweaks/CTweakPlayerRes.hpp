@@ -3,6 +3,7 @@
 
 #include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/SObjectTag.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/single_ptr.hpp"
 
@@ -10,7 +11,7 @@ struct SLdrTweakPlayerRes;
 
 class CTweakPlayerRes {
 public:
-  explicit CTweakPlayerRes(const SLdrTweakPlayerRes& data) : mData(&data) { ResolveResources(); }
+  explicit CTweakPlayerRes(const SLdrTweakPlayerRes& data) : mData(&data) { CacheResources(); }
   ~CTweakPlayerRes() {}
 
   CAssetId GetSaveStationIcon() const { return mSaveStationIcon; }
@@ -21,18 +22,24 @@ public:
   CAssetId GetDownArrowIcon() const { return mDownArrowIcon; } // Guessed name
   CAssetId GetUpArrowIcon() const { return mUpArrowIcon; }     // Guessed name
 
+  CAssetId GetBallTransitionBeamResId(CPlayerState::EBeamId beam) const;
+  // Guessed name
+  CAssetId GetBallTransitionBeamResIdMultiplayer(CPlayerState::EBeamId beam) const;
+  CAssetId GetCinematicBeamResId(CPlayerState::EBeamId beam) const;
+  CAssetId GetCinematicGrappleResId() const;
+
 private:
-  void ResolveResources(); // Guessed name
+  void CacheResources();
 
   CAssetId mSaveStationIcon;
   CAssetId mMissileStationIcon;
   CAssetId mElevatorIcon;
   CAssetId mPortalIcon;
   CAssetId mTranslatorDoorIcon;
-  CAssetId mDownArrowIcon; // Guessed name
-  CAssetId mUpArrowIcon;   // Guessed name
-  CAssetId x1c_;
-  CAssetId x20_;
+  CAssetId mDownArrowIcon;       // Guessed name
+  CAssetId mUpArrowIcon;         // Guessed name
+  CAssetId mSecondDownArrowIcon; // Guessed names; duplicate arrow resources.
+  CAssetId mSecondUpArrowIcon;
 
 public:
   rstl::reserved_vector< CAssetId, 9 > mLStick;
@@ -52,11 +59,12 @@ private:
   CAssetId mCineGun[4];
   CAssetId mCinematicGrapple;
   float mCinematicMoveOutofIntoPlayerDistance;
-  SLdrSpline mBallTransitionSpline1; // Guessed names
-  SLdrSpline mBallTransitionSpline2;
-  SLdrSpline mBallTransitionSpline3;
-  SLdrSpline mBallTransitionSpline4;
-  SLdrSpline mMovementControlSpline; // Guessed name
+  // Guessed names
+  CMayaSpline mUnmorphAlphaSpline;
+  CMayaSpline mMorphAlphaSpline;
+  CMayaSpline mMultiplayerUnmorphAlphaSpline;
+  CMayaSpline mMultiplayerMorphAlphaSpline;
+  CMayaSpline mMovementControlSpline;
   const SLdrTweakPlayerRes* mData;
 };
 CHECK_SIZEOF(CTweakPlayerRes, 0x25c)
