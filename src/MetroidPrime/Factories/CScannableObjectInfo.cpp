@@ -12,99 +12,30 @@ namespace {
 const CAssetId skInvalidModelId = kInvalidAssetId;
 }
 
-void CScannableObjectInfo::ReadProperties(CInputStream& in) {
-  SLdrScannableObjectInfo data;
-  const ushort count = in.ReadUint16();
-  for (int i = 0; i < count; ++i) {
-    const int property = in.ReadInt32();
-    const ushort size = in.ReadUint16();
-    switch (property) {
-    case 0x2f5b6423:
-      data.scanInfoTextStringTable = in.ReadInt32();
-      break;
-    case 0xc308a322:
-      data.unknown_0xc308a322 = in.ReadInt32();
-      break;
-    case 0x7b714814:
-      data.critical = in.ReadBool();
-      break;
-    case 0x1733b1ec:
-      data.unknown_0x1733b1ec = in.ReadBool();
-      break;
-    case 0x53336141:
-      data.scanTextureInHud = in.ReadInt32();
-      break;
-    case 0x3de0ba64:
-      data.modelInitialPitch = in.ReadFloat();
-      break;
-    case 0x2add6628:
-      data.modelInitialYaw = in.ReadFloat();
-      break;
-    case 0xd0c15066:
-      data.modelScale = in.ReadFloat();
-      break;
-    case 0xb7adc418:
-      data.staticModel = in.ReadInt32();
-      break;
-    case 0x15694ee1:
-      LoadTypedefAnimationSet(data.animatedModel, in);
-      break;
-    case 0x58f9fe99:
-      LoadTypedefAnimationSet(data.primarySecondAnimatedModel, in);
-      break;
-    case 0x1c5b4a3a:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel0, in);
-      break;
-    case 0x8728a0ee:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel1, in);
-      break;
-    case 0xf1cd99d3:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel2, in);
-      break;
-    case 0x6abe7307:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel3, in);
-      break;
-    case 0x1c07eba9:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel4, in);
-      break;
-    case 0x8774017d:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel5, in);
-      break;
-    case 0xf1913840:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel6, in);
-      break;
-    case 0x6ae2d294:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel7, in);
-      break;
-    case 0x1ce2091c:
-      LoadTypedefScanInfoSecondaryModel(data.secondaryModel8, in);
-      break;
-    default:
-      in.ReadBytes(nullptr, size);
-      break;
-    }
-  }
+void CScannableObjectInfo::ReadProperties(CInputStream& input) {
+  SLdrScannableObjectInfo sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrScannableObjectInfo.inc"
 
-  mStringTableId = data.scanInfoTextStringTable;
-  mTotalDownloadTime = gpTweakGui->GetScanSpeed(data.unknown_0xc308a322);
-  mCritical = data.critical;
-  mUseScanModel = data.unknown_0x1733b1ec;
-  mScanTextureId = data.scanTextureInHud;
+  mStringTableId = sldrThis.scanInfoTextStringTable;
+  mTotalDownloadTime = gpTweakGui->GetScanSpeed(sldrThis.unknown_0xc308a322);
+  mCritical = sldrThis.critical;
+  mUseScanModel = sldrThis.unknown_0x1733b1ec;
+  mScanTextureId = sldrThis.scanTextureInHud;
 
-  mStaticModels.push_back(data.staticModel);
-  mAnimatedModels.push_back(data.animatedModel.ancs);
-  mCharacterIndices.push_back(data.animatedModel.character_index);
-  mAnimationIndices.push_back(data.animatedModel.initial_anim);
+  mStaticModels.push_back(sldrThis.staticModel);
+  mAnimatedModels.push_back(sldrThis.animatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.animatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.animatedModel.initial_anim);
 
   mStaticModels.push_back(kInvalidAssetId);
-  mAnimatedModels.push_back(data.primarySecondAnimatedModel.ancs);
-  mCharacterIndices.push_back(data.primarySecondAnimatedModel.character_index);
-  mAnimationIndices.push_back(data.primarySecondAnimatedModel.initial_anim);
+  mAnimatedModels.push_back(sldrThis.primarySecondAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.primarySecondAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.primarySecondAnimatedModel.initial_anim);
 
   const SLdrScanInfoSecondaryModel* secondaryModels[] = {
-      &data.secondaryModel0, &data.secondaryModel1, &data.secondaryModel2,
-      &data.secondaryModel3, &data.secondaryModel4, &data.secondaryModel5,
-      &data.secondaryModel6, &data.secondaryModel7, &data.secondaryModel8,
+      &sldrThis.secondaryModel0, &sldrThis.secondaryModel1, &sldrThis.secondaryModel2,
+      &sldrThis.secondaryModel3, &sldrThis.secondaryModel4, &sldrThis.secondaryModel5,
+      &sldrThis.secondaryModel6, &sldrThis.secondaryModel7, &sldrThis.secondaryModel8,
   };
   for (int i = 0; i < 9; ++i) {
     const SLdrScanInfoSecondaryModel& model = *secondaryModels[i];
@@ -115,9 +46,9 @@ void CScannableObjectInfo::ReadProperties(CInputStream& in) {
     mModelLocators.push_back(model.secondaryModelLocator);
   }
 
-  mModelInitialPitch = data.modelInitialPitch;
-  mModelInitialYaw = data.modelInitialYaw;
-  mModelScale = data.modelScale;
+  mModelInitialPitch = sldrThis.modelInitialPitch;
+  mModelInitialYaw = sldrThis.modelInitialYaw;
+  mModelScale = sldrThis.modelScale;
 }
 
 CScannableObjectInfo::CScannableObjectInfo(CInputStream& in, CAssetId id)
