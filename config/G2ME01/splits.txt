@@ -523,6 +523,13 @@ MetroidPrime/CFluidPlaneManager.cpp:
 	.bss        start:0x80410980 end:0x80410998 align:4 common
 	.sdata2     start:0x8041B7D4 end:0x8041B7E8
 
+MetroidPrime/ScriptObjects/CScriptGrapplePoint.cpp:
+	.text       start:0x800ED18C end:0x800ED7D8
+	.rodata     start:0x803A8BB8 end:0x803A8BC0
+	.data       start:0x803B3AC0 end:0x803B3B40
+	.sdata      start:0x80418240 end:0x80418248
+	.sdata2     start:0x8041B7E8 end:0x8041B7F0
+
 MetroidPrime/ScriptObjects/CHUDBillboardEffect.cpp:
 	.text       start:0x800ED7D8 end:0x800EE0A0
 	.rodata     start:0x803A8BC0 end:0x803A8BC8

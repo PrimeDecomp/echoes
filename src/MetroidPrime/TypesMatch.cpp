@@ -13,6 +13,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCounter.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDistanceFog.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTriggerOrientated.hpp"
@@ -173,6 +174,9 @@ TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
 CAST_TO_PTR_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 CAST_TO_REF_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 TYPES_MATCH_IMPL(CScriptCoverPoint, CActor, kET_ScriptCoverPoint)
+CAST_TO_PTR_IMPL(CScriptGrapplePoint, kET_ScriptGrapplePoint)
+CAST_TO_REF_IMPL(CScriptGrapplePoint, kET_ScriptGrapplePoint)
+TYPES_MATCH_IMPL(CScriptGrapplePoint, CActor, kET_ScriptGrapplePoint)
 TYPES_MATCH_IMPL(CScriptDamageableTrigger, CActor, kET_ScriptDamageableTrigger)
 TYPES_MATCH_IMPL(CScriptDamageableTriggerOrientated, CScriptDamageableTrigger,
                  kET_ScriptDamageableTriggerOrientated)
