@@ -512,6 +512,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptActorRotate.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPickupGenerator.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPointOfInterest.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEMPulse.cpp"),
             Object(NonMatching, "MetroidPrime/CMapArea.cpp"),
             Object(NonMatching, "MetroidPrime/CMappableObject.cpp"),

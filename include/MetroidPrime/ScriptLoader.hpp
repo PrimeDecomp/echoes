@@ -10,11 +10,13 @@ class CEntityInfo;
 class CActorParameters;
 class CDamageInfo;
 class CTransform4f;
+class CScannableParameters;
 class CVector2f;
 struct SEchoParameters;
 struct SLdrActorParameters;
 struct SLdrDamageInfo;
 struct SLdrEchoParameters;
+struct SLdrScannableParameters;
 struct SLdrEditorProperties;
 struct SLdrVector2f;
 
@@ -23,6 +25,8 @@ CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data);
 CTransform4f LdrToTransform4f(const SLdrEditorProperties& data);
 CVector2f LdrToVector2f(const SLdrVector2f& data);
 ERglFogMode FogSelectionToFogMode(int selection);
+// Guessed name, following the neighbouring SEL-derived conversions.
+CScannableParameters LdrToScannableParameters(const SLdrScannableParameters& data);
 CActorParameters LdrToActorParameters(const SLdrActorParameters& data);
 SEchoParameters LdrToEchoParameters(const SLdrEchoParameters& data);
 

@@ -52,6 +52,7 @@ enum EEntityType {
   kET_ScriptPickupGenerator = 67,
   kET_ScriptPlayerHint = 68,
   kET_ScriptPlayerProxy = 69,
+  kET_ScriptPointOfInterest = 71, // Guessed name; Prime has CScriptPointOfInterest.
   kET_ScriptPlatform = 70,
   kET_ScriptPortalTransition = 72,
   kET_ScriptRelay = 73,
