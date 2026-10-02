@@ -663,6 +663,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/BodyState/CABSReaction.cpp"),
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
             Object(NonMatching, "MetroidPrime/CActorModelParticles.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAiJumpPoint.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
             Object(Matching, "MetroidPrime/CScriptMailbox.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRelay.cpp"),

@@ -33,6 +33,7 @@ enum EEntityType {
   kET_ScriptActor = 34,
   kET_ScriptActorKeyframe = 35,
   kET_ScriptActorRotate = 36,
+  kET_ScriptAiJumpPoint = 38,
   kET_ScriptCameraHint = 40,
   kET_ScriptCameraShaker = 41,
   kET_ScriptCameraPitch = 42, // Guessed name.
