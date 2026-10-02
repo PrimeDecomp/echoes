@@ -32,6 +32,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 
 #include "MetroidPrime/CActor.hpp"
@@ -167,6 +168,9 @@ TYPES_MATCH_IMPL(CScriptRelay, CEntity, kET_ScriptRelay)
 TYPES_MATCH_IMPL(CScriptTimer, CEntity, kET_ScriptTimer)
 TYPES_MATCH_IMPL(CScriptTrigger, CActor, kET_ScriptTrigger)
 TYPES_MATCH_IMPL(CScriptTriggerEllipsoid, CScriptTrigger, kET_ScriptTriggerEllipsoid)
+TYPES_MATCH_IMPL(CScriptTriggerOrientated, CScriptTrigger, kET_ScriptTriggerOrientated)
+CAST_TO_REF_IMPL(CScriptTriggerOrientated, kET_ScriptTriggerOrientated)
+CAST_TO_PTR_IMPL(CScriptTriggerOrientated, kET_ScriptTriggerOrientated)
 TYPES_MATCH_IMPL(CScriptSafeZone, CScriptTriggerEllipsoid, kET_ScriptSafeZone)
 TYPES_MATCH_IMPL(CScriptVisorFlare, CActor, kET_ScriptVisorFlare)
 TYPES_MATCH_IMPL(CScriptWater, CScriptTrigger, kET_ScriptWater)

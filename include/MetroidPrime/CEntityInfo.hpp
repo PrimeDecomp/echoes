@@ -68,6 +68,7 @@ enum EEntityType {
   kET_ScriptTimer = 91,
   kET_ScriptTrigger = 92,
   kET_ScriptTriggerEllipsoid = 93,
+  kET_ScriptTriggerOrientated = 94, // Guessed name; oriented-box trigger.
   kET_ScriptSafeZone = 95, // Guessed name; REL ScriptSafeZone.
   kET_ScriptVisorFlare = 96,
   kET_ScriptWater = 97,

@@ -506,6 +506,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDebris.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEffect.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTrigger.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptBallTrigger.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptWater.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptColorModulate.cpp"),
