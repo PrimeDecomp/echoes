@@ -6,6 +6,8 @@
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/TStateMachineState2.hpp"
 
 const float CPatterned::skDamageHitTime = 0.33f;
@@ -240,18 +242,27 @@ void CPatterned::SetupPlayerCollision(bool) {
   // TODO: Update the player's material in the include/exclude filter for the collider mode.
 }
 
-CScriptCoverPoint* CPatterned::GetCoverPoint(CStateManager&, TUniqueId) const {
-  // TODO: Resolve and type-check the cover-point entity once its interface is available.
-  return nullptr;
+CScriptCoverPoint* CPatterned::GetCoverPoint(CStateManager& mgr, const TUniqueId id) const {
+  CScriptCoverPoint* point = nullptr;
+  if (id != kInvalidUniqueId) {
+    point = TCastToPtr< CScriptCoverPoint >(mgr.ObjectById(id));
+  }
+  return point;
 }
 
-void CPatterned::ReleaseCoverPoint(CStateManager&, TUniqueId&, bool) {
-  // TODO: Clear the cover point's in-use flag, optionally clear its cooldown, and invalidate the
-  // ID.
+void CPatterned::ReleaseCoverPoint(CStateManager& mgr, TUniqueId& id, bool retainCooldown) {
+  if (CScriptCoverPoint* point = GetCoverPoint(mgr, id)) {
+    point->SetInUse(false);
+    if (!retainCooldown) {
+      point->ResetCooldown();
+    }
+    id = kInvalidUniqueId;
+  }
 }
 
-void CPatterned::SetCoverPoint(CScriptCoverPoint*, TUniqueId&) {
-  // TODO: Mark the cover point in use and record its ID.
+void CPatterned::SetCoverPoint(CScriptCoverPoint* point, TUniqueId& id) {
+  point->SetInUse(true);
+  id = point->GetUniqueId();
 }
 
 void CPatterned::Death(CStateManager&, const CVector3f&, EScriptObjectState) {
