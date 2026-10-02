@@ -1,4 +1,4 @@
-#include "MetroidPrime/CRelayTracker.hpp"
+#include "MetroidPrime/CScriptMailbox.hpp"
 
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CStateManager.hpp"
@@ -9,9 +9,9 @@
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 
-CRelayTracker::CRelayTracker() { CMemory::OffsetFakeStatics(static_cast< int >(sizeof(*this))); }
+CScriptMailbox::CScriptMailbox() { CMemory::OffsetFakeStatics(static_cast< int >(sizeof(*this))); }
 
-CRelayTracker::CRelayTracker(CBitStreamReader& in, const CWorldSaveGameInfo& saveWorld) {
+CScriptMailbox::CScriptMailbox(CBitStreamReader& in, const CWorldSaveGameInfo& saveWorld) {
   rstl::vector< bool > relayStates(saveWorld.GetRelays().size(), false);
   for (int i = 0; i < relayStates.size(); ++i) {
     relayStates[i] = in.ReadBits(1);
@@ -26,9 +26,11 @@ CRelayTracker::CRelayTracker(CBitStreamReader& in, const CWorldSaveGameInfo& sav
   CMemory::OffsetFakeStatics(static_cast< int >(sizeof(*this)));
 }
 
-CRelayTracker::~CRelayTracker() { CMemory::OffsetFakeStatics(-static_cast< int >(sizeof(*this))); }
+CScriptMailbox::~CScriptMailbox() {
+  CMemory::OffsetFakeStatics(-static_cast< int >(sizeof(*this)));
+}
 
-void CRelayTracker::PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveWorld) const {
+void CScriptMailbox::PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveWorld) const {
   rstl::vector< bool > relayStates(saveWorld.GetRelays().size(), false);
 
   rstl::reserved_vector< TEditorId, 512 >::const_iterator it = mRelays.begin();
@@ -42,7 +44,7 @@ void CRelayTracker::PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveW
   }
 }
 
-void CRelayTracker::SendMsgs(const TAreaId& areaId, CStateManager& mgr) {
+void CScriptMailbox::SendMsgs(const TAreaId& areaId, CStateManager& mgr) {
   rstl::reserved_vector< TEditorId, 512 >::iterator it = mRelays.begin();
   for (; it != mRelays.end(); ++it) {
     if (it->AreaNum() == areaId.Value()) {
@@ -70,7 +72,7 @@ void CRelayTracker::SendMsgs(const TAreaId& areaId, CStateManager& mgr) {
   }
 }
 
-void CRelayTracker::AddRelay(const TEditorId& id) {
+void CScriptMailbox::AddMsg(const TEditorId& id) {
   rstl::reserved_vector< TEditorId, 512 >::iterator it = mRelays.begin();
   for (; it != mRelays.end(); ++it) {
     if (*it == id) {
@@ -81,7 +83,7 @@ void CRelayTracker::AddRelay(const TEditorId& id) {
   mRelays.push_back(id);
 }
 
-void CRelayTracker::RemoveRelay(const TEditorId& id) {
+void CScriptMailbox::RemoveMsg(const TEditorId& id) {
   rstl::reserved_vector< TEditorId, 512 >::iterator it = mRelays.begin();
   for (; it != mRelays.end(); ++it) {
     if (*it == id) {

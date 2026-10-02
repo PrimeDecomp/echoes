@@ -1,6 +1,6 @@
 #include "MetroidPrime/ScriptObjects/CScriptMemoryRelay.hpp"
 
-#include "MetroidPrime/CRelayTracker.hpp"
+#include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrMemoryRelay.hpp"
@@ -15,13 +15,13 @@ CScriptMemoryRelay::~CScriptMemoryRelay() {}
 void CScriptMemoryRelay::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Activate:
-    mgr.RelayTracker()->AddRelay(GetEditorId());
+    mgr.Mailbox()->AddMsg(GetEditorId());
     if (!mSkipSendActive) {
       SendScriptMsgs(kSS_Active, mgr, kSM_None);
     }
     break;
   case kSM_Deactivate:
-    mgr.RelayTracker()->RemoveRelay(GetEditorId());
+    mgr.Mailbox()->RemoveMsg(GetEditorId());
     break;
   default:
     CEntity::AcceptScriptMsg(mgr, msg);

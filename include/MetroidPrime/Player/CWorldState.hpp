@@ -4,7 +4,7 @@
 #include "MetroidPrime/CMapWorldInfo.hpp"
 #include "rstl/rc_ptr.hpp"
 
-class CRelayTracker;
+class CScriptMailbox;
 class CWorldLayerState;
 class CBitStreamReader;
 class CBitStreamWriter;
@@ -24,12 +24,12 @@ public:
   rstl::rc_ptr< CMapWorldInfo > GetMapWorldInfo() const;
   rstl::ncrc_ptr< CMapWorldInfo >& MapWorldInfo();
   rstl::ncrc_ptr< CWorldLayerState >& GetLayerState();
-  rstl::ncrc_ptr< CRelayTracker >& RelayTracker(); // Guessed name
+  rstl::ncrc_ptr< CScriptMailbox >& Mailbox(); // Guessed name
 
 private:
   CAssetId mWorldId;
   TAreaId mAreaId;
-  rstl::ncrc_ptr< CRelayTracker > mRelayTracker;
+  rstl::ncrc_ptr< CScriptMailbox > mMailbox;
   rstl::ncrc_ptr< CMapWorldInfo > mMapWorldInfo;
   CAssetId mDesiredAreaAssetId;
   rstl::ncrc_ptr< CWorldLayerState > mLayerState;
