@@ -231,6 +231,7 @@ public:
   void EnterSaveGameScreen() { DeferStateTransition(kSMT_SaveGame); }
   void EnterMessageScreen(uint, float);
   bool GetWantsToEnterMapScreen() const { return mDeferredTransition == kSMT_MapScreen; }
+  bool GetInMapScreen() const { return mInMapScreen; }
   bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
@@ -335,7 +336,7 @@ public:
   bool mUnkFlagA1 : 1;
   bool mUnkFlagA2 : 1;
   bool mUnkFlagA3 : 1;
-  bool mUnkFlagA4 : 1;
+  bool mInMapScreen : 1;
   bool mUnkFlagA5 : 1;
   bool mCinematicPause : 1;
   bool mUnkFlagA7 : 1;

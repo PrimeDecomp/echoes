@@ -175,6 +175,9 @@ ENUM_RECORDS = frozenset({"PlayerItem"})
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
 # Record -> member -> statements appended after that member's template defaults.
 NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
+    "SLdrControllerAction": {
+        "cmd": ("unknown_0x94ba5737 = 1;",),
+    },
     "SLdrPickup": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
         "actorInformation": (
