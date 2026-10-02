@@ -25,6 +25,7 @@ class CRandom16 {
 public:
   CRandom16(uint seed = 99);
   void SetSeed(uint seed);
+  uint GetSeed() const { return mSeed; }
   int Range(int min, int max);
   float Range(float min, float max);
   int Next();

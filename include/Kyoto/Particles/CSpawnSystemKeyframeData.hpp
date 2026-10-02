@@ -40,6 +40,7 @@ public:
 
   void LoadAllSpawnedSystemTokens(CSimplePool* pool);
   rstl::vector< CSpawnSystemKeyframeInfo >& GetSpawnedSystemsAtFrame(uint frame);
+  uint GetEndFrame() const { return mEndFrame; }
 
 private:
   int x0_;
