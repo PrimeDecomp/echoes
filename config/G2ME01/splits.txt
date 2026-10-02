@@ -679,6 +679,12 @@ MetroidPrime/BodyState/CBSCover.cpp:
 	.data       start:0x803B4D38 end:0x803B4D78
 	.sdata2     start:0x8041BCB8 end:0x8041BCC8
 
+MetroidPrime/ScriptObjects/CScriptBallTrigger.cpp:
+	.text       start:0x80118B08 end:0x80119598
+	.rodata     start:0x803A8D00 end:0x803A8D08
+	.data       start:0x803B4D78 end:0x803B4E10
+	.sdata2     start:0x8041BCC8 end:0x8041BCE8
+
 MetroidPrime/Weapons/CPlasmaProjectile.cpp:
 	.text       start:0x80119598 end:0x8011BFA8
 	.ctors      start:0x803A5520 end:0x803A5524
@@ -1032,6 +1038,12 @@ MetroidPrime/Cameras/CSpindleCamera.cpp:
 MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
 	.text       start:0x801B730C end:0x801B73E4
 	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
+
+MetroidPrime/ScriptObjects/CScriptTriggerOrientated.cpp:
+	.text       start:0x801B7F44 end:0x801B8514
+	.rodata     start:0x803AA610 end:0x803AA618
+	.data       start:0x803B6910 end:0x803B69A8
+	.sdata2     start:0x8041CEE0 end:0x8041CEE8
 
 MetroidPrime/CHintState.cpp:
 	.text       start:0x801B8CFC end:0x801B9310
