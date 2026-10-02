@@ -483,6 +483,14 @@ MetroidPrime/CFluidPlaneManager.cpp:
 	.bss        start:0x80410980 end:0x80410998 align:4 common
 	.sdata2     start:0x8041B7D4 end:0x8041B7E8
 
+MetroidPrime/ScriptObjects/CHUDBillboardEffect.cpp:
+	.text       start:0x800ED7D8 end:0x800EE0A0
+	.rodata     start:0x803A8BC0 end:0x803A8BC8
+	.data       start:0x803B3B40 end:0x803B3BC0
+	.bss        start:0x803DAAC0 end:0x803DAAD0 align:4
+	.sbss       start:0x80419130 end:0x80419140
+	.sdata2     start:0x8041B7F0 end:0x8041B820
+
 MetroidPrime/BodyState/CBodyStateCmdMgr.cpp:
 	.text       start:0x800EE0A0 end:0x800EF908
 	.data       start:0x803B3BC0 end:0x803B3CC0
