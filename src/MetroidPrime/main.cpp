@@ -628,7 +628,7 @@ int CMain::RsMain(int argc, const char* const* argv) {
     const int gameMode = gpGameState->GetGameModeType();
     if (gameMode != 'COIN' && gameMode != 'DTHM') {
       architecture->GetIOWinManager().AddIOWin(
-          rs_new CSplashScreen(CSplashScreen::kSplashScreen_Nintendo), 1000, 10000);
+          rs_new CSplashScreen(CSplashScreen::kSplashScreen_ProgressiveCheck), 1000, 10000);
     }
     CDvdFile::FileExists("Strings.pak");
 
