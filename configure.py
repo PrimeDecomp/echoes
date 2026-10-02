@@ -597,6 +597,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CInterpolationCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptMidi.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptStreamedMusic.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoaderRel.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader.cpp"),
