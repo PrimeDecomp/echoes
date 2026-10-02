@@ -25,13 +25,15 @@ public:
     static CElementAllocationChunk* sFreeChunk;
   };
 
-  virtual ~IElement(){};
+  virtual ~IElement() = 0;
 
   // -> CFrameDelayedKiller
   void* operator new(size_t sz, const char*, const char*);
   void* operator new(size_t sz) { return operator new(sz, "??(??)", nullptr); }
   void operator delete(void* ptr, size_t sz);
 };
+
+inline IElement::~IElement() {}
 
 class CRealElement : public IElement {
 public:
@@ -41,7 +43,7 @@ public:
 
 class CIntElement : public IElement {
 public:
-  ~CIntElement() override{};
+  ~CIntElement() override {};
   virtual bool GetValue(int frame, int& valOut) const = 0;
 };
 
@@ -70,7 +72,7 @@ struct SUVElementSet {
   float xMin, yMin, xMax, yMax;
 
   // SUVElementSet() : xMin(0.f), yMin(1.f), xMax(0.f), yMax(1.f) {}
-  //SUVElementSet(float xMin, float yMin, float xMax, float yMax)
+  // SUVElementSet(float xMin, float yMin, float xMax, float yMax)
   //: xMin(xMin), yMin(yMin), xMax(xMax), yMax(yMax) {}
   // SUVElementSet(const SUVElementSet& other)
   // : xMin(other.xMin), yMin(other.yMin), xMax(other.xMax), yMax(other.yMax) {}
