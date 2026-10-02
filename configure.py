@@ -593,6 +593,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CFluidPlaneCPU.cpp"),
             Object(NonMatching, "MetroidPrime/CCollisionActorManager.cpp"),
             Object(NonMatching, "MetroidPrime/CCollisionActor.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/CBurstFire.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpindleCamera.cpp"),
