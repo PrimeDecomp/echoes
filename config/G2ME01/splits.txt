@@ -1055,9 +1055,15 @@ MetroidPrime/ScriptObjects/CScriptPathCamera.cpp:
 	.data       start:0x803B7558 end:0x803B7588
 
 MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp:
-	.text       start:0x801E1338 end:0x801E2098
+	.text       start:0x801E1338 end:0x801E2334
 	.data       start:0x803B7588 end:0x803B75A8
 	.sdata2     start:0x8041D3F8 end:0x8041D400
+
+MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.cpp:
+	.text       start:0x801E2334 end:0x801E2E30
+	.rodata     start:0x803AB180 end:0x803AB188
+	.data       start:0x803B75A8 end:0x803B7640
+	.sdata2     start:0x8041D400 end:0x8041D410
 
 MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C

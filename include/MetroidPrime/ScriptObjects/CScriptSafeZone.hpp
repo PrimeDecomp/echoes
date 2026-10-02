@@ -2,10 +2,10 @@
 #define _CSCRIPTSAFEZONE
 
 #include "MetroidPrime/CDarkWorldInfo.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 
-// Scaffold; evidence in Echoes research/CScriptSafeZone-CScriptTriggerOrientated-G2ME01.md.
-class CScriptSafeZone : public CScriptTriggerOrientated {
+// Scaffold; evidence in Echoes research/CScriptSafeZone-CScriptTriggerEllipsoid-G2ME01.md.
+class CScriptSafeZone : public CScriptTriggerEllipsoid {
 public:
   // CEntity
   ~CScriptSafeZone() override;
