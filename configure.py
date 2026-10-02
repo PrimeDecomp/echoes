@@ -823,6 +823,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAllFormatsAnimSource.cpp"),
             Object(NonMatching, "Kyoto/Animation/CFBStreamedAnimReader.cpp"),
             Object(NonMatching, "Kyoto/Animation/CFBStreamedCompression.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CBoolPOINode.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CCharAnimMemoryMetrics.cpp"),
             Object(NonMatching, "Kyoto/Animation/CInt32POINode.cpp"),
             Object(NonMatching, "Kyoto/Animation/CParticlePOINode.cpp"),

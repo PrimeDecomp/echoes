@@ -1864,6 +1864,9 @@ Kyoto/Animation/CAnimTreeTweenBase.cpp:
 	.data       start:0x803B9A48 end:0x803B9AD0
 	.sbss       start:0x804198C0 end:0x804198D8
 
+Kyoto/Animation/CBoolPOINode.cpp:
+	.text       start:0x802ABA00 end:0x802ABA68
+
 Kyoto/Animation/CCharAnimMemoryMetrics.cpp:
 	.text       start:0x802ABA68 end:0x802ABA94
 	.sbss       start:0x804198D8 end:0x804198E0
