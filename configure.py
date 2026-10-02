@@ -479,6 +479,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerState.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTimer.cpp"),
             Object(NonMatching, "MetroidPrime/CAutoMapper.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGun.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGunBase.cpp"),

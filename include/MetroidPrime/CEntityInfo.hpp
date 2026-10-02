@@ -59,6 +59,7 @@ enum EEntityType {
   kET_ScriptStreamedMusic = 84,
   kET_ScriptTeamAi = 88,
   kET_ScriptSwitch = 86,
+  kET_ScriptTimer = 91,
   kET_ScriptTrigger = 92,
   kET_ScriptTriggerEllipsoid = 93,
   kET_ScriptSafeZone = 95, // Guessed name; REL ScriptSafeZone.
@@ -121,6 +122,8 @@ enum EScriptObjectMessage {
   kSM_SetToZero = 0x5a45524f,
   kSM_SetToMax = 0x534d4158,
   kSM_Reset = 0x52534554,
+  kSM_ResetAndStart = 0x52535453,
+  kSM_StopAndReset = 0x53545052,
   kSM_Follow = 0x464f4c57,
   kSM_Attach = 0x41544348,
   kSM_Open = 0x4f50454e,
