@@ -1769,6 +1769,15 @@ Kyoto/Audio/CSfxManager.cpp:
 	.data       start:0x803B9490 end:0x803B95D8
 	.sdata2     start:0x8041E2E0 end:0x8041E310
 
+Kyoto/Animation/CAdvancementDeltas.cpp:
+	.text       start:0x802A042C end:0x802A05EC
+	.sdata2     start:0x8041E310 end:0x8041E320
+
+Kyoto/Animation/CAnimMathUtils.cpp:
+	.text       start:0x802A05EC end:0x802A0A70
+	.sbss       start:0x804198A0 end:0x804198A8
+	.sdata2     start:0x8041E320 end:0x8041E348
+
 Kyoto/Animation/CAnimPOIData.cpp:
 	.text       start:0x802A0B38 end:0x802A0F2C
 	.sbss       start:0x804198A8 end:0x804198B8
