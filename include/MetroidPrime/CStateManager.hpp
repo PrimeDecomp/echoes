@@ -182,6 +182,7 @@ public:
   int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return mNumPlayers; }
+  int GetViewportLayoutIndex() const; // Guessed name
   typedef rstl::reserved_vector< rstl::reserved_vector< CCameraFilterPass, 11 >, 4 >
       TCameraFilterPasses;
   typedef rstl::reserved_vector< rstl::reserved_vector< CCameraBlurPass, 11 >, 4 >

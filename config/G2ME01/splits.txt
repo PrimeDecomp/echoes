@@ -556,6 +556,12 @@ MetroidPrime/ScriptObjects/CScriptEMPulse.cpp:
 	.sdata      start:0x80418340 end:0x80418348
 	.sdata2     start:0x8041BF00 end:0x8041BF20
 
+MetroidPrime/HUD/CHudRadarInterface.cpp:
+	.text       start:0x8012ED0C end:0x8012FD84
+	.rodata     start:0x803A8EB8 end:0x803A8F28
+	.sdata      start:0x80418348 end:0x80418358 align:4
+	.sdata2     start:0x8041BF58 end:0x8041BFA0
+
 MetroidPrime/HUD/CHudVisorBeamMenu.cpp:
 	.text       start:0x8012FD84 end:0x80131404
 	.rodata     start:0x803A8F28 end:0x803A9090
