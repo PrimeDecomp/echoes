@@ -52,6 +52,56 @@ struct SLdrFlyingPirate {
   float unknown_0x7ac85cb6; // 0x7ac85cb6
 };
 
-void LoadTypedefSLdrFlyingPirate(SLdrFlyingPirate& data, CInputStream& input);
+inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), actorInformation(), projectile(kInvalidAssetId), projectileDamage(), missile(kInvalidAssetId), missileDamage(), wPSC(kInvalidAssetId), rocketPackExplosion(kInvalidAssetId), rocketPackExplosionDamage(), landingCloudDirt(kInvalidAssetId), landingCloudDust(kInvalidAssetId), landingCloudSnow(kInvalidAssetId) {
+  patterned.turnSpeed = 360.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 15.0f;
+  patterned.maxAttackRange = 40.0f;
+  patterned.averageAttackTime = 1.0f;
+  patterned.attackTimeVariation = 0.5f;
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 10.0f;
+  patterned.damageWaitTime = 3.0f;
+  patterned.health.health = 300.0f;
+  patterned.health.hI_KnockBackResistance = 5.0f;
+  patterned.collisionHeight = 6.0f;
+  patterned.stepUpHeight = 0.30000001f;
+  searchRadius = 20.0f;
+  hearingRadius = 20.0f;
+  unknown_0x20daf45e = 0;
+  projectileDamage.unknown_0x119fbd31 = 9;
+  projectileDamage.dI_Damage = 5.0f;
+  sound_Projectile = 0;
+  missileDamage.unknown_0x119fbd31 = 9;
+  missileDamage.dI_Damage = 10.0f;
+  missileDamage.dI_Radius = 5.0f;
+  hurlRecoverTime = 0.80000001f;
+  hoverHeight = 4.0f;
+  rocketPackExplosionDamage.unknown_0x119fbd31 = 9;
+  rocketPackExplosionDamage.dI_Damage = 20.0f;
+  rocketPackExplosionDamage.dI_Radius = 10.0f;
+  rocketPackExplosionDamage.dI_KnockBackPower = 10.0f;
+  spiralChance = 20.0f;
+  minimumMissileTime = 10.0f;
+  missileTimeVariation = 10.0f;
+  flightThrust = 1000.0f;
+  sound_Impact = 0;
+  sound_Spiral = 0;
+  landChance = 25.0f;
+  intraBurstShotTime = 0.1f;
+  intraBurstShotVariation = 0.050000001f;
+  sound_Hurled = 0;
+  sound_Death = 0;
+  doubleAttackChance = 25.0f;
+  unknown_0x3427d27f = 25.0f;
+  stopHomingRange = 8.0f;
+  unknown_0xccf05648 = 2.25f;
+  unknown_0x2a90f9a9 = 3.0f;
+  unknown_0x9ca8f357 = -0.1f;
+  unknown_0x7ac85cb6 = -0.23f;
+}
+
+inline SLdrFlyingPirate::~SLdrFlyingPirate() {}
 
 #endif

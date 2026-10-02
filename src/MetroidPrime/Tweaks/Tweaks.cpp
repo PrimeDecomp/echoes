@@ -31,52 +31,52 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   switch (instanceId) {
 
   case 0x5457414d:
-    LoadTypedefSLdrTweakAutoMapper(gpTweakContents->TweakAutoMapper, input);
+    LoadTypedefTweakAutoMapper(gpTweakContents->TweakAutoMapper, input);
     break;
   case 0x5457424c:
-    LoadTypedefSLdrTweakBall(gpTweakContents->TweakBall, input);
+    LoadTypedefTweakBall(gpTweakContents->TweakBall, input);
     break;
   case 0x54574342:
-    LoadTypedefSLdrTweakCameraBob(gpTweakContents->TweakCameraBob, input);
+    LoadTypedefTweakCameraBob(gpTweakContents->TweakCameraBob, input);
     break;
   case 0x5457474d:
-    LoadTypedefSLdrTweakGame(gpTweakContents->TweakGame, input);
+    LoadTypedefTweakGame(gpTweakContents->TweakGame, input);
     break;
   case 0x54574755:
-    LoadTypedefSLdrTweakGui(gpTweakContents->TweakGui, input);
+    LoadTypedefTweakGui(gpTweakContents->TweakGui, input);
     break;
   case 0x54574743:
-    LoadTypedefSLdrTweakGuiColors(gpTweakContents->TweakGuiColors, input);
+    LoadTypedefTweakGuiColors(gpTweakContents->TweakGuiColors, input);
     break;
   case 0x54575041:
-    LoadTypedefSLdrTweakParticle(gpTweakContents->TweakParticle, input);
+    LoadTypedefTweakParticle(gpTweakContents->TweakParticle, input);
     break;
   case 0x5457504c:
-    LoadTypedefSLdrTweakPlayer(gpTweakContents->TweakPlayer, input);
+    LoadTypedefTweakPlayer(gpTweakContents->TweakPlayer, input);
     break;
   case 0x54575032:
-    LoadTypedefSLdrTweakPlayer(gpTweakContents->TweakPlayer2, input);
+    LoadTypedefTweakPlayer(gpTweakContents->TweakPlayer2, input);
     break;
   case 0x54575043:
-    LoadTypedefSLdrTweakPlayerControls(gpTweakContents->TweakPlayerControls, input);
+    LoadTypedefTweakPlayerControls(gpTweakContents->TweakPlayerControls, input);
     break;
   case 0x54574332:
-    LoadTypedefSLdrTweakPlayerControls(gpTweakContents->TweakPlayerControls2, input);
+    LoadTypedefTweakPlayerControls(gpTweakContents->TweakPlayerControls2, input);
     break;
   case 0x54575047:
-    LoadTypedefSLdrTweakPlayerGun(gpTweakContents->TweakPlayerGun, input);
+    LoadTypedefTweakPlayerGun(gpTweakContents->TweakPlayerGun, input);
     break;
   case 0x5457504d:
-    LoadTypedefSLdrTweakPlayerGun(gpTweakContents->TweakPlayerGunMuli, input);
+    LoadTypedefTweakPlayerGun(gpTweakContents->TweakPlayerGunMuli, input);
     break;
   case 0x54575052:
-    LoadTypedefSLdrTweakPlayerRes(gpTweakContents->TweakPlayerRes, input);
+    LoadTypedefTweakPlayerRes(gpTweakContents->TweakPlayerRes, input);
     break;
   case 0x54575353:
-    LoadTypedefSLdrTweakSlideShow(gpTweakContents->TweakSlideShow, input);
+    LoadTypedefTweakSlideShow(gpTweakContents->TweakSlideShow, input);
     break;
   case 0x54575447:
-    LoadTypedefSLdrTweakTargeting(gpTweakContents->TweakTargeting, input);
+    LoadTypedefTweakTargeting(gpTweakContents->TweakTargeting, input);
     break;
   default:
     break;

@@ -13,6 +13,10 @@ struct SLdrSpiderBallWaypoint {
   int flags; // 0x5d817483
 };
 
-void LoadTypedefSLdrSpiderBallWaypoint(SLdrSpiderBallWaypoint& data, CInputStream& input);
+inline SLdrSpiderBallWaypoint::SLdrSpiderBallWaypoint() : editorProperties() {
+  flags = 0;
+}
+
+inline SLdrSpiderBallWaypoint::~SLdrSpiderBallWaypoint() {}
 
 #endif

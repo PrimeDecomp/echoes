@@ -35,7 +35,112 @@ struct SLdrAIMannedTurretData {
   CAssetId telegraphEffect; // 0x8f68ac21
 };
 
-void LoadTypedefSLdrAIMannedTurretData(SLdrAIMannedTurretData& data, CInputStream& input);
+inline SLdrAIMannedTurretData::SLdrAIMannedTurretData() : weaponDamage(), weaponEffect(kInvalidAssetId), health(), vulnerability(), stateMachine(kInvalidAssetId), telegraphEffect(kInvalidAssetId) {
+  maxHorizRotationLeft = 90.0f;
+  maxHorizRotationRight = 90.0f;
+  maxVertElevationUp = 60.0f;
+  maxVertElevationDown = 60.0f;
+  damageAngle = 30.0f;
+  horizSpeed = 30.0f;
+  vertSpeed = 30.0f;
+  fireRate = 1.0f;
+  fireRateRandomFactor = 0.0f;
+  maxAttackAngle = 90.0f;
+  maxAttackRange = 40.0f;
+  startAttackRange = 20.0f;
+  attackLeashTimer = 2.0f;
+}
+
+inline SLdrAIMannedTurretData::~SLdrAIMannedTurretData() {}
+
+inline void LoadTypedefAIMannedTurretData(SLdrAIMannedTurretData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x17cd8b2a: {
+      sldrThis.maxHorizRotationLeft = input.ReadFloat();
+      break;
+    }
+    case 0x1473dad2: {
+      sldrThis.maxHorizRotationRight = input.ReadFloat();
+      break;
+    }
+    case 0x3650ce75: {
+      sldrThis.maxVertElevationUp = input.ReadFloat();
+      break;
+    }
+    case 0x78520e6e: {
+      sldrThis.maxVertElevationDown = input.ReadFloat();
+      break;
+    }
+    case 0xa39a5d72: {
+      sldrThis.damageAngle = input.ReadFloat();
+      break;
+    }
+    case 0xfb2e32db: {
+      sldrThis.horizSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x1b3c8683: {
+      sldrThis.vertSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xc6e48f18: {
+      sldrThis.fireRate = input.ReadFloat();
+      break;
+    }
+    case 0xf9bd253e: {
+      sldrThis.fireRateRandomFactor = input.ReadFloat();
+      break;
+    }
+    case 0xf11f7384: {
+      sldrThis.maxAttackAngle = input.ReadFloat();
+      break;
+    }
+    case 0xff77c96f: {
+      sldrThis.maxAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0xb63f274c: {
+      sldrThis.startAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0xf8d1ea77: {
+      sldrThis.attackLeashTimer = input.ReadFloat();
+      break;
+    }
+    case 0x8e5f7e96: {
+      LoadTypedefDamageInfo(sldrThis.weaponDamage, input);
+      break;
+    }
+    case 0xc43360a7: {
+      sldrThis.weaponEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcf90d15e: {
+      LoadTypedefHealthInfo(sldrThis.health, input);
+      break;
+    }
+    case 0x7b71ae90: {
+      LoadTypedefDamageVulnerability(sldrThis.vulnerability, input);
+      break;
+    }
+    case 0x55744160: {
+      sldrThis.stateMachine = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x8f68ac21: {
+      sldrThis.telegraphEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrAIMannedTurret {
   SLdrAIMannedTurret();
@@ -47,6 +152,10 @@ struct SLdrAIMannedTurret {
   SLdrSpline patrolVerticalSpline; // 0x84284b1c
 };
 
-void LoadTypedefSLdrAIMannedTurret(SLdrAIMannedTurret& data, CInputStream& input);
+inline SLdrAIMannedTurret::SLdrAIMannedTurret() : editorProperties(), data(), patrolHorizSpline(), patrolVerticalSpline() {
+  editorProperties.active = false;
+}
+
+inline SLdrAIMannedTurret::~SLdrAIMannedTurret() {}
 
 #endif

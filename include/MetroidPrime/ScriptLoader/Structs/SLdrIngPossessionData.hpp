@@ -22,6 +22,6 @@ struct SLdrIngPossessionData {
   SLdrDamageVulnerability ingVulnerability; // 0x4aeec093
 };
 
-void LoadTypedefSLdrIngPossessionData(SLdrIngPossessionData& data, CInputStream& input);
+void LoadTypedefIngPossessionData(SLdrIngPossessionData& data, CInputStream& input);
 
 #endif

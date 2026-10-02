@@ -462,7 +462,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CRainSplashGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerData.cpp"),
-            Object(MatchingFor("G2ME01"), "MetroidPrime/ScriptObjects/CScriptCameraFilterKeyframe.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraFilterKeyframe.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/ScriptObjects/CScriptCameraBlurKeyframe.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraFilter.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraShaker.cpp"),

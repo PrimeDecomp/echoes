@@ -18,6 +18,10 @@ struct SLdrCameraPitch {
   bool playerSplineLoops; // 0x431769c6
 };
 
-void LoadTypedefSLdrCameraPitch(SLdrCameraPitch& data, CInputStream& input);
+inline SLdrCameraPitch::SLdrCameraPitch() : editorProperties(), forwardsPitch(), backwardsPitch(), playerSplineType() {
+  playerSplineLoops = false;
+}
+
+inline SLdrCameraPitch::~SLdrCameraPitch() {}
 
 #endif

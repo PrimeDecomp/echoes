@@ -6,7 +6,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "rstl/string.hpp"
 
@@ -17,7 +17,7 @@ struct SLdrPlayerController {
   SLdrEditorProperties editorProperties; // 0x255a4580
   int unknown_0xe71de331; // 0xe71de331
   CAssetId model; // 0xc27ffa8f
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   int proxyType; // 0xca56a18a
   CVector3f playerOffset; // 0x1d8b933f
@@ -30,6 +30,18 @@ struct SLdrPlayerController {
   rstl::string stringParameter1; // 0x70bc90a6
 };
 
-void LoadTypedefSLdrPlayerController(SLdrPlayerController& data, CInputStream& input);
+inline SLdrPlayerController::SLdrPlayerController() : editorProperties(), model(kInvalidAssetId), animationInformation(), actorInformation(), playerOffset(CVector3f::Zero()), vectorParameter1(CVector3f::Zero()), stringParameter1() {
+  editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
+  unknown_0xe71de331 = 0;
+  proxyType = 0;
+  playerOffset = CVector3f(0.0f, 0.0f, 1.5f);
+  intParameter1 = 0;
+  intParameter2 = 0;
+  floatParameter1 = 0.0f;
+  floatParameter2 = 0.0f;
+  floatParameter3 = 0.0f;
+}
+
+inline SLdrPlayerController::~SLdrPlayerController() {}
 
 #endif

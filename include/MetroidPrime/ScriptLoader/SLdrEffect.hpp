@@ -41,6 +41,30 @@ struct SLdrEffect {
   bool unknown_0x608ecac5; // 0x608ecac5
 };
 
-void LoadTypedefSLdrEffect(SLdrEffect& data, CInputStream& input);
+inline SLdrEffect::SLdrEffect() : editorProperties(), particleEffect(kInvalidAssetId), lighting(), motionSplineType(), motionControlSpline() {
+  unknown_0x3df5a489 = false;
+  restartOnActivate = false;
+  unknown_0xee538174 = false;
+  unknown_0xa94b0efd = 5.0f;
+  unknown_0x93756968 = 0.5f;
+  unknown_0x0b94597d = 0.2f;
+  unknown_0xd0e8a496 = 0.1f;
+  unknown_0xa8bb6c61 = false;
+  unknown_0x7589d549 = 20.0f;
+  unknown_0xa7d7d767 = 30.0f;
+  unknown_0xfe69615c = 0.0f;
+  visibleInScanOrNormal = true;
+  visibleInDark = true;
+  visibleInEcho = true;
+  deleteWhenDone = false;
+  unknown_0xbe931927 = false;
+  renderOrder = 0;
+  motionSplinePathLoops = false;
+  motionSplineDuration = 10.0f;
+  unknown_0x73e63382 = false;
+  unknown_0x608ecac5 = false;
+}
+
+inline SLdrEffect::~SLdrEffect() {}
 
 #endif

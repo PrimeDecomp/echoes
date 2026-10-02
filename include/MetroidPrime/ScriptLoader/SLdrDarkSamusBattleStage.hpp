@@ -14,7 +14,38 @@ struct SLdrDSMissiles {
   float unknown_0x1e2debc6; // 0x1e2debc6
 };
 
-void LoadTypedefSLdrDSMissiles(SLdrDSMissiles& data, CInputStream& input);
+inline SLdrDSMissiles::SLdrDSMissiles() {
+  unknown_0x7ee77018 = 50.0f;
+  unknown_0xbfb7ca5c = 100.0f;
+  unknown_0x1e2debc6 = 100.0f;
+}
+
+inline SLdrDSMissiles::~SLdrDSMissiles() {}
+
+inline void LoadTypedefDSMissiles(SLdrDSMissiles& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x7ee77018: {
+      sldrThis.unknown_0x7ee77018 = input.ReadFloat();
+      break;
+    }
+    case 0xbfb7ca5c: {
+      sldrThis.unknown_0xbfb7ca5c = input.ReadFloat();
+      break;
+    }
+    case 0x1e2debc6: {
+      sldrThis.unknown_0x1e2debc6 = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDSStageInfo {
   SLdrDSStageInfo();
@@ -59,7 +90,207 @@ struct SLdrDSStageInfo {
   bool unknown_0x911a2476; // 0x911a2476
 };
 
-void LoadTypedefSLdrDSStageInfo(SLdrDSStageInfo& data, CInputStream& input);
+inline SLdrDSStageInfo::SLdrDSStageInfo() : missiles() {
+  unknown_0xb5af7831 = -1.0f;
+  minTimeBetweenActions = 2.5f;
+  maxTimeBetweenActions = 4.0f;
+  minTimeBetweenActionsWhenInvisible = 2.5f;
+  maxTimeBetweenActionsWhenInvisible = 4.0f;
+  unknown_0xd061ff99 = 20.0f;
+  pauseDurationMin = 1.5f;
+  pauseDurationMax = 3.0f;
+  chanceToDoubleDash = 0.0f;
+  unknown_0x3ff87a8c = false;
+  unknown_0x49b9936d = false;
+  unknown_0xc96b8223 = false;
+  unknown_0x53fdcb5b = false;
+  usesAlternateScannableInfo = false;
+  unknown_0xaa85c885 = false;
+  pause = 0.0f;
+  taunt = 0.0f;
+  lookAround = true;
+  meleeAttack = 0.0f;
+  meleeDash = 0.0f;
+  scatterShot = 0.0f;
+  movingScatterShot = 0.0f;
+  diveAttack = 0.0f;
+  unknown_0xb2c1e4fa = false;
+  unknown_0xf5cf3c0f = true;
+  normalMissile = 0.0f;
+  missileJump = 0.0f;
+  superMissile = 0.0f;
+  freezeBeamWhenInvisible = 0.0f;
+  normalMissileWhenInvisible = 0.0f;
+  sweepBeam = 0.0f;
+  boostBall = 0.0f;
+  unknown_0x2d7551e6 = false;
+  phazonAttack = 0.0f;
+  phazonEnrage = 0.0f;
+  unknown_0x911a2476 = false;
+}
+
+inline SLdrDSStageInfo::~SLdrDSStageInfo() {}
+
+inline void LoadTypedefDSStageInfo(SLdrDSStageInfo& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xb5af7831: {
+      sldrThis.unknown_0xb5af7831 = input.ReadFloat();
+      break;
+    }
+    case 0xac65eb7a: {
+      sldrThis.minTimeBetweenActions = input.ReadFloat();
+      break;
+    }
+    case 0x4f3855a0: {
+      sldrThis.maxTimeBetweenActions = input.ReadFloat();
+      break;
+    }
+    case 0x08c0b02c: {
+      sldrThis.minTimeBetweenActionsWhenInvisible = input.ReadFloat();
+      break;
+    }
+    case 0x695f68c7: {
+      sldrThis.maxTimeBetweenActionsWhenInvisible = input.ReadFloat();
+      break;
+    }
+    case 0xd061ff99: {
+      sldrThis.unknown_0xd061ff99 = input.ReadFloat();
+      break;
+    }
+    case 0x97dbd42a: {
+      sldrThis.pauseDurationMin = input.ReadFloat();
+      break;
+    }
+    case 0x71bb7bcb: {
+      sldrThis.pauseDurationMax = input.ReadFloat();
+      break;
+    }
+    case 0xb751778b: {
+      sldrThis.chanceToDoubleDash = input.ReadFloat();
+      break;
+    }
+    case 0xd6740348: {
+      LoadTypedefDSMissiles(sldrThis.missiles, input);
+      break;
+    }
+    case 0x3ff87a8c: {
+      sldrThis.unknown_0x3ff87a8c = input.ReadBool();
+      break;
+    }
+    case 0x49b9936d: {
+      sldrThis.unknown_0x49b9936d = input.ReadBool();
+      break;
+    }
+    case 0xc96b8223: {
+      sldrThis.unknown_0xc96b8223 = input.ReadBool();
+      break;
+    }
+    case 0x53fdcb5b: {
+      sldrThis.unknown_0x53fdcb5b = input.ReadBool();
+      break;
+    }
+    case 0x0d7ef013: {
+      sldrThis.usesAlternateScannableInfo = input.ReadBool();
+      break;
+    }
+    case 0xaa85c885: {
+      sldrThis.unknown_0xaa85c885 = input.ReadBool();
+      break;
+    }
+    case 0x80f7e605: {
+      sldrThis.pause = input.ReadFloat();
+      break;
+    }
+    case 0x479f6a4f: {
+      sldrThis.taunt = input.ReadFloat();
+      break;
+    }
+    case 0x778791f5: {
+      sldrThis.lookAround = input.ReadBool();
+      break;
+    }
+    case 0xce4c4668: {
+      sldrThis.meleeAttack = input.ReadFloat();
+      break;
+    }
+    case 0x5951a03f: {
+      sldrThis.meleeDash = input.ReadFloat();
+      break;
+    }
+    case 0x94615651: {
+      sldrThis.scatterShot = input.ReadFloat();
+      break;
+    }
+    case 0x94f48974: {
+      sldrThis.movingScatterShot = input.ReadFloat();
+      break;
+    }
+    case 0x6e40fb76: {
+      sldrThis.diveAttack = input.ReadFloat();
+      break;
+    }
+    case 0xb2c1e4fa: {
+      sldrThis.unknown_0xb2c1e4fa = input.ReadBool();
+      break;
+    }
+    case 0xf5cf3c0f: {
+      sldrThis.unknown_0xf5cf3c0f = input.ReadBool();
+      break;
+    }
+    case 0x6847efa7: {
+      sldrThis.normalMissile = input.ReadFloat();
+      break;
+    }
+    case 0x083fd602: {
+      sldrThis.missileJump = input.ReadFloat();
+      break;
+    }
+    case 0xdb21402f: {
+      sldrThis.superMissile = input.ReadFloat();
+      break;
+    }
+    case 0xe63286eb: {
+      sldrThis.freezeBeamWhenInvisible = input.ReadFloat();
+      break;
+    }
+    case 0x4aae6186: {
+      sldrThis.normalMissileWhenInvisible = input.ReadFloat();
+      break;
+    }
+    case 0x2bd1c15b: {
+      sldrThis.sweepBeam = input.ReadFloat();
+      break;
+    }
+    case 0xb53693fa: {
+      sldrThis.boostBall = input.ReadFloat();
+      break;
+    }
+    case 0x2d7551e6: {
+      sldrThis.unknown_0x2d7551e6 = input.ReadBool();
+      break;
+    }
+    case 0x93a876f3: {
+      sldrThis.phazonAttack = input.ReadFloat();
+      break;
+    }
+    case 0xaea228b9: {
+      sldrThis.phazonEnrage = input.ReadFloat();
+      break;
+    }
+    case 0x911a2476: {
+      sldrThis.unknown_0x911a2476 = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDarkSamusBattleStage {
   SLdrDarkSamusBattleStage();
@@ -69,6 +300,10 @@ struct SLdrDarkSamusBattleStage {
   SLdrDSStageInfo stage; // 0xd83caab6
 };
 
-void LoadTypedefSLdrDarkSamusBattleStage(SLdrDarkSamusBattleStage& data, CInputStream& input);
+inline SLdrDarkSamusBattleStage::SLdrDarkSamusBattleStage() : editorProperties(), stage() {
+  editorProperties.active = true;
+}
+
+inline SLdrDarkSamusBattleStage::~SLdrDarkSamusBattleStage() {}
 
 #endif

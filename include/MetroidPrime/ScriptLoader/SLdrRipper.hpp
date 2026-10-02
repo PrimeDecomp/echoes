@@ -19,6 +19,11 @@ struct SLdrRipper {
   SLdrGrappleParameters grappleInfo; // 0x6a2872d8
 };
 
-void LoadTypedefSLdrRipper(SLdrRipper& data, CInputStream& input);
+inline SLdrRipper::SLdrRipper() : editorProperties(), patterned(), actorInformation(), grappleInfo() {
+  flavor = 0;
+  patterned.unknown_0xf0790c1b = 10.0f;
+}
+
+inline SLdrRipper::~SLdrRipper() {}
 
 #endif

@@ -4,7 +4,7 @@
 
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrRiftPortal {
@@ -13,13 +13,13 @@ struct SLdrRiftPortal {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   CAssetId model; // 0xc27ffa8f
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   CAssetId backgroundModel; // 0x90c42387
-  SLdrAnimationParameters backgroundAnimation; // 0x80c6a38d
+  SLdrAnimationSet backgroundAnimation; // 0x80c6a38d
   CAssetId incandescentModel; // 0xa71696b0
-  SLdrAnimationParameters incandescentAnimation; // 0x5cb18eb4
+  SLdrAnimationSet incandescentAnimation; // 0x5cb18eb4
   CAssetId lineModel; // 0xf284d838
-  SLdrAnimationParameters lineAnimation; // 0xe845fa67
+  SLdrAnimationSet lineAnimation; // 0xe845fa67
   bool ripPortal; // 0xf5b73af8
   int projectileAttraction; // 0x87d5a35f
   float projectileBoxWidth; // 0x709c1413
@@ -27,6 +27,14 @@ struct SLdrRiftPortal {
   float projectileDestructionRadius; // 0xe1e5551f
 };
 
-void LoadTypedefSLdrRiftPortal(SLdrRiftPortal& data, CInputStream& input);
+inline SLdrRiftPortal::SLdrRiftPortal() : editorProperties(), model(kInvalidAssetId), animationInformation(), backgroundModel(kInvalidAssetId), backgroundAnimation(), incandescentModel(kInvalidAssetId), incandescentAnimation(), lineModel(kInvalidAssetId), lineAnimation() {
+  ripPortal = false;
+  projectileAttraction = 0;
+  projectileBoxWidth = 10.0f;
+  projectileAngle = 30.0f;
+  projectileDestructionRadius = 5.0f;
+}
+
+inline SLdrRiftPortal::~SLdrRiftPortal() {}
 
 #endif

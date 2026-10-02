@@ -17,7 +17,7 @@ struct SLdrTweakGame_FragLimitChoices {
   int fragLimit4; // 0x2d60acff
 };
 
-void LoadTypedefSLdrTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& data, CInputStream& input);
 
 struct SLdrTweakGame_TimeLimitChoices {
   SLdrTweakGame_TimeLimitChoices();
@@ -30,7 +30,7 @@ struct SLdrTweakGame_TimeLimitChoices {
   float timeLimit4; // 0xec0fcde2
 };
 
-void LoadTypedefSLdrTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& data, CInputStream& input);
 
 struct SLdrTweakGame_CoinLimitChoices {
   SLdrTweakGame_CoinLimitChoices();
@@ -43,7 +43,7 @@ struct SLdrTweakGame_CoinLimitChoices {
   int coinLimit4; // 0xe42e3971
 };
 
-void LoadTypedefSLdrTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& data, CInputStream& input);
 
 struct SLdrTweakGame {
   SLdrTweakGame();
@@ -75,6 +75,6 @@ struct SLdrTweakGame {
   SLdrSpline unknown_0x40818220; // 0x40818220
 };
 
-void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input);
+void LoadTypedefTweakGame(SLdrTweakGame& data, CInputStream& input);
 
 #endif

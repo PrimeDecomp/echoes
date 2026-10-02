@@ -31,6 +31,23 @@ struct SLdrPlayerTurret {
   int sFXMultiPlayerProjectile; // 0x035459fd
 };
 
-void LoadTypedefSLdrPlayerTurret(SLdrPlayerTurret& data, CInputStream& input);
+inline SLdrPlayerTurret::SLdrPlayerTurret() : editorProperties(), weaponDamage(), weaponEffect(kInvalidAssetId), weaponEffectMultiPlayer(kInvalidAssetId) {
+  flagsPlayerTurret = 0x00000001u;
+  maxHorizRotationLeft = 90.0f;
+  maxHorizRotationRight = 90.0f;
+  maxVertElevationUp = 90.0f;
+  maxVertElevationDown = 0.0f;
+  damageAngle = 30.0f;
+  horizSpeed = 30.0f;
+  vertSpeed = 30.0f;
+  fireRate = 1.0f;
+  sFXTurretRotation = 0;
+  sFXSinglePlayerImpact = 0;
+  sFXMultiPlayerImpact = 0;
+  sFXSinglePlayerProjectile = 0;
+  sFXMultiPlayerProjectile = 0;
+}
+
+inline SLdrPlayerTurret::~SLdrPlayerTurret() {}
 
 #endif

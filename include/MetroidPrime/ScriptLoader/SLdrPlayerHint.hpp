@@ -16,6 +16,13 @@ struct SLdrPlayerHint {
   uint flagsPlayerHint; // 0x1bce57e1
 };
 
-void LoadTypedefSLdrPlayerHint(SLdrPlayerHint& data, CInputStream& input);
+inline SLdrPlayerHint::SLdrPlayerHint() : editorProperties() {
+  priority = 10;
+  timer = 0.0f;
+  interpolateControlTime = 1.0f;
+  flagsPlayerHint = 0x00000001u;
+}
+
+inline SLdrPlayerHint::~SLdrPlayerHint() {}
 
 #endif

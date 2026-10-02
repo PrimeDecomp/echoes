@@ -12,6 +12,6 @@ struct SLdrVisorParameters {
   uint visorFlags; // non-matching name, 0xca19e8c6
 };
 
-void LoadTypedefSLdrVisorParameters(SLdrVisorParameters& data, CInputStream& input);
+void LoadTypedefVisorParameters(SLdrVisorParameters& data, CInputStream& input);
 
 #endif

@@ -5,7 +5,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrPortalTransition {
@@ -13,7 +13,7 @@ struct SLdrPortalTransition {
   ~SLdrPortalTransition();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   CVector3f playerScale; // 0xe56ba365
   int volume; // 0x80c66c37
   int pan; // 0xd6088bc5
@@ -25,6 +25,16 @@ struct SLdrPortalTransition {
   int direction; // 0x4406dc02
 };
 
-void LoadTypedefSLdrPortalTransition(SLdrPortalTransition& data, CInputStream& input);
+inline SLdrPortalTransition::SLdrPortalTransition() : editorProperties(), animationInformation(), playerScale(CVector3f::Zero()), portalSoundGroupCommon(kInvalidAssetId), portalSoundGroupDirectional(kInvalidAssetId) {
+  playerScale = CVector3f(1.0f, 1.0f, 1.0f);
+  volume = 127;
+  pan = 64;
+  startPortal = 0;
+  inPortal1 = 0;
+  inPortal2 = 0;
+  direction = 0;
+}
+
+inline SLdrPortalTransition::~SLdrPortalTransition() {}
 
 #endif

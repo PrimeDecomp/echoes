@@ -34,7 +34,98 @@ struct SLdrSwampBossStage2Phase {
   int unknown_0x2b0bfd51; // 0x2b0bfd51
 };
 
-void LoadTypedefSLdrSwampBossStage2Phase(SLdrSwampBossStage2Phase& data, CInputStream& input);
+inline SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
+  minTimeBetweenAttacks = 3.0f;
+  maxTimeBetweenAttacks = 7.0f;
+  unknown_0x29e6ead6 = 1.0f;
+  unknown_0x1753225e = 2.0f;
+  dashChance = 0.2f;
+  tauntChance = 0.2f;
+  firstAttack = 0;
+  secondAttack = 0;
+  thirdAttack = 0;
+  fourthAttack = 7;
+  fifthAttack = 7;
+  health = 10.0f;
+  unknown_0x2e7e55f2 = 5;
+  unknown_0xef3efec0 = 2;
+  unknown_0x2b0bfd51 = 10;
+}
+
+inline SLdrSwampBossStage2Phase::~SLdrSwampBossStage2Phase() {}
+
+inline void LoadTypedefSwampBossStage2Phase(SLdrSwampBossStage2Phase& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x95e7a2c2: {
+      sldrThis.minTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x76ba1c18: {
+      sldrThis.maxTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x29e6ead6: {
+      sldrThis.unknown_0x29e6ead6 = input.ReadFloat();
+      break;
+    }
+    case 0x1753225e: {
+      sldrThis.unknown_0x1753225e = input.ReadFloat();
+      break;
+    }
+    case 0xbe1afbf8: {
+      sldrThis.dashChance = input.ReadFloat();
+      break;
+    }
+    case 0xa77f6212: {
+      sldrThis.tauntChance = input.ReadFloat();
+      break;
+    }
+    case 0x9cfa9acb: {
+      sldrThis.firstAttack = input.ReadInt32();
+      break;
+    }
+    case 0x180f81dd: {
+      sldrThis.secondAttack = input.ReadInt32();
+      break;
+    }
+    case 0x42617cfd: {
+      sldrThis.thirdAttack = input.ReadInt32();
+      break;
+    }
+    case 0xc39f864e: {
+      sldrThis.fourthAttack = input.ReadInt32();
+      break;
+    }
+    case 0x1994d506: {
+      sldrThis.fifthAttack = input.ReadInt32();
+      break;
+    }
+    case 0xf0668919: {
+      sldrThis.health = input.ReadFloat();
+      break;
+    }
+    case 0x2e7e55f2: {
+      sldrThis.unknown_0x2e7e55f2 = input.ReadInt32();
+      break;
+    }
+    case 0xef3efec0: {
+      sldrThis.unknown_0xef3efec0 = input.ReadInt32();
+      break;
+    }
+    case 0x2b0bfd51: {
+      sldrThis.unknown_0x2b0bfd51 = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrUnknownStruct38 {
   SLdrUnknownStruct38();
@@ -47,7 +138,48 @@ struct SLdrUnknownStruct38 {
   CVector3f repelOffset; // 0xb3252324
 };
 
-void LoadTypedefSLdrUnknownStruct38(SLdrUnknownStruct38& data, CInputStream& input);
+inline SLdrUnknownStruct38::SLdrUnknownStruct38() : repelOffset(CVector3f::Zero()) {
+  range = 20.0f;
+  turnRate = 180.0f;
+  soundEffect = 0;
+  warpScale = 5.0f;
+  repelOffset = CVector3f(0.0f, 1.0f, 5.0f);
+}
+
+inline SLdrUnknownStruct38::~SLdrUnknownStruct38() {}
+
+inline void LoadTypedefUnknownStruct38(SLdrUnknownStruct38& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x3642a398: {
+      sldrThis.range = input.ReadFloat();
+      break;
+    }
+    case 0xe34dc703: {
+      sldrThis.turnRate = input.ReadFloat();
+      break;
+    }
+    case 0x8d3ba8ae: {
+      sldrThis.soundEffect = input.ReadInt32();
+      break;
+    }
+    case 0xb99098d9: {
+      sldrThis.warpScale = input.ReadFloat();
+      break;
+    }
+    case 0xb3252324: {
+      sldrThis.repelOffset = CVector3f(input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSwampBossStage2Data {
   SLdrSwampBossStage2Data();
@@ -110,7 +242,274 @@ struct SLdrSwampBossStage2Data {
   SLdrAudioPlaybackParms audioPlaybackParms_0xbe3d39aa; // non-matching name, 0xbe3d39aa
 };
 
-void LoadTypedefSLdrSwampBossStage2Data(SLdrSwampBossStage2Data& data, CInputStream& input);
+inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data() : wingGrowthLF(kInvalidAssetId), wingGrowthLB(kInvalidAssetId), wingGrowthRF(kInvalidAssetId), wingGrowthRB(kInvalidAssetId), lightFlyer1(), darkFlyer1(), lightFlyer2(), darkFlyer2(), spitProjectile(kInvalidAssetId), spitDamage(), spitVisorEffect(kInvalidAssetId), swoopDamage(), splash(kInvalidAssetId), splashShockWave(), scanInfoLight(kInvalidAssetId), scanInfoDark(kInvalidAssetId), bubbleTelegraphEffect(kInvalidAssetId), wingDamageEffect(kInvalidAssetId), unknown_0x9347820e(), blowEffect(kInvalidAssetId), blowDamage(), stunnedSound(), audioPlaybackParms(), audioPlaybackParms_0xc05d5c7a(), audioPlaybackParms_0x2b3c923a(), flinchSound(), stunnedFlinchSound(), stunnedReelSound(), audioPlaybackParms_0x692fa63c(), audioPlaybackParms_0xbe3d39aa() {
+  hoverSpeed = 10.0f;
+  wingGrowthHealth = 1.0f;
+  stunTime = 30.0f;
+  unknown_0x96ce7897 = 2;
+  spitDamage.unknown_0x119fbd31 = 11;
+  spitDamage.dI_Damage = 5.0f;
+  sound_SpitVisor = 0;
+  spitProjectileRadius = 2.0f;
+  swoopDamage.unknown_0x119fbd31 = 11;
+  swoopDamage.dI_Damage = 0.5f;
+  swoopPush = 10.0f;
+  swoopDamageTime = 0.2f;
+  unknown_0x7fc50ac2 = 100.0f;
+  unknown_0x13448a4a = 2.0f;
+  unknown_0xf55924da = 100.0f;
+  unknown_0x83bc1de7 = 100.0f;
+  unknown_0x5a844633 = 30.0f;
+  unknown_0x78e22d1b = 30.0f;
+  unknown_0x9e116385 = 40.0f;
+  radarRange = 50.0f;
+  unknown_0xfe97e835 = 50.0f;
+  splashShockWaveMaxTime = 2.0f;
+  unknown_0xe57ca27c = 0.40000001f;
+  blowDamage.unknown_0x119fbd31 = 11;
+  blowDamage.dI_Damage = 0.5f;
+  blowTelegraphPush = 0.1f;
+  blowPush = 5.0f;
+  breakStunDamage = 30.0f;
+  unknown_0x8fe0bf01 = 15.0f;
+  flinchSoundChance = 0.80000001f;
+  stunnedFlinchSoundDamageThreshold = 4.0f;
+}
+
+inline SLdrSwampBossStage2Data::~SLdrSwampBossStage2Data() {}
+
+inline void LoadTypedefSwampBossStage2Data(SLdrSwampBossStage2Data& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x845ef489: {
+      sldrThis.hoverSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x11a273cb: {
+      sldrThis.wingGrowthLF = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x8a3331dd: {
+      sldrThis.wingGrowthLB = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x26439458: {
+      sldrThis.wingGrowthRF = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xbdd2d64e: {
+      sldrThis.wingGrowthRB = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcabe6b96: {
+      sldrThis.wingGrowthHealth = input.ReadFloat();
+      break;
+    }
+    case 0x7fa9256a: {
+      LoadTypedefSwampBossStage2Phase(sldrThis.lightFlyer1, input);
+      break;
+    }
+    case 0x8b884b8e: {
+      LoadTypedefSwampBossStage2Phase(sldrThis.darkFlyer1, input);
+      break;
+    }
+    case 0x04b7a789: {
+      LoadTypedefSwampBossStage2Phase(sldrThis.lightFlyer2, input);
+      break;
+    }
+    case 0xf096c96d: {
+      LoadTypedefSwampBossStage2Phase(sldrThis.darkFlyer2, input);
+      break;
+    }
+    case 0x7e192395: {
+      sldrThis.stunTime = input.ReadFloat();
+      break;
+    }
+    case 0x96ce7897: {
+      sldrThis.unknown_0x96ce7897 = input.ReadInt32();
+      break;
+    }
+    case 0xcfe37ebf: {
+      sldrThis.spitProjectile = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xda3c9b32: {
+      LoadTypedefDamageInfo(sldrThis.spitDamage, input);
+      break;
+    }
+    case 0x008becab: {
+      sldrThis.spitVisorEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xf3af8417: {
+      sldrThis.sound_SpitVisor = input.ReadInt32();
+      break;
+    }
+    case 0xdadc5bc9: {
+      sldrThis.spitProjectileRadius = input.ReadFloat();
+      break;
+    }
+    case 0x294e9516: {
+      LoadTypedefDamageInfo(sldrThis.swoopDamage, input);
+      break;
+    }
+    case 0x7d483636: {
+      sldrThis.swoopPush = input.ReadFloat();
+      break;
+    }
+    case 0x7b61a42b: {
+      sldrThis.swoopDamageTime = input.ReadFloat();
+      break;
+    }
+    case 0xd8d148fb: {
+      sldrThis.splash = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x7fc50ac2: {
+      sldrThis.unknown_0x7fc50ac2 = input.ReadFloat();
+      break;
+    }
+    case 0x13448a4a: {
+      sldrThis.unknown_0x13448a4a = input.ReadFloat();
+      break;
+    }
+    case 0xf55924da: {
+      sldrThis.unknown_0xf55924da = input.ReadFloat();
+      break;
+    }
+    case 0x83bc1de7: {
+      sldrThis.unknown_0x83bc1de7 = input.ReadFloat();
+      break;
+    }
+    case 0x5a844633: {
+      sldrThis.unknown_0x5a844633 = input.ReadFloat();
+      break;
+    }
+    case 0x78e22d1b: {
+      sldrThis.unknown_0x78e22d1b = input.ReadFloat();
+      break;
+    }
+    case 0x9e116385: {
+      sldrThis.unknown_0x9e116385 = input.ReadFloat();
+      break;
+    }
+    case 0xee258868: {
+      sldrThis.radarRange = input.ReadFloat();
+      break;
+    }
+    case 0xfe97e835: {
+      sldrThis.unknown_0xfe97e835 = input.ReadFloat();
+      break;
+    }
+    case 0x6c0f7aa3: {
+      LoadTypedefShockWaveInfo(sldrThis.splashShockWave, input);
+      break;
+    }
+    case 0x9807497c: {
+      sldrThis.splashShockWaveMaxTime = input.ReadFloat();
+      break;
+    }
+    case 0xe57ca27c: {
+      sldrThis.unknown_0xe57ca27c = input.ReadFloat();
+      break;
+    }
+    case 0xa3e1608c: {
+      sldrThis.scanInfoLight = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xa21792bf: {
+      sldrThis.scanInfoDark = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x515268e5: {
+      sldrThis.bubbleTelegraphEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xb1b55340: {
+      sldrThis.wingDamageEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x9347820e: {
+      LoadTypedefUnknownStruct38(sldrThis.unknown_0x9347820e, input);
+      break;
+    }
+    case 0xb7dc6c65: {
+      sldrThis.blowEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xf1f0c73d: {
+      LoadTypedefDamageInfo(sldrThis.blowDamage, input);
+      break;
+    }
+    case 0x6d89649b: {
+      sldrThis.blowTelegraphPush = input.ReadFloat();
+      break;
+    }
+    case 0x77f97080: {
+      sldrThis.blowPush = input.ReadFloat();
+      break;
+    }
+    case 0x6d67c284: {
+      sldrThis.breakStunDamage = input.ReadFloat();
+      break;
+    }
+    case 0x87b30e02: {
+      LoadTypedefAudioPlaybackParms(sldrThis.stunnedSound, input);
+      break;
+    }
+    case 0x427a116a: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms, input);
+      break;
+    }
+    case 0xc05d5c7a: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms_0xc05d5c7a, input);
+      break;
+    }
+    case 0x2b3c923a: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms_0x2b3c923a, input);
+      break;
+    }
+    case 0x8fe0bf01: {
+      sldrThis.unknown_0x8fe0bf01 = input.ReadFloat();
+      break;
+    }
+    case 0x23087520: {
+      LoadTypedefAudioPlaybackParms(sldrThis.flinchSound, input);
+      break;
+    }
+    case 0xa3131519: {
+      sldrThis.flinchSoundChance = input.ReadFloat();
+      break;
+    }
+    case 0xb53087cc: {
+      LoadTypedefAudioPlaybackParms(sldrThis.stunnedFlinchSound, input);
+      break;
+    }
+    case 0x878a6522: {
+      LoadTypedefAudioPlaybackParms(sldrThis.stunnedReelSound, input);
+      break;
+    }
+    case 0x19849710: {
+      sldrThis.stunnedFlinchSoundDamageThreshold = input.ReadFloat();
+      break;
+    }
+    case 0x692fa63c: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms_0x692fa63c, input);
+      break;
+    }
+    case 0xbe3d39aa: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms_0xbe3d39aa, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSwampBossStage2 {
   SLdrSwampBossStage2();
@@ -123,6 +522,24 @@ struct SLdrSwampBossStage2 {
   SLdrSwampBossStage2Data swampBossStage2Properties; // 0xb31b771d
 };
 
-void LoadTypedefSLdrSwampBossStage2(SLdrSwampBossStage2& data, CInputStream& input);
+inline SLdrSwampBossStage2::SLdrSwampBossStage2() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), swampBossStage2Properties() {
+  patterned.mass = 25.0f;
+  patterned.turnSpeed = 720.0f;
+  patterned.detectionRange = 5.0f;
+  patterned.detectionHeightRange = 5.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 4.0f;
+  patterned.maxAttackRange = 20.0f;
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 5.0f;
+  patterned.damageWaitTime = 1.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.5f;
+  patterned.unknown_0xe287d8dd = 0.0f;
+  patterned.creatureSize = 2;
+}
+
+inline SLdrSwampBossStage2::~SLdrSwampBossStage2() {}
 
 #endif

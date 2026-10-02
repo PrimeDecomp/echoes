@@ -30,6 +30,24 @@ struct SLdrColorModulate {
   SLdrSpline controlSpline; // 0x15567fe7
 };
 
-void LoadTypedefSLdrColorModulate(SLdrColorModulate& data, CInputStream& input);
+inline SLdrColorModulate::SLdrColorModulate() : editorProperties(), color_A(CColor::Green()), color_B(CColor::Green()), controlSpline() {
+  color_A = CColor(1.0f, 1.0f, 1.0f, 0.0f);
+  color_B = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  blend_Mode = 0;
+  time_A2B = 1.0f;
+  time_B2A = 1.0f;
+  do_Reverse = false;
+  reset_Target_When_Done = false;
+  depth_Compare = true;
+  depth_Update = true;
+  depth_Backwards = false;
+  autoStart = false;
+  updateTime = true;
+  loopForever = false;
+  externalTime = false;
+  copyModelColorToColorA = false;
+}
+
+inline SLdrColorModulate::~SLdrColorModulate() {}
 
 #endif

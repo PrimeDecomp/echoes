@@ -14,6 +14,11 @@ struct SLdrPathMeshCtrl {
   int initialCount; // 0x7a6e0de9
 };
 
-void LoadTypedefSLdrPathMeshCtrl(SLdrPathMeshCtrl& data, CInputStream& input);
+inline SLdrPathMeshCtrl::SLdrPathMeshCtrl() : editorProperties() {
+  type = 0;
+  initialCount = 1;
+}
+
+inline SLdrPathMeshCtrl::~SLdrPathMeshCtrl() {}
 
 #endif

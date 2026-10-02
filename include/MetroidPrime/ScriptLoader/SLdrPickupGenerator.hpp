@@ -17,6 +17,10 @@ struct SLdrPickupGenerator {
   CAssetId rules; // 0x0c5143fe
 };
 
-void LoadTypedefSLdrPickupGenerator(SLdrPickupGenerator& data, CInputStream& input);
+inline SLdrPickupGenerator::SLdrPickupGenerator() : editorProperties(), offset(CVector3f::Zero()), rules(kInvalidAssetId) {
+  offsetIsLocalSpace = false;
+}
+
+inline SLdrPickupGenerator::~SLdrPickupGenerator() {}
 
 #endif

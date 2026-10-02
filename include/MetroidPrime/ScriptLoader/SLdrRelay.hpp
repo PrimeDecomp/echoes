@@ -13,6 +13,10 @@ struct SLdrRelay {
   bool oneShot; // 0xead7b7bb
 };
 
-void LoadTypedefSLdrRelay(SLdrRelay& data, CInputStream& input);
+inline SLdrRelay::SLdrRelay() : editorProperties() {
+  oneShot = false;
+}
+
+inline SLdrRelay::~SLdrRelay() {}
 
 #endif

@@ -17,6 +17,14 @@ struct SLdrAIWaypoint {
   int unknown_0x166979d4; // 0x166979d4
 };
 
-void LoadTypedefSLdrAIWaypoint(SLdrAIWaypoint& data, CInputStream& input);
+inline SLdrAIWaypoint::SLdrAIWaypoint() : editorProperties() {
+  speed = 1.0f;
+  pause = 0.0f;
+  unknown_0xc6705a00 = 0;
+  locatorIndex = 0;
+  unknown_0x166979d4 = 0;
+}
+
+inline SLdrAIWaypoint::~SLdrAIWaypoint() {}
 
 #endif

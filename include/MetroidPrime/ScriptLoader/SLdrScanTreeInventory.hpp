@@ -19,6 +19,10 @@ struct SLdrScanTreeInventory {
   SLdrScannableParameters scannableInfo; // 0x2da1ec33
 };
 
-void LoadTypedefSLdrScanTreeInventory(SLdrScanTreeInventory& data, CInputStream& input);
+inline SLdrScanTreeInventory::SLdrScanTreeInventory() : editorProperties(), nodeName(kInvalidAssetId), stringName(), scannableInfo() {
+  unknown_0x3d326f90 = 0;
+}
+
+inline SLdrScanTreeInventory::~SLdrScanTreeInventory() {}
 
 #endif

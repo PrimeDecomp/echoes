@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAudioPlaybackParms.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
@@ -24,12 +24,12 @@ struct SLdrGrenchler {
   bool isGrappleGuardian; // 0x33408e7f
   bool hasHealthBar; // 0x67b6ea0b
   SLdrDamageVulnerability damageVulnerability; // non-matching name, 0x0a7326a3
-  SLdrAnimationParameters tail; // 0xa18f626b
-  SLdrAnimationParameters tailWhenUnderwater; // 0x0abef809
+  SLdrAnimationSet tail; // 0xa18f626b
+  SLdrAnimationSet tailWhenUnderwater; // 0x0abef809
   CAssetId taillessModel; // 0x4f3a4566
   CAssetId taillessSkinRules; // 0x401bc111
-  SLdrAnimationParameters tail_Dark; // 0x9b193ae8
-  SLdrAnimationParameters tailWhenUnderwater_Dark; // 0xc24cf580
+  SLdrAnimationSet tail_Dark; // 0x9b193ae8
+  SLdrAnimationSet tailWhenUnderwater_Dark; // 0xc24cf580
   CAssetId taillessModel_Dark; // 0x72258fe7
   CAssetId taillessSkinRules_Dark; // 0xe5fba24c
   int tailHitSound; // 0x55c51213
@@ -82,6 +82,58 @@ struct SLdrGrenchler {
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
 };
 
-void LoadTypedefSLdrGrenchler(SLdrGrenchler& data, CInputStream& input);
+inline SLdrGrenchler::SLdrGrenchler() : editorProperties(), patterned(), actorInformation(), damageVulnerability(), tail(), tailWhenUnderwater(), taillessModel(kInvalidAssetId), taillessSkinRules(kInvalidAssetId), tail_Dark(), tailWhenUnderwater_Dark(), taillessModel_Dark(kInvalidAssetId), taillessSkinRules_Dark(kInvalidAssetId), biteDamage(), electricEffect(kInvalidAssetId), beamDamage(), beamAttackSound_OneShot(), burstProjectile(kInvalidAssetId), burstDamage(), surfaceRingsEffect(kInvalidAssetId), shallowWaterRing(kInvalidAssetId), shallowWaterSplash(kInvalidAssetId), pART(kInvalidAssetId), grappleSwoosh(kInvalidAssetId), grappleBeamPart(kInvalidAssetId), grappleHitFx(kInvalidAssetId), grappleDamage(), grappleBeamSound_Loop(), beamEffect(kInvalidAssetId), grappleVisorEffect(kInvalidAssetId), damageInfo(), pART_0x54b6bfa1(kInvalidAssetId), audioPlaybackParms(), grappleGuardianEyeGlow(kInvalidAssetId), alternateScannableInfo(kInvalidAssetId), ingPossessionData() {
+  patterned.minAttackRange = 6.0f;
+  patterned.maxAttackRange = 11.0f;
+  patterned.averageAttackTime = 2.0f;
+  patterned.attackTimeVariation = 1.0f;
+  patterned.leashRadius = 100.0f;
+  patterned.playerLeashRadius = 25.0f;
+  patterned.playerLeashTime = 5.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.collisionRadius = 1.6f;
+  patterned.collisionHeight = 2.5f;
+  patterned.stepUpHeight = 1.0f;
+  patterned.creatureSize = 1;
+  tailDestroyedHealth = 50.0f;
+  isGrappleGuardian = false;
+  hasHealthBar = false;
+  tailHitSound = 0;
+  tailDestroyedSound = 0;
+  minTimeBetweenCharges = 4.5f;
+  unknown_0x7bd1a35f = -1.0f;
+  chargeAttackMinRange = 8.0f;
+  chargeAttackMaxRange = 40.0f;
+  biteAttackMinRange = 2.0f;
+  biteAttackMaxRange = 8.0f;
+  biteAttackMinPause = 2.0f;
+  biteAttackMaxPause = 3.0f;
+  biteAttackDamageRadius = 6.0f;
+  biteDamage.unknown_0x119fbd31 = 11;
+  biteDamage.dI_Damage = 5.0f;
+  beamAttackMinRange = 9.0f;
+  beamAttackMaxRange = 25.0f;
+  beamAttackMinPause = 1.0f;
+  beamAttackMaxPause = 1.5f;
+  beamDamage.unknown_0x119fbd31 = 11;
+  beamDamage.dI_Damage = 5.0f;
+  beamAttackMaxAngle = 45.0f;
+  burstAttackMinRange = 0.5f;
+  burstAttackMaxRange = 8.0f;
+  burstAttackMinPause = 1.0f;
+  burstAttackMaxPause = 1.5f;
+  burstAttackDamageRadius = 20.0f;
+  burstDamage.unknown_0x119fbd31 = 11;
+  burstDamage.dI_Damage = 5.0f;
+  unknown_0xd4753ff4 = 4;
+  unknown_0x05fc6001 = 20.0f;
+  unknown_0x13e5b580 = 20.0f;
+  unknown_0xfc6f199d = 10.0f;
+  damageInfo.unknown_0x119fbd31 = 11;
+  damageInfo.dI_Damage = 5.0f;
+}
+
+inline SLdrGrenchler::~SLdrGrenchler() {}
 
 #endif

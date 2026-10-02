@@ -51,6 +51,6 @@ struct SLdrBasicSwarmProperties {
   float lifeTime; // 0xb02de555
 };
 
-void LoadTypedefSLdrBasicSwarmProperties(SLdrBasicSwarmProperties& data, CInputStream& input);
+void LoadTypedefBasicSwarmProperties(SLdrBasicSwarmProperties& data, CInputStream& input);
 
 #endif

@@ -24,7 +24,7 @@ SLdrTDamageInfo::SLdrTDamageInfo() {
 
 SLdrTDamageInfo::~SLdrTDamageInfo() {}
 
-void LoadTypedefSLdrTDamageInfo(SLdrTDamageInfo& sldrThis, CInputStream& input) {
+void LoadTypedefTDamageInfo(SLdrTDamageInfo& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -68,18 +68,18 @@ SLdrTWeaponDamage::SLdrTWeaponDamage() : normal(), charged() {
 
 SLdrTWeaponDamage::~SLdrTWeaponDamage() {}
 
-void LoadTypedefSLdrTWeaponDamage(SLdrTWeaponDamage& sldrThis, CInputStream& input) {
+void LoadTypedefTWeaponDamage(SLdrTWeaponDamage& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x8ac4278a: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.normal, input);
+      LoadTypedefTDamageInfo(sldrThis.normal, input);
       break;
     }
     case 0xc9ac01d2: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.charged, input);
+      LoadTypedefTDamageInfo(sldrThis.charged, input);
       break;
     }
     default:
@@ -95,7 +95,7 @@ SLdrTBeamInfo::SLdrTBeamInfo() : damageInfo() {
 
 SLdrTBeamInfo::~SLdrTBeamInfo() {}
 
-void LoadTypedefSLdrTBeamInfo(SLdrTBeamInfo& sldrThis, CInputStream& input) {
+void LoadTypedefTBeamInfo(SLdrTBeamInfo& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -106,7 +106,7 @@ void LoadTypedefSLdrTBeamInfo(SLdrTBeamInfo& sldrThis, CInputStream& input) {
       break;
     }
     case 0xfaa71e25: {
-      LoadTypedefSLdrTWeaponDamage(sldrThis.damageInfo, input);
+      LoadTypedefTWeaponDamage(sldrThis.damageInfo, input);
       break;
     }
     default:
@@ -130,7 +130,7 @@ SLdrTIcon_Configurations::SLdrTIcon_Configurations() {
 
 SLdrTIcon_Configurations::~SLdrTIcon_Configurations() {}
 
-void LoadTypedefSLdrTIcon_Configurations(SLdrTIcon_Configurations& sldrThis, CInputStream& input) {
+void LoadTypedefTIcon_Configurations(SLdrTIcon_Configurations& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -184,7 +184,7 @@ SLdrTGunResources::SLdrTGunResources() : power_Beam(), ice_Beam(), wave_Beam(), 
 
 SLdrTGunResources::~SLdrTGunResources() {}
 
-void LoadTypedefSLdrTGunResources(SLdrTGunResources& sldrThis, CInputStream& input) {
+void LoadTypedefTGunResources(SLdrTGunResources& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -227,7 +227,7 @@ SLdrTBallTransitionResources::SLdrTBallTransitionResources() : suitANCS(), gunRe
 
 SLdrTBallTransitionResources::~SLdrTBallTransitionResources() {}
 
-void LoadTypedefSLdrTBallTransitionResources(SLdrTBallTransitionResources& sldrThis, CInputStream& input) {
+void LoadTypedefTBallTransitionResources(SLdrTBallTransitionResources& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -239,11 +239,11 @@ void LoadTypedefSLdrTBallTransitionResources(SLdrTBallTransitionResources& sldrT
       break;
     }
     case 0x01e12c84: {
-      LoadTypedefSLdrTGunResources(sldrThis.gunResources, input);
+      LoadTypedefTGunResources(sldrThis.gunResources, input);
       break;
     }
     case 0xf24b055d: {
-      LoadTypedefSLdrTGunResources(sldrThis.multiPlayerGunResources, input);
+      LoadTypedefTGunResources(sldrThis.multiPlayerGunResources, input);
       break;
     }
     case 0xa342c3a6: {
@@ -284,7 +284,7 @@ SLdrTweakPlayer_DarkWorld::SLdrTweakPlayer_DarkWorld() : damagePerSecond() {
 
 SLdrTweakPlayer_DarkWorld::~SLdrTweakPlayer_DarkWorld() {}
 
-void LoadTypedefSLdrTweakPlayer_DarkWorld(SLdrTweakPlayer_DarkWorld& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_DarkWorld(SLdrTweakPlayer_DarkWorld& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -299,7 +299,7 @@ void LoadTypedefSLdrTweakPlayer_DarkWorld(SLdrTweakPlayer_DarkWorld& sldrThis, C
       break;
     }
     case 0xf9bf59a2: {
-      LoadTypedefSLdrDamageInfo(sldrThis.damagePerSecond, input);
+      LoadTypedefDamageInfo(sldrThis.damagePerSecond, input);
       break;
     }
     case 0x333b7549: {
@@ -333,7 +333,7 @@ SLdrTweakBall_Misc::SLdrTweakBall_Misc() {
 
 SLdrTweakBall_Misc::~SLdrTweakBall_Misc() {}
 
-void LoadTypedefSLdrTweakBall_Misc(SLdrTweakBall_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_Misc(SLdrTweakBall_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -427,7 +427,7 @@ SLdrTweakBall_Movement::SLdrTweakBall_Movement() {
 
 SLdrTweakBall_Movement::~SLdrTweakBall_Movement() {}
 
-void LoadTypedefSLdrTweakBall_Movement(SLdrTweakBall_Movement& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_Movement(SLdrTweakBall_Movement& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -639,7 +639,7 @@ SLdrTweakGui_ScannableObjectDownloadTimes::SLdrTweakGui_ScannableObjectDownloadT
 
 SLdrTweakGui_ScannableObjectDownloadTimes::~SLdrTweakGui_ScannableObjectDownloadTimes() {}
 
-void LoadTypedefSLdrTweakGui_ScannableObjectDownloadTimes(SLdrTweakGui_ScannableObjectDownloadTimes& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_ScannableObjectDownloadTimes(SLdrTweakGui_ScannableObjectDownloadTimes& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -686,7 +686,7 @@ SLdrTweakPlayerControls_Booleans::SLdrTweakPlayerControls_Booleans() {
 
 SLdrTweakPlayerControls_Booleans::~SLdrTweakPlayerControls_Booleans() {}
 
-void LoadTypedefSLdrTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -863,7 +863,7 @@ SLdrTweakPlayerControls_Controls::SLdrTweakPlayerControls_Controls() {
 
 SLdrTweakPlayerControls_Controls::~SLdrTweakPlayerControls_Controls() {}
 
-void LoadTypedefSLdrTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1184,7 +1184,7 @@ SLdrTweakPlayerGun_Holstering::SLdrTweakPlayerGun_Holstering() {
 
 SLdrTweakPlayerGun_Holstering::~SLdrTweakPlayerGun_Holstering() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Holstering(SLdrTweakPlayerGun_Holstering& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Holstering(SLdrTweakPlayerGun_Holstering& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1226,7 +1226,7 @@ SLdrTweakPlayerGun_Misc::SLdrTweakPlayerGun_Misc() {
 
 SLdrTweakPlayerGun_Misc::~SLdrTweakPlayerGun_Misc() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1296,7 +1296,7 @@ SLdrTweakPlayerGun_Position::SLdrTweakPlayerGun_Position() {
 
 SLdrTweakPlayerGun_Position::~SLdrTweakPlayerGun_Position() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Position(SLdrTweakPlayerGun_Position& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Position(SLdrTweakPlayerGun_Position& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1336,7 +1336,7 @@ SLdrTweakPlayerGun_RicochetDamage_Factor::SLdrTweakPlayerGun_RicochetDamage_Fact
 
 SLdrTweakPlayerGun_RicochetDamage_Factor::~SLdrTweakPlayerGun_RicochetDamage_Factor() {}
 
-void LoadTypedefSLdrTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1395,7 +1395,7 @@ SLdrTweakPlayerRes_AutoMapperIcons::SLdrTweakPlayerRes_AutoMapperIcons()
 
 SLdrTweakPlayerRes_AutoMapperIcons::~SLdrTweakPlayerRes_AutoMapperIcons() {}
 
-void LoadTypedefSLdrTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1485,7 +1485,7 @@ SLdrTweakPlayerRes_MapScreenIcons::SLdrTweakPlayerRes_MapScreenIcons() : lStickN
 
 SLdrTweakPlayerRes_MapScreenIcons::~SLdrTweakPlayerRes_MapScreenIcons() {}
 
-void LoadTypedefSLdrTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1679,7 +1679,7 @@ SLdrTweakPlayer_AimStuff::SLdrTweakPlayer_AimStuff() {
 
 SLdrTweakPlayer_AimStuff::~SLdrTweakPlayer_AimStuff() {}
 
-void LoadTypedefSLdrTweakPlayer_AimStuff(SLdrTweakPlayer_AimStuff& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_AimStuff(SLdrTweakPlayer_AimStuff& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1766,7 +1766,7 @@ SLdrTweakPlayer_Collision::SLdrTweakPlayer_Collision() {
 
 SLdrTweakPlayer_Collision::~SLdrTweakPlayer_Collision() {}
 
-void LoadTypedefSLdrTweakPlayer_Collision(SLdrTweakPlayer_Collision& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Collision(SLdrTweakPlayer_Collision& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1807,7 +1807,7 @@ SLdrTweakPlayer_Frozen::SLdrTweakPlayer_Frozen() {
 
 SLdrTweakPlayer_Frozen::~SLdrTweakPlayer_Frozen() {}
 
-void LoadTypedefSLdrTweakPlayer_Frozen(SLdrTweakPlayer_Frozen& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Frozen(SLdrTweakPlayer_Frozen& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1841,7 +1841,7 @@ SLdrTweakPlayer_GrappleBeam::SLdrTweakPlayer_GrappleBeam() {
 
 SLdrTweakPlayer_GrappleBeam::~SLdrTweakPlayer_GrappleBeam() {}
 
-void LoadTypedefSLdrTweakPlayer_GrappleBeam(SLdrTweakPlayer_GrappleBeam& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_GrappleBeam(SLdrTweakPlayer_GrappleBeam& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -1890,7 +1890,7 @@ SLdrTweakPlayer_Misc::SLdrTweakPlayer_Misc() {
 
 SLdrTweakPlayer_Misc::~SLdrTweakPlayer_Misc() {}
 
-void LoadTypedefSLdrTweakPlayer_Misc(SLdrTweakPlayer_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Misc(SLdrTweakPlayer_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2044,7 +2044,7 @@ SLdrTweakPlayer_Motion::SLdrTweakPlayer_Motion() {
 
 SLdrTweakPlayer_Motion::~SLdrTweakPlayer_Motion() {}
 
-void LoadTypedefSLdrTweakPlayer_Motion(SLdrTweakPlayer_Motion& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Motion(SLdrTweakPlayer_Motion& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2416,7 +2416,7 @@ SLdrTweakPlayer_Orbit::SLdrTweakPlayer_Orbit() {
 
 SLdrTweakPlayer_Orbit::~SLdrTweakPlayer_Orbit() {}
 
-void LoadTypedefSLdrTweakPlayer_Orbit(SLdrTweakPlayer_Orbit& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Orbit(SLdrTweakPlayer_Orbit& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2641,7 +2641,7 @@ SLdrTweakPlayer_ScanVisor::SLdrTweakPlayer_ScanVisor() {
 
 SLdrTweakPlayer_ScanVisor::~SLdrTweakPlayer_ScanVisor() {}
 
-void LoadTypedefSLdrTweakPlayer_ScanVisor(SLdrTweakPlayer_ScanVisor& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_ScanVisor(SLdrTweakPlayer_ScanVisor& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2691,7 +2691,7 @@ SLdrTweakPlayer_Shield::SLdrTweakPlayer_Shield() {
 
 SLdrTweakPlayer_Shield::~SLdrTweakPlayer_Shield() {}
 
-void LoadTypedefSLdrTweakPlayer_Shield(SLdrTweakPlayer_Shield& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Shield(SLdrTweakPlayer_Shield& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2728,7 +2728,7 @@ SLdrTweakPlayer_SuitDamageReduction::SLdrTweakPlayer_SuitDamageReduction() {
 
 SLdrTweakPlayer_SuitDamageReduction::~SLdrTweakPlayer_SuitDamageReduction() {}
 
-void LoadTypedefSLdrTweakPlayer_SuitDamageReduction(SLdrTweakPlayer_SuitDamageReduction& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_SuitDamageReduction(SLdrTweakPlayer_SuitDamageReduction& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -2836,7 +2836,7 @@ SLdrTweakAutoMapper_Base::SLdrTweakAutoMapper_Base() : mapScreenBGColor(CColor::
 
 SLdrTweakAutoMapper_Base::~SLdrTweakAutoMapper_Base() {}
 
-void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CInputStream& input) {
+void LoadTypedefTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3182,7 +3182,7 @@ SLdrTweakAutoMapper_DoorColors::SLdrTweakAutoMapper_DoorColors() : blueDoorColor
 
 SLdrTweakAutoMapper_DoorColors::~SLdrTweakAutoMapper_DoorColors() {}
 
-void LoadTypedefSLdrTweakAutoMapper_DoorColors(SLdrTweakAutoMapper_DoorColors& sldrThis, CInputStream& input) {
+void LoadTypedefTweakAutoMapper_DoorColors(SLdrTweakAutoMapper_DoorColors& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3265,7 +3265,7 @@ SLdrTweakBall_BoostBall::SLdrTweakBall_BoostBall() : boostBallDamage() {
 
 SLdrTweakBall_BoostBall::~SLdrTweakBall_BoostBall() {}
 
-void LoadTypedefSLdrTweakBall_BoostBall(SLdrTweakBall_BoostBall& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_BoostBall(SLdrTweakBall_BoostBall& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3312,7 +3312,7 @@ void LoadTypedefSLdrTweakBall_BoostBall(SLdrTweakBall_BoostBall& sldrThis, CInpu
       break;
     }
     case 0x17e38e7e: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.boostBallDamage, input);
+      LoadTypedefTDamageInfo(sldrThis.boostBallDamage, input);
       break;
     }
     case 0x6d210beb: {
@@ -3386,7 +3386,7 @@ SLdrTweakBall_Camera::SLdrTweakBall_Camera() : ballCameraOffset(CVector3f::Zero(
 
 SLdrTweakBall_Camera::~SLdrTweakBall_Camera() {}
 
-void LoadTypedefSLdrTweakBall_Camera(SLdrTweakBall_Camera& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_Camera(SLdrTweakBall_Camera& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3597,7 +3597,7 @@ SLdrTweakBall_DeathBall::SLdrTweakBall_DeathBall() : deathBallDamage() {
 
 SLdrTweakBall_DeathBall::~SLdrTweakBall_DeathBall() {}
 
-void LoadTypedefSLdrTweakBall_DeathBall(SLdrTweakBall_DeathBall& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_DeathBall(SLdrTweakBall_DeathBall& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3608,7 +3608,7 @@ void LoadTypedefSLdrTweakBall_DeathBall(SLdrTweakBall_DeathBall& sldrThis, CInpu
       break;
     }
     case 0xccccef24: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.deathBallDamage, input);
+      LoadTypedefTDamageInfo(sldrThis.deathBallDamage, input);
       break;
     }
     default:
@@ -3623,14 +3623,14 @@ SLdrTweakBall_CannonBall::SLdrTweakBall_CannonBall() : cannonBallDamage() {
 
 SLdrTweakBall_CannonBall::~SLdrTweakBall_CannonBall() {}
 
-void LoadTypedefSLdrTweakBall_CannonBall(SLdrTweakBall_CannonBall& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_CannonBall(SLdrTweakBall_CannonBall& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xd51d8d71: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.cannonBallDamage, input);
+      LoadTypedefTDamageInfo(sldrThis.cannonBallDamage, input);
       break;
     }
     default:
@@ -3662,7 +3662,7 @@ SLdrTweakBall_ScrewAttack::SLdrTweakBall_ScrewAttack() : screwAttackDamage() {
 
 SLdrTweakBall_ScrewAttack::~SLdrTweakBall_ScrewAttack() {}
 
-void LoadTypedefSLdrTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& sldrThis, CInputStream& input) {
+void LoadTypedefTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3721,7 +3721,7 @@ void LoadTypedefSLdrTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& sldrThis, C
       break;
     }
     case 0xb372ecab: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.screwAttackDamage, input);
+      LoadTypedefTDamageInfo(sldrThis.screwAttackDamage, input);
       break;
     }
     default:
@@ -3751,7 +3751,7 @@ SLdrTweakGuiColors_HUDColorsTypedef::SLdrTweakGuiColors_HUDColorsTypedef() : hUD
 
 SLdrTweakGuiColors_HUDColorsTypedef::~SLdrTweakGuiColors_HUDColorsTypedef() {}
 
-void LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColorsTypedef& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColorsTypedef& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -3972,7 +3972,7 @@ SLdrTweakGuiColors_Misc::SLdrTweakGuiColors_Misc() : pauseScreenBGModulateColor(
 
 SLdrTweakGuiColors_Misc::~SLdrTweakGuiColors_Misc() {}
 
-void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -4716,7 +4716,7 @@ SLdrTweakGuiColors_Multiplayer::SLdrTweakGuiColors_Multiplayer() : scoreTextColo
 
 SLdrTweakGuiColors_Multiplayer::~SLdrTweakGuiColors_Multiplayer() {}
 
-void LoadTypedefSLdrTweakGuiColors_Multiplayer(SLdrTweakGuiColors_Multiplayer& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGuiColors_Multiplayer(SLdrTweakGuiColors_Multiplayer& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -4783,7 +4783,7 @@ SLdrTweakGui_Completion::SLdrTweakGui_Completion() : unknown_0x81fc78c2(), mainF
 
 SLdrTweakGui_Completion::~SLdrTweakGui_Completion() {}
 
-void LoadTypedefSLdrTweakGui_Completion(SLdrTweakGui_Completion& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_Completion(SLdrTweakGui_Completion& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -4852,7 +4852,7 @@ SLdrTweakGuiColors_TurretHudTypedef::SLdrTweakGuiColors_TurretHudTypedef() : fra
 
 SLdrTweakGuiColors_TurretHudTypedef::~SLdrTweakGuiColors_TurretHudTypedef() {}
 
-void LoadTypedefSLdrTweakGuiColors_TurretHudTypedef(SLdrTweakGuiColors_TurretHudTypedef& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGuiColors_TurretHudTypedef(SLdrTweakGuiColors_TurretHudTypedef& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -4899,7 +4899,7 @@ SLdrTweakGui_Credits::SLdrTweakGui_Credits() : unknown_0x81fc78c2(), englishFont
 
 SLdrTweakGui_Credits::~SLdrTweakGui_Credits() {}
 
-void LoadTypedefSLdrTweakGui_Credits(SLdrTweakGui_Credits& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_Credits(SLdrTweakGui_Credits& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -4960,7 +4960,7 @@ SLdrTweakGui_DarkWorld::SLdrTweakGui_DarkWorld() : darkWorldBaseColor(CColor::Gr
 
 SLdrTweakGui_DarkWorld::~SLdrTweakGui_DarkWorld() {}
 
-void LoadTypedefSLdrTweakGui_DarkWorld(SLdrTweakGui_DarkWorld& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_DarkWorld(SLdrTweakGui_DarkWorld& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5024,7 +5024,7 @@ SLdrTweakGui_EchoVisor::SLdrTweakGui_EchoVisor() : echoBaseColor(CColor::Green()
 
 SLdrTweakGui_EchoVisor::~SLdrTweakGui_EchoVisor() {}
 
-void LoadTypedefSLdrTweakGui_EchoVisor(SLdrTweakGui_EchoVisor& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_EchoVisor(SLdrTweakGui_EchoVisor& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5100,7 +5100,7 @@ SLdrTweakGui_VisorColorSchemeTypedef::SLdrTweakGui_VisorColorSchemeTypedef() : h
 
 SLdrTweakGui_VisorColorSchemeTypedef::~SLdrTweakGui_VisorColorSchemeTypedef() {}
 
-void LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(SLdrTweakGui_VisorColorSchemeTypedef& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_VisorColorSchemeTypedef(SLdrTweakGui_VisorColorSchemeTypedef& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5136,7 +5136,7 @@ SLdrTweakGui_HudColorTypedef::SLdrTweakGui_HudColorTypedef() : energyBarFilledCo
 
 SLdrTweakGui_HudColorTypedef::~SLdrTweakGui_HudColorTypedef() {}
 
-void LoadTypedefSLdrTweakGui_HudColorTypedef(SLdrTweakGui_HudColorTypedef& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_HudColorTypedef(SLdrTweakGui_HudColorTypedef& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5199,7 +5199,7 @@ SLdrTweakGame_FragLimitChoices::SLdrTweakGame_FragLimitChoices() {
 
 SLdrTweakGame_FragLimitChoices::~SLdrTweakGame_FragLimitChoices() {}
 
-void LoadTypedefSLdrTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5242,7 +5242,7 @@ SLdrTweakGame_CoinLimitChoices::SLdrTweakGame_CoinLimitChoices() {
 
 SLdrTweakGame_CoinLimitChoices::~SLdrTweakGame_CoinLimitChoices() {}
 
-void LoadTypedefSLdrTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5285,7 +5285,7 @@ SLdrTweakGame_TimeLimitChoices::SLdrTweakGame_TimeLimitChoices() {
 
 SLdrTweakGame_TimeLimitChoices::~SLdrTweakGame_TimeLimitChoices() {}
 
-void LoadTypedefSLdrTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5393,7 +5393,7 @@ SLdrTweakGui_LogBook::SLdrTweakGui_LogBook() : mainWindowBorderColor(CColor::Gre
 
 SLdrTweakGui_LogBook::~SLdrTweakGui_LogBook() {}
 
-void LoadTypedefSLdrTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5715,7 +5715,7 @@ SLdrTweakGui_MovieVolumes::SLdrTweakGui_MovieVolumes() {
 
 SLdrTweakGui_MovieVolumes::~SLdrTweakGui_MovieVolumes() {}
 
-void LoadTypedefSLdrTweakGui_MovieVolumes(SLdrTweakGui_MovieVolumes& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_MovieVolumes(SLdrTweakGui_MovieVolumes& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -5913,7 +5913,7 @@ SLdrTweakGui_Misc::SLdrTweakGui_Misc() : unknown_0x50812f49(CVector3f::Zero()), 
 
 SLdrTweakGui_Misc::~SLdrTweakGui_Misc() {}
 
-void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -6592,7 +6592,7 @@ SLdrTweakGui_ScanVisor::SLdrTweakGui_ScanVisor() : inactiveColor(CColor::Green()
 
 SLdrTweakGui_ScanVisor::~SLdrTweakGui_ScanVisor() {}
 
-void LoadTypedefSLdrTweakGui_ScanVisor(SLdrTweakGui_ScanVisor& sldrThis, CInputStream& input) {
+void LoadTypedefTweakGui_ScanVisor(SLdrTweakGui_ScanVisor& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -6676,7 +6676,7 @@ SLdrTweakPlayerGun_Arm_Position::SLdrTweakPlayerGun_Arm_Position() : normal(CVec
 
 SLdrTweakPlayerGun_Arm_Position::~SLdrTweakPlayerGun_Arm_Position() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -6720,30 +6720,30 @@ SLdrTweakPlayerGun_Beam_Combo::SLdrTweakPlayerGun_Beam_Combo() : superMissile_Po
 
 SLdrTweakPlayerGun_Beam_Combo::~SLdrTweakPlayerGun_Beam_Combo() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Beam_Combo(SLdrTweakPlayerGun_Beam_Combo& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Beam_Combo(SLdrTweakPlayerGun_Beam_Combo& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xc713acf9: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.superMissile_Power, input);
+      LoadTypedefTDamageInfo(sldrThis.superMissile_Power, input);
       break;
     }
     case 0x19468f2a: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.darkCombo_Dark, input);
+      LoadTypedefTDamageInfo(sldrThis.darkCombo_Dark, input);
       break;
     }
     case 0x48ac6dd8: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.lightCombo_Light, input);
+      LoadTypedefTDamageInfo(sldrThis.lightCombo_Light, input);
       break;
     }
     case 0xc1c315ff: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.annihilatorCombo_Annihilator, input);
+      LoadTypedefTDamageInfo(sldrThis.annihilatorCombo_Annihilator, input);
       break;
     }
     case 0x42885c6c: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.unknown_0x42885c6c, input);
+      LoadTypedefTDamageInfo(sldrThis.unknown_0x42885c6c, input);
       break;
     }
     default:
@@ -6777,22 +6777,22 @@ SLdrTweakPlayerGun_Beam_Misc::SLdrTweakPlayerGun_Beam_Misc() : blackhole_Dark(),
 
 SLdrTweakPlayerGun_Beam_Misc::~SLdrTweakPlayerGun_Beam_Misc() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x8aacfc27: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.blackhole_Dark, input);
+      LoadTypedefTDamageInfo(sldrThis.blackhole_Dark, input);
       break;
     }
     case 0xa054ff1c: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.sunBurstRays_Light, input);
+      LoadTypedefTDamageInfo(sldrThis.sunBurstRays_Light, input);
       break;
     }
     case 0xabfa93e9: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.imploder_Annihilator, input);
+      LoadTypedefTDamageInfo(sldrThis.imploder_Annihilator, input);
       break;
     }
     case 0xf8f9bf33: {
@@ -6833,7 +6833,7 @@ SLdrTweakPlayer_FirstPersonCamera::SLdrTweakPlayer_FirstPersonCamera() : darkLig
 
 SLdrTweakPlayer_FirstPersonCamera::~SLdrTweakPlayer_FirstPersonCamera() {}
 
-void LoadTypedefSLdrTweakPlayer_FirstPersonCamera(SLdrTweakPlayer_FirstPersonCamera& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_FirstPersonCamera(SLdrTweakPlayer_FirstPersonCamera& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -6906,7 +6906,7 @@ SLdrTweakPlayer_Grapple::SLdrTweakPlayer_Grapple() : beam() {
 
 SLdrTweakPlayer_Grapple::~SLdrTweakPlayer_Grapple() {}
 
-void LoadTypedefSLdrTweakPlayer_Grapple(SLdrTweakPlayer_Grapple& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayer_Grapple(SLdrTweakPlayer_Grapple& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -6973,7 +6973,7 @@ void LoadTypedefSLdrTweakPlayer_Grapple(SLdrTweakPlayer_Grapple& sldrThis, CInpu
       break;
     }
     case 0xae1fc47c: {
-      LoadTypedefSLdrTweakPlayer_GrappleBeam(sldrThis.beam, input);
+      LoadTypedefTweakPlayer_GrappleBeam(sldrThis.beam, input);
       break;
     }
     default:
@@ -6996,7 +6996,7 @@ SLdrTweakTargeting_Charge_Gauge::SLdrTweakTargeting_Charge_Gauge() : chargeGauge
 
 SLdrTweakTargeting_Charge_Gauge::~SLdrTweakTargeting_Charge_Gauge() {}
 
-void LoadTypedefSLdrTweakTargeting_Charge_Gauge(SLdrTweakTargeting_Charge_Gauge& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_Charge_Gauge(SLdrTweakTargeting_Charge_Gauge& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7052,7 +7052,7 @@ SLdrTweakTargeting_LockDagger::SLdrTweakTargeting_LockDagger() : lockDaggerColor
 
 SLdrTweakTargeting_LockDagger::~SLdrTweakTargeting_LockDagger() {}
 
-void LoadTypedefSLdrTweakTargeting_LockDagger(SLdrTweakTargeting_LockDagger& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_LockDagger(SLdrTweakTargeting_LockDagger& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7097,7 +7097,7 @@ SLdrTweakTargeting_LockFire::SLdrTweakTargeting_LockFire() : lockFireColor(CColo
 
 SLdrTweakTargeting_LockFire::~SLdrTweakTargeting_LockFire() {}
 
-void LoadTypedefSLdrTweakTargeting_LockFire(SLdrTweakTargeting_LockFire& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_LockFire(SLdrTweakTargeting_LockFire& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7132,7 +7132,7 @@ SLdrTweakTargeting_OuterBeamIcon::SLdrTweakTargeting_OuterBeamIcon() : outerBeam
 
 SLdrTweakTargeting_OuterBeamIcon::~SLdrTweakTargeting_OuterBeamIcon() {}
 
-void LoadTypedefSLdrTweakTargeting_OuterBeamIcon(SLdrTweakTargeting_OuterBeamIcon& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_OuterBeamIcon(SLdrTweakTargeting_OuterBeamIcon& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7173,7 +7173,7 @@ SLdrTweakTargeting_Scan::SLdrTweakTargeting_Scan() : scanLockCrossHairColor(CCol
 
 SLdrTweakTargeting_Scan::~SLdrTweakTargeting_Scan() {}
 
-void LoadTypedefSLdrTweakTargeting_Scan(SLdrTweakTargeting_Scan& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_Scan(SLdrTweakTargeting_Scan& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7217,7 +7217,7 @@ SLdrTweakTargeting_VulnerabilityIndicator::SLdrTweakTargeting_VulnerabilityIndic
 
 SLdrTweakTargeting_VulnerabilityIndicator::~SLdrTweakTargeting_VulnerabilityIndicator() {}
 
-void LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(SLdrTweakTargeting_VulnerabilityIndicator& sldrThis, CInputStream& input) {
+void LoadTypedefTweakTargeting_VulnerabilityIndicator(SLdrTweakTargeting_VulnerabilityIndicator& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7267,14 +7267,14 @@ SLdrTweakPlayerGun_Weapons::SLdrTweakPlayerGun_Weapons() : bomb(), power_Bomb(),
 
 SLdrTweakPlayerGun_Weapons::~SLdrTweakPlayerGun_Weapons() {}
 
-void LoadTypedefSLdrTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& sldrThis, CInputStream& input) {
+void LoadTypedefTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x6173ad96: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.bomb, input);
+      LoadTypedefTDamageInfo(sldrThis.bomb, input);
       break;
     }
     case 0xe8907530: {
@@ -7286,35 +7286,35 @@ void LoadTypedefSLdrTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& sldrThis,
       break;
     }
     case 0xdcc0c6fb: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.power_Bomb, input);
+      LoadTypedefTDamageInfo(sldrThis.power_Bomb, input);
       break;
     }
     case 0x58f00b0a: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.missile, input);
+      LoadTypedefTDamageInfo(sldrThis.missile, input);
       break;
     }
     case 0x1f6c1a6b: {
-      LoadTypedefSLdrTBeamInfo(sldrThis.power_Beam, input);
+      LoadTypedefTBeamInfo(sldrThis.power_Beam, input);
       break;
     }
     case 0xc50f608b: {
-      LoadTypedefSLdrTBeamInfo(sldrThis.dark_Beam, input);
+      LoadTypedefTBeamInfo(sldrThis.dark_Beam, input);
       break;
     }
     case 0x059dce11: {
-      LoadTypedefSLdrTDamageInfo(sldrThis.dark_Beam_Blob, input);
+      LoadTypedefTDamageInfo(sldrThis.dark_Beam_Blob, input);
       break;
     }
     case 0xde7a8255: {
-      LoadTypedefSLdrTBeamInfo(sldrThis.light_Beam, input);
+      LoadTypedefTBeamInfo(sldrThis.light_Beam, input);
       break;
     }
     case 0x74b9b983: {
-      LoadTypedefSLdrTBeamInfo(sldrThis.annihilator_Beam, input);
+      LoadTypedefTBeamInfo(sldrThis.annihilator_Beam, input);
       break;
     }
     case 0xdd5f2e3d: {
-      LoadTypedefSLdrTBeamInfo(sldrThis.phazon_Beam, input);
+      LoadTypedefTBeamInfo(sldrThis.phazon_Beam, input);
       break;
     }
     default:
@@ -7329,7 +7329,7 @@ SLdrTweakGui::SLdrTweakGui() : instanceName(), misc(), scannableObjectDownloadTi
 
 SLdrTweakGui::~SLdrTweakGui() {}
 
-void LoadTypedefSLdrTweakGui(SLdrTweakGui& data, CInputStream& input) {
+void LoadTypedefTweakGui(SLdrTweakGui& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7341,39 +7341,39 @@ void LoadTypedefSLdrTweakGui(SLdrTweakGui& data, CInputStream& input) {
       break;
     }
     case 0xd45f7663: {
-      LoadTypedefSLdrTweakGui_Misc(data.misc, input);
+      LoadTypedefTweakGui_Misc(data.misc, input);
       break;
     }
     case 0x80b13e60: {
-      LoadTypedefSLdrTweakGui_ScannableObjectDownloadTimes(data.scannableObjectDownloadTimes, input);
+      LoadTypedefTweakGui_ScannableObjectDownloadTimes(data.scannableObjectDownloadTimes, input);
       break;
     }
     case 0x102aa38d: {
-      LoadTypedefSLdrTweakGui_DarkWorld(data.darkVisorLightWorld, input);
+      LoadTypedefTweakGui_DarkWorld(data.darkVisorLightWorld, input);
       break;
     }
     case 0x2b698e45: {
-      LoadTypedefSLdrTweakGui_EchoVisor(data.echoVisor, input);
+      LoadTypedefTweakGui_EchoVisor(data.echoVisor, input);
       break;
     }
     case 0x40ffb3c4: {
-      LoadTypedefSLdrTweakGui_ScanVisor(data.scanVisor, input);
+      LoadTypedefTweakGui_ScanVisor(data.scanVisor, input);
       break;
     }
     case 0x97b8a76a: {
-      LoadTypedefSLdrTweakGui_LogBook(data.logBook, input);
+      LoadTypedefTweakGui_LogBook(data.logBook, input);
       break;
     }
     case 0x77393416: {
-      LoadTypedefSLdrTweakGui_Credits(data.credits, input);
+      LoadTypedefTweakGui_Credits(data.credits, input);
       break;
     }
     case 0x02149892: {
-      LoadTypedefSLdrTweakGui_Completion(data.completion, input);
+      LoadTypedefTweakGui_Completion(data.completion, input);
       break;
     }
     case 0xa4f61e92: {
-      LoadTypedefSLdrTweakGui_MovieVolumes(data.movieVolumes, input);
+      LoadTypedefTweakGui_MovieVolumes(data.movieVolumes, input);
       break;
     }
     default:
@@ -7517,7 +7517,7 @@ SLdrTweakTargeting::SLdrTweakTargeting() : instanceName(), tweakTargeting_OuterB
 
 SLdrTweakTargeting::~SLdrTweakTargeting() {}
 
-void LoadTypedefSLdrTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
+void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -7529,39 +7529,39 @@ void LoadTypedefSLdrTweakTargeting(SLdrTweakTargeting& data, CInputStream& input
       break;
     }
     case 0x5173932f: {
-      LoadTypedefSLdrTweakTargeting_OuterBeamIcon(data.tweakTargeting_OuterBeamIcon, input);
+      LoadTypedefTweakTargeting_OuterBeamIcon(data.tweakTargeting_OuterBeamIcon, input);
       break;
     }
     case 0x23ff4be4: {
-      LoadTypedefSLdrTIcon_Configurations(data.power_Beam_Icon_Configurations, input);
+      LoadTypedefTIcon_Configurations(data.power_Beam_Icon_Configurations, input);
       break;
     }
     case 0x92e98613: {
-      LoadTypedefSLdrTIcon_Configurations(data.ice_Beam_Icon_Configurations, input);
+      LoadTypedefTIcon_Configurations(data.ice_Beam_Icon_Configurations, input);
       break;
     }
     case 0x64833842: {
-      LoadTypedefSLdrTIcon_Configurations(data.wave_Beam_Icon_Configurations, input);
+      LoadTypedefTIcon_Configurations(data.wave_Beam_Icon_Configurations, input);
       break;
     }
     case 0x8dfd6e3c: {
-      LoadTypedefSLdrTIcon_Configurations(data.plasma_Beam_Icon_Configurations, input);
+      LoadTypedefTIcon_Configurations(data.plasma_Beam_Icon_Configurations, input);
       break;
     }
     case 0xbc5a41b2: {
-      LoadTypedefSLdrTweakTargeting_Charge_Gauge(data.charge_Gauge, input);
+      LoadTypedefTweakTargeting_Charge_Gauge(data.charge_Gauge, input);
       break;
     }
     case 0x00183589: {
-      LoadTypedefSLdrTweakTargeting_LockFire(data.lockFire, input);
+      LoadTypedefTweakTargeting_LockFire(data.lockFire, input);
       break;
     }
     case 0xd20ecc07: {
-      LoadTypedefSLdrTweakTargeting_LockDagger(data.lockDagger, input);
+      LoadTypedefTweakTargeting_LockDagger(data.lockDagger, input);
       break;
     }
     case 0x65ef9f2a: {
-      LoadTypedefSLdrTweakTargeting_Scan(data.scan, input);
+      LoadTypedefTweakTargeting_Scan(data.scan, input);
       break;
     }
     case 0xc3410560: {
@@ -7977,19 +7977,19 @@ void LoadTypedefSLdrTweakTargeting(SLdrTweakTargeting& data, CInputStream& input
       break;
     }
     case 0x1e179603: {
-      LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(data.powerVulnerabilityIndicator, input);
+      LoadTypedefTweakTargeting_VulnerabilityIndicator(data.powerVulnerabilityIndicator, input);
       break;
     }
     case 0x2b70cef8: {
-      LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(data.lightVulnerabilityIndicator, input);
+      LoadTypedefTweakTargeting_VulnerabilityIndicator(data.lightVulnerabilityIndicator, input);
       break;
     }
     case 0x946cefde: {
-      LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(data.darkVulnerabilityIndicator, input);
+      LoadTypedefTweakTargeting_VulnerabilityIndicator(data.darkVulnerabilityIndicator, input);
       break;
     }
     case 0x921c86e1: {
-      LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(data.annihilatorVulnerabilityIndicator, input);
+      LoadTypedefTweakTargeting_VulnerabilityIndicator(data.annihilatorVulnerabilityIndicator, input);
       break;
     }
     default:
@@ -8005,7 +8005,7 @@ SLdrTweakPlayerRes::SLdrTweakPlayerRes() : instanceName(), autoMapperIcons(), ma
 
 SLdrTweakPlayerRes::~SLdrTweakPlayerRes() {}
 
-void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input) {
+void LoadTypedefTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8017,19 +8017,19 @@ void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input
       break;
     }
     case 0x357741e0: {
-      LoadTypedefSLdrTweakPlayerRes_AutoMapperIcons(data.autoMapperIcons, input);
+      LoadTypedefTweakPlayerRes_AutoMapperIcons(data.autoMapperIcons, input);
       break;
     }
     case 0x0d5e02a0: {
-      LoadTypedefSLdrTweakPlayerRes_MapScreenIcons(data.mapScreenIcons, input);
+      LoadTypedefTweakPlayerRes_MapScreenIcons(data.mapScreenIcons, input);
       break;
     }
     case 0x279852ba: {
-      LoadTypedefSLdrTBallTransitionResources(data.ballTransitionResources, input);
+      LoadTypedefTBallTransitionResources(data.ballTransitionResources, input);
       break;
     }
     case 0x5e630608: {
-      LoadTypedefSLdrTGunResources(data.cinematicResources, input);
+      LoadTypedefTGunResources(data.cinematicResources, input);
       break;
     }
     case 0x36ad9d19: {
@@ -8048,7 +8048,7 @@ SLdrTweakPlayerControls2::SLdrTweakPlayerControls2() : instanceName(), controls(
 
 SLdrTweakPlayerControls2::~SLdrTweakPlayerControls2() {}
 
-void LoadTypedefSLdrTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputStream& input) {
+void LoadTypedefTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8060,11 +8060,11 @@ void LoadTypedefSLdrTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputS
       break;
     }
     case 0x3c34dfed: {
-      LoadTypedefSLdrTweakPlayerControls_Controls(data.controls, input);
+      LoadTypedefTweakPlayerControls_Controls(data.controls, input);
       break;
     }
     case 0x168a79f1: {
-      LoadTypedefSLdrTweakPlayerControls_Booleans(data.booleans, input);
+      LoadTypedefTweakPlayerControls_Booleans(data.booleans, input);
       break;
     }
     default:
@@ -8079,7 +8079,7 @@ SLdrTweakParticle::SLdrTweakParticle() : instanceName(), pakFile(), primary_Weap
 
 SLdrTweakParticle::~SLdrTweakParticle() {}
 
-void LoadTypedefSLdrTweakParticle(SLdrTweakParticle& data, CInputStream& input) {
+void LoadTypedefTweakParticle(SLdrTweakParticle& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8117,7 +8117,7 @@ SLdrTweakGuiColors::SLdrTweakGuiColors() : instanceName(), hUDColors(), misc(), 
 
 SLdrTweakGuiColors::~SLdrTweakGuiColors() {}
 
-void LoadTypedefSLdrTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input) {
+void LoadTypedefTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8129,59 +8129,59 @@ void LoadTypedefSLdrTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input
       break;
     }
     case 0xcb737724: {
-      LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(data.hUDColors, input);
+      LoadTypedefTweakGuiColors_HUDColorsTypedef(data.hUDColors, input);
       break;
     }
     case 0x6756d4de: {
-      LoadTypedefSLdrTweakGuiColors_Misc(data.misc, input);
+      LoadTypedefTweakGuiColors_Misc(data.misc, input);
       break;
     }
     case 0x697613e9: {
-      LoadTypedefSLdrTweakGuiColors_Multiplayer(data.multiplayer, input);
+      LoadTypedefTweakGuiColors_Multiplayer(data.multiplayer, input);
       break;
     }
     case 0x67c70055: {
-      LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(data.combatHudColorScheme, input);
+      LoadTypedefTweakGui_VisorColorSchemeTypedef(data.combatHudColorScheme, input);
       break;
     }
     case 0x62e0a08f: {
-      LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(data.echoHudColorScheme, input);
+      LoadTypedefTweakGui_VisorColorSchemeTypedef(data.echoHudColorScheme, input);
       break;
     }
     case 0x80becd6e: {
-      LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(data.scanHudColorScheme, input);
+      LoadTypedefTweakGui_VisorColorSchemeTypedef(data.scanHudColorScheme, input);
       break;
     }
     case 0x7de4b297: {
-      LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(data.darkHudColorScheme, input);
+      LoadTypedefTweakGui_VisorColorSchemeTypedef(data.darkHudColorScheme, input);
       break;
     }
     case 0xc0181762: {
-      LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(data.ballHudColorScheme, input);
+      LoadTypedefTweakGui_VisorColorSchemeTypedef(data.ballHudColorScheme, input);
       break;
     }
     case 0x45d7a40f: {
-      LoadTypedefSLdrTweakGui_HudColorTypedef(data.combatHud, input);
+      LoadTypedefTweakGui_HudColorTypedef(data.combatHud, input);
       break;
     }
     case 0x594b44cf: {
-      LoadTypedefSLdrTweakGui_HudColorTypedef(data.scanHud, input);
+      LoadTypedefTweakGui_HudColorTypedef(data.scanHud, input);
       break;
     }
     case 0x8f5ebeb9: {
-      LoadTypedefSLdrTweakGui_HudColorTypedef(data.xRayHud, input);
+      LoadTypedefTweakGui_HudColorTypedef(data.xRayHud, input);
       break;
     }
     case 0xf12b1e59: {
-      LoadTypedefSLdrTweakGui_HudColorTypedef(data.thermalHud, input);
+      LoadTypedefTweakGui_HudColorTypedef(data.thermalHud, input);
       break;
     }
     case 0x58cd6373: {
-      LoadTypedefSLdrTweakGui_HudColorTypedef(data.ballHud, input);
+      LoadTypedefTweakGui_HudColorTypedef(data.ballHud, input);
       break;
     }
     case 0xde139081: {
-      LoadTypedefSLdrTweakGuiColors_TurretHudTypedef(data.turretHud, input);
+      LoadTypedefTweakGuiColors_TurretHudTypedef(data.turretHud, input);
       break;
     }
     default:
@@ -8212,7 +8212,7 @@ SLdrTweakGame::SLdrTweakGame() : instanceName(), pakFile(), asset(), unknown_0x1
 
 SLdrTweakGame::~SLdrTweakGame() {}
 
-void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input) {
+void LoadTypedefTweakGame(SLdrTweakGame& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8298,19 +8298,19 @@ void LoadTypedefSLdrTweakGame(SLdrTweakGame& data, CInputStream& input) {
       break;
     }
     case 0x1d627808: {
-      LoadTypedefSLdrTweakGame_FragLimitChoices(data.unknown_0x1d627808, input);
+      LoadTypedefTweakGame_FragLimitChoices(data.unknown_0x1d627808, input);
       break;
     }
     case 0xb2e8828d: {
-      LoadTypedefSLdrTweakGame_TimeLimitChoices(data.unknown_0xb2e8828d, input);
+      LoadTypedefTweakGame_TimeLimitChoices(data.unknown_0xb2e8828d, input);
       break;
     }
     case 0x06af87bd: {
-      LoadTypedefSLdrTweakGame_CoinLimitChoices(data.unknown_0x06af87bd, input);
+      LoadTypedefTweakGame_CoinLimitChoices(data.unknown_0x06af87bd, input);
       break;
     }
     case 0x1533ea4e: {
-      LoadTypedefSLdrTweakGame_TimeLimitChoices(data.unknown_0x1533ea4e, input);
+      LoadTypedefTweakGame_TimeLimitChoices(data.unknown_0x1533ea4e, input);
       break;
     }
     case 0x40818220: {
@@ -8329,7 +8329,7 @@ SLdrTweakPlayer2::SLdrTweakPlayer2() : instanceName(), darkWorld(), grappleBeam(
 
 SLdrTweakPlayer2::~SLdrTweakPlayer2() {}
 
-void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input) {
+void LoadTypedefTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8341,55 +8341,55 @@ void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input) {
       break;
     }
     case 0xdfd08eba: {
-      LoadTypedefSLdrTweakPlayer_DarkWorld(data.darkWorld, input);
+      LoadTypedefTweakPlayer_DarkWorld(data.darkWorld, input);
       break;
     }
     case 0x45171a96: {
-      LoadTypedefSLdrTweakPlayer_GrappleBeam(data.grappleBeam, input);
+      LoadTypedefTweakPlayer_GrappleBeam(data.grappleBeam, input);
       break;
     }
     case 0x82cf4cf1: {
-      LoadTypedefSLdrTweakPlayer_Motion(data.motion, input);
+      LoadTypedefTweakPlayer_Motion(data.motion, input);
       break;
     }
     case 0x56a720c8: {
-      LoadTypedefSLdrTweakPlayer_Misc(data.misc, input);
+      LoadTypedefTweakPlayer_Misc(data.misc, input);
       break;
     }
     case 0x42a17438: {
-      LoadTypedefSLdrTweakPlayer_AimStuff(data.aimStuff, input);
+      LoadTypedefTweakPlayer_AimStuff(data.aimStuff, input);
       break;
     }
     case 0x243ae038: {
-      LoadTypedefSLdrTweakPlayer_Orbit(data.orbit, input);
+      LoadTypedefTweakPlayer_Orbit(data.orbit, input);
       break;
     }
     case 0x20124c3d: {
-      LoadTypedefSLdrTweakPlayer_ScanVisor(data.scanVisor, input);
+      LoadTypedefTweakPlayer_ScanVisor(data.scanVisor, input);
       break;
     }
     case 0x30412440: {
-      LoadTypedefSLdrTweakPlayer_Grapple(data.grapple, input);
+      LoadTypedefTweakPlayer_Grapple(data.grapple, input);
       break;
     }
     case 0xc4d32ae5: {
-      LoadTypedefSLdrTweakPlayer_Collision(data.collision, input);
+      LoadTypedefTweakPlayer_Collision(data.collision, input);
       break;
     }
     case 0xd6155d4b: {
-      LoadTypedefSLdrTweakPlayer_FirstPersonCamera(data.firstPersonCamera, input);
+      LoadTypedefTweakPlayer_FirstPersonCamera(data.firstPersonCamera, input);
       break;
     }
     case 0xbcca767e: {
-      LoadTypedefSLdrTweakPlayer_Shield(data.shield, input);
+      LoadTypedefTweakPlayer_Shield(data.shield, input);
       break;
     }
     case 0x4d3b20b7: {
-      LoadTypedefSLdrTweakPlayer_Frozen(data.frozen, input);
+      LoadTypedefTweakPlayer_Frozen(data.frozen, input);
       break;
     }
     case 0xaeaff210: {
-      LoadTypedefSLdrTweakPlayer_SuitDamageReduction(data.suitDamageReduction, input);
+      LoadTypedefTweakPlayer_SuitDamageReduction(data.suitDamageReduction, input);
       break;
     }
     default:
@@ -8418,7 +8418,7 @@ SLdrTweakSlideShow::SLdrTweakSlideShow() : instanceName(), pakFile(), font(), fo
 
 SLdrTweakSlideShow::~SLdrTweakSlideShow() {}
 
-void LoadTypedefSLdrTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input) {
+void LoadTypedefTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8512,7 +8512,7 @@ SLdrTweakBall::SLdrTweakBall() : instanceName(), movement(), camera(), misc(), b
 
 SLdrTweakBall::~SLdrTweakBall() {}
 
-void LoadTypedefSLdrTweakBall(SLdrTweakBall& data, CInputStream& input) {
+void LoadTypedefTweakBall(SLdrTweakBall& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8524,31 +8524,31 @@ void LoadTypedefSLdrTweakBall(SLdrTweakBall& data, CInputStream& input) {
       break;
     }
     case 0x0def1ffb: {
-      LoadTypedefSLdrTweakBall_Movement(data.movement, input);
+      LoadTypedefTweakBall_Movement(data.movement, input);
       break;
     }
     case 0x7aac09b9: {
-      LoadTypedefSLdrTweakBall_Camera(data.camera, input);
+      LoadTypedefTweakBall_Camera(data.camera, input);
       break;
     }
     case 0x0c67b730: {
-      LoadTypedefSLdrTweakBall_Misc(data.misc, input);
+      LoadTypedefTweakBall_Misc(data.misc, input);
       break;
     }
     case 0xcb4ea3bf: {
-      LoadTypedefSLdrTweakBall_BoostBall(data.boostBall, input);
+      LoadTypedefTweakBall_BoostBall(data.boostBall, input);
       break;
     }
     case 0x5fb9e808: {
-      LoadTypedefSLdrTweakBall_CannonBall(data.cannonBall, input);
+      LoadTypedefTweakBall_CannonBall(data.cannonBall, input);
       break;
     }
     case 0x4b1c7b7d: {
-      LoadTypedefSLdrTweakBall_ScrewAttack(data.screwAttack, input);
+      LoadTypedefTweakBall_ScrewAttack(data.screwAttack, input);
       break;
     }
     case 0xbb5fc8a4: {
-      LoadTypedefSLdrTweakBall_DeathBall(data.deathBall, input);
+      LoadTypedefTweakBall_DeathBall(data.deathBall, input);
       break;
     }
     default:
@@ -8563,7 +8563,7 @@ SLdrTweakAutoMapper::SLdrTweakAutoMapper() : instanceName(), base(), doorColors(
 
 SLdrTweakAutoMapper::~SLdrTweakAutoMapper() {}
 
-void LoadTypedefSLdrTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& input) {
+void LoadTypedefTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8575,11 +8575,11 @@ void LoadTypedefSLdrTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& inp
       break;
     }
     case 0x18b2f423: {
-      LoadTypedefSLdrTweakAutoMapper_Base(data.base, input);
+      LoadTypedefTweakAutoMapper_Base(data.base, input);
       break;
     }
     case 0xc5368863: {
-      LoadTypedefSLdrTweakAutoMapper_DoorColors(data.doorColors, input);
+      LoadTypedefTweakAutoMapper_DoorColors(data.doorColors, input);
       break;
     }
     default:
@@ -8594,7 +8594,7 @@ SLdrTweakPlayerControls::SLdrTweakPlayerControls() : instanceName(), controls(),
 
 SLdrTweakPlayerControls::~SLdrTweakPlayerControls() {}
 
-void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStream& input) {
+void LoadTypedefTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8606,11 +8606,11 @@ void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStr
       break;
     }
     case 0x3c34dfed: {
-      LoadTypedefSLdrTweakPlayerControls_Controls(data.controls, input);
+      LoadTypedefTweakPlayerControls_Controls(data.controls, input);
       break;
     }
     case 0x168a79f1: {
-      LoadTypedefSLdrTweakPlayerControls_Booleans(data.booleans, input);
+      LoadTypedefTweakPlayerControls_Booleans(data.booleans, input);
       break;
     }
     default:
@@ -8631,7 +8631,7 @@ SLdrTweakPlayerGun2::SLdrTweakPlayerGun2() : instanceName(), misc(), holstering(
 
 SLdrTweakPlayerGun2::~SLdrTweakPlayerGun2() {}
 
-void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input) {
+void LoadTypedefTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8643,59 +8643,59 @@ void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& inp
       break;
     }
     case 0xb82ed424: {
-      LoadTypedefSLdrTweakPlayerGun_Misc(data.misc, input);
+      LoadTypedefTweakPlayerGun_Misc(data.misc, input);
       break;
     }
     case 0x6b6bdc47: {
-      LoadTypedefSLdrTweakPlayerGun_Holstering(data.holstering, input);
+      LoadTypedefTweakPlayerGun_Holstering(data.holstering, input);
       break;
     }
     case 0x87882cb0: {
-      LoadTypedefSLdrTweakPlayerGun_Position(data.position, input);
+      LoadTypedefTweakPlayerGun_Position(data.position, input);
       break;
     }
     case 0x255007ad: {
-      LoadTypedefSLdrTweakPlayerGun_Arm_Position(data.arm_Position, input);
+      LoadTypedefTweakPlayerGun_Arm_Position(data.arm_Position, input);
       break;
     }
     case 0x83d758ab: {
-      LoadTypedefSLdrTweakPlayerGun_Weapons(data.weapons, input);
+      LoadTypedefTweakPlayerGun_Weapons(data.weapons, input);
       break;
     }
     case 0x888c8775: {
-      LoadTypedefSLdrTweakPlayerGun_Beam_Combo(data.beam_Combo, input);
+      LoadTypedefTweakPlayerGun_Beam_Combo(data.beam_Combo, input);
       break;
     }
     case 0xaaebb73e: {
-      LoadTypedefSLdrTweakPlayerGun_Beam_Misc(data.beam_Misc, input);
+      LoadTypedefTweakPlayerGun_Beam_Misc(data.beam_Misc, input);
       break;
     }
     case 0x8da058fe: {
-      LoadTypedefSLdrTweakPlayerGun_RicochetDamage_Factor(data.ricochetDamage_Factor, input);
+      LoadTypedefTweakPlayerGun_RicochetDamage_Factor(data.ricochetDamage_Factor, input);
       break;
     }
     case 0xffdb4bb7: {
-      LoadTypedefSLdrCameraShakerData(data.recoil, input);
+      LoadTypedefCameraShakerData(data.recoil, input);
       break;
     }
     case 0x937a35bd: {
-      LoadTypedefSLdrCameraShakerData(data.comboRecoil, input);
+      LoadTypedefCameraShakerData(data.comboRecoil, input);
       break;
     }
     case 0x26196738: {
-      LoadTypedefSLdrCameraShakerData(data.projectileRecoil, input);
+      LoadTypedefCameraShakerData(data.projectileRecoil, input);
       break;
     }
     case 0xf40808c9: {
-      LoadTypedefSLdrCameraShakerData(data.flameThrower, input);
+      LoadTypedefCameraShakerData(data.flameThrower, input);
       break;
     }
     case 0x9a6d7a31: {
-      LoadTypedefSLdrCameraShakerData(data.waveBuster, input);
+      LoadTypedefCameraShakerData(data.waveBuster, input);
       break;
     }
     case 0x12f14c5a: {
-      LoadTypedefSLdrCameraShakerData(data.projectileImpact, input);
+      LoadTypedefCameraShakerData(data.projectileImpact, input);
       break;
     }
     default:
@@ -8716,7 +8716,7 @@ SLdrTweakPlayerGun::SLdrTweakPlayerGun() : instanceName(), misc(), holstering(),
 
 SLdrTweakPlayerGun::~SLdrTweakPlayerGun() {}
 
-void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input) {
+void LoadTypedefTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8728,59 +8728,59 @@ void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input
       break;
     }
     case 0xb82ed424: {
-      LoadTypedefSLdrTweakPlayerGun_Misc(data.misc, input);
+      LoadTypedefTweakPlayerGun_Misc(data.misc, input);
       break;
     }
     case 0x6b6bdc47: {
-      LoadTypedefSLdrTweakPlayerGun_Holstering(data.holstering, input);
+      LoadTypedefTweakPlayerGun_Holstering(data.holstering, input);
       break;
     }
     case 0x87882cb0: {
-      LoadTypedefSLdrTweakPlayerGun_Position(data.position, input);
+      LoadTypedefTweakPlayerGun_Position(data.position, input);
       break;
     }
     case 0x255007ad: {
-      LoadTypedefSLdrTweakPlayerGun_Arm_Position(data.arm_Position, input);
+      LoadTypedefTweakPlayerGun_Arm_Position(data.arm_Position, input);
       break;
     }
     case 0x83d758ab: {
-      LoadTypedefSLdrTweakPlayerGun_Weapons(data.weapons, input);
+      LoadTypedefTweakPlayerGun_Weapons(data.weapons, input);
       break;
     }
     case 0x888c8775: {
-      LoadTypedefSLdrTweakPlayerGun_Beam_Combo(data.beam_Combo, input);
+      LoadTypedefTweakPlayerGun_Beam_Combo(data.beam_Combo, input);
       break;
     }
     case 0xaaebb73e: {
-      LoadTypedefSLdrTweakPlayerGun_Beam_Misc(data.beam_Misc, input);
+      LoadTypedefTweakPlayerGun_Beam_Misc(data.beam_Misc, input);
       break;
     }
     case 0x8da058fe: {
-      LoadTypedefSLdrTweakPlayerGun_RicochetDamage_Factor(data.ricochetDamage_Factor, input);
+      LoadTypedefTweakPlayerGun_RicochetDamage_Factor(data.ricochetDamage_Factor, input);
       break;
     }
     case 0xffdb4bb7: {
-      LoadTypedefSLdrCameraShakerData(data.recoil, input);
+      LoadTypedefCameraShakerData(data.recoil, input);
       break;
     }
     case 0x937a35bd: {
-      LoadTypedefSLdrCameraShakerData(data.comboRecoil, input);
+      LoadTypedefCameraShakerData(data.comboRecoil, input);
       break;
     }
     case 0x26196738: {
-      LoadTypedefSLdrCameraShakerData(data.projectileRecoil, input);
+      LoadTypedefCameraShakerData(data.projectileRecoil, input);
       break;
     }
     case 0xf40808c9: {
-      LoadTypedefSLdrCameraShakerData(data.flameThrower, input);
+      LoadTypedefCameraShakerData(data.flameThrower, input);
       break;
     }
     case 0x9a6d7a31: {
-      LoadTypedefSLdrCameraShakerData(data.waveBuster, input);
+      LoadTypedefCameraShakerData(data.waveBuster, input);
       break;
     }
     case 0x12f14c5a: {
-      LoadTypedefSLdrCameraShakerData(data.projectileImpact, input);
+      LoadTypedefCameraShakerData(data.projectileImpact, input);
       break;
     }
     default:
@@ -8809,7 +8809,7 @@ SLdrTweakCameraBob::SLdrTweakCameraBob() : instanceName() {
 
 SLdrTweakCameraBob::~SLdrTweakCameraBob() {}
 
-void LoadTypedefSLdrTweakCameraBob(SLdrTweakCameraBob& data, CInputStream& input) {
+void LoadTypedefTweakCameraBob(SLdrTweakCameraBob& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8888,7 +8888,7 @@ SLdrTweakPlayer::SLdrTweakPlayer() : instanceName(), darkWorld(), grappleBeam(),
 
 SLdrTweakPlayer::~SLdrTweakPlayer() {}
 
-void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input) {
+void LoadTypedefTweakPlayer(SLdrTweakPlayer& data, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -8900,55 +8900,55 @@ void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input) {
       break;
     }
     case 0xdfd08eba: {
-      LoadTypedefSLdrTweakPlayer_DarkWorld(data.darkWorld, input);
+      LoadTypedefTweakPlayer_DarkWorld(data.darkWorld, input);
       break;
     }
     case 0x45171a96: {
-      LoadTypedefSLdrTweakPlayer_GrappleBeam(data.grappleBeam, input);
+      LoadTypedefTweakPlayer_GrappleBeam(data.grappleBeam, input);
       break;
     }
     case 0x82cf4cf1: {
-      LoadTypedefSLdrTweakPlayer_Motion(data.motion, input);
+      LoadTypedefTweakPlayer_Motion(data.motion, input);
       break;
     }
     case 0x56a720c8: {
-      LoadTypedefSLdrTweakPlayer_Misc(data.misc, input);
+      LoadTypedefTweakPlayer_Misc(data.misc, input);
       break;
     }
     case 0x42a17438: {
-      LoadTypedefSLdrTweakPlayer_AimStuff(data.aimStuff, input);
+      LoadTypedefTweakPlayer_AimStuff(data.aimStuff, input);
       break;
     }
     case 0x243ae038: {
-      LoadTypedefSLdrTweakPlayer_Orbit(data.orbit, input);
+      LoadTypedefTweakPlayer_Orbit(data.orbit, input);
       break;
     }
     case 0x20124c3d: {
-      LoadTypedefSLdrTweakPlayer_ScanVisor(data.scanVisor, input);
+      LoadTypedefTweakPlayer_ScanVisor(data.scanVisor, input);
       break;
     }
     case 0x30412440: {
-      LoadTypedefSLdrTweakPlayer_Grapple(data.grapple, input);
+      LoadTypedefTweakPlayer_Grapple(data.grapple, input);
       break;
     }
     case 0xc4d32ae5: {
-      LoadTypedefSLdrTweakPlayer_Collision(data.collision, input);
+      LoadTypedefTweakPlayer_Collision(data.collision, input);
       break;
     }
     case 0xd6155d4b: {
-      LoadTypedefSLdrTweakPlayer_FirstPersonCamera(data.firstPersonCamera, input);
+      LoadTypedefTweakPlayer_FirstPersonCamera(data.firstPersonCamera, input);
       break;
     }
     case 0xbcca767e: {
-      LoadTypedefSLdrTweakPlayer_Shield(data.shield, input);
+      LoadTypedefTweakPlayer_Shield(data.shield, input);
       break;
     }
     case 0x4d3b20b7: {
-      LoadTypedefSLdrTweakPlayer_Frozen(data.frozen, input);
+      LoadTypedefTweakPlayer_Frozen(data.frozen, input);
       break;
     }
     case 0xaeaff210: {
-      LoadTypedefSLdrTweakPlayer_SuitDamageReduction(data.suitDamageReduction, input);
+      LoadTypedefTweakPlayer_SuitDamageReduction(data.suitDamageReduction, input);
       break;
     }
     default:

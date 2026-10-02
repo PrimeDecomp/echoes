@@ -91,7 +91,7 @@ struct SLdrTweakAutoMapper_Base {
   CColor legendGradientColor; // 0x01cea7f9
 };
 
-void LoadTypedefSLdrTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& data, CInputStream& input);
+void LoadTypedefTweakAutoMapper_Base(SLdrTweakAutoMapper_Base& data, CInputStream& input);
 
 struct SLdrTweakAutoMapper_DoorColors {
   SLdrTweakAutoMapper_DoorColors();
@@ -111,7 +111,7 @@ struct SLdrTweakAutoMapper_DoorColors {
   CColor whiteDoorColor; // 0x0f08f35e
 };
 
-void LoadTypedefSLdrTweakAutoMapper_DoorColors(SLdrTweakAutoMapper_DoorColors& data, CInputStream& input);
+void LoadTypedefTweakAutoMapper_DoorColors(SLdrTweakAutoMapper_DoorColors& data, CInputStream& input);
 
 struct SLdrTweakAutoMapper {
   SLdrTweakAutoMapper();
@@ -122,6 +122,6 @@ struct SLdrTweakAutoMapper {
   SLdrTweakAutoMapper_DoorColors doorColors; // 0xc5368863
 };
 
-void LoadTypedefSLdrTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& input);
+void LoadTypedefTweakAutoMapper(SLdrTweakAutoMapper& data, CInputStream& input);
 
 #endif

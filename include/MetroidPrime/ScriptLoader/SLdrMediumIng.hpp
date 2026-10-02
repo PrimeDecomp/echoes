@@ -7,7 +7,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrCameraShakerData.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
@@ -38,7 +38,7 @@ struct SLdrMediumIng {
   float maxTentacleLength; // 0x35e8d21f
   float armAttackTime; // 0xb93573f7
   float unknown_0x8f1d597c; // 0x8f1d597c
-  SLdrAnimationParameters attackTentacle; // 0x7a9f8249
+  SLdrAnimationSet attackTentacle; // 0x7a9f8249
   SLdrActorParameters attackTentacleActorInformation; // 0x38cf133b
   SLdrSpline attackMotion; // 0x0767060d
   SLdrCameraShakerData attackTentacleImpact; // 0x0e6b1e70
@@ -54,6 +54,33 @@ struct SLdrMediumIng {
   float unknown_0x0e3d3708; // 0x0e3d3708
 };
 
-void LoadTypedefSLdrMediumIng(SLdrMediumIng& data, CInputStream& input);
+inline SLdrMediumIng::SLdrMediumIng() : editorProperties(), patterned(), actorInformation(), meleeDamage(), mistDamage(), mistingVulnerability(), attackTentacle(), attackTentacleActorInformation(), attackMotion(), attackTentacleImpact(), attackTentacleDamage(), lightColor(CColor::Green()), unknown_0xb459c3e9(), dashSpeed(), ingSpotBlobFx(kInvalidAssetId) {
+  patterned.turnSpeed = 360.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 1;
+  spawnMode = 0;
+  aggressiveness = 50.0f;
+  noMistDamageThreshold = 4.0f;
+  minMeleeAttackInterval = 10.0f;
+  maxMeleeAttackRange = 20.0f;
+  maxMistAttackRange = 10.0f;
+  minMistAttackInterval = 10.0f;
+  minArmAttackInterval = 2.0f;
+  minArmAttackRange = 15.0f;
+  maxArmAttackRange = 30.0f;
+  minTentacleLength = 5.0f;
+  maxTentacleLength = 40.0f;
+  armAttackTime = 1.0f;
+  unknown_0x8f1d597c = 0.5f;
+  tauntChance = 25.0f;
+  doubleDashChance = 25.0f;
+  lightColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  lightAttenuation = 2.0f;
+  ingSpotSound = 0;
+  unknown_0x0e3d3708 = 50.0f;
+}
+
+inline SLdrMediumIng::~SLdrMediumIng() {}
 
 #endif

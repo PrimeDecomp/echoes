@@ -26,6 +26,6 @@ struct SLdrTweakCameraBob {
   float helmetBobMagnitude; // 0x38a82ac1
 };
 
-void LoadTypedefSLdrTweakCameraBob(SLdrTweakCameraBob& data, CInputStream& input);
+void LoadTypedefTweakCameraBob(SLdrTweakCameraBob& data, CInputStream& input);
 
 #endif

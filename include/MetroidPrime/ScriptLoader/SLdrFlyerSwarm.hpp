@@ -4,7 +4,7 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrBasicSwarmProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
@@ -14,7 +14,7 @@ struct SLdrFlyerSwarm {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
   float unknown_0x4a85a2da; // 0x4a85a2da
@@ -25,6 +25,16 @@ struct SLdrFlyerSwarm {
   float rollUprightMinAngle; // 0xd572d1da
 };
 
-void LoadTypedefSLdrFlyerSwarm(SLdrFlyerSwarm& data, CInputStream& input);
+inline SLdrFlyerSwarm::SLdrFlyerSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties() {
+  active = true;
+  unknown_0x4a85a2da = 1.0f;
+  initialMoveSpeedModifier = 1.0f;
+  initialMoveSpeedModifierTime = 0.0f;
+  unknown_0x262e586d = 0.0f;
+  rollUprightSpeed = 0.0f;
+  rollUprightMinAngle = 0.0f;
+}
+
+inline SLdrFlyerSwarm::~SLdrFlyerSwarm() {}
 
 #endif

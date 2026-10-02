@@ -12,6 +12,10 @@ struct SLdrTargetingPoint {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-void LoadTypedefSLdrTargetingPoint(SLdrTargetingPoint& data, CInputStream& input);
+inline SLdrTargetingPoint::SLdrTargetingPoint() : editorProperties() {
+  editorProperties.active = false;
+}
+
+inline SLdrTargetingPoint::~SLdrTargetingPoint() {}
 
 #endif

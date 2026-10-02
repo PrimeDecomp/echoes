@@ -60,48 +60,10 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   }
 }
 
-CScriptAreaProperties* LoadAreaProperties(CStateManager& mgr, CInputStream& input,
+CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input,
                                           CEntityInfo& info) {
   SLdrAreaAttributes sldrThis;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    uint propertyId = (uint)input.ReadInt32();
-    u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0x95d4bee7:
-      sldrThis.needSky = input.ReadBool();
-      break;
-    case 0xb24fde1a:
-      sldrThis.darkWorld = input.ReadBool();
-      break;
-    case 0x9d0006ab:
-      sldrThis.environmentEffects = input.ReadInt32();
-      break;
-    case 0x56263e35:
-      sldrThis.environmentGroupSound = input.ReadInt32();
-      break;
-    case 0x64e5fe9f:
-      sldrThis.density = input.ReadFloat();
-      break;
-    case 0xba5f801e:
-      sldrThis.normalLighting = input.ReadFloat();
-      break;
-    case 0xd208c9fa:
-      sldrThis.overrideSky = input.ReadInt32();
-      break;
-    case 0xffeebc46:
-      sldrThis.phazonDamage = input.ReadInt32();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrAreaAttributes.inc"
 
   return new CScriptAreaProperties(
       mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),

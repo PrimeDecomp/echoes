@@ -47,37 +47,37 @@ void CScannableObjectInfo::ReadProperties(CInputStream& in) {
       data.staticModel = in.ReadInt32();
       break;
     case 0x15694ee1:
-      LoadTypedefSLdrAnimationParameters(data.animatedModel, in);
+      LoadTypedefAnimationSet(data.animatedModel, in);
       break;
     case 0x58f9fe99:
-      LoadTypedefSLdrAnimationParameters(data.primarySecondAnimatedModel, in);
+      LoadTypedefAnimationSet(data.primarySecondAnimatedModel, in);
       break;
     case 0x1c5b4a3a:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel0, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel0, in);
       break;
     case 0x8728a0ee:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel1, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel1, in);
       break;
     case 0xf1cd99d3:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel2, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel2, in);
       break;
     case 0x6abe7307:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel3, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel3, in);
       break;
     case 0x1c07eba9:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel4, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel4, in);
       break;
     case 0x8774017d:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel5, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel5, in);
       break;
     case 0xf1913840:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel6, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel6, in);
       break;
     case 0x6ae2d294:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel7, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel7, in);
       break;
     case 0x1ce2091c:
-      LoadTypedefSLdrScanInfoSecondaryModel(data.secondaryModel8, in);
+      LoadTypedefScanInfoSecondaryModel(data.secondaryModel8, in);
       break;
     default:
       in.ReadBytes(nullptr, size);

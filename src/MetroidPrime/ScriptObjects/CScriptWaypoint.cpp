@@ -60,27 +60,12 @@ void CScriptWaypoint::AddToRenderer(const CStateManager& mgr) const {}
 
 void CScriptWaypoint::Render(const CStateManager& mgr) const {}
 
-CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
 
-CEntity* LoadWaypoint(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CEntity* LoadWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrWaypoint sldrThis;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const int propertyId = input.Get< int >();
-    const u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrWaypoint.inc"
 
   return rs_new CScriptWaypoint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
                                 LdrToEntityInfo(info, sldrThis.editorProperties),
-                                LoadEditorTransform(sldrThis.editorProperties));
+                                LdrToTransform4f(sldrThis.editorProperties));
 }

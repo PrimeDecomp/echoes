@@ -28,7 +28,92 @@ struct SLdrShredderData {
   float desiredDistance; // 0x60be35a1
 };
 
-void LoadTypedefSLdrShredderData(SLdrShredderData& data, CInputStream& input);
+inline SLdrShredderData::SLdrShredderData() : explosionDamage() {
+  startState = 10;
+  minHeight = 4.0f;
+  maxHeight = 4.0f;
+  minDownHeight = 4.0f;
+  maxDownHeight = 4.0f;
+  separationDistance = 5.0f;
+  minLifeTime = 14.0f;
+  maxLifeTime = 16.0f;
+  normalKnockback = 20.0f;
+  heavyKnockback = 40.0f;
+  knockbackDecline = 100.0f;
+  isDarkShredder = false;
+  desiredDistance = 0.0f;
+}
+
+inline SLdrShredderData::~SLdrShredderData() {}
+
+inline void LoadTypedefShredderData(SLdrShredderData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x46d866d1: {
+      sldrThis.startState = input.ReadInt32();
+      break;
+    }
+    case 0xdeff74ea: {
+      LoadTypedefDamageInfo(sldrThis.explosionDamage, input);
+      break;
+    }
+    case 0xc6c4232c: {
+      sldrThis.minHeight = input.ReadFloat();
+      break;
+    }
+    case 0x7fe2b85d: {
+      sldrThis.maxHeight = input.ReadFloat();
+      break;
+    }
+    case 0x10be8ad3: {
+      sldrThis.minDownHeight = input.ReadFloat();
+      break;
+    }
+    case 0x43189237: {
+      sldrThis.maxDownHeight = input.ReadFloat();
+      break;
+    }
+    case 0x01559f27: {
+      sldrThis.separationDistance = input.ReadFloat();
+      break;
+    }
+    case 0x07dcd404: {
+      sldrThis.minLifeTime = input.ReadFloat();
+      break;
+    }
+    case 0x56256f59: {
+      sldrThis.maxLifeTime = input.ReadFloat();
+      break;
+    }
+    case 0x3061976c: {
+      sldrThis.normalKnockback = input.ReadFloat();
+      break;
+    }
+    case 0x93a80aa2: {
+      sldrThis.heavyKnockback = input.ReadFloat();
+      break;
+    }
+    case 0x4c6b2421: {
+      sldrThis.knockbackDecline = input.ReadFloat();
+      break;
+    }
+    case 0xcff9971b: {
+      sldrThis.isDarkShredder = input.ReadBool();
+      break;
+    }
+    case 0x60be35a1: {
+      sldrThis.desiredDistance = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrShredder {
   SLdrShredder();
@@ -40,6 +125,10 @@ struct SLdrShredder {
   SLdrShredderData data; // 0xab24a926
 };
 
-void LoadTypedefSLdrShredder(SLdrShredder& data, CInputStream& input);
+inline SLdrShredder::SLdrShredder() : editorProperties(), patterned(), actorInformation(), data() {
+  patterned.creatureSize = 1;
+}
+
+inline SLdrShredder::~SLdrShredder() {}
 
 #endif

@@ -15,7 +15,33 @@ struct SLdrEmperorIngStage2TentacleData {
   float forgetTime; // 0x1fe28a36
 };
 
-void LoadTypedefSLdrEmperorIngStage2TentacleData(SLdrEmperorIngStage2TentacleData& data, CInputStream& input);
+inline SLdrEmperorIngStage2TentacleData::SLdrEmperorIngStage2TentacleData() {
+  detectionTime = 0.0f;
+  forgetTime = 0.0f;
+}
+
+inline SLdrEmperorIngStage2TentacleData::~SLdrEmperorIngStage2TentacleData() {}
+
+inline void LoadTypedefEmperorIngStage2TentacleData(SLdrEmperorIngStage2TentacleData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xbaa9254a: {
+      sldrThis.detectionTime = input.ReadFloat();
+      break;
+    }
+    case 0x1fe28a36: {
+      sldrThis.forgetTime = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage2Tentacle {
   SLdrEmperorIngStage2Tentacle();
@@ -27,6 +53,10 @@ struct SLdrEmperorIngStage2Tentacle {
   SLdrEmperorIngStage2TentacleData data; // 0x5105fa2d
 };
 
-void LoadTypedefSLdrEmperorIngStage2Tentacle(SLdrEmperorIngStage2Tentacle& data, CInputStream& input);
+inline SLdrEmperorIngStage2Tentacle::SLdrEmperorIngStage2Tentacle() : editorProperties(), patterned(), actorInformation(), data() {
+  patterned.creatureSize = 2;
+}
+
+inline SLdrEmperorIngStage2Tentacle::~SLdrEmperorIngStage2Tentacle() {}
 
 #endif

@@ -14,6 +14,11 @@ struct SLdrWorldLightFader {
   float targetLightRate; // 0x234dce52
 };
 
-void LoadTypedefSLdrWorldLightFader(SLdrWorldLightFader& data, CInputStream& input);
+inline SLdrWorldLightFader::SLdrWorldLightFader() : editorProperties() {
+  targetLight = 1.0f;
+  targetLightRate = 1.0f;
+}
+
+inline SLdrWorldLightFader::~SLdrWorldLightFader() {}
 
 #endif

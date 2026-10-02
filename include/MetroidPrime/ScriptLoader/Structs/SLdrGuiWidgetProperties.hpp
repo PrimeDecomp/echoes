@@ -14,6 +14,6 @@ struct SLdrGuiWidgetProperties {
   bool isLocked; // 0xdee730f5
 };
 
-void LoadTypedefSLdrGuiWidgetProperties(SLdrGuiWidgetProperties& data, CInputStream& input);
+void LoadTypedefGuiWidgetProperties(SLdrGuiWidgetProperties& data, CInputStream& input);
 
 #endif

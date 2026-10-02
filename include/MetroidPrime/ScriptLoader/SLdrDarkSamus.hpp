@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAudioPlaybackParms.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
@@ -55,7 +55,7 @@ struct SLdrDarkSamus {
   int unknown_0x0ef8dc15; // 0x0ef8dc15
   CAssetId invulnerableModel; // 0x072df331
   CAssetId invulnerableSkinRules; // 0xaa96399c
-  SLdrAnimationParameters boostBallModel; // 0xf148f728
+  SLdrAnimationSet boostBallModel; // 0xf148f728
   SLdrDamageInfo boostBallDamage; // 0xe18dc6fc
   CAssetId boostBallGlow; // 0xac43ba34
   CAssetId boostBallTrailSwoosh; // 0x449aa4aa
@@ -80,6 +80,36 @@ struct SLdrDarkSamus {
   CAssetId alternateScannableInfo; // 0xf60ac5cc
 };
 
-void LoadTypedefSLdrDarkSamus(SLdrDarkSamus& data, CInputStream& input);
+inline SLdrDarkSamus::SLdrDarkSamus() : editorProperties(), patterned(), actorInformation(), tXTR(kInvalidAssetId), meleeAttackDamage(), meleeAttackFX(kInvalidAssetId), pART(kInvalidAssetId), diveAttackDamage(), diveAttackEffect(kInvalidAssetId), scatterShotProjectile(kInvalidAssetId), scatterShotProjectile2(kInvalidAssetId), scatterShotDamage(), normalMissileProjectile(kInvalidAssetId), normalMissileDamage(), superMissileProjectile(kInvalidAssetId), superMissileDamage(), freezeBeamProjectile(kInvalidAssetId), freezeBeamDamage(), freezeBeamVisorTexture(kInvalidAssetId), sweepSwoosh(kInvalidAssetId), sweepBeamDamage(), sweepBeamCollisionEffect(kInvalidAssetId), invulnerableModel(kInvalidAssetId), invulnerableSkinRules(kInvalidAssetId), boostBallModel(), boostBallDamage(), boostBallGlow(kInvalidAssetId), boostBallTrailSwoosh(kInvalidAssetId), sWHC(kInvalidAssetId), boostBallCollision(kInvalidAssetId), boostBallCollisionSound_OneShot(), iceSpreadFX(kInvalidAssetId), pART_0x908b06e9(kInvalidAssetId), pART_0x494de4a4(kInvalidAssetId), damageInfo(), pART_0xe701daea(kInvalidAssetId), phazonProjectile(kInvalidAssetId), phazonSuperMissileProjectile(kInvalidAssetId), phazonSuperMissileDamage(), phazonProjectileDamage(), phazonEnrageSphere(kInvalidAssetId), phazonEnrageSphereContactDamage(), alternateScannableInfo(kInvalidAssetId) {
+  patterned.detectionRange = 32.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.0f;
+  patterned.creatureSize = 1;
+  unknown_0x72edeb7d = -1.0f;
+  unknown_0x74fa22f0 = -1.0f;
+  glideSound = 0;
+  missileRicochetSound = 0;
+  startsInTheAir = false;
+  unknown_0x2c6a3344 = 100.0f;
+  diveAttackImpulseVertical = 40.0f;
+  diveAttackImpulseHorizontal = 500.0f;
+  unknown_0x378285b9 = 0.0f;
+  scatterShotProjectilesPerSecond = 300.0f;
+  unknown_0x1f1ef7a9 = 1;
+  unknown_0xc4a1a44e = 3;
+  damageInterruptThreshold = 10.0f;
+  unknown_0xf317f4d5 = 4.0f;
+  sweepBeamSound = 0;
+  unknown_0x0ef8dc15 = -1;
+  boostBallRollSound = 0;
+  boostBallHitPlayerSound = 0;
+  iceSpreadSound = 0;
+  sound = 0;
+  phazonProjectileDamage.unknown_0x119fbd31 = 11;
+  phazonProjectileDamage.dI_Damage = 10.0f;
+  phazonProjectileDamage.dI_Radius = 5.0f;
+}
+
+inline SLdrDarkSamus::~SLdrDarkSamus() {}
 
 #endif

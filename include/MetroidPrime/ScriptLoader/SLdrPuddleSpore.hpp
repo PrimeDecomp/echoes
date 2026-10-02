@@ -28,6 +28,28 @@ struct SLdrPuddleSpore {
   SLdrShockWaveInfo shockWaveInfo; // 0x8f4787cb
 };
 
-void LoadTypedefSLdrPuddleSpore(SLdrPuddleSpore& data, CInputStream& input);
+inline SLdrPuddleSpore::SLdrPuddleSpore() : editorProperties(), patterned(), actorInformation(), shockWaveInfo() {
+  flavor = 0;
+  patterned.detectionRange = 35.0f;
+  patterned.detectionHeightRange = 3.0f;
+  patterned.detectionAngle = 180.0f;
+  patterned.damageWaitTime = 0.0f;
+  patterned.health.health = 1000000.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.collisionRadius = 2.5f;
+  patterned.collisionHeight = 3.0f;
+  patterned.creatureSize = 1;
+  unknown_0x5cdc877d = true;
+  chargeTime = 3.0f;
+  timeOpen = 3.0f;
+  platformTime = 7.0f;
+  unknown_0xf1c2d224 = 30.0f;
+  knockOffForce = 5.0f;
+  hitDetectionAngle = 30.0f;
+  shockWaveHeight = 0.0f;
+  sound_ShockWaveTravelSound = 0;
+}
+
+inline SLdrPuddleSpore::~SLdrPuddleSpore() {}
 
 #endif

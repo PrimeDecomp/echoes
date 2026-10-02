@@ -23,7 +23,58 @@ struct SLdrSandwormStruct {
   int unknown_0xfc2697dd; // 0xfc2697dd
 };
 
-void LoadTypedefSLdrSandwormStruct(SLdrSandwormStruct& data, CInputStream& input);
+inline SLdrSandwormStruct::SLdrSandwormStruct() {
+  unknown_0x98106ee2 = 1.0f;
+  minTimeBetweenSequences = 3.0f;
+  maxTimeBetweenSequences = 5.0f;
+  moveSpeedMultiplier = 1.0f;
+  unknown_0x59f14d7c = 3;
+  unknown_0x9606b4b0 = 5;
+  unknown_0xfc2697dd = 5;
+}
+
+inline SLdrSandwormStruct::~SLdrSandwormStruct() {}
+
+inline void LoadTypedefSandwormStruct(SLdrSandwormStruct& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x98106ee2: {
+      sldrThis.unknown_0x98106ee2 = input.ReadFloat();
+      break;
+    }
+    case 0x95081226: {
+      sldrThis.minTimeBetweenSequences = input.ReadFloat();
+      break;
+    }
+    case 0xc2064265: {
+      sldrThis.maxTimeBetweenSequences = input.ReadFloat();
+      break;
+    }
+    case 0xfe9133cd: {
+      sldrThis.moveSpeedMultiplier = input.ReadFloat();
+      break;
+    }
+    case 0x59f14d7c: {
+      sldrThis.unknown_0x59f14d7c = input.ReadInt32();
+      break;
+    }
+    case 0x9606b4b0: {
+      sldrThis.unknown_0x9606b4b0 = input.ReadInt32();
+      break;
+    }
+    case 0xfc2697dd: {
+      sldrThis.unknown_0xfc2697dd = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSandworm {
   SLdrSandworm();
@@ -81,6 +132,53 @@ struct SLdrSandworm {
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
 };
 
-void LoadTypedefSLdrSandworm(SLdrSandworm& data, CInputStream& input);
+inline SLdrSandworm::SLdrSandworm() : editorProperties(), patterned(), actorInformation(), pincerL(kInvalidAssetId), pincerR(kInvalidAssetId), spitAttackVisorEffect(kInvalidAssetId), projectile(kInvalidAssetId), projectileDamage(), morphballTossDamage(), pincerSwipeDamage(), eyeGlow(kInvalidAssetId), pART(kInvalidAssetId), pART_0x8b2a15ee(kInvalidAssetId), ingBossBombFX(kInvalidAssetId), ingBossBombExplosionFX(kInvalidAssetId), ingBossBombDamage(), sandwormStruct(), sandwormStruct_0xce246628(), sandwormStruct_0x55578cfc(), sandwormStruct_0x23ee1452(), sandwormStruct_0xb89dfe86(), ingPossessionData() {
+  unknown_0x06dee4c5 = 0;
+  patterned.detectionRange = 32.0f;
+  patterned.minAttackRange = 6.0f;
+  patterned.maxAttackRange = 11.0f;
+  patterned.averageAttackTime = 2.0f;
+  patterned.attackTimeVariation = 1.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.0f;
+  patterned.creatureSize = 2;
+  pincerScale = 1.0f;
+  walkSound = 0;
+  walkVocalSound = 0;
+  meleeAttackSound = 0;
+  eyeKilledSound = 0;
+  spitAttackMinRange = 9.0f;
+  spitAttackMaxRange = 25.0f;
+  unknown_0x61f75902 = 60.0f;
+  chargeRangeMin = 25.0f;
+  chargeRangeMax = 30.0f;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  chargeImpulseHorizontal = 50.0f;
+  chargeImpulseVertical = 50.0f;
+  morphballTossImpulseHorizontal = 50.0f;
+  morphballTossImpulseVertical = 50.0f;
+  meleeImpulseHorizontal = 30.0f;
+  meleeImpulseVertical = 15.0f;
+  morphballTossDamage.unknown_0x119fbd31 = 11;
+  morphballTossDamage.dI_Damage = 5.0f;
+  pincerSwipeDamage.unknown_0x119fbd31 = 11;
+  pincerSwipeDamage.dI_Damage = 5.0f;
+  unknown_0xe593f1c6 = 25.0f;
+  lurkUndergroundTimeMin = 2.0f;
+  lurkUndergroundTimeMax = 5.0f;
+  pursuitFrustrationTimer = 6.0f;
+  pursuitFrustrationRadius = 20.0f;
+  canLinkTransfer = false;
+  ingBossBombDamage.unknown_0x119fbd31 = 11;
+  ingBossBombDamage.dI_Damage = 5.0f;
+  ingBossBombDropRate = 0.0f;
+  bombBounceSound = 0;
+  bombExplodeSound = 0;
+  unknown_0x547f9400 = 50.0f;
+  unknown_0xefef7b45 = 10.0f;
+}
+
+inline SLdrSandworm::~SLdrSandworm() {}
 
 #endif

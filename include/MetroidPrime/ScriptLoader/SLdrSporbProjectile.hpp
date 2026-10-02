@@ -19,6 +19,9 @@ struct SLdrSporbProjectile {
   CAssetId ballEscapeParticleEffect; // 0xaaff1884
 };
 
-void LoadTypedefSLdrSporbProjectile(SLdrSporbProjectile& data, CInputStream& input);
+inline SLdrSporbProjectile::SLdrSporbProjectile() : editorProperties(), patterned(), actorInformation(), ballSpitParticleEffect(kInvalidAssetId), ballEscapeParticleEffect(kInvalidAssetId) {
+}
+
+inline SLdrSporbProjectile::~SLdrSporbProjectile() {}
 
 #endif

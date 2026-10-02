@@ -6,6 +6,9 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrCameraBlurKeyframe {
+  SLdrCameraBlurKeyframe();
+  ~SLdrCameraBlurKeyframe();
+
   SLdrEditorProperties editorProperties; // 0x255a4580
   int blurType; // 0xe9359148
   float blurRadius; // 0x6f6eb1f4
@@ -14,6 +17,14 @@ struct SLdrCameraBlurKeyframe {
   float interpolateOutTime; // 0x3eaf78fe
 };
 
-void LoadTypedefSLdrCameraBlurKeyframe(SLdrCameraBlurKeyframe& data, CInputStream& input);
+inline SLdrCameraBlurKeyframe::SLdrCameraBlurKeyframe() : editorProperties() {
+  blurType = 0;
+  blurRadius = 0.0f;
+  whichFilterGroup = 0;
+  interpolateInTime = 0.0f;
+  interpolateOutTime = 0.0f;
+}
+
+inline SLdrCameraBlurKeyframe::~SLdrCameraBlurKeyframe() {}
 
 #endif

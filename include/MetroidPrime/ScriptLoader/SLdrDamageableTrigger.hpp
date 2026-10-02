@@ -21,6 +21,12 @@ struct SLdrDamageableTrigger {
   SLdrVisorParameters visor; // 0x05ad250e
 };
 
-void LoadTypedefSLdrDamageableTrigger(SLdrDamageableTrigger& data, CInputStream& input);
+inline SLdrDamageableTrigger::SLdrDamageableTrigger() : editorProperties(), health(), vulnerability(), visor() {
+  orbitable = false;
+  enableSeekerLockOn = false;
+  invulnerable = false;
+}
+
+inline SLdrDamageableTrigger::~SLdrDamageableTrigger() {}
 
 #endif

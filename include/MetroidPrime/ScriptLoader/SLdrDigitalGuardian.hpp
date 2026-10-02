@@ -71,7 +71,258 @@ struct SLdrDigitalGuardianData {
   SLdrDamageVulnerability toeTargetVulnerability; // 0xf14f3237
 };
 
-void LoadTypedefSLdrDigitalGuardianData(SLdrDigitalGuardianData& data, CInputStream& input);
+inline SLdrDigitalGuardianData::SLdrDigitalGuardianData() : scannableInfoCrippled(kInvalidAssetId), legStabDamage(), toeTargetModel(kInvalidAssetId), toeTargetExplosion(kInvalidAssetId), sound_ToeTarget(), sound_ToeTargetAttack(), sound_ToeTargetExplosion(), sound_ToeTargetHit(), sound_ShockWave(), shockWaveInfo(), vortexDamage(), sound_VortexFlash(), legModel(kInvalidAssetId), shinArmor(kInvalidAssetId), sound_KneeArmorHit(), sound_KneeVulnerable(), kneeArmor(kInvalidAssetId), kneeEchoParameters(), transmissionBeacon(kInvalidAssetId), transmissionBeaconFx(kInvalidAssetId), transmissionBeaconEchoParameters(), sound_TransmissionBeacon(), sound_BeaconExtract(), sound_BeaconRetract(), transmissionBeaconExplosion(kInvalidAssetId), transmissionBeaconEchoHit(kInvalidAssetId), sound_BeaconExplode(), sound_BeaconHit(), kneeVulnerability(), vortexVulnerability(), toeTargetVulnerability() {
+  nearLegStabRange = 10.0f;
+  farLegStabRange = 17.0f;
+  minLegStabAttackTime = 5.0f;
+  legStabDamage.unknown_0x119fbd31 = 11;
+  legStabDamage.dI_Damage = 50.0f;
+  legStabDamage.dI_KnockBackPower = 10.0f;
+  toeTargetHP = 75.0f;
+  vortexAttackDuration = 5.0f;
+  vortexAttractionForce = 50.0f;
+  maxVortexAttractionDistance = 30.0f;
+  vortexLinearVelocity = 20.0f;
+  vortexLinearAcceleration = 20.0f;
+  vortexDamage.unknown_0x119fbd31 = 11;
+  vortexDamage.dI_Damage = 50.0f;
+  vortexDamage.dI_KnockBackPower = 10.0f;
+  unknown_0xfb5263e8 = -5734;
+  unknown_0x6aaf33e3 = 8191;
+  unknown_0x4f5d725c = 100.0f;
+  kneeArmorHP = 100.0f;
+  unknown_0xa324e26c = 2.0f;
+  unknown_0x6a754ebd = 5.0f;
+  jumpTimer = 10.0f;
+  unknown_0x8106cda9 = 0.69999999f;
+  unknown_0x9e1b8105 = 0.69999999f;
+  unknown_0xa08fcc70 = 0.69999999f;
+  unknown_0x3254a16b = 1.0f;
+  transmissionBeaconHP = 500.0f;
+}
+
+inline SLdrDigitalGuardianData::~SLdrDigitalGuardianData() {}
+
+inline void LoadTypedefDigitalGuardianData(SLdrDigitalGuardianData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x2aa63fc4: {
+      sldrThis.scannableInfoCrippled = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x0faf6a8e: {
+      sldrThis.nearLegStabRange = input.ReadFloat();
+      break;
+    }
+    case 0xd3056808: {
+      sldrThis.farLegStabRange = input.ReadFloat();
+      break;
+    }
+    case 0x304b47ee: {
+      sldrThis.minLegStabAttackTime = input.ReadFloat();
+      break;
+    }
+    case 0xefacfa50: {
+      LoadTypedefDamageInfo(sldrThis.legStabDamage, input);
+      break;
+    }
+    case 0xb4561f28: {
+      sldrThis.toeTargetHP = input.ReadFloat();
+      break;
+    }
+    case 0xbb06dd83: {
+      sldrThis.toeTargetModel = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x783635a6: {
+      sldrThis.toeTargetExplosion = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x13845a66: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ToeTarget, input);
+      break;
+    }
+    case 0xa305dcba: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ToeTargetAttack, input);
+      break;
+    }
+    case 0xc6ec1630: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ToeTargetExplosion, input);
+      break;
+    }
+    case 0x98419eac: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ToeTargetHit, input);
+      break;
+    }
+    case 0x4691c9ab: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ShockWave, input);
+      break;
+    }
+    case 0x8f4787cb: {
+      LoadTypedefShockWaveInfo(sldrThis.shockWaveInfo, input);
+      break;
+    }
+    case 0x76527e01: {
+      sldrThis.vortexAttackDuration = input.ReadFloat();
+      break;
+    }
+    case 0xd210dfdb: {
+      sldrThis.vortexAttractionForce = input.ReadFloat();
+      break;
+    }
+    case 0x348bff02: {
+      sldrThis.maxVortexAttractionDistance = input.ReadFloat();
+      break;
+    }
+    case 0x84fef16f: {
+      sldrThis.vortexLinearVelocity = input.ReadFloat();
+      break;
+    }
+    case 0x93a74a46: {
+      sldrThis.vortexLinearAcceleration = input.ReadFloat();
+      break;
+    }
+    case 0x5ca612aa: {
+      LoadTypedefDamageInfo(sldrThis.vortexDamage, input);
+      break;
+    }
+    case 0xfb5263e8: {
+      sldrThis.unknown_0xfb5263e8 = input.ReadInt32();
+      break;
+    }
+    case 0x6aaf33e3: {
+      sldrThis.unknown_0x6aaf33e3 = input.ReadInt32();
+      break;
+    }
+    case 0x4f5d725c: {
+      sldrThis.unknown_0x4f5d725c = input.ReadFloat();
+      break;
+    }
+    case 0x7bfab420: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_VortexFlash, input);
+      break;
+    }
+    case 0xc0a86488: {
+      sldrThis.legModel = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x8ddd85ca: {
+      sldrThis.shinArmor = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xe3dd61e6: {
+      sldrThis.kneeArmorHP = input.ReadFloat();
+      break;
+    }
+    case 0x91d2a042: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_KneeArmorHit, input);
+      break;
+    }
+    case 0x9386d22b: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_KneeVulnerable, input);
+      break;
+    }
+    case 0x5ef8b288: {
+      sldrThis.kneeArmor = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x7b5b7312: {
+      LoadTypedefEchoParameters(sldrThis.kneeEchoParameters, input);
+      break;
+    }
+    case 0xa324e26c: {
+      sldrThis.unknown_0xa324e26c = input.ReadFloat();
+      break;
+    }
+    case 0x6a754ebd: {
+      sldrThis.unknown_0x6a754ebd = input.ReadFloat();
+      break;
+    }
+    case 0xc9fc9977: {
+      sldrThis.jumpTimer = input.ReadFloat();
+      break;
+    }
+    case 0x8106cda9: {
+      sldrThis.unknown_0x8106cda9 = input.ReadFloat();
+      break;
+    }
+    case 0x9e1b8105: {
+      sldrThis.unknown_0x9e1b8105 = input.ReadFloat();
+      break;
+    }
+    case 0xa08fcc70: {
+      sldrThis.unknown_0xa08fcc70 = input.ReadFloat();
+      break;
+    }
+    case 0x3254a16b: {
+      sldrThis.unknown_0x3254a16b = input.ReadFloat();
+      break;
+    }
+    case 0x5796a143: {
+      sldrThis.transmissionBeacon = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x3fa7df1c: {
+      sldrThis.transmissionBeaconFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x021b6f9d: {
+      LoadTypedefEchoParameters(sldrThis.transmissionBeaconEchoParameters, input);
+      break;
+    }
+    case 0x55a8011c: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_TransmissionBeacon, input);
+      break;
+    }
+    case 0x7ae73fb3: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BeaconExtract, input);
+      break;
+    }
+    case 0xa9e55c8e: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BeaconRetract, input);
+      break;
+    }
+    case 0x4f6d27d3: {
+      sldrThis.transmissionBeaconHP = input.ReadFloat();
+      break;
+    }
+    case 0x71f0c674: {
+      sldrThis.transmissionBeaconExplosion = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xc8ec315b: {
+      sldrThis.transmissionBeaconEchoHit = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xeed5b990: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BeaconExplode, input);
+      break;
+    }
+    case 0x535f6fec: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BeaconHit, input);
+      break;
+    }
+    case 0x6dbad233: {
+      LoadTypedefDamageVulnerability(sldrThis.kneeVulnerability, input);
+      break;
+    }
+    case 0xf1259e3a: {
+      LoadTypedefDamageVulnerability(sldrThis.vortexVulnerability, input);
+      break;
+    }
+    case 0xf14f3237: {
+      LoadTypedefDamageVulnerability(sldrThis.toeTargetVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDigitalGuardian {
   SLdrDigitalGuardian();
@@ -83,6 +334,14 @@ struct SLdrDigitalGuardian {
   SLdrDigitalGuardianData digitalGuardianProperties; // 0xc55918cc
 };
 
-void LoadTypedefSLdrDigitalGuardian(SLdrDigitalGuardian& data, CInputStream& input);
+inline SLdrDigitalGuardian::SLdrDigitalGuardian() : editorProperties(), patterned(), actorInformation(), digitalGuardianProperties() {
+  patterned.turnSpeed = 360.0f;
+  patterned.minAttackRange = 0.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 2;
+}
+
+inline SLdrDigitalGuardian::~SLdrDigitalGuardian() {}
 
 #endif

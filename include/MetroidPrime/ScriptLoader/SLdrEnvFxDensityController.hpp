@@ -14,6 +14,11 @@ struct SLdrEnvFxDensityController {
   int fadeSpeed; // 0x65a823b4
 };
 
-void LoadTypedefSLdrEnvFxDensityController(SLdrEnvFxDensityController& data, CInputStream& input);
+inline SLdrEnvFxDensityController::SLdrEnvFxDensityController() : editorProperties() {
+  density = 0.5f;
+  fadeSpeed = 500;
+}
+
+inline SLdrEnvFxDensityController::~SLdrEnvFxDensityController() {}
 
 #endif

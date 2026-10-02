@@ -28,7 +28,82 @@ struct SLdrIngPuddleData {
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
 };
 
-void LoadTypedefSLdrIngPuddleData(SLdrIngPuddleData& data, CInputStream& input);
+inline SLdrIngPuddleData::SLdrIngPuddleData() : stateMachine(kInvalidAssetId), health(), blobEffect(kInvalidAssetId), puddleHitNormalDamage(kInvalidAssetId), puddleHitHeavyDamage(kInvalidAssetId), puddleDeath(kInvalidAssetId), vulnerability() {
+  health.hI_KnockBackResistance = 2.0f;
+  puddleSpeed = 20.0f;
+  sound_IngSpotIdle = 0;
+  sound_IngSpotMove = 0;
+  sound_HitNormalDamage = 0;
+  sound_HitHeavyDamage = 0;
+  sound_IngSpotDeath = 0;
+}
+
+inline SLdrIngPuddleData::~SLdrIngPuddleData() {}
+
+inline void LoadTypedefIngPuddleData(SLdrIngPuddleData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x55744160: {
+      sldrThis.stateMachine = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcf90d15e: {
+      LoadTypedefHealthInfo(sldrThis.health, input);
+      break;
+    }
+    case 0xc6c16427: {
+      sldrThis.puddleSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x2367f689: {
+      sldrThis.blobEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xe8a6e174: {
+      sldrThis.puddleHitNormalDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x1ab2b090: {
+      sldrThis.puddleHitHeavyDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x1ccfa4ba: {
+      sldrThis.puddleDeath = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4cab30a9: {
+      sldrThis.sound_IngSpotIdle = input.ReadInt32();
+      break;
+    }
+    case 0x8f83be73: {
+      sldrThis.sound_IngSpotMove = input.ReadInt32();
+      break;
+    }
+    case 0xb392943a: {
+      sldrThis.sound_HitNormalDamage = input.ReadInt32();
+      break;
+    }
+    case 0x24ecc1e9: {
+      sldrThis.sound_HitHeavyDamage = input.ReadInt32();
+      break;
+    }
+    case 0x4489935e: {
+      sldrThis.sound_IngSpotDeath = input.ReadInt32();
+      break;
+    }
+    case 0x7b71ae90: {
+      LoadTypedefDamageVulnerability(sldrThis.vulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrIngPuddle {
   SLdrIngPuddle();
@@ -39,6 +114,9 @@ struct SLdrIngPuddle {
   SLdrIngPuddleData ingPuddleProperties; // 0xd520975d
 };
 
-void LoadTypedefSLdrIngPuddle(SLdrIngPuddle& data, CInputStream& input);
+inline SLdrIngPuddle::SLdrIngPuddle() : editorProperties(), actorInformation(), ingPuddleProperties() {
+}
+
+inline SLdrIngPuddle::~SLdrIngPuddle() {}
 
 #endif

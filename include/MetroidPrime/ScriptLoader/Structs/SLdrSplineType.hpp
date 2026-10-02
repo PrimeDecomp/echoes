@@ -11,6 +11,6 @@ struct SLdrSplineType {
   int type; // 0xf53dcdd6
 };
 
-void LoadTypedefSLdrSplineType(SLdrSplineType& data, CInputStream& input);
+void LoadTypedefSplineType(SLdrSplineType& data, CInputStream& input);
 
 #endif

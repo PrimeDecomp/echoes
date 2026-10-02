@@ -14,6 +14,9 @@ struct SLdrCameraShaker {
   SLdrCameraShakerData shakerData; // 0xad547f96
 };
 
-void LoadTypedefSLdrCameraShaker(SLdrCameraShaker& data, CInputStream& input);
+inline SLdrCameraShaker::SLdrCameraShaker() : editorProperties(), shakerData() {
+}
+
+inline SLdrCameraShaker::~SLdrCameraShaker() {}
 
 #endif

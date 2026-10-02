@@ -4,7 +4,7 @@
 
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "rstl/string.hpp"
 
 struct SLdrScanInfoSecondaryModel {
@@ -12,11 +12,40 @@ struct SLdrScanInfoSecondaryModel {
   ~SLdrScanInfoSecondaryModel();
 
   CAssetId secondaryStaticModel; // 0x1f7921bc
-  SLdrAnimationParameters secondaryAnimatedModel; // 0xcdd202d1
+  SLdrAnimationSet secondaryAnimatedModel; // 0xcdd202d1
   rstl::string secondaryModelLocator; // 0x3ea2bed8
 };
 
-void LoadTypedefSLdrScanInfoSecondaryModel(SLdrScanInfoSecondaryModel& data, CInputStream& input);
+inline SLdrScanInfoSecondaryModel::SLdrScanInfoSecondaryModel() : secondaryStaticModel(kInvalidAssetId), secondaryAnimatedModel(), secondaryModelLocator() {
+}
+
+inline SLdrScanInfoSecondaryModel::~SLdrScanInfoSecondaryModel() {}
+
+inline void LoadTypedefScanInfoSecondaryModel(SLdrScanInfoSecondaryModel& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x1f7921bc: {
+      sldrThis.secondaryStaticModel = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcdd202d1: {
+      LoadTypedefAnimationSet(sldrThis.secondaryAnimatedModel, input);
+      break;
+    }
+    case 0x3ea2bed8: {
+      const rstl::string value(input);
+      sldrThis.secondaryModelLocator = value;
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrScannableObjectInfo {
   SLdrScannableObjectInfo();
@@ -31,8 +60,8 @@ struct SLdrScannableObjectInfo {
   float modelInitialYaw; // 0x2add6628
   float modelScale; // 0xd0c15066
   CAssetId staticModel; // 0xb7adc418
-  SLdrAnimationParameters animatedModel; // 0x15694ee1
-  SLdrAnimationParameters primarySecondAnimatedModel; // 0x58f9fe99
+  SLdrAnimationSet animatedModel; // 0x15694ee1
+  SLdrAnimationSet primarySecondAnimatedModel; // 0x58f9fe99
   SLdrScanInfoSecondaryModel secondaryModel0; // 0x1c5b4a3a
   SLdrScanInfoSecondaryModel secondaryModel1; // 0x8728a0ee
   SLdrScanInfoSecondaryModel secondaryModel2; // 0xf1cd99d3
@@ -44,6 +73,15 @@ struct SLdrScannableObjectInfo {
   SLdrScanInfoSecondaryModel secondaryModel8; // 0x1ce2091c
 };
 
-void LoadTypedefSLdrScannableObjectInfo(SLdrScannableObjectInfo& data, CInputStream& input);
+inline SLdrScannableObjectInfo::SLdrScannableObjectInfo() : scanInfoTextStringTable(kInvalidAssetId), scanTextureInHud(kInvalidAssetId), staticModel(kInvalidAssetId), animatedModel(), primarySecondAnimatedModel(), secondaryModel0(), secondaryModel1(), secondaryModel2(), secondaryModel3(), secondaryModel4(), secondaryModel5(), secondaryModel6(), secondaryModel7(), secondaryModel8() {
+  unknown_0xc308a322 = 0;
+  critical = false;
+  unknown_0x1733b1ec = false;
+  modelInitialPitch = 0.0f;
+  modelInitialYaw = 0.0f;
+  modelScale = 1.0f;
+}
+
+inline SLdrScannableObjectInfo::~SLdrScannableObjectInfo() {}
 
 #endif

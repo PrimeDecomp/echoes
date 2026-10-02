@@ -16,6 +16,13 @@ struct SLdrTimer {
   bool autoStart; // 0x3217dff8
 };
 
-void LoadTypedefSLdrTimer(SLdrTimer& data, CInputStream& input);
+inline SLdrTimer::SLdrTimer() : editorProperties() {
+  time = 5.0f;
+  randomAdjust = 0.0f;
+  autoReset = false;
+  autoStart = false;
+}
+
+inline SLdrTimer::~SLdrTimer() {}
 
 #endif

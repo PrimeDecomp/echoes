@@ -19,7 +19,37 @@ struct SLdrDynamicLightIntensity {
   bool intensityLoops; // 0xae67e050
 };
 
-void LoadTypedefSLdrDynamicLightIntensity(SLdrDynamicLightIntensity& data, CInputStream& input);
+inline SLdrDynamicLightIntensity::SLdrDynamicLightIntensity() : intensity() {
+  intensityDuration = 0.0f;
+  intensityLoops = false;
+}
+
+inline SLdrDynamicLightIntensity::~SLdrDynamicLightIntensity() {}
+
+inline void LoadTypedefDynamicLightIntensity(SLdrDynamicLightIntensity& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x239d0d2b: {
+      sldrThis.intensity = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0xc90d8899: {
+      sldrThis.intensityDuration = input.ReadFloat();
+      break;
+    }
+    case 0xae67e050: {
+      sldrThis.intensityLoops = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDynamicLightFalloff {
   SLdrDynamicLightFalloff();
@@ -31,7 +61,42 @@ struct SLdrDynamicLightFalloff {
   bool falloffRateLoops; // 0x6d323ea3
 };
 
-void LoadTypedefSLdrDynamicLightFalloff(SLdrDynamicLightFalloff& data, CInputStream& input);
+inline SLdrDynamicLightFalloff::SLdrDynamicLightFalloff() : falloffRate() {
+  falloffType = 0;
+  falloffRateDuration = 0.0f;
+  falloffRateLoops = false;
+}
+
+inline SLdrDynamicLightFalloff::~SLdrDynamicLightFalloff() {}
+
+inline void LoadTypedefDynamicLightFalloff(SLdrDynamicLightFalloff& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x456df20c: {
+      sldrThis.falloffType = input.ReadInt32();
+      break;
+    }
+    case 0x2f7c63a3: {
+      sldrThis.falloffRate = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0x1f6813f1: {
+      sldrThis.falloffRateDuration = input.ReadFloat();
+      break;
+    }
+    case 0x6d323ea3: {
+      sldrThis.falloffRateLoops = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDynamicLightSpotlight {
   SLdrDynamicLightSpotlight();
@@ -42,7 +107,37 @@ struct SLdrDynamicLightSpotlight {
   bool spotlightAngleLoops; // 0x2fd08300
 };
 
-void LoadTypedefSLdrDynamicLightSpotlight(SLdrDynamicLightSpotlight& data, CInputStream& input);
+inline SLdrDynamicLightSpotlight::SLdrDynamicLightSpotlight() : spotlightAngle() {
+  spotlightAngleDuration = 0.0f;
+  spotlightAngleLoops = false;
+}
+
+inline SLdrDynamicLightSpotlight::~SLdrDynamicLightSpotlight() {}
+
+inline void LoadTypedefDynamicLightSpotlight(SLdrDynamicLightSpotlight& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xfeeca0d6: {
+      sldrThis.spotlightAngle = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0x79aa798b: {
+      sldrThis.spotlightAngleDuration = input.ReadFloat();
+      break;
+    }
+    case 0x2fd08300: {
+      sldrThis.spotlightAngleLoops = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDynamicLightMotionSpline {
   SLdrDynamicLightMotionSpline();
@@ -54,7 +149,41 @@ struct SLdrDynamicLightMotionSpline {
   float motionSplineDuration; // 0xfd1e2f56
 };
 
-void LoadTypedefSLdrDynamicLightMotionSpline(SLdrDynamicLightMotionSpline& data, CInputStream& input);
+inline SLdrDynamicLightMotionSpline::SLdrDynamicLightMotionSpline() : motionSplineType(), motionControlSpline() {
+  motionSplinePathLoops = false;
+  motionSplineDuration = 10.0f;
+}
+
+inline SLdrDynamicLightMotionSpline::~SLdrDynamicLightMotionSpline() {}
+
+inline void LoadTypedefDynamicLightMotionSpline(SLdrDynamicLightMotionSpline& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x3d7406af: {
+      sldrThis.motionSplinePathLoops = input.ReadBool();
+      break;
+    }
+    case 0x493d6a2d: {
+      LoadTypedefSplineType(sldrThis.motionSplineType, input);
+      break;
+    }
+    case 0x27e5f874: {
+      sldrThis.motionControlSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0xfd1e2f56: {
+      sldrThis.motionSplineDuration = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDynamicLightParent {
   SLdrDynamicLightParent();
@@ -66,7 +195,41 @@ struct SLdrDynamicLightParent {
   bool useParentRotation; // 0xf72eefbd
 };
 
-void LoadTypedefSLdrDynamicLightParent(SLdrDynamicLightParent& data, CInputStream& input);
+inline SLdrDynamicLightParent::SLdrDynamicLightParent() : translationFromParent(CVector3f::Zero()), rotationFromParent(CVector3f::Zero()), locatorName() {
+  useParentRotation = false;
+}
+
+inline SLdrDynamicLightParent::~SLdrDynamicLightParent() {}
+
+inline void LoadTypedefDynamicLightParent(SLdrDynamicLightParent& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xddd74295: {
+      sldrThis.translationFromParent = CVector3f(input);
+      break;
+    }
+    case 0x88f018b3: {
+      sldrThis.rotationFromParent = CVector3f(input);
+      break;
+    }
+    case 0xfbc6c110: {
+      const rstl::string value(input);
+      sldrThis.locatorName = value;
+      break;
+    }
+    case 0xf72eefbd: {
+      sldrThis.useParentRotation = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDynamicLight {
   SLdrDynamicLight();
@@ -83,6 +246,12 @@ struct SLdrDynamicLight {
   SLdrDynamicLightParent parent; // 0xf734df8c
 };
 
-void LoadTypedefSLdrDynamicLight(SLdrDynamicLight& data, CInputStream& input);
+inline SLdrDynamicLight::SLdrDynamicLight() : editorProperties(), color(CColor::Green()), intensity(), falloff(), spotlight(), motionSpline(), parent() {
+  lightType = 2;
+  lightSet = 6;
+  color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+inline SLdrDynamicLight::~SLdrDynamicLight() {}
 
 #endif

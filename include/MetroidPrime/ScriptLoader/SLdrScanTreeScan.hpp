@@ -18,6 +18,9 @@ struct SLdrScanTreeScan {
   SLdrScannableParameters scannableInfo; // 0x2da1ec33
 };
 
-void LoadTypedefSLdrScanTreeScan(SLdrScanTreeScan& data, CInputStream& input);
+inline SLdrScanTreeScan::SLdrScanTreeScan() : editorProperties(), nodeName(kInvalidAssetId), stringName(), scannableInfo() {
+}
+
+inline SLdrScanTreeScan::~SLdrScanTreeScan() {}
 
 #endif

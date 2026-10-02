@@ -40,6 +40,21 @@ struct SLdrWallWalker {
   SLdrCameraShakerData projectileExplosionShaker; // 0x22bbdd0a
 };
 
-void LoadTypedefSLdrWallWalker(SLdrWallWalker& data, CInputStream& input);
+inline SLdrWallWalker::SLdrWallWalker() : editorProperties(), patterned(), actorInformation(), legVulnerability(), explodeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId), projectile(kInvalidAssetId), projectileDamage(), pART(kInvalidAssetId), projectileExplosionShaker() {
+  patterned.creatureSize = 1;
+  waypointApproachDistance = 2.5f;
+  floorTurnSpeed = 1080.0f;
+  stickyReach = 0.40000001f;
+  visibleDistance = 40.0f;
+  grenadeMass = 4.0f;
+  unknown_0xed086ce0 = 0.5f;
+  unknown_0x454f16b1 = 5;
+  grenadeSoundBounce = 0;
+  grenadeSoundExplode = 0;
+  projectileInterval = 2.0f;
+  projectileStopHomingRange = 5.0f;
+}
+
+inline SLdrWallWalker::~SLdrWallWalker() {}
 
 #endif

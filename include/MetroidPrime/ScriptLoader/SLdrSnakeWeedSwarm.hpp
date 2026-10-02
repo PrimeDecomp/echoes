@@ -4,7 +4,7 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
@@ -13,7 +13,7 @@ struct SLdrSnakeWeedSwarm {
   ~SLdrSnakeWeedSwarm();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   float density; // 0x64e5fe9f
   float maxDepth; // 0x23cef95f
@@ -36,6 +36,28 @@ struct SLdrSnakeWeedSwarm {
   int sound_OutofGround; // 0xcde17346
 };
 
-void LoadTypedefSLdrSnakeWeedSwarm(SLdrSnakeWeedSwarm& data, CInputStream& input);
+inline SLdrSnakeWeedSwarm::SLdrSnakeWeedSwarm() : editorProperties(), animationInformation(), actorInformation(), contactDamage() {
+  density = 1.0f;
+  maxDepth = 1.0f;
+  locationVariance = 0.5f;
+  detectionRadius = 4.0f;
+  grabRadius = 1.0f;
+  waitTimeOut = 2.0f;
+  waitTimeOutVariance = 0.2f;
+  retreatDepth = 2.5f;
+  moveSpeed = 1.5f;
+  moveSpeedVariance = 3.0f;
+  maxSlope = 5.0f;
+  minSize = 1.0f;
+  maxSize = 1.0f;
+  heightOffset = 0.0f;
+  contactDamage.unknown_0x119fbd31 = 9;
+  damageWaitTime = 0.0f;
+  sound_Looped = 0;
+  sound_IntoGround = 0;
+  sound_OutofGround = 0;
+}
+
+inline SLdrSnakeWeedSwarm::~SLdrSnakeWeedSwarm() {}
 
 #endif

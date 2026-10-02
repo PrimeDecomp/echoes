@@ -23,6 +23,16 @@ struct SLdrCrystallite {
   float stunTime; // 0x7e192395
 };
 
-void LoadTypedefSLdrCrystallite(SLdrCrystallite& data, CInputStream& input);
+inline SLdrCrystallite::SLdrCrystallite() : editorProperties(), patterned(), actorInformation() {
+  waypointApproachDistance = 2.5f;
+  wallTurnSpeed = 360.0f;
+  floorTurnSpeed = 720.0f;
+  downTurnSpeed = 120.0f;
+  visibleDistance = 40.0f;
+  forwardMovingPriority = 0.2f;
+  stunTime = 1.5f;
+}
+
+inline SLdrCrystallite::~SLdrCrystallite() {}
 
 #endif

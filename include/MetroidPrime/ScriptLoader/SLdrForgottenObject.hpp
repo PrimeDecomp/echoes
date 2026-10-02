@@ -12,6 +12,9 @@ struct SLdrForgottenObject {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-void LoadTypedefSLdrForgottenObject(SLdrForgottenObject& data, CInputStream& input);
+inline SLdrForgottenObject::SLdrForgottenObject() : editorProperties() {
+}
+
+inline SLdrForgottenObject::~SLdrForgottenObject() {}
 
 #endif

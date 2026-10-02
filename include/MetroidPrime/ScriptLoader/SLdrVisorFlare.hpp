@@ -17,7 +17,42 @@ struct SLdrFlareDef {
   CColor color; // 0x37c7d09d
 };
 
-void LoadTypedefSLdrFlareDef(SLdrFlareDef& data, CInputStream& input);
+inline SLdrFlareDef::SLdrFlareDef() : texture(kInvalidAssetId), color(CColor::Green()) {
+  position = 0.0f;
+  scale = 0.0f;
+  color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+inline SLdrFlareDef::~SLdrFlareDef() {}
+
+inline void LoadTypedefFlareDef(SLdrFlareDef& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xd1f65872: {
+      sldrThis.texture = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcb99b4da: {
+      sldrThis.position = input.ReadFloat();
+      break;
+    }
+    case 0x2c51a676: {
+      sldrThis.scale = input.ReadFloat();
+      break;
+    }
+    case 0x37c7d09d: {
+      sldrThis.color = CColor(input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrVisorFlare {
   SLdrVisorFlare();
@@ -39,6 +74,26 @@ struct SLdrVisorFlare {
   SLdrFlareDef flare5; // 0x61c9232f
 };
 
-void LoadTypedefSLdrVisorFlare(SLdrVisorFlare& data, CInputStream& input);
+inline SLdrVisorFlare::SLdrVisorFlare() : editorProperties(), flare1(), flare2(), flare3(), flare4(), flare5() {
+  blendMode = 0;
+  constantScale = true;
+  fadeTime = 0.1f;
+  fadeFactor = 1.0f;
+  rotateFactor = 2.0f;
+  combatVisorMode = 0;
+  unknown_0xa51f243e = true;
+  noOcclusionTest = false;
+  flare1.scale = 1.0f;
+  flare2.position = 0.25f;
+  flare2.scale = 1.0f;
+  flare3.position = 0.5f;
+  flare3.scale = 1.0f;
+  flare4.position = 0.75f;
+  flare4.scale = 1.0f;
+  flare5.position = 1.0f;
+  flare5.scale = 1.0f;
+}
+
+inline SLdrVisorFlare::~SLdrVisorFlare() {}
 
 #endif

@@ -28,6 +28,20 @@ struct SLdrSporbNeedle {
   int explosionSound; // 0x6028d1cc
 };
 
-void LoadTypedefSLdrSporbNeedle(SLdrSporbNeedle& data, CInputStream& input);
+inline SLdrSporbNeedle::SLdrSporbNeedle() : editorProperties(), actorInformation(), model(kInvalidAssetId), attackDamage(), trailEffect(kInvalidAssetId), explosionEffect(kInvalidAssetId) {
+  initialSpeed = 60.0f;
+  mass = 1.0f;
+  attackDamage.unknown_0x119fbd31 = 9;
+  attackDamage.dI_Damage = 5.0f;
+  attackDamage.dI_KnockBackPower = 2.0f;
+  fuseTime = 1.5f;
+  launchSound = 0;
+  flightSound = 0;
+  hitPlayerSound = 0;
+  collisionSound = 0;
+  explosionSound = 0;
+}
+
+inline SLdrSporbNeedle::~SLdrSporbNeedle() {}
 
 #endif

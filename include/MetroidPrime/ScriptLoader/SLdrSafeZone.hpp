@@ -39,7 +39,124 @@ struct SLdrSafeZoneAttributes {
   CColor unknown_0xe68b1fa8; // 0xe68b1fa8
 };
 
-void LoadTypedefSLdrSafeZoneAttributes(SLdrSafeZoneAttributes& data, CInputStream& input);
+inline SLdrSafeZoneAttributes::SLdrSafeZoneAttributes() : darkVisorSpotTexture(kInvalidAssetId), shellEnvironmentMap(kInvalidAssetId), shell1Texture(kInvalidAssetId), shell2Texture(kInvalidAssetId), shellColor(CColor::Green()), unknown_0xe68b1fa8(CColor::Green()) {
+  turnOnSound = 0;
+  unknown_0xd4839a3f = 0.0f;
+  activeLoopSound = 0;
+  turnOffSound = 0;
+  playerEnterSound = 0;
+  playerExitSound = 0;
+  darkVisorSpotMaxSize = 50.0f;
+  shell1AnimatedHorizRate = -0.039999999f;
+  shell1AnimatedVertRate = -0.029999999f;
+  shell1ScaleHoriz = 2.0f;
+  shell1ScaleVert = 1.0f;
+  shell2AnimatedHorizRate = 0.0f;
+  shell2AnimatedVertRate = 0.029999999f;
+  shell2ScaleHoriz = 3.0f;
+  shell2ScaleVert = 1.0f;
+  shellColor = CColor(0.094117999f, 0.49803901f, 0.49803901f, 1.0f);
+  unknown_0xe68b1fa8 = CColor(0.74901998f, 0.74901998f, 0.74901998f, 1.0f);
+}
+
+inline SLdrSafeZoneAttributes::~SLdrSafeZoneAttributes() {}
+
+inline void LoadTypedefSafeZoneAttributes(SLdrSafeZoneAttributes& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xc6bfc270: {
+      sldrThis.turnOnSound = input.ReadInt32();
+      break;
+    }
+    case 0xd4839a3f: {
+      sldrThis.unknown_0xd4839a3f = input.ReadFloat();
+      break;
+    }
+    case 0xe0903825: {
+      sldrThis.activeLoopSound = input.ReadInt32();
+      break;
+    }
+    case 0xe5567935: {
+      sldrThis.turnOffSound = input.ReadInt32();
+      break;
+    }
+    case 0x3e854866: {
+      sldrThis.playerEnterSound = input.ReadInt32();
+      break;
+    }
+    case 0xd3ec0993: {
+      sldrThis.playerExitSound = input.ReadInt32();
+      break;
+    }
+    case 0xd09f83e7: {
+      sldrThis.darkVisorSpotTexture = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xc496a6a8: {
+      sldrThis.darkVisorSpotMaxSize = input.ReadFloat();
+      break;
+    }
+    case 0x74f8a729: {
+      sldrThis.shellEnvironmentMap = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x521382c7: {
+      sldrThis.shell1AnimatedHorizRate = input.ReadFloat();
+      break;
+    }
+    case 0x1be4426e: {
+      sldrThis.shell1AnimatedVertRate = input.ReadFloat();
+      break;
+    }
+    case 0x34b2a190: {
+      sldrThis.shell1ScaleHoriz = input.ReadFloat();
+      break;
+    }
+    case 0xad4715a8: {
+      sldrThis.shell1ScaleVert = input.ReadFloat();
+      break;
+    }
+    case 0x1e712ee2: {
+      sldrThis.shell1Texture = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x24f6bbfa: {
+      sldrThis.shell2AnimatedHorizRate = input.ReadFloat();
+      break;
+    }
+    case 0x229cef2e: {
+      sldrThis.shell2AnimatedVertRate = input.ReadFloat();
+      break;
+    }
+    case 0x1d7a1562: {
+      sldrThis.shell2ScaleHoriz = input.ReadFloat();
+      break;
+    }
+    case 0xbc3a7fd1: {
+      sldrThis.shell2ScaleVert = input.ReadFloat();
+      break;
+    }
+    case 0xa3bb422c: {
+      sldrThis.shell2Texture = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x47b4e863: {
+      sldrThis.shellColor = CColor(input);
+      break;
+    }
+    case 0xe68b1fa8: {
+      sldrThis.unknown_0xe68b1fa8 = CColor(input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSafeZoneStructA {
   SLdrSafeZoneStructA();
@@ -53,7 +170,52 @@ struct SLdrSafeZoneStructA {
   SLdrVector2f distanceRate; // 0xcc8e0f98
 };
 
-void LoadTypedefSLdrSafeZoneStructA(SLdrSafeZoneStructA& data, CInputStream& input);
+inline SLdrSafeZoneStructA::SLdrSafeZoneStructA() : color(CColor::Green()), nearFarPlane(), distanceRate() {
+  enabled = true;
+  mode = 0;
+  color = CColor(0.0f, 0.0f, 0.0f, 0.0f);
+  nearFarPlane.x = 1.0f;
+  colorRate = 0.0f;
+}
+
+inline SLdrSafeZoneStructA::~SLdrSafeZoneStructA() {}
+
+inline void LoadTypedefSafeZoneStructA(SLdrSafeZoneStructA& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x29c77d27: {
+      sldrThis.enabled = input.ReadBool();
+      break;
+    }
+    case 0x09ad63de: {
+      sldrThis.mode = input.ReadInt32();
+      break;
+    }
+    case 0x37c7d09d: {
+      sldrThis.color = CColor(input);
+      break;
+    }
+    case 0x652008da: {
+      LoadTypedefVector2f(sldrThis.nearFarPlane, input);
+      break;
+    }
+    case 0x29ab4727: {
+      sldrThis.colorRate = input.ReadFloat();
+      break;
+    }
+    case 0xcc8e0f98: {
+      LoadTypedefVector2f(sldrThis.distanceRate, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSafeZone {
   SLdrSafeZone();
@@ -93,6 +255,61 @@ struct SLdrSafeZone {
   SLdrEchoParameters echoParameters; // 0x4476bed8
 };
 
-void LoadTypedefSLdrSafeZone(SLdrSafeZone& data, CInputStream& input);
+inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffect(kInvalidAssetId), normalAttributes(), hurtfulAttributes(), echoAttributes(), normalDamage(), hurtfulDamage(), mobileLightOffset(CVector3f::Zero()), unknown_0xe71b43e1(CColor::Green()), safeZoneStructA(), safeZoneStructA_0xafb855b8(), echoParameters() {
+  deactivateOnEnter = false;
+  deactivateOnExit = false;
+  activationTime = 0.15000001f;
+  deactivationTime = 0.15000001f;
+  lifetime = 0.0f;
+  randomLifetimeOffset = 0.0f;
+  filterSoundEffects = true;
+  unknown_0x414379ea = 300;
+  ignoreCinematicCamera = false;
+  hurtfulAttributes.shell1AnimatedHorizRate = 0.039999999f;
+  hurtfulAttributes.shell1AnimatedVertRate = 0.0f;
+  hurtfulAttributes.shell1ScaleHoriz = 4.0f;
+  hurtfulAttributes.shell1ScaleVert = 2.0f;
+  hurtfulAttributes.shell2ScaleHoriz = 10.0f;
+  hurtfulAttributes.shell2ScaleVert = 12.0f;
+  hurtfulAttributes.shellColor = CColor(1.0f, 0.73725498f, 0.39215699f, 1.0f);
+  echoAttributes.shell1AnimatedHorizRate = 0.039999999f;
+  echoAttributes.shell1AnimatedVertRate = 0.0f;
+  echoAttributes.shell1ScaleHoriz = 4.0f;
+  echoAttributes.shell1ScaleVert = 2.0f;
+  echoAttributes.shell2ScaleHoriz = 10.0f;
+  echoAttributes.shell2ScaleVert = 12.0f;
+  echoAttributes.shellColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
+  normalDamage.unknown_0x119fbd31 = 20;
+  hurtfulDamage.unknown_0x119fbd31 = 18;
+  insideFadeStart = 3.0f;
+  insideFadeTime = 2.0f;
+  insideFadeMinAlpha = 0.25f;
+  flashTime = 1.0f;
+  flashBrightness = 0.5f;
+  flashSound = 0;
+  safezoneShape = 0;
+  mobile = false;
+  generateMobileLight = false;
+  unknown_0xe71b43e1 = CColor(0.73725498f, 1.0f, 1.0f, 0.247059f);
+  unknown_0x9f638987 = 0.2f;
+  safeZoneStructA.enabled = false;
+  safeZoneStructA.mode = 1;
+  safeZoneStructA.color = CColor(0.73725498f, 1.0f, 1.0f, 1.0f);
+  safeZoneStructA.nearFarPlane.x = 0.0f;
+  safeZoneStructA.nearFarPlane.y = 750.0f;
+  safeZoneStructA.colorRate = 5.0f;
+  safeZoneStructA.distanceRate.x = 5000.0f;
+  safeZoneStructA.distanceRate.y = 5000.0f;
+  safeZoneStructA_0xafb855b8.enabled = false;
+  safeZoneStructA_0xafb855b8.mode = 1;
+  safeZoneStructA_0xafb855b8.color = CColor(0.0f, 0.098039001f, 0.0f, 0.0f);
+  safeZoneStructA_0xafb855b8.nearFarPlane.x = 0.0f;
+  safeZoneStructA_0xafb855b8.nearFarPlane.y = 1000.0f;
+  safeZoneStructA_0xafb855b8.colorRate = 5.0f;
+  safeZoneStructA_0xafb855b8.distanceRate.x = 5000.0f;
+  safeZoneStructA_0xafb855b8.distanceRate.y = 5000.0f;
+}
+
+inline SLdrSafeZone::~SLdrSafeZone() {}
 
 #endif

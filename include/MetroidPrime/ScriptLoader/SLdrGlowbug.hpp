@@ -30,6 +30,14 @@ struct SLdrGlowbug {
   bool isInLightWorld; // 0x1917a180
 };
 
-void LoadTypedefSLdrGlowbug(SLdrGlowbug& data, CInputStream& input);
+inline SLdrGlowbug::SLdrGlowbug() : editorProperties(), patterned(), actorInformation(), deathFlashEffect(kInvalidAssetId), deathBreakApartEffect(kInvalidAssetId), attackEffect(kInvalidAssetId), attackTelegraphEffect(kInvalidAssetId), attackEchoEffect(kInvalidAssetId), attackAimOffset(CVector3f::Zero()), scanModel(kInvalidAssetId) {
+  attackDuration = 1.0f;
+  attackTelegraphDuration = 1.0f;
+  attackTelegraphSound = 0;
+  attackSound = 0;
+  isInLightWorld = false;
+}
+
+inline SLdrGlowbug::~SLdrGlowbug() {}
 
 #endif

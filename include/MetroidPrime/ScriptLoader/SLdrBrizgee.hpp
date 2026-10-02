@@ -36,6 +36,21 @@ struct SLdrBrizgee {
   int playerPoisonSound; // 0xdf2d8017
 };
 
-void LoadTypedefSLdrBrizgee(SLdrBrizgee& data, CInputStream& input);
+inline SLdrBrizgee::SLdrBrizgee() : editorProperties(), patterned(), actorInformation(), noShellModel(kInvalidAssetId), noShellSkin(kInvalidAssetId), shellVulnerability(), shellContactDamage(), poisonDamage() {
+  waypointApproachDistance = 2.5f;
+  wallTurnSpeed = 360.0f;
+  floorTurnSpeed = 720.0f;
+  downTurnSpeed = 120.0f;
+  visibleDistance = 40.0f;
+  forwardMovingPriority = 0.2f;
+  shellHealth = 2.0f;
+  shellOffSpeedMultiplier = 1.5f;
+  poisonTime = 2.0f;
+  shellBreakSound = 0;
+  poisonHitSound = 0;
+  playerPoisonSound = 0;
+}
+
+inline SLdrBrizgee::~SLdrBrizgee() {}
 
 #endif

@@ -18,6 +18,15 @@ struct SLdrAIKeyframe {
   float playbackRate; // 0x6f8d34ca
 };
 
-void LoadTypedefSLdrAIKeyframe(SLdrAIKeyframe& data, CInputStream& input);
+inline SLdrAIKeyframe::SLdrAIKeyframe() : editorProperties() {
+  animation = -1;
+  loop = false;
+  loopDuration = 0.0f;
+  unknown_0x58810503 = 0;
+  unknown_0x6d62ef74 = 0;
+  playbackRate = 1.0f;
+}
+
+inline SLdrAIKeyframe::~SLdrAIKeyframe() {}
 
 #endif

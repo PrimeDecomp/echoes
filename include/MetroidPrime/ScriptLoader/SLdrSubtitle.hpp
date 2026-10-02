@@ -24,6 +24,22 @@ struct SLdrSubtitle {
   float fadeOutTime; // 0x7c269ebc
 };
 
-void LoadTypedefSLdrSubtitle(SLdrSubtitle& data, CInputStream& input);
+inline SLdrSubtitle::SLdrSubtitle() : editorProperties(), textProperties(), japanTextProperties(), stringTable(kInvalidAssetId) {
+  textProperties.lineSpacing = 100.0f;
+  textProperties.lineExtraSpace = 0;
+  textProperties.characterExtraSpace = 0;
+  textPositionX = 0;
+  textPositionY = 0;
+  japanTextProperties.textBoundingWidth = 640;
+  japanTextProperties.textBoundingHeight = 448;
+  japanTextProperties.unknown_0x18dd95cd = 1;
+  japanTextPositionX = 0;
+  japanTextPositionY = 100;
+  initialStringIndex = 0;
+  fadeInTime = 0.0f;
+  fadeOutTime = 0.0f;
+}
+
+inline SLdrSubtitle::~SLdrSubtitle() {}
 
 #endif

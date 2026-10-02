@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAudioPlaybackParms.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
@@ -28,7 +28,53 @@ struct SLdrEmperorIngStage1TentacleData {
   int tentacleDamagedSound; // 0xe19f4608
 };
 
-void LoadTypedefSLdrEmperorIngStage1TentacleData(SLdrEmperorIngStage1TentacleData& data, CInputStream& input);
+inline SLdrEmperorIngStage1TentacleData::SLdrEmperorIngStage1TentacleData() : health(), normalVulnerability(), warpAttackVulnerability(), meleeAttackVulnerability(), projectileAttackVulnerability() {
+  stayRetractedTime = 0.0f;
+  tentacleDamagedSound = 0;
+}
+
+inline SLdrEmperorIngStage1TentacleData::~SLdrEmperorIngStage1TentacleData() {}
+
+inline void LoadTypedefEmperorIngStage1TentacleData(SLdrEmperorIngStage1TentacleData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xcf90d15e: {
+      LoadTypedefHealthInfo(sldrThis.health, input);
+      break;
+    }
+    case 0x29df61e1: {
+      LoadTypedefDamageVulnerability(sldrThis.normalVulnerability, input);
+      break;
+    }
+    case 0x8d7378a4: {
+      LoadTypedefDamageVulnerability(sldrThis.warpAttackVulnerability, input);
+      break;
+    }
+    case 0x6c79054f: {
+      LoadTypedefDamageVulnerability(sldrThis.meleeAttackVulnerability, input);
+      break;
+    }
+    case 0x3c2d2492: {
+      LoadTypedefDamageVulnerability(sldrThis.projectileAttackVulnerability, input);
+      break;
+    }
+    case 0x491c2657: {
+      sldrThis.stayRetractedTime = input.ReadFloat();
+      break;
+    }
+    case 0xe19f4608: {
+      sldrThis.tentacleDamagedSound = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1MeleeData {
   SLdrEmperorIngStage1MeleeData();
@@ -37,7 +83,27 @@ struct SLdrEmperorIngStage1MeleeData {
   SLdrDamageInfo damage; // 0x337f9524
 };
 
-void LoadTypedefSLdrEmperorIngStage1MeleeData(SLdrEmperorIngStage1MeleeData& data, CInputStream& input);
+inline SLdrEmperorIngStage1MeleeData::SLdrEmperorIngStage1MeleeData() : damage() {
+}
+
+inline SLdrEmperorIngStage1MeleeData::~SLdrEmperorIngStage1MeleeData() {}
+
+inline void LoadTypedefEmperorIngStage1MeleeData(SLdrEmperorIngStage1MeleeData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x337f9524: {
+      LoadTypedefDamageInfo(sldrThis.damage, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1ProjectileAttackData {
   SLdrEmperorIngStage1ProjectileAttackData();
@@ -48,14 +114,42 @@ struct SLdrEmperorIngStage1ProjectileAttackData {
   CAssetId projectileVisorEffect; // 0x8f8c64a0
 };
 
-void LoadTypedefSLdrEmperorIngStage1ProjectileAttackData(SLdrEmperorIngStage1ProjectileAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage1ProjectileAttackData::SLdrEmperorIngStage1ProjectileAttackData() : projectile(kInvalidAssetId), projectileDamage(), projectileVisorEffect(kInvalidAssetId) {
+}
+
+inline SLdrEmperorIngStage1ProjectileAttackData::~SLdrEmperorIngStage1ProjectileAttackData() {}
+
+inline void LoadTypedefEmperorIngStage1ProjectileAttackData(SLdrEmperorIngStage1ProjectileAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xef485db9: {
+      sldrThis.projectile = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x553b1339: {
+      LoadTypedefDamageInfo(sldrThis.projectileDamage, input);
+      break;
+    }
+    case 0x8f8c64a0: {
+      sldrThis.projectileVisorEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1WarpAttackData {
   SLdrEmperorIngStage1WarpAttackData();
   ~SLdrEmperorIngStage1WarpAttackData();
 
   CAssetId portalEffect; // 0x4a7c4ec2
-  SLdrAnimationParameters attackTip; // 0xf10b6ef6
+  SLdrAnimationSet attackTip; // 0xf10b6ef6
   SLdrDamageInfo stabDamage; // 0x946016a9
   int unknown_0xecfab026; // 0xecfab026
   int unknown_0x94880277; // 0x94880277
@@ -63,7 +157,55 @@ struct SLdrEmperorIngStage1WarpAttackData {
   int sound_0xa93f0198; // non-matching name, 0xa93f0198
 };
 
-void LoadTypedefSLdrEmperorIngStage1WarpAttackData(SLdrEmperorIngStage1WarpAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage1WarpAttackData::SLdrEmperorIngStage1WarpAttackData() : portalEffect(kInvalidAssetId), attackTip(), stabDamage() {
+  unknown_0xecfab026 = -1;
+  unknown_0x94880277 = -1;
+  sound = 0;
+  sound_0xa93f0198 = 0;
+}
+
+inline SLdrEmperorIngStage1WarpAttackData::~SLdrEmperorIngStage1WarpAttackData() {}
+
+inline void LoadTypedefEmperorIngStage1WarpAttackData(SLdrEmperorIngStage1WarpAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x4a7c4ec2: {
+      sldrThis.portalEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xf10b6ef6: {
+      LoadTypedefAnimationSet(sldrThis.attackTip, input);
+      break;
+    }
+    case 0x946016a9: {
+      LoadTypedefDamageInfo(sldrThis.stabDamage, input);
+      break;
+    }
+    case 0xecfab026: {
+      sldrThis.unknown_0xecfab026 = input.ReadInt32();
+      break;
+    }
+    case 0x94880277: {
+      sldrThis.unknown_0x94880277 = input.ReadInt32();
+      break;
+    }
+    case 0x1c3e84b6: {
+      sldrThis.sound = input.ReadInt32();
+      break;
+    }
+    case 0xa93f0198: {
+      sldrThis.sound_0xa93f0198 = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1TauntAttackData {
   SLdrEmperorIngStage1TauntAttackData();
@@ -75,7 +217,42 @@ struct SLdrEmperorIngStage1TauntAttackData {
   int shockWaveTravelSound; // 0x25af490e
 };
 
-void LoadTypedefSLdrEmperorIngStage1TauntAttackData(SLdrEmperorIngStage1TauntAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage1TauntAttackData::SLdrEmperorIngStage1TauntAttackData() : shockWaveInfo() {
+  loopDuration = 0.0f;
+  destroyPercentage = 0;
+  shockWaveTravelSound = 0;
+}
+
+inline SLdrEmperorIngStage1TauntAttackData::~SLdrEmperorIngStage1TauntAttackData() {}
+
+inline void LoadTypedefEmperorIngStage1TauntAttackData(SLdrEmperorIngStage1TauntAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xcee68723: {
+      sldrThis.loopDuration = input.ReadFloat();
+      break;
+    }
+    case 0x01274d6e: {
+      sldrThis.destroyPercentage = input.ReadInt32();
+      break;
+    }
+    case 0x8f4787cb: {
+      LoadTypedefShockWaveInfo(sldrThis.shockWaveInfo, input);
+      break;
+    }
+    case 0x25af490e: {
+      sldrThis.shockWaveTravelSound = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1BeamAttackData {
   SLdrEmperorIngStage1BeamAttackData();
@@ -86,7 +263,44 @@ struct SLdrEmperorIngStage1BeamAttackData {
   int sound; // 0x5f7c352e
 };
 
-void LoadTypedefSLdrEmperorIngStage1BeamAttackData(SLdrEmperorIngStage1BeamAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage1BeamAttackData::SLdrEmperorIngStage1BeamAttackData() : beamInfo(), damage() {
+  beamInfo.length = 500.0f;
+  beamInfo.expansionSpeed = 4.0f;
+  beamInfo.lifeTime = 1.0f;
+  beamInfo.pulseSpeed = 20.0f;
+  beamInfo.shutdownTime = 0.25f;
+  beamInfo.pulseEffectScale = 2.0f;
+  beamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  beamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+  sound = 0;
+}
+
+inline SLdrEmperorIngStage1BeamAttackData::~SLdrEmperorIngStage1BeamAttackData() {}
+
+inline void LoadTypedefEmperorIngStage1BeamAttackData(SLdrEmperorIngStage1BeamAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x1598012a: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.beamInfo, input);
+      break;
+    }
+    case 0x337f9524: {
+      LoadTypedefDamageInfo(sldrThis.damage, input);
+      break;
+    }
+    case 0x5f7c352e: {
+      sldrThis.sound = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1Data {
   SLdrEmperorIngStage1Data();
@@ -112,7 +326,106 @@ struct SLdrEmperorIngStage1Data {
   float attackIntervalMax; // 0xd78b5788
 };
 
-void LoadTypedefSLdrEmperorIngStage1Data(SLdrEmperorIngStage1Data& data, CInputStream& input);
+inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(), projectile(), warp(), tauntAttack(), beamAttack(), heartDamageSound() {
+  heartExposedTime = 0.0f;
+  unknown_0x905938b8 = 0.0f;
+  unknown_0xb826317a = 0.0f;
+  turnSpeedAccel = 0.0f;
+  maxTurnSpeedNormal = 0.0f;
+  maxTurnSpeedMelee = 0.0f;
+  unknown_0xe5a7c358 = 0.0f;
+  vulnerabilityChangeSound = -1;
+  tauntFrequency = 0.0f;
+  attackIntervalMin = 0.0f;
+  attackIntervalMax = 0.0f;
+}
+
+inline SLdrEmperorIngStage1Data::~SLdrEmperorIngStage1Data() {}
+
+inline void LoadTypedefEmperorIngStage1Data(SLdrEmperorIngStage1Data& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xb3c6398f: {
+      LoadTypedefEmperorIngStage1TentacleData(sldrThis.tentacle, input);
+      break;
+    }
+    case 0xf59f9a60: {
+      LoadTypedefEmperorIngStage1MeleeData(sldrThis.melee, input);
+      break;
+    }
+    case 0xa1cda0b6: {
+      LoadTypedefEmperorIngStage1ProjectileAttackData(sldrThis.projectile, input);
+      break;
+    }
+    case 0x85f36473: {
+      LoadTypedefEmperorIngStage1WarpAttackData(sldrThis.warp, input);
+      break;
+    }
+    case 0xb4bc04c4: {
+      LoadTypedefEmperorIngStage1TauntAttackData(sldrThis.tauntAttack, input);
+      break;
+    }
+    case 0x8e6d20ec: {
+      LoadTypedefEmperorIngStage1BeamAttackData(sldrThis.beamAttack, input);
+      break;
+    }
+    case 0xa588afd1: {
+      sldrThis.heartExposedTime = input.ReadFloat();
+      break;
+    }
+    case 0x905938b8: {
+      sldrThis.unknown_0x905938b8 = input.ReadFloat();
+      break;
+    }
+    case 0xb826317a: {
+      sldrThis.unknown_0xb826317a = input.ReadFloat();
+      break;
+    }
+    case 0x88232388: {
+      LoadTypedefAudioPlaybackParms(sldrThis.heartDamageSound, input);
+      break;
+    }
+    case 0xc36ae5ca: {
+      sldrThis.turnSpeedAccel = input.ReadFloat();
+      break;
+    }
+    case 0xd30d9bb9: {
+      sldrThis.maxTurnSpeedNormal = input.ReadFloat();
+      break;
+    }
+    case 0xb02cd31f: {
+      sldrThis.maxTurnSpeedMelee = input.ReadFloat();
+      break;
+    }
+    case 0xe5a7c358: {
+      sldrThis.unknown_0xe5a7c358 = input.ReadFloat();
+      break;
+    }
+    case 0x93357240: {
+      sldrThis.vulnerabilityChangeSound = input.ReadInt32();
+      break;
+    }
+    case 0x293a0c19: {
+      sldrThis.tauntFrequency = input.ReadFloat();
+      break;
+    }
+    case 0x31ebf869: {
+      sldrThis.attackIntervalMin = input.ReadFloat();
+      break;
+    }
+    case 0xd78b5788: {
+      sldrThis.attackIntervalMax = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage1 {
   SLdrEmperorIngStage1();
@@ -124,6 +437,10 @@ struct SLdrEmperorIngStage1 {
   SLdrEmperorIngStage1Data data; // 0x4a1e493b
 };
 
-void LoadTypedefSLdrEmperorIngStage1(SLdrEmperorIngStage1& data, CInputStream& input);
+inline SLdrEmperorIngStage1::SLdrEmperorIngStage1() : editorProperties(), patterned(), actorInformation(), data() {
+  patterned.creatureSize = 2;
+}
+
+inline SLdrEmperorIngStage1::~SLdrEmperorIngStage1() {}
 
 #endif

@@ -5,7 +5,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrBasicSwarmProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
@@ -15,7 +15,7 @@ struct SLdrIngBlobSwarm {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
   int intoAttackAnimation; // 0x7399abbb
@@ -28,6 +28,17 @@ struct SLdrIngBlobSwarm {
   CVector3f attackAimOffset; // 0x540c1f87
 };
 
-void LoadTypedefSLdrIngBlobSwarm(SLdrIngBlobSwarm& data, CInputStream& input);
+inline SLdrIngBlobSwarm::SLdrIngBlobSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties(), attackAimOffset(CVector3f::Zero()) {
+  active = true;
+  intoAttackAnimation = -1;
+  attackAnimation = -1;
+  maxAttackAngle = 30.0f;
+  intoAttackSpeed = 1.0f;
+  attackSpeed = 1.0f;
+  mass = 2.0f;
+  maxAttackHeight = 0.5f;
+}
+
+inline SLdrIngBlobSwarm::~SLdrIngBlobSwarm() {}
 
 #endif

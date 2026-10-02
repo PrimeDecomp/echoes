@@ -16,6 +16,10 @@ struct SLdrStoneToad {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-void LoadTypedefSLdrStoneToad(SLdrStoneToad& data, CInputStream& input);
+inline SLdrStoneToad::SLdrStoneToad() : editorProperties(), patterned(), actorInformation() {
+  patterned.creatureSize = 1;
+}
+
+inline SLdrStoneToad::~SLdrStoneToad() {}
 
 #endif

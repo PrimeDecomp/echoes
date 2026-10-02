@@ -16,6 +16,11 @@ struct SLdrAreaDamage {
   float graceTime; // 0xc052bc02
 };
 
-void LoadTypedefSLdrAreaDamage(SLdrAreaDamage& data, CInputStream& input);
+inline SLdrAreaDamage::SLdrAreaDamage() : editorProperties(), damage() {
+  pulseTime = 1.0f;
+  graceTime = 1.0f;
+}
+
+inline SLdrAreaDamage::~SLdrAreaDamage() {}
 
 #endif

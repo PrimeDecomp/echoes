@@ -29,6 +29,23 @@ struct SLdrFogOverlay {
   float unknown_0xd8daff1d; // 0xd8daff1d
 };
 
-void LoadTypedefSLdrFogOverlay(SLdrFogOverlay& data, CInputStream& input);
+inline SLdrFogOverlay::SLdrFogOverlay() : editorProperties(), color(CColor::Green()), unknown_0x2190ab0a(CVector3f::Zero()) {
+  fullAlpha = 1.0f;
+  fadeDownTime = 1.0f;
+  fadeUpTime = 1.0f;
+  startFadedOut = false;
+  color = CColor(1.0f, 1.0f, 1.0f, 0.0f);
+  ambientRadiusX = 0.5f;
+  ambientRadiusY = 0.2f;
+  ambientSpeed = 0.1f;
+  ambientSpeedTarget = 0.1f;
+  unknown_0x6a111b96 = 1.0f;
+  unknown_0xff226ea3 = 1.0f;
+  unknown_0x9f19f0af = 0.1f;
+  unknown_0x90c10fe7 = 1.0f;
+  unknown_0xd8daff1d = 1.0f;
+}
+
+inline SLdrFogOverlay::~SLdrFogOverlay() {}
 
 #endif

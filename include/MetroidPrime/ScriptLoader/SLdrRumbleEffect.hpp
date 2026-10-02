@@ -15,6 +15,12 @@ struct SLdrRumbleEffect {
   uint flagsRumble; // 0x4f7fec39
 };
 
-void LoadTypedefSLdrRumbleEffect(SLdrRumbleEffect& data, CInputStream& input);
+inline SLdrRumbleEffect::SLdrRumbleEffect() : editorProperties() {
+  radius = 20.0f;
+  effect = 0;
+  flagsRumble = 0x00000000u;
+}
+
+inline SLdrRumbleEffect::~SLdrRumbleEffect() {}
 
 #endif

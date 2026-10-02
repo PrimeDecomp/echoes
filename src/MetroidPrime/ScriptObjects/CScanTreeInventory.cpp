@@ -82,7 +82,7 @@ CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
     
     switch (propertyId) {
     case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
+      LoadTypedefEditorProperties(sldrThis.editorProperties, input);
       break;
     case 0x46219bac:
       sldrThis.nameStringTable = input.ReadInt32();
@@ -94,7 +94,7 @@ CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
       sldrThis.inventorySlotId = input.ReadInt32();
       break;
     case 0x2da1ec33:
-      LoadTypedefSLdrScannableParameters(sldrThis.scannableParams, input);
+      LoadTypedefScannableParameters(sldrThis.scannableParams, input);
       break;
     default:
       input.ReadBytes(nullptr, propertySize);

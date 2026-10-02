@@ -15,7 +15,32 @@ struct SLdrSpindleCameraInterpolant {
   SLdrSpline interpolantSpline; // 0x9a598fa5
 };
 
-void LoadTypedefSLdrSpindleCameraInterpolant(SLdrSpindleCameraInterpolant& data, CInputStream& input);
+inline SLdrSpindleCameraInterpolant::SLdrSpindleCameraInterpolant() : interpolantSpline() {
+  interpolantType = 0;
+}
+
+inline SLdrSpindleCameraInterpolant::~SLdrSpindleCameraInterpolant() {}
+
+inline void LoadTypedefSpindleCameraInterpolant(SLdrSpindleCameraInterpolant& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x3e9cf140: {
+      sldrThis.interpolantType = input.ReadInt32();
+      break;
+    }
+    case 0x9a598fa5: {
+      sldrThis.interpolantSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSpindleCamera {
   SLdrSpindleCamera();
@@ -46,6 +71,12 @@ struct SLdrSpindleCamera {
   bool playerSplineLoops; // 0x431769c6
 };
 
-void LoadTypedefSLdrSpindleCamera(SLdrSpindleCamera& data, CInputStream& input);
+inline SLdrSpindleCamera::SLdrSpindleCamera() : editorProperties(), angularSpeed(), linearSpeed(), motionRadius(), radialOffset(), desiredAngularOffset(), minAngularOffset(), maxAngularOffset(), lookAtAngularOffset(), lookAtZOffset(), zOffset(), angularConstraint(), angularDampening(), desiredAngularSpeed(), deactivateRadius(), constraintFlipAngle(), fOV(), targetSplineType(), targetControlSpline(), playerSplineType() {
+  flagsSpindleCamera = 0x00001900u;
+  targetSplineLoops = false;
+  playerSplineLoops = false;
+}
+
+inline SLdrSpindleCamera::~SLdrSpindleCamera() {}
 
 #endif

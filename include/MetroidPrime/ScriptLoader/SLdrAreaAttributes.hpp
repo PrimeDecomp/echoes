@@ -21,6 +21,16 @@ struct SLdrAreaAttributes {
   int phazonDamage; // 0xffeebc46
 };
 
-void LoadTypedefSLdrAreaAttributes(SLdrAreaAttributes& data, CInputStream& input);
+inline SLdrAreaAttributes::SLdrAreaAttributes() : editorProperties(), overrideSky(kInvalidAssetId) {
+  needSky = false;
+  darkWorld = false;
+  environmentEffects = 0;
+  environmentGroupSound = 0;
+  density = 1.0f;
+  normalLighting = 1.0f;
+  phazonDamage = 0;
+}
+
+inline SLdrAreaAttributes::~SLdrAreaAttributes() {}
 
 #endif

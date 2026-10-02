@@ -22,7 +22,48 @@ struct SLdrBloggStruct {
   float unknown_0xecba9fb2; // 0xecba9fb2
 };
 
-void LoadTypedefSLdrBloggStruct(SLdrBloggStruct& data, CInputStream& input);
+inline SLdrBloggStruct::SLdrBloggStruct() {
+  min_________________________ = -2143184152;
+  max_________________________ = 0;
+  unknown_0x6e603df2 = 0.0f;
+  unknown_0x1e74f1ec = 0.0f;
+  unknown_0xecba9fb2 = 0.0f;
+}
+
+inline SLdrBloggStruct::~SLdrBloggStruct() {}
+
+inline void LoadTypedefBloggStruct(SLdrBloggStruct& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x3e505ddb: {
+      sldrThis.min_________________________ = input.ReadInt32();
+      break;
+    }
+    case 0x118f1e46: {
+      sldrThis.max_________________________ = input.ReadInt32();
+      break;
+    }
+    case 0x6e603df2: {
+      sldrThis.unknown_0x6e603df2 = input.ReadFloat();
+      break;
+    }
+    case 0x1e74f1ec: {
+      sldrThis.unknown_0x1e74f1ec = input.ReadFloat();
+      break;
+    }
+    case 0xecba9fb2: {
+      sldrThis.unknown_0xecba9fb2 = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrBlogg {
   SLdrBlogg();
@@ -71,6 +112,58 @@ struct SLdrBlogg {
   SLdrBloggStruct bloggStruct_0xf2ba21e1; // non-matching name, 0xf2ba21e1
 };
 
-void LoadTypedefSLdrBlogg(SLdrBlogg& data, CInputStream& input);
+inline SLdrBlogg::SLdrBlogg() : editorProperties(), patterned(), actorInformation(), projectileParticleEffect(kInvalidAssetId), projectileDamage(), armorVulnerability(), ingPossessionData(), ingPossessedArmorVulnerability(), bloggStruct(), bloggStruct_0x97dd1aa7(), bloggStruct_0xf2ba21e1() {
+  patterned.creatureSize = 1;
+  minAttackAngle = 30.0f;
+  maxAttackAngle = 30.0f;
+  minDelayBetweenProjectileAttacks = 2.0f;
+  maxDelayBetweenProjectileAttacks = 2.0f;
+  unknown_0xa19d5f62 = 1;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  projectileDamage.dI_KnockBackPower = 2.0f;
+  bodyDamageMultiplier = 1.0f;
+  mouthDamageMultiplier = 1.0f;
+  mouthDamageAngle = 45.0f;
+  chargeDamageRadius = 2.0f;
+  chargeDamage = 10.0f;
+  biteDamage = 10.0f;
+  ballSpitDamage = 10.0f;
+  chargeTurnSpeed = 900.0f;
+  fishAttractionRadius = 10.0f;
+  fishAttractionPriority = 0.5f;
+  aggressiveness = 0.5f;
+  unknown_0x479ccc37 = 0.75f;
+  unknown_0x689a803f = 1.0f;
+  unknown_0x800a2b0d = 0.30000001f;
+  chargeSpeedMultiplier = 1.0f;
+  maxMeleeRange = 10.0f;
+  maxBallDetectionRange = 20.0f;
+  maxPlayerPursuitTime = 5.0f;
+  maxBallPursuitTime = 5.0f;
+  minDelayBetweenMeleeAttacks = 2.0f;
+  maxCollisionTime = 0.2f;
+  mouthOpenSound = 0;
+  isMegaBlogg = false;
+  projectileBlurRadius = 4.0f;
+  projectileBlurTime = 4.0f;
+  bloggStruct.min_________________________ = 1;
+  bloggStruct.max_________________________ = 1;
+  bloggStruct.unknown_0x6e603df2 = 0.5f;
+  bloggStruct.unknown_0x1e74f1ec = 0.5f;
+  bloggStruct.unknown_0xecba9fb2 = 0.5f;
+  bloggStruct_0x97dd1aa7.min_________________________ = 1;
+  bloggStruct_0x97dd1aa7.max_________________________ = 1;
+  bloggStruct_0x97dd1aa7.unknown_0x6e603df2 = 0.5f;
+  bloggStruct_0x97dd1aa7.unknown_0x1e74f1ec = 0.5f;
+  bloggStruct_0x97dd1aa7.unknown_0xecba9fb2 = 0.5f;
+  bloggStruct_0xf2ba21e1.min_________________________ = 1;
+  bloggStruct_0xf2ba21e1.max_________________________ = 1;
+  bloggStruct_0xf2ba21e1.unknown_0x6e603df2 = 0.5f;
+  bloggStruct_0xf2ba21e1.unknown_0x1e74f1ec = 0.5f;
+  bloggStruct_0xf2ba21e1.unknown_0xecba9fb2 = 0.5f;
+}
+
+inline SLdrBlogg::~SLdrBlogg() {}
 
 #endif

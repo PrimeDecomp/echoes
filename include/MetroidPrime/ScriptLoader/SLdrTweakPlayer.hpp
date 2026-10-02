@@ -19,7 +19,7 @@ struct SLdrTweakPlayer_DarkWorld {
   float darkSuitEffectColorScale; // 0x19275a97
 };
 
-void LoadTypedefSLdrTweakPlayer_DarkWorld(SLdrTweakPlayer_DarkWorld& data, CInputStream& input);
+void LoadTypedefTweakPlayer_DarkWorld(SLdrTweakPlayer_DarkWorld& data, CInputStream& input);
 
 struct SLdrTweakPlayer_GrappleBeam {
   SLdrTweakPlayer_GrappleBeam();
@@ -31,7 +31,7 @@ struct SLdrTweakPlayer_GrappleBeam {
   float angle_Phase_Delta; // 0x2aab8dda
 };
 
-void LoadTypedefSLdrTweakPlayer_GrappleBeam(SLdrTweakPlayer_GrappleBeam& data, CInputStream& input);
+void LoadTypedefTweakPlayer_GrappleBeam(SLdrTweakPlayer_GrappleBeam& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Motion {
   SLdrTweakPlayer_Motion();
@@ -115,7 +115,7 @@ struct SLdrTweakPlayer_Motion {
   bool gravityBoostMultipleAllowed; // 0xe1fefd3c
 };
 
-void LoadTypedefSLdrTweakPlayer_Motion(SLdrTweakPlayer_Motion& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Motion(SLdrTweakPlayer_Motion& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Misc {
   SLdrTweakPlayer_Misc();
@@ -138,7 +138,7 @@ struct SLdrTweakPlayer_Misc {
   float rightAnalogMax; // 0x2b1f5094
 };
 
-void LoadTypedefSLdrTweakPlayer_Misc(SLdrTweakPlayer_Misc& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Misc(SLdrTweakPlayer_Misc& data, CInputStream& input);
 
 struct SLdrTweakPlayer_AimStuff {
   SLdrTweakPlayer_AimStuff();
@@ -162,7 +162,7 @@ struct SLdrTweakPlayer_AimStuff {
   float aimAssistVerticalAngle; // 0x1157883e
 };
 
-void LoadTypedefSLdrTweakPlayer_AimStuff(SLdrTweakPlayer_AimStuff& data, CInputStream& input);
+void LoadTypedefTweakPlayer_AimStuff(SLdrTweakPlayer_AimStuff& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Orbit {
   SLdrTweakPlayer_Orbit();
@@ -220,7 +220,7 @@ struct SLdrTweakPlayer_Orbit {
   float orbitDashHorizontalDoubleJumpAccel; // 0xc4775e5f
 };
 
-void LoadTypedefSLdrTweakPlayer_Orbit(SLdrTweakPlayer_Orbit& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Orbit(SLdrTweakPlayer_Orbit& data, CInputStream& input);
 
 struct SLdrTweakPlayer_ScanVisor {
   SLdrTweakPlayer_ScanVisor();
@@ -235,7 +235,7 @@ struct SLdrTweakPlayer_ScanVisor {
   float scanCameraSpeed; // 0x8a7b245f
 };
 
-void LoadTypedefSLdrTweakPlayer_ScanVisor(SLdrTweakPlayer_ScanVisor& data, CInputStream& input);
+void LoadTypedefTweakPlayer_ScanVisor(SLdrTweakPlayer_ScanVisor& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Grapple {
   SLdrTweakPlayer_Grapple();
@@ -259,7 +259,7 @@ struct SLdrTweakPlayer_Grapple {
   SLdrTweakPlayer_GrappleBeam beam; // 0xae1fc47c
 };
 
-void LoadTypedefSLdrTweakPlayer_Grapple(SLdrTweakPlayer_Grapple& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Grapple(SLdrTweakPlayer_Grapple& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Collision {
   SLdrTweakPlayer_Collision();
@@ -272,7 +272,7 @@ struct SLdrTweakPlayer_Collision {
   float ballRadius; // 0x0e2f537f
 };
 
-void LoadTypedefSLdrTweakPlayer_Collision(SLdrTweakPlayer_Collision& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Collision(SLdrTweakPlayer_Collision& data, CInputStream& input);
 
 struct SLdrTweakPlayer_FirstPersonCamera {
   SLdrTweakPlayer_FirstPersonCamera();
@@ -290,7 +290,7 @@ struct SLdrTweakPlayer_FirstPersonCamera {
   CVector3f darkLightScale; // 0x7960c3a0
 };
 
-void LoadTypedefSLdrTweakPlayer_FirstPersonCamera(SLdrTweakPlayer_FirstPersonCamera& data, CInputStream& input);
+void LoadTypedefTweakPlayer_FirstPersonCamera(SLdrTweakPlayer_FirstPersonCamera& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Shield {
   SLdrTweakPlayer_Shield();
@@ -302,7 +302,7 @@ struct SLdrTweakPlayer_Shield {
   bool allowsMotion; // 0x59efbb34
 };
 
-void LoadTypedefSLdrTweakPlayer_Shield(SLdrTweakPlayer_Shield& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Shield(SLdrTweakPlayer_Shield& data, CInputStream& input);
 
 struct SLdrTweakPlayer_Frozen {
   SLdrTweakPlayer_Frozen();
@@ -313,7 +313,7 @@ struct SLdrTweakPlayer_Frozen {
   float frozenDamageThreshold; // 0x33b040bf
 };
 
-void LoadTypedefSLdrTweakPlayer_Frozen(SLdrTweakPlayer_Frozen& data, CInputStream& input);
+void LoadTypedefTweakPlayer_Frozen(SLdrTweakPlayer_Frozen& data, CInputStream& input);
 
 struct SLdrTweakPlayer_SuitDamageReduction {
   SLdrTweakPlayer_SuitDamageReduction();
@@ -324,7 +324,7 @@ struct SLdrTweakPlayer_SuitDamageReduction {
   float light; // 0x95700a27
 };
 
-void LoadTypedefSLdrTweakPlayer_SuitDamageReduction(SLdrTweakPlayer_SuitDamageReduction& data, CInputStream& input);
+void LoadTypedefTweakPlayer_SuitDamageReduction(SLdrTweakPlayer_SuitDamageReduction& data, CInputStream& input);
 
 struct SLdrTweakPlayer {
   SLdrTweakPlayer();
@@ -346,7 +346,7 @@ struct SLdrTweakPlayer {
   SLdrTweakPlayer_SuitDamageReduction suitDamageReduction; // 0xaeaff210
 };
 
-void LoadTypedefSLdrTweakPlayer(SLdrTweakPlayer& data, CInputStream& input);
+void LoadTypedefTweakPlayer(SLdrTweakPlayer& data, CInputStream& input);
 
 struct SLdrTweakPlayer2 {
   SLdrTweakPlayer2();
@@ -368,6 +368,6 @@ struct SLdrTweakPlayer2 {
   SLdrTweakPlayer_SuitDamageReduction suitDamageReduction; // 0xaeaff210
 };
 
-void LoadTypedefSLdrTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input);
+void LoadTypedefTweakPlayer2(SLdrTweakPlayer2& data, CInputStream& input);
 
 #endif

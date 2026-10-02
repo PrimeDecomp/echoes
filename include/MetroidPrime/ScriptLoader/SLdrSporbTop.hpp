@@ -16,6 +16,9 @@ struct SLdrSporbTop {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-void LoadTypedefSLdrSporbTop(SLdrSporbTop& data, CInputStream& input);
+inline SLdrSporbTop::SLdrSporbTop() : editorProperties(), patterned(), actorInformation() {
+}
+
+inline SLdrSporbTop::~SLdrSporbTop() {}
 
 #endif

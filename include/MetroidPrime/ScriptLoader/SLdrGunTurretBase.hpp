@@ -63,6 +63,53 @@ struct SLdrGunTurretBase {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-void LoadTypedefSLdrGunTurretBase(SLdrGunTurretBase& data, CInputStream& input);
+inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), patterned(), actorInformation() {
+  attackDamage.unknown_0x119fbd31 = 11;
+  attackDamage.dI_Damage = 5.0f;
+  hurtSleepDelay = 2.0f;
+  gunAimTurnSpeed = 180.0f;
+  gunLockOnTurnSpeed = 180.0f;
+  minTimeBetweenAttacks = 2.0f;
+  maxTimeBetweenAttacks = 2.0f;
+  minTimeBetweenShots = 1.0f;
+  maxTimeBetweenShots = 1.0f;
+  minShotsInABurst = 1;
+  maxShotsInABurst = 1;
+  maxPitchAngleUp = 85.0f;
+  maxPitchAngleDown = -45.0f;
+  unknown_0xfc036e93 = 0.0f;
+  shotAngleVariance = 0.0f;
+  patrolDelay = 0.0f;
+  withdrawDelay = 0.0f;
+  unknown_0x8a35b1ea = 1.0f;
+  unknown_0xd49bec5a = 1.0f;
+  unknown_0x80ce481a = 1.0f;
+  attackDelay = 0.0f;
+  detectionHeightUp = 0.0f;
+  detectionHeightDown = 0.0f;
+  attackLeashTime = 0.0f;
+  gunRespawns = false;
+  unknown_0x5cf12e9a = false;
+  unknown_0x479d8dc4 = false;
+  isPirateTurret = false;
+  alwaysFF = -1;
+  gFFireShotSound = 0;
+  pirateFireShotSound = 0;
+  lockOnSound = 0;
+  gunPanSound = 0;
+  gFGunChargeSound = 0;
+  pirateGunChargeSound = 0;
+  gunLowerLoopedSound = 0;
+  gunLowerOffSound = 0;
+  gunRaiseLoopedSound = 0;
+  gunRaiseOffSound = 0;
+  pirateGunDeathLowerLoopedSound = 0;
+  gFGunDeathLowerLoopedSound = 0;
+  poleSparksSound = 0;
+  maxAudibleDistance = 100.0f;
+  soundFallOff = 0.0f;
+}
+
+inline SLdrGunTurretBase::~SLdrGunTurretBase() {}
 
 #endif

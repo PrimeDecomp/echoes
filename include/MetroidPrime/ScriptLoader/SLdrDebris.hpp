@@ -30,6 +30,21 @@ struct SLdrDebris {
   bool unknown_0x4edb1d0e; // 0x4edb1d0e
 };
 
-void LoadTypedefSLdrDebris(SLdrDebris& data, CInputStream& input);
+inline SLdrDebris::SLdrDebris() : editorProperties(), impulseVariance(CVector3f::Zero()), fadeOutColor(CColor::Green()), model(kInvalidAssetId), actorInformation(), particle(kInvalidAssetId), particleSystemScale(CVector3f::Zero()) {
+  editorProperties.active = false;
+  impulse = 20.0f;
+  impulseVariance = CVector3f(20.0f, 20.0f, 25.0f);
+  fadeOutColor = CColor(1.0f, 0.0f, 0.0f, 0.0f);
+  mass = 12.0f;
+  unknown_0x417f4a91 = 0.375f;
+  lifeTime = 1.0f;
+  scaleType = 0;
+  randomSpin = true;
+  particleSystemScale = CVector3f(1.0f, 1.0f, 1.0f);
+  isCollider = true;
+  unknown_0x4edb1d0e = false;
+}
+
+inline SLdrDebris::~SLdrDebris() {}
 
 #endif

@@ -14,6 +14,11 @@ struct SLdrSwitch {
   bool isAutoClose; // 0x054a1e34
 };
 
-void LoadTypedefSLdrSwitch(SLdrSwitch& data, CInputStream& input);
+inline SLdrSwitch::SLdrSwitch() : editorProperties() {
+  isOpen = false;
+  isAutoClose = false;
+}
+
+inline SLdrSwitch::~SLdrSwitch() {}
 
 #endif

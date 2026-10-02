@@ -34,6 +34,33 @@ struct SLdrAtomicBeta {
   float damageDelay; // 0x8f4fb79d
 };
 
-void LoadTypedefSLdrAtomicBeta(SLdrAtomicBeta& data, CInputStream& input);
+inline SLdrAtomicBeta::SLdrAtomicBeta() : editorProperties(), patterned(), actorInformation(), beamEffect(kInvalidAssetId), beam(kInvalidAssetId), beamDamage(), contactFx(kInvalidAssetId), frozenVulnerability() {
+  patterned.mass = 25.0f;
+  patterned.turnSpeed = 720.0f;
+  patterned.detectionRange = 5.0f;
+  patterned.detectionHeightRange = 5.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 4.0f;
+  patterned.maxAttackRange = 20.0f;
+  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 5.0f;
+  patterned.damageWaitTime = 1.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.5f;
+  patterned.unknown_0xe287d8dd = 0.0f;
+  beamFadeTime = 1.0f;
+  beamRadius = 0.1f;
+  hoverSpeed = 3.0f;
+  normalRotateSpeed = 1.5f;
+  chargingRotateSpeed = 5.0f;
+  speedChangeRate = 1.0f;
+  sound_FlyLoop = 0;
+  sound_FlyLoopActivated = 0;
+  sound_ElectricityLoop = 0;
+  damageDelay = 1.0f;
+}
+
+inline SLdrAtomicBeta::~SLdrAtomicBeta() {}
 
 #endif

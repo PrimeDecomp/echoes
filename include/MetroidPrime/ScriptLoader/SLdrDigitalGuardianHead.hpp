@@ -26,7 +26,58 @@ struct SLdrDigitalGuardianHeadStruct {
   float lockOnMissilesOdds; // 0xf967e246
 };
 
-void LoadTypedefSLdrDigitalGuardianHeadStruct(SLdrDigitalGuardianHeadStruct& data, CInputStream& input);
+inline SLdrDigitalGuardianHeadStruct::SLdrDigitalGuardianHeadStruct() {
+  firstShotType = 4;
+  projectileTelegraphTime = 1.25f;
+  projectileAttackTime = 2.0f;
+  annihilatorPulseOdds = 25.0f;
+  annihilatorChargeOdds = 25.0f;
+  machineGunOdds = 25.0f;
+  lockOnMissilesOdds = 25.0f;
+}
+
+inline SLdrDigitalGuardianHeadStruct::~SLdrDigitalGuardianHeadStruct() {}
+
+inline void LoadTypedefDigitalGuardianHeadStruct(SLdrDigitalGuardianHeadStruct& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xd20288a4: {
+      sldrThis.firstShotType = input.ReadInt32();
+      break;
+    }
+    case 0x75dc92bc: {
+      sldrThis.projectileTelegraphTime = input.ReadFloat();
+      break;
+    }
+    case 0x9e1c3f6c: {
+      sldrThis.projectileAttackTime = input.ReadFloat();
+      break;
+    }
+    case 0xfdfca535: {
+      sldrThis.annihilatorPulseOdds = input.ReadFloat();
+      break;
+    }
+    case 0xcd03632c: {
+      sldrThis.annihilatorChargeOdds = input.ReadFloat();
+      break;
+    }
+    case 0xf1548397: {
+      sldrThis.machineGunOdds = input.ReadFloat();
+      break;
+    }
+    case 0xf967e246: {
+      sldrThis.lockOnMissilesOdds = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDigitalGuardianHeadData {
   SLdrDigitalGuardianHeadData();
@@ -92,7 +143,291 @@ struct SLdrDigitalGuardianHeadData {
   SLdrDamageVulnerability echoTargetVulnerability; // 0x1b2aa049
 };
 
-void LoadTypedefSLdrDigitalGuardianHeadData(SLdrDigitalGuardianHeadData& data, CInputStream& input);
+inline SLdrDigitalGuardianHeadData::SLdrDigitalGuardianHeadData() : scannableInfoShieldHead(kInvalidAssetId), scannableInfoStunnedHead(kInvalidAssetId), scannableInfoFinalHead(kInvalidAssetId), headArmor(kInvalidAssetId), sound_HeadModuleHit(), dropShieldsFx(kInvalidAssetId), sound_RaiseShields(), sound_DropShields(), sound_EjectSplitter(), pART(kInvalidAssetId), echoTargets(kInvalidAssetId), echoTargetEmitterFx(kInvalidAssetId), echoTargetDestroyedFx(kInvalidAssetId), sound_EchoTargetExtract(), sound_EchoTargetRetract(), sound_EchoTargetTransmit(), sound_EchoTargetHit(), sound_EchoTargetExplosion(), echoTargetsParameters(), bombSlotDestroyedFx(kInvalidAssetId), sound_BombSlotExplosion(), sound_BombSlotDestroyed(), sound_Stage3Recover(), annihilatorPulse(kInvalidAssetId), annihilatorPulseDamage(), annihilatorCharge(kInvalidAssetId), annihilatorChargeDamage(), fRME(kInvalidAssetId), lockOnBeams(), lockOnMissiles(kInvalidAssetId), lockOnMissilesDamage(), machineGun(kInvalidAssetId), machineGunDamage(), sound_MachineGun(), digitalGuardianHeadStruct(), digitalGuardianHeadStruct_0x8e128141(), digitalGuardianHeadStruct_0xea54b390(), digitalGuardianHeadStruct_0xbbd3e7a7(), digitalGuardianHeadStruct_0x2dd88764(), digitalGuardianHeadStruct_0x48b46e55(), bombPitVulnerability(), echoTargetVulnerability() {
+  maxTurnSpeed = 60.0f;
+  maxLinearVelocity = 20.0f;
+  gravityRepulsorHP = 100.0f;
+  maxStunnedLinearVelocity = 5.0f;
+  maxStage2StunnedTime = 10.0f;
+  unknown_0x8a83a097 = 22.5f;
+  unknown_0xd919fb13 = 15.0f;
+  unknown_0x1cc6d870 = 5.0f;
+  echoTargetHP = 100.0f;
+  unknown_0x8317610f = 30.0f;
+  annihilatorPulseDamage.unknown_0x119fbd31 = 11;
+  annihilatorPulseDamage.dI_Damage = 20.0f;
+  annihilatorPulseDamage.dI_KnockBackPower = 10.0f;
+  annihilatorChargeDamage.unknown_0x119fbd31 = 11;
+  annihilatorChargeDamage.dI_Damage = 20.0f;
+  annihilatorChargeDamage.dI_KnockBackPower = 10.0f;
+  unknown_0xff7688bf = 6.0f;
+  unknown_0x12ebb390 = 1500;
+  lockOnBeams.length = 500.0f;
+  lockOnBeams.expansionSpeed = 4.0f;
+  lockOnBeams.lifeTime = 1.0f;
+  lockOnBeams.pulseSpeed = 20.0f;
+  lockOnBeams.shutdownTime = 0.25f;
+  lockOnBeams.pulseEffectScale = 2.0f;
+  lockOnBeams.innerColor = CColor(0.49803901f, 0.0f, 0.0f, 0.49803901f);
+  lockOnBeams.outerColor = CColor(0.698039f, 0.0f, 0.0f, 0.49803901f);
+  lockOnMissilesDamage.unknown_0x119fbd31 = 11;
+  lockOnMissilesDamage.dI_Damage = 20.0f;
+  lockOnMissilesDamage.dI_KnockBackPower = 10.0f;
+  machineGunDamage.unknown_0x119fbd31 = 11;
+  machineGunDamage.dI_Damage = 20.0f;
+  machineGunDamage.dI_KnockBackPower = 10.0f;
+  machineGunHalfSweepDist = 15.0f;
+  machineGunSweepDuration = 2.0f;
+  machineGunChargeDuration = 0.5f;
+  machineGunFireTime = 0.15000001f;
+}
+
+inline SLdrDigitalGuardianHeadData::~SLdrDigitalGuardianHeadData() {}
+
+inline void LoadTypedefDigitalGuardianHeadData(SLdrDigitalGuardianHeadData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x4eaf47d7: {
+      sldrThis.scannableInfoShieldHead = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x390f3677: {
+      sldrThis.scannableInfoStunnedHead = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xb6eea4ce: {
+      sldrThis.scannableInfoFinalHead = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x07d8cc4f: {
+      sldrThis.headArmor = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x0b5c3c1a: {
+      sldrThis.maxTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x00d74fc3: {
+      sldrThis.maxLinearVelocity = input.ReadFloat();
+      break;
+    }
+    case 0xe7de8b82: {
+      sldrThis.gravityRepulsorHP = input.ReadFloat();
+      break;
+    }
+    case 0x96e18283: {
+      sldrThis.maxStunnedLinearVelocity = input.ReadFloat();
+      break;
+    }
+    case 0xf77138d5: {
+      sldrThis.maxStage2StunnedTime = input.ReadFloat();
+      break;
+    }
+    case 0x8a83a097: {
+      sldrThis.unknown_0x8a83a097 = input.ReadFloat();
+      break;
+    }
+    case 0xd919fb13: {
+      sldrThis.unknown_0xd919fb13 = input.ReadFloat();
+      break;
+    }
+    case 0x0a693a04: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_HeadModuleHit, input);
+      break;
+    }
+    case 0x1cc6d870: {
+      sldrThis.unknown_0x1cc6d870 = input.ReadFloat();
+      break;
+    }
+    case 0x5ff0b26c: {
+      sldrThis.dropShieldsFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x50baee63: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_RaiseShields, input);
+      break;
+    }
+    case 0xa5e1ec03: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_DropShields, input);
+      break;
+    }
+    case 0x8d6053cb: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EjectSplitter, input);
+      break;
+    }
+    case 0xc91ef399: {
+      sldrThis.pART = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x7d3d44af: {
+      sldrThis.echoTargetHP = input.ReadFloat();
+      break;
+    }
+    case 0x2fa93722: {
+      sldrThis.echoTargets = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x342ae844: {
+      sldrThis.echoTargetEmitterFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcf98f423: {
+      sldrThis.echoTargetDestroyedFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x76eedd2a: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EchoTargetExtract, input);
+      break;
+    }
+    case 0xa5ecbe17: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EchoTargetRetract, input);
+      break;
+    }
+    case 0xb1fc705f: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EchoTargetTransmit, input);
+      break;
+    }
+    case 0x2bc2677a: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EchoTargetHit, input);
+      break;
+    }
+    case 0x7f5b82b2: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EchoTargetExplosion, input);
+      break;
+    }
+    case 0x331fd5f7: {
+      LoadTypedefEchoParameters(sldrThis.echoTargetsParameters, input);
+      break;
+    }
+    case 0x8317610f: {
+      sldrThis.unknown_0x8317610f = input.ReadFloat();
+      break;
+    }
+    case 0x321c97a9: {
+      sldrThis.bombSlotDestroyedFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xd5cc7e71: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BombSlotExplosion, input);
+      break;
+    }
+    case 0xa62c0ea7: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_BombSlotDestroyed, input);
+      break;
+    }
+    case 0xfd9f5486: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_Stage3Recover, input);
+      break;
+    }
+    case 0x27464886: {
+      sldrThis.annihilatorPulse = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4eaf615f: {
+      LoadTypedefDamageInfo(sldrThis.annihilatorPulseDamage, input);
+      break;
+    }
+    case 0xd669f12c: {
+      sldrThis.annihilatorCharge = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x41177ac6: {
+      LoadTypedefDamageInfo(sldrThis.annihilatorChargeDamage, input);
+      break;
+    }
+    case 0xff7688bf: {
+      sldrThis.unknown_0xff7688bf = input.ReadFloat();
+      break;
+    }
+    case 0x12ebb390: {
+      sldrThis.unknown_0x12ebb390 = input.ReadInt32();
+      break;
+    }
+    case 0xad151546: {
+      sldrThis.fRME = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xc7cf5db1: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.lockOnBeams, input);
+      break;
+    }
+    case 0xd187f05c: {
+      sldrThis.lockOnMissiles = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xa8c6106b: {
+      LoadTypedefDamageInfo(sldrThis.lockOnMissilesDamage, input);
+      break;
+    }
+    case 0x0b5498d6: {
+      sldrThis.machineGun = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x45ef2edc: {
+      LoadTypedefDamageInfo(sldrThis.machineGunDamage, input);
+      break;
+    }
+    case 0x47c8115e: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_MachineGun, input);
+      break;
+    }
+    case 0x4ab23ffe: {
+      sldrThis.machineGunHalfSweepDist = input.ReadFloat();
+      break;
+    }
+    case 0x81a8474f: {
+      sldrThis.machineGunSweepDuration = input.ReadFloat();
+      break;
+    }
+    case 0x71c406ac: {
+      sldrThis.machineGunChargeDuration = input.ReadFloat();
+      break;
+    }
+    case 0xe5bc88b7: {
+      sldrThis.machineGunFireTime = input.ReadFloat();
+      break;
+    }
+    case 0x8f6732ea: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct, input);
+      break;
+    }
+    case 0x8e128141: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct_0x8e128141, input);
+      break;
+    }
+    case 0xea54b390: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct_0xea54b390, input);
+      break;
+    }
+    case 0xbbd3e7a7: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct_0xbbd3e7a7, input);
+      break;
+    }
+    case 0x2dd88764: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct_0x2dd88764, input);
+      break;
+    }
+    case 0x48b46e55: {
+      LoadTypedefDigitalGuardianHeadStruct(sldrThis.digitalGuardianHeadStruct_0x48b46e55, input);
+      break;
+    }
+    case 0x7352d60a: {
+      LoadTypedefDamageVulnerability(sldrThis.bombPitVulnerability, input);
+      break;
+    }
+    case 0x1b2aa049: {
+      LoadTypedefDamageVulnerability(sldrThis.echoTargetVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrDigitalGuardianHead {
   SLdrDigitalGuardianHead();
@@ -104,6 +439,14 @@ struct SLdrDigitalGuardianHead {
   SLdrDigitalGuardianHeadData digitalGuardianHeadProperties; // 0x0f4d73b7
 };
 
-void LoadTypedefSLdrDigitalGuardianHead(SLdrDigitalGuardianHead& data, CInputStream& input);
+inline SLdrDigitalGuardianHead::SLdrDigitalGuardianHead() : editorProperties(), patterned(), actorInformation(), digitalGuardianHeadProperties() {
+  patterned.turnSpeed = 360.0f;
+  patterned.minAttackRange = 0.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 2;
+}
+
+inline SLdrDigitalGuardianHead::~SLdrDigitalGuardianHead() {}
 
 #endif

@@ -75,7 +75,300 @@ struct SLdrIngBoostBallGuardianData {
   SLdrDamageVulnerability ingSpotVulnerability; // 0x1b96ff8b
 };
 
-void LoadTypedefSLdrIngBoostBallGuardianData(SLdrIngBoostBallGuardianData& data, CInputStream& input);
+inline SLdrIngBoostBallGuardianData::SLdrIngBoostBallGuardianData() : ingSpotBlobEffect(kInvalidAssetId), ingSpotHitNormalDamage(kInvalidAssetId), ingSpotHitHeavyDamage(kInvalidAssetId), ingSpotDeath(kInvalidAssetId), pART(kInvalidAssetId), sRSC(kInvalidAssetId), pART_0x3da219c7(kInvalidAssetId), pART_0x081e9e6c(kInvalidAssetId), armSwipeDamage(), bodyProjectileContactDamage(), bodyProjectileSplatEffect(kInvalidAssetId), miniPortalEffect(kInvalidAssetId), miniPortalProjectileDamage(), miniPortalBeamInfo(), lightColor(CColor::Green()), ingSpotVulnerability() {
+  unknown_0x01789abd = 0;
+  hearingRadius = 50.0f;
+  ingSpotMaxSpeed = 15.0f;
+  ingSpotMaxWallSpeed = 7.0f;
+  ingSpotBallPursuitSpeed = 25.0f;
+  unknown_0x50398a06 = 25.0f;
+  ingSpotTurnSpeed = 360.0f;
+  sound_IngSpotIdle = 0;
+  sound_IngSpotMove = 0;
+  sound_HitNormalDamage = 0;
+  sound_HitHeavyDamage = 0;
+  sound_IngSpotDeath = 0;
+  unknown_0x23271976 = 0.34999999f;
+  unknown_0xcb39eccb = 15.0f;
+  unknown_0x587ca175 = 1.5f;
+  unknown_0x0bd7d5a9 = 1.5f;
+  sound_SwarmMove = 0;
+  sound_InsideHost = 0;
+  sound_ExitHost = 0;
+  sound_ExitHostSafeZone = 0;
+  sound = 0;
+  unknown_0x5d0d2c40 = 15.0f;
+  unknown_0xc620183a = 1.5f;
+  frustrationTime = 2.0f;
+  tauntChance = 25.0f;
+  aggressiveness = 10.0f;
+  armSwipeDamage.unknown_0x119fbd31 = 11;
+  armSwipeDamage.dI_Damage = 20.0f;
+  armSwipeDamage.dI_KnockBackPower = 10.0f;
+  bodyProjectileContactDamage.unknown_0x119fbd31 = 11;
+  bodyProjectileContactDamage.dI_Damage = 20.0f;
+  bodyProjectileContactDamage.dI_KnockBackPower = 5.0f;
+  unknown_0xa0d63374 = 20.0f;
+  bodyProjectileSuckTime = 5.0f;
+  bodyProjectileSpeed = 25.0f;
+  bodyProjectileDropTime = 2.0f;
+  bodyProjectileMinAttackDist = 20.0f;
+  bodyProjectileMaxAttackDist = 40.0f;
+  sound_BodyProjectile = 0;
+  sound_BodyProjectileSplatWall = 0;
+  bodyProjectileOdds = 70.0f;
+  miniPortalMinAttackDist = 40.0f;
+  miniPortalMaxAttackDist = 100.0f;
+  sound_MiniPortal = 0;
+  miniPortalProjectileDamage.unknown_0x119fbd31 = 11;
+  miniPortalProjectileDamage.dI_Damage = 20.0f;
+  miniPortalProjectileDamage.dI_KnockBackPower = 10.0f;
+  miniPortalBeamInfo.length = 500.0f;
+  miniPortalBeamInfo.expansionSpeed = 4.0f;
+  miniPortalBeamInfo.lifeTime = 1.0f;
+  miniPortalBeamInfo.pulseSpeed = 20.0f;
+  miniPortalBeamInfo.shutdownTime = 0.25f;
+  miniPortalBeamInfo.pulseEffectScale = 2.0f;
+  miniPortalBeamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  miniPortalBeamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+  lightColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  lightAttenuation = 5.0f;
+}
+
+inline SLdrIngBoostBallGuardianData::~SLdrIngBoostBallGuardianData() {}
+
+inline void LoadTypedefIngBoostBallGuardianData(SLdrIngBoostBallGuardianData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x01789abd: {
+      sldrThis.unknown_0x01789abd = input.ReadInt32();
+      break;
+    }
+    case 0xed69488f: {
+      sldrThis.hearingRadius = input.ReadFloat();
+      break;
+    }
+    case 0x95b47cf9: {
+      sldrThis.ingSpotMaxSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x8d42a8d5: {
+      sldrThis.ingSpotMaxWallSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x84586bfd: {
+      sldrThis.ingSpotBallPursuitSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x50398a06: {
+      sldrThis.unknown_0x50398a06 = input.ReadFloat();
+      break;
+    }
+    case 0xeaa3c3f8: {
+      sldrThis.ingSpotTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xcc5a4918: {
+      sldrThis.ingSpotBlobEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x8851dc01: {
+      sldrThis.ingSpotHitNormalDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x5d01100f: {
+      sldrThis.ingSpotHitHeavyDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x9a56892e: {
+      sldrThis.ingSpotDeath = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4cab30a9: {
+      sldrThis.sound_IngSpotIdle = input.ReadInt32();
+      break;
+    }
+    case 0x8f83be73: {
+      sldrThis.sound_IngSpotMove = input.ReadInt32();
+      break;
+    }
+    case 0xb392943a: {
+      sldrThis.sound_HitNormalDamage = input.ReadInt32();
+      break;
+    }
+    case 0x24ecc1e9: {
+      sldrThis.sound_HitHeavyDamage = input.ReadInt32();
+      break;
+    }
+    case 0x4489935e: {
+      sldrThis.sound_IngSpotDeath = input.ReadInt32();
+      break;
+    }
+    case 0x3c2d681e: {
+      sldrThis.pART = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xd576f379: {
+      sldrThis.sRSC = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x3da219c7: {
+      sldrThis.pART_0x3da219c7 = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x23271976: {
+      sldrThis.unknown_0x23271976 = input.ReadFloat();
+      break;
+    }
+    case 0x081e9e6c: {
+      sldrThis.pART_0x081e9e6c = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcb39eccb: {
+      sldrThis.unknown_0xcb39eccb = input.ReadFloat();
+      break;
+    }
+    case 0x587ca175: {
+      sldrThis.unknown_0x587ca175 = input.ReadFloat();
+      break;
+    }
+    case 0x0bd7d5a9: {
+      sldrThis.unknown_0x0bd7d5a9 = input.ReadFloat();
+      break;
+    }
+    case 0xe8ea5bc8: {
+      sldrThis.sound_SwarmMove = input.ReadInt32();
+      break;
+    }
+    case 0x5650366a: {
+      sldrThis.sound_InsideHost = input.ReadInt32();
+      break;
+    }
+    case 0xb09af706: {
+      sldrThis.sound_ExitHost = input.ReadInt32();
+      break;
+    }
+    case 0x0c13c5a8: {
+      sldrThis.sound_ExitHostSafeZone = input.ReadInt32();
+      break;
+    }
+    case 0x148b81e4: {
+      sldrThis.sound = input.ReadInt32();
+      break;
+    }
+    case 0x5d0d2c40: {
+      sldrThis.unknown_0x5d0d2c40 = input.ReadFloat();
+      break;
+    }
+    case 0xc620183a: {
+      sldrThis.unknown_0xc620183a = input.ReadFloat();
+      break;
+    }
+    case 0x7d19c3ca: {
+      sldrThis.frustrationTime = input.ReadFloat();
+      break;
+    }
+    case 0xa77f6212: {
+      sldrThis.tauntChance = input.ReadFloat();
+      break;
+    }
+    case 0x9579b1f2: {
+      sldrThis.aggressiveness = input.ReadFloat();
+      break;
+    }
+    case 0x915da374: {
+      LoadTypedefDamageInfo(sldrThis.armSwipeDamage, input);
+      break;
+    }
+    case 0xab258f6b: {
+      LoadTypedefDamageInfo(sldrThis.bodyProjectileContactDamage, input);
+      break;
+    }
+    case 0xa0d63374: {
+      sldrThis.unknown_0xa0d63374 = input.ReadFloat();
+      break;
+    }
+    case 0xdfea60a2: {
+      sldrThis.bodyProjectileSuckTime = input.ReadFloat();
+      break;
+    }
+    case 0x601cc5b4: {
+      sldrThis.bodyProjectileSplatEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xce980820: {
+      sldrThis.bodyProjectileSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xb752c177: {
+      sldrThis.bodyProjectileDropTime = input.ReadFloat();
+      break;
+    }
+    case 0xe6ddb662: {
+      sldrThis.bodyProjectileMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0xb57bae86: {
+      sldrThis.bodyProjectileMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x2025858b: {
+      sldrThis.sound_BodyProjectile = input.ReadInt32();
+      break;
+    }
+    case 0x19f8fee6: {
+      sldrThis.sound_BodyProjectileSplatWall = input.ReadInt32();
+      break;
+    }
+    case 0xdc741fbd: {
+      sldrThis.bodyProjectileOdds = input.ReadFloat();
+      break;
+    }
+    case 0xfa6edeb5: {
+      sldrThis.miniPortalMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0xa9c8c651: {
+      sldrThis.miniPortalMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0xa926f8a8: {
+      sldrThis.miniPortalEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4051fd1a: {
+      sldrThis.sound_MiniPortal = input.ReadInt32();
+      break;
+    }
+    case 0x424a6d37: {
+      LoadTypedefDamageInfo(sldrThis.miniPortalProjectileDamage, input);
+      break;
+    }
+    case 0x9c170968: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.miniPortalBeamInfo, input);
+      break;
+    }
+    case 0xbd3efe7d: {
+      sldrThis.lightColor = CColor(input);
+      break;
+    }
+    case 0xd24b888f: {
+      sldrThis.lightAttenuation = input.ReadFloat();
+      break;
+    }
+    case 0x1b96ff8b: {
+      LoadTypedefDamageVulnerability(sldrThis.ingSpotVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrIngBoostBallGuardianStruct {
   SLdrIngBoostBallGuardianStruct();
@@ -97,7 +390,93 @@ struct SLdrIngBoostBallGuardianStruct {
   float ingSpotSpeedScale; // 0xc19ed897
 };
 
-void LoadTypedefSLdrIngBoostBallGuardianStruct(SLdrIngBoostBallGuardianStruct& data, CInputStream& input);
+inline SLdrIngBoostBallGuardianStruct::SLdrIngBoostBallGuardianStruct() {
+  boostPuddleModeTime = 1.8f;
+  unknown_0xabe99de0 = 1.8f;
+  breakBoostPuddleModeDamage = 1.8f;
+  breakBoostModeDamage = 150.0f;
+  nextBoostTimeMin = 0.5f;
+  nextBoostTimeMax = 0.0f;
+  unknown_0x285d67ad = 0;
+  unknown_0x6d5f242f = 0;
+  unknown_0xe3ff2ed6 = 0;
+  unknown_0xa6fd6d54 = 0;
+  unknown_0xecb314b6 = 0;
+  unknown_0xa9b15734 = 0;
+  locomotionSpeedScale = 0.0f;
+  ingSpotSpeedScale = 0.0f;
+}
+
+inline SLdrIngBoostBallGuardianStruct::~SLdrIngBoostBallGuardianStruct() {}
+
+inline void LoadTypedefIngBoostBallGuardianStruct(SLdrIngBoostBallGuardianStruct& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x25d02bc5: {
+      sldrThis.boostPuddleModeTime = input.ReadFloat();
+      break;
+    }
+    case 0xabe99de0: {
+      sldrThis.unknown_0xabe99de0 = input.ReadFloat();
+      break;
+    }
+    case 0xe2b23f03: {
+      sldrThis.breakBoostPuddleModeDamage = input.ReadFloat();
+      break;
+    }
+    case 0x2f845006: {
+      sldrThis.breakBoostModeDamage = input.ReadFloat();
+      break;
+    }
+    case 0x5d1626fb: {
+      sldrThis.nextBoostTimeMin = input.ReadFloat();
+      break;
+    }
+    case 0xbb76891a: {
+      sldrThis.nextBoostTimeMax = input.ReadFloat();
+      break;
+    }
+    case 0x285d67ad: {
+      sldrThis.unknown_0x285d67ad = input.ReadInt32();
+      break;
+    }
+    case 0x6d5f242f: {
+      sldrThis.unknown_0x6d5f242f = input.ReadInt32();
+      break;
+    }
+    case 0xe3ff2ed6: {
+      sldrThis.unknown_0xe3ff2ed6 = input.ReadInt32();
+      break;
+    }
+    case 0xa6fd6d54: {
+      sldrThis.unknown_0xa6fd6d54 = input.ReadInt32();
+      break;
+    }
+    case 0xecb314b6: {
+      sldrThis.unknown_0xecb314b6 = input.ReadInt32();
+      break;
+    }
+    case 0xa9b15734: {
+      sldrThis.unknown_0xa9b15734 = input.ReadInt32();
+      break;
+    }
+    case 0x1213a7d4: {
+      sldrThis.locomotionSpeedScale = input.ReadFloat();
+      break;
+    }
+    case 0xc19ed897: {
+      sldrThis.ingSpotSpeedScale = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrBoostBallGuardianData {
   SLdrBoostBallGuardianData();
@@ -136,7 +515,218 @@ struct SLdrBoostBallGuardianData {
   SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xc2784287; // non-matching name, 0xc2784287
 };
 
-void LoadTypedefSLdrBoostBallGuardianData(SLdrBoostBallGuardianData& data, CInputStream& input);
+inline SLdrBoostBallGuardianData::SLdrBoostBallGuardianData() : boostBallScale(CVector3f::Zero()), boostBallSpeed(), boostBallDamageToMorphBall(), boostBallDamageToFirstPerson(), boostBallModel(kInvalidAssetId), boostBallChargeUpEffect(kInvalidAssetId), boostBallShieldEffect(kInvalidAssetId), boostBallTrailEffect(kInvalidAssetId), boostBallVulnerability(), ingSpotDamageToMorphBall(), ingSpotDamageToFirstPerson(), boostIngSpotBlobEffect(kInvalidAssetId), boostIngSpotHitNormalDamage(kInvalidAssetId), boostIngSpotHitHeavyDamage(kInvalidAssetId), ingBoostBallGuardianStruct(), ingBoostBallGuardianStruct_0xfe18a18f(), ingBoostBallGuardianStruct_0xc2784287() {
+  boostBallScale = CVector3f(1.8f, 1.8f, 1.8f);
+  boostBallMass = 150.0f;
+  unknown_0xbea96fb7 = 0.5f;
+  boostBallDamageToMorphBall.unknown_0x119fbd31 = 7;
+  boostBallDamageToMorphBall.dI_Damage = 30.0f;
+  boostBallDamageToMorphBall.dI_Radius = 1.5f;
+  boostBallDamageToMorphBall.dI_KnockBackPower = 4.0f;
+  boostBallDamageToFirstPerson.unknown_0x119fbd31 = 7;
+  boostBallDamageToFirstPerson.dI_Damage = 30.0f;
+  boostBallDamageToFirstPerson.dI_Radius = 1.5f;
+  boostBallDamageToFirstPerson.dI_KnockBackPower = 6.0f;
+  boostBallMinDamageSpeed = 10.0f;
+  unknown_0x7b21e31a = 3.0f;
+  sound_Bounce = 0;
+  sound_IntoBall = 0;
+  sound_OutofBall = 0;
+  sound = 0;
+  sound_Boost = 0;
+  sound_Rolling = 0;
+  unknown_0xee69b993 = 2;
+  unknown_0x4b2de673 = 3;
+  searchConeAngle = 80.0f;
+  unknown_0xb0e85d53 = 0.2f;
+  ingSpotDamageToMorphBall.unknown_0x119fbd31 = 11;
+  ingSpotDamageToMorphBall.dI_Damage = 20.0f;
+  ingSpotDamageToMorphBall.dI_KnockBackPower = 10.0f;
+  ingSpotDamageToFirstPerson.unknown_0x119fbd31 = 11;
+  ingSpotDamageToFirstPerson.dI_Damage = 10.0f;
+  ingSpotDamageToFirstPerson.dI_KnockBackPower = 5.0f;
+  ingBoostBallGuardianStruct.boostPuddleModeTime = 15.0f;
+  ingBoostBallGuardianStruct.unknown_0xabe99de0 = 0.5f;
+  ingBoostBallGuardianStruct.breakBoostPuddleModeDamage = 90.0f;
+  ingBoostBallGuardianStruct.breakBoostModeDamage = 10.0f;
+  ingBoostBallGuardianStruct.nextBoostTimeMin = 2.0f;
+  ingBoostBallGuardianStruct.nextBoostTimeMax = 5.0f;
+  ingBoostBallGuardianStruct.unknown_0x285d67ad = 3;
+  ingBoostBallGuardianStruct.unknown_0x6d5f242f = 3;
+  ingBoostBallGuardianStruct.unknown_0xe3ff2ed6 = 1;
+  ingBoostBallGuardianStruct.unknown_0xa6fd6d54 = 5;
+  ingBoostBallGuardianStruct.unknown_0xecb314b6 = 6;
+  ingBoostBallGuardianStruct.unknown_0xa9b15734 = 10;
+  ingBoostBallGuardianStruct.locomotionSpeedScale = 1.0f;
+  ingBoostBallGuardianStruct.ingSpotSpeedScale = 1.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.boostPuddleModeTime = 15.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0xabe99de0 = 0.5f;
+  ingBoostBallGuardianStruct_0xfe18a18f.breakBoostPuddleModeDamage = 90.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.breakBoostModeDamage = 10.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.nextBoostTimeMin = 2.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.nextBoostTimeMax = 5.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0x285d67ad = 3;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0x6d5f242f = 3;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0xe3ff2ed6 = 1;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0xa6fd6d54 = 5;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0xecb314b6 = 6;
+  ingBoostBallGuardianStruct_0xfe18a18f.unknown_0xa9b15734 = 10;
+  ingBoostBallGuardianStruct_0xfe18a18f.locomotionSpeedScale = 1.0f;
+  ingBoostBallGuardianStruct_0xfe18a18f.ingSpotSpeedScale = 1.0f;
+  ingBoostBallGuardianStruct_0xc2784287.boostPuddleModeTime = 15.0f;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0xabe99de0 = 0.5f;
+  ingBoostBallGuardianStruct_0xc2784287.breakBoostPuddleModeDamage = 90.0f;
+  ingBoostBallGuardianStruct_0xc2784287.breakBoostModeDamage = 10.0f;
+  ingBoostBallGuardianStruct_0xc2784287.nextBoostTimeMin = 2.0f;
+  ingBoostBallGuardianStruct_0xc2784287.nextBoostTimeMax = 5.0f;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0x285d67ad = 3;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0x6d5f242f = 3;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0xe3ff2ed6 = 1;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0xa6fd6d54 = 5;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0xecb314b6 = 6;
+  ingBoostBallGuardianStruct_0xc2784287.unknown_0xa9b15734 = 10;
+  ingBoostBallGuardianStruct_0xc2784287.locomotionSpeedScale = 1.0f;
+  ingBoostBallGuardianStruct_0xc2784287.ingSpotSpeedScale = 1.0f;
+}
+
+inline SLdrBoostBallGuardianData::~SLdrBoostBallGuardianData() {}
+
+inline void LoadTypedefBoostBallGuardianData(SLdrBoostBallGuardianData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xa322f51d: {
+      sldrThis.boostBallScale = CVector3f(input);
+      break;
+    }
+    case 0x528d951e: {
+      sldrThis.boostBallMass = input.ReadFloat();
+      break;
+    }
+    case 0xbea96fb7: {
+      sldrThis.unknown_0xbea96fb7 = input.ReadFloat();
+      break;
+    }
+    case 0xa25b96e1: {
+      sldrThis.boostBallSpeed = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0x0e1a78bd: {
+      LoadTypedefDamageInfo(sldrThis.boostBallDamageToMorphBall, input);
+      break;
+    }
+    case 0x19c3d263: {
+      LoadTypedefDamageInfo(sldrThis.boostBallDamageToFirstPerson, input);
+      break;
+    }
+    case 0xd8047cba: {
+      sldrThis.boostBallMinDamageSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x7b21e31a: {
+      sldrThis.unknown_0x7b21e31a = input.ReadFloat();
+      break;
+    }
+    case 0x18381479: {
+      sldrThis.boostBallModel = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x15534429: {
+      sldrThis.boostBallChargeUpEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4cceb7ad: {
+      sldrThis.boostBallShieldEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xe41cb449: {
+      sldrThis.boostBallTrailEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x6758bf01: {
+      sldrThis.sound_Bounce = input.ReadInt32();
+      break;
+    }
+    case 0x8d9e014f: {
+      sldrThis.sound_IntoBall = input.ReadInt32();
+      break;
+    }
+    case 0xe35ae4be: {
+      sldrThis.sound_OutofBall = input.ReadInt32();
+      break;
+    }
+    case 0x9f7372b3: {
+      sldrThis.sound = input.ReadInt32();
+      break;
+    }
+    case 0xdd69a116: {
+      sldrThis.sound_Boost = input.ReadInt32();
+      break;
+    }
+    case 0xbf42c3ec: {
+      sldrThis.sound_Rolling = input.ReadInt32();
+      break;
+    }
+    case 0x42eca523: {
+      LoadTypedefDamageVulnerability(sldrThis.boostBallVulnerability, input);
+      break;
+    }
+    case 0xee69b993: {
+      sldrThis.unknown_0xee69b993 = input.ReadInt32();
+      break;
+    }
+    case 0x4b2de673: {
+      sldrThis.unknown_0x4b2de673 = input.ReadInt32();
+      break;
+    }
+    case 0x2a7073ce: {
+      sldrThis.searchConeAngle = input.ReadFloat();
+      break;
+    }
+    case 0xb0e85d53: {
+      sldrThis.unknown_0xb0e85d53 = input.ReadFloat();
+      break;
+    }
+    case 0x5616d5f1: {
+      LoadTypedefDamageInfo(sldrThis.ingSpotDamageToMorphBall, input);
+      break;
+    }
+    case 0xed685533: {
+      LoadTypedefDamageInfo(sldrThis.ingSpotDamageToFirstPerson, input);
+      break;
+    }
+    case 0xd771ec43: {
+      sldrThis.boostIngSpotBlobEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x2009a977: {
+      sldrThis.boostIngSpotHitNormalDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x62ab33a2: {
+      sldrThis.boostIngSpotHitHeavyDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xbab98497: {
+      LoadTypedefIngBoostBallGuardianStruct(sldrThis.ingBoostBallGuardianStruct, input);
+      break;
+    }
+    case 0xfe18a18f: {
+      LoadTypedefIngBoostBallGuardianStruct(sldrThis.ingBoostBallGuardianStruct_0xfe18a18f, input);
+      break;
+    }
+    case 0xc2784287: {
+      LoadTypedefIngBoostBallGuardianStruct(sldrThis.ingBoostBallGuardianStruct_0xc2784287, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrIngBoostBallGuardian {
   SLdrIngBoostBallGuardian();
@@ -149,6 +739,14 @@ struct SLdrIngBoostBallGuardian {
   SLdrBoostBallGuardianData boostBallGuardian; // 0x78656d1e
 };
 
-void LoadTypedefSLdrIngBoostBallGuardian(SLdrIngBoostBallGuardian& data, CInputStream& input);
+inline SLdrIngBoostBallGuardian::SLdrIngBoostBallGuardian() : editorProperties(), patterned(), actorInformation(), guardianProperties(), boostBallGuardian() {
+  patterned.turnSpeed = 360.0f;
+  patterned.minAttackRange = 0.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 1;
+}
+
+inline SLdrIngBoostBallGuardian::~SLdrIngBoostBallGuardian() {}
 
 #endif

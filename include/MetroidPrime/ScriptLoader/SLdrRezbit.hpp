@@ -63,7 +63,248 @@ struct SLdrRezbitData {
   SLdrDamageVulnerability shieldVulnerability; // 0xd34f1323
 };
 
-void LoadTypedefSLdrRezbitData(SLdrRezbitData& data, CInputStream& input);
+inline SLdrRezbitData::SLdrRezbitData() : derezModel(kInvalidAssetId), derezSkinRules(kInvalidAssetId), shieldExplodeEffect(kInvalidAssetId), sound_ShieldExplode(), sound_ShieldOn(), sound_ShieldOff(), sound_Flinch(), sound_DeflectMissile(), energyBoltDamage(), energyBoltProjectile(kInvalidAssetId), sound_EnergyBolt(), virusDamage(), virusMorphballFx(kInvalidAssetId), cuttingLaserDamage(), sound_CuttingLaser(), cuttingLaserBeamInfo(), shieldVulnerability() {
+  hearingRadius = 20.0f;
+  unknown_0x4a6c4b40 = 20.0f;
+  derezTime = 10.0f;
+  shieldDownTime = 3.0f;
+  shieldDownTimeVariance = 2.0f;
+  shieldUpTime = 3.0f;
+  shieldHitPoints = 1.0f;
+  missileDeflectRadius = 12.0f;
+  missileDeflectRate = 1.2f;
+  unknown_0x70e597d4 = 2.0f;
+  unknown_0x94980a67 = 100.0f;
+  strafeDerezInterval = 2.0f;
+  strafeDerezChance = 100.0f;
+  normalRezAttackTime = 4.0f;
+  energyBoltChance = 50.0f;
+  cuttingLaserChance = 50.0f;
+  energyBoltMinAttackDist = 20.0f;
+  energyBoltMaxAttackDist = 40.0f;
+  energyBoltDamage.unknown_0x119fbd31 = 11;
+  energyBoltDamage.dI_Damage = 20.0f;
+  energyBoltDamage.dI_KnockBackPower = 5.0f;
+  energyBoltAttackDuration = 4.0f;
+  energyBoltAttackVariance = 2.0f;
+  energyBoltBurstTime = 0.5f;
+  virusMinAttackDist = 0.0f;
+  virusMaxAttackDist = 30.0f;
+  virusAttackTime = 6.0f;
+  virusDamage.unknown_0x119fbd31 = 11;
+  virusDamage.dI_Damage = 20.0f;
+  virusDamage.dI_KnockBackPower = 5.0f;
+  sound_VirusHUD = 0;
+  sound_HUDReboot = 0;
+  cuttingLaserMinAttackDist = 20.0f;
+  cuttingLaserMaxAttackDist = 40.0f;
+  cuttingLaserDamage.unknown_0x119fbd31 = 11;
+  cuttingLaserDamage.dI_Damage = 20.0f;
+  cuttingLaserDamage.dI_KnockBackPower = 5.0f;
+  cuttingLaserBeamInfo.length = 500.0f;
+  cuttingLaserBeamInfo.expansionSpeed = 4.0f;
+  cuttingLaserBeamInfo.lifeTime = 1.0f;
+  cuttingLaserBeamInfo.pulseSpeed = 20.0f;
+  cuttingLaserBeamInfo.shutdownTime = 0.25f;
+  cuttingLaserBeamInfo.pulseEffectScale = 2.0f;
+  cuttingLaserBeamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  cuttingLaserBeamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+}
+
+inline SLdrRezbitData::~SLdrRezbitData() {}
+
+inline void LoadTypedefRezbitData(SLdrRezbitData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xed69488f: {
+      sldrThis.hearingRadius = input.ReadFloat();
+      break;
+    }
+    case 0x4a6c4b40: {
+      sldrThis.unknown_0x4a6c4b40 = input.ReadFloat();
+      break;
+    }
+    case 0x30d11671: {
+      sldrThis.derezTime = input.ReadFloat();
+      break;
+    }
+    case 0xc80bb6e4: {
+      sldrThis.derezModel = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x05486319: {
+      sldrThis.derezSkinRules = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x8980a469: {
+      sldrThis.shieldDownTime = input.ReadFloat();
+      break;
+    }
+    case 0xffb37b81: {
+      sldrThis.shieldDownTimeVariance = input.ReadFloat();
+      break;
+    }
+    case 0x448579cd: {
+      sldrThis.shieldUpTime = input.ReadFloat();
+      break;
+    }
+    case 0x0d1d1648: {
+      sldrThis.shieldHitPoints = input.ReadFloat();
+      break;
+    }
+    case 0xa41f75ef: {
+      sldrThis.shieldExplodeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xa34e2d84: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ShieldExplode, input);
+      break;
+    }
+    case 0x8c598e41: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ShieldOn, input);
+      break;
+    }
+    case 0xf4491ed5: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_ShieldOff, input);
+      break;
+    }
+    case 0x7d832158: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_Flinch, input);
+      break;
+    }
+    case 0xad120ad7: {
+      sldrThis.missileDeflectRadius = input.ReadFloat();
+      break;
+    }
+    case 0xe70ef8a3: {
+      sldrThis.missileDeflectRate = input.ReadFloat();
+      break;
+    }
+    case 0x6bf2ff60: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_DeflectMissile, input);
+      break;
+    }
+    case 0x70e597d4: {
+      sldrThis.unknown_0x70e597d4 = input.ReadFloat();
+      break;
+    }
+    case 0x94980a67: {
+      sldrThis.unknown_0x94980a67 = input.ReadFloat();
+      break;
+    }
+    case 0xd02f08b0: {
+      sldrThis.strafeDerezInterval = input.ReadFloat();
+      break;
+    }
+    case 0x53e84718: {
+      sldrThis.strafeDerezChance = input.ReadFloat();
+      break;
+    }
+    case 0x6fbc1bf9: {
+      sldrThis.normalRezAttackTime = input.ReadFloat();
+      break;
+    }
+    case 0xdc276015: {
+      sldrThis.energyBoltChance = input.ReadFloat();
+      break;
+    }
+    case 0x2ca3e9cd: {
+      sldrThis.cuttingLaserChance = input.ReadFloat();
+      break;
+    }
+    case 0x075491ca: {
+      sldrThis.energyBoltMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x54f2892e: {
+      sldrThis.energyBoltMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x600c5f40: {
+      LoadTypedefDamageInfo(sldrThis.energyBoltDamage, input);
+      break;
+    }
+    case 0x2f11094b: {
+      sldrThis.energyBoltProjectile = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xa1f350f5: {
+      sldrThis.energyBoltAttackDuration = input.ReadFloat();
+      break;
+    }
+    case 0x28944183: {
+      sldrThis.energyBoltAttackVariance = input.ReadFloat();
+      break;
+    }
+    case 0xc7a69a59: {
+      sldrThis.energyBoltBurstTime = input.ReadFloat();
+      break;
+    }
+    case 0xbd3eb001: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_EnergyBolt, input);
+      break;
+    }
+    case 0x9ede657f: {
+      sldrThis.virusMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0xcd787d9b: {
+      sldrThis.virusMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x4a7d3b04: {
+      sldrThis.virusAttackTime = input.ReadFloat();
+      break;
+    }
+    case 0x16869b57: {
+      LoadTypedefDamageInfo(sldrThis.virusDamage, input);
+      break;
+    }
+    case 0x973d7cc3: {
+      sldrThis.virusMorphballFx = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xbb3f8a7b: {
+      sldrThis.sound_VirusHUD = input.ReadInt32();
+      break;
+    }
+    case 0x601f846d: {
+      sldrThis.sound_HUDReboot = input.ReadInt32();
+      break;
+    }
+    case 0x64c7990d: {
+      sldrThis.cuttingLaserMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x376181e9: {
+      sldrThis.cuttingLaserMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0xbb58c088: {
+      LoadTypedefDamageInfo(sldrThis.cuttingLaserDamage, input);
+      break;
+    }
+    case 0x7864ca32: {
+      LoadTypedefAudioPlaybackParms(sldrThis.sound_CuttingLaser, input);
+      break;
+    }
+    case 0x59764dbb: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.cuttingLaserBeamInfo, input);
+      break;
+    }
+    case 0xd34f1323: {
+      LoadTypedefDamageVulnerability(sldrThis.shieldVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrRezbit {
   SLdrRezbit();
@@ -75,6 +316,14 @@ struct SLdrRezbit {
   SLdrRezbitData rezbitProperties; // 0x8716d656
 };
 
-void LoadTypedefSLdrRezbit(SLdrRezbit& data, CInputStream& input);
+inline SLdrRezbit::SLdrRezbit() : editorProperties(), patterned(), actorInformation(), rezbitProperties() {
+  patterned.turnSpeed = 360.0f;
+  patterned.minAttackRange = 0.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 1;
+}
+
+inline SLdrRezbit::~SLdrRezbit() {}
 
 #endif

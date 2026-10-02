@@ -43,7 +43,160 @@ struct SLdrSplitterMainChassisData {
   SLdrDamageVulnerability spinAttackVulnerability; // 0x24e23cc5
 };
 
-void LoadTypedefSLdrSplitterMainChassisData(SLdrSplitterMainChassisData& data, CInputStream& input);
+inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData() : legStabDamage(), spinAttackDamage(), ingPossessionData(), spinAttackVulnerability() {
+  unknown_0xcef5c2fe = 124;
+  legStabAttackInterval = 2.0f;
+  legStabMinAttackRange = 2.5f;
+  legStabMaxAttackRange = 6.0f;
+  legStabDamage.unknown_0x119fbd31 = 11;
+  legStabDamage.dI_Damage = 20.0f;
+  legStabDamage.dI_KnockBackPower = 5.0f;
+  minDodgeInterval = 3.0f;
+  dodgeChance = 100.0f;
+  deploymentSpeed = 40.0f;
+  scanDuration = 3.0f;
+  laserSweepInterval = 6.0f;
+  laserSweepMinAttackRange = 30.0f;
+  laserSweepMaxAttackRange = 60.0f;
+  spinAttackLinearVelocity = 20.0f;
+  spinAttackLinearAcceleration = 20.0f;
+  spinAttackLinearDeceleration = 60.0f;
+  spinAttackTurnSpeed = 20.0f;
+  spinAttackInterval = 6.0f;
+  spinAttackIntervalPenalty = 6.0f;
+  spinAttackTelegraphTime = 1.5f;
+  spinAttackMinAttackRange = 10.0f;
+  spinAttackMaxAttackRange = 30.0f;
+  unknown_0xd5f34476 = 4;
+  spinAttackMaxTime = 30.0f;
+  spinAttackDamage.unknown_0x119fbd31 = 11;
+  spinAttackDamage.dI_Damage = 20.0f;
+  spinAttackDamage.dI_KnockBackPower = 5.0f;
+  sound_Alerted = 0;
+}
+
+inline SLdrSplitterMainChassisData::~SLdrSplitterMainChassisData() {}
+
+inline void LoadTypedefSplitterMainChassisData(SLdrSplitterMainChassisData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xcef5c2fe: {
+      sldrThis.unknown_0xcef5c2fe = input.ReadInt32();
+      break;
+    }
+    case 0xa8fddba0: {
+      sldrThis.legStabAttackInterval = input.ReadFloat();
+      break;
+    }
+    case 0xf6047d40: {
+      sldrThis.legStabMinAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0x5130fd39: {
+      sldrThis.legStabMaxAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0xefacfa50: {
+      LoadTypedefDamageInfo(sldrThis.legStabDamage, input);
+      break;
+    }
+    case 0x99a55939: {
+      sldrThis.minDodgeInterval = input.ReadFloat();
+      break;
+    }
+    case 0x47be3298: {
+      sldrThis.dodgeChance = input.ReadFloat();
+      break;
+    }
+    case 0xeead6b4d: {
+      sldrThis.deploymentSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xf84d8fda: {
+      sldrThis.scanDuration = input.ReadFloat();
+      break;
+    }
+    case 0x0fba492b: {
+      sldrThis.laserSweepInterval = input.ReadFloat();
+      break;
+    }
+    case 0xb3ea58f8: {
+      sldrThis.laserSweepMinAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0x14ded881: {
+      sldrThis.laserSweepMaxAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0x35eedd1c: {
+      sldrThis.spinAttackLinearVelocity = input.ReadFloat();
+      break;
+    }
+    case 0x2dde6bfb: {
+      sldrThis.spinAttackLinearAcceleration = input.ReadFloat();
+      break;
+    }
+    case 0x8ae1ee93: {
+      sldrThis.spinAttackLinearDeceleration = input.ReadFloat();
+      break;
+    }
+    case 0x5027d1aa: {
+      sldrThis.spinAttackTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xd8940662: {
+      sldrThis.spinAttackInterval = input.ReadFloat();
+      break;
+    }
+    case 0xf65e430f: {
+      sldrThis.spinAttackIntervalPenalty = input.ReadFloat();
+      break;
+    }
+    case 0x43722555: {
+      sldrThis.spinAttackTelegraphTime = input.ReadFloat();
+      break;
+    }
+    case 0x8935377c: {
+      sldrThis.spinAttackMinAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0x2e01b705: {
+      sldrThis.spinAttackMaxAttackRange = input.ReadFloat();
+      break;
+    }
+    case 0xd5f34476: {
+      sldrThis.unknown_0xd5f34476 = input.ReadInt32();
+      break;
+    }
+    case 0x21296bdc: {
+      sldrThis.spinAttackMaxTime = input.ReadFloat();
+      break;
+    }
+    case 0xcfacff53: {
+      LoadTypedefDamageInfo(sldrThis.spinAttackDamage, input);
+      break;
+    }
+    case 0xa61c2a66: {
+      sldrThis.sound_Alerted = input.ReadInt32();
+      break;
+    }
+    case 0xe61748ed: {
+      LoadTypedefIngPossessionData(sldrThis.ingPossessionData, input);
+      break;
+    }
+    case 0x24e23cc5: {
+      LoadTypedefDamageVulnerability(sldrThis.spinAttackVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSplitterMainChassis {
   SLdrSplitterMainChassis();
@@ -55,6 +208,15 @@ struct SLdrSplitterMainChassis {
   SLdrSplitterMainChassisData splitterMainChassisData; // non-matching name, 0x15e03a2f
 };
 
-void LoadTypedefSLdrSplitterMainChassis(SLdrSplitterMainChassis& data, CInputStream& input);
+inline SLdrSplitterMainChassis::SLdrSplitterMainChassis() : editorProperties(), patterned(), actorInformation(), splitterMainChassisData() {
+  patterned.turnSpeed = 60.0f;
+  patterned.minAttackRange = 12.0f;
+  patterned.maxAttackRange = 37.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 2;
+}
+
+inline SLdrSplitterMainChassis::~SLdrSplitterMainChassis() {}
 
 #endif

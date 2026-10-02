@@ -27,7 +27,63 @@ struct SLdrUnknownStruct42 {
   float openSpeed; // 0x4e29c85a
 };
 
-void LoadTypedefSLdrUnknownStruct42(SLdrUnknownStruct42& data, CInputStream& input);
+inline SLdrUnknownStruct42::SLdrUnknownStruct42() : cloudColor1(CColor::Green()), cloudColor2(CColor::Green()), addColor1(CColor::Green()), addColor2(CColor::Green()) {
+  angle = 20.0f;
+  cloudColor1 = CColor(0.247059f, 0.0f, 0.0f, 0.0f);
+  cloudColor2 = CColor(0.49803901f, 0.098039001f, 0.098039001f, 0.0f);
+  addColor1 = CColor(0.34902f, 0.0f, 0.0f, 0.0f);
+  addColor2 = CColor(0.14902f, 0.0f, 0.0f, 0.0f);
+  cloudScale = 10.0f;
+  fadeOffSize = 5.0f;
+  openSpeed = 4.0f;
+}
+
+inline SLdrUnknownStruct42::~SLdrUnknownStruct42() {}
+
+inline void LoadTypedefUnknownStruct42(SLdrUnknownStruct42& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x382a1973: {
+      sldrThis.angle = input.ReadFloat();
+      break;
+    }
+    case 0x4c41dcd4: {
+      sldrThis.cloudColor1 = CColor(input);
+      break;
+    }
+    case 0xcad5ae7a: {
+      sldrThis.cloudColor2 = CColor(input);
+      break;
+    }
+    case 0x1e52124e: {
+      sldrThis.addColor1 = CColor(input);
+      break;
+    }
+    case 0x98c660e0: {
+      sldrThis.addColor2 = CColor(input);
+      break;
+    }
+    case 0x10c1ded2: {
+      sldrThis.cloudScale = input.ReadFloat();
+      break;
+    }
+    case 0xae71a22a: {
+      sldrThis.fadeOffSize = input.ReadFloat();
+      break;
+    }
+    case 0x4e29c85a: {
+      sldrThis.openSpeed = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSplitterCommandModuleData {
   SLdrSplitterCommandModuleData();
@@ -64,7 +120,172 @@ struct SLdrSplitterCommandModuleData {
   SLdrDamageVulnerability darkShieldVulnerability; // 0xa21c90ea
 };
 
-void LoadTypedefSLdrSplitterCommandModuleData(SLdrSplitterCommandModuleData& data, CInputStream& input);
+inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData() : laserPulseProjectile(kInvalidAssetId), laserPulseDamage(), laserSweepDamage(), laserSweepBeamInfo(), unknown_0x9ec51fe4(), ingPossessionData(), lightShieldVulnerability(), darkShieldVulnerability() {
+  unknown_0xbd80fd94 = 10;
+  maxLinearVelocity = 20.0f;
+  maxTurnSpeed = 720.0f;
+  scanningTurnSpeed = 20.0f;
+  minLaserPulseAttackTime = 4.0f;
+  minLaserPulseRange = 10.0f;
+  maxLaserPulseRange = 20.0f;
+  maxLaserPulseShots = 3;
+  laserPulseDamage.unknown_0x119fbd31 = 11;
+  laserPulseDamage.dI_Damage = 10.0f;
+  minDodges = 1;
+  maxDodges = 3;
+  dodgeChance = 100.0f;
+  resetShieldTime = 10.0f;
+  shieldHP = 100.0f;
+  laserSweepTurnSpeed = 45.0f;
+  laserSweepDamage.unknown_0x119fbd31 = 11;
+  laserSweepDamage.dI_Damage = 10.0f;
+  laserSweepBeamInfo.length = 500.0f;
+  laserSweepBeamInfo.expansionSpeed = 4.0f;
+  laserSweepBeamInfo.lifeTime = 1.0f;
+  laserSweepBeamInfo.pulseSpeed = 20.0f;
+  laserSweepBeamInfo.shutdownTime = 0.25f;
+  laserSweepBeamInfo.pulseEffectScale = 2.0f;
+  laserSweepBeamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  laserSweepBeamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+  sound_LaserSweep = 0;
+  sound_LaserChargeUp = 0;
+  sound_Docking = 0;
+  sound_Scanning = 0;
+  sound_LightShield = 0;
+  sound_DarkShield = 0;
+  sound_ShieldOn = 0;
+}
+
+inline SLdrSplitterCommandModuleData::~SLdrSplitterCommandModuleData() {}
+
+inline void LoadTypedefSplitterCommandModuleData(SLdrSplitterCommandModuleData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xbd80fd94: {
+      sldrThis.unknown_0xbd80fd94 = input.ReadInt32();
+      break;
+    }
+    case 0x00d74fc3: {
+      sldrThis.maxLinearVelocity = input.ReadFloat();
+      break;
+    }
+    case 0x0b5c3c1a: {
+      sldrThis.maxTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xa0b3e1be: {
+      sldrThis.scanningTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xe32fcae9: {
+      sldrThis.minLaserPulseAttackTime = input.ReadFloat();
+      break;
+    }
+    case 0xc5e0b92c: {
+      sldrThis.minLaserPulseRange = input.ReadFloat();
+      break;
+    }
+    case 0xc17a8806: {
+      sldrThis.maxLaserPulseRange = input.ReadFloat();
+      break;
+    }
+    case 0xe75bae9e: {
+      sldrThis.maxLaserPulseShots = input.ReadInt32();
+      break;
+    }
+    case 0x4d77b7aa: {
+      sldrThis.laserPulseProjectile = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xb763eb10: {
+      LoadTypedefDamageInfo(sldrThis.laserPulseDamage, input);
+      break;
+    }
+    case 0xeda45014: {
+      sldrThis.minDodges = input.ReadInt32();
+      break;
+    }
+    case 0x7dd740fe: {
+      sldrThis.maxDodges = input.ReadInt32();
+      break;
+    }
+    case 0x47be3298: {
+      sldrThis.dodgeChance = input.ReadFloat();
+      break;
+    }
+    case 0xd3dec6dc: {
+      sldrThis.resetShieldTime = input.ReadFloat();
+      break;
+    }
+    case 0xecd9d92d: {
+      sldrThis.shieldHP = input.ReadFloat();
+      break;
+    }
+    case 0x5ff006d1: {
+      sldrThis.laserSweepTurnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x1bd017ce: {
+      LoadTypedefDamageInfo(sldrThis.laserSweepDamage, input);
+      break;
+    }
+    case 0x4a37c437: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.laserSweepBeamInfo, input);
+      break;
+    }
+    case 0x9ec51fe4: {
+      LoadTypedefUnknownStruct42(sldrThis.unknown_0x9ec51fe4, input);
+      break;
+    }
+    case 0xea307548: {
+      sldrThis.sound_LaserSweep = input.ReadInt32();
+      break;
+    }
+    case 0x3779bd93: {
+      sldrThis.sound_LaserChargeUp = input.ReadInt32();
+      break;
+    }
+    case 0xc90dbdb4: {
+      sldrThis.sound_Docking = input.ReadInt32();
+      break;
+    }
+    case 0xe7724802: {
+      sldrThis.sound_Scanning = input.ReadInt32();
+      break;
+    }
+    case 0xd4a06273: {
+      sldrThis.sound_LightShield = input.ReadInt32();
+      break;
+    }
+    case 0xafc20631: {
+      sldrThis.sound_DarkShield = input.ReadInt32();
+      break;
+    }
+    case 0x2ff5a809: {
+      sldrThis.sound_ShieldOn = input.ReadInt32();
+      break;
+    }
+    case 0xe61748ed: {
+      LoadTypedefIngPossessionData(sldrThis.ingPossessionData, input);
+      break;
+    }
+    case 0x80a8ef3b: {
+      LoadTypedefDamageVulnerability(sldrThis.lightShieldVulnerability, input);
+      break;
+    }
+    case 0xa21c90ea: {
+      LoadTypedefDamageVulnerability(sldrThis.darkShieldVulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSplitterCommandModule {
   SLdrSplitterCommandModule();
@@ -76,6 +297,15 @@ struct SLdrSplitterCommandModule {
   SLdrSplitterCommandModuleData commandModuleProperties; // 0x560cf813
 };
 
-void LoadTypedefSLdrSplitterCommandModule(SLdrSplitterCommandModule& data, CInputStream& input);
+inline SLdrSplitterCommandModule::SLdrSplitterCommandModule() : editorProperties(), patterned(), actorInformation(), commandModuleProperties() {
+  patterned.turnSpeed = 60.0f;
+  patterned.minAttackRange = 12.0f;
+  patterned.maxAttackRange = 37.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 2;
+}
+
+inline SLdrSplitterCommandModule::~SLdrSplitterCommandModule() {}
 
 #endif

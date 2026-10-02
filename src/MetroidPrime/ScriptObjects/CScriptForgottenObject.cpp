@@ -64,7 +64,7 @@ struct SLdrForgottenObject {
   SLdrEditorProperties editorProperties;
 };
 
-CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrForgottenObject properties;
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
@@ -72,7 +72,7 @@ CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, const CEnt
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(properties.editorProperties, input);
+      LoadTypedefEditorProperties(properties.editorProperties, input);
       break;
     default:
       input.ReadBytes(nullptr, propertySize);

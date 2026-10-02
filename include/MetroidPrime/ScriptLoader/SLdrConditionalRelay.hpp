@@ -4,19 +4,60 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrPlayerItem.hpp"
 
 struct SLdrConditionalTest {
   SLdrConditionalTest();
   ~SLdrConditionalTest();
 
   int boolean; // 0xde3e40a3
-  int playerItem; // 0xd3af8d72
+  SLdrPlayerItem playerItem; // 0xd3af8d72
   int amountOrCapacity; // 0x03bdea98
   int condition; // 0x70729364
   int value; // 0x8db9398a
 };
 
-void LoadTypedefSLdrConditionalTest(SLdrConditionalTest& data, CInputStream& input);
+inline SLdrConditionalTest::SLdrConditionalTest() : playerItem() {
+  boolean = 1;
+  amountOrCapacity = 0;
+  condition = 0;
+  value = 0;
+}
+
+inline SLdrConditionalTest::~SLdrConditionalTest() {}
+
+inline void LoadTypedefConditionalTest(SLdrConditionalTest& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xde3e40a3: {
+      sldrThis.boolean = input.ReadInt32();
+      break;
+    }
+    case 0xd3af8d72: {
+      LoadTypedefPlayerItem(sldrThis.playerItem, input);
+      break;
+    }
+    case 0x03bdea98: {
+      sldrThis.amountOrCapacity = input.ReadInt32();
+      break;
+    }
+    case 0x70729364: {
+      sldrThis.condition = input.ReadInt32();
+      break;
+    }
+    case 0x8db9398a: {
+      sldrThis.value = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrConditionalRelay {
   SLdrConditionalRelay();
@@ -31,6 +72,14 @@ struct SLdrConditionalRelay {
   SLdrConditionalTest conditional4; // 0xb498b424
 };
 
-void LoadTypedefSLdrConditionalRelay(SLdrConditionalRelay& data, CInputStream& input);
+inline SLdrConditionalRelay::SLdrConditionalRelay() : editorProperties(), conditional1(), conditional2(), conditional3(), conditional4() {
+  setToZeroOnAreaLoaded = false;
+  multiplayerMaskandNegate = 7680;
+  conditional2.boolean = 0;
+  conditional3.boolean = 0;
+  conditional4.boolean = 0;
+}
+
+inline SLdrConditionalRelay::~SLdrConditionalRelay() {}
 
 #endif

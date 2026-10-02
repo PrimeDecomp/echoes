@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.hpp"
@@ -27,8 +27,8 @@ struct SLdrSplinter {
   int unknown_0x376e909f; // 0x376e909f
   SLdrDamageInfo attackDamage; // 0x66dcaacb
   int unknown_0xb63b810c; // 0xb63b810c
-  SLdrAnimationParameters unknown_0x6d752efc; // 0x6d752efc
-  SLdrAnimationParameters unknown_0x0d6ab7b5; // 0x0d6ab7b5
+  SLdrAnimationSet unknown_0x6d752efc; // 0x6d752efc
+  SLdrAnimationSet unknown_0x0d6ab7b5; // 0x0d6ab7b5
   CAssetId pART; // non-matching name, 0x630d93a1
   SLdrDamageInfo damageInfo; // non-matching name, 0x4436a388
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
@@ -40,6 +40,29 @@ struct SLdrSplinter {
   float unknown_0xb7deaf32; // 0xb7deaf32
 };
 
-void LoadTypedefSLdrSplinter(SLdrSplinter& data, CInputStream& input);
+inline SLdrSplinter::SLdrSplinter() : editorProperties(), patterned(), actorInformation(), attackDamage(), unknown_0x6d752efc(), unknown_0x0d6ab7b5(), pART(kInvalidAssetId), damageInfo(), ingPossessionData(), megaSplinterSpitProjectile(kInvalidAssetId), megaSplinterSpitProjectileDamage(), megaSplinterSpitVisorEffect(kInvalidAssetId) {
+  patterned.detectionRange = 32.0f;
+  patterned.minAttackRange = 7.0f;
+  patterned.maxAttackRange = 17.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.0f;
+  unknown_0x72edeb7d = 0.0f;
+  unknown_0xb8ed9ffa = 5.0f;
+  unknown_0x5e8d301b = 18.0f;
+  unknown_0xb98bb88f = 1.0f;
+  unknown_0x5feb176e = 3.0f;
+  unknown_0x726cd31d = 1;
+  unknown_0x376e909f = 2;
+  attackDamage.unknown_0x119fbd31 = 11;
+  attackDamage.dI_Damage = 5.0f;
+  unknown_0xb63b810c = 0;
+  isMegaSplinter = false;
+  megaSplinterSpitProjectileDamage.unknown_0x119fbd31 = 11;
+  megaSplinterSpitProjectileDamage.dI_Damage = 5.0f;
+  unknown_0x51be00d3 = 2.5f;
+  unknown_0xb7deaf32 = 5.0f;
+}
+
+inline SLdrSplinter::~SLdrSplinter() {}
 
 #endif

@@ -21,6 +21,17 @@ struct SLdrEMPulse {
   CAssetId explosion; // 0xd8c6d15c
 };
 
-void LoadTypedefSLdrEMPulse(SLdrEMPulse& data, CInputStream& input);
+inline SLdrEMPulse::SLdrEMPulse() : editorProperties(), explosion(kInvalidAssetId) {
+  editorProperties.active = false;
+  initialSize = 0.1f;
+  finalSize = 34.0f;
+  duration = 1.3329999f;
+  minHudDisableTime = 1.0f;
+  maxHudDisableTime = 3.0f;
+  minHudDisableAmount = 0.40000001f;
+  maxHudDisableAmount = 0.80000001f;
+}
+
+inline SLdrEMPulse::~SLdrEMPulse() {}
 
 #endif

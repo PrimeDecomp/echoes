@@ -24,6 +24,7 @@
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 // #include "MetroidPrime/HUD/CSamusHud.hpp"
 
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrPickup.hpp"
 
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
@@ -304,130 +305,37 @@ void CScriptPickup::SetSpawned() { mGenerated = true; }
 
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
                   const CVector3f& collisionOffset);
-CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
-CActorParameters LoadActorParameters(const SLdrActorParameters&);
-SEchoParameters LoadEchoParameters(const SLdrEchoParameters&);
-// Guessed name; the native reader stores a single item index.
-void ReadPlayerItem(int& item, CInputStream& input);
 
-rstl::optional_object< CModelData > LoadModelData(const CVector3f&, CAssetId asset,
-                                                  const SLdrAnimationParameters&, bool);
+rstl::optional_object< CModelData > LdrToModelData(const CVector3f&, CAssetId asset,
+                                                  const SLdrAnimationSet&, bool);
 
-CScriptPickup* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  SLdrPickup sldrPickup;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    uint propertyId = (uint)input.ReadInt32();
-    u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrPickup.editorProperties, input);
-      break;
-    case 0x3a3e03ba:
-      sldrPickup.collisionSize = CVector3f(input);
-      break;
-    case 0x2e686c2a:
-      sldrPickup.collisionOffset = CVector3f(input);
-      break;
-    case 0xa02ef0c4:
-      ReadPlayerItem(sldrPickup.itemToGive, input);
-      break;
-    case 0x28c71b54:
-      sldrPickup.capacityIncrease = input.ReadInt32();
-      break;
-    case 0x165ab069:
-      sldrPickup.itemPercentageIncrease = input.ReadInt32();
-      break;
-    case 0x94af1445:
-      sldrPickup.amount = input.ReadInt32();
-      break;
-    case 0xf7fbaaa5:
-      sldrPickup.respawnTime = input.ReadFloat();
-      break;
-    case 0xc80fc827:
-      sldrPickup.pickupEffectLifetime = input.ReadFloat();
-      break;
-    case 0x32dc67f6:
-      sldrPickup.lifetime = input.ReadFloat();
-      break;
-    case 0x56e3ceef:
-      sldrPickup.fadetime = input.ReadFloat();
-      break;
-    case 0xc27ffa8f:
-      sldrPickup.model = input.ReadInt32();
-      break;
-    case 0xe25fb08c:
-      LoadTypedefSLdrAnimationParameters(sldrPickup.animationInformation, input);
-      break;
-    case 0x7e397fed:
-      LoadTypedefSLdrActorParameters(sldrPickup.actorInformation, input);
-      break;
-    case 0x192b0e70:
-      LoadTypedefSLdrEchoParameters(sldrPickup.echoInformation, input);
-      break;
-    case 0xe585f166:
-      sldrPickup.activationDelay = input.ReadFloat();
-      break;
-    case 0xa9fe872a:
-      sldrPickup.pickupEffect = input.ReadInt32();
-      break;
-    case 0xe10bcb96:
-      sldrPickup.absoluteValue = input.ReadBool();
-      break;
-    case 0xce33239f:
-      sldrPickup.calculateVisibility = input.ReadBool();
-      break;
-    case 0x2de4a294:
-      sldrPickup.canHomeByDefault = input.ReadBool();
-      break;
-    case 0xa6ea280d:
-      sldrPickup.autoHomeRange = input.ReadFloat();
-      break;
-    case 0xc2b11cfd:
-      sldrPickup.delayUntilHome = input.ReadFloat();
-      break;
-    case 0x2db59fcf:
-      sldrPickup.homingSpeed = input.ReadFloat();
-      break;
-    case 0x961c0d17:
-      sldrPickup.autoSpin = input.ReadBool();
-      break;
-    case 0xa755eb02:
-      sldrPickup.blinkOut = input.ReadBool();
-      break;
-    case 0x850115e4:
-      sldrPickup.orbitOffset = CVector3f(input);
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+CEntity* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPickup sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPickup.inc"
 
   rstl::optional_object< CModelData > modelData(
-      LoadModelData(sldrPickup.editorProperties.transform.scale, sldrPickup.model,
-                    sldrPickup.animationInformation, true));
+      LdrToModelData(sldrThis.editorProperties.transform.scale, sldrThis.model,
+                    sldrThis.animationInformation, true));
   if (!modelData) {
     return nullptr;
   }
 
   CAABox box =
-      LoadCAABox(mgr, info.GetAreaId(), sldrPickup.collisionSize, sldrPickup.collisionOffset);
-  if (sldrPickup.collisionSize == CVector3f::Zero()) {
-    box = modelData->GetBounds(CTransform4f(LoadEditorTransform(sldrPickup.editorProperties)));
+      LoadCAABox(mgr, info.GetAreaId(), sldrThis.collisionSize, sldrThis.collisionOffset);
+  if (sldrThis.collisionSize == CVector3f::Zero()) {
+    box = modelData->GetBounds(CTransform4f(LdrToTransform4f(sldrThis.editorProperties)));
   }
   return new CScriptPickup(
-      mgr.AllocateUniqueId(), sldrPickup.editorProperties.name,
-      LdrToEntityInfo(info, sldrPickup.editorProperties),
-      LoadEditorTransform(sldrPickup.editorProperties), *modelData,
-      LoadActorParameters(sldrPickup.actorInformation),
-      LoadEchoParameters(sldrPickup.echoInformation), box,
-      CPlayerState::EItemType(sldrPickup.itemToGive), sldrPickup.amount,
-      sldrPickup.capacityIncrease, sldrPickup.itemPercentageIncrease, sldrPickup.pickupEffect,
-      sldrPickup.absoluteValue, sldrPickup.canHomeByDefault, sldrPickup.autoSpin,
-      sldrPickup.blinkOut,
-      sldrPickup.lifetime, sldrPickup.respawnTime, sldrPickup.fadetime,
-      sldrPickup.activationDelay, sldrPickup.pickupEffectLifetime, sldrPickup.autoHomeRange,
-      sldrPickup.delayUntilHome, sldrPickup.homingSpeed, CVector3f(sldrPickup.orbitOffset));
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), *modelData,
+      LdrToActorParameters(sldrThis.actorInformation),
+      LdrToEchoParameters(sldrThis.echoInformation), box,
+      CPlayerState::EItemType(sldrThis.itemToGive.value), sldrThis.amount,
+      sldrThis.capacityIncrease, sldrThis.itemPercentageIncrease, sldrThis.pickupEffect,
+      sldrThis.absoluteValue, sldrThis.canHomeByDefault, sldrThis.autoSpin,
+      sldrThis.blinkOut,
+      sldrThis.lifetime, sldrThis.respawnTime, sldrThis.fadetime,
+      sldrThis.activationDelay, sldrThis.pickupEffectLifetime, sldrThis.autoHomeRange,
+      sldrThis.delayUntilHome, sldrThis.homingSpeed, CVector3f(sldrThis.orbitOffset));
 }

@@ -14,6 +14,6 @@ struct SLdrDamageInfo {
   float dI_KnockBackPower; // 0x555ff80a
 };
 
-void LoadTypedefSLdrDamageInfo(SLdrDamageInfo& data, CInputStream& input);
+void LoadTypedefDamageInfo(SLdrDamageInfo& data, CInputStream& input);
 
 #endif

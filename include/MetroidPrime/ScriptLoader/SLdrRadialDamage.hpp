@@ -18,6 +18,13 @@ struct SLdrRadialDamage {
   bool originator; // 0x9c951fed
 };
 
-void LoadTypedefSLdrRadialDamage(SLdrRadialDamage& data, CInputStream& input);
+inline SLdrRadialDamage::SLdrRadialDamage() : editorProperties(), damage() {
+  radius = 15.0f;
+  autoAction = false;
+  autoDelete = false;
+  originator = false;
+}
+
+inline SLdrRadialDamage::~SLdrRadialDamage() {}
 
 #endif

@@ -14,7 +14,33 @@ struct SLdrCommandData {
   int state; // 0x4063422a
 };
 
-void LoadTypedefSLdrCommandData(SLdrCommandData& data, CInputStream& input);
+inline SLdrCommandData::SLdrCommandData() : command() {
+  command.unknown_0x94ba5737 = 0;
+  state = 0;
+}
+
+inline SLdrCommandData::~SLdrCommandData() {}
+
+inline void LoadTypedefCommandData(SLdrCommandData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x359c7aaf: {
+      LoadTypedefCommand(sldrThis.command, input);
+      break;
+    }
+    case 0x4063422a: {
+      sldrThis.state = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrControlHint {
   SLdrControlHint();
@@ -38,6 +64,16 @@ struct SLdrControlHint {
   SLdrCommandData command8; // 0x3d2d3746
 };
 
-void LoadTypedefSLdrControlHint(SLdrControlHint& data, CInputStream& input);
+inline SLdrControlHint::SLdrControlHint() : editorProperties(), command1(), command2(), command3(), command4(), command5(), command6(), command7(), command8() {
+  priority = 10;
+  timer = 0.0f;
+  cancelMethod = 0;
+  cancelPressCount = 0;
+  cancelPressTime = 0.0f;
+  cancelTimer = 0.0f;
+  disableControlFlagsControlHint = 0x00000000u;
+}
+
+inline SLdrControlHint::~SLdrControlHint() {}
 
 #endif

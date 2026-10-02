@@ -30,6 +30,6 @@ struct SLdrTweakSlideShow {
   rstl::string stringResName; // 0xc0544bc1
 };
 
-void LoadTypedefSLdrTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input);
+void LoadTypedefTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input);
 
 #endif

@@ -28,6 +28,22 @@ struct SLdrTextPane {
   bool depth_Backwards; // 0x35dc43d0
 };
 
-void LoadTypedefSLdrTextPane(SLdrTextPane& data, CInputStream& input);
+inline SLdrTextPane::SLdrTextPane() : editorProperties(), guiLabel(), textProperties(), japanTextProperties(), pivotOffset(CVector3f::Zero()), defaultString(kInvalidAssetId), defaultStringName() {
+  textProperties.textBoundingWidth = 80;
+  textProperties.textBoundingHeight = 10;
+  textProperties.lineSpacing = 100.0f;
+  textProperties.lineExtraSpace = 0;
+  textProperties.characterExtraSpace = 0;
+  japanTextProperties.textBoundingWidth = 80;
+  japanTextProperties.textBoundingHeight = 10;
+  blend_Mode = 1;
+  fadeInTime = 0.25f;
+  fadeOutTime = 0.25f;
+  depth_Compare = true;
+  depth_Update = true;
+  depth_Backwards = false;
+}
+
+inline SLdrTextPane::~SLdrTextPane() {}
 
 #endif

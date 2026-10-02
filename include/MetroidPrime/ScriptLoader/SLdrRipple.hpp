@@ -13,6 +13,10 @@ struct SLdrRipple {
   float energy; // 0x69731a91
 };
 
-void LoadTypedefSLdrRipple(SLdrRipple& data, CInputStream& input);
+inline SLdrRipple::SLdrRipple() : editorProperties() {
+  energy = -0.1f;
+}
+
+inline SLdrRipple::~SLdrRipple() {}
 
 #endif

@@ -234,31 +234,13 @@ rstl::optional_object< CAABox > CScriptSpiderBallWaypoint::GetTouchBounds() cons
   return mAabox;
 }
 
-CTransform4f LoadEditorTransform(const SLdrEditorProperties&);
 
-CEntity* LoadSpiderBallWaypoint(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CEntity* LoadSpiderBallWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSpiderBallWaypoint sldrThis;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const int propertyId = input.Get< int >();
-    const u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0x5d817483:
-      sldrThis.flags = input.ReadInt32();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrSpiderBallWaypoint.inc"
 
   return rs_new CScriptSpiderBallWaypoint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
                                           LdrToEntityInfo(info, sldrThis.editorProperties),
-                                          LoadEditorTransform(sldrThis.editorProperties),
+                                          LdrToTransform4f(sldrThis.editorProperties),
                                           sldrThis.flags);
 }

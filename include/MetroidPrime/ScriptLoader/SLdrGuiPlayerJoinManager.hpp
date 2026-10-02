@@ -12,6 +12,10 @@ struct SLdrGuiPlayerJoinManager {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-void LoadTypedefSLdrGuiPlayerJoinManager(SLdrGuiPlayerJoinManager& data, CInputStream& input);
+inline SLdrGuiPlayerJoinManager::SLdrGuiPlayerJoinManager() : editorProperties() {
+  editorProperties.active = false;
+}
+
+inline SLdrGuiPlayerJoinManager::~SLdrGuiPlayerJoinManager() {}
 
 #endif

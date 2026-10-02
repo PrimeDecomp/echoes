@@ -16,6 +16,11 @@ struct SLdrTriggerOrientated {
   bool deactivateOnExit; // 0x1c453986
 };
 
-void LoadTypedefSLdrTriggerOrientated(SLdrTriggerOrientated& data, CInputStream& input);
+inline SLdrTriggerOrientated::SLdrTriggerOrientated() : editorProperties(), trigger() {
+  deactivateOnEnter = false;
+  deactivateOnExit = false;
+}
+
+inline SLdrTriggerOrientated::~SLdrTriggerOrientated() {}
 
 #endif

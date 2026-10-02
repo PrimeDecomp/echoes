@@ -17,6 +17,14 @@ struct SLdrDock {
   bool showSoftTransition; // 0x222d9daf
 };
 
-void LoadTypedefSLdrDock(SLdrDock& data, CInputStream& input);
+inline SLdrDock::SLdrDock() : editorProperties() {
+  dockNumber = 0;
+  areaNumber = 0;
+  isVirtual = false;
+  loadConnectedImmediate = true;
+  showSoftTransition = true;
+}
+
+inline SLdrDock::~SLdrDock() {}
 
 #endif

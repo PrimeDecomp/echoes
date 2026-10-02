@@ -25,6 +25,6 @@ struct SLdrTextProperties {
   bool drawShadow; // 0xd8a2eef0
 };
 
-void LoadTypedefSLdrTextProperties(SLdrTextProperties& data, CInputStream& input);
+void LoadTypedefTextProperties(SLdrTextProperties& data, CInputStream& input);
 
 #endif

@@ -15,7 +15,28 @@ struct SLdrConnection {
   bool unknown_0x00000002;
 };
 
-void LoadTypedefSLdrConnection(SLdrConnection& data, CInputStream& input);
+inline SLdrConnection::SLdrConnection() : activationTimes() {
+  connectionIndex = 0;
+  unknown_0x00000002 = false;
+}
+
+inline SLdrConnection::~SLdrConnection() {}
+
+inline void LoadTypedefConnection(SLdrConnection& sldrThis, CInputStream& input) {
+  sldrThis.connectionIndex = input.ReadInt16();
+  {
+    const int count0 = input.ReadInt32();
+    sldrThis.activationTimes.clear();
+    sldrThis.activationTimes.reserve(count0);
+    for (int i0 = 0; i0 < count0; ++i0) {
+      float item0 = float();
+      item0 = 0.0f;
+      item0 = input.ReadFloat();
+      sldrThis.activationTimes.push_back(item0);
+    }
+  }
+  sldrThis.unknown_0x00000002 = input.ReadBool();
+}
 
 struct SLdrSequenceTimer {
   SLdrSequenceTimer();
@@ -31,6 +52,15 @@ struct SLdrSequenceTimer {
   bool takeExternalTime; // 0x27b3b082
 };
 
-void LoadTypedefSLdrSequenceTimer(SLdrSequenceTimer& data, CInputStream& input);
+inline SLdrSequenceTimer::SLdrSequenceTimer() : editorProperties(), sequenceConnections() {
+  startTime = 0.0f;
+  maxTime = 0.0f;
+  loopStartTime = 0.0f;
+  isAutostart = false;
+  isLoop = false;
+  takeExternalTime = false;
+}
+
+inline SLdrSequenceTimer::~SLdrSequenceTimer() {}
 
 #endif

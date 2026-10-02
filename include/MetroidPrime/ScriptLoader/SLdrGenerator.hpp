@@ -20,6 +20,15 @@ struct SLdrGenerator {
   float randomScaleMax; // 0x25e6b485
 };
 
-void LoadTypedefSLdrGenerator(SLdrGenerator& data, CInputStream& input);
+inline SLdrGenerator::SLdrGenerator() : editorProperties(), offset(CVector3f::Zero()) {
+  randomCount = 1;
+  uniqueLocations = false;
+  keepOrientation = false;
+  useOriginatorTransform = false;
+  randomScaleMin = 1.0f;
+  randomScaleMax = 1.0f;
+}
+
+inline SLdrGenerator::~SLdrGenerator() {}
 
 #endif

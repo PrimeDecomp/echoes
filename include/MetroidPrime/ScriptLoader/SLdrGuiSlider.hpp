@@ -20,6 +20,16 @@ struct SLdrGuiSlider {
   int slideSoundVolume; // 0x20ddb661
 };
 
-void LoadTypedefSLdrGuiSlider(SLdrGuiSlider& data, CInputStream& input);
+inline SLdrGuiSlider::SLdrGuiSlider() : editorProperties(), widgetProperties() {
+  editorProperties.active = false;
+  minValue = 0.0f;
+  maxValue = 255.0f;
+  increment = 1.0f;
+  slideSpeed = 1.0f;
+  slideSound = 0;
+  slideSoundVolume = 127;
+}
+
+inline SLdrGuiSlider::~SLdrGuiSlider() {}
 
 #endif

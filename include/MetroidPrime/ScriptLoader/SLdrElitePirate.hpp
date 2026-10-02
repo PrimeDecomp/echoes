@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.hpp"
@@ -54,13 +54,48 @@ struct SLdrElitePirate {
   int alwaysFF; // non-matching name, 0x06cf4324
   int alwaysFF_0x23f5e1ee; // non-matching name, 0x23f5e1ee
   SLdrActorParameters rocketLauncherActorInfo; // 0x62c744cd
-  SLdrAnimationParameters rocketLauncherAnimInfo; // 0xb92b481d
-  SLdrAnimationParameters unknown_0x7e6e0d38; // 0x7e6e0d38
+  SLdrAnimationSet rocketLauncherAnimInfo; // 0xb92b481d
+  SLdrAnimationSet unknown_0x7e6e0d38; // 0x7e6e0d38
   CAssetId visorElectricEffect; // 0xbd321538
   int sound_VisorElectric; // 0x58a492ef
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
 };
 
-void LoadTypedefSLdrElitePirate(SLdrElitePirate& data, CInputStream& input);
+inline SLdrElitePirate::SLdrElitePirate() : editorProperties(), patterned(), actorInformation(), meleeDamage(), shieldedModel(kInvalidAssetId), shieldedSkinRules(kInvalidAssetId), darkShield(kInvalidAssetId), darkShieldPop(kInvalidAssetId), lightShield(kInvalidAssetId), lightShieldPop(kInvalidAssetId), singleShockWaveInfo(), doubleShockWaveInfo(), rocket(kInvalidAssetId), rocketDamage(), rocketLauncherActorInfo(), rocketLauncherAnimInfo(), unknown_0x7e6e0d38(), visorElectricEffect(kInvalidAssetId), ingPossessionData() {
+  patterned.minAttackRange = 6.0f;
+  patterned.maxAttackRange = 11.0f;
+  patterned.averageAttackTime = 3.5f;
+  patterned.attackTimeVariation = 2.0f;
+  patterned.creatureSize = 2;
+  maxMeleeRange = 9.0f;
+  minShockwaveRange = 9.0f;
+  maxShockwaveRange = 35.0f;
+  minRocketRange = 15.0f;
+  maxRocketRange = 80.0f;
+  unknown_0x5236c2b6 = 50.0f;
+  unknown_0x01eaab17 = 50.0f;
+  darkShieldSound = 0;
+  lightShieldSound = 0;
+  tauntInterval = 8.0f;
+  tauntVariance = 3.0f;
+  unknown_0x28b39197 = 1.0f;
+  unknown_0xe27de71b = 1.0f;
+  unknown_0x665e7ace = 1.0f;
+  unknown_0xacd4d06d = 2.0f;
+  rocketDamage.unknown_0x119fbd31 = 11;
+  rocketDamage.dI_Damage = 10.0f;
+  rocketDamage.dI_Radius = 5.0f;
+  unknown_0x624222f8 = 2;
+  unknown_0x31e43a1c = 4;
+  repeatedAttackChance = 0.1f;
+  energyAbsorbDuration = 3.0f;
+  energyAbsorbVariance = 1.0f;
+  energyAttractionForce = 50.0f;
+  alwaysFF = -1;
+  alwaysFF_0x23f5e1ee = -1;
+  sound_VisorElectric = 0;
+}
+
+inline SLdrElitePirate::~SLdrElitePirate() {}
 
 #endif

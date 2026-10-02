@@ -37,6 +37,32 @@ struct SLdrMetroidAlpha {
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
 };
 
-void LoadTypedefSLdrMetroidAlpha(SLdrMetroidAlpha& data, CInputStream& input);
+inline SLdrMetroidAlpha::SLdrMetroidAlpha() : editorProperties(), patterned(), actorInformation(), frozenVulnerability(), energyDrainVulnerability(), babyMetroidGrowthVulnerability(), babyMetroidTransformationParticleEffect(kInvalidAssetId), ingPossessionData() {
+  patterned.turnSpeed = 180.0f;
+  patterned.detectionRange = 60.0f;
+  patterned.maxAttackRange = 10.0f;
+  patterned.averageAttackTime = 6.0f;
+  patterned.attackTimeVariation = 5.0f;
+  patterned.contactDamage.dI_Damage = 5.0f;
+  patterned.contactDamage.dI_KnockBackPower = 3.0f;
+  patterned.health.health = 1.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 1;
+  unknown_0x72439b39 = 5.0f;
+  unknown_0x3af75fcc = 40.0f;
+  telegraphAttackTime = 1.0f;
+  babyMetroidScale = 0.5f;
+  unknown_0x03362858 = 10.0f;
+  unknown_0x852d3bb0 = 10.0f;
+  unknown_0x1c783744 = 0.5f;
+  stage2GrowthScale = 1.75f;
+  stage2GrowthEnergy = 50.0f;
+  unknown_0x5f3f294c = 100.0f;
+  dodgeCheckTimeInterval = 5.0f;
+  chanceToDodge = 0.5f;
+  metroidFlagsMetroid = 0x00000000u;
+}
+
+inline SLdrMetroidAlpha::~SLdrMetroidAlpha() {}
 
 #endif

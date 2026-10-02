@@ -27,6 +27,6 @@ struct SLdrLightParameters {
   int useLightSet; // 0x1f715fd3
 };
 
-void LoadTypedefSLdrLightParameters(SLdrLightParameters& data, CInputStream& input);
+void LoadTypedefLightParameters(SLdrLightParameters& data, CInputStream& input);
 
 #endif
