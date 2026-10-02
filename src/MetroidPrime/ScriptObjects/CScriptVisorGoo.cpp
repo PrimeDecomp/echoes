@@ -81,72 +81,74 @@ void CScriptVisorGoo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
 
 void CScriptVisorGoo::Think(float, CStateManager& mgr) {
   if (GetActive() && mEffectId == kInvalidUniqueId) {
-  bool loaded = false;
-  if (mParticleId != kInvalidAssetId) {
-    if (mParticleDesc.IsLoaded()) {
-      if (mElectricId != kInvalidAssetId) {
-        if (mElectricDesc.IsLoaded()) {
+    bool loaded = false;
+    if (mParticleId != kInvalidAssetId) {
+      if (mParticleDesc.IsLoaded()) {
+        if (mElectricId != kInvalidAssetId) {
+          if (mElectricDesc.IsLoaded()) {
+            loaded = true;
+          }
+        } else {
           loaded = true;
         }
-      } else {
-        loaded = true;
+      }
+    } else if (mElectricDesc.IsLoaded()) {
+      loaded = true;
+    }
+    if (loaded) {
+      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+        CPlayer* player = mgr.GetPlayer(i);
+        if (player->GetCameraState() != CPlayer::kCS_FirstPerson) {
+          continue;
+        }
+        bool showGoo = false;
+        const CVector3f eyeToGoo = GetTranslation() - player->GetEyePosition();
+        const float eyeToGooDist = eyeToGoo.Magnitude();
+        if (eyeToGooDist >= mMinRange && eyeToGooDist <= mMaxRange) {
+          if (mViewCheck) {
+            const CVector3f colNorm = player->GetCameraManager()
+                                          ->GetCurrentCameraTransform(mgr, true)
+                                          .GetColumn(kDY)
+                                          .AsNormalized();
+            float angleThresh = 45.f;
+            const float dot = CMath::Limit(CVector3f::Dot(eyeToGoo.AsNormalized(), colNorm), 1.f);
+            const float angle = CMath::Rad2Rev(CMath::FastArcCosR(dot)) * 360.f;
+            if (eyeToGooDist < 4.f) {
+              angleThresh *= 4.f / eyeToGooDist;
+              angleThresh = rstl::min_val(angleThresh, 90.f);
+            }
+            if (angle <= angleThresh) {
+              showGoo = true;
+            }
+          } else {
+            showGoo = true;
+          }
+          if (showGoo) {
+            const float t = (mMaxRange - eyeToGooDist) / (mMaxRange - mMinRange);
+            const float prob = t * mChanceMinRange + (1.f - t) * mChanceMaxRange;
+            if (mgr.Random()->Float() * 100.f <= prob) {
+              mEffectId = mgr.AllocateUniqueId();
+              mgr.AddObject(rs_new CHUDBillboardEffect(
+                  mParticleId != kInvalidAssetId
+                      ? rstl::optional_object< TToken< CGenDescription > >(GetParticleDesc())
+                      : rstl::optional_object_null(),
+                  mElectricId != kInvalidAssetId
+                      ? rstl::optional_object< TToken< CElectricDescription > >(GetElectricDesc())
+                      : rstl::optional_object_null(),
+                  mEffectId, true, rstl::string_l("VisorGoo"),
+                  CHUDBillboardEffect::GetNearClipDistance(mgr, i),
+                  CHUDBillboardEffect::GetScaleForPOV(mgr), i, mColor, CVector3f::One(),
+                  CVector3f::Zero(), 0));
+              CSfxManager::SfxStart(mSfx, 0x7f, 0x40, CSfxManager::kAllAreas, false, false,
+                                    CSfxManager::kMedPriority);
+            }
+          }
+        }
+      }
+      if (!mPersistent) {
+        mgr.DeleteObjectRequest(GetUniqueId());
       }
     }
-  } else if (mElectricDesc.IsLoaded()) {
-    loaded = true;
-  }
-  if (loaded) {
-  for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
-    CPlayer* player = mgr.GetPlayer(i);
-    if (player->GetCameraState() != CPlayer::kCS_FirstPerson) {
-      continue;
-    }
-    bool showGoo = false;
-    const CVector3f eyeToGoo = GetTranslation() - player->GetEyePosition();
-    const float eyeToGooDist = eyeToGoo.Magnitude();
-    if (eyeToGooDist >= mMinRange && eyeToGooDist <= mMaxRange) {
-      if (mViewCheck) {
-        const CVector3f colNorm =
-            player->GetCameraManager()->GetCurrentCameraTransform(mgr, true).GetColumn(kDY).AsNormalized();
-        float angleThresh = 45.f;
-        const float dot = CMath::Limit(CVector3f::Dot(eyeToGoo.AsNormalized(), colNorm), 1.f);
-        const float angle = CMath::Rad2Rev(CMath::FastArcCosR(dot)) * 360.f;
-        if (eyeToGooDist < 4.f) {
-          angleThresh *= 4.f / eyeToGooDist;
-          angleThresh = rstl::min_val(angleThresh, 90.f);
-        }
-        if (angle <= angleThresh) {
-          showGoo = true;
-        }
-      } else {
-        showGoo = true;
-      }
-      if (showGoo) {
-        const float t = (mMaxRange - eyeToGooDist) / (mMaxRange - mMinRange);
-        const float prob = t * mChanceMinRange + (1.f - t) * mChanceMaxRange;
-        if (mgr.Random()->Float() * 100.f <= prob) {
-          mEffectId = mgr.AllocateUniqueId();
-          mgr.AddObject(rs_new CHUDBillboardEffect(
-              mParticleId != kInvalidAssetId
-                  ? rstl::optional_object< TToken< CGenDescription > >(GetParticleDesc())
-                  : rstl::optional_object_null(),
-              mElectricId != kInvalidAssetId
-                  ? rstl::optional_object< TToken< CElectricDescription > >(GetElectricDesc())
-                  : rstl::optional_object_null(),
-              mEffectId, true, rstl::string_l("VisorGoo"),
-              CHUDBillboardEffect::GetNearClipDistance(mgr, i),
-              CHUDBillboardEffect::GetScaleForPOV(mgr), i, mColor, CVector3f::One(),
-              CVector3f::Zero(), 0));
-          CSfxManager::SfxStart(mSfx, 0x7f, 0x40, CSfxManager::kAllAreas, false, false,
-                                CSfxManager::kMedPriority);
-        }
-      }
-    }
-  }
-  if (!mPersistent) {
-    mgr.DeleteObjectRequest(GetUniqueId());
-  }
-  }
   }
 }
 
@@ -166,11 +168,10 @@ CEntity* LoadVisorGoo(CStateManager& mgr, CInputStream& input, CEntityInfo& info
 
   return rs_new CScriptVisorGoo(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), sldrThis.particle, sldrThis.electric,
-      sldrThis.color, sldrThis.minRange, sldrThis.maxRange, sldrThis.chanceAtMinRange,
-      sldrThis.chanceAtMaxRange, sldrThis.sound_HitSound, sldrThis.noViewCheck,
-      sldrThis.persistent, sldrThis.unknown_0xcb9a3009);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.particle, sldrThis.electric, sldrThis.color, sldrThis.minRange, sldrThis.maxRange,
+      sldrThis.chanceAtMinRange, sldrThis.chanceAtMaxRange, sldrThis.sound_HitSound,
+      sldrThis.noViewCheck, sldrThis.persistent, sldrThis.unknown_0xcb9a3009);
 }
 
 CScriptVisorGoo::~CScriptVisorGoo() {}

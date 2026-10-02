@@ -3,12 +3,12 @@
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CMain.hpp"
+#include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
 #include "MetroidPrime/Factories/CCharacterFactory.hpp"
 #include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
-#include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
@@ -170,9 +170,9 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINF, kSM_None)));
     const CScriptCamera* secondPass = TCastToConstPtr< CScriptCamera >(
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINB, kSM_None)));
-    const CEntity* darkWorldHolder =
-        TryCast(const_cast< CEntity* >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_None))),
-                kDarkWorldInfoHolderType);
+    const CEntity* darkWorldHolder = TryCast(
+        const_cast< CEntity* >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_None))),
+        kDarkWorldInfoHolderType);
     const CDarkWorldInfo* darkWorldInfo = nullptr;
     if (darkWorldHolder != nullptr) {
       darkWorldInfo = reinterpret_cast< const CDarkWorldInfo* >(
@@ -185,8 +185,8 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
     }
 
     transMgr->EnableTransition(
-        animRes, gpGameState->GetPlayerState()->ShouldDrawGrapple(), mPlatformModel,
-        mPlatformScale, mBackgroundModel, mBackgroundScale, mUpElevator,
+        animRes, gpGameState->GetPlayerState()->ShouldDrawGrapple(), mPlatformModel, mPlatformScale,
+        mBackgroundModel, mBackgroundScale, mUpElevator,
         firstPass ? &firstPass->GetSpline() : nullptr,
         secondPass ? &secondPass->GetSpline() : nullptr,
         mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetPostConstructed()->mInverseTransform,
@@ -199,7 +199,8 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
     mInTransition = true;
   } else {
     const CEntity* portal = mgr.GetObjectById(FindConnectedObject(mgr, kSS_Play, kSM_None));
-    if (const CScriptPortalTransition* transition = TCastToConstPtr< CScriptPortalTransition >(portal)) {
+    if (const CScriptPortalTransition* transition =
+            TCastToConstPtr< CScriptPortalTransition >(portal)) {
       rstl::single_ptr< CPortalTransition > portalTransition(transition->CreateTransition(mgr));
       gpGameState->WorldTransitionManager()->EnableTransition(portalTransition, mVolume);
       mInTransition = true;

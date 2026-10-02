@@ -12,10 +12,9 @@ class CElectricDescription;
 class CScriptVisorGoo : public CActor {
 public:
   CScriptVisorGoo(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                  const CTransform4f& xf, CAssetId particle, CAssetId electric,
-                  const CColor& color, float minRange, float maxRange, float chanceMinRange,
-                  float chanceMaxRange, int sfx, bool noViewCheck, bool persistent,
-                  bool deleteOnDeactivate);
+                  const CTransform4f& xf, CAssetId particle, CAssetId electric, const CColor& color,
+                  float minRange, float maxRange, float chanceMinRange, float chanceMaxRange,
+                  int sfx, bool noViewCheck, bool persistent, bool deleteOnDeactivate);
 
   // CEntity
   ~CScriptVisorGoo() override;
@@ -32,7 +31,7 @@ public:
   const TToken< CElectricDescription >& GetElectricDesc() const { return mElectricDesc; }
 
 private:
-  TToken< CGenDescription > mParticleDesc; // 0x158
+  TToken< CGenDescription > mParticleDesc;      // 0x158
   TToken< CElectricDescription > mElectricDesc; // 0x160
   ushort mSfx;
   CAssetId mParticleId;
