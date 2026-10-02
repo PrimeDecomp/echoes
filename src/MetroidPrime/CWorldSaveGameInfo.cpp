@@ -12,9 +12,31 @@
 inline CWorldSaveGameInfo::SLayerState::SLayerState(CInputStream& in)
 : mArea(in.ReadInt32()), mLayer(in.ReadInt32()) {}
 
-CFactoryFnReturn FSaveWorldFactory(const SObjectTag& tag, CInputStream& in,
-                                   const CVParamTransfer& params) {
-  return rs_new CWorldSaveGameInfo(in);
+CWorldSaveGameInfo::CWorldSaveGameInfo(CInputStream& in) : mAreaCount(0) {
+  in.ReadInt32();
+  const uint version = in.Get< uint >();
+  mAreaCount = in.ReadInt32();
+  mCinematics = rstl::vector< TEditorId >(in);
+  mRelays = rstl::vector< TEditorId >(in);
+  mLayers = rstl::vector< SLayerState >(in);
+  mDoors = rstl::vector< TEditorId >(in);
+  mScans = rstl::vector< ScanState >(in);
+  if (version > 3) {
+    mSystemVariables = rstl::vector< SEnvironmentVariable >(in);
+    mGameVariables = rstl::vector< SEnvironmentVariable >(in);
+  }
+  if (version > 4) {
+    mUnmappableObjects = rstl::vector< TEditorId >(in);
+  }
+}
+
+int CWorldSaveGameInfo::GetRelayIndex(const TEditorId& id) const {
+  for (int i = 0; i < mRelays.size(); ++i) {
+    if (mRelays[i] == id) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 uint CWorldSaveGameInfo::CalculateHash() const { // Guessed name
@@ -65,29 +87,7 @@ uint CWorldSaveGameInfo::CalculateHash() const { // Guessed name
   return CCRC32::Calculate(buffer.get(), size, hash);
 }
 
-int CWorldSaveGameInfo::GetRelayIndex(const TEditorId& id) const {
-  for (int i = 0; i < mRelays.size(); ++i) {
-    if (mRelays[i] == id) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-CWorldSaveGameInfo::CWorldSaveGameInfo(CInputStream& in) : mAreaCount(0) {
-  in.ReadInt32();
-  const uint version = in.ReadInt32();
-  mAreaCount = in.ReadInt32();
-  mCinematics = rstl::vector< TEditorId >(in);
-  mRelays = rstl::vector< TEditorId >(in);
-  mLayers = rstl::vector< SLayerState >(in);
-  mDoors = rstl::vector< TEditorId >(in);
-  mScans = rstl::vector< ScanState >(in);
-  if (version > 3) {
-    mSystemVariables = rstl::vector< SEnvironmentVariable >(in);
-    mGameVariables = rstl::vector< SEnvironmentVariable >(in);
-  }
-  if (version > 4) {
-    mUnmappableObjects = rstl::vector< TEditorId >(in);
-  }
+CFactoryFnReturn FSaveWorldFactory(const SObjectTag& tag, CInputStream& in,
+                                   const CVParamTransfer& params) {
+  return rs_new CWorldSaveGameInfo(in);
 }
