@@ -19,4 +19,13 @@ CHECK_SIZEOF(CSegStatementSet, 0x8)
 
 inline CSegStatementSet::~CSegStatementSet() {}
 
+class CStackSegStatementSet : public CSegStatementSet {
+public:
+  CStackSegStatementSet();
+
+  // CSegStatementSet
+  ~CStackSegStatementSet() override;
+};
+CHECK_SIZEOF(CStackSegStatementSet, 0x8)
+
 #endif // _CSEGSTATEMENTSET
