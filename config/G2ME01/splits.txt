@@ -1942,6 +1942,11 @@ Kyoto/Text/CTextInstruction.cpp:
 Kyoto/Text/CTextParser.cpp:
 	.text       start:0x802B9368 end:0x802BA7E0
 
+Kyoto/Text/CWordBreakTables.cpp:
+	.text       start:0x802BA7E0 end:0x802BA95C
+	.rodata     start:0x803AEEB8 end:0x803AF378
+	.sbss       start:0x804198F0 end:0x804198F8
+
 Kyoto/Text/CWordInstruction.cpp:
 	.text       start:0x802BA95C end:0x802BAB4C
 	.data       start:0x803B9F80 end:0x803B9FA0
