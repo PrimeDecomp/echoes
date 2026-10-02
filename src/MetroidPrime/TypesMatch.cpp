@@ -45,6 +45,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActorRotate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptAiJumpPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDebris.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
@@ -99,6 +100,8 @@ CScriptRoomAcoustics::~CScriptRoomAcoustics() {}
 CScriptDamageableTriggerOrientated::~CScriptDamageableTriggerOrientated() {}
 
 CScriptCoverPoint::~CScriptCoverPoint() {}
+
+CScriptAiJumpPoint::~CScriptAiJumpPoint() {}
 
 CEnergyProjectile::~CEnergyProjectile() {}
 
@@ -171,6 +174,9 @@ TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
+CAST_TO_PTR_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
+CAST_TO_REF_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
+TYPES_MATCH_IMPL(CScriptAiJumpPoint, CActor, kET_ScriptAiJumpPoint)
 CAST_TO_PTR_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 CAST_TO_REF_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 TYPES_MATCH_IMPL(CScriptCoverPoint, CActor, kET_ScriptCoverPoint)
