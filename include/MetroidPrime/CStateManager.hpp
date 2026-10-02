@@ -125,7 +125,9 @@ public:
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
-  void RenderLast(TUniqueId uid); // Guessed name.
+  bool RenderLast(TUniqueId uid);        // Guessed name.
+  bool RenderLastOverlay(const TUniqueId& uid); // Guessed name.
+  bool RenderLastHUD(const TUniqueId& uid); // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
