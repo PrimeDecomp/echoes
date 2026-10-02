@@ -20,6 +20,9 @@
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
 
+const float CPlayer::skDefaultHudFadeOutSpeed = 0.5f;
+const float CPlayer::skDefaultHudFadeInSpeed = 2.5f;
+
 CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
                  const CVector3f& playerScale, float mass, float stepUp, float stepDown,
                  float ballRadius, const CMaterialList& ml, CPlayerState* playerState,
