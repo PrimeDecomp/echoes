@@ -685,6 +685,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAiJumpPoint.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CMessageScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
+            Object(NonMatching, "MetroidPrime/Weapons/WeaponTypes.cpp"),
             Object(Matching, "MetroidPrime/CScriptMailbox.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRelay.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp"),

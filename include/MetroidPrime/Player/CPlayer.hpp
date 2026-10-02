@@ -47,6 +47,7 @@ enum EPlayerMovementState {
 
 class CPlayer : public CPhysicsActor {
 public:
+  bool GetX1268_31() const { return x1268_31_; }
   enum ESurfaceRestraints {
     kSR_Normal,
     kSR_Air,

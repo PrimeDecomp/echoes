@@ -1090,6 +1090,9 @@ MetroidPrime/Player/CPlayerDynamics.cpp:
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
+MetroidPrime/Weapons/WeaponTypes.cpp:
+	.text       start:0x8018A188 end:0x8018A9CC
+
 MetroidPrime/Player/CMorphBallShadow.cpp:
 	.text       start:0x8018A9CC end:0x8018BDF0
 
