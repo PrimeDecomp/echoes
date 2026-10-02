@@ -151,7 +151,7 @@ CSfxHandle PlaySfxForPlayer(CPlayer* player, ushort sfx, short pan, int area, bo
                             bool looped) {
   CSfxHandle hnd = CSfxManager::SfxStart(sfx, 0x7f, pan, area, true, looped);
   CSfxManager::SfxSpan(hnd, 0);
-  if (player && player->GetX1268_31()) {
+  if (player && player->IsInSafeZone()) {
     CSfxManager::SetIgnoreAreaLowPass(hnd, true);
   }
   if (underwater) {
