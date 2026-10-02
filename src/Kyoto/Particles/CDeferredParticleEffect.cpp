@@ -5,6 +5,7 @@
 #include "Kyoto/Particles/CParticleElectric.hpp"
 #include "Kyoto/Particles/CParticleSpawnSystem.hpp"
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
+#include "Kyoto/Particles/CSortedParticleSystem.hpp"
 
 CDeferredParticleEffect::CDeferredParticleEffect(const CToken& effect,
                                                  const CDependencyGroupToken& group)
@@ -124,8 +125,8 @@ void CDeferredParticleEffect::CreateGenerator() {
     break;
   }
   case 'SRSC': {
-    TToken< CSpawnRandomDescription > desc(mEffect);
-    gen = rs_new CParticleSpawnRandom(desc, CElementGen::kOSF_One, false);
+    TToken< CSortedParticleSystemDescription > desc(mEffect);
+    gen = rs_new CSortedParticleSystem(desc, CElementGen::kOSF_One, false);
     break;
   }
   default:
