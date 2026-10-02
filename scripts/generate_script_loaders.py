@@ -183,12 +183,6 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
 }
 
-# Scalar defaults the native constructor assigns where the templates have none
-# (LoadScanTreeInventory, G2ME01 0x8020EBF0: inventory slot 10).
-NATIVE_DEFAULT_VALUES: dict[tuple[str, int], str] = {
-    ("SLdrScanTreeInventory", 0x3D326F90): "10",
-}
-
 # An enumeration without a template default is still assigned zero in the body.
 ZERO_DEFAULT_KINDS = frozenset({"Choice"})
 pwe_type_lookup = {
@@ -679,12 +673,6 @@ class Generator:
         for name in self.structs:
             owner(name)
 
-    def field_defaults(self, record: str, prop: Field) -> list[str]:
-        native = NATIVE_DEFAULT_VALUES.get((record, property_id(prop.node)))
-        if native is not None:
-            return [prop.name + " = " + native + ";"]
-        return self.defaults(prop, prop.name)
-
     def defaults(self, prop: Field, target: str) -> list[str]:
         kind = prop.node.attrib["Type"]
         if prop.dependency and kind == "Choice":
@@ -932,7 +920,7 @@ class Generator:
                     prop.condition,
                     [
                         "  " + line
-                        for line in self.field_defaults(name, prop)
+                        for line in self.defaults(prop, prop.name)
                         + [
                             prop.name + "." + line
                             for line in NATIVE_INSTANCE_DEFAULTS.get(name, {}).get(
