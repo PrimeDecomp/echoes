@@ -8,7 +8,7 @@ public:
   CBSSlide();
 
   // CBodyState
-  ~CBSSlide() override;
+  ~CBSSlide() override {}
   bool IsMoving() const override;
   bool ApplyHeadTracking() const override;
   void Start(CBodyController& bc, CStateManager& mgr) override;
@@ -17,6 +17,8 @@ public:
 
 private:
   float mRotateSpeed;
+
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc);
 };
 CHECK_SIZEOF(CBSSlide, 0x8)
 
