@@ -1,62 +1,85 @@
 #include "MetroidPrime/CDamageInfo.hpp"
 
-// #include "Kyoto/Streams/CInputStream.hpp"
-// #include "MetroidPrime/CDamageVulnerability.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CDamageVulnerability.hpp"
 
-#include "MetroidPrime/Player/CPlayerState.hpp"
+static inline bool does_damage(const CWeaponTypeVulnerability& vulnerability) {
+  return !close_enough(vulnerability.mDamageMultiplier, 0.f) &&
+         vulnerability.mEffect != CWeaponTypeVulnerability::kE_Immune;
+}
 
-// CDamageInfo::CDamageInfo(CInputStream& in)
-// : x0_weaponMode(CWeaponMode::Invalid()), x18_24_noImmunity(false) {
-//   in.ReadLong();
-//   x0_weaponMode = CWeaponMode(EWeaponType(in.ReadLong()));
-//   x8_damage = in.ReadFloat();
-//   xc_radiusDamage = x8_damage;
-//   x10_radius = in.ReadFloat();
-//   x14_knockback = in.ReadFloat();
-// }
+static inline bool check_hurts(const CWeaponTypeVulnerability& vulnerability) {
+  bool hurts = true;
+  if (!does_damage(vulnerability) && vulnerability.mEffect != CWeaponTypeVulnerability::kE_Immune) {
+    hurts = false;
+  }
+  return hurts;
+}
 
-// float CDamageInfo::GetDamage(const CDamageVulnerability& dVuln) const {
-//   EVulnerability vuln = dVuln.GetVulnerability(x0_weaponMode, false);
-//   if (vuln == kVN_Deflect)
-//     return 0.f;
-//   else if (vuln == kVN_Weak)
-//     return 2.f * x8_damage;
+float CDamageInfo::GetDamage(const CDamageVulnerability& dVuln) const {
+  if (dVuln.GetEffect(mWeaponMode) == CWeaponTypeVulnerability::kE_Immune) {
+    return 0.f;
+  }
+  return GetVulnerableDamage(dVuln);
+}
 
-//   return x8_damage;
-// }
+float CDamageInfo::GetVulnerableDamage(const CDamageVulnerability& dVuln) const {
+  const CWeaponTypeVulnerability vulnerability = dVuln.GetVulnerability(mWeaponMode);
+  return mDamage * vulnerability.mDamageMultiplier;
+}
 
-// float CDamageInfo::GetRadiusDamage(const CDamageVulnerability& dVuln) const {
-//   EVulnerability vuln = dVuln.GetVulnerability(x0_weaponMode, false);
-//   if (vuln == kVN_Deflect) {
-//     return 0.f;
-//   }
-//   if (vuln == kVN_Weak) {
-//     return 2.f * xc_radiusDamage;
-//   }
+float CDamageInfo::GetRadiusDamage(const CDamageVulnerability& dVuln) const {
+  if (dVuln.GetEffect(mWeaponMode) == CWeaponTypeVulnerability::kE_Immune) {
+    return 0.f;
+  }
+  return GetVulnerableRadiusDamage(dVuln);
+}
 
-//   return xc_radiusDamage;
-// }
+float CDamageInfo::GetVulnerableRadiusDamage(const CDamageVulnerability& dVuln) const {
+  const CWeaponTypeVulnerability vulnerability = dVuln.GetVulnerability(mWeaponMode);
+  return mRadiusDamageAmount * vulnerability.mDamageMultiplier;
+}
 
-// CDamageInfo::CDamageInfo(const CDamageInfo& other, float dt)
-// : x0_weaponMode(other.x0_weaponMode)
-// , x8_damage(other.x8_damage * (60 * dt))
-// , xc_radiusDamage(x8_damage)
-// , x10_radius(other.x10_radius)
-// , x14_knockback(other.x14_knockback)
-// , x18_24_noImmunity(true) {}
+float CDamageInfo::GetKnockBackPower(const CDamageVulnerability& dVuln, float distance) const {
+  if (dVuln.GetEffect(mWeaponMode) == CWeaponTypeVulnerability::kE_Immune) {
+    return 0.f;
+  }
+  return GetVulnerableKnockBackPower(dVuln, distance);
+}
 
-// CDamageInfo CDamageInfo::MakeScaledForTime(const float dt) const {
-//   return CDamageInfo(x0_weaponMode, x8_damage * (60.f * dt), x10_radius, x14_knockback, true);
-// }
-
-
-CDamageInfo CDamageInfo::ApplyDoubleDamage(const CPlayerState& state) const {
-  int amount = state.GetItemAmount(CPlayerState::kIT_DoubleDamage, true);
-  if (amount == 0) {
-    return *this;
-  } else {
-    return CDamageInfo(*this, 2.f * amount);
+float CDamageInfo::GetVulnerableKnockBackPower(const CDamageVulnerability& dVuln,
+                                               float distance) const {
+  const CWeaponTypeVulnerability vulnerability = dVuln.GetVulnerability(mWeaponMode);
+  if (!check_hurts(vulnerability)) {
+    return 0.f;
   }
 
-  return *this;
+  const float radius = mDamageRadius;
+  const bool hasFalloff = radius != 0.f && distance != 0.f;
+  float falloff = hasFalloff ? (radius - distance) / radius : 1.f;
+  if (vulnerability.mDamageMultiplier <= 0.5f) {
+    falloff *= 2.f;
+  }
+  return falloff * mKnockbackPower;
+}
+
+CDamageInfo::CDamageInfo(const CDamageInfo& other, float dt)
+: mWeaponMode(other.mWeaponMode)
+, mDamage(other.mDamage * (60.f * dt))
+, mRadiusDamageAmount(mDamage)
+, mDamageRadius(other.mDamageRadius)
+, mKnockbackPower(other.mKnockbackPower)
+, x14_(other.x14_)
+, x16_(other.x16_)
+, x18_(other.x18_)
+, mNoImmunity(true)
+, x1a_25_(other.x1a_25_) {}
+
+void CDamageInfo::SetDamageFromVulnerability(const CDamageVulnerability& dVuln, float damage) {
+  const float multiplier = dVuln.GetVulnerability(mWeaponMode).mDamageMultiplier;
+  if (close_enough(multiplier, 0.f)) {
+    mDamage = 0.f;
+  } else {
+    mDamage = damage / multiplier;
+  }
 }

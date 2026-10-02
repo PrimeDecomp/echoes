@@ -40,6 +40,7 @@ public:
   CDamageInfo(const SLdrTDamageInfo& data, bool charged = false, bool comboed = false,
               bool noImmunity = false, bool flag = false);
   CDamageInfo(const CDamageInfo&, float);
+  void SetDamageFromVulnerability(const CDamageVulnerability& dVuln, float damage);
 
   CDamageInfo ApplyDoubleDamage(const CPlayerState& state) const;
 
@@ -48,7 +49,7 @@ public:
   float GetRadius() const { return mDamageRadius; }
   void SetRadius(float r) { mDamageRadius = r; }
   float GetKnockBackPower() const { return mKnockbackPower; }
-  float GetKnockBackPower(const CDamageVulnerability& vulnerability, float defaultPower) const;
+  float GetKnockBackPower(const CDamageVulnerability& vulnerability, float distance) const;
   bool GetX1a25() const { return x1a_25_; }
   void SetKnockBackPower(float k) { mKnockbackPower = k; }
   float GetDamage() const { return mDamage; }
@@ -73,6 +74,10 @@ public:
   }
 
 private:
+  float GetVulnerableDamage(const CDamageVulnerability& dVuln) const;
+  float GetVulnerableRadiusDamage(const CDamageVulnerability& dVuln) const;
+  float GetVulnerableKnockBackPower(const CDamageVulnerability& dVuln, float distance) const;
+
   CWeaponMode mWeaponMode;
   float mDamage;
   float mRadiusDamageAmount;
