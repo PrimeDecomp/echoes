@@ -20,7 +20,7 @@ struct SLdrScanTreeInventory {
 };
 
 inline SLdrScanTreeInventory::SLdrScanTreeInventory() : editorProperties(), nodeName(kInvalidAssetId), stringName(), scannableInfo() {
-  unknown_0x3d326f90 = 0;
+  unknown_0x3d326f90 = 10;
 }
 
 inline SLdrScanTreeInventory::~SLdrScanTreeInventory() {}

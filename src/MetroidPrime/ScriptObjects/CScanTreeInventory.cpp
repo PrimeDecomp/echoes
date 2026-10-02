@@ -4,8 +4,7 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrScannableParameters.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.hpp"
 #include "rstl/string.hpp"
 
 static const CPlayerState::EItemType kInventorySlotToItemType[] = {
@@ -64,46 +63,12 @@ static const CPlayerState::EItemType kInventorySlotToItemType[] = {
   CPlayerState::kIT_ChargeCombo
 };
 
-struct SLdrScanTreeInventory {
-    SLdrEditorProperties editorProperties;
-    CAssetId nameStringTable;
-    rstl::string nameStringName;
-    int inventorySlotId;
-    SLdrScannableParameters scannableParams;
-};
-
 CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
   SLdrScanTreeInventory sldrThis;
-  
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    uint propertyId = (uint)input.ReadInt32();
-    u16 propertySize = input.ReadUint16();
-    
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0x46219bac:
-      sldrThis.nameStringTable = input.ReadInt32();
-      break;
-    case 0x32698bd6:
-      sldrThis.nameStringName = rstl::string(input);
-      break;
-    case 0x3d326f90:
-      sldrThis.inventorySlotId = input.ReadInt32();
-      break;
-    case 0x2da1ec33:
-      LoadTypedefScannableParameters(sldrThis.scannableParams, input);
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.inc"
 
-  return new CScanTreeInventory(
-    *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nameStringTable,
-    sldrThis.scannableParams.scannableInfo0, sldrThis.inventorySlotId < 0x35 ? kInventorySlotToItemType[sldrThis.inventorySlotId] : CPlayerState::kIT_PowerBeam, sldrThis.nameStringName
+  return rs_new CScanTreeInventory(
+    *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName,
+    sldrThis.scannableInfo.scannableInfo0, uint(sldrThis.unknown_0x3d326f90) < 0x35 ? kInventorySlotToItemType[sldrThis.unknown_0x3d326f90] : CPlayerState::kIT_PowerBeam, sldrThis.stringName
   );
 }
