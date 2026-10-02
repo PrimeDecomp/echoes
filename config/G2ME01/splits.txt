@@ -1037,6 +1037,13 @@ MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
 
+MetroidPrime/Weapons/CShockWave.cpp:
+	.text       start:0x80170E3C end:0x80171DC4
+	.rodata     start:0x803A9A00 end:0x803A9A18
+	.data       start:0x803B5580 end:0x803B5600
+	.sdata      start:0x80418518 end:0x80418520
+	.sdata2     start:0x8041C808 end:0x8041C818
+
 MetroidPrime/CWorldLayerState.cpp:
 	.text       start:0x80171DC4 end:0x801724CC
 	.ctors      start:0x803A5550 end:0x803A5554
