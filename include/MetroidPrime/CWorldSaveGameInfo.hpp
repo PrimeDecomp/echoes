@@ -11,17 +11,15 @@
 class CWorldSaveGameInfo {
 public:
   struct SLayerState {
-    TAreaId mArea;
+    explicit SLayerState(CInputStream& in);
+
+    int mArea;
     uint mLayer;
   };
 
   // Guessed name. SAVW records shared by the system and game environment-variable lists.
   struct SEnvironmentVariable {
-    explicit SEnvironmentVariable(CInputStream& in)
-    : mName(in)
-    , mMinimum(in.ReadInt32())
-    , mMaximum(in.ReadInt32())
-    , mDefaultValue(in.ReadInt32()) {}
+    explicit SEnvironmentVariable(CInputStream& in);
 
     bool operator==(const SEnvironmentVariable& other) const;
 
@@ -39,6 +37,7 @@ public:
   int GetCinematicCount() const { return mCinematics.size(); }
   const rstl::vector< TEditorId >& GetCinematics() const { return mCinematics; }
   const rstl::vector< TEditorId >& GetRelays() const { return mRelays; }
+  uint CalculateHash() const; // Guessed name
   int GetRelayIndex(const TEditorId& id) const;
   const rstl::vector< TEditorId >& GetDoors() const { return mDoors; }
   const rstl::vector< TEditorId >& GetUnmappableObjects() const { return mUnmappableObjects; }

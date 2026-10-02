@@ -183,6 +183,9 @@ void CMemoryCard::MergeEnvironmentVariables(const rstl::vector< EnvironmentVaria
   }
 }
 
+CWorldSaveGameInfo::SEnvironmentVariable::SEnvironmentVariable(CInputStream& in)
+: mName(in), mMinimum(in.ReadInt32()), mMaximum(in.ReadInt32()), mDefaultValue(in.ReadInt32()) {}
+
 bool CWorldSaveGameInfo::SEnvironmentVariable::operator==(const SEnvironmentVariable& other) const {
   return mName == other.mName;
 }

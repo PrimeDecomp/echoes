@@ -1083,6 +1083,12 @@ MetroidPrime/CErrorOutputWindow.cpp:
 MetroidPrime/CRainSplashGenerator.cpp:
 	.text       start:0x80181750 end:0x80182830
 
+MetroidPrime/CWorldSaveGameInfo.cpp:
+	.text       start:0x80182830 end:0x80183648
+	.rodata     start:0x803A9F68 end:0x803A9F70
+	.data       start:0x803B5B20 end:0x803B5B30
+	.sbss       start:0x80419240 end:0x80419248
+
 MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
