@@ -19,7 +19,8 @@ public:
                           const ushort* extraIndices, const CVector3f* vertices, bool ownsArrays);
   ~CCollisionPrimitiveData();
 
-  CCollisionSurface GetTriangle(ushort index) const;
+  int GetTriangleCount() const { return mTriangleCount; }
+  CCollisionSurface GetTriangle(uint index) const;
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf) const;
 
 protected:

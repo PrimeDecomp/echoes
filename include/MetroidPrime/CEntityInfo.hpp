@@ -157,6 +157,7 @@ enum EScriptObjectMessage {
   kSM_XALD = 0x58414c44,
   kSM_XWLD = 0x58574c44,
   kSM_XDelete = 0x5844454c,
+  kSM_XINS = 0x58494e53, // Guessed name; sent to the player when an ice impact touches them.
   kSM_XDamage = 0x58444d47, // Guessed name; damage notification.
   kSM_XHIT = 0x58484954,
   kSM_SuspendedMove =

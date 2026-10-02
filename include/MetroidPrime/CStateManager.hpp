@@ -134,6 +134,11 @@ public:
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
+  void ApplyDamage(TUniqueId damager, TUniqueId damagee, TUniqueId weapon,
+                   const CDamageInfo& damage, const CMaterialFilter& filter,
+                   const CVector3f& direction);
+  void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
+                         TUniqueId weapon, const CDamageInfo& damage);
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
