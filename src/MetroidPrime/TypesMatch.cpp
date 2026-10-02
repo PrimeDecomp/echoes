@@ -13,6 +13,7 @@
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCounter.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptAIHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDistanceFog.hpp"
@@ -191,6 +192,8 @@ TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
 CAST_TO_PTR_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
 CAST_TO_REF_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
 TYPES_MATCH_IMPL(CScriptAiJumpPoint, CActor, kET_ScriptAiJumpPoint)
+CAST_TO_PTR_IMPL(CScriptAIHint, kET_ScriptAIHint)
+CAST_TO_REF_IMPL(CScriptAIHint, kET_ScriptAIHint)
 CAST_TO_PTR_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 CAST_TO_REF_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 TYPES_MATCH_IMPL(CScriptCoverPoint, CActor, kET_ScriptCoverPoint)
