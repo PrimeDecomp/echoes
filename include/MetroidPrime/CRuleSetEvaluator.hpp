@@ -7,7 +7,7 @@
 class CRuleSetEvaluator {
 public:
   explicit CRuleSetEvaluator(CAssetId rules);
-  ~CRuleSetEvaluator();
+  ~CRuleSetEvaluator() {}
   void EvaluateRules(); // Guessed name; evaluates the locked RULE and its parents.
 
   // Guessed names; these two slots precede the knockback-specific virtual interface.

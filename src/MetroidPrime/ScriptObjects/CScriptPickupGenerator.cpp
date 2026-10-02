@@ -4,11 +4,13 @@
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPickupGenerator.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CPickupGeneratorRuleEvaluator::CPickupGeneratorRuleEvaluator(CAssetId rules)
-: CRuleSetEvaluator(rules), mManager(nullptr), mLastDamageWeapon(), mLastDamageFlag(false) {
+: CRuleSetEvaluator(rules), mManager(nullptr), mLastDamageWeapon(CWeaponMode()), mLastDamageFlag(false) {
   for (int i = 0; i < 16; ++i) {
     mMinimumAmounts[i] = 0;
     mMaximumAmounts[i] = 0;
@@ -16,22 +18,25 @@ CPickupGeneratorRuleEvaluator::CPickupGeneratorRuleEvaluator(CAssetId rules)
 }
 
 void CPickupGeneratorRuleEvaluator::Refresh(CStateManager& mgr, const CHealthInfo* health) {
-  mManager = &mgr;
-  mLastDamageWeapon = health != nullptr ? health->GetCauseOfDeathWeapon() : CWeaponMode();
-  mLastDamageFlag = health != nullptr && health->GetDamageFlag();
-
   for (int i = 0; i < 16; ++i) {
     mMinimumAmounts[i] = 0;
     mMaximumAmounts[i] = 0;
+  }
+  mManager = &mgr;
+  mLastDamageWeapon = CWeaponMode();
+  mLastDamageFlag = false;
+  if (health != nullptr) {
+    mLastDamageWeapon = health->GetCauseOfDeathWeapon();
+    mLastDamageFlag = health->GetDamageFlag();
   }
   for (int i = 0; i < CPlayerState::kIT_ChargeCombo; ++i) {
     mPendingItemAmounts[i] = 0;
   }
 
-  CObjectList& actors = mgr.ObjectListById(kOL_Actor);
+  const CObjectList& actors = mgr.GetObjectListById(kOL_All);
   for (int index = actors.GetFirstObjectIndex(); index != -1;
        index = actors.GetNextObjectIndex(index)) {
-    CScriptPickup* pickup = TCastToPtr< CScriptPickup >(actors[index]);
+    const CScriptPickup* pickup = TCastToConstPtr< CScriptPickup >(actors[index]);
     if (pickup != nullptr && pickup->GetActive() && pickup->GetCapacity() == 0) {
       mPendingItemAmounts[pickup->GetItem()] += pickup->GetAmount();
     }
@@ -42,67 +47,89 @@ void CPickupGeneratorRuleEvaluator::Refresh(CStateManager& mgr, const CHealthInf
 }
 
 CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) const {
-  if (mManager == nullptr) {
-    return CRuleValue(0);
-  }
-
   CPlayerState& state = *mManager->PlayerState(0);
 
   switch (condition) {
   case 'ALWS':
     return CRuleValue(true);
-  case 'AMSL':
-    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile));
-  case 'APBM':
-    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb));
+  case 'AHLT':
+    return CRuleValue(int(GetEffectiveHealth(state)));
+  case 'PHLT':
+    return CRuleValue(100.f * GetEffectiveHealth(state) / state.CalculateHealth());
   case 'ADAM':
     return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo));
   case 'ALAM':
     return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo));
-  case 'AHLT':
-    return CRuleValue(int(GetEffectiveHealth(state)));
-  case 'CMSL':
-    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_Missile));
-  case 'CPBM':
-    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_Powerbomb));
+  case 'AMSL':
+    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile));
+  case 'APBM':
+    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb));
+  case '%DAM':
+    {
+      const float capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
+      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) / capacity);
+    }
+  case '%LAM':
+    {
+      const float capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
+      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) / capacity);
+    }
+  case '%MSL':
+    {
+      const float capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
+      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Missile) / capacity);
+    }
+  case '%PBM':
+    {
+      const float capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
+      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) / capacity);
+    }
   case 'CDAM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo));
   case 'CLAM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_LightAmmo));
-  case '?MSL':
-    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile) <
-                      state.GetItemCapacity(CPlayerState::kIT_Missile));
-  case '?PBM':
-    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) <
-                      state.GetItemCapacity(CPlayerState::kIT_Powerbomb));
+  case 'CMSL':
+    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_Missile));
+  case 'CPBM':
+    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_Powerbomb));
+  case '?HLT':
+    return CRuleValue(state.CalculateHealth() > GetEffectiveHealth(state));
   case '?DBM':
-    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0 &&
-                      GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) <
-                          state.GetItemCapacity(CPlayerState::kIT_DarkAmmo));
+    {
+      bool result = false;
+      if (state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0) {
+        const int capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
+        if (GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) < capacity) {
+          result = true;
+        }
+      }
+      return CRuleValue(result);
+    }
   case '?LBM':
-    return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_LightBeam) > 0 &&
-                      GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) <
-                          state.GetItemCapacity(CPlayerState::kIT_LightAmmo));
+    {
+      bool result = false;
+      if (state.GetItemCapacity(CPlayerState::kIT_LightBeam) > 0) {
+        const int capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
+        if (GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) < capacity) {
+          result = true;
+        }
+      }
+      return CRuleValue(result);
+    }
+  case '?MSL':
+    {
+      const int capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
+      return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile) < capacity);
+    }
+  case '?PBM':
+    {
+      const int capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
+      return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) < capacity);
+    }
   case 'HDBM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0);
   case 'HLBM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_LightBeam) > 0);
-  case '?HLT':
-    return CRuleValue(GetEffectiveHealth(state) < state.CalculateHealth());
-  case 'PHLT':
-    return CRuleValue(100.f * GetEffectiveHealth(state) / state.CalculateHealth());
-  case '%MSL':
-    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Missile) /
-                      state.GetItemCapacity(CPlayerState::kIT_Missile));
-  case '%PBM':
-    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) /
-                      state.GetItemCapacity(CPlayerState::kIT_Powerbomb));
-  case '%DAM':
-    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) /
-                      state.GetItemCapacity(CPlayerState::kIT_DarkAmmo));
-  case '%LAM':
-    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) /
-                      state.GetItemCapacity(CPlayerState::kIT_LightAmmo));
   case 'KWPB':
     return CRuleValue(mLastDamageWeapon.GetType() == kWT_Power);
   case 'KWDB':
@@ -111,16 +138,16 @@ CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) co
     return CRuleValue(mLastDamageWeapon.GetType() == kWT_Light);
   case 'KWAB':
     return CRuleValue(mLastDamageWeapon.GetType() == kWT_Annihilator);
+  case 'KWCB':
+    return CRuleValue(mLastDamageWeapon.IsCharged());
+  case 'KWKB':
+    return CRuleValue(mLastDamageWeapon.IsComboed());
   case 'KWMS':
     return CRuleValue(mLastDamageWeapon.GetType() == kWT_Missile);
   case 'KLDB':
     return CRuleValue(mLastDamageWeapon.GetType() != kWT_Dark &&
                       mLastDamageWeapon.GetType() != kWT_Light &&
                       mLastDamageWeapon.GetType() != kWT_Annihilator);
-  case 'KWCB':
-    return CRuleValue(mLastDamageWeapon.IsCharged());
-  case 'KWKB':
-    return CRuleValue(mLastDamageWeapon.IsComboed());
   case 'KFCH':
     return CRuleValue(mLastDamageFlag);
   default:
@@ -130,81 +157,66 @@ CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) co
 
 bool CPickupGeneratorRuleEvaluator::SetAmountRange(float chance, int ruleSlot, int minimum,
                                                    int maximum) {
-  if (mManager->Random()->Range(0.f, 100.f) > chance) {
-    return true;
+  if (mManager->Random()->Range(0.f, 100.f) <= chance) {
+    mMinimumAmounts[ruleSlot] = minimum;
+    mMaximumAmounts[ruleSlot] = maximum;
+    return false;
   }
-
-  mMinimumAmounts[ruleSlot] = minimum;
-  mMaximumAmounts[ruleSlot] = maximum;
-  return false;
+  return true;
 }
 
 bool CPickupGeneratorRuleEvaluator::ExecuteAction(const CRuleAction& action) {
   const float chance = action.GetProperty(0).GetFloat();
-  const int minimum = action.GetPropertyCount() > 1 ? action.GetProperty(1).GetInt() : 1;
-  const int maximum = action.GetPropertyCount() > 2 ? action.GetProperty(2).GetInt() : 0;
-  int ruleSlot;
-
+  int minimum = 1;
+  if (action.GetPropertyCount() > 1) {
+    minimum = action.GetProperty(1).GetInt();
+  }
+  int maximum = 0;
+  if (action.GetPropertyCount() > 2) {
+    maximum = action.GetProperty(2).GetInt();
+  }
   switch (action.GetId()) {
   case 'SLMS':
-    ruleSlot = 0;
-    break;
+    return SetAmountRange(chance, 0, minimum, maximum);
   case 'BGMS':
-    ruleSlot = 1;
-    break;
+    return SetAmountRange(chance, 1, minimum, maximum);
   case 'SLHL':
-    ruleSlot = 2;
-    break;
-  case 'BGHL':
-    ruleSlot = 3;
-    break;
+    return SetAmountRange(chance, 2, minimum, maximum);
   case 'MGHL':
-    ruleSlot = 4;
-    break;
+    return SetAmountRange(chance, 4, minimum, maximum);
+  case 'BGHL':
+    return SetAmountRange(chance, 3, minimum, maximum);
   case 'GGHL':
-    ruleSlot = 5;
-    break;
+    return SetAmountRange(chance, 5, minimum, maximum);
   case 'PBMB':
-    ruleSlot = 6;
-    break;
+    return SetAmountRange(chance, 6, minimum, maximum);
   case 'LTAM':
-    ruleSlot = 7;
-    break;
+    return SetAmountRange(chance, 7, minimum, maximum);
   case 'DKAM':
-    ruleSlot = 8;
-    break;
+    return SetAmountRange(chance, 8, minimum, maximum);
   case 'LTAx':
-    ruleSlot = 9;
-    break;
+    return SetAmountRange(chance, 9, minimum, maximum);
   case 'DKAx':
-    ruleSlot = 10;
-    break;
+    return SetAmountRange(chance, 10, minimum, maximum);
   case 'LTAX':
-    ruleSlot = 11;
-    break;
+    return SetAmountRange(chance, 11, minimum, maximum);
   case 'DKAX':
-    ruleSlot = 12;
-    break;
+    return SetAmountRange(chance, 12, minimum, maximum);
   case 'LTBM':
-    ruleSlot = 13;
-    break;
+    return SetAmountRange(chance, 13, minimum, maximum);
   case 'DKBM':
-    ruleSlot = 14;
-    break;
+    return SetAmountRange(chance, 14, minimum, maximum);
   case 'ANBM':
-    ruleSlot = 15;
-    break;
+    return SetAmountRange(chance, 15, minimum, maximum);
   default:
     return false;
   }
-
-  return SetAmountRange(chance, ruleSlot, minimum, maximum);
 }
 
 int CPickupGeneratorRuleEvaluator::GetRandomAmount(CStateManager& mgr, int ruleSlot) const {
-  const int minimum = mMinimumAmounts[ruleSlot];
   const int maximum = mMaximumAmounts[ruleSlot];
-  return minimum > maximum ? minimum : mgr.Random()->Range(minimum, maximum);
+  const int minimum = mMinimumAmounts[ruleSlot];
+  return maximum < minimum ? minimum : mgr.Random()->Range(minimum, maximum);
 }
 
 CScriptPickupGenerator::CScriptPickupGenerator(TUniqueId uid, const rstl::string& name,
@@ -362,4 +374,17 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
   }
 
   CEntity::AcceptScriptMsg(mgr, msg);
+}
+
+CEntity* LoadPickupGenerator(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPickupGenerator sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPickupGenerator.inc"
+
+  if (sldrThis.rules == kInvalidAssetId) {
+    return nullptr;
+  }
+  return rs_new CScriptPickupGenerator(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.offset, sldrThis.rules,
+      sldrThis.offsetIsLocalSpace);
 }
