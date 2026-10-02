@@ -25,7 +25,7 @@ static bool sGXAborted;
 static bool sUseStreamVertexDelay;
 static int sSpareAllocationSize;
 static void* sSpareAllocation;
-static bool sIs50Hz;
+bool CGraphics::sIs50Hz;
 static float sFrameWaitFraction;
 static float sPreviousFrameWaitFraction;
 static int sGraphicsArenaSize;

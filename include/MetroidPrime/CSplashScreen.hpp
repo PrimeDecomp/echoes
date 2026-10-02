@@ -2,13 +2,16 @@
 #define _CSPLASHSCREEN
 
 #include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/TToken.hpp"
 #include "MetroidPrime/CIOWin.hpp"
 #include "rstl/optional_object.hpp"
 
 class CSplashScreen : public CIOWin {
 public:
-  // Guessed names, correlated with Prime's startup splash sequence.
+  // Guessed names; order recovered from the native texture table and startup flow.
   enum ESplashScreen {
+    kSplashScreen_ProgressiveCheck,
+    kSplashScreen_HealthWarning,
     kSplashScreen_Nintendo,
     kSplashScreen_Retro,
     kSplashScreen_Dolby,
@@ -31,7 +34,7 @@ private:
   bool mProgressiveMode;
   bool mTexturesLoaded;
   rstl::optional_object< TCachedToken< CTexture > > mSplashTexture;
-  rstl::optional_object< TCachedToken< CTexture > > mProgressiveTexture;
+  rstl::optional_object< TCachedToken< CTexture > > mPressStartTexture;
 };
 CHECK_SIZEOF(CSplashScreen, 0x48)
 

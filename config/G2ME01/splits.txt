@@ -75,6 +75,13 @@ MetroidPrime/CCredits.cpp:
 	.sbss       start:0x80418F10 end:0x80418F18
 	.sdata2     start:0x8041A650 end:0x8041A6C0
 
+MetroidPrime/CSplashScreen.cpp:
+	.text       start:0x80023FFC end:0x80025D3C
+	.rodata     start:0x803A62F0 end:0x803A6490
+	.data       start:0x803B18D8 end:0x803B1914
+	.sdata      start:0x80417E08 end:0x80417E10
+	.sdata2     start:0x8041A6C0 end:0x8041A790
+
 MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
 	.ctors      start:0x803A54BC end:0x803A54C0
@@ -1683,6 +1690,7 @@ Kyoto/Graphics/CGX.cpp:
 Kyoto/Graphics/DolphinCGraphics.cpp:
 	.text       start:0x802BE6F8 end:0x802C3EAC
 	.ctors      start:0x803A55EC end:0x803A55F0
+	.sbss       start:0x804199CC end:0x804199D0 align:4
 
 Kyoto/Graphics/DolphinCTexture.cpp:
 	.text       start:0x802C416C end:0x802C60EC

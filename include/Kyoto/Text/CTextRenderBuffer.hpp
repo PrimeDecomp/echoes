@@ -55,7 +55,6 @@ public:
   };
 
   explicit CTextRenderBuffer(EMode mode);
-  ~CTextRenderBuffer();
   void AddPaletteChange(const CGraphicsPalette& palette, EFontMode mode);
   void AddCharacter(const CVector2i& offset, short chr, uint color);
   void AddFontChange(const TToken< CRasterFont >& font);

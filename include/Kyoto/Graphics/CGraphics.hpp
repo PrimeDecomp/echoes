@@ -337,6 +337,7 @@ public:
   static const CViewport& GetViewport() { return mViewport; }
   static float GetPixelAspectRatio() { return mPixelAspectRatio; }
   static const GXRenderModeObj& GetRenderMode() { return mRenderModeObj; }
+  static bool Is50Hz() { return sIs50Hz; } // Guessed name.
   static CVector3f GetViewPoint() { return mViewMatrix.GetTranslation(); }
   static const CTransform4f& GetViewMatrix() { return mViewMatrix; }
   static const Mtx& GetCameraMtx() { return mCameraMtx; }
@@ -458,6 +459,7 @@ private:
   static GXTexRegion mTexRegions[GX_MAX_TEXMAP];
   static GXTexRegion mTexRegionsCI[GX_MAX_TEXMAP / 2];
   static GXRenderModeObj mRenderModeObj;
+  static bool sIs50Hz; // Guessed name; shared video timing and splash-coordinate flag.
   static Mtx mGXViewPointMatrix;
   static Mtx mGxModelView;
   static Mtx mGxModelViewInvXpose;
