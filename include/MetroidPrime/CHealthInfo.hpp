@@ -13,6 +13,9 @@ public:
   void SetHP(float hp) { healthB = hp; }
   void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
   float GetHP() const { return healthB; }
+  float GetInitialHP() const { return healthA; } // Guessed name.
+  TUniqueId GetDamageId1() const { return uidA; } // Guessed name; primary death attribution ID.
+  TUniqueId GetDamageId2() const { return uidB; } // Guessed name; fallback death attribution ID.
   const CWeaponMode& GetCauseOfDeathWeapon() const { return weaponModeA; } // Guessed name.
   bool GetDamageFlag() const { return flagA; } // Guessed name; the flag's role is unresolved.
 
