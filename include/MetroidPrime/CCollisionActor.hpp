@@ -58,6 +58,7 @@ public:
   void SetNonUniformVulnerability(rstl::ncrc_ptr< CNonUniformVulnerability >& vulnerability);
   void ResetNonUniformVulnerability();
   TUniqueId GetLastTouchedObject() const;
+  TUniqueId GetOwnerId() const { return mOwner; }
   float GetSphereRadius() const;
   void SetSphereRadius(float radius);
 
