@@ -65,6 +65,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptVisorFlare.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Weapons/CBeamProjectile.hpp"
@@ -139,11 +140,13 @@ TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
 TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
 TYPES_MATCH_IMPL(CGameCamera, CActor, kET_GameCamera)
 TYPES_MATCH_IMPL(CCinematicCamera, CGameCamera, kET_CinematicCamera)
+TYPES_MATCH_IMPL(CBouncyGrenade, CPhysicsActor, kET_BouncyGrenade)
 TYPES_MATCH_IMPL(CScriptCamera, CActor, kET_ScriptCamera)
 TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
 TYPES_MATCH_IMPL(CFirstPersonCamera, CGameCamera, kET_FirstPersonCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
+CAST_TO_PTR_IMPL(CBouncyGrenade, kET_BouncyGrenade)
 CAST_TO_REF_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_PTR_IMPL(CGameProjectile, kET_GameProjectile)
 CAST_TO_REF_IMPL(CGameProjectile, kET_GameProjectile)

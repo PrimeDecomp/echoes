@@ -271,7 +271,6 @@ public:
   CColor mModuColor;
 
   static bool sSubtractBlend;
-  static bool sEnableAlphaModulation; // Guessed name; distinct from sMoveRedToAlphaBuffer.
   // Guessed names, correlated with Prime's seed and live-system accounting.
   static ushort sSeed;
   static int sParticleAliveCount;
@@ -280,6 +279,7 @@ public:
 public:
   // Hypothesis: the sbss flag read by the G2ME01 CElementGen render paths.
   static bool sMoveRedToAlphaBuffer;
+  static bool sEnableAlphaModulation; // Guessed name; distinct from sMoveRedToAlphaBuffer.
 };
 CHECK_SIZEOF(CElementGen, 0x338)
 

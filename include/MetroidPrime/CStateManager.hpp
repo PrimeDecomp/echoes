@@ -263,7 +263,7 @@ public:
   CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
 
-  int fn_800366e4(CActor*);
+  bool fn_800366e4(const CActor*) const;
 
 public:
   ushort mNextFreeIndex;
