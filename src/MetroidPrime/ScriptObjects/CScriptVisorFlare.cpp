@@ -74,13 +74,13 @@ CEntity* LoadVisorFlare(CStateManager& mgr, CInputStream& input, CEntityInfo& in
     flares.push_back_unsafe(*flare5);
   }
 
-  return rs_new CScriptVisorFlare(
-      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.editorProperties.transform.position,
-      static_cast< CVisorFlare::EBlendMode >(sldrThis.blendMode), sldrThis.constantScale,
-      sldrThis.fadeTime, sldrThis.fadeFactor, sldrThis.rotateFactor, 2, sldrThis.combatVisorMode,
-      flares, sldrThis.unknown_0xa51f243e, sldrThis.noOcclusionTest);
+  return rs_new CScriptVisorFlare(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                  LdrToEntityInfo(info, sldrThis.editorProperties),
+                                  sldrThis.editorProperties.transform.position,
+                                  static_cast< CVisorFlare::EBlendMode >(sldrThis.blendMode),
+                                  sldrThis.constantScale, sldrThis.fadeTime, sldrThis.fadeFactor,
+                                  sldrThis.rotateFactor, 2, sldrThis.combatVisorMode, flares,
+                                  sldrThis.unknown_0xa51f243e, sldrThis.noOcclusionTest);
 }
 
 CScriptVisorFlare::~CScriptVisorFlare() {}
