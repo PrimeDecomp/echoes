@@ -516,6 +516,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CMapArea.cpp"),
             Object(NonMatching, "MetroidPrime/CMappableObject.cpp"),
             Object(NonMatching, "MetroidPrime/CMapWorldInfo.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCounter.cpp"),
             Object(NonMatching, "MetroidPrime/CMapWorld.cpp"),
             Object(NonMatching, "MetroidPrime/CMemoryDrawEnum.cpp"),
             Object(NonMatching, "MetroidPrime/CMapUniverse.cpp"),
