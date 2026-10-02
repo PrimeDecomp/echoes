@@ -642,6 +642,7 @@ MetroidPrime/ScriptObjects/CScriptActorRotate.cpp:
 
 MetroidPrime/ScriptObjects/CScriptPlayerHint.cpp:
 	.text       start:0x8010BFB8 end:0x8010C590
+	.rodata     start:0x803A8C70 end:0x803A8C78
 	.data       start:0x803B4B30 end:0x803B4BB0
 	.sdata2     start:0x8041BBD0 end:0x8041BBD8
 

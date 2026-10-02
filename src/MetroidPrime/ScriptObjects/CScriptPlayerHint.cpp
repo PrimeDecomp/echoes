@@ -3,6 +3,8 @@
 #include "MetroidPrime/CHintManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPlayerHint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptPlayerHint::CScriptPlayerHint(TUniqueId uid, const rstl::string& name,
@@ -51,6 +53,21 @@ void CScriptPlayerHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     break;
   }
   CGameHint::AcceptScriptMsg(mgr, msg);
+}
+
+CEntity* LoadPlayerHint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPlayerHint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPlayerHint.inc"
+
+  int acrossAreas = 0;
+  if (sldrThis.flagsPlayerHint & 0x100000) {
+    acrossAreas = 1;
+  }
+  return rs_new CScriptPlayerHint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                  LdrToEntityInfo(info, sldrThis.editorProperties),
+                                  LdrToTransform4f(sldrThis.editorProperties), sldrThis.priority,
+                                  sldrThis.timer, sldrThis.flagsPlayerHint, acrossAreas,
+                                  sldrThis.interpolateControlTime);
 }
 
 CScriptPlayerHint::~CScriptPlayerHint() {}
