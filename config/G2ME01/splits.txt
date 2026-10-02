@@ -1071,6 +1071,12 @@ MetroidPrime/CMemoryCardDriver.cpp:
 MetroidPrime/CSaveGameScreen.cpp:
 	.text       start:0x8017C548 end:0x8017DFBC
 
+MetroidPrime/Weapons/CElectricBeamProjectile.cpp:
+	.text       start:0x8017DFBC end:0x8017EA6C
+	.rodata     start:0x803A9EE0 end:0x803A9F00
+	.data       start:0x803B57D8 end:0x803B5870
+	.sdata2     start:0x8041C890 end:0x8041C8A8
+
 MetroidPrime/CGameHintInfo.cpp:
 	.text       start:0x8017F988 end:0x80180E94
 	.rodata     start:0x803A9F30 end:0x803A9F38

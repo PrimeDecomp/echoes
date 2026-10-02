@@ -21,7 +21,7 @@ public:
                     bool drawOwnerFirst, uint attribs);
 
   // CEntity
-  ~CPlasmaProjectile() override {}
+  ~CPlasmaProjectile() override;
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 

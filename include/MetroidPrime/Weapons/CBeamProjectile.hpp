@@ -13,7 +13,7 @@ public:
                   TUniqueId uid, TAreaId areaId, TUniqueId owner, uint attribs, bool growingBeam);
 
   // CEntity
-  ~CBeamProjectile() override {}
+  ~CBeamProjectile() override;
   CEntity* TypesMatch(int typeId) const override;
 
   // CActor
