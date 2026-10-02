@@ -3,3 +3,10 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 CBoolPOINode::CBoolPOINode(CInputStream& in) : CPOINode(in), mVal(in.ReadBool()) {}
+
+CBoolPOINode CBoolPOINode::CopyNodeMinusStartTime(const CBoolPOINode& node,
+                                               const CCharAnimTime& startTime) {
+  return CBoolPOINode(node.GetNameHash(), node.GetPoiType(), node.GetTime() - startTime,
+                      node.GetIndex(), node.GetSaveState(), node.GetWeight(),
+                      node.GetCharacterIndex(), node.GetFlags(), node.GetValue());
+}

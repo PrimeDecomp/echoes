@@ -1860,12 +1860,12 @@ Kyoto/Animation/CAnimTreeTransition.cpp:
 	.sdata2     start:0x8041E3A0 end:0x8041E3A8
 
 Kyoto/Animation/CAnimTreeTweenBase.cpp:
-	.text       start:0x802AA750 end:0x802ABA00
+	.text       start:0x802AA750 end:0x802AB968
 	.data       start:0x803B9A48 end:0x803B9AD0
 	.sbss       start:0x804198C0 end:0x804198D8
 
 Kyoto/Animation/CBoolPOINode.cpp:
-	.text       start:0x802ABA00 end:0x802ABA68
+	.text       start:0x802AB968 end:0x802ABA68
 
 Kyoto/Animation/CCharAnimMemoryMetrics.cpp:
 	.text       start:0x802ABA68 end:0x802ABA94
