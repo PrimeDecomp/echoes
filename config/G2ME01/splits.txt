@@ -1862,7 +1862,10 @@ Kyoto/Animation/CAnimTreeSingleChild.cpp:
 
 Kyoto/Animation/CAnimTreeTimeScale.cpp:
 	.text       start:0x802A81F0 end:0x802A981C
+	.rodata     start:0x803AEDF0 end:0x803AEDF8
 	.data       start:0x803B9948 end:0x803B99C0
+	.sdata      start:0x80418A88 end:0x80418A98
+	.sdata2     start:0x8041E388 end:0x8041E390
 
 Kyoto/Animation/CAnimTreeTransition.cpp:
 	.text       start:0x802A981C end:0x802AA750
