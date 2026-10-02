@@ -16,19 +16,17 @@ public:
                    const CPASAnimParm& parm5 = CPASAnimParm::NoParameter(),
                    const CPASAnimParm& parm6 = CPASAnimParm::NoParameter(),
                    const CPASAnimParm& parm7 = CPASAnimParm::NoParameter(),
-                   const CPASAnimParm& parm8 = CPASAnimParm::NoParameter());
-  /*
-  : x0_stateId(stateId) {
-    x4_parms.push_back(parm1);
-    x4_parms.push_back(parm2);
-    x4_parms.push_back(parm3);
-    x4_parms.push_back(parm4);
-    x4_parms.push_back(parm5);
-    x4_parms.push_back(parm6);
-    x4_parms.push_back(parm7);
-    x4_parms.push_back(parm8);
+                   const CPASAnimParm& parm8 = CPASAnimParm::NoParameter())
+  : mStateId(stateId) {
+    mParms.push_back(parm1);
+    mParms.push_back(parm2);
+    mParms.push_back(parm3);
+    mParms.push_back(parm4);
+    mParms.push_back(parm5);
+    mParms.push_back(parm6);
+    mParms.push_back(parm7);
+    mParms.push_back(parm8);
   }
-  */
   ~CPASAnimParmData() {}
 
   pas::EAnimationState GetStateId() const { return mStateId; }

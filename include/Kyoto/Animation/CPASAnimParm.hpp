@@ -1,6 +1,7 @@
 #ifndef _CPASANIMPARM
 #define _CPASANIMPARM
 
+#include "rstl/construct.hpp"
 #include "types.h"
 
 class CPASAnimParm {
@@ -45,5 +46,9 @@ private:
 };
 
 CHECK_SIZEOF(CPASAnimParm, 0x8)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPASAnimParm)
+} // namespace rstl
 
 #endif // _CPASANIMPARM

@@ -96,6 +96,10 @@ public:
   , mTarget(target)
   , mBlendAnims(blendAnims) {}
 
+  pas::ESeverity GetAttackSeverity() const { return mSeverity; }
+  const CVector3f& GetTargetPosition() const { return mTarget; }
+  bool BlendTwoClosest() const { return mBlendAnims; }
+
 private:
   pas::ESeverity mSeverity;
   CVector3f mTarget;
@@ -273,6 +277,11 @@ public:
   , mIsLooped(isLooped)
   , mUseLoopDuration(useLoopDuration)
   , mLoopDuration(loopDuration) {}
+
+  int GetAnimId() const { return mAnimId; }
+  bool IsLooped() const { return mIsLooped; }
+  bool GetUseLoopDuration() const { return mUseLoopDuration; }
+  float GetLoopDuration() const { return mLoopDuration; }
 
 private:
   int mAnimId;
