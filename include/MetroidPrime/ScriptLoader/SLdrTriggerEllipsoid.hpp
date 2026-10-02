@@ -17,6 +17,7 @@ struct SLdrTriggerEllipsoid {
 };
 
 inline SLdrTriggerEllipsoid::SLdrTriggerEllipsoid() : editorProperties(), trigger() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   deactivateOnEnter = false;
   deactivateOnExit = false;
 }

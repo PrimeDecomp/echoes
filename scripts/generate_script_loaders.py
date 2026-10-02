@@ -190,6 +190,9 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
     "SLdrControllerAction": {
         "cmd": ("unknown_0x94ba5737 = 1;",),
     },
+    "SLdrTriggerEllipsoid": {
+        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
+    },
     "SLdrPickup": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
         "actorInformation": (
