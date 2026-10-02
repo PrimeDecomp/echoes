@@ -722,6 +722,12 @@ MetroidPrime/ScriptObjects/CScriptWorldTeleporter.cpp:
 	.data       start:0x803B51C8 end:0x803B51E8
 	.sdata2     start:0x8041C1E8 end:0x8041C208
 
+MetroidPrime/ScriptObjects/CScriptVisorGoo.cpp:
+	.text       start:0x80148D4C end:0x80149DD8
+	.rodata     start:0x803A93E0 end:0x803A93F0
+	.data       start:0x803B51E8 end:0x803B5280
+	.sdata2     start:0x8041C208 end:0x8041C238
+
 MetroidPrime/ScriptObjects/CScriptControllerAction.cpp:
 	.text       start:0x80149DD8 end:0x8014A258
 	.rodata     start:0x803A93F0 end:0x803A93F8
