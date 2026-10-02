@@ -76,8 +76,8 @@ public:
   iterator erase(iterator first, iterator last);
 
   void push_back(const T& in) {
-    if (mCount == mCapacity) {
-      reserve(mCount << 1);
+    if (mCount >= mCapacity) {
+      reserve(mCapacity != 0 ? mCapacity * 2 : 4);
     }
     rstl::construct(mItems + mCount, in);
     ++mCount;
