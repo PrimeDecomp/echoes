@@ -497,6 +497,16 @@ MetroidPrime/BodyState/CBSJump.cpp:
 MetroidPrime/CSortedLists.cpp:
 	.text       start:0x800FD7E0 end:0x800FED74
 
+MetroidPrime/BodyState/CBSScripted.cpp:
+	.text       start:0x800FF164 end:0x800FF484
+	.data       start:0x803B4608 end:0x803B4648
+	.sdata2     start:0x8041BA98 end:0x8041BAA0
+
+MetroidPrime/BodyState/CBSProjectileAttack.cpp:
+	.text       start:0x800FFC2C end:0x8010010C
+	.data       start:0x803B4668 end:0x803B46A8
+	.sdata2     start:0x8041BAB0 end:0x8041BAD8
+
 MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 	.text       start:0x80100C38 end:0x80109E7C
 

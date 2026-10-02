@@ -8,13 +8,15 @@ public:
   CBSScripted();
 
   // CBodyState
-  ~CBSScripted() override;
+  ~CBSScripted() override {}
   bool ApplyHeadTracking() const override;
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
   void Shutdown(CBodyController& bc) override;
 
 private:
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc);
+
   bool mLoopAnim : 1;
   bool mTimedLoop : 1;
   float mRemTime;
