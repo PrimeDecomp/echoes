@@ -10,6 +10,8 @@
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
@@ -142,6 +144,8 @@ TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptTrigger, CActor, kET_ScriptTrigger)
+TYPES_MATCH_IMPL(CScriptTriggerOrientated, CScriptTrigger, kET_ScriptTriggerOrientated)
+TYPES_MATCH_IMPL(CScriptSafeZone, CScriptTriggerOrientated, kET_ScriptSafeZone)
 TYPES_MATCH_IMPL(CScriptVisorFlare, CActor, kET_ScriptVisorFlare)
 TYPES_MATCH_IMPL(CScriptWater, CScriptTrigger, kET_ScriptWater)
 TYPES_MATCH_IMPL(CScriptWorldTeleporter, CEntity, kET_ScriptWorldTeleporter)
@@ -163,6 +167,7 @@ CAST_TO_REF_IMPL(CScriptActor, kET_ScriptActor)
 CAST_TO_PTR_IMPL(CScriptActor, kET_ScriptActor)
 CAST_TO_PTR_IMPL(CScriptCameraWaypoint, kET_ScriptCameraWaypoint)
 CAST_TO_PTR_IMPL(CScriptWaypoint, kET_ScriptWaypoint)
+CAST_TO_PTR_IMPL(CScriptSafeZone, kET_ScriptSafeZone)
 CAST_TO_PTR_IMPL(CScriptPathCamera, kET_ScriptPathCamera)
 CAST_TO_PTR_IMPL(CScriptCamera, kET_ScriptCamera)
 CAST_TO_PTR_IMPL(CScriptDock, kET_ScriptDock)
