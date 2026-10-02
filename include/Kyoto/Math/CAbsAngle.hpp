@@ -58,6 +58,9 @@ private:
 CHECK_SIZEOF(CAbsAngle, 0x4)
 
 // __mi__FRC9CAbsAngleRC9CAbsAngle
+inline CRelAngle operator-(const CAbsAngle& a, const CAbsAngle& b) {
+  return CRelAngle::FromRadians(a.AsRadians() - b.AsRadians());
+}
 
 static inline float cosine(const CAbsAngle& angle) { return cos(angle.AsRadians()); }
 

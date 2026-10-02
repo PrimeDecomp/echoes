@@ -292,6 +292,7 @@ public:
 
   SPersistentState& GetPersistentState();
   uint GetPlayerSelection() const { return mPersistentState.mPlayerSelection; } // Guessed name
+  uint GetTeamIndex() const { return mPersistentState.mTeamIndex; } // Guessed name
   const CPowerUp& GetPowerUp(EItemType type) const { return mPowerups[type]; }
   CPowerUp& PowerUp(EItemType type) { return mPowerups[type]; }
   void SetPersistentState(const SPersistentState&);

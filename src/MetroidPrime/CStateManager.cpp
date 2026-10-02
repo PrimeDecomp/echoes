@@ -28,6 +28,16 @@
 
 const int gkPVSEnabled = 1;
 
+int CStateManager::GetViewportLayoutIndex() const {
+  if (mNumPlayers == 1u) {
+    return 0;
+  }
+  if (mNumPlayers != 2u) {
+    return 2;
+  }
+  return 1;
+}
+
 struct queryOutput {
   int* unk0;
   int unk4;

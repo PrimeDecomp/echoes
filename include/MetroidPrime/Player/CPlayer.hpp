@@ -221,6 +221,10 @@ public:
   void Teleport(const CTransform4f& xf, CStateManager& mgr, bool resetBallCam);
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
+  bool IsOverrideRadarRadius() const { return (x126a_ & 4) != 0; }
+  float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
+  float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
+  float GetEchoPulsePhase() const { return mEchoPulsePhase; } // Guessed name
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
 
   void Update(float dt, CStateManager& mgr);
@@ -712,8 +716,8 @@ private:
   int mSustainedDamageCount;
   float mSustainedDamageTime;
   float x12cc_;
-  float x12d0_;
-  float x12d4_;
+  float mRadarXYRadiusOverride;
+  float mRadarZRadiusOverride;
   float mAttachedActorStruggle;
   int x12dc_;
   float x12e0_;
@@ -731,7 +735,7 @@ private:
   CCameraManager* mCameraManager; // 0x1318
   SFrozenResources* mFrozenResources;
   int mControlScheme;
-  float x1324_;
+  float mEchoPulsePhase; // Guessed name: normalized repeating Echo Visor pulse phase
   int x1328_;
   int x132c_;
   CSfxHandle mDarkAetherDamageSfx;
