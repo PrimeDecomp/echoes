@@ -2006,6 +2006,13 @@ Kyoto/Graphics/CGX.cpp:
 	.bss        start:0x803DF828 end:0x803DFA8C
 	.sdata      start:0x80418AD0 end:0x80418AD4
 
+Kyoto/Graphics/CTevCombiners.cpp:
+	.text       start:0x802BE31C end:0x802BE6F8
+	.ctors      start:0x803A55E8 end:0x803A55EC
+	.bss        start:0x80416B48 end:0x80416B94 align:4 common
+	.sdata      start:0x80418AD8 end:0x80418AE0
+	.sbss       start:0x80419918 end:0x80419928
+
 Kyoto/Graphics/DolphinCGraphics.cpp:
 	.text       start:0x802BE6F8 end:0x802C3EAC
 	.ctors      start:0x803A55EC end:0x803A55F0
