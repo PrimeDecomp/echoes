@@ -247,6 +247,8 @@ public:
   float GetScanTime(CAssetId time);
   void SetScanFlag(uint, bool);
   void UpdateStaticInterference(const CStateManager& mgr, const float& dt);
+  CStaticInterference& StaticInterference() { return mStaticIntf; }
+  const CStaticInterference& StaticInterference() const { return mStaticIntf; }
 
   bool GetIsVisorTransitioning() const;
   float GetVisorTransitionFactor() const;

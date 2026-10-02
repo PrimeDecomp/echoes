@@ -35,6 +35,7 @@ MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B8E8 end:0x8001D0CC
 	.ctors      start:0x803A54AC end:0x803A54B0
 	.data       start:0x803B15D0 end:0x803B16AC
+	.sdata2     start:0x8041A458 end:0x8041A460 align:4
 
 MetroidPrime/CAxisAngle.cpp:
 	.text       start:0x8001D0CC end:0x8001D430
@@ -547,6 +548,13 @@ MetroidPrime/BodyState/CBSWallHang.cpp:
 	.text       start:0x8012CD10 end:0x8012DDFC
 	.data       start:0x803B4EA8 end:0x803B4F10
 	.sdata2     start:0x8041BEE0 end:0x8041BF00
+
+MetroidPrime/ScriptObjects/CScriptEMPulse.cpp:
+	.text       start:0x8012DDFC end:0x8012E838
+	.rodata     start:0x803A8DF8 end:0x803A8E00
+	.data       start:0x803B4F10 end:0x803B4F90
+	.sdata      start:0x80418340 end:0x80418348
+	.sdata2     start:0x8041BF00 end:0x8041BF20
 
 MetroidPrime/Weapons/CBeamProjectile.cpp:
 	.text       start:0x80131404 end:0x80131DF8
