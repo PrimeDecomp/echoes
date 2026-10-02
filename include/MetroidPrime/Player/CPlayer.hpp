@@ -47,6 +47,7 @@ enum EPlayerMovementState {
 
 class CPlayer : public CPhysicsActor {
 public:
+  bool IsInSafeZone() const { return mInSafeZone; }
   enum ESurfaceRestraints {
     kSR_Normal,
     kSR_Air,
@@ -683,7 +684,7 @@ private:
   bool x1268_28_ : 1;
   bool x1268_29_ : 1;
   bool x1268_30_ : 1;
-  bool x1268_31_ : 1;
+  bool mInSafeZone : 1;
   bool x1269_24_ : 1;
   bool mHitWallDuringMove : 1;
   bool x1269_26_ : 1;

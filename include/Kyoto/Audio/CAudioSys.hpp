@@ -49,7 +49,7 @@ public:
 
   struct C3DEmitterParmData {
     C3DEmitterParmData(const float maxDist = 150.f, const float distComp = 0.1f,
-                       const uint flags = 1, const uchar maxVol = 127, const uchar minVol = 0);
+                       const uint flags = 1, uchar maxVol = 127, uchar minVol = 0);
 
     CVector3f mPos;
     CVector3f mDir;
