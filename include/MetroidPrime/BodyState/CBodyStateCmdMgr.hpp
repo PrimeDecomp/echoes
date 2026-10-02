@@ -81,6 +81,10 @@ public:
   , mTargetPos(CVector3f::Zero())
   , mHasTargetPos(false) {}
 
+  pas::ESeverity GetAttackSeverity() const { return mSeverity; }
+  bool HasAttackTargetPos() const { return mHasTargetPos; }
+  const CVector3f& GetAttackTargetPos() const { return mTargetPos; }
+
 private:
   pas::ESeverity mSeverity;
   CVector3f mTargetPos;
@@ -114,6 +118,10 @@ public:
   , mType(type)
   , mWaitForAnimOver(waitForAnimOver)
   , mSkipInto(false) {}
+
+  pas::ELoopAttackType GetAttackType() const { return mType; }
+  int WaitForAnimOver() const { return mWaitForAnimOver; }
+  bool SkipInto() const { return mSkipInto; }
 
 private:
   pas::ELoopAttackType mType;
@@ -408,6 +416,10 @@ public:
   void DeliverCmd(const CBodyStateCmd& cmd);
   void DeliverCmd(const CBCLocomotionCmd& cmd);
   void DeliverCmd(EBodyStateCmd cmd);
+  void DeliverCmd(const CBCSlideCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mSlide = cmd;
+  }
   void DeliverCmd(const CBCAdditiveReactionCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mAdditiveReaction = cmd;

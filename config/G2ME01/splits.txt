@@ -466,6 +466,12 @@ MetroidPrime/BodyState/CBodyStateInfo.cpp:
 	.data       start:0x803B3CC0 end:0x803B3D60
 	.sdata2     start:0x8041B830 end:0x8041B840
 
+MetroidPrime/BodyState/CBSAttack.cpp:
+	.text       start:0x800F128C end:0x800F1A10
+	.data       start:0x803B3D60 end:0x803B3DA0
+	.sdata      start:0x80418250 end:0x80418258
+	.sdata2     start:0x8041B840 end:0x8041B850
+
 MetroidPrime/BodyState/CBSLocomotion.cpp:
 	.text       start:0x800F2BC4 end:0x800F5004
 	.ctors      start:0x803A5514 end:0x803A5518
@@ -480,6 +486,11 @@ MetroidPrime/BodyState/CBodyController.cpp:
 	.text       start:0x800F649C end:0x800F794C
 	.rodata     start:0x803A8BD0 end:0x803A8BE0
 	.sdata2     start:0x8041B920 end:0x8041B940
+
+MetroidPrime/BodyState/CBSLoopAttack.cpp:
+	.text       start:0x800F794C end:0x800F81C8
+	.data       start:0x803B42C8 end:0x803B4308
+	.sdata2     start:0x8041B940 end:0x8041B958
 
 MetroidPrime/CSteeringBehaviors.cpp:
 	.text       start:0x800F90C0 end:0x800FA754
