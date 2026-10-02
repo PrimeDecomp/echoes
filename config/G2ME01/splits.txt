@@ -436,6 +436,11 @@ MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.cpp:
 	.data       start:0x803B3988 end:0x803B3A10
 	.sdata2     start:0x8041B740 end:0x8041B750
 
+MetroidPrime/TGameTypes.cpp:
+	.text       start:0x800E9BDC end:0x800E9C14
+	.ctors      start:0x803A550C end:0x803A5510
+	.sbss       start:0x80419120 end:0x80419130
+
 MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C1C end:0x800EBD40
 	.ctors      start:0x803A5510 end:0x803A5514
