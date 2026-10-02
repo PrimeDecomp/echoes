@@ -170,6 +170,7 @@ public:
                                const CColor& modulationColor, const CVector3f& localScale);
 
   int GetCumulativeParticleCount() const { return mCumulativeParticles; }
+  int GetMaxParticles() const { return mMAXP; }
   bool IsIndirectTextured() const;
   float GetExternalVar(int index) const;
   void SetExternalParam(uint index, float value);

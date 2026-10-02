@@ -1093,6 +1093,13 @@ MetroidPrime/Weapons/CElectricBeamProjectile.cpp:
 	.data       start:0x803B57D8 end:0x803B5870
 	.sdata2     start:0x8041C890 end:0x8041C8A8
 
+MetroidPrime/ScriptObjects/CDamageEffect.cpp:
+	.text       start:0x8017EA6C end:0x8017F350
+	.rodata     start:0x803A9F00 end:0x803A9F18
+	.data       start:0x803B5870 end:0x803B58F0
+	.sdata      start:0x80418540 end:0x80418548
+	.sdata2     start:0x8041C8A8 end:0x8041C8C0
+
 MetroidPrime/CGameHintInfo.cpp:
 	.text       start:0x8017F988 end:0x80180E94
 	.rodata     start:0x803A9F30 end:0x803A9F38
