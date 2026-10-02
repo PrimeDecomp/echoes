@@ -399,6 +399,12 @@ MetroidPrime/CSimpleShadow.cpp:
 	.sdata      start:0x80418210 end:0x80418218
 	.sdata2     start:0x8041B668 end:0x8041B680
 
+MetroidPrime/CActorParameters.cpp:
+	.text       start:0x800DFA60 end:0x800E028C
+	.rodata     start:0x803A8A30 end:0x803A8A38
+	.sdata      start:0x80418218 end:0x80418228
+	.sdata2     start:0x8041B680 end:0x8041B688
+
 MetroidPrime/CWorldShadow.cpp:
 	.text       start:0x800E17E4 end:0x800E24D0
 	.sbss       start:0x804190E8 end:0x804190F8
