@@ -620,6 +620,8 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSFall.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSGetup.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSLieOnGround.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSDie.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSGroundHit.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSProjectileAttack.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBSTurn.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBSWallHang.cpp"),
