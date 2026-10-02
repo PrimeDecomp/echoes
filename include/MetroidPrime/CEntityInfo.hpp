@@ -35,6 +35,7 @@ enum EEntityType {
   kET_ScriptActorRotate = 36,
   kET_ScriptCameraHint = 40,
   kET_ScriptCameraShaker = 41,
+  kET_ScriptCameraPitch = 42, // Guessed name.
   kET_ScriptCameraWaypoint = 43,
   kET_ScriptCamera = 44,
   kET_ScriptColorModulate = 45,
