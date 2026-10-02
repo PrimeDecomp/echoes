@@ -615,6 +615,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/CProjectileInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameTweakManager.cpp"),
             Object(NonMatching, "MetroidPrime/CIkChain.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/RumbleFxTable.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CBeamProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CPlasmaProjectile.cpp"),
             Object(NonMatching, "Weapons/CProjectileWeapon.cpp"),
