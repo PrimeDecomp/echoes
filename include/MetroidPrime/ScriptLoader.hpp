@@ -1,6 +1,8 @@
 #ifndef _SCRIPTLOADER
 #define _SCRIPTLOADER
 
+#include "Kyoto/Graphics/CGraphics.hpp"
+
 class CEntity;
 class CInputStream;
 class CStateManager;
@@ -8,15 +10,19 @@ class CEntityInfo;
 class CActorParameters;
 class CDamageInfo;
 class CTransform4f;
+class CVector2f;
 struct SEchoParameters;
 struct SLdrActorParameters;
 struct SLdrDamageInfo;
 struct SLdrEchoParameters;
 struct SLdrEditorProperties;
+struct SLdrVector2f;
 
 // Names from the Echoes Wii SEL exports.
 CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data);
 CTransform4f LdrToTransform4f(const SLdrEditorProperties& data);
+CVector2f LdrToVector2f(const SLdrVector2f& data);
+ERglFogMode FogSelectionToFogMode(int selection);
 CActorParameters LdrToActorParameters(const SLdrActorParameters& data);
 SEchoParameters LdrToEchoParameters(const SLdrEchoParameters& data);
 

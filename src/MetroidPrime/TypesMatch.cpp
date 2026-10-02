@@ -12,6 +12,7 @@
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCounter.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDistanceFog.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptMemoryRelay.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRelay.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTimer.hpp"
@@ -156,6 +157,7 @@ TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
+TYPES_MATCH_IMPL(CScriptDistanceFog, CEntity, kET_ScriptDistanceFog)
 TYPES_MATCH_IMPL(CScriptRelay, CEntity, kET_ScriptRelay)
 TYPES_MATCH_IMPL(CScriptTimer, CEntity, kET_ScriptTimer)
 TYPES_MATCH_IMPL(CScriptTrigger, CActor, kET_ScriptTrigger)

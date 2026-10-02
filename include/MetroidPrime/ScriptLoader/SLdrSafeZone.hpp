@@ -173,7 +173,6 @@ struct SLdrSafeZoneStructA {
 inline SLdrSafeZoneStructA::SLdrSafeZoneStructA() : color(CColor::Green()), nearFarPlane(), distanceRate() {
   enabled = true;
   mode = 0;
-  color = CColor(0.0f, 0.0f, 0.0f, 0.0f);
   nearFarPlane.x = 1.0f;
   colorRate = 0.0f;
 }

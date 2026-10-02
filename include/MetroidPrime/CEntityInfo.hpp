@@ -41,6 +41,7 @@ enum EEntityType {
   kET_ScriptCounter = 47,
   kET_DarkSamusBattleStage = 51,
   kET_ScriptDebris = 52,
+  kET_ScriptDistanceFog = 54, // Guessed name; Prime has CScriptDistanceFog.
   kET_ScriptDock = 55,
   kET_ScriptDoor = 56,
   kET_ScriptEffect = 58,
