@@ -171,21 +171,9 @@ PRIMITIVES: dict[str, Primitive] = {
 # destructor and reader (SLdrPlayerItem: 0x8023E0C4, 0x8023E0DC, 0x8023E118).
 ENUM_RECORDS = frozenset({"PlayerItem"})
 
-# Redundant nested stores in a native object constructor.
-#
-# Normally the generator only assigns a nested member in the object constructor
-# when the object's template overrides the archetype default; everything else is
-# left to the nested record's own constructor. SLdrPickup::SLdrPickup (G2ME01
-# 0x800B40B4) additionally stores three nested members right after the nested
-# constructors ran, at +0x38, +0x98 and +0xe8, with values equal to the archetype
-# defaults (EditorProperties 0x5D298A43 = 3, LightParameters 0xA33E5B0E = white,
-# VisorParameters 0xCA19E8C6 = 15). The templates are therefore correct and have
-# nothing to override, so this is not expressible there; the statements below are
-# appended verbatim after the template-derived defaults of the named member.
-#
-# Keyed by record, then by member; each entry is a statement relative to that
-# member. Only add an entry with a constructor address showing the store. Wrong
-# or missing template values belong in a retro-script-object-templates PR instead.
+# Nested members a native constructor re-stores with their archetype default, so
+# the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
+# Record -> member -> statements appended after that member's template defaults.
 NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
     "SLdrPickup": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
