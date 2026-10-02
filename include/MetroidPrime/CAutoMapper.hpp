@@ -144,6 +144,7 @@ public:
   float GetTimeIntoInterpolation() const { return mInterpTime; }
   EAutoMapperState GetCurrentState() const { return mState; }
   EAutoMapperState GetNextState() const { return mNextState; }
+  EMapMode GetMapMode() const { return mMapMode; } // Guessed name
   bool IsInPlayerControlState() const {
     return IsInMapperState(kAMS_MapScreen) || IsInMapperState(kAMS_MapScreenUniverse);
   }

@@ -38,6 +38,7 @@ public:
                     CGuiFrameLoader* helmet, CGuiFrameLoader* darkMask, int playerIndex);
 
   bool GetIsGameDraw() const;
+  const CAutoMapper* GetAutoMapper() const { return mAutoMapper; }
   void PreDraw(CStateManager& mgr, bool cameraActive);
   void Draw(const CStateManager& mgr) const;
   void Update(const CStateManager& mgr, float dt, CRandom16& random, CArchitectureQueue& queue,

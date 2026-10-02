@@ -13,6 +13,8 @@ public:
   void SetBlur(EBlurType type, float amount, float duration, bool usePersistentFb);
   void DisableBlur(float duration);
   void Draw() const;
+  EBlurType GetCurrType() const { return mCurrentType; }
+  bool GetNoPersistentCopy() const { return mNoPersistentCopy; }
   static void GetFbCopy(GXTexFmt format);
   void AllocatePersistentFbTexture();
   void FreePersistentFbTexture();
