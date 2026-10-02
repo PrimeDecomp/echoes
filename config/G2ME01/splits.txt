@@ -614,6 +614,11 @@ MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 MetroidPrime/ScriptObjects/CScriptActorRotate.cpp:
 	.text       start:0x80109E7C end:0x8010B2C0
 
+MetroidPrime/ScriptObjects/CScriptPlayerHint.cpp:
+	.text       start:0x8010BFB8 end:0x8010C590
+	.data       start:0x803B4B30 end:0x803B4BB0
+	.sdata2     start:0x8041BBD0 end:0x8041BBD8
+
 MetroidPrime/CMapWorldInfo.cpp:
 	.text       start:0x8010F084 end:0x80110B18
 	.sdata      start:0x804182B8 end:0x804182C0
@@ -985,6 +990,19 @@ MetroidPrime/Cameras/CSpindleCamera.cpp:
 MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
 	.text       start:0x801B730C end:0x801B73E4
 	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
+
+MetroidPrime/CHintState.cpp:
+	.text       start:0x801B8CFC end:0x801B9310
+	.sdata2     start:0x8041CF00 end:0x8041CF08
+
+MetroidPrime/CHintManager.cpp:
+	.text       start:0x801B9310 end:0x801BAD5C
+	.data       start:0x803B69A8 end:0x803B69D0
+	.sdata2     start:0x8041CF08 end:0x8041CF10
+
+MetroidPrime/CPlayerHintManager.cpp:
+	.text       start:0x801BAD5C end:0x801BAFCC
+	.data       start:0x803B69D0 end:0x803B69F8
 
 MetroidPrime/Enemies/CKnockBackMgr.cpp:
 	.text       start:0x801BD714 end:0x801BEDD0

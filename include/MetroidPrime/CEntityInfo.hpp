@@ -47,6 +47,7 @@ enum EEntityType {
   kET_ScriptPathCamera = 65,
   kET_ScriptPickup = 66,
   kET_ScriptPickupGenerator = 67,
+  kET_ScriptPlayerHint = 68,
   kET_ScriptPlayerProxy = 69,
   kET_ScriptPlatform = 70,
   kET_ScriptPortalTransition = 72,

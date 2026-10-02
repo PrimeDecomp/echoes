@@ -14,6 +14,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
@@ -127,6 +128,9 @@ TYPES_MATCH_IMPL(CHUDBillboardEffect, CEffect, kET_HUDBillboardEffect)
 TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
 TYPES_MATCH_IMPL(CGameHint, CActor, kET_GameHint)
 TYPES_MATCH_IMPL(CScriptCameraHint, CGameHint, kET_ScriptCameraHint)
+TYPES_MATCH_IMPL(CScriptPlayerHint, CGameHint, kET_ScriptPlayerHint)
+CAST_TO_PTR_IMPL(CScriptPlayerHint, kET_ScriptPlayerHint)
+CAST_TO_PTR_IMPL(CGameHint, kET_GameHint)
 TYPES_MATCH_IMPL(CScriptActor, CPhysicsActor, kET_ScriptActor)
 TYPES_MATCH_IMPL(CScriptActorRotate, CEntity, kET_ScriptActorRotate)
 TYPES_MATCH_IMPL(CScriptCameraShaker, CEntity, kET_ScriptCameraShaker)
