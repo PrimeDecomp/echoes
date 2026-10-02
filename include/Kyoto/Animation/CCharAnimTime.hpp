@@ -19,6 +19,7 @@ public:
   explicit CCharAnimTime(CInputStream& in);
   explicit CCharAnimTime(float time = 0.f);
   explicit CCharAnimTime(const EType& type, const float& time) : mTime(time), mType(type) {}
+  CCharAnimTime(EType type, float time, int) : mTime(time), mType(type) {}
 
   bool operator>(const CCharAnimTime& other) const;
   bool operator==(const CCharAnimTime& other) const;
@@ -36,8 +37,8 @@ public:
   bool EqualsZero() const;
   void PutTo(COutputStream& out) const;
   static CCharAnimTime Infinity();
-  static CCharAnimTime ZeroPlus() { return CCharAnimTime(kT_ZeroIncreasing, 0.f); }
-  static CCharAnimTime ZeroMinus() { return CCharAnimTime(kT_ZeroDecreasing, 0.f); }
+  static CCharAnimTime ZeroPlus() { return CCharAnimTime(kT_ZeroIncreasing, 0.f, 0); }
+  static CCharAnimTime ZeroMinus() { return CCharAnimTime(kT_ZeroDecreasing, 0.f, 0); }
 
   int ZeroOrdering() const {
     if (mType == kT_ZeroDecreasing) {
@@ -74,13 +75,13 @@ inline CCharAnimTime CCharAnimTime::ZeroSignScale(float other) const {
   if (other > 0.f) {
     return *this;
   } else if (other < 0.f) {
-    return CCharAnimTime(ZeroTypeFromOrdering(-ZeroOrdering()), 0.f);
+    return CCharAnimTime(ZeroTypeFromOrdering(-ZeroOrdering()), 0.f, 0);
   }
   return ZeroFlat();
 }
 
-inline CCharAnimTime CCharAnimTime::ZeroFlat() { return CCharAnimTime(kT_ZeroSteady, 0.f); }
+inline CCharAnimTime CCharAnimTime::ZeroFlat() { return CCharAnimTime(kT_ZeroSteady, 0.f, 0); }
 
-inline CCharAnimTime CCharAnimTime::Infinity() { return CCharAnimTime(kT_Infinity, 1.f); }
+inline CCharAnimTime CCharAnimTime::Infinity() { return CCharAnimTime(kT_Infinity, 1.f, 0); }
 
 #endif // _CCHARANIMTIME

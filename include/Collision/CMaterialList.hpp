@@ -68,9 +68,6 @@ enum EMaterialTypes {
   kMT_SixtyThree = 63
 };
 
-// TODO: how else would they end up in .data?
-static EMaterialTypes SolidMaterial = kMT_Solid;
-
 class CMaterialList {
 public:
   CMaterialList() : value(0) {}

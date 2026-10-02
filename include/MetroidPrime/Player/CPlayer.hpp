@@ -198,6 +198,8 @@ public:
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
+  EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
+  const CVector3f& GetOrbitPoint() const { return mOrbitPoint; }
   TUniqueId GetOrbitTargetId() const { return mOrbitTargetId; }
   CMorphBall* GetMorphBall() { return mMorphBall; }
   const CMorphBall* GetMorphBall() const { return mMorphBall; }
