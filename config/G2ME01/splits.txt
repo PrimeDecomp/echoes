@@ -332,6 +332,18 @@ MetroidPrime/Player/CPlayerCameraBob.cpp:
 	.sbss       start:0x80419080 end:0x80419090
 	.sdata2     start:0x8041B230 end:0x8041B278
 
+MetroidPrime/ScriptObjects/CScriptCameraFilterKeyframe.cpp:
+	.text       start:0x800BCFC4 end:0x800BD63C
+	.rodata     start:0x803A8020 end:0x803A8028
+	.data       start:0x803B3660 end:0x803B3680
+	.sdata2     start:0x8041B278 end:0x8041B288
+
+MetroidPrime/ScriptObjects/CScriptCameraBlurKeyframe.cpp:
+	.text       start:0x800BD63C end:0x800BDA8C
+	.rodata     start:0x803A8028 end:0x803A8030
+	.data       start:0x803B3680 end:0x803B36A0
+	.sdata2     start:0x8041B288 end:0x8041B290
+
 MetroidPrime/Cameras/CCameraFilter.cpp:
 	.text       start:0x800BDA8C end:0x800C02A4
 	.ctors      start:0x803A54F0 end:0x803A54F4

@@ -8,8 +8,7 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrCameraFilterKeyframe {
-  SLdrCameraFilterKeyframe();
-  ~SLdrCameraFilterKeyframe();
+  SLdrCameraFilterKeyframe() : color(CColor::Green()), texture(kInvalidAssetId) {}
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   int filterType; // 0x7975db5b
