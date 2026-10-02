@@ -716,6 +716,12 @@ MetroidPrime/Player/CGameState.cpp:
 	.sdata      start:0x804183D8 end:0x804183E4 align:4
 	.sdata2     start:0x8041C1A8 end:0x8041C1C8
 
+MetroidPrime/ScriptObjects/CScriptWorldTeleporter.cpp:
+	.text       start:0x80147A78 end:0x80148D4C
+	.rodata     start:0x803A93D8 end:0x803A93E0
+	.data       start:0x803B51C8 end:0x803B51E8
+	.sdata2     start:0x8041C1E8 end:0x8041C208
+
 MetroidPrime/ScriptObjects/CScriptControllerAction.cpp:
 	.text       start:0x80149DD8 end:0x8014A258
 	.rodata     start:0x803A93F0 end:0x803A93F8

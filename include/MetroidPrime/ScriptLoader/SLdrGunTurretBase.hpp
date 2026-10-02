@@ -63,7 +63,7 @@ struct SLdrGunTurretBase {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), patterned(), actorInformation() {
+inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), alwaysFF(-1), patterned(), actorInformation() {
   attackDamage.unknown_0x119fbd31 = 11;
   attackDamage.dI_Damage = 5.0f;
   hurtSleepDelay = 2.0f;
@@ -92,7 +92,6 @@ inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage
   unknown_0x5cf12e9a = false;
   unknown_0x479d8dc4 = false;
   isPirateTurret = false;
-  alwaysFF = -1;
   gFFireShotSound = 0;
   pirateFireShotSound = 0;
   lockOnSound = 0;

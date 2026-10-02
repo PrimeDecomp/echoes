@@ -43,7 +43,7 @@ struct SLdrKralee {
   bool initiallyInvisible; // 0x738d1c80
 };
 
-inline SLdrKralee::SLdrKralee() : editorProperties(), patterned(), actorInformation(), warpInParticleEffect(kInvalidAssetId), warpOutParticleEffect(kInvalidAssetId) {
+inline SLdrKralee::SLdrKralee() : editorProperties(), patterned(), actorInformation(), warpInParticleEffect(kInvalidAssetId), warpOutParticleEffect(kInvalidAssetId), warpOutSound(-1) {
   flavor = 0;
   patterned.mass = 25.0f;
   patterned.speed = 3.0f;
@@ -80,7 +80,6 @@ inline SLdrKralee::SLdrKralee() : editorProperties(), patterned(), actorInformat
   animSpeedScalar = 1.0f;
   maxAudibleDistance = 50.0f;
   warpInSound = 0;
-  warpOutSound = -1;
   initiallyPaused = false;
   initiallyInvisible = false;
 }

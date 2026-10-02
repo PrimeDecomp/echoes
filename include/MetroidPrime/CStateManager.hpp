@@ -155,6 +155,8 @@ public:
   TIdListResult GetIdListForScript(TEditorId) const;
 
   CWorld* World() { return mWorld; }
+  CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
+  void QuitGame() { mQuitGame = true; }
   const CWorld* GetWorld() const { return mWorld; }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
   CEnvFxManager* EnvFxManager() { return mEnvFxManager; }
@@ -334,7 +336,7 @@ public:
   float x2944;
   CColor x2948;
   bool mUnkFlagA1 : 1;
-  bool mUnkFlagA2 : 1;
+  bool mQuitGame : 1;
   bool mUnkFlagA3 : 1;
   bool mInMapScreen : 1;
   bool mUnkFlagA5 : 1;

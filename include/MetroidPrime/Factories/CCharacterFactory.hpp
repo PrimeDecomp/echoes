@@ -40,6 +40,7 @@ public:
                                               const TLockedToken< CCharacterFactory >& factory,
                                               int defaultAnim) const;
   const CCharacterInfo& GetCharInfo(int charIdx) const;
+  int GetCharacterCount() const { return mCharInfoDB.size(); }
   const rstl::vector< rstl::pair< uint, CAdditiveAnimationInfo > >&
   GetAdditiveAnimInfoList() const {
     return mAdditiveInfo;

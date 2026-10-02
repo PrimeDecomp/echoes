@@ -142,6 +142,15 @@ def is_matching(name: str, hash_value: int) -> bool:
     return (crc32(name.encode()) ^ 0xFFFFFFFF) == hash_value
 
 
+
+def is_invalid_sound(prop: "Field") -> bool:
+    """A Sound defaulting to -1 is constructed in the initializer list."""
+    if prop.node.attrib["Type"] != "Sound":
+        return False
+    default = prop.node.find("DefaultValue")
+    return default is not None and (default.text or "").strip() == "-1"
+
+
 @dataclass(frozen=True)
 class Primitive:
     cpp_type: str
@@ -175,6 +184,9 @@ ENUM_RECORDS = frozenset({"PlayerItem"})
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
 # Record -> member -> statements appended after that member's template defaults.
 NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
+    "SLdrWorldTeleporter": {
+        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
+    },
     "SLdrControllerAction": {
         "cmd": ("unknown_0x94ba5737 = 1;",),
     },
@@ -693,6 +705,8 @@ class Generator:
                 if ET.tostring(actual.node) != ET.tostring(member.node):
                     result.extend(self.defaults(actual, target + "." + member.name))
             return result
+        if is_invalid_sound(prop):
+            return []  # Initialized to -1 in the initializer list.
         default = prop.node.find("DefaultValue")
         if default is None:
             if kind in ZERO_DEFAULT_KINDS:
@@ -891,6 +905,8 @@ class Generator:
                     value = "CVector3f::Zero()"
                 elif kind == "Asset" and prop.node.find("DefaultValue") is None:
                     value = "kInvalidAssetId"
+                elif is_invalid_sound(prop):
+                    value = "-1"
                 elif kind not in ("String", "Array", "Spline") and (
                     prop.node.find("DefaultValue") is not None
                     or kind in ZERO_DEFAULT_KINDS

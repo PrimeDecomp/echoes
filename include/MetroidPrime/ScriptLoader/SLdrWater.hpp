@@ -130,7 +130,7 @@ struct SLdrWater {
   int unknown_0x414379ea; // 0x414379ea
 };
 
-inline SLdrWater::SLdrWater() : editorProperties(), trigger(), lightMap(kInvalidAssetId), colorMap(kInvalidAssetId), colorWarpMap(kInvalidAssetId), glossMap(kInvalidAssetId), envMap(kInvalidAssetId), refractWarpMap(kInvalidAssetId), foamMap(kInvalidAssetId), alphaMap(kInvalidAssetId), baseColor(CColor::Green()), flowColor(), flowColorWarp(), flowGloss1(), flowGloss2(), flowRefractWarp(), underwaterFogColor(CColor::Green()), splashColor(CColor::Green()), splash_Small(kInvalidAssetId), splash_Medium(kInvalidAssetId), splash_Big(kInvalidAssetId), visorRunoff(kInvalidAssetId), visorRunoffBall(kInvalidAssetId), fogColor(CColor::Green()) {
+inline SLdrWater::SLdrWater() : editorProperties(), trigger(), lightMap(kInvalidAssetId), colorMap(kInvalidAssetId), colorWarpMap(kInvalidAssetId), glossMap(kInvalidAssetId), envMap(kInvalidAssetId), refractWarpMap(kInvalidAssetId), foamMap(kInvalidAssetId), alphaMap(kInvalidAssetId), baseColor(CColor::Green()), flowColor(), flowColorWarp(), flowGloss1(), flowGloss2(), flowRefractWarp(), underwaterFogColor(CColor::Green()), splashColor(CColor::Green()), splash_Small(kInvalidAssetId), splash_Medium(kInvalidAssetId), splash_Big(kInvalidAssetId), visorRunoff(kInvalidAssetId), visorRunoffBall(kInvalidAssetId), sound_SoundRunoffBall(-1), fogColor(CColor::Green()) {
   alphaFadeinTime = 0.0f;
   alphaFadeoutTime = 0.0f;
   morphTimeTo = 5.0f;
@@ -168,7 +168,6 @@ inline SLdrWater::SLdrWater() : editorProperties(), trigger(), lightMap(kInvalid
   underwaterFogColor = CColor(0.0f, 0.49803901f, 1.0f, 1.0f);
   splashColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   sound_SoundRunoff = 0;
-  sound_SoundRunoffBall = -1;
   sound_Splash_Small = 0;
   sound_Splash_Medium = 0;
   sound_Splash_Big = 0;

@@ -42,12 +42,12 @@ struct SLdrWorldTeleporter {
   bool unknown_0x5657ca1c; // 0x5657ca1c
 };
 
-inline SLdrWorldTeleporter::SLdrWorldTeleporter() : editorProperties(), world(kInvalidAssetId), area(kInvalidAssetId), animationInformation(), playerScale(CVector3f::Zero()), platform(kInvalidAssetId), platformScale(CVector3f::Zero()), shaft(kInvalidAssetId), shaftScale(CVector3f::Zero()), soundGroup(kInvalidAssetId), displayFont(kInvalidAssetId), string(kInvalidAssetId), audioStream() {
+inline SLdrWorldTeleporter::SLdrWorldTeleporter() : editorProperties(), world(kInvalidAssetId), area(kInvalidAssetId), animationInformation(), playerScale(CVector3f::Zero()), platform(kInvalidAssetId), platformScale(CVector3f::Zero()), shaft(kInvalidAssetId), shaftScale(CVector3f::Zero()), soundGroup(kInvalidAssetId), elevator(-1), displayFont(kInvalidAssetId), string(kInvalidAssetId), audioStream() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   playerScale = CVector3f(1.0f, 1.0f, 1.0f);
   platformScale = CVector3f(1.0f, 1.0f, 1.0f);
   shaftScale = CVector3f(1.0f, 1.0f, 1.0f);
   unknown_0x2e997e0b = true;
-  elevator = 0;
   volume = 127;
   pan = 64;
   isTeleport = false;
