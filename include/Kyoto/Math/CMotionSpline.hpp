@@ -36,6 +36,8 @@ public:
   float GetDuration() const { return mDuration; }
   int GetControlPointCount() const { return mControlPoints.size(); }
   int GetKnotCount() const { return mKnots.size(); }
+  CVector3f GetKnot(uint index) const; // Guessed name; respects closed-loop index wrapping.
+  int GetKnotIndexByLength(float distance) const; // Guessed name; searches knot arc lengths.
   bool IsClosedLoop() const { return mClosedLoop; }
 
 private:
