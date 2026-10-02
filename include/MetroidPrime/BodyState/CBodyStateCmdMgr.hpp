@@ -43,6 +43,14 @@ public:
   , mTargetPos(CVector3f::Zero())
   , mHasTargetPos(false) {}
 
+  pas::EStepDirection GetStepDirection() const { return mDir; }
+
+  pas::EStepType GetStepType() const { return mType; }
+
+  const CVector3f& GetTargetPos() const { return mTargetPos; }
+
+  bool HasTargetPos() const { return mHasTargetPos; }
+
 private:
   pas::EStepDirection mDir;
   pas::EStepType mType;
@@ -285,6 +293,10 @@ public:
   // CBodyStateCmd
   ~CBCSlideCmd() override {}
 
+  pas::ESlideType GetSlideType() const { return mType; }
+
+  const CVector3f& GetSlideDirection() const { return mDir; }
+
 private:
   pas::ESlideType mType;
   CVector3f mDir;
@@ -294,6 +306,8 @@ CHECK_SIZEOF(CBCSlideCmd, 0x18)
 class CBCTauntCmd : public CBodyStateCmd {
 public:
   explicit CBCTauntCmd(pas::ETauntType type) : CBodyStateCmd(kBSC_Taunt), mType(type) {}
+
+  pas::ETauntType GetTauntType() const { return mType; }
 
 private:
   pas::ETauntType mType;
