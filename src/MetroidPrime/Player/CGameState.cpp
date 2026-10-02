@@ -7,7 +7,7 @@
 #include "Kyoto/Streams/CMemoryStreamOut.hpp"
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMemoryCard.hpp"
-#include "MetroidPrime/CRelayTracker.hpp"
+#include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/Player/CGMCoin.hpp"
 #include "MetroidPrime/Player/CGMDeathMatch.hpp"
@@ -190,7 +190,7 @@ void CPersistentOptions::PutTo(CBitStreamWriter& out) const {
 CWorldState::CWorldState(CAssetId worldId)
 : mWorldId(worldId)
 , mAreaId(0)
-, mRelayTracker(rs_new CRelayTracker)
+, mMailbox(rs_new CScriptMailbox)
 , mMapWorldInfo(rs_new CMapWorldInfo)
 , mDesiredAreaAssetId(kInvalidAssetId)
 , mLayerState(rs_new CWorldLayerState) {}
@@ -199,13 +199,13 @@ CWorldState::CWorldState(CBitStreamReader& in, CAssetId worldId,
                          const CWorldSaveGameInfo& saveWorld)
 : mWorldId(worldId)
 , mAreaId(kInvalidAreaId)
-, mRelayTracker(nullptr)
+, mMailbox(nullptr)
 , mMapWorldInfo(nullptr)
 , mDesiredAreaAssetId(kInvalidAssetId)
 , mLayerState(nullptr) {
   mAreaId = TAreaId(in.ReadBits(32));
   mDesiredAreaAssetId = in.ReadBits(32);
-  mRelayTracker = rs_new CRelayTracker(in, saveWorld);
+  mMailbox = rs_new CScriptMailbox(in, saveWorld);
   mMapWorldInfo = rs_new CMapWorldInfo(in, saveWorld, mWorldId);
   mLayerState = rs_new CWorldLayerState(in);
 }
@@ -213,14 +213,14 @@ CWorldState::CWorldState(CBitStreamReader& in, CAssetId worldId,
 void CWorldState::PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveWorld) const {
   out.WriteBits(mAreaId.Value(), 32);
   out.WriteBits(mDesiredAreaAssetId, 32);
-  mRelayTracker->PutTo(out, saveWorld);
+  mMailbox->PutTo(out, saveWorld);
   mMapWorldInfo->PutTo(out, saveWorld, mWorldId);
   mLayerState->PutTo(out);
 }
 
 CAssetId CWorldState::GetWorldAssetId() const { return mWorldId; }
 
-rstl::ncrc_ptr< CRelayTracker >& CWorldState::RelayTracker() { return mRelayTracker; }
+rstl::ncrc_ptr< CScriptMailbox >& CWorldState::Mailbox() { return mMailbox; }
 
 rstl::ncrc_ptr< CMapWorldInfo >& CWorldState::MapWorldInfo() { return mMapWorldInfo; }
 

@@ -48,7 +48,6 @@ class CCameraManager;
 class CRumbleManager;
 class CSaveGameScreen;
 class CActorModelParticles;
-class CRelayTracker;
 class CWorldLayerState;
 class CStateManagerContainer;
 class CInputStream;
@@ -160,6 +159,7 @@ public:
 
   CWorld* World() { return mWorld; }
   CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
+  CScriptMailbox* Mailbox() const { return mMailbox.GetPtr(); }
   void QuitGame() { mQuitGame = true; }
   const CWorld* GetWorld() const { return mWorld; }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
@@ -291,7 +291,7 @@ public:
   CActorModelParticles* mActorModelParticles; // 0x1634
   void* x1638;
   char mUnknownData1[0x40];
-  rstl::rc_ptr< CRelayTracker > mRelayTracker;
+  rstl::rc_ptr< CScriptMailbox > mMailbox;
   rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
   rstl::rc_ptr< CWorldTransManager > mWorldTransManager;
   CWorldLayerState* mCurrentWorldLayerState;
