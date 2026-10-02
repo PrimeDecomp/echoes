@@ -510,6 +510,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptBallTrigger.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDamageableTriggerOrientated.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCoverPoint.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptWater.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptColorModulate.cpp"),

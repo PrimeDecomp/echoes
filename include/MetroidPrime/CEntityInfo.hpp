@@ -40,6 +40,7 @@ enum EEntityType {
   kET_ScriptCamera = 44,
   kET_ScriptColorModulate = 45,
   kET_ScriptCounter = 47,
+  kET_ScriptCoverPoint = 48,
   kET_ScriptDamageableTrigger = 49,
   kET_ScriptDamageableTriggerOrientated = 50, // Guessed name.
   kET_DarkSamusBattleStage = 51,
@@ -98,6 +99,7 @@ enum EScriptObjectState {
   kSS_ScanProcessing = 0x4253434e,
   kSS_ScanDone = 0x53434e44,
   kSS_Patrol = 0x5054524c,
+  kSS_Retreat = 0x52545254, // Prime-correlated name; cover point's retreat connection.
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
   kSS_XINF = 0x58494e46, // Guessed name: first-pass elevator camera.

@@ -12,6 +12,7 @@
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCounter.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDistanceFog.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTriggerOrientated.hpp"
@@ -96,6 +97,8 @@ CScriptRoomAcoustics::~CScriptRoomAcoustics() {}
 
 CScriptDamageableTriggerOrientated::~CScriptDamageableTriggerOrientated() {}
 
+CScriptCoverPoint::~CScriptCoverPoint() {}
+
 CEnergyProjectile::~CEnergyProjectile() {}
 
 CEntity* TryCast(CEntity* entity, int typeId) {
@@ -167,6 +170,9 @@ TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
+CAST_TO_PTR_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
+CAST_TO_REF_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
+TYPES_MATCH_IMPL(CScriptCoverPoint, CActor, kET_ScriptCoverPoint)
 TYPES_MATCH_IMPL(CScriptDamageableTrigger, CActor, kET_ScriptDamageableTrigger)
 TYPES_MATCH_IMPL(CScriptDamageableTriggerOrientated, CScriptDamageableTrigger,
                  kET_ScriptDamageableTriggerOrientated)
