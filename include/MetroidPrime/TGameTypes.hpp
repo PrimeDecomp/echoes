@@ -1,9 +1,9 @@
 #ifndef _TGAMETYPES
 #define _TGAMETYPES
 
-#include "types.h"
 #include "rstl/construct.hpp"
 #include "rstl/pair.hpp"
+#include "types.h"
 
 class CInputStream;
 class COutputStream;
@@ -66,6 +66,17 @@ CHECK_SIZEOF(TUniqueId, 0x2)
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TUniqueId)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TEditorId)
+
+template <>
+struct is_trivially_destructible< pair< TUniqueId, TUniqueId > > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< pair< TUniqueId, TUniqueId > >(void* dest,
+                                                      const pair< TUniqueId, TUniqueId >& src) {
+  *static_cast< pair< TUniqueId, TUniqueId >* >(dest) = src;
+}
 
 template <>
 struct is_trivially_destructible< pair< TEditorId, bool > > {

@@ -46,7 +46,7 @@ CScriptCameraHint::CScriptCameraHint(TUniqueId uid, const rstl::string& name,
                                      float interpolateOnTime, float interpolateOffTime,
                                      float controlInterpDur, int interpolateOnType,
                                      int interpolationMode, int interpolateOffType, int acrossAreas)
-: CGameHint(uid, name, info, xf, priority, timer, acrossAreas, 0, 0, 0, 0.f, SCallback(),
+: CGameHint(uid, name, info, xf, priority, timer, acrossAreas, kBHT_None, 0, 0, 0.f, SCallback(),
             SCallback(), 0.f)
 , mOverrideInfo(flags, overrideFlags, behaviour, minDist, maxDist, backwardsDist, lookAtOffset,
                 worldOffset, fov, attitudeRange, azimuthRange, anglePerSecond, elevation,
@@ -131,7 +131,8 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
 }
 
 void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateManager& mgr) const {
-  if (CScriptPathCamera* camera = TCastToPtr< CScriptPathCamera >(mgr.ObjectById(mDelegatedCameraId))) {
+  if (CScriptPathCamera* camera =
+          TCastToPtr< CScriptPathCamera >(mgr.ObjectById(mDelegatedCameraId))) {
     camera->TranslateSplines(position);
   }
 }
