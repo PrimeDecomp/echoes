@@ -11,6 +11,7 @@
 #include "MetroidPrime/CEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTimer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
@@ -143,6 +144,7 @@ TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
+TYPES_MATCH_IMPL(CScriptTimer, CEntity, kET_ScriptTimer)
 TYPES_MATCH_IMPL(CScriptTrigger, CActor, kET_ScriptTrigger)
 TYPES_MATCH_IMPL(CScriptTriggerEllipsoid, CScriptTrigger, kET_ScriptTriggerEllipsoid)
 TYPES_MATCH_IMPL(CScriptSafeZone, CScriptTriggerEllipsoid, kET_ScriptSafeZone)
