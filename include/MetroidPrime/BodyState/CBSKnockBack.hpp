@@ -8,7 +8,7 @@ public:
   CBSKnockBack();
 
   // CBodyState
-  ~CBSKnockBack() override;
+  ~CBSKnockBack() override {}
   bool IsMoving() const override;
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
@@ -18,6 +18,8 @@ private:
   float mCurTime;
   float mRotateSpeed;
   float mRemTime;
+
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc);
 };
 CHECK_SIZEOF(CBSKnockBack, 0x10)
 

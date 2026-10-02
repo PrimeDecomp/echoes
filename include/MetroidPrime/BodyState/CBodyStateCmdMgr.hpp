@@ -64,13 +64,18 @@ CHECK_SIZEOF(CBCKnockDownCmd, 0x1c)
 class CBCKnockBackCmd : public CBodyStateCmd {
 public:
   CBCKnockBackCmd(const CVector3f& dir, pas::ESeverity severity)
-  : CBodyStateCmd(kBSC_KnockBack), mDir(dir), mSeverity(severity), x18_(-1), x1c_(false) {}
+  : CBodyStateCmd(kBSC_KnockBack), mDir(dir), mSeverity(severity), mAnimId(-1), mForceRestart(false) {}
+
+  const CVector3f& GetHitDirection() const { return mDir; }
+  pas::ESeverity GetHitSeverity() const { return mSeverity; }
+  int GetAnimationId() const { return mAnimId; }
+  bool GetForceRestart() const { return mForceRestart; }
 
 private:
   CVector3f mDir;
   pas::ESeverity mSeverity;
-  int x18_;
-  bool x1c_;
+  int mAnimId;
+  bool mForceRestart; // Guessed name
 };
 CHECK_SIZEOF(CBCKnockBackCmd, 0x20)
 
@@ -164,7 +169,14 @@ public:
   , mAnimId(animId)
   , mTargetTransform(false)
   , mOverrideAnim(animId != -1)
-  , x1c_2_(false) {}
+  , mInterruptKnockBack(false) {}
+
+  pas::EGenerateType GetGenerateType() const { return mType; }
+  bool UseSpecialAnimId() const { return mOverrideAnim; }
+  int GetSpecialAnimId() const { return mAnimId; }
+  bool HasExitTargetPos() const { return mTargetTransform; }
+  const CVector3f& GetExitTargetPos() const { return mTargetPos; }
+  bool CanInterruptKnockBack() const { return mInterruptKnockBack; }
 
 private:
   pas::EGenerateType mType;
@@ -172,7 +184,7 @@ private:
   int mAnimId;
   uint mTargetTransform : 1;
   uint mOverrideAnim : 1;
-  uint x1c_2_ : 1;
+  uint mInterruptKnockBack : 1; // Guessed name
 };
 CHECK_SIZEOF(CBCGenerateCmd, 0x20)
 
