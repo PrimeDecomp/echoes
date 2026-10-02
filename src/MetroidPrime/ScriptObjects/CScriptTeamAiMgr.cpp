@@ -4,11 +4,33 @@
 #include "MetroidPrime/Enemies/CAi.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTeamAI.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "rstl/algorithm.hpp"
 
 #include <float.h>
 #include <limits.h>
+
+CEntity* LoadTeamAI(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrTeamAI sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrTeamAI.inc"
+
+  CScriptTeamAiMgr::CTeamAiData data;
+  data.mAiCount = sldrThis.maxTeamSize;
+  data.mMeleeCount = sldrThis.maxMeleeAttackers;
+  data.mProjectileCount = sldrThis.maxRangedAttackers;
+  data.mOtherRoleCount = sldrThis.unknown_0x9fa9c457;
+  data.mMaxMeleeAttackerCount = sldrThis.maxSimultaneousMeleeAttacks;
+  data.mMaxProjectileAttackerCount = sldrThis.maxSimultaneousRangedAttacks;
+  data.mPositionMode = sldrThis.teamFormation;
+  data.mMeleeTimeInterval = sldrThis.minTimeBetweenMeleeAttacks;
+  data.mProjectileTimeInterval = sldrThis.minTimeBetweenRangedAttacks;
+  LdrToEntityInfo(info, sldrThis.editorProperties);
+  info.SetActive(true);
+  return rs_new CScriptTeamAiMgr(mgr.AllocateUniqueId(), sldrThis.editorProperties.name, info,
+                                 data);
+}
 
 // Guessed name
 class CTeamAiPredicate : public CValidEntityPredicate {
