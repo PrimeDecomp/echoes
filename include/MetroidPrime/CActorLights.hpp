@@ -44,6 +44,7 @@ public:
   uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
 
   void SetCastShadows(bool v) { mCastShadows = v; }
+  void SetAmbientColor(const CColor& color) { mAmbientColor = color; }
   void SetFindShadowLight(bool v) { mFindShadowLight = v; }
   void SetFramesBetweenRecalculation(uint frames) { mAreaUpdateFramePeriod = frames; }
   void SetAmbienceGenerated(bool generated) { mAmbienceGenerated = generated; }

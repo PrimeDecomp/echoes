@@ -16,7 +16,7 @@ CScriptDock::CScriptDock(TUniqueId uid, const rstl::string& name, const CEntityI
                          bool showSoftTransition)
 : CPhysicsActor(uid, name, info, 0, CTransform4f::Translate(position), CModelData(),
                 CMaterialList(kMT_Trigger, kMT_Immovable, kMT_AIBlock),
-                CAABox(-(0.5f * extent), 0.5f * extent), SMoverData(1.f), CActorParameters(),
+                CAABox(-(0.5f * extent), 0.5f * extent), SMoverData(1.f), CActorParameters::None(),
                 StepData(0.3f, 0.3f, 0))
 , mDockReferenceCount(dockReferenceCount)
 , mDock(dock)

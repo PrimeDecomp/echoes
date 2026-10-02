@@ -21,7 +21,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
                 CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
-                SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
+                SMoverData(mass), CActorParameters::None(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_OBBTreeGroup)
 , mOwner(owner)
 , mBoxSize(extent)
@@ -47,7 +47,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
                 CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
-                SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
+                SMoverData(mass), CActorParameters::None(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_AABox)
 , mOwner(owner)
 , mBoxSize(boxSize)
@@ -74,7 +74,7 @@ CCollisionActor::CCollisionActor(TUniqueId uid, TAreaId areaId, TUniqueId owner,
 : CPhysicsActor(uid, rstl::string_l("CollisionActor"),
                 CEntityInfo(areaId, NullConnectionList, active), 0, CTransform4f::Identity(),
                 CModelData::CModelDataNull(), kCollisionActorMaterials, CAABox::Identity(),
-                SMoverData(mass), CActorParameters(), StepData(0.f, 0.f, 0))
+                SMoverData(mass), CActorParameters::None(), StepData(0.f, 0.f, 0))
 , mPrimitiveType(kPT_Sphere)
 , mOwner(owner)
 , mBoxSize(CVector3f::Zero())

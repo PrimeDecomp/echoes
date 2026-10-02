@@ -6,9 +6,6 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrCameraBlurKeyframe {
-  SLdrCameraBlurKeyframe();
-  ~SLdrCameraBlurKeyframe();
-
   SLdrEditorProperties editorProperties; // 0x255a4580
   int blurType; // 0xe9359148
   float blurRadius; // 0x6f6eb1f4

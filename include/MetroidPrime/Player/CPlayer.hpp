@@ -86,6 +86,7 @@ public:
   };
   enum EPlayerOrbitRequest {
     kOR_StopOrbit,
+    kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
   };
   enum EPlayerZoneInfo {
     kZI_Targeting,
@@ -253,7 +254,11 @@ public:
   void BreakFrozenState(CStateManager& mgr, EBreakFrozenState state, bool playSound);
   void SetVisorSteam(float targetAlpha, float alphaInDuration, float alphaOutDuration,
                      CAssetId texture);
-  void SetHudDisable(float staticTimer, float fadeOutSpeed, float fadeInSpeed);
+  static const float skDefaultHudFadeOutSpeed;
+  static const float skDefaultHudFadeInSpeed;
+  void SetHudDisable(float staticTimer, float fadeOutSpeed = skDefaultHudFadeOutSpeed,
+                     float fadeInSpeed = skDefaultHudFadeInSpeed);
+  float GetStaticTimer() const { return mStaticTimer; }
   bool WasDamaged() const;
   float GetDamageAmount() const;
   float GetPrevDamageAmount() const;

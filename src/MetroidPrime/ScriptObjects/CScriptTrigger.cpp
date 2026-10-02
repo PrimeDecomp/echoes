@@ -9,7 +9,7 @@ CScriptTrigger::CScriptTrigger(TUniqueId uid, const rstl::string& name, const CE
                                const CDamageInfo& damage, const CVector3f& forceField, uint flags,
                                bool deactivateOnEntered, bool deactivateOnExited)
 : CActor(uid, name, info, 0, CTransform4f::Translate(position), CModelData(),
-         CMaterialList(kMT_Trigger), CActorParameters(), kInvalidUniqueId)
+         CMaterialList(kMT_Trigger), CActorParameters::None(), kInvalidUniqueId)
 , mAttachedTrigger(kInvalidUniqueId)
 , mDamageInfo(damage)
 , mForceField(forceField)

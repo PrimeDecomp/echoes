@@ -24,7 +24,7 @@ CScriptSpindleCamera::CScriptSpindleCamera(
     SLdrSplineType targetType, const CMayaSpline& targetControlSpline, bool targetLoops,
     SLdrSplineType playerType, bool playerLoops)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
-         CActorParameters(), kInvalidUniqueId)
+         CActorParameters::None(), kInvalidUniqueId)
 , mParameters(flags, angularSpeed, linearSpeed, motionRadius, radialOffset, desiredAngularOffset,
               minAngularOffset, maxAngularOffset, lookAtAngularOffset, lookAtZOffset, zOffset,
               angularConstraint, angularDampening, desiredAngularSpeed, deactivateRadius,

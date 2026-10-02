@@ -575,8 +575,3 @@ CAABox CPatterned::GetScanVisorRenderBounds(const CStateManager&) const {
 }
 
 CPatterned::~CPatterned() {}
-
-bool CPatterned::fn_80073938(CStateManager&, TUniqueId) const {
-  // TODO: Resolve the queried actor and identify the target's cast predicate.
-  return false;
-}

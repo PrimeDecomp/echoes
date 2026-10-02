@@ -7,6 +7,8 @@ struct SEchoParameters {
   SEchoParameters(bool isEchoEmitter, bool onlyEmitDamage, uint numSoundWaves,
                   float spaceBetweenWaves, float waveLineSize, float forcedMinimumVis);
 
+  static SEchoParameters None();
+
   uint mIsEchoEmitter : 1;
   uint mOnlyEmitDamage : 1;
   uint mNumSoundWaves : 30;

@@ -35,6 +35,7 @@ MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B8E8 end:0x8001D0CC
 	.ctors      start:0x803A54AC end:0x803A54B0
 	.data       start:0x803B15D0 end:0x803B16AC
+	.sdata2     start:0x8041A458 end:0x8041A460 align:4
 
 MetroidPrime/CAxisAngle.cpp:
 	.text       start:0x8001D0CC end:0x8001D430
@@ -180,8 +181,15 @@ MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.text       start:0x8007105C end:0x80073474
 	.data       start:0x803B2018 end:0x803B20B0
 
+MetroidPrime/ScriptObjects/CScriptWaypoint.cpp:
+	.text       start:0x80073474 end:0x80073978
+	.rodata     start:0x803A7110 end:0x803A7118
+	.data       start:0x803B20B0 end:0x803B2148
+	.sdata      start:0x80417EF0 end:0x80417EF8
+	.sdata2     start:0x8041AAA8 end:0x8041AAB8
+
 MetroidPrime/Enemies/CPatterned.cpp:
-	.text       start:0x80073938 end:0x8007B0DC
+	.text       start:0x80073978 end:0x8007B0DC
 	.ctors      start:0x803A54D0 end:0x803A54D4
 	.data       start:0x803B2148 end:0x803B263C
 
@@ -332,6 +340,18 @@ MetroidPrime/Player/CPlayerCameraBob.cpp:
 	.sbss       start:0x80419080 end:0x80419090
 	.sdata2     start:0x8041B230 end:0x8041B278
 
+MetroidPrime/ScriptObjects/CScriptCameraFilterKeyframe.cpp:
+	.text       start:0x800BCFC4 end:0x800BD63C
+	.rodata     start:0x803A8020 end:0x803A8028
+	.data       start:0x803B3660 end:0x803B3680
+	.sdata2     start:0x8041B278 end:0x8041B288
+
+MetroidPrime/ScriptObjects/CScriptCameraBlurKeyframe.cpp:
+	.text       start:0x800BD63C end:0x800BDA8C
+	.rodata     start:0x803A8028 end:0x803A8030
+	.data       start:0x803B3680 end:0x803B36A0
+	.sdata2     start:0x8041B288 end:0x8041B290
+
 MetroidPrime/Cameras/CCameraFilter.cpp:
 	.text       start:0x800BDA8C end:0x800C02A4
 	.ctors      start:0x803A54F0 end:0x803A54F4
@@ -387,6 +407,12 @@ MetroidPrime/CSimpleShadow.cpp:
 	.sdata      start:0x80418210 end:0x80418218
 	.sdata2     start:0x8041B668 end:0x8041B680
 
+MetroidPrime/CActorParameters.cpp:
+	.text       start:0x800DFA60 end:0x800E028C
+	.rodata     start:0x803A8A30 end:0x803A8A38
+	.sdata      start:0x80418218 end:0x80418228
+	.sdata2     start:0x8041B680 end:0x8041B688
+
 MetroidPrime/CWorldShadow.cpp:
 	.text       start:0x800E17E4 end:0x800E24D0
 	.sbss       start:0x804190E8 end:0x804190F8
@@ -404,6 +430,17 @@ MetroidPrime/CDecalManager.cpp:
 	.sdata      start:0x80418228 end:0x80418238
 	.sbss       start:0x80419100 end:0x80419120
 	.sdata2     start:0x8041B730 end:0x8041B740
+
+MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.cpp:
+	.text       start:0x800E8C8C end:0x800E9BDC
+	.rodata     start:0x803A8B90 end:0x803A8B98
+	.data       start:0x803B3988 end:0x803B3A10
+	.sdata2     start:0x8041B740 end:0x8041B750
+
+MetroidPrime/TGameTypes.cpp:
+	.text       start:0x800E9BDC end:0x800E9C14
+	.ctors      start:0x803A550C end:0x803A5510
+	.sbss       start:0x80419120 end:0x80419130
 
 MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C1C end:0x800EBD40
@@ -511,6 +548,13 @@ MetroidPrime/BodyState/CBSWallHang.cpp:
 	.text       start:0x8012CD10 end:0x8012DDFC
 	.data       start:0x803B4EA8 end:0x803B4F10
 	.sdata2     start:0x8041BEE0 end:0x8041BF00
+
+MetroidPrime/ScriptObjects/CScriptEMPulse.cpp:
+	.text       start:0x8012DDFC end:0x8012E838
+	.rodata     start:0x803A8DF8 end:0x803A8E00
+	.data       start:0x803B4F10 end:0x803B4F90
+	.sdata      start:0x80418340 end:0x80418348
+	.sdata2     start:0x8041BF00 end:0x8041BF20
 
 MetroidPrime/HUD/CHudVisorBeamMenu.cpp:
 	.text       start:0x8012FD84 end:0x80131404

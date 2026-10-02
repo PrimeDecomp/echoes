@@ -15,7 +15,7 @@ CScriptCannonBall::CScriptCannonBall(TUniqueId uid, const rstl::string& name,
                                      const CEntityInfo& info, const CTransform4f& xf,
                                      CAssetId effect)
 
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(), CActorParameters(),
+: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(), CActorParameters::None(),
          kInvalidUniqueId)
 , m_effect(effect) {}
 
