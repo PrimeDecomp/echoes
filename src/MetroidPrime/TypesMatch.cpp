@@ -1,4 +1,5 @@
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
@@ -86,6 +87,8 @@ CEntity* CEntity::TypesMatch(int typeId) const {
 }
 
 TYPES_MATCH_IMPL(CActor, CEntity, kET_Actor)
+TYPES_MATCH_IMPL(CEffect, CActor, kET_Effect)
+TYPES_MATCH_IMPL(CExplosion, CEffect, kET_Explosion)
 TYPES_MATCH_IMPL(CWeapon, CActor, kET_Weapon)
 TYPES_MATCH_IMPL(CBomb, CWeapon, kET_Bomb)
 TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)

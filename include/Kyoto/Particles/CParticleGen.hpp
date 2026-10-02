@@ -17,7 +17,7 @@ class CWarp;
 class CParticleGen {
 public:
   CParticleGen() : mDrawFlags(0) {}
-  virtual ~CParticleGen() {}
+  virtual ~CParticleGen() = 0;
   virtual const bool Update(double) = 0;
   virtual void Render() = 0;
   virtual void SetOrientation(const CTransform4f& orientation) = 0;
@@ -61,5 +61,7 @@ protected:
 private:
   uint mDrawFlags;
 };
+
+inline CParticleGen::~CParticleGen() {}
 
 #endif // _CPARTICLEGEN

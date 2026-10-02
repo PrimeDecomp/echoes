@@ -149,6 +149,16 @@ MetroidPrime/CArchMsgParmControllerStatus.cpp:
 	.text       start:0x80052880 end:0x80052900
 	.data       start:0x803B1D10 end:0x803B1D20
 
+MetroidPrime/CExplosion.cpp:
+	.text       start:0x80052900 end:0x80053594
+	.rodata     start:0x803A6830 end:0x803A6838
+	.data       start:0x803B1D20 end:0x803B1E28
+	.sdata2     start:0x8041A900 end:0x8041A928
+
+MetroidPrime/CEffect.cpp:
+	.text       start:0x80053594 end:0x80053688
+	.sdata      start:0x80417EB0 end:0x80417EB8
+
 MetroidPrime/CGameArea.cpp:
 	.text       start:0x80053688 end:0x800609B4
 	.rodata     start:0x803A6838 end:0x803A6858
@@ -459,6 +469,12 @@ MetroidPrime/CFluidUVMotion.cpp:
 MetroidPrime/CFluidPlane.cpp:
 	.text       start:0x800EC978 end:0x800ECCDC
 	.data       start:0x803B3AA8 end:0x803B3AC0
+
+MetroidPrime/CFluidPlaneManager.cpp:
+	.text       start:0x800ECCDC end:0x800ED18C
+	.rodata     start:0x803A8BA8 end:0x803A8BB8
+	.bss        start:0x80410980 end:0x80410998 align:4 common
+	.sdata2     start:0x8041B7D4 end:0x8041B7E8
 
 MetroidPrime/BodyState/CBodyStateCmdMgr.cpp:
 	.text       start:0x800EE0A0 end:0x800EF908

@@ -8,7 +8,8 @@ public:
   CEffect(TUniqueId uid, const CEntityInfo& info, const rstl::string& name, const CTransform4f& xf);
 
   // CEntity
-  ~CEffect() override;
+  ~CEffect() override {}
+  CEntity* TypesMatch(int typeId) const override;
 
   // CActor
   void AddToRenderer(const CStateManager& mgr) const override;

@@ -124,6 +124,7 @@ public:
                      TUniqueId actor); // Guessed overload name.
 
   void AddObject(CEntity*);
+  void AddObject(CEntity&);
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);

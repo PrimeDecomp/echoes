@@ -65,6 +65,7 @@ public:
   const rstl::optional_object< TLockedToken< CGenDescription > >&
   GetSplashEffect(float scale) const;
   int GetSplashIndex(float scale) const;
+  const CColor& GetSplashColor() const { return mSplashColor; }
   CVector2f GetFluidUVExtent(const CAABox& bounds) const; // Guessed name
   void CalculateRenderBounds();
   void ClearSplashInhabitants(); // Guessed name
