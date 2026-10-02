@@ -160,6 +160,7 @@ public:
 
   CWorld* World() { return mWorld; }
   CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
+  CRelayTracker* RelayTracker() const { return mRelayTracker.GetPtr(); }
   void QuitGame() { mQuitGame = true; }
   const CWorld* GetWorld() const { return mWorld; }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }

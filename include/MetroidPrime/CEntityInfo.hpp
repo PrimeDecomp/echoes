@@ -185,6 +185,7 @@ public:
   const rstl::vector< SConnection >& GetConnectionList() const { return mConnections; }
   TEditorId GetEditorId() const { return mEditorId; }
   bool GetActive() const { return mActive; }
+  void SetActive(bool active) { mActive = active; }
   bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
   bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }
 };

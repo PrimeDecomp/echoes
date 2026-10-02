@@ -38,6 +38,8 @@ public:
   uint GetAreaCount() const { return mAreaCount; }
   int GetCinematicCount() const { return mCinematics.size(); }
   const rstl::vector< TEditorId >& GetCinematics() const { return mCinematics; }
+  const rstl::vector< TEditorId >& GetRelays() const { return mRelays; }
+  int GetRelayIndex(const TEditorId& id) const;
   const rstl::vector< TEditorId >& GetDoors() const { return mDoors; }
   const rstl::vector< TEditorId >& GetUnmappableObjects() const { return mUnmappableObjects; }
   const rstl::vector< ScanState >& GetScans() const { return mScans; }

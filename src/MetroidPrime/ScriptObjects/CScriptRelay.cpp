@@ -4,15 +4,9 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrRelay.hpp"
 
-CScriptRelay::~CScriptRelay() {}
-
-CEntity* LoadRelay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  SLdrRelay sldrThis;
-#include "MetroidPrime/ScriptLoader/SLdrRelay.inc"
-
-  return rs_new CScriptRelay(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-                             LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.oneShot);
-}
+CScriptRelay::CScriptRelay(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                           bool oneShot)
+: CEntity(uid, info, name, 0), mOriginator(kInvalidUniqueId), mOneShot(oneShot) {}
 
 void CScriptRelay::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CEntity::AcceptScriptMsg(mgr, msg);
@@ -40,6 +34,12 @@ void CScriptRelay::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
 }
 
-CScriptRelay::CScriptRelay(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                           bool oneShot)
-: CEntity(uid, info, name, 0), mOriginator(kInvalidUniqueId), mOneShot(oneShot) {}
+CEntity* LoadRelay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrRelay sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrRelay.inc"
+
+  return rs_new CScriptRelay(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                             LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.oneShot);
+}
+
+CScriptRelay::~CScriptRelay() {}

@@ -69,7 +69,17 @@ public:
   inline const T& operator[](int idx) const { return data()[idx]; }
   inline T& at(int idx) { return data()[idx]; }
   inline const T& at(int idx) const { return data()[idx]; }
-  iterator erase(iterator it);
+  iterator erase(iterator it) {
+    if (it >= begin() && it < end()) {
+      for (iterator j = it; j < end() - 1; ++j) {
+        *j = *(j + 1);
+      }
+      destroy(end() - 1);
+      --mCount;
+      return it;
+    }
+    return end();
+  }
 
   void resize(int count, const T& item = T()) {
     if (mCount == count) {
@@ -107,19 +117,6 @@ inline reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserve
     mCount = other.mCount;
   }
   return *this;
-}
-
-template < typename T, int N >
-typename reserved_vector< T, N >::iterator reserved_vector< T, N >::erase(iterator it) {
-  if (it >= begin() && it < end()) {
-    for (iterator j = it; j < end() - 1; ++j) {
-      *j = *(j + 1);
-    }
-    destroy(end() - 1);
-    --mCount;
-    return it;
-  }
-  return end();
 }
 
 } // namespace rstl

@@ -343,6 +343,10 @@ MetroidPrime/ScriptObjects/CScriptCameraHint.cpp:
 	.text       start:0x800B8098 end:0x800B88D4
 	.data       start:0x803B3530 end:0x803B35B8
 
+MetroidPrime/CRelayTracker.cpp:
+	.text       start:0x800B88D4 end:0x800B8E9C
+	.sdata      start:0x80418058 end:0x80418060
+
 MetroidPrime/ScriptObjects/CScriptRelay.cpp:
 	.text       start:0x800B8E9C end:0x800B9214
 	.rodata     start:0x803A7F08 end:0x803A7F10
@@ -880,6 +884,11 @@ MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp:
 	.text       start:0x801727F8 end:0x8017645C
 	.rodata     start:0x803A9A20 end:0x803A9A30
 	.data       start:0x803B5600 end:0x803B5630
+
+MetroidPrime/ScriptObjects/CScriptMemoryRelay.cpp:
+	.text       start:0x8017645C end:0x801767BC
+	.rodata     start:0x803A9A38 end:0x803A9A40
+	.data       start:0x803B5630 end:0x803B5650
 
 MetroidPrime/CMemoryCard.cpp:
 	.text       start:0x801767BC end:0x8017904C
