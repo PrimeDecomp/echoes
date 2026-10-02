@@ -27,6 +27,8 @@ class CBCGetupCmd : public CBodyStateCmd {
 public:
   explicit CBCGetupCmd(pas::EGetupType type) : CBodyStateCmd(kBSC_Getup), mType(type) {}
 
+  pas::EGetupType GetGetupType() const { return mType; }
+
 private:
   pas::EGetupType mType;
 };
@@ -52,12 +54,16 @@ CHECK_SIZEOF(CBCStepCmd, 0x20)
 class CBCKnockDownCmd : public CBodyStateCmd {
 public:
   CBCKnockDownCmd(const CVector3f& dir, pas::ESeverity severity)
-  : CBodyStateCmd(kBSC_KnockDown), mDir(dir), mSeverity(severity), x18_(false) {}
+  : CBodyStateCmd(kBSC_KnockDown), mDir(dir), mSeverity(severity), mSkipRotation(false) {}
+
+  const CVector3f& GetHitDirection() const { return mDir; }
+  pas::ESeverity GetHitSeverity() const { return mSeverity; }
+  bool GetSkipRotation() const { return mSkipRotation; }
 
 private:
   CVector3f mDir;
   pas::ESeverity mSeverity;
-  bool x18_;
+  bool mSkipRotation; // Guessed name
 };
 CHECK_SIZEOF(CBCKnockDownCmd, 0x1c)
 
