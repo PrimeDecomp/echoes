@@ -1,5 +1,6 @@
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CExplosion.hpp"
+#include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
@@ -95,6 +96,10 @@
   }
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
+CPlasmaProjectile::~CPlasmaProjectile() {}
+
+CBeamProjectile::~CBeamProjectile() {}
+
 CScriptTargetingPoint::~CScriptTargetingPoint() {}
 
 CGameLight::~CGameLight() {}
