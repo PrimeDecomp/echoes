@@ -710,6 +710,12 @@ MetroidPrime/ScriptObjects/CScriptSteam.cpp:
 	.data       start:0x803B4C80 end:0x803B4D18
 	.sdata2     start:0x8041BC68 end:0x8041BC88
 
+MetroidPrime/ScriptObjects/CScriptRipple.cpp:
+	.text       start:0x801173A4 end:0x80117614
+	.rodata     start:0x803A8CF8 end:0x803A8D00
+	.data       start:0x803B4D18 end:0x803B4D38
+	.sdata2     start:0x8041BC88 end:0x8041BC90
+
 MetroidPrime/CBoneTracking.cpp:
 	.text       start:0x80117614 end:0x80118294
 	.sdata2     start:0x8041BC90 end:0x8041BCA8
@@ -877,6 +883,11 @@ MetroidPrime/BodyState/CABSAim.cpp:
 	.text       start:0x8014A9BC end:0x8014B234
 	.data       start:0x803B5340 end:0x803B5380
 	.sdata2     start:0x8041C248 end:0x8041C268
+
+MetroidPrime/ScriptObjects/CScriptPlayerStateChange.cpp:
+	.text       start:0x8014B234 end:0x8014B5D8
+	.rodata     start:0x803A9400 end:0x803A9408
+	.data       start:0x803B5380 end:0x803B53A0
 
 MetroidPrime/CActorModelParticles.cpp:
 	.text       start:0x8014B5D8 end:0x8014FDFC
