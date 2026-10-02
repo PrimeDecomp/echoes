@@ -939,6 +939,11 @@ MetroidPrime/ScriptObjects/CScriptAiJumpPoint.cpp:
 	.sdata      start:0x804183F8 end:0x80418400
 	.sdata2     start:0x8041C290 end:0x8041C298
 
+MetroidPrime/CMessageScreen.cpp:
+	.text       start:0x801502E0 end:0x80150AF8
+	.rodata     start:0x803A94C0 end:0x803A9560
+	.sdata2     start:0x8041C298 end:0x8041C2D0
+
 MetroidPrime/BodyState/CABSReaction.cpp:
 	.text       start:0x80150AF8 end:0x80150FE8
 	.data       start:0x803B53A0 end:0x803B53E0

@@ -7,7 +7,6 @@
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 
-
 #include "dolphin/os.h"
 
 extern "C" void fn_8029AF00(int, uchar);
@@ -17,8 +16,8 @@ extern "C" rstl::pair< bool, bool > fn_80227624(CBitStreamReader& in);
 
 extern "C" bool lbl_804191E0;
 
-SObjectTag sControllerAssets[] = {
-  SObjectTag(0x2A13423E, 0xF13452F8),
+rstl::pair< CAssetId, CAssetId > sControllerAssets[] = {
+    rstl::pair< CAssetId, CAssetId >(0x2A13423E, 0xF13452F8),
 };
 
 int CGameOptions_CalculateBits(uint v) {
@@ -87,7 +86,7 @@ CGameOptions::CGameOptions(CBitStreamReader& in)
 , swapBeamsControls(false)
 , hintSystem(true)
 , unk(false)
-, vec() {
+, mControlTXTRMap() {
   in.ReadBits(32);
   soundMode = (CAudioSys::ESurroundModes)in.ReadBits(CGameOptions_CalculateBits(2));
   screenBrightness = in.ReadBits(CGameOptions_CalculateBits(8));
@@ -313,13 +312,13 @@ void CGameOptions::ToggleControls(bool flag) {
 void CGameOptions::ResetControllerAssets(int controls) {
   switch (controls) {
   case 1:
-    vec.reserve(15);
+    mControlTXTRMap.reserve(15);
     for (int i = 0; i < 5; ++i) {
-      vec.push_back(sControllerAssets[i]);
+      mControlTXTRMap.push_back(sControllerAssets[i]);
     }
     break;
   case 0:
-    vec = rstl::vector<SObjectTag>();
+    mControlTXTRMap = rstl::vector< rstl::pair< CAssetId, CAssetId > >();
     break;
   default:
     break;
