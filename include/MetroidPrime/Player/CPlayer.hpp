@@ -247,6 +247,8 @@ public:
   void UpdateScanningState(const CFinalInput& input, CStateManager& mgr, float dt);
   bool ValidateScanning(const CFinalInput& input, CStateManager& mgr) const;
   void SetScanningState(EPlayerScanState state, CStateManager& mgr);
+  EPlayerScanState GetPlayerScanState() const { return mScanState; }
+  float GetScanningTime() const { return mScanningTime; }
   bool ObjectInScanningRange(TUniqueId id, const CStateManager& mgr);
   void FinishNewScan(CStateManager& mgr);
   void UpdateVisorState(const CFinalInput& input, float dt, CStateManager& mgr);

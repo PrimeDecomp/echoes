@@ -199,7 +199,7 @@ public:
   CCameraBlurPass& CameraBlurPass(uint player, int stage) {
     return mCameraBlurPasses[player][stage];
   }
-  uint ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
+  ushort ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
   CPlayer* GetPlayer(int index) { return mPlayers[index]; }
   const CPlayer* GetPlayer(int index) const { return mPlayers[index]; }
   CPlayer* Player(int index) { return mPlayers[index]; }

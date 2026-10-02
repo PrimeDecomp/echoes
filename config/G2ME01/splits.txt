@@ -481,6 +481,11 @@ MetroidPrime/CAudioStateWin.cpp:
 	.rodata     start:0x803A8AB8 end:0x803A8AC8
 	.data       start:0x803B3950 end:0x803B3970
 
+MetroidPrime/Player/CPlayerVisor.cpp:
+	.text       start:0x800E2620 end:0x800E4A58
+	.rodata     start:0x803A8AC8 end:0x803A8B90
+	.sdata2     start:0x8041B6D0 end:0x8041B728
+
 MetroidPrime/CModelData.cpp:
 	.text       start:0x800E4A58 end:0x800E6CEC
 	.ctors      start:0x803A5504 end:0x803A5508
@@ -1278,7 +1283,7 @@ MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
 
-MetroidPrime/Player/CPlayerVisor.cpp:
+MetroidPrime/Player/CPlayerHints.cpp:
 	.text       start:0x8022AF0C end:0x8022C4C4
 
 MetroidPrime/CGameHint.cpp:
