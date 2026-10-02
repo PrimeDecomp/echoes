@@ -4848,9 +4848,9 @@ PreRender__13CBoneTrackingFRC13CStateManagerR9CAnimDataRC12CTransform4fRC9CVecto
 Think__13CBoneTrackingFf = .text:0x80118144; // type:function size:0x20 align:4
 PreThink__13CBoneTrackingFR9CAnimData = .text:0x80118164; // type:function size:0x14 align:4
 __ct__13CBoneTrackingFRC9CAnimDataRCQ24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>ffUi = .text:0x80118178; // type:function size:0x11C align:4
-fn_80118294 = .text:0x80118294; // type:function size:0x11C
-fn_801183B0 = .text:0x801183B0; // type:function size:0x120
-fn_801184D0 = .text:0x801184D0; // type:function size:0x18
+Draw__20CFaceplateDecorationCFRC13CStateManager = .text:0x80118294; // type:function size:0x11C
+Update__20CFaceplateDecorationFRC13CStateManager = .text:0x801183B0; // type:function size:0x120
+__ct__20CFaceplateDecorationFRC13CStateManageri = .text:0x801184D0; // type:function size:0x18
 IsMoving__8CBSCoverCFv = .text:0x801184E8; // type:function size:0x8 align:4
 ApplyHeadTracking__8CBSCoverCFv = .text:0x801184F0; // type:function size:0x8 align:4
 GetBodyStateTransition__8CBSCoverFfR15CBodyController = .text:0x801184F8; // type:function size:0xB4 align:4
