@@ -25,13 +25,12 @@ struct SLdrVisorGoo {
   bool unknown_0xcb9a3009; // 0xcb9a3009
 };
 
-inline SLdrVisorGoo::SLdrVisorGoo() : editorProperties(), particle(kInvalidAssetId), electric(kInvalidAssetId), color(CColor::Green()) {
+inline SLdrVisorGoo::SLdrVisorGoo() : editorProperties(), particle(kInvalidAssetId), electric(kInvalidAssetId), color(CColor::Green()), sound_HitSound(-1) {
   minRange = 1.0f;
   maxRange = 8.0f;
   chanceAtMinRange = 40.0f;
   chanceAtMaxRange = 20.0f;
   color = CColor(1.0f, 1.0f, 1.0f, 1.0f);
-  sound_HitSound = 0;
   noViewCheck = false;
   persistent = false;
   unknown_0xcb9a3009 = true;

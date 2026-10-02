@@ -58,6 +58,7 @@ enum EEntityType {
   kET_ScriptSpindleCamera = 83,
   kET_ScriptStreamedMusic = 84,
   kET_ScriptTeamAi = 88,
+  kET_ScriptSwitch = 86,
   kET_ScriptTrigger = 92,
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
@@ -85,6 +86,8 @@ enum EScriptObjectState {
   kSS_Patrol = 0x5054524c,
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
+  kSS_XINF = 0x58494e46, // Guessed name: first-pass elevator camera.
+  kSS_XINB = 0x58494e42, // Guessed name: second-pass elevator camera.
   kSS_Slave = 0x534c4156,
   kSS_Opened = 0x4f50454e,
   kSS_Closed = 0x434c4f53,

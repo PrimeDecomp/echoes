@@ -39,6 +39,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptSequenceTimer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSwitch.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
@@ -137,8 +139,10 @@ TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptTrigger, CActor, kET_ScriptTrigger)
 TYPES_MATCH_IMPL(CScriptWater, CScriptTrigger, kET_ScriptWater)
+TYPES_MATCH_IMPL(CScriptWorldTeleporter, CEntity, kET_ScriptWorldTeleporter)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
+TYPES_MATCH_IMPL(CScriptSwitch, CEntity, kET_ScriptSwitch)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 CAST_TO_REF_IMPL(CEntity, kET_Entity)

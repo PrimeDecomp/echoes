@@ -225,6 +225,7 @@ public:
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
   float GetEchoPulsePhase() const { return mEchoPulsePhase; } // Guessed name
+  EPlayerCameraState GetCameraState() const { return mCameraState; }
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
 
   void Update(float dt, CStateManager& mgr);

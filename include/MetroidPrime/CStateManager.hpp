@@ -156,6 +156,8 @@ public:
   TIdListResult GetIdListForScript(TEditorId) const;
 
   CWorld* World() { return mWorld; }
+  CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
+  void QuitGame() { mQuitGame = true; }
   const CWorld* GetWorld() const { return mWorld; }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
   CEnvFxManager* EnvFxManager() { return mEnvFxManager; }
@@ -232,6 +234,7 @@ public:
   void EnterSaveGameScreen() { DeferStateTransition(kSMT_SaveGame); }
   void EnterMessageScreen(uint, float);
   bool GetWantsToEnterMapScreen() const { return mDeferredTransition == kSMT_MapScreen; }
+  bool GetInMapScreen() const { return mInMapScreen; }
   bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
@@ -334,9 +337,9 @@ public:
   float x2944;
   CColor x2948;
   bool mUnkFlagA1 : 1;
-  bool mUnkFlagA2 : 1;
+  bool mQuitGame : 1;
   bool mUnkFlagA3 : 1;
-  bool mUnkFlagA4 : 1;
+  bool mInMapScreen : 1;
   bool mUnkFlagA5 : 1;
   bool mCinematicPause : 1;
   bool mUnkFlagA7 : 1;

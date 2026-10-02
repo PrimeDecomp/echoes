@@ -326,7 +326,7 @@ struct SLdrEmperorIngStage1Data {
   float attackIntervalMax; // 0xd78b5788
 };
 
-inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(), projectile(), warp(), tauntAttack(), beamAttack(), heartDamageSound() {
+inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(), projectile(), warp(), tauntAttack(), beamAttack(), heartDamageSound(), vulnerabilityChangeSound(-1) {
   heartExposedTime = 0.0f;
   unknown_0x905938b8 = 0.0f;
   unknown_0xb826317a = 0.0f;
@@ -334,7 +334,6 @@ inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(
   maxTurnSpeedNormal = 0.0f;
   maxTurnSpeedMelee = 0.0f;
   unknown_0xe5a7c358 = 0.0f;
-  vulnerabilityChangeSound = -1;
   tauntFrequency = 0.0f;
   attackIntervalMin = 0.0f;
   attackIntervalMax = 0.0f;

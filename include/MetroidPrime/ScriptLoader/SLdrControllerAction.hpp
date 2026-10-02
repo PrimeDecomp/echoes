@@ -16,6 +16,7 @@ struct SLdrControllerAction {
 };
 
 inline SLdrControllerAction::SLdrControllerAction() : editorProperties(), cmd() {
+  cmd.unknown_0x94ba5737 = 1;
   oneShot = false;
 }
 
