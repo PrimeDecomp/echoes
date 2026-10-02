@@ -994,6 +994,12 @@ MetroidPrime/CIkChain.cpp:
 	.text       start:0x8016C6CC end:0x8016D214
 	.sdata2     start:0x8041C690 end:0x8041C6A8
 
+MetroidPrime/RumbleFxTable.cpp:
+	.text       start:0x8016D214 end:0x8016DC58
+	.ctors      start:0x803A5548 end:0x803A554C
+	.bss        start:0x80410B40 end:0x80410DFC align:4 common
+	.sdata2     start:0x8041C6A8 end:0x8041C788
+
 MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
