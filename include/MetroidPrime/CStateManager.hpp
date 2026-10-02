@@ -5,6 +5,8 @@ extern const int gkPVSEnabled;
 
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
+#include "MetroidPrime/Cameras/CCameraBlurPass.hpp"
+#include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "MetroidPrime/CFilteredObjectList.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
@@ -73,6 +75,7 @@ enum EStateManagerTransition {
 };
 
 class CStateManager {
+
   struct ScriptMsgArray {
     CScriptMsg mMessages[192];
     int mWriteIndex;
@@ -179,6 +182,16 @@ public:
   int Get0x244c() const { return x244c; }
 
   int GetNumPlayers() const { return mNumPlayers; }
+  typedef rstl::reserved_vector< rstl::reserved_vector< CCameraFilterPass, 11 >, 4 >
+      TCameraFilterPasses;
+  typedef rstl::reserved_vector< rstl::reserved_vector< CCameraBlurPass, 11 >, 4 >
+      TCameraBlurPasses;
+  CCameraFilterPass& CameraFilterPass(uint player, int stage) {
+    return mCameraFilterPasses[player][stage];
+  }
+  CCameraBlurPass& CameraBlurPass(uint player, int stage) {
+    return mCameraBlurPasses[player][stage];
+  }
   uint ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
   CPlayer* GetPlayer(int index) { return mPlayers[index]; }
   const CPlayer* GetPlayer(int index) const { return mPlayers[index]; }
@@ -285,7 +298,9 @@ public:
   char x16e8_[4];
   EGameState mGameState;
   EInitPhase mInitPhase;
-  char x16f4_[0xD40];
+  TCameraFilterPasses mCameraFilterPasses; // 0x16f4
+  TCameraBlurPasses mCameraBlurPasses;     // 0x1e98
+  char x242c_[8];
 
   CAssetId mPauseHudMessage; // 0x2434
   float mEscapeTotalTime;
