@@ -25,7 +25,7 @@ static bool sGXAborted;
 static bool sUseStreamVertexDelay;
 static int sSpareAllocationSize;
 static void* sSpareAllocation;
-bool CGraphics::mIs50Hz;
+bool CGraphics::sIs50Hz;
 static float sFrameWaitFraction;
 static float sPreviousFrameWaitFraction;
 static int sGraphicsArenaSize;
@@ -356,7 +356,7 @@ void CGraphics::ConfigureVideo(bool initial, bool progressive) {
   mRenderModeObj.viWidth += 20;
   mRenderModeObj.viXOrigin -= 10;
   mPixelAspectRatio = 1.f;
-  mIs50Hz = false;
+  sIs50Hz = false;
   if (progressive) {
     SetProgressiveFilter(mRenderModeObj);
   }
@@ -844,7 +844,7 @@ void CGraphics::EndScene() {
       }
     }
     const float elapsedMs = static_cast< float >(waitTimer.GetElapsedMicros() / 1000);
-    const float framePeriod = mIs50Hz ? 20.f : 16.6666667f;
+    const float framePeriod = sIs50Hz ? 20.f : 16.6666667f;
     sPreviousFrameWaitFraction = sFrameWaitFraction;
     sFrameWaitFraction = (framePeriod - elapsedMs) / framePeriod;
   } else {
