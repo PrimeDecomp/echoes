@@ -629,6 +629,12 @@ MetroidPrime/BodyState/CBSScripted.cpp:
 	.data       start:0x803B4608 end:0x803B4648
 	.sdata2     start:0x8041BA98 end:0x8041BAA0
 
+MetroidPrime/ScriptObjects/CScriptDistanceFog.cpp:
+	.text       start:0x800FF484 end:0x800FFC2C
+	.rodata     start:0x803A8BF0 end:0x803A8BF8
+	.data       start:0x803B4648 end:0x803B4668
+	.sdata2     start:0x8041BAA0 end:0x8041BAB0
+
 MetroidPrime/BodyState/CBSProjectileAttack.cpp:
 	.text       start:0x800FFC2C end:0x8010010C
 	.data       start:0x803B4668 end:0x803B46A8

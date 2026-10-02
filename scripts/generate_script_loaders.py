@@ -731,6 +731,10 @@ class Generator:
             ]
             if kind == "Vector" and all(float(arg[:-1]) == 0.0 for arg in args):
                 return []  # Already CVector3f::Zero() from the initializer list.
+            if kind == "Color" and all(float(arg[:-1]) == 0.0 for arg in args):
+                # The native constructor leaves the CColor::Green() placeholder in place
+                # (SLdrDistanceFog::SLdrDistanceFog, G2ME01 0x800FF648).
+                return []
             expression = prop.cpp + "(" + ", ".join(args) + ")"
         elif kind == "String":
             expression = (

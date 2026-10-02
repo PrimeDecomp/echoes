@@ -23,7 +23,6 @@ struct SLdrDistanceFog {
 inline SLdrDistanceFog::SLdrDistanceFog() : editorProperties(), color(CColor::Green()), nearFarPlane(), distanceRate() {
   editorProperties.active = false;
   mode = 0;
-  color = CColor(0.0f, 0.0f, 0.0f, 0.0f);
   colorRate = 0.0f;
   forceSettings = false;
 }
