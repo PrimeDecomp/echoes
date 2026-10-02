@@ -38,6 +38,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTargetingPoint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpiderBallAttractionSurface.hpp"
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -93,6 +95,8 @@
   }
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
+CScriptTargetingPoint::~CScriptTargetingPoint() {}
+
 CGameLight::~CGameLight() {}
 
 CScriptRoomAcoustics::~CScriptRoomAcoustics() {}
@@ -201,6 +205,12 @@ TYPES_MATCH_IMPL(CScriptWorldTeleporter, CEntity, kET_ScriptWorldTeleporter)
 TYPES_MATCH_IMPL(CScriptSpawnPoint, CEntity, kET_ScriptSpawnPoint)
 TYPES_MATCH_IMPL(CScriptStreamedMusic, CEntity, kET_ScriptStreamedMusic)
 TYPES_MATCH_IMPL(CScriptSwitch, CEntity, kET_ScriptSwitch)
+TYPES_MATCH_IMPL(CScriptTargetingPoint, CActor, kET_ScriptTargetingPoint)
+CAST_TO_REF_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
+CAST_TO_PTR_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
+TYPES_MATCH_IMPL(CScriptSpiderBallAttractionSurface, CActor, kET_ScriptSpiderBallAttractionSurface)
+CAST_TO_REF_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)
+CAST_TO_PTR_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 CAST_TO_REF_IMPL(CEntity, kET_Entity)
