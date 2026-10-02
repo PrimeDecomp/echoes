@@ -57,11 +57,25 @@ private:
     CFunctionDescription(float slope, const float& yIntercept, const float& t1, const float& t2)
     : mSlope(slope), mYIntercept(yIntercept), mT1(t1), mT2(t2) {}
 
+    CFunctionDescription FunctionMirroredAround(const float& value) const {
+      const float twiceValue = 2.f * value;
+      return CFunctionDescription(-mSlope, mYIntercept - mSlope * twiceValue, twiceValue - mT2,
+                                  twiceValue - mT1);
+    }
+
     float mSlope;
     float mYIntercept;
     float mT1;
     float mT2;
   };
+
+  static float FindUpperLimitFromRoot(const CFunctionDescription& desc, const float& lowerLimit,
+                                      const float& root);
+  static float TimeScaleIntegralWithSortedLimits(const CFunctionDescription& desc,
+                                                 const float& lowerLimit, const float& upperLimit);
+  static float GetScale(const CFunctionDescription& desc, const float& time) {
+    return desc.mSlope * time + desc.mYIntercept;
+  }
 
   CFunctionDescription mDesc;
 };

@@ -780,6 +780,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Animation/CAnimTreeSingleChild.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimTreeBlend.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimTreeTimeScale.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Animation/CTimeScaleFunctions.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimTreeTransition.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimTreeTweenBase.cpp"),
             Object(NonMatching, "Kyoto/Animation/IAnimReader.cpp"),
