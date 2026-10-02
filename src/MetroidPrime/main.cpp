@@ -579,8 +579,6 @@ void CMain::FillInAssetIDs() {
   gpSimplePool->fn_8029c7e8(*gpResourceFactory->GetResourceIdByName("sound_lookup_ATBL"));
 }
 
-CInGameTweakManager::~CInGameTweakManager() {}
-
 CGameGlobalObjects::~CGameGlobalObjects() {}
 
 int CMain::RsMain(int argc, const char* const* argv) {

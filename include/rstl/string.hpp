@@ -58,6 +58,35 @@ struct char_traits< char > {
   }
 };
 
+template < typename _CharTp >
+struct case_insensitive_char_traits {
+  static void copy(_CharTp* out, const _CharTp* in, int count) {
+    for (int i = 0; i < count; ++i) {
+      out[i] = in[i];
+    }
+  }
+
+  static void assign(_CharTp& out, const _CharTp& value) { out = value; }
+
+  static void assign(_CharTp* out, int count, const _CharTp& value) {
+    for (int i = 0; i < count; ++i) {
+      out[i] = value;
+    }
+  }
+
+  static _CharTp eos() { return 0; }
+  static _CharTp toupper(const _CharTp ch) {
+    return (ch >= 'a' && ch <= 'z')         ? ch - 32
+           : (ch >= 0xe0 && ch <= 0xfe)     ? ch - 32
+           : (ch >= 0x30a0 && ch <= 0x30ff) ? ch - 96
+                                            : ch;
+  }
+
+  static bool eq(const _CharTp& lhs, const _CharTp& rhs) { return toupper(lhs) == toupper(rhs); }
+
+  static int compare(const _CharTp& lhs, const _CharTp& rhs) { return toupper(rhs) - toupper(lhs); }
+};
+
 template < typename _CharTp, typename Traits = char_traits< _CharTp >,
            typename Alloc = rmemory_allocator >
 class basic_string {
@@ -308,6 +337,7 @@ inline bool basic_string< _CharTp, Traits, Alloc >::operator!=(const basic_strin
 
 typedef basic_string< wchar_t > wstring;
 typedef basic_string< char > string;
+typedef basic_string< char, case_insensitive_char_traits< char > > istring;
 
 inline bool operator<(const string& lhs, const string& rhs) { return lhs.compare(rhs) < 0; }
 
@@ -315,6 +345,9 @@ inline bool operator==(const string& lhs, const char* rhs) { return lhs.compare(
 
 bool operator==(const char* lhs, const string& rhs);
 bool operator!=(const string& lhs, const char* rhs);
+
+istring istring_l(const char* data);
+inline bool operator==(const istring& a, const istring& b) { return a.compare(b) == 0; }
 
 wstring wstring_l(const wchar_t* data);
 

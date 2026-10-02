@@ -1000,6 +1000,14 @@ MetroidPrime/Weapons/CProjectileInfo.cpp:
 	.text       start:0x8016B7B0 end:0x8016BBF4
 	.sdata2     start:0x8041C680 end:0x8041C690
 
+MetroidPrime/CInGameTweakManager.cpp:
+	.text       start:0x8016BBF4 end:0x8016C6CC
+	.rodata     start:0x803A9848 end:0x803A99B8
+
+MetroidPrime/CIkChain.cpp:
+	.text       start:0x8016C6CC end:0x8016D214
+	.sdata2     start:0x8041C690 end:0x8041C6A8
+
 MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
