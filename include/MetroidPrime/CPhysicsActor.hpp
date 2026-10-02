@@ -81,6 +81,9 @@ class CPhysicsActor : public CActor {
   static const float kGravityAccel;
 
 public:
+  // Guessed name; shared default step settings initialized by this TU.
+  static const StepData skDefaultStepData;
+
   CPhysicsActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                 uint inGrave,
                 const CTransform4f& xf, const CModelData& mData, const CMaterialList& matList,

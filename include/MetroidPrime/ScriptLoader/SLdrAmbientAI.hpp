@@ -38,6 +38,8 @@ inline SLdrAmbientAI::SLdrAmbientAI() : editorProperties(), collisionBox(CVector
   vulnerability.phazon.effect = 0;
   vulnerability.powerCharge.effect = 0;
   vulnerability.superMissle.effect = 0;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   detectRadius = 7.0f;
   explodeRadius = 1.5f;
   animation_React = -1;
