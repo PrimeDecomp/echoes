@@ -35,9 +35,10 @@ private:
   EPaletteFormat mFmt;
   mutable uint mFrameLoaded;
   uint mEntryCount;
-  rstl::single_ptr<ushort> mEntries;
+  rstl::single_ptr< ushort > mEntries;
   GXTlutObj mTlutObj;
   bool mLocked;
 };
+CHECK_SIZEOF(CGraphicsPalette, 0x20)
 
 #endif // _CGRAPHICSPALETTE

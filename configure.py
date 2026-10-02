@@ -772,6 +772,7 @@ config.libs = [
             Object(Matching, "Kyoto/Input/CDolphinController.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegIdList.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimSource.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Graphics/DolphinCPalette.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimMathUtils.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAdvancementDeltas.cpp"),
             Object(NonMatching, "Kyoto/Animation/CAnimSourceReader.cpp"),

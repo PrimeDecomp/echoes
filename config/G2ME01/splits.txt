@@ -1995,6 +1995,11 @@ Kyoto/Graphics/DolphinCGraphics.cpp:
 	.ctors      start:0x803A55EC end:0x803A55F0
 	.sbss       start:0x804199CC end:0x804199D0 align:4
 
+Kyoto/Graphics/DolphinCPalette.cpp:
+	.text       start:0x802C3EAC end:0x802C416C
+	.rodata     start:0x803AF400 end:0x803AF408
+	.sbss       start:0x80419A10 end:0x80419A18
+
 Kyoto/Graphics/DolphinCTexture.cpp:
 	.text       start:0x802C416C end:0x802C60EC
 	.rodata     start:0x803AF408 end:0x803AF420
