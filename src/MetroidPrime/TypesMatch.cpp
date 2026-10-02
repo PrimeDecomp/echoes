@@ -71,6 +71,7 @@
 #include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 #include "MetroidPrime/Weapons/CBomb.hpp"
+#include "MetroidPrime/Weapons/CPowerBomb.hpp"
 
 #define TYPES_MATCH_IMPL(cls, parent, id)                                                          \
   CEntity* cls::TypesMatch(int typeId) const {                                                     \
@@ -130,6 +131,7 @@ TYPES_MATCH_IMPL(CEffect, CActor, kET_Effect)
 TYPES_MATCH_IMPL(CExplosion, CEffect, kET_Explosion)
 TYPES_MATCH_IMPL(CWeapon, CActor, kET_Weapon)
 TYPES_MATCH_IMPL(CBomb, CWeapon, kET_Bomb)
+TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
 TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)
 TYPES_MATCH_IMPL(CEnergyProjectile, CGameProjectile, kET_EnergyProjectile)
 CAST_TO_REF_IMPL(CEnergyProjectile, kET_EnergyProjectile)
