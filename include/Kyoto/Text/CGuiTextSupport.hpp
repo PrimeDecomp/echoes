@@ -49,6 +49,8 @@ public:
   void ClearRenderBuffer();
   bool GetIsTextSupportFinishedLoading() const;
   float GetTotalAnimationTime() const;
+  float GetCurTime() const { return mCurrentTime; }
+  void SetCurTime(float time) { mCurrentTime = time; }
   float GetNumCharactersPrinted() const;
   float GetCurrentAnimationOverAge() const;
   int GetTotalPageCount();

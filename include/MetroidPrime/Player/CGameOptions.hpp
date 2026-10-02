@@ -59,6 +59,9 @@ public:
   rstl::pair< bool, bool >& PlayerOptions(int player) { return unk2[player]; } // Guessed name
   void ToggleControls(bool);
   bool GetSwapBeamControls() const { return swapBeamsControls; }
+  const rstl::vector< rstl::pair< CAssetId, CAssetId > >& GetControlTXTRMap() const {
+    return mControlTXTRMap;
+  }
 
   void ResetControllerAssets(int);
   void SetControls(int);
@@ -82,8 +85,8 @@ private:
   bool swapBeamsControls : 1;
   bool hintSystem : 1;
   bool unk : 1;
-  rstl::vector<SObjectTag> vec;
-  rstl::reserved_vector<rstl::pair<bool, bool>, 4> unk2;
+  rstl::vector< rstl::pair< CAssetId, CAssetId > > mControlTXTRMap;
+  rstl::reserved_vector< rstl::pair< bool, bool >, 4 > unk2;
 };
 CHECK_SIZEOF(CGameOptions, 0x44)
 
