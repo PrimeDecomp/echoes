@@ -682,6 +682,15 @@ MetroidPrime/BodyState/CBSProjectileAttack.cpp:
 	.data       start:0x803B4668 end:0x803B46A8
 	.sdata2     start:0x8041BAB0 end:0x8041BAD8
 
+MetroidPrime/Weapons/CPowerBomb.cpp:
+	.text       start:0x8010010C end:0x80100C38
+	.ctors      start:0x803A5518 end:0x803A551C
+	.rodata     start:0x803A8BF8 end:0x803A8C18
+	.data       start:0x803B46A8 end:0x803B4728
+	.sdata      start:0x80418270 end:0x80418290
+	.sbss       start:0x80419150 end:0x80419158
+	.sdata2     start:0x8041BAD8 end:0x8041BAF8
+
 MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 	.text       start:0x80100C38 end:0x80109E7C
 
