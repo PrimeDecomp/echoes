@@ -61,7 +61,6 @@ CHECK_SIZEOF(CTweakValue, 0x48)
 class CInGameTweakManager {
 public:
   CInGameTweakManager();
-  ~CInGameTweakManager();
 
   bool HasTweakValue(const rstl::string& name) const;
   const CTweakValue* GetTweakValue(const rstl::string& name) const;
