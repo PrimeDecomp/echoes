@@ -14,6 +14,9 @@ class CToken;
 class CSimplePool;
 class CSfxPitchBend;
 struct SObjectTag;
+struct SFlangerAuxParameters;
+struct SBitcrusherAuxParameters;
+struct SPhaserAuxParameters;
 
 class CSfxManager {
 public:
@@ -255,8 +258,16 @@ public:
   static bool ShouldApplyLowPass(CBaseSfxWrapper* sound);     // Guessed name
   static int GetLowPassFrequency(CBaseSfxWrapper* sound);     // Guessed name
 
-  // TODO: identify the auxiliary-effect types before declaring their registration/update
-  // methods and the eight effect-parameter overloads.
+  // Guessed names; each registration returns an effect ID (zero is invalid).
+  static void RemoveAuxEffect(int id);
+  static int AddAuxEffect(int area, const SND_AUX_REVERBHI& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SND_AUX_CHORUS& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SND_AUX_REVERBSTD& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SND_AUX_DELAY& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SFlangerAuxParameters& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SBitcrusherAuxParameters& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SPhaserAuxParameters& params, uchar volume, int priority);
+  // The eighth effect overload and effect-update interface remain unidentified.
 
 private:
   static CSfxChannel mChannels[4];

@@ -283,7 +283,7 @@ MetroidPrime/Enemies/CAi.cpp:
 
 MetroidPrime/TypesMatch.cpp:
 	.text       start:0x800972BC end:0x8009D644
-	.data       start:0x803B2ED4 end:0x803B3068
+	.data       start:0x803B2BAC end:0x803B3068
 
 MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.text       start:0x8009DCE8 end:0x8009F4E4
@@ -708,6 +708,10 @@ MetroidPrime/CFluidPlaneCPU.cpp:
 	.text       start:0x80131DF8 end:0x801344A8
 	.rodata     start:0x803A9090 end:0x803A9170
 	.data       start:0x803B5028 end:0x803B5040
+
+MetroidPrime/ScriptObjects/CScriptRoomAcoustics.cpp:
+	.text       start:0x801344A8 end:0x801358B4
+	.sdata2     start:0x8041C060 end:0x8041C09C
 
 MetroidPrime/CCollisionActorManager.cpp:
 	.text       start:0x801358B4 end:0x801375EC

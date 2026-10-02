@@ -54,6 +54,7 @@ enum EEntityType {
   kET_ScriptPortalTransition = 72,
   kET_Relay = 73,
   kET_ScriptRepulsor = 74,
+  kET_ScriptRoomAcoustics = 76,
   kET_ScriptSound = 77,
   kET_ScriptSpawnPoint = 79,
   kET_ScriptSpecialFunction = 80,
