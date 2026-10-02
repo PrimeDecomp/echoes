@@ -530,6 +530,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptMemoryRelay.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraHint.cpp"),
+            Object(Matching, "MetroidPrime/CAnimRes.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CSamusFaceReflection.cpp"),
             Object(Matching, "MetroidPrime/ScriptObjects/CScriptPlayerHint.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRoomAcoustics.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraPitch.cpp"),

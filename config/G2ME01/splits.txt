@@ -82,6 +82,9 @@ MetroidPrime/CSplashScreen.cpp:
 	.sdata      start:0x80417E08 end:0x80417E10
 	.sdata2     start:0x8041A6C0 end:0x8041A790
 
+MetroidPrime/CAnimRes.cpp:
+	.sdata2     start:0x8041A7B8 end:0x8041A7BC
+
 MetroidPrime/CAnimData.cpp:
 	.text       start:0x80025D3C end:0x8002F7A8
 	.ctors      start:0x803A54BC end:0x803A54C0
@@ -659,6 +662,13 @@ MetroidPrime/ScriptObjects/CScriptSpecialFunction.cpp:
 
 MetroidPrime/ScriptObjects/CScriptActorRotate.cpp:
 	.text       start:0x80109E7C end:0x8010B2C0
+
+MetroidPrime/Player/CSamusFaceReflection.cpp:
+	.text       start:0x8010B2C0 end:0x8010BFB8
+	.ctors      start:0x803A551C end:0x803A5520
+	.rodata     start:0x803A8C48 end:0x803A8C70
+	.bss        start:0x803DAAD0 end:0x803DAB00
+	.sdata2     start:0x8041BB98 end:0x8041BBD0
 
 MetroidPrime/ScriptObjects/CScriptPlayerHint.cpp:
 	.text       start:0x8010BFB8 end:0x8010C590
