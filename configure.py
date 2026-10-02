@@ -654,6 +654,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
             Object(NonMatching, "MetroidPrime/CActorModelParticles.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRelay.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRuleSet.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayer.cpp"),

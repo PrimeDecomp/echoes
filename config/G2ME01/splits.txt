@@ -343,6 +343,11 @@ MetroidPrime/ScriptObjects/CScriptCameraHint.cpp:
 	.text       start:0x800B8098 end:0x800B88D4
 	.data       start:0x803B3530 end:0x803B35B8
 
+MetroidPrime/ScriptObjects/CScriptRelay.cpp:
+	.text       start:0x800B8E9C end:0x800B9214
+	.rodata     start:0x803A7F08 end:0x803A7F10
+	.data       start:0x803B35B8 end:0x803B35D8
+
 MetroidPrime/ScriptObjects/CScriptSpawnPoint.cpp:
 	.text       start:0x800B9214 end:0x800BA234
 	.data       start:0x803B35D8 end:0x803B35F8
