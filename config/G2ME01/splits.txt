@@ -265,6 +265,11 @@ MetroidPrime/CAutoMapper.cpp:
 	.sbss       start:0x80419050 end:0x80419058
 	.sdata2     start:0x8041AC10 end:0x8041ACF0
 
+MetroidPrime/ScriptObjects/CScriptCounter.cpp:
+	.text       start:0x80092310 end:0x80092918
+	.rodata     start:0x803A7BD0 end:0x803A7BD8
+	.data       start:0x803B29A0 end:0x803B29C0
+
 MetroidPrime/CMapWorld.cpp:
 	.text       start:0x80092918 end:0x80096C94
 	.data       start:0x803B29C0 end:0x803B29E0
