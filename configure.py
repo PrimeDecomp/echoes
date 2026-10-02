@@ -834,6 +834,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Particles/CDeferredParticleEffect.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CRelFileDebugInfo.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegId.cpp"),
+            Object(NonMatching, "Kyoto/Animation/CSegStatementSet.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Input/CFinalInput.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Graphics/CColor.cpp"),
             Object(NonMatching, "Kyoto/Graphics/DolphinCColor.cpp"),
