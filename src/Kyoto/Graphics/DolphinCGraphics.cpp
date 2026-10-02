@@ -34,8 +34,6 @@ static uchar* sGraphicsArena;
 
 // Buffer ownership is unresolved; also used by the skinned-model workspace allocator.
 extern "C" void fn_8032F6EC(void* buffer, uint size);
-// Unnamed TEV-combiner dependency; the register index is relative to GX_TEVREG0.
-extern "C" void fn_802BE368(int index, const CColor& color);
 
 // clang-format off
 CTevCombiners::CTevPass CGraphics::kEnvModulateConstColor(
@@ -1452,7 +1450,9 @@ void CGraphics::SetTevOp(ERglTevStage stage, const CTevCombiners::CTevPass& pass
   CTevCombiners::SetupPass(get_texture_unit(stage), pass);
 }
 
-void CGraphics::SetTevRegisterColor(int index, const CColor& color) { fn_802BE368(index, color); }
+void CGraphics::SetTevRegisterColor(int index, const CColor& color) {
+  CTevCombiners::SetTevRegisterColor(index, color);
+}
 
 void CGraphics::SetFog(ERglFogMode mode, float startz, float endz, const CColor& color) {
   CGX::SetFog(static_cast< GXFogType >(mode), startz, endz, mProj.GetNear(), mProj.GetFar(),
