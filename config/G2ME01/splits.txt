@@ -412,6 +412,14 @@ MetroidPrime/Player/CMorphBall.cpp:
 	.text       start:0x800C02A4 end:0x800D06CC
 	.ctors      start:0x803A54F4 end:0x803A54F8
 
+MetroidPrime/ScriptObjects/CScriptDamageableTrigger.cpp:
+	.text       start:0x800D06CC end:0x800D1060
+	.ctors      start:0x803A54F8 end:0x803A54FC
+	.rodata     start:0x803A89C8 end:0x803A89D0
+	.sdata      start:0x80418160 end:0x80418170
+	.sbss       start:0x804190C0 end:0x804190C8
+	.sdata2     start:0x8041B4E0 end:0x8041B4F0
+
 MetroidPrime/ScriptObjects/CScriptDebris.cpp:
 	.text       start:0x800D1060 end:0x800D50B8
 	.ctors      start:0x803A54FC end:0x803A5500
@@ -1239,6 +1247,11 @@ MetroidPrime/Player/CFrontEndGameMode.cpp:
 	.text       start:0x80226B3C end:0x80226D30
 	.data       start:0x803B8490 end:0x803B84F8
 	.sdata2     start:0x8041DAC0 end:0x8041DAC8
+
+MetroidPrime/ScriptObjects/CScriptDamageableTriggerOrientated.cpp:
+	.text       start:0x80226D30 end:0x802274C8
+	.rodata     start:0x803AD310 end:0x803AD318
+	.sdata2     start:0x8041DAC8 end:0x8041DAD0
 
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC

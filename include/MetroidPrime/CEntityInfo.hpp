@@ -40,6 +40,8 @@ enum EEntityType {
   kET_ScriptCamera = 44,
   kET_ScriptColorModulate = 45,
   kET_ScriptCounter = 47,
+  kET_ScriptDamageableTrigger = 49,
+  kET_ScriptDamageableTriggerOrientated = 50, // Guessed name.
   kET_DarkSamusBattleStage = 51,
   kET_ScriptDebris = 52,
   kET_ScriptDistanceFog = 54, // Guessed name; Prime has CScriptDistanceFog.
@@ -151,6 +153,7 @@ enum EScriptObjectMessage {
   kSM_XALD = 0x58414c44,
   kSM_XWLD = 0x58574c44,
   kSM_XDelete = 0x5844454c,
+  kSM_XDamage = 0x58444d47, // Guessed name; damage notification.
   kSM_XHIT = 0x58484954,
   kSM_SuspendedMove =
       0x58415544, // Guessed name, sent when a patterned actor's movement is suspended.
