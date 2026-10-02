@@ -17,6 +17,7 @@ struct SLdrPlayerHint {
 };
 
 inline SLdrPlayerHint::SLdrPlayerHint() : editorProperties() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   priority = 10;
   timer = 0.0f;
   interpolateControlTime = 1.0f;
