@@ -40,9 +40,9 @@ public:
     CVector3f mOffset;
   };
 
-  void Insert(const CSegId& id, const CQuaternion& rot) { mTreeMap[id].SetRotation(rot); }
+  void Insert(const CSegId& id, const CQuaternion& rot);
   void Insert(const CSegId& id, const CVector3f& offset) { mTreeMap[id].SetOffset(offset); }
-  CQuaternion GetSegRotation(const CSegId& id) const { return mTreeMap[id].GetRotation(); }
+  CQuaternion GetSegRotation(const CSegId& id) const;
   const TLockedToken< CCharLayoutInfo >& CharLayoutInfo() const {
     return mLayoutDesc.ScaledLayout();
   }

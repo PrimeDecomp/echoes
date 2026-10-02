@@ -2,20 +2,22 @@
 
 #include "MetroidPrime/CAnimData.hpp"
 
+#include "Kyoto/Animation/CCharLayoutInfo.hpp"
+
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 
+#include "rstl/math.hpp"
+
 void CIkChain::Solve(CQuaternion& q1, CQuaternion& q2, const CVector3f& pos) {
   const float mag = pos.Magnitude();
-  float secondCos =
-      (mP1BoneLength * mP1BoneLength + mag * mag - mP2p1Length * mP2p1Length) /
-      (2.f * mag * mP1BoneLength);
+  float secondCos = (mP1BoneLength * mP1BoneLength + mag * mag - mP2p1Length * mP2p1Length) /
+                    (2.f * mag * mP1BoneLength);
   secondCos = CMath::Clamp(-1.f, secondCos, 1.f);
   float secondAngle = acosf(secondCos);
-  float firstCos =
-      (mP2p1Length * mP2p1Length + (mag * mag - mP1BoneLength * mP1BoneLength)) /
-      (2.f * mag * mP2p1Length);
+  float firstCos = (mP2p1Length * mP2p1Length + (mag * mag - mP1BoneLength * mP1BoneLength)) /
+                   (2.f * mag * mP2p1Length);
   firstCos = CMath::Clamp(-1.f, firstCos, 1.f);
   float firstAngle = acosf(firstCos);
 
@@ -23,7 +25,7 @@ void CIkChain::Solve(CQuaternion& q1, CQuaternion& q2, const CVector3f& pos) {
   CVector3f axis = CVector3f::Cross(mP2p1Dir, boneDir);
   float axisMag = axis.Magnitude();
   axis *= 1.f / axisMag;
-  axisMag = CMath::Min(axisMag, 1.f);
+  axisMag = rstl::min_val(1.f, axisMag);
   float angle = static_cast< float >(asin(axisMag));
   if (CVector3f::Dot(mP2p1Dir, boneDir) < 0.f) {
     angle = M_PIF - angle;
@@ -39,7 +41,7 @@ void CIkChain::Solve(CQuaternion& q1, CQuaternion& q2, const CVector3f& pos) {
   axis = CVector3f::Cross(current.AsNormalized(), target);
   axisMag = axis.Magnitude();
   axis *= 1.f / axisMag;
-  axisMag = CMath::Min(axisMag, 1.f);
+  axisMag = rstl::min_val(1.f, axisMag);
   angle = static_cast< float >(asin(axisMag));
   if (CVector3f::Dot(current, target) < 0.f) {
     angle = M_PIF - angle;
@@ -49,11 +51,19 @@ void CIkChain::Solve(CQuaternion& q1, CQuaternion& q2, const CVector3f& pos) {
   q1 = targetRotation * q1;
 }
 
+void CHierarchyPoseBuilder::Insert(const CSegId& id, const CQuaternion& rot) {
+  mTreeMap[id].SetRotation(rot);
+}
+
+CQuaternion CHierarchyPoseBuilder::GetSegRotation(const CSegId& id) const {
+  return mTreeMap[id].GetRotation();
+}
+
 void CIkChain::Activate(const CAnimData& data, CSegId bone, const CTransform4f& xf) {
   mBone = bone;
   const CHierarchyPoseBuilder& builder = data.GetPoseBuilder();
   mP1 = builder.CharLayoutInfo()->GetOriginalParent(mBone);
-  if (mP1 != CSegId(2)) {
+  if (mP1 != CSegId::Character()) {
     mP2 = builder.CharLayoutInfo()->GetOriginalParent(mP1);
     mP2p1Dir = builder.CharLayoutInfo()->GetFromParentUnrotated(mP1);
     mP2p1Length = mP2p1Dir.Magnitude();
@@ -101,8 +111,8 @@ void CIkChain::Deactivate() { mActivated = false; }
 
 void CIkChain::Update(float dt) {
   if (mActivated) {
-    mTime = CMath::Min(mTime + dt, 1.f);
+    mTime = rstl::min_val(1.f, mTime + dt);
   } else {
-    mTime = CMath::Max(0.f, mTime - dt);
+    mTime = rstl::max_val(mTime - dt, 0.f);
   }
 }
