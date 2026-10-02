@@ -49,6 +49,7 @@ enum EEntityType {
   kET_ScriptDock = 55,
   kET_ScriptDoor = 56,
   kET_ScriptEffect = 58,
+  kET_ScriptGrapplePoint = 59,
   kET_ScriptLayerController = 64,
   kET_ScriptPathCamera = 65,
   kET_ScriptPickup = 66,
