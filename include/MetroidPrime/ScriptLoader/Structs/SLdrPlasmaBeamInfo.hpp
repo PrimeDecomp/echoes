@@ -30,6 +30,6 @@ struct SLdrPlasmaBeamInfo {
   CAssetId beamStreaks; // 0xaeb31af3
 };
 
-void LoadTypedefSLdrPlasmaBeamInfo(SLdrPlasmaBeamInfo& data, CInputStream& input);
+void LoadTypedefPlasmaBeamInfo(SLdrPlasmaBeamInfo& data, CInputStream& input);
 
 #endif

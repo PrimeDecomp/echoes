@@ -5,7 +5,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEchoParameters.hpp"
@@ -40,7 +40,7 @@ struct SLdrPatternedAITypedef {
   float unknown_0x66cdc6e8; // 0x66cdc6e8
   float xDamageDelay; // 0x061cbe62
   int sound_XDamage; // 0x19f84380
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   CAssetId stateMachine; // 0x55744160
   CAssetId stateMachine2; // 0xc1c7e255
   float unknown_0x87d22d43; // 0x87d22d43
@@ -60,6 +60,6 @@ struct SLdrPatternedAITypedef {
   SLdrEchoParameters echoParameters; // 0x4476bed8
 };
 
-void LoadTypedefSLdrPatternedAITypedef(SLdrPatternedAITypedef& data, CInputStream& input);
+void LoadTypedefPatternedAITypedef(SLdrPatternedAITypedef& data, CInputStream& input);
 
 #endif

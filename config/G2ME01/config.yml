@@ -425,9 +425,9 @@ modules:
     symbols: config/G2ME01/rels/Tweaks/symbols.txt
     # These unreferenced functions are present in the original REL.
     force_active:
-      - LoadTypedefSLdrTweakPlayer2__FR16SLdrTweakPlayer2R12CInputStream
-      - LoadTypedefSLdrTweakPlayerControls2__FR24SLdrTweakPlayerControls2R12CInputStream
-      - LoadTypedefSLdrTweakPlayerGun2__FR19SLdrTweakPlayerGun2R12CInputStream
+      - LoadTypedefTweakPlayer2__FR16SLdrTweakPlayer2R12CInputStream
+      - LoadTypedefTweakPlayerControls2__FR24SLdrTweakPlayerControls2R12CInputStream
+      - LoadTypedefTweakPlayerGun2__FR19SLdrTweakPlayerGun2R12CInputStream
       - __ct__16SLdrTweakPlayer2Fv
       - __ct__19SLdrTweakPlayerGun2Fv
       - __ct__24SLdrTweakPlayerControls2Fv

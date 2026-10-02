@@ -27,7 +27,78 @@ struct SLdrPowerBombGuardianStageProperties {
   int unknown_0x6491357e; // 0x6491357e
 };
 
-void LoadTypedefSLdrPowerBombGuardianStageProperties(SLdrPowerBombGuardianStageProperties& data, CInputStream& input);
+inline SLdrPowerBombGuardianStageProperties::SLdrPowerBombGuardianStageProperties() {
+  minTimeBetweenAttacks = 2.0f;
+  maxTimeBetweenAttacks = 2.0f;
+  minTimeBetweenShots = 1.0f;
+  maxTimeBetweenShots = 1.0f;
+  minShotsInABurst = 1;
+  maxShotsInABurst = 1;
+  powerBombProjectileGravityMultiplier = 1.0f;
+  unknown_0xd356c997 = 1.0f;
+  doubleShotChance = 0.5f;
+  unknown_0x87cc8ba4 = 10;
+  unknown_0x6491357e = 10;
+}
+
+inline SLdrPowerBombGuardianStageProperties::~SLdrPowerBombGuardianStageProperties() {}
+
+inline void LoadTypedefPowerBombGuardianStageProperties(SLdrPowerBombGuardianStageProperties& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x95e7a2c2: {
+      sldrThis.minTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x76ba1c18: {
+      sldrThis.maxTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x3eb2de35: {
+      sldrThis.minTimeBetweenShots = input.ReadFloat();
+      break;
+    }
+    case 0xe50d8dd2: {
+      sldrThis.maxTimeBetweenShots = input.ReadFloat();
+      break;
+    }
+    case 0x64d482d5: {
+      sldrThis.minShotsInABurst = input.ReadInt32();
+      break;
+    }
+    case 0xc3e002ac: {
+      sldrThis.maxShotsInABurst = input.ReadInt32();
+      break;
+    }
+    case 0xbb4b6680: {
+      sldrThis.powerBombProjectileGravityMultiplier = input.ReadFloat();
+      break;
+    }
+    case 0xd356c997: {
+      sldrThis.unknown_0xd356c997 = input.ReadFloat();
+      break;
+    }
+    case 0xca6ac43a: {
+      sldrThis.doubleShotChance = input.ReadFloat();
+      break;
+    }
+    case 0x87cc8ba4: {
+      sldrThis.unknown_0x87cc8ba4 = input.ReadInt32();
+      break;
+    }
+    case 0x6491357e: {
+      sldrThis.unknown_0x6491357e = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSporbBase {
   SLdrSporbBase();
@@ -90,6 +161,56 @@ struct SLdrSporbBase {
   SLdrPowerBombGuardianStageProperties stage4Data; // 0xbfaefb37
 };
 
-void LoadTypedefSLdrSporbBase(SLdrSporbBase& data, CInputStream& input);
+inline SLdrSporbBase::SLdrSporbBase() : editorProperties(), patterned(), actorInformation(), attackAimOffset(CVector3f::Zero()), tendrilParticleEffect(kInvalidAssetId), powerBombProjectileParticleEffect(kInvalidAssetId), powerBombProjectileDamage(), stage1Data(), stage2Data(), stage3Data(), stage4Data() {
+  minTimeBetweenAttacks = 2.0f;
+  maxTimeBetweenAttacks = 2.0f;
+  minTimeBetweenShots = 1.0f;
+  maxTimeBetweenShots = 1.0f;
+  minShotsInABurst = 1;
+  maxShotsInABurst = 1;
+  shotAngleVariance = 0.0f;
+  unknown_0x35557a83 = 0.1f;
+  grabberOutAcceleration = -10.0f;
+  grabberInAcceleration = -100.0f;
+  initialGrabberOutSpeed = 50.0f;
+  initialGrabberInSpeed = 0.0f;
+  grabberAttachTime = 2.0f;
+  minGrabberGrabTime = 2.0f;
+  maxGrabberGrabTime = 2.0f;
+  spitForce = 40.0f;
+  spitDamage = 0.0f;
+  grabDamage = 5.0f;
+  unknown_0x2cfade2c = 10.0f;
+  minGrabberGrabRange = 5.0f;
+  maxGrabberGrabRange = 20.0f;
+  isPowerBombGuardian = false;
+  powerBombProjectileDamage.unknown_0x119fbd31 = 11;
+  powerBombProjectileDamage.dI_Damage = 5.0f;
+  powerBombProjectileDamage.dI_KnockBackPower = 2.0f;
+  maxPowerBombProjectileHeight = 20.0f;
+  powerBombProjectileFuseTime = 1.0f;
+  powerBombProjectileStartDamageTime = 1.0f;
+  powerBombProjectileEndDamageTime = 1.0f;
+  powerBombProjectileDamageWaitTime = 5.0f;
+  powerBombProjectileSound = 0;
+  unknown_0x48df4182 = 20.0f;
+  unknown_0xe39482ad = 0.0f;
+  unknown_0xdd8502cc = 1.0f;
+  unknown_0x4ab8cf7d = 0.40000001f;
+  unknown_0xf5e28404 = 5.0f;
+  grabberFireSound = 0;
+  grabberFlightSound = 0;
+  grabberHitPlayerSound = 0;
+  grabberHitWorldSound = 0;
+  grabberRetractSound = 0;
+  grabberRetractMissedPlayerSound = 0;
+  morphballSpitSound = 0;
+  grabberExplosionSound = 0;
+  ballEscapeSound = 0;
+  needleTelegraphSound = 0;
+  grabberTelegraphSound = 0;
+}
+
+inline SLdrSporbBase::~SLdrSporbBase() {}
 
 #endif

@@ -15,6 +15,10 @@ struct SLdrControllerAction {
   bool oneShot; // 0xead7b7bb
 };
 
-void LoadTypedefSLdrControllerAction(SLdrControllerAction& data, CInputStream& input);
+inline SLdrControllerAction::SLdrControllerAction() : editorProperties(), cmd() {
+  oneShot = false;
+}
+
+inline SLdrControllerAction::~SLdrControllerAction() {}
 
 #endif

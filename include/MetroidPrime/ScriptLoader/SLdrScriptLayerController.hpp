@@ -13,7 +13,16 @@ struct SLdrMasterLayer {
   int layer;
 };
 
-void LoadTypedefSLdrMasterLayer(SLdrMasterLayer& data, CInputStream& input);
+inline SLdrMasterLayer::SLdrMasterLayer() : areaID() {
+  layer = 0;
+}
+
+inline SLdrMasterLayer::~SLdrMasterLayer() {}
+
+inline void LoadTypedefMasterLayer(SLdrMasterLayer& sldrThis, CInputStream& input) {
+  sldrThis.areaID = input.ReadInt32();
+  sldrThis.layer = input.ReadInt32();
+}
 
 struct SLdrScriptLayerController {
   SLdrScriptLayerController();
@@ -24,6 +33,10 @@ struct SLdrScriptLayerController {
   bool isDynamic; // 0x12a7d8b2
 };
 
-void LoadTypedefSLdrScriptLayerController(SLdrScriptLayerController& data, CInputStream& input);
+inline SLdrScriptLayerController::SLdrScriptLayerController() : editorProperties(), masterLayer() {
+  isDynamic = false;
+}
+
+inline SLdrScriptLayerController::~SLdrScriptLayerController() {}
 
 #endif

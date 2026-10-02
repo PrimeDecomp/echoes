@@ -17,6 +17,14 @@ struct SLdrFishCloudModifier {
   float influencePriority; // 0xaba2d9ed
 };
 
-void LoadTypedefSLdrFishCloudModifier(SLdrFishCloudModifier& data, CInputStream& input);
+inline SLdrFishCloudModifier::SLdrFishCloudModifier() : editorProperties() {
+  active = true;
+  unknown_0xea2d4ca8 = false;
+  rotate = false;
+  influenceDistance = 8.0f;
+  influencePriority = 0.40000001f;
+}
+
+inline SLdrFishCloudModifier::~SLdrFishCloudModifier() {}
 
 #endif

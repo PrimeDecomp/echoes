@@ -13,6 +13,10 @@ struct SLdrTimeKeyframe {
   float time; // 0x44335aff
 };
 
-void LoadTypedefSLdrTimeKeyframe(SLdrTimeKeyframe& data, CInputStream& input);
+inline SLdrTimeKeyframe::SLdrTimeKeyframe() : editorProperties() {
+  time = 1.0f;
+}
+
+inline SLdrTimeKeyframe::~SLdrTimeKeyframe() {}
 
 #endif

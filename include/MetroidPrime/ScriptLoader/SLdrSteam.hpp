@@ -21,6 +21,14 @@ struct SLdrSteam {
   bool unknown_0xa366c949; // 0xa366c949
 };
 
-void LoadTypedefSLdrSteam(SLdrSteam& data, CInputStream& input);
+inline SLdrSteam::SLdrSteam() : editorProperties(), trigger(), steam(kInvalidAssetId) {
+  strength = 0.34999999f;
+  fadeInRate = 1.0f;
+  fadeOutRate = 2.0f;
+  radius = 0.0f;
+  unknown_0xa366c949 = false;
+}
+
+inline SLdrSteam::~SLdrSteam() {}
 
 #endif

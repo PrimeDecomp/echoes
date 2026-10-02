@@ -17,7 +17,7 @@ struct SLdrTweakTargeting_OuterBeamIcon {
   int unknown_0xe7d57d6a; // 0xe7d57d6a
 };
 
-void LoadTypedefSLdrTweakTargeting_OuterBeamIcon(SLdrTweakTargeting_OuterBeamIcon& data, CInputStream& input);
+void LoadTypedefTweakTargeting_OuterBeamIcon(SLdrTweakTargeting_OuterBeamIcon& data, CInputStream& input);
 
 struct SLdrTIcon_Configurations {
   SLdrTIcon_Configurations();
@@ -34,7 +34,7 @@ struct SLdrTIcon_Configurations {
   float something8Angle; // non-matching name, 0x8a9b4eb7
 };
 
-void LoadTypedefSLdrTIcon_Configurations(SLdrTIcon_Configurations& data, CInputStream& input);
+void LoadTypedefTIcon_Configurations(SLdrTIcon_Configurations& data, CInputStream& input);
 
 struct SLdrTweakTargeting_Charge_Gauge {
   SLdrTweakTargeting_Charge_Gauge();
@@ -50,7 +50,7 @@ struct SLdrTweakTargeting_Charge_Gauge {
   float chargeGaugeTickDeltaAngle; // 0x2c3d9e27
 };
 
-void LoadTypedefSLdrTweakTargeting_Charge_Gauge(SLdrTweakTargeting_Charge_Gauge& data, CInputStream& input);
+void LoadTypedefTweakTargeting_Charge_Gauge(SLdrTweakTargeting_Charge_Gauge& data, CInputStream& input);
 
 struct SLdrTweakTargeting_LockFire {
   SLdrTweakTargeting_LockFire();
@@ -61,7 +61,7 @@ struct SLdrTweakTargeting_LockFire {
   CColor lockFireColor; // 0xf5e9899f
 };
 
-void LoadTypedefSLdrTweakTargeting_LockFire(SLdrTweakTargeting_LockFire& data, CInputStream& input);
+void LoadTypedefTweakTargeting_LockFire(SLdrTweakTargeting_LockFire& data, CInputStream& input);
 
 struct SLdrTweakTargeting_LockDagger {
   SLdrTweakTargeting_LockDagger();
@@ -75,7 +75,7 @@ struct SLdrTweakTargeting_LockDagger {
   float lockDagger2Angle; // 0xfaf066e3
 };
 
-void LoadTypedefSLdrTweakTargeting_LockDagger(SLdrTweakTargeting_LockDagger& data, CInputStream& input);
+void LoadTypedefTweakTargeting_LockDagger(SLdrTweakTargeting_LockDagger& data, CInputStream& input);
 
 struct SLdrTweakTargeting_Scan {
   SLdrTweakTargeting_Scan();
@@ -89,7 +89,7 @@ struct SLdrTweakTargeting_Scan {
   CColor scanLockUnlockedColor; // 0xa81f378c
 };
 
-void LoadTypedefSLdrTweakTargeting_Scan(SLdrTweakTargeting_Scan& data, CInputStream& input);
+void LoadTypedefTweakTargeting_Scan(SLdrTweakTargeting_Scan& data, CInputStream& input);
 
 struct SLdrTweakTargeting_VulnerabilityIndicator {
   SLdrTweakTargeting_VulnerabilityIndicator();
@@ -99,7 +99,7 @@ struct SLdrTweakTargeting_VulnerabilityIndicator {
   CColor indicatorColor; // 0x436b66ac
 };
 
-void LoadTypedefSLdrTweakTargeting_VulnerabilityIndicator(SLdrTweakTargeting_VulnerabilityIndicator& data, CInputStream& input);
+void LoadTypedefTweakTargeting_VulnerabilityIndicator(SLdrTweakTargeting_VulnerabilityIndicator& data, CInputStream& input);
 
 struct SLdrTweakTargeting {
   SLdrTweakTargeting();
@@ -224,6 +224,6 @@ struct SLdrTweakTargeting {
   SLdrTweakTargeting_VulnerabilityIndicator annihilatorVulnerabilityIndicator; // 0x921c86e1
 };
 
-void LoadTypedefSLdrTweakTargeting(SLdrTweakTargeting& data, CInputStream& input);
+void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input);
 
 #endif

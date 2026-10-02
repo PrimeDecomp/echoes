@@ -26,7 +26,7 @@ struct SLdrTweakPlayerGun_Misc {
   float gunTransformTime; // 0x9262a722
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Holstering {
   SLdrTweakPlayerGun_Holstering();
@@ -37,7 +37,7 @@ struct SLdrTweakPlayerGun_Holstering {
   float gunHolsteredAngle; // 0x0448573f
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Holstering(SLdrTweakPlayerGun_Holstering& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Holstering(SLdrTweakPlayerGun_Holstering& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Position {
   SLdrTweakPlayerGun_Position();
@@ -49,7 +49,7 @@ struct SLdrTweakPlayerGun_Position {
   float z; // 0xecafdc45
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Position(SLdrTweakPlayerGun_Position& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Position(SLdrTweakPlayerGun_Position& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Arm_Position {
   SLdrTweakPlayerGun_Arm_Position();
@@ -59,7 +59,7 @@ struct SLdrTweakPlayerGun_Arm_Position {
   CVector3f grappling; // 0x66b1d066
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& data, CInputStream& input);
 
 struct SLdrTWeaponDamage {
   SLdrTWeaponDamage();
@@ -69,7 +69,7 @@ struct SLdrTWeaponDamage {
   SLdrTDamageInfo charged; // 0xc9ac01d2
 };
 
-void LoadTypedefSLdrTWeaponDamage(SLdrTWeaponDamage& data, CInputStream& input);
+void LoadTypedefTWeaponDamage(SLdrTWeaponDamage& data, CInputStream& input);
 
 struct SLdrTBeamInfo {
   SLdrTBeamInfo();
@@ -79,7 +79,7 @@ struct SLdrTBeamInfo {
   SLdrTWeaponDamage damageInfo; // 0xfaa71e25
 };
 
-void LoadTypedefSLdrTBeamInfo(SLdrTBeamInfo& data, CInputStream& input);
+void LoadTypedefTBeamInfo(SLdrTBeamInfo& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Weapons {
   SLdrTweakPlayerGun_Weapons();
@@ -98,7 +98,7 @@ struct SLdrTweakPlayerGun_Weapons {
   SLdrTBeamInfo phazon_Beam; // 0xdd5f2e3d
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Beam_Combo {
   SLdrTweakPlayerGun_Beam_Combo();
@@ -111,7 +111,7 @@ struct SLdrTweakPlayerGun_Beam_Combo {
   SLdrTDamageInfo unknown_0x42885c6c; // 0x42885c6c
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Beam_Combo(SLdrTweakPlayerGun_Beam_Combo& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Beam_Combo(SLdrTweakPlayerGun_Beam_Combo& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_Beam_Misc {
   SLdrTweakPlayerGun_Beam_Misc();
@@ -126,7 +126,7 @@ struct SLdrTweakPlayerGun_Beam_Misc {
   float phazonShotAbsorbRadius; // 0x3ae5d1fa
 };
 
-void LoadTypedefSLdrTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun_RicochetDamage_Factor {
   SLdrTweakPlayerGun_RicochetDamage_Factor();
@@ -140,7 +140,7 @@ struct SLdrTweakPlayerGun_RicochetDamage_Factor {
   float missile; // 0x01234cd8
 };
 
-void LoadTypedefSLdrTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun {
   SLdrTweakPlayerGun();
@@ -163,7 +163,7 @@ struct SLdrTweakPlayerGun {
   SLdrCameraShakerData projectileImpact; // 0x12f14c5a
 };
 
-void LoadTypedefSLdrTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input);
 
 struct SLdrTweakPlayerGun2 {
   SLdrTweakPlayerGun2();
@@ -186,6 +186,6 @@ struct SLdrTweakPlayerGun2 {
   SLdrCameraShakerData projectileImpact; // 0x12f14c5a
 };
 
-void LoadTypedefSLdrTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input);
 
 #endif

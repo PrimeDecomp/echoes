@@ -16,6 +16,13 @@ struct SLdrRepulsor {
   uint flagsRepulsor; // 0x8aef6bd2
 };
 
-void LoadTypedefSLdrRepulsor(SLdrRepulsor& data, CInputStream& input);
+inline SLdrRepulsor::SLdrRepulsor() : editorProperties() {
+  shape = 0;
+  radius = 1.0f;
+  value = -1.0f;
+  flagsRepulsor = 0x00000000u;
+}
+
+inline SLdrRepulsor::~SLdrRepulsor() {}
 
 #endif

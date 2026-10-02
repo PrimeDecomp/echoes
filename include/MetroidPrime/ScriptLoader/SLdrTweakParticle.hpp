@@ -15,6 +15,6 @@ struct SLdrTweakParticle {
   rstl::string secondary_Weapon; // 0xbc401445
 };
 
-void LoadTypedefSLdrTweakParticle(SLdrTweakParticle& data, CInputStream& input);
+void LoadTypedefTweakParticle(SLdrTweakParticle& data, CInputStream& input);
 
 #endif

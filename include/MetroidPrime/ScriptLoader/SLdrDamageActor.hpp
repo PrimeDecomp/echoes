@@ -14,6 +14,9 @@ struct SLdrDamageActor {
   SLdrDamageInfo damage; // 0x337f9524
 };
 
-void LoadTypedefSLdrDamageActor(SLdrDamageActor& data, CInputStream& input);
+inline SLdrDamageActor::SLdrDamageActor() : editorProperties(), damage() {
+}
+
+inline SLdrDamageActor::~SLdrDamageActor() {}
 
 #endif

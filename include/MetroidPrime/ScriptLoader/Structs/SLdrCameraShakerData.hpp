@@ -18,6 +18,6 @@ struct SLdrCameraShakerData {
   int audioEffect; // 0x388d2e46
 };
 
-void LoadTypedefSLdrCameraShakerData(SLdrCameraShakerData& data, CInputStream& input);
+void LoadTypedefCameraShakerData(SLdrCameraShakerData& data, CInputStream& input);
 
 #endif

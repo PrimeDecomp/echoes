@@ -34,7 +34,108 @@ struct SLdrUnknownStruct10 {
   int sound_GrenadeExplode; // 0xaf6aad88
 };
 
-void LoadTypedefSLdrUnknownStruct10(SLdrUnknownStruct10& data, CInputStream& input);
+inline SLdrUnknownStruct10::SLdrUnknownStruct10() : grenadeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId) {
+  grenadeMinAttackInterval = 10.0f;
+  grenadePostAttackPause = 0.25f;
+  grenadeAttackChance = 80.0f;
+  grenadeMinAttackDist = 15.0f;
+  grenadeMaxAttackDist = 50.0f;
+  grenadeDamage.unknown_0x119fbd31 = 11;
+  grenadeDamage.dI_Damage = 50.0f;
+  grenadeDamage.dI_Radius = 10.0f;
+  grenadeDamage.dI_KnockBackPower = 10.0f;
+  grenadeMass = 25.0f;
+  unknown_0xed086ce0 = 0.40000001f;
+  grenadeMinLaunchSpeed = 20.0f;
+  grenadeMaxLaunchSpeed = 50.0f;
+  unknown_0x454f16b1 = 0;
+  eMPDuration = 8.0f;
+  sound_GrenadeBounce = 0;
+  sound_GrenadeExplode = 0;
+}
+
+inline SLdrUnknownStruct10::~SLdrUnknownStruct10() {}
+
+inline void LoadTypedefUnknownStruct10(SLdrUnknownStruct10& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x74479b13: {
+      sldrThis.grenadeMinAttackInterval = input.ReadFloat();
+      break;
+    }
+    case 0xb7994ea1: {
+      sldrThis.grenadePostAttackPause = input.ReadFloat();
+      break;
+    }
+    case 0x9a86ec4d: {
+      sldrThis.grenadeAttackChance = input.ReadFloat();
+      break;
+    }
+    case 0x25f822c4: {
+      sldrThis.grenadeMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x765e3a20: {
+      sldrThis.grenadeMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x14d1a3a8: {
+      LoadTypedefDamageInfo(sldrThis.grenadeDamage, input);
+      break;
+    }
+    case 0x1319e077: {
+      sldrThis.grenadeExplosion = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xd207ff0f: {
+      sldrThis.grenadeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x2b31c882: {
+      sldrThis.grenadeTrail = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x9a6bb47f: {
+      sldrThis.grenadeMass = input.ReadFloat();
+      break;
+    }
+    case 0xed086ce0: {
+      sldrThis.unknown_0xed086ce0 = input.ReadFloat();
+      break;
+    }
+    case 0x00fc6646: {
+      sldrThis.grenadeMinLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xa7c8e63f: {
+      sldrThis.grenadeMaxLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x454f16b1: {
+      sldrThis.unknown_0x454f16b1 = input.ReadInt32();
+      break;
+    }
+    case 0x2d4706e8: {
+      sldrThis.eMPDuration = input.ReadFloat();
+      break;
+    }
+    case 0x258c3e1b: {
+      sldrThis.sound_GrenadeBounce = input.ReadInt32();
+      break;
+    }
+    case 0xaf6aad88: {
+      sldrThis.sound_GrenadeExplode = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrCommandoShield {
   SLdrCommandoShield();
@@ -59,7 +160,105 @@ struct SLdrCommandoShield {
   int sound_ShieldTurnOff; // 0x78be3b8d
 };
 
-void LoadTypedefSLdrCommandoShield(SLdrCommandoShield& data, CInputStream& input);
+inline SLdrCommandoShield::SLdrCommandoShield() : shieldChargeDamage(), shieldVulnerability(), shieldExplodeEffect(kInvalidAssetId), armShieldExplodeEffect(kInvalidAssetId), shieldChargeEffect(kInvalidAssetId), armShieldEffect(kInvalidAssetId) {
+  shieldChargeDamage.unknown_0x119fbd31 = 11;
+  shieldChargeDamage.dI_Damage = 10.0f;
+  shieldChargeDamage.dI_KnockBackPower = 5.0f;
+  shieldChargeMinAttackDist = 15.0f;
+  shieldChargeMaxAttackDist = 30.0f;
+  shieldChargeSpeed = 40.0f;
+  sound_ShieldExplode = 0;
+  unknown_0x6cb0da5a = 50.0f;
+  unknown_0xc3938663 = 1.5f;
+  armShieldChance = 50.0f;
+  armShieldTime = 4.0f;
+  armShieldTimeVariation = 1.0f;
+  sound_ShieldTurnOn = 0;
+  sound_ShieldTurnOff = 0;
+}
+
+inline SLdrCommandoShield::~SLdrCommandoShield() {}
+
+inline void LoadTypedefCommandoShield(SLdrCommandoShield& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x4da4a894: {
+      LoadTypedefDamageInfo(sldrThis.shieldChargeDamage, input);
+      break;
+    }
+    case 0xd34f1323: {
+      LoadTypedefDamageVulnerability(sldrThis.shieldVulnerability, input);
+      break;
+    }
+    case 0xc1d9dbc6: {
+      sldrThis.shieldChargeMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x927fc322: {
+      sldrThis.shieldChargeMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x717824b4: {
+      sldrThis.shieldChargeSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xa41f75ef: {
+      sldrThis.shieldExplodeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xe6e92e73: {
+      sldrThis.sound_ShieldExplode = input.ReadInt32();
+      break;
+    }
+    case 0x6cb0da5a: {
+      sldrThis.unknown_0x6cb0da5a = input.ReadFloat();
+      break;
+    }
+    case 0xc3938663: {
+      sldrThis.unknown_0xc3938663 = input.ReadFloat();
+      break;
+    }
+    case 0x865c109c: {
+      sldrThis.armShieldChance = input.ReadFloat();
+      break;
+    }
+    case 0x8b48a2f8: {
+      sldrThis.armShieldTime = input.ReadFloat();
+      break;
+    }
+    case 0xe1b0efa0: {
+      sldrThis.armShieldTimeVariation = input.ReadFloat();
+      break;
+    }
+    case 0x5ca206ca: {
+      sldrThis.armShieldExplodeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xebf69cf0: {
+      sldrThis.shieldChargeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x4aab4e04: {
+      sldrThis.armShieldEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xbf3c59b6: {
+      sldrThis.sound_ShieldTurnOn = input.ReadInt32();
+      break;
+    }
+    case 0x78be3b8d: {
+      sldrThis.sound_ShieldTurnOff = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrCommandoPirate {
   SLdrCommandoPirate();
@@ -90,6 +289,43 @@ struct SLdrCommandoPirate {
   float intraBurstShotVariation; // 0x7903312e
 };
 
-void LoadTypedefSLdrCommandoPirate(SLdrCommandoPirate& data, CInputStream& input);
+inline SLdrCommandoPirate::SLdrCommandoPirate() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), bladeDamage(), projectile(kInvalidAssetId), projectileDamage(), unknown_0xfb435257(), shieldInfo() {
+  patterned.turnSpeed = 360.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.averageAttackTime = 1.0f;
+  patterned.attackTimeVariation = 0.5f;
+  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 10.0f;
+  patterned.damageWaitTime = 3.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.collisionRadius = 0.80000001f;
+  patterned.collisionHeight = 3.0f;
+  patterned.stepUpHeight = 0.30000001f;
+  patterned.unknown_0xf0790c1b = 0.2f;
+  patterned.creatureSize = 1;
+  sound = 0;
+  aggressiveness = 10.0f;
+  coverCheck = 50.0f;
+  searchRadius = 30.0f;
+  dodgeCheck = 80.0f;
+  sound_Impact = 0;
+  sound_Hurled = 0;
+  sound_Death = 0;
+  alwaysFF = -1;
+  alwaysFF_0x467c3d94 = -1;
+  bladeDamage.unknown_0x119fbd31 = 11;
+  bladeDamage.dI_Damage = 10.0f;
+  bladeDamage.dI_KnockBackPower = 5.0f;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  sound_Projectile = 0;
+  hearingRadius = 20.0f;
+  intraBurstShotTime = 0.1f;
+  intraBurstShotVariation = 0.050000001f;
+}
+
+inline SLdrCommandoPirate::~SLdrCommandoPirate() {}
 
 #endif

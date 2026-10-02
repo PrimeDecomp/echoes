@@ -24,6 +24,13 @@ struct SLdrCamera {
   SLdrSpline slowmoControlSpline; // 0xf4f4798e
 };
 
-void LoadTypedefSLdrCamera(SLdrCamera& data, CInputStream& input);
+inline SLdrCamera::SLdrCamera() : editorProperties(), motionSplineType(), targetSplineType(), motionControlSpline(), targetControlSpline(), fOVSpline(), rollSpline(), slowmoControlSpline() {
+  editorProperties.active = false;
+  animationTime = 10.0f;
+  flagsCinematicCamera = 0x000000a8u;
+  unknown_0xd4b29446 = 0;
+}
+
+inline SLdrCamera::~SLdrCamera() {}
 
 #endif

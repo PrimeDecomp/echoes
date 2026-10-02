@@ -16,6 +16,6 @@ struct SLdrAudioPlaybackParms {
   bool useRoomAcoustics; // 0x85707354
 };
 
-void LoadTypedefSLdrAudioPlaybackParms(SLdrAudioPlaybackParms& data, CInputStream& input);
+void LoadTypedefAudioPlaybackParms(SLdrAudioPlaybackParms& data, CInputStream& input);
 
 #endif

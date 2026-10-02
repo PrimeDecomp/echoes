@@ -12,6 +12,9 @@ struct SLdrSkyRipple {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-void LoadTypedefSLdrSkyRipple(SLdrSkyRipple& data, CInputStream& input);
+inline SLdrSkyRipple::SLdrSkyRipple() : editorProperties() {
+}
+
+inline SLdrSkyRipple::~SLdrSkyRipple() {}
 
 #endif

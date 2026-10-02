@@ -15,6 +15,6 @@ struct SLdrTriggerInfo {
   uint flagsTrigger; // 0x82859f46
 };
 
-void LoadTypedefSLdrTriggerInfo(SLdrTriggerInfo& data, CInputStream& input);
+void LoadTypedefTriggerInfo(SLdrTriggerInfo& data, CInputStream& input);
 
 #endif

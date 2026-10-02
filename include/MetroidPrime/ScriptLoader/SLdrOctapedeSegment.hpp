@@ -52,6 +52,59 @@ struct SLdrOctapedeSegment {
   float unknown_0x0c4763d7; // 0x0c4763d7
 };
 
-void LoadTypedefSLdrOctapedeSegment(SLdrOctapedeSegment& data, CInputStream& input);
+inline SLdrOctapedeSegment::SLdrOctapedeSegment() : editorProperties(), patterned(), actorInformation(), betweenSegmentsEffect(kInvalidAssetId), explosionDamage() {
+  flavor = 0;
+  patterned.mass = 25.0f;
+  patterned.speed = 3.0f;
+  patterned.turnSpeed = 720.0f;
+  patterned.detectionRange = 5.0f;
+  patterned.detectionHeightRange = 5.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 4.0f;
+  patterned.maxAttackRange = 20.0f;
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 5.0f;
+  patterned.damageWaitTime = 3.0f;
+  patterned.collisionRadius = 0.2f;
+  patterned.collisionHeight = 5.0f;
+  patterned.unknown_0xe287d8dd = 0.0f;
+  waypointApproachDistance = 2.5f;
+  visibleDistance = 2.5f;
+  wallTurnSpeed = 360.0f;
+  floorTurnSpeed = 180.0f;
+  downTurnSpeed = 120.0f;
+  stickyReach = 0.40000001f;
+  projectileBoundsMultiplier = 1.0f;
+  collisionLookAhead = 0.02f;
+  animSpeedScalar = 1.0f;
+  maxAudibleDistance = 50.0f;
+  initiallyPaused = false;
+  unknown_0x4fb8747e = 0.0f;
+  minBreakApartSpeed = 0.0f;
+  maxBreakApartSpeed = 0.0f;
+  minBreakApartAngle = 0.0f;
+  maxBreakApartAngle = 0.0f;
+  minBreakApartSpinSpeed = 0.0f;
+  maxBreakApartSpinSpeed = 0.0f;
+  minRunAroundTime = 0.0f;
+  maxRunAroundTime = 0.0f;
+  unknown_0x2caddcbe = 1.0f;
+  unknown_0x4d320455 = 2.0f;
+  minBounces = 1;
+  maxBounces = 1;
+  unknown_0x417f4a91 = 0.75f;
+  explosionDamage.unknown_0x119fbd31 = 9;
+  explosionDamage.dI_Damage = 5.0f;
+  explosionDamage.dI_KnockBackPower = 2.0f;
+  walkSound = 0;
+  idleSound = 0;
+  seperateSound = 0;
+  bounceSound = 0;
+  explodeSound = 0;
+  unknown_0x0c4763d7 = 0.0f;
+}
+
+inline SLdrOctapedeSegment::~SLdrOctapedeSegment() {}
 
 #endif

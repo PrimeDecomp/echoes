@@ -120,7 +120,568 @@ struct SLdrPlayerInventory {
   int translatorUpgrade4; // 0x46c2e53d
 };
 
-void LoadTypedefSLdrPlayerInventory(SLdrPlayerInventory& data, CInputStream& input);
+inline SLdrPlayerInventory::SLdrPlayerInventory() {
+  powerBeam = 1;
+  darkBeam = 0;
+  lightBeam = 0;
+  annihilatorBeam = 0;
+  powerBeamCombo = 1;
+  darkBeamCombo = 0;
+  lightBeamCombo = 0;
+  annihilatorBeamCombo = 0;
+  chargeComboUpgrade = 0;
+  combatVisor = 1;
+  scanVisor = 1;
+  darkVisor = 1;
+  echoVisor = 1;
+  variaSuit = 1;
+  darkSuit = 0;
+  lightSuit = 0;
+  morphBall = 1;
+  boostBall = 1;
+  spiderBall = 1;
+  bomb = 1;
+  lightBomb = 1;
+  darkBomb = 1;
+  annihilatorBomb = 1;
+  chargeUpgrade = 1;
+  grappleBeam = 0;
+  doubleJump = 1;
+  gravityBoost = 1;
+  seeker = 1;
+  screwAttack = 0;
+  translatorUpgrade = 0;
+  templeKey1 = 0;
+  templeKey2 = 0;
+  templeKey3 = 0;
+  templeKey4 = 0;
+  templeKey5 = 0;
+  templeKey6 = 0;
+  templeKey7 = 0;
+  templeKey8 = 0;
+  templeKey9 = 0;
+  sandKey1 = 0;
+  sandKey2 = 0;
+  sandKey3 = 0;
+  swampKey1 = 0;
+  swampKey2 = 0;
+  swampKey3 = 0;
+  cliffsideKey1 = 0;
+  cliffsideKey2 = 0;
+  cliffsideKey3 = 0;
+  energy = 0;
+  energyTank = 0;
+  energyTransferModule = 0;
+  powerBomb = 0;
+  missile = 5;
+  darkBeamAmmo = 5;
+  lightBeamAmmo = 5;
+  percentageIncrease = 0;
+  miscCounter1 = 0;
+  miscCounter2 = 0;
+  miscCounter3 = 0;
+  miscCounter4 = 0;
+  changeToPowerBeam = 0;
+  changeToDarkBeam = 0;
+  changeToLightBeam = 0;
+  changeToAnnihilatorBeam = 0;
+  multiChargeUpgrade = 0;
+  invisibility = 0;
+  amplifiedDamage = 0;
+  invincibility = 0;
+  miscCounter1a = 0;
+  miscCounter2a = 0;
+  miscCounter3a = 0;
+  miscCounter4a = 0;
+  fragCount = 0;
+  diedCount = 0;
+  archenemyCount = 0;
+  persistentCounter1 = 0;
+  persistentCounter2 = 0;
+  persistentCounter3 = 0;
+  persistentCounter4 = 0;
+  persistentCounter5 = 0;
+  persistentCounter6 = 0;
+  persistentCounter7 = 0;
+  persistentCounter8 = 0;
+  changeToCombatVisor = 0;
+  changeToScanVisor = 0;
+  changeToDarkVisor = 0;
+  changeToEchoVisor = 0;
+  coinAmplifier = 0;
+  coinCounter = 0;
+  unlimitedMissiles = 0;
+  unlimitedBeamAmmo = 0;
+  darkShield = 0;
+  lightShield = 0;
+  absorbAttack = 0;
+  deathBall = 0;
+  scanVirus = 0;
+  visorStatic = 0;
+  beamWeaponsDisabled = 0;
+  missileWeaponsDisabled = 0;
+  stuckInBall = 0;
+  disableBall = 0;
+  disableDoubleJump = 0;
+  activateMorphballBoost = 0;
+  receivedScanVirus = 0;
+  activateMorphballDamage = 0;
+  translatorUpgrade1 = 0;
+  translatorUpgrade2 = 0;
+  translatorUpgrade3 = 0;
+  translatorUpgrade4 = 0;
+}
+
+inline SLdrPlayerInventory::~SLdrPlayerInventory() {}
+
+inline void LoadTypedefPlayerInventory(SLdrPlayerInventory& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x9aca45bc: {
+      sldrThis.powerBeam = input.ReadInt32();
+      break;
+    }
+    case 0x92bb94b7: {
+      sldrThis.darkBeam = input.ReadInt32();
+      break;
+    }
+    case 0x6be340ba: {
+      sldrThis.lightBeam = input.ReadInt32();
+      break;
+    }
+    case 0xc73b2c90: {
+      sldrThis.annihilatorBeam = input.ReadInt32();
+      break;
+    }
+    case 0xefd4dabe: {
+      sldrThis.powerBeamCombo = input.ReadInt32();
+      break;
+    }
+    case 0x9b06bd3c: {
+      sldrThis.darkBeamCombo = input.ReadInt32();
+      break;
+    }
+    case 0x6d7172bf: {
+      sldrThis.lightBeamCombo = input.ReadInt32();
+      break;
+    }
+    case 0x16d89acc: {
+      sldrThis.annihilatorBeamCombo = input.ReadInt32();
+      break;
+    }
+    case 0xea86a2b9: {
+      sldrThis.chargeComboUpgrade = input.ReadInt32();
+      break;
+    }
+    case 0x26a5e3c1: {
+      sldrThis.combatVisor = input.ReadInt32();
+      break;
+    }
+    case 0x9de8731d: {
+      sldrThis.scanVisor = input.ReadInt32();
+      break;
+    }
+    case 0x3b0ab10b: {
+      sldrThis.darkVisor = input.ReadInt32();
+      break;
+    }
+    case 0x95a30488: {
+      sldrThis.echoVisor = input.ReadInt32();
+      break;
+    }
+    case 0x0ab603f7: {
+      sldrThis.variaSuit = input.ReadInt32();
+      break;
+    }
+    case 0x4da55282: {
+      sldrThis.darkSuit = input.ReadInt32();
+      break;
+    }
+    case 0xb4fd868f: {
+      sldrThis.lightSuit = input.ReadInt32();
+      break;
+    }
+    case 0x3ec5a9f5: {
+      sldrThis.morphBall = input.ReadInt32();
+      break;
+    }
+    case 0x8c98247d: {
+      sldrThis.boostBall = input.ReadInt32();
+      break;
+    }
+    case 0xbd8b547c: {
+      sldrThis.spiderBall = input.ReadInt32();
+      break;
+    }
+    case 0x53387689: {
+      sldrThis.bomb = input.ReadInt32();
+      break;
+    }
+    case 0x57eb9e8b: {
+      sldrThis.lightBomb = input.ReadInt32();
+      break;
+    }
+    case 0xaeb34a86: {
+      sldrThis.darkBomb = input.ReadInt32();
+      break;
+    }
+    case 0xfb33f2a1: {
+      sldrThis.annihilatorBomb = input.ReadInt32();
+      break;
+    }
+    case 0x4b15eb9a: {
+      sldrThis.chargeUpgrade = input.ReadInt32();
+      break;
+    }
+    case 0x44fbb19c: {
+      sldrThis.grappleBeam = input.ReadInt32();
+      break;
+    }
+    case 0xf55be12c: {
+      sldrThis.doubleJump = input.ReadInt32();
+      break;
+    }
+    case 0xbc25caed: {
+      sldrThis.gravityBoost = input.ReadInt32();
+      break;
+    }
+    case 0x0a6b376f: {
+      sldrThis.seeker = input.ReadInt32();
+      break;
+    }
+    case 0xd8a9bbcb: {
+      sldrThis.screwAttack = input.ReadInt32();
+      break;
+    }
+    case 0x7d1c9685: {
+      sldrThis.translatorUpgrade = input.ReadInt32();
+      break;
+    }
+    case 0x8f6cdcf9: {
+      sldrThis.templeKey1 = input.ReadInt32();
+      break;
+    }
+    case 0x9dd97317: {
+      sldrThis.templeKey2 = input.ReadInt32();
+      break;
+    }
+    case 0x25651472: {
+      sldrThis.templeKey3 = input.ReadInt32();
+      break;
+    }
+    case 0xb8b22ccb: {
+      sldrThis.templeKey4 = input.ReadInt32();
+      break;
+    }
+    case 0x000e4bae: {
+      sldrThis.templeKey5 = input.ReadInt32();
+      break;
+    }
+    case 0x12bbe440: {
+      sldrThis.templeKey6 = input.ReadInt32();
+      break;
+    }
+    case 0xaa078325: {
+      sldrThis.templeKey7 = input.ReadInt32();
+      break;
+    }
+    case 0xf2649373: {
+      sldrThis.templeKey8 = input.ReadInt32();
+      break;
+    }
+    case 0x4ad8f416: {
+      sldrThis.templeKey9 = input.ReadInt32();
+      break;
+    }
+    case 0xc271cfbc: {
+      sldrThis.sandKey1 = input.ReadInt32();
+      break;
+    }
+    case 0xd0c46052: {
+      sldrThis.sandKey2 = input.ReadInt32();
+      break;
+    }
+    case 0x68780737: {
+      sldrThis.sandKey3 = input.ReadInt32();
+      break;
+    }
+    case 0x6effcf82: {
+      sldrThis.swampKey1 = input.ReadInt32();
+      break;
+    }
+    case 0x7c4a606c: {
+      sldrThis.swampKey2 = input.ReadInt32();
+      break;
+    }
+    case 0xc4f60709: {
+      sldrThis.swampKey3 = input.ReadInt32();
+      break;
+    }
+    case 0xc20d622b: {
+      sldrThis.cliffsideKey1 = input.ReadInt32();
+      break;
+    }
+    case 0xd0b8cdc5: {
+      sldrThis.cliffsideKey2 = input.ReadInt32();
+      break;
+    }
+    case 0x6804aaa0: {
+      sldrThis.cliffsideKey3 = input.ReadInt32();
+      break;
+    }
+    case 0x01c397f0: {
+      sldrThis.energy = input.ReadInt32();
+      break;
+    }
+    case 0xfc6f860c: {
+      sldrThis.energyTank = input.ReadInt32();
+      break;
+    }
+    case 0x161898dc: {
+      sldrThis.energyTransferModule = input.ReadInt32();
+      break;
+    }
+    case 0xa6c29b8d: {
+      sldrThis.powerBomb = input.ReadInt32();
+      break;
+    }
+    case 0xec7fb0ef: {
+      sldrThis.missile = input.ReadInt32();
+      break;
+    }
+    case 0xfcecf744: {
+      sldrThis.darkBeamAmmo = input.ReadInt32();
+      break;
+    }
+    case 0x32052f91: {
+      sldrThis.lightBeamAmmo = input.ReadInt32();
+      break;
+    }
+    case 0x6e4038ab: {
+      sldrThis.percentageIncrease = input.ReadInt32();
+      break;
+    }
+    case 0x14387aab: {
+      sldrThis.miscCounter1 = input.ReadInt32();
+      break;
+    }
+    case 0x068dd545: {
+      sldrThis.miscCounter2 = input.ReadInt32();
+      break;
+    }
+    case 0xbe31b220: {
+      sldrThis.miscCounter3 = input.ReadInt32();
+      break;
+    }
+    case 0x23e68a99: {
+      sldrThis.miscCounter4 = input.ReadInt32();
+      break;
+    }
+    case 0x8ecb6665: {
+      sldrThis.changeToPowerBeam = input.ReadInt32();
+      break;
+    }
+    case 0x92c402ab: {
+      sldrThis.changeToDarkBeam = input.ReadInt32();
+      break;
+    }
+    case 0x7fe26363: {
+      sldrThis.changeToLightBeam = input.ReadInt32();
+      break;
+    }
+    case 0xd7f8586a: {
+      sldrThis.changeToAnnihilatorBeam = input.ReadInt32();
+      break;
+    }
+    case 0x27d254af: {
+      sldrThis.multiChargeUpgrade = input.ReadInt32();
+      break;
+    }
+    case 0x19926420: {
+      sldrThis.invisibility = input.ReadInt32();
+      break;
+    }
+    case 0xce284c09: {
+      sldrThis.amplifiedDamage = input.ReadInt32();
+      break;
+    }
+    case 0xdec999c3: {
+      sldrThis.invincibility = input.ReadInt32();
+      break;
+    }
+    case 0x66ae338e: {
+      sldrThis.miscCounter1a = input.ReadInt32();
+      break;
+    }
+    case 0x210e495e: {
+      sldrThis.miscCounter2a = input.ReadInt32();
+      break;
+    }
+    case 0x1c6e60ee: {
+      sldrThis.miscCounter3a = input.ReadInt32();
+      break;
+    }
+    case 0xae4ebcfe: {
+      sldrThis.miscCounter4a = input.ReadInt32();
+      break;
+    }
+    case 0x5351dba5: {
+      sldrThis.fragCount = input.ReadInt32();
+      break;
+    }
+    case 0x02db9a0a: {
+      sldrThis.diedCount = input.ReadInt32();
+      break;
+    }
+    case 0x7b980651: {
+      sldrThis.archenemyCount = input.ReadInt32();
+      break;
+    }
+    case 0xe9861c49: {
+      sldrThis.persistentCounter1 = input.ReadInt32();
+      break;
+    }
+    case 0xfb33b3a7: {
+      sldrThis.persistentCounter2 = input.ReadInt32();
+      break;
+    }
+    case 0x438fd4c2: {
+      sldrThis.persistentCounter3 = input.ReadInt32();
+      break;
+    }
+    case 0xde58ec7b: {
+      sldrThis.persistentCounter4 = input.ReadInt32();
+      break;
+    }
+    case 0x66e48b1e: {
+      sldrThis.persistentCounter5 = input.ReadInt32();
+      break;
+    }
+    case 0x745124f0: {
+      sldrThis.persistentCounter6 = input.ReadInt32();
+      break;
+    }
+    case 0xcced4395: {
+      sldrThis.persistentCounter7 = input.ReadInt32();
+      break;
+    }
+    case 0x948e53c3: {
+      sldrThis.persistentCounter8 = input.ReadInt32();
+      break;
+    }
+    case 0xd438f8e4: {
+      sldrThis.changeToCombatVisor = input.ReadInt32();
+      break;
+    }
+    case 0x89e950c4: {
+      sldrThis.changeToScanVisor = input.ReadInt32();
+      break;
+    }
+    case 0x2f0b92d2: {
+      sldrThis.changeToDarkVisor = input.ReadInt32();
+      break;
+    }
+    case 0x81a22751: {
+      sldrThis.changeToEchoVisor = input.ReadInt32();
+      break;
+    }
+    case 0xdb8f0e87: {
+      sldrThis.coinAmplifier = input.ReadInt32();
+      break;
+    }
+    case 0xaf6f361a: {
+      sldrThis.coinCounter = input.ReadInt32();
+      break;
+    }
+    case 0xae8dee81: {
+      sldrThis.unlimitedMissiles = input.ReadInt32();
+      break;
+    }
+    case 0xd1ffb49f: {
+      sldrThis.unlimitedBeamAmmo = input.ReadInt32();
+      break;
+    }
+    case 0xbc51de4b: {
+      sldrThis.darkShield = input.ReadInt32();
+      break;
+    }
+    case 0x88414f93: {
+      sldrThis.lightShield = input.ReadInt32();
+      break;
+    }
+    case 0xfbe21590: {
+      sldrThis.absorbAttack = input.ReadInt32();
+      break;
+    }
+    case 0xd0b6a007: {
+      sldrThis.deathBall = input.ReadInt32();
+      break;
+    }
+    case 0xc45848fe: {
+      sldrThis.scanVirus = input.ReadInt32();
+      break;
+    }
+    case 0x92b916d7: {
+      sldrThis.visorStatic = input.ReadInt32();
+      break;
+    }
+    case 0xa6257cd8: {
+      sldrThis.beamWeaponsDisabled = input.ReadInt32();
+      break;
+    }
+    case 0x6bf24c24: {
+      sldrThis.missileWeaponsDisabled = input.ReadInt32();
+      break;
+    }
+    case 0x32f5e918: {
+      sldrThis.stuckInBall = input.ReadInt32();
+      break;
+    }
+    case 0x1ce95541: {
+      sldrThis.disableBall = input.ReadInt32();
+      break;
+    }
+    case 0x5dd9004d: {
+      sldrThis.disableDoubleJump = input.ReadInt32();
+      break;
+    }
+    case 0xf64f1dbd: {
+      sldrThis.activateMorphballBoost = input.ReadInt32();
+      break;
+    }
+    case 0x76000d1e: {
+      sldrThis.receivedScanVirus = input.ReadInt32();
+      break;
+    }
+    case 0x85ab52bc: {
+      sldrThis.activateMorphballDamage = input.ReadInt32();
+      break;
+    }
+    case 0x711c150f: {
+      sldrThis.translatorUpgrade1 = input.ReadInt32();
+      break;
+    }
+    case 0x63a9bae1: {
+      sldrThis.translatorUpgrade2 = input.ReadInt32();
+      break;
+    }
+    case 0xdb15dd84: {
+      sldrThis.translatorUpgrade3 = input.ReadInt32();
+      break;
+    }
+    case 0x46c2e53d: {
+      sldrThis.translatorUpgrade4 = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSpawnPoint {
   SLdrSpawnPoint();
@@ -133,6 +694,11 @@ struct SLdrSpawnPoint {
   SLdrPlayerInventory spawnInventoryCapacity; // 0x4081bf95
 };
 
-void LoadTypedefSLdrSpawnPoint(SLdrSpawnPoint& data, CInputStream& input);
+inline SLdrSpawnPoint::SLdrSpawnPoint() : editorProperties(), spawnInventory(), spawnInventoryCapacity() {
+  firstSpawn = true;
+  spawnInMorphBallMode = false;
+}
+
+inline SLdrSpawnPoint::~SLdrSpawnPoint() {}
 
 #endif

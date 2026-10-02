@@ -9,6 +9,18 @@ Generate into a staging directory and review the diff before replacing tracked f
 Make corrections in the generator or templates so regeneration preserves them.
 The Tweaks profile pins the templates and selects the module's sources.
 Register new translation units in configure.py.
+
+Records listed in a profile, and the shared Structs/ typedefs, have out-of-line
+constructors, destructors and LoadTypedef readers in their own source. Every other
+script object is header-only: its constructor is inline and its tagged property loop
+is an includable SLdrX.inc fragment for the hand-written LoadX in the object's source:
+
+    SLdrWaypoint sldrThis;
+    #include "MetroidPrime/ScriptLoader/SLdrWaypoint.inc"
+    return rs_new CScriptWaypoint(...);
+
+Type and reader names follow the Echoes Wii SEL exports (LoadTypedefEditorProperties
+taking SLdrEditorProperties&, SLdrAnimationSet).
 """
 
 from __future__ import annotations
@@ -34,6 +46,7 @@ from textwrap import dedent
 from typing import Protocol
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
+PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
 # The XML labels these as PAL additions. G2ME01's native record has nine icons;
 # retain the existing layout for other builds until their binaries are checked.
@@ -154,6 +167,25 @@ PRIMITIVES: dict[str, Primitive] = {
         "SLdrSpline", "SLdrSpline(input, propertySize)", "Kyoto/Math/CMayaSpline.hpp"
     ),
 }
+# Enumeration archetypes that G2ME01 wraps in a record with its own constructor,
+# destructor and reader (SLdrPlayerItem: 0x8023E0C4, 0x8023E0DC, 0x8023E118).
+ENUM_RECORDS = frozenset({"PlayerItem"})
+
+# Nested members a native constructor re-stores with their archetype default, so
+# the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
+# Record -> member -> statements appended after that member's template defaults.
+NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
+    "SLdrPickup": {
+        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
+        "actorInformation": (
+            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
+            "visor.visorFlags = 0x0000000fu;",
+        ),
+    },
+}
+
+# An enumeration without a template default is still assigned zero in the body.
+ZERO_DEFAULT_KINDS = frozenset({"Choice"})
 pwe_type_lookup = {
     "Bool": "bool",
     "Short": "short",
@@ -372,6 +404,18 @@ class Generator:
         self.loaders: list[Loader] = []
         self.uses_animation_parameters = False
         self.header_owners: dict[str, str] = {}
+        # Records with their own source; every other object record is header-only.
+        self.sourced: set[str] = set()
+
+    def is_inline(self, name: str) -> bool:
+        if name in self.sourced:
+            return False
+        return self.structs[self.header_owners[name]].is_object
+
+    @staticmethod
+    def loader_name(cpp: str) -> str:
+        """Native readers are named after the template, not the SLdr record."""
+        return "LoadTypedef" + cpp.removeprefix("SLdr")
 
     @staticmethod
     def index(game: ET.Element, section: str) -> dict[str, str]:
@@ -495,14 +539,25 @@ class Generator:
                 self.add_struct(cpp, node, "inline " + owner)
             return Field(name, node, cpp, matching_name, cpp)
 
+        if kind == "Choice" and archetype in ENUM_RECORDS:
+            cpp = "SLdr" + identifier(archetype)
+            record = ET.fromstring(
+                '<Element Type="Struct"><Atomic>true</Atomic><SubProperties>'
+                '<Element Type="Choice" ID="0x0"><Name>Value</Name>'
+                "<DefaultValue>0</DefaultValue></Element></SubProperties></Element>"
+            )
+            self.header_owners[cpp] = cpp
+            self.add_struct(cpp, record, self.archetypes[archetype])
+            return Field(name, node, cpp, matching_name, cpp)
+
         if kind == "AnimationSet":
             self.uses_animation_parameters = True
             return Field(
                 name,
                 node,
-                "SLdrAnimationParameters",
+                "SLdrAnimationSet",
                 matching_name,
-                "SLdrAnimationParameters",
+                "SLdrAnimationSet",
             )
         if kind not in PRIMITIVES:
             raise TemplateError("Unsupported property type " + kind + " in " + owner)
@@ -621,6 +676,8 @@ class Generator:
 
     def defaults(self, prop: Field, target: str) -> list[str]:
         kind = prop.node.attrib["Type"]
+        if prop.dependency and kind == "Choice":
+            return []  # The enumeration record's constructor owns the default.
         if prop.dependency and kind != "AnimationSet":
             struct = self.structs[prop.dependency]
             children = {
@@ -635,6 +692,8 @@ class Generator:
             return result
         default = prop.node.find("DefaultValue")
         if default is None:
+            if kind in ZERO_DEFAULT_KINDS:
+                return [target + " = 0;"]
             return []  # Value-initialize absent primitive defaults; keep class defaults.
         if kind in ("Array", "Spline", "AnimationSet"):
             raise TemplateError("Unsupported explicit " + kind + " default")
@@ -647,6 +706,8 @@ class Generator:
                 )
                 for component in components
             ]
+            if kind == "Vector" and all(float(arg[:-1]) == 0.0 for arg in args):
+                return []  # Already CVector3f::Zero() from the initializer list.
             expression = prop.cpp + "(" + ", ".join(args) + ")"
         elif kind == "String":
             expression = (
@@ -672,7 +733,7 @@ class Generator:
     ) -> list[str]:
         kind = prop.node.attrib["Type"]
         if prop.dependency:
-            return [f"LoadTypedef{prop.cpp}({target}, input);"]
+            return [f"{self.loader_name(prop.cpp)}({target}, input);"]
         if kind == "Array":
             return self.read_array(prop, target, depth)
         if kind == "String" and size is not None:
@@ -705,8 +766,8 @@ class Generator:
         return ["{", *("  " + line for line in lines), "}"]
 
     def _include_path_for(self, struct_name: str) -> str:
-        if struct_name == "SLdrAnimationParameters":
-            return "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+        if struct_name == "SLdrAnimationSet":
+            return "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
         owner = self.header_owners[struct_name]
         prefix = "" if self.structs[owner].is_object else "Structs/"
         return f"MetroidPrime/ScriptLoader/{prefix}{owner}.hpp"
@@ -754,6 +815,7 @@ class Generator:
         header += ['#include "' + h + '"' for h in sorted(headers)]
         for member in ordered:
             member_name = member.name
+            inline = self.is_inline(member_name)
             header += [
                 "",
                 "struct " + member_name + " {",
@@ -777,19 +839,42 @@ class Generator:
                     )
                 )
             header += conditional_lines(declarations)
-            header += [
-                "};",
-                "",
-                "void LoadTypedef"
-                + member_name
-                + "("
-                + member_name
-                + "& data, CInputStream& input);",
-            ]
+            header += ["};"]
+            if not inline:
+                header += [
+                    "",
+                    "void "
+                    + self.loader_name(member_name)
+                    + "("
+                    + member_name
+                    + "& data, CInputStream& input);",
+                ]
+            else:
+                header += [""] + self.render_definitions(member, "inline ")
         header += ["", "#endif", ""]
         return "\n".join(header)
 
+    def render_fragment(self, struct: Struct) -> str:
+        """Tagged property loop for inclusion in the hand-written object loader."""
+        return "\n".join(
+            [
+                f"// Include in the object loader after `{struct.name} sldrThis;`.",
+                *self.render_tagged_reader(struct, "sldrThis", indent=""),
+                "",
+            ]
+        )
+
     def render_struct_source(self, struct: Struct) -> str:
+        return "\n".join(
+            [
+                f'#include "{self._include_path_for(struct.name)}"',
+                "",
+                *self.render_definitions(struct, ""),
+                "",
+            ]
+        )
+
+    def render_definitions(self, struct: Struct, prefix: str) -> list[str]:
         name = struct.name
         parameter = "data" if struct.is_object else "sldrThis"
         initializers: list[tuple[str | None, str]] = []
@@ -801,19 +886,18 @@ class Generator:
                     value = "CColor::Green()"
                 elif kind == "Vector":
                     value = "CVector3f::Zero()"
-                elif (
-                    kind not in ("String", "Array", "Spline")
-                    and prop.node.find("DefaultValue") is not None
+                elif kind == "Asset" and prop.node.find("DefaultValue") is None:
+                    value = "kInvalidAssetId"
+                elif kind not in ("String", "Array", "Spline") and (
+                    prop.node.find("DefaultValue") is not None
+                    or kind in ZERO_DEFAULT_KINDS
                 ):
                     # Native generated constructors assign scalar defaults once.
                     continue
             initializers.append((prop.condition, prop.name + "(" + value + ")"))
-        source = [
-            f'#include "{self._include_path_for(name)}"',
-            "",
-        ]
+        source: list[str] = []
         if any(condition for condition, _ in initializers):
-            source.append(f"{name}::{name}()")
+            source.append(f"{prefix}{name}::{name}()")
             source += conditional_lines(
                 [
                     (condition, [(": " if i == 0 else ", ") + initializer])
@@ -823,7 +907,7 @@ class Generator:
             source.append("{")
         else:
             source.append(
-                f"{name}::{name}()"
+                f"{prefix}{name}::{name}()"
                 + (
                     " : " + ", ".join(value for _, value in initializers)
                     if initializers
@@ -835,7 +919,16 @@ class Generator:
             [
                 (
                     prop.condition,
-                    ["  " + line for line in self.defaults(prop, prop.name)],
+                    [
+                        "  " + line
+                        for line in self.defaults(prop, prop.name)
+                        + [
+                            prop.name + "." + line
+                            for line in NATIVE_INSTANCE_DEFAULTS.get(name, {}).get(
+                                prop.name, ()
+                            )
+                        ]
+                    ],
                 )
                 for prop in struct.fields
             ]
@@ -843,10 +936,14 @@ class Generator:
         source += [
             "}",
             "",
-            name + "::~" + name + "() {}",
+            prefix + name + "::~" + name + "() {}",
+        ]
+        if prefix and struct.is_object:
+            return source  # The property loop is the includable fragment.
+        source += [
             "",
-            "void LoadTypedef"
-            + name
+            f"{prefix}void "
+            + self.loader_name(name)
             + "("
             + name
             + f"& {parameter}, CInputStream& input) {{",
@@ -856,8 +953,8 @@ class Generator:
             if struct.atomic
             else self.render_tagged_reader(struct, parameter)
         )
-        source += ["}", ""]
-        return "\n".join(source)
+        source += ["}"]
+        return source
 
     def render_sequential_reader(self, struct: Struct, parameter: str) -> list[str]:
         return conditional_lines(
@@ -873,7 +970,9 @@ class Generator:
             ]
         )
 
-    def render_tagged_reader(self, struct: Struct, parameter: str) -> list[str]:
+    def render_tagged_reader(
+        self, struct: Struct, parameter: str, indent: str = "  "
+    ) -> list[str]:
         lines = [
             "  const int propertyCount = input.ReadUint16();",
             "  for (int i = 0; i < propertyCount; ++i) {",
@@ -902,7 +1001,9 @@ class Generator:
                 "  }",
             ]
         )
-        return lines
+        return [
+            line if line.startswith("#") else indent + line[2:] for line in lines
+        ]
 
     def render_struct(self, struct: Struct) -> tuple[str, str]:
         return self.render_struct_header(struct), self.render_struct_source(struct)
@@ -910,28 +1011,34 @@ class Generator:
     @staticmethod
     def render_animation_parameters() -> dict[str, str]:
         return {
-            "Structs/SLdrAnimationParameters.hpp": dedent("""\
-                #ifndef GENERATED_SLDRANIMATIONPARAMETERS_HPP
-                #define GENERATED_SLDRANIMATIONPARAMETERS_HPP
+            "Structs/SLdrAnimationSet.hpp": dedent("""\
+                #ifndef _SLDRANIMATIONSET_HPP
+                #define _SLDRANIMATIONSET_HPP
 
                 #include "Kyoto/SObjectTag.hpp"
                 #include "Kyoto/Streams/CInputStream.hpp"
 
-                struct SLdrAnimationParameters {
-                  SLdrAnimationParameters() : ancs(kInvalidAssetId), character_index(0), initial_anim(0) {}
+                struct SLdrAnimationSet {
+                  SLdrAnimationSet();
+                  ~SLdrAnimationSet();
+
                   CAssetId ancs;
                   int character_index;
                   int initial_anim;
                 };
 
-                void LoadTypedefSLdrAnimationParameters(SLdrAnimationParameters&, CInputStream&);
+                void LoadTypedefAnimationSet(SLdrAnimationSet&, CInputStream&);
 
                 #endif
                 """),
-            "Structs/SLdrAnimationParameters.cpp": dedent("""\
-                #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+            "Structs/SLdrAnimationSet.cpp": dedent("""\
+                #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 
-                void LoadTypedefSLdrAnimationParameters(SLdrAnimationParameters& data, CInputStream& input) {
+                SLdrAnimationSet::SLdrAnimationSet() : ancs(kInvalidAssetId), character_index(0), initial_anim(0) {}
+
+                SLdrAnimationSet::~SLdrAnimationSet() {}
+
+                void LoadTypedefAnimationSet(SLdrAnimationSet& data, CInputStream& input) {
                   data.ancs = input.ReadInt32();
                   data.character_index = input.ReadInt32();
                   data.initial_anim = input.ReadInt32();
@@ -946,12 +1053,15 @@ class Generator:
             prefix = "" if struct.is_object else "Structs/"
             if self.header_owners[name] == name:
                 files[f"{prefix}{name}.hpp"] = self.render_struct_header(struct)
-            files[f"{prefix}{name}.cpp"] = self.render_struct_source(struct)
+            if not self.is_inline(name):
+                files[f"{prefix}{name}.cpp"] = self.render_struct_source(struct)
+            elif struct.is_object:
+                files[f"{name}.inc"] = self.render_fragment(struct)
 
         if self.uses_animation_parameters:
-            if "SLdrAnimationParameters" in self.structs:
+            if "SLdrAnimationSet" in self.structs:
                 raise TemplateError(
-                    "AnimationParameters collides with built-in wire type"
+                    "AnimationSet collides with built-in wire type"
                 )
             files.update(self.render_animation_parameters())
 
@@ -1171,6 +1281,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         # Profiles select output, not input: shared-header ownership must agree with
         # full-repository generation even when only one REL is being regenerated.
         generator.collect(args.object)
+        # Every profile decides which records own a source, whichever one is rendered.
+        for path in sorted(PROFILE_DIRECTORY.glob("*.json")):
+            _, profile_sources, _, profile_duplicates = read_profile(path)
+            generator.sourced |= {PurePosixPath(name).stem for name in profile_sources}
+            if not args.object:
+                duplicates = {**profile_duplicates, **duplicates}
         generator.add_duplicates(duplicates)
         files = generator.render()
         if sources:
@@ -1180,7 +1296,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             outputs.append(
                 (
                     args.header_output,
-                    {n: c for n, c in files.items() if n.endswith(".hpp")},
+                    {n: c for n, c in files.items() if n.endswith((".hpp", ".inc"))},
                 )
             )
         if args.cpp_output:

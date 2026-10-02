@@ -107,6 +107,6 @@ void CScriptSpawnPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
   }
 }
 
-CEntity* LoadSpawnPoint(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CEntity* LoadSpawnPoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   
 }

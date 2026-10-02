@@ -14,6 +14,9 @@ struct SLdrCannonBall {
   CAssetId effect; // 0xb68c6d96
 };
 
-void LoadTypedefSLdrCannonBall(SLdrCannonBall& data, CInputStream& input);
+inline SLdrCannonBall::SLdrCannonBall() : editorProperties(), effect(kInvalidAssetId) {
+}
+
+inline SLdrCannonBall::~SLdrCannonBall() {}
 
 #endif

@@ -22,6 +22,6 @@ struct SLdrGrappleParameters {
   bool constrainToAxis; // 0x11b6a17a
 };
 
-void LoadTypedefSLdrGrappleParameters(SLdrGrappleParameters& data, CInputStream& input);
+void LoadTypedefGrappleParameters(SLdrGrappleParameters& data, CInputStream& input);
 
 #endif

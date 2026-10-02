@@ -16,6 +16,11 @@ struct SLdrTrigger {
   bool deactivateOnExit; // 0x1c453986
 };
 
-void LoadTypedefSLdrTrigger(SLdrTrigger& data, CInputStream& input);
+inline SLdrTrigger::SLdrTrigger() : editorProperties(), trigger() {
+  deactivateOnEnter = false;
+  deactivateOnExit = false;
+}
+
+inline SLdrTrigger::~SLdrTrigger() {}
 
 #endif

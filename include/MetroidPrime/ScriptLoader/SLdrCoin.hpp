@@ -59,6 +59,47 @@ struct SLdrCoin {
   float disablePhysicsThreshold; // 0x295f05b7
 };
 
-void LoadTypedefSLdrCoin(SLdrCoin& data, CInputStream& input);
+inline SLdrCoin::SLdrCoin() : editorProperties(), startColor(CColor::Green()), endColor(CColor::Green()), finalScale(CVector3f::Zero()), positionOffset(CVector3f::Zero()), model(kInvalidAssetId), actorInformation(), particle1(kInvalidAssetId), particleSystem1Scale(CVector3f::Zero()), particle2(kInvalidAssetId), particleSystem2Scale(CVector3f::Zero()), deathParticle(kInvalidAssetId), deathParticleSystemScale(CVector3f::Zero()) {
+  editorProperties.active = false;
+  coneSpread = 180.0f;
+  minimumSpeed = 5.0f;
+  maximumSpeed = 15.0f;
+  minimumSpinSpeed = 1.0f;
+  maximumSpinSpeed = 1.2f;
+  minimumLifeTime = 2.0f;
+  maximumLifeTime = 3.0f;
+  disableCollisionTime = 0.0f;
+  fadeInEndPercentage = 10.0f;
+  fadeOutStartPercentage = 80.0f;
+  startColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  endColor = CColor(1.0f, 1.0f, 1.0f, 0.0f);
+  scaleStartPercentage = 80.0f;
+  finalScale = CVector3f(1.0f, 1.0f, 1.0f);
+  unknown_0x417f4a91 = 0.375f;
+  gravity = 25.0f;
+  bounceSound = 0;
+  maxBounceSounds = 1;
+  bounceSoundVolumeDecay = 1.0f;
+  bounceSoundSpeedThreshold = 1.0f;
+  particleSystem1Scale = CVector3f(1.0f, 1.0f, 1.0f);
+  particleSystem1UsesGlobalTranslation = false;
+  particleSystem1WaitForParticlesToDie = false;
+  particleSystem1Orientation = 0;
+  particleSystem2Scale = CVector3f(1.0f, 1.0f, 1.0f);
+  particleSystem2UsesGlobalTranslation = false;
+  particleSystem2WaitForParticlesToDie = false;
+  particleSystem2Orientation = 0;
+  deathParticleSystemScale = CVector3f(1.0f, 1.0f, 1.0f);
+  deathParticleSystemOrientation = 0;
+  isCollider = true;
+  isShootable = false;
+  dieOnCollision = false;
+  unknown_0xdcaa0f22 = false;
+  flickerOnFadeOut = false;
+  unknown_0x723d42d6 = true;
+  disablePhysicsThreshold = 1.0f;
+}
+
+inline SLdrCoin::~SLdrCoin() {}
 
 #endif

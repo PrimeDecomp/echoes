@@ -20,6 +20,15 @@ struct SLdrShadowProjector {
   int unknown_0x606e341c; // 0x606e341c
 };
 
-void LoadTypedefSLdrShadowProjector(SLdrShadowProjector& data, CInputStream& input);
+inline SLdrShadowProjector::SLdrShadowProjector() : editorProperties(), shadowOffset(CVector3f::Zero()) {
+  shadowScale = 1.0f;
+  shadowHeight = 100.0f;
+  shadowAlpha = 0.5f;
+  shadowFadeTime = 1.0f;
+  unknown_0xbca8b742 = false;
+  unknown_0x606e341c = 128;
+}
+
+inline SLdrShadowProjector::~SLdrShadowProjector() {}
 
 #endif

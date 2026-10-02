@@ -6,7 +6,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrHealthInfo.hpp"
@@ -23,7 +23,7 @@ struct SLdrPlayerActor {
   SLdrHealthInfo health; // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   CAssetId noModel; // 0x405e5286
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   bool isLoop; // 0xc08d1b93
   bool immovable; // 0x1e32523e
@@ -32,6 +32,16 @@ struct SLdrPlayerActor {
   int renderGunOverride; // 0xb6832840
 };
 
-void LoadTypedefSLdrPlayerActor(SLdrPlayerActor& data, CInputStream& input);
+inline SLdrPlayerActor::SLdrPlayerActor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), noModel(kInvalidAssetId), animationInformation(), actorInformation() {
+  mass = 1.0f;
+  gravity = 0.0f;
+  isLoop = true;
+  immovable = true;
+  isSolid = true;
+  flagsPlayerActor = 0x00000004u;
+  renderGunOverride = 0;
+}
+
+inline SLdrPlayerActor::~SLdrPlayerActor() {}
 
 #endif

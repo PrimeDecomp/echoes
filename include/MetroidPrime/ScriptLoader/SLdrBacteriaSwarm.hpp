@@ -6,7 +6,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrBasicSwarmProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
@@ -16,7 +16,7 @@ struct SLdrBacteriaSwarm {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
   float unknown_0x4a85a2da; // 0x4a85a2da
@@ -48,6 +48,35 @@ struct SLdrBacteriaSwarm {
   bool spawnInstantly; // 0xc5bc5ed0
 };
 
-void LoadTypedefSLdrBacteriaSwarm(SLdrBacteriaSwarm& data, CInputStream& input);
+inline SLdrBacteriaSwarm::SLdrBacteriaSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties(), bacteriaParticleEffect(kInvalidAssetId), bacteriaPatrolColor(CColor::Green()), bacteriaPlayerPursuitColor(CColor::Green()), bacteriaScanModel(kInvalidAssetId) {
+  active = true;
+  unknown_0x4a85a2da = 1.0f;
+  containmentPriority = 1.0f;
+  bacteriaPatrolSpeed = 0.1f;
+  bacteriaSafeZoneEscapeSpeed = 0.5f;
+  bacteriaPlayerPursuitSpeed = 0.2f;
+  bacteriaAcceleration = 0.0099999998f;
+  bacteriaDeceleration = 0.0099999998f;
+  patrolTurnSpeed = 180.0f;
+  avoidSafeZoneTurnSpeed = 1440.0f;
+  bacteriaPatrolColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  bacteriaPlayerPursuitColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
+  colorChangeTime = 0.5f;
+  patrolSound = 0;
+  pursuitSound = 0;
+  minPatrolSoundTime = 0.5f;
+  maxPatrolSoundTime = 0.5f;
+  patrolSoundWeight = 0.5f;
+  minPursuitSoundTime = 0.5f;
+  maxPursuitSoundTime = 0.5f;
+  pursuitSoundWeight = 0.5f;
+  soundFallOff = 0.0f;
+  maxAudibleDistance = 100.0f;
+  minVolume = 20;
+  maxVolume = 127;
+  spawnInstantly = false;
+}
+
+inline SLdrBacteriaSwarm::~SLdrBacteriaSwarm() {}
 
 #endif

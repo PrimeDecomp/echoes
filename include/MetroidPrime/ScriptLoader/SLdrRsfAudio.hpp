@@ -19,6 +19,14 @@ struct SLdrRsfAudio {
   int volume; // 0x80c66c37
 };
 
-void LoadTypedefSLdrRsfAudio(SLdrRsfAudio& data, CInputStream& input);
+inline SLdrRsfAudio::SLdrRsfAudio() : editorProperties(), unknown_0xfe97e5b3() {
+  loopStart = 0;
+  loopEnd = 0;
+  fadeInTime = 0.25f;
+  fadeOutTime = 0.25f;
+  volume = 127;
+}
+
+inline SLdrRsfAudio::~SLdrRsfAudio() {}
 
 #endif

@@ -21,6 +21,16 @@ struct SLdrStreamedMovie {
   float fadeOutTime; // 0x7c269ebc
 };
 
-void LoadTypedefSLdrStreamedMovie(SLdrStreamedMovie& data, CInputStream& input);
+inline SLdrStreamedMovie::SLdrStreamedMovie() : editorProperties(), movieFile() {
+  loop = false;
+  videoFilterEnabled = true;
+  whenToDraw = 0;
+  volume = 127;
+  volumeType = 0;
+  cacheLength = 0.050000001f;
+  fadeOutTime = 1.0f;
+}
+
+inline SLdrStreamedMovie::~SLdrStreamedMovie() {}
 
 #endif

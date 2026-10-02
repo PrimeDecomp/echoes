@@ -4,6 +4,7 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrPlayerItem.hpp"
 #include "rstl/string.hpp"
 
 struct SLdrSpecialFunction {
@@ -19,12 +20,26 @@ struct SLdrSpecialFunction {
   float valueParm4; // 0xfaca49e8
   int intParm1; // 0xa734f8a5
   int intParm2; // 0xb581574b
-  int inventoryItemParm; // 0x3fa164bc
+  SLdrPlayerItem inventoryItemParm; // 0x3fa164bc
   int sound1; // 0xa4ee16bf
   int sound2; // 0x227a6411
   int sound3; // 0xe926b7b4
 };
 
-void LoadTypedefSLdrSpecialFunction(SLdrSpecialFunction& data, CInputStream& input);
+inline SLdrSpecialFunction::SLdrSpecialFunction() : editorProperties(), stringParm(), inventoryItemParm() {
+  editorProperties.active = true;
+  function = 0;
+  valueParm = 0.0f;
+  valueParm2 = 0.0f;
+  valueParm3 = 0.0f;
+  valueParm4 = 0.0f;
+  intParm1 = 0;
+  intParm2 = 0;
+  sound1 = 0;
+  sound2 = 0;
+  sound3 = 0;
+}
+
+inline SLdrSpecialFunction::~SLdrSpecialFunction() {}
 
 #endif

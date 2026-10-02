@@ -32,7 +32,102 @@ struct SLdrSpacePirateWeaponData {
   int sound_GrenadeExplode; // 0xaf6aad88
 };
 
-void LoadTypedefSLdrSpacePirateWeaponData(SLdrSpacePirateWeaponData& data, CInputStream& input);
+inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData() : grenadeLauncher(kInvalidAssetId), grenadeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId) {
+  equippedWeapon = 0;
+  unknown_0xa95a025b = 3;
+  grenadeMinAttackDist = 15.0f;
+  grenadeMaxAttackDist = 50.0f;
+  grenadeDamage.unknown_0x119fbd31 = 11;
+  grenadeDamage.dI_Damage = 40.0f;
+  grenadeDamage.dI_Radius = 8.0f;
+  grenadeDamage.dI_KnockBackPower = 10.0f;
+  grenadeMass = 25.0f;
+  unknown_0xed086ce0 = 0.40000001f;
+  grenadeMinLaunchSpeed = 20.0f;
+  grenadeMaxLaunchSpeed = 50.0f;
+  unknown_0x454f16b1 = 2;
+  sound_GrenadeBounce = 0;
+  sound_GrenadeExplode = 0;
+}
+
+inline SLdrSpacePirateWeaponData::~SLdrSpacePirateWeaponData() {}
+
+inline void LoadTypedefSpacePirateWeaponData(SLdrSpacePirateWeaponData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x647670ac: {
+      sldrThis.equippedWeapon = input.ReadInt32();
+      break;
+    }
+    case 0xa79bb82e: {
+      sldrThis.grenadeLauncher = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xa95a025b: {
+      sldrThis.unknown_0xa95a025b = input.ReadInt32();
+      break;
+    }
+    case 0x25f822c4: {
+      sldrThis.grenadeMinAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x765e3a20: {
+      sldrThis.grenadeMaxAttackDist = input.ReadFloat();
+      break;
+    }
+    case 0x14d1a3a8: {
+      LoadTypedefDamageInfo(sldrThis.grenadeDamage, input);
+      break;
+    }
+    case 0x1319e077: {
+      sldrThis.grenadeExplosion = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xd207ff0f: {
+      sldrThis.grenadeEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x2b31c882: {
+      sldrThis.grenadeTrail = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x9a6bb47f: {
+      sldrThis.grenadeMass = input.ReadFloat();
+      break;
+    }
+    case 0xed086ce0: {
+      sldrThis.unknown_0xed086ce0 = input.ReadFloat();
+      break;
+    }
+    case 0x00fc6646: {
+      sldrThis.grenadeMinLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xa7c8e63f: {
+      sldrThis.grenadeMaxLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x454f16b1: {
+      sldrThis.unknown_0x454f16b1 = input.ReadInt32();
+      break;
+    }
+    case 0x258c3e1b: {
+      sldrThis.sound_GrenadeBounce = input.ReadInt32();
+      break;
+    }
+    case 0xaf6aad88: {
+      sldrThis.sound_GrenadeExplode = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSpacePirate {
   SLdrSpacePirate();
@@ -77,6 +172,59 @@ struct SLdrSpacePirate {
   SLdrSpacePirateWeaponData weaponData; // 0xdc89cc3c
 };
 
-void LoadTypedefSLdrSpacePirate(SLdrSpacePirate& data, CInputStream& input);
+inline SLdrSpacePirate::SLdrSpacePirate() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), projectile(kInvalidAssetId), projectileDamage(), bladeDamage(), kneelAttackShot(kInvalidAssetId), kneelAttackDamage(), weaponData() {
+  patterned.turnSpeed = 360.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 4.0f;
+  patterned.averageAttackTime = 1.0f;
+  patterned.attackTimeVariation = 0.5f;
+  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 10.0f;
+  patterned.damageWaitTime = 3.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.collisionRadius = 0.80000001f;
+  patterned.collisionHeight = 3.0f;
+  patterned.stepUpHeight = 0.30000001f;
+  patterned.unknown_0xf0790c1b = 0.2f;
+  patterned.creatureSize = 1;
+  aggressiveness = 10.0f;
+  coverCheck = 50.0f;
+  searchRadius = 20.0f;
+  fallBackCheck = 20.0f;
+  fallBackRadius = 10.0f;
+  hearingRadius = 20.0f;
+  flags = 0x00000000u;
+  unknown_0xce670970 = false;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  sound_Projectile = 0;
+  bladeDamage.unknown_0x119fbd31 = 11;
+  bladeDamage.dI_Damage = 10.0f;
+  bladeDamage.dI_KnockBackPower = 5.0f;
+  kneelAttackChance = 10.0f;
+  kneelAttackDamage.unknown_0x119fbd31 = 11;
+  kneelAttackDamage.dI_Damage = 10.0f;
+  dodgeCheck = 80.0f;
+  sound_Impact = 0;
+  intraBurstShotTime = 0.1f;
+  intraBurstShotVariation = 0.050000001f;
+  unknown_0x5080162a = 0.1f;
+  unknown_0xc78b40e0 = 0.050000001f;
+  sound_Alert = 0;
+  gunTrackDelay = 1.0f;
+  unknown_0x1b454a27 = 0;
+  cloakOpacity = 0.1f;
+  maxCloakOpacity = 0.75f;
+  breakDodgeMinTime = 5.0f;
+  breakDodgeMaxTime = 10.0f;
+  sound_Hurled = 0;
+  sound_Death = 0;
+  unknown_0x8708b7d3 = 0.2f;
+  avoidDistance = 10.0f;
+}
+
+inline SLdrSpacePirate::~SLdrSpacePirate() {}
 
 #endif

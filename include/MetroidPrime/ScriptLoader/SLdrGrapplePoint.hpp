@@ -14,6 +14,9 @@ struct SLdrGrapplePoint {
   SLdrGrappleParameters grappleInfo; // 0x6a2872d8
 };
 
-void LoadTypedefSLdrGrapplePoint(SLdrGrapplePoint& data, CInputStream& input);
+inline SLdrGrapplePoint::SLdrGrapplePoint() : editorProperties(), grappleInfo() {
+}
+
+inline SLdrGrapplePoint::~SLdrGrapplePoint() {}
 
 #endif

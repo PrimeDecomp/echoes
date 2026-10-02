@@ -19,7 +19,48 @@ struct SLdrLayerInfo {
   float textureScale; // 0x080c7499
 };
 
-void LoadTypedefSLdrLayerInfo(SLdrLayerInfo& data, CInputStream& input);
+inline SLdrLayerInfo::SLdrLayerInfo() {
+  motionType = -2143184152;
+  timeToCycleTex = 0.0f;
+  rotation = 0.0f;
+  amplitude = -0.0f;
+  textureScale = 0.0f;
+}
+
+inline SLdrLayerInfo::~SLdrLayerInfo() {}
+
+inline void LoadTypedefLayerInfo(SLdrLayerInfo& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xe94f7e87: {
+      sldrThis.motionType = input.ReadInt32();
+      break;
+    }
+    case 0x3c5b0c98: {
+      sldrThis.timeToCycleTex = input.ReadFloat();
+      break;
+    }
+    case 0x912954e6: {
+      sldrThis.rotation = input.ReadFloat();
+      break;
+    }
+    case 0x89e3d294: {
+      sldrThis.amplitude = input.ReadFloat();
+      break;
+    }
+    case 0x080c7499: {
+      sldrThis.textureScale = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrWater {
   SLdrWater();
@@ -89,6 +130,71 @@ struct SLdrWater {
   int unknown_0x414379ea; // 0x414379ea
 };
 
-void LoadTypedefSLdrWater(SLdrWater& data, CInputStream& input);
+inline SLdrWater::SLdrWater() : editorProperties(), trigger(), lightMap(kInvalidAssetId), colorMap(kInvalidAssetId), colorWarpMap(kInvalidAssetId), glossMap(kInvalidAssetId), envMap(kInvalidAssetId), refractWarpMap(kInvalidAssetId), foamMap(kInvalidAssetId), alphaMap(kInvalidAssetId), baseColor(CColor::Green()), flowColor(), flowColorWarp(), flowGloss1(), flowGloss2(), flowRefractWarp(), underwaterFogColor(CColor::Green()), splashColor(CColor::Green()), splash_Small(kInvalidAssetId), splash_Medium(kInvalidAssetId), splash_Big(kInvalidAssetId), visorRunoff(kInvalidAssetId), visorRunoffBall(kInvalidAssetId), fogColor(CColor::Green()) {
+  alphaFadeinTime = 0.0f;
+  alphaFadeoutTime = 0.0f;
+  morphTimeTo = 5.0f;
+  morphTimeRestore = 5.0f;
+  fluidType = 0;
+  envMapSize = 1.0f;
+  baseColor = CColor(0.0f, 0.0f, 0.49803901f, 1.0f);
+  alpha = 0.60000002f;
+  glossFlat = 0.2f;
+  glossTopDown = 1.0f;
+  refractWarpFlat = 1.0f;
+  refractWarpTopDown = 0.0f;
+  flowColor.motionType = 0;
+  flowColor.timeToCycleTex = 5.0f;
+  flowColor.amplitude = 0.15000001f;
+  flowColor.textureScale = 10.0f;
+  flowColorWarp.motionType = 0;
+  flowColorWarp.timeToCycleTex = 5.0f;
+  flowColorWarp.amplitude = 0.15000001f;
+  flowColorWarp.textureScale = 10.0f;
+  flowGloss1.motionType = 0;
+  flowGloss1.timeToCycleTex = 5.0f;
+  flowGloss1.amplitude = 0.15000001f;
+  flowGloss1.textureScale = 10.0f;
+  flowGloss2.motionType = 0;
+  flowGloss2.timeToCycleTex = 5.0f;
+  flowGloss2.amplitude = 0.15000001f;
+  flowGloss2.textureScale = 10.0f;
+  flowRefractWarp.motionType = 0;
+  flowRefractWarp.timeToCycleTex = 5.0f;
+  flowRefractWarp.amplitude = 0.15000001f;
+  flowRefractWarp.textureScale = 10.0f;
+  flowSpeed = 10.0f;
+  flowOrientation = 0.0f;
+  underwaterFogColor = CColor(0.0f, 0.49803901f, 1.0f, 1.0f);
+  splashColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  sound_SoundRunoff = 0;
+  sound_SoundRunoffBall = -1;
+  sound_Splash_Small = 0;
+  sound_Splash_Medium = 0;
+  sound_Splash_Big = 0;
+  fogColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  fogHeight = 0.0f;
+  fogBobHeight = 0.0f;
+  fogBobFreq = 1.0f;
+  fogNoGravSuitDist = 30.0f;
+  fogNoGravSuitFactor = 125.0f;
+  fogGravSuitDist = 150.0f;
+  fogGravSuitFactor = 300.0f;
+  viscosity = 0.5f;
+  renderSurface = true;
+  useDynamicLights = true;
+  renderTileScaleX = 1.0f;
+  renderTileScaleY = 1.0f;
+  lightMapResolution = 0.30000001f;
+  lightMapScaleX = 1.0f;
+  lightMapScaleY = 1.0f;
+  lightMapOffsetX = 0.0f;
+  lightMapOffsetY = 0.0f;
+  unknown_0xc71c0d63 = false;
+  filterSoundEffects = true;
+  unknown_0x414379ea = 300;
+}
+
+inline SLdrWater::~SLdrWater() {}
 
 #endif

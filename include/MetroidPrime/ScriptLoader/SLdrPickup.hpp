@@ -6,9 +6,10 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEchoParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrPlayerItem.hpp"
 
 struct SLdrPickup {
   SLdrPickup();
@@ -17,7 +18,7 @@ struct SLdrPickup {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CVector3f collisionSize; // 0x3a3e03ba
   CVector3f collisionOffset; // 0x2e686c2a
-  int itemToGive; // 0xa02ef0c4
+  SLdrPlayerItem itemToGive; // 0xa02ef0c4
   int capacityIncrease; // 0x28c71b54
   int itemPercentageIncrease; // 0x165ab069
   int amount; // 0x94af1445
@@ -26,7 +27,7 @@ struct SLdrPickup {
   float lifetime; // 0x32dc67f6
   float fadetime; // 0x56e3ceef
   CAssetId model; // 0xc27ffa8f
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   SLdrEchoParameters echoInformation; // 0x192b0e70
   float activationDelay; // 0xe585f166
@@ -42,6 +43,28 @@ struct SLdrPickup {
   CVector3f orbitOffset; // 0x850115e4
 };
 
-void LoadTypedefSLdrPickup(SLdrPickup& data, CInputStream& input);
+inline SLdrPickup::SLdrPickup() : editorProperties(), collisionSize(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), itemToGive(), model(kInvalidAssetId), animationInformation(), actorInformation(), echoInformation(), pickupEffect(kInvalidAssetId), orbitOffset(CVector3f::Zero()) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
+  capacityIncrease = 1;
+  itemPercentageIncrease = 0;
+  amount = 1;
+  respawnTime = 0.0f;
+  pickupEffectLifetime = 0.0f;
+  lifetime = 0.0f;
+  fadetime = 0.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
+  activationDelay = 0.0f;
+  absoluteValue = false;
+  calculateVisibility = true;
+  canHomeByDefault = false;
+  autoHomeRange = 0.0f;
+  delayUntilHome = 0.0f;
+  homingSpeed = 20.0f;
+  autoSpin = false;
+  blinkOut = false;
+}
+
+inline SLdrPickup::~SLdrPickup() {}
 
 #endif

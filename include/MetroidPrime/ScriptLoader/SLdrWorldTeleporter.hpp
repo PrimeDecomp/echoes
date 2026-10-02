@@ -5,7 +5,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "rstl/string.hpp"
 
@@ -16,7 +16,7 @@ struct SLdrWorldTeleporter {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CAssetId world; // 0x31ec14bc
   CAssetId area; // 0xe0c17804
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   CVector3f playerScale; // 0xe56ba365
   CAssetId platform; // 0x9703f961
   CVector3f platformScale; // 0xca1d9615
@@ -42,6 +42,26 @@ struct SLdrWorldTeleporter {
   bool unknown_0x5657ca1c; // 0x5657ca1c
 };
 
-void LoadTypedefSLdrWorldTeleporter(SLdrWorldTeleporter& data, CInputStream& input);
+inline SLdrWorldTeleporter::SLdrWorldTeleporter() : editorProperties(), world(kInvalidAssetId), area(kInvalidAssetId), animationInformation(), playerScale(CVector3f::Zero()), platform(kInvalidAssetId), platformScale(CVector3f::Zero()), shaft(kInvalidAssetId), shaftScale(CVector3f::Zero()), soundGroup(kInvalidAssetId), displayFont(kInvalidAssetId), string(kInvalidAssetId), audioStream() {
+  playerScale = CVector3f(1.0f, 1.0f, 1.0f);
+  platformScale = CVector3f(1.0f, 1.0f, 1.0f);
+  shaftScale = CVector3f(1.0f, 1.0f, 1.0f);
+  unknown_0x2e997e0b = true;
+  elevator = 0;
+  volume = 127;
+  pan = 64;
+  isTeleport = false;
+  isFadeWhite = false;
+  characterFadeTime = 0.0099999998f;
+  charactersPerSecond = 8.0f;
+  startDelay = 0.0f;
+  displaySubtitles = false;
+  endDelay = 0.0f;
+  subtitleFadeInDelay = 2.0f;
+  subtitleFadeTime = 3.0f;
+  unknown_0x5657ca1c = false;
+}
+
+inline SLdrWorldTeleporter::~SLdrWorldTeleporter() {}
 
 #endif

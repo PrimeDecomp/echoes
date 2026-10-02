@@ -25,6 +25,13 @@ struct SLdrSurfaceCamera {
   SLdrSpline fOVSpline; // 0x6868d4b3
 };
 
-void LoadTypedefSLdrSurfaceCamera(SLdrSurfaceCamera& data, CInputStream& input);
+inline SLdrSurfaceCamera::SLdrSurfaceCamera() : editorProperties(), spline(), playerOffset(CVector3f::Zero()), playerSplineType(), targetSplineType(), targetControlSpline(), fOVSpline() {
+  flagsSurfaceCamera = 0x00000002u;
+  surfaceType = 1;
+  playerSplineLoops = false;
+  targetSplineLoops = false;
+}
+
+inline SLdrSurfaceCamera::~SLdrSurfaceCamera() {}
 
 #endif

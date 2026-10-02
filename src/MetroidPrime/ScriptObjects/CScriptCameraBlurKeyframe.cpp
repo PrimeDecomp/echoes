@@ -50,43 +50,9 @@ void CScriptCameraBlurKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScrip
   }
 }
 
-CEntity* LoadCameraBlurKeyframe(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
+CEntity* LoadCameraBlurKeyframe(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrCameraBlurKeyframe sldrThis;
-  sldrThis.blurType = 0;
-  sldrThis.blurRadius = 0.f;
-  sldrThis.whichFilterGroup = 0;
-  sldrThis.interpolateInTime = 0.f;
-  sldrThis.interpolateOutTime = 0.f;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const int propertyId = input.Get< int >();
-    const u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0xe9359148:
-      sldrThis.blurType = input.ReadInt32();
-      break;
-    case 0x6f6eb1f4:
-      sldrThis.blurRadius = input.ReadFloat();
-      break;
-    case 0x3fdc4b2e:
-      sldrThis.whichFilterGroup = input.ReadInt32();
-      break;
-    case 0xabd41a36:
-      sldrThis.interpolateInTime = input.ReadFloat();
-      break;
-    case 0x3eaf78fe:
-      sldrThis.interpolateOutTime = input.ReadFloat();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrCameraBlurKeyframe.inc"
 
   return rs_new CScriptCameraBlurKeyframe(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

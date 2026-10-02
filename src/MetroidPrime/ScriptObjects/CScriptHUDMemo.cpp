@@ -56,53 +56,9 @@ void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   CEntity::AcceptScriptMsg(mgr, msg);
 }
 
-CScriptHUDMemo* LoadHUDMemo(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadHUDMemo(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrHUDMemo sldrThis;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    uint propertyId = (uint)input.ReadInt32();
-    u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0x1a26c1cc: //('display_time', _decode_display_time),
-      sldrThis.displayTime = input.ReadFloat();
-      break;
-    case 0x84e2496f:
-      sldrThis.clearWindow = input.ReadBool();
-      break;
-    case 0xa8fadfa5:
-      sldrThis.player1 = input.ReadBool();
-      break;
-    case 0xef5aa575:
-      sldrThis.player2 = input.ReadBool();
-      break;
-    case 0xd23a8cc5:
-      sldrThis.player3 = input.ReadBool();
-      break;
-    case 0x601a50d5:
-      sldrThis.player4 = input.ReadBool();
-      break;
-    case 0xafd0158e:
-      sldrThis.typeOut = input.ReadBool();
-      break;
-    case 0xbd6f7b11:
-      sldrThis.useOriginator = input.ReadBool();
-      break;
-    case 0x4ab3b95b:
-      sldrThis.displayType = input.ReadInt32();
-      break;
-    case 0x9182250c:
-      sldrThis.string = input.ReadInt32();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrHUDMemo.inc"
 
   int mask = 0;
   if (sldrThis.player1) {

@@ -16,6 +16,9 @@ struct SLdrScanTreeCategory {
   rstl::string stringName; // 0x32698bd6
 };
 
-void LoadTypedefSLdrScanTreeCategory(SLdrScanTreeCategory& data, CInputStream& input);
+inline SLdrScanTreeCategory::SLdrScanTreeCategory() : editorProperties(), nodeName(kInvalidAssetId), stringName() {
+}
+
+inline SLdrScanTreeCategory::~SLdrScanTreeCategory() {}
 
 #endif

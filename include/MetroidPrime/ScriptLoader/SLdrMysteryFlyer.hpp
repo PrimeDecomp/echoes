@@ -21,7 +21,53 @@ struct SLdrMysteryFlyerData {
   bool needsToGenerate; // 0x5f3fffd6
 };
 
-void LoadTypedefSLdrMysteryFlyerData(SLdrMysteryFlyerData& data, CInputStream& input);
+inline SLdrMysteryFlyerData::SLdrMysteryFlyerData() : shotProjectile(kInvalidAssetId), shotDamage() {
+  shotDamage.unknown_0x119fbd31 = 11;
+  shotDamage.dI_Damage = 5.0f;
+  hoverSpeed = 10.0f;
+  hoverHeight = 2.0f;
+  separationDistance = 5.0f;
+  needsToGenerate = true;
+}
+
+inline SLdrMysteryFlyerData::~SLdrMysteryFlyerData() {}
+
+inline void LoadTypedefMysteryFlyerData(SLdrMysteryFlyerData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x51253ba3: {
+      sldrThis.shotProjectile = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcea30138: {
+      LoadTypedefDamageInfo(sldrThis.shotDamage, input);
+      break;
+    }
+    case 0x845ef489: {
+      sldrThis.hoverSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xc75998aa: {
+      sldrThis.hoverHeight = input.ReadFloat();
+      break;
+    }
+    case 0x01559f27: {
+      sldrThis.separationDistance = input.ReadFloat();
+      break;
+    }
+    case 0x5f3fffd6: {
+      sldrThis.needsToGenerate = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrMysteryFlyer {
   SLdrMysteryFlyer();
@@ -33,6 +79,9 @@ struct SLdrMysteryFlyer {
   SLdrMysteryFlyerData mysteryFlyerProperties; // 0x44080565
 };
 
-void LoadTypedefSLdrMysteryFlyer(SLdrMysteryFlyer& data, CInputStream& input);
+inline SLdrMysteryFlyer::SLdrMysteryFlyer() : editorProperties(), patterned(), actorInformation(), mysteryFlyerProperties() {
+}
+
+inline SLdrMysteryFlyer::~SLdrMysteryFlyer() {}
 
 #endif

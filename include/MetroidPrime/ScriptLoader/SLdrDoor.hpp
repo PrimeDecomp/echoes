@@ -7,7 +7,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrHealthInfo.hpp"
@@ -22,7 +22,7 @@ struct SLdrDoor {
   CVector3f collisionOffset; // 0x2e686c2a
   SLdrHealthInfo health; // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   CAssetId shellModel; // 0xb20cc271
   CAssetId blueShellModel; // 0xae5b2114
   CColor shellColor; // 0x47b4e863
@@ -41,6 +41,19 @@ struct SLdrDoor {
   SLdrScannableParameters altScannable; // 0x9ec62712
 };
 
-void LoadTypedefSLdrDoor(SLdrDoor& data, CInputStream& input);
+inline SLdrDoor::SLdrDoor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), animationInformation(), shellModel(kInvalidAssetId), blueShellModel(kInvalidAssetId), shellColor(CColor::Green()), burnTexture(kInvalidAssetId), actorInformation(), orbitOffset(CVector3f::Zero()), altScannable() {
+  shellColor = CColor(0.0f, 1.0f, 1.0f, 1.0f);
+  isOpen = true;
+  isLocked = false;
+  openAnimationTime = 0.5f;
+  closeAnimationTime = 0.5f;
+  closeDelay = 0.5f;
+  shieldFadeOutTime = 0.5f;
+  shieldFadeInTime = 0.5f;
+  morphBallTunnel = false;
+  horizontal = false;
+}
+
+inline SLdrDoor::~SLdrDoor() {}
 
 #endif

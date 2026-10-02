@@ -3,7 +3,7 @@
 #include "Kyoto/Graphics/CGX.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrForgottenObject.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -60,29 +60,13 @@ void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid, b
   CGX::SetColorUpdate(GX_TRUE);
 }
 
-struct SLdrForgottenObject {
-  SLdrEditorProperties editorProperties;
-};
-
-CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
-  SLdrForgottenObject properties;
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.ReadInt32();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(properties.editorProperties, input);
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrForgottenObject sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrForgottenObject.inc"
 
   return rs_new CScriptForgottenObject(mgr.AllocateUniqueId(),
-                                       LdrToEntityInfo(info, properties.editorProperties),
-                                       properties.editorProperties.name);
+                                       LdrToEntityInfo(info, sldrThis.editorProperties),
+                                       sldrThis.editorProperties.name);
 }
 
 static void SetFuncPtrs() {

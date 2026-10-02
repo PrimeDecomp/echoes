@@ -257,48 +257,12 @@ void CScriptStreamedMusic::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   }
 }
 
-CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, const CEntityInfo& info) {
-  SLdrStreamedAudio data;
-
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.ReadInt32();
-    const uint propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(data.editorProperties, input);
-      break;
-    case 0xf6f3de1c: {
-      const rstl::string value(input);
-      data.songFile = value;
-      break;
-    }
-    case 0x34b152c4:
-      data.defaultAudio = input.ReadBool();
-      break;
-    case 0x90aa341f:
-      data.fadeInTime = input.ReadFloat();
-      break;
-    case 0x7c269ebc:
-      data.fadeOutTime = input.ReadFloat();
-      break;
-    case 0x80c66c37:
-      data.volume = input.ReadInt32();
-      break;
-    case 0x28f82261:
-      data.softwareChannel = input.ReadInt32();
-      break;
-    case 0xd3356fe7:
-      data.softwareIsMusic = input.ReadBool();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrStreamedAudio sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrStreamedAudio.inc"
 
   return new CScriptStreamedMusic(
-      mgr.AllocateUniqueId(), LdrToEntityInfo(info, data.editorProperties),
-      data.editorProperties.name, data.songFile, data.defaultAudio, data.fadeInTime, data.fadeOutTime,
-      data.volume, data.softwareChannel == 0, data.softwareIsMusic);
+      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),
+      sldrThis.editorProperties.name, sldrThis.songFile, sldrThis.defaultAudio, sldrThis.fadeInTime, sldrThis.fadeOutTime,
+      sldrThis.volume, sldrThis.softwareChannel == 0, sldrThis.softwareIsMusic);
 }

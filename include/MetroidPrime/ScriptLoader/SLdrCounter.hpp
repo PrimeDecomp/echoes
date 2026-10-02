@@ -16,6 +16,13 @@ struct SLdrCounter {
   bool wrap; // 0xf076cef5
 };
 
-void LoadTypedefSLdrCounter(SLdrCounter& data, CInputStream& input);
+inline SLdrCounter::SLdrCounter() : editorProperties() {
+  initial_Count = 10;
+  max_Count = 10;
+  autoReset = false;
+  wrap = false;
+}
+
+inline SLdrCounter::~SLdrCounter() {}
 
 #endif

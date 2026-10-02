@@ -17,6 +17,15 @@ struct SLdrSilhouette {
   float fadeOutTime; // 0x7c269ebc
 };
 
-void LoadTypedefSLdrSilhouette(SLdrSilhouette& data, CInputStream& input);
+inline SLdrSilhouette::SLdrSilhouette() : editorProperties(), silhouetteColor(CColor::Green()) {
+  editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
+  editorProperties.active = false;
+  unknown_0x82bad3ee = 0.5f;
+  silhouetteColor = CColor(0.29803899f, 0.60000002f, 1.0f, 0.49803901f);
+  fadeInTime = 1.0f;
+  fadeOutTime = 1.0f;
+}
+
+inline SLdrSilhouette::~SLdrSilhouette() {}
 
 #endif

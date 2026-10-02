@@ -123,62 +123,10 @@ void CScriptSequenceTimer::fn_801e1af8(float f, CStateManager& mgr) {
   return;
 }
 
-CScriptSequenceTimer* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
+CEntity* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
                                         CEntityInfo& info) {
   SLdrSequenceTimer sldrThis;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    uint propertyId = (uint)input.ReadInt32();
-    u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-
-    case 0xef5c94e9:
-      {
-        const int count = input.ReadInt32();
-        sldrThis.sequenceConnections.clear();
-        sldrThis.sequenceConnections.reserve(count);
-        for (int connectionIndex = 0; connectionIndex < count; ++connectionIndex) {
-          SLdrConnection connection;
-          LoadTypedefSLdrConnection(connection, input);
-          sldrThis.sequenceConnections.push_back(connection);
-        }
-      }
-      break;
-
-    case 0xb8bd2175:
-      sldrThis.startTime = input.ReadFloat();
-      break;
-
-    case 0x3e7b2b4:
-      sldrThis.maxTime = input.ReadFloat();
-      break;
-
-    case 0xacf9ca5f:
-      sldrThis.loopStartTime = input.ReadFloat();
-      break;
-
-    case 0x42c6e2b2:
-      sldrThis.isAutostart = input.ReadBool();
-      break;
-
-    case 0xc08d1b93:
-      sldrThis.isLoop = input.ReadBool();
-      break;
-
-    case 0x27b3b082:
-      sldrThis.takeExternalTime = input.ReadBool();
-      break;
-
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.inc"
 
   return new CScriptSequenceTimer(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
                                   LdrToEntityInfo(info, sldrThis.editorProperties),

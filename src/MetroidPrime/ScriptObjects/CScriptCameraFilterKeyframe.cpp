@@ -68,54 +68,9 @@ void CScriptCameraFilterKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScr
 }
 
 CEntity* LoadCameraFilterKeyframe(CStateManager& mgr, CInputStream& input,
-                                  const CEntityInfo& info) {
+                                  CEntityInfo& info) {
   SLdrCameraFilterKeyframe sldrThis;
-  sldrThis.filterType = 0;
-  sldrThis.filterShape = 0;
-  sldrThis.filterStage = 0;
-  sldrThis.whichFilterGroup = 0;
-  sldrThis.color = CColor(1.f, 1.f, 1.f, 1.f);
-  sldrThis.interpolateInTime = 0.f;
-  sldrThis.interpolateOutTime = 0.f;
-
-  int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const int propertyId = input.Get< int >();
-    const u16 propertySize = input.ReadUint16();
-
-    switch (propertyId) {
-    case 0x255a4580:
-      LoadTypedefSLdrEditorProperties(sldrThis.editorProperties, input);
-      break;
-    case 0x7975db5b:
-      sldrThis.filterType = input.ReadInt32();
-      break;
-    case 0x6a3e9a3d:
-      sldrThis.filterShape = input.ReadInt32();
-      break;
-    case 0x58bdbd7b:
-      sldrThis.filterStage = input.ReadInt32();
-      break;
-    case 0x3fdc4b2e:
-      sldrThis.whichFilterGroup = input.ReadInt32();
-      break;
-    case 0x37c7d09d:
-      sldrThis.color = CColor(input);
-      break;
-    case 0xabd41a36:
-      sldrThis.interpolateInTime = input.ReadFloat();
-      break;
-    case 0x3eaf78fe:
-      sldrThis.interpolateOutTime = input.ReadFloat();
-      break;
-    case 0xd1f65872:
-      sldrThis.texture = input.ReadInt32();
-      break;
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
+#include "MetroidPrime/ScriptLoader/SLdrCameraFilterKeyframe.inc"
 
   return rs_new CScriptCameraFilterKeyframe(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

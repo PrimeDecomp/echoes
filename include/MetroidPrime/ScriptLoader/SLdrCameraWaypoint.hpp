@@ -12,6 +12,9 @@ struct SLdrCameraWaypoint {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-void LoadTypedefSLdrCameraWaypoint(SLdrCameraWaypoint& data, CInputStream& input);
+inline SLdrCameraWaypoint::SLdrCameraWaypoint() : editorProperties() {
+}
+
+inline SLdrCameraWaypoint::~SLdrCameraWaypoint() {}
 
 #endif

@@ -39,6 +39,30 @@ struct SLdrIngSnatchingSwarm {
   SLdrDamageVulnerability swarmVulnerability; // 0x8792a2b0
 };
 
-void LoadTypedefSLdrIngSnatchingSwarm(SLdrIngSnatchingSwarm& data, CInputStream& input);
+inline SLdrIngSnatchingSwarm::SLdrIngSnatchingSwarm() : editorProperties(), stateMachine(kInvalidAssetId), swarmParticleSystem(kInvalidAssetId), secondarySwarmParticleSystem(kInvalidAssetId), pART(kInvalidAssetId), impactDamage(), swarmVulnerability() {
+  unknown_0x7cae2ed5 = 0.5f;
+  unknown_0xf65e7ec5 = 0.34999999f;
+  lifetime = 15.0f;
+  maxLinearSpeed = 25.0f;
+  maxLinearAcceleration = 10.0f;
+  maxTurnSpeed = 2000.0f;
+  useSteeringForMovement = false;
+  ignorePlayer = false;
+  unknown_0xe6b57a25 = 0.5f;
+  exitPortalDistance = 4.0f;
+  unknown_0x2de5a19a = 10.0f;
+  unknown_0x4e79f717 = 3.0f;
+  unknown_0xe8e0b5a6 = 2.0f;
+  beginSnatchingRange = 5.0f;
+  impactDamage.unknown_0x119fbd31 = 11;
+  impactDamage.dI_Damage = 20.0f;
+  impactDamage.dI_KnockBackPower = 10.0f;
+  sound_Impact = 0;
+  sound_Idle = 0;
+  sound_Move = 0;
+  health = 50.0f;
+}
+
+inline SLdrIngSnatchingSwarm::~SLdrIngSnatchingSwarm() {}
 
 #endif

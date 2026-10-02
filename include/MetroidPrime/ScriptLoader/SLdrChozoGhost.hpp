@@ -22,7 +22,58 @@ struct SLdrGhostBehave {
   int numBolts; // 0x5ab228b6
 };
 
-void LoadTypedefSLdrGhostBehave(SLdrGhostBehave& data, CInputStream& input);
+inline SLdrGhostBehave::SLdrGhostBehave() {
+  lurk = -0.0f;
+  heckle = 0.0f;
+  attack = 0.0f;
+  move = 0.0f;
+  lurkTime = 0.0f;
+  chargeAttack = 0.0f;
+  numBolts = 0;
+}
+
+inline SLdrGhostBehave::~SLdrGhostBehave() {}
+
+inline void LoadTypedefGhostBehave(SLdrGhostBehave& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xd3a313a5: {
+      sldrThis.lurk = input.ReadFloat();
+      break;
+    }
+    case 0x3cfa69f1: {
+      sldrThis.heckle = input.ReadFloat();
+      break;
+    }
+    case 0x1af89f4b: {
+      sldrThis.attack = input.ReadFloat();
+      break;
+    }
+    case 0xe7e66f66: {
+      sldrThis.move = input.ReadFloat();
+      break;
+    }
+    case 0xb9d9c2d2: {
+      sldrThis.lurkTime = input.ReadFloat();
+      break;
+    }
+    case 0xcfabdd5f: {
+      sldrThis.chargeAttack = input.ReadFloat();
+      break;
+    }
+    case 0x5ab228b6: {
+      sldrThis.numBolts = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrChozoGhost {
   SLdrChozoGhost();
@@ -58,6 +109,56 @@ struct SLdrChozoGhost {
   int midChance; // 0x1b272781
 };
 
-void LoadTypedefSLdrChozoGhost(SLdrChozoGhost& data, CInputStream& input);
+inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actorInformation(), unknown_0x54151870(kInvalidAssetId), damageInfo(), unknown_0x3a58089c(kInvalidAssetId), damageInfo_0x1ff047a9(), far(), mid(), near(), projectileVisorEffect(kInvalidAssetId) {
+  patterned.turnSpeed = 720.0f;
+  patterned.detectionRange = 25.0f;
+  patterned.minAttackRange = 8.0f;
+  patterned.maxAttackRange = 70.0f;
+  patterned.leashRadius = 70.0f;
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 5.0f;
+  patterned.contactDamage.dI_KnockBackPower = 1.0f;
+  patterned.health.health = 300.0f;
+  patterned.health.hI_KnockBackResistance = 10.0f;
+  patterned.collisionHeight = 4.5f;
+  patterned.creatureSize = 1;
+  hearingRadius = 20.0f;
+  fadeOutDelay = 2.5f;
+  attackDelay = 1.0f;
+  freezeTime = 2.0f;
+  damageInfo.dI_Damage = 10.0f;
+  damageInfo_0x1ff047a9.dI_Damage = 5.0f;
+  far.lurk = 20.0f;
+  far.attack = 60.0f;
+  far.move = 20.0f;
+  far.lurkTime = 2.0f;
+  far.numBolts = 1;
+  mid.lurk = 20.0f;
+  mid.heckle = 10.0f;
+  mid.attack = 60.0f;
+  mid.move = 10.0f;
+  mid.lurkTime = 2.0f;
+  mid.chargeAttack = 20.0f;
+  mid.numBolts = 3;
+  near.attack = 100.0f;
+  near.lurkTime = 2.0f;
+  near.chargeAttack = 50.0f;
+  near.numBolts = 2;
+  sound_Impact = 0;
+  disablePlayerGunTime = 1.5f;
+  sound_PhazeIn = 0;
+  sound_PhazeOut = 0;
+  unknown_0xec76940c = 0;
+  projectileStopHomingRange = 8.0f;
+  unknown_0xfe9eac26 = 0;
+  hurlRecoverTime = 1.5f;
+  sound_ProjectileVisor = 0;
+  nearToMidDistance = 20.0f;
+  midToFarDistance = 45.0f;
+  nearChance = 40;
+  midChance = 40;
+}
+
+inline SLdrChozoGhost::~SLdrChozoGhost() {}
 
 #endif

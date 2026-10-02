@@ -14,6 +14,11 @@ struct SLdrAIJumpPoint {
   int type; // 0xf53dcdd6
 };
 
-void LoadTypedefSLdrAIJumpPoint(SLdrAIJumpPoint& data, CInputStream& input);
+inline SLdrAIJumpPoint::SLdrAIJumpPoint() : editorProperties() {
+  jumpApex = 3.0f;
+  type = 0;
+}
+
+inline SLdrAIJumpPoint::~SLdrAIJumpPoint() {}
 
 #endif

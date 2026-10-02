@@ -86,7 +86,7 @@ struct SLdrTweakPlayerControls_Controls {
   int unknown_0x64003596; // 0x64003596
 };
 
-void LoadTypedefSLdrTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& data, CInputStream& input);
 
 struct SLdrTweakPlayerControls_Booleans {
   SLdrTweakPlayerControls_Booleans();
@@ -115,7 +115,7 @@ struct SLdrTweakPlayerControls_Booleans {
   bool unknown_0x522ab1ac; // 0x522ab1ac
 };
 
-void LoadTypedefSLdrTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& data, CInputStream& input);
 
 struct SLdrTweakPlayerControls {
   SLdrTweakPlayerControls();
@@ -126,7 +126,7 @@ struct SLdrTweakPlayerControls {
   SLdrTweakPlayerControls_Booleans booleans; // 0x168a79f1
 };
 
-void LoadTypedefSLdrTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls(SLdrTweakPlayerControls& data, CInputStream& input);
 
 struct SLdrTweakPlayerControls2 {
   SLdrTweakPlayerControls2();
@@ -137,6 +137,6 @@ struct SLdrTweakPlayerControls2 {
   SLdrTweakPlayerControls_Booleans booleans; // 0x168a79f1
 };
 
-void LoadTypedefSLdrTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls2(SLdrTweakPlayerControls2& data, CInputStream& input);
 
 #endif

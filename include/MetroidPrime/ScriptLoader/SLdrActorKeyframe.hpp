@@ -17,6 +17,14 @@ struct SLdrActorKeyframe {
   float playbackRate; // 0x6f8d34ca
 };
 
-void LoadTypedefSLdrActorKeyframe(SLdrActorKeyframe& data, CInputStream& input);
+inline SLdrActorKeyframe::SLdrActorKeyframe() : editorProperties() {
+  animation = -1;
+  loop = false;
+  loopDuration = 0.0f;
+  unknown_0x6d62ef74 = 0;
+  playbackRate = 1.0f;
+}
+
+inline SLdrActorKeyframe::~SLdrActorKeyframe() {}
 
 #endif

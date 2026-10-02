@@ -6,7 +6,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEchoParameters.hpp"
@@ -26,7 +26,7 @@ struct SLdrActor {
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   CAssetId model; // 0xc27ffa8f
   CAssetId collisionModel; // 0x0fc966dc
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   SLdrEchoParameters echoInformation; // 0x192b0e70
   bool isLoop; // 0xc08d1b93
@@ -43,6 +43,22 @@ struct SLdrActor {
   SLdrDamageInfo projectileDamage; // 0x553b1339
 };
 
-void LoadTypedefSLdrActor(SLdrActor& data, CInputStream& input);
+inline SLdrActor::SLdrActor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), model(kInvalidAssetId), collisionModel(kInvalidAssetId), animationInformation(), actorInformation(), echoInformation(), projectile(kInvalidAssetId), projectileDamage() {
+  mass = 1.0f;
+  gravity = 0.0f;
+  isLoop = true;
+  immovable = true;
+  isSolid = true;
+  isCameraThrough = false;
+  isScanThrough = false;
+  renderTextureSet = 0;
+  drawsShadow = false;
+  scaleAnimation = false;
+  aiShootThrough = false;
+  randomAnimationOffset = 0.0f;
+  projectileDamage.unknown_0x119fbd31 = 11;
+}
+
+inline SLdrActor::~SLdrActor() {}
 
 #endif

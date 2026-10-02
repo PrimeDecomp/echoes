@@ -21,6 +21,20 @@ struct SLdrSpankWeed {
   float hurtSleepDelay; // 0x9b5a4744
 };
 
-void LoadTypedefSLdrSpankWeed(SLdrSpankWeed& data, CInputStream& input);
+inline SLdrSpankWeed::SLdrSpankWeed() : editorProperties(), patterned(), actorInformation() {
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 20.0f;
+  patterned.contactDamage.dI_KnockBackPower = 1.0f;
+  patterned.damageWaitTime = 1.0f;
+  patterned.health.health = 1000000.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  unknown_0x5cdc877d = true;
+  wakeUpRadius = 60.0f;
+  searchRadius = 30.0f;
+  attackRadius = 15.0f;
+  hurtSleepDelay = 5.0f;
+}
+
+inline SLdrSpankWeed::~SLdrSpankWeed() {}
 
 #endif

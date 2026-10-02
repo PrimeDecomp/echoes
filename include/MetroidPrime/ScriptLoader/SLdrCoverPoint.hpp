@@ -17,6 +17,14 @@ struct SLdrCoverPoint {
   float lockTime; // 0x308edc44
 };
 
-void LoadTypedefSLdrCoverPoint(SLdrCoverPoint& data, CInputStream& input);
+inline SLdrCoverPoint::SLdrCoverPoint() : editorProperties() {
+  unknown_0x969de5ff = 1;
+  shouldCrouch = true;
+  horizontalSafeAngle = 180.0f;
+  verticalSafeAngle = 90.0f;
+  lockTime = 10.0f;
+}
+
+inline SLdrCoverPoint::~SLdrCoverPoint() {}
 
 #endif

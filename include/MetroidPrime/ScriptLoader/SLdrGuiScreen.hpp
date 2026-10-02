@@ -15,6 +15,10 @@ struct SLdrGuiScreen {
   CAssetId stringTable; // 0xfd95ed2a
 };
 
-void LoadTypedefSLdrGuiScreen(SLdrGuiScreen& data, CInputStream& input);
+inline SLdrGuiScreen::SLdrGuiScreen() : editorProperties(), stringTable(kInvalidAssetId) {
+  whichScreen = 0;
+}
+
+inline SLdrGuiScreen::~SLdrGuiScreen() {}
 
 #endif

@@ -5,7 +5,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrBasicSwarmProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
@@ -16,7 +16,7 @@ struct SLdrPlantScarabSwarm {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
   int intoAttackAnimation; // 0x7399abbb
@@ -42,6 +42,26 @@ struct SLdrPlantScarabSwarm {
   float grenadeExplosionMaxAudibleDistance; // 0xab84892e
 };
 
-void LoadTypedefSLdrPlantScarabSwarm(SLdrPlantScarabSwarm& data, CInputStream& input);
+inline SLdrPlantScarabSwarm::SLdrPlantScarabSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties(), grenadeDamage(), grenadeExplosionEffect(kInvalidAssetId), grenadeExplosionXRayEffect(kInvalidAssetId), grenadeTrailEffect(kInvalidAssetId), grenadeEffect(kInvalidAssetId) {
+  active = true;
+  intoAttackAnimation = -1;
+  attackAnimation = -1;
+  maxAttackAngle = 30.0f;
+  intoAttackSpeed = 1.0f;
+  attackSpeed = 1.0f;
+  grenadeMass = 1.0f;
+  grenadeLaunchSpeed = 1.0f;
+  unknown_0xed086ce0 = 0.5f;
+  unknown_0x454f16b1 = 3;
+  grenadeExplosionProximity = 0.5f;
+  grenadeBounceSound = 0;
+  grenadeBounceSoundFallOff = 0.0f;
+  grenadeBounceMaxAudibleDistance = 100.0f;
+  grenadeExplosionSound = 0;
+  grenadeExplosionSoundFallOff = 0.0f;
+  grenadeExplosionMaxAudibleDistance = 100.0f;
+}
+
+inline SLdrPlantScarabSwarm::~SLdrPlantScarabSwarm() {}
 
 #endif

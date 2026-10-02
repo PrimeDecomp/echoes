@@ -12,6 +12,6 @@ struct SLdrVector2f {
   float y; // 0x6a3baeeb
 };
 
-void LoadTypedefSLdrVector2f(SLdrVector2f& data, CInputStream& input);
+void LoadTypedefVector2f(SLdrVector2f& data, CInputStream& input);
 
 #endif

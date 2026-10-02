@@ -5,7 +5,7 @@
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
 struct SLdrFishCloud {
@@ -15,7 +15,7 @@ struct SLdrFishCloud {
   SLdrEditorProperties editorProperties; // 0x255a4580
   bool active; // 0xc6bb2f45
   CAssetId fishModel; // 0x7990a3b6
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   float fishCount; // 0xf1c07275
   float speed; // 0x6392404e
   float influenceDistance; // 0x7864ad0e
@@ -49,6 +49,37 @@ struct SLdrFishCloud {
   bool isHighlightedInDarkVisor; // 0xcd4c81a1
 };
 
-void LoadTypedefSLdrFishCloud(SLdrFishCloud& data, CInputStream& input);
+inline SLdrFishCloud::SLdrFishCloud() : editorProperties(), fishModel(kInvalidAssetId), animationInformation(), materialColor(CColor::Green()), deathEffect0(kInvalidAssetId), deathEffect1(kInvalidAssetId), deathEffect2(kInvalidAssetId), deathEffect3(kInvalidAssetId) {
+  active = true;
+  fishCount = 20.0f;
+  speed = 3.0f;
+  influenceDistance = 2.0f;
+  cohesionPriority = 0.40000001f;
+  alignmentPriority = 0.89999998f;
+  separationPriority = 1.0f;
+  projectilePriority = 1.0f;
+  playerPriority = 0.40000001f;
+  containmentPriority = 0.2f;
+  wanderPriority = 0.0f;
+  wanderAmount = 0.0f;
+  playerBallPriority = 0.0f;
+  playerBallDistance = 30.0f;
+  projectileDecayRate = 0.1f;
+  playerDecayRate = 0.1f;
+  lookAheadTime = 0.5f;
+  updateFrame = 3;
+  materialColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  canBeKilled = false;
+  collisionRadius = 0.0f;
+  deathEffect0Count = 0;
+  deathEffect1Count = 0;
+  deathEffect2Count = 0;
+  deathEffect3Count = 0;
+  deathSound = 0;
+  unknown_0xc320a050 = true;
+  isHighlightedInDarkVisor = true;
+}
+
+inline SLdrFishCloud::~SLdrFishCloud() {}
 
 #endif

@@ -37,7 +37,121 @@ struct SLdrMinorIngIngSpot {
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
 };
 
-void LoadTypedefSLdrMinorIngIngSpot(SLdrMinorIngIngSpot& data, CInputStream& input);
+inline SLdrMinorIngIngSpot::SLdrMinorIngIngSpot() : damage(), blobEffect(kInvalidAssetId), hitNormalDamage(kInvalidAssetId), hitHeavyDamage(kInvalidAssetId), death(kInvalidAssetId), vulnerability() {
+  damage.unknown_0x119fbd31 = 11;
+  damage.dI_Damage = 10.0f;
+  damage.dI_Radius = 4.5f;
+  damage.dI_KnockBackPower = 4.0f;
+  bombStunDuration = 5.0f;
+  morphballPursuitDistance = 10.0f;
+  maxSpeed = 15.0f;
+  maxWallSpeed = 7.0f;
+  ballPursuitSpeed = 25.0f;
+  speedModifier = 2.0f;
+  turnSpeed = 360.0f;
+  sound_Idle = 0;
+  sound_Move = 0;
+  sound_HitNormalDamage = 0;
+  sound_HitHeavyDamage = 0;
+  sound_Death = 0;
+  unknown_0x7569fdba = 100.0f;
+  sfxFallOff = 0.2f;
+}
+
+inline SLdrMinorIngIngSpot::~SLdrMinorIngIngSpot() {}
+
+inline void LoadTypedefMinorIngIngSpot(SLdrMinorIngIngSpot& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x337f9524: {
+      LoadTypedefDamageInfo(sldrThis.damage, input);
+      break;
+    }
+    case 0x5860e24b: {
+      sldrThis.bombStunDuration = input.ReadFloat();
+      break;
+    }
+    case 0x46aaced3: {
+      sldrThis.morphballPursuitDistance = input.ReadFloat();
+      break;
+    }
+    case 0x82db0cbe: {
+      sldrThis.maxSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xbec652ae: {
+      sldrThis.maxWallSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x600a863f: {
+      sldrThis.ballPursuitSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x388e4902: {
+      sldrThis.speedModifier = input.ReadFloat();
+      break;
+    }
+    case 0x020c78bb: {
+      sldrThis.turnSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x2367f689: {
+      sldrThis.blobEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xd473158d: {
+      sldrThis.hitNormalDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcca298b4: {
+      sldrThis.hitHeavyDamage = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xb99c80d3: {
+      sldrThis.death = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xaf38968e: {
+      sldrThis.sound_Idle = input.ReadInt32();
+      break;
+    }
+    case 0x6c101854: {
+      sldrThis.sound_Move = input.ReadInt32();
+      break;
+    }
+    case 0xb392943a: {
+      sldrThis.sound_HitNormalDamage = input.ReadInt32();
+      break;
+    }
+    case 0x24ecc1e9: {
+      sldrThis.sound_HitHeavyDamage = input.ReadInt32();
+      break;
+    }
+    case 0xe160b593: {
+      sldrThis.sound_Death = input.ReadInt32();
+      break;
+    }
+    case 0x7569fdba: {
+      sldrThis.unknown_0x7569fdba = input.ReadFloat();
+      break;
+    }
+    case 0xd55938d2: {
+      sldrThis.sfxFallOff = input.ReadFloat();
+      break;
+    }
+    case 0x7b71ae90: {
+      LoadTypedefDamageVulnerability(sldrThis.vulnerability, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrUnknownStruct34 {
   SLdrUnknownStruct34();
@@ -63,7 +177,111 @@ struct SLdrUnknownStruct34 {
   bool allowLockOn; // 0x98d21b22
 };
 
-void LoadTypedefSLdrUnknownStruct34(SLdrUnknownStruct34& data, CInputStream& input);
+inline SLdrUnknownStruct34::SLdrUnknownStruct34() : health(), damage(), explosion(kInvalidAssetId), effect(kInvalidAssetId), trail(kInvalidAssetId) {
+  damage.unknown_0x119fbd31 = 9;
+  damage.dI_Damage = 5.0f;
+  damage.dI_KnockBackPower = 1.0f;
+  mass = 4.0f;
+  unknown_0x417f4a91 = 0.5f;
+  minLaunchSpeed = 15.0f;
+  maxLaunchSpeed = 20.0f;
+  numBounces = 5;
+  sound_Bounce = 0;
+  sound_Explode = 0;
+  maxTurnAngle = 30.0f;
+  unknown_0x47f99fbc = 2.0f;
+  minGeneration = 0;
+  maxGeneration = 3;
+  unknown_0xfbf8ea0a = 40.0f;
+  allowLockOn = true;
+}
+
+inline SLdrUnknownStruct34::~SLdrUnknownStruct34() {}
+
+inline void LoadTypedefUnknownStruct34(SLdrUnknownStruct34& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xcf90d15e: {
+      LoadTypedefHealthInfo(sldrThis.health, input);
+      break;
+    }
+    case 0x337f9524: {
+      LoadTypedefDamageInfo(sldrThis.damage, input);
+      break;
+    }
+    case 0xd8c6d15c: {
+      sldrThis.explosion = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xb68c6d96: {
+      sldrThis.effect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0xcb0b919b: {
+      sldrThis.trail = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x75dbb375: {
+      sldrThis.mass = input.ReadFloat();
+      break;
+    }
+    case 0x417f4a91: {
+      sldrThis.unknown_0x417f4a91 = input.ReadFloat();
+      break;
+    }
+    case 0x50a19b1f: {
+      sldrThis.minLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xf7951b66: {
+      sldrThis.maxLaunchSpeed = input.ReadFloat();
+      break;
+    }
+    case 0xfbcdb101: {
+      sldrThis.numBounces = input.ReadInt32();
+      break;
+    }
+    case 0x6758bf01: {
+      sldrThis.sound_Bounce = input.ReadInt32();
+      break;
+    }
+    case 0x524a8073: {
+      sldrThis.sound_Explode = input.ReadInt32();
+      break;
+    }
+    case 0x50e46527: {
+      sldrThis.maxTurnAngle = input.ReadFloat();
+      break;
+    }
+    case 0x47f99fbc: {
+      sldrThis.unknown_0x47f99fbc = input.ReadFloat();
+      break;
+    }
+    case 0xdc5af41e: {
+      sldrThis.minGeneration = input.ReadInt32();
+      break;
+    }
+    case 0x8da34f43: {
+      sldrThis.maxGeneration = input.ReadInt32();
+      break;
+    }
+    case 0xfbf8ea0a: {
+      sldrThis.unknown_0xfbf8ea0a = input.ReadFloat();
+      break;
+    }
+    case 0x98d21b22: {
+      sldrThis.allowLockOn = input.ReadBool();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrMinorIng {
   SLdrMinorIng();
@@ -91,6 +309,29 @@ struct SLdrMinorIng {
   SLdrUnknownStruct34 unknown_0x3da35851; // 0x3da35851
 };
 
-void LoadTypedefSLdrMinorIng(SLdrMinorIng& data, CInputStream& input);
+inline SLdrMinorIng::SLdrMinorIng() : editorProperties(), patterned(), actorInformation(), projectileDamage(), projectile(kInvalidAssetId), ingSpot(), unknown_0x3da35851() {
+  patterned.minAttackRange = 4.5f;
+  patterned.maxAttackRange = 30.0f;
+  patterned.averageAttackTime = 3.0f;
+  patterned.collisionHeight = 4.0f;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  projectileDamage.dI_KnockBackPower = 3.0f;
+  unknown_0xa03e450c = 20.0f;
+  attackAngleLimit = 90.0f;
+  lineOfSightHeightOffset = 2.0f;
+  unknown_0xd6c8eac2 = 7.0f;
+  unknown_0x2a5449ba = 7.0f;
+  hearingRadius = 50.0f;
+  allowProjectileDuringAttackPattern = false;
+  unknown_0xbce16644 = false;
+  unknown_0x142433d3 = false;
+  stayOnPointPathFinding = false;
+  allowProjectileDuringStayOnPointPathFinding = false;
+  unknown_0x09207f51 = false;
+  allowPuddleLockOn = false;
+}
+
+inline SLdrMinorIng::~SLdrMinorIng() {}
 
 #endif

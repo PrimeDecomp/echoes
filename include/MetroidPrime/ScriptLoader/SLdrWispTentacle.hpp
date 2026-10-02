@@ -25,6 +25,18 @@ struct SLdrWispTentacle {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-void LoadTypedefSLdrWispTentacle(SLdrWispTentacle& data, CInputStream& input);
+inline SLdrWispTentacle::SLdrWispTentacle() : editorProperties(), attackDamage(), patterned(), actorInformation() {
+  wakeUpDistance = 30.0f;
+  searchDistance = 20.0f;
+  attackDistance = 10.0f;
+  detectionHeight = 0.0f;
+  attackDamage.unknown_0x119fbd31 = 9;
+  attackDamage.dI_Damage = 5.0f;
+  spawnFromPortal = false;
+  hurtSleepDelay = 2.0f;
+  grabBlendTime = 0.2f;
+}
+
+inline SLdrWispTentacle::~SLdrWispTentacle() {}
 
 #endif

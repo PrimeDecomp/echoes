@@ -37,6 +37,21 @@ struct SLdrEyeBall {
   float dropOff; // 0x08bf2e54
 };
 
-void LoadTypedefSLdrEyeBall(SLdrEyeBall& data, CInputStream& input);
+inline SLdrEyeBall::SLdrEyeBall() : editorProperties(), patterned(), actorInformation(), projectile(kInvalidAssetId), rayDamage(), plasmaBurn(kInvalidAssetId), plasmaPulse(kInvalidAssetId), plasmaTexture(kInvalidAssetId), plasmaGlow(kInvalidAssetId), laserInnerColor(CColor::Green()), laserOuterColor(CColor::Green()) {
+  closeTime = 3.0f;
+  fireWaitTime = 3.0f;
+  laserInnerColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  laserOuterColor = CColor(0.0f, 1.0f, 0.0f, 1.0f);
+  unknown_0x81d14be8 = -1;
+  unknown_0x6e1320d6 = -1;
+  unknown_0x85249bd5 = -1;
+  unknown_0x6ae6f0eb = -1;
+  laserSound = 0;
+  shouldBeTriggered = false;
+  maxAudibleDistance = 50.0f;
+  dropOff = 0.2f;
+}
+
+inline SLdrEyeBall::~SLdrEyeBall() {}
 
 #endif

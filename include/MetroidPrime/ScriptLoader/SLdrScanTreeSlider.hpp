@@ -17,6 +17,9 @@ struct SLdrScanTreeSlider {
   int unknown_0x0261a4e0; // 0x0261a4e0
 };
 
-void LoadTypedefSLdrScanTreeSlider(SLdrScanTreeSlider& data, CInputStream& input);
+inline SLdrScanTreeSlider::SLdrScanTreeSlider() : editorProperties(), nodeName(kInvalidAssetId), stringName(), unknown_0x0261a4e0() {
+}
+
+inline SLdrScanTreeSlider::~SLdrScanTreeSlider() {}
 
 #endif

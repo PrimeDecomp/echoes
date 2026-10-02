@@ -16,6 +16,11 @@ struct SLdrPointOfInterest {
   bool lookAtPOI; // non-matching name, 0x01f9c5bb
 };
 
-void LoadTypedefSLdrPointOfInterest(SLdrPointOfInterest& data, CInputStream& input);
+inline SLdrPointOfInterest::SLdrPointOfInterest() : editorProperties(), scanInfo() {
+  scanOffset = 1.5f;
+  lookAtPOI = false;
+}
+
+inline SLdrPointOfInterest::~SLdrPointOfInterest() {}
 
 #endif

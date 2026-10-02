@@ -28,7 +28,7 @@ struct SLdrTweakGuiColors_HUDColorsTypedef {
   CColor textShadowOutlineColor; // 0x0daa7d80
 };
 
-void LoadTypedefSLdrTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColorsTypedef& data, CInputStream& input);
+void LoadTypedefTweakGuiColors_HUDColorsTypedef(SLdrTweakGuiColors_HUDColorsTypedef& data, CInputStream& input);
 
 struct SLdrTweakGuiColors_Misc {
   SLdrTweakGuiColors_Misc();
@@ -215,7 +215,7 @@ struct SLdrTweakGuiColors_Misc {
   CColor darkAmmoEmptyTankWarningColor; // 0xea4347bc
 };
 
-void LoadTypedefSLdrTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& data, CInputStream& input);
+void LoadTypedefTweakGuiColors_Misc(SLdrTweakGuiColors_Misc& data, CInputStream& input);
 
 struct SLdrTweakGuiColors_Multiplayer {
   SLdrTweakGuiColors_Multiplayer();
@@ -233,7 +233,7 @@ struct SLdrTweakGuiColors_Multiplayer {
   CColor lockonIndicatorOffColor; // 0x4c215775
 };
 
-void LoadTypedefSLdrTweakGuiColors_Multiplayer(SLdrTweakGuiColors_Multiplayer& data, CInputStream& input);
+void LoadTypedefTweakGuiColors_Multiplayer(SLdrTweakGuiColors_Multiplayer& data, CInputStream& input);
 
 struct SLdrTweakGui_VisorColorSchemeTypedef {
   SLdrTweakGui_VisorColorSchemeTypedef();
@@ -243,7 +243,7 @@ struct SLdrTweakGui_VisorColorSchemeTypedef {
   CColor glassTint; // 0x9da5d1d7
 };
 
-void LoadTypedefSLdrTweakGui_VisorColorSchemeTypedef(SLdrTweakGui_VisorColorSchemeTypedef& data, CInputStream& input);
+void LoadTypedefTweakGui_VisorColorSchemeTypedef(SLdrTweakGui_VisorColorSchemeTypedef& data, CInputStream& input);
 
 struct SLdrTweakGui_HudColorTypedef {
   SLdrTweakGui_HudColorTypedef();
@@ -261,7 +261,7 @@ struct SLdrTweakGui_HudColorTypedef {
   CColor primaryEnergyTankFilledColor; // 0xc2a8ccc6
 };
 
-void LoadTypedefSLdrTweakGui_HudColorTypedef(SLdrTweakGui_HudColorTypedef& data, CInputStream& input);
+void LoadTypedefTweakGui_HudColorTypedef(SLdrTweakGui_HudColorTypedef& data, CInputStream& input);
 
 struct SLdrTweakGuiColors_TurretHudTypedef {
   SLdrTweakGuiColors_TurretHudTypedef();
@@ -275,7 +275,7 @@ struct SLdrTweakGuiColors_TurretHudTypedef {
   CColor energyBarEmptyColor; // 0x37e381c2
 };
 
-void LoadTypedefSLdrTweakGuiColors_TurretHudTypedef(SLdrTweakGuiColors_TurretHudTypedef& data, CInputStream& input);
+void LoadTypedefTweakGuiColors_TurretHudTypedef(SLdrTweakGuiColors_TurretHudTypedef& data, CInputStream& input);
 
 struct SLdrTweakGuiColors {
   SLdrTweakGuiColors();
@@ -298,6 +298,6 @@ struct SLdrTweakGuiColors {
   SLdrTweakGuiColors_TurretHudTypedef turretHud; // 0xde139081
 };
 
-void LoadTypedefSLdrTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input);
+void LoadTypedefTweakGuiColors(SLdrTweakGuiColors& data, CInputStream& input);
 
 #endif

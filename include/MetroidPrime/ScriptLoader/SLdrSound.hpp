@@ -13,7 +13,33 @@ struct SLdrSurroundPan {
   float surroundPan; // 0x482b88aa
 };
 
-void LoadTypedefSLdrSurroundPan(SLdrSurroundPan& data, CInputStream& input);
+inline SLdrSurroundPan::SLdrSurroundPan() {
+  pan = 0.0f;
+  surroundPan = 0.0f;
+}
+
+inline SLdrSurroundPan::~SLdrSurroundPan() {}
+
+inline void LoadTypedefSurroundPan(SLdrSurroundPan& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xdf4353a3: {
+      sldrThis.pan = input.ReadFloat();
+      break;
+    }
+    case 0x482b88aa: {
+      sldrThis.surroundPan = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrSound {
   SLdrSound();
@@ -42,6 +68,28 @@ struct SLdrSound {
   int echoVisorMaxVolume; // 0x69ec9107
 };
 
-void LoadTypedefSLdrSound(SLdrSound& data, CInputStream& input);
+inline SLdrSound::SLdrSound() : editorProperties(), surroundPan() {
+  sound = 0;
+  maxAudibleDistance = 50.0f;
+  dropOff = 0.2f;
+  delayTime = 0.0f;
+  minVolume = 20;
+  maxVolume = 127;
+  priority = 127;
+  loop = false;
+  ambient = false;
+  viewportDependent = false;
+  autoStart = false;
+  canOcclude = false;
+  useRoomAcoustics = true;
+  persistent = false;
+  playAlways = false;
+  allArea = false;
+  soundIsMusic = false;
+  pitch = 0;
+  echoVisorMaxVolume = 0;
+}
+
+inline SLdrSound::~SLdrSound() {}
 
 #endif

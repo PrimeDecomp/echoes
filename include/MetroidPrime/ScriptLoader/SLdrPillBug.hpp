@@ -33,6 +33,23 @@ struct SLdrPillBug {
   float unknown_0xcf4ea141; // 0xcf4ea141
 };
 
-void LoadTypedefSLdrPillBug(SLdrPillBug& data, CInputStream& input);
+inline SLdrPillBug::SLdrPillBug() : editorProperties(), patterned(), actorInformation(), damageVulnerability(), wanderVulnerability() {
+  planarConstraint = 0;
+  floorTurnSpeed = 120.0f;
+  stickRadius = 0.2f;
+  waypointApproachDistance = 1.5f;
+  visibleDistance = 200.0f;
+  crawlRadius = 0.34999999f;
+  rollRadius = 0.5f;
+  unknown_0x519c7197 = 0.5f;
+  collisionLookAheadTime = 0.02f;
+  forwardPriority = 0.30000001f;
+  unknown_0x558c0692 = 0.60000002f;
+  unknown_0x0f991bf1 = 1.5f;
+  unknown_0x385a1bed = 0.60000002f;
+  unknown_0xcf4ea141 = 1.5f;
+}
+
+inline SLdrPillBug::~SLdrPillBug() {}
 
 #endif

@@ -28,7 +28,7 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
 #endif
 };
 
-void LoadTypedefSLdrTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& data, CInputStream& input);
+void LoadTypedefTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& data, CInputStream& input);
 
 struct SLdrTweakPlayerRes_MapScreenIcons {
   SLdrTweakPlayerRes_MapScreenIcons();
@@ -68,7 +68,7 @@ struct SLdrTweakPlayerRes_MapScreenIcons {
   rstl::string yButtonIn; // 0xc81690cb
 };
 
-void LoadTypedefSLdrTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& data, CInputStream& input);
+void LoadTypedefTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& data, CInputStream& input);
 
 struct SLdrTGunResources {
   SLdrTGunResources();
@@ -81,7 +81,7 @@ struct SLdrTGunResources {
   rstl::string phazon_Beam; // 0xa3890335
 };
 
-void LoadTypedefSLdrTGunResources(SLdrTGunResources& data, CInputStream& input);
+void LoadTypedefTGunResources(SLdrTGunResources& data, CInputStream& input);
 
 struct SLdrTBallTransitionResources {
   SLdrTBallTransitionResources();
@@ -97,7 +97,7 @@ struct SLdrTBallTransitionResources {
   SLdrSpline movementControl; // 0x9183a262
 };
 
-void LoadTypedefSLdrTBallTransitionResources(SLdrTBallTransitionResources& data, CInputStream& input);
+void LoadTypedefTBallTransitionResources(SLdrTBallTransitionResources& data, CInputStream& input);
 
 struct SLdrTweakPlayerRes {
   SLdrTweakPlayerRes();
@@ -111,6 +111,6 @@ struct SLdrTweakPlayerRes {
   float unknown_0x36ad9d19; // 0x36ad9d19
 };
 
-void LoadTypedefSLdrTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input);
+void LoadTypedefTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input);
 
 #endif

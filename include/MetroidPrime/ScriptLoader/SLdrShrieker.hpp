@@ -45,6 +45,43 @@ struct SLdrShrieker {
   float visibilityChangeTime; // 0x3d689edd
 };
 
-void LoadTypedefSLdrShrieker(SLdrShrieker& data, CInputStream& input);
+inline SLdrShrieker::SLdrShrieker() : editorProperties(), patterned(), actorInformation(), buriedVulnerability(), damageInfo(), pART(kInvalidAssetId), projectileDamage(), projectile(kInvalidAssetId), meleeDamage(), meleeEffect(kInvalidAssetId), missileDeflectionOffset(CVector3f::Zero()) {
+  patterned.minAttackRange = 4.5f;
+  patterned.maxAttackRange = 30.0f;
+  patterned.averageAttackTime = 3.0f;
+  patterned.collisionHeight = 4.0f;
+  patterned.creatureSize = 1;
+  hostileAccumulatePriority = 0.1f;
+  damageInfo.unknown_0x119fbd31 = 11;
+  damageInfo.dI_Damage = 10.0f;
+  damageInfo.dI_Radius = 4.5f;
+  damageInfo.dI_KnockBackPower = 4.0f;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 5.0f;
+  projectileDamage.dI_KnockBackPower = 3.0f;
+  combatVisorMaxVolume = 50;
+  echoVisorMaxVolume = 100;
+  meleeDamage.unknown_0x119fbd31 = 11;
+  meleeDamage.dI_Damage = 10.0f;
+  meleeDamage.dI_Radius = 4.5f;
+  meleeDamage.dI_KnockBackPower = 4.0f;
+  meleeAverageAttackTime = 1.0f;
+  meleeAttackTimeVariation = 0.1f;
+  meleeRange = 4.0f;
+  hoverHeight = 0.0f;
+  missileDeflectionOffset = CVector3f(0.0f, 0.0f, -1.5f);
+  missileDeflectionRadius = 15.0f;
+  missileDeflectRate = 1.0f;
+  sound_MissileDeflection = 0;
+  dodgeTime = 3.0f;
+  dodgePercentage = 20.0f;
+  detectionHeight = 5.0f;
+  rustleDetectionRadius = 15.0f;
+  popDetectionRadius = 10.0f;
+  morphballDetectionRadius = 5.0f;
+  visibilityChangeTime = 0.5f;
+}
+
+inline SLdrShrieker::~SLdrShrieker() {}
 
 #endif

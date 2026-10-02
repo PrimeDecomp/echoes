@@ -21,6 +21,6 @@ struct SLdrShockWaveInfo {
   int sound_VisorElectric; // 0x58a492ef
 };
 
-void LoadTypedefSLdrShockWaveInfo(SLdrShockWaveInfo& data, CInputStream& input);
+void LoadTypedefShockWaveInfo(SLdrShockWaveInfo& data, CInputStream& input);
 
 #endif

@@ -17,6 +17,12 @@ struct SLdrMidi {
   int volume; // 0x80c66c37
 };
 
-void LoadTypedefSLdrMidi(SLdrMidi& data, CInputStream& input);
+inline SLdrMidi::SLdrMidi() : editorProperties(), songFile(kInvalidAssetId) {
+  fadeInTime = 0.0f;
+  fadeOutTime = 0.0f;
+  volume = 127;
+}
+
+inline SLdrMidi::~SLdrMidi() {}
 
 #endif

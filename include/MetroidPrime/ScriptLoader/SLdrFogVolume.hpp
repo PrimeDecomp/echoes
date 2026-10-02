@@ -16,6 +16,13 @@ struct SLdrFogVolume {
   CColor fogColor; // 0xe578c0dd
 };
 
-void LoadTypedefSLdrFogVolume(SLdrFogVolume& data, CInputStream& input);
+inline SLdrFogVolume::SLdrFogVolume() : editorProperties(), fogColor(CColor::Green()) {
+  editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
+  fogBobHeight = 0.0f;
+  fogBobFreq = 1.0f;
+  fogColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+inline SLdrFogVolume::~SLdrFogVolume() {}
 
 #endif

@@ -14,6 +14,11 @@ struct SLdrMemoryRelay {
   bool delayedAction; // 0xa905ccf0
 };
 
-void LoadTypedefSLdrMemoryRelay(SLdrMemoryRelay& data, CInputStream& input);
+inline SLdrMemoryRelay::SLdrMemoryRelay() : editorProperties() {
+  oneShot = false;
+  delayedAction = false;
+}
+
+inline SLdrMemoryRelay::~SLdrMemoryRelay() {}
 
 #endif

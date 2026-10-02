@@ -65,6 +65,62 @@ struct SLdrRoomAcoustics {
   float phaserSweep; // 0xd5388116
 };
 
-void LoadTypedefSLdrRoomAcoustics(SLdrRoomAcoustics& data, CInputStream& input);
+inline SLdrRoomAcoustics::SLdrRoomAcoustics() : editorProperties() {
+  roomVolume = 117;
+  priority = 1;
+  reverbHiEnabled = false;
+  unknown_0x3263c26e = false;
+  reverbHiTime = 0.0f;
+  reverbHiPreDelay = 0.0f;
+  reverbHiDamping = 0.0f;
+  reverbHiColoration = 0.0f;
+  reverbHiCrossTalk = 0.0f;
+  reverbHiMix = 0.0f;
+  chorusEnabled = false;
+  chorusBaseDelay = 0.0f;
+  chorusVariation = 0.0f;
+  chorusPeriod = 0.0f;
+  reverbStdEnabled = false;
+  unknown_0x4a5bbf90 = false;
+  reverbStdTime = 0.0f;
+  reverbStdPreDelay = 0.0f;
+  reverbStdDamping = 0.0f;
+  reverbStdColoration = 0.0f;
+  reverbStdMix = 0.0f;
+  delayEnabled = false;
+  delay0 = 0;
+  delay1 = 0;
+  delay2 = 0;
+  delayFeedback0 = 0;
+  delayFeedback1 = 0;
+  delayFeedback2 = 0;
+  delayOutput0 = 0;
+  delayOutput1 = 0;
+  delayOutput2 = 0;
+  delayLowPassFilter = 32000;
+  delayHighPassFilter = 0;
+  flangerEnabled = false;
+  flangerDelay = 0.0f;
+  flangerDelayPhase = 0.0f;
+  flangerDry = 0.0f;
+  flangerFeedback = 0.0f;
+  flangerLFODepth = 0.0f;
+  flangerLFOFrequency = 0.0f;
+  flangerLFOWave = 0.0f;
+  flangerOut = 0.0f;
+  bitcrusherEnabled = false;
+  unknown_0xf51a1d6a = 0;
+  bitcrusherGain = 0.0f;
+  bitcrusherBitDepth = 0;
+  bitcrusherSampleRateReduction = 1.0f;
+  phaserEnabled = false;
+  phaserFrequency = 0.0f;
+  phaserFeedback = 0.0f;
+  phaserInvert = 0.0f;
+  phaserMix = 0.0f;
+  phaserSweep = 200.0f;
+}
+
+inline SLdrRoomAcoustics::~SLdrRoomAcoustics() {}
 
 #endif

@@ -16,6 +16,13 @@ struct SLdrRandomRelay {
   bool isRandomChance; // 0xef7b9826
 };
 
-void LoadTypedefSLdrRandomRelay(SLdrRandomRelay& data, CInputStream& input);
+inline SLdrRandomRelay::SLdrRandomRelay() : editorProperties() {
+  count = 1;
+  randomAdjust = 0;
+  percentCount = false;
+  isRandomChance = false;
+}
+
+inline SLdrRandomRelay::~SLdrRandomRelay() {}
 
 #endif

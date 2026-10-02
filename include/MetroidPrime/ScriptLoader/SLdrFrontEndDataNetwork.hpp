@@ -41,6 +41,28 @@ struct SLdrFrontEndDataNetwork {
   int rotationSoundVolume; // 0x4da90d36
 };
 
-void LoadTypedefSLdrFrontEndDataNetwork(SLdrFrontEndDataNetwork& data, CInputStream& input);
+inline SLdrFrontEndDataNetwork::SLdrFrontEndDataNetwork() : editorProperties(), hotDotTexture(kInvalidAssetId), hotDotHaloTexture(kInvalidAssetId), hotDotAButtonTexture(kInvalidAssetId), selectedColor(CColor::Green()), unselectedMinColor(CColor::Green()), unselectedMaxColor(CColor::Green()), disabledColor(CColor::Green()), transitionShrinkSpline(), transitionMoveSpline(), transitionExpandSpline(), transitionMoveInSpline() {
+  isRoot = false;
+  unknown_0x77f59f4a = false;
+  unknown_0x29c0cb7f = true;
+  canBeSelected = true;
+  isProxy = false;
+  isLocked = false;
+  unknown_0x8b8fa0fe = true;
+  unknown_0xd0f2d612 = false;
+  connectionRadius = 8.0f;
+  selectedColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  unselectedMinColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.74901998f);
+  unselectedMaxColor = CColor(0.80000001f, 0.80000001f, 0.80000001f, 1.0f);
+  disabledColor = CColor(0.247059f, 0.247059f, 0.247059f, 1.0f);
+  rotationSound = 0;
+  transitionShrinkTime = 0.75f;
+  transitionMoveTime = 0.75f;
+  transitionExpandTime = 0.75f;
+  transitionMoveInTime = 0.75f;
+  rotationSoundVolume = 127;
+}
+
+inline SLdrFrontEndDataNetwork::~SLdrFrontEndDataNetwork() {}
 
 #endif

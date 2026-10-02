@@ -27,6 +27,16 @@ struct SLdrGunTurretTop {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-void LoadTypedefSLdrGunTurretTop(SLdrGunTurretTop& data, CInputStream& input);
+inline SLdrGunTurretTop::SLdrGunTurretTop() : editorProperties(), pART(kInvalidAssetId), pART_0xaf6e671a(kInvalidAssetId), lightColor(CColor::Green()), patterned(), actorInformation() {
+  powerUpTime = 0.5f;
+  powerDownTime = 0.5f;
+  alwaysFF = -1;
+  alwaysFF_0x68d8b844 = -1;
+  lightColor = CColor(1.0f, 1.0f, 1.0f, 0.0f);
+  sound = 0;
+  sound_0x5d9ed447 = 0;
+}
+
+inline SLdrGunTurretTop::~SLdrGunTurretTop() {}
 
 #endif

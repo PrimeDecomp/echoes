@@ -41,6 +41,44 @@ struct SLdrKrocuss {
   float maxAudibleDistance; // 0x214e48a0
 };
 
-void LoadTypedefSLdrKrocuss(SLdrKrocuss& data, CInputStream& input);
+inline SLdrKrocuss::SLdrKrocuss() : editorProperties(), patterned(), actorInformation(), shellClosedVulnerability(), wingLightColor(CColor::Green()), dPSC(kInvalidAssetId) {
+  flavor = 0;
+  patterned.mass = 25.0f;
+  patterned.speed = 3.0f;
+  patterned.turnSpeed = 720.0f;
+  patterned.detectionRange = 5.0f;
+  patterned.detectionHeightRange = 5.0f;
+  patterned.detectionAngle = 90.0f;
+  patterned.minAttackRange = 4.0f;
+  patterned.maxAttackRange = 20.0f;
+  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_Damage = 10.0f;
+  patterned.contactDamage.dI_KnockBackPower = 5.0f;
+  patterned.damageWaitTime = 3.0f;
+  patterned.collisionRadius = 0.2f;
+  patterned.collisionHeight = 5.0f;
+  patterned.unknown_0xe287d8dd = 0.0f;
+  waypointApproachDistance = 2.5f;
+  visibleDistance = 2.5f;
+  wallTurnSpeed = 360.0f;
+  floorTurnSpeed = 180.0f;
+  downTurnSpeed = 120.0f;
+  stickyReach = 0.40000001f;
+  projectileBoundsMultiplier = 1.0f;
+  collisionLookAhead = 0.02f;
+  animSpeedScalar = 1.0f;
+  initiallyPaused = false;
+  timeShellClosed = 1.0f;
+  timeToOpenShell = 1.0f;
+  timeShellOpen = 1.0f;
+  timeToCloseShell = 1.0f;
+  unknown_0xbbebed9e = 1.0f;
+  wingLightColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
+  shellOpenSound = 0;
+  shellCloseSound = 0;
+  maxAudibleDistance = 50.0f;
+}
+
+inline SLdrKrocuss::~SLdrKrocuss() {}
 
 #endif

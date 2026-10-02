@@ -11,6 +11,6 @@ struct SLdrCommand {
   int unknown_0x94ba5737; // 0x94ba5737
 };
 
-void LoadTypedefSLdrCommand(SLdrCommand& data, CInputStream& input);
+void LoadTypedefCommand(SLdrCommand& data, CInputStream& input);
 
 #endif

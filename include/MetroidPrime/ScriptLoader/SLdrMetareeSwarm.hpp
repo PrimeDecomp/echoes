@@ -4,7 +4,7 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrBasicSwarmProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 
@@ -14,7 +14,7 @@ struct SLdrMetareeSwarm {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   bool active; // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
   int intoAttackAnimation; // 0x7399abbb
@@ -24,6 +24,15 @@ struct SLdrMetareeSwarm {
   float attackSpeed; // 0x6c0a2bc8
 };
 
-void LoadTypedefSLdrMetareeSwarm(SLdrMetareeSwarm& data, CInputStream& input);
+inline SLdrMetareeSwarm::SLdrMetareeSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties() {
+  active = true;
+  intoAttackAnimation = -1;
+  attackAnimation = -1;
+  maxAttackAngle = 30.0f;
+  intoAttackSpeed = 1.0f;
+  attackSpeed = 1.0f;
+}
+
+inline SLdrMetareeSwarm::~SLdrMetareeSwarm() {}
 
 #endif

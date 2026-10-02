@@ -31,6 +31,6 @@ struct SLdrActorParameters {
   int maxEchoVolume; // 0xba2600d7
 };
 
-void LoadTypedefSLdrActorParameters(SLdrActorParameters& data, CInputStream& input);
+void LoadTypedefActorParameters(SLdrActorParameters& data, CInputStream& input);
 
 #endif

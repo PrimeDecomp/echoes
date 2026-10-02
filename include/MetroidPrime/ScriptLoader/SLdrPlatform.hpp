@@ -7,7 +7,7 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrHealthInfo.hpp"
@@ -27,7 +27,58 @@ struct SLdrPlatformMotionProperties {
   SLdrSpline pitchControlSpline; // 0xb4a2e15a
 };
 
-void LoadTypedefSLdrPlatformMotionProperties(SLdrPlatformMotionProperties& data, CInputStream& input);
+inline SLdrPlatformMotionProperties::SLdrPlatformMotionProperties() : motionSplineType(), motionControlSpline(), rollControlSpline(), yawControlSpline(), pitchControlSpline() {
+  motionSplineDuration = 10.0f;
+  initialTime = 0.0f;
+  motionFlagsPlatformMotion = 0x00000120u;
+}
+
+inline SLdrPlatformMotionProperties::~SLdrPlatformMotionProperties() {}
+
+inline void LoadTypedefPlatformMotionProperties(SLdrPlatformMotionProperties& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x493d6a2d: {
+      LoadTypedefSplineType(sldrThis.motionSplineType, input);
+      break;
+    }
+    case 0x27e5f874: {
+      sldrThis.motionControlSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0xfd1e2f56: {
+      sldrThis.motionSplineDuration = input.ReadFloat();
+      break;
+    }
+    case 0xa5753d52: {
+      sldrThis.initialTime = input.ReadFloat();
+      break;
+    }
+    case 0xae80628f: {
+      sldrThis.motionFlagsPlatformMotion = uint(input.ReadInt32());
+      break;
+    }
+    case 0x628bdf0f: {
+      sldrThis.rollControlSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0x78d03a32: {
+      sldrThis.yawControlSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    case 0xb4a2e15a: {
+      sldrThis.pitchControlSpline = SLdrSpline(input, propertySize);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrPlatform {
   SLdrPlatform();
@@ -37,7 +88,7 @@ struct SLdrPlatform {
   CVector3f collisionBox; // 0xf344c0b0
   CVector3f collisionOffset; // 0x2e686c2a
   CAssetId model; // 0xc27ffa8f
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   CAssetId collisionModel; // 0x0fc966dc
   SLdrHealthInfo health; // 0xcf90d15e
@@ -52,6 +103,16 @@ struct SLdrPlatform {
   float randomAnimationOffset; // 0xbf69c03e
 };
 
-void LoadTypedefSLdrPlatform(SLdrPlatform& data, CInputStream& input);
+inline SLdrPlatform::SLdrPlatform() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), model(kInvalidAssetId), animationInformation(), actorInformation(), collisionModel(kInvalidAssetId), health(), vulnerability(), motionProperties(), conveyorBeltVelocity(CVector3f::Zero()) {
+  xRayTransparency = 1.0f;
+  maximumSplashes = 200;
+  splashGenerationRate = 20;
+  renderRainSplashes = false;
+  unknown_0xf203bc81 = false;
+  conveyorBeltVelocity = CVector3f(0.0f, 0.15000001f, 0.0f);
+  randomAnimationOffset = 0.0f;
+}
+
+inline SLdrPlatform::~SLdrPlatform() {}
 
 #endif

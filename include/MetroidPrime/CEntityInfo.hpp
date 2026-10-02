@@ -206,6 +206,6 @@ public:
 };
 
 struct SLdrEditorProperties;
-const CEntityInfo& LdrToEntityInfo(const CEntityInfo&, const SLdrEditorProperties&);
+CEntityInfo& LdrToEntityInfo(CEntityInfo&, const SLdrEditorProperties&);
 
 #endif // _CENTITYINFO

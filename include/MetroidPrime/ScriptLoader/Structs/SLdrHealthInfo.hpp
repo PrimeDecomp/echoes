@@ -12,6 +12,6 @@ struct SLdrHealthInfo {
   float hI_KnockBackResistance; // 0x3a2d17e4
 };
 
-void LoadTypedefSLdrHealthInfo(SLdrHealthInfo& data, CInputStream& input);
+void LoadTypedefHealthInfo(SLdrHealthInfo& data, CInputStream& input);
 
 #endif

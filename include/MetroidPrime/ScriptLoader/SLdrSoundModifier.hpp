@@ -20,6 +20,12 @@ struct SLdrSoundModifier {
   SLdrSpline pitch; // 0x0e727fc4
 };
 
-void LoadTypedefSLdrSoundModifier(SLdrSoundModifier& data, CInputStream& input);
+inline SLdrSoundModifier::SLdrSoundModifier() : editorProperties(), volume(), pan(), surroundPan(), pitch() {
+  time = 5.0f;
+  autoReset = false;
+  autoStart = false;
+}
+
+inline SLdrSoundModifier::~SLdrSoundModifier() {}
 
 #endif

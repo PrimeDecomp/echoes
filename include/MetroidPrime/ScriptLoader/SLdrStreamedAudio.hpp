@@ -20,6 +20,15 @@ struct SLdrStreamedAudio {
   bool softwareIsMusic; // 0xd3356fe7
 };
 
-void LoadTypedefSLdrStreamedAudio(SLdrStreamedAudio& data, CInputStream& input);
+inline SLdrStreamedAudio::SLdrStreamedAudio() : editorProperties(), songFile() {
+  defaultAudio = false;
+  fadeInTime = 0.25f;
+  fadeOutTime = 0.25f;
+  volume = 127;
+  softwareChannel = 0;
+  softwareIsMusic = true;
+}
+
+inline SLdrStreamedAudio::~SLdrStreamedAudio() {}
 
 #endif

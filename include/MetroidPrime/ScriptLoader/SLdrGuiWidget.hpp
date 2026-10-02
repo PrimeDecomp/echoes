@@ -15,6 +15,11 @@ struct SLdrGuiWidget {
   int controllerNumber; // 0xdb7f4aa2
 };
 
-void LoadTypedefSLdrGuiWidget(SLdrGuiWidget& data, CInputStream& input);
+inline SLdrGuiWidget::SLdrGuiWidget() : editorProperties(), widgetProperties() {
+  editorProperties.active = false;
+  controllerNumber = 1;
+}
+
+inline SLdrGuiWidget::~SLdrGuiWidget() {}
 
 #endif

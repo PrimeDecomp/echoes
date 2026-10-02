@@ -44,6 +44,19 @@ struct SLdrSafeZoneCrystal {
   SLdrSpline unknown_0xbbbee60b; // 0xbbbee60b
 };
 
-void LoadTypedefSLdrSafeZoneCrystal(SLdrSafeZoneCrystal& data, CInputStream& input);
+inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal() : editorProperties(), actorParameters(), scannableInfoCollapsed(kInvalidAssetId), scannableInfoEntangled(kInvalidAssetId), scannableInfoLight(kInvalidAssetId), scannableInfoAnnihilator(kInvalidAssetId), collapsedEffect(kInvalidAssetId), expandedEffect(kInvalidAssetId), entangledEffect(kInvalidAssetId), hurtfulEffect(kInvalidAssetId), echoEffect(kInvalidAssetId), normalCrystal(kInvalidAssetId), entangledCrystal(kInvalidAssetId), hurtfulCrystal(kInvalidAssetId), echoCrystal(kInvalidAssetId), powerBeamRefreshEffect(kInvalidAssetId), hitRadius(CVector3f::Zero()), hitOffset(CVector3f::Zero()), effectOffset(CVector3f::Zero()), unknown_0xbbbee60b() {
+  safezoneType = 0;
+  initiallyEntangled = false;
+  maxTimeExpanded = 5.0f;
+  maxTimeEntangled = 5.0f;
+  unknown_0xf0a45c32 = 5.0f;
+  unknown_0xd8116003 = 5.0f;
+  unknown_0x415046ed = 3.0f;
+  unknown_0xec9c01b2 = 1.0f;
+  powerBeamHP = 5.0f;
+  hitRadius = CVector3f(1.0f, 1.0f, 1.0f);
+}
+
+inline SLdrSafeZoneCrystal::~SLdrSafeZoneCrystal() {}
 
 #endif

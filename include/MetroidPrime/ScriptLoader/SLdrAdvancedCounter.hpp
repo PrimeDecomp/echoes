@@ -25,6 +25,22 @@ struct SLdrAdvancedCounter {
   int counterCondition10; // 0x9215e813
 };
 
-void LoadTypedefSLdrAdvancedCounter(SLdrAdvancedCounter& data, CInputStream& input);
+inline SLdrAdvancedCounter::SLdrAdvancedCounter() : editorProperties() {
+  initial_Count = 0;
+  max_Count = 10;
+  autoReset = false;
+  counterCondition1 = 1;
+  counterCondition2 = 2;
+  counterCondition3 = 3;
+  counterCondition4 = 4;
+  counterCondition5 = 5;
+  counterCondition6 = 6;
+  counterCondition7 = 7;
+  counterCondition8 = 8;
+  counterCondition9 = 9;
+  counterCondition10 = 10;
+}
+
+inline SLdrAdvancedCounter::~SLdrAdvancedCounter() {}
 
 #endif

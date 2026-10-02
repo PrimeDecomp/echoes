@@ -32,6 +32,26 @@ struct SLdrLumite {
   int phaseOutSound; // 0x3aaf7871
 };
 
-void LoadTypedefSLdrLumite(SLdrLumite& data, CInputStream& input);
+inline SLdrLumite::SLdrLumite() : editorProperties(), patterned(), actorInformation(), smallShotProjectile(kInvalidAssetId), smallShotDamage(), bigShotProjectile(kInvalidAssetId), bigShotDamage(), trailEffect(kInvalidAssetId), sunlightEnterExitEffect(kInvalidAssetId) {
+  patterned.leashRadius = 100.0f;
+  patterned.collisionRadius = 0.1f;
+  patterned.collisionHeight = 0.1f;
+  patterned.stepUpHeight = 1.0f;
+  patterned.creatureSize = 1;
+  smallShotMinRange = 8.0f;
+  smallShotMaxRange = 30.0f;
+  smallShotDamage.unknown_0x119fbd31 = 11;
+  smallShotDamage.dI_Damage = 5.0f;
+  bigShotMinRange = 8.0f;
+  bigShotMaxRange = 30.0f;
+  bigShotDamage.unknown_0x119fbd31 = 11;
+  bigShotDamage.dI_Damage = 5.0f;
+  minHopDistance = 5.0f;
+  maxHopDistance = 45.0f;
+  phaseInSound = 0;
+  phaseOutSound = 0;
+}
+
+inline SLdrLumite::~SLdrLumite() {}
 
 #endif

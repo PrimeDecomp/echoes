@@ -174,7 +174,7 @@ struct SLdrTweakGui_Misc {
   CColor unknown_0x98d8e1ba; // 0x98d8e1ba
 };
 
-void LoadTypedefSLdrTweakGui_Misc(SLdrTweakGui_Misc& data, CInputStream& input);
+void LoadTypedefTweakGui_Misc(SLdrTweakGui_Misc& data, CInputStream& input);
 
 struct SLdrTweakGui_ScannableObjectDownloadTimes {
   SLdrTweakGui_ScannableObjectDownloadTimes();
@@ -184,7 +184,7 @@ struct SLdrTweakGui_ScannableObjectDownloadTimes {
   float slow; // 0xb1338beb
 };
 
-void LoadTypedefSLdrTweakGui_ScannableObjectDownloadTimes(SLdrTweakGui_ScannableObjectDownloadTimes& data, CInputStream& input);
+void LoadTypedefTweakGui_ScannableObjectDownloadTimes(SLdrTweakGui_ScannableObjectDownloadTimes& data, CInputStream& input);
 
 struct SLdrTweakGui_DarkWorld {
   SLdrTweakGui_DarkWorld();
@@ -200,7 +200,7 @@ struct SLdrTweakGui_DarkWorld {
   int darkVisorFrameWidth; // 0x2773fbb3
 };
 
-void LoadTypedefSLdrTweakGui_DarkWorld(SLdrTweakGui_DarkWorld& data, CInputStream& input);
+void LoadTypedefTweakGui_DarkWorld(SLdrTweakGui_DarkWorld& data, CInputStream& input);
 
 struct SLdrTweakGui_EchoVisor {
   SLdrTweakGui_EchoVisor();
@@ -222,7 +222,7 @@ struct SLdrTweakGui_EchoVisor {
   float echoAuraBigSize; // 0x51f19dea
 };
 
-void LoadTypedefSLdrTweakGui_EchoVisor(SLdrTweakGui_EchoVisor& data, CInputStream& input);
+void LoadTypedefTweakGui_EchoVisor(SLdrTweakGui_EchoVisor& data, CInputStream& input);
 
 struct SLdrTweakGui_ScanVisor {
   SLdrTweakGui_ScanVisor();
@@ -246,7 +246,7 @@ struct SLdrTweakGui_ScanVisor {
   float fadeOutTime; // 0x7c269ebc
 };
 
-void LoadTypedefSLdrTweakGui_ScanVisor(SLdrTweakGui_ScanVisor& data, CInputStream& input);
+void LoadTypedefTweakGui_ScanVisor(SLdrTweakGui_ScanVisor& data, CInputStream& input);
 
 struct SLdrTweakGui_LogBook {
   SLdrTweakGui_LogBook();
@@ -328,7 +328,7 @@ struct SLdrTweakGui_LogBook {
   CColor modelAmbientLightColor; // 0x62ff6d72
 };
 
-void LoadTypedefSLdrTweakGui_LogBook(SLdrTweakGui_LogBook& data, CInputStream& input);
+void LoadTypedefTweakGui_LogBook(SLdrTweakGui_LogBook& data, CInputStream& input);
 
 struct SLdrTweakGui_Credits {
   SLdrTweakGui_Credits();
@@ -344,7 +344,7 @@ struct SLdrTweakGui_Credits {
   float movieFadeTime; // 0xf0f977e6
 };
 
-void LoadTypedefSLdrTweakGui_Credits(SLdrTweakGui_Credits& data, CInputStream& input);
+void LoadTypedefTweakGui_Credits(SLdrTweakGui_Credits& data, CInputStream& input);
 
 struct SLdrTweakGui_Completion {
   SLdrTweakGui_Completion();
@@ -364,7 +364,7 @@ struct SLdrTweakGui_Completion {
   float textStartDelay; // 0x2955d055
 };
 
-void LoadTypedefSLdrTweakGui_Completion(SLdrTweakGui_Completion& data, CInputStream& input);
+void LoadTypedefTweakGui_Completion(SLdrTweakGui_Completion& data, CInputStream& input);
 
 struct SLdrTweakGui_MovieVolumes {
   SLdrTweakGui_MovieVolumes();
@@ -380,7 +380,7 @@ struct SLdrTweakGui_MovieVolumes {
   int unknown_0xf38093f5; // 0xf38093f5
 };
 
-void LoadTypedefSLdrTweakGui_MovieVolumes(SLdrTweakGui_MovieVolumes& data, CInputStream& input);
+void LoadTypedefTweakGui_MovieVolumes(SLdrTweakGui_MovieVolumes& data, CInputStream& input);
 
 struct SLdrTweakGui {
   SLdrTweakGui();
@@ -398,6 +398,6 @@ struct SLdrTweakGui {
   SLdrTweakGui_MovieVolumes movieVolumes; // 0xa4f61e92
 };
 
-void LoadTypedefSLdrTweakGui(SLdrTweakGui& data, CInputStream& input);
+void LoadTypedefTweakGui(SLdrTweakGui& data, CInputStream& input);
 
 #endif

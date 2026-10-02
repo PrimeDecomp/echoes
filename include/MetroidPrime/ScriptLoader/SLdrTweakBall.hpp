@@ -61,7 +61,7 @@ struct SLdrTweakBall_Movement {
   float leanTrackingGain; // 0xb90a721e
 };
 
-void LoadTypedefSLdrTweakBall_Movement(SLdrTweakBall_Movement& data, CInputStream& input);
+void LoadTypedefTweakBall_Movement(SLdrTweakBall_Movement& data, CInputStream& input);
 
 struct SLdrTweakBall_Camera {
   SLdrTweakBall_Camera();
@@ -116,7 +116,7 @@ struct SLdrTweakBall_Camera {
   float unknown_0x50f77df0; // 0x50f77df0
 };
 
-void LoadTypedefSLdrTweakBall_Camera(SLdrTweakBall_Camera& data, CInputStream& input);
+void LoadTypedefTweakBall_Camera(SLdrTweakBall_Camera& data, CInputStream& input);
 
 struct SLdrTweakBall_Misc {
   SLdrTweakBall_Misc();
@@ -131,7 +131,7 @@ struct SLdrTweakBall_Misc {
   float darkWorldLightRadiusLightSuit; // 0xb0575d4e
 };
 
-void LoadTypedefSLdrTweakBall_Misc(SLdrTweakBall_Misc& data, CInputStream& input);
+void LoadTypedefTweakBall_Misc(SLdrTweakBall_Misc& data, CInputStream& input);
 
 struct SLdrTweakBall_BoostBall {
   SLdrTweakBall_BoostBall();
@@ -153,7 +153,7 @@ struct SLdrTweakBall_BoostBall {
   float boostBallHitPlayerFPKnockBackSpeed; // 0x340be92f
 };
 
-void LoadTypedefSLdrTweakBall_BoostBall(SLdrTweakBall_BoostBall& data, CInputStream& input);
+void LoadTypedefTweakBall_BoostBall(SLdrTweakBall_BoostBall& data, CInputStream& input);
 
 struct SLdrTweakBall_CannonBall {
   SLdrTweakBall_CannonBall();
@@ -162,7 +162,7 @@ struct SLdrTweakBall_CannonBall {
   SLdrTDamageInfo cannonBallDamage; // 0xd51d8d71
 };
 
-void LoadTypedefSLdrTweakBall_CannonBall(SLdrTweakBall_CannonBall& data, CInputStream& input);
+void LoadTypedefTweakBall_CannonBall(SLdrTweakBall_CannonBall& data, CInputStream& input);
 
 struct SLdrTweakBall_ScrewAttack {
   SLdrTweakBall_ScrewAttack();
@@ -184,7 +184,7 @@ struct SLdrTweakBall_ScrewAttack {
   SLdrTDamageInfo screwAttackDamage; // 0xb372ecab
 };
 
-void LoadTypedefSLdrTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& data, CInputStream& input);
+void LoadTypedefTweakBall_ScrewAttack(SLdrTweakBall_ScrewAttack& data, CInputStream& input);
 
 struct SLdrTweakBall_DeathBall {
   SLdrTweakBall_DeathBall();
@@ -194,7 +194,7 @@ struct SLdrTweakBall_DeathBall {
   SLdrTDamageInfo deathBallDamage; // 0xccccef24
 };
 
-void LoadTypedefSLdrTweakBall_DeathBall(SLdrTweakBall_DeathBall& data, CInputStream& input);
+void LoadTypedefTweakBall_DeathBall(SLdrTweakBall_DeathBall& data, CInputStream& input);
 
 struct SLdrTweakBall {
   SLdrTweakBall();
@@ -210,6 +210,6 @@ struct SLdrTweakBall {
   SLdrTweakBall_DeathBall deathBall; // 0xbb5fc8a4
 };
 
-void LoadTypedefSLdrTweakBall(SLdrTweakBall& data, CInputStream& input);
+void LoadTypedefTweakBall(SLdrTweakBall& data, CInputStream& input);
 
 #endif

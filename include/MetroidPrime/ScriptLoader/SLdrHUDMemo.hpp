@@ -23,6 +23,18 @@ struct SLdrHUDMemo {
   CAssetId string; // 0x9182250c
 };
 
-void LoadTypedefSLdrHUDMemo(SLdrHUDMemo& data, CInputStream& input);
+inline SLdrHUDMemo::SLdrHUDMemo() : editorProperties(), string(kInvalidAssetId) {
+  displayTime = 3.0f;
+  clearWindow = true;
+  player1 = true;
+  player2 = true;
+  player3 = true;
+  player4 = true;
+  typeOut = true;
+  useOriginator = false;
+  displayType = 0;
+}
+
+inline SLdrHUDMemo::~SLdrHUDMemo() {}
 
 #endif

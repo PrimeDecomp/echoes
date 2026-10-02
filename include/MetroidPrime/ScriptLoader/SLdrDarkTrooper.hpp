@@ -35,6 +35,23 @@ struct SLdrDarkTrooper {
   CAssetId scannableInfoWhenAttacking; // 0x8b6f9b43
 };
 
-void LoadTypedefSLdrDarkTrooper(SLdrDarkTrooper& data, CInputStream& input);
+inline SLdrDarkTrooper::SLdrDarkTrooper() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), meleeAttackDamage(), rangedAttackDamage(), rangedAttackProjectile(kInvalidAssetId), missileProjectile(kInvalidAssetId), missileDamage(), scannableInfoWhenAttacking(kInvalidAssetId) {
+  patterned.leashRadius = 100.0f;
+  patterned.collisionRadius = 0.5f;
+  patterned.collisionHeight = 1.6f;
+  patterned.stepUpHeight = 1.0f;
+  patterned.creatureSize = 1;
+  flotsam = false;
+  avoidDownFrames = false;
+  meleeAttackMinRange = 0.0f;
+  meleeAttackMaxRange = 5.0f;
+  unknown_0x2dca199d = 1.0f;
+  rangedAttackMinRange = 5.0f;
+  rangedAttackMaxRange = 18.0f;
+  ragdollImpactSound = 0;
+  firesMissiles = false;
+}
+
+inline SLdrDarkTrooper::~SLdrDarkTrooper() {}
 
 #endif

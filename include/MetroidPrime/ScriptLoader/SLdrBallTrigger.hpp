@@ -21,6 +21,16 @@ struct SLdrBallTrigger {
   float boundsSizeMultiplier; // 0x2766636a
 };
 
-void LoadTypedefSLdrBallTrigger(SLdrBallTrigger& data, CInputStream& input);
+inline SLdrBallTrigger::SLdrBallTrigger() : editorProperties(), trigger(), attractionDirection(CVector3f::Zero()) {
+  editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
+  attractionForce = 20.0f;
+  attractionAngle = 60.0f;
+  attractionDistance = 20.0f;
+  attractionDirection = CVector3f(1.0f, 0.0f, 0.0f);
+  noBallMovement = false;
+  boundsSizeMultiplier = 1.0f;
+}
+
+inline SLdrBallTrigger::~SLdrBallTrigger() {}
 
 #endif

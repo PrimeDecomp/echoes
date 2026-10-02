@@ -21,6 +21,18 @@ struct SLdrTeamAI {
   float minTimeBetweenRangedAttacks; // 0x8d00b839
 };
 
-void LoadTypedefSLdrTeamAI(SLdrTeamAI& data, CInputStream& input);
+inline SLdrTeamAI::SLdrTeamAI() : editorProperties() {
+  maxTeamSize = 20;
+  maxMeleeAttackers = 2;
+  maxRangedAttackers = 2;
+  unknown_0x9fa9c457 = 30;
+  maxSimultaneousMeleeAttacks = 1;
+  maxSimultaneousRangedAttacks = 1;
+  teamFormation = 0;
+  minTimeBetweenMeleeAttacks = 0.0f;
+  minTimeBetweenRangedAttacks = 0.0f;
+}
+
+inline SLdrTeamAI::~SLdrTeamAI() {}
 
 #endif

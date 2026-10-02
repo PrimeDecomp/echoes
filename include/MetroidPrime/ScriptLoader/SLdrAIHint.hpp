@@ -17,6 +17,14 @@ struct SLdrAIHint {
   float valueParm3; // 0xe7cf7950
 };
 
-void LoadTypedefSLdrAIHint(SLdrAIHint& data, CInputStream& input);
+inline SLdrAIHint::SLdrAIHint() : editorProperties() {
+  hintType = 0;
+  radius = 0.0f;
+  valueParm = 0.0f;
+  valueParm2 = 0.0f;
+  valueParm3 = 0.0f;
+}
+
+inline SLdrAIHint::~SLdrAIHint() {}
 
 #endif

@@ -16,6 +16,6 @@ struct SLdrEchoParameters {
   float forcedMinimumVis; // 0xf87a15e7
 };
 
-void LoadTypedefSLdrEchoParameters(SLdrEchoParameters& data, CInputStream& input);
+void LoadTypedefEchoParameters(SLdrEchoParameters& data, CInputStream& input);
 
 #endif

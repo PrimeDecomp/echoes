@@ -5,7 +5,7 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationParameters.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageVulnerability.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrHealthInfo.hpp"
@@ -20,7 +20,7 @@ struct SLdrAmbientAI {
   float mass; // 0x75dbb375
   SLdrHealthInfo health; // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  SLdrAnimationParameters animationInformation; // 0xe25fb08c
+  SLdrAnimationSet animationInformation; // 0xe25fb08c
   SLdrActorParameters actorInformation; // 0x7e397fed
   float detectRadius; // 0xa7d00780
   float explodeRadius; // 0xd4d52631
@@ -28,6 +28,22 @@ struct SLdrAmbientAI {
   int animation_Damaged; // 0xed5f16ac
 };
 
-void LoadTypedefSLdrAmbientAI(SLdrAmbientAI& data, CInputStream& input);
+inline SLdrAmbientAI::SLdrAmbientAI() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), animationInformation(), actorInformation() {
+  mass = 1.0f;
+  vulnerability.power.effect = 0;
+  vulnerability.boostBall.effect = 0;
+  vulnerability.bomb.effect = 0;
+  vulnerability.powerBomb.effect = 0;
+  vulnerability.missile.effect = 0;
+  vulnerability.phazon.effect = 0;
+  vulnerability.powerCharge.effect = 0;
+  vulnerability.superMissle.effect = 0;
+  detectRadius = 7.0f;
+  explodeRadius = 1.5f;
+  animation_React = -1;
+  animation_Damaged = -1;
+}
+
+inline SLdrAmbientAI::~SLdrAmbientAI() {}
 
 #endif

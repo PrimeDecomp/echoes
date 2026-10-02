@@ -24,7 +24,44 @@ struct SLdrEmperorIngStage3DarkBeamAttackData {
   int beamSound; // 0xf6f185d6
 };
 
-void LoadTypedefSLdrEmperorIngStage3DarkBeamAttackData(SLdrEmperorIngStage3DarkBeamAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage3DarkBeamAttackData::SLdrEmperorIngStage3DarkBeamAttackData() : beamInfo(), damage() {
+  beamInfo.length = 500.0f;
+  beamInfo.expansionSpeed = 4.0f;
+  beamInfo.lifeTime = 1.0f;
+  beamInfo.pulseSpeed = 20.0f;
+  beamInfo.shutdownTime = 0.25f;
+  beamInfo.pulseEffectScale = 2.0f;
+  beamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  beamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+  beamSound = 0;
+}
+
+inline SLdrEmperorIngStage3DarkBeamAttackData::~SLdrEmperorIngStage3DarkBeamAttackData() {}
+
+inline void LoadTypedefEmperorIngStage3DarkBeamAttackData(SLdrEmperorIngStage3DarkBeamAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x1598012a: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.beamInfo, input);
+      break;
+    }
+    case 0x337f9524: {
+      LoadTypedefDamageInfo(sldrThis.damage, input);
+      break;
+    }
+    case 0xf6f185d6: {
+      sldrThis.beamSound = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage3PortalAttackData {
   SLdrEmperorIngStage3PortalAttackData();
@@ -36,7 +73,51 @@ struct SLdrEmperorIngStage3PortalAttackData {
   SLdrPlasmaBeamInfo beamInfo; // 0x1598012a
 };
 
-void LoadTypedefSLdrEmperorIngStage3PortalAttackData(SLdrEmperorIngStage3PortalAttackData& data, CInputStream& input);
+inline SLdrEmperorIngStage3PortalAttackData::SLdrEmperorIngStage3PortalAttackData() : effect(kInvalidAssetId), projectileDamage(), beamInfo() {
+  portalOpenSound = 0;
+  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_Damage = 20.0f;
+  projectileDamage.dI_KnockBackPower = 10.0f;
+  beamInfo.length = 500.0f;
+  beamInfo.expansionSpeed = 4.0f;
+  beamInfo.lifeTime = 1.0f;
+  beamInfo.pulseSpeed = 20.0f;
+  beamInfo.shutdownTime = 0.25f;
+  beamInfo.pulseEffectScale = 2.0f;
+  beamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  beamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+}
+
+inline SLdrEmperorIngStage3PortalAttackData::~SLdrEmperorIngStage3PortalAttackData() {}
+
+inline void LoadTypedefEmperorIngStage3PortalAttackData(SLdrEmperorIngStage3PortalAttackData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xb68c6d96: {
+      sldrThis.effect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x1a66bed7: {
+      sldrThis.portalOpenSound = input.ReadInt32();
+      break;
+    }
+    case 0x553b1339: {
+      LoadTypedefDamageInfo(sldrThis.projectileDamage, input);
+      break;
+    }
+    case 0x1598012a: {
+      LoadTypedefPlasmaBeamInfo(sldrThis.beamInfo, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage3Action {
   SLdrEmperorIngStage3Action();
@@ -47,7 +128,38 @@ struct SLdrEmperorIngStage3Action {
   float modifier; // 0xed2d546f
 };
 
-void LoadTypedefSLdrEmperorIngStage3Action(SLdrEmperorIngStage3Action& data, CInputStream& input);
+inline SLdrEmperorIngStage3Action::SLdrEmperorIngStage3Action() {
+  enabled = false;
+  chance = 0.0f;
+  modifier = 0.0f;
+}
+
+inline SLdrEmperorIngStage3Action::~SLdrEmperorIngStage3Action() {}
+
+inline void LoadTypedefEmperorIngStage3Action(SLdrEmperorIngStage3Action& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x29c77d27: {
+      sldrThis.enabled = input.ReadBool();
+      break;
+    }
+    case 0x7a7b330e: {
+      sldrThis.chance = input.ReadFloat();
+      break;
+    }
+    case 0xed2d546f: {
+      sldrThis.modifier = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage3Stage {
   SLdrEmperorIngStage3Stage();
@@ -66,7 +178,70 @@ struct SLdrEmperorIngStage3Stage {
   SLdrEmperorIngStage3Action jumpAttack; // 0xe2e78a78
 };
 
-void LoadTypedefSLdrEmperorIngStage3Stage(SLdrEmperorIngStage3Stage& data, CInputStream& input);
+inline SLdrEmperorIngStage3Stage::SLdrEmperorIngStage3Stage() : stampede(), jumpSlide(), lightSwarm(), darkBeam(), lightBeam(), portalAttack(), darkFlier(), jumpAttack() {
+  minHealthPercentage = 0.0f;
+  minTimeBetweenAttacks = 0.0f;
+  maxTimeBetweenAttacks = 0.0f;
+}
+
+inline SLdrEmperorIngStage3Stage::~SLdrEmperorIngStage3Stage() {}
+
+inline void LoadTypedefEmperorIngStage3Stage(SLdrEmperorIngStage3Stage& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xdfea46b3: {
+      sldrThis.minHealthPercentage = input.ReadFloat();
+      break;
+    }
+    case 0x95e7a2c2: {
+      sldrThis.minTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x76ba1c18: {
+      sldrThis.maxTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x3826ec75: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.stampede, input);
+      break;
+    }
+    case 0x93bf1106: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.jumpSlide, input);
+      break;
+    }
+    case 0xc4b88b80: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.lightSwarm, input);
+      break;
+    }
+    case 0x32c6dc77: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.darkBeam, input);
+      break;
+    }
+    case 0xc6e7b293: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.lightBeam, input);
+      break;
+    }
+    case 0x20746b56: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.portalAttack, input);
+      break;
+    }
+    case 0x2ab44adb: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.darkFlier, input);
+      break;
+    }
+    case 0xe2e78a78: {
+      LoadTypedefEmperorIngStage3Action(sldrThis.jumpAttack, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage3Data {
   SLdrEmperorIngStage3Data();
@@ -99,7 +274,127 @@ struct SLdrEmperorIngStage3Data {
   SLdrEmperorIngStage3Stage stage4; // 0xa3cab6bf
 };
 
-void LoadTypedefSLdrEmperorIngStage3Data(SLdrEmperorIngStage3Data& data, CInputStream& input);
+inline SLdrEmperorIngStage3Data::SLdrEmperorIngStage3Data() : yellowHealth(), health(), redVulnerability(), lightVulnerability(), darkVulnerability(), meleeDamage(), stampedeDamage(), jumpSlideDamage(), groundPoundDamage(), darkBeamAttack(), lightBeamAttack(), lightSwarmEffect(kInvalidAssetId), lightSwarmProperties(), lightSwarmDeathSound(), audioPlaybackParms(), portalAttack(), jumpAttackShockWaveInfo(), stage1(), stage2(), stage3(), stage4() {
+  tauntFrequency = 0.0f;
+  vulnerableTime = 0.0f;
+  vulnerableDamageThreshold = 0.0f;
+  sound = 0;
+}
+
+inline SLdrEmperorIngStage3Data::~SLdrEmperorIngStage3Data() {}
+
+inline void LoadTypedefEmperorIngStage3Data(SLdrEmperorIngStage3Data& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x293a0c19: {
+      sldrThis.tauntFrequency = input.ReadFloat();
+      break;
+    }
+    case 0x8a3f760c: {
+      LoadTypedefHealthInfo(sldrThis.yellowHealth, input);
+      break;
+    }
+    case 0xcf90d15e: {
+      LoadTypedefHealthInfo(sldrThis.health, input);
+      break;
+    }
+    case 0x69bc5cd4: {
+      sldrThis.vulnerableTime = input.ReadFloat();
+      break;
+    }
+    case 0xb110e539: {
+      sldrThis.vulnerableDamageThreshold = input.ReadFloat();
+      break;
+    }
+    case 0x8d70d67a: {
+      LoadTypedefDamageVulnerability(sldrThis.redVulnerability, input);
+      break;
+    }
+    case 0x89c142f7: {
+      LoadTypedefDamageVulnerability(sldrThis.lightVulnerability, input);
+      break;
+    }
+    case 0x8855c118: {
+      LoadTypedefDamageVulnerability(sldrThis.darkVulnerability, input);
+      break;
+    }
+    case 0xc9416034: {
+      LoadTypedefDamageInfo(sldrThis.meleeDamage, input);
+      break;
+    }
+    case 0x1440d152: {
+      LoadTypedefDamageInfo(sldrThis.stampedeDamage, input);
+      break;
+    }
+    case 0xef582bd6: {
+      LoadTypedefDamageInfo(sldrThis.jumpSlideDamage, input);
+      break;
+    }
+    case 0x4738c321: {
+      LoadTypedefDamageInfo(sldrThis.groundPoundDamage, input);
+      break;
+    }
+    case 0x98e311c1: {
+      LoadTypedefEmperorIngStage3DarkBeamAttackData(sldrThis.darkBeamAttack, input);
+      break;
+    }
+    case 0x93dae216: {
+      LoadTypedefEmperorIngStage3DarkBeamAttackData(sldrThis.lightBeamAttack, input);
+      break;
+    }
+    case 0x4f82b9e5: {
+      sldrThis.lightSwarmEffect = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x043e9c2e: {
+      LoadTypedefBasicSwarmProperties(sldrThis.lightSwarmProperties, input);
+      break;
+    }
+    case 0x91001508: {
+      LoadTypedefAudioPlaybackParms(sldrThis.lightSwarmDeathSound, input);
+      break;
+    }
+    case 0x03552953: {
+      LoadTypedefAudioPlaybackParms(sldrThis.audioPlaybackParms, input);
+      break;
+    }
+    case 0xaf7e3033: {
+      LoadTypedefEmperorIngStage3PortalAttackData(sldrThis.portalAttack, input);
+      break;
+    }
+    case 0xab4ed456: {
+      LoadTypedefShockWaveInfo(sldrThis.jumpAttackShockWaveInfo, input);
+      break;
+    }
+    case 0x985f72fd: {
+      sldrThis.sound = input.ReadInt32();
+      break;
+    }
+    case 0xe843417f: {
+      LoadTypedefEmperorIngStage3Stage(sldrThis.stage1, input);
+      break;
+    }
+    case 0xd13bec3f: {
+      LoadTypedefEmperorIngStage3Stage(sldrThis.stage2, input);
+      break;
+    }
+    case 0xc61388ff: {
+      LoadTypedefEmperorIngStage3Stage(sldrThis.stage3, input);
+      break;
+    }
+    case 0xa3cab6bf: {
+      LoadTypedefEmperorIngStage3Stage(sldrThis.stage4, input);
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrEmperorIngStage3 {
   SLdrEmperorIngStage3();
@@ -111,6 +406,10 @@ struct SLdrEmperorIngStage3 {
   SLdrEmperorIngStage3Data data; // 0x30de1a5b
 };
 
-void LoadTypedefSLdrEmperorIngStage3(SLdrEmperorIngStage3& data, CInputStream& input);
+inline SLdrEmperorIngStage3::SLdrEmperorIngStage3() : editorProperties(), patterned(), actorInformation(), data() {
+  patterned.creatureSize = 2;
+}
+
+inline SLdrEmperorIngStage3::~SLdrEmperorIngStage3() {}
 
 #endif

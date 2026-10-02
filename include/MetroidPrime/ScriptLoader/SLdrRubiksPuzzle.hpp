@@ -14,7 +14,32 @@ struct SLdrRubiksPuzzleData {
   CAssetId stateMachine; // 0x55744160
 };
 
-void LoadTypedefSLdrRubiksPuzzleData(SLdrRubiksPuzzleData& data, CInputStream& input);
+inline SLdrRubiksPuzzleData::SLdrRubiksPuzzleData() : stateMachine(kInvalidAssetId) {
+  rotationSpeed = 90.0f;
+}
+
+inline SLdrRubiksPuzzleData::~SLdrRubiksPuzzleData() {}
+
+inline void LoadTypedefRubiksPuzzleData(SLdrRubiksPuzzleData& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x11cd076f: {
+      sldrThis.rotationSpeed = input.ReadFloat();
+      break;
+    }
+    case 0x55744160: {
+      sldrThis.stateMachine = CAssetId(input.ReadInt32());
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
 
 struct SLdrRubiksPuzzle {
   SLdrRubiksPuzzle();
@@ -24,6 +49,9 @@ struct SLdrRubiksPuzzle {
   SLdrRubiksPuzzleData rubiksPuzzleProperties; // 0x9fcd4e38
 };
 
-void LoadTypedefSLdrRubiksPuzzle(SLdrRubiksPuzzle& data, CInputStream& input);
+inline SLdrRubiksPuzzle::SLdrRubiksPuzzle() : editorProperties(), rubiksPuzzleProperties() {
+}
+
+inline SLdrRubiksPuzzle::~SLdrRubiksPuzzle() {}
 
 #endif

@@ -87,6 +87,81 @@ struct SLdrIng {
   SLdrDamageVulnerability triggerVulnerability; // 0x23399d21
 };
 
-void LoadTypedefSLdrIng(SLdrIng& data, CInputStream& input);
+inline SLdrIng::SLdrIng() : editorProperties(), patterned(), actorInformation(), facePlateModel(kInvalidAssetId), ingSpotBlobEffect(kInvalidAssetId), ingSpotHitNormalDamage(kInvalidAssetId), ingSpotHitHeavyDamage(kInvalidAssetId), ingSpotDeath(kInvalidAssetId), pART(kInvalidAssetId), sRSC(kInvalidAssetId), pART_0x3da219c7(kInvalidAssetId), pART_0x081e9e6c(kInvalidAssetId), armSwipeDamage(), bodyProjectileContactDamage(), bodyProjectileSplatEffect(kInvalidAssetId), miniPortalEffect(kInvalidAssetId), miniPortalProjectileDamage(), miniPortalBeamInfo(), exitGrappleDamage(), lightColor(CColor::Green()), ingSpotVulnerability(), grappleBallVulnerability(), triggerVulnerability() {
+  patterned.turnSpeed = 360.0f;
+  patterned.minAttackRange = 0.0f;
+  patterned.health.health = 150.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.creatureSize = 1;
+  ingFlagsIng = 0x00000000u;
+  hearingRadius = 50.0f;
+  ingSpotMaxSpeed = 15.0f;
+  ingSpotMaxWallSpeed = 7.0f;
+  ingSpotBallPursuitSpeed = 25.0f;
+  unknown_0x50398a06 = 25.0f;
+  ingSpotTurnSpeed = 360.0f;
+  sound_IngSpotIdle = 0;
+  sound_IngSpotMove = 0;
+  sound_HitNormalDamage = 0;
+  sound_HitHeavyDamage = 0;
+  sound_IngSpotDeath = 0;
+  unknown_0x23271976 = 0.34999999f;
+  unknown_0xcb39eccb = 15.0f;
+  unknown_0x587ca175 = 1.5f;
+  unknown_0x0bd7d5a9 = 1.5f;
+  sound_SwarmMove = 0;
+  sound_InsideHost = 0;
+  sound_ExitHost = 0;
+  sound_ExitHostSafeZone = 0;
+  sound = 0;
+  unknown_0x5d0d2c40 = 15.0f;
+  unknown_0xc620183a = 1.5f;
+  frustrationTime = 2.0f;
+  tauntChance = 25.0f;
+  aggressiveness = 10.0f;
+  armSwipeDamage.unknown_0x119fbd31 = 11;
+  armSwipeDamage.dI_Damage = 20.0f;
+  armSwipeDamage.dI_KnockBackPower = 10.0f;
+  bodyProjectileContactDamage.unknown_0x119fbd31 = 11;
+  bodyProjectileContactDamage.dI_Damage = 20.0f;
+  bodyProjectileContactDamage.dI_KnockBackPower = 5.0f;
+  unknown_0xa0d63374 = 20.0f;
+  bodyProjectileSuckTime = 5.0f;
+  bodyProjectileSpeed = 25.0f;
+  bodyProjectileDropTime = 2.0f;
+  bodyProjectileMinAttackDist = 20.0f;
+  bodyProjectileMaxAttackDist = 40.0f;
+  sound_BodyProjectile = 0;
+  sound_BodyProjectileSplatWall = 0;
+  bodyProjectileOdds = 70.0f;
+  miniPortalMinAttackDist = 40.0f;
+  miniPortalMaxAttackDist = 100.0f;
+  sound_MiniPortal = 0;
+  miniPortalProjectileDamage.unknown_0x119fbd31 = 11;
+  miniPortalProjectileDamage.dI_Damage = 20.0f;
+  miniPortalProjectileDamage.dI_KnockBackPower = 10.0f;
+  miniPortalBeamInfo.length = 500.0f;
+  miniPortalBeamInfo.expansionSpeed = 4.0f;
+  miniPortalBeamInfo.lifeTime = 1.0f;
+  miniPortalBeamInfo.pulseSpeed = 20.0f;
+  miniPortalBeamInfo.shutdownTime = 0.25f;
+  miniPortalBeamInfo.pulseEffectScale = 2.0f;
+  miniPortalBeamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
+  miniPortalBeamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
+  unknown_0x67f6c10e = 30.0f;
+  exitGrappleDamage.unknown_0x119fbd31 = 11;
+  exitGrappleDamage.dI_Damage = 10.0f;
+  exitGrappleDamage.dI_KnockBackPower = 1.0f;
+  exitGrappleSpitForce = 30.0f;
+  sound_Grapple = 0;
+  sound_ExitGrapple = 0;
+  maxGrappleBallHoldTime = 10.0f;
+  grappleBallPursuitRange = 20.0f;
+  postGrappleBallWaitTime = 10.0f;
+  lightColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  lightAttenuation = 5.0f;
+}
+
+inline SLdrIng::~SLdrIng() {}
 
 #endif
