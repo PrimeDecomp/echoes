@@ -18,6 +18,7 @@
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
+#include "Kyoto/Particles/CParticleSpawnSystemDataFactory.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
@@ -74,8 +75,6 @@ CFactoryFnReturn FParticleFactory(const SObjectTag&, CInputStream&, const CVPara
 CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag&, CInputStream&,
                                               const CVParamTransfer&);
 // Guessed names, supported by native resource tags and constructed/parsed types.
-CFactoryFnReturn FSpawnParticleSystemDataFactory(const SObjectTag&, CInputStream&,
-                                                 const CVParamTransfer&);
 CFactoryFnReturn FSortedParticleSystemDataFactory(const SObjectTag&, CInputStream&,
                                                   const CVParamTransfer&);
 CFactoryFnReturn FProjectileWeaponDataFactory(const SObjectTag&, CInputStream&,
