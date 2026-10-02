@@ -5,6 +5,7 @@
 
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/Animation/IAnimReader.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
@@ -33,22 +34,6 @@ class CTexture;
 class CPlayerState;
 struct SSkinningWorkspace;
 struct SModelDataMultipassContext;
-
-// TODO move
-#include "Kyoto/Math/CQuaternion.hpp"
-struct CAdvancementDeltas {
-public:
-  CAdvancementDeltas(const CVector3f& posDelta, const CQuaternion& rotDelta)
-  : mPosDelta(posDelta), mRotDelta(rotDelta) {}
-
-  const CVector3f& GetOffsetDelta() const { return mPosDelta; }
-  const CQuaternion& GetOrientationDelta() const { return mRotDelta; }
-
-private:
-  CVector3f mPosDelta;
-  CQuaternion mRotDelta;
-};
-CHECK_SIZEOF(CAdvancementDeltas, 0x1c)
 
 class CStaticRes {
   CAssetId mCmdlId;
