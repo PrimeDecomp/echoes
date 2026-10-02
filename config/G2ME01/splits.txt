@@ -835,6 +835,10 @@ MetroidPrime/CCollisionActor.cpp:
 	.sbss       start:0x804191B0 end:0x804191B8
 	.sdata2     start:0x8041C0C0 end:0x8041C0D0
 
+MetroidPrime/Enemies/CBurstFire.cpp:
+	.text       start:0x8013894C end:0x80138DB0
+	.sdata2     start:0x8041C0D0 end:0x8041C0F0
+
 MetroidPrime/Player/CPlayerEnergyDrain.cpp:
 	.text       start:0x80138DB0 end:0x801399A8
 	.sdata2     start:0x8041C0F0 end:0x8041C0F8
