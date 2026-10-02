@@ -6,9 +6,7 @@
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
-// Scaffold: layout, vtable and signatures from G2ME01 DOL 0x801E2334-0x801E2CB4 (vtable
-// 0x803B75A8), ctor at 0x801E2CB4. The class name is an original export
-// (GetOBBox__24CScriptTriggerOrientatedCFv in the Wii MP2 SEL). Method bodies are not ported.
+// Scaffold; evidence in Echoes research/CScriptSafeZone-CScriptTriggerOrientated-G2ME01.md.
 class CScriptTriggerOrientated : public CScriptTrigger {
 public:
   CScriptTriggerOrientated(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -34,7 +32,7 @@ private:
   CVector3f mScale;        // 0x1c8, half extents
   CVector3f mInverseScale; // 0x1d4
   CAABox mWorldBounds;     // 0x1e0, bounds of the oriented box transformed into world space
-  float x1f8_;             // Initialised to 0.0 by the constructor.
+  float x1f8_;
   uint x1fc_;
 };
 CHECK_SIZEOF(CScriptTriggerOrientated, 0x200)
