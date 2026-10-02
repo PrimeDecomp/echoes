@@ -492,6 +492,11 @@ MetroidPrime/BodyState/CBSLoopAttack.cpp:
 	.data       start:0x803B42C8 end:0x803B4308
 	.sdata2     start:0x8041B940 end:0x8041B958
 
+MetroidPrime/BodyState/CBSLoopReaction.cpp:
+	.text       start:0x800F88D4 end:0x800F90C0
+	.data       start:0x803B43A8 end:0x803B43E8
+	.sdata2     start:0x8041B970 end:0x8041B980
+
 MetroidPrime/CSteeringBehaviors.cpp:
 	.text       start:0x800F90C0 end:0x800FA754
 
@@ -545,6 +550,11 @@ MetroidPrime/Player/CScanDisplay.cpp:
 MetroidPrime/CBoneTracking.cpp:
 	.text       start:0x80117614 end:0x80118294
 	.sdata2     start:0x8041BC90 end:0x8041BCA8
+
+MetroidPrime/BodyState/CBSCover.cpp:
+	.text       start:0x801184E8 end:0x80118B08
+	.data       start:0x803B4D38 end:0x803B4D78
+	.sdata2     start:0x8041BCB8 end:0x8041BCC8
 
 MetroidPrime/Weapons/CPlasmaProjectile.cpp:
 	.text       start:0x80119598 end:0x8011BFA8

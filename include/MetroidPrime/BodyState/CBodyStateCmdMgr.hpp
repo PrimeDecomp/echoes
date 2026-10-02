@@ -2,6 +2,7 @@
 #define _CBODYSTATECMDMGR
 
 #include "Kyoto/Animation/CharacterCommon.hpp"
+#include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/reserved_vector.hpp"
@@ -135,6 +136,8 @@ public:
   explicit CBCLoopReactionCmd(pas::EReactionType type)
   : CBodyStateCmd(kBSC_LoopReaction), mType(type) {}
 
+  pas::EReactionType GetReactionType() const { return mType; }
+
 private:
   pas::EReactionType mType;
 };
@@ -144,6 +147,8 @@ class CBCLoopHitReactionCmd : public CBodyStateCmd {
 public:
   explicit CBCLoopHitReactionCmd(pas::EReactionType type)
   : CBodyStateCmd(kBSC_LoopHitReaction), mType(type) {}
+
+  pas::EReactionType GetReactionType() const { return mType; }
 
 private:
   pas::EReactionType mType;
@@ -303,6 +308,12 @@ class CBCCoverCmd : public CBodyStateCmd {
 public:
   CBCCoverCmd(pas::ECoverDirection dir, const CVector3f& target, const CVector3f& alignDir)
   : CBodyStateCmd(kBSC_Cover), mDir(dir), mTargetPos(target), mAlignDir(alignDir) {}
+
+  pas::ECoverDirection GetDirection() const { return mDir; }
+  const CVector3f& GetTarget() const { return mTargetPos; }
+  const CUnitVector3f GetAlignDirection() const {
+    return CUnitVector3f(mAlignDir, CUnitVector3f::kN_No);
+  }
 
 private:
   pas::ECoverDirection mDir;

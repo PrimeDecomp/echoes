@@ -8,7 +8,7 @@ public:
   CBSCover();
 
   // CBodyState
-  ~CBSCover() override;
+  ~CBSCover() override {}
   bool IsMoving() const override;
   bool ApplyHeadTracking() const override;
   bool CanShoot() const override;
@@ -16,10 +16,15 @@ public:
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
   void Shutdown(CBodyController& bc) override;
 
+  pas::ECoverDirection GetCoverDirection() const { return mCoverDirection; }
+  bool GetNeedsExit() const { return mNeedsExit; }
+
 private:
   pas::ECoverState mState;
   pas::ECoverDirection mCoverDirection;
   bool mNeedsExit;
+
+  pas::EAnimationState GetBodyStateTransition(float dt, CBodyController& bc);
 };
 CHECK_SIZEOF(CBSCover, 0x10)
 
