@@ -497,6 +497,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CSimpleShadow.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CActorParameters.cpp"),
             Object(NonMatching, "MetroidPrime/CWorldShadow.cpp"),
+            Object(Matching, "MetroidPrime/CAudioStateWin.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRepulsor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSound.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlatform.cpp"),
