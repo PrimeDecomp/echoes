@@ -1447,6 +1447,13 @@ MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.cpp:
 	.data       start:0x803B75A8 end:0x803B7640
 	.sdata2     start:0x8041D400 end:0x8041D410
 
+MetroidPrime/ScriptObjects/CScriptAreaDamage.cpp:
+	.text       start:0x801E2E30 end:0x801E3A34
+	.rodata     start:0x803AB188 end:0x803AB190
+	.data       start:0x803B7640 end:0x803B7660
+	.sdata      start:0x804186F8 end:0x80418700
+	.sdata2     start:0x8041D410 end:0x8041D418
+
 MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
