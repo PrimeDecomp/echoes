@@ -38,6 +38,11 @@ private:
 CHECK_SIZEOF(CPlayerBodyStateCmd, 0x8)
 
 class CPBCLocomotionCmd : public CPlayerBodyStateCmd {
+public:
+  const CVector3f& GetMovement() const { return mMovement; }
+
+  const CVector3f& GetFacing() const { return mFacing; }
+
 private:
   CVector3f mMovement;
   CVector3f mFacing;
@@ -63,6 +68,9 @@ private:
 };
 
 class CPBCJumpCmd : public CPlayerBodyStateCmd {
+public:
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mAnimationVariant;
   // Guessed name; copied auxiliary parameter observed as 0 or 4, use unresolved.
@@ -132,6 +140,8 @@ CHECK_SIZEOF(CPBCAdditiveReactionCmd, 0x10)
 
 class CPlayerBodyStateCmdMgr {
 public:
+  const CPlayerBodyStateCmd* GetCmd(EPlayerBodyStateCmd command) const;
+
   void DeliverCmd(const CPlayerBodyStateCmd& command);
   void DeliverCmd(const CPBCKnockBackCmd& command) {
     DeliverCmd(command.GetCommandId());
