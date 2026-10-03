@@ -6,31 +6,35 @@
 #include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.hpp"
 
 class CScriptSequenceTimer : public CEntity {
-private:
-
 public:
-  CScriptSequenceTimer(TUniqueId, const rstl::string&, const CEntityInfo&, const rstl::vector< SLdrConnection >& connections, float startTime, float maxTime, float loopStartTime, bool isAutostart, bool isLoop, bool takeExternalTime);
-  ~CScriptSequenceTimer();
+  CScriptSequenceTimer(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                       const rstl::vector< SLdrConnection >& connections, float startTime,
+                       float maxTime, float loopStartTime, bool autoStart, bool loop,
+                       bool takeExternalTime);
+
+  // CEntity
+  ~CScriptSequenceTimer() override;
   CEntity* TypesMatch(int typeId) const override;
-
   void Think(float dt, CStateManager& mgr) override;
-  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&) override;
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
-  void fn_801e1c1c(float f, CStateManager& mgr);
-
-  void SetCurrentTime(float);
-  void fn_801e1af8(float f, CStateManager& mgr);
+  void SetCurrentTime(float time); // Guessed name
+  void ReceiveExternalTime(CStateManager& mgr, float time);
 
 private:
-  float m_startTime;  // 0x24
-  float m_currentTime;  // 0x28
-  float m_maxTime;  // 0x2c
-  float m_loopStartTime;  // 0x30
-  bool m_isAutostart : 1;
-  bool m_isLoop : 1;
-  bool m_takeExternalTime : 1;
-  rstl::vector< SLdrConnection > m_connections;
-  CScriptMsg m_scriptMsg; // 0x48
+  void ApplyTime(float time, CStateManager& mgr); // Guessed name
+
+  // Guessed field names, derived from initialization and schedule playback.
+  float mStartTime;
+  float mCurrentTime;
+  float mMaxTime;
+  float mLoopStartTime;
+  bool mRunning : 1;
+  bool mLoop : 1;
+  bool mTakeExternalTime : 1;
+  rstl::vector< SLdrConnection > mConnections;
+  CScriptMsg mStartMessage;
 };
+CHECK_SIZEOF(CScriptSequenceTimer, 0x58)
 
 #endif // _CSCRIPTSEQUENCETIMER
