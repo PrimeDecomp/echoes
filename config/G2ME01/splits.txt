@@ -1557,6 +1557,22 @@ MetroidPrime/ScriptObjects/CScriptTextPane.cpp:
 	.data       start:0x803B7C18 end:0x803B7C98
 	.sdata2     start:0x8041D6B8 end:0x8041D6E8
 
+MetroidPrime/Enemies/CSpacePirate.cpp:
+	.text       start:0x80200DAC end:0x80200E44
+	.sbss       start:0x80419358 end:0x80419360
+
+MetroidPrime/Enemies/CKralee.cpp:
+	.text       start:0x80200E44 end:0x80200E78
+	.sbss       start:0x80419360 end:0x80419368
+
+MetroidPrime/Enemies/CParasite.cpp:
+	.text       start:0x80200E78 end:0x80200F04
+	.sbss       start:0x80419368 end:0x80419370
+
+MetroidPrime/Enemies/CPillBug.cpp:
+	.text       start:0x80200F04 end:0x80200F38
+	.sbss       start:0x80419370 end:0x80419378
+
 MetroidPrime/Weapons/CBouncingBomb.cpp:
 	.text       start:0x80200F38 end:0x80201F4C
 	.rodata     start:0x803AC588 end:0x803AC598
