@@ -35,6 +35,7 @@ public:
   virtual TUniqueId ChooseSpawnPoint(CStateManager& mgr, uint playerIndex, TUniqueId requested);
 
   void SetMusicIndex(int musicIndex);
+  int GetMusicIndex() const { return mMusicIndex; } // Guessed name; multiplayer pause music choice.
   void UpdateTimer(float dt, CStateManager& mgr);
 
 protected:

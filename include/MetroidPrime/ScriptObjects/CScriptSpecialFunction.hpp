@@ -24,6 +24,7 @@ public:
     kSF_PlayerInAreaRelay = 25,
     kSF_HUDTarget = 26,
     kSF_ItemDepletion = 51,    // Guessed name
+    kSF_MultiplayerMusic = 65, // Guessed name; pause menu selects a streamed-music connection.
     kSF_RadialDamage = 0x10001 // Guessed name; native message-handler dispatch.
   };
 

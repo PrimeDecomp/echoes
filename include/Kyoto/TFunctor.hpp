@@ -73,6 +73,32 @@ private:
   CMethodPtrStore mMethod;
 };
 
+// Prime-correlated names; the Echoes bridge copies and invokes a native member pointer.
+template < class T, typename P1, typename P2 >
+class TNonStaticCallback2 {
+public:
+  typedef void (T::*MethodPtr)(P1, P2);
+
+  static void Function(const void* object, const void* method, P1 p1, P2 p2) {
+    MethodPtr callback;
+    memcpy(&callback, method, sizeof(callback));
+    (static_cast< T* >(const_cast< void* >(object))->*callback)(p1, p2);
+  }
+};
+
+template < class T, typename P1, typename P2 >
+class TFunctor2FromMethod {
+public:
+  typedef void (T::*MethodPtr)(P1, P2);
+
+  static TFunctor2< P1, P2 > Make(T& object, MethodPtr method) {
+    char methodData[sizeof(method)];
+    memcpy(methodData, &method, sizeof(method));
+    return TFunctor2< P1, P2 >(TNonStaticCallback2< T, P1, P2 >::Function, &object, methodData,
+                               sizeof(method));
+  }
+};
+
 CHECK_SIZEOF(CMethodPtrStore, 0x10)
 
 #endif // _TFUNCTOR_HPP
