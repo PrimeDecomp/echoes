@@ -272,7 +272,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mFrozenResources(nullptr)
 , mControlScheme(controlScheme)
 , mEchoPulsePhase(0.f)
-, x1328_(0)
+, mEchoPulseCounter(0)
 , x132c_(0)
 , mDarkAetherDamageSfx()
 , mSafeZoneHealSfx()

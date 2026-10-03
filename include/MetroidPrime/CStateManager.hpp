@@ -95,6 +95,8 @@ public:
   enum EInitPhase { kIP_LoadAudioGroups, kIP_LoadWorld, kIP_LoadFirstArea, kIP_Done };
   // Guessed names, based on the update dispatch and Prime's corresponding state.
   enum EGameState { kGS_Running, kGS_SoftPaused };
+  // Guessed names: Combat and Scan share the normal rendering mode.
+  enum ERenderVisorMode { kRVM_Normal, kRVM_Echo, kRVM_Dark };
 
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
@@ -190,7 +192,7 @@ public:
   }
 
   const CFrustumPlanes& GetFrustumPlanes() const { return mPlanes; }
-  int Get0x244c() const { return x244c; }
+  ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
   int GetNumPlayers() const { return mNumPlayers; }
   int GetViewportLayoutIndex() const; // Guessed name
@@ -323,7 +325,7 @@ public:
   TUniqueId mBossId; // 0x2440
   float mBossHealth;
   uint mBossLanguageTableIndex;
-  int x244c; // unk type
+  ERenderVisorMode mRenderVisorMode;
   TUniqueId mSpecialFunctionId;
   float mHudMessageTime;        // 0x2454
   int x2458;                    // unk type

@@ -156,12 +156,12 @@ rstl::auto_ptr< CActorLights > CLightParameters::MakeActorLights() const {
 
 SEchoParameters::SEchoParameters(bool isEchoEmitter, bool onlyEmitDamage, uint numSoundWaves,
                                  float spaceBetweenWaves, float waveLineSize,
-                                 float forcedMinimumVis)
+                                 float visibilityDecayTime)
 : mIsEchoEmitter(isEchoEmitter)
 , mOnlyEmitDamage(onlyEmitDamage)
 , mNumSoundWaves(numSoundWaves)
 , mSpaceBetweenWaves(spaceBetweenWaves)
 , mWaveLineSize(waveLineSize)
-, mForcedMinimumVis(forcedMinimumVis) {}
+, mVisibilityDecayTime(visibilityDecayTime) {}
 
 SEchoParameters SEchoParameters::None() { return SEchoParameters(false, false, 0, 0.f, 0.f, 0.f); }
