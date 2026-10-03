@@ -49,6 +49,7 @@ public:
     kRF_BreakFreeze = 1,
     kRF_DouseFire = 2,
     kRF_StopElectrocution = 4,
+    kRF_BreakOrbit = 8,
     kRF_DisablePhysics = 16,
     kRF_ResetTimeScale = 32,
     kRF_SkipFallRotation = 64

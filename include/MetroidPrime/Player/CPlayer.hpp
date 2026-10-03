@@ -34,6 +34,7 @@ class CRezbitEffectOptions;
 class CScriptPlayerHint;
 class CPlayerTargeting;      // Guessed name; targeting/scan resources, independent TU.
 class CPlayerBodyController; // Guessed name; CEntity-derived player animation controller.
+class CPlayerRagDoll;
 
 namespace NPlayer {
 enum EPlayerMovementState {
@@ -88,6 +89,7 @@ public:
   enum EPlayerOrbitRequest {
     kOR_StopOrbit,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
+    kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
   };
   enum EPlayerZoneInfo {
     kZI_Targeting,
@@ -209,6 +211,12 @@ public:
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
   const CPlayerTargeting* GetTargeting() const { return mTargeting; }
 
+  CPlayerBodyController* BodyController() { return mBodyController; }
+
+  const CPlayerRagDoll* GetPlayerRagDoll() const { return mRagDoll.get(); }
+
+  rstl::single_ptr< CPlayerRagDoll >& PlayerRagDoll() { return mRagDoll; }
+
   EPlayerMorphBallState GetMorphballTransitionState() const { return mMorphBallState; }
   EPlayerMorphBallState GetSpawnedMorphballState() const { return mSpawnedMorphBallState; }
   int Get_x12f8() const { return mTurretState; }
@@ -228,7 +236,7 @@ public:
   bool IsOverrideRadarRadius() const { return (x126a_ & 4) != 0; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
-  float GetEchoPulsePhase() const { return mEchoPulsePhase; } // Guessed name
+  float GetEchoPulsePhase() const { return mEchoPulsePhase; }    // Guessed name
   uint GetEchoPulseCounter() const { return mEchoPulseCounter; } // Guessed name
   EPlayerCameraState GetCameraState() const { return mCameraState; }
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
@@ -279,6 +287,18 @@ public:
   CVector3f GetDamageLocationWR() const;
   float GetDeathAlpha() const;
   float GetDeathTime() const { return mDeathTime; }
+
+  // Guessed names; native knockback and death-effect consumers.
+  void SetDeathFadeEnabled(bool enabled) { mDeathFadeEnabled = enabled; }
+
+  void SetDeathFadeDuration(float duration) { mDeathFadeDuration = duration; }
+
+  void SetDeathFadeDelay(float delay) { mDeathFadeDelay = delay; }
+
+  void SetDeathEffectId(TUniqueId id) { mDeathEffectId = id; }
+
+  void SetDeathRenderingSuppressed(bool suppressed) { mDeathRenderingSuppressed = suppressed; }
+
   bool IsEnergyLow() const;
   void PushSustainedDamage();
   void PopSustainedDamage();
@@ -607,7 +627,7 @@ private:
   CPlayerTargeting* mTargeting;
   CPlayerBodyController* mBodyController;
   CPlayerKnockBackMgr mKnockBackManager;
-  int xf6c_; // 0xf6c
+  rstl::single_ptr< CPlayerRagDoll > mRagDoll;
   CPlayerStuckTracker* mPlayerStuckTracker;
   TReservedAverage< float, 20 > mMoveSpeedAvg; // 0xf74
   float mMoveSpeed;                            // 0xfc8
@@ -702,7 +722,7 @@ private:
   bool x126b_25_ : 1;
   bool x126b_26_ : 1;
   bool x126b_27_ : 1;
-  bool x126b_28_ : 1;
+  bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
   bool x126b_31_ : 1;
@@ -718,7 +738,7 @@ private:
   float mDeathTime;
   float mControlDirInterpTime;
   float mControlDirInterpDuration;
-  TUniqueId mDeathPowerBomb;
+  TUniqueId mDeathEffectId; // Guessed name; death particle actor, including the Morph Ball gib.
   float mPreThinkDt;
   CAssetId mSteamTextureId;
   CAssetId mIceTextureId;
@@ -745,7 +765,7 @@ private:
   CCameraManager* mCameraManager; // 0x1318
   SFrozenResources* mFrozenResources;
   int mControlScheme;
-  float mEchoPulsePhase; // Guessed name: normalized repeating Echo Visor pulse phase
+  float mEchoPulsePhase;  // Guessed name: normalized repeating Echo Visor pulse phase
   uint mEchoPulseCounter; // Guessed name: incremented whenever the echo pulse phase wraps.
   int x132c_;
   CSfxHandle mDarkAetherDamageSfx;

@@ -46,6 +46,9 @@ public:
 
   ushort GetWeaponMode1() const { return mWeaponMode.GetRawType(); }
   const CWeaponMode& GetWeaponMode() const { return mWeaponMode; }
+
+  void SetWeaponMode(const CWeaponMode& mode) { mWeaponMode = mode; }
+
   float GetRadius() const { return mDamageRadius; }
   void SetRadius(float r) { mDamageRadius = r; }
   float GetKnockBackPower() const { return mKnockbackPower; }

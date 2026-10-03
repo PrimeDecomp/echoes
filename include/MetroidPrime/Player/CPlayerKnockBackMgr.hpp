@@ -1,14 +1,18 @@
 #ifndef _CPLAYERKNOCKBACKMGR
 #define _CPLAYERKNOCKBACKMGR
 
+#include "Collision/CMaterialList.hpp"
+#include "Kyoto/Animation/CharacterCommon.hpp"
 #include "MetroidPrime/Enemies/CKnockBackMgr.hpp"
 
-// Wii SEL exports establish the class name; the remaining player-specific fields
-// need semantic recovery. Its RULE_Player constructor is in a separate TU.
+class CPlayer;
+
+// Wii SEL exports establish the class name and ApplyPlayerKnockBackForce.
+// Other player-specific method and member names are guessed from native consumers.
 class CPlayerKnockBackMgr : public CKnockBackMgr {
 public:
   CPlayerKnockBackMgr();
-  ~CPlayerKnockBackMgr();
+  ~CPlayerKnockBackMgr() {}
 
   // CKnockBackMgr
   void Update(float dt, CStateManager& mgr, CActor& actor) override;
@@ -25,19 +29,55 @@ public:
   void ApplyKnockBackEffects(CActor& actor, CStateManager& mgr,
                              const CKnockBackInfo& info) override;
 
+  void ResetEffects(CStateManager& mgr, CPlayer& player);
+  float GetBurnDeathAlpha() const;
+  void Burn(float duration, float damagePerSecond, TUniqueId owner);
+  void DouseFlames();
+  void StopBurnDeath(CStateManager& mgr, CPlayer& player);
+  void Freeze(float duration, CPlayer& player);
+  void Shock(float duration, float damagePerSecond, CPlayer& player, TUniqueId owner);
+  void DouseElectrocution();
+
+  static void ApplyPlayerKnockBackForce(CPlayer& player, const CVector3f& direction, float power,
+                                        float unused);
+
 private:
-  float x64_;
-  float x68_;
-  TUniqueId x6c_;
-  float x70_;
-  float x74_;
-  float x78_;
-  float x7c_;
-  TUniqueId x80_;
-  float x84_;
-  float x88_;
-  uchar x8c_;
-  uchar x8d_;
+  enum EExplosionDeathType { kEDT_Normal, kEDT_Ice };
+  enum EBurnDeathType { kBDT_Normal, kBDT_Lagged };
+
+  void UpdateBurning(float dt, CStateManager& mgr, CPlayer& player);
+  void StartBurnDeath(CStateManager& mgr, CPlayer& player, EBurnDeathType type);
+  void ExplodeDeath(CStateManager& mgr, CPlayer& player, EExplosionDeathType type,
+                    TUniqueId source);
+  void UpdateElectrocution(float dt, CStateManager& mgr, CPlayer& player);
+  bool CanApplyKnockBackForce(CStateManager& mgr, CPlayer& player,
+                              const CKnockBackInfo& info) const;
+  void StartBlackHoleDeath(CStateManager& mgr, TUniqueId source, CPlayer& player);
+  void UpdateImplosion(CStateManager& mgr, CPlayer& player);
+
+  float mBurnRemainingTime;
+  float mBurnDamagePerSecond;
+  TUniqueId mBurnOwner;
+  float mBallExtinguishRemainingTime;
+  float mBurnDeathRemainingTime;
+  float mElectrocutionRemainingTime;
+  float mElectrocutionDamagePerSecond;
+  TUniqueId mElectrocutionOwner;
+  float mRagDollDelay;
+  float mFreezeDuration;
+  bool mWasBall : 1;
+  bool mWasFrozen : 1;
+  bool mWasOnGround : 1;
+  bool mLaggedBurnDeath : 1;
+  bool mImploding : 1;
+  bool mBurnDeath : 1;
+  bool mRagDollPending : 1;
+  bool mDeathAnimationStarted : 1;
+  bool mFreezePending : 1;
+  bool mExplosionDeathStarted : 1;
+
+  static const int skAnimationStates[5];
+  static EMaterialTypes sDamageMaterial; // Guessed name; burn/electrocution damage filter.
 };
 CHECK_SIZEOF(CPlayerKnockBackMgr, 0x90)
 

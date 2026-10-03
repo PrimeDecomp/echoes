@@ -5,11 +5,11 @@ extern const int gkPVSEnabled;
 
 #include "Kyoto/Math/CFrustumPlanes.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
-#include "MetroidPrime/Cameras/CCameraBlurPass.hpp"
-#include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "MetroidPrime/CFilteredObjectList.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
+#include "MetroidPrime/Cameras/CCameraBlurPass.hpp"
+#include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "MetroidPrime/Enemies/EListenNoiseType.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "TGameTypes.hpp"
@@ -126,9 +126,9 @@ public:
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
-  bool RenderLast(TUniqueId uid);        // Guessed name.
+  bool RenderLast(TUniqueId uid);               // Guessed name.
   bool RenderLastOverlay(const TUniqueId& uid); // Guessed name.
-  bool RenderLastHUD(const TUniqueId& uid); // Guessed name.
+  bool RenderLastHUD(const TUniqueId& uid);     // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
@@ -141,11 +141,14 @@ public:
                    const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
                          TUniqueId weapon, const CDamageInfo& damage);
+  void KillPlayer(float remainingHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void SetupParticleHook(const CActor& actor) const;
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
+
+  CActorModelParticles* ActorModelParticles() { return mActorModelParticles; }
 
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
