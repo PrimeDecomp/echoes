@@ -3,6 +3,7 @@
 
 #include "MetroidPrime/Weapons/CGunWeapon.hpp"
 
+// Guessed class name
 class CLightBeam : public CGunWeapon {
 public:
   CLightBeam(TUniqueId playerId, const CVector3f& scale, int flags);
