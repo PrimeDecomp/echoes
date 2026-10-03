@@ -3,8 +3,6 @@
 
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
-// Reconstructed GC declarations; the constructor signature is corroborated by
-// the original R3ME01 MP2 export. See research/CTargetableProjectile-G2ME01.md.
 class CTargetableProjectile : public CEnergyProjectile {
 public:
   CTargetableProjectile(const TToken< CWeaponDescription >& description, EWeaponType type,
@@ -32,7 +30,6 @@ public:
                const CDamageVulnerability& vulnerability, TUniqueId hitActor) override;
 
 private:
-  // Guessed descriptive names: used to create a projectile back toward the owner.
   TToken< CWeaponDescription > mDeflectedWeaponDescription;
   CDamageInfo mDeflectedDamage;
   bool mDeflectToOwner : 1;
