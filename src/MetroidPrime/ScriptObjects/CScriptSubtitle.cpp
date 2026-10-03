@@ -2,23 +2,6 @@
 
 #include "MetroidPrime/ScriptLoader.hpp"
 
-CScriptSubtitle::~CScriptSubtitle() {}
-
-// Guessed loader name.
-CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
-
-void CScriptSubtitle::RefreshText() {}
-
-void CScriptSubtitle::SetStringIndex(CStateManager& mgr, int index) {}
-
-void CScriptSubtitle::Render(const CStateManager& mgr) const {}
-
-void CScriptSubtitle::PreRender(CStateManager& mgr) {}
-
-void CScriptSubtitle::Think(float dt, CStateManager& mgr) {}
-
-void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {}
-
 CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                  int positionX, int positionY, int extentX, int extentY,
                                  const CColor& fontColor, const CColor& outlineColor,
@@ -38,3 +21,20 @@ CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const 
 , mFadeOutTime(fadeOutTime)
 , mFadeOpacity(0.f)
 , mTargetFadeOpacity(0.f) {}
+
+void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {}
+
+void CScriptSubtitle::Think(float dt, CStateManager& mgr) {}
+
+void CScriptSubtitle::PreRender(CStateManager& mgr) {}
+
+void CScriptSubtitle::Render(const CStateManager& mgr) const {}
+
+void CScriptSubtitle::SetStringIndex(CStateManager& mgr, int index) {}
+
+void CScriptSubtitle::RefreshText() {}
+
+// Guessed loader name.
+CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
+
+CScriptSubtitle::~CScriptSubtitle() {}

@@ -3,13 +3,13 @@
 
 SSpacePirate_FuncPtrs* gLoader_SpacePirate; // Guessed global name.
 
-void CSpacePirate::DetachActorFromPirate() {}
+CEntity* CSpacePirate::TypesMatch(int typeId) const {}
 
-bool CSpacePirate::AttachActorToPirate(TUniqueId id) {}
+void SetSSpacePirate_FuncPtrs(SSpacePirate_FuncPtrs* callbacks) {}
 
 // Guessed loader name.
 CEntity* LoadSpacePirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
 
-void SetSSpacePirate_FuncPtrs(SSpacePirate_FuncPtrs* callbacks) {}
+bool CSpacePirate::AttachActorToPirate(TUniqueId id) {}
 
-CEntity* CSpacePirate::TypesMatch(int typeId) const {}
+void CSpacePirate::DetachActorFromPirate() {}

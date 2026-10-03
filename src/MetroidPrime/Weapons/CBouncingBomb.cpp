@@ -2,27 +2,7 @@
 
 #include "Kyoto/Particles/CElementGen.hpp"
 
-void CBouncingBomb::Touch(CActor& actor, CStateManager& mgr) {}
-
-void CBouncingBomb::Think(float dt, CStateManager& mgr) {}
-
-void CBouncingBomb::Render(const CStateManager& mgr) const {}
-
-void CBouncingBomb::AddToRenderer(const CStateManager& mgr) const {}
-
-void CBouncingBomb::UpdateParticles(float dt) {}
-
-rstl::optional_object< CAABox > CBouncingBomb::GetTouchBounds() const {}
-
-void CBouncingBomb::UpdateExplosion(float dt, CStateManager& mgr) {}
-
-void CBouncingBomb::Explode(CStateManager& mgr) {}
-
-void CBouncingBomb::ApplyGravity() {}
-
-void CBouncingBomb::HandleStaticCollision(CStateManager& mgr, const CRayCastResult& result) {}
-
-CBouncingBomb::~CBouncingBomb() {}
+CEntity* CBouncingBomb::TypesMatch(int typeId) const {}
 
 CBouncingBomb::CBouncingBomb(TToken< CGenDescription > particle,
                              TToken< CGenDescription > explosion, TUniqueId uid, TAreaId areaId,
@@ -54,4 +34,24 @@ CBouncingBomb::CBouncingBomb(TToken< CGenDescription > particle,
 , mIsNotDetonated(true)
 , mDisableFuse(false) {}
 
-CEntity* CBouncingBomb::TypesMatch(int typeId) const {}
+CBouncingBomb::~CBouncingBomb() {}
+
+void CBouncingBomb::HandleStaticCollision(CStateManager& mgr, const CRayCastResult& result) {}
+
+void CBouncingBomb::ApplyGravity() {}
+
+void CBouncingBomb::Explode(CStateManager& mgr) {}
+
+void CBouncingBomb::UpdateExplosion(float dt, CStateManager& mgr) {}
+
+rstl::optional_object< CAABox > CBouncingBomb::GetTouchBounds() const {}
+
+void CBouncingBomb::UpdateParticles(float dt) {}
+
+void CBouncingBomb::AddToRenderer(const CStateManager& mgr) const {}
+
+void CBouncingBomb::Render(const CStateManager& mgr) const {}
+
+void CBouncingBomb::Think(float dt, CStateManager& mgr) {}
+
+void CBouncingBomb::Touch(CActor& actor, CStateManager& mgr) {}
