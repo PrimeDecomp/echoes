@@ -1667,6 +1667,10 @@ MetroidPrime/Tweaks/CTweakPlayer.cpp:
 	.data       start:0x803B824C end:0x803B830C align:4
 	.sdata2     start:0x8041D928 end:0x8041D940 align:4
 
+MetroidPrime/Enemies/Sandworm.cpp:
+	.text       start:0x802187EC end:0x80218884
+	.sbss       start:0x804193C0 end:0x804193C8
+
 MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0

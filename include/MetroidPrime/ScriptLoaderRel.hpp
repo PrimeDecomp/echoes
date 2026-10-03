@@ -51,6 +51,17 @@ struct SSporb_FuncPtrs {
 CHECK_SIZEOF(SSporb_FuncPtrs, 0x10)
 void SetSSporb_FuncPtrs(SSporb_FuncPtrs* callbacks);
 
+class CSandworm;
+
+struct SSandworm_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadSandworm;
+  CVector3f (CSandworm::*mGetRadarPointPosition)(int index) const;
+  int (CSandworm::*mGetRadarPointCount)() const;
+};
+CHECK_SIZEOF(SSandworm_FuncPtrs, 0x1c)
+void SetSSandworm_FuncPtrs(SSandworm_FuncPtrs* callbacks);
+
 struct SGuiWidget_FuncPtrs {
   FScriptLoader guiWidget;
   FScriptLoader guiScreen;
