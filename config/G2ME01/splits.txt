@@ -307,7 +307,7 @@ MetroidPrime/CMemoryDrawEnum.cpp:
 
 MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
 	.text       start:0x800A0200 end:0x800A4850
-	.data       start:0x803B3210 end:0x803B32B0
+	.data       start:0x803B3210 end:0x803B32C0
 
 MetroidPrime/ScriptObjects/CScriptGenerator.cpp:
 	.text       start:0x800A4B20 end:0x800A5474
@@ -1529,6 +1529,11 @@ MetroidPrime/Cameras/CCameraColliderGroup.cpp:
 	.sdata      start:0x804187D0 end:0x804187E8
 	.sbss       start:0x80419340 end:0x80419350
 	.sdata2     start:0x8041D650 end:0x8041D688
+
+MetroidPrime/ScriptObjects/CPlatformWaypointTracker.cpp:
+	.text       start:0x801FA3CC end:0x801FB1E4
+	.data       start:0x803B7B00 end:0x803B7B10
+	.sdata2     start:0x8041D688 end:0x8041D6A0
 
 MetroidPrime/ScriptObjects/CScriptCameraPitch.cpp:
 	.text       start:0x801FB1E4 end:0x801FBBC4
