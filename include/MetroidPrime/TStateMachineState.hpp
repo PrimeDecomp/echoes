@@ -26,6 +26,7 @@ class TStateMachineStateBase {
 public:
   typedef typename TStateMachineFunctionTypes< T >::StateFunc StateFunc;
   typedef typename TStateMachineFunctionTypes< T >::TriggerFunc TriggerFunc;
+  typedef void (T::*CodeFunc)(CStateManager&, float); // Guessed name.
   struct SStateFunction {
     const char* mName;
     StateFunc mFunction;
@@ -34,13 +35,17 @@ public:
     const char* mName;
     TriggerFunc mFunction;
   };
+  struct SCodeFunction { // Guessed name.
+    const char* mName;
+    CodeFunc mFunction;
+  };
 
   virtual ~TStateMachineStateBase() {}
   virtual int GetType() const = 0;
   virtual void Reset(CStateManager& mgr, T& owner) = 0;
   virtual void SetStateFunctions(const SStateFunction* functions, int count) = 0;
   virtual void SetTriggerFunctions(const STriggerFunction* functions, int count) = 0;
-  virtual void fn_80194bf0() = 0;
+  virtual void SetCodeFunctions(const SCodeFunction* functions, int count) = 0; // Guessed name.
   virtual void SetState(CStateManager& mgr, T& owner, const rstl::string& name) = 0;
   virtual void Update(CStateManager& mgr, T& owner, float dt) = 0;
   virtual bool HasState() const = 0;
@@ -58,6 +63,7 @@ public:
   typedef typename TStateMachineStateBase< T >::TriggerFunc TriggerFunc;
   typedef typename TStateMachineStateBase< T >::SStateFunction SStateFunction;
   typedef typename TStateMachineStateBase< T >::STriggerFunction STriggerFunction;
+  typedef typename TStateMachineStateBase< T >::SCodeFunction SCodeFunction;
 
   TStateMachineState();
 
@@ -67,7 +73,7 @@ public:
   virtual void Reset(CStateManager& mgr, T& owner);
   virtual void SetStateFunctions(const SStateFunction* functions, int count);
   virtual void SetTriggerFunctions(const STriggerFunction* functions, int count);
-  virtual void fn_80194bf0();
+  virtual void SetCodeFunctions(const SCodeFunction* functions, int count);
   virtual void SetState(CStateManager& mgr, T& owner, const rstl::string& name);
   virtual void Update(CStateManager& mgr, T& owner, float dt);
   virtual bool HasState() const;
@@ -280,7 +286,7 @@ void TStateMachineState< T >::SetTriggerFunction(const rstl::string& name, Trigg
 }
 
 template < class T >
-void TStateMachineState< T >::fn_80194bf0() {}
+void TStateMachineState< T >::SetCodeFunctions(const SCodeFunction* functions, int count) {}
 
 template < class T >
 bool TStateMachineState< T >::CallTrigger(const CTrigger& trigger, CStateManager& mgr, T& owner) {
