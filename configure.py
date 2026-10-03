@@ -480,6 +480,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CWorldSaveGameInfo.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerData.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerManager.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraFilterKeyframe.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/ScriptObjects/CScriptCameraBlurKeyframe.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraFilter.cpp"),
