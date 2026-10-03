@@ -6,10 +6,12 @@
 #include "rstl/pair.hpp"
 #include "rstl/vector.hpp"
 
-// Guessed names; the EGMC stream contains model-index/editor-ID pairs.
+// Guessed EGMC class and member names
 class CStaticGeometryMapData {
 public:
-  typedef rstl::pair< int, TEditorId > TMapping;
+  typedef rstl::pair< uint, TEditorId > TMapping;
+  explicit CStaticGeometryMapData(CInputStream& in);
+  ~CStaticGeometryMapData();
   const rstl::vector< TMapping >& GetMappings() const { return mMappings; }
 
 private:
@@ -17,7 +19,7 @@ private:
 };
 CHECK_SIZEOF(CStaticGeometryMapData, 0x10)
 
-// Guessed names for the EGMC resource and its runtime token owner.
+// Guessed runtime-owner class and member names
 class CStaticGeometryMap {
 public:
   explicit CStaticGeometryMap(const TLockedToken< CStaticGeometryMapData >& data);
@@ -27,5 +29,11 @@ private:
   TLockedToken< CStaticGeometryMapData > mData;
 };
 CHECK_SIZEOF(CStaticGeometryMap, 0xc)
+
+class CFactoryFnReturn;
+class CVParamTransfer;
+// Guessed name
+CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag& tag, CInputStream& in,
+                                                        const CVParamTransfer& xfer);
 
 #endif // _CSTATICGEOMETRYMAP
