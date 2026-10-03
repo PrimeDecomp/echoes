@@ -24,6 +24,7 @@ public:
   CVector3f GetTranslation(const CStateManager& mgr) const;
 
 private:
+  // Reconstructed record and member names; no original exported type name is known.
   struct SShaker {
     SShaker(int id, int playerIndex, const CCameraShakerData& data, bool playSound,
             bool useThresholdTimes);
@@ -49,7 +50,7 @@ private:
   int mPlayerIndex;
   bool mPendingRumble : 1;
   bool mRumbling : 1;
-  short x83e_;
+  short x83e_; // Only constructor-zero is established; runtime role remains unknown.
   float mRumbleCooldown;
 };
 CHECK_SIZEOF(CCameraShakerManager, 0x844)
