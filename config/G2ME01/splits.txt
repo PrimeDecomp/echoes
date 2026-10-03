@@ -2709,6 +2709,9 @@ Kyoto/Audio/CAuxEffect.cpp:
 	.text       start:0x80334C18 end:0x803359F4
 	.data       start:0x803BB438 end:0x803BB498
 
+Kyoto/Graphics/CDisplayListReader.cpp:
+	.text       start:0x8033B414 end:0x8033B940
+
 Kyoto/Audio/CDSPStreamManager.cpp:
 	.text       start:0x8033B940 end:0x8033D2EC
 	.ctors      start:0x803A5684 end:0x803A5688

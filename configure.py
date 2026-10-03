@@ -759,6 +759,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/CARAMManager.cpp"),
             Object(NonMatching, "Kyoto/Math/CFrustumPlanes.cpp"),
             Object(NonMatching, "Kyoto/Graphics/CCubeMaterial.cpp"),
+            Object(NonMatching, "Kyoto/Graphics/CDisplayListReader.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Graphics/CCubeSurface.cpp"),
             Object(Matching, "Kyoto/Math/CVector2f.cpp"),
             Object(Matching, "Kyoto/Math/CVector2i.cpp"),
