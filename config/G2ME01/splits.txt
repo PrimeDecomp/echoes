@@ -1601,8 +1601,13 @@ MetroidPrime/ScriptObjects/CScriptSubtitle.cpp:
 	.data       start:0x803B7D70 end:0x803B7DF0
 	.sdata2     start:0x8041D860 end:0x8041D890
 
-MetroidPrime/ScriptObjects/CScanTreeInventory.cpp:
-	.text       start:0x8020EBF0 end:0x8020EE18
+MetroidPrime/CScanTree.cpp:
+	.text       start:0x8020E548 end:0x802134A8
+	.ctors      start:0x803A5594 end:0x803A5598
+	.rodata     start:0x803ACAE0 end:0x803ACBE0
+	.data       start:0x803B7DF0 end:0x803B7F98
+	.bss        start:0x803DE0D0 end:0x803DE0E0
+	.sdata2     start:0x8041D890 end:0x8041D8E8
 
 MetroidPrime/CRelFile.cpp:
 	.text       start:0x80213650 end:0x80213C08
