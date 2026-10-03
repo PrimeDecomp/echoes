@@ -8,6 +8,7 @@
 
 class CCubeModel;
 class CInputStream;
+class CModelFlags;
 class CSimplePool;
 class CTexture;
 
@@ -16,6 +17,9 @@ class CGuiFrameModelDatabase {
 public:
   CGuiFrameModelDatabase(CInputStream& in, CSimplePool* pool);
   ~CGuiFrameModelDatabase();
+
+  const CCubeModel* GetModel(int index) const;
+  void Draw(int index, const CModelFlags& flags) const;
 
 private:
   uint mBufferSize;

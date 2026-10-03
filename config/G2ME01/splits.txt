@@ -2085,6 +2085,10 @@ GuiSys/CAuiBitmapMeter.cpp:
 	.data       start:0x803B9100 end:0x803B9140
 	.sdata2     start:0x8041E150 end:0x8041E170
 
+GuiSys/CGuiFrameModelDatabase.cpp:
+	.text       start:0x80280D20 end:0x80281490
+	.rodata     start:0x803AE9E8 end:0x803AE9F0
+
 Collision/CCollidableAABox.cpp:
 	.text       start:0x80281490 end:0x80281EF0
 	.ctors      start:0x803A55C0 end:0x803A55C4
