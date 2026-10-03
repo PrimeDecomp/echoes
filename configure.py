@@ -659,6 +659,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Factories/CStateMachineFactory.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAiKnockBackMgr.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CKnockBackMgr.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerKnockBackMgr.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptWaypoint.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CPatterned.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CPatternedAiFunctions.cpp"),

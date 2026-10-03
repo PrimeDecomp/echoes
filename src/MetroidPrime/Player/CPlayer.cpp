@@ -1,4 +1,5 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerRagDoll.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -135,7 +136,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mTargeting(nullptr)
 , mBodyController(nullptr)
 , mKnockBackManager()
-, xf6c_(0)
+, mRagDoll(nullptr)
 , mPlayerStuckTracker(nullptr)
 , mMoveSpeedAvg()
 , mMoveSpeed(0.f)
@@ -230,7 +231,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , x126b_25_(false)
 , x126b_26_(false)
 , x126b_27_(true)
-, x126b_28_(false)
+, mDeathRenderingSuppressed(false)
 , mDeathFadeEnabled(false)
 , mUseAlternateBeam(false)
 , x126b_31_(false)
@@ -246,7 +247,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDeathTime(0.f)
 , mControlDirInterpTime(0.f)
 , mControlDirInterpDuration(0.f)
-, mDeathPowerBomb(kInvalidUniqueId)
+, mDeathEffectId(kInvalidUniqueId)
 , mPreThinkDt(0.f)
 , mSteamTextureId(kInvalidAssetId)
 , mFreezeSfx()
@@ -782,17 +783,17 @@ void CPlayer::ResetControlDirectionInterpolation() {
 
 void CPlayer::DoThink(float dt, CStateManager& mgr) {
   Think(dt, mgr);
-  CEntity* bomb = mgr.ObjectById(mDeathPowerBomb);
-  if (bomb) {
-    bomb->Think(dt, mgr);
+  CEntity* effect = mgr.ObjectById(mDeathEffectId);
+  if (effect) {
+    effect->Think(dt, mgr);
   }
 }
 
 void CPlayer::DoPreThink(float dt, CStateManager& mgr) {
   PreThink(dt, mgr);
-  CEntity* bomb = mgr.ObjectById(mDeathPowerBomb);
-  if (bomb) {
-    bomb->PreThink(dt, mgr);
+  CEntity* effect = mgr.ObjectById(mDeathEffectId);
+  if (effect) {
+    effect->PreThink(dt, mgr);
   }
 }
 
