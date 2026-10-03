@@ -8,6 +8,7 @@
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 
+#include "rstl/math.hpp"
 #include "rstl/pair.hpp"
 
 #include <float.h>
@@ -242,18 +243,10 @@ static rstl::pair< bool, CFrustumPlanes > ClipPortal(const CGameCamera& camera,
   float maxY = -FLT_MAX;
   for (int i = 0; i < polygon.size(); ++i) {
     const CVector3f screen = camera.ConvertToScreenSpace(polygon[i]);
-    if (screen.GetX() < minX) {
-      minX = screen.GetX();
-    }
-    if (maxX < screen.GetX()) {
-      maxX = screen.GetX();
-    }
-    if (maxY < screen.GetY()) {
-      maxY = screen.GetY();
-    }
-    if (screen.GetY() < minY) {
-      minY = screen.GetY();
-    }
+    minX = rstl::min_val(minX, screen.GetX());
+    maxX = rstl::max_val(maxX, screen.GetX());
+    maxY = rstl::max_val(maxY, screen.GetY());
+    minY = rstl::min_val(minY, screen.GetY());
   }
   minX = CMath::Clamp(-1.f, minX, 1.f);
   maxX = CMath::Clamp(-1.f, maxX, 1.f);
