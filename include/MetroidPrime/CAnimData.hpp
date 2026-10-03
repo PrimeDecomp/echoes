@@ -94,6 +94,7 @@ public:
 
   const CCharLayoutInfo* GetCharLayoutInfo() const { return *mLayoutData; }
   CPoseAsTransforms_Linear& Pose() { return mPose; } // Guessed name.
+  const CPoseAsTransforms_Linear& Pose() const { return mPose; } // Guessed name.
   void SetPoseBuilt(bool built) { mPoseBuilt = built; } // Guessed name.
   CHierarchyPoseBuilder& PoseBuilder() const { return mPoseBuilder; }
   const CHierarchyPoseBuilder& GetPoseBuilder() const { return mPoseBuilder; }

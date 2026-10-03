@@ -1245,6 +1245,11 @@ MetroidPrime/Player/CGMMultiplayer.cpp:
 	.data       start:0x803B5E40 end:0x803B5EB0
 	.sdata2     start:0x8041CB30 end:0x8041CB40
 
+MetroidPrime/ScriptObjects/CScriptConditionalRelay.cpp:
+	.text       start:0x80197978 end:0x801984F8
+	.rodata     start:0x803AA240 end:0x803AA248
+	.data       start:0x803B5EB0 end:0x803B5EF0
+
 MetroidPrime/Player/CPlayerBodyLocomotion.cpp:
 	.text       start:0x8019B988 end:0x8019C73C
 	.rodata     start:0x803AA528 end:0x803AA558
@@ -1463,6 +1468,11 @@ MetroidPrime/CPortalArea.cpp:
 MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
+
+MetroidPrime/Cameras/CCameraShakerManager.cpp:
+	.text       start:0x801E782C end:0x801E8558
+	.data       start:0x803B7670 end:0x803B7680
+	.sdata2     start:0x8041D46C end:0x8041D4A8 align:4
 
 MetroidPrime/CEchoEmitter.cpp:
 	.text       start:0x801EBB44 end:0x801ECF44
@@ -1786,6 +1796,12 @@ MetroidPrime/CInGameQuitScreen.cpp:
 	.rodata     start:0x803AD5C8 end:0x803AD6F0
 	.data       start:0x803B89B0 end:0x803B89C0
 	.sdata2     start:0x8041DD00 end:0x8041DD08
+
+MetroidPrime/CPirateEchoEmitter.cpp:
+	.text       start:0x80244F74 end:0x8024569C
+	.rodata     start:0x803AD6F0 end:0x803AD708
+	.data       start:0x803B89C0 end:0x803B89D8
+	.sdata2     start:0x8041DD08 end:0x8041DD28
 
 WorldFormat/CAreaOctTree_Tests.cpp:
 	.text       start:0x8024569C end:0x802471B0

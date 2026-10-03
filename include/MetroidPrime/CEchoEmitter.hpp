@@ -46,8 +46,12 @@ private:
   // Guessed names for native runtime helpers.
   void ResetPlayerState();
   void ResetPlayerState(CStateManager& mgr);
+
+protected:
   void DrawContour(const CVector3f* points, int count, int subdivisions,
                    const SProjection& projection, const CStateManager& mgr) const;
+
+private:
   void DrawWaves(const CVector3f* points, int count, int subdivisions,
                  const SProjection& projection, const CColor& color, float scale, float spacing,
                  float alpha) const;
