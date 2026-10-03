@@ -5,12 +5,12 @@
 #include <musyx/musyx.h>
 
 // Guessed types and member names, based on the native processor and VstP callback descriptor.
-class CAuxEffectProcessor;
-struct SAuxEffectDescriptor;
+class AudioEffect;
+struct AEffect;
 
 struct SAuxEffectProcessingState {
-  CAuxEffectProcessor* mProcessor;
-  SAuxEffectDescriptor* mEffectDescriptor;
+  AudioEffect* mProcessor;
+  AEffect* mEffectDescriptor;
   float* mLeftBuffer;
   float* mRightBuffer;
   float* mSurroundBuffer;
