@@ -8,10 +8,18 @@
 #include "MetroidPrime/SEchoParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.hpp"
 
+struct SLdrPatternedAITypedef;
+
 class CPatternedInfo {
   friend class CPatterned;
+  friend CPatternedInfo LdrToPatternedInfo(const SLdrPatternedAITypedef& data,
+                                          const SLdrIngPossessionData* possession);
 
 public:
+  CPatternedInfo(const CHealthInfo& health, const CDamageVulnerability& vulnerability,
+                 CAssetId stateMachine, CAssetId stateMachine2);
+  ~CPatternedInfo();
+
   const CAnimationParameters& GetAnimationParameters() const { return mAnimationParameters; }
   const CHealthInfo& GetHealthInfo() const { return mHealthInfo; }
   const CDamageVulnerability& GetDamageVulnerability() const { return mDamageVulnerability; }

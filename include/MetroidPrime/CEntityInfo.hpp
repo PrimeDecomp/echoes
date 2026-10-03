@@ -219,7 +219,9 @@ public:
   bool GetActive() const { return mActive; }
   void SetActive(bool active) { mActive = active; }
   bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
+  void SetUpdateWhileOccluded(bool update) { mUpdateWhileOccluded = update; }
   bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }
+  void SetUpdateDuringCinematicSkip(bool update) { mUpdateDuringCinematicSkip = update; }
 };
 
 class CScriptMsg {

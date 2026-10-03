@@ -6,6 +6,12 @@
 
 class CBeamInfo {
 public:
+  CBeamInfo(int beamAttributes, CAssetId contactFxId, CAssetId pulseFxId, CAssetId textureId,
+            CAssetId glowTextureId, float length, float radius, float expansionSpeed,
+            float lifeTime, float pulseSpeed, float shutdownTime, float contactFxScale,
+            float pulseFxScale, const CColor& innerColor, const CColor& outerColor,
+            float travelSpeed, CAssetId muzzleFxId);
+
   int GetBeamAttributes() const { return mBeamAttributes; }
   CAssetId GetContactFXId() const { return mContactFxId; }
   CAssetId GetPulseFXId() const { return mPulseFxId; }
