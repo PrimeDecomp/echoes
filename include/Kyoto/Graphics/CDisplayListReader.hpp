@@ -20,6 +20,10 @@ public:
   bool EnumerateTriangles(IDisplayListTriangleCallback& callback) const;
   uint GetVertexIndex(const uchar* vertex, GXAttr attribute) const;
 
+  // Guessed names for the native packed-descriptor decoding helpers.
+  static uint GetVertexStride(uint vertexDesc);
+  static GXAttrType GetAttributeType(uint vertexDesc, GXAttr attribute);
+
 private:
   const uchar* mDisplayList;
   uint mSize;
