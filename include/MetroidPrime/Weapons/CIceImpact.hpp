@@ -38,7 +38,7 @@ class CIceImpact : public CEffect {
 public:
   CIceImpact(const TLockedToken< CGenDescription >& particle, TUniqueId uid, TAreaId aid,
              TUniqueId ownerId, bool active, const rstl::string& name, const CTransform4f& xf,
-             uint flags, const CVector3f& scale, float boundScale);
+             uint flags, const CVector3f& scale, const CColor& color, float boundScale);
 
   // CEntity
   ~CIceImpact() override;
