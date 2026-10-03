@@ -13,7 +13,7 @@ CScriptRoomAcoustics::CScriptRoomAcoustics(
     int feedbackL, int feedbackR, int feedbackS, int outputL, int outputR, int outputS,
     bool flanger, float flangerDelay, float flangerDelayPhase, float flangerDry,
     float flangerFeedback, float flangerLFODepth, float flangerLFOFrequency, float flangerLFOWave,
-    float flangerOut, bool bitcrusher, float bitcrusherValue, float bitcrusherGain,
+    float flangerOut, bool bitcrusher, float bitcrusherDistortionType, float bitcrusherGain,
     float bitcrusherBitDepth, float bitcrusherSampleRateReduction, bool phaser,
     float phaserFrequency, float phaserFeedback, float phaserInvert, float phaserMix,
     float phaserSweep)
@@ -60,7 +60,7 @@ CScriptRoomAcoustics::CScriptRoomAcoustics(
 , mFlangerLFOWave(flangerLFOWave)
 , mFlangerOut(flangerOut)
 , mBitcrusher(bitcrusher)
-, xC4_(bitcrusherValue)
+, mBitcrusherDistortionType(bitcrusherDistortionType)
 , mBitcrusherGain(bitcrusherGain)
 , mBitcrusherBitDepth(bitcrusherBitDepth)
 , mBitcrusherSampleRateReduction(bitcrusherSampleRateReduction)
@@ -151,7 +151,7 @@ void CScriptRoomAcoustics::EnableAuxCallbacks() {
     }
     if (mFlanger && applied < 1) {
       SFlangerAuxParameters flanger;
-      flanger.x14_ = true;
+      flanger.mProcessing.mProcessReplacing = true;
       flanger.mDelay = mFlangerDelay;
       flanger.mFeedback = mFlangerFeedback;
       flanger.mOut = mFlangerOut;
@@ -166,8 +166,8 @@ void CScriptRoomAcoustics::EnableAuxCallbacks() {
     }
     if (mBitcrusher && applied < 1) {
       SBitcrusherAuxParameters bitcrusher;
-      bitcrusher.x14_ = true;
-      bitcrusher.x18_ = xC4_;
+      bitcrusher.mProcessing.mProcessReplacing = true;
+      bitcrusher.mDistortionType = mBitcrusherDistortionType;
       bitcrusher.mGain = mBitcrusherGain;
       bitcrusher.mBitDepth = mBitcrusherBitDepth;
       bitcrusher.mSampleRateReduction = mBitcrusherSampleRateReduction;
@@ -177,7 +177,7 @@ void CScriptRoomAcoustics::EnableAuxCallbacks() {
     }
     if (mPhaser && applied < 1) {
       SPhaserAuxParameters phaser;
-      phaser.x14_ = false;
+      phaser.mProcessing.mProcessReplacing = false;
       phaser.mFrequency = mPhaserFrequency;
       phaser.mFeedback = mPhaserFeedback;
       phaser.mInvert = mPhaserInvert;
