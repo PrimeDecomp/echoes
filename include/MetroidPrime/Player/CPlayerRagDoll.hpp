@@ -3,13 +3,13 @@
 
 #include "MetroidPrime/CRagDoll.hpp"
 
-class CPhysicsActor;
+class CPlayer;
 
 // Guessed name. Native player-owned specialization of CRagDoll; its sound and
 // impulse members also correspond structurally to Prime's CPirateRagDoll.
 class CPlayerRagDoll : public CRagDoll {
 public:
-  CPlayerRagDoll(CStateManager& mgr, CPhysicsActor* actor, ushort thudSfx, uint flags);
+  CPlayerRagDoll(CStateManager& mgr, CPlayer* player, ushort thudSfx, uint flags);
   ~CPlayerRagDoll() {}
 
   // CRagDoll
@@ -17,9 +17,12 @@ public:
   void Update(CStateManager& mgr, float dt, float waterTop) override;
   void PreRender(const CVector3f& pos, CModelData& modelData) override;
 
+  // Guessed name: restores the saved bounds and collision materials.
+  void RestoreActorCollision(CStateManager& mgr);
+
 private:
   // Guessed names, established by construction, Prime and Update consumers.
-  CPhysicsActor* mActor;
+  CPlayer* mPlayer;
   ushort mThudSfx;
   float mSfxTimer;
   CVector3f mLastSfxPos;

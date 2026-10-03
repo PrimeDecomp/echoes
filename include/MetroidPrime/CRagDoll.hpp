@@ -61,6 +61,9 @@ protected:
     const CSegId& GetBone() const { return mId; }
     const CVector3f& GetPosition() const { return mCurPos; }
     CVector3f& Position() { return mCurPos; }
+
+    CVector3f& Acceleration() { return mAcceleration; }
+
     float GetRadius() const { return mRadius; }
 
   private:
