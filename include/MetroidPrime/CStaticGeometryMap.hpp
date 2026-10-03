@@ -6,6 +6,7 @@
 #include "rstl/pair.hpp"
 #include "rstl/vector.hpp"
 
+// Guessed EGMC class and member names
 class CStaticGeometryMapData {
 public:
   typedef rstl::pair< uint, TEditorId > TMapping;
@@ -18,6 +19,7 @@ private:
 };
 CHECK_SIZEOF(CStaticGeometryMapData, 0x10)
 
+// Guessed runtime-owner class and member names
 class CStaticGeometryMap {
 public:
   explicit CStaticGeometryMap(const TLockedToken< CStaticGeometryMapData >& data);
@@ -30,6 +32,7 @@ CHECK_SIZEOF(CStaticGeometryMap, 0xc)
 
 class CFactoryFnReturn;
 class CVParamTransfer;
+// Guessed name
 CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag& tag, CInputStream& in,
                                                         const CVParamTransfer& xfer);
 
