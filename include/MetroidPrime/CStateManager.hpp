@@ -145,6 +145,7 @@ public:
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
+  bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
 
