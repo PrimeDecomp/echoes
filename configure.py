@@ -394,6 +394,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CArchMsgParmUserInput.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CInputGenerator.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CMainFlow.cpp"),
+            Object(NonMatching, "MetroidPrime/CMFGame.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CCredits.cpp"),
             Object(NonMatching, "MetroidPrime/CSplashScreen.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),

@@ -46,6 +46,8 @@ public:
     SPreviousGameResults()
     : mGameMode(0), mShowResults(false), x8_(0), mPlayerCount(0), mPlayers(4, SPlayerResult()) {}
     explicit SPreviousGameResults(CBitStreamReader& in);
+    SPreviousGameResults(uint gameMode, bool showResults, int modeResult, int playerCount,
+                         const rstl::reserved_vector< SPlayerResult, 4 >& players);
     void PutTo(CBitStreamWriter& out) const;
 
     uint mGameMode;
