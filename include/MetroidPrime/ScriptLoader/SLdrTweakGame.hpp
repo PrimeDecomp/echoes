@@ -10,11 +10,7 @@ struct SLdrTweakGame_FragLimitChoices {
   SLdrTweakGame_FragLimitChoices();
   ~SLdrTweakGame_FragLimitChoices();
 
-  int fragLimit0; // 0xa2023ba8
-  int fragLimit1; // 0x1abe5ccd
-  int fragLimit2; // 0x080bf323
-  int fragLimit3; // 0xb0b79446
-  int fragLimit4; // 0x2d60acff
+  int fragLimits[5]; // Guessed member name.
 };
 
 void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& data, CInputStream& input);
@@ -23,11 +19,7 @@ struct SLdrTweakGame_TimeLimitChoices {
   SLdrTweakGame_TimeLimitChoices();
   ~SLdrTweakGame_TimeLimitChoices();
 
-  float timeLimit0; // 0x779e8ff4
-  float timeLimit1; // 0xbcc25c51
-  float timeLimit2; // 0x3a562eff
-  float timeLimit3; // 0xf10afd5a
-  float timeLimit4; // 0xec0fcde2
+  float timeLimits[5]; // Guessed member name.
 };
 
 void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& data, CInputStream& input);
@@ -36,11 +28,7 @@ struct SLdrTweakGame_CoinLimitChoices {
   SLdrTweakGame_CoinLimitChoices();
   ~SLdrTweakGame_CoinLimitChoices();
 
-  int coinLimit0; // 0x6b4cae26
-  int coinLimit1; // 0xd3f0c943
-  int coinLimit2; // 0xc14566ad
-  int coinLimit3; // 0x79f901c8
-  int coinLimit4; // 0xe42e3971
+  int coinLimits[5]; // Guessed member name.
 };
 
 void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& data, CInputStream& input);

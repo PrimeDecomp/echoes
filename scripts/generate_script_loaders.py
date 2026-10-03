@@ -180,6 +180,14 @@ PRIMITIVES: dict[str, Primitive] = {
 # destructor and reader (SLdrPlayerItem: 0x8023E0C4, 0x8023E0DC, 0x8023E118).
 ENUM_RECORDS = frozenset({"PlayerItem"})
 
+# G2ME01 CTweakGame's indexed getters at 80216CD0..80216D20 access these
+# homogeneous records as five-element arrays; retain each XML property ID.
+NATIVE_INDEXED_RECORDS = {
+    "SLdrTweakGame_FragLimitChoices": ("fragLimit", "int"),
+    "SLdrTweakGame_TimeLimitChoices": ("timeLimit", "float"),
+    "SLdrTweakGame_CoinLimitChoices": ("coinLimit", "int"),
+}
+
 # Nested members a native constructor re-stores with their archetype default, so
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
 # Record -> member -> statements appended after that member's template defaults.
@@ -628,6 +636,24 @@ class Generator:
             if pid in G2ME01_ABSENT_PROPERTIES.get(name, frozenset()):
                 prop = replace(prop, condition="VERSION != VERSION_G2ME01")
             struct.fields.append(prop)
+        if name in NATIVE_INDEXED_RECORDS:
+            base, cpp = NATIVE_INDEXED_RECORDS[name]
+            if (
+                [prop.name for prop in struct.fields]
+                != [base + str(i) for i in range(5)]
+                or any(
+                    prop.cpp != cpp
+                    or prop.dependency
+                    or prop.condition
+                    or prop.node.find("DefaultValue") is None
+                    for prop in struct.fields
+                )
+            ):
+                raise TemplateError("Indexed record shape changed: " + name)
+            struct.fields = [
+                replace(prop, name=f"{base}s[{i}]")
+                for i, prop in enumerate(struct.fields)
+            ]
         self.loading.remove(name)
         self.structs[name] = struct
 
@@ -859,6 +885,14 @@ class Generator:
             ]
             declarations: list[tuple[str | None, list[str]]] = []
             for prop in member.fields:
+                if member_name in NATIVE_INDEXED_RECORDS:
+                    if prop != member.fields[0]:
+                        continue
+                    base, cpp = NATIVE_INDEXED_RECORDS[member_name]
+                    declarations.append(
+                        (None, [f"  {cpp} {base}s[5]; // Guessed member name."])
+                    )
+                    continue
                 comment_entries = []
                 if not member.atomic:
                     if prop.matching_name is False:

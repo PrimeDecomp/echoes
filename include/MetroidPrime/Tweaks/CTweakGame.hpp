@@ -11,7 +11,7 @@ class CTweakGame {
 public:
   explicit CTweakGame(const SLdrTweakGame& data) : mData(&data) {}
 
-  rstl::string GetPakFile();             // Guessed name.
+  rstl::string GetPakFile() const;       // Guessed name.
   float GetFieldOfView() const;          // Guessed name.
   float GetTwoPlayerFieldOfView() const; // Guessed name.
   float GetHardModeDamageMultiplier() const;
