@@ -1794,6 +1794,13 @@ WorldFormat/CAreaRenderOctTree.cpp:
 	.sdata      start:0x80418960 end:0x80418968
 	.sdata2     start:0x8041DDF0 end:0x8041DDF8
 
+MetroidPrime/CPortalAreaData.cpp:
+	.text       start:0x802554D0 end:0x80257498
+	.rodata     start:0x803AD920 end:0x803AD928
+	.data       start:0x803B8AB0 end:0x803B8AC0
+	.sbss       start:0x80419720 end:0x80419730
+	.sdata2     start:0x8041DE00 end:0x8041DE18
+
 WorldFormat/CCollisionCache.cpp:
 	.text       start:0x80257CB8 end:0x802591B4
 	.rodata     start:0x803AD928 end:0x803AD930
