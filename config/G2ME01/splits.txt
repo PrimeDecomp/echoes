@@ -65,6 +65,15 @@ MetroidPrime/CMainFlow.cpp:
 	.data       start:0x803B1770 end:0x803B17D0
 	.sdata      start:0x80417DE0 end:0x80417DF8
 
+MetroidPrime/CMFGame.cpp:
+	.text       start:0x8001E070 end:0x8001FF7C
+	.rodata     start:0x803A60B0 end:0x803A6130
+	.data       start:0x803B17D0 end:0x803B1850
+	.sdata      start:0x80417DF8 end:0x80417E00
+	.sbss       start:0x80418F08 end:0x80418F10
+	.sdata2     start:0x8041A628 end:0x8041A650
+	.sbss2      start:0x8041F880 end:0x8041F888
+
 MetroidPrime/CCredits.cpp:
 	.text       start:0x8001FF7C end:0x80023FFC
 	.ctors      start:0x803A54B8 end:0x803A54BC
