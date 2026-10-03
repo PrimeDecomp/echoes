@@ -1733,6 +1733,17 @@ GuiSys/CGuiWidget.cpp:
 	.text       start:0x8027D7B0 end:0x8027E1E4
 	.data       start:0x803B9040 end:0x803B9080
 
+GuiSys/CGuiWidgetIdDB.cpp:
+	.text       start:0x8027E1E4 end:0x8027E3D8
+	.rodata     start:0x803AE938 end:0x803AE968
+	.sdata2     start:0x8041E0F0 end:0x8041E0F8
+
+GuiSys/CGuiWidgetDrawParms.cpp:
+	.text       start:0x8027E3D8 end:0x8027E3F8
+	.ctors      start:0x803A55BC end:0x803A55C0
+	.bss        start:0x80411024 end:0x80411038 align:4 common
+	.sdata2     start:0x8041E0F8 end:0x8041E100
+
 GuiSys/CAuiEnergyBarT01.cpp:
 	.text       start:0x8027E3F8 end:0x8027EF10
 	.rodata     start:0x803AE968 end:0x803AE998
