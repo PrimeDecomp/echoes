@@ -2619,7 +2619,12 @@ Kyoto/Math/CMayaSpline.cpp:
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
 
 Kyoto/Particles/CParticleSpawnSystem.cpp:
+	.text       start:0x8032B7C0 end:0x8032DC68
+	.ctors      start:0x803A5674 end:0x803A5678
+	.data       start:0x803BB2D8 end:0x803BB368
+	.bss        start:0x803E0520 end:0x803E0530
 	.sdata      start:0x80418C68 end:0x80418C70
+	.sdata2     start:0x8041EC30 end:0x8041EC68
 
 Kyoto/Particles/CParticleSpawnRandom.cpp:
 	.sdata      start:0x80418C70 end:0x80418C78
