@@ -438,6 +438,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileManager.cpp"),
             Object(NonMatching, "Collision/CCollidableAABox.cpp"),
             Object(NonMatching, "Collision/CCollidableSphere.cpp"),
+            Object(NonMatching, "Collision/CMaterialFilter.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollidableCollisionSurface.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollisionInfo.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/InternalColliders.cpp"),
