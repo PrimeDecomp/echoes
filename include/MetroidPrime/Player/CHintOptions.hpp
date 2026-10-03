@@ -42,6 +42,7 @@ public:
   const SHintState* GetCurrentDisplayedHint() const;
   int GetNextHintIdx();
   const rstl::vector< SHintState >& GetHintStates() const { return mHintStates; }
+  void SetInRezbitState(bool state) { mInRezbitState = state; } // Guessed name
 
 private:
   static uint GetBitCount(uint value);

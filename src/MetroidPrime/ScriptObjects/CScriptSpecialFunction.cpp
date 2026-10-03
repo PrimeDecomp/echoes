@@ -10,6 +10,7 @@
 #include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/CMapWorldInfo.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Decode.hpp"
@@ -17,6 +18,8 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 // Guessed names
@@ -279,7 +282,7 @@ void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& 
 
 void CScriptSpecialFunction::AcceptInventoryActivator(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Action) {
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < static_cast< uint >(mgr.GetNumPlayers()); ++i) {
       if (mgr.PlayerState(i)->HasPowerUp(mItem)) {
         SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
         return;
@@ -306,7 +309,24 @@ void CScriptSpecialFunction::AcceptDropBomb(CStateManager& mgr, const CScriptMsg
 }
 
 void CScriptSpecialFunction::AcceptHint(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: control the named hint and hint timer.
+  CHintOptions& hints = gpGameState->HintOptions();
+  switch (msg.GetMessage()) {
+  case kSM_Action:
+    hints.ActivateContinueDelayHintTimer(mStringParm);
+    break;
+  case kSM_Increment:
+    hints.ActivateImmediateHintTimer(mStringParm);
+    break;
+  case kSM_Decrement:
+    hints.DelayHint(mStringParm);
+    break;
+  case kSM_Start:
+    hints.SetInRezbitState(false);
+    break;
+  case kSM_Stop:
+    hints.SetInRezbitState(true);
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptPlayerInArea(CStateManager& mgr, const CScriptMsg& msg) {
@@ -337,7 +357,7 @@ void CScriptSpecialFunction::AcceptFogFader(CStateManager& mgr, const CScriptMsg
   case kSM_Increment:
     scale = mValue1;
   case kSM_Decrement:
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < static_cast< uint >(mgr.GetNumPlayers()); ++i) {
       mgr.CameraManager(i)->SetWaterFogScale(scale, mValue2);
     }
     break;
@@ -382,7 +402,15 @@ void CScriptSpecialFunction::fn_80107a58(CStateManager& mgr, const CScriptMsg& m
 }
 
 void CScriptSpecialFunction::AcceptPlayerSpawnPoint(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: select a connected spawn point for the configured player.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = mIntParm1;
+    if (player < mgr.GetNumPlayers()) {
+      TUniqueId spawn = FindConnectedObject(mgr, kSS_Play, kSM_Activate);
+      if (TCastToConstPtr< CScriptSpawnPoint >(mgr.GetObjectById(spawn))) {
+        gpGameState->GetGameMode().SetSpawnPoint(mIntParm1, spawn);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::fn_80107994(CStateManager& mgr, const CScriptMsg& msg) {
@@ -403,8 +431,8 @@ void CScriptSpecialFunction::AcceptSetTimedItemAmount(CStateManager& mgr, const 
   if (msg.GetMessage() == kSM_Action) {
     uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
     if (player < mgr.GetNumPlayers()) {
-      CPlayerState* playerState = mgr.PlayerState(player);
       CPlayerState::EItemType item = mItem;
+      CPlayerState* playerState = mgr.PlayerState(player);
       playerState->SetItemAmount(item, mIntParm2);
       playerState->SetTimeLeft(item, mValue1);
       mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
@@ -438,11 +466,32 @@ void CScriptSpecialFunction::AcceptModifyItemCapacity(CStateManager& mgr, const 
 }
 
 void CScriptSpecialFunction::AcceptModifyItem(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: adjust the selected player's item capacity and amount.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      CPlayerState* playerState = mgr.PlayerState(player);
+      playerState->AddPowerUp(mItem, mIntParm2);
+      if (mIntParm2 > 0) {
+        playerState->IncrPickUp(mItem, mIntParm2);
+      } else {
+        playerState->DecrPickUp(mItem, -mIntParm2);
+      }
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptGiveTimedItem(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: set the selected player's item capacity, amount and timer.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      CPlayerState* playerState = mgr.PlayerState(player);
+      playerState->ReInitializePowerUp(mItem, mIntParm2);
+      playerState->SetItemAmount(mItem, mIntParm2);
+      playerState->SetTimeLeft(mItem, mValue1);
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptLastDamager(CStateManager& mgr, const CScriptMsg& msg) {
@@ -589,7 +638,16 @@ void CScriptSpecialFunction::AcceptMultiplayerResult(CStateManager& mgr, const C
 }
 
 void CScriptSpecialFunction::AcceptMapObjectVisibility(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update this object's map visibility.
+  if (GetActive()) {
+    switch (msg.GetMessage()) {
+    case kSM_Decrement:
+      mgr.MapWorldInfo()->SetObjectUnmapped(mgr.GetEditorIdForUniqueId(GetUniqueId()), true);
+      break;
+    case kSM_Increment:
+      mgr.MapWorldInfo()->SetObjectUnmapped(mgr.GetEditorIdForUniqueId(GetUniqueId()), false);
+      break;
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptStopRezbitState(CStateManager& mgr, const CScriptMsg& msg) {
@@ -901,7 +959,36 @@ void CScriptSpecialFunction::Think(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkBillboard(float dt, CStateManager& mgr) {
-  // TODO: advance the billboard fade state.
+  switch (mIntParm2) {
+  case 1:
+    if (!CMath::IsEpsilon(mValue2, 0.f, 0.00001f)) {
+      float alpha = mValue4 + dt / mValue2;
+      if (alpha >= 1.f) {
+        mValue4 = 1.f;
+        mIntParm2 = 0;
+      } else {
+        mValue4 = alpha;
+      }
+    } else {
+      mValue4 = 1.f;
+      mIntParm2 = 0;
+    }
+    break;
+  case 2:
+    if (!CMath::IsEpsilon(mValue3, 0.f, 0.00001f)) {
+      float alpha = mValue4 - dt / mValue3;
+      if (alpha <= 0.f) {
+        mValue4 = 0.f;
+        mIntParm2 = 0;
+      } else {
+        mValue4 = alpha;
+      }
+    } else {
+      mValue4 = 0.f;
+      mIntParm2 = 0;
+    }
+    break;
+  }
 }
 
 void CScriptSpecialFunction::ThinkSaveStation(float dt, CStateManager& mgr) {
@@ -977,7 +1064,13 @@ void CScriptSpecialFunction::ThinkPlayerFrustumTester(float dt, CStateManager& m
 }
 
 void CScriptSpecialFunction::ThinkPlayerItemRelay(float dt, CStateManager& mgr) {
-  // TODO: route player messages using the configured item's value.
+  for (int i = 0; i < static_cast< uint >(mgr.GetNumPlayers()); ++i) {
+    int amount = mgr.PlayerState(i)->GetItemAmount(mItem, true);
+    if (amount != 0 && amount <= static_cast< uint >(mgr.GetNumPlayers())) {
+      SendScriptMsgs(kSS_Play, mgr, mgr.GetPlayer(i)->GetUniqueId(), kSM_None);
+      SendScriptMsgs(kSS_Zero, mgr, mgr.GetPlayer(amount - 1)->GetUniqueId(), kSM_None);
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkPlayerOffset(float dt, CStateManager& mgr) {
@@ -1023,7 +1116,15 @@ void CScriptSpecialFunction::ThinkSkyboxLighting(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkAreaOcclusion(float dt, CStateManager& mgr) {
-  // TODO: report changes in this area's occlusion state.
+  int state = mgr.World()->Area(GetCurrentAreaId())->GetOcclusionState();
+  if (state != mIntParm1) {
+    if (state == CGameArea::kOS_Occluded) {
+      SendScriptMsgs(kSS_InternalState00, mgr, kInvalidUniqueId, kSM_None);
+    } else if (state == CGameArea::kOS_Visible) {
+      SendScriptMsgs(kSS_InternalState01, mgr, kInvalidUniqueId, kSM_None);
+    }
+    mIntParm1 = state;
+  }
 }
 
 void CScriptSpecialFunction::ThinkMultiplayerEndConditions(float dt, CStateManager& mgr) {
@@ -1031,7 +1132,11 @@ void CScriptSpecialFunction::ThinkMultiplayerEndConditions(float dt, CStateManag
 }
 
 void CScriptSpecialFunction::ThinkTriggerScale(float dt, CStateManager& mgr) {
-  // TODO: resize the connected trigger.
+  if (CScriptTriggerEllipsoid* trigger = TCastToPtr< CScriptTriggerEllipsoid >(
+          mgr.ObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)))) {
+    float d = dt * mValue1;
+    trigger->SetScale(trigger->GetScale() + CVector3f(d, d, d));
+  }
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowJoint(float dt, CStateManager& mgr) {
@@ -1087,10 +1192,10 @@ void CScriptSpecialFunction::SetInFrustum(bool inFrustum) {
   mInFrustum = inFrustum;
 }
 
-int CScriptSpecialFunction::ResolvePlayerIndex(int playerIndex, TUniqueId originator,
+int CScriptSpecialFunction::ResolvePlayerIndex(int playerIndex, const TUniqueId& originator,
                                                CStateManager& mgr) {
-  if (playerIndex == -1 && TCastToPtr< CPlayer >(mgr.ObjectById(originator))) {
-    playerIndex = mgr.MaskUIdNumPlayers(originator);
+  if (playerIndex == -1 && TCastToConstPtr< CPlayer >(mgr.GetObjectById(originator))) {
+    return mgr.MaskUIdNumPlayers(originator);
   }
   return playerIndex;
 }

@@ -131,7 +131,7 @@ public:
   void SendFrustumMessages(CStateManager& mgr);
   void SetInFrustum(bool inFrustum);
   void OnItemDepleted(CStateManager& mgr, int playerIndex, CPlayerState::EItemType item);
-  int ResolvePlayerIndex(int playerIndex, TUniqueId originator, CStateManager& mgr);
+  int ResolvePlayerIndex(int playerIndex, const TUniqueId& originator, CStateManager& mgr);
 
   // Guessed names for the independently dispatched Echoes handlers.
   void AcceptCredits(CStateManager& mgr, const CScriptMsg& msg);
