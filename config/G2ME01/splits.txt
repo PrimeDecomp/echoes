@@ -1547,6 +1547,12 @@ MetroidPrime/Enemies/CGenericFSM2.cpp:
 	.data       start:0x803B7B90 end:0x803B7C18
 	.sdata2     start:0x8041D6B0 end:0x8041D6B8
 
+MetroidPrime/ScriptObjects/CScriptTextPane.cpp:
+	.text       start:0x801FFEB0 end:0x80200DAC
+	.rodata     start:0x803AC580 end:0x803AC588
+	.data       start:0x803B7C18 end:0x803B7C98
+	.sdata2     start:0x8041D6B8 end:0x8041D6E8
+
 MetroidPrime/CPauseScreen.cpp:
 	.text       start:0x80201F4C end:0x8020DA7C
 
