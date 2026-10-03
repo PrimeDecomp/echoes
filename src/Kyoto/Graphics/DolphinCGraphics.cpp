@@ -7,6 +7,7 @@
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CGXTransientBuffer.hpp"
 #include "Kyoto/Graphics/CGraphicsSys.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
@@ -31,9 +32,6 @@ static float sPreviousFrameWaitFraction;
 static int sGraphicsArenaSize;
 static int sGraphicsArenaOffset;
 static uchar* sGraphicsArena;
-
-// Buffer ownership is unresolved; also used by the skinned-model workspace allocator.
-extern "C" void fn_8032F6EC(void* buffer, uint size);
 
 // clang-format off
 CTevCombiners::CTevPass CGraphics::kEnvModulateConstColor(
@@ -362,7 +360,7 @@ void CGraphics::ConfigureVideo(bool initial, bool progressive) {
   mpFrameBuf2 = nullptr;
   mpFifo = nullptr;
   sSpareAllocation = nullptr;
-  fn_8032F6EC(nullptr, 0);
+  CGXTransientBuffer::SetBuffer(nullptr, 0);
   ResetGraphicsArena();
   const int frameBufferSize = ((mRenderModeObj.fbWidth + 15) & ~15) * mRenderModeObj.xfbHeight * 2;
   mpFrameBuf1 = AllocateGraphicsArena(frameBufferSize);
@@ -371,7 +369,7 @@ void CGraphics::ConfigureVideo(bool initial, bool progressive) {
   sSpareAllocationSize = 0x46000;
   mpFifo = AllocateGraphicsArena(mFifoSize);
   sSpareAllocation = AllocateGraphicsArena(sSpareAllocationSize);
-  fn_8032F6EC(AllocateGraphicsArena(0x40000), 0x40000);
+  CGXTransientBuffer::SetBuffer(AllocateGraphicsArena(0x40000), 0x40000);
   mSpareBufferSize = sSpareAllocationSize;
   mpSpareBuffer = sSpareAllocation;
   if (!initial) {
@@ -439,7 +437,7 @@ void CGraphics::Shutdown() {
   mpFrameBuf2 = nullptr;
   mpFifo = nullptr;
   sSpareAllocation = nullptr;
-  fn_8032F6EC(nullptr, 0);
+  CGXTransientBuffer::SetBuffer(nullptr, 0);
   ResetGraphicsArena();
 }
 

@@ -2677,6 +2677,13 @@ Kyoto/Particles/CSortedParticleSystemDataFactory.cpp:
 Kyoto/Particles/CSortedParticleSystemDescription.cpp:
 	.text       start:0x8032F2B8 end:0x8032F31C
 
+Kyoto/Graphics/CGXTransientBuffer.cpp:
+	.text       start:0x8032F31C end:0x8032FA60
+	.ctors      start:0x803A567C end:0x803A5680
+	.bss        start:0x803E0540 end:0x803E0590
+	.sdata      start:0x80418C78 end:0x80418C80
+	.sbss       start:0x80419C58 end:0x80419C68
+
 Kyoto/Math/CGameCameraSpline.cpp:
 	.text       start:0x8032FA60 end:0x8032FC64
 	.data       start:0x803BB408 end:0x803BB418

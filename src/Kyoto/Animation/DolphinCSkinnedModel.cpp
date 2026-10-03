@@ -8,16 +8,13 @@
 #include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CCubeSurface.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CGXTransientBuffer.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 
 #include "dolphin/gx.h"
 #include "dolphin/os.h"
-
-// Shared GX scratch-buffer helpers; their owning TU is not yet reconstructed.
-extern "C" void* fn_8032F404(int size);
-extern "C" void fn_8032F3CC();
 
 CSkinnedModel::TPointGenFunc CSkinnedModel::sPointGen;
 void* CSkinnedModel::sPointGenData;
@@ -30,7 +27,7 @@ public:
 
   ~CMatrixPoolGuard() {
     if (mActive) {
-      fn_8032F3CC();
+      CGXTransientBuffer::ReleaseAllocation();
     }
   }
 
@@ -90,7 +87,8 @@ void CSkinnedModel::DolphinDrawInternal(const SSkinningWorkspace& workspace, uin
   SSkinningMatrices* matrices = workspace.mMatrices;
   if (matrices == nullptr) {
     matrices = static_cast< SSkinningMatrices* >(
-        fn_8032F404(mSkinRules->GetNumVirtualBones() * sizeof(SSkinningMatrices)));
+        CGXTransientBuffer::EnsureAllocation(mSkinRules->GetNumVirtualBones() *
+                                            sizeof(SSkinningMatrices)));
     BuildSkinningMatrices(workspace.mTransforms, matrices, workspace.mUniformScale);
   }
   CGX::SetArray(GX_POS_MTX_ARRAY, matrices, sizeof(SSkinningMatrices));
@@ -141,7 +139,7 @@ CSkinnedModelState::CSkinnedModelState(int boneCount, bool transient) {
   if (mWorkspace.mTransient) {
     const uint transformSize = (boneCount * sizeof(CTransform4f) + 31) & ~31;
     const uint matrixSize = (boneCount * sizeof(SSkinningMatrices) + 31) & ~31;
-    void* data = fn_8032F404(transformSize + matrixSize);
+    void* data = CGXTransientBuffer::EnsureAllocation(transformSize + matrixSize);
     mWorkspace.mTransforms = static_cast< CTransform4f* >(data);
     mWorkspace.mMatrices =
         reinterpret_cast< SSkinningMatrices* >(static_cast< uchar* >(data) + transformSize);
@@ -163,7 +161,7 @@ CSkinnedModelState::~CSkinnedModelState() {
     if (mWorkspace.mTransient) {
       DCFlushRange(mWorkspace.mTransforms,
                    (mWorkspace.mBoneCount * sizeof(CTransform4f) + 31) & ~31);
-      fn_8032F3CC();
+      CGXTransientBuffer::ReleaseAllocation();
     } else {
       CMemory::Free(mWorkspace.mTransforms);
     }
