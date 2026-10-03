@@ -1446,7 +1446,9 @@ MetroidPrime/Player/CPlayerTargeting.cpp:
 	.sdata2     start:0x8041D520 end:0x8041D550
 
 MetroidPrime/CStaticGeometryMap.cpp:
-	.text       start:0x801EFA00 end:0x801EFA4C
+	.text       start:0x801EF598 end:0x801EFB00
+	.rodata     start:0x803AB1B8 end:0x803AB1C0
+	.data       start:0x803B78D0 end:0x803B78E0
 
 MetroidPrime/Startup.cpp:
 	.text       start:0x801EFB00 end:0x801F0254
