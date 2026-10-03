@@ -15,6 +15,7 @@ class CGenDescription;
 class CSwooshDescription;
 class CCollisionResponseData;
 
+// WPSM resource layout: property names and offsets are corroborated by the native factory.
 class CWeaponDescription {
 public:
   typedef rstl::optional_object< TLockedToken< CModel > > TParticleModel;

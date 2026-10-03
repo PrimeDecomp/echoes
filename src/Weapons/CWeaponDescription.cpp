@@ -1,0 +1,90 @@
+#include "Weapons/CWeaponDescription.hpp"
+
+#include "Kyoto/Particles/IElement.hpp"
+
+CWeaponDescription::CWeaponDescription()
+: mIORN(nullptr)
+, mIVEC(nullptr)
+, mPSOV(nullptr)
+, mPSVM(nullptr)
+, mPSLT(nullptr)
+, mPSCL(nullptr)
+, mPCOL(nullptr)
+, mPOFS(nullptr)
+, mOFST(nullptr)
+, mB1TX(nullptr)
+, mB1PO(nullptr)
+, mB1CL(nullptr)
+, mB1SE(nullptr)
+, mB1RT(nullptr)
+, mB2TX(nullptr)
+, mB2PO(nullptr)
+, mB2CL(nullptr)
+, mB2SE(nullptr)
+, mB2RT(nullptr)
+, mTTEX(nullptr)
+, mTLPO(nullptr)
+, mTSCL(nullptr)
+, mTECL(nullptr)
+, mTSZE(nullptr)
+, mTLEN(nullptr)
+, mAPSO(false)
+, mF60H(false)
+, mSVBD(false)
+, mNDTT(false)
+// Native construction leaves mHOMG untouched; it is read from a WPSM property.
+, mDP1C(false)
+, mAP11(false)
+, mSPS1(false)
+, mDP2C(false)
+, mAP21(false)
+, mSPS2(false)
+, mAS11(false)
+, mAS12(false)
+, mAS13(false)
+, mEELT(false)
+, mEWTR(true)
+, mLWTR(true)
+, mSWTR(true)
+, mFC60(false)
+, mRWPE(false)
+, mVMD2(false)
+, mRB1A(true)
+, mRB2A(true)
+, mRTLA(true)
+, mBHBT(true)
+, mTRAT(nullptr)
+, mPJFX(-1)
+, mRNGE(nullptr)
+, mFOFF(nullptr) {}
+
+CWeaponDescription::~CWeaponDescription() {
+  delete mIVEC;
+  delete mIORN;
+  delete mPSVM;
+  delete mPSOV;
+  delete mPSLT;
+  delete mPSCL;
+  delete mPCOL;
+  delete mPOFS;
+  delete mOFST;
+  delete mB1TX;
+  delete mB1PO;
+  delete mB1CL;
+  delete mB1SE;
+  delete mB1RT;
+  delete mB2TX;
+  delete mB2PO;
+  delete mB2CL;
+  delete mB2SE;
+  delete mB2RT;
+  delete mTTEX;
+  delete mTLPO;
+  delete mTSCL;
+  delete mTECL;
+  delete mTSZE;
+  delete mTLEN;
+  delete mTRAT;
+  delete mRNGE;
+  delete mFOFF;
+}

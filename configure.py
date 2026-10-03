@@ -662,6 +662,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/CShockWave.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CPlasmaProjectile.cpp"),
             Object(NonMatching, "Weapons/CProjectileWeapon.cpp"),
+            Object(NonMatching, "Weapons/CProjectileWeaponDataFactory.cpp"),
+            Object(NonMatching, "Weapons/CWeaponDescription.cpp"),
             Object(NonMatching, "Weapons/CCollisionResponseData.cpp"),
             Object(Matching, "Weapons/IWeaponRenderer.cpp"),
             Object(Matching, "Weapons/CDecalDataFactory.cpp"),
