@@ -479,6 +479,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptActorKeyframe.cpp"),
             Object(NonMatching, "MetroidPrime/CConsoleOutputWindow.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CCameraColliderGroup.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CBallCameraTransitions.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CFirstPersonCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraManager.cpp"),
