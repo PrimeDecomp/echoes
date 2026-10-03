@@ -2645,6 +2645,10 @@ Kyoto/Math/CMayaSpline.cpp:
 	.sdata      start:0x80418C50 end:0x80418C68
 	.sdata2     start:0x8041EBC0 end:0x8041EC28
 
+Kyoto/Audio/CSfxPitchBend.cpp:
+	.text       start:0x8032AFC8 end:0x8032B080
+	.sdata2     start:0x8041EC28 end:0x8041EC30
+
 Kyoto/Particles/CParticleSpawnSystemDataFactory.cpp:
 	.text       start:0x8032B080 end:0x8032B7C0
 	.rodata     start:0x803B00F8 end:0x803B0100
