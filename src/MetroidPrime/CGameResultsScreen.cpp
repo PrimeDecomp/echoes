@@ -2,6 +2,7 @@
 
 #include "Kyoto/CDependencyGroupToken.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CFilePreload.hpp"
 #include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "MetroidPrime/CActorLights.hpp"
@@ -12,14 +13,7 @@
 // Nonfunctional runtime scaffold: loading, rendering and state-machine bodies remain unimplemented.
 
 float CGameResultsScreen::CalculateFade(float start, float duration, float time) {
-  const float fade = (time - start) / duration;
-  if (fade < 0.f) {
-    return 0.f;
-  }
-  if (fade > 1.f) {
-    return 1.f;
-  }
-  return fade;
+  return CMath::Clamp(0.f, (time - start) / duration, 1.f);
 }
 
 CGameResultsScreen::SPlayerScore::SPlayerScore(int playerIndex, int coins, int frags, int deaths)
