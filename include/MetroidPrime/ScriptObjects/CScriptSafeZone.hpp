@@ -25,6 +25,10 @@ public:
   void InhabitantExited(CActor& actor, CStateManager& mgr) override;
   bool ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) const override;
 
+  // CScriptSafeZone; reconstructed name/qualification for the native extra slot.
+  virtual bool IsHurtful() const;
+  // A following native extra slot remains unidentified.
+
   // Shell appearance used while teleporting; WorldTeleporter reads the first entry.
   const CDarkWorldInfo& GetDarkWorldInfo() const { return mDarkWorldInfos[0]; }
 
@@ -39,5 +43,8 @@ private:
   uchar x3b4_[0x488 - 0x3b4];
 };
 CHECK_SIZEOF(CScriptSafeZone, 0x488)
+
+// Existing DOL forwarder into the loaded SafeZone REL callback.
+void SafeZone_ActOn(CEntity& entity, CStateManager& mgr);
 
 #endif // _CSCRIPTSAFEZONE
