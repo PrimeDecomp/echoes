@@ -795,6 +795,9 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/CBloggProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/Sporb.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/Sandworm.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SDarkCommando_FuncPtrs.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SDarkSamus_FuncPtrs.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SIng_FuncPtrs.cpp"),
         ],
     },
     {

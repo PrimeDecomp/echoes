@@ -1710,6 +1710,18 @@ MetroidPrime/Enemies/Sandworm.cpp:
 	.text       start:0x802187EC end:0x80218884
 	.sbss       start:0x804193C0 end:0x804193C8
 
+MetroidPrime/Enemies/SDarkCommando_FuncPtrs.cpp:
+	.text       start:0x80218884 end:0x802188B8
+	.sbss       start:0x804193C8 end:0x804193D0
+
+MetroidPrime/Enemies/SDarkSamus_FuncPtrs.cpp:
+	.text       start:0x802188B8 end:0x802188EC
+	.sbss       start:0x804193D0 end:0x804193D8
+
+MetroidPrime/Enemies/SIng_FuncPtrs.cpp:
+	.text       start:0x802188EC end:0x80218920
+	.sbss       start:0x804193D8 end:0x804193E0
+
 MetroidPrime/ScriptLoaderRel.cpp:
 	.text       start:0x8021BA60 end:0x8021BFE0
 	.sbss       start:0x80419480 end:0x804194F0

@@ -62,6 +62,24 @@ struct SSandworm_FuncPtrs {
 CHECK_SIZEOF(SSandworm_FuncPtrs, 0x1c)
 void SetSSandworm_FuncPtrs(SSandworm_FuncPtrs* callbacks);
 
+struct SDarkCommando_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SDarkCommando_FuncPtrs, 0x4)
+void SetSDarkCommando_FuncPtrs(SDarkCommando_FuncPtrs* callbacks);
+
+struct SDarkSamus_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SDarkSamus_FuncPtrs, 0x4)
+void SetSDarkSamus_FuncPtrs(SDarkSamus_FuncPtrs* callbacks);
+
+struct SIng_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIng_FuncPtrs, 0x4)
+void SetSIng_FuncPtrs(SIng_FuncPtrs* callbacks);
+
 struct SGuiWidget_FuncPtrs {
   FScriptLoader guiWidget;
   FScriptLoader guiScreen;
