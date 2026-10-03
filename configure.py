@@ -706,6 +706,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CAiKnockBackMgr.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CKnockBackMgr.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerKnockBackMgr.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerBodyController.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyLocomotion.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyJump.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerRagDoll.cpp"),

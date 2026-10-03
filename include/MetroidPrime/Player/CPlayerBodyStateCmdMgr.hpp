@@ -50,18 +50,33 @@ private:
 CHECK_SIZEOF(CPBCLocomotionCmd, 0x20)
 
 class CPBCMorphToScrewAttackCmd : public CPlayerBodyStateCmd {
+public:
+  int GetTransitionType() const { return mTransitionType; }
+
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mTransitionType;
   int mAnimationVariant;
 };
 
 class CPBCMorphToBallCmd : public CPlayerBodyStateCmd {
+public:
+  int GetTransitionType() const { return mTransitionType; }
+
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mTransitionType;
   int mAnimationVariant;
 };
 
 class CPBCMorphToPlayerCmd : public CPlayerBodyStateCmd {
+public:
+  int GetTransitionType() const { return mTransitionType; }
+
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mTransitionType;
   int mAnimationVariant;
@@ -70,6 +85,7 @@ private:
 class CPBCJumpCmd : public CPlayerBodyStateCmd {
 public:
   int GetAnimationVariant() const { return mAnimationVariant; }
+  int GetJumpParameter() const { return mJumpParameter; }
 
 private:
   int mAnimationVariant;
@@ -111,6 +127,9 @@ private:
 CHECK_SIZEOF(CPBCDeathReactionCmd, 0x18)
 
 class CPBCAimCmd : public CPlayerBodyStateCmd {
+public:
+  const CVector3f& GetDirection() const { return mDirection; }
+
 private:
   CVector3f mDirection;
 };
@@ -132,6 +151,8 @@ public:
   CPBCAdditiveReactionCmd(EAdditiveReactionType type, bool looping)
   : CPlayerBodyStateCmd(kPBSC_AdditiveReaction), mType(type), mLooping(looping) {}
 
+  EAdditiveReactionType GetType() const { return mType; }
+
 private:
   EAdditiveReactionType mType;
   bool mLooping : 1;
@@ -140,6 +161,9 @@ CHECK_SIZEOF(CPBCAdditiveReactionCmd, 0x10)
 
 class CPlayerBodyStateCmdMgr {
 public:
+  CPlayerBodyStateCmdMgr();
+  void ClearCmds();
+
   const CPlayerBodyStateCmd* GetCmd(EPlayerBodyStateCmd command) const;
 
   void DeliverCmd(const CPlayerBodyStateCmd& command);

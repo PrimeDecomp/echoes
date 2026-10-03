@@ -1250,6 +1250,13 @@ MetroidPrime/ScriptObjects/CScriptConditionalRelay.cpp:
 	.rodata     start:0x803AA240 end:0x803AA248
 	.data       start:0x803B5EB0 end:0x803B5EF0
 
+MetroidPrime/Player/CPlayerBodyController.cpp:
+	.text       start:0x801984F8 end:0x8019B988
+	.ctors      start:0x803A555C end:0x803A5560
+	.rodata     start:0x803AA248 end:0x803AA528
+	.data       start:0x803B5EF0 end:0x803B6450
+	.sdata2     start:0x8041CB40 end:0x8041CB68
+
 MetroidPrime/Player/CPlayerBodyLocomotion.cpp:
 	.text       start:0x8019B988 end:0x8019C73C
 	.rodata     start:0x803AA528 end:0x803AA558
