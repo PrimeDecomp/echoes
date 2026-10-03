@@ -101,6 +101,10 @@ void CAuxWeapon::FireLightCombo(bool, int, uint, const CTransform4f&, TUniqueId,
 
 void CAuxWeapon::AcceptScriptMsg(CStateManager&, const CScriptMsg&) {}
 
+void CAuxWeapon::Load(int beam, CStateManager& mgr) {}
+
+void CAuxWeapon::LoadIdle() {}
+
 void CAuxWeapon::FreeComboVoiceId() {
   CSfxManager::SfxStop(mComboSfx);
   mComboSfx.Clear();
