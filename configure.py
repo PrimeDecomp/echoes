@@ -509,6 +509,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/HUD/CHudDecoInterfaceScan.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudVisorBeamMenu.cpp"),
             Object(NonMatching, "MetroidPrime/CQuitGameScreen.cpp"),
+            Object(NonMatching, "MetroidPrime/CInGameQuitScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CPauseScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManager.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManagerSet.cpp"),
