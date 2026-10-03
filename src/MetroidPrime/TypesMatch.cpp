@@ -36,6 +36,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptColorModulate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSound.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSoundModifier.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
@@ -188,6 +189,7 @@ TYPES_MATCH_IMPL(CScriptPointOfInterest, CActor, kET_ScriptPointOfInterest)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
 TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
+TYPES_MATCH_IMPL(CScriptSoundModifier, CEntity, kET_ScriptSoundModifier)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
@@ -252,6 +254,7 @@ CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_REF_IMPL(CScriptPickup, kET_ScriptPickup)
 CAST_TO_PTR_IMPL(CScriptPickup, kET_ScriptPickup)
 CAST_TO_REF_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
+CAST_TO_PTR_IMPL(CScriptSound, kET_ScriptSound)
 CAST_TO_PTR_IMPL(CScriptSpawnPoint, kET_ScriptSpawnPoint)
 CAST_TO_REF_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)
 CAST_TO_PTR_IMPL(CScriptStreamedMusic, kET_ScriptStreamedMusic)

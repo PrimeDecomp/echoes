@@ -53,7 +53,7 @@ CScriptSound::CScriptSound(TUniqueId uid, const rstl::string& name, const CEntit
 , mAllowDuplicates(allowDuplicates)
 , mProcessedThisFrame(false)
 , mPlayerRelativePan(playerRelativePan)
-, x1a9_27_(false)
+, mSoundModifierAttached(false)
 , mAllAreas(allAreas)
 , mScaleByMusicVolume(scaleByMusicVolume) {
   if (mWorldSfx && !mNonEmitter) {
@@ -77,6 +77,12 @@ void CScriptSound::SetMaxVolume(short volume) {
   mVolume = volume;
   // TODO: update the live emitter/non-emitter handle.
 }
+
+CSfxHandle CScriptSound::GetSfxHandle() const { return mSfxHandle; }
+
+bool CScriptSound::IsNonEmitter() const { return mNonEmitter; }
+
+void CScriptSound::SetSoundModifierAttached(bool attached) { mSoundModifierAttached = attached; }
 
 void CScriptSound::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);

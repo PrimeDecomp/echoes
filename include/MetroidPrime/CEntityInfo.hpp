@@ -66,6 +66,7 @@ enum EEntityType {
   kET_ScriptRepulsor = 74,
   kET_ScriptRoomAcoustics = 76,
   kET_ScriptSound = 77,
+  kET_ScriptSoundModifier = 78, // Guessed name.
   kET_ScriptSpawnPoint = 79,
   kET_ScriptSpecialFunction = 80,
   kET_ScriptSpiderBallAttractionSurface = 81,
