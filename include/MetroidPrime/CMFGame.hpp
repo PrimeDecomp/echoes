@@ -10,11 +10,8 @@ class CInGameGuiManagerSet;
 class CPortalTransition;
 class CStateManager;
 
-// Names reconstructed from G2ME01 behavior and Prime correspondence, except the
-// Wii-exported mMultiplayerGuiActive. See research/CMFGame-G2ME01.md in the workspace docs.
 class CMFGame : public CIOWin {
 public:
-  // Guessed names; Echoes adds multiplayer and portal states to Prime's flow.
   enum EFlowState {
     kFS_Zero,
     kFS_InGame,
@@ -24,7 +21,7 @@ public:
     kFS_MultiplayerResults,
     kFS_CinematicSkip,
     kFS_PortalTransition,
-    kFS_State8 // Area update and timed screen fade; exact purpose unresolved.
+    kFS_State8
   };
 
   CMFGame(rstl::ncrc_ptr< CStateManager > stateManager,
@@ -36,19 +33,18 @@ public:
   EMessageReturn OnMessage(const CArchitectureMessage&, CArchitectureQueue&) override;
   void Draw() const override;
 
-  static void ActivateMultiplayerGui(); // Guessed name; sets the exported static flag.
+  static void ActivateMultiplayerGui();
   void EnterMapScreen();
   void PauseGame();
   void EnterLogBook();
   void SaveGame();
-  void EnterPauseScreenState5(); // Deferred-transition 5; screen identity unresolved.
+  void EnterPauseScreenState5();
   void EnterMessageScreen(float time);
   void UnpauseGame();
   void PlayerDied();
   bool IsCameraActiveFlow() const;
 
 private:
-  // Guessed names for the observed -1,0..4 transition sequence.
   enum ETransitionPhase {
     kTP_None = -1,
     kTP_FadeOut,
@@ -59,12 +55,12 @@ private:
   };
 
   void SetFlowState(EFlowState state);
-  void RecordMultiplayerResults() const;     // Guessed name.
-  void FinishMultiplayerGame();              // Guessed name.
-  void EndGame(CArchitectureQueue& queue);   // Guessed name.
-  void DrawWorld(bool singleViewport) const; // Guessed names for the two render passes.
+  void RecordMultiplayerResults() const;
+  void FinishMultiplayerGame();
+  void EndGame(CArchitectureQueue& queue);
+  void DrawWorld(bool singleViewport) const;
   void DrawGui(bool singleViewport) const;
-  void DrawTransitionFilter() const; // Guessed name.
+  void DrawTransitionFilter() const;
 
   static bool mMultiplayerGuiActive;
 
@@ -82,7 +78,7 @@ private:
   bool mPlayerAlive : 1;
   bool mEndGameFrameCaptured : 1;
   bool mTransitionFromDarkWorld : 1;
-  bool x44_4 : 1; // Mask 0x08 in IsCameraActiveFlow; writer/meaning unresolved.
+  bool x44_4 : 1;
 };
 CHECK_SIZEOF(CMFGame, 0x48)
 
