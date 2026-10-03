@@ -965,6 +965,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Audio/CFlanger.cpp"),
             Object(NonMatching, "Kyoto/Audio/AudioEffect.cpp"),
             Object(NonMatching, "Kyoto/Audio/AudioEffectX.cpp"),
+            Object(NonMatching, "Kyoto/Audio/CCustomAudioAux.cpp"),
             Object(NonMatching, "Kyoto/Audio/CFilteredDelayAux.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
             Object(Matching, "Kyoto/Streams/CBufferedDvdRequest.cpp"),
