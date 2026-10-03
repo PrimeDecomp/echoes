@@ -425,6 +425,9 @@ public:
   CBCAdditiveLoopReactionCmd(int type, float weight)
   : CBodyStateCmd(kBSC_AdditiveLoopReaction), mWeight(weight), mType(type) {}
 
+  float GetWeight() const { return mWeight; }
+  int GetType() const { return mType; }
+
 private:
   float mWeight;
   int mType;
