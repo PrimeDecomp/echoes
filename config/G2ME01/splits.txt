@@ -1730,6 +1730,16 @@ MetroidPrime/CMissileRepeller.cpp:
 	.text       start:0x80235620 end:0x80235DA0
 	.sdata2     start:0x8041DBE8 end:0x8041DBF8
 
+MetroidPrime/CGameResultsScreen.cpp:
+	.text       start:0x80235E08 end:0x802399C8
+	.ctors      start:0x803A55A0 end:0x803A55A4
+	.rodata     start:0x803AD490 end:0x803AD5C8
+	.data       start:0x803B8990 end:0x803B89B0
+	.bss        start:0x803DE110 end:0x803DE138
+	.sdata      start:0x804188F8 end:0x80418930
+	.sbss       start:0x80419668 end:0x804196C0
+	.sdata2     start:0x8041DBF8 end:0x8041DC88
+
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x80242894 end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
