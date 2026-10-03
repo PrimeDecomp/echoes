@@ -15,7 +15,7 @@ public:
       int feedbackL, int feedbackR, int feedbackS, int outputL, int outputR, int outputS,
       bool flanger, float flangerDelay, float flangerDelayPhase, float flangerDry,
       float flangerFeedback, float flangerLFODepth, float flangerLFOFrequency, float flangerLFOWave,
-      float flangerOut, bool bitcrusher, float bitcrusherValue, float bitcrusherGain,
+      float flangerOut, bool bitcrusher, float bitcrusherDistortionType, float bitcrusherGain,
       float bitcrusherBitDepth, float bitcrusherSampleRateReduction, bool phaser,
       float phaserFrequency, float phaserFeedback, float phaserInvert, float phaserMix,
       float phaserSweep);
@@ -72,7 +72,7 @@ private:
   float mFlangerLFOWave;
   float mFlangerOut;
   bool mBitcrusher;
-  float xC4_; // Verified property 0xf51a1d6a; runtime meaning unresolved.
+  float mBitcrusherDistortionType; // Guessed name; verified property 0xf51a1d6a.
   float mBitcrusherGain;
   float mBitcrusherBitDepth;
   float mBitcrusherSampleRateReduction;
