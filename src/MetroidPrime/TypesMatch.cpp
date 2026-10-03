@@ -30,6 +30,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptLayerController.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptHUDHint.hpp"
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraShaker.hpp"
@@ -122,6 +123,8 @@ CEnergyProjectile::~CEnergyProjectile() {}
 
 CScriptPortalTransition::~CScriptPortalTransition() {}
 
+CScriptHUDHint::~CScriptHUDHint() {}
+
 CEntity* TryCast(CEntity* entity, int typeId) {
   if (entity != nullptr) {
     return entity->TypesMatch(typeId);
@@ -165,6 +168,9 @@ TYPES_MATCH_IMPL(CScriptSpindleCamera, CActor, kET_ScriptSpindleCamera)
 TYPES_MATCH_IMPL(CScriptLayerController, CEntity, kET_ScriptLayerController)
 TYPES_MATCH_IMPL(CScriptPathCamera, CEntity, kET_ScriptPathCamera)
 TYPES_MATCH_IMPL(CScriptPortalTransition, CEntity, kET_ScriptPortalTransition)
+TYPES_MATCH_IMPL(CScriptHUDHint, CActor, kET_ScriptHUDHint)
+CAST_TO_REF_IMPL(CScriptHUDHint, kET_ScriptHUDHint)
+CAST_TO_PTR_IMPL(CScriptHUDHint, kET_ScriptHUDHint)
 TYPES_MATCH_IMPL(CPathCamera, CGameCamera, kET_PathCamera)
 TYPES_MATCH_IMPL(CScriptSequenceTimer, CEntity, kET_ScriptSequenceTimer)
 TYPES_MATCH_IMPL(CGameLight, CActor, kET_GameLight)
