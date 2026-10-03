@@ -134,7 +134,7 @@ void REL_CreateTweakGlobals() {
   gpTweakTargeting = rs_new CTweakTargeting(gpTweakContents->TweakTargeting);
 
   gpTweakPlayerGun = gpTweakPlayerGunSingle.get();
-  CPlayerCameraBob::ReadTweaks(gpTweakContents->TweakCameraBob);
+  CPlayerCameraBob::BindTweaks(gpTweakContents->TweakCameraBob);
   CMappableObject::ReadAutomapperTweaks();
 }
 

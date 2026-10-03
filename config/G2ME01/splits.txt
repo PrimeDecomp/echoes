@@ -1648,6 +1648,12 @@ MetroidPrime/Tweaks/CTweakGui.cpp:
 	.text       start:0x80215F80 end:0x80216CC4
 	.sdata2     start:0x8041D900 end:0x8041D91C align:4
 
+MetroidPrime/Tweaks/CTweakGame.cpp:
+	.text       start:0x80216CC4 end:0x80216D84
+
+MetroidPrime/Player/CPlayerCameraBobTweaks.cpp:
+	.text       start:0x80216D84 end:0x80216DF8
+
 MetroidPrime/Tweaks/CTweakBall.cpp:
 	.text       start:0x80216DF8 end:0x802175B4
 	.data       start:0x803B818C end:0x803B822C align:4
