@@ -1228,6 +1228,10 @@ MetroidPrime/Player/CGMDeathMatch.cpp:
 	.data       start:0x803B5C40 end:0x803B5CB0
 	.sdata2     start:0x8041CB00 end:0x8041CB08
 
+MetroidPrime/Player/CPlayerListener.cpp:
+	.text       start:0x80193E34 end:0x8019404C
+	.data       start:0x803B5D18 end:0x803B5D28
+
 MetroidPrime/Factories/CStateMachineFactory.cpp:
 	.text       start:0x8019405C end:0x8019448C
 	.data       start:0x803B5DA0 end:0x803B5DB0
