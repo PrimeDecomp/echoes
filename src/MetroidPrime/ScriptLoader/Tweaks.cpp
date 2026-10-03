@@ -5190,11 +5190,11 @@ void LoadTypedefTweakGui_HudColorTypedef(SLdrTweakGui_HudColorTypedef& sldrThis,
 }
 
 SLdrTweakGame_FragLimitChoices::SLdrTweakGame_FragLimitChoices() {
-  fragLimit0 = 0;
-  fragLimit1 = 5;
-  fragLimit2 = 10;
-  fragLimit3 = 15;
-  fragLimit4 = 20;
+  fragLimits[0] = 0;
+  fragLimits[1] = 5;
+  fragLimits[2] = 10;
+  fragLimits[3] = 15;
+  fragLimits[4] = 20;
 }
 
 SLdrTweakGame_FragLimitChoices::~SLdrTweakGame_FragLimitChoices() {}
@@ -5206,23 +5206,23 @@ void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& sldrT
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xa2023ba8: {
-      sldrThis.fragLimit0 = input.ReadInt32();
+      sldrThis.fragLimits[0] = input.ReadInt32();
       break;
     }
     case 0x1abe5ccd: {
-      sldrThis.fragLimit1 = input.ReadInt32();
+      sldrThis.fragLimits[1] = input.ReadInt32();
       break;
     }
     case 0x080bf323: {
-      sldrThis.fragLimit2 = input.ReadInt32();
+      sldrThis.fragLimits[2] = input.ReadInt32();
       break;
     }
     case 0xb0b79446: {
-      sldrThis.fragLimit3 = input.ReadInt32();
+      sldrThis.fragLimits[3] = input.ReadInt32();
       break;
     }
     case 0x2d60acff: {
-      sldrThis.fragLimit4 = input.ReadInt32();
+      sldrThis.fragLimits[4] = input.ReadInt32();
       break;
     }
     default:
@@ -5233,11 +5233,11 @@ void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& sldrT
 }
 
 SLdrTweakGame_CoinLimitChoices::SLdrTweakGame_CoinLimitChoices() {
-  coinLimit0 = 200;
-  coinLimit1 = 400;
-  coinLimit2 = 600;
-  coinLimit3 = 800;
-  coinLimit4 = 1000;
+  coinLimits[0] = 200;
+  coinLimits[1] = 400;
+  coinLimits[2] = 600;
+  coinLimits[3] = 800;
+  coinLimits[4] = 1000;
 }
 
 SLdrTweakGame_CoinLimitChoices::~SLdrTweakGame_CoinLimitChoices() {}
@@ -5249,23 +5249,23 @@ void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& sldrT
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x6b4cae26: {
-      sldrThis.coinLimit0 = input.ReadInt32();
+      sldrThis.coinLimits[0] = input.ReadInt32();
       break;
     }
     case 0xd3f0c943: {
-      sldrThis.coinLimit1 = input.ReadInt32();
+      sldrThis.coinLimits[1] = input.ReadInt32();
       break;
     }
     case 0xc14566ad: {
-      sldrThis.coinLimit2 = input.ReadInt32();
+      sldrThis.coinLimits[2] = input.ReadInt32();
       break;
     }
     case 0x79f901c8: {
-      sldrThis.coinLimit3 = input.ReadInt32();
+      sldrThis.coinLimits[3] = input.ReadInt32();
       break;
     }
     case 0xe42e3971: {
-      sldrThis.coinLimit4 = input.ReadInt32();
+      sldrThis.coinLimits[4] = input.ReadInt32();
       break;
     }
     default:
@@ -5276,11 +5276,11 @@ void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& sldrT
 }
 
 SLdrTweakGame_TimeLimitChoices::SLdrTweakGame_TimeLimitChoices() {
-  timeLimit0 = 0.0f;
-  timeLimit1 = 3.0f;
-  timeLimit2 = 5.0f;
-  timeLimit3 = 10.0f;
-  timeLimit4 = 20.0f;
+  timeLimits[0] = 0.0f;
+  timeLimits[1] = 3.0f;
+  timeLimits[2] = 5.0f;
+  timeLimits[3] = 10.0f;
+  timeLimits[4] = 20.0f;
 }
 
 SLdrTweakGame_TimeLimitChoices::~SLdrTweakGame_TimeLimitChoices() {}
@@ -5292,23 +5292,23 @@ void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& sldrT
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0x779e8ff4: {
-      sldrThis.timeLimit0 = input.ReadFloat();
+      sldrThis.timeLimits[0] = input.ReadFloat();
       break;
     }
     case 0xbcc25c51: {
-      sldrThis.timeLimit1 = input.ReadFloat();
+      sldrThis.timeLimits[1] = input.ReadFloat();
       break;
     }
     case 0x3a562eff: {
-      sldrThis.timeLimit2 = input.ReadFloat();
+      sldrThis.timeLimits[2] = input.ReadFloat();
       break;
     }
     case 0xf10afd5a: {
-      sldrThis.timeLimit3 = input.ReadFloat();
+      sldrThis.timeLimits[3] = input.ReadFloat();
       break;
     }
     case 0xec0fcde2: {
-      sldrThis.timeLimit4 = input.ReadFloat();
+      sldrThis.timeLimits[4] = input.ReadFloat();
       break;
     }
     default:

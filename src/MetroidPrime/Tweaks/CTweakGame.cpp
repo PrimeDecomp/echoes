@@ -14,19 +14,19 @@ float CTweakGame::GetHardModeWeaponMultiplier() const { return mData->hardModeWe
 int CTweakGame::GetTotalPercentage() { return mData->maxPercentageInventoryItems; }
 
 int CTweakGame::GetDeathMatchFragLimit(int index) const {
-  return reinterpret_cast< const int* >(&mData->unknown_0x1d627808)[index];
+  return mData->unknown_0x1d627808.fragLimits[index];
 }
 
 float CTweakGame::GetDeathMatchTimeLimit(int index) const {
-  return reinterpret_cast< const float* >(&mData->unknown_0xb2e8828d)[index];
+  return mData->unknown_0xb2e8828d.timeLimits[index];
 }
 
 int CTweakGame::GetCoinGameCoinLimit(int index) const {
-  return reinterpret_cast< const int* >(&mData->unknown_0x06af87bd)[index];
+  return mData->unknown_0x06af87bd.coinLimits[index];
 }
 
 float CTweakGame::GetCoinGameTimeLimit(int index) const {
-  return reinterpret_cast< const float* >(&mData->unknown_0x1533ea4e)[index];
+  return mData->unknown_0x1533ea4e.timeLimits[index];
 }
 
 CMayaSpline& CTweakGame::GetMusicVolumeSpline() {
