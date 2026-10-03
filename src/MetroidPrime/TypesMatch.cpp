@@ -37,6 +37,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraShaker.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraPitch.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPathMeshCtrl.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptColorModulate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSound.hpp"
@@ -166,6 +167,7 @@ TYPES_MATCH_IMPL(CCollisionActor, CPhysicsActor, kET_CollisionActor)
 TYPES_MATCH_IMPL(CAi, CPhysicsActor, kET_Ai)
 TYPES_MATCH_IMPL(CPatterned, CAi, kET_Patterned)
 TYPES_MATCH_IMPL(CScriptWaypoint, CActor, kET_ScriptWaypoint)
+TYPES_MATCH_IMPL(CScriptPathMeshCtrl, CActor, kET_ScriptPathMeshCtrl)
 TYPES_MATCH_IMPL(CScriptSpindleCamera, CActor, kET_ScriptSpindleCamera)
 TYPES_MATCH_IMPL(CScriptLayerController, CEntity, kET_ScriptLayerController)
 TYPES_MATCH_IMPL(CScriptPathCamera, CEntity, kET_ScriptPathCamera)
