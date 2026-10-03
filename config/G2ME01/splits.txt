@@ -1766,6 +1766,11 @@ Weapons/CProjectileWeapon.cpp:
 	.sbss       start:0x80419730 end:0x80419738
 	.sdata2     start:0x8041DE20 end:0x8041DE78
 
+Weapons/CProjectileWeaponDataFactory.cpp:
+	.text       start:0x8025CA80 end:0x8025DD1C
+	.rodata     start:0x803AD938 end:0x803AD940
+	.data       start:0x803B8B40 end:0x803B8B50
+
 Weapons/CCollisionResponseData.cpp:
 	.text       start:0x8025DD1C end:0x8025F41C
 	.rodata     start:0x803AD940 end:0x803ADD68
@@ -1792,6 +1797,9 @@ Weapons/CDecal.cpp:
 	.sdata      start:0x804189A0 end:0x804189A8
 	.sbss       start:0x80419740 end:0x80419748
 	.sdata2     start:0x8041DE88 end:0x8041DEB8
+
+Weapons/CWeaponDescription.cpp:
+	.text       start:0x8026258C end:0x80262CAC
 
 Weapons/CDecalDescription.cpp:
 	.text       start:0x80262CAC end:0x80262D3C
