@@ -124,6 +124,7 @@ enum EScriptObjectState {
   kSS_Generate = 0x47454e52,
   kSS_ReflectedDamage = 0x52454644,
   kSS_InheritBounds = 0x49424e44,
+  kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
   kSS_ScanSource = 0x53434e53,
   kSS_InvalidState = 0xffffffff,
 };
