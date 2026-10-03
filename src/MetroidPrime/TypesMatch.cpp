@@ -9,6 +9,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/CEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
@@ -193,6 +194,7 @@ TYPES_MATCH_IMPL(CScriptCameraWaypoint, CScriptWaypoint, kET_ScriptCameraWaypoin
 TYPES_MATCH_IMPL(CScriptColorModulate, CEntity, kET_ScriptColorModulate)
 TYPES_MATCH_IMPL(CScriptDock, CPhysicsActor, kET_ScriptDock)
 TYPES_MATCH_IMPL(CScriptDoor, CPhysicsActor, kET_ScriptDoor)
+TYPES_MATCH_IMPL(CScriptDynamicLight, CGameLight, kET_ScriptDynamicLight)
 TYPES_MATCH_IMPL(CScriptEffect, CActor, kET_ScriptEffect)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptDebris, CPhysicsActor, kET_ScriptDebris)
@@ -264,6 +266,8 @@ CAST_TO_PTR_IMPL(CScriptPortalTransition, kET_ScriptPortalTransition)
 CAST_TO_PTR_IMPL(CScriptDock, kET_ScriptDock)
 CAST_TO_REF_IMPL(CScriptDoor, kET_ScriptDoor)
 CAST_TO_PTR_IMPL(CScriptDoor, kET_ScriptDoor)
+CAST_TO_REF_IMPL(CScriptDynamicLight, kET_ScriptDynamicLight)
+CAST_TO_PTR_IMPL(CScriptDynamicLight, kET_ScriptDynamicLight)
 CAST_TO_REF_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_PTR_IMPL(CScriptEffect, kET_ScriptEffect)
 CAST_TO_REF_IMPL(CScriptPickup, kET_ScriptPickup)

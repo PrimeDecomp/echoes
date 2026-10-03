@@ -1748,6 +1748,12 @@ MetroidPrime/ScriptLoaderRel.cpp:
 MetroidPrime/HUD/CHudDecoInterfaceScan.cpp:
 	.text       start:0x8021BFE0 end:0x8021DC00
 
+MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp:
+	.text       start:0x8021FABC end:0x802219EC
+	.rodata     start:0x803ACF30 end:0x803ACF38
+	.data       start:0x803B83F8 end:0x803B8478
+	.sdata2     start:0x8041D9F8 end:0x8041DA10
+
 MetroidPrime/CQuitGameScreen.cpp:
 	.text       start:0x802219EC end:0x802221C0
 

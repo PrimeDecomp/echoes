@@ -49,6 +49,12 @@ public:
   void SetFramesBetweenRecalculation(uint frames) { mAreaUpdateFramePeriod = frames; }
   void SetAmbienceGenerated(bool generated) { mAmbienceGenerated = generated; }
   void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
+  // Guessed name; native registration reserves the final available slot.
+  void AddExplicitLightId(TUniqueId id) {
+    if (mExplicitLightIds.size() + 1 < mExplicitLightIds.capacity()) {
+      mExplicitLightIds.push_back(id);
+    }
+  }
 
 private:
   rstl::reserved_vector< CLight, 4 > mAreaLights;

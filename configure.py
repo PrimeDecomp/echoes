@@ -530,6 +530,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlatform.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptActor.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDoor.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDock.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDebris.cpp"),

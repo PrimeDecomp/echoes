@@ -52,6 +52,7 @@ enum EEntityType {
   kET_ScriptDistanceFog = 54, // Guessed name; Prime has CScriptDistanceFog.
   kET_ScriptDock = 55,
   kET_ScriptDoor = 56,
+  kET_ScriptDynamicLight = 57,
   kET_ScriptEffect = 58,
   kET_ScriptGrapplePoint = 59,
   kET_ScriptHUDHint = 63, // Guessed name; HUD texture marker.
