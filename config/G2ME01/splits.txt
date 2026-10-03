@@ -1500,6 +1500,12 @@ MetroidPrime/CRuleSet.cpp:
 	.rodata     start:0x803AC548 end:0x803AC550
 	.data       start:0x803B7AD0 end:0x803B7AE0
 
+MetroidPrime/CSurfaceAlignmentHelper.cpp:
+	.text       start:0x801F7304 end:0x801F7E04
+	.rodata     start:0x803AC550 end:0x803AC558
+	.sdata      start:0x804187B0 end:0x804187D0
+	.sdata2     start:0x8041D618 end:0x8041D638
+
 MetroidPrime/Cameras/CCameraColliderGroup.cpp:
 	.text       start:0x801F94DC end:0x801FA3CC
 	.ctors      start:0x803A5590 end:0x803A5594
