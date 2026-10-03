@@ -42,6 +42,7 @@ enum EEntityType {
   kET_ScriptCameraWaypoint = 43,
   kET_ScriptCamera = 44,
   kET_ScriptColorModulate = 45,
+  kET_ScriptControlHint = 46, // Guessed name; command-filter hint.
   kET_ScriptCounter = 47,
   kET_ScriptCoverPoint = 48,
   kET_ScriptDamageableTrigger = 49,

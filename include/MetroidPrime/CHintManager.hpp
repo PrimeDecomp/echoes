@@ -14,7 +14,7 @@ public:
   CHintManager(int playerIndex, const rstl::string& name);
   virtual ~CHintManager();
   virtual void RefreshHint(CStateManager& mgr);
-  virtual void Reset();
+  virtual void Reset(CStateManager& mgr);
   virtual bool SetHint(CHintState* hint, CStateManager& mgr, bool areaChanged, bool force);
   virtual void ClearHint(CStateManager& mgr, bool areaChanged);
   virtual bool SelectHintFromStack(CHintState* hint, CStateManager& mgr, bool areaChanged);
@@ -39,7 +39,6 @@ protected:
     mPriority = priority;
   }
 
-private:
   // Guessed name. Sorting compares the priority only, not the record's other fields.
   struct SHint {
     SHint(const int& priority, const CHintState& state) : mPriority(priority), mState(state) {}
@@ -48,6 +47,10 @@ private:
     int mPriority;
     CHintState mState;
   };
+  const rstl::vector< SHint >& GetHints() const { return mHints; }
+  rstl::vector< SHint >& GetHints() { return mHints; }
+
+private:
   typedef rstl::pair< TUniqueId, TUniqueId > THintSender;
 
   static bool ContainsHint(const rstl::vector< SHint >& hints, TUniqueId hint);

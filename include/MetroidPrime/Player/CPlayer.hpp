@@ -325,6 +325,7 @@ public:
   const CHintManager* GetPlayerHintManager() const;
   CHintManager* GetControlHintManager();
   const CHintManager* GetControlHintManager() const;
+  CControlMapper& GetControlMapper() { return mControlMapper; }
   CPlayerGun* GetPlayerGun();
   const CPlayerGun* GetPlayerGun() const;
   ETurretState GetTurretState() const { return mTurretState; }

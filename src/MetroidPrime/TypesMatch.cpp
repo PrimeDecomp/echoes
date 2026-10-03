@@ -26,6 +26,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptControlHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRoomAcoustics.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptLayerController.hpp"
@@ -203,6 +204,8 @@ TYPES_MATCH_IMPL(CScriptSoundModifier, CEntity, kET_ScriptSoundModifier)
 TYPES_MATCH_IMPL(CScriptSpecialFunction, CActor, kET_ScriptSpecialFunction)
 TYPES_MATCH_IMPL(CScriptTeamAiMgr, CEntity, kET_ScriptTeamAi)
 TYPES_MATCH_IMPL(CScriptCounter, CEntity, kET_ScriptCounter)
+TYPES_MATCH_IMPL(CScriptControlHint, CGameHint, kET_ScriptControlHint)
+CAST_TO_PTR_IMPL(CScriptControlHint, kET_ScriptControlHint)
 CAST_TO_PTR_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
 CAST_TO_REF_IMPL(CScriptAiJumpPoint, kET_ScriptAiJumpPoint)
 TYPES_MATCH_IMPL(CScriptAiJumpPoint, CActor, kET_ScriptAiJumpPoint)

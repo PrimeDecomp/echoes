@@ -288,7 +288,7 @@ bool CHintManager::HasHint(const CStateManager& mgr) const {
 
 void CHintManager::OnHintRemoved(CStateManager& mgr) {}
 
-void CHintManager::Reset() {
+void CHintManager::Reset(CStateManager& mgr) {
   mHints.clear();
   mRemovedHints.clear();
   mAddedHints.clear();
