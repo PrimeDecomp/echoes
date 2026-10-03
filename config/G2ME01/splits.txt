@@ -1596,6 +1596,12 @@ MetroidPrime/Player/CPlayerHints.cpp:
 MetroidPrime/CGameHint.cpp:
 	.text       start:0x8022D1EC end:0x8022D548
 
+MetroidPrime/ScriptObjects/CScriptSoundModifier.cpp:
+	.text       start:0x8022EC6C end:0x8022F768
+	.rodata     start:0x803AD3C8 end:0x803AD3D0
+	.data       start:0x803B88B0 end:0x803B88D0
+	.sdata2     start:0x8041DB48 end:0x8041DB68
+
 MetroidPrime/ScriptObjects/CScriptLayerController.cpp:
 	.text       start:0x8022F768 end:0x8022FF98
 	.rodata     start:0x803AD3D0 end:0x803AD3D8

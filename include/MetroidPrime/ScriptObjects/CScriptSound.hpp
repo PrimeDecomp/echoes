@@ -23,6 +23,9 @@ public:
   void PlaySound(CStateManager& mgr, const CScriptMsg* msg);
   void StopSound(CStateManager& mgr);
   void SetMaxVolume(short volume);
+  CSfxHandle GetSfxHandle() const;
+  bool IsNonEmitter() const;
+  void SetSoundModifierAttached(bool attached); // Guessed name.
   ushort GetSoundId() const { return mSoundId; }
   static float GetOccludedVolumeAmount(const CVector3f& pos, const CStateManager& mgr);
 
@@ -59,7 +62,7 @@ private:
   bool mAllowDuplicates : 1;
   bool mProcessedThisFrame : 1;
   bool mPlayerRelativePan : 1;
-  bool x1a9_27_ : 1;
+  bool mSoundModifierAttached : 1; // Guessed name.
   bool mAllAreas : 1;
   bool mScaleByMusicVolume : 1;
 };
