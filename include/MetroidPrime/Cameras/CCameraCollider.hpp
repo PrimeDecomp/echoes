@@ -6,20 +6,39 @@
 class CCameraCollider {
 public:
   CCameraCollider(float radius, CVector3f position, float scale);
+  CCameraCollider(const CCameraCollider& other)
+  : mRadius(other.mRadius)
+  , mLastLocalPos(other.mLastLocalPos)
+  , mLocalPos(other.mLocalPos)
+  , mScaledWorldPos(other.mScaledWorldPos)
+  , mLastWorldPos(other.mLastWorldPos)
+  , mOcclusionCount(other.mOcclusionCount)
+  , mScale(other.mScale) {}
+
   virtual ~CCameraCollider() {}
 
   float GetRadius() const { return mRadius; }
+
   const CVector3f& GetPosition() const { return mLastLocalPos; }
+
   const CVector3f& GetDesiredPosition() const { return mLocalPos; }
+
   const CVector3f& GetLookAtPosition() const { return mScaledWorldPos; }
+
   const CVector3f& GetRealPosition() const { return mLastWorldPos; }
+
   int GetOcclusionCount() const { return mOcclusionCount; }
+
   float GetScale() const { return mScale; }
 
   void SetPosition(const CVector3f& position) { mLastLocalPos = position; }
+
   void SetDesiredPosition(const CVector3f& position) { mLocalPos = position; }
+
   void SetLookAtPosition(const CVector3f& position) { mScaledWorldPos = position; }
+
   void SetRealPosition(const CVector3f& position) { mLastWorldPos = position; }
+
   void SetOcclusionCount(int count) { mOcclusionCount = count; }
 
 private:

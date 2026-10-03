@@ -155,6 +155,13 @@ public:
   CEntity* GetObjectByIdFromListAll(TUniqueId uid);
   bool RayCollideWorld(const CVector3f& start, const CVector3f& end, const CMaterialFilter& filter,
                        const CActor* damagee);
+  bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
+                       const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                       const CMaterialFilter& filter, const CActor* ignoreActor) const;
+  CRayCastResult
+  RayWorldIntersection(TUniqueId& idOut, const CVector3f& position, const CVector3f& direction,
+                       float length, const CMaterialFilter& filter,
+                       const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const;
   CRayCastResult RayStaticIntersection(const CVector3f& position, const CVector3f& direction,
                                        float length, const CMaterialFilter& filter) const;
   void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CVector3f& position,

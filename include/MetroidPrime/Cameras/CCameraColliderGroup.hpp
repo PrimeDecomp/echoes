@@ -14,6 +14,7 @@ class CStateManager;
 class CCameraColliderGroup {
 public:
   CCameraColliderGroup();
+
   virtual ~CCameraColliderGroup() {}
 
   void SetupColliders(float xMag, float zMag, float radius, int count, float startAngle);
@@ -33,10 +34,11 @@ private:
   CVector3f mCentroid;
   CVector3f mLookPosition;
   float mClearColliderThreshold;
+  // Unresolved inherited fields: constructor initializes these to zero; no use found.
   int x30_;
   int x34_;
   int mColliderIterator;
-  bool x3c_24_ : 1;
+  bool x3c_24_ : 1; // Constructor sets true; role remains unresolved.
 };
 CHECK_SIZEOF(CCameraColliderGroup, 0x40)
 
