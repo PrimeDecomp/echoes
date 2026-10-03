@@ -19,6 +19,7 @@
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CParticleSpawnSystemDataFactory.hpp"
+#include "Kyoto/Particles/CSortedParticleSystemDataFactory.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
@@ -74,9 +75,6 @@ CFactoryFnReturn FParticleSwooshDataFactory(const SObjectTag&, CInputStream&,
 CFactoryFnReturn FParticleFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FParticleElectricDataFactory(const SObjectTag&, CInputStream&,
                                               const CVParamTransfer&);
-// Guessed names, supported by native resource tags and constructed/parsed types.
-CFactoryFnReturn FSortedParticleSystemDataFactory(const SObjectTag&, CInputStream&,
-                                                  const CVParamTransfer&);
 CFactoryFnReturn FProjectileWeaponDataFactory(const SObjectTag&, CInputStream&,
                                               const CVParamTransfer&);
 CFactoryFnReturn RGuiFrameFactoryInGame(const SObjectTag&, CInputStream&, const CVParamTransfer&);
