@@ -1512,7 +1512,8 @@ MetroidPrime/Enemies/CIngSpotPathFindNavigation.cpp:
 	.sdata2     start:0x8041D638 end:0x8041D640
 
 MetroidPrime/PathFinding/CPathFindPointSearch.cpp:
-	.text       start:0x801F8280 end:0x801F8838
+	.text       start:0x801F8280 end:0x801F9050
+	.sbss       start:0x80419330 end:0x80419340
 	.sdata2     start:0x8041D640 end:0x8041D648
 
 MetroidPrime/Cameras/CCameraColliderGroup.cpp:

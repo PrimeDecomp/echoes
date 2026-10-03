@@ -2,6 +2,7 @@
 #define _CPATHFINDAREA
 
 #include "MetroidPrime/PathFinding/CPFBitSet.hpp"
+#include "MetroidPrime/PathFinding/CPFPointSearchState.hpp"
 #include "MetroidPrime/PathFinding/CPathFindRegion.hpp"
 
 #include "Kyoto/Math/CTransform4f.hpp"
@@ -88,26 +89,6 @@ private:
   rstl::prereserved_vector< CPFRegion* > mRegions;
 };
 CHECK_SIZEOF(CPFAreaOctree, 0x50)
-
-// Guessed name. This owned point-search workspace is constructed by another TU.
-class CPFPointSearchState {
-public:
-  explicit CPFPointSearchState(int pointCount);
-
-private:
-  // Guessed name; individual search-record roles still need consumer evidence.
-  struct SPointData {
-    int x0_;
-    uint x4_;
-    float x8_;
-    float xc_;
-    uchar x10_;
-  };
-  int mPointCount;
-  rstl::vector< SPointData > mPointData;
-  rstl::vector< int > mOpenPoints; // Guessed name
-};
-CHECK_SIZEOF(CPFPointSearchState, 0x24)
 
 class CPFArea {
 public:
