@@ -12,6 +12,9 @@ public:
 
   void SetHP(float hp) { healthB = hp; }
   void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
+
+  float GetKnockBackResistance() const { return knockbackResistance; }
+
   float GetHP() const { return healthB; }
   float GetInitialHP() const { return healthA; } // Guessed name.
   TUniqueId GetDamageId1() const { return uidA; } // Guessed name; primary death attribution ID.

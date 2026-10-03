@@ -61,8 +61,8 @@ CHECK_SIZEOF(CBCStepCmd, 0x20)
 
 class CBCKnockDownCmd : public CBodyStateCmd {
 public:
-  CBCKnockDownCmd(const CVector3f& dir, pas::ESeverity severity)
-  : CBodyStateCmd(kBSC_KnockDown), mDir(dir), mSeverity(severity), mSkipRotation(false) {}
+  CBCKnockDownCmd(const CVector3f& dir, pas::ESeverity severity, bool skipRotation = false)
+  : CBodyStateCmd(kBSC_KnockDown), mDir(dir), mSeverity(severity), mSkipRotation(skipRotation) {}
 
   const CVector3f& GetHitDirection() const { return mDir; }
   pas::ESeverity GetHitSeverity() const { return mSeverity; }
@@ -459,6 +459,22 @@ public:
   void DeliverCmd(const CBodyStateCmd& cmd);
   void DeliverCmd(const CBCLocomotionCmd& cmd);
   void DeliverCmd(EBodyStateCmd cmd);
+
+  void DeliverCmd(const CBCKnockDownCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mKnockDown = cmd;
+  }
+
+  void DeliverCmd(const CBCKnockBackCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mKnockBack = cmd;
+  }
+
+  void DeliverCmd(const CBCHurledCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mHurled = cmd;
+  }
+
   void DeliverCmd(const CBCSlideCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mSlide = cmd;

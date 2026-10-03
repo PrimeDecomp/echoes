@@ -60,7 +60,7 @@ enum EAnimationState {
   kAS_AdditiveAim = 22,
   kAS_AdditiveFlinch = 23,
   kAS_AdditiveReaction = 24,
-  kAS_Unknown25 = 25,
+  kAS_AdditiveDirectionalReaction = 25, // Guessed name
   kAS_Unknown26 = 26,
   kAS_Unknown27 = 27,
   kAS_AdditiveLoopReaction = 28 // Guessed name

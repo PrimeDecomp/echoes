@@ -5,10 +5,12 @@
 #include "Kyoto/Math/CVector3f.hpp"
 #include "MetroidPrime/Enemies/CKnockBackMgr.hpp"
 
+class CPhysicsActor;
+
 class CAiKnockBackMgr : public CKnockBackMgr {
 public:
   explicit CAiKnockBackMgr(CAssetId rules);
-  ~CAiKnockBackMgr();
+  ~CAiKnockBackMgr() {}
 
   // CKnockBackMgr
   void Update(float dt, CStateManager& mgr, CActor& actor) override;
@@ -28,8 +30,14 @@ public:
   void SetPhysicsKnockBackType(EPhysicsKnockBackType type);
   void EnableKnockBackPhysics(bool enabled);
   void SetAdditiveFlinchWeight(float weight);
+  float GetAdditiveFlinchWeight() const;
+
+  // Guessed names, correlated with Prime's impulse implementation.
+  void ApplyImpulse(float dt, CPhysicsActor& actor);
+  void ResetKnockBackImpulse(CActor& actor, const CVector3f& direction, float magnitude);
 
 private:
+  // Guessed member names, recovered from initialization and native consumers.
   pas::ESeverity mSeverity;
   int mFlinchType; // Guessed name; enum parameter for the directional flinch animation.
   float mFlinchRemainingTime;
@@ -43,6 +51,9 @@ private:
   bool mHurlVelocityEnabled : 1; // Guessed name; selects computed hurl velocity versus zero.
   bool mWasFrozen : 1;
   bool mWasOnGround : 1;
+
+  static const float skImpulseDurations[2];
+  static const pas::EAnimationState skReactionStates[5];
 };
 CHECK_SIZEOF(CAiKnockBackMgr, 0x94)
 
