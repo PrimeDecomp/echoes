@@ -2,6 +2,8 @@
 
 #include "MetroidPrime/ScriptLoader.hpp"
 
+CEntity* CScriptTextPane::TypesMatch(int typeId) const {}
+
 CScriptTextPane::CScriptTextPane(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CVector3f& pivotOffset, float width, float height, int extentX, int extentY,
@@ -29,13 +31,9 @@ CScriptTextPane::CScriptTextPane(
 , mDepthUpdate(depthUpdate)
 , mDepthBackwards(depthBackwards) {}
 
-CScriptTextPane::~CScriptTextPane() {}
-
-CEntity* CScriptTextPane::TypesMatch(int typeId) const {}
+void CScriptTextPane::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {}
 
 void CScriptTextPane::Think(float dt, CStateManager& mgr) {}
-
-void CScriptTextPane::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {}
 
 void CScriptTextPane::PreRender(CStateManager& mgr) {}
 
@@ -48,3 +46,5 @@ bool CScriptTextPane::CanRenderUnsorted(const CStateManager& mgr) const {}
 void CScriptTextPane::SetRenderScale(float scale) {}
 
 CEntity* LoadTextPane(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
+
+CScriptTextPane::~CScriptTextPane() {}
