@@ -234,7 +234,7 @@ void CStateManager::DeferStateTransition(EStateManagerTransition t) {
     } else if (mDeferredTransition == kSMT_InGame) {
       mWorld->SetLoadPauseState(true);
       mDeferredTransition = t;
-      if (mDeferredTransition == kSMT_Unk) {
+      if (mDeferredTransition == kSMT_SaveGame) {
         mSaveGameScreen = new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
       }
     }

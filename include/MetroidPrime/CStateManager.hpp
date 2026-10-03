@@ -67,9 +67,9 @@ enum EStateManagerTransition {
   kSMT_InGame,
   kSMT_MapScreen,
   kSMT_PauseGame,
+  kSMT_Unk, // Unknown; Echoes uses 4 for the log book and 5 for the save screen.
   kSMT_LogBook,
   kSMT_SaveGame,
-  kSMT_Unk,
   kSMT_MessageScreen
 };
 
@@ -277,9 +277,12 @@ public:
   const CPlayerState* GetPlayerState(int playerIndex) const { return mPlayerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
+  CArchitectureQueue& ArchQueue() { return *mArchQueue; }
   TUniqueId GetSkipCinematicSpecialFunction() const { return mSpecialFunctionId; }
   void SetSkipCinematicSpecialFunction(TUniqueId id) { mSpecialFunctionId = id; }
   void SetUnkFlagA3(bool value) { mUnkFlagA3 = value; }
+  bool GetInSaveUI() const { return mInSaveUI; }
+  void SetIsFullThreat(bool value) { mIsFullThreat = value; }
 
   bool fn_800366e4(const CActor*) const;
 
@@ -367,9 +370,9 @@ public:
   bool mQuitGame : 1;
   bool mUnkFlagA3 : 1;
   bool mInMapScreen : 1;
-  bool mUnkFlagA5 : 1;
+  bool mInSaveUI : 1;       // Prime-correlated name
   bool mCinematicPause : 1;
-  bool mUnkFlagA7 : 1;
+  bool mIsFullThreat : 1;   // Prime-correlated name
   bool mIsDarkWorld : 1;        // 0x294c
   bool mShowSoftTransition : 1; // Guessed name.
   bool mUnkFlagB2 : 1;

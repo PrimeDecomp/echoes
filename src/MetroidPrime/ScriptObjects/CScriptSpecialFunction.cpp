@@ -3,13 +3,25 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CArchitectureMessage.hpp"
+#include "MetroidPrime/CArchitectureQueue.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CCredits.hpp"
 #include "MetroidPrime/CEnvFxManager.hpp"
+#include "MetroidPrime/CGameArea.hpp"
+#include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+// Guessed names
+static int kCreditsMsgPriority = 11;
+static int kCreditsDrawPriority = 1001;
 
 CScriptSpecialFunction::CScriptSpecialFunction(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
@@ -88,7 +100,9 @@ void CScriptSpecialFunction::AddToRenderer(const CStateManager& mgr) const {
 }
 
 void CScriptSpecialFunction::PreRenderFogVolume(CStateManager& mgr) {
-  // TODO: test the fog volume's bounds against the current frustum.
+  CVector3f max = GetTranslation() + mVectorParm;
+  max.SetZ(max.GetZ() + mValue1);
+  SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(CAABox(GetTranslation() - mVectorParm, max)));
 }
 
 void CScriptSpecialFunction::PreRenderViewFrustumTester(CStateManager& mgr) {
@@ -264,11 +278,27 @@ void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& 
 }
 
 void CScriptSpecialFunction::AcceptInventoryActivator(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: send Zero when any player has the configured item.
+  if (msg.GetMessage() == kSM_Action) {
+    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      if (mgr.PlayerState(i)->HasPowerUp(mItem)) {
+        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+        return;
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptAreaDamage(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: clean up the active area-damage state.
+  switch (msg.GetMessage()) {
+  case kSM_Deactivate:
+  case kSM_XDelete:
+    if (!mgr.IsMultiplayer() && mInAreaDamage) {
+      mInAreaDamage = false;
+      mgr.GetPlayer(0)->PopSustainedDamage();
+      mgr.SetIsFullThreat(false);
+    }
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptDropBomb(CStateManager& mgr, const CScriptMsg& msg) {
@@ -280,7 +310,14 @@ void CScriptSpecialFunction::AcceptHint(CStateManager& mgr, const CScriptMsg& ms
 }
 
 void CScriptSpecialFunction::AcceptPlayerInArea(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: query whether the primary player is in this area.
+  switch (msg.GetMessage()) {
+  case kSM_Action:
+  case kSM_SetToZero:
+    if (!mgr.IsMultiplayer() && mgr.GetPlayer(0)->GetCurrentAreaId() == GetCurrentAreaId()) {
+      SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+    }
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptHUDTarget(CStateManager& mgr, const CScriptMsg& msg) {
@@ -295,12 +332,21 @@ void CScriptSpecialFunction::AcceptHUDTarget(CStateManager& mgr, const CScriptMs
 }
 
 void CScriptSpecialFunction::AcceptFogFader(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update the camera fog interpolation for each player.
+  float scale = 1.f;
+  switch (msg.GetMessage()) {
+  case kSM_Increment:
+    scale = mValue1;
+  case kSM_Decrement:
+    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      mgr.CameraManager(i)->SetWaterFogScale(scale, mValue2);
+    }
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptLogbook(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Action) {
-    mgr.EnterSaveGameScreen();
+    mgr.EnterLogBookScreen();
   }
 }
 
@@ -313,7 +359,17 @@ void CScriptSpecialFunction::AcceptPlayerVelocity(CStateManager& mgr, const CScr
 }
 
 void CScriptSpecialFunction::AcceptDarkWorld(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: send the state selected by the world's light/dark state.
+  switch (msg.GetMessage()) {
+  case kSM_XALD:
+    if (GetActive()) {
+      if (mgr.GetIsDarkWorld()) {
+        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+      } else {
+        SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+      }
+    }
+    break;
+  }
 }
 
 void CScriptSpecialFunction::fn_80107a58(CStateManager& mgr, const CScriptMsg& msg) {
@@ -334,19 +390,51 @@ void CScriptSpecialFunction::fn_80107994(CStateManager& mgr, const CScriptMsg& m
 }
 
 void CScriptSpecialFunction::AcceptSetItemCapacity(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: set the selected player's item capacity.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      mgr.PlayerState(player)->ReInitializePowerUp(mItem, mIntParm2);
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptSetTimedItemAmount(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: set the selected player's item amount and timer.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      CPlayerState* playerState = mgr.PlayerState(player);
+      CPlayerState::EItemType item = mItem;
+      playerState->SetItemAmount(item, mIntParm2);
+      playerState->SetTimeLeft(item, mValue1);
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptModifyItemAmount(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: adjust the selected player's item amount.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      CPlayerState* playerState = mgr.PlayerState(player);
+      if (mIntParm2 > 0) {
+        playerState->IncrPickUp(mItem, mIntParm2);
+      } else {
+        playerState->DecrPickUp(mItem, -mIntParm2);
+      }
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptModifyItemCapacity(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: adjust the selected player's item capacity.
+  if (msg.GetMessage() == kSM_Action) {
+    uint player = ResolvePlayerIndex(mIntParm1, msg.GetOriginator(), mgr);
+    if (player < mgr.GetNumPlayers()) {
+      mgr.PlayerState(player)->AddPowerUp(mItem, mIntParm2);
+      mgr.DisplayAlertAboutOutOfAmmo(*mgr.GetPlayer(player), mItem);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptModifyItem(CStateManager& mgr, const CScriptMsg& msg) {
@@ -358,7 +446,16 @@ void CScriptSpecialFunction::AcceptGiveTimedItem(CStateManager& mgr, const CScri
 }
 
 void CScriptSpecialFunction::AcceptLastDamager(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: forward the sender's last damaging actor as the originator.
+  if (msg.GetMessage() == kSM_Action) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetUnk()))) {
+      if (const CHealthInfo* healthInfo = actor->GetHealthInfo()) {
+        TUniqueId damager = healthInfo->GetDamageId1();
+        if (damager != kInvalidUniqueId) {
+          SendScriptMsgs(kSS_Zero, mgr, damager, kSM_None);
+        }
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::fn_80107458(CStateManager& mgr, const CScriptMsg& msg) {
@@ -373,7 +470,23 @@ void CScriptSpecialFunction::fn_80107458(CStateManager& mgr, const CScriptMsg& m
 }
 
 void CScriptSpecialFunction::AcceptSilhouette(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update current and target silhouette strength.
+  switch (msg.GetMessage()) {
+  case kSM_Increment:
+    mTargetSilhouetteStrength = 1.f;
+    SetActive(true);
+    break;
+  case kSM_Decrement:
+    mTargetSilhouetteStrength = 0.f;
+    break;
+  case kSM_Activate:
+    mTargetSilhouetteStrength = 1.f;
+    mSilhouetteStrength = 1.f;
+    break;
+  case kSM_Deactivate:
+    mTargetSilhouetteStrength = 0.f;
+    mSilhouetteStrength = 0.f;
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptPauseGame(CStateManager& mgr, const CScriptMsg& msg) {
@@ -383,7 +496,25 @@ void CScriptSpecialFunction::AcceptPauseGame(CStateManager& mgr, const CScriptMs
 }
 
 void CScriptSpecialFunction::AcceptSkyboxLighting(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: set the skybox lighting level or its interpolation direction.
+  switch (msg.GetMessage()) {
+  case kSM_XCRT:
+    mIntParm1 = 0;
+    break;
+  case kSM_Increment:
+    mIntParm1 = 1;
+    break;
+  case kSM_Decrement:
+    mIntParm1 = 2;
+    break;
+  case kSM_SetToMax:
+    mgr.World()->SetSkyboxLightingLevel(mValue4);
+    mIntParm1 = 0;
+    break;
+  case kSM_SetToZero:
+    mgr.World()->SetSkyboxLightingLevel(mValue3);
+    mIntParm1 = 0;
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptAreaOcclusion(CStateManager& mgr, const CScriptMsg& msg) {
@@ -439,7 +570,14 @@ void CScriptSpecialFunction::AcceptBillboard(CStateManager& mgr, const CScriptMs
 }
 
 void CScriptSpecialFunction::AcceptAreaDocks(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: enable or disable this area's docks.
+  switch (msg.GetMessage()) {
+  case kSM_Start:
+    mgr.World()->Area(GetCurrentAreaId())->EnableDocks();
+    break;
+  case kSM_Stop:
+    mgr.World()->Area(GetCurrentAreaId())->DisableDocks(mgr);
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptEnvironmentVariable(CStateManager& mgr, const CScriptMsg& msg) {
@@ -461,7 +599,13 @@ void CScriptSpecialFunction::AcceptStopRezbitState(CStateManager& mgr, const CSc
 }
 
 void CScriptSpecialFunction::AcceptCredits(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: queue the credits screen.
+  if (GetActive() && msg.GetMessage() == kSM_Action) {
+    gpGameState->WorldTransitionManager()->WaitForModelsAndTextures();
+    CIOWin* credits = rs_new CCredits();
+    CArchitectureQueue& queue = mgr.ArchQueue();
+    queue.Push(
+        MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kCreditsMsgPriority, kCreditsDrawPriority, credits));
+  }
 }
 
 void CScriptSpecialFunction::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
@@ -761,7 +905,14 @@ void CScriptSpecialFunction::ThinkBillboard(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkSaveStation(float dt, CStateManager& mgr) {
-  // TODO: observe the deferred save transition and send its completion state.
+  if (mDoSave && !mgr.GetWantsToEnterSaveGameScreen()) {
+    mDoSave = false;
+    if (mgr.GetInSaveUI()) {
+      SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+    } else {
+      SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkPlayerFollowLocator(float dt, CStateManager& mgr) {
@@ -786,7 +937,11 @@ void CScriptSpecialFunction::ThinkChaffTarget(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkRainSimulator(float dt, CStateManager& mgr) {
-  // TODO: send the state selected by the manager's update-frame cycle.
+  if (static_cast< float >(static_cast< uint >(mgr.GetUpdateFrameIdx()) % 3600) / 3600.f < 0.5f) {
+    SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+  } else {
+    SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+  }
 }
 
 void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
@@ -798,7 +953,15 @@ void CScriptSpecialFunction::ThinkActorScale(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkPlayerInArea(float dt, CStateManager& mgr) {
-  // TODO: send Entered/Exited when the primary player's area changes.
+  if (mgr.GetPlayer(0)->GetCurrentAreaId() == GetCurrentAreaId()) {
+    if (!mPlayerInArea) {
+      mPlayerInArea = true;
+      SendScriptMsgs(kSS_Entered, mgr, kInvalidUniqueId, kSM_None);
+    }
+  } else if (mPlayerInArea) {
+    mPlayerInArea = false;
+    SendScriptMsgs(kSS_Exited, mgr, kInvalidUniqueId, kSM_None);
+  }
 }
 
 void CScriptSpecialFunction::ThinkViewFrustumTester(float dt, CStateManager& mgr) {
@@ -876,7 +1039,15 @@ void CScriptSpecialFunction::ThinkObjectFollowJoint(float dt, CStateManager& mgr
 }
 
 void CScriptSpecialFunction::ThinkRezbitState(float dt, CStateManager& mgr) {
-  // TODO: expire the originating player's Rezbit state.
+  uint player = mLastOriginatorPlayer == kInvalidUniqueId
+                    ? 0
+                    : mgr.MaskUIdNumPlayers(mLastOriginatorPlayer);
+  if (mgr.GetPlayer(player)->GetRezbitState() == CPlayer::kRS_Recovered) {
+    mValue2 -= dt;
+    if (mValue2 <= 0.f) {
+      mgr.GetPlayer(player)->SetRezbitState(CPlayer::kRS_None);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AddOrUpdateEmitter(float pitch, float maxDist, float falloff,
