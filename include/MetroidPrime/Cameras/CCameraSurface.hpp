@@ -82,7 +82,7 @@ public:
   CSplineCylinderCameraSurface(const CMayaSpline& spline, const CCylinder& cylinder,
                                const CVector3f& referenceDirection, float height);
 
-  // CCylinderCameraSurface
+  // CCameraSurface
   CVector3f GetSurfacePoint(const CVector3f& point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSplineCylinderCameraSurface() override;
