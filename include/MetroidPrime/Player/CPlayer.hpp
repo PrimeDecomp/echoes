@@ -228,6 +228,7 @@ public:
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
   float GetEchoPulsePhase() const { return mEchoPulsePhase; } // Guessed name
+  uint GetEchoPulseCounter() const { return mEchoPulseCounter; } // Guessed name
   EPlayerCameraState GetCameraState() const { return mCameraState; }
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
 
@@ -744,7 +745,7 @@ private:
   SFrozenResources* mFrozenResources;
   int mControlScheme;
   float mEchoPulsePhase; // Guessed name: normalized repeating Echo Visor pulse phase
-  int x1328_;
+  uint mEchoPulseCounter; // Guessed name: incremented whenever the echo pulse phase wraps.
   int x132c_;
   CSfxHandle mDarkAetherDamageSfx;
   CSfxHandle mSafeZoneHealSfx;

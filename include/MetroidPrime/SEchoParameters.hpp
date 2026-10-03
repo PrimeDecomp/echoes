@@ -5,7 +5,7 @@
 
 struct SEchoParameters {
   SEchoParameters(bool isEchoEmitter, bool onlyEmitDamage, uint numSoundWaves,
-                  float spaceBetweenWaves, float waveLineSize, float forcedMinimumVis);
+                  float spaceBetweenWaves, float waveLineSize, float visibilityDecayTime);
 
   static SEchoParameters None();
 
@@ -14,7 +14,7 @@ struct SEchoParameters {
   uint mNumSoundWaves : 30;
   float mSpaceBetweenWaves;
   float mWaveLineSize;
-  float mForcedMinimumVis;
+  float mVisibilityDecayTime; // Guessed runtime role; serialized property is forcedMinimumVis.
 };
 CHECK_SIZEOF(SEchoParameters, 0x10)
 

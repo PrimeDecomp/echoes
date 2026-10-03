@@ -340,7 +340,7 @@ void CActor::PreRender(CStateManager& mgr) {
 }
 
 bool CActor::ShouldDrawShadow(const CStateManager& mgr) const {
-  return GetDrawShadow() && mgr.Get0x244c() == 0;
+  return GetDrawShadow() && mgr.GetRenderVisorMode() == CStateManager::kRVM_Normal;
 }
 
 void CActor::AddToRenderer(const CStateManager& mgr) const {
