@@ -2836,6 +2836,11 @@ Kyoto/CRelFileDebugInfo.cpp:
 	.text       start:0x8033ED24 end:0x8033EE98
 	.sbss       start:0x80419CA8 end:0x80419CB0
 
+Kyoto/Audio/CFilteredDelayAux.cpp:
+	.text       start:0x80342694 end:0x80342B44
+	.rodata     start:0x803B0320 end:0x803B0340
+	.sdata2     start:0x8041EF58 end:0x8041EF68
+
 Kyoto/Streams/CBitStreamWriter.cpp:
 	.text       start:0x80342B44 end:0x80342D98
 

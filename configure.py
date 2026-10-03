@@ -948,6 +948,7 @@ config.libs = [
             Object(NonMatching, "Kyoto/Math/CGameSpline.cpp"),
             Object(NonMatching, "Kyoto/Math/CMotionSpline.cpp"),
             Object(NonMatching, "Kyoto/Audio/CAuxEffect.cpp"),
+            Object(NonMatching, "Kyoto/Audio/CFilteredDelayAux.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CInputStream.cpp"),
             Object(Matching, "Kyoto/Streams/CBufferedDvdRequest.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamReader.cpp"),
