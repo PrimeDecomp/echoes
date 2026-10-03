@@ -778,6 +778,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CMorphBallShadow.cpp"),
             Object(NonMatching, "MetroidPrime/CScanTree.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CBloggProjectile.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/Sporb.cpp"),
         ],
     },
     {
