@@ -9,12 +9,12 @@ class AudioEffect;
 struct AEffect;
 
 struct SAuxEffectProcessingState {
-  AudioEffect* mProcessor;
-  AEffect* mEffectDescriptor;
+  AudioEffect* mProcessor; // Owned; deleted by the corresponding Shutdown callback.
+  AEffect* mEffectDescriptor; // Borrowed from mProcessor.
   float* mLeftBuffer;
   float* mRightBuffer;
   float* mSurroundBuffer;
-  bool mProcessReplacing;
+  bool mProcessReplacing; // Chosen by the caller, not reset by Prepare.
 };
 CHECK_SIZEOF(SAuxEffectProcessingState, 0x18)
 
