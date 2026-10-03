@@ -1357,6 +1357,15 @@ MetroidPrime/CEchoEmitter.cpp:
 	.data       start:0x803B7898 end:0x803B78B0
 	.sdata2     start:0x8041D4F8 end:0x8041D520
 
+MetroidPrime/Player/CPlayerTargeting.cpp:
+	.text       start:0x801ECF44 end:0x801EF598
+	.ctors      start:0x803A5580 end:0x803A5584
+	.data       start:0x803B78B0 end:0x803B78D0
+	.bss        start:0x803DB6C8 end:0x803DB6E0
+	.sdata      start:0x80418730 end:0x80418738
+	.sbss       start:0x804192E0 end:0x804192F0
+	.sdata2     start:0x8041D520 end:0x8041D550
+
 MetroidPrime/CStaticGeometryMap.cpp:
 	.text       start:0x801EFA00 end:0x801EFA4C
 

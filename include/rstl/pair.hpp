@@ -34,6 +34,15 @@ public:
 };
 
 template <>
+struct is_trivially_destructible< pair< int, int > > {
+  enum { value = true };
+};
+
+inline void construct_impl(void* dest, const pair< int, int >& src) {
+  *static_cast< pair< int, int >* >(dest) = src;
+}
+
+template <>
 struct is_trivially_destructible< pair< uint, uint > > {
   enum { value = true };
 };

@@ -202,6 +202,7 @@ public:
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
   const CVector3f& GetOrbitPoint() const { return mOrbitPoint; }
   TUniqueId GetOrbitTargetId() const { return mOrbitTargetId; }
+  TUniqueId GetOrbitNextTargetId() const { return mOrbitNextTargetId; }
   CMorphBall* GetMorphBall() { return mMorphBall; }
   const CMorphBall* GetMorphBall() const { return mMorphBall; }
   CPlayerState* GetPlayerState() { return mPlayerState; }

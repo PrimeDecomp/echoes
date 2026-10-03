@@ -34,4 +34,8 @@ private:
 };
 CHECK_SIZEOF(CPlane, 0x10)
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CPlane)
+} // namespace rstl
+
 #endif // _CPLANE
