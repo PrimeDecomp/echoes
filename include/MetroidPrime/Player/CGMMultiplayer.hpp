@@ -25,8 +25,8 @@ public:
   bool IsGameOver() override;
   void EndGame(int resultIndex, CStateManager& mgr) override;
   int GetResultIndex() const override;
-  void AddListener(CGameModeListener& listener, uint playerIndex) override;
-  void RemoveListener(CGameModeListener& listener, uint playerIndex) override;
+  void AddListener(CPlayerListener& listener, uint playerIndex) override;
+  void RemoveListener(CPlayerListener& listener, uint playerIndex) override;
   bool v21() const override;
   float GetElapsedTime() const override { return mElapsedTime; }
   float GetMatchTimeLimit() const override { return mTimeLimit; }
@@ -54,7 +54,7 @@ protected:
                        const void* value);
 
 private:
-  typedef rstl::pair< uint, CGameModeListener* > TListener;
+  typedef rstl::pair< uint, CPlayerListener* > TListener;
   float mTimeLimit;
   float mElapsedTime;
   int mMusicIndex;

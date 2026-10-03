@@ -37,9 +37,9 @@ int CFrontEndGameMode::GetResultIndex() const { return mResultIndex; }
 
 void CFrontEndGameMode::GiveScore(CStateManager& mgr, uint playerIndex, uint amount) {}
 
-void CFrontEndGameMode::AddListener(CGameModeListener& listener, uint playerIndex) {}
+void CFrontEndGameMode::AddListener(CPlayerListener& listener, uint playerIndex) {}
 
-void CFrontEndGameMode::RemoveListener(CGameModeListener& listener, uint playerIndex) {}
+void CFrontEndGameMode::RemoveListener(CPlayerListener& listener, uint playerIndex) {}
 
 bool CFrontEndGameMode::v21() const { return false; }
 

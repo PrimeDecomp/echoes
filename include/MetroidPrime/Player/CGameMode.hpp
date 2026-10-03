@@ -3,7 +3,7 @@
 
 #include "MetroidPrime/TGameTypes.hpp"
 
-class CGameModeListener;
+class CPlayerListener;
 class COutputStream;
 class CStateManager;
 
@@ -30,8 +30,8 @@ public:
   virtual void GiveScore(CStateManager& mgr, uint playerIndex, uint amount) = 0;
   virtual int GetItemAmount(const CStateManager& mgr, uint playerIndex) const = 0;
   virtual bool IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const = 0;
-  virtual void AddListener(CGameModeListener& listener, uint playerIndex) = 0;
-  virtual void RemoveListener(CGameModeListener& listener, uint playerIndex) = 0;
+  virtual void AddListener(CPlayerListener& listener, uint playerIndex) = 0;
+  virtual void RemoveListener(CPlayerListener& listener, uint playerIndex) = 0;
   virtual bool v21() const = 0;
   virtual float GetElapsedTime() const = 0;
   virtual float GetMatchTimeLimit() const = 0;

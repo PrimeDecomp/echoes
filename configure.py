@@ -620,6 +620,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CGMDeathMatch.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGMCoin.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGMMultiplayer.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerListener.cpp"),
             Object(NonMatching, "MetroidPrime/CBoneTracking.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Player/CFaceplateDecoration.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGameOptions.cpp"),

@@ -3,7 +3,7 @@
 #include "Kyoto/Streams/COutputStream.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/Player/CGameModeListener.hpp"
+#include "MetroidPrime/Player/CPlayerListener.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -80,11 +80,11 @@ void CGMMultiplayer::NotifyGenericEvent(CStateManager& mgr, TUniqueId player, ui
   NotifyListeners(mgr, playerIndex, playerIndex, kGE_Generic, &value);
 }
 
-void CGMMultiplayer::AddListener(CGameModeListener& listener, uint playerIndex) {
+void CGMMultiplayer::AddListener(CPlayerListener& listener, uint playerIndex) {
   mListeners.insert(TListener(playerIndex, &listener));
 }
 
-void CGMMultiplayer::RemoveListener(CGameModeListener& listener, uint playerIndex) {
+void CGMMultiplayer::RemoveListener(CPlayerListener& listener, uint playerIndex) {
   mListeners.erase(TListener(playerIndex, &listener));
 }
 
