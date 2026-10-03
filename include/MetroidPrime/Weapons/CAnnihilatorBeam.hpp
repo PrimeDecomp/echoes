@@ -33,7 +33,7 @@ private:
   float mShotDelay;                                                       // Guessed name
   float mLightingResetDelayTimer;                                         // Guessed name
   float mProjectileSpeed;                                                 // Guessed name
-  float mProjectileLifetime;                                              // Guessed name
+  float mProjectileTurnRate;                                              // Guessed name
   TAreaId mLightingArea;                                                  // Guessed name
   bool mEffectLoaded : 1;                                                 // Guessed name
   bool mWorldLightingDimmed : 1;                                          // Guessed name
