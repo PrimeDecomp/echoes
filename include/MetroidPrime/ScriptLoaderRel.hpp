@@ -9,6 +9,37 @@
 class CVector3f;
 class CDamageInfo;
 class CFinalInput;
+class CSpacePirate;
+
+struct SSpacePirate_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadSpacePirate;
+  bool (CSpacePirate::*mAttachActor)(TUniqueId);
+  void (CSpacePirate::*mDetachActor)();
+};
+CHECK_SIZEOF(SSpacePirate_FuncPtrs, 0x1c)
+void SetSSpacePirate_FuncPtrs(SSpacePirate_FuncPtrs* callbacks);
+
+struct SKralee_FuncPtrs {
+  FScriptLoader mLoadKralee; // Guessed member name.
+};
+CHECK_SIZEOF(SKralee_FuncPtrs, 0x4)
+void SetSKralee_FuncPtrs(SKralee_FuncPtrs* callbacks);
+
+struct SParasite_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadParasite;
+  FScriptLoader mLoadBrizgee;
+  FScriptLoader mLoadCrystallite;
+};
+CHECK_SIZEOF(SParasite_FuncPtrs, 0xc)
+void SetSParasite_FuncPtrs(SParasite_FuncPtrs* callbacks);
+
+struct SPillBug_FuncPtrs {
+  FScriptLoader mLoadPillBug; // Guessed member name.
+};
+CHECK_SIZEOF(SPillBug_FuncPtrs, 0x4)
+void SetSPillBug_FuncPtrs(SPillBug_FuncPtrs* callbacks);
 
 struct SGuiWidget_FuncPtrs {
   FScriptLoader guiWidget;
