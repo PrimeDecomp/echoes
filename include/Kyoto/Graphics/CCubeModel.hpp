@@ -39,6 +39,7 @@ public:
     , mPackedTexCoords(packedTexCoords) {}
 
     rstl::vector< void* >& Surfaces() { return mSurfacePtrs; }
+    const rstl::vector< void* >& Surfaces() const { return mSurfacePtrs; }
     const void* GetMaterialPointer() const { return mMaterialData; }
     void SetMaterialPointer(const void* data) { mMaterialData = data; }
     const void* GetVertexPointer() const { return mPositions; }
