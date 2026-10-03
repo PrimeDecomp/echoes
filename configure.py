@@ -500,6 +500,7 @@ config.libs = [
             Object(Matching, "MetroidPrime/HUD/CHUDMemoParms.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CSamusHud.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudRadarInterface.cpp"),
+            Object(NonMatching, "MetroidPrime/HUD/CHudBossEnergyInterface.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudDecoInterfaceScan.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudVisorBeamMenu.cpp"),
             Object(NonMatching, "MetroidPrime/CQuitGameScreen.cpp"),
