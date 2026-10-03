@@ -336,6 +336,10 @@ MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 	.ctors      start:0x803A54E4 end:0x803A54E8
 	.data       start:0x803B3418 end:0x803B3498
 
+MetroidPrime/CDamageInfo.cpp:
+	.text       start:0x800B5F14 end:0x800B6320
+	.sdata2     start:0x8041B1B0 end:0x8041B1C8
+
 MetroidPrime/ScriptObjects/CScriptDock.cpp:
 	.text       start:0x800B63DC end:0x800B7928
 	.data       start:0x803B3498 end:0x803B3530
@@ -1136,7 +1140,7 @@ MetroidPrime/Player/CPlayerDynamics.cpp:
 	.text       start:0x80183648 end:0x80189FD4
 	.ctors      start:0x803A5554 end:0x803A5558
 
-MetroidPrime/CDamageInfo.cpp:
+MetroidPrime/CDamageInfoModifiers.cpp:
 	.text       start:0x80189FD4 end:0x8018A188
 
 MetroidPrime/Weapons/WeaponTypes.cpp:
