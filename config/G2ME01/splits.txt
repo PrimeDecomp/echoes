@@ -1970,6 +1970,11 @@ Kyoto/Animation/IAnimReader.cpp:
 	.text       start:0x802B2570 end:0x802B286C
 	.data       start:0x803B9BB0 end:0x803B9C18
 
+Kyoto/Animation/CJointData_LinearStorage.cpp:
+	.text       start:0x802B286C end:0x802B2F74
+	.rodata     start:0x803AEE58 end:0x803AEE60
+	.sdata2     start:0x8041E428 end:0x8041E430
+
 Kyoto/Animation/CAllFormatsAnimSource.cpp:
 	.text       start:0x802B2F74 end:0x802B3660
 	.rodata     start:0x803AEE60 end:0x803AEE68
@@ -2724,6 +2729,12 @@ Kyoto/Audio/CDSPStreamManager.cpp:
 	.bss        start:0x803E0590 end:0x803E05C8
 	.bss        start:0x804176E0 end:0x80417D64 align:4 common
 	.sbss       start:0x80419C70 end:0x80419C98
+
+Kyoto/Alloc/LockedCache.cpp:
+	.text       start:0x8033D2EC end:0x8033D420
+	.bss        start:0x803E05C8 end:0x803E0608
+	.sdata      start:0x80418C88 end:0x80418C90
+	.sbss       start:0x80419C98 end:0x80419CA8
 
 Kyoto/Animation/CSoundPOINode.cpp:
 	.text       start:0x8033D420 end:0x8033D69C
