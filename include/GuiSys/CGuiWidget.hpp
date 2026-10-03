@@ -90,6 +90,9 @@ public:
 
   short GetWidgetID() const { return mSelfId; }
   short GetWorkerId() const { return mWorkerId; }
+
+  bool GetIsSelectable() const { return mIsSelectable; }
+
   const CColor& GetColor() const { return mColor; }
   const CColor& GetModifiedColor() const { return mColor2; }
   const CTransform4f& GetIdleXform() const { return mTransform; }

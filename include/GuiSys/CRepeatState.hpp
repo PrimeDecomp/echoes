@@ -7,7 +7,7 @@
 class CRepeatState {
 public:
   CRepeatState();
-  bool Update(float dt, bool pressed);
+  const bool Update(float dt, bool pressed);
 
 private:
   float mTimer;
