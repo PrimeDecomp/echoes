@@ -66,11 +66,11 @@ CStateMachine* CAi::GetStateMachine() {
   return *token;
 }
 
-CStateMachine2* CAi::GetStateMachine2() {
+CGenericFSM2* CAi::GetStateMachine2() {
   if (!mStateMachine->IsLoaded()) {
     return nullptr;
   }
-  TToken< CStateMachine2 > token(*mStateMachine);
+  TToken< CGenericFSM2 > token(*mStateMachine);
   return *token;
 }
 

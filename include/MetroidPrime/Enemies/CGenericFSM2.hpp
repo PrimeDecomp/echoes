@@ -1,5 +1,5 @@
-#ifndef _CSTATEMACHINE2
-#define _CSTATEMACHINE2
+#ifndef _CGENERICFSM2
+#define _CGENERICFSM2
 
 #include "Kyoto/CToken.hpp"
 #include "rstl/optional_object.hpp"
@@ -7,7 +7,7 @@
 #include "rstl/vector.hpp"
 
 class CInputStream;
-class CStateMachine2;
+class CGenericFSM2;
 
 // Guessed name.
 class CState2 {
@@ -104,8 +104,8 @@ public:
   virtual EType GetType() const;
 
   void Setup(const rstl::string& name, const rstl::vector< SStateMachine2Transition >& transitions,
-             CAssetId assetId);             // Guessed name.
-  const CStateMachine2* GetMachine() const; // Guessed name.
+             CAssetId assetId);           // Guessed name.
+  const CGenericFSM2* GetMachine() const; // Guessed name.
 
 private:
   rstl::vector< SStateMachine2Transition > mTransitions; // Guessed name.
@@ -113,11 +113,11 @@ private:
 };
 CHECK_SIZEOF(CState2SubMachine, 0x30)
 
-// Guessed name.
-class CStateMachine2 {
+// MP3 Proto name.
+class CGenericFSM2 {
 public:
-  explicit CStateMachine2(CInputStream& in);
-  ~CStateMachine2();
+  explicit CGenericFSM2(CInputStream& in);
+  ~CGenericFSM2();
 
 private:
   const CState2* ResolveNode(uint target) const;  // Guessed name.
@@ -126,6 +126,6 @@ private:
   rstl::vector< CState2Trigger > mTriggers;       // Guessed name.
   rstl::vector< CState2SubMachine > mSubMachines; // Guessed name.
 };
-CHECK_SIZEOF(CStateMachine2, 0x40)
+CHECK_SIZEOF(CGenericFSM2, 0x40)
 
 #endif

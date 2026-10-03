@@ -8,7 +8,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
-#include "MetroidPrime/TStateMachineState2.hpp"
+#include "MetroidPrime/CGenericFSM2State.hpp"
 
 const float CPatterned::skDamageHitTime = 0.33f;
 const float CPatterned::skActorApproachDistance = 3.f;
@@ -51,7 +51,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , x34d_26_(true)
 , mStateMachine(pinfo.mStateMachine2Id == kInvalidAssetId
                     ? static_cast< StateMachine* >(rs_new TStateMachineState< CPatterned >)
-                    : static_cast< StateMachine* >(rs_new TStateMachineState2< CPatterned >))
+                    : static_cast< StateMachine* >(rs_new CGenericFSM2State< CPatterned >))
 , mCharacterType(character)
 , mCreatureSize(pinfo.mCreatureSize)
 , mIngPossessionBlend(0.f)
@@ -339,11 +339,11 @@ void CPatterned::InitializeStateMachine(CStateManager& mgr) {
     return;
   }
   if (mStateMachine->GetType() == 1) {
-    CStateMachine2* machine = GetStateMachine2();
+    CGenericFSM2* machine = GetStateMachine2();
     if (!machine) {
       return;
     }
-    static_cast< TStateMachineState2< CPatterned >* >(mStateMachine.get())->Setup(*machine);
+    static_cast< CGenericFSM2State< CPatterned >* >(mStateMachine.get())->Setup(*machine);
   } else {
     CStateMachine* machine = GetStateMachine();
     if (!machine) {

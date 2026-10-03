@@ -1,13 +1,13 @@
-#ifndef _TSTATEMACHINESTATE2
-#define _TSTATEMACHINESTATE2
+#ifndef _CGENERICFSM2STATE
+#define _CGENERICFSM2STATE
 
-#include "MetroidPrime/Enemies/CStateMachine2.hpp"
+#include "MetroidPrime/Enemies/CGenericFSM2.hpp"
 #include "MetroidPrime/TStateMachineState.hpp"
 #include "rstl/rc_ptr.hpp"
 
-// Guessed name.
+// MP3 Proto name; guessed template form.
 template < class T >
-class TStateMachineState2 : public TStateMachineStateBase< T > {
+class CGenericFSM2State : public TStateMachineStateBase< T > {
 public:
   typedef typename TStateMachineStateBase< T >::StateFunc StateFunc;
   typedef typename TStateMachineStateBase< T >::TriggerFunc TriggerFunc;
@@ -16,10 +16,10 @@ public:
   typedef typename TStateMachineStateBase< T >::STriggerFunction STriggerFunction;
   typedef typename TStateMachineStateBase< T >::SCodeFunction SCodeFunction;
 
-  TStateMachineState2();
+  CGenericFSM2State();
 
   // TStateMachineStateBase
-  virtual ~TStateMachineState2();
+  virtual ~CGenericFSM2State();
   virtual int GetType() const;
   virtual void Reset(CStateManager& mgr, T& owner);
   virtual void SetStateFunctions(const SStateFunction* functions, int count);
@@ -33,7 +33,7 @@ public:
   virtual float GetDelay() const;
   virtual void SetDelay(float delay);
 
-  void Setup(const CStateMachine2& machine);
+  void Setup(const CGenericFSM2& machine);
   // Guessed names.
   int GetStateIndex(const rstl::string& name) const;
   int GetTriggerIndex(const rstl::string& name) const;
@@ -46,22 +46,26 @@ public:
 private:
   struct SSubMachine { // Guessed name.
     const CState2* mState;
-    rstl::rc_ptr< TStateMachineState2< T > > mMachine;
+    rstl::rc_ptr< CGenericFSM2State< T > > mMachine;
   };
 
   // Guessed names.
   void CallCode(const CState2Code& state, CStateManager& mgr, T& owner, float dt);
   bool CallTrigger(const CState2Trigger& state, CStateManager& mgr, T& owner);
-  void CallSubMachine(const CState2SubMachine& state, const rstl::string& name, CStateManager& mgr,
+  // MP3 Proto names.
+  void ExecuteSubflow(const CState2SubMachine& state, const rstl::string& name, CStateManager& mgr,
                       T& owner, EStateMsg msg, float dt);
-  void CallState(const CState2State& state, CStateManager& mgr, T& owner, EStateMsg msg, float dt);
+  void ExecuteState(const CState2State& state, CStateManager& mgr, T& owner, EStateMsg msg,
+                    float dt);
+  // Guessed names.
   const CState2SubMachine* GetActiveSubMachine() const;
   const CState2State* GetActiveState() const;
   bool EvaluateTransitions(CStateManager& mgr, T& owner, float dt,
                            const rstl::vector< SStateMachine2Transition >& transitions);
   void ExitActive(CStateManager& mgr, T& owner);
 
-  const CStateMachine2* mMachine;
+  // Guessed member names.
+  const CGenericFSM2* mMachine;
   rstl::vector< StateFunc > mStateFunctions;
   rstl::vector< CodeFunc > mCodeFunctions;
   rstl::vector< TriggerFunc > mTriggerFunctions;
@@ -72,101 +76,101 @@ private:
 };
 
 template < class T >
-TStateMachineState2< T >::TStateMachineState2()
+CGenericFSM2State< T >::CGenericFSM2State()
 : mMachine(nullptr), mState(nullptr), mTime(0.f), mDelay(0.f) {}
 
 template < class T >
-TStateMachineState2< T >::~TStateMachineState2() {}
+CGenericFSM2State< T >::~CGenericFSM2State() {}
 
 template < class T >
-int TStateMachineState2< T >::GetType() const {}
+int CGenericFSM2State< T >::GetType() const {}
 
 template < class T >
-void TStateMachineState2< T >::Reset(CStateManager& mgr, T& owner) {}
+void CGenericFSM2State< T >::Reset(CStateManager& mgr, T& owner) {}
 
 template < class T >
-void TStateMachineState2< T >::SetStateFunctions(const SStateFunction* functions, int count) {}
+void CGenericFSM2State< T >::SetStateFunctions(const SStateFunction* functions, int count) {}
 
 template < class T >
-void TStateMachineState2< T >::SetTriggerFunctions(const STriggerFunction* functions, int count) {}
+void CGenericFSM2State< T >::SetTriggerFunctions(const STriggerFunction* functions, int count) {}
 
 template < class T >
-void TStateMachineState2< T >::SetCodeFunctions(const SCodeFunction* functions, int count) {}
+void CGenericFSM2State< T >::SetCodeFunctions(const SCodeFunction* functions, int count) {}
 
 template < class T >
-void TStateMachineState2< T >::SetState(CStateManager& mgr, T& owner, const rstl::string& name) {}
+void CGenericFSM2State< T >::SetState(CStateManager& mgr, T& owner, const rstl::string& name) {}
 
 template < class T >
-void TStateMachineState2< T >::Update(CStateManager& mgr, T& owner, float dt) {}
+void CGenericFSM2State< T >::Update(CStateManager& mgr, T& owner, float dt) {}
 
 template < class T >
-bool TStateMachineState2< T >::HasState() const {}
+bool CGenericFSM2State< T >::HasState() const {}
 
 template < class T >
-const char* TStateMachineState2< T >::GetName() const {}
+const char* CGenericFSM2State< T >::GetName() const {}
 
 template < class T >
-float TStateMachineState2< T >::GetTime() const {}
+float CGenericFSM2State< T >::GetTime() const {}
 
 template < class T >
-float TStateMachineState2< T >::GetDelay() const {}
+float CGenericFSM2State< T >::GetDelay() const {}
 
 template < class T >
-void TStateMachineState2< T >::SetDelay(float delay) {}
+void CGenericFSM2State< T >::SetDelay(float delay) {}
 
 template < class T >
-void TStateMachineState2< T >::Setup(const CStateMachine2& machine) {}
+void CGenericFSM2State< T >::Setup(const CGenericFSM2& machine) {}
 
 template < class T >
-int TStateMachineState2< T >::GetStateIndex(const rstl::string& name) const {}
+int CGenericFSM2State< T >::GetStateIndex(const rstl::string& name) const {}
 
 template < class T >
-int TStateMachineState2< T >::GetTriggerIndex(const rstl::string& name) const {}
+int CGenericFSM2State< T >::GetTriggerIndex(const rstl::string& name) const {}
 
 template < class T >
-int TStateMachineState2< T >::GetCodeIndex(const rstl::string& name) const {}
+int CGenericFSM2State< T >::GetCodeIndex(const rstl::string& name) const {}
 
 template < class T >
-int TStateMachineState2< T >::GetSubMachineIndex(const CState2* state) const {}
+int CGenericFSM2State< T >::GetSubMachineIndex(const CState2* state) const {}
 
 template < class T >
-void TStateMachineState2< T >::SetStateFunction(const rstl::string& name, StateFunc function) {}
+void CGenericFSM2State< T >::SetStateFunction(const rstl::string& name, StateFunc function) {}
 
 template < class T >
-void TStateMachineState2< T >::SetTriggerFunction(const rstl::string& name, TriggerFunc function) {}
+void CGenericFSM2State< T >::SetTriggerFunction(const rstl::string& name, TriggerFunc function) {}
 
 template < class T >
-void TStateMachineState2< T >::SetCodeFunction(const rstl::string& name, CodeFunc function) {}
+void CGenericFSM2State< T >::SetCodeFunction(const rstl::string& name, CodeFunc function) {}
 
 template < class T >
-void TStateMachineState2< T >::CallCode(const CState2Code& state, CStateManager& mgr, T& owner,
-                                        float dt) {}
+void CGenericFSM2State< T >::CallCode(const CState2Code& state, CStateManager& mgr, T& owner,
+                                      float dt) {}
 
 template < class T >
-bool TStateMachineState2< T >::CallTrigger(const CState2Trigger& state, CStateManager& mgr,
-                                           T& owner) {}
+bool CGenericFSM2State< T >::CallTrigger(const CState2Trigger& state, CStateManager& mgr,
+                                         T& owner) {}
 
 template < class T >
-void TStateMachineState2< T >::CallSubMachine(const CState2SubMachine& state,
-                                              const rstl::string& name, CStateManager& mgr,
-                                              T& owner, EStateMsg msg, float dt) {}
+void CGenericFSM2State< T >::ExecuteSubflow(const CState2SubMachine& state,
+                                            const rstl::string& name, CStateManager& mgr, T& owner,
+                                            EStateMsg msg, float dt) {}
 
 template < class T >
-void TStateMachineState2< T >::CallState(const CState2State& state, CStateManager& mgr, T& owner,
-                                         EStateMsg msg, float dt) {}
+void CGenericFSM2State< T >::ExecuteState(const CState2State& state, CStateManager& mgr, T& owner,
+                                          EStateMsg msg, float dt) {}
 
 template < class T >
-const CState2SubMachine* TStateMachineState2< T >::GetActiveSubMachine() const {}
+const CState2SubMachine* CGenericFSM2State< T >::GetActiveSubMachine() const {}
 
 template < class T >
-const CState2State* TStateMachineState2< T >::GetActiveState() const {}
+const CState2State* CGenericFSM2State< T >::GetActiveState() const {}
 
 template < class T >
-bool TStateMachineState2< T >::EvaluateTransitions(
+bool CGenericFSM2State< T >::EvaluateTransitions(
     CStateManager& mgr, T& owner, float dt,
     const rstl::vector< SStateMachine2Transition >& transitions) {}
 
 template < class T >
-void TStateMachineState2< T >::ExitActive(CStateManager& mgr, T& owner) {}
+void CGenericFSM2State< T >::ExitActive(CStateManager& mgr, T& owner) {}
 
 #endif

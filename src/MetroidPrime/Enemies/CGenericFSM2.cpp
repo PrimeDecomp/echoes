@@ -1,4 +1,4 @@
-#include "MetroidPrime/Enemies/CStateMachine2.hpp"
+#include "MetroidPrime/Enemies/CGenericFSM2.hpp"
 
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
@@ -7,11 +7,11 @@
 CFactoryFnReturn FAiStateMachine2Factory(const SObjectTag& tag, CInputStream& in,
                                          const CVParamTransfer& params) {}
 
-CStateMachine2::CStateMachine2(CInputStream& in) {}
+CGenericFSM2::CGenericFSM2(CInputStream& in) {}
 
-CStateMachine2::~CStateMachine2() {}
+CGenericFSM2::~CGenericFSM2() {}
 
-const CState2* CStateMachine2::ResolveNode(uint target) const {}
+const CState2* CGenericFSM2::ResolveNode(uint target) const {}
 
 SStateMachine2SerializedTransition::SStateMachine2SerializedTransition(CInputStream& in) {}
 
@@ -67,4 +67,4 @@ void CState2SubMachine::Setup(const rstl::string& name,
                               const rstl::vector< SStateMachine2Transition >& transitions,
                               CAssetId assetId) {}
 
-const CStateMachine2* CState2SubMachine::GetMachine() const {}
+const CGenericFSM2* CState2SubMachine::GetMachine() const {}

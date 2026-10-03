@@ -11,7 +11,7 @@
 
 class CKnockBackInfo;
 class CStateMachine;
-class CStateMachine2;
+class CGenericFSM2;
 class CTeamAiRole;
 
 class CAi : public CPhysicsActor {
@@ -49,7 +49,7 @@ public:
   }
 
   CStateMachine* GetStateMachine();
-  CStateMachine2* GetStateMachine2();
+  CGenericFSM2* GetStateMachine2();
 
 private:
   CHealthInfo mHealthInfo;
