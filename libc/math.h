@@ -86,6 +86,7 @@ double asin(double x);
 double acos(double x);
 _MATH_INLINE float acosf(float x) { return (float)acos((double)x); }
 double log(double x);
+double log10(double x);
 double exp(double x);
 
 double ldexp(double x, int exp);
