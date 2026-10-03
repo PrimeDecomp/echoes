@@ -5,6 +5,7 @@
 
 struct CAdvancementDeltas {
 public:
+  CAdvancementDeltas() {}
   CAdvancementDeltas(const CVector3f& posDelta, const CQuaternion& rotDelta)
   : mPosDelta(posDelta), mRotDelta(rotDelta) {}
 
@@ -16,7 +17,6 @@ public:
   static CAdvancementDeltas Blend(const CAdvancementDeltas& a, const CAdvancementDeltas& b,
                                   const float t);
 
-private:
   CVector3f mPosDelta;
   CQuaternion mRotDelta;
 };

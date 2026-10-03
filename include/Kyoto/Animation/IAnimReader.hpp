@@ -4,6 +4,7 @@
 #include "Kyoto/Math/CQuaternion.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
+#include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/Animation/CCharAnimTime.hpp"
 #include "Kyoto/Particles/CParticleData.hpp"
 
@@ -12,19 +13,7 @@
 #include "rstl/ownership_transfer.hpp"
 #include "rstl/string.hpp"
 
-struct SAdvancementDeltas {
-  CVector3f mPosDelta;
-  CQuaternion mRotDelta;
-
-  SAdvancementDeltas() {}
-  SAdvancementDeltas(const CVector3f& posDelta, const CQuaternion& rotDelta)
-  : mPosDelta(posDelta), mRotDelta(rotDelta) {}
-
-  static SAdvancementDeltas Interpolate(const SAdvancementDeltas& a, const SAdvancementDeltas& b,
-                                        float oldWeight, float newWeight);
-  static SAdvancementDeltas Blend(const SAdvancementDeltas& a, const SAdvancementDeltas& b,
-                                  float w);
-};
+typedef CAdvancementDeltas SAdvancementDeltas;
 
 struct SAdvancementResults {
   CCharAnimTime mRemTime;
