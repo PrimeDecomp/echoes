@@ -1276,6 +1276,11 @@ MetroidPrime/Player/CPlayerBodyJump.cpp:
 	.text       start:0x8019C73C end:0x8019D2B8
 	.sdata2     start:0x8041CB88 end:0x8041CBA0
 
+MetroidPrime/Player/CPlayerBodyStateCmdMgr.cpp:
+	.text       start:0x8019D2B8 end:0x8019DA4C
+	.data       start:0x803B6450 end:0x803B6478
+	.sdata      start:0x80418570 end:0x80418578
+
 MetroidPrime/Player/CPlayerBodyAdditiveAim.cpp:
 	.text       start:0x8019DA4C end:0x8019E0BC
 	.sdata2     start:0x8041CBA0 end:0x8041CBC8
