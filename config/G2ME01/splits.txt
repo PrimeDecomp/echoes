@@ -1756,6 +1756,12 @@ MetroidPrime/CInGameQuitScreen.cpp:
 	.data       start:0x803B89B0 end:0x803B89C0
 	.sdata2     start:0x8041DD00 end:0x8041DD08
 
+MetroidPrime/CPirateEchoEmitter.cpp:
+	.text       start:0x80244F74 end:0x8024569C
+	.rodata     start:0x803AD6F0 end:0x803AD708
+	.data       start:0x803B89C0 end:0x803B89D8
+	.sdata2     start:0x8041DD08 end:0x8041DD28
+
 WorldFormat/CAreaOctTree_Tests.cpp:
 	.text       start:0x8024569C end:0x802471B0
 
