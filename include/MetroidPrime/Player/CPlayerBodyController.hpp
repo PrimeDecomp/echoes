@@ -24,7 +24,9 @@ public:
   enum EPlayerAnimationState {
     kPAS_Locomotion = 0,
     kPAS_MorphTransition = 1,
+    kPAS_Dash = 2,
     kPAS_Jump = 3,
+    kPAS_AdditiveAim = 4,
     kPAS_DeathReaction = 5,
     kPAS_MorphDuration = 7,
     kPAS_GunReaction = 9
@@ -47,6 +49,8 @@ public:
   CPlayer& GetPlayer() const { return *mPlayer; }
 
   int GetCurrentAnimationId() const { return mAnimationId; }
+
+  int GetLocomotionMode() const { return mLocomotion.mLocomotionMode; }
 
   bool IsAnimationOver() const { return (mAnimationFlags & kAF_AnimationOver) != 0; }
 
@@ -158,12 +162,18 @@ private:
   };
 
   struct SDashState {
+    // Guessed player-specific state and PAS phase names.
+    enum EState { kS_Invalid = -1, kS_IntoDash, kS_Loop, kS_Exit };
+    enum EAnimationPhase { kAP_IntoDash, kAP_Loop, kAP_Exit };
+
     SDashState();
     void Start(CStateManager& mgr, CPlayerBodyController& controller);
     bool Update(CStateManager& mgr, CPlayerBodyController& controller);
     void Shutdown(CPlayerBodyController& controller);
+    void PlayLoop(CStateManager& mgr, CPlayerBodyController& controller);
+    void PlayExit(CStateManager& mgr, CPlayerBodyController& controller);
 
-    int mState;
+    EState mState;
     int mAnimationVariant;
   };
 
@@ -176,16 +186,21 @@ private:
   };
 
   struct SAdditiveAimState {
+    // Guessed signed-axis labels. Category meanings beyond their mode selectors are unresolved.
+    enum EDirection { kD_NegativeYaw, kD_PositiveYaw, kD_PositivePitch, kD_NegativePitch };
+    enum ECategory { kC_Default, kC_LocomotionMode4, kC_LocomotionMode5 };
+
     explicit SAdditiveAimState(CActor& actor);
     void Start(CStateManager& mgr, CPlayerBodyController& controller);
     void Update(float dt, CStateManager& mgr, CPlayerBodyController& controller);
     void Shutdown(CPlayerBodyController& controller);
+    void UpdatePitch(float dt, const CVector3f& direction, CPlayerBodyController& controller);
 
     int mAvailableAnimations[3];
     int mAnimationIds[3][4];
     float mYawLimits[2];
     float mPitchLimits[2];
-    int mCategory;
+    ECategory mCategory;
     float mYawWeight;
     float mYawVelocity;
     float mPitchWeight;
