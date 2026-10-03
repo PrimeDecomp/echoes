@@ -91,7 +91,7 @@ void CInGameGuiManager::DrawDarkVisorMask() const {
   // TODO: set the outer-mask visibility and draw the loaded dark-visor frame.
 }
 
-void CInGameGuiManager::fn_80225a30(float, const CStateManager&, const CColor&, const CColor&,
+void CInGameGuiManager::DrawScanVisor(float, const CStateManager&, const CColor&, const CColor&,
                                     const CColor&, const CColor*, int, const CVector3f&) const {
   // TODO: forward the visor dimensions, color palette and camera direction to the renderer.
   // The effect's source name remains unresolved.

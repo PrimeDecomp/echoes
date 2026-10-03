@@ -50,8 +50,10 @@ public:
   void StopSounds();            // Guessed name
   bool IsInPausedState() const; // Guessed name
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
-  void fn_80225a30(float, const CStateManager&, const CColor&, const CColor&, const CColor&,
-                   const CColor*, int, const CVector3f&) const;
+  // Guessed name; forwards the scan palette and camera direction to the renderer.
+  void DrawScanVisor(float time, const CStateManager& mgr, const CColor& sweepColor,
+                     const CColor& inactiveColor, const CColor& inactiveExternalColor,
+                     const CColor* palette, int paletteSize, const CVector3f& direction) const;
 
 private:
   typedef rstl::reserved_vector< TToken< CDependencyGroup >, 3 > TPauseScreenDGRPs;
