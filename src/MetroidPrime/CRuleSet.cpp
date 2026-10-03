@@ -14,44 +14,44 @@ CRuleSet::CRuleSet(CInputStream& input) {
   input.ReadInt8();  // version
   CAssetId parentRule = static_cast< CAssetId >(input.ReadInt32());
   if (parentRule != kInvalidAssetId) {
-    m_parentRule = TLockedToken< CRuleSet >(gpSimplePool->GetObj(SObjectTag('RULE', parentRule)));
+    mParentRule = TLockedToken< CRuleSet >(gpSimplePool->GetObj(SObjectTag('RULE', parentRule)));
   }
   int ruleCount = input.ReadInt16();
-  m_rules.reserve(ruleCount);
+  mRules.reserve(ruleCount);
   for (int i = 0; i < ruleCount; ++i) {
-    m_rules.push_back_unsafe(CRuleSetRule(input));
+    mRules.push_back_unsafe(CRuleSetRule(input));
   }
 }
 
 CRuleSetRule::CRuleSetRule(CInputStream& input) {
   int conditionCount = input.ReadInt16();
-  m_conditions.reserve(conditionCount);
+  mConditions.reserve(conditionCount);
   for (int i = 0; i < conditionCount; ++i) {
-    m_conditions.push_back_unsafe(CRuleCondition(input));
+    mConditions.push_back_unsafe(CRuleCondition(input));
   }
 
   int actionCount = input.ReadInt16();
-  m_actions.reserve(actionCount);
+  mActions.reserve(actionCount);
   for (int i = 0; i < actionCount; ++i) {
-    m_actions.push_back_unsafe(CRuleAction(input));
+    mActions.push_back_unsafe(CRuleAction(input));
   }
 }
 
 CRuleCondition::CRuleCondition(CInputStream& input)
-: m_id(input.ReadInt32()), m_operator(input.ReadInt8()), m_value(input.ReadInt8(), input) {}
+: mId(input.ReadInt32()), mOperator(input.ReadInt8()), mValue(input.ReadInt8(), input) {}
 
-CRuleAction::CRuleAction(CInputStream& input) : m_id(input.ReadInt32()) {
+CRuleAction::CRuleAction(CInputStream& input) : mId(input.ReadInt32()) {
   int propCount = input.ReadInt8();
-  m_properties.reserve(propCount);
+  mProperties.reserve(propCount);
   for (int i = 0; i < propCount; ++i) {
-    m_properties.push_back_unsafe(CRuleValue(3, input));
+    mProperties.push_back_unsafe(CRuleValue(3, input));
   }
 }
 
-CRuleValue::CRuleValue(int type, CInputStream& input) : m_type(type), m_value(input.ReadInt32()) {}
+CRuleValue::CRuleValue(int type, CInputStream& input) : mType(type), mValue(input.ReadInt32()) {}
 
-bool CRuleValue::GetBool() const { return *reinterpret_cast< const bool* >(&m_value); }
+bool CRuleValue::GetBool() const { return *reinterpret_cast< const bool* >(&mValue); }
 
-int CRuleValue::GetInt() const { return m_value; }
+int CRuleValue::GetInt() const { return mValue; }
 
-float CRuleValue::GetFloat() const { return *reinterpret_cast< const float* >(&m_value); }
+float CRuleValue::GetFloat() const { return *reinterpret_cast< const float* >(&mValue); }
