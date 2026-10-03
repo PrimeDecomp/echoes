@@ -1667,6 +1667,11 @@ WorldFormat/CAreaRenderOctTree.cpp:
 	.sdata      start:0x80418960 end:0x80418968
 	.sdata2     start:0x8041DDF0 end:0x8041DDF8
 
+WorldFormat/CCollisionCache.cpp:
+	.text       start:0x80257CB8 end:0x802591B4
+	.rodata     start:0x803AD928 end:0x803AD930
+	.sdata2     start:0x8041DE18 end:0x8041DE20
+
 Weapons/CProjectileWeapon.cpp:
 	.text       start:0x802591B4 end:0x8025CA80
 	.rodata     start:0x803AD930 end:0x803AD938

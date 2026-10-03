@@ -424,6 +424,7 @@ config.libs = [
             Object(NonMatching, "WorldFormat/CMetroidAreaCollider.cpp"),
             Object(NonMatching, "WorldFormat/CAreaOctTree_Tests.cpp"),
             Object(NonMatching, "WorldFormat/CCollisionSurface.cpp"),
+            Object(NonMatching, "WorldFormat/CCollisionCache.cpp"),
             Object(NonMatching, "WorldFormat/CMetroidModelInstance.cpp"),
             Object(MatchingFor("G2ME01"), "WorldFormat/CAreaBspTree.cpp"),
             Object(NonMatching, "WorldFormat/CPVSAreaSet.cpp"),
