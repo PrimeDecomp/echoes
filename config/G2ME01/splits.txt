@@ -2774,6 +2774,26 @@ Kyoto/Audio/CAuxEffect.cpp:
 	.text       start:0x80334C18 end:0x803359F4
 	.data       start:0x803BB438 end:0x803BB498
 
+MetroidPrime/Cameras/CCameraSurface.cpp:
+	.text       start:0x80339D24 end:0x8033A28C
+	.data       start:0x803BBAC8 end:0x803BBB10
+	.sdata2     start:0x8041EDA8 end:0x8041EDB8
+
+MetroidPrime/Cameras/CCylinderCameraSurface.cpp:
+	.text       start:0x8033A4B0 end:0x8033A8D4
+	.data       start:0x803BBB10 end:0x803BBB28
+	.sdata2     start:0x8041EDC8 end:0x8041EDD0
+
+MetroidPrime/Cameras/CSplineCylinderCameraSurface.cpp:
+	.text       start:0x8033A8D4 end:0x8033AF90
+	.data       start:0x803BBB28 end:0x803BBB40
+	.sdata2     start:0x8041EDD0 end:0x8041EDF0
+
+MetroidPrime/Cameras/CSplinePlaneCameraSurface.cpp:
+	.text       start:0x8033AF90 end:0x8033B414
+	.data       start:0x803BBB40 end:0x803BBB58
+	.sdata2     start:0x8041EDF0 end:0x8041EE00
+
 Kyoto/Graphics/CDisplayListReader.cpp:
 	.text       start:0x8033B414 end:0x8033B940
 

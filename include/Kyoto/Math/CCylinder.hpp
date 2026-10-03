@@ -12,6 +12,10 @@ public:
   CVector3f GetSurfacePoint(const CVector3f& point) const;
   CVector3f GetAxisPoint(CVector3f point) const;
 
+  const CLine& GetAxis() const { return mAxis; }
+
+  float GetRadius() const { return mRadius; }
+
 private:
   CLine mAxis;
   float mRadius;
