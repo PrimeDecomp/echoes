@@ -20,6 +20,7 @@ public:
   float GetRollByTime(float time); // Guessed name; cinematic roll in degrees.
 
 private:
+  // Guessed semantic names, corroborated by camera FOV and cinematic-roll consumers.
   CMayaSpline mFovSpline;
   CMayaSpline mRollSpline;
 };

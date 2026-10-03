@@ -28,17 +28,24 @@ public:
   float ValidateLength(float distance) const;
   // Guessed names; time is mapped through arc length rather than segment parameterization.
   CVector3f GetPositionByTime(float time) const;
-  CVector3f GetTangentByTime(float time) const; // Guessed name.
+  CVector3f GetPositionByLength(float distance) const; // Guessed name.
+  CVector3f GetTangentByTime(float time) const;        // Guessed name.
   void CalculateLength();
   void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
-  int GetControlPointCount() const { return mControlPoints.size(); }
-  int GetKnotCount() const { return mKnots.size(); }
+  uint GetControlPointCount() const { return mControlPoints.size(); }
+  uint GetKnotCount() const { return mKnots.size(); }
   CVector3f GetKnot(uint index) const; // Guessed name; respects closed-loop index wrapping.
   int GetKnotIndexByLength(float distance) const; // Guessed name; searches knot arc lengths.
+  // Guessed names, recovered from game-spline orientation interpolation.
+  uint GetKnotIndexByTime(float time) const;
+  uint ValidateKnotIndex(uint index) const;
+  float GetKnotTime(uint index) const;
+  float GetKnotLength(uint index) const;
   bool IsClosedLoop() const { return mClosedLoop; }
+  void SetClosedLoop(bool closedLoop) { mClosedLoop = closedLoop; } // Guessed name.
 
 private:
   rstl::vector< CVector3f > mControlPoints;
