@@ -53,6 +53,7 @@ struct SPlayerTurret_FuncPtrs {
   TUniqueId (CEntity::*GetSomeId)();
 };
 void SetSPlayerTurret_FuncPtrs(SPlayerTurret_FuncPtrs*);
+TUniqueId PlayerTurret_GetSomeId(CEntity& entity); // Guessed name; existing REL ID query.
 
 struct SScriptForgottenObject_FuncPtrs {
   FScriptLoader loader;
