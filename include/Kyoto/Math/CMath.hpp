@@ -97,6 +97,20 @@ public:
   static CVector3f GetCatmullRomSplinePoint(const CVector3f& a, const CVector3f& b,
                                             const CVector3f& c, const CVector3f& d, float t);
   static float GetCatmullRomSplinePoint(float a, float b, float c, float d, float t);
+  // Guessed names, based on the native spline basis and normalized-bisector formulas.
+  static CVector3f GetCatmullRomSplineTangent(const CVector3f& a, const CVector3f& b,
+                                              const CVector3f& c, const CVector3f& d, float t);
+  static CVector3f GetBSplinePoint(const CVector3f& a, const CVector3f& b, const CVector3f& c,
+                                   const CVector3f& d, float t);
+  static CVector3f GetBSplineTangent(const CVector3f& a, const CVector3f& b, const CVector3f& c,
+                                     const CVector3f& d, float t);
+  static CVector3f GetBezierTangent(const CVector3f& a, const CVector3f& b, const CVector3f& c,
+                                    const CVector3f& d, float t);
+  static CVector3f GetRoundedCatmullRomSplinePoint(const CVector3f& a, const CVector3f& b,
+                                                   const CVector3f& c, const CVector3f& d, float t);
+  static CVector3f GetRoundedCatmullRomSplineTangent(const CVector3f& a, const CVector3f& b,
+                                                     const CVector3f& c, const CVector3f& d,
+                                                     float t);
   static CVector3f GetBezierPoint(const CVector3f&, const CVector3f&, const CVector3f&,
                                   const CVector3f&, float);
   static CVector3f BaryToWorld(const CVector3f& p0, const CVector3f& p1, const CVector3f& p2,
