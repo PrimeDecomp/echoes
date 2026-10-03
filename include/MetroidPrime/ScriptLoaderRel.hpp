@@ -41,6 +41,16 @@ struct SPillBug_FuncPtrs {
 CHECK_SIZEOF(SPillBug_FuncPtrs, 0x4)
 void SetSPillBug_FuncPtrs(SPillBug_FuncPtrs* callbacks);
 
+struct SSporb_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadBase;
+  FScriptLoader mLoadProjectile;
+  FScriptLoader mLoadNeedle;
+  FScriptLoader mLoadTop;
+};
+CHECK_SIZEOF(SSporb_FuncPtrs, 0x10)
+void SetSSporb_FuncPtrs(SSporb_FuncPtrs* callbacks);
+
 struct SGuiWidget_FuncPtrs {
   FScriptLoader guiWidget;
   FScriptLoader guiScreen;
