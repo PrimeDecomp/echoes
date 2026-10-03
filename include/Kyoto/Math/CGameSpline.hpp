@@ -9,10 +9,23 @@
 // Guessed name. Runtime spline, distinct from the serialized CGameSplineDesc.
 class CGameSpline {
 public:
-  CGameSpline(float duration, uint flags, const SLdrSpline& positionTimeSpline,
-              const SLdrSpline& lookAtTimeSpline, CMotionSpline::ESplineType positionType,
+  // Guessed flag names, based on native construction and sampling controls.
+  enum EFlags {
+    kF_LoopPosition = 0x1,
+    kF_LoopLookAt = 0x2,
+    kF_UsePositionTimeForLookAt = 0x4,
+    kF_UsePositionForLookAt = 0x8,
+  };
+
+  CGameSpline(float duration, uint flags, const CMayaSpline& positionTimeSpline,
+              const CMayaSpline& lookAtTimeSpline, CMotionSpline::ESplineType positionType,
               CMotionSpline::ESplineType lookAtType);
   virtual ~CGameSpline();
+
+  // Guessed name; replaces both motion paths and their position-key orientations.
+  void Initialise(const rstl::vector< CVector3f >& positions,
+                  const rstl::vector< CQuaternion >& orientations,
+                  const rstl::vector< CVector3f >& lookAtPoints);
 
   // Guessed accessor names, recovered from the script-camera callers.
   uint GetPositionKnotCount() const;
@@ -35,6 +48,7 @@ public:
   CQuaternion GetOrientationByLength(float distance);
 
 protected:
+  // Guessed semantic names, supported by construction and native samplers.
   CMotionSpline mPositionSpline;
   CMayaSpline mPositionTimeSpline;
   CMotionSpline mLookAtSpline;
