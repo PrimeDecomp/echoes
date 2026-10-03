@@ -250,6 +250,7 @@ public:
 
   // State transitions
   void DeferStateTransition(EStateManagerTransition t);
+  void ResetEscapeSequenceTimer(float time); // Prime-correlated name
   void EnterMapScreen() { DeferStateTransition(kSMT_MapScreen); }
   void EnterPauseScreen() { DeferStateTransition(kSMT_PauseGame); }
   void EnterLogBookScreen() { DeferStateTransition(kSMT_LogBook); }
@@ -276,6 +277,9 @@ public:
   const CPlayerState* GetPlayerState(int playerIndex) const { return mPlayerStates[playerIndex]; }
   CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
+  TUniqueId GetSkipCinematicSpecialFunction() const { return mSpecialFunctionId; }
+  void SetSkipCinematicSpecialFunction(TUniqueId id) { mSpecialFunctionId = id; }
+  void SetUnkFlagA3(bool value) { mUnkFlagA3 = value; }
 
   bool fn_800366e4(const CActor*) const;
 
