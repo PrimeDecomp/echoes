@@ -15,10 +15,15 @@ public:
   void SetDestination(const CVector3f& position);
 
 private:
+  // Guessed names, recovered from the path-search and steering callers.
+  void StartPathFind(CStateManager& mgr, CPatterned& actor);
+  void ApproachDest(CStateManager& mgr, CPatterned& actor);
+
+  // Guessed member names, supported by native setters/search/steering consumers.
   CVector3f mSegmentStart;
+  CVector3f mPathTarget;
   CVector3f mDestinationPosition;
-  CVector3f mFaceVector;
-  TUniqueId mDestination;
+  TUniqueId mFaceTarget;
   bool mInPosition : 1;
   bool x26_25_ : 1;
 };
