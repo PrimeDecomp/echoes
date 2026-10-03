@@ -3,9 +3,9 @@
 
 #include "types.h"
 
-#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "MetroidPrime/CTargetReticles.hpp"
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
@@ -64,6 +64,7 @@ public:
   CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLoader& memo,
             CGuiFrameLoader* helmet, int playerIndex);
   virtual ~CSamusHud();
+  static const char* GetHudFrameName(int viewportLayout); // Guessed name; native frame-name table.
   bool CheckLoadComplete(const CStateManager& mgr);
   void Update(float dt, const CStateManager& mgr, uint helmetVisibility, bool hudVisible,
               bool targetingVisible);

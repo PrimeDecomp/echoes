@@ -475,6 +475,11 @@ MetroidPrime/CActorParameters.cpp:
 	.sdata      start:0x80418218 end:0x80418228
 	.sdata2     start:0x8041B680 end:0x8041B688
 
+MetroidPrime/CInGameGuiManagerSet.cpp:
+	.text       start:0x800E028C end:0x800E17E4
+	.rodata     start:0x803A8A38 end:0x803A8AB0
+	.sdata2     start:0x8041B688 end:0x8041B690
+
 MetroidPrime/CWorldShadow.cpp:
 	.text       start:0x800E17E4 end:0x800E24D0
 	.sbss       start:0x804190E8 end:0x804190F8
@@ -1486,6 +1491,13 @@ MetroidPrime/HUD/CHudDecoInterfaceScan.cpp:
 
 MetroidPrime/CQuitGameScreen.cpp:
 	.text       start:0x802219EC end:0x802221C0
+
+MetroidPrime/CMultiplayerGui.cpp:
+	.text       start:0x802221C0 end:0x80222EC4
+	.rodata     start:0x803AD020 end:0x803AD108
+	.sdata      start:0x804188A0 end:0x804188B0
+	.sbss       start:0x80419540 end:0x80419550
+	.sdata2     start:0x8041DA20 end:0x8041DA78
 
 MetroidPrime/CInGameGuiManager.cpp:
 	.text       start:0x80222EC4 end:0x80226B3C

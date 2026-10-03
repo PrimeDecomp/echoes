@@ -4,8 +4,16 @@
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "MetroidPrime/CAutoMapper.hpp"
+#include "MetroidPrime/CInGameQuitScreen.hpp"
+#include "MetroidPrime/CMessageScreen.hpp"
+#include "MetroidPrime/CPauseScreen.hpp"
+#include "MetroidPrime/CPauseScreenBlur.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CTurretHud.hpp"
 #include "MetroidPrime/HUD/CSamusHud.hpp"
+#include "MetroidPrime/Player/CPlayerVisor.hpp"
+#include "MetroidPrime/Player/CSamusFaceReflection.hpp"
 
 // Structure-first scaffold. This is not a functional replacement for the original object.
 
@@ -78,7 +86,7 @@ bool CInGameGuiManager::GetIsGameDraw() const {
 }
 
 void CInGameGuiManager::PrepareScanDisplay(const CStateManager& mgr, int playerIndex) {
-  if (mSamusHud != nullptr) {
+  if (!mSamusHud.null()) {
     mSamusHud->PrepareScanDisplay(mgr, playerIndex);
   }
 }
@@ -92,7 +100,7 @@ void CInGameGuiManager::DrawDarkVisorMask() const {
 }
 
 void CInGameGuiManager::DrawScanVisor(float, const CStateManager&, const CColor&, const CColor&,
-                                    const CColor&, const CColor*, int, const CVector3f&) const {
+                                      const CColor&, const CColor*, int, const CVector3f&) const {
   // TODO: forward the visor dimensions, color palette and camera direction to the renderer.
   // The effect's source name remains unresolved.
 }
@@ -158,7 +166,7 @@ void CInGameGuiManager::ShowPauseGameHudMessage(const CStateManager& mgr, CAsset
 }
 
 bool CInGameGuiManager::IsInPausedState() const {
-  return mQuitScreen != nullptr || !InGameGuiStates::IsGameplayState(mPrevState) ||
+  return !mQuitScreen.null() || !InGameGuiStates::IsGameplayState(mPrevState) ||
          !InGameGuiStates::IsGameplayState(mNextState);
 }
 

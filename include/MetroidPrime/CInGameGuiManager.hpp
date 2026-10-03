@@ -10,6 +10,7 @@
 #include "rstl/list.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
+#include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
 
 class CArchitectureQueue;
@@ -36,9 +37,10 @@ class CInGameGuiManager {
 public:
   CInGameGuiManager(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLoader& memo,
                     CGuiFrameLoader* helmet, CGuiFrameLoader* darkMask, int playerIndex);
+  ~CInGameGuiManager();
 
   bool GetIsGameDraw() const;
-  const CAutoMapper* GetAutoMapper() const { return mAutoMapper; }
+  const CAutoMapper* GetAutoMapper() const { return mAutoMapper.get(); }
   void PreDraw(CStateManager& mgr, bool cameraActive);
   void Draw(const CStateManager& mgr) const;
   void Update(const CStateManager& mgr, float dt, CRandom16& random, CArchitectureQueue& queue,
@@ -47,7 +49,8 @@ public:
   bool CheckLoadComplete(const CStateManager& mgr);
   void PauseGame(const CStateManager& mgr, EInGameGuiState state);
   void ShowPauseGameHudMessage(const CStateManager& mgr, CAssetId message, float time);
-  void StopSounds();            // Guessed name
+  void StopSounds(); // Guessed name
+  void BeginStateTransition(EInGameGuiState state, const CStateManager& mgr);
   bool IsInPausedState() const; // Guessed name
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
   // Guessed name; forwards the scan palette and camera direction to the renderer.
@@ -66,7 +69,6 @@ private:
   bool TryReloadAreaTextures();
   bool IsTextureInPauseScreen(CAssetId id) const;
   void EnsureStates(const CStateManager& mgr);
-  void BeginStateTransition(EInGameGuiState state, const CStateManager& mgr);
   void DoStateTransition(const CStateManager& mgr);
   void TryCompleteStateTransition();
   bool IsTransitionReady() const; // Guessed name
@@ -77,16 +79,15 @@ private:
   bool mIsSinglePlayer;
   TCachedToken< CTexture > mDeathDot;
   CFaceplateDecoration mFaceplateDecoration;
-  // Owning pointers. Construction/cleanup awaits the corresponding shared class interfaces.
-  CPlayerVisor* mPlayerVisor;
-  CSamusHud* mSamusHud;
-  CAutoMapper* mAutoMapper;
-  CSamusFaceReflection* mSamusReflection;
-  CPauseScreenBlur* mPauseScreenBlur;
-  CInGameQuitScreen* mQuitScreen;
-  CMessageScreen* mMessageScreen;
-  CPauseScreen* mPauseScreen;
-  CTurretHud* mTurretHud;
+  rstl::single_ptr< CPlayerVisor > mPlayerVisor;
+  rstl::single_ptr< CSamusHud > mSamusHud;
+  rstl::single_ptr< CAutoMapper > mAutoMapper;
+  rstl::single_ptr< CSamusFaceReflection > mSamusReflection;
+  rstl::single_ptr< CPauseScreenBlur > mPauseScreenBlur;
+  rstl::single_ptr< CInGameQuitScreen > mQuitScreen;
+  rstl::single_ptr< CMessageScreen > mMessageScreen;
+  rstl::single_ptr< CPauseScreen > mPauseScreen;
+  rstl::single_ptr< CTurretHud > mTurretHud;
   CAssetId mPauseGameHudMessage;
   float mPauseGameHudTime;
   TPauseScreenDGRPs mPauseScreenDGRPs;
