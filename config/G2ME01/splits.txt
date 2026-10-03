@@ -1478,6 +1478,15 @@ MetroidPrime/CRELFileManager.cpp:
 	.rodata     start:0x803AC440 end:0x803AC448
 	.sdata      start:0x80418738 end:0x80418740
 
+MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:
+	.text       start:0x801F4BCC end:0x801F55F0
+	.ctors      start:0x803A558C end:0x803A5590
+	.data       start:0x803B7A30 end:0x803B7AD0
+	.bss        start:0x803DE030 end:0x803DE060
+	.sdata      start:0x80418780 end:0x80418798
+	.sbss       start:0x80419328 end:0x80419330
+	.sdata2     start:0x8041D5E8 end:0x8041D610
+
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F7304
 	.rodata     start:0x803AC548 end:0x803AC550
