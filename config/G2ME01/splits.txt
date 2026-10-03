@@ -1659,6 +1659,12 @@ MetroidPrime/CScriptObjectLoaderHelper.cpp:
 	.text       start:0x80233390 end:0x80234900
 	.sdata      start:0x804188D8 end:0x804188E0
 
+MetroidPrime/Weapons/CFreezeBeamProjectile.cpp:
+	.text       start:0x80234934 end:0x80234DAC
+	.rodata     start:0x803AD468 end:0x803AD488
+	.data       start:0x803B88F0 end:0x803B8990
+	.sdata2     start:0x8041DBE0 end:0x8041DBE8
+
 MetroidPrime/SwarmRenderHelpers.cpp:
 	.text       start:0x80234E70 end:0x80235620
 	.rodata     start:0x803AD488 end:0x803AD490
