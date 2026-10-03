@@ -1487,6 +1487,11 @@ MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:
 	.sbss       start:0x80419328 end:0x80419330
 	.sdata2     start:0x8041D5E8 end:0x8041D610
 
+MetroidPrime/CLineOfSightTracker.cpp:
+	.text       start:0x801F55F0 end:0x801F59D0
+	.sdata      start:0x80418798 end:0x804187B0
+	.sdata2     start:0x8041D610 end:0x8041D618
+
 MetroidPrime/CRuleSetEvaluator.cpp:
 	.text       start:0x801F59D0 end:0x801F5E04
 
