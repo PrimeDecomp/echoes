@@ -26,11 +26,11 @@ public:
   void ReleaseResources(CStateManager& mgr) override;
 
 private:
-  rstl::optional_object< TToken< CWeaponDescription > > mChargedProjectiles[3];
-  rstl::optional_object< TCachedToken< CGenDescription > > mSecondaryEffect;
-  rstl::single_ptr< CElementGen > mSecondaryGenerator;
+  rstl::optional_object< TToken< CWeaponDescription > > mChargedProjectiles[3]; // Guessed name
+  rstl::optional_object< TCachedToken< CGenDescription > > mSecondaryEffect; // Guessed name
+  rstl::single_ptr< CElementGen > mSecondaryGenerator; // Guessed name
 
-  void ReInitVariables();
+  void ReInitVariables(); // Guessed name
 };
 CHECK_SIZEOF(CLightBeam, 0x2ac)
 
