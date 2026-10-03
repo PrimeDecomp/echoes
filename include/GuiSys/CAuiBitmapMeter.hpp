@@ -16,8 +16,10 @@ public:
                   const rstl::reserved_vector< CVector3f, 4 >& coords,
                   const rstl::reserved_vector< CVector2f, 4 >& uvs, bool loadTexture);
 
-  // CGuiWidget
+  // CGuiObject
   ~CAuiBitmapMeter() override;
+
+  // CGuiWidget
   FourCC GetWidgetTypeID() const override;
   EWidgetUsageFlags GetWidgetUsageFlags() const override;
   void Update(float dt) override;
