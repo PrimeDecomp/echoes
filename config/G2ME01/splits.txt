@@ -1799,6 +1799,9 @@ Collision/CCollisionPrimitive.cpp:
 	.bss        start:0x803DF4D0 end:0x803DF500 align:4
 	.sbss       start:0x804197E0 end:0x80419808
 
+Collision/CMaterialList.cpp:
+	.text       start:0x80283750 end:0x8028385C
+
 Collision/CollisionUtil.cpp:
 	.text       start:0x8028385C end:0x80288300
 	.ctors      start:0x803A55C8 end:0x803A55CC
@@ -1822,6 +1825,11 @@ Collision/COBBox.cpp:
 Collision/CMRay.cpp:
 	.text       start:0x8028AF74 end:0x8028B1F4
 	.sdata2     start:0x8041E248 end:0x8041E250
+
+Collision/CSpatialPrimitive.cpp:
+	.text       start:0x8028B1F4 end:0x8028BBA0
+	.rodata     start:0x803AEAB0 end:0x803AEAB8
+	.data       start:0x803B9230 end:0x803B9240
 
 Kyoto/Basics/CStopwatch.cpp:
 	.text       start:0x8028BC64 end:0x8028BD3C
@@ -2872,6 +2880,11 @@ Kyoto/Audio/AudioEffectX.cpp:
 	.text       start:0x80337EC0 end:0x80339004
 	.data       start:0x803BB850 end:0x803BBAC8
 	.sdata2     start:0x8041ED90 end:0x8041ED98
+
+Kyoto/Audio/CCustomAudioAux.cpp:
+	.text       start:0x80339004 end:0x80339D24
+	.rodata     start:0x803B0220 end:0x803B0228
+	.sdata2     start:0x8041ED98 end:0x8041EDA8
 
 MetroidPrime/Cameras/CCameraSurface.cpp:
 	.text       start:0x80339D24 end:0x8033A28C
