@@ -25,7 +25,7 @@ public:
   void NotifyStop(CStateManager& mgr, TUniqueId player) override;
   uint GetNumPlayers() const override;
   bool IsGameOver() override;
-  void EndGame(int resultIndex, CStateManager& mgr) override;
+  void EndGame(int reason, CStateManager& mgr) override;
   int GetResultIndex() const override;
   int GetGameModeType() override;
   void GiveScore(CStateManager& mgr, uint playerIndex, uint amount) override;
@@ -38,9 +38,18 @@ public:
   float GetMatchTimeLimit() const override;
 
 private:
-  bool x4_;
-  bool x5_;
-  int x8_;
+  // Reconstructed result/helper/member names, not original exports.
+  enum EResultIndex {
+    kRI_Unset,
+    kRI_Under75Percent,
+    kRI_Under100Percent,
+    kRI_AtLeast100Percent,
+  };
+  EResultIndex CalculateResult(const CStateManager& mgr);
+
+  bool mPlayerSpawned; // Set on spawn; no reader established in this TU.
+  bool mGameOver;
+  EResultIndex mResultIndex;
 };
 CHECK_SIZEOF(CGMSinglePlayer, 0xc)
 
