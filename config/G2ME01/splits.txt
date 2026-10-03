@@ -2694,6 +2694,13 @@ Kyoto/Math/CGameSpline.cpp:
 	.data       start:0x803BB418 end:0x803BB428
 	.sdata2     start:0x8041EC98 end:0x8041ECA8
 
+Kyoto/Math/CMotionSpline.cpp:
+	.text       start:0x803307D8 end:0x80334C18
+	.rodata     start:0x803B0108 end:0x803B0180
+	.data       start:0x803BB428 end:0x803BB438
+	.sdata      start:0x80418C80 end:0x80418C88
+	.sdata2     start:0x8041ECA8 end:0x8041ECE8
+
 Kyoto/Audio/CDSPStreamManager.cpp:
 	.text       start:0x8033B940 end:0x8033D2EC
 	.ctors      start:0x803A5684 end:0x803A5688

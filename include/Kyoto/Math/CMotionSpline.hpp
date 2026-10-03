@@ -2,6 +2,7 @@
 #define _CMOTIONSPLINE
 
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/reserved_vector.hpp"
 #include "rstl/vector.hpp"
 
 class CQuaternion;
@@ -14,7 +15,7 @@ public:
     kST_BSpline,
     kST_Linear,
     kST_Bezier,
-    kST_NormalizedHermite,
+    kST_RoundedCatmullRom,
   };
 
   CMotionSpline(bool closedLoop, float duration, ESplineType type);
@@ -30,6 +31,7 @@ public:
   CVector3f GetPositionByTime(float time) const;
   CVector3f GetPositionByLength(float distance) const; // Guessed name.
   CVector3f GetTangentByTime(float time) const;        // Guessed name.
+  CVector3f GetTangentByLength(float distance) const;  // Guessed name.
   void CalculateLength();
   void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
@@ -48,6 +50,29 @@ public:
   void SetClosedLoop(bool closedLoop) { mClosedLoop = closedLoop; } // Guessed name.
 
 private:
+  // Guessed names, recovered from native spline mutation and sampling behavior.
+  uint ValidateControlPointIndex(uint index) const;
+  CVector3f GetControlPoint(uint index) const;
+  void SetControlPoint(uint index, CVector3f point, bool recalculateLength);
+  void SetKnot(uint index, CVector3f point, bool recalculateLength);
+  void AddKnot(const CVector3f& point);
+  void AddControlPoint(const CVector3f& point);
+  void AddKnotAndControlPoint(const CVector3f& point);
+  void ResetKnots(uint count);
+  void ResetControlPoints(uint count);
+  void Reset(uint count);
+  void GetSurroundingPoints(int index, rstl::reserved_vector< CVector3f, 4 >& points) const;
+  float CalculateCatmullRomLength(int index) const;
+  float CalculateRoundedCatmullRomLength(int index) const;
+  float CalculateBSplineLength(int index) const;
+  float CalculateBezierLength(const CVector3f& a, const CVector3f& b, const CVector3f& c,
+                              const CVector3f& d) const;
+  float CalculateBezierLength(int index) const;
+  CVector3f GetPositionInSegment(uint index, float t) const;
+  float GetSegmentParameter(float distance, uint index) const;
+  float FindClosestBezierLength(float start, const CVector3f& position) const;
+
+  // Guessed member names; constructor, mutation and sampling offsets establish the roles.
   rstl::vector< CVector3f > mControlPoints;
   rstl::vector< CVector3f > mKnots;
   rstl::vector< float > mKnotDistances;
