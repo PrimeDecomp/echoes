@@ -9,6 +9,7 @@
 class CTransform4f;
 class CCollisionPrimitiveData;
 class CCollisionCacheIterator;
+class CCachedCollisionSurface;
 
 // Guessed name
 class CCollisionCache {
@@ -21,6 +22,8 @@ public:
   uint SkipGeometry(CCollisionCacheIterator& iterator);
   uint ReadGeometry(CCollisionCacheIterator& iterator);
   void ReadLeaf(CCollisionCacheIterator& iterator);
+  const CCachedCollisionSurface* NextTriangle(CCollisionCacheIterator& iterator) const;
+  int GetTriangleStride() const;
 
 private:
   CAABox mBounds; // Guessed names

@@ -21,6 +21,11 @@ uint CCollisionCache::ReadGeometry(CCollisionCacheIterator& iterator) {}
 
 void CCollisionCache::ReadLeaf(CCollisionCacheIterator& iterator) {}
 
+const CCachedCollisionSurface*
+CCollisionCache::NextTriangle(CCollisionCacheIterator& iterator) const {}
+
+int CCollisionCache::GetTriangleStride() const {}
+
 void CCollisionCache::Reset() {}
 
 void CCollisionCache::SetBounds(const CAABox& bounds) {}
