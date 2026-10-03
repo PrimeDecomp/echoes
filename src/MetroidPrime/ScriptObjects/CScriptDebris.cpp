@@ -434,7 +434,7 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
         }
 
         const CScriptObjectLoaderHelper::SGeneratedObject generated =
-            mgr.ScriptObjectLoaderHelper().GenerateObject(connection.objId, mgr);
+            mgr.ScriptObjectLoaderHelper().GenerateScriptObject(connection.objId, mgr);
         CActor* actor = TCastToPtr< CActor >(generated.mEntity);
         if (actor) {
           mGeneratedObject = generated.mUniqueId;

@@ -54,6 +54,9 @@ SEchoParameters LdrToEchoParameters(const SLdrEchoParameters& data);
 
 typedef CEntity* (*FScriptLoader)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
+// Guessed name: target dispatches a FourCC to a loader callback.
+FScriptLoader GetScriptLoaderForType(FourCC type);
+
 CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadActorKeyframe(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadActorRotate(CStateManager& mgr, CInputStream& input, CEntityInfo& info);

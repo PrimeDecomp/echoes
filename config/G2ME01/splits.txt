@@ -1596,6 +1596,10 @@ MetroidPrime/Player/CPlayerHints.cpp:
 MetroidPrime/CGameHint.cpp:
 	.text       start:0x8022D1EC end:0x8022D548
 
+MetroidPrime/CScriptObjectLoaderHelper.cpp:
+	.text       start:0x80233390 end:0x80234900
+	.sdata      start:0x804188D8 end:0x804188E0
+
 MetroidPrime/SwarmRenderHelpers.cpp:
 	.text       start:0x80234E70 end:0x80235620
 	.rodata     start:0x803AD488 end:0x803AD490
