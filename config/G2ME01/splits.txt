@@ -1506,6 +1506,15 @@ MetroidPrime/CSurfaceAlignmentHelper.cpp:
 	.sdata      start:0x804187B0 end:0x804187D0
 	.sdata2     start:0x8041D618 end:0x8041D638
 
+MetroidPrime/Enemies/CIngSpotPathFindNavigation.cpp:
+	.text       start:0x801F7E04 end:0x801F8280
+	.rodata     start:0x803AC558 end:0x803AC568
+	.sdata2     start:0x8041D638 end:0x8041D640
+
+MetroidPrime/PathFinding/CPathFindPointSearch.cpp:
+	.text       start:0x801F8280 end:0x801F8838
+	.sdata2     start:0x8041D640 end:0x8041D648
+
 MetroidPrime/Cameras/CCameraColliderGroup.cpp:
 	.text       start:0x801F94DC end:0x801FA3CC
 	.ctors      start:0x803A5590 end:0x803A5594

@@ -585,6 +585,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/CIceImpact.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CStaticInterference.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindSearch.cpp"),
+            Object(NonMatching, "MetroidPrime/PathFinding/CPathFindPointSearch.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CIngSpotPathFindNavigation.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindRegion.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindArea.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/PathFinding/CPathFindSpline.cpp"),
