@@ -2658,11 +2658,19 @@ Kyoto/Particles/CParticleSpawnSystem.cpp:
 	.sdata      start:0x80418C68 end:0x80418C70
 	.sdata2     start:0x8041EC30 end:0x8041EC68
 
-Kyoto/Particles/CParticleSpawnRandom.cpp:
-	.sdata      start:0x80418C70 end:0x80418C78
-
 Kyoto/Particles/CSpawnSystemDescription.cpp:
 	.text       start:0x8032DC68 end:0x8032DF0C
+
+Kyoto/Particles/CSortedParticleSystem.cpp:
+	.text       start:0x8032DF0C end:0x8032EE68
+	.ctors      start:0x803A5678 end:0x803A567C
+	.data       start:0x803BB368 end:0x803BB3F8
+	.bss        start:0x803E0530 end:0x803E0540
+	.sdata      start:0x80418C70 end:0x80418C78
+	.sdata2     start:0x8041EC68 end:0x8041EC90
+
+Kyoto/Particles/CSortedParticleSystemDescription.cpp:
+	.text       start:0x8032F2B8 end:0x8032F31C
 
 Kyoto/Audio/CDSPStreamManager.cpp:
 	.text       start:0x8033B940 end:0x8033D2EC

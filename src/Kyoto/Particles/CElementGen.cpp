@@ -13,6 +13,7 @@
 #include "Kyoto/Particles/CParticleGlobals.hpp"
 #include "Kyoto/Particles/CParticleSpawnSystem.hpp"
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
+#include "Kyoto/Particles/CSortedParticleSystem.hpp"
 #include "Kyoto/Particles/CSpawnSystemKeyframeData.hpp"
 #include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
@@ -776,13 +777,13 @@ CParticleGen* CElementGen::ConstructChildParticleSystem(
     break;
   }
   case 'SRSC': {
-    const short backupSeed = CParticleSpawnRandom::GetGlobalSeed();
+    const short backupSeed = CSortedParticleSystem::GetGlobalSeed();
     if (seed != 0) {
-      CParticleSpawnRandom::SetGlobalSeed(seed);
+      CSortedParticleSystem::SetGlobalSeed(seed);
     }
-    TToken< CSpawnRandomDescription > spawnDescription(description);
-    child = rs_new CParticleSpawnRandom(spawnDescription, flags, modelsUseLights);
-    CParticleSpawnRandom::SetGlobalSeed(backupSeed);
+    TToken< CSortedParticleSystemDescription > spawnDescription(description);
+    child = rs_new CSortedParticleSystem(spawnDescription, flags, modelsUseLights);
+    CSortedParticleSystem::SetGlobalSeed(backupSeed);
     break;
   }
   default:
