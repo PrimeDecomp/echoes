@@ -88,6 +88,7 @@ enum EEntityType {
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
+  kET_PlayerTurret = 138, // Guessed name; turret-HUD REL dispatch target.
   kET_PowerBomb = 156,
   kET_ScriptForgottenObject = 160,
 };

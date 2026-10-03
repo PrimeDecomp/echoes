@@ -732,6 +732,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptLayerController.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPortalTransition.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptHUDHint.cpp"),
+            Object(NonMatching, "MetroidPrime/CTurretHud.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerTargeting.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlayerStateChange.cpp"),
             Object(NonMatching, "MetroidPrime/CActorModelParticles.cpp"),
