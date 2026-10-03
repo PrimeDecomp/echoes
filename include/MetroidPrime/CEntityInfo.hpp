@@ -53,6 +53,7 @@ enum EEntityType {
   kET_ScriptDoor = 56,
   kET_ScriptEffect = 58,
   kET_ScriptGrapplePoint = 59,
+  kET_ScriptHUDHint = 63, // Guessed name; HUD texture marker.
   kET_ScriptLayerController = 64,
   kET_ScriptPathCamera = 65,
   kET_ScriptPickup = 66,
@@ -163,6 +164,7 @@ enum EScriptObjectMessage {
   kSM_Decrement = 0x44454352,
   kSM_Kill = 0x4b494c4c,
   kSM_InternalMessage00 = 0x494d3030,
+  kSM_InternalMessage01 = 0x494d3031,
 
   kSM_XCRT = 0x58435254,
   kSM_XENZ = 0x58454e5a, // Guessed name; makes a flagged bouncy grenade explode.

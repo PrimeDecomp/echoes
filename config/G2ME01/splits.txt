@@ -1640,6 +1640,11 @@ MetroidPrime/ScriptObjects/CScriptPortalTransition.cpp:
 	.sbss       start:0x80419620 end:0x80419630
 	.sdata2     start:0x8041DB68 end:0x8041DBA0
 
+MetroidPrime/ScriptObjects/CScriptHUDHint.cpp:
+	.text       start:0x802328A4 end:0x80233390
+	.rodata     start:0x803AD460 end:0x803AD468
+	.sdata2     start:0x8041DBB8 end:0x8041DBE0
+
 MetroidPrime/CScriptObjectLoaderHelper.cpp:
 	.text       start:0x80233390 end:0x80234900
 	.sdata      start:0x804188D8 end:0x804188E0
