@@ -1,4 +1,5 @@
 #include "Kyoto/Basics/CBasics.hpp"
+#include "Kyoto/Basics/CInterruptGuard.hpp"
 #include "Kyoto/Alloc/LockedCache.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
@@ -40,14 +41,6 @@ static rstl::string SelectMoviePath(const char* path) {
 static bool ShouldEnableLockedCache() {
   return LCGetBase() != GetLockedCacheAllocationBase();
 }
-
-class CInterruptGuard {
-  bool mEnabled;
-
-public:
-  CInterruptGuard() : mEnabled(OSDisableInterrupts()) {}
-  ~CInterruptGuard() { OSRestoreInterrupts(mEnabled); }
-};
 
 static int sNumReferences = 0;
 static CMoviePlayer* sAudioPlayer;

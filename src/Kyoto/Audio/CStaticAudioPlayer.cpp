@@ -1,4 +1,5 @@
 #include "Kyoto/Audio/CAudioSys.hpp"
+#include "Kyoto/Basics/CInterruptGuard.hpp"
 #include "rstl/algorithm.hpp"
 #include <Kyoto/Alloc/CMemory.hpp>
 #include <Kyoto/Audio/CStaticAudioPlayer.hpp>
@@ -11,14 +12,6 @@
 #include <dolphin/ai.h>
 #include <dolphin/os.h>
 #include <stdint.h>
-
-class CInterruptGuard {
-  bool mEnabled;
-
-public:
-  CInterruptGuard() : mEnabled(OSDisableInterrupts()) {}
-  ~CInterruptGuard() { OSRestoreInterrupts(mEnabled); }
-};
 
 static CStaticAudioPlayer* sCurrentPlayer = nullptr;
 static rstl::reserved_vector< FAudioCallback, 4 > sAICallbacks;

@@ -1,6 +1,6 @@
 #include "Kyoto/Audio/CAuxEffectManager.hpp"
 
-#include "dolphin/os.h"
+#include "Kyoto/Basics/CInterruptGuard.hpp"
 #include "rstl/math.hpp"
 #include <string.h>
 
@@ -62,17 +62,16 @@ void CAuxEffectManager::Initialize() {
     mCallbackInstalled[bus] = false;
 
   for (int bus = 0; bus < 3; ++bus) {
-    const bool interrupts = OSDisableInterrupts();
+    CInterruptGuard interrupts;
     if (bus == 2)
       sndSetAuxProcessingCallbacks(kStudios[bus], NoEffectCallback, &mContexts[bus], SND_MIDI_NONE,
                                    0, nullptr, nullptr, SND_MIDI_NONE, 0);
-    OSRestoreInterrupts(interrupts);
   }
 }
 
 void CAuxEffectManager::Shutdown() {
   mContexts.clear();
-  const bool interrupts = OSDisableInterrupts();
+  CInterruptGuard interrupts;
   for (int bus = 0; bus < 3; ++bus)
     sndSetAuxProcessingCallbacks(kStudios[bus], nullptr, nullptr, SND_MIDI_NONE, 0, nullptr,
                                  nullptr, SND_MIDI_NONE, 0);
@@ -83,11 +82,10 @@ void CAuxEffectManager::Shutdown() {
     }
   }
   mBuses.clear();
-  OSRestoreInterrupts(interrupts);
 }
 
 void CAuxEffectManager::Cleanup() {
-  const bool interrupts = OSDisableInterrupts();
+  CInterruptGuard interrupts;
   for (int bus = 0; bus < 3; ++bus) {
     if (!mCallbackInstalled[bus])
       continue;
@@ -100,14 +98,14 @@ void CAuxEffectManager::Cleanup() {
         ++active;
     }
     if (active == 0) {
-      const bool callbackInterrupts = OSDisableInterrupts();
-      sndSetAuxProcessingCallbacks(kStudios[bus], bus == 2 ? NoEffectCallback : nullptr, nullptr,
-                                   SND_MIDI_NONE, 0, nullptr, nullptr, SND_MIDI_NONE, 0);
-      OSRestoreInterrupts(callbackInterrupts);
+      {
+        CInterruptGuard callbackInterrupts;
+        sndSetAuxProcessingCallbacks(kStudios[bus], bus == 2 ? NoEffectCallback : nullptr, nullptr,
+                                     SND_MIDI_NONE, 0, nullptr, nullptr, SND_MIDI_NONE, 0);
+      }
       mCallbackInstalled[bus] = false;
     }
   }
-  OSRestoreInterrupts(interrupts);
 }
 
 void CAuxEffectManager::FadeOut(int bus, ECategory category) {
@@ -145,9 +143,8 @@ void CAuxEffectManager::SetHighestPrioritySerialState(int bus, EState state) {
     }
   }
   if (selected != -1) {
-    const bool interrupts = OSDisableInterrupts();
+    CInterruptGuard interrupts;
     mBuses[bus][selected].SetState(state);
-    OSRestoreInterrupts(interrupts);
   }
 }
 
@@ -176,23 +173,23 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
   for (int slot = 0; slot < effects.size(); ++slot) {
     if (effects[slot].GetState() != kES_Free)
       continue;
-    const bool interrupts = OSDisableInterrupts();
-    id = (++mNextId << 4) | (bus << 2) | (slot + 1);
-    effects[slot].SetId(id);
-    effects[slot].SetFade(0.f);
-    effects[slot].SetEffect(effect);
-    effects[slot].SetState(category == kEC_Parallel ? kES_ParallelFadeIn
-                           : primary                ? kES_SerialFadeIn
-                                                    : kES_SerialBypassFadeOut);
-    effects[slot].Prepare();
-    OSRestoreInterrupts(interrupts);
+    {
+      CInterruptGuard interrupts;
+      id = (++mNextId << 4) | (bus << 2) | (slot + 1);
+      effects[slot].SetId(id);
+      effects[slot].SetFade(0.f);
+      effects[slot].SetEffect(effect);
+      effects[slot].SetState(category == kEC_Parallel ? kES_ParallelFadeIn
+                             : primary                ? kES_SerialFadeIn
+                                                      : kES_SerialBypassFadeOut);
+      effects[slot].Prepare();
+    }
     assigned = true;
     break;
   }
   if (!assigned) {
-    const bool interrupts = OSDisableInterrupts();
+    CInterruptGuard interrupts;
     if (effects.size() == 4) {
-      OSRestoreInterrupts(interrupts);
       return 0;
     }
     // New slots use a zero-based index; reused slots use one-based indices.
@@ -200,7 +197,6 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
     effects.push_back(SEffectSlot(
         0.f, category == kEC_Parallel ? kES_ParallelFadeIn : kES_SerialFadeIn, id, effect));
     effects.back().Prepare();
-    OSRestoreInterrupts(interrupts);
   }
   if (!mCallbackInstalled[bus]) {
     sndSetAuxProcessingCallbacks(kStudios[bus], AuxCallback, &mContexts[bus], SND_MIDI_NONE, 0,
@@ -211,7 +207,7 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
 }
 
 void CAuxEffectManager::RemoveEffect(int id) {
-  const bool interrupts = OSDisableInterrupts();
+  CInterruptGuard interrupts;
   for (int bus = 0; bus < 3; ++bus) {
     for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
       SEffectSlot& effect = mBuses[bus][slot];
@@ -228,11 +224,9 @@ void CAuxEffectManager::RemoveEffect(int id) {
         effect.SetState(kES_SerialFadeOut);
         break;
       }
-      OSRestoreInterrupts(interrupts);
       return;
     }
   }
-  OSRestoreInterrupts(interrupts);
 }
 
 void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user) {
