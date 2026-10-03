@@ -296,7 +296,9 @@ void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   }
 }
 
-void CPatterned::fn_80077aac(CStateManager&, const CVector3f&, int, float, float, TUniqueId) {
+void CPatterned::ApplyKnockBackFollowUp(CStateManager&, const CVector3f&,
+                                       CKnockBackMgr::EFollowUp, float, float, TUniqueId,
+                                       TUniqueId) {
   // TODO: Apply the knockback rule's follow-up (freeze, burn, shock, death or disintegration).
 }
 

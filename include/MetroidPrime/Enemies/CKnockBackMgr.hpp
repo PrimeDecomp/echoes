@@ -44,6 +44,15 @@ public:
     kFU_FreezeDisintegration
   };
   enum ECharacterState { kCS_Invalid = -1, kCS_Alive, kCS_Dead };
+  // Guessed names, established by RULE actions and AI effect consumers.
+  enum EReactionFlags {
+    kRF_BreakFreeze = 1,
+    kRF_DouseFire = 2,
+    kRF_StopElectrocution = 4,
+    kRF_DisablePhysics = 16,
+    kRF_ResetTimeScale = 32,
+    kRF_SkipFallRotation = 64
+  };
   enum EKnockBackWeaponType {
     kKBWT_Invalid = -1,
     kKBWT_Power,
@@ -82,7 +91,7 @@ public:
   };
 
   explicit CKnockBackMgr(CAssetId rules);
-  ~CKnockBackMgr();
+  ~CKnockBackMgr() {}
 
   // CRuleSetEvaluator
   CRuleValue GetConditionValue(FourCC condition) const override;
@@ -116,6 +125,12 @@ public:
   void ValidateState(const CActor& actor);
   void DeferFollowUp(float delay, EFollowUp followUp, float duration);
   float CalculateExtraHurlVelocity(CStateManager& mgr, float magnitude, float resistance) const;
+
+  EFollowUp GetFollowUp() const { return mActiveParameters.mFollowUp; }
+
+  float GetFollowUpDuration() const { return mActiveParameters.mFollowUpDuration; }
+
+  float GetSecondaryDuration() const { return mActiveParameters.mSecondaryDuration; }
 
 protected:
   // Guessed name. Echoes uses RULE resources instead of Prime's static parameter table.

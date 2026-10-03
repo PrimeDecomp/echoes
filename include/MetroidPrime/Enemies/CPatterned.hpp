@@ -24,6 +24,7 @@ class CImpactVisorEffect;
 class CPathFindSearch;
 class CPatterned;
 class CProjectileInfo;
+class CRagDoll;
 class CScriptCoverPoint;
 class CSkinnedModel;
 class CPASAnimParmData;
@@ -114,7 +115,7 @@ public:
   virtual CDamageInfo GetContactDamage() const;
   virtual void UpdateHitDamageTime(float dt);
   virtual void SetupStateMachine(CStateManager& mgr);
-  virtual bool IsListening() const { return false; }
+  virtual CRagDoll* GetRagDoll() const { return nullptr; } // Guessed name
   virtual bool CanBeIngPossessed(CStateManager& mgr) const;
   virtual bool CanBeUnPossessed(CStateManager& mgr) const;
   virtual void SetIngPossessed(bool possessed, CStateManager& mgr);
@@ -171,8 +172,10 @@ public:
                          CAssetId particle, uint flags, int index);
   void fn_800747a4(CAssetId model, CAssetId skinRules);
   void fn_80074e54(const CModelFlags& flags) const;
-  void fn_80077aac(CStateManager& mgr, const CVector3f& direction, int followUp, float magnitude,
-                   float duration, TUniqueId projectile);
+  // Guessed name; dispatches the selected knockback follow-up effect.
+  void ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
+                               CKnockBackMgr::EFollowUp followUp, float duration,
+                               float secondaryDuration, TUniqueId source, TUniqueId owner);
   void fn_8007850c(CStateManager& mgr);
 
   void Start(CStateManager& mgr, EStateMsg msg, float dt);
@@ -225,6 +228,8 @@ public:
   CBodyController* BodyController() { return mBodyController.get(); }
 
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
+
+  const CAiKnockBackMgr& GetKnockBackController() const { return mKnockBackController; }
 
 private:
   TUniqueId mDestObj;

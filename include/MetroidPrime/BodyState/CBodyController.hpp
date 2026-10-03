@@ -71,6 +71,8 @@ public:
 
   float GetTimeScale() const { return mTimeScale; } // Guessed name
 
+  void SetTimeScale(float scale) { mTimeScale = scale; } // Guessed name
+
   bool IsAnimationOver() const { return mAnimationOver; }
 
   bool GetIsActive() const { return mActive; }
