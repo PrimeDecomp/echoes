@@ -99,6 +99,9 @@ private:
 };
 
 class CPBCDashCmd : public CPlayerBodyStateCmd {
+public:
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mAnimationVariant;
 };
