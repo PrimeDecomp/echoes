@@ -409,6 +409,7 @@ config.libs = [
             Object(NonMatching, "GuiSys/CGuiLight.cpp"),
             Object(NonMatching, "GuiSys/CGuiObject.cpp"),
             Object(NonMatching, "GuiSys/CGuiWidget.cpp"),
+            Object(NonMatching, "GuiSys/CGuiWidgetIdDB.cpp"),
             Object(NonMatching, "GuiSys/CAuiEnergyBarT01.cpp"),
             Object(NonMatching, "GuiSys/CAuiImagePane.cpp"),
             Object(NonMatching, "GuiSys/CAuiBitmapMeter.cpp"),
