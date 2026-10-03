@@ -754,6 +754,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CScriptObjectLoaderHelper.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSoundModifier.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAdvancedCounter.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptConditionalRelay.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptLayerController.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPortalTransition.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptHUDHint.cpp"),
