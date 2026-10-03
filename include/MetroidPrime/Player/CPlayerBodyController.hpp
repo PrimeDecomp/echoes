@@ -28,7 +28,10 @@ public:
     kPAS_Jump = 3,
     kPAS_AdditiveAim = 4,
     kPAS_DeathReaction = 5,
+    kPAS_AdditiveFlinch = 6,
+    kPAS_AdditiveReaction = 7,
     kPAS_MorphDuration = 7,
+    kPAS_KnockBack = 8,
     kPAS_GunReaction = 9,
     kPAS_Grapple = 11
   };
@@ -58,6 +61,7 @@ public:
   const CPASDatabase& GetPASDatabase() const;
   void MultiplyPlaybackRate(float rate);
   void RequestAnimation(const CAnimPlaybackParms& parameters, bool looping, bool noTransition);
+  void SelectAnimation(const CPASAnimParmData& parameters, CRandom16& random);
   bool IsAnimationLooping() const;
 
   bool IsDeathReactionActive() const { return (mReactionFlags & kRF_DeathReactionActive) != 0; }
@@ -229,6 +233,7 @@ private:
     void Start(CStateManager& mgr, CPlayerBodyController& controller);
     bool Update(CStateManager& mgr, CPlayerBodyController& controller);
     void Shutdown(CPlayerBodyController& controller);
+    void StopAnimation(CPlayerBodyController& controller);
 
     int mAnimationId;
     CPBCAdditiveReactionCmd::EAdditiveReactionType mType;
@@ -301,7 +306,6 @@ private:
   void TrySetupStateMachines(CStateManager& mgr);
   const CStateMachine* GetStateMachine();
   void SelectLoopingAnimation(const CPASAnimParmData& parameters, CRandom16& random);
-  void SelectAnimation(const CPASAnimParmData& parameters, CRandom16& random);
   void SetPlaybackRate(float rate);
 
   static const TStateMachineState< CPlayerBodyController >::STriggerFunction skTriggerFunctions[22];

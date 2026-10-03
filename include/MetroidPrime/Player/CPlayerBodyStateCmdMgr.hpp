@@ -149,6 +149,8 @@ public:
   explicit CPBCKnockBackCmd(const CVector3f& direction)
   : CPlayerBodyStateCmd(kPBSC_KnockBack), mDirection(direction) {}
 
+  const CVector3f& GetDirection() const { return mDirection; }
+
 private:
   CVector3f mDirection;
 };
@@ -184,6 +186,8 @@ public:
   explicit CPBCFlinchCmd(const CVector3f& direction)
   : CPlayerBodyStateCmd(kPBSC_Flinch), mDirection(direction) {}
 
+  const CVector3f& GetDirection() const { return mDirection; }
+
 private:
   CVector3f mDirection;
 };
@@ -197,6 +201,7 @@ public:
   : CPlayerBodyStateCmd(kPBSC_AdditiveReaction), mType(type), mLooping(looping) {}
 
   EAdditiveReactionType GetType() const { return mType; }
+  bool IsLooping() const { return mLooping; }
 
 private:
   EAdditiveReactionType mType;

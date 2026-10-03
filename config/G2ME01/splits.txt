@@ -1390,6 +1390,18 @@ MetroidPrime/Player/CPlayerKnockBackMgr.cpp:
 	.sdata      start:0x80418680 end:0x80418688
 	.sdata2     start:0x8041CF78 end:0x8041CFD0
 
+MetroidPrime/Player/CPlayerBodyAdditiveReaction.cpp:
+	.text       start:0x801C0CB0 end:0x801C0FFC
+	.sdata2     start:0x8041CFD0 end:0x8041CFE0
+
+MetroidPrime/Player/CPlayerBodyAdditiveFlinch.cpp:
+	.text       start:0x801C0FFC end:0x801C128C
+	.sdata2     start:0x8041CFE0 end:0x8041D000
+
+MetroidPrime/Player/CPlayerBodyKnockBack.cpp:
+	.text       start:0x801C128C end:0x801C13F8
+	.sdata2     start:0x8041D000 end:0x8041D018
+
 MetroidPrime/Player/CPlayerRagDoll.cpp:
 	.text       start:0x801C13F8 end:0x801C316C
 	.ctors      start:0x803A5570 end:0x803A5574
