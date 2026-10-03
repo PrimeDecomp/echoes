@@ -686,6 +686,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CStateMachine.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CGenericFSM2.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTextPane.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSubtitle.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CSpacePirate.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CKralee.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CParasite.cpp"),
