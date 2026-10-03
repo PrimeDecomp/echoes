@@ -1516,6 +1516,12 @@ MetroidPrime/PathFinding/CPathFindPointSearch.cpp:
 	.sbss       start:0x80419330 end:0x80419340
 	.sdata2     start:0x8041D640 end:0x8041D648
 
+MetroidPrime/ScriptObjects/CScriptTimeKeyframe.cpp:
+	.text       start:0x801F9050 end:0x801F94DC
+	.rodata     start:0x803AC568 end:0x803AC570
+	.data       start:0x803B7AE0 end:0x803B7B00
+	.sdata2     start:0x8041D648 end:0x8041D650
+
 MetroidPrime/Cameras/CCameraColliderGroup.cpp:
 	.text       start:0x801F94DC end:0x801FA3CC
 	.ctors      start:0x803A5590 end:0x803A5594
