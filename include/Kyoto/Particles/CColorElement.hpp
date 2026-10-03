@@ -107,7 +107,7 @@ public:
   bool GetValue(int frame, CColor& valOut) const override;
 };
 
-class CCEKEYF : public CColorElement {
+class CCEKeyframeInput : public CColorElement {
   int mPercent;
   int mUnk1;
   bool mLoop;
@@ -120,27 +120,30 @@ class CCEKEYF : public CColorElement {
   CRealElement* x30_;
 
 public:
-  CCEKEYF(CInputStream& in);
-  ~CCEKEYF() override;
+  CCEKeyframeInput(CInputStream& in);
+  ~CCEKeyframeInput() override;
   bool GetValue(int frame, CColor& valOut) const override;
+  
+  int GetLoopStart() const { return mLoopStart; }
+  int GetLoopEnd() const { return mLoopEnd; }
 };
 
-class CCEKPIN : public CColorElement {
+class CCEKeepInitial : public CColorElement {
   CColorElement* x4_;
 
 public:
-  CCEKPIN(CColorElement* a);
-  ~CCEKPIN() override;
+  CCEKeepInitial(CColorElement* a);
+  ~CCEKeepInitial() override;
   bool GetValue(int frame, CColor& valOut) const override;
 };
 
-class CCEMDAO : public CColorElement {
+class CCEModifyAlphaOnly : public CColorElement {
   CColorElement* x4_;
   CRealElement* x8_;
 
 public:
-  CCEMDAO(CColorElement* a, CRealElement* b);
-  ~CCEMDAO() override;
+  CCEModifyAlphaOnly(CColorElement* a, CRealElement* b);
+  ~CCEModifyAlphaOnly() override;
   bool GetValue(int frame, CColor& valOut) const override;
 };
 
@@ -154,13 +157,13 @@ public:
   bool GetValue(int frame, CColor& valOut) const override;
 };
 
-class CCEVRTC : public CColorElement {
+class CCEVectorAndRealToColor : public CColorElement {
   CVectorElement* x4_;
   CRealElement* x8_;
 
 public:
-  CCEVRTC(CVectorElement* a, CRealElement* b);
-  ~CCEVRTC() override;
+  CCEVectorAndRealToColor(CVectorElement* a, CRealElement* b);
+  ~CCEVectorAndRealToColor() override;
   bool GetValue(int frame, CColor& valOut) const override;
 };
 

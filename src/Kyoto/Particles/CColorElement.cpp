@@ -224,7 +224,7 @@ bool CCEKeyframeEmitter::GetValue(int frame, CColor& valOut) const {
   return false;
 }
 
-CCEKEYF::CCEKEYF(CInputStream& in)
+CCEKeyframeInput::CCEKeyframeInput(CInputStream& in)
 : mPercent(in.ReadInt32())
 , mUnk1(in.ReadInt32())
 , mLoop(in.ReadBool())
@@ -240,13 +240,13 @@ CCEKEYF::CCEKEYF(CInputStream& in)
   }
 }
 
-CCEKEYF::~CCEKEYF() { delete x30_; }
+CCEKeyframeInput::~CCEKeyframeInput() { delete x30_; }
 
-bool CCEKEYF::GetValue(int frame, CColor& valOut) const {
+bool CCEKeyframeInput::GetValue(int frame, CColor& valOut) const {
   if (mPercent == 2) {
     float in = 0.0f;
     x30_->GetValue(frame, in);
-    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, mLoopStart, mLoopEnd);
+    int idx = GetKeyframeIndex(GetKeyframeTime(in, x18_, x1c_), mLoop, GetLoopStart(), GetLoopEnd());
     bool lerp = idx > 0 && idx < mLoopEnd - 1;
     if (lerp) {
       float t = CMath::Clamp(0.0f, (in - x18_) - static_cast< float >(idx) / x1c_, 1.0f);
@@ -279,14 +279,14 @@ bool CCEMultiply::GetValue(int frame, CColor& valOut) const {
   return false;
 }
 
-CCEVRTC::CCEVRTC(CVectorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
+CCEVectorAndRealToColor::CCEVectorAndRealToColor(CVectorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
 
-CCEVRTC::~CCEVRTC() {
+CCEVectorAndRealToColor::~CCEVectorAndRealToColor() {
   delete x4_;
   delete x8_;
 }
 
-bool CCEVRTC::GetValue(int frame, CColor& valOut) const {
+bool CCEVectorAndRealToColor::GetValue(int frame, CColor& valOut) const {
   CVector3f rgb = CVector3f::Zero();
   float a = 1.f;
   x4_->GetValue(frame, rgb);
@@ -312,25 +312,25 @@ bool CCEInitialSwitch::GetValue(int frame, CColor& valOut) const {
   return false;
 }
 
-CCEKPIN::CCEKPIN(CColorElement* a) : x4_(a) {}
+CCEKeepInitial::CCEKeepInitial(CColorElement* a) : x4_(a) {}
 
-CCEKPIN::~CCEKPIN() { delete x4_; }
+CCEKeepInitial::~CCEKeepInitial() { delete x4_; }
 
-bool CCEKPIN::GetValue(int frame, CColor& valOut) const {
+bool CCEKeepInitial::GetValue(const int frame, CColor& valOut) const {
   if (frame == 0) {
     x4_->GetValue(0, valOut);
   }
   return false;
 }
 
-CCEMDAO::CCEMDAO(CColorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
+CCEModifyAlphaOnly::CCEModifyAlphaOnly(CColorElement* a, CRealElement* b) : x4_(a), x8_(b) {}
 
-CCEMDAO::~CCEMDAO() {
+CCEModifyAlphaOnly::~CCEModifyAlphaOnly() {
   delete x4_;
   delete x8_;
 }
 
-bool CCEMDAO::GetValue(int frame, CColor& valOut) const {
+bool CCEModifyAlphaOnly::GetValue(int frame, CColor& valOut) const {
   x4_->GetValue(frame, valOut);
   float a = 1.f;
   x8_->GetValue(frame, a);

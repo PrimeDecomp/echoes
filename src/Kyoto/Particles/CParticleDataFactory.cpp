@@ -1326,7 +1326,7 @@ CColorElement* CParticleDataFactory::GetColorElement(CInputStream& in) {
     ret = rs_new CCEKeyframeEmitter(in);
     break;
   case SBIG('KEYF'): {
-    ret = rs_new CCEKEYF(in);
+    ret = rs_new CCEKeyframeInput(in);
     break;
   }
   case SBIG('FADE'): {
@@ -1371,7 +1371,7 @@ CColorElement* CParticleDataFactory::GetColorElement(CInputStream& in) {
   case SBIG('VRTC'): {
     CVectorElement* a = GetVectorElement(in);
     CRealElement* b = GetRealElement(in);
-    ret = rs_new CCEVRTC(a, b);
+    ret = rs_new CCEVectorAndRealToColor(a, b);
     break;
   }
   case SBIG('ISWT'): {
@@ -1382,13 +1382,13 @@ CColorElement* CParticleDataFactory::GetColorElement(CInputStream& in) {
   }
   case SBIG('KPIN'): {
     CColorElement* a = GetColorElement(in);
-    ret = rs_new CCEKPIN(a);
+    ret = rs_new CCEKeepInitial(a);
     break;
   }
   case SBIG('MDAO'): {
     CColorElement* a = GetColorElement(in);
     CRealElement* b = GetRealElement(in);
-    ret = rs_new CCEMDAO(a, b);
+    ret = rs_new CCEModifyAlphaOnly(a, b);
     break;
   }
   case SBIG('NONE'):
