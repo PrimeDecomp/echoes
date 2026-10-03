@@ -4,6 +4,8 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "MetroidPrime/CFluidPlaneCPU.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrWater.hpp"
 
 const float CScriptWater::kSplashScales[6] = {1.f, 3.f, 0.71f, 1.19f, 0.71f, 1.f};
 
@@ -243,3 +245,7 @@ void CScriptWater::InhabitantExited(CActor& actor, CStateManager& mgr) {
 void CScriptWater::InhabitantIdle(CActor& actor, CStateManager& mgr) {
   // TODO: send the per-inhabitant inside-fluid message.
 }
+
+CFluidUVMotion::SFluidLayerMotion LdrToFluidLayerMotion(const SLdrLayerInfo& data) {}
+
+CEntity* LoadWater(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}

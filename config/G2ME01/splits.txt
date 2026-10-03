@@ -463,9 +463,11 @@ MetroidPrime/CConsoleOutputWindow.cpp:
 	.sdata2     start:0x8041B560 end:0x8041B578
 
 MetroidPrime/ScriptObjects/CScriptWater.cpp:
-	.text       start:0x800D79D8 end:0x800DAE94
-	.rodata     start:0x803A8A00 end:0x803A8A18
+	.text       start:0x800D6644 end:0x800DAE94
+	.rodata     start:0x803A8A00 end:0x803A8A20
 	.data       start:0x803B3810 end:0x803B38A8
+	.sdata      start:0x804181E0 end:0x804181EC align:4
+	.sdata2     start:0x8041B578 end:0x8041B5D8
 
 MetroidPrime/Weapons/CWeapon.cpp:
 	.text       start:0x800DAE94 end:0x800DB3B0
