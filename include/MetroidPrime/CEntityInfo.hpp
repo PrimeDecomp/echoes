@@ -125,6 +125,7 @@ enum EScriptObjectState {
   kSS_Dead = 0x44454144,
   kSS_Generate = 0x47454e52,
   kSS_ReflectedDamage = 0x52454644,
+  kSS_Damage = 0x44414d47, // Guessed name; ADMG damage notification state.
   kSS_InheritBounds = 0x49424e44,
   kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
   // Guessed names; portal-transition connections use these internal states.

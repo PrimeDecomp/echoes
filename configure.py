@@ -624,6 +624,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/CBurstFire.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaDamage.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
