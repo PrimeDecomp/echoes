@@ -1617,6 +1617,17 @@ GuiSys/CGuiPane.cpp:
 	.data       start:0x803B8F18 end:0x803B8F68
 	.sdata2     start:0x8041E050 end:0x8041E068
 
+GuiSys/CGuiSliderGroup.cpp:
+	.text       start:0x80278BF8 end:0x80279244
+	.rodata     start:0x803AE560 end:0x803AE568
+	.data       start:0x803B8F68 end:0x803B8FA8
+	.sdata2     start:0x8041E068 end:0x8041E078
+
+GuiSys/CGuiTableGroup.cpp:
+	.text       start:0x80279244 end:0x8027A1B8
+	.rodata     start:0x803AE568 end:0x803AE570
+	.data       start:0x803B8FA8 end:0x803B8FE8
+
 GuiSys/CGuiTextPane.cpp:
 	.text       start:0x8027A1B8 end:0x8027AE64
 	.data       start:0x803B8FE8 end:0x803B9040
@@ -1641,6 +1652,10 @@ GuiSys/CAuiImagePane.cpp:
 	.rodata     start:0x803AE998 end:0x803AE9B8
 	.data       start:0x803B90C0 end:0x803B9100
 	.sdata2     start:0x8041E118 end:0x8041E140
+
+GuiSys/CRepeatState.cpp:
+	.text       start:0x802802B8 end:0x8028032C
+	.sdata2     start:0x8041E140 end:0x8041E150
 
 Collision/CCollidableAABox.cpp:
 	.text       start:0x80281490 end:0x80281EF0
