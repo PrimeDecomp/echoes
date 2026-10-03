@@ -400,6 +400,7 @@ config.libs = [
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrameFactory.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrame.cpp"),
+            Object(NonMatching, "GuiSys/CGuiFrameModelDatabase.cpp"),
             Object(NonMatching, "GuiSys/CAuiMeter.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiCompoundWidget.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiSliderGroup.cpp"),
