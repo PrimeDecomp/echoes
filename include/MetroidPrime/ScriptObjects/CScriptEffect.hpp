@@ -43,6 +43,7 @@ public:
   void SetGlobalTranslation(const CVector3f& translation);
   void SetGlobalScale(const CVector3f& scale);
   CVector3f GetGlobalScale() const;             // Guessed name.
+  CToken GetDescription() const; // Guessed name; returns an owning resource handle.
   bool IsEmitting() const { return mEmitting; } // Guessed name; independent of GetActive().
   static void ResetParticleCounts();
 

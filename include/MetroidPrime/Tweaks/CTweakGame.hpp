@@ -13,6 +13,7 @@ public:
   const rstl::string& GetPakFile();
   bool GetSplashScreensDisabled();
   int GetTotalPercentage();
+  float GetFieldOfView() const; // Guessed name; the ordinary fieldofView setting.
   float GetHardModeDamageMultiplier() const;
   float GetHardModeWeaponMultiplier() const;
 

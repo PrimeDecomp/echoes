@@ -125,6 +125,11 @@ enum EScriptObjectState {
   kSS_ReflectedDamage = 0x52454644,
   kSS_InheritBounds = 0x49424e44,
   kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
+  // Guessed names; portal-transition connections use these internal states.
+  kSS_InternalState03 = 0x49533033,
+  kSS_InternalState04 = 0x49533034,
+  kSS_InternalState05 = 0x49533035,
+  kSS_InternalState06 = 0x49533036,
   kSS_ScanSource = 0x53434e53,
   kSS_InvalidState = 0xffffffff,
 };

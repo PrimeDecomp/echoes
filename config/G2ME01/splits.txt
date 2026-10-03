@@ -1634,6 +1634,12 @@ MetroidPrime/ScriptObjects/CScriptLayerController.cpp:
 	.rodata     start:0x803AD3D0 end:0x803AD3D8
 	.data       start:0x803B88D0 end:0x803B88F0
 
+MetroidPrime/ScriptObjects/CScriptPortalTransition.cpp:
+	.text       start:0x80230000 end:0x80232308
+	.rodata     start:0x803AD3D8 end:0x803AD3E0
+	.sbss       start:0x80419620 end:0x80419630
+	.sdata2     start:0x8041DB68 end:0x8041DBA0
+
 MetroidPrime/CScriptObjectLoaderHelper.cpp:
 	.text       start:0x80233390 end:0x80234900
 	.sdata      start:0x804188D8 end:0x804188E0
