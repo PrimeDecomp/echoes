@@ -15,8 +15,11 @@ class CTransform4f;
 
 class CFrustumPlanes {
 public:
-  CFrustumPlanes();
+  CFrustumPlanes() {}
+  explicit CFrustumPlanes(const rstl::reserved_vector< CPlane, 6 >& planes) : mPlanes(planes) {}
   CFrustumPlanes(const CTransform4f&, float, float, float, bool, float);
+
+  const rstl::reserved_vector< CPlane, 6 >& GetPlanes() const { return mPlanes; }
 
   bool BoxInFrustumPlanes(const CAABox& box) const;
   bool BoxInFrustumPlanes(const rstl::optional_object< CAABox >& box) const;
