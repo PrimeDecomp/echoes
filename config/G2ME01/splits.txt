@@ -2875,6 +2875,27 @@ Kyoto/CRelFileDebugInfo.cpp:
 	.text       start:0x8033ED24 end:0x8033EE98
 	.sbss       start:0x80419CA8 end:0x80419CB0
 
+Kyoto/Audio/CAudioSys.cpp:
+	.text       start:0x8033EE98 end:0x8033EEFC
+
+Kyoto/Audio/CBitcrusher.cpp:
+	.text       start:0x8033EEFC end:0x8033F7FC
+	.rodata     start:0x803B0240 end:0x803B0288
+	.data       start:0x803BBB68 end:0x803BBD58
+	.sdata2     start:0x8041EE20 end:0x8041EE90
+
+Kyoto/Audio/CAuxEffectManager.cpp:
+	.text       start:0x8033F7FC end:0x80341500
+	.rodata     start:0x803B0288 end:0x803B0298
+	.data       start:0x803BBD58 end:0x803BBD98
+	.sdata2     start:0x8041EE90 end:0x8041EEA8
+
+Kyoto/Audio/CPhaser.cpp:
+	.text       start:0x80341500 end:0x80342694
+	.rodata     start:0x803B0298 end:0x803B0320
+	.data       start:0x803BBD98 end:0x803BBF88
+	.sdata2     start:0x8041EEA8 end:0x8041EF58
+
 Kyoto/Audio/CFilteredDelayAux.cpp:
 	.text       start:0x80342694 end:0x80342B44
 	.rodata     start:0x803B0320 end:0x803B0340

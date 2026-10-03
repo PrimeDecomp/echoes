@@ -1,20 +1,12 @@
 #include "Kyoto/Audio/CDSPStreamManager.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Basics/CInterruptGuard.hpp"
 #include "Kyoto/CDvdFile.hpp"
 
 #include "dolphin/os.h"
 
 #include <string.h>
-
-class CInterruptGuard {
-public:
-  CInterruptGuard() : mEnabled(OSDisableInterrupts()) {}
-  ~CInterruptGuard() { OSRestoreInterrupts(mEnabled); }
-
-private:
-  bool mEnabled;
-};
 
 CDSPStreamManager sStreams[2];
 rstl::reserved_vector< SDSPStreamVoice, 4 > sVoices;
