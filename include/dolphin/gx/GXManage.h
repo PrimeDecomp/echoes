@@ -20,6 +20,7 @@ void GXPixModeSync(void);
 void GXSetMisc(GXMiscToken token, u32 val);
 GXDrawSyncCallback GXSetDrawSyncCallback(GXDrawSyncCallback cb);
 void GXSetDrawSync(u16 token);
+u16 GXReadDrawSync(void);
 
 #ifdef __cplusplus
 }

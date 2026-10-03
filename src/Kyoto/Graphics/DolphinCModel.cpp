@@ -7,6 +7,7 @@
 #include "Kyoto/Graphics/CCubeMaterial.hpp"
 #include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CGXTransientBuffer.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Math/CAABox.hpp"
@@ -14,10 +15,6 @@
 
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
-
-// Unidentified GX scratch buffer helpers (not yet split).
-extern "C" void* fn_8032F404(int size);
-extern "C" void fn_8032F3CC();
 
 static bool sIsTextureTimeoutEnabled = true;
 uint CModel::sTotalMemory = 0;
@@ -38,7 +35,7 @@ public:
   CSkinMatricesGuard(void* matrices) : mActive(matrices != nullptr) {}
   ~CSkinMatricesGuard() {
     if (mActive) {
-      fn_8032F3CC();
+      CGXTransientBuffer::ReleaseAllocation();
       GXSetCurrentMtx(GX_PNMTX0);
     }
   }
@@ -185,7 +182,8 @@ void* CModel::SetupSkinMatrices() const {
     return nullptr;
   }
 
-  SSkinMatrices* matrices = static_cast< SSkinMatrices* >(fn_8032F404(sizeof(SSkinMatrices)));
+  SSkinMatrices* matrices =
+      static_cast< SSkinMatrices* >(CGXTransientBuffer::EnsureAllocation(sizeof(SSkinMatrices)));
   matrices->mModelView = CGraphics::GetGXModelView();
   float (*normal)[3] = matrices->mNormal;
   const Mtx& invXpose = CGraphics::GetGXModelViewInvXpose();
