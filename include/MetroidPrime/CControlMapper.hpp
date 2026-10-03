@@ -135,6 +135,9 @@ public:
   // Echoes method names below are inferred from their implementations.
   void Reset();
   void ResetCommandFilters();
+  void SetCommandFilters(const rstl::reserved_vector< bool, kC_Count >& enabled) {
+    mCommandEnabled = enabled;
+  }
   void ResetCommandOverrides();
   EFunctionList GetMapping(ECommands command) const;
   const CTweakPlayerControls* GetTweakPlayerControls() const;

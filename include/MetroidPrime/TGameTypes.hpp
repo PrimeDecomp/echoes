@@ -14,6 +14,7 @@ struct TUniqueId;
 
 extern const TAreaId kInvalidAreaId;
 extern const TEditorId kInvalidEditorId;
+extern const TEditorId kUnkId;
 extern const TUniqueId kInvalidUniqueId;
 
 struct TAreaId {
