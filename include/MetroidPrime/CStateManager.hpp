@@ -210,6 +210,7 @@ public:
   CPlayer* Player(int index) { return mPlayers[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *mObjectLists[id]; }
+  bool IsSkippingCinematic() const { return mSkippingCinematic; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *mObjectLists[id]; }
   // Guessed names. The first filtered list qualifies only CScriptDoor objects.
   const rstl::list< CEntity* >& GetDoorList() const {
@@ -263,7 +264,7 @@ public:
   CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
 
-  int fn_800366e4(CActor*);
+  bool fn_800366e4(const CActor*) const;
 
 public:
   ushort mNextFreeIndex;
@@ -308,7 +309,8 @@ public:
   int mUpdateFrameIdx;   // 16AC
   char mUnknownData2[0x34];
   CRandom16 mRandom;
-  char x16e8_[4];
+  bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
+  char x16e9_[3];
   EGameState mGameState;
   EInitPhase mInitPhase;
   TCameraFilterPasses mCameraFilterPasses; // 0x16f4

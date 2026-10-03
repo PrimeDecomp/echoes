@@ -1054,6 +1054,22 @@ MetroidPrime/CRumbleManager.cpp:
 	.text       start:0x8016DC58 end:0x8016DF3C
 	.sdata2     start:0x8041C788 end:0x8041C798
 
+MetroidPrime/Enemies/CBouncyGrenade.cpp:
+	.text       start:0x8016DF3C end:0x8016FF54
+	.rodata     start:0x803A99B8 end:0x803A99C0
+	.data       start:0x803B5468 end:0x803B5500
+	.sdata      start:0x804184F0 end:0x80418518
+	.sbss       start:0x80419220 end:0x80419230
+	.sdata2     start:0x8041C798 end:0x8041C7C0
+
+MetroidPrime/Enemies/CElitePirateGrenadeLauncher.cpp:
+	.text       start:0x8016FF54 end:0x80170E3C
+	.ctors      start:0x803A554C end:0x803A5550
+	.rodata     start:0x803A99C0 end:0x803A9A00
+	.data       start:0x803B5500 end:0x803B5580
+	.bss        start:0x803DB410 end:0x803DB430
+	.sdata2     start:0x8041C7C0 end:0x8041C808
+
 MetroidPrime/Weapons/CShockWave.cpp:
 	.text       start:0x80170E3C end:0x80171DC4
 	.rodata     start:0x803A9A00 end:0x803A9A18

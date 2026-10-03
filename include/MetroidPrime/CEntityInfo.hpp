@@ -20,6 +20,7 @@ enum EEntityType {
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
   kET_Bomb = 14,
+  kET_BouncyGrenade = 16,
   kET_CinematicCamera = 17,
   kET_CollisionActor = 18,
   kET_EnergyProjectile = 19,
@@ -157,6 +158,7 @@ enum EScriptObjectMessage {
   kSM_InternalMessage00 = 0x494d3030,
 
   kSM_XCRT = 0x58435254,
+  kSM_XENZ = 0x58454e5a, // Guessed name; makes a flagged bouncy grenade explode.
   kSM_XClear = 0x58434c52, // Guessed name: clear an effect's particles.
   kSM_XALD = 0x58414c44,
   kSM_XWLD = 0x58574c44,
