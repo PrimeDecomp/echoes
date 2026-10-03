@@ -834,6 +834,11 @@ MetroidPrime/ScriptObjects/CScriptEMPulse.cpp:
 	.sdata      start:0x80418340 end:0x80418348
 	.sdata2     start:0x8041BF00 end:0x8041BF20
 
+MetroidPrime/HUD/CHudBossEnergyInterface.cpp:
+	.text       start:0x8012E838 end:0x8012ED0C
+	.rodata     start:0x803A8E00 end:0x803A8EB8
+	.sdata2     start:0x8041BF20 end:0x8041BF58
+
 MetroidPrime/HUD/CHudRadarInterface.cpp:
 	.text       start:0x8012ED0C end:0x8012FD84
 	.rodata     start:0x803A8EB8 end:0x803A8F28
