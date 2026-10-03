@@ -1824,8 +1824,9 @@ MetroidPrime/CGameResultsScreen.cpp:
 	.sdata2     start:0x8041DBF8 end:0x8041DC88
 
 MetroidPrime/ScriptLoader.cpp:
-	.text       start:0x80242894 end:0x80243ED4
+	.text       start:0x802399FC end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
+	.bss        start:0x803DE138 end:0x803DE6F8
 
 MetroidPrime/CInGameQuitScreen.cpp:
 	.text       start:0x80243ED4 end:0x80244F74

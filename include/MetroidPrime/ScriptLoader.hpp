@@ -8,6 +8,14 @@ class CInputStream;
 class CStateManager;
 class CEntityInfo;
 class CActorParameters;
+class CLightParameters;
+class CVisorParameters;
+class CAnimationParameters;
+class CGrappleParameters;
+class CBeamInfo;
+class CBasicSwarmData;
+class CPatternedInfo;
+struct CPowerBombGuardianStageData;
 class CDamageInfo;
 class CTransform4f;
 class CScannableParameters;
@@ -32,23 +40,51 @@ struct SLdrEchoParameters;
 struct SLdrScannableParameters;
 struct SLdrEditorProperties;
 struct SLdrVector2f;
+struct SLdrLightParameters;
+struct SLdrVisorParameters;
+struct SLdrGrappleParameters;
+struct SLdrWeaponVulnerability;
+struct CWeaponTypeVulnerability;
+struct SLdrPlasmaBeamInfo;
+struct SLdrBasicSwarmProperties;
+struct SLdrPatternedAITypedef;
+struct SLdrIngPossessionData;
+struct SLdrPowerBombGuardianStageProperties;
 
 // Names from the Echoes Wii SEL exports.
 CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data);
 CHealthInfo LdrToHealthInfo(const SLdrHealthInfo& data);
 CDamageVulnerability LdrToDamageVulnerability(const SLdrDamageVulnerability& data);
 rstl::optional_object< CModelData > LdrToModelData(const CVector3f& scale, CAssetId model,
-                                               const SLdrAnimationSet& animation,
-                                               bool useAnimation);
+                                                   const SLdrAnimationSet& animation, bool canLoop);
+CAnimationParameters LdrToAnimationParameters(const SLdrAnimationSet& data);
+CGrappleParameters LdrToGrappleParameters(const SLdrGrappleParameters& data);
+CBeamInfo TLdrToBeamInfo(const SLdrPlasmaBeamInfo& data, int beamAttributes);
+CBasicSwarmData LdrToBasicSwarmData(const SLdrBasicSwarmProperties& data);
+CPatternedInfo LdrToPatternedInfo(const SLdrPatternedAITypedef& data,
+                                  const SLdrIngPossessionData* possession);
+CPowerBombGuardianStageData
+LdrToPowerBombGuardianStageData(const SLdrPowerBombGuardianStageProperties& data);
 // Reconstructed name, correlated with Prime and verified Echoes loader callers.
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
-                 const CVector3f& collisionOffset);
+                  const CVector3f& collisionOffset);
+CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& scale,
+                  const CTransform4f& transform, const CVector3f& collisionSize,
+                  const CVector3f& collisionOffset);
 // Names from the Echoes Wii SEL exports.
 CTransform4f LdrToTransform4f(const SLdrEditorProperties& data);
+// Guessed name; shared by editor conversion and runtime parent attachment.
+CTransform4f ConvertEditorEulerToTransform4f(const CVector3f& orientation,
+                                             const CVector3f& position);
 CVector2f LdrToVector2f(const SLdrVector2f& data);
+// Guessed name for the native serialized-fog selector conversion.
 ERglFogMode FogSelectionToFogMode(int selection);
 // Guessed name, following the neighbouring SEL-derived conversions.
 CScannableParameters LdrToScannableParameters(const SLdrScannableParameters& data);
+// Guessed names for unexported conversions, supported by their native callers.
+CLightParameters LdrToLightParameters(const SLdrLightParameters& data);
+CVisorParameters LdrToVisorParameters(const SLdrVisorParameters& data);
+CWeaponTypeVulnerability LdrToWeaponVulnerability(const SLdrWeaponVulnerability& data);
 CActorParameters LdrToActorParameters(const SLdrActorParameters& data);
 SEchoParameters LdrToEchoParameters(const SLdrEchoParameters& data);
 

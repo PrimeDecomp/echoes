@@ -54,6 +54,7 @@ public:
   float GetKnockBackPower() const { return mKnockbackPower; }
   float GetKnockBackPower(const CDamageVulnerability& vulnerability, float distance) const;
   bool GetX1a25() const { return x1a_25_; }
+  void SetX1a25(bool flag) { x1a_25_ = flag; }
   void SetKnockBackPower(float k) { mKnockbackPower = k; }
   float GetDamage() const { return mDamage; }
   void SetDamage(float d) { mDamage = d; }
