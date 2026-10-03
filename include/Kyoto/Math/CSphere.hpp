@@ -5,10 +5,13 @@
 
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "Kyoto/Streams/CInputStream.hpp"
 
 class CSphere {
 public:
   CSphere(const CVector3f& pos, float radius) : mCenter(pos), mRadius(radius) {}
+
+  explicit CSphere(CInputStream& in) : mCenter(in), mRadius(in.ReadFloat()) {}
 
   const CVector3f& GetCenter() const { return mCenter; }
   float GetRadius() const { return mRadius; }
