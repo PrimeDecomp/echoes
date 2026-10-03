@@ -1302,6 +1302,10 @@ MetroidPrime/ScriptObjects/CScriptTriggerOrientated.cpp:
 	.data       start:0x803B6910 end:0x803B69A8
 	.sdata2     start:0x8041CEE0 end:0x8041CEE8
 
+MetroidPrime/Enemies/CPathFindNavigation.cpp:
+	.text       start:0x801B8514 end:0x801B8CFC
+	.sdata2     start:0x8041CEE8 end:0x8041CF00
+
 MetroidPrime/CHintState.cpp:
 	.text       start:0x801B8CFC end:0x801B9310
 	.sdata2     start:0x8041CF00 end:0x8041CF08
