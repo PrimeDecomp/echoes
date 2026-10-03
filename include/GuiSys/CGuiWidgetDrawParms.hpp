@@ -5,6 +5,9 @@
 
 class CGuiWidgetDrawParms {
 public:
+  static CGuiWidgetDrawParms sDefaultDrawParms;
+  static const CGuiWidgetDrawParms& Default() { return sDefaultDrawParms; }
+
   CGuiWidgetDrawParms(float alpha, const CVector3f& offset)
   : mAlpha(alpha), mCameraOffset(offset) {}
 

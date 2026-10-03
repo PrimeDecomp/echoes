@@ -504,6 +504,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CQuitGameScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CPauseScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManager.cpp"),
+            Object(NonMatching, "MetroidPrime/CInGameGuiManagerSet.cpp"),
+            Object(NonMatching, "MetroidPrime/CMultiplayerGui.cpp"),
             Object(NonMatching, "MetroidPrime/CSimpleShadow.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CActorParameters.cpp"),
             Object(NonMatching, "MetroidPrime/CWorldShadow.cpp"),
