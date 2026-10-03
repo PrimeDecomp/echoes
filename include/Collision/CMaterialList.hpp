@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+class CInputStream;
+
 enum EMaterialTypes {
   kMT_NoStepLogic = 0,
   kMT_Stone = 1,
@@ -70,21 +72,21 @@ enum EMaterialTypes {
 
 class CMaterialList {
 public:
-  CMaterialList() : value(0) {}
-  explicit CMaterialList(const EMaterialTypes& m1) : value(0) { Add(m1); }
-  CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2) : value(0) {
+  CMaterialList() : mValue(0) {}
+  explicit CMaterialList(const EMaterialTypes& m1) : mValue(0) { Add(m1); }
+  CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2) : mValue(0) {
     Add(m1);
     Add(m2);
   }
   CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2, const EMaterialTypes& m3)
-  : value(0) {
+  : mValue(0) {
     Add(m1);
     Add(m2);
     Add(m3);
   }
   CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2, const EMaterialTypes& m3,
                 const EMaterialTypes& m4)
-  : value(0) {
+  : mValue(0) {
     Add(m1);
     Add(m2);
     Add(m3);
@@ -92,26 +94,28 @@ public:
   }
   CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2, const EMaterialTypes& m3,
                 const EMaterialTypes& m4, const EMaterialTypes& m5)
-  : value(0) {
+  : mValue(0) {
     Add(m1);
     Add(m2);
     Add(m3);
     Add(m4);
     Add(m5);
   }
-  explicit CMaterialList(u64 value) : value(value) {}
-  u64 GetValue() const { return value; }
+  explicit CMaterialList(u64 value) : mValue(value) {}
+  // Guessed identity: adjacent to BitPosition; consumes one aligned 64-bit value.
+  explicit CMaterialList(CInputStream& in);
+  u64 GetValue() const { return mValue; }
 
-  void Add(EMaterialTypes material) { value |= u64(1) << material; }
-  void Add(const CMaterialList& material) { value |= material.value; }
-  void Remove(EMaterialTypes material) { value &= ~(u64(1) << material); }
-  void Remove(const CMaterialList& material) { value &= ~material.value; }
+  void Add(EMaterialTypes material) { mValue |= u64(1) << material; }
+  void Add(const CMaterialList& material) { mValue |= material.mValue; }
+  void Remove(EMaterialTypes material) { mValue &= ~(u64(1) << material); }
+  void Remove(const CMaterialList& material) { mValue &= ~material.mValue; }
   const CMaterialList& Union(const CMaterialList& other) {
-    value |= other.value;
+    mValue |= other.mValue;
     return *this;
   }
   bool HasMaterial(EMaterialTypes material) const {
-    return (value & (u64(1) << material)) ? true : false;
+    return (mValue & (u64(1) << material)) ? true : false;
   }
   // HasMaterials__13CMaterialListCFv weak
   // GetField__13CMaterialListCFUxUx weak
@@ -119,11 +123,11 @@ public:
   static int BitPosition(u64 flags);
   // GetMaterialString__13CMaterialListCFv weak
   bool SharesMaterials(const CMaterialList& other) const {
-    return (other.value & value) ? true : false;
+    return (other.mValue & mValue) ? true : false;
   }
 
 private:
-  u64 value;
+  u64 mValue;
 
   // static CMaterialList kEverything;
 };
