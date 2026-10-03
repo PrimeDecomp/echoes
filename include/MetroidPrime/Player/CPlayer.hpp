@@ -354,6 +354,9 @@ public:
   void fn_8000d5dc(const CFinalInput& input, CStateManager& mgr);
   void ExitTurret(CStateManager& mgr);
   float GetAttachedActorStruggle() const;
+
+  TUniqueId GetAttachedActorId() const { return mAttachedActor; }
+
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
   void ApplySubmergedPitchBend(CSfxHandle& handle);
   void fn_8000e85c(float dt);

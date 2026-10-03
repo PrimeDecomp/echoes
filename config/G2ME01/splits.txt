@@ -1288,6 +1288,14 @@ MetroidPrime/Player/CPlayerKnockBackMgr.cpp:
 	.sdata      start:0x80418680 end:0x80418688
 	.sdata2     start:0x8041CF78 end:0x8041CFD0
 
+MetroidPrime/Player/CPlayerRagDoll.cpp:
+	.text       start:0x801C13F8 end:0x801C316C
+	.ctors      start:0x803A5570 end:0x803A5574
+	.rodata     start:0x803AA6E8 end:0x803AA7A8
+	.data       start:0x803B6B78 end:0x803B6B90
+	.bss        start:0x803DB4E8 end:0x803DB670
+	.sdata2     start:0x8041D018 end:0x8041D070
+
 MetroidPrime/Player/CGrappleArm.cpp:
 	.text       start:0x801C316C end:0x801C6B20
 	.ctors      start:0x803A5574 end:0x803A5578
