@@ -1046,7 +1046,7 @@ SendScriptMsg__13CStateManagerFP7CEntity9TUniqueId20EScriptObjectMessage9TUnique
 DeliverScriptMsg__13CStateManagerFRC10CScriptMsg = .text:0x80037098; // type:function size:0x68
 SendScriptMsg__13CStateManagerFRC10CScriptMsg = .text:0x80037100; // type:function size:0x70 scope:global
 QueueMessage__13CStateManagerFiUif = .text:0x80037170; // type:function size:0x10 align:4
-fn_80037180 = .text:0x80037180; // type:function size:0x14 align:4
+SetBossParams__13CStateManagerF9TUniqueIdfUi = .text:0x80037180; // type:function size:0x14 align:4
 fn_80037194 = .text:0x80037194; // type:function size:0x12C
 fn_800372C0 = .text:0x800372C0; // type:function size:0x358 align:4
 fn_80037618 = .text:0x80037618; // type:function size:0x9C align:4
@@ -2727,7 +2727,7 @@ fn_800989B0 = .text:0x800989B0; // type:function size:0x24 align:4
 fn_800989D4 = .text:0x800989D4; // type:function size:0x30 align:4
 fn_80098A04 = .text:0x80098A04; // type:function size:0x24 align:4
 fn_80098A28 = .text:0x80098A28; // type:function size:0x30 align:4
-fn_80098A58 = .text:0x80098A58; // type:function size:0x24 align:4
+TCastToPtr<22CScriptWorldTeleporter>__FP7CEntity = .text:0x80098A58; // type:function size:0x24 align:4
 fn_80098A7C = .text:0x80098A7C; // type:function size:0x30 align:4
 fn_80098AAC = .text:0x80098AAC; // type:function size:0x24 align:4
 fn_80098AD0 = .text:0x80098AD0; // type:function size:0x30 align:4

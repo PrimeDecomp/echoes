@@ -37,7 +37,6 @@ public:
   float GetElapsedTime() const override;
   float GetMatchTimeLimit() const override;
 
-private:
   // Reconstructed result/helper/member names, not original exports.
   enum EResultIndex {
     kRI_Unset,
@@ -47,6 +46,7 @@ private:
   };
   EResultIndex CalculateResult(const CStateManager& mgr);
 
+private:
   bool mPlayerSpawned; // Set on spawn; no reader established in this TU.
   bool mGameOver;
   EResultIndex mResultIndex;

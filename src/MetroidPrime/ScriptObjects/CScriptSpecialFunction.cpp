@@ -2,6 +2,7 @@
 
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CArchitectureMessage.hpp"
 #include "MetroidPrime/CArchitectureQueue.hpp"
@@ -10,17 +11,25 @@
 #include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
+#include "MetroidPrime/CRumbleManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Decode.hpp"
+#include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+static const ERumbleFxId skRumbleFxList[6] = {
+    kRFX_Twenty, kRFX_One, kRFX_TwentyOne, kRFX_TwentyTwo, kRFX_TwentyThree, kRFX_Zero,
+};
 
 // Guessed names
 static int kCreditsMsgPriority = 11;
@@ -205,11 +214,44 @@ void CScriptSpecialFunction::AcceptSpinner(CStateManager& mgr, const CScriptMsg&
 }
 
 void CScriptSpecialFunction::AcceptShotSpinner(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update the shot-spinner impulse and send Play.
+  switch (msg.GetMessage()) {
+  case kSM_Increment:
+    mShotSpinnerImpulse = rstl::max_val(0.f, rstl::min_val(mShotSpinnerImpulse + 1.f, 1.f));
+    SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+    break;
+  case kSM_SetToMax:
+    mShotSpinnerImpulse = mValue3;
+    SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+    break;
+  case kSM_SetToZero:
+    mShotSpinnerImpulse = -0.5f * mValue3;
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptMapStation(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: map the connected destinations and open the map screen.
+  if (msg.GetMessage() == kSM_Action) {
+    rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Activate);
+    bool foundTeleporter = false;
+    for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+      if (const CScriptWorldTeleporter* teleporter =
+              TCastToConstPtr< CScriptWorldTeleporter >(mgr.GetObjectById(*it))) {
+        foundTeleporter = true;
+        if (teleporter->GetWorldId() == mgr.World()->GetWorldAssetId()) {
+          TAreaId areaId = mgr.World()->GetAreaId(teleporter->GetAreaId());
+          if (static_cast< uint >(areaId.Value()) != -1u) {
+            mgr.MapWorldInfo()->SetIsMapped(areaId, true);
+          }
+        }
+      }
+    }
+    if (!foundTeleporter) {
+      mgr.MapWorldInfo()->SetMapStationUsed(true);
+    }
+    CMapWorld* mapWorld = mgr.World()->GetMapWorld();
+    mapWorld->RecalculateWorldSphere(*mgr.MapWorldInfo(), *mgr.World());
+    mgr.EnterMapScreen();
+  }
 }
 
 void CScriptSpecialFunction::AcceptMissileStation(CStateManager& mgr, const CScriptMsg& msg) {
@@ -229,7 +271,22 @@ void CScriptSpecialFunction::AcceptPowerBombStation(CStateManager& mgr, const CS
 }
 
 void CScriptSpecialFunction::AcceptSaveStation(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: request the save interaction and track its completion.
+  if (msg.GetMessage() == kSM_Action) {
+    if (!mgr.IsMultiplayer()) {
+      const bool noCard = gpGameState->GetCardSerial() == 0;
+      mgr.PlayerState(0)->IncrPickUp(CPlayerState::kIT_EnergyTanks, 1);
+      if (noCard) {
+        SendScriptMsgs(kSS_Closed, mgr, kInvalidUniqueId, kSM_None);
+      } else if (!noCard) {
+        mgr.EnterSaveGameScreen();
+        mDoSave = true;
+      }
+    }
+  } else if (msg.GetMessage() == kSM_Increment) {
+    gpGameState->RecordCheckpoint();
+  } else if (msg.GetMessage() == kSM_Decrement) {
+    gpGameState->ClearCheckpoint();
+  }
 }
 
 void CScriptSpecialFunction::AcceptEnergyTank(CStateManager& mgr, const CScriptMsg& msg) {
@@ -245,7 +302,35 @@ void CScriptSpecialFunction::AcceptRadialDamage(CStateManager& mgr, const CScrip
 }
 
 void CScriptSpecialFunction::AcceptBossEnergyBar(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: select the boss actor, health and localized name.
+  switch (msg.GetMessage()) {
+  case kSM_Increment: {
+    int stringIdx = static_cast< int >(mValue2);
+    stringIdx += gpStringTable->GetStringIndex("Boss0");
+    if (mStringParm.length() != 0) {
+      int idx = gpStringTable->GetStringIndex(mStringParm.data());
+      if (idx != -1) {
+        stringIdx = idx;
+      }
+    }
+    TUniqueId bossId = FindConnectedObject(mgr, kSS_Play, kSM_Activate);
+    if (const CActor* boss = TCastToConstPtr< CActor >(mgr.GetObjectById(bossId))) {
+      float maxEnergy = mValue1;
+      if (maxEnergy == 0.f) {
+        if (const CHealthInfo* healthInfo = boss->GetHealthInfo()) {
+          maxEnergy = healthInfo->GetInitialHP();
+        }
+      }
+      mgr.SetBossParams(bossId, maxEnergy, stringIdx);
+    } else {
+
+      mgr.SetBossParams(msg.GetUnk(), mValue1, stringIdx);
+    }
+    break;
+  }
+  case kSM_Decrement:
+    mgr.SetBossParams(kInvalidUniqueId, 0.f, 0);
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptEndGame(CStateManager& mgr, const CScriptMsg& msg) {
@@ -277,7 +362,26 @@ void CScriptSpecialFunction::AcceptEnvFxDensity(CStateManager& mgr, const CScrip
 }
 
 void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: start the configured positional or non-positional rumble.
+  if (msg.GetMessage() == kSM_Action) {
+    int rumbFxIdx = static_cast< int >(mValue2);
+    mgr.IsMultiplayer();
+    if (rumbFxIdx >= 0 && rumbFxIdx < static_cast< int >(sizeof(skRumbleFxList) / sizeof(ERumbleFxId))) {
+      ERumbleFxId rumbFx = skRumbleFxList[rumbFxIdx];
+      uint flags = mValue3;
+      if ((flags & 1) != 0) {
+        mgr.RumbleManager(0)->Rumble(mgr, rumbFx, 1.f, kRP_One);
+      } else {
+        CVector3f pos = GetTranslation();
+        if ((flags & 2) != 0) {
+          TUniqueId uid = msg.GetUnk();
+          if (const CActor* act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
+            pos = act->GetTranslation();
+          }
+        }
+        mgr.RumbleManager(0)->Rumble(mgr, pos, rumbFx, mValue1, kRP_One);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptInventoryActivator(CStateManager& mgr, const CScriptMsg& msg) {
@@ -371,11 +475,39 @@ void CScriptSpecialFunction::AcceptLogbook(CStateManager& mgr, const CScriptMsg&
 }
 
 void CScriptSpecialFunction::AcceptEnding(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: compare the requested ending with the unlocked tier.
+  if (msg.GetMessage() == kSM_Action) {
+    CGameMode* mode = &gpGameState->GetGameMode();
+    if (mode && mode->GetGameModeType() == 'SNGL') {
+      int result = static_cast< CGMSinglePlayer* >(mode)->CalculateResult(mgr);
+      bool send = false;
+      switch (static_cast< int >(mValue1)) {
+      case 0:
+        send = result == CGMSinglePlayer::kRI_Under75Percent;
+        break;
+      case 1:
+        send = result == CGMSinglePlayer::kRI_Under100Percent;
+        break;
+      case 2:
+        send = result == CGMSinglePlayer::kRI_AtLeast100Percent;
+        break;
+      }
+      if (send) {
+        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptPlayerVelocity(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: direct the originating player's velocity toward a connected actor.
+  if (msg.GetMessage() == kSM_Action) {
+    CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)));
+    TUniqueId originator = msg.GetOriginator();
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator));
+    if (player) {
+      CVector3f dir = (actor->GetTranslation() - player->GetTranslation()).AsNormalized();
+      player->SetVelocityWR(mValue1 * dir);
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptDarkWorld(CStateManager& mgr, const CScriptMsg& msg) {
@@ -600,7 +732,28 @@ void CScriptSpecialFunction::AcceptDamageActor(CStateManager& mgr, const CScript
 }
 
 void CScriptSpecialFunction::AcceptRezbitState(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: start or stop the originating player's timed Rezbit state.
+  switch (msg.GetMessage()) {
+  case kSM_XCRT:
+    mValue2 = 0.f;
+    break;
+  case kSM_Action: {
+    mValue2 = mValue1;
+    uint player = mLastOriginatorPlayer == kInvalidUniqueId
+                      ? 0
+                      : mgr.MaskUIdNumPlayers(mLastOriginatorPlayer);
+    mgr.GetPlayer(player)->SetRezbitState(CPlayer::kRS_Recovered);
+    break;
+  }
+  case kSM_Deactivate: {
+    uint player = mLastOriginatorPlayer == kInvalidUniqueId
+                      ? 0
+                      : mgr.MaskUIdNumPlayers(mLastOriginatorPlayer);
+    if (mgr.GetPlayer(player)->GetRezbitState() == CPlayer::kRS_Recovered) {
+      mgr.GetPlayer(player)->SetRezbitState(CPlayer::kRS_None);
+    }
+    break;
+  }
+  }
 }
 
 void CScriptSpecialFunction::AcceptFogPlane(CStateManager& mgr, const CScriptMsg& msg) {
@@ -615,7 +768,33 @@ void CScriptSpecialFunction::AcceptFogPlane(CStateManager& mgr, const CScriptMsg
 }
 
 void CScriptSpecialFunction::AcceptBillboard(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update the billboard's visibility flags and fade state.
+  switch (msg.GetMessage()) {
+  case kSM_XCRT:
+    mIntParm1 = (mIntParm1 & ~2) | ((mIntParm2 != 0) << 1);
+    mValue4 = 0.f;
+    mIntParm2 = 0;
+    break;
+  case kSM_Increment:
+    mIntParm2 = 1;
+    break;
+  case kSM_Decrement:
+    mIntParm2 = 2;
+    break;
+  case kSM_SetToMax:
+    mIntParm2 = 0;
+    mValue4 = 1.f;
+    break;
+  case kSM_SetToZero:
+    mIntParm2 = 0;
+    mValue4 = 0.f;
+    break;
+  case kSM_Start:
+    mIntParm1 = (mIntParm1 & ~1) | 1;
+    break;
+  case kSM_Stop:
+    mIntParm1 = mIntParm1 & ~1;
+    break;
+  }
 }
 
 void CScriptSpecialFunction::AcceptAreaDocks(CStateManager& mgr, const CScriptMsg& msg) {
