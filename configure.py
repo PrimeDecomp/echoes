@@ -723,6 +723,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CEchoEmitter.cpp"),
             Object(NonMatching, "MetroidPrime/SwarmRenderHelpers.cpp"),
             Object(NonMatching, "MetroidPrime/CScriptObjectLoaderHelper.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptLayerController.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerTargeting.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlayerStateChange.cpp"),
             Object(NonMatching, "MetroidPrime/CActorModelParticles.cpp"),
