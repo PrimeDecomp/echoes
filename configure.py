@@ -856,6 +856,8 @@ config.libs = [
             Object(NonMatching, "Kyoto/Graphics/CCubeMoviePlayer.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CAdditiveAnimPlayback.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Particles/CParticleElectricDataFactory.cpp"),
+            Object(NonMatching, "Kyoto/Particles/CParticleSpawnSystemDataFactory.cpp"),
+            Object(MatchingFor("G2ME01"), "Kyoto/Particles/CSpawnSystemDescription.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleElectric.cpp"),
             Object(NonMatching, "Kyoto/Particles/CElementGen.cpp"),
             Object(NonMatching, "Kyoto/Particles/CParticleSpawnSystem.cpp"),
