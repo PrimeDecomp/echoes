@@ -1553,6 +1553,15 @@ MetroidPrime/ScriptObjects/CScriptTextPane.cpp:
 	.data       start:0x803B7C18 end:0x803B7C98
 	.sdata2     start:0x8041D6B8 end:0x8041D6E8
 
+MetroidPrime/Weapons/CBouncingBomb.cpp:
+	.text       start:0x80200F38 end:0x80201F4C
+	.rodata     start:0x803AC588 end:0x803AC598
+	.data       start:0x803B7C98 end:0x803B7D18
+	.bss        start:0x803DE078 end:0x803DE090
+	.sdata      start:0x804187F0 end:0x80418820
+	.sbss       start:0x80419378 end:0x80419380
+	.sdata2     start:0x8041D6E8 end:0x8041D708
+
 MetroidPrime/CPauseScreen.cpp:
 	.text       start:0x80201F4C end:0x8020DA7C
 
