@@ -1541,6 +1541,12 @@ MetroidPrime/ScriptObjects/CScriptCameraPitch.cpp:
 	.sdata      start:0x804187E8 end:0x804187F0
 	.sdata2     start:0x8041D6A0 end:0x8041D6B0
 
+MetroidPrime/Enemies/CStateMachine2.cpp:
+	.text       start:0x801FBBC4 end:0x801FFEB0
+	.rodata     start:0x803AC578 end:0x803AC580
+	.data       start:0x803B7B90 end:0x803B7C18
+	.sdata2     start:0x8041D6B0 end:0x8041D6B8
+
 MetroidPrime/CPauseScreen.cpp:
 	.text       start:0x80201F4C end:0x8020DA7C
 
