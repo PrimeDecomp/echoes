@@ -743,6 +743,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CEchoEmitter.cpp"),
             Object(NonMatching, "MetroidPrime/SwarmRenderHelpers.cpp"),
             Object(NonMatching, "MetroidPrime/CMissileRepeller.cpp"),
+            Object(NonMatching, "MetroidPrime/CGameResultsScreen.cpp"),
             Object(NonMatching, "MetroidPrime/CScriptObjectLoaderHelper.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSoundModifier.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAdvancedCounter.cpp"),
