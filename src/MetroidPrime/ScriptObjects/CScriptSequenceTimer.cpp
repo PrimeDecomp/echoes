@@ -1,94 +1,80 @@
 #include "MetroidPrime/ScriptObjects/CScriptSequenceTimer.hpp"
 
-#include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.hpp"
-
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 
-#include "Kyoto/Math/CMath.hpp"
+#include "rstl/math.hpp"
 
+#include <math.h>
+
+// Guessed name.
 rstl::pair< float, float > FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >&);
 
 CScriptSequenceTimer::CScriptSequenceTimer(TUniqueId uid, const rstl::string& name,
                                            const CEntityInfo& info,
                                            const rstl::vector< SLdrConnection >& connections,
                                            float startTime, float maxTime, float loopStartTime,
-                                           bool isAutostart, bool isLoop, bool takeExternalTime)
-: CEntity(uid, info, name, false)
-
-, m_startTime(startTime)
-, m_currentTime(startTime)
-, m_maxTime(maxTime != 0.0f ? maxTime : FindMinMaxConnectionTimes(connections).second)
-, m_loopStartTime(loopStartTime)
-, m_isAutostart(isAutostart)
-, m_isLoop(isLoop)
-, m_takeExternalTime(takeExternalTime)
-, m_connections(connections)
-, m_scriptMsg() {}
+                                           bool autoStart, bool loop, bool takeExternalTime)
+: CEntity(uid, info, name, 0)
+, mStartTime(startTime)
+, mCurrentTime(startTime)
+, mMaxTime(maxTime != 0.f ? maxTime : FindMinMaxConnectionTimes(connections).second)
+, mLoopStartTime(loopStartTime)
+, mRunning(autoStart)
+, mLoop(loop)
+, mTakeExternalTime(takeExternalTime)
+, mConnections(connections)
+, mStartMessage() {}
 
 CScriptSequenceTimer::~CScriptSequenceTimer() {}
 
 void CScriptSequenceTimer::Think(float dt, CStateManager& mgr) {
-  if (GetActive()) {
-    if (m_isAutostart && !m_takeExternalTime) {
-      fn_801e1c1c(m_currentTime + dt + 0.1f, mgr); // maybe 0.0000099999997f
-    }
+  if (GetActive() && mRunning && !mTakeExternalTime) {
+    ApplyTime(0.00001f + (mCurrentTime + dt), mgr);
   }
 }
 
-void CScriptSequenceTimer::fn_801e1c1c(float changeTo, CStateManager& mgr) {
-  float oldTime = m_currentTime;
-  m_currentTime = changeTo;
+void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
+  const float oldTime = mCurrentTime;
+  mCurrentTime = time;
 
-  bool exceedMaxTime = false;
-  if (m_isLoop) {
-    if (m_maxTime <= m_currentTime) {
-      exceedMaxTime = true;
-      float t = fmod(m_currentTime, m_maxTime);
-      m_currentTime = m_loopStartTime + t;
+  bool wrapped = false;
+  if (mLoop && mMaxTime <= mCurrentTime) {
+    wrapped = true;
+    mCurrentTime = mLoopStartTime + float(fmod(mCurrentTime, mMaxTime));
+  }
+
+  const float lowerTime = rstl::min_val(mCurrentTime, oldTime);
+  const float upperTime = rstl::max_val(mCurrentTime, oldTime);
+  for (rstl::vector< SLdrConnection >::iterator connection = mConnections.begin();
+       connection != mConnections.end(); ++connection) {
+    const uint connectionIndex = static_cast< ushort >(connection->connectionIndex);
+    if (connection->unknown_0x00000002 && gpMain->GetMaxSpeed()) {
+      continue;
     }
-  }
 
-  float oldestTime = m_currentTime;
-  float latestTime = oldestTime;
-  if (oldestTime < oldestTime) {
-    latestTime = oldTime;
-  }
-  if (oldestTime < oldTime) {
-    oldestTime = oldTime;
-  }
+    for (rstl::vector< float >::iterator activation = connection->activationTimes.begin();
+         activation != connection->activationTimes.end(); ++activation) {
+      const float activationTime = *activation;
+      const bool crossed = wrapped ? upperTime <= activationTime || activationTime < lowerTime
+                                   : lowerTime <= activationTime && activationTime < upperTime;
+      if (!crossed) {
+        continue;
+      }
 
-  for (rstl::vector< SLdrConnection >::iterator connection = m_connections.begin();
-       connection != m_connections.end(); ++connection) {
-    if (!connection->unknown_0x00000002 || !gpMain->GetMaxSpeed()) {
-      for (rstl::vector< float >::iterator activation = connection->activationTimes.begin();
-           activation != connection->activationTimes.end(); ++activation) {
-        bool bVar6 = false;
-        if (!exceedMaxTime) {
-          if (latestTime <= *activation && *activation < oldestTime) {
-            bVar6 = true;
-          }
-        } else if (oldestTime <= *activation || *activation < latestTime) {
-          bVar6 = true;
-        }
-        if (bVar6) {
-          const SConnection& con = GetConnectionList()[connection->connectionIndex];
-          CStateManager::TIdListResult search = mgr.GetIdListForScript(con.objId);
-          CStateManager::TIdList::const_iterator current = search.first;
-          CStateManager::TIdList::const_iterator end = search.second;
-          while (current != end) {
-            mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), m_scriptMsg.GetOriginator(),
-                                         current->second, con.msg, con.state));
-            ++current;
-          }
-        }
+      const SConnection& target = GetConnectionList()[connectionIndex];
+      const CStateManager::TIdListResult ids = mgr.GetIdListForScript(target.objId);
+      for (CStateManager::TIdList::const_iterator id = ids.first; id != ids.second; ++id) {
+        mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), mStartMessage.GetOriginator(), id->second,
+                                     target.msg, target.state));
       }
     }
   }
 
-  if (!m_isLoop && m_maxTime <= m_currentTime) {
-    SendScriptMsgs(kSS_MaxReached, mgr, m_scriptMsg.GetOriginator(), kSM_None);
-    m_isAutostart = false;
+  if (!mLoop && mMaxTime <= mCurrentTime) {
+    SendScriptMsgs(kSS_MaxReached, mgr, mStartMessage.GetOriginator(), kSM_None);
+    mRunning = false;
   }
 }
 
@@ -96,19 +82,16 @@ void CScriptSequenceTimer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   if (GetActive()) {
     switch (msg.GetMessage()) {
     case kSM_Start:
-      m_isAutostart = true;
-      m_scriptMsg = msg;
-      m_currentTime = m_startTime;
+      mRunning = true;
+      mStartMessage = msg;
+      mCurrentTime = mStartTime;
       break;
-
     case kSM_Stop:
-      m_isAutostart = false;
+      mRunning = false;
       break;
-
     case kSM_Play:
-      m_isAutostart = true;
+      mRunning = true;
       break;
-
     default:
       break;
     }
@@ -116,21 +99,21 @@ void CScriptSequenceTimer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   CEntity::AcceptScriptMsg(mgr, msg);
 }
 
-void CScriptSequenceTimer::SetCurrentTime(float f) { m_currentTime = fmod(f, m_maxTime); }
-
-void CScriptSequenceTimer::fn_801e1af8(float f, CStateManager& mgr) {
-  fn_801e1c1c(f, mgr);
-  return;
+void CScriptSequenceTimer::SetCurrentTime(float time) {
+  mCurrentTime = float(fmod(time, mMaxTime));
 }
 
-CEntity* LoadSequenceTimer(CStateManager& mgr, CInputStream& input,
-                                        CEntityInfo& info) {
+void CScriptSequenceTimer::ReceiveExternalTime(CStateManager& mgr, float time) {
+  ApplyTime(time, mgr);
+}
+
+CEntity* LoadSequenceTimer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSequenceTimer sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSequenceTimer.inc"
 
-  return new CScriptSequenceTimer(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-                                  LdrToEntityInfo(info, sldrThis.editorProperties),
-                                  sldrThis.sequenceConnections, sldrThis.startTime,
-                                  sldrThis.maxTime, sldrThis.loopStartTime, sldrThis.isAutostart,
-                                  sldrThis.isLoop, sldrThis.takeExternalTime);
+  return rs_new CScriptSequenceTimer(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                     LdrToEntityInfo(info, sldrThis.editorProperties),
+                                     sldrThis.sequenceConnections, sldrThis.startTime,
+                                     sldrThis.maxTime, sldrThis.loopStartTime, sldrThis.isAutostart,
+                                     sldrThis.isLoop, sldrThis.takeExternalTime);
 }
