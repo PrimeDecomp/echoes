@@ -34,7 +34,7 @@ MetroidPrime/CObjectList.cpp:
 MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B8E8 end:0x8001D0CC
 	.ctors      start:0x803A54AC end:0x803A54B0
-	.data       start:0x803B15D0 end:0x803B16AC
+	.data       start:0x803B15D0 end:0x803B16BC
 	.sdata2     start:0x8041A458 end:0x8041A460 align:4
 
 MetroidPrime/CAxisAngle.cpp:
@@ -1486,6 +1486,9 @@ MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:
 	.sdata      start:0x80418780 end:0x80418798
 	.sbss       start:0x80419328 end:0x80419330
 	.sdata2     start:0x8041D5E8 end:0x8041D610
+
+MetroidPrime/CRuleSetEvaluator.cpp:
+	.text       start:0x801F59D0 end:0x801F5E04
 
 MetroidPrime/CRuleSet.cpp:
 	.text       start:0x801F5E04 end:0x801F7304
