@@ -11,7 +11,7 @@
 #include "rstl/vector.hpp"
 
 class CBallCamera;
-class CCameraShakeManager; // Guessed name
+class CCameraShakerManager;
 class CCinematicCamera;
 class CFinalInput;
 class CFirstPersonCamera;
@@ -149,7 +149,7 @@ private:
   float mFogDensityFactorTarget;
   float mFluidFogTime;              // Guessed name
   CHintManager* mCameraHintManager; // Allocated by this manager; ownership wrapper unresolved.
-  CCameraShakeManager* mCameraShakeManager; // Ownership wrapper unresolved.
+  CCameraShakerManager* mCameraShakeManager; // Ownership wrapper unresolved.
   float mFirstPersonFov;
   SCameraHistory mCameraHistory;
   float mScreenFlashTimer; // Guessed name

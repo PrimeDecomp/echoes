@@ -1464,6 +1464,11 @@ MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
 
+MetroidPrime/Cameras/CCameraShakerManager.cpp:
+	.text       start:0x801E782C end:0x801E8558
+	.data       start:0x803B7670 end:0x803B7680
+	.sdata2     start:0x8041D46C end:0x8041D4A8 align:4
+
 MetroidPrime/CEchoEmitter.cpp:
 	.text       start:0x801EBB44 end:0x801ECF44
 	.data       start:0x803B7898 end:0x803B78B0
