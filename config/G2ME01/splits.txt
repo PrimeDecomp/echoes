@@ -1637,6 +1637,10 @@ MetroidPrime/Tweaks/CTweakPlayerRes.cpp:
 MetroidPrime/Tweaks/CTweakPlayerGun.cpp:
 	.text       start:0x80214B5C end:0x80215424
 
+MetroidPrime/Tweaks/CTweakPlayerControls.cpp:
+	.text       start:0x80215424 end:0x80215878
+	.data       start:0x803B805C end:0x803B818C align:4
+
 MetroidPrime/Tweaks/CTweakGuiColors.cpp:
 	.text       start:0x80215878 end:0x80215F80
 

@@ -604,6 +604,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakPlayerRes.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRelFile.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakTargeting.cpp"),
+            Object(NonMatching, "MetroidPrime/Tweaks/CTweakPlayerControls.cpp"),
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakSlideShow.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakGuiColors.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/CTweakGui.cpp"),
