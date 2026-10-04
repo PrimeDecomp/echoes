@@ -16,6 +16,7 @@ extern const int gkPVSEnabled;
 
 #include "Kyoto/CRandom16.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Graphics/CLight.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
@@ -30,6 +31,7 @@ extern const int gkPVSEnabled;
 #include "rstl/rc_ptr.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/single_ptr.hpp"
+#include "rstl/vector.hpp"
 
 class CWorld;
 class CPortalTransition;
@@ -150,6 +152,7 @@ public:
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
+  void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
 
   CActorModelParticles* ActorModelParticles() { return mActorModelParticles; }
@@ -338,7 +341,11 @@ public:
   TAreaId mPreviousAreaId;
   int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
   int mUpdateFrameIdx;   // 16AC
-  char mUnknownData2[0x30];
+  char x16b0_[8];
+  // Guessed names: actor-specific exclusions and the renderer's world-light list.
+  rstl::vector< rstl::pair< TUniqueId, CLight > > mDynamicActorLights;
+  rstl::vector< CLight > mDynamicLights;
+  char x16d8_[8]; // Token storage; full resource ownership remains unresolved here.
   CTexture* mShadowTex; // 0x16e0
   CRandom16 mRandom;
   bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
