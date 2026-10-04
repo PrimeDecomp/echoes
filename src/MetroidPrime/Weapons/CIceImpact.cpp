@@ -329,7 +329,7 @@ bool CIceImpact::GenerateParticlesAgainstWorld(CStateManager& mgr,
     const int triangleCount = triangles.GetSize();
     bool done = false;
     for (int i = 0; i < triangleCount && !done; ++i) {
-      int index = triangles.GetAt(i);
+      ushort index = triangles.GetAt(i);
       if (CMetroidAreaCollider::DupTriangleListValue(index) !=
           CMetroidAreaCollider::GetDupPrimitiveCheckCount()) {
         CMetroidAreaCollider::DupTriangleListValue(index) =
