@@ -25,6 +25,7 @@ enum EEntityType {
   kET_CinematicCamera = 17,
   kET_CollisionActor = 18,
   kET_EnergyProjectile = 19,
+  kET_LightComboProjectile = 20, // Guessed class name.
   kET_Explosion = 22,
   kET_FirstPersonCamera = 23,
   kET_GameLight = 26,

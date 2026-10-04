@@ -78,6 +78,7 @@
 #include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
+#include "MetroidPrime/Weapons/CLightComboProjectile.hpp"
 #include "MetroidPrime/Weapons/CBeamProjectile.hpp"
 #include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
@@ -149,6 +150,7 @@ TYPES_MATCH_IMPL(CBomb, CWeapon, kET_Bomb)
 TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
 TYPES_MATCH_IMPL(CGameProjectile, CWeapon, kET_GameProjectile)
 TYPES_MATCH_IMPL(CEnergyProjectile, CGameProjectile, kET_EnergyProjectile)
+TYPES_MATCH_IMPL(CLightComboProjectile, CEnergyProjectile, kET_LightComboProjectile)
 CAST_TO_REF_IMPL(CEnergyProjectile, kET_EnergyProjectile)
 TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
 TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
