@@ -891,7 +891,7 @@ config.libs = [
             Object(NonMatching, "GuiSys/CAuiImagePane.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CRepeatState.cpp"),
             Object(NonMatching, "GuiSys/CAuiBitmapMeter.cpp"),
-            Object(NonMatching, "GuiSys/CGuiFrameModelDatabase.cpp"),
+            Object(MatchingFor("G2ME01"), "GuiSys/CGuiFrameModelDatabase.cpp"),
             Object(NonMatching, "Collision/CCollidableAABox.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollidableCollisionSurface.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollisionInfo.cpp"),

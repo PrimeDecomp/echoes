@@ -10855,7 +10855,7 @@ __dt__Q24rstl60vector<23TCachedToken<8CTexture>,Q24rstl17rmemory_allocator>Fv = 
 fn_80270660 = .text:0x80270660; // type:function size:0x38
 fn_80270698 = .text:0x80270698; // type:function size:0x60
 fn_802706F8 = .text:0x802706F8; // type:function size:0x64 align:4
-fn_8027075C = .text:0x8027075C; // type:function size:0x84
+__dt__Q24rstl66vector<Q24rstl22auto_ptr<10CCubeModel>,Q24rstl17rmemory_allocator>Fv = .text:0x8027075C; // type:function size:0x84
 fn_802707E0 = .text:0x802707E0; // type:function size:0x68
 __dt__13CCubeRendererFv = .text:0x80270848; // type:function size:0x21C align:4
 GenerateScanRampTex__13CCubeRendererFv = .text:0x80270A64; // type:function size:0x150
@@ -11257,7 +11257,7 @@ uninitialized_fill_n<PQ24rstl37vector<Pv,Q24rstl17rmemory_allocator>,Q24rstl37ve
 construct<Q24rstl37vector<Pv,Q24rstl17rmemory_allocator>>__4rstlFPvRCQ24rstl37vector<Pv,Q24rstl17rmemory_allocator> = .text:0x8028137C; // type:function size:0x20
 construct_impl<Q24rstl37vector<Pv,Q24rstl17rmemory_allocator>>__4rstlFPvRCQ24rstl37vector<Pv,Q24rstl17rmemory_allocator> = .text:0x8028139C; // type:function size:0x28
 __ct__Q24rstl66vector<Q24rstl22auto_ptr<10CCubeModel>,Q24rstl17rmemory_allocator>FiRCQ24rstl22auto_ptr<10CCubeModel>RCQ24rstl17rmemory_allocator = .text:0x802813C4; // type:function size:0x94
-fn_80281458 = .text:0x80281458; // type:function size:0x38
+MemoryFromPartData__FRPUcRPi = .text:0x80281458; // type:function size:0x38 scope:local
 GetTableIndex__16CCollidableAABoxCFv = .text:0x80281490; // type:function size:0x8 align:4
 GetPrimType__16CCollidableAABoxCFv = .text:0x80281498; // type:function size:0xC align:4
 Transform__16CCollidableAABoxCFRC12CTransform4f = .text:0x802814A4; // type:function size:0x7C align:4
