@@ -6,11 +6,63 @@
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return nullptr;
+  SLdrCameraHint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrCameraHint.inc"
+
+  uint overrideFlags = 0;
+  if (sldrThis.minSpeedDistance.field_override) {
+    overrideFlags |= 0x1;
+  }
+  if (sldrThis.maxSpeedDistance.field_override) {
+    overrideFlags |= 0x2;
+  }
+  if (sldrThis.backwardsDistance.field_override) {
+    overrideFlags |= 0x4;
+  }
+  if (sldrThis.lookAtOffset.field_override) {
+    overrideFlags |= 0x8;
+  }
+  if (sldrThis.fieldOfView.field_override) {
+    overrideFlags |= 0x10;
+  }
+  if (sldrThis.cameraHintStructB.field_override) {
+    overrideFlags |= 0x20;
+  }
+  if (sldrThis.angularSpeed.field_override) {
+    overrideFlags |= 0x80;
+  }
+  if (sldrThis.cameraHintStructB_0xc82395fa.field_override) {
+    overrideFlags |= 0x40;
+  }
+  if (sldrThis.zOffset.field_override) {
+    overrideFlags |= 0x100;
+  }
+
+  int acrossAreas = 0;
+  if (sldrThis.flagsCameraHint & 0x2000000) {
+    acrossAreas = 1;
+  }
+
+  return rs_new CScriptCameraHint(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), sldrThis.priority, sldrThis.timer,
+      static_cast< CBallCamera::EBallCameraBehaviour >(sldrThis.behaviour.behaviourType),
+      sldrThis.flagsCameraHint, overrideFlags, sldrThis.minSpeedDistance.distance,
+      sldrThis.maxSpeedDistance.distance, sldrThis.backwardsDistance.distance,
+      sldrThis.lookAtOffset.offset, sldrThis.worldOffset, sldrThis.fieldOfView.fOV,
+      sldrThis.cameraHintStructB.angle * (M_PIF / 180.f),
+      sldrThis.cameraHintStructB_0xc82395fa.angle * (M_PIF / 180.f),
+      sldrThis.angularSpeed.speed * (M_PIF / 180.f), sldrThis.zOffset.zOffset,
+      sldrThis.interpolateOnTime, sldrThis.interpolateOffTime,
+      sldrThis.interpolateControlTime, sldrThis.cameraHintStructA1.type,
+      sldrThis.unknown_0x9e8631f1.type, sldrThis.cameraHintStructA.type,
+      acrossAreas);
 }
 
 CCameraOverrideInfo::CCameraOverrideInfo(
@@ -143,4 +195,9 @@ void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateM
 }
 
 void CScriptCameraHint::SetPathCameraRotation(const CQuaternion& rotation, const CVector3f& pivot,
-                                            CStateManager& mgr) const {}
+                                             CStateManager& mgr) const {
+  if (CScriptPathCamera* camera =
+          TCastToPtr< CScriptPathCamera >(mgr.ObjectById(mDelegatedCameraId))) {
+    camera->RotateSplines(rotation, pivot);
+  }
+}
