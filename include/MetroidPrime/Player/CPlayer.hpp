@@ -203,6 +203,7 @@ public:
   bool GetX126c24() const { return x126c_24_; }
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   const CVector3f& GetLookDir() const { return mLookDir; }
+  const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
