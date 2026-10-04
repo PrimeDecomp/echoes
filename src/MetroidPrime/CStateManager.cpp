@@ -29,6 +29,40 @@
 
 const int gkPVSEnabled = 1;
 
+namespace {
+// Guessed local type/member names, correlated with Prime's area-ordering predicate.
+class area_sorter {
+public:
+  area_sorter(const CVector3f& reference, TAreaId visibleAreaId)
+  : mReference(reference), mVisibleAreaId(visibleAreaId) {}
+
+  bool operator()(const CGameArea* a, const CGameArea* b) const;
+
+private:
+  CVector3f mReference;
+  TAreaId mVisibleAreaId;
+};
+CHECK_SIZEOF(area_sorter, 0x10)
+
+bool area_sorter::operator()(const CGameArea* a, const CGameArea* b) const {
+  const TAreaId aId = a->GetId();
+  const TAreaId bId = b->GetId();
+  if (aId == bId) {
+    return false;
+  }
+  if (aId == mVisibleAreaId) {
+    return false;
+  }
+  if (bId == mVisibleAreaId) {
+    return true;
+  }
+
+  const float aDot = CVector3f::Dot(mReference, a->GetAABB().GetCenterPoint());
+  const float bDot = CVector3f::Dot(mReference, b->GetAABB().GetCenterPoint());
+  return aDot > bDot;
+}
+} // namespace
+
 int CStateManager::GetViewportLayoutIndex() const {
   if (mNumPlayers == 1u) {
     return 0;
