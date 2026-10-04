@@ -1,5 +1,7 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 
+#include "Collision/CCollidableSphere.hpp"
+#include "Collision/CCollisionPrimitive.hpp"
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CCast.hpp"
@@ -13,6 +15,9 @@
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CFluidPlaneManager.hpp"
+#include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CRainSplashGenerator.hpp"
 #include "MetroidPrime/CWorldShadow.hpp"
@@ -20,6 +25,8 @@
 #include "MetroidPrime/Player/CMorphBallShadow.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakBall.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
@@ -303,9 +310,22 @@ void CMorphBall::LoadMorphBallModel() {
   // TODO: Select normal/spider/boost resources and glow colors for the three Echoes suits.
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::FluidFXThink(CActor::EFluidState state, CScriptWater& water, CStateManager& mgr) {
-  // TODO: Rate-limit water splashes using speed, fluid state and the fluid-plane manager.
+  const float speed = mPlayer.GetVelocityWR().Magnitude();
+  const CVector3f splashPos(mPlayer.GetTranslation().GetX(), mPlayer.GetTranslation().GetY(),
+                            water.GetTriggerBoundsWR().GetMaxPoint().GetZ());
+
+  if (speed >= 8.f) {
+    const float maxVel = mPlayer.GetBallMaxVelocity();
+    if (mgr.GetFluidPlaneManager()->GetLastSplashDeltaTime(mPlayer.GetUniqueId()) >=
+        0.1f * ((maxVel - speed) / (maxVel - 8.f))) {
+      mgr.GetFluidPlaneManager()->CreateSplash(mPlayer.GetUniqueId(), mgr, water, splashPos, 0.f,
+                                               state == CActor::kFS_EnteredFluid);
+    }
+  }
+
+  const CVector2f flatVelocity(mPlayer.GetVelocityWR().GetX(), mPlayer.GetVelocityWR().GetY());
+  const float flatMoveSpeed = flatVelocity.Magnitude();
 }
 
 bool CMorphBall::IsClimbable(const CCollisionInfo& collision) const {
@@ -393,10 +413,35 @@ void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& col
   // TODO: Process contact materials/normals, boost damage, half-pipe and Screw Attack collisions.
 }
 
-// Scaffold, not a reconstructed implementation.
+static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player; // Guessed name
+static EMaterialTypes CloseToCollisionMaterial2 = kMT_Unknown59; // Guessed name
+
 bool CMorphBall::BallCloseToCollision(const CStateManager& mgr, float distance,
                                       const CMaterialFilter& filter) const {
-  // TODO: Test a swept sphere against the world's filtered collision geometry.
+  const CCollidableSphere prim(
+      CSphere(mPlayer.GetTranslation() + CVector3f(0.f, 0.f, GetBallRadius()), distance),
+      CMaterialList(CloseToCollisionMaterial1, CloseToCollisionMaterial2));
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  mgr.BuildColliderList(nearList, mPlayer, prim.CalculateLocalAABox());
+
+  if (CGameCollision::DetectStaticCollisionBoolean(mgr, prim, CTransform4f::Identity(), filter)) {
+    return true;
+  }
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator id = nearList.begin();
+       id != nearList.end(); ++id) {
+    if (const CPhysicsActor* const actor =
+            TCastToConstPtr< CPhysicsActor >(mgr.GetObjectById(*id))) {
+      if (CCollisionPrimitive::CollideBoolean(
+              CInternalCollisionStructure::CPrimDesc(prim, filter, CTransform4f::Identity()),
+              CInternalCollisionStructure::CPrimDesc(*actor->GetCollisionPrimitive(),
+                                                     CMaterialFilter::GetPassEverything(),
+                                                     actor->GetPrimitiveTransform()))) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -712,9 +757,23 @@ bool CMorphBall::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
   return false;
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: Handle Echoes CScriptMsg creation/deletion of the inner-glow light.
+  switch (msg.GetMessage()) {
+  case kSM_XCRT:
+    if (mBallInnerGlowGen.get() && mBallInnerGlowGen->SystemHasLight()) {
+      mBallInnerGlowLight = mgr.AllocateUniqueId();
+      const uint sourceId =
+          mBallInnerGlow.GetTag().id + mgr.MaskUIdNumPlayers(mPlayer.GetUniqueId());
+      mgr.AddObject(rs_new CGameLight(mBallInnerGlowLight, kInvalidAreaId, false,
+                                      rstl::string_l("BallLight"), GetBallToWorld(),
+                                      mPlayer.GetUniqueId(), mBallInnerGlowGen->GetLight(),
+                                      sourceId, 0, 0.f));
+    }
+    break;
+  case kSM_XDelete:
+    DeleteLight(mgr);
+    break;
+  }
 }
 
 void CMorphBall::Update(float dt, CStateManager& mgr) {
@@ -921,10 +980,40 @@ bool CMorphBall::FindClosestSpiderBallWaypoint(
   return false;
 }
 
-// Scaffold, not a reconstructed implementation.
 bool CMorphBall::CheckForSwitchToSpiderBallSwinging(CStateManager& mgr) const {
-  // TODO: Check Spider surface kind, attachment geometry and the player's movement state.
-  return false;
+  if (!mTouchingSpider) {
+    return false;
+  }
+
+  if (1.f == mSpiderPullMovement) {
+    if (mSpiderBallSwinging) {
+      CVector3f closestPoint = CVector3f::Zero();
+      CVector3f interpDeltaBetweenPoints = CVector3f::Zero();
+      CVector3f deltaBetweenPoints = CVector3f::Zero();
+      float distance = 0.f;
+      CVector3f normal = CVector3f::Zero();
+      CTransform4f surfaceTransform(CTransform4f::Identity());
+      ESpiderSurfaceType surfaceType;
+      TUniqueId surfaceId = kInvalidUniqueId;
+      if (FindClosestSpiderBallWaypoint(mgr, GetBallPosition(), closestPoint,
+                                        interpDeltaBetweenPoints, deltaBetweenPoints, distance,
+                                        normal, surfaceType, surfaceId, surfaceTransform)) {
+        if (distance < 2.1f) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  if (mSpiderBallSwinging) {
+    return true;
+  }
+
+  return CMath::AbsF(mPlayerToSpiderNormal.GetZ()) > 0.9f;
 }
 
 // Scaffold, not a reconstructed implementation.
