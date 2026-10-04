@@ -1,7 +1,9 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 
+#include "Collision/CCollidableAABox.hpp"
 #include "Collision/CCollidableSphere.hpp"
 #include "Collision/CCollisionPrimitive.hpp"
+#include "Collision/CRayCastResult.hpp"
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CCast.hpp"
@@ -387,10 +389,47 @@ float CMorphBall::CalculateSurfaceFriction() const {
   return friction;
 }
 
-// Scaffold, not a reconstructed implementation.
+static EMaterialTypes LiftBoundsMaterial = kMT_Unknown59; // Guessed name
+static EMaterialTypes LiftRayMaterial = kMT_Unknown59;    // Guessed name
+
 void CMorphBall::ComputeLiftForces(const CVector3f& controlForce, const CVector3f& velocity,
                                    const CStateManager& mgr) {
-  // TODO: Update the lift averages and apply the contact-dependent upward force.
+  const float liftSpeed = velocity.Magnitude();
+  mLiftSpeedAverage.AddValue(liftSpeed);
+  mLiftControlForceAverage.AddValue(controlForce);
+
+  const CVector3f avgControlForce = mLiftControlForceAverage.GetAverage().data();
+  const float avgControlForceMag = avgControlForce.Magnitude();
+  if (avgControlForceMag > 12000.f) {
+    const float avgLiftSpeed = mLiftSpeedAverage.GetAverage().data();
+    if (avgLiftSpeed < 4.f) {
+      const CTransform4f primitiveXf = mPlayer.GetPrimitiveTransform();
+      const CAABox primitiveBounds = mPlayer.GetCollisionPrimitive()->CalculateAABox(primitiveXf);
+      const CVector3f liftBoundsOffset(0.1f, 0.1f, -0.05f);
+      const CAABox liftBounds(primitiveBounds.GetMinPoint() - liftBoundsOffset,
+                              primitiveBounds.GetMaxPoint() + liftBoundsOffset);
+      if (CGameCollision::DetectStaticCollisionBoolean(
+              mgr, CCollidableAABox(liftBounds, CMaterialList(LiftBoundsMaterial)),
+              CTransform4f::Identity(), CMaterialFilter::skPassEverything)) {
+        const CVector3f liftPos =
+            primitiveXf.GetTranslation() + CVector3f(0.f, 0.f, 1.75f * GetBallRadius());
+        const CVector3f liftDir = avgControlForce * (1.f / avgControlForceMag);
+        const CMaterialFilter rayFilter =
+            CMaterialFilter::MakeInclude(CMaterialList(LiftRayMaterial));
+        const CRayCastResult result = mgr.RayStaticIntersection(liftPos, liftDir, 1.4f, rayFilter);
+        if (!result.IsValid()) {
+          const float liftScale = 1.f - rstl::max_val(0.f, avgLiftSpeed - 3.f);
+          mPlayer.ApplyForceWR(CVector3f(0.f, 0.f, liftScale * 40000.f), CAxisAngle::Identity());
+
+          mPlayer.ApplyImpulseWR(CVector3f::Zero(),
+                                 CAxisAngle::FromVector(CVector3f(-mSurfaceToWorld.Get00(),
+                                                                  -mSurfaceToWorld.Get10(),
+                                                                  -mSurfaceToWorld.Get20()) *
+                                                        1000.f * liftScale));
+        }
+      }
+    }
+  }
 }
 
 CAABox CMorphBall::GetRenderBounds(const CStateManager& mgr) const {
@@ -510,10 +549,26 @@ void CMorphBall::RenderScrewAttackJumpEffects() const {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderDamageEffects(const CStateManager& mgr,
                                      const CTransform4f& transform) const {
-  // TODO: Render the damage overlay using the ball's damage timer and glow color.
+  CRandom16 rand(99);
+  const float alpha = mPlayer.GetDeathAlpha();
+  const float colorComponent = 0.1f * mDamageEffect * alpha;
+  const CColor color(0.25f * mDamageEffect * alpha, colorComponent, colorComponent, 1.f);
+  const CModelFlags flags = CModelFlags::Additive(color).DepthCompareUpdate(true, false);
+
+  for (int i = 0; i < 5; ++i) {
+    const float randX = rand.Float();
+    const float randY = rand.Float();
+    const float randZ = rand.Float();
+    const float randomPhase = M_PIF * rand.Float();
+    const float phase = 30.f * mDamageTime + randomPhase;
+    const float translateMag = mDamageEffect * CMath::FastSinR(phase) * 0.15f;
+    CTransform4f modelXf =
+        transform * CTransform4f::Translate(
+                        CVector3f(randX * translateMag, randY * translateMag, randZ * translateMag));
+    mBallModel->RenderSolid(CModelData::kWM_Normal, modelXf, false, flags);
+  }
 }
 
 void CMorphBall::RenderIceBreakEffect(const CStateManager& mgr) const {
@@ -902,16 +957,51 @@ void CMorphBall::ComputeMarioMovement(const CFinalInput& input, CStateManager& m
   // TODO: Compute camera-relative control, friction, lift, torque and contact response.
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::TransformSpiderBallState(const CQuaternion& rotation,
                                           const CVector3f& translation) {
-  // TODO: Rotate the saved physics forces/normals and transform the track point about the ball.
+  if (mBallState != kBS_Spider) {
+    return;
+  }
+
+  mSpiderSwingInAir = true;
+  CPhysicsState state = mPlayer.GetPhysicsState();
+  const CTransform4f rotationXf = rotation.BuildTransform4f();
+  state.SetConstantForceWR(rotationXf.Rotate(state.GetConstantForceWR()));
+  state.SetForceWR(rotationXf.Rotate(state.GetForceWR()));
+  mPlayer.SetPhysicsState(state);
+  mSpiderInterpBetweenPoints = rotationXf.Rotate(mSpiderInterpBetweenPoints);
+  mPlayerToSpiderNormal = rotationXf.Rotate(mPlayerToSpiderNormal);
+
+  const CTransform4f deltaXf = CTransform4f::Translate(translation) * rotation.BuildTransform4f();
+  const CTransform4f ballToWorld = GetBallToWorld();
+  const CTransform4f worldToBall = ballToWorld.GetQuickInverse();
+  const CTransform4f xf = ballToWorld * deltaXf * worldToBall;
+  mSpiderTrackPoint = xf * mSpiderTrackPoint;
 }
 
-// Scaffold, not a reconstructed implementation.
-void CMorphBall::CreateSpiderBallParticles(CStateManager& mgr, const CVector3f& ballPosition,
+void CMorphBall::CreateSpiderBallParticles(CStateManager& mgr, const CVector3f& ballPos,
                                            const CVector3f& trackPoint) {
-  // TODO: Emit/update the magnet effect along the ball-to-track segment.
+  mSpiderBallMagnetGen->SetParticleEmission(true);
+
+  CVector3f ballToTrack = trackPoint - ballPos;
+  const float ballToTrackMag = ballToTrack.Magnitude();
+  const int subCount =
+      static_cast< int >(ballToTrackMag / (mgr.IsMultiplayer() ? 0.5f : 0.2f) + 1.f);
+  const float scale = 1.f / static_cast< float >(subCount);
+  ballToTrack *= scale;
+  int count = static_cast< int >(8.f * (ballToTrackMag / 2.1f));
+
+  while (count >= 0) {
+    CVector3f translation = ballPos;
+    for (int i = 0; i < subCount; ++i) {
+      mSpiderBallMagnetGen->SetTranslation(translation);
+      mSpiderBallMagnetGen->ForceParticleCreation(1);
+      translation += ballToTrack;
+    }
+    --count;
+  }
+
+  mSpiderBallMagnetGen->SetParticleEmission(false);
 }
 
 float CMorphBall::GetSpiderBallSwingControllerMovementScalar() const {
