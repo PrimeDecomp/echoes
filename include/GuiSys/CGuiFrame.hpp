@@ -39,6 +39,11 @@ public:
   void ApplyLights() const; // Guessed name
 
 private:
+  // Reconstructed resource-reader names and source qualifiers; native ABI verified.
+  void LoadWidgetsInGame(CInputStream& in, CSimplePool* pool, uint version);
+  static rstl::vector< CToken > LoadAssets(CInputStream& in, CSimplePool* pool, uint version);
+  static uint ReadVersion(CInputStream& in);
+
   uint mVersion;
   rstl::vector< CToken > mAssets;
   CGuiHeadWidget* mRootWidget;
