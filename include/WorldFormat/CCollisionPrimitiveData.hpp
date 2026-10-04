@@ -29,6 +29,9 @@ public:
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf) const;
   // Additional-flags overload is target-derived; this spelling is reconstructed.
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf, u64 additionalFlags) const;
+  const ushort* GetTriangleEdgeIndices(ushort index) const { return mSurfaceIndices + index * 3; }
+  u64 GetVertMaterial(uint index) const { return mMaterials[mVertexMaterials[index]]; }
+  u64 GetEdgeMaterial(uint index) const { return mMaterials[mEdgeMaterials[index]]; }
 
 protected:
   int mMaterialCount;
@@ -52,6 +55,6 @@ CHECK_SIZEOF(CCollisionPrimitiveData, 0x34)
 namespace CollisionPrimitiveDataCache {
 extern uint gGeometryRevision;
 ushort GetGeneration(ushort id);
-}
+} // namespace CollisionPrimitiveDataCache
 
 #endif // _CCOLLISIONPRIMITIVEDATA
