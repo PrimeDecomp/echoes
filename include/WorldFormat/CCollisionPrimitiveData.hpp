@@ -1,6 +1,8 @@
 #ifndef _CCOLLISIONPRIMITIVEDATA
 #define _CCOLLISIONPRIMITIVEDATA
 
+#include "Kyoto/Math/CVector3f.hpp"
+#include "WorldFormat/CCollisionEdge.hpp"
 #include "types.h"
 
 class CCollisionEdge;
@@ -32,6 +34,9 @@ public:
   const ushort* GetTriangleEdgeIndices(ushort index) const { return mSurfaceIndices + index * 3; }
   u64 GetVertMaterial(uint index) const { return mMaterials[mVertexMaterials[index]]; }
   u64 GetEdgeMaterial(uint index) const { return mMaterials[mEdgeMaterials[index]]; }
+  u64 GetTriangleMaterial(uint index) const { return mMaterials[mSurfaceMaterials[index]]; }
+  const CVector3f& GetVert(uint index) const { return mVertices[index]; }
+  const CCollisionEdge& GetEdge(uint index) const { return mEdges[index]; }
 
 protected:
   int mMaterialCount;

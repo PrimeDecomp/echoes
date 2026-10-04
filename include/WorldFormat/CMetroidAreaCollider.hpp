@@ -182,18 +182,18 @@ public:
   static void SetDuplicatePrimitiveBuffers(uchar* vertices, ushort vertexCount, uchar* edges,
                                            ushort edgeCount, uchar* triangles,
                                            ushort triangleCount);
-  static bool AABoxCollisionCheckBoolean_Cached(const CCollisionCache& cache, const CAABox& aabb,
+  static bool AABoxCollisionCheckBoolean_Cached(CCollisionCache& cache, const CAABox& aabb,
                                                 const CMaterialFilter& filter);
-  static bool SphereCollisionCheckBoolean_Cached(const CCollisionCache& cache, const CAABox& aabb,
+  static bool SphereCollisionCheckBoolean_Cached(CCollisionCache& cache, const CAABox& aabb,
                                                  const CSphere& sphere,
                                                  const CMaterialFilter& filter);
-  static bool AABoxCollisionCheck_Cached(const CCollisionCache& cache, const CAABox& aabb,
+  static bool AABoxCollisionCheck_Cached(CCollisionCache& cache, const CAABox& aabb,
                                          const CMaterialFilter& filter,
                                          const CMaterialList& matList, CCollisionInfoList& list);
-  static bool SphereCollisionCheck_Cached(const CCollisionCache& cache, const CAABox& aabb,
+  static bool SphereCollisionCheck_Cached(CCollisionCache& cache, const CAABox& aabb,
                                           const CSphere& sphere, const CMaterialList& matList,
                                           const CMaterialFilter& filter, CCollisionInfoList& list);
-  static bool MovingAABoxCollisionCheck_Cached(const CCollisionCache& cache, const CAABox& aabb,
+  static bool MovingAABoxCollisionCheck_Cached(CCollisionCache& cache, const CAABox& aabb,
                                                const CMaterialFilter& filter,
                                                const CMaterialList& matList, CVector3f dir, float d,
                                                CCollisionInfo& infoOut, double& dOut);

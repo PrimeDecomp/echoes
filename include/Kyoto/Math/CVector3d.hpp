@@ -14,6 +14,7 @@ public:
 
   CVector3d AsNormalized() const;
   CVector3f AsCVector3f() const;
+  static const CVector3d& Zero() { return sZeroVector; }
 
   double GetX() const { return mX; }
   double GetY() const { return mY; }
@@ -28,7 +29,7 @@ private:
   double mX;
   double mY;
   double mZ;
-  
+
   static CVector3d sZeroVector;
   static CVector3d sUpVector;
   static CVector3d sDownVector;
@@ -38,7 +39,9 @@ private:
   static CVector3d sBackVector;
 };
 
-CVector3d operator+(const CVector3d& other);
+CVector3d operator+(const CVector3d& lhs, const CVector3d& rhs);
 CVector3d operator-(const CVector3d& lhs, const CVector3d& rhs);
+CVector3d operator-(const CVector3d& other);
+CVector3d operator*(double lhs, const CVector3d& rhs);
 
 #endif // _CVECTOR3D
