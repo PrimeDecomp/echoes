@@ -2,7 +2,9 @@
 
 SPillBug_FuncPtrs* gLoader_PillBug; // Guessed global name.
 
-void SetSPillBug_FuncPtrs(SPillBug_FuncPtrs* callbacks) {}
+void SetSPillBug_FuncPtrs(SPillBug_FuncPtrs* callbacks) { gLoader_PillBug = callbacks; }
 
 // Guessed loader name.
-CEntity* LoadPillBug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
+CEntity* LoadPillBug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  return gLoader_PillBug->mLoadPillBug(mgr, input, info);
+}
