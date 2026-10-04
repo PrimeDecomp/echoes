@@ -190,45 +190,29 @@ NATIVE_INDEXED_RECORDS = {
 
 # Nested members a native constructor re-stores with their archetype default, so
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
-# Record -> member -> statements appended after that member's template defaults.
-NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
+# Record -> property-ID paths to re-store. Values and C++ names come from XML.
+NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     # SLdrAmbientAI, G2ME01 0x801795D8: two actor defaults, no editor re-store.
-    "SLdrAmbientAI": {
-        "actorInformation": (
-            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
-            "visor.visorFlags = 0x0000000fu;",
-        ),
-    },
-    "SLdrWorldTeleporter": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-    },
-    "SLdrControllerAction": {
-        "cmd": ("command = 1;",),
-    },
-    "SLdrTriggerEllipsoid": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-    },
-    "SLdrPlayerHint": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-    },
-    "SLdrSound": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-    },
+    "SLdrAmbientAI": (
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrWorldTeleporter": ((0x255A4580, 0x5D298A43),),
+    "SLdrControllerAction": ((0x4C6EEFAE, 0x94BA5737),),
+    "SLdrTriggerEllipsoid": ((0x255A4580, 0x5D298A43),),
+    "SLdrPlayerHint": ((0x255A4580, 0x5D298A43),),
+    "SLdrSound": ((0x255A4580, 0x5D298A43),),
     # SLdrPlatform, G2ME01 0x8009FE84: editor, ambient color and visor re-stores.
-    "SLdrPlatform": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-        "actorInformation": (
-            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
-            "visor.visorFlags = 0x0000000fu;",
-        ),
-    },
-    "SLdrPickup": {
-        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
-        "actorInformation": (
-            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
-            "visor.visorFlags = 0x0000000fu;",
-        ),
-    },
+    "SLdrPlatform": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    "SLdrPickup": (
+        (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
 }
 
 # An enumeration without a template default is still assigned zero in the body.
@@ -697,10 +681,33 @@ class Generator:
                 raise TemplateError("Object name collision: " + name)
             used.add(name)
             cpp = "SLdr" + name
+            self.apply_native_instance_defaults(cpp, node)
             self.add_struct(cpp, node, path, is_object=True)
             keys = sorted(key for key, value in self.objects.items() if value == path)
             self.loaders.append(Loader(name, cpp, tuple(keys)))
         self._assign_header_owners()
+
+    @staticmethod
+    def apply_native_instance_defaults(name: str, node: ET.Element) -> None:
+        """Mark resolved instance XML defaults without changing shared archetypes."""
+        for path in NATIVE_INSTANCE_DEFAULTS.get(name, ()):
+            prop = node
+            for pid in path:
+                children = {
+                    property_id(child): child
+                    for child in prop.findall("SubProperties/Element")
+                }
+                if pid not in children:
+                    raise TemplateError(
+                        f"Missing native instance property 0x{pid:08x} in {name}"
+                    )
+                prop = children[pid]
+            default = prop.find("DefaultValue")
+            if default is None:
+                raise TemplateError(f"Missing native instance default in {name}: {path}")
+            # A generator-only annotation makes even an equal archetype default an
+            # instance override for defaults(), preserving its native re-store.
+            default.set("NativeInstance", "true")
 
     def add_duplicates(self, duplicates: dict[str, str]) -> None:
         """Reconstruct duplicate native root records without duplicating helpers."""
@@ -1008,12 +1015,6 @@ class Generator:
                     [
                         "  " + line
                         for line in self.defaults(prop, prop.name)
-                        + [
-                            prop.name + "." + line
-                            for line in NATIVE_INSTANCE_DEFAULTS.get(name, {}).get(
-                                prop.name, ()
-                            )
-                        ]
                     ],
                 )
                 for prop in struct.fields
