@@ -11095,8 +11095,8 @@ __ct__12CGuiTextPaneFRCQ210CGuiWidget15CGuiWidgetParmsP11CSimplePoolffRC9CVector
 Create__12CGuiTextPaneFP9CGuiFrameR12CInputStreamP11CSimplePoolUi = .text:0x8027AA7C; // type:function size:0x340 scope:global
 __ct__Q212CGuiTextPane9SFontInfoFR12CInputStream = .text:0x8027ADBC; // type:function size:0x88 scope:global
 __ct__Q212CGuiTextPane9SFontInfoFiiRC6CColorRC6CColorUi = .text:0x8027AE44; // type:function size:0x20 scope:global
-fn_8027AE64 = .text:0x8027AE64; // type:function size:0x128
-fn_8027AF8C = .text:0x8027AF8C; // type:function size:0x1F8
+DrawString__10ScreenTextFRCQ24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>iiRC21TToken<11CRasterFont> = .text:0x8027AE64; // type:function size:0x128
+DrawExecuteBuffer__10ScreenTextFRC18CTextExecuteBuffer = .text:0x8027AF8C; // type:function size:0x1F8
 fn_8027B184 = .text:0x8027B184; // type:function size:0x38
 fn_8027B1BC = .text:0x8027B1BC; // type:function size:0x20
 GetBounds__15CGuiTextSupportFv = .text:0x8027B1DC; // type:function size:0x30 align:4
