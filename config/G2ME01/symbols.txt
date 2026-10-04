@@ -4891,7 +4891,7 @@ MakeBillboardEffect__17CPlasmaProjectileFRCQ24rstl44optional_object<25TToken<15C
 UpdateBeamState__17CPlasmaProjectileFfR13CStateManager = .text:0x8011B35C; // type:function size:0x184
 __ct__17CPlasmaProjectileFRC28TToken<18CWeaponDescription>RCQ24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>11EWeaponTypeRC9CBeamInfoRC12CTransform4f14EMaterialTypesRC11CDamageInfo9TUniqueId7TAreaId9TUniqueIdRC16CWeaponAssetInfobUi = .text:0x8011B4E0; // type:function size:0xA8C
 __sinit_CPlasmaProjectile_cpp = .text:0x8011BF6C; // type:function size:0x3C align:4
-fn_8011BFA8 = .text:0x8011BFA8; // type:function size:0x384
+FindScanTargetId__7CPlayerCFRC13CStateManager = .text:0x8011BFA8; // type:function size:0x384
 fn_8011C32C = .text:0x8011C32C; // type:function size:0x7C
 GetMaskTextureData__7CPlayerCFv = .text:0x8011C3A8; // type:function size:0x8 align:4
 GetIndirectTextureData__7CPlayerCFv = .text:0x8011C3B0; // type:function size:0x8
