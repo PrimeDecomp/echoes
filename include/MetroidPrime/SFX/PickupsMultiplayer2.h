@@ -1,0 +1,12 @@
+#ifndef MUSYX_GROUP_PICKUPSMULTIPLAYER2_H
+#define MUSYX_GROUP_PICKUPSMULTIPLAYER2_H
+
+#define GRPPickupsMultiplayer2 0x0267
+
+#define SFXelu_a_rocket_01_oneshot 0x076A
+#define SFXelu_a_rocket_lp_00_looped 0x076B
+#define SFXblg_r_voxdeath_00_oneshot 0x0779
+#define SFXblg_r_voxdeath_01_oneshot 0x077A
+#define SFXbl3_r_voxdeath_00_oneshot 0x077E
+
+#endif

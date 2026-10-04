@@ -1,0 +1,35 @@
+#ifndef MUSYX_GROUP_UI_MP_H
+#define MUSYX_GROUP_UI_MP_H
+
+#define GRPUI_MP 0x026A
+
+#define SFXclf_x_0cring_lp_00_looped 0x1155
+#define SFXclf_x_genring_lp_00_looped 0x1156
+#define SFXclf_x_genring_lp_01_looped 0x1157
+#define SFXclf_x_03cnvyr_00_lp_looped 0x1158
+#define SFXclf_x_03cnvyrstop_00_oneshot 0x1159
+#define SFXclf_x_0ktumbler_lp_00_looped 0x115A
+#define SFXclf_x_elugas_00_oneshot 0x115B
+#define SFXclf_x_eluhood_00_oneshot 0x115C
+#define SFXclf_x_eluservo_lp_00_looped 0x115E
+#define SFXclf_x_0espin_lp_00_looped 0x115F
+#define SFXclf_x_05radar_00_oneshot 0x1160
+#define SFXclf_x_00abeam_lp_00_looped 0x1161
+#define SFXclf_x_05laser_lp_00_looped 0x1162
+#define SFXclf_x_darkvisplat_lp_00_looped 0x1163
+#define SFXgft_x_gfcomp_lp_looped 0x1164
+#define SFXgft_x_gfcompfail_00_oneshot 0x1165
+#define SFXte2_x_worms_lp_00_looped 0x1166
+#define SFXtem_x_floorup_00_oneshot 0x1167
+#define SFXtem_x_tubeup_00_oneshot 0x1168
+#define SFXtem_x_flicker_00_oneshot 0x116C
+#define SFXtem_x_flicker_lp_00_looped 0x116D
+#define SFXtem_x_0ehorror_00_oneshot 0x116E
+#define SFXtem_x_01door_00_oneshot 0x116F
+#define SFXtem_x_gfelevact_00_oneshot 0x1170
+#define SFXtem_c_wind_lp_00r_looped 0x1171
+#define SFXtem_x_bridgedwn_00_oneshot 0x1172
+#define SFXtem_x_bridgehit_00_oneshot 0x1173
+#define SFXfnt_x_slider_lp_00_looped 0x15C0
+
+#endif

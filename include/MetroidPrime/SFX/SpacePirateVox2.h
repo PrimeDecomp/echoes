@@ -1,0 +1,21 @@
+#ifndef MUSYX_GROUP_SPACEPIRATEVOX2_H
+#define MUSYX_GROUP_SPACEPIRATEVOX2_H
+
+#define GRPSpacePirateVox2 0x00D7
+
+#define SFXelu_b_voxalert_00_oneshot 0x028E
+#define SFXelu_b_voxangry_00_oneshot 0x0296
+#define SFXelu_b_voxangry_01_oneshot 0x0297
+#define SFXelu_r_voxpainbig_00_oneshot 0x029B
+#define SFXelu_b_run_00_oneshot 0x029E
+#define SFXwar_a_stab_01_oneshot 0x02B9
+#define SFXelu_r_snatch_lp_00_looped 0x02DF
+#define SFXgf2_r_snatch_lp_00_looped 0x02E0
+#define SFXblg_r_snatch_lp_00_looped 0x02E5
+#define SFXdce_c_snatch_lp_00_looped 0x02E6
+#define SFXgf2_b_voxalert_00_oneshot 0x02E9
+#define SFXgf2_b_voxalert_01_oneshot 0x02EA
+#define SFXgf2_r_voxpain_00_oneshot 0x02EB
+#define SFXsts_r_voxrest_00_oneshot 0x02F3
+
+#endif

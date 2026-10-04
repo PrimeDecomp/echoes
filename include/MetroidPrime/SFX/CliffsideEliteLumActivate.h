@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_CLIFFSIDEELITELUMACTIVATE_H
+#define MUSYX_GROUP_CLIFFSIDEELITELUMACTIVATE_H
+
+#define GRPCliffsideEliteLumActivate 0x0165
+
+#define SFXdk3_c_land_01_oneshot 0x1252
+#define SFXdk3_c_voxbreath_00_oneshot 0x1253
+#define SFXdk3_c_voxbreath_01_oneshot 0x1254
+
+#endif

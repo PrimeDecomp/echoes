@@ -1,0 +1,14 @@
+#ifndef MUSYX_GROUP_WISPTENTACLEVOX2_H
+#define MUSYX_GROUP_WISPTENTACLEVOX2_H
+
+#define GRPWispTentacleVox2 0x00BF
+
+#define SFXbl3_a_charge_lp_00_looped 0x041F
+#define SFXbl3_a_sonic_00_oneshot 0x0422
+#define SFXblg_b_voxalert_00_oneshot 0x0426
+#define SFXblg_b_voxangry_00_oneshot 0x0427
+#define SFXbl3_b_voxangry_00_oneshot 0x042F
+#define SFXbl3_b_voxangry_01_oneshot 0x0430
+#define SFXgrn_r_voxdeathwtr_00_oneshot 0x0436
+
+#endif

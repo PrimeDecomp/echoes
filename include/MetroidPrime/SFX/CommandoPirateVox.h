@@ -1,0 +1,13 @@
+#ifndef MUSYX_GROUP_COMMANDOPIRATEVOX_H
+#define MUSYX_GROUP_COMMANDOPIRATEVOX_H
+
+#define GRPCommandoPirateVox 0x00BE
+
+#define SFXgrn_b_voxangrywtr_01_oneshot 0x044A
+#define SFXgrn_b_bubbles_00_oneshot 0x0452
+#define SFXgrn_a_bitewtr_00_oneshot 0x0453
+#define SFXgrn_r_voxshelloffwtr_00_oneshot 0x0456
+#define SFXshk_b_voxidle_01_oneshot 0x0458
+#define SFXspb_a_gripsuck_00_oneshot 0x046F
+
+#endif

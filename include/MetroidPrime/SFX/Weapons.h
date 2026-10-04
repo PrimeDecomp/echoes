@@ -1,0 +1,56 @@
+#ifndef MUSYX_GROUP_WEAPONS_H
+#define MUSYX_GROUP_WEAPONS_H
+
+#define GRPWeapons 0x0133
+
+#define SFXing_b_swarmmini_lp_00_looped 0x06E1
+#define SFXing_b_voxswarmmini_00_oneshot 0x06E2
+#define SFXshr_b_spin_lp_00_looped 0x0DE9
+#define SFXsts_b_walk_00_oneshot 0x0DF3
+#define SFXsts_b_walk_01_oneshot 0x0DF4
+#define SFXsts_b_voxidle_01_oneshot 0x0DF6
+#define SFXkcs_b_open_oneshot 0x0DF7
+#define SFXkcs_b_walk_00_oneshot 0x0DF8
+#define SFXoct_r_bounce_00_oneshot 0x0E02
+#define SFXoct_b_run_00_oneshot 0x0E05
+#define SFXoct_r_boom_oneshot 0x0E06
+#define SFXmin_b_voxdeath_00_oneshot 0x0E1E
+#define SFXmin_b_voxidle_00_oneshot 0x0E20
+#define SFXmin_b_voxidle_01_oneshot 0x0E21
+#define SFXmin_a_spin_00_oneshot 0x0E22
+#define SFXmin_r_explode_00_oneshot 0x0E24
+#define SFXmin_b_fly_lp_00_looped 0x0E25
+#define SFXrez_a_boltfire_00_oneshot 0x0E26
+#define SFXrez_b_shieldout_00_oneshot 0x0E27
+#define SFXrez_b_strafe_00_oneshot 0x0E28
+#define SFXrez_r_death_00_oneshot 0x0E29
+#define SFXswf_b_move_01_oneshot 0x0E34
+#define SFXswf_b_voxidle_00_alt_oneshot 0x0E35
+#define SFXswf_b_voxidle_01_alt_oneshot 0x0E36
+#define SFXswf_b_move_lp_01_looped 0x0E37
+#define SFXipg_b_spidroll_lp_00_looped 0x0E38
+#define SFXisg_b_elec_lp_00_looped 0x0E39
+#define SFXisg_b_rollelec_00_oneshot 0x0E3A
+#define SFXisg_b_rollelec_01_oneshot 0x0E3B
+#define SFXswi_b_voxidle_01_oneshot 0x0E51
+#define SFXswi_r_voxdeath_00_oneshot 0x0E54
+#define SFXswi_r_voxdeath_01_oneshot 0x0E55
+#define SFXbat_b_fly_00_oneshot 0x0E77
+#define SFXbat_r_voxdeath_00_oneshot 0x0E7A
+#define SFXbat_r_voxdeath_01_oneshot 0x0E7B
+#define SFXbat_b_vox_00_oneshot 0x0E7D
+#define SFXpls_a_grenade_lp_00 0x0E80
+#define SFXpls_a_launch_00_oneshot 0x0E81
+#define SFXpls_b_voxidle_00_oneshot 0x0E84
+#define SFXpls_b_voxidle_01_oneshot 0x0E85
+#define SFXpls_r_death_00_oneshot 0x0E86
+#define SFXpls_r_death_01_oneshot 0x0E87
+#define SFXigg_r_tailbrk_00_oneshot 0x0E89
+#define SFXigg_b_landsm_00_oneshot 0x0E91
+#define SFXgrn_r_armorbrk_00_oneshot 0x0E93
+#define SFXblp_b_idle_lp_00_looped 0x0E97
+#define SFXblp_r_gib_00_oneshot 0x0E98
+#define SFXblp_r_gib_01_oneshot 0x0E99
+#define SFXsa2_a_nilcofire_00_oneshot 0x1583
+
+#endif

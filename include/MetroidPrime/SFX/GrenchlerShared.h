@@ -1,0 +1,18 @@
+#ifndef MUSYX_GROUP_GRENCHLERSHARED_H
+#define MUSYX_GROUP_GRENCHLERSHARED_H
+
+#define GRPGrenchlerShared 0x0114
+
+#define SFXing_b_voxidle_01_oneshot 0x048D
+#define SFXing_b_voxtaunt_00_oneshot 0x048E
+#define SFXing_c_dsi_voxangry_00_oneshot 0x0496
+#define SFXing_c_voxidle_00a_oneshot 0x0497
+#define SFXcpr_b_voxalert_00_oneshot 0x04AC
+#define SFXcpr_a_voxattack_01_oneshot 0x04AF
+#define SFXwst_a_voxgrab_00_oneshot 0x04B6
+#define SFXwst_a_voxgrab_01_oneshot 0x04B7
+#define SFXpil_b_voxinroll_01_oneshot 0x04D4
+#define SFXspr_a_grenexpl_00_oneshot 0x04D8
+#define SFXspr_a_grenchrg_00_oneshot 0x04D9
+
+#endif

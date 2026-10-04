@@ -1,0 +1,9 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSAPPEARS2_H
+#define MUSYX_GROUP_CINEDARKSAMUSAPPEARS2_H
+
+#define GRPCineDarkSamusAppears2 0x0204
+
+#define SFXsam_a_phazhit_00_oneshot 0x165D
+#define SFXprt_x_riftlightclose_00_oneshot 0x1660
+
+#endif

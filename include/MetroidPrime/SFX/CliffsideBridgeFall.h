@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_CLIFFSIDEBRIDGEFALL_H
+#define MUSYX_GROUP_CLIFFSIDEBRIDGEFALL_H
+
+#define GRPCliffsideBridgeFall 0x015C
+
+#define SFXcnt_b_floormove_lp_00_looped 0x123F
+#define SFXlth_x_mtlhitmed_01_oneshot 0x1240
+#define SFXlth_x_mtlhitmeddull_00_oneshot 0x1241
+
+#endif

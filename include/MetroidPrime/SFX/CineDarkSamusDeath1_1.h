@@ -1,0 +1,17 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSDEATH1_1_H
+#define MUSYX_GROUP_CINEDARKSAMUSDEATH1_1_H
+
+#define GRPCineDarkSamusDeath1_1 0x023B
+
+#define SFXrec_x_servodwn_lp_00_looped 0x1414
+#define SFXcan_x_adjust_lp_00_looped 0x141A
+#define SFXcan_x_stop_01_oneshot 0x141F
+#define SFXti2_x_randomcnt_00_oneshot 0x1424
+#define SFXti2_x_countdown_00_oneshot 0x1426
+#define SFXsh2_x_ship_lp_00_looped 0x142A
+#define SFXpi2_x_massdam_00l_oneshot 0x142B
+#define SFXsa2_b_wlkfabr_01_oneshot 0x14D9
+#define SFXsa2_b_landsnow_00_oneshot 0x14E0
+#define SFXrok_x_meddebris_00_oneshot 0x167D
+
+#endif

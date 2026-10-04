@@ -1,0 +1,9 @@
+#ifndef MUSYX_GROUP_GFMETALSCRAPEMEDRATCHET_H
+#define MUSYX_GROUP_GFMETALSCRAPEMEDRATCHET_H
+
+#define GRPGFMetalScrapeMedRatchet 0x014E
+
+#define SFXtem_x_gfgatestp_00_oneshot 0x117E
+#define SFXswp_x_10laseroff_00_oneshot 0x11FE
+
+#endif

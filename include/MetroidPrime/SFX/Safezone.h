@@ -1,0 +1,20 @@
+#ifndef MUSYX_GROUP_SAFEZONE_H
+#define MUSYX_GROUP_SAFEZONE_H
+
+#define GRPSafezone 0x02C7
+
+#define SFXsp3_b_voxsniff_00_oneshot 0x0628
+#define SFXsp3_b_voxsniff_01_oneshot 0x0629
+#define SFXspl_r_voxsnatch_lp_00_looped 0x062A
+#define SFXdce_c_splvoxtaunt_01_oneshot 0x062D
+#define SFXdce_c_splvoxtaunt_02_oneshot 0x062E
+#define SFXdce_c_snatchlong_00_oneshot 0x062F
+#define SFXdce_c_sploutcocoon_00_oneshot 0x0630
+#define SFXdce_c_sploutcocoon_01_oneshot 0x0631
+#define SFXwst_a_voxattack_00_oneshot 0x0632
+#define SFXwst_b_voxidle_00_oneshot 0x0633
+#define SFXwst_b_voxidle_01_oneshot 0x0634
+#define SFXwst_b_voxspawn_00_oneshot 0x0635
+#define SFXwst_b_voxspawn_01_oneshot 0x0636
+
+#endif

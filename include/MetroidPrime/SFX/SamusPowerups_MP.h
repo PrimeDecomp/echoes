@@ -1,0 +1,17 @@
+#ifndef MUSYX_GROUP_SAMUSPOWERUPS_MP_H
+#define MUSYX_GROUP_SAMUSPOWERUPS_MP_H
+
+#define GRPSamusPowerups_MP 0x0276
+
+#define SFXsam_b_wlkplas_00_oneshot 0x102A
+#define SFXsam_b_wlkplas_01_oneshot 0x102B
+#define SFXsam_b_wlkwire_00_oneshot 0x102C
+#define SFXsam_b_wlkwire_01_oneshot 0x102D
+#define SFXsam_b_landmoth_00_oneshot 0x102E
+#define SFXsam_b_landmoth_02_oneshot 0x102F
+#define SFXsam_b_landweb_00_oneshot 0x1030
+#define SFXsam_b_landweb_02_oneshot 0x1031
+#define SFXsam_b_mlandmoth_00_oneshot 0x1032
+#define SFXsam_b_mlandweb_00_oneshot 0x1033
+
+#endif

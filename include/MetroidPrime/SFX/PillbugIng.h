@@ -1,0 +1,23 @@
+#ifndef MUSYX_GROUP_PILLBUGING_H
+#define MUSYX_GROUP_PILLBUGING_H
+
+#define GRPPillbugIng 0x010F
+
+#define SFXblg_b_swimfast_01_oneshot 0x0405
+#define SFXbl3_b_swim_01_oneshot 0x040D
+#define SFXbl3_b_swimfast_01_oneshot 0x040F
+#define SFXbl3_r_hitwall_00_oneshot 0x0410
+#define SFXbl3_r_hitwall_01_oneshot 0x0411
+#define SFXblg_a_charge_00_oneshot 0x0412
+#define SFXblg_a_charge_01_oneshot 0x0414
+#define SFXblg_a_grabball_00_oneshot 0x0415
+#define SFXblg_a_grabball_01_oneshot 0x0416
+#define SFXblg_a_sonic_00_oneshot 0x0417
+#define SFXblg_a_sonic_lp_00_looped 0x0418
+#define SFXblg_a_charge_lp_00_looped 0x041A
+#define SFXblg_a_sonichit_00_oneshot 0x041B
+#define SFXblg_a_grabball_lp_00_looped 0x041C
+#define SFXbl3_a_charge_00_oneshot 0x041D
+#define SFXbl3_a_charge_01_oneshot 0x041E
+
+#endif

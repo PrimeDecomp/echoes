@@ -1,0 +1,12 @@
+#ifndef MUSYX_GROUP_SAMUSGUNMOVEMENT_MP_H
+#define MUSYX_GROUP_SAMUSGUNMOVEMENT_MP_H
+
+#define GRPSamusGunMovement_MP 0x0271
+
+#define SFXsam_r_mcollide_00_oneshot 0x10B2
+#define SFXsam_r_mhitheavy_00_oneshot 0x10B3
+#define SFXsam_r_mhitlight_00_oneshot 0x10B4
+#define SFXsam_r_mhitmed_00_oneshot 0x10B5
+#define SFXsam_b_jump_00_oneshot 0x10B6
+
+#endif

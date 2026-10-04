@@ -1,0 +1,28 @@
+#ifndef MUSYX_GROUP_WEAPONS4_MP_H
+#define MUSYX_GROUP_WEAPONS4_MP_H
+
+#define GRPWeapons4_MP 0x027B
+
+#define SFXmt3_a_voxattack_lp_00_looped 0x0332
+#define SFXui_x_download_lp_00_looped 0x10F2
+#define SFXlog_x_modfade_00_oneshot 0x10F3
+#define SFXui_x_static_lp_00_looped 0x10F4
+#define SFXui_x_static_lp_01_looped 0x10F5
+#define SFXui_x_static_lp_00a_looped 0x10F6
+#define SFXui_c_download_lp_00_looped 0x10F7
+#define SFXui_x_invzoom_00_oneshot 0x1110
+#define SFXui_x_invzoom_01_oneshot 0x1111
+#define SFXgft_x_mtlhitbigring_01_oneshot 0x1126
+#define SFXgft_x_mtlscrapemedratch_lp_00_looped 0x1127
+#define SFXtem_x_gfelev_lp_looped 0x1128
+#define SFXgft_x_mtlscrapesmrattle_lp_00_looped 0x1129
+#define SFXtem_x_02gondola_lp_00_looped 0x112A
+#define SFXclf_x_0gspindoor_lp_00_looped 0x112B
+#define SFXtem_x_10car_lp_00_looped 0x112C
+#define SFXgft_x_mtlservomed_lp_00_looped 0x112D
+#define SFXclf_x_07ballexp_00_oneshot 0x1133
+#define SFXclf_x_rotator_lp_00_looped 0x1135
+#define SFXclf_x_wind_lp_00_looped 0x1138
+#define SFXclf_x_gryo2stop_00_oneshot 0x114C
+
+#endif

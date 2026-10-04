@@ -1,0 +1,8 @@
+#ifndef MUSYX_GROUP_CLIFFSIDEDARKVISORPLATFORM_H
+#define MUSYX_GROUP_CLIFFSIDEDARKVISORPLATFORM_H
+
+#define GRPCliffsideDarkVisorPlatform 0x016A
+
+#define SFXlth_x_mtlhitmedratch_00_oneshot 0x122C
+
+#endif

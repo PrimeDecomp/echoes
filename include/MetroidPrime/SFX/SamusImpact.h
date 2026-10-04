@@ -1,0 +1,23 @@
+#ifndef MUSYX_GROUP_SAMUSIMPACT_H
+#define MUSYX_GROUP_SAMUSIMPACT_H
+
+#define GRPSamusImpact 0x0140
+
+#define SFXui_c_scanon_00_oneshot 0x0FC1
+#define SFXui_c_scanon_01_oneshot 0x0FC2
+#define SFXsam_b_wlkstone_00_oneshot 0x0FC3
+#define SFXsam_b_wlkstone_01_oneshot 0x0FC4
+#define SFXsam_b_mlandsnd_00_oneshot 0x0FC5
+#define SFXsam_b_mlandstn_00_oneshot 0x0FC6
+#define SFXsam_b_wlkwatr_00_oneshot 0x0FC7
+#define SFXsam_b_wlkwatr_01_oneshot 0x0FC8
+#define SFXsam_b_landmetl_00_oneshot 0x0FC9
+#define SFXsam_b_wlkgrate_00_oneshot 0x0FCA
+#define SFXsam_b_wlkgrate_01_oneshot 0x0FCD
+#define SFXsam_b_wlkmetal_00_oneshot 0x0FCE
+#define SFXsam_b_wlkmetal_01_oneshot 0x0FCF
+#define SFXsam_b_wlkdirt_00_oneshot 0x0FD0
+#define SFXsam_b_mlandgrt_00_oneshot 0x0FD1
+#define SFXsam_b_wlkdirt_01_oneshot 0x0FD2
+
+#endif

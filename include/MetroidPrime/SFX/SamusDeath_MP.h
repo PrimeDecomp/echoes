@@ -1,0 +1,17 @@
+#ifndef MUSYX_GROUP_SAMUSDEATH_MP_H
+#define MUSYX_GROUP_SAMUSDEATH_MP_H
+
+#define GRPSamusDeath_MP 0x026D
+
+#define SFXipg_b_plantin_00_oneshot 0x06D8
+#define SFXing_b_swarmmove_lp_00_looped 0x06DB
+#define SFXing_b_voxswarm_00_oneshot 0x06DC
+#define SFXsam_b_landice_02_oneshot 0x1039
+#define SFXsam_b_landsnow_00_oneshot 0x103A
+#define SFXsam_b_landsnow_02_oneshot 0x103B
+#define SFXsam_b_mlandice_00_oneshot 0x103C
+#define SFXsam_b_mlandsnw_00_oneshot 0x103D
+#define SFXsam_b_wlkice_00_oneshot 0x103E
+#define SFXsam_b_wlkice_01_oneshot 0x103F
+
+#endif

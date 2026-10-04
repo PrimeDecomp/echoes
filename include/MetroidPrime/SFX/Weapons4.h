@@ -1,0 +1,25 @@
+#ifndef MUSYX_GROUP_WEAPONS4_H
+#define MUSYX_GROUP_WEAPONS4_H
+
+#define GRPWeapons4 0x012D
+
+#define SFXshr_r_drkexplode_01_oneshot 0x0DEB
+#define SFXshr_b_voxangry_00_oneshot 0x0DF0
+#define SFXshr_b_voxangry_01_oneshot 0x0DF1
+#define SFXoct_b_voxidle_00_oneshot 0x0DFF
+#define SFXoct_b_voxidle_01_oneshot 0x0E00
+#define SFXoct_b_walk_lp_00_looped 0x0E01
+#define SFXrez_r_shieldexp_00_oneshot 0x0E2D
+#define SFXswf_b_move_00_oneshot 0x0E33
+#define SFXisg_b_rollelec_lp_00_looped 0x0E3C
+#define SFXisg_b_rollzap_lp_00_looped 0x0E3D
+#define SFXisg_b_rollelecslow_00_oneshot 0x0E3E
+#define SFXisg_b_rollelecslow_01_oneshot 0x0E3F
+#define SFXisg_b_spidrollfast_lp_00_looped 0x0E48
+#define SFXswb_b_death_00_oneshot 0x0E5B
+#define SFXswb_b_death_01_oneshot 0x0E5C
+#define SFXgrn_r_armorbrk_01_oneshot 0x0E94
+#define SFXmis_c_armclank_00_oneshot 0x1347
+#define SFXmis_c_mislget_00_oneshot 0x1349
+
+#endif

@@ -1,0 +1,22 @@
+#ifndef MUSYX_GROUP_FLYINGPIRATE_H
+#define MUSYX_GROUP_FLYINGPIRATE_H
+
+#define GRPFlyingPirate 0x00D0
+
+#define SFXcnt_b_elecfloor_00_looped 0x0256
+#define SFXpds_b_turnover_00_oneshot 0x0257
+#define SFXeye_x_activate_00_oneshot 0x0259
+#define SFXeye_x_laser_lp_looped 0x025A
+#define SFXeye_x_stunned_00_oneshot 0x025B
+#define SFXeye_x_activate_01_oneshot 0x025C
+#define SFXbl3_a_sonic_01_oneshot 0x0265
+#define SFXrez_a_boltout_00_oneshot 0x026A
+#define SFXrez_b_activate_00_oneshot 0x026B
+#define SFXrez_a_samvirus_lp_00_looped 0x026C
+#define SFXrez_a_laserin_lp_00_looped 0x026D
+#define SFXspt_b_shieldon_00_oneshot 0x0274
+#define SFXspt_r_headexp_00_oneshot 0x0275
+#define SFXspt_r_active_00_oneshot 0x0276
+#define SFXspt_r_shieldcrk_00_oneshot 0x0279
+
+#endif

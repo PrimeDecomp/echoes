@@ -1,0 +1,39 @@
+#ifndef MUSYX_GROUP_UI3_H
+#define MUSYX_GROUP_UI3_H
+
+#define GRPUI3 0x0147
+
+#define SFXwal_r_voxpain_01_oneshot 0x0EA6
+#define SFXwal_r_bounce_00_oneshot 0x0EA7
+#define SFXwal_r_legmove_00_oneshot 0x0EA8
+#define SFXwal_b_squish_lp_00_looped 0x0EA9
+#define SFXigg_b_voxidle_00_oneshot 0x0EAA
+#define SFXigg_b_voxidle_01_oneshot 0x0EAB
+#define SFXigg_r_voxpain_00_oneshot 0x0EAE
+#define SFXigg_r_voxpain_01_oneshot 0x0EAF
+#define SFXigg_r_voxpain_02_oneshot 0x0EB0
+#define SFXigg_r_voxshelloff_00_oneshot 0x0EB1
+#define SFXing_r_dethpuddle_00_oneshot 0x0EB5
+#define SFXing_c_swarmhit_00_oneshot 0x0EB6
+#define SFXing_r_jumpguard_death_00_oneshot 0x0EB7
+#define SFXcnt_b_arms_lp_00_looped 0x0EBA
+#define SFXcnt_b_armstop_00_oneshot 0x0EBB
+#define SFXcnt_b_headpiece_lp_00_looped 0x0EBC
+#define SFXcnt_b_rise_lp_00_looped 0x0EBD
+#define SFXcnt_b_risestop_00_oneshot 0x0EBE
+#define SFXstw_b_move_lp_00_looped 0x0EC2
+#define SFXstw_b_voxidle_00_oneshot 0x0EC3
+#define SFXstw_b_voxidle_01_oneshot 0x0EC4
+#define SFXpls_a_grenbnce_00_oneshot 0x0EC5
+#define SFXspr_b_jump_00_oneshot 0x0ECF
+#define SFXspr_b_cling_00_oneshot 0x0ED0
+#define SFXcpr_r_voxdeathshort_00_oneshot 0x0EDF
+#define SFXsam_a_nilcharge_02_oneshot 0x0F02
+#define SFXdgd_a_nilfire_00_oneshot 0x0F03
+#define SFXdgd_a_nilchfire_00_oneshot 0x0F04
+#define SFXsam_c_nilchfire_00_oneshot 0x0F05
+#define SFXsam_c_nilcofire_00_oneshot 0x0F07
+#define SFXsam_a_litchfire_00_oneshot 0x0F0E
+#define SFXsam_c_litcharge_lp_00_looped 0x0F1C
+
+#endif

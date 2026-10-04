@@ -1,0 +1,14 @@
+#ifndef MUSYX_GROUP_UNSEENSHRIEKER3_H
+#define MUSYX_GROUP_UNSEENSHRIEKER3_H
+
+#define GRPUnseenShrieker3 0x00B2
+
+#define SFXshk_b_idle_00_oneshot 0x0475
+#define SFXing_b_spotmove_lp_00_looped 0x0478
+#define SFXing_b_spotidle_lp_00_looped 0x0479
+#define SFXing_b_spotmove_lp_01_looped 0x047A
+#define SFXing_b_spotidle_lp_01_looped 0x047B
+#define SFXin3_b_spotidle_lp_00_looped 0x047C
+#define SFXing_r_voxpain_02_oneshot 0x0488
+
+#endif

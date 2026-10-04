@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_CINELUMINOTHENCOUNTER3_H
+#define MUSYX_GROUP_CINELUMINOTHENCOUNTER3_H
+
+#define GRPCineLuminothEncounter3 0x01EB
+
+#define SFXmtl_x_smdebris_short_00_oneshot 0x1643
+#define SFXmtl_x_smdebris_short_01_oneshot 0x1644
+#define SFXmtl_x_hitbig_00_oneshot 0x1656
+
+#endif

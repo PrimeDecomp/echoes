@@ -1,0 +1,53 @@
+#ifndef MUSYX_GROUP_FRONTEND_H
+#define MUSYX_GROUP_FRONTEND_H
+
+#define GRPFrontEnd 0x027E
+
+#define SFXblg_r_voxdeathgib_00_oneshot 0x09C0
+#define SFXblg_r_voxblogetgib_01_oneshot 0x09CD
+#define SFXma2_a_mislcharge_00_oneshot 0x168A
+#define SFXman_a_mislcharge_00_oneshot 0x168B
+#define SFXma2_a_mislhit_01_oneshot 0x168C
+#define SFXma2_r_impact_00_oneshot 0x168D
+#define SFXint_c_shipopen_01_oneshot 0x168E
+#define SFXint_c_shipelev_lp_00_looped 0x168F
+#define SFXint_c_shiphover_lp_00_looped 0x1690
+#define SFXint_c_shiphover_lp_01_looped 0x1691
+#define SFXint_c_shipopen_lp_00_looped 0x1692
+#define SFXint_c_shiprear_lp_00_looped 0x1693
+#define SFXsav_c_shipdoor_00_oneshot 0x1694
+#define SFXsav_c_shipplat_lp_00_looped 0x1695
+#define SFXswp_x_rain_lp_00l_looped 0x1696
+#define SFXswp_x_rain_lp_00r_looped 0x1697
+#define SFXdrn_a_laser_lp_00_looped 0x1698
+#define SFXfpr_a_gun_lp_00_looped 0x1699
+#define SFXfpr_a_gunhit_00_oneshot 0x169A
+#define SFXsh2_a_fireball_lp_00_looped 0x169B
+#define SFXshe_a_fireball_lp_00_looped 0x169C
+#define SFXspr_a_gunfire_lp_00_looped 0x169D
+#define SFXspr_a_gunhit_00_oneshot 0x169E
+#define SFXtur_a_laser_lp_00_looped 0x169F
+#define SFXtur_a_turhit_00_oneshot 0x16A0
+#define SFXcpr_a_gunfire_lp_00_looped 0x16A1
+#define SFXcpr_a_gunhit_00_oneshot 0x16A2
+#define SFXspb_a_needle_lp_00_looped 0x16A3
+#define SFXdks_a_missile_lp_00_looped 0x16A4
+#define SFXdks_a_smissile_lp_00_looped 0x16A5
+#define SFXin2_a_fire_lp_00_looped 0x16A6
+#define SFXlum_a_bigshot_lp_00_looped 0x16A7
+#define SFXlum_a_shot_lp_00_looped 0x16A8
+#define SFXwar_a_spit_lp_00_looped 0x16AB
+#define SFXcp2_a_drkfire_lp_00_looped 0x16AC
+#define SFXslt_x_slowglow_00_oneshot 0x16AD
+#define SFXslt_x_slotglowloud_00_oneshot 0x16AE
+#define SFXpik_x_elevamb_lp_00_looped 0x16AF
+#define SFXpik_x_map_00_oneshot 0x16B0
+#define SFXdrn_r_empelec_00_oneshot 0x16B1
+#define SFXdgd_r_electro_lp_01_looped 0x16B2
+#define SFXga2_r_explode_00_oneshot 0x16B3
+#define SFXgab_r_explode_00_oneshot 0x16B4
+#define SFXjzp_r_explode_00_oneshot 0x16B5
+#define SFXmtr_r_explode_00_oneshot 0x16B6
+#define SFXmtd_r_sacexpl_00_oneshot 0x16B7
+
+#endif

@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALHITSMALL_H
+#define MUSYX_GROUP_LUMINOTHMETALHITSMALL_H
+
+#define GRPLuminothMetalHitSmall 0x01CB
+
+#define SFXtem_x_gfgatemal_00_oneshot 0x1189
+#define SFXdks_c_touchdown_00_oneshot 0x1250
+#define SFXdk2_c_glassbrk_01_oneshot 0x126E
+
+#endif

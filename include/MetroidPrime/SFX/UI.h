@@ -1,0 +1,73 @@
+#ifndef MUSYX_GROUP_UI_H
+#define MUSYX_GROUP_UI_H
+
+#define GRPUI 0x0134
+
+#define SFXhlc_r_gib_00_oneshot 0x0E9A
+#define SFXswp_x_plantgib_00_oneshot 0x0E9B
+#define SFXwal_a_bomb_00_oneshot 0x0E9C
+#define SFXwal_b_voxidle_00_oneshot 0x0E9D
+#define SFXwal_r_explode_00_oneshot 0x0E9F
+#define SFXwal_a_bomb_00_lp_looped 0x0EA0
+#define SFXwal_a_bombexp_00_oneshot 0x0EA1
+#define SFXwal_r_voxdeath_00_oneshot 0x0EA4
+#define SFXwal_r_voxpain_00_oneshot 0x0EA5
+#define SFXigg_r_stage_02_oneshot 0x0EAD
+#define SFXing_r_voxoffsamus_00_oneshot 0x0EB2
+#define SFXing_c_voxswarmhit_00_oneshot 0x0EB3
+#define SFXing_a_bodyhit_00_oneshot 0x0EB4
+#define SFXisg_r_voxstun_00_oneshot 0x0EB9
+#define SFXcnt_b_telemetry_lp_00_looped 0x0EBF
+#define SFXat2_r_gibbounce_00_oneshot 0x0EC6
+#define SFXebo_b_float_lp_00_looped 0x0EC7
+#define SFXebo_b_headdwn_00_oneshot 0x0EC8
+#define SFXebo_b_headup_00_oneshot 0x0EC9
+#define SFXebo_b_voxidle_01_oneshot 0x0ECB
+#define SFXspr_b_warpout_00_oneshot 0x0ECC
+#define SFXspr_r_voxfling_00_oneshot 0x0ED2
+#define SFXcpr_b_voxcloak_00_oneshot 0x0ED7
+#define SFXcpr_b_voxdecloak_00_oneshot 0x0ED8
+#define SFXcpr_r_voxdeath_00_oneshot 0x0EDC
+#define SFXcpr_r_voxpain_00_oneshot 0x0EDE
+#define SFXatm_r_explode_00_oneshot 0x0EE0
+#define SFXcnt_b_sensornrg_lp_00_looped 0x0EE1
+#define SFXcnt_c_explode_00_oneshot 0x0EE3
+#define SFXoct_b_elecshield_lp_00_looped 0x0EE4
+#define SFXoct_b_eleczap_lp_00_oneshot 0x0EE5
+#define SFXsam_a_mislemp_00_oneshot 0x0EE6
+#define SFXsam_a_mishit_00_oneshot 0x0EE7
+#define SFXsam_a_mislfire_00_oneshot 0x0EE8
+#define SFXsam_b_malfxn_00_oneshot 0x0EE9
+#define SFXsam_a_skrfire_01_oneshot 0x0EEE
+#define SFXsam_a_skrfire_02_oneshot 0x0EEF
+#define SFXsam_a_skrhit_00_oneshot 0x0EF1
+#define SFXsam_a_skrrico_00_oneshot 0x0EF2
+#define SFXsam_a_co1rico_00_oneshot 0x0EF3
+#define SFXsam_a_powexpl_00_oneshot 0x0EF4
+#define SFXsam_a_combochg_00_oneshot 0x0EF5
+#define SFXsam_a_nilfire_00_oneshot 0x0EF6
+#define SFXsam_a_nilhit_00_oneshot 0x0EF7
+#define SFXsam_a_nilchric_00_oneshot 0x0EF8
+#define SFXsam_a_nilrico_00_oneshot 0x0EF9
+#define SFXsam_a_nilchfire_00_oneshot 0x0EFB
+#define SFXsam_a_nilchhit_00_oneshot 0x0EFC
+#define SFXsam_a_nilcharge_00_oneshot 0x0F00
+#define SFXsam_a_nilcharge_01_oneshot 0x0F01
+#define SFXsam_c_nilcharge_lp_00_looped 0x0F06
+#define SFXsam_c_nilfire_00_oneshot 0x0F08
+#define SFXsam_a_litfire_00_oneshot 0x0F09
+#define SFXsam_a_lithit_00_oneshot 0x0F0A
+#define SFXsam_a_litchric_00_oneshot 0x0F0B
+#define SFXsam_a_litrico_00_oneshot 0x0F0C
+#define SFXsam_a_litcharge_lp_00_looped 0x0F0D
+#define SFXsam_c_litcofire_00_oneshot 0x0F13
+#define SFXsam_c_litchfire_00_oneshot 0x0F14
+#define SFXsam_c_litfire_00_oneshot 0x0F15
+#define SFXsam_a_screw_lp_00_looped 0x0F16
+#define SFXsam_a_screwhit_00_oneshot 0x0F17
+#define SFXsam_a_screwhit_01_oneshot 0x0F18
+#define SFXsam_b_screwin_00_oneshot 0x0F19
+#define SFXsam_a_screw_lp_01_looped 0x0F1A
+#define SFXsam_a_litcohit_00_oneshot 0x0F1B
+
+#endif

@@ -1,0 +1,17 @@
+#ifndef MUSYX_GROUP_ELITELUMINOTH4_H
+#define MUSYX_GROUP_ELITELUMINOTH4_H
+
+#define GRPEliteLuminoth4 0x008D
+
+#define SFXspr_b_runsand_00_oneshot 0x03AB
+#define SFXspr_b_runsand_01_oneshot 0x03AC
+#define SFXspr_b_walksand_00_oneshot 0x03AD
+#define SFXspr_b_walksand_01_oneshot 0x03AE
+#define SFXipg_a_pbombmove_00_oneshot 0x03B8
+#define SFXgf2_a_gunfire_lp_00_looped 0x03B9
+#define SFXgft_c_gunfire_lp_00_looped 0x03BC
+#define SFXgf2_a_mislfire_00_oneshot 0x03BD
+#define SFXgf2_a_mislhit_00_oneshot 0x03BE
+#define SFXin2_b_voxangry_00_oneshot 0x03D1
+
+#endif

@@ -1,0 +1,19 @@
+#ifndef MUSYX_GROUP_MANNEDTURRET2_H
+#define MUSYX_GROUP_MANNEDTURRET2_H
+
+#define GRPMannedTurret2 0x02AF
+
+#define SFXdce_c_splwalk_01_oneshot 0x0609
+#define SFXdce_c_splvoxattack_00_oneshot 0x060A
+#define SFXspl_r_voxdeath_00_oneshot 0x060B
+#define SFXspl_r_voxpain_00_oneshot 0x060C
+#define SFXspl_b_voxtaunt_00_oneshot 0x060F
+#define SFXspl_b_voxsniff_01_oneshot 0x0610
+#define SFXspl_b_voxsniff_00_oneshot 0x0611
+#define SFXspl_b_outcocoon_00_oneshot 0x0613
+#define SFXspl_b_outcocoon_01_oneshot 0x0614
+#define SFXspl_c_voxtaunt_00_oneshot 0x0617
+#define SFXspl_c_voxtaunt_01_oneshot 0x0618
+#define SFXspl_c_voxtaunt_02_oneshot 0x0619
+
+#endif

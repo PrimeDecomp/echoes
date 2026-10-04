@@ -1,0 +1,8 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALHITMEDRATCHET_H
+#define MUSYX_GROUP_LUMINOTHMETALHITMEDRATCHET_H
+
+#define GRPLuminothMetalHitMedRatchet 0x01CA
+
+#define SFXdk2_c_glassbrk_00_oneshot 0x126D
+
+#endif

@@ -1,0 +1,14 @@
+#ifndef MUSYX_GROUP_DIGITALGUARDIAN9_H
+#define MUSYX_GROUP_DIGITALGUARDIAN9_H
+
+#define GRPDigitalGuardian9 0x005C
+
+#define SFXtls_c_passby_00c_oneshot 0x1303
+#define SFXtls_c_passby_00b_oneshot 0x1304
+#define SFXtrp_c_voxfallback_00_oneshot 0x1310
+#define SFXsav_c_powrdown_00_oneshot 0x1317
+#define SFXmis_c_armswoosh_00_oneshot 0x132D
+#define SFXmis_c_armswoosh_01_oneshot 0x132E
+#define SFXcin_c_samjump_00_oneshot 0x1355
+
+#endif

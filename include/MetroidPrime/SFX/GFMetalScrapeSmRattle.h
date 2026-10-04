@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_GFMETALSCRAPESMRATTLE_H
+#define MUSYX_GROUP_GFMETALSCRAPESMRATTLE_H
+
+#define GRPGFMetalScrapeSmRattle 0x014F
+
+#define SFXsam_b_rollweb_lp_00_looped 0x117D
+#define SFXsb1_c_bubbles_lp_00_looped 0x11FC
+#define SFXswp_x_03bridge_lp_00_looped 0x1236
+
+#endif

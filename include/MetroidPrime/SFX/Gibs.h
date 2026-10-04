@@ -1,0 +1,31 @@
+#ifndef MUSYX_GROUP_GIBS_H
+#define MUSYX_GROUP_GIBS_H
+
+#define GRPGibs 0x02B7
+
+#define SFXei3_b_whoosh_00_oneshot 0x00AC
+#define SFXdgd_c_elbow_00_oneshot 0x00C5
+#define SFXdgd_b_toeloop_lp_00_looped 0x00E7
+#define SFXdgd_r_knee1_00_oneshot 0x00EB
+#define SFXei2_b_tentagraph_00_oneshot 0x00F6
+#define SFXdks_b_jump_01_oneshot 0x0172
+#define SFXdgd_a_shockwave_00_oneshot 0x01DD
+#define SFXdks_a_divehit_00_oneshot 0x01F2
+#define SFXein_c_telestop_lp_00_looped 0x0200
+#define SFXspl_b_warpin_00_oneshot 0x022C
+#define SFXcp2_b_voxidle_00_oneshot 0x0247
+#define SFXpds_b_voxcomp_00_oneshot 0x0344
+#define SFXmtd_b_hitglass_00_oneshot 0x039B
+#define SFXibg_b_voxangry_00_oneshot 0x03DC
+#define SFXin2_b_ei2move_lp_00_looped 0x0401
+#define SFXshk_b_fly_00_oneshot 0x0477
+#define SFXfpr_b_land_01_oneshot 0x0513
+#define SFXspl_a_voxattack_01_oneshot 0x05CD
+#define SFXsdw_b_erupt_00_oneshot 0x066D
+#define SFXgf2_r_voxdeath_01_oneshot 0x0CF8
+#define SFXibg_r_voxpainbig_00_oneshot 0x0D2E
+#define SFXibg_r_voxpain_00_oneshot 0x0D30
+#define SFXshr_b_inflate_00_oneshot 0x0D7A
+#define SFXshr_b_popup_00_oneshot 0x0D86
+
+#endif

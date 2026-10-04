@@ -1,0 +1,13 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSINTRO2_H
+#define MUSYX_GROUP_CINEDARKSAMUSINTRO2_H
+
+#define GRPCineDarkSamusIntro2 0x020C
+
+#define SFXfin_x_splode_00_L_oneshot 0x1401
+#define SFXfin_x_splode_00_R_oneshot 0x1402
+#define SFXrec_x_stop_00_oneshot 0x1417
+#define SFXrec_x_charge_00_oneshot 0x1418
+#define SFXsa2_b_landsnow_02_oneshot 0x14E1
+#define SFXsa2_b_mlandice_00_oneshot 0x14E2
+
+#endif

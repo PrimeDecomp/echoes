@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALSERVOMED_H
+#define MUSYX_GROUP_LUMINOTHMETALSERVOMED_H
+
+#define GRPLuminothMetalServoMed 0x01D0
+
+#define SFXsb1_c_riverin_lp_01_looped 0x0016
+#define SFXtem_x_gfgatemal_02_oneshot 0x118A
+#define SFXamo_c_podlower_00_oneshot 0x1273
+
+#endif

@@ -1,0 +1,12 @@
+#ifndef MUSYX_GROUP_COMMANDOPIRATELIGHT4_H
+#define MUSYX_GROUP_COMMANDOPIRATELIGHT4_H
+
+#define GRPCommandoPirateLight4 0x0127
+
+#define SFXshk_r_voxdeath_00_oneshot 0x045D
+#define SFXshk_a_shriek_00_oneshot 0x045E
+#define SFXspb_a_needltele_00_oneshot 0x0468
+#define SFXspb_a_gripfire_00_oneshot 0x0469
+#define SFXspb_a_gripsuck_02_oneshot 0x0470
+
+#endif

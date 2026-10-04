@@ -1,0 +1,19 @@
+#ifndef MUSYX_GROUP_SANDBOSS4_H
+#define MUSYX_GROUP_SANDBOSS4_H
+
+#define GRPSandBoss4 0x004F
+
+#define SFXprt_c_swoosh_lp_00_looped 0x1360
+#define SFXint_c_planetbuild_00_oneshot 0x136E
+#define SFXint_c_shipflinch_00_oneshot 0x1372
+#define SFXint_c_shipnrgdwn_00_oneshot 0x1374
+#define SFXgft_c_voxdeath_01_oneshot 0x138B
+#define SFXgft_c_voxdeath_02_oneshot 0x138C
+#define SFXgft_c_impact_00_oneshot 0x1390
+#define SFXgft_c_impact_01_oneshot 0x1391
+#define SFXsja_c_pixieflash_00_oneshot 0x1396
+#define SFXgrp_c_electric_lp_00_looped 0x1397
+#define SFXkey_c_emerge_00_oneshot 0x13A2
+#define SFXsja_c_swoosh_01_oneshot 0x13A8
+
+#endif

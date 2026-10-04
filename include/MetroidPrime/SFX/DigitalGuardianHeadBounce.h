@@ -1,0 +1,8 @@
+#ifndef MUSYX_GROUP_DIGITALGUARDIANHEADBOUNCE_H
+#define MUSYX_GROUP_DIGITALGUARDIANHEADBOUNCE_H
+
+#define GRPDigitalGuardianHeadBounce 0x0003
+
+#define SFXgrv_c_arpegg_lp_00_looped 0x1359
+
+#endif

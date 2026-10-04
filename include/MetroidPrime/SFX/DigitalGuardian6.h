@@ -1,0 +1,15 @@
+#ifndef MUSYX_GROUP_DIGITALGUARDIAN6_H
+#define MUSYX_GROUP_DIGITALGUARDIAN6_H
+
+#define GRPDigitalGuardian6 0x002B
+
+#define SFXvis_c_twinkle_00_oneshot 0x1311
+#define SFXsav_x_savestn_lp_00_looped 0x1312
+#define SFXsav_c_armstop_00_oneshot 0x1313
+#define SFXsav_c_download_lp_00_looped 0x1314
+#define SFXsav_c_turnon_00_oneshot 0x1315
+#define SFXint_c_samjump_00_oneshot 0x1352
+#define SFXdks_c_samjump_00_oneshot 0x1354
+#define SFXdk2_c_samjump_00_oneshot 0x1356
+
+#endif

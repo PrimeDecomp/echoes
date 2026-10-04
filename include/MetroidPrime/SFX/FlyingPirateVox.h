@@ -1,0 +1,16 @@
+#ifndef MUSYX_GROUP_FLYINGPIRATEVOX_H
+#define MUSYX_GROUP_FLYINGPIRATEVOX_H
+
+#define GRPFlyingPirateVox 0x00D8
+
+#define SFXswp_x_10platover_00_oneshot 0x0258
+#define SFXspt_r_voxsnatch_00_oneshot 0x025E
+#define SFXspt_r_gibbig_00_oneshot 0x025F
+#define SFXspt_r_gibbig_02_oneshot 0x0263
+#define SFXbl3_a_melee_00_oneshot 0x0264
+#define SFXrez_a_boltin_lp_00_looped 0x026E
+#define SFXrez_a_virusin_00_oneshot 0x026F
+#define SFXspt_b_movefast_00_oneshot 0x0270
+#define SFXspt_b_movefast_01_oneshot 0x0271
+
+#endif

@@ -1,0 +1,15 @@
+#ifndef MUSYX_GROUP_DARKSAMUSGLIDE_H
+#define MUSYX_GROUP_DARKSAMUSGLIDE_H
+
+#define GRPDarkSamusGlide 0x0024
+
+#define SFXdks_c_voxdeath_00_oneshot 0x13BC
+#define SFXdks_c_voxdeath_01_oneshot 0x13BD
+#define SFXdks_c_voxdeath_02_oneshot 0x13BE
+#define SFXscw_c_pixiedust_00_oneshot 0x13C7
+#define SFXskr_c_chargeenigma_00_oneshot 0x13CC
+#define SFXgen_c_samglow_00_oneshot 0x13FC
+#define SFXcoi_x_coinland_01_oneshot 0x140D
+#define SFXrec_x_servo_lp_00_looped 0x1416
+
+#endif

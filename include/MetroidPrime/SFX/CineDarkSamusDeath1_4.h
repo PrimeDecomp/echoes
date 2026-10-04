@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSDEATH1_4_H
+#define MUSYX_GROUP_CINEDARKSAMUSDEATH1_4_H
+
+#define GRPCineDarkSamusDeath1_4 0x023E
+
+#define SFXti2_x_oneminute_00_oneshot 0x1427
+#define SFXti2_x_randomizer_01_oneshot 0x1428
+#define SFXdob_x_stop_00_oneshot 0x1429
+
+#endif

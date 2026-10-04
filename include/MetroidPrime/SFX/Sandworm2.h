@@ -1,0 +1,23 @@
+#ifndef MUSYX_GROUP_SANDWORM2_H
+#define MUSYX_GROUP_SANDWORM2_H
+
+#define GRPSandworm2 0x00E2
+
+#define SFXsdb_a_dblfire_lp_00_looped 0x0182
+#define SFXsdb_a_trplfire_lp_00_looped 0x0183
+#define SFXsdb_a_dblcharge_lp_00_looped 0x0184
+#define SFXsdb_a_trpcharge_lp_00_looped 0x0185
+#define SFXsdb_a_suckin_00_oneshot 0x0187
+#define SFXsdb_a_spitout_00_oneshot 0x0188
+#define SFXsdb_a_suck_lp_00_looped 0x0189
+#define SFXsdb_r_armorbrk_00_oneshot 0x018A
+#define SFXsdb_c_erupt_00_oneshot 0x0193
+#define SFXsdb_b_land_01_oneshot 0x0194
+#define SFXsdb_c_passby_00_oneshot 0x0197
+#define SFXsdb_r_eyeglow_00_oneshot 0x0198
+#define SFXsdb_c_dissolve_lp_00_looped 0x019A
+#define SFXsdb_c_detach_00_oneshot 0x019B
+#define SFXdks_b_pissed_00_oneshot 0x01A2
+#define SFXdks_c_charge_00_oneshot 0x01A3
+
+#endif

@@ -1,0 +1,29 @@
+#ifndef MUSYX_GROUP_PICKUPSMULTIPLAYER_H
+#define MUSYX_GROUP_PICKUPSMULTIPLAYER_H
+
+#define GRPPickupsMultiplayer 0x0268
+
+#define SFXelu_a_hitgrnd_00_oneshot 0x0766
+#define SFXelu_a_hitgrnd_01_oneshot 0x0767
+#define SFXelu_a_hitgrnd_02_oneshot 0x0768
+#define SFXelu_a_rocket_00_oneshot 0x0769
+#define SFXelu_a_rocket_02_oneshot 0x076C
+#define SFXelu_a_shokwave_00_oneshot 0x076D
+#define SFXelu_a_shokwavebig_00_oneshot 0x076E
+#define SFXelu_a_shokwave_01_oneshot 0x076F
+#define SFXelu_a_shokwavebig_01_oneshot 0x0770
+#define SFXelu_b_powerup_02_oneshot 0x0771
+#define SFXin3_b_voxalert_00_oneshot 0x0772
+#define SFXin3_b_voxangry_00_oneshot 0x0773
+#define SFXin3_b_voxangry_01_oneshot 0x0774
+#define SFXin3_r_voxdeath_00_oneshot 0x0775
+#define SFXin3_r_voxpain_00_oneshot 0x0777
+#define SFXin3_r_voxpainbig_00_oneshot 0x0778
+#define SFXblg_r_voxpain_00_oneshot 0x077B
+#define SFXblg_r_voxpain_01_oneshot 0x077C
+#define SFXblg_r_voxflinch_00_oneshot 0x077D
+#define SFXbl3_r_voxdeath_01_oneshot 0x077F
+#define SFXbl3_r_voxflinch_00_oneshot 0x0780
+#define SFXbl3_r_voxpain_00_oneshot 0x0781
+
+#endif

@@ -1,0 +1,11 @@
+#ifndef MUSYX_GROUP_DARKSAMUSDIVEJUMP_H
+#define MUSYX_GROUP_DARKSAMUSDIVEJUMP_H
+
+#define GRPDarkSamusDiveJump 0x000C
+
+#define SFXdks_c_diesuck_00_oneshot 0x13B8
+#define SFXdks_c_dienrg_lp_00_looped 0x13B9
+#define SFXwpn_c_wpnswitch_04b_oneshot 0x13DC
+#define SFXgen_c_samhookupthrust_00_oneshot 0x13F0
+
+#endif

@@ -1,0 +1,46 @@
+#ifndef MUSYX_GROUP_WEAPONS_MP_H
+#define MUSYX_GROUP_WEAPONS_MP_H
+
+#define GRPWeapons_MP 0x0269
+
+#define SFXui_x_samrot_lp_00_looped 0x10F1
+#define SFXui_x_pause_01_oneshot 0x10FB
+#define SFXui_x_hinticon_00_oneshot 0x10FC
+#define SFXui_x_hint_00_oneshot 0x10FD
+#define SFXui_x_hint_01_oneshot 0x10FE
+#define SFXmap_x_pan_lp_00_looped 0x10FF
+#define SFXui_x_univmap_00_oneshot 0x1100
+#define SFXui_x_univmap_01_oneshot 0x1101
+#define SFXui_x_hintflas_00_oneshot 0x1102
+#define SFXui_x_hinton_00_oneshot 0x1103
+#define SFXui_x_hintoff_00_oneshot 0x1104
+#define SFXui_x_hintopen_00_oneshot 0x1105
+#define SFXgal_x_pan_lp_00_looped 0x1106
+#define SFXgal_x_zoom_lp_00_looped 0x1107
+#define SFXgal_x_legoff_00_oneshot 0x1108
+#define SFXgal_x_legon_00_oneshot 0x1109
+#define SFXmap_x_darkout_00_oneshot 0x110A
+#define SFXmap_x_darkin_00_oneshot 0x110B
+#define SFXmap_x_blip_00_oneshot 0x110C
+#define SFXmap_x_blink_00_oneshot 0x110D
+#define SFXlog_x_rotatemod_lp_00_looped 0x110E
+#define SFXui_x_type_00_oneshot 0x1114
+#define SFXui_x_type_01_oneshot 0x1115
+#define SFXui_x_newlog_00_oneshot 0x1116
+#define SFXui_x_typewin_00_oneshot 0x1117
+#define SFXgft_x_mtlservosm_lp_00_looped 0x1130
+#define SFXclf_x_gyrostopping_lp_00_looped 0x1131
+#define SFXclf_x_0ngate_00_oneshot 0x1132
+#define SFXei3_r_explode_00_oneshot 0x1134
+#define SFXclf_x_0ifan_lp_00_looped 0x1136
+#define SFXclf_x_0Mbeam_lp_00_looped 0x1137
+#define SFXclf_x_07puzzlerotate_00_oneshot 0x114D
+#define SFXclf_x_07nrg_lp_00_looped 0x114E
+#define SFXclf_x_piston_lp_00_looped 0x114F
+#define SFXclf_x_spin_lp_00_looped 0x1150
+#define SFXclf_x_sphere_lp_00_looped 0x1151
+#define SFXclf_x_sphereglow_lp_00_looped 0x1152
+#define SFXclf_x_0Jelev_lp_00_looped 0x1153
+#define SFXclf_x_0Jelevstop_00_oneshot 0x1154
+
+#endif

@@ -1,0 +1,12 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALHITBIGRATTLE_H
+#define MUSYX_GROUP_LUMINOTHMETALHITBIGRATTLE_H
+
+#define GRPLuminothMetalHitBigRattle 0x01C8
+
+#define SFXte2_x_12columnon_00_oneshot 0x119C
+#define SFXsnd_x_lasermech_00_oneshot 0x11B0
+#define SFXdk3_c_gone_00_oneshot 0x125C
+#define SFXele_c_elev_lp_00R_looped 0x1269
+#define SFXui2_x_lockon_00_oneshot 0x1476
+
+#endif

@@ -1,0 +1,8 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALHITMEDDULL_H
+#define MUSYX_GROUP_LUMINOTHMETALHITMEDDULL_H
+
+#define GRPLuminothMetalHitMedDull 0x01D2
+
+#define SFXclf_x_07glassbrk_00_oneshot 0x126C
+
+#endif

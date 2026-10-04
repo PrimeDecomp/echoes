@@ -1,0 +1,24 @@
+#ifndef MUSYX_GROUP_TURRETGALACTIC_H
+#define MUSYX_GROUP_TURRETGALACTIC_H
+
+#define GRPTurretGalactic 0x00DC
+
+#define SFXei2_r_crack_01_oneshot 0x01C1
+#define SFXei2_r_tentdie_01_oneshot 0x01C3
+#define SFXei3_a_jump_00_oneshot 0x01C4
+#define SFXei3_a_jump_01_oneshot 0x01C5
+#define SFXein_a_darkfire_00_oneshot 0x01C6
+#define SFXein_a_darktele_00_oneshot 0x01C8
+#define SFXein_a_darktele_01_oneshot 0x01C9
+#define SFXein_a_darktele_02_oneshot 0x01CA
+#define SFXein_a_darktele_03_oneshot 0x01CB
+#define SFXein_a_darkhit_00_oneshot 0x01CD
+#define SFXein_a_darkfire_lp_00_looped 0x01CE
+#define SFXdk2_a_boost_lp_00_looped 0x01D0
+#define SFXdk2_a_boost_00_oneshot 0x01D1
+#define SFXdk2_a_boostchg_00_oneshot 0x01D2
+#define SFXdk2_a_boostout_00_oneshot 0x01D3
+#define SFXdk2_a_divehit_00_oneshot 0x01D4
+#define SFXdk2_a_boost_lp_01_looped 0x01D5
+
+#endif

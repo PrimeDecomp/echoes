@@ -1,0 +1,9 @@
+#ifndef MUSYX_GROUP_DARKSAMUSCHANCEMEETING_H
+#define MUSYX_GROUP_DARKSAMUSCHANCEMEETING_H
+
+#define GRPDarkSamusChanceMeeting 0x006C
+
+#define SFXdk2_c_glassbrk_03_oneshot 0x13EC
+#define SFXdk2_c_footstepsmall_00_oneshot 0x13ED
+
+#endif

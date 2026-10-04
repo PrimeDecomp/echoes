@@ -1,0 +1,11 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSDEATH3_3_H
+#define MUSYX_GROUP_CINEDARKSAMUSDEATH3_3_H
+
+#define GRPCineDarkSamusDeath3_3 0x01DE
+
+#define SFXzzz_x_testtone_02_oneshot 0x166F
+#define SFXzzz_x_testtone_03_oneshot 0x1670
+#define SFXmtl_x_minidebris_00_oneshot 0x1671
+#define SFXprt_x_static_lp_00_looped 0x1673
+
+#endif

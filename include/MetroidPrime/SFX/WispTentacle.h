@@ -1,0 +1,19 @@
+#ifndef MUSYX_GROUP_WISPTENTACLE_H
+#define MUSYX_GROUP_WISPTENTACLE_H
+
+#define GRPWispTentacle 0x00C0
+
+#define SFXbl3_a_grabball_01_oneshot 0x0420
+#define SFXbl3_a_grabball_lp_00_looped 0x0421
+#define SFXblg_b_voxidle_00_oneshot 0x0428
+#define SFXblg_b_voxidle_01_oneshot 0x0429
+#define SFXblg_b_voxangry_01_oneshot 0x042B
+#define SFXblg_a_melee_00_oneshot 0x042C
+#define SFXblg_a_throwball_00_oneshot 0x042D
+#define SFXbl3_a_throwball_00_oneshot 0x042E
+#define SFXbl3_b_voxidle_00_oneshot 0x0431
+#define SFXbl3_b_voxidle_01_oneshot 0x0432
+#define SFXgrn_r_voxdeath_00_oneshot 0x0433
+#define SFXgrn_r_voxpainwtr_00_oneshot 0x0437
+
+#endif

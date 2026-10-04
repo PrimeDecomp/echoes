@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_CINEDARKCREATUREENCOUNTER2_H
+#define MUSYX_GROUP_CINEDARKCREATUREENCOUNTER2_H
+
+#define GRPCineDarkCreatureEncounter2 0x024A
+
+#define SFXsa2_b_wlkmoth_00_oneshot 0x14F4
+#define SFXef2_x_ashsmall_01_oneshot 0x1504
+#define SFXmet_x_passby_01_oneshot 0x1650
+
+#endif

@@ -1,0 +1,36 @@
+#ifndef MUSYX_GROUP_SAMUSMORPHBALL_MP_H
+#define MUSYX_GROUP_SAMUSMORPHBALL_MP_H
+
+#define GRPSamusMorphball_MP 0x0274
+
+#define SFXsam_b_rollrubb_lp_00_looped 0x10CF
+#define SFXsam_b_rollsand_lp_00_looped 0x10D0
+#define SFXsam_b_rollston_lp_00_looped 0x10D2
+#define SFXsam_b_rollwatr_lp_00_looped 0x10D3
+#define SFXsam_b_rollwire_lp_00_looped 0x10D4
+#define SFXsam_b_rollwood_lp_00_looped 0x10D5
+#define SFXsam_b_spidlach_00_oneshot 0x10D6
+#define SFXsam_b_spidlach_lp_00_looped 0x10D7
+#define SFXepr_a_pushsam_lp_00_looped 0x10D8
+#define SFXmph_c_morphin_00_oneshot 0x10D9
+#define SFXmph_c_morphout_00_oneshot 0x10DA
+#define SFXsam_a_boosthit_00_oneshot 0x10DB
+#define SFXibg_a_boosthit_00_oneshot 0x10DC
+#define SFXsam_b_screwout_00_oneshot 0x10DD
+#define SFXsam_b_screwout_01_oneshot 0x10DE
+#define SFXsam_b_slide_lp_00_looped 0x10DF
+#define SFXsam_r_darkhit_lp_00_looped 0x10E0
+#define SFXprt_c_darkhit_lp_00_looped 0x10E1
+#define SFXsam_r_darkhit_lp_01_looped 0x10E2
+#define SFXsam_r_phazhit_lp_00_looped 0x10E3
+#define SFXpik_x_idle_lp_00_looped 0x10E4
+#define SFXpik_x_idle_01_lp_looped 0x10E5
+#define SFXvis_x_echo_00_oneshot 0x10E6
+#define SFXvis_x_echodis_lp_00_looped 0x10E7
+#define SFXvis_x_echo_03L_oneshot 0x10E8
+#define SFXvis_x_echo_03R_oneshot 0x10E9
+#define SFXvis_x_echodis_00_oneshot 0x10EA
+#define SFXsam_r_damage_lp_00_looped 0x10EB
+#define SFXui_x_visor_lp_00_looped 0x10EC
+
+#endif

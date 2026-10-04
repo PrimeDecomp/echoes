@@ -1,0 +1,11 @@
+#ifndef MUSYX_GROUP_CLIFFSIDEGYROSCOPE_H
+#define MUSYX_GROUP_CLIFFSIDEGYROSCOPE_H
+
+#define GRPCliffsideGyroscope 0x015A
+
+#define SFXtem_x_floormove_lp_00_looped 0x123B
+#define SFXclf_x_05spin_lp_00_looped 0x123C
+#define SFXlth_x_mtlservomed_lp_00_looped 0x123D
+#define SFXsw2_x_10spinner_lp_00_looped 0x123E
+
+#endif

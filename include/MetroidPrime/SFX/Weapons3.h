@@ -1,0 +1,27 @@
+#ifndef MUSYX_GROUP_WEAPONS3_H
+#define MUSYX_GROUP_WEAPONS3_H
+
+#define GRPWeapons3 0x012E
+
+#define SFXshr_b_spinwtr_lp_00_looped 0x0DEA
+#define SFXshr_r_explode_00_oneshot 0x0DEC
+#define SFXshr_b_popup_02_oneshot 0x0DEE
+#define SFXshr_b_voxalert_00_oneshot 0x0DEF
+#define SFXsts_b_voxidle_00_oneshot 0x0DF5
+#define SFXoct_r_bounce_01_oneshot 0x0E03
+#define SFXoct_r_split_00_oneshot 0x0E04
+#define SFXspu_b_close_oneshot 0x0E07
+#define SFXrez_b_sphere_01_oneshot 0x0E31
+#define SFXswf_r_voxdeath_00_oneshot 0x0E32
+#define SFXisg_b_rollelecslow_lp_00_looped 0x0E41
+#define SFXisg_b_rollzapslow_lp_00_looped 0x0E42
+#define SFXisg_b_spidrollslow_lp_00_looped 0x0E43
+#define SFXswi_b_move_lp_00_looped 0x0E49
+#define SFXswb_b_bactanrgry_00_oneshot 0x0E5D
+#define SFXswb_b_bactangry_01_oneshot 0x0E5E
+#define SFXgrn_r_tailbrk_00_oneshot 0x0E8B
+#define SFXigg_r_electric_lp_00_looped 0x0E8C
+#define SFXigg_r_tailbrk_01_oneshot 0x0E95
+#define SFXsam_b_mland_00_oneshot 0x0FF5
+
+#endif

@@ -1,0 +1,12 @@
+#ifndef MUSYX_GROUP_CINEDARKSAMUSDEATH1_6_H
+#define MUSYX_GROUP_CINEDARKSAMUSDEATH1_6_H
+
+#define GRPCineDarkSamusDeath1_6 0x01E4
+
+#define SFXclf_x_05spinstop_00_oneshot 0x1230
+#define SFXgas_x_open_00_oneshot 0x1421
+#define SFXgas_x_close_00_oneshot 0x1422
+#define SFXsa2_b_wlkice_00_oneshot 0x14E4
+#define SFXsa2_b_wlkice_01_oneshot 0x14E5
+
+#endif

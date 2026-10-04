@@ -1,0 +1,25 @@
+#ifndef MUSYX_GROUP_WEAPONS2_MP_H
+#define MUSYX_GROUP_WEAPONS2_MP_H
+
+#define GRPWeapons2_MP 0x0279
+
+#define SFXsam_b_jump_01_oneshot 0x10B8
+#define SFXsam_b_jump_02_oneshot 0x10BA
+#define SFXsam_c_jump_00_oneshot 0x10BB
+#define SFXsam_b_sidejump_00_oneshot 0x10BC
+#define SFXsam_b_gravboost_lp_00_looped 0x10BD
+#define SFXclf_x_lumrings_lp_00_looped 0x1139
+#define SFXclf_x_rings_lp_00_looped 0x113A
+#define SFXclf_x_gyro_lp_00_looped 0x113C
+#define SFXclf_x_gyrostop_00_oneshot 0x113E
+#define SFXclf_x_gryo_lp_01_looped 0x113F
+#define SFXclf_x_gyrostart_00_oneshot 0x1140
+#define SFXsam_b_rolldgras_lp_00_looped 0x1141
+#define SFXsam_b_rolldwal_lp_00_looped 0x1142
+#define SFXclf_x_btower_00_oneshot 0x1143
+#define SFXclf_x_bwiresnap_00_oneshot 0x1144
+#define SFXclf_x_bwronk_00_oneshot 0x1145
+#define SFXclf_x_gryo2_lp_looped 0x1147
+#define SFXrec_x_servoup_lp_00_looped 0x1415
+
+#endif

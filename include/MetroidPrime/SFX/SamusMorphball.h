@@ -1,0 +1,38 @@
+#ifndef MUSYX_GROUP_SAMUSMORPHBALL_H
+#define MUSYX_GROUP_SAMUSMORPHBALL_H
+
+#define GRPSamusMorphball 0x0142
+
+#define SFXibg_a_fire_00_oneshot 0x03C8
+#define SFXspr_b_moan_01_oneshot 0x053D
+#define SFXsam_b_mlandmtl_00_oneshot 0x0FD3
+#define SFXsam_b_movearm_01_oneshot 0x0FD4
+#define SFXsam_b_landgrat_00_oneshot 0x0FD5
+#define SFXsam_b_landston_00_oneshot 0x0FD7
+#define SFXsam_c_landgrat_00_oneshot 0x0FD8
+#define SFXsam_c_landmetl_00_oneshot 0x0FD9
+#define SFXsam_b_wlkwood_00_oneshot 0x0FDC
+#define SFXsam_b_wlkwood_01_oneshot 0x0FDD
+#define SFXsam_b_landwood_00_oneshot 0x0FDE
+#define SFXsam_b_landdirt_00_oneshot 0x0FE0
+#define SFXsam_b_mlanddrt_00_oneshot 0x0FE1
+#define SFXsam_c_highlandston_00_oneshot 0x0FE2
+#define SFXsam_b_landsand_00_oneshot 0x0FE3
+#define SFXsam_b_landsand_02_oneshot 0x0FE4
+#define SFXsam_b_voxland_00_oneshot 0x0FE5
+#define SFXsam_b_voxland_01_oneshot 0x0FE6
+#define SFXsam_b_wlksand_00_oneshot 0x0FE8
+#define SFXsam_b_wlksand_01_oneshot 0x0FE9
+#define SFXsam_c_wlkgrate_00_oneshot 0x0FEB
+#define SFXsam_c_wlkgrate_01_oneshot 0x0FEC
+#define SFXsam_c_wlkmetal_00_oneshot 0x0FED
+#define SFXsam_b_landgras_00_oneshot 0x0FEF
+#define SFXsam_b_wlkgrass_01_oneshot 0x0FF1
+#define SFXsam_b_landorg_00_oneshot 0x0FF2
+#define SFXsam_b_mlandorg_00_oneshot 0x0FF3
+#define SFXsam_b_mlandgrs_00_oneshot 0x0FF4
+#define SFXsam_c_land_01_oneshot 0x0FF6
+#define SFXsa2_a_litrico_00_oneshot 0x156E
+#define SFXsa2_a_litcohit_00_oneshot 0x156F
+
+#endif

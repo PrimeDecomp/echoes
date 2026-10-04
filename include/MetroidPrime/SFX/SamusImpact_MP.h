@@ -1,0 +1,19 @@
+#ifndef MUSYX_GROUP_SAMUSIMPACT_MP_H
+#define MUSYX_GROUP_SAMUSIMPACT_MP_H
+
+#define GRPSamusImpact_MP 0x0272
+
+#define SFXsam_b_screwjump_00_oneshot 0x10BE
+#define SFXsam_b_gravfall_00_oneshot 0x10BF
+#define SFXsam_c_jump_01_oneshot 0x10C0
+#define SFXsam_b_bombjump_00_oneshot 0x10C1
+#define SFXsam_b_morphboo_00_oneshot 0x10C2
+#define SFXsam_b_morphchg_lp_00_looped 0x10C3
+#define SFXsam_b_morphin_00_oneshot 0x10C4
+#define SFXsam_b_morphout_00_oneshot 0x10C5
+#define SFXsam_b_rolldirt_lp_00_looped 0x10C6
+#define SFXsam_b_rollfabr_lp_00_looped 0x10C7
+#define SFXsam_b_rollgras_lp_00_looped 0x10C8
+#define SFXsam_b_rollgrat_lp_00_looped 0x10C9
+
+#endif

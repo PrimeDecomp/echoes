@@ -1,0 +1,27 @@
+#ifndef MUSYX_GROUP_WEAPONS2_H
+#define MUSYX_GROUP_WEAPONS2_H
+
+#define GRPWeapons2 0x012F
+
+#define SFXing_a_offsamus_00_oneshot 0x06DF
+#define SFXing_a_offsamus_01_oneshot 0x06E0
+#define SFXshr_r_explode_01_oneshot 0x0DED
+#define SFXshr_r_voxpain_00_oneshot 0x0DF2
+#define SFXspu_b_open_oneshot 0x0E14
+#define SFXspu_b_idle_lp_00_looped 0x0E16
+#define SFXrez_r_voxalert_00_oneshot 0x0E2E
+#define SFXrez_r_voxpain_00_oneshot 0x0E2F
+#define SFXrez_b_sphere_00_oneshot 0x0E30
+#define SFXisg_b_rollelecfast_00_oneshot 0x0E44
+#define SFXisg_b_rollelecfast_01_oneshot 0x0E45
+#define SFXisg_b_rollelecfast_lp_00_looped 0x0E46
+#define SFXisg_b_rollzapfast_lp_00_looped 0x0E47
+#define SFXswi_b_voxattack_00_oneshot 0x0E4A
+#define SFXswb_b_bacteria_00_oneshot 0x0E61
+#define SFXswb_b_bacteria_01_oneshot 0x0E62
+#define SFXblp_b_idle_00_oneshot 0x0E96
+#define SFXui_x_abutton_00_oneshot 0x0FBA
+#define SFXui_c_scandone_00_oneshot 0x0FBF
+#define SFXui_c_scanoff_01_oneshot 0x0FC0
+
+#endif

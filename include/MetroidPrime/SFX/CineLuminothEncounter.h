@@ -1,0 +1,13 @@
+#ifndef MUSYX_GROUP_CINELUMINOTHENCOUNTER_H
+#define MUSYX_GROUP_CINELUMINOTHENCOUNTER_H
+
+#define GRPCineLuminothEncounter 0x0206
+
+#define SFXdob_x_break_00_oneshot 0x1645
+#define SFXmtl_x_hitsmring_01_oneshot 0x1651
+#define SFXmtl_x_hitsmring_00_oneshot 0x1652
+#define SFXmtl_x_hitbigring_00_oneshot 0x1653
+#define SFXdk2_a_boosthit_01_oneshot 0x1654
+#define SFXdk2_a_boosthit_00_oneshot 0x1655
+
+#endif

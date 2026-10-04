@@ -1,0 +1,49 @@
+#ifndef MUSYX_GROUP_SPLINTER_H
+#define MUSYX_GROUP_SPLINTER_H
+
+#define GRPSplinter 0x00D9
+
+#define SFXdgd_b_shoulder_02_oneshot 0x01DB
+#define SFXdgd_b_voxidle_01_oneshot 0x01E1
+#define SFXdgd_c_shoulder_02_oneshot 0x01E2
+#define SFXdgd_a_homing_00_oneshot 0x01E3
+#define SFXdgd_a_nilfire_lp_00_looped 0x01E4
+#define SFXdgd_c_headbounce_00_oneshot 0x01E8
+#define SFXdgd_c_samland_00_oneshot 0x01E9
+#define SFXdgd_c_voxdistort_00_oneshot 0x01EB
+#define SFXsb2_a_flapattack_00_oneshot 0x01ED
+#define SFXsb2_a_spit_00_oneshot 0x01EE
+#define SFXsb2_b_flierdeath_00_oneshot 0x01EF
+#define SFXsb2_a_dive_00_oneshot 0x01F0
+#define SFXsb2_b_voxstun_00_oneshot 0x01F1
+#define SFXein_c_appear_00_oneshot 0x01F5
+#define SFXein_c_bodymove_lp_00_looped 0x01F6
+#define SFXein_c_tentdown_00_oneshot 0x01F7
+#define SFXein_c_pullout_00_oneshot 0x01F8
+#define SFXein_c_tentacle_lp_00_looped 0x01F9
+#define SFXein_c_tentswoosh_00_oneshot 0x01FA
+#define SFXein_c_generatoropen_00_oneshot 0x01FE
+#define SFXein_c_teleportation_00_oneshot 0x01FF
+#define SFXein_a_heartattack_01_oneshot 0x0203
+#define SFXein_a_heartattack_00_oneshot 0x0204
+#define SFXdk3_b_enrageout_00_oneshot 0x0206
+#define SFXdks_c_bluedeth_lp_00_looped 0x0209
+#define SFXdks_c_elecsm_lp_00_looped 0x020A
+#define SFXdk2_c_electric_lp_00_looped 0x020D
+#define SFXeff_x_electrobig_lp_00_looped 0x020E
+#define SFXdks_c_sshot_01_oneshot 0x020F
+#define SFXdks_a_sshot_01_oneshot 0x0210
+#define SFXdk2_c_sshot_01_oneshot 0x0211
+#define SFXdk2_c_voxbreath_01_oneshot 0x0217
+#define SFXdgd_c_dissolve_00_oneshot 0x0218
+#define SFXdgd_b_beacon_lp_00_looped 0x0219
+#define SFXdgd_b_beacon_lp_01_looped 0x021A
+#define SFXsa2_b_wlkweb_01_oneshot 0x14F7
+#define SFXsa2_b_sweetland_00_oneshot 0x14F8
+#define SFXsa2_r_acidhit_00_oneshot 0x14F9
+#define SFXsa2_r_acidhit_lp_00_looped 0x14FA
+#define SFXsa2_r_die_00_oneshot 0x14FB
+#define SFXsa2_r_gibsamus_01_oneshot 0x1501
+#define SFXsa2_r_ash_00_oneshot 0x1502
+
+#endif

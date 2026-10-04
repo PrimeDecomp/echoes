@@ -1,0 +1,21 @@
+#ifndef MUSYX_GROUP_WEAPONS3_MP_H
+#define MUSYX_GROUP_WEAPONS3_MP_H
+
+#define GRPWeapons3_MP 0x027A
+
+#define SFXmap_x_rotate_00_looped 0x10F8
+#define SFXmap_x_zoom_lp_00_looped 0x10F9
+#define SFXui_x_pause_00_oneshot 0x10FA
+#define SFXui_x_invslide_lp_00_looped 0x110F
+#define SFXlog_x_pagedown_00_oneshot 0x1118
+#define SFXui_x_default_00_oneshot 0x1119
+#define SFXgen_x_wind_lp_03_looped 0x111A
+#define SFXgft_x_mtlhitbigrattle_00_oneshot 0x111D
+#define SFXgft_x_mtlhitbigring_00_oneshot 0x1120
+#define SFXgft_x_mtlhitmedhollow_00_oneshot 0x1121
+#define SFXcnt_b_floorstop_00_oneshot 0x1122
+#define SFXgft_x_mtlhitsmdull_00_oneshot 0x1123
+#define SFXclf_x_0gspinstop_00_oneshot 0x1124
+#define SFXtem_x_gfelevstop_00_oneshot 0x1125
+
+#endif

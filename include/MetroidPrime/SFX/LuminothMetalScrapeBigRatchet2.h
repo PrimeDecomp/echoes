@@ -1,0 +1,9 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALSCRAPEBIGRATCHET2_H
+#define MUSYX_GROUP_LUMINOTHMETALSCRAPEBIGRATCHET2_H
+
+#define GRPLuminothMetalScrapeBigRatchet2 0x01CE
+
+#define SFXdk3_c_voxidle_00_oneshot 0x1260
+#define SFXamo_c_recharge_00_oneshot 0x1271
+
+#endif

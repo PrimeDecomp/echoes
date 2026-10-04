@@ -1,0 +1,14 @@
+#ifndef MUSYX_GROUP_EMPERORING1_1_H
+#define MUSYX_GROUP_EMPERORING1_1_H
+
+#define GRPEmperorIng1_1 0x0059
+
+#define SFXptx_c_lightdark_lp_00_looped 0x12CA
+#define SFXprt_c_riftdark_lp_01L_looped 0x12CB
+#define SFXptx_c_riftlight_lp_00R_looped 0x12CF
+#define SFXptx_c_darklight_lp_00_looped 0x12D0
+#define SFXprt_x_riftdark_lp_01L_looped 0x12D1
+#define SFXprt_x_riftdark_lp_01R_looped 0x12D2
+#define SFXprt_x_riftdarkcomp_lp_01_looped 0x12D3
+
+#endif

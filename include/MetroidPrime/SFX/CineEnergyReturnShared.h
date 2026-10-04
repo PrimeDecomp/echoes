@@ -1,0 +1,9 @@
+#ifndef MUSYX_GROUP_CINEENERGYRETURNSHARED_H
+#define MUSYX_GROUP_CINEENERGYRETURNSHARED_H
+
+#define GRPCineEnergyReturnShared 0x01D9
+
+#define SFXsa2_b_landdwal_02_oneshot 0x14C8
+#define SFXsa2_b_landwire_02_oneshot 0x14CE
+
+#endif

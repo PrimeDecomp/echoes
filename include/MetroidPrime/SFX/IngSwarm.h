@@ -1,0 +1,22 @@
+#ifndef MUSYX_GROUP_INGSWARM_H
+#define MUSYX_GROUP_INGSWARM_H
+
+#define GRPIngSwarm 0x00EE
+
+#define SFXdk3_a_phazhit_lp_00_looped 0x0108
+#define SFXdk3_b_enrageland_00_oneshot 0x0109
+#define SFXdk2_b_invisin_00_oneshot 0x010A
+#define SFXdk2_b_invisout_00_oneshot 0x010B
+#define SFXdk2_a_icechg_00_oneshot 0x010C
+#define SFXdk3_b_invisin_00_oneshot 0x010D
+#define SFXdk2_a_sweep_00_oneshot 0x010E
+#define SFXdk2_a_sweepchg_00_oneshot 0x010F
+#define SFXein_b_voxidle_01_oneshot 0x011B
+#define SFXein_b_hitground_00_oneshot 0x011C
+#define SFXein_a_tentwarp_00_oneshot 0x0128
+#define SFXein_a_tentwarptele_00_oneshot 0x0129
+#define SFXsdb_a_darkspithit_00_oneshot 0x014D
+#define SFXsdb_a_jawattack_00_oneshot 0x014E
+#define SFXsdb_x_sphereslam_00_oneshot 0x0150
+
+#endif

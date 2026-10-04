@@ -1,0 +1,22 @@
+#ifndef MUSYX_GROUP_PILLBUG_H
+#define MUSYX_GROUP_PILLBUG_H
+
+#define GRPPillbug 0x00C1
+
+#define SFXin2_b_spotin_00_oneshot 0x03F5
+#define SFXin2_b_spotout_00_oneshot 0x03F6
+#define SFXin2_b_spotidle_lp_00_looped 0x03F7
+#define SFXin2_b_spotmove_lp_00_looped 0x03F8
+#define SFXibg_a_firehit_00_oneshot 0x03F9
+#define SFXibg_b_spotidle_lp_00_looped 0x03FA
+#define SFXibg_b_spotin_00_oneshot 0x03FB
+#define SFXibg_b_spotmove_lp_00_looped 0x03FC
+#define SFXibg_b_spotout_00_oneshot 0x03FD
+#define SFXibg_b_henshin_00_oneshot 0x03FE
+#define SFXibg_b_henshinout_00_oneshot 0x03FF
+#define SFXin2_b_ei2idle_lp_00_looped 0x0400
+#define SFXblg_b_swim_00_oneshot 0x0402
+#define SFXblg_b_swim_01_oneshot 0x0403
+#define SFXblg_b_swimfast_00_oneshot 0x0404
+
+#endif

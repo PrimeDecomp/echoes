@@ -1,0 +1,18 @@
+#ifndef MUSYX_GROUP_CINEPORTALTRANSITION_H
+#define MUSYX_GROUP_CINEPORTALTRANSITION_H
+
+#define GRPCinePortalTransition 0x0209
+
+#define SFXsd2_a_boost_01_oneshot 0x0703
+#define SFXsd2_b_voxangry_01_oneshot 0x0710
+#define SFXsd2_b_voxdig_00_oneshot 0x0711
+#define SFXsd2_b_voxerupt_00_oneshot 0x0712
+#define SFXsa2_b_rollice_lp_00_looped 0x1532
+#define SFXsa2_b_rollorg_lp_00_looped 0x1536
+#define SFXsa2_b_rollphaz_lp_00_looped 0x1537
+#define SFXsa2_b_rollrubb_lp_00_looped 0x1539
+#define SFXsa2_b_rollsand_lp_00_looped 0x153A
+#define SFXsa2_b_rollwatr_lp_00_looped 0x153D
+#define SFXsa2_b_rollweb_lp_00_looped 0x153E
+
+#endif

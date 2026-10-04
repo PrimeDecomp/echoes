@@ -1,0 +1,10 @@
+#ifndef MUSYX_GROUP_LUMINOTHMETALSCRAPEMED_H
+#define MUSYX_GROUP_LUMINOTHMETALSCRAPEMED_H
+
+#define GRPLuminothMetalScrapeMed 0x01CF
+
+#define SFXlth_x_transsqueek_00_oneshot 0x1218
+#define SFXgen_c_wild_lp_00_looped 0x124F
+#define SFXamo_c_redglow_lp_00_looped 0x1272
+
+#endif

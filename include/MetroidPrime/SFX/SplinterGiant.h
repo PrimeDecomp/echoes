@@ -1,0 +1,13 @@
+#ifndef MUSYX_GROUP_SPLINTERGIANT_H
+#define MUSYX_GROUP_SPLINTERGIANT_H
+
+#define GRPSplinterGiant 0x0099
+
+#define SFXdks_c_intobluebits_00_oneshot 0x0207
+#define SFXdks_c_electric_lp_00_looped 0x020B
+#define SFXdks_c_electricup_lp_00_looped 0x020C
+#define SFXspt_a_laser_lp_00_looped 0x021D
+#define SFXrez_a_sptlazer_lp_00_looped 0x021E
+#define SFXelu_b_litshield_lp_00_looped 0x021F
+
+#endif

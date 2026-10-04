@@ -1,0 +1,25 @@
+#ifndef MUSYX_GROUP_UI2_H
+#define MUSYX_GROUP_UI2_H
+
+#define GRPUI2 0x0146
+
+#define SFXwal_b_voxidle_01_oneshot 0x0E9E
+#define SFXwal_b_walk_00_oneshot 0x0EA2
+#define SFXwal_b_walk_01_oneshot 0x0EA3
+#define SFXspr_b_jump_01_oneshot 0x0ECE
+#define SFXcpr_b_decloak_00_oneshot 0x0ED6
+#define SFXsam_a_mislrico_00_oneshot 0x0EEA
+#define SFXsam_a_mislemp_01_oneshot 0x0EEC
+#define SFXsam_a_skrfire_00_oneshot 0x0EED
+#define SFXsam_a_skrcharge_lp_00_looped 0x0EF0
+#define SFXsam_a_nilcharge_lp_00_looped 0x0EFA
+#define SFXsam_a_nilcofire_00_oneshot 0x0EFD
+#define SFXsam_a_nilcohit_00_oneshot 0x0EFF
+#define SFXsam_a_litchhit_00_oneshot 0x0F0F
+#define SFXsam_a_litcofire_00_oneshot 0x0F10
+#define SFXsam_a_litcofire_lp_00_looped 0x0F11
+#define SFXsam_a_litcorico_00_oneshot 0x0F12
+#define SFXsa2_a_skrfire_02_oneshot 0x1591
+#define SFXsa2_a_skrhit_00_oneshot 0x1592
+
+#endif

@@ -1,0 +1,6 @@
+#ifndef MUSYX_GROUP_PORTALTRANSITION_H
+#define MUSYX_GROUP_PORTALTRANSITION_H
+
+#define GRPPortalTransition 0xFFFF
+
+#endif
