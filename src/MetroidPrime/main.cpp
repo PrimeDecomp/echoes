@@ -3,7 +3,9 @@
 #include "Kyoto/Alloc/LockedCache.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CSaveRegion.hpp"
+#include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/CWorldLayerState.hpp"
 
 #include "Kyoto/Audio/CDSPStreamManager.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -57,7 +59,9 @@
 #include "MetroidPrime/CMainFlow.hpp"
 #include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
@@ -827,3 +831,15 @@ CPlayerState::~CPlayerState() {}
 CPlayerState::SPersistentState::~SPersistentState() {}
 
 CStaticInterference::~CStaticInterference() {}
+
+CGameOptions::~CGameOptions() {}
+
+CWorldState::~CWorldState() {}
+
+CGameState::~CGameState() {}
+
+void CMain::ResetGameState() {}
+
+int CMain::GetLanguage() const {}
+
+void CMain::UpdateStreamedAudio() {}
