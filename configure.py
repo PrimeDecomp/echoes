@@ -569,7 +569,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CMapWorldInfo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCounter.cpp"),
             Object(NonMatching, "MetroidPrime/CMapWorld.cpp"),
-            Object(NonMatching, "MetroidPrime/CMemoryDrawEnum.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CMemoryDrawEnum.cpp"),
             Object(NonMatching, "MetroidPrime/CMapUniverse.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptMemoryRelay.cpp"),
