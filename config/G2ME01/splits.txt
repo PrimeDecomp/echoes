@@ -315,9 +315,6 @@ MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.sbss       start:0x80419058 end:0x8041905C
 	.sdata2     start:0x8041AFE0 end:0x8041B018
 
-MetroidPrime/CMemoryDrawEnum.cpp:
-	.sbss       start:0x80419078 end:0x8041907C
-
 MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
 	.text       start:0x8009F550 end:0x800A4850
 	.data       start:0x803B3210 end:0x803B32C0
@@ -364,6 +361,10 @@ MetroidPrime/ScriptObjects/CScriptPickup.cpp:
 MetroidPrime/CDamageInfo.cpp:
 	.text       start:0x800B5F14 end:0x800B6320
 	.sdata2     start:0x8041B1B0 end:0x8041B1C8
+
+MetroidPrime/CMemoryDrawEnum.cpp:
+	.text       start:0x800B6320 end:0x800B63DC
+	.sbss       start:0x80419078 end:0x8041907C
 
 MetroidPrime/ScriptObjects/CScriptDock.cpp:
 	.text       start:0x800B63DC end:0x800B7928
