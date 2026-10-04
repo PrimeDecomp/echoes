@@ -1,6 +1,10 @@
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CFluidPlaneManager.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
+
+#include "rstl/math.hpp"
 
 CWeapon::CWeapon(TUniqueId uid, TAreaId areaId, bool active, TUniqueId owner, EWeaponType type,
                  const rstl::string& name, const CTransform4f& xf, const CMaterialFilter& filter,
@@ -32,7 +36,11 @@ void CWeapon::SetDamageFalloffSpeed(float speed) {
 void CWeapon::Think(float dt, CStateManager& mgr) {
   mCurTime += dt;
   if (HasAttrib(kPA_DamageFalloff)) {
-    // TODO: reconstruct scaled damage with fresh hit metadata, not a copy of the original record.
+    const float scale = rstl::max_val(0.f, 1.f - mCurTime * mDamageFalloffSpeed);
+    const float damage = scale * mOrigDamageInfo.GetDamage();
+    const float radius = scale * mOrigDamageInfo.GetRadius();
+    const float knockback = scale * mOrigDamageInfo.GetKnockBackPower();
+    mCurDamageInfo = CDamageInfo(mOrigDamageInfo.GetWeaponMode(), damage, radius, knockback);
   } else {
     mCurDamageInfo = mOrigDamageInfo;
   }
@@ -40,7 +48,54 @@ void CWeapon::Think(float dt, CStateManager& mgr) {
 }
 
 void CWeapon::FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) {
-  // TODO: weapon-dependent splash strength and fluid-plane manager effects.
+  bool doSplash = true;
+  float magnitude = 0.f;
+  switch (mWeaponType) {
+  case kWT_Power:
+  case kWT_Light:
+  case kWT_Phazon:
+    magnitude = 0.1f;
+    break;
+  case kWT_Dark:
+    magnitude = 0.3f;
+    break;
+  case kWT_Annihilator:
+    break;
+  case kWT_Missile:
+    magnitude = 0.5f;
+    break;
+  default:
+    doSplash = false;
+    break;
+  }
+
+  if (HasAttrib(kPA_ComboShot)) {
+    if (state == kFS_InFluid) {
+      doSplash = false;
+    } else {
+      magnitude += 0.5f;
+    }
+  }
+  if (HasAttrib(kPA_Charged)) {
+    magnitude += 0.25f;
+  }
+  magnitude = rstl::min_val(magnitude, 1.f);
+
+  if (doSplash) {
+    const CVector3f position(GetTranslation().GetX(), GetTranslation().GetY(),
+                             water.GetTriggerBoundsWR().GetMaxPoint().GetZ());
+    if (HasAttrib(kPA_ComboShot)) {
+      doSplash = water.CanRippleAtPoint(position);
+    } else if (state == kFS_InFluid) {
+      doSplash = false;
+    }
+
+    if (doSplash) {
+      const bool playSound = state == kFS_EnteredFluid || state == kFS_LeftFluid;
+      mgr.GetFluidPlaneManager()->CreateSplash(GetUniqueId(), mgr, water, position, magnitude,
+                                               playSound);
+    }
+  }
 }
 
 void CWeapon::Render(const CStateManager& mgr) const {}
