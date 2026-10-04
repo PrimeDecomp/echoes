@@ -933,6 +933,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Math/CNUQuaternion.cpp"),
             Object(NonMatching, "Kyoto/Math/CQuaternion.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CRandom16.cpp"),
+            Object(NonMatching, "Kyoto/CFactoryStore.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CObjectReference.cpp"),
             Object(NonMatching, "Kyoto/CSimplePool.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/CToken.cpp"),
