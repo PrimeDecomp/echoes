@@ -907,6 +907,7 @@ config.libs = [
         "host": True,
         "objects": [
             Object(Matching, "Kyoto/Basics/CStopwatch.cpp"),
+            Object(NonMatching, "Kyoto/Basics/CBasics.cpp"),
             Object(NonMatching, "Kyoto/Basics/CBasicsDolphin.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Alloc/CCallStackDolphin.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Basics/COsContextDolphin.cpp"),
