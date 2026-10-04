@@ -172,6 +172,9 @@ public:
                      const CActor* ignoreActor) const;
   void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CAABox& bounds,
                      const CMaterialFilter& filter, const CActor* ignoreActor) const;
+  // Guessed name, correlated with Prime's actor-filtered near-list wrapper.
+  void BuildColliderList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CActor& actor,
+                         const CAABox& bounds) const;
 
   TEditorId GetEditorIdForUniqueId(TUniqueId) const;
   TUniqueId GetIdForScript(TEditorId eid) const;

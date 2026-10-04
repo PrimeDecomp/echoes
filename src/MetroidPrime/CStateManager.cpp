@@ -10,6 +10,7 @@
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
+#include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
@@ -71,6 +72,11 @@ int CStateManager::GetViewportLayoutIndex() const {
     return 2;
   }
   return 1;
+}
+
+void CStateManager::BuildColliderList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                    const CActor& actor, const CAABox& bounds) const {
+  mSortedListManager->BuildNearList(nearList, actor, bounds);
 }
 
 struct queryOutput {
