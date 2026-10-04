@@ -1,5 +1,5 @@
-#ifndef _RENDERCOLLISION
-#define _RENDERCOLLISION
+#ifndef _RENDERGEOMETRYRAYCAST
+#define _RENDERGEOMETRYRAYCAST
 
 #include "Collision/CRayCastResult.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
@@ -12,7 +12,7 @@ class CMaterialFilter;
 class CStateManager;
 
 // Guessed namespace and function names for the render-geometry ray queries.
-namespace RenderCollision {
+namespace RenderGeometryRayCast {
 
 CRayCastResult RayWorldIntersection(const CStateManager& mgr, const CVector3f& origin,
                                     const CVector3f& direction, float length,
@@ -22,6 +22,6 @@ int RaySurfaceIntersection(const CCubeSurface& surface, const CCubeMaterial& mat
                            const CVector3f* positions, const CLine& line, CRayCastResult& result,
                            float& nearest);
 
-} // namespace RenderCollision
+} // namespace RenderGeometryRayCast
 
-#endif // _RENDERCOLLISION
+#endif // _RENDERGEOMETRYRAYCAST

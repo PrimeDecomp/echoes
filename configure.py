@@ -705,7 +705,7 @@ config.libs = [
             Object(NonMatching, "Weapons/CDecal.cpp"),
             Object(Matching, "Weapons/CDecalDescription.cpp"),
             Object(NonMatching, "MetroidPrime/CDecalManager.cpp"),
-            Object(NonMatching, "MetroidPrime/RenderCollision.cpp"),
+            Object(NonMatching, "MetroidPrime/RenderGeometryRayCast.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/TGameTypes.cpp"),
             Object(NonMatching, "MetroidPrime/CPhysicsActor.cpp"),

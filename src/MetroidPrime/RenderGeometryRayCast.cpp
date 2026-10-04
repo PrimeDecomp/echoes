@@ -1,4 +1,4 @@
-#include "MetroidPrime/RenderCollision.hpp"
+#include "MetroidPrime/RenderGeometryRayCast.hpp"
 
 #include "Collision/CMaterialFilter.hpp"
 #include "Collision/CollisionUtil.hpp"
@@ -54,10 +54,10 @@ inline bool IntersectTriangle(const CVector3f& a, const CVector3f& b, const CVec
 }
 } // namespace
 
-int RenderCollision::RaySurfaceIntersection(const CCubeSurface& surface,
-                                            const CCubeMaterial& material,
-                                            const CVector3f* positions, const CLine& line,
-                                            CRayCastResult& result, float& nearest) {
+int RenderGeometryRayCast::RaySurfaceIntersection(const CCubeSurface& surface,
+                                                  const CCubeMaterial& material,
+                                                  const CVector3f* positions, const CLine& line,
+                                                  CRayCastResult& result, float& nearest) {
   const uint descriptor = material.GetVertexDesc();
   int stride = 0;
   for (int i = 0; i < 16; ++i) {
@@ -119,11 +119,11 @@ int RenderCollision::RaySurfaceIntersection(const CCubeSurface& surface,
   return triangles;
 }
 
-CRayCastResult RenderCollision::RayWorldIntersection(const CStateManager& mgr,
-                                                     const CVector3f& origin,
-                                                     const CVector3f& direction, float length,
-                                                     const CMaterialFilter& filter,
-                                                     rstl::pair< TAreaId, int >* modelOut) {
+CRayCastResult RenderGeometryRayCast::RayWorldIntersection(const CStateManager& mgr,
+                                                           const CVector3f& origin,
+                                                           const CVector3f& direction, float length,
+                                                           const CMaterialFilter& filter,
+                                                           rstl::pair< TAreaId, int >* modelOut) {
   CRayCastResult result;
   if (length <= 0.f) {
     length = 100000.f;
