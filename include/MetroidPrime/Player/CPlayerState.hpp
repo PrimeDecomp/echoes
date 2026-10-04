@@ -277,6 +277,7 @@ public:
   void DecrPickUp(EItemType type, int amount);
   void IncrPickUp(EItemType type, int amount);
   void ResetAndIncrPickUp(EItemType type, int amount);
+  float GetTimeLeft(EItemType type) const { return mPowerups[type].mTimeLeft; }
   void SetTimeLeft(EItemType type, float time) { mPowerups[type].mTimeLeft = time; }
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();

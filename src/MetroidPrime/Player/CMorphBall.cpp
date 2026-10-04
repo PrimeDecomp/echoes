@@ -14,10 +14,12 @@
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Particles/CDeferredParticleEffect.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
+#include "Kyoto/Particles/CParticleElectric.hpp"
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/CFluidPlaneManager.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
@@ -1117,14 +1119,241 @@ void CMorphBall::UpdateBallLight(float dt, CStateManager& mgr) {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateEffects(float dt, CStateManager& mgr) {
-  // TODO: Update particle transforms, trail history, wake selection and light intensities.
+  const CTransform4f swooshToWorld = GetSwooshToWorld();
+  const CPlayerState* playerState = mPlayer.GetPlayerState();
+  const bool dead = mPlayer.GetDeathTime() > 0.f;
+
+  if (!dead) {
+    const CTransform4f ballToWorld = GetBallToWorld();
+    const CVector3f ballPos = ballToWorld.GetTranslation();
+
+    const CVector3f slowBlueOffset1 = swooshToWorld.Rotate(CVector3f(0.1f, 0.f, 0.f));
+    mSlowBlueTailSwooshGen->SetTranslation(swooshToWorld.GetTranslation() + slowBlueOffset1);
+    mSlowBlueTailSwooshGen->SetOrientation(swooshToWorld.GetRotation());
+    mSlowBlueTailSwooshGen->SetWarmUp();
+    mSlowBlueTailSwooshGen->Update(0.0);
+
+    const CVector3f slowBlueOffset2 = swooshToWorld.Rotate(CVector3f(-0.1f, 0.f, 0.f));
+    mSlowBlueTailSwooshGen2->SetTranslation(swooshToWorld.GetTranslation() + slowBlueOffset2);
+    mSlowBlueTailSwooshGen2->SetOrientation(swooshToWorld.GetRotation());
+    mSlowBlueTailSwooshGen2->SetWarmUp();
+    mSlowBlueTailSwooshGen2->Update(0.0);
+
+    const CVector3f slowBlueOffset3 = swooshToWorld.Rotate(CVector3f(0.f, 0.f, 0.65f));
+    mSlowBlueTailSwoosh2Gen->SetTranslation(swooshToWorld.GetTranslation() + slowBlueOffset3);
+    mSlowBlueTailSwoosh2Gen->SetOrientation(swooshToWorld.GetRotation());
+    mSlowBlueTailSwoosh2Gen->SetWarmUp();
+    mSlowBlueTailSwoosh2Gen->Update(0.0);
+
+    const CVector3f slowBlueOffset4 = swooshToWorld.Rotate(CVector3f(0.f, 0.f, -0.65f));
+    mSlowBlueTailSwoosh2Gen2->SetTranslation(swooshToWorld.GetTranslation() + slowBlueOffset4);
+    mSlowBlueTailSwoosh2Gen2->SetOrientation(swooshToWorld.GetRotation());
+    mSlowBlueTailSwoosh2Gen2->SetWarmUp();
+    mSlowBlueTailSwoosh2Gen2->Update(0.0);
+
+    mJaggyTrailGen->SetTranslation(swooshToWorld.GetTranslation());
+    mJaggyTrailGen->SetOrientation(swooshToWorld.GetRotation());
+    mJaggyTrailGen->SetWarmUp();
+    mJaggyTrailGen->Update(0.0);
+
+    const bool hasBoostBall = playerState->HasPowerUp(CPlayerState::kIT_BoostBall);
+    if (!mgr.IsMultiplayer() && hasBoostBall && mLoadedModelId % 3 == 1) {
+      mSideSwooshGen->SetTranslation(swooshToWorld.GetTranslation() +
+                                swooshToWorld.Rotate(CVector3f(-0.5859f, 0.f, 0.f)));
+      mSideSwooshGen->SetOrientation(swooshToWorld.GetRotation());
+      mSideSwooshGen->SetWarmUp();
+      mSideSwooshGen->Update(0.0);
+
+      mSideSwooshGen2->SetTranslation(swooshToWorld.GetTranslation() +
+                                swooshToWorld.Rotate(CVector3f(0.5859f, 0.f, 0.f)));
+      mSideSwooshGen2->SetOrientation(swooshToWorld.GetRotation());
+      mSideSwooshGen2->SetWarmUp();
+      mSideSwooshGen2->Update(0.0);
+    }
+
+    mWallSparkGen->Update(dt);
+
+    const bool emitRainWake = mPlayer.GetPlayerMovementState() == NPlayer::kMS_OnGround &&
+                              mgr.GetWorld()->GetNeededEnvFx() == kEFX_Rain &&
+                              mgr.GetEnvFxManager()->GetRainMagnitude() > 0.f &&
+                              mgr.GetEnvFxManager()->IsSplashActive();
+    if (emitRainWake) {
+      mWakeEffects[5]->Load(true);
+    }
+    mWakeEffects[5]->SetParticleEmission(emitRainWake);
+    if (emitRainWake) {
+      const CTransform4f rainWakeXf =
+          CTransform4f::LookAt(mPlayer.GetTranslation() + mPlayer.GetMovementDirection(),
+                               mPlayer.GetTranslation(), CVector3f::Up());
+      mWakeEffects[5]->SetOrientation(rainWakeXf);
+
+      const float flatMoveSpeed = mPlayer.GetFlatMoveSpeed();
+      const float ballMaxVelocity = mPlayer.GetBallMaxVelocity();
+      const float rainDensity = 2.f * mgr.GetEnvFxManager()->GetRainMagnitude();
+      const float rainGenRate = rainDensity * flatMoveSpeed / ballMaxVelocity;
+      mWakeEffects[5]->SetGeneratorRate(rstl::min_val(rainGenRate, 1.f));
+      mWakeEffects[5]->SetTranslation(mPlayer.GetTranslation());
+    }
+
+    for (int i = 0; i < 6; ++i) {
+      if (i != mWakeEffectIndex && i != 5) {
+        mWakeEffects[i]->SetParticleEmission(false);
+      }
+      mWakeEffects[i]->Update(dt);
+    }
+
+    if (static_cast< int >(mWallSparkFrameCountdown) > 0) {
+      mWallSparkFrameCountdown -= 1;
+      if (static_cast< int >(mWallSparkFrameCountdown) <= 0) {
+        mWallSparkGen->SetParticleEmission(false);
+      }
+    }
+
+    mBallInnerGlowGen->SetGlobalTranslation(swooshToWorld.GetTranslation());
+    mBallInnerGlowGen->Update(dt);
+
+    if (mBoostChargeTime == 0.f && mBoostDrainTime == 0.f) {
+      const CColor clear(0);
+      mBoostBallGlowGen->SetModulationColor(clear);
+    } else {
+      mBoostBallGlowGen->SetGlobalTranslation(swooshToWorld.GetTranslation());
+
+      const float t = mBoostDrainTime == 0.f
+                          ? mBoostChargeTime / gpTweakBall->GetBoostBallMaxChargeTime()
+                          : 1.f - mBoostDrainTime / gpTweakBall->GetBoostBallDrainTime();
+
+      CElementGen* boostBallGlowGen = mBoostBallGlowGen.get();
+      boostBallGlowGen->SetModulationColor(
+          CColor::Lerp(CColor(0.f, 0.f, 0.f, 1.f), CColor(1.f, 1.f, 0.4f, 1.f), t));
+      mBoostBallGlowGen->Update(dt);
+    }
+
+    mSpiderBallMagnetGen->Update(dt);
+
+    mBoostOverLightFactor -= 0.03f;
+    mBoostOverLightFactor = rstl::max_val(0.f, mBoostOverLightFactor);
+    if (mBoostOverLightFactor == 0.f) {
+      mBoostLightFactor -= 0.04f;
+      mBoostLightFactor = rstl::max_val(0.f, mBoostLightFactor);
+    }
+
+    if (IsBoosting()) {
+      mBoostOverLightFactor = 1.f;
+      mBoostLightFactor = 0.f;
+    } else {
+      mBoostLightFactor = rstl::max_val(
+          mBoostLightFactor, mBoostChargeTime / gpTweakBall->GetBoostBallMaxChargeTime());
+      mBoostLightFactor = rstl::min_val(1.f, mBoostLightFactor);
+    }
+
+    if (mBoostEffectGen.get()) {
+      bool slowBoostEffect = false;
+      float rate = 1.f;
+      if (mPlayer.GetVelocityWR().MagSquared() > 100.f || mBoostEffectTime <= 0.02f) {
+        const CTransform4f boostEffectXf =
+            CTransform4f::LookAt(ballPos, ballPos + mPlayer.GetLookDir(), CVector3f::Up());
+        mBoostEffectGen->SetOrientation(boostEffectXf.GetRotation());
+      } else {
+        slowBoostEffect = true;
+      }
+      mBoostEffectGen->SetTranslation(ballPos);
+
+      if (slowBoostEffect) {
+        rate = mBoostEffectGen->GetCurrentTime() < 1.7708333f ? 4.f : 2.f;
+      }
+      mBoostEffectGen->Update(dt * rate);
+
+      mBoostEffectTime += dt;
+      const bool boostEffectDone = !IsBoosting() && mBoostEffectTime > 1.5f;
+      if (boostEffectDone || mBoostEffectGen->IsSystemDeletable()) {
+        mBoostEffectGen = nullptr;
+      }
+    }
+
+    const bool hasDeathBall = playerState->GetItemAmount(CPlayerState::kIT_DeathBall, true) != 0;
+    if (hasDeathBall) {
+      if (!mDeathBallOuterShellGen.get()) {
+        mDeathBallOuterShellGen = rs_new CElementGen(mDeathBallOuterShell);
+      }
+      if (!mDeathBallSpikesGen.get()) {
+        mDeathBallSpikesGen = rs_new CParticleElectric(mDeathBallSpikes);
+      }
+    }
+
+    if (mDeathBallOuterShellGen.get()) {
+      if (mDeathBallOuterShellGen->GetParticleCount() == 0 &&
+          mDeathBallOuterShellGen->GetEmitterTime() != 0) {
+        mDeathBallOuterShellGen = nullptr;
+      } else {
+        mDeathBallOuterShellGen->SetGlobalTranslation(ballPos);
+        mDeathBallOuterShellGen->Update(dt);
+        const float timeLeft = playerState->GetTimeLeft(CPlayerState::kIT_DeathBall);
+        if (timeLeft < 0.5f && 0.f != timeLeft) {
+          mDeathBallOuterShellGen->SetModulationColor(
+              CColor::Lerp(CColor::Black(), CColor::White(), timeLeft / 0.5f));
+        }
+        if (!hasDeathBall) {
+          mDeathBallOuterShellGen->SetGeneratorRate(0.f);
+        }
+      }
+    }
+
+    if (mDeathBallSpikesGen.get()) {
+      const bool stopSpikes =
+          !hasDeathBall ||
+          (hasDeathBall && playerState->GetTimeLeft(CPlayerState::kIT_DeathBall) < 0.6f &&
+           0.f != playerState->GetTimeLeft(CPlayerState::kIT_DeathBall));
+      if (mDeathBallSpikesGen->GetParticleCount() == 0 &&
+          mDeathBallSpikesGen->GetEmitterTime() != 0 && !stopSpikes) {
+        mDeathBallSpikesGen = nullptr;
+      } else {
+        mDeathBallSpikesGen->SetGlobalTranslation(ballPos);
+        mDeathBallSpikesGen->Update(dt);
+        if (stopSpikes) {
+          mDeathBallSpikesGen->SetGeneratorRate(0.f);
+        }
+      }
+    }
+
+    if (mScrewAttackJumpFlashGen.get()) {
+      if (mScrewAttackJumpFlashGen->IsSystemDeletable()) {
+        mScrewAttackJumpFlashGen = nullptr;
+      } else {
+        const CTransform4f& playerXf = mPlayer.GetTransform();
+        mScrewAttackJumpFlashGen->Update(dt);
+        mScrewAttackJumpFlashGen->SetGlobalTranslation(playerXf.GetTranslation());
+        mScrewAttackJumpFlashGen->SetGlobalOrientation(playerXf.GetRotation());
+      }
+    }
+
+    if (mScrewAttackWallJumpFlashGen.get()) {
+      if (mScrewAttackWallJumpFlashGen->IsSystemDeletable()) {
+        mScrewAttackWallJumpFlashGen = nullptr;
+      } else {
+        const CTransform4f& playerXf = mPlayer.GetTransform();
+        mScrewAttackWallJumpFlashGen->Update(dt);
+        mScrewAttackWallJumpFlashGen->SetGlobalTranslation(playerXf.GetTranslation());
+        mScrewAttackWallJumpFlashGen->SetGlobalOrientation(playerXf.GetRotation());
+      }
+    }
+
+    UpdateMorphBallTransitionFlash(dt);
+    UpdateIceBreakEffect(dt);
+  }
+
+  if (!dead) {
+    if (mBallState == kBS_Spider) {
+      mSpiderLightFactor = rstl::min_val(1.f, mSpiderLightFactor + 0.25f);
+    } else {
+      mSpiderLightFactor = rstl::max_val(0.f, mSpiderLightFactor - 0.15f);
+    }
+  }
 }
 
 void CMorphBall::StopParticleWakes() {
   mWallSparkGen->SetParticleEmission(false);
-  for (int i = 0; i < mWakeEffects.size(); ++i) {
+  for (int i = 0; i < 6; ++i) {
     mWakeEffects[i]->SetParticleEmission(false);
   }
 }

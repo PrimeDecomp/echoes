@@ -17,6 +17,7 @@
 
 class CActorLights;
 class CDamageInfo;
+class CElectricDescription;
 class CElementGen;
 class CFinalInput;
 class CFrustumPlanes;
@@ -25,6 +26,7 @@ class CInt32POINode;
 class CMaterialFilter;
 class CModelData;
 class CMorphBallShadow;
+class CParticleElectric;
 class CParticleSwoosh;
 class CPlayer;
 class CRainSplashGenerator;
@@ -282,7 +284,7 @@ private:
   TToken< CGenDescription > mMorphBallIceBreak;
   TToken< CGenDescription > mBoostEffect;
   TToken< CGenDescription > mDeathBallOuterShell;
-  TToken< CGenDescription > mDeathBallSpikes;
+  TToken< CElectricDescription > mDeathBallSpikes;
   TToken< CGenDescription > mScrewAttackJumpFlash;
   rstl::single_ptr< CParticleSwoosh > mSlowBlueTailSwooshGen;
   rstl::single_ptr< CParticleSwoosh > mSlowBlueTailSwooshGen2;
@@ -299,7 +301,7 @@ private:
   rstl::single_ptr< CElementGen > mMorphBallTransitionFlashGen;
   rstl::single_ptr< CElementGen > mMorphBallIceBreakGen;
   rstl::single_ptr< CElementGen > mDeathBallOuterShellGen;
-  rstl::single_ptr< CElementGen > mDeathBallSpikesGen;
+  rstl::single_ptr< CParticleElectric > mDeathBallSpikesGen;
   rstl::single_ptr< CElementGen > mScrewAttackJumpFlashGen;
   rstl::single_ptr< CElementGen > mScrewAttackWallJumpFlashGen;
   rstl::reserved_vector< rstl::auto_ptr< CDeferredParticleEffect >, 6 > mWakeEffects;

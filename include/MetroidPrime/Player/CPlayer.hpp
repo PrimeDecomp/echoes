@@ -199,6 +199,7 @@ public:
   int GetPlayerIndex() const;
   float GetGunAlpha() const { return mGunAlpha; }
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
+  float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
