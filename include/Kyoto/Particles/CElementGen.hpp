@@ -171,6 +171,7 @@ public:
 
   int GetCumulativeParticleCount() const { return mCumulativeParticles; }
   int GetMaxParticles() const { return mMAXP; }
+  double GetCurrentTime() const { return mCurSeconds; } // Guessed name
   bool IsIndirectTextured() const;
   float GetExternalVar(int index) const;
   void SetExternalParam(uint index, float value);

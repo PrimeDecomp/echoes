@@ -35,6 +35,7 @@ public:
   bool GetNeedsSky() const { return m_hasSkybox; }
   int GetEnvFxType() const { return m_environmentEffects; }
   CAssetId GetSkyModel() const { return m_skyBoxAssetId; }
+  int GetPhazonDamage() const { return m_phazonDamage; }
   // Guessed names
   ERglFogMode GetSkyFogMode() const { return static_cast< ERglFogMode >(x4c); }
   float GetSkyFogStart() const { return x50; }

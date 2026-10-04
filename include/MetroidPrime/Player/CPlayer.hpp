@@ -3,6 +3,7 @@
 
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CVector2i.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/TReservedAverage.hpp"
@@ -90,6 +91,7 @@ public:
     kOR_StopOrbit,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
+    kOR_BoostBall = 13,          // Guessed name; requested when a boost charge releases.
   };
   enum EPlayerZoneInfo {
     kZI_Targeting,
@@ -198,7 +200,13 @@ public:
   int GetPlayerIndex() const;
   float GetGunAlpha() const { return mGunAlpha; }
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
+  float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
+  bool DampsBoostEntryVelocity() const { return mDampBoostEntryVelocity; }
+  const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
+  void SetLastSpaceJumpPosition(const CVector3f& pos) { mLastSpaceJumpPosition = pos; }
   const CVector3f& GetLookDir() const { return mLookDir; }
+  const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
+  bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
@@ -254,6 +262,9 @@ public:
   void SetMorphBallState(EPlayerMorphBallState state, EPlayerMorphBallState spawnedState);
   void SetCameraState(EPlayerCameraState state, CStateManager& mgr);
   bool IsMorphBallTransitioning() const;
+  float GetMorphBallTransitionFactor() const {
+    return mMorphDuration == 0.f ? 0.f : CMath::Clamp(0.f, mMorphTime / mMorphDuration, 1.f);
+  }
   bool CanEnterMorphBallState() const;
   bool CanLeaveMorphBallState(CStateManager& mgr, CVector3f& position) const;
   bool AttachActorToPlayer(TUniqueId actor, bool disableGun);
@@ -278,6 +289,10 @@ public:
   const CVisorSteam& GetVisorSteam() const { return mVisorSteam; }
   float GetVisorSteamAlpha() const { return mVisorSteam.GetAlpha(); }
   static const float skDefaultHudFadeOutSpeed;
+  // Guessed name. Hard landing sounds by material, indexed by multiplayer.
+  static const ushort skPlayerLandSfxHard[2][26];
+  static int SfxIdFromMaterial(const CMaterialList& mat, const ushort* idList, int tableLen,
+                               ushort defId);
   static const float skDefaultHudFadeInSpeed;
   void SetHudDisable(float staticTimer, float fadeOutSpeed = skDefaultHudFadeOutSpeed,
                      float fadeInSpeed = skDefaultHudFadeInSpeed);
@@ -358,9 +373,15 @@ public:
   float GetAttachedActorStruggle() const;
 
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
+  const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
+  const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
+  bool IsInFreeLook() const { return mInFreeLook; }
+  bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  bool GetSelectFluidBallSound() const { return mSelectFluidBallSound; }
+  void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
-  void ApplySubmergedPitchBend(CSfxHandle& handle);
+  void ApplySubmergedPitchBend(CSfxHandle handle);
   void fn_8000e85c(float dt);
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
   void fn_8000eba0();
@@ -492,7 +513,7 @@ public:
   void SetRezbitState(ERezbitState state);
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
-  bool fn_8022b7a8(const CFinalInput& input) const;
+  bool BoostHeld(const CFinalInput& input) const; // Guessed name: digital kC_Unknown73.
   bool fn_8022b7f4(const CFinalInput& input) const;
   bool JumpPressed(const CFinalInput& input) const;
   bool JumpHeld(const CFinalInput& input) const;
@@ -712,12 +733,12 @@ private:
   bool x1268_26_ : 1;
   bool x1268_27_ : 1;
   bool x1268_28_ : 1;
-  bool x1268_29_ : 1;
+  bool mSpiderBallControlXY : 1; // Guessed name (Prime)
   bool x1268_30_ : 1;
   bool mInSafeZone : 1;
   bool x1269_24_ : 1;
   bool mHitWallDuringMove : 1;
-  bool x1269_26_ : 1;
+  bool mSelectFluidBallSound : 1;
   bool x1269_27_ : 1;
   bool x1269_28_ : 1;
   bool mInterpolatingControlDir : 1;
@@ -732,7 +753,7 @@ private:
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
   bool x126b_31_ : 1;
-  bool x126c_24_ : 1;
+  bool mDampBoostEntryVelocity : 1; // Guessed name: player hint flag 0x800000.
   float mDeathFadeDuration;
   float mDeathFadeDelay;
   float mEyeZBias;

@@ -41,6 +41,7 @@ public:
   bool GetNeedsRelight() const { return mDirty == TRUE; }
   bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
   int GetShadowLightIndex() const { return mShadowLightIdx; }
+  const CColor& GetAmbientColor() const { return mAmbientColor; }
   uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
 
   void SetCastShadows(bool v) { mCastShadows = v; }
@@ -55,6 +56,7 @@ public:
       mExplicitLightIds.push_back(id);
     }
   }
+  void SetNeedsRelight(bool v) { mDirty = v; }
 
 private:
   rstl::reserved_vector< CLight, 4 > mAreaLights;

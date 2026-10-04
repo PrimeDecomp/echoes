@@ -138,6 +138,7 @@ public:
   void ClearImpulses();
   void ComputeDerivedQuantities();
   void UseCollisionImpulses();
+  void ClearAngularImpulses(); // Guessed name
   bool WillMove(const CStateManager& mgr);
   void Stop();
 

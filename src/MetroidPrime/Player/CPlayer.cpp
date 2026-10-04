@@ -215,12 +215,12 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , x1268_26_(true)
 , x1268_27_(true)
 , x1268_28_(true)
-, x1268_29_(false)
+, mSpiderBallControlXY(false)
 , x1268_30_(false)
 , mInSafeZone(false)
 , x1269_24_(false)
 , mHitWallDuringMove(false)
-, x1269_26_(false)
+, mSelectFluidBallSound(false)
 , x1269_27_(true)
 , x1269_28_(false)
 , mInterpolatingControlDir(false)
@@ -235,7 +235,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDeathFadeEnabled(false)
 , mUseAlternateBeam(false)
 , x126b_31_(false)
-, x126c_24_(false)
+, mDampBoostEntryVelocity(false)
 , mDeathFadeDuration(1.f)
 , mDeathFadeDelay(0.f)
 , mEyeZBias(0.f)
@@ -814,7 +814,7 @@ void CPlayer::fn_8000e85c(float dt) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::ApplySubmergedPitchBend(CSfxHandle& handle) {
+void CPlayer::ApplySubmergedPitchBend(CSfxHandle handle) {
   if (CheckSubmerged()) {
     CSfxManager::PitchBend(handle, 0);
   }

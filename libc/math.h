@@ -255,6 +255,9 @@ double nextafter(double, double);
 
 #ifdef __cplusplus
 }
+
+// MSL C++ float overload; the retail binary calls it out of line.
+float sqrt(float x);
 #endif
 
 #endif

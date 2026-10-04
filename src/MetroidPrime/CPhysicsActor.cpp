@@ -217,6 +217,10 @@ void CPhysicsActor::UseCollisionImpulses() {
   ComputeDerivedQuantities();
 }
 
+void CPhysicsActor::ClearAngularImpulses() {
+  mAngularImpulse = mMoveAngularImpulse = CAxisAngle::Identity();
+}
+
 void CPhysicsActor::MoveToWR(const CVector3f& trans, float d) {
   mConstantForce = (trans - GetTranslation()) * GetMass() * (1.f / d);
   ComputeDerivedQuantities();

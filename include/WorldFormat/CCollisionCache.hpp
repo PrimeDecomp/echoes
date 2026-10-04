@@ -12,11 +12,62 @@ class CCollisionPrimitiveData;
 class CCollisionCacheIterator;
 class CCachedCollisionSurface;
 
+// Guessed name. This is the triangle payload, not the packed cache's full slot.
+class CCachedCollisionSurface {
+public:
+  CCachedCollisionSurface(const CCollisionSurface& surface, ushort triangleIndex);
+
+  const CCollisionSurface& GetSurface() const { return mSurface; }
+
+private:
+  CCollisionSurface mSurface;
+  ushort mTriangleIndex;
+};
+
+// Guessed name. One packed cache slot: the triangle payload followed by a plane that is
+// filled in the first time the leaf is visited.
+struct SCachedCollisionSlot {
+  CCachedCollisionSurface mTriangle;
+  CPlane mPlane;
+};
+
+// Guessed name
+class CCollisionCacheIterator {
+  friend class CCollisionCache;
+
+public:
+  CCollisionCacheIterator();
+  explicit CCollisionCacheIterator(CCollisionCache& cache);
+  void Reset(); // Guessed names
+  short GetObjectId() const { return mObjectId; }
+  bool AtEnd() const { return mOffset >= mEnd; }
+  bool AtLeafStart() const { return mLeafExhausted; }
+  bool MatchesGeometry(short id, const CCollisionPrimitiveData* geometry,
+                       const CTransform4f& transform, u64 flags) const;
+
+private:
+  short mObjectId; // Guessed names
+  const CTransform4f* mTransform;
+  const CCollisionPrimitiveData* mGeometry;
+  u64 mMaterialFlags;
+  bool mLeafExhausted : 1;
+  bool mLeafStatusZero : 1;
+  const CAABox* mLeafBounds;
+  uint mOffset;
+  uint mTrianglesRemaining;
+  uint mLeavesRemaining;
+  uint mLeafTriangleCount;
+  ushort* mLeafStatus;
+  uchar x34_unknown[4];
+  uint mEnd;
+  int mGeometryStart;
+};
+CHECK_SIZEOF(CCollisionCacheIterator, 0x40)
+
 // Guessed name
 class CCollisionCache {
 public:
   CCollisionCache(const CAABox& bounds, int x2c, int x30, ushort x34);
-  ~CCollisionCache();
   void Reset(); // Guessed names
   void SetBounds(const CAABox& bounds);
   const CAABox& GetBounds() const { return mBounds; }
@@ -27,6 +78,48 @@ public:
   uint ReadGeometry(CCollisionCacheIterator& iterator);
   void ReadLeaf(CCollisionCacheIterator& iterator);
   const CCachedCollisionSurface* NextTriangle(CCollisionCacheIterator& iterator) const;
+  // Guessed names. Weak copies are emitted in CMorphBall.
+  SCachedCollisionSlot* NextTriangle(CCollisionCacheIterator& iterator) {
+    if (iterator.mTrianglesRemaining != 0) {
+      SCachedCollisionSlot* slot =
+          reinterpret_cast< SCachedCollisionSlot* >(mData.data() + iterator.mOffset);
+      --iterator.mTrianglesRemaining;
+      iterator.mLeafExhausted = iterator.mTrianglesRemaining == 0;
+      iterator.mOffset += sizeof(SCachedCollisionSlot) / sizeof(ushort);
+      if (iterator.mLeafStatusZero) {
+        const CCollisionSurface& surface = slot->mTriangle.GetSurface();
+        slot->mPlane = CPlane(surface.GetVert(0), surface.GetVert(1), surface.GetVert(2));
+        --iterator.mLeafTriangleCount;
+        if (iterator.mLeafTriangleCount == 0) {
+          *iterator.mLeafStatus = 1;
+        }
+      }
+      return slot;
+    }
+    if (iterator.mLeavesRemaining == 0) {
+      ReadGeometry(iterator);
+    }
+    --iterator.mLeavesRemaining;
+    ReadLeaf(iterator);
+    return NextTriangle(iterator);
+  }
+  const CAABox* GetLeafBounds(CCollisionCacheIterator& iterator) {
+    if (iterator.mTrianglesRemaining != 0) {
+      return iterator.mLeafBounds;
+    }
+    if (iterator.mLeavesRemaining == 0) {
+      ReadGeometry(iterator);
+    }
+    --iterator.mLeavesRemaining;
+    ReadLeaf(iterator);
+    return GetLeafBounds(iterator);
+  }
+  void SkipLeaf(CCollisionCacheIterator& iterator) {
+    iterator.mOffset +=
+        iterator.mTrianglesRemaining * (sizeof(SCachedCollisionSlot) / sizeof(ushort));
+    iterator.mTrianglesRemaining = 0;
+    iterator.mLeafExhausted = true;
+  }
   int GetTriangleStride() const;
 
 private:
@@ -39,44 +132,6 @@ private:
   uint mGeometryRevision;
 };
 CHECK_SIZEOF(CCollisionCache, 0x3c)
-
-// Guessed name
-class CCollisionCacheIterator {
-public:
-  CCollisionCacheIterator();
-  explicit CCollisionCacheIterator(CCollisionCache& cache);
-  void Reset(); // Guessed names
-  bool MatchesGeometry(short id, const CCollisionPrimitiveData* geometry,
-                       const CTransform4f& transform, u64 flags) const;
-
-private:
-  short mObjectId; // Guessed names
-  const CTransform4f* mTransform;
-  const CCollisionPrimitiveData* mGeometry;
-  u64 mMaterialFlags;
-  bool mLeafExhausted : 1;
-  bool mLeafStatusZero : 1;
-  const CAABox* mLeafBounds;
-  int mOffset;
-  int mTrianglesRemaining;
-  int mLeavesRemaining;
-  int mLeafTriangleCount;
-  const ushort* mLeafStatus;
-  uchar x34_unknown[4];
-  int mEnd;
-  int mGeometryStart;
-};
-CHECK_SIZEOF(CCollisionCacheIterator, 0x40)
-
-// Guessed name. This is the triangle payload, not the packed cache's full slot.
-class CCachedCollisionSurface {
-public:
-  CCachedCollisionSurface(const CCollisionSurface& surface, ushort triangleIndex);
-
-private:
-  CCollisionSurface mSurface;
-  ushort mTriangleIndex;
-};
 
 // Guessed name
 class CCollisionCacheWriter {

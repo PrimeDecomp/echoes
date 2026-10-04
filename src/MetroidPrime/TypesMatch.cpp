@@ -54,6 +54,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTargetingPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpiderBallAttractionSurface.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.hpp"
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -234,6 +235,10 @@ TYPES_MATCH_IMPL(CScriptAiJumpPoint, CActor, kET_ScriptAiJumpPoint)
 CAST_TO_PTR_IMPL(CScriptAIHint, kET_ScriptAIHint)
 CAST_TO_REF_IMPL(CScriptAIHint, kET_ScriptAIHint)
 TYPES_MATCH_IMPL(CScriptAIHint, CActor, kET_ScriptAIHint)
+CAST_TO_PTR_IMPL(CScriptDamageableTriggerOrientated, kET_ScriptDamageableTriggerOrientated)
+CAST_TO_REF_IMPL(CScriptDamageableTriggerOrientated, kET_ScriptDamageableTriggerOrientated)
+CAST_TO_PTR_IMPL(CScriptDamageableTrigger, kET_ScriptDamageableTrigger)
+CAST_TO_REF_IMPL(CScriptDamageableTrigger, kET_ScriptDamageableTrigger)
 CAST_TO_PTR_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 CAST_TO_REF_IMPL(CScriptCoverPoint, kET_ScriptCoverPoint)
 TYPES_MATCH_IMPL(CScriptCoverPoint, CActor, kET_ScriptCoverPoint)
@@ -261,6 +266,8 @@ TYPES_MATCH_IMPL(CScriptSwitch, CEntity, kET_ScriptSwitch)
 TYPES_MATCH_IMPL(CScriptTargetingPoint, CActor, kET_ScriptTargetingPoint)
 CAST_TO_REF_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
 CAST_TO_PTR_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
+CAST_TO_REF_IMPL(CScriptSpiderBallWaypoint, kET_ScriptSpiderBallWaypoint)
+CAST_TO_PTR_IMPL(CScriptSpiderBallWaypoint, kET_ScriptSpiderBallWaypoint)
 TYPES_MATCH_IMPL(CScriptSpiderBallAttractionSurface, CActor, kET_ScriptSpiderBallAttractionSurface)
 CAST_TO_REF_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)
 CAST_TO_PTR_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)

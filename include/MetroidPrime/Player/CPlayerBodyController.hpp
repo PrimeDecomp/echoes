@@ -52,6 +52,8 @@ public:
 
   CPlayer& GetPlayer() const { return *mPlayer; }
 
+  const TStateMachineState< CPlayerBodyController >& GetBodyState() const { return mBodyState; }
+
   int GetCurrentAnimationId() const { return mAnimationId; }
 
   int GetLocomotionMode() const { return mLocomotion.mLocomotionMode; }

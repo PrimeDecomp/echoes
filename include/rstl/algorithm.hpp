@@ -27,6 +27,13 @@ It find(It first, It last, const T& val) {
   return first;
 }
 
+template < class It, class Pred >
+inline It find_if(It first, It last, Pred pred) {
+  while (first != last && !pred(*first))
+    ++first;
+  return first;
+}
+
 template < typename T >
 inline void swap(T& a, T& b) {
   T tmp(a);

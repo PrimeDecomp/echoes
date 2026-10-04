@@ -11,12 +11,14 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/optional_object.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
 
 class CActorLights;
 class CDamageInfo;
+class CElectricDescription;
 class CElementGen;
 class CFinalInput;
 class CFrustumPlanes;
@@ -25,6 +27,7 @@ class CInt32POINode;
 class CMaterialFilter;
 class CModelData;
 class CMorphBallShadow;
+class CParticleElectric;
 class CParticleSwoosh;
 class CPlayer;
 class CRainSplashGenerator;
@@ -34,6 +37,11 @@ class CSkinnedModel;
 struct SSkinningWorkspace;
 class CWorldShadow;
 class CDeferredParticleEffect; // Guessed name: dependency-backed wake effect, target size 0x44.
+
+struct SMorphBallModelInfo {
+  const char* mName;
+  uint mShader;
+};
 
 // G2ME01 structure pass. See Echoes research/CMorphBall-G2ME01.md for evidence and uncertainties.
 class CMorphBall {
@@ -53,6 +61,12 @@ public:
   };
   // Guessed name. This replaces Prime's isSpiderSurface boolean.
   enum ESpiderSurfaceType { kSST_None, kSST_Waypoint, kSST_ScriptedSurface, kSST_CollisionSurface };
+
+  struct SColorRgb {
+    uchar mR;
+    uchar mG;
+    uchar mB;
+  };
 
   CMorphBall(CPlayer& player, float radius, bool multiplayer);
   ~CMorphBall();
@@ -191,6 +205,21 @@ public:
   CVector3f TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const;
 
 private:
+  static const SMorphBallModelInfo skBallCharacter[3];
+  static const SMorphBallModelInfo skBallLowPoly[3];
+  static const SMorphBallModelInfo skSpiderBallCharacter[3];
+  static const SMorphBallModelInfo skSpiderBallLowPoly[3];
+  static const SMorphBallModelInfo skBoostBallCharacter[3]; // Guessed name
+  static const SMorphBallModelInfo skBoostBallLowPoly[3];  // Guessed name
+  static const SMorphBallModelInfo skSpiderBallGlass[3];
+  static const SMorphBallModelInfo skFrozenBall[3];
+  static const uint skBallGlowColorIdx[3];
+  static const uint skSpiderBallGlowColorIdx[3];
+  static const uint skBoostBallGlowColorIdx[3]; // Guessed name
+  static const SColorRgb skBallLightModulationColors[3];
+  static const SColorRgb skBallHullGlowColors[3]; // Guessed name
+  static CColor GetBallGlowColor(const SColorRgb& color);
+
   void InitializeWakeEffects();
   void SelectMorphBallSounds(const CMaterialList& material);
   void UpdateMorphBallSound(float dt, CStateManager& mgr);
@@ -256,7 +285,7 @@ private:
   TToken< CGenDescription > mMorphBallIceBreak;
   TToken< CGenDescription > mBoostEffect;
   TToken< CGenDescription > mDeathBallOuterShell;
-  TToken< CGenDescription > mDeathBallSpikes;
+  TToken< CElectricDescription > mDeathBallSpikes;
   TToken< CGenDescription > mScrewAttackJumpFlash;
   rstl::single_ptr< CParticleSwoosh > mSlowBlueTailSwooshGen;
   rstl::single_ptr< CParticleSwoosh > mSlowBlueTailSwooshGen2;
@@ -273,7 +302,7 @@ private:
   rstl::single_ptr< CElementGen > mMorphBallTransitionFlashGen;
   rstl::single_ptr< CElementGen > mMorphBallIceBreakGen;
   rstl::single_ptr< CElementGen > mDeathBallOuterShellGen;
-  rstl::single_ptr< CElementGen > mDeathBallSpikesGen;
+  rstl::single_ptr< CParticleElectric > mDeathBallSpikesGen;
   rstl::single_ptr< CElementGen > mScrewAttackJumpFlashGen;
   rstl::single_ptr< CElementGen > mScrewAttackWallJumpFlashGen;
   rstl::reserved_vector< rstl::auto_ptr< CDeferredParticleEffect >, 6 > mWakeEffects;
@@ -307,8 +336,7 @@ private:
   float mBoostEffectTime;
   float mBoostDamageScale;
   float mDisableSpiderBallTime;
-  CVector3f mSpiderBoostDirection;
-  bool mHasSpiderBoostDirection;
+  rstl::optional_object< CVector3f > mSpiderBoostDirection;
   rstl::reserved_vector< TUniqueId, 1024 > mBoostDamagedObjects;
   float mBoostTrailFadeTimer;
   bool mInHalfPipeMode : 1;
