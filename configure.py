@@ -725,6 +725,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CAmbientAI.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAi.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CStateMachine.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SPositionHistory.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CGenericFSM2.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTextPane.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSubtitle.cpp"),
