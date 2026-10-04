@@ -1671,9 +1671,109 @@ void CMorphBall::SwitchToMarble() {
   mTireInterpolationSpeed = -1.f;
 }
 
-// Scaffold, not a reconstructed implementation.
+static EMaterialTypes BallCloseToCollisionMaterial = kMT_Unknown59; // Guessed name
+
 void CMorphBall::UpdateBallDynamics(CStateManager& mgr, float dt) {
-  // TODO: Update contact orientation, tire/marble mode, damping and velocity history.
+  CVector3f ballContactNormal(0.f, 0.f, 0.f);
+  CVector3f ballContactPoint(0.f, 0.f, 0.f);
+  CTransform4f ballToWorldXf(CTransform4f::Identity());
+
+  const float angularDamping = pow(0.95f, 60.f * dt);
+  mPlayer.SetAngularVelocityWR(
+      CAxisAngle(angularDamping * mPlayer.GetAngularVelocityWR().GetVector()));
+
+  const CMaterialFilter ballCloseFilter =
+      CMaterialFilter::MakeInclude(CMaterialList(BallCloseToCollisionMaterial));
+  mBallCloseToCollision = BallCloseToCollision(mgr, sBallCloseToCollisionDistance, ballCloseFilter);
+  if (mBallCloseToCollision) {
+    mCloseToCollisionTime += dt;
+  } else {
+    mCloseToCollisionTime = 0.f;
+  }
+
+  UpdateHalfPipeStatus(mgr, dt);
+
+  mDisableControlCooldown -= dt;
+  mDisableControlCooldown = rstl::max_val(mDisableControlCooldown, 0.f);
+  mDamageTimer -= dt;
+  mDamageTimer = rstl::max_val(mDamageTimer, 0.f);
+  mDisableSpiderBallTime -= dt;
+  mDisableSpiderBallTime = rstl::max_val(mDisableSpiderBallTime, 0.f);
+
+  if (mBallState == kBS_Spider) {
+    mSurfaceToWorld = CalculateSurfaceToWorld(mPlayerToSpiderNormal, mSpiderTrackPoint,
+                                              mSpiderInterpBetweenPoints);
+    mTireLeanAngle = 0.f;
+    if (!mTireMode) {
+      SwitchToTire();
+    }
+    mTireInterpolating = true;
+    mTireInterpolationSpeed = -1.f;
+    UpdateMarbleDynamics(mgr, dt, mSpiderTrackPoint);
+  } else if (mPlayer.GetSurfaceRestraint() != CPlayer::kSR_Air) {
+    if (CalculateBallContactInfo(ballContactNormal, ballContactPoint)) {
+      mSurfaceToWorld =
+          CalculateSurfaceToWorld(ballContactNormal, ballContactPoint, mPlayer.GetLookDir());
+
+      const float ballSpeed = mPlayer.GetVelocityWR().Magnitude();
+      if (ballSpeed < gpTweakBall->GetTireToMarbleThresholdSpeed() && mTireMode) {
+        SwitchToMarble();
+      }
+
+      if (UpdateMarbleDynamics(mgr, dt, ballContactPoint) &&
+          ballSpeed >= gpTweakBall->GetMarbleToTireThresholdSpeed() && !mTireMode) {
+        SwitchToTire();
+      }
+
+      if (mTireMode) {
+        const float accelRatio =
+            mPlayer.GetTransform().TransposeRotate(mPlayer.GetForceWR()).GetX() /
+            gpTweakBall->GetMaxBallTranslationAcceleration(mPlayer.GetSurfaceRestraint());
+        mTireLeanAngle = accelRatio * gpTweakBall->GetMaxLeanAngle().AsRadians() *
+                         gpTweakBall->GetForceToLeanGain();
+        mTireLeanAngle = CMath::Limit(mTireLeanAngle, gpTweakBall->GetMaxLeanAngle().AsRadians());
+
+        if (mPlayer.GetTransform().Get00() * mSurfaceToWorld.Get00() +
+                mPlayer.GetTransform().Get10() * mSurfaceToWorld.Get10() +
+                mPlayer.GetTransform().Get20() * mSurfaceToWorld.Get20() <
+            0.f) {
+          mTireLeanAngle = -mTireLeanAngle;
+        }
+      }
+    }
+  } else {
+    mTireLeanAngle = 0.f;
+  }
+
+  if (!InScrewAttackMode()) {
+    const float tiltAngleDelta = CMath::WrapPi(mTireLeanAngle - mBallTiltAngle);
+    const float leanTracking = gpTweakBall->GetMaxLeanAngle().AsRadians() *
+                               CMath::AbsF(tiltAngleDelta) * gpTweakBall->GetLeanTrackingGain();
+    if (tiltAngleDelta > 0.05f) {
+      mBallTiltAngle += leanTracking * dt;
+    } else if (tiltAngleDelta < -0.05f) {
+      mBallTiltAngle -= leanTracking * dt;
+    } else {
+      mBallTiltAngle = mTireLeanAngle;
+    }
+  } else {
+    mPlayer.ClearAngularImpulses();
+    mPlayer.SetAngularVelocityWR(CAxisAngle::Identity());
+  }
+
+  if (mBallState != kBS_Spider) {
+    ApplyFriction(60.f * dt * CalculateSurfaceFriction());
+  } else {
+    DampLinearAndAngularVelocities(mLinearVelocityDamping, mAngularVelocityDamping, dt);
+  }
+
+  if (mBallState != kBS_Spider) {
+    ApplyGravity();
+  }
+
+  mCollisionInfos.Clear();
+  mBallOrientationAverage.AddValue(CQuaternion::FromMatrix(GetBallToWorld()));
+  mBallPositionAverage.AddValue(GetBallPosition());
 }
 
 float CMorphBall::BallTurnInput(const CFinalInput& input) const {
