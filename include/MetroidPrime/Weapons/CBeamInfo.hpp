@@ -2,6 +2,7 @@
 #define _CBEAMINFO
 
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
 class CBeamInfo {
@@ -10,7 +11,24 @@ public:
             CAssetId glowTextureId, float length, float radius, float expansionSpeed,
             float lifeTime, float pulseSpeed, float shutdownTime, float contactFxScale,
             float pulseFxScale, const CColor& innerColor, const CColor& outerColor,
-            float travelSpeed, CAssetId muzzleFxId);
+            float travelSpeed, CAssetId muzzleFxId)
+  : mBeamAttributes(beamAttributes)
+  , mContactFxId(contactFxId)
+  , mPulseFxId(pulseFxId)
+  , mTextureId(textureId)
+  , mGlowTextureId(glowTextureId)
+  , mLength(length)
+  , mRadius(radius)
+  , mExpansionSpeed(expansionSpeed)
+  , mLifeTime(lifeTime)
+  , mPulseSpeed(pulseSpeed)
+  , mShutdownTime(shutdownTime)
+  , mContactFxScale(contactFxScale)
+  , mPulseFxScale(pulseFxScale)
+  , mTravelSpeed(travelSpeed)
+  , mInnerColor(innerColor)
+  , mOuterColor(outerColor)
+  , mMuzzleFxId(muzzleFxId) {}
 
   int GetBeamAttributes() const { return mBeamAttributes; }
   CAssetId GetContactFXId() const { return mContactFxId; }

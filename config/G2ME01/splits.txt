@@ -1576,6 +1576,15 @@ MetroidPrime/CRELFileManager.cpp:
 	.rodata     start:0x803AC440 end:0x803AC448
 	.sdata      start:0x80418738 end:0x80418740
 
+MetroidPrime/Weapons/CLightComboProjectile.cpp:
+	.text       start:0x801F0D24 end:0x801F2E80
+	.ctors      start:0x803A5584 end:0x803A5588
+	.rodata     start:0x803AC448 end:0x803AC4A0
+	.data       start:0x803B78F0 end:0x803B7990
+	.sdata      start:0x80418740 end:0x80418758
+	.sbss       start:0x80419310 end:0x80419318
+	.sdata2     start:0x8041D55C end:0x8041D5A0 align:4
+
 MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:
 	.text       start:0x801F4BCC end:0x801F55F0
 	.ctors      start:0x803A558C end:0x803A5590

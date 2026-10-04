@@ -38,6 +38,7 @@ public:
   void SetInitialDamage(float damage);
   CColor GetInnerColor() const { return mInnerColor; }
   CColor GetOuterColor() const { return mOuterColor; }
+  void SetOuterColor(const CColor& color) { mOuterColor = color; }
   bool IsFiring() const { return mFiring; }
 
 private:
