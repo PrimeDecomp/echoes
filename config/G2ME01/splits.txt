@@ -129,7 +129,7 @@ MetroidPrime/CStateManagerContainer.cpp:
 	.text       start:0x8004540C end:0x800455C0
 
 MetroidPrime/CEntity.cpp:
-	.text       start:0x800476A8 end:0x8004875C
+	.text       start:0x800476A8 end:0x800487B8
 	.ctors      start:0x803A54C4 end:0x803A54C8
 	.data       start:0x803B1B30 end:0x803B1B60
 	.bss        start:0x8040D4AC end:0x8040D4D8 align:4 common

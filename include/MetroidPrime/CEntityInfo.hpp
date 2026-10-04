@@ -220,7 +220,6 @@ class CEntityInfo {
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& connections, bool active,
               TEditorId eid = kInvalidEditorId);
-  CEntityInfo(const CEntityInfo&);
   ~CEntityInfo();
 
   TAreaId GetAreaId() const { return mAreaId; }
