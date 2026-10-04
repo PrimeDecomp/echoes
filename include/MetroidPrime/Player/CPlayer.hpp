@@ -201,7 +201,7 @@ public:
   float GetGunAlpha() const { return mGunAlpha; }
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
   float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
-  bool GetX126c24() const { return x126c_24_; }
+  bool DampsBoostEntryVelocity() const { return mDampBoostEntryVelocity; }
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   void SetLastSpaceJumpPosition(const CVector3f& pos) { mLastSpaceJumpPosition = pos; }
   const CVector3f& GetLookDir() const { return mLookDir; }
@@ -513,7 +513,7 @@ public:
   void SetRezbitState(ERezbitState state);
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
-  bool fn_8022b7a8(const CFinalInput& input) const;
+  bool BoostHeld(const CFinalInput& input) const; // Guessed name: digital kC_Unknown73.
   bool fn_8022b7f4(const CFinalInput& input) const;
   bool JumpPressed(const CFinalInput& input) const;
   bool JumpHeld(const CFinalInput& input) const;
@@ -753,7 +753,7 @@ private:
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
   bool x126b_31_ : 1;
-  bool x126c_24_ : 1;
+  bool mDampBoostEntryVelocity : 1; // Guessed name: player hint flag 0x800000.
   float mDeathFadeDuration;
   float mDeathFadeDelay;
   float mEyeZBias;

@@ -1376,7 +1376,7 @@ void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
     mBoostDamageScale = 1.f;
   }
 
-  if (mPlayer.GetX126c24()) {
+  if (mPlayer.DampsBoostEntryVelocity()) {
     mPlayer.SetVelocityWR(mPlayer.GetVelocityWR() * 0.4f);
   }
 
@@ -1492,7 +1492,7 @@ void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManage
   }
 
   if (!IsBoosting() || activateBoost) {
-    if (mPlayer.fn_8022b7a8(input) && !activateBoost) {
+    if (mPlayer.BoostHeld(input) && !activateBoost) {
       const bool canCharge = mTimeNotInBoost > gpTweakBall->GetBoostBallDrainTime();
       if (canCharge) {
         if (mBallAnimationIndex == 0) {

@@ -52,7 +52,8 @@ bool CPlayer::fn_8022b7f4(const CFinalInput& input) const {
   return false;
 }
 
-bool CPlayer::fn_8022b7a8(const CFinalInput& input) const {
+// Guessed name
+bool CPlayer::BoostHeld(const CFinalInput& input) const {
   // TODO: Recover the remaining target behavior.
   return false;
 }
