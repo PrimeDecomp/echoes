@@ -1,6 +1,7 @@
 #include "GuiSys/CGuiFrame.hpp"
 
 #include "GuiSys/CGuiCamera.hpp"
+#include "GuiSys/CGuiFactories.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "GuiSys/CGuiFrameModelDatabase.hpp"
 #include "GuiSys/CGuiHeadWidget.hpp"
@@ -8,6 +9,7 @@
 #include "GuiSys/CGuiModel.hpp"
 #include "GuiSys/CGuiWidget.hpp"
 #include "Kyoto/CResFactory.hpp"
+#include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "rstl/algorithm.hpp"
@@ -22,7 +24,93 @@ public:
 };
 } // namespace rstl
 
+uint CGuiFrame::ReadVersion(CInputStream& in) { return in.Get< uint >(); }
+
+rstl::vector< CToken > CGuiFrame::LoadAssets(CInputStream& in, CSimplePool* pool, uint version) {
+  rstl::vector< CToken > assets;
+  if (version <= 1u) {
+    in.ReadInt32();
+    in.ReadInt32();
+    in.ReadInt32();
+    return assets;
+  }
+
+  assets.reserve(in.ReadInt32());
+  for (int i = 0; i < assets.capacity(); ++i) {
+    const FourCC type = in.Get< uint >();
+    const CAssetId id = in.Get< uint >();
+    CToken token = pool->GetObj(SObjectTag(type, id));
+    token.Lock();
+    assets.push_back(token);
+  }
+  return assets;
+}
+
+CGuiFrame::CGuiFrame(CInputStream& in, CSimplePool* pool)
+: mVersion(ReadVersion(in))
+, mAssets(LoadAssets(in, pool, mVersion))
+, mRootWidget(nullptr)
+, mCamera(nullptr)
+, mLights(rstl::vector< CGuiLight* >(8, static_cast< CGuiLight* >(nullptr)))
+, mModelDatabase(rs_new CGuiFrameModelDatabase(in, pool))
+, mLoaded(false) {
+  LoadWidgetsInGame(in, pool, mVersion);
+}
+
 CGuiFrame::~CGuiFrame() { delete mRootWidget; }
+
+void CGuiFrame::LoadWidgetsInGame(CInputStream& in, CSimplePool* pool, uint version) {
+  const int count = in.Get< int >();
+  mWidgets.reserve(count);
+  mWidgetIds.Reserve(count);
+
+  int drawCount = 0;
+  int updateCount = 0;
+  int inputCount = 0;
+  int preDrawCount = 0;
+  for (int i = 0; i < count; ++i) {
+    CGuiWidget* widget = FGuiWidgetFactoryInGame(in.Get< uint >(), this, in, pool, version);
+    if (widget->GetWidgetTypeID() != 'CAMR' && widget->GetWidgetTypeID() != 'LITE') {
+      mWidgets.push_back(widget);
+      const CGuiWidget::EWidgetUsageFlags flags = widget->GetWidgetUsageFlags();
+      if (flags & CGuiWidget::kWUF_Draw) {
+        ++drawCount;
+      }
+      if (flags & CGuiWidget::kWUF_Update) {
+        ++updateCount;
+      }
+      if (flags & CGuiWidget::kWUF_Input) {
+        ++inputCount;
+      }
+      if (flags & CGuiWidget::kWUF_PreDraw) {
+        ++preDrawCount;
+      }
+    }
+  }
+
+  mDrawWidgets.reserve(drawCount);
+  mUpdateWidgets.reserve(updateCount);
+  mInputWidgets.reserve(inputCount);
+  mPreDrawWidgets.reserve(preDrawCount);
+  for (rstl::vector< CGuiWidget* >::const_iterator it = mWidgets.begin(); it != mWidgets.end();
+       ++it) {
+    CGuiWidget* widget = *it;
+    const CGuiWidget::EWidgetUsageFlags flags = widget->GetWidgetUsageFlags();
+    if (flags & CGuiWidget::kWUF_Draw) {
+      mDrawWidgets.push_back(widget);
+    }
+    if (flags & CGuiWidget::kWUF_Update) {
+      mUpdateWidgets.push_back(widget);
+    }
+    if (flags & CGuiWidget::kWUF_Input) {
+      mInputWidgets.push_back(widget);
+    }
+    if (flags & CGuiWidget::kWUF_PreDraw) {
+      mPreDrawWidgets.push_back(widget);
+    }
+  }
+  Initialize();
+}
 
 void CGuiFrame::Initialize() {
   SortDrawOrder();

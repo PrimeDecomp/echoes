@@ -112,7 +112,7 @@ CModel::CModel(const rstl::auto_ptr< uchar >& data, int length, IObjectStore& st
 , mModelInstance(nullptr)
 , mLastFrame(CGraphics::GetFrameCounter() - 2)
 , mCurrentMatxIdx(0)
-, x30_16_(false)
+, mInitialTextureLocksReleased(false)
 , mHasSkinMatrices(false) {
   uchar* dataPtr = data.get();
   mHasSkinMatrices = *reinterpret_cast< const uint* >(dataPtr + 8) & 1;
@@ -254,7 +254,7 @@ void CModel::VerifyCurrentShader(int shader) const {
     mModelInstance->RemapMaterialData(material.mData, &material.mTextures);
     mCurrentMatxIdx = shader;
   }
-  if (x30_16_) {
+  if (mInitialTextureLocksReleased) {
     material.MoveToThisFrameList();
   }
 }
@@ -373,3 +373,20 @@ void CModel::RemapData(uchar* data) {
 }
 
 void CModel::UpdateLastFrame() const { mLastFrame = CGraphics::GetFrameCounter(); }
+
+bool CModel::IsDefinitelyOpaque() const {
+  return mModelInstance.get() != nullptr && !mModelInstance->GetAlphaSurfaces().IsValid();
+}
+
+const CAABox& CModel::GetAABB() const { return mModelInstance->GetBoundingBox(); }
+
+void CModel::UnlockTextures() {
+  if (mInitialTextureLocksReleased) {
+    return;
+  }
+
+  mInitialTextureLocksReleased = true;
+  for (int i = 0; i < mMatSets.size(); ++i) {
+    mMatSets[i].UnlockTextures();
+  }
+}

@@ -1338,6 +1338,9 @@ MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
 	.text       start:0x801B730C end:0x801B73E4
 	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
 
+MetroidPrime/Enemies/CAnimationState.cpp:
+	.text       start:0x801B73E4 end:0x801B742C
+
 MetroidPrime/Enemies/CWaypointNavigation.cpp:
 	.text       start:0x801B742C end:0x801B7F44
 	.data       start:0x803B6900 end:0x803B6910
@@ -1529,6 +1532,13 @@ MetroidPrime/Cameras/ScriptCameraSpline.cpp:
 	.data       start:0x803B7660 end:0x803B7670
 	.sdata2     start:0x8041D448 end:0x8041D450
 
+MetroidPrime/RenderGeometryRayCast.cpp:
+	.text       start:0x801E5BB4 end:0x801E70B0
+	.ctors      start:0x803A557C end:0x803A5580
+	.sdata      start:0x80418708 end:0x80418720
+	.sbss       start:0x804192D8 end:0x804192E0
+	.sdata2     start:0x8041D450 end:0x8041D460
+
 MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
@@ -1608,6 +1618,16 @@ MetroidPrime/Weapons/CLightComboProjectile.cpp:
 	.sdata      start:0x80418740 end:0x80418758
 	.sbss       start:0x80419310 end:0x80419318
 	.sdata2     start:0x8041D55C end:0x8041D5A0 align:4
+
+MetroidPrime/CMFGameLoader.cpp:
+	.text       start:0x801F3AE0 end:0x801F4BCC
+	.ctors      start:0x803A5588 end:0x803A558C
+	.rodata     start:0x803AC4A8 end:0x803AC548
+	.data       start:0x803B7A10 end:0x803B7A30
+	.bss        start:0x803DB6E0 end:0x803DE030
+	.sdata      start:0x80418778 end:0x80418780
+	.sbss       start:0x80419320 end:0x80419328
+	.sdata2     start:0x8041D5D0 end:0x8041D5E8
 
 MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:
 	.text       start:0x801F4BCC end:0x801F55F0
@@ -1881,6 +1901,12 @@ MetroidPrime/ScriptObjects/CScriptControlHint.cpp:
 
 MetroidPrime/CGameHint.cpp:
 	.text       start:0x8022D1EC end:0x8022D548
+
+MetroidPrime/CRezbitEffect.cpp:
+	.text       start:0x8022D5B0 end:0x8022E108
+	.rodata     start:0x803AD3A8 end:0x803AD3C0
+	.data       start:0x803B87F8 end:0x803B8890
+	.sdata2     start:0x8041DB38 end:0x8041DB48
 
 MetroidPrime/ScriptObjects/CScriptAdvancedCounter.cpp:
 	.text       start:0x8022E13C end:0x8022E9F0
@@ -3078,7 +3104,7 @@ Kyoto/Animation/DolphinCVirtualBone.cpp:
 	.text       start:0x80310838 end:0x80310E8C
 
 Kyoto/Graphics/DolphinCModel.cpp:
-	.text       start:0x80310F38 end:0x80312320
+	.text       start:0x80310E8C end:0x80312320
 	.rodata     start:0x803AFE68 end:0x803AFE70
 	.data       start:0x803BB0D8 end:0x803BB0E8
 	.sdata      start:0x80418C00 end:0x80418C08
@@ -3323,6 +3349,13 @@ MetroidPrime/Cameras/CCameraSurface.cpp:
 	.text       start:0x80339D24 end:0x8033A28C
 	.data       start:0x803BBAC8 end:0x803BBB10
 	.sdata2     start:0x8041EDA8 end:0x8041EDB8
+
+Kyoto/Graphics/PortalPlane.cpp:
+	.text       start:0x8033A28C end:0x8033A4B0
+	.ctors      start:0x803A5680 end:0x803A5684
+	.bss        start:0x8041768C end:0x804176CC align:4 common
+	.sbss       start:0x80419C68 end:0x80419C69
+	.sdata2     start:0x8041EDB8 end:0x8041EDC8
 
 MetroidPrime/Cameras/CCylinderCameraSurface.cpp:
 	.text       start:0x8033A4B0 end:0x8033A8D4

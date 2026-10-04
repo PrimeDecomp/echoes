@@ -144,6 +144,8 @@ public:
   float GetHardModeDamageMultiplier() const;
   float GetHardModeWeaponMultiplier() const;
   bool GetHardModeEnabled() const { return mHardMode; }
+  bool GetInitPowerupsAtFirstSpawn() const { return mInitPowerupsAtFirstSpawn; } // Guessed name
+  bool GetIsDarkWorld() const { return mIsDarkWorld; } // Guessed name
   double GetTotalPlayTime() const { return mTotalPlayTime; }
   rstl::rc_ptr< CPlayerState > GetPlayerState() const;
   rstl::rc_ptr< CPlayerState > GetPlayerState(int player) const;

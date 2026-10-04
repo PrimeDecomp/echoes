@@ -9,6 +9,7 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/Graphics/PortalPlane.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
@@ -19,7 +20,6 @@
 #include <string.h>
 
 extern "C" int fn_8033B70C(uint vtxDesc, int attr);
-extern "C" const float (*fn_8033A44C())[4];
 
 typedef void (*TTevHandler)(const uint*& materialData, uint firstTev, uint& tevCount,
                             uint& tcgCount);
@@ -293,7 +293,8 @@ static void HandleAlphaMask(uint vtxDesc, uint& tevCount, uint& texCount, uint& 
   CGX::SetTevAlphaIn(stage, GX_CA_ZERO, GX_CA_APREV, GX_CA_TEXA, GX_CA_ZERO);
   CGX::SetTevOrder(stage, static_cast< GXTexCoordID >(sAlphaMaskTexCoord), texMap, GX_COLOR_NULL);
   CGraphics::SetAlphaCompare(kAF_Greater, 0, kAO_And, kAF_Always, 0);
-  CGX::LoadTexMtxImm(fn_8033A44C(), sAlphaMaskPostTexMtx, GX_MTX3x4);
+  CGX::LoadTexMtxImm(PortalPlane::GetTextureTransform().GetCStyleMatrix(),
+                     sAlphaMaskPostTexMtx, GX_MTX3x4);
   CGX::SetTexCoordGen(static_cast< GXTexCoordID >(sAlphaMaskTexCoord), GX_TG_MTX3x4, GX_TG_POS,
                       static_cast< GXTexMtx >(GX_PNMTX0), GX_FALSE,
                       static_cast< GXPTTexMtx >(sAlphaMaskPostTexMtx));

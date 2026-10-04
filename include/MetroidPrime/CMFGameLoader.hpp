@@ -4,16 +4,36 @@
 #include "types.h"
 
 #include "MetroidPrime/CIOWin.hpp"
+#include "rstl/rc_ptr.hpp"
+
+class CStateManager;
+class CInGameGuiManagerSet;
 
 class CMFGameLoader : public CIOWin {
 public:
   CMFGameLoader();
 
+  // CIOWin
   ~CMFGameLoader() override;
-  EMessageReturn OnMessage(const CArchitectureMessage&, CArchitectureQueue&) override;
+  EMessageReturn OnMessage(const CArchitectureMessage& message, CArchitectureQueue& queue) override;
+  void Draw() const override;
 
 private:
-  char x14_[0x18];
+  // Guessed names for the gun-pak selection and loading interfaces.
+  void UnloadGunPakSet(int set);
+  void LoadGunPakSet(int set);
+  void SelectGunPakSet();
+  bool IsGunPakSetLoaded(int set) const;
+  void ClearGunPakSetLoaded(int set);
+  void MarkGunPakSetLoaded(int set);
+  void ScanLoadedGunPaks();
+  void UpdateGunPaks();
+
+  rstl::ncrc_ptr< CStateManager > mStateManager;
+  rstl::ncrc_ptr< CInGameGuiManagerSet > mGuiManager;
+  uint mLoadedGunPakSets;
+  bool mInitialized : 1;
+  bool mTransitionFinished : 1;
 };
 CHECK_SIZEOF(CMFGameLoader, 0x2c)
 
