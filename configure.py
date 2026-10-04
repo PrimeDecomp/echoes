@@ -656,6 +656,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CInterpolationCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CFixedCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/Cameras/CSurfaceCamera.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSurfaceCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCylinderCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSplineCylinderCameraSurface.cpp"),

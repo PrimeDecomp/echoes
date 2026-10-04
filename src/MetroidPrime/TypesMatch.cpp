@@ -9,6 +9,7 @@
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
+#include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/CEffect.hpp"
@@ -37,6 +38,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptHUDHint.hpp"
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSurfaceCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraShaker.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCameraPitch.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathMeshCtrl.hpp"
@@ -163,6 +165,7 @@ TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
 TYPES_MATCH_IMPL(CFirstPersonCamera, CGameCamera, kET_FirstPersonCamera)
 TYPES_MATCH_IMPL(CFixedCamera, CGameCamera, kET_FixedCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
+TYPES_MATCH_IMPL(CSurfaceCamera, CGameCamera, kET_SurfaceCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_PTR_IMPL(CBouncyGrenade, kET_BouncyGrenade)
 CAST_TO_REF_IMPL(CGameCamera, kET_GameCamera)
@@ -175,6 +178,8 @@ TYPES_MATCH_IMPL(CPatterned, CAi, kET_Patterned)
 TYPES_MATCH_IMPL(CScriptWaypoint, CActor, kET_ScriptWaypoint)
 TYPES_MATCH_IMPL(CScriptPathMeshCtrl, CActor, kET_ScriptPathMeshCtrl)
 TYPES_MATCH_IMPL(CScriptSpindleCamera, CActor, kET_ScriptSpindleCamera)
+TYPES_MATCH_IMPL(CScriptSurfaceCamera, CActor, kET_ScriptSurfaceCamera)
+CAST_TO_PTR_IMPL(CScriptSurfaceCamera, kET_ScriptSurfaceCamera)
 TYPES_MATCH_IMPL(CScriptLayerController, CEntity, kET_ScriptLayerController)
 TYPES_MATCH_IMPL(CScriptPathCamera, CEntity, kET_ScriptPathCamera)
 TYPES_MATCH_IMPL(CScriptPortalTransition, CEntity, kET_ScriptPortalTransition)

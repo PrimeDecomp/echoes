@@ -79,6 +79,7 @@ enum EEntityType {
   kET_ScriptSpiderBallAttractionSurface = 81,
   kET_ScriptSpindleCamera = 83,
   kET_ScriptStreamedMusic = 84,
+  kET_ScriptSurfaceCamera = 85, // Guessed name; script surface-camera provider.
   kET_ScriptTeamAi = 88,
   kET_ScriptSwitch = 86,
   kET_ScriptTargetingPoint = 87,
@@ -91,6 +92,7 @@ enum EEntityType {
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
   kET_SpindleCamera = 100,
+  kET_SurfaceCamera = 101, // Guessed name; runtime surface camera.
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
