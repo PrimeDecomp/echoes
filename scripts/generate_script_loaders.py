@@ -508,7 +508,12 @@ class Generator:
         pid = property_id(node) if "ID" in node.attrib else 0
         name = node.findtext("Name")
         if not name:
-            kind = node.get("Archetype", node.attrib["Type"]).lower()
+            archetype = node.get("Archetype", "").lower()
+            name = self.names.get((pid, archetype))
+            if name:
+                return name
+
+            kind = node.attrib["Type"].lower()
             name = self.names.get((pid, kind))
         return name
 
