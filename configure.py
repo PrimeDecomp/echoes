@@ -1160,6 +1160,16 @@ config.libs = [
         ],
     },
     {
+        "lib": "MetroTRK",
+        "mw_version": config.linker_version,
+        "cflags": cflags_runtime,
+        "progress_category": "sdk",
+        "host": False,
+        "objects": [
+            Object(NonMatching, "MetroTRK/mslsupp.c"),
+        ],
+    },
+    {
         "lib": "Runtime.PPCEABI.H",
         "mw_version": config.linker_version,
         "cflags": cflags_runtime,
