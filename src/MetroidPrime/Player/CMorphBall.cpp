@@ -33,6 +33,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakBall.hpp"
+#include "MetroidPrime/Weapons/WeaponSound.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 
@@ -231,9 +232,8 @@ void CMorphBall::StartLandingSfx() {
   if (mPlayer.GetVelocityWR().GetZ() < -5.f && mLandSfxId != 0xffff) {
     const uchar vol =
         CCast::ToUint8(CMath::Clamp(95.f, 1.6f * mPlayer.GetLastVelocity().GetZ() + 95.f, 127.f));
-    CSfxHandle handle = CSfxManager::SfxStart(
-        mLandSfxId, vol, mPlayer.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, true);
-    mPlayer.ApplySubmergedPitchBend(handle);
+    mPlayer.ApplySubmergedPitchBend(CSfxManager::SfxStart(
+        mLandSfxId, vol, mPlayer.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, true));
   }
 }
 
@@ -264,9 +264,85 @@ void CMorphBall::StartScrewAttackSfx() {
                                             mPlayer.GetCurrentAreaId().Value(), true, true);
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateMorphBallSound(float dt, CStateManager& mgr) {
-  // TODO: Maintain the roll, Spider, death-ball and Screw Attack emitters.
+  CVector3f velocity = mPlayer.GetVelocityWR();
+  if (mBallState != kBS_Spider) {
+    velocity.SetZ(0.f);
+  }
+
+  switch (mPlayer.GetPlayerMovementState()) {
+  case NPlayer::kMS_OnGround:
+  case NPlayer::kMS_FallingMorphed: {
+    float speed = velocity.Magnitude();
+    if (mBallState == kBS_Spider) {
+      speed += 4.f * (dt * gpTweakBall->GetBallGravity());
+    }
+
+    bool rolling = false;
+    if (!InScrewAttackMode() || mBallState == kBS_ScrewAttackRecovery) {
+      rolling = true;
+    }
+
+    if (rolling && speed > 0.8f) {
+      if (!mRollSfx) {
+        if (mRollSfxId != 0xffff) {
+          mRollSfx = AddEmitter(mPlayer, mRollSfxId, true, true, CSfxManager::kMedPriority, 0x7f,
+                                0x14, 150.f, 1.f);
+        }
+        mPlayer.ApplySubmergedPitchBend(mRollSfx);
+      }
+
+      CSfxManager::PitchBend(mRollSfx,
+                             CMath::Clamp(0, static_cast< int >(speed) * 500 + 0x2b4, 0x4000));
+      const uchar vol = CCast::ToUint8(CMath::Clamp(64.f, 3.2f * speed + 64.f, 127.f));
+      CSfxManager::UpdateEmitter(mRollSfx, mPlayer.GetTranslation(), CVector3f::Zero(), vol);
+      break;
+    }
+  }
+  default:
+    if (mRollSfx) {
+      CSfxManager::SfxStop(mRollSfx);
+      mRollSfx.Clear();
+    }
+    break;
+  }
+
+  if (mBoostReleaseSfx) {
+    if (!CSfxManager::IsPlaying(mBoostReleaseSfx) && !CSfxManager::IsQueued(mBoostReleaseSfx)) {
+      mBoostReleaseSfx.Clear();
+    } else {
+      CSfxManager::UpdateEmitter(mBoostReleaseSfx, mPlayer.GetTranslation(), CVector3f::Zero(),
+                                 0x7f);
+    }
+  }
+
+  if (mBoostChargeSfx) {
+    CSfxManager::UpdateEmitter(mBoostChargeSfx, mPlayer.GetTranslation(), CVector3f::Zero(), 0x7f);
+  }
+
+  if (mBallState == kBS_Spider) {
+    if (!mSpiderSfx) {
+      mSpiderSfx = AddEmitter(mPlayer, mgr.ReturnFirstIfSingleElseSecond(0x159, 0x2641), true, true,
+                              0xc8, 0x7f, 0x14, 150.f, 1.f);
+      mPlayer.ApplySubmergedPitchBend(mSpiderSfx);
+    }
+    CSfxManager::UpdateEmitter(mSpiderSfx, mPlayer.GetTranslation(), CVector3f::Zero(), 0x7f);
+  } else if (mSpiderSfx) {
+    CSfxManager::SfxStop(mSpiderSfx);
+    mSpiderSfx.Clear();
+  }
+
+  if (mPlayer.GetPlayerState()->GetItemAmount(CPlayerState::kIT_DeathBall, true) != 0) {
+    if (!mDeathBallSfx) {
+      mDeathBallSfx = CSfxManager::AddEmitter(0x2611, mPlayer.GetTranslation(),
+                                              mPlayer.GetCurrentAreaId().Value(), true, true, 0xc8);
+      mPlayer.ApplySubmergedPitchBend(mDeathBallSfx);
+    }
+    CSfxManager::UpdateEmitter(mDeathBallSfx, mPlayer.GetTranslation(), CVector3f::Zero(), 0x7f);
+  } else if (mDeathBallSfx) {
+    CSfxManager::SfxStop(mDeathBallSfx);
+    mDeathBallSfx.Clear();
+  }
 }
 
 void CMorphBall::SelectMorphBallSounds(const CMaterialList& material) {

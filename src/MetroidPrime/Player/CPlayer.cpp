@@ -814,7 +814,7 @@ void CPlayer::fn_8000e85c(float dt) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::ApplySubmergedPitchBend(CSfxHandle& handle) {
+void CPlayer::ApplySubmergedPitchBend(CSfxHandle handle) {
   if (CheckSubmerged()) {
     CSfxManager::PitchBend(handle, 0);
   }

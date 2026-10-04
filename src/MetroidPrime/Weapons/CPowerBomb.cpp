@@ -127,11 +127,10 @@ void CPowerBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     if (ownerDead) {
       if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetOwnerId()))) {
-        CSfxHandle sound =
+        player->ApplySubmergedPitchBend(
             CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x245c, 0x25b8), 127,
                                   player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
-                                  false, false, CSfxManager::kMedPriority);
-        player->ApplySubmergedPitchBend(sound);
+                                  false, false, CSfxManager::kMedPriority));
       }
     } else {
       mExplosionSound =

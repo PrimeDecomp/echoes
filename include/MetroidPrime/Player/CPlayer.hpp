@@ -374,7 +374,7 @@ public:
   void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
-  void ApplySubmergedPitchBend(CSfxHandle& handle);
+  void ApplySubmergedPitchBend(CSfxHandle handle);
   void fn_8000e85c(float dt);
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
   void fn_8000eba0();
