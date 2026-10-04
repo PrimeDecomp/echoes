@@ -282,6 +282,10 @@ public:
   const CVisorSteam& GetVisorSteam() const { return mVisorSteam; }
   float GetVisorSteamAlpha() const { return mVisorSteam.GetAlpha(); }
   static const float skDefaultHudFadeOutSpeed;
+  // Guessed name. Hard landing sounds by material, indexed by multiplayer.
+  static const ushort skPlayerLandSfxHard[2][26];
+  static int SfxIdFromMaterial(const CMaterialList& mat, const ushort* idList, int tableLen,
+                               ushort defId);
   static const float skDefaultHudFadeInSpeed;
   void SetHudDisable(float staticTimer, float fadeOutSpeed = skDefaultHudFadeOutSpeed,
                      float fadeInSpeed = skDefaultHudFadeInSpeed);
@@ -366,6 +370,8 @@ public:
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  bool GetSelectFluidBallSound() const { return mSelectFluidBallSound; }
+  void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
   void ApplySubmergedPitchBend(CSfxHandle& handle);
@@ -725,7 +731,7 @@ private:
   bool mInSafeZone : 1;
   bool x1269_24_ : 1;
   bool mHitWallDuringMove : 1;
-  bool x1269_26_ : 1;
+  bool mSelectFluidBallSound : 1;
   bool x1269_27_ : 1;
   bool x1269_28_ : 1;
   bool mInterpolatingControlDir : 1;

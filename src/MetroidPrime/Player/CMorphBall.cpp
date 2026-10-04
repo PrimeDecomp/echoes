@@ -34,6 +34,38 @@ const CMorphBall::SColorRgb CMorphBall::skBallHullGlowColors[3] = {
     {255, 204, 0},
 };
 
+// Roll sounds by material; the second set is used in multiplayer.
+static const ushort skBallRollSfx[2][26] = {
+    {
+        0xffff, 0x1c10, 0xa5, 0x741, 0x1d48, 0xffff, 0xa4, 0x1c18,
+        0x4cd, 0x1d8f, 0x1d90, 0x1d49, 0x1c6c, 0xffff, 0x1c6d, 0x1c6e,
+        0xffff, 0x1ad0, 0x1d91, 0x1d92, 0xffff, 0xffff, 0x4cb, 0x621,
+        0xffff, 0x1d5e,
+    },
+    {
+        0xffff, 0x263b, 0x2633, 0x262f, 0x2631, 0xffff, 0x2630, 0x2636,
+        0x262c, 0x262b, 0x262d, 0x263a, 0x262e, 0xffff, 0x2637, 0x263e,
+        0xffff, 0x2639, 0x2634, 0x263d, 0xffff, 0xffff, 0x263f, 0x2635,
+        0xffff, 0x2638,
+    },
+};
+
+// Landing sounds by material; the second set is used in multiplayer.
+static const ushort skBallLandSfx[2][26] = {
+    {
+        0xffff, 0x8e, 0xa9, 0x73f, 0x1d42, 0xffff, 0xa7, 0x1c17,
+        0x4d0, 0x1c5b, 0x1c5c, 0x1d43, 0x1c69, 0xffff, 0x1c6a, 0x1c6b,
+        0xffff, 0x4df, 0x1d36, 0x1d37, 0xffff, 0xffff, 0x4ca, 0x620,
+        0xffff, 0x1d5b,
+    },
+    {
+        0xffff, 0x26e4, 0x26e1, 0x26df, 0x2721, 0xffff, 0x26e0, 0x2701,
+        0x26de, 0x270e, 0x270f, 0x2722, 0x2710, 0xffff, 0x2711, 0x2712,
+        0xffff, 0x26e3, 0x1d36, 0x1d37, 0xffff, 0xffff, 0x26e5, 0x26e2,
+        0xffff, 0x2729,
+    },
+};
+
 inline CColor CMorphBall::GetBallGlowColor(const SColorRgb& color) {
   return CColor(color.mR, color.mG, color.mB, 0xff);
 }
@@ -180,9 +212,38 @@ void CMorphBall::UpdateMorphBallSound(float dt, CStateManager& mgr) {
   // TODO: Maintain the roll, Spider, death-ball and Screw Attack emitters.
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::SelectMorphBallSounds(const CMaterialList& material) {
-  // TODO: Select roll/landing sound IDs for collision material and multiplayer mode.
+  const int sfxSet = mMultiplayer ? 1 : 0;
+  short rollSfx;
+  if (!InScrewAttackMode()) {
+    if (mPlayer.GetSelectFluidBallSound()) {
+      if (mMultiplayer) {
+        rollSfx = 0x263c;
+      } else {
+        rollSfx = 0x94;
+      }
+    } else {
+      rollSfx = CPlayer::SfxIdFromMaterial(material, skBallRollSfx[sfxSet], 26, 0xffff);
+    }
+  } else {
+    rollSfx = 0x25a;
+  }
+  mPlayer.SetSelectFluidBallSound(false);
+
+  if (rollSfx != 0xffff) {
+    if (mRollSfxId != rollSfx && mRollSfx) {
+      CSfxManager::SfxStop(mRollSfx);
+      mRollSfx.Clear();
+    }
+    mRollSfxId = rollSfx;
+  }
+
+  if (!InScrewAttackMode()) {
+    mLandSfxId = CPlayer::SfxIdFromMaterial(material, skBallLandSfx[sfxSet], 26, 0xffff);
+  } else {
+    mLandSfxId =
+        CPlayer::SfxIdFromMaterial(material, CPlayer::skPlayerLandSfxHard[sfxSet], 26, 0xffff);
+  }
 }
 
 void CMorphBall::TakeDamage(float damage) {

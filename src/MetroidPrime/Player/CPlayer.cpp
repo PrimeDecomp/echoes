@@ -220,7 +220,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mInSafeZone(false)
 , x1269_24_(false)
 , mHitWallDuringMove(false)
-, x1269_26_(false)
+, mSelectFluidBallSound(false)
 , x1269_27_(true)
 , x1269_28_(false)
 , mInterpolatingControlDir(false)
