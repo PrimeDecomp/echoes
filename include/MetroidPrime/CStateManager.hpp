@@ -20,6 +20,7 @@ extern const int gkPVSEnabled;
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
+#include "Kyoto/TOneStatic.hpp"
 
 #include "rstl/auto_ptr.hpp"
 #include "rstl/bit_vector.hpp"
@@ -73,7 +74,7 @@ enum EStateManagerTransition {
   kSMT_MessageScreen
 };
 
-class CStateManager {
+class CStateManager : public TOneStatic< CStateManager > {
 
   struct ScriptMsgArray {
     CScriptMsg mMessages[192];
