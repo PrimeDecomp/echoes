@@ -10,6 +10,7 @@
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
+#include "MetroidPrime/CStateManagerContainer.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"

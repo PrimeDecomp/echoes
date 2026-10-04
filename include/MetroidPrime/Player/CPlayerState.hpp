@@ -17,6 +17,9 @@ class CBitStreamWriter;
 
 class CPlayerState {
 public:
+  // Guessed enum spelling for the native four-player index domain.
+  enum EPlayerIndex { kPI_Player1 = 0, kPI_Player2 = 1, kPI_Player3 = 2, kPI_Player4 = 3 };
+
   enum EItemType {
     kIT_Invalid = -1,
     kIT_PowerBeam = 0x0,
