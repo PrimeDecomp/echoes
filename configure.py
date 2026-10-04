@@ -581,6 +581,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CPlayerHintManager.cpp"),
             Object(NonMatching, "MetroidPrime/CCameraHintManager.cpp"),
             Object(NonMatching, "MetroidPrime/CControlHintManager.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAIHint.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptControlHint.cpp"),
             Object(NonMatching, "MetroidPrime/CGameHint.cpp"),
             Object(NonMatching, "MetroidPrime/CGameLight.cpp"),
