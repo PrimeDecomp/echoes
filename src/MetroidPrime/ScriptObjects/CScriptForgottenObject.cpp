@@ -71,7 +71,7 @@ CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInf
 
 static void SetFuncPtrs() {
   static SScriptForgottenObject_FuncPtrs funcPtrs;
-  funcPtrs.loader = &LoadForgottenObject;
+  funcPtrs.mLoader = &LoadForgottenObject;
   SetSScriptForgottenObject_FuncPtrs(&funcPtrs);
 }
 

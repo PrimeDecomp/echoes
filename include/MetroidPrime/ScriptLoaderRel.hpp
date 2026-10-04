@@ -10,6 +10,79 @@ class CVector3f;
 class CDamageInfo;
 class CFinalInput;
 class CSpacePirate;
+class CMetroidAlpha;
+class CSplitterMainChassis;
+
+struct SIngSnatchingSwarm_FuncPtrs {
+  FScriptLoader mLoadIngSnatchingSwarm; // Guessed member name.
+};
+CHECK_SIZEOF(SIngSnatchingSwarm_FuncPtrs, 0x4)
+void SetSIngSnatchingSwarm_FuncPtrs(SIngSnatchingSwarm_FuncPtrs* callbacks);
+
+struct SAtomicAlpha_FuncPtrs {
+  FScriptLoader mLoadAtomicAlpha; // Guessed member name.
+};
+CHECK_SIZEOF(SAtomicAlpha_FuncPtrs, 0x4)
+void SetSAtomicAlpha_FuncPtrs(SAtomicAlpha_FuncPtrs* callbacks);
+
+struct SRipper_FuncPtrs {
+  FScriptLoader mLoadRipper; // Guessed member name.
+};
+CHECK_SIZEOF(SRipper_FuncPtrs, 0x4)
+void SetSRipper_FuncPtrs(SRipper_FuncPtrs* callbacks);
+
+struct SPuffer_FuncPtrs {
+  FScriptLoader mLoadPuffer; // Guessed member name.
+};
+CHECK_SIZEOF(SPuffer_FuncPtrs, 0x4)
+void SetSPuffer_FuncPtrs(SPuffer_FuncPtrs* callbacks);
+
+struct SMetaree_FuncPtrs {
+  FScriptLoader mLoadMetaree; // Guessed member name.
+};
+CHECK_SIZEOF(SMetaree_FuncPtrs, 0x4)
+void SetSMetaree_FuncPtrs(SMetaree_FuncPtrs* callbacks);
+
+struct SRiftPortal_FuncPtrs {
+  FScriptLoader mLoadRiftPortal; // Guessed member name.
+};
+CHECK_SIZEOF(SRiftPortal_FuncPtrs, 0x4)
+void SetSRiftPortal_FuncPtrs(SRiftPortal_FuncPtrs* callbacks);
+
+struct SPlayerController_FuncPtrs {
+  FScriptLoader mLoadPlayerController; // Guessed member name.
+};
+CHECK_SIZEOF(SPlayerController_FuncPtrs, 0x4)
+void SetSPlayerController_FuncPtrs(SPlayerController_FuncPtrs* callbacks);
+
+struct SWallWalker_FuncPtrs {
+  FScriptLoader mLoadWallWalker; // Guessed member name.
+};
+CHECK_SIZEOF(SWallWalker_FuncPtrs, 0x4)
+void SetSWallWalker_FuncPtrs(SWallWalker_FuncPtrs* callbacks);
+
+struct SCannonBall_FuncPtrs {
+  FScriptLoader mLoadCannonBall; // Guessed member name.
+};
+CHECK_SIZEOF(SCannonBall_FuncPtrs, 0x4)
+void SetSCannonBall_FuncPtrs(SCannonBall_FuncPtrs* callbacks);
+
+struct SMetroid_FuncPtrs {
+  // Guessed member names; CMetroidAlpha is the existing reconstructed boundary owner.
+  FScriptLoader mLoadMetroid;
+  void (CMetroidAlpha::*mOnDockTouch)(CStateManager&);
+};
+CHECK_SIZEOF(SMetroid_FuncPtrs, 0x10)
+void SetSMetroid_FuncPtrs(SMetroid_FuncPtrs* callbacks);
+
+struct SSplitterMainChassis_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadMainChassis;
+  FScriptLoader mLoadCommandModule;
+  void (CSplitterMainChassis::*mAutoDestruct)(float);
+};
+CHECK_SIZEOF(SSplitterMainChassis_FuncPtrs, 0x14)
+void SetSSplitterMainChassis_FuncPtrs(SSplitterMainChassis_FuncPtrs* callbacks);
 
 struct SSpacePirate_FuncPtrs {
   // Guessed member names.
@@ -61,6 +134,12 @@ struct SSandworm_FuncPtrs {
 };
 CHECK_SIZEOF(SSandworm_FuncPtrs, 0x1c)
 void SetSSandworm_FuncPtrs(SSandworm_FuncPtrs* callbacks);
+
+struct SCommandoPirate_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SCommandoPirate_FuncPtrs, 0x4)
+void SetSCommandoPirate_FuncPtrs(SCommandoPirate_FuncPtrs* callbacks);
 
 struct SDarkCommando_FuncPtrs {
   FScriptLoader mLoader; // Guessed member name.
@@ -149,63 +228,88 @@ CHECK_SIZEOF(SMetareeSwarm_FuncPtrs, 0x4)
 void SetSMetareeSwarm_FuncPtrs(SMetareeSwarm_FuncPtrs* callbacks);
 
 struct SGuiWidget_FuncPtrs {
-  FScriptLoader guiWidget;
-  FScriptLoader guiScreen;
-  FScriptLoader guiSlider;
-  FScriptLoader guiMenu;
-  FScriptLoader guiPlayerJoinManager;
+  // Guessed member names.
+  FScriptLoader mLoadGuiWidget;
+  FScriptLoader mLoadGuiScreen;
+  FScriptLoader mLoadGuiSlider;
+  FScriptLoader mLoadGuiMenu;
+  FScriptLoader mLoadGuiPlayerJoinManager;
 };
+CHECK_SIZEOF(SGuiWidget_FuncPtrs, 0x14)
 void SetSGuiWidget_FuncPtrs(SGuiWidget_FuncPtrs*);
 
+// These CEntity member pointers are type-erased REL subtype bridges, not CEntity methods.
 struct SSafeZone_FuncPtrs {
-  FScriptLoader safeZone;
-  FScriptLoader safeZoneCrystal;
-  void (CEntity::*method)(CStateManager& mgr);
+  // Guessed member names.
+  FScriptLoader mLoadSafeZone;
+  FScriptLoader mLoadSafeZoneCrystal;
+  void (CEntity::*mApplyRenderEffect)(CStateManager&);
 };
+CHECK_SIZEOF(SSafeZone_FuncPtrs, 0x14)
 void SetSSafeZone_FuncPtrs(SSafeZone_FuncPtrs*);
 
 struct SFishCloud_FuncPtrs {
-  FScriptLoader fishCloud;
-  FScriptLoader fishCloudModifier;
+  // Guessed member names.
+  FScriptLoader mLoadFishCloud;
+  FScriptLoader mLoadFishCloudModifier;
 };
+CHECK_SIZEOF(SFishCloud_FuncPtrs, 0x8)
 void SetSFishCloud_FuncPtrs(SFishCloud_FuncPtrs*);
 
 struct SSnakeWeedSwarm_FuncPtrs {
-  FScriptLoader swarm;
-  void (CEntity::*method)(const CVector3f&, const CDamageInfo&, CStateManager&);
+  // Guessed member names; member-pointer owners use the type-erased bridge convention.
+  FScriptLoader mLoadSnakeWeedSwarm;
+  void (CEntity::*mApplyRadiusDamage)(CVector3f, const CDamageInfo&, CStateManager&);
+  void (CEntity::*mScareSnakeWeeds)(CStateManager&, const CVector3f&, float);
 };
+CHECK_SIZEOF(SSnakeWeedSwarm_FuncPtrs, 0x1c)
 void SetSSnakeWeedSwarm_FuncPtrs(SSnakeWeedSwarm_FuncPtrs*);
 
 struct SPlayerActor_FuncPtrs {
-  FScriptLoader loader;
-  void (CEntity::*method)(CStateManager& mgr);
+  // Guessed member names; member-pointer owner uses the type-erased bridge convention.
+  FScriptLoader mLoadPlayerActor;
+  void (CEntity::*mTouchModels)(CStateManager&);
 };
+CHECK_SIZEOF(SPlayerActor_FuncPtrs, 0x10)
 void SetSPlayerActor_FuncPtrs(SPlayerActor_FuncPtrs*);
 
 struct SPlayerTurret_FuncPtrs {
-  FScriptLoader loader;
-  CTransform4f (CEntity::*GetTransform1)(CStateManager&);
-  CTransform4f (CEntity::*GetTransform2)(CStateManager&);
-  void (CEntity::*SendSomeMsg)(CStateManager&);
-  void (CEntity::*CheckInput)(float, CFinalInput&, CStateManager&);
-  TUniqueId (CEntity::*GetSomeId)();
+  // Guessed member names; member-pointer owners use the type-erased bridge convention.
+  FScriptLoader mLoadPlayerTurret;
+  CTransform4f (CEntity::*mGetCameraTransform)(CStateManager&);
+  CTransform4f (CEntity::*mGetTurretTransform)(CStateManager&);
+  void (CEntity::*mExitTurret)(CStateManager&);
+  void (CEntity::*mProcessInput)(const CFinalInput&, CStateManager&);
+  TUniqueId (CEntity::*mGetHullActorId)();
 };
+CHECK_SIZEOF(SPlayerTurret_FuncPtrs, 0x40)
 void SetSPlayerTurret_FuncPtrs(SPlayerTurret_FuncPtrs*);
-TUniqueId PlayerTurret_GetSomeId(CEntity& entity); // Guessed name; existing REL ID query.
+
+// Guessed descriptive names for the existing REL member bridges.
+void SafeZone_ApplyRenderEffect(CEntity& entity, CStateManager& mgr);
+void SnakeWeed_ApplyRadiusDamage(CEntity& entity, const CVector3f& position,
+                                 const CDamageInfo& damage, CStateManager& mgr);
+void PlayerActor_TouchModels(CEntity& entity, CStateManager& mgr);
+CTransform4f PlayerTurret_GetCameraTransform(CEntity& entity, CStateManager& mgr);
+CTransform4f PlayerTurret_GetTurretTransform(CEntity& entity, CStateManager& mgr);
+void PlayerTurret_ExitTurret(CEntity& entity, CStateManager& mgr);
+void PlayerTurret_ProcessInput(CEntity& entity, const CFinalInput& input, CStateManager& mgr);
+TUniqueId PlayerTurret_GetHullActorId(CEntity& entity);
 
 struct SScriptForgottenObject_FuncPtrs {
-  FScriptLoader loader;
+  FScriptLoader mLoader; // Guessed member name.
 };
+CHECK_SIZEOF(SScriptForgottenObject_FuncPtrs, 0x4)
 void SetSScriptForgottenObject_FuncPtrs(SScriptForgottenObject_FuncPtrs*);
 
-void SetLoader_CannonBall(FScriptLoader* loader);
-
 struct STweaks_FuncPtrs {
-  void (*Loader)(CInputStream&);
-  void (*CreateGlobals)();
-  void (*FreeTweaks)();
+  // Guessed member names.
+  void (*mLoadTweaks)(CInputStream&);
+  void (*mCreateGlobals)();
+  void (*mFreeTweaks)();
 };
-void SetTweaks_FuncPtrs(STweaks_FuncPtrs*);
+CHECK_SIZEOF(STweaks_FuncPtrs, 0xc)
+void SetSTweaks_FuncPtrs(STweaks_FuncPtrs*);
 
 // Guessed names; dispatch through the currently loaded Tweaks REL's function table.
 void LoadTweaks(CInputStream&);

@@ -45,6 +45,6 @@ private:
 CHECK_SIZEOF(CScriptSafeZone, 0x488)
 
 // Existing DOL forwarder into the loaded SafeZone REL callback.
-void SafeZone_ActOn(CEntity& entity, CStateManager& mgr);
+void SafeZone_ApplyRenderEffect(CEntity& entity, CStateManager& mgr); // Guessed name.
 
 #endif // _CSCRIPTSAFEZONE

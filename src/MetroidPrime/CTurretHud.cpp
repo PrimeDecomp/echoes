@@ -75,7 +75,7 @@ void CTurretHud::UpdateEnergy(const CStateManager& mgr) {
   }
 
   const CActor* hull =
-      TCastToConstPtr< CActor >(mgr.GetObjectById(PlayerTurret_GetSomeId(*turret)));
+      TCastToConstPtr< CActor >(mgr.GetObjectById(PlayerTurret_GetHullActorId(*turret)));
   if (const CHealthInfo* health = hull->GetHealthInfo()) {
     mHullEnergy->SetMaxEnergy(health->GetInitialHP());
     mHullEnergy->SetCurrEnergy(health->GetHP(), CAuiEnergyBarT01::kSM_Instant);
