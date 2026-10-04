@@ -1532,6 +1532,13 @@ MetroidPrime/Cameras/ScriptCameraSpline.cpp:
 	.data       start:0x803B7660 end:0x803B7670
 	.sdata2     start:0x8041D448 end:0x8041D450
 
+MetroidPrime/RenderGeometryRayCast.cpp:
+	.text       start:0x801E5BB4 end:0x801E70B0
+	.ctors      start:0x803A557C end:0x803A5580
+	.sdata      start:0x80418708 end:0x80418720
+	.sbss       start:0x804192D8 end:0x804192E0
+	.sdata2     start:0x8041D450 end:0x8041D460
+
 MetroidPrime/Cameras/CCameraShakerData.cpp:
 	.text       start:0x801E70F0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
