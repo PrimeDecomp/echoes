@@ -33,6 +33,7 @@ public:
 
 protected:
   int GetPlayerIndex() const { return mPlayerIndex; }
+  TUniqueId GetCurrentHintId() const { return mCurrentHintId; }
   int GetCurrentPriority() const { return mPriority; }
   void ClearCurrentHint(int priority) {
     mCurrentHintId = kInvalidUniqueId;

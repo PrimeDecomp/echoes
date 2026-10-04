@@ -20,6 +20,9 @@ public:
   void SetLight(const CLight& light);
   TUniqueId GetParentId() const { return mParentId; }
 
+protected:
+  CLight& Light() { return mLight; }
+
 private:
   TUniqueId mParentId;
   CLight mLight;

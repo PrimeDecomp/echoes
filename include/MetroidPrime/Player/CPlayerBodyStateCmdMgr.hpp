@@ -125,6 +125,8 @@ public:
   explicit CPBCGrappleCmd(int animationVariant)
   : CPlayerBodyStateCmd(kPBSC_Grapple), mAnimationVariant(animationVariant) {}
 
+  int GetAnimationVariant() const { return mAnimationVariant; }
+
 private:
   int mAnimationVariant;
 };

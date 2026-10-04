@@ -10,6 +10,8 @@ class prereserved_vector {
 public:
   prereserved_vector() : mSize(0), mData(nullptr) {}
   int size() const { return mSize; }
+  T* data() { return mData; }
+  const T* data() const { return mData; }
   void set_size(int size) { mSize = size; }
   void set_data(T* data) { mData = data; }
   T& operator[](int idx) { return mData[idx]; }

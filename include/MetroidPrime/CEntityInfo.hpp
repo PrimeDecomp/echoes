@@ -17,6 +17,7 @@ enum EEntityType {
   kET_Effect = 7,
   kET_GameProjectile = 8,
   kET_ScriptWaypoint = 9,
+  kET_ScriptPathMeshCtrl = 10, // Guessed class name; native path-mesh obstruction controller.
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
   kET_Bomb = 14,
@@ -52,6 +53,7 @@ enum EEntityType {
   kET_ScriptDistanceFog = 54, // Guessed name; Prime has CScriptDistanceFog.
   kET_ScriptDock = 55,
   kET_ScriptDoor = 56,
+  kET_ScriptDynamicLight = 57,
   kET_ScriptEffect = 58,
   kET_ScriptGrapplePoint = 59,
   kET_ScriptHUDHint = 63, // Guessed name; HUD texture marker.

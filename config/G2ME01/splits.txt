@@ -1361,6 +1361,11 @@ MetroidPrime/CPlayerHintManager.cpp:
 	.text       start:0x801BAD5C end:0x801BAFCC
 	.data       start:0x803B69D0 end:0x803B69F8
 
+MetroidPrime/CCameraHintManager.cpp:
+	.text       start:0x801BAFCC end:0x801BC900
+	.data       start:0x803B69F8 end:0x803B6A40
+	.sdata2     start:0x8041CF10 end:0x8041CF28
+
 MetroidPrime/Enemies/CAiKnockBackMgr.cpp:
 	.text       start:0x801BC900 end:0x801BD714
 	.rodata     start:0x803AA618 end:0x803AA630
@@ -1492,6 +1497,10 @@ MetroidPrime/ScriptObjects/CScriptAreaDamage.cpp:
 	.sdata      start:0x804186F8 end:0x80418700
 	.sdata2     start:0x8041D410 end:0x8041D418
 
+MetroidPrime/Player/CPlayerBodyGrapple.cpp:
+	.text       start:0x801E3A34 end:0x801E4074
+	.sdata2     start:0x8041D418 end:0x8041D420
+
 MetroidPrime/CPortalArea.cpp:
 	.text       start:0x801E4074 end:0x801E555C
 	.sdata      start:0x80418700 end:0x80418708
@@ -1510,6 +1519,11 @@ MetroidPrime/Cameras/CCameraShakerManager.cpp:
 MetroidPrime/CSafeZoneManager.cpp:
 	.text       start:0x801EA9AC end:0x801EB64C
 	.sdata2     start:0x8041D4E0 end:0x8041D4F8
+
+MetroidPrime/ScriptObjects/CScriptPathMeshCtrl.cpp:
+	.text       start:0x801EB64C end:0x801EBB44
+	.data       start:0x803B7818 end:0x803B7898
+	.sdata      start:0x80418728 end:0x80418730
 
 MetroidPrime/CEchoEmitter.cpp:
 	.text       start:0x801EBB44 end:0x801ECF44
@@ -1742,6 +1756,12 @@ MetroidPrime/ScriptLoaderRel.cpp:
 
 MetroidPrime/HUD/CHudDecoInterfaceScan.cpp:
 	.text       start:0x8021BFE0 end:0x8021DC00
+
+MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp:
+	.text       start:0x8021FABC end:0x802219EC
+	.rodata     start:0x803ACF30 end:0x803ACF38
+	.data       start:0x803B83F8 end:0x803B8478
+	.sdata2     start:0x8041D9F8 end:0x8041DA10
 
 MetroidPrime/CQuitGameScreen.cpp:
 	.text       start:0x802219EC end:0x802221C0
