@@ -6,12 +6,57 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "rstl/string.hpp"
+
 class CVector3f;
 class CDamageInfo;
 class CFinalInput;
 class CSpacePirate;
 class CMetroidAlpha;
 class CSplitterMainChassis;
+class CEffect;
+class CGenDescription;
+class CPatterned;
+class CRagDoll;
+
+template < typename T >
+class TLockedToken;
+
+namespace rstl {
+template < typename T, int N >
+class reserved_vector;
+}
+
+struct SGeomBlobV2_FuncPtrs {
+  // Guessed member name; compatible base return type.
+  CEffect* (*mFactory)(const TLockedToken< CGenDescription >& token, TUniqueId uid, TAreaId area,
+                       bool active, const rstl::string& name, const CTransform4f& transform,
+                       TUniqueId relatedId, uint flags);
+};
+CHECK_SIZEOF(SGeomBlobV2_FuncPtrs, 0x4)
+void SetSGeomBlobV2_FuncPtrs(SGeomBlobV2_FuncPtrs* callbacks);
+
+// Guessed record and member names; compatible factory signature.
+struct SSurfaceParticleEffect_FuncPtrs {
+  CEffect* (*mFactory)(const TLockedToken< CGenDescription >& token, TUniqueId uid, TAreaId area,
+                       bool active, const rstl::string& name, const CTransform4f& transform,
+                       TUniqueId ignoredCollisionId, uint flags);
+};
+CHECK_SIZEOF(SSurfaceParticleEffect_FuncPtrs, 0x4)
+void SetSSurfaceParticleEffect_FuncPtrs(SSurfaceParticleEffect_FuncPtrs* callbacks);
+
+struct SPirateRagDoll_FuncPtrs {
+  // Guessed member name; compatible base return type.
+  CRagDoll* (*mFactory)(CStateManager& mgr, CPatterned* actor, ushort soundId, uint flags,
+                        float first, float second,
+                        const rstl::reserved_vector< float, 14 >& values);
+};
+CHECK_SIZEOF(SPirateRagDoll_FuncPtrs, 0x4)
+void SetSPirateRagDoll_FuncPtrs(SPirateRagDoll_FuncPtrs* callbacks);
+
+// The native record's callback signature is unresolved.
+struct SSwarmBasics_FuncPtrs;
+void SetSSwarmBasics_FuncPtrs(SSwarmBasics_FuncPtrs* callbacks);
 
 struct SIngSnatchingSwarm_FuncPtrs {
   FScriptLoader mLoadIngSnatchingSwarm; // Guessed member name.
