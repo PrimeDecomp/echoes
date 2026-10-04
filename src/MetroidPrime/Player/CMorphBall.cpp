@@ -1513,10 +1513,127 @@ void CMorphBall::UpdateScrewAttackRecovery(float dt) {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::ComputeScrewAttackMovement(const CFinalInput& input, CStateManager& mgr,
                                             float dt) {
-  // TODO: Handle jump/wall-jump input, speed/height limits and Screw Attack recovery.
+  const float mass = mPlayer.GetMass();
+  CPlayerBodyStateCmdMgr& cmdMgr = mPlayer.BodyController()->CommandMgr();
+  const float initialDropLimit = gpTweakBall->GetScrewAttackInitialDropLimit();
+  const float finalDropLimit = gpTweakBall->GetScrewAttackFinalDropLimit();
+  const int dropLimitJumpCount = gpTweakBall->GetScrewAttackDropLimitJumpCount();
+  const float dropLimit = initialDropLimit + (static_cast< float >(mScrewAttackJumpCount) /
+                                              static_cast< float >(dropLimitJumpCount)) *
+                                                 (finalDropLimit - initialDropLimit);
+  const float drop = mPlayer.GetTranslation().GetZ() - mPlayer.GetLastSpaceJumpPosition().GetZ();
+
+  bool jumpPressed = true;
+  if (!mPlayer.JumpPressed(input) && !mForcedScrewJumpInput) {
+    jumpPressed = false;
+  }
+  mForcedScrewJumpInput = false;
+
+  bool startSfx = false;
+  if (drop < 0.f && CMath::AbsF(drop) > dropLimit) {
+    mEndScrewAttackRequested = true;
+  }
+
+  mTimeSinceScrewAttackJump += dt;
+  if (mBallState == kBS_ScrewAttackWallJump && mTouchingWall && 0.f == mWallContactTime) {
+    cmdMgr.DeliverCmd(CPBCMorphToScrewAttackCmd(5, 1));
+    mPlayer.SetVelocityWR(CVector3f::Zero());
+  }
+
+  if (mBallState == kBS_ScrewAttackWallJump) {
+    if (mWallJumpInputPending && mTimeSinceScrewAttackJump > 0.15f) {
+      mEndScrewAttackRequested = true;
+    }
+
+    mScrewAttackDirection = mWallNormal;
+    mWallContactTime += dt;
+    const float wallTimeScale = mWallJumpCount != 0 ? 1.f : 1.5f;
+    const float maxWallContactTime = wallTimeScale * gpTweakBall->GetScrewAttackWallJumpMaxTime();
+    if (mTouchingWall && mWallContactTime > maxWallContactTime) {
+      mEndScrewAttackRequested = true;
+    }
+
+    if (!mEndScrewAttackRequested && (jumpPressed || (mWallJumpInputPending && mTouchingWall))) {
+      const float verticalVelocity = gpTweakBall->GetScrewAttackWallJumpVerticalVelocity();
+      const float horizontalVelocity = gpTweakBall->GetScrewAttackWallJumpHorizontalVelocity();
+      if (mTouchingWall) {
+        mPlayer.SetLastSpaceJumpPosition(mPlayer.GetTranslation());
+        startSfx = true;
+        mTouchingWall = false;
+        mWallJumpInputPending = false;
+        CVector3f velocity = horizontalVelocity * mWallNormal;
+        velocity += CVector3f(0.f, 0.f, verticalVelocity);
+        mPlayer.SetVelocityWR(velocity);
+        ++mScrewAttackJumpCount;
+        ++mWallJumpCount;
+        cmdMgr.DeliverCmd(CPBCMorphToScrewAttackCmd(4, 1));
+      } else if (mWallJumpInputPending) {
+        mEndScrewAttackRequested = true;
+      } else {
+        mWallJumpInputPending = true;
+        mTimeSinceScrewAttackJump = 0.f;
+      }
+    }
+  } else {
+    const float verticalVelocity = gpTweakBall->GetScrewAttackVerticalJumpVelocity();
+    const float jumpEnergy = mass * (0.5f * verticalVelocity * verticalVelocity);
+    const float horizontalVelocity = gpTweakBall->GetScrewAttackHorizontalJumpVelocity();
+    CVector3f moveDir = mPlayer.GetMovementDirection();
+    mScrewAttackDirection = moveDir;
+    if (jumpPressed && !mEndScrewAttackRequested && mScrewAttackJumpCount < 5) {
+      mTimeSinceScrewAttackJump = 0.f;
+      const float verticalSpeed = mPlayer.GetVelocityWR().GetZ();
+      if (CMath::AbsF(drop) < dropLimit && verticalSpeed < 0.f) {
+        const float potentialEnergy = mass * (drop * GetGravityAcceleration());
+        const float jumpSpeed = CMath::SqrtF(2.f * (jumpEnergy + potentialEnergy) / mass);
+        const CVector2f steering = CalculateSpiderBallAttractionSurfaceForces(input);
+        if (CMath::AbsF(steering.GetX()) > 0.05f) {
+          const float steeringAngle =
+              -(gpTweakBall->GetScrewAttackMaxSteeringAngle().AsRadians() * steering.GetX());
+          moveDir = CTransform4f::RotateZ(CRelAngle::FromRadians(steeringAngle)).Rotate(moveDir);
+          CTransform4f playerXf = mPlayer.GetTransform();
+          playerXf.RotateLocalZ(CRelAngle::FromRadians(steeringAngle));
+          mPlayer.SetTransform(playerXf);
+        }
+
+        CVector3f velocity = horizontalVelocity * moveDir;
+        velocity += CVector3f(0.f, 0.f, jumpSpeed);
+        mPlayer.SetVelocityWR(velocity);
+        ++mScrewAttackJumpCount;
+        cmdMgr.DeliverCmd(CPBCLocomotionCmd(moveDir, moveDir));
+        startSfx = true;
+        if (!mScrewAttackJumpFlashGen.get()) {
+          mScrewAttackJumpFlashGen = rs_new CElementGen(mScrewAttackJumpFlash);
+          mScrewAttackJumpFlashGen->SetGlobalScale(mPlayer.GetModelData()->GetScale());
+        } else {
+          mScrewAttackWallJumpFlashGen = rs_new CElementGen(mScrewAttackJumpFlash);
+          mScrewAttackWallJumpFlashGen->SetGlobalScale(mPlayer.GetModelData()->GetScale());
+        }
+      } else {
+        mEndScrewAttackRequested = true;
+      }
+    }
+  }
+
+  if (mEndScrewAttackRequested) {
+    mBallState = kBS_ScrewAttackRecovery;
+    mWallJumpInputPending = false;
+  } else {
+    ApplyScrewAttackDamage(dt, mgr);
+    if (startSfx) {
+      StartScrewAttackSfx();
+    }
+    CSfxManager::UpdateEmitter(mScrewAttackSfx, mPlayer.GetTranslation(), CVector3f::Zero(), 0x7f);
+  }
+
+  if (mScrewAttackDirection.CanBeNormalized()) {
+    CTransform4f playerXf = mPlayer.GetTransform();
+    playerXf.SetRotation(
+        CTransform4f::LookAt(CVector3f::Zero(), mScrewAttackDirection, CVector3f::Up()));
+    mPlayer.SetTransform(playerXf);
+  }
 }
 
 // Guessed name

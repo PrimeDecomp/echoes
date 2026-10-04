@@ -203,6 +203,7 @@ public:
   float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
   bool GetX126c24() const { return x126c_24_; }
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
+  void SetLastSpaceJumpPosition(const CVector3f& pos) { mLastSpaceJumpPosition = pos; }
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
   bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
