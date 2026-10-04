@@ -452,7 +452,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Collision/CCollisionInfo.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/InternalColliders.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CCollisionPrimitive.cpp"),
-            Object(NonMatching, "Collision/CMaterialList.cpp"),
+            Object(MatchingFor("G2ME01"), "Collision/CMaterialList.cpp"),
             Object(NonMatching, "Collision/CollisionUtil.cpp"),
             Object(NonMatching, "Collision/COBBox.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CMRay.cpp"),
