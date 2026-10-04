@@ -107,6 +107,7 @@ public:
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return mIsDarkWorld; }
+  CAssetId GetMapTeleportWorldId() const { return mMapTeleportWorldId; } // Guessed name
   void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
   rstl::pair< int, int > CalculateScanCompletionRate() const;

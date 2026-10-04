@@ -1,9 +1,11 @@
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 
+#include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CAxisAngle.hpp"
 #include "MetroidPrime/CArchitectureMessage.hpp"
 #include "MetroidPrime/CArchitectureQueue.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
@@ -17,9 +19,11 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Decode.hpp"
+#include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
@@ -210,7 +214,30 @@ void CScriptSpecialFunction::AcceptEscapeSequence(CStateManager& mgr, const CScr
 }
 
 void CScriptSpecialFunction::AcceptSpinner(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update spinner motion, reset state and sound lifetime.
+  if (!mgr.IsMultiplayer()) {
+    switch (msg.GetMessage()) {
+    case kSM_Play:
+      mSfx3Played = mSfx2Played = false;
+      mSpinnerCanMove = true;
+      mgr.GetPlayer(0)->SetAngularVelocityWR(CAxisAngle::Identity());
+      if (mSfx2 != CSfxManager::kInternalInvalidSfxId) {
+        CSfxManager::AddEmitter(mSfx2, GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                                CSfxManager::kMedPriority);
+      }
+      break;
+    case kSM_Stop:
+      mSfx2Played = false;
+      mSpinnerCanMove = false;
+      break;
+    case kSM_Reset:
+      mSpinnerPosition = 0.f;
+      mPreviousSpinnerSpeed = 0.f;
+      mSfx3Played = mSfx2Played = false;
+    case kSM_Deactivate:
+      DeleteEmitter(mSfxHandle);
+      break;
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptShotSpinner(CStateManager& mgr, const CScriptMsg& msg) {
@@ -298,7 +325,31 @@ void CScriptSpecialFunction::AcceptEnergyTank(CStateManager& mgr, const CScriptM
 }
 
 void CScriptSpecialFunction::AcceptRadialDamage(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: apply radial damage and perform the optional self-deletion.
+  switch (msg.GetMessage()) {
+  case kSM_Activate:
+  case kSM_XCRT:
+    if ((mIntParm1 & 1) == 0 || !GetActive()) {
+      break;
+    }
+  case kSM_Action: {
+    CDamageInfo info = mDamageInfo;
+    info.SetRadius(mValue1);
+    if ((mIntParm1 & 4) != 0) {
+      mgr.ApplyDamage(GetUniqueId(), msg.GetOriginator(), kInvalidUniqueId, info,
+                      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
+                                                          CMaterialList()),
+                      CVector3f::Zero());
+    } else {
+      mgr.ApplyDamageToWorld(GetUniqueId(), *this, GetTranslation(), info,
+                             CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
+                                                                 CMaterialList()));
+    }
+    if ((mIntParm1 & 2) != 0) {
+      mgr.DeleteObjectRequest(GetUniqueId());
+    }
+    break;
+  }
+  }
 }
 
 void CScriptSpecialFunction::AcceptBossEnergyBar(CStateManager& mgr, const CScriptMsg& msg) {
@@ -728,7 +779,24 @@ void CScriptSpecialFunction::AcceptViewFrustumTester(CStateManager& mgr, const C
 }
 
 void CScriptSpecialFunction::AcceptDamageActor(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: apply configured damage to connected actors.
+  switch (msg.GetMessage()) {
+  case kSM_Action: {
+    CDamageInfo info = mDamageInfo;
+    info.SetRadius(mValue1);
+    rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Connect, kSM_Attach);
+    for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+      if (CActor* act = TCastToPtr< CActor >(mgr.ObjectById(*it))) {
+        if (act->GetActive()) {
+          mgr.ApplyDamage(msg.GetOriginator(), act->GetUniqueId(), msg.GetOriginator(), info,
+                          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
+                                                              CMaterialList()),
+                          CVector3f::Zero());
+        }
+      }
+    }
+    break;
+  }
+  }
 }
 
 void CScriptSpecialFunction::AcceptRezbitState(CStateManager& mgr, const CScriptMsg& msg) {
@@ -809,11 +877,53 @@ void CScriptSpecialFunction::AcceptAreaDocks(CStateManager& mgr, const CScriptMs
 }
 
 void CScriptSpecialFunction::AcceptEnvironmentVariable(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: update or query the named persistent environment variable.
+  CEnvironmentVariable* var;
+  if (mFunction == kSF_SystemStateEnvVarController) {
+    var = gpGameState->SystemOptions().FindEnvironmentVariable(mStringParm.data());
+  } else {
+    var = gpGameState->PersistentOptions().FindEnvironmentVariable(mStringParm.data());
+  }
+  if (GetActive()) {
+    switch (msg.GetMessage()) {
+    case kSM_Increment:
+      var->Set(var->GetValue() + 1);
+      break;
+    case kSM_Decrement:
+      var->Set(var->GetValue() - 1);
+      break;
+    case kSM_SetToZero:
+      if (var->GetValue() == var->GetMaximum()) {
+        SendScriptMsgs(kSS_Opened, mgr, kInvalidUniqueId, kSM_None);
+      }
+      if (var->GetValue() == var->GetMinimum()) {
+        SendScriptMsgs(kSS_Closed, mgr, kInvalidUniqueId, kSM_None);
+      }
+      break;
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptMultiplayerResult(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: forward the connection selected by the multiplayer result.
+  if (GetActive() && msg.GetMessage() == kSM_SetToZero) {
+    CGameMode& mode = gpGameState->GetGameMode();
+    if (mode.GetGameModeType() == 'DTHM' || mode.GetGameModeType() == 'COIN') {
+      int musicIndex = static_cast< CGMMultiplayer& >(mode).GetMusicIndex();
+      if (musicIndex >= 0 && musicIndex < GetConnectionList().size()) {
+        const SConnection& conn = GetConnectionList()[musicIndex];
+        if (conn.state == kSS_Zero) {
+          CStateManager::TIdListResult search = mgr.GetIdListForScript(conn.objId);
+
+          CStateManager::TIdList::const_iterator current = search.first;
+          CStateManager::TIdList::const_iterator end = search.second;
+          while (current != end) {
+            mgr.SendScriptMsg(
+                CScriptMsg(GetUniqueId(), msg.GetOriginator(), current->second, conn.msg, conn.state));
+            ++current;
+          }
+        }
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::AcceptMapObjectVisibility(CStateManager& mgr, const CScriptMsg& msg) {
@@ -1271,7 +1381,22 @@ void CScriptSpecialFunction::ThinkSilhouette(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkMapTeleport(float dt, CStateManager& mgr) {
-  // TODO: enable the selected world's teleporters and report the destination.
+  CAssetId worldId = mgr.GetMapTeleportWorldId();
+  if (worldId != kInvalidAssetId) {
+    rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Activate);
+    for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+      if (CScriptWorldTeleporter* teleporter =
+              TCastToPtr< CScriptWorldTeleporter >(mgr.ObjectById(*it))) {
+        bool active = teleporter->GetWorldId() == worldId;
+        mgr.SendScriptMsg(teleporter, GetUniqueId(),
+                          active ? kSM_Activate : kSM_Deactivate,
+                          kInvalidUniqueId);
+      }
+    }
+    SendScriptMsgs(mgr.World()->GetWorldAssetId() == worldId ? kSS_Zero : kSS_MaxReached, mgr,
+                   kInvalidUniqueId, kSM_None);
+    mgr.SetMapTeleportWorldId(kInvalidAssetId);
+  }
 }
 
 void CScriptSpecialFunction::ThinkSkyboxLighting(float dt, CStateManager& mgr) {
