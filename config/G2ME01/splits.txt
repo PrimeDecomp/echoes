@@ -2192,7 +2192,7 @@ GuiSys/CGuiTextPane.cpp:
 	.sdata2     start:0x8041E078 end:0x8041E0B0
 
 Kyoto/Text/CGuiTextSupport.cpp:
-	.text       start:0x8027B184 end:0x8027D7B0
+	.text       start:0x8027AE64 end:0x8027D7B0
 
 GuiSys/CGuiWidget.cpp:
 	.text       start:0x8027D7B0 end:0x8027E1E4
