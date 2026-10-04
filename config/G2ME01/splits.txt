@@ -1853,6 +1853,13 @@ MetroidPrime/Tweaks/CTweakPlayer.cpp:
 	.data       start:0x803B824C end:0x803B830C align:4
 	.sdata2     start:0x8041D928 end:0x8041D940 align:4
 
+MetroidPrime/CDamageInfoScriptLoader.cpp:
+	.text       start:0x80218698 end:0x80218760
+
+MetroidPrime/Tweaks/STweaks_FuncPtrs.cpp:
+	.text       start:0x80218760 end:0x802187EC
+	.sbss       start:0x804193B8 end:0x804193C0
+
 MetroidPrime/Enemies/SSandworm_FuncPtrs.cpp:
 	.text       start:0x802187EC end:0x80218884
 	.sbss       start:0x804193C0 end:0x804193C8
