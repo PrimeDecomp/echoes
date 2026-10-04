@@ -2002,6 +2002,10 @@ MetroidPrime/Enemies/SCoin_FuncPtrs.cpp:
 	.text       start:0x8021FA54 end:0x8021FA88
 	.sbss       start:0x80419530 end:0x80419538
 
+MetroidPrime/Enemies/SCannonBall_FuncPtrs.cpp:
+	.text       start:0x8021FA88 end:0x8021FABC
+	.sbss       start:0x80419538 end:0x80419540
+
 MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp:
 	.text       start:0x8021FABC end:0x802219EC
 	.rodata     start:0x803ACF30 end:0x803ACF38
