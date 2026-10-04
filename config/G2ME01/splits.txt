@@ -1585,7 +1585,7 @@ MetroidPrime/RenderGeometryRayCast.cpp:
 	.sdata2     start:0x8041D450 end:0x8041D460
 
 MetroidPrime/Cameras/CCameraShakerData.cpp:
-	.text       start:0x801E70F0 end:0x801E782C
+	.text       start:0x801E70B0 end:0x801E782C
 	.sdata2     start:0x8041D460 end:0x8041D46C
 
 MetroidPrime/Cameras/CCameraShakerManager.cpp:

@@ -1,5 +1,7 @@
 #include "MetroidPrime/Cameras/CCameraShakerData.hpp"
 
+#include "MetroidPrime/ScriptLoader/Structs/SLdrCameraShakerData.hpp"
+
 #include "Kyoto/Math/CMath.hpp"
 #include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
@@ -80,4 +82,11 @@ float CCameraShakerData::FindFirstIntersection(float amplitude) {
     }
   }
   return 0.f;
+}
+
+CCameraShakerData LdrToCameraShakerData(const SLdrCameraShakerData& data,
+                                      const CVector3f& position) {
+  return CCameraShakerData(data.attenuationDistance, data.duration, data.flagsCameraShaker,
+                          position, data.horizontalMotion, data.verticalMotion,
+                          data.forwardMotion, data.audioEffect);
 }
