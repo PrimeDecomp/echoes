@@ -59,6 +59,9 @@ public:
 
   const rstl::vector< CVector3f >& GetLinearParentOffsets() const { return mLinearParentOffsets; }
 
+  // Guessed name
+  const rstl::vector< CQuaternion >& GetLinearRotations() const { return mLinearRotations; }
+
   CVector3f GetFromParentUnrotated(const CSegId& id) const {
     const CCharLayoutNode& node = GetSegmentData(id);
     const CSegId parent = node.GetParent();

@@ -27,6 +27,7 @@ public:
   void SetDoorVisited(TEditorId objectId, bool visited);
   void SetObjectUnmapped(TEditorId objectId, bool unmapped); // Guessed name
   bool GetMapStationUsed() const { return mMapStationUsed; }
+  void SetMapStationUsed(bool used) { mMapStationUsed = used; }
 
 private:
   mutable rstl::bit_vector<> mVisitedAreas;

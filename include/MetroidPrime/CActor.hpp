@@ -204,6 +204,7 @@ public:
   void SetMuted(bool b);
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
+  bool GetDrawEnabled() const { return mDrawEnabled; } // Guessed name
   void SetDoTargetDistanceTest(bool enabled) { mDoTargetDistanceTest = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,

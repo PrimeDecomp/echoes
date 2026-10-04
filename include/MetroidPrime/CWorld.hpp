@@ -123,6 +123,8 @@ public:
   CAssetId GetWorldAssetId() const { return mMlvlId; }
   TAreaId GetCurrentAreaId() const { return mCurAreaId; }
   int GetNeededEnvFx() const { return mNeededEnvFx; }
+  float GetSkyboxLightingLevel() const { return mSkyboxLightingLevel; } // Guessed name
+  void SetSkyboxLightingLevel(float level) { mSkyboxLightingLevel = level; }
   CMapWorld* GetMapWorld() const;
 
   static void PropogateAreaChain(CGameArea::EOcclusionState occlusionState, CGameArea* area,

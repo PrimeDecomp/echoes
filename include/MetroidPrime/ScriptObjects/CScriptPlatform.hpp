@@ -96,6 +96,8 @@ public:
   void AdvanceMotionTime(float dt); // Guessed name
   void fn_800a3d18();
   void StopMotion(); // Guessed name
+  void SetControlledAnimation(bool controlled) { mControlledAnimation = controlled; }
+  float GetMotionDuration() const { return mMotionDuration; } // Guessed name
 
   typedef rstl::reserved_vector< ushort, 1024 > TMovedList;
   typedef rstl::reserved_vector< TUniqueId, 1024 > TNearList;

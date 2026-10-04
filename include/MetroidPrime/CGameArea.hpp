@@ -115,6 +115,8 @@ public:
     CColor GetColor() const;
     void Update(float dt);
     void SetCurrent() const;
+    ERglFogMode GetFogMode() const { return mFogMode; }       // Guessed name
+    const CVector2f& GetRange() const { return mRangeCur; } // Guessed name
 
   private:
     ERglFogMode mFogMode;
@@ -268,6 +270,7 @@ public:
   }
   CPostConstructed* GetPostConstructed() { return mPostConstructed.get(); }
   const CPostConstructed* GetPostConstructed() const { return mPostConstructed.get(); }
+  const CAreaFog* GetAreaFog() const { return GetPostConstructed()->mAreaFog.get(); }
   CGameArea* GetNext() const { return mNext; }
   int GetCurChain() const { return mCurrentChain; }
   bool IsActive() const { return mActive; }

@@ -29,6 +29,8 @@ public:
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
   void StartTransition(CStateManager& mgr);
+  CAssetId GetWorldId() const { return mWorldId; }
+  CAssetId GetAreaId() const { return mAreaId; }
 
 private:
   enum ETeleporterType { kTT_NoTransition, kTT_Elevator, kTT_Text };

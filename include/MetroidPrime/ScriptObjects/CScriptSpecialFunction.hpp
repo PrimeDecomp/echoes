@@ -9,23 +9,85 @@
 
 class CScriptSpecialFunction : public CActor {
 public:
+  // Values up to 0x45 are named after the script-object templates, the native-only
+  // 0x1000x values after Prime's equivalents, unless marked.
   enum ESpecialFunction {
+    kSF_None = 0,
     kSF_PlayerFollowLocator = 1,
     kSF_SpinnerController = 2,
     kSF_ObjectFollowLocator = 3,
     kSF_ChaffTarget = 4,
+    kSF_InventoryActivator = 5,
+    kSF_MapStation = 6,
     kSF_SaveStation = 7,
+    kSF_IntroBossRingController = 8,
     kSF_ViewFrustumTester = 9,
     kSF_ShotSpinnerController = 10,
+    kSF_EscapeSequence = 11,
+    kSF_BossEnergyBar = 12,
+    kSF_EndGame = 13,
+    kSF_DisableHud = 14,
+    kSF_CinematicSkip = 15,
+    kSF_ScriptLayerController = 16,
     kSF_RainSimulator = 17,
     kSF_AreaDamage = 18,
     kSF_ObjectFollowObject = 19,
+    kSF_HintController = 20,
+    kSF_DropBomb = 21,
     kSF_ScaleActor = 22,
+    kSF_MissileStation = 23,
+    kSF_Billboard = 24,
     kSF_PlayerInAreaRelay = 25,
     kSF_HUDTarget = 26,
-    kSF_ItemDepletion = 51,    // Guessed name
+    kSF_UnderwaterFog = 27,
+    kSF_EnterLogbookScreen = 28,
+    kSF_PowerBombStation = 29,
+    kSF_EndingActivator = 30,
+    kSF_FusionRelay = 31,
+    kSF_WeaponSwitch = 32,
+    kSF_LaunchPlayer = 33,
+    kSF_RechargeStation = 34,
+    kSF_WorldSwapper = 35,
+    kSF_PlayerOffscreen = 36,
+    kSF_Function37 = 37,
+    kSF_Function38 = 38,
+    kSF_Function39 = 39,
+    kSF_SetInventoryCapacity = 40,
+    kSF_SetInventoryAmount = 41,
+    kSF_ModifyInventoryAmount = 42,
+    kSF_ModifyInventoryCapacity = 43,
+    kSF_ModifyInventoryAmountAndCapacity = 44,
+    kSF_SetInventoryAmountAndCapacity = 45,
+    kSF_Function46 = 46,
+    kSF_SunPlacement = 47,
+    kSF_Function48 = 48,
+    kSF_TransparencyWipe = 49,
+    kSF_Function50 = 50,
+    kSF_ItemDepletion = 51, // Guessed name
+    kSF_DemoTimeoutResetController = 52,
+    kSF_SunGeneratorTeleporter = 53,
+    kSF_SkyLighting = 54,
+    kSF_OcclusionRelay = 55,
+    kSF_MultiplayerCountdown = 56,
+    kSF_ScaleSZ = 57,
+    kSF_ObjectFollowJoint = 58,
+    kSF_Function59 = 59,
+    kSF_ExtraRenderClipPlane = 60,
+    kSF_VisorBlowout = 61,
+    kSF_AreaAutoLoadController = 62,
+    kSF_SystemStateEnvVarController = 63,
+    kSF_GameStateEnvVarController = 64,
     kSF_MultiplayerMusic = 65, // Guessed name; pause menu selects a streamed-music connection.
-    kSF_RadialDamage = 0x10001 // Guessed name; native message-handler dispatch.
+    kSF_UnmappableObject = 66,
+    kSF_CinematicSkipSignal = 67,
+    kSF_RemoveRezbitVirus = 68,
+    kSF_CompletionScreen = 69,
+    kSF_FogVolume = 0x10000,
+    kSF_RadialDamage = 0x10001,
+    kSF_EnvFxDensityController = 0x10002,
+    kSF_RumbleEffect = 0x10003,
+    kSF_Silhouette = 0x10004,  // Guessed name
+    kSF_DamageActor = 0x10005 // Guessed name
   };
 
   enum ESpinnerControllerMode { kSCM_Spinner, kSCM_ShotSpinner };
@@ -69,7 +131,7 @@ public:
   void SendFrustumMessages(CStateManager& mgr);
   void SetInFrustum(bool inFrustum);
   void OnItemDepleted(CStateManager& mgr, int playerIndex, CPlayerState::EItemType item);
-  int ResolvePlayerIndex(int playerIndex, TUniqueId originator, CStateManager& mgr);
+  int ResolvePlayerIndex(int playerIndex, const TUniqueId& originator, CStateManager& mgr);
 
   // Guessed names for the independently dispatched Echoes handlers.
   void AcceptCredits(CStateManager& mgr, const CScriptMsg& msg);
