@@ -26,3 +26,10 @@ Runtime/__init_cpp_exceptions.cpp:
 
 MetroidPrime/CAxisAngle.cpp:
 	.bss        start:0x8040BF60 end:0x8040BF6C align:4 common
+
+Runtime/__mem.c:
+	.init       start:0x80003100 end:0x80003238
+
+Dolphin/os/__start.c:
+	.init       start:0x80003238 end:0x80003538
+	.sbss       start:0x8041B318 end:0x8041B320
