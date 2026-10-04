@@ -22,7 +22,7 @@ struct SLdrSpankWeed {
 };
 
 inline SLdrSpankWeed::SLdrSpankWeed() : editorProperties(), patterned(), actorInformation() {
-  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_WeaponType = 9;
   patterned.contactDamage.dI_Damage = 20.0f;
   patterned.contactDamage.dI_KnockBackPower = 1.0f;
   patterned.damageWaitTime = 1.0f;

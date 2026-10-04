@@ -119,7 +119,7 @@ inline SLdrBlogg::SLdrBlogg() : editorProperties(), patterned(), actorInformatio
   minDelayBetweenProjectileAttacks = 2.0f;
   maxDelayBetweenProjectileAttacks = 2.0f;
   unknown_0xa19d5f62 = 1;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 5.0f;
   projectileDamage.dI_KnockBackPower = 2.0f;
   bodyDamageMultiplier = 1.0f;

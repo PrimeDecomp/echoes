@@ -48,7 +48,7 @@ inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData() : legStabDamag
   legStabAttackInterval = 2.0f;
   legStabMinAttackRange = 2.5f;
   legStabMaxAttackRange = 6.0f;
-  legStabDamage.unknown_0x119fbd31 = 11;
+  legStabDamage.dI_WeaponType = 11;
   legStabDamage.dI_Damage = 20.0f;
   legStabDamage.dI_KnockBackPower = 5.0f;
   minDodgeInterval = 3.0f;
@@ -69,7 +69,7 @@ inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData() : legStabDamag
   spinAttackMaxAttackRange = 30.0f;
   unknown_0xd5f34476 = 4;
   spinAttackMaxTime = 30.0f;
-  spinAttackDamage.unknown_0x119fbd31 = 11;
+  spinAttackDamage.dI_WeaponType = 11;
   spinAttackDamage.dI_Damage = 20.0f;
   spinAttackDamage.dI_KnockBackPower = 5.0f;
   sound_Alerted = 0;

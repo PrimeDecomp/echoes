@@ -11,17 +11,17 @@ class SLdrTransform;
 class CScanTreeInventory : public CScanTreeScan {
 public:
   CScanTreeInventory(int id, const SLdrTransform& transform, CAssetId nameStringTable,
-                     CAssetId scannableInfo, CPlayerState::EItemType inventorySlotId,
+                     CAssetId scannableInfo, CPlayerState::EItemType inventoryItem,
                      const rstl::string& nameStringName);
 
   // CScanTreeNode
   ~CScanTreeInventory();
   ENodeType GetNodeType() const;
 
-  CPlayerState::EItemType GetItemToCheck() const;
+  CPlayerState::EItemType GetInventoryItem() const;
 
 private:
-  CPlayerState::EItemType mItemToCheck;
+  CPlayerState::EItemType mInventoryItem;
 };
 CHECK_SIZEOF(CScanTreeInventory, 0x6C)
 

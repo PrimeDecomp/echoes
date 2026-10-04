@@ -54,7 +54,7 @@ inline SLdrIngSnatchingSwarm::SLdrIngSnatchingSwarm() : editorProperties(), stat
   unknown_0x4e79f717 = 3.0f;
   unknown_0xe8e0b5a6 = 2.0f;
   beginSnatchingRange = 5.0f;
-  impactDamage.unknown_0x119fbd31 = 11;
+  impactDamage.dI_WeaponType = 11;
   impactDamage.dI_Damage = 20.0f;
   impactDamage.dI_KnockBackPower = 10.0f;
   sound_Impact = 0;

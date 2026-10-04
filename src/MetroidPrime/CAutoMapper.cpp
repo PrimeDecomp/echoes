@@ -824,7 +824,7 @@ void CAutoMapper::ProcessControllerInput(const CFinalInput& input, CStateManager
     gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->Set(paneMode);
   }
 
-  if ((gpGameState->ControlMapper().GetPressInput(CControlMapper::kC_ExitMap, input) ||
+  if ((gpGameState->ControlMapper().GetPressInput(CControlMapper::kC_MapScreen, input) ||
        input.PB()) &&
       mTransitionState == kTS_Idle && !IsRenderStateInterpolating()) {
     TryLeaveMapScreen(mgr);

@@ -33,7 +33,7 @@ inline SLdrSandBossStampedeData::SLdrSandBossStampedeData() : stampedeArmorExplo
   breakStampedeHP = 150.0f;
   sound_StampedeArmorExplode = 0;
   sound_StampedeArmorExplodePain = 0;
-  stampedeDamage.unknown_0x119fbd31 = 11;
+  stampedeDamage.dI_WeaponType = 11;
   stampedeDamage.dI_Damage = 20.0f;
   stampedeDamage.dI_Radius = 13.0f;
   stampedeDamage.dI_KnockBackPower = 10.0f;
@@ -112,7 +112,7 @@ struct SLdrSandBossChargeBeamData {
 };
 
 inline SLdrSandBossChargeBeamData::SLdrSandBossChargeBeamData() : damage() {
-  damage.unknown_0x119fbd31 = 11;
+  damage.dI_WeaponType = 11;
   damage.dI_Damage = 0.5f;
   damage.dI_KnockBackPower = 10.0f;
   duration = 15.0f;
@@ -359,15 +359,15 @@ struct SLdrSandBossData {
 
 inline SLdrSandBossData::SLdrSandBossData() : scannableInfo1(kInvalidAssetId), crackedSphere1(kInvalidAssetId), crackedSphere2(kInvalidAssetId), crackedSphere3(kInvalidAssetId), snapJawDamage(), spitOutDamage(), darkBeamProjectile(kInvalidAssetId), darkBeamDamage(), headArmorExplosion(kInvalidAssetId), stampedeProperties(), unknown_0x7619e561(), attachedArmor(), stampedeArmor(), withTailArmorModel(kInvalidAssetId), withTailArmorSkinRules(kInvalidAssetId), damageVulnerability(), stampedeVulnerability(), suckAirVulnerability() {
   commandIndex = 0;
-  snapJawDamage.unknown_0x119fbd31 = 11;
+  snapJawDamage.dI_WeaponType = 11;
   snapJawDamage.dI_Damage = 20.0f;
   snapJawDamage.dI_KnockBackPower = 10.0f;
-  spitOutDamage.unknown_0x119fbd31 = 11;
+  spitOutDamage.dI_WeaponType = 11;
   spitOutDamage.dI_Damage = 20.0f;
   spitOutDamage.dI_KnockBackPower = 10.0f;
   minDarkBeamAttackTime = 4.0f;
   darkBeamAttackTimeVariance = 1.0f;
-  darkBeamDamage.unknown_0x119fbd31 = 1;
+  darkBeamDamage.dI_WeaponType = 1;
   darkBeamDamage.dI_Damage = 20.0f;
   darkBeamDamage.dI_KnockBackPower = 10.0f;
   unknown_0x2b42dddf = 90.0f;

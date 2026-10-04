@@ -37,7 +37,7 @@ inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData() : grenadeLauncher(
   unknown_0xa95a025b = 3;
   grenadeMinAttackDist = 15.0f;
   grenadeMaxAttackDist = 50.0f;
-  grenadeDamage.unknown_0x119fbd31 = 11;
+  grenadeDamage.dI_WeaponType = 11;
   grenadeDamage.dI_Damage = 40.0f;
   grenadeDamage.dI_Radius = 8.0f;
   grenadeDamage.dI_KnockBackPower = 10.0f;
@@ -178,7 +178,7 @@ inline SLdrSpacePirate::SLdrSpacePirate() : editorProperties(), patterned(), act
   patterned.minAttackRange = 4.0f;
   patterned.averageAttackTime = 1.0f;
   patterned.attackTimeVariation = 0.5f;
-  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_WeaponType = 11;
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 10.0f;
   patterned.damageWaitTime = 3.0f;
@@ -197,14 +197,14 @@ inline SLdrSpacePirate::SLdrSpacePirate() : editorProperties(), patterned(), act
   hearingRadius = 20.0f;
   flags = 0x00000000u;
   unknown_0xce670970 = false;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 5.0f;
   sound_Projectile = 0;
-  bladeDamage.unknown_0x119fbd31 = 11;
+  bladeDamage.dI_WeaponType = 11;
   bladeDamage.dI_Damage = 10.0f;
   bladeDamage.dI_KnockBackPower = 5.0f;
   kneelAttackChance = 10.0f;
-  kneelAttackDamage.unknown_0x119fbd31 = 11;
+  kneelAttackDamage.dI_WeaponType = 11;
   kneelAttackDamage.dI_Damage = 10.0f;
   dodgeCheck = 80.0f;
   sound_Impact = 0;

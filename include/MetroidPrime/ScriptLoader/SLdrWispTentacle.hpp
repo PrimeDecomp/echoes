@@ -30,7 +30,7 @@ inline SLdrWispTentacle::SLdrWispTentacle() : editorProperties(), attackDamage()
   searchDistance = 20.0f;
   attackDistance = 10.0f;
   detectionHeight = 0.0f;
-  attackDamage.unknown_0x119fbd31 = 9;
+  attackDamage.dI_WeaponType = 9;
   attackDamage.dI_Damage = 5.0f;
   spawnFromPortal = false;
   hurtSleepDelay = 2.0f;

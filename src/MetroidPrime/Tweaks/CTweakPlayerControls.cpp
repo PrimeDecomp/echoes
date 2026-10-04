@@ -61,155 +61,155 @@ CControlMapper::EFunctionList
 CTweakPlayerControls::GetMapping(CControlMapper::ECommands command) const {
   switch (command) {
   case CControlMapper::kC_Forward:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xaf03e16c);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.forward);
   case CControlMapper::kC_Backward:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xcfa71717);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.backward);
   case CControlMapper::kC_TurnLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x91532a8c);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.turnLeft);
   case CControlMapper::kC_TurnRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x07acc58d);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.turnRight);
   case CControlMapper::kC_StrafeLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xacc575a2);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.strafeLeft);
   case CControlMapper::kC_StrafeRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xdb475e1d);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.strafeRight);
   case CControlMapper::kC_LookLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xa900887a);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookLeft);
   case CControlMapper::kC_LookRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x534ac106);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookRight);
   case CControlMapper::kC_LookUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x0d723723);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookUp);
   case CControlMapper::kC_LookDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5c46b025);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookDown);
   case CControlMapper::kC_JumpOrBoost:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xf836180a);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.jump);
   case CControlMapper::kC_JumpOrBoost2:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xfe16f98d);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.jump2);
   case CControlMapper::kC_FireOrBomb:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xfd59aa9f);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.fireBeam);
   case CControlMapper::kC_FireOrBomb2:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x7e76f1f4);
-  case CControlMapper::kC_Unknown15:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x93dd818b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.fireBeam2);
+  case CControlMapper::kC_AutoFireBeam:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.autoFireBeam);
   case CControlMapper::kC_ChargeBeam:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x258402ec);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.chargeBeam);
   case CControlMapper::kC_ChargeBeam2:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xb7a20cda);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.chargeBeam2);
   case CControlMapper::kC_MissileOrPowerBomb:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5b9a9219);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.useItem);
   case CControlMapper::kC_AimUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x82a717cd);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.aimUp);
   case CControlMapper::kC_AimDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xa7d5c15a);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.aimDown);
   case CControlMapper::kC_CycleBeamUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x33731936);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.cycleBeamUp);
   case CControlMapper::kC_CycleBeamDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xb72565ff);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.cycleBeamDown);
   case CControlMapper::kC_CycleItem:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc592ca02);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.cycleItem);
   case CControlMapper::kC_PowerBeam:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5228272c);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.selectPowerBeam);
   case CControlMapper::kC_IceBeam:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x901ac820);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.selectIceBeam);
   case CControlMapper::kC_WaveBeam:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x4ecea0c0);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.selectWaveBeam);
   case CControlMapper::kC_PlasmaBeam:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xa4f35804);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.selectPlasmaBeam);
   case CControlMapper::kC_ToggleHolster:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x919d7de0);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.gunToggleHolster);
   case CControlMapper::kC_OrbitClose:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5200b48b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitClose);
   case CControlMapper::kC_OrbitFar:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x49c493a3);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitFar);
   case CControlMapper::kC_OrbitObject:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xeb38a36b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitObject);
   case CControlMapper::kC_OrbitSelect:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc60f66d2);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitSelect);
   case CControlMapper::kC_OrbitConfirm:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x1d97cc2b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitConfirm);
   case CControlMapper::kC_OrbitLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc449ae1d);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitLeft);
   case CControlMapper::kC_OrbitRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x80f17cdb);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitRight);
   case CControlMapper::kC_OrbitUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xabc5a6aa);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitUp);
   case CControlMapper::kC_OrbitDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x310f9642);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.orbitDown);
   case CControlMapper::kC_LookHold1:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc4923775);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.holdLook1);
   case CControlMapper::kC_LookHold2:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xf57a2de8);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.holdLook2);
   case CControlMapper::kC_LookZoomIn:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xba4fb516);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookZoomIn);
   case CControlMapper::kC_LookZoomOut:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x9f45c8db);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.lookZoomOut);
   case CControlMapper::kC_AimHold:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5344d2f7);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.holdAim);
   case CControlMapper::kC_MapCircleUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x018c157d);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapCircleUp);
   case CControlMapper::kC_MapCircleDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xad1e8de5);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapCircleDown);
   case CControlMapper::kC_MapCircleLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5858b5ba);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapCircleLeft);
   case CControlMapper::kC_MapCircleRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc8df5b8b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapCircleRight);
   case CControlMapper::kC_MapMoveForward:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x8d86d7b5);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapMoveForward);
   case CControlMapper::kC_MapMoveBack:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xab429ebd);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapMoveBack);
   case CControlMapper::kC_MapMoveLeft:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x31111d41);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapMoveLeft);
   case CControlMapper::kC_MapMoveRight:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xe2d939b7);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapMoveRight);
   case CControlMapper::kC_MapZoomIn:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xb06d1b60);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapZoomIn);
   case CControlMapper::kC_MapZoomOut:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x26293e7c);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapZoomOut);
   case CControlMapper::kC_SpiderBall:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x649b0835);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.spiderBall);
   case CControlMapper::kC_ChaseCamera:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5b1e0e7c);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.chaseCamera);
   case CControlMapper::kC_XrayVisor:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xb35d2cca);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.xRayVisor);
   case CControlMapper::kC_ThermoVisor:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5a7e4dfc);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.thermoVisor);
   case CControlMapper::kC_EnviroVisor:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x76faf77e);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.enviroVisor);
   case CControlMapper::kC_NoVisor:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x9ba498f6);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.noVisor);
   case CControlMapper::kC_VisorMenu:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x2b9a4a7f);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.visorMenu);
   case CControlMapper::kC_VisorUp:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xd6fb0bf9);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.cycleVisorUp);
   case CControlMapper::kC_VisorDown:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x08fe3abe);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.cycleVisorDown);
   case CControlMapper::kC_DarkVisorToggle:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xc3f4f3ef);
-  case CControlMapper::kC_Unknown63:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x53e56da8);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.darkVisorToggle);
+  case CControlMapper::kC_Crosshairs:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.crosshairs);
   case CControlMapper::kC_Unknown64:
     return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x29293fb1);
   case CControlMapper::kC_UseShield:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x02c06b91);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.useShield);
   case CControlMapper::kC_ScanItem:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xbaa185cf);
-  case CControlMapper::kC_Unknown67:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x6cdd19a4);
-  case CControlMapper::kC_ExitMap:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xe08f6c6f);
-  case CControlMapper::kC_Unknown69:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x1230759b);
-  case CControlMapper::kC_Unknown70:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x5b9b4285);
-  case CControlMapper::kC_Unknown71:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xbf218f4f);
-  case CControlMapper::kC_Unknown72:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x05ef2422);
-  case CControlMapper::kC_Unknown73:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0xced85a1b);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.scanItem);
+  case CControlMapper::kC_InventoryScreen:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.inventoryScreen);
+  case CControlMapper::kC_MapScreen:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.mapScreen);
+  case CControlMapper::kC_OptionsScreen:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.optionsScreen);
+  case CControlMapper::kC_LogScreen:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.logScreen);
+  case CControlMapper::kC_PauseScreenCycleLeft:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.pauseScreenCycleLeft);
+  case CControlMapper::kC_PauseScreenCycleRight:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.pauseScreenCycleRight);
+  case CControlMapper::kC_BoostBall:
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.boostBall);
   case CControlMapper::kC_MorphIntoBall:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x39cf6e72);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.morphIntoBall);
   case CControlMapper::kC_MorphFromBall:
-    return static_cast< CControlMapper::EFunctionList >(mData->controls.unknown_0x64003596);
+    return static_cast< CControlMapper::EFunctionList >(mData->controls.morphFromBall);
   case CControlMapper::kC_None:
   default:
     return CControlMapper::kFL_None;

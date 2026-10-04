@@ -129,7 +129,7 @@ inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData() : laserPul
   minLaserPulseRange = 10.0f;
   maxLaserPulseRange = 20.0f;
   maxLaserPulseShots = 3;
-  laserPulseDamage.unknown_0x119fbd31 = 11;
+  laserPulseDamage.dI_WeaponType = 11;
   laserPulseDamage.dI_Damage = 10.0f;
   minDodges = 1;
   maxDodges = 3;
@@ -137,7 +137,7 @@ inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData() : laserPul
   resetShieldTime = 10.0f;
   shieldHP = 100.0f;
   laserSweepTurnSpeed = 45.0f;
-  laserSweepDamage.unknown_0x119fbd31 = 11;
+  laserSweepDamage.dI_WeaponType = 11;
   laserSweepDamage.dI_Damage = 10.0f;
   laserSweepBeamInfo.length = 500.0f;
   laserSweepBeamInfo.expansionSpeed = 4.0f;

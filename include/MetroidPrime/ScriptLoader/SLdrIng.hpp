@@ -119,10 +119,10 @@ inline SLdrIng::SLdrIng() : editorProperties(), patterned(), actorInformation(),
   frustrationTime = 2.0f;
   tauntChance = 25.0f;
   aggressiveness = 10.0f;
-  armSwipeDamage.unknown_0x119fbd31 = 11;
+  armSwipeDamage.dI_WeaponType = 11;
   armSwipeDamage.dI_Damage = 20.0f;
   armSwipeDamage.dI_KnockBackPower = 10.0f;
-  bodyProjectileContactDamage.unknown_0x119fbd31 = 11;
+  bodyProjectileContactDamage.dI_WeaponType = 11;
   bodyProjectileContactDamage.dI_Damage = 20.0f;
   bodyProjectileContactDamage.dI_KnockBackPower = 5.0f;
   unknown_0xa0d63374 = 20.0f;
@@ -137,7 +137,7 @@ inline SLdrIng::SLdrIng() : editorProperties(), patterned(), actorInformation(),
   miniPortalMinAttackDist = 40.0f;
   miniPortalMaxAttackDist = 100.0f;
   sound_MiniPortal = 0;
-  miniPortalProjectileDamage.unknown_0x119fbd31 = 11;
+  miniPortalProjectileDamage.dI_WeaponType = 11;
   miniPortalProjectileDamage.dI_Damage = 20.0f;
   miniPortalProjectileDamage.dI_KnockBackPower = 10.0f;
   miniPortalBeamInfo.length = 500.0f;
@@ -149,7 +149,7 @@ inline SLdrIng::SLdrIng() : editorProperties(), patterned(), actorInformation(),
   miniPortalBeamInfo.innerColor = CColor(0.49803901f, 0.49803901f, 0.49803901f, 0.49803901f);
   miniPortalBeamInfo.outerColor = CColor(0.60000002f, 0.60000002f, 0.0f, 0.49803901f);
   unknown_0x67f6c10e = 30.0f;
-  exitGrappleDamage.unknown_0x119fbd31 = 11;
+  exitGrappleDamage.dI_WeaponType = 11;
   exitGrappleDamage.dI_Damage = 10.0f;
   exitGrappleDamage.dI_KnockBackPower = 1.0f;
   exitGrappleSpitForce = 30.0f;

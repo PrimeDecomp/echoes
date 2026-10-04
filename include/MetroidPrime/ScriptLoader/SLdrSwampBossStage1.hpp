@@ -206,7 +206,7 @@ inline SLdrSwampBossStage1Data::SLdrSwampBossStage1Data() : darkWaterRingEffect(
   unknown_0xee6b6f47 = 180.0f;
   unknown_0x3ce96c9d = 100.0f;
   weakSpotDamageMultiplier = 2.0f;
-  spitDamage.unknown_0x119fbd31 = 11;
+  spitDamage.dI_WeaponType = 11;
   spitDamage.dI_Damage = 5.0f;
   sound_SpitVisor = 0;
   spitProjectileRadius = 2.0f;

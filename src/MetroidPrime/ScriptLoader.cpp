@@ -266,7 +266,7 @@ CTransform4f ConvertEditorEulerToTransform4f(const CVector3f& orientation,
 }
 
 CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data) {
-  const EWeaponType type = static_cast< EWeaponType >(data.unknown_0x119fbd31);
+  const EWeaponType type = static_cast< EWeaponType >(data.dI_WeaponType);
   CDamageInfo result(CWeaponMode(type, false, false, type == kWT_UnknownSource), data.dI_Damage,
                      data.dI_Radius, data.dI_KnockBackPower);
   result.SetX1a25(false);

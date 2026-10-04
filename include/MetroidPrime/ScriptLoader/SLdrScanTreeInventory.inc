@@ -19,7 +19,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x3d326f90: {
-    sldrThis.unknown_0x3d326f90 = input.ReadInt32();
+    sldrThis.inventoryItem = input.ReadInt32();
     break;
   }
   case 0x2da1ec33: {

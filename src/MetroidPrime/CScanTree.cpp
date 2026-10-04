@@ -146,14 +146,14 @@ CAssetId CScanTreeScan::GetScannableInfo() const {}
 
 CScanTreeInventory::CScanTreeInventory(int id, const SLdrTransform& transform,
                                        CAssetId nameStringTable, CAssetId scannableInfo,
-                                       CPlayerState::EItemType inventorySlotId,
+                                       CPlayerState::EItemType inventoryItem,
                                        const rstl::string& nameStringName)
 : CScanTreeScan(id, transform, nameStringTable, scannableInfo, nameStringName)
-, mItemToCheck(inventorySlotId) {}
+, mInventoryItem(inventoryItem) {}
 
 CScanTreeNode::ENodeType CScanTreeInventory::GetNodeType() const {}
 
-CPlayerState::EItemType CScanTreeInventory::GetItemToCheck() const {}
+CPlayerState::EItemType CScanTreeInventory::GetInventoryItem() const {}
 
 CScanTreeMenu::CScanTreeMenu(int id, const SLdrTransform& transform, CAssetId nameStringTable,
                              const rstl::string& nameStringName, ESetting setting,
@@ -321,8 +321,8 @@ CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
 
   return rs_new CScanTreeInventory(*id & 0xffff, sldrThis.editorProperties.transform,
                                    sldrThis.nodeName, sldrThis.scannableInfo.scannableInfo0,
-                                   uint(sldrThis.unknown_0x3d326f90) < 0x35
-                                       ? kInventorySlotToItemType[sldrThis.unknown_0x3d326f90]
+                                   uint(sldrThis.inventoryItem) < 0x35
+                                       ? kInventorySlotToItemType[sldrThis.inventoryItem]
                                        : CPlayerState::kIT_PowerBeam,
                                    sldrThis.stringName);
 }

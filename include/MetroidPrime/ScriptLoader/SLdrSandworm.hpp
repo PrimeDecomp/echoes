@@ -152,7 +152,7 @@ inline SLdrSandworm::SLdrSandworm() : editorProperties(), patterned(), actorInfo
   unknown_0x61f75902 = 60.0f;
   chargeRangeMin = 25.0f;
   chargeRangeMax = 30.0f;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 5.0f;
   chargeImpulseHorizontal = 50.0f;
   chargeImpulseVertical = 50.0f;
@@ -160,9 +160,9 @@ inline SLdrSandworm::SLdrSandworm() : editorProperties(), patterned(), actorInfo
   morphballTossImpulseVertical = 50.0f;
   meleeImpulseHorizontal = 30.0f;
   meleeImpulseVertical = 15.0f;
-  morphballTossDamage.unknown_0x119fbd31 = 11;
+  morphballTossDamage.dI_WeaponType = 11;
   morphballTossDamage.dI_Damage = 5.0f;
-  pincerSwipeDamage.unknown_0x119fbd31 = 11;
+  pincerSwipeDamage.dI_WeaponType = 11;
   pincerSwipeDamage.dI_Damage = 5.0f;
   unknown_0xe593f1c6 = 25.0f;
   lurkUndergroundTimeMin = 2.0f;
@@ -170,7 +170,7 @@ inline SLdrSandworm::SLdrSandworm() : editorProperties(), patterned(), actorInfo
   pursuitFrustrationTimer = 6.0f;
   pursuitFrustrationRadius = 20.0f;
   canLinkTransfer = false;
-  ingBossBombDamage.unknown_0x119fbd31 = 11;
+  ingBossBombDamage.dI_WeaponType = 11;
   ingBossBombDamage.dI_Damage = 5.0f;
   ingBossBombDropRate = 0.0f;
   bombBounceSound = 0;

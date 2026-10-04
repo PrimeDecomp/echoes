@@ -247,11 +247,11 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data() : wingGrowthLF(kInvali
   wingGrowthHealth = 1.0f;
   stunTime = 30.0f;
   unknown_0x96ce7897 = 2;
-  spitDamage.unknown_0x119fbd31 = 11;
+  spitDamage.dI_WeaponType = 11;
   spitDamage.dI_Damage = 5.0f;
   sound_SpitVisor = 0;
   spitProjectileRadius = 2.0f;
-  swoopDamage.unknown_0x119fbd31 = 11;
+  swoopDamage.dI_WeaponType = 11;
   swoopDamage.dI_Damage = 0.5f;
   swoopPush = 10.0f;
   swoopDamageTime = 0.2f;
@@ -266,7 +266,7 @@ inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data() : wingGrowthLF(kInvali
   unknown_0xfe97e835 = 50.0f;
   splashShockWaveMaxTime = 2.0f;
   unknown_0xe57ca27c = 0.40000001f;
-  blowDamage.unknown_0x119fbd31 = 11;
+  blowDamage.dI_WeaponType = 11;
   blowDamage.dI_Damage = 0.5f;
   blowTelegraphPush = 0.1f;
   blowPush = 5.0f;
@@ -530,7 +530,7 @@ inline SLdrSwampBossStage2::SLdrSwampBossStage2() : editorProperties(), patterne
   patterned.detectionAngle = 90.0f;
   patterned.minAttackRange = 4.0f;
   patterned.maxAttackRange = 20.0f;
-  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_WeaponType = 9;
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 1.0f;

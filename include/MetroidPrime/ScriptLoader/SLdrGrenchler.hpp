@@ -110,13 +110,13 @@ inline SLdrGrenchler::SLdrGrenchler() : editorProperties(), patterned(), actorIn
   biteAttackMinPause = 2.0f;
   biteAttackMaxPause = 3.0f;
   biteAttackDamageRadius = 6.0f;
-  biteDamage.unknown_0x119fbd31 = 11;
+  biteDamage.dI_WeaponType = 11;
   biteDamage.dI_Damage = 5.0f;
   beamAttackMinRange = 9.0f;
   beamAttackMaxRange = 25.0f;
   beamAttackMinPause = 1.0f;
   beamAttackMaxPause = 1.5f;
-  beamDamage.unknown_0x119fbd31 = 11;
+  beamDamage.dI_WeaponType = 11;
   beamDamage.dI_Damage = 5.0f;
   beamAttackMaxAngle = 45.0f;
   burstAttackMinRange = 0.5f;
@@ -124,13 +124,13 @@ inline SLdrGrenchler::SLdrGrenchler() : editorProperties(), patterned(), actorIn
   burstAttackMinPause = 1.0f;
   burstAttackMaxPause = 1.5f;
   burstAttackDamageRadius = 20.0f;
-  burstDamage.unknown_0x119fbd31 = 11;
+  burstDamage.dI_WeaponType = 11;
   burstDamage.dI_Damage = 5.0f;
   unknown_0xd4753ff4 = 4;
   unknown_0x05fc6001 = 20.0f;
   unknown_0x13e5b580 = 20.0f;
   unknown_0xfc6f199d = 10.0f;
-  damageInfo.unknown_0x119fbd31 = 11;
+  damageInfo.dI_WeaponType = 11;
   damageInfo.dI_Damage = 5.0f;
 }
 

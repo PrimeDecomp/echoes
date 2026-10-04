@@ -184,7 +184,7 @@ inline SLdrSporbBase::SLdrSporbBase() : editorProperties(), patterned(), actorIn
   minGrabberGrabRange = 5.0f;
   maxGrabberGrabRange = 20.0f;
   isPowerBombGuardian = false;
-  powerBombProjectileDamage.unknown_0x119fbd31 = 11;
+  powerBombProjectileDamage.dI_WeaponType = 11;
   powerBombProjectileDamage.dI_Damage = 5.0f;
   powerBombProjectileDamage.dI_KnockBackPower = 2.0f;
   maxPowerBombProjectileHeight = 20.0f;

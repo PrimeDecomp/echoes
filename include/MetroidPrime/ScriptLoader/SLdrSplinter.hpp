@@ -53,11 +53,11 @@ inline SLdrSplinter::SLdrSplinter() : editorProperties(), patterned(), actorInfo
   unknown_0x5feb176e = 3.0f;
   unknown_0x726cd31d = 1;
   unknown_0x376e909f = 2;
-  attackDamage.unknown_0x119fbd31 = 11;
+  attackDamage.dI_WeaponType = 11;
   attackDamage.dI_Damage = 5.0f;
   unknown_0xb63b810c = 0;
   isMegaSplinter = false;
-  megaSplinterSpitProjectileDamage.unknown_0x119fbd31 = 11;
+  megaSplinterSpitProjectileDamage.dI_WeaponType = 11;
   megaSplinterSpitProjectileDamage.dI_Damage = 5.0f;
   unknown_0x51be00d3 = 2.5f;
   unknown_0xb7deaf32 = 5.0f;

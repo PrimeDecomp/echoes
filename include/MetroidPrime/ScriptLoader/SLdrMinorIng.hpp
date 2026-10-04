@@ -38,7 +38,7 @@ struct SLdrMinorIngIngSpot {
 };
 
 inline SLdrMinorIngIngSpot::SLdrMinorIngIngSpot() : damage(), blobEffect(kInvalidAssetId), hitNormalDamage(kInvalidAssetId), hitHeavyDamage(kInvalidAssetId), death(kInvalidAssetId), vulnerability() {
-  damage.unknown_0x119fbd31 = 11;
+  damage.dI_WeaponType = 11;
   damage.dI_Damage = 10.0f;
   damage.dI_Radius = 4.5f;
   damage.dI_KnockBackPower = 4.0f;
@@ -178,7 +178,7 @@ struct SLdrUnknownStruct34 {
 };
 
 inline SLdrUnknownStruct34::SLdrUnknownStruct34() : health(), damage(), explosion(kInvalidAssetId), effect(kInvalidAssetId), trail(kInvalidAssetId) {
-  damage.unknown_0x119fbd31 = 9;
+  damage.dI_WeaponType = 9;
   damage.dI_Damage = 5.0f;
   damage.dI_KnockBackPower = 1.0f;
   mass = 4.0f;
@@ -314,7 +314,7 @@ inline SLdrMinorIng::SLdrMinorIng() : editorProperties(), patterned(), actorInfo
   patterned.maxAttackRange = 30.0f;
   patterned.averageAttackTime = 3.0f;
   patterned.collisionHeight = 4.0f;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 5.0f;
   projectileDamage.dI_KnockBackPower = 3.0f;
   unknown_0xa03e450c = 20.0f;

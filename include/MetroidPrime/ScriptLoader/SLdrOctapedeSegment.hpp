@@ -62,7 +62,7 @@ inline SLdrOctapedeSegment::SLdrOctapedeSegment() : editorProperties(), patterne
   patterned.detectionAngle = 90.0f;
   patterned.minAttackRange = 4.0f;
   patterned.maxAttackRange = 20.0f;
-  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_WeaponType = 9;
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 3.0f;
@@ -94,7 +94,7 @@ inline SLdrOctapedeSegment::SLdrOctapedeSegment() : editorProperties(), patterne
   minBounces = 1;
   maxBounces = 1;
   unknown_0x417f4a91 = 0.75f;
-  explosionDamage.unknown_0x119fbd31 = 9;
+  explosionDamage.dI_WeaponType = 9;
   explosionDamage.dI_Damage = 5.0f;
   explosionDamage.dI_KnockBackPower = 2.0f;
   walkSound = 0;

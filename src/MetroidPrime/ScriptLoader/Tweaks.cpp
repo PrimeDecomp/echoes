@@ -276,7 +276,7 @@ void LoadTypedefTBallTransitionResources(SLdrTBallTransitionResources& sldrThis,
 SLdrTweakPlayer_DarkWorld::SLdrTweakPlayer_DarkWorld() : damagePerSecond() {
   damageGracePeriod = 2.0f;
   unknown_0xa4e33ef0 = 4.0f;
-  damagePerSecond.unknown_0x119fbd31 = 17;
+  damagePerSecond.dI_WeaponType = 17;
   darkSuitDamageReduction = 1.0f;
   darkSuitEffectGenerationScale = 0.34999999f;
   darkSuitEffectColorScale = 0.5f;
@@ -784,81 +784,81 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
 }
 
 SLdrTweakPlayerControls_Controls::SLdrTweakPlayerControls_Controls() {
-  unknown_0xaf03e16c = 1;
-  unknown_0xcfa71717 = 2;
-  unknown_0x91532a8c = 3;
-  unknown_0x07acc58d = 4;
-  unknown_0xacc575a2 = 3;
-  unknown_0xdb475e1d = 4;
-  unknown_0xa900887a = 3;
-  unknown_0x534ac106 = 4;
-  unknown_0x0d723723 = 2;
-  unknown_0x5c46b025 = 1;
-  unknown_0xf836180a = 16;
-  unknown_0xfe16f98d = 16;
-  unknown_0xfd59aa9f = 15;
-  unknown_0x7e76f1f4 = 15;
-  unknown_0x93dd818b = 0;
-  unknown_0x258402ec = 15;
-  unknown_0xb7a20cda = 15;
-  unknown_0x5b9a9219 = 18;
-  unknown_0x82a717cd = 0;
-  unknown_0xa7d5c15a = 0;
-  unknown_0x33731936 = 0;
-  unknown_0xb72565ff = 0;
-  unknown_0xc592ca02 = 0;
-  unknown_0x5228272c = 11;
-  unknown_0x901ac820 = 12;
-  unknown_0x4ecea0c0 = 14;
-  unknown_0xa4f35804 = 13;
-  unknown_0x919d7de0 = 0;
-  unknown_0x5200b48b = 0;
-  unknown_0x49c493a3 = 9;
-  unknown_0xeb38a36b = 20;
-  unknown_0xc60f66d2 = 0;
-  unknown_0x1d97cc2b = 0;
-  unknown_0xc449ae1d = 3;
-  unknown_0x80f17cdb = 4;
-  unknown_0xabc5a6aa = 1;
-  unknown_0x310f9642 = 2;
-  unknown_0xc4923775 = 10;
-  unknown_0xf57a2de8 = 0;
-  unknown_0xba4fb516 = 17;
-  unknown_0x9f45c8db = 18;
-  unknown_0x5344d2f7 = 0;
-  unknown_0x018c157d = 2;
-  unknown_0xad1e8de5 = 1;
-  unknown_0x5858b5ba = 3;
-  unknown_0xc8df5b8b = 4;
-  unknown_0x8d86d7b5 = 5;
-  unknown_0xab429ebd = 6;
-  unknown_0x31111d41 = 7;
-  unknown_0xe2d939b7 = 8;
-  unknown_0xb06d1b60 = 10;
-  unknown_0x26293e7c = 9;
-  unknown_0x649b0835 = 10;
-  unknown_0x5b1e0e7c = 9;
-  unknown_0xb35d2cca = 0;
-  unknown_0x5a7e4dfc = 0;
-  unknown_0x76faf77e = 0;
-  unknown_0x9ba498f6 = 0;
-  unknown_0x2b9a4a7f = 0;
-  unknown_0xd6fb0bf9 = 19;
-  unknown_0x08fe3abe = 0;
-  unknown_0xc3f4f3ef = 0;
-  unknown_0x53e56da8 = 21;
+  forward = 1;
+  backward = 2;
+  turnLeft = 3;
+  turnRight = 4;
+  strafeLeft = 3;
+  strafeRight = 4;
+  lookLeft = 3;
+  lookRight = 4;
+  lookUp = 2;
+  lookDown = 1;
+  jump = 16;
+  jump2 = 16;
+  fireBeam = 15;
+  fireBeam2 = 15;
+  autoFireBeam = 0;
+  chargeBeam = 15;
+  chargeBeam2 = 15;
+  useItem = 18;
+  aimUp = 0;
+  aimDown = 0;
+  cycleBeamUp = 0;
+  cycleBeamDown = 0;
+  cycleItem = 0;
+  selectPowerBeam = 11;
+  selectIceBeam = 12;
+  selectWaveBeam = 14;
+  selectPlasmaBeam = 13;
+  gunToggleHolster = 0;
+  orbitClose = 0;
+  orbitFar = 9;
+  orbitObject = 20;
+  orbitSelect = 0;
+  orbitConfirm = 0;
+  orbitLeft = 3;
+  orbitRight = 4;
+  orbitUp = 1;
+  orbitDown = 2;
+  holdLook1 = 10;
+  holdLook2 = 0;
+  lookZoomIn = 17;
+  lookZoomOut = 18;
+  holdAim = 0;
+  mapCircleUp = 2;
+  mapCircleDown = 1;
+  mapCircleLeft = 3;
+  mapCircleRight = 4;
+  mapMoveForward = 5;
+  mapMoveBack = 6;
+  mapMoveLeft = 7;
+  mapMoveRight = 8;
+  mapZoomIn = 10;
+  mapZoomOut = 9;
+  spiderBall = 10;
+  chaseCamera = 9;
+  xRayVisor = 0;
+  thermoVisor = 0;
+  enviroVisor = 0;
+  noVisor = 0;
+  visorMenu = 0;
+  cycleVisorUp = 19;
+  cycleVisorDown = 0;
+  darkVisorToggle = 0;
+  crosshairs = 21;
   unknown_0x29293fb1 = 0;
-  unknown_0x02c06b91 = 0;
-  unknown_0xbaa185cf = 9;
-  unknown_0x6cdd19a4 = 13;
-  unknown_0xe08f6c6f = 22;
-  unknown_0x1230759b = 12;
-  unknown_0x5b9b4285 = 14;
-  unknown_0xbf218f4f = 9;
-  unknown_0x05ef2422 = 10;
-  unknown_0xced85a1b = 16;
-  unknown_0x39cf6e72 = 17;
-  unknown_0x64003596 = 17;
+  useShield = 0;
+  scanItem = 9;
+  inventoryScreen = 13;
+  mapScreen = 22;
+  optionsScreen = 12;
+  logScreen = 14;
+  pauseScreenCycleLeft = 9;
+  pauseScreenCycleRight = 10;
+  boostBall = 16;
+  morphIntoBall = 17;
+  morphFromBall = 17;
 }
 
 SLdrTweakPlayerControls_Controls::~SLdrTweakPlayerControls_Controls() {}
@@ -870,255 +870,255 @@ void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& s
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xaf03e16c: {
-      sldrThis.unknown_0xaf03e16c = input.ReadInt32();
+      sldrThis.forward = input.ReadInt32();
       break;
     }
     case 0xcfa71717: {
-      sldrThis.unknown_0xcfa71717 = input.ReadInt32();
+      sldrThis.backward = input.ReadInt32();
       break;
     }
     case 0x91532a8c: {
-      sldrThis.unknown_0x91532a8c = input.ReadInt32();
+      sldrThis.turnLeft = input.ReadInt32();
       break;
     }
     case 0x07acc58d: {
-      sldrThis.unknown_0x07acc58d = input.ReadInt32();
+      sldrThis.turnRight = input.ReadInt32();
       break;
     }
     case 0xacc575a2: {
-      sldrThis.unknown_0xacc575a2 = input.ReadInt32();
+      sldrThis.strafeLeft = input.ReadInt32();
       break;
     }
     case 0xdb475e1d: {
-      sldrThis.unknown_0xdb475e1d = input.ReadInt32();
+      sldrThis.strafeRight = input.ReadInt32();
       break;
     }
     case 0xa900887a: {
-      sldrThis.unknown_0xa900887a = input.ReadInt32();
+      sldrThis.lookLeft = input.ReadInt32();
       break;
     }
     case 0x534ac106: {
-      sldrThis.unknown_0x534ac106 = input.ReadInt32();
+      sldrThis.lookRight = input.ReadInt32();
       break;
     }
     case 0x0d723723: {
-      sldrThis.unknown_0x0d723723 = input.ReadInt32();
+      sldrThis.lookUp = input.ReadInt32();
       break;
     }
     case 0x5c46b025: {
-      sldrThis.unknown_0x5c46b025 = input.ReadInt32();
+      sldrThis.lookDown = input.ReadInt32();
       break;
     }
     case 0xf836180a: {
-      sldrThis.unknown_0xf836180a = input.ReadInt32();
+      sldrThis.jump = input.ReadInt32();
       break;
     }
     case 0xfe16f98d: {
-      sldrThis.unknown_0xfe16f98d = input.ReadInt32();
+      sldrThis.jump2 = input.ReadInt32();
       break;
     }
     case 0xfd59aa9f: {
-      sldrThis.unknown_0xfd59aa9f = input.ReadInt32();
+      sldrThis.fireBeam = input.ReadInt32();
       break;
     }
     case 0x7e76f1f4: {
-      sldrThis.unknown_0x7e76f1f4 = input.ReadInt32();
+      sldrThis.fireBeam2 = input.ReadInt32();
       break;
     }
     case 0x93dd818b: {
-      sldrThis.unknown_0x93dd818b = input.ReadInt32();
+      sldrThis.autoFireBeam = input.ReadInt32();
       break;
     }
     case 0x258402ec: {
-      sldrThis.unknown_0x258402ec = input.ReadInt32();
+      sldrThis.chargeBeam = input.ReadInt32();
       break;
     }
     case 0xb7a20cda: {
-      sldrThis.unknown_0xb7a20cda = input.ReadInt32();
+      sldrThis.chargeBeam2 = input.ReadInt32();
       break;
     }
     case 0x5b9a9219: {
-      sldrThis.unknown_0x5b9a9219 = input.ReadInt32();
+      sldrThis.useItem = input.ReadInt32();
       break;
     }
     case 0x82a717cd: {
-      sldrThis.unknown_0x82a717cd = input.ReadInt32();
+      sldrThis.aimUp = input.ReadInt32();
       break;
     }
     case 0xa7d5c15a: {
-      sldrThis.unknown_0xa7d5c15a = input.ReadInt32();
+      sldrThis.aimDown = input.ReadInt32();
       break;
     }
     case 0x33731936: {
-      sldrThis.unknown_0x33731936 = input.ReadInt32();
+      sldrThis.cycleBeamUp = input.ReadInt32();
       break;
     }
     case 0xb72565ff: {
-      sldrThis.unknown_0xb72565ff = input.ReadInt32();
+      sldrThis.cycleBeamDown = input.ReadInt32();
       break;
     }
     case 0xc592ca02: {
-      sldrThis.unknown_0xc592ca02 = input.ReadInt32();
+      sldrThis.cycleItem = input.ReadInt32();
       break;
     }
     case 0x5228272c: {
-      sldrThis.unknown_0x5228272c = input.ReadInt32();
+      sldrThis.selectPowerBeam = input.ReadInt32();
       break;
     }
     case 0x901ac820: {
-      sldrThis.unknown_0x901ac820 = input.ReadInt32();
+      sldrThis.selectIceBeam = input.ReadInt32();
       break;
     }
     case 0x4ecea0c0: {
-      sldrThis.unknown_0x4ecea0c0 = input.ReadInt32();
+      sldrThis.selectWaveBeam = input.ReadInt32();
       break;
     }
     case 0xa4f35804: {
-      sldrThis.unknown_0xa4f35804 = input.ReadInt32();
+      sldrThis.selectPlasmaBeam = input.ReadInt32();
       break;
     }
     case 0x919d7de0: {
-      sldrThis.unknown_0x919d7de0 = input.ReadInt32();
+      sldrThis.gunToggleHolster = input.ReadInt32();
       break;
     }
     case 0x5200b48b: {
-      sldrThis.unknown_0x5200b48b = input.ReadInt32();
+      sldrThis.orbitClose = input.ReadInt32();
       break;
     }
     case 0x49c493a3: {
-      sldrThis.unknown_0x49c493a3 = input.ReadInt32();
+      sldrThis.orbitFar = input.ReadInt32();
       break;
     }
     case 0xeb38a36b: {
-      sldrThis.unknown_0xeb38a36b = input.ReadInt32();
+      sldrThis.orbitObject = input.ReadInt32();
       break;
     }
     case 0xc60f66d2: {
-      sldrThis.unknown_0xc60f66d2 = input.ReadInt32();
+      sldrThis.orbitSelect = input.ReadInt32();
       break;
     }
     case 0x1d97cc2b: {
-      sldrThis.unknown_0x1d97cc2b = input.ReadInt32();
+      sldrThis.orbitConfirm = input.ReadInt32();
       break;
     }
     case 0xc449ae1d: {
-      sldrThis.unknown_0xc449ae1d = input.ReadInt32();
+      sldrThis.orbitLeft = input.ReadInt32();
       break;
     }
     case 0x80f17cdb: {
-      sldrThis.unknown_0x80f17cdb = input.ReadInt32();
+      sldrThis.orbitRight = input.ReadInt32();
       break;
     }
     case 0xabc5a6aa: {
-      sldrThis.unknown_0xabc5a6aa = input.ReadInt32();
+      sldrThis.orbitUp = input.ReadInt32();
       break;
     }
     case 0x310f9642: {
-      sldrThis.unknown_0x310f9642 = input.ReadInt32();
+      sldrThis.orbitDown = input.ReadInt32();
       break;
     }
     case 0xc4923775: {
-      sldrThis.unknown_0xc4923775 = input.ReadInt32();
+      sldrThis.holdLook1 = input.ReadInt32();
       break;
     }
     case 0xf57a2de8: {
-      sldrThis.unknown_0xf57a2de8 = input.ReadInt32();
+      sldrThis.holdLook2 = input.ReadInt32();
       break;
     }
     case 0xba4fb516: {
-      sldrThis.unknown_0xba4fb516 = input.ReadInt32();
+      sldrThis.lookZoomIn = input.ReadInt32();
       break;
     }
     case 0x9f45c8db: {
-      sldrThis.unknown_0x9f45c8db = input.ReadInt32();
+      sldrThis.lookZoomOut = input.ReadInt32();
       break;
     }
     case 0x5344d2f7: {
-      sldrThis.unknown_0x5344d2f7 = input.ReadInt32();
+      sldrThis.holdAim = input.ReadInt32();
       break;
     }
     case 0x018c157d: {
-      sldrThis.unknown_0x018c157d = input.ReadInt32();
+      sldrThis.mapCircleUp = input.ReadInt32();
       break;
     }
     case 0xad1e8de5: {
-      sldrThis.unknown_0xad1e8de5 = input.ReadInt32();
+      sldrThis.mapCircleDown = input.ReadInt32();
       break;
     }
     case 0x5858b5ba: {
-      sldrThis.unknown_0x5858b5ba = input.ReadInt32();
+      sldrThis.mapCircleLeft = input.ReadInt32();
       break;
     }
     case 0xc8df5b8b: {
-      sldrThis.unknown_0xc8df5b8b = input.ReadInt32();
+      sldrThis.mapCircleRight = input.ReadInt32();
       break;
     }
     case 0x8d86d7b5: {
-      sldrThis.unknown_0x8d86d7b5 = input.ReadInt32();
+      sldrThis.mapMoveForward = input.ReadInt32();
       break;
     }
     case 0xab429ebd: {
-      sldrThis.unknown_0xab429ebd = input.ReadInt32();
+      sldrThis.mapMoveBack = input.ReadInt32();
       break;
     }
     case 0x31111d41: {
-      sldrThis.unknown_0x31111d41 = input.ReadInt32();
+      sldrThis.mapMoveLeft = input.ReadInt32();
       break;
     }
     case 0xe2d939b7: {
-      sldrThis.unknown_0xe2d939b7 = input.ReadInt32();
+      sldrThis.mapMoveRight = input.ReadInt32();
       break;
     }
     case 0xb06d1b60: {
-      sldrThis.unknown_0xb06d1b60 = input.ReadInt32();
+      sldrThis.mapZoomIn = input.ReadInt32();
       break;
     }
     case 0x26293e7c: {
-      sldrThis.unknown_0x26293e7c = input.ReadInt32();
+      sldrThis.mapZoomOut = input.ReadInt32();
       break;
     }
     case 0x649b0835: {
-      sldrThis.unknown_0x649b0835 = input.ReadInt32();
+      sldrThis.spiderBall = input.ReadInt32();
       break;
     }
     case 0x5b1e0e7c: {
-      sldrThis.unknown_0x5b1e0e7c = input.ReadInt32();
+      sldrThis.chaseCamera = input.ReadInt32();
       break;
     }
     case 0xb35d2cca: {
-      sldrThis.unknown_0xb35d2cca = input.ReadInt32();
+      sldrThis.xRayVisor = input.ReadInt32();
       break;
     }
     case 0x5a7e4dfc: {
-      sldrThis.unknown_0x5a7e4dfc = input.ReadInt32();
+      sldrThis.thermoVisor = input.ReadInt32();
       break;
     }
     case 0x76faf77e: {
-      sldrThis.unknown_0x76faf77e = input.ReadInt32();
+      sldrThis.enviroVisor = input.ReadInt32();
       break;
     }
     case 0x9ba498f6: {
-      sldrThis.unknown_0x9ba498f6 = input.ReadInt32();
+      sldrThis.noVisor = input.ReadInt32();
       break;
     }
     case 0x2b9a4a7f: {
-      sldrThis.unknown_0x2b9a4a7f = input.ReadInt32();
+      sldrThis.visorMenu = input.ReadInt32();
       break;
     }
     case 0xd6fb0bf9: {
-      sldrThis.unknown_0xd6fb0bf9 = input.ReadInt32();
+      sldrThis.cycleVisorUp = input.ReadInt32();
       break;
     }
     case 0x08fe3abe: {
-      sldrThis.unknown_0x08fe3abe = input.ReadInt32();
+      sldrThis.cycleVisorDown = input.ReadInt32();
       break;
     }
     case 0xc3f4f3ef: {
-      sldrThis.unknown_0xc3f4f3ef = input.ReadInt32();
+      sldrThis.darkVisorToggle = input.ReadInt32();
       break;
     }
     case 0x53e56da8: {
-      sldrThis.unknown_0x53e56da8 = input.ReadInt32();
+      sldrThis.crosshairs = input.ReadInt32();
       break;
     }
     case 0x29293fb1: {
@@ -1126,47 +1126,47 @@ void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& s
       break;
     }
     case 0x02c06b91: {
-      sldrThis.unknown_0x02c06b91 = input.ReadInt32();
+      sldrThis.useShield = input.ReadInt32();
       break;
     }
     case 0xbaa185cf: {
-      sldrThis.unknown_0xbaa185cf = input.ReadInt32();
+      sldrThis.scanItem = input.ReadInt32();
       break;
     }
     case 0x6cdd19a4: {
-      sldrThis.unknown_0x6cdd19a4 = input.ReadInt32();
+      sldrThis.inventoryScreen = input.ReadInt32();
       break;
     }
     case 0xe08f6c6f: {
-      sldrThis.unknown_0xe08f6c6f = input.ReadInt32();
+      sldrThis.mapScreen = input.ReadInt32();
       break;
     }
     case 0x1230759b: {
-      sldrThis.unknown_0x1230759b = input.ReadInt32();
+      sldrThis.optionsScreen = input.ReadInt32();
       break;
     }
     case 0x5b9b4285: {
-      sldrThis.unknown_0x5b9b4285 = input.ReadInt32();
+      sldrThis.logScreen = input.ReadInt32();
       break;
     }
     case 0xbf218f4f: {
-      sldrThis.unknown_0xbf218f4f = input.ReadInt32();
+      sldrThis.pauseScreenCycleLeft = input.ReadInt32();
       break;
     }
     case 0x05ef2422: {
-      sldrThis.unknown_0x05ef2422 = input.ReadInt32();
+      sldrThis.pauseScreenCycleRight = input.ReadInt32();
       break;
     }
     case 0xced85a1b: {
-      sldrThis.unknown_0xced85a1b = input.ReadInt32();
+      sldrThis.boostBall = input.ReadInt32();
       break;
     }
     case 0x39cf6e72: {
-      sldrThis.unknown_0x39cf6e72 = input.ReadInt32();
+      sldrThis.morphIntoBall = input.ReadInt32();
       break;
     }
     case 0x64003596: {
-      sldrThis.unknown_0x64003596 = input.ReadInt32();
+      sldrThis.morphFromBall = input.ReadInt32();
       break;
     }
     default:

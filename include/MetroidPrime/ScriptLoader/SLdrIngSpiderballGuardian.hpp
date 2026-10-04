@@ -104,7 +104,7 @@ struct SLdrIngSpiderballGuardianData {
 
 inline SLdrIngSpiderballGuardianData::SLdrIngSpiderballGuardianData() : ingSpiderballGuardianStruct(), ingSpiderballGuardianStruct_0x2d163ff7(), ingSpiderballGuardianStruct_0x8c2fbb19(), ingSpiderballGuardianStruct_0x5d612911(), ingSpiderballGuardianStruct_0xfc58adff(), ingSpiderballGuardianStruct_0xc463268c(), proximityDamage(), audioPlaybackParms(), sound_SpiderballRolling(), sound_SpiderballSlowRolling(), sound_SpiderballFastRolling(), sound_EnterStunned(), audioPlaybackParms_0x44c1f241() {
   damageRadius = 2.0f;
-  proximityDamage.unknown_0x119fbd31 = 11;
+  proximityDamage.dI_WeaponType = 11;
   proximityDamage.dI_Damage = 40.0f;
   proximityDamage.dI_KnockBackPower = 10.0f;
   unknown_0x32133b39 = 20.0f;

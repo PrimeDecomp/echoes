@@ -56,7 +56,7 @@ inline SLdrActor::SLdrActor() : editorProperties(), collisionBox(CVector3f::Zero
   scaleAnimation = false;
   aiShootThrough = false;
   randomAnimationOffset = 0.0f;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
 }
 
 inline SLdrActor::~SLdrActor() {}

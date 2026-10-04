@@ -40,7 +40,7 @@ inline SLdrUnknownStruct10::SLdrUnknownStruct10() : grenadeDamage(), grenadeExpl
   grenadeAttackChance = 80.0f;
   grenadeMinAttackDist = 15.0f;
   grenadeMaxAttackDist = 50.0f;
-  grenadeDamage.unknown_0x119fbd31 = 11;
+  grenadeDamage.dI_WeaponType = 11;
   grenadeDamage.dI_Damage = 50.0f;
   grenadeDamage.dI_Radius = 10.0f;
   grenadeDamage.dI_KnockBackPower = 10.0f;
@@ -161,7 +161,7 @@ struct SLdrCommandoShield {
 };
 
 inline SLdrCommandoShield::SLdrCommandoShield() : shieldChargeDamage(), shieldVulnerability(), shieldExplodeEffect(kInvalidAssetId), armShieldExplodeEffect(kInvalidAssetId), shieldChargeEffect(kInvalidAssetId), armShieldEffect(kInvalidAssetId) {
-  shieldChargeDamage.unknown_0x119fbd31 = 11;
+  shieldChargeDamage.dI_WeaponType = 11;
   shieldChargeDamage.dI_Damage = 10.0f;
   shieldChargeDamage.dI_KnockBackPower = 5.0f;
   shieldChargeMinAttackDist = 15.0f;
@@ -294,7 +294,7 @@ inline SLdrCommandoPirate::SLdrCommandoPirate() : editorProperties(), patterned(
   patterned.detectionAngle = 90.0f;
   patterned.averageAttackTime = 1.0f;
   patterned.attackTimeVariation = 0.5f;
-  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_WeaponType = 11;
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 10.0f;
   patterned.damageWaitTime = 3.0f;
@@ -315,10 +315,10 @@ inline SLdrCommandoPirate::SLdrCommandoPirate() : editorProperties(), patterned(
   sound_Death = 0;
   alwaysFF = -1;
   alwaysFF_0x467c3d94 = -1;
-  bladeDamage.unknown_0x119fbd31 = 11;
+  bladeDamage.dI_WeaponType = 11;
   bladeDamage.dI_Damage = 10.0f;
   bladeDamage.dI_KnockBackPower = 5.0f;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 5.0f;
   sound_Projectile = 0;
   hearingRadius = 20.0f;

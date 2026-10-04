@@ -10,7 +10,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xc308a322: {
-    sldrThis.unknown_0xc308a322 = input.ReadInt32();
+    sldrThis.scanSpeed = input.ReadInt32();
     break;
   }
   case 0x7b714814: {

@@ -13,7 +13,7 @@ typedef bool (CFinalInput::*FDigitalInput)() const;
 
 class CControlMapper {
 public:
-  // Names follow the retail description strings; values without a description are unnamed.
+  // Names follow retail descriptions and verified control properties.
   enum ECommands {
     kC_None,
     kC_Forward,
@@ -30,7 +30,7 @@ public:
     kC_JumpOrBoost2,
     kC_FireOrBomb,
     kC_FireOrBomb2,
-    kC_Unknown15,
+    kC_AutoFireBeam,
     kC_ChargeBeam,
     kC_ChargeBeam2,
     kC_MissileOrPowerBomb,
@@ -78,17 +78,17 @@ public:
     kC_VisorUp,
     kC_VisorDown,
     kC_DarkVisorToggle,
-    kC_Unknown63,
+    kC_Crosshairs,
     kC_Unknown64,
     kC_UseShield,
     kC_ScanItem,
-    kC_Unknown67,
-    kC_ExitMap, // Guessed name
-    kC_Unknown69,
-    kC_Unknown70,
-    kC_Unknown71,
-    kC_Unknown72,
-    kC_Unknown73,
+    kC_InventoryScreen,
+    kC_MapScreen,
+    kC_OptionsScreen,
+    kC_LogScreen,
+    kC_PauseScreenCycleLeft,
+    kC_PauseScreenCycleRight,
+    kC_BoostBall,
     kC_MorphIntoBall,
     kC_MorphFromBall,
     kC_Count

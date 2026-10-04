@@ -75,7 +75,7 @@ struct SLdrEmperorIngStage3PortalAttackData {
 
 inline SLdrEmperorIngStage3PortalAttackData::SLdrEmperorIngStage3PortalAttackData() : effect(kInvalidAssetId), projectileDamage(), beamInfo() {
   portalOpenSound = 0;
-  projectileDamage.unknown_0x119fbd31 = 11;
+  projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 20.0f;
   projectileDamage.dI_KnockBackPower = 10.0f;
   beamInfo.length = 500.0f;

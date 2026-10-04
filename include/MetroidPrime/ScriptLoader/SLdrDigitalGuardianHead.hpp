@@ -154,10 +154,10 @@ inline SLdrDigitalGuardianHeadData::SLdrDigitalGuardianHeadData() : scannableInf
   unknown_0x1cc6d870 = 5.0f;
   echoTargetHP = 100.0f;
   unknown_0x8317610f = 30.0f;
-  annihilatorPulseDamage.unknown_0x119fbd31 = 11;
+  annihilatorPulseDamage.dI_WeaponType = 11;
   annihilatorPulseDamage.dI_Damage = 20.0f;
   annihilatorPulseDamage.dI_KnockBackPower = 10.0f;
-  annihilatorChargeDamage.unknown_0x119fbd31 = 11;
+  annihilatorChargeDamage.dI_WeaponType = 11;
   annihilatorChargeDamage.dI_Damage = 20.0f;
   annihilatorChargeDamage.dI_KnockBackPower = 10.0f;
   unknown_0xff7688bf = 6.0f;
@@ -170,10 +170,10 @@ inline SLdrDigitalGuardianHeadData::SLdrDigitalGuardianHeadData() : scannableInf
   lockOnBeams.pulseEffectScale = 2.0f;
   lockOnBeams.innerColor = CColor(0.49803901f, 0.0f, 0.0f, 0.49803901f);
   lockOnBeams.outerColor = CColor(0.698039f, 0.0f, 0.0f, 0.49803901f);
-  lockOnMissilesDamage.unknown_0x119fbd31 = 11;
+  lockOnMissilesDamage.dI_WeaponType = 11;
   lockOnMissilesDamage.dI_Damage = 20.0f;
   lockOnMissilesDamage.dI_KnockBackPower = 10.0f;
-  machineGunDamage.unknown_0x119fbd31 = 11;
+  machineGunDamage.dI_WeaponType = 11;
   machineGunDamage.dI_Damage = 20.0f;
   machineGunDamage.dI_KnockBackPower = 10.0f;
   machineGunHalfSweepDist = 15.0f;

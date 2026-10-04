@@ -8,7 +8,7 @@ struct SLdrCommand {
   SLdrCommand();
   ~SLdrCommand();
 
-  int unknown_0x94ba5737; // 0x94ba5737
+  int command; // 0x94ba5737
 };
 
 void LoadTypedefCommand(SLdrCommand& data, CInputStream& input);
