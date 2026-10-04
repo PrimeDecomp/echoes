@@ -1,8 +1,10 @@
 #include "MetroidPrime/CCameraManager.hpp"
 
 #include "Kyoto/Input/CFinalInput.hpp"
+#include "MetroidPrime/CHintManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
+#include "MetroidPrime/Cameras/CCameraShakerManager.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"

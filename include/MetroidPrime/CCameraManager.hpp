@@ -8,6 +8,7 @@
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/optional_object.hpp"
 #include "rstl/reserved_vector.hpp"
+#include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
 
 class CBallCamera;
@@ -31,8 +32,8 @@ class CCameraManager {
 public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
-  CHintManager* HintManager() { return mCameraHintManager; }
-  const CHintManager* GetHintManager() const { return mCameraHintManager; }
+  CHintManager* HintManager() { return mCameraHintManager.get(); }
+  const CHintManager* GetHintManager() const { return mCameraHintManager.get(); }
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
   CBallCamera* BallCamera() { return mBallCamera; }
@@ -150,8 +151,8 @@ private:
   float mFogDensitySpeed;
   float mFogDensityFactorTarget;
   float mFluidFogTime;              // Guessed name
-  CHintManager* mCameraHintManager; // Allocated by this manager; ownership wrapper unresolved.
-  CCameraShakerManager* mCameraShakeManager; // Ownership wrapper unresolved.
+  rstl::single_ptr< CHintManager > mCameraHintManager;
+  rstl::single_ptr< CCameraShakerManager > mCameraShakeManager;
   float mFirstPersonFov;
   SCameraHistory mCameraHistory;
   float mScreenFlashTimer; // Guessed name
