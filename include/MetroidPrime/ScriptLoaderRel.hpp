@@ -4,8 +4,10 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 
 #include "Kyoto/Math/CTransform4f.hpp"
+#include "Kyoto/TToken.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "rstl/reserved_vector.hpp"
 #include "rstl/string.hpp"
 
 class CVector3f;
@@ -18,14 +20,6 @@ class CEffect;
 class CGenDescription;
 class CPatterned;
 class CRagDoll;
-
-template < typename T >
-class TLockedToken;
-
-namespace rstl {
-template < typename T, int N >
-class reserved_vector;
-}
 
 struct SGeomBlobV2_FuncPtrs {
   // Guessed member name; compatible base return type.
