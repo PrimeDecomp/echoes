@@ -80,13 +80,16 @@ enum EStateManagerTransition {
 class CStateManager : public TOneStatic< CStateManager > {
 
   struct ScriptMsgArray {
-    CScriptMsg mMessages[192];
-    int mWriteIndex;
-    int mReadIndex;
+    enum { kCapacity = 192 };
 
+    CScriptMsg mMessages[kCapacity];
+    uint mWriteIndex;
+    uint mReadIndex;
+
+    // Reconstructed operation names; the original spellings are unknown.
     void Append(const CScriptMsg& msg);
-    int fn_8019E69C();
-    const CScriptMsg& fn_8019E6BC() const;
+    int GetCount() const;
+    CScriptMsg Dequeue();
 
     bool empty() const { return mWriteIndex == mReadIndex; }
   };
