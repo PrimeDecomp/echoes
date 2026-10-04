@@ -30,6 +30,7 @@ enum EEntityType {
   kET_FirstPersonCamera = 23,
   kET_FixedCamera = 24, // Guessed name; runtime fixed camera.
   kET_GameLight = 26,
+  kET_HomingBlob = 27, // Guessed name; Dark impact's multi-target particle weapon.
   kET_HUDBillboardEffect = 28,
   kET_PathCamera = 31,
   kET_Player = 32,
