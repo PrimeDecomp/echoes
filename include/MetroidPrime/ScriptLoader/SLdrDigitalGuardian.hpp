@@ -75,7 +75,7 @@ inline SLdrDigitalGuardianData::SLdrDigitalGuardianData() : scannableInfoCripple
   nearLegStabRange = 10.0f;
   farLegStabRange = 17.0f;
   minLegStabAttackTime = 5.0f;
-  legStabDamage.unknown_0x119fbd31 = 11;
+  legStabDamage.dI_WeaponType = 11;
   legStabDamage.dI_Damage = 50.0f;
   legStabDamage.dI_KnockBackPower = 10.0f;
   toeTargetHP = 75.0f;
@@ -84,7 +84,7 @@ inline SLdrDigitalGuardianData::SLdrDigitalGuardianData() : scannableInfoCripple
   maxVortexAttractionDistance = 30.0f;
   vortexLinearVelocity = 20.0f;
   vortexLinearAcceleration = 20.0f;
-  vortexDamage.unknown_0x119fbd31 = 11;
+  vortexDamage.dI_WeaponType = 11;
   vortexDamage.dI_Damage = 50.0f;
   vortexDamage.dI_KnockBackPower = 10.0f;
   unknown_0xfb5263e8 = -5734;

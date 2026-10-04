@@ -513,7 +513,7 @@ public:
   void SetRezbitState(ERezbitState state);
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
-  bool BoostHeld(const CFinalInput& input) const; // Guessed name: digital kC_Unknown73.
+  bool BoostHeld(const CFinalInput& input) const; // Guessed name.
   bool fn_8022b7f4(const CFinalInput& input) const;
   bool JumpPressed(const CFinalInput& input) const;
   bool JumpHeld(const CFinalInput& input) const;

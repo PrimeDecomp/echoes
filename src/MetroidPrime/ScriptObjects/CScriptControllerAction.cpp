@@ -63,7 +63,7 @@ CEntity* LoadControllerAction(CStateManager& mgr, CInputStream& input, CEntityIn
   SLdrControllerAction sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrControllerAction.inc"
 
-  const int command = sldrThis.cmd.unknown_0x94ba5737;
+  const int command = sldrThis.cmd.command;
   if (command > 0 && command <= 0x4c) {
     return rs_new CScriptControllerAction(
         mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

@@ -90,7 +90,7 @@ inline SLdrIngSpaceJumpGuardianData::SLdrIngSpaceJumpGuardianData() : ingSpotBlo
   lightColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   lightAttenuation = 5.0f;
   sound_MiniPortal = 0;
-  miniPortalProjectileDamage.unknown_0x119fbd31 = 11;
+  miniPortalProjectileDamage.dI_WeaponType = 11;
   miniPortalProjectileDamage.dI_Damage = 20.0f;
   miniPortalProjectileDamage.dI_KnockBackPower = 10.0f;
   miniPortalBeamInfo.length = 500.0f;

@@ -30,13 +30,13 @@ struct SLdrMetaree {
 inline SLdrMetaree::SLdrMetaree() : editorProperties(), patterned(), actorInformation(), radiusDamage(), collisionOffset0(CVector3f::Zero()), turnSound() {
   patterned.detectionRange = 10.0f;
   patterned.maxAttackRange = 30.0f;
-  patterned.contactDamage.unknown_0x119fbd31 = 11;
+  patterned.contactDamage.dI_WeaponType = 11;
   patterned.contactDamage.dI_Damage = 2.5f;
   patterned.contactDamage.dI_KnockBackPower = 4.0f;
   patterned.health.health = 2.0f;
   patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.unknown_0xe287d8dd = 0.0f;
-  radiusDamage.unknown_0x119fbd31 = 11;
+  radiusDamage.dI_WeaponType = 11;
   radiusDamage.dI_Damage = 5.0f;
   radiusDamage.dI_KnockBackPower = 5.0f;
   dropHeight = 3.0f;

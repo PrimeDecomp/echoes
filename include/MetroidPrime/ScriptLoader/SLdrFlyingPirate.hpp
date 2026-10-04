@@ -59,7 +59,7 @@ inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), a
   patterned.maxAttackRange = 40.0f;
   patterned.averageAttackTime = 1.0f;
   patterned.attackTimeVariation = 0.5f;
-  patterned.contactDamage.unknown_0x119fbd31 = 9;
+  patterned.contactDamage.dI_WeaponType = 9;
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 10.0f;
   patterned.damageWaitTime = 3.0f;
@@ -70,15 +70,15 @@ inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), a
   searchRadius = 20.0f;
   hearingRadius = 20.0f;
   unknown_0x20daf45e = 0;
-  projectileDamage.unknown_0x119fbd31 = 9;
+  projectileDamage.dI_WeaponType = 9;
   projectileDamage.dI_Damage = 5.0f;
   sound_Projectile = 0;
-  missileDamage.unknown_0x119fbd31 = 9;
+  missileDamage.dI_WeaponType = 9;
   missileDamage.dI_Damage = 10.0f;
   missileDamage.dI_Radius = 5.0f;
   hurlRecoverTime = 0.80000001f;
   hoverHeight = 4.0f;
-  rocketPackExplosionDamage.unknown_0x119fbd31 = 9;
+  rocketPackExplosionDamage.dI_WeaponType = 9;
   rocketPackExplosionDamage.dI_Damage = 20.0f;
   rocketPackExplosionDamage.dI_Radius = 10.0f;
   rocketPackExplosionDamage.dI_KnockBackPower = 10.0f;

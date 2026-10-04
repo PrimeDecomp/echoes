@@ -36,7 +36,7 @@ inline SLdrDarkCommandoEMPData::SLdrDarkCommandoEMPData() : grenadeDamage(), gre
   preFireIdleTime = 2.0f;
   minAttackRange = 35.0f;
   maxAttackRange = 100.0f;
-  grenadeDamage.unknown_0x119fbd31 = 11;
+  grenadeDamage.dI_WeaponType = 11;
   grenadeDamage.dI_Damage = 20.0f;
   grenadeDamage.dI_KnockBackPower = 10.0f;
   grenadeMass = 25.0f;
@@ -142,10 +142,10 @@ inline SLdrDarkCommandoChargeBeamData::SLdrDarkCommandoChargeBeamData() : damage
   postFireIdleTime = 2.0f;
   minAttackRange = 10.0f;
   maxAttackRange = 35.0f;
-  damage.unknown_0x119fbd31 = 11;
+  damage.dI_WeaponType = 11;
   damage.dI_Damage = 40.0f;
   damage.dI_KnockBackPower = 10.0f;
-  moldDamage.unknown_0x119fbd31 = 11;
+  moldDamage.dI_WeaponType = 11;
   moldDamage.dI_Damage = 0.083329998f;
 }
 
@@ -295,7 +295,7 @@ inline SLdrDarkCommandoData::SLdrDarkCommandoData() : bladeDamage(), sound_Impac
   tauntChance = 12.5f;
   eMPAttackChance = 25.0f;
   chargeBeamAttackChance = 50.0f;
-  bladeDamage.unknown_0x119fbd31 = 11;
+  bladeDamage.dI_WeaponType = 11;
   bladeDamage.dI_Damage = 20.0f;
   bladeDamage.dI_KnockBackPower = 10.0f;
 }

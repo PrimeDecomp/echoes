@@ -64,7 +64,7 @@ struct SLdrGunTurretBase {
 };
 
 inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), alwaysFF(-1), patterned(), actorInformation() {
-  attackDamage.unknown_0x119fbd31 = 11;
+  attackDamage.dI_WeaponType = 11;
   attackDamage.dI_Damage = 5.0f;
   hurtSleepDelay = 2.0f;
   gunAimTurnSpeed = 180.0f;

@@ -278,8 +278,8 @@ inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffec
   echoAttributes.shell2ScaleHoriz = 10.0f;
   echoAttributes.shell2ScaleVert = 12.0f;
   echoAttributes.shellColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
-  normalDamage.unknown_0x119fbd31 = 20;
-  hurtfulDamage.unknown_0x119fbd31 = 18;
+  normalDamage.dI_WeaponType = 20;
+  hurtfulDamage.dI_WeaponType = 18;
   insideFadeStart = 3.0f;
   insideFadeTime = 2.0f;
   insideFadeMinAlpha = 0.25f;

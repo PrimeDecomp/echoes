@@ -15,7 +15,7 @@ struct SLdrCommandData {
 };
 
 inline SLdrCommandData::SLdrCommandData() : command() {
-  command.unknown_0x94ba5737 = 0;
+  command.command = 0;
   state = 0;
 }
 

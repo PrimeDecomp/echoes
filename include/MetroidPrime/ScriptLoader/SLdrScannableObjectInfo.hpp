@@ -52,7 +52,7 @@ struct SLdrScannableObjectInfo {
   ~SLdrScannableObjectInfo();
 
   CAssetId scanInfoTextStringTable; // 0x2f5b6423
-  int unknown_0xc308a322; // 0xc308a322
+  int scanSpeed; // 0xc308a322
   bool critical; // 0x7b714814
   bool unknown_0x1733b1ec; // 0x1733b1ec
   CAssetId scanTextureInHud; // 0x53336141
@@ -74,7 +74,7 @@ struct SLdrScannableObjectInfo {
 };
 
 inline SLdrScannableObjectInfo::SLdrScannableObjectInfo() : scanInfoTextStringTable(kInvalidAssetId), scanTextureInHud(kInvalidAssetId), staticModel(kInvalidAssetId), animatedModel(), primarySecondAnimatedModel(), secondaryModel0(), secondaryModel1(), secondaryModel2(), secondaryModel3(), secondaryModel4(), secondaryModel5(), secondaryModel6(), secondaryModel7(), secondaryModel8() {
-  unknown_0xc308a322 = 0;
+  scanSpeed = 0;
   critical = false;
   unknown_0x1733b1ec = false;
   modelInitialPitch = 0.0f;

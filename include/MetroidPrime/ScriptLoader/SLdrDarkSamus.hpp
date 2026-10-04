@@ -105,7 +105,7 @@ inline SLdrDarkSamus::SLdrDarkSamus() : editorProperties(), patterned(), actorIn
   boostBallHitPlayerSound = 0;
   iceSpreadSound = 0;
   sound = 0;
-  phazonProjectileDamage.unknown_0x119fbd31 = 11;
+  phazonProjectileDamage.dI_WeaponType = 11;
   phazonProjectileDamage.dI_Damage = 10.0f;
   phazonProjectileDamage.dI_Radius = 5.0f;
 }

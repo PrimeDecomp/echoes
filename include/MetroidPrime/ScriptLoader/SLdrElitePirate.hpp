@@ -82,7 +82,7 @@ inline SLdrElitePirate::SLdrElitePirate() : editorProperties(), patterned(), act
   unknown_0xe27de71b = 1.0f;
   unknown_0x665e7ace = 1.0f;
   unknown_0xacd4d06d = 2.0f;
-  rocketDamage.unknown_0x119fbd31 = 11;
+  rocketDamage.dI_WeaponType = 11;
   rocketDamage.dI_Damage = 10.0f;
   rocketDamage.dI_Radius = 5.0f;
   unknown_0x624222f8 = 2;

@@ -31,7 +31,7 @@ struct SLdrSporbNeedle {
 inline SLdrSporbNeedle::SLdrSporbNeedle() : editorProperties(), actorInformation(), model(kInvalidAssetId), attackDamage(), trailEffect(kInvalidAssetId), explosionEffect(kInvalidAssetId) {
   initialSpeed = 60.0f;
   mass = 1.0f;
-  attackDamage.unknown_0x119fbd31 = 9;
+  attackDamage.dI_WeaponType = 9;
   attackDamage.dI_Damage = 5.0f;
   attackDamage.dI_KnockBackPower = 2.0f;
   fuseTime = 1.5f;

@@ -82,7 +82,7 @@ inline SLdrRezbitData::SLdrRezbitData() : derezModel(kInvalidAssetId), derezSkin
   cuttingLaserChance = 50.0f;
   energyBoltMinAttackDist = 20.0f;
   energyBoltMaxAttackDist = 40.0f;
-  energyBoltDamage.unknown_0x119fbd31 = 11;
+  energyBoltDamage.dI_WeaponType = 11;
   energyBoltDamage.dI_Damage = 20.0f;
   energyBoltDamage.dI_KnockBackPower = 5.0f;
   energyBoltAttackDuration = 4.0f;
@@ -91,14 +91,14 @@ inline SLdrRezbitData::SLdrRezbitData() : derezModel(kInvalidAssetId), derezSkin
   virusMinAttackDist = 0.0f;
   virusMaxAttackDist = 30.0f;
   virusAttackTime = 6.0f;
-  virusDamage.unknown_0x119fbd31 = 11;
+  virusDamage.dI_WeaponType = 11;
   virusDamage.dI_Damage = 20.0f;
   virusDamage.dI_KnockBackPower = 5.0f;
   sound_VirusHUD = 0;
   sound_HUDReboot = 0;
   cuttingLaserMinAttackDist = 20.0f;
   cuttingLaserMaxAttackDist = 40.0f;
-  cuttingLaserDamage.unknown_0x119fbd31 = 11;
+  cuttingLaserDamage.dI_WeaponType = 11;
   cuttingLaserDamage.dI_Damage = 20.0f;
   cuttingLaserDamage.dI_KnockBackPower = 5.0f;
   cuttingLaserBeamInfo.length = 500.0f;

@@ -22,7 +22,7 @@ struct SLdrMysteryFlyerData {
 };
 
 inline SLdrMysteryFlyerData::SLdrMysteryFlyerData() : shotProjectile(kInvalidAssetId), shotDamage() {
-  shotDamage.unknown_0x119fbd31 = 11;
+  shotDamage.dI_WeaponType = 11;
   shotDamage.dI_Damage = 5.0f;
   hoverSpeed = 10.0f;
   hoverHeight = 2.0f;

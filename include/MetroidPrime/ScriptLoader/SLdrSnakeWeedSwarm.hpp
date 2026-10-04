@@ -51,7 +51,7 @@ inline SLdrSnakeWeedSwarm::SLdrSnakeWeedSwarm() : editorProperties(), animationI
   minSize = 1.0f;
   maxSize = 1.0f;
   heightOffset = 0.0f;
-  contactDamage.unknown_0x119fbd31 = 9;
+  contactDamage.dI_WeaponType = 9;
   damageWaitTime = 0.0f;
   sound_Looped = 0;
   sound_IntoGround = 0;

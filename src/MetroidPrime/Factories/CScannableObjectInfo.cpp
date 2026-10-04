@@ -17,7 +17,7 @@ void CScannableObjectInfo::ReadProperties(CInputStream& input) {
 #include "MetroidPrime/ScriptLoader/SLdrScannableObjectInfo.inc"
 
   mStringTableId = sldrThis.scanInfoTextStringTable;
-  mTotalDownloadTime = gpTweakGui->GetScanSpeed(sldrThis.unknown_0xc308a322);
+  mTotalDownloadTime = gpTweakGui->GetScanSpeed(sldrThis.scanSpeed);
   mCritical = sldrThis.critical;
   mUseScanModel = sldrThis.unknown_0x1733b1ec;
   mScanTextureId = sldrThis.scanTextureInHud;

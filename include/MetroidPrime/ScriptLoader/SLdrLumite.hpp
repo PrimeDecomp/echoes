@@ -40,11 +40,11 @@ inline SLdrLumite::SLdrLumite() : editorProperties(), patterned(), actorInformat
   patterned.creatureSize = 1;
   smallShotMinRange = 8.0f;
   smallShotMaxRange = 30.0f;
-  smallShotDamage.unknown_0x119fbd31 = 11;
+  smallShotDamage.dI_WeaponType = 11;
   smallShotDamage.dI_Damage = 5.0f;
   bigShotMinRange = 8.0f;
   bigShotMaxRange = 30.0f;
-  bigShotDamage.unknown_0x119fbd31 = 11;
+  bigShotDamage.dI_WeaponType = 11;
   bigShotDamage.dI_Damage = 5.0f;
   minHopDistance = 5.0f;
   maxHopDistance = 45.0f;
