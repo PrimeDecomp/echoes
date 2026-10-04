@@ -877,19 +877,22 @@ float CMorphBall::GetMinimumAlignmentSpeed() const {
 
 void CMorphBall::DampLinearAndAngularVelocities(float linearDamping, float angularDamping,
                                                 float dt) {
-  const float frames = 60.f * dt;
-  const float linearScale = pow(1.f - linearDamping, frames);
-  mPlayer.SetVelocityWR(linearScale * mPlayer.GetVelocityWR());
-  const float angularScale = pow(1.f - angularDamping, frames);
-  mPlayer.SetAngularVelocityWR(mPlayer.GetAngularVelocityWR() * angularScale);
+  CVector3f velocity = mPlayer.GetVelocityWR();
+  velocity *= pow(1.f - linearDamping, 60.f * dt);
+  mPlayer.SetVelocityWR(velocity);
+
+  CAxisAngle angularVelocity = mPlayer.GetAngularVelocityWR();
+  const float damping = pow(1.f - angularDamping, 60.f * dt);
+  angularVelocity *= damping;
+  mPlayer.SetAngularVelocityWR(angularVelocity);
 }
 
 void CMorphBall::ApplyFriction(float friction) {
   CVector3f velocity = mPlayer.GetVelocityWR();
-  if (velocity.Magnitude() <= friction) {
-    velocity = CVector3f::Zero();
+  if (friction < velocity.Magnitude()) {
+    velocity = velocity.AsNormalized() * (velocity.Magnitude() - friction);
   } else {
-    velocity = (velocity.Magnitude() - friction) * velocity.AsNormalized();
+    velocity = CVector3f::Zero();
   }
   mPlayer.SetVelocityWR(velocity);
 }
@@ -1912,7 +1915,10 @@ CVector3f CMorphBall::GetBallPosition() const {
 }
 
 CTransform4f CMorphBall::GetBallToWorld() const {
-  return CTransform4f::Translate(GetBallPosition()) * mPlayer.GetTransform().GetRotation();
+  CTransform4f ballToWorld =
+      CTransform4f::Translate(mPlayer.GetTranslation() + CVector3f(0.f, 0.f, mRadius)) *
+      mPlayer.GetTransform().GetRotation();
+  return ballToWorld;
 }
 
 CTransform4f CMorphBall::GetSwooshToWorld() const {
