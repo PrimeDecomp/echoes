@@ -145,6 +145,7 @@ public:
   EAutoMapperState GetCurrentState() const { return mState; }
   EAutoMapperState GetNextState() const { return mNextState; }
   EMapMode GetMapMode() const { return mMapMode; } // Guessed name
+  void SetMapMode(EMapMode mode) { mMapMode = mode; }
   bool IsInPlayerControlState() const {
     return IsInMapperState(kAMS_MapScreen) || IsInMapperState(kAMS_MapScreenUniverse);
   }

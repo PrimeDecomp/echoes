@@ -3,8 +3,14 @@
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
+#include "Kyoto/CResFactory.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Audio/CStreamAudioManager.hpp"
+#include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Input/IController.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "MetroidPrime/CAutoMapper.hpp"
+#include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CInGameQuitScreen.hpp"
 #include "MetroidPrime/CMessageScreen.hpp"
 #include "MetroidPrime/CPauseScreen.hpp"
@@ -62,13 +68,15 @@ CInGameGuiManager::CInGameGuiManager(const CStateManager& mgr, CGuiFrameLoader& 
 }
 
 bool CInGameGuiManager::CheckDGRPLoadComplete() {
-  for (int i = 0; i < mPauseScreenDGRPs.size(); ++i) {
-    if (!mPauseScreenDGRPs[i].IsLoaded()) {
+  for (TPauseScreenDGRPs::iterator it = mPauseScreenDGRPs.begin();
+       it != mPauseScreenDGRPs.end(); ++it) {
+    if (!it->IsLoaded()) {
       return false;
     }
   }
-  for (int i = 0; i < mInGameGuiDGRPs.size(); ++i) {
-    if (!mInGameGuiDGRPs[i].IsLoaded()) {
+  for (rstl::vector< TToken< CDependencyGroup > >::iterator it = mInGameGuiDGRPs.begin();
+       it != mInGameGuiDGRPs.end(); ++it) {
+    if (!it->IsLoaded()) {
       return false;
     }
   }
@@ -81,8 +89,7 @@ bool CInGameGuiManager::CheckLoadComplete(const CStateManager&) {
 }
 
 bool CInGameGuiManager::GetIsGameDraw() const {
-  // TODO: query CPauseScreenBlur's game-draw state.
-  return false;
+  return mPauseScreenBlur->IsGameDraw();
 }
 
 void CInGameGuiManager::PrepareScanDisplay(const CStateManager& mgr, int playerIndex) {
@@ -91,8 +98,10 @@ void CInGameGuiManager::PrepareScanDisplay(const CStateManager& mgr, int playerI
   }
 }
 
-void CInGameGuiManager::PreDraw(CStateManager&, bool) {
-  // TODO: prepare the face reflection when this player's camera is active.
+void CInGameGuiManager::PreDraw(CStateManager& mgr, bool cameraActive) {
+  if (!mSamusReflection.null() && cameraActive) {
+    mSamusReflection->PreDraw(mgr);
+  }
 }
 
 void CInGameGuiManager::DrawDarkVisorMask() const {
@@ -134,28 +143,87 @@ CInGameGuiManager::TPauseScreenDGRPs CInGameGuiManager::LockPauseScreenDependenc
 }
 
 bool CInGameGuiManager::IsTransitionReady() const {
-  // TODO: test both the blur transition and the automapper transition.
-  return false;
+  if (!mPauseScreenBlur->IsNotTransitioning()) {
+    return false;
+  }
+  if (!mAutoMapper.null()) {
+    return mAutoMapper->GetCurrentState() == mAutoMapper->GetNextState();
+  }
+  return true;
 }
 
 void CInGameGuiManager::TryCompleteStateTransition() {
-  // TODO: release obsolete screens and finish texture reloads before accepting the next state.
+  if (mNextState != kIGGS_PauseGame && mNextState != kIGGS_PauseLogBook) {
+    mPauseScreen = nullptr;
+  }
+  if (InGameGuiStates::IsGameplayState(mNextState)) {
+    mMessageScreen = nullptr;
+    if (!TryReloadAreaTextures()) {
+      return;
+    }
+    CModel::EnableTextureTimeout();
+  }
+  mPrevState = mNextState;
 }
 
-void CInGameGuiManager::BeginStateTransition(EInGameGuiState, const CStateManager&) {
-  // TODO: update state, defer texture dumping when necessary, and transition blur/map/audio.
+void CInGameGuiManager::BeginStateTransition(EInGameGuiState state, const CStateManager& mgr) {
+  if (mNextState == state) {
+    return;
+  }
+  mPrevState = mNextState;
+  mNextState = state;
+
+  if (state == kIGGS_InGame) {
+    CSfxManager::SetChannel(CSfxManager::kSC_Game);
+  } else if (state == kIGGS_PauseHUDMessage) {
+    mMessageScreen = rs_new CMessageScreen(mPauseGameHudMessage, mPauseGameHudTime);
+  } else if (state != kIGGS_PauseSaveGame && InGameGuiStates::IsGameplayState(mPrevState)) {
+    mDeferTransition = true;
+  }
+
+  mPauseScreenBlur->OnNewInGameGuiState(state, mgr, *this);
+  if (!mDeferTransition) {
+    DoStateTransition(mgr);
+  }
+  if (state == kIGGS_InGame && !mAutoMapper.null()) {
+    mAutoMapper->UnmuteAllLoopedSounds();
+  }
 }
 
-void CInGameGuiManager::DoStateTransition(const CStateManager&) {
-  // TODO: construct the appropriate pause or message screen and update resource locks.
+void CInGameGuiManager::DoStateTransition(const CStateManager& mgr) {
+  if (!mAutoMapper.null()) {
+    mAutoMapper->OnNewInGameGuiState(mNextState, const_cast< CStateManager& >(mgr));
+  }
+  if ((mNextState == kIGGS_PauseGame || mNextState == kIGGS_PauseLogBook) &&
+      mPauseScreen.null()) {
+    mPauseScreen = rs_new CPauseScreen();
+  }
+  const bool paused = InGameGuiStates::IsPausedState(mNextState);
+  for (rstl::vector< CToken >::iterator it = mPauseResources.begin();
+       it != mPauseResources.end(); ++it) {
+    if (paused) {
+      it->Lock();
+    } else {
+      it->Unlock();
+    }
+  }
 }
 
 void CInGameGuiManager::InitializeDumpableARAMTextures() {
   // TODO: collect unique in-game texture IDs and retain the pause-screen resources.
 }
 
-void CInGameGuiManager::PauseGame(const CStateManager&, EInGameGuiState) {
-  // TODO: open the quit screen or begin the requested pause transition and switch audio channels.
+void CInGameGuiManager::PauseGame(const CStateManager& mgr, EInGameGuiState state) {
+  if (state == kIGGS_QuitGame) {
+    mQuitScreen = rs_new CInGameQuitScreen(mgr.GetViewportLayoutIndex());
+    return;
+  }
+  gpController->SetMotorState(kIOP_Player1, kMS_Stop);
+  CSfxManager::SetChannel(CSfxManager::kSC_PauseScreen);
+  if (state != kIGGS_PauseHUDMessage) {
+    CStreamAudioManager::StopSfx();
+  }
+  BeginStateTransition(state, mgr);
 }
 
 void CInGameGuiManager::ShowPauseGameHudMessage(const CStateManager& mgr, CAssetId message,
@@ -166,20 +234,32 @@ void CInGameGuiManager::ShowPauseGameHudMessage(const CStateManager& mgr, CAsset
 }
 
 bool CInGameGuiManager::IsInPausedState() const {
-  return !mQuitScreen.null() || !InGameGuiStates::IsGameplayState(mPrevState) ||
-         !InGameGuiStates::IsGameplayState(mNextState);
+  if (!mQuitScreen.null()) {
+    return true;
+  }
+  bool gameplay = false;
+  if (InGameGuiStates::IsGameplayState(mPrevState) &&
+      InGameGuiStates::IsGameplayState(mNextState)) {
+    gameplay = true;
+  }
+  return !gameplay;
 }
 
-void CInGameGuiManager::EnsureStates(const CStateManager&) {
-  // TODO: dump area textures once the deferred blur transition stops drawing the game.
+void CInGameGuiManager::EnsureStates(const CStateManager& mgr) {
+  if (mDeferTransition && !mPauseScreenBlur->IsGameDraw()) {
+    DestroyAreaTextures(mgr);
+    mDeferTransition = false;
+    DoStateTransition(mgr);
+  }
 }
 
 bool CInGameGuiManager::IsTextureInPauseScreen(CAssetId id) const {
-  for (int i = 0; i < mPauseScreenDGRPs.size(); ++i) {
-    TToken< CDependencyGroup > group = mPauseScreenDGRPs[i].NonConstCopy();
+  TPauseScreenDGRPs::const_iterator groupIt = mPauseScreenDGRPs.begin();
+  for (int i = 0; i < 3; ++i, ++groupIt) {
+    TToken< CDependencyGroup > group = *groupIt;
     const rstl::vector< SObjectTag >& tags = group->GetObjectTagVector();
-    for (int j = 0; j < tags.size(); ++j) {
-      if (tags[j].id == id) {
+    for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
+      if (it->id == id) {
         return true;
       }
     }
@@ -192,8 +272,17 @@ void CInGameGuiManager::DestroyAreaTextures(const CStateManager&) {
 }
 
 bool CInGameGuiManager::TryReloadAreaTextures() {
-  // TODO: reload and erase completed entries through CTexture's bitmap-reload interface.
-  return mDumpedTextures.empty();
+  bool complete = true;
+  rstl::list< TDumpedTexture >::iterator it = mDumpedTextures.begin();
+  while (it != mDumpedTextures.end()) {
+    if (it->second->TryReloadBitmapData(*gpResourceFactory)) {
+      it = mDumpedTextures.erase(it);
+    } else {
+      complete = false;
+      ++it;
+    }
+  }
+  return complete;
 }
 
 void CInGameGuiManager::StopSounds() {

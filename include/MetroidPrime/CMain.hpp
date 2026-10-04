@@ -61,6 +61,7 @@ public:
 
   void SetGameExitReset(bool reset) { mGameExitReset = reset; }
   void SetGameFrameDrawn(bool drawn) { mGameFrameDrawn = drawn; }
+  void SetGameFlowBuilt(bool built) { mMfGameBuilt = built; }
   // Guessed names; the native flag forces two ticks and a 30-FPS frame wait.
   void SetThirtyFps(bool enabled);
   bool GetThirtyFps() const { return mThirtyFps; }

@@ -44,6 +44,9 @@ public:
   const CInGameGuiManager& GetPlayerGuiManager(int playerIndex) const {
     return *mPlayerGuiManagers[playerIndex];
   }
+  CInGameGuiManager& GetPlayerGuiManager(int playerIndex) {
+    return *mPlayerGuiManagers[playerIndex];
+  }
 
 private:
   bool CheckPlayerGuiLoadComplete(const CStateManager& mgr);

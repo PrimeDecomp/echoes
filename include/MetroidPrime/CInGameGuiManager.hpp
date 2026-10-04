@@ -40,6 +40,7 @@ public:
   ~CInGameGuiManager();
 
   bool GetIsGameDraw() const;
+  CAutoMapper& GetAutoMapper() { return *mAutoMapper; }
   const CAutoMapper* GetAutoMapper() const { return mAutoMapper.get(); }
   void PreDraw(CStateManager& mgr, bool cameraActive);
   void Draw(const CStateManager& mgr) const;

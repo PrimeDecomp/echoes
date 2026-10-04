@@ -17,6 +17,10 @@ namespace InGameGuiStates {
 inline bool IsGameplayState(EInGameGuiState state) {
   return state >= kIGGS_Zero && state <= kIGGS_InGame;
 }
+
+inline bool IsPausedState(EInGameGuiState state) {
+  return state >= kIGGS_MapScreen && state <= kIGGS_QuitGame;
+}
 } // namespace InGameGuiStates
 
 #endif // _CINGAMEGUIMANAGERCOMMON

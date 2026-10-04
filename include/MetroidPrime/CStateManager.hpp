@@ -124,6 +124,7 @@ public:
   void ShowPausedHUDMemo(CAssetId strg, float time);
   void QueueMessage(int frameCount, CAssetId msg, float f1);
   int GetHUDMessageFrameCount() const { return mHudMessageFrameCount; }
+  CAssetId GetPauseHUDMessage() const { return mPauseHudMessage; }
   // float GetHUDMessageTime() const { return mHudMessageTime; }
   void IncrementHUDMessageFrameCounter() { ++mHudMessageFrameCount; }
 
@@ -280,6 +281,8 @@ public:
   void EnterMessageScreen(uint, float);
   bool GetWantsToEnterMapScreen() const { return mDeferredTransition == kSMT_MapScreen; }
   bool GetInMapScreen() const { return mInMapScreen; }
+  bool GetShowSoftTransition() const { return mShowSoftTransition; }
+  void SetInMapScreen(bool inMapScreen) { mInMapScreen = inMapScreen; }
   bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
