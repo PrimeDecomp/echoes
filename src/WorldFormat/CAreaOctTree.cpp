@@ -1,4 +1,5 @@
 #include "WorldFormat/CAreaOctTree.hpp"
+#include "Kyoto/Streams/CMemoryInStream.hpp"
 
 static CAABox BoxFromIndex(int index, const CVector3f& min, const CVector3f& center,
                            const CVector3f& max) {
@@ -66,8 +67,39 @@ CAreaOctTree::CAreaOctTree(const CAABox& bounds, Node::ETreeType treeType, const
 
 void CAreaOctTree::MakeFromMemory(void* buffer, uint bufferLength, CAreaOctTree** treeOut,
                                   bool* valid) {
-  // TODO: Decode the tree and nonowning collision-array views, including 64-bit
-  // materials and Echoes's additional serialized triangle-index array.
-  *treeOut = nullptr;
-  *valid = false;
+  CMemoryInStream in(buffer, bufferLength, CMemoryInStream::kOS_NotOwned);
+  in.ReadInt32();
+  in.ReadInt32();
+  CAABox bounds(in);
+  Node::ETreeType treeType = static_cast< Node::ETreeType >(in.ReadInt32());
+  uint treeSize = in.ReadInt32();
+  uchar* treeBuffer = static_cast< uchar* >(buffer) + in.GetReadPosition();
+
+  uint* materialHeader = reinterpret_cast< uint* >(treeBuffer + treeSize);
+  uint materialCount = *materialHeader;
+  u64* materials = reinterpret_cast< u64* >(materialHeader + 1);
+  uint* vertexMaterialHeader = reinterpret_cast< uint* >(materials + materialCount);
+  uchar* vertexMaterials = reinterpret_cast< uchar* >(vertexMaterialHeader + 1);
+  uint* edgeMaterialHeader = reinterpret_cast< uint* >(vertexMaterials + *vertexMaterialHeader);
+  uchar* edgeMaterials = reinterpret_cast< uchar* >(edgeMaterialHeader + 1);
+  uint* surfaceMaterialHeader = reinterpret_cast< uint* >(edgeMaterials + *edgeMaterialHeader);
+  uchar* surfaceMaterials = reinterpret_cast< uchar* >(surfaceMaterialHeader + 1);
+
+  uint* edgeHeader = reinterpret_cast< uint* >(surfaceMaterials + *surfaceMaterialHeader);
+  uint edgeCount = *edgeHeader;
+  CCollisionEdge* edges = reinterpret_cast< CCollisionEdge* >(edgeHeader + 1);
+  uint* surfaceHeader = reinterpret_cast< uint* >(edges + edgeCount);
+  uint triangleCount = *surfaceHeader / 3;
+  ushort* surfaceIndices = reinterpret_cast< ushort* >(surfaceHeader + 1);
+  uint* extraIndexHeader = reinterpret_cast< uint* >(surfaceIndices + triangleCount * 3);
+  ushort* extraIndices = reinterpret_cast< ushort* >(extraIndexHeader + 1);
+  uint* vertexHeader = reinterpret_cast< uint* >(extraIndices + triangleCount * 3);
+  uint vertexCount = *vertexHeader;
+  CVector3f* vertices = reinterpret_cast< CVector3f* >(vertexHeader + 1);
+
+  *treeOut = rs_new CAreaOctTree(bounds, treeType, static_cast< uchar* >(buffer), treeBuffer,
+                                 materialCount, vertexCount, edgeCount, triangleCount, materials,
+                                 vertexMaterials, edgeMaterials, surfaceMaterials, edges,
+                                 surfaceIndices, extraIndices, vertices);
+  *valid = true;
 }
