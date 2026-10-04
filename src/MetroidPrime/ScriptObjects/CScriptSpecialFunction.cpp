@@ -240,7 +240,45 @@ void CScriptSpecialFunction::RenderSilhouette(const CStateManager& mgr) const {
 }
 
 void CScriptSpecialFunction::RenderBillboard() const {
-  // TODO: draw the camera-facing textured effect.
+  CCubeRenderer::That()->GetSphereRamp().Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+  const CTransform4f& view = CGraphics::GetViewMatrix();
+  const CVector3f pos = (mIntParm1 & 2) ? view.GetTranslation() + view.GetForward() * 10.f
+                                         : GetTranslation();
+  float alpha = mValue4;
+  if (!(mIntParm1 & 2)) {
+    const CVector3f delta = pos - view.GetTranslation();
+    if (!delta.CanBeNormalized()) {
+      return;
+    }
+    const float dot = CVector3f::Dot(delta.AsNormalized(), view.GetForward());
+    if (dot < 0.f) {
+      return;
+    }
+    alpha *= dot;
+  }
+
+  const float scale = alpha * mValue1;
+  const CVector3f right = view.GetRight() * scale;
+  const CVector3f up = view.GetUp() * scale;
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  CGraphics::SetBlendMode(kBM_Blend, kBF_One, kBF_One, kLO_Clear);
+  CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
+  CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+  CGraphics::SetDepthWriteMode(false, kE_Always, false);
+  CGraphics::DisableAllLights();
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_Or, kAF_Always, 0);
+  const CColor color(alpha, alpha, alpha, alpha);
+  CGraphics::StreamColor(color);
+  CGraphics::StreamBegin(kP_TriangleFan);
+  CGraphics::StreamTexcoord(0.f, 0.f);
+  CGraphics::StreamVertex(pos - right + up);
+  CGraphics::StreamTexcoord(1.f, 0.f);
+  CGraphics::StreamVertex(pos - right - up);
+  CGraphics::StreamTexcoord(1.f, 1.f);
+  CGraphics::StreamVertex(pos + right - up);
+  CGraphics::StreamTexcoord(0.f, 1.f);
+  CGraphics::StreamVertex(pos + right + up);
+  CGraphics::StreamEnd();
 }
 
 void CScriptSpecialFunction::Render(const CStateManager& mgr) const {
@@ -1951,7 +1989,15 @@ void CScriptSpecialFunction::ThinkRezbitState(float dt, CStateManager& mgr) {
 void CScriptSpecialFunction::AddOrUpdateEmitter(float pitch, float maxDist, float falloff,
                                                 CSfxHandle& handle, ushort id, CVector3f position,
                                                 uchar volume) {
-  // TODO: create or update the spinner emitter with Echoes sound parameters.
+  if (!handle) {
+    CAudioSys::C3DEmitterParmData data(maxDist, falloff, 1, 0x7f, 0x14);
+    data.mPos = position;
+    data.mSfxId = id;
+    handle = CSfxManager::AddEmitter(data, GetCurrentAreaId().Value(), true, true);
+  } else {
+    CSfxManager::UpdateEmitter(handle, position, CVector3f::Zero(), volume);
+    CSfxManager::PitchBend(handle, static_cast< short >(8192.f * pitch + 8192.f));
+  }
 }
 
 void CScriptSpecialFunction::DeleteEmitter(CSfxHandle& handle) {
