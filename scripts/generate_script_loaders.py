@@ -214,6 +214,14 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
     "SLdrSound": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
     },
+    # SLdrPlatform, G2ME01 0x8009FE84: editor, ambient color and visor re-stores.
+    "SLdrPlatform": {
+        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
+        "actorInformation": (
+            "lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);",
+            "visor.visorFlags = 0x0000000fu;",
+        ),
+    },
     "SLdrPickup": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
         "actorInformation": (
