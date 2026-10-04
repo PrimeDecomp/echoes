@@ -73,10 +73,11 @@ CCollisionPrimitiveData::~CCollisionPrimitiveData() {
       ~CollisionPrimitiveDataCache::kRC_Occupied;
 }
 
-CCollisionSurface CCollisionPrimitiveData::GetTriangle(ushort index) const {
-  const u64 flags = mMaterials[mSurfaceMaterials[index]];
-  const CCollisionEdge& edge0 = mEdges[mSurfaceIndices[index * 3]];
-  const CCollisionEdge& edge1 = mEdges[mSurfaceIndices[index * 3 + 1]];
+CCollisionSurface CCollisionPrimitiveData::GetTriangle(uint index) const {
+  const ushort triangleIndex = index;
+  const u64 flags = mMaterials[mSurfaceMaterials[triangleIndex]];
+  const CCollisionEdge& edge0 = mEdges[mSurfaceIndices[triangleIndex * 3]];
+  const CCollisionEdge& edge1 = mEdges[mSurfaceIndices[triangleIndex * 3 + 1]];
   if (flags & kFlippedTriangle) {
     return CCollisionSurface(mVertices[edge0.GetVertIndex2()], mVertices[edge0.GetVertIndex1()],
                              mVertices[edge1.GetVertIndex1()], flags);

@@ -23,7 +23,9 @@ public:
   int GetTriangleCount() const { return mTriangleCount; }
   // Guessed name/qualifiers, correlated with the native triangle consumers.
   void GetTriangleVertexIndices(ushort index, ushort indices[3]) const;
-  CCollisionSurface GetTriangle(ushort index) const;
+  // GC uint formal is a compatible reconstruction; the callee uses a ushort triangle domain.
+  // Wii exports use ushort instead. Neither version's signature proves the other.
+  CCollisionSurface GetTriangle(uint index) const;
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf) const;
   // Additional-flags overload is target-derived; this spelling is reconstructed.
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf, u64 additionalFlags) const;
