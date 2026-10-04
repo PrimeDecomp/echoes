@@ -574,6 +574,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CHintState.cpp"),
             Object(NonMatching, "MetroidPrime/CHintManager.cpp"),
             Object(NonMatching, "MetroidPrime/CPlayerHintManager.cpp"),
+            Object(NonMatching, "MetroidPrime/CCameraHintManager.cpp"),
             Object(NonMatching, "MetroidPrime/CControlHintManager.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptControlHint.cpp"),
             Object(NonMatching, "MetroidPrime/CGameHint.cpp"),

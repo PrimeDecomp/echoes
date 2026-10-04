@@ -15,6 +15,7 @@ public:
   virtual ~CCameraOverrideInfo();
 
   CBallCamera::EBallCameraBehaviour GetBehaviourType() const { return mBehaviour; }
+  uint GetFlags() const { return mFlags; }
 
 private:
   uint mFlags;

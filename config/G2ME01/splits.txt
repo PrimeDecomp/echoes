@@ -1357,6 +1357,11 @@ MetroidPrime/CPlayerHintManager.cpp:
 	.text       start:0x801BAD5C end:0x801BAFCC
 	.data       start:0x803B69D0 end:0x803B69F8
 
+MetroidPrime/CCameraHintManager.cpp:
+	.text       start:0x801BAFCC end:0x801BC900
+	.data       start:0x803B69F8 end:0x803B6A40
+	.sdata2     start:0x8041CF10 end:0x8041CF28
+
 MetroidPrime/Enemies/CAiKnockBackMgr.cpp:
 	.text       start:0x801BC900 end:0x801BD714
 	.rodata     start:0x803AA618 end:0x803AA630
