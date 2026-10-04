@@ -14335,9 +14335,9 @@ Transform2FromMatrixData__FP12CTransform4fPC9CMatrix3fPC9CVector3ffPC9CMatrix3fP
 TransformFromMatrixDelta__FP12CTransform4fPC9CMatrix3fPC9CVector3f = .text:0x80310C1C; // type:function size:0x48
 __ct__12CVirtualBoneFR12CInputStream = .text:0x80310C64; // type:function size:0xAC
 StreamInSkinWeighting__FR12CInputStream = .text:0x80310D10; // type:function size:0x17C scope:local
-fn_80310E8C = .text:0x80310E8C; // type:function size:0x7C
-fn_80310F08 = .text:0x80310F08; // type:function size:0xC
-fn_80310F14 = .text:0x80310F14; // type:function size:0x24 align:4
+UnlockTextures__6CModelFv = .text:0x80310E8C; // type:function size:0x7C
+GetAABB__6CModelCFv = .text:0x80310F08; // type:function size:0xC
+IsDefinitelyOpaque__6CModelCFv = .text:0x80310F14; // type:function size:0x24 align:4
 UpdateLastFrame__6CModelCFv = .text:0x80310F38; // type:function size:0x30
 RemapData__6CModelFPUc = .text:0x80310F68; // type:function size:0x200 align:4
 GetData__6CModelFv = .text:0x80311168; // type:function size:0x1C align:4

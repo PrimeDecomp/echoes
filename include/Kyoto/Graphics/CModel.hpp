@@ -57,7 +57,9 @@ public:
   void DolphinDrawFlat(EDrawFlatFlags flags) const;
   void PreDrawModel(const CModelFlags& flags) const;
   bool IsLoaded(int matIdx) const;
+  bool IsDefinitelyOpaque() const;
   const CAABox& GetAABB() const;
+  void UnlockTextures();
   const float* GetPositions() const;
   const float* GetNormals() const;
   const CCubeModel* GetModelInstance() const { return mModelInstance.get(); }
@@ -85,7 +87,7 @@ private:
   rstl::single_ptr< CCubeModel > mModelInstance;
   mutable uint mLastFrame;
   mutable uint mCurrentMatxIdx : 16;
-  uint x30_16_ : 1;
+  uint mInitialTextureLocksReleased : 1;
   uint mHasSkinMatrices : 1;
 };
 CHECK_SIZEOF(CModel, 0x34)
