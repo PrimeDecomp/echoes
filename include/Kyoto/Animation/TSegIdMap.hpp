@@ -35,6 +35,8 @@ public:
     return mNodes[mIndirectionMap[id.val()].second.val()];
   }
 
+  int GetNumNodes() const { return mBoneCount; }
+
   const T& AccessElement(int index) const { return mNodes[index]; }
 
   bool ContainsDataFor(const CSegId& id) const {
