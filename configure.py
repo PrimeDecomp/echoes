@@ -718,6 +718,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CActorLights.cpp"),
             Object(NonMatching, "MetroidPrime/CGroundMovement.cpp"),
             Object(NonMatching, "MetroidPrime/CGameCollision.cpp"),
+            Object(NonMatching, "MetroidPrime/CGameCollisionPackedCache.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAmbientAI.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAi.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CStateMachine.cpp"),

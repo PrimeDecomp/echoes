@@ -2,6 +2,7 @@
 #define _CCOLLISIONCACHE
 
 #include "Kyoto/Math/CAABox.hpp"
+#include "MetroidPrime/TGameTypes.hpp"
 #include "WorldFormat/CCollisionSurface.hpp"
 #include "rstl/locked_cache_allocator.hpp"
 #include "rstl/vector.hpp"
@@ -18,6 +19,9 @@ public:
   ~CCollisionCache();
   void Reset(); // Guessed names
   void SetBounds(const CAABox& bounds);
+  const CAABox& GetBounds() const { return mBounds; }
+  int GetDynamicGeometryMode() const { return mDynamicGeometryMode; }
+  TUniqueId GetOwnerId() const { return TUniqueId(mOwnerId); }
   void RemoveGeometry(CCollisionCacheIterator& iterator);
   uint SkipGeometry(CCollisionCacheIterator& iterator);
   uint ReadGeometry(CCollisionCacheIterator& iterator);
@@ -29,9 +33,9 @@ private:
   CAABox mBounds; // Guessed names
   rstl::vector< ushort, rstl::locked_cache_allocator > mData;
   int mMetadataWords;
-  int x2c_unknown;
+  int mDynamicGeometryMode; // Guessed role; the full mode domain remains unresolved.
   int x30_unknown;
-  ushort x34_unknown;
+  ushort mOwnerId; // Packed TUniqueId storage; constructor API remains ushort.
   uint mGeometryRevision;
 };
 CHECK_SIZEOF(CCollisionCache, 0x3c)
