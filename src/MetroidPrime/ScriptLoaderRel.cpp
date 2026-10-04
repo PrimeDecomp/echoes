@@ -16,8 +16,6 @@ SGuiWidget_FuncPtrs* gLoader_GUI;
 SPlayerController_FuncPtrs* gLoader_PlayerController;
 SWallWalker_FuncPtrs* gLoader_WallWalker;
 
-SCannonBall_FuncPtrs* gLoader_CannonBall;
-
 void SetSWallWalker_FuncPtrs(SWallWalker_FuncPtrs* callbacks) { gLoader_WallWalker = callbacks; }
 
 CEntity* Load_WallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -165,10 +163,4 @@ void SetSIngSnatchingSwarm_FuncPtrs(SIngSnatchingSwarm_FuncPtrs* callbacks) {
 
 CEntity* LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_IngSnatchingSwarm->mLoadIngSnatchingSwarm(mgr, input, info);
-}
-
-void SetSCannonBall_FuncPtrs(SCannonBall_FuncPtrs* callbacks) { gLoader_CannonBall = callbacks; }
-
-CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_CannonBall->mLoadCannonBall(mgr, input, info);
 }

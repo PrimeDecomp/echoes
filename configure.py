@@ -853,6 +853,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SFrontEndDataNetwork_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SStoneToad_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SCoin_FuncPtrs.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SCannonBall_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SKrocuss_FuncPtrs.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/SSurfaceParticleEffect_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SAIMannedTurret_FuncPtrs.cpp"),
