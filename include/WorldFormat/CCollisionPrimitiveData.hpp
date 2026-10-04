@@ -8,7 +8,8 @@ class CCollisionSurface;
 class CTransform4f;
 class CVector3f;
 
-// Shared collision-array view. COBBTree owns its arrays through SIndexData instead.
+// Collision-array view with optional ownership of metadata/index buffers, not vertices.
+// COBBTree owns its arrays through SIndexData instead.
 class CCollisionPrimitiveData {
 public:
   CCollisionPrimitiveData();
@@ -20,8 +21,14 @@ public:
   ~CCollisionPrimitiveData();
 
   int GetTriangleCount() const { return mTriangleCount; }
+  // Guessed name/qualifiers, correlated with the native triangle consumers.
+  void GetTriangleVertexIndices(ushort index, ushort indices[3]) const;
+  // GC uint formal is a compatible reconstruction; the callee uses a ushort triangle domain.
+  // Wii exports use ushort instead. Neither version's signature proves the other.
   CCollisionSurface GetTriangle(uint index) const;
   CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf) const;
+  // Additional-flags overload is target-derived; this spelling is reconstructed.
+  CCollisionSurface GetTriangle(ushort index, const CTransform4f* xf, u64 additionalFlags) const;
 
 protected:
   int mMaterialCount;
@@ -40,5 +47,11 @@ protected:
   bool mOwnsArrays : 1;
 };
 CHECK_SIZEOF(CCollisionPrimitiveData, 0x34)
+
+// Guessed scope/names for the geometry registration pool; IDs are not TUniqueId.
+namespace CollisionPrimitiveDataCache {
+extern uint gGeometryRevision;
+ushort GetGeneration(ushort id);
+}
 
 #endif // _CCOLLISIONPRIMITIVEDATA

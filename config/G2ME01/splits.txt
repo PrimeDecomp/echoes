@@ -2076,6 +2076,11 @@ MetroidPrime/CPortalAreaData.cpp:
 	.sbss       start:0x80419720 end:0x80419730
 	.sdata2     start:0x8041DE00 end:0x8041DE18
 
+WorldFormat/CCollisionPrimitiveData.cpp:
+	.text       start:0x80257498 end:0x80257CB8
+	.bss        start:0x80410E24 end:0x80411024 align:4 common
+	.sdata      start:0x80418968 end:0x80418970
+
 WorldFormat/CCollisionCache.cpp:
 	.text       start:0x80257CB8 end:0x802591B4
 	.rodata     start:0x803AD928 end:0x803AD930
