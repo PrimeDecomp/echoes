@@ -18,6 +18,7 @@ public:
   CCachedCollisionSurface(const CCollisionSurface& surface, ushort triangleIndex);
 
   const CCollisionSurface& GetSurface() const { return mSurface; }
+  ushort GetTriangleIndex() const { return mTriangleIndex; }
 
 private:
   CCollisionSurface mSurface;
@@ -40,6 +41,8 @@ public:
   explicit CCollisionCacheIterator(CCollisionCache& cache);
   void Reset(); // Guessed names
   short GetObjectId() const { return mObjectId; }
+  u64 GetMaterialFlags() const { return mMaterialFlags; }
+  const CCollisionPrimitiveData& GetGeometry() const { return *mGeometry; }
   bool AtEnd() const { return mOffset >= mEnd; }
   bool AtLeafStart() const { return mLeafExhausted; }
   bool MatchesGeometry(short id, const CCollisionPrimitiveData* geometry,
@@ -66,11 +69,16 @@ CHECK_SIZEOF(CCollisionCacheIterator, 0x40)
 
 // Guessed name
 class CCollisionCache {
+  friend class CCollisionCacheWriter;
+
 public:
   CCollisionCache(const CAABox& bounds, int x2c, int x30, ushort x34);
   void Reset(); // Guessed names
   void SetBounds(const CAABox& bounds);
   const CAABox& GetBounds() const { return mBounds; }
+  uint GetNumTriangles() const {
+    return uint(mData.size() - mMetadataWords) / (sizeof(SCachedCollisionSlot) / sizeof(ushort));
+  }
   int GetDynamicGeometryMode() const { return mDynamicGeometryMode; }
   TUniqueId GetOwnerId() const { return TUniqueId(mOwnerId); }
   void RemoveGeometry(CCollisionCacheIterator& iterator);
@@ -137,6 +145,7 @@ CHECK_SIZEOF(CCollisionCache, 0x3c)
 class CCollisionCacheWriter {
 public:
   explicit CCollisionCacheWriter(CCollisionCache& cache);
+  const CAABox& GetBounds() const { return mCache.GetBounds(); }
   ~CCollisionCacheWriter();
   void AddTriangle(const CCollisionSurface& surface, ushort triangleIndex);
   void ReserveTriangles(int count);
