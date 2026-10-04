@@ -1873,6 +1873,10 @@ MetroidPrime/Enemies/SBlogg_FuncPtrs.cpp:
 	.text       start:0x80218ADC end:0x80218B10
 	.sbss       start:0x80419410 end:0x80419418
 
+MetroidPrime/Enemies/SMetroid_FuncPtrs.cpp:
+	.text       start:0x80218B10 end:0x80218B70
+	.sbss       start:0x80419418 end:0x80419420
+
 MetroidPrime/Enemies/SGunTurretBase_FuncPtrs.cpp:
 	.text       start:0x80218B70 end:0x80218BD0
 	.sbss       start:0x80419420 end:0x80419428
@@ -1888,6 +1892,10 @@ MetroidPrime/Enemies/SShrieker_FuncPtrs.cpp:
 MetroidPrime/Enemies/SSplinter_FuncPtrs.cpp:
 	.text       start:0x80218C38 end:0x80218C6C
 	.sbss       start:0x80419438 end:0x80419440
+
+MetroidPrime/Enemies/SSplitterMainChassis_FuncPtrs.cpp:
+	.text       start:0x80218C6C end:0x80218CF8
+	.sbss       start:0x80419440 end:0x80419448
 
 MetroidPrime/Enemies/SChozoGhost_FuncPtrs.cpp:
 	.text       start:0x80218CF8 end:0x80218D2C
