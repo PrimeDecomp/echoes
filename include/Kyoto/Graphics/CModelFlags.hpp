@@ -104,8 +104,8 @@ public:
   static CModelFlags Additive(const CColor& color) {
     return CModelFlags(CModelFlags::kT_Additive, color);
   }
-  static CModelFlags AdditiveRGB(const CColor& color);
-  static CModelFlags ColorModulate(const CColor& color);
+  static CModelFlags AdditiveRGB(const CColor& color) { return CModelFlags(kT_Additive2, color); }
+  static CModelFlags ColorModulate(const CColor& color) { return CModelFlags(kT_One, color); }
 
 private:
   uint x0_;

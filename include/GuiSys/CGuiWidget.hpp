@@ -29,7 +29,10 @@ public:
     kGMDF_Opaque = 1,
     kGMDF_Alpha = 2,
     kGMDF_Additive = 3,
-    kGMDF_AlphaAdditiveOverdraw = 4
+    kGMDF_AlphaAdditiveOverdraw = 4,
+    // Guessed names: additional Echoes flat-model draw modes.
+    kGMDF_ClearAlpha = 5,
+    kGMDF_DoubleColor = 6
   };
 
   class CGuiWidgetParms {
