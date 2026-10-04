@@ -2,6 +2,8 @@
 
 #include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Animation/CCharLayoutInfo.hpp"
@@ -17,6 +19,8 @@
 #include "MetroidPrime/CCredits.hpp"
 #include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/CGameArea.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
@@ -151,7 +155,17 @@ void CScriptSpecialFunction::PreRenderPlayerFrustumTester(CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::PreRenderSilhouette(CStateManager& mgr) {
-  // TODO: copy the connected actor's bounds and test visibility.
+  SetInFrustum(false);
+  if (mSilhouetteStrength <= 0.f) {
+    return;
+  }
+  CActor* act = TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
+  if (!act || !act->GetActive()) {
+    return;
+  }
+    SetOtherBounds(act->GetOtherBounds());
+    SetRenderBounds(act->GetOtherBounds());
+    SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(act->GetOtherBounds()));
 }
 
 void CScriptSpecialFunction::PreRenderBillboard(CStateManager& mgr) {
@@ -185,11 +199,44 @@ void CScriptSpecialFunction::PreRender(CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::RenderFogVolume(const CStateManager& mgr) const {
-  // TODO: draw the animated fog volume.
+  if (GetActive()) {
+    const float z =
+        mgr.IntegrateVisorFog(mValue1 * CMath::FastSinR(CGraphics::GetSecondsMod900() * mValue2));
+    if (z > 0.f) {
+      const CVector3f pos = GetTranslation();
+      CVector3f min(pos - mVectorParm);
+      CVector3f max(pos + mVectorParm);
+      max[kDZ] += z;
+      CAABox box(min, max);
+      CTransform4f modelMtx = CTransform4f::Translate(box.GetCenterPoint()) *
+                              CTransform4f::Scale((box.GetMaxPoint() - box.GetMinPoint()) * 0.5f);
+
+      CAABox renderbox(CVector3f(-1.f, -1.f, -1.f), CVector3f(1.f, 1.f, 1.f));
+
+      gpRender->SetModelMatrix(modelMtx);
+      gpRender->RenderFogVolume(mColorParm, renderbox, nullptr, nullptr);
+    }
+  }
 }
 
 void CScriptSpecialFunction::RenderSilhouette(const CStateManager& mgr) const {
-  // TODO: render the connected actor's silhouette.
+  const CActor* act =
+      TCastToConstPtr< CActor >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
+  if (!act || !act->GetActive() || !act->GetDrawEnabled()) {
+    return;
+  }
+
+  CCubeRenderer* renderer = gpRender;
+  renderer->AllocatePhazonSuitMaskTexture();
+  renderer->CopyScreenTex(3, true, CGraphics::GetDolphinSpareBuffer(), GX_TF_RGB565, false);
+  CGX::SetDstAlpha(true, 0xff);
+  gpRender->SetModelMatrix(act->GetTransform());
+  act->Render(mgr);
+  renderer->RenderSilhouette(
+      mValue1,
+      CColor(mSilhouetteStrength * mColorParm.GetRed(), mSilhouetteStrength * mColorParm.GetGreen(),
+             mSilhouetteStrength * mColorParm.GetBlue(), mColorParm.GetAlpha()),
+      rstl::optional_object< TCachedToken< CTexture > >(), 0.f, 0.f, 0.f, CColor::White());
 }
 
 void CScriptSpecialFunction::RenderBillboard() const {
@@ -1966,7 +2013,46 @@ void CScriptSpecialFunction::SendFrustumMessages(CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::PreRenderAllViewports(CStateManager& mgr) {
-  // TODO: submit the per-viewport fog settings for the selected function.
+  switch (mFunction) {
+  case kSF_ExtraRenderClipPlane: {
+    if (!GetActive()) {
+      return;
+    }
+    if (mIntParm1 == 0) {
+      return;
+    }
+
+    const CTransform4f camXf(
+        mgr.GetCurrentRenderCameraManager()->GetCurrentCameraTransform(mgr, true));
+    if (mIntParm2 != 0) {
+      if (mgr.GetRenderVisorMode() == CStateManager::kRVM_Echo) {
+        return;
+      }
+      const CGameArea::CAreaFog* areaFog =
+          mgr.World()->GetAreaAlways(GetCurrentAreaId()).GetAreaFog();
+      const CGameArea::CAreaFog& camFog = mgr.GetCurrentRenderCameraManager()->GetFog();
+      const CGameArea::CAreaFog* fog = camFog.IsFogDisabled() ? areaFog : &camFog;
+      if (fog->GetFogMode() == kRFM_None) {
+        return;
+      }
+      mgr.SetAreaClipPlane(
+          GetCurrentAreaId(),
+          CPlane(fog->GetRange().GetY() +
+                     CVector3f::Dot(camXf.GetForward(), camXf.GetTranslation()),
+                 CUnitVector3f(camXf.GetForward(), CUnitVector3f::kN_No)));
+    } else {
+      CPlane plane(GetTranslation(), CUnitVector3f(GetTransform().GetUp()));
+      const CVector3f point = plane.GetNormal() * plane.GetConstant();
+      if (CVector3f::Dot(camXf.GetTranslation() - point, plane.GetNormal()) > 0.f) {
+        plane = CPlane(point, -plane.GetNormal());
+      }
+      mgr.SetAreaClipPlane(GetCurrentAreaId(), plane);
+    }
+    break;
+  }
+  default:
+    break;
+  }
 }
 
 CEntity* LoadSpecialFunction(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {

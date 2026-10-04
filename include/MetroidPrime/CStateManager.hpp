@@ -253,6 +253,8 @@ public:
   void DeferStateTransition(EStateManagerTransition t);
   void ResetEscapeSequenceTimer(float time); // Prime-correlated name
   void SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx); // Prime name
+  float IntegrateVisorFog(float f) const;
+  void SetAreaClipPlane(TAreaId area, const CPlane& plane); // Guessed name
   void EnterMapScreen() { DeferStateTransition(kSMT_MapScreen); }
   void EnterPauseScreen() { DeferStateTransition(kSMT_PauseGame); }
   void EnterLogBookScreen() { DeferStateTransition(kSMT_LogBook); }
