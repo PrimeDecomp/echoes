@@ -610,6 +610,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindSearch.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindPointSearch.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CIngSpotPathFindNavigation.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CIngSpotData.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CPathFindNavigation.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAnimationState.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CWaypointNavigation.cpp"),
