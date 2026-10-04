@@ -3,6 +3,7 @@
 #include "Kyoto/Animation/CInt32POINode.hpp"
 #include "Kyoto/Animation/CParticlePOINode.hpp"
 #include "Kyoto/Animation/CSoundPOINode.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include <stdlib.h>
 
 CAnimTreeDoubleChild::CAnimTreeDoubleChild(const rstl::ncrc_ptr< CAnimTreeNode >& a,
@@ -85,10 +86,50 @@ CAnimTreeDoubleChild::CDoubleChildAdvancementResult::CDoubleChildAdvancementResu
 CAnimTreeDoubleChild::CDoubleChildAdvancementResult
 CAnimTreeDoubleChild::AdvanceViewBothChildren(const CCharAnimTime& time, bool runLeft,
                                               bool loopLeft) {
-  // TODO: Advance/simplify both children, respecting left-child looping, and accumulate root
-  // motion.
-  SAdvancementResults unchanged(time);
-  return CDoubleChildAdvancementResult(CCharAnimTime(0.f), unchanged.mDeltas, unchanged.mDeltas);
+  CCharAnimTime leftRemaining = time;
+  CCharAnimTime totalTime = !runLeft   ? CCharAnimTime::ZeroFlat()
+                            : loopLeft ? CCharAnimTime::Infinity()
+                                       : mA->GetTimeRemaining();
+  CVector3f leftOffset(0.f, 0.f, 0.f);
+  CQuaternion leftRotation = CQuaternion::NoRotation();
+  CCharAnimTime rightRemaining = time;
+  CVector3f rightOffset(0.f, 0.f, 0.f);
+  CQuaternion rightRotation = CQuaternion::NoRotation();
+
+  if (time.GreaterThanZero()) {
+    while (leftRemaining.GreaterThanZero() && !close_enough(leftRemaining.GetSeconds(), 0.f) &&
+           totalTime.GreaterThanZero() &&
+           (loopLeft || !close_enough(totalTime.GetSeconds(), 0.f))) {
+      SAdvancementResults result = mA->AdvanceView(leftRemaining);
+      rstl::optional_object< rstl::ownership_transfer< IAnimReader > > simplified =
+          mA->Simplified();
+      if (simplified.valid())
+        mA = Cast(*simplified);
+      SAdvancementDeltas deltas = result.mDeltas;
+      leftOffset += deltas.GetOffsetDelta();
+      CQuaternion rotation = deltas.GetOrientationDelta();
+      leftRotation *= rotation;
+      if (!loopLeft)
+        totalTime = mA->GetTimeRemaining();
+      leftRemaining = result.mRemTime;
+    }
+
+    while (rightRemaining.GreaterThanZero() && !close_enough(rightRemaining.GetSeconds(), 0.f)) {
+      SAdvancementResults result = mB->AdvanceView(rightRemaining);
+      rstl::optional_object< rstl::ownership_transfer< IAnimReader > > simplified =
+          mB->Simplified();
+      if (simplified.valid())
+        mB = Cast(*simplified);
+      SAdvancementDeltas deltas = result.mDeltas;
+      rightOffset += deltas.GetOffsetDelta();
+      CQuaternion rotation = deltas.GetOrientationDelta();
+      rightRotation *= rotation;
+      rightRemaining = result.mRemTime;
+    }
+  }
+
+  return CDoubleChildAdvancementResult(time, SAdvancementDeltas(leftOffset, leftRotation),
+                                       SAdvancementDeltas(rightOffset, rightRotation));
 }
 
 void CAnimTreeDoubleChild::VSetPhase(float phase) {

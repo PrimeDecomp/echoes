@@ -1,5 +1,7 @@
 #include "Kyoto/Animation/CAnimTreeTransition.hpp"
 
+#include "Kyoto/Math/CloseEnough.hpp"
+
 CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& b,
@@ -29,26 +31,82 @@ CAnimTreeTransition::~CAnimTreeTransition() {}
 
 rstl::optional_object< rstl::ownership_transfer< IAnimReader > >
 CAnimTreeTransition::VSimplified() {
-  // TODO: Select the destination reader when the transition finishes; otherwise simplify both.
-  return rstl::optional_object_null();
+  if (close_enough(GetBlendingWeight(), 1.f)) {
+    rstl::optional_object< rstl::ownership_transfer< IAnimReader > > simp = mB->Simplified();
+    if (simp)
+      return simp;
+    return mB->Clone();
+  }
+  return CAnimTreeTweenBase::VSimplified();
 }
 
 rstl::optional_object< rstl::ownership_transfer< IAnimReader > >
 CAnimTreeTransition::VReverseSimplified() {
-  // TODO: Select the source reader at zero transition weight.
-  return rstl::optional_object_null();
+  if (close_enough(GetBlendingWeight(), 0.f))
+    return mA->Clone();
+  return CAnimTreeTweenBase::VReverseSimplified();
 }
 
 rstl::pair< CCharAnimTime, SAdvancementDeltas >
 CAnimTreeTransition::AdvanceViewForTransitionalPeriod(const CCharAnimTime& time) {
-  // TODO: Advance both children and interpolate root motion between old/new transition weights.
-  SAdvancementResults unchanged(time);
-  return rstl::pair< CCharAnimTime, SAdvancementDeltas >(CCharAnimTime(0.f), unchanged.mDeltas);
+  IncAdvancementDepth();
+  CDoubleChildAdvancementResult res = AdvanceViewBothChildren(time, mRunA, mLoopA);
+  DecAdvancementDepth();
+  const CCharAnimTime& trueAdvancement = res.GetTrueAdvancement();
+  if (trueAdvancement.EqualsZero())
+    return rstl::pair< CCharAnimTime, SAdvancementDeltas >(
+        CCharAnimTime::ZeroFlat(),
+        SAdvancementDeltas(CVector3f::Zero(), CQuaternion::NoRotation()));
+
+  float oldWeight = GetBlendingWeight();
+  mTimeInTrans += trueAdvancement;
+  float newWeight = GetBlendingWeight();
+  if (ShouldCullTree()) {
+    if (newWeight < 0.5f)
+      mCullSelector = 1;
+    else
+      mCullSelector = 2;
+  }
+
+  const SAdvancementDeltas& leftDeltas = res.GetLeftAdvancementDeltas();
+  const SAdvancementDeltas& rightDeltas = res.GetRightAdvancementDeltas();
+  if (GetBlendRoot() & kBlendRoot_Offset)
+    return rstl::pair< CCharAnimTime, SAdvancementDeltas >(
+        res.GetTrueAdvancement(),
+        SAdvancementDeltas::Interpolate(leftDeltas, rightDeltas, oldWeight, newWeight));
+  return rstl::pair< CCharAnimTime, SAdvancementDeltas >(res.GetTrueAdvancement(), rightDeltas);
 }
 
 SAdvancementResults CAnimTreeTransition::VAdvanceView(const CCharAnimTime& time) {
-  // TODO: Split advancement at the transition boundary and update initialization/culling state.
-  return SAdvancementResults(time);
+  if (time.EqualsZero()) {
+    IncAdvancementDepth();
+    mB->AdvanceView(time);
+    if (mRunA)
+      mA->AdvanceView(time);
+    DecAdvancementDepth();
+    if (ShouldCullTree())
+      mCullSelector = 1;
+    return SAdvancementResults(CCharAnimTime::ZeroFlat(),
+                               SAdvancementDeltas(CVector3f::Zero(), CQuaternion::NoRotation()));
+  }
+
+  if (!mInitialized)
+    mInitialized = true;
+  if (mTimeInTrans + time < mTransDur) {
+    rstl::pair< CCharAnimTime, SAdvancementDeltas > res = AdvanceViewForTransitionalPeriod(time);
+    return SAdvancementResults(time - res.first, res.second);
+  }
+
+  CCharAnimTime transTimeRem = mTransDur - mTimeInTrans;
+  rstl::pair< CCharAnimTime, SAdvancementDeltas > res(
+      CCharAnimTime(0.f), SAdvancementDeltas(CVector3f::Zero(), CQuaternion::NoRotation()));
+  if (transTimeRem.GreaterThanZero()) {
+    res = AdvanceViewForTransitionalPeriod(transTimeRem);
+    if (res.first != transTimeRem)
+      return SAdvancementResults(res.first, res.second);
+  }
+  CCharAnimTime remainder = time - transTimeRem;
+  return SAdvancementResults(remainder, res.second);
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimTreeTransition::VClone() const {
