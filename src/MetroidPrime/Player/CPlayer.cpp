@@ -215,7 +215,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , x1268_26_(true)
 , x1268_27_(true)
 , x1268_28_(true)
-, x1268_29_(false)
+, mSpiderBallControlXY(false)
 , x1268_30_(false)
 , mInSafeZone(false)
 , x1269_24_(false)

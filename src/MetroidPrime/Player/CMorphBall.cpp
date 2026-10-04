@@ -34,6 +34,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerBodyController.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakBall.hpp"
@@ -2343,9 +2344,220 @@ bool CMorphBall::CheckForSwitchToSpiderBallSwinging(CStateManager& mgr) const {
   return CMath::AbsF(mPlayerToSpiderNormal.GetZ()) > 0.9f;
 }
 
-// Scaffold, not a reconstructed implementation.
+static float SpiderPlatformRiderDecayTime = 0.02f; // Guessed name
+
 void CMorphBall::ApplySpiderBallRollForces(const CFinalInput& input, CStateManager& mgr, float dt) {
-  // TODO: Find the attachment, project controls and apply Spider roll/attraction forces.
+  CVector2f surfaceForces = CalculateSpiderBallAttractionSurfaceForces(input);
+  CVector3f viewSurfaceForces = TransformSpiderBallForcesXZ(surfaceForces, mgr);
+  const CTransform4f camXf = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
+  const CVector3f spiderDirNorm = mSpiderInterpBetweenPoints.AsNormalized();
+
+  const float spiderUpDot = CMath::AbsF(CVector3f::Dot(spiderDirNorm, camXf.GetColumn(kDZ)));
+  const float spiderForwardDot = CMath::AbsF(CVector3f::Dot(spiderDirNorm, camXf.GetColumn(kDY)));
+  if (mPlayer.GetSpiderBallControlXY()) {
+    if (spiderUpDot < 0.25f) {
+      if (spiderForwardDot > 0.25f) {
+        viewSurfaceForces = TransformSpiderBallForcesXY(surfaceForces, mgr);
+      }
+    }
+  }
+
+  const float forceMag = surfaceForces.Magnitude();
+  CVector2f normSurfaceForces(0.f, 0.f);
+  bool isSurface = false;
+  if (mSpiderSurfaceType == kSST_CollisionSurface || mSpiderSurfaceType == kSST_ScriptedSurface) {
+    isSurface = true;
+  }
+  float spiderTrackForceMag =
+      isSurface ? forceMag : CVector3f::Dot(viewSurfaceForces, spiderDirNorm);
+
+  bool forceApplied = true;
+  bool moving;
+  bool continueTrackForce = false;
+  if (CMath::AbsF(forceMag) > 0.05f) {
+    normSurfaceForces = surfaceForces.AsNormalized();
+    if (!isSurface && CVector2f::Dot(normSurfaceForces, mNormalizedSpiderSurfaceForces) > 0.9f) {
+      continueTrackForce = true;
+      spiderTrackForceMag = forceMag * CMath::Sign(mSpiderTrackForceMagnitude);
+    } else if (CMath::AbsF(spiderTrackForceMag) > 0.05f) {
+      spiderTrackForceMag = forceMag * CMath::Sign(spiderTrackForceMag);
+    } else {
+      forceApplied = false;
+    }
+  } else {
+    forceApplied = false;
+  }
+
+  if (!continueTrackForce) {
+    mNormalizedSpiderSurfaceForces = normSurfaceForces;
+    mSpiderTrackForceMagnitude = spiderTrackForceMag;
+    mSpiderForcesReset = true;
+  }
+
+  if (!forceApplied) {
+    spiderTrackForceMag = 0.f;
+    ResetSpiderBallForces();
+  }
+
+  moving = true;
+  if (!forceApplied) {
+    if (!(mPlayer.GetVelocityWR().Magnitude() > 6.5f)) {
+      moving = false;
+    }
+  }
+
+  CVector3f moveDelta = CVector3f::Zero();
+  if (mTouchingSpider && forceApplied) {
+    if (isSurface) {
+      moveDelta = 0.1f * viewSurfaceForces;
+    } else {
+      const float spiderTrackSign = CMath::Sign(spiderTrackForceMag);
+      moveDelta = mSpiderBetweenPoints.AsNormalized() * 0.1f * spiderTrackSign;
+    }
+  }
+
+  CVector3f ballPos = GetBallPosition() + moveDelta;
+  bool lockToCurrentTrack = false;
+  float distance = 0.f;
+  if (!moving && mTouchingSpider && 1.f == mSpiderPullMovement && !mSpiderSwingInAir) {
+    lockToCurrentTrack = true;
+  }
+
+  if (!lockToCurrentTrack) {
+    mSpiderNearby = false;
+    TUniqueId surfaceId = kInvalidUniqueId;
+    if (FindClosestSpiderBallWaypoint(mgr, ballPos, mSpiderTrackPoint, mSpiderInterpBetweenPoints,
+                                      mSpiderBetweenPoints, distance, mPlayerToSpiderNormal,
+                                      mSpiderSurfaceType, surfaceId, mSpiderSurfaceTransform)) {
+      mSpiderNearby = true;
+      mSpiderSwingInAir = false;
+      if (surfaceId != kInvalidUniqueId) {
+        if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(surfaceId))) {
+          platform->AddRider(mPlayer.GetUniqueId(), mgr,
+                             rstl::optional_object< float >(SpiderPlatformRiderDecayTime));
+        }
+      }
+
+      if (CMath::AbsF(CVector3f::Dot(mSpiderInterpBetweenPoints, mPlayerToSpiderNormal)) >
+              0.95f &&
+          mSpiderSurfaceType == kSST_CollisionSurface) {
+        mSpiderInterpBetweenPoints = mPlayer.GetTransform().GetColumn(kDY);
+      }
+    }
+  } else {
+    mPlayerToSpiderNormal = mSpiderTrackPoint - ballPos;
+    distance = mPlayerToSpiderNormal.Magnitude();
+    mPlayerToSpiderNormal *= 1.f / (-1.f * distance);
+    mSpiderNearby = true;
+  }
+
+  if (mSpiderNearby) {
+    if (distance < sBallCloseToCollisionDistance) {
+      mTouchingSpider = true;
+    }
+
+    const float angVelDamp = 0.2f;
+    if (mTouchingSpider == true) {
+      if (moving) {
+        if (!isSurface) {
+          mLinearVelocityDamping = 0.4f;
+          mAngularVelocityDamping = angVelDamp;
+
+          const CVector3f spiderInterpNorm = mSpiderInterpBetweenPoints.AsNormalized();
+          float viewControlMag = CVector3f::Dot(viewSurfaceForces, spiderInterpNorm);
+          if (continueTrackForce && !mSpiderForcesReset) {
+            viewControlMag = mSpiderViewControlMagnitude;
+          } else {
+            mSpiderViewControlMagnitude = viewControlMag;
+            mSpiderForcesReset = false;
+          }
+
+          float spiderForceMag;
+          if (CMath::AbsF(viewControlMag) > 0.1f) {
+            const float spiderTrackSign = CMath::Sign(viewControlMag);
+            spiderForceMag = spiderTrackSign * CMath::Clamp(-1.f, forceMag, 1.f);
+          } else {
+            spiderForceMag = 0.f;
+            ResetSpiderBallForces();
+          }
+
+          if (distance > 1.05f) {
+            spiderForceMag *= (1.05f - (distance - 1.05f)) / 1.05f;
+          }
+
+          mPlayer.ApplyForceWR(spiderForceMag * (mSpiderBetweenPoints.AsNormalized() * 90000.f),
+                               CAxisAngle::Identity());
+        } else {
+          mLinearVelocityDamping = 0.3f;
+          mAngularVelocityDamping = angVelDamp;
+
+          const float surfaceXDot =
+              CVector3f::Dot(mSpiderSurfaceTransform.GetColumn(kDX), viewSurfaceForces);
+          const float surfaceZDot =
+              CVector3f::Dot(mSpiderSurfaceTransform.GetColumn(kDZ), viewSurfaceForces);
+          const float signedXForce =
+              CMath::Sign(surfaceXDot) * CMath::AbsF(surfaceForces.GetX());
+          const float signedZForce =
+              CMath::Sign(surfaceZDot) * CMath::AbsF(surfaceForces.GetY());
+
+          float surfaceXForce;
+          if (CMath::AbsF(surfaceXDot) > 0.4f) {
+            surfaceXForce = signedXForce;
+          } else if (CMath::AbsF(surfaceXDot) > 0.1f) {
+            surfaceXForce = (CMath::AbsF(surfaceXDot) / 0.3f) * signedXForce;
+          } else {
+            surfaceXForce = 0.f;
+          }
+
+          float surfaceZForce;
+          if (CMath::AbsF(surfaceZDot) > 0.4f) {
+            surfaceZForce = signedZForce;
+          } else if (CMath::AbsF(surfaceZDot) > 0.1f) {
+            surfaceZForce = (CMath::AbsF(surfaceZDot) / 0.3f) * signedZForce;
+          } else {
+            surfaceZForce = 0.f;
+          }
+
+          const CVector3f forceVec =
+              45000.f * (surfaceXForce * mSpiderSurfaceTransform.GetColumn(kDX) +
+                         surfaceZForce * mSpiderSurfaceTransform.GetColumn(kDZ));
+          mPlayer.ApplyForceWR(forceVec, CAxisAngle::Identity());
+
+          const rstl::pair< float, float > pivotForces(45000.f * surfaceXForce,
+                                                       45000.f * surfaceZForce);
+          float angle = mSpiderSurfacePivotTargetAngle;
+          if (forceVec.MagSquared() > 0.f) {
+            angle = atan2f(pivotForces.first, pivotForces.second);
+            if (angle - mSpiderSurfacePivotAngle > M_PIF / 2.f) {
+              angle -= M_PIF;
+            } else if (mSpiderSurfacePivotAngle - angle > M_PIF / 2.f) {
+              angle += M_PIF;
+            }
+            mSpiderSurfacePivotTargetAngle = angle;
+          }
+
+          const float pivotDelta = angle - mSpiderSurfacePivotAngle;
+          const float absPivotDelta = CMath::AbsF(pivotDelta);
+          const float pivotStep = rstl::min_val(0.2f, absPivotDelta);
+          mSpiderSurfacePivotAngle = pivotStep * CMath::Sign(pivotDelta) + mSpiderSurfacePivotAngle;
+
+          const CRelAngle pivotAngle = CRelAngle::FromRadians(mSpiderSurfacePivotAngle);
+          const CTransform4f& rotateY = CTransform4f::RotateY(pivotAngle);
+          mSpiderInterpBetweenPoints = mSpiderSurfaceTransform.Rotate(rotateY.GetColumn(kDZ));
+        }
+      }
+
+      const float spiderPullForce = 8.f * (mPlayer.GetMass() * gpTweakBall->GetBallGravity());
+      mPlayer.ApplyForceWR(CVector3f(0.f, 0.f, (1.f - mSpiderPullMovement) * spiderPullForce),
+                           CAxisAngle::Identity());
+    } else {
+      mLinearVelocityDamping = 0.2f;
+      mAngularVelocityDamping = angVelDamp;
+    }
+
+    mPlayer.SetMomentumWR(
+        4.f * ((mPlayer.GetMass() * gpTweakBall->GetBallGravity()) * mPlayerToSpiderNormal));
+  }
 }
 
 void CMorphBall::ResetSpiderBallForces() {

@@ -204,6 +204,7 @@ public:
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
+  bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
@@ -730,7 +731,7 @@ private:
   bool x1268_26_ : 1;
   bool x1268_27_ : 1;
   bool x1268_28_ : 1;
-  bool x1268_29_ : 1;
+  bool mSpiderBallControlXY : 1; // Guessed name (Prime)
   bool x1268_30_ : 1;
   bool mInSafeZone : 1;
   bool x1269_24_ : 1;
