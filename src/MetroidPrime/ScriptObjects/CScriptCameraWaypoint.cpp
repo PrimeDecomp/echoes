@@ -1,6 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCameraWaypoint.hpp"
 
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -31,4 +32,10 @@ TUniqueId CScriptCameraWaypoint::NextWaypoint(CStateManager& mgr) const {
                                  CValidCameraWaypointPredicate());
 }
 
-CEntity* LoadCameraWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
+CEntity* LoadCameraWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrCameraWaypoint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrCameraWaypoint.inc"
+  return rs_new CScriptCameraWaypoint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                      LdrToEntityInfo(info, sldrThis.editorProperties),
+                                      LdrToTransform4f(sldrThis.editorProperties));
+}
