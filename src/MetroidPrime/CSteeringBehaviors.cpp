@@ -1,8 +1,13 @@
 #include "MetroidPrime/CSteeringBehaviors.hpp"
 
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "rstl/math.hpp"
+
+// Native polynomial solver used by the accelerated interception path.
+extern "C" int fn_802CB918(const float* coefficients, float* roots);
 
 CSteeringBehaviors::CSteeringBehaviors() : x0_(M_PIF / 2.f) {}
 
@@ -119,33 +124,168 @@ bool CSteeringBehaviors::ProjectLinearIntersection(const CVector3f& origin, floa
                                                    const CVector3f& velocity,
                                                    const CVector3f& acceleration,
                                                    CVector3f& intersection) {
-  // TODO: Use the shared quartic solver and evaluate the positive interception times.
-  return false;
+  const CVector3f delta = position - origin;
+  float coefficients[5];
+  coefficients[0] = delta.MagSquared();
+  coefficients[1] = 2.f * CVector3f::Dot(delta, velocity);
+  coefficients[2] = velocity.MagSquared() + CVector3f::Dot(delta, acceleration) - speed * speed;
+  coefficients[3] = CVector3f::Dot(velocity, acceleration);
+  coefficients[4] = 0.25f * acceleration.MagSquared();
+
+  float roots[4];
+  const int count = fn_802CB918(coefficients, roots);
+  bool found = false;
+  for (int i = 0; i < count; ++i) {
+    const float time = roots[i];
+    if (time > 0.f) {
+      found = true;
+      intersection = position + velocity * time + 0.5f * time * time * acceleration;
+    }
+  }
+  return found;
 }
 
-bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, float speed,
-                                                    float dt, const CVector3f& position,
+bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, float speed, float dt,
+                                                    const CVector3f& position,
                                                     const CVector3f& velocity,
                                                     const CVector3f& orbitPoint,
                                                     CVector3f& intersection) {
-  // TODO: Step the radial/tangential motion and test projectile arrival time.
+  if (speed > 0.f) {
+    if (velocity.CanBeNormalized()) {
+      CVector3f radial((position - orbitPoint).DropZ());
+      if (radial.CanBeNormalized()) {
+        CVector3f currentPosition = position;
+        CVector3f currentVelocity = velocity;
+        CVector3f delta = currentPosition - origin;
+        float travelTime = delta.Magnitude() / speed;
+        float elapsed = 0.f;
+        float previousRemaining = FLT_MAX;
+        float remaining = travelTime - elapsed;
+        CVector3f radialUnit = radial.AsNormalized();
+        CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+        float tangentialSpeed = CVector3f::Dot(currentVelocity, tangent);
+        float radialSpeed = CVector3f::Dot(currentVelocity, radialUnit);
+
+        while (remaining < previousRemaining && elapsed < 4.f) {
+          if (close_enough(remaining, dt) || remaining < 0.f) {
+            intersection = currentPosition;
+            return true;
+          }
+
+          currentPosition += dt * currentVelocity;
+          previousRemaining = remaining;
+          radial = (currentPosition - orbitPoint).DropZ();
+          if (!radial.CanBeNormalized()) {
+            break;
+          }
+
+          radialUnit = radial.AsNormalized();
+          CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+          currentVelocity = tangentialSpeed * tangent + radialSpeed * radialUnit;
+          delta = currentPosition - origin;
+          travelTime = delta.Magnitude() / speed;
+          elapsed += dt;
+          remaining = travelTime - elapsed;
+        }
+      } else {
+        return ProjectLinearIntersection(origin, speed, position, velocity, intersection);
+      }
+    } else {
+      intersection = position;
+      return true;
+    }
+  }
   return false;
 }
 
-bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, float speed,
-                                                    float dt, const CVector3f& position,
+bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, float speed, float dt,
+                                                    const CVector3f& position,
                                                     const CVector3f& velocity,
                                                     const CVector3f& acceleration,
                                                     const CVector3f& orbitPoint,
                                                     CVector3f& intersection) {
-  // TODO: Include acceleration in orbital stepping and the linear fallback.
-  return false;
+  bool found = false;
+  if (speed > 0.f) {
+    CVector3f radial((position - orbitPoint).DropZ());
+    if (velocity.CanBeNormalized() && radial.CanBeNormalized()) {
+      CVector3f currentPosition = position;
+      CVector3f currentVelocity = velocity;
+      CVector3f delta = currentPosition - origin;
+      float travelTime = delta.Magnitude() / speed;
+      float elapsed = 0.f;
+      float previousRemaining = FLT_MAX;
+      float remaining = travelTime - elapsed;
+      CVector3f radialUnit = radial.AsNormalized();
+      CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+      float tangentialSpeed = CVector3f::Dot(currentVelocity, tangent);
+      float radialSpeed = CVector3f::Dot(currentVelocity, radialUnit);
+
+      while (remaining < previousRemaining && elapsed < 4.f) {
+        if (close_enough(remaining, dt) || remaining < 0.f) {
+          intersection = currentPosition;
+          found = true;
+          break;
+        }
+
+        currentPosition += dt * currentVelocity;
+        previousRemaining = remaining;
+        delta = currentPosition - origin;
+        travelTime = delta.Magnitude() / speed;
+        elapsed += dt;
+        remaining = travelTime - elapsed;
+        radial = (currentPosition - orbitPoint).DropZ();
+        if (!radial.CanBeNormalized()) {
+          break;
+        }
+
+        radialUnit = radial.AsNormalized();
+        CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+        currentVelocity = CVector3f(0.f, 0.f, currentVelocity.GetZ()) + dt * acceleration;
+        currentVelocity += tangentialSpeed * tangent + radialSpeed * radialUnit;
+      }
+    } else {
+      return ProjectLinearIntersection(origin, speed, position, velocity, acceleration,
+                                       intersection);
+    }
+  }
+
+  const bool result = found;
+  return result;
 }
 
 CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
                                                      const CVector3f& velocity,
                                                      const CVector3f& orbitPoint, float dt,
                                                      float preThinkDt) {
-  // TODO: Advance the position while preserving radial and tangential velocity components.
-  return position;
+  CVector3f currentPosition = position;
+  if (velocity.CanBeNormalized()) {
+    CVector3f radial((position - orbitPoint).DropZ());
+    if (radial.CanBeNormalized()) {
+      CVector3f currentVelocity = velocity;
+      float elapsed = 0.f;
+      CVector3f radialUnit = radial.AsNormalized();
+      CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+      float tangentialSpeed = CVector3f::Dot(currentVelocity, tangent);
+      float radialSpeed = CVector3f::Dot(currentVelocity, radialUnit);
+
+      while (elapsed < dt) {
+
+        currentPosition += preThinkDt * currentVelocity;
+        radial = (currentPosition - orbitPoint).DropZ();
+        if (radial.CanBeNormalized()) {
+
+          radialUnit = radial.AsNormalized();
+          CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
+          currentVelocity = tangentialSpeed * tangent + radialSpeed * radialUnit;
+        }
+
+        float step = dt - elapsed;
+        if (step > preThinkDt) {
+          step = preThinkDt;
+        }
+        elapsed += step;
+      }
+    }
+  }
+  return currentPosition;
 }
