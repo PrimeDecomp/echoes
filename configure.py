@@ -388,6 +388,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Startup.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CControlMapper.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CObjectList.cpp"),
+            Object(NonMatching, "MetroidPrime/CFilteredObjectList.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CAxisAngle.cpp"),
             Object(NonMatching, "MetroidPrime/CEulerAngles.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CMatrix3f_Ext.cpp"),
