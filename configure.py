@@ -1401,7 +1401,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
-            Object(NonMatching, "Dolphin/os/__start.c"),
+            Object(MatchingFor("G2ME01"), "Dolphin/os/__start.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/__ppc_eabi_init.cpp"),
         ],
     ),
