@@ -1166,7 +1166,7 @@ config.libs = [
         "progress_category": "sdk",
         "host": False,
         "objects": [
-            Object(NonMatching, "MetroTRK/mslsupp.c"),
+            Object(Matching, "MetroTRK/mslsupp.c"),
         ],
     },
     {
