@@ -771,6 +771,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/BodyState/CABSFlinch.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CABSAim.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CABSReaction.cpp"),
+            Object(NonMatching, "MetroidPrime/BodyState/CABSLoopReaction.cpp"),
             Object(NonMatching, "MetroidPrime/CActor.cpp"),
             Object(NonMatching, "MetroidPrime/CEchoEmitter.cpp"),
             Object(NonMatching, "MetroidPrime/SwarmRenderHelpers.cpp"),
