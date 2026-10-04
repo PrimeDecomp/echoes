@@ -10,9 +10,6 @@
 #include "dolphin/os.h"
 
 extern "C" void fn_8029AF00(int, uchar);
-extern "C" rstl::pair< bool, bool > fn_80227694();
-extern "C" void fn_802275B8(rstl::pair< bool, bool >&, CBitStreamWriter& out);
-extern "C" rstl::pair< bool, bool > fn_80227624(CBitStreamReader& in);
 
 extern "C" bool lbl_804191E0;
 
@@ -63,7 +60,7 @@ CGameOptions::CGameOptions()
 , swapBeamsControls(false)
 , hintSystem(true)
 , unk(false)
-, unk2(fn_80227694())
+, mPlayerOptions(CPlayerOptions())
 
 {
   InitSoundMode();
@@ -107,7 +104,7 @@ CGameOptions::CGameOptions(CBitStreamReader& in)
   unk = in.ReadBits(1);
 
   for (int i = 0; i < 4; ++i) {
-    unk2.push_back(fn_80227624(in));
+    mPlayerOptions.push_back(CPlayerOptions(in));
   }
 
   InitSoundMode();
@@ -132,9 +129,9 @@ void CGameOptions::PutTo(CBitStreamWriter& out) {
   out.WriteBits(unk != 0, 1);
 
   int i = 0;
-  rstl::pair< bool, bool >* data = unk2.data();
+  CPlayerOptions* data = mPlayerOptions.data();
   for (; i < 4; ++i) {
-    fn_802275B8(*data, out);
+    data->PutTo(out);
     ++data;
   }
 }

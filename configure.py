@@ -633,6 +633,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CBoneTracking.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Player/CFaceplateDecoration.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGameOptions.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerOptions.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerStuckTracker.cpp"),
             Object(NonMatching, "MetroidPrime/CEnvFxManager.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRumbleManager.cpp"),
