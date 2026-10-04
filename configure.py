@@ -734,6 +734,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CAmbientAI.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAi.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CStateMachine.cpp"),
+            # Provisional owner of header-defined delay virtuals; no forced instantiation.
+            Object(NonMatching, "MetroidPrime/TStateMachineState.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/SPositionHistory.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CGenericFSM2.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTextPane.cpp"),
