@@ -3,6 +3,7 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
@@ -42,6 +43,8 @@
 #include "MetroidPrime/ScriptLoader/SLdrSpecialFunction.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSpinner.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptActorRotate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
@@ -1326,7 +1329,169 @@ void CScriptSpecialFunction::ThinkPlayerFollowLocator(float dt, CStateManager& m
 
 void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr,
                                                     ESpinnerControllerMode mode) {
-  // TODO: update spinner progress, connected actors and its sound emitter.
+  const ushort sfx1 = mSfx1;
+  const ushort sfx3 = mSfx3;
+  const float value1 = mValue1;
+  const float value2 = mValue2;
+  const float value4 = mValue4;
+  if (mgr.IsMultiplayer()) {
+    return;
+  }
+  if (!mSpinnerCanMove && mSfx2Played) {
+    return;
+  }
+
+  const bool allowWrap = (mIntParm1 & 1) != 0;
+  const bool noBackward = (mIntParm1 & 2) != 0;
+  const bool splineControl = (mIntParm1 & 4) != 0;
+  if (mSfx3Played && !allowWrap) {
+    return;
+  }
+
+  rstl::vector< TUniqueId > ids;
+  {
+    rstl::vector< TUniqueId > platforms(FindConnectedObjects(mgr, kSS_Play, kSM_Activate));
+    rstl::vector< TUniqueId > rotators(FindConnectedObjects(mgr, kSS_Connect, kSM_Attach));
+    ids.reserve(platforms.size() + rotators.size());
+    ids.insert(ids.begin(), platforms.begin(), platforms.end());
+    ids.insert(ids.end(), rotators.begin(), rotators.end());
+  }
+
+  const float decay = 0.1f * dt * value2;
+  const float previous = mSpinnerPosition;
+
+  if (mode == kSCM_Spinner) {
+    if (mSpinnerCanMove) {
+      CPlayer* player = mgr.GetPlayer(0);
+      const CPlayer::EPlayerMorphBallState morphState =
+          player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+              ? player->GetMorphballTransitionState()
+              : CPlayer::kMS_Unmorphed;
+      bool isMorphed = morphState == CPlayer::kMS_Morphed;
+      const CVector3f angVel = player->GetAngularVelocityOR().GetVector();
+      float mag = angVel.CanBeNormalized() ? angVel.Magnitude() : 0.f;
+      const float spinImpulse = isMorphed ? 0.025f * mag : 0.f;
+      if (spinImpulse > mPreviousSpinnerSpeed) {
+        SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+      }
+
+      mPreviousSpinnerSpeed = spinImpulse;
+      mSpinnerPosition += 0.01f * spinImpulse * value1;
+
+      if (!noBackward) {
+        mSpinnerPosition -= decay;
+      }
+    } else if (!noBackward) {
+      mSpinnerPosition = previous - 2.f * dt;
+    }
+  } else if (mode == kSCM_ShotSpinner) {
+    mSpinnerPosition = (0.01f * mShotSpinnerImpulse) * value1 + previous;
+
+    if (!noBackward) {
+      mSpinnerPosition -= decay;
+
+      if (CMath::AbsF(mShotSpinnerImpulse) < dt) {
+        mShotSpinnerImpulse = 0.f;
+      } else {
+        mShotSpinnerImpulse = -(dt * CMath::Sign(mShotSpinnerImpulse) - mShotSpinnerImpulse);
+      }
+    }
+  }
+
+  if (allowWrap) {
+    mSpinnerPosition = fmod(mSpinnerPosition, 1.0);
+    if (mSpinnerPosition < 0.f) {
+      mSpinnerPosition += 1.f;
+    }
+  } else {
+    mSpinnerPosition = rstl::min_val(1.f, rstl::max_val(0.f, mSpinnerPosition));
+  }
+
+  bool noSfxPlayed = true;
+  const float movementDelta = mSpinnerPosition - previous;
+  if (close_enough(mSpinnerPosition, 1.f)) {
+    mSpinnerPosition = 1.f;
+    if (!mSfx3Played) {
+      if (sfx3 != CSfxManager::kInternalInvalidSfxId) {
+        CSfxManager::AddEmitter(sfx3, GetTranslation(), GetCurrentAreaId().Value(), true, false);
+      }
+
+      mSfx3Played = true;
+    }
+
+    SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+    noSfxPlayed = false;
+  } else {
+    mSfx3Played = false;
+  }
+
+  if (close_enough(mSpinnerPosition, 0.f)) {
+    mSpinnerPosition = 0.f;
+    if (!mSfx2Played) {
+      mSfx2Played = true;
+    }
+
+    SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+    noSfxPlayed = false;
+  } else {
+    mSfx2Played = false;
+  }
+
+  rstl::optional_object< float > previousAverage = mVolumeAverage.GetAverage();
+
+  if (noSfxPlayed) {
+    if (sfx1 != CSfxManager::kInternalInvalidSfxId) {
+      bool movingForward = movementDelta >= 0.f;
+      if (noSfxPlayed) {
+        mVolumeAverage.AddValue(movingForward ? uchar(100) : uchar(0x7f));
+      } else {
+        mVolumeAverage.AddValue(0.f);
+      }
+      const rstl::optional_object< float >& volume = mVolumeAverage.GetAverage();
+      float pitch = movingForward ? value4 : 1.f;
+      AddOrUpdateEmitter(pitch, 0.f, 1.f, mSfxHandle, sfx1, GetTranslation(),
+                         static_cast< uchar >(volume.data()));
+    }
+  } else {
+    DeleteEmitter(mSfxHandle);
+  }
+
+  for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+    CScriptPlatform* plat = TCastToPtr< CScriptPlatform >(mgr.ObjectById(*it));
+    CScriptActorRotate* rot = TCastToPtr< CScriptActorRotate >(mgr.ObjectById(*it));
+    if (plat) {
+      plat->SetControlledAnimation(true);
+      if (!mSpinnerInitializedXf) {
+        mSpinnerInitialXf = plat->GetTransform();
+        mSpinnerInitializedXf = true;
+      }
+
+      if (splineControl) {
+        plat->SetMotionTime(mSpinnerPosition * plat->GetMotionDuration(), mgr);
+      } else {
+        const CAnimData* animData = plat->GetAnimationData();
+        const float dur =
+            mSpinnerPosition * animData->GetAnimationDuration(animData->GetCurrentAnimation());
+        plat->AnimationData()->SetPhase(0.f);
+        plat->AnimationData()->SetPlaybackRate(1.f);
+        CAdvancementDeltas deltas = plat->UpdateAnimation(dur, mgr, true);
+        plat->SetTransform(mSpinnerInitialXf * deltas.GetOrientationDelta().BuildTransform4f(
+                                                   deltas.GetOffsetDelta()));
+      }
+    }
+
+    if (rot) {
+      rot->SetExternalTime();
+      if (!rot->IsPlaying()) {
+        rot->UpdateActors(false, mgr);
+      }
+      rot->SetCurrentTime(mSpinnerPosition * rot->GetDuration());
+      if (mSfx3Played || (mSfx2Played && !mSpinnerCanMove)) {
+        rot->UpdateActorRotations(dt, mgr);
+        rot->StopRotation();
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowLocator(float dt, CStateManager& mgr) {

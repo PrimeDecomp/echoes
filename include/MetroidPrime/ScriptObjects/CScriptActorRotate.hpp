@@ -36,6 +36,10 @@ public:
   void SetActorTransforms(const CTransform4f& xf);         // Guessed name.
   void UpdateActorRotations(float dt, CStateManager& mgr); // Guessed name.
   void CheckEnd(CStateManager& mgr);                       // Guessed name.
+  // Guessed names.
+  void SetExternalTime() { mFlags |= kF_ExternalTime; }
+  bool IsPlaying() const { return mPlaying; }
+  float GetDuration() const { return mDuration; }
 
 private:
   float mDuration;
