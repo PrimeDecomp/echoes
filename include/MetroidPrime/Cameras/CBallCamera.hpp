@@ -70,6 +70,7 @@ public:
   const CVector3f& GetLookPosAhead() const { return mLookPosAhead; }
   float GetDistance() const { return mCurMinDistance; }
   float GetElevation() const { return mElevation; }
+  float GetTargetAnglePerSecond() const { return mTargetAnglePerSecond; }
   EBallCameraState GetState() const { return mState; }
   EBallCameraBehaviour GetBehaviourType() const { return mBehaviour; }
   TUniqueId GetTooCloseActorId() const { return mTooCloseActorId; }
