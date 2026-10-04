@@ -11,6 +11,7 @@
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Particles/CDeferredParticleEffect.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
@@ -998,10 +999,94 @@ bool CMorphBall::UpdateMarbleDynamics(CStateManager& mgr, float dt, const CVecto
   return aligned;
 }
 
-// Scaffold, not a reconstructed implementation.
+static EMaterialTypes BoostDamageMaterial = kMT_Unknown59; // Guessed name
+
 void CMorphBall::ApplyBoostBallDamage(CStateManager& mgr, TUniqueId id, const CDamageInfo& damage,
                                       float dt) {
-  // TODO: Filter already-hit actors, scale damage and update the cooldown/history.
+  if (rstl::find(mBoostDamagedObjects.begin(), mBoostDamagedObjects.end(), id) !=
+      mBoostDamagedObjects.end()) {
+    return;
+  }
+
+  CDamageInfo boostDamage(damage);
+  boostDamage.SetDamage(mBoostDamageScale * boostDamage.GetDamage());
+  const bool boosting = IsBoosting();
+  const bool hasCannonBall =
+      mPlayer.GetPlayerState()->GetItemAmount(CPlayerState::kIT_CannonBall, true) != 0;
+
+  if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
+    const TUniqueId playerId = mPlayer.GetUniqueId();
+    if (CPhysicsActor* physAct = TCastToPtr< CPhysicsActor >(mgr.ObjectById(id))) {
+      const CVector3f playerVelocity = mPlayer.GetVelocityWR();
+      const CVector3f relVelocity = playerVelocity - physAct->GetVelocityWR();
+      const float relSpeed = relVelocity.Magnitude();
+      const float playerSpeed = playerVelocity.Magnitude();
+      const CVector3f hitDir =
+          close_enough(relSpeed, 0.f) ? CVector3f::Zero() : relVelocity * (1.f / relSpeed);
+
+      bool canDamage = relSpeed > gpTweakBall->GetBoostBallMinRelativeSpeedForDamage();
+      bool slowHit = false;
+      if (relSpeed < gpTweakBall->GetBoostBallMinRelativeSpeedForDamage() && playerSpeed < 10.f) {
+        slowHit = true;
+      }
+
+      canDamage |= slowHit;
+      if (canDamage) {
+        CPlayer* otherPlayer = TCastToPtr< CPlayer >(physAct);
+        const float knockBackSpeed = gpTweakBall->GetBoostBallCollisionKnockBackSpeed();
+        if (otherPlayer) {
+          bool shielded = false;
+          const bool otherMorphed =
+              otherPlayer->GetMorphballTransitionState() == CPlayer::kMS_Morphed;
+          if (otherPlayer->GetMorphBall()->IsBoostShieldActive() && !hasCannonBall) {
+            shielded = true;
+          }
+
+          if (!otherMorphed || !shielded) {
+            mgr.ApplyDamage(playerId, physAct->GetUniqueId(), playerId, boostDamage,
+                            CMaterialFilter(), relVelocity);
+            const bool otherHasCannonBall = otherPlayer->GetPlayerState()->GetItemAmount(
+                                                CPlayerState::kIT_CannonBall, true) != 0;
+            if (otherHasCannonBall) {
+              mgr.ApplyDamage(physAct->GetUniqueId(), playerId, physAct->GetUniqueId(), boostDamage,
+                              CMaterialFilter(), -relVelocity);
+            }
+          }
+
+          if (otherMorphed && !hasCannonBall && playerSpeed > 10.f) {
+            const float volumeFactor = CMath::Limit((playerSpeed - 10.f) / 30.f, 1.f);
+            const int volume = static_cast< int >(volumeFactor * 107.f + 20.f);
+            CSfxManager::SfxStart(0x468, volume, mPlayer.GetSoundPan(CPlayer::kMSP_4));
+          }
+
+          if (boosting) {
+            if (otherMorphed) {
+              const float hitSpeed = shielded
+                                         ? knockBackSpeed
+                                         : gpTweakBall->GetBoostBallHitPlayerBallKnockBackSpeed();
+              otherPlayer->SetVelocityWR(hitSpeed * hitDir + CVector3f(0.f, 0.f, hitSpeed * 0.5f));
+            } else {
+              otherPlayer->SetVelocityWR(gpTweakBall->GetBoostBallHitPlayerFPKnockBackSpeed() *
+                                         hitDir);
+            }
+            otherPlayer->SetMinimalAccelerationTimer(0.25f);
+            mPlayer.SetVelocityWR(-knockBackSpeed * hitDir + CVector3f(0.f, 0.f, knockBackSpeed));
+            CancelBoosting();
+          }
+        } else {
+          mgr.ApplyDamage(playerId, physAct->GetUniqueId(), playerId, boostDamage,
+                          CMaterialFilter(), relVelocity);
+        }
+      }
+    } else {
+      mgr.ApplyDamage(
+          playerId, actor->GetUniqueId(), playerId, boostDamage,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(BoostDamageMaterial), CMaterialList()),
+          CVector3f::Zero());
+    }
+  }
+
+  mBoostDamagedObjects.push_back(id);
 }
 
 void CMorphBall::CancelBoosting() {
