@@ -5,6 +5,7 @@
 #include "MetroidPrime/CEntityInfo.hpp"
 
 class CEntity;
+class CMaterialFilter;
 class CStateManager;
 class CTransform4f;
 
@@ -37,6 +38,8 @@ CHECK_SIZEOF(CScriptCameraSpline, 0x1b8)
 
 // Guessed helper names/scope. Shared waypoint traversal is implemented in a separate TU.
 namespace ScriptCameraSpline {
+float ClampLength(const CMotionSpline& spline, const CVector3f& position, bool checkObstructions,
+                  const CMaterialFilter& filter, const CStateManager& mgr);
 void CollectWaypoints(const CEntity& entity, EScriptObjectState state, EScriptObjectMessage message,
                       rstl::vector< CVector3f >& positions,
                       rstl::vector< CQuaternion >& orientations, CStateManager& mgr);
