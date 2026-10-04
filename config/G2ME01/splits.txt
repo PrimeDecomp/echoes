@@ -1521,6 +1521,12 @@ MetroidPrime/Cameras/CCameraShakerManager.cpp:
 	.data       start:0x803B7670 end:0x803B7680
 	.sdata2     start:0x8041D46C end:0x8041D4A8 align:4
 
+MetroidPrime/ScriptObjects/CScriptAIWaypoint.cpp:
+	.text       start:0x801E8558 end:0x801E8874
+	.rodata     start:0x803AB190 end:0x803AB198
+	.data       start:0x803B7680 end:0x803B7708
+	.sdata2     start:0x8041D4A8 end:0x8041D4B0
+
 MetroidPrime/CSafeZoneManager.cpp:
 	.text       start:0x801EA9AC end:0x801EB64C
 	.sdata2     start:0x8041D4E0 end:0x8041D4F8

@@ -436,6 +436,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CPortalAreaData.cpp"),
             Object(NonMatching, "MetroidPrime/CPortalArea.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/ScriptCameraSpline.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAIWaypoint.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileToken.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileManager.cpp"),
             Object(NonMatching, "Collision/CCollidableAABox.cpp"),
