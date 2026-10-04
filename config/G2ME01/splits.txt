@@ -1544,6 +1544,18 @@ MetroidPrime/ScriptObjects/CScriptAIWaypoint.cpp:
 	.data       start:0x803B7680 end:0x803B7708
 	.sdata2     start:0x8041D4A8 end:0x8041D4B0
 
+MetroidPrime/Cameras/CSurfaceCamera.cpp:
+	.text       start:0x801E8874 end:0x801E979C
+	.rodata     start:0x803AB198 end:0x803AB1A8
+	.data       start:0x803B7708 end:0x803B7798
+	.sdata2     start:0x8041D4B0 end:0x8041D4D8
+
+MetroidPrime/ScriptObjects/CScriptSurfaceCamera.cpp:
+	.text       start:0x801E979C end:0x801EA9AC
+	.rodata     start:0x803AB1A8 end:0x803AB1B0
+	.data       start:0x803B7798 end:0x803B7818
+	.sdata2     start:0x8041D4D8 end:0x8041D4E0
+
 MetroidPrime/CSafeZoneManager.cpp:
 	.text       start:0x801EA9AC end:0x801EB64C
 	.sdata2     start:0x8041D4E0 end:0x8041D4F8

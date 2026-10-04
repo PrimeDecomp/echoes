@@ -32,6 +32,7 @@ public:
   CCameraManager(TUniqueId curCamera, int playerIndex);
 
   CHintManager* HintManager() { return mCameraHintManager; }
+  const CHintManager* GetHintManager() const { return mCameraHintManager; }
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
   CBallCamera* BallCamera() { return mBallCamera; }

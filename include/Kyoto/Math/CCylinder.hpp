@@ -8,6 +8,8 @@
 // Class name and PointInside are Echoes Wii SEL exports; the other method names are guessed.
 class CCylinder {
 public:
+  CCylinder(const CLine& axis, float radius) : mAxis(axis), mRadius(radius) {}
+
   bool PointInside(const CVector3f& point) const;
   CVector3f GetSurfacePoint(const CVector3f& point) const;
   CVector3f GetAxisPoint(CVector3f point) const;
