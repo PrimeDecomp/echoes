@@ -1,7 +1,7 @@
 #ifndef _CSCRIPTPLATFORM
 #define _CSCRIPTPLATFORM
 
-#include "Kyoto/Math/CMayaSpline.hpp"
+#include "Kyoto/Math/CGameSplineDesc.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -11,17 +11,8 @@
 class COBBTreeGroup;
 class CFluidPlane;
 
-// Guessed name: an owned control spline, its timing parameters and mode.
-struct SPlatformMotionSpline {
-  CMayaSpline mSpline;
-  float mInitialTime;
-  float mDuration;
-  bool x4c_;
-};
-CHECK_SIZEOF(SPlatformMotionSpline, 0x50)
-
-// Guessed names; the two polymorphic motion helpers remain unscaffolded.
-class CPlatformSplineController;
+class CGameSpline;
+// Guessed name; the owned waypoint helper remains incompletely scaffolded.
 class CPlatformWaypointTracker;
 
 struct SRiders {
@@ -36,16 +27,16 @@ CHECK_SIZEOF(SRiders, 0x3c)
 
 class CScriptPlatform : public CPhysicsActor {
 public:
-  CScriptPlatform(
-      TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
-      const CModelData& model, const CActorParameters& params, const CAABox& bounds,
-      const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
-      const CHealthInfo& health, const CDamageVulnerability& vulnerability,
-      const CMaterialList& materials, bool detectCollision, uint maxRainSplashes, uint rainGenRate,
-      const SPlatformMotionSpline& motionSpline, uint motionFlags,
-      const CVector3f& conveyorVelocity, const CMayaSpline& rollSpline,
-      const CMayaSpline& yawSpline, const CMayaSpline& pitchSpline, float initialTime,
-      float xrayAlpha);
+  CScriptPlatform(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                  const CTransform4f& xf, const CModelData& model, const CActorParameters& params,
+                  const CAABox& bounds,
+                  const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
+                  const CHealthInfo& health, const CDamageVulnerability& vulnerability,
+                  const CMaterialList& materials, bool renderRainSplashes, uint maxRainSplashes,
+                  uint rainGenRate, const CGameSplineDesc& motionSpline, uint motionFlags,
+                  const CVector3f& conveyorVelocity, const CMayaSpline& rollSpline,
+                  const CMayaSpline& yawSpline, const CMayaSpline& pitchSpline, float initialTime,
+                  float randomAnimationOffset);
 
   // CEntity
   ~CScriptPlatform() override;
@@ -135,8 +126,8 @@ private:
   uint mMaxRainSplashes;
   uint mRainGenRate;
   TUniqueId mBoundsTrigger;
-  rstl::single_ptr< SPlatformMotionSpline > mMotionSpline;
-  CPlatformSplineController* mSplineController; // Owned; cleanup awaits the helper's interface.
+  rstl::single_ptr< CGameSplineDesc > mMotionSpline;
+  CGameSpline* mSplineController; // Owned; existing cleanup remains to be recovered.
   float mMotionTime;
   uint mMotionFlags;
   float mInitialTime;
@@ -148,11 +139,11 @@ private:
   TUniqueId x450_;
   TUniqueId x452_;
   TUniqueId mLookAtTarget;
-  float mXrayAlpha;
+  float mRandomAnimationOffset;
   CTransform4f mInitialTransform;
   bool mDead : 1;
   bool mControlledAnimation : 1;
-  bool mDetectCollision : 1;
+  bool mRenderRainSplashes : 1;
   bool mSquishedRider : 1;
   bool mMotionActive : 1;
   bool mPassedMotionEnd : 1;

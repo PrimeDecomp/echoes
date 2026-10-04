@@ -2,17 +2,23 @@
 
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+#include "Kyoto/CResFactory.hpp"
+#include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Math/CMath.hpp"
 
 CScriptPlatform::CScriptPlatform(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CModelData& model, const CActorParameters& params, const CAABox& bounds,
-    const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln,
-    const CHealthInfo& health, const CDamageVulnerability& vulnerability,
-    const CMaterialList& materials, bool detectCollision, uint maxRainSplashes, uint rainGenRate,
-    const SPlatformMotionSpline& motionSpline, uint motionFlags, const CVector3f& conveyorVelocity,
+    const rstl::optional_object< TLockedToken< COBBTreeGroup > >& dcln, const CHealthInfo& health,
+    const CDamageVulnerability& vulnerability, const CMaterialList& materials,
+    bool renderRainSplashes, uint maxRainSplashes, uint rainGenRate,
+    const CGameSplineDesc& motionSpline, uint motionFlags, const CVector3f& conveyorVelocity,
     const CMayaSpline& rollSpline, const CMayaSpline& yawSpline, const CMayaSpline& pitchSpline,
-    float initialTime, float xrayAlpha)
+    float initialTime, float randomAnimationOffset)
 : CPhysicsActor(uid, name, info, 0, xf, model, materials, bounds, SMoverData(15000.f), params,
                 StepData(0.f, 0.f, 0))
 , mMoveDelay(0.f)
@@ -31,12 +37,12 @@ CScriptPlatform::CScriptPlatform(
 , mMaxRainSplashes(maxRainSplashes)
 , mRainGenRate(rainGenRate)
 , mBoundsTrigger(kInvalidUniqueId)
-, mMotionSpline(rs_new SPlatformMotionSpline(motionSpline))
+, mMotionSpline(rs_new CGameSplineDesc(motionSpline))
 , mSplineController(nullptr)
 , mMotionTime(0.f)
 , mMotionFlags(motionFlags)
 , mInitialTime(initialTime)
-, mMotionDuration(motionSpline.mDuration)
+, mMotionDuration(motionSpline.GetDuration())
 , mWaypointTracker(nullptr)
 , mRollSpline(rollSpline.GetKnotCount() ? rs_new CMayaSpline(rollSpline) : nullptr)
 , mYawSpline(yawSpline.GetKnotCount() ? rs_new CMayaSpline(yawSpline) : nullptr)
@@ -44,11 +50,11 @@ CScriptPlatform::CScriptPlatform(
 , x450_(kInvalidUniqueId)
 , x452_(kInvalidUniqueId)
 , mLookAtTarget(kInvalidUniqueId)
-, mXrayAlpha(xrayAlpha)
+, mRandomAnimationOffset(randomAnimationOffset)
 , mInitialTransform(xf)
 , mDead(false)
 , mControlledAnimation(false)
-, mDetectCollision(detectCollision)
+, mRenderRainSplashes(renderRainSplashes)
 , mSquishedRider(false)
 , mMotionActive(false)
 , mPassedMotionEnd(false)
@@ -281,4 +287,51 @@ CQuaternion CScriptPlatform::CalculateRotationDelta() {
 
 void CScriptPlatform::fn_800a0200(float time, CStateManager& mgr) {
   // TODO: restore initial orientation and clamp the spline time.
+}
+
+CEntity* LoadPlatform(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPlatform sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPlatform.inc"
+  const rstl::optional_object< CModelData > model =
+      LdrToModelData(sldrThis.editorProperties.transform.scale, sldrThis.model,
+                     sldrThis.animationInformation, true);
+  if (!model.valid()) {
+    return nullptr;
+  }
+
+  CAABox bounds =
+      LoadCAABox(mgr, info.GetAreaId(), sldrThis.collisionBox, sldrThis.collisionOffset);
+  if (sldrThis.collisionBox == CVector3f::Zero()) {
+    bounds = model->GetBounds(LdrToTransform4f(sldrThis.editorProperties).GetRotation());
+  }
+
+  rstl::optional_object< TLockedToken< COBBTreeGroup > > dcln;
+  if (gpResourceFactory->GetResourceTypeById(sldrThis.collisionModel) != 0) {
+    dcln = TLockedToken< COBBTreeGroup >(
+        gpSimplePool->GetObj(SObjectTag('DCLN', sldrThis.collisionModel)));
+  }
+
+  const SLdrPlatformMotionProperties& motion = sldrThis.motionProperties;
+  float duration = motion.motionSplineDuration;
+  if (CMath::IsEpsilon(duration, 0.f, 0.00001f)) {
+    duration = motion.motionControlSpline.GetDuration();
+  }
+  const CGameSplineDesc spline(
+      motion.motionControlSpline,
+      static_cast< CMotionSpline::ESplineType >(motion.motionSplineType.type), duration,
+      (motion.motionFlagsPlatformMotion & 1) != 0);
+  CMaterialList materials(kMT_Unknown59, kMT_Immovable, kMT_Platform, kMT_Occluder);
+  if (sldrThis.unknown_0xf203bc81) {
+    materials.Add(kMT_ExcludeFromLineOfSightTest);
+  }
+
+  return rs_new CScriptPlatform(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      *model, LdrToActorParameters(sldrThis.actorInformation), bounds, dcln,
+      LdrToHealthInfo(sldrThis.health), LdrToDamageVulnerability(sldrThis.vulnerability), materials,
+      sldrThis.renderRainSplashes, sldrThis.maximumSplashes, sldrThis.splashGenerationRate, spline,
+      motion.motionFlagsPlatformMotion, sldrThis.conveyorBeltVelocity, motion.rollControlSpline,
+      motion.yawControlSpline, motion.pitchControlSpline, motion.initialTime,
+      sldrThis.randomAnimationOffset);
 }

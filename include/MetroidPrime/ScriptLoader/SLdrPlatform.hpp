@@ -104,6 +104,9 @@ struct SLdrPlatform {
 };
 
 inline SLdrPlatform::SLdrPlatform() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), model(kInvalidAssetId), animationInformation(), actorInformation(), collisionModel(kInvalidAssetId), health(), vulnerability(), motionProperties(), conveyorBeltVelocity(CVector3f::Zero()) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   xRayTransparency = 1.0f;
   maximumSplashes = 200;
   splashGenerationRate = 20;
