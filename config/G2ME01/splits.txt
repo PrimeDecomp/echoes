@@ -1338,6 +1338,9 @@ MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
 	.text       start:0x801B730C end:0x801B73E4
 	.sdata2     start:0x8041CEC8 end:0x8041CED0 align:4
 
+MetroidPrime/Enemies/CAnimationState.cpp:
+	.text       start:0x801B73E4 end:0x801B742C
+
 MetroidPrime/Enemies/CWaypointNavigation.cpp:
 	.text       start:0x801B742C end:0x801B7F44
 	.data       start:0x803B6900 end:0x803B6910
