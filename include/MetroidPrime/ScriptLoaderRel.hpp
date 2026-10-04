@@ -212,4 +212,246 @@ void LoadTweaks(CInputStream&);
 void CreateTweakGlobals();
 void FreeTweaks();
 
+struct SScriptRubiksPuzzle_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SScriptRubiksPuzzle_FuncPtrs, 0x4)
+void SetSScriptRubiksPuzzle_FuncPtrs(SScriptRubiksPuzzle_FuncPtrs* callbacks);
+
+struct SAtomicBeta_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SAtomicBeta_FuncPtrs, 0x4)
+void SetSAtomicBeta_FuncPtrs(SAtomicBeta_FuncPtrs* callbacks);
+
+struct SBacteriaSwarm_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SBacteriaSwarm_FuncPtrs, 0x4)
+void SetSBacteriaSwarm_FuncPtrs(SBacteriaSwarm_FuncPtrs* callbacks);
+
+struct SBlogg_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SBlogg_FuncPtrs, 0x4)
+void SetSBlogg_FuncPtrs(SBlogg_FuncPtrs* callbacks);
+
+struct SChozoGhost_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SChozoGhost_FuncPtrs, 0x4)
+void SetSChozoGhost_FuncPtrs(SChozoGhost_FuncPtrs* callbacks);
+
+struct SScriptDarkSamusBattleStage_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SScriptDarkSamusBattleStage_FuncPtrs, 0x4)
+void SetSScriptDarkSamusBattleStage_FuncPtrs(SScriptDarkSamusBattleStage_FuncPtrs* callbacks);
+
+struct SDarkTrooper_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SDarkTrooper_FuncPtrs, 0x4)
+void SetSDarkTrooper_FuncPtrs(SDarkTrooper_FuncPtrs* callbacks);
+
+struct SDestructibleBarrier_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SDestructibleBarrier_FuncPtrs, 0x4)
+void SetSDestructibleBarrier_FuncPtrs(SDestructibleBarrier_FuncPtrs* callbacks);
+
+struct SElitePirate_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SElitePirate_FuncPtrs, 0x4)
+void SetSElitePirate_FuncPtrs(SElitePirate_FuncPtrs* callbacks);
+
+struct SEmperorIngStage2Tentacle_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SEmperorIngStage2Tentacle_FuncPtrs, 0x4)
+void SetSEmperorIngStage2Tentacle_FuncPtrs(SEmperorIngStage2Tentacle_FuncPtrs* callbacks);
+
+struct SEmperorIngStage3_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SEmperorIngStage3_FuncPtrs, 0x4)
+void SetSEmperorIngStage3_FuncPtrs(SEmperorIngStage3_FuncPtrs* callbacks);
+
+struct SEyeBall_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SEyeBall_FuncPtrs, 0x4)
+void SetSEyeBall_FuncPtrs(SEyeBall_FuncPtrs* callbacks);
+
+struct SFlyerSwarm_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SFlyerSwarm_FuncPtrs, 0x4)
+void SetSFlyerSwarm_FuncPtrs(SFlyerSwarm_FuncPtrs* callbacks);
+
+struct SFlyingPirate_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SFlyingPirate_FuncPtrs, 0x4)
+void SetSFlyingPirate_FuncPtrs(SFlyingPirate_FuncPtrs* callbacks);
+
+struct SScriptFogOverlay_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SScriptFogOverlay_FuncPtrs, 0x4)
+void SetSScriptFogOverlay_FuncPtrs(SScriptFogOverlay_FuncPtrs* callbacks);
+
+struct SGlowbug_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SGlowbug_FuncPtrs, 0x4)
+void SetSGlowbug_FuncPtrs(SGlowbug_FuncPtrs* callbacks);
+
+struct SGrenchler_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SGrenchler_FuncPtrs, 0x4)
+void SetSGrenchler_FuncPtrs(SGrenchler_FuncPtrs* callbacks);
+
+struct SGunTurretBase_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadBase;
+  FScriptLoader mLoadTop;
+};
+CHECK_SIZEOF(SGunTurretBase_FuncPtrs, 0x8)
+void SetSGunTurretBase_FuncPtrs(SGunTurretBase_FuncPtrs* callbacks);
+
+struct SIngBoostBallGuardian_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIngBoostBallGuardian_FuncPtrs, 0x4)
+void SetSIngBoostBallGuardian_FuncPtrs(SIngBoostBallGuardian_FuncPtrs* callbacks);
+
+struct SIngBlobSwarm_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIngBlobSwarm_FuncPtrs, 0x4)
+void SetSIngBlobSwarm_FuncPtrs(SIngBlobSwarm_FuncPtrs* callbacks);
+
+struct SIngPuddle_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIngPuddle_FuncPtrs, 0x4)
+void SetSIngPuddle_FuncPtrs(SIngPuddle_FuncPtrs* callbacks);
+
+struct SIngSpiderballGuardian_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIngSpiderballGuardian_FuncPtrs, 0x4)
+void SetSIngSpiderballGuardian_FuncPtrs(SIngSpiderballGuardian_FuncPtrs* callbacks);
+
+struct SLumite_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SLumite_FuncPtrs, 0x4)
+void SetSLumite_FuncPtrs(SLumite_FuncPtrs* callbacks);
+
+struct SMediumIng_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SMediumIng_FuncPtrs, 0x4)
+void SetSMediumIng_FuncPtrs(SMediumIng_FuncPtrs* callbacks);
+
+struct SMinorIng_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SMinorIng_FuncPtrs, 0x4)
+void SetSMinorIng_FuncPtrs(SMinorIng_FuncPtrs* callbacks);
+
+struct SMysteryFlyer_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SMysteryFlyer_FuncPtrs, 0x4)
+void SetSMysteryFlyer_FuncPtrs(SMysteryFlyer_FuncPtrs* callbacks);
+
+struct SPlantScarabSwarm_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SPlantScarabSwarm_FuncPtrs, 0x4)
+void SetSPlantScarabSwarm_FuncPtrs(SPlantScarabSwarm_FuncPtrs* callbacks);
+
+struct SPuddleSpore_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SPuddleSpore_FuncPtrs, 0x4)
+void SetSPuddleSpore_FuncPtrs(SPuddleSpore_FuncPtrs* callbacks);
+
+struct SRezbit_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SRezbit_FuncPtrs, 0x4)
+void SetSRezbit_FuncPtrs(SRezbit_FuncPtrs* callbacks);
+
+struct SSandBoss_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SSandBoss_FuncPtrs, 0x4)
+void SetSSandBoss_FuncPtrs(SSandBoss_FuncPtrs* callbacks);
+
+struct SScriptRsfAudio_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SScriptRsfAudio_FuncPtrs, 0x4)
+void SetSScriptRsfAudio_FuncPtrs(SScriptRsfAudio_FuncPtrs* callbacks);
+
+struct SStreamedMovie_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SStreamedMovie_FuncPtrs, 0x4)
+void SetSStreamedMovie_FuncPtrs(SStreamedMovie_FuncPtrs* callbacks);
+
+struct SShrieker_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SShrieker_FuncPtrs, 0x4)
+void SetSShrieker_FuncPtrs(SShrieker_FuncPtrs* callbacks);
+
+struct SScriptSkyRipple_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SScriptSkyRipple_FuncPtrs, 0x4)
+void SetSScriptSkyRipple_FuncPtrs(SScriptSkyRipple_FuncPtrs* callbacks);
+
+struct SSpankWeed_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SSpankWeed_FuncPtrs, 0x4)
+void SetSSpankWeed_FuncPtrs(SSpankWeed_FuncPtrs* callbacks);
+
+struct SSplinter_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SSplinter_FuncPtrs, 0x4)
+void SetSSplinter_FuncPtrs(SSplinter_FuncPtrs* callbacks);
+
+struct SSwampBossStage1_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SSwampBossStage1_FuncPtrs, 0x4)
+void SetSSwampBossStage1_FuncPtrs(SSwampBossStage1_FuncPtrs* callbacks);
+
+struct SSwampBossStage2_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SSwampBossStage2_FuncPtrs, 0x4)
+void SetSSwampBossStage2_FuncPtrs(SSwampBossStage2_FuncPtrs* callbacks);
+
+struct STryclops_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(STryclops_FuncPtrs, 0x4)
+void SetSTryclops_FuncPtrs(STryclops_FuncPtrs* callbacks);
+
+struct SWispTentacle_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SWispTentacle_FuncPtrs, 0x4)
+void SetSWispTentacle_FuncPtrs(SWispTentacle_FuncPtrs* callbacks);
+
 #endif // _SCRIPTLOADERREL

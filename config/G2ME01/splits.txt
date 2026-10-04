@@ -1845,6 +1845,74 @@ MetroidPrime/Enemies/SIng_FuncPtrs.cpp:
 MetroidPrime/Enemies/CIngSpotData.cpp:
 	.text       start:0x80218920 end:0x802189A4
 
+MetroidPrime/Enemies/SSandBoss_FuncPtrs.cpp:
+	.text       start:0x802189A4 end:0x802189D8
+	.sbss       start:0x804193E0 end:0x804193E8
+
+MetroidPrime/Enemies/SFlyingPirate_FuncPtrs.cpp:
+	.text       start:0x802189D8 end:0x80218A0C
+	.sbss       start:0x804193E8 end:0x804193F0
+
+MetroidPrime/Enemies/SGrenchler_FuncPtrs.cpp:
+	.text       start:0x80218A0C end:0x80218A40
+	.sbss       start:0x804193F0 end:0x804193F8
+
+MetroidPrime/Enemies/SMediumIng_FuncPtrs.cpp:
+	.text       start:0x80218A40 end:0x80218A74
+	.sbss       start:0x804193F8 end:0x80419400
+
+MetroidPrime/Enemies/SMinorIng_FuncPtrs.cpp:
+	.text       start:0x80218A74 end:0x80218AA8
+	.sbss       start:0x80419400 end:0x80419408
+
+MetroidPrime/Enemies/SElitePirate_FuncPtrs.cpp:
+	.text       start:0x80218AA8 end:0x80218ADC
+	.sbss       start:0x80419408 end:0x80419410
+
+MetroidPrime/Enemies/SBlogg_FuncPtrs.cpp:
+	.text       start:0x80218ADC end:0x80218B10
+	.sbss       start:0x80419410 end:0x80419418
+
+MetroidPrime/Enemies/SGunTurretBase_FuncPtrs.cpp:
+	.text       start:0x80218B70 end:0x80218BD0
+	.sbss       start:0x80419420 end:0x80419428
+
+MetroidPrime/Enemies/SLumite_FuncPtrs.cpp:
+	.text       start:0x80218BD0 end:0x80218C04
+	.sbss       start:0x80419428 end:0x80419430
+
+MetroidPrime/Enemies/SShrieker_FuncPtrs.cpp:
+	.text       start:0x80218C04 end:0x80218C38
+	.sbss       start:0x80419430 end:0x80419438
+
+MetroidPrime/Enemies/SSplinter_FuncPtrs.cpp:
+	.text       start:0x80218C38 end:0x80218C6C
+	.sbss       start:0x80419438 end:0x80419440
+
+MetroidPrime/Enemies/SChozoGhost_FuncPtrs.cpp:
+	.text       start:0x80218CF8 end:0x80218D2C
+	.sbss       start:0x80419448 end:0x80419450
+
+MetroidPrime/Enemies/STryclops_FuncPtrs.cpp:
+	.text       start:0x80218D2C end:0x80218D60
+	.sbss       start:0x80419450 end:0x80419458
+
+MetroidPrime/Enemies/SWispTentacle_FuncPtrs.cpp:
+	.text       start:0x80218D60 end:0x80218D94
+	.sbss       start:0x80419458 end:0x80419460
+
+MetroidPrime/Enemies/SSpankWeed_FuncPtrs.cpp:
+	.text       start:0x80218D94 end:0x80218DC8
+	.sbss       start:0x80419460 end:0x80419468
+
+MetroidPrime/Enemies/SDarkTrooper_FuncPtrs.cpp:
+	.text       start:0x80218DC8 end:0x80218DFC
+	.sbss       start:0x80419468 end:0x80419470
+
+MetroidPrime/Enemies/SGlowbug_FuncPtrs.cpp:
+	.text       start:0x80218DFC end:0x80218E30
+	.sbss       start:0x80419470 end:0x80419478
+
 MetroidPrime/CGameCollisionPackedCache.cpp:
 	.text       start:0x80218E30 end:0x8021BA60
 	.ctors      start:0x803A5598 end:0x803A559C
@@ -1944,6 +2012,14 @@ MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
 
+MetroidPrime/Enemies/SRezbit_FuncPtrs.cpp:
+	.text       start:0x80227ACC end:0x80227B00
+	.sbss       start:0x80419580 end:0x80419588
+
+MetroidPrime/Enemies/SScriptRsfAudio_FuncPtrs.cpp:
+	.text       start:0x80227B00 end:0x80227B34
+	.sbss       start:0x80419588 end:0x80419590
+
 MetroidPrime/BodyState/CABSLoopReaction.cpp:
 	.text       start:0x80227B34 end:0x802280E8
 	.data       start:0x803B8578 end:0x803B85B4
@@ -1962,11 +2038,39 @@ MetroidPrime/CFilteredObjectList.cpp:
 	.text       start:0x80229718 end:0x80229EAC
 	.data       start:0x803B8648 end:0x803B86B8
 
+MetroidPrime/Enemies/SIngPuddle_FuncPtrs.cpp:
+	.text       start:0x80229EB4 end:0x80229EE8
+	.sbss       start:0x80419598 end:0x804195A0
+
+MetroidPrime/Enemies/SFlyerSwarm_FuncPtrs.cpp:
+	.text       start:0x80229F90 end:0x80229FC4
+	.sbss       start:0x804195A0 end:0x804195A8
+
+MetroidPrime/Enemies/SStreamedMovie_FuncPtrs.cpp:
+	.text       start:0x80229FC4 end:0x80229FF8
+	.sbss       start:0x804195A8 end:0x804195B0
+
+MetroidPrime/Enemies/SIngSpiderballGuardian_FuncPtrs.cpp:
+	.text       start:0x80229FF8 end:0x8022A02C
+	.sbss       start:0x804195B0 end:0x804195B8
+
+MetroidPrime/Enemies/SPuddleSpore_FuncPtrs.cpp:
+	.text       start:0x8022A02C end:0x8022A060
+	.sbss       start:0x804195B8 end:0x804195C0
+
 MetroidPrime/ScriptObjects/CScriptAIHint.cpp:
 	.text       start:0x8022A060 end:0x8022A544
 	.rodata     start:0x803AD338 end:0x803AD340
 	.data       start:0x803B86B8 end:0x803B8738
 	.sdata2     start:0x8041DB08 end:0x8041DB10
+
+MetroidPrime/Enemies/SEmperorIngStage2Tentacle_FuncPtrs.cpp:
+	.text       start:0x8022A544 end:0x8022A578
+	.sbss       start:0x804195C0 end:0x804195C8
+
+MetroidPrime/Enemies/SBacteriaSwarm_FuncPtrs.cpp:
+	.text       start:0x8022A580 end:0x8022A5B4
+	.sbss       start:0x804195D0 end:0x804195D8
 
 MetroidPrime/CControlHintManager.cpp:
 	.text       start:0x8022A5B4 end:0x8022AF0C
@@ -1987,6 +2091,10 @@ MetroidPrime/ScriptObjects/CScriptControlHint.cpp:
 MetroidPrime/CGameHint.cpp:
 	.text       start:0x8022D1EC end:0x8022D548
 
+MetroidPrime/Enemies/SScriptForgottenObject_FuncPtrs.cpp:
+	.text       start:0x8022D548 end:0x8022D57C
+	.sbss       start:0x804195D8 end:0x804195E0
+
 MetroidPrime/Enemies/SMetareeSwarm_FuncPtrs.cpp:
 	.text       start:0x8022D57C end:0x8022D5B0
 	.sbss       start:0x804195E0 end:0x804195E8
@@ -1997,6 +2105,10 @@ MetroidPrime/CRezbitEffect.cpp:
 	.data       start:0x803B87F8 end:0x803B8890
 	.sdata2     start:0x8041DB38 end:0x8041DB48
 
+MetroidPrime/Enemies/SIngBlobSwarm_FuncPtrs.cpp:
+	.text       start:0x8022E108 end:0x8022E13C
+	.sbss       start:0x804195E8 end:0x804195F0
+
 MetroidPrime/ScriptObjects/CScriptAdvancedCounter.cpp:
 	.text       start:0x8022E13C end:0x8022E9F0
 	.rodata     start:0x803AD3C0 end:0x803AD3C8
@@ -2004,6 +2116,22 @@ MetroidPrime/ScriptObjects/CScriptAdvancedCounter.cpp:
 
 MetroidPrime/Player/CGunDrawBlockSet.cpp:
 	.text       start:0x8022E9F0 end:0x8022EB9C
+
+MetroidPrime/Enemies/SEmperorIngStage3_FuncPtrs.cpp:
+	.text       start:0x8022EB9C end:0x8022EBD0
+	.sbss       start:0x804195F0 end:0x804195F8
+
+MetroidPrime/Enemies/SDestructibleBarrier_FuncPtrs.cpp:
+	.text       start:0x8022EBD0 end:0x8022EC04
+	.sbss       start:0x804195F8 end:0x80419600
+
+MetroidPrime/Enemies/SSwampBossStage2_FuncPtrs.cpp:
+	.text       start:0x8022EC04 end:0x8022EC38
+	.sbss       start:0x80419600 end:0x80419608
+
+MetroidPrime/Enemies/SSwampBossStage1_FuncPtrs.cpp:
+	.text       start:0x8022EC38 end:0x8022EC6C
+	.sbss       start:0x80419608 end:0x80419610
 
 MetroidPrime/ScriptObjects/CScriptSoundModifier.cpp:
 	.text       start:0x8022EC6C end:0x8022F768
@@ -2016,16 +2144,40 @@ MetroidPrime/ScriptObjects/CScriptLayerController.cpp:
 	.rodata     start:0x803AD3D0 end:0x803AD3D8
 	.data       start:0x803B88D0 end:0x803B88F0
 
+MetroidPrime/Enemies/SIngBoostBallGuardian_FuncPtrs.cpp:
+	.text       start:0x8022FF98 end:0x8022FFCC
+	.sbss       start:0x80419610 end:0x80419618
+
+MetroidPrime/Enemies/SPlantScarabSwarm_FuncPtrs.cpp:
+	.text       start:0x8022FFCC end:0x80230000
+	.sbss       start:0x80419618 end:0x80419620
+
 MetroidPrime/ScriptObjects/CScriptPortalTransition.cpp:
 	.text       start:0x80230000 end:0x80232308
 	.rodata     start:0x803AD3D8 end:0x803AD3E0
 	.sbss       start:0x80419620 end:0x80419630
 	.sdata2     start:0x8041DB68 end:0x8041DBA0
 
+MetroidPrime/Enemies/SScriptSkyRipple_FuncPtrs.cpp:
+	.text       start:0x80232308 end:0x8023233C
+	.sbss       start:0x80419630 end:0x80419638
+
 MetroidPrime/CTurretHud.cpp:
 	.text       start:0x8023233C end:0x80232808
 	.rodata     start:0x803AD3E0 end:0x803AD460
 	.sdata2     start:0x8041DBA0 end:0x8041DBB8
+
+MetroidPrime/Enemies/SScriptFogOverlay_FuncPtrs.cpp:
+	.text       start:0x80232808 end:0x8023283C
+	.sbss       start:0x80419638 end:0x80419640
+
+MetroidPrime/Enemies/SMysteryFlyer_FuncPtrs.cpp:
+	.text       start:0x8023283C end:0x80232870
+	.sbss       start:0x80419640 end:0x80419648
+
+MetroidPrime/Enemies/SAtomicBeta_FuncPtrs.cpp:
+	.text       start:0x80232870 end:0x802328A4
+	.sbss       start:0x80419648 end:0x80419650
 
 MetroidPrime/ScriptObjects/CScriptHUDHint.cpp:
 	.text       start:0x802328A4 end:0x80233390
@@ -2035,6 +2187,10 @@ MetroidPrime/ScriptObjects/CScriptHUDHint.cpp:
 MetroidPrime/CScriptObjectLoaderHelper.cpp:
 	.text       start:0x80233390 end:0x80234900
 	.sdata      start:0x804188D8 end:0x804188E0
+
+MetroidPrime/Enemies/SEyeBall_FuncPtrs.cpp:
+	.text       start:0x80234900 end:0x80234934
+	.sbss       start:0x80419650 end:0x80419658
 
 MetroidPrime/Weapons/CFreezeBeamProjectile.cpp:
 	.text       start:0x80234934 end:0x80234DAC
@@ -2050,6 +2206,10 @@ MetroidPrime/CMissileRepeller.cpp:
 	.text       start:0x80235620 end:0x80235DA0
 	.sdata2     start:0x8041DBE8 end:0x8041DBF8
 
+MetroidPrime/Enemies/SScriptDarkSamusBattleStage_FuncPtrs.cpp:
+	.text       start:0x80235DA0 end:0x80235DD4
+	.sbss       start:0x80419658 end:0x80419660
+
 MetroidPrime/CGameResultsScreen.cpp:
 	.text       start:0x80235E08 end:0x802399C8
 	.ctors      start:0x803A55A0 end:0x803A55A4
@@ -2059,6 +2219,10 @@ MetroidPrime/CGameResultsScreen.cpp:
 	.sdata      start:0x804188F8 end:0x80418930
 	.sbss       start:0x80419668 end:0x804196C0
 	.sdata2     start:0x8041DBF8 end:0x8041DC88
+
+MetroidPrime/Enemies/SScriptRubiksPuzzle_FuncPtrs.cpp:
+	.text       start:0x802399C8 end:0x802399FC
+	.sbss       start:0x804196C0 end:0x804196C8
 
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x802399FC end:0x80243ED4
