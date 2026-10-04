@@ -16,6 +16,10 @@ public:
 
   CBallCamera::EBallCameraBehaviour GetBehaviourType() const { return mBehaviour; }
   uint GetFlags() const { return mFlags; }
+  uint GetOverrideFlags() const { return mOverrideFlags; }
+  float GetFov() const { return mFov; }
+  float GetAttitudeRange() const { return mAttitudeRange; }
+  float GetAzimuthRange() const { return mAzimuthRange; }
 
 private:
   uint mFlags;

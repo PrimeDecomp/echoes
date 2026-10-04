@@ -4,6 +4,7 @@
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
+#include "MetroidPrime/Cameras/CFixedCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
@@ -160,6 +161,7 @@ TYPES_MATCH_IMPL(CBouncyGrenade, CPhysicsActor, kET_BouncyGrenade)
 TYPES_MATCH_IMPL(CScriptCamera, CActor, kET_ScriptCamera)
 TYPES_MATCH_IMPL(CBallCamera, CGameCamera, kET_BallCamera)
 TYPES_MATCH_IMPL(CFirstPersonCamera, CGameCamera, kET_FirstPersonCamera)
+TYPES_MATCH_IMPL(CFixedCamera, CGameCamera, kET_FixedCamera)
 TYPES_MATCH_IMPL(CSpindleCamera, CGameCamera, kET_SpindleCamera)
 CAST_TO_PTR_IMPL(CGameCamera, kET_GameCamera)
 CAST_TO_PTR_IMPL(CBouncyGrenade, kET_BouncyGrenade)
