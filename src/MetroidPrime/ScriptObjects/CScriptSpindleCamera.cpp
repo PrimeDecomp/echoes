@@ -3,6 +3,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrSplineType.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSpindleCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -61,4 +62,64 @@ void CScriptSpindleCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   }
 }
 
-CEntity* LoadSpindleCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}
+CEntity* LoadSpindleCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSpindleCamera sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSpindleCamera.inc"
+
+  CSpindleCameraInterpolant angularSpeed(
+      static_cast< ESpindleInput >(sldrThis.angularSpeed.interpolantType),
+      sldrThis.angularSpeed.interpolantSpline);
+  CSpindleCameraInterpolant linearSpeed(
+      static_cast< ESpindleInput >(sldrThis.linearSpeed.interpolantType),
+      sldrThis.linearSpeed.interpolantSpline);
+  CSpindleCameraInterpolant motionRadius(
+      static_cast< ESpindleInput >(sldrThis.motionRadius.interpolantType),
+      sldrThis.motionRadius.interpolantSpline);
+  CSpindleCameraInterpolant radialOffset(
+      static_cast< ESpindleInput >(sldrThis.radialOffset.interpolantType),
+      sldrThis.radialOffset.interpolantSpline);
+  CSpindleCameraInterpolant desiredAngularOffset(
+      static_cast< ESpindleInput >(sldrThis.desiredAngularOffset.interpolantType),
+      sldrThis.desiredAngularOffset.interpolantSpline);
+  CSpindleCameraInterpolant minAngularOffset(
+      static_cast< ESpindleInput >(sldrThis.minAngularOffset.interpolantType),
+      sldrThis.minAngularOffset.interpolantSpline);
+  CSpindleCameraInterpolant maxAngularOffset(
+      static_cast< ESpindleInput >(sldrThis.maxAngularOffset.interpolantType),
+      sldrThis.maxAngularOffset.interpolantSpline);
+  CSpindleCameraInterpolant lookAtAngularOffset(
+      static_cast< ESpindleInput >(sldrThis.lookAtAngularOffset.interpolantType),
+      sldrThis.lookAtAngularOffset.interpolantSpline);
+  CSpindleCameraInterpolant lookAtZOffset(
+      static_cast< ESpindleInput >(sldrThis.lookAtZOffset.interpolantType),
+      sldrThis.lookAtZOffset.interpolantSpline);
+  CSpindleCameraInterpolant zOffset(static_cast< ESpindleInput >(sldrThis.zOffset.interpolantType),
+                                    sldrThis.zOffset.interpolantSpline);
+  CSpindleCameraInterpolant angularConstraint(
+      static_cast< ESpindleInput >(sldrThis.angularConstraint.interpolantType),
+      sldrThis.angularConstraint.interpolantSpline);
+  CSpindleCameraInterpolant angularDampening(
+      static_cast< ESpindleInput >(sldrThis.angularDampening.interpolantType),
+      sldrThis.angularDampening.interpolantSpline);
+  CSpindleCameraInterpolant desiredAngularSpeed(
+      static_cast< ESpindleInput >(sldrThis.desiredAngularSpeed.interpolantType),
+      sldrThis.desiredAngularSpeed.interpolantSpline);
+  CSpindleCameraInterpolant deactivateRadius(
+      static_cast< ESpindleInput >(sldrThis.deactivateRadius.interpolantType),
+      sldrThis.deactivateRadius.interpolantSpline);
+  CSpindleCameraInterpolant constraintFlipAngle(
+      static_cast< ESpindleInput >(sldrThis.constraintFlipAngle.interpolantType),
+      sldrThis.constraintFlipAngle.interpolantSpline);
+  CSpindleCameraInterpolant fov(static_cast< ESpindleInput >(sldrThis.fOV.interpolantType),
+                                sldrThis.fOV.interpolantSpline);
+
+  return rs_new CScriptSpindleCamera(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), sldrThis.flagsSpindleCamera, angularSpeed,
+      linearSpeed, motionRadius, radialOffset, desiredAngularOffset, minAngularOffset,
+      maxAngularOffset, lookAtAngularOffset, lookAtZOffset, zOffset, angularConstraint,
+      angularDampening, desiredAngularSpeed, deactivateRadius, constraintFlipAngle, fov,
+      sldrThis.targetSplineType, sldrThis.targetControlSpline, sldrThis.targetSplineLoops,
+      sldrThis.playerSplineType, sldrThis.playerSplineLoops);
+}
