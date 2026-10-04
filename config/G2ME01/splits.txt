@@ -2445,6 +2445,9 @@ MetaRender/CCubeRenderer.cpp:
 	.data       start:0x803B8C10 end:0x803B8D60
 	.sbss       start:0x80419748 end:0x8041974C
 
+MetaRender/AmbientLightScale.cpp:
+	.text       start:0x80273FAC end:0x80273FB8
+
 GuiSys/CAuiMeter.cpp:
 	.text       start:0x80273FB8 end:0x80274708
 	.rodata     start:0x803AE4B8 end:0x803AE4C0
