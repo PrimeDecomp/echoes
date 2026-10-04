@@ -52,6 +52,7 @@ public:
   // Guessed name.
   void CheckIntroTextSeen();
   bool IsTransitionFinished() const { return mTransitionFinished; }
+  bool IsIntroText() const { return mIntroText; } // Guessed name
   ETransType GetTransType() const { return mTransType; }
 
 private:
