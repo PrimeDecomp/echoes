@@ -32,6 +32,15 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDamageActor.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrEnvFxDensityController.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrFogVolume.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrRadialDamage.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrRumbleEffect.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSilhouette.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSpecialFunction.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSpinner.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
@@ -1793,6 +1802,150 @@ void CScriptSpecialFunction::SendFrustumMessages(CStateManager& mgr) {
 
 void CScriptSpecialFunction::PreRenderAllViewports(CStateManager& mgr) {
   // TODO: submit the per-viewport fog settings for the selected function.
+}
+
+CEntity* LoadSpecialFunction(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSpecialFunction sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSpecialFunction.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties),
+      static_cast< CScriptSpecialFunction::ESpecialFunction >(sldrThis.function),
+      sldrThis.stringParm, sldrThis.valueParm, sldrThis.valueParm2, sldrThis.valueParm3,
+      sldrThis.valueParm4, sldrThis.intParm1, sldrThis.intParm2, CVector3f::Zero(),
+      CColor::Black(), CDamageInfo(),
+      static_cast< CPlayerState::EItemType >(sldrThis.inventoryItemParm.value),
+      static_cast< ushort >(sldrThis.sound1), static_cast< ushort >(sldrThis.sound2),
+      static_cast< ushort >(sldrThis.sound3));
+}
+
+CEntity* LoadFogVolume(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrFogVolume sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrFogVolume.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_FogVolume,
+      rstl::string_l(""), sldrThis.fogBobHeight, sldrThis.fogBobFreq, 0.f, 0.f, 0, 0,
+      sldrThis.editorProperties.transform.scale, sldrThis.fogColor, CDamageInfo(),
+      CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
+}
+
+CEntity* LoadSilhouette(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSilhouette sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSilhouette.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_Silhouette,
+      rstl::string_l(""), sldrThis.unknown_0x82bad3ee, sldrThis.fadeInTime,
+      sldrThis.fadeOutTime, 0.f, 0, 0, sldrThis.editorProperties.transform.scale,
+      sldrThis.silhouetteColor, CDamageInfo(), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
+}
+
+CEntity* LoadRadialDamage(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrRadialDamage sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrRadialDamage.inc"
+
+  int flags = 0;
+  if (sldrThis.autoAction) {
+    flags |= 1;
+  }
+  if (sldrThis.autoDelete) {
+    flags |= 2;
+  }
+  if (sldrThis.originator) {
+    flags |= 4;
+  }
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_RadialDamage,
+      rstl::string_l(""), sldrThis.radius, 0.f, 0.f, 0.f, flags, 0, CVector3f::Zero(),
+      CColor::Black(), LdrToDamageInfo(sldrThis.damage), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
+}
+
+CEntity* LoadEnvFxDensityController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrEnvFxDensityController sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrEnvFxDensityController.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), CTransform4f::Identity(),
+      CScriptSpecialFunction::kSF_EnvFxDensityController, rstl::string_l(""), sldrThis.density,
+      static_cast< float >(sldrThis.fadeSpeed), 0.f, 0.f, 0, 0, CVector3f::Zero(),
+      CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
+}
+
+CEntity* LoadRumbleEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrRumbleEffect sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrRumbleEffect.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      ConvertEditorEulerToTransform4f(CVector3f::Zero(),
+                                      sldrThis.editorProperties.transform.position),
+      CScriptSpecialFunction::kSF_RumbleEffect, rstl::string_l(""), sldrThis.radius,
+      static_cast< float >(sldrThis.effect), static_cast< float >(sldrThis.flagsRumble), 0.f, 0,
+      0, CVector3f::Zero(), CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
+}
+
+CEntity* LoadSpinner(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSpinner sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSpinner.inc"
+
+  int flags = 0;
+  if (sldrThis.allowWrap) {
+    flags |= 1;
+  }
+  if (sldrThis.noBackward) {
+    flags |= 2;
+  }
+  if (sldrThis.splineControl) {
+    flags |= 4;
+  }
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      ConvertEditorEulerToTransform4f(CVector3f::Zero(),
+                                      sldrThis.editorProperties.transform.position),
+      sldrThis.shotSpinner ? CScriptSpecialFunction::kSF_ShotSpinnerController
+                           : CScriptSpecialFunction::kSF_SpinnerController,
+      rstl::string(), sldrThis.forwardSpeed, sldrThis.backwardSpeed,
+      sldrThis.unknown_0x449dd059, sldrThis.unknown_0xfc849759, flags, 0, CVector3f::Zero(),
+      CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
+      static_cast< ushort >(sldrThis.loopSound), static_cast< ushort >(sldrThis.startSound),
+      static_cast< ushort >(sldrThis.stopSound));
+}
+
+CEntity* LoadDamageActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDamageActor sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDamageActor.inc"
+
+  return rs_new CScriptSpecialFunction(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_DamageActor,
+      rstl::string_l(""), 0.f, 0.f, 0.f, 0.f, 0, 0, CVector3f::Zero(), CColor::Black(),
+      LdrToDamageInfo(sldrThis.damage), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
 }
 
 CScriptSpecialFunction::~CScriptSpecialFunction() {}

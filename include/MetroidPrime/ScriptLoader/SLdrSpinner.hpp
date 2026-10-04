@@ -23,7 +23,7 @@ struct SLdrSpinner {
   int stopSound; // 0xe88e7d41
 };
 
-inline SLdrSpinner::SLdrSpinner() : editorProperties() {
+inline SLdrSpinner::SLdrSpinner() : editorProperties(), loopSound(-1), startSound(-1), stopSound(-1) {
   forwardSpeed = 0.0f;
   backwardSpeed = 0.0f;
   unknown_0x449dd059 = 0.0f;
@@ -32,9 +32,6 @@ inline SLdrSpinner::SLdrSpinner() : editorProperties() {
   allowWrap = false;
   noBackward = false;
   splineControl = true;
-  loopSound = 0;
-  startSound = 0;
-  stopSound = 0;
 }
 
 inline SLdrSpinner::~SLdrSpinner() {}

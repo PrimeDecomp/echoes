@@ -26,8 +26,8 @@ struct SLdrSpecialFunction {
   int sound3; // 0xe926b7b4
 };
 
-inline SLdrSpecialFunction::SLdrSpecialFunction() : editorProperties(), stringParm(), inventoryItemParm() {
-  editorProperties.active = true;
+inline SLdrSpecialFunction::SLdrSpecialFunction() : editorProperties(), stringParm(), inventoryItemParm(), sound1(-1), sound2(-1), sound3(-1) {
+  editorProperties.active = false;
   function = 0;
   valueParm = 0.0f;
   valueParm2 = 0.0f;
@@ -35,9 +35,6 @@ inline SLdrSpecialFunction::SLdrSpecialFunction() : editorProperties(), stringPa
   valueParm4 = 0.0f;
   intParm1 = 0;
   intParm2 = 0;
-  sound1 = 0;
-  sound2 = 0;
-  sound3 = 0;
 }
 
 inline SLdrSpecialFunction::~SLdrSpecialFunction() {}
