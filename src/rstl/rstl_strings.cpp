@@ -6,10 +6,34 @@
 namespace rstl {
 
 template <>
-char basic_string< char >::mNull;
+char basic_string< char >::mNull = char_traits< char >::eos();
 
 template <>
-wchar_t basic_string< wchar_t >::mNull;
+wchar_t basic_string< wchar_t >::mNull = char_traits< wchar_t >::eos();
+
+template <>
+char basic_string< char, case_insensitive_char_traits< char > >::mNull =
+    case_insensitive_char_traits< char >::eos();
+
+template <>
+// Guessed specialization: the fourth native null cell is a wchar, as in Prime.
+wchar_t basic_string< wchar_t, case_insensitive_char_traits< wchar_t > >::mNull =
+    case_insensitive_char_traits< wchar_t >::eos();
+
+string string_l(const char* data) {
+  string::literal_t literal;
+  return string(literal, data);
+}
+
+wstring wstring_l(const wchar_t* data) {
+  wstring::literal_t literal;
+  return wstring(literal, data);
+}
+
+istring istring_l(const char* data) {
+  istring::literal_t literal;
+  return istring(literal, data);
+}
 
 template <>
 basic_string< char >::basic_string(CInputStream& in, const rmemory_allocator& alloc)
@@ -331,6 +355,42 @@ void basic_string< wchar_t >::internal_prepare_to_write(int len, bool preserve) 
     internal_dereference();
     mCow = newControl;
     mPtr = newData;
+  }
+}
+
+template <>
+basic_string< char, case_insensitive_char_traits< char > >::basic_string(
+    const char* data, int count, const rmemory_allocator& alloc)
+: mAllocator(alloc) {
+  if (count <= 0 && !*data) {
+    mPtr = &mNull;
+    mSize = 0;
+    mCow = nullptr;
+    return;
+  }
+
+  const pair< const char*, int > range = compute_length(data, count);
+  const int len = range.second;
+  internal_allocate(len + 1);
+  mSize = len;
+  case_insensitive_char_traits< char >::copy(const_cast< char* >(mPtr), data, len);
+  case_insensitive_char_traits< char >::assign(const_cast< char& >(mPtr[len]),
+                                               case_insensitive_char_traits< char >::eos());
+}
+
+template <>
+void basic_string< char, case_insensitive_char_traits< char > >::internal_allocate(int size) {
+  rmemory_allocator::allocate(reinterpret_cast< uchar*& >(mCow),
+                              sizeof(control) + sizeof(char) * size);
+  mPtr = reinterpret_cast< char* >(mCow + 1);
+  mCow->mCapacity = size;
+  mCow->mRefCount = 1;
+}
+
+template <>
+void basic_string< char, case_insensitive_char_traits< char > >::internal_dereference() {
+  if (mCow && --mCow->mRefCount == 0) {
+    CMemory::Free(mCow);
   }
 }
 

@@ -1140,7 +1140,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Streams/CBitStreamReader.cpp"),
             Object(MatchingFor("G2ME01"), "rstl/rstl_map.cpp"),
             Object(
-                MatchingFor("G2ME01"),
+                NonMatching,
                 "rstl/rstl_strings.cpp",
                 extra_cflags=["-inline deferred"] if config.version == "G2ME01" else [],
             ),
