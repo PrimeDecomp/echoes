@@ -19,10 +19,12 @@
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CFluidPlaneManager.hpp"
+#include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CRainSplashGenerator.hpp"
+#include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldShadow.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CMorphBallShadow.hpp"
@@ -38,6 +40,50 @@
 #include "rstl/math.hpp"
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
+
+const SMorphBallModelInfo CMorphBall::skBallCharacter[3] = {
+    {"SamusBallCMDL", 0},
+    {"SamusBallDarkCMDL", 0},
+    {"SamusBallLightCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skBallLowPoly[3] = {
+    {"SamusBallLowPolyCMDL", 0},
+    {"SamusBallLowPolyCMDL", 0},
+    {"SamusBallLowPolyCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skSpiderBallCharacter[3] = {
+    {"SamusBallCMDL", 0},
+    {"SamusSpiderBallDarkCMDL", 0},
+    {"SamusBallLightCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skSpiderBallLowPoly[3] = {
+    {"SamusSpiderBallLowPolyCMDL", 0},
+    {"SamusSpiderBallLowPolyCMDL", 0},
+    {"SamusSpiderBallLowPolyCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skBoostBallCharacter[3] = {
+    {"SamusBallCMDL", 0},
+    {"SamusBoostBallDarkCMDL", 0},
+    {"SamusBallLightCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skBoostBallLowPoly[3] = {
+    {"SamusSpiderBallLowPolyCMDL", 0},
+    {"SamusSpiderBallLowPolyCMDL", 0},
+    {"SamusSpiderBallLowPolyCMDL", 0},
+};
+const SMorphBallModelInfo CMorphBall::skSpiderBallGlass[3] = {
+    {nullptr, 0},
+    {"SamusSpiderBallDarkCapsCMDL", 0},
+    {nullptr, 0},
+};
+const SMorphBallModelInfo CMorphBall::skFrozenBall[3] = {
+    {"SamusBallFrozenCMDL", 0},
+    {"SamusBallFrozenCMDL", 0},
+    {"SamusBallFrozenCMDL", 0},
+};
+const uint CMorphBall::skBallGlowColorIdx[3] = {0, 1, 2};
+const uint CMorphBall::skSpiderBallGlowColorIdx[3] = {0, 1, 2};
+const uint CMorphBall::skBoostBallGlowColorIdx[3] = {0, 1, 2};
 
 const CMorphBall::SColorRgb CMorphBall::skBallHullGlowColors[3] = {
     {102, 196, 255},
@@ -309,9 +355,57 @@ CModelData* CMorphBall::GetMorphBallModel(const rstl::string& name, float radius
   return rs_new CModelData(CAnimRes(tag->id, CAnimRes::kDefaultCharIdx, scale, 0, false));
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::LoadMorphBallModel() {
-  // TODO: Select normal/spider/boost resources and glow colors for the three Echoes suits.
+  if (!mMultiplayer) {
+    CPlayerState* playerState = mPlayer.GetPlayerState();
+    const bool boostBall = playerState->HasPowerUp(CPlayerState::kIT_BoostBall);
+    const bool spiderBall = playerState->HasPowerUp(CPlayerState::kIT_SpiderBall);
+    const int modelIdx = playerState->GetCurrentSuitRaw();
+    int loadModelId = modelIdx;
+    if (spiderBall) {
+      loadModelId = modelIdx + 3;
+    } else if (boostBall) {
+      loadModelId = modelIdx + 6;
+    }
+
+    if (mLoadedModelId == loadModelId) {
+      return;
+    }
+
+    mLoadedModelId = loadModelId;
+    if (spiderBall) {
+      mBallModel = GetMorphBallModel(rstl::string_l(skSpiderBallCharacter[modelIdx].mName), mRadius);
+      mBallModelShader = skSpiderBallCharacter[modelIdx].mShader;
+      mLowPolyBallModel =
+          GetMorphBallModel(rstl::string_l(skSpiderBallLowPoly[modelIdx].mName), mRadius);
+      mLowPolyBallModelShader = skSpiderBallLowPoly[modelIdx].mShader;
+      if (skSpiderBallGlass[modelIdx].mName != nullptr) {
+        mSpiderBallGlassModel =
+            GetMorphBallModel(rstl::string_l(skSpiderBallGlass[modelIdx].mName), mRadius);
+        mSpiderBallGlassModelShader = skSpiderBallGlass[modelIdx].mShader;
+      } else {
+        mSpiderBallGlassModel = nullptr;
+        mSpiderBallGlassModelShader = 0;
+      }
+      mBallGlowColorIdx = skSpiderBallGlowColorIdx[modelIdx];
+    } else if (boostBall) {
+      mBallModel = GetMorphBallModel(rstl::string_l(skBoostBallCharacter[modelIdx].mName), mRadius);
+      mBallModelShader = skBoostBallCharacter[modelIdx].mShader;
+      mLowPolyBallModel =
+          GetMorphBallModel(rstl::string_l(skBoostBallLowPoly[modelIdx].mName), mRadius);
+      mLowPolyBallModelShader = skBoostBallLowPoly[modelIdx].mShader;
+      mBallGlowColorIdx = skBoostBallGlowColorIdx[modelIdx];
+    } else {
+      mBallModel = GetMorphBallModel(rstl::string_l(skBallCharacter[modelIdx].mName), mRadius);
+      mBallModelShader = skBallCharacter[modelIdx].mShader;
+      mLowPolyBallModel = GetMorphBallModel(rstl::string_l(skBallLowPoly[modelIdx].mName), mRadius);
+      mLowPolyBallModelShader = skBallLowPoly[modelIdx].mShader;
+      mBallGlowColorIdx = skBallGlowColorIdx[modelIdx];
+    }
+  }
+
+  const float scale = 2.f * GetBallRadius();
+  mBallModel->SetScale(CVector3f(scale, scale, scale));
 }
 
 void CMorphBall::FluidFXThink(CActor::EFluidState state, CScriptWater& water, CStateManager& mgr) {
@@ -640,9 +734,51 @@ void CMorphBall::Render(const CStateManager& mgr, const CActorLights* lights) co
   // TODO: Render the ball, glass, trails and Echoes Screw Attack/death-ball effects.
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) {
-  // TODO: Prepare model animation, rain-splash point generation, actor lights and the world shadow.
+  if (1.f == mBoostLightFactor) {
+    return;
+  }
+
+  CActorLights* lights = mPlayer.ActorLights();
+  const bool lowDamage = mDamageEffect < 0.25f;
+  lights->SetFindShadowLight(CWorldShadow::CanRender(mgr) && lowDamage);
+  lights->SetShadowDynamicRangeThreshold(0.05f);
+  lights->SetNeedsRelight(true);
+
+  CCollidableSphere sphere = mCollisionSphere;
+  sphere.SetSphere(CSphere(CVector3f::Zero(), sphere.GetSphere().GetRadius()));
+  CAABox ballAABB = sphere.CalculateAABox(GetBallToWorld());
+
+  int areaId = mPlayer.GetCurrentAreaId().Value();
+  if (areaId != kInvalidAreaId.Value()) {
+    const CWorld* world = mgr.GetWorld();
+    if (world->GetAreaAlways(TAreaId(areaId)).IsLoaded()) {
+      lights->BuildAreaLightList(mgr, world->GetAreaAlways(TAreaId(areaId)), ballAABB);
+    }
+  }
+
+  lights->BuildDynamicLightList(mgr, ballAABB);
+
+  if (mPlayer.ActorLights()->HasShadowLight()) {
+    CCollidableSphere shadowSphere = mCollisionSphere;
+    shadowSphere.SetSphere(CSphere(CVector3f::Zero(), shadowSphere.GetSphere().GetRadius()));
+
+    const int shadowAreaId = mPlayer.GetCurrentAreaId().Value();
+    const uint lightIndex = mPlayer.ActorLights()->GetShadowLightIndex();
+    mWorldShadow->BuildLightShadowTexture(mgr, TAreaId(shadowAreaId), lightIndex,
+                                          shadowSphere.CalculateAABox(GetBallToWorld()), false,
+                                          false);
+  } else {
+    mWorldShadow->ResetBlur();
+  }
+
+  lights->SetAmbientColor(
+      CColor::Lerp(lights->GetAmbientColor(), CColor::White(), mBoostLightFactor));
+  *mActorLights = *lights;
+
+  const float& lightFactor = rstl::max_val(mSpiderLightFactor, mBoostLightFactor);
+  mActorLights->SetAmbientColor(
+      CColor::Lerp(lights->GetAmbientColor(), CColor::White(), lightFactor));
 }
 
 float CMorphBall::GetMinimumAlignmentSpeed() const {

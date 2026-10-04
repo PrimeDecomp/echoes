@@ -35,6 +35,11 @@ struct SSkinningWorkspace;
 class CWorldShadow;
 class CDeferredParticleEffect; // Guessed name: dependency-backed wake effect, target size 0x44.
 
+struct SMorphBallModelInfo {
+  const char* mName;
+  uint mShader;
+};
+
 // G2ME01 structure pass. See Echoes research/CMorphBall-G2ME01.md for evidence and uncertainties.
 class CMorphBall {
 public:
@@ -197,6 +202,17 @@ public:
   CVector3f TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const;
 
 private:
+  static const SMorphBallModelInfo skBallCharacter[3];
+  static const SMorphBallModelInfo skBallLowPoly[3];
+  static const SMorphBallModelInfo skSpiderBallCharacter[3];
+  static const SMorphBallModelInfo skSpiderBallLowPoly[3];
+  static const SMorphBallModelInfo skBoostBallCharacter[3]; // Guessed name
+  static const SMorphBallModelInfo skBoostBallLowPoly[3];  // Guessed name
+  static const SMorphBallModelInfo skSpiderBallGlass[3];
+  static const SMorphBallModelInfo skFrozenBall[3];
+  static const uint skBallGlowColorIdx[3];
+  static const uint skSpiderBallGlowColorIdx[3];
+  static const uint skBoostBallGlowColorIdx[3]; // Guessed name
   static const SColorRgb skBallHullGlowColors[3]; // Guessed name
   static CColor GetBallGlowColor(const SColorRgb& color);
 

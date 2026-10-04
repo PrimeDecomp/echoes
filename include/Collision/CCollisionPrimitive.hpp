@@ -87,6 +87,7 @@ public:
   };
 
   CCollisionPrimitive(const CMaterialList& list);
+  CCollisionPrimitive(const CCollisionPrimitive& other) : mMaterial(other.mMaterial) {}
 
   virtual uint GetTableIndex() const = 0;
   virtual CAABox CalculateAABox(const CTransform4f&) const = 0;
