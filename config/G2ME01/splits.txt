@@ -1727,19 +1727,19 @@ MetroidPrime/ScriptObjects/CScriptTextPane.cpp:
 	.data       start:0x803B7C18 end:0x803B7C98
 	.sdata2     start:0x8041D6B8 end:0x8041D6E8
 
-MetroidPrime/Enemies/CSpacePirate.cpp:
+MetroidPrime/Enemies/SSpacePirate_FuncPtrs.cpp:
 	.text       start:0x80200DAC end:0x80200E44
 	.sbss       start:0x80419358 end:0x80419360
 
-MetroidPrime/Enemies/CKralee.cpp:
+MetroidPrime/Enemies/SKralee_FuncPtrs.cpp:
 	.text       start:0x80200E44 end:0x80200E78
 	.sbss       start:0x80419360 end:0x80419368
 
-MetroidPrime/Enemies/CParasite.cpp:
+MetroidPrime/Enemies/SParasite_FuncPtrs.cpp:
 	.text       start:0x80200E78 end:0x80200F04
 	.sbss       start:0x80419368 end:0x80419370
 
-MetroidPrime/Enemies/CPillBug.cpp:
+MetroidPrime/Enemies/SPillBug_FuncPtrs.cpp:
 	.text       start:0x80200F04 end:0x80200F38
 	.sbss       start:0x80419370 end:0x80419378
 
@@ -1777,7 +1777,7 @@ MetroidPrime/CRelFile.cpp:
 	.text       start:0x80213650 end:0x80213C08
 	.rodata     start:0x803ACBE0 end:0x803ACBE8
 
-MetroidPrime/Enemies/Sporb.cpp:
+MetroidPrime/Enemies/SSporb_FuncPtrs.cpp:
 	.text       start:0x80213C08 end:0x80213CC0
 	.sbss       start:0x804193A8 end:0x804193B0
 
@@ -1826,7 +1826,7 @@ MetroidPrime/Tweaks/CTweakPlayer.cpp:
 	.data       start:0x803B824C end:0x803B830C align:4
 	.sdata2     start:0x8041D928 end:0x8041D940 align:4
 
-MetroidPrime/Enemies/Sandworm.cpp:
+MetroidPrime/Enemies/SSandworm_FuncPtrs.cpp:
 	.text       start:0x802187EC end:0x80218884
 	.sbss       start:0x804193C0 end:0x804193C8
 
