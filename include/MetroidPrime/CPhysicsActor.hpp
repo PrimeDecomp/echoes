@@ -134,6 +134,7 @@ public:
   void SetAngularVelocityOR(const CAxisAngle& angleVel);
   void ClearForcesAndTorques();
   void ClearImpulses();
+  void ClearAngularImpulses(); // Guessed name; leaves linear impulses unchanged.
   void ComputeDerivedQuantities();
   void UseCollisionImpulses();
   bool WillMove(const CStateManager& mgr);

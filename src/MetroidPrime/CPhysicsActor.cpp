@@ -211,6 +211,10 @@ void CPhysicsActor::ClearImpulses() {
   mAngularImpulse = mMoveAngularImpulse = CAxisAngle::Identity();
 }
 
+void CPhysicsActor::ClearAngularImpulses() {
+  mAngularImpulse = mMoveAngularImpulse = CAxisAngle::Identity();
+}
+
 void CPhysicsActor::UseCollisionImpulses() {
   mConstantForce += mImpulse;
   mAngularMomentum += mAngularImpulse;
