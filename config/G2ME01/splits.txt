@@ -542,7 +542,7 @@ MetroidPrime/TGameTypes.cpp:
 	.sbss       start:0x80419120 end:0x80419130
 
 MetroidPrime/CPhysicsActor.cpp:
-	.text       start:0x800E9C1C end:0x800EBD40
+	.text       start:0x800E9C14 end:0x800EBD40
 	.ctors      start:0x803A5510 end:0x803A5514
 	.data       start:0x803B3A10 end:0x803B3AA8
 	.bss        start:0x80410974 end:0x80410980 align:4 common
