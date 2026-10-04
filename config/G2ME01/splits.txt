@@ -2782,7 +2782,7 @@ Kyoto/Animation/CAdvancementDeltas.cpp:
 	.sdata2     start:0x8041E310 end:0x8041E320
 
 Kyoto/Animation/CAnimMathUtils.cpp:
-	.text       start:0x802A05EC end:0x802A0A70
+	.text       start:0x802A05EC end:0x802A0B38
 	.sbss       start:0x804198A0 end:0x804198A8
 	.sdata2     start:0x8041E320 end:0x8041E348
 
