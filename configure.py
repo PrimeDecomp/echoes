@@ -717,6 +717,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyStateCmdMgr.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyAdditiveAim.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyDash.cpp"),
+            Object(NonMatching, "MetroidPrime/Player/CPlayerBodyGrapple.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyLocomotion.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyJump.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerRagDoll.cpp"),

@@ -1493,6 +1493,10 @@ MetroidPrime/ScriptObjects/CScriptAreaDamage.cpp:
 	.sdata      start:0x804186F8 end:0x80418700
 	.sdata2     start:0x8041D410 end:0x8041D418
 
+MetroidPrime/Player/CPlayerBodyGrapple.cpp:
+	.text       start:0x801E3A34 end:0x801E4074
+	.sdata2     start:0x8041D418 end:0x8041D420
+
 MetroidPrime/CPortalArea.cpp:
 	.text       start:0x801E4074 end:0x801E555C
 	.sdata      start:0x80418700 end:0x80418708

@@ -29,7 +29,8 @@ public:
     kPAS_AdditiveAim = 4,
     kPAS_DeathReaction = 5,
     kPAS_MorphDuration = 7,
-    kPAS_GunReaction = 9
+    kPAS_GunReaction = 9,
+    kPAS_Grapple = 11
   };
 
   CPlayerBodyController(CPlayer& player, CAssetId stateMachine);
@@ -152,12 +153,19 @@ private:
   };
 
   struct SGrappleState {
+    // Guessed player-specific state and PAS phase names.
+    enum EState { kS_Invalid = -1, kS_Firing, kS_Pull, kS_Swinging };
+    enum EAnimationPhase { kAP_Firing, kAP_Pull, kAP_Swinging };
+
     SGrappleState();
     void Start(CStateManager& mgr, CPlayerBodyController& controller);
     bool Update(CStateManager& mgr, CPlayerBodyController& controller);
     void Shutdown(CPlayerBodyController& controller);
+    bool TryPlayFiring(CStateManager& mgr, CPlayerBodyController& controller);
+    bool TryPlayPull(CStateManager& mgr, CPlayerBodyController& controller);
+    void PlaySwing(CStateManager& mgr, CPlayerBodyController& controller);
 
-    int mState;
+    EState mState;
     int mAnimationVariant;
   };
 

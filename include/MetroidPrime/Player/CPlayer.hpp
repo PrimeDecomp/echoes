@@ -201,6 +201,7 @@ public:
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
+  EGrappleState GetGrappleState() const { return mGrappleState; }
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
   const CVector3f& GetOrbitPoint() const { return mOrbitPoint; }
   TUniqueId GetOrbitTargetId() const { return mOrbitTargetId; }
