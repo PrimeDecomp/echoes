@@ -31,6 +31,7 @@ public:
   const CVector3f& GetNormalLeft() const { return mNormalLeft; }
   const CVector3f& GetNormalRight() const { return mNormalRight; }
   TUniqueId GetObjectId() const { return mObjectId; }
+  void SetObjectId(TUniqueId id) { mObjectId = id; }
   void Swap();
 
 private:
