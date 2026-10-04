@@ -2,10 +2,13 @@
 
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
+#include "GuiSys/CGuiHeadWidget.hpp"
+#include "GuiSys/CGuiWidgetDrawParms.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Input/IController.hpp"
 #include "Kyoto/CSimplePool.hpp"
@@ -106,7 +109,11 @@ void CInGameGuiManager::PreDraw(CStateManager& mgr, bool cameraActive) {
 }
 
 void CInGameGuiManager::DrawDarkVisorMask() const {
-  // TODO: set the outer-mask visibility and draw the loaded dark-visor frame.
+  if (mDarkMaskFrame.get() != nullptr) {
+    CGraphics::SetDepthRange(1.f / 512.f, 1.f / 256.f);
+    mSamusHud->GetLoadedHudFrame()->GetRootWidget()->Draw(CGuiWidgetDrawParms::Default());
+    mDarkMaskFrame->GetRootWidget()->Draw(CGuiWidgetDrawParms::Default());
+  }
 }
 
 void CInGameGuiManager::DrawScanVisor(float, const CStateManager&, const CColor&, const CColor&,

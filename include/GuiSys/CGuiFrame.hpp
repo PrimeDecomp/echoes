@@ -26,6 +26,7 @@ public:
   void ProcessUserInput(const CFinalInput& input);
   void Draw(const CGuiWidgetDrawParms& parms) const;
   CGuiCamera* GetFrameCamera() const { return mCamera; }
+  CGuiHeadWidget* GetRootWidget() const { return mRootWidget; }
   const CGuiFrameModelDatabase* GetModelDatabase() const { return mModelDatabase.get(); }
   CGuiWidgetIdDB& WidgetIdDB() { return mWidgetIds; }
   void SetFrameCamera(CGuiCamera* camera);

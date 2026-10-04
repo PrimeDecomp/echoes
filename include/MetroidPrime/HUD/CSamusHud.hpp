@@ -73,6 +73,7 @@ public:
   void EnterFirstPerson(const CStateManager& mgr);
   void LeaveFirstPerson(const CStateManager& mgr);
   void StopSounds(const CStateManager& mgr);
+  CGuiFrame* GetLoadedHudFrame() const { return mLoadedHudFrame; }
   void ProcessControllerInput(const CFinalInput& input);
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
   static CHudDecoInterfaceScan* GetScanInterface(int playerIndex);
