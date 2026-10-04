@@ -2,6 +2,7 @@
 
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -11,17 +12,18 @@
 #include "Kyoto/Particles/CParticleSwoosh.hpp"
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CRainSplashGenerator.hpp"
 #include "MetroidPrime/CWorldShadow.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CMorphBallShadow.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
-#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
-
-#include "Kyoto/Basics/CCast.hpp"
-#include "MetroidPrime/Tweaks/CTweakBall.hpp"
-#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/Tweaks/CTweakBall.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
+
 #include "rstl/math.hpp"
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
@@ -690,9 +692,29 @@ void CMorphBall::ResetSpiderBallSwingControllerMovementTimer() {
   mSwingControlTime = 0.f;
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetSpiderBallControllerMovement(const CFinalInput& input) const {
-  // TODO: Convert mapped movement axes to signed magnitude with the Echoes angle dead zones.
+  if (!IsMovementAllowed()) {
+    return 0.f;
+  }
+
+  const float forward =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Forward, input) -
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Backward, input);
+  const float turn =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnRight, input) -
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnLeft, input);
+  const double angleTemp = atan2(forward, turn);
+  const float angle = (180.f / M_PIF) * static_cast< float >(angleTemp);
+  const float hyp = CMath::SqrtF(forward * forward + turn * turn);
+
+  if (angle > -35.f && angle < 125.f) {
+    return hyp;
+  }
+
+  if (angle < -55.f || angle > 145.f) {
+    return -hyp;
+  }
+
   return 0.f;
 }
 
@@ -731,22 +753,28 @@ void CMorphBall::ResetSpiderBallForces() {
   mSpiderForcesReset = true;
 }
 
-// Scaffold, not a reconstructed implementation.
 CVector2f CMorphBall::CalculateSpiderBallAttractionSurfaceForces(const CFinalInput& input) const {
-  // TODO: Build the mapped two-axis attraction input with movement gating.
-  return CVector2f(0.f, 0.f);
+  if (!IsMovementAllowed()) {
+    return CVector2f::Zero();
+  }
+
+  const float forwardBack =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Forward, input) -
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Backward, input);
+  const float rightLeft =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnRight, input) -
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnLeft, input);
+  return CVector2f(rightLeft, forwardBack);
 }
 
-// Scaffold, not a reconstructed implementation.
 CVector3f CMorphBall::TransformSpiderBallForcesXZ(CVector2f& forces, CStateManager& mgr) const {
-  // TODO: Transform the XZ force plane using the player's Echoes camera mode.
-  return CVector3f::Zero();
+  const CTransform4f camXf = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
+  return camXf.GetColumn(kDX) * forces.GetX() + camXf.GetColumn(kDZ) * forces.GetY();
 }
 
-// Scaffold, not a reconstructed implementation.
 CVector3f CMorphBall::TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const {
-  // TODO: Transform the XY force plane using the player's Echoes camera mode.
-  return CVector3f::Zero();
+  const CTransform4f camXf = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
+  return camXf.GetColumn(kDX) * forces.GetX() + camXf.GetColumn(kDY) * forces.GetY();
 }
 
 // Scaffold, not a reconstructed implementation.
