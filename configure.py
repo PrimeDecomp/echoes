@@ -429,6 +429,7 @@ config.libs = [
             Object(NonMatching, "WorldFormat/CMetroidAreaCollider.cpp"),
             Object(NonMatching, "WorldFormat/CAreaOctTree_Tests.cpp"),
             Object(NonMatching, "WorldFormat/CCollisionSurface.cpp"),
+            Object(NonMatching, "WorldFormat/CCollisionEdge.cpp"),
             Object(NonMatching, "WorldFormat/CCollisionPrimitiveData.cpp"),
             Object(NonMatching, "WorldFormat/CCollisionCache.cpp"),
             Object(NonMatching, "WorldFormat/CMetroidModelInstance.cpp"),
