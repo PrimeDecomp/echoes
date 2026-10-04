@@ -80,6 +80,74 @@ struct SIng_FuncPtrs {
 CHECK_SIZEOF(SIng_FuncPtrs, 0x4)
 void SetSIng_FuncPtrs(SIng_FuncPtrs* callbacks);
 
+struct SIngSpaceJumpGuardian_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SIngSpaceJumpGuardian_FuncPtrs, 0x4)
+void SetSIngSpaceJumpGuardian_FuncPtrs(SIngSpaceJumpGuardian_FuncPtrs* callbacks);
+
+struct SDigitalGuardian_FuncPtrs {
+  // Guessed member names.
+  FScriptLoader mLoadDigitalGuardian;
+  FScriptLoader mLoadDigitalGuardianHead;
+};
+CHECK_SIZEOF(SDigitalGuardian_FuncPtrs, 0x8)
+void SetSDigitalGuardian_FuncPtrs(SDigitalGuardian_FuncPtrs* callbacks);
+
+struct SShredder_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SShredder_FuncPtrs, 0x4)
+void SetSShredder_FuncPtrs(SShredder_FuncPtrs* callbacks);
+
+struct SFrontEndDataNetwork_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SFrontEndDataNetwork_FuncPtrs, 0x4)
+void SetSFrontEndDataNetwork_FuncPtrs(SFrontEndDataNetwork_FuncPtrs* callbacks);
+
+struct SStoneToad_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SStoneToad_FuncPtrs, 0x4)
+void SetSStoneToad_FuncPtrs(SStoneToad_FuncPtrs* callbacks);
+
+struct SCoin_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SCoin_FuncPtrs, 0x4)
+void SetSCoin_FuncPtrs(SCoin_FuncPtrs* callbacks);
+
+struct SKrocuss_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SKrocuss_FuncPtrs, 0x4)
+void SetSKrocuss_FuncPtrs(SKrocuss_FuncPtrs* callbacks);
+
+struct SAIMannedTurret_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SAIMannedTurret_FuncPtrs, 0x4)
+void SetSAIMannedTurret_FuncPtrs(SAIMannedTurret_FuncPtrs* callbacks);
+
+struct SEmperorIngStage1_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SEmperorIngStage1_FuncPtrs, 0x4)
+void SetSEmperorIngStage1_FuncPtrs(SEmperorIngStage1_FuncPtrs* callbacks);
+
+struct SOctapedeSegment_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SOctapedeSegment_FuncPtrs, 0x4)
+void SetSOctapedeSegment_FuncPtrs(SOctapedeSegment_FuncPtrs* callbacks);
+
+struct SMetareeSwarm_FuncPtrs {
+  FScriptLoader mLoader; // Guessed member name.
+};
+CHECK_SIZEOF(SMetareeSwarm_FuncPtrs, 0x4)
+void SetSMetareeSwarm_FuncPtrs(SMetareeSwarm_FuncPtrs* callbacks);
+
 struct SGuiWidget_FuncPtrs {
   FScriptLoader guiWidget;
   FScriptLoader guiScreen;
