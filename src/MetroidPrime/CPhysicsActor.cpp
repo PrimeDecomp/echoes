@@ -2,17 +2,18 @@
 
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "WorldFormat/CCollisionCache.hpp"
 
 #include "rstl/math.hpp"
 
 const float CPhysicsActor::kGravityAccel = 9.81f * 2.5f;
 const StepData CPhysicsActor::skDefaultStepData(0.3f, 0.3f, 0);
 
-CPhysicsActor::CPhysicsActor(TUniqueId uid, const rstl::string& name,
-                             const CEntityInfo& info, uint inGrave, const CTransform4f& xf,
-                             const CModelData& mData, const CMaterialList& matList,
-                             const CAABox& aabb, const SMoverData& moverData,
-                             const CActorParameters& actParams, const StepData& stepData)
+CPhysicsActor::CPhysicsActor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+                             uint inGrave, const CTransform4f& xf, const CModelData& mData,
+                             const CMaterialList& matList, const CAABox& aabb,
+                             const SMoverData& moverData, const CActorParameters& actParams,
+                             const StepData& stepData)
 : CActor(uid, name, info, inGrave | 2, xf, mData, matList, actParams, kInvalidUniqueId)
 , mMass(moverData.mMass)
 , mMassRecip(moverData.mMass > 0.f ? 1.f / moverData.mMass : 1.f)
@@ -36,16 +37,17 @@ CPhysicsActor::CPhysicsActor(TUniqueId uid, const rstl::string& name,
 , mBaseBoundingBox(aabb)
 , mCollisionPrimitive(aabb, matList)
 , mPrimitiveOffset(xf.GetTranslation())
-, mLastNonCollidingState(xf.GetTranslation(),
-                             CNUQuaternion::BuildFromMatrix3f(xf.BuildMatrix3f()),
-                             CVector3f::Zero(), CAxisAngle::Identity())
+, mLastNonCollidingState(xf.GetTranslation(), CNUQuaternion::BuildFromMatrix3f(xf.BuildMatrix3f()),
+                         CVector3f::Zero(), CAxisAngle::Identity())
 , mMaximumCollisionVelocity(1000000.0)
 , mStepUpHeight(stepData.stepUp)
 , mStepDownHeight(stepData.stepDown)
 , mRestitutionCoefModifier(0.f)
 , mCollisionAccuracyModifier(1.f)
 , mNumTicksStuck(0)
-, mNumTicksPartialUpdate(0) {
+, mNumTicksPartialUpdate(0)
+, mCollisionCache(stepData.unk & 1 ? rs_new CCollisionCache(CAABox::Identity(), 1, 2, uid.value)
+                                   : nullptr) {
   SetMass(moverData.mMass);
   MoveCollisionPrimitive(CVector3f::Zero());
   SetVelocityOR(moverData.mVelocity);
@@ -391,3 +393,5 @@ float CPhysicsActor::GetMaximumCollisionVelocity() const { return mMaximumCollis
 bool CPhysicsActor::IsOnStaticGround() const {
   return 0;
 }
+
+CCollisionCache* CPhysicsActor::GetCollisionCache() const { return mCollisionCache.get(); }

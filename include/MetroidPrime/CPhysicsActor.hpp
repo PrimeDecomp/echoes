@@ -14,6 +14,7 @@
 
 #include "Collision/CCollidableAABox.hpp"
 
+#include "rstl/auto_ptr.hpp"
 #include "rstl/optional_object.hpp"
 
 struct SMoverData {
@@ -62,11 +63,7 @@ private:
 CHECK_SIZEOF(CMotionState, 0x34)
 
 class CCollisionInfoList;
-
-struct CPhysicsActorUnkB {
-  ~CPhysicsActorUnkB();
-  int a;
-};
+class CCollisionCache;
 
 struct StepData {
   float stepUp;
@@ -109,6 +106,7 @@ public:
   virtual bool IsOnStaticGround() const;
   virtual float GetWeight() const;
   float GetMass() const { return mMass; }
+  CCollisionCache* GetCollisionCache() const; // Guessed name; borrowed mutable cache.
   void SetMass(float mass);
   void SetInertiaTensorScalar(float tensor);
 
@@ -236,9 +234,7 @@ private:
   float mCollisionAccuracyModifier;
   uint mNumTicksStuck;
   uint mNumTicksPartialUpdate;
-  CPhysicsActorUnkB x254_;
-  void* unk2;
-  int unk3;
+  rstl::auto_ptr< CCollisionCache > mCollisionCache; // Guessed name.
 };
 CHECK_SIZEOF(CPhysicsActor, 0x2d0)
 
