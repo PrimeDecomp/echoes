@@ -11,6 +11,7 @@ public:
 
   // CEntity
   ~CScriptActorKeyframe() override;
+  CEntity* TypesMatch(int typeId) const override;
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 

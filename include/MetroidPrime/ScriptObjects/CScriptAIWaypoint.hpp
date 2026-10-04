@@ -17,6 +17,7 @@ public:
 
   float GetSpeed() const { return mSpeed; }
   float GetPause() const { return mPause; }
+  uint GetFlags() const { return x164_; } // Guessed accessor name; unknown bits are preserved.
 
 private:
   float mSpeed;

@@ -218,6 +218,8 @@ public:
 
   bool GetAlive() const { return mAlive; }
 
+  bool GetVerticalMovement() const { return mVerticalMovement; }
+
   bool IsInCollision() const { return mSolidCollision; }
 
   float GetSpeed() const { return mSpeed; }

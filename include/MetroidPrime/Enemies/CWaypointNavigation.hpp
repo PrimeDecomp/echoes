@@ -8,6 +8,7 @@
 class CPatterned;
 class CStateManager;
 
+// Wii SEL class name; remaining helper/member spellings and qualifiers are reconstructed.
 class CWaypointNavigation {
 public:
   CWaypointNavigation();
@@ -16,6 +17,11 @@ public:
   void ConfigureWobbleSteering(bool clockwise, float strength);
 
 private:
+  void ApplyWobbleSteering(CVector3f& movement) const;
+  void UpdateActorKeyframe(CStateManager& mgr, CPatterned& actor);
+  void UpdateDest(CStateManager& mgr, CPatterned& actor);
+  void ApproachDest(CStateManager& mgr, CPatterned& actor);
+
   enum EPatrolState { kPS_Invalid = -1, kPS_Moving, kPS_Paused, kPS_Done };
   float mMoveSpeed;
   float mPauseRemainingTime;
@@ -31,4 +37,4 @@ private:
 };
 CHECK_SIZEOF(CWaypointNavigation, 0x3c)
 
-#endif
+#endif // _CWAYPOINTNAVIGATION

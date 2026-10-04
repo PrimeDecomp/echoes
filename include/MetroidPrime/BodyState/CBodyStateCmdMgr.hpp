@@ -241,6 +241,16 @@ public:
   , mFacingFlags(facingFlags)
   , mWallJump(false) {}
 
+  CBCJumpCmd(const CVector3f& waypoint1, const CVector3f& waypoint2)
+  : CBodyStateCmd(kBSC_Jump)
+  , mType(pas::kJT_Normal)
+  , mAnimationVariant(0)
+  , mWaypoint1(waypoint1)
+  , mWaypoint2(waypoint2)
+  , mInitialState(pas::kJS_IntoJump)
+  , mFacingFlags(kFF_AmbushJump)
+  , mWallJump(true) {}
+
   pas::EJumpType GetJumpType() const { return mType; }
 
   const CVector3f& GetJumpTarget() const { return mWaypoint1; }
@@ -479,6 +489,12 @@ public:
     DeliverCmd(cmd.GetCommandId());
     mSlide = cmd;
   }
+
+  void DeliverCmd(const CBCJumpCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mJump = cmd;
+  }
+
   void DeliverCmd(const CBCAdditiveReactionCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mAdditiveReaction = cmd;
@@ -492,6 +508,8 @@ public:
   const CBodyStateCmd* GetCmd(EBodyStateCmd cmd) const;
 
   const CVector3f& GetMoveVector() const { return mMove; }
+
+  const CVector3f& GetPreviousMoveVector() const { return mPreviousMove; }
 
   const CVector3f& GetFaceVector() const { return mFace; }
 
