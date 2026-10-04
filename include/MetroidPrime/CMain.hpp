@@ -34,7 +34,7 @@ public:
   ~CMain();
 
   bool LoadAudio();
-  void UpdateStreamedAudio();
+  void UpdateStreamedAudio(); // Name inferred from Prime's stream-audio update method.
   void RegisterResourceTweaks();
   void ResetGameState();
   void StreamNewGameState(bool);
