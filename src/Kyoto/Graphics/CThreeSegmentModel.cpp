@@ -129,12 +129,9 @@ void CThreeSegmentModel::SetSegmentTransforms(int matrixGroup, const CTransform4
   Mtx lowerModelView;
   Mtx middleModelView;
   Mtx upperModelView;
-  PSMTXConcat(CGraphics::GetGXModelView().GetCStyleMatrix(), lower.GetCStyleMatrix(),
-              lowerModelView);
-  PSMTXConcat(CGraphics::GetGXModelView().GetCStyleMatrix(), middle.GetCStyleMatrix(),
-              middleModelView);
-  PSMTXConcat(CGraphics::GetGXModelView().GetCStyleMatrix(), upper.GetCStyleMatrix(),
-              upperModelView);
+  PSMTXConcat(CGraphics::GetCameraMtx(), lower.GetCStyleMatrix(), lowerModelView);
+  PSMTXConcat(CGraphics::GetCameraMtx(), middle.GetCStyleMatrix(), middleModelView);
+  PSMTXConcat(CGraphics::GetCameraMtx(), upper.GetCStyleMatrix(), upperModelView);
   const int firstMatrix = matrixGroup * kS_Count * 3;
   GXLoadPosMtxImm(lowerModelView, firstMatrix + GX_PNMTX1);
   GXLoadPosMtxImm(middleModelView, firstMatrix + GX_PNMTX2);
