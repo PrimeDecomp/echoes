@@ -249,8 +249,7 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
     }
   }
 
-  const bool result = found;
-  return result;
+  return found;
 }
 
 CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
@@ -269,11 +268,9 @@ CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
       float radialSpeed = CVector3f::Dot(currentVelocity, radialUnit);
 
       while (elapsed < dt) {
-
         currentPosition += preThinkDt * currentVelocity;
         radial = (currentPosition - orbitPoint).DropZ();
         if (radial.CanBeNormalized()) {
-
           radialUnit = radial.AsNormalized();
           CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
           currentVelocity = tangentialSpeed * tangent + radialSpeed * radialUnit;
