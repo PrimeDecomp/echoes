@@ -399,6 +399,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CSplashScreen.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrameFactory.cpp"),
+            Object(NonMatching, "GuiSys/CGuiFactories.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrame.cpp"),
             Object(NonMatching, "GuiSys/CGuiFrameModelDatabase.cpp"),
             Object(NonMatching, "GuiSys/CGuiModel.cpp"),
