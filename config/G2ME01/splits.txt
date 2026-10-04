@@ -301,9 +301,10 @@ MetroidPrime/TypesMatch.cpp:
 	.data       start:0x803B2B30 end:0x803B3068
 
 MetroidPrime/ScriptObjects/CScriptSound.cpp:
-	.text       start:0x8009DCE8 end:0x8009F4E4
+	.text       start:0x8009D644 end:0x8009F4E4
 	.data       start:0x803B3190 end:0x803B3210
 	.sbss       start:0x80419058 end:0x8041905C
+	.sdata2     start:0x8041AFE0 end:0x8041B018
 
 MetroidPrime/CMemoryDrawEnum.cpp:
 	.sbss       start:0x80419078 end:0x8041907C

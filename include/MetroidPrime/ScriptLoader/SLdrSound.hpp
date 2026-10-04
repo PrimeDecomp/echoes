@@ -68,8 +68,8 @@ struct SLdrSound {
   int echoVisorMaxVolume; // 0x69ec9107
 };
 
-inline SLdrSound::SLdrSound() : editorProperties(), surroundPan() {
-  sound = 0;
+inline SLdrSound::SLdrSound() : editorProperties(), sound(-1), surroundPan() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   maxAudibleDistance = 50.0f;
   dropOff = 0.2f;
   delayTime = 0.0f;

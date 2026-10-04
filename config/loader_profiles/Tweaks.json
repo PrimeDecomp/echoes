@@ -1,5 +1,5 @@
 {
-  "template_ref": "ad4b3d62e952a01c13badcc6aa1cb68314d898dd",
+  "template_ref": "74dcb04f9f5fbda3cf78096f4ef38b2fcb586e7a",
   "sources": [
     "Structs/SLdrTDamageInfo.cpp",
     "Structs/SLdrTWeaponDamage.cpp",

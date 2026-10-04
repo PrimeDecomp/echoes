@@ -211,6 +211,9 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, dict[str, tuple[str, ...]]] = {
     "SLdrPlayerHint": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
     },
+    "SLdrSound": {
+        "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
+    },
     "SLdrPickup": {
         "editorProperties": ("unknown_0x5d298a43 = 0x00000003u;",),
         "actorInformation": (
