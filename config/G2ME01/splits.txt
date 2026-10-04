@@ -2081,6 +2081,9 @@ MetroidPrime/Enemies/SIngPuddle_FuncPtrs.cpp:
 	.text       start:0x80229EB4 end:0x80229EE8
 	.sbss       start:0x80419598 end:0x804195A0
 
+MetroidPrime/CBasicSwarmData.cpp:
+	.text       start:0x80229EE8 end:0x80229F90
+
 MetroidPrime/Enemies/SFlyerSwarm_FuncPtrs.cpp:
 	.text       start:0x80229F90 end:0x80229FC4
 	.sbss       start:0x804195A0 end:0x804195A8

@@ -9827,7 +9827,7 @@ do_erase__Q24rstl42list<P7CEntity,Q24rstl17rmemory_allocator>FPQ34rstl42list<P7C
 SetSGeomBlobV2_FuncPtrs__FP20SGeomBlobV2_FuncPtrs = .text:0x80229EAC; // type:function size:0x8 scope:global align:4
 LoadIngPuddle__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x80229EB4; // type:function size:0x2C scope:global align:4
 SetSIngPuddle_FuncPtrs__FP19SIngPuddle_FuncPtrs = .text:0x80229EE0; // type:function size:0x8 scope:global align:4
-fn_80229EE8 = .text:0x80229EE8; // type:function size:0xA8
+__ct__15CBasicSwarmDataFRC11CDamageInfoRC11CHealthInfoRC20CDamageVulnerabilityUi = .text:0x80229EE8; // type:function size:0xA8
 LoadFlyerSwarm__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x80229F90; // type:function size:0x2C scope:global align:4
 SetSFlyerSwarm_FuncPtrs__FP20SFlyerSwarm_FuncPtrs = .text:0x80229FBC; // type:function size:0x8 scope:global align:4
 LoadStreamedMovie__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x80229FC4; // type:function size:0x2C scope:global align:4
