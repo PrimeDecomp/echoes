@@ -1166,6 +1166,7 @@ config.libs = [
         "progress_category": "sdk",  # str | List[str]
         "host": False,
         "objects": [
+            Object(NonMatching, "Runtime/__mem.c"),
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(MatchingFor("G2ME01"), "Runtime/__va_arg.c"),
             Object(MatchingFor("G2ME01"), "Runtime/CPlusLibPPC.cpp"),
@@ -1400,6 +1401,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSSync.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSThread.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/OSTime.c"),
+            Object(NonMatching, "Dolphin/os/__start.c"),
             Object(MatchingFor("G2ME01"), "Dolphin/os/__ppc_eabi_init.cpp"),
         ],
     ),

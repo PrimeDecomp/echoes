@@ -4361,6 +4361,13 @@ Dolphin/os/OSTime.c:
 	.text       start:0x80376148 end:0x803765C4
 	.data       start:0x803BFAD8 end:0x803BFB38
 
+Runtime/__mem.c:
+	.init       start:0x80003100 end:0x80003238
+
+Dolphin/os/__start.c:
+	.init       start:0x80003238 end:0x80003538
+	.sbss       start:0x8041A020 end:0x8041A028
+
 Dolphin/os/__ppc_eabi_init.cpp:
 	.init       start:0x80003538 end:0x80003590
 	.text       start:0x803765C4 end:0x8037665C
