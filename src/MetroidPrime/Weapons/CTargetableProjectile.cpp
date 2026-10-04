@@ -10,11 +10,21 @@ CTargetableProjectile::CTargetableProjectile(
     const TToken< CWeaponDescription >& deflectedDescription, TUniqueId homingTarget, uint attribs,
     const CImpactVisorEffect& visorEffect, const CVector3f& scale)
 : CEnergyProjectile(true, description, type, xf, excludeMaterial, damage, uid, areaId, owner,
-                    homingTarget, attribs, false, scale, visorEffect, false, true, false, 1.f, 0.f,
-                    0.f)
+                    homingTarget, attribs | kPA_PartialCharge | ::kPA_PlasmaProjectile |
+                                      kPA_BigProjectile,
+                    false, scale, visorEffect, false, true, false, 1.f, 0.f, 0.f)
 , mDeflectedWeaponDescription(deflectedDescription)
 , mDeflectedDamage(deflectedDamage)
-, mDeflectToOwner(true) {}
+, mDeflectToOwner(true) {
+  MaterialList().Add(kMT_Target);
+  MaterialList().Add(kMT_Orbit);
+  MaterialList().Add(kMT_Unknown46);
+
+  const CMaterialFilter& oldFilter = GetMaterialFilter();
+  CMaterialList excluded = oldFilter.GetExcludeList();
+  excluded.Add(kMT_Unknown46);
+  SetMaterialFilter(CMaterialFilter(oldFilter.GetIncludeList(), excluded, oldFilter.GetType()));
+}
 
 CTargetableProjectile::~CTargetableProjectile() {}
 
