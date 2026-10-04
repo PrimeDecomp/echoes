@@ -12,7 +12,7 @@ CTargetableProjectile::CTargetableProjectile(
 : CEnergyProjectile(true, description, type, xf, excludeMaterial, damage, uid, areaId, owner,
                     homingTarget, attribs | kPA_PartialCharge | ::kPA_PlasmaProjectile |
                                       kPA_BigProjectile,
-                    false, scale, visorEffect, false, true, false, 1.f, 0.f, 0.f)
+                    false, scale, visorEffect, false, true, false, 1.f, 4.f, 4.f)
 , mDeflectedWeaponDescription(deflectedDescription)
 , mDeflectedDamage(deflectedDamage)
 , mDeflectToOwner(true) {
@@ -73,7 +73,7 @@ bool CTargetableProjectile::Explode(const CVector3f& position, const CVector3f& 
             true, mDeflectedWeaponDescription, GetType(),
             CTransform4f::LookAt(mProjectile.GetTranslation(), aimPosition, CVector3f::Up()),
             kMT_Player, mDeflectedDamage, uid, GetCurrentAreaId(), projectileOwner, GetOwnerId(),
-            0, false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f, 0.f, 0.f);
+            0, false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
         mgr.AddObject(*projectile);
         projectile->AddMaterial(kMT_Orbit, mgr);
         player->SetAimTarget(uid);
