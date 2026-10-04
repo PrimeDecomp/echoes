@@ -571,9 +571,38 @@ void CMorphBall::LeaveMorphBallState(CStateManager& mgr) {
   StopParticleWakes();
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::EnterMorphBallState(CStateManager& mgr, EBallState state) {
-  // TODO: Reset ball/spider/boost state, sounds, averages and lighting for the requested mode.
+  mBallState = state;
+  mTireFactor = 0.f;
+  mBoostTrailFadeTimer = 0.f;
+  UpdateEffects(0.f, mgr);
+  mBallAnimationIndex = 0;
+  StopParticleWakes();
+  StopSounds();
+  mBoostOverLightFactor = 0.f;
+  mBoostLightFactor = 0.f;
+  mSpiderLightFactor = 0.f;
+  DisableHalfPipeStatus();
+  mBallTiltAngle = 0.f;
+  mTireLeanAngle = 0.f;
+  mScrewAttackJumpCount = 0;
+  mWallJumpCount = 0;
+  mScrewAttackGroundedFrames = 0;
+  mScrewAttackExitAnimationFrames = 0;
+  mScrewAttackRecoveryCollisionTime = 0.f;
+  mPendingRecoil = false;
+  mRecoiling = false;
+  mEndScrewAttackRequested = false;
+  mWallJumpInputPending = false;
+  mCollidedDuringRecovery = false;
+  x18a8_30_ = false;
+  mTouchedFloorDuringBoost = false;
+  mTireMode = false;
+  mPlayer.GetPlayerState()->SetItemAmount(CPlayerState::kIT_ActivateMorphballBoost, 0);
+  if (mBallState == kBS_ScrewAttack) {
+    mScrewAttackSfx = CSfxManager::AddEmitter(0x4a1, mPlayer.GetTranslation(),
+                                              mPlayer.GetCurrentAreaId().Value(), true, true);
+  }
 }
 
 void CMorphBall::SetBallLightActive(CStateManager& mgr, bool active) {
