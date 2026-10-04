@@ -561,6 +561,9 @@ MetroidPrime/CPhysicsActor.cpp:
 	.bss        start:0x80410974 end:0x80410980 align:4 common
 	.sdata2     start:0x8041B75C end:0x8041B790
 
+MetroidPrime/CPhysicsState.cpp:
+	.text       start:0x800EBD40 end:0x800EBE2C
+
 MetroidPrime/CFluidUVMotion.cpp:
 	.text       start:0x800EBE2C end:0x800EC298
 	.sdata2     start:0x8041B790 end:0x8041B7B0
@@ -3507,6 +3510,9 @@ Kyoto/Audio/CStreamAudioManager.cpp:
 	.sdata      start:0x80418C20 end:0x80418C38
 	.sbss       start:0x80419C18 end:0x80419C28
 	.sdata2     start:0x8041EB58 end:0x8041EB88
+
+Kyoto/Animation/CHalfTransition.cpp:
+	.text       start:0x8032250C end:0x8032257C
 
 Kyoto/Particles/CElectricDescription.cpp:
 	.text       start:0x8032257C end:0x803228CC
