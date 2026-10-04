@@ -205,6 +205,7 @@ public:
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
   bool GetDrawEnabled() const { return mDrawEnabled; } // Guessed name
+  bool GetTakesProjectedShadow() const { return mTakesProjectedShadow; }
   void SetDoTargetDistanceTest(bool enabled) { mDoTargetDistanceTest = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,

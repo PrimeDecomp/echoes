@@ -217,7 +217,7 @@ void CProjectedShadow::Render(const CStateManager& mgr) const {
     mgr.BuildNearList(nearList, queryBounds, CMaterialFilter::skPassEverything, nullptr);
     for (AUTO(it, nearList.begin()); it != nearList.end(); ++it) {
       const CActor* actor = static_cast< const CActor* >(mgr.GetObjectById(*it));
-      if (actor && actor->CanDrawStatic()) {
+      if (actor && actor->CanDrawStatic() && actor->GetTakesProjectedShadow()) {
         const CModelData& modelData = *actor->GetModelData();
         const CTransform4f modelXf =
             actor->GetTransform() * CTransform4f::Scale(CVector3f(modelData.GetScale()));
