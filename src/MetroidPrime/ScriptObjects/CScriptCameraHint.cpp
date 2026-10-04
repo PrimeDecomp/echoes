@@ -5,8 +5,13 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  return nullptr;
+}
 
 CCameraOverrideInfo::CCameraOverrideInfo(
     uint flags, uint overrideFlags, CBallCamera::EBallCameraBehaviour behaviour, float minDist,
@@ -136,3 +141,6 @@ void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateM
     camera->TranslateSplines(position);
   }
 }
+
+void CScriptCameraHint::SetPathCameraRotation(const CQuaternion& rotation, const CVector3f& pivot,
+                                            CStateManager& mgr) const {}
