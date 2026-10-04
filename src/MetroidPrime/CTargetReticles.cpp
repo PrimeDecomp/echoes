@@ -8,6 +8,10 @@
 #include <math.h>
 #include <stdio.h>
 
+// Guessed name, corroborated by Prime.
+static CTargetReticleRenderState skZeroRenderState(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f,
+                                                 1.f, true);
+
 static bool IsDamageOrbit(CPlayer::EPlayerOrbitRequest request) {
   // TODO: recover the Echoes orbit-request enumerators used by damage/lock-break transitions.
   return false;
@@ -60,14 +64,14 @@ CCompoundTargetReticle::CCompoundTargetReticle(const CStateManager& mgr, int pla
 , mNextTargetId(kInvalidUniqueId)
 , mTargetPosition(CVector3f::Zero())
 , mLaggingTargetPosition(CVector3f::Zero())
-, mCurrentGroupInterpolated(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
-, mCurrentGroupA(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
-, mCurrentGroupB(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
+, mCurrentGroupInterpolated(skZeroRenderState)
+, mCurrentGroupA(skZeroRenderState)
+, mCurrentGroupB(skZeroRenderState)
 , mCurrentGroupDuration(0.f)
 , mCurrentGroupTimer(0.f)
-, mNextGroupInterpolated(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
-, mNextGroupA(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
-, mNextGroupB(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f, 1.f, true)
+, mNextGroupInterpolated(skZeroRenderState)
+, mNextGroupA(skZeroRenderState)
+, mNextGroupB(skZeroRenderState)
 , mNextGroupDuration(0.f)
 , mNextGroupTimer(0.f)
 , mGrapplePointA(kInvalidUniqueId)
