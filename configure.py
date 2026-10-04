@@ -1049,6 +1049,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CRemoveColorOverrideInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CLineSpacingInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CLineExtraSpaceInstruction.cpp"),
+            Object(NonMatching, "Kyoto/Text/CCharacterExtraSpaceInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CPushStateInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CPopStateInstruction.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Text/CSaveableState.cpp"),

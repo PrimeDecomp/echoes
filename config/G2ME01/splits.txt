@@ -3304,6 +3304,10 @@ Kyoto/Animation/CTimeRemainderAndFraction.cpp:
 	.text       start:0x80327A98 end:0x80327B7C
 	.sdata2     start:0x8041EBB0 end:0x8041EBC0
 
+Kyoto/Text/CCharacterExtraSpaceInstruction.cpp:
+	.text       start:0x80327B7C end:0x80327C10
+	.data       start:0x803BB2A8 end:0x803BB2C8
+
 Kyoto/Math/CMayaSpline.cpp:
 	.text       start:0x80327C10 end:0x8032AFC8
 	.sdata      start:0x80418C50 end:0x80418C68
