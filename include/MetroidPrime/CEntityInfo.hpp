@@ -17,6 +17,7 @@ enum EEntityType {
   kET_Effect = 7,
   kET_GameProjectile = 8,
   kET_ScriptWaypoint = 9,
+  kET_ScriptPathMeshCtrl = 10, // Guessed class name; native path-mesh obstruction controller.
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
   kET_Bomb = 14,

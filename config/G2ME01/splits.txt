@@ -1516,6 +1516,11 @@ MetroidPrime/CSafeZoneManager.cpp:
 	.text       start:0x801EA9AC end:0x801EB64C
 	.sdata2     start:0x8041D4E0 end:0x8041D4F8
 
+MetroidPrime/ScriptObjects/CScriptPathMeshCtrl.cpp:
+	.text       start:0x801EB64C end:0x801EBB44
+	.data       start:0x803B7818 end:0x803B7898
+	.sdata      start:0x80418728 end:0x80418730
+
 MetroidPrime/CEchoEmitter.cpp:
 	.text       start:0x801EBB44 end:0x801ECF44
 	.data       start:0x803B7898 end:0x803B78B0

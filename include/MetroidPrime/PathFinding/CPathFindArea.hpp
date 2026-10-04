@@ -102,6 +102,7 @@ public:
   CVector3f GetClosestPoint() const { return mClosestPoint; }
   int GetNumRegions() const { return mRegions.size(); }
   CPFRegion& GetRegion(int index) { return mRegions[index]; }
+  CPFRegion* GetRegionPtr(int index) { return mRegions.data() + index; } // Guessed name
   const CPFNode& GetNode(int index) const { return mNodes[index]; }
   CPFLink& GetLink(int index) { return mLinks[index]; }
   CPFRegionData& GetRegionData(int index) { return mRegionData[index]; }
