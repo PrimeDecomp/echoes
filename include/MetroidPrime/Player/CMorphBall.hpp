@@ -213,6 +213,7 @@ private:
   static const uint skBallGlowColorIdx[3];
   static const uint skSpiderBallGlowColorIdx[3];
   static const uint skBoostBallGlowColorIdx[3]; // Guessed name
+  static const SColorRgb skBallLightModulationColors[3];
   static const SColorRgb skBallHullGlowColors[3]; // Guessed name
   static CColor GetBallGlowColor(const SColorRgb& color);
 

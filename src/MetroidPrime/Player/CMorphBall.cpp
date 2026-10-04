@@ -86,6 +86,12 @@ const uint CMorphBall::skBallGlowColorIdx[3] = {0, 1, 2};
 const uint CMorphBall::skSpiderBallGlowColorIdx[3] = {0, 1, 2};
 const uint CMorphBall::skBoostBallGlowColorIdx[3] = {0, 1, 2};
 
+const CMorphBall::SColorRgb CMorphBall::skBallLightModulationColors[3] = {
+    {102, 196, 255},
+    {255, 128, 51},
+    {255, 255, 204},
+};
+
 const CMorphBall::SColorRgb CMorphBall::skBallHullGlowColors[3] = {
     {102, 196, 255},
     {255, 128, 51},
@@ -1051,9 +1057,64 @@ void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateBallLight(float dt, CStateManager& mgr) {
-  // TODO: Update the inner-glow light from the generator and ball lighting state.
+  if (mBallInnerGlowLight == kInvalidUniqueId) {
+    return;
+  }
+  if (CGameLight* ballLight = TCastToPtr< CGameLight >(mgr.ObjectById(mBallInnerGlowLight))) {
+    const CTransform4f swooshToWorld = GetSwooshToWorld();
+    rstl::optional_object< CLight > light;
+    if (IsMorphBallTransitionFlashValid() && mMorphBallTransitionFlashGen->SystemHasLight()) {
+      light = mMorphBallTransitionFlashGen->GetLight();
+    } else if (mBallInnerGlowGen.get() != nullptr && mBallInnerGlowGen->SystemHasLight()) {
+      light = mBallInnerGlowGen->GetLight();
+    }
+
+    const bool lightSuitInDarkWorld =
+        mPlayer.GetPlayerState()->GetItemAmount(CPlayerState::kIT_LightSuit, true) != 0 &&
+        mgr.GetIsDarkWorld();
+
+    if (light.valid() && mBallLightActive && (lightSuitInDarkWorld || !InScrewAttackMode()) &&
+        mPlayer.GetSpawnedMorphballState() != CPlayer::kMS_Morphed) {
+      if (mBallState == kBS_Spider) {
+        ballLight->SetTranslation(swooshToWorld.GetTranslation() +
+                                  mSurfaceToWorld.GetUp() * GetBallRadius());
+      } else if (mPlayer.GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
+        ballLight->SetTranslation(mPlayer.GetTranslation() + CVector3f::Up() * GetBallRadius());
+      } else {
+        ballLight->SetTranslation(swooshToWorld.GetTranslation() +
+                                  CVector3f::Up() * GetBallRadius());
+      }
+
+      CLight lightCopy(*light);
+      const CColor& lightColor = lightCopy.GetColor();
+      lightCopy.SetColor(CColor::Modulate(
+          lightColor, GetBallGlowColor(skBallLightModulationColors[mBallGlowColorIdx])));
+
+      if (!lightSuitInDarkWorld &&
+          mPlayer.GetMorphballTransitionState() == CPlayer::kMS_Unmorphing) {
+        const float t =
+            rstl::min_val(rstl::max_val(mPlayer.GetMorphBallTransitionFactor() / 0.2f, 0.f), 1.f);
+        lightCopy.SetColor(CColor::Lerp(lightColor, CColor::Black(), t));
+      } else if (!lightSuitInDarkWorld &&
+                 mPlayer.GetMorphballTransitionState() == CPlayer::kMS_Morphing) {
+        const float t = rstl::min_val(
+            rstl::max_val((mPlayer.GetMorphBallTransitionFactor() - 0.45f) / 0.35f, 0.f), 1.f);
+        lightCopy.SetColor(CColor::Lerp(CColor::Black(), lightColor, t));
+      } else if (mPlayer.GetPlayerState()->GetItemAmount(CPlayerState::kIT_Invisibility, true) !=
+                 0) {
+        lightCopy.SetColor(CColor(0.f, 0.f, 0.1f, 1.f));
+      } else {
+        lightCopy.SetColor(CColor::Lerp(lightColor, CColor::White(), mBoostLightFactor));
+      }
+
+      lightCopy.SetColor(CColor::Lerp(CColor::Black(), lightColor, mPlayer.GetDeathAlpha()));
+      ballLight->SetLight(lightCopy);
+      ballLight->SetActive(true);
+    } else {
+      ballLight->SetActive(false);
+    }
+  }
 }
 
 // Scaffold, not a reconstructed implementation.
