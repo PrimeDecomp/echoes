@@ -1830,7 +1830,7 @@ MetroidPrime/Enemies/SSandworm_FuncPtrs.cpp:
 	.text       start:0x802187EC end:0x80218884
 	.sbss       start:0x804193C0 end:0x804193C8
 
-MetroidPrime/Enemies/SDarkCommando_FuncPtrs.cpp:
+MetroidPrime/Enemies/SCommandoPirate_FuncPtrs.cpp:
 	.text       start:0x80218884 end:0x802188B8
 	.sbss       start:0x804193C8 end:0x804193D0
 
@@ -2209,6 +2209,10 @@ MetroidPrime/CMissileRepeller.cpp:
 MetroidPrime/Enemies/SScriptDarkSamusBattleStage_FuncPtrs.cpp:
 	.text       start:0x80235DA0 end:0x80235DD4
 	.sbss       start:0x80419658 end:0x80419660
+
+MetroidPrime/Enemies/SDarkCommando_FuncPtrs.cpp:
+	.text       start:0x80235DD4 end:0x80235E08
+	.sbss       start:0x80419660 end:0x80419668
 
 MetroidPrime/CGameResultsScreen.cpp:
 	.text       start:0x80235E08 end:0x802399C8

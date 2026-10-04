@@ -8,5 +8,5 @@ void SetSScriptForgottenObject_FuncPtrs(SScriptForgottenObject_FuncPtrs* callbac
 
 // Guessed loader name.
 CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_ForgottenObject->loader(mgr, input, info);
+  return gLoader_ForgottenObject->mLoader(mgr, input, info);
 }

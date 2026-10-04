@@ -1,140 +1,183 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 
-FScriptLoader* gLoader_IngSnatchingSwarm;
+// Guessed global names; records remain borrowed from the currently loaded REL.
+SIngSnatchingSwarm_FuncPtrs* gLoader_IngSnatchingSwarm;
 SSnakeWeedSwarm_FuncPtrs* gLoader_SnakeWeed;
 SFishCloud_FuncPtrs* gLoader_FishCloud;
-FScriptLoader* gLoader_AtomicAlpha;
-FScriptLoader* gLoader_Ripper;
-FScriptLoader* gLoader_Puffer;
-FScriptLoader* gLoader_Metaree;
+SAtomicAlpha_FuncPtrs* gLoader_AtomicAlpha;
+SRipper_FuncPtrs* gLoader_Ripper;
+SPuffer_FuncPtrs* gLoader_Puffer;
+SMetaree_FuncPtrs* gLoader_Metaree;
 SPlayerActor_FuncPtrs* gLoader_PlayerActor;
 SPlayerTurret_FuncPtrs* gLoader_PlayerTurret;
-FScriptLoader* gLoader_RiftPortal;
+SRiftPortal_FuncPtrs* gLoader_RiftPortal;
 SSafeZone_FuncPtrs* gLoader_SafeZone;
 SGuiWidget_FuncPtrs* gLoader_GUI;
-FScriptLoader* gLoader_PlayerController;
-FScriptLoader* gLoader_WallWalker;
+SPlayerController_FuncPtrs* gLoader_PlayerController;
+SWallWalker_FuncPtrs* gLoader_WallWalker;
 
-FScriptLoader* gLoader_CannonBall;
+SCannonBall_FuncPtrs* gLoader_CannonBall;
 STweaks_FuncPtrs* gLoader_Tweaks;
 
-void SetLoader_WallWalker(FScriptLoader* loader) { gLoader_WallWalker = loader; }
+void SetSWallWalker_FuncPtrs(SWallWalker_FuncPtrs* callbacks) { gLoader_WallWalker = callbacks; }
+
 CEntity* Load_WallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_WallWalker)(mgr, input, info);
+  return gLoader_WallWalker->mLoadWallWalker(mgr, input, info);
 }
-void SetLoader_PlayerController(FScriptLoader* loader) { gLoader_PlayerController = loader; }
+
+void SetSPlayerController_FuncPtrs(SPlayerController_FuncPtrs* callbacks) {
+  gLoader_PlayerController = callbacks;
+}
+
 CEntity* LoadPlayerController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_PlayerController)(mgr, input, info);
+  return gLoader_PlayerController->mLoadPlayerController(mgr, input, info);
 }
+
 void SetSGuiWidget_FuncPtrs(SGuiWidget_FuncPtrs* loaders) { gLoader_GUI = loaders; }
 
 CEntity* LoadGuiWidget(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_GUI->guiWidget(mgr, input, info);
+  return gLoader_GUI->mLoadGuiWidget(mgr, input, info);
 }
+
 CEntity* LoadGuiScreen(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_GUI->guiScreen(mgr, input, info);
+  return gLoader_GUI->mLoadGuiScreen(mgr, input, info);
 }
+
 CEntity* LoadGuiSlider(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_GUI->guiSlider(mgr, input, info);
+  return gLoader_GUI->mLoadGuiSlider(mgr, input, info);
 }
+
 CEntity* LoadGuiMenu(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_GUI->guiMenu(mgr, input, info);
+  return gLoader_GUI->mLoadGuiMenu(mgr, input, info);
 }
-CEntity* LoadGuiPlayerJoinManager(CStateManager& mgr, CInputStream& input,
-                                  CEntityInfo& info) {
-  return gLoader_GUI->guiPlayerJoinManager(mgr, input, info);
+
+CEntity* LoadGuiPlayerJoinManager(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  return gLoader_GUI->mLoadGuiPlayerJoinManager(mgr, input, info);
 }
 
 void SetSSafeZone_FuncPtrs(SSafeZone_FuncPtrs* loader) { gLoader_SafeZone = loader; }
+
 CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_SafeZone->safeZone(mgr, input, info);
+  return gLoader_SafeZone->mLoadSafeZone(mgr, input, info);
 }
-void SafeZone_ActOn(CEntity& entity, CStateManager& mgr) {
-  (entity.*(gLoader_SafeZone->method))(mgr);
+
+void SafeZone_ApplyRenderEffect(CEntity& entity, CStateManager& mgr) {
+  (entity.*(gLoader_SafeZone->mApplyRenderEffect))(mgr);
 }
 
 CEntity* LoadSafeZoneCrystal(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_SafeZone->safeZoneCrystal(mgr, input, info);
+  return gLoader_SafeZone->mLoadSafeZoneCrystal(mgr, input, info);
 }
-void SetLoader_RiftPortal(FScriptLoader* loader) { gLoader_RiftPortal = loader; }
+
+void SetSRiftPortal_FuncPtrs(SRiftPortal_FuncPtrs* callbacks) { gLoader_RiftPortal = callbacks; }
+
 CEntity* LoadRiftPortal(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_RiftPortal)(mgr, input, info);
+  return gLoader_RiftPortal->mLoadRiftPortal(mgr, input, info);
 }
 
-void SetLoader_PlayerTurret(SPlayerTurret_FuncPtrs* loader) { gLoader_PlayerTurret = loader; }
+void SetSPlayerTurret_FuncPtrs(SPlayerTurret_FuncPtrs* callbacks) {
+  gLoader_PlayerTurret = callbacks;
+}
+
 CEntity* LoadPlayerTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_PlayerTurret->loader(mgr, input, info);
-}
-CTransform4f PlayerTurret_GetTransform1(CEntity& entity, CStateManager& mgr) {
-  return (entity.*(gLoader_PlayerTurret->GetTransform1))(mgr);
+  return gLoader_PlayerTurret->mLoadPlayerTurret(mgr, input, info);
 }
 
-CTransform4f PlayerTurret_GetTransform2(CEntity& entity, CStateManager& mgr) {
-  return (entity.*(gLoader_PlayerTurret->GetTransform2))(mgr);
+CTransform4f PlayerTurret_GetCameraTransform(CEntity& entity, CStateManager& mgr) {
+  return (entity.*(gLoader_PlayerTurret->mGetCameraTransform))(mgr);
 }
 
-void PlayerTurret_SendSomeMsg(CEntity& entity, CStateManager& mgr) {
-  return (entity.*(gLoader_PlayerTurret->SendSomeMsg))(mgr);
+CTransform4f PlayerTurret_GetTurretTransform(CEntity& entity, CStateManager& mgr) {
+  return (entity.*(gLoader_PlayerTurret->mGetTurretTransform))(mgr);
 }
 
-void PlayerTurret_CheckInput(CEntity& entity, float dt, CFinalInput& input, CStateManager& mgr) {
-  return (entity.*(gLoader_PlayerTurret->CheckInput))(dt, input, mgr);
+void PlayerTurret_ExitTurret(CEntity& entity, CStateManager& mgr) {
+  (entity.*(gLoader_PlayerTurret->mExitTurret))(mgr);
 }
 
-TUniqueId PlayerTurret_GetSomeId(CEntity& entity) {
-  return (entity.*(gLoader_PlayerTurret->GetSomeId))();
+void PlayerTurret_ProcessInput(CEntity& entity, const CFinalInput& input, CStateManager& mgr) {
+  (entity.*(gLoader_PlayerTurret->mProcessInput))(input, mgr);
 }
 
-void SetLoader_PlayerActor(SPlayerActor_FuncPtrs* loader) { gLoader_PlayerActor = loader; }
+TUniqueId PlayerTurret_GetHullActorId(CEntity& entity) {
+  return (entity.*(gLoader_PlayerTurret->mGetHullActorId))();
+}
+
+void SetSPlayerActor_FuncPtrs(SPlayerActor_FuncPtrs* callbacks) { gLoader_PlayerActor = callbacks; }
+
 CEntity* LoadPlayerActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_PlayerActor->loader(mgr, input, info);
-}
-void TouchPlayerActor(CEntity& ent, CStateManager& mgr) {
-  return (ent.*(gLoader_PlayerActor->method))(mgr);
+  return gLoader_PlayerActor->mLoadPlayerActor(mgr, input, info);
 }
 
-void SetLoader_Metaree(FScriptLoader* loader) { gLoader_Metaree = loader; }
+void PlayerActor_TouchModels(CEntity& ent, CStateManager& mgr) {
+  (ent.*(gLoader_PlayerActor->mTouchModels))(mgr);
+}
+
+void SetSMetaree_FuncPtrs(SMetaree_FuncPtrs* callbacks) { gLoader_Metaree = callbacks; }
+
 CEntity* LoadMetaree(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_Metaree)(mgr, input, info);
+  return gLoader_Metaree->mLoadMetaree(mgr, input, info);
 }
-void SetLoader_Puffer(FScriptLoader* loader) { gLoader_Puffer = loader; }
+
+void SetSPuffer_FuncPtrs(SPuffer_FuncPtrs* callbacks) { gLoader_Puffer = callbacks; }
+
 CEntity* LoadPuffer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_Puffer)(mgr, input, info);
+  return gLoader_Puffer->mLoadPuffer(mgr, input, info);
 }
-void SetLoader_Ripper(FScriptLoader* loader) { gLoader_Ripper = loader; }
+
+void SetSRipper_FuncPtrs(SRipper_FuncPtrs* callbacks) { gLoader_Ripper = callbacks; }
+
 CEntity* LoadRipper(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_Ripper)(mgr, input, info);
+  return gLoader_Ripper->mLoadRipper(mgr, input, info);
 }
-void SetLoader_AtomicAlpha(FScriptLoader* loader) { gLoader_AtomicAlpha = loader; }
+
+void SetSAtomicAlpha_FuncPtrs(SAtomicAlpha_FuncPtrs* callbacks) { gLoader_AtomicAlpha = callbacks; }
+
 CEntity* LoadAtomicAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_AtomicAlpha)(mgr, input, info);
+  return gLoader_AtomicAlpha->mLoadAtomicAlpha(mgr, input, info);
 }
 
-void SetLoader_FishCloud(SFishCloud_FuncPtrs* loader) { gLoader_FishCloud = loader; }
+void SetSFishCloud_FuncPtrs(SFishCloud_FuncPtrs* callbacks) { gLoader_FishCloud = callbacks; }
+
 CEntity* LoadFishCloud(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_FishCloud->fishCloud(mgr, input, info);
+  return gLoader_FishCloud->mLoadFishCloud(mgr, input, info);
 }
+
 CEntity* LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_FishCloud->fishCloudModifier(mgr, input, info);
+  return gLoader_FishCloud->mLoadFishCloudModifier(mgr, input, info);
 }
 
-void SetLoader_SnakeWeedSwarm(SSnakeWeedSwarm_FuncPtrs* loader) { gLoader_SnakeWeed = loader; }
+void SetSSnakeWeedSwarm_FuncPtrs(SSnakeWeedSwarm_FuncPtrs* callbacks) {
+  gLoader_SnakeWeed = callbacks;
+}
+
 CEntity* LoadSnakeWeedSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return gLoader_SnakeWeed->swarm(mgr, input, info);
+  return gLoader_SnakeWeed->mLoadSnakeWeedSwarm(mgr, input, info);
 }
 
-void SnakeWeedAlt_8021BA94(CEntity& ent, const CVector3f& v, const CDamageInfo& dmgInfo, CStateManager& mgr) {
-  return (ent.*(gLoader_SnakeWeed->method))(v, dmgInfo, mgr);
+void SnakeWeed_ApplyRadiusDamage(CEntity& entity, const CVector3f& position,
+                                 const CDamageInfo& damage, CStateManager& mgr) {
+  (entity.*(gLoader_SnakeWeed->mApplyRadiusDamage))(position, damage, mgr);
 }
 
-void SetLoader_IngSnatchingSwarm(FScriptLoader* loader) { gLoader_IngSnatchingSwarm = loader; }
+void SetSIngSnatchingSwarm_FuncPtrs(SIngSnatchingSwarm_FuncPtrs* callbacks) {
+  gLoader_IngSnatchingSwarm = callbacks;
+}
+
 CEntity* LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_IngSnatchingSwarm)(mgr, input, info);
+  return gLoader_IngSnatchingSwarm->mLoadIngSnatchingSwarm(mgr, input, info);
 }
 
-void SetLoader_CannonBall(FScriptLoader* loader) { gLoader_CannonBall = loader; }
+void SetSCannonBall_FuncPtrs(SCannonBall_FuncPtrs* callbacks) { gLoader_CannonBall = callbacks; }
+
 CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  return (*gLoader_CannonBall)(mgr, input, info);
+  return gLoader_CannonBall->mLoadCannonBall(mgr, input, info);
 }
 
-void SetTweaks_FuncPtrs(STweaks_FuncPtrs* loaders) { gLoader_Tweaks = loaders; }
+void SetSTweaks_FuncPtrs(STweaks_FuncPtrs* callbacks) { gLoader_Tweaks = callbacks; }
+
+void LoadTweaks(CInputStream& input) { gLoader_Tweaks->mLoadTweaks(input); }
+
+void CreateTweakGlobals() { gLoader_Tweaks->mCreateGlobals(); }
+
+void FreeTweaks() { gLoader_Tweaks->mFreeTweaks(); }

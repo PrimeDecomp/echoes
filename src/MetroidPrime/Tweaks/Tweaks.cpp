@@ -159,12 +159,12 @@ void REL_FreeTweaks() {
 }
 
 void TweaksInit() {
-  REL_loader_Tweaks.Loader = REL_LoadTweaks;
-  REL_loader_Tweaks.CreateGlobals = REL_CreateTweakGlobals;
-  REL_loader_Tweaks.FreeTweaks = REL_FreeTweaks;
-  SetTweaks_FuncPtrs(&REL_loader_Tweaks);
+  REL_loader_Tweaks.mLoadTweaks = REL_LoadTweaks;
+  REL_loader_Tweaks.mCreateGlobals = REL_CreateTweakGlobals;
+  REL_loader_Tweaks.mFreeTweaks = REL_FreeTweaks;
+  SetSTweaks_FuncPtrs(&REL_loader_Tweaks);
 }
 
 extern "C" void RELMain() { TweaksInit(); }
 
-extern "C" void RELExit() { SetTweaks_FuncPtrs(nullptr); }
+extern "C" void RELExit() { SetSTweaks_FuncPtrs(nullptr); }

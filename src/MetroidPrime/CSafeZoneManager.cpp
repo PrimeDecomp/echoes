@@ -69,7 +69,7 @@ void CSafeZoneManager::Render(CStateManager& mgr) const {
 
   rstl::sort_by_key(visibleZones);
   for (int i = 0; i < visibleZones.size(); ++i) {
-    SafeZone_ActOn(*visibleZones[i].second, mgr);
+    SafeZone_ApplyRenderEffect(*visibleZones[i].second, mgr);
   }
 }
 

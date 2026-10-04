@@ -167,13 +167,13 @@ CEntity* REL_LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo
   );
 }
 
-FScriptLoader REL_loader_CannonBall;
+SCannonBall_FuncPtrs REL_loader_CannonBall;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_CannonBall = REL_LoadCannonBall;
-  SetLoader_CannonBall(&REL_loader_CannonBall);
+  REL_loader_CannonBall.mLoadCannonBall = REL_LoadCannonBall;
+  SetSCannonBall_FuncPtrs(&REL_loader_CannonBall);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
-extern "C" void RELExit() { SetLoader_CannonBall(nullptr); }
+extern "C" void RELExit() { SetSCannonBall_FuncPtrs(nullptr); }
