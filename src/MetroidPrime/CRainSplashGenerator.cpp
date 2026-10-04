@@ -28,7 +28,7 @@ int CRainSplashGenerator::GetNextBestPt(int point, const CSkinnedModel& model,
     const CVector3f normal = model.GetSkinnedNormal(workspace, index);
     const float normalDot = CVector3f::Dot(normal, CVector3f::Up());
     const bool goodNormal = normalDot >= 0.f && normalDot <= 1.f;
-    const bool goodHeight = minZ <= 0.f || vertex.GetZ() > minZ;
+    const bool goodHeight = minZ > 0.f ? vertex.GetZ() > minZ : true;
     if (distance > maxDistance && goodNormal && goodHeight) {
       nextPoint = index;
       maxDistance = distance;
@@ -69,7 +69,7 @@ void CRainSplashGenerator::AddPoint(const CVector3f& position) {
 
 void CRainSplashGenerator::GeneratePoints(const CSkinnedModel& model,
                                           const SSkinningWorkspace& workspace) {
-  if (!mRaining || mGenerateTimer <= mGenerateInterval) {
+  if (!mRaining || !(mGenerateTimer > mGenerateInterval)) {
     return;
   }
   int point = mCurrentPoint;
