@@ -370,7 +370,7 @@ MetroidPrime/ScriptObjects/CScriptDock.cpp:
 	.sdata2     start:0x8041B1C8 end:0x8041B1D0
 
 MetroidPrime/ScriptObjects/CScriptCameraHint.cpp:
-	.text       start:0x800B8098 end:0x800B88D4
+	.text       start:0x800B7928 end:0x800B88D4
 	.data       start:0x803B3530 end:0x803B35B8
 
 MetroidPrime/CScriptMailbox.cpp:

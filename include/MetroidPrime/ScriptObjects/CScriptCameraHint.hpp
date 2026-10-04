@@ -23,6 +23,9 @@ public:
 
   // Guessed name. Updates the connected script path camera's three position splines.
   void SetPathCameraPosition(const CVector3f& position, CStateManager& mgr) const;
+  // Guessed name. Rotates the connected script path camera's splines.
+  void SetPathCameraRotation(const CQuaternion& rotation, const CVector3f& pivot,
+                             CStateManager& mgr) const;
 
   const CCameraOverrideInfo& GetInfo() const { return mOverrideInfo; }
   TUniqueId GetDelegatedCameraId() const { return mDelegatedCameraId; }
