@@ -5,12 +5,36 @@
 #include "MetroidPrime/CWorld.hpp"
 
 #include "Kyoto/Basics/CCast.hpp"
+#include "Kyoto/Animation/CSkinnedModel.hpp"
+#include "Kyoto/Animation/CSkinRules.hpp"
+#include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
+
+#include "dolphin/gx/GXVert.h"
+
+static const GXVtxDescList skSplashVertexDesc[] = {
+    {GX_VA_POS, GX_DIRECT}, {GX_VA_CLR0, GX_DIRECT}, {GX_VA_NULL, GX_NONE}};
 
 int CRainSplashGenerator::GetNextBestPt(int point, const CSkinnedModel& model,
                                         const SSkinningWorkspace& workspace, int count,
                                         CRandom16& random, float minZ) {
-  // TODO: Sample three skinned vertices and normals; choose the farthest eligible point.
-  return point;
+  int nextPoint = point;
+  const CVector3f reference = model.GetSkinnedPosition(workspace, point);
+  float maxDistance = 0.f;
+  for (int i = 0; i < 3; ++i) {
+    const int index = random.Range(0, count - 1);
+    const CVector3f vertex = model.GetSkinnedPosition(workspace, index);
+    const float distance = (reference - vertex).MagSquared();
+    const CVector3f normal = model.GetSkinnedNormal(workspace, index);
+    const float normalDot = CVector3f::Dot(normal, CVector3f::Up());
+    const bool goodNormal = normalDot >= 0.f && normalDot <= 1.f;
+    const bool goodHeight = minZ > 0.f ? vertex.GetZ() > minZ : true;
+    if (distance > maxDistance && goodNormal && goodHeight) {
+      nextPoint = index;
+      maxDistance = distance;
+    }
+  }
+  return nextPoint;
 }
 
 CRainSplashGenerator::CRainSplashGenerator(const CVector3f& scale, int maxSplashes,
@@ -45,13 +69,30 @@ void CRainSplashGenerator::AddPoint(const CVector3f& position) {
 
 void CRainSplashGenerator::GeneratePoints(const CSkinnedModel& model,
                                           const SSkinningWorkspace& workspace) {
-  // TODO: Fill the splash queue from skinned model samples when the generation interval elapses.
+  if (!mRaining || !(mGenerateTimer > mGenerateInterval)) {
+    return;
+  }
+  int point = mCurrentPoint;
+  for (int i = 0; i < mGenerationRate; ++i) {
+    if (mQueueSize >= mRainSplashes.size()) {
+      break;
+    }
+    const int nextPoint = GetNextBestPt(point, model, workspace,
+                                        model.GetSkinRules()->GetNumPoints(), mRandom, mMinZ);
+    AddPoint(CVector3f::ByElementMultiply(
+        mScale, model.GetSkinnedPosition(workspace, nextPoint)));
+    point = nextPoint;
+  }
+  mCurrentPoint = point;
+  mGenerateTimer = 0.f;
 }
 
 CVector3f CRainSplashGenerator::GeneratePoint(const CSkinnedModel& model,
                                               const SSkinningWorkspace& workspace) {
-  // TODO: Select a skinned point, update mCurrentPoint, and return its scaled position.
-  return CVector3f::Zero();
+  mCurrentPoint = GetNextBestPt(mCurrentPoint, model, workspace,
+                                model.GetSkinRules()->GetNumPoints(), mRandom, mMinZ);
+  return CVector3f::ByElementMultiply(mScale,
+                                     model.GetSkinnedPosition(workspace, mCurrentPoint));
 }
 
 void CRainSplashGenerator::UpdateRainSplashRange(CStateManager& mgr, int start, int end, float dt) {
@@ -108,7 +149,39 @@ void CRainSplashGenerator::Draw(const CTransform4f& xf) const {
 }
 
 void CRainSplashGenerator::DoDraw(const CTransform4f& xf) const {
-  // TODO: Set up line rendering and draw the active ring-buffer ranges in model space.
+  if (mDt <= 0.f) {
+    return;
+  }
+  CGX::SetVtxDescv(skSplashVertexDesc);
+  CGX::SetNumChans(1);
+  CGX::SetNumTevStages(1);
+  CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
+                   GX_AF_NONE);
+  CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+  CGX::SetNumTexGens(0);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+  CGX::SetZMode(true, GX_LEQUAL, false);
+  CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvPassthru);
+  CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+  CGraphics::SetModelMatrix(xf);
+  if (mQueueSize > 0) {
+    if (mQueueTail <= mQueueHead) {
+      for (int i = mQueueHead; i < mRainSplashes.size(); ++i) {
+        const SRainSplash& splash = mRainSplashes[i];
+        splash.Draw(mAlpha, mDt, splash.mPosition);
+      }
+      for (int i = 0; i < mQueueTail; ++i) {
+        const SRainSplash& splash = mRainSplashes[i];
+        splash.Draw(mAlpha, mDt, splash.mPosition);
+      }
+    } else {
+      for (int i = mQueueHead; i < mQueueTail; ++i) {
+        const SRainSplash& splash = mRainSplashes[i];
+        splash.Draw(mAlpha, mDt, splash.mPosition);
+      }
+    }
+  }
+  CGX::SetLineWidth(6, GX_TO_ZERO);
 }
 
 void CRainSplashGenerator::SSplashLine::SetActive() { mActive = true; }
@@ -136,36 +209,58 @@ void CRainSplashGenerator::SSplashLine::Update(float dt, CStateManager& mgr) {
 
 void CRainSplashGenerator::SSplashLine::Draw(float alpha, float dt,
                                              const CVector3f& position) const {
-  // TODO: Draw the fading parabolic line strip, using mLength for the trail duration.
+  if (mTime > 0.f) {
+    float delta = dt * mSpeed;
+    const float trailTime = delta * CCast::ToReal32(mLength);
+    float t = mTime - trailTime;
+    if (t < 0.f) {
+      t = 0.f;
+    }
+    int vertexCount = static_cast< int >((mTime - t) / delta + 1.f);
+    CGX::SetLineWidth(mLineWidth * 6, GX_TO_ZERO);
+    CGX::Begin(GX_LINESTRIP, GX_VTXFMT0, vertexCount);
+    for (int i = 0; i < vertexCount; ++i) {
+      const float height = -4.f * t * (t - 1.f) * mParabolaHeight;
+      GXPosition3f32(t * mEndX + position.GetX(), t * mEndY + position.GetY(),
+                     height + position.GetZ());
+      GXColor1u32(static_cast< uint >(t * alpha) | 0xffffff00);
+      t += delta;
+    }
+    CGX::End();
+  }
 }
 
 CRainSplashGenerator::SRainSplash::SRainSplash()
 : mLines(SSplashLine()), mPosition(CVector3f::Zero()), x70_(0.f) {}
 
 void CRainSplashGenerator::SRainSplash::Update(float dt, CStateManager& mgr) {
-  for (int i = 0; i < mLines.size(); ++i) {
-    mLines[i].Update(dt, mgr);
+  for (rstl::reserved_vector< SSplashLine, 4 >::iterator it = mLines.begin();
+       it != mLines.end(); ++it) {
+    it->Update(dt, mgr);
   }
 }
 
 void CRainSplashGenerator::SRainSplash::Draw(float alpha, float dt,
                                              const CVector3f& position) const {
-  for (int i = 0; i < mLines.size(); ++i) {
-    mLines[i].Draw(alpha, dt, position);
+  for (rstl::reserved_vector< SSplashLine, 4 >::const_iterator it = mLines.begin();
+       it != mLines.end(); ++it) {
+    it->Draw(alpha, dt, position);
   }
 }
 
 bool CRainSplashGenerator::SRainSplash::IsActive() const {
   bool active = false;
-  for (int i = 0; i < mLines.size(); ++i) {
-    active |= mLines[i].mActive;
+  for (rstl::reserved_vector< SSplashLine, 4 >::const_iterator it = mLines.begin();
+       it != mLines.end(); ++it) {
+    active |= it->mActive;
   }
   return active;
 }
 
 void CRainSplashGenerator::SRainSplash::SetPoint(const CVector3f& position) {
-  for (int i = 0; i < mLines.size(); ++i) {
-    mLines[i].SetActive();
+  for (rstl::reserved_vector< SSplashLine, 4 >::iterator it = mLines.begin();
+       it != mLines.end(); ++it) {
+    it->SetActive();
   }
   mPosition = position;
 }
