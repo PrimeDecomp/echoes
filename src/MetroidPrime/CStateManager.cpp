@@ -5,6 +5,7 @@
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -20,6 +21,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
@@ -27,10 +29,33 @@
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 
 #include "rstl/vector.hpp"
+#include "rstl/algorithm.hpp"
+
+#include <float.h>
 
 const int gkPVSEnabled = 1;
 
 namespace {
+// Guessed local predicate names; priorities and equal-priority intensities descend.
+struct CLightPredicate {
+  bool operator()(const CLight& a, const CLight& b) const {
+    if (a.GetPriority() > b.GetPriority()) {
+      return true;
+    }
+    if (a.GetPriority() == b.GetPriority()) {
+      return a.GetIntensity() > b.GetIntensity();
+    }
+    return false;
+  }
+};
+
+struct CActorLightPredicate {
+  bool operator()(const rstl::pair< TUniqueId, CLight >& a,
+                  const rstl::pair< TUniqueId, CLight >& b) const {
+    return CLightPredicate()(a.second, b.second);
+  }
+};
+
 // Guessed local type/member names, correlated with Prime's area-ordering predicate.
 class area_sorter {
 public:
@@ -72,6 +97,55 @@ int CStateManager::GetViewportLayoutIndex() const {
     return 2;
   }
   return 1;
+}
+
+void CStateManager::BuildDynamicLightListForWorld() {
+  if (mRenderVisorMode != kRVM_Normal || mNumPlayers >= 3u) {
+    mDynamicLights = rstl::vector< CLight >();
+    mDynamicActorLights = rstl::vector< rstl::pair< TUniqueId, CLight > >();
+    return;
+  }
+
+  const CObjectList& list = GetObjectListById(kOL_GameLight);
+  const int listSize = list.size();
+  if (listSize == 0) {
+    return;
+  }
+
+  if (mDynamicLights.capacity() != listSize) {
+    mDynamicLights = rstl::vector< CLight >();
+    mDynamicLights.reserve(listSize);
+    mDynamicActorLights = rstl::vector< rstl::pair< TUniqueId, CLight > >();
+    mDynamicActorLights.reserve(listSize);
+  } else {
+    mDynamicLights.clear();
+    mDynamicActorLights.clear();
+  }
+
+  for (int idx = list.GetFirstObjectIndex(); idx != -1; idx = list.GetNextObjectIndex(idx)) {
+    const CGameLight* light = static_cast< const CGameLight* >(list[idx]);
+    if (light && light->GetActive()) {
+      const CLight& value = light->GetLight();
+      if (value.GetIntensity() > FLT_EPSILON && value.GetRadius() > FLT_EPSILON) {
+        if (const CScriptDynamicLight* dynamicLight = TCastToConstPtr< CScriptDynamicLight >(light)) {
+          if (dynamicLight->UsesLayerOne() || dynamicLight->UsesLayerTwo()) {
+            mDynamicActorLights.push_back_unsafe(
+                rstl::pair< TUniqueId, CLight >(dynamicLight->GetUniqueId(), value));
+          }
+          if (dynamicLight->UsesWorld()) {
+            mDynamicLights.push_back_unsafe(value);
+          }
+        } else {
+          mDynamicActorLights.push_back_unsafe(
+              rstl::pair< TUniqueId, CLight >(kInvalidUniqueId, value));
+          mDynamicLights.push_back_unsafe(value);
+        }
+      }
+    }
+  }
+
+  rstl::sort(mDynamicLights.begin(), mDynamicLights.end(), CLightPredicate());
+  rstl::sort(mDynamicActorLights.begin(), mDynamicActorLights.end(), CActorLightPredicate());
 }
 
 void CStateManager::BuildColliderList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
