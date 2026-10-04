@@ -4,6 +4,7 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Text/CRasterFont.hpp"
 #include "Kyoto/Text/CTextParser.hpp"
+#include "Kyoto/Text/ScreenText.hpp"
 #include "rstl/StringExtras.hpp"
 #include "rstl/math.hpp"
 #include <math.h>
@@ -269,4 +270,42 @@ const CTextRenderBuffer* CGuiTextSupport::GetCurrentPageRenderBuffer() const {
 const rstl::pair< CVector2i, CVector2i >& CGuiTextSupport::GetBounds() {
   CheckAndRebuildRenderBuffer();
   return mBounds;
+}
+
+void ScreenText::DrawExecuteBuffer(const CTextExecuteBuffer& buffer) {
+  const CViewport viewport = CGraphics::GetViewport();
+  CGraphics::SetViewPointMatrix(CTransform4f::Identity());
+  CGraphics::SetOrtho(static_cast< float >(viewport.mLeft),
+                      static_cast< float >(viewport.mLeft + viewport.mWidth),
+                      static_cast< float >(viewport.mTop + viewport.mHeight),
+                      static_cast< float >(viewport.mTop), -4096.f, 4096.f);
+  CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
+  CGraphics::SetCullMode(kCM_None);
+  CGraphics::SetDepthWriteMode(true, kE_Always, false);
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
+
+  const CTransform4f transform =
+      CTransform4f::FromColumns(CVector3f::Right(), CVector3f::Forward(), CVector3f::Down(),
+                                CVector3f(0.f, 0.f, static_cast< float >(viewport.mHeight)));
+  CGraphics::SetModelMatrix(transform);
+
+  buffer.BuildRenderBuffer().Render(CColor::White(), 0.f);
+  CGraphics::SetCullMode(kCM_Front);
+}
+
+void ScreenText::DrawString(const rstl::string& text, int x, int y,
+                            const TToken< CRasterFont >& font) {
+  const CViewport viewport = CGraphics::GetViewport();
+  CTextExecuteBuffer buffer;
+  buffer.AddWordWrapping(true);
+  buffer.BeginBlock(x, y, viewport.mWidth - x, viewport.mHeight - y, false, kTD_Horizontal,
+                    kJustification_Left, kVerticalJustification_Center);
+
+  {
+    const TToken< CRasterFont > fontCopy = font;
+    buffer.AddFont(fontCopy);
+  }
+  buffer.AddString(CStringExtras::ConvertToUNICODE(text));
+  buffer.EndBlock();
+  DrawExecuteBuffer(buffer);
 }

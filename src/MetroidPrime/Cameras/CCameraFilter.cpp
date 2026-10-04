@@ -5,6 +5,7 @@
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/Text/ScreenText.hpp"
 #include "MetaRender/IRenderer.hpp"
 #include "rstl/math.hpp"
 
@@ -13,10 +14,6 @@
 #include <stdlib.h>
 
 extern IRenderer* gpRender;
-
-// The text helper's signature is established, but its original owner/name is unresolved.
-extern "C" void fn_8027AE64(const rstl::string& text, int x, int y,
-                            const TToken< CRasterFont >& font);
 
 static const CColor& skIdentityColorMultiply = CColor::White();
 
@@ -350,9 +347,9 @@ void CCameraFilterPass::DrawCinematicPlaceholderLabel() {
   gpRender->SetModelMatrix(CTransform4f::Identity());
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvPassthru);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
-  fn_8027AE64(rstl::string(rstl::string::literal_t(), "CINEMATIC PLACEHOLDER"),
-              static_cast< int >(viewport.mHalfWidth) - 112,
-              static_cast< int >(viewport.mHalfHeight), *gpDefaultFont);
+  ScreenText::DrawString(rstl::string(rstl::string::literal_t(), "CINEMATIC PLACEHOLDER"),
+                         static_cast< int >(viewport.mHalfWidth) - 112,
+                         static_cast< int >(viewport.mHalfHeight), *gpDefaultFont);
 }
 
 void CCameraFilterPass::Draw() const {
