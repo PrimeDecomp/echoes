@@ -2881,7 +2881,11 @@ Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1AD0 end:0x802B1D10
 
 Kyoto/Animation/CSegId.cpp:
-	.text       start:0x802B1D10 end:0x802B1D28
+	.text       start:0x802B1D10 end:0x802B1DC0
+	.ctors      start:0x803A55DC end:0x803A55E0
+	.rodata     start:0x803AEE30 end:0x803AEE48
+	.bss        start:0x803DF810 end:0x803DF828
+	.bss        start:0x80416B10 end:0x80416B30 align:4 common
 
 Kyoto/Animation/CSegStatementSet.cpp:
 	.text       start:0x802B1DC0 end:0x802B2088
