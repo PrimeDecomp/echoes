@@ -50,14 +50,43 @@ void CMorphBall::CreateBallShadow() {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderToShadowTex(CStateManager& mgr) {
-  // TODO: Gather shadow receivers and render CMorphBallShadow with the player texture.
+  if (mShadow.get() == nullptr) {
+    return;
+  }
+
+  const float ballRadius = mRadius;
+  const CVector3f center =
+      mPlayer.GetTranslation() + mPlayer.GetPrimitiveOffset() + CVector3f(0.f, 0.f, ballRadius);
+  const float extent = 1.5f * mRadius;
+  const CAABox aabb(CVector3f(center.GetX() - extent, center.GetY() - extent, center.GetZ() - 10.f),
+                    CVector3f(center.GetX() + extent, center.GetY() + extent, center.GetZ()));
+  mShadow->RenderIdBuffer(aabb, mgr, mPlayer);
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::DrawBallShadow(CStateManager& mgr) {
-  // TODO: Draw the projected ball shadow against the gathered world/actor receivers.
+  if (mShadow.get() != nullptr) {
+    float alpha = 1.f;
+    switch (mPlayer.GetMorphballTransitionState()) {
+    case CPlayer::kMS_Morphed:
+      alpha = 1.f;
+      break;
+    case CPlayer::kMS_Unmorphed:
+      return;
+    case CPlayer::kMS_Unmorphing: {
+      const float t = mPlayer.GetMorphBallTransitionFactor();
+      alpha = 1.f - t;
+      break;
+    }
+    case CPlayer::kMS_Morphing: {
+      const float t = mPlayer.GetMorphBallTransitionFactor();
+      alpha = t;
+      break;
+    }
+    }
+
+    mShadow->Render(mgr, alpha, *mgr.GetShadowTex());
+  }
 }
 
 // Guessed name.

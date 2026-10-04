@@ -3,6 +3,7 @@
 
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
+#include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CVector2i.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/TReservedAverage.hpp"
@@ -254,6 +255,9 @@ public:
   void SetMorphBallState(EPlayerMorphBallState state, EPlayerMorphBallState spawnedState);
   void SetCameraState(EPlayerCameraState state, CStateManager& mgr);
   bool IsMorphBallTransitioning() const;
+  float GetMorphBallTransitionFactor() const {
+    return mMorphDuration == 0.f ? 0.f : CMath::Clamp(0.f, mMorphTime / mMorphDuration, 1.f);
+  }
   bool CanEnterMorphBallState() const;
   bool CanLeaveMorphBallState(CStateManager& mgr, CVector3f& position) const;
   bool AttachActorToPlayer(TUniqueId actor, bool disableGun);

@@ -61,6 +61,7 @@ class CWeaponMgr;
 class CFluidPlaneManager;
 class CDamageInfo;
 class CAABox;
+class CTexture;
 
 typedef rstl::bit_vector<> MapWorldInfoAreas;
 
@@ -208,6 +209,7 @@ public:
   }
 
   const CFrustumPlanes& GetFrustumPlanes() const { return mPlanes; }
+  const CTexture* GetShadowTex() const { return mShadowTex; }
   ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
   int GetNumPlayers() const { return mNumPlayers; }
@@ -335,7 +337,8 @@ public:
   TAreaId mPreviousAreaId;
   int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
   int mUpdateFrameIdx;   // 16AC
-  char mUnknownData2[0x34];
+  char mUnknownData2[0x30];
+  CTexture* mShadowTex; // 0x16e0
   CRandom16 mRandom;
   bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
   char x16e9_[3];
