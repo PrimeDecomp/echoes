@@ -317,11 +317,11 @@ MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
 	.data       start:0x803B3210 end:0x803B32C0
 
 MetroidPrime/ScriptObjects/CScriptGenerator.cpp:
-	.text       start:0x800A4B20 end:0x800A5474
+	.text       start:0x800A4850 end:0x800A5474
 	.data       start:0x803B32C0 end:0x803B32E0
 
 MetroidPrime/ScriptObjects/CScriptCameraWaypoint.cpp:
-	.text       start:0x800A5594 end:0x800A5740
+	.text       start:0x800A5474 end:0x800A5740
 	.data       start:0x803B32E0 end:0x803B3378
 
 MetroidPrime/CGameLight.cpp:
@@ -2041,7 +2041,7 @@ MetroidPrime/Player/CPlayerOptions.cpp:
 	.text       start:0x802275A8 end:0x802276A8
 
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
-	.text       start:0x802278C8 end:0x80227ACC
+	.text       start:0x802276A8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
 
 MetroidPrime/Enemies/SRezbit_FuncPtrs.cpp:

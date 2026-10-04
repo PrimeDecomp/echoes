@@ -1,5 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.hpp"
 
+#include "MetroidPrime/ScriptLoader.hpp"
+
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
@@ -28,3 +30,5 @@ TUniqueId CScriptCameraWaypoint::NextWaypoint(CStateManager& mgr) const {
                                  static_cast< EScriptObjectMessage >('NEXT'),
                                  CValidCameraWaypointPredicate());
 }
+
+CEntity* LoadCameraWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}

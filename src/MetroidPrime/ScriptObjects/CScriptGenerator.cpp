@@ -1,5 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptGenerator.hpp"
 
+#include "MetroidPrime/ScriptLoader.hpp"
+
 CScriptGenerator::CScriptGenerator(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                    int spawnCount, bool noReuseFollowers, const CVector3f& offset,
                                    bool noInheritTransform, bool unknown, float minScale,
@@ -19,3 +21,5 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
   // TODO: follower selection, generation, transform/scale and connection propagation.
   CEntity::AcceptScriptMsg(mgr, msg);
 }
+
+CEntity* LoadGenerator(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
