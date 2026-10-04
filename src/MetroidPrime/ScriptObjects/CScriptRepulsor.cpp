@@ -1,5 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptRepulsor.hpp"
 
+#include "MetroidPrime/ScriptLoader.hpp"
+
 #include "MetroidPrime/CActorParameters.hpp"
 
 CScriptRepulsor::CScriptRepulsor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -25,3 +27,5 @@ float CScriptRepulsor::GetRadius() const { return mRadius; }
 float CScriptRepulsor::GetStrength() const { return mStrength; }
 
 CScriptRepulsor::EShape CScriptRepulsor::GetShape() const { return mShape; }
+
+CEntity* LoadRepulsor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
