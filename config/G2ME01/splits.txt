@@ -2002,9 +2002,17 @@ MetroidPrime/Enemies/SKrocuss_FuncPtrs.cpp:
 	.text       start:0x802274C8 end:0x802274FC
 	.sbss       start:0x80419550 end:0x80419558
 
+MetroidPrime/Enemies/SSurfaceParticleEffect_FuncPtrs.cpp:
+	.text       start:0x802274FC end:0x80227504
+	.sbss       start:0x80419558 end:0x80419560
+
 MetroidPrime/Enemies/SAIMannedTurret_FuncPtrs.cpp:
 	.text       start:0x80227504 end:0x80227538
 	.sbss       start:0x80419560 end:0x80419568
+
+MetroidPrime/Enemies/SPirateRagDoll_FuncPtrs.cpp:
+	.text       start:0x80227538 end:0x80227540
+	.sbss       start:0x80419568 end:0x80419570
 
 MetroidPrime/Enemies/SEmperorIngStage1_FuncPtrs.cpp:
 	.text       start:0x80227540 end:0x80227574
@@ -2047,6 +2055,10 @@ MetroidPrime/CFilteredObjectList.cpp:
 	.text       start:0x80229718 end:0x80229EAC
 	.data       start:0x803B8648 end:0x803B86B8
 
+MetroidPrime/Enemies/SGeomBlobV2_FuncPtrs.cpp:
+	.text       start:0x80229EAC end:0x80229EB4
+	.sbss       start:0x80419590 end:0x80419598
+
 MetroidPrime/Enemies/SIngPuddle_FuncPtrs.cpp:
 	.text       start:0x80229EB4 end:0x80229EE8
 	.sbss       start:0x80419598 end:0x804195A0
@@ -2076,6 +2088,10 @@ MetroidPrime/ScriptObjects/CScriptAIHint.cpp:
 MetroidPrime/Enemies/SEmperorIngStage2Tentacle_FuncPtrs.cpp:
 	.text       start:0x8022A544 end:0x8022A578
 	.sbss       start:0x804195C0 end:0x804195C8
+
+MetroidPrime/Enemies/SSwarmBasics_FuncPtrs.cpp:
+	.text       start:0x8022A578 end:0x8022A580
+	.sbss       start:0x804195C8 end:0x804195D0
 
 MetroidPrime/Enemies/SBacteriaSwarm_FuncPtrs.cpp:
 	.text       start:0x8022A580 end:0x8022A5B4
