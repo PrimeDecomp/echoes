@@ -833,6 +833,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/CBloggProjectile.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SSporb_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SSandworm_FuncPtrs.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SMetroid_FuncPtrs.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/SSplitterMainChassis_FuncPtrs.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/SCommandoPirate_FuncPtrs.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/SDarkCommando_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SDarkSamus_FuncPtrs.cpp"),
