@@ -126,6 +126,7 @@ public:
                                                   ELoopedSoundType type);
 
   int GetBoidCount() const { return mBoids.size(); }
+  const CVector3f& GetLastKilledOffset() const { return mLastKilledOffset; }
 
 private:
   // Opaque owned allocation: cleanup is established, but its element type is unresolved.
