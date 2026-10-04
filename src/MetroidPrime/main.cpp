@@ -140,14 +140,14 @@ extern bool sProgressiveModePrompt; // Prime-correlated name; shared with CSplas
 static uchar sMainSpace[sizeof(CMain)];
 static u32 sARAMMemArray[3];
 
-bool CMain::GetMaxSpeed() { return mMaxSpeed; }
+bool CMain::IsMaxSpeed() { return mIsMaxSpeed; }
 
 void CMain::SetMaxSpeed(const bool enabled) {
-  if (enabled && !mMaxSpeed) {
+  if (enabled && !mIsMaxSpeed) {
     CFrameDelayedKiller::StallAndFlushAllAllocations();
   }
   mMaxSpeedDrawTimer = 1.f;
-  mMaxSpeed = enabled;
+  mIsMaxSpeed = enabled;
 }
 
 void CMain::SetThirtyFps(bool enabled) { mThirtyFps = enabled; }
@@ -170,7 +170,7 @@ CMain::CMain(COsContext* context, CSaveRegion* saveRegion, CMemorySys* memorySys
 , mFrameTimeIdx(0)
 , mFinished(false)
 , mMfGameBuilt(false)
-, mMaxSpeed(false)
+, mIsMaxSpeed(false)
 , mResetButtonHeld(false)
 , mManageCard(false)
 , mResetRequested(false)
@@ -332,7 +332,7 @@ bool CGameArchitectureSupport::UpdateTicks() {
   if (gpMain->GetThirtyFps()) {
     mTickRemainder = 1.f / 30.f;
   }
-  const bool maxSpeed = gpMain->GetMaxSpeed();
+  const bool maxSpeed = gpMain->IsMaxSpeed();
   if (maxSpeed || stopwatchTime > 0.035f) {
     gpMain->DecrementMaxSpeedDrawTimer(stopwatchTime);
     mTickRemainder = 1.f / 60.f;
@@ -646,7 +646,7 @@ int CMain::RsMain(int argc, const char* const* argv) {
       drawTimer.Reset();
 
       bool drawFrame = true;
-      if (GetMaxSpeed()) {
+      if (IsMaxSpeed()) {
         AsyncIdle(1000000);
         if (mMaxSpeedDrawTimer > 0.f) {
           drawFrame = false;
@@ -734,7 +734,7 @@ void CMain::AsyncIdle(uint time) {
     time = mFrameTimeMinimum;
   }
   mFrameTimeMinimum = 0;
-  bool flag = GetMaxSpeed();
+  bool flag = IsMaxSpeed();
   if (flag) {
     time = 1000000;
   }

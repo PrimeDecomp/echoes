@@ -57,7 +57,7 @@ public:
 
   void SetMaxSpeed(bool enabled);
 
-  bool GetMaxSpeed();
+  bool IsMaxSpeed();
 
   void SetGameExitReset(bool reset) { mGameExitReset = reset; }
   void SetGameFrameDrawn(bool drawn) { mGameFrameDrawn = drawn; }
@@ -95,7 +95,7 @@ private:
   int mFrameTimeIdx;
   bool mFinished : 1;
   bool mMfGameBuilt : 1; // Inherited name; no semantic use identified in this TU.
-  bool mMaxSpeed : 1;    // Guessed name: cinematic-skip fast-forward.
+  bool mIsMaxSpeed : 1;  // Guessed name: cinematic-skip fast-forward.
   bool mResetButtonHeld : 1;
   bool mManageCard : 1;
   bool mResetRequested : 1;

@@ -34,7 +34,7 @@ void CScriptControllerAction::Think(float dt, CStateManager& mgr) {
     default:
       break;
     }
-  } else if (gpMain->GetMaxSpeed()) {
+  } else if (gpMain->IsMaxSpeed()) {
     mPressed = !mPressed;
   } else {
     if (gpGameState->ControlMapper().GetDigitalInput(mCommand, mgr.mFinalInputs[0],

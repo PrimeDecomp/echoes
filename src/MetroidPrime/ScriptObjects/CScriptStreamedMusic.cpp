@@ -203,7 +203,7 @@ void CScriptStreamedMusic::PlayAudio() {
 }
 
 void CScriptStreamedMusic::Play(CStateManager& mgr) {
-  if (!GetUpdateDuringCinematicSkip() && gpMain->GetMaxSpeed()) {
+  if (!GetUpdateDuringCinematicSkip() && gpMain->IsMaxSpeed()) {
     return;
   }
   TweakOverride(mgr);

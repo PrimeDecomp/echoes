@@ -314,7 +314,7 @@ void CStateManager::MoveActors(float dt) {
        i = physicsList->GetNextObjectIndex(i)) {
     CPhysicsActor* actor = static_cast< CPhysicsActor* >((*physicsList)[i]);
     if (actor == nullptr || !actor->GetActive() || actor->GetMass() == 0.f ||
-        (!actor->GetUpdateDuringCinematicSkip() && gpMain->GetMaxSpeed())) {
+        (!actor->GetUpdateDuringCinematicSkip() && gpMain->IsMaxSpeed())) {
       continue;
     }
 
@@ -371,7 +371,7 @@ void CStateManager::Think(float dt) {
   } else {
     for (long i = allList->GetFirstObjectIndex(); i != -1; i = allList->GetNextObjectIndex(i)) {
       CEntity* entity = (*allList)[i];
-      if (entity == nullptr || (!entity->GetUpdateDuringCinematicSkip() && gpMain->GetMaxSpeed())) {
+      if (entity == nullptr || (!entity->GetUpdateDuringCinematicSkip() && gpMain->IsMaxSpeed())) {
         continue;
       }
 

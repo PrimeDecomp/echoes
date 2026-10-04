@@ -50,7 +50,7 @@ void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
   for (rstl::vector< SLdrConnection >::iterator connection = mConnections.begin();
        connection != mConnections.end(); ++connection) {
     const uint connectionIndex = static_cast< ushort >(connection->connectionIndex);
-    if (connection->unknown_0x00000002 && gpMain->GetMaxSpeed()) {
+    if (connection->unknown_0x00000002 && gpMain->IsMaxSpeed()) {
       continue;
     }
 
