@@ -61,6 +61,7 @@ public:
 
   CAABox GetProjectileBounds() const;
   const CVector3f& GetPreviousPos() const { return mPreviousPos; }
+  TUniqueId GetHomingTargetId() const { return mHomingTargetId; }
   CProjectileTouchResult CanCollideWithTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithGameObject(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithComplexCollision(CActor& actor, CStateManager& mgr);

@@ -30,6 +30,7 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
@@ -1320,7 +1321,55 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowLocator(float dt, CStateManager& mgr) {
-  // TODO: move connected actors to the source actor's locator.
+  rstl::vector< TUniqueId > followers;
+  TUniqueId followedAct = kInvalidUniqueId;
+
+  int count = 0;
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state == kSS_Play && conn->msg == kSM_Deactivate) {
+      ++count;
+    }
+  }
+  followers.reserve(count);
+
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state != kSS_Play || (conn->msg != kSM_Activate && conn->msg != kSM_Deactivate)) {
+      continue;
+    }
+
+    const CStateManager::TIdListResult ids = mgr.GetIdListForScript(conn->objId);
+    if (ids.first == ids.second) {
+      continue;
+    }
+    for (CStateManager::TIdList::const_iterator id = ids.first; id != ids.second; ++id) {
+      TUniqueId uid = id->second;
+      if (const CActor* const act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
+        if (conn->msg == kSM_Activate && act->HasAnimation()) {
+          if (!act->GetActive()) {
+            return;
+          }
+          followedAct = uid;
+        } else if (conn->msg == kSM_Deactivate) {
+          followers.push_back_unsafe(uid);
+        }
+      }
+    }
+  }
+
+  const CActor* followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
+  if (followedAct == kInvalidUniqueId || !followed) {
+    return;
+  }
+
+  for (rstl::vector< TUniqueId >::iterator it = followers.begin(); it != followers.end(); ++it) {
+    CActor* follower = TCastToPtr< CActor >(mgr.ObjectById(*it));
+    if (followed && follower) {
+      CTransform4f xf = followed->GetTransform() * followed->GetScaledLocatorTransform(mStringParm);
+      follower->SetTransform(xf);
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowObject(float dt, CStateManager& mgr) {
@@ -1355,7 +1404,49 @@ void CScriptSpecialFunction::ThinkObjectFollowObject(float dt, CStateManager& mg
 }
 
 void CScriptSpecialFunction::ThinkChaffTarget(float dt, CStateManager& mgr) {
-  // TODO: inspect nearby projectiles and update each player's HUD interference.
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  const CVector3f offset(5.f, 5.f, 5.f);
+  const CAABox box(GetTranslation() - offset, GetTranslation() + offset);
+  mgr.BuildNearList(nearList, box, CMaterialFilter::MakeInclude(CMaterialList(kMT_Projectile)),
+                    nullptr);
+
+  for (int i = 0; i < nearList.size(); ++i) {
+    if (CEnergyProjectile* proj = TCastToPtr< CEnergyProjectile >(mgr.ObjectById(nearList[i]))) {
+      if (proj->GetHomingTargetId() == GetUniqueId()) {
+        proj->SetExplodePending(true);
+        for (int p = 0; p < static_cast< uint >(mgr.GetNumPlayers()); ++p) {
+          if (mgr.GetPlayer(p)->GetCurrentAreaId() == GetCurrentAreaId()) {
+            mgr.Player(p)->SetHudDisable(mValue2);
+            mChaffTimer = mValue1;
+
+            CCameraFilterPass& filter = mgr.CameraFilterPass(p, 7);
+            filter.SetFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_Fullscreen, 0.f,
+                             CColor(1.f, 1.f, 1.f, 1.f), kInvalidAssetId);
+            filter.DisableFilter(0.1f);
+          }
+        }
+      }
+    }
+  }
+
+  bool addedInterference = false;
+  mChaffTimer = rstl::max_val(mChaffTimer - dt, 0.f);
+  for (int p = 0; p < static_cast< uint >(mgr.GetNumPlayers()); ++p) {
+    CPlayer* player = mgr.Player(p);
+    if (mChaffTimer && player->GetCurrentAreaId() == GetCurrentAreaId()) {
+      addedInterference = true;
+      float intfMag = mValue3 * (0.5f + ((0.5f * mChaffTimer) / mValue1));
+      if (mChaffTimer < 1.f) {
+        intfMag *= mChaffTimer;
+      }
+      player->GetPlayerState()->StaticInterference().AddSource(GetUniqueId(), intfMag, 0.5f);
+    }
+    if (addedInterference) {
+      player->AddOrbitDisableSource(mgr, GetUniqueId());
+    } else {
+      player->RemoveOrbitDisableSource(GetUniqueId());
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkRainSimulator(float dt, CStateManager& mgr) {
