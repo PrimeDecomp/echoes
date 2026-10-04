@@ -1223,12 +1223,15 @@ void CCollisionCacheWriter::ReserveTriangles(int count) {
   int required = mCache.mData.size() + count * (sizeof(SCachedCollisionSlot) / sizeof(ushort));
   if (mCache.mData.capacity() < required) {
     ushort* oldData = mCache.mData.data();
+    int leafCountOffset = mLeafCount - oldData;
+    int triangleCountOffset = mTriangleCount - oldData;
+    int leafBoundsOffset = reinterpret_cast< ushort* >(mLeafBounds) - oldData;
     int capacity = mCache.mData.capacity() * 2;
     mCache.mData.reserve(capacity > required ? capacity : required * 2);
-    int delta = mCache.mData.data() - oldData;
-    mLeafCount += delta;
-    mTriangleCount += delta;
-    mLeafBounds = reinterpret_cast< CAABox* >(reinterpret_cast< ushort* >(mLeafBounds) + delta);
+    ushort* newData = mCache.mData.data();
+    mLeafCount = newData + leafCountOffset;
+    mTriangleCount = newData + triangleCountOffset;
+    mLeafBounds = reinterpret_cast< CAABox* >(newData + leafBoundsOffset);
   }
 }
 
@@ -1244,6 +1247,7 @@ void CCollisionCacheWriter::AddTriangle(const CCollisionSurface& surface, ushort
   if (size > mCache.mData.size()) {
     mCache.mData.reserve(size);
   }
+  // The payload is already constructed; resize would overwrite it with zeros.
   mCache.mData.mCount = size;
   mLeafBounds->AccumulateBounds(surface.GetVert(0));
   mLeafBounds->AccumulateBounds(surface.GetVert(1));
