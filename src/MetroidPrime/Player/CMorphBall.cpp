@@ -34,6 +34,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerBodyController.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptAreaProperties.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpiderBallAttractionSurface.hpp"
@@ -637,10 +638,262 @@ CAABox CMorphBall::GetRenderBounds(const CStateManager& mgr) const {
   return bounds;
 }
 
-// Scaffold, not a reconstructed implementation.
-void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& collisions,
+static inline CMaterialList GetCollisionMaterials(const CCollisionInfoList& list) {
+  CMaterialList materials;
+  for (const CCollisionInfo* info = list.Begin(); info != list.End(); ++info) {
+    materials.Add(info->GetMaterialLeft());
+  }
+  return materials;
+}
+
+static inline int GetWakeMaterial(const CCollisionInfo& info, int currentMaterial) {
+  const CMaterialList& materials = info.GetMaterialLeft();
+  const int dirt = materials.HasMaterial(kMT_Dirt) ? kMT_Dirt : currentMaterial;
+  const int sand = materials.HasMaterial(kMT_Sand) ? kMT_Sand : dirt;
+  const int organic = materials.HasMaterial(kMT_Organic) ? kMT_Organic : sand;
+  return materials.HasMaterial(kMT_Phazon) ? kMT_Phazon : organic;
+}
+
+static EMaterialTypes ScrewAttackWallFloorMaterial = kMT_NoStepLogic;     // Guessed name
+static EMaterialTypes ScrewAttackWallJumpFloorMaterial = kMT_NoStepLogic; // Guessed name
+static EMaterialTypes ScrewAttackRecoveryFloorMaterial = kMT_NoStepLogic; // Guessed name
+
+void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
                               CStateManager& mgr) {
-  // TODO: Process contact materials/normals, boost damage, half-pipe and Screw Attack collisions.
+  if (list.GetCount() == 0) {
+    return;
+  }
+
+  mCollisionInfos = list;
+
+  const CMaterialList allMats = GetCollisionMaterials(list);
+  CVector3f normal = CVector3f::Zero();
+  for (int i = 0; i < list.GetCount(); ++i) {
+    normal += list[i].GetNormalLeft();
+  }
+  normal.Normalize();
+
+  const CVector3f vel = mPlayer.GetVelocityWR();
+  float velMag = vel.Magnitude();
+  int wakeMaterial = kMT_NoStepLogic;
+  if (!InScrewAttackMode() && velMag > 7.f && mPlayer.GetFluidCount() == 0) {
+    const CCollisionInfo* info = list.Begin();
+    bool hitWall = false;
+    for (; info != list.End(); ++info) {
+      if (!hitWall) {
+        if (info->GetMaterialLeft().HasMaterial(kMT_Wall)) {
+          hitWall = true;
+          if (info->GetMaterialLeft().HasMaterial(kMT_Stone) ||
+              info->GetMaterialLeft().HasMaterial(kMT_Metal)) {
+            mWallSparkGen->SetTranslation(info->GetPoint());
+            mWallSparkGen->SetParticleEmission(true);
+            mWallSparkFrameCountdown = 7;
+          }
+        }
+      }
+
+      if (wakeMaterial == kMT_NoStepLogic) {
+        if (info->GetMaterialLeft().HasMaterial(kMT_Floor)) {
+          int tmpMaterial = GetWakeMaterial(*info, wakeMaterial);
+
+          wakeMaterial = tmpMaterial;
+          if (tmpMaterial != kMT_NoStepLogic) {
+            int mappedIdx = sWakeEffectForMaterial[tmpMaterial];
+            if (mappedIdx == 0) {
+              const CScriptAreaProperties* areaAttrs = mgr.GetWorld()
+                                                           ->GetArea(mgr.GetNextAreaId())
+                                                           ->GetPostConstructed()
+                                                           ->mAreaAttributes;
+              if (areaAttrs != nullptr && areaAttrs->GetPhazonDamage() == 2) {
+                mappedIdx = 1;
+              }
+            }
+
+            mWakeEffectIndex = mappedIdx;
+            mWakeEffects[mWakeEffectIndex]->Load(true);
+            mWakeEffects[mWakeEffectIndex]->SetParticleEmission(true);
+            mWakeEffects[mWakeEffectIndex]->SetTranslation(info->GetPoint());
+          }
+        }
+      }
+    }
+
+    if (hitWall && !CSfxManager::IsPlaying(mWallHitSfx)) {
+      mWallHitSfx = AddEmitter(mPlayer, mgr.ReturnFirstIfSingleElseSecond(0x130, 0x26fc), true,
+                               false, CSfxManager::kMedPriority, 0x7f, 0x14, 150.f, 1.f);
+      mPlayer.ApplySubmergedPitchBend(mWallHitSfx);
+    }
+  }
+
+  if (wakeMaterial == kMT_NoStepLogic) {
+    mWakeEffectIndex = -1;
+  }
+
+  if (mBallState == kBS_Projectile) {
+    mBallState = kBS_Normal;
+  }
+
+  if (allMats.HasMaterial(kMT_HalfPipe)) {
+    mTouchHalfPipeCooldown = 4.f;
+    mTouchedHalfPipeRecentCooldown = 0.05f;
+    for (int i = 0; i < list.GetCount(); ++i) {
+      const CCollisionInfo& info = list[i];
+      if (info.GetMaterialLeft().HasMaterial(kMT_HalfPipe)) {
+        const CVector3f halfPipeNormal = info.GetNormalLeft();
+        const float dot = CVector3f::Dot(halfPipeNormal, mHalfPipeNormal);
+        if (dot < 0.99f) {
+          mPrevHalfPipeNormal = mHalfPipeNormal;
+          mHalfPipeNormal = halfPipeNormal;
+          if (close_enough(mPrevHalfPipeNormal, CVector3f::Zero(), 0.000011920929f)) {
+            mPrevHalfPipeNormal = mHalfPipeNormal;
+          }
+        }
+      }
+    }
+  }
+
+  if (allMats.HasMaterial(kMT_Floor)) {
+    mLastFloorCollisionFrame = mgr.GetUpdateFrameIdx();
+    if (allMats.HasMaterial(kMT_Wall)) {
+      mLastWallCollisionFrame = mgr.GetUpdateFrameIdx();
+      if (mTireMode) {
+        SwitchToMarble();
+      }
+    }
+  }
+
+  bool leftBoost = false;
+  if (!GetIsInHalfPipeMode() && IsBoosting() && velMag > 3.f) {
+    const CVector3f velNorm = vel.AsNormalized();
+    for (int i = 0; i < list.GetCount(); ++i) {
+      const CCollisionInfo& info = list[i];
+      if (!info.GetMaterialLeft().HasMaterial(kMT_HalfPipe) &&
+          CVector3f::Dot(info.GetNormalLeft(), velNorm) < -0.4f) {
+        leftBoost = true;
+        DampLinearAndAngularVelocities(0.4f, 0.01f, 1.f / 60.f);
+        break;
+      }
+    }
+  }
+
+  if (id == kInvalidUniqueId) {
+    const CVector3f cvel = mPlayer.GetVelocityWR();
+    const CVector3f cforce = mControlForce;
+    const float cvelMag = cvel.Magnitude();
+    if (cforce.Magnitude() > 1000.f && cvelMag > 8.f) {
+      const CVector3f cforceNorm = cforce.AsNormalized();
+      const CVector3f cvelNorm = cvel.AsNormalized();
+      for (const CCollisionInfo* info = list.Begin(); info != list.End(); ++info) {
+        if (IsClimbable(*info)) {
+          const CVector3f climbNormal = info->GetNormalLeft();
+          const float cforceDot = CVector3f::Dot(cforceNorm, climbNormal);
+          const float cvelDot = CVector3f::Dot(cvelNorm, climbNormal);
+          if (cforceDot < -0.4f && cvelDot < -0.6f) {
+            const float boostZ = 0.75f * cvelMag;
+            const float clampedZ = CMath::FastMax(
+                boostZ,
+                0.15f * gpTweakBall->GetBallTranslationMaxSpeed(mPlayer.GetSurfaceRestraint()));
+            const float maxZ =
+                0.25f * gpTweakBall->GetBallTranslationMaxSpeed(mPlayer.GetSurfaceRestraint());
+            const float zVel = CMath::FastFSel(clampedZ - maxZ, maxZ, clampedZ);
+            mVelocityBeforeFailsafe = cvel;
+            const CVector3f newVel = cvel + CVector3f(0.f, 0.f, zVel);
+            mVelocityAfterFailsafe = newVel;
+            mPlayer.SetVelocityWR(newVel);
+            ++mFailsafeCounter;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (list.GetCount() > 2 && list[0].GetNormalLeft().GetZ() > 0.2f &&
+      CMath::AbsF(CVector3f::Dot(list[0].GetNormalLeft(), mPlayer.GetVelocityWR())) > 2.f) {
+    float accum = 0.f;
+    uint dotCount = 0;
+    for (int i = 1; i < list.GetCount(); ++i) {
+      const CCollisionInfo& infoA = list[i];
+      for (int j = 1; j < list.GetCount(); ++j) {
+        if (i != j) {
+          accum += CVector3f::Dot(infoA.GetNormalLeft(), list[j].GetNormalLeft());
+          ++dotCount;
+        }
+      }
+    }
+
+    accum /= static_cast< float >(dotCount);
+    if (accum < 0.5f) {
+      ++mFailsafeCounter;
+    }
+  }
+
+  const CCollisionInfo* info = list.Begin();
+  if (info != list.End()) {
+    SelectMorphBallSounds(info->GetMaterialLeft());
+  }
+
+  if (mBallState == kBS_ScrewAttack || mBallState == kBS_ScrewAttackWallJump) {
+    const bool isWall = CMath::AbsF(CVector3f::Dot(mPlayer.GetMovementDirection(), normal)) < 0.9f;
+    if (!allMats.HasMaterial(kMT_Wall) || !isWall) {
+      mBallState = kBS_ScrewAttackRecovery;
+      mTouchingWall = false;
+      if (!CGameCollision::IsFloor(CMaterialList(ScrewAttackWallFloorMaterial), normal)) {
+        if (!mPendingRecoil) {
+          CSfxManager::AddEmitter(mMultiplayer ? 0x32e : 0x32d, mPlayer.GetTranslation(),
+                                  mPlayer.GetCurrentAreaId().Value(), true, false,
+                                  CSfxManager::kMedPriority);
+        }
+        mPendingRecoil = true;
+        mPlayer.BodyController()->CommandMgr().DeliverCmd(CPBCMorphToScrewAttackCmd(3, 4));
+        mWallNormal = normal;
+        mScrewAttackDirection = mWallNormal;
+        mScrewAttackDirection.SetZ(0.f);
+        if (mScrewAttackDirection.CanBeNormalized()) {
+          mScrewAttackDirection.AsNormalized();
+        } else {
+          mScrewAttackDirection = CVector3f::Zero();
+        }
+      } else {
+        mPlayer.CalculatePlayerMovementDirection(0.02f, mScrewAttackDirection);
+        mWallNormal = CVector3f::Zero();
+        mScrewAttackDirection = CVector3f::Zero();
+      }
+    } else if (!CGameCollision::IsFloor(CMaterialList(ScrewAttackWallJumpFloorMaterial), normal)) {
+      if (mBallState == kBS_ScrewAttack || !mTouchingWall) {
+        mBallState = kBS_ScrewAttackWallJump;
+        mTouchingWall = true;
+        mWallContactTime = 0.f;
+        mWallNormal = normal;
+        CSfxManager::AddEmitter(mMultiplayer ? 0x25e3 : 0x2204, mPlayer.GetTranslation(),
+                                mPlayer.GetCurrentAreaId().Value(), true, false,
+                                CSfxManager::kMedPriority);
+        if (mScrewAttackSfx) {
+          CSfxManager::SfxStop(mScrewAttackSfx);
+          mScrewAttackSfx = CSfxHandle();
+        }
+      }
+    }
+  }
+
+  if (mBallState == kBS_ScrewAttackRecovery) {
+    mCollidedDuringRecovery = true;
+    if (CGameCollision::IsFloor(CMaterialList(ScrewAttackRecoveryFloorMaterial), normal)) {
+      x18a8_30_ = true;
+    }
+  }
+
+  if (IsBoosting() && id != kInvalidUniqueId) {
+    ApplyBoostBallDamage(mgr, id, gpTweakBall->GetBoostBallDamage(), 0.f);
+  }
+
+  if (CGameCollision::IsFloor(CMaterialList(allMats), normal)) {
+    mTouchedFloorDuringBoost = true;
+  }
+
+  if (leftBoost == true) {
+    LeaveBoosting();
+  }
 }
 
 static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player;    // Guessed name

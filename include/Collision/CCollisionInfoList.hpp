@@ -23,6 +23,9 @@ public:
   const CCollisionInfo& operator[](int index) const { return mList[index]; }
   CCollisionInfo& operator[](int index) { return mList[index]; }
 
+  const CCollisionInfo* Begin() const { return mList.begin(); }
+  const CCollisionInfo* End() const { return mList.end(); }
+
 private:
   rstl::reserved_vector< CCollisionInfo, 32 > mList;
 };
