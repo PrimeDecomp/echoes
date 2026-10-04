@@ -456,7 +456,6 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Collision/CMRay.cpp"),
             Object(NonMatching, "Collision/CSpatialPrimitive.cpp"),
             Object(NonMatching, "MetroidPrime/CStateManager.cpp"),
-            Object(NonMatching, "MetroidPrime/CStateManagerContainer.cpp"),
             Object(NonMatching, "MetroidPrime/CVisorFlare.cpp"),
             Object(NonMatching, "MetroidPrime/CWorldTransManager.cpp"),
             Object(NonMatching, "MetroidPrime/CRagDoll.cpp"),
