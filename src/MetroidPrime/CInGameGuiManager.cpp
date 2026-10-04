@@ -20,6 +20,7 @@
 #include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CPlayerVisor.hpp"
 #include "MetroidPrime/Player/CSamusFaceReflection.hpp"
+#include "rstl/algorithm.hpp"
 
 // Structure-first scaffold. This is not a functional replacement for the original object.
 
@@ -210,7 +211,33 @@ void CInGameGuiManager::DoStateTransition(const CStateManager& mgr) {
 }
 
 void CInGameGuiManager::InitializeDumpableARAMTextures() {
-  // TODO: collect unique in-game texture IDs and retain the pause-screen resources.
+  if (!mIsSinglePlayer) {
+    return;
+  }
+
+  int count = 0;
+  for (AUTO(it, mInGameGuiDGRPs.begin()); it != mInGameGuiDGRPs.end(); ++it) {
+    count += (*it)->GetCountForResType('TXTR');
+  }
+  mInGameTextureIds.reserve(count);
+
+  for (AUTO(it, mInGameGuiDGRPs.begin()); it != mInGameGuiDGRPs.end(); ++it) {
+    const rstl::vector< SObjectTag >& tags = (*it)->GetObjectTagVector();
+    for (AUTO(tag, tags.begin()); tag != tags.end(); ++tag) {
+      if (tag->GetType() == 'TXTR' &&
+          rstl::find(mInGameTextureIds.begin(), mInGameTextureIds.end(), tag->GetId()) ==
+              mInGameTextureIds.end()) {
+        mInGameTextureIds.push_back(tag->GetId());
+      }
+    }
+  }
+  mInGameGuiDGRPs = rstl::vector< TToken< CDependencyGroup > >();
+
+  const rstl::vector< SObjectTag >& tags = mPauseScreenDGRPs[2]->GetObjectTagVector();
+  mPauseResources.reserve(tags.size());
+  for (AUTO(it, tags.begin()); it != tags.end(); ++it) {
+    mPauseResources.push_back(gpSimplePool->GetObj(*it));
+  }
 }
 
 void CInGameGuiManager::PauseGame(const CStateManager& mgr, EInGameGuiState state) {
