@@ -13,6 +13,9 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:16
 
+MetroTRK/mslsupp.c:
+	.text       start:0x80003840 end:0x80003858
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x80345230 end:0x80345290
 	.sbss       start:0x8041AFB8 end:0x8041AFBC

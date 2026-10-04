@@ -13,6 +13,9 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:4
 
+MetroTRK/mslsupp.c:
+	.text       start:0x80003840 end:0x80003858
+
 MetroidPrime/main.cpp:
 	.text       start:0x800053B8 end:0x80009880
 	.ctors      start:0x803A54A4 end:0x803A54A8
