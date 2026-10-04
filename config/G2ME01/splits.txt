@@ -3337,6 +3337,13 @@ MetroidPrime/Cameras/CCameraSurface.cpp:
 	.data       start:0x803BBAC8 end:0x803BBB10
 	.sdata2     start:0x8041EDA8 end:0x8041EDB8
 
+Kyoto/Graphics/PortalPlane.cpp:
+	.text       start:0x8033A28C end:0x8033A4B0
+	.ctors      start:0x803A5680 end:0x803A5684
+	.bss        start:0x8041768C end:0x804176CC align:4 common
+	.sbss       start:0x80419C68 end:0x80419C69
+	.sdata2     start:0x8041EDB8 end:0x8041EDC8
+
 MetroidPrime/Cameras/CCylinderCameraSurface.cpp:
 	.text       start:0x8033A4B0 end:0x8033A8D4
 	.data       start:0x803BBB10 end:0x803BBB28
