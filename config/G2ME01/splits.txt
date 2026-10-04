@@ -2041,6 +2041,15 @@ GuiSys/CGuiLight.cpp:
 	.data       start:0x803B8E70 end:0x803B8EB0
 	.sdata2     start:0x8041E030 end:0x8041E038
 
+GuiSys/CGuiModel.cpp:
+	.text       start:0x80277084 end:0x8027799C
+	.ctors      start:0x803A55B8 end:0x803A55BC
+	.rodata     start:0x803AE550 end:0x803AE558
+	.data       start:0x803B8EB0 end:0x803B8F08
+	.sdata      start:0x804189C0 end:0x804189C8
+	.sbss       start:0x804197D0 end:0x804197D8
+	.sdata2     start:0x8041E038 end:0x8041E048
+
 GuiSys/CGuiObject.cpp:
 	.text       start:0x8027799C end:0x8027855C
 	.data       start:0x803B8F08 end:0x803B8F18

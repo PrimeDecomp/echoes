@@ -20,8 +20,11 @@ public:
   void DrawModel(const CModelFlags& flags) const; // Guessed name
   static void BeginDraw();                        // Guessed name
   static void EndDraw();                          // Guessed name
+  static CGuiModel* Create(CGuiFrame* frame, CInputStream& in, uint version);
 
 private:
+  static void UpdateDrawState(int drawFlags, CColor color); // Guessed name
+
   CAssetId mModelId;
   int mModelIndex;
   uint mLightMask;
