@@ -4,14 +4,14 @@
 #include "types.h"
 
 #include "MetroidPrime/Player/CGameMode.hpp"
-#include "rstl/pair.hpp"
+#include "MetroidPrime/Player/CPlayerOptions.hpp"
 #include "rstl/reserved_vector.hpp"
 
 // Class name from the Wii MP2 SEL (SetPlayerData__17CFrontEndGameMode...). Members are guessed.
 class CFrontEndPlayerData {
 public:
   uint mPlayerSelection;
-  rstl::pair< bool, bool > mOptions; // Rumble enabled; second meaning unresolved.
+  CPlayerOptions mOptions;
 };
 CHECK_SIZEOF(CFrontEndPlayerData, 8)
 

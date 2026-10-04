@@ -10,6 +10,7 @@
 #include "Kyoto/Audio/CAudioSys.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
+#include "MetroidPrime/Player/CPlayerOptions.hpp"
 
 class CBitStreamReader;
 class CBitStreamWriter;
@@ -55,8 +56,10 @@ public:
   void SetIsRumbleEnabled(bool rumble);
   bool GetIsRumbleEnabled() const { return rumble; }
   // Guessed name
-  bool GetIsPlayerRumbleEnabled(int player) const { return unk2[player].first; }
-  rstl::pair< bool, bool >& PlayerOptions(int player) { return unk2[player]; } // Guessed name
+  bool GetIsPlayerRumbleEnabled(int player) const {
+    return mPlayerOptions[player].GetRumbleEnabled();
+  }
+  CPlayerOptions& PlayerOptions(int player) { return mPlayerOptions[player]; } // Guessed name
   void ToggleControls(bool);
   bool GetSwapBeamControls() const { return swapBeamsControls; }
   const rstl::vector< rstl::pair< CAssetId, CAssetId > >& GetControlTXTRMap() const {
@@ -86,7 +89,7 @@ private:
   bool hintSystem : 1;
   bool unk : 1;
   rstl::vector< rstl::pair< CAssetId, CAssetId > > mControlTXTRMap;
-  rstl::reserved_vector< rstl::pair< bool, bool >, 4 > unk2;
+  rstl::reserved_vector< CPlayerOptions, 4 > mPlayerOptions;
 };
 CHECK_SIZEOF(CGameOptions, 0x44)
 

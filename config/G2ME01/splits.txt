@@ -1802,6 +1802,9 @@ MetroidPrime/ScriptObjects/CScriptDamageableTriggerOrientated.cpp:
 	.rodata     start:0x803AD310 end:0x803AD318
 	.sdata2     start:0x8041DAC8 end:0x8041DAD0
 
+MetroidPrime/Player/CPlayerOptions.cpp:
+	.text       start:0x802275A8 end:0x802276A8
+
 MetroidPrime/ScriptObjects/CScriptRepulsor.cpp:
 	.text       start:0x802278C8 end:0x80227ACC
 	.data       start:0x803B84F8 end:0x803B8578
