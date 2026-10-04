@@ -11,6 +11,7 @@
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
 #include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/Weapons/CHomingBlob.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/CEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
@@ -189,6 +190,7 @@ CAST_TO_PTR_IMPL(CScriptHUDHint, kET_ScriptHUDHint)
 TYPES_MATCH_IMPL(CPathCamera, CGameCamera, kET_PathCamera)
 TYPES_MATCH_IMPL(CScriptSequenceTimer, CEntity, kET_ScriptSequenceTimer)
 TYPES_MATCH_IMPL(CGameLight, CActor, kET_GameLight)
+TYPES_MATCH_IMPL(CHomingBlob, CWeapon, kET_HomingBlob)
 TYPES_MATCH_IMPL(CHUDBillboardEffect, CEffect, kET_HUDBillboardEffect)
 TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
 TYPES_MATCH_IMPL(CGameHint, CActor, kET_GameHint)

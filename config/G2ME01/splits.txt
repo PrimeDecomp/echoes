@@ -1848,6 +1848,14 @@ MetroidPrime/ScriptLoaderRel.cpp:
 MetroidPrime/HUD/CHudDecoInterfaceScan.cpp:
 	.text       start:0x8021BFE0 end:0x8021DC00
 
+MetroidPrime/Weapons/CHomingBlob.cpp:
+	.text       start:0x8021DC34 end:0x8021F958
+	.rodata     start:0x803ACF18 end:0x803ACF30
+	.data       start:0x803B8378 end:0x803B83F8
+	.sdata      start:0x80418858 end:0x804188A0
+	.sbss       start:0x80419500 end:0x80419510
+	.sdata2     start:0x8041D9D0 end:0x8041D9F8
+
 MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp:
 	.text       start:0x8021FABC end:0x802219EC
 	.rodata     start:0x803ACF30 end:0x803ACF38
