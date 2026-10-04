@@ -894,10 +894,105 @@ void CMorphBall::ApplyFriction(float friction) {
   mPlayer.SetVelocityWR(velocity);
 }
 
-// Scaffold, not a reconstructed implementation.
 bool CMorphBall::UpdateMarbleDynamics(CStateManager& mgr, float dt, const CVector3f& point) {
-  // TODO: Apply marble alignment, rolling torque and contact-force response.
-  return false;
+  bool aligned = false;
+  bool continueForce = false;
+  const float maxAcceleration =
+      gpTweakBall->GetMaxBallTranslationAcceleration(mPlayer.GetSurfaceRestraint());
+
+  if (mPlayer.GetVelocityWR().Magnitude() < 3.f &&
+      mBoostControlForce.Magnitude() > 0.95f * maxAcceleration) {
+    CVector3f momentum = mPlayer.GetMomentumWR();
+    CVector3f localMomentum = mSurfaceToWorld.TransposeRotate(momentum);
+    CVector3f localControlForce = mSurfaceToWorld.TransposeRotate(mBoostControlForce);
+    localMomentum.SetZ(0.f);
+    localControlForce.SetZ(0.f);
+    if (localMomentum.CanBeNormalized() && localControlForce.CanBeNormalized()) {
+      if (CVector3f::Dot(localMomentum.AsNormalized(), localControlForce.AsNormalized()) < -0.9f) {
+        continueForce = true;
+      }
+    }
+  }
+
+  if (!continueForce) {
+    const CVector3f velocity = mPlayer.GetVelocityWR();
+    CVector3f ballToPoint =
+        point - (mPlayer.GetTranslation() + CVector3f(0.f, 0.f, GetBallRadius()));
+
+    const CVector3f addVelocity =
+        CVector3f::Cross(mPlayer.GetAngularVelocityWR().GetVector(), ballToPoint);
+    CVector3f slipVelocity = velocity - addVelocity;
+
+    const float minLiftSpeed = mBallState == kBS_Spider ? -1.f : 0.4f;
+
+    float liftSpeed = 0.f;
+    if (mLiftSpeedAverage.size() > 3) {
+      liftSpeed = *mLiftSpeedAverage.GetEntry(0);
+      liftSpeed = rstl::min_val(*mLiftSpeedAverage.GetEntry(1), liftSpeed);
+      liftSpeed = rstl::min_val(*mLiftSpeedAverage.GetEntry(2), liftSpeed);
+    }
+
+    if (slipVelocity.MagSquared() > 1.f && liftSpeed > minLiftSpeed) {
+      if (slipVelocity.Magnitude() > M_PIF * 8.f) {
+        slipVelocity = slipVelocity.AsNormalized() * M_PIF * 8.f;
+      }
+
+      CVector3f newVelocity = velocity + addVelocity;
+      if (newVelocity.CanBeNormalized()) {
+        bool useTireFactor = false;
+        if (mTireMode && mBallState != kBS_Spider) {
+          useTireFactor = true;
+        }
+
+        const float tireFactor = useTireFactor ? 0.25f : 1.f;
+
+        const CVector3f& newVelocityDir = newVelocity.AsNormalized();
+        const CVector3f torque =
+            newVelocityDir *
+            (slipVelocity.Magnitude() *
+             -gpTweakBall->GetBallSlipFactor(mPlayer.GetSurfaceRestraint()) * tireFactor * 0.5f /
+             GetBallRadius());
+        const CVector3f worldTorque = CVector3f::Cross(ballToPoint.AsNormalized(), torque);
+        mPlayer.ApplyTorqueWR(worldTorque);
+      }
+    }
+  } else {
+    const float spinSpeed = 25.f / GetBallRadius();
+    CVector3f rotateAxis = CVector3f::Cross(mSurfaceToWorld.GetColumn(kDZ), mBoostControlForce);
+    if (rotateAxis.CanBeNormalized()) {
+      SpinToSpeed(spinSpeed, rotateAxis.AsNormalized(), 800.f);
+    }
+  }
+
+  const float velocityMag = mPlayer.GetVelocityWR().Magnitude();
+  if (velocityMag >= GetMinimumAlignmentSpeed()) {
+    const CVector3f playerRight = mPlayer.GetTransform().GetColumn(kDX);
+    CVector3f surfaceRight = mSurfaceToWorld.GetColumn(kDX);
+    if (CVector3f::Dot(playerRight, surfaceRight) < 0.f) {
+      surfaceRight = -surfaceRight;
+    }
+
+    CVector3f upVec = CVector3f::Cross(playerRight, surfaceRight);
+    if (upVec.CanBeNormalized()) {
+      if (!mTireMode) {
+        const CVector3f alignmentImpulse = gpTweakBall->GetTireness() * upVec.AsNormalized();
+        mPlayer.SetAngularImpulseWR(
+            CAxisAngle::FromVector(mPlayer.GetAngularImpulseWR().GetVector() + alignmentImpulse));
+      } else {
+        CVector3f right(1.f, 0.f, 0.f);
+        CVector3f localRight = GetBallToWorld().TransposeRotate(surfaceRight);
+        CQuaternion rotation = CQuaternion::ShortestRotationArc(right, localRight);
+        mPlayer.RotateInOneFrameOR(rotation, dt);
+      }
+    }
+
+    const float alignmentMagnitude = GetIsInHalfPipeMode() ? 0.2f : 0.05f;
+    if (upVec.Magnitude() < alignmentMagnitude) {
+      aligned = true;
+    }
+  }
+
+  return aligned;
 }
 
 // Scaffold, not a reconstructed implementation.

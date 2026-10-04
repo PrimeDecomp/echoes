@@ -47,6 +47,13 @@ public:
 
     return GetMaxValue(this->data(), this->size());
   }
+  rstl::optional_object< T > GetEntry(int idx) const {
+    if (idx >= this->size()) {
+      return rstl::optional_object_null();
+    } else {
+      return rstl::optional_object< T >(this->operator[](idx));
+    }
+  }
 };
 
 #endif // _TRESERVEDAVERAGE
