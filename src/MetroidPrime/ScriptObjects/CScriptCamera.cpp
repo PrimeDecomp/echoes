@@ -7,6 +7,7 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 class CScriptTimeKeyframe; // Guessed name; shared with the path-camera connection code.
@@ -104,3 +105,5 @@ void CScriptCamera::RotateSplines(const CQuaternion& rotation, const CVector3f& 
   mSpline.PositionSpline().Rotate(rotation, origin);
   mSpline.LookAtSpline().Rotate(rotation, origin);
 }
+
+CEntity* LoadCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}

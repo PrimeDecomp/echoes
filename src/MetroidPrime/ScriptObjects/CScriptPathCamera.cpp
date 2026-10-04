@@ -4,6 +4,7 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 // Guessed name, supported by the time-keyframe loader and connected-object updates.
@@ -168,3 +169,5 @@ void CScriptPathCamera::RotateSplines(const CQuaternion& rotation, const CVector
   mSpline.LookAtSpline().Rotate(rotation, origin);
   mPlayerSpline.Rotate(rotation, origin);
 }
+
+CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}

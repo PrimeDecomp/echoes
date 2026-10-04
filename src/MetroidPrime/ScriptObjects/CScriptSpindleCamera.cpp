@@ -4,6 +4,7 @@
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrSplineType.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptSpindleCamera::CScriptSpindleCamera(
@@ -59,3 +60,5 @@ void CScriptSpindleCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
     }
   }
 }
+
+CEntity* LoadSpindleCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}
