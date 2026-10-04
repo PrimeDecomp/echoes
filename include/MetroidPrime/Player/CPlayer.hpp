@@ -12,6 +12,7 @@
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CGunDrawBlockSet.hpp"
 #include "MetroidPrime/Player/CPlayerEnergyDrain.hpp"
 #include "MetroidPrime/Player/CPlayerKnockBackMgr.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
@@ -692,7 +693,7 @@ private:
   int mIceBreakJumps;
   float mIceBreakJumpTimeout;
   ERezbitState mRezbitState;
-  uint mRezbitEffectToken;
+  CGunDrawBlockSet mRezbitGunDrawBlocks;
   TUniqueId mRezbitEffectId;
   float mRezbitRecoveryTimer;
   CMorphBall* mMorphBall; // 0x1174
@@ -785,7 +786,7 @@ private:
   float mInvulnerabilityTimer;
   ETurretState mTurretState;
   TUniqueId mTurretId;
-  uint x1300_;
+  CGunDrawBlockSet mTurretGunDrawBlocks;
   float mTurretTimer;
   short mPlayerSoundPan[5];
   CPlayerState* mPlayerState;     // 0x1314
