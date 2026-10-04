@@ -137,7 +137,6 @@ public:
   void ClearAngularImpulses(); // Guessed name; leaves linear impulses unchanged.
   void ComputeDerivedQuantities();
   void UseCollisionImpulses();
-  void ClearAngularImpulses(); // Guessed name
   bool WillMove(const CStateManager& mgr);
   void Stop();
 
