@@ -8,6 +8,9 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
+const char* const eCamTypePerspective = "eCamTypePerspective";
+const char* const eCamTypeOrthogonal = "eCamTypeOrthogonal";
+
 CGuiWidget* CGuiCamera::Create(CGuiFrame* frame, CInputStream& in, CSimplePool* sp, uint version) {
   CGuiWidgetParms parms = ReadWidgetHeader(frame, in);
   EProjection proj = static_cast< EProjection >(in.ReadInt32());

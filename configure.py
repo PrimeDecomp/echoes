@@ -411,7 +411,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiSliderGroup.cpp"),
             Object(NonMatching, "GuiSys/CGuiTableGroup.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CRepeatState.cpp"),
-            Object(NonMatching, "GuiSys/CGuiCamera.cpp"),
+            Object(MatchingFor("G2ME01"), "GuiSys/CGuiCamera.cpp"),
             Object(NonMatching, "GuiSys/CGuiLight.cpp"),
             Object(NonMatching, "GuiSys/CGuiObject.cpp"),
             Object(NonMatching, "GuiSys/CGuiWidget.cpp"),
