@@ -41,12 +41,12 @@ private:
   CRumbleManager mRumbleManager2;
   CRumbleManager mRumbleManager3;
   CScriptObjectLoaderHelper mScriptObjectLoader;
-  // Render-phase UID queues; their precise phase roles remain unresolved.
-  rstl::reserved_vector< TUniqueId, 20 > x13ed8_;
-  rstl::reserved_vector< TUniqueId, 20 > x13f04_;
-  rstl::reserved_vector< TUniqueId, 20 > x13f30_;
-  rstl::reserved_vector< TUniqueId, 20 > x13f5c_;
-  rstl::reserved_vector< TUniqueId, 20 > x13f88_;
+  // Descriptive names derived from native render-phase profiling strings.
+  rstl::reserved_vector< TUniqueId, 20 > mRenderBeforeAreas;
+  rstl::reserved_vector< TUniqueId, 20 > mRenderFirstSorted;
+  rstl::reserved_vector< TUniqueId, 20 > mRenderLast;
+  rstl::reserved_vector< TUniqueId, 20 > mRenderLastUnderGun;
+  rstl::reserved_vector< TUniqueId, 20 > mRenderLastAfterCameraFilters;
 };
 CHECK_SIZEOF(CStateManagerContainer, 0x13fb4)
 
