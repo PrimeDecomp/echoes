@@ -47,6 +47,8 @@ public:
 
   const CCharLayoutNode& GetSegmentData(const CSegId& seg) const { return (*mNodes)[seg]; }
 
+  int GetNumSegments() const { return mNodes->GetNumNodes(); }
+
   const CSegIdList& GetBodyPartSegIds() const { return mSegIdList; }
 
   CSegId GetOriginalParent(const CSegId& seg) const { return GetSegmentData(seg).GetParent(); }
