@@ -1830,6 +1830,9 @@ MetroidPrime/Enemies/SIng_FuncPtrs.cpp:
 	.text       start:0x802188EC end:0x80218920
 	.sbss       start:0x804193D8 end:0x804193E0
 
+MetroidPrime/Enemies/CIngSpotData.cpp:
+	.text       start:0x80218920 end:0x802189A4
+
 MetroidPrime/CGameCollisionPackedCache.cpp:
 	.text       start:0x80218E30 end:0x8021BA60
 	.ctors      start:0x803A5598 end:0x803A559C
