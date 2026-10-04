@@ -268,8 +268,9 @@ void CMorphBall::StartScrewAttackSfx() {
   if (mScrewAttackSfx) {
     CSfxManager::SfxStop(mScrewAttackSfx);
   }
-  mScrewAttackSfx = CSfxManager::AddEmitter(mMultiplayer ? 0x25e2 : 0x2203, mPlayer.GetTranslation(),
-                                            mPlayer.GetCurrentAreaId().Value(), true, true);
+  mScrewAttackSfx =
+      CSfxManager::AddEmitter(mMultiplayer ? 0x25e2 : 0x2203, mPlayer.GetTranslation(),
+                              mPlayer.GetCurrentAreaId().Value(), true, true);
 }
 
 void CMorphBall::UpdateMorphBallSound(float dt, CStateManager& mgr) {
@@ -458,7 +459,8 @@ void CMorphBall::LoadMorphBallModel() {
 
     mLoadedModelId = loadModelId;
     if (spiderBall) {
-      mBallModel = GetMorphBallModel(rstl::string_l(skSpiderBallCharacter[modelIdx].mName), mRadius);
+      mBallModel =
+          GetMorphBallModel(rstl::string_l(skSpiderBallCharacter[modelIdx].mName), mRadius);
       mBallModelShader = skSpiderBallCharacter[modelIdx].mShader;
       mLowPolyBallModel =
           GetMorphBallModel(rstl::string_l(skSpiderBallLowPoly[modelIdx].mName), mRadius);
@@ -601,11 +603,11 @@ void CMorphBall::ComputeLiftForces(const CVector3f& controlForce, const CVector3
           const float liftScale = 1.f - rstl::max_val(0.f, avgLiftSpeed - 3.f);
           mPlayer.ApplyForceWR(CVector3f(0.f, 0.f, liftScale * 40000.f), CAxisAngle::Identity());
 
-          mPlayer.ApplyImpulseWR(CVector3f::Zero(),
-                                 CAxisAngle::FromVector(CVector3f(-mSurfaceToWorld.Get00(),
-                                                                  -mSurfaceToWorld.Get10(),
-                                                                  -mSurfaceToWorld.Get20()) *
-                                                        1000.f * liftScale));
+          mPlayer.ApplyImpulseWR(
+              CVector3f::Zero(),
+              CAxisAngle::FromVector(CVector3f(-mSurfaceToWorld.Get00(), -mSurfaceToWorld.Get10(),
+                                               -mSurfaceToWorld.Get20()) *
+                                     1000.f * liftScale));
         }
       }
     }
@@ -632,7 +634,7 @@ void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& col
   // TODO: Process contact materials/normals, boost damage, half-pipe and Screw Attack collisions.
 }
 
-static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player; // Guessed name
+static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player;    // Guessed name
 static EMaterialTypes CloseToCollisionMaterial2 = kMT_Unknown59; // Guessed name
 
 bool CMorphBall::BallCloseToCollision(const CStateManager& mgr, float distance,
@@ -675,9 +677,7 @@ void CMorphBall::DisableHalfPipeStatus() {
   mHalfPipeNormal = CVector3f::Zero();
 }
 
-void CMorphBall::SetTouchedHalfPipeRecently(bool touched) {
-  mTouchedHalfPipeRecently = touched;
-}
+void CMorphBall::SetTouchedHalfPipeRecently(bool touched) { mTouchedHalfPipeRecently = touched; }
 
 bool CMorphBall::GetTouchedHalfPipeRecently() const { return mTouchedHalfPipeRecently; }
 
@@ -745,8 +745,8 @@ void CMorphBall::RenderDamageEffects(const CStateManager& mgr,
     const float phase = 30.f * mDamageTime + randomPhase;
     const float translateMag = mDamageEffect * CMath::FastSinR(phase) * 0.15f;
     CTransform4f modelXf =
-        transform * CTransform4f::Translate(
-                        CVector3f(randX * translateMag, randY * translateMag, randZ * translateMag));
+        transform * CTransform4f::Translate(CVector3f(randX * translateMag, randY * translateMag,
+                                                      randZ * translateMag));
     mBallModel->RenderSolid(CModelData::kWM_Normal, modelXf, false, flags);
   }
 }
@@ -933,12 +933,17 @@ void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManage
 
 void CMorphBall::SetScrewAttackActive(bool active) { mForcedScrewJumpInput = active; }
 
-static EMaterialTypes ScrewAttackIncludeMaterial1 = static_cast< EMaterialTypes >(34); // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial2 = static_cast< EMaterialTypes >(43); // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial3 = kMT_Unknown59;                      // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial4 = static_cast< EMaterialTypes >(50); // Guessed name
-static EMaterialTypes ScrewAttackExcludeMaterial1 = static_cast< EMaterialTypes >(35); // Guessed name
-static EMaterialTypes ScrewAttackExcludeMaterial2 = static_cast< EMaterialTypes >(45); // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial1 =
+    static_cast< EMaterialTypes >(34); // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial2 =
+    static_cast< EMaterialTypes >(43);                             // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial3 = kMT_Unknown59; // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial4 =
+    static_cast< EMaterialTypes >(50); // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial1 =
+    static_cast< EMaterialTypes >(35); // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial2 =
+    static_cast< EMaterialTypes >(45); // Guessed name
 
 void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
   CDamageInfo damage = gpTweakBall->GetScrewAttackDamage();
@@ -976,8 +981,8 @@ void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
     }
 
     if (applyDamage) {
-      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage,
-                      CMaterialFilter(), CVector3f::Zero());
+      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage, CMaterialFilter(),
+                      CVector3f::Zero());
     }
   }
 }
@@ -1005,14 +1010,13 @@ struct SDeathBallCooldownFinder {
 
 static EMaterialTypes DeathBallIncludeMaterial1 = static_cast< EMaterialTypes >(34); // Guessed name
 static EMaterialTypes DeathBallIncludeMaterial2 = static_cast< EMaterialTypes >(43); // Guessed name
-static EMaterialTypes DeathBallIncludeMaterial3 = kMT_Unknown59;                      // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial3 = kMT_Unknown59;                     // Guessed name
 static EMaterialTypes DeathBallIncludeMaterial4 = static_cast< EMaterialTypes >(50); // Guessed name
 static EMaterialTypes DeathBallExcludeMaterial1 = static_cast< EMaterialTypes >(35); // Guessed name
 static EMaterialTypes DeathBallExcludeMaterial2 = static_cast< EMaterialTypes >(45); // Guessed name
 
 void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
-  rstl::vector< rstl::pair< TUniqueId, float > >::iterator it =
-      mDeathBallDamageCooldowns.begin();
+  rstl::vector< rstl::pair< TUniqueId, float > >::iterator it = mDeathBallDamageCooldowns.begin();
   while (it != mDeathBallDamageCooldowns.end()) {
     it->second -= dt;
     if (it->second <= 0.f) {
@@ -1048,8 +1052,8 @@ void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
                       SDeathBallCooldownFinder(uid));
 
     if (cooldown == mDeathBallDamageCooldowns.end()) {
-      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage,
-                      CMaterialFilter(), CVector3f::Zero());
+      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage, CMaterialFilter(),
+                      CVector3f::Zero());
       if (mDeathBallDamageCooldowns.size() == mDeathBallDamageCooldowns.capacity()) {
         mDeathBallDamageCooldowns.reserve(mDeathBallDamageCooldowns.capacity() * 2);
       }
@@ -1160,13 +1164,13 @@ void CMorphBall::UpdateEffects(float dt, CStateManager& mgr) {
     const bool hasBoostBall = playerState->HasPowerUp(CPlayerState::kIT_BoostBall);
     if (!mgr.IsMultiplayer() && hasBoostBall && mLoadedModelId % 3 == 1) {
       mSideSwooshGen->SetTranslation(swooshToWorld.GetTranslation() +
-                                swooshToWorld.Rotate(CVector3f(-0.5859f, 0.f, 0.f)));
+                                     swooshToWorld.Rotate(CVector3f(-0.5859f, 0.f, 0.f)));
       mSideSwooshGen->SetOrientation(swooshToWorld.GetRotation());
       mSideSwooshGen->SetWarmUp();
       mSideSwooshGen->Update(0.0);
 
       mSideSwooshGen2->SetTranslation(swooshToWorld.GetTranslation() +
-                                swooshToWorld.Rotate(CVector3f(0.5859f, 0.f, 0.f)));
+                                      swooshToWorld.Rotate(CVector3f(0.5859f, 0.f, 0.f)));
       mSideSwooshGen2->SetOrientation(swooshToWorld.GetRotation());
       mSideSwooshGen2->SetWarmUp();
       mSideSwooshGen2->Update(0.0);
@@ -1400,9 +1404,7 @@ void CMorphBall::EnterMorphBallState(CStateManager& mgr, EBallState state) {
   }
 }
 
-void CMorphBall::SetBallLightActive(CStateManager& mgr, bool active) {
-  mBallLightActive = active;
-}
+void CMorphBall::SetBallLightActive(CStateManager& mgr, bool active) { mBallLightActive = active; }
 
 void CMorphBall::DeleteLight(CStateManager& mgr) {
   if (mBallInnerGlowLight != kInvalidUniqueId) {
@@ -1428,10 +1430,9 @@ void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mBallInnerGlowLight = mgr.AllocateUniqueId();
       const uint sourceId =
           mBallInnerGlow.GetTag().id + mgr.MaskUIdNumPlayers(mPlayer.GetUniqueId());
-      mgr.AddObject(rs_new CGameLight(mBallInnerGlowLight, kInvalidAreaId, false,
-                                      rstl::string_l("BallLight"), GetBallToWorld(),
-                                      mPlayer.GetUniqueId(), mBallInnerGlowGen->GetLight(),
-                                      sourceId, 0, 0.f));
+      mgr.AddObject(rs_new CGameLight(
+          mBallInnerGlowLight, kInvalidAreaId, false, rstl::string_l("BallLight"), GetBallToWorld(),
+          mPlayer.GetUniqueId(), mBallInnerGlowGen->GetLight(), sourceId, 0, 0.f));
     }
     break;
   case kSM_XDelete:
@@ -1497,8 +1498,7 @@ void CMorphBall::SwitchToTire() {
 
 void CMorphBall::SwitchToMarble() {
   const CUnitVector3f axis(mPlayer.GetTransform().TransposeRotate(mPlayer.GetLookDir()));
-  const CQuaternion rotation =
-      CQuaternion::AxisAngle(axis, CRelAngle::FromRadians(mBallTiltAngle));
+  const CQuaternion rotation = CQuaternion::AxisAngle(axis, CRelAngle::FromRadians(mBallTiltAngle));
   mPlayer.SetTransform(mPlayer.GetTransform() * rotation.BuildTransform4f());
   mTireMode = false;
   mTireInterpolating = true;
@@ -1555,8 +1555,7 @@ CTransform4f CMorphBall::GetBallToWorld() const {
 }
 
 CTransform4f CMorphBall::GetSwooshToWorld() const {
-  return CTransform4f::Translate(mPlayer.GetTranslation() +
-                                 CVector3f(0.f, 0.f, GetBallRadius())) *
+  return CTransform4f::Translate(mPlayer.GetTranslation() + CVector3f(0.f, 0.f, GetBallRadius())) *
          mSurfaceToWorld.GetRotation() *
          CTransform4f::RotateY(CRelAngle::FromRadians(mBallTiltAngle));
 }
@@ -1742,13 +1741,15 @@ CVector2f CMorphBall::CalculateSpiderBallAttractionSurfaceForces(const CFinalInp
 }
 
 CVector3f CMorphBall::TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const {
-  const CTransform4f camXf = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
+  const CTransform4f camXf =
+      mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
   CVector3f ret = camXf.GetColumn(kDX) * forces.GetX() + camXf.GetColumn(kDY) * forces.GetY();
   return ret;
 }
 
 CVector3f CMorphBall::TransformSpiderBallForcesXZ(CVector2f& forces, CStateManager& mgr) const {
-  const CTransform4f camXf = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
+  const CTransform4f camXf =
+      mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true)->GetTransform();
   CVector3f ret = camXf.GetColumn(kDX) * forces.GetX() + camXf.GetColumn(kDZ) * forces.GetY();
   return ret;
 }
@@ -1768,8 +1769,8 @@ void CMorphBall::ApplySpiderBallSwingingForces(const CFinalInput& input, CStateM
   const float swingMovement = movement * GetSpiderBallSwingControllerMovementScalar();
   const float swingForce = 110000.f * playerToSpiderDist / 3.7f;
   const CVector3f swing = CVector3f::Cross(mPlayerToSpiderNormal, mSpiderBetweenPoints);
-  mPlayer.ApplyForceWR(CVector3f::Cross(swing, mPlayerToSpiderNormal).AsNormalized() *
-                           swingForce * swingMovement * 0.06f,
+  mPlayer.ApplyForceWR(CVector3f::Cross(swing, mPlayerToSpiderNormal).AsNormalized() * swingForce *
+                           swingMovement * 0.06f,
                        CAxisAngle::Identity());
   mPlayer.SetMomentumWR(CVector3f(0.f, 0.f, mPlayer.GetMass() * gpTweakBall->GetBallGravity()));
   mRefPullVelocity = (1.f - mSpiderPullMovement) * 3.7f + 1.4f;
@@ -1945,8 +1946,7 @@ CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
 , mBallInnerGlowLight(kInvalidUniqueId)
 , mBallLightActive(false)
 , mWorldShadow(rs_new CWorldShadow(16, 16, false))
-, mActorLights(
-      rs_new CActorLights(8, CVector3f::Zero(), 4, 4, 0.1f, false, false, false, false))
+, mActorLights(rs_new CActorLights(8, CVector3f::Zero(), 4, 4, 0.1f, false, false, false, false))
 , mRainSplashGen(rs_new CRainSplashGenerator(mBallModel->GetScale(), 40, 2, 0.15f, 0.5f))
 , mTireFactor(0.f)
 , mMaxTireFactor(0.5f)
