@@ -364,9 +364,34 @@ void CMorphBall::SetIsInHalfPipeMode(bool active) { mInHalfPipeMode = active; }
 
 bool CMorphBall::GetIsInHalfPipeMode() const { return mInHalfPipeMode; }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateHalfPipeStatus(CStateManager& mgr, float dt) {
-  // TODO: Expire half-pipe/contact cooldowns and adjust collision accuracy.
+  mTouchHalfPipeCooldown -= dt;
+  mTouchHalfPipeCooldown = rstl::max_val(0.f, mTouchHalfPipeCooldown);
+  mTouchedHalfPipeRecentCooldown -= dt;
+  mTouchedHalfPipeRecentCooldown = rstl::max_val(0.f, mTouchedHalfPipeRecentCooldown);
+
+  if (mTouchHalfPipeCooldown > 0.f) {
+    const float avg = *mLiftSpeedAverage.GetAverage();
+    if (avg > 25.f || (GetIsInHalfPipeMode() && avg > 4.5f)) {
+      SetIsInHalfPipeMode(true);
+      SetIsInHalfPipeModeInAir(!mBallCloseToCollision);
+      SetTouchedHalfPipeRecently(mTouchedHalfPipeRecentCooldown > 0.f);
+      if (GetIsInHalfPipeModeInAir()) {
+        mPrevHalfPipeNormal = CVector3f::Zero();
+        mHalfPipeNormal = CVector3f::Zero();
+      }
+    } else {
+      DisableHalfPipeStatus();
+    }
+  } else {
+    DisableHalfPipeStatus();
+  }
+
+  if (GetIsInHalfPipeMode()) {
+    mPlayer.SetCollisionAccuracyModifier(20.f);
+  } else {
+    mPlayer.SetCollisionAccuracyModifier(5.f);
+  }
 }
 
 // Guessed name.
@@ -631,10 +656,52 @@ void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   // TODO: Handle Echoes CScriptMsg creation/deletion of the inner-glow light.
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::Update(float dt, CStateManager& mgr) {
-  // TODO: Update effects, light, death-ball state, tire interpolation, damage decay, rain and
-  // sound.
+  if (mBallState == kBS_Spider) {
+    CreateSpiderBallParticles(mgr, GetBallPosition(), mSpiderTrackPoint);
+  }
+
+  if (mMultiplayer) {
+    mBallModelShader = mPlayer.GetCurrentBeam();
+  }
+
+  UpdateEffects(dt, mgr);
+  UpdateBallLight(dt, mgr);
+
+  if (mPlayer.GetDeathTime() <= 0.f) {
+    UpdateDeathBall(dt, mgr);
+  }
+
+  if (mDamageEffect > 0.f) {
+    mDamageEffect -= mDamageEffectDecaySpeed * dt;
+    if (mDamageEffect <= 0.f) {
+      mDamageEffect = 0.f;
+      mDamageEffectDecaySpeed = 0.f;
+      mDamageTime = 0.f;
+    } else {
+      mDamageTime += dt;
+    }
+  }
+
+  if (mTireInterpolating) {
+    mTireFactor += mTireInterpolationSpeed * dt;
+    if (mTireFactor < 0.f) {
+      mTireInterpolating = false;
+      mTireFactor = 0.f;
+    } else if (mTireFactor > mMaxTireFactor) {
+      mTireInterpolating = false;
+      mTireFactor = mMaxTireFactor;
+    }
+  }
+
+  mBoostTrailFadeTimer -= dt;
+  mBoostTrailFadeTimer = rstl::max_val(0.f, mBoostTrailFadeTimer);
+
+  if (mRainSplashGen.get() != nullptr) {
+    mRainSplashGen->Update(dt, mgr);
+  }
+
+  UpdateMorphBallSound(dt, mgr);
 }
 
 void CMorphBall::SwitchToTire() {
