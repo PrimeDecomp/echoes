@@ -1,6 +1,9 @@
 #include "MetroidPrime/ScriptObjects/CScriptSound.hpp"
 
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSound.hpp"
 
 bool CScriptSound::sFirstInFrame;
 
@@ -136,4 +139,25 @@ void CScriptSound::StopSound(CStateManager& mgr) {
 float CScriptSound::GetOccludedVolumeAmount(const CVector3f& pos, const CStateManager& mgr) {
   // TODO: listener-relative ray grid and occlusion attenuation.
   return 1.f;
+}
+
+CEntity* LoadSound(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSound sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSound.inc"
+  if (sldrThis.sound < 0) {
+    return nullptr;
+  }
+
+  return rs_new CScriptSound(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      static_cast< ushort >(sldrThis.sound), sldrThis.maxAudibleDistance, sldrThis.dropOff,
+      sldrThis.delayTime, static_cast< short >(sldrThis.minVolume),
+      static_cast< short >(sldrThis.maxVolume), 0,
+      static_cast< short >(sldrThis.echoVisorMaxVolume), static_cast< short >(sldrThis.priority),
+      static_cast< short >(63.f * (1.f + sldrThis.surroundPan.pan)),
+      static_cast< short >(63.f * (1.f - sldrThis.surroundPan.surroundPan)), 0, sldrThis.loop,
+      sldrThis.ambient, sldrThis.viewportDependent, sldrThis.autoStart, sldrThis.canOcclude,
+      sldrThis.useRoomAcoustics, sldrThis.persistent, sldrThis.playAlways, sldrThis.allArea,
+      sldrThis.soundIsMusic, sldrThis.pitch);
 }
