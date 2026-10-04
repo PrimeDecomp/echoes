@@ -3,10 +3,12 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAxisAngle.hpp"
 #include "MetroidPrime/CArchitectureMessage.hpp"
 #include "MetroidPrime/CArchitectureQueue.hpp"
@@ -1365,7 +1367,33 @@ void CScriptSpecialFunction::ThinkRainSimulator(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
-  // TODO: track single-player area damage and apply the frame's damage.
+  if (mgr.IsMultiplayer()) {
+    return;
+  }
+  CPlayer* player = mgr.GetPlayer(0);
+  bool inArea = player->GetCurrentAreaId() == GetCurrentAreaId();
+  bool immune = mgr.PlayerState(0)->GetCurrentSuitRaw() > CPlayerState::kPS_Varia;
+  if (mInAreaDamage) {
+    if (!inArea || immune) {
+      mInAreaDamage = false;
+      player->PopSustainedDamage();
+      SendScriptMsgs(kSS_Exited, mgr, kInvalidUniqueId, kSM_None);
+      mgr.SetIsFullThreat(false);
+      return;
+    }
+  } else if (!inArea || immune) {
+    return;
+  } else {
+    mInAreaDamage = true;
+    player->PushSustainedDamage();
+    SendScriptMsgs(kSS_Entered, mgr, kInvalidUniqueId, kSM_None);
+    mgr.SetIsFullThreat(true);
+  }
+
+  CDamageInfo dInfo(CWeaponMode(kWT_Heat), mValue1 * dt, 0.f, 0.f, true);
+  mgr.ApplyDamage(GetUniqueId(), player->GetUniqueId(), GetUniqueId(), dInfo,
+                  CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+                  CVector3f::Zero());
 }
 
 void CScriptSpecialFunction::ThinkActorScale(float dt, CStateManager& mgr) {
@@ -1557,7 +1585,43 @@ void CScriptSpecialFunction::ThinkTriggerScale(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowJoint(float dt, CStateManager& mgr) {
-  // TODO: include the source joint's bind rotation when following a locator.
+  TUniqueId followerAct = kInvalidUniqueId;
+  TUniqueId followedAct = kInvalidUniqueId;
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state != kSS_Play || (conn->msg != kSM_Activate && conn->msg != kSM_Deactivate)) {
+      continue;
+    }
+
+    const CStateManager::TIdListResult it = mgr.GetIdListForScript(conn->objId);
+    if (!(it.first == it.second)) {
+      TUniqueId uid = it.first->second;
+      if (const CActor* const act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
+        if (conn->msg == kSM_Activate && act->HasAnimation()) {
+          if (!act->GetActive()) {
+            return;
+          }
+          followedAct = uid;
+        } else if (conn->msg == kSM_Deactivate) {
+          followerAct = uid;
+        }
+      }
+    }
+  }
+
+  if (followerAct != kInvalidUniqueId && followedAct != kInvalidUniqueId) {
+    const CActor* followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
+    CActor* follower = TCastToPtr< CActor >(mgr.ObjectById(followerAct));
+    if (followed && follower) {
+      const CCharLayoutInfo* layout =
+          followed->GetModelData()->GetAnimationData()->GetCharLayoutInfo();
+      CSegId id = layout->GetSegIdFromString(mStringParm);
+      CTransform4f xf =
+          followed->GetTransform() * followed->GetScaledLocatorTransform(id) *
+          layout->GetLinearRotations()[id.val()].BuildTransform4f();
+      follower->SetTransform(xf);
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkRezbitState(float dt, CStateManager& mgr) {

@@ -24,7 +24,9 @@ public:
   , mNoImmunity(false)
   , x1a_25_(false) {}
 
-  CDamageInfo(const CWeaponMode& mode, float damage, float radius, float knockback)
+  // The x1a_25_ initializer is inferred from the two known argument patterns.
+  CDamageInfo(const CWeaponMode& mode, float damage, float radius, float knockback,
+              bool noImmunity = false)
   : mWeaponMode(mode)
   , mDamage(damage)
   , mRadiusDamageAmount(damage)
@@ -33,8 +35,8 @@ public:
   , x14_(0xffff)
   , x16_(0xffff)
   , x18_(0xffff)
-  , mNoImmunity(false)
-  , x1a_25_(true) {}
+  , mNoImmunity(noImmunity)
+  , x1a_25_(!noImmunity) {}
 
   CDamageInfo(CInputStream& in);
   CDamageInfo(const SLdrTDamageInfo& data, bool charged = false, bool comboed = false,
