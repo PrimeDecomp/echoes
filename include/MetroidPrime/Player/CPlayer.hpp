@@ -201,6 +201,7 @@ public:
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
   float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
   bool GetX126c24() const { return x126c_24_; }
+  const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   const CVector3f& GetLookDir() const { return mLookDir; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }

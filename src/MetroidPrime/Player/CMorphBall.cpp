@@ -31,6 +31,7 @@
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CMorphBallShadow.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerBodyController.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -39,7 +40,9 @@
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 
-#include "rstl/algorithm.hpp"
+#include <string.h>
+
+#include "rstl//algorithm.hpp"
 #include "rstl/math.hpp"
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
@@ -1074,9 +1077,85 @@ void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::UpdateScrewAttackRecovery(float dt) {
-  // TODO: Recover from recoil/collisions and request the player's exit animation.
+  if (mPendingRecoil) {
+    const CVector3f recoilVelocity = 12.f * mScrewAttackDirection + 24.f * CVector3f::Up();
+    mPlayer.SetVelocityWR(recoilVelocity);
+    mPlayer.CalculatePlayerMovementDirection(0.f, -recoilVelocity);
+    mPendingRecoil = false;
+    mRecoiling = true;
+  }
+
+  bool endRecovery = false;
+  if (mCollidedDuringRecovery) {
+    mTouchingWall = false;
+    mCollidedDuringRecovery = false;
+    if (x18a8_30_) {
+      mScrewAttackRecoveryCollisionTime += 0.5f * dt;
+      x18a8_30_ = false;
+    } else {
+      mScrewAttackRecoveryCollisionTime += dt;
+    }
+    if (mScrewAttackRecoveryCollisionTime > 0.4f) {
+      endRecovery = true;
+    }
+  }
+
+  const CVector3f velocity = mPlayer.GetVelocityWR();
+  CVector3f lookDir = CVector3f::Forward();
+  if (mScrewAttackDirection.CanBeNormalized()) {
+    if (mRecoiling) {
+      lookDir = -1.f * mScrewAttackDirection;
+    } else {
+      lookDir = mScrewAttackDirection;
+    }
+
+    if (!mRecoiling && mTouchingWall) {
+      const CVector2f flatVelocity = CVector2f(velocity.GetX(), velocity.GetY());
+      if (mPlayer.GetTranslation().GetZ() - mPlayer.GetLastSpaceJumpPosition().GetZ() > 0.f) {
+        if (flatVelocity.MagSquared() < 64.f) {
+          const CVector3f wallVelocity = velocity + 4.f * mScrewAttackDirection;
+          mPlayer.SetVelocityWR(wallVelocity);
+          mPlayer.CalculatePlayerMovementDirection(0.f, wallVelocity);
+        }
+      } else {
+        const float damping = pow(0.05f, 60.f * dt);
+        const CVector3f dampedVelocity =
+            velocity - damping * CVector3f(flatVelocity.GetX(), flatVelocity.GetY(), 0.f);
+        mPlayer.SetVelocityWR(dampedVelocity);
+      }
+    }
+  } else {
+    lookDir = mPlayer.GetMovementDirection();
+  }
+
+  if (mScrewAttackExitAnimationFrames != 0) {
+    mPlayer.BodyController()->CommandMgr().DeliverCmd(CPBCJumpCmd(0, 4));
+    --mScrewAttackExitAnimationFrames;
+  }
+
+  if (mScrewAttackSfx) {
+    CSfxManager::SfxStop(mScrewAttackSfx);
+    mScrewAttackSfx.Clear();
+  }
+
+  CTransform4f playerXf = mPlayer.GetTransform();
+  playerXf.SetRotation(CTransform4f::LookAt(CVector3f::Zero(), lookDir, CVector3f::Up()));
+  mPlayer.SetTransform(playerXf);
+
+  if (mPlayer.GetPlayerMovementState() == NPlayer::kMS_OnGround) {
+    ++mScrewAttackGroundedFrames;
+    CVector2f flatVelocity(velocity.GetX(), velocity.GetY());
+    const CVector3f dampedVelocity =
+        velocity - static_cast< float >(pow(0.05f, 60.f * dt)) *
+                       CVector3f(flatVelocity.GetX(), flatVelocity.GetY(), 0.f);
+    mPlayer.SetVelocityWR(dampedVelocity);
+  }
+
+  if (endRecovery ||
+      strcmp(mPlayer.BodyController()->GetBodyState().GetName(), "Locomotion") == 0) {
+    mPlayer.fn_80184294(CPlayer::kMS_Morphed);
+  }
 }
 
 // Scaffold, not a reconstructed implementation.
