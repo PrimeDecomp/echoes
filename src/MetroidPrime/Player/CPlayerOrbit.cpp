@@ -1,5 +1,13 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Player/CPlayerTargeting.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPointOfInterest.hpp"
+#include "MetroidPrime/TCastTo.hpp"
+#include "dolphin/os/OSCache.h"
+
 // NonMatching scaffold. Definitions are in reverse target order for deferred inlining.
 
 bool CPlayer::ValidateOrbitTargetIdAndPointer(TUniqueId target, const CStateManager& mgr) const {
@@ -267,10 +275,83 @@ void CPlayer::fn_8011c3c0() {
 }
 
 // Guessed name
-// Guessed name
-// Guessed name
 void* CPlayer::GetReflectionTextureData() const { return mReflectionTextureData; }
 
 void* CPlayer::GetIndirectTextureData() const { return mIndirectTextureData; }
 
 void* CPlayer::GetMaskTextureData() const { return mMaskTextureData; }
+
+TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
+  uint width = 64;
+  uint height = 32;
+  TUniqueId selectedId = kInvalidUniqueId;
+  uint selectedPalette = 0;
+
+  if (mReflectionTextureData && mTargeting) {
+    if (mgr.IsMultiplayer()) {
+      width >>= 1;
+    }
+    if (mgr.GetNumPlayers() >= 3u) {
+      height >>= 1;
+    }
+
+    rstl::reserved_vector< uint, 62 > histogram;
+    histogram.resize(62, 0u);
+    const uchar* paletteData = static_cast< const uchar* >(mReflectionTextureData);
+    for (uint i = 0; i < width * height; ++i) {
+      const uint palette = paletteData[i] >> 2;
+      if (palette < 62) {
+        ++histogram[palette];
+      }
+    }
+
+    uint bestCount = 0;
+    for (int palette = 1; palette < 62; ++palette) {
+      const uint count = histogram[palette];
+      if (count > bestCount && count - bestCount > 16u) {
+        const TUniqueId id = mTargeting->GetScanTargetId(mgr, palette);
+        const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(id));
+        if (actor && actor->GetMaterialList().HasMaterial(kMT_Scannable)) {
+          bestCount = count;
+          selectedId = id;
+          selectedPalette = palette;
+        }
+      }
+    }
+  }
+
+  const uchar* paletteData = static_cast< const uchar* >(mReflectionTextureData);
+  const ushort* depthData = static_cast< const ushort* >(mIndirectTextureData);
+  const uchar* lowDepthData = static_cast< const uchar* >(mMaskTextureData);
+  double totalDepth = 0.;
+  uint sampleCount = 0;
+  for (uint i = 0; i < width * height; ++i) {
+    if (paletteData[i] >> 2 == selectedPalette) {
+      const ushort depth = ushort((depthData[i] << 8) | (depthData[i] >> 8));
+      totalDepth += 256. * depth + lowDepthData[i];
+      ++sampleCount;
+    }
+  }
+
+  const double meanDepth = totalDepth / sampleCount;
+  const double nearClip = mCameraManager->GetCurrentCamera(mgr, false)->GetNearClipDistance();
+  const double farClip = mCameraManager->GetCurrentCamera(mgr, false)->GetFarClipDistance();
+  const double distance =
+      (-farClip * nearClip) / ((meanDepth / 16777215.) * (farClip - nearClip) - farClip);
+  if (selectedId != mOrbitTargetId) {
+    const CScriptPointOfInterest* point =
+        TCastToConstPtr< CScriptPointOfInterest >(mgr.GetObjectById(selectedId));
+    if (point && !point->GetLookAt()) {
+      CVector3f position = mCameraManager->GetCurrentCamera(mgr, false)->GetTranslation();
+      position += float(distance) *
+                  mCameraManager->GetCurrentCamera(mgr, false)->GetTransform().GetForward();
+      // The const lookup borrows a view of a mutable registered game entity.
+      const_cast< CScriptPointOfInterest* >(point)->SetTranslation(position);
+    }
+  }
+
+  DCInvalidateRange(mReflectionTextureData, 2048);
+  DCInvalidateRange(mIndirectTextureData, 4096);
+  DCInvalidateRange(mMaskTextureData, 2048);
+  return selectedId;
+}

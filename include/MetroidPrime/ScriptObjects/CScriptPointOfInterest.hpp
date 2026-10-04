@@ -25,6 +25,8 @@ public:
   void PreRenderAllViewports(CStateManager& mgr) override;
   rstl::optional_object< CAABox > GetTouchBounds() const override;
 
+  bool GetLookAt() const { return mLookAt; }
+
 private:
   float mScanOffset;
   bool mLookAt : 1;

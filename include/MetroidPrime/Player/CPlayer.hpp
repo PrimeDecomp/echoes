@@ -459,6 +459,7 @@ public:
   TUniqueId CheckEnemyAgainstOrbitZone(TUniqueId target, EPlayerZoneInfo zone, EPlayerZoneType type,
                                        CStateManager& mgr);
   TUniqueId FindOrbitTargetId(CStateManager& mgr);
+  TUniqueId FindScanTargetId(const CStateManager& mgr) const; // Guessed name
   void UpdateOrbitableObjects(CStateManager& mgr);
   TUniqueId FindBestOrbitableObject(const rstl::reserved_vector< TUniqueId, 64 >& objects,
                                     EPlayerZoneInfo zone, CStateManager& mgr);
