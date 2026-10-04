@@ -921,9 +921,96 @@ void CMorphBall::LeaveBoosting() {
   mBoostDrainTime = 0.f;
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
-  // TODO: Enter normal/spider boost, optionally apply the impulse, and reset damage history.
+  if (mBallState == kBS_Spider) {
+    mBallState = kBS_SpiderBoost;
+    mSpiderBoostDirection = mPlayerToSpiderNormal;
+    SetDamageTimer(0.05f);
+    mBoostDamageScale = 1.f;
+  } else {
+    mBallState = kBS_Boost;
+    mBoostDamageScale = 1.f;
+  }
+
+  if (mPlayer.GetX126c24()) {
+    mPlayer.SetVelocityWR(mPlayer.GetVelocityWR() * 0.4f);
+  }
+
+  if (!skipImpulse) {
+    const float boostChargeTime = mBoostChargeTime;
+    float incSpeed = 0.f;
+    if (boostChargeTime <= gpTweakBall->GetBoostBallChargeTimeTable(0)) {
+      incSpeed = gpTweakBall->GetBoostBallIncrementalSpeedTable(0);
+    } else if (boostChargeTime <= gpTweakBall->GetBoostBallChargeTimeTable(1)) {
+      incSpeed = gpTweakBall->GetBoostBallIncrementalSpeedTable(1);
+    } else if (boostChargeTime <= gpTweakBall->GetBoostBallChargeTimeTable(2)) {
+      incSpeed = gpTweakBall->GetBoostBallIncrementalSpeedTable(2);
+    }
+
+    if (GetIsInHalfPipeMode()) {
+      const float speedMul = mPlayer.GetVelocityWR().Magnitude() / 95.f;
+      if (speedMul > 0.3f) {
+        incSpeed = incSpeed - incSpeed * (speedMul - 0.3f);
+      }
+      incSpeed = rstl::max_val(0.f, incSpeed);
+    } else {
+      incSpeed *= 1.f - mPlayer.GetVelocityWR().Magnitude() / 50.f;
+    }
+
+    CVector3f lookDir;
+    lookDir.SetX(mPlayer.GetLookDir().GetX());
+    lookDir.SetY(mPlayer.GetLookDir().GetY());
+    lookDir.SetZ(mPlayer.GetLookDir().GetZ());
+    float lookMag2d = sqrt(lookDir.GetX() * lookDir.GetX() + lookDir.GetY() * lookDir.GetY());
+    double lookAngle = atan2(lookDir.GetZ(), lookMag2d);
+    float vertLookAngle = CMath::Rad2Rev(lookAngle) * 360.f;
+    float lookMag2dZero = 0.f;
+    if (CMath::AbsF(lookMag2d - lookMag2dZero) < 0.001f &&
+        mPlayer.GetPlayerMovementState() == NPlayer::kMS_OnGround) {
+      const CVector3f velocity = mPlayer.GetVelocityWR();
+      const float velZ = velocity.GetZ();
+      float velMag2d = sqrt(velocity.GetX() * velocity.GetX() + velocity.GetY() * velocity.GetY());
+      float velMag2dZero = 0.f;
+      if (CMath::AbsF(velMag2d - velMag2dZero) < 0.01f && CMath::AbsF(velZ) < 2.f) {
+        const CGameCamera* camera = mPlayer.GetCameraManager()->GetCurrentCamera(mgr, true);
+        lookDir.SetX(camera->GetTransform().Get01());
+        lookDir.SetY(camera->GetTransform().Get11());
+        lookDir.SetZ(camera->GetTransform().Get21());
+        lookMag2d = sqrt(lookDir.GetX() * lookDir.GetX() + lookDir.GetY() * lookDir.GetY());
+        lookAngle = atan2(lookDir.GetZ(), lookMag2d);
+        vertLookAngle = CMath::Rad2Rev(lookAngle) * 360.f;
+      }
+    }
+
+    float speedMul = 1.f;
+    if (mBallState == kBS_SpiderBoost) {
+      lookDir = mSpiderBoostDirection->AsNormalized();
+      speedMul = gpTweakBall->GetSpiderBallBoostScalar();
+    } else if (vertLookAngle > 40.f) {
+      const float speedDamp = (vertLookAngle - 40.f) / 50.f;
+      speedMul = 0.35f * speedDamp + (1.f - speedDamp);
+    }
+
+    if (mPlayer.CheckSubmerged() &&
+        !mPlayer.GetPlayerState()->HasPowerUp(CPlayerState::kIT_GravityBoost)) {
+      speedMul *= 0.5f;
+    }
+
+    mPlayer.ApplyImpulseWR(lookDir * (speedMul * incSpeed * mPlayer.GetMass()),
+                           CAxisAngle::Identity());
+  }
+
+  mBoostDrainTime = 0.f;
+  mBoostChargeTime = 0.f;
+  mBoostEffectTime = 0.f;
+  mTimeNotInBoost = 0.f;
+  mBoostDamagedObjects.clear();
+  mTouchedFloorDuringBoost = false;
+  mBoostTrailFadeTimer = 1.f;
+
+  mPlayer.SetTransform(CTransform4f(mSurfaceToWorld.BuildMatrix3f(), mPlayer.GetTranslation()));
+  SwitchToTire();
+  mBoostEffectGen = rs_new CElementGen(mBoostEffect);
 }
 
 // Scaffold, not a reconstructed implementation.
@@ -1971,7 +2058,6 @@ CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
 , mBoostEffectTime(0.f)
 , mBoostDamageScale(1.f)
 , mDisableSpiderBallTime(0.f)
-, mHasSpiderBoostDirection(false)
 , mBoostTrailFadeTimer(0.f)
 , mInHalfPipeMode(false)
 , mInHalfPipeModeInAir(false)

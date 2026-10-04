@@ -11,6 +11,7 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/optional_object.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/single_ptr.hpp"
 #include "rstl/vector.hpp"
@@ -335,8 +336,7 @@ private:
   float mBoostEffectTime;
   float mBoostDamageScale;
   float mDisableSpiderBallTime;
-  CVector3f mSpiderBoostDirection;
-  bool mHasSpiderBoostDirection;
+  rstl::optional_object< CVector3f > mSpiderBoostDirection;
   rstl::reserved_vector< TUniqueId, 1024 > mBoostDamagedObjects;
   float mBoostTrailFadeTimer;
   bool mInHalfPipeMode : 1;
