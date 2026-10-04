@@ -358,6 +358,10 @@ public:
   float GetAttachedActorStruggle() const;
 
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
+  const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
+  const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
+  bool IsInFreeLook() const { return mInFreeLook; }
+  bool IsLookButtonHeld() const { return mLookButtonHeld; }
 
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
   void ApplySubmergedPitchBend(CSfxHandle& handle);

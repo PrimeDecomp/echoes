@@ -54,6 +54,12 @@ public:
   // Guessed name. This replaces Prime's isSpiderSurface boolean.
   enum ESpiderSurfaceType { kSST_None, kSST_Waypoint, kSST_ScriptedSurface, kSST_CollisionSurface };
 
+  struct SColorRgb {
+    uchar mR;
+    uchar mG;
+    uchar mB;
+  };
+
   CMorphBall(CPlayer& player, float radius, bool multiplayer);
   ~CMorphBall();
   EBallBoostState GetBallBoostState() const;
@@ -191,6 +197,9 @@ public:
   CVector3f TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const;
 
 private:
+  static const SColorRgb skBallHullGlowColors[3]; // Guessed name
+  static CColor GetBallGlowColor(const SColorRgb& color);
+
   void InitializeWakeEffects();
   void SelectMorphBallSounds(const CMaterialList& material);
   void UpdateMorphBallSound(float dt, CStateManager& mgr);

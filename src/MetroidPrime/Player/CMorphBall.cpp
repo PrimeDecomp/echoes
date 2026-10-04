@@ -18,9 +18,23 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
+#include "Kyoto/Basics/CCast.hpp"
+#include "MetroidPrime/Tweaks/CTweakBall.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "rstl/math.hpp"
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
+
+const CMorphBall::SColorRgb CMorphBall::skBallHullGlowColors[3] = {
+    {102, 196, 255},
+    {255, 128, 51},
+    {255, 204, 0},
+};
+
+inline CColor CMorphBall::GetBallGlowColor(const SColorRgb& color) {
+  return CColor(color.mR, color.mG, color.mB, 0xff);
+}
 
 // Guessed names for TU-local state.
 static float sBallCloseToCollisionDistance;
@@ -93,9 +107,14 @@ void CMorphBall::PointGenerator(const CSkinnedModel& model, const SSkinningWorks
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::StartLandingSfx() {
-  // TODO: Choose and play the landing sound from velocity and selected surface material.
+  if (mPlayer.GetVelocityWR().GetZ() < -5.f && mLandSfxId != 0xffff) {
+    const uchar vol =
+        CCast::ToUint8(CMath::Clamp(95.f, 1.6f * mPlayer.GetLastVelocity().GetZ() + 95.f, 127.f));
+    CSfxHandle handle = CSfxManager::SfxStart(
+        mLandSfxId, vol, mPlayer.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, true);
+    mPlayer.ApplySubmergedPitchBend(handle);
+  }
 }
 
 void CMorphBall::StopSounds() {
@@ -117,9 +136,12 @@ void CMorphBall::StopSounds() {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::StartScrewAttackSfx() {
-  // TODO: Start the Screw Attack sound with the player's sound-channel settings.
+  if (mScrewAttackSfx) {
+    CSfxManager::SfxStop(mScrewAttackSfx);
+  }
+  mScrewAttackSfx = CSfxManager::AddEmitter(mMultiplayer ? 0x25e2 : 0x2203, mPlayer.GetTranslation(),
+                                            mPlayer.GetCurrentAreaId().Value(), true, true);
 }
 
 // Scaffold, not a reconstructed implementation.
@@ -205,10 +227,15 @@ bool CMorphBall::IsClimbable(const CCollisionInfo& collision) const {
 // The original body is genuinely empty.
 void CMorphBall::Touch(CActor& actor, CStateManager& mgr) {}
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::ComputeMaxSpeed() const {
-  // TODO: Use the surface-restraint tweak or clamp the half-pipe velocity-derived limit.
-  return 0.f;
+  float maxSpeed;
+  if (GetIsInHalfPipeMode()) {
+    maxSpeed = rstl::max_val(1.5f * mPlayer.GetVelocityWR().Magnitude(), 0.01f);
+    maxSpeed = rstl::min_val(maxSpeed, 95.f);
+  } else {
+    maxSpeed = gpTweakBall->GetBallTranslationMaxSpeed(mPlayer.GetSurfaceRestraint());
+  }
+  return maxSpeed;
 }
 
 void CMorphBall::SpinToSpeed(float speed, const CVector3f& direction, float dt) {
@@ -220,16 +247,32 @@ void CMorphBall::ApplyGravity() {
   mPlayer.SetMomentumWR(CVector3f(0.f, 0.f, mPlayer.GetMass() * GetGravityAcceleration()));
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetGravityAcceleration() const {
-  // TODO: Select normal/water/Screw Attack/wall-jump gravity from CTweakBall.
-  return 0.f;
+  if (mPlayer.CheckSubmerged() &&
+      !mPlayer.GetPlayerState()->HasPowerUp(CPlayerState::kIT_GravityBoost)) {
+    return gpTweakBall->GetBallWaterGravity();
+  }
+  if (mBallState == kBS_ScrewAttack) {
+    return gpTweakBall->GetScrewAttackGravity();
+  }
+  if (mBallState == kBS_ScrewAttackWallJump) {
+    return gpTweakBall->GetScrewAttackWallJumpGravity();
+  }
+  return gpTweakBall->GetBallGravity();
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::CalculateSurfaceFriction() const {
-  // TODO: Use the surface-restraint tweak, attachment state and energy-drain count.
-  return 0.f;
+  float friction = gpTweakBall->GetBallTranslationFriction(mPlayer.GetSurfaceRestraint());
+  if (mPlayer.GetAttachedActorId() != kInvalidUniqueId) {
+    friction *= 2.f;
+  }
+
+  const int drainSourceCount = mPlayer.GetEnergyDrain().GetEnergyDrainSources().size();
+  if (drainSourceCount > 0) {
+    friction *= 1.5f * drainSourceCount;
+  }
+
+  return friction;
 }
 
 // Scaffold, not a reconstructed implementation.
@@ -343,9 +386,12 @@ bool CMorphBall::IsMorphBallTransitionFlashValid() const {
   return mMorphBallTransitionFlashGen.get() != nullptr;
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::RenderMorphBallTransitionFlash(const CStateManager& mgr) const {
-  // TODO: Apply the suit-dependent transition color before rendering the generator.
+  if (mMorphBallTransitionFlashGen.get() != nullptr) {
+    mMorphBallTransitionFlashGen->SetModulationColor(
+        GetBallGlowColor(skBallHullGlowColors[mBallGlowColorIdx]));
+    mMorphBallTransitionFlashGen->Render();
+  }
 }
 
 void CMorphBall::UpdateMorphBallTransitionFlash(float dt) {
@@ -380,10 +426,11 @@ void CMorphBall::PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) {
   // TODO: Prepare model animation, rain-splash point generation, actor lights and the world shadow.
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::GetMinimumAlignmentSpeed() const {
-  // TODO: Return zero in Spider mode; otherwise use the alignment-speed tweak.
-  return 0.f;
+  if (mBallState == kBS_Spider) {
+    return 0.f;
+  }
+  return gpTweakBall->GetMinimumAlignmentSpeed();
 }
 
 void CMorphBall::DampLinearAndAngularVelocities(float linearDamping, float angularDamping,
@@ -509,10 +556,13 @@ void CMorphBall::DeleteLight(CStateManager& mgr) {
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 bool CMorphBall::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
                                  EUserEventType type) {
-  // TODO: Handle event 0x1b during morphed Screw Attack recovery through CPlayer.
+  if (type == kUE_EventStart && mPlayer.GetMorphballTransitionState() == CPlayer::kMS_Morphed &&
+      mBallState == kBS_ScrewAttackRecovery) {
+    mPlayer.fn_80184294(CPlayer::kMS_Morphed);
+    return true;
+  }
   return false;
 }
 
@@ -549,10 +599,17 @@ void CMorphBall::UpdateBallDynamics(CStateManager& mgr, float dt) {
   // TODO: Update contact orientation, tire/marble mode, damping and velocity history.
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::BallTurnInput(const CFinalInput& input) const {
-  // TODO: Use the player's Echoes control mapping: turn-left minus turn-right.
-  return 0.f;
+  if (!IsMovementAllowed()) {
+    return 0.f;
+  }
+
+  const float turnLeftInput =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnLeft, input);
+  const float turnRightInput =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_TurnRight, input);
+
+  return turnLeftInput - turnRightInput;
 }
 
 bool CMorphBall::CalculateBallContactInfo(CVector3f& normal, CVector3f& point) const {
@@ -711,10 +768,17 @@ void CMorphBall::SetDamageTimer(float time) { mDamageTimer = time; }
 
 void CMorphBall::SetDisableSpiderBallTime(float time) { mDisableSpiderBallTime = time; }
 
-// Scaffold, not a reconstructed implementation.
 bool CMorphBall::IsMovementAllowed() const {
-  // TODO: Check per-player free-look controls, morph transitions and the control cooldown.
-  return false;
+  if (!mPlayer.GetTweakPlayerControls()->GetMoveDuringFreeLook() &&
+      (mPlayer.IsInFreeLook() || mPlayer.IsLookButtonHeld())) {
+    return false;
+  }
+
+  if (mPlayer.IsMorphBallTransitioning()) {
+    return false;
+  }
+
+  return !(mDisableControlCooldown > 0.f);
 }
 
 void CMorphBall::ComputeBallMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
@@ -737,18 +801,20 @@ void CMorphBall::ComputeBallMovement(const CFinalInput& input, CStateManager& mg
   }
 }
 
-// Scaffold, not a reconstructed implementation.
 float CMorphBall::ForwardInput(const CFinalInput& input) const {
-  // TODO: Use the player's Echoes control mapping: forward minus backward, gated by
-  // IsMovementAllowed.
-  return 0.f;
+  if (!IsMovementAllowed()) {
+    return 0.f;
+  }
+
+  const float forwardInput =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Forward, input);
+  const float backwardInput =
+      mPlayer.GetControlMapper().GetAnalogInput(CControlMapper::kC_Backward, input);
+
+  return forwardInput - backwardInput;
 }
 
-// Scaffold, not a reconstructed implementation.
-float CMorphBall::GetBallTouchRadius() const {
-  // TODO: Use CTweakBall::GetBallTouchRadius once the shared tweak interface is declared.
-  return 0.f;
-}
+float CMorphBall::GetBallTouchRadius() const { return gpTweakBall->GetBallTouchRadius(); }
 
 float CMorphBall::GetBallRadius() const { return mPlayer.GetTweakPlayer()->GetBallRadius(); }
 
