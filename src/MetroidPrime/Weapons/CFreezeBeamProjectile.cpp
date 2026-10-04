@@ -7,6 +7,12 @@
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CIceImpact.hpp"
 
+// Provisional TU placement; filter names are reconstructed.
+static const CMaterialFilter sInclude63Filter = CMaterialFilter::MakeIncludeExclude(
+    CMaterialList(kMT_SixtyThree), CMaterialList(kMT_NoPlatformCollision));
+static const CMaterialFilter sInclude59Filter = CMaterialFilter::MakeIncludeExclude(
+    CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+
 CFreezeBeamProjectile::CFreezeBeamProjectile(const TToken< CWeaponDescription >& description,
                                              EWeaponType type, const CTransform4f& xf,
                                              EMaterialTypes excludeMaterial,

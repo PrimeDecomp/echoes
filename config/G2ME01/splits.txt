@@ -2258,9 +2258,12 @@ MetroidPrime/Enemies/SEyeBall_FuncPtrs.cpp:
 	.sbss       start:0x80419650 end:0x80419658
 
 MetroidPrime/Weapons/CFreezeBeamProjectile.cpp:
-	.text       start:0x80234934 end:0x80234DAC
+	.text       start:0x80234934 end:0x80234E70
+	.ctors      start:0x803A559C end:0x803A55A0
 	.rodata     start:0x803AD468 end:0x803AD488
 	.data       start:0x803B88F0 end:0x803B8990
+	.bss        start:0x803DE0E0 end:0x803DE110
+	.sdata      start:0x804188E0 end:0x804188F0
 	.sdata2     start:0x8041DBE0 end:0x8041DBE8
 
 MetroidPrime/SwarmRenderHelpers.cpp:
