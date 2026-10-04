@@ -3,6 +3,8 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CPlane.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAxisAngle.hpp"
@@ -19,6 +21,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Decode.hpp"
+#include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
@@ -26,6 +29,7 @@
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
@@ -1292,7 +1296,20 @@ void CScriptSpecialFunction::ThinkSaveStation(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkPlayerFollowLocator(float dt, CStateManager& mgr) {
-  // TODO: move the originating player to the connected actor's locator.
+  if (const CActor* act =
+          TCastToConstPtr< CActor >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)))) {
+    CTransform4f xf = act->HasAnimation()
+                          ? act->GetTransform() * act->GetScaledLocatorTransform(mStringParm)
+                          : act->GetTransform();
+    if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(mLastOriginatorPlayer))) {
+      CTransform4f playerXf =
+          CTransform4f::Translate(CVector3f(0.f, 0.f, -player->GetMorphBall()->GetBallRadius())) * xf;
+      player->SetTransform(playerXf);
+      player->SetVelocityWR(CVector3f::Zero());
+      player->SetAngularVelocityWR(CAxisAngle::Identity());
+      player->ClearForcesAndTorques();
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr,
@@ -1305,7 +1322,34 @@ void CScriptSpecialFunction::ThinkObjectFollowLocator(float dt, CStateManager& m
 }
 
 void CScriptSpecialFunction::ThinkObjectFollowObject(float dt, CStateManager& mgr) {
-  // TODO: copy the active source actor's transform to its connected target.
+  TUniqueId followerAct = kInvalidUniqueId;
+  TUniqueId followedAct = kInvalidUniqueId;
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state != kSS_Play || (conn->msg != kSM_Activate && conn->msg != kSM_Deactivate)) {
+      continue;
+    }
+
+    const CStateManager::TIdListResult it = mgr.GetIdListForScript(conn->objId);
+    if (!(it.first == it.second)) {
+      TUniqueId uid = it.first->second;
+      if (const CActor* const act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
+        if (conn->msg == kSM_Activate) {
+          if (act->GetActive()) {
+            followedAct = uid;
+          }
+        } else if (conn->msg == kSM_Deactivate) {
+          followerAct = uid;
+        }
+      }
+    }
+  }
+
+  const CActor* followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
+  CActor* follower = TCastToPtr< CActor >(mgr.ObjectById(followerAct));
+  if (follower && followed) {
+    follower->SetTransform(followed->GetTransform());
+  }
 }
 
 void CScriptSpecialFunction::ThinkChaffTarget(float dt, CStateManager& mgr) {
@@ -1325,7 +1369,32 @@ void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkActorScale(float dt, CStateManager& mgr) {
-  // TODO: scale connected actors toward the configured limit.
+  const float deltaScale = dt * mValue1;
+  const float f2 = mValue2;
+
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state != kSS_Play || conn->msg != kSM_Activate) {
+      continue;
+    }
+
+    TUniqueId uid = mgr.GetIdForScript(conn->objId);
+    if (CActor* act = TCastToPtr< CActor >(mgr.ObjectById(uid))) {
+      if (act->HasModelData()) {
+        CVector3f scale = act->GetModelData()->GetScale();
+        if (deltaScale > 0.f) {
+          scale.SetX(rstl::min_val(f2, deltaScale + scale.GetX()));
+          scale.SetY(rstl::min_val(f2, deltaScale + scale.GetY()));
+          scale.SetZ(rstl::min_val(f2, deltaScale + scale.GetZ()));
+        } else {
+          scale.SetX(rstl::max_val(f2, deltaScale + scale.GetX()));
+          scale.SetY(rstl::max_val(f2, deltaScale + scale.GetY()));
+          scale.SetZ(rstl::max_val(f2, deltaScale + scale.GetZ()));
+        }
+        act->ModelData()->SetScale(scale);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkPlayerInArea(float dt, CStateManager& mgr) {
@@ -1363,11 +1432,40 @@ void CScriptSpecialFunction::ThinkPlayerItemRelay(float dt, CStateManager& mgr) 
 }
 
 void CScriptSpecialFunction::ThinkPlayerOffset(float dt, CStateManager& mgr) {
-  // TODO: position connected actors at the configured angular offset from the player.
+  CPlayer* player = mgr.GetPlayer(0);
+  CVector3f pos = player->GetTransform().GetTranslation();
+  CTransform4f rotation = CTransform4f::RotateZ(CRelAngle::FromDegrees(-mValue1)) *
+                          CTransform4f::RotateX(CRelAngle::FromDegrees(mValue2));
+  CTransform4f xf = CTransform4f::Translate(pos + rotation * (mValue3 * CVector3f::Forward()));
+
+  for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
+       conn != GetConnectionList().end(); ++conn) {
+    if (conn->state != kSS_Connect || conn->msg != kSM_Activate) {
+      continue;
+    }
+
+    const CStateManager::TIdListResult it = mgr.GetIdListForScript(conn->objId);
+    if (!(it.first == it.second)) {
+      TUniqueId uid = it.first->second;
+      if (CActor* act = TCastToPtr< CActor >(mgr.ObjectById(uid))) {
+        act->SetTransform(xf);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkConnectedEffectPlane(float dt, CStateManager& mgr) {
-  // TODO: update the connected effect's plane from its source actor.
+  if (CActor* act =
+          TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)))) {
+    const CTransform4f& xf = act->GetTransform();
+    CPlane plane(act->GetTranslation(), CUnitVector3f(-1.f * xf.Get02(), -1.f * xf.Get12(), -1.f * xf.Get22()));
+    rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Deactivate);
+    for (int i = 0; i < ids.size(); ++i) {
+      if (CScriptActor* scriptActor = TCastToPtr< CScriptActor >(mgr.ObjectById(ids[i]))) {
+        scriptActor->SetPortalPlane(plane);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkSilhouette(float dt, CStateManager& mgr) {
@@ -1432,7 +1530,22 @@ void CScriptSpecialFunction::ThinkAreaOcclusion(float dt, CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::ThinkMultiplayerEndConditions(float dt, CStateManager& mgr) {
-  // TODO: send the multiplayer time/score threshold messages.
+  if (mIntParm1 == 0 && gpGameState->GetGameMode().GetMatchTimeLimit() > 0.f) {
+    float elapsed = gpGameState->GetGameMode().GetElapsedTime();
+    if (gpGameState->GetGameMode().GetMatchTimeLimit() - elapsed <= 61.f) {
+      mIntParm1 = 1;
+      SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+    }
+  }
+  if (mIntParm2 == 0) {
+    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      if (gpGameState->GetGameMode().GetGameModeType() == 'DTHM' &&
+          gpGameState->GetGameMode().IsNearScoreLimit(mgr, i)) {
+        mIntParm2 = 1;
+        SendScriptMsgs(kSS_Arrived, mgr, kInvalidUniqueId, kSM_None);
+      }
+    }
+  }
 }
 
 void CScriptSpecialFunction::ThinkTriggerScale(float dt, CStateManager& mgr) {
