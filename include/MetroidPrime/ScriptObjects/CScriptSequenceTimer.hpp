@@ -8,9 +8,8 @@
 class CScriptSequenceTimer : public CEntity {
 public:
   CScriptSequenceTimer(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                       const rstl::vector< SLdrConnection >& connections, float startTime,
-                       float maxTime, float loopStartTime, bool autoStart, bool loop,
-                       bool takeExternalTime);
+                       const SLdrSequenceConnections& connections, float startTime, float maxTime,
+                       float loopStartTime, bool autoStart, bool loop, bool takeExternalTime);
 
   // CEntity
   ~CScriptSequenceTimer() override;
@@ -32,7 +31,7 @@ private:
   bool mRunning : 1;
   bool mLoop : 1;
   bool mTakeExternalTime : 1;
-  rstl::vector< SLdrConnection > mConnections;
+  SLdrSequenceConnections mConnections;
   CScriptMsg mStartMessage;
 };
 CHECK_SIZEOF(CScriptSequenceTimer, 0x58)

@@ -10,16 +10,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xef5c94e9: {
-    {
-      const int count0 = input.ReadInt32();
-      sldrThis.sequenceConnections.clear();
-      sldrThis.sequenceConnections.reserve(count0);
-      for (int i0 = 0; i0 < count0; ++i0) {
-        SLdrConnection item0 = SLdrConnection();
-        LoadTypedefConnection(item0, input);
-        sldrThis.sequenceConnections.push_back(item0);
-      }
-    }
+    sldrThis.sequenceConnections = SLdrSequenceConnections(input);
     break;
   }
   case 0xb8bd2175: {

@@ -762,6 +762,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Enemies/CPatterned.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CPatternedInfo.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrSequenceConnections.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CPatternedAiFunctions.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBodyController.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBodyStateCmdMgr.cpp"),

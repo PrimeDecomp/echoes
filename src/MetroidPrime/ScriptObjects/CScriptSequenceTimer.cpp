@@ -8,18 +8,15 @@
 
 #include <math.h>
 
-// Guessed name.
-rstl::pair< float, float > FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >&);
-
 CScriptSequenceTimer::CScriptSequenceTimer(TUniqueId uid, const rstl::string& name,
                                            const CEntityInfo& info,
-                                           const rstl::vector< SLdrConnection >& connections,
+                                           const SLdrSequenceConnections& connections,
                                            float startTime, float maxTime, float loopStartTime,
                                            bool autoStart, bool loop, bool takeExternalTime)
 : CEntity(uid, info, name, 0)
 , mStartTime(startTime)
 , mCurrentTime(startTime)
-, mMaxTime(maxTime != 0.f ? maxTime : FindMinMaxConnectionTimes(connections).second)
+, mMaxTime(maxTime != 0.f ? maxTime : FindMinMaxConnectionTimes(connections.mConnections).second)
 , mLoopStartTime(loopStartTime)
 , mRunning(autoStart)
 , mLoop(loop)
@@ -47,15 +44,15 @@ void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
 
   const float lowerTime = rstl::min_val(mCurrentTime, oldTime);
   const float upperTime = rstl::max_val(mCurrentTime, oldTime);
-  for (rstl::vector< SLdrConnection >::iterator connection = mConnections.begin();
-       connection != mConnections.end(); ++connection) {
-    const uint connectionIndex = static_cast< ushort >(connection->connectionIndex);
-    if (connection->unknown_0x00000002 && gpMain->IsMaxSpeed()) {
+  for (rstl::vector< SLdrConnection >::iterator connection = mConnections.mConnections.begin();
+       connection != mConnections.mConnections.end(); ++connection) {
+    const uint connectionIndex = connection->connectionIndex;
+    if (connection->mActivation.second && gpMain->IsMaxSpeed()) {
       continue;
     }
 
-    for (rstl::vector< float >::iterator activation = connection->activationTimes.begin();
-         activation != connection->activationTimes.end(); ++activation) {
+    for (rstl::vector< float >::iterator activation = connection->mActivation.first.begin();
+         activation != connection->mActivation.first.end(); ++activation) {
       const float activationTime = *activation;
       const bool crossed = wrapped ? upperTime <= activationTime || activationTime < lowerTime
                                    : lowerTime <= activationTime && activationTime < upperTime;
