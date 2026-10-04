@@ -91,6 +91,7 @@ public:
     kOR_StopOrbit,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
+    kOR_BoostBall = 13,          // Guessed name; requested when a boost charge releases.
   };
   enum EPlayerZoneInfo {
     kZI_Targeting,

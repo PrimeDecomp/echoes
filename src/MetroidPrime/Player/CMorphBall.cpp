@@ -34,6 +34,7 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerBodyController.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -1200,9 +1201,179 @@ void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
   mBoostEffectGen = rs_new CElementGen(mBoostEffect);
 }
 
-// Scaffold, not a reconstructed implementation.
+extern const bool kBoostBallBreaksOrbit;                               // Guessed name
+static EMaterialTypes BoostSphereMaterial = kMT_Unknown59;             // Guessed name
+static EMaterialTypes BoostNearListMaterial1 = kMT_Unknown59;          // Guessed name
+static EMaterialTypes BoostNearListMaterial2 = kMT_NonSolidDamageable; // Guessed name
+
 void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
-  // TODO: Handle charge, release, draining, Spider Boost direction and damage.
+  if (!IsMovementAllowed()) {
+    return;
+  }
+
+  mTimeNotInBoost += dt;
+  CPlayerState* playerState = mPlayer.GetPlayerState();
+  const bool hasCannonBall = playerState->GetItemAmount(CPlayerState::kIT_CannonBall, true) != 0;
+  if (playerState->GetItemAmount(CPlayerState::kIT_BoostBall, true) == 0 &&
+      playerState->GetItemAmount(CPlayerState::kIT_ActivateMorphballBoost, true) == 0 &&
+      !hasCannonBall) {
+    CancelBoosting();
+    LeaveBoosting();
+    return;
+  }
+
+  if ((!mBoostEnabled && !hasCannonBall) || mDisableSpiderBallTime > 0.f) {
+    CancelBoosting();
+    LeaveBoosting();
+    return;
+  }
+
+  const CTransform4f ballToWorld = GetBallToWorld();
+  const bool activateBoost =
+      playerState->GetItemAmount(CPlayerState::kIT_ActivateMorphballBoost, true) != 0;
+  if (activateBoost) {
+    playerState->SetItemAmount(CPlayerState::kIT_ActivateMorphballBoost, 0);
+  }
+
+  if (!IsBoosting() || activateBoost) {
+    if (mPlayer.fn_8022b7a8(input) && !activateBoost) {
+      const bool canCharge = mTimeNotInBoost > gpTweakBall->GetBoostBallDrainTime();
+      if (canCharge) {
+        if (mBallAnimationIndex == 0) {
+          mBallAnimationIndex = 1;
+          mBoostChargeSfx = AddEmitter(mPlayer, mgr.ReturnFirstIfSingleElseSecond(0x90, 0x2628),
+                                       true, true, 0xb4, 0x7f, 0x14, 150.f, 1.f);
+        }
+
+        mBoostChargeTime += dt;
+        if (mBoostChargeTime > gpTweakBall->GetBoostBallMaxChargeTime()) {
+          mBoostChargeTime = gpTweakBall->GetBoostBallMaxChargeTime();
+        }
+      } else {
+        mBoostChargeTime = 0.f;
+      }
+    } else {
+      if (mBallAnimationIndex == 1) {
+        mBallAnimationIndex = 0;
+        CSfxManager::RemoveEmitter(mBoostChargeSfx);
+        mBoostChargeSfx = CSfxHandle();
+
+        if (mBoostChargeTime >= gpTweakBall->GetBoostBallMinChargeTime()) {
+          mBoostReleaseSfx =
+              AddEmitter(mPlayer, mgr.ReturnFirstIfSingleElseSecond(0x8f, 0x2627), true, false,
+                         CSfxManager::kMedPriority, 0x7f, 0x14, 150.f, 1.f);
+        }
+      }
+
+      if (mBoostChargeTime >= gpTweakBall->GetBoostBallMinChargeTime() || activateBoost) {
+        if (kBoostBallBreaksOrbit) {
+          mPlayer.fn_8011eac4(CPlayer::kOR_BoostBall, mgr);
+        }
+
+        if (GetBallBoostState() == kBBS_BoostAvailable) {
+          if (GetIsInHalfPipeMode() || mBallCloseToCollision || mBallState == kBS_SpiderBoost) {
+            EnterBoosting(mgr, false);
+          } else {
+            const CVector3f surfaceY = mSurfaceToWorld.GetColumn(kDY);
+            mPlayer.ApplyImpulseWR(CVector3f::Zero(), CAxisAngle::FromVector(10000.f * -surfaceY));
+            CancelBoosting();
+          }
+        } else if (GetBallBoostState() == kBBS_BoostDisabled) {
+          mPlayer.SetTransform(CTransform4f::LookAt(mPlayer.GetTransform().GetTranslation(),
+                                                    mPlayer.GetTransform().GetTranslation() +
+                                                        ballToWorld.GetColumn(kDY),
+                                                    CVector3f::Up()));
+
+          const CVector3f playerX = mPlayer.GetTransform().GetColumn(kDX);
+          mPlayer.ApplyImpulseWR(CVector3f::Zero(), CAxisAngle::FromVector(10000.f * -playerX));
+          CancelBoosting();
+        }
+      } else if (mBoostChargeTime > 0.f) {
+        CancelBoosting();
+      }
+    }
+  } else {
+    mBoostDrainTime += dt;
+    if (mBoostDrainTime > gpTweakBall->GetBoostBallDrainTime()) {
+      LeaveBoosting();
+    }
+
+    if (!GetIsInHalfPipeMode() && mBallState != kBS_SpiderBoost && !mBallCloseToCollision) {
+      if (mBoostDrainTime / gpTweakBall->GetBoostBallDrainTime() < 0.3f) {
+        DampLinearAndAngularVelocities(0.5f, 0.01f, dt);
+      }
+
+      LeaveBoosting();
+    }
+  }
+
+  if (!IsBoosting() && !hasCannonBall) {
+    return;
+  }
+
+  mBoostDamagedObjects.clear();
+  CDamageInfo damage =
+      hasCannonBall ? gpTweakBall->GetCannonBallDamage() : gpTweakBall->GetBoostBallDamage();
+  damage = damage.ApplyDoubleDamage(*mPlayer.GetPlayerState());
+
+  const float speed = mPlayer.GetVelocityWR().Magnitude();
+  const bool moving = speed > 1.1920929e-4f;
+  const CVector3f motion = mPlayer.GetVelocityWR() * (1.f / speed);
+  double distance = speed * dt;
+  double hitDistance = distance;
+
+  const CCollidableSphere sphere(CSphere(ballToWorld.GetTranslation(), damage.GetRadius()),
+                                 CMaterialList(BoostSphereMaterial));
+  const CAABox localBox = sphere.CalculateLocalAABox();
+  CAABox box = localBox;
+  if (moving) {
+    const CVector3f delta = static_cast< float >(distance) * motion;
+    box.AccumulateBounds(localBox.GetMinPoint() + delta);
+    box.AccumulateBounds(localBox.GetMaxPoint() + delta);
+  }
+
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  mgr.BuildNearList(
+      nearList, box,
+      CMaterialFilter::MakeInclude(CMaterialList(BoostNearListMaterial1, BoostNearListMaterial2)),
+      &mPlayer);
+
+  TUniqueId hitId = kInvalidUniqueId;
+  CCollisionInfo info;
+  const bool collided =
+      moving && CGameCollision::DetectDynamicCollisionMoving(
+                    sphere, CTransform4f::Identity(), nearList, motion, hitId, info, distance, mgr);
+  if (collided && hitId != kInvalidUniqueId) {
+    ApplyBoostBallDamage(mgr, hitId, damage, dt);
+    nearList.erase(rstl::find(nearList.begin(), nearList.end(), hitId));
+  }
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    const TUniqueId id = *it;
+    CEntity* ent = mgr.ObjectById(id);
+    if (CScriptDamageableTrigger* trigger = TCastToPtr< CScriptDamageableTrigger >(ent)) {
+      const rstl::optional_object< CAABox > touchBounds = trigger->GetTouchBounds();
+      if (touchBounds) {
+        CVector3f normal = CVector3f::Up();
+        CVector3f point = CVector3f::Zero();
+        const bool intersects =
+            CollisionUtil::AABoxSphereIntersection(*touchBounds, sphere.GetSphere()) ||
+            (moving && CollisionUtil::MovingSphereAABox(sphere.GetSphere(), *touchBounds, motion,
+                                                        hitDistance, point, normal));
+        if (intersects && hitDistance <= distance) {
+          ApplyBoostBallDamage(mgr, id, damage, dt);
+        }
+      }
+    } else if (hasCannonBall) {
+      if (CPhysicsActor* physAct = TCastToPtr< CPhysicsActor >(ent)) {
+        if (CGameCollision::DetectDynamicCollisionBoolean(sphere, CTransform4f::Identity(),
+                                                          *physAct)) {
+          ApplyBoostBallDamage(mgr, id, damage, dt);
+        }
+      }
+    }
+  }
 }
 
 void CMorphBall::SetScrewAttackActive(bool active) { mForcedScrewJumpInput = active; }
