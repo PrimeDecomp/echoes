@@ -543,6 +543,8 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDynamicLight.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CHomingBlob.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfo.cpp"),
+            Object(NonMatching, "MetroidPrime/CDamageInfoScriptLoader.cpp"),
+            Object(NonMatching, "MetroidPrime/Tweaks/STweaks_FuncPtrs.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDock.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDebris.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEffect.cpp"),

@@ -17,7 +17,6 @@ SPlayerController_FuncPtrs* gLoader_PlayerController;
 SWallWalker_FuncPtrs* gLoader_WallWalker;
 
 SCannonBall_FuncPtrs* gLoader_CannonBall;
-STweaks_FuncPtrs* gLoader_Tweaks;
 
 void SetSWallWalker_FuncPtrs(SWallWalker_FuncPtrs* callbacks) { gLoader_WallWalker = callbacks; }
 
@@ -173,11 +172,3 @@ void SetSCannonBall_FuncPtrs(SCannonBall_FuncPtrs* callbacks) { gLoader_CannonBa
 CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_CannonBall->mLoadCannonBall(mgr, input, info);
 }
-
-void SetSTweaks_FuncPtrs(STweaks_FuncPtrs* callbacks) { gLoader_Tweaks = callbacks; }
-
-void LoadTweaks(CInputStream& input) { gLoader_Tweaks->mLoadTweaks(input); }
-
-void CreateTweakGlobals() { gLoader_Tweaks->mCreateGlobals(); }
-
-void FreeTweaks() { gLoader_Tweaks->mFreeTweaks(); }
