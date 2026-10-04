@@ -1,10 +1,20 @@
 #include "MetroidPrime/CEnvFxManager.hpp"
 
 #include "Kyoto/CRandom16.hpp"
+#include "Kyoto/CResFactory.hpp"
+#include "Kyoto/Graphics/CGX.hpp"
+#include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
+#include "Kyoto/Streams/CInputStream.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
+#include "dolphin/gx/GXGeometry.h"
+#include "dolphin/gx/GXTev.h"
+#include "rstl/auto_ptr.hpp"
 
 // The target stores the largest finite single-precision value directly.
 static const float skMaximumBlockingHeight = 3.402823466e+38F;
+static float g_SnowForces[256][2];
 
 CEnvFxManagerGrid::CEnvFxManagerGrid(const CVector2i& position, const CVector2i& extent,
                                      const rstl::vector< CVectorFixed8_8 >& initialParticles,
@@ -55,11 +65,50 @@ CEnvFxManager::CEnvFxManager()
 }
 
 void CEnvFxManagerGrid::RenderRainParticles(const CTransform4f& camXf) {
-  // TODO: Draw fixed-point rain lines with camera-dependent length.
+  int count = mParticles.size();
+  float absDot = CMath::AbsF(CVector3f::Dot(camXf.GetUp(), CVector3f::Up()));
+  CGX::Begin(GX_LINES, GX_VTXFMT6, count * 2);
+  short zOffset = static_cast< short >(512.f * (1.f - absDot) + 256.f);
+  for (int i = 0; i < count; ++i) {
+    CVectorFixed8_8 particle = mParticles[i];
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord1s16(10);
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ + zOffset);
+    GXTexCoord1s16(0);
+  }
+  CGX::End();
 }
 
 void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
-  // TODO: Draw camera-facing snow quads.
+  int count = mParticles.size();
+  short zx = real_to_fixed8_8(0.2f * camXf.Get02());
+  short zy = real_to_fixed8_8(0.2f * camXf.Get12());
+  short zz = real_to_fixed8_8(0.2f * camXf.Get22());
+  short xx = real_to_fixed8_8(0.2f * camXf.Get00());
+  short xy = real_to_fixed8_8(0.2f * camXf.Get10());
+  short xz = real_to_fixed8_8(0.2f * camXf.Get20());
+  CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  for (int i = count - 1; i >= 0; --i) {
+    CVectorFixed8_8 particle = mParticles[i];
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 0);
+    particle.mX += zx;
+    particle.mY += zy;
+    particle.mZ += zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 2);
+    particle.mX += xx;
+    particle.mY += xy;
+    particle.mZ += xz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 2);
+    particle.mX -= zx;
+    particle.mY -= zy;
+    particle.mZ -= zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 0);
+  }
+  CGX::End();
 }
 
 void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
@@ -71,7 +120,35 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
 }
 
 void CEnvFxManagerGrid::RenderUnderwaterParticles(const CTransform4f& camXf) {
-  // TODO: Draw camera-facing underwater quads.
+  int count = mParticles.size();
+  short zx = real_to_fixed8_8(0.5f * camXf.Get02());
+  short zy = real_to_fixed8_8(0.5f * camXf.Get12());
+  short zz = real_to_fixed8_8(0.5f * camXf.Get22());
+  short xx = real_to_fixed8_8(0.5f * camXf.Get00());
+  short xy = real_to_fixed8_8(0.5f * camXf.Get10());
+  short xz = real_to_fixed8_8(0.5f * camXf.Get20());
+  CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  for (int i = count - 1; i >= 0; --i) {
+    CVectorFixed8_8 particle = mParticles[i];
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 0);
+    particle.mX += zx;
+    particle.mY += zy;
+    particle.mZ += zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 2);
+    particle.mX += xx;
+    particle.mY += xy;
+    particle.mZ += xz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 2);
+    particle.mX -= zx;
+    particle.mY -= zy;
+    particle.mZ -= zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 0);
+  }
+  CGX::End();
 }
 
 bool CEnvFxManagerGrid::SetupRender(const CTransform4f& xf, const CTransform4f& invXf,
@@ -79,9 +156,19 @@ bool CEnvFxManagerGrid::SetupRender(const CTransform4f& xf, const CTransform4f& 
   if (mParticles.empty() || !mBlock.first) {
     return false;
   }
+  const float gridX = fixed8_8_to_real(mPosition.GetX());
+  const float gridY = fixed8_8_to_real(mPosition.GetY());
+  const CTransform4f gridXf = xf * CTransform4f::Translate(gridX, gridY, 0.f);
+  gpRender->SetModelMatrix(gridXf);
 
-  // TODO: Set the grid model transform and the blocking-height texture matrix.
-  return false;
+  if (type == kEFX_Snow || type == kEFX_Rain || type == kEFX_DarkWorld ||
+      type == kEFX_Unknown5 || type == kEFX_Unknown6 || type == kEFX_Unknown7) {
+    const CVector3f localUp = invXf * (mBlock.second * CVector3f::Up());
+    float texMtx[2][4] = {{0.f, 0.f, 0.f, 0.f}, {0.f, 0.f, 10.f, 0.f}};
+    texMtx[1][3] = -(10.f * localUp.GetZ() + 0.5f);
+    GXLoadTexMtxImm(texMtx, GX_TEXMTX5, GX_MTX2x4);
+  }
+  return true;
 }
 
 void CEnvFxManagerGrid::Render(const CTransform4f& xf, const CTransform4f& invXf,
@@ -133,7 +220,14 @@ void CEnvFxManager::AsyncLoadResources(CStateManager& mgr) {
 }
 
 void CEnvFxManager::Initialize() {
-  // TODO: Read the 256 pairs of floats from DUMB_SnowForces.
+  const SObjectTag* tag = gpResourceFactory->GetResourceIdByName("DUMB_SnowForces");
+  rstl::auto_ptr< CInputStream > stream(
+      gpResourceFactory->GetResLoader().LoadNewResourceSync(*tag, nullptr));
+  for (int i = 0; i < 256; ++i) {
+    for (int j = 0; j < 2; ++j) {
+      g_SnowForces[i][j] = stream->ReadFloat();
+    }
+  }
 }
 
 void CEnvFxManager::Cleanup() {
@@ -235,7 +329,16 @@ CTransform4f CEnvFxManager::GetParticleBoundsToWorldTransform() const {
 }
 
 void CEnvFxManager::BlankFirstSnowflakeMip(CTexture& tex) {
-  // TODO: Clear and flush the texture's first mip once before rendering.
+  if (!mSnowflakeTextureMipBlanked) {
+    void* data = tex.Lock();
+    int size = tex.GetWidth() * tex.GetHeight() * tex.GetBitsPerPixel() / 8;
+    uchar* ptr = static_cast< uchar* >(data);
+    for (int i = 0; i < size; ++i) {
+      ptr[i] = 0;
+    }
+    tex.UnLock();
+    mSnowflakeTextureMipBlanked = true;
+  }
 }
 
 void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
@@ -255,7 +358,7 @@ void CEnvFxManager::SetupUnderwaterTevs(const CTransform4f& invXf, CStateManager
 }
 
 void CEnvFxManager::SetupDefaultTevSwapMode() {
-  // TODO: Restore the default TEV swap mode after underwater rendering.
+  GXSetTevSwapMode(GX_TEVSTAGE1, GX_TEV_SWAP0, GX_TEV_SWAP0);
 }
 
 void CEnvFxManager::SetupRainTevs() {

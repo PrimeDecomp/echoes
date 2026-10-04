@@ -53,6 +53,12 @@ public:
 };
 CHECK_SIZEOF(CVectorFixed8_8, 0x6)
 
+inline short real_to_fixed8_8(float value) {
+  return static_cast< short >(static_cast< int >(256.f * value));
+}
+
+inline float fixed8_8_to_real(short value) { return (1.f / 256.f) * static_cast< float >(value); }
+
 class CEnvFxManagerGrid {
   friend class CEnvFxManager;
 
