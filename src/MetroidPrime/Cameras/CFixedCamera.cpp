@@ -11,6 +11,22 @@
 #include "MetroidPrime/ScriptObjects/CScriptCameraHint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
+namespace {
+// Guessed names for the supported roles in the two separate flag domains.
+enum EHintFlags {
+  kHF_TeleportBallCamera = 0x20,
+  kHF_InstantLookAt = 0x40,
+  kHF_UseExistingTransform = 0x400,
+  kHF_FreezeTargetPosition = 0x800
+};
+
+enum EOverrideFlags {
+  kOF_OverrideFov = 0x10,
+  kOF_ConstrainAttitude = 0x20,
+  kOF_ConstrainAzimuth = 0x40
+};
+} // namespace
+
 CFixedCamera::CFixedCamera(TUniqueId uid, const CTransform4f& xf, int index, int controllerIdx)
 : CGameCamera(uid, rstl::string_l("Fixed Camera"),
               CEntityInfo(kInvalidAreaId, NullConnectionList, false), xf,
@@ -59,12 +75,12 @@ void CFixedCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
   const CScriptCameraHint* hint =
       TCastToConstPtr< CScriptCameraHint >(mgr.GetObjectById(mScriptCameraId));
   if (hint) {
-    if (!(hint->GetInfo().GetFlags() & 0x400)) {
+    if (!(hint->GetInfo().GetFlags() & kHF_UseExistingTransform)) {
       SetTransform(CTransform4f::LookAt(hint->GetTranslation(), mTargetPosition));
     } else {
       SetTransform(xf);
     }
-    if (hint->GetInfo().GetFlags() & 0x20) {
+    if (hint->GetInfo().GetFlags() & kHF_TeleportBallCamera) {
       CBallCamera* ballCamera = mgr.CameraManager(GetControllerNumber())->BallCamera();
       ballCamera->TeleportCamera(GetTransform(), mgr);
       ballCamera->TeleportLookAtStuff(mgr);
@@ -85,7 +101,7 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
       TCastToConstPtr< CScriptCameraHint >(mgr.GetObjectById(mScriptCameraId));
   if (hint) {
     const CCameraOverrideInfo& info = hint->GetInfo();
-    if (!(info.GetFlags() & 0x800)) {
+    if (!(info.GetFlags() & kHF_FreezeTargetPosition)) {
       UpdateTargetPosition(mgr);
     }
     switch (info.GetBehaviourType()) {
@@ -94,11 +110,11 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
       break;
     case CBallCamera::kBCB_Unknown4: {
       const CVector3f position =
-          (info.GetFlags() & 0x400) ? GetTranslation() : hint->GetTranslation();
+          (info.GetFlags() & kHF_UseExistingTransform) ? GetTranslation() : hint->GetTranslation();
       CVector3f direction = mTargetPosition - position;
       if (direction.IsMagnitudeSafe()) {
         direction = ConstrainLookDirection(direction.AsNormalized(), mgr);
-        if (info.GetFlags() & 0x40) {
+        if (info.GetFlags() & kHF_InstantLookAt) {
           SetTransform(CTransform4f::LookAt(position, position + direction));
         } else if (direction.DropZ().IsMagnitudeSafe()) {
           CVector3f forward = GetTransform().GetForward();
@@ -136,7 +152,7 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
     default:
       break;
     }
-    if (info.GetOverrideFlags() & 0x10) {
+    if (info.GetOverrideFlags() & kOF_OverrideFov) {
       SetFovAndTarget(info.GetFov());
     }
   }
@@ -177,7 +193,7 @@ CVector3f CFixedCamera::ConstrainLookDirection(const CVector3f& direction, CStat
 
   const CCameraOverrideInfo& info = hint->GetInfo();
   float attitude = CMath::ArcCosineR(CMath::Limit(CVector3f::Dot(direction, planar), 1.f));
-  if (info.GetOverrideFlags() & 0x20) {
+  if (info.GetOverrideFlags() & kOF_ConstrainAttitude) {
     const float hintAttitude =
         CMath::ArcCosineR(CMath::Limit(CVector3f::Dot(hintDirection, hintPlanar), 1.f));
     attitude = hintAttitude + CMath::Limit(attitude - hintAttitude, info.GetAttitudeRange());
@@ -187,7 +203,7 @@ CVector3f CFixedCamera::ConstrainLookDirection(const CVector3f& direction, CStat
   }
 
   float azimuth = CMath::ArcCosineR(CMath::Limit(CVector3f::Dot(planar, hintPlanar), 1.f));
-  if (info.GetOverrideFlags() & 0x40) {
+  if (info.GetOverrideFlags() & kOF_ConstrainAzimuth) {
     azimuth = CMath::Limit(azimuth, info.GetAzimuthRange());
   }
   if (CVector3f::Cross(planar, hintPlanar).GetZ() >= 0.f) {
