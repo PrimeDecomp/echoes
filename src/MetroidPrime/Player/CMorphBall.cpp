@@ -4,6 +4,7 @@
 #include "Collision/CCollidableSphere.hpp"
 #include "Collision/CCollisionPrimitive.hpp"
 #include "Collision/CRayCastResult.hpp"
+#include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CCast.hpp"
@@ -33,6 +34,7 @@
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 
+#include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
 
 // Structure-first reconstruction. TODO bodies below are scaffolds, not equivalent implementations.
@@ -711,9 +713,53 @@ void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManage
 
 void CMorphBall::SetScrewAttackActive(bool active) { mForcedScrewJumpInput = active; }
 
-// Scaffold, not a reconstructed implementation.
+static EMaterialTypes ScrewAttackIncludeMaterial1 = static_cast< EMaterialTypes >(34); // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial2 = static_cast< EMaterialTypes >(43); // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial3 = kMT_Unknown59;                      // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial4 = static_cast< EMaterialTypes >(50); // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial1 = static_cast< EMaterialTypes >(35); // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial2 = static_cast< EMaterialTypes >(45); // Guessed name
+
 void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
-  // TODO: Build the swept contact list and apply Screw Attack damage.
+  CDamageInfo damage = gpTweakBall->GetScrewAttackDamage();
+  const float radius = damage.GetRadius();
+  damage.SetDamage(60.f * (dt * damage.GetDamage()));
+  damage.SetRadiusDamage(60.f * (dt * damage.GetRadiusDamage()));
+  damage.SetRadius(0.f);
+
+  const CVector3f ballPos = GetBallPosition();
+  const CAABox bounds(ballPos - CVector3f(radius, radius, radius),
+                      ballPos + CVector3f(radius, radius, radius));
+  const CSphere sphere(ballPos, radius);
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+      CMaterialList(ScrewAttackIncludeMaterial1, ScrewAttackIncludeMaterial2,
+                    ScrewAttackIncludeMaterial3, ScrewAttackIncludeMaterial4),
+      CMaterialList(ScrewAttackExcludeMaterial1, ScrewAttackExcludeMaterial2));
+  mgr.BuildNearList(nearList, bounds, filter, &mPlayer);
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    const TUniqueId uid = *it;
+    bool applyDamage = true;
+    if (const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(uid))) {
+      if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed &&
+          player->GetMorphBall()->InScrewAttackMode()) {
+        applyDamage = false;
+      }
+    }
+
+    const CActor* actor = static_cast< const CActor* >(mgr.GetObjectById(uid));
+    const rstl::optional_object< CAABox > touchBounds = actor->GetTouchBounds();
+    if (touchBounds.valid() && !CollisionUtil::SphereAABoxIntersection(sphere, *touchBounds)) {
+      applyDamage = false;
+    }
+
+    if (applyDamage) {
+      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage,
+                      CMaterialFilter(), CVector3f::Zero());
+    }
+  }
 }
 
 // Scaffold, not a reconstructed implementation.
@@ -727,9 +773,70 @@ void CMorphBall::ComputeScrewAttackMovement(const CFinalInput& input, CStateMana
   // TODO: Handle jump/wall-jump input, speed/height limits and Screw Attack recovery.
 }
 
-// Scaffold, not a reconstructed implementation.
+// Guessed name
+struct SDeathBallCooldownFinder {
+  SDeathBallCooldownFinder(const TUniqueId& id) : mId(id) {}
+  bool operator()(const rstl::pair< TUniqueId, float >& cooldown) const {
+    return cooldown.first == mId;
+  }
+
+  TUniqueId mId;
+};
+
+static EMaterialTypes DeathBallIncludeMaterial1 = static_cast< EMaterialTypes >(34); // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial2 = static_cast< EMaterialTypes >(43); // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial3 = kMT_Unknown59;                      // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial4 = static_cast< EMaterialTypes >(50); // Guessed name
+static EMaterialTypes DeathBallExcludeMaterial1 = static_cast< EMaterialTypes >(35); // Guessed name
+static EMaterialTypes DeathBallExcludeMaterial2 = static_cast< EMaterialTypes >(45); // Guessed name
+
 void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
-  // TODO: Update the multiplayer death-ball effects and per-object damage cooldowns.
+  rstl::vector< rstl::pair< TUniqueId, float > >::iterator it =
+      mDeathBallDamageCooldowns.begin();
+  while (it != mDeathBallDamageCooldowns.end()) {
+    it->second -= dt;
+    if (it->second <= 0.f) {
+      it = mDeathBallDamageCooldowns.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  if (mPlayer.GetPlayerState()->GetItemAmount(CPlayerState::kIT_DeathBall, true) == 0) {
+    return;
+  }
+
+  CDamageInfo damage = gpTweakBall->GetDeathBallDamage();
+  damage.SetDamage(60.f * (dt * damage.GetDamage()));
+  damage.SetRadiusDamage(60.f * (dt * damage.GetRadiusDamage()));
+  const float radius = damage.GetRadius();
+  const CVector3f ballPos = GetBallPosition();
+  const CAABox bounds(ballPos - CVector3f(radius, radius, radius),
+                      ballPos + CVector3f(radius, radius, radius));
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+      CMaterialList(DeathBallIncludeMaterial1, DeathBallIncludeMaterial2, DeathBallIncludeMaterial3,
+                    DeathBallIncludeMaterial4),
+      CMaterialList(DeathBallExcludeMaterial1, DeathBallExcludeMaterial2));
+  mgr.BuildNearList(nearList, bounds, filter, &mPlayer);
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator id = nearList.begin();
+       id != nearList.end(); ++id) {
+    const TUniqueId uid = *id;
+    rstl::vector< rstl::pair< TUniqueId, float > >::iterator cooldown =
+        rstl::find_if(mDeathBallDamageCooldowns.begin(), mDeathBallDamageCooldowns.end(),
+                      SDeathBallCooldownFinder(uid));
+
+    if (cooldown == mDeathBallDamageCooldowns.end()) {
+      mgr.ApplyDamage(mPlayer.GetUniqueId(), uid, mPlayer.GetUniqueId(), damage,
+                      CMaterialFilter(), CVector3f::Zero());
+      if (mDeathBallDamageCooldowns.size() == mDeathBallDamageCooldowns.capacity()) {
+        mDeathBallDamageCooldowns.reserve(mDeathBallDamageCooldowns.capacity() * 2);
+      }
+      mDeathBallDamageCooldowns.push_back_unsafe(
+          rstl::pair< TUniqueId, float >(uid, gpTweakBall->GetDeathBallDamageDelay()));
+    }
+  }
 }
 
 // Scaffold, not a reconstructed implementation.
@@ -1144,10 +1251,43 @@ CVector3f CMorphBall::TransformSpiderBallForcesXZ(CVector2f& forces, CStateManag
   return ret;
 }
 
-// Scaffold, not a reconstructed implementation.
 void CMorphBall::ApplySpiderBallSwingingForces(const CFinalInput& input, CStateManager& mgr,
                                                float dt) {
-  // TODO: Apply the radial constraint, swing input and gravity about the Spider track.
+  mLinearVelocityDamping = 0.04f;
+  mAngularVelocityDamping = 0.99f;
+  mPlayerToSpiderNormal = mSpiderTrackPoint - mPlayer.GetTranslation();
+
+  const float playerToSpiderDist = mPlayerToSpiderNormal.Magnitude();
+  mPlayerToSpiderNormal *= 1.f / (-1.f * playerToSpiderDist);
+
+  const float movement = GetSpiderBallControllerMovement(input);
+  UpdateSpiderBallSwingControllerMovementTimer(movement, dt);
+
+  const float swingMovement = movement * GetSpiderBallSwingControllerMovementScalar();
+  const float swingForce = 110000.f * playerToSpiderDist / 3.7f;
+  const CVector3f swing = CVector3f::Cross(mPlayerToSpiderNormal, mSpiderBetweenPoints);
+  mPlayer.ApplyForceWR(CVector3f::Cross(swing, mPlayerToSpiderNormal).AsNormalized() *
+                           swingForce * swingMovement * 0.06f,
+                       CAxisAngle::Identity());
+  mPlayer.SetMomentumWR(CVector3f(0.f, 0.f, mPlayer.GetMass() * gpTweakBall->GetBallGravity()));
+  mRefPullVelocity = (1.f - mSpiderPullMovement) * 3.7f + 1.4f;
+  mPlayerToSpiderTrackDistance = playerToSpiderDist;
+
+  CVector3f playerVel = mPlayer.GetVelocityWR();
+  const float playerSpeed = playerVel.Magnitude();
+  playerVel -= mPlayerToSpiderNormal * playerSpeed *
+               CVector3f::Dot(mPlayerToSpiderNormal, playerVel.AsNormalized());
+
+  float maxPullVel = 0.04f;
+  if (1.f == mSpiderPullMovement && CMath::AbsF(mPlayerToSpiderNormal.GetZ()) > 0.8f) {
+    maxPullVel = 0.3f;
+  }
+
+  const float pullDelta = mRefPullVelocity - playerToSpiderDist;
+  const float signedMaxPull = maxPullVel * CMath::Sign(pullDelta);
+  const float clampedPull = rstl::min_val(CMath::AbsF(signedMaxPull), CMath::AbsF(pullDelta));
+  playerVel += mPlayerToSpiderNormal * (clampedPull * CMath::Sign(signedMaxPull) / dt);
+  mPlayer.SetVelocityWR(playerVel);
 }
 
 void CMorphBall::UpdateSpiderBall(const CFinalInput& input, CStateManager& mgr, float dt) {
