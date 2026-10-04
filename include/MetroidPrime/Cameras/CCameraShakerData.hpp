@@ -4,6 +4,8 @@
 #include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 
+struct SLdrCameraShakerData;
+
 class CCameraShakerData {
 public:
   // Guessed names for target-supported flag uses; other bits remain unresolved.
@@ -53,5 +55,9 @@ private:
   float mFirstThresholdTime;
 };
 CHECK_SIZEOF(CCameraShakerData, 0xf4)
+
+// Original Wii-exported name and parameters; return type correlated to GC callers.
+CCameraShakerData LdrToCameraShakerData(const SLdrCameraShakerData& data,
+                                      const CVector3f& position);
 
 #endif // _CCAMERASHAKERDATA
