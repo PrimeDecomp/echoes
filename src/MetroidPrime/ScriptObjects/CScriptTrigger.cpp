@@ -2,6 +2,7 @@
 
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptTrigger::CScriptTrigger(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -202,3 +203,5 @@ bool CScriptTrigger::RemoveInhabitant(TUniqueId id, CStateManager& mgr) {
   }
   return false;
 }
+
+CEntity* LoadTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}

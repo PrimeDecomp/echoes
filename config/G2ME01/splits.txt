@@ -216,7 +216,7 @@ MetroidPrime/ScriptObjects/CScriptActor.cpp:
 	.sdata2     start:0x8041AA78 end:0x8041AA90
 
 MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
-	.text       start:0x8007105C end:0x80073474
+	.text       start:0x80070DB4 end:0x80073474
 	.data       start:0x803B2018 end:0x803B20B0
 
 MetroidPrime/ScriptObjects/CScriptWaypoint.cpp:
