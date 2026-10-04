@@ -347,7 +347,10 @@ MetroidPrime/CParticleDatabase.cpp:
 	.text       start:0x800A6444 end:0x800ABE1C
 
 MetroidPrime/CTargetReticles.cpp:
-	.text       start:0x800ABE1C end:0x800B3040
+	.text       start:0x800ABE1C end:0x800B30A8
+	.ctors      start:0x803A54E0 end:0x803A54E4
+	.bss        start:0x803DA940 end:0x803DA960
+	.sdata2     start:0x8041B0A0 end:0x8041B0A8
 
 MetroidPrime/CWeaponMgr.cpp:
 	.text       start:0x800B30A8 end:0x800B389C
@@ -1056,7 +1059,9 @@ MetroidPrime/CVisorFlare.cpp:
 	.sdata2     start:0x8041C350 end:0x8041C388
 
 MetroidPrime/CWorldTransManager.cpp:
-	.text       start:0x801576FC end:0x8015C634
+	.text       start:0x801576FC end:0x8015C67C
+	.ctors      start:0x803A5538 end:0x803A553C
+	.sbss       start:0x804191B8 end:0x804191C0
 
 MetroidPrime/ScriptObjects/CScriptMidi.cpp:
 	.text       start:0x8015C67C end:0x8015CD4C

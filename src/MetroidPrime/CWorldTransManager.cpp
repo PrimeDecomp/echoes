@@ -8,6 +8,10 @@
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "rstl/math.hpp"
 
+// Guessed names.
+static CColor sDarkPointLightColor(uchar(80), uchar(49), uchar(130), uchar(255));
+static CColor sDarkMovingLightColor(uchar(156), uchar(123), uchar(200), uchar(255));
+
 struct CWorldTransManager::SModelDatas {
   CAnimRes mSamusRes;
   CModelData mSamusModelData;
