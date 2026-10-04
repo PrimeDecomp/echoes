@@ -78,6 +78,7 @@ enum EEntityType {
   kET_ScriptSpawnPoint = 79,
   kET_ScriptSpecialFunction = 80,
   kET_ScriptSpiderBallAttractionSurface = 81,
+  kET_ScriptSpiderBallWaypoint = 82,
   kET_ScriptSpindleCamera = 83,
   kET_ScriptStreamedMusic = 84,
   kET_ScriptSurfaceCamera = 85, // Guessed name; script surface-camera provider.

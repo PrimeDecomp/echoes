@@ -36,10 +36,13 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDamageableTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpiderBallAttractionSurface.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakBall.hpp"
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
+#include "WorldFormat/CCollisionCache.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 
@@ -2587,13 +2590,147 @@ void CMorphBall::SetSpiderBallSwingingState(bool swinging) {
   mSpiderBallSwinging = swinging;
 }
 
-// Scaffold, not a reconstructed implementation.
-bool CMorphBall::FindClosestSpiderBallWaypoint(
-    CStateManager& mgr, const CVector3f& center, CVector3f& trackPoint,
-    CVector3f& interpolatedDirection, CVector3f& direction, float& distance, CVector3f& normal,
-    ESpiderSurfaceType& surfaceType, TUniqueId& surfaceId, CTransform4f& surfaceTransform) const {
-  // TODO: Search waypoint tracks, scripted surfaces and collision surfaces; populate the outputs.
-  return false;
+static EMaterialTypes SpiderNearListExcludeMaterial1 = kMT_Character;           // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial2 = kMT_Player;              // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial3 = kMT_Projectile;          // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial4 = kMT_NoPlatformCollision; // Guessed name
+static EMaterialTypes SpiderCollisionSurfaceMaterial =
+    static_cast< EMaterialTypes >(61); // Guessed name
+
+bool CMorphBall::FindClosestSpiderBallWaypoint(CStateManager& mgr, const CVector3f& ballCenter,
+                                               CVector3f& closestPoint,
+                                               CVector3f& interpDeltaBetweenPoints,
+                                               CVector3f& deltaBetweenPoints, float& distance,
+                                               CVector3f& normal, ESpiderSurfaceType& surfaceType,
+                                               TUniqueId& surfaceId,
+                                               CTransform4f& surfaceTransform) const {
+  surfaceType = kSST_None;
+  surfaceId = kInvalidUniqueId;
+  float minDist = 2.1f;
+  bool ret = false;
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  const CMaterialFilter nearFilter = CMaterialFilter::MakeExclude(
+      CMaterialList(SpiderNearListExcludeMaterial1, SpiderNearListExcludeMaterial2,
+                    SpiderNearListExcludeMaterial3, SpiderNearListExcludeMaterial4));
+  const CAABox aabb(ballCenter - CVector3f(2.1f, 2.1f, 2.1f),
+                    ballCenter + CVector3f(2.1f, 2.1f, 2.1f));
+  mgr.BuildNearList(nearList, aabb, nearFilter, nullptr);
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator surfaceIt = nearList.begin();
+       surfaceIt != nearList.end(); ++surfaceIt) {
+    if (const CScriptSpiderBallAttractionSurface* const surface =
+            TCastToConstPtr< CScriptSpiderBallAttractionSurface >(mgr.GetObjectById(*surfaceIt))) {
+      const CVector3f surfaceNormal = surface->GetTransform().GetColumn(kDY).AsNormalized();
+      CPlane plane(surface->GetTranslation(), CUnitVector3f(1.f * surfaceNormal));
+      CVector3f point = CVector3f::Zero();
+
+      if (CollisionUtil::RayPlaneIntersection(ballCenter + 2.1f * surfaceNormal,
+                                              ballCenter - 2.1f * surfaceNormal, plane, point)) {
+        const CVector3f halfScale = 0.5f * surface->GetScale();
+        CTransform4f invScaleXf = CTransform4f::Scale(
+            1.f / halfScale.GetX(), 1.f / halfScale.GetY(), 1.f / halfScale.GetZ());
+        CVector3f clampedPoint = (invScaleXf * surface->GetTransform().GetQuickInverse()) * point;
+        clampedPoint[kDX] = CMath::Clamp(-1.f, clampedPoint[kDX], 1.f);
+        clampedPoint[kDZ] = CMath::Clamp(-1.f, clampedPoint[kDZ], 1.f);
+        CTransform4f scaleXf =
+            CTransform4f::Scale(halfScale.GetX(), halfScale.GetY(), halfScale.GetZ());
+        CVector3f worldPoint = (surface->GetTransform() * scaleXf) * clampedPoint;
+        const CVector3f finalDelta = worldPoint - ballCenter;
+        const float finalMag = finalDelta.Magnitude();
+
+        if (finalMag < minDist) {
+          minDist = finalMag;
+          closestPoint = worldPoint;
+          distance = finalMag;
+          normal = (-1.f / minDist) * finalDelta;
+          surfaceType = kSST_ScriptedSurface;
+          surfaceTransform = surface->GetTransform();
+          ret = true;
+        }
+      }
+    }
+  }
+
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator waypointIt = nearList.begin();
+       waypointIt != nearList.end(); ++waypointIt) {
+    if (const CScriptSpiderBallWaypoint* waypoint =
+            TCastToConstPtr< CScriptSpiderBallWaypoint >(mgr.GetObjectById(*waypointIt))) {
+      const CScriptSpiderBallWaypoint* closestWp = nullptr;
+      CVector3f worldPoint = CVector3f::Zero();
+      CVector3f useInterpDeltaBetweenPoints = interpDeltaBetweenPoints;
+      CVector3f useDeltaBetweenPoints = deltaBetweenPoints;
+      waypoint->GetClosestPointAlongWaypoints(mgr, ballCenter, 2.1f, &closestWp, worldPoint,
+                                              useDeltaBetweenPoints, 0.8f,
+                                              useInterpDeltaBetweenPoints);
+
+      if (closestWp != nullptr) {
+        const CVector3f ballToPoint = worldPoint - ballCenter;
+        const float ballToPointMag = ballToPoint.Magnitude();
+
+        if (ballToPointMag < minDist) {
+          minDist = ballToPointMag;
+          closestPoint = worldPoint;
+          interpDeltaBetweenPoints = useInterpDeltaBetweenPoints;
+          deltaBetweenPoints = useDeltaBetweenPoints;
+          distance = ballToPointMag;
+          normal = (-1.f / minDist) * ballToPoint;
+          surfaceType = kSST_Waypoint;
+          ret = true;
+        }
+      }
+    }
+  }
+
+  CCollisionCache cache(aabb, 1, 0, 0xffff);
+  CGameCollision::BuildCollisionCache(mgr, cache, nearList,
+                                      CGameCollision::kCUP_RemoveCachedNearListIds);
+  const CMaterialFilter filter =
+      CMaterialFilter::MakeInclude(CMaterialList(SpiderCollisionSurfaceMaterial));
+  float minDistSq = minDist * minDist;
+  CSphere sphere(ballCenter, 2.1f);
+  CCollisionCacheIterator it(cache);
+  while (!it.AtEnd()) {
+    if (it.AtLeafStart()) {
+      if (!CollisionUtil::AABoxSphereIntersection(*cache.GetLeafBounds(it), sphere)) {
+        cache.SkipLeaf(it);
+        continue;
+      }
+    }
+
+    const SCachedCollisionSlot* slot = cache.NextTriangle(it);
+    const CCollisionSurface& surface = slot->mTriangle.GetSurface();
+    if (!filter.Passes(CMaterialList(surface.GetSurfaceFlags()))) {
+      continue;
+    }
+
+    float baryU;
+    float baryV;
+    const float distSq = CollisionUtil::TriPointSqrDist_Float(
+        ballCenter, surface.GetVert(0), surface.GetVert(1), surface.GetVert(2), &baryU, &baryV);
+    if (distSq > minDistSq) {
+      continue;
+    }
+
+    minDistSq = distSq;
+    minDist = CMath::SqrtF(distSq);
+    sphere = CSphere(ballCenter, minDist);
+    const CVector3f point =
+        CMath::BaryToWorld(surface.GetVert(0), surface.GetVert(1), surface.GetVert(2),
+                           CVector3f(1.f - (baryU + baryV), baryV, baryU));
+    closestPoint = point;
+    distance = minDist;
+    normal = (-1.f / minDist) * (point - ballCenter);
+    surfaceType = kSST_CollisionSurface;
+    const CVector3f& up =
+        CMath::AbsF(CVector3f::Dot((point - ballCenter).AsNormalized(), CVector3f::Up())) < 0.9f
+            ? static_cast< const CVector3f& >(CVector3f::Up())
+            : mPlayer.GetControlDirFlat();
+    surfaceTransform = CTransform4f::LookAt(ballCenter, point, up);
+    surfaceId = TUniqueId(it.GetObjectId());
+    ret = true;
+  }
+
+  return ret;
 }
 
 bool CMorphBall::CheckForSwitchToSpiderBallSwinging(CStateManager& mgr) const {

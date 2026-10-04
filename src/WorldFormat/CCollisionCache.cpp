@@ -33,7 +33,6 @@ void CCollisionCache::SetBounds(const CAABox& bounds) {}
 CCollisionCache::CCollisionCache(const CAABox& bounds, int x2c, int x30, ushort x34)
 : mBounds(bounds) {}
 
-CCollisionCache::~CCollisionCache() {}
 
 CCollisionCacheIterator::CCollisionCacheIterator() {}
 

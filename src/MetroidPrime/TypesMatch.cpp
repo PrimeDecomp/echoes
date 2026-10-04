@@ -54,6 +54,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTargetingPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpiderBallAttractionSurface.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.hpp"
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -265,6 +266,8 @@ TYPES_MATCH_IMPL(CScriptSwitch, CEntity, kET_ScriptSwitch)
 TYPES_MATCH_IMPL(CScriptTargetingPoint, CActor, kET_ScriptTargetingPoint)
 CAST_TO_REF_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
 CAST_TO_PTR_IMPL(CScriptTargetingPoint, kET_ScriptTargetingPoint)
+CAST_TO_REF_IMPL(CScriptSpiderBallWaypoint, kET_ScriptSpiderBallWaypoint)
+CAST_TO_PTR_IMPL(CScriptSpiderBallWaypoint, kET_ScriptSpiderBallWaypoint)
 TYPES_MATCH_IMPL(CScriptSpiderBallAttractionSurface, CActor, kET_ScriptSpiderBallAttractionSurface)
 CAST_TO_REF_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)
 CAST_TO_PTR_IMPL(CScriptSpiderBallAttractionSurface, kET_ScriptSpiderBallAttractionSurface)
