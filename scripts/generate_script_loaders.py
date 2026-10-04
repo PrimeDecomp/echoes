@@ -103,6 +103,7 @@ KEYWORDS: set[str] = {
     "nullptr",
     "operator",
     "or",
+    "override",
     "private",
     "protected",
     "public",
