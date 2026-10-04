@@ -8,6 +8,9 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CObjectList.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTev.h"
 #include "rstl/auto_ptr.hpp"
@@ -212,7 +215,31 @@ CVector3f CEnvFxManager::GetParticleBoundsToWorldScale() const {
 }
 
 void CEnvFxManager::MoveWrapCells(EEnvFxType type, int moveX, int moveY) {
-  // TODO: Snapshot blocking heights, wrap the grid positions and dirty exposed cells.
+  if (moveX == 0 && moveY == 0) {
+    return;
+  }
+
+  const bool moveAll = CMath::AbsD(static_cast< double >(moveX)) >= 1.0 ||
+                       CMath::AbsD(static_cast< double >(moveY)) >= 1.0;
+  rstl::reserved_vector< rstl::pair< bool, float >, 64 > visibility;
+  for (int i = 0; i < 64; ++i) {
+    visibility.push_back(mGrids[i].GetVisibility());
+  }
+
+  for (int row = 0; row < 8; ++row) {
+    for (int col = 0; col < 8; ++col) {
+      CEnvFxManagerGrid& grid = mGrids[row * 8 + col];
+      const int sourceCol = col - moveX;
+      const int sourceRow = row - moveY;
+      if (!moveAll && sourceCol >= 0 && sourceCol < 8 && sourceRow >= 0 && sourceRow < 8) {
+        grid.SetVisibility(visibility[sourceRow * 8 + sourceCol]);
+      } else {
+        grid.SetDirty(true);
+      }
+      grid.SetStart(CVector2i((grid.GetStart().GetX() + (moveX << 11)) & 0x3fff,
+                              (grid.GetStart().GetY() + (moveY << 11)) & 0x3fff));
+    }
+  }
 }
 
 void CEnvFxManager::AsyncLoadResources(CStateManager& mgr) {
@@ -397,7 +424,16 @@ void CEnvFxManager::PlayRainSounds() { mRainSoundsStopped = false; }
 
 void CEnvFxManager::BuildBlockObjectList(rstl::reserved_vector< TUniqueId, 1024 >& list,
                                          CStateManager& mgr) {
-  // TODO: Collect triggers with the environment-blocking flag from the object list.
+  const CObjectList& objects = mgr.GetObjectListById(kOL_All);
+  for (int index = objects.GetFirstObjectIndex(); index != -1;
+       index = objects.GetNextObjectIndex(index)) {
+    const CEntity* entity = objects[index];
+    const CScriptTrigger* trigger = TCastToConstPtr< CScriptTrigger >(entity);
+    if (trigger != nullptr &&
+        (trigger->GetTriggerFlags() & kTFL_BlockEnvironmentalEffects) != 0) {
+      list.push_back(entity->GetUniqueId());
+    }
+  }
 }
 
 void CEnvFxManager::AreaLoaded() {
