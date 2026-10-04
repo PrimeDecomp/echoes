@@ -434,6 +434,7 @@ class Generator:
         self.loading: set[str] = set()
         self.loaders: list[Loader] = []
         self.uses_animation_parameters = False
+        self.sequence_connections: Field | None = None
         self.header_owners: dict[str, str] = {}
         # Records with their own source; every other object record is header-only.
         self.sourced: set[str] = set()
@@ -685,7 +686,47 @@ class Generator:
             self.add_struct(cpp, node, path, is_object=True)
             keys = sorted(key for key, value in self.objects.items() if value == path)
             self.loaders.append(Loader(name, cpp, tuple(keys)))
+        self.apply_sequence_connections_shape()
         self._assign_header_owners()
+
+    def apply_sequence_connections_shape(self) -> None:
+        """One native-backed array family, not a general XML Array policy.
+
+        G2ME01 80255198 constructs a one-vector owner; 802552E4 constructs
+        its short-indexed element from a nested vector/bool stream value.
+        See research/SequenceConnections-wrapper-discrimination-G2ME01.md.
+        """
+        timer = self.structs.get("SLdrSequenceTimer")
+        if timer is None:
+            return
+        candidates = [p for p in timer.fields if property_id(p.node) == 0xEF5C94E9]
+        if len(candidates) != 1:
+            raise TemplateError("SequenceTimer connection property changed")
+        prop = candidates[0]
+        connection = self.structs.get("SLdrConnection")
+        if (
+            prop.node.get("Type") != "Array"
+            or prop.item is None
+            or prop.item.dependency != "SLdrConnection"
+            or prop.node.find("DefaultValue") is not None
+            or connection is None
+            or "SLdrSequenceConnections" in self.structs
+            or not connection.atomic
+            or [(property_id(p.node), p.node.get("Type")) for p in connection.fields]
+            != [(0, "Short"), (1, "Array"), (2, "Bool")]
+            or connection.fields[1].item is None
+            or connection.fields[1].item.cpp != "float"
+            or connection.fields[1].node.find("DefaultValue") is not None
+            or any(p.condition for p in connection.fields)
+        ):
+            raise TemplateError("Native SequenceConnections shape changed")
+        self.sequence_connections = prop
+        timer.fields[timer.fields.index(prop)] = replace(
+            prop, cpp="SLdrSequenceConnections", dependency="SLdrSequenceConnections", item=None
+        )
+        # This family has its own native constructor/helper context, not the
+        # otherwise private inline LoadTypedefConnection in SequenceTimer.
+        self.header_owners["SLdrConnection"] = "SLdrConnection"
 
     @staticmethod
     def apply_native_instance_defaults(name: str, node: ET.Element) -> None:
@@ -753,6 +794,8 @@ class Generator:
 
     def defaults(self, prop: Field, target: str) -> list[str]:
         kind = prop.node.attrib["Type"]
+        if prop.cpp == "SLdrSequenceConnections":
+            return []  # Its default constructor owns the empty vector.
         if prop.dependency and kind == "Choice":
             return []  # The enumeration record's constructor owns the default.
         if prop.dependency and kind != "AnimationSet":
@@ -815,6 +858,8 @@ class Generator:
         self, prop: Field, target: str, size: str | None = None, depth: int = 0
     ) -> list[str]:
         kind = prop.node.attrib["Type"]
+        if prop.cpp == "SLdrSequenceConnections":
+            return [f"{target} = SLdrSequenceConnections(input);"]
         if prop.dependency:
             return [f"{self.loader_name(prop.cpp)}({target}, input);"]
         if kind == "Array":
@@ -849,6 +894,8 @@ class Generator:
         return ["{", *("  " + line for line in lines), "}"]
 
     def _include_path_for(self, struct_name: str) -> str:
+        if struct_name in ("SLdrSequenceConnections", "SLdrConnection") and self.sequence_connections:
+            return "MetroidPrime/ScriptLoader/Structs/SLdrSequenceConnections.hpp"
         if struct_name == "SLdrAnimationSet":
             return "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
         owner = self.header_owners[struct_name]
@@ -1137,6 +1184,8 @@ class Generator:
         files: dict[str, str] = {}
 
         for name, struct in sorted(self.structs.items()):
+            if name == "SLdrConnection" and self.sequence_connections:
+                continue
             prefix = "" if struct.is_object else "Structs/"
             if self.header_owners[name] == name:
                 files[f"{prefix}{name}.hpp"] = self.render_struct_header(struct)
@@ -1151,6 +1200,9 @@ class Generator:
                     "AnimationSet collides with built-in wire type"
                 )
             files.update(self.render_animation_parameters())
+
+        if self.sequence_connections:
+            files["Structs/SLdrSequenceConnections.hpp"] = self.render_sequence_connections()
 
         for name, content in files.items():
             files[name] = (
@@ -1179,6 +1231,57 @@ class Generator:
             self.source.read("LICENSE").decode("utf-8").replace("\r\n", "\n")
         )
         return files
+
+    def render_sequence_connections(self) -> str:
+        """Generate declarations/defaults; the native helper TU is hand-owned."""
+        index, times, flag = self.structs["SLdrConnection"].fields
+        defaults = self.defaults(index, index.name) + self.defaults(flag, "mActivation.second")
+        body = "\n".join("    " + line for line in defaults)
+        return dedent("""\
+            #ifndef _SLDRSEQUENCECONNECTIONS_HPP
+            #define _SLDRSEQUENCECONNECTIONS_HPP
+
+            #include "Kyoto/Streams/CInputStream.hpp"
+            #include "rstl/pair.hpp"
+            #include "rstl/vector.hpp"
+
+            // Guessed name: retained from the existing reconstruction.
+            struct SLdrConnection {
+              SLdrConnection() : @INDEX@(), mActivation() {
+            @DEFAULTS@
+              }
+
+              SLdrConnection(CInputStream& input)
+              : @INDEX@(input.Get< ushort >())
+              , mActivation(input.Get< rstl::pair< rstl::vector< float >, bool > >()) {}
+
+              ushort @INDEX@; // XML Short: @INDEX_LABEL@, 0x00000000; native unsigned index.
+              // Guessed grouping: first is @TIMES_LABEL@ (0x00000001);
+              // second is XML @FLAG_LABEL@ (0x00000002), suppressing max-speed events.
+              rstl::pair< rstl::vector< float >, bool > mActivation;
+            };
+
+            CHECK_SIZEOF(SLdrConnection, 0x18)
+
+            // Guessed name: the outer owning record, not a general Array wrapper.
+            struct SLdrSequenceConnections {
+              SLdrSequenceConnections();
+              SLdrSequenceConnections(CInputStream& input);
+
+              rstl::vector< SLdrConnection > mConnections;
+            };
+
+            CHECK_SIZEOF(SLdrSequenceConnections, 0x10)
+
+            // Guessed name.
+            rstl::pair< float, float > FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >& connections);
+
+            #endif
+            """).replace("@DEFAULTS@", body).replace("@INDEX@", index.name).replace(
+                "@INDEX_LABEL@", self.raw_name(index.node) or index.name
+            ).replace("@TIMES_LABEL@", self.raw_name(times.node) or times.name).replace(
+                "@FLAG_LABEL@", self.raw_name(flag.node) or flag.name
+            )
 
 
 def read_profile(

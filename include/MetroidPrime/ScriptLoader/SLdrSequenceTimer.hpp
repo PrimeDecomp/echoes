@@ -4,46 +4,14 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
-#include "rstl/vector.hpp"
-
-struct SLdrConnection {
-  SLdrConnection();
-  ~SLdrConnection();
-
-  short connectionIndex;
-  rstl::vector< float > activationTimes;
-  bool unknown_0x00000002;
-};
-
-inline SLdrConnection::SLdrConnection() : activationTimes() {
-  connectionIndex = 0;
-  unknown_0x00000002 = false;
-}
-
-inline SLdrConnection::~SLdrConnection() {}
-
-inline void LoadTypedefConnection(SLdrConnection& sldrThis, CInputStream& input) {
-  sldrThis.connectionIndex = input.ReadInt16();
-  {
-    const int count0 = input.ReadInt32();
-    sldrThis.activationTimes.clear();
-    sldrThis.activationTimes.reserve(count0);
-    for (int i0 = 0; i0 < count0; ++i0) {
-      float item0 = float();
-      item0 = 0.0f;
-      item0 = input.ReadFloat();
-      sldrThis.activationTimes.push_back(item0);
-    }
-  }
-  sldrThis.unknown_0x00000002 = input.ReadBool();
-}
+#include "MetroidPrime/ScriptLoader/Structs/SLdrSequenceConnections.hpp"
 
 struct SLdrSequenceTimer {
   SLdrSequenceTimer();
   ~SLdrSequenceTimer();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::vector< SLdrConnection > sequenceConnections; // non-matching name, 0xef5c94e9
+  SLdrSequenceConnections sequenceConnections; // non-matching name, 0xef5c94e9
   float startTime; // 0xb8bd2175
   float maxTime; // 0x03e7b2b4
   float loopStartTime; // 0xacf9ca5f
