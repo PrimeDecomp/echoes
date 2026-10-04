@@ -1622,6 +1622,14 @@ MetroidPrime/Weapons/CLightComboProjectile.cpp:
 	.sbss       start:0x80419310 end:0x80419318
 	.sdata2     start:0x8041D55C end:0x8041D5A0 align:4
 
+MetroidPrime/Weapons/CBlackHole.cpp:
+	.text       start:0x801F2E80 end:0x801F3AE0
+	.rodata     start:0x803AC4A0 end:0x803AC4A8
+	.data       start:0x803B7990 end:0x803B7A10
+	.sdata      start:0x80418758 end:0x80418778
+	.sbss       start:0x80419318 end:0x80419320
+	.sdata2     start:0x8041D5A4 end:0x8041D5D0 align:4
+
 MetroidPrime/CMFGameLoader.cpp:
 	.text       start:0x801F3AE0 end:0x801F4BCC
 	.ctors      start:0x803A5588 end:0x803A558C
