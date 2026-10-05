@@ -181,11 +181,11 @@ enum EBodyType {
   kBT_BiPedal,
   kBT_Restricted,
   kBT_Flyer,
-  kBT_Pitchable,
-  kBT_RestrictedFlyer,
+  kBT_PitchableFlyer, // Cross-game name (DKCR HD); Echoes factory corroborated.
+  kBT_Floater, // Cross-game name (DKCR HD); Echoes factory corroborated.
   kBT_WallWalker,
-  kBT_NewFlyer,
-  kBT_Blended // Guessed name
+  kBT_AiMovedFlyer, // Cross-game name (DKCR HD); Echoes factory corroborated.
+  kBT_4WayBlended // Guessed name from DKCR HD; Echoes blends four movement directions.
 };
 
 enum EBodyStateCmd {

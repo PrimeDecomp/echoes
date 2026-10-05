@@ -270,9 +270,9 @@ void CPatterned::ApproachDest(CStateManager&) {
       move.Normalize();
     }
     const EBodyType bodyType = mBodyController->GetBodyType();
-    if (bodyType == kBT_NewFlyer) {
+    if (bodyType == kBT_AiMovedFlyer) {
       mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
-    } else if (bodyType == kBT_Blended) {
+    } else if (bodyType == kBT_4WayBlended) {
       mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
     } else if (!mBodyController->HasBodyState(pas::kAS_Step)) {
       mBodyController->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, CVector3f::Zero(), 1.f));
