@@ -417,8 +417,7 @@ void CGameProjectile::UpdateProjectileMovement(float dt, CStateManager& mgr) {
   SetTranslation(mProjectile.GetTranslation());
   UpdateHoming(dt, mgr);
   if (mTouchedDock != kInvalidUniqueId) {
-    if (CScriptDock* dock =
-            static_cast< CScriptDock* >(mgr.ObjectById(mTouchedDock))) {
+    if (CScriptDock* dock = static_cast< CScriptDock* >(mgr.ObjectById(mTouchedDock))) {
       const rstl::optional_object< CAABox > dockBounds = dock->GetTouchBounds();
       if (dockBounds) {
         const rstl::optional_object< CAABox > projectileBounds = GetTouchBounds();
