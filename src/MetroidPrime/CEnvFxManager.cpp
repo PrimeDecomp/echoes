@@ -459,7 +459,7 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
   const CTransform4f xf = GetParticleBoundsToWorldTransform();
   const CTransform4f invXf = xf.GetInverse();
   UpdateBlockedGrids(mgr, type, camXf, xf, invXf);
-  CreateNewParticles(type, invXf);
+  CreateNewParticles(type, invXf, dt);
   mPreviousFxType = type;
 
   switch (type) {
@@ -492,7 +492,7 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
       256.f);
 }
 
-void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf) {
+void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf, float dt) {
   int maxParticleCount = 0;
   switch (type) {
   case kEFX_Snow:
@@ -540,10 +540,10 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
         grid.mTrailFrames.reserve(maxParticleCount / 8);
       }
       while (particles.size() < cellParticleCount) {
-        // The retail dark-world branch reads the caller's frame delta from f31 instead of
-        // drawing an X coordinate; its short conversion is zero at normal frame rates.
+        // The retail dark-world branch uses the caller's frame delta for X rather than
+        // drawing another random value.
         const short x = type == kEFX_DarkWorld
-                            ? 0
+                            ? static_cast< short >(dt)
                             : static_cast< short >(random.Range(
                                   0.f, static_cast< float >(grid.mExtent.GetX()) -
                                            (trails ? 20.f : 0.f)));

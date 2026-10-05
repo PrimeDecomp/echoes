@@ -140,7 +140,7 @@ private:
                                    CStateManager& mgr);
   void UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type, const CTransform4f& camXf,
                           const CTransform4f& xf, const CTransform4f& invXf);
-  void CreateNewParticles(EEnvFxType type, const CTransform4f& invXf);
+  void CreateNewParticles(EEnvFxType type, const CTransform4f& invXf, float dt);
   void UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces);
   void UpdateRainParticles(const CVectorFixed8_8& zVec, const CVector3f& inverseScale, float dt);
   void UpdateUnderwaterParticles(const CVectorFixed8_8& zVec);
