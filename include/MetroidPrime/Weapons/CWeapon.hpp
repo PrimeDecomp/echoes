@@ -18,6 +18,7 @@ public:
     kPA_BigProjectile = 1 << 10,
     kPA_BigStrike = 1 << 12, // Guessed Prime name; native gun strike reaction.
     kPA_DamageFalloff = 1 << 13,
+    kPA_StaticInterference = 1 << 14, // Guessed Prime name; player visor interference.
     kPA_PlayerUnFreeze = 1 << 15,
     kPA_ParticleOPTS = 1 << 16,
     kPA_KeepInCinematic = 1 << 17,
@@ -51,6 +52,7 @@ public:
   TUniqueId GetOwnerId() const { return mOwnerId; }
   EWeaponType GetType() const { return mWeaponType; }
   float GetDamageDuration() const { return mDamageDuration; }
+  float GetInterferenceDuration() const { return mInterferenceDuration; }
   CMaterialFilter GetFilter() const { return mFilter; }
   const CDamageInfo& GetCurrentDamageInfo() const { return mCurDamageInfo; }
 

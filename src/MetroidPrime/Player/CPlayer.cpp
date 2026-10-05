@@ -9,6 +9,7 @@
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
+#include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CRandom16.hpp"
 #include "Kyoto/CSimplePool.hpp"
@@ -54,8 +55,10 @@
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerStuckTracker.hpp"
 #include "MetroidPrime/Player/CPlayerTargeting.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -65,6 +68,8 @@
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
+#include "MetroidPrime/Weapons/CGameProjectile.hpp"
+#include "MetroidPrime/Weapons/CGunWeapon.hpp"
 #include "MetroidPrime/Weapons/WeaponCommon.hpp"
 #include "MetroidPrime/Weapons/WeaponTypes.hpp"
 #include "WorldFormat/CCollisionCache.hpp"
@@ -91,6 +96,7 @@ static CColor skLaggedBurnDeathColor(uchar(255), uchar(255), uchar(192), uchar(2
 static CColor skImplosionColor(uchar(170), uchar(84), uchar(255), uchar(255));
 
 static const char* const kGunLocator = "GUN_LCTR";
+static const char* const kBeamThirdPersonFxGroup = "BeamThirdPersonFx_DGRP";
 
 static const char* const skThirdPersonChargeNames[4] = {
     "PowerChargeThirdPerson", "DarkChargeThirdPerson", "LightChargeThirdPerson",
@@ -144,6 +150,26 @@ static const ushort skRightStepSounds[2][26] = {
     {0xffff, 0x26f7, 0x26f1, 0x26ed, 0x2724, 0xffff, 0x26ef, 0x2703, 0x26eb,
      0x2714, 0x2716, 0x2726, 0x2718, 0xffff, 0x271a, 0x271c, 0xffff, 0x26f5,
      0x2733, 0x2735, 0xffff, 0xffff, 0x26fb, 0x26f3, 0xffff, 0x272b}};
+
+static const ushort skPlayerLandSfxSoft[2][26] = {
+    {0xffff, 0x00ae, 0x00ac, 0x05da, 0x1d3e, 0xffff, 0x00ad, 0x1c15, 0x04ce,
+     0x1c57, 0x1c59, 0x1d40, 0x1c63, 0xffff, 0x1c65, 0x1c67, 0xffff, 0x008b,
+     0x1d32, 0x1d34, 0xffff, 0xffff, 0x04c8, 0x061e, 0xffff, 0x1d59},
+    {0xffff, 0x26da, 0x26d4, 0x26d0, 0x271d, 0xffff, 0x26d2, 0x26ff, 0x26ce,
+     0x2704, 0x2706, 0x271f, 0x2709, 0xffff, 0x270a, 0x270c, 0xffff, 0x26d8,
+     0x272c, 0x272e, 0xffff, 0xffff, 0x26dc, 0x26d6, 0xffff, 0x2727}};
+
+const ushort CPlayer::skPlayerLandSfxHard[2][26] = {
+    {0xffff, 0x0bc7, 0x0bc1, 0x0bbd, 0x1d3f, 0xffff, 0x0bbe, 0x1c16, 0x0bbb,
+     0x1c58, 0x1c5a, 0x1d41, 0x1c64, 0xffff, 0x1c66, 0x1c68, 0xffff, 0x0bc5,
+     0x1d33, 0x1d35, 0xffff, 0xffff, 0x0bc8, 0x0bc3, 0xffff, 0x1d5a},
+    {0xffff, 0x26db, 0x26d5, 0x26d1, 0x271e, 0xffff, 0x26d3, 0x2700, 0x26cf,
+     0x2705, 0x2707, 0x2720, 0x2708, 0xffff, 0x270b, 0x270d, 0xffff, 0x26d9,
+     0x272d, 0x272f, 0xffff, 0xffff, 0x26dd, 0x26d7, 0xffff, 0x2728}};
+
+static const short skPlayerSoundPanStereo[10] = {29, 35, 22, 42, 32, 91, 101, 86, 106, 96};
+
+static const short skPlayerSoundPanCentered[5] = {61, 67, 54, 74, 64};
 
 static void StopSound(CSfxHandle& sound) {
   if (sound) {
@@ -1240,29 +1266,45 @@ CPlayer::CVisorSteam::CVisorSteam(float targetAlpha, float alphaInDuration, floa
 , mDelayTimer(0.f) {}
 
 void CPlayer::CVisorSteam::Update(float dt) {
-  if (mNextTexture == kInvalidAssetId) {
-    mTargetAlpha = 0.f;
-  } else {
+  if (mNextTexture != kInvalidAssetId) {
     mTargetAlpha = mNextTargetAlpha;
     mAlphaInDuration = mNextAlphaInDuration;
     mAlphaOutDuration = mNextAlphaOutDuration;
     mTexture = mNextTexture;
+  } else {
+    mTargetAlpha = 0.f;
   }
+
   mNextTexture = kInvalidAssetId;
-  if (fabs(mAlpha - mTargetAlpha) < 0.00001f && fabs(mAlpha) < 0.00001f) {
+  if (close_enough(mAlpha, mTargetAlpha) && close_enough(mAlpha, 0.f)) {
     return;
   }
-  if (mAlpha <= mTargetAlpha) {
-    CToken texture = gpSimplePool->GetObj(SObjectTag('TXTR', mTexture));
-    if (texture.IsLoaded()) {
-      mAlpha = rstl::min_val(mTargetAlpha, mAlpha + dt / mAlphaInDuration);
-      mDelayTimer = 0.1f;
+
+  if (mAlpha > mTargetAlpha) {
+    if (mDelayTimer <= 0.f) {
+      mAlpha -= dt / mAlphaOutDuration;
+      if (mAlpha < mTargetAlpha) {
+        mAlpha = mTargetAlpha;
+      }
+    } else {
+      mDelayTimer -= dt;
+      if (mDelayTimer < 0.f) {
+        mDelayTimer = 0.f;
+      }
     }
-  } else if (mDelayTimer > 0.f) {
-    mDelayTimer = rstl::max_val(0.f, mDelayTimer - dt);
-  } else {
-    mAlpha = rstl::max_val(mTargetAlpha, mAlpha - dt / mAlphaOutDuration);
+    return;
   }
+
+  if (!gpSimplePool->GetObj(SObjectTag('TXTR', mTexture)).IsLoaded()) {
+    return;
+  }
+
+  mAlpha += dt / mAlphaInDuration;
+  if (mAlpha > mTargetAlpha) {
+    mAlpha = mTargetAlpha;
+  }
+
+  mDelayTimer = 0.1f;
 }
 
 void CPlayer::CVisorSteam::Reset() {
@@ -1573,7 +1615,230 @@ void CPlayer::UpdateCameraTimers(float dt, const CFinalInput& input) {
 }
 
 void CPlayer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: Recover the remaining target behavior.
+  const EPlayerMorphBallState morphState = mMorphBallState;
+  const TUniqueId sender = msg.GetSenderId();
+  const EScriptObjectMessage message = msg.GetMessage();
+  bool updateSurface = true;
+  if (morphState == kMS_Morphed && mMovementState == NPlayer::kMS_ApplyJump) {
+    updateSurface = false;
+  }
+
+  switch (message) {
+  case kSM_Landed:
+    mGravityBoostUsed = false;
+    if (mMovementState != NPlayer::kMS_OnGround && mMorphBallState != kMS_Morphed &&
+        mFallingTime > 0.3f) {
+      if (mMovementState != NPlayer::kMS_Falling) {
+        static const float minLandVol = 95.f;
+        static const float maxLandVol = 127.f;
+        const float hardThreshold =
+            CMath::FastSqrtF(-GetTweakPlayer()->GetNormalGravAccel() * 2.f * 30.f);
+        const float landVolume =
+            CMath::Clamp(minLandVol, -mLastVelocity.GetZ() * 1.6f + 95.f, maxLandVol);
+        const uchar landVol = CCast::ToUint8(landVolume);
+        ushort landSfx;
+        if (-mLastVelocity.GetZ() < hardThreshold) {
+          landSfx = GetMaterialSoundUnderPlayer(mgr, skPlayerLandSfxSoft[mgr.IsMultiplayer()], 26,
+                                                0xffff);
+        } else {
+          landSfx = GetMaterialSoundUnderPlayer(mgr, skPlayerLandSfxHard[mgr.IsMultiplayer()], 26,
+                                                0xffff);
+          StartSamusVoiceSfx(mgr.ReturnFirstIfSingleElseSecond(0x4f5, 0x26e9), 127, 5);
+          mDamageAmount = 0.f;
+          mPrevDamageAmount = 10.f;
+          mDamageLocation = GetTranslation();
+          mWasDamaged = true;
+          DisableControls(mgr, 1, GetUniqueId(), 0.5f, CGameHint::kBHT_None);
+          mLandingStrikePending = true;
+          mBodyController->CommandMgr().DeliverCmd(CPlayerBodyStateCmd(kPBSC_HardLanding));
+        }
+        ApplySubmergedPitchBend(CSfxManager::SfxStart(landSfx, landVol, GetSoundPan(kMSP_Player),
+                                                      CSfxManager::kAllAreas, true, false,
+                                                      CSfxManager::kMedPriority));
+
+        const float rumbleMagnitude = -mLastVelocity.GetZ() * (1.f / 110.f);
+        if (rumbleMagnitude > 0.f) {
+          mgr.RumbleManager(GetPlayerIndex())
+              ->Rumble(mgr, kRFX_PlayerLand, CMath::Limit(rumbleMagnitude, 0.8f), kRP_One);
+        }
+        mAirborneTimer = 0.f;
+      }
+    } else if (mMovementState != NPlayer::kMS_OnGround && mMorphBallState == kMS_Morphed) {
+      if (GetVelocityWR().GetZ() < -40.f && !mMorphBall->GetIsInHalfPipeMode() &&
+          mMovementState == NPlayer::kMS_ApplyJump) {
+        if (mMorphBall->InScrewAttackMode()) {
+          if (GetVelocityWR().GetZ() < -50.f) {
+            mBodyController->CommandMgr().DeliverCmd(CPBCJumpCmd(0, 4));
+            mMorphBall->ResetScrewAttackExitAnimationTimer();
+          }
+        } else if (mFallingTime > 0.75f) {
+          SetCoefficientOfRestitutionModifier(0.2f);
+        }
+      }
+      mMorphBall->StartLandingSfx();
+      if (GetVelocityWR().GetZ() < -5.f) {
+        const float rumbleMagnitude = -GetVelocityWR().GetZ() * (1.f / 110.f) * 0.5f;
+        mgr.RumbleManager(GetPlayerIndex())
+            ->Rumble(mgr, kRFX_PlayerLand, CMath::Limit(rumbleMagnitude, 0.8f), kRP_One);
+        mAirborneTimer = 0.f;
+      }
+      if (GetVelocityWR().GetZ() < -30.f) {
+        const float rumbleMagnitude = -GetVelocityWR().GetZ() * (1.f / 110.f);
+        mgr.RumbleManager(GetPlayerIndex())
+            ->Rumble(mgr, kRFX_PlayerLand, CMath::Limit(rumbleMagnitude, 0.8f), kRP_One);
+        mAirborneTimer = 0.f;
+      }
+    }
+    mFallingTime = 0.f;
+    SetMoveState(NPlayer::kMS_OnGround, mgr);
+    break;
+  case kSM_Falling:
+    if (morphState != kMS_Morphed || mMorphBall->GetBallState() != CMorphBall::kBS_Spider) {
+      if (morphState == kMS_Morphed) {
+        if (mMovementState == NPlayer::kMS_OnGround) {
+          SetMoveState(NPlayer::kMS_FallingMorphed, mgr);
+        }
+      } else {
+        SetMoveState(NPlayer::kMS_Falling, mgr);
+      }
+    }
+    break;
+  case kSM_LandOnNotFloor:
+    if (morphState == kMS_Morphed && mMorphBall->GetBallState() == CMorphBall::kBS_Spider &&
+        mMovementState != NPlayer::kMS_ApplyJump) {
+      SetMoveState(NPlayer::kMS_ApplyJump, mgr);
+    }
+    break;
+  case kSM_OnIceSurface:
+    if (updateSurface) {
+      SetSurfaceRestraint(kSR_Ice);
+    }
+    break;
+  case kSM_OnMudSlowSurface:
+    if (updateSurface) {
+      SetSurfaceRestraint(kSR_Organic);
+    }
+    break;
+  case kSM_OnNormalSurface:
+    if (updateSurface) {
+      SetSurfaceRestraint(kSR_Normal);
+    }
+    break;
+  case kSM_XINS:
+    if (updateSurface) {
+      SetSurfaceRestraint(kSR_Shrubbery);
+    }
+    break;
+  case kSM_XENF: {
+    UpdateSubmerged(mgr);
+    const float length = 0.5f * GetEyeHeight();
+    const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
+    const CRayCastResult result =
+        mgr.RayStaticIntersection(GetTranslation(), CVector3f(0.f, 0.f, -1.f), length, filter);
+    if (!result.IsValid()) {
+      SetVelocityWR(GetVelocityWR() * 0.095f);
+      SetConstantForceWR(GetConstantForceWR() * 0.095f);
+    }
+    break;
+  }
+  case kSM_XINF:
+    UpdateSubmerged(mgr);
+    if (const CScriptWater* water =
+            TCastToConstPtr< CScriptWater >(mgr.GetObjectById(InFluidId()))) {
+      switch (water->GetFluidPlane().GetFluidType()) {
+      case 0:
+        if (CheckSubmerged() && !mPlayerState->HasPowerUp(CPlayerState::kIT_GravityBoost)) {
+          SetSurfaceRestraint(kSR_Water);
+        }
+        break;
+      case 1:
+        if (CheckSubmerged() && !mPlayerState->HasPowerUp(CPlayerState::kIT_GravityBoost)) {
+          SetSurfaceRestraint(kSR_Phazon);
+        }
+        break;
+      case 2:
+        if (!mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
+          SetSurfaceRestraint(kSR_Lava);
+        }
+        break;
+      default:
+        break;
+      }
+    }
+    break;
+  case kSM_XEXF:
+    UpdateSubmerged(mgr);
+    SetSurfaceRestraint(IsOnGround() ? kSR_Normal : kSR_Air);
+    break;
+  case kSM_XAOV:
+    mOrbitPreventionTimer = GetTweakPlayer()->GetOrbitPreventionTime();
+    SetOrbitRequest(kOR_ProjectileCollide, mgr);
+    break;
+  case kSM_AddPlatformRider:
+    if (mRidingPlatform != kInvalidUniqueId && mRidingPlatform != sender) {
+      if (CScriptPlatform* platform =
+              TCastToPtr< CScriptPlatform >(mgr.ObjectById(mRidingPlatform))) {
+        platform->RemoveRider(GetUniqueId());
+      }
+    }
+    mRidingPlatform = sender;
+    break;
+  case kSM_Damage:
+    if (mTurretState == kTS_Active) {
+      return;
+    }
+    if (const CGameProjectile* projectile =
+            TCastToConstPtr< CGameProjectile >(mgr.GetObjectById(sender))) {
+      if (projectile->HasAttrib(CWeapon::kPA_StaticInterference)) {
+        mPlayerState->StaticInterference().AddSource(GetUniqueId(), 0.3f,
+                                                     projectile->GetInterferenceDuration());
+      }
+    }
+    break;
+  case kSM_Create: {
+    for (int channel = 0; channel < 5; ++channel) {
+      mPlayerSoundPan[channel] = CalculateSoundPan(mgr, channel);
+    }
+    static const CDamageVulnerability::TWeaponVulnerability areaLightImmunity(
+        kWT_AreaLight, CWeaponTypeVulnerability::Immune());
+    if (!mgr.IsMultiplayer()) {
+      mVariaSuitVulnerability = CDamageVulnerability(mVariaSuitVulnerability, &areaLightImmunity, 1,
+                                                     CDamageVulnerability::kOF_Normal);
+      mBodyController->SetAnimationChangeDisabled(true);
+    } else {
+      AddMaterial(kMT_SeekerTarget, mgr);
+      mBodyController->SetAnimationChangeDisabled(false);
+    }
+    mDarkSuitVulnerability = CDamageVulnerability(
+        mVariaSuitVulnerability, skDarkSuitVulnerabilities, 2, CDamageVulnerability::kOF_Normal);
+    mLightSuitVulnerability = CDamageVulnerability(
+        mDarkSuitVulnerability, skLightSuitVulnerabilities, 2, CDamageVulnerability::kOF_Normal);
+
+    if (mgr.IsMultiplayer()) {
+      TCachedToken< CDependencyGroup > group(gpSimplePool->GetObj(kBeamThirdPersonFxGroup), false);
+      mBeamEffectTokens.reserve(group->GetObjectTagVector().size());
+      CGunWeapon::FillTokenVector(group->GetObjectTagVector(), mBeamEffectTokens, true);
+      NWeaponTypes::lock_tokens(mBeamEffectTokens);
+      mBeamParticleDescriptionsInitialized = false;
+    }
+    break;
+  }
+  case kSM_Delete:
+    mPlayerState->ResetVisor();
+    if (mEchoVisorAuxEffectId != 0) {
+      CSfxManager::RemoveAuxEffect(mEchoVisorAuxEffectId);
+      mEchoVisorAuxEffectId = 0;
+    }
+    mRezbitGunDrawBlocks.RemovePlayer(mgr, mPlayerIndex);
+    mTurretGunDrawBlocks.RemovePlayer(mgr, mPlayerIndex);
+    break;
+  default:
+    break;
+  }
+
+  mGun->AcceptScriptMsg(mgr, msg);
+  mMorphBall->AcceptScriptMsg(mgr, msg);
+  CActor::AcceptScriptMsg(mgr, msg);
 }
 
 void CPlayer::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
@@ -3598,9 +3863,25 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
 }
 
 void CPlayer::StartTurret(TUniqueId turret, CStateManager& mgr) {
-  // TODO: Camera, controls, orbit, visor and multiplayer displacement.
   mTurretId = turret;
+  mTurretGunDrawBlocks.AddPlayer(mgr, mPlayerIndex, true);
   SetTurretState(kTS_Entering, mgr);
+  SetOrbitRequest(kOR_InvalidateTarget, mgr);
+  SetOrbitRequestForOtherPlayers(kOR_EnterTurret, mgr);
+  BreakFrozenState(mgr, kBFS_Break, false);
+  mPlayerState->StartTransitionToVisor(CPlayerState::kPV_Combat);
+
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    if (i != GetPlayerIndex()) {
+      CPlayer* player = mgr.GetPlayer(i);
+      CVector3f displacement = player->GetTranslation() - GetTranslation();
+      displacement.SetZ(0.f);
+      if (displacement.Magnitude() < 2.f) {
+        mgr.KillPlayer(player->mPlayerState->GetHealthInfo().GetHP(), player->GetUniqueId(),
+                       GetUniqueId());
+      }
+    }
+  }
 }
 
 void CPlayer::ExitTurret(CStateManager& mgr) { SetTurretState(kTS_Exiting, mgr); }
@@ -3612,11 +3893,34 @@ void CPlayer::EjectFromTurret(TUniqueId turret, CStateManager& mgr) {
 }
 
 void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  if (CEntity* turret = TryCast(mgr.ObjectById(mTurretId), kET_PlayerTurret)) {
+    switch (mTurretState) {
+    case kTS_Entering:
+      SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
+      mTurretTimer += input.DeltaTime();
+      mGun->Reset(mgr);
+      break;
+    case kTS_Active:
+      ProcessTurretActions(input, mgr);
+      SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
+      break;
+    case kTS_Ejected:
+      SetTurretState(kTS_Four, mgr);
+      break;
+    default:
+      break;
+    }
+  }
 }
 
-void CPlayer::fn_8000d540(const CFinalInput& input, CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::ProcessTurretActions(const CFinalInput& input, CStateManager& mgr) {
+  if (CEntity* turret = TryCast(mgr.ObjectById(mTurretId), kET_PlayerTurret)) {
+    if (JumpPressed(input)) {
+      ExitTurret(mgr);
+    } else {
+      PlayerTurret_ProcessInput(*turret, input, mgr);
+    }
+  }
 }
 
 bool CPlayer::fn_8000d40c(const CVector3f& direction, CStateManager& mgr) {
@@ -3628,8 +3932,26 @@ void CPlayer::fn_8000d3ac(const CVector3f& direction, CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
-CTransform4f CPlayer::GetTurretTransform(const CStateManager& mgr) const {
-  // TODO: Query the turret's camera transform.
+CTransform4f CPlayer::GetTurretTransform(CStateManager& mgr) const {
+  CEntity* turret = TryCast(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)), kET_PlayerTurret);
+  if (turret) {
+    CTransform4f transform = PlayerTurret_GetTurretTransform(*turret, mgr);
+    if (mTurretState == kTS_Entering) {
+      const CActor* actor = static_cast< const CActor* >(turret);
+      CVector3f direction(actor->GetTransform().GetForward().ToVec2f(), 0.f);
+      direction.Normalize();
+      transform = CTransform4f(CTransform4f::LookAt(
+          transform.GetTranslation(), transform.GetTranslation() + direction, CVector3f::Up()));
+    }
+
+    const CVector3f offset(0.f, 3.f, 0.f);
+    const CVector3f lookAhead(0.f, 20.f, 0.f);
+    const CVector3f position = transform.GetTranslation();
+    transform.SetTranslation(position + transform.Rotate(offset));
+    transform = CTransform4f::LookAt(transform.GetTranslation(),
+                                     position + transform.Rotate(lookAhead), CVector3f::Up());
+    return transform;
+  }
   return GetTransform();
 }
 
@@ -3643,9 +3965,11 @@ const CHintManager* CPlayer::GetPlayerHintManager() const { return mPlayerHintMa
 
 CHintManager* CPlayer::GetPlayerHintManager() { return mPlayerHintManager.get(); }
 
-int CPlayer::fn_8000d0ac(const CStateManager& mgr, int channel) const {
-  // TODO: Select the per-viewport sound-pan table.
-  return 0;
+int CPlayer::CalculateSoundPan(const CStateManager& mgr, int channel) const {
+  if (mgr.GetNumPlayers() > 2u) {
+    return skPlayerSoundPanStereo[channel + 5 * (GetPlayerIndex() & 1)];
+  }
+  return skPlayerSoundPanCentered[channel];
 }
 
 short CPlayer::GetSoundPan(EMultiPlayerSoundPan channel) const { return mPlayerSoundPan[channel]; }
@@ -3898,8 +4222,22 @@ void CPlayer::UpdateUnderwaterParticles(float dt, CStateManager& mgr) {
 }
 
 CColor CPlayer::GetDarkAetherDamageColor(const CStateManager& mgr, int view) const {
-  // TODO: Reconstruct the safe-zone/suit damage-color calculation.
-  return CColor::Black();
+  if (!mgr.GetIsDarkWorld() || mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
+    return CColor::Black();
+  }
+
+  const float damage = GetDarkAetherDamage();
+  float flash = 0.f;
+  if (mDarkAetherDamageFlashTime != 0.f) {
+    flash = 1.f - 0.5f * fabsf((4.f / 3.f) * mDarkAetherDamageFlashTime - 0.5f);
+  }
+  float intensity = view == 0 ? 0.65f : 0.35f;
+  if (mPlayerState->HasPowerUp(CPlayerState::kIT_DarkSuit)) {
+    intensity *= GetTweakPlayer()->GetDarkSuitEffectColorScale();
+  }
+  const float red = intensity * CMath::Clamp(0.f, damage + flash, 1.f);
+  const float blue = intensity * CMath::Clamp(0.f, damage - flash, 1.f);
+  return CColor(red, 0.f, blue, 1.f);
 }
 
 CTweakPlayer* CPlayer::GetTweakPlayer() const {
@@ -3937,11 +4275,29 @@ float CPlayer::GetDeathAlpha() const {
 }
 
 void CPlayer::SetMultiplayerBeamAuxParticlesEnabled(CStateManager& mgr, bool createNew) {
-  // TODO: Recover the remaining target behavior.
+  if (mgr.IsMultiplayer() && mBeamParticleDescriptionsInitialized) {
+    if (createNew) {
+      mBeamParticles = rs_new CElementGen(
+          TToken< CGenDescription >(mBeamParticleDescriptions[mGun->GetPrimaryWeaponId()].second),
+          CElementGen::kMOT_Normal, CElementGen::kOSF_One);
+      mBeamParticles->SetParticleEmission(true);
+    } else {
+      mBeamParticles = nullptr;
+    }
+  }
 }
 
 void CPlayer::EmitMultiplayerBeamParticles(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  if (mgr.IsMultiplayer() && mBeamParticleDescriptionsInitialized) {
+    const CPlayerState::EBeamId beam = mGun->GetPrimaryWeaponId();
+    if (!mBeamAuxParticles.get() || mParticleBeam != beam) {
+      mParticleBeam = beam;
+      mBeamAuxParticles =
+          rs_new CElementGen(TToken< CGenDescription >(mBeamParticleDescriptions[beam].first),
+                             CElementGen::kMOT_Normal, CElementGen::kOSF_One);
+    }
+    mBeamAuxParticles->ForceParticleCreation(1);
+  }
 }
 
 void CPlayer::RenderMultiplayerBeamParticles(const CStateManager& mgr) const {
