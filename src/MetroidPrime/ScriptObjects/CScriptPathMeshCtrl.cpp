@@ -36,7 +36,7 @@ void CScriptPathMeshCtrl::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
       ModifyObstructionCount(mgr, -1);
     }
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     ModifyObstructionCount(mgr, mInitialCount);
     break;
   }

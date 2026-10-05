@@ -19,7 +19,7 @@ void CScriptSpiderBallWaypoint::AcceptScriptMsg(CStateManager& mgr, const CScrip
   CScriptWaypoint::AcceptScriptMsg(mgr, msg);
 
   switch (message) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     BuildWaypointListAndBounds(mgr);
     break;
   case static_cast< EScriptObjectMessage >('ARRV'):

@@ -333,10 +333,10 @@ CGameProjectile::RayCollisionCheckWithWorld(TUniqueId& idOut, const CVector3f& s
 
 void CGameProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     x404_ = mgr.GetRenderFrameIndex();
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     DeleteProjectileLight(mgr);
     break;
   case kSM_XENF:

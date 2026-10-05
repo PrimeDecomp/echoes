@@ -37,7 +37,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     break;
   }
 
-  case kSM_XCRT: {
+  case kSM_Create: {
     for (int playerIndex = 0; playerIndex < mgr.GetNumPlayers(); ++playerIndex) {
       TUniqueId id = mgr.AllocateUniqueId();
 
@@ -58,7 +58,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     break;
   }
 
-  case kSM_XDelete: {
+  case kSM_Delete: {
     for (int i = 0; i < m_fields.size(); ++i) {
       m_fields[i].FreeScriptObject(mgr);
     }

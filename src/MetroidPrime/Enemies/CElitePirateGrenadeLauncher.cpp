@@ -69,7 +69,7 @@ void CElitePirateGrenadeLauncher::AcceptScriptMsg(CStateManager& mgr, const CScr
   const EScriptObjectMessage kind = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   switch (kind) {
-  case kSM_XCRT:
+  case kSM_Create:
     UpdateLauncherAnimation();
     break;
   case kSM_Start:

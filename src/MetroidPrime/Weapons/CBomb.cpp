@@ -164,7 +164,7 @@ void CBomb::Think(float dt, CStateManager& mgr) {
 
 void CBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (mParticle2->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
       const CAssetId sourceId = mParticle2Id;
@@ -177,7 +177,7 @@ void CBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                false, CSfxManager::kMedPriority, 127, 20, 150.f, 1.f);
     mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);
     }

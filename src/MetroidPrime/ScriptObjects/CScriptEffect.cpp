@@ -193,7 +193,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     AcceptScriptMsg(mgr, CScriptMsg(msg.GetUnk(), msg.GetOriginator(), msg.GetId(),
                                     mEmitting ? kSM_Deactivate : kSM_Activate, msg.GetState()));
     break;
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     for (int i = 0; i < GetConnectionList().size(); ++i) {
       const SConnection& conn = GetConnectionList()[i];
       if (conn.state == kSS_InheritBounds && conn.msg == kSM_Activate) {
@@ -213,7 +213,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XCRT:
+  case kSM_Create:
     if (!mParticleSystem.null() && mParticleSystem->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
       mgr.AddObject(rs_new CGameLight(mLightId, GetCurrentAreaId(), mEmitting, rstl::string_l(""),
@@ -221,12 +221,12 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                                       mEffectId, 1, 0.f));
     }
     break;
-  case kSM_XClear:
+  case kSM_Clear:
     if (!mParticleSystem.null()) {
       mParticleSystem->DestroyParticles();
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);
       mLightId = kInvalidUniqueId;

@@ -124,7 +124,7 @@ void CBouncyGrenade::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   const EScriptObjectMessage kind = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   switch (kind) {
-  case kSM_XDamage:
+  case kSM_Damage:
     if (const CHealthInfo* health = GetHealthInfo()) {
       if (health->GetHP() <= 0.f) {
         Explode(mgr, kInvalidUniqueId);

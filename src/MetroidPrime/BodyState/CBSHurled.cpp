@@ -50,7 +50,7 @@ void CBSHurled::Start(CBodyController& bc, CStateManager& mgr) {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, owner.GetUniqueId(),
                                     kSM_Falling, kSS_InvalidState));
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, owner.GetUniqueId(),
-                                    kSM_Jumped, kSS_InvalidState));
+                                    kSM_Launching, kSS_InvalidState));
     if (!close_enough(cmd->GetLaunchVelocity(), CVector3f::Zero(), 0.0001f)) {
       actor->SetConstantForceWR(actor->GetMass() * cmd->GetLaunchVelocity());
     }
@@ -185,7 +185,7 @@ void CBSHurled::PlayLandAnimation(CBodyController& bc, CStateManager& mgr) {
   bc.SetFallState(
       static_cast< pas::EFallState >(hurledState->GetAnimParmData(animId, 3).GetEnumValue()));
   if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
-    mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+    mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
   }
 }
 

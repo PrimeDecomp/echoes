@@ -92,9 +92,9 @@ CRezbitEffect::CRezbitEffect(TUniqueId uid, const CEntityInfo& info,
 
 void CRezbitEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
-  if (msg.GetMessage() == kSM_XALD) {
+  if (msg.GetMessage() == kSM_AreaLoaded) {
     gpIOWinManager->AddIOWin(mIOWin, 9999, 99999);
-  } else if (msg.GetMessage() == kSM_XDelete) {
+  } else if (msg.GetMessage() == kSM_Delete) {
     static_cast< CRezbitEffectIOWin* >(mIOWin.GetPtr())->RequestExit();
   }
 }

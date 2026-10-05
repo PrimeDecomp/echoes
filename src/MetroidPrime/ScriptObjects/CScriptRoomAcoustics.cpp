@@ -77,13 +77,13 @@ void CScriptRoomAcoustics::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
 
   switch (message) {
   case kSM_Activate:
-  case kSM_XCRT:
+  case kSM_Create:
     if (GetActive()) {
       EnableAuxCallbacks();
     }
     break;
   case kSM_Deactivate:
-  case kSM_XDelete:
+  case kSM_Delete:
     DisableAuxCallbacks();
     break;
   default:

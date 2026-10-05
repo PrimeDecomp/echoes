@@ -180,7 +180,7 @@ void CScriptDoor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     mDockId = FindConnectedObject(mgr, kSS_InvalidState, kSM_Increment);
     mLockActorId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     if (mInitiallyLocked) {

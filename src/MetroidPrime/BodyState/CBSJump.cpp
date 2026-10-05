@@ -90,7 +90,7 @@ void CBSJump::PlayJumpLoop(CStateManager& mgr, CBodyController& bc) {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor->GetUniqueId(),
                                     kSM_Falling, kSS_InvalidState));
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor->GetUniqueId(),
-                                    kSM_Jumped, kSS_InvalidState));
+                                    kSM_Launching, kSS_InvalidState));
     mApplyLaunchVel = false;
     mVelocity = actor->GetVelocityWR();
   }
@@ -243,7 +243,7 @@ void CBSJump::CheckForLand(CBodyController& bc, CStateManager& mgr) {
                                             CPASAnimParm::FromEnum(mJumpType),
                                             CPASAnimParm::FromEnum(mAnimationVariant)),
                            *mgr.Random());
-      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
     }
   }
 }
@@ -257,7 +257,7 @@ void CBSJump::ForceLand(CBodyController& bc, CStateManager& mgr) {
                                           CPASAnimParm::FromEnum(mJumpType),
                                           CPASAnimParm::FromEnum(mAnimationVariant)),
                          *mgr.Random());
-    mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+    mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
   }
 }
 
@@ -272,7 +272,7 @@ uchar CBSJump::CheckForWallJump(CBodyController& bc, CStateManager& mgr) {
                                               CPASAnimParm::FromEnum(mJumpType),
                                               CPASAnimParm::FromEnum(mAnimationVariant)),
                              *mgr.Random());
-        mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+        mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
         return true;
       }
     }

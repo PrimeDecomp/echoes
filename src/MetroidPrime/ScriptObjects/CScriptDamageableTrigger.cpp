@@ -55,7 +55,7 @@ void CScriptDamageableTrigger::AcceptScriptMsg(CStateManager& mgr, const CScript
       }
     }
     break;
-  case kSM_XDamage:
+  case kSM_Damage:
     if (mHealth.GetHP() <= 0.f) {
       mDeathOriginator = msg.GetUnk();
       if (mgr.IsMultiplayer()) {

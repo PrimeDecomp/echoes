@@ -124,8 +124,9 @@ enum EScriptObjectState {
   kSS_Retreat = 0x52545254, // Prime-correlated name; cover point's retreat connection.
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
-  kSS_XINF = 0x58494e46, // Guessed name: first-pass elevator camera.
-  kSS_XINB = 0x58494e42, // Guessed name: second-pass elevator camera.
+  // Guessed names from DKCR HD; first/second elevator-camera connections in Echoes.
+  kSS_InFront = 0x58494e46,
+  kSS_InBack = 0x58494e42,
   kSS_Slave = 0x534c4156,
   kSS_Opened = 0x4f50454e,
   kSS_Closed = 0x434c4f53,
@@ -181,26 +182,26 @@ enum EScriptObjectMessage {
   kSM_InternalMessage00 = 0x494d3030,
   kSM_InternalMessage01 = 0x494d3031,
 
-  kSM_XCRT = 0x58435254,
+  // Guessed lifecycle names from DKCR HD, corroborated by Echoes consumers.
+  kSM_Create = 0x58435254,
   kSM_XENZ = 0x58454e5a, // Guessed name; makes a flagged bouncy grenade explode.
-  kSM_XClear = 0x58434c52, // Guessed name: clear an effect's particles.
-  kSM_XALD = 0x58414c44,
-  kSM_XWLD = 0x58574c44,
-  kSM_XDelete = 0x5844454c,
+  kSM_Clear = 0x58434c52, // Guessed DKCR HD name; clears an effect's particles.
+  kSM_AreaLoaded = 0x58414c44,
+  kSM_WorldLoaded = 0x58574c44,
+  kSM_Delete = 0x5844454c,
   kSM_XENF = 0x58454e46, // Native fluid-entry tag.
   kSM_XINF = 0x58494e46, // Native fluid-update tag.
   kSM_XEXF = 0x58455846, // Native fluid-exit tag.
   kSM_XINS = 0x58494e53, // Guessed name; sent to the player when an ice impact touches them.
-  kSM_XDamage = 0x58444d47, // Guessed name; damage notification.
+  kSM_Damage = 0x58444d47, // Guessed DKCR HD name; damage notification.
   kSM_XHIT = 0x58484954,
   kSM_XAOV = 0x58414f56, // Native projectile visor-impact tag.
-  kSM_SuspendedMove =
-      0x58415544, // Guessed name, sent when a patterned actor's movement is suspended.
+  kSM_AIUpdateDisabled = 0x58415544, // Guessed DKCR HD name; patterned update disabled.
   kSM_XXDG = 0x58584447,
   kSM_LandOnNotFloor = 0x5846414c,
   kSM_Falling = 0x584f4646,
-  kSM_Jumped = 0x584c4155,
-  kSM_OnFloor = 0x584c4e44,
+  kSM_Launching = 0x584c4155, // Guessed DKCR HD name; jump/hurled launch notification.
+  kSM_Landed = 0x584c4e44, // Guessed DKCR HD name; landing notification.
 
   kSM_None = 0xffffffff,
 };

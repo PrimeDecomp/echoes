@@ -39,7 +39,7 @@ CScriptHUDHint::CScriptHUDHint(TUniqueId uid, const rstl::string& name, const CE
 void CScriptHUDHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
   const EScriptObjectMessage message = msg.GetMessage();
-  if (message == kSM_Deactivate || message == kSM_XDelete ||
+  if (message == kSM_Deactivate || message == kSM_Delete ||
       (message == kSM_ToggleActive && !GetActive())) {
     const int numPlayers = mgr.GetNumPlayers();
     for (int player = 0; player < numPlayers; ++player) {

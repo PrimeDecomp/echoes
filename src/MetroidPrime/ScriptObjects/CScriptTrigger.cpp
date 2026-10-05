@@ -211,10 +211,10 @@ rstl::optional_object< CAABox > CScriptTrigger::GetTouchBounds() const {
 }
 
 void CScriptTrigger::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_XALD) {
+  if (msg.GetMessage() == kSM_AreaLoaded) {
     mAttachedTrigger = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
   }
-  if (GetActive() && (msg.GetMessage() == kSM_Deactivate || msg.GetMessage() == kSM_XDelete)) {
+  if (GetActive() && (msg.GetMessage() == kSM_Deactivate || msg.GetMessage() == kSM_Delete)) {
     ClearInhabitants(mgr);
     for (int i = 0; i < 4; ++i) {
       SetPlayerInside(mgr, false, i);

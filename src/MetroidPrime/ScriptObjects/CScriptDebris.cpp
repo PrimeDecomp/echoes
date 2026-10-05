@@ -383,7 +383,7 @@ rstl::optional_object< CAABox > CScriptDebris::GetTouchBounds() const {
 
 void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XDelete:
+  case kSM_Delete:
     if (!mKeepGeneratedObject && mGeneratedObject != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mGeneratedObject);
       mGeneratedObject = kInvalidUniqueId;
@@ -456,7 +456,7 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_OnFloor:
+  case kSM_Landed:
     if (!mNoBounce) {
       ApplyImpulseWR(-mRestitution * GetConstantForceWR(), -mRestitution * GetAngularMomentumWR());
     }

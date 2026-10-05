@@ -21,7 +21,7 @@ void CScriptPlayerHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
   const TUniqueId sender = msg.GetUnk();
   switch (msg.GetMessage()) {
   case kSM_Deactivate:
-  case kSM_XDelete: {
+  case kSM_Delete: {
     CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()));
     if (!player) {
       player = mgr.GetPlayer(0);
@@ -46,7 +46,7 @@ void CScriptPlayerHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       player->GetPlayerHintManager()->AddHint(GetUniqueId(), sender, mgr);
     }
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     mActorId = CheckConnectedObject(mgr, kSS_Connect, kSM_Attach);
     break;
   default:

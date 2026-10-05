@@ -181,7 +181,7 @@ void CShockWave::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   const TUniqueId sender = msg.GetUnk();
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (mElementGen->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
       const int partId = mShockWaveInfo.GetParticleDescId();
@@ -190,7 +190,7 @@ void CShockWave::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                                       partId, 1, 0.f));
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);
       mLightId = kInvalidUniqueId;

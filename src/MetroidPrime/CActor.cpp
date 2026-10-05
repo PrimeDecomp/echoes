@@ -650,7 +650,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     StopLoopedSounds();
     break;
   }
-  case kSM_XDelete: {
+  case kSM_Delete: {
     StopLoopedSounds();
     if (HasModelData() && AnimationData() != nullptr) {
       AnimationData()->GetParticleDB().DeleteAllLights(&mgr);
@@ -660,7 +660,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XCRT: {
+  case kSM_Create: {
     if (GetScannableObjectInfo() != nullptr) {
       AddMaterial(kMT_Scannable, mgr);
     } else {
@@ -675,7 +675,7 @@ void CActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     rstl::vector< SConnection >::const_iterator iter = GetConnectionList().begin();
     for (; iter != GetConnectionList().end(); ++iter) {
       if (iter->state != kSS_DefaultState) {

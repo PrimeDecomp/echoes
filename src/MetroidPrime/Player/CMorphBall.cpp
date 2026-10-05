@@ -2319,7 +2319,7 @@ bool CMorphBall::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
 
 void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (mBallInnerGlowGen.get() && mBallInnerGlowGen->SystemHasLight()) {
       mBallInnerGlowLight = mgr.AllocateUniqueId();
       const uint sourceId =
@@ -2329,7 +2329,7 @@ void CMorphBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
           mPlayer.GetUniqueId(), mBallInnerGlowGen->GetLight(), sourceId, 0, 0.f));
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     DeleteLight(mgr);
     break;
   }

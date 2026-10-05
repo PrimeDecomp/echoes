@@ -116,7 +116,7 @@ void CExplosion::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   const TUniqueId sender = msg.GetUnk();
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (mgr.GetNumPlayers() < 3u && mParticleGen->SystemHasLight()) {
       mExplosionLight = mgr.AllocateUniqueId();
       const uint sourceId = mSourceId;
@@ -125,7 +125,7 @@ void CExplosion::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                                       mParticleGen->GetLight(), sourceId, 1, 0.f));
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mExplosionLight != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mExplosionLight);
       mExplosionLight = kInvalidUniqueId;

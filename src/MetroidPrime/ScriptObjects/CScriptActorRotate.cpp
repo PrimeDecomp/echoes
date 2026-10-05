@@ -32,7 +32,7 @@ void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
 
   switch (message) {
   case kSM_Activate:
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     mTargetId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     if ((mFlags & kF_AutoStart) == 0 || !GetActive()) {
       break;

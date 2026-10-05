@@ -131,7 +131,7 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     CHintManager* hints = mgr.CameraManager(playerIndex)->HintManager();
     switch (message) {
     case kSM_Deactivate:
-    case kSM_XDelete:
+    case kSM_Delete:
     case kSM_SetToZero:
       hints->ForceRemoveHint(GetUniqueId(), mgr, kInvalidUniqueId);
       break;
@@ -180,7 +180,7 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     }
   }
 
-  if (message == kSM_XALD) {
+  if (message == kSM_AreaLoaded) {
     mDelegatedCameraId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     mCameraTargetId = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
   }

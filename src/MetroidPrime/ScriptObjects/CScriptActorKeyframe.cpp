@@ -27,7 +27,7 @@ CScriptActorKeyframe::CScriptActorKeyframe(TUniqueId uid, const rstl::string& na
 
 void CScriptActorKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     if (mAnimationId == -1) {
       mAnimationId = 0;
     }
