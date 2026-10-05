@@ -1,29 +1,61 @@
 #include "Kyoto/Animation/CAnimSourceReaderBase.hpp"
 
 #include "Kyoto/Animation/CAnimPOIData.hpp"
+#include "rstl/math.hpp"
 
-uint CAnimSourceReaderBase::VGetBoolPOIList(const CCharAnimTime&, CBoolPOINode*, uint, uint,
-                                            int) const {
-  // TODO: Copy the pending bool events with times relative to mCurTime.
-  return 0;
+template < class T >
+uint _getPOIList(const CCharAnimTime& time, T* listOut, uint capacity, uint iterator, int additive,
+                 const rstl::vector< T >& stream, const CCharAnimTime& curTime,
+                 const IAnimSourceInfo& sourceInfo, int passedCount) {
+  uint ret = 0;
+  int count = stream.size();
+  if (count > 0) {
+    const CCharAnimTime& duration = sourceInfo.GetAnimationDuration();
+    CCharAnimTime totalTime = curTime + time;
+    CCharAnimTime endTime = rstl::min_val(duration, totalTime);
+    if (passedCount < count) {
+      int index = passedCount;
+      const int initialIndex = index;
+      CCharAnimTime nodeTime(stream[initialIndex].GetTime());
+      while (index < count && nodeTime <= endTime) {
+        const T& node = stream[index];
+        if (ret + iterator < capacity) {
+          listOut[iterator + ret] = T::CopyNodeMinusStartTime(node, curTime);
+          ++ret;
+        }
+        ++index;
+        if (index < count) {
+          nodeTime = stream[index].GetTime();
+        }
+      }
+    }
+  }
+  return ret;
 }
 
-uint CAnimSourceReaderBase::VGetInt32POIList(const CCharAnimTime&, CInt32POINode*, uint, uint,
-                                             int) const {
-  // TODO: Copy the pending integer events with times relative to mCurTime.
-  return 0;
+uint CAnimSourceReaderBase::VGetBoolPOIList(const CCharAnimTime& time, CBoolPOINode* listOut,
+                                            uint capacity, uint iterator, int additive) const {
+  return _getPOIList(time, listOut, capacity, iterator, additive, mPOIData->GetBoolPOIStream(),
+                     mCurTime, *mSourceInfo, mPassedBoolCount);
 }
 
-uint CAnimSourceReaderBase::VGetParticlePOIList(const CCharAnimTime&, CParticlePOINode*, uint, uint,
-                                                int) const {
-  // TODO: Copy the pending particle events with times relative to mCurTime.
-  return 0;
+uint CAnimSourceReaderBase::VGetInt32POIList(const CCharAnimTime& time, CInt32POINode* listOut,
+                                             uint capacity, uint iterator, int additive) const {
+  return _getPOIList(time, listOut, capacity, iterator, additive, mPOIData->GetInt32POIStream(),
+                     mCurTime, *mSourceInfo, mPassedIntCount);
 }
 
-uint CAnimSourceReaderBase::VGetSoundPOIList(const CCharAnimTime&, CSoundPOINode*, uint, uint,
-                                             int) const {
-  // TODO: Copy the pending sound events with times relative to mCurTime.
-  return 0;
+uint CAnimSourceReaderBase::VGetParticlePOIList(const CCharAnimTime& time,
+                                                CParticlePOINode* listOut, uint capacity,
+                                                uint iterator, int additive) const {
+  return _getPOIList(time, listOut, capacity, iterator, additive, mPOIData->GetParticlePOIStream(),
+                     mCurTime, *mSourceInfo, mPassedParticleCount);
+}
+
+uint CAnimSourceReaderBase::VGetSoundPOIList(const CCharAnimTime& time, CSoundPOINode* listOut,
+                                             uint capacity, uint iterator, int additive) const {
+  return _getPOIList(time, listOut, capacity, iterator, additive, mPOIData->GetSoundPOIStream(),
+                     mCurTime, *mSourceInfo, mPassedSoundCount);
 }
 
 bool CAnimSourceReaderBase::VGetBoolPOIState(uint nameHash) const {
@@ -54,7 +86,43 @@ CParticleData::EParentedMode CAnimSourceReaderBase::VGetParticlePOIState(uint na
 }
 
 void CAnimSourceReaderBase::UpdatePOIStates() {
-  // TODO: Consume each event stream up to mCurTime and update its indexed state.
+  const rstl::vector< CBoolPOINode >& boolNodes = mPOIData->GetBoolPOIStream();
+  const rstl::vector< CInt32POINode >& int32Nodes = mPOIData->GetInt32POIStream();
+  const rstl::vector< CParticlePOINode >& particleNodes = mPOIData->GetParticlePOIStream();
+  const rstl::vector< CSoundPOINode >& soundNodes = mPOIData->GetSoundPOIStream();
+  int boolCount = boolNodes.size();
+  int int32Count = int32Nodes.size();
+  int particleCount = particleNodes.size();
+  int soundCount = soundNodes.size();
+  while (mPassedBoolCount < boolCount && boolNodes[mPassedBoolCount].GetTime() <= mCurTime) {
+    const CBoolPOINode& node = boolNodes[mPassedBoolCount];
+    int index = node.GetIndex();
+    if (index >= 0 && index < mBoolStates.size()) {
+      mBoolStates[index].second = node.GetValue();
+    }
+    ++mPassedBoolCount;
+  }
+  while (mPassedIntCount < int32Count && int32Nodes[mPassedIntCount].GetTime() <= mCurTime) {
+    const CInt32POINode& node = int32Nodes[mPassedIntCount];
+    int index = node.GetIndex();
+    if (index >= 0 && index < mInt32States.size()) {
+      mInt32States[index].second = node.GetValue();
+    }
+    ++mPassedIntCount;
+  }
+  while (mPassedParticleCount < particleCount &&
+         particleNodes[mPassedParticleCount].GetTime() <= mCurTime) {
+    const CParticlePOINode& node = particleNodes[mPassedParticleCount];
+    int index = node.GetIndex();
+    if (index >= 0 && index < mParticleStates.size()) {
+      mParticleStates[index] = rstl::pair< uint, CParticleData::EParentedMode >(
+          mParticleStates[index].first, node.GetParticleData().GetParentedMode());
+    }
+    ++mPassedParticleCount;
+  }
+  while (mPassedSoundCount < soundCount && soundNodes[mPassedSoundCount].GetTime() <= mCurTime) {
+    ++mPassedSoundCount;
+  }
 }
 
 rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueBoolPOIs() const {
@@ -95,5 +163,56 @@ void CAnimSourceReaderBase::PostConstruct(const CCharAnimTime& time) {
   mPassedIntCount = 0;
   mPassedParticleCount = 0;
   mPassedSoundCount = 0;
-  // TODO: Build indexed POI states and advance to the requested starting time.
+  const rstl::set< rstl::pair< uint, int > > boolPOIs = GetUniqueBoolPOIs();
+  const rstl::set< rstl::pair< uint, int > > int32POIs = GetUniqueInt32POIs();
+  const rstl::set< rstl::pair< uint, int > > particlePOIs = GetUniqueParticlePOIs();
+  int boolCount = boolPOIs.size();
+  int int32Count = int32POIs.size();
+  int particleCount = particlePOIs.size();
+  mBoolStates.resize(boolCount, rstl::pair< uint, bool >(uint(-1), false));
+  mInt32States.resize(int32Count, rstl::pair< uint, int >(uint(-1), 0));
+  mParticleStates.resize(particleCount, rstl::pair< uint, CParticleData::EParentedMode >(
+                                            uint(-1), CParticleData::kPM_Initial));
+  for (rstl::set< rstl::pair< uint, int > >::const_iterator it = boolPOIs.begin();
+       it != boolPOIs.end();) {
+    uint name = it->first;
+    int index = it->second;
+    if (index >= 0 && index < mBoolStates.size()) {
+      mBoolStates[index] = rstl::pair< uint, bool >(name, false);
+    }
+    ++it;
+  }
+  for (rstl::set< rstl::pair< uint, int > >::const_iterator it = int32POIs.begin();
+       it != int32POIs.end();) {
+    uint name = it->first;
+    int index = it->second;
+    if (index >= 0 && index < mInt32States.size()) {
+      mInt32States[index] = rstl::pair< uint, int >(name, 0);
+    }
+    ++it;
+  }
+  for (rstl::set< rstl::pair< uint, int > >::const_iterator it = particlePOIs.begin();
+       it != particlePOIs.end();) {
+    uint name = it->first;
+    int index = it->second;
+    if (index >= 0 && index < mParticleStates.size()) {
+      mParticleStates[index] =
+          rstl::pair< uint, CParticleData::EParentedMode >(name, CParticleData::kPM_Initial);
+    }
+    ++it;
+  }
+  CCharAnimTime remaining = time;
+  if (remaining.GreaterThanZero()) {
+    while (remaining.GreaterThanZero()) {
+      remaining = VAdvanceView(remaining).GetRemainder();
+    }
+  } else {
+    UpdatePOIStates();
+    if (!time.GreaterThanZero()) {
+      mPassedBoolCount = 0;
+      mPassedIntCount = 0;
+      mPassedParticleCount = 0;
+      mPassedSoundCount = 0;
+    }
+  }
 }
