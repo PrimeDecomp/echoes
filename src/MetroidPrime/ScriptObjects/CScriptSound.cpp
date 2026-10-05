@@ -25,7 +25,7 @@
 bool CScriptSound::sFirstInFrame;
 
 extern "C" int fn_8009DCE8(int volume) {
-  const float musicVolume = float(gpGameState->GameOptions().GetMusicVolume());
+  const float musicVolume = float(int(gpGameState->GameOptions().GetMusicVolume()));
   CMayaSpline& volumeCurve = gpTweakGame->GetMusicVolumeSpline();
   const float musicScale = volumeCurve.EvaluateAt(musicVolume);
   return CCast::FtoS(float(volume * musicScale) / 127.f);
@@ -41,18 +41,13 @@ extern "C" CVector3f fn_8009DD94(const CStateManager& mgr,
       continue;
     }
 
-    float planes[6][4];
-    int planeCount = 0;
+    rstl::reserved_vector< CPlane, 6 > planes;
     if (const CScriptTriggerOrientated* oriented =
             TCastToConstPtr< CScriptTriggerOrientated >(entity)) {
       for (int face = 0; face < 6; ++face) {
         const CQuad quad = oriented->GetOBBox().GetQuad(CAABox::EBoxFaceId(face));
         const CPlane plane = quad.GetTri(0).GetPlane();
-        planes[planeCount][0] = plane.GetNormal().GetX();
-        planes[planeCount][1] = plane.GetNormal().GetY();
-        planes[planeCount][2] = plane.GetNormal().GetZ();
-        planes[planeCount][3] = plane.GetConstant();
-        ++planeCount;
+        planes.push_back(plane);
       }
     } else if (const CActor* actor = TCastToConstPtr< CActor >(entity)) {
       const rstl::optional_object< CAABox > bounds = actor->GetTouchBounds();
@@ -60,15 +55,11 @@ extern "C" CVector3f fn_8009DD94(const CStateManager& mgr,
         for (int face = 0; face < 6; ++face) {
           const CQuad quad = bounds->GetQuad(CAABox::EBoxFaceId(face));
           const CPlane plane = quad.GetTri(0).GetPlane();
-          planes[planeCount][0] = plane.GetNormal().GetX();
-          planes[planeCount][1] = plane.GetNormal().GetY();
-          planes[planeCount][2] = plane.GetNormal().GetZ();
-          planes[planeCount][3] = plane.GetConstant();
-          ++planeCount;
+          planes.push_back(plane);
         }
       }
     }
-    if (planeCount == 0) {
+    if (planes.empty()) {
       continue;
     }
 
@@ -76,11 +67,11 @@ extern "C" CVector3f fn_8009DD94(const CStateManager& mgr,
       const CVector3f listener =
           mgr.GetCameraManager(player)->GetCurrentCameraTransform(mgr, true).GetTranslation();
       CVector3f candidate = listener;
-      for (int plane = 0; plane < planeCount; ++plane) {
-        const CVector3f normal(planes[plane][0], planes[plane][1], planes[plane][2]);
-        const float distance = CVector3f::Dot(normal, candidate) - planes[plane][3];
-        if (distance < 0.f) {
-          candidate -= distance * normal;
+      for (rstl::reserved_vector< CPlane, 6 >::const_iterator plane = planes.begin();
+           plane != planes.end(); ++plane) {
+        const float dot = CVector3f::Dot(plane->GetNormal(), candidate);
+        if (dot < plane->GetConstant()) {
+          candidate -= (dot - plane->GetConstant()) * plane->GetNormal();
         }
       }
       const float distSq = (listener - candidate).MagSquared();
@@ -254,9 +245,10 @@ void CScriptSound::Think(float dt, CStateManager& mgr) {
         }
       }
     }
-    if (mScaleByMusicVolume) {
-      CSfxManager::SfxVolume(mSfxHandle, uchar(fn_8009DCE8(mCurrentMaxVolume)));
-    }
+  }
+  if (mScaleByMusicVolume) {
+    const uchar volume = fn_8009DCE8(mCurrentMaxVolume);
+    CSfxManager::SfxVolume(mSfxHandle, volume);
   }
 }
 
@@ -358,8 +350,8 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
           }
         }
         if (player) {
-          pan = short(63.f * (float(mPan) / 127.f - 0.5f) +
-                      float(player->GetSoundPan(CPlayer::kMSP_4)));
+          pan = CCast::FtoS(63.f * (float(mPan) / 127.f - 0.5f) +
+                           float(player->GetSoundPan(CPlayer::kMSP_4)));
         }
       }
       mCurrentMaxVolume = volume;
