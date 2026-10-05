@@ -102,8 +102,8 @@ private:
   float mTextElapsedTime;
   float mIntroTextFadeTimer;
   float mPortalFade;
-  rstl::optional_object< CGameCameraSpline > mFirstPassCamera;
-  rstl::optional_object< CGameCameraSpline > mSecondPassCamera;
+  mutable rstl::optional_object< CGameCameraSpline > mFirstPassCamera;
+  mutable rstl::optional_object< CGameCameraSpline > mSecondPassCamera;
   CTransform4f mCameraTransform;
   rstl::optional_object< TLockedToken< CCharacterFactory > > mCharacterFactory;
   rstl::single_ptr< CPortalTransition > mPortalTransition;
