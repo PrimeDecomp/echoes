@@ -40,6 +40,8 @@ public:
   short GetY() const { return mY; }
   short GetZ() const { return mZ; }
 
+  short& operator[](int index) { return (&mX)[index]; }
+
   CVectorFixed8_8& operator+=(const CVectorFixed8_8& other) {
     mX += other.mX;
     mY += other.mY;
@@ -47,11 +49,43 @@ public:
     return *this;
   }
 
+  CVectorFixed8_8 operator+(const CVectorFixed8_8& other) const {
+    return CVectorFixed8_8(mX + other.mX, mY + other.mY, mZ + other.mZ);
+  }
+
+  CVectorFixed8_8 operator-(const CVectorFixed8_8& other) const {
+    return CVectorFixed8_8(mX - other.mX, mY - other.mY, mZ - other.mZ);
+  }
+
+  CVectorFixed8_8 operator*(short scale) const {
+    return CVectorFixed8_8((mX * scale) >> 8, (mY * scale) >> 8, (mZ * scale) >> 8);
+  }
+
+  static CVectorFixed8_8 FromCVector3f(const CVector3f& value);
+  CVector3f ToCVector3f() const;
+
   short mX;
   short mY;
   short mZ;
 };
 CHECK_SIZEOF(CVectorFixed8_8, 0x6)
+
+inline short real_to_fixed8_8(float value) {
+  return static_cast< short >(static_cast< int >(256.f * value));
+}
+
+inline float fixed8_8_to_real(short value) { return (1.f / 256.f) * static_cast< float >(value); }
+
+inline CVectorFixed8_8 CVectorFixed8_8::FromCVector3f(const CVector3f& value) {
+  short x = real_to_fixed8_8(value.GetX());
+  short y = real_to_fixed8_8(value.GetY());
+  short z = real_to_fixed8_8(value.GetZ());
+  return CVectorFixed8_8(x, y, z);
+}
+
+inline CVector3f CVectorFixed8_8::ToCVector3f() const {
+  return CVector3f(fixed8_8_to_real(mX), fixed8_8_to_real(mY), fixed8_8_to_real(mZ));
+}
 
 class CEnvFxManagerGrid {
   friend class CEnvFxManager;
@@ -74,7 +108,7 @@ public:
   const CVector2i& GetSize() const { return mExtent; }
   void SetStart(const CVector2i& start) { mPosition = start; }
   rstl::pair< bool, float > GetVisibility() const { return mBlock; }
-  void SetVisibility(const rstl::pair< bool, float >& block) { mBlock = block; }
+  void SetVisibility(rstl::pair< bool, float > block) { mBlock = block; }
   rstl::vector< CVectorFixed8_8 >& Particles() { return mParticles; }
   const rstl::vector< CVectorFixed8_8 >& Particles() const { return mParticles; }
 
@@ -134,7 +168,7 @@ private:
                                    CStateManager& mgr);
   void UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type, const CTransform4f& camXf,
                           const CTransform4f& xf, const CTransform4f& invXf);
-  void CreateNewParticles(EEnvFxType type, const CTransform4f& invXf);
+  void CreateNewParticles(EEnvFxType type, const CTransform4f& invXf, float dt);
   void UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces);
   void UpdateRainParticles(const CVectorFixed8_8& zVec, const CVector3f& inverseScale, float dt);
   void UpdateUnderwaterParticles(const CVectorFixed8_8& zVec);

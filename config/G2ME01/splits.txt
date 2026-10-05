@@ -1099,6 +1099,7 @@ MetroidPrime/Player/CGameOptions.cpp:
 MetroidPrime/CEnvFxManager.cpp:
 	.text       start:0x80161FBC end:0x801685E4
 	.ctors      start:0x803A5540 end:0x803A5544
+	.sdata      start:0x8041849C end:0x804184B4
 
 MetroidPrime/Weapons/CEnergyProjectile.cpp:
 	.text       start:0x801685E4 end:0x8016B7B0
