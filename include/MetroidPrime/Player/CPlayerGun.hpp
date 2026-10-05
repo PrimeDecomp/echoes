@@ -95,6 +95,7 @@ public:
   };
 
   CPlayerGun(TUniqueId playerId, int characterIndex);
+  CGrappleArm* GrappleArm() { return mGrappleArm.get(); }
   ~CPlayerGun() override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
   void TouchModel(const CStateManager& mgr) const override;

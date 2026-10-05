@@ -91,6 +91,11 @@ public:
   void EnterStruck(CStateManager& mgr, float angle, bool bigStrike, bool notInFreeLook);
   void ReturnToDefault(CStateManager& mgr, float delay, bool reset);
   void SetStateFlags(uint flags); // Guessed name.
+  uint GetStateFlags() const { return mStateFlags; }
+  EArmState GetAnimState() const { return mAnimationState; }
+  bool IsGrappleBeamActive() const { return mBeamActive; }
+  CTransform4f GetTransform() const { return mTransform; }
+  void SetTransform(const CTransform4f& xf) { mTransform = xf; }
 
   // Callback names are preserved in the original state-machine registration strings.
   void Start(CStateManager& mgr, int msg, float dt);
