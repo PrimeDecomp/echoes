@@ -83,21 +83,7 @@ private:
 template < uint Components, uint ConstantComponent, uint SignComponent >
 class CFBBitCompressedDataChannelHeader {
 public:
-  explicit CFBBitCompressedDataChannelHeader(CInputStream& in) {
-    ushort width = in.ReadUint16();
-    TLoadedVal< ushort >::Write(this, width);
-    uchar* data = reinterpret_cast< uchar* >(this) + sizeof(ushort);
-    if (width != 0) {
-      for (uint i = 0; i < Components; ++i) {
-        if (i != SignComponent) {
-          TLoadedVal< short >::Write(data, in.ReadInt16());
-          data[2] = in.ReadInt8();
-          data += 3;
-        }
-      }
-    }
-  }
-
+  explicit CFBBitCompressedDataChannelHeader(CInputStream& in);
   uint GetWidth() const { return *mWidth; }
   short GetInitialValue(uint component) const {
     if (component == SignComponent) {
@@ -117,27 +103,59 @@ public:
     return reinterpret_cast< const uchar* >(
         this)[sizeof(ushort) + component * 3 + 2 - 3 * (SignComponent < Components)];
   }
-  const uchar* AfterEnd() const {
-    uint bytes = sizeof(ushort);
-    if (GetWidth() != 0) {
-      bytes += 3 * (Components - (SignComponent < Components));
-    }
-    return reinterpret_cast< const uchar* >(this) + bytes;
-  }
-  uint GetSumOfBitCounts() const {
-    if (GetWidth() == 0) {
-      return 0;
-    }
-    uint sum = 0;
-    for (uint i = 0; i < Components; ++i) {
-      sum += GetBitCount(i);
-    }
-    return sum;
-  }
+  const uchar* AfterEnd() const;
+  uint GetSumOfBitCounts() const;
 
 private:
   TLoadedVal< ushort > mWidth;
 };
+
+template < uint Components, uint ConstantComponent, uint SignComponent >
+CFBBitCompressedDataChannelHeader< Components, ConstantComponent, SignComponent >::
+    CFBBitCompressedDataChannelHeader(CInputStream& in) {
+  ushort width = in.ReadUint16();
+  TLoadedVal< ushort >::Write(this, width);
+  uchar* data = reinterpret_cast< uchar* >(this) + sizeof(ushort);
+  if (width != 0) {
+    for (uint i = 0; i < Components; ++i) {
+      if (i != SignComponent) {
+        TLoadedVal< short >::Write(data, in.ReadInt16());
+        data[2] = in.ReadInt8();
+        data += 3;
+      }
+    }
+  }
+}
+
+template < uint Components, uint ConstantComponent, uint SignComponent >
+const uchar*
+CFBBitCompressedDataChannelHeader< Components, ConstantComponent, SignComponent >::AfterEnd()
+    const {
+  if (GetWidth() == 0) {
+    return reinterpret_cast< const uchar* >(this) + sizeof(ushort);
+  }
+  return reinterpret_cast< const uchar* >(this) + sizeof(ushort) +
+         3 * (Components - (SignComponent < Components));
+}
+
+template < uint Components, uint ConstantComponent, uint SignComponent >
+uint CFBBitCompressedDataChannelHeader< Components, ConstantComponent,
+                                        SignComponent >::GetSumOfBitCounts() const {
+  if (GetWidth() == 0) {
+    return 0;
+  }
+  uint sum = 0;
+  const uchar* data = reinterpret_cast< const uchar* >(this) + sizeof(ushort);
+  for (uint i = 0; i < Components; ++i) {
+    if (i == SignComponent) {
+      sum += 1;
+    } else {
+      sum += data[2];
+      data += 3;
+    }
+  }
+  return sum;
+}
 
 class CFBStreamedPerChannelHeader {
 public:
@@ -211,24 +229,28 @@ public:
 
   explicit TVectorOfVaryingLengthItems(CInputStream& in) {
     this->LoadSize(this->mSize, in);
+    int count = this->size();
     const T* ptr = reinterpret_cast< const T* >(this->GetFirstAddress());
-    for (int i = 0; i < this->size(); ++i) {
+    for (int i = 0; i < count; ++i) {
       new (const_cast< T* >(ptr)) T(in);
       ptr = ptr->AfterEnd();
     }
   }
-  const uchar* AfterEnd() const {
-    const T* ptr = reinterpret_cast< const T* >(this->GetFirstAddress());
-    for (int i = 0; i < this->size(); ++i) {
-      ptr = ptr->AfterEnd();
-    }
-    return reinterpret_cast< const uchar* >(ptr);
-  }
+  const uchar* AfterEnd() const;
   const_iterator begin() const {
     return const_iterator(reinterpret_cast< const T* >(this->GetFirstAddress()), this->size());
   }
   const_iterator end() const { return const_iterator(nullptr, 0); }
 };
+
+template < typename Size, typename T >
+const uchar* TVectorOfVaryingLengthItems< Size, T >::AfterEnd() const {
+  const_iterator it(begin());
+  for (int remaining = this->size(); remaining > 0; --remaining) {
+    ++it;
+  }
+  return reinterpret_cast< const uchar* >(&*it);
+}
 
 class CFBStreamedPerChannelHeaderList
 : public TVectorOfVaryingLengthItems< uint, CFBStreamedPerChannelHeader > {
@@ -254,12 +276,13 @@ public:
 
   explicit CFBKeyFrameReductionPerChannel_HeaderForAll(CInputStream& in)
   : mBitCount(in.Get< uint >()) {
+    uint words = Uint32sForBitCount(mBitCount);
     uint* data = &mBitCount + 1;
-    for (uint i = 0; i < Uint32sForBitCount(mBitCount); ++i) {
+    for (uint i = 0; i < words; ++i) {
       data[i] = in.Get< uint >();
     }
   }
-  static uint Uint32sForBitCount(uint bits) { return bits / 32 + (bits % 32 != 0); }
+  static uint Uint32sForBitCount(uint bits) { return bits % 32 == 0 ? bits / 32 : bits / 32 + 1; }
   uint FrameAfter(uint frame) const {
     FrameIterator it(reinterpret_cast< const uint* >(this + 1) + frame / 32, 1u << (frame % 32));
     do {
