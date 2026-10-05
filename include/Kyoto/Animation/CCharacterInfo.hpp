@@ -19,6 +19,11 @@ public:
   class CParticleResData {
   public:
     CParticleResData(CInputStream& in, ushort tableCount);
+    const rstl::vector< CAssetId >& GetParts() const { return mPart; }
+    const rstl::vector< CAssetId >& GetSwooshes() const { return mSwhc; }
+    const rstl::vector< CAssetId >& GetElectrics() const { return mElscA; }
+    const rstl::vector< CAssetId >& GetSpawnSystems() const { return mSpsc; }
+    const rstl::vector< CAssetId >& GetSortedSystems() const { return mSrsc; }
 
   private:
     rstl::vector< CAssetId > mPart;

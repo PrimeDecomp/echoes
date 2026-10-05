@@ -21,6 +21,11 @@ public:
   : mDuration(duration), mParticle(tag), mBone(bone), mScale(scale), mParentMode(mode) {}
 
   CParticleData(CInputStream& in);
+
+  int GetDuration() const { return mDuration; }
+  const SObjectTag& GetParticleAssetInfo() const { return mParticle; }
+  CSegId GetSegmentId() const { return mBone; }
+  float GetScale() const { return mScale; }
   EParentedMode GetParentedMode() const { return mParentMode; }
 
 private:
