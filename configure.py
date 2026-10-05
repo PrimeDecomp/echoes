@@ -1201,7 +1201,7 @@ config.libs = [
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
             # TODO: need to implement all
             Object(NonMatching, "Runtime/Gecko_ExceptionPPC.cp"),
-            Object(NonMatching, "Runtime/__mem.c"),
+            Object(MatchingFor("G2ME01"), "Runtime/__mem.c"),
         ],
     },
     {
