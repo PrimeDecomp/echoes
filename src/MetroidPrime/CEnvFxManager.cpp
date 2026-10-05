@@ -11,6 +11,7 @@
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
@@ -291,7 +292,90 @@ void CEnvFxManager::ClearParticles() {
 }
 
 void CEnvFxManager::Update(float dt, CStateManager& mgr) {
-  // TODO: Follow effect transitions, density fades, camera movement and particle updates.
+  if (gpMain->IsMaxSpeed()) {
+    return;
+  }
+  const CCameraManager* cameraManager = mgr.GetCameraManager(0);
+  const CTransform4f camXf = cameraManager->GetCurrentCameraTransform(mgr, true);
+  const EEnvFxType type = static_cast< EEnvFxType >(mgr.GetWorld()->GetNeededEnvFx());
+
+  if (cameraManager->GetCurrentCamera(mgr, true)->GetFluidCount() != 0) {
+    mLastBlockedGridIdx = -1;
+    mEnableSplash = false;
+    SetSplashEffectRate(0.f, mgr);
+  }
+  UpdateRainSounds(dt, mgr);
+  UpdateVisorSplash(mgr, dt, camXf);
+
+  if (type != mPreviousFxType) {
+    if (mPreviousFxType != kEFX_None) {
+      ClearParticles();
+      AreaLoaded();
+    }
+    mPreviousFxType = type;
+    if (type == kEFX_None) {
+      return;
+    }
+  }
+
+  const float densityDelta = mTargetFxDensity - mFxDensity;
+  mFxDensity += rstl::min_val(1.f, CMath::AbsF(densityDelta) / 0.15f) *
+                CMath::Limit(densityDelta, dt * mMaxDensityDeltaSpeed / 11000.f);
+
+  const CVector3f scale = GetParticleBoundsToWorldScale();
+  const CVector3f inverseScale(1.f / scale.GetX(), 1.f / scale.GetY(), 1.f / scale.GetZ());
+  const CVector3f forwardPoint = camXf.GetTranslation() + 23.8125f * camXf.GetForward();
+  const CVector3f cellBase(forwardPoint.GetX() - CMath::ModF(forwardPoint.GetX(), 7.9375f),
+                           forwardPoint.GetY() - CMath::ModF(forwardPoint.GetY(), 7.9375f),
+                           forwardPoint.GetZ());
+  const CVector3f delta = mFocusCellPosition - cellBase;
+  mFocusCellPosition = cellBase;
+  MoveWrapCells(type, static_cast< int >(delta.GetX() / 7.9375f),
+                static_cast< int >(delta.GetY() / 7.9375f));
+
+  CVectorFixed8_8 zVec(0, 0, real_to_fixed8_8(delta.GetZ() * inverseScale.GetZ()));
+  if (type == kEFX_UnderwaterFlake) {
+    zVec.mZ += real_to_fixed8_8(0.5f * dt);
+  } else if (type == kEFX_DarkWorld) {
+    zVec.mZ += static_cast< short >(-10.f * dt);
+  }
+  rstl::reserved_vector< CVectorFixed8_8, 256 > snowForces;
+  CalculateSnowForces(zVec, snowForces, type, inverseScale, dt);
+
+  const CTransform4f xf = GetParticleBoundsToWorldTransform();
+  const CTransform4f invXf = xf.GetInverse();
+  UpdateBlockedGrids(mgr, type, camXf, xf, invXf);
+  CreateNewParticles(type, invXf);
+  mPreviousFxType = type;
+
+  switch (type) {
+  case kEFX_Snow:
+    UpdateSnowParticles(snowForces);
+    break;
+  case kEFX_Rain:
+    UpdateRainParticles(zVec, inverseScale, dt);
+    break;
+  case kEFX_UnderwaterFlake:
+    UpdateUnderwaterParticles(zVec);
+    break;
+  case kEFX_DarkWorld:
+    UpdateDarkWorldParticles(dt, snowForces, invXf);
+    break;
+  case kEFX_Unknown5:
+    UpdateDriftingParticles(dt, snowForces, invXf);
+    break;
+  case kEFX_Unknown6:
+  case kEFX_Unknown7:
+    UpdateParticleTrails(dt, zVec);
+    break;
+  default:
+    break;
+  }
+
+  mFirstSnowForce = CMath::ModF(
+      ((type == kEFX_Snow || type == kEFX_DarkWorld || type == kEFX_Unknown5) ? 1.f : 0.125f) +
+          mFirstSnowForce,
+      256.f);
 }
 
 void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf) {
