@@ -69,6 +69,17 @@ RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TUniqueId)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TEditorId)
 
 template <>
+struct is_trivially_destructible< pair< TEditorId, TUniqueId > > {
+  enum { value = true };
+};
+
+template <>
+inline void construct< pair< TEditorId, TUniqueId > >(
+    void* dest, const pair< TEditorId, TUniqueId >& src) {
+  *static_cast< pair< TEditorId, TUniqueId >* >(dest) = src;
+}
+
+template <>
 struct is_trivially_destructible< pair< TUniqueId, TUniqueId > > {
   enum { value = true };
 };

@@ -490,12 +490,6 @@ CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
-struct queryOutput {
-  int* unk0;
-  int unk4;
-};
-
-void fn_80041518(queryOutput&, MapWorldInfoAreas& allocatedObjectIndices, ushort ourIndex);
 void fn_8003C02C(rstl::list< rstl::reserved_vector< CEntity*, 32 > >& v, int);
 
 CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
@@ -514,26 +508,22 @@ CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
 CStateManager::~CStateManager() {}
 
 TUniqueId CStateManager::AllocateUniqueId() {
-
   const ushort lastIndex = mNextFreeIndex;
   ushort ourIndex;
-  queryOutput query;
   do {
     ourIndex = mNextFreeIndex;
     mNextFreeIndex = (ourIndex + 1) % 1024;
     if (mNextFreeIndex == lastIndex) {
       rs_debugger_printf("Object list full!");
     }
-    fn_80041518(query, mAllocatedObjectIndices, ourIndex);
-  } while ((query.unk4 & *query.unk0) != 0);
+  } while (mAllocatedObjectIndices[ourIndex]);
 
   mObjectIndexArray[ourIndex] = (mObjectIndexArray[ourIndex] + 1) & 0x3f;
   if (TUniqueId(mObjectIndexArray[ourIndex], ourIndex) == kInvalidUniqueId) {
     mObjectIndexArray[ourIndex] = 0;
   }
 
-  fn_80041518(query, mAllocatedObjectIndices, ourIndex);
-  *query.unk0 = *query.unk0 | query.unk4;
+  mAllocatedObjectIndices[ourIndex] = true;
 
   return TUniqueId(mObjectIndexArray[ourIndex], ourIndex);
 }
