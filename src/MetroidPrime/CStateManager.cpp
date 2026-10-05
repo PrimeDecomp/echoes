@@ -10,7 +10,10 @@
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CMain.hpp"
+#include "MetroidPrime/CMapWorld.hpp"
+#include "MetroidPrime/CMapWorldInfo.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
+#include "MetroidPrime/CPortalArea.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CProjectedShadow.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
@@ -33,8 +36,10 @@
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
 #include "Kyoto/Basics/RAssertDolphin.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 
 #include "rstl/vector.hpp"
 #include "rstl/algorithm.hpp"
@@ -270,9 +275,66 @@ CEntity* CStateManager::ObjectById(TUniqueId uid) {
   return mObjectLists[kOL_All]->GetObjectById(uid);
 }
 
+void CStateManager::SetCurrentAreaId(TAreaId area) {
+  if (mNextAreaId != area) {
+    mPreviousAreaId = mNextAreaId;
+    mNextAreaId = area;
+  }
+
+  const TAreaId& currentArea = area;
+  if (currentArea != kInvalidAreaId) {
+    if (!mMapWorldInfo->IsAreaVisited(currentArea)) {
+      mMapWorldInfo->SetAreaVisited(currentArea, true);
+      CMapWorldInfo* mapInfo = mMapWorldInfo.GetPtr();
+      CWorld* world = mWorld;
+      CMapWorld* mapWorld = world->GetMapWorld();
+      mapWorld->RecalculateWorldSphere(*mapInfo, *world);
+    }
+  }
+}
+
 void CStateManager::FrameEnd() {
   CModel::FrameDone();
   gpSimplePool->Flush();
+}
+
+void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) const {
+  switch (mPlayerState->GetActiveVisor(*this)) {
+  case CPlayerState::kPV_Echo:
+  case CPlayerState::kPV_Scan:
+    return;
+  default:
+    break;
+  }
+
+  const CGameCamera* camera = mCameraManager->GetCurrentCamera(*this, true);
+  gpRender->DrawSpaceWarp(camera->ConvertToScreenSpace(position), strength);
+}
+
+void CStateManager::SetActorAreaId(CActor& actor, const TAreaId area) {
+  const int oldArea = actor.GetCurrentAreaId().Value();
+  if (oldArea != area.Value()) {
+    CWorld* world = mWorld;
+    if (oldArea != kInvalidAreaId.Value()) {
+      CGameArea* oldAreaObject = world->Area(TAreaId(oldArea));
+      if (oldAreaObject->GetPhase() > CGameArea::kP_FinishScriptObjects) {
+        oldAreaObject->ObjectList()->RemoveObject(actor.GetUniqueId());
+        if (oldAreaObject->GetPostConstructed()->mPortalArea.get() != nullptr) {
+          oldAreaObject->GetPostConstructed()->mPortalArea->RemoveActor(*this, actor.GetUniqueId());
+        }
+      }
+    }
+
+    actor.SetCurrentAreaId(area);
+    if (area != kInvalidAreaId) {
+      CGameArea* newAreaObject = world->Area(area);
+      if (newAreaObject->IsLoaded()) {
+        if (newAreaObject->GetObjectList()->GetObjectById(actor.GetUniqueId()) == nullptr) {
+          newAreaObject->ObjectList()->AddObject(actor);
+        }
+      }
+    }
+  }
 }
 
 void CStateManager::SetupParticleHook(const CActor& actor) const {
@@ -325,6 +387,43 @@ bool CStateManager::RenderLastOverlay(const TUniqueId& uid) {
   return true;
 }
 
+void CStateManager::SetGameState(EGameState state) {
+  if (mGameState == state) {
+    return;
+  }
+
+  if (mGameState == kGS_SoftPaused) {
+    mWorld->SetLoadPauseState(false);
+  }
+
+  switch (state) {
+  case kGS_Running:
+    for (uint i = 0; i < mNumPlayers; ++i) {
+      if (mRumbleManagers[i]->GetDisabled()) {
+        mRumbleManagers[i]->SetDisabled(false);
+      }
+    }
+    if (CSfxManager::GetChannel() == CSfxManager::kSC_SoftPaused) {
+      CSfxManager::KillAll(CSfxManager::kSC_SoftPaused);
+    }
+    CSfxManager::SetChannel(CSfxManager::kSC_Game);
+    break;
+  case kGS_SoftPaused:
+    for (uint i = 0; i < mNumPlayers; ++i) {
+      if (!mRumbleManagers[i]->GetDisabled()) {
+        mRumbleManagers[i]->SetDisabled(true);
+      }
+    }
+    CSfxManager::SetChannel(CSfxManager::kSC_SoftPaused);
+    mWorld->SetLoadPauseState(true);
+    break;
+  default:
+    break;
+  }
+
+  mGameState = state;
+}
+
 void CStateManager::SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx) {
   mBossId = bossId;
   mBossHealth = maxEnergy;
@@ -355,6 +454,18 @@ float CStateManager::IntegrateVisorFog(float fog) const {
     return fog * (1.f - playerState->GetVisorTransitionFactor());
   }
   return fog;
+}
+
+uint CStateManager::MaskUIdNumPlayers(TUniqueId id) const {
+  const uint index = id.Value();
+  return index < static_cast< uint >(mNumPlayers) ? index : 0;
+}
+
+void CStateManager::UpdateDynamicLayers() {
+  for (CGameArea::CChainIterator it = mWorld->ChainHead(CWorld::kC_Alive);
+       it != CWorld::AliveAreasEnd(); ++it) {
+    it->UpdateDynamicLayers(*this);
+  }
 }
 
 bool CStateManager::HasPendingLayerLoads() const {
@@ -577,7 +688,7 @@ void CStateManager::DeferStateTransition(EStateManagerTransition t) {
       mWorld->SetLoadPauseState(true);
       mDeferredTransition = t;
       if (mDeferredTransition == kSMT_SaveGame) {
-        mSaveGameScreen = new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
+        mSaveGameScreen = rs_new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
       }
     }
   }
@@ -602,11 +713,6 @@ void CStateManager::SendScriptMsg(const CScriptMsg& msg) {
 bool CStateManager::IsMultiplayer() const {
   int v = gpGameState->GetGameMode().GetGameModeType();
   return v != 'SNGL' && v != 'FRND';
-}
-
-uint CStateManager::MaskUIdNumPlayers(TUniqueId id) const {
-  // TODO
-  return id.Value() & mNumPlayers;
 }
 
 void CStateManager::MoveActors(float dt) {

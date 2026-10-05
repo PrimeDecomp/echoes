@@ -35,6 +35,8 @@ public:
   TEditorId GetEditorId() const { return mEditorId; }
   TAreaId GetAreaIdForPersistence() const;
   TAreaId GetCurrentAreaId() const { return mAreaId; }
+  // Reconstructed setter name; current-area reassignment is separate from persistence.
+  void SetCurrentAreaId(TAreaId area) { mAreaId = area; }
   const bool GetActive() const { return mActive; }
   bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
   bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }

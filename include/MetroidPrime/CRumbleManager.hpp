@@ -18,6 +18,9 @@ public:
 
   void StopRumble(short id);
   void HardStopAll() { mRumbleGenerator.HardStopAll(); }
+  // Reconstructed accessors for the native pause-state gate.
+  bool GetDisabled() const { return mRumbleGenerator.GetDisabled(); }
+  void SetDisabled(bool disabled) { mRumbleGenerator.SetDisabled(disabled); }
   void Update(float dt);
 
 private:
