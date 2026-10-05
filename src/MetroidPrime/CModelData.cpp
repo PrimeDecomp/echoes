@@ -7,9 +7,13 @@
 
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/PortalPlane.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/SObjectTag.hpp"
+
+#include <dolphin/mtx.h>
 
 // Guessed name.
 struct SModelDataMultipassContext {
@@ -420,5 +424,9 @@ void CModelData::SetScale(const CVector3f& scale) {
 }
 
 void CModelData::SetupWorldSpacePortalPlane(const CTransform4f& xf, const CPlane& plane) const {
-  // TODO: Set the portal plane using both the scaled model matrix and its model-view matrix.
+  const CTransform4f model = xf * CTransform4f::Scale(mScale);
+  Mtx modelView;
+  PSMTXConcat(CGraphics::GetCameraMtx(), model.GetCStyleMatrix(), modelView);
+  PortalPlane::SetWorldSpacePlane(plane, *reinterpret_cast< const CTransform4f* >(modelView),
+                                  model);
 }
