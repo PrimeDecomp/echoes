@@ -38,6 +38,7 @@
 
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
@@ -573,6 +574,24 @@ const CEntity* CStateManager::GetObjectById(TUniqueId uid) const {
 void CStateManager::SetIsDarkWorld(bool b) {
   mIsDarkWorld = b;
   gpGameState->SetIsDarkWorld(mIsDarkWorld);
+}
+
+void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {
+  CPlayer* player = TCastToPtr< CPlayer >(ObjectById(victim));
+  if (player != nullptr) {
+    PlayerState(MaskUIdNumPlayers(victim))->SetPlayerAlive(false);
+
+    if (previousHealth >= 0.f) {
+      const CGameState& gameState = *gpGameState;
+      CGameMode& gameMode = gameState.GetGameMode();
+      gameMode.OnPlayerKilled(*this, victim, killer);
+    }
+
+    if (!IsMultiplayer()) {
+      CSfxManager::KillAll(CSfxManager::kSC_Game);
+      CStreamAudioManager::FadeOutSoftwareAudio(CStreamAudioManager::kSC_Default, 0.5f);
+    }
+  }
 }
 
 bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee,
