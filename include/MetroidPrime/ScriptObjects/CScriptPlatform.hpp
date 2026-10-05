@@ -64,14 +64,10 @@ public:
                            CStateManager& mgr) const;
   virtual CQuaternion Move(float dt, CStateManager& mgr);
 
-  void fn_800a0200(float time, CStateManager& mgr);
+  void ResetMotion(float time, CStateManager& mgr); // Reconstructed name.
   CQuaternion CalculateRotationDelta(); // Guessed name
   void SetTransformExplicitly(const CTransform4f& xf);
-  void fn_8009f4e4(const CTransform4f& xf) {
-    // TODO: leave the transform unchanged when the active spline controller owns it.
-    CActor::SetTransform(xf);
-    mMotionTransformed = true;
-  }
+  void SetTransformIfNoPositionSpline(const CTransform4f& xf); // Reconstructed name.
   bool IsSlave(TUniqueId id) const;
   bool RemoveRider(TUniqueId id); // Guessed name
   bool IsRider(TUniqueId id) const;
@@ -95,10 +91,10 @@ public:
   static bool IsInMovedList(TUniqueId id, const TMovedList& moved);
   void DragSlaves(CStateManager& mgr, TMovedList& moved);
   void DragSlave(CStateManager& mgr, TMovedList& moved, const SRiders& slave);
-  void MoveRiders(CStateManager& mgr, bool active, rstl::vector< SRiders >& riders,
+  void MoveRiders(CStateManager& mgr, float dt, bool active, rstl::vector< SRiders >& riders,
                   rstl::vector< SRiders >& collidedRiders, const TNearList& nearList,
                   const CTransform4f& oldXf, const CTransform4f& newXf, const CVector3f& dragDelta,
-                  const CQuaternion& rotDelta);
+                  CQuaternion rotDelta);
   static void DecayRiders(rstl::vector< SRiders >& riders, float dt, CStateManager& mgr);
   static TNearList BuildNearListFromRiders(CStateManager& mgr,
                                            const rstl::vector< SRiders >& riders);
@@ -127,12 +123,12 @@ private:
   uint mRainGenRate;
   TUniqueId mBoundsTrigger;
   rstl::single_ptr< CGameSplineDesc > mMotionSpline;
-  CGameSpline* mSplineController; // Owned; existing cleanup remains to be recovered.
+  rstl::single_ptr< CGameSpline > mSplineController;
   float mMotionTime;
   uint mMotionFlags;
   float mInitialTime;
   float mMotionDuration;
-  CPlatformWaypointTracker* mWaypointTracker; // Owned; cleanup awaits the helper's interface.
+  rstl::single_ptr< CPlatformWaypointTracker > mWaypointTracker;
   rstl::single_ptr< CMayaSpline > mRollSpline;
   rstl::single_ptr< CMayaSpline > mYawSpline;
   rstl::single_ptr< CMayaSpline > mPitchSpline;
