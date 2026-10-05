@@ -105,89 +105,85 @@ void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCa
   CCollisionCacheIterator iterator;
 
   for (;;) {
-    const uint result = cache.SkipGeometry(iterator);
-    if (result == uint(-1)) {
-      for (int i = 0; i < nearList.size(); ++i) {
-        const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
-        if (actor && status[i] != 1 && CacheActorGeometry(mgr, cache, actor)) {
-          status[i] = 1;
-        }
-      }
-
-      if (policy == kCUP_RemoveCachedNearListIds) {
-        int statusIndex = 0;
-        for (rstl::reserved_vector< TUniqueId, 1024 >::iterator id = nearList.begin();
-             id != nearList.end(); ++statusIndex) {
-          if (status[statusIndex] == 1) {
-            id = nearList.erase(id);
-          } else {
-            ++id;
-          }
-        }
-      }
-      return;
-    }
-
     const short objectId = iterator.GetObjectId();
-    if (objectId == kInvalidUniqueId.value) {
-      continue;
-    }
-
-    bool removeGeometry = true;
-    for (int i = 0; i < nearList.size(); ++i) {
-      if (nearList[i].value != objectId) {
-        continue;
-      }
-
-      const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
-      const CPhysicsActor* physics = TCastToConstPtr< CPhysicsActor >(actor);
-      if (!physics) {
-        continue;
-      }
-
-      const CCollisionPrimitive& primitive = *physics->GetCollisionPrimitive();
-      if (primitive.GetPrimType() == 'OBTG') {
-        const CCollidableOBBTreeGroup& group =
-            static_cast< const CCollidableOBBTreeGroup& >(primitive);
-        const CTransform4f transform = physics->GetPrimitiveTransform();
-        const bool matches = iterator.MatchesGeometry(
-            objectId, group.GetOBBTree(0), transform, physics->GetMaterialList().GetValue());
-        status[i] = matches ? 1 : 2;
-        if (matches) {
-          removeGeometry = false;
+    if (objectId != kInvalidUniqueId.value) {
+      bool removeGeometry = true;
+      for (int i = 0; i < nearList.size(); ++i) {
+        if (nearList[i].value != objectId) {
+          continue;
         }
-        break;
-      }
-      if (cache.GetDynamicGeometryMode() != 2) {
-        if (primitive.GetPrimType() == 'AABX') {
-          const CTransform4f transform = MakeAABoxCacheTransform(
-              *physics, static_cast< const CCollidableAABox& >(primitive));
+
+        const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
+        const CPhysicsActor* physics = TCastToConstPtr< CPhysicsActor >(actor);
+        if (!physics) {
+          continue;
+        }
+
+        const CCollisionPrimitive& primitive = *physics->GetCollisionPrimitive();
+        if (primitive.GetPrimType() == 'OBTG') {
+          const CCollidableOBBTreeGroup& group =
+              static_cast< const CCollidableOBBTreeGroup& >(primitive);
+          const CTransform4f transform = physics->GetPrimitiveTransform();
           const bool matches = iterator.MatchesGeometry(
-              objectId, &iterator.GetGeometry(), transform,
-              physics->GetMaterialList().GetValue());
+              objectId, group.GetOBBTree(0), transform, physics->GetMaterialList().GetValue());
           status[i] = matches ? 1 : 2;
           if (matches) {
             removeGeometry = false;
           }
           break;
         }
-        if (primitive.GetPrimType() == 'SPHR') {
-          const CTransform4f transform = MakeSphereCacheTransform(
-              *physics, static_cast< const CCollidableSphere& >(primitive));
-          const bool matches = iterator.MatchesGeometry(
-              objectId, &iterator.GetGeometry(), transform,
-              physics->GetMaterialList().GetValue());
-          status[i] = matches ? 1 : 2;
-          if (matches) {
-            removeGeometry = false;
+        if (cache.GetDynamicGeometryMode() != 2) {
+          if (primitive.GetPrimType() == 'AABX') {
+            const CTransform4f transform = MakeAABoxCacheTransform(
+                *physics, static_cast< const CCollidableAABox& >(primitive));
+            const bool matches = iterator.MatchesGeometry(
+                objectId, &iterator.GetGeometry(), transform,
+                physics->GetMaterialList().GetValue());
+            status[i] = matches ? 1 : 2;
+            if (matches) {
+              removeGeometry = false;
+            }
+            break;
           }
-          break;
+          if (primitive.GetPrimType() == 'SPHR') {
+            const CTransform4f transform = MakeSphereCacheTransform(
+                *physics, static_cast< const CCollidableSphere& >(primitive));
+            const bool matches = iterator.MatchesGeometry(
+                objectId, &iterator.GetGeometry(), transform,
+                physics->GetMaterialList().GetValue());
+            status[i] = matches ? 1 : 2;
+            if (matches) {
+              removeGeometry = false;
+            }
+            break;
+          }
         }
       }
-    }
 
-    if (removeGeometry) {
-      cache.RemoveGeometry(iterator);
+      if (removeGeometry) {
+        cache.RemoveGeometry(iterator);
+      }
+    }
+    if (cache.SkipGeometry(iterator) == uint(-1)) {
+      break;
+    }
+  }
+
+  for (int i = 0; i < nearList.size(); ++i) {
+    const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
+    if (actor && status[i] != 1 && CacheActorGeometry(mgr, cache, actor)) {
+      status[i] = 1;
+    }
+  }
+  if (policy == kCUP_RemoveCachedNearListIds) {
+    int statusIndex = 0;
+    for (rstl::reserved_vector< TUniqueId, 1024 >::iterator id = nearList.begin();
+         id != nearList.end(); ++statusIndex) {
+      if (status[statusIndex] == 1) {
+        id = nearList.erase(id);
+      } else {
+        ++id;
+      }
     }
   }
 }
@@ -408,64 +404,61 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
     actor.SetNumTicksPartialUpdate(actor.GetNumTicksPartialUpdate() + 1);
   }
 
-  if (actor.GetNumTicksPartialUpdate() <= 1 &&
-      !DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
-                                     actor.GetMaterialFilter(), nearList)) {
-    actor.SetLastNonCollidingState(actor.GetMotionState());
-    actor.SetNumTicksStuck(0);
-    return;
-  }
-
-  actor.SetNumTicksPartialUpdate(0);
-  actor.SetNumTicksStuck(actor.GetNumTicksStuck() + 1);
-  if (actor.GetNumTicksStuck() < failsafeTicks) {
-    return;
-  }
-
-  const CMotionState oldState = actor.GetMotionState();
-  const CMotionState lastState = actor.GetLastNonCollidingState();
-  actor.SetMotionState(lastState);
-  if (!DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
-                                     actor.GetMaterialFilter(), nearList)) {
-    actor.SetLastNonCollidingState(
-        CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
-                     0.5f * lastState.GetVelocity(),
-                     0.5f * lastState.GetAngularMomentum()));
-    actor.SetNumTicksStuck(0);
-    return;
-  }
-
-  CVector3f recoveryImpulse = CVector3f::Zero();
-  if (impulseScale != 0.f) {
-    CCollisionInfoList collisions;
-    TUniqueId id = kInvalidUniqueId;
-    DetectCollision_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
-                           actor.GetMaterialFilter(), nearList, id, collisions);
-    if (collisions.GetCount() != 0) {
-      CVector3f normal = CVector3f::Zero();
-      for (int i = 0; i < collisions.GetCount(); ++i) {
-        normal += collisions[i].GetNormalLeft();
-      }
-      if (normal.IsNonZero()) {
-        normal = normal.AsNormalized();
-      }
-      recoveryImpulse = actor.GetMass() * impulseScale * normal;
+  if (actor.GetNumTicksPartialUpdate() > 1 ||
+      DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                                    actor.GetMaterialFilter(), nearList)) {
+    actor.SetNumTicksPartialUpdate(0);
+    actor.SetNumTicksStuck(actor.GetNumTicksStuck() + 1);
+    if (actor.GetNumTicksStuck() < failsafeTicks) {
+      return;
     }
-  }
 
-  actor.SetMotionState(oldState);
-  const rstl::optional_object< CVector3f > displacement =
-      FindNonIntersectingVector(mgr, actor, primitive);
-  if (displacement.valid()) {
-    actor.SetMotionState(
-        CMotionState(oldState.GetTranslation() + *displacement, oldState.GetOrientation(),
-                     oldState.GetVelocity() + recoveryImpulse, oldState.GetAngularMomentum()));
-    actor.SetLastNonCollidingState(actor.GetMotionState());
+    const CMotionState oldState = actor.GetMotionState();
+    const CMotionState lastState = actor.GetLastNonCollidingState();
+    actor.SetMotionState(lastState);
+    if (!DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                                       actor.GetMaterialFilter(), nearList)) {
+      actor.SetLastNonCollidingState(
+          CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
+                       0.5f * lastState.GetVelocity(), 0.5f * lastState.GetAngularMomentum()));
+      actor.SetNumTicksStuck(0);
+    } else {
+      CVector3f recoveryImpulse = CVector3f::Zero();
+      if (impulseScale != 0.f) {
+        CCollisionInfoList collisions;
+        TUniqueId id = kInvalidUniqueId;
+        DetectCollision_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                               actor.GetMaterialFilter(), nearList, id, collisions);
+        if (collisions.GetCount() != 0) {
+          CVector3f normal = CVector3f::Zero();
+          for (int i = 0; i < collisions.GetCount(); ++i) {
+            normal += collisions[i].GetNormalLeft();
+          }
+          if (normal.IsNonZero()) {
+            normal = normal.AsNormalized();
+          }
+          recoveryImpulse = actor.GetMass() * impulseScale * normal;
+        }
+      }
+
+      actor.SetMotionState(oldState);
+      const rstl::optional_object< CVector3f > displacement =
+          FindNonIntersectingVector(mgr, actor, primitive);
+      if (displacement.valid()) {
+        actor.SetMotionState(
+            CMotionState(oldState.GetTranslation() + *displacement, oldState.GetOrientation(),
+                         oldState.GetVelocity() + recoveryImpulse, oldState.GetAngularMomentum()));
+        actor.SetLastNonCollidingState(actor.GetMotionState());
+      } else {
+        actor.SetLastNonCollidingState(
+            CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
+                         0.5f * lastState.GetVelocity() + recoveryImpulse,
+                         0.5f * lastState.GetAngularMomentum()));
+      }
+    }
   } else {
-    actor.SetLastNonCollidingState(
-        CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
-                     0.5f * lastState.GetVelocity() + recoveryImpulse,
-                     0.5f * lastState.GetAngularMomentum()));
+    actor.SetLastNonCollidingState(actor.GetMotionState());
+    actor.SetNumTicksStuck(0);
   }
 }
 
