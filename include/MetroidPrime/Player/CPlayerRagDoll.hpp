@@ -20,6 +20,8 @@ public:
   // Guessed name: restores the saved bounds and collision materials.
   void RestoreActorCollision(CStateManager& mgr);
 
+  CVector3f& TorsoImpulse() { return mTorsoImpulse; }
+
 private:
   // Guessed names, established by construction, Prime and Update consumers.
   CPlayer* mPlayer;

@@ -79,6 +79,10 @@ public:
 
   const CAABox& GetTriggerBounds() const { return mBounds; }
   uint GetTriggerFlags() const { return mFlags; }
+
+  float GetForceMagnitude() const { return mForceMagnitude; }
+
+  const CVector3f& GetForceField() const { return mForceField; }
   const CDamageInfo& GetDamageInfo() const { return mDamageInfo; }
   const rstl::list< CObjectTracker >& GetInhabitants() const { return mInhabitants; }
 
