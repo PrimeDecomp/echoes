@@ -434,13 +434,7 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
         DetectCollision_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
                                actor.GetMaterialFilter(), nearList, id, collisions);
         if (collisions.GetCount() != 0) {
-          CVector3f normal = CVector3f::Zero();
-          for (int i = 0; i < collisions.GetCount(); ++i) {
-            normal += collisions[i].GetNormalLeft();
-          }
-          if (normal.IsNonZero()) {
-            normal = normal.AsNormalized();
-          }
+          const CVector3f normal = collisions.GetCombinedNormalLeft();
           recoveryImpulse = actor.GetMass() * (impulseScale * normal);
         }
       }
@@ -479,7 +473,7 @@ CGameCollision::FindNonIntersectingVector(const CStateManager& mgr, CPhysicsActo
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
   mgr.BuildColliderList(nearList, actor, searchBounds);
 
-  for (int i = 2; i < 1000; i += i / 2) {
+  for (int i = 2; static_cast< float >(i) < 1000.f; i += i / 2) {
     const float step = 0.005f * static_cast< float >(i);
     for (int j = 0; j < 26; ++j) {
       CVector3f displacement = CVector3f::Zero();
