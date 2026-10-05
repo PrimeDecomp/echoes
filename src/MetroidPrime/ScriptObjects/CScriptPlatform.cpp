@@ -121,6 +121,7 @@ void CScriptPlatform::StopMotion() {
   mMotionActive = false;
   Stop();
   mPreviousRotation = GetTransform().GetRotation();
+  mPreviousRotation.Orthonormalize();
   mCurrentRotation = mPreviousRotation;
   mDragDelta = CVector3f::Zero();
   mRotationDelta = CQuaternion::NoRotation();
