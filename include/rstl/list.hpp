@@ -15,7 +15,9 @@ public:
   class const_iterator;
 
   // private:
+#pragma pack(push, 1)
   struct node;
+#pragma pack(pop)
 
 public:
   list(const Alloc& alloc = Alloc())
