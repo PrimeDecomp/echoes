@@ -378,7 +378,7 @@ void CParticleDatabase::UpdateParticleGenDB(float dt, CAnimData& animData,
     }
     info.Update(dt, mgr);
     if (!info.GetIsActive()) {
-      if (!info.HasActiveParticles() && !(info.GetCurrentTime() - info.GetFinishTime() <= 5.f) &&
+      if (!info.HasActiveParticles() && info.GetCurrentTime() - info.GetFinishTime() > 5.f &&
           deleteIfDone) {
         info.DeleteLight(mgr);
         it = map.erase(it);
