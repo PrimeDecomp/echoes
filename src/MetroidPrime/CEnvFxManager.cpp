@@ -126,7 +126,7 @@ void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
-  // TODO: Draw the billboards for environment effect 5.
+  RenderSnowParticles(camXf);
 }
 
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
@@ -218,7 +218,39 @@ void CEnvFxManagerGrid::RenderDarkWorldParticles(const CTransform4f& xf, const C
                                                  const CVectorFixed8_8* offsets,
                                                  const CVectorFixed8_8* upDeltas,
                                                  const CVectorFixed8_8* rightDeltas) {
-  // TODO: Draw lifetime-faded quads using the sixteen precomputed corner offsets.
+  if (!SetupRender(xf, invXf, camXf, density, kEFX_DarkWorld)) {
+    return;
+  }
+  CGX::SetTevKColor(GX_KCOLOR0, CColor::White().GetGXColor());
+  for (int i = mParticles.size() - 1; i >= 0; --i) {
+    const float lifetime = mParticleLifetimes[i];
+    const float brightness = rstl::max_val(0.f, 1.5f * lifetime - 0.5f);
+    const float remaining = 1.f - lifetime;
+    const float remainingSquared = remaining * remaining;
+    const uchar red = static_cast< uchar >(255.f * brightness);
+    const uchar green = static_cast< uchar >(red * lifetime);
+    const uchar alpha = static_cast< uchar >(255.f * (1.f - remainingSquared * remainingSquared));
+    CGX::SetTevKColor(GX_KCOLOR0, CColor(red, green, red, alpha).GetGXColor());
+
+    const CVectorFixed8_8& particle = mParticles[i];
+    const CVectorFixed8_8& offset = offsets[i & 15];
+    const CVectorFixed8_8& up = upDeltas[i & 15];
+    const CVectorFixed8_8& right = rightDeltas[i & 15];
+    const short x = particle.mX + offset.mX;
+    const short y = particle.mY + offset.mY;
+    const short z = particle.mZ + offset.mZ;
+    CGX::Begin(GX_QUADS, GX_VTXFMT6, 4);
+    GXPosition3s16(x, y, z);
+    GXTexCoord2u8(0, 0);
+    GXPosition3s16(x + up.mX, y + up.mY, z + up.mZ);
+    GXTexCoord2u8(0, 2);
+    GXPosition3s16(x + up.mX + right.mX, y + up.mY + right.mY, z + up.mZ + right.mZ);
+    GXTexCoord2u8(2, 2);
+    GXPosition3s16(x + right.mX, y + right.mY, z + right.mZ);
+    GXTexCoord2u8(2, 0);
+    CGX::End();
+  }
+  CGX::SetTevKColor(GX_KCOLOR0, CColor::Black().GetGXColor());
 }
 
 CVector3f CEnvFxManager::GetParticleBoundsToWorldScale() const {
@@ -384,13 +416,134 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
 }
 
 void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf) {
-  // TODO: Resize and seed per-grid particles, lifetimes and trail histories for this effect.
+  int maxParticleCount = 0;
+  switch (type) {
+  case kEFX_Snow:
+  case kEFX_Unknown5:
+    maxParticleCount = 0x1c98;
+    break;
+  case kEFX_Rain:
+    maxParticleCount = 11000;
+    break;
+  case kEFX_UnderwaterFlake:
+    maxParticleCount = 0xfeb;
+    break;
+  case kEFX_DarkWorld:
+    maxParticleCount = 0x2ee;
+    break;
+  case kEFX_Unknown6:
+  case kEFX_Unknown7:
+    maxParticleCount = 0x1c90;
+    break;
+  default:
+    break;
+  }
+  maxParticleCount /= 64;
+  int cellParticleCount = static_cast< int >(mFxDensity * maxParticleCount);
+  const bool trails = type == kEFX_Unknown6 || type == kEFX_Unknown7;
+  if (trails) {
+    maxParticleCount &= ~7;
+    cellParticleCount &= ~7;
+  }
+
+  static uint seed = 0;
+  CRandom16 random(seed);
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    if (!grid.mBlock.first) {
+      continue;
+    }
+    rstl::vector< CVectorFixed8_8 >& particles = grid.mParticles;
+    if (particles.size() < cellParticleCount) {
+      particles.reserve(maxParticleCount);
+      if (type == kEFX_DarkWorld) {
+        grid.mParticleLifetimes.reserve(maxParticleCount);
+      } else if (trails) {
+        grid.mParticleLifetimes.reserve(maxParticleCount / 8);
+        grid.mTrailFrames.reserve(maxParticleCount / 8);
+      }
+      while (particles.size() < cellParticleCount) {
+        const short x = static_cast< short >(random.Range(
+            0.f, static_cast< float >(grid.mExtent.GetX()) - (trails ? 20.f : 0.f)));
+        const short y =
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        short z;
+        if (type == kEFX_DarkWorld) {
+          z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
+        } else if (trails) {
+          z = static_cast< short >(random.Range(20.f, 16363.f));
+        } else {
+          z = real_to_fixed8_8(random.Range(0.f, 63.f));
+        }
+        particles.push_back(CVectorFixed8_8(x, y, z));
+        if (type == kEFX_DarkWorld) {
+          grid.mParticleLifetimes.push_back(random.Float());
+        } else if (trails) {
+          grid.mParticleLifetimes.push_back(1.f);
+          grid.mTrailFrames.push_back(8 * (type == kEFX_Unknown7 ? 8 : 2) * random.Range(0, 100));
+          for (int point = 1; point < 8; ++point) {
+            particles.push_back(CVectorFixed8_8());
+          }
+        }
+      }
+    } else {
+      particles.resize(cellParticleCount);
+      if (type == kEFX_DarkWorld) {
+        grid.mParticleLifetimes.resize(cellParticleCount);
+      } else if (trails) {
+        grid.mParticleLifetimes.resize(cellParticleCount / 8);
+        grid.mTrailFrames.resize(cellParticleCount / 8);
+      }
+    }
+  }
+  seed = random.GetSeed();
 }
 
 void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
                                         rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
                                         EEnvFxType type, const CVector3f& inverseScale, float dt) {
-  // TODO: Build the force cycle, with separate dark-world and effect-5 motion.
+  if (type != kEFX_Snow && type != kEFX_DarkWorld && type != kEFX_Unknown5) {
+    return;
+  }
+
+  CRandom16 random(99);
+  CVector3f accumulated = CVector3f::Zero();
+  CVectorFixed8_8 previous;
+  float phase = 0.f;
+  const float speed = type == kEFX_DarkWorld ? 5.f : 1.f;
+  for (int i = 255; i >= 0; --i) {
+    float forceX = g_SnowForces[i][0];
+    float forceY = g_SnowForces[i][1];
+    if (type == kEFX_Unknown5) {
+      forceX = CMath::FastSinR(phase) + 0.2f * random.Range(-1.f, 1.f);
+      forceY = CMath::FastCosR(phase) + 0.2f * random.Range(-1.f, 1.f);
+    }
+    accumulated += CVector3f(inverseScale.GetX() * dt * speed * forceX,
+                              inverseScale.GetY() * dt * speed * forceY, 0.f);
+    const CVectorFixed8_8 current(real_to_fixed8_8(accumulated.GetX()),
+                                   real_to_fixed8_8(accumulated.GetY()),
+                                   real_to_fixed8_8(accumulated.GetZ()));
+    snowForces.push_back(CVectorFixed8_8(current.mX - previous.mX, current.mY - previous.mY,
+                                         current.mZ - previous.mZ));
+    previous = current;
+    phase += 0.024543693f;
+  }
+  snowForces[0].mX -= real_to_fixed8_8(accumulated.GetX());
+  snowForces[0].mY -= real_to_fixed8_8(accumulated.GetY());
+  snowForces[0].mZ -= real_to_fixed8_8(accumulated.GetZ());
+
+  if (type == kEFX_DarkWorld) {
+    // TODO: Apply the native time-varying radial impulse to the force cycle.
+    return;
+  }
+  const float zDeltaTime = type == kEFX_Unknown5 ? 0.f : dt;
+  for (int i = 0; i < snowForces.size(); ++i) {
+    const CVector3f delta = CVector3f::ByElementMultiply(
+        inverseScale, zDeltaTime * mSnowZDeltas[i & 15]);
+    snowForces[i].mX += real_to_fixed8_8(delta.GetX()) + zVec.mX;
+    snowForces[i].mY += real_to_fixed8_8(delta.GetY()) + zVec.mY;
+    snowForces[i].mZ += real_to_fixed8_8(delta.GetZ()) + zVec.mZ;
+  }
 }
 
 void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
@@ -525,7 +678,40 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
 void CEnvFxManager::UpdateDarkWorldParticles(
     float dt, rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
     const CTransform4f& invXf) {
-  // TODO: Apply lifetime-dependent forces and respawn particles at the blocking height.
+  const int firstForce = static_cast< int >(mFirstSnowForce);
+  const float lifetimeDelta = dt / 3.f;
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    if (!grid.mBlock.first) {
+      continue;
+    }
+    CRandom16 random(99);
+    for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
+      float& lifetime = grid.mParticleLifetimes[j];
+      lifetime -= lifetimeDelta;
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      if (lifetime > 0.f) {
+        const CVectorFixed8_8& force = snowForces[(firstForce + random.Next()) & 0xff];
+        const float elapsed = 1.f - lifetime;
+        const float elapsedSquared = elapsed * elapsed;
+        const float growth = 2.f * elapsedSquared * elapsedSquared;
+        const short forceScale = real_to_fixed8_8(1.f + growth);
+        particle.mX += (force.mX * forceScale) >> 8;
+        particle.mY += (force.mY * forceScale) >> 8;
+        particle.mZ += (force.mZ * forceScale) >> 8;
+        particle.mZ += real_to_fixed8_8(dt * growth);
+      } else {
+        lifetime = 1.f;
+        const short z = real_to_fixed8_8(
+            (invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
+        const short y = static_cast< short >(
+            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        const short x = static_cast< short >(
+            random.Range(0.f, static_cast< float >(grid.mExtent.GetX())));
+        particle = CVectorFixed8_8(x, y, z);
+      }
+    }
+  }
 }
 
 void CEnvFxManager::UpdateRainParticles(const CVectorFixed8_8& zVec, const CVector3f& inverseScale,
