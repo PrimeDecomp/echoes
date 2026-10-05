@@ -55,6 +55,7 @@ class CWorldLayerState;
 class CStateManagerContainer;
 class CInputStream;
 class CStateManager;
+class CInGameGuiManagerSet;
 
 namespace SL {
 class CSortedListManager;
@@ -153,6 +154,12 @@ public:
                          TUniqueId weapon, const CDamageInfo& damage);
   void KillPlayer(float remainingHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
+  void PreRender(uint playerIndex); // Prime-correlated name.
+  void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
+  void SetupPlayerViewport(uint playerIndex); // Guessed name.
+  void DrawUnusedViewport(int viewportIndex); // Guessed name.
+  void EndPlayerRender(); // Guessed name.
+  void Touch(); // Prime-correlated name.
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.

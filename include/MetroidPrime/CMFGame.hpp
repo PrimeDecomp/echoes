@@ -76,7 +76,7 @@ private:
   float mTransitionFadeTime;
   bool mInitialized : 1;
   bool mPlayerAlive : 1;
-  bool mEndGameFrameCaptured : 1;
+  mutable bool mEndGameFrameCaptured : 1;
   bool mTransitionFromDarkWorld : 1;
   bool x44_4 : 1;
 };
