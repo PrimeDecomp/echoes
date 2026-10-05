@@ -43,8 +43,11 @@ CTransform4f MakeAABoxCacheTransform(const CPhysicsActor& actor, const CCollidab
 }
 
 CTransform4f MakeSphereCacheTransform(const CPhysicsActor& actor, const CCollidableSphere& sphere) {
-  const CVector3f center = actor.GetPrimitiveTransform() * sphere.GetSphere().GetCenter();
-  CTransform4f transform = CTransform4f::Scale(sphere.GetSphere().GetRadius());
+  const CSphere& shape = sphere.GetSphere();
+  const CVector3f localCenter = shape.GetCenter();
+  const float radius = shape.GetRadius();
+  const CVector3f center = actor.GetPrimitiveTransform() * localCenter;
+  CTransform4f transform = CTransform4f::Scale(radius);
   transform.SetTranslation(center);
   return transform;
 }
@@ -104,68 +107,70 @@ void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCa
   memset(status, 0, nearList.size());
   CCollisionCacheIterator iterator;
 
-  for (;;) {
+  while (cache.SkipGeometry(iterator) != uint(-1)) {
     const short objectId = iterator.GetObjectId();
-    if (objectId != kInvalidUniqueId.value) {
-      bool removeGeometry = true;
-      for (int i = 0; i < nearList.size(); ++i) {
-        if (nearList[i].value != objectId) {
-          continue;
-        }
+    if (objectId == kInvalidUniqueId.value) {
+      continue;
+    }
+    bool removeGeometry = true;
+    for (int i = 0; i < nearList.size(); ++i) {
+      if (nearList[i].value != objectId) {
+        continue;
+      }
 
-        const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
-        const CPhysicsActor* physics = TCastToConstPtr< CPhysicsActor >(actor);
-        if (!physics) {
-          continue;
-        }
+      const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
+      const CPhysicsActor* physics = TCastToConstPtr< CPhysicsActor >(actor);
+      if (!physics) {
+        continue;
+      }
 
-        const CCollisionPrimitive& primitive = *physics->GetCollisionPrimitive();
-        if (primitive.GetPrimType() == 'OBTG') {
-          const CCollidableOBBTreeGroup& group =
-              static_cast< const CCollidableOBBTreeGroup& >(primitive);
-          const CTransform4f transform = physics->GetPrimitiveTransform();
+      const CCollisionPrimitive& primitive = *physics->GetCollisionPrimitive();
+      if (primitive.GetPrimType() == 'OBTG') {
+        const CCollidableOBBTreeGroup& group =
+            static_cast< const CCollidableOBBTreeGroup& >(primitive);
+        const CTransform4f transform = physics->GetPrimitiveTransform();
+        const bool matches = iterator.MatchesGeometry(objectId, group.GetOBBTree(0), transform,
+                                                      physics->GetMaterialList().GetValue());
+        if (matches) {
+          status[i] = 1;
+          removeGeometry = false;
+        } else {
+          status[i] = 2;
+        }
+        break;
+      }
+      if (cache.GetDynamicGeometryMode() != 2) {
+        if (primitive.GetPrimType() == 'AABX') {
+          const CTransform4f transform =
+              MakeAABoxCacheTransform(*physics, static_cast< const CCollidableAABox& >(primitive));
           const bool matches = iterator.MatchesGeometry(
-              objectId, group.GetOBBTree(0), transform, physics->GetMaterialList().GetValue());
-          status[i] = matches ? 1 : 2;
+              objectId, &iterator.GetGeometry(), transform, physics->GetMaterialList().GetValue());
           if (matches) {
+            status[i] = 1;
             removeGeometry = false;
+          } else {
+            status[i] = 2;
           }
           break;
         }
-        if (cache.GetDynamicGeometryMode() != 2) {
-          if (primitive.GetPrimType() == 'AABX') {
-            const CTransform4f transform = MakeAABoxCacheTransform(
-                *physics, static_cast< const CCollidableAABox& >(primitive));
-            const bool matches = iterator.MatchesGeometry(
-                objectId, &iterator.GetGeometry(), transform,
-                physics->GetMaterialList().GetValue());
-            status[i] = matches ? 1 : 2;
-            if (matches) {
-              removeGeometry = false;
-            }
-            break;
+        if (primitive.GetPrimType() == 'SPHR') {
+          const CTransform4f transform = MakeSphereCacheTransform(
+              *physics, static_cast< const CCollidableSphere& >(primitive));
+          const bool matches = iterator.MatchesGeometry(
+              objectId, &iterator.GetGeometry(), transform, physics->GetMaterialList().GetValue());
+          if (matches) {
+            status[i] = 1;
+            removeGeometry = false;
+          } else {
+            status[i] = 2;
           }
-          if (primitive.GetPrimType() == 'SPHR') {
-            const CTransform4f transform = MakeSphereCacheTransform(
-                *physics, static_cast< const CCollidableSphere& >(primitive));
-            const bool matches = iterator.MatchesGeometry(
-                objectId, &iterator.GetGeometry(), transform,
-                physics->GetMaterialList().GetValue());
-            status[i] = matches ? 1 : 2;
-            if (matches) {
-              removeGeometry = false;
-            }
-            break;
-          }
+          break;
         }
       }
-
-      if (removeGeometry) {
-        cache.RemoveGeometry(iterator);
-      }
     }
-    if (cache.SkipGeometry(iterator) == uint(-1)) {
-      break;
+
+    if (removeGeometry) {
+      cache.RemoveGeometry(iterator);
     }
   }
 
@@ -436,7 +441,7 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
           if (normal.IsNonZero()) {
             normal = normal.AsNormalized();
           }
-          recoveryImpulse = actor.GetMass() * impulseScale * normal;
+          recoveryImpulse = actor.GetMass() * (impulseScale * normal);
         }
       }
 
@@ -452,7 +457,7 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
         actor.SetMotionState(
             CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
                          0.5f * lastState.GetVelocity() + recoveryImpulse,
-                         0.5f * lastState.GetAngularMomentum()));
+                         lastState.GetAngularMomentum() * 0.5f));
         actor.SetLastNonCollidingState(actor.GetMotionState());
       }
     }
