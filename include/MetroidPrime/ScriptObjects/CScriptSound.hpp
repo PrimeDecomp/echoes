@@ -8,7 +8,7 @@ public:
   CScriptSound(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                const CTransform4f& xf, ushort soundId, float maxDist, float distComp,
                float startDelay, short minVolume, short volume, short unknown198,
-               short darkVisorVolume, short priority, short pan, short surroundPan,
+               short echoVisorVolume, short priority, short pan, short surroundPan,
                short unknown1a2, bool looped, bool nonEmitter, bool playerRelativePan,
                bool autoStart, bool occlusionTest, bool acoustics, bool worldSfx,
                bool allowDuplicates, bool allAreas, bool scaleByMusicVolume, int pitch);
@@ -45,7 +45,7 @@ private:
   short mMinVolume;
   short mVolume;
   short x198_;
-  short mDarkVisorVolume;
+  short mEchoVisorVolume;
   short mPriority;
   short mPan;
   short mSurroundPan;
