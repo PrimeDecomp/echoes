@@ -2,16 +2,19 @@
 
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
+#include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Graphics/PortalPlane.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/SObjectTag.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 
 #include <dolphin/mtx.h>
 
@@ -66,7 +69,24 @@ void CModelData::Render(EWhichModel which, const CTransform4f& xf, const CActorL
 
 void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
                                      const CActorLights* lights, const CModelFlags& flags) const {
-  // TODO: Draw eligible static unsorted surfaces and update mRenderSorted.
+  if (HasAnimation() || !mNormalModel || flags.GetTrans() >= CModelFlags::kT_Blend ||
+      !mRenderUnsortedParts) {
+    mRenderSorted = false;
+    return;
+  }
+
+  gpRender->SetModelMatrix(xf * CTransform4f::Scale(mScale));
+  if (lights != nullptr && which != kWM_Dark) {
+    lights->ActivateLights();
+  } else {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  }
+
+  PickStaticModel(which)->DrawUnsortedParts(flags);
+  gpRender->SetAmbientColor(CColor::White());
+  CGraphics::DisableAllLights();
+  mRenderSorted = true;
 }
 
 void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace,
