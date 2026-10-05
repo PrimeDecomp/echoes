@@ -6,6 +6,9 @@
 
 CGX::SGXState CGX::sGXState;
 CGX::SGXState* CGX::gpGXState = &CGX::sGXState;
+static const uint sAlwaysAlphaCompare = CGX::MaskAndShiftLeft(GX_ALWAYS, 7, 0) |
+                                        CGX::MaskAndShiftLeft(GX_AOP_OR, 7, 11) |
+                                        CGX::MaskAndShiftLeft(GX_ALWAYS, 7, 14);
 
 #if NONMATCHING
 // Doesn't need to be so big
@@ -188,13 +191,23 @@ void CGX::SetZMode(const GXBool compareEnable, GXCompare func, const GXBool upda
 }
 
 void CGX::SetAlphaCompare(GXCompare comp0, uchar ref0, GXAlphaOp op, GXCompare comp1, uchar ref1) {
+  if (comp0 == GX_ALWAYS) {
+    if (gpGXState->mAlphaCompare != sAlwaysAlphaCompare) {
+      GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
+      gpGXState->mAlphaCompare = sAlwaysAlphaCompare;
+      GXSetZCompLoc(true);
+    }
+    return;
+  }
   uint flags = MaskAndShiftLeft(comp0, 7, 0) | MaskAndShiftLeft(ref0, 0xFF, 3) |
                MaskAndShiftLeft(op, 7, 11) | MaskAndShiftLeft(comp1, 7, 14) |
                MaskAndShiftLeft(ref1, 0xFF, 17);
   if (gpGXState->mAlphaCompare != flags) {
+    if (gpGXState->mAlphaCompare == sAlwaysAlphaCompare) {
+      GXSetZCompLoc(false);
+    }
     gpGXState->mAlphaCompare = flags;
     GXSetAlphaCompare(comp0, ref0, op, comp1, ref1);
-    GXSetZCompLoc(comp0 == GX_ALWAYS);
   }
 }
 
@@ -320,7 +333,9 @@ CGX::SGXState::SGXState()
 , mFogType(0)
 , mLineWidthAndOffset(USHRT_MAX)
 , mBlendMode(USHRT_MAX)
-, mAlphaCompare(UINT_MAX) {
+, mAlphaCompare(UINT_MAX)
+, mDstAlphaEnabled(false)
+, mDstAlpha(0) {
   const GXColor sGXClear = {0, 0, 0, 0};
   const GXColor sGXWhite = {255, 255, 255, 255};
   for (int i = 0; i < 2; ++i) {
@@ -405,7 +420,7 @@ void CGX::SetIndTexMtxSTPointFive(GXIndTexMtxID id, s8 scaleExp) {
       {0.5f, 0.f, 0.f},
       {0.f, 0.5f, 0.f},
   };
-  GXSetIndTexMtx(id, const_cast< float(*)[3] >(indMtx), scaleExp);
+  GXSetIndTexMtx(id, const_cast< float (*)[3] >(indMtx), scaleExp);
 }
 
 void CGX::SetVtxDescv_Compressed(uint flags) {
@@ -521,8 +536,16 @@ void CGX::GetFog(GXFogType* fogType, float* fogStartZ, float* fogEndZ, float* fo
 }
 
 void CGX::SetDstAlpha(bool enable, uchar alpha) {
-  // TODO
-  GXSetDstAlpha(enable, alpha);
+  if (!enable) {
+    if (gpGXState->mDstAlphaEnabled) {
+      gpGXState->mDstAlphaEnabled = false;
+      GXSetDstAlpha(false, 0);
+    }
+  } else if (!gpGXState->mDstAlphaEnabled || gpGXState->mDstAlpha != alpha) {
+    gpGXState->mDstAlphaEnabled = true;
+    gpGXState->mDstAlpha = alpha;
+    GXSetDstAlpha(enable, alpha);
+  }
 }
 
 #ifndef TARGET_PC
@@ -557,8 +580,7 @@ void CGX::update_fog(uint flags) {
 #ifdef TARGET_PC
     GXSetFogColor(gpGXState->mFogParams.mFogColor);
 #else
-    write_bp_cmd((gpGXState->mFogParams.mFogColor.b) |
-                 (gpGXState->mFogParams.mFogColor.g << 8) |
+    write_bp_cmd((gpGXState->mFogParams.mFogColor.b) | (gpGXState->mFogParams.mFogColor.g << 8) |
                  (gpGXState->mFogParams.mFogColor.r << 16) | 0xf2000000);
 #endif
   }
