@@ -62,6 +62,7 @@ public:
 
   CCompoundTargetReticle(const CStateManager& mgr, int playerIndex);
   ~CCompoundTargetReticle();
+  void SetLeadingOrientation(const CQuaternion& orientation) { mLeadingOrientation = orientation; }
 
   void Touch() const;
   static float CalculateClampedScale(CVector3f position, float scale, float clampMin,
@@ -185,6 +186,7 @@ class CTargetingManager {
 public:
   CTargetingManager(const CStateManager& mgr, int playerIndex);
   ~CTargetingManager();
+  CCompoundTargetReticle& CompoundTargetReticle() { return mTargetReticle; }
   bool CheckLoadComplete();
   void Update(float dt, const CStateManager& mgr);
   void Draw(const CStateManager& mgr, bool hideLockOn) const;

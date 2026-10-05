@@ -315,7 +315,7 @@ void CScanTreeMenu::ApplyOption(int index) {
     options.SetIsHintSystemEnabled(value != 0);
     break;
   case kS_Unknown3:
-    options.SetFlag3(value != 0);
+    options.SetIsHudEnglish(value != 0);
     break;
   case kS_InvertYAxis:
     options.SetInvertYAxis(value != 0);
