@@ -52,8 +52,8 @@ public:
   void SetHUDLag(bool);
   void SetIsHintSystemEnabled(bool);
   bool GetIsHintSystemEnabled() const { return hintSystem; }
-  void SetFlag3(bool);
-  bool GetIsHudEnglish() const { return unk; } // Guessed name; selects STRG_HudEngOnly.
+  void SetIsHudEnglish(bool);
+  bool GetIsHudEnglish() const { return hudEnglish; } // Guessed name; selects STRG_HudEngOnly.
   void SetInvertYAxis(bool);
   void SetIsRumbleEnabled(bool rumble);
   bool GetIsRumbleEnabled() const { return rumble; }
@@ -89,7 +89,7 @@ private:
   bool rumble : 1;
   bool swapBeamsControls : 1;
   bool hintSystem : 1;
-  bool unk : 1;
+  bool hudEnglish : 1;
   rstl::vector< rstl::pair< CAssetId, CAssetId > > mControlTXTRMap;
   rstl::reserved_vector< CPlayerOptions, 4 > mPlayerOptions;
 };

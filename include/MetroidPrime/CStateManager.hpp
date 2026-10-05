@@ -20,8 +20,8 @@ extern const int gkPVSEnabled;
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
-#include "Kyoto/TToken.hpp"
 #include "Kyoto/TOneStatic.hpp"
+#include "Kyoto/TToken.hpp"
 
 #include "rstl/auto_ptr.hpp"
 #include "rstl/bit_vector.hpp"
@@ -119,10 +119,10 @@ public:
   void InitializeState(CAssetId world, TAreaId area, CAssetId saveWorld);
   void DeleteSaveGameScreen();
   int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
-  bool PrepareAreaTransition(TAreaId area); // Guessed name.
+  bool PrepareAreaTransition(TAreaId area);                      // Guessed name.
   rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
   bool HasPendingLayerLoads() const; // Guessed name, from the area query.
-  void UpdateDynamicLayers(); // Guessed name, from the area update.
+  void UpdateDynamicLayers();        // Guessed name, from the area update.
   void SetRandomAvailable(bool available) { mSkippingCinematic = available; }
 
   TUniqueId AllocateUniqueId();
@@ -131,7 +131,7 @@ public:
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return mIsDarkWorld; }
   CAssetId GetMapTeleportWorldId() const { return mMapTeleportWorldId; } // Guessed name
-  void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; } // Guessed name
+  void SetMapTeleportWorldId(CAssetId id) { mMapTeleportWorldId = id; }  // Guessed name
   void DisplayAlertAboutOutOfAmmo(const CPlayer&, CPlayerState::EItemType) const;
   rstl::pair< int, int > CalculateScanCompletionRate() const;
 
@@ -169,12 +169,12 @@ public:
                          TUniqueId weapon, const CDamageInfo& damage);
   void KillPlayer(float remainingHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
-  void PreRender(uint playerIndex); // Prime-correlated name.
+  void PreRender(uint playerIndex);                // Prime-correlated name.
   void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
-  void SetupPlayerViewport(uint playerIndex); // Guessed name.
-  void DrawUnusedViewport(int viewportIndex); // Guessed name.
-  void EndPlayerRender(); // Guessed name.
-  void Touch(); // Prime-correlated name.
+  void SetupPlayerViewport(uint playerIndex);      // Guessed name.
+  void DrawUnusedViewport(int viewportIndex);      // Guessed name.
+  void EndPlayerRender();                          // Guessed name.
+  void Touch();                                    // Prime-correlated name.
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
@@ -307,9 +307,11 @@ public:
   // State transitions
   EGameState GetGameState() const { return mGameState; }
   void DeferStateTransition(EStateManagerTransition t);
-  void ResetEscapeSequenceTimer(float time); // Prime-correlated name
+  void ResetEscapeSequenceTimer(float time);                             // Prime-correlated name
   void SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx); // Prime name
   TUniqueId GetBossId() const { return mBossId; }
+  float GetTotalBossEnergy() const { return mBossHealth; }
+  uint GetBossStringIdx() const { return mBossLanguageTableIndex; }
   float IntegrateVisorFog(float f) const;
   void SetAreaClipPlane(TAreaId area, const CPlane& plane); // Guessed name
   void EnterMapScreen() { DeferStateTransition(kSMT_MapScreen); }
@@ -370,7 +372,7 @@ public:
   CRumbleManager* mRumbleManagers[4];
   CFinalInput mFinalInputs[4];
   char x15ec_[4];
-  ushort mForceTriggerIds[4]; // 0x15f0: packed current force-field trigger IDs, one per player.
+  ushort mForceTriggerIds[4];    // 0x15f0: packed current force-field trigger IDs, one per player.
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
   CPlayerState* mPlayerState;
   CCameraManager* mCameraManager;
@@ -398,7 +400,7 @@ public:
   // Guessed names: actor-specific exclusions and the renderer's world-light list.
   rstl::vector< rstl::pair< TUniqueId, CLight > > mDynamicActorLights;
   rstl::vector< CLight > mDynamicLights;
-  char x16d8_[8]; // Token storage; full resource ownership remains unresolved here.
+  char x16d8_[8];       // Token storage; full resource ownership remains unresolved here.
   CTexture* mShadowTex; // 0x16e0
   CRandom16 mRandom;
   bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
@@ -417,10 +419,10 @@ public:
   uint mBossLanguageTableIndex;
   ERenderVisorMode mRenderVisorMode;
   TUniqueId mSpecialFunctionId;
-  float mHudMessageTime;        // 0x2454
+  float mHudMessageTime;               // 0x2454
   CProjectedShadow* mProjectedShadows; // 0x2458; head of this frame's shadow list.
-  int mHudMessageFrameCount;    // 0x245c
-  int mPausedHudMemoFrameCount; // 0x2460
+  int mHudMessageFrameCount;           // 0x245c
+  int mPausedHudMemoFrameCount;        // 0x2460
   CAssetId mPausedHudMemoAssetId;
   float x2468;
   CAssetId mMapTeleportWorldId; // Guessed name
@@ -442,9 +444,9 @@ public:
   bool mQuitGame : 1;
   bool mUnkFlagA3 : 1;
   bool mInMapScreen : 1;
-  bool mInSaveUI : 1;       // Prime-correlated name
+  bool mInSaveUI : 1; // Prime-correlated name
   bool mCinematicPause : 1;
-  bool mIsFullThreat : 1;   // Prime-correlated name
+  bool mIsFullThreat : 1;       // Prime-correlated name
   bool mIsDarkWorld : 1;        // 0x294c
   bool mShowSoftTransition : 1; // Guessed name.
   bool mUnkFlagB2 : 1;

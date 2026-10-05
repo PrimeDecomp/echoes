@@ -36,6 +36,7 @@ public:
 
   void ActivateLights() const;
   uint GetActiveLightCount() const;
+  uint GetActiveAreaLightCount() const { return mAreaLights.size(); }
   const CLight& GetLight(uint idx) const;
 
   bool GetNeedsRelight() const { return mDirty == TRUE; }

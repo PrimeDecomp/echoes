@@ -5,6 +5,7 @@
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "GuiSys/CGuiTextPane.hpp"
+#include "GuiSys/CGuiWidgetDrawParms.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/CResFactory.hpp"
@@ -14,19 +15,23 @@
 #include "MetroidPrime/HUD/CHudVisorBeamMenu.hpp"
 
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CLight.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
+#include "rstl/StringExtras.hpp"
 
 #include <stdio.h>
 
@@ -531,8 +536,11 @@ void CSamusHud::DeferHintMemo(CAssetId stringTable, uint index, const CHUDMemoPa
 }
 
 bool CSamusHud::IsHudMemoVisible(int playerIndex) {
-  // TODO: query the player's memo widgets for visibility.
-  return false;
+  const CSamusHud* hud = gpSamusHud[playerIndex];
+  if (hud == nullptr || hud->mMessageRoot == nullptr || hud->mMessagePane == nullptr) {
+    return false;
+  }
+  return hud->mMessageRoot->GetIsVisible() || hud->mMessagePane->GetIsVisible();
 }
 
 void CSamusHud::InternalDisplayHudMemo(const rstl::wstring& text, const CHUDMemoParms& info) {
@@ -694,7 +702,30 @@ CHudDecoInterfaceScan* CSamusHud::GetScanInterface(int playerIndex) {
 }
 
 void CSamusHud::UpdateEnergyLow(float dt, const CStateManager& mgr) {
-  // TODO: animate the low-energy warning and pulse.
+  const bool cineCam =
+      TCastToConstPtr< CCinematicCamera >(
+          mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true)) != nullptr;
+  const float oldTimer = mEnergyLowTimer;
+  mEnergyLowTimer = fmod(mEnergyLowTimer + dt, 0.5);
+  mEnergyLowPulse =
+      mEnergyLowTimer < 0.25f ? mEnergyLowTimer / 0.25f : (0.5f - mEnergyLowTimer) / 0.25f;
+  if (mEnergyLow) {
+    mEnergyLowFade = rstl::min_val(1.f, mEnergyLowFade + 2.f * dt);
+  } else {
+    mEnergyLowFade = rstl::max_val(0.f, mEnergyLowFade - 2.f * dt);
+  }
+  if (mEnergyWarning != nullptr) {
+    CColor fontColor = gpTweakGuiColors->GetEnergyWarningColor();
+    fontColor.SetAlpha(mEnergyLowPulse * mEnergyLowFade);
+    mEnergyWarning->TextSupport().SetFontColor(fontColor);
+    CColor outlineColor = gpTweakGuiColors->GetEnergyWarningOutlineColor();
+    outlineColor.SetAlpha(mEnergyLowPulse * mEnergyLowFade);
+    mEnergyWarning->TextSupport().SetOutlineColor(outlineColor);
+  }
+  if (!cineCam && mEnergyLow && mEnergyLowTimer < oldTimer) {
+    CSfxManager::SfxStart(0x37, 127, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+                          CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+  }
 }
 
 CSamusHud::~CSamusHud() {
@@ -748,7 +779,25 @@ void CSamusHud::UpdateStaticInterference(float dt, const CStateManager& mgr) {
 void CSamusHud::UpdateStaticSfx(const CStateManager& mgr, CSfxHandle& sound, float& cycle,
                                 ushort soundId, float dt, float previousInterference,
                                 float threshold) {
-  // TODO: start, cycle or stop one interference sound.
+  const bool crossed = (previousInterference > threshold && mStaticInterference <= threshold) ||
+                       (previousInterference <= threshold && mStaticInterference > threshold);
+  if (crossed) {
+    cycle = 0.f;
+  } else if (cycle < 0.1f) {
+    cycle = rstl::min_val(0.1f, cycle + dt);
+    if (cycle == 0.1f) {
+      if (mStaticInterference > threshold) {
+        if (!sound) {
+          sound = CSfxManager::SfxStart(
+              soundId, 127, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+              CSfxManager::kAllAreas, false, true, CSfxManager::kMedPriority);
+        }
+      } else {
+        CSfxManager::SfxStop(sound);
+        sound.Clear();
+      }
+    }
+  }
 }
 
 void CSamusHud::UpdateHudColor() {
@@ -758,15 +807,418 @@ void CSamusHud::UpdateHudColor() {
 }
 
 void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
-  // TODO: update health digits, energy tanks and the energy bar.
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
+  const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
+  const float energy = rstl::max_val(0.f, CMath::CeilingF(state.GetHealthInfo().GetHP()));
+  const int numEnergyTanks = state.GetItemCapacity(CPlayerState::kIT_EnergyTanks);
+  const bool energyLow = player.IsEnergyLow();
+  if (init || energy != mPlayerHealth || numEnergyTanks != mEnergyTankCapacity ||
+      energyLow != mEnergyLow) {
+    float lastTankEnergy = energy;
+    int filledTanks = 0;
+    while (lastTankEnergy > CPlayerState::GetBaseHealthCapacity()) {
+      ++filledTanks;
+      lastTankEnergy -= CPlayerState::GetEnergyTankCapacity();
+    }
+    if (mEnergyBar != nullptr) {
+      mEnergyBar->SetCurrEnergy(lastTankEnergy, CAuiEnergyBarT01::kSM_Normal);
+    }
+    if (energyLow != mEnergyLow || init) {
+      const rstl::wstring warning = energyLow
+                                        ? rstl::wstring_l(mHudStringTable->GetString("EnergyLow"))
+                                        : rstl::wstring_l(L"");
+      if (mEnergyWarning != nullptr) {
+        mEnergyWarning->TextSupport().SetText(warning);
+      }
+      if (energyLow) {
+        CSfxManager::SfxStart(0x37, 127, 64, CSfxManager::kAllAreas, false, false,
+                              CSfxManager::kMedPriority);
+      }
+      mEnergyLow = energyLow;
+    }
+    for (int i = 0; i < mFilledEnergyTanks.size(); ++i) {
+      CGuiWidget* filled = mFilledEnergyTanks[i];
+      CGuiWidget* empty = mEmptyEnergyTanks[i];
+      if (filled != nullptr && empty != nullptr) {
+        if (i < numEnergyTanks) {
+          const bool full = i < filledTanks;
+          filled->SetVisibility(full, kTM_Children);
+          empty->SetVisibility(!full, kTM_Children);
+        } else {
+          filled->SetVisibility(false, kTM_Children);
+          empty->SetVisibility(false, kTM_Children);
+        }
+      }
+    }
+    char digits[16];
+    sprintf(digits, "%02d", int(lastTankEnergy));
+    mEnergyDigits->TextSupport().SetText(CStringExtras::ConvertToUNICODE(rstl::string_l(digits)));
+    float currentTankEnergy = mPlayerHealth;
+    while (currentTankEnergy > CPlayerState::GetBaseHealthCapacity()) {
+      currentTankEnergy -= CPlayerState::GetEnergyTankCapacity();
+    }
+    mPlayerHealth = energy;
+    mEnergyTankCapacity = numEnergyTanks;
+  }
+  if (mEnergyBar != nullptr) {
+    const CColor emptyColor = ModulateColor(gpTweakGuiColors->GetEnergyBarEmptyColor());
+    const CColor filledColor = ModulateColor(gpTweakGuiColors->GetEnergyBarFilledColor());
+    const CColor shadowColor = ModulateColor(gpTweakGuiColors->GetEnergyBarShadowColor());
+    const CColor lowEmptyColor = gpTweakGuiColors->GetEnergyBarLowEmptyColor();
+    const CColor lowFilledColor = filledColor;
+    const CColor lowShadowColor = shadowColor;
+    const CColor finalEmpty = mEnergyLow ? lowEmptyColor : emptyColor;
+    const CColor finalFilled = mEnergyLow ? lowFilledColor : filledColor;
+    const CColor finalShadow = mEnergyLow ? lowShadowColor : shadowColor;
+    CColor damageColor = CColor::Lerp(finalFilled, gpTweakGuiColors->GetEnergyBarDamageColor(),
+                                      mDamageHighlightRemaining / mDamageHighlightDuration);
+    if (mEnergyLow) {
+      damageColor = CColor::Lerp(damageColor, CColor(1.f, 0.f, 0.f, 1.f), mEnergyLowTimer);
+    }
+    mEnergyBar->SetFilledColor(damageColor);
+    mEnergyBar->SetShadowColor(finalShadow);
+    mEnergyBar->SetEmptyColor(finalEmpty);
+    if (mEnergyDigits != nullptr) {
+      mEnergyDigits->SetColor(damageColor);
+    }
+  }
+  if (mBossEnergy.get() != nullptr) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mgr.GetBossId()))) {
+      if (const CHealthInfo* health = actor->GetHealthInfo()) {
+        const float bossEnergy = CMath::CeilingF(health->GetHP());
+        const float maxEnergy = mgr.GetTotalBossEnergy();
+        const rstl::wstring name =
+            rstl::wstring_l(gpStringTable->GetString(mgr.GetBossStringIdx()));
+        mBossEnergy->SetBossParams(true, name, bossEnergy, maxEnergy);
+      } else {
+        mBossEnergy->SetBossParams(false, rstl::wstring_l(L""), 0.f, 0.f);
+      }
+    } else {
+      mBossEnergy->SetBossParams(false, rstl::wstring_l(L""), 0.f, 0.f);
+    }
+  }
 }
 
 void CSamusHud::UpdateMissile(float dt, const CStateManager& mgr, bool init) {
-  // TODO: update missile amount, capacity, enabled state and pickup pulse.
+  if (mMissileDigits == nullptr) {
+    return;
+  }
+  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->GetPlayerGun();
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
+  const int enabled = !gun.GetMissileMode();
+  const int missiles = state.GetItemAmount(CPlayerState::kIT_Missile, true);
+  const int capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
+  if (init || missiles != mMissileAmount || enabled != mMissileEnabled ||
+      capacity != mMissileCapacity || CMath::AbsF(mMissilePickupPulse) >= 0.00001f ||
+      CMath::AbsF(mMissileModeTransition) >= 0.00001f) {
+    if (GetNextState() != kHS_Scan) {
+      if (missiles > mMissileAmount) {
+        mMissilePickupPulse = 0.5f;
+      }
+      mMissilePickupPulse = rstl::max_val(0.f, mMissilePickupPulse - dt);
+      const float pickup = CMath::FastSinR(M_PIF * (mMissilePickupPulse / 0.5f));
+      const CColor flash =
+          CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetMissileGroupChangeFlash(), pickup);
+      mMissileModeTransition = rstl::max_val(0.f, mMissileModeTransition - 3.f * dt);
+      if (mMissileEnabled != enabled) {
+        mMissileModeTransition = 1.f;
+      }
+      const float transition =
+          gun.GetMissileMode() ? mMissileModeTransition : 1.f - mMissileModeTransition;
+      const CColor active =
+          CColor::Add(ModulateColor(gpTweakGuiColors->GetMissileGroupActiveColor()), flash);
+      const CColor inactive =
+          CColor::Add(ModulateColor(gpTweakGuiColors->GetMissileGroupInactiveColor()), flash);
+      const CColor& depletion = gpTweakGuiColors->GetMissileDepletionColor();
+      const CColor iconColor =
+          missiles == 0 ? depletion : CColor::Lerp(active, inactive, transition);
+      const bool visible = mgr.IsMultiplayer() ? missiles != 0 : capacity != 0;
+      if (mMissileIcon != nullptr) {
+        mMissileIcon->SetColor(iconColor);
+        mMissileIcon->SetVisibility(visible, kTM_Children);
+      }
+      const CColor activeText =
+          CColor::Add(ModulateColor(gpTweakGuiColors->GetActiveTextForegroundColor()), flash);
+      const CColor inactiveText =
+          CColor::Add(ModulateColor(gpTweakGuiColors->GetInactiveTextForegroundColor()), flash);
+      const CColor textColor =
+          missiles == 0 ? depletion : CColor::Lerp(activeText, inactiveText, transition);
+      char digits[16];
+      if (mgr.IsMultiplayer()) {
+        sprintf(digits, "%02d", missiles);
+      } else {
+        sprintf(digits, "%02d\n%02d", missiles, capacity);
+      }
+      mMissileDigits->TextSupport().SetText(
+          CStringExtras::ConvertToUNICODE(rstl::string_l(digits)));
+      mMissileDigits->TextSupport().SetFontColor(textColor);
+      mMissileDigits->SetVisibility(visible, kTM_Children);
+      if (mMissileFraction != nullptr) {
+        mMissileFraction->SetColor(textColor);
+        mMissileFraction->SetVisibility(visible, kTM_Children);
+      }
+      if (mMissileGauge != nullptr && capacity != 0) {
+        mMissileGauge->SetTargetFraction(float(missiles) / float(capacity));
+      }
+      mMissileAmount = missiles;
+      mMissileEnabled = enabled;
+      mMissileCapacity = capacity;
+    }
+  }
+  if (missiles != 0 && capacity != 0 &&
+      float(missiles) <= float(capacity) * gpTweakGui->GetMissileWarningThreshold()) {
+    const float transition =
+        gun.GetMissileMode() ? mMissileModeTransition : 1.f - mMissileModeTransition;
+    const float pulse =
+        (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
+        0.5f;
+    if (mMissileIcon != nullptr) {
+      const CColor base =
+          CColor::Lerp(ModulateColor(gpTweakGuiColors->GetMissileGroupActiveColor()),
+                       ModulateColor(gpTweakGuiColors->GetMissileGroupInactiveColor()), transition);
+      const CColor color = CColor::Lerp(base, gpTweakGuiColors->GetMissileWarningColor(), pulse);
+      mMissileIcon->SetColor(color);
+    }
+    if (mMissileDigits != nullptr) {
+      const CColor base = CColor::Lerp(
+          ModulateColor(gpTweakGuiColors->GetActiveTextForegroundColor()),
+          ModulateColor(gpTweakGuiColors->GetInactiveTextForegroundColor()), transition);
+      const CColor color = CColor::Lerp(base, gpTweakGuiColors->GetMissileWarningColor(), pulse);
+      mMissileDigits->TextSupport().SetFontColor(color);
+      if (mMissileFraction != nullptr) {
+        mMissileFraction->SetColor(color);
+      }
+    }
+  }
 }
 
 void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
-  // TODO: update dark/light ammo digits, segmented meters and pickup flashes.
+  if (mDesiredState == kHS_Scan) {
+    return;
+  }
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
+  const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
+  CPlayerState::EBeamId beam;
+  if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+    beam = mBallBeamTransition > 0.3f ? mPreviousBallBeam : state.GetCurrentBeam();
+  } else {
+    beam = player.GetPlayerGun()->GetPrimaryWeaponId();
+  }
+  const float beamFactor = CMath::Clamp(0.f, mBeamMenuTransition, 1.f);
+  const int darkAmmo = state.GetItemAmount(CPlayerState::kIT_DarkAmmo, true);
+  const int lightAmmo = state.GetItemAmount(CPlayerState::kIT_LightAmmo, true);
+  if (init || darkAmmo != mDarkAmmo || beam != mAmmoBeam ||
+      float(darkAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo)) *
+                             gpTweakGui->GetMissileWarningThreshold() ||
+      CMath::AbsF(mDarkAmmoPickupPulse) >= 0.00001f ||
+      (CMath::AbsF(beamFactor) >= 0.00001f && CMath::AbsF(beamFactor - 1.f) >= 0.00001f)) {
+    if (state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) < 1 &&
+        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) < 1) {
+      if (mDarkAmmoIcon != nullptr) {
+        mDarkAmmoIcon->SetIsVisible(false);
+      }
+      for (int i = 0; i < mDarkAmmoSegments.size(); ++i) {
+        mDarkAmmoSegments[i]->SetColor(gpTweakGuiColors->GetDarkAmmoTankEmptyUnselectedColor());
+        mDarkAmmoMeters[i]->SetVisibility(false, kTM_Children);
+        mDarkAmmoSegments[i]->SetVisibility(false, kTM_Children);
+      }
+
+    } else {
+      if (darkAmmo > mDarkAmmo) {
+        mDarkAmmoPickupPulse = 0.5f;
+      }
+      mDarkAmmoPickupPulse = rstl::max_val(0.f, mDarkAmmoPickupPulse - 0.0166f);
+      const float pickup = CMath::FastSinR(M_PIF * (mDarkAmmoPickupPulse / 0.5f));
+      const CColor flash =
+          CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetDarkAmmoChangeFlash(), pickup);
+      const bool selected = beam == CPlayerState::kBI_Dark || beam == CPlayerState::kBI_Annihilator;
+      const float selection = selected ? beamFactor : 0.f;
+      float warning = 0.f;
+      if (darkAmmo != 0 &&
+          float(darkAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo)) *
+                                 gpTweakGui->GetMissileWarningThreshold()) {
+        warning =
+            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
+            0.5f;
+      }
+      const CColor selectedEmpty =
+          CColor::Lerp(gpTweakGuiColors->GetDarkAmmoTankEmptySelectedColor(),
+                       gpTweakGuiColors->GetDarkAmmoEmptyTankWarningColor(), warning);
+      const CColor selectedFull =
+          CColor::Lerp(gpTweakGuiColors->GetDarkAmmoTankFullSelectedColor(),
+                       gpTweakGuiColors->GetDarkAmmoTankWarningColor(), warning);
+      const CColor selectedFill =
+          CColor::Lerp(gpTweakGuiColors->GetDarkAmmoMeterSelectedFillColor(),
+                       gpTweakGuiColors->GetDarkAmmoMeterWarningColor(), warning);
+      const CColor empty = CColor::Lerp(gpTweakGuiColors->GetDarkAmmoTankEmptyUnselectedColor(),
+                                        selectedEmpty, selection);
+      const CColor full = CColor::Lerp(gpTweakGuiColors->GetDarkAmmoTankFullUnselectedColor(),
+                                       selectedFull, selection);
+      const CColor fill =
+          CColor::Add(CColor::Lerp(gpTweakGuiColors->GetDarkAmmoMeterUnselectedFillColor(),
+                                   selectedFill, selection),
+                      flash);
+      const CColor shadow =
+          CColor::Lerp(gpTweakGuiColors->GetDarkAmmoMeterUnselectedShadowColor(),
+                       gpTweakGuiColors->GetDarkAmmoMeterSelectedShadowColor(), selection);
+      const CColor icon = CColor::Lerp(gpTweakGuiColors->GetDarkAmmoIconUnselectedColor(),
+                                       gpTweakGuiColors->GetDarkAmmoIconSelectedColor(), selection);
+      const CColor baseDigits =
+          CColor::Lerp(gpTweakGuiColors->GetDarkAmmoDigitsUnselectedColor(),
+                       gpTweakGuiColors->GetDarkAmmoDigitsSelectedColor(), selection);
+      const CColor digits =
+          CColor::Lerp(baseDigits, gpTweakGuiColors->GetDarkAmmoDigitWarningColor(), warning);
+      if (mDarkAmmoDigits != nullptr) {
+        mDarkAmmoDigits->TextSupport().SetFontColor(
+            darkAmmo == 0 ? gpTweakGuiColors->GetDarkAmmoDepletionColor() : digits);
+      }
+      if (mDarkAmmoSegments.size() != 0) {
+        const int perTank =
+            CPlayerState::GetPowerUpMaxValue(CPlayerState::kIT_DarkAmmo) / mDarkAmmoSegments.size();
+        const int capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
+        const int filledTanks = darkAmmo / perTank;
+        const int activeTanks = filledTanks + 1;
+        const int capacityTanks = (capacity + perTank - 1) / perTank;
+        for (int i = 0; i < mDarkAmmoSegments.size(); ++i) {
+          mDarkAmmoSegments[i]->SetVisibility(capacity != 0, kTM_Children);
+          mDarkAmmoMeters[i]->SetVisibility(capacity != 0, kTM_Children);
+          mDarkAmmoMeters[i]->SetColor(fill);
+          mDarkAmmoMeters[i]->SetShadowColor(shadow);
+          mDarkAmmoSegments[i]->SetColor(i < capacityTanks ? full : empty);
+          mDarkAmmoMeters[i]->SetTargetFraction(i < activeTanks ? 1.f : 0.f);
+        }
+        if (activeTanks > 0 && activeTanks <= mDarkAmmoSegments.size()) {
+          mDarkAmmoMeters[filledTanks]->SetTargetFraction(float(darkAmmo - filledTanks * perTank) /
+                                                          float(perTank));
+        }
+      }
+      if (mDarkAmmoDigits != nullptr) {
+        char buffer[16];
+        sprintf(buffer, "%02d", darkAmmo);
+        mDarkAmmoDigits->TextSupport().SetText(
+            CStringExtras::ConvertToUNICODE(rstl::string_l(buffer)));
+      }
+      mDarkAmmo = darkAmmo;
+      if (mDarkAmmoIcon != nullptr) {
+        mDarkAmmoIcon->SetIsVisible(true);
+        mDarkAmmoIcon->SetColor(darkAmmo < 1 ? empty : full);
+      }
+    }
+  }
+  if (init || lightAmmo != mLightAmmo || beam != mAmmoBeam ||
+      float(lightAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_LightAmmo)) *
+                              gpTweakGui->GetMissileWarningThreshold() ||
+      CMath::AbsF(mLightAmmoPickupPulse) >= 0.00001f ||
+      (CMath::AbsF(beamFactor) >= 0.00001f && CMath::AbsF(beamFactor - 1.f) >= 0.00001f)) {
+    if (state.GetItemAmount(CPlayerState::kIT_LightBeam, true) < 1 &&
+        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) < 1) {
+      if (mLightAmmoIcon != nullptr) {
+        mLightAmmoIcon->SetIsVisible(false);
+      }
+      for (int i = 0; i < mLightAmmoSegments.size(); ++i) {
+        mLightAmmoSegments[i]->SetColor(gpTweakGuiColors->GetLightAmmoTankEmptyUnselectedColor());
+        mLightAmmoMeters[i]->SetVisibility(false, kTM_Children);
+        mLightAmmoSegments[i]->SetVisibility(false, kTM_Children);
+      }
+      if (mLightAmmoDigits != nullptr) {
+        mLightAmmoDigits->TextSupport().SetFontColor(
+            gpTweakGuiColors->GetLightAmmoDepletionColor());
+      }
+    } else {
+      if (lightAmmo > mLightAmmo) {
+        mLightAmmoPickupPulse = 0.5f;
+      }
+      mLightAmmoPickupPulse = rstl::max_val(0.f, mLightAmmoPickupPulse - 0.0166f);
+      const float pickup = CMath::FastSinR(M_PIF * (mLightAmmoPickupPulse / 0.5f));
+      const CColor flash =
+          CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetLightAmmoChangeFlash(), pickup);
+      const bool selected =
+          beam == CPlayerState::kBI_Light || beam == CPlayerState::kBI_Annihilator;
+      const float selection = selected ? beamFactor : 0.f;
+      float warning = 0.f;
+      if (lightAmmo != 0 &&
+          float(lightAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_LightAmmo)) *
+                                  gpTweakGui->GetMissileWarningThreshold()) {
+        warning =
+            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
+            0.5f;
+      }
+      const CColor selectedEmpty =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoTankEmptySelectedColor(),
+                       gpTweakGuiColors->GetLightAmmoEmptyTankWarningColor(), warning);
+      const CColor selectedFull =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoTankFullSelectedColor(),
+                       gpTweakGuiColors->GetLightAmmoTankWarningColor(), warning);
+      const CColor selectedFill =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoMeterSelectedFillColor(),
+                       gpTweakGuiColors->GetLightAmmoMeterWarningColor(), warning);
+      const CColor empty = CColor::Lerp(gpTweakGuiColors->GetLightAmmoTankEmptyUnselectedColor(),
+                                        selectedEmpty, selection);
+      const CColor full = CColor::Lerp(gpTweakGuiColors->GetLightAmmoTankFullUnselectedColor(),
+                                       selectedFull, selection);
+      const CColor fill =
+          CColor::Add(CColor::Lerp(gpTweakGuiColors->GetLightAmmoMeterUnselectedFillColor(),
+                                   selectedFill, selection),
+                      flash);
+      const CColor shadow =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoMeterUnselectedShadowColor(),
+                       gpTweakGuiColors->GetLightAmmoMeterSelectedShadowColor(), selection);
+      const CColor icon =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoIconUnselectedColor(),
+                       gpTweakGuiColors->GetLightAmmoIconSelectedColor(), selection);
+      const CColor baseDigits =
+          CColor::Lerp(gpTweakGuiColors->GetLightAmmoDigitsUnselectedColor(),
+                       gpTweakGuiColors->GetLightAmmoDigitsSelectedColor(), selection);
+      const CColor digits =
+          CColor::Lerp(baseDigits, gpTweakGuiColors->GetLightAmmoDigitWarningColor(), warning);
+      if (mLightAmmoDigits != nullptr) {
+        mLightAmmoDigits->TextSupport().SetFontColor(
+            lightAmmo == 0 ? gpTweakGuiColors->GetLightAmmoDepletionColor() : digits);
+      }
+      if (mLightAmmoMeters.size() != 0) {
+        const int perTank = CPlayerState::GetPowerUpMaxValue(CPlayerState::kIT_LightAmmo) /
+                            mLightAmmoSegments.size();
+        const int capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
+        const int filledTanks = lightAmmo / perTank;
+        const int activeTanks = filledTanks + 1;
+        const int capacityTanks = (capacity + perTank - 1) / perTank;
+        for (int i = 0; i < mLightAmmoSegments.size(); ++i) {
+          mLightAmmoSegments[i]->SetVisibility(capacity != 0, kTM_Children);
+          mLightAmmoMeters[i]->SetVisibility(capacity != 0, kTM_Children);
+          mLightAmmoMeters[i]->SetColor(fill);
+          mLightAmmoMeters[i]->SetShadowColor(shadow);
+          mLightAmmoSegments[i]->SetColor(i < capacityTanks ? full : empty);
+          mLightAmmoMeters[i]->SetTargetFraction(i < activeTanks ? 1.f : 0.f);
+        }
+        if (activeTanks > 0 && activeTanks <= mLightAmmoSegments.size()) {
+          mLightAmmoMeters[filledTanks]->SetTargetFraction(
+              float(lightAmmo - filledTanks * perTank) / float(perTank));
+        }
+      }
+      char buffer[16];
+      sprintf(buffer, "%02d", lightAmmo);
+      mLightAmmoDigits->TextSupport().SetText(
+          CStringExtras::ConvertToUNICODE(rstl::string_l(buffer)));
+      mLightAmmo = lightAmmo;
+      if (mLightAmmoIcon != nullptr) {
+        mLightAmmoIcon->SetIsVisible(true);
+        mLightAmmoIcon->SetColor(lightAmmo < 1 ? empty : full);
+      }
+    }
+  }
+  if (mNextState != kHS_Scan) {
+    if (mLightAmmoDigits != nullptr) {
+      const bool available = state.GetItemAmount(CPlayerState::kIT_LightBeam, true) > 0 ||
+                             state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0;
+      mLightAmmoDigits->SetIsVisible(available);
+    }
+    if (mDarkAmmoDigits != nullptr) {
+      const bool available = state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) > 0 ||
+                             state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0;
+      mDarkAmmoDigits->SetIsVisible(available);
+    }
+  }
+  mAmmoBeam = beam;
 }
 
 void CSamusHud::UpdateBallMode(const CStateManager& mgr) {
@@ -835,7 +1287,13 @@ void CSamusHud::fn_8006653c(const CStateManager&, bool) {}
 
 bool CSamusHud::IsCachedLightInAreaLights(const SCachedHudLight& light,
                                           const CActorLights& lights) const {
-  // TODO: compare position and color using CActorLights' recovered area-light interface.
+  const uint count = lights.GetActiveAreaLightCount();
+  for (uint i = 0; i < count; ++i) {
+    const CLight& areaLight = lights.GetLight(i);
+    if (areaLight.GetColor() == light.mColor && areaLight.GetPosition() == light.mPosition) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -864,8 +1322,30 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
 }
 
 CColor CSamusHud::GetVisorHudLightColor(const CColor& color, const CStateManager& mgr) const {
-  // TODO: apply the visor-dependent light tint.
-  return color;
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
+  const CPlayerState::EPlayerVisor visor = state.GetCurrentVisor();
+  const float t = state.GetVisorTransitionFactor();
+  CColor result = color;
+  switch (visor) {
+  case CPlayerState::kPV_Scan: {
+    const CColor& white = CColor::White();
+    const CColor multiplier =
+        CColor::Lerp(white, gpTweakGuiColors->GetScanVisorHUDLightMultiply(), t);
+    result = CColor::Modulate(result, multiplier);
+    break;
+  }
+  case CPlayerState::kPV_Dark: {
+    const CColor multiplier = gpTweakGuiColors->GetDarkVisorHelmetLightModulateColor();
+    result = CColor::Modulate(result, multiplier);
+    break;
+  }
+  case CPlayerState::kPV_Echo:
+    result = CColor(uint(0));
+    break;
+  default:
+    break;
+  }
+  return result;
 }
 
 void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr) {
@@ -934,11 +1414,13 @@ void CSamusHud::DrawPlayerFilter(const CStateManager& mgr) const {
 }
 
 void CSamusHud::EnterFirstPerson(const CStateManager& mgr) {
-  // TODO: restore both static-interference sound volumes.
+  CSfxManager::SfxVolume(mStaticSoundLow, 127);
+  CSfxManager::SfxVolume(mStaticSoundHigh, 127);
 }
 
 void CSamusHud::LeaveFirstPerson(const CStateManager& mgr) {
-  // TODO: mute both static-interference sounds through CSfxManager.
+  CSfxManager::SfxVolume(mStaticSoundLow, 0);
+  CSfxManager::SfxVolume(mStaticSoundHigh, 0);
 }
 
 void CSamusHud::Draw(const CStateManager& mgr, float alpha, uint helmetVisibility, bool hudVisible,
@@ -947,11 +1429,23 @@ void CSamusHud::Draw(const CStateManager& mgr, float alpha, uint helmetVisibilit
 }
 
 void CSamusHud::DrawHelmet(const CStateManager& mgr, float cameraYOffset) const {
-  // TODO: draw helmet geometry with its camera offset.
+  if (mLoadedHelmetFrame == nullptr || mgr.GetPlayer(mPlayerIndex)->IsInTurret()) {
+    return;
+  }
+  const bool unmorphed =
+      mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed;
+  if (mLoadedHelmetFrame != nullptr && unmorphed && mNextState != kHS_Ball) {
+    const float alpha = mPreviousState == kHS_Ball ? mTransitionFactor : 1.f;
+    const CGuiWidgetDrawParms parms(alpha * gpGameState->GameOptions().GetHelmetAlpha(),
+                                    CVector3f(0.f, 15.f * cameraYOffset, 0.f));
+    mLoadedHelmetFrame->Draw(parms);
+  }
 }
 
 void CSamusHud::DrawHudMemo() const {
-  // TODO: draw the loaded memo frame.
+  if (mLoadedMemoFrame != nullptr) {
+    mLoadedMemoFrame->Draw(CGuiWidgetDrawParms::Default());
+  }
 }
 
 void CSamusHud::ProcessControllerInput(const CFinalInput& input) {
@@ -1012,7 +1506,51 @@ void CSamusHud::ApplyClassicLag(const CUnitVector3f& lookDirection, CQuaternion&
 }
 
 void CSamusHud::SetMessage(const rstl::wstring& text, const CHUDMemoParms& info) {
-  // TODO: apply memo visibility, typewriter settings and fade transitions.
+  if (mMessagePane == nullptr) {
+    return;
+  }
+  mMessageText = text;
+  const bool visible = mMessageRoot->GetIsVisible();
+  if (!visible || info.IsHintMemo()) {
+    if (info.IsFadeOutOnly()) {
+      mMessageTime = 1.f;
+      if (info.IsHintMemo() && visible) {
+        CSfxManager::SfxStart(0x12ac, 127, 64, CSfxManager::kAllAreas, false, false,
+                              CSfxManager::kMedPriority);
+      }
+      return;
+    }
+    mMessageRoot->SetColor(CColor::White());
+    mMessageRoot->SetVisibility(false, kTM_Children);
+    CGuiWidget* pane = info.IsHintMemo() ? mMessageRoot : mMessagePane;
+    if (!info.IsClearMemoWindow() || info.GetDisplayTime() != 0.f || mMessageTime != 0.f ||
+        text.size() != 0) {
+      pane->SetVisibility(true, kTM_Children);
+    }
+    mMessagePane->TextSupport().SetTypeWriteEffectOptions(info.GetFadeInText(), 0.1f, 40.f);
+    if (info.IsClearMemoWindow()) {
+      mLastMessageSoundChars = 0.f;
+      mMessagePane->TextSupport().SetCurTime(0.f);
+      mMessagePane->TextSupport().SetText(text);
+    } else if (mMessagePane->TextSupport().GetText().size() == 0) {
+      mLastMessageSoundChars = 0.f;
+      mMessagePane->TextSupport().AddText(text);
+    } else {
+      mMessagePane->TextSupport().AddText(rstl::wstring_l(L"\n") + text);
+    }
+    mMessagePane->SetColor(CColor::White());
+    mMessageRoot->SetColor(CColor::White());
+    mMessageTime = info.GetDisplayTime();
+    if (info.IsHintMemo()) {
+      if (!visible) {
+        mAButtonPulse = 0.f;
+        CSfxManager::SfxStart(0x1286, 127, 64, CSfxManager::kAllAreas, false, false,
+                              CSfxManager::kMedPriority);
+      }
+    } else {
+      mMessageRoot->SetO2PTransform(mMessageRoot->GetIdleXform());
+    }
+  }
 }
 
 void CSamusHud::StopSounds(const CStateManager&) {
@@ -1033,5 +1571,7 @@ void CSamusHud::UpdateBossLockOnWarning(float dt, const CStateManager& mgr) {
 }
 
 void CSamusHud::DrawBossLockOnWarning() const {
-  // TODO: draw the loaded boss-lock warning frame.
+  if (mBossLockOnFrame.get() != nullptr) {
+    mBossLockOnFrame->Draw(CGuiWidgetDrawParms::Default());
+  }
 }

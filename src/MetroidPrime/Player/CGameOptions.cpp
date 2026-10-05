@@ -59,7 +59,7 @@ CGameOptions::CGameOptions()
 , rumble(true)
 , swapBeamsControls(false)
 , hintSystem(true)
-, unk(false)
+, hudEnglish(false)
 , mPlayerOptions(CPlayerOptions())
 
 {
@@ -82,7 +82,7 @@ CGameOptions::CGameOptions(CBitStreamReader& in)
 , rumble(true)
 , swapBeamsControls(false)
 , hintSystem(true)
-, unk(false)
+, hudEnglish(false)
 , mControlTXTRMap() {
   in.ReadBits(32);
   soundMode = (CAudioSys::ESurroundModes)in.ReadBits(CGameOptions_CalculateBits(2));
@@ -101,7 +101,7 @@ CGameOptions::CGameOptions(CBitStreamReader& in)
   invertY = in.ReadBits(1);
   rumble = in.ReadBits(1);
   swapBeamsControls = in.ReadBits(1);
-  unk = in.ReadBits(1);
+  hudEnglish = in.ReadBits(1);
 
   for (int i = 0; i < 4; ++i) {
     mPlayerOptions.push_back(CPlayerOptions(in));
@@ -126,7 +126,7 @@ void CGameOptions::PutTo(CBitStreamWriter& out) {
   out.WriteBits(invertY != 0, 1);
   out.WriteBits(rumble != 0, 1);
   out.WriteBits(swapBeamsControls != 0, 1);
-  out.WriteBits(unk != 0, 1);
+  out.WriteBits(hudEnglish != 0, 1);
 
   int i = 0;
   CPlayerOptions* data = mPlayerOptions.data();
@@ -151,7 +151,7 @@ void CGameOptions::ResetToDefaults() {
   rumble = true;
   swapBeamsControls = false;
   hintSystem = true;
-  unk = false;
+  hudEnglish = false;
   InitSoundMode();
   EnsureOptions();
 }
@@ -187,7 +187,7 @@ void CGameOptions::ResetVisorToDefaults() {
   helmetAlpha = 0xff;
   hudLag = true;
   hintSystem = true;
-  unk = false;
+  hudEnglish = false;
   InitSoundMode();
   EnsureOptions();
 }
@@ -207,7 +207,7 @@ void CGameOptions::EnsureOptions() {
   SetIsRumbleEnabled(rumble);
   SetIsHintSystemEnabled(hintSystem);
   ToggleControls(swapBeamsControls);
-  SetFlag3(unk);
+  SetIsHudEnglish(hudEnglish);
 }
 
 void CGameOptions::SetScreenBrightness(int value, bool apply) {
@@ -291,7 +291,7 @@ void CGameOptions::SetHUDLag(bool active) { hudLag = active; }
 
 void CGameOptions::SetIsHintSystemEnabled(bool active) { hintSystem = active; }
 
-void CGameOptions::SetFlag3(bool active) { unk = active; }
+void CGameOptions::SetIsHudEnglish(bool active) { hudEnglish = active; }
 
 void CGameOptions::SetInvertYAxis(bool active) { invertY = active; }
 

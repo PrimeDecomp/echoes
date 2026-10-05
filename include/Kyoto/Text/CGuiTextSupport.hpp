@@ -53,6 +53,7 @@ public:
   void SetCurTime(float time) { mCurrentTime = time; }
   float GetNumCharactersPrinted() const;
   float GetCurrentAnimationOverAge() const;
+  const rstl::wstring& GetText() const { return mText; }
   int GetTotalPageCount();
   void SetPage(int page);
   CTextRenderBuffer* GetCurrentPageRenderBuffer() const;

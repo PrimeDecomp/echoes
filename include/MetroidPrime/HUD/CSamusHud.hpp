@@ -126,6 +126,7 @@ private:
   int FindEmptyHudLightSlot(const CLight& light) const;
   bool IsAreaLightInCachedLights(const CLight& light) const;
   bool IsCachedLightInAreaLights(const SCachedHudLight& light, const CActorLights& lights) const;
+  // Native empty setup hook; no evidence distinguishes its original role or name.
   void fn_8006653c(const CStateManager& mgr, bool init);
   void UpdateThreatAssessment(float dt, const CStateManager& mgr);
   void ResolveLockOnTexture();
@@ -240,7 +241,7 @@ private:
   float mEnergyLowPulse;
   float mEnergyLowFade;
   float mAButtonPulse;
-  float x670;
+  float x670; // Only native use is constructor initialization to 9999.f.
   float mThreatAmount;
   rstl::optional_object< TCachedToken< CTexture > > mLockedOnIndicator;
   CPlayerState::EBeamId mCurrentBeam;
@@ -273,7 +274,7 @@ private:
   rstl::reserved_vector< CAuiBitmapMeter*, 5 > mDarkAmmoMeters;
   rstl::reserved_vector< CGuiWidget*, 5 > mLightAmmoSegments;
   rstl::reserved_vector< CAuiBitmapMeter*, 5 > mLightAmmoMeters;
-  float x7ec;
+  float x7ec; // Only native use is constructor initialization to 0.f.
   CGuiWidget* mDecorationRoot;
   CGuiWidget* mThreatIcon;
   CGuiWidget* mThreatBar;
