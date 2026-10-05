@@ -174,12 +174,12 @@ short CSfxManager::CSfxEmitterWrapper::GetAudible(const CVector3f& position) {
   const float distanceSquared = (mEmitterData.mPos - position).MagSquared();
   const float maxDistanceSquared = mEmitterData.mMaxDist * mEmitterData.mMaxDist;
   if (distanceSquared < maxDistanceSquared * 0.25f) {
-    return kSA_Aud3;
+    return kSA_High;
   }
   if (distanceSquared < maxDistanceSquared * 0.5f) {
-    return kSA_Aud2;
+    return kSA_Medium;
   }
-  return distanceSquared < maxDistanceSquared ? kSA_Aud1 : kSA_Aud0;
+  return distanceSquared < maxDistanceSquared ? kSA_Low : kSA_Inaudible;
 }
 
 SND_VOICEID CSfxManager::CSfxEmitterWrapper::GetVoice() const {
@@ -243,7 +243,7 @@ bool CSfxManager::CSfxWrapper::IsPlaying() const {
 
 bool CSfxManager::CSfxWrapper::Ready() { return IsLooped() || mReady; }
 
-short CSfxManager::CSfxWrapper::GetAudible(const CVector3f&) { return kSA_Aud3; }
+short CSfxManager::CSfxWrapper::GetAudible(const CVector3f&) { return kSA_High; }
 
 SND_VOICEID CSfxManager::CSfxWrapper::GetVoice() const { return mVoiceHandle; }
 
@@ -839,7 +839,7 @@ int CSfxManager::GetRank(CBaseSfxWrapper* sound) {
   for (int i = 0; i < 4; ++i) {
     if (channel.mListeners[i].mActive) {
       const short audible = sound->GetAudible(channel.mListeners[i].mListener.mPosition);
-      if (audible == kSA_Aud0) {
+      if (audible == kSA_Inaudible) {
         rank = 0;
       } else {
         rank += audible * 2;

@@ -25,7 +25,7 @@ struct SPhaserAuxParameters;
 class CSfxManager {
 public:
   enum ESfxChannels { kSC_Invalid = -1, kSC_Default = 0, kSC_Game, kSC_PauseScreen };
-  enum ESfxAudibility { kSA_Aud0, kSA_Aud1, kSA_Aud2, kSA_Aud3 };
+  enum ESfxAudibility { kSA_Inaudible, kSA_Low, kSA_Medium, kSA_High };
 
   class CBaseSfxWrapper {
   public:
