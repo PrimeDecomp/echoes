@@ -175,9 +175,11 @@ void CModelData::RenderSolid(EWhichModel which, const CTransform4f& xf, bool uns
   if (HasAnimation()) {
     const CSkinnedModel& model = PickAnimatedModel(which);
     mAnimData->SetupRender();
-    gpRender->DrawModelFlat(SModelRenderData(model, mAnimData->Pose()), flags, unsortedOnly);
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelFlat(renderData, flags, unsortedOnly);
   } else {
-    gpRender->DrawModelFlat(SModelRenderData(**PickStaticModel(which)), flags, unsortedOnly);
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelFlat(renderData, flags, unsortedOnly);
   }
 }
 
