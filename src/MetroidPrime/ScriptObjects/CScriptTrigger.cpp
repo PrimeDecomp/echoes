@@ -9,15 +9,15 @@
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
+#include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Player/CMorphBall.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
-#include "MetroidPrime/Cameras/CGameCamera.hpp"
-#include "MetroidPrime/Enemies/CPatterned.hpp"
-#include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
-#include "MetroidPrime/Player/CPlayer.hpp"
-#include "MetroidPrime/Player/CMorphBall.hpp"
-#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 #include "rstl/algorithm.hpp"
@@ -132,8 +132,7 @@ void CScriptTrigger::Touch(CActor& actor, CStateManager& mgr) {
   if (mAttachedTrigger == kInvalidUniqueId) {
     const int trackedPlayer = player && (testFlags & 0x10000006) != 0 ? playerIndex : -1;
     AddInhabitant(mgr, trackedPlayer, actor.GetUniqueId(), GetUniqueId());
-  } else if (CScriptTrigger* target =
-                 TCastToPtr< CScriptTrigger >(mgr.ObjectById(connectedId))) {
+  } else if (CScriptTrigger* target = TCastToPtr< CScriptTrigger >(mgr.ObjectById(connectedId))) {
     if (target->GetActive()) {
       const int trackedPlayer = player && (testFlags & 0x10000006) != 0 ? playerIndex : -1;
       target->AddInhabitant(mgr, trackedPlayer, actor.GetUniqueId(), GetUniqueId());
@@ -152,8 +151,8 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
     return;
   }
 
-  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
-       it != mInhabitants.end(); ++it) {
+  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+       ++it) {
     if (it->GetObjectId() == id) {
       const rstl::list< TUniqueId >& triggers = it->GetTriggers();
       for (rstl::list< TUniqueId >::const_iterator trigger = triggers.begin();
@@ -180,18 +179,17 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
     mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
                                     kSS_InvalidState));
     if (actor->HealthInfo() && mDamageInfo.GetDamage() > 0.f) {
-      const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59), CMaterialList());
-      mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), mDamageInfo, filter,
-                      CVector3f::Zero());
+      const CMaterialFilter filter =
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
+      mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), mDamageInfo, filter, CVector3f::Zero());
     }
   }
   if (mFlags & kTFL_KillOnEnter) {
     if (CHealthInfo* health = actor->HealthInfo()) {
       static CWeaponMode killWeaponMode(kWT_Power, false, false, true);
       const CDamageInfo damage(killWeaponMode, 10.f * health->GetHP(), 0.f, 0.f);
-      const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59), CMaterialList());
+      const CMaterialFilter filter =
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
       mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), damage, filter, CVector3f::Zero());
     }
   }
@@ -237,8 +235,8 @@ bool CScriptTrigger::BoundsOverlap(const CAABox& bounds) const {
 }
 
 void CScriptTrigger::ClearInhabitants(CStateManager& mgr) {
-  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
-       it != mInhabitants.end(); ++it) {
+  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+       ++it) {
     int playerIndex = -1;
     for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       if (mgr.GetPlayer(i)->GetUniqueId() == it->GetObjectId()) {
@@ -246,7 +244,7 @@ void CScriptTrigger::ClearInhabitants(CStateManager& mgr) {
         break;
       }
     }
-    if (CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(it->GetObjectId()))) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(it->GetObjectId()))) {
       if (playerIndex != -1) {
         SetPlayerInside(mgr, false, playerIndex);
       }
@@ -368,12 +366,11 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
          triggerId != contributingTriggers.end();) {
       rstl::list< TUniqueId >::iterator nextTrigger = triggerId;
       ++nextTrigger;
-      CScriptTrigger* trigger =
-          TCastToPtr< CScriptTrigger >(mgr.ObjectById(*triggerId));
+      CScriptTrigger* trigger = TCastToPtr< CScriptTrigger >(mgr.ObjectById(*triggerId));
       bool valid = trigger != nullptr;
+      const uint flags = trigger ? trigger->mFlags : 0;
       if (valid && playerIndex != -1) {
         const CPlayer* player = mgr.GetPlayer(playerIndex);
-        const uint flags = trigger->mFlags;
         if ((flags & (kTFL_DetectMorphedPlayer | kTFL_DetectUnmorphedPlayer)) !=
             (kTFL_DetectMorphedPlayer | kTFL_DetectUnmorphedPlayer)) {
           const bool screwAttack = player->GetMorphBall()->InScrewAttackMode();
@@ -411,20 +408,20 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
           if (!damage) {
             damage = CDamageInfo(trigger->mDamageInfo, dt);
           }
-          const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Unknown59), CMaterialList());
-          mgr.ApplyDamage(GetUniqueId(), id, trigger->GetUniqueId(), *damage, filter,
+          const CMaterialFilter filter =
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
+          mgr.ApplyDamage(trigger->GetUniqueId(), id, GetUniqueId(), *damage, filter,
                           CVector3f::Zero());
         }
         if (trigger->mForceMagnitude > 0.f) {
           if (CPhysicsActor* physics = TCastToPtr< CPhysicsActor >(actor)) {
             float forceScale = 1.f;
-            if (trigger->mFlags & kTFL_UseBooleanIntersection) {
-              forceScale = actorBounds->GetBooleanIntersection(*triggerBounds).GetVolume() /
+            if (flags & kTFL_UseBooleanIntersection) {
+              forceScale = triggerBounds->GetBooleanIntersection(*actorBounds).GetVolume() /
                            actorBounds->GetVolume();
             }
             const CVector3f force = forceScale * mForceField;
-            if (trigger->mFlags & kTFL_UseCollisionImpulses) {
+            if (flags & kTFL_UseCollisionImpulses) {
               physics->ApplyImpulseWR((60.f * dt) * force, CAxisAngle::Identity());
               physics->UseCollisionImpulses();
             } else {
@@ -489,7 +486,8 @@ bool CScriptTrigger::IsAI(CStateManager& mgr, CActor& actor) const {
     return true;
   }
   if (CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(&actor)) {
-    return TCastToPtr< CPatterned >(mgr.ObjectById(collisionActor->GetOwnerId())) != nullptr;
+    return TCastToConstPtr< CPatterned >(mgr.GetObjectById(collisionActor->GetOwnerId())) !=
+           nullptr;
   }
   return false;
 }
@@ -503,16 +501,16 @@ bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateM
 
   const bool alreadyInside = HasInhabitant(newId);
   if (!alreadyInside) {
-    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
-         it != mInhabitants.end(); ++it) {
+    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+         ++it) {
       if (it->GetObjectId() == oldId) {
         it->SetObjectId(newId);
         return true;
       }
     }
   } else {
-    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
-         it != mInhabitants.end(); ++it) {
+    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+         ++it) {
       if (it->GetObjectId() == oldId) {
         mInhabitants.erase(it);
         break;
@@ -523,7 +521,7 @@ bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateM
 }
 
 bool CScriptTrigger::RemoveInhabitantIfOutside(TUniqueId id, CStateManager& mgr) {
-  if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
+  if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(id))) {
     for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
          ++it) {
       if (it->GetObjectId() == id) {
@@ -541,7 +539,7 @@ bool CScriptTrigger::RemoveInhabitantIfOutside(TUniqueId id, CStateManager& mgr)
 }
 
 bool CScriptTrigger::RemoveInhabitant(TUniqueId id, CStateManager& mgr) {
-  if (TCastToPtr< CActor >(mgr.ObjectById(id)) != nullptr) {
+  if (TCastToConstPtr< CActor >(mgr.GetObjectById(id)) != nullptr) {
     for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
          ++it) {
       if (it->GetObjectId() == id) {
@@ -561,11 +559,10 @@ CEntity* LoadTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
   const CAABox bounds(-halfExtent, halfExtent);
   const CVector3f forceField =
       mgr.GetWorld()->GetAreaAlways(info.GetAreaId()).GetTM().Rotate(sldrThis.trigger.forceField);
-  return rs_new CScriptTrigger(
-      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.editorProperties.transform.position, bounds,
-      LdrToDamageInfo(sldrThis.trigger.damage),
-      forceField, sldrThis.trigger.flagsTrigger,
-      sldrThis.deactivateOnEnter, sldrThis.deactivateOnExit);
+  return rs_new CScriptTrigger(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                               LdrToEntityInfo(info, sldrThis.editorProperties),
+                               sldrThis.editorProperties.transform.position, bounds,
+                               LdrToDamageInfo(sldrThis.trigger.damage), forceField,
+                               sldrThis.trigger.flagsTrigger, sldrThis.deactivateOnEnter,
+                               sldrThis.deactivateOnExit);
 }
