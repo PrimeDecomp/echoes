@@ -203,6 +203,8 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     "SLdrTriggerEllipsoid": ((0x255A4580, 0x5D298A43),),
     "SLdrPlayerHint": ((0x255A4580, 0x5D298A43),),
     "SLdrSound": ((0x255A4580, 0x5D298A43),),
+    # LoadCameraShaker, G2ME01 0x800D5128: re-store update flags to 3.
+    "SLdrCameraShaker": ((0x255A4580, 0x5D298A43),),
     # SLdrPlatform, G2ME01 0x8009FE84: editor, ambient color and visor re-stores.
     "SLdrPlatform": (
         (0x255A4580, 0x5D298A43),
