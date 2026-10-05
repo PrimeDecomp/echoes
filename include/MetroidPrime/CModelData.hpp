@@ -142,8 +142,7 @@ public:
 
 private:
   // Guessed name. Echoes supplies a skinning workspace instead of Prime's raw arrays.
-  static void MultipassDrawCallback(const SSkinningWorkspace& workspace,
-                                    const SModelDataMultipassContext& context);
+  static void MultipassDrawCallback(const SSkinningWorkspace& workspace, void* context);
   CVector3f mScale;
   rstl::auto_ptr< CAnimData > mAnimData;
   mutable bool mRenderSorted : 1;

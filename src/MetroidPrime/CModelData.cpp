@@ -149,8 +149,9 @@ void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
   mRenderSorted = true;
 }
 
-void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace,
-                                       const SModelDataMultipassContext& context) {
+void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace, void* data) {
+  const SModelDataMultipassContext& context =
+      *static_cast< const SModelDataMultipassContext* >(data);
   for (int i = 0; i < context.mCount; ++i) {
     gpRender->SetGXRegister1Color(context.mColors[i]);
     PortalPlane::SetCurrentPlane(context.mPlanes[i]);
@@ -239,9 +240,7 @@ void CModelData::RenderModelMultipleTimesWithFlags(EWhichModel which, const CTra
     const CSkinnedModel& model = PickAnimatedModel(which);
     mAnimData->SetupRender();
     SModelDataMultipassContext context = {model, flags, masks, colors, planes, count};
-    model.Draw(&mAnimData->Pose(),
-               reinterpret_cast< CSkinnedModel::TDrawFunc >(&MultipassDrawCallback),
-               &context);
+    model.Draw(&mAnimData->Pose(), &MultipassDrawCallback, &context);
   } else {
     const CModel& model = **PickStaticModel(which);
     for (int i = 0; i < count; ++i) {
@@ -591,6 +590,7 @@ void CModelData::SetupWorldSpacePortalPlane(const CTransform4f& xf, const CPlane
   const CTransform4f model = xf * CTransform4f::Scale(mScale);
   Mtx modelView;
   PSMTXConcat(CGraphics::GetCameraMtx(), model.GetCStyleMatrix(), modelView);
+  // SDK Mtx and CTransform4f both store the same 3x4 float matrix.
   PortalPlane::SetWorldSpacePlane(plane, *reinterpret_cast< const CTransform4f* >(modelView),
                                   model);
 }
