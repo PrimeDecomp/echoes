@@ -840,19 +840,55 @@ void CBallCamera::BuildSpline(CStateManager& mgr) {
   knot1.SetZ(GetTranslation().GetZ());
   mCamSpline.AddKnotAndControlPoint(knot1);
 
-  const CVector3f knot2 =
-      knot1 + (0.5f + downFactor) * (mSplineIntermediatePos - GetTranslation());
+  const CVector3f delta = (0.5f + downFactor) * (mSplineIntermediatePos - GetTranslation());
+  CVector3f knot2 = knot1 + delta;
+  const float firstLength = delta.Magnitude();
+  if (delta.CanBeNormalized()) {
+    mgr.BuildNearList(nearList, knot1, delta.AsNormalized(), firstLength,
+                      skLineOfSightFilter, nullptr);
+    const CRayCastResult hit = mgr.RayWorldIntersection(
+        intersectId, knot1, delta.AsNormalized(), firstLength, skLineOfSightFilter, nearList);
+    if (hit.IsValid()) {
+      knot2 = hit.GetPoint();
+      const CActor* hitActor = TCastToConstPtr<CActor>(mgr.GetObjectByIdFromListAll(intersectId));
+      if ((intersectId == kInvalidUniqueId && hit.GetMaterial().HasMaterial(kMT_Floor)) ||
+          (hitActor != nullptr && hitActor->GetMaterialList().HasMaterial(kMT_Floor))) {
+        knot2.SetZ(knot2.GetZ() + elevation);
+      }
+    }
+  }
   mCamSpline.AddKnotAndControlPoint(knot2);
 
-  CVector3f toBall = ballPos - knot2;
+  CVector3f knot3(knot2.GetX() - downFactor * delta.GetX(),
+                  knot2.GetY() - downFactor * delta.GetY(),
+                  knot2.GetZ() + (0.25f + downFactor) * delta.GetZ());
+  const CVector3f secondDelta = knot3 - knot2;
+  const float secondLength = secondDelta.Magnitude();
+  if (secondDelta.CanBeNormalized()) {
+    nearList.clear();
+    mgr.BuildNearList(nearList, knot2, secondDelta.AsNormalized(), secondLength,
+                      skLineOfSightFilter, nullptr);
+    const CRayCastResult hit = mgr.RayWorldIntersection(
+        intersectId, knot2, secondDelta.AsNormalized(), secondLength, skLineOfSightFilter, nearList);
+    if (hit.IsValid()) {
+      knot3 = hit.GetPoint();
+      const CActor* hitActor = TCastToConstPtr<CActor>(mgr.GetObjectByIdFromListAll(intersectId));
+      if ((intersectId == kInvalidUniqueId && hit.GetMaterial().HasMaterial(kMT_Floor)) ||
+          (hitActor != nullptr && hitActor->GetMaterialList().HasMaterial(kMT_Floor))) {
+        knot3.SetZ(knot3.GetZ() + elevation);
+      }
+    }
+  }
+  mCamSpline.AddKnotAndControlPoint(knot3);
+
+  CVector3f toBall = ballPos - knot3;
   toBall.SetZ(0.f);
   if (toBall.IsMagnitudeSafe()) {
     toBall.Normalize();
   } else {
     toBall = player.GetMovementDirection();
   }
-  const CVector3f desiredPos = FindDesiredPosition(distance, elevation, toBall, mgr, false);
-  mCamSpline.AddKnotAndControlPoint(desiredPos);
+  FindDesiredPosition(distance, elevation, toBall, mgr, false);
   mCamSpline.CalculateLength();
 
   CMaterialList hitMaterial;
@@ -1031,7 +1067,354 @@ bool CBallCamera::fn_801a36f0(float distance, float dt, CVector3f& position, CSt
 }
 
 void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
-  // TODO: combine collider avoidance, door/volume constraints, splines and camera hints.
+  if (Player(mgr).GetBombJumpCounter() == 1) {
+    const CScriptDoor* door = TCastToConstPtr<CScriptDoor>(mgr.GetObjectById(mTooCloseActorId));
+    if (door != nullptr && !door->IsOpen()) {
+      return;
+    }
+  }
+
+  CVector3f ballPos = Player(mgr).GetBallPosition();
+  if (GetWatchedObject() != Player(mgr).GetUniqueId()) {
+    if (const CActor* watched = TCastToConstPtr<CActor>(mgr.GetObjectById(GetWatchedObject()))) {
+      ballPos = watched->GetOrbitPosition(mgr);
+    }
+  }
+  const CPlayer* player = &Player(mgr);
+  if (player->GetBombJumpCounter() == 2) {
+    CVector3f lookDir(mLookPos.GetX() - GetTransform().Get03(),
+                      mLookPos.GetY() - GetTransform().Get13(),
+                      mLookPos.GetZ() - GetTransform().Get23());
+    if (mLookAtBall) {
+      lookDir = CVector3f(ballPos.GetX() - GetTransform().Get03(),
+                          ballPos.GetY() - GetTransform().Get13(),
+                          ballPos.GetZ() - GetTransform().Get23());
+    }
+
+    if (lookDir.CanBeNormalized()) {
+      lookDir.Normalize();
+      UpdateTransform(lookDir, GetTranslation(), dt, mgr);
+    }
+    return;
+  }
+
+  if (player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed &&
+      !mAvoidGeometryFull) {
+    return;
+  }
+
+  const CTransform4f oldXf = GetTransform();
+  const CVector3f oldPos = GetTranslation();
+  x3b0_ = mSmallColliders.CountObscuredColliders();
+  x3b4_ = mMediumColliders.CountObscuredColliders();
+  x3b8_ = mLargeColliders.CountObscuredColliders();
+
+  CVector3f ballToCamFlat(GetTransform().Get03() - ballPos.GetX(),
+                          GetTransform().Get13() - ballPos.GetY(),
+                          GetTransform().Get23() - ballPos.GetZ());
+  CVector3f posAtBallLevel(0.f, 0.f, ballToCamFlat.GetZ());
+  ballToCamFlat[kDZ] = 0.f;
+  float ballToCamFlatMag = 0.f;
+  if (ballToCamFlat.CanBeNormalized()) {
+    ballToCamFlatMag = ballToCamFlat.Magnitude();
+  } else {
+    ballToCamFlat = -player->GetMovementDirection();
+  }
+
+  posAtBallLevel = CVector3f(GetTransform().Get03() - posAtBallLevel.GetX(),
+                             GetTransform().Get13() - posAtBallLevel.GetY(),
+                             GetTransform().Get23() - posAtBallLevel.GetZ());
+  CTransform4f ballToUnderCamLook = CTransform4f::Identity();
+  if (CVector3f(posAtBallLevel - ballPos).CanBeNormalized()) {
+    ballToUnderCamLook = CTransform4f::LookAt(ballPos, posAtBallLevel, CVector3f::Up());
+  }
+
+  float distance = mBallCameraSpring.ApplyDistanceSpring(mCurMinDistance, ballToCamFlatMag,
+                                                             dt * (3.f + mSpeedFactor));
+  CVector3f camToBall(ballPos.GetX() - GetTransform().Get03(),
+                      ballPos.GetY() - GetTransform().Get13(),
+                      ballPos.GetZ() - GetTransform().Get23());
+  camToBall[kDZ] = 0.f;
+  if (camToBall.CanBeNormalized()) {
+    camToBall.Normalize();
+    float dot = CVector3f::Dot(camToBall, player->GetMovementDirection());
+    dot = CMath::Limit(dot, 1.f);
+    if (CMath::AbsF(acosf(dot)) > (150.f * (M_PIF / 180.f))) {
+      CVector3f velocity = player->GetVelocityWR();
+      if (velocity.CanBeNormalized()) {
+        distance = mBallCameraSpring.ApplyDistanceSpring(
+            mCurMinDistance + mSpeedFactor * (mBackwardsDistance - mCurMinDistance),
+            ballToCamFlatMag, 3.f * dt);
+      }
+    }
+  }
+
+  mCollidersAABB = mLargeColliders.CalculateCollidersBoundingBox();
+  rstl::reserved_vector<TUniqueId, 1024> nearList;
+  mgr.BuildNearList(nearList, mCollidersAABB, skLineOfSightFilter,
+                    TCastToConstPtr< CActor >(mgr.GetObjectById(mCollisionActorId)));
+
+  if (!mClearLOS && mObscuringObjectId == kInvalidUniqueId) {
+    if (mObscuredTime > 0.f || mObscuringMaterial.HasMaterial(kMT_Floor) ||
+        mObscuringMaterial.HasMaterial(kMT_Wall)) {
+      mColliderMag += 2.f * dt;
+      if (mColliderMag < 2.f) {
+        mColliderMag = 2.f;
+      }
+      if (mColliderMag > 2.f) {
+        mColliderMag = 2.f;
+      }
+      mSmallColliders.UpdateCollidersDistances( 7.f * 0.33f * mColliderMag,
+                               7.f * 0.33f * mColliderMag / 2.f, -M_PIF / 2.f);
+      mMediumColliders.UpdateCollidersDistances( 7.f * 0.66f * mColliderMag,
+                               7.f * 0.66f * mColliderMag / 2.f, -M_PIF / 2.f);
+      mLargeColliders.UpdateCollidersDistances( 7.f * mColliderMag,
+                               7.f * mColliderMag / 2.f, -M_PIF / 2.f);
+    }
+  } else {
+    float targetColliderMag = 1.f;
+    if (mPrevClearLOS && player->GetMoveSpeed() < 1.f) {
+      targetColliderMag = 0.25f;
+    }
+    mColliderMag += 2.f * ((targetColliderMag - mColliderMag) * dt);
+    mSmallColliders.UpdateCollidersDistances( mColliderMag * (7.f * 0.33f),
+                             mColliderMag * (7.f * 0.33f), -M_PIF / 2.f);
+    mMediumColliders.UpdateCollidersDistances( mColliderMag * (7.f * 0.66f),
+                             mColliderMag * (7.f * 0.66f), -M_PIF / 2.f);
+    mLargeColliders.UpdateCollidersDistances( mColliderMag * 7.f, mColliderMag * 7.f,
+                             -M_PIF / 2.f);
+  }
+
+  float elevation = mElevation;
+  bool interpolateElevation = true;
+  if (ConstrainElevationAndDistance(elevation, distance, dt, mgr)) {
+    interpolateElevation = false;
+  }
+  CVector3f desiredBallToCam(0.f, distance, elevation);
+  desiredBallToCam = ballToUnderCamLook.Rotate(desiredBallToCam);
+
+  const CScriptDoor* door = TCastToConstPtr<CScriptDoor>(mgr.GetObjectById(mTooCloseActorId));
+  if ((door == nullptr || !door->IsOpen()) &&
+      ((mChaseAllowed && mState == kBCS_Chase) || mBehaviour == kBCB_FreezeLookPosition ||
+       mState == kBCS_Boost)) {
+    CVector3f ballToCam(GetTranslation() - ballPos);
+    if (ballToCam.CanBeNormalized()) {
+      ballToCam.Normalize();
+    } else {
+      ballToCam = -player->GetMovementDirection();
+    }
+    if (CMath::AbsF(ballToCamFlatMag - mChaseDistance) < 3.f) {
+      float yawSpeed = gpTweakBall->GetBallCameraChaseYawSpeed();
+      float dampenAngle = gpTweakBall->GetBallCameraChaseDampenAngle();
+      if (mState == kBCS_Boost) {
+        yawSpeed = gpTweakBall->GetBallCameraBoostYawSpeed();
+        dampenAngle = gpTweakBall->GetBallCameraBoostDampenAngle();
+      }
+      ballToCam = ConstrainYawAngle(*player, yawSpeed, dampenAngle, dt, mgr);
+    }
+    ballToCam[kDZ] = 0.f;
+    if (ballToCam.CanBeNormalized()) {
+      ballToCam.Normalize();
+    } else {
+      ballToCam = -player->GetMovementDirection();
+    }
+    ballToCam *= distance;
+    ballToCam[kDZ] = elevation;
+    desiredBallToCam = ballToCam;
+    interpolateElevation = false;
+  }
+
+  switch (mBehaviour) {
+  default:
+    break;
+  case kBCB_HintBallToCam: {
+    desiredBallToCam = mOverrideBallToCam;
+    if (mObscureAvoidance) {
+      CVector3f ballToCamDir = desiredBallToCam;
+      if (ballToCamDir.CanBeNormalized()) {
+        ballToCamDir.Normalize();
+      } else {
+        ballToCamDir = -player->GetMovementDirection();
+      }
+      TUniqueId intersectId = kInvalidUniqueId;
+      const CRayCastResult& result = mgr.RayWorldIntersection(
+          intersectId, ballPos, ballToCamDir, distance, skLineOfSightFilter, nearList);
+      const float hitTime = result.GetTime();
+      if (result.IsValid()) {
+        float hitX = hitTime * ballToCamDir.GetX();
+        float hitY = hitTime * ballToCamDir.GetY();
+        float hitZ = hitTime * ballToCamDir.GetZ();
+        desiredBallToCam = CVector3f(0.9f * hitX, 0.9f * hitY, 0.9f * hitZ);
+      }
+    }
+    interpolateElevation = false;
+    break;
+  }
+  }
+
+  distance = desiredBallToCam.Magnitude();
+  CVector3f desiredCamPos(ballPos.GetX() + desiredBallToCam.GetX(),
+                          ballPos.GetY() + desiredBallToCam.GetY(),
+                          ballPos.GetZ() + desiredBallToCam.GetZ());
+  float collDist = 0.f;
+  bool noCollision = !DetectCollision(ballPos,
+                                      CVector3f(ballPos.GetX() + desiredBallToCam.GetX(),
+                                                ballPos.GetY() + desiredBallToCam.GetY(),
+                                                ballPos.GetZ() + desiredBallToCam.GetZ()),
+                                      0.3f, collDist, mgr, GetControllerNumber());
+  if (!noCollision) {
+    const float collisionDistance = collDist;
+    if (collisionDistance >= 1.f) {
+      const CVector3f& normalizedDir = desiredBallToCam.AsNormalized();
+      desiredBallToCam = CVector3f(collisionDistance * normalizedDir.GetX(),
+                                   collisionDistance * normalizedDir.GetY(),
+                                   collisionDistance * normalizedDir.GetZ());
+      desiredCamPos = CVector3f(ballPos.GetX() + desiredBallToCam.GetX(),
+                                ballPos.GetY() + desiredBallToCam.GetY(),
+                                ballPos.GetZ() + desiredBallToCam.GetZ());
+    } else {
+      desiredCamPos = GetTranslation();
+      desiredBallToCam =
+          CVector3f(desiredCamPos.GetX() - ballPos.GetX(), desiredCamPos.GetY() - ballPos.GetY(),
+                    desiredCamPos.GetZ() - ballPos.GetZ());
+    }
+  }
+
+  CTransform4f lookXf = CTransform4f::LookAt(desiredCamPos, mLookPos, CVector3f::Up());
+  CTransform4f oldLookXf = CTransform4f::LookAt(GetTranslation(), mLookPos, CVector3f::Up());
+  mNextLookXf = lookXf;
+  lookXf = oldLookXf;
+
+  CVector3f colliderPointLocal = CVector3f::Zero();
+  if (mAvoidGeometryFull || !mClearLOS) {
+    colliderPointLocal = AvoidGeometryFull(lookXf, nearList, mgr);
+  } else {
+    colliderPointLocal = AvoidGeometry(lookXf, nearList, mgr);
+  }
+
+  CVector3f oldBallToCamFlat(GetTranslation().GetX() - ballPos.GetX(),
+                            GetTranslation().GetY() - ballPos.GetY(), 0.f);
+  if (oldBallToCamFlat.Magnitude() < 2.f) {
+    if (mClearLOS && mShortMoveCount > 2) {
+      colliderPointLocal *= 1.f / float(mShortMoveCount);
+    }
+    if (collDist < 3.f) {
+      colliderPointLocal *= 0.25f;
+      if (mClearLOS && mShortMoveCount > 0) {
+        colliderPointLocal *= mSpeedFactor;
+      }
+    }
+    if (collDist < 1.f) {
+      colliderPointLocal = CVector3f::Zero();
+    }
+  }
+
+  CVector3f rotatedColliderPoint = lookXf.Rotate(colliderPointLocal);
+  CVector3f camDelta(rotatedColliderPoint[kDX] + desiredCamPos[kDX] - ballPos[kDX],
+                     rotatedColliderPoint[kDY] + desiredCamPos[kDY] - ballPos[kDY],
+                     rotatedColliderPoint[kDZ] + desiredCamPos[kDZ] - ballPos[kDZ]);
+  if (camDelta.CanBeNormalized()) {
+    camDelta.Normalize();
+  }
+  float desiredX = distance * camDelta[kDX];
+  float desiredY = distance * camDelta[kDY];
+  float desiredZ = distance * camDelta[kDZ];
+  CVector3f desiredPos(ballPos.GetX() + desiredX, ballPos.GetY() + desiredY,
+                       ballPos.GetZ() + desiredZ);
+
+  camDelta = mDampedPos - desiredPos;
+  float dampDeltaMag = camDelta.Magnitude();
+  if (camDelta.CanBeNormalized()) {
+    camDelta.Normalize();
+  }
+  float springDist = mBallCameraCentroidSpring.ApplyDistanceSpring(0.f, dampDeltaMag, dt);
+  float springX = springDist * camDelta[kDX];
+  float springY = springDist * camDelta[kDY];
+  float springZ = springDist * camDelta[kDZ];
+  mDampedPos = CVector3f(desiredPos.GetX() + springX, desiredPos.GetY() + springY,
+                             desiredPos.GetZ() + springZ);
+
+  CVector3f posDelta(oldPos.GetX() - mDampedPos.GetX(), oldPos.GetY() - mDampedPos.GetY(),
+                     oldPos.GetZ() - mDampedPos.GetZ());
+  float posDeltaMag = posDelta.Magnitude();
+  if (posDelta.CanBeNormalized()) {
+    posDelta.Normalize();
+  }
+
+  float springSpeed = 1.f;
+  if (mObtuseDirection) {
+    springSpeed = 3.f;
+  }
+  float springMag =
+      mBallCameraCentroidDistanceSpring.ApplyDistanceSpring(0.f, posDeltaMag, dt * springSpeed);
+  if (GetState() == kBCS_Boost) {
+    springMag = mBallCameraBoostSpring.ApplyDistanceSpring(0.f, posDeltaMag, dt);
+  } else if (mChaseAllowed) {
+    if (mState == kBCS_Chase || mBehaviour == kBCB_FreezeLookPosition) {
+      springMag = mBallCameraChaseSpring.ApplyDistanceSpring(0.f, posDeltaMag, dt);
+    }
+  }
+
+  float finalX = springMag * posDelta.GetX();
+  float finalY = springMag * posDelta.GetY();
+  float finalZ = springMag * posDelta.GetZ();
+  CVector3f finalPos(mDampedPos.GetX() + finalX, mDampedPos.GetY() + finalY,
+                     mDampedPos.GetZ() + finalZ);
+  if (player->GetMorphBall()->GetBallState() != CMorphBall::kBS_Spider &&
+      !mNoElevationVelClamp && player->GetVelocityWR().GetZ() > 8.f) {
+    CVector3f delta(finalPos.GetX() - oldPos.GetX(), finalPos.GetY() - oldPos.GetY(),
+                    finalPos.GetZ() - oldPos.GetZ());
+    delta[kDZ] = CMath::Limit(delta.GetZ(), 0.1f * dt);
+    finalPos = CVector3f(oldPos.GetX() + delta.GetX(), oldPos.GetY() + delta.GetY(),
+                         oldPos.GetZ() + delta.GetZ());
+  }
+
+  if (interpolateElevation && mState != kBCS_ToBall) {
+    finalPos = InterpolateCameraElevation(finalPos, dt);
+  }
+  if (mNoElevationInterp) {
+    finalPos[kDZ] = elevation + ballPos.GetZ();
+  }
+
+  if (oldBallToCamFlat.Magnitude() < 2.f) {
+    if (finalPos.GetZ() < 2.f + ballPos.GetZ()) {
+      finalPos[kDZ] = 2.f + ballPos.GetZ();
+    }
+    mBallCameraSpring.Reset();
+  }
+
+  finalPos = ClampElevationToWater(finalPos, mgr);
+  if (oldBallToCamFlat.Magnitude() < 2.f) {
+    if (mTooCloseActorId != kInvalidUniqueId && mTooCloseActorDist < 5.f) {
+      door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(TUniqueId(mTooCloseActorId)));
+      if (door != nullptr && !door->IsOpen()) {
+        finalPos[kDX] = GetTranslation()[kDX];
+        finalPos[kDY] = GetTranslation()[kDY];
+        finalPos[kDZ] = GetTranslation()[kDZ];
+      }
+    }
+  }
+
+  const float backupZ = finalPos.GetZ();
+  finalPos = MoveCollisionActor(finalPos, dt, mgr);
+  if (mClearLOS && mShortMoveCount > 0) {
+    finalPos[kDZ] = backupZ;
+    finalPos = MoveCollisionActor(finalPos, dt, mgr);
+  }
+
+  CVector3f lookDir(mLookPos.GetX() - finalPos.GetX(), mLookPos.GetY() - finalPos.GetY(),
+                    mLookPos.GetZ() - finalPos.GetZ());
+  if (mLookAtBall) {
+    lookDir = ballPos - finalPos;
+  }
+  if (lookDir.CanBeNormalized()) {
+    lookDir.Normalize();
+    UpdateTransform(lookDir, finalPos, dt, mgr);
+  }
+
+  if (mClampVelTimer > 0.f) {
+    mClampVelTimer -= dt;
+  }
 }
 
 void CBallCamera::UpdateUsingFreeLook(float dt, CStateManager& mgr) {
