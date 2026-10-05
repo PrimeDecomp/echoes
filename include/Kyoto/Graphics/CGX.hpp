@@ -85,6 +85,7 @@ public:
   };
 
   static void SetNumChans(uchar num);
+  static void FlushState();
   static void SetNumTexGens(uchar num);
   static void SetNumTevStages(uchar num);
   static void SetNumIndStages(uchar num);
@@ -183,7 +184,6 @@ public:
 
 private:
   static void FlushChanCtrl(GXChannelID chan, ushort flags);
-  static void FlushState();
   static void update_fog(uint flags);
   static void apply_fog() {
     static const GXColor black = {0, 0, 0, 0};
