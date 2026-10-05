@@ -1,8 +1,8 @@
 #ifndef _RSTL_RC_PTR
 #define _RSTL_RC_PTR
 
-#include "types.h"
 #include "Kyoto/Alloc/CMemory.hpp"
+#include "types.h"
 
 namespace rstl {
 class CRefData {
@@ -21,7 +21,10 @@ class rc_ptr {
 public:
   rc_ptr() : mPtr(nullptr), mRefCount(&CRefData::sNull.mRefCount) { ++*mRefCount; }
   rc_ptr(const T* ptr) : mPtr(ptr), mRefCount(rs_new int(1)) {}
-  rc_ptr(const rc_ptr& other) : mPtr(other.mPtr), mRefCount(other.mRefCount) {
+  rc_ptr(const rc_ptr& other) : mPtr(other.mPtr), mRefCount(other.mRefCount) { ++*mRefCount; }
+  template < typename U >
+  explicit rc_ptr(const rc_ptr< U >& other)
+  : mPtr(static_cast< const T* >(other.GetPtr())), mRefCount(other.GetRefCountPtr()) {
     ++*mRefCount;
   }
   ~rc_ptr() { ReleaseData(); }
@@ -35,6 +38,7 @@ public:
     return *this;
   }
   T* GetPtr() const { return const_cast< T* >(mPtr); }
+  int* GetRefCountPtr() const { return mRefCount; }
   bool IsNull() const { return GetPtr() == nullptr; }
   template < typename U >
   void Assign(const U* ptr) {

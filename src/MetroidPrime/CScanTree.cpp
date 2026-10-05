@@ -330,15 +330,3 @@ CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
 CScanTreeMenu* LoadScanTreeMenu(int* id, CInputStream& input) {}
 
 CScanTreeSlider* LoadScanTreeSlider(int* id, CInputStream& input) {}
-
-CScanTreeMenu::~CScanTreeMenu() {}
-
-CScanTreeSlider::~CScanTreeSlider() {}
-
-CScanTreeScan::~CScanTreeScan() {}
-
-CScanTreeCategory::~CScanTreeCategory() {}
-
-CScanTreeNode::~CScanTreeNode() {}
-
-CScanTree::~CScanTree() {}

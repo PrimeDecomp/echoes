@@ -3,9 +3,9 @@
 
 #include "types.h"
 
-#include "rstl/rmemory_allocator.hpp"
 #include "rstl/linear_iterator.hpp"
 #include "rstl/pair.hpp"
+#include "rstl/rmemory_allocator.hpp"
 
 class CInputStream;
 class COutputStream;
@@ -193,6 +193,7 @@ public:
   bool operator!=(const basic_string& other) const;
 
   int find(const basic_string& other, int pos = 0) const;
+  int find(const _CharTp* other, int pos = 0, int count = -1) const;
   int find(_CharTp ch, int pos = 0) const;
   int find_first_of(const basic_string& other, int pos = 0) const;
   const_iterator position_iterator(int pos) const;
@@ -247,18 +248,21 @@ inline int basic_string< _CharTp, Traits, Alloc >::internal_search(It first, It 
     return 0;
   }
   It it = first;
-  int matched = 0;
-  OtherIt search = otherFirst;
-  for (; it != last; ++it) {
-    if (Traits::eq(*it, *search)) {
+  int index = 0;
+  for (; it != last; ++it, ++index) {
+    if (Traits::eq(*it, *otherFirst)) {
+      It candidate = it;
+      ++candidate;
+      OtherIt search = otherFirst;
       ++search;
-      ++matched;
-      if (search == otherLast) {
-        return (it - first) - matched + 1;
+      for (; search != otherLast; ++search, ++candidate) {
+        if (candidate == last || !Traits::eq(*candidate, *search)) {
+          break;
+        }
       }
-    } else {
-      search = otherFirst;
-      matched = 0;
+      if (search == otherLast) {
+        return index;
+      }
     }
   }
   return -1;
@@ -268,6 +272,23 @@ template < typename _CharTp, typename Traits, typename Alloc >
 int basic_string< _CharTp, Traits, Alloc >::find(const basic_string& other, int pos) const {
   pos = get_real_pos_for_begin(pos);
   const int found = internal_search(begin() + pos, end(), other.begin(), other.end());
+  int result = found + pos;
+  if (found == -1) {
+    result = found;
+  }
+  return result;
+}
+
+template < typename _CharTp, typename Traits, typename Alloc >
+int basic_string< _CharTp, Traits, Alloc >::find(const _CharTp* other, int pos, int count) const {
+  pos = get_real_pos_for_begin(pos);
+  int length = 0;
+  const _CharTp* end = other;
+  while ((count == -1 || length < count) && *end != Traits::eos()) {
+    ++length;
+    ++end;
+  }
+  const int found = internal_search(begin() + pos, this->end(), other, end);
   int result = found + pos;
   if (found == -1) {
     result = found;
@@ -355,6 +376,12 @@ string string_l(const char* data);
 
 string operator+(const string& a, const string& b);
 inline wstring operator+(const wstring& a, const wstring& b) {
+  wstring result(a);
+  result.append(b);
+  return result;
+}
+
+inline wstring operator+(const wchar_t* a, const wstring& b) {
   wstring result(a);
   result.append(b);
   return result;
