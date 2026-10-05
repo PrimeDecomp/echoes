@@ -24,8 +24,8 @@ class CGenDescription;
 class CSwooshDescription;
 class CElectricDescription;
 // Guessed names: resource tags are established, concrete description names are not.
-class CParticleDescriptionSPSC;
-class CParticleDescriptionSRSC;
+class CSpawnSystemDescription;
+class CSortedParticleSystemDescription;
 
 class CParticleDatabase {
 public:
@@ -84,8 +84,8 @@ private:
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CGenDescription > > > mParticleDescs;
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSwooshDescription > > > mSwooshDescs;
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CElectricDescription > > > mElectricDescs;
-  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CParticleDescriptionSPSC > > > mSpscDescs;
-  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CParticleDescriptionSRSC > > > mSrscDescs;
+  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSpawnSystemDescription > > > mSpscDescs;
+  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSortedParticleSystemDescription > > > mSrscDescs;
   DrawMap mRendererDrawLoop;
   DrawMap mFirstDrawLoop;
   DrawMap mLastDrawLoop;

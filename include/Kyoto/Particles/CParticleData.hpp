@@ -23,6 +23,12 @@ public:
   CParticleData(CInputStream& in);
   EParentedMode GetParentedMode() const { return mParentMode; }
 
+  int GetDuration() const { return mDuration; }
+  const SObjectTag& GetParticleAssetInfo() const { return mParticle; }
+  CSegId GetSegmentId() const { return mBone; }
+  float GetScale() const { return mScale; }
+  EParentedMode GetParentedMode() const { return mParentMode; }
+
 private:
   int mDuration;
   SObjectTag mParticle;
