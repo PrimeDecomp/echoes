@@ -2148,7 +2148,7 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
       ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
       const CVector3f desiredPos =
           FindDesiredPosition(distance, elevation, player.GetMovementDirection(), mgr, false);
-      TeleportCamera(CTransform4f::LookAt(desiredPos, mFixedLookPos, CVector3f::Up()), mgr);
+      TeleportCamera(CTransform4f::LookAt(desiredPos, mLookPos, CVector3f::Up()), mgr);
     }
     break;
   case kBCB_HintBallToCam: {
