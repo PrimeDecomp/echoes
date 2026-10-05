@@ -444,9 +444,9 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
     const CVector3f extent(padding, padding, padding);
     const CAABox cacheBounds(motionVolume.GetMinPoint() - extent,
                              motionVolume.GetMaxPoint() + extent);
-    cachePtr = &localCache.emplace(cacheBounds,
-                                   cached != nullptr ? cached->GetDynamicGeometryMode() : 1,
-                                   0, ushort(0xffff));
+    cachePtr = new (localCache.prepare_emplace())
+        CCollisionCache(cacheBounds, cached != nullptr ? cached->GetDynamicGeometryMode() : 1,
+                        0, ushort(0xffff));
     CGameCollision::BuildCollisionCache(mgr, *cachePtr, nearList,
                                         CGameCollision::kCUP_RemoveCachedNearListIds);
   } else {
@@ -709,8 +709,9 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
     CGameCollision::MakeCollisionCallbacks(mgr, actor, *result.mId, collisionList);
   }
   CMotionState motion = actor.GetMotionState();
-  motion.SetTranslation(actor.GetLastNonCollidingState().GetTranslation());
-  motion.SetVelocity(actor.GetLastNonCollidingState().GetVelocity());
+  const CMotionState lastNonColliding = actor.GetLastNonCollidingState();
+  motion.SetTranslation(lastNonColliding.GetTranslation());
+  motion.SetVelocity(lastNonColliding.GetVelocity());
   actor.SetLastNonCollidingState(motion);
   uchar primitiveStorage[64];
   const CCollisionPrimitive* primitive = actor.GetCollisionPrimitive();
@@ -729,8 +730,10 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
         primitive->GetMaterial());
   }
   CGameCollision::CollisionFailsafe(mgr, cache, actor, *usePrimitive, nearList, 0.f, 1, 0.f);
-  if (cached != nullptr && localCache) {
-    *cached = *localCache;
+  if (CCollisionCache* currentCache = actor.GetCollisionCache()) {
+    if (localCache) {
+      *currentCache = *localCache;
+    }
   }
 }
 
