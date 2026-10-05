@@ -1,6 +1,7 @@
 #include "MetroidPrime/CEnvFxManager.hpp"
 
 #include "Kyoto/CRandom16.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
@@ -9,6 +10,10 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CObjectList.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "dolphin/gx/GXGeometry.h"
@@ -243,7 +248,19 @@ void CEnvFxManager::MoveWrapCells(EEnvFxType type, int moveX, int moveY) {
 }
 
 void CEnvFxManager::AsyncLoadResources(CStateManager& mgr) {
-  // TODO: Create and register one persistent visor-rain billboard per player.
+  for (int playerIndex = 0; playerIndex < mgr.GetNumPlayers(); ++playerIndex) {
+    const TUniqueId id = mgr.AllocateUniqueId();
+    mEnvRainSplashIds[playerIndex] = id;
+    CHUDBillboardEffect* effect = new CHUDBillboardEffect(
+        rstl::optional_object< TToken< CGenDescription > >(*mEnvRainSplash),
+        rstl::optional_object< TToken< CElectricDescription > >(), id, true,
+        rstl::string_l("VisorRainSplashes"),
+        CHUDBillboardEffect::GetNearClipDistance(mgr, playerIndex),
+        CHUDBillboardEffect::GetScaleForPOV(mgr), playerIndex, CColor::White(),
+        CVector3f::One(), CVector3f::Zero(), false);
+    effect->SetRunIndefinitely(true);
+    mgr.AddObject(effect);
+  }
 }
 
 void CEnvFxManager::Initialize() {
@@ -329,7 +346,16 @@ void CEnvFxManager::UpdateDarkWorldParticles(
 
 void CEnvFxManager::UpdateRainParticles(const CVectorFixed8_8& zVec, const CVector3f& inverseScale,
                                         float dt) {
-  // TODO: Apply rainfall speed and camera displacement to visible grids.
+  const short deltaZ = zVec.GetZ() + real_to_fixed8_8(-40.f * dt * inverseScale.GetZ());
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    if (!grid.mBlock.first) {
+      continue;
+    }
+    for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
+      grid.mParticles[j].mZ = (grid.mParticles[j].mZ + deltaZ) & 0x3fff;
+    }
+  }
 }
 
 void CEnvFxManager::UpdateUnderwaterParticles(const CVectorFixed8_8& zVec) {
@@ -342,11 +368,45 @@ void CEnvFxManager::UpdateUnderwaterParticles(const CVectorFixed8_8& zVec) {
 }
 
 void CEnvFxManager::UpdateVisorSplash(CStateManager& mgr, float dt, const CTransform4f& camXf) {
-  // TODO: Relocate each player's billboard and derive the rain rate from view and velocity.
+  const EEnvFxType fxType = static_cast< EEnvFxType >(mgr.GetWorld()->GetNeededEnvFx());
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    if (mEnvRainSplashIds[i] == kInvalidUniqueId) {
+      continue;
+    }
+    CHUDBillboardEffect* effect =
+        TCastToPtr< CHUDBillboardEffect >(mgr.GetObjectByIdFromListAll(mEnvRainSplashIds[i]));
+    if (effect != nullptr) {
+      mgr.SetActorAreaId(*effect, mgr.GetNextAreaId());
+    }
+  }
+
+  const float upness = CVector3f::Dot(camXf.GetForward(), CVector3f::Up());
+  const float splashRate = mEnableSplash ? mFxDensity * rstl::max_val(0.f, upness) : 0.f;
+  float forwardRate = 0.f;
+  if (mEnableSplash && upness >= -0.1f) {
+    const CPlayer* player = mgr.GetPlayer(0);
+    const CVector3f localVelocity =
+        player->GetTransform().TransposeRotate(player->GetVelocityWR());
+    if (localVelocity.CanBeNormalized()) {
+      const float speed = localVelocity.Magnitude();
+      forwardRate = rstl::min_val(1.f, speed / 60.f) *
+                    CVector3f::Dot(localVelocity / speed, CVector3f::Forward());
+    }
+  }
+
+  const float additionalRate = fxType == kEFX_Rain ? splashRate + forwardRate : 0.f;
+  SetSplashEffectRate(mBaseSplashRate + additionalRate, mgr);
+  mBaseSplashRate = 0.f;
 }
 
 void CEnvFxManager::SetSplashEffectRate(float rate, CStateManager& mgr) {
-  // TODO: Set the generator rate on each active visor-rain billboard.
+  for (int i = 0; i < mEnvRainSplashIds.size(); ++i) {
+    CHUDBillboardEffect* effect =
+        TCastToPtr< CHUDBillboardEffect >(mgr.GetObjectByIdFromListAll(mEnvRainSplashIds[i]));
+    if (effect != nullptr && effect->IsElementGen()) {
+      effect->GetParticleGen()->SetGeneratorRate(rate);
+    }
+  }
 }
 
 CTransform4f CEnvFxManager::GetParticleBoundsToWorldTransform() const {
@@ -410,7 +470,39 @@ static int CalcRainVolume(float density) {
 static short CalcRainPitch(float density) { return static_cast< short >(8192.f * density); }
 
 void CEnvFxManager::UpdateRainSounds(float dt, CStateManager& mgr) {
-  // TODO: Fade rain audio and maintain the two camera-relative emitters, volume and pitch.
+  if (mgr.GetWorld()->GetNeededEnvFx() == kEFX_Rain) {
+    if (mRainSoundsStopped) {
+      mRainSoundFade = rstl::max_val(0.f, mRainSoundFade - dt);
+    } else {
+      mRainSoundFade = rstl::min_val(1.f, mRainSoundFade + dt);
+    }
+
+    if (mgr.GetGameState() == CStateManager::kGS_SoftPaused) {
+      return;
+    }
+    const CTransform4f camXf = mgr.GetCameraManager(0)->GetCurrentCameraTransform(mgr, true);
+    const uchar volume = static_cast< uchar >(mRainSoundFade * CalcRainVolume(mFxDensity));
+    if (!mRainSoundActive) {
+      mLeftRainSound = CSfxManager::AddEmitter(0x2841, CVector3f::Zero(),
+                                               CSfxManager::kAllAreas, true, true,
+                                               CSfxManager::kMaxPriority);
+      mRightRainSound = CSfxManager::AddEmitter(0x2842, CVector3f::Zero(),
+                                                CSfxManager::kAllAreas, true, true,
+                                                CSfxManager::kMaxPriority);
+      mRainSoundActive = true;
+    }
+    CSfxManager::UpdateEmitter(mLeftRainSound, camXf.GetTranslation() - camXf.GetRight(),
+                               camXf.GetRight(), volume);
+    CSfxManager::UpdateEmitter(mRightRainSound, camXf.GetTranslation() + camXf.GetRight(),
+                               -camXf.GetRight(), volume);
+    const short pitch = CalcRainPitch(mFxDensity);
+    CSfxManager::PitchBend(mLeftRainSound, pitch);
+    CSfxManager::PitchBend(mRightRainSound, pitch);
+  } else if (mRainSoundActive) {
+    CSfxManager::RemoveEmitter(mLeftRainSound);
+    CSfxManager::RemoveEmitter(mRightRainSound);
+    mRainSoundActive = false;
+  }
 }
 
 void CEnvFxManager::FadeDensity(float density, int speed) {
