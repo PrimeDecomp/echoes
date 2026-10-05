@@ -20,8 +20,8 @@ public:
   float GetFov() const { return mFov; }
   float GetAttitudeRange() const { return mAttitudeRange; }
   float GetAzimuthRange() const { return mAzimuthRange; }
-  const CVector3f& GetLookAtOffset() const { return mLookAtOffset; }
-  const CVector3f& GetWorldOffset() const { return mWorldOffset; }
+  CVector3f GetLookAtOffset() const { return mLookAtOffset; }
+  CVector3f GetWorldOffset() const { return mWorldOffset; }
   float GetMinDist() const { return mMinDist; }
   float GetMaxDist() const { return mMaxDist; }
   float GetBackwardsDist() const { return mBackwardsDist; }

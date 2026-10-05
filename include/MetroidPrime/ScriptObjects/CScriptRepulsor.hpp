@@ -9,7 +9,7 @@ public:
   // Guessed names; the cylindrical test ignores the vertical displacement.
   enum EShape { kS_Sphere, kS_Cylinder };
   // Guessed names, derived from the consumers of each flag.
-  enum EFlags { kF_RepelPlayer = 1, kF_UseRightVector = 2 };
+  enum EFlags { kF_RepelPlayer = 1, kF_UseForwardVector = 2 };
 
   CScriptRepulsor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                   const CTransform4f& transform, float radius, float strength, EShape shape,

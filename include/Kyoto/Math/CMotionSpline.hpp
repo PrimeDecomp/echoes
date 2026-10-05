@@ -40,9 +40,11 @@ public:
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
   void SetDuration(float duration) { mDuration = duration; }
+  void SetSplineType(ESplineType type) { mType = type; }
   uint GetControlPointCount() const { return mControlPoints.size(); }
   uint GetKnotCount() const { return mKnots.size(); }
   CVector3f GetKnot(uint index) const; // Guessed name; respects closed-loop index wrapping.
+  CVector3f GetControlPoint(uint index) const;
   int GetKnotIndexByLength(float distance) const; // Guessed name; searches knot arc lengths.
   // Guessed names, recovered from game-spline orientation interpolation.
   uint GetKnotIndexByTime(float time) const;
@@ -55,7 +57,6 @@ public:
 private:
   // Guessed names, recovered from native spline mutation and sampling behavior.
   uint ValidateControlPointIndex(uint index) const;
-  CVector3f GetControlPoint(uint index) const;
   void SetControlPoint(uint index, CVector3f point, bool recalculateLength);
   void SetKnot(uint index, CVector3f point, bool recalculateLength);
   void AddKnot(const CVector3f& point);
