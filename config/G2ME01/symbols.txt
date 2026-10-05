@@ -5024,7 +5024,7 @@ __as__Q24rstl27optional_object<9CVector3f>FRCQ24rstl27optional_object<9CVector3f
 prepare_emplace__Q24rstl34optional_object<15CCollisionCache>Fv = .text:0x8012A8B8; // type:function size:0x4C
 destroy<15CCollisionCache>__4rstlFP15CCollisionCache = .text:0x8012A904; // type:function size:0x20 scope:local
 destroy_impl<15CCollisionCache>__4rstlFP15CCollisionCache = .text:0x8012A924; // type:function size:0x24 scope:local
-__dt__Q24rstl34optional_object<15CCollisionCache>Fv = .text:0x8012A948; // type:function size:0x6C scope:local
+__dt__Q24rstl34optional_object<15CCollisionCache>Fv = .text:0x8012A948; // type:function size:0x6C scope:weak
 RemoveNormalComponent__15CGroundMovementFRC9CVector3fR9CVector3f = .text:0x8012A9B4; // type:function size:0x78
 RemoveNormalComponent__15CGroundMovementFRC9CVector3fRC9CVector3fR9CVector3fRf = .text:0x8012AA2C; // type:function size:0x1B8
 RemovePositiveZComponentFromNormal__FR9CVector3f = .text:0x8012ABE4; // type:function size:0x88

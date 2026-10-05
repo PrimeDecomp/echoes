@@ -1,24 +1,24 @@
 #include "MetroidPrime/CGroundMovement.hpp"
 
-#include "Collision/CCollisionInfoList.hpp"
 #include "Collision/CCollidableAABoxSphere.hpp"
-#include "Collision/CRayCastResult.hpp"
+#include "Collision/CCollisionInfoList.hpp"
 #include "Collision/CCollisionPrimitive.hpp"
+#include "Collision/CRayCastResult.hpp"
 #include "Collision/CollisionUtil.hpp"
-#include "MetroidPrime/CAABoxFilter.hpp"
-#include "Kyoto/Math/CVector3d.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
+#include "Kyoto/Math/CVector3d.hpp"
+#include "MetroidPrime/CAABoxFilter.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
-#include "MetroidPrime/Player/CPlayer.hpp"
-#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/UserNames.hpp"
-#include "WorldFormat/CMetroidAreaCollider.hpp"
 #include "WorldFormat/CCollisionCache.hpp"
+#include "WorldFormat/CMetroidAreaCollider.hpp"
 #include "rstl/math.hpp"
 
 #include <float.h>
@@ -39,7 +39,7 @@ void CGroundMovement::CheckFalling(CPhysicsActor& actor, CStateManager& mgr, flo
                                     kSM_Falling, kSS_InvalidState));
   } else {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                    kSM_OnFloor, kSS_InvalidState));
+                                    kSM_Landed, kSS_InvalidState));
     actor.SetAngularVelocityWR(actor.GetAngularVelocityWR() * 0.98f);
     CVector3f velocity = actor.GetTransform().TransposeRotate(actor.GetVelocityWR());
     velocity.SetZ(0.f);
@@ -48,8 +48,9 @@ void CGroundMovement::CheckFalling(CPhysicsActor& actor, CStateManager& mgr, flo
   }
 }
 
-void CGroundMovement::MoveGroundCollider(CStateManager& mgr, CPhysicsActor& actor, float dt,
-                                         const rstl::reserved_vector< TUniqueId, 1024 >* colliderList) {
+void CGroundMovement::MoveGroundCollider(
+    CStateManager& mgr, CPhysicsActor& actor, float dt,
+    const rstl::reserved_vector< TUniqueId, 1024 >* colliderList) {
   CMotionState oldState = actor.GetMotionState();
   if (IsUser(0)) {
     actor.SetMotionState(oldState);
@@ -119,17 +120,16 @@ void CGroundMovement::MoveGroundCollider(CStateManager& mgr, CPhysicsActor& acto
           CEntity* entity = mgr.ObjectById(stepZId);
           if (TCastToPtr< CScriptPlatform >(entity)) {
             mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId,
-                                            entity->GetUniqueId(),
-                                            static_cast< EScriptObjectMessage >('XONP'),
+                                            entity->GetUniqueId(), kSM_AddPlatformRider,
                                             kSS_InvalidState));
           }
           CGameCollision::SendMaterialMessage(mgr, info.GetMaterialLeft(), actor);
           mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                          kSM_OnFloor, kSS_InvalidState));
+                                          kSM_Landed, kSS_InvalidState));
           if (!TCastToPtr< CScriptPlatform >(entity)) {
-            mgr.DeliverScriptMsg(
-                CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                           static_cast< EScriptObjectMessage >('XLSG'), kSS_InvalidState));
+            mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
+                                            static_cast< EScriptObjectMessage >('XLSG'),
+                                            kSS_InvalidState));
           }
         } else {
           CheckFalling(actor, mgr, dt);
@@ -265,7 +265,8 @@ bool CGroundMovement::MoveGroundColliderZ(CAreaCollisionCache& cache, CStateMana
 
 bool CGroundMovement::MoveGroundColliderXY(CAreaCollisionCache& cache, CStateManager& mgr,
                                            CPhysicsActor& actor, const CMaterialFilter& filter,
-                                           const rstl::reserved_vector< TUniqueId, 1024 >& nearList, float dt) {
+                                           const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                           float dt) {
   bool didCollide = false;
   bool isPlayer = actor.GetMaterialList().HasMaterial(kMT_Player);
   CMotionState oldState = actor.GetMotionState();
@@ -427,8 +428,9 @@ bool CGroundMovement::RemoveNormalComponent(const CVector3f& normal, CVector3f& 
   return true;
 }
 
-void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& actor, float dt,
-                                             const rstl::reserved_vector< TUniqueId, 1024 >* colliderList) {
+void CGroundMovement::MoveGroundCollider_New(
+    CStateManager& mgr, CPhysicsActor& actor, float dt,
+    const rstl::reserved_vector< TUniqueId, 1024 >* colliderList) {
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
   CAABox motionVolume = actor.GetMotionVolume(dt);
   if (colliderList != nullptr) {
@@ -518,8 +520,7 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
         double useStepUp = stepAmount;
         CGameCollision::DetectCollision_Cached_Moving(
             mgr, cache, *actor.GetCollisionPrimitive(), actor.GetTransform(),
-            actor.GetMaterialFilter(), nearList, CVector3f(0.f, 0.f, 1.f), upCollision,
-            useStepUp);
+            actor.GetMaterialFilter(), nearList, CVector3f(0.f, 0.f, 1.f), upCollision, useStepUp);
         if (upCollision.IsValid()) {
           useStepUp = rstl::max_val(0.0, useStepUp - stepOptions.mMinimumTranslationDelta);
           done = true;
@@ -535,8 +536,8 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
           if (useStepDown > 0.0) {
             CGameCollision::DetectCollision_Cached_Moving(
                 mgr, cache, *actor.GetCollisionPrimitive(), actor.GetTransform(),
-                actor.GetMaterialFilter(), nearList, CVector3f(0.f, 0.f, -1.f),
-                downCollision, useStepDown);
+                actor.GetMaterialFilter(), nearList, CVector3f(0.f, 0.f, -1.f), downCollision,
+                useStepDown);
           } else {
             useStepDown = 0.0;
           }
@@ -571,8 +572,8 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
           }
         }
         actor.SetPhysicsState(states[maxIndex]);
-        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                        actor.GetUniqueId(), kSM_OnFloor, kSS_InvalidState));
+        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
+                                        kSM_Landed, kSS_InvalidState));
         materials = stepMaterials[maxIndex];
         const TUniqueId id = collisions[maxIndex].GetObjectId();
         CEntity* entity = mgr.ObjectById(id);
@@ -581,8 +582,7 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
           result.mCollision = collisions[maxIndex];
           if (TCastToPtr< CScriptPlatform >(entity)) {
             mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId,
-                                            entity->GetUniqueId(),
-                                            static_cast< EScriptObjectMessage >('XONP'),
+                                            entity->GetUniqueId(), kSM_AddPlatformRider,
                                             kSS_InvalidState));
           }
         }
@@ -660,20 +660,18 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
       CheckFalling(actor, mgr, dt);
       actor.SetLastFloorPlaneNormal(rstl::optional_object_null());
     } else {
-      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                      actor.GetUniqueId(), kSM_OnFloor, kSS_InvalidState));
+      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
+                                      kSM_Landed, kSS_InvalidState));
       useStepDown = rstl::max_val(useStepDown - 0.0005f, 0.0);
       const CVector3f& up = CVector3f(0.f, 0.f, 1.f);
       actor.SetTranslation(actor.GetTranslation() - static_cast< float >(useStepDown) * up);
       CEntity* entity = mgr.ObjectById(id);
       if (TCastToPtr< CScriptPlatform >(entity)) {
         mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId,
-                                        entity->GetUniqueId(),
-                                        static_cast< EScriptObjectMessage >('XONP'),
+                                        entity->GetUniqueId(), kSM_AddPlatformRider,
                                         kSS_InvalidState));
       } else {
-        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                        actor.GetUniqueId(),
+        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
                                         static_cast< EScriptObjectMessage >('XLSG'),
                                         kSS_InvalidState));
       }
