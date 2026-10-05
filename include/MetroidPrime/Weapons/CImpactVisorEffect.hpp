@@ -27,6 +27,13 @@ public:
 
   CImpactVisorEffect();
 
+  const rstl::optional_object< SParticleEffect >& GetParticleEffect() const {
+    return mParticleEffect;
+  }
+  const rstl::optional_object< SBlurEffect >& GetBlurEffect() const { return mBlurEffect; }
+  CPlayerState::EPlayerVisor GetForcedVisor() const { return mForcedVisor; }
+  float GetForcedVisorDuration() const { return mForcedVisorDuration; }
+
   // Guessed name
   rstl::optional_object< rstl::pair< int, float > > GetLowPassFilter() const {
     return mLowPassFilter;

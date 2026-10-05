@@ -95,6 +95,7 @@ enum EEntityType {
   kET_ScriptWorldTeleporter = 98,
   kET_SpindleCamera = 100,
   kET_SurfaceCamera = 101, // Guessed name; runtime surface camera.
+  kET_SwarmBasics = 102, // Native TypesMatch tag, correlated with swarm consumers.
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
@@ -186,9 +187,13 @@ enum EScriptObjectMessage {
   kSM_XALD = 0x58414c44,
   kSM_XWLD = 0x58574c44,
   kSM_XDelete = 0x5844454c,
+  kSM_XENF = 0x58454e46, // Native fluid-entry tag.
+  kSM_XINF = 0x58494e46, // Native fluid-update tag.
+  kSM_XEXF = 0x58455846, // Native fluid-exit tag.
   kSM_XINS = 0x58494e53, // Guessed name; sent to the player when an ice impact touches them.
   kSM_XDamage = 0x58444d47, // Guessed name; damage notification.
   kSM_XHIT = 0x58484954,
+  kSM_XAOV = 0x58414f56, // Native projectile visor-impact tag.
   kSM_SuspendedMove =
       0x58415544, // Guessed name, sent when a patterned actor's movement is suspended.
   kSM_XXDG = 0x58584447,

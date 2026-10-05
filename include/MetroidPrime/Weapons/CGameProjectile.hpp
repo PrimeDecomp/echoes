@@ -66,8 +66,8 @@ public:
   CProjectileTouchResult CanCollideWithTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithGameObject(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithComplexCollision(CActor& actor, CStateManager& mgr);
-  // Guessed name: tests the oriented box exposed by a door.
-  CProjectileTouchResult CanCollideWithDoor(CActor& actor, CStateManager& mgr);
+  // Reconstructed name: tests the oriented damageable trigger's world box.
+  CProjectileTouchResult CanCollideWithOrientatedTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWith(CActor& actor, CStateManager& mgr);
   void ApplyDamageToActors(CStateManager& mgr, const CDamageInfo& damageInfo);
   CRayCastResult DoCollisionCheck(TUniqueId& idOut, CStateManager& mgr);
