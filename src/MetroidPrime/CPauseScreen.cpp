@@ -3,26 +3,36 @@
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CAnimData.hpp"
+#include "MetroidPrime/CArchitectureQueue.hpp"
+#include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/CModelData.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/CQuitGameScreen.hpp"
 #include "MetroidPrime/Factories/CScannableObjectInfo.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeCategory.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeMenu.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeScan.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeSlider.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CAuiBitmapMeter.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "GuiSys/CGuiTextPane.hpp"
+#include "GuiSys/CGuiWidgetDrawParms.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Animation/CCharLayoutInfo.hpp"
+#include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
@@ -31,7 +41,10 @@
 #include "dolphin/os/OSCache.h"
 
 #include "rstl/math.hpp"
+#include "rstl/StringExtras.hpp"
+#include "rstl/algorithm.hpp"
 #include <limits.h>
+#include <stdio.h>
 #include <string.h>
 
 // Structure-first scaffold. The scan-tree, GUI and model-viewer bodies remain incomplete.
@@ -142,11 +155,178 @@ CPauseScreen::CPauseScreen()
 CPauseScreen::~CPauseScreen() {}
 
 void CPauseScreen::InitializeFrameGlue() {
-  // TODO: create the frame, bind its widgets, initialize lights/history, and begin fading in.
+  mFrame = mFrameLoader->CreateFrame();
+  if (mFrame.null()) {
+    return;
+  }
+
+  mLights.reserve(2);
+  mLights.push_back(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight1Position(),
+                                      gpTweakGui->GetLogBookModelLight1Color()));
+  mLights[0].SetAttenuation(1.f, 0.2f, 0.f);
+  mLights.push_back(CLight::BuildPoint(gpTweakGui->GetLogBookModelLight2Position(),
+                                      gpTweakGui->GetLogBookModelLight2Color()));
+  mLights[1].SetAttenuation(1.f, 0.2f, 0.f);
+  mActorLights->BuildFakeLightList(mLights, gpTweakGui->GetLogBookModelAmbientLightColor());
+  mMessage = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_message"));
+  mMessage->TextSupport().SetFontColor(gpTweakGui->GetLogBookScanTextWindowFontColor());
+  mMessage->TextSupport().SetOutlineColor(gpTweakGuiColors->GetHUDMemoTextOutlineColor());
+  mMessage->SetVisibility(false, kTM_Children);
+  mHexWidgets.reserve(100);
+  for (int i = 0; i < 100; ++i) {
+    CGuiWidget* widget = mFrame->FindWidget(CBasics::Stringize("%s%d", "model_hex", i));
+    if (widget != nullptr) {
+      mHexWidgets.push_back(widget);
+    }
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_topframe")) {
+    widget->SetColor(gpTweakGui->GetLogBookMainWindowBorderColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_label")) {
+    widget->SetColor(gpTweakGui->GetLogBookMainWindowBorderColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_frame_02")) {
+    widget->SetColor(gpTweakGui->GetLogBookScanTextWindowBorderColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_backdrop")) {
+    widget->SetColor(gpTweakGui->GetLogBookScanTextWindowBackgroundColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_frame_03")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendWindowBorderColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_backdrop2")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendWindowBackgroundColor());
+  }
+  mBottomPane = mFrame->FindWidget("basewidget_bottomPane");
+  if (!mLegendVisible) {
+    mBottomPane->SetVisibility(false, kTM_Children);
+    mLegendHiddenAmount = 1.f;
+  }
+  mScanInfoGroup = mFrame->FindWidget("basewidget_scaninfogroup");
+  mScanInfoGroup->SetVisibility(false, kTM_Children);
+  mAdvanceButton = mFrame->FindWidget("model_abutton");
+  for (int i = 0; i < 6; ++i) {
+    if (CGuiWidget* widget = mFrame->FindWidget(CBasics::Stringize("model_history%d_active", i + 1))) {
+      mHistoryHighlights.push_back(widget);
+      widget->SetVisibility(false, kTM_Children);
+    }
+    if (CGuiWidget* widget = mFrame->FindWidget(CBasics::Stringize("model_history%d_bottom", i + 1))) {
+      mHistoryBackgrounds.push_back(widget);
+      widget->SetVisibility(false, kTM_Children);
+      widget->SetColor(gpTweakGui->GetLogBookHistorySelectedFrame());
+    }
+    if (CGuiTextPane* widget = static_cast< CGuiTextPane* >(
+            mFrame->FindWidget(CBasics::Stringize("textpane_history%d", i + 1)))) {
+      mHistoryLabels.push_back(widget);
+      widget->TextSupport().SetFontColor(gpTweakGui->GetLogBookHistoryUnselectedTitle());
+      widget->SetVisibility(false, kTM_Children);
+      widget->TextSupport().SetWordWrap(true);
+    }
+    if (CAuiBitmapMeter* widget = static_cast< CAuiBitmapMeter* >(
+            mFrame->FindWidget(CBasics::Stringize("barmeter_percent%d", i + 1)))) {
+      mHistoryMeters.push_back(widget);
+      widget->SetVisibility(false, kTM_Children);
+      widget->SetColor(gpTweakGui->GetLogBookHistoryPercentBarUnselected());
+      widget->SetTargetFraction(0.f);
+      widget->SetCurrentFraction(0.f);
+      widget->SetIncreaseSpeed(60.f);
+      widget->SetDecreaseSpeed(60.f);
+    }
+    if (CGuiWidget* widget = mFrame->FindWidget(CBasics::Stringize("model_barmeterbg%d", i + 1))) {
+      mHistoryMeterBackgrounds.push_back(widget);
+      widget->SetVisibility(false, kTM_Children);
+      widget->SetColor(gpTweakGui->GetLogBookHistoryPercentBarBackgroundUnselected());
+    }
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_scanlines")) {
+    widget->SetColor(gpTweakGui->GetLogBookScanlineColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_frame")) {
+    widget->SetColor(gpTweakGui->GetLogBookFrameColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_legend_left")) {
+    widget->SetColor(gpTweakGui->GetLogBookFrameColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_legend_center")) {
+    widget->SetColor(gpTweakGui->GetLogBookFrameColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_legend_right")) {
+    widget->SetColor(gpTweakGui->GetLogBookFrameColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_black_right")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendBackgroundColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_black_left")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendBackgroundColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_black_center")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendBackgroundColor());
+  }
+  if (CGuiWidget* widget = mFrame->FindWidget("model_rhs_bgnd")) {
+    widget->SetColor(gpTweakGui->GetLogBookLegendBackgroundColor());
+  }
+  mInstructionLabel = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_lable"));
+  mInstructionLabel->TextSupport().SetText(
+      rstl::wstring(gpStringTable->GetString("LogBookScreenInstructionPanelLabel")), false);
+  mInstructionLabel->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  CGuiTextPane* left = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_left"));
+  left->TextSupport().SetText(rstl::wstring(gpStringTable->GetString("InstructionsLeft")), false);
+  left->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mRightInstructions = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_right2"));
+  mRightInstructions->TextSupport().SetText(rstl::wstring(gpStringTable->GetString("InstructionsMid")), false);
+  mRightInstructions->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  CGuiTextPane* next = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_instructions2"));
+  next->TextSupport().SetText(rstl::wstring(gpStringTable->GetString("InstructionsNext")), false);
+  next->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  CGuiTextPane* back = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_instructions1"));
+  back->TextSupport().SetText(rstl::wstring(gpStringTable->GetString("InstructionsBack")), false);
+  back->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  CGuiTextPane* zoom = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_right3"));
+  zoom->TextSupport().SetText(rstl::wstring(gpStringTable->GetString("LogbookZoomInstructions")), false);
+  zoom->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mScanPercentage = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_percent"));
+  mScanPercentage->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mItemPercentage = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_percent1"));
+  mItemPercentage->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mLeftStickInstructions = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_instructions"));
+  mLeftStickInstructions->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mRightStickInstructions = static_cast< CGuiTextPane* >(mFrame->FindWidget("textpane_right"));
+  mRightStickInstructions->TextSupport().SetFontColor(gpTweakGui->GetLogBookLegendWindowFontColor());
+  mFrameLoader = nullptr;
+  mTransitionState = kTS_FadeIn;
+  mAlpha = 0.f;
 }
 
-void CPauseScreen::Initialize(const CStateManager&) {
-  // TODO: initialize scan-tree completion counts and open the player's just-completed scan.
+void CPauseScreen::Initialize(const CStateManager& mgr) {
+  mScanTree.RefreshVisibility(const_cast< CStateManager& >(mgr));
+  mScanTree.RefreshViewed(const_cast< CStateManager& >(mgr));
+  const rstl::pair< uint, uint > scans = mScanTree.GetScanCounts();
+  const int scanPercentage = int((100.f * int(scans.first)) / int(scans.second));
+  char text[256];
+  sprintf(text, "%d%%", scanPercentage);
+  mScanPercentage->TextSupport().SetText(
+      rstl::wstring(gpStringTable->GetString("ScansPercentage")) +
+          CStringExtras::ConvertToUNICODE(rstl::string(text)), false);
+  sprintf(text, "%d%%", mgr.GetPlayerState(0)->GetItemPercentageRatio());
+  mItemPercentage->TextSupport().SetText(
+      rstl::wstring(gpStringTable->GetString("ItemsPercentage")) +
+          CStringExtras::ConvertToUNICODE(rstl::string(text)), false);
+
+  mOpenedFromScan = false;
+  const TUniqueId target = mgr.GetPlayer(0)->GetOrbitTargetId();
+  if (mgr.GetPlayer(0)->GetPlayerScanState() == CPlayer::kSS_ScanComplete &&
+      target != kInvalidUniqueId) {
+    const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(target));
+    if (actor != nullptr) {
+      const CScannableObjectInfo* scan = actor->GetScannableObjectInfo();
+      if (scan != nullptr) {
+        mScanTree.SelectScan(scan->GetScannableObjectId(), 0.f);
+        LoadScan(mScanTree.GetSelectedNode());
+        UpdateHistoryText();
+        mOpenedFromScan = true;
+      }
+    }
+  }
 }
 
 void CPauseScreen::TrackTexture(const TToken< CTexture >& texture, bool restoreToARAM) {
@@ -196,10 +376,173 @@ void CPauseScreen::RestoreTextures() {
   CTexture::sCurrentFrameCount = 0;
 }
 
-bool CPauseScreen::CheckLoadComplete(const CStateManager&) {
-  // TODO: advance scan-tree, SCAN, STRG, model/dependency and frame-loading states.
-  // Model loading may continue after the surrounding GUI becomes ready.
-  return false;
+bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
+  if (!gpResourceFactory->GetResLoader().AreAllPaksLoaded()) {
+    return false;
+  }
+  if (mScanTree.IsLoaded() && mScanTree.GetRootNode() == -1) {
+    mScanTree.LoadAsync();
+    return false;
+  }
+  if (mLoadState == kLS_ScanInfo) {
+    if (!mScanInfo.null()) {
+      if (!mScanInfo->IsLoaded()) {
+        return true;
+      }
+      const CScannableObjectInfo& scan = *mScanInfo->GetObject();
+      mModelPitch = CRelAngle::FromDegrees(scan.GetModelInitialPitch());
+      mModelYaw = CRelAngle::FromDegrees(scan.GetModelInitialYaw());
+      mModelTokens.clear();
+      mModels.clear();
+      mDependencies.clear();
+      mModelsReady = false;
+      mDependencies.reserve(scan.GetDependencies().size());
+      for (rstl::vector< SObjectTag >::const_iterator it = scan.GetDependencies().begin();
+           it != scan.GetDependencies().end(); ++it) {
+        if (it->type != FourCC('AGSC')) {
+          mDependencies.push_back(gpSimplePool->GetObj(*it));
+          mDependencies.back().Lock();
+        }
+      }
+      for (int i = 0; i < 11; ++i) {
+        if (scan.GetAnimatedModelId(i) != kInvalidAssetId) {
+          mModelTokens.push_back(gpSimplePool->GetObj(SObjectTag('ANCS', scan.GetAnimatedModelId(i))));
+          mModelTokens[i]->Lock();
+        } else if (scan.GetStaticModelId(i) != kInvalidAssetId) {
+          mModelTokens.push_back(gpSimplePool->GetObj(SObjectTag('CMDL', scan.GetStaticModelId(i))));
+          mModelTokens[i]->Lock();
+        } else {
+          mModelTokens.push_back(rstl::optional_object< CToken >());
+        }
+      }
+      mScanStrings = rs_new TCachedToken< CStringTable >(
+          gpSimplePool->GetObj(SObjectTag('STRG', scan.GetStringTableId())));
+      mScanStrings->Lock();
+    }
+    mLoadState = kLS_ScanText;
+  }
+  if (mLoadState == kLS_ScanText) {
+    if (!mScanStrings.null()) {
+      if (!mScanStrings->IsLoaded()) {
+        return true;
+      }
+      mMessage->TextSupport().SetText(rstl::wstring(mScanStrings->GetObject()->GetString(2)), true);
+      if (!mMessage->TextSupport().GetIsTextSupportFinishedLoading()) {
+        return true;
+      }
+      mMessage->TextSupport().SetPage(0);
+      mPageCount = mMessage->TextSupport().GetTotalPageCount();
+    }
+    mLoadState = kLS_ScanModels;
+  }
+  if (mLoadState == kLS_ScanModels) {
+    for (int i = 0; i < mModelTokens.size(); ++i) {
+      if (mModelTokens[i].valid() && mModelTokens[i]->HasLock() && !mModelTokens[i]->IsLoaded()) {
+        return true;
+      }
+    }
+    for (rstl::vector< CToken >::const_iterator it = mDependencies.begin();
+         it != mDependencies.end(); ++it) {
+      if (!it->IsLoaded() || !EnsureTextureLoaded(*it)) {
+        return true;
+      }
+    }
+    if (mModels.empty()) {
+      for (int i = 0; i < mModelTokens.size(); ++i) {
+        if (mModelTokens[i].valid() && mModelTokens[i]->HasLock() && mModelTokens[i]->IsLoaded() &&
+            !mScanInfo.null() && mScanInfo->GetObject() != nullptr) {
+          mModels.push_back(mScanInfo->GetObject()->CreateModel(i));
+        } else {
+          mModels.push_back(rstl::auto_ptr< CModelData >(nullptr));
+        }
+      }
+    }
+    for (int i = 0; i < mModels.size(); ++i) {
+      CModelData* model = mModels[i].get();
+      if (model != nullptr) {
+        if (!model->IsNull()) {
+          model->Touch(CModelData::kWM_Normal, 0);
+        }
+        if (!model->IsLoaded(0)) {
+          return true;
+        }
+        if (!model->HasAnimation()) {
+          const CCubeModel* instance = model->PickStaticModel(CModelData::kWM_Normal)->GetModelInstance();
+          if (instance != nullptr) {
+            const rstl::vector< TCachedToken< CTexture > >& textures = instance->GetTextures();
+            for (rstl::vector< TCachedToken< CTexture > >::const_iterator it = textures.begin();
+                 it != textures.end(); ++it) {
+              const TCachedToken< CTexture > texture = *it;
+              if (!EnsureTextureLoaded(CToken(texture))) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+    CAABox bounds = CAABox::MakeMaxInvertedBox();
+    for (int i = 0; i < mModels.size(); ++i) {
+      CModelData* model = mModels[i].get();
+      if (model != nullptr && !model->IsNull()) {
+        mModelFade = 0.f;
+        model->Touch(CModelData::kWM_Normal, 0);
+        model->EnableLooping(true);
+        if (model->HasAnimation()) {
+          CRandom16 random(0);
+          model->AdvanceAnimation(0.02f, random, true);
+          const CAABox modelBounds = model->AnimationData()->CalcBoundingBoxFromModelVerts();
+          bounds.AccumulateBounds(modelBounds.GetMinPoint());
+          bounds.AccumulateBounds(modelBounds.GetMaxPoint());
+        } else {
+          const CAABox modelBounds = model->GetBounds();
+          bounds.AccumulateBounds(modelBounds.GetMinPoint());
+          bounds.AccumulateBounds(modelBounds.GetMaxPoint());
+        }
+        mModelCenterOffset = -bounds.GetCenterPoint();
+        const CVector3f extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
+        const float maxExtent = rstl::max_val(rstl::max_val(extent.GetX(), extent.GetZ()), extent.GetY());
+        const float scale = (gpTweakGui->GetLogBookScanModelScale() *
+                             mScanInfo->GetObject()->GetModelScale()) / maxExtent;
+        mModelScale = CVector3f(scale, scale, scale);
+      }
+    }
+    mModelsReady = true;
+    mLoadState = kLS_Ready;
+  }
+  if (mLoadState == kLS_ScanTree) {
+    if (!mScanTree.PollLoad()) {
+      return false;
+    }
+    mLoadState = kLS_Ready;
+  }
+  if (!mFrameLoader.null() && !mFrameLoader->IsFinishedLoading()) {
+    return false;
+  }
+  if (mFrame.null() && !mFrameLoader.null()) {
+    InitializeFrameGlue();
+    Initialize(mgr);
+  }
+  if (mFrame.null()) {
+    return false;
+  }
+  mFont.IsLoaded();
+  mUnselectedNodeTexture.IsLoaded();
+  mSelectedNodeTexture.IsLoaded();
+  mParentNodeTexture.IsLoaded();
+  mSelectedCursorTexture.IsLoaded();
+  mHighlightTexture.IsLoaded();
+  mSliderModel.IsLoaded();
+  mSliderEndModel.IsLoaded();
+  mSliderCenterModel.IsLoaded();
+  mMenuArrowModel.IsLoaded();
+  mOptionBackgroundModel.IsLoaded();
+  mScanSweepTexture.IsLoaded();
+  if (!mNodesTouched) {
+    TouchVisibleNodes();
+    mNodesTouched = true;
+  }
+  return true;
 }
 
 void CPauseScreen::UpdatePulse(float dt) {
@@ -220,8 +563,189 @@ void CPauseScreen::UpdatePulse(float dt) {
   }
 }
 
-void CPauseScreen::Update(float, const CStateManager&, CArchitectureQueue&) {
-  // TODO: update transitions, tree rotation/selection, model animation, GUI text and quit messages.
+void CPauseScreen::Update(float dt, const CStateManager& mgr, CArchitectureQueue& queue) {
+  if (mDone || !CheckLoadComplete(mgr)) {
+    return;
+  }
+  if (!mHistoryTextReady) {
+    UpdateHistoryText();
+  }
+  if (!mLegendVisible) {
+    mLegendHiddenAmount += dt / gpTweakGui->GetLogBookLegendHideTime();
+  } else {
+    mLegendHiddenAmount -= dt / gpTweakGui->GetLogBookLegendHideTime();
+  }
+  mLegendHiddenAmount = CMath::Clamp(0.f, mLegendHiddenAmount, 1.f);
+  if (mBottomPane != nullptr) {
+    mBottomPane->SetColor(CColor::White().WithAlphaModulatedBy(1.f - mLegendHiddenAmount));
+    mBottomPane->SetVisibility(!close_enough(mLegendHiddenAmount, 1.f), kTM_Children);
+  }
+  if (mScanInfoGroup != nullptr) {
+    mScanInfoGroup->SetO2PTransform(mScanInfoGroup->GetIdleXform() *
+                                  CTransform4f::Translate(0.f, 0.f, -4.3f * mLegendHiddenAmount));
+  }
+  if (mModelZoomed) {
+    mModelZoomAmount = 2.f * dt + mModelZoomAmount;
+  } else {
+    mModelZoomAmount = -(2.f * dt - mModelZoomAmount);
+  }
+  mModelZoomAmount = CMath::Clamp(0.f, mModelZoomAmount, 1.f);
+  mSelectionDelay = rstl::max_val(mSelectionDelay - dt, 0.f);
+  mSelectionHighlight = rstl::max_val(-(3.f * dt - mSelectionHighlight), 0.f);
+  mModelFade = rstl::min_val(mModelFade + dt / gpTweakGui->GetLogBookScanObjectFadeInTime(), 1.f);
+  mFrame->Update(dt);
+  if (mQuitScreen.get() == nullptr) {
+    mScanTree.Update(dt);
+  } else {
+    const EQuitAction action = mQuitScreen->Update(dt);
+    if (action == kQA_No) {
+      mQuitScreen = rstl::auto_ptr< CQuitGameScreen >(nullptr);
+    } else if (action == kQA_Yes) {
+      queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
+    }
+  }
+  UpdateHistoryColors();
+  UpdatePulse(dt);
+  if (mPendingScanNode != -1) {
+    mScanTree.MarkViewed(const_cast< CStateManager& >(mgr), mPendingScanNode);
+    mPendingScanNode = -1;
+  }
+  const float transition = mScanTree.GetTransition();
+  const rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(mScanTree.GetSelectedNode());
+  const CVector3f position = node->GetDisplayPosition();
+  mRotationVelocity += mRotationInput * dt;
+  mRotationVelocity *= 0.97f;
+  mRotationInput = CVector2f::Zero();
+  if (mRotationVelocity.MagSquared() > 1166400.f) {
+    mRotationVelocity = mRotationVelocity.AsNormalized() * 1080.f;
+  }
+  const CVector2f rotation = mRotationVelocity * dt;
+  const CTransform4f view = mViewRotation.BuildTransform4f();
+  const CVector3f selectionOffset = -2.f * view.GetColumn(kDY);
+  mViewRotation = mViewRotation * CQuaternion::ZRotation(CRelAngle::FromDegrees(rotation.GetX())) *
+                  CQuaternion::XRotation(CRelAngle::FromDegrees(rotation.GetY()));
+  if (close_enough(transition, 0.f) && close_enough(mSelectionDelay, 0.f)) {
+    float bestDistance = 10000.f;
+    if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
+      const rstl::rc_ptr< CScanTreeNode > categoryNode(node);
+      CScanTreeCategory& category = static_cast< CScanTreeCategory& >(*categoryNode);
+      const int count = category.GetChildCount();
+      const int selected = category.GetSelectedChild();
+      for (int i = 0; i < count; ++i) {
+        const int id = category.GetChild(i);
+        const rstl::rc_ptr< CScanTreeNode > child = mScanTree.GetNode(id);
+        if (!child->IsVisible()) {
+          continue;
+        }
+        const float distance = (id == selected ? 1.f : 1.5f) *
+            (child->GetDisplayPosition() - position - selectionOffset).MagSquared();
+        if (distance < bestDistance) {
+          category.SetSelectedChild(id);
+          bestDistance = distance;
+        }
+      }
+      if (selected != category.GetSelectedChild()) {
+        CSfxManager::SfxStart(0x21ce, 0x7f, 0x3f, CSfxManager::kAllAreas, false, false,
+                              CSfxManager::kMedPriority);
+        mSelectionHighlight = 1.f;
+      }
+    }
+  }
+  if (!mModels.empty()) {
+    const CVector3f lightPositions[] = {gpTweakGui->GetLogBookModelLight1Position(),
+                                      gpTweakGui->GetLogBookModelLight2Position()};
+    const CVector3f* lightPosition = lightPositions;
+    for (rstl::vector< CLight >::iterator it = mLights.begin(); it != mLights.end(); ++it) {
+      it->SetPosition(mViewRotation.BuildTransform4f() *
+                     (*lightPosition + (GetModelPosition() - GetDefaultModelPosition())));
+      ++lightPosition;
+    }
+    mActorLights->BuildFakeLightList(mLights, gpTweakGui->GetLogBookModelAmbientLightColor());
+    const rstl::rc_ptr< CScanTreeNode > current = mScanTree.GetNode(mScanTree.GetSelectedNode());
+    const CVector3f scale = (1.f + 0.5f * mModelZoomAmount) * mModelScale;
+    mModelTransform = view.GetRotation() * CTransform4f::Translate(GetModelPosition()) *
+                      CTransform4f::RotateX(mModelPitch) * CTransform4f::RotateZ(mModelYaw) *
+                      CTransform4f::Scale(scale) * CTransform4f::Translate(mModelCenterOffset);
+    if (!close_enough(mScanTree.GetTransition(), 0.f) ||
+        current->GetNodeType() == CScanTreeNode::kNT_Scan ||
+        current->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+      for (int i = 0; i < mModels.size(); ++i) {
+        if (mModels[i].get() != nullptr && mModels[i]->HasAnimation()) {
+          CRandom16 random(0);
+          mModels[i]->AdvanceAnimation(dt, random, true);
+          mModels[i]->AnimationData()->AdvanceParticles(mModelTransform, dt, CVector3f::One(), nullptr);
+        }
+      }
+    } else {
+      RestoreTextures();
+      mModels.clear();
+      mModelTokens.clear();
+      mDependencies.clear();
+      mModelTokens = rstl::reserved_vector< rstl::optional_object< CToken >, 11 >();
+      mModels = rstl::reserved_vector< rstl::auto_ptr< CModelData >, 11 >();
+      mDependencies = rstl::vector< CToken >();
+    }
+  }
+  float scanAlpha = 0.f;
+  if (node->GetNodeType() == CScanTreeNode::kNT_Scan ||
+      node->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+    scanAlpha = 1.f - transition;
+  }
+  const int previousId = mScanTree.GetPreviousNode();
+  if (previousId != -1) {
+    const rstl::rc_ptr< CScanTreeNode > previous = mScanTree.GetNode(previousId);
+    if (previous->GetNodeType() == CScanTreeNode::kNT_Scan ||
+        previous->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+      scanAlpha = transition;
+    }
+  }
+  const float visibleAlpha = (1.f - mModelZoomAmount) * scanAlpha;
+  if (mScanInfoGroup != nullptr) {
+    mScanInfoGroup->SetColor(CColor::Modulate(CColor::White(),
+        CColor(visibleAlpha, visibleAlpha, visibleAlpha, 1.f)).WithAlphaModulatedBy(visibleAlpha));
+    mScanInfoGroup->SetVisibility(!close_enough(visibleAlpha, 0.f), kTM_Children);
+    if (mPage < mPageCount - 1) {
+      mAdvanceButton->SetColor(CColor::White().WithAlphaModulatedBy(
+          0.5f * (1.f + CMath::FastCosR(5.f * CGraphics::GetSecondsMod900()))));
+    } else {
+      mAdvanceButton->SetColor(CColor::White().WithAlphaModulatedBy(0.f));
+    }
+  }
+  mRightInstructions->SetColor(CColor::White().WithAlphaOf(
+      rstl::max_val(1.f - mLegendHiddenAmount, (1.f - scanAlpha) * (1.f - scanAlpha))));
+  const wchar_t imagePrefix[] = L"&image=";
+  const wchar_t separator[] = L";";
+  rstl::wstring text;
+  text.reserve(256);
+  text.append(imagePrefix, -1);
+  text.append(CStringExtras::ConvertToUNICODE(rstl::string(
+      CBasics::Stringize("SI,0.6,1.0,%8.8X", gpTweakPlayerRes->mLStick[mLeftStickIcon]))));
+  text.append(separator, -1);
+  text.append(gpStringTable->GetString("InstructionRotate"), -1);
+  mLeftStickInstructions->TextSupport().SetText(text, false);
+  text.assign(imagePrefix, -1);
+  text.append(CStringExtras::ConvertToUNICODE(rstl::string(
+      CBasics::Stringize("SI,0.6,1.0,%8.8X", gpTweakPlayerRes->mCStick[mRightStickIcon]))));
+  text.append(separator, -1);
+  text.append(gpStringTable->GetString("InstructionMove"), -1);
+  mRightStickInstructions->TextSupport().SetText(text, false);
+  if (mTransitionState == kTS_FadeIn) {
+    mAlpha = rstl::min_val(mAlpha + dt / 0.4f, 1.f);
+    if (mAlpha == 1.f) {
+      mTransitionState = kTS_Active;
+    }
+  } else if (mTransitionState == kTS_FadeOut) {
+    mAlpha = rstl::max_val(mAlpha - dt / 0.4f, 0.f);
+    if (mAlpha == 0.f) {
+      mDone = true;
+      gpResourceFactory->GetResLoader().RemovePakFile("logbook");
+      mFrame = rstl::auto_ptr< CGuiFrame >(nullptr);
+      gpGameState->RecordCompressedGameOptions(gpGameState->SystemOptions().GetSaveIdx());
+      CSfxManager::SfxStop(mRotateSfx);
+      CSfxManager::SfxStop(mPanSfx);
+      CSfxManager::SfxStop(mZoomSfx);
+    }
+  }
 }
 
 void CPauseScreen::TouchVisibleNodes() {
@@ -760,21 +1284,248 @@ void CPauseScreen::SetFog(bool enabled) const {
 }
 
 void CPauseScreen::Draw() const {
-  // TODO: draw the loaded GUI, scan network, active node's model/menu/slider, or quit dialog.
+  if (mDone || !mScanTree.IsLoaded() || !mFont.IsLoaded() || mFrame.null()) {
+    return;
+  }
+  if (!mQuitScreen.null()) {
+    mQuitScreen->Draw();
+    return;
+  }
+  float frameAlpha = mAlpha;
+  if (!close_enough(mModelZoomAmount, 0.f)) {
+    frameAlpha = 1.f - mModelZoomAmount;
+  }
+  if (!close_enough(frameAlpha, 0.f)) {
+    CGraphics::SetDepthRange(0.f, 0.f);
+    mFrame->Draw(CGuiWidgetDrawParms(frameAlpha, CVector3f::Zero()));
+  }
+  CGraphics::SetDepthRange(0.125f, 1.f);
+  const CViewport& viewport = CGraphics::GetViewport();
+  gpRender->SetPerspective(30.f, viewport.mWidth, viewport.mHeight, 0.2f, 4096.f);
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  const CTransform4f view = mViewRotation.BuildTransform4f();
+  const CVector3f camera(gpTweakGui->GetLogBookCameraXOffset(),
+                         -gpTweakGui->GetLogBookCameraDistance(),
+                         gpTweakGui->GetLogBookCameraZOffset());
+  const CVector3f zoomCamera(0.f, -gpTweakGui->GetLogBookCameraDistance(), 0.f);
+  const CVector3f cameraPosition = (1.f - mModelZoomAmount) * camera + mModelZoomAmount * zoomCamera;
+  CGraphics::SetViewPointMatrix(view * CTransform4f::Translate(cameraPosition));
+  CGraphics::SetDepthRange(0.125f, 1.f);
+  CGraphics::SetCullMode(kCM_None);
+  CGraphics::SetLineWidth(2.f, kTO_One);
+  SetFog(true);
+
+  const float transition = mScanTree.GetTransition();
+  const int selectedId = mScanTree.GetSelectedNode();
+  rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(selectedId);
+  CVector3f origin = node->GetDisplayPosition();
+  const bool option = node->GetNodeType() == CScanTreeNode::kNT_Slider ||
+                      node->GetNodeType() == CScanTreeNode::kNT_Menu;
+  rstl::vector< SNodeDraw > nodes;
+  if (!close_enough(transition, 0.f) || option) {
+    const int previousId = mScanTree.GetPreviousNode();
+    rstl::rc_ptr< CScanTreeNode > previous = mScanTree.GetNode(previousId);
+    const bool previousOption = previous->GetNodeType() == CScanTreeNode::kNT_Slider ||
+                                previous->GetNodeType() == CScanTreeNode::kNT_Menu;
+    origin = previous->GetDisplayPosition();
+    const float previousAlpha = mAlpha * (option || previousOption ? 1.f : transition);
+    switch (previous->GetNodeType()) {
+    case CScanTreeNode::kNT_Category:
+      DrawScanTree(view, origin, previousId, !option, nodes);
+      break;
+    case CScanTreeNode::kNT_Scan:
+    case CScanTreeNode::kNT_Inventory:
+      DrawModels(previousAlpha);
+      break;
+    }
+    if (!option) {
+      origin = node->GetDisplayPosition();
+    }
+  }
+  if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
+    DrawScanTree(view, origin, selectedId, false, nodes);
+  }
+  DrawNodes(view, nodes);
+  const float alpha = (1.f - transition) * mAlpha;
+  switch (node->GetNodeType()) {
+  case CScanTreeNode::kNT_Menu:
+    DrawMenuNode(view, origin, selectedId, alpha);
+    break;
+  case CScanTreeNode::kNT_Scan:
+  case CScanTreeNode::kNT_Inventory:
+    DrawModels(alpha);
+    break;
+  case CScanTreeNode::kNT_Slider:
+    DrawSliderNode(view, origin, selectedId, alpha);
+    break;
+  }
+  CGraphics::SetCullMode(kCM_Front);
+  CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+  SetFog(false);
 }
 
-void CPauseScreen::DrawScanTree(const CTransform4f&, const CVector3f&, int, bool,
-                                rstl::vector< SNodeDraw >&) const {
-  // TODO: gather parent/child node records and draw their connecting lines.
+void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origin, int nodeId,
+                                bool skipParent, rstl::vector< SNodeDraw >& nodes) const {
+  nodes.reserve(nodes.size() + 2);
+  rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
+  const CVector3f position = node->GetDisplayPosition() - origin;
+  gpRender->SetBlendMode_AdditiveAlpha();
+  gpRender->SetModelMatrix(CTransform4f::Identity());
+  if (!skipParent) {
+    SNodeDraw draw;
+    draw.mNode = node;
+    draw.mPosition = position;
+    draw.mDepth = 0.f;
+    draw.mStyle = 1;
+    draw.mAlpha = mScanTree.GetLayoutProgress();
+    nodes.push_back(draw);
+  }
+  if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const CScanTreeCategory& category = static_cast< const CScanTreeCategory& >(*node);
+    const int count = category.GetChildCount();
+    nodes.reserve(nodes.size() + count);
+    for (int i = 0; i < count; ++i) {
+      const int childId = category.GetChild(i);
+      rstl::rc_ptr< CScanTreeNode > child = mScanTree.GetNode(childId);
+      if (!child->IsVisible()) {
+        continue;
+      }
+      const bool selected = category.GetSelectedChild() == childId;
+      const bool option = child->GetNodeType() == CScanTreeNode::kNT_Menu ||
+                          child->GetNodeType() == CScanTreeNode::kNT_Slider;
+      const bool activeOption = option && childId == mScanTree.GetSelectedNode();
+      int style = 2;
+      if (selected) {
+        style = activeOption ? 4 : 3;
+      }
+      const float alpha = rstl::min_val(1.f, rstl::max_val(0.f, child->GetOpacity()));
+      const CColor brightness(alpha, alpha, alpha, 1.f);
+      const CVector3f childPosition = child->GetDisplayPosition() - origin;
+      SNodeDraw draw;
+      draw.mNode = child;
+      draw.mPosition = childPosition;
+      draw.mDepth = 0.f;
+      draw.mStyle = style;
+      draw.mAlpha = alpha;
+      nodes.push_back(draw);
+      DrawConnection(view, position, childPosition,
+                     CColor::Modulate(gpTweakGui->GetLogBookNodeColor(), brightness), 1.f);
+    }
+  }
 }
 
-void CPauseScreen::DrawNodes(const CTransform4f&, rstl::vector< SNodeDraw >&) const {
-  // TODO: depth-sort the records and draw the appropriate node textures, labels and highlights.
+void CPauseScreen::DrawNodes(const CTransform4f& view, rstl::vector< SNodeDraw >& nodes) const {
+  CTexture* parent = mParentNodeTexture.GetObject();
+  CTexture* unselected = mUnselectedNodeTexture.GetObject();
+  CTexture* selected = mSelectedNodeTexture.GetObject();
+  CTexture* highlight = mHighlightTexture.GetObject();
+  if (parent == nullptr || unselected == nullptr || selected == nullptr || highlight == nullptr) {
+    return;
+  }
+  gpRender->SetDepthReadWrite(false, false);
+  for (rstl::vector< SNodeDraw >::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    it->mDepth = view.TransposeRotate(it->mPosition).GetY();
+  }
+  struct SDepthCompare {
+    bool operator()(const SNodeDraw& a, const SNodeDraw& b) const { return a.mDepth > b.mDepth; }
+  };
+  rstl::sort(nodes.begin(), nodes.end(), SDepthCompare());
+
+  for (rstl::vector< SNodeDraw >::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    const float alpha = rstl::min_val(1.f, rstl::max_val(0.f, it->mAlpha));
+    const CColor brightness(alpha, alpha, alpha, 1.f);
+    const CColor faded = brightness.WithAlphaOf(alpha);
+    const CColor* textColor;
+    const CColor* selectedTextColor;
+    if (it->mNode->IsViewed()) {
+      textColor = &gpTweakGui->GetLogBookMainWindowTextColor();
+      selectedTextColor = &gpTweakGui->GetLogBookMainWindowSelectedTextColor();
+    } else {
+      textColor = &gpTweakGui->GetLogBookMainWindowUnviewedColor();
+      selectedTextColor = &gpTweakGui->GetLogBookMainWindowUnviewedSelectedColor();
+    }
+    switch (it->mStyle) {
+    case 0:
+      unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookNodeBackgroundColor(), brightness),
+                   gpTweakGui->GetLogBookNodeScale(), true);
+      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*textColor, brightness),
+                    gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookTextScale());
+      break;
+    case 1:
+      parent->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition, CColor::White().WithAlphaOf(alpha),
+                   gpTweakGui->GetLogBookNodeScale(), false);
+      break;
+    case 2:
+      unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookNodeColor(), brightness),
+                   gpTweakGui->GetLogBookNodeScale(), true);
+      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*textColor, brightness),
+                    gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookTextScale());
+      break;
+    case 3:
+      unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
+                   gpTweakGui->GetLogBookSelectedNodeScale(), true);
+      selected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
+                   gpTweakGui->GetLogBookSelectedNodeScale(), false);
+      if (mSelectionHighlight > 0.f) {
+        highlight->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+        DrawNodeIcon(view, it->mPosition,
+                     CColor::Lerp(CColor(0.f, 0.f, 0.f, 0.f), CColor::White(), mSelectionHighlight),
+                     gpTweakGui->GetLogBookSelectedNodeScale(), true);
+      }
+      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*selectedTextColor, brightness),
+                    gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookSelectedTextScale());
+      break;
+    case 4:
+      unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
+                   gpTweakGui->GetLogBookSelectedNodeScale(), true);
+      selected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      DrawNodeIcon(view, it->mPosition,
+                   CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
+                   gpTweakGui->GetLogBookSelectedNodeScale(), false);
+      DrawOptionBackground(view, it->mPosition, alpha);
+      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*selectedTextColor, brightness),
+                    gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookSelectedTextScale());
+      break;
+    }
+  }
 }
 
-void CPauseScreen::DrawConnection(const CTransform4f&, const CVector3f&, const CVector3f&,
-                                  const CColor&, float) const {
-  // TODO: project and trim the connection, then draw its layered line segments.
+void CPauseScreen::DrawConnection(const CTransform4f& view, const CVector3f& from,
+                                  const CVector3f& to, const CColor& color, float progress) const {
+  CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvPassthru);
+  const CVector3f delta = to - from;
+  if (delta.CanBeNormalized()) {
+    const float length = delta.Magnitude();
+    const CVector3f direction = (1.f / length) * delta;
+    const CVector3f forward = view.GetColumn(kDY);
+    const CVector3f projected = delta - (length * CVector3f::Dot(direction, forward)) * forward;
+    const float projectedLength = projected.Magnitude();
+    if (projectedLength > 0.34f) {
+      const CVector3f trim = ((0.17f * length) / projectedLength) * direction;
+      const CVector3f start = from + trim;
+      const CVector3f end = to - trim;
+      const CVector3f current = (1.f - progress) * start + progress * end;
+      for (int i = 2; i != 0; --i) {
+        CGraphics::SetLineWidth(i + 1, kTO_Zero);
+        CGraphics::StreamBegin(kP_Lines);
+        CGraphics::StreamColor(color.WithAlphaModulatedBy(1.f / 3.f));
+        CGraphics::StreamVertex(start);
+        CGraphics::StreamVertex(current);
+        CGraphics::StreamEnd();
+      }
+    }
+  }
 }
 
 void CPauseScreen::DrawNodeIcon(const CTransform4f& view, const CVector3f& position,
@@ -833,17 +1584,130 @@ void CPauseScreen::DrawOptionBackground(const CTransform4f& view, const CVector3
   }
 }
 
-void CPauseScreen::DrawSliderNode(const CTransform4f&, const CVector3f&, int, float) const {
-  // TODO: measure the slider node's label and draw its current/previous values.
+void CPauseScreen::DrawSliderNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
+                                  float alpha) const {
+  gpRender->SetDepthReadWrite(false, false);
+  rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
+  gpTweakGui->GetLogBookSelectedNodeScale();
+  const float scale = gpTweakGui->GetLogBookSelectedTextScale();
+  const CVector3f position = node->GetDisplayPosition() - origin;
+  if (node->AreResourcesLoaded()) {
+    gpRender->SetBlendMode_AdditiveAlpha();
+    mNodeText->SetText(node->GetName(), false);
+    gpTweakGui->GetLogBookTextScale();
+    const float textScale = 0.02f * scale;
+    const float textOffset = -mNodeText->GetTextBoundingWidth() * 0.5f;
+    const CScanTreeSlider& slider = static_cast< const CScanTreeSlider& >(*node);
+    const float value = slider.GetNormalizedValue();
+    const float defaultValue = slider.GetNormalizedDefaultValue();
+    static const float widthScale = gpTweakGui->GetLogBookSliderTextWidthScale();
+    static const float heightScale = gpTweakGui->GetLogBookSliderTextHeightScale();
+    const rstl::pair< CVector2i, CVector2i >& bounds = mNodeText->GetBounds();
+    DrawSlider(view, position, scale, widthScale * (bounds.second.GetX() - bounds.first.GetX()),
+               value, defaultValue,
+               textScale * textOffset - heightScale * (bounds.second.GetY() - bounds.first.GetY()),
+               alpha);
+  }
 }
 
-void CPauseScreen::DrawSlider(const CTransform4f&, const CVector3f&, float, float, float, float,
-                              float, float) const {
-  // TODO: draw end caps, center, old/new slider positions and the percentage label.
+void CPauseScreen::DrawSlider(const CTransform4f& view, const CVector3f& position, float scale,
+                              float width, float value, float defaultValue, float textOffset,
+                              float alpha) const {
+  const float sliderScale = gpTweakGui->GetLogBookSliderScale();
+  const float centerWidth = width - 4.094f;
+  const float halfWidth = centerWidth * 0.5f;
+  const CTransform4f local = CTransform4f::Scale(scale * sliderScale) * view.GetRotation() *
+                            CTransform4f::Translate(0.f, 0.f, textOffset);
+  const CTransform4f world = CTransform4f::Translate(position) * local;
+  const CColor selectionColor = gpTweakGui->GetLogBookSliderSelectionColor().WithAlphaModulatedBy(alpha);
+  const CColor backgroundColor = gpTweakGui->GetLogBookSliderBackgroundColor().WithAlphaModulatedBy(alpha);
+  static const CTransform4f flip = CTransform4f::Scale(CVector3f(-1.f, 1.f, 1.f));
+  const CVector3f endPosition(-(halfWidth - 0.5f), 0.f, 0.f);
+  if (mSliderEndModel.GetObject() != nullptr) {
+    CGraphics::SetModelMatrix(world * CTransform4f::Translate(endPosition));
+    mSliderEndModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Additive, backgroundColor));
+    CGraphics::SetModelMatrix(world * flip * CTransform4f::Translate(endPosition));
+    mSliderEndModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
+  }
+  CGraphics::SetModelMatrix(world * CTransform4f::Scale(CVector3f(centerWidth, 1.f, 1.f)));
+  if (mSliderCenterModel.GetObject() != nullptr) {
+    mSliderCenterModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
+  }
+  CGraphics::SetModelMatrix(
+      world * CTransform4f::Translate(CVector3f((defaultValue - 0.5f) * (width - 2.f), 0.f, 0.f)));
+  if (mSliderModel.GetObject() != nullptr) {
+    const CColor dim = CColor::Modulate(selectionColor, CColor(0.5f, 0.5f, 0.5f, 0.5f));
+    mSliderModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Additive, dim));
+  }
+  CGraphics::SetModelMatrix(
+      world * CTransform4f::Translate(CVector3f((value - 0.5f) * (width - 2.f), 0.f, 0.f)));
+  if (mSliderModel.GetObject() != nullptr) {
+    mSliderModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Additive, selectionColor));
+  }
+
+  char text[16];
+  sprintf(text, "%02d", int(100.f * value));
+  mNodeText->SetText(rstl::string(text), false);
+  const float heightScale = gpTweakGui->GetLogBookSliderTextHeightScale();
+  const CVector3f offset(-mNodeText->GetTextBoundingWidth() * 0.5f, 0.f,
+                         -5.f + textOffset / heightScale);
+  const CTransform4f textXf = CTransform4f::Scale(0.02f * scale) * view.GetRotation() *
+                             CTransform4f::Translate(offset);
+  CGraphics::SetModelMatrix(CTransform4f::Translate(position) * textXf);
+  mNodeText->Render();
 }
 
-void CPauseScreen::DrawMenuNode(const CTransform4f&, const CVector3f&, int, float) const {
-  // TODO: draw the current choice and dim unavailable left/right menu arrows.
+void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
+                                float alpha) const {
+  gpRender->SetDepthReadWrite(false, false);
+  rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
+  const float nodeScale = gpTweakGui->GetLogBookSelectedNodeScale();
+  const float textScale = gpTweakGui->GetLogBookSelectedTextScale();
+  gpTweakGui->GetLogBookMenuOptionColor();
+  const CVector3f position = node->GetDisplayPosition() - origin;
+  if (node->AreResourcesLoaded()) {
+    gpRender->SetBlendMode_AdditiveAlpha();
+    const float labelScale = gpTweakGui->GetLogBookTextScale();
+    const float scaledText = 0.02f * textScale;
+    CVector3f offset(-mNodeText->GetTextBoundingWidth() * 0.5f, 0.f,
+                     -(1.2f * (0.2f * nodeScale) * 0.5f) / (0.02f * labelScale));
+    const float optionScale = 0.02f * gpTweakGui->GetLogBookMenuOptionScale();
+    mNodeText->SetText(node->GetName(), false);
+    const CScanTreeMenu& menu = static_cast< const CScanTreeMenu& >(*node);
+    const rstl::pair< CVector2i, CVector2i >& labelBounds = mNodeText->GetBounds();
+    offset.SetZ(scaledText *
+                (offset.GetZ() - (labelBounds.second.GetY() - labelBounds.first.GetY()) - 1.5f) /
+                optionScale);
+    const CTransform4f optionXf = CTransform4f::Scale(optionScale) * view.GetRotation() *
+                                 CTransform4f::Translate(offset);
+    CGraphics::SetModelMatrix(CTransform4f::Translate(position) * optionXf);
+    mNodeText->SetGeometryColor(gpTweakGui->GetLogBookMenuOptionColor());
+    mNodeText->SetText(menu.GetOptionName(menu.GetCurrentOptionIndex()), false);
+    mNodeText->Render();
+
+    const CColor enabled = gpTweakGui->GetLogBookMenuOptionEnabledArrowColor().WithAlphaModulatedBy(alpha);
+    const CColor disabled = gpTweakGui->GetLogBookMenuOptionDisabledArrowColor().WithAlphaModulatedBy(alpha);
+    CModel* arrow = mMenuArrowModel.GetObject();
+    if (arrow != nullptr) {
+      static const CVector3f flip(-1.f, 1.f, 1.f);
+      const float arrowScale = gpTweakGui->GetLogBookMenuOptionArrowScale();
+      const rstl::pair< CVector2i, CVector2i >& bounds = mNodeText->GetBounds();
+      const CVector3f arrowOffset(
+          optionScale * -(bounds.second.GetX() - bounds.first.GetX()) * 0.5f - 0.1f, 0.f,
+          optionScale * -(bounds.second.GetY() - bounds.first.GetY()) * 0.5f +
+              optionScale * (offset.GetZ() - bounds.first.GetY()));
+      const bool rightEnabled = menu.GetCurrentOptionIndex() < menu.GetOptionCount() - 1;
+      const bool leftEnabled = menu.GetCurrentOptionIndex() > 0;
+      const CTransform4f left = view.GetRotation() * CTransform4f::Translate(arrowOffset) *
+                               CTransform4f::Scale(arrowScale);
+      CGraphics::SetModelMatrix(CTransform4f::Translate(position) * left);
+      arrow->Draw(CModelFlags(CModelFlags::kT_One, leftEnabled ? enabled : disabled));
+      const CTransform4f right = view.GetRotation() * CTransform4f::Scale(flip) *
+                                CTransform4f::Translate(arrowOffset) * CTransform4f::Scale(arrowScale);
+      CGraphics::SetModelMatrix(CTransform4f::Translate(position) * right);
+      arrow->Draw(CModelFlags(CModelFlags::kT_One, rightEnabled ? enabled : disabled));
+    }
+  }
 }
 
 bool CPauseScreen::IsDone() const { return mDone; }
@@ -958,7 +1822,98 @@ void CPauseScreen::UpdateHistoryText() {
 }
 
 void CPauseScreen::UpdateHistoryColors() {
-  // TODO: animate history-row visibility and selection colors during node transitions.
+  rstl::reserved_vector< int, 6 > rows;
+  for (int i = 0; i < 6; ++i) {
+    if (mHistoryRowExpanded[i]) {
+      rows.push_back(i + 6);
+      ++i;
+    } else {
+      rows.push_back(i);
+    }
+  }
+
+  float transition = mScanTree.GetTransition();
+  const CColor& unselectedTitle = gpTweakGui->GetLogBookHistoryUnselectedTitle();
+  const CColor& selectedTitle = gpTweakGui->GetLogBookHistorySelectedTitle();
+  const CColor clear(0.f, 0.f, 0.f, 0.f);
+  const CColor& selectedFrame = gpTweakGui->GetLogBookHistorySelectedFrame();
+  const CColor& unselectedFrame = gpTweakGui->GetLogBookHistoryUnselectedFrame();
+  const CColor& cursor = gpTweakGui->GetLogBookHistoryCursorColor();
+  const CColor& unselectedBar = gpTweakGui->GetLogBookHistoryPercentBarUnselected();
+  const CColor& selectedBar = gpTweakGui->GetLogBookHistoryPercentBarSelected();
+  const CColor& unselectedBackground = gpTweakGui->GetLogBookHistoryPercentBarBackgroundUnselected();
+  const CColor& selectedBackground = gpTweakGui->GetLogBookHistoryPercentBarBackgroundSelected();
+
+  int depth = 0;
+  int nodeId = mScanTree.GetSelectedNode();
+  rstl::rc_ptr< CScanTreeNode > selected = mScanTree.GetNode(nodeId);
+  const bool fromParent = selected->GetParentNode() == mScanTree.GetPreviousNode();
+  while (nodeId != -1) {
+    rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
+    if (node.IsNull()) {
+      break;
+    }
+    ++depth;
+    nodeId = node->GetParentNode();
+  }
+
+  int count = depth - 1;
+  if (!close_enough(transition, 0.f) && !fromParent) {
+    count = depth;
+  }
+  count = CMath::Clamp(0, count, mHistoryBackgrounds.size());
+  int i = 0;
+  for (; i < count; ++i) {
+    const int row = rows[i];
+    mHistoryLabels[row]->SetVisibility(true, kTM_Children);
+    mHistoryBackgrounds[row]->SetVisibility(true, kTM_Children);
+    mHistoryHighlights[row]->SetVisibility(true, kTM_Children);
+    mHistoryMeters[row]->SetVisibility(true, kTM_Children);
+    mHistoryMeterBackgrounds[row]->SetVisibility(true, kTM_Children);
+    mHistoryHighlights[row]->SetColor(clear);
+  }
+  for (; i < rows.size(); ++i) {
+    const int row = rows[i];
+    mHistoryLabels[row]->SetVisibility(false, kTM_Children);
+    mHistoryBackgrounds[row]->SetVisibility(false, kTM_Children);
+    mHistoryMeters[row]->SetVisibility(false, kTM_Children);
+    mHistoryMeterBackgrounds[row]->SetVisibility(false, kTM_Children);
+    mHistoryHighlights[row]->SetVisibility(false, kTM_Children);
+  }
+
+  if (close_enough(transition, 0.f)) {
+    if (count > 0) {
+      const int row = rows[count - 1];
+      mHistoryLabels[row]->TextSupport().SetFontColor(selectedTitle);
+      mHistoryBackgrounds[row]->SetColor(unselectedFrame);
+      mHistoryHighlights[row]->SetColor(cursor);
+      mHistoryMeters[row]->SetColor(selectedBar);
+      mHistoryMeterBackgrounds[row]->SetColor(selectedBackground);
+    }
+  } else {
+    if (fromParent) {
+      transition = 1.f - transition;
+    }
+    if (count > 1) {
+      const int row = rows[count - 2];
+      mHistoryLabels[row]->TextSupport().SetFontColor(
+          CColor::Lerp(selectedTitle, unselectedTitle, transition));
+      mHistoryBackgrounds[row]->SetColor(CColor::Lerp(unselectedFrame, selectedFrame, transition));
+      mHistoryHighlights[row]->SetColor(CColor::Lerp(cursor, clear, transition));
+      mHistoryMeters[row]->SetColor(CColor::Lerp(selectedBar, unselectedBar, transition));
+      mHistoryMeterBackgrounds[row]->SetColor(
+          CColor::Lerp(selectedBackground, unselectedBackground, transition));
+    }
+    if (count > 0) {
+      const int row = rows[count - 1];
+      const float fade = 1.f - transition;
+      mHistoryLabels[row]->TextSupport().SetFontColor(CColor::Lerp(selectedTitle, clear, fade));
+      mHistoryBackgrounds[row]->SetColor(CColor::Lerp(unselectedFrame, clear, fade));
+      mHistoryHighlights[row]->SetColor(CColor::Lerp(cursor, clear, fade));
+      mHistoryMeters[row]->SetColor(CColor::Lerp(selectedBar, clear, fade));
+      mHistoryMeterBackgrounds[row]->SetColor(CColor::Lerp(selectedBackground, clear, fade));
+    }
+  }
 }
 
 CVector3f CPauseScreen::GetDefaultModelPosition() {

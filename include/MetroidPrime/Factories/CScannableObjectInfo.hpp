@@ -23,6 +23,7 @@ public:
   CAssetId GetStringTableId() const { return mStringTableId; }
   CAssetId GetScanTextureId() const { return mScanTextureId; }
   CAssetId GetStaticModelId(int index) const { return mStaticModels[index]; }
+  CAssetId GetAnimatedModelId(int index) const { return mAnimatedModels[index]; }
   float GetTotalDownloadTime() const;
   bool IsCritical() const { return mCritical; }
   bool UsesScanModel() const { return mUseScanModel; }
