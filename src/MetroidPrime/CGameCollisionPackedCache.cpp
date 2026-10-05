@@ -19,6 +19,8 @@
 #include "WorldFormat/COBBTree.hpp"
 #include "rstl/math.hpp"
 
+#include <string.h>
+
 namespace {
 const CMaterialList kImplicitGeometryMaterials(kMT_Unknown59, kMT_Unknown60);
 
@@ -98,7 +100,8 @@ void CGameCollision::BuildCollisionCache(const CStateManager& mgr, CCollisionCac
 void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCache& cache,
                                           rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                                           ECacheUpdatePolicy policy) {
-  uchar status[1024] = {};
+  uchar status[1024];
+  memset(status, 0, nearList.size());
   CCollisionCacheIterator iterator;
 
   for (;;) {
@@ -136,44 +139,50 @@ void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCa
         continue;
       }
 
-      const CPhysicsActor* actor =
-          TCastToConstPtr< CPhysicsActor >(mgr.GetObjectById(nearList[i]));
-      if (!actor) {
+      const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
+      const CPhysicsActor* physics = TCastToConstPtr< CPhysicsActor >(actor);
+      if (!physics) {
         continue;
       }
 
-      const CCollisionPrimitive& primitive = *actor->GetCollisionPrimitive();
-      const CCollisionPrimitiveData* geometry = nullptr;
-      CTransform4f transform = CTransform4f::Identity();
-      switch (primitive.GetPrimType()) {
-      case 'OBTG':
-        geometry = static_cast< const CCollidableOBBTreeGroup& >(primitive).GetOBBTree(0);
-        transform = actor->GetPrimitiveTransform();
-        break;
-      case 'AABX':
-        if (cache.GetDynamicGeometryMode() != 2) {
-          geometry = &iterator.GetGeometry();
-          transform = MakeAABoxCacheTransform(
-              *actor, static_cast< const CCollidableAABox& >(primitive));
-        }
-        break;
-      case 'SPHR':
-        if (cache.GetDynamicGeometryMode() != 2) {
-          transform = MakeSphereCacheTransform(
-              *actor, static_cast< const CCollidableSphere& >(primitive));
-          geometry = &iterator.GetGeometry();
-        }
-        break;
-      }
-
-      if (geometry) {
+      const CCollisionPrimitive& primitive = *physics->GetCollisionPrimitive();
+      if (primitive.GetPrimType() == 'OBTG') {
+        const CCollidableOBBTreeGroup& group =
+            static_cast< const CCollidableOBBTreeGroup& >(primitive);
+        const CTransform4f transform = physics->GetPrimitiveTransform();
         const bool matches = iterator.MatchesGeometry(
-            objectId, geometry, transform, actor->GetMaterialList().GetValue());
+            objectId, group.GetOBBTree(0), transform, physics->GetMaterialList().GetValue());
         status[i] = matches ? 1 : 2;
         if (matches) {
           removeGeometry = false;
         }
         break;
+      }
+      if (cache.GetDynamicGeometryMode() != 2) {
+        if (primitive.GetPrimType() == 'AABX') {
+          const CTransform4f transform = MakeAABoxCacheTransform(
+              *physics, static_cast< const CCollidableAABox& >(primitive));
+          const bool matches = iterator.MatchesGeometry(
+              objectId, &iterator.GetGeometry(), transform,
+              physics->GetMaterialList().GetValue());
+          status[i] = matches ? 1 : 2;
+          if (matches) {
+            removeGeometry = false;
+          }
+          break;
+        }
+        if (primitive.GetPrimType() == 'SPHR') {
+          const CTransform4f transform = MakeSphereCacheTransform(
+              *physics, static_cast< const CCollidableSphere& >(primitive));
+          const bool matches = iterator.MatchesGeometry(
+              objectId, &iterator.GetGeometry(), transform,
+              physics->GetMaterialList().GetValue());
+          status[i] = matches ? 1 : 2;
+          if (matches) {
+            removeGeometry = false;
+          }
+          break;
+        }
       }
     }
 
