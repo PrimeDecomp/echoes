@@ -681,8 +681,8 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
         grid.SetVisibility(rstl::pair< bool, float >(true, -skMaximumBlockingHeight));
       } else {
         const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Solid, kMT_Trigger),
-            CMaterialList(kMT_ProjectilePassthrough, kMT_SeeThrough));
+            CMaterialList(kMT_Unknown59, kMT_Trigger),
+            CMaterialList(kMT_NoPlatformCollision, kMT_SeeThrough));
         const CVector2i gridPos = grid.GetStart();
         const CVector3f localGrid(fixed8_8_to_real(gridPos.GetX()),
                                   fixed8_8_to_real(gridPos.GetY()), 0.f);
@@ -718,6 +718,13 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
         } else {
           CRayCastResult best =
               CGameCollision::RayStaticIntersection(mgr, start, down, 1000.f, filter);
+          if (best.IsValid()) {
+            const CMaterialFilter floorOrTrigger =
+                CMaterialFilter::MakeInclude(CMaterialList(kMT_Trigger, kMT_Floor));
+            if (!floorOrTrigger.Passes(best.GetMaterial())) {
+              best = CRayCastResult::MakeInvalid();
+            }
+          }
           if (best.IsValid()) {
             if (!blockListBuilt) {
               BuildBlockObjectList(blockList, mgr);
