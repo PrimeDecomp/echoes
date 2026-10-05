@@ -241,6 +241,9 @@ public:
   CObjectList& ObjectListById(EGameObjectList id) { return *mObjectLists[id]; }
   bool IsSkippingCinematic() const { return mSkippingCinematic; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *mObjectLists[id]; }
+  const rstl::vector< rstl::pair< TUniqueId, CLight > >& GetDynamicActorLights() const {
+    return mDynamicActorLights;
+  }
   // Guessed names. The first filtered list qualifies only CScriptDoor objects.
   const rstl::list< CEntity* >& GetDoorList() const {
     return mFilteredObjectLists[0]->GetObjects();
