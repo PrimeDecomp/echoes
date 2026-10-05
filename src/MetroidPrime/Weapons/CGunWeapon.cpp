@@ -828,11 +828,11 @@ void CGunWeapon::InitializeResources(CStateManager& mgr) {
     mAncsId = NWeaponTypes::get_asset_id_from_name(skBeamNames[mBeamId]);
     mGunCharacter = TToken< CAnimCharacterSet >(gpSimplePool->GetObj(SObjectTag('ANCS', mAncsId)));
     mResourcesAllocated = true;
+    mCurrentPlayerSuit =
+        mgr.IsMultiplayer()
+            ? static_cast< CPlayerState::EPlayerSuit >(mgr.MaskUIdNumPlayers(mPlayerId))
+            : GetPlayer(mgr)->GetPlayerState()->GetCurrentSuitRaw();
   }
-  mCurrentPlayerSuit =
-      mgr.IsMultiplayer()
-          ? static_cast< CPlayerState::EPlayerSuit >(mgr.MaskUIdNumPlayers(mPlayerId))
-          : GetPlayer(mgr)->GetPlayerState()->GetCurrentSuitRaw();
 }
 
 void CGunWeapon::BuildAnimationIdList(const CAnimData& animData) {
