@@ -48,6 +48,7 @@ public:
                         float fov);
   void EndInterpolation(EEndReason reason, CStateManager& mgr);
   void SetSpline(const CMotionSpline& spline); // Guessed name
+  TUniqueId GetTargetId() const { return mTargetId; }
 
 private:
   // Guessed names for the Echoes-specific interpolation paths.

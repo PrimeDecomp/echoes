@@ -70,6 +70,7 @@ public:
   CScannableObjectInfo* GetScannableObjectInfo() const override;
 
   bool IsOpen() const { return mIsOpen; }
+  bool IsHorizontal() const { return mHorizontal; }
   bool IsBallDoor() const { return mBallDoor; }
   TUniqueId GetConnectedDockID() const { return mDockId; }
   bool IsConnectedToArea(const CStateManager& mgr, TAreaId area) const;

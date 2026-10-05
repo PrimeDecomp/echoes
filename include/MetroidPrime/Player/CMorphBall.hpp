@@ -74,6 +74,7 @@ public:
   void SetBallBoostState(EBallBoostState state);
   EBombJumpState GetBombJumpState() const;
   EBallState GetBallState() const { return mBallState; }
+  int GetBallAnimationIndex() const { return mBallAnimationIndex; }
   void SetBoostEnabled(bool enabled) { mBoostEnabled = enabled; }
   float GetBoostChargeTimer() const;
   float GetTimeNotInBoost() const; // Guessed name

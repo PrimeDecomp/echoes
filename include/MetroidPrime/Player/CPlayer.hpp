@@ -203,6 +203,7 @@ public:
   float GetGunAlpha() const { return mGunAlpha; }
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
   float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
+  float GetMoveSpeed() const { return mMoveSpeed; }
   bool DampsBoostEntryVelocity() const { return mDampBoostEntryVelocity; }
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   void SetLastSpaceJumpPosition(const CVector3f& pos) { mLastSpaceJumpPosition = pos; }
@@ -210,6 +211,7 @@ public:
   const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
   bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
+  const CVector3f& GetLeaveMorphDirection() const { return xfe8_; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
@@ -348,6 +350,7 @@ public:
   CHintManager* GetControlHintManager();
   const CHintManager* GetControlHintManager() const;
   CControlMapper& GetControlMapper() { return mControlMapper; }
+  const CControlMapper& GetControlMapper() const { return mControlMapper; }
   CPlayerGun* GetPlayerGun();
   const CPlayerGun* GetPlayerGun() const;
   ETurretState GetTurretState() const { return mTurretState; }

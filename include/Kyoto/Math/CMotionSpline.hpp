@@ -33,14 +33,18 @@ public:
   CVector3f GetTangentByTime(float time) const;        // Guessed name.
   CVector3f GetTangentByLength(float distance) const;  // Guessed name.
   void CalculateLength();
+  void Reset(uint count);
+  void AddKnotAndControlPoint(const CVector3f& point);
   void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
   void SetDuration(float duration) { mDuration = duration; }
+  void SetSplineType(ESplineType type) { mType = type; }
   uint GetControlPointCount() const { return mControlPoints.size(); }
   uint GetKnotCount() const { return mKnots.size(); }
   CVector3f GetKnot(uint index) const; // Guessed name; respects closed-loop index wrapping.
+  CVector3f GetControlPoint(uint index) const;
   int GetKnotIndexByLength(float distance) const; // Guessed name; searches knot arc lengths.
   // Guessed names, recovered from game-spline orientation interpolation.
   uint GetKnotIndexByTime(float time) const;
@@ -53,15 +57,12 @@ public:
 private:
   // Guessed names, recovered from native spline mutation and sampling behavior.
   uint ValidateControlPointIndex(uint index) const;
-  CVector3f GetControlPoint(uint index) const;
   void SetControlPoint(uint index, CVector3f point, bool recalculateLength);
   void SetKnot(uint index, CVector3f point, bool recalculateLength);
   void AddKnot(const CVector3f& point);
   void AddControlPoint(const CVector3f& point);
-  void AddKnotAndControlPoint(const CVector3f& point);
   void ResetKnots(uint count);
   void ResetControlPoints(uint count);
-  void Reset(uint count);
   void GetSurroundingPoints(int index, rstl::reserved_vector< CVector3f, 4 >& points) const;
   float CalculateCatmullRomLength(int index) const;
   float CalculateRoundedCatmullRomLength(int index) const;
