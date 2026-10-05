@@ -33,6 +33,8 @@ public:
 
   CParticleGen* GetParticleGen() const { return mGenerator.get(); }
   void SetFinishing() { mFinishing = true; }
+  void SetRunIndefinitely(bool runIndefinitely) { mRunIndefinitely = runIndefinitely; }
+  bool IsElementGen() const { return mIsElementGen; }
 
   static float GetNearClipDistance(const CStateManager& mgr, int playerIndex);
   static const CVector3f& GetScaleForPOV(const CStateManager& mgr);
