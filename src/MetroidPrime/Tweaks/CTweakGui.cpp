@@ -553,8 +553,8 @@ CMayaSpline& CTweakGui::GetLogBookNodeCollapseMotion() const {
   return const_cast< CMayaSpline& >(mData->logBook.nodeCollapseMotion);
 }
 
-const CMayaSpline& CTweakGui::GetLogBookSelectedNodeCollapseMotion() const {
-  return mData->logBook.selectedNodeCollapseMotion;
+CMayaSpline& CTweakGui::GetLogBookSelectedNodeCollapseMotion() const {
+  return const_cast< CMayaSpline& >(mData->logBook.selectedNodeCollapseMotion);
 }
 
 CMayaSpline& CTweakGui::GetLogBookNodeExpandMotion() const {

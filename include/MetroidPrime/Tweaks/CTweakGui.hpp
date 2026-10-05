@@ -238,7 +238,7 @@ public:
   float GetLogBookSelectedTextScale() const;
   float GetLogBookTransitionTime() const;
   CMayaSpline& GetLogBookNodeCollapseMotion() const;
-  const CMayaSpline& GetLogBookSelectedNodeCollapseMotion() const;
+  CMayaSpline& GetLogBookSelectedNodeCollapseMotion() const;
   CMayaSpline& GetLogBookNodeExpandMotion() const;
   float GetLogBookRotationSpeed() const;
   float GetLogBookNodeScale() const;

@@ -564,9 +564,54 @@ rstl::pair< uint, uint > CScanTree::GetScanCounts() const {
   return rstl::pair< uint, uint >(0, 1);
 }
 
-void CScanTree::RandomizeChildPositions(int node) {}
+void CScanTree::RandomizeChildPositions(int node) {
+  const float branchLength = gpTweakGui->GetLogBookBranchLength();
+  const rstl::rc_ptr< CScanTreeNode > treeNode = mNodes[node];
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      const int child = category->GetChild(i);
+      const float angle = mRandom.Range(0.f, 2.f * M_PIF);
+      const float height = mRandom.Range(-branchLength, branchLength);
+      const float ratio = height / branchLength;
+      const float ratioSquared = ratio * ratio;
+      const float planarRatio = CMath::SqrtF(1.f - ratioSquared);
+      const float x = branchLength * planarRatio * CMath::FastCosR(angle);
+      const float y = branchLength * planarRatio * CMath::FastSinR(angle);
+      const CVector3f direction(x, y, height);
+      const CVector3f position = direction.AsNormalized() * 2.f + category->GetPosition();
+      mNodes[child]->SetPosition(position);
+      mNodes[child]->SetDisplayPosition(position);
+    }
+  }
+}
 
-void CScanTree::InitializeNodePositions(int node) {}
+void CScanTree::InitializeNodePositions(int node) {
+  const float branchLength = gpTweakGui->GetLogBookBranchLength();
+  const rstl::rc_ptr< CScanTreeNode > treeNode = mNodes[node];
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      const int child = category->GetChild(i);
+      const float angle = mRandom.Range(0.f, 2.f * M_PIF);
+      const float height = mRandom.Range(-branchLength, branchLength);
+      const float ratio = height / branchLength;
+      const float ratioSquared = ratio * ratio;
+      const float planarRatio = CMath::SqrtF(1.f - ratioSquared);
+      const float x = branchLength * planarRatio * CMath::FastCosR(angle);
+      const float y = branchLength * planarRatio * CMath::FastSinR(angle);
+      const CVector3f position =
+          CVector3f(x, y, height) + category->GetPosition();
+      mNodes[child]->SetPosition(position);
+      mNodes[child]->SetDisplayPosition(position);
+    }
+    for (int i = 0; i < childCount; ++i) {
+      InitializeNodePositions(category->GetChild(i));
+    }
+  }
+}
 
 bool CScanTree::PollLoad() {
   if (mLoadRequest.get() != nullptr) {
@@ -626,9 +671,67 @@ rstl::rc_ptr< CScanTreeNode > CScanTree::GetNode(int node) const { return mNodes
 int CScanTree::GetRootNode() const { return mRootNode; }
 
 void CScanTree::ScaleChildren(int node, float otherScale, float selectedScale,
-                              bool excludeOptions) {}
+                              bool excludeOptions) {
+  const rstl::rc_ptr< CScanTreeNode > treeNode = GetNode(node);
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const CVector3f& displayPosition = category->GetDisplayPosition();
+    mNodes[category->GetId()]->SetPosition(displayPosition);
+    for (int i = 0; i < category->GetChildCount(); ++i) {
+      const int child = category->GetChild(i);
+      const rstl::rc_ptr< CScanTreeNode > childNode = mNodes[child];
+      if (excludeOptions && (childNode->GetNodeType() == CScanTreeNode::kNT_Menu ||
+                             childNode->GetNodeType() == CScanTreeNode::kNT_Slider)) {
+        continue;
+      }
+      const rstl::rc_ptr< CScanTreeNode > target = mNodes[child];
+      const CVector3f offset = childNode->GetPosition() - displayPosition;
+      if (offset.CanBeNormalized()) {
+        const CVector3f direction = offset.AsNormalized();
+        if (child == category->GetSelectedChild()) {
+          const float length = gpTweakGui->GetLogBookBranchLength();
+          target->SetDisplayPosition(
+              CVector3f(displayPosition.GetX() + selectedScale * (length * direction.GetX()),
+                        displayPosition.GetY() + selectedScale * (length * direction.GetY()),
+                        displayPosition.GetZ() + selectedScale * (length * direction.GetZ())));
+          target->SetOpacity(CMath::Clamp(0.f, selectedScale, 1.f));
+        } else {
+          const float length = gpTweakGui->GetLogBookBranchLength();
+          target->SetDisplayPosition(
+              CVector3f(displayPosition.GetX() + otherScale * (length * direction.GetX()),
+                        displayPosition.GetY() + otherScale * (length * direction.GetY()),
+                        displayPosition.GetZ() + otherScale * (length * direction.GetZ())));
+          target->SetOpacity(CMath::Clamp(0.f, otherScale, 1.f));
+        }
+      }
+    }
+  }
+}
 
-void CScanTree::UpdateLayout(float) {}
+void CScanTree::UpdateLayout(float) {
+  if (!CMath::IsEpsilon(mInitialLayoutTransition, 0.f, FLT_EPSILON)) {
+    const float progress = 1.f - mInitialLayoutTransition;
+    ScaleChildren(mSelectedNode, progress, progress, false);
+  }
+  if (!CMath::IsEpsilon(mTransition, 0.f, FLT_EPSILON)) {
+    const rstl::rc_ptr< CScanTreeNode > selected = GetNode(mSelectedNode);
+    const rstl::rc_ptr< CScanTreeNode > previous = GetNode(mPreviousNode);
+    if (selected->GetNodeType() != CScanTreeNode::kNT_Menu &&
+        selected->GetNodeType() != CScanTreeNode::kNT_Slider &&
+        previous->GetNodeType() != CScanTreeNode::kNT_Menu &&
+        previous->GetNodeType() != CScanTreeNode::kNT_Slider) {
+      const float collapse =
+          0.0001f + gpTweakGui->GetLogBookNodeCollapseMotion().EvaluateAt(1.f - mTransition);
+      const float selectedCollapse =
+          0.0001f +
+          gpTweakGui->GetLogBookSelectedNodeCollapseMotion().EvaluateAt(1.f - mTransition);
+      const float expand =
+          0.001f + gpTweakGui->GetLogBookNodeExpandMotion().EvaluateAt(1.f - mTransition);
+      ScaleChildren(mSelectedNode, expand, expand, false);
+      ScaleChildren(mPreviousNode, collapse, selectedCollapse, false);
+    }
+  }
+}
 
 float CScanTree::GetLayoutProgress() const {
   if (!CMath::IsEpsilon(mInitialLayoutTransition, 0.f, FLT_EPSILON)) {
