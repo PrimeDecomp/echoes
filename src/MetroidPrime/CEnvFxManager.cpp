@@ -176,13 +176,13 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
     const short fraction = static_cast< short >(
         256.f * static_cast< float >(frame % period) / static_cast< float >(period));
     const float lifetime = mParticleLifetimes[trail];
-    float fade = 1.f;
+    float colorAlpha = baseColor.GetAlpha();
     if (lifetime < 0.2f) {
-      fade = lifetime / 0.2f;
+      colorAlpha = colorAlpha * lifetime / 0.2f;
     } else if (lifetime > 0.8f) {
-      fade = (1.f - lifetime) / 0.2f;
+      colorAlpha = colorAlpha * (1.f - lifetime) / 0.2f;
     }
-    const CColor color = baseColor.WithAlphaModulatedBy(fade);
+    const CColor color = baseColor.WithAlphaOf(colorAlpha);
     GXSetTevColor(GX_TEVREG1, color.GetGXColor());
 
     CVectorFixed8_8 position = mParticles[base + segment];
