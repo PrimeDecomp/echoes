@@ -278,6 +278,9 @@ public:
   int GetDockCount() const { return mDocks.size(); }
   const CTransform4f& GetTM() const { return mTransform; }
   TAreaId GetId() const { return mSelfIdx; }
+  int GetNumAttachedAreas() const { return mAttachedAreaIndices.size(); }
+  TAreaId GetAttachedAreaId(int index) const { return TAreaId(mAttachedAreaIndices[index]); }
+  const rstl::pair< CAssetId, uint >& GetAssetID(int index) const { return mDependencies2[index]; }
   const CAABox& GetAABB() const { return mBounds; }
   const Dock& GetDock(int index) const { return mDocks[index]; }
   Dock& DockNC(int index) { return mDocks[index]; }

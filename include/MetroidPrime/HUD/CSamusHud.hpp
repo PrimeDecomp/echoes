@@ -76,6 +76,13 @@ public:
   CGuiFrame* GetLoadedHudFrame() const { return mLoadedHudFrame; }
   CGuiCamera* GetHudCamera() const { return mHudCamera; }
   CGuiWidget* GetAutomapperRoot() const { return mAutomapperRoot; }
+  CGuiWidget* GetAutomapperModel() const { return mAutomapperModel; }
+  float GetDesiredViewportScaleX() const { return mViewportScaleX; }
+  float GetDesiredViewportScaleY() const { return mViewportScaleY; }
+  void UpdateHudMemo(float dt, const CStateManager& mgr);
+  void UpdateHudFrame(float dt, const CStateManager& mgr);
+  void DrawHudMemo() const;
+  void DrawHelmet(const CStateManager& mgr, float cameraYOffset) const;
   void ProcessControllerInput(const CFinalInput& input);
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
   static CHudDecoInterfaceScan* GetScanInterface(int playerIndex);
@@ -101,8 +108,6 @@ private:
   EHudState GetDesiredHudState(const CStateManager& mgr) const;
   EHudState GetNextState() const;
   CColor ModulateColor(const CColor& color) const;
-  void DrawHudMemo() const;
-  void DrawHelmet(const CStateManager& mgr, float cameraYOffset) const;
   void DrawPlayerFilter(const CStateManager& mgr) const;
   void DrawAttachedEnemyEffect(const CStateManager& mgr) const;
   void DrawLockOnIndicators(const CStateManager& mgr) const;
@@ -110,9 +115,7 @@ private:
                             const rstl::reserved_vector< TUniqueId, 12 >& targets) const;
   rstl::reserved_vector< bool, 4 > BuildPlayerHasBeams(const CStateManager& mgr) const;
   rstl::reserved_vector< bool, 4 > BuildPlayerHasVisors(const CStateManager& mgr) const;
-  void UpdateHudMemo(float dt, const CStateManager& mgr);
   void UpdateBootSequence(float dt, const CStateManager& mgr);
-  void UpdateHudFrame(float dt, const CStateManager& mgr);
   void UpdateStateTransition(float dt, const CStateManager& mgr);
   void UpdateHudDamage(float dt, const CStateManager& mgr);
   CColor GetVisorHudLightColor(const CColor& color, const CStateManager& mgr) const;

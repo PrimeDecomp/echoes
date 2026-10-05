@@ -307,6 +307,8 @@ public:
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
   bool GetWantsToEnterSaveGameScreen() const { return mDeferredTransition == kSMT_SaveGame; }
+  bool HasSaveGameScreen() const { return !mSaveGameScreen.null(); }
+  TAreaId GetPendingDockArea() const { return mPendingDockArea; }
   bool GetWantsToEnterMessageScreen() const { return mDeferredTransition == kSMT_MessageScreen; }
 
   const CCameraManager* GetCameraManager(int playerIndex) const {
