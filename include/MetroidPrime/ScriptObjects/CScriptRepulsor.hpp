@@ -25,6 +25,7 @@ public:
   EShape GetShape() const;
   float GetStrength() const; // Guessed name
   float GetRadius() const;
+  uint GetFlags() const { return mFlags; }
 
 private:
   float mRadius;

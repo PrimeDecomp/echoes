@@ -37,6 +37,7 @@ public:
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
   const CFirstPersonCamera* GetFirstPersonCamera() const { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
+  const CInterpolationCamera* GetInterpolationCamera() const { return mInterpCamera; }
   CBallCamera* BallCamera() { return mBallCamera; }
   const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }
 
