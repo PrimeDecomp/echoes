@@ -21,6 +21,7 @@
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
@@ -40,6 +41,7 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 
@@ -529,13 +531,12 @@ CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
-void fn_8003C02C(rstl::list< rstl::reserved_vector< CEntity*, 32 > >& v, int);
-
 CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
                              const rstl::ncrc_ptr< CMapWorldInfo >&,
                              const rstl::ncrc_ptr< CPlayerState >&,
                              const rstl::ncrc_ptr< CWorldTransManager >&)
 : mNextFreeIndex(0)
+, mAudioGroupDependencies(static_cast< CDependencyGroup* >(nullptr))
 , mBossId(kInvalidUniqueId)
 , mSpecialFunctionId(kInvalidUniqueId)
 , mProjectedShadows(nullptr)
@@ -574,6 +575,97 @@ const CEntity* CStateManager::GetObjectById(TUniqueId uid) const {
 void CStateManager::SetIsDarkWorld(bool b) {
   mIsDarkWorld = b;
   gpGameState->SetIsDarkWorld(mIsDarkWorld);
+}
+
+bool CStateManager::HasWorld() const { return mWorld != nullptr; }
+
+void CStateManager::AddObject(CEntity& entity) {
+  const TUniqueId id = entity.GetUniqueId();
+  if (entity.GetEditorId() != kInvalidEditorId) {
+    mScriptIdMap.insert(rstl::pair< TEditorId, TUniqueId >(entity.GetEditorId(), id));
+  }
+
+  for (rstl::reserved_vector< rstl::auto_ptr< CObjectList >, 8 >::iterator it =
+           mObjectLists.begin();
+       it != mObjectLists.end(); ++it) {
+    (*it)->AddObject(entity);
+  }
+  for (rstl::reserved_vector< rstl::auto_ptr< CFilteredObjectList >, 6 >::iterator it =
+           mFilteredObjectLists.begin();
+       it != mFilteredObjectLists.end(); ++it) {
+    (*it)->AddObject(entity);
+  }
+  mNewObjectIds.push_back(id);
+
+  if (entity.GetCurrentAreaId() == kInvalidAreaId && TCastToPtr< CPlayer >(entity) == nullptr) {
+    entity.SetCurrentAreaId(mPlayers[0]->GetCurrentAreaId());
+  }
+
+  CActor* actor = TCastToPtr< CActor >(entity);
+  const TAreaId areaId = entity.GetCurrentAreaId();
+  if (areaId != kInvalidAreaId) {
+    CGameArea* area = mWorld->Area(areaId);
+    if (area->GetPhase() > CGameArea::kP_FinishDependencies) {
+      area->ObjectList()->AddObject(entity);
+    }
+  }
+  if (actor != nullptr) {
+    UpdateActorInSortedLists(actor);
+  }
+
+  DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity.GetUniqueId(), kSM_Create,
+                              kSS_InvalidState));
+  if (entity.GetCurrentAreaId() != kInvalidAreaId && HasWorld()) {
+    CGameArea* area = mWorld->Area(entity.GetCurrentAreaId());
+    if (area->GetPhase() > CGameArea::kP_FinishDependencies &&
+        area->GetPostConstructed()->mScriptObjectsInitialized) {
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity.GetUniqueId(),
+                                  kSM_AreaLoaded, kSS_InvalidState));
+    }
+  }
+}
+
+void CStateManager::RemoveObject(TUniqueId id) {
+  CEntity* entity = mObjectLists[kOL_All]->GetObjectById(id);
+  if (entity != nullptr) {
+    const TEditorId editorId = entity->GetEditorId();
+    if (editorId != kInvalidEditorId) {
+      const rstl::pair< TIdList::iterator, TIdList::iterator > range =
+          mScriptIdMap.equal_range(editorId);
+      TIdList::iterator it = range.first;
+      while (it != range.second) {
+        if (it->second == id) {
+          it = mScriptIdMap.erase(it);
+        } else {
+          ++it;
+        }
+      }
+    }
+
+    const TAreaId areaId = entity->GetCurrentAreaId();
+    if (areaId != kInvalidAreaId) {
+      CGameArea* area = mWorld->Area(areaId);
+      if (area->IsLoaded()) {
+        area->ObjectList()->RemoveObject(id);
+        if (area->GetPostConstructed()->mPortalArea.get() != nullptr) {
+          area->GetPostConstructed()->mPortalArea->RemoveActor(*this, id);
+        }
+      }
+    }
+
+    if (CActor* actor = TCastToPtr< CActor >(entity)) {
+      mSortedListManager->Remove(actor);
+      actor->SetUseInSortedLists(false);
+    }
+  }
+
+  for (int i = 0; i < mObjectLists.size(); ++i) {
+    mObjectLists[i]->RemoveObject(id);
+  }
+  for (int i = 0; i < mFilteredObjectLists.size(); ++i) {
+    mFilteredObjectLists[i]->RemoveObject(id);
+  }
+  mAllocatedObjectIndices[id.Value()] = false;
 }
 
 void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {
@@ -707,6 +799,19 @@ void CStateManager::InformListeners(const CVector3f& position, EListenNoiseType 
   }
 }
 
+CStateManager::TIdListResult CStateManager::GetIdListForScript(TEditorId editorId) const {
+  const TIdListResult range = mScriptIdMap.equal_range(editorId);
+  return range;
+}
+
+TUniqueId CStateManager::GetIdForScript(TEditorId editorId) const {
+  TIdList::const_iterator it = mScriptIdMap.find(editorId);
+  if (it != mScriptIdMap.end()) {
+    return it->second;
+  }
+  return kInvalidUniqueId;
+}
+
 TEditorId CStateManager::GetEditorIdForUniqueId(TUniqueId uid) const {
   const CEntity* entity = GetObjectById(uid);
   if (entity != nullptr) {
@@ -722,32 +827,52 @@ void CStateManager::EndPlayerRender() {
   mCameraManager = nullptr;
 }
 
-void CStateManager::fn_8003BF84(CEntity* ent) {
-  // Clear Graveyard?
+void CStateManager::AddToGraveyard(CEntity* entity) {
   if (mGraveyard.empty()) {
-    fn_8003C02C(mGraveyard, 0);
-  } else if ((--mGraveyard.end())->size() == 32) {
-    fn_8003C02C(mGraveyard, 0);
+    rstl::reserved_vector< CEntity*, 32 > batch;
+    mGraveyard.push_back(batch);
+  } else if (mGraveyard.back().size() == mGraveyard.back().capacity()) {
+    rstl::reserved_vector< CEntity*, 32 > batch;
+    mGraveyard.push_back(batch);
   }
-  (--mGraveyard.end())->push_back(ent);
+
+  mGraveyard.back().push_back(entity);
 }
 
-void CStateManager::fn_8003BE54() {
+void CStateManager::DispatchScriptMessages() {
   while (!mScriptMsgs.empty()) {
     CScriptMsg msg = mScriptMsgs.Dequeue();
-    CEntity* ent = GetObjectByIdFromListAll(msg.GetId());
+    CEntity* ent = ObjectById(msg.GetId());
     if (ent) {
-      bool flag = ent->GetActive();
+      const bool wasActive = ent->GetActive();
       ent->AcceptScriptMsg(*this, msg);
-      if (flag != ent->GetActive()) {
+      if (wasActive != ent->GetActive()) {
         if (CActor* actor = TCastToPtr< CActor >(ent)) {
           UpdateActorInSortedLists(actor);
         }
       }
+
       if (msg.GetMessage() == kSM_Delete) {
-        fn_8003BF84(ent);
-        fn_800412EC(ent->GetUniqueId());
+        AddToGraveyard(ent);
+        RemoveObject(ent->GetUniqueId());
       }
+    }
+  }
+}
+
+void CStateManager::ThinkNewObjects(float dt) {
+  for (;;) {
+    DispatchScriptMessages();
+    if (mNewObjectIds.empty()) {
+      return;
+    }
+
+    rstl::list< TUniqueId >::iterator it = mNewObjectIds.begin();
+    while (it != mNewObjectIds.end()) {
+      if (CEntity* entity = ObjectById(*it)) {
+        ThinkEntity(dt, *entity);
+      }
+      it = mNewObjectIds.erase(it);
     }
   }
 }
@@ -780,7 +905,7 @@ void CStateManager::SendScriptMsg(const CScriptMsg& msg) {
   int v = mScriptMsgs.GetCount();
   if (0x80 < v && !mDispatchingScriptMessages) {
     mDispatchingScriptMessages = true;
-    fn_8003BE54();
+    DispatchScriptMessages();
     mDispatchingScriptMessages = false;
   }
 }

@@ -348,7 +348,7 @@ void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
     // connection to a pickup. The generator's object-creation API is not yet reconstructed.
   }
 
-  mgr.fn_8003BE54();
+  mgr.DispatchScriptMessages();
 }
 
 void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
