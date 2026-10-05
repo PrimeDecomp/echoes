@@ -603,13 +603,13 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
 void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
                                         rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
                                         EEnvFxType type, const CVector3f& inverseScale, float dt) {
-  if (type != kEFX_Snow && type != kEFX_DarkWorld && type != kEFX_Unknown5) {
+  if (type != kEFX_DarkWorld && type != kEFX_Snow && type != kEFX_Unknown5) {
     return;
   }
 
-  CRandom16 random(99);
   CVector3f accumulated = CVector3f::Zero();
   CVectorFixed8_8 previous;
+  CRandom16 random(99);
   float phase = 0.f;
   const float speed = type == kEFX_DarkWorld ? 5.f : 1.f;
   for (int i = 255; i >= 0; --i) {
