@@ -277,14 +277,16 @@ void CModelData::Touch() const {
   if (HasAnimation()) {
     for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
       const CModel& model = **PickAnimatedModel(static_cast< EWhichModel >(which)).GetModel();
-      for (int shader = 0; shader < model.GetNumMaterialSets(); ++shader) {
+      const int shaderCount = model.GetNumMaterialSets();
+      for (int shader = 0; shader < shaderCount; ++shader) {
         model.Touch(shader);
       }
     }
   } else {
     for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
       const CModel& model = **PickStaticModel(static_cast< EWhichModel >(which));
-      for (int shader = 0; shader < model.GetNumMaterialSets(); ++shader) {
+      const int shaderCount = model.GetNumMaterialSets();
+      for (int shader = 0; shader < shaderCount; ++shader) {
         model.Touch(shader);
       }
     }
