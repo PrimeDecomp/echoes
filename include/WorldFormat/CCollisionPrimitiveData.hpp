@@ -23,6 +23,7 @@ public:
   ~CCollisionPrimitiveData();
 
   int GetTriangleCount() const { return mTriangleCount; }
+  ushort GetCacheId() const { return mCacheId; }
   // Guessed name/qualifiers, correlated with the native triangle consumers.
   void GetTriangleVertexIndices(ushort index, ushort indices[3]) const;
   // GC uint formal is a compatible reconstruction; the callee uses a ushort triangle domain.

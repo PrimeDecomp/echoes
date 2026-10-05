@@ -9,7 +9,12 @@ namespace rstl {
 // Guessed name
 class locked_cache_allocator {
 public:
-  locked_cache_allocator() {}
+  explicit locked_cache_allocator(int mode = 0)
+  : mHeapAfterCacheAttempt(mode == 0)
+  , mPreferHeap(mode == 2)
+  , mHeapAllocation(false)
+  , mPreviousHeapAllocation(false)
+  , mAllocationCount(0) {}
   void Allocate(void*& out, uint size); // Guessed name
 
   template < typename T >
@@ -33,13 +38,12 @@ public:
 
 private:
   // Guessed names; byte positions are recovered from allocation/free consumers.
-  bool mUnknown : 1;
+  bool mHeapAfterCacheAttempt : 1;
   bool mPreferHeap : 1;
   bool mHeapAllocation : 1;
   bool mPreviousHeapAllocation : 1;
-  uchar mAllocationCount : 2;
-  uchar mUnknownTail : 2;
-  uchar x1_unknown[3];
+  uint mAllocationCount : 2;
+  uint mUnknownTail : 2;
 };
 CHECK_SIZEOF(locked_cache_allocator, 0x4)
 } // namespace rstl
