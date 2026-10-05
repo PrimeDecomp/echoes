@@ -1,6 +1,8 @@
 #ifndef _SMODELRENDERDATA
 #define _SMODELRENDERDATA
 
+#include "Kyoto/Animation/CSkinnedModel.hpp"
+#include "Kyoto/Graphics/CModel.hpp"
 #include "types.h"
 
 class CModel;
@@ -14,6 +16,10 @@ struct SModelRenderData {
   : mModel(&model), mSkinnedModel(nullptr), mWorkspace(nullptr), mPose(nullptr) {}
   SModelRenderData(const CSkinnedModel& model, const CPoseAsTransforms_Linear& pose)
   : mModel(nullptr), mSkinnedModel(&model), mWorkspace(nullptr), mPose(&pose) {}
+
+  // Guessed method names; native helpers dispatch through these four fields.
+  const CAABox& GetAABB() const;
+  void DrawFlat(const CModelFlags& flags, bool unsorted, bool sorted) const;
 
   const CModel* mModel;
   const CSkinnedModel* mSkinnedModel;

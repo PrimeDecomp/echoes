@@ -44,7 +44,10 @@ class CModel {
 
 public:
   enum EDrawFlatFlags {
-    kDF_Unknown0,
+    // Guessed names; values select the existing unsorted/sorted surface lists.
+    kDF_Unsorted = 0,
+    kDF_Sorted = 1,
+    kDF_All = 2,
   };
 
   CModel(const rstl::auto_ptr< uchar >& data, int length, IObjectStore& store);

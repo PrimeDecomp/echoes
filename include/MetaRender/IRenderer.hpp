@@ -157,8 +157,9 @@ public:
   virtual void DrawModelNoise(const SModelRenderData& model, const CColor& color,
                               bool additive) = 0;
   virtual bool EnableSilhouetteRender() = 0;
-  // TODO: identify the unused argument and original method name.
-  virtual void fn_802679DC(const void* unused, const CModel& model, const CModelFlags& flags) = 0;
+  // Unused virtual draw entry; original name and first parameter type are unresolved.
+  virtual void fn_802679DC(const void* unused, const SModelRenderData& model,
+                          const CModelFlags& flags) = 0;
   // Guessed name
   virtual void DrawSilhouetteNoise(const SSilhouetteNoise& noise) = 0;
   virtual void SetWireframeFlags(int flags) = 0;

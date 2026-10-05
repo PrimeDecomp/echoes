@@ -28,7 +28,7 @@ private:
 };
 
 CVector2i operator+(const CVector2i& lhs, const CVector2i& rhs);
-CVector2i operator+(const CVector2i& lhs, const CVector2i& rhs);
+CVector2i operator-(const CVector2i& lhs, const CVector2i& rhs);
 bool operator==(const CVector2i& lhs, const CVector2i& rhs);
 bool operator!=(const CVector2i& lhs, const CVector2i& rhs);
 CVector2i operator*(const CVector2i& lhs, int rhs);

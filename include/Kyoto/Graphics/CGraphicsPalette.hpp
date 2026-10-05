@@ -23,6 +23,8 @@ public:
 
   ushort* GetPaletteData() { return mEntries.get(); }
   const ushort* GetPaletteData() const { return mEntries.get(); }
+  EPaletteFormat GetFormat() const { return mFmt; }
+  uint GetEntryCount() const { return mEntryCount; }
   void Load() const;
   void* Lock() {
     mLocked = true;

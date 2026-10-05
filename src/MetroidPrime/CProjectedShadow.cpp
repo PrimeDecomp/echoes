@@ -226,7 +226,7 @@ void CProjectedShadow::Render(const CStateManager& mgr) const {
         CGX::LoadTexMtxImm(modelTextureXf.GetCStyleMatrix(), GX_TEXMTX0, GX_MTX3x4);
         const CModel& model = **modelData.PickStaticModel(CModelData::kWM_Normal);
         model.UpdateLastFrame();
-        model.DolphinDrawFlat(CModel::kDF_Unknown0);
+        model.DolphinDrawFlat(CModel::kDF_Unsorted);
       }
     }
   }

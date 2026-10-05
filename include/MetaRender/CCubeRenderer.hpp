@@ -11,6 +11,7 @@
 #include "Kyoto/Text/CFont.hpp"
 #include "MetaRender/IRenderer.hpp"
 #include "Weapons/IWeaponRenderer.hpp"
+#include "WorldFormat/CMetroidModelInstance.hpp"
 #include "rstl/auto_ptr.hpp"
 #include "rstl/list.hpp"
 #include "rstl/optional_object.hpp"
@@ -147,19 +148,18 @@ public:
                        bool clear) override;
   void DrawSpaceWarp(const CVector3f& point, float strength) override;
   void DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
-                             const CColor& color,
-                             float amount) override;
+                             const CColor& color, float amount) override;
   void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
                      bool unsortedOnly) override;
   // Guessed name
   void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
-                                const CVector3f& origin, const CColor& color,
-                                float scale) override;
+                                const CVector3f& origin, const CColor& color, float scale) override;
   // Guessed name
   void DrawModelNoise(const SModelRenderData& model, const CColor& color, bool additive) override;
   bool EnableSilhouetteRender() override;
   // TODO: identify the unused argument and original method name.
-  void fn_802679DC(const void* unused, const CModel& model, const CModelFlags& flags) override;
+  void fn_802679DC(const void* unused, const SModelRenderData& model,
+                   const CModelFlags& flags) override;
   // Guessed name
   void DrawSilhouetteNoise(const SSilhouetteNoise& noise) override;
   void SetWireframeFlags(int flags) override;
@@ -219,10 +219,10 @@ public:
   // Guessed name
   void SetMaterialMode(int mode);
   // Guessed name
-  static void GenerateScreenMipmaps(int mipCount, bool depth);
+  static void GenerateScreenMipmaps(int mipCount, bool alpha);
   // Guessed name
-  static void* GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
-                                     int left, int top, int width, int height);
+  static void GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
+                                    int left, int top, int width, int height);
   // Guessed name
   static void DrawTexturedScreenQuad(int left, int top, int width, int height);
   // Guessed name
@@ -260,8 +260,9 @@ public:
   // Guessed name
   uchar FindOrAddLightSet(uint lightSet);
   // Guessed name
-  bool DrawScanSurface(const CAreaListItem& area, const CCubeModel& model,
-                       const CCubeSurface& surface, uint lightSet, bool alpha);
+  int DrawScanSurface(int areaSurfaceIndex, const CCubeModel& model,
+                      const CMetroidModelInstance::CSurfaceGroups& groups, ushort group,
+                      bool intersects);
   void ReallyRenderFogVolume(const CColor& color, const CAABox& bounds, const CModel* model,
                              const CSkinnedModel* skinnedModel);
   static void RenderFogVolumeModel(const CAABox& bounds, const CModel* model,

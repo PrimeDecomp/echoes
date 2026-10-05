@@ -213,7 +213,7 @@ void CMorphBallShadow::Render(CStateManager& mgr, float alpha, const CTexture& s
     const CTransform4f modelTextureXf = textureXf * modelXf;
     GXLoadTexMtxImm(modelTextureXf.GetCStyleMatrix(), GX_TEXMTX0, GX_MTX3x4);
     const CModel& model = **modelData.PickStaticModel(CModelData::kWM_Normal);
-    model.DolphinDrawFlat(CModel::kDF_Unknown0);
+    model.DolphinDrawFlat(CModel::kDF_Unsorted);
     ++id;
   }
   GXLoadTexMtxImm(textureXf.GetCStyleMatrix(), GX_TEXMTX0, GX_MTX3x4);
