@@ -1,43 +1,44 @@
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 
-#include "Kyoto/Text/CGuiTextSupport.hpp"
-#include "Kyoto/Text/CStringTable.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/CDvdFile.hpp"
-#include "Kyoto/Graphics/CLight.hpp"
+#include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CLight.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
-#include "Kyoto/CFrameDelayedKiller.hpp"
+#include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
-#include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
-#include "MetroidPrime/CCameraManager.hpp"
-#include "MetroidPrime/CAnimRes.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
+#include "Kyoto/Text/CStringTable.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
-#include "MetroidPrime/CActorLights.hpp"
+#include "MetroidPrime/CAnimRes.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
+#include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "MetroidPrime/Factories/CCharacterFactory.hpp"
 #include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
-#include "MetroidPrime/Tweaks/CTweakGui.hpp"
-#include "Kyoto/Math/CAABox.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
-#include "MetaRender/CCubeRenderer.hpp"
-#include "rstl/math.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
+#include "dolphin/os.h"
 #include "rstl/StringExtras.hpp"
 #include "rstl/list.hpp"
-#include "dolphin/os.h"
+#include "rstl/math.hpp"
 #include <float.h>
 
 // Guessed names.
 static CColor sDarkPointLightColor(uchar(80), uchar(49), uchar(130), uchar(255));
 static CColor sDarkMovingLightColor(uchar(156), uchar(123), uchar(200), uchar(255));
+static const char* const kIntroAudio = "/Audio/swanp-maae32.dsp";
 
 struct CWorldTransManager::SModelDatas {
   CAnimRes mSamusRes;
@@ -132,18 +133,19 @@ void CWorldTransManager::TouchModels() {
   }
   SModelDatas& data = *mModelData;
   if (data.mBeamModel && data.mBeamModel->IsLoaded()) {
-    data.mBeamModelData = CModelData(CStaticRes(data.mBeamModel->GetTag().GetId(),
-                                                 data.mSamusRes.GetScale()));
+    data.mBeamModelData =
+        CModelData(CStaticRes(data.mBeamModel->GetTag().GetId(), data.mSamusRes.GetScale()));
     data.mBeamModel.clear();
   }
   if (data.mGrappleModel && data.mGrappleModel->IsLoaded()) {
-    data.mGrappleModelData = CModelData(CStaticRes(data.mGrappleModel->GetTag().GetId(),
-                                                    data.mSamusRes.GetScale()));
+    data.mGrappleModelData =
+        CModelData(CStaticRes(data.mGrappleModel->GetTag().GetId(), data.mSamusRes.GetScale()));
     data.mGrappleModel.clear();
   }
   if (data.mSuitModel && data.mSuitSkin && data.mSuitModel->IsLoaded() &&
       data.mSuitSkin->IsLoaded()) {
-    data.mSamusModelData = CModelData(data.mSamusRes);
+    const CModelData samusModel(data.mSamusRes);
+    data.mSamusModelData = samusModel;
     data.mSamusModelData.AnimationData()->SetAnimation(
         CAnimPlaybackParms(data.mSamusRes.GetDefaultAnim(), -1, 1.f, true), false);
     data.mSuitModel.clear();
@@ -151,9 +153,6 @@ void CWorldTransManager::TouchModels() {
   }
   if (!data.mSamusModelData.IsNull()) {
     data.mSamusModelData.Touch(CModelData::kWM_Normal, 0);
-  }
-  if (!data.mSecondPassSamusModelData.IsNull()) {
-    data.mSecondPassSamusModelData.Touch(CModelData::kWM_Normal, 0);
   }
   if (!data.mPlatformModelData.IsNull()) {
     data.mPlatformModelData.Touch(CModelData::kWM_Normal, 0);
@@ -197,20 +196,20 @@ void CWorldTransManager::EnableTransition(const CAnimRes& samusRes, bool renderG
   data.mSamusModelData.AnimationData()->SetAnimation(
       CAnimPlaybackParms(samusRes.GetDefaultAnim(), -1, 1.f, true), false);
   data.mSecondPassSamusModelData = CModelData(samusRes);
-  data.mSecondPassSamusModelData.AnimationData()->SetAnimation(
-      CAnimPlaybackParms(1, -1, 1.f, true), false);
+  data.mSecondPassSamusModelData.AnimationData()->SetAnimation(CAnimPlaybackParms(1, -1, 1.f, true),
+                                                               false);
 
-  const CAssetId beamRes = gpTweakPlayerRes->GetCinematicBeamResId(
-      gpGameState->GetPlayerState()->GetCurrentBeam());
+  const CAssetId beamRes =
+      gpTweakPlayerRes->GetCinematicBeamResId(gpGameState->GetPlayerState()->GetCurrentBeam());
   data.mBeamModel = gpSimplePool->GetObj(SObjectTag('CMDL', beamRes));
   data.mBeamModel->Lock();
   if (renderGrapple) {
-    data.mGrappleModel = gpSimplePool->GetObj(
-        SObjectTag('CMDL', gpTweakPlayerRes->GetCinematicGrappleResId()));
+    data.mGrappleModel =
+        gpSimplePool->GetObj(SObjectTag('CMDL', gpTweakPlayerRes->GetCinematicGrappleResId()));
     data.mGrappleModel->Lock();
   }
-  mCharacterFactory = TLockedToken< CCharacterFactory >(
-      gpCharacterFactoryBuilder->GetFactory(samusRes));
+  mCharacterFactory =
+      TLockedToken< CCharacterFactory >(gpCharacterFactoryBuilder->GetFactory(samusRes));
   const CCharacterInfo& character =
       (*mCharacterFactory)->GetCharInfo(samusRes.GetCharacterNodeId());
   data.mSuitModel = gpSimplePool->GetObj(SObjectTag('CMDL', character.GetModelId()));
@@ -304,13 +303,14 @@ void CWorldTransManager::UpdateEnabled(float dt) {
     if (mStopSoon && !data.mDissolveStarted && mCurTime >= 4.f) {
       data.mDissolveStarted = true;
       data.mDissolveStartTime = mCurTime;
-      data.mDissolveEndTime = mCurTime;
+      data.mDissolveEndTime = 4.f + mCurTime - 4.f;
       if (!mSecondPassCamera) {
-        data.mTransCompleteTime = 1.f + mCurTime;
+        data.mTransCompleteTime = 5.f + mCurTime - 4.f;
       } else {
         data.mTransCompleteTime = mCurTime + mSecondPassCamera->GetDuration();
-        data.mSamusModelData.AnimationData()->SetAnimation(
-            CAnimPlaybackParms(1, -1, 1.f, true), false);
+        data.mSamusModelData.AnimationData()->SetAnimation(CAnimPlaybackParms(1, -1, 1.f, true),
+                                                           false);
+        data.mSamusModelData.AnimationData()->EnableLooping(false);
       }
     }
     if (data.mDissolveStarted && mCurTime > data.mTransCompleteTime) {
@@ -323,8 +323,7 @@ void CWorldTransManager::UpdateEnabled(float dt) {
     data.mRandTimeout -= dt;
     if (data.mRandTimeout <= 0.f) {
       data.mRandTimeout = mRandom.Range(0.016666668f, 0.1f);
-      const CVector2f shake(mRandom.Range(-0.025f, 0.025f),
-                            mRandom.Range(-0.075f, 0.075f));
+      const CVector2f shake(mRandom.Range(-0.025f, 0.025f), mRandom.Range(-0.075f, 0.075f));
       data.mShakeDelta = (shake - data.mShakeResult) / data.mRandTimeout;
       const float blur = mRandom.Range(-2.f, 4.f);
       data.mBlurDelta = (blur - data.mBlurResult) / data.mRandTimeout;
@@ -405,15 +404,15 @@ void CWorldTransManager::UpdateLights(float dt) {
   }
   if (intensity < 1.f) {
     CLight wrappedLight = light;
-    wrappedLight.SetPosition(lightPos + CVector3f(0.f, 0.f,
-                                                 mGoingUp ? mLightHeight : -mLightHeight));
+    wrappedLight.SetPosition(lightPos +
+                             CVector3f(0.f, 0.f, mGoingUp ? mLightHeight : -mLightHeight));
     wrappedLight.SetColor(CColor::Lerp(CColor::Black(), pointColor, 1.f - intensity));
     lights.push_back(wrappedLight);
     movingLight.SetColor(CColor::Lerp(CColor::Black(), movingColor, intensity));
   }
   lights.push_back(movingLight);
-  movingLight.SetPosition(CVector3f(movingLight.GetPosition().GetX(), -1.2f,
-                                    movingLight.GetPosition().GetZ()));
+  movingLight.SetPosition(
+      CVector3f(movingLight.GetPosition().GetX(), -1.2f, movingLight.GetPosition().GetZ()));
   lights.push_back(movingLight);
 }
 
@@ -444,13 +443,13 @@ CTransform4f CWorldTransManager::GetCameraTransform(int pass) const {
     time = mCurTime;
   } else if (pass == 1) {
     if (!mSecondPassCamera) {
-      const float t = CMath::Clamp(0.f, (4.f + mCurTime - mModelData->mDissolveStartTime) / 5.f,
-                                   1.f);
+      const float t =
+          CMath::Clamp(0.f, (4.f + (mCurTime - mModelData->mDissolveStartTime)) / 5.f, 1.f);
       const CRelAngle angle = CRelAngle::FromDegrees(48.f * t + 180.f - 24.f);
       const CVector3f& scale = mModelData->mSamusRes.GetScale();
-      return CTransform4f::RotateZ(angle) *
-             CTransform4f::Translate(-0.1f * scale.GetX(), -0.5f * scale.GetY(),
-                                     1.5f * scale.GetZ());
+      return CTransform4f::RotateZ(angle) * CTransform4f::Translate(-0.1f * scale.GetX(),
+                                                                    -0.5f * scale.GetY(),
+                                                                    1.5f * scale.GetZ());
     }
     spline = &*mSecondPassCamera;
     time = mCurTime - mModelData->mDissolveStartTime;
@@ -470,28 +469,26 @@ void CWorldTransManager::DrawAllModels() const {
                              CTransform4f::Translate(0.f, 0.f, -(2.f * mBgHeight - mBgOffset)),
                              &lights, CModelFlags::Normal());
     data.mBgModelData.Render(CModelData::kWM_Normal,
-                             CTransform4f::Translate(0.f, 0.f, mBgOffset - mBgHeight),
-                             &lights, CModelFlags::Normal());
-    data.mBgModelData.Render(CModelData::kWM_Normal,
-                             CTransform4f::Translate(0.f, 0.f, mBgOffset),
+                             CTransform4f::Translate(0.f, 0.f, mBgOffset - mBgHeight), &lights,
+                             CModelFlags::Normal());
+    data.mBgModelData.Render(CModelData::kWM_Normal, CTransform4f::Translate(0.f, 0.f, mBgOffset),
                              &lights, CModelFlags::Normal());
   }
   if (!data.mPlatformModelData.IsNull()) {
-    data.mPlatformModelData.Render(CModelData::kWM_Normal, CTransform4f::Identity(),
-                                   &lights, CModelFlags::Normal());
+    data.mPlatformModelData.Render(CModelData::kWM_Normal, CTransform4f::Identity(), &lights,
+                                   CModelFlags::Normal());
   }
   if (!data.mSamusModelData.IsNull()) {
     const CTransform4f& samusXf = CTransform4f::Identity();
     data.mSamusModelData.AnimationData()->PreRender();
-    data.mSamusModelData.Render(CModelData::kWM_Normal, samusXf, &lights,
-                                CModelFlags::Normal());
+    data.mSamusModelData.Render(CModelData::kWM_Normal, samusXf, &lights, CModelFlags::Normal());
     if (!data.mBeamModelData.IsNull()) {
-      data.mBeamModelData.Render(CModelData::kWM_Normal, samusXf * data.mGunXf,
-                                 &lights, CModelFlags::Normal());
+      data.mBeamModelData.Render(CModelData::kWM_Normal, samusXf * data.mGunXf, &lights,
+                                 CModelFlags::Normal());
     }
     if (!data.mGrappleModelData.IsNull()) {
-      data.mGrappleModelData.Render(CModelData::kWM_Normal, samusXf * data.mGrappleXf,
-                                    &lights, CModelFlags::Normal());
+      data.mGrappleModelData.Render(CModelData::kWM_Normal, samusXf * data.mGrappleXf, &lights,
+                                    CModelFlags::Normal());
     }
   }
   if (mDarkWorldInfo) {
@@ -502,16 +499,17 @@ void CWorldTransManager::DrawAllModels() const {
       scale = CVector3f(halfWidth, halfWidth, halfWidth);
     }
     const CDarkWorldInfo& dark = *mDarkWorldInfo;
-    gpRender->DrawDarkWorldVolume(CVector3f::Zero(), scale, 255, 128, true, 1.f,
-                                  dark.mScroll1, dark.mScroll2, dark.mTexScale1,
-                                  dark.mTexScale2, **dark.mEnvironment, **dark.mCloud1,
-                                  **dark.mCloud2, dark.mColor, dark.mAdditiveColor, false, false);
+    gpRender->DrawDarkWorldVolume(CVector3f::Zero(), scale, 255, 128, true, 1.f, dark.mScroll1,
+                                  dark.mScroll2, dark.mTexScale1, dark.mTexScale2,
+                                  **dark.mEnvironment, **dark.mCloud1, **dark.mCloud2, dark.mColor,
+                                  dark.mAdditiveColor, false, false);
   }
 }
 
 void CWorldTransManager::DrawFirstPass() const {
   const float fov = GetCameraFov(0);
-  gpRender->SetPerspective(0.7f * fov, 1.42f, CCameraManager::GetDefaultFirstPersonNearClipDistance(),
+  gpRender->SetPerspective(0.7f * fov, 1.42f,
+                           CCameraManager::GetDefaultFirstPersonNearClipDistance(),
                            CCameraManager::GetDefaultFirstPersonFarClipDistance());
   CGraphics::SetViewPointMatrix(GetCameraTransform(0));
   DrawAllModels();
@@ -519,7 +517,8 @@ void CWorldTransManager::DrawFirstPass() const {
 
 void CWorldTransManager::DrawSecondPass() const {
   const float fov = GetCameraFov(1);
-  gpRender->SetPerspective(0.7f * fov, 1.42f, CCameraManager::GetDefaultFirstPersonNearClipDistance(),
+  gpRender->SetPerspective(0.7f * fov, 1.42f,
+                           CCameraManager::GetDefaultFirstPersonNearClipDistance(),
                            CCameraManager::GetDefaultFirstPersonFarClipDistance());
   CGraphics::SetViewPointMatrix(GetCameraTransform(1));
   DrawAllModels();
@@ -532,7 +531,7 @@ void CWorldTransManager::DrawEnabled() const {
   gpRender->SetRequestRGBA6(true);
   if (mCurTime <= mModelData->mDissolveStartTime) {
     DrawFirstPass();
-  } else {
+  } else if (mCurTime > mModelData->mDissolveStartTime) {
     DrawSecondPass();
   }
   CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Multiply, CCameraFilterPass::kFS_CinemaBars,
@@ -547,16 +546,14 @@ void CWorldTransManager::DrawEnabled() const {
     alpha = 1.f - (mModelData->mTransCompleteTime - mCurTime) / 0.25f;
   }
   if (alpha > 0.f) {
-    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend,
-                                  CCameraFilterPass::kFS_Fullscreen,
+    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_Fullscreen,
                                   CColor(0.f, 0.f, 0.f, alpha), nullptr, 1.f);
   }
   CGraphics::SetIsBeginSceneClearFb(true);
 }
 
 void CWorldTransManager::DrawDisabled() const {
-  CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend,
-                                CCameraFilterPass::kFS_Fullscreen,
+  CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_Fullscreen,
                                 CColor(uchar(0), uchar(0), uchar(0), uchar(3)), nullptr, 1.f);
 }
 
@@ -568,8 +565,8 @@ void CWorldTransManager::DrawPortalTransition() const {
   CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Add, CCameraFilterPass::kFS_Fullscreen,
                                 CColor::Lerp(CColor::White(), CColor::Black(), mPortalFade),
                                 nullptr, 1.f);
-  CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Multiply,
-                                CCameraFilterPass::kFS_CinemaBars, CColor::Black(), nullptr, 1.f);
+  CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Multiply, CCameraFilterPass::kFS_CinemaBars,
+                                CColor::Black(), nullptr, 1.f);
   CGraphics::SetIsBeginSceneClearFb(true);
 }
 
@@ -613,19 +610,19 @@ void CWorldTransManager::EnableTransition(CAssetId fontId, CAssetId stringId, in
   mTransType = kTT_Text;
   mModelData = nullptr;
   mFadeWhite = fadeWhite;
-  const CGuiTextProperties properties(true, kJustification_Center,
-                                      kVerticalJustification_Center);
-  mTextData = rs_new CGuiTextSupport(fontId, 640, 448, properties, CColor::White(),
-                                     CColor::Black(), CColor::White(), gpSimplePool);
+  const CVector2i extent(CGraphics::GetViewport().mWidth, CGraphics::GetViewport().mHeight);
+  const CGuiTextProperties properties(true, kJustification_Center, kVerticalJustification_Center);
+  mTextData =
+      rs_new CGuiTextSupport(fontId, extent.GetX(), extent.GetY(), properties, CColor::White(),
+                             CColor::Black(), CColor::White(), gpSimplePool);
   mTextData->SetTypeWriteEffectOptions(true, charFadeTime, charFadeRate);
   mTextData->SetText(rstl::wstring_l(L""));
   if (mIntroText) {
-    mTextData->SetExtentX(640 - 64);
+    mTextData->SetExtentX(CGraphics::GetViewport().mWidth - 64);
   }
   if (mDisplaySubtitles) {
-    mSubtitleData = rs_new CGuiTextSupport(fontId, 640, 120, properties,
-                                           CColor::White(), CColor::Black(),
-                                           CColor::White(), gpSimplePool);
+    mSubtitleData = rs_new CGuiTextSupport(fontId, extent.GetX(), 120, properties, CColor::White(),
+                                           CColor::Black(), CColor::White(), gpSimplePool);
     mSubtitleData->SetText(rstl::wstring_l(L""));
     mSubtitleData->SetGeometryColor(CColor::Black());
   }
@@ -651,27 +648,29 @@ void CWorldTransManager::EnableTransition(rstl::single_ptr< CPortalTransition >&
 
 void CWorldTransManager::UpdateText(float dt) {
   if (mTextDirty) {
-    if (mStrTable && mStrTable->IsLoaded()) {
-      const CStringTable& strings = ***mStrTable;
+    TToken< CStringTable > stringTable = *mStrTable;
+    if (stringTable.IsLoaded()) {
+      const CStringTable& strings = **stringTable;
       if (mStrIdx < strings.GetStringCount()) {
         mTextData->SetText(rstl::wstring(strings.GetString(mStrIdx)));
-        if (mDisplaySubtitles && mStrIdx + 1 < strings.GetStringCount()) {
+        if (mDisplaySubtitles) {
           mSubtitleData->SetText(rstl::wstring(strings.GetString(mStrIdx + 1)));
         }
       }
-      if (mAudioStream == rstl::string_l("UseStringTable") &&
+      if (CStringExtras::CompareCaseInsensitive(mAudioStream, rstl::string_l("UseStringTable")) ==
+              0 &&
           mStrIdx + 1 < strings.GetStringCount()) {
-        mAudioStream =
-            CStringExtras::ConvertToANSI(rstl::wstring(strings.GetString(mStrIdx + 1)));
+        mAudioStream = CStringExtras::ConvertToANSI(rstl::wstring(strings.GetString(mStrIdx + 1)));
       }
-      if (mIntroText && strings.GetString(0)[0] != L'\0') {
-        mAudioStream = CStringExtras::ConvertToANSI(rstl::wstring(strings.GetString(0)));
+      const rstl::wstring introAudio(strings.GetString(0));
+      if (mIntroText && introAudio.size() != 0) {
+        mAudioStream = CStringExtras::ConvertToANSI(introAudio);
       }
       mSfxInterval = 0.f;
       if (mIntroText) {
         mIntroAudioStopped = false;
         CStreamAudioManager::PlaySoftwareAudio(CStreamAudioManager::kSC_OneShot,
-                                                rstl::string_l(""), 0.25f, 3.f, 87, true);
+                                               rstl::string_l(kIntroAudio), 0.25f, 3.f, 87, true);
       }
       mTextDirty = false;
     } else if (mCurTime >= mTextStartTime) {
@@ -681,19 +680,19 @@ void CWorldTransManager::UpdateText(float dt) {
 
   if (mCurTime >= mTextStartTime) {
     if (mAudioStream.size() != 0 && CDvdFile::FileExists(mAudioStream.c_str())) {
-      CStreamAudioManager::PlaySoftwareAudio(CStreamAudioManager::kSC_Default, mAudioStream,
-                                              0.f, 0.f, mVolume, false);
+      CStreamAudioManager::PlaySoftwareAudio(CStreamAudioManager::kSC_Default, mAudioStream, 0.f,
+                                             0.f, mVolume, false);
       mAudioStream = rstl::string_l("");
     }
     if (mTextData->GetCurTime() < mTextData->GetTotalAnimationTime() + 0.1f) {
       mTextData->Update(dt);
     }
     mTextElapsedTime += dt;
-    if (mDisplaySubtitles && !mSubtitleData.null()) {
+    if (mDisplaySubtitles) {
       const float elapsed = rstl::max_val(0.f, mCurTime - mTextStartTime - mSubtitleFadeInDelay);
       const float fraction = rstl::min_val(1.f, elapsed / mSubtitleFadeTime);
       mSubtitleData->SetGeometryColor(
-          CColor::White().WithAlphaOf(0.75f * fraction * fraction));
+          CColor::White().WithAlphaModulatedBy(0.75f * (fraction * fraction)));
       mSubtitleData->Update(dt);
     }
     const float printed = mTextData->GetNumCharactersPrinted();
@@ -711,44 +710,47 @@ void CWorldTransManager::UpdateText(float dt) {
     if (!mIntroAudioStopped && mCurTime >= mTextStartTime + 27.25f) {
       mIntroAudioStopped = true;
       CStreamAudioManager::StopSoftwareAudio(CStreamAudioManager::kSC_OneShot,
-                                              rstl::string_l(""));
+                                             rstl::string_l(kIntroAudio));
     }
     endDelay = mStrIdx + 1 == strings.GetStringCount() ? 4.f : (mStrIdx & 1 ? 0.5f : 2.f);
     if (mIntroTextFadeTimer > 0.f) {
-      mIntroTextFadeTimer = rstl::max_val(0.f, mIntroTextFadeTimer - 2.f * dt);
+      mIntroTextFadeTimer = rstl::max_val(mIntroTextFadeTimer - 2.f * dt, 0.f);
       mTextData->SetGeometryColor(CColor::White().WithAlphaOf(mIntroTextFadeTimer));
     }
     if (mStrIdx == strings.GetStringCount() - 1 &&
         mTextData->GetTotalAnimationTime() < mTextElapsedTime) {
       mTextData->SetTypeWriteEffectOptions(false, 0.f, FLT_MAX);
-      static float flashTime = 0.f;
+      static float flashTime = FLT_MAX;
       static bool flashBlue = false;
       flashTime += dt;
       if (flashTime > 0.25f) {
         flashBlue = !flashBlue;
         flashTime = 0.f;
         rstl::wstring text(strings.GetString(mStrIdx));
-        const char* markup = flashBlue ? static_cast< const char* >("&main-color=#89D6FF;_")
-                                       : static_cast< const char* >("&main-color=#000000;_");
-        text.append(CStringExtras::ConvertToUNICODE(rstl::string(markup)));
+        const char* markup = flashBlue ? "&main-color=#89D6FF;_" : "&main-color=#000000;_";
+        text.append(CStringExtras::ConvertToUNICODE(rstl::string_l(markup)));
         mTextData->SetText(text);
       }
     }
 
-    const float pageCompletion = 1.f + mTextData->GetTotalAnimationTime() + endDelay;
-    if (mTextElapsedTime <= pageCompletion) {
+    const float pageCompletion = endDelay + (1.f + mTextData->GetTotalAnimationTime());
+    if (pageCompletion >= mTextElapsedTime) {
       textReadyToFinish = false;
-    } else if (!mIntroTextSeen && mStrIdx + 1 < strings.GetStringCount()) {
+    } else if (!mIntroTextSeen) {
       static bool pageFadeStarted = false;
-      if ((mStrIdx + 1) & 1 && !pageFadeStarted) {
+      const bool newPage = (mStrIdx + 1) % 2 != 0;
+      if (mIntroTextFadeTimer > 0.f) {
+        textReadyToFinish = false;
+      } else if (!pageFadeStarted && (newPage || mStrIdx - 1 == strings.GetStringCount())) {
         pageFadeStarted = true;
         mIntroTextFadeTimer = 1.f;
-      } else if (mIntroTextFadeTimer <= 0.f) {
+        textReadyToFinish = false;
+      } else if (mStrIdx + 1 < strings.GetStringCount()) {
         ++mStrIdx;
         rstl::wstring text(strings.GetString(mStrIdx));
-        if (mStrIdx & 1) {
+        if (newPage) {
           if (mStrIdx + 1 == strings.GetStringCount()) {
-            text.append(rstl::wstring_l(L"_"));
+            text.append(CStringExtras::ConvertToUNICODE(rstl::string_l("_")));
           }
           mTextData->SetText(text);
           mSfxInterval = 0.f;
@@ -759,18 +761,16 @@ void CWorldTransManager::UpdateText(float dt) {
           pageFadeStarted = false;
         }
         mTextData->SetGeometryColor(CColor::White());
-        if (mDisplaySubtitles && mStrIdx + 1 < strings.GetStringCount()) {
+        if (mDisplaySubtitles) {
           mSubtitleData->SetText(rstl::wstring(strings.GetString(mStrIdx + 1)));
         }
+        textReadyToFinish = false;
       }
-      textReadyToFinish = false;
-    } else if (mIntroTextFadeTimer > 0.f) {
-      textReadyToFinish = false;
     }
   }
 
   if (mStopSoon) {
-    const float completion = 1.f + mTextData->GetTotalAnimationTime() + endDelay;
+    const float completion = endDelay + (1.f + mTextData->GetTotalAnimationTime());
     if (textReadyToFinish && mTextElapsedTime > completion) {
       if (mCurTime - mStopTime > 1.f) {
         gpGameState->SystemOptions().FindEnvironmentVariable("SeenIntroText")->Set(1);
@@ -780,7 +780,7 @@ void CWorldTransManager::UpdateText(float dt) {
         mIntroAudioStopped = true;
         CStreamAudioManager::FadeOutSoftwareAudio(CStreamAudioManager::kSC_OneShot, 1.f);
         CStreamAudioManager::StopSoftwareAudio(CStreamAudioManager::kSC_OneShot,
-                                                rstl::string_l(""));
+                                               rstl::string_l(kIntroAudio));
       }
     } else {
       mStopTime = mCurTime;
@@ -790,12 +790,13 @@ void CWorldTransManager::UpdateText(float dt) {
 
 void CWorldTransManager::DrawText() const {
   gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
-  gpRender->SetModelMatrix(CTransform4f::Translate(mIntroText ? 32.f : 0.f, 0.f, 448.f));
+  gpRender->SetModelMatrix(
+      CTransform4f::Translate(mIntroText ? 32.f : 0.f, 0.f, CGraphics::GetViewport().mHeight));
   CGraphics::SetCullMode(kCM_None);
   gpRender->SetDepthReadWrite(false, false);
   gpRender->SetBlendMode_AdditiveAlpha();
   mTextData->Render();
-  if (mDisplaySubtitles && !mSubtitleData.null()) {
+  if (mDisplaySubtitles) {
     gpRender->SetModelMatrix(CTransform4f::Translate(0.f, 0.f, 120.f));
     mSubtitleData->Render();
   }
@@ -808,8 +809,8 @@ void CWorldTransManager::DrawText() const {
   }
   if (alpha > 0.f) {
     const CColor color = (mFadeWhite ? CColor::White() : CColor::Black()).WithAlphaOf(alpha);
-    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend,
-                                  CCameraFilterPass::kFS_Fullscreen, color, nullptr, 1.f);
+    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_Fullscreen,
+                                  color, nullptr, 1.f);
   }
   CGraphics::SetIsBeginSceneClearFb(true);
 }
@@ -824,7 +825,7 @@ void CWorldTransManager::StartTextFadeOut() {
 void CWorldTransManager::CheckIntroTextSeen() {
   const CEnvironmentVariable* seen =
       gpGameState->SystemOptions().FindEnvironmentVariable("SeenIntroText");
-  if (seen != nullptr && seen->GetValue() != 0) {
+  if (seen->GetValue() != 0) {
     mIntroTextSeen = true;
   }
 }
