@@ -449,10 +449,11 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
                          oldState.GetVelocity() + recoveryImpulse, oldState.GetAngularMomentum()));
         actor.SetLastNonCollidingState(actor.GetMotionState());
       } else {
-        actor.SetLastNonCollidingState(
+        actor.SetMotionState(
             CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
                          0.5f * lastState.GetVelocity() + recoveryImpulse,
                          0.5f * lastState.GetAngularMomentum()));
+        actor.SetLastNonCollidingState(actor.GetMotionState());
       }
     }
   } else {
