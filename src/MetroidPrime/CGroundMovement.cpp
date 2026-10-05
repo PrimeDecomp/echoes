@@ -7,6 +7,7 @@
 #include "Collision/CollisionUtil.hpp"
 #include "MetroidPrime/CAABoxFilter.hpp"
 #include "Kyoto/Math/CVector3d.hpp"
+#include "Kyoto/Math/CUnitVector3f.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
@@ -661,6 +662,18 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
       }
       if (info.IsValid()) {
         player.SetPlayerIsSlidingOnWall(true);
+        if (CVector3f::Dot(info.GetNormalLeft(), CVector3f::Up()) > 0.95f) {
+          CVector3f flatVelocity = actor.GetVelocityWR();
+          flatVelocity.SetZ(0.f);
+          const float speed = flatVelocity.Magnitude();
+          if (speed < 5.f) {
+            if (speed > 0.2f) {
+              actor.SetVelocityWR(1.2f * flatVelocity);
+            } else {
+              actor.SetVelocityWR(0.5f * actor.GetTransform().GetForward());
+            }
+          }
+        }
       }
       CheckFalling(actor, mgr, dt);
       actor.SetLastFloorPlaneNormal(rstl::optional_object_null());
@@ -675,6 +688,11 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
         mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId,
                                         entity->GetUniqueId(),
                                         static_cast< EScriptObjectMessage >('XONP'),
+                                        kSS_InvalidState));
+      } else {
+        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
+                                        actor.GetUniqueId(),
+                                        static_cast< EScriptObjectMessage >('XLSG'),
                                         kSS_InvalidState));
       }
       CGameCollision::SendMaterialMessage(mgr, info.GetMaterialLeft(), actor);
@@ -711,6 +729,9 @@ void CGroundMovement::MoveGroundCollider_New(CStateManager& mgr, CPhysicsActor& 
         primitive->GetMaterial());
   }
   CGameCollision::CollisionFailsafe(mgr, cache, actor, *usePrimitive, nearList, 0.f, 1, 0.f);
+  if (cached != nullptr && localCache) {
+    *cached = *localCache;
+  }
 }
 
 CMaterialList
