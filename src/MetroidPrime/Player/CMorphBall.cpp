@@ -1080,7 +1080,7 @@ void CMorphBall::Render(const CStateManager& mgr, const CActorLights* lights) co
   // TODO: Render the ball, glass, trails and Echoes Screw Attack/death-ball effects.
 }
 
-void CMorphBall::PreRender(CStateManager& mgr, const CFrustumPlanes& frustum) {
+void CMorphBall::PreRender(CStateManager& mgr) {
   if (1.f == mBoostLightFactor) {
     return;
   }

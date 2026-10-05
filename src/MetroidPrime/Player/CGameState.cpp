@@ -673,7 +673,7 @@ float CGameState::GetHardModeWeaponMultiplier() const {
   return gpTweakGame->GetHardModeWeaponMultiplier();
 }
 
-const CGameMode& CGameState::GetGameMode() const { return *mGameMode; }
+CGameMode& CGameState::GetGameMode() const { return *mGameMode; }
 
 CGameMode& CGameState::GetGameMode() { return *mGameMode; }
 

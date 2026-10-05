@@ -92,10 +92,10 @@ void CTweakPlayerRes::CacheResources() {
   mCinematicGrapple = ResolveAssetId(rstl::string_l("CinematicGrapple"));
   mCinematicMoveOutofIntoPlayerDistance = mData->unknown_0x36ad9d19;
 
-  mUnmorphAlphaSpline = mData->ballTransitionResources.unknown_0xa342c3a6;
-  mMorphAlphaSpline = mData->ballTransitionResources.unknown_0x15b6840d;
-  mMultiplayerUnmorphAlphaSpline = mData->ballTransitionResources.unknown_0x23fb0e93;
-  mMultiplayerMorphAlphaSpline = mData->ballTransitionResources.unknown_0x564262f0;
+  mMorphAlphaSpline = mData->ballTransitionResources.unknown_0xa342c3a6;
+  mUnmorphAlphaSpline = mData->ballTransitionResources.unknown_0x15b6840d;
+  mMultiplayerMorphAlphaSpline = mData->ballTransitionResources.unknown_0x23fb0e93;
+  mMultiplayerUnmorphAlphaSpline = mData->ballTransitionResources.unknown_0x564262f0;
   mMovementControlSpline = mData->ballTransitionResources.movementControl;
 }
 

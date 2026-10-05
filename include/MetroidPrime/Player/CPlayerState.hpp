@@ -288,6 +288,10 @@ public:
 
   float CalculateHealth();
 
+  int GetLogScans() const { return mScanCompletionRateFirst; }
+  void SetScanCompletionRateFirst(int rate) { mScanCompletionRateFirst = rate; }
+  void SetScanCompletionRateSecond(int rate) { mScanCompletionRateSecond = rate; }
+
   void InitializeScanTimes();
 
   static uint GetBitCount(uint);

@@ -441,10 +441,10 @@ public:
                   TUniqueId owner, const CDamageInfo& damageInfo, CStateManager& mgr);
   bool GetExplorationMode() const;
   bool GetCombatMode() const;
-  void fn_80010bf4(CStateManager& mgr);
+  void UpdateTransitionAlpha(CStateManager& mgr); // Guessed name; morph-transition opacity.
   void RenderGun(const CStateManager& mgr, const CVector3f& position) const;
   void fn_80012040(CStateManager& mgr);
-  void RenderReflectedPlayer(CStateManager& mgr);
+  void UpdateModelScale(CStateManager& mgr); // Guessed name; adjusts the viewed player's scale.
   float GetMaximumPlayerPositiveVerticalVelocity(const CStateManager& mgr) const;
   void fn_80012eb8(CStateManager& mgr);
   void UpdateCameraTimers(float dt, const CFinalInput& input);
