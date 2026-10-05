@@ -1230,9 +1230,9 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
   }
 
   if (type == kEFX_DarkWorld) {
-    CVectorFixed8_8 offsets[16];
-    CVectorFixed8_8 upDeltas[16];
-    CVectorFixed8_8 rightDeltas[16];
+    rstl::reserved_vector< CVectorFixed8_8, 16 > offsets;
+    rstl::reserved_vector< CVectorFixed8_8, 16 > upDeltas;
+    rstl::reserved_vector< CVectorFixed8_8, 16 > rightDeltas;
     CRandom16 random(99);
     const CTransform4f cameraRotation = camXf.GetRotation();
     for (int i = 0; i < 16; ++i) {
@@ -1240,19 +1240,20 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
       const float size = random.Range(0.05f, 0.7f);
       const CVector3f up = cameraRotation * CVector3f(0.f, 0.f, size);
       const CVector3f right = cameraRotation * CVector3f(size, 0.f, 0.f);
-      const CVector3f offset = -0.5f * (up + right);
-      offsets[i] = CVectorFixed8_8(real_to_fixed8_8(offset.GetX()),
-                                   real_to_fixed8_8(offset.GetY()),
-                                   real_to_fixed8_8(offset.GetZ()));
-      upDeltas[i] = CVectorFixed8_8(real_to_fixed8_8(up.GetX()), real_to_fixed8_8(up.GetY()),
-                                    real_to_fixed8_8(up.GetZ()));
-      rightDeltas[i] = CVectorFixed8_8(real_to_fixed8_8(right.GetX()),
-                                       real_to_fixed8_8(right.GetY()),
-                                       real_to_fixed8_8(right.GetZ()));
+      const CVector3f offset = -0.5f * up - 0.5f * right;
+      upDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(up.GetX()),
+                                         real_to_fixed8_8(up.GetY()),
+                                         real_to_fixed8_8(up.GetZ())));
+      rightDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(right.GetX()),
+                                            real_to_fixed8_8(right.GetY()),
+                                            real_to_fixed8_8(right.GetZ())));
+      offsets.push_back(CVectorFixed8_8(real_to_fixed8_8(offset.GetX()),
+                                       real_to_fixed8_8(offset.GetY()),
+                                       real_to_fixed8_8(offset.GetZ())));
     }
     for (int i = 0; i < mGrids.size(); ++i) {
-      mGrids[i].RenderDarkWorldParticles(xf, invXf, camXf, mFxDensity, offsets, upDeltas,
-                                         rightDeltas);
+      mGrids[i].RenderDarkWorldParticles(xf, invXf, camXf, mFxDensity, offsets.data(),
+                                         upDeltas.data(), rightDeltas.data());
     }
   } else {
     for (int i = 0; i < mGrids.size(); ++i) {
