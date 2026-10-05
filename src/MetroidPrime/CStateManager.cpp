@@ -32,6 +32,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
@@ -278,6 +279,10 @@ CEntity* CStateManager::ObjectById(TUniqueId uid) {
   return mObjectLists[kOL_All]->GetObjectById(uid);
 }
 
+void CStateManager::DeleteObjectRequest(TUniqueId uid) {
+  SendScriptMsg(uid, kInvalidUniqueId, kSM_Delete, kInvalidUniqueId);
+}
+
 void CStateManager::SetCurrentAreaId(TAreaId area) {
   if (mNextAreaId != area) {
     mPreviousAreaId = mNextAreaId;
@@ -364,30 +369,53 @@ int CStateManager::GetWeaponIdCount(TUniqueId owner, EWeaponType type) {
 }
 
 bool CStateManager::RenderLastHUD(const TUniqueId& uid) {
-  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderLast;
-  if (list.size() == list.capacity()) {
+  CStateManagerContainer* container = mStateManagerContainer.get();
+  if (container->mRenderLast.size() == container->mRenderLast.capacity()) {
     return false;
   }
-  list.push_back(uid);
+  container->mRenderLast.push_back(uid);
   return true;
 }
 
 bool CStateManager::RenderLast(TUniqueId uid) {
-  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderLastUnderGun;
-  if (list.size() == list.capacity()) {
+  CStateManagerContainer* container = mStateManagerContainer.get();
+  if (container->mRenderLastUnderGun.size() == container->mRenderLastUnderGun.capacity()) {
     return false;
   }
-  list.push_back(uid);
+  container->mRenderLastUnderGun.push_back(uid);
   return true;
 }
 
 bool CStateManager::RenderLastOverlay(const TUniqueId& uid) {
-  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderBeforeAreas;
-  if (list.size() == list.capacity()) {
+  CStateManagerContainer* container = mStateManagerContainer.get();
+  if (container->mRenderBeforeAreas.size() == container->mRenderBeforeAreas.capacity()) {
     return false;
   }
-  list.push_back(uid);
+  container->mRenderBeforeAreas.push_back(uid);
   return true;
+}
+
+int CStateManager::SpecialSkipCinematic() {
+  int result = 0;
+  if (mSpecialFunctionId != kInvalidUniqueId) {
+    CEntity* entity = ObjectById(TUniqueId(mSpecialFunctionId));
+    if (entity == nullptr) {
+      SetSkipCinematicSpecialFunction(kInvalidUniqueId);
+    } else if (CScriptSpecialFunction* special = TCastToPtr< CScriptSpecialFunction >(entity)) {
+      const bool wasSkipping = mSkippingCinematic;
+      mSkippingCinematic = true;
+
+      if (special->GetFunction() == CScriptSpecialFunction::kSF_CinematicSkip) {
+        mCameraManagers[0]->StopCinematics(*this);
+        result = 1;
+      } else {
+        result = 2;
+      }
+      special->SkipCinematic(*this);
+      mSkippingCinematic = wasSkipping;
+    }
+  }
+  return result;
 }
 
 void CStateManager::SetGameState(EGameState state) {
