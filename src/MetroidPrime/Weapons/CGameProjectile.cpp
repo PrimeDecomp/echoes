@@ -464,7 +464,7 @@ void CGameProjectile::Chase(float dt, CStateManager& mgr) {
     return;
   }
   if (!actor->GetMaterialList().HasMaterial(kMT_Target) &&
-      !actor->GetMaterialList().HasMaterial(kMT_SixtyThree) &&
+      !actor->GetMaterialList().HasMaterial(kMT_SeekerTarget) &&
       !actor->GetMaterialList().HasMaterial(kMT_Player)) {
     mHomingTargetId = kInvalidUniqueId;
     return;

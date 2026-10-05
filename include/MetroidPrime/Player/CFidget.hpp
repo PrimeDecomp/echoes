@@ -7,17 +7,18 @@ class CPlayer;
 
 class CFidget {
 public:
-  enum EState { kS_NoFidget, kS_MinorFidget, kS_MajorFidget, kS_HolsterBeam };
+  enum EState { kS_NoFidget, kS_MinorFidget, kS_MajorFidget, kS_HolsterBeam, kS_Loading = 7 };
 
   CFidget();
   void Update(int fireButtonStates, bool bobbing, bool inStrikeCooldown, float dt,
               CStateManager& mgr, const CPlayer& player);
   void ResetAll();
   void ResetState(); // Guessed name
-  EState GetState() const { return mState; }
+  EState GetState() const { return mLoading ? kS_Loading : mState; }
   SamusGun::EFidgetType GetType() const { return mType; }
   int GetAnimSet() const { return mAnimSet; }
   void DoneLoading() { mLoading = false; }
+  void SetLoading() { mLoading = true; }
 
 private:
   float mTimeSinceFire;

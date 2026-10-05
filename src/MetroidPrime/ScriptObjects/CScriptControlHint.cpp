@@ -99,7 +99,7 @@ CScriptControlHint::CScriptControlHint(TUniqueId uid, const rstl::string& name,
 }
 
 void CScriptControlHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   switch (msg.GetMessage()) {
   case kSM_Deactivate:
   case kSM_Decrement: {

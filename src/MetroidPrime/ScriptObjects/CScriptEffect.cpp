@@ -190,7 +190,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   case kSM_ToggleActive:
     handled = true;
-    AcceptScriptMsg(mgr, CScriptMsg(msg.GetUnk(), msg.GetOriginator(), msg.GetId(),
+    AcceptScriptMsg(mgr, CScriptMsg(msg.GetSenderId(), msg.GetOriginator(), msg.GetId(),
                                     mEmitting ? kSM_Deactivate : kSM_Activate, msg.GetState()));
     break;
   case kSM_AreaLoaded: {
@@ -239,7 +239,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     CActor::AcceptScriptMsg(mgr, msg);
   }
   CActor* light = TCastToPtr< CActor >(mgr.ObjectById(mLightId));
-  mgr.SendScriptMsg(light, msg.GetUnk(), msg.GetMessage(), kInvalidUniqueId);
+  mgr.SendScriptMsg(light, msg.GetSenderId(), msg.GetMessage(), kInvalidUniqueId);
   if (oldEmitting == mEmitting) {
     return;
   }

@@ -60,6 +60,7 @@ public:
     EWipeEvent Update(float inY, float outY, float dt, const CPlayer& player);
 
   private:
+    friend class CPlayerGun;
     float mYLerp;
     float mGunTransformTime;
     float mRemTime;
@@ -81,6 +82,7 @@ public:
     void Update(bool firing, float dt, CTransform4f& transform, CStateManager& mgr);
 
   private:
+    friend class CPlayerGun;
     float mExtendParabolaDelayTimer;
     float mFireTime;
     float mCurrentExtendDistance;
@@ -115,7 +117,7 @@ public:
   void PollStateMachine(CStateManager& mgr) override;
   void InitializeStateMachine(CStateManager& mgr) override;
 
-  CVector3f fn_801c6df8() const; // Beam vector's meaning remains unresolved.
+  CVector3f GetRainSplashPosition() const;
   int GetBombsAvailable(CStateManager& mgr) const;
   TUniqueId DropPowerBomb(CStateManager& mgr) const;
   void DropBomb(EBWeapon type, CStateManager& mgr);
@@ -138,7 +140,7 @@ public:
   void EnableSeekerFx(CStateManager& mgr, bool enable);
   void FireSecondary(float dt, CStateManager& mgr, TUniqueId target, uint attributes,
                      const CTransform4f* transform, ushort sound);
-  void UpdateAuxWeapons(const CTransform4f& transform, CStateManager& mgr);
+  void UpdateAuxWeapons(float dt, const CTransform4f& transform, CStateManager& mgr);
   void StopContinuousBeam(CStateManager& mgr, bool deactivate);
   void DoUserAnimEvent(float dt, CStateManager& mgr, const CInt32POINode& node,
                        EUserEventType type);
@@ -181,7 +183,7 @@ public:
   CVector3f ConvertToScreenSpace(const CVector3f& position, const CGameCamera& camera) const;
   void BeginDarkVisorRender(const CStateManager& mgr) const; // Guessed name
   void EndDarkVisorRender(const CStateManager& mgr) const;   // Guessed name
-  static void DrawScreenTex();
+  static void DrawScreenTex(float depth);
   static void CopyScreenTex();
   CStateMachine* GetStateMachine();
   void ResetStateMachine(CStateManager& mgr);

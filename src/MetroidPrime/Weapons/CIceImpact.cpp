@@ -222,7 +222,7 @@ void CIceImpact::Think(float dt, CStateManager& mgr) {
 
 void CIceImpact::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   switch (message) {
   case kSM_Create:
     if (mElementGen->SystemHasLight()) {

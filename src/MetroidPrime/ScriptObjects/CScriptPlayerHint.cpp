@@ -18,7 +18,7 @@ CScriptPlayerHint::CScriptPlayerHint(TUniqueId uid, const rstl::string& name,
 , mControlInterpDur(controlInterpDur) {}
 
 void CScriptPlayerHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   switch (msg.GetMessage()) {
   case kSM_Deactivate:
   case kSM_Delete: {

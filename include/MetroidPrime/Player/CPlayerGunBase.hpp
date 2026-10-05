@@ -41,6 +41,7 @@ public:
 
   TUniqueId GetPlayerUniqueId() const { return mPlayerUniqueId; }
   bool GetMissileMode() const { return mMissileMode; }
+  bool AreBombsDisabled() const { return mBombsDisabled; }
   uint GetFiring() const { return mFiredWeaponFlags; }
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
@@ -79,7 +80,7 @@ protected:
   EGunHolsterState mGunHolsterState;
   short mSoundVolume;
   bool mUnderwater : 1;
-  bool x3ae_25_ : 1; // No identified reads beyond construction/reset yet.
+  bool mBombsDisabled : 1; // Target-derived: gates bomb firing and HUD readiness.
   bool mInBigStrike : 1;
   bool mMissileMode : 1;
   bool mInPhazonPool : 1;

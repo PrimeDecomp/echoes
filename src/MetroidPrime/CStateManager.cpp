@@ -15,6 +15,7 @@
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
@@ -35,6 +36,10 @@
 #include <float.h>
 
 const int gkPVSEnabled = 1;
+
+bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {
+  return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
+}
 
 CStateManagerContainer::CStateManagerContainer()
 : mCameraManager0(kInvalidUniqueId, CPlayerState::kPI_Player1)

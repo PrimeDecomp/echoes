@@ -220,6 +220,8 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+  bool IsMakingBigStrike() const { return mIsMakingBigStrike; }
+  float GetDamageDuration() const { return mDamageDuration; }
   int GetCreatureSize() const { return mCreatureSize; }
   const CPlane& GetIngSnatchingPlane() const { return mIngSnatchingPlane; }
 
@@ -301,7 +303,7 @@ private:
   uint mPendingDeath : 1;
   uint mLostMassiveFrozenHP : 1;
   uint mDieIf80PercFrozen : 1;
-  uint x421_30_ : 1;
+  uint mIsMakingBigStrike : 1; // Guessed Prime name; native gun strike reaction.
   uint mDrawParticles : 1;
   uint mEnableStateMachine : 1;
   uint mStateControlledMassiveDeath : 1;

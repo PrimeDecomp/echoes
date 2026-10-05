@@ -478,7 +478,7 @@ void CScriptSpecialFunction::AcceptBossEnergyBar(CStateManager& mgr, const CScri
       mgr.SetBossParams(bossId, maxEnergy, stringIdx);
     } else {
 
-      mgr.SetBossParams(msg.GetUnk(), mValue1, stringIdx);
+      mgr.SetBossParams(msg.GetSenderId(), mValue1, stringIdx);
     }
     break;
   }
@@ -528,7 +528,7 @@ void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& 
       } else {
         CVector3f pos = GetTranslation();
         if ((flags & 2) != 0) {
-          TUniqueId uid = msg.GetUnk();
+          TUniqueId uid = msg.GetSenderId();
           if (const CActor* act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
             pos = act->GetTranslation();
           }
@@ -783,7 +783,7 @@ void CScriptSpecialFunction::AcceptGiveTimedItem(CStateManager& mgr, const CScri
 
 void CScriptSpecialFunction::AcceptLastDamager(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Action) {
-    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetUnk()))) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetSenderId()))) {
       if (const CHealthInfo* healthInfo = actor->GetHealthInfo()) {
         TUniqueId damager = healthInfo->GetDamageId1();
         if (damager != kInvalidUniqueId) {

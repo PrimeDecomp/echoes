@@ -1,7 +1,7 @@
 #include "MetroidPrime/Weapons/CAnnihilatorProjectile.hpp"
 
 const CMaterialFilter CAnnihilatorProjectile::kTargetFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_SixtyThree), CMaterialList(kMT_NoPlatformCollision, kMT_Trigger));
+    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_NoPlatformCollision, kMT_Trigger));
 const CMaterialFilter CAnnihilatorProjectile::kRayFilter = CMaterialFilter::MakeIncludeExclude(
     CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
 float CAnnihilatorProjectile::sNextTargetSeekOffset = 0.f;

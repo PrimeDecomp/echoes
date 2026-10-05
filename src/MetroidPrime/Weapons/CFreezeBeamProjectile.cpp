@@ -9,7 +9,7 @@
 
 // Provisional TU placement; filter names are reconstructed.
 static const CMaterialFilter sInclude63Filter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_SixtyThree), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_NoPlatformCollision));
 static const CMaterialFilter sInclude59Filter = CMaterialFilter::MakeIncludeExclude(
     CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
 

@@ -247,7 +247,7 @@ public:
   CSfxHandle PlaySfxForPlayer(uint sfxId, short param_4, TAreaId nextAreaId, bool, int);
 
   float fn_8000BE98() const { return GetDeathAlpha(); }
-  void fn_8000BC44(CStateManager& mgr);
+  void EmitMultiplayerBeamParticles(CStateManager& mgr);
   void fn_80019E40(CStateManager&, int);
   void fn_8000d3ac(const CVector3f&, CStateManager&);
   bool fn_8000d40c(const CVector3f&, CStateManager&);
@@ -378,9 +378,10 @@ public:
   void SkipMorphTransition();
   void StopSounds();
   void fn_8000bbb4(CStateManager& mgr);
-  void fn_8000bd5c(CStateManager& mgr, bool createNew);
+  void SetMultiplayerBeamAuxParticlesEnabled(CStateManager& mgr, bool createNew);
   float fn_8000bf1c() const;
   float GetDarkAetherDamage() const;
+  CElementGen* GetUnderwaterParticles() const { return mUnderwaterParticles.get(); }
   CElementGen* GetDarkAetherParticles() const { return mDarkAetherParticles.get(); }
   CColor GetDarkAetherDamageColor(const CStateManager& mgr, int view) const;
   void fn_8000c124(float dt, CStateManager& mgr);
@@ -399,6 +400,8 @@ public:
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  bool IsLandingStrikePending() const { return mLandingStrikePending; }
+  void SetLandingStrikePending(bool pending) { mLandingStrikePending = pending; }
   float GetFreeLookAngleX() const { return mFreeLookPitchAngle; }
   float GetFreeLookAngleZ() const { return mFreeLookYawAngle; }
   float GetJumpCameraTimer() const { return mJumpCameraTimer; }
@@ -785,7 +788,7 @@ private:
   bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
-  bool x126b_31_ : 1;
+  bool mLandingStrikePending : 1; // Guessed name; hard-landing gun reaction pending.
   bool mDampBoostEntryVelocity : 1; // Guessed name: player hint flag 0x800000.
   float mDeathFadeDuration;
   float mDeathFadeDelay;

@@ -20,7 +20,7 @@ CAuxWeapon::CAuxWeapon(TUniqueId playerId)
   InitComboData();
 }
 
-void CAuxWeapon::Fire(bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
+void CAuxWeapon::Fire(float dt, bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
                       const CTransform4f& xf, CStateManager& mgr, EWeaponType type,
                       TUniqueId homingId, uint attributes, ushort soundId) {
   if (!mIsLoaded) {
@@ -33,7 +33,7 @@ void CAuxWeapon::Fire(bool underwater, int currentBeam, CPlayerState::EChargeSta
   }
 
   if (!isCombo) {
-    FireProjectile(type, underwater, false, false, currentBeam, attributes, xf, homingId, soundId,
+    FireProjectile(dt, type, underwater, false, false, currentBeam, attributes, xf, homingId, soundId,
                    mgr);
     return;
   }
@@ -41,14 +41,14 @@ void CAuxWeapon::Fire(bool underwater, int currentBeam, CPlayerState::EChargeSta
   switch (currentBeam) {
   case CPlayerState::kBI_Power:
   case CPlayerState::kBI_Dark:
-    FireProjectile(type, underwater, true, false, currentBeam, attributes, xf, homingId, soundId,
+    FireProjectile(dt, type, underwater, true, false, currentBeam, attributes, xf, homingId, soundId,
                    mgr);
     break;
   case CPlayerState::kBI_Light:
-    FireLightCombo(underwater, currentBeam, attributes, xf, homingId, mgr);
+    FireLightCombo(dt, underwater, currentBeam, attributes, xf, homingId, mgr);
     break;
   case CPlayerState::kBI_Annihilator:
-    FireProjectile(type, underwater, true, true, currentBeam, attributes, xf, homingId, soundId,
+    FireProjectile(dt, type, underwater, true, true, currentBeam, attributes, xf, homingId, soundId,
                    mgr);
     break;
   default:
@@ -90,12 +90,12 @@ void CAuxWeapon::InitComboData() {
   }
 }
 
-void CAuxWeapon::FireProjectile(EWeaponType, bool, bool, bool, int, uint, const CTransform4f&,
+void CAuxWeapon::FireProjectile(float, EWeaponType, bool, bool, bool, int, uint, const CTransform4f&,
                                 TUniqueId, ushort, CStateManager&) {
   // TODO: Construct the Echoes projectile and apply its per-player effects.
 }
 
-void CAuxWeapon::FireLightCombo(bool, int, uint, const CTransform4f&, TUniqueId, CStateManager&) {
+void CAuxWeapon::FireLightCombo(float, bool, int, uint, const CTransform4f&, TUniqueId, CStateManager&) {
   // TODO: Construct the special Light-beam combo projectile.
 }
 

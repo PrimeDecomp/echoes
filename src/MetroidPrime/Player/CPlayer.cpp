@@ -253,7 +253,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDeathRenderingSuppressed(false)
 , mDeathFadeEnabled(false)
 , mUseAlternateBeam(false)
-, x126b_31_(false)
+, mLandingStrikePending(false)
 , mDampBoostEntryVelocity(false)
 , mDeathFadeDuration(1.f)
 , mDeathFadeDelay(0.f)
@@ -992,11 +992,11 @@ float CPlayer::GetDeathAlpha() const {
   return mPlayerState->IsPlayerAlive() ? 1.f : 0.f;
 }
 
-void CPlayer::fn_8000bd5c(CStateManager& mgr, bool createNew) {
+void CPlayer::SetMultiplayerBeamAuxParticlesEnabled(CStateManager& mgr, bool createNew) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::fn_8000BC44(CStateManager& mgr) {
+void CPlayer::EmitMultiplayerBeamParticles(CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 

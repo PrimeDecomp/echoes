@@ -41,6 +41,7 @@ public:
   bool GetNeedsRelight() const { return mDirty == TRUE; }
   bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
   int GetShadowLightIndex() const { return mShadowLightIdx; }
+  int GetShadowLightArrayIndex() const { return mShadowLightArrIdx; }
   const CColor& GetAmbientColor() const { return mAmbientColor; }
   uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
   int GetMaxAreaLights() const { return mMaxAreaLights; }
@@ -59,6 +60,7 @@ public:
   void SetFramesBetweenRecalculation(uint frames) { mAreaUpdateFramePeriod = frames; }
   void SetAmbienceGenerated(bool generated) { mAmbienceGenerated = generated; }
   void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
+  void SetWorldLightingLevel(float level) { mWorldLightingLevel = level; }
   // Guessed name; native registration reserves the final available slot.
   void AddExplicitLightId(TUniqueId id) {
     if (mExplicitLightIds.size() + 1 < mExplicitLightIds.capacity()) {

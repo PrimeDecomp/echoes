@@ -101,7 +101,7 @@ void CBouncyGrenade::CollidedWith(const TUniqueId& id, const CCollisionInfoList&
     for (int i = 0; i < list.GetCount(); ++i) {
       const CCollisionInfo& info = list[i];
       if (info.GetMaterialLeft().SharesMaterials(skSolidTypes)) {
-        if ((mFlags & 1) != 0 && !info.GetMaterialLeft().HasMaterial(kMT_SixtyThree)) {
+        if ((mFlags & 1) != 0 && !info.GetMaterialLeft().HasMaterial(kMT_SeekerTarget)) {
           Explode(mgr, kInvalidUniqueId);
         } else if (mNumBounces != 0) {
           const CVector3f normal = CVector3f::Dot(GetVelocityWR(), info.GetNormalLeft()) > 0.f

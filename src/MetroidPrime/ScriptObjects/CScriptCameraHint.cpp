@@ -117,7 +117,7 @@ CScriptCameraHint::~CScriptCameraHint() {}
 
 void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   uint playerIndex = 0;
   if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(msg.GetOriginator()))) {
     playerIndex = mgr.MaskUIdNumPlayers(msg.GetOriginator());

@@ -125,7 +125,7 @@ void CScriptDoor::SetDoorAnimation(EDoorAnimType animation) {
 }
 
 void CScriptDoor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   if (!GetActive()) {

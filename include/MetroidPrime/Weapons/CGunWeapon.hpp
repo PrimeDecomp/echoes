@@ -30,6 +30,7 @@ class CTransform4f;
 class CModelFlags;
 class CActorLights;
 class SWeaponInfo;
+void DrawClipCube(const CAABox& bounds);
 class CPlayer;
 class CSkinnedModel;
 struct SSkinningWorkspace;
@@ -95,7 +96,7 @@ public:
   virtual void UpdateMuzzleFx(float dt, const CVector3f& scale, const CVector3f& pos,
                               bool emitting);
   virtual void ActivateCharge(bool enable, bool resetEffect);
-  virtual void Unk8() {}
+  virtual void OnChargeReset() {} // Guessed name; default charge-reset hook.
   virtual void InitializeResources(CStateManager& mgr); // Guessed name
 
   virtual void Load(CStateManager& mgr, bool subtypeBasePose);
@@ -111,6 +112,8 @@ public:
   const CModelData& GetSolidModelData() const { return mSolidModelData.data(); }
 
   EWeaponType GetType() const { return mWeaponType; }
+  const TCachedToken< CWeaponDescription >&
+  GetProjectileToken(CPlayerState::EChargeStage stage) const { return mWeapons[stage]; }
   TUniqueId GetPlayerId() const { return mPlayerId; }
   EMaterialTypes GetPlayerMaterial() const { return mPlayerMaterial; }
 
@@ -137,6 +140,18 @@ public:
   float GetAnimDuration(NWeaponTypes::EGunAnimType type) const; // Guessed name
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const; // Guessed name
+  const CVector3f& GetRainSplashPosition() const { return mRainSplashPosition; }
+  void SetRainSplashGenerator(CRainSplashGenerator* generator) { mRainSplashGenerator = generator; }
+  void SetSpeedUpAnimation(bool enabled) { mSpeedUpAnimation = enabled; }
+  bool GetSpeedUpAnimation() const { return mSpeedUpAnimation; }
+  bool IsSpecialAnimationPlaying() const { return mSpecialAnimationPlaying; }
+  static const char* GetMuzzleLocatorName() { return skMuzzleLocator; }
+  void SetSpecialAnimationPlaying(bool playing) { mSpecialAnimationPlaying = playing; }
+  void SetEnableCharge(bool enabled) { mEnableCharge = enabled; }
+  void SetSoundVolume(short volume) { mSoundVolume = volume; }
+  TCachedToken< CGenDescription >& GetTransferEffect() { return mXferEffect; }
+  static void FillTokenVector(const rstl::vector< SObjectTag >& tags,
+                              rstl::vector< CToken >& objects, bool includeTxtr);
 
 protected:
   // x0 is vtable
@@ -195,8 +210,6 @@ protected:
 
   void AllocResPools(CPlayerState::EBeamId beam);
   void FreeResPools();
-  static void FillTokenVector(const rstl::vector< SObjectTag >& tags,
-                              rstl::vector< CToken >& objects, bool includeTxtr);
   void BuildDependencyList(CPlayerState::EBeamId beam);
   void LoadSuitArm();
   void LoadGunModels();

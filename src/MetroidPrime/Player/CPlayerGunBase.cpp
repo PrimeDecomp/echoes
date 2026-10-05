@@ -31,7 +31,7 @@ CPlayerGunBase::CPlayerGunBase(const rstl::string& name, TUniqueId playerId, con
 , mGunHolsterState(kGHS_Drawn)
 , mSoundVolume(0x4a)
 , mUnderwater(false)
-, x3ae_25_(false)
+, mBombsDisabled(false)
 , mInBigStrike(false)
 , mMissileMode(false)
 , mInPhazonPool(false) {}

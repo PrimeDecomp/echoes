@@ -15,7 +15,7 @@ make_damageable_trigger_materials(CScriptDamageableTrigger::ECanOrbit canOrbit,
     materials.Add(kMT_Orbit);
   }
   if (seekerLockOn == CScriptDamageableTrigger::kSLO_Enabled) {
-    materials.Add(kMT_SixtyThree);
+    materials.Add(kMT_SeekerTarget);
   }
   return materials;
 }
@@ -57,7 +57,7 @@ void CScriptDamageableTrigger::AcceptScriptMsg(CStateManager& mgr, const CScript
     break;
   case kSM_Damage:
     if (mHealth.GetHP() <= 0.f) {
-      mDeathOriginator = msg.GetUnk();
+      mDeathOriginator = msg.GetSenderId();
       if (mgr.IsMultiplayer()) {
         mDeathOriginator = mHealth.GetDamageId1();
         if (mDeathOriginator == kInvalidUniqueId) {
