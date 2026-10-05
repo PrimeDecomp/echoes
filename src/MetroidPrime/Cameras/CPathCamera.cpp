@@ -422,14 +422,14 @@ void CPathCamera::UpdateOrientation(float dt, const CTransform4f& xf, const CSta
   currentForward.Normalize();
 
   const float alignment = CMath::Limit(CVector3f::Dot(currentForward, targetForward), 1.f);
-  if (CMath::AbsF(alignment) < 0.999999f) {
+  if (!(CMath::AbsF(alignment) >= 0.999999f)) {
     if (hint->GetInfo().GetFlags() & 0x40) {
       SetTransform(xf);
       return;
     }
 
     const float ratio = CMath::Clamp(0.f, acosf(alignment) / (1.0471976f * dt), 1.f);
-    float step = dt * ratio * camera->GetAngularSpeed();
+    float step = dt * (ratio * camera->GetAngularSpeed());
     const float vertical =
         CMath::AbsF(CMath::Limit(CVector3f::Dot(targetForward, CVector3f::Up()), 1.f));
     const float verticalStep = 12.566371f * dt * (1.f - vertical);
@@ -440,7 +440,7 @@ void CPathCamera::UpdateOrientation(float dt, const CTransform4f& xf, const CSta
     const CUnitVector3f from(currentForward);
     const CUnitVector3f to(targetForward);
     const CQuaternion rotation = CQuaternion::LookAt(from, to, CRelAngle::FromRadians(step));
-    SetTransform(rotation.BuildTransform4f() * GetTransform());
+    SetTransform(rotation.BuildTransform4f() * GetTransform().GetRotation());
   } else {
     SetTranslation(position);
   }
