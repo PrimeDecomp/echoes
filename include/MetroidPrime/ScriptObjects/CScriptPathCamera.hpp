@@ -33,10 +33,16 @@ public:
   CMayaSpline& GetPerpendicularDistanceControlSpline() const {
     return mPerpendicularDistanceControlSpline;
   }
+  CMayaSpline& GetPerpendicularInterpControlSpline() const {
+    return mPerpendicularInterpControlSpline;
+  }
   float GetDistance() const { return mDistance; }
   float GetSpeed() const { return mSpeed; }
+  float GetAngularSpeed() const { return mAngularSpeed; }
   float GetDampenDistance() const { return mDampenDistance; }
+  int GetInitialPosition() const { return mInitialPosition; }
   uint GetFlags() const { return mFlags; }
+  TUniqueId GetTimeKeyframeId() const { return mTimeKeyframeId; }
 
 private:
   mutable CScriptCameraSpline mSpline;
@@ -49,7 +55,7 @@ private:
   int mInitialPosition;
   uint mFlags;
   mutable CMayaSpline mPerpendicularDistanceControlSpline;
-  CMayaSpline mPerpendicularInterpControlSpline;
+  mutable CMayaSpline mPerpendicularInterpControlSpline;
   TUniqueId mTimeKeyframeId;
 };
 CHECK_SIZEOF(CScriptPathCamera, 0x308)

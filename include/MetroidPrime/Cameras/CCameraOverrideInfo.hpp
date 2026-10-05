@@ -20,6 +20,7 @@ public:
   float GetFov() const { return mFov; }
   float GetAttitudeRange() const { return mAttitudeRange; }
   float GetAzimuthRange() const { return mAzimuthRange; }
+  const CVector3f& GetLookAtOffset() const { return mLookAtOffset; }
 
 private:
   uint mFlags;
