@@ -558,11 +558,14 @@ CGameCollision::FindNonIntersectingVector(const CStateManager& mgr, CPhysicsActo
         break;
       }
 
-      const CVector3f position = origin + displacement;
-      if (mgr.GetWorld()->GetAreaAlways(mgr.GetNextAreaId()).GetAABB().PointInside(position) &&
+      const float x = origin.GetX() + displacement.GetX();
+      const float y = origin.GetY() + displacement.GetY();
+      const float z = origin.GetZ() + displacement.GetZ();
+      if (mgr.GetWorld()->GetAreaAlways(mgr.GetNextAreaId()).GetAABB().PointInside(
+              CVector3f(x, y, z)) &&
           mgr.RayCollideWorld(center, center + displacement, nearList,
                               CMaterialFilter::GetPassEverything(), &actor)) {
-        transform.SetTranslation(position);
+        transform.SetTranslation(CVector3f(x, y, z));
         if (!DetectCollisionBoolean(mgr, primitive, transform, actor.GetMaterialFilter(),
                                     nearList)) {
           return rstl::optional_object< CVector3f >(displacement);
