@@ -19,6 +19,7 @@ public:
     kPA_DamageFalloff = 1 << 13,
     kPA_PlayerUnFreeze = 1 << 15,
     kPA_ParticleOPTS = 1 << 16,
+    kPA_KeepInCinematic = 1 << 17,
     kPA_Dark = 1 << 18,
     kPA_Light = 1 << 19,
     kPA_Annihilator = 1 << 20,

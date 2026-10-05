@@ -66,6 +66,14 @@ public:
   GetSplashEffect(float scale) const;
   int GetSplashIndex(float scale) const;
   const CColor& GetSplashColor() const { return mSplashColor; }
+  const CFluidPlaneCPU& GetFluidPlane() const { return *mFluidPlane; }
+  const CColor& GetUnderwaterFogColor() const { return mInsideFogColor; }
+  float GetFogNoGravSuitDist() const { return x310_; }
+  float GetFogNoGravSuitFactor() const { return x314_; }
+  float GetFogGravSuitDist() const { return x318_; }
+  float GetFogGravSuitFactor() const { return x31c_; }
+  uint GetLowPassFilterId() const { return x328_; }
+  bool GetLowPassFilterEnabled() const { return x32c_7_; }
   const rstl::optional_object< TLockedToken< CGenDescription > >& GetVisorRunoffEffect() const {
     return mVisorRunoffEffect;
   }

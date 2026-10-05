@@ -1,7 +1,6 @@
 #ifndef _CCAMERAMANAGER
 #define _CCAMERAMANAGER
 
-#include "Kyoto/Audio/CSfxHandle.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/Cameras/CInterpolationCamera.hpp"
@@ -115,8 +114,7 @@ public:
 private:
   // Guessed name. Fixed-capacity circular history; pointers refer into mTransforms.
   struct SCameraHistory {
-    explicit SCameraHistory(const CTransform4f& initial)
-    : mTransforms(80, initial), mBegin(mTransforms.begin()), mEnd(mBegin + 1) {}
+    explicit SCameraHistory(const CTransform4f& initial);
 
     void Push(const CTransform4f& xf);
     rstl::optional_object< CTransform4f > Last() const;
@@ -158,7 +156,7 @@ private:
   float mFirstPersonFov;
   SCameraHistory mCameraHistory;
   float mScreenFlashTimer; // Guessed name
-  CSfxHandle mFluidSoundHandle;
+  int mFluidFilterHandle;
   bool mInWater : 1;
   bool xfa4_25_ : 1;
   bool mWasFogEnabled : 1;
