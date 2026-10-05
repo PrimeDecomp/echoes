@@ -44,10 +44,14 @@ public:
   const CColor& GetAmbientColor() const { return mAmbientColor; }
   uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
   int GetMaxAreaLights() const { return mMaxAreaLights; }
-  void SetMaxAreaLights(int v) { mMaxAreaLights = v; }
+  void SetMaxAreaLights(int v) {
+    mMaxAreaLights = v;
+    mHasAreaLights = mMaxAreaLights > 0;
+  }
   void SetMaxDynamicLights(int v) { mMaxDynamicLights = v; }
   void SetInArea(bool v) { mInArea = v; }
   void SetFindNearestDynamicLights(bool v) { mFindNearestDynamicLights = v; }
+  void SetExcludeSpecialDynamicLights(bool v) { mExcludeSpecialDynamicLights = v; }
 
   void SetCastShadows(bool v) { mCastShadows = v; }
   void SetAmbientColor(const CColor& color) { mAmbientColor = color; }

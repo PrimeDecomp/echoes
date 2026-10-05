@@ -18,14 +18,14 @@
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrWater.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
 
 extern const bool gkWaterFog;
-#include "MetroidPrime/Cameras/CGameCamera.hpp"
-#include "MetroidPrime/TCastTo.hpp"
 
 const float CScriptWater::kSplashScales[6] = {1.f, 3.f, 0.71f, 1.19f, 0.71f, 1.f};
 
@@ -144,6 +144,7 @@ CScriptWater::CScriptWater(
   ActorLights()->SetCastShadows(false);
   ActorLights()->SetAmbienceGenerated(false);
   ActorLights()->SetFindNearestDynamicLights(true);
+  ActorLights()->SetExcludeSpecialDynamicLights(true);
   CalculateRenderBounds();
   if (!GetActive()) {
     mAlpha = 0.f;
@@ -222,8 +223,8 @@ void CScriptWater::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       const CVector3f& max = mBounds.GetMaxPoint();
       actor->SetTranslation(
           CVector3f(GetTranslation().GetX(), GetTranslation().GetY(),
-                    GetTranslation().GetZ() + 0.5f * (max.GetZ() - min.GetZ()) - 1.f));
-      const CAABox box(CVector3f(min.GetX(), min.GetY(), 1e-5f),
+                    GetTranslation().GetZ() + (0.5f * (max.GetZ() - min.GetZ()) - 1.f)));
+      const CAABox box(CVector3f(min.GetX(), min.GetY(), -0.5f),
                        CVector3f(max.GetX(), max.GetY(), 0.5f));
       actor->SetCollisionPrimitive(
           CCollidableAABox(box, actor->GetMaterialFilter().GetIncludeList()));
@@ -391,7 +392,7 @@ void CScriptWater::PreRenderAllViewports(CStateManager& mgr) {
   const CVector3f& localMin = mBounds.GetMinPoint();
   const CVector3f& localMax = mBounds.GetMaxPoint();
   const CAABox visibleBounds(
-      CVector3f(localMin.GetX(), localMin.GetY(), localMin.GetZ()) + GetTranslation(),
+      CVector3f(localMin.GetX(), localMin.GetY(), localMax.GetZ()) + GetTranslation(),
       CVector3f(localMax.GetX(), localMax.GetY(), localMax.GetZ() + fogHeight) + GetTranslation());
   SetOtherBounds(visibleBounds);
   SetRenderBounds(visibleBounds);
@@ -418,7 +419,7 @@ void CScriptWater::PreRenderAllViewports(CStateManager& mgr) {
 }
 
 CAABox CScriptWater::GetSortingBounds(const CStateManager&) const {
-  // TODO: recover the intent of the original's redundant surface-height adjustment.
+  // The original's maxZ < maxZ - 1 comparison leaves the surface bounds unchanged.
   return mSurfaceBounds;
 }
 
@@ -718,8 +719,6 @@ CEntity* LoadWater(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
 
   const CVector3f halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
   const CAABox bounds(-halfExtent, halfExtent);
-  const CVector3f forceField =
-      mgr.GetWorld()->GetAreaAlways(info.GetAreaId()).GetTM().Rotate(sldrThis.trigger.forceField);
   const CFluidUVMotion uvMotion(
       sldrThis.flowSpeed, M_2PIF * sldrThis.flowOrientation / 360.f - M_2PIF,
       LdrToFluidLayerMotion(sldrThis.flowColor), LdrToFluidLayerMotion(sldrThis.flowColorWarp),
@@ -730,15 +729,16 @@ CEntity* LoadWater(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
       mgr, mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties),
       sldrThis.editorProperties.transform.position, bounds,
-      LdrToDamageInfo(sldrThis.trigger.damage), forceField, sldrThis.trigger.flagsTrigger,
-      sldrThis.alphaFadeinTime, sldrThis.alphaFadeoutTime, sldrThis.morphTimeTo,
-      sldrThis.morphTimeRestore, sldrThis.fluidType, sldrThis.lightMap, sldrThis.colorMap,
-      sldrThis.baseColor, sldrThis.colorWarpMap, sldrThis.glossMap, sldrThis.envMap,
-      sldrThis.envMapSize, sldrThis.refractWarpMap, sldrThis.foamMap, sldrThis.alphaMap,
-      sldrThis.alpha, sldrThis.glossFlat, sldrThis.glossTopDown, sldrThis.refractWarpFlat,
-      sldrThis.refractWarpTopDown, uvMotionCopy, sldrThis.splashColor, sldrThis.underwaterFogColor,
-      sldrThis.splash_Small, sldrThis.splash_Medium, sldrThis.splash_Big, sldrThis.visorRunoff,
-      sldrThis.visorRunoffBall, static_cast< TSfxId >(sldrThis.sound_SoundRunoff),
+      LdrToDamageInfo(sldrThis.trigger.damage), sldrThis.trigger.forceField,
+      sldrThis.trigger.flagsTrigger, sldrThis.alphaFadeinTime, sldrThis.alphaFadeoutTime,
+      sldrThis.morphTimeTo, sldrThis.morphTimeRestore, sldrThis.fluidType, sldrThis.lightMap,
+      sldrThis.colorMap, sldrThis.baseColor, sldrThis.colorWarpMap, sldrThis.glossMap,
+      sldrThis.envMap, sldrThis.envMapSize, sldrThis.refractWarpMap, sldrThis.foamMap,
+      sldrThis.alphaMap, sldrThis.alpha, sldrThis.glossFlat, sldrThis.glossTopDown,
+      sldrThis.refractWarpFlat, sldrThis.refractWarpTopDown, uvMotionCopy, sldrThis.splashColor,
+      sldrThis.underwaterFogColor, sldrThis.splash_Small, sldrThis.splash_Medium,
+      sldrThis.splash_Big, sldrThis.visorRunoff, sldrThis.visorRunoffBall,
+      static_cast< TSfxId >(sldrThis.sound_SoundRunoff),
       static_cast< TSfxId >(sldrThis.sound_SoundRunoffBall),
       static_cast< TSfxId >(sldrThis.sound_Splash_Small),
       static_cast< TSfxId >(sldrThis.sound_Splash_Medium),
