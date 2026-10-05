@@ -382,7 +382,6 @@ public:
 
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
   TUniqueId GetRidingPlatform() const { return mRidingPlatform; }
-  CPlayerCameraBob* CameraBob() { return mCameraBob; }
   const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }

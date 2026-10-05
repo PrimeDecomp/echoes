@@ -200,7 +200,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   const CTransform4f oldTransform = GetTransform();
   CPlayer& transitionPlayer = Player(mgr);
   const float splineDistance = (splinePosition - eyePos).Magnitude();
-  const float currentDistance = (oldPosition - eyePos).Magnitude();
+  const float currentDistance = (GetTranslation() - eyePos).Magnitude();
   mBallCameraSpring.ApplyDistanceSpring(splineDistance, currentDistance, dt);
 
   CVector3f position = splinePosition;
@@ -216,10 +216,11 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
       currentForward.Normalize();
       const float dot = CMath::Limit(CVector3f::Dot(currentForward, lookDirection), 1.f);
       if (fabsf(dot) < 0.999999f) {
-        const float rotationFactor = CMath::Limit(1.15f * factor, 1.f);
+        const float rotationFactor =
+            CMath::Limit(1.15f * transitionPlayer.GetMorphBallTransitionFactor(), 1.f);
         const CQuaternion rotation =
             CQuaternion::LookAt(CUnitVector3f(currentForward), CUnitVector3f(lookDirection),
-                                CRelAngle::FromRadians(rotationFactor * acosf(dot)));
+                                CRelAngle::FromRadians(rotationFactor * acosf(fabsf(dot))));
         SetTransform(rotation.BuildTransform4f() *
                      CTransform4f::LookAt(position, position + currentForward, CVector3f::Up()));
       } else {
@@ -231,7 +232,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
   SetTransform(ValidateCameraTransform(GetTransform(), oldTransform));
   SetTranslation(position);
   TeleportCamera(position, mgr);
-  mToBallTransition->mPlayerXf = transitionPlayer.GetTransform();
+  mToBallTransition->mPlayerXf = player.GetTransform();
   if ((mToBallTransition->mSpline.GetPositionByTime(mToBallTransition->mSpline.GetDuration()) -
        GetTranslation())
           .Magnitude() > 0.5f) {
@@ -264,7 +265,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(CStateManager& mgr) {
       const float rotationFactor = CMath::Limit(1.5f * morphFactor, 1.f);
       const CQuaternion rotation =
           CQuaternion::LookAt(CUnitVector3f(currentForward), CUnitVector3f(lookDirection),
-                              CRelAngle::FromRadians(rotationFactor * acosf(dot)));
+                              CRelAngle::FromRadians(rotationFactor * acosf(fabsf(dot))));
       const CTransform4f lookXf =
           CTransform4f::LookAt(position, position + currentForward, CVector3f::Up());
       SetTransform(rotation.BuildTransform4f() * lookXf);
