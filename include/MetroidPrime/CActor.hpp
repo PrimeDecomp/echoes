@@ -163,6 +163,8 @@ public:
   }
   CModelData* ModelData() { return mModelData.get(); }
   const CModelData* GetModelData() const { return mModelData.get(); }
+  bool GetPointGeneratorParticles() const { return mPointGeneratorParticles; }
+  void SetPointGeneratorParticles(bool enabled) { mPointGeneratorParticles = enabled; }
 
   bool HasAnimation() const { return GetModelData() && GetModelData()->HasAnimation(); }
   CAnimData* AnimationData() { return ModelData()->AnimationData(); }
