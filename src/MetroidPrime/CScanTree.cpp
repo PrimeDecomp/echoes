@@ -495,9 +495,58 @@ void CScanTree::InitializeHierarchy() {
   mInitialLayoutTransition = 1.f;
 }
 
-bool CScanTree::UpdateNodeVisibility(CStateManager& mgr, int node) {}
+bool CScanTree::UpdateNodeVisibility(CStateManager& mgr, int node) {
+  bool visible = false;
+  const rstl::rc_ptr< CScanTreeNode > treeNode = mNodes[node];
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      if (UpdateNodeVisibility(mgr, category->GetChild(i))) {
+        visible = true;
+      }
+    }
+  } else if (treeNode->GetNodeType() == CScanTreeNode::kNT_Scan) {
+    const rstl::rc_ptr< CScanTreeScan > scan(treeNode);
+    const CAssetId scannableInfo = scan->GetScannableInfo();
+    const rstl::vector< CPlayerState::SPersistentState::SScanState >& scanStates =
+        mgr.PlayerState(0)->ScanStates();
+    rstl::vector< CPlayerState::SPersistentState::SScanState >::const_iterator state =
+        rstl::binary_find(scanStates.begin(), scanStates.end(), scannableInfo,
+                          SlideShowScanIdLess());
+    visible = state != scanStates.end() && state->mProgress == 0xff;
+  } else if (treeNode->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+    const rstl::rc_ptr< CScanTreeInventory > inventory(treeNode);
+    visible = mgr.PlayerState(0)->GetItemCapacity(inventory->GetInventoryItem()) > 0;
+  }
+  treeNode->SetVisible(visible);
+  return visible;
+}
 
-void CScanTree::RefreshVisibility(CStateManager& mgr) {}
+void CScanTree::RefreshVisibility(CStateManager& mgr) {
+  const rstl::rc_ptr< CScanTreeNode > root = mNodes[mRootNode];
+  if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(root);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      const int index = category->GetChild(i);
+      const rstl::rc_ptr< CScanTreeNode > child = mNodes[index];
+      if (child->GetNameStringName() == kLogbookCategoryName ||
+          child->GetNameStringName() == kSamusGearCategoryName) {
+        UpdateNodeVisibility(mgr, index);
+      }
+      if (child->GetNameStringName() == kLogbookCategoryName && child->IsVisible()) {
+        mNodes[index]->SetPosition(kLogbookPosition);
+        const rstl::rc_ptr< CScanTreeNode > parent = mNodes[child->GetParentNode()];
+        if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
+          const rstl::rc_ptr< CScanTreeCategory > rootCategory(root);
+          rootCategory->SetSelectedChild(index);
+        }
+      }
+    }
+  }
+  UpdateDescendantCounts();
+}
 
 rstl::pair< uint, uint > CScanTree::GetScanCounts() const {
   const rstl::rc_ptr< CScanTreeNode > root = mNodes[mRootNode];
@@ -679,13 +728,81 @@ bool CScanTree::UpdateCategoryViewed(int node) {
 }
 
 CVector3f CScanTree::CalculatePairForce(float radius, float strength, const CVector3f& position,
-                                        const CVector3f& otherPosition) const {}
+                                        const CVector3f& otherPosition) const {
+  const CVector3f delta = position - otherPosition;
+  const float radiusSquared = radius * radius;
+  if (delta.MagSquared() < radiusSquared) {
+    const float falloff = 1.f - delta.MagSquared() / radiusSquared;
+    if (delta.CanBeNormalized()) {
+      return delta.AsNormalized() * falloff * strength;
+    }
+  }
+  return CVector3f::Zero();
+}
 
 CVector3f CScanTree::CalculateSeparationForce(const rstl::rc_ptr< CScanTreeCategory >& category,
-                                              int node) const {}
+                                              int node) const {
+  // Holds the nearest sibling position until it is replaced by the resulting force.
+  CVector3f force = CVector3f::Zero();
+  float nearestDistanceSquared = 999999.f;
+  const rstl::rc_ptr< CScanTreeNode > self = mNodes[node];
+  const CVector3f position = self->GetPosition();
+  for (int i = 0; i < category->GetChildCount(); ++i) {
+    const int child = category->GetChild(i);
+    if (child == node) {
+      continue;
+    }
+    const rstl::rc_ptr< CScanTreeNode > other = mNodes[child];
+    if (!other->IsVisible()) {
+      continue;
+    }
+    const CVector3f delta = other->GetPosition() - position;
+    const float distanceSquared = CVector3f::Dot(delta, delta);
+    if (distanceSquared < nearestDistanceSquared) {
+      nearestDistanceSquared = distanceSquared;
+      force = other->GetPosition();
+    }
+  }
+  force = CalculatePairForce(6.1f, 0.8f, position, force);
+  if (category->GetParentNode() != -1) {
+    const rstl::rc_ptr< CScanTreeNode > parent = mNodes[category->GetParentNode()];
+    force += CalculatePairForce(6.1f, 0.8f, position, parent->GetPosition());
+  }
+  return force;
+}
 
 CVector3f CScanTree::CalculateNeighborForce(const rstl::rc_ptr< CScanTreeCategory >& category,
-                                            int node) const {}
+                                            int node) const {
+  CVector3f center = CVector3f::Zero();
+  const rstl::rc_ptr< CScanTreeNode > self = mNodes[node];
+  const CVector3f position = self->GetPosition();
+  int neighborCount = 0;
+  for (int i = 0; i < category->GetChildCount(); ++i) {
+    const int child = category->GetChild(i);
+    if (child == node) {
+      continue;
+    }
+    const rstl::rc_ptr< CScanTreeNode > other = mNodes[child];
+    if (!other->IsVisible()) {
+      continue;
+    }
+    const CVector3f delta = position - other->GetPosition();
+    if (CVector3f::Dot(delta, delta) < 16.f) {
+      center += other->GetPosition();
+      ++neighborCount;
+    }
+  }
+  if (neighborCount > 0) {
+    center *= 1.f / float(neighborCount);
+    const CVector3f toCenter = center - position;
+    if (toCenter.CanBeNormalized()) {
+      const float distanceSquared = toCenter.MagSquared();
+      const float scale = distanceSquared < 16.f ? 0.0625f * distanceSquared : 1.f;
+      return toCenter.AsNormalized() * scale * 0.2f;
+    }
+  }
+  return CVector3f::Zero();
+}
 
 CScanTreeCategory* LoadScanTreeCategory(int* id, const rstl::vector< int >& children,
                                         CInputStream& input) {}
