@@ -130,7 +130,54 @@ void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
-  // TODO: Interpolate the eight-point histories and fade their line strips.
+  const CColor baseColor = type == kEFX_Unknown6 ? CColor(0.6f, 0.71f, 0.48f, 0.175f)
+                                                    : CColor(0.f, 0.f, 1.f, 0.175f);
+  const int period = type == kEFX_Unknown6 ? 2 : 8;
+  for (int trail = 0; trail < mParticles.size() / 8; ++trail) {
+    const int frame = mTrailFrames[trail];
+    const int base = trail * 8;
+    int segment = (frame / period) & 7;
+    const short fraction = static_cast< short >(
+        256.f * static_cast< float >(frame % period) / static_cast< float >(period));
+    const float lifetime = mParticleLifetimes[trail];
+    float fade = 1.f;
+    if (lifetime < 0.2f) {
+      fade = lifetime / 0.2f;
+    } else if (lifetime > 0.8f) {
+      fade = (1.f - lifetime) / 0.2f;
+    }
+    const CColor color = baseColor.WithAlphaModulatedBy(fade);
+    GXSetTevColor(GX_TEVREG1, color.GetGXColor());
+
+    CVectorFixed8_8 position = mParticles[base + segment];
+    uchar alpha = 0x7f;
+    CGX::Begin(GX_LINESTRIP, GX_VTXFMT6, 8);
+    for (int point = 0; point < 8; ++point) {
+      segment = (segment + 7) & 7;
+      const CVectorFixed8_8& delta = mParticles[base + segment];
+      const CVectorFixed8_8 next(position.mX + delta.mX, position.mY + delta.mY,
+                                 position.mZ + delta.mZ);
+      if (point == 0 || point == 6) {
+        if (point == 6) {
+          GXPosition3s16(position.mX, position.mY, position.mZ);
+          GXTexCoord2u8(0, alpha);
+          alpha -= 15;
+        }
+        GXPosition3s16(next.mX - ((delta.mX * fraction) >> 8),
+                       next.mY - ((delta.mY * fraction) >> 8),
+                       next.mZ - ((delta.mZ * fraction) >> 8));
+      } else {
+        GXPosition3s16(position.mX, position.mY, position.mZ);
+      }
+      GXTexCoord2u8(0, alpha);
+      alpha -= 15;
+      position = next;
+      if (point == 6) {
+        break;
+      }
+    }
+    CGX::End();
+  }
 }
 
 void CEnvFxManagerGrid::RenderUnderwaterParticles(const CTransform4f& camXf) {
@@ -672,7 +719,72 @@ void CEnvFxManager::UpdateDriftingParticles(
 }
 
 void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) {
-  // TODO: Advance normalized lifetimes, frame counters and eight-point trail histories.
+  static const float kSecondaryOffsets[8] = {-0.6f, 1.2f, -0.9f, 0.3f,
+                                              -0.4f, 0.9f, -2.f, 0.4f};
+  static const float kPrimaryOffsets[7] = {0.3f, 0.9f, 0.5f, 0.8f, 0.4f, 0.7f, 0.2f};
+  static uint seed = 0;
+  CRandom16 random(seed);
+  const int period = mPreviousFxType == kEFX_Unknown7 ? 8 : 2;
+  const int primaryAxis = mPreviousFxType == kEFX_Unknown7 ? 0 : 2;
+  const int secondaryAxis = mPreviousFxType == kEFX_Unknown7 ? 2 : 0;
+  const float primaryScale = mPreviousFxType == kEFX_Unknown7 ? 1.5f : 1.f;
+
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    if (!grid.mBlock.first) {
+      continue;
+    }
+    for (int trail = 0; trail < grid.mParticles.size() / 8; ++trail) {
+      float& lifetime = grid.mParticleLifetimes[trail];
+      int& frame = grid.mTrailFrames[trail];
+      lifetime -= dt / 3.f;
+      ++frame;
+      const int base = trail * 8;
+      if (lifetime > 0.f) {
+        if (frame % period == 0) {
+          const int current = ((frame - 1) / period) & 7;
+          const int next = (current + 1) & 7;
+          CVectorFixed8_8& currentPoint = grid.mParticles[base + current];
+          CVectorFixed8_8& nextPoint = grid.mParticles[base + next];
+          nextPoint = currentPoint;
+          if (frame % (period * 2) == 0) {
+            const short delta = real_to_fixed8_8(
+                primaryScale * kPrimaryOffsets[trail % 7]);
+            if (primaryAxis == 0) {
+              nextPoint.mX += delta;
+            } else {
+              nextPoint.mZ += delta;
+            }
+          } else {
+            const short delta = real_to_fixed8_8(
+                kSecondaryOffsets[(frame / (period * 2)) & 7]);
+            if (secondaryAxis == 0) {
+              nextPoint.mX += delta;
+            } else {
+              nextPoint.mZ += delta;
+            }
+          }
+          currentPoint.mX -= nextPoint.mX;
+          currentPoint.mY -= nextPoint.mY;
+          currentPoint.mZ -= nextPoint.mZ;
+        }
+      } else {
+        lifetime = 1.f;
+        frame = period * random.Range(0, 100);
+        const int current = (frame / period) & 7;
+        for (int point = 0; point < 8; ++point) {
+          grid.mParticles[base + point] = CVectorFixed8_8();
+        }
+        grid.mParticles[base + current] = CVectorFixed8_8(
+            static_cast< short >(random.Range(0.f, grid.mExtent.GetX() - 20.f)),
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY()))),
+            static_cast< short >(random.Range(20.f, 16363.f)));
+      }
+      CVectorFixed8_8& point = grid.mParticles[base + ((frame / period) & 7)];
+      point.mZ = (point.mZ + zVec.mZ) & 0x3fff;
+    }
+  }
+  seed = random.GetSeed();
 }
 
 void CEnvFxManager::UpdateDarkWorldParticles(
