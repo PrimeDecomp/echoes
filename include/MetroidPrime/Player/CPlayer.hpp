@@ -379,7 +379,8 @@ public:
   void StopSounds();
   void fn_8000bbb4(CStateManager& mgr);
   void SetMultiplayerBeamAuxParticlesEnabled(CStateManager& mgr, bool createNew);
-  float fn_8000bf1c() const;
+  float
+  GetDarkWorldDamageExposureFraction() const; // Guessed name; normalized grace-period exposure.
   float GetDarkAetherDamage() const;
   CElementGen* GetUnderwaterParticles() const { return mUnderwaterParticles.get(); }
   CElementGen* GetDarkAetherParticles() const { return mDarkAetherParticles.get(); }
@@ -400,6 +401,7 @@ public:
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  bool GetFreeLookStickState() const { return mLookAnalogHeld; }
   bool IsLandingStrikePending() const { return mLandingStrikePending; }
   void SetLandingStrikePending(bool pending) { mLandingStrikePending = pending; }
   float GetFreeLookAngleX() const { return mFreeLookPitchAngle; }
@@ -408,6 +410,7 @@ public:
   float GetFallCameraTimer() const { return mFallCameraTimer; }
   bool GetOrbitLockAcquired() const { return mOrbitLockEstablished; }
   CPlayerCameraBob* CameraBobObject() { return mCameraBob; }
+  const CPlayerCameraBob* CameraBobObject() const { return mCameraBob; }
   bool GetSelectFluidBallSound() const { return mSelectFluidBallSound; }
   void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
@@ -416,7 +419,10 @@ public:
   void fn_8000e85c(float dt);
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
   void fn_8000eba0();
-  uint fn_8000f6e8() const;
+  uint GetDamageWeaponType() const; // Reconstructed name; retained damage-event weapon type.
+  const CColor& GetScreenFilterColor() const { return mScreenFilterColor; } // Guessed name.
+  TUniqueId GetEnemyLockOnActorId() const { return mEnemyLockOnActorId; }   // Guessed name.
+  char GetEnemyLockOnCount() const { return mEnemyLockOnCount; }            // Guessed name.
   void TakeDamage(bool significant, const CVector3f& location, float damage, TUniqueId source,
                   TUniqueId owner, const CWeaponMode& weapon, CStateManager& mgr);
   bool GetExplorationMode() const;
@@ -713,7 +719,7 @@ private:
   float mDamageAmount;
   float mPrevDamageAmount;
   CVector3f mDamageLocation;
-  uint x1130_;
+  uint mDamageWeaponType;
   float mImmuneTimer;
   float mMorphTime;
   float mMorphDuration;
@@ -762,7 +768,7 @@ private:
   CSfxHandle mGravityBoostSfx;
   CSfxHandle x1258_;
   bool mGravityBoostActive;
-  CColor mGravityBoostColor;
+  CColor mScreenFilterColor;
   CHintManager* mPlayerHintManager;
   bool x1268_24_ : 1;
   bool mDrawCrosshairs : 1;
@@ -837,7 +843,7 @@ private:
   CVector3f mPreviousCameraForwardPoint;
   CVector3f mPreviousEyePosition;
   CVector2i mScreenPosition;
-  float mSafeZoneHealSfxTimer;
+  float mDarkWorldDamageExposureTime;
   float mDarkAetherDamage;
   float mDarkAetherDamageFlashTime;
   rstl::auto_ptr< rstl::pair< TToken< CGenDescription >, TToken< CGenDescription > > >
@@ -865,8 +871,8 @@ private:
   CHintManager* mControlHintManager;
   TUniqueId x14bc_;
   float x14c0_;
-  TUniqueId x14c4_;
-  bool x14c6_;
+  TUniqueId mEnemyLockOnActorId;
+  char mEnemyLockOnCount;
 };
 CHECK_SIZEOF(CPlayer, 0x14c8)
 typedef char CPlayerVisorSteamSizeCheck[check_sizeof< CPlayer::CVisorSteam, 0x28 >::value];

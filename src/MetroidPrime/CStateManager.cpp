@@ -35,6 +35,8 @@
 
 #include <float.h>
 
+float CStateManager::GetEscapeSequenceTimer() const { return gpGameState->GetEscapeTime(); }
+
 const int gkPVSEnabled = 1;
 
 bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {

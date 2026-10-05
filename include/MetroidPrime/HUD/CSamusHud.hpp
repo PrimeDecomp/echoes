@@ -197,10 +197,10 @@ private:
   float mDamageFilterGain;
   float mDamageHighlightDuration;
   float mDamageHighlightRemaining;
-  rstl::reserved_vector< float, 12 > mDamageSectorDurations;
   rstl::reserved_vector< float, 12 > mDamageSectorRemaining;
+  rstl::reserved_vector< float, 12 > mDamageSectorDurations;
   rstl::reserved_vector< float, 12 > mDamageSectorIntensity;
-  TCachedToken< CTexture > mDamageRingTexture;
+  mutable TCachedToken< CTexture > mDamageRingTexture;
   CVector3f mDamagerToPlayer;
   float mShakeTranslationAmount;
   float mShakeTranslationVelocity;
@@ -283,7 +283,7 @@ private:
   CGuiWidget* mMissileIcon;
   CGuiWidget* mLightAmmoIcon;
   CGuiWidget* mDarkAmmoIcon;
-  float mThreatAlpha;
+  float mThreatAnimationTime;
   rstl::single_ptr< CHudDecoInterfaceScan > mScanInterface;
   CGuiTextPane* mPowerBombDigits;
   CGuiWidget* mPowerBombIcon;

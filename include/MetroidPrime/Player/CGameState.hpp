@@ -90,6 +90,7 @@ public:
   void SetDesiredWorldId(CAssetId worldId);
   void SetTotalPlayTime(double time);
   void SetEscapeTime(float time);
+  float GetEscapeTime() const { return mEscapeTime; }
   void SetHardMode(bool hardMode);
   void SetDeferPowerupInit(bool defer);
 

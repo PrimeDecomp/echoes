@@ -178,7 +178,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDamageAmount(0.f)
 , mPrevDamageAmount(0.f)
 , mDamageLocation(CVector3f::Zero())
-, x1130_(~0u)
+, mDamageWeaponType(~0u)
 , mImmuneTimer(0.f)
 , mMorphTime(0.f)
 , mMorphDuration(0.f)
@@ -227,7 +227,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mGravityBoostSfx()
 , x1258_()
 , mGravityBoostActive(false)
-, mGravityBoostColor(1.f, 1.f, 1.f, 0.f)
+, mScreenFilterColor(1.f, 1.f, 1.f, 0.f)
 , mPlayerHintManager(nullptr)
 , x1268_24_(false)
 , mDrawCrosshairs(false)
@@ -300,7 +300,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mPreviousCameraForwardPoint(CVector3f::Zero())
 , mPreviousEyePosition(CVector3f::Zero())
 , mScreenPosition(0, 0)
-, mSafeZoneHealSfxTimer(0.f)
+, mDarkWorldDamageExposureTime(0.f)
 , mDarkAetherDamage(0.f)
 , mDarkAetherDamageFlashTime(0.f)
 , mDarkAetherParticleDescriptions(nullptr)
@@ -325,8 +325,8 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mControlHintManager(nullptr)
 , x14bc_(kInvalidUniqueId)
 , x14c0_(0.f)
-, x14c4_(kInvalidUniqueId)
-, x14c6_(false) {
+, mEnemyLockOnActorId(kInvalidUniqueId)
+, mEnemyLockOnCount(0) {
   // TODO: Construct targeting, body controller, failsafe, camera bob and hint managers.
   // TODO: Acquire beam/particle resources and reflection buffers, initialize control mapping,
   //       apply suit-specific vulnerabilities, and configure animation/lighting.
@@ -719,7 +719,7 @@ float CPlayer::GetPrevDamageAmount() const { return mPrevDamageAmount; }
 
 CVector3f CPlayer::GetDamageLocationWR() const { return mDamageLocation; }
 
-uint CPlayer::fn_8000f6e8() const { return x1130_; }
+uint CPlayer::GetDamageWeaponType() const { return mDamageWeaponType; }
 
 void CPlayer::FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
@@ -978,9 +978,11 @@ CTweakPlayerControls* CPlayer::GetTweakPlayerControls() const {
 
 float CPlayer::GetDarkAetherDamage() const { return mDarkAetherDamage; }
 
-float CPlayer::fn_8000bf1c() const {
-  // TODO: Normalize the safe-zone healing timer by the tweak period.
-  return 0.f;
+float CPlayer::GetDarkWorldDamageExposureFraction() const {
+  if (mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
+    return 0.f;
+  }
+  return mDarkWorldDamageExposureTime / GetTweakPlayer()->GetDarkWorldDamageGracePeriod();
 }
 
 float CPlayer::GetDeathAlpha() const {

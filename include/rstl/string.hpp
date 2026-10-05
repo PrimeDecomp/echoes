@@ -412,6 +412,14 @@ static inline wstring operator+(const wstring& a, const wchar_t* c) {
 }
 
 CHECK_SIZEOF(string, 0x10)
+
+template < typename _CharTp, typename Traits, typename Alloc >
+basic_string< _CharTp, Traits, Alloc >
+basic_string< _CharTp, Traits, Alloc >::substr(int pos, int count) const {
+  const pair< const_iterator, const_iterator > range = range_iterator(pos, count);
+  return basic_string(range.first, range.second);
+}
+
 } // namespace rstl
 
 #endif // _RSTL_STRING

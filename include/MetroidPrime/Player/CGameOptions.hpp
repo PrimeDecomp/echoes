@@ -50,6 +50,7 @@ public:
   void SetHelmetAlpha(int);
 
   void SetHUDLag(bool);
+  bool GetHUDLag() const { return hudLag; }
   void SetIsHintSystemEnabled(bool);
   bool GetIsHintSystemEnabled() const { return hintSystem; }
   void SetIsHudEnglish(bool);

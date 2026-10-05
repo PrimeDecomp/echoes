@@ -100,7 +100,7 @@ public:
 
   static const CAABox& Identity() { return mskNullBox; }
   static const CAABox& MakeMaxInvertedBox() { return mskInvertedBox; }
-  // MakeNullBox__6CAABoxFv ??
+  static const CAABox& MakeNullBox() { return mskNullBox; }
   static float DistanceBetween(const CAABox& a, const CAABox& b);
 
 private:

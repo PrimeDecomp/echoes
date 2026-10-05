@@ -232,6 +232,8 @@ public:
   }
   float GetAllSeekersLockedTime() const { return mAllSeekersLockedTime; }
   CPlayerState::EBeamId GetPrimaryWeaponId() const { return mCurrentBeamId; }
+  CPlayerState::EBeamId GetPrimaryDestWeaponId() const { return mNextBeamId; }
+  float GetHoloTransitionFactor() const { return mGunMorph.mTransitionFactor; }
 
 private:
   typedef void (CPlayerGun::*RenderFunc)(const CStateManager&, const CVector3f&, bool,

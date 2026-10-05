@@ -308,6 +308,7 @@ public:
   EGameState GetGameState() const { return mGameState; }
   void DeferStateTransition(EStateManagerTransition t);
   void ResetEscapeSequenceTimer(float time);                             // Prime-correlated name
+  float GetEscapeSequenceTimer() const; // Prime-correlated name; saved GameState timer in Echoes.
   void SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx); // Prime name
   TUniqueId GetBossId() const { return mBossId; }
   float GetTotalBossEnergy() const { return mBossHealth; }
