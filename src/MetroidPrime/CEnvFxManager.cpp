@@ -177,7 +177,7 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
         256.f * static_cast< float >(frame % period) / static_cast< float >(period));
     const float lifetime = mParticleLifetimes[trail];
     float colorAlpha = baseColor.GetAlpha();
-    if (!(lifetime >= 0.2f)) {
+    if (lifetime < 0.2f) {
       colorAlpha = colorAlpha * lifetime / 0.2f;
     } else if (lifetime > 0.8f) {
       colorAlpha = colorAlpha * (1.f - lifetime) / 0.2f;
