@@ -111,6 +111,9 @@ public:
   virtual void MassiveFrozenDeath(CStateManager& mgr);
   virtual CProjectileInfo* ProjectileInfo() { return nullptr; }
   virtual CPathFindSearch* GetSearchPath() { return nullptr; }
+  CPathFindSearch* GetSearchPath() const {
+    return const_cast< CPatterned* >(this)->GetSearchPath();
+  }
   virtual void* fn_80073c7c() { return nullptr; }
   virtual CDamageInfo GetContactDamage() const;
   virtual void UpdateHitDamageTime(float dt);

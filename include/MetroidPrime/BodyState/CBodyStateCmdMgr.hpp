@@ -473,6 +473,11 @@ public:
   void DeliverCmd(const CBCLocomotionCmd& cmd);
   void DeliverCmd(EBodyStateCmd cmd);
 
+  void DeliverCmd(const CBCStepCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mStep = cmd;
+  }
+
   void DeliverCmd(const CBCKnockDownCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mKnockDown = cmd;
@@ -517,6 +522,7 @@ public:
   const CVector3f& GetFaceVector() const { return mFace; }
 
   const CVector3f& GetTargetVector() const { return mTarget; }
+  void SetTargetVector(const CVector3f& target) { mTarget = target; }
 
   const CVector3f& GetAdditiveTargetVector() const { return mAdditiveTarget; }
 
