@@ -38,6 +38,7 @@ public:
   CMayaSpline& LookAtTimeSpline();
   float GetLength() const;
   float GetDuration() const;
+  uint GetFlags() const { return mFlags; }
   float FindClosestLengthOnSpline(float start, const CVector3f& position) const;
   float ValidateLength(float distance) const;
   CVector3f GetPositionByTime(float time);
