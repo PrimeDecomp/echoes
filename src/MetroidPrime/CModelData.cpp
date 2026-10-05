@@ -15,6 +15,7 @@
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetaRender/SModelRenderData.hpp"
 
 #include <dolphin/mtx.h>
 
@@ -63,8 +64,56 @@ CModelData::~CModelData() {}
 
 void CModelData::Render(EWhichModel which, const CTransform4f& xf, const CActorLights* lights,
                         const CModelFlags& flags) const {
-  // TODO: Echo silhouette rendering, scaled model submission, and sorted-pass state.
-  // Dark models disable actor lighting; Echo models use RenderSolid and the full-model flag.
+  if (which == kWM_Echo) {
+    uchar destinationAlpha = 0;
+    if (flags.GetTrans() == CModelFlags::kT_Two) {
+      const CColor& color = flags.GetColorRef();
+      uchar intensity = color.GetRedu8();
+      if (intensity < color.GetGreenu8()) {
+        intensity = color.GetGreenu8();
+      }
+      if (intensity < color.GetBlueu8()) {
+        intensity = color.GetBlueu8();
+      }
+      destinationAlpha = intensity * 2 < 255 ? intensity * 2 : 255;
+    }
+    if (destinationAlpha != 0) {
+      gpRender->SetDestinationAlpha(destinationAlpha);
+    }
+    const CModelFlags echoFlags(CModelFlags::kT_One, 0,
+                                static_cast< CModelFlags::EFlags >(CModelFlags::kF_DepthCompare |
+                                                                  CModelFlags::kF_DepthUpdate),
+                                CColor::Black());
+    RenderSolid(which, xf, !mRenderFullEchoModel, echoFlags);
+    if (destinationAlpha != 0) {
+      gpRender->SetDestinationAlpha(0);
+    }
+    return;
+  }
+
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  if (lights != nullptr && which != kWM_Dark) {
+    lights->ActivateLights();
+  } else {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  }
+
+  if (HasAnimation()) {
+    mAnimData->Render(PickAnimatedModel(which), flags);
+  } else if (mNormalModel) {
+    const CModel& model = **PickStaticModel(which);
+    if (mRenderSorted) {
+      model.DrawSortedParts(flags);
+    } else {
+      model.Draw(flags);
+    }
+  }
+
+  gpRender->SetAmbientColor(CColor::White());
+  CGraphics::DisableAllLights();
+  mRenderSorted = false;
 }
 
 void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
@@ -119,7 +168,17 @@ void CModelData::RenderNoise(const CStateManager& mgr, const CTransform4f& xf, c
 
 void CModelData::RenderSolid(EWhichModel which, const CTransform4f& xf, bool unsortedOnly,
                              const CModelFlags& flags) const {
-  // TODO: Flat rendering through the shared static/skinned model-input wrapper.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    gpRender->DrawModelFlat(SModelRenderData(model, mAnimData->Pose()), flags, unsortedOnly);
+  } else {
+    gpRender->DrawModelFlat(SModelRenderData(**PickStaticModel(which)), flags, unsortedOnly);
+  }
 }
 
 void CModelData::RenderModelMultipleTimesWithFlags(EWhichModel which, const CTransform4f& xf,
