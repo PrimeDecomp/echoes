@@ -98,10 +98,12 @@ public:
     kOR_InvalidateTarget = 6,
     kOR_BadVerticalAngle = 7,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
+    kOR_ProjectileCollide = 9, // Guessed Prime name; projectile visor impact interrupts orbit.
     kOR_Freeze = 10,             // Target-derived: interrupts orbit when the player freezes.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
     kOR_LostGrappleLineOfSight = 12,
     kOR_BoostBall = 13, // Guessed name; requested when a boost charge releases.
+    kOR_EnterTurret = 13, // Target-derived alias; interrupts other players' orbit on turret entry.
     kOR_TargetingThroughDoor = 14,
   };
   enum EPlayerZoneInfo {
@@ -402,9 +404,9 @@ public:
   void UpdateUnderwaterParticles(float dt, CStateManager& mgr);
   void UpdateEchoVisorEffects(float dt, CStateManager& mgr);
   short GetSoundPan(EMultiPlayerSoundPan channel) const;
-  int fn_8000d0ac(const CStateManager& mgr, int channel) const;
-  CTransform4f GetTurretTransform(const CStateManager& mgr) const;
-  void fn_8000d540(const CFinalInput& input, CStateManager& mgr);
+  int CalculateSoundPan(const CStateManager& mgr, int channel) const; // Guessed name.
+  CTransform4f GetTurretTransform(CStateManager& mgr) const;
+  void ProcessTurretActions(const CFinalInput& input, CStateManager& mgr); // Guessed name.
   void ProcessTurretInput(const CFinalInput& input, CStateManager& mgr); // Guessed name.
   void ExitTurret(CStateManager& mgr);
   float GetAttachedActorStruggle() const;
