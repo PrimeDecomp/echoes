@@ -245,6 +245,7 @@ public:
   void Teleport(const CTransform4f& xf, CStateManager& mgr, bool resetBallCam);
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
+  CCameraManager* CameraManager() { return mCameraManager; }
   bool IsOverrideRadarRadius() const { return (x126a_ & 4) != 0; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
@@ -366,6 +367,7 @@ public:
   void fn_8000bd5c(CStateManager& mgr, bool createNew);
   float fn_8000bf1c() const;
   float GetDarkAetherDamage() const;
+  CElementGen* GetDarkAetherParticles() const { return mDarkAetherParticles.get(); }
   CColor GetDarkAetherDamageColor(const CStateManager& mgr, int view) const;
   void fn_8000c124(float dt, CStateManager& mgr);
   void fn_8000ce94(float dt, CStateManager& mgr);
@@ -436,6 +438,7 @@ public:
   float GetUnbiasedEyeHeight() const;
   void UpdateSubmerged(const CStateManager& mgr);
   void BombJump(const CVector3f& position, CStateManager& mgr);
+  int GetBombJumpCounter() const { return mBombJumpCount; }
   CTransform4f CreateTransformFromMovementDirection() const;
   const CCollidableSphere* GetCollidableSphere() const;
   float GetActualBallMaxVelocity(float dt) const;
