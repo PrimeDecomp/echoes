@@ -1,9 +1,9 @@
 #ifndef _SMODELRENDERDATA
 #define _SMODELRENDERDATA
 
-#include "types.h"
 #include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "types.h"
 
 class CModel;
 class CSkinnedModel;
@@ -18,34 +18,8 @@ struct SModelRenderData {
   : mModel(nullptr), mSkinnedModel(&model), mWorkspace(nullptr), mPose(&pose) {}
 
   // Guessed method names; native helpers dispatch through these four fields.
-  const CAABox& GetAABB() const {
-    return mModel ? mModel->GetAABB() : mSkinnedModel->GetModel()->GetAABB();
-  }
-
-  void DrawFlat(const CModelFlags& flags, bool unsorted, bool sorted) const {
-    if (!unsorted && !sorted) {
-      return;
-    }
-    if (mModel) {
-      const CModel::EDrawFlatFlags selection =
-          unsorted && sorted ? CModel::kDF_All : unsorted ? CModel::kDF_Unsorted : CModel::kDF_Sorted;
-      mModel->PreDrawModel(flags);
-      mModel->DolphinDrawFlat(selection);
-    } else if (mSkinnedModel) {
-      uint drawFlags = CSkinnedModel::kDF_Flat;
-      if (unsorted) {
-        drawFlags |= CSkinnedModel::kDF_Unsorted;
-      }
-      if (sorted) {
-        drawFlags |= CSkinnedModel::kDF_Sorted;
-      }
-      if (mPose) {
-        mSkinnedModel->DolphinDrawWithFlags(mPose, drawFlags, flags);
-      } else if (mWorkspace) {
-        mSkinnedModel->DolphinDrawFromWorkspace(*mWorkspace, drawFlags, flags);
-      }
-    }
-  }
+  const CAABox& GetAABB() const;
+  void DrawFlat(const CModelFlags& flags, bool unsorted, bool sorted) const;
 
   const CModel* mModel;
   const CSkinnedModel* mSkinnedModel;

@@ -3,6 +3,7 @@
 #include "MetaRender/SModelRenderData.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Graphics/CCubeMaterial.hpp"
 #include "Kyoto/Graphics/CCubeModel.hpp"
@@ -27,10 +28,11 @@
 #include "dolphin/os/OSCache.h"
 #include <string.h>
 
-// NonMatching scaffold: unfinished rendering passes are explicitly marked below.
+// Reconstructed against the G2ME01 renderer; remaining compiler differences keep this NonMatching.
 CCubeRenderer* CCubeRenderer::sRenderer = nullptr;
 IWeaponRenderer* IWeaponRenderer::sWeaponRenderer = nullptr;
 
+static CModelFlags skNormalFlag = CModelFlags::Normal();
 static CModelFlags skNormalFlagNoUpdate = CModelFlags::Normal().DepthCompareUpdate(true, false);
 
 namespace Buckets {
@@ -91,8 +93,17 @@ void CCubeRenderer::DrawGeometry(int areaId) {
         if (surface == end) {
           continue;
         }
+        const CCubeSurface firstSurface(instance.GetSurfaces()[*surface]);
         ActivateLightsForModel(mLightSets[lightSet]);
-        for (; surface != end; ++surface) {
+        if (Alpha) {
+          const uchar alpha = area.mPVSAlpha[instance.GetSurfaceAreaIndex(*surface)];
+          if (alpha != lastAlpha) {
+            CGX::SetDstAlpha(true, alpha);
+            lastAlpha = alpha;
+          }
+        }
+        model.DrawSurface(firstSurface, CModelFlags::Normal());
+        for (++surface; surface != end; ++surface) {
           const ushort areaIndex = instance.GetSurfaceAreaIndex(*surface);
           if (area.mLightSetIndices[areaIndex] != lightSet) {
             continue;
@@ -658,11 +669,11 @@ void CCubeRenderer::SetupCGraphicsStates() {
 
 void CCubeRenderer::AddWorldSurface(short modelIndex, ushort surfaceIndex, uint blend,
                                     const CAABox& bounds) {
-  const uint surface =
-      (static_cast< uint >(static_cast< ushort >(modelIndex)) << 16) | surfaceIndex;
-  const CVector3f closest = bounds.ClosestPointAlongVector(mViewPlane.GetNormal());
+  const ushort extraSort = blend == 0x50004;
+  const uint surface = (static_cast< uint >(modelIndex) << 16) | surfaceIndex;
+  const CVector3f& closest = bounds.ClosestPointAlongVector(mViewPlane.GetNormal());
   Buckets::Insert(closest, bounds, kDT_WorldSurface, reinterpret_cast< const void* >(surface),
-                  mViewPlane, blend == 0x50004 ? 1 : 0, false);
+                  mViewPlane, extraSort, false);
 }
 
 void CCubeRenderer::DrawRenderBucketsDebug() {}
@@ -1825,11 +1836,9 @@ void CCubeRenderer::DrawScreenFilter(const CColor& color0, const CColor& color1,
   CGX::SetTevOrder(GX_TEVSTAGE3, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
   CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
   CGX::SetNumTevStages(4);
-  for (int i = 0; i < 3; ++i) {
-    CGX::SetTexCoordGen(static_cast< GXTexCoordID >(i), GX_TG_MTX3x4,
-                        static_cast< GXTexGenSrc >(GX_TG_TEX0 + i), GX_IDENTITY, false,
-                        GX_PTIDENTITY);
-  }
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_TEX1, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX2, GX_IDENTITY, false, GX_PTIDENTITY);
   CGX::SetNumTexGens(3);
   const CVector2f offsets[3] = {
       CVector2f(2.f / mipWidth, 2.f / mipHeight),
@@ -1839,14 +1848,22 @@ void CCubeRenderer::DrawScreenFilter(const CColor& color0, const CColor& color1,
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
   CGX::SetZMode(false, GX_ALWAYS, false);
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(u * width, 0.f, v * height);
-    for (int coord = 0; coord < 3; ++coord) {
-      GXTexCoord2f32(u + offsets[coord].GetX(), v + offsets[coord].GetY());
-    }
-  }
+  GXPosition3f32(0.f, 0.f, 0.f);
+  GXTexCoord2f32(offsets[0].GetX(), offsets[0].GetY());
+  GXTexCoord2f32(offsets[1].GetX(), offsets[1].GetY());
+  GXTexCoord2f32(offsets[2].GetX(), offsets[2].GetY());
+  GXPosition3f32(0.f, 0.f, height);
+  GXTexCoord2f32(offsets[0].GetX(), 1.f + offsets[0].GetY());
+  GXTexCoord2f32(offsets[1].GetX(), 1.f + offsets[1].GetY());
+  GXTexCoord2f32(offsets[2].GetX(), 1.f + offsets[2].GetY());
+  GXPosition3f32(width, 0.f, height);
+  GXTexCoord2f32(1.f + offsets[0].GetX(), 1.f + offsets[0].GetY());
+  GXTexCoord2f32(1.f + offsets[1].GetX(), 1.f + offsets[1].GetY());
+  GXTexCoord2f32(1.f + offsets[2].GetX(), 1.f + offsets[2].GetY());
+  GXPosition3f32(width, 0.f, 0.f);
+  GXTexCoord2f32(1.f + offsets[0].GetX(), offsets[0].GetY());
+  GXTexCoord2f32(1.f + offsets[1].GetX(), offsets[1].GetY());
+  GXTexCoord2f32(1.f + offsets[2].GetX(), offsets[2].GetY());
   CGX::End();
 
   mScanRamp.Load(GX_TEXMAP0, CTexture::kCM_Repeat);
@@ -1861,15 +1878,19 @@ void CCubeRenderer::DrawScreenFilter(const CColor& color0, const CColor& color1,
   CGX::SetNumChans(0);
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_DSTALPHA, GX_BL_ONE, GX_LO_CLEAR);
   CGX::SetVtxDescv(oneTexDesc);
+  const float rampWidth = width * 0.125f;
+  const float rampHeight = height * 0.125f;
   CGX::SetDstAlpha(true, 0);
   GXSetAlphaUpdate(true);
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(u * width, 0.f, v * height);
-    GXTexCoord2f32(u * (width * 0.125f), v * (height * 0.125f));
-  }
+  GXPosition3f32(0.f, 0.f, 0.f);
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(0.f, 0.f, height);
+  GXTexCoord2f32(0.f, rampHeight);
+  GXPosition3f32(width, 0.f, height);
+  GXTexCoord2f32(rampWidth, rampHeight);
+  GXPosition3f32(width, 0.f, 0.f);
+  GXTexCoord2f32(rampWidth, 0.f);
   CGX::End();
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
   CGraphics::SetProjectionState(oldProjection);
@@ -2063,8 +2084,9 @@ int CCubeRenderer::DrawOverlappingWorldModelShadows(int alphaVal, rstl::vector< 
         const CCubeModel& model = *(*area->mModels)[areaSurface.mModelIndex];
         CCubeMaterial::KillCachedViewDepState();
         model.SetArraysCurrent();
-        const ushort count = instance.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-        const ushort* indices = instance.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = instance.GetSurfaceGroups();
+        const ushort count = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
         for (ushort surfaceIndex = 0; surfaceIndex < count; ++surfaceIndex) {
           const CCubeSurface surface(instance.GetSurfaces()[indices[surfaceIndex]]);
           const CCubeMaterial material = model.GetMaterial(surface);
@@ -2128,8 +2150,9 @@ void CCubeRenderer::DrawWorldModelShadow(const CAABox& bounds) {
         const CCubeModel& model = *(*area->mModels)[areaSurface.mModelIndex];
         CCubeMaterial::KillCachedViewDepState();
         model.SetArraysCurrent();
-        const ushort count = instance.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-        const ushort* indices = instance.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = instance.GetSurfaceGroups();
+        const ushort count = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
         for (ushort surfaceIndex = 0; surfaceIndex < count; ++surfaceIndex) {
           const CCubeSurface surface(instance.GetSurfaces()[indices[surfaceIndex]]);
           const CCubeMaterial material = model.GetMaterial(surface);
@@ -2173,8 +2196,9 @@ void CCubeRenderer::DrawOverlappingWorldModelIDs(int alphaVal, rstl::vector< uin
         const CCubeModel& model = *(*area->mModels)[areaSurface.mModelIndex];
         CCubeMaterial::KillCachedViewDepState();
         model.SetArraysCurrent();
-        const ushort count = instance.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-        const ushort* indices = instance.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = instance.GetSurfaceGroups();
+        const ushort count = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
         for (ushort surfaceIndex = 0; surfaceIndex < count; ++surfaceIndex) {
           const CCubeSurface surface(instance.GetSurfaces()[indices[surfaceIndex]]);
           const CCubeMaterial material = model.GetMaterial(surface);
@@ -2742,13 +2766,18 @@ void CCubeRenderer::DrawSilhouetteNoise(const SSilhouetteNoise& noise) {
   rstl::reserved_vector< CVector2f, 9 > coords;
   PopulateNoiseTexCoords(noise.mTime, coords);
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(2.f * u - 1.f, 0.5f, 2.f * v - 1.f);
-    GXTexCoord2f32(u, v);
-    GXTexCoord2f32(u, v);
-  }
+  GXPosition3f32(-1.f, 0.5f, -1.f);
+  GXTexCoord2f32(0.f, 0.f);
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(-1.f, 0.5f, 1.f);
+  GXTexCoord2f32(0.f, 1.f);
+  GXTexCoord2f32(0.f, 1.f);
+  GXPosition3f32(1.f, 0.5f, 1.f);
+  GXTexCoord2f32(1.f, 1.f);
+  GXTexCoord2f32(1.f, 1.f);
+  GXPosition3f32(1.f, 0.5f, -1.f);
+  GXTexCoord2f32(1.f, 0.f);
+  GXTexCoord2f32(1.f, 0.f);
   CGX::End();
   CGraphics::SetProjectionState(oldProjection);
   CGraphics::SetModelMatrix(oldModel);
@@ -3397,13 +3426,18 @@ void CCubeRenderer::DrawDarkWorldTransition(const CColor& color0, const CColor& 
   CGX::SetVtxDescv(twoTexDesc);
   GXPixModeSync();
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(u * width, 0.5f, v * height);
-    GXTexCoord2f32(u, v);
-    GXTexCoord2f32(u, v);
-  }
+  GXPosition3f32(0.f, 0.5f, 0.f);
+  GXTexCoord2f32(0.f, 0.f);
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(0.f, 0.5f, height);
+  GXTexCoord2f32(0.f, 1.f);
+  GXTexCoord2f32(0.f, 1.f);
+  GXPosition3f32(width, 0.5f, height);
+  GXTexCoord2f32(1.f, 1.f);
+  GXTexCoord2f32(1.f, 1.f);
+  GXPosition3f32(width, 0.5f, 0.f);
+  GXTexCoord2f32(1.f, 0.f);
+  GXTexCoord2f32(1.f, 0.f);
   CGX::End();
 
   GXSetTexCopySrc(viewport.mLeft + captureOrigin.GetX(), viewport.mTop + captureOrigin.GetY(),
@@ -3425,13 +3459,15 @@ void CCubeRenderer::DrawDarkWorldTransition(const CColor& color0, const CColor& 
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR);
   GXPixModeSync();
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(captureOrigin.GetX() + u * captureSize.GetX(), 0.5f,
-                   captureOrigin.GetY() + v * captureSize.GetY());
-    GXTexCoord2f32(u, v);
-  }
+  GXPosition3f32(captureOrigin.GetX(), 0.5f, captureOrigin.GetY());
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(captureOrigin.GetX(), 0.5f, captureOrigin.GetY() + captureSize.GetY());
+  GXTexCoord2f32(0.f, 1.f);
+  GXPosition3f32(captureOrigin.GetX() + captureSize.GetX(), 0.5f,
+                 captureOrigin.GetY() + captureSize.GetY());
+  GXTexCoord2f32(1.f, 1.f);
+  GXPosition3f32(captureOrigin.GetX() + captureSize.GetX(), 0.5f, captureOrigin.GetY());
+  GXTexCoord2f32(1.f, 0.f);
   CGX::End();
 
   GXSetAlphaUpdate(true);
@@ -3450,13 +3486,15 @@ void CCubeRenderer::DrawDarkWorldTransition(const CColor& color0, const CColor& 
   CGX::SetVtxDescv(oneTexDesc);
   const CVector2i movedOrigin = motion + captureOrigin;
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(movedOrigin.GetX() + u * captureSize.GetX(), 0.5f,
-                   movedOrigin.GetY() + v * captureSize.GetY());
-    GXTexCoord2f32(u, v);
-  }
+  GXPosition3f32(movedOrigin.GetX(), 0.5f, movedOrigin.GetY());
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(movedOrigin.GetX(), 0.5f, movedOrigin.GetY() + captureSize.GetY());
+  GXTexCoord2f32(0.f, 1.f);
+  GXPosition3f32(movedOrigin.GetX() + captureSize.GetX(), 0.5f,
+                 movedOrigin.GetY() + captureSize.GetY());
+  GXTexCoord2f32(1.f, 1.f);
+  GXPosition3f32(movedOrigin.GetX() + captureSize.GetX(), 0.5f, movedOrigin.GetY());
+  GXTexCoord2f32(1.f, 0.f);
   CGX::End();
 
   if (motion != CVector2i(0, 0)) {
@@ -3469,32 +3507,37 @@ void CCubeRenderer::DrawDarkWorldTransition(const CColor& color0, const CColor& 
     CGX::SetNumTevStages(1);
     CGX::SetNumTexGens(1);
     CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
+    const float distanceX = motion.GetX();
+    const float distanceY = motion.GetY();
     const CVector2i end = captureOrigin + captureSize;
-    for (int axis = 0; axis < 2; ++axis) {
-      const float distance = motion[axis];
-      if (!(CMath::AbsF(distance - 0.f) >= 0.00001f)) {
-        continue;
-      }
-      float left = captureOrigin.GetX(), right = end.GetX();
-      float top = captureOrigin.GetY(), bottom = end.GetY();
-      if (axis == 0) {
-        if (distance <= 0.f) {
-          left = right + distance;
-        } else {
-          right = left + distance;
-        }
-      } else {
-        if (distance <= 0.f) {
-          top = bottom + distance;
-        } else {
-          bottom = top + distance;
-        }
-      }
+    if (CMath::AbsF(distanceX - 0.f) >= 0.00001f) {
       CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-      GXPosition3f32(left, 0.5f, top);
-      GXPosition3f32(left, 0.5f, bottom);
-      GXPosition3f32(right, 0.5f, bottom);
-      GXPosition3f32(right, 0.5f, top);
+      if (distanceX <= 0.f) {
+        GXPosition3f32(float(end.GetX()) + distanceX, 0.5f, captureOrigin.GetY());
+        GXPosition3f32(float(end.GetX()) + distanceX, 0.5f, end.GetY());
+        GXPosition3f32(end.GetX(), 0.5f, end.GetY());
+        GXPosition3f32(end.GetX(), 0.5f, captureOrigin.GetY());
+      } else {
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, captureOrigin.GetY());
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, end.GetY());
+        GXPosition3f32(float(captureOrigin.GetX()) + distanceX, 0.5f, end.GetY());
+        GXPosition3f32(float(captureOrigin.GetX()) + distanceX, 0.5f, captureOrigin.GetY());
+      }
+      CGX::End();
+    }
+    if (CMath::AbsF(distanceY - 0.f) >= 0.00001f) {
+      CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
+      if (distanceY <= 0.f) {
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, float(end.GetY()) + distanceY);
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, end.GetY());
+        GXPosition3f32(end.GetX(), 0.5f, end.GetY());
+        GXPosition3f32(end.GetX(), 0.5f, float(end.GetY()) + distanceY);
+      } else {
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, captureOrigin.GetY());
+        GXPosition3f32(captureOrigin.GetX(), 0.5f, float(captureOrigin.GetY()) + distanceY);
+        GXPosition3f32(end.GetX(), 0.5f, float(captureOrigin.GetY()) + distanceY);
+        GXPosition3f32(end.GetX(), 0.5f, captureOrigin.GetY());
+      }
       CGX::End();
     }
   }
@@ -3569,13 +3612,18 @@ void CCubeRenderer::DrawDarkWorldFilter(float amount) {
   const float scrollY = CMath::FastSinR(time / 20.f);
   const int top = (viewport.mTop & ~1) - viewport.mTop;
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
-  for (int i = 0; i < 4; ++i) {
-    const float u = i >= 2 ? 1.f : 0.f;
-    const float v = i == 1 || i == 2 ? 1.f : 0.f;
-    GXPosition3f32(u * viewport.mWidth, 995.f, top + v * copyHeight);
-    GXTexCoord2f32(u, v);
-    GXTexCoord2f32(u + scrollX, v + scrollY);
-  }
+  GXPosition3f32(0.f, 995.f, top);
+  GXTexCoord2f32(0.f, 0.f);
+  GXTexCoord2f32(scrollX, scrollY);
+  GXPosition3f32(0.f, 995.f, top + copyHeight);
+  GXTexCoord2f32(0.f, 1.f);
+  GXTexCoord2f32(scrollX, 1.f + scrollY);
+  GXPosition3f32(viewport.mWidth, 995.f, top + copyHeight);
+  GXTexCoord2f32(1.f, 1.f);
+  GXTexCoord2f32(1.f + scrollX, 1.f + scrollY);
+  GXPosition3f32(viewport.mWidth, 995.f, top);
+  GXTexCoord2f32(1.f, 0.f);
+  GXTexCoord2f32(1.f + scrollX, scrollY);
   CGX::End();
   CGraphics::SetProjectionState(oldProjection);
   CGraphics::SetViewPointMatrix(oldView);
@@ -3586,9 +3634,10 @@ void CCubeRenderer::DrawDarkWorldFilter(float amount) {
 }
 
 uint CCubeRenderer::PackLightSet(const uchar* lights, float ambient) {
+  const uint packed = (lights[0] & 63) | ((lights[1] & 63) << 6) | ((lights[2] & 63) << 12) |
+                      ((lights[3] & 63) << 18);
   const uint level = CMath::ClampI(0, static_cast< int >(63.f * ambient), 63);
-  return (lights[0] & 63) | ((lights[1] & 63) << 6) | ((lights[2] & 63) << 12) |
-         ((lights[3] & 63) << 18) | (level << 24);
+  return packed | (level << 24);
 }
 
 void CCubeRenderer::UnpackLightSet(uint lightSet, uchar* lights, float* ambient,
@@ -3729,8 +3778,9 @@ void CCubeRenderer::DrawAreaModel(int areaId, int modelId, const CModelFlags& fl
   const CMetroidModelInstance& instance = (*area->mGeometry)[modelIndex];
   CCubeMaterial::ResetCachedMaterials();
   model.SetArraysCurrent();
-  const ushort count = instance.GetSurfaceCountInGroup(groupIndex);
-  const ushort* indices = instance.GetSurfaceIndices(groupIndex);
+  const CMetroidModelInstance::CSurfaceGroups groups = instance.GetSurfaceGroups();
+  const ushort count = groups.GetSurfaceCount(groupIndex);
+  const ushort* indices = groups.GetSurfaceIndices(groupIndex);
   for (ushort i = 0; i < count; ++i) {
     const CCubeSurface surface(instance.GetSurfaces()[indices[i]]);
     model.DrawSurface(surface, flags);
@@ -3740,13 +3790,14 @@ void CCubeRenderer::DrawAreaModel(int areaId, int modelId, const CModelFlags& fl
 CAABox CCubeRenderer::GetAreaModelBounds(int areaId, int modelId) {
   rstl::list< CAreaListItem >::const_iterator area = FindArea(areaId);
   if (area == mAreaListItems.end()) {
-    return CAABox(CVector3f::Zero(), CVector3f::Zero());
+    return CAABox::Identity();
   }
   CAABox bounds = CAABox::MakeMaxInvertedBox();
   const SAreaSurface& areaSurface = (*area->mSurfaces)[modelId + 1];
   const CMetroidModelInstance& model = (*area->mGeometry)[areaSurface.mModelIndex];
-  const ushort count = model.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-  const ushort* indices = model.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+  const CMetroidModelInstance::CSurfaceGroups groups = model.GetSurfaceGroups();
+  const ushort count = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+  const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
   for (ushort i = 0; i < count; ++i) {
     const CCubeSurface surface(model.GetSurfaces()[indices[i]]);
     const CAABox surfaceBounds = surface.GetBounds();
@@ -3772,8 +3823,9 @@ void CCubeRenderer::DrawVisibleAreaGeometry(int areaId, const CPVSVisSet& pvs,
         const CMetroidModelInstance& instance = (*area->mGeometry)[modelIndex];
         const CCubeModel& model = *(*area->mModels)[modelIndex];
         model.SetArraysCurrent();
-        const ushort count = instance.GetSurfaceCountInGroup(groupIndex);
-        const ushort* indices = instance.GetSurfaceIndices(groupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = instance.GetSurfaceGroups();
+        const ushort count = groups.GetSurfaceCount(groupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(groupIndex);
         for (ushort j = 0; j < count; ++j) {
           const CCubeSurface surface(instance.GetSurfaces()[indices[j]]);
           const CAABox surfaceBounds = surface.GetBounds();
@@ -3832,8 +3884,9 @@ void CCubeRenderer::EnablePVS(int areaId, const rstl::vector< rstl::pair< int, i
   DisablePVS(areaId);
   rstl::list< CAreaListItem >::iterator area = FindArea(areaId);
   if (area != mAreaListItems.end()) {
-    for (int i = 0; i < visible.size(); ++i) {
-      area->mPVSAlpha[visible[i].first] = visible[i].second << 2;
+    for (rstl::vector< rstl::pair< int, int > >::const_iterator it = visible.begin();
+         it != visible.end(); ++it) {
+      area->mPVSAlpha[it->first] = it->second << 2;
     }
   }
 }
@@ -3841,9 +3894,7 @@ void CCubeRenderer::EnablePVS(int areaId, const rstl::vector< rstl::pair< int, i
 void CCubeRenderer::DisablePVS(int areaId) {
   rstl::list< CAreaListItem >::iterator area = FindArea(areaId);
   if (area != mAreaListItems.end()) {
-    for (int i = 0; i < area->mPVSAlpha.size(); ++i) {
-      area->mPVSAlpha[i] = 0;
-    }
+    CBasics::ZeroMemory(area->mPVSAlpha.data(), area->mPVSAlpha.size());
   }
 }
 
@@ -3922,24 +3973,44 @@ void CCubeRenderer::DrawDarkWorldCloud(float time, const CVector3f& scale, const
   const float growth = remaining / 3.f;
   const float scrollX = 2.f * scale.GetX();
   const float scrollY = 2.f * scale.GetZ();
+  const float extent0 = 1.f + growth;
+  const float extent1 = 2.f / 3.f + growth;
+  const float extent2 = 1.f / 3.f + growth;
+  const float low0 = -extent0 * 0.5f + 0.5f;
+  const float low1 = -extent1 * 0.5f + 0.5f;
+  const float low2 = -extent2 * 0.5f + 0.5f;
+  const float high0 = extent0 * 0.5f + 0.5f;
+  const float high1 = extent1 * 0.5f + 0.5f;
+  const float high2 = extent2 * 0.5f + 0.5f;
   const CColor transparent(0u);
   CGX::SetTevKColor(GX_KCOLOR0,
                     CColor::Lerp(transparent, color, opacity * scale.GetY()).GetGXColor());
   CGX::SetTevKColor(GX_KCOLOR1, CColor::Lerp(transparent, color, opacity).GetGXColor());
   CGX::SetTevKColor(GX_KCOLOR2, CColor::Lerp(transparent, color, opacity * remaining).GetGXColor());
-  for (int i = 0; i < 3; ++i) {
-    const GXTevStageID stage = static_cast< GXTevStageID >(i);
-    const GXTexCoordID coord = static_cast< GXTexCoordID >(i);
-    CGX::SetTevKColorSel(stage, static_cast< GXTevKColorSel >(GX_TEV_KCSEL_K0 + i));
-    CGX::SetTevKAlphaSel(stage, static_cast< GXTevKAlphaSel >(GX_TEV_KASEL_K0_A + i));
-    CGX::SetTevColorIn(stage, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, i ? GX_CC_CPREV : GX_CC_ZERO);
-    CGX::SetTevAlphaIn(stage, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, i ? GX_CA_APREV : GX_CA_ZERO);
-    CGX::SetStandardTevColorAlphaOp(stage);
-    CGX::SetTevOrder(stage, coord, GX_TEXMAP0, GX_COLOR_NULL);
-    CGX::SetTexCoordGen(coord, GX_TG_MTX3x4, static_cast< GXTexGenSrc >(GX_TG_TEX0 + i),
-                        GX_IDENTITY, false, GX_PTIDENTITY);
-    CGX::SetTevDirect(stage);
-  }
+  CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, GX_CA_ZERO);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
+  CGX::SetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K1);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K1_A);
+  CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_CPREV);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, GX_CA_APREV);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
+  CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR_NULL);
+  CGX::SetTevKColorSel(GX_TEVSTAGE2, GX_TEV_KCSEL_K2);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K2_A);
+  CGX::SetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_CPREV);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, GX_CA_APREV);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE2);
+  CGX::SetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD2, GX_TEXMAP0, GX_COLOR_NULL);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_TEX1, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX2, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetTevDirect(GX_TEVSTAGE0);
+  CGX::SetTevDirect(GX_TEVSTAGE1);
+  CGX::SetTevDirect(GX_TEVSTAGE2);
   CGX::SetNumTevStages(3);
   CGX::SetNumTexGens(3);
   CGX::SetNumChans(0);
@@ -3947,19 +4018,23 @@ void CCubeRenderer::DrawDarkWorldCloud(float time, const CVector3f& scale, const
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
   CGX::SetZMode(false, GX_ALWAYS, false);
 
-  const float extents[3] = {1.f + growth, 2.f / 3.f + growth, 1.f / 3.f + growth};
   CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
-  for (int vertex = 0; vertex < 4; ++vertex) {
-    const bool right = (vertex & 1) != 0;
-    const bool top = (vertex & 2) != 0;
-    GXPosition3f32(right ? screen.second.GetX() : screen.first.GetX(), 0.f,
-                   top ? screen.second.GetY() : screen.first.GetY());
-    for (int stage = 0; stage < 3; ++stage) {
-      const float low = -extents[stage] * 0.5f + 0.5f;
-      const float high = extents[stage] * 0.5f + 0.5f;
-      GXTexCoord2f32((right ? high : low) + scrollX, (top ? high : low) + scrollY);
-    }
-  }
+  GXPosition3f32(screen.first.GetX(), 0.f, screen.first.GetY());
+  GXTexCoord2f32(low0 + scrollX, low0 + scrollY);
+  GXTexCoord2f32(low1 + scrollX, low1 + scrollY);
+  GXTexCoord2f32(low2 + scrollX, low2 + scrollY);
+  GXPosition3f32(screen.second.GetX(), 0.f, screen.first.GetY());
+  GXTexCoord2f32(high0 + scrollX, low0 + scrollY);
+  GXTexCoord2f32(high1 + scrollX, low1 + scrollY);
+  GXTexCoord2f32(high2 + scrollX, low2 + scrollY);
+  GXPosition3f32(screen.first.GetX(), 0.f, screen.second.GetY());
+  GXTexCoord2f32(low0 + scrollX, high0 + scrollY);
+  GXTexCoord2f32(low1 + scrollX, high1 + scrollY);
+  GXTexCoord2f32(low2 + scrollX, high2 + scrollY);
+  GXPosition3f32(screen.second.GetX(), 0.f, screen.second.GetY());
+  GXTexCoord2f32(high0 + scrollX, high0 + scrollY);
+  GXTexCoord2f32(high1 + scrollX, high1 + scrollY);
+  GXTexCoord2f32(high2 + scrollX, high2 + scrollY);
   CGX::End();
   CGraphics::SetProjectionState(oldProjection);
   CGraphics::SetViewPointMatrix(oldView);
@@ -3991,6 +4066,36 @@ void CCubeRenderer::DrawModelNoise(const SModelRenderData& model, const CColor& 
   CGX::SetNumTexGens(1);
   CGX::SetNumChans(0);
   model.DrawFlat(CModelFlags(CModelFlags::kT_Opaque, CColor::White()), true, false);
+}
+
+const CAABox& SModelRenderData::GetAABB() const {
+  return mModel ? mModel->GetAABB() : mSkinnedModel->GetModel()->GetAABB();
+}
+
+void SModelRenderData::DrawFlat(const CModelFlags& flags, bool unsorted, bool sorted) const {
+  if (!unsorted && !sorted) {
+    return;
+  }
+  if (mModel) {
+    const CModel::EDrawFlatFlags selection = unsorted && sorted ? CModel::kDF_All
+                                             : unsorted         ? CModel::kDF_Unsorted
+                                                                : CModel::kDF_Sorted;
+    mModel->PreDrawModel(flags);
+    mModel->DolphinDrawFlat(selection);
+  } else if (mSkinnedModel) {
+    uint drawFlags = CSkinnedModel::kDF_Flat;
+    if (unsorted) {
+      drawFlags |= CSkinnedModel::kDF_Unsorted;
+    }
+    if (sorted) {
+      drawFlags |= CSkinnedModel::kDF_Sorted;
+    }
+    if (mPose) {
+      mSkinnedModel->DolphinDrawWithFlags(mPose, drawFlags, flags);
+    } else if (mWorkspace) {
+      mSkinnedModel->DolphinDrawFromWorkspace(*mWorkspace, drawFlags, flags);
+    }
+  }
 }
 
 uint GetRendererWorkspaceSize() { return Buckets::GetWorkspaceSize(); }
