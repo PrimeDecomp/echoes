@@ -540,8 +540,13 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
         grid.mTrailFrames.reserve(maxParticleCount / 8);
       }
       while (particles.size() < cellParticleCount) {
-        const short x = static_cast< short >(random.Range(
-            0.f, static_cast< float >(grid.mExtent.GetX()) - (trails ? 20.f : 0.f)));
+        // The retail dark-world branch reads the caller's frame delta from f31 instead of
+        // drawing an X coordinate; its short conversion is zero at normal frame rates.
+        const short x = type == kEFX_DarkWorld
+                            ? 0
+                            : static_cast< short >(random.Range(
+                                  0.f, static_cast< float >(grid.mExtent.GetX()) -
+                                           (trails ? 20.f : 0.f)));
         short z;
         if (type == kEFX_DarkWorld) {
           z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
@@ -892,10 +897,10 @@ void CEnvFxManager::UpdateRainParticles(const CVectorFixed8_8& zVec, const CVect
 }
 
 void CEnvFxManager::UpdateUnderwaterParticles(const CVectorFixed8_8& zVec) {
+  const short zDelta = zVec.GetZ();
   for (int i = mGrids.size() - 1; i >= 0; --i) {
-    rstl::vector< CVectorFixed8_8 >& particles = mGrids[i].mParticles;
-    for (int j = particles.size() - 1; j >= 0; --j) {
-      particles[j].mZ = (particles[j].mZ + zVec.GetZ()) & 0x3fff;
+    for (int j = mGrids[i].mParticles.size() - 1; j >= 0; --j) {
+      mGrids[i].mParticles[j].mZ = (zDelta + mGrids[i].mParticles[j].mZ) & 0x3fff;
     }
   }
 }
