@@ -307,12 +307,15 @@ void CEnvFxManagerGrid::RenderDarkWorldParticles(const CTransform4f& xf, const C
   CGX::SetTevKColor(GX_KCOLOR0, CColor::White().GetGXColor());
   for (int i = mParticles.size() - 1; i >= 0; --i) {
     const float lifetime = mParticleLifetimes[i];
-    const float brightness = rstl::max_val(0.f, 1.5f * lifetime - 0.5f);
+    float brightness = 1.5f * lifetime - 0.5f;
+    if (brightness < 0.f) {
+      brightness = 0.f;
+    }
     const float remaining = 1.f - lifetime;
     const float remainingSquared = remaining * remaining;
     const uchar red = static_cast< uchar >(255.f * brightness);
     const uchar green = static_cast< uchar >(red * lifetime);
-    const uchar alpha = static_cast< uchar >(255.f * (1.f - remainingSquared * remainingSquared));
+    const uchar alpha = static_cast< uchar >(255.f * -(remainingSquared * remainingSquared - 1.f));
     CGX::SetTevKColor(GX_KCOLOR0, CColor(red, green, red, alpha).GetGXColor());
 
     const CVectorFixed8_8& particle = mParticles[i];
