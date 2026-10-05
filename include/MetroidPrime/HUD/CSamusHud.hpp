@@ -99,6 +99,8 @@ public:
   static rstl::pair< CVector3f, CVector3f > CombatEnergyCoordFunc(float t);
 
 private:
+  static const char* const
+      skHudElementNames[17]; // Guessed name; Prime-correlated profiling labels.
   void DrawBossLockOnWarning() const;
   void UpdateBossLockOnWarning(float dt, const CStateManager& mgr);
   void SetMessage(const rstl::wstring& text, const CHUDMemoParms& info);
@@ -126,7 +128,7 @@ private:
   bool IsCachedLightInAreaLights(const SCachedHudLight& light, const CActorLights& lights) const;
   void fn_8006653c(const CStateManager& mgr, bool init);
   void UpdateThreatAssessment(float dt, const CStateManager& mgr);
-  bool ResolveLockOnTexture();
+  void ResolveLockOnTexture();
   void UpdateBallMode(const CStateManager& mgr);
   void UpdateBeamAmmo(const CStateManager& mgr, bool init);
   void UpdateMissile(float dt, const CStateManager& mgr, bool init);
