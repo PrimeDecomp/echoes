@@ -368,7 +368,7 @@ GetDamageVulnerability__7CPlayerCFv = .text:0x8000ED34; // type:function size:0x
 GetHomingPosition__7CPlayerCFRC13CStateManagerf = .text:0x8000EDEC; // type:function size:0x134 align:4
 GetAimPosition__7CPlayerCFRC13CStateManagerf = .text:0x8000EF20; // type:function size:0x1C8 align:4
 fn_8000F0E8 = .text:0x8000F0E8; // type:function size:0x30
-fn_8000F118 = .text:0x8000F118; // type:function size:0xE8
+GetCombinedNormalLeft__18CCollisionInfoListCFv = .text:0x8000F118; // type:function size:0xE8
 __ct__12CMotionStateFRC12CMotionState = .text:0x8000F200; // type:function size:0x6C
 ObjectInScanningRange__7CPlayerF9TUniqueIdRC13CStateManager = .text:0x8000F26C; // type:function size:0xC4 align:4
 FluidFXThink__7CPlayerFQ26CActor11EFluidStateR12CScriptWaterR13CStateManager = .text:0x8000F330; // type:function size:0x3B8 align:4
@@ -4957,7 +4957,7 @@ PushActorAwayFromWalls__14CGameCollisionFR13CStateManagerR13CPhysicsActorffffif 
 GetActorRelativeVelocities__14CGameCollisionFPC13CPhysicsActorPC13CPhysicsActor = .text:0x80123B74; // type:function size:0xD8
 FindNonIntersectingVector__14CGameCollisionFRC13CStateManagerR13CPhysicsActorRC19CCollisionPrimitiveRCQ24rstl27optional_object<9CVector3f> = .text:0x80123C4C; // type:function size:0x5A8
 CollisionFailsafe__14CGameCollisionFRC13CStateManagerR19CAreaCollisionCacheR13CPhysicsActorRC19CCollisionPrimitiveRCQ24rstl32reserved_vector<9TUniqueId,1024>fUif = .text:0x801241F4; // type:function size:0x5E0 align:4
-fn_801247D4 = .text:0x801247D4; // type:function size:0x24
+GetLastNonCollidingState__13CPhysicsActorCFv = .text:0x801247D4; // type:function size:0x24
 MovePlayer__14CGameCollisionFR13CStateManagerR13CPhysicsActorfPCQ24rstl32reserved_vector<9TUniqueId,1024> = .text:0x801247F8; // type:function size:0x138
 Move__14CGameCollisionFR13CStateManagerR13CPhysicsActorfPCQ24rstl32reserved_vector<9TUniqueId,1024> = .text:0x80124930; // type:function size:0x1F4
 CollideWithStaticBodyNoRot__14CGameCollisionFR13CPhysicsActorRC13CMaterialListRC13CMaterialListRC13CUnitVector3ffb = .text:0x80124B24; // type:function size:0x1EC

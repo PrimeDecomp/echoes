@@ -50,6 +50,13 @@ public:
 
   T& data() { return *get_ptr(); }
   const T& data() const { return *get_ptr(); }
+  template < typename A1, typename A2, typename A3, typename A4 >
+  T& emplace(const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
+    clear();
+    new (m_data) T(a1, a2, a3, a4);
+    m_valid = true;
+    return data();
+  }
   T* get_ptr() { return reinterpret_cast< T* >(m_data); }
   const T* get_ptr() const { return reinterpret_cast< const T* >(m_data); }
   bool valid() const { return m_valid; }
