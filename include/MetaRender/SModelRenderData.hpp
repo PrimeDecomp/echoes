@@ -12,6 +12,8 @@ class CPoseAsTransforms_Linear;
 struct SModelRenderData {
   explicit SModelRenderData(const CModel& model)
   : mModel(&model), mSkinnedModel(nullptr), mWorkspace(nullptr), mPose(nullptr) {}
+  SModelRenderData(const CSkinnedModel& model, const CPoseAsTransforms_Linear& pose)
+  : mModel(nullptr), mSkinnedModel(&model), mWorkspace(nullptr), mPose(&pose) {}
 
   const CModel* mModel;
   const CSkinnedModel* mSkinnedModel;

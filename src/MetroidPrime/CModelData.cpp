@@ -2,14 +2,27 @@
 
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
+#include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
 #include "Kyoto/Animation/CSegId.hpp"
+#include "Kyoto/Animation/CSkinnedModel.hpp"
+#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CModelFlags.hpp"
+#include "Kyoto/Graphics/PortalPlane.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/SObjectTag.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
+#include "MetaRender/SModelRenderData.hpp"
+#include "MetroidPrime/Factories/CCharacterFactory.hpp"
+#include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
+
+#include <dolphin/mtx.h>
 
 // Guessed name.
 struct SModelDataMultipassContext {
@@ -48,33 +61,120 @@ CModelData::CModelData(const CAnimRes& res)
 , mRenderUnsortedParts(true)
 , mRenderFullEchoModel(false)
 , mAmbientColor(CColor::White()) {
-  // TODO: Create the character through CCharacterFactoryBuilder. A negative default animation
-  // selects the character's default; pass the model scale to the resulting CAnimData.
+  TLockedToken< CCharacterFactory > factory(gpCharacterFactoryBuilder->GetFactory(res));
+  int defaultAnim = res.GetDefaultAnim();
+  if (defaultAnim < 0) {
+    defaultAnim = factory->GetCharInfo(res.GetCharacterNodeId()).GetDefaultAnimation();
+  }
+  mAnimData = factory->CreateCharacter(res.GetCharacterNodeId(), res.CanLoop(), factory,
+                                       defaultAnim);
+  mAnimData->SetModelScale(mScale);
 }
 
 CModelData::~CModelData() {}
 
 void CModelData::Render(EWhichModel which, const CTransform4f& xf, const CActorLights* lights,
                         const CModelFlags& flags) const {
-  // TODO: Echo silhouette rendering, scaled model submission, and sorted-pass state.
-  // Dark models disable actor lighting; Echo models use RenderSolid and the full-model flag.
+  if (which == kWM_Echo) {
+    uchar destinationAlpha = 0;
+    if (flags.GetTrans() == CModelFlags::kT_Two) {
+      const CColor& color = flags.GetColorRef();
+      uchar intensity = color.GetRedu8();
+      if (intensity < color.GetGreenu8()) {
+        intensity = color.GetGreenu8();
+      }
+      if (intensity < color.GetBlueu8()) {
+        intensity = color.GetBlueu8();
+      }
+      destinationAlpha = intensity * 2 < 255 ? intensity * 2 : 255;
+    }
+    if (destinationAlpha != 0) {
+      gpRender->SetDestinationAlpha(destinationAlpha);
+    }
+    const CModelFlags echoFlags(CModelFlags::kT_One, 0,
+                                static_cast< CModelFlags::EFlags >(CModelFlags::kF_DepthCompare |
+                                                                  CModelFlags::kF_DepthUpdate),
+                                CColor::Black());
+    RenderSolid(which, xf, !mRenderFullEchoModel, echoFlags);
+    if (destinationAlpha != 0) {
+      gpRender->SetDestinationAlpha(0);
+    }
+    return;
+  }
+
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  if (lights != nullptr && which != kWM_Dark) {
+    lights->ActivateLights();
+  } else {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  }
+
+  if (HasAnimation()) {
+    mAnimData->Render(PickAnimatedModel(which), flags);
+  } else if (mNormalModel) {
+    const CModel& model = **PickStaticModel(which);
+    if (mRenderSorted) {
+      model.DrawSortedParts(flags);
+    } else {
+      model.Draw(flags);
+    }
+  }
+
+  gpRender->SetAmbientColor(CColor::White());
+  CGraphics::DisableAllLights();
+  mRenderSorted = false;
 }
 
 void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
                                      const CActorLights* lights, const CModelFlags& flags) const {
-  // TODO: Draw eligible static unsorted surfaces and update mRenderSorted.
+  if (HasAnimation() || !mNormalModel || static_cast< char >(flags.GetTrans()) > 4 ||
+      !mRenderUnsortedParts) {
+    mRenderSorted = false;
+    return;
+  }
+
+  gpRender->SetModelMatrix(xf * CTransform4f::Scale(mScale));
+  if (lights != nullptr && which != kWM_Dark) {
+    lights->ActivateLights();
+  } else {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  }
+
+  PickStaticModel(which)->DrawUnsortedParts(flags);
+  gpRender->SetAmbientColor(CColor::White());
+  CGraphics::DisableAllLights();
+  mRenderSorted = true;
 }
 
-void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace,
-                                       const SModelDataMultipassContext& context) {
-  // TODO: For each pass, set its color and portal plane, then draw the skinned model
-  // with the corresponding flags and 64-bit surface mask.
+void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace, void* data) {
+  const SModelDataMultipassContext& context =
+      *static_cast< const SModelDataMultipassContext* >(data);
+  for (int i = 0; i < context.mCount; ++i) {
+    gpRender->SetGXRegister1Color(context.mColors[i]);
+    PortalPlane::SetCurrentPlane(context.mPlanes[i]);
+    context.mModel.DolphinDrawFromWorkspace(workspace, 6, context.mFlags[i], context.mMasks[i]);
+  }
 }
 
 void CModelData::DisintegrateDraw(EWhichModel which, const CTransform4f& xf,
                                   const CTexture& texture, const CColor& color,
                                   float amount) const {
-  // TODO: Submit the static or posed model through the renderer's model-input wrapper.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelDisintegrate(renderData, texture, color, amount);
+  } else {
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelDisintegrate(renderData, texture, color, amount);
+  }
 }
 
 void CModelData::DisintegrateDraw(const CStateManager& mgr, const CTransform4f& xf,
@@ -85,7 +185,19 @@ void CModelData::DisintegrateDraw(const CStateManager& mgr, const CTransform4f& 
 
 void CModelData::RenderNoise(EWhichModel which, const CTransform4f& xf, const CColor& color,
                              bool additive) const {
-  // TODO: Submit the scaled static or posed model to the noise-rendering path.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelNoise(renderData, color, additive);
+  } else {
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelNoise(renderData, color, additive);
+  }
 }
 
 void CModelData::RenderNoise(const CStateManager& mgr, const CTransform4f& xf, const CColor& color,
@@ -95,7 +207,19 @@ void CModelData::RenderNoise(const CStateManager& mgr, const CTransform4f& xf, c
 
 void CModelData::RenderSolid(EWhichModel which, const CTransform4f& xf, bool unsortedOnly,
                              const CModelFlags& flags) const {
-  // TODO: Flat rendering through the shared static/skinned model-input wrapper.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelFlat(renderData, flags, unsortedOnly);
+  } else {
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelFlat(renderData, flags, unsortedOnly);
+  }
 }
 
 void CModelData::RenderModelMultipleTimesWithFlags(EWhichModel which, const CTransform4f& xf,
@@ -103,7 +227,27 @@ void CModelData::RenderModelMultipleTimesWithFlags(EWhichModel which, const CTra
                                                    const CModelFlags* flags, const u64* masks,
                                                    const CColor* colors, const CPlane* planes,
                                                    int count) const {
-  // TODO: Set scaled transform and lighting, then submit the static passes or skinning callback.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  if (lights == nullptr || which == kWM_Dark) {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  } else {
+    lights->ActivateLights();
+  }
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    SModelDataMultipassContext context = {model, flags, masks, colors, planes, count};
+    model.Draw(&mAnimData->Pose(), &MultipassDrawCallback, &context);
+  } else {
+    const CModel& model = **PickStaticModel(which);
+    for (int i = 0; i < count; ++i) {
+      gpRender->SetGXRegister1Color(colors[i]);
+      model.Draw(masks[i], flags[i]);
+    }
+  }
 }
 
 void CModelData::Touch(const CStateManager& mgr, int shaderIdx) const {
@@ -116,11 +260,37 @@ void CModelData::Touch(const CStateManager& mgr, int shaderIdx) const {
 }
 
 void CModelData::Touch(EWhichModel which, int shaderIdx) const {
-  // TODO: Touch the selected static or animated model only when textures are locked.
+  if (!mTexturesLocked) {
+    return;
+  }
+  if (HasAnimation()) {
+    PickAnimatedModel(which).GetModel()->Touch(shaderIdx);
+  } else {
+    PickStaticModel(which)->Touch(shaderIdx);
+  }
 }
 
 void CModelData::Touch() const {
-  // TODO: Touch every shader in all three model variants when textures are locked.
+  if (!mTexturesLocked) {
+    return;
+  }
+  if (HasAnimation()) {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      const CModel& model = **PickAnimatedModel(static_cast< EWhichModel >(which)).GetModel();
+      const int shaderCount = model.GetNumMaterialSets();
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.Touch(shader);
+      }
+    }
+  } else {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      const CModel& model = **PickStaticModel(static_cast< EWhichModel >(which));
+      const int shaderCount = model.GetNumMaterialSets();
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.Touch(shader);
+      }
+    }
+  }
 }
 
 void CModelData::RenderParticles(const CFrustumPlanes& planes) const {
@@ -133,9 +303,10 @@ bool CModelData::IsAnimating() const { return HasAnimation() && mAnimData->IsAni
 
 CAdvancementDeltas CModelData::AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid,
                                                 bool advTree, float cameraDistance) {
-  // TODO: Delegate to CAnimData::Advance with the manager's embedded random generator.
-  // CStateManager's declaration does not yet expose that recovered member.
-  return skNullAdvance;
+  if (!HasAnimation()) {
+    return skNullAdvance;
+  }
+  return mAnimData->Advance(dt, cameraDistance, mScale, &mgr, *mgr.Random(), aid, advTree);
 }
 
 CAdvancementDeltas CModelData::AdvanceAnimation(float dt, CRandom16& random, bool advTree) {
@@ -261,16 +432,40 @@ float CModelData::GetAnimationDuration(int anim) const {
 bool CModelData::GetIsLoop() const { return HasAnimation() && mAnimData->GetIsLoop(); }
 
 bool CModelData::IsDefinitelyOpaque(EWhichModel which) const {
-  // TODO: Query the selected CModel's opaque-material flag after its interface is recovered.
-  return false;
+  if (HasAnimation()) {
+    return PickAnimatedModel(which).GetModel()->IsDefinitelyOpaque();
+  }
+  return mNormalModel && PickStaticModel(which)->IsDefinitelyOpaque();
 }
 
 void CModelData::SetEchoModel(const rstl::pair< CAssetId, CAssetId >& assets) {
-  // TODO: Validate CMDL/CSKR resources and replace the static token or animated Echo model.
+  if (assets.first == 0 || gpResourceFactory->GetResourceTypeById(assets.first) != 'CMDL') {
+    return;
+  }
+
+  if (HasAnimation() && assets.second != 0 &&
+      gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+    TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
+    mAnimData->SetXRayModel(model, skin);
+  } else {
+    mEchoModel = TLockedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+  }
 }
 
 void CModelData::SetDarkModel(const rstl::pair< CAssetId, CAssetId >& assets) {
-  // TODO: Validate CMDL/CSKR resources and replace the static token or animated Dark model.
+  if (assets.first == 0 || gpResourceFactory->GetResourceTypeById(assets.first) != 'CMDL') {
+    return;
+  }
+
+  if (HasAnimation() && assets.second != 0 &&
+      gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+    TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
+    mAnimData->SetInfraModel(model, skin);
+  } else {
+    mDarkModel = TLockedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+  }
 }
 
 const TLockedToken< CModel >& CModelData::PickStaticModel(EWhichModel which) const {
@@ -354,12 +549,36 @@ bool CModelData::IsLoaded(int shaderIdx) const {
 }
 
 int CModelData::GetNumShaders() const {
-  // TODO: Return the normal CModel's shader-vector size; CModel's layout is still absent.
+  if (HasAnimation()) {
+    return mAnimData->GetModelData()->GetModel()->GetNumMaterialSets();
+  }
+  if (mNormalModel) {
+    return (*mNormalModel)->GetNumMaterialSets();
+  }
   return 1;
 }
 
 void CModelData::LockTextures() {
-  // TODO: Lock textures for every model variant and set mTexturesLocked once.
+  if (mTexturesLocked) {
+    return;
+  }
+  mTexturesLocked = true;
+  const int shaderCount = GetNumShaders();
+  if (HasAnimation()) {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      CModel& model = **PickAnimatedModel(static_cast< EWhichModel >(which)).GetModel();
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.UnlockTextures();
+      }
+    }
+  } else {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      CModel& model = **PickStaticModel(static_cast< EWhichModel >(which));
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.UnlockTextures();
+      }
+    }
+  }
 }
 
 void CModelData::SetScale(const CVector3f& scale) {
@@ -370,5 +589,10 @@ void CModelData::SetScale(const CVector3f& scale) {
 }
 
 void CModelData::SetupWorldSpacePortalPlane(const CTransform4f& xf, const CPlane& plane) const {
-  // TODO: Set the portal plane using both the scaled model matrix and its model-view matrix.
+  const CTransform4f model = xf * CTransform4f::Scale(mScale);
+  Mtx modelView;
+  PSMTXConcat(CGraphics::GetCameraMtx(), model.GetCStyleMatrix(), modelView);
+  // SDK Mtx and CTransform4f both store the same 3x4 float matrix.
+  PortalPlane::SetWorldSpacePlane(plane, *reinterpret_cast< const CTransform4f* >(modelView),
+                                  model);
 }

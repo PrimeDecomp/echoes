@@ -145,15 +145,17 @@ public:
   virtual void CacheReflection(void (*callback)(void*, const CVector3f&), void* context,
                                bool clear) = 0;
   virtual void DrawSpaceWarp(const CVector3f& point, float strength) = 0;
-  virtual void DrawModelDisintegrate(const CModel& model, const CTexture& texture,
+  virtual void DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
                                      const CColor& color, float amount) = 0;
-  virtual void DrawModelFlat(const CModel& model, const CModelFlags& flags, bool unsortedOnly) = 0;
+  virtual void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
+                             bool unsortedOnly) = 0;
   // Guessed name
   virtual void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
                                         const CVector3f& origin, const CColor& color,
                                         float scale) = 0;
   // Guessed name
-  virtual void DrawModelNoise(const CModel& model, const CColor& color, bool additive) = 0;
+  virtual void DrawModelNoise(const SModelRenderData& model, const CColor& color,
+                              bool additive) = 0;
   virtual bool EnableSilhouetteRender() = 0;
   // TODO: identify the unused argument and original method name.
   virtual void fn_802679DC(const void* unused, const CModel& model, const CModelFlags& flags) = 0;
