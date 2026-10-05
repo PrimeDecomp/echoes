@@ -564,7 +564,7 @@ void CScriptPlatform::fn_800a1df8() {
 }
 
 void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   switch (msg.GetMessage()) {
   case kSM_AreaLoaded: {
     BuildSlaveList(mgr);

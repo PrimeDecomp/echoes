@@ -22,7 +22,7 @@ public:
   explicit CAuxWeapon(TUniqueId playerId);
   ~CAuxWeapon();
 
-  void Fire(bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
+  void Fire(float dt, bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
             const CTransform4f& xf, CStateManager& mgr, EWeaponType type, TUniqueId homingId,
             uint attributes, ushort soundId);
   bool IsComboFxActive(const CStateManager& mgr) const;
@@ -37,14 +37,15 @@ public:
   void SetTargetId(TUniqueId target);
   TUniqueId GetTargetId() const;
   bool IsLoaded() const { return mIsLoaded; }
+  void SetSoundVolume(short volume) { mSoundVolume = volume; }
 
 private:
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
   CPlayer* FindPlayer(CStateManager& mgr) const;
   void FreeComboVoiceId();
-  void FireLightCombo(bool underwater, int comboId, uint attributes, const CTransform4f& xf,
+  void FireLightCombo(float dt, bool underwater, int comboId, uint attributes, const CTransform4f& xf,
                       TUniqueId homingId, CStateManager& mgr); // Guessed name.
-  void FireProjectile(EWeaponType type, bool underwater, bool isCombo, bool adjustSpawn,
+  void FireProjectile(float dt, EWeaponType type, bool underwater, bool isCombo, bool adjustSpawn,
                       int comboId, uint attributes, const CTransform4f& xf, TUniqueId homingId,
                       ushort soundId, CStateManager& mgr);
   void InitComboData();

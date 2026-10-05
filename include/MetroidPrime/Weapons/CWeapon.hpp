@@ -16,6 +16,7 @@ public:
     kPA_TriggerBomb = 1 << 8,
     kPA_PowerBombs = 1 << 9, // Guessed name, based on CPowerBomb construction.
     kPA_BigProjectile = 1 << 10,
+    kPA_BigStrike = 1 << 12, // Guessed Prime name; native gun strike reaction.
     kPA_DamageFalloff = 1 << 13,
     kPA_PlayerUnFreeze = 1 << 15,
     kPA_ParticleOPTS = 1 << 16,
@@ -49,6 +50,7 @@ public:
   bool HasAttrib(EProjectileAttrib attrib) const { return (mProjectileAttribs & attrib) == attrib; }
   TUniqueId GetOwnerId() const { return mOwnerId; }
   EWeaponType GetType() const { return mWeaponType; }
+  float GetDamageDuration() const { return mDamageDuration; }
   CMaterialFilter GetFilter() const { return mFilter; }
   const CDamageInfo& GetCurrentDamageInfo() const { return mCurDamageInfo; }
 

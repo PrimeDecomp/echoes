@@ -65,7 +65,7 @@ void CElitePirateGrenadeLauncher::Think(float dt, CStateManager& mgr) {
 }
 
 void CElitePirateGrenadeLauncher::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   const EScriptObjectMessage kind = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   switch (kind) {

@@ -253,7 +253,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDeathRenderingSuppressed(false)
 , mDeathFadeEnabled(false)
 , mUseAlternateBeam(false)
-, x126b_31_(false)
+, mLandingStrikePending(false)
 , mDampBoostEntryVelocity(false)
 , mDeathFadeDuration(1.f)
 , mDeathFadeDelay(0.f)

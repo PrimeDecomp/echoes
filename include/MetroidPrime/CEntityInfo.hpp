@@ -243,17 +243,17 @@ public:
 class CScriptMsg {
 public:
   CScriptMsg()
-  : m_unk(kInvalidUniqueId)
+  : mSenderId(kInvalidUniqueId)
   , m_originator(kInvalidUniqueId)
   , m_id(kInvalidUniqueId)
   , m_msg(kSM_None)
   , m_state(kSS_InvalidState) {}
 
-  CScriptMsg(TUniqueId unk, TUniqueId originator, TUniqueId id, EScriptObjectMessage msg,
+  CScriptMsg(TUniqueId sender, TUniqueId originator, TUniqueId id, EScriptObjectMessage msg,
              EScriptObjectState state)
-  : m_unk(unk), m_originator(originator), m_id(id), m_msg(msg), m_state(state) {}
+  : mSenderId(sender), m_originator(originator), m_id(id), m_msg(msg), m_state(state) {}
 
-  TUniqueId GetUnk() const { return m_unk; }
+  TUniqueId GetSenderId() const { return mSenderId; } // Guessed name; native sender UID.
   TUniqueId GetOriginator() const { return m_originator; }
   TUniqueId GetId() const { return m_id; }
   EScriptObjectMessage GetMessage() const { return m_msg; }
@@ -262,7 +262,7 @@ public:
   void SetMessage(EScriptObjectMessage msg) { m_msg = msg; }
 
 public:
-  TUniqueId m_unk;
+  TUniqueId mSenderId;
   TUniqueId m_originator;
   TUniqueId m_id;
   EScriptObjectMessage m_msg;

@@ -67,7 +67,7 @@ enum EMaterialTypes {
   kMT_NoPlayerCollision = 58,
   kMT_Unknown59 = 59, // Used by the Echoes Morph Ball collision sphere.
   kMT_Unknown60 = 60, // Included in the implicit world-render geometry mask.
-  kMT_SixtyThree = 63
+  kMT_SeekerTarget = 63 // Target-derived name: seeker lock-on eligibility.
 };
 
 class CMaterialList {

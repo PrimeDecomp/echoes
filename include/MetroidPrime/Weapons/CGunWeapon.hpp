@@ -112,6 +112,8 @@ public:
   const CModelData& GetSolidModelData() const { return mSolidModelData.data(); }
 
   EWeaponType GetType() const { return mWeaponType; }
+  const TCachedToken< CWeaponDescription >&
+  GetProjectileToken(CPlayerState::EChargeStage stage) const { return mWeapons[stage]; }
   TUniqueId GetPlayerId() const { return mPlayerId; }
   EMaterialTypes GetPlayerMaterial() const { return mPlayerMaterial; }
 
@@ -141,8 +143,12 @@ public:
   const CVector3f& GetRainSplashPosition() const { return mRainSplashPosition; }
   void SetRainSplashGenerator(CRainSplashGenerator* generator) { mRainSplashGenerator = generator; }
   void SetSpeedUpAnimation(bool enabled) { mSpeedUpAnimation = enabled; }
+  bool GetSpeedUpAnimation() const { return mSpeedUpAnimation; }
+  bool IsSpecialAnimationPlaying() const { return mSpecialAnimationPlaying; }
+  static const char* GetMuzzleLocatorName() { return skMuzzleLocator; }
   void SetSpecialAnimationPlaying(bool playing) { mSpecialAnimationPlaying = playing; }
   void SetEnableCharge(bool enabled) { mEnableCharge = enabled; }
+  void SetSoundVolume(short volume) { mSoundVolume = volume; }
   TCachedToken< CGenDescription >& GetTransferEffect() { return mXferEffect; }
   static void FillTokenVector(const rstl::vector< SObjectTag >& tags,
                               rstl::vector< CToken >& objects, bool includeTxtr);

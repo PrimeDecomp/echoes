@@ -400,6 +400,8 @@ public:
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  bool IsLandingStrikePending() const { return mLandingStrikePending; }
+  void SetLandingStrikePending(bool pending) { mLandingStrikePending = pending; }
   float GetFreeLookAngleX() const { return mFreeLookPitchAngle; }
   float GetFreeLookAngleZ() const { return mFreeLookYawAngle; }
   float GetJumpCameraTimer() const { return mJumpCameraTimer; }
@@ -786,7 +788,7 @@ private:
   bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
-  bool x126b_31_ : 1;
+  bool mLandingStrikePending : 1; // Guessed name; hard-landing gun reaction pending.
   bool mDampBoostEntryVelocity : 1; // Guessed name: player hint flag 0x800000.
   float mDeathFadeDuration;
   float mDeathFadeDelay;

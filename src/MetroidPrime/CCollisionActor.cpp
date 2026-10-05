@@ -137,7 +137,7 @@ CTransform4f CCollisionActor::GetPrimitiveTransform() const {
 
 void CCollisionActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
-  const TUniqueId sender = msg.GetUnk();
+  const TUniqueId sender = msg.GetSenderId();
   switch (message) {
   case kSM_Delete:
     if (mNonUniformVulnerability)

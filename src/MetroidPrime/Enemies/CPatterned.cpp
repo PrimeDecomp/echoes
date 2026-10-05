@@ -16,7 +16,7 @@ const CColor CPatterned::skDamageColor(0.5f, 0.f, 0.f, 1.f);
 const CColor CPatterned::skHitsWithoutDamageColor(0.5f, 0.5f, 0.f, 1.f);
 
 static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Unknown59, kMT_Orbit,
-                                                  kMT_Target, kMT_SixtyThree);
+                                                  kMT_Target, kMT_SeekerTarget);
 static CMaterialList gkPatternedGroundMaterialList =
     CMaterialList(kMT_GroundCollider).Union(gkPatternedFlyerMaterialList);
 
@@ -98,7 +98,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mPendingDeath(false)
 , mLostMassiveFrozenHP(false)
 , mDieIf80PercFrozen(false)
-, x421_30_(false)
+, mIsMakingBigStrike(false)
 , mDrawParticles(true)
 , mEnableStateMachine(true)
 , mStateControlledMassiveDeath(true)

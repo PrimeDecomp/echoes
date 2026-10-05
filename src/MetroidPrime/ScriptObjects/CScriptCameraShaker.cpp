@@ -28,7 +28,7 @@ void CScriptCameraShaker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
         actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetOriginator()));
       }
       if (!actor) {
-        actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetUnk()));
+        actor = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetSenderId()));
       }
       if (actor) {
         mShakeData.SetPosition(actor->GetTranslation());

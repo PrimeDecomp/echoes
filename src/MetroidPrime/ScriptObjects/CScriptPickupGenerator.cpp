@@ -355,7 +355,7 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
   if (msg.GetMessage() == kSM_SetToZero && GetActive()) {
     TUniqueId sender = msg.GetOriginator();
     if (sender == kInvalidUniqueId) {
-      sender = msg.GetUnk();
+      sender = msg.GetSenderId();
     }
 
     // TODO: Forward the zero message to linked generator objects before evaluating RULE.

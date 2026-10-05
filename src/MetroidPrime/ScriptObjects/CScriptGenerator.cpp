@@ -51,7 +51,7 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
       if (x28_26_) {
         followers.push_back_unsafe(msg.GetOriginator());
       } else {
-        followers.push_back_unsafe(msg.GetUnk());
+        followers.push_back_unsafe(msg.GetSenderId());
       }
     }
 
