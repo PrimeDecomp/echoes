@@ -129,7 +129,7 @@ void CModelData::Render(EWhichModel which, const CTransform4f& xf, const CActorL
 
 void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
                                      const CActorLights* lights, const CModelFlags& flags) const {
-  if (HasAnimation() || !mNormalModel || flags.GetTrans() >= CModelFlags::kT_Blend ||
+  if (HasAnimation() || !mNormalModel || static_cast< char >(flags.GetTrans()) > 4 ||
       !mRenderUnsortedParts) {
     mRenderSorted = false;
     return;
