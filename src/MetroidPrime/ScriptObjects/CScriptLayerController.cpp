@@ -71,7 +71,7 @@ void CScriptLayerController::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
         if (phase == CGameArea::kLP_Ready) {
           area->ActivateLayerDynamic(mgr, layer);
         } else if (phase == CGameArea::kLP_RestartPending || phase == CGameArea::kLP_Loading) {
-          mgr.mUnkFlagB4 = true;
+          mgr.mLayerRestartPending = true;
           mActivateWhenLoaded = true;
         }
       }

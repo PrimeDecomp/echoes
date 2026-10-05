@@ -2,8 +2,8 @@
 
 #include "MetroidPrime/CEntity.hpp"
 
-CObjectList::CObjectList(EGameObjectList list, bool flag)
-: mListType(list), mFirstId(-1), mCount(0), x200c_(flag) {
+CObjectList::CObjectList(EGameObjectList list, bool dynamic)
+: mListType(list), mFirstId(-1), mCount(0), mDynamic(dynamic) {
   for (int i = 0; i < kMaxObjects; ++i) {
     mObjects[i] = SObjectListEntry();
   }

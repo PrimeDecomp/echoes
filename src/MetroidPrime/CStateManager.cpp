@@ -20,36 +20,42 @@
 #include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
+#include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
-#include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/GameObjectLists.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
-#include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
-#include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Basics/RAssertDolphin.hpp"
+#include "Kyoto/CARAMManager.hpp"
+#include "Kyoto/CARAMToken.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
+#include "Kyoto/CFrameDelayedKiller.hpp"
+#include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
+#include "Kyoto/Graphics/CTexture.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CSimpleShadow.hpp"
+#include "Weapons/CDecal.hpp"
 
-#include "rstl/vector.hpp"
 #include "rstl/algorithm.hpp"
+#include "rstl/vector.hpp"
 
 #include <float.h>
-
 
 const int gkPVSEnabled = 1;
 
@@ -531,21 +537,188 @@ CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
-CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
-                             const rstl::ncrc_ptr< CMapWorldInfo >&,
-                             const rstl::ncrc_ptr< CPlayerState >&,
-                             const rstl::ncrc_ptr< CWorldTransManager >&)
+CStateManager::CStateManager(
+    const rstl::ncrc_ptr< CScriptMailbox >& mailbox,
+    const rstl::ncrc_ptr< CMapWorldInfo >& mapWorldInfo,
+    const rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 >& playerStates,
+    const rstl::ncrc_ptr< CWorldTransManager >& worldTransManager,
+    const rstl::ncrc_ptr< CWorldLayerState >& worldLayerState)
 : mNextFreeIndex(0)
+, mObjectIndexArray(0)
+, mObjectLists(rstl::auto_ptr< CObjectList >())
+, mFilteredObjectLists(rstl::auto_ptr< CFilteredObjectList >())
+, mAllocatedObjectIndices(kMaxObjects, false)
+, mArchQueue(nullptr)
+, mNumPlayers(0)
+, mForceTriggerIds(kInvalidUniqueId)
+, mCurrentRenderPlayer(nullptr)
+, mPlayerState(nullptr)
+, mCameraManager(nullptr)
+, mWorld(nullptr)
+, mStateManagerContainer(rs_new CStateManagerContainer())
+, mSortedListManager(&mStateManagerContainer->mSortedListManager)
+, mWeaponMgr(&mStateManagerContainer->mWeaponManager)
+, mFluidPlaneManager(&mStateManagerContainer->mFluidPlaneManager)
+, mEnvFxManager(&mStateManagerContainer->mEnvFxManager)
+, mActorModelParticles(&mStateManagerContainer->mActorModelParticles)
+, mSafeZoneManager(&mStateManagerContainer->mSafeZoneManager)
 , mAudioGroupDependencies(static_cast< CDependencyGroup* >(nullptr))
+, mPlayerStateOwners(playerStates)
+, mMailbox(mailbox)
+, mMapWorldInfo(mapWorldInfo)
+, mWorldTransManager(worldTransManager)
+, mCurrentWorldLayerState(worldLayerState)
+, mNextAreaId(0)
+, mPreviousAreaId(kInvalidAreaId)
+, mRenderFrameIndex(0)
+, mUpdateFrameIdx(0)
+, mObjectDrawToken(0)
+, mUnknown0x16b4(0)
+, mShadowTex(gpSimplePool->GetObj("DefaultShadow"))
+, mRandom(0)
+, mSkippingCinematic(false)
+, mGameState(kGS_Running)
+, mInitPhase(kIP_LoadAudioGroups)
+, mCameraFilterPasses(4, rstl::reserved_vector< CCameraFilterPass, 11 >(11, CCameraFilterPass()))
+, mCameraBlurPasses(4, rstl::reserved_vector< CCameraBlurPass, 11 >(11, CCameraBlurPass()))
+, mHintIdx(-1)
+, mHintPeriods(0)
+, mPauseHudMessage(kInvalidAssetId)
+, mEscapeTotalTime(0.f)
+, mCurTimeMod900(0.f)
 , mBossId(kInvalidUniqueId)
+, mBossHealth(0.f)
+, mBossLanguageTableIndex(0)
+, mRenderVisorMode(kRVM_Normal)
 , mSpecialFunctionId(kInvalidUniqueId)
+, mPlayerActorHead(kInvalidUniqueId)
+, mHudMessageTime(0.f)
 , mProjectedShadows(nullptr)
+, mHudMessageFrameCount(0)
+, mPausedHudMemoFrameCount(-1)
+, mPausedHudMemoAssetId(kInvalidAssetId)
+, mQueuedHudMemoDismissalDelay(0.f)
+, mMapTeleportWorldId(kInvalidAssetId)
+, mDeferredTransition(kSMT_InGame)
+, mPlayerLineOfSightPairs(0)
+, mNextPlayerLineOfSightPair(0)
 , mPlanes()
+, mCurrentRenderPlayerIndex(kInvalidRenderPlayerIndex)
+, mVisAreaId(-1)
 , mPendingDockArea(kInvalidAreaId)
 , mPendingDock(0)
-, mShowSoftTransition(true) {}
+, mUnknown0x2908(CTransform4f::Identity())
+, mDarkWorldCloudScale(CVector3f::Zero())
+, mDarkWorldCloudTime(0.f)
+, mDarkWorldCloudColor(CColor::Black())
+, mReadyToRender(false)
+, mQuitGame(false)
+, mUnkFlagA3(true)
+, mInMapScreen(false)
+, mInSaveUI(false)
+, mCinematicPause(false)
+, mIsFullThreat(false)
+, mIsDarkWorld(false)
+, mShowSoftTransition(true)
+, mTearingDown(false)
+, mDispatchingScriptMessages(false)
+, mLayerRestartPending(false)
+, mLightAmmoDepletedPlayers(0)
+, mDarkAmmoDepletedPlayers(0) {
+  mRumbleManagers[0] = &mStateManagerContainer->mRumbleManager0;
+  mRumbleManagers[1] = &mStateManagerContainer->mRumbleManager1;
+  mRumbleManagers[2] = &mStateManagerContainer->mRumbleManager2;
+  mRumbleManagers[3] = &mStateManagerContainer->mRumbleManager3;
+
+  mObjectLists[kOL_All] = rs_new CObjectList(kOL_All, false);
+  mObjectLists[kOL_Actor] = rs_new CActorList();
+  mObjectLists[kOL_PhysicsActor] = rs_new CPhysicsActorList();
+  mObjectLists[kOL_GameLight] = rs_new CGameLightList();
+  mObjectLists[kOL_ListeningAi] = rs_new CListeningAiList();
+  mObjectLists[kOL_AiWaypoint] = rs_new CAiWaypointList();
+  mObjectLists[kOL_Platform] = rs_new CPlatformList();
+  mObjectLists[kOL_Trigger] = rs_new CTriggerList();
+
+  mFilteredObjectLists[1] = rs_new CFilteredDockList();
+  mFilteredObjectLists[0] = rs_new CFilteredDoorList();
+  mFilteredObjectLists[2] = rs_new CFilteredType124List();
+  mFilteredObjectLists[3] = rs_new CFilteredForgottenObjectList();
+  mFilteredObjectLists[4] = rs_new CFilteredGameCameraList();
+  mFilteredObjectLists[5] = rs_new CFilteredGrapplePointList();
+
+  for (int i = 0; i < mObjectLists.size(); ++i) {
+    CObjectList* list = mObjectLists[i].get();
+    if (list->IsDynamic()) {
+      mDynamicObjectLists.push_back(list);
+    }
+  }
+  for (int i = 0; i < mFilteredObjectLists.size(); ++i) {
+    CFilteredObjectList* list = mFilteredObjectLists[i].get();
+    if (list->IsDynamic()) {
+      mDynamicFilteredObjectLists.push_back(list);
+    }
+  }
+
+  gpRender->SetDrawableCallback(RendererDrawCallback, this);
+  CMemory::SetOutOfMemoryCallback(MemoryAllocatorAllocationFailedCallback, this);
+  CGameCollision::InitCollision(this);
+  CMemory::OffsetFakeStatics(mObjectLists.size() * sizeof(CObjectList) +
+                             mFilteredObjectLists.size() * sizeof(CFilteredObjectList) + 0x12c);
+  mShadowTex.Lock();
+  gpMain->SetThirtyFps(gpGameState->GetGameMode().GetNumPlayers() == 2);
+}
 
 CStateManager::~CStateManager() {}
+
+const bool CStateManager::MemoryAllocatorAllocationFailedCallback(const void* context, uint) {
+  return static_cast< CStateManager* >(const_cast< void* >(context))->SwapOutAllPossibleMemory();
+}
+
+bool CStateManager::SwapOutAllPossibleMemory() {
+  CFrameDelayedKiller::StallAndFlushAllAllocations();
+  CARAMManager::WaitForAllDMAsToComplete();
+  CARAMToken::UpdateAllDMAs();
+  return true;
+}
+
+void CStateManager::RecursiveDrawTree(TUniqueId uid) const {
+  CActor* actor = TCastToPtr< CActor >(const_cast< CEntity* >(GetObjectById(uid)));
+  if (actor != nullptr && mObjectDrawToken != actor->GetDrawToken()) {
+    const TUniqueId nextNode = actor->GetDrawParent();
+    if (nextNode != kInvalidUniqueId) {
+      RecursiveDrawTree(nextNode);
+    }
+    if (mObjectDrawToken == actor->GetAddedToken()) {
+      actor->Render(*this);
+    }
+    actor->SetDrawToken(mObjectDrawToken);
+  }
+}
+
+void CStateManager::RendererDrawCallback(const void* drawable, const void* context, int type) {
+  const CStateManager& mgr = *static_cast< const CStateManager* >(context);
+  switch (type) {
+  case 0: {
+    const CActor& actor = *static_cast< const CActor* >(drawable);
+    if (mgr.mObjectDrawToken == actor.GetDrawToken()) {
+      break;
+    }
+    const TUniqueId nextNode = actor.GetDrawParent();
+    if (nextNode != kInvalidUniqueId) {
+      mgr.RecursiveDrawTree(nextNode);
+    }
+    actor.Render(mgr);
+    actor.SetDrawToken(mgr.mObjectDrawToken);
+    break;
+  }
+  case 1:
+    static_cast< const CSimpleShadow* >(drawable)->Render(mgr.mShadowTex.GetObject());
+    break;
+  case 2:
+    static_cast< const CDecal* >(drawable)->Render();
+    break;
+  }
+}
 
 TUniqueId CStateManager::AllocateUniqueId() {
   ushort lastIndex = mNextFreeIndex;
