@@ -282,6 +282,9 @@ public:
   static float GetEnergyTankCapacity();
   static float GetBaseHealthCapacity();
   rstl::vector< SPersistentState::SScanState >& ScanStates();
+  const rstl::vector< SPersistentState::SScanState >& ScanStates() const {
+    return mPersistentState.mScanStates;
+  }
 
   float CalculateHealth();
 
