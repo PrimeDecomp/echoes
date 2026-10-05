@@ -424,7 +424,7 @@ float CBSWallWalkerLocomotion::ApplyLocomotionPhysics(float dt, CBodyController&
     CVector3f moveImpulse =
         act->GetMoveToORImpulseWR(act->GetTransform().TransposeRotate(moveDt), dt);
     CVector3f impulse;
-    impulse = act->GetMass() > FLT_EPSILON ? moveImpulse / act->GetMass()
+    impulse = act->GetMass() > FLT_EPSILON ? (1.f / act->GetMass()) * moveImpulse
                                            : CVector3f(0.f, act->GetVelocityWR().Magnitude(), 0.f);
 
     if (maxSpeed > FLT_EPSILON) {
@@ -552,11 +552,11 @@ float CBSBlendedLocomotion::UpdateLocomotionAnimation(float dt, float velMag, CB
     }
 
     const pas::ELocomotionAnim longitudinal =
-        desired.GetY() <= 0.f ? pas::kLA_BackUp : pas::kLA_Run;
+        desired.GetY() > 0.f ? pas::kLA_Run : pas::kLA_BackUp;
     const pas::ELocomotionAnim lateral =
-        desired.GetX() <= 0.f ? pas::kLA_StrafeLeft : pas::kLA_StrafeRight;
-    const float longitudinalWeight = desired.GetY() <= 0.f ? -desired.GetY() : desired.GetY();
-    const float lateralWeight = rstl::max_val(0.f, 1.f - longitudinalWeight);
+        desired.GetX() > 0.f ? pas::kLA_StrafeRight : pas::kLA_StrafeLeft;
+    const float longitudinalWeight = desired.GetY() > 0.f ? desired.GetY() : -1.f * desired.GetY();
+    const float lateralWeight = rstl::max_val(1.f - longitudinalWeight, 0.f);
     const int longitudinalId = GetLocoAnimation(mLocomotionType, longitudinal).first;
     const int lateralId = GetLocoAnimation(mLocomotionType, lateral).first;
     const CAnimPlaybackParms parms(longitudinalId, lateralId, lateralWeight, true);
