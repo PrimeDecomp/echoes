@@ -1,6 +1,7 @@
 #include "MetroidPrime/CScanTree.hpp"
 #include "Kyoto/CDvdRequest.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeCategory.hpp"
@@ -67,57 +68,62 @@ CScanTreeNode::CScanTreeNode(int id, const SLdrTransform& transform, CAssetId na
 , mVisible(true)
 , mViewed(true) {}
 
-void CScanTreeNode::LockResources() {}
+void CScanTreeNode::LockResources() { mNameStringTable->Lock(); }
 
-void CScanTreeNode::UnlockResources() {}
+void CScanTreeNode::UnlockResources() { mNameStringTable->Unlock(); }
 
-bool CScanTreeNode::AreResourcesLoaded() {}
+bool CScanTreeNode::AreResourcesLoaded() { return mNameStringTable->IsLoaded(); }
 
-const CVector3f& CScanTreeNode::GetDisplayPosition() const {}
+const CVector3f& CScanTreeNode::GetDisplayPosition() const { return mDisplayPosition; }
 
-void CScanTreeNode::SetDisplayPosition(const CVector3f& position) {}
+void CScanTreeNode::SetDisplayPosition(const CVector3f& position) { mDisplayPosition = position; }
 
-const CVector3f& CScanTreeNode::GetPosition() const {}
+const CVector3f& CScanTreeNode::GetPosition() const { return mPosition; }
 
-void CScanTreeNode::SetPosition(const CVector3f& position) {}
+void CScanTreeNode::SetPosition(const CVector3f& position) { mPosition = position; }
 
-int CScanTreeNode::GetId() const {}
+int CScanTreeNode::GetId() const { return mId; }
 
-int CScanTreeNode::GetParentNode() const {}
+int CScanTreeNode::GetParentNode() const { return mParentNode; }
 
-void CScanTreeNode::SetParentNode(int node) {}
+void CScanTreeNode::SetParentNode(int node) { mParentNode = node; }
 
-rstl::wstring CScanTreeNode::GetName() const {}
+rstl::wstring CScanTreeNode::GetName() const {
+  if (mNameStringName.size() == 0) {
+    return rstl::wstring(mNameStringTable->GetObject()->GetString(0));
+  }
+  return rstl::wstring(mNameStringTable->GetObject()->GetString(mNameStringName.c_str()));
+}
 
-const rstl::string& CScanTreeNode::GetNameStringName() const {}
+const rstl::string& CScanTreeNode::GetNameStringName() const { return mNameStringName; }
 
-CVector3f CScanTreeNode::GetVelocity() const {}
+CVector3f CScanTreeNode::GetVelocity() const { return mVelocity; }
 
-void CScanTreeNode::SetVelocity(const CVector3f& velocity) {}
+void CScanTreeNode::SetVelocity(const CVector3f& velocity) { mVelocity = velocity; }
 
-CVector3f CScanTreeNode::GetAcceleration() const {}
+CVector3f CScanTreeNode::GetAcceleration() const { return mAcceleration; }
 
-void CScanTreeNode::SetAcceleration(const CVector3f& acceleration) {}
+void CScanTreeNode::SetAcceleration(const CVector3f& acceleration) { mAcceleration = acceleration; }
 
-bool CScanTreeNode::IsVisible() const {}
+bool CScanTreeNode::IsVisible() const { return mVisible; }
 
-void CScanTreeNode::SetVisible(bool visible) {}
+void CScanTreeNode::SetVisible(bool visible) { mVisible = visible; }
 
-float CScanTreeNode::GetOpacity() const {}
+float CScanTreeNode::GetOpacity() const { return mOpacity; }
 
-void CScanTreeNode::SetOpacity(float opacity) {}
+void CScanTreeNode::SetOpacity(float opacity) { mOpacity = opacity; }
 
-int CScanTreeNode::GetDescendantCount() const {}
+int CScanTreeNode::GetDescendantCount() const { return mDescendantCount; }
 
-void CScanTreeNode::SetDescendantCount(int count) {}
+void CScanTreeNode::SetDescendantCount(int count) { mDescendantCount = count; }
 
-int CScanTreeNode::GetVisibleDescendantCount() const {}
+int CScanTreeNode::GetVisibleDescendantCount() const { return mVisibleDescendantCount; }
 
-void CScanTreeNode::SetVisibleDescendantCount(int count) {}
+void CScanTreeNode::SetVisibleDescendantCount(int count) { mVisibleDescendantCount = count; }
 
-bool CScanTreeNode::IsViewed() const {}
+bool CScanTreeNode::IsViewed() const { return mViewed; }
 
-void CScanTreeNode::SetViewed(bool viewed) {}
+void CScanTreeNode::SetViewed(bool viewed) { mViewed = viewed; }
 
 CScanTreeCategory::CScanTreeCategory(int id, const rstl::vector< int >& children,
                                      const SLdrTransform& transform, CAssetId nameStringTable,
@@ -126,23 +132,23 @@ CScanTreeCategory::CScanTreeCategory(int id, const rstl::vector< int >& children
 , mChildren(children)
 , mSelectedChild(-1) {}
 
-CScanTreeNode::ENodeType CScanTreeCategory::GetNodeType() const {}
+CScanTreeNode::ENodeType CScanTreeCategory::GetNodeType() const { return kNT_Category; }
 
-int CScanTreeCategory::GetChildCount() const {}
+int CScanTreeCategory::GetChildCount() const { return mChildren.size(); }
 
-int CScanTreeCategory::GetChild(int index) const {}
+int CScanTreeCategory::GetChild(int index) const { return mChildren[index]; }
 
-int CScanTreeCategory::GetSelectedChild() const {}
+int CScanTreeCategory::GetSelectedChild() const { return mSelectedChild; }
 
-void CScanTreeCategory::SetSelectedChild(int node) {}
+void CScanTreeCategory::SetSelectedChild(int node) { mSelectedChild = node; }
 
 CScanTreeScan::CScanTreeScan(int id, const SLdrTransform& transform, CAssetId nameStringTable,
                              CAssetId scannableInfo, const rstl::string& nameStringName)
 : CScanTreeNode(id, transform, nameStringTable, nameStringName), mScannableInfo(scannableInfo) {}
 
-CScanTreeNode::ENodeType CScanTreeScan::GetNodeType() const {}
+CScanTreeNode::ENodeType CScanTreeScan::GetNodeType() const { return kNT_Scan; }
 
-CAssetId CScanTreeScan::GetScannableInfo() const {}
+CAssetId CScanTreeScan::GetScannableInfo() const { return mScannableInfo; }
 
 CScanTreeInventory::CScanTreeInventory(int id, const SLdrTransform& transform,
                                        CAssetId nameStringTable, CAssetId scannableInfo,
@@ -151,9 +157,9 @@ CScanTreeInventory::CScanTreeInventory(int id, const SLdrTransform& transform,
 : CScanTreeScan(id, transform, nameStringTable, scannableInfo, nameStringName)
 , mInventoryItem(inventoryItem) {}
 
-CScanTreeNode::ENodeType CScanTreeInventory::GetNodeType() const {}
+CScanTreeNode::ENodeType CScanTreeInventory::GetNodeType() const { return kNT_Inventory; }
 
-CPlayerState::EItemType CScanTreeInventory::GetInventoryItem() const {}
+CPlayerState::EItemType CScanTreeInventory::GetInventoryItem() const { return mInventoryItem; }
 
 CScanTreeMenu::CScanTreeMenu(int id, const SLdrTransform& transform, CAssetId nameStringTable,
                              const rstl::string& nameStringName, ESetting setting,
@@ -166,31 +172,88 @@ CScanTreeMenu::CScanTreeMenu(int id, const SLdrTransform& transform, CAssetId na
 , mSelectedOption(0)
 , mOptionStringTable(rs_new TCachedToken< CStringTable >(
       gpSimplePool->GetObj(SObjectTag('STRG', optionStringTable))))
-, mOptions() {}
+, mOptions() {
+  typedef rstl::pair< rstl::string, int > Option;
+  if (option1.size() != 0) {
+    mOptions.push_back(Option(option1, value1));
+  }
+  if (option2.size() != 0) {
+    mOptions.push_back(Option(option2, value2));
+  }
+  if (option3.size() != 0) {
+    mOptions.push_back(Option(option3, value3));
+  }
+  if (option4.size() != 0) {
+    mOptions.push_back(Option(option4, value4));
+  }
+  mOptionStringTable->Lock();
+}
 
-CScanTreeNode::ENodeType CScanTreeMenu::GetNodeType() const {}
+CScanTreeNode::ENodeType CScanTreeMenu::GetNodeType() const { return kNT_Menu; }
 
-CScanTreeMenu::ESetting CScanTreeMenu::GetSetting() const {}
+CScanTreeMenu::ESetting CScanTreeMenu::GetSetting() const { return mSetting; }
 
-void CScanTreeMenu::LockResources() {}
+void CScanTreeMenu::LockResources() {
+  CScanTreeNode::LockResources();
+  mOptionStringTable->Lock();
+}
 
-void CScanTreeMenu::UnlockResources() {}
+void CScanTreeMenu::UnlockResources() {
+  CScanTreeNode::UnlockResources();
+  mOptionStringTable->Unlock();
+}
 
-bool CScanTreeMenu::AreResourcesLoaded() {}
+bool CScanTreeMenu::AreResourcesLoaded() {
+  return CScanTreeNode::AreResourcesLoaded() && mOptionStringTable->IsLoaded();
+}
 
-void CScanTreeMenu::RefreshSelectedOption() {}
+void CScanTreeMenu::RefreshSelectedOption() { mSelectedOption = GetCurrentOptionIndex(); }
 
-int CScanTreeMenu::GetSelectedOption() const {}
+int CScanTreeMenu::GetSelectedOption() const { return mSelectedOption; }
 
-void CScanTreeMenu::ApplySelectedOption() {}
+void CScanTreeMenu::ApplySelectedOption() { ApplyOption(mSelectedOption); }
 
 int CScanTreeMenu::GetCurrentOptionIndex() const {}
 
-void CScanTreeMenu::ApplyOption(int index) {}
+void CScanTreeMenu::ApplyOption(int index) {
+  CGameOptions& options = gpGameState->GameOptions();
+  const int value = mOptions[index].second;
+  switch (mSetting) {
+  case kS_SurroundMode:
+    options.SetSurroundMode(static_cast< CAudioSys::ESurroundModes >(value), true);
+    break;
+  case kS_HudLag:
+    options.SetHUDLag(value != 0);
+    break;
+  case kS_HintSystem:
+    options.SetIsHintSystemEnabled(value != 0);
+    break;
+  case kS_Unknown3:
+    options.SetFlag3(value != 0);
+    break;
+  case kS_InvertYAxis:
+    options.SetInvertYAxis(value != 0);
+    break;
+  case kS_SwapBeamControls:
+    options.ToggleControls(value != 0);
+    break;
+  case kS_Rumble:
+    options.SetIsRumbleEnabled(value != 0);
+    break;
+  default:
+    mOptionValue = value;
+    break;
+  }
+}
 
-rstl::wstring CScanTreeMenu::GetOptionName(int index) const {}
+rstl::wstring CScanTreeMenu::GetOptionName(int index) const {
+  if (index >= mOptions.size() || mOptions[index].first.size() == 0) {
+    return rstl::wstring(mOptionStringTable->GetObject()->GetString(index));
+  }
+  return rstl::wstring(mOptionStringTable->GetObject()->GetString(mOptions[index].first.c_str()));
+}
 
-int CScanTreeMenu::GetOptionCount() const {}
+int CScanTreeMenu::GetOptionCount() const { return mOptions.size(); }
 
 CScanTreeSlider::CScanTreeSlider(int id, const SLdrTransform& transform, CAssetId nameStringTable,
                                  const rstl::string& nameStringName, ESetting setting)
@@ -199,33 +262,143 @@ CScanTreeSlider::CScanTreeSlider(int id, const SLdrTransform& transform, CAssetI
 , mSavedNormalizedValue(0.f)
 , mSetting(setting) {}
 
-CScanTreeNode::ENodeType CScanTreeSlider::GetNodeType() const {}
+CScanTreeNode::ENodeType CScanTreeSlider::GetNodeType() const { return kNT_Slider; }
 
-int CScanTreeSlider::GetMinOptionValue() const {}
+int CScanTreeSlider::GetMinOptionValue() const {
+  switch (mSetting) {
+  case kS_ScreenBrightness:
+    return 0;
+  case kS_ScreenPositionX:
+    return -30;
+  case kS_ScreenPositionY:
+    return -19;
+  case kS_ScreenStretch:
+    return -10;
+  case kS_SfxVolume:
+    return 0;
+  case kS_MusicVolume:
+    return 0;
+  case kS_HudAlpha:
+    return 0;
+  case kS_HelmetAlpha:
+    return 0;
+  default:
+    return 0;
+  }
+}
 
-int CScanTreeSlider::GetMaxOptionValue() const {}
+int CScanTreeSlider::GetMaxOptionValue() const {
+  switch (mSetting) {
+  case kS_ScreenBrightness:
+    return 8;
+  case kS_ScreenPositionX:
+    return 30;
+  case kS_ScreenPositionY:
+    return 19;
+  case kS_ScreenStretch:
+    return 10;
+  case kS_SfxVolume:
+    return 105;
+  case kS_MusicVolume:
+    return 105;
+  case kS_HudAlpha:
+    return 255;
+  case kS_HelmetAlpha:
+    return 255;
+  default:
+    return 0;
+  }
+}
 
 int CScanTreeSlider::GetOptionValue() const {}
 
-int CScanTreeSlider::GetDefaultOptionValue() const {}
+int CScanTreeSlider::GetDefaultOptionValue() const {
+  switch (mSetting) {
+  case kS_ScreenBrightness:
+    return 4;
+  case kS_ScreenPositionX:
+    return 0;
+  case kS_ScreenPositionY:
+    return 0;
+  case kS_ScreenStretch:
+    return 0;
+  case kS_SfxVolume:
+    return 105;
+  case kS_MusicVolume:
+    return 79;
+  case kS_HudAlpha:
+    return 255;
+  case kS_HelmetAlpha:
+    return 255;
+  default:
+    return 0;
+  }
+}
 
-void CScanTreeSlider::SetOptionValue(int value) {}
+void CScanTreeSlider::SetOptionValue(int value) {
+  CGameOptions& options = gpGameState->GameOptions();
+  switch (mSetting) {
+  case kS_ScreenBrightness:
+    options.SetScreenBrightness(value, true);
+    break;
+  case kS_ScreenPositionX:
+    options.SetScreenPositionX(value, true);
+    break;
+  case kS_ScreenPositionY:
+    options.SetScreenPositionY(value, true);
+    break;
+  case kS_ScreenStretch:
+    options.SetScreenStretch(value, true);
+    break;
+  case kS_SfxVolume:
+    options.SetSfxVolume(value, true);
+    break;
+  case kS_MusicVolume:
+    options.SetMusicVolume(value, true);
+    break;
+  case kS_HudAlpha:
+    options.SetHudAlpha(value);
+    break;
+  case kS_HelmetAlpha:
+    options.SetHelmetAlpha(value);
+    break;
+  }
+}
 
-void CScanTreeSlider::RefreshNormalizedValue() {}
+void CScanTreeSlider::RefreshNormalizedValue() {
+  const int offset = GetOptionValue() - GetMinOptionValue();
+  const int range = GetMaxOptionValue() - GetMinOptionValue();
+  mNormalizedValue = float(offset) / float(range);
+}
 
-void CScanTreeSlider::ApplyNormalizedValue() {}
+void CScanTreeSlider::ApplyNormalizedValue() {
+  SetOptionValue(int(mNormalizedValue * float(GetMaxOptionValue() - GetMinOptionValue()) +
+                     float(GetMinOptionValue())));
+}
 
-void CScanTreeSlider::SaveValue() {}
+void CScanTreeSlider::SaveValue() {
+  const int offset = GetOptionValue() - GetMinOptionValue();
+  const int range = GetMaxOptionValue() - GetMinOptionValue();
+  mSavedNormalizedValue = float(offset) / float(range);
+}
 
-void CScanTreeSlider::RestoreSavedValue() {}
+void CScanTreeSlider::RestoreSavedValue() {
+  SetOptionValue(int(mSavedNormalizedValue * float(GetMaxOptionValue() - GetMinOptionValue()) +
+                     float(GetMinOptionValue())));
+  RefreshNormalizedValue();
+}
 
-float CScanTreeSlider::GetSavedNormalizedValue() const {}
+float CScanTreeSlider::GetSavedNormalizedValue() const { return mSavedNormalizedValue; }
 
-void CScanTreeSlider::SetNormalizedValue(float value) {}
+void CScanTreeSlider::SetNormalizedValue(float value) { mNormalizedValue = value; }
 
-float CScanTreeSlider::GetNormalizedValue() const {}
+float CScanTreeSlider::GetNormalizedValue() const { return mNormalizedValue; }
 
-float CScanTreeSlider::GetNormalizedDefaultValue() const {}
+float CScanTreeSlider::GetNormalizedDefaultValue() const {
+  const int offset = GetDefaultOptionValue() - GetMinOptionValue();
+  const int range = GetMaxOptionValue() - GetMinOptionValue();
+  return float(offset) / float(range);
+}
 
 CScanTree::CScanTree()
 : mSelectedNode(-1)
@@ -246,7 +419,7 @@ void CScanTree::ReserveNodes(int count) {}
 
 void CScanTree::AddNode(CScanTreeNode* node) {}
 
-void CScanTree::SetRootNode(int node) {}
+void CScanTree::SetRootNode(int node) { mRootNode = node; }
 
 void CScanTree::UpdateDescendantCounts() {}
 
@@ -270,17 +443,17 @@ void CScanTree::SelectNode(int node, float duration) {}
 
 void CScanTree::SelectScan(CAssetId scannableInfo, float duration) {}
 
-int CScanTree::GetSelectedNode() const {}
+int CScanTree::GetSelectedNode() const { return mSelectedNode; }
 
-int CScanTree::GetPreviousNode() const {}
+int CScanTree::GetPreviousNode() const { return mPreviousNode; }
 
-float CScanTree::GetTransition() const {}
+float CScanTree::GetTransition() const { return mTransition; }
 
 bool CScanTree::IsLoaded() const {}
 
 rstl::rc_ptr< CScanTreeNode > CScanTree::GetNode(int node) const {}
 
-int CScanTree::GetRootNode() const {}
+int CScanTree::GetRootNode() const { return mRootNode; }
 
 void CScanTree::ScaleChildren(int node, float otherScale, float selectedScale,
                               bool excludeOptions) {}
