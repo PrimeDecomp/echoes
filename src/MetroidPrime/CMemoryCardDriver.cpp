@@ -13,23 +13,69 @@
 #include <dolphin/os.h>
 #include <stdio.h>
 
-static bool sDriverExists; // Guessed name
+static const char* const skSaveFileName = "MetroidPrime2";
+
+// Diagnostic strings retained in the retail pool; table structure is inferred from Prime.
+static const char* const skStateNames[] = {
+    "NotLoaded",
+    "Loaded",
+    "NoCard",
+    "Saved",
+    "Formatted",
+    "Probed",
+    "Mounted",
+    "CheckedCard",
+    "CreatedInitial",
+    "WroteCopy",
+    "FailedProbe",
+    "FailedMount",
+    "FailedCheck",
+    "FailedDeleteCorruptedFile",
+    "FailedLoad",
+    "FailedCreateInitial",
+    "FailedWriteInitial",
+    "FailedWriteCopy",
+    "FailedFormat",
+    "Probing",
+    "Mounting",
+    "CheckingCard",
+    "DeletingCorruptedFile",
+    "Reading",
+    "CreatingInitial",
+    "WritingInitial",
+    "WritingCopy",
+    "Formatting",
+};
+
+static const char* const skErrorNames[] = {
+    "NoError",
+    "CorruptedFile",
+    "EncodingMismatch",
+    "Damaged",
+    "WrongDevice",
+    "InsufficientSpace",
+    "BadSectorSize",
+    "NoFile",
+};
 
 // Guessed name
 static uint GetSaveSignature() {
   static uint signature = 0xffffffff;
-  if (signature == 0xffffffff) {
-    signature = 0x5553413e;
-    const rstl::vector< CMemoryCard::MemoryWorld >& worlds = gpMemoryCard->GetMemoryWorlds();
-    for (rstl::vector< CMemoryCard::MemoryWorld >::const_iterator it = worlds.begin();
-         it != worlds.end(); ++it) {
-      const CAssetId saveId = it->second.GetSaveWorldAssetId();
-      TLockedToken< CWorldSaveGameInfo > save(gpSimplePool->GetObj(SObjectTag('SAVW', saveId)));
-      signature ^= save->CalculateHash();
-    }
+  if (signature != 0xffffffff) {
+    return signature;
+  }
+  signature = 0x5553413e;
+  const rstl::vector< CMemoryCard::MemoryWorld >& worlds = gpMemoryCard->GetMemoryWorlds();
+  for (rstl::vector< CMemoryCard::MemoryWorld >::const_iterator it = worlds.begin();
+       it != worlds.end(); ++it) {
+    const CAssetId saveId = it->second.GetSaveWorldAssetId();
+    TLockedToken< CWorldSaveGameInfo > save(gpSimplePool->GetObj(SObjectTag('SAVW', saveId)));
+    signature ^= save->CalculateHash();
   }
   return signature;
 }
+
+static bool sDriverExists; // Guessed name
 
 // Guessed name
 static bool IsSaveSignatureInvalid(const void* data) {
@@ -60,7 +106,7 @@ CMemoryCardDriver::CMemoryCardDriver(CMemoryCardSys::EMemoryCardPort cardPort, C
 , mSystemData(uchar(0))
 , mFileSlots(rstl::auto_ptr< SGameFileSlot >())
 , mSaveIdx(gpGameState->SystemOptions().GetSaveIdx())
-, mGameOptionsData(rstl::reserved_vector< uchar, 32 >(uchar(0)))
+, mGameOptionsData(3, rstl::reserved_vector< uchar, 32 >(uchar(0)))
 , mGlobalGameOptionsData(uchar(0))
 , mFileInfo(nullptr)
 , x1ac_(false)
@@ -68,18 +114,18 @@ CMemoryCardDriver::CMemoryCardDriver(CMemoryCardSys::EMemoryCardPort cardPort, C
   sDriverExists = true;
   InitializeFileInfo();
   {
-    CMemoryStreamOut output(mSystemData.data(), mSystemData.size());
+    CMemoryStreamOut output(mSystemData.data(), mSystemData.capacity());
     CBitStreamWriter writer(output);
     gpGameState->SystemOptions().PutTo(writer);
   }
   CGameOptions defaults;
   for (int i = 0; i < 3; ++i) {
-    CMemoryStreamOut output(mGameOptionsData[i].data(), mGameOptionsData[i].size());
+    CMemoryStreamOut output(mGameOptionsData[i].data(), mGameOptionsData[i].capacity());
     CBitStreamWriter writer(output);
     defaults.PutTo(writer);
   }
   {
-    CMemoryStreamOut output(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.size());
+    CMemoryStreamOut output(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.capacity());
     CBitStreamWriter writer(output);
     defaults.PutTo(writer);
   }
@@ -92,18 +138,20 @@ CMemoryCardDriver::~CMemoryCardDriver() {
 }
 
 void CMemoryCardDriver::InitializeFileInfo() {
-  mFileInfo = rs_new CMemoryCardSys::CCardFileInfo(mCardPort, rstl::string_l("MetroidPrime2"));
-  mFileInfo->ResetHeaderInfo();
+  mFileInfo = rs_new CMemoryCardSys::CCardFileInfo(mCardPort, rstl::string_l(skSaveFileName));
+  CMemoryCardSys::CCardFileInfo& file = *mFileInfo;
+  file.ResetHeaderInfo();
 
+  char comment[] = "Metroid Prime 2 Echoes          ";
   OSCalendarTime date;
   OSTicksToCalendarTime(OSGetTime(), &date);
   char timestamp[36];
   sprintf(timestamp, "%02d.%02d.%02d  %02d:%02d", date.mon + 1, date.mday, date.year % 100,
           date.hour, date.min);
-  mFileInfo->SetComment(rstl::string_l("Metroid Prime 2 Echoes          ") + timestamp);
-  mFileInfo->LockBannerToken(mSaveBanner, *gpSimplePool);
-  mFileInfo->LockIconToken(mSaveIcon0, 2, *gpSimplePool);
-  mFileInfo->BuildHeaderBuffer();
+  file.SetComment(rstl::string_l(comment) + timestamp);
+  file.LockBannerToken(mSaveBanner, *gpSimplePool);
+  file.LockIconToken(mSaveIcon0, 2, *gpSimplePool);
+  file.BuildHeaderBuffer();
 }
 
 void CMemoryCardDriver::Update() {
@@ -122,9 +170,12 @@ void CMemoryCardDriver::Update() {
   }
 
   const ECardResult result = CMemoryCardSys::GetResultCode(mCardPort);
-  const bool busy = IsCardBusy(mState);
-  if (busy) {
+  bool busy = false;
+  if (IsCardBusy(mState)) {
+    busy = true;
     switch (mState) {
+    case kS_CardProbe:
+      break;
     case kS_CardMount:
       UpdateMountCard(result);
       break;
@@ -158,13 +209,7 @@ void CMemoryCardDriver::Update() {
 
 void CMemoryCardDriver::HandleCardError(ECardResult result, EState state) {
   switch (result) {
-  case kCR_ENCODING:
-    mState = state;
-    mError = kE_CardWrongCharacterSet;
-    break;
-  case kCR_IOERROR:
-    mState = state;
-    mError = kE_CardIOError;
+  case kCR_BUSY:
     break;
   case kCR_WRONGDEVICE:
     mState = state;
@@ -173,17 +218,24 @@ void CMemoryCardDriver::HandleCardError(ECardResult result, EState state) {
   case kCR_NOCARD:
     NoCardFound();
     break;
-  default:
+  case kCR_IOERROR:
+    mState = state;
+    mError = kE_CardIOError;
+    break;
+  case kCR_ENCODING:
+    mState = state;
+    mError = kE_CardWrongCharacterSet;
     break;
   }
 }
 
 void CMemoryCardDriver::UpdateMountCard(ECardResult result) {
-  if (result == kCR_READY || result == kCR_BROKEN) {
+  if (result == kCR_READY) {
     mState = kS_CardMountDone;
-    if (result == kCR_BROKEN) {
-      mError = kE_CardBroken;
-    }
+    StartCardCheck();
+  } else if (result == kCR_BROKEN) {
+    mState = kS_CardMountDone;
+    mError = kE_CardBroken;
     StartCardCheck();
   } else {
     HandleCardError(result, kS_CardMountFailed);
@@ -205,23 +257,24 @@ void CMemoryCardDriver::UpdateCardCheck(ECardResult result) {
 }
 
 void CMemoryCardDriver::UpdateFileRead(ECardResult result) {
-  if (result != kCR_READY) {
-    HandleCardError(result, kS_FileBad);
-    return;
-  }
-
-  result = mFileInfo->PumpCardRead();
   if (result == kCR_READY) {
-    mState = kS_Ready;
-    if (IsSaveSignatureInvalid(mFileInfo->LoadedData().data())) {
+    const ECardResult readResult = mFileInfo->PumpCardRead();
+    if (readResult == kCR_READY) {
+      mState = kS_Ready;
+      if (IsSaveSignatureInvalid(mFileInfo->LoadedData().data())) {
+        mState = kS_FileBad;
+        mError = kE_FileCorrupted;
+      } else {
+        ReadFinished();
+      }
+    } else if (readResult == kCR_BUSY) {
+      return;
+    } else if (readResult == kCR_CRC_MISMATCH) {
       mState = kS_FileBad;
       mError = kE_FileCorrupted;
-    } else {
-      ReadFinished();
     }
-  } else if (result == kCR_CRC_MISMATCH) {
-    mState = kS_FileBad;
-    mError = kE_FileCorrupted;
+  } else {
+    HandleCardError(result, kS_FileBad);
   }
 }
 
@@ -247,24 +300,23 @@ void CMemoryCardDriver::UpdateFileCreate(ECardResult result) {
 
 void CMemoryCardDriver::UpdateFileWrite(ECardResult result, EState successState,
                                         EState errorState) {
-  if (result != kCR_READY) {
-    HandleCardError(result, errorState);
-    return;
-  }
-
-  result = mFileInfo->PumpCardTransfer();
   if (result == kCR_READY) {
-    mState = successState;
-    if (successState == kS_DriverClosed) {
-      WriteBackupBuf();
+    const ECardResult writeResult = mFileInfo->PumpCardTransfer();
+    if (writeResult == kCR_READY) {
+      mState = successState;
+      if (successState == kS_DriverClosed) {
+        WriteBackupBuf();
+      }
+    } else if (writeResult != kCR_BUSY) {
+      if (writeResult == kCR_IOERROR) {
+        mState = kS_FileWriteFailed;
+        mError = kE_CardIOError;
+      } else {
+        NoCardFound();
+      }
     }
-  } else if (result != kCR_BUSY) {
-    if (result == kCR_IOERROR) {
-      mState = kS_FileWriteFailed;
-      mError = kE_CardIOError;
-    } else {
-      NoCardFound();
-    }
+  } else {
+    HandleCardError(result, errorState);
   }
 }
 
@@ -299,16 +351,22 @@ void CMemoryCardDriver::UpdateCardProbe() {
     if (result.mSectorSize != 0x2000) {
       mState = kS_CardProbeFailed;
       mError = kE_CardNon8KSectors;
-    } else {
-      mState = kS_CardProbeDone;
-      StartMountCard();
+      return;
     }
-  } else if (result.mError == kCR_WRONGDEVICE) {
-    mState = kS_CardProbeFailed;
-    mError = kE_CardWrongDevice;
-  } else if (result.mError != kCR_BUSY) {
-    NoCardFound();
+  } else {
+    if (result.mError == kCR_BUSY) {
+      return;
+    }
+    if (result.mError == kCR_WRONGDEVICE) {
+      mState = kS_CardProbeFailed;
+      mError = kE_CardWrongDevice;
+    } else {
+      NoCardFound();
+    }
+    return;
   }
+  mState = kS_CardProbeDone;
+  StartMountCard();
 }
 
 void CMemoryCardDriver::StartMountCard() {
@@ -321,8 +379,8 @@ void CMemoryCardDriver::StartMountCard() {
 }
 
 void CMemoryCardDriver::StartCardCheck() {
-  mState = kS_CardCheck;
   mError = kE_OK;
+  mState = kS_CardCheck;
   const ECardResult result = CMemoryCardSys::CheckCard(mCardPort);
   if (result != kCR_READY) {
     UpdateCardCheck(result);
@@ -358,8 +416,8 @@ void CMemoryCardDriver::IndexFiles() {
 }
 
 void CMemoryCardDriver::StartFileDeleteBad() {
-  mState = kS_FileDeleteBad;
   mError = kE_OK;
+  mState = kS_FileDeleteBad;
   const ECardResult result = CMemoryCardSys::FastDeleteFile(mCardPort, mFileInfo->GetFileNo());
   if (result != kCR_READY) {
     UpdateFileDeleteBad(result);
@@ -367,8 +425,8 @@ void CMemoryCardDriver::StartFileDeleteBad() {
 }
 
 void CMemoryCardDriver::StartFileRead() {
-  mState = kS_FileRead;
   mError = kE_OK;
+  mState = kS_FileRead;
   const ECardResult result = mFileInfo->StartRead();
   if (result != kCR_READY) {
     UpdateFileRead(result);
@@ -391,8 +449,8 @@ void CMemoryCardDriver::StartFileCreate() {
 }
 
 void CMemoryCardDriver::StartFileWrite() {
-  mState = kS_FileWrite;
   mError = kE_OK;
+  mState = kS_FileWrite;
   const ECardResult result = mFileInfo->WriteFile();
   if (result != kCR_READY) {
     UpdateFileWrite(result, kS_Ready, kS_FileWriteFailed);
@@ -400,8 +458,8 @@ void CMemoryCardDriver::StartFileWrite() {
 }
 
 void CMemoryCardDriver::StartFileWriteTransactional() {
-  mState = kS_FileWriteTransactional;
   mError = kE_OK;
+  mState = kS_FileWriteTransactional;
   BuildSaveBuffer();
   const ECardResult result = mFileInfo->WriteFile();
   if (result != kCR_READY) {
@@ -410,8 +468,8 @@ void CMemoryCardDriver::StartFileWriteTransactional() {
 }
 
 void CMemoryCardDriver::StartCardFormat() {
-  mState = kS_CardFormat;
   mError = kE_OK;
+  mState = kS_CardFormat;
   const ECardResult result = CMemoryCardSys::FormatCard(mCardPort);
   if (result != kCR_READY) {
     UpdateCardFormat(result);
@@ -425,20 +483,22 @@ void CMemoryCardDriver::BuildSaveBuffer() {
 
   rstl::vector< uchar >& buffer = mFileInfo->SaveBuffer();
   buffer.resize(0x1ff8, uchar(0));
-  CMemoryStreamOut output(buffer.data(), buffer.size());
+  CMemoryStreamOut output(buffer.data(), 0x1ff8);
   SSaveHeader header(GetSaveSignature(), mSaveIdx);
   for (int i = 0; i < 3; ++i) {
-    header.mSavePresent[i] = !mFileSlots[i].null();
+    header.SetSavePresent(i, !mFileSlots[i].null());
   }
   header.PutTo(output);
-  output.Put(mSystemData.data(), mSystemData.size());
+  output.Put(mSystemData.data(), mSystemData.capacity());
   for (int i = 0; i < 3; ++i) {
-    output.Put(mGameOptionsData[i].data(), mGameOptionsData[i].size());
+    output.Put(mGameOptionsData[i].data(), mGameOptionsData[i].capacity());
   }
-  output.Put(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.size());
-  for (int i = 0; i < 3; ++i) {
-    if (!mFileSlots[i].null()) {
-      mFileSlots[i]->PutTo(output);
+  output.Put(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.capacity());
+  for (rstl::reserved_vector< rstl::auto_ptr< SGameFileSlot >, 3 >::const_iterator it =
+           mFileSlots.begin();
+       it != mFileSlots.end(); ++it) {
+    if (!it->null()) {
+      (*it)->PutTo(output);
     }
   }
 }
@@ -451,18 +511,19 @@ void CMemoryCardDriver::ReadFinished() {
   }
   mFileTime = stat.GetTime();
   CMemoryInStream input(mFileInfo->LoadedData().data(), 0x1ff8);
-  const SSaveHeader header(input);
+  SSaveHeader header(input);
   mSaveIdx = header.mSaveIdx;
-  input.Get(mSystemData.data(), mSystemData.size());
+  input.Get(mSystemData.data(), mSystemData.capacity());
   for (int i = 0; i < 3; ++i) {
-    input.Get(mGameOptionsData[i].data(), mGameOptionsData[i].size());
+    input.Get(mGameOptionsData[i].data(), mGameOptionsData[i].capacity());
   }
-  input.Get(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.size());
+  input.Get(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.capacity());
   for (int i = 0; i < 3; ++i) {
+    rstl::auto_ptr< SGameFileSlot >& slot = mFileSlots[i];
     if (header.mSavePresent[i]) {
-      mFileSlots[i] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot(input));
+      slot = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot(input));
     } else {
-      mFileSlots[i] = rstl::auto_ptr< SGameFileSlot >();
+      slot = rstl::auto_ptr< SGameFileSlot >();
     }
   }
   if (mImportPersistent) {
@@ -475,7 +536,7 @@ void CMemoryCardDriver::EraseFileSlot(int idx) {
   mFileSlots[idx] = rstl::auto_ptr< SGameFileSlot >();
   CGameOptions options;
   {
-    CMemoryStreamOut output(mGameOptionsData[idx].data(), mGameOptionsData[idx].size());
+    CMemoryStreamOut output(mGameOptionsData[idx].data(), mGameOptionsData[idx].capacity());
     CBitStreamWriter writer(output);
     options.PutTo(writer);
   }
@@ -487,10 +548,12 @@ void CMemoryCardDriver::EraseFileSlot(int idx) {
 
 // Guessed name
 void CMemoryCardDriver::CopyFileSlot(int from, int to) {
-  CMemoryInStream input(mFileSlots[from]->mSaveBuffer.data(), mFileSlots[from]->mSaveBuffer.size());
-  mFileSlots[to] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot(input));
-  const rstl::vector< uchar >& options = gpGameState->GetCompressedGameOptions()[from];
-  gpGameState->CopyCompressedGameOptions(to, options.data());
+  {
+    CMemoryInStream input(mFileSlots[from]->mSaveBuffer.data(),
+                          mFileSlots[from]->mSaveBuffer.capacity());
+    mFileSlots[to] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot(input));
+  }
+  gpGameState->CopyCompressedGameOptions(to, gpGameState->GetCompressedGameOptions(from).data());
   mGameOptionsData[to] = mGameOptionsData[from];
 }
 
@@ -499,14 +562,14 @@ void CMemoryCardDriver::BuildNewFileSlot(int idx) {
     mFileSlots[idx] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot());
   }
   for (int i = 0; i < 3; ++i) {
-    if (mFileSlots[i].null()) {
-      gpGameState->ClearCompressedGameState(i);
-    } else {
+    if (!mFileSlots[i].null()) {
       gpGameState->CopyCompressedGameState(i, mFileSlots[i]->mSaveBuffer.data());
+    } else {
+      gpGameState->ClearCompressedGameState(i);
     }
   }
   {
-    CMemoryInStream input(mSystemData.data(), mSystemData.size());
+    CMemoryInStream input(mSystemData.data(), mSystemData.capacity());
     gpGameState->ReadSystemOptions(input);
   }
   gpGameState->SystemOptions().SetSaveIdx(idx);
@@ -516,30 +579,30 @@ void CMemoryCardDriver::BuildNewFileSlot(int idx) {
 }
 
 void CMemoryCardDriver::BuildExistingFileSlot(int idx) {
-  const rstl::reserved_vector< rstl::vector< uchar >, 3 >& states =
-      gpGameState->GetCompressedGameStates();
   for (int i = 0; i < 3; ++i) {
-    if (states[i].empty()) {
-      mFileSlots[i] = rstl::auto_ptr< SGameFileSlot >();
-    } else {
-      CMemoryInStream input(states[i].data(), 0xa38);
+    const rstl::vector< uchar >& state = gpGameState->GetCompressedGameStates()[i];
+    if (!state.empty()) {
+      CMemoryInStream input(state.data(), 0xa38);
       mFileSlots[i] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot(input));
+    } else {
+      mFileSlots[i] = rstl::auto_ptr< SGameFileSlot >();
     }
   }
   ExportGameOptions();
   gpGameState->SystemOptions().SetSaveIdx(idx);
-  if (mFileSlots[idx].null()) {
-    mFileSlots[idx] = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot());
+  rstl::auto_ptr< SGameFileSlot >& slot = mFileSlots[idx];
+  if (slot.null()) {
+    slot = rstl::auto_ptr< SGameFileSlot >(rs_new SGameFileSlot());
   } else {
-    mFileSlots[idx]->InitializeFromGameState();
+    slot->InitializeFromGameState();
   }
-  CMemoryStreamOut output(mSystemData.data(), mSystemData.size());
+  CMemoryStreamOut output(mSystemData.data(), mSystemData.capacity());
   gpGameState->WriteSystemOptions(output);
   mSaveIdx = gpGameState->SystemOptions().GetSaveIdx();
 }
 
 void CMemoryCardDriver::ImportPersistentOptions() {
-  CMemoryInStream stream(mSystemData.data(), mSystemData.size());
+  CMemoryInStream stream(mSystemData.data(), mSystemData.capacity());
   CBitStreamReader reader(stream);
   CPersistentOptions options(reader);
   gpGameState->SetSystemOptions(options);
@@ -554,28 +617,27 @@ void CMemoryCardDriver::ImportGameOptions() {
 }
 
 void CMemoryCardDriver::ExportPersistentOptions() {
-  CMemoryInStream input(mSystemData.data(), mSystemData.size());
+  CMemoryInStream input(mSystemData.data(), mSystemData.capacity());
   CBitStreamReader reader(input);
   CPersistentOptions options(reader);
   gpGameState->ExportPersistentOptions(options);
   mSaveIdx = options.GetSaveIdx();
 
-  CMemoryStreamOut output(mSystemData.data(), mSystemData.size());
+  CMemoryStreamOut output(mSystemData.data(), mSystemData.capacity());
   CBitStreamWriter writer(output);
   options.PutTo(writer);
 }
 
 // Guessed name
 void CMemoryCardDriver::ExportGameOptions() {
-  const rstl::reserved_vector< rstl::vector< uchar >, 3 >& gameOptions =
-      gpGameState->GetCompressedGameOptions();
   for (int i = 0; i < 3; ++i) {
-    CMemoryStreamOut output(mGameOptionsData[i].data(), mGameOptionsData[i].size());
-    output.Put(gameOptions[i].data(), gameOptions[i].size());
+    CMemoryStreamOut output(mGameOptionsData[i].data(), mGameOptionsData[i].capacity());
+    const rstl::vector< uchar >& gameOptions = gpGameState->GetCompressedGameOptions()[i];
+    output.Put(gameOptions.data(), gameOptions.size());
   }
 
+  CMemoryStreamOut output(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.capacity());
   const rstl::vector< uchar >& multiplayerOptions = gpGameState->GetCompressedMultiplayerOptions();
-  CMemoryStreamOut output(mGlobalGameOptionsData.data(), mGlobalGameOptionsData.size());
   output.Put(multiplayerOptions.data(), multiplayerOptions.size());
 }
 
@@ -601,23 +663,23 @@ void SSaveHeader::PutTo(COutputStream& out) const {
 }
 
 SGameFileSlot::SGameFileSlot() : mSaveBuffer(uchar(0)) {
-  CMemoryStreamOut stream(mSaveBuffer.data(), mSaveBuffer.size());
+  CMemoryStreamOut stream(mSaveBuffer.data(), mSaveBuffer.capacity());
   CBitStreamWriter writer(stream);
   CGameState::SerializeNewForCleanSlot(writer, gpGameState->GetHardModeEnabled());
 }
 
 SGameFileSlot::SGameFileSlot(CInputStream& in) : mSaveBuffer(uchar(0)) {
-  in.Get(mSaveBuffer.data(), mSaveBuffer.size());
+  in.Get(mSaveBuffer.data(), mSaveBuffer.capacity());
   mFileInfo = CGameState::LoadGameFileState(mSaveBuffer.data());
 }
 
 void SGameFileSlot::PutTo(COutputStream& out) const {
-  out.Put(mSaveBuffer.data(), mSaveBuffer.size());
+  out.Put(mSaveBuffer.data(), mSaveBuffer.capacity());
 }
 
 void SGameFileSlot::InitializeFromGameState() {
   {
-    CMemoryStreamOut stream(mSaveBuffer.data(), mSaveBuffer.size());
+    CMemoryStreamOut stream(mSaveBuffer.data(), mSaveBuffer.capacity());
     CBitStreamWriter writer(stream);
     gpGameState->PutTo(writer);
   }
@@ -633,6 +695,7 @@ bool CMemoryCardDriver::GetCardFreeBytes() {
       CMemoryCardSys::GetNumFreeBytes(mCardPort, mCardFreeBytes, mCardFreeFiles);
   if (result != kCR_READY) {
     NoCardFound();
+    return false;
   }
-  return result == kCR_READY;
+  return true;
 }

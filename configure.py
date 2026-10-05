@@ -601,7 +601,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptMemoryRelay.cpp"),
             Object(NonMatching, "MetroidPrime/CMemoryCard.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CAmbientAI.cpp"),
-            Object(NonMatching, "MetroidPrime/CMemoryCardDriver.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/CMemoryCardDriver.cpp"),
             Object(NonMatching, "MetroidPrime/CSaveGameScreen.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Weapons/CElectricBeamProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CDamageEffect.cpp"),

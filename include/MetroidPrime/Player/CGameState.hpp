@@ -114,6 +114,9 @@ public:
   const rstl::reserved_vector< rstl::vector< uchar >, 3 >& GetCompressedGameOptions() const {
     return mCompressedGameOptions;
   }
+  const rstl::vector< uchar >& GetCompressedGameOptions(int slot) const {
+    return mCompressedGameOptions[slot];
+  }
   const rstl::vector< uchar >& GetCompressedMultiplayerOptions() const {
     return mCompressedMultiplayerOptions;
   }
