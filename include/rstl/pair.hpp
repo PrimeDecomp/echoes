@@ -33,23 +33,30 @@ public:
   R second;
 };
 
-template <>
-struct is_trivially_destructible< pair< int, int > > {
-  enum { value = true };
+template < typename L, typename R >
+struct is_trivially_destructible< pair< L, R > > {
+  enum { value = is_trivially_destructible< L >::value && is_trivially_destructible< R >::value };
 };
 
-inline void construct_impl(void* dest, const pair< int, int >& src) {
-  *static_cast< pair< int, int >* >(dest) = src;
-}
-
-template <>
-struct is_trivially_destructible< pair< uint, uint > > {
-  enum { value = true };
+template < typename L, typename R >
+struct use_assignment_for_construction< pair< L, R > > {
+  enum {
+    value = use_assignment_for_construction< L >::value &&
+    use_assignment_for_construction< R >::value
+  };
 };
 
-inline void construct_impl(void* dest, const pair< uint, uint >& src) {
-  *static_cast< pair< uint, uint >* >(dest) = src;
-}
+// These legacy element policies retain the native construction null checks and
+// destruction loops even though the individual members have trivial lifetimes.
+template <>
+struct is_trivially_destructible< pair< int, float > > {
+  enum { value = false };
+};
+
+template <>
+struct use_assignment_for_construction< pair< int, float > > {
+  enum { value = false };
+};
 
 template < typename P >
 struct select1st : unary_function< P, P > {

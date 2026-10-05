@@ -36,16 +36,6 @@ CHECK_SIZEOF(CSegId, 0x1)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CSegId)
-
-template <>
-struct is_trivially_destructible< pair< CSegId, CSegId > > {
-  enum { value = true };
-};
-
-template <>
-inline void construct< pair< CSegId, CSegId > >(void* dest, const pair< CSegId, CSegId >& src) {
-  *static_cast< pair< CSegId, CSegId >* >(dest) = src;
-}
 } // namespace rstl
 
 #endif // _CSEGID

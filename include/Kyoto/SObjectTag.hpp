@@ -33,10 +33,7 @@ struct SObjectTag {
 };
 
 namespace rstl {
-template <>
-inline void construct< SObjectTag >(void* dest, const SObjectTag& src) {
-  *static_cast< SObjectTag* >(dest) = src;
-}
+RSTL_DECLARE_ASSIGNMENT_CONSTRUCTION(SObjectTag)
 } // namespace rstl
 
 #endif // _SOBJECTTAG

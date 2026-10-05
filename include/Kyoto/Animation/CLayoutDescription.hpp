@@ -42,11 +42,4 @@ private:
 CHECK_SIZEOF(CLayoutDescription, 0x30)
 NESTED_CHECK_SIZEOF(CLayoutDescription, CScaledLayoutDescription, 0x20)
 
-namespace rstl {
-inline void construct_impl(void* dest,
-                           const CLayoutDescription::CScaledLayoutDescription::ScaleInfo& src) {
-  *static_cast< CLayoutDescription::CScaledLayoutDescription::ScaleInfo* >(dest) = src;
-}
-} // namespace rstl
-
 #endif // _CLAYOUTDESCRIPTION

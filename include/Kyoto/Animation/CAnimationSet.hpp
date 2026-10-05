@@ -50,8 +50,4 @@ private:
 };
 CHECK_SIZEOF(CAnimationSet, 0x64)
 
-namespace rstl {
-RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CAnimationSet::AdditiveAnimationList::value_type)
-}
-
 #endif // _CANIMATIONSET
