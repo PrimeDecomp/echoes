@@ -755,8 +755,8 @@ void CSfxManager::Update(float dt) {
       }
     }
   }
-  UpdateLowPassFilters(dt);
   UpdateLowPassAreaFilters(dt);
+  UpdateLowPassFilters(dt);
   if (mCurrentChannel == kSC_Game) {
     CSfxChannel& game = mChannels[kSC_Game];
     for (int j = 0; j < game.mSounds.size(); ++j) {
@@ -765,8 +765,9 @@ void CSfxManager::Update(float dt) {
         const int area = sound->GetArea();
         const bool acoustics = sound->UseAcoustics();
         if (area != kAllAreas || acoustics) {
-          CAudioSys::SfxSetFilter(sound->GetVoice(), ShouldApplyLowPass(sound),
-                                  GetLowPassFrequency(sound));
+          const bool lowPass = ShouldApplyLowPass(sound);
+          const int frequency = GetLowPassFrequency(sound);
+          CAudioSys::SfxSetFilter(sound->GetVoice(), lowPass, frequency);
         }
         CAudioSys::SfxPitchBend(sound->GetVoice(), sound->GetPitchBend());
       }
