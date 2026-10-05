@@ -38,7 +38,7 @@ void CScriptCameraShaker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
         mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetOcclusionState() !=
             CGameArea::kOS_Occluded) {
       if (mShakeData.GetFlags() & 2) {
-        for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+        for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
           mPlayerShakeIds[i] = mgr.CameraManager(i)->CameraShakerManager()->AddCameraShaker(
               mShakeData, mgr, true, true);
         }
@@ -51,7 +51,7 @@ void CScriptCameraShaker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
     }
   } else if (msg.GetMessage() == kSM_Stop) {
     if (mShakeData.GetFlags() & 2) {
-      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
         mgr.CameraManager(i)->CameraShakerManager()->RemoveCameraShaker(mPlayerShakeIds[i]);
       }
     } else if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()))) {

@@ -15,6 +15,7 @@ struct SLdrCameraShaker {
 };
 
 inline SLdrCameraShaker::SLdrCameraShaker() : editorProperties(), shakerData() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
 }
 
 inline SLdrCameraShaker::~SLdrCameraShaker() {}
