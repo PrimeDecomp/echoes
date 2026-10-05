@@ -102,7 +102,7 @@ private:
   CQuaternion mModelRotation;
   CVector3f mStartScale;
   CVector3f mEndScale;
-  float x2ec_; // Camera parameter saved during preparation; use not established.
+  float mStartAspect;
   float mStartFov;
   float mEndFov;
   float mModelTransition;

@@ -289,9 +289,11 @@ public:
   void ThinkEntity(float dt, CEntity& entity);
 
   // State transitions
+  EGameState GetGameState() const { return mGameState; }
   void DeferStateTransition(EStateManagerTransition t);
   void ResetEscapeSequenceTimer(float time); // Prime-correlated name
   void SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx); // Prime name
+  TUniqueId GetBossId() const { return mBossId; }
   float IntegrateVisorFog(float f) const;
   void SetAreaClipPlane(TAreaId area, const CPlane& plane); // Guessed name
   void EnterMapScreen() { DeferStateTransition(kSMT_MapScreen); }
