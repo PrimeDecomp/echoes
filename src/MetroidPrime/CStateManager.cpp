@@ -73,6 +73,9 @@ CStateManagerContainer::CStateManagerContainer()
           gpGameState->GetPlayerState(CPlayerState::kPI_Player4)->GetPlayerSelection())) {}
 
 namespace {
+// Reconstructed name for the native sentinel outside all valid player indices.
+const int kInvalidRenderPlayerIndex = 2000000;
+
 // Guessed local predicate names; priorities and equal-priority intensities descend.
 struct CLightPredicate {
   bool operator()(const CLight& a, const CLight& b) const {
@@ -635,6 +638,34 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
     hp = playerState.CalculateHealth();
     damage = -(damageReduction * damage - damage);
   }
+}
+
+void CStateManager::InformListeners(const CVector3f& position, EListenNoiseType type) {
+  CObjectList* list = mObjectLists[kOL_ListeningAi].get();
+  for (int i = list->GetFirstObjectIndex(); i != -1; i = list->GetNextObjectIndex(i)) {
+    CPatterned* patterned = TCastToPtr< CPatterned >((*list)[i]);
+    if (patterned != nullptr && patterned->GetActive()) {
+      CGameArea* area = mWorld->Area(patterned->GetCurrentAreaId());
+      if (area->GetOcclusionState() != CGameArea::kOS_Occluded) {
+        patterned->Listen(*this, position, type);
+      }
+    }
+  }
+}
+
+TEditorId CStateManager::GetEditorIdForUniqueId(TUniqueId uid) const {
+  const CEntity* entity = GetObjectById(uid);
+  if (entity != nullptr) {
+    return entity->GetEditorId();
+  }
+  return kInvalidEditorId;
+}
+
+void CStateManager::EndPlayerRender() {
+  mCurrentRenderPlayerIndex = kInvalidRenderPlayerIndex;
+  mCurrentRenderPlayer = nullptr;
+  mPlayerState = nullptr;
+  mCameraManager = nullptr;
 }
 
 void CStateManager::fn_8003BF84(CEntity* ent) {
