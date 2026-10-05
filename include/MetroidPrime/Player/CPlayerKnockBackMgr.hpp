@@ -31,6 +31,11 @@ public:
 
   void ResetEffects(CStateManager& mgr, CPlayer& player);
   float GetBurnDeathAlpha() const;
+  float GetBurnRemainingTime() const { return mBurnRemainingTime; }
+  bool IsDeathAnimationStarted() const { return mDeathAnimationStarted; }
+  bool IsRagDollPending() const { return mRagDollPending; }
+  bool IsLaggedBurnDeath() const { return mLaggedBurnDeath; }
+  bool IsBurnDeath() const { return mBurnDeath; }
   void Burn(float duration, float damagePerSecond, TUniqueId owner);
   void DouseFlames();
   void StopBurnDeath(CStateManager& mgr, CPlayer& player);

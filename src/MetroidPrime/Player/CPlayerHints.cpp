@@ -111,15 +111,15 @@ void CPlayer::ResetPlayerHintState(CStateManager& mgr) {
   mExtendTargetDistance = false;
   mOutOfBallLookAtHint = false;
   mSpiderBallControlXY = false;
-  x126a_ &= ~1;
-  x1269_31_ = false;
-  x126a_ &= ~0x80;
-  x126a_ &= ~0x40;
+  mOutOfBallLookAtHintActor = false;
+  mIgnoreDarkWorldDamage = false;
+  mNoSafeZoneHealing = false;
+  mNoMorphBallDamageTimer = false;
   mLandingStrikePending = false;
   mMorphBall->SetBoostEnabled(true);
   ResetControlDirectionInterpolation();
   RemoveMaterial(kMT_Immovable, mgr);
-  if (mControlHintManager && mPlayerHintControlHintId != kInvalidUniqueId) {
+  if (mControlHintManager.get() && mPlayerHintControlHintId != kInvalidUniqueId) {
     mControlHintManager->RemoveHint(mPlayerHintControlHintId, GetUniqueId(), mgr);
   }
 }
@@ -137,10 +137,10 @@ bool CPlayer::SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mg
   mExtendTargetDistance = (hint.GetOverrideFlags() & 4) != 0;
   mOutOfBallLookAtHint = (hint.GetOverrideFlags() & 8) != 0;
   mSpiderBallControlXY = (hint.GetOverrideFlags() & 0x10) != 0;
-  x126a_ = (x126a_ & ~1) | ((hint.GetOverrideFlags() & 0x4000) ? 1 : 0);
-  x1269_31_ = (hint.GetOverrideFlags() & 0x8000) != 0;
-  x126a_ = (x126a_ & ~0x80) | ((hint.GetOverrideFlags() & 0x10000) ? 0x80 : 0);
-  x126a_ = (x126a_ & ~0x40) | ((hint.GetOverrideFlags() & 0x20000) ? 0x40 : 0);
+  mOutOfBallLookAtHintActor = (hint.GetOverrideFlags() & 0x4000) != 0;
+  mIgnoreDarkWorldDamage = (hint.GetOverrideFlags() & 0x8000) != 0;
+  mNoSafeZoneHealing = (hint.GetOverrideFlags() & 0x10000) != 0;
+  mNoMorphBallDamageTimer = (hint.GetOverrideFlags() & 0x20000) != 0;
   mMorphBall->SetBoostEnabled(!(hint.GetOverrideFlags() & 0x100));
 
   bool switchedVisor = false;
@@ -172,7 +172,7 @@ bool CPlayer::SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mg
     AddMaterial(kMT_Immovable, mgr);
   }
   if ((hint.GetOverrideFlags() & 0x80) != 0) {
-    if (mPlayerHintControlHintId != kInvalidUniqueId && mControlHintManager) {
+    if (mPlayerHintControlHintId != kInvalidUniqueId && mControlHintManager.get()) {
       mControlHintManager->RemoveHint(mPlayerHintControlHintId, GetUniqueId(), mgr);
     }
     mPlayerHintControlHintId =
@@ -294,7 +294,7 @@ void CPlayer::StartRezbitState(CStateManager& mgr, const CRezbitEffectOptions& o
 
     CScriptControlHint::TCommandStates commandStates;
     mRezbitControlHintId =
-        static_cast< CControlHintManager* >(mControlHintManager)
+        static_cast< CControlHintManager* >(mControlHintManager.get())
             ->CreateHint(mgr, rstl::string("Rezbit Control Hint"), 0, 0.f, 0xfc, commandStates,
                          GetUniqueId(), CGameHint::kBHT_TriggersAndB, 0, 0.f,
                          CGameHint::SCallback(this, &CPlayer::ResetRezbitState),
@@ -350,9 +350,9 @@ void CPlayer::StopRezbitState(CStateManager& mgr) {
 
 TUniqueId CPlayer::DisableControls(CStateManager& mgr, uint controls, TUniqueId source,
                                    float duration, CGameHint::EBreakHintType breakType) {
-  if (mControlHintManager) {
+  if (mControlHintManager.get()) {
     CScriptControlHint::TCommandStates commandStates;
-    return static_cast< CControlHintManager* >(mControlHintManager)
+    return static_cast< CControlHintManager* >(mControlHintManager.get())
         ->CreateHint(mgr, rstl::string("Player Hint disabled controls"), 0, duration, controls,
                      commandStates, source, breakType, 0, 0.f, CGameHint::SCallback(),
                      CGameHint::SCallback(), 0.f, 0);

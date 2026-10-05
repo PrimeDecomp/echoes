@@ -318,8 +318,7 @@ bool CPlayerGun::ShouldHolster(CStateManager& mgr, const float& argument) {
 }
 
 bool CPlayerGun::IsHolstered(CStateManager& mgr, const float& argument) {
-  // The original table name is surprising: the target tests Drawing, not Holstered.
-  return mGunHolsterState == kGHS_Drawing;
+  return mGunHolsterState == kGHS_Holstered;
 }
 
 bool CPlayerGun::IsNotHolstered(CStateManager& mgr, const float& argument) {
@@ -711,7 +710,7 @@ void CPlayerGun::EventHandler(CStateManager& mgr, int message, float dt) {
   }
 }
 
-void CPlayerGun::DamageRumble(const CVector3f& position, float damage) {
+void CPlayerGun::DamageRumble(const CVector3f& position, float damage, const CStateManager& mgr) {
   mDamageLocation = position;
   mDamageAmount = damage;
 }

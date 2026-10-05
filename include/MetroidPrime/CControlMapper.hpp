@@ -139,6 +139,7 @@ public:
     mCommandEnabled = enabled;
   }
   void ResetCommandOverrides();
+  void SetControlScheme(int scheme) { mControlScheme = scheme; }
   EFunctionList GetMapping(ECommands command) const;
   const CTweakPlayerControls* GetTweakPlayerControls() const;
 

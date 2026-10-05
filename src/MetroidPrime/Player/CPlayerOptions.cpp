@@ -3,16 +3,16 @@
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
 
-CPlayerOptions::CPlayerOptions() : mRumbleEnabled(true), x1_(false) {}
+CPlayerOptions::CPlayerOptions() : mRumbleEnabled(true), mInvertYAxis(false) {}
 
 CPlayerOptions::CPlayerOptions(CBitStreamReader& in)
-: mRumbleEnabled(in.ReadPackedBool()), x1_(in.ReadPackedBool()) {}
+: mRumbleEnabled(in.ReadPackedBool()), mInvertYAxis(in.ReadPackedBool()) {}
 
 void CPlayerOptions::PutTo(CBitStreamWriter& out) const {
   out.WriteBits(mRumbleEnabled != 0, 1);
-  out.WriteBits(x1_ != 0, 1);
+  out.WriteBits(mInvertYAxis != 0, 1);
 }
 
 void CPlayerOptions::SetRumbleEnabled(bool enabled) { mRumbleEnabled = enabled; }
 
-void CPlayerOptions::SetUnknownFlag(bool value) { x1_ = value; }
+void CPlayerOptions::SetInvertYAxis(bool value) { mInvertYAxis = value; }

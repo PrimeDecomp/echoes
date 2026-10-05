@@ -193,12 +193,12 @@ void CPlayerBodyController::SetupStateMachines(CStateManager& mgr) {
 void CPlayerBodyController::CheckDeathCommands(CStateManager& mgr) {
   if (mCommandMgr.GetCmd(kPBSC_DeathReaction) != nullptr &&
       (!mBodyState.HasState() ||
-       (mReactionFlags & (kRF_DeathReactionActive | kRF_GibDeath)) == 0)) {
+       (mReactionFlags & (kRF_DeathReactionActive | kRF_DeathReactionOver)) == 0)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("Dead"));
   }
   if (mCommandMgr.GetCmd(kPBSC_GibDeath) != nullptr &&
       (!mBodyState.HasState() ||
-       (mReactionFlags & (kRF_DeathReactionActive | kRF_GibDeath)) == 0)) {
+       (mReactionFlags & (kRF_DeathReactionActive | kRF_DeathReactionOver)) == 0)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("GibDeath"));
   }
 }
@@ -250,7 +250,7 @@ bool CPlayerBodyController::IsFirstPerson(CStateManager&, const float&) {
 }
 
 void CPlayerBodyController::Start(CStateManager&, int, float) {
-  mReactionFlags &= ~(kRF_GibDeath | kRF_DeathReactionActive);
+  mReactionFlags &= ~(kRF_DeathReactionOver | kRF_DeathReactionActive);
   mAnimationFlags &= ~kAF_MorphTransitionActive;
 }
 
@@ -435,7 +435,7 @@ void CPlayerBodyController::Dead(CStateManager&, int, float) {
 void CPlayerBodyController::GibDeath(CStateManager&, int msg, float) {
   if (msg == kStateMsg_Activate) {
     mAnimationFlags &= ~kAF_Moving;
-    mReactionFlags |= kRF_GibDeath | kRF_DeathReactionActive;
+    mReactionFlags |= kRF_DeathReactionOver | kRF_DeathReactionActive;
   }
 }
 

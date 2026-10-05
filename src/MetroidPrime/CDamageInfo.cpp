@@ -69,9 +69,9 @@ CDamageInfo::CDamageInfo(const CDamageInfo& other, float dt)
 , mRadiusDamageAmount(mDamage)
 , mDamageRadius(other.mDamageRadius)
 , mKnockbackPower(other.mKnockbackPower)
-, x14_(other.x14_)
-, x16_(other.x16_)
-, x18_(other.x18_)
+, mDamageSfxId(other.mDamageSfxId)
+, mDamageLoopSfxId(other.mDamageLoopSfxId)
+, mSamusVoiceSfxId(other.mSamusVoiceSfxId)
 , mNoImmunity(true)
 , x1a_25_(other.x1a_25_) {}
 

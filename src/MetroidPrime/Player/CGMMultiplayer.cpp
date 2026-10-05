@@ -164,7 +164,7 @@ void CGMMultiplayer::RespawnPlayer(CStateManager& mgr, uint playerIndex) {
   player.AsyncLoadSuit(mgr);
   player.SetSpawnedMorphBallState(spawn.IsMorphed() ? CPlayer::kMS_Morphed : CPlayer::kMS_Unmorphed,
                                   mgr);
-  player.fn_80019E40(mgr, 1);
+  player.ResetPlayerState(mgr, 1);
   spawn.SendSpawnMessage(mgr, player);
   NotifyListeners(mgr, playerIndex, playerIndex, kGE_Spawn, nullptr);
 }

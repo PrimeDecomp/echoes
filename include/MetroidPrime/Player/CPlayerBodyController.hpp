@@ -56,6 +56,10 @@ public:
 
   int GetCurrentAnimationId() const { return mAnimationId; }
 
+  float GetCurrentAnimationDuration() const { return mAnimationDuration; }
+
+  bool IsUnfreezing() const { return (mAnimationFlags & kAF_Unfreezing) != 0; }
+
   int GetLocomotionMode() const { return mLocomotion.mLocomotionMode; }
 
   // Reconstructed accessors for the existing native animation masks.
@@ -75,6 +79,8 @@ public:
   void SelectAnimation(const CPASAnimParmData& parameters, CRandom16& random);
   bool IsAnimationLooping() const;
 
+  bool IsDeathReactionOver() const { return (mReactionFlags & kRF_DeathReactionOver) != 0; }
+
   bool IsDeathReactionActive() const { return (mReactionFlags & kRF_DeathReactionActive) != 0; }
 
 private:
@@ -89,7 +95,7 @@ private:
     kAF_MorphTransitionActive = 0x1
   };
 
-  enum EReactionFlags { kRF_GibDeath = 0x80, kRF_DeathReactionActive = 0x40 };
+  enum EReactionFlags { kRF_DeathReactionOver = 0x80, kRF_DeathReactionActive = 0x40 };
 
   enum EStatePhase { kSP_Invalid = -1, kSP_Active = 2, kSP_Over = 3 };
 

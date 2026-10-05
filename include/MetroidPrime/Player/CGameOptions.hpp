@@ -56,6 +56,7 @@ public:
   void SetIsHudEnglish(bool);
   bool GetIsHudEnglish() const { return hudEnglish; } // Guessed name; selects STRG_HudEngOnly.
   void SetInvertYAxis(bool);
+  bool GetInvertYAxis() const { return invertY; }
   void SetIsRumbleEnabled(bool rumble);
   bool GetIsRumbleEnabled() const { return rumble; }
   // Guessed name

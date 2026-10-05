@@ -380,7 +380,7 @@ void CCameraManager::AddCinemaCamera(TUniqueId uid, CStateManager& mgr) {
 }
 
 void CCameraManager::EnterCinematic(CStateManager& mgr) {
-  mgr.Player(mPlayerIndex)->BreakFrozenState(mgr, CPlayer::kBFS_One, false);
+  mgr.Player(mPlayerIndex)->BreakFrozenState(mgr, CPlayer::kBFS_BreakWithEffects, false);
   CObjectList& list = mgr.ObjectListById(kOL_All);
   for (int index = list.GetFirstObjectIndex(); index != -1;
        index = list.GetNextObjectIndex(index)) {
@@ -406,7 +406,7 @@ void CCameraManager::StopCinematics(CStateManager& mgr) {
   if (mCinematicCamera) {
     mCinematicCamera->SetActive(false);
     SetCinematicCameraId(mgr, kInvalidUniqueId);
-    mgr.Player(mPlayerIndex)->fn_8001660c(mgr);
+    mgr.Player(mPlayerIndex)->UpdateCinematicState(mgr);
     mFpCamera->SkipCinematic();
     gpMain->SetThirtyFps(gpGameState->GetGameMode().GetNumPlayers() > 2);
   }
