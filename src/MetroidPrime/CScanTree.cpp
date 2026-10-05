@@ -1,8 +1,14 @@
 #include "MetroidPrime/CScanTree.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
+#include "rstl/algorithm.hpp"
 #include "Kyoto/Math/CMayaSpline.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "Kyoto/CDvdRequest.hpp"
+#include "Kyoto/CResFactory.hpp"
+#include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.hpp"
@@ -46,6 +52,18 @@ static const CPlayerState::EItemType kInventorySlotToItemType[] = {
 
 // Guessed name.
 static CVector3f kLogbookPosition(0.f, -1.f, 0.f);
+static const char* const kLogbookCategoryName = "Logbook";
+static const char* const kSamusGearCategoryName = "Samus Gear";
+
+// Matches the comparator symbol shared with CSlideShow.
+struct SlideShowScanIdLess {
+  bool operator()(const CPlayerState::SPersistentState::SScanState& scan, CAssetId id) const {
+    return scan.mAssetId < id;
+  }
+  bool operator()(CAssetId id, const CPlayerState::SPersistentState::SScanState& scan) const {
+    return id < scan.mAssetId;
+  }
+};
 
 CScanTreeInventory::~CScanTreeInventory() {}
 
@@ -416,7 +434,14 @@ CScanTree::CScanTree()
 , mRootNode(-1)
 , mRandom(0) {}
 
-void CScanTree::LoadAsync() {}
+void CScanTree::LoadAsync() {
+  const SObjectTag* tag = gpResourceFactory->GetResourceIdByName("DUMB_ScanTree");
+  mBufferLength = gpResourceFactory->GetResLoader().ResourceSize(*tag);
+  mBuffer = rstl::auto_ptr< uchar >(
+      static_cast< uchar* >(CMemory::Alloc(mBufferLength, IAllocator::kHI_RoundUpLen)));
+  mLoadRequest = rstl::auto_ptr< CDvdRequest >(gpResourceFactory->GetResLoader().LoadResourceAsync(
+      *tag, reinterpret_cast< char* >(mBuffer.get())));
+}
 
 void CScanTree::ReserveNodes(int count) { mNodes.reserve(count); }
 
@@ -426,21 +451,87 @@ void CScanTree::AddNode(CScanTreeNode* node) {
 
 void CScanTree::SetRootNode(int node) { mRootNode = node; }
 
-void CScanTree::UpdateDescendantCounts() {}
+void CScanTree::UpdateDescendantCounts() {
+  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+       it != mNodes.end(); ++it) {
+    const rstl::rc_ptr< CScanTreeNode > node = *it;
+    if (node->GetNodeType() != CScanTreeNode::kNT_Category) {
+      node->SetDescendantCount(1);
+      node->SetVisibleDescendantCount(1);
+      const bool visible = node->IsVisible();
+      int parent = node->GetParentNode();
+      while (parent != -1) {
+        const rstl::rc_ptr< CScanTreeCategory > category(mNodes[parent]);
+        category->SetDescendantCount(category->GetDescendantCount() + 1);
+        if (visible) {
+          category->SetVisibleDescendantCount(category->GetVisibleDescendantCount() + 1);
+        }
+        parent = category->GetParentNode();
+      }
+    }
+  }
+}
 
-void CScanTree::InitializeHierarchy() {}
+void CScanTree::InitializeHierarchy() {
+  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+       it != mNodes.end(); ++it) {
+    if ((*it)->GetNodeType() == CScanTreeNode::kNT_Category) {
+      const rstl::rc_ptr< CScanTreeCategory > category(*it);
+      const int childCount = category->GetChildCount();
+      for (int i = 0; i < childCount; ++i) {
+        const int child = category->GetChild(i);
+        mNodes[child]->SetParentNode(category->GetId());
+        if (category->GetSelectedChild() == -1 && mNodes[child]->IsVisible()) {
+          category->SetSelectedChild(child);
+        }
+      }
+      if (category->GetSelectedChild() == -1) {
+        category->SetVisible(false);
+      }
+    }
+  }
+  mSelectedNode = mRootNode;
+  InitializeNodePositions(mSelectedNode);
+  mInitialLayoutTransition = 1.f;
+}
 
 bool CScanTree::UpdateNodeVisibility(CStateManager& mgr, int node) {}
 
 void CScanTree::RefreshVisibility(CStateManager& mgr) {}
 
-rstl::pair< uint, uint > CScanTree::GetScanCounts() const {}
+rstl::pair< uint, uint > CScanTree::GetScanCounts() const {
+  const rstl::rc_ptr< CScanTreeNode > root = mNodes[mRootNode];
+  if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(root);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      const rstl::rc_ptr< CScanTreeNode > child = mNodes[category->GetChild(i)];
+      if (child->GetNameStringName() == kLogbookCategoryName) {
+        const uint total = child->GetDescendantCount();
+        return rstl::pair< uint, uint >(child->GetVisibleDescendantCount(), total);
+      }
+    }
+  }
+  return rstl::pair< uint, uint >(0, 1);
+}
 
 void CScanTree::RandomizeChildPositions(int node) {}
 
 void CScanTree::InitializeNodePositions(int node) {}
 
-bool CScanTree::PollLoad() {}
+bool CScanTree::PollLoad() {
+  if (mLoadRequest.get() != nullptr) {
+    if (!mLoadRequest->IsComplete()) {
+      return false;
+    }
+    CMemoryInStream in(mBuffer.get(), mBufferLength);
+    ReadScanTree(in, *this);
+    mBuffer = rstl::auto_ptr< uchar >(nullptr);
+    mLoadRequest = rstl::auto_ptr< CDvdRequest >(nullptr);
+    InitializeHierarchy();
+  }
+  return true;
+}
 
 void CScanTree::SelectNode(int node) {
   SelectNode(node, gpTweakGui->GetLogBookTransitionTime());
@@ -512,13 +603,80 @@ void CScanTree::Update(float dt) {
   }
 }
 
-void CScanTree::RefreshViewed(CStateManager& mgr) {}
+void CScanTree::RefreshViewed(CStateManager& mgr) {
+  const rstl::vector< CPlayerState::SPersistentState::SScanState >& scanStates =
+      mgr.PlayerState(0)->ScanStates();
+  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+       it != mNodes.end(); ++it) {
+    if ((*it)->GetNodeType() == CScanTreeNode::kNT_Scan ||
+        (*it)->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+      const rstl::rc_ptr< CScanTreeScan > scan(*it);
+      rstl::vector< CPlayerState::SPersistentState::SScanState >::const_iterator state =
+          rstl::binary_find(scanStates.begin(), scanStates.end(), scan->GetScannableInfo(),
+                            SlideShowScanIdLess());
+      scan->SetViewed(state != scanStates.end() && state->mViewedInLogbook);
+    }
+  }
+  UpdateViewedCategories();
+}
 
-void CScanTree::MarkViewed(CStateManager& mgr, int node) {}
+void CScanTree::MarkViewed(CStateManager& mgr, int node) {
+  if (node < mNodes.size()) {
+    const rstl::vector< CPlayerState::SPersistentState::SScanState >& scanStates =
+        mgr.PlayerState(0)->ScanStates();
+    const rstl::rc_ptr< CScanTreeNode > treeNode = mNodes[node];
+    if (treeNode->GetNodeType() == CScanTreeNode::kNT_Scan ||
+        treeNode->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+      const rstl::rc_ptr< CScanTreeScan > scan(treeNode);
+      scan->SetViewed(true);
+      const CAssetId scannableInfo = scan->GetScannableInfo();
+      rstl::vector< CPlayerState::SPersistentState::SScanState >::const_iterator state =
+          rstl::binary_find(scanStates.begin(), scanStates.end(), scannableInfo,
+                            SlideShowScanIdLess());
+      if (state != scanStates.end()) {
+        gpGameState->PlayerState(0)->SetScanFlag(scannableInfo, true);
+      }
+    }
+    UpdateViewedCategories();
+  }
+}
 
-void CScanTree::UpdateViewedCategories() {}
+void CScanTree::UpdateViewedCategories() {
+  const rstl::rc_ptr< CScanTreeNode > root = mNodes[mRootNode];
+  if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(root);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      const int index = category->GetChild(i);
+      const rstl::rc_ptr< CScanTreeNode > child = mNodes[index];
+      if (child->GetNameStringName() == kLogbookCategoryName ||
+          child->GetNameStringName() == kSamusGearCategoryName) {
+        UpdateCategoryViewed(index);
+      }
+    }
+  }
+}
 
-bool CScanTree::UpdateCategoryViewed(int node) {}
+bool CScanTree::UpdateCategoryViewed(int node) {
+  const rstl::rc_ptr< CScanTreeNode > treeNode = mNodes[node];
+  if (!treeNode->IsVisible()) {
+    return true;
+  }
+  bool allViewed = true;
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const int childCount = category->GetChildCount();
+    for (int i = 0; i < childCount; ++i) {
+      if (!UpdateCategoryViewed(category->GetChild(i))) {
+        allViewed = false;
+      }
+    }
+  } else {
+    return treeNode->IsViewed();
+  }
+  treeNode->SetViewed(allViewed);
+  return allViewed;
+}
 
 CVector3f CScanTree::CalculatePairForce(float radius, float strength, const CVector3f& position,
                                         const CVector3f& otherPosition) const {}
