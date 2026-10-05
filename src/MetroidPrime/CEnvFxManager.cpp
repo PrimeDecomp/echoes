@@ -31,6 +31,11 @@
 // The target stores the largest finite single-precision value directly.
 static const float skMaximumBlockingHeight = 3.402823466e+38F;
 static float g_SnowForces[256][2];
+static int g_TrailPeriod = 8;
+static int g_TrailSecondaryAxis = 2;
+static float g_TrailPrimaryScale;
+static float g_TrailDecayRate;
+static int g_TrailPrimaryAxis;
 
 CEnvFxManagerGrid::CEnvFxManagerGrid(const CVector2i& position, const CVector2i& extent,
                                      const rstl::vector< CVectorFixed8_8 >& initialParticles,
@@ -162,7 +167,7 @@ void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
   const CColor baseColor = type == kEFX_Unknown6 ? CColor(0.6f, 0.71f, 0.48f, 0.175f)
                                                     : CColor(0.f, 0.f, 1.f, 0.175f);
-  const int period = type == kEFX_Unknown6 ? 2 : 8;
+  const int period = g_TrailPeriod;
   for (int trail = 0; trail < mParticles.size() / 8; ++trail) {
     const int frame = mTrailFrames[trail];
     const int base = trail * 8;
@@ -412,6 +417,19 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
   const CCameraManager* cameraManager = mgr.GetCameraManager(0);
   const CTransform4f camXf = cameraManager->GetCurrentCameraTransform(mgr, true);
   const EEnvFxType type = static_cast< EEnvFxType >(mgr.GetWorld()->GetNeededEnvFx());
+  if (type == kEFX_Unknown7) {
+    g_TrailPeriod = 8;
+    g_TrailPrimaryScale = 1.5f;
+    g_TrailDecayRate = 1.f / 3.f;
+    g_TrailPrimaryAxis = 0;
+    g_TrailSecondaryAxis = 2;
+  } else if (type == kEFX_Unknown6) {
+    g_TrailPeriod = 2;
+    g_TrailPrimaryScale = 6.f;
+    g_TrailDecayRate = 1.f / 3.f;
+    g_TrailPrimaryAxis = 2;
+    g_TrailSecondaryAxis = 0;
+  }
 
   if (cameraManager->GetCurrentCamera(mgr, true)->GetFluidCount() != 0) {
     mLastBlockedGridIdx = -1;
@@ -562,7 +580,7 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
           grid.mParticleLifetimes.push_back(random.Float());
         } else if (trails) {
           grid.mParticleLifetimes.push_back(1.f);
-          grid.mTrailFrames.push_back(8 * (type == kEFX_Unknown7 ? 8 : 2) * random.Range(0, 100));
+          grid.mTrailFrames.push_back(8 * g_TrailPeriod * random.Range(0, 100));
           for (int point = 1; point < 8; ++point) {
             particles.push_back(CVectorFixed8_8());
           }
@@ -780,10 +798,10 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
   static const float kPrimaryOffsets[7] = {0.3f, 0.9f, 0.5f, 0.8f, 0.4f, 0.7f, 0.2f};
   static uint seed = 0;
   CRandom16 random(seed);
-  const int period = mPreviousFxType == kEFX_Unknown7 ? 8 : 2;
-  const int primaryAxis = mPreviousFxType == kEFX_Unknown7 ? 0 : 2;
-  const int secondaryAxis = mPreviousFxType == kEFX_Unknown7 ? 2 : 0;
-  const float primaryScale = mPreviousFxType == kEFX_Unknown7 ? 1.5f : 1.f;
+  const int period = g_TrailPeriod;
+  const int primaryAxis = g_TrailPrimaryAxis;
+  const int secondaryAxis = g_TrailSecondaryAxis;
+  const float primaryScale = g_TrailPrimaryScale;
 
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
@@ -793,7 +811,7 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
     for (int trail = 0; trail < grid.mParticles.size() / 8; ++trail) {
       float& lifetime = grid.mParticleLifetimes[trail];
       int& frame = grid.mTrailFrames[trail];
-      lifetime -= dt / 3.f;
+      lifetime -= dt * g_TrailDecayRate;
       ++frame;
       const int base = trail * 8;
       if (lifetime > 0.f) {
