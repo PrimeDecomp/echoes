@@ -332,21 +332,22 @@ pas::EStepDirection CPatterned::FindBestStepDirection(const CVector3f& direction
 }
 
 void CPatterned::RotateToPoint(const CVector3f& point, float dt, float turnSpeed) {
-  if (dt > 0.f && mBodyController->GetTimeScale() != 0.f) {
-    CVector3f forward = GetTransform().GetForward();
-    forward.SetZ(0.f);
-    if (forward.CanBeNormalized()) {
-      forward.Normalize();
-      CVector3f direction = point - GetTranslation();
-      direction.SetZ(0.f);
-      if (direction.CanBeNormalized()) {
-        direction.Normalize();
-        const CRelAngle angle =
-            CRelAngle::FromRadians(dt * turnSpeed * mBodyController->GetTimeScale());
-        const CQuaternion rotation =
-            CQuaternion::ShortestRotationArcClamped(forward, direction, angle);
-        RotateInOneFrameOR(rotation, dt);
-      }
+  if (dt <= 0.f || mBodyController->GetTimeScale() == 0.f) {
+    return;
+  }
+  CVector3f forward = GetTransform().GetForward();
+  forward.SetZ(0.f);
+  if (forward.CanBeNormalized()) {
+    forward.Normalize();
+    CVector3f direction = point - GetTranslation();
+    direction.SetZ(0.f);
+    if (direction.CanBeNormalized()) {
+      direction.Normalize();
+      const CRelAngle angle =
+          CRelAngle::FromRadians(dt * turnSpeed * mBodyController->GetTimeScale());
+      const CQuaternion rotation =
+          CQuaternion::ShortestRotationArcClamped(forward, direction, angle);
+      RotateInOneFrameOR(rotation, dt);
     }
   }
 }
