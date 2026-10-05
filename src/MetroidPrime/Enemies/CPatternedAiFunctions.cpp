@@ -9,8 +9,11 @@
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/BodyState/CBodyStateCmdMgr.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
+#include "MetroidPrime/Cameras/CCameraShakerManager.hpp"
 #include "MetroidPrime/PathFinding/CPathFindSearch.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptCameraShaker.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include <float.h>
 
 void CPatterned::Start(CStateManager&, EStateMsg, float) {}
@@ -348,6 +351,15 @@ void CPatterned::RotateToPoint(const CVector3f& point, float dt, float turnSpeed
   }
 }
 
-void CPatterned::ApplyScreenShake(CStateManager&, const CVector3f&, TUniqueId) {
-  // TODO: Resolve the shaker (or Footstep/Attach connection), copy its shake and set its position.
+void CPatterned::ApplyScreenShake(CStateManager& mgr, const CVector3f& position, TUniqueId uid) {
+  if (uid == kInvalidUniqueId) {
+    uid = FindConnectedObject(mgr, kSS_Footstep, kSM_Attach);
+  }
+  CScriptCameraShaker* shaker = static_cast< CScriptCameraShaker* >(
+      TryCast(mgr.ObjectById(uid), kET_ScriptCameraShaker));
+  if (shaker) {
+    CCameraShakerData data = shaker->GetShakeData();
+    data.SetPosition(position);
+    mgr.CameraManager(0)->CameraShakerManager()->AddCameraShaker(data, mgr, false, false);
+  }
 }

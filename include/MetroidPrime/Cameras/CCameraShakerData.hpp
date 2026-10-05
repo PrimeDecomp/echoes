@@ -36,6 +36,7 @@ public:
   float GetDuration() const { return mDuration; }
   float GetAttenuationDistance() const { return mAttenuationDistance; }
   const CVector3f& GetPosition() const { return mPosition; }
+  void SetPosition(const CVector3f& position) { mPosition = position; }
   int GetAudioEffect() const { return mAudioEffect; }
   float GetCachedMaxAmplitude() const { return mMaxAmplitude; }
   float GetFirstThresholdTime() const { return mFirstThresholdTime; }

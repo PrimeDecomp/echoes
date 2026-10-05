@@ -110,6 +110,7 @@ enum EScriptObjectState {
   kSS_Entered = 0x454e5452,
   kSS_Inside = 0x494e5344,
   kSS_Exited = 0x45584954,
+  kSS_Footstep = 0x464f4f54,
   kSS_Zero = 0x5a45524f,
   kSS_NonZero = 0x215a4552,
   kSS_DefaultState = 0x44465354,

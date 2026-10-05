@@ -8,6 +8,7 @@ class CScriptCameraShaker : public CEntity {
 public:
   CScriptCameraShaker(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                       const CCameraShakerData& shakeData);
+  const CCameraShakerData& GetShakeData() const { return mShakeData; }
 
   // CEntity
   ~CScriptCameraShaker() override;
