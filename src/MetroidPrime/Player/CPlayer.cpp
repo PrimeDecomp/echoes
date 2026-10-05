@@ -1,6 +1,8 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerRagDoll.hpp"
 
+#include "Collision/CCollisionInfoList.hpp"
+
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
@@ -23,6 +25,17 @@
 
 const float CPlayer::skDefaultHudFadeOutSpeed = 0.5f;
 const float CPlayer::skDefaultHudFadeInSpeed = 2.5f;
+
+CVector3f CCollisionInfoList::GetCombinedNormalLeft() const {
+  CVector3f normal = CVector3f::Zero();
+  for (const CCollisionInfo* collision = Begin(); collision != End(); ++collision) {
+    normal += collision->GetNormalLeft();
+  }
+  if (normal.IsNonZero()) {
+    return normal.AsNormalized();
+  }
+  return normal;
+}
 
 CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
                  const CVector3f& playerScale, float mass, float stepUp, float stepDown,

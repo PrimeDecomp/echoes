@@ -165,7 +165,7 @@ public:
     mAngularImpulse = angularImpulse;
   }
   void SetLastNonCollidingState(const CMotionState& state) { mLastNonCollidingState = state; }
-  CMotionState GetLastNonCollidingState() const { return mLastNonCollidingState; }
+  CMotionState GetLastNonCollidingState() const;
   const rstl::optional_object< CVector3f >& GetLastFloorPlaneNormal() const {
     return mLastFloorPlaneNormal;
   }

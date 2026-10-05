@@ -30,6 +30,8 @@ static bool CollideCachedAABox(const CAreaCollisionCache&, const CAABox&, const 
                                CCollisionInfoList&, const CCollisionPrimitive&);
 static void EnsureCacheBounds(const CStateManager&, CAreaCollisionCache&, const CAABox&);
 
+CMotionState CPhysicsActor::GetLastNonCollidingState() const { return mLastNonCollidingState; }
+
 void CGameCollision::InitCollision(CStateManager*) {
   // TODO: OBB-tree-group collider registration, mode-dependent duplicate buffers, and debug models.
 }

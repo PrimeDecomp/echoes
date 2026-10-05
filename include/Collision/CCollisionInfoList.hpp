@@ -25,6 +25,7 @@ public:
 
   const CCollisionInfo* Begin() const { return mList.begin(); }
   const CCollisionInfo* End() const { return mList.end(); }
+  CVector3f GetCombinedNormalLeft() const;
 
 private:
   rstl::reserved_vector< CCollisionInfo, 32 > mList;
