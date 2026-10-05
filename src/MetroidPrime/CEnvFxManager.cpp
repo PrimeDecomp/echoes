@@ -874,7 +874,16 @@ void CEnvFxManager::UpdateDarkWorldParticles(
       float& lifetime = grid.mParticleLifetimes[j];
       lifetime -= lifetimeDelta;
       CVectorFixed8_8& particle = grid.mParticles[j];
-      if (!(lifetime <= 0.f)) {
+      if (lifetime <= 0.f) {
+        lifetime = 1.f;
+        const short z = real_to_fixed8_8(
+            (invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
+        const short y = static_cast< short >(
+            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        const short x = static_cast< short >(
+            random.Range(0.f, static_cast< float >(grid.mExtent.GetX())));
+        particle = CVectorFixed8_8(x, y, z);
+      } else {
         const CVectorFixed8_8& force = snowForces[(firstForce + random.Next()) & 0xff];
         const float elapsed = 1.f - lifetime;
         const float elapsedSquared = elapsed * elapsed;
@@ -884,15 +893,6 @@ void CEnvFxManager::UpdateDarkWorldParticles(
         particle.mY += (force.mY * forceScale) >> 8;
         particle.mZ += (force.mZ * forceScale) >> 8;
         particle.mZ += real_to_fixed8_8(dt * growth);
-      } else {
-        lifetime = 1.f;
-        const short z = real_to_fixed8_8(
-            (invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
-        const short y = static_cast< short >(
-            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
-        const short x = static_cast< short >(
-            random.Range(0.f, static_cast< float >(grid.mExtent.GetX())));
-        particle = CVectorFixed8_8(x, y, z);
       }
     }
   }
