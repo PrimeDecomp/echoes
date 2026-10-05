@@ -109,9 +109,9 @@ public:
   float GetScanWindowActiveWidth() const;
   float GetScanWindowIdleHeight() const;
   float GetScanWindowIdleWidth() const;
-  CMayaSpline& GetScanObjectScaleTransitionSpline() const;
-  CMayaSpline& GetScanObjectRotationTransitionSpline() const;
-  CMayaSpline& GetScanObjectTranslateTransitionSpline() const;
+  const CMayaSpline& GetScanObjectScaleTransitionSpline() const;
+  const CMayaSpline& GetScanObjectRotationTransitionSpline() const;
+  const CMayaSpline& GetScanObjectTranslateTransitionSpline() const;
   float GetScanSidesEndTime() const;
   float GetScanSidesStartTime() const;
   float GetScanSidesDuration() const;

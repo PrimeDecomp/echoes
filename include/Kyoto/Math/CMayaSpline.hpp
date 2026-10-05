@@ -10,15 +10,15 @@
 class CMayaSplineKnot {
   float mTime;
   float mAmplitude;
-  uint mFlagA : 8;
-  uint mFlagB : 8;
-  uint mDirty : 1;
+  mutable uint mFlagA : 8;
+  mutable uint mFlagB : 8;
+  mutable uint mDirty : 1;
   // u8 x8_;
   // u8 x9_;
   // bool xa_24_dirty : 1;
   // u8 xb_;
-  CVector2f mCachedTangentA;
-  CVector2f mCachedTangentB;
+  mutable CVector2f mCachedTangentA;
+  mutable CVector2f mCachedTangentB;
 
 public:
   CMayaSplineKnot(CInputStream& in);
@@ -30,9 +30,9 @@ public:
   float GetAmplitude() const { return mAmplitude; }
   int GetTangentModeA() const { return mFlagA; }
   int GetTangentModeB() const { return mFlagB; }
-  void GetTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next, CVector2f& tangentA,
-                   CVector2f& tangentB);
-  void CalculateTangents(CMayaSplineKnot* prev, CMayaSplineKnot* next);
+  void GetTangents(const CMayaSplineKnot* prev, const CMayaSplineKnot* next, CVector2f& tangentA,
+                   CVector2f& tangentB) const;
+  void CalculateTangents(const CMayaSplineKnot* prev, const CMayaSplineKnot* next) const;
 };
 
 namespace rstl {
@@ -41,8 +41,7 @@ RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMayaSplineKnot)
 
 class CMayaSpline {
   struct SCache {
-    SCache()
-    : mKnotIndex(-1), mSegmentIndex(-1), mStepSegment(false), mMinTime(0.f) {}
+    SCache() : mKnotIndex(-1), mSegmentIndex(-1), mStepSegment(false), mMinTime(0.f) {}
 
     int mKnotIndex;
     int mSegmentIndex;
@@ -73,28 +72,28 @@ public:
   float GetMaxTime() const;
   float GetDuration() const;
 
-  rstl::pair< float, float > FindMaximumAmplitude();
-  float FindFirstIntersection(float amplitude);
-  float FindLastIntersection(float amplitude);
-  void FindIntersections(float amplitude, rstl::reserved_vector< float, 8 >& intersections);
+  rstl::pair< float, float > FindMaximumAmplitude() const;
+  float FindFirstIntersection(float amplitude) const;
+  float FindLastIntersection(float amplitude) const;
+  void FindIntersections(float amplitude, rstl::reserved_vector< float, 8 >& intersections) const;
   rstl::reserved_vector< float, 8 >
-  FilterLeftIntersections(const rstl::reserved_vector< float, 8 >& intersections);
+  FilterLeftIntersections(const rstl::reserved_vector< float, 8 >& intersections) const;
   rstl::reserved_vector< float, 8 >
-  FilterRightIntersections(const rstl::reserved_vector< float, 8 >& intersections);
-  bool IsSegmentConstant(int knotIndex);
+  FilterRightIntersections(const rstl::reserved_vector< float, 8 >& intersections) const;
+  bool IsSegmentConstant(int knotIndex) const;
   void FindSegmentExtrema(int knotIndex,
-                          rstl::reserved_vector< rstl::pair< float, float >, 2 >& extrema);
+                          rstl::reserved_vector< rstl::pair< float, float >, 2 >& extrema) const;
   void FindSegmentIntersections(float amplitude, int knotIndex,
-                                rstl::reserved_vector< float, 3 >& intersections);
+                                rstl::reserved_vector< float, 3 >& intersections) const;
 
-  float EvaluateAt(float time);
-  float EvaluateAtUnclamped(float time);
-  float EvaluateInfinities(float time, bool Pre);
-  float EvaluateHermite(float time);
-  bool FindKnot(float time, int& knotIndex);
-  void FindControlPoints(int knotIndex, rstl::reserved_vector< CVector2f, 4 >& controlPoints);
+  float EvaluateAt(float time) const;
+  float EvaluateAtUnclamped(float time) const;
+  float EvaluateInfinities(float time, bool Pre) const;
+  float EvaluateHermite(float time) const;
+  bool FindKnot(float time, int& knotIndex) const;
+  void FindControlPoints(int knotIndex, rstl::reserved_vector< CVector2f, 4 >& controlPoints) const;
   void CalculateHermiteCoefficients(const rstl::reserved_vector< CVector2f, 4 >& controlPoits,
-                                    float* coefs);
+                                    float* coefs) const;
 };
 
 // Compatibility name used by generated script-loader declarations.

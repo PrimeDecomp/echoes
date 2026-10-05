@@ -34,7 +34,7 @@ public:
   void Update(float dt);
   void UpdateNodePhysics(float dt);
   float GetLayoutProgress() const;
-  void UpdateLayout();
+  void UpdateLayout(float dt);
   void ScaleChildren(int node, float otherScale, float selectedScale, bool excludeOptions);
   int GetRootNode() const;
   rstl::rc_ptr< CScanTreeNode > GetNode(int node) const;
