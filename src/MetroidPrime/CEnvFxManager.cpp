@@ -1224,11 +1224,12 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
     CVectorFixed8_8 upDeltas[16];
     CVectorFixed8_8 rightDeltas[16];
     CRandom16 random(99);
+    const CTransform4f cameraRotation = camXf.GetRotation();
     for (int i = 0; i < 16; ++i) {
       random.Next();
       const float size = random.Range(0.05f, 0.7f);
-      const CVector3f up = camXf.Rotate(CVector3f(0.f, 0.f, size));
-      const CVector3f right = camXf.Rotate(CVector3f(size, 0.f, 0.f));
+      const CVector3f up = cameraRotation * CVector3f(0.f, 0.f, size);
+      const CVector3f right = cameraRotation * CVector3f(size, 0.f, 0.f);
       const CVector3f offset = -0.5f * (up + right);
       offsets[i] = CVectorFixed8_8(real_to_fixed8_8(offset.GetX()),
                                    real_to_fixed8_8(offset.GetY()),
