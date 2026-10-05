@@ -112,7 +112,7 @@ void CPowerBomb::Think(float dt, CStateManager& mgr) {
 
 void CPowerBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT: {
+  case kSM_Create: {
     mgr.AddWeaponId(GetOwnerId(), GetType());
     if (mFlags & kF_NoDamageDelay) {
       mDamageStartTime = 0.f;
@@ -148,7 +148,7 @@ void CPowerBomb::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XDelete:
+  case kSM_Delete:
     mgr.RemoveWeaponId(GetOwnerId(), GetType());
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);

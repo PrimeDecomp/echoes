@@ -38,7 +38,7 @@ void CScriptCameraBlurKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScrip
     }
     break;
   case kSM_Deactivate:
-  case kSM_XDelete:
+  case kSM_Delete:
     if (GetActive()) {
       for (int i = 0; i < 4; ++i) {
         mgr.CameraBlurPass(i, 0).DisableBlur(0.f);

@@ -154,7 +154,7 @@ void CHomingBlob::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const TUniqueId sender = msg.GetUnk();
 
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (mParticleGen->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
       mgr.AddObject(rs_new CGameLight(
@@ -166,7 +166,7 @@ void CHomingBlob::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       // TODO: distance-sorted near-list filtering and the distinct type-102 callback.
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);
       mLightId = kInvalidUniqueId;

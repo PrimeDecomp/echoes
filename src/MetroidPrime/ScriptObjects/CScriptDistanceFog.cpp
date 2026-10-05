@@ -33,7 +33,7 @@ void CScriptDistanceFog::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
 
   if (GetCurrentAreaId() != kInvalidAreaId && GetActive()) {
     switch (message) {
-    case kSM_XALD:
+    case kSM_AreaLoaded:
       if (mExplicit) {
         const TAreaId aid = GetCurrentAreaId();
         CGameArea::CAreaFog* fog = mgr.World()->Area(aid)->GetPostConstructed()->mAreaFog.get();

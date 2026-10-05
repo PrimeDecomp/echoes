@@ -64,7 +64,7 @@ void CScriptDynamicLight::Think(float dt, CStateManager& mgr) {
 }
 
 void CScriptDynamicLight::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_XALD) {
+  if (msg.GetMessage() == kSM_AreaLoaded) {
     if (CheckConnectedObject_if(mgr, kSS_CameraPath, kSM_Attach, CValidEntityPredicate()) !=
         kInvalidUniqueId) {
       mHasSpline = true;

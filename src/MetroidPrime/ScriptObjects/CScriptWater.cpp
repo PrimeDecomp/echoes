@@ -211,10 +211,10 @@ void CScriptWater::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mAlphaOut = true;
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     ClearSplashInhabitants();
     break;
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     const TUniqueId id = FindConnectedObject(mgr, kSS_Connect, kSM_Reset);
     if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(id))) {
       actor->SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(

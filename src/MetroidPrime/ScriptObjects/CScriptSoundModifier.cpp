@@ -33,7 +33,7 @@ CScriptSoundModifier::~CScriptSoundModifier() {}
 void CScriptSoundModifier::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   if (GetActive()) {
     switch (msg.GetMessage()) {
-    case kSM_XALD:
+    case kSM_AreaLoaded:
       mSounds = FindConnectedObjects(mgr, kSS_Connect, kSM_Attach);
       for (rstl::vector< TUniqueId >::const_iterator it = mSounds.begin(); it != mSounds.end();
            ++it) {

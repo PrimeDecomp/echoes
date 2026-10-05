@@ -142,10 +142,10 @@ void CAmbientAI::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mDead = false;
     mHealthInfo = mInitialHealthInfo;
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     RandomizePlaybackRate(mgr);
     break;
-  case kSM_XDamage:
+  case kSM_Damage:
     if (GetActive()) {
       mAnimState = kAS_Impact;
       ModelData()->AnimationData()->SetAnimation(CAnimPlaybackParms(mDamagedAnim, -1, 1.f, true),

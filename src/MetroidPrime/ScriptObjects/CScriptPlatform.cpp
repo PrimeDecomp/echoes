@@ -566,7 +566,7 @@ void CScriptPlatform::fn_800a1df8() {
 void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const TUniqueId sender = msg.GetUnk();
   switch (msg.GetMessage()) {
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     BuildSlaveList(mgr);
     for (int i = 0; i < mStaticSlaves.size(); ++i) {
       if (CScriptPlatform* platform =
@@ -642,7 +642,7 @@ void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
   case kSM_Decrement:
     CScriptColorModulate::FadeOutHelper(mgr, GetUniqueId(), mFadeOutTime);
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     DecayRiders(mRiders, 1.6666667f, mgr);
     break;
   case kSM_Deactivate:

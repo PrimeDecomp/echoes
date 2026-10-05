@@ -274,7 +274,7 @@ void CScriptColorModulate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   case kSM_Reset:
     mCurTime = 0.f;
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     mEnable = mAutoStart;
     if (mExternalTime) {
       mEnable = true;

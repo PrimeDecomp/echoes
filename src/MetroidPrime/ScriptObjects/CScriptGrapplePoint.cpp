@@ -35,7 +35,7 @@ void CScriptGrapplePoint::Think(float, CStateManager&) {
 void CScriptGrapplePoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   switch (message) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     for (uint player = 0; player < mgr.GetNumPlayers(); ++player) {
       SetValidTarget(player, true);
     }

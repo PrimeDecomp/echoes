@@ -59,7 +59,7 @@ void CLightComboProjectile::Think(float dt, CStateManager& mgr) {
 
 void CLightComboProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XDelete:
+  case kSM_Delete:
     FreeRays(mgr);
     break;
   default:

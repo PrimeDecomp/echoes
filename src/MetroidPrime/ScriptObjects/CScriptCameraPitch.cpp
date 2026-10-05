@@ -79,7 +79,7 @@ void CScriptCameraPitch::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
   }
 
   switch (message) {
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     rstl::vector< CVector3f > positions;
     rstl::vector< CQuaternion > orientations;
     const TUniqueId waypointId = FindConnectedObject(mgr, kSS_CameraPlayer, kSM_Attach);

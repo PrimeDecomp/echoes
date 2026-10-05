@@ -29,7 +29,7 @@ TUniqueId CScriptForgottenObject::DisableTargetRendering(CStateManager& mgr,
 
 void CScriptForgottenObject::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CEntity::AcceptScriptMsg(mgr, msg);
-  if (msg.GetMessage() == kSM_XALD) {
+  if (msg.GetMessage() == kSM_AreaLoaded) {
     x24_ = DisableTargetRendering(mgr, kSS_Zero);
     x28_ = DisableTargetRendering(mgr, kSS_MaxReached);
   }

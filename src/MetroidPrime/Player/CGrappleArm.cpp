@@ -617,7 +617,7 @@ void CGrappleArm::PointGenerator(const CSkinnedModel& model, const SSkinningWork
 }
 
 void CGrappleArm::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_XCRT) {
+  if (msg.GetMessage() == kSM_Create) {
     UpdateGrappleModel(mgr, mCurrentSuit, mgr.IsMultiplayer());
     mSoundPan = GetPlayer(mgr)->GetSoundPan(CPlayer::kMSP_2);
     mSoundSetIndex = mgr.IsMultiplayer();

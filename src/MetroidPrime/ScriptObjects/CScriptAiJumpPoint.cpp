@@ -23,7 +23,7 @@ void CScriptAiJumpPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
   CActor::AcceptScriptMsg(mgr, msg);
 
   switch (message) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
          conn != GetConnectionList().end(); ++conn) {
       if (conn->state != kSS_Arrived || conn->msg != kSM_Next) {

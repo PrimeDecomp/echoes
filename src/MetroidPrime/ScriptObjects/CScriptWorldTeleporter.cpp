@@ -162,9 +162,9 @@ void CScriptWorldTeleporter::StartTransition(CStateManager& mgr) {
 
     const CAnimRes animRes(mPlayerAncs, suit, mPlayerScale, mPlayerDefaultAnim, true);
     const CScriptCamera* firstPass = TCastToConstPtr< CScriptCamera >(
-        mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINF, kSM_None)));
+        mgr.GetObjectById(FindConnectedObject(mgr, kSS_InFront, kSM_None)));
     const CScriptCamera* secondPass = TCastToConstPtr< CScriptCamera >(
-        mgr.GetObjectById(FindConnectedObject(mgr, kSS_XINB, kSM_None)));
+        mgr.GetObjectById(FindConnectedObject(mgr, kSS_InBack, kSM_None)));
     const CScriptSafeZone* safeZone = TCastToConstPtr< CScriptSafeZone >(
         mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_None)));
     const CDarkWorldInfo* darkWorldInfo = nullptr;

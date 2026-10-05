@@ -588,7 +588,7 @@ void CGameCollision::SendScriptMessages(CStateManager& mgr, CActor& actor, CActo
   SendMaterialMessage(mgr, materials, actor);
   if (hasFloor) {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                    kSM_OnFloor, kSS_InvalidState));
+                                    kSM_Landed, kSS_InvalidState));
     if (hasPlatform) {
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(other)) {
         mgr.DeliverScriptMsg(

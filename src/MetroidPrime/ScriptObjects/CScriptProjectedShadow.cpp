@@ -30,7 +30,7 @@ void CScriptShadowProjector::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
   CActor::AcceptScriptMsg(mgr, msg);
 
   switch (message) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
       if (it->state != kSS_Play) {

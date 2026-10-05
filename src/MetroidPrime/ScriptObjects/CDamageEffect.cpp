@@ -127,7 +127,7 @@ void CDamageEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
 
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     mParticle->SetParticleEmission(true);
     SetActive(true);
     break;

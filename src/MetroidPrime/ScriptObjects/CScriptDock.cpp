@@ -96,7 +96,7 @@ void CGameArea::AddDock(TUniqueId uid) { mPostConstructed->mDockIds.push_back(ui
 
 void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT: {
+  case kSM_Create: {
     CGameArea* area = mgr.World()->Area(mArea);
     if (mDock >= area->GetDockCount()) {
       return;
@@ -107,13 +107,13 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_XDelete:
+  case kSM_Delete:
     AreaUnloaded(mgr);
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     mgr.World()->Area(GetCurrentAreaId())->AddDock(GetUniqueId());
     break;
-  case kSM_XWLD: {
+  case kSM_WorldLoaded: {
     UpdateAreaActivateFlags(mgr);
     CMaterialList include = GetMaterialFilter().GetIncludeList();
     include.Add(kMT_AIBlock);

@@ -139,7 +139,7 @@ void CCollisionActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
   const EScriptObjectMessage message = msg.GetMessage();
   const TUniqueId sender = msg.GetUnk();
   switch (message) {
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mNonUniformVulnerability)
       mNonUniformVulnerability.reset();
     break;

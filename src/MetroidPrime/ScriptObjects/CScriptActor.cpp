@@ -126,7 +126,7 @@ void CScriptActor::Think(float dt, CStateManager& mgr) {
 
 void CScriptActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     for (rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
          conn != GetConnectionList().end(); ++conn) {
       if (conn->state == kSS_InheritBounds && conn->msg == kSM_Activate) {

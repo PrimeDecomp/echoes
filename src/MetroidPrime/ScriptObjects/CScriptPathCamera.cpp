@@ -132,7 +132,7 @@ CScriptPathCamera::~CScriptPathCamera() {}
 void CScriptPathCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CEntity::AcceptScriptMsg(mgr, msg);
-  if (GetActive() && message == kSM_XALD) {
+  if (GetActive() && message == kSM_AreaLoaded) {
     ScriptCameraSpline::Initialise(*this, kSS_CameraPath, kSM_Attach, kSS_CameraTarget, kSM_Attach,
                                    mgr, mSpline);
     if (mSpline.GetLookAtKnotCount() == 0) {

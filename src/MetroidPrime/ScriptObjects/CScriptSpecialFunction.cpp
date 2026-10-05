@@ -299,7 +299,7 @@ void CScriptSpecialFunction::Render(const CStateManager& mgr) const {
 
 void CScriptSpecialFunction::AcceptChaffTarget(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     AddMaterial(kMT_Target, mgr);
     break;
   }
@@ -431,7 +431,7 @@ void CScriptSpecialFunction::AcceptEnergyTank(CStateManager& mgr, const CScriptM
 void CScriptSpecialFunction::AcceptRadialDamage(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Activate:
-  case kSM_XCRT:
+  case kSM_Create:
     if ((mIntParm1 & 1) == 0 || !GetActive()) {
       break;
     }
@@ -502,7 +502,7 @@ void CScriptSpecialFunction::AcceptCinematicSkip(CStateManager& mgr, const CScri
   case kSM_Decrement:
     mgr.SetSkipCinematicSpecialFunction(kInvalidUniqueId);
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mgr.GetSkipCinematicSpecialFunction() == GetUniqueId()) {
       mgr.SetSkipCinematicSpecialFunction(kInvalidUniqueId);
     }
@@ -553,7 +553,7 @@ void CScriptSpecialFunction::AcceptInventoryActivator(CStateManager& mgr, const 
 void CScriptSpecialFunction::AcceptAreaDamage(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Deactivate:
-  case kSM_XDelete:
+  case kSM_Delete:
     if (!mgr.IsMultiplayer() && mInAreaDamage) {
       mInAreaDamage = false;
       mgr.GetPlayer(0)->PopSustainedDamage();
@@ -667,7 +667,7 @@ void CScriptSpecialFunction::AcceptPlayerVelocity(CStateManager& mgr, const CScr
 
 void CScriptSpecialFunction::AcceptDarkWorld(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     if (GetActive()) {
       if (mgr.GetIsDarkWorld()) {
         SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
@@ -833,7 +833,7 @@ void CScriptSpecialFunction::AcceptPauseGame(CStateManager& mgr, const CScriptMs
 
 void CScriptSpecialFunction::AcceptSkyboxLighting(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mIntParm1 = 0;
     break;
   case kSM_Increment:
@@ -855,7 +855,7 @@ void CScriptSpecialFunction::AcceptSkyboxLighting(CStateManager& mgr, const CScr
 
 void CScriptSpecialFunction::AcceptAreaOcclusion(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mIntParm1 = 0;
     break;
   }
@@ -864,7 +864,7 @@ void CScriptSpecialFunction::AcceptAreaOcclusion(CStateManager& mgr, const CScri
 void CScriptSpecialFunction::AcceptMultiplayerEndConditions(CStateManager& mgr,
                                                             const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mIntParm1 = 0;
     mIntParm2 = 0;
     break;
@@ -905,7 +905,7 @@ void CScriptSpecialFunction::AcceptDamageActor(CStateManager& mgr, const CScript
 
 void CScriptSpecialFunction::AcceptRezbitState(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mValue2 = 0.f;
     break;
   case kSM_Action: {
@@ -941,7 +941,7 @@ void CScriptSpecialFunction::AcceptFogPlane(CStateManager& mgr, const CScriptMsg
 
 void CScriptSpecialFunction::AcceptBillboard(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mIntParm1 = (mIntParm1 & ~2) | ((mIntParm2 != 0) << 1);
     mValue4 = 0.f;
     mIntParm2 = 0;
@@ -1078,7 +1078,7 @@ void CScriptSpecialFunction::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
     break;
   }
 
-  if (!GetActive() && message != kSM_XCRT && message != kSM_XALD) {
+  if (!GetActive() && message != kSM_Create && message != kSM_AreaLoaded) {
     return;
   }
 

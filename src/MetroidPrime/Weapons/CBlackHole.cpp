@@ -91,7 +91,7 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
 
 void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (!mParticleGen.null()) {
       mParticleGen->SetGlobalTranslation(GetTransform().GetTranslation());
     }
@@ -110,7 +110,7 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                                       mSourceId, 1, 0.f));
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     mgr.RemoveWeaponId(GetOwnerId(), GetType());
     if (mLightId != kInvalidUniqueId) {
       mgr.DeleteObjectRequest(mLightId);

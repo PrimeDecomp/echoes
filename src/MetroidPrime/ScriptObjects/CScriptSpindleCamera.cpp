@@ -41,7 +41,7 @@ CScriptSpindleCamera::~CScriptSpindleCamera() {}
 void CScriptSpindleCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
-  if (GetActive() && message == kSM_XALD) {
+  if (GetActive() && message == kSM_AreaLoaded) {
     rstl::vector< CVector3f > targetPoints;
     rstl::vector< CQuaternion > targetOrientations;
     const TUniqueId target = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);

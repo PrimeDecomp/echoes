@@ -66,7 +66,7 @@ void CScriptCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mgr.CameraManager(index)->SetCinematicPaused(message == kSM_Stop);
     break;
   }
-  case kSM_XALD: {
+  case kSM_AreaLoaded: {
     ScriptCameraSpline::Initialise(*this, kSS_CameraPath, kSM_Attach, kSS_CameraTarget, kSM_Attach,
                                    mgr, mSpline);
     if (mSpline.GetPositionKnotCount() == 0) {

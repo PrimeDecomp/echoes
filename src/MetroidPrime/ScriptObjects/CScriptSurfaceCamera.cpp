@@ -34,7 +34,7 @@ void CScriptSurfaceCamera::Think(float dt, CStateManager& mgr) {
 void CScriptSurfaceCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
-  if (GetActive() && message == kSM_XALD) {
+  if (GetActive() && message == kSM_AreaLoaded) {
     mTargetId = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
     if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(mTargetId))) {
       rstl::vector< CVector3f > positions;

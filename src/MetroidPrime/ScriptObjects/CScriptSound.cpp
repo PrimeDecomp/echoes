@@ -279,13 +279,13 @@ void CScriptSound::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (GetActive() && mAutoStart) {
       mPlayRequested = true;
     }
     mSelfFree = mgr.ScriptObjectLoaderHelper().IsGeneratingObject();
     break;
-  case kSM_XALD:
+  case kSM_AreaLoaded:
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
       if (it->state == kSS_Connect) {
@@ -314,7 +314,7 @@ void CScriptSound::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mPlayRequested = true;
     }
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     if (!mWorldSfx) {
       StopSound(mgr);
     }

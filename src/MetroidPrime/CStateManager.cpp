@@ -357,7 +357,7 @@ void CStateManager::fn_8003BE54() {
           UpdateActorInSortedLists(actor);
         }
       }
-      if (msg.GetMessage() == kSM_XDelete) {
+      if (msg.GetMessage() == kSM_Delete) {
         fn_8003BF84(ent);
         fn_800412EC(ent->GetUniqueId());
       }
@@ -428,7 +428,7 @@ void CStateManager::MoveActors(float dt) {
 
     CPatterned* patterned = TCastToPtr< CPatterned >(actor);
     if (patterned != nullptr && !ShouldUpdatePatterned(*patterned)) {
-      SendScriptMsg(patterned->GetUniqueId(), kInvalidUniqueId, kSM_SuspendedMove,
+      SendScriptMsg(patterned->GetUniqueId(), kInvalidUniqueId, kSM_AIUpdateDisabled,
                     kInvalidUniqueId);
       continue;
     }

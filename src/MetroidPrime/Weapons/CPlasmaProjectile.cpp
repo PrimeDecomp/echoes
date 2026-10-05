@@ -496,7 +496,7 @@ void CPlasmaProjectile::RenderMotionBlur() const {
 }
 
 void CPlasmaProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_XDelete) {
+  if (msg.GetMessage() == kSM_Delete) {
     mgr.RemoveWeaponId(GetOwnerId(), GetType());
     DeletePlasmaLights(mgr);
     if (mSustainedDamagePlayerId != kInvalidUniqueId) {
@@ -505,7 +505,7 @@ void CPlasmaProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       }
       mSustainedDamagePlayerId = kInvalidUniqueId;
     }
-  } else if (msg.GetMessage() == kSM_XCRT) {
+  } else if (msg.GetMessage() == kSM_Create) {
     const TLockedToken< CWeaponDescription > desc = mProjectile.GetWeaponDescription();
     if (desc->mAPSM) {
       mWeaponGen = rs_new CElementGen(*desc->mAPSM);

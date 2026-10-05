@@ -45,7 +45,7 @@ CDamageVulnerability* CAi::DamageVulnerability() { return &mDamageVulnerability;
 void CAi::TakeDamage(const CVector3f&, float) {}
 
 void CAi::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_XALD) {
+  if (msg.GetMessage() == kSM_AreaLoaded) {
     CMaterialList include = GetMaterialFilter().GetIncludeList();
     include.Add(kMT_AIBlock);
     SetMaterialFilter(

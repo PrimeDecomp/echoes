@@ -63,7 +63,7 @@ void CScriptVisorGoo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       CEntity* effect = mgr.ObjectById(mEffectId);
       if (effect != nullptr) {
         if (mDeleteOnDeactivate) {
-          mgr.SendScriptMsg(effect, GetUniqueId(), kSM_XDelete, kInvalidUniqueId);
+          mgr.SendScriptMsg(effect, GetUniqueId(), kSM_Delete, kInvalidUniqueId);
         } else {
           CHUDBillboardEffect* hud = static_cast< CHUDBillboardEffect* >(effect);
           hud->GetParticleGen()->SetParticleEmission(false);

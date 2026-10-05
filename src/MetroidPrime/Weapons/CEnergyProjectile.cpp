@@ -270,7 +270,7 @@ void CEnergyProjectile::ResolveCollisionWithWorld(const CRayCastResult& result,
 
 void CEnergyProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XDelete:
+  case kSM_Delete:
     if (mActive) {
       mgr.RemoveWeaponId(GetOwnerId(), GetType());
     }
@@ -279,7 +279,7 @@ void CEnergyProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       mSfx.Clear();
     }
     break;
-  case kSM_XCRT: {
+  case kSM_Create: {
     CElementGen* particles = mProjectile.GetAttachedPS1();
     if (particles != nullptr && particles->SystemHasLight()) {
       CreateProjectileLight(rstl::string_l("ProjectileLight_GameProjectile"), particles->GetLight(),

@@ -2074,7 +2074,7 @@ void CBallCamera::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
 void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CGameCamera::AcceptScriptMsg(mgr, msg);
   switch (msg.GetMessage()) {
-  case kSM_XCRT: {
+  case kSM_Create: {
     mCollisionActorId = mgr.AllocateUniqueId();
     CCollisionActor* actor = rs_new CCollisionActor(mCollisionActorId, GetAreaIdForPersistence(),
                                                     kInvalidUniqueId, true, 0.3f, 1.f);
@@ -2097,7 +2097,7 @@ void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     RemoveMaterial(kMT_Unknown59, mgr);
     break;
   }
-  case kSM_XDelete:
+  case kSM_Delete:
     mgr.DeleteObjectRequest(mCollisionActorId);
     mCollisionActorId = kInvalidUniqueId;
     break;

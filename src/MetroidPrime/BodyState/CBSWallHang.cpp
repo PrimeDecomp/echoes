@@ -83,7 +83,7 @@ pas::EAnimationState CBSWallHang::UpdateBody(float dt, CBodyController& bc, CSta
 
       if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
         mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor->GetUniqueId(),
-                                        kSM_Jumped, kSS_InvalidState));
+                                        kSM_Launching, kSS_InvalidState));
         if (const CActor* waypoint = TCastToConstPtr< CActor >(mgr.GetObjectById(mWpId))) {
           const CVector3f toWaypoint = waypoint->GetTranslation() - actor->GetTranslation();
           if (!(toWaypoint.GetZ() < 0.f)) {
@@ -154,7 +154,7 @@ pas::EAnimationState CBSWallHang::UpdateBody(float dt, CBodyController& bc, CSta
 
       if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
         mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor->GetUniqueId(),
-                                        kSM_Jumped, kSS_InvalidState));
+                                        kSM_Launching, kSS_InvalidState));
         mLaunched = false;
         if (const CActor* waypoint = TCastToConstPtr< CActor >(mgr.GetObjectById(mWpId))) {
           mLaunchVel = 15.f * waypoint->GetTransform().GetForward();
@@ -208,7 +208,7 @@ bool CBSWallHang::CheckForWall(CBodyController& bc, CStateManager& mgr) {
                              false, false);
       actor->SetVelocityWR(CVector3f::Zero());
       actor->SetMomentumWR(CVector3f::Zero());
-      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
       return true;
     }
   }
@@ -221,7 +221,7 @@ bool CBSWallHang::CheckForLand(CBodyController& bc, CStateManager& mgr) {
       mState = pas::kWHS_DetachOutOfJump;
       bc.PlayBestAnimation(CPASAnimParmData(pas::kAS_WallHang, CPASAnimParm::FromEnum(mState)),
                            *mgr.Random());
-      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_OnFloor, kInvalidUniqueId);
+      mgr.SendScriptMsg(actor, kInvalidUniqueId, kSM_Landed, kInvalidUniqueId);
       return true;
     }
   }

@@ -33,10 +33,10 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   CEntity::AcceptScriptMsg(mgr, msg);
   if (GetCurrentAreaId() != kInvalidAreaId) {
     switch (message) {
-    case kSM_XCRT:
+    case kSM_Create:
       mgr.SetIsDarkWorld(m_isDarkWorld);
       break;
-    case kSM_XALD:
+    case kSM_AreaLoaded:
       mgr.World()->Area(GetCurrentAreaId())->SetAreaAttributes(this);
       if (m_environmentEffects) {
         mgr.EnvFxManager()->FadeDensity(m_density, 500);
@@ -48,7 +48,7 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
     case kSM_Stop:
       mgr.EnvFxManager()->StopRainSounds();
       break;
-    case kSM_XDelete: {
+    case kSM_Delete: {
       if (mgr.World()->Area(GetCurrentAreaId())->GetPhase() == 0x10) {
         mgr.World()->Area(GetCurrentAreaId())->SetAreaAttributes(nullptr);
       }

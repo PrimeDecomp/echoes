@@ -118,11 +118,11 @@ void CElectricBeamProjectile::ResetBeam(CStateManager& mgr, bool fullReset) {
 
 void CElectricBeamProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     mgr.AddWeaponId(GetOwnerId(), GetType());
     CauseDamage(true);
     break;
-  case kSM_XDelete:
+  case kSM_Delete:
     DeleteProjectileLight(mgr);
     break;
   default:
