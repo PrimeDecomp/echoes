@@ -518,7 +518,7 @@ void CCubeRenderer::DrawModelDisintegrate(const CModel& model, const CTexture& t
   // TODO: reconstruct this rendering pass.
 }
 
-void CCubeRenderer::DrawModelFlat(const CModel& model, const CModelFlags& flags,
+void CCubeRenderer::DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
                                   bool unsortedOnly) {
   // TODO: reconstruct this rendering pass.
 }

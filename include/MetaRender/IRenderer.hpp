@@ -147,7 +147,8 @@ public:
   virtual void DrawSpaceWarp(const CVector3f& point, float strength) = 0;
   virtual void DrawModelDisintegrate(const CModel& model, const CTexture& texture,
                                      const CColor& color, float amount) = 0;
-  virtual void DrawModelFlat(const CModel& model, const CModelFlags& flags, bool unsortedOnly) = 0;
+  virtual void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
+                             bool unsortedOnly) = 0;
   // Guessed name
   virtual void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
                                         const CVector3f& origin, const CColor& color,

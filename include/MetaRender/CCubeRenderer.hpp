@@ -148,7 +148,8 @@ public:
   void DrawSpaceWarp(const CVector3f& point, float strength) override;
   void DrawModelDisintegrate(const CModel& model, const CTexture& texture, const CColor& color,
                              float amount) override;
-  void DrawModelFlat(const CModel& model, const CModelFlags& flags, bool unsortedOnly) override;
+  void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
+                     bool unsortedOnly) override;
   // Guessed name
   void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
                                 const CVector3f& origin, const CColor& color,
