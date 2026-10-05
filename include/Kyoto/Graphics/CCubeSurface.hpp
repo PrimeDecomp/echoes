@@ -30,7 +30,9 @@ public:
   const CVector3f& GetCenter() const { return mData->mCenter; }
   const CVector3f& GetNormalHint() const { return mData->mNormal; }
   uint GetMaterialIndex() const { return mData->mMaterialIndex; }
+  CCubeModel* GetParent() const { return mData->mParent; }
   short GetMatrixBank() const { return mData->mMatrixBank; } // Guessed name.
+  short GetShadowBank() const { return mData->x2e_; }        // Target-derived grouping key.
   uint GetDisplayListSize() const { return mData->mDisplayListSizeAndNormalHint & 0x7fffffff; }
   uint GetSurfaceHeaderSize() const { return (sizeof(SSurfaceData) + 7 + mData->mExtraSize) & ~31; }
   const void* GetDisplayList() const {

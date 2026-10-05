@@ -88,6 +88,8 @@ public:
   static void FlushState();
   static void SetNumTexGens(uchar num);
   static void SetNumTevStages(uchar num);
+  static uchar GetNumTevStages();
+  static uchar GetNumTexGens();
   static void SetNumIndStages(uchar num);
   static void SetChanAmbColor(EChannelId channel, const GXColor& color);
   static void SetChanMatColor(EChannelId channel, const GXColor& color);

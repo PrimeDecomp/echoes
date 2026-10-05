@@ -29,6 +29,10 @@ void CGX::SetNumTexGens(uchar num) {
   }
 }
 
+uchar CGX::GetNumTexGens() { return gpGXState->mNumTexGens; }
+
+uchar CGX::GetNumTevStages() { return gpGXState->mNumTevStages; }
+
 void CGX::SetChanAmbColor(EChannelId channel, const GXColor& color) {
   if (!CompareGXColors(color, gpGXState->mChanAmbColors[channel])) {
     CopyGXColor(gpGXState->mChanAmbColors[channel], color);
