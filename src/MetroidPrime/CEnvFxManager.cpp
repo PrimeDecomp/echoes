@@ -815,45 +815,42 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
       lifetime -= dt * g_TrailDecayRate;
       ++frame;
       const int base = trail * 8;
-      if (!(lifetime <= 0.f)) {
-        if (frame % period == 0) {
-          const int current = ((frame - 1) / period) & 7;
-          const int next = (current + 1) & 7;
-          CVectorFixed8_8& currentPoint = grid.mParticles[base + current];
-          CVectorFixed8_8& nextPoint = grid.mParticles[base + next];
-          nextPoint = currentPoint;
-          if (frame % (period * 2) == 0) {
-            const short delta = real_to_fixed8_8(
-                primaryScale * kPrimaryOffsets[trail % 7]);
-            if (primaryAxis == 0) {
-              nextPoint.mX += delta;
-            } else {
-              nextPoint.mZ += delta;
-            }
-          } else {
-            const short delta = real_to_fixed8_8(
-                kSecondaryOffsets[(frame / (period * 2)) & 7]);
-            if (secondaryAxis == 0) {
-              nextPoint.mX += delta;
-            } else {
-              nextPoint.mZ += delta;
-            }
-          }
-          currentPoint.mX -= nextPoint.mX;
-          currentPoint.mY -= nextPoint.mY;
-          currentPoint.mZ -= nextPoint.mZ;
-        }
-      } else {
+      if (lifetime <= 0.f) {
         lifetime = 1.f;
         frame = period * random.Range(0, 100);
         const int current = (frame / period) & 7;
+        const short z = static_cast< short >(random.Range(20.f, 16363.f));
+        const short y = static_cast< short >(
+            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        const short x = static_cast< short >(random.Range(0.f, grid.mExtent.GetX() - 20.f));
         for (int point = 0; point < 8; ++point) {
           grid.mParticles[base + point] = CVectorFixed8_8();
         }
-        grid.mParticles[base + current] = CVectorFixed8_8(
-            static_cast< short >(random.Range(0.f, grid.mExtent.GetX() - 20.f)),
-            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY()))),
-            static_cast< short >(random.Range(20.f, 16363.f)));
+        grid.mParticles[base + current] = CVectorFixed8_8(x, y, z);
+      } else if (frame % period == 0) {
+        const int current = ((frame - 1) / period) & 7;
+        const int next = (current + 1) & 7;
+        CVectorFixed8_8& currentPoint = grid.mParticles[base + current];
+        CVectorFixed8_8& nextPoint = grid.mParticles[base + next];
+        nextPoint = currentPoint;
+        if (frame % (period * 2) == 0) {
+          const short delta = real_to_fixed8_8(primaryScale * kPrimaryOffsets[trail % 7]);
+          if (primaryAxis == 0) {
+            nextPoint.mX += delta;
+          } else {
+            nextPoint.mZ += delta;
+          }
+        } else {
+          const short delta = real_to_fixed8_8(kSecondaryOffsets[(frame / (period * 2)) & 7]);
+          if (secondaryAxis == 0) {
+            nextPoint.mX += delta;
+          } else {
+            nextPoint.mZ += delta;
+          }
+        }
+        currentPoint.mX -= nextPoint.mX;
+        currentPoint.mY -= nextPoint.mY;
+        currentPoint.mZ -= nextPoint.mZ;
       }
       CVectorFixed8_8& point = grid.mParticles[base + ((frame / period) & 7)];
       point.mZ = (point.mZ + zVec.mZ) & 0x3fff;
