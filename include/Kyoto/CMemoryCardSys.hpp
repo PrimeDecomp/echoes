@@ -117,6 +117,7 @@ public:
     void ResetHeaderInfo();
     void LockBannerToken(CAssetId bannerTxtr, CSimplePool& pool);
     void LockIconToken(CAssetId iconTxtr, int speed, CSimplePool& pool);
+    void BuildHeaderBuffer();
 
     ECardResult Open();
     ECardResult CreateFile();
@@ -128,6 +129,7 @@ public:
     EMemoryCardPort GetCardPort();
     int GetFileNo();
     int GetFileBlocks();
+    bool IsRepairingHeader() const { return mStatus == kS_RepairHeader; }
 
     rstl::vector< uchar >& LoadedData() { return mLoadedData; }
     rstl::vector< uchar >& SaveBuffer() { return mSaveBuffer; }
@@ -136,7 +138,6 @@ public:
     ECardResult CheckHeaderCrc();
     ECardResult SelectSaveSlot();
     void BuildSaveSlot();
-    void BuildHeaderBuffer();
     void WriteBannerData(COutputStream& out);
     void WriteIconData(COutputStream& out);
     ECardResult WriteSaveSlot(int slot);
