@@ -34,7 +34,9 @@ public:
 
   CHintManager* HintManager() { return mCameraHintManager.get(); }
   const CHintManager* GetHintManager() const { return mCameraHintManager.get(); }
+  CCameraShakerManager* CameraShakerManager() { return mCameraShakeManager.get(); }
   CFirstPersonCamera* FirstPersonCamera() { return mFpCamera; }
+  const CFirstPersonCamera* GetFirstPersonCamera() const { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
   CBallCamera* BallCamera() { return mBallCamera; }
   const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }

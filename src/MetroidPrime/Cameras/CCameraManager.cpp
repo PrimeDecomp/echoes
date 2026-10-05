@@ -13,7 +13,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-// NonMatching scaffold: camera creation and the separate hint/shake subsystems remain TODO.
+// NonMatching scaffold: camera creation and other camera behavior remain TODO.
 CCameraManager::CCameraManager(TUniqueId curCamera, int playerIndex)
 : mPlayerIndex(playerIndex)
 , mCurCameraId(curCamera)
@@ -30,8 +30,8 @@ CCameraManager::CCameraManager(TUniqueId curCamera, int playerIndex)
 , mFogDensitySpeed(0.f)
 , mFogDensityFactorTarget(1.f)
 , mFluidFogTime(0.f)
-, mCameraHintManager(nullptr)
-, mCameraShakeManager(nullptr)
+, mCameraHintManager(rs_new CHintManager(playerIndex, rstl::string("Camera Hint Manager")))
+, mCameraShakeManager(rs_new CCameraShakerManager(playerIndex))
 , mFirstPersonFov(55.f)
 , mCameraHistory(CTransform4f::Identity())
 , mScreenFlashTimer(0.f)
@@ -39,7 +39,6 @@ CCameraManager::CCameraManager(TUniqueId curCamera, int playerIndex)
 , xfa4_25_(false)
 , mWasFogEnabled(false)
 , mFogEnabled(false) {
-  // TODO: construct the owned hint and shake managers once their layouts are recovered.
   // mSurfaceCamera is assigned by CreateCameras, not initialized by the original constructor.
 }
 
