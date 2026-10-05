@@ -1,27 +1,27 @@
 #include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
-#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CMath.hpp"
-#include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Particles/CElectricDescription.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
-#include "MetroidPrime/CGameLight.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
-#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
-#include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Weapons/CBeamInfo.hpp"
 #include "MetroidPrime/Weapons/CWeaponAssetInfo.hpp"
 #include "Weapons/CWeaponDescription.hpp"
-#include "MetaRender/CCubeRenderer.hpp"
 #include "dolphin/gx.h"
 
 const int CPlasmaProjectile::kMaxPlasmaLights = 3;
@@ -158,11 +158,11 @@ void CPlasmaProjectile::MakeBillboardEffect(
     const rstl::optional_object< TToken< CGenDescription > >& particle,
     const rstl::optional_object< TToken< CElectricDescription > >& electric,
     const rstl::string& name, CStateManager& mgr, uint playerMask) {
-  mgr.AddObject(rs_new CHUDBillboardEffect(
-      particle, electric, mgr.AllocateUniqueId(), true, name,
-      CHUDBillboardEffect::GetNearClipDistance(mgr, playerMask),
-      CHUDBillboardEffect::GetScaleForPOV(mgr), playerMask, CColor::White(), CVector3f::One(),
-      CVector3f::Zero(), false));
+  mgr.AddObject(
+      rs_new CHUDBillboardEffect(particle, electric, mgr.AllocateUniqueId(), true, name,
+                                 CHUDBillboardEffect::GetNearClipDistance(mgr, playerMask),
+                                 CHUDBillboardEffect::GetScaleForPOV(mgr), playerMask,
+                                 CColor::White(), CVector3f::One(), CVector3f::Zero(), false));
 }
 
 void CPlasmaProjectile::UpdatePlayerEffects(float dt, CStateManager& mgr) {
@@ -188,7 +188,8 @@ void CPlasmaProjectile::UpdatePlayerEffects(float dt, CStateManager& mgr) {
         }
         switch (GetType()) {
         case kWT_Dark:
-          player->GetKnockBackManager().Freeze(player->GetTweakPlayer()->GetFrozenTimeout(), *player);
+          player->GetKnockBackManager().Freeze(player->GetTweakPlayer()->GetFrozenTimeout(),
+                                               *player);
           break;
         case kWT_Light:
           if (mVisorElectric) {
@@ -539,8 +540,8 @@ void CPlasmaProjectile::CreatePlasmaLights(uint sourceId, const CLight& light, C
   mLights.reserve(kMaxPlasmaLights);
   for (int i = 0; i < kMaxPlasmaLights; ++i) {
     const TUniqueId id = mgr.AllocateUniqueId();
-    mgr.AddObject(rs_new CGameLight(id, GetCurrentAreaId(), GetActive(), rstl::string(), GetTransform(),
-                                    GetUniqueId(), light, sourceId, 0, 0.f));
+    mgr.AddObject(rs_new CGameLight(id, GetAreaIdForPersistence(), GetActive(), rstl::string(),
+                                    GetTransform(), GetUniqueId(), light, sourceId, 0, 0.f));
     mLights.push_back(id);
   }
 }
