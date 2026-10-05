@@ -5,6 +5,7 @@
 #include "Kyoto/Text/CColorInstruction.hpp"
 #include "Kyoto/Text/CColorOverrideInstruction.hpp"
 #include "Kyoto/Text/CFontInstruction.hpp"
+#include "Kyoto/Text/CFontRenderState.hpp"
 #include "Kyoto/Text/CImageInstruction.hpp"
 #include "Kyoto/Text/CLineExtraSpaceInstruction.hpp"
 #include "Kyoto/Text/CLineInstruction.hpp"
@@ -12,7 +13,9 @@
 #include "Kyoto/Text/CPopStateInstruction.hpp"
 #include "Kyoto/Text/CPushStateInstruction.hpp"
 #include "Kyoto/Text/CRemoveColorOverrideInstruction.hpp"
+#include "Kyoto/Text/CTextInstruction.hpp"
 #include "Kyoto/Text/CTextRenderBuffer.hpp"
+#include "Kyoto/Text/CWordBreakTables.hpp"
 #include "Kyoto/Text/CWordInstruction.hpp"
 #include "rstl/math.hpp"
 
@@ -80,8 +83,34 @@ void CTextExecuteBuffer::AddFont(const TToken< CRasterFont >& font) {
 }
 
 void CTextExecuteBuffer::AddImage(const CFontImageDef& image) {
-  // TODO: update line metrics and wrap loaded images before appending the instruction.
-  Add(rs_new CImageInstruction(image));
+  if (!mCurrentLine) {
+    StartNewLine();
+  }
+
+  if (mCurrentBlock && image.IsLoaded()) {
+    bool wrap = mState.IsWordWrapping();
+    if (wrap) {
+      const int width = mCurrentLine->GetWidth() + image.GetWidth();
+      wrap = width > mCurrentBlock->GetOutputWidth();
+    }
+    if (wrap) {
+      wrap = mCurrentLine->GetWordCount() > 0;
+    }
+    if (wrap) {
+      StartNewLine();
+    }
+    mCurrentLine->TestLargestImage(image.GetMonoWidth(), image.GetHeight(),
+                                  image.CalculateBaseline());
+    if (mCurrentBlock->GetTextDirection() == kTD_Horizontal) {
+      mCurrentLine->AddWidth(image.GetWidth());
+      if (mCurrentLine->GetWidth() > image.GetWidth()) {
+        mCurrentBlock->SetWidth(mCurrentLine->GetWidth());
+      }
+    }
+  }
+
+  const rstl::ncrc_ptr< CInstruction > instruction = rs_new CImageInstruction(image);
+  Add(instruction);
 }
 
 void CTextExecuteBuffer::AddColor(EColorType type, const CTextColor& color) {
@@ -199,8 +228,52 @@ void CTextExecuteBuffer::MoveWordLTR() {
 }
 
 int CTextExecuteBuffer::WrapOneLTR(const wchar_t* str, int len) {
-  // TODO: measure glyphs, select word-break ranks and append text fragments.
-  return len;
+  int rem = len;
+  if (mState.IsFinishedLoading()) {
+    int width, height;
+    mState.GetFont()->GetSize(mState.GetOptions(), width, height, str, len);
+    if (mState.IsWordWrapping()) {
+      if (width + mCurrentLine->GetWidth() > mCurrentBlock->GetOutputWidth() &&
+          mCurrentLine->GetWordCount() > 1 && mCurrentX + width < mCurrentBlock->GetOutputWidth()) {
+        MoveWordLTR();
+      }
+      if (width + mCurrentLine->GetWidth() > mCurrentBlock->GetOutputWidth() && len > 1) {
+        rem = rstl::max_val(
+            1, rstl::min_val(len, 2 * ((mCurrentBlock->GetOutputWidth() - mCurrentLine->GetWidth()) /
+                                       mState.GetFont()->GetMonoWidth())));
+        int rank = 5;
+        do {
+          --rem;
+          int endRank = rem > 1 ? CWordBreakTables::GetEndRank(str[rem - 1]) : 4;
+          int beginRank = CWordBreakTables::GetBeginRank(str[rem]);
+          if (endRank < rank && endRank <= beginRank) {
+            rank = endRank;
+          } else if (beginRank < rank && beginRank <= endRank) {
+            rank = endRank;
+          } else {
+            mState.GetFont()->GetSize(mState.GetOptions(), width, height, str, rem);
+          }
+        } while (width + mCurrentLine->GetWidth() > mCurrentBlock->GetOutputWidth() && rem > 1);
+      }
+    }
+    if (mState.GetFont()->GetCarriageAdvance() > mCurrentY) {
+      mCurrentY = mState.GetFont()->GetCarriageAdvance();
+    }
+    mCurrentLine->TestLargestFont(mState.GetFont()->GetMonoWidth(),
+                                  mState.GetFont()->GetCarriageAdvance(),
+                                  mState.GetFont()->GetBaseLine());
+    mCurrentLine->AddWidth(width);
+    if (mCurrentLine->GetWidth() > mCurrentBlock->GetLineX()) {
+      mCurrentBlock->SetWidth(mCurrentLine->GetWidth());
+    }
+    mCurrentX += width;
+    const rstl::ncrc_ptr< CInstruction > instruction = CTextInstruction::Create(str, rem);
+    Add(instruction);
+    if (rem != len) {
+      StartNewLine();
+    }
+  }
+  return rem;
 }
 
 void CTextExecuteBuffer::AddStringFragment(const wchar_t* str, int len) {
@@ -213,7 +286,39 @@ void CTextExecuteBuffer::AddStringFragment(const wchar_t* str, int len) {
 }
 
 void CTextExecuteBuffer::AddString(const wchar_t* str, int len) {
-  // TODO: split words/newlines and account for space metrics in each text direction.
+  if (!mCurrentLine) {
+    StartNewLine();
+  }
+
+  int wordStart = 0;
+  int i = 0;
+  for (; str[i] && (i < len || len == -1); ++i) {
+    if (str[i] == L'\n' || str[i] == L' ') {
+      AddStringFragment(str + wordStart, i - wordStart);
+      wordStart = i + 1;
+      if (str[i] == L'\n') {
+        StartNewLine();
+      } else {
+        StartNewWord();
+        int width = 0;
+        int height = 0;
+        if (mState.IsFinishedLoading()) {
+          wchar_t space = L' ';
+          mState.GetFont()->GetSize(mState.GetOptions(), width, height, &space, 1);
+        }
+        if (mCurrentBlock->GetTextDirection() == kTD_Horizontal) {
+          mCurrentLine->AddWidth(width);
+          mSpaceDistance = width;
+        } else {
+          mCurrentLine->AddHeight(height);
+          mSpaceDistance = height;
+        }
+      }
+    }
+  }
+  if (i > wordStart) {
+    AddStringFragment(str + wordStart, i - wordStart);
+  }
 }
 
 rstl::vector< CToken > CTextExecuteBuffer::GetAssets() const {
@@ -233,19 +338,81 @@ rstl::vector< CToken > CTextExecuteBuffer::GetAssets() const {
 }
 
 CTextRenderBuffer CTextExecuteBuffer::BuildRenderBuffer() const {
-  // TODO: invoke instructions in allocation-tally and buffer-fill passes.
-  return CTextRenderBuffer(CTextRenderBuffer::kM_AllocTally);
+  CTextRenderBuffer buffer(CTextRenderBuffer::kM_AllocTally);
+  {
+    CFontRenderState state;
+    for (InstList::const_iterator it = mInstructions.begin(); it != mInstructions.end(); ++it) {
+      (*it)->Invoke(state, &buffer);
+    }
+  }
+  buffer.SetMode(CTextRenderBuffer::kM_BufferFill);
+  {
+    CFontRenderState state;
+    for (InstList::const_iterator it = mInstructions.begin(); it != mInstructions.end(); ++it) {
+      (*it)->Invoke(state, &buffer);
+    }
+  }
+  return buffer;
 }
 
 CTextRenderBuffer CTextExecuteBuffer::BuildRenderBufferPage(InstList::const_iterator start,
                                                             InstList::const_iterator pageStart,
                                                             InstList::const_iterator pageEnd) {
-  // TODO: replay state before pageStart, then invoke the page's instructions in both passes.
-  return CTextRenderBuffer(CTextRenderBuffer::kM_AllocTally);
+  CTextRenderBuffer buffer(CTextRenderBuffer::kM_AllocTally);
+  {
+    CFontRenderState state;
+    for (InstList::const_iterator it = start; it != pageStart; ++it) {
+      (*it)->PageInvoke(state, &buffer);
+    }
+    for (InstList::const_iterator it = pageStart; it != pageEnd; ++it) {
+      (*it)->Invoke(state, &buffer);
+    }
+  }
+  buffer.SetMode(CTextRenderBuffer::kM_BufferFill);
+  {
+    CFontRenderState state;
+    for (InstList::const_iterator it = start; it != pageStart; ++it) {
+      (*it)->PageInvoke(state, &buffer);
+    }
+    for (InstList::const_iterator it = pageStart; it != pageEnd; ++it) {
+      (*it)->Invoke(state, &buffer);
+    }
+  }
+  return buffer;
 }
 
 rstl::list< CTextRenderBuffer >
 CTextExecuteBuffer::BuildRenderBufferPages(const CVector2i& extent) const {
-  // TODO: paginate at line instructions using the accumulated rendering-state height.
-  return rstl::list< CTextRenderBuffer >();
+  rstl::list< CTextRenderBuffer > pages;
+  InstList::const_iterator it = mInstructions.begin();
+  while (it != mInstructions.end()) {
+    CTextRenderBuffer buffer(CTextRenderBuffer::kM_AllocTally);
+    {
+      CFontRenderState state;
+      for (InstList::const_iterator it2 = mInstructions.begin(); it2 != mInstructions.end(); ++it2) {
+        (*it2)->Invoke(state, &buffer);
+      }
+    }
+    buffer.SetMode(CTextRenderBuffer::kM_BufferFill);
+    CFontRenderState state;
+    InstList::const_iterator pageEnd = it;
+    bool seeking = true;
+    for (InstList::const_iterator it2 = mInstructions.begin(); it2 != mInstructions.end(); ++it2) {
+      if (it2 == it) {
+        seeking = false;
+      }
+      if (seeking) {
+        (*it2)->PageInvoke(state, &buffer);
+      } else {
+        (*it2)->Invoke(state, &buffer);
+        if ((*it2)->IsLineInstruction() && state.GetY() > extent.GetY()) {
+          break;
+        }
+        ++pageEnd;
+      }
+    }
+    pages.push_back(BuildRenderBufferPage(mInstructions.begin(), it, pageEnd));
+    it = pageEnd;
+  }
+  return pages;
 }
