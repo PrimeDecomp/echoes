@@ -297,15 +297,14 @@ bool CGameCollision::DetectStaticCollision_Cached(const CStateManager& mgr, CCol
     IsUser(0);
   }
 
-  switch (primitive.GetPrimType()) {
-  case 'AABX':
+  if (primitive.GetPrimType() == 'AABX') {
     return CMetroidAreaCollider::AABoxCollisionCheck_Cached(cache, bounds, geometryFilter,
                                                             primitive.GetMaterial(), collisions);
-  case 'SPHR':
+  } else if (primitive.GetPrimType() == 'SPHR') {
     return CMetroidAreaCollider::SphereCollisionCheck_Cached(
         cache, bounds, static_cast< const CCollidableSphere& >(primitive).Transform(transform),
         primitive.GetMaterial(), geometryFilter, collisions);
-  case 'ABSH': {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
     bool hit = DetectStaticCollision_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
@@ -316,9 +315,7 @@ bool CGameCollision::DetectStaticCollision_Cached(const CStateManager& mgr, CCol
     }
     return hit;
   }
-  default:
-    return false;
-  }
+  return false;
 }
 
 bool CGameCollision::DetectStaticCollisionBoolean_Cached(const CStateManager& mgr,
@@ -341,14 +338,13 @@ bool CGameCollision::DetectStaticCollisionBoolean_Cached(const CStateManager& mg
     IsUser(0);
   }
 
-  switch (primitive.GetPrimType()) {
-  case 'AABX':
+  if (primitive.GetPrimType() == 'AABX') {
     return CMetroidAreaCollider::AABoxCollisionCheckBoolean_Cached(cache, bounds, geometryFilter);
-  case 'SPHR':
+  } else if (primitive.GetPrimType() == 'SPHR') {
     return CMetroidAreaCollider::SphereCollisionCheckBoolean_Cached(
         cache, bounds, static_cast< const CCollidableSphere& >(primitive).Transform(transform),
         geometryFilter);
-  case 'ABSH': {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
     return DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
@@ -356,9 +352,7 @@ bool CGameCollision::DetectStaticCollisionBoolean_Cached(const CStateManager& mg
            DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableSphere(),
                                                transform, geometryFilter);
   }
-  default:
-    return false;
-  }
+  return false;
 }
 
 bool CGameCollision::DetectStaticCollision_Cached_Moving(
