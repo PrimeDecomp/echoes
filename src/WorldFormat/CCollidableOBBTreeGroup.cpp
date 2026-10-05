@@ -7,6 +7,7 @@
 #include "Collision/CollisionUtil.hpp"
 #include "Kyoto/CFactoryMgr.hpp"
 #include "WorldFormat/CCollidableOBBTree.hpp"
+#include "WorldFormat/CCollisionCache.hpp"
 
 uint CCollidableOBBTreeGroup::sTableIndex = -1;
 
@@ -314,8 +315,19 @@ bool CCollidableOBBTreeGroup::CollideMovingSphere(const CInternalCollisionStruct
   return result;
 }
 
-void CCollidableOBBTreeGroup::CacheTree(CCollisionCache&, const CTransform4f&, short, u64) const {
-  // TODO: Recover the shared collision-cache writer before filling this cache.
+void CCollidableOBBTreeGroup::CacheTree(CCollisionCache& cache, const CTransform4f& xf,
+                                        short ownerId, u64 material) const {
+  CTransform4f inverse = xf.GetQuickInverse();
+  COBBox obb = COBBox::FromAABox(cache.GetBounds(), inverse);
+  CVector3f center = cache.GetBounds().GetCenterPoint();
+  CVector3f halfExtent = cache.GetBounds().GetHalfExtent();
+  CCollisionCacheWriter writer(cache);
+
+  for (int i = 0; i < mContainer->NumTrees(); ++i) {
+    CCollidableOBBTree tree(GetOBBTree(i), CMaterialList(material));
+    writer.BeginGeometry(tree.GetOBBTree(), &xf, ownerId, material);
+    tree.CacheTree(writer, *tree.GetOBBTree().GetRoot(), xf, center, halfExtent, obb);
+  }
 }
 
 CAABox CCollidableOBBTreeGroup::CalculateAABox(const CTransform4f& xf) const {
