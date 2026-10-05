@@ -742,7 +742,45 @@ float CScanTree::GetLayoutProgress() const {
   return collapse < expand ? expand : collapse;
 }
 
-void CScanTree::UpdateNodePhysics(float dt) {}
+void CScanTree::UpdateNodePhysics(float dt) {
+  const rstl::rc_ptr< CScanTreeNode > treeNode = GetNode(mSelectedNode);
+  if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
+    const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
+    const CVector3f& categoryPosition = category->GetPosition();
+    for (int i = 0; i < category->GetChildCount(); ++i) {
+      const int child = category->GetChild(i);
+      const rstl::rc_ptr< CScanTreeNode > childNode = mNodes[child];
+      CVector3f position = childNode->GetPosition();
+      const rstl::rc_ptr< CScanTreeNode > target = mNodes[child];
+      if (child != category->GetSelectedChild()) {
+        CVector3f force = CVector3f::Zero();
+        force += CalculateSeparationForce(rstl::rc_ptr< CScanTreeCategory >(category), child);
+        force += CalculateNeighborForce(rstl::rc_ptr< CScanTreeCategory >(category), child);
+        const CVector3f acceleration = childNode->GetAcceleration() + force;
+        CVector3f velocity = childNode->GetVelocity() + 3.f * (dt * acceleration);
+        if (velocity.CanBeNormalized()) {
+          const float magnitude = velocity.Magnitude();
+          const float speed = CMath::Clamp(0.1f, magnitude, 1.f);
+          velocity = speed * (velocity * (1.f / magnitude));
+        }
+        position += dt * velocity;
+        target->SetVelocity(velocity);
+        target->SetAcceleration(acceleration);
+      } else {
+        target->SetVelocity(CVector3f::Zero());
+        target->SetAcceleration(CVector3f::Zero());
+      }
+      const CVector3f offset = position - categoryPosition;
+      if (offset.CanBeNormalized()) {
+        const CVector3f direction = offset.AsNormalized();
+        const CVector3f newPosition =
+            categoryPosition + gpTweakGui->GetLogBookBranchLength() * direction;
+        target->SetPosition(newPosition);
+        target->SetDisplayPosition(newPosition);
+      }
+    }
+  }
+}
 
 void CScanTree::Update(float dt) {
   const float transition = mTransition - dt / mTransitionDuration;
