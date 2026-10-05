@@ -1,7 +1,12 @@
 #include "MetroidPrime/HUD/CSamusHud.hpp"
+#include "GuiSys/CAuiBitmapMeter.hpp"
+#include "GuiSys/CAuiEnergyBarT01.hpp"
+#include "GuiSys/CGuiCamera.hpp"
 #include "GuiSys/CGuiFrame.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
+#include "GuiSys/CGuiTextPane.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "MetroidPrime/HUD/CHudBossEnergyInterface.hpp"
 #include "MetroidPrime/HUD/CHudDecoInterfaceScan.hpp"
@@ -13,9 +18,17 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/CActorLights.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
+
+#include <stdio.h>
 
 // Structure-first scaffold. Unrecovered behavior is marked at each entry point.
 
@@ -79,20 +92,20 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
 , mInFreeLook(false)
 , mLookControlHeld(false)
 , mFirstPerson(true)
-, mEnergyLow(false)
-, mEnglishOnly(false)
+, mEnergyLow(mgr.GetPlayer(playerIndex)->IsEnergyLow())
 , mMenuBeam(CPlayerState::kBI_Power)
 , mMenuVisor(CPlayerState::kPV_Combat)
 , mMissileEnabled(0)
-, mPreviousCameraDirection(CVector3f::Forward())
+, mPreviousCameraDirection(
+      mgr.GetCameraManager(playerIndex)->GetFirstPersonCamera()->GetTransform().GetForward())
 , mHudLag(CQuaternion::NoRotation())
 , mInverseHudLag(CQuaternion::NoRotation())
-, mHelmetLightingWidget(mLoadedHelmetFrame != nullptr
-                            ? mLoadedHelmetFrame->FindWidget("BaseWidget_Helmet_TX")
-                            : nullptr)
-, mLights(rs_new CActorLights(8, CVector3f::Zero(), 4, 1, 0.1f, true, false, false, false))
-, mHudLights(3, SCachedHudLight())
-, mHudStringTable(gpSimplePool->GetObj("STRG_Hud"))
+, mHelmetLightingWidget(
+      mLoadedHelmetFrame != nullptr ? mLoadedHelmetFrame->FindWidget("BaseWidget_Helmet") : nullptr)
+, mLights(rs_new CActorLights(8, CVector3f::Zero(), 4, 1, CActorLights::kDefaultMinPosChange,
+                             true, false, false, false))
+, mHudLights(3, SCachedHudLight(CVector3f::Zero(), CColor::White(), 0.f, 0.f, 0.f, 0.f))
+, mHudStringTable(static_cast< CStringTable* >(nullptr))
 , mDamageTime(0.f)
 , mDamagePulse(0.f)
 , mDamageFilterDuration(1.f)
@@ -103,7 +116,8 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
 , mDamageSectorDurations(12, 0.f)
 , mDamageSectorRemaining(12, 0.f)
 , mDamageSectorIntensity(12, 0.f)
-, mDamageRingTexture(gpSimplePool->GetObj("TXTR_QuarterCurve"))
+, mDamageRingTexture(mgr.IsMultiplayer() ? gpSimplePool->GetObj("TXTR_QuarterCurveMP")
+                                         : gpSimplePool->GetObj("TXTR_QuarterCurve"))
 , mDamagerToPlayer(CVector3f::Zero())
 , mShakeTranslationAmount(0.f)
 , mShakeTranslationVelocity(0.f)
@@ -120,16 +134,12 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
 , mStaticCycleHigh(0.f)
 , mHudMemoParms(0.f, false, false, false, 0xf, true)
 , mHudMemoIndex(0)
-, mMessageRoot(nullptr)
-, mMessagePane(nullptr)
-, mMessageAButton(nullptr)
 , mMessageTime(0.f)
 , mLastMessageSoundChars(0.f)
-, mPreviousFreeLookDirection(CVector3f::Forward())
+, mPreviousFreeLookDirection(
+      mgr.GetCameraManager(playerIndex)->GetFirstPersonCamera()->GetTransform().GetForward())
 , mFreeLookDirectionDot(1.f)
 , mFreeLookSoundCycle(0.f)
-, mFreeLookLeft(nullptr)
-, mFreeLookRight(nullptr)
 , mFreeLookLeftTransform(CTransform4f::Identity())
 , mFreeLookRightTransform(CTransform4f::Identity())
 , mFreeLookFade(0.f)
@@ -142,65 +152,39 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
 , mCurrentBeam(mgr.GetPlayerState(playerIndex)->GetCurrentBeam())
 , mPreviousBeam(mCurrentBeam)
 , mBeamMenuTransition(1.f)
-, mVisorBracket(nullptr)
 , mMissilePickupPulse(0.f)
 , mLightAmmoPickupPulse(0.f)
 , mDarkAmmoPickupPulse(0.f)
-, mEnergyDigits(nullptr)
-, mMissileDigits(nullptr)
-, mMissileFraction(nullptr)
-, mEnergyWarning(nullptr)
-, mLightAmmoDigits(nullptr)
-, mDarkAmmoDigits(nullptr)
-, mCounter(nullptr)
-, mDarkVisor(nullptr)
-, mDarkVisorBacking(nullptr)
 , mEnergyBracketTransform(CTransform4f::Identity())
-, mEnergyBracket(nullptr)
-, mEnergyBar(nullptr)
-, mMissileGauge(nullptr)
 , x7ec(0.f)
-, mDecorationRoot(nullptr)
-, mThreatIcon(nullptr)
-, mThreatBar(nullptr)
-, mThreatRoot(nullptr)
-, mThreatGauge(nullptr)
-, mMissileIcon(nullptr)
-, mLightAmmoIcon(nullptr)
-, mDarkAmmoIcon(nullptr)
 , mThreatAlpha(1.f)
-, mPowerBombDigits(nullptr)
-, mPowerBombIcon(nullptr)
-, mPowerBombDecoration(nullptr)
 , mBallBeamTransition(0.f)
 , mPreviousBallBeam(CPlayerState::kBI_Power)
-, mHudCamera(nullptr)
-, mAutomapperRoot(nullptr)
-, mAutomapperModel(nullptr)
 , mGuiState(3)
 , mHudColor(0u)
 , mBootTimer(0.f)
 , mBootTextFade(0.f)
 , mHudBootAlpha(1.f)
 , mCorruptTextTimer(0.f)
-, mBootText(gpResourceFactory->GetResourceIdByName("FONT_Deface13B")->id, 420, 400,
+, mBootText(gpResourceFactory->GetResourceIdByName("FONT_Deface13B")->GetId(), 420, 400,
             CGuiTextProperties(true, kJustification_Left, kVerticalJustification_Bottom),
-            CColor::White(), CColor::White().WithAlphaOf(0.f), CColor::White(), gpSimplePool)
+            gpTweakGuiColors->GetHUDMemoTextForegroundColor().WithAlphaOf(0.5f),
+            CColor::White().WithAlphaOf(0.f), CColor::White(), gpSimplePool)
 , mBooting(false)
 , mProfileInfo(17, SProfileInfo()) {
-  // TODO: Initialize camera direction, energy-low state, language and boot-text tint from shared
-  // APIs.
-  // TODO: Select the multiplayer damage-ring texture.
+  RefreshHudStringTable();
   gpSamusHud[mPlayerIndex] = this;
   mDamageRingTexture.Lock();
   if (mgr.IsMultiplayer()) {
     mLockedOnIndicator = TCachedToken< CTexture >(gpSimplePool->GetObj("TXTR_LockedOnIndicator"));
     mLockedOnIndicator->Lock();
   }
+  mDesiredState = kHS_Combat;
   mNextState = kHS_Combat;
-  if (mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() != CPlayer::kMS_Unmorphed) {
+  if (mgr.GetPlayer(playerIndex)->GetMorphballTransitionState() != CPlayer::kMS_Unmorphed) {
     mTransitionFactor = 0.f;
   }
+  mgr.GetViewportLayoutIndex();
   UpdateHudColor();
   InitializeFrameGluePermanent();
 }
@@ -451,7 +435,55 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
 }
 
 void CSamusHud::UpdateBallMode(const CStateManager& mgr) {
-  // TODO: update bomb availability, power-bomb digits and ball beam transition.
+  if (mPowerBombDigits == nullptr && mPowerBombIcon == nullptr && mBombIndicators.size() != 3) {
+    return;
+  }
+
+  const CPlayerState& playerState = *mgr.GetPlayerState(mPlayerIndex);
+  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->GetPlayerGun();
+  const int powerBombs = playerState.GetItemAmount(CPlayerState::kIT_Powerbomb, false);
+  const int powerBombCapacity = playerState.GetItemCapacity(CPlayerState::kIT_Powerbomb);
+  const int bombsAvailable = gun.GetBombsAvailable(const_cast< CStateManager& >(mgr));
+  const bool hasBombs = playerState.HasPowerUp(CPlayerState::kIT_MorphBallBombs);
+  const bool powerBombReady =
+      !gun.AreBombsDisabled() &&
+      mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() == CPlayer::kMS_Morphed;
+
+  if (mPowerBombDigits != nullptr) {
+    mPowerBombDigits->SetVisibility(powerBombCapacity > 0, kTM_Children);
+    char buffer[16];
+    if (mgr.IsMultiplayer()) {
+      sprintf(buffer, "%d", powerBombs);
+    } else {
+      sprintf(buffer, "%d/%d", powerBombs, powerBombCapacity);
+    }
+    mPowerBombDigits->TextSupport().SetText(rstl::string(buffer), false);
+    mPowerBombDigits->TextSupport().SetFontColor(
+        powerBombs == 0 ? gpTweakGuiColors->GetMorphBallEmptyPowerBombDigitsForegroundColor()
+                        : gpTweakGuiColors->GetMorphBallPowerBombDigitsForegroundColor());
+    mPowerBombDigits->TextSupport().SetOutlineColor(
+        powerBombs == 0 ? gpTweakGuiColors->GetMorphBallEmptyPowerBombDigitsOutlineColor()
+                        : gpTweakGuiColors->GetMorphBallPowerBombDigitsOutlineColor());
+  }
+
+  if (mPowerBombIcon != nullptr) {
+    mPowerBombIcon->SetVisibility(powerBombCapacity > 0, kTM_Children);
+    mPowerBombIcon->SetColor(powerBombReady && powerBombs > 0
+                                 ? gpTweakGuiColors->GetMorphBallPowerBombIconColor()
+                                 : gpTweakGuiColors->GetMorphBallEmptyPowerBombIconColor());
+  }
+  if (mPowerBombDecoration != nullptr) {
+    mPowerBombDecoration->SetVisibility(powerBombCapacity > 0, kTM_Children);
+  }
+
+  for (int i = 0; i < mBombIndicators.size(); ++i) {
+    if (mBombIndicators[i] != nullptr) {
+      mBombIndicators[i]->SetVisibility(hasBombs, kTM_Children);
+      mBombIndicators[i]->SetColor(i < bombsAvailable
+                                       ? gpTweakGuiColors->GetMorphBallBombCounterFilledColor()
+                                       : gpTweakGuiColors->GetMorphBallBombCounterEmptyColor());
+    }
+  }
 }
 
 void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
@@ -522,7 +554,8 @@ void CSamusHud::UpdateEnergyLow(float dt, const CStateManager& mgr) {
 }
 
 void CSamusHud::RefreshHudStringTable() {
-  // TODO: select STRG_Hud or STRG_HudEngOnly from the language option.
+  mHudStringTable = TLockedToken< CStringTable >(gpSimplePool->GetObj(
+      gpGameState->GameOptions().GetIsHudEnglish() ? "STRG_HudEngOnly" : "STRG_Hud"));
 }
 
 bool CSamusHud::IsHudMemoVisible(int playerIndex) {
@@ -594,11 +627,240 @@ void CSamusHud::UninitializeFrameGlueMutable() {
 }
 
 void CSamusHud::InitializeFrameGlueMutable(const CStateManager& mgr) {
-  // TODO: bind visor/ball widgets and construct their typed HUD interfaces.
+  if (mLoadedHudFrame->FindWidget("textpane_visormenu") != nullptr) {
+    mVisorMenu =
+        rs_new CHudVisorBeamMenu(*mLoadedHudFrame, mHudStringTable, CHudVisorBeamMenu::kVBM_Visor,
+                                 BuildPlayerHasVisors(mgr), 0, mgr.IsMultiplayer());
+    mMenuVisor = CPlayerState::kPV_Combat;
+  }
+  if (mLoadedHudFrame->FindWidget("textpane_beammenu") != nullptr) {
+    const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
+    const CPlayerState& playerState = *mgr.GetPlayerState(mPlayerIndex);
+    const CPlayerGun& gun = *player.GetPlayerGun();
+    const CPlayerState::EBeamId beam = player.GetMorphballTransitionState() == CPlayer::kMS_Morphed
+                                           ? playerState.GetCurrentBeam()
+                                           : gun.GetPrimaryWeaponId();
+    mBeamMenu =
+        rs_new CHudVisorBeamMenu(*mLoadedHudFrame, mHudStringTable, CHudVisorBeamMenu::kVBM_Beam,
+                                 BuildPlayerHasBeams(mgr), beam, mgr.IsMultiplayer());
+    mMenuBeam = beam;
+  }
+  if (mLoadedHudFrame->FindWidget("basewidget_radar") != nullptr) {
+    mRadar = rs_new CHudRadarInterface(*mLoadedHudFrame, mgr, mPlayerIndex,
+                                       ModulateColor(gpTweakGuiColors->GetRadarWidgetColor()));
+  }
+
+  mDecorationRoot = mLoadedHudFrame->FindWidget(rstl::string_l("basewidget_decogroup"));
+  mEnergyBar = static_cast< CAuiEnergyBarT01* >(
+      mLoadedHudFrame->FindWidget(rstl::string_l("energybart01_energybar")));
+  mEnergyDigits =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_energydigits"));
+  mMissileDigits =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_missiledigits"));
+  mMissileFraction = mLoadedHudFrame->FindWidget("model_fraction");
+  mEnergyWarning =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_energywarning"));
+  CGuiTextPane* memo = static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_boss"));
+  if (memo != nullptr) {
+    memo->TextSupport().SetFontColor(gpTweakGuiColors->GetHUDMemoTextForegroundColor());
+    memo->TextSupport().SetOutlineColor(gpTweakGuiColors->GetHUDMemoTextOutlineColor());
+  }
+  mCounter = static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_counter"));
+  if (mCounter != nullptr) {
+    mCounter->TextSupport().SetFontColor(gpTweakGuiColors->GetCountdownForegroundColor());
+    mCounter->TextSupport().SetOutlineColor(gpTweakGuiColors->GetCountdownOutlineColor());
+  }
+
+  mVisorBracket = mLoadedHudFrame->FindWidget("model_visorbracket");
+  mThreatIcon = mLoadedHudFrame->FindWidget("model_threaticon");
+  mThreatRoot = mLoadedHudFrame->FindWidget("basewidget_threat");
+  mThreatBar = mLoadedHudFrame->FindWidget("model_threatbar");
+  mMissileIcon = mLoadedHudFrame->FindWidget("model_missileicon");
+  mDarkVisor = mLoadedHudFrame->FindWidget("model_darkvisor");
+  mDarkVisorBacking = mLoadedHudFrame->FindWidget("model_darkvisor_black");
+  mLightAmmoDigits =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_lightammodigits"));
+  mDarkAmmoDigits =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_darkammodigits"));
+  mLightAmmoIcon = mLoadedHudFrame->FindWidget("model_lighticon");
+  mDarkAmmoIcon = mLoadedHudFrame->FindWidget("model_darkicon");
+  mFreeLookLeft = mLoadedHudFrame->FindWidget("model_freelookleft");
+  mFreeLookRight = mLoadedHudFrame->FindWidget("model_freelookright");
+  mMissileGauge =
+      static_cast< CAuiBitmapMeter* >(mLoadedHudFrame->FindWidget("barmeter_missileguagequad"));
+  mThreatGauge =
+      static_cast< CAuiBitmapMeter* >(mLoadedHudFrame->FindWidget("barmeter_threatguagequad"));
+  if (mThreatGauge != nullptr) {
+    mThreatGauge->SetIncreaseSpeed(50.f);
+  }
+  mEnergyBracket = mLoadedHudFrame->FindWidget("model_rightenergymeterbracket");
+  mHudCamera = mLoadedHudFrame->GetFrameCamera();
+  mAutomapperRoot = mLoadedHudFrame->FindWidget(rstl::string_l("basewidget_automapper"));
+  mAutomapperModel = mLoadedHudFrame->FindWidget(rstl::string_l("model_automapper"));
+  mPowerBombDigits =
+      static_cast< CGuiTextPane* >(mLoadedHudFrame->FindWidget("textpane_bombdigits"));
+  mPowerBombIcon = mLoadedHudFrame->FindWidget("model_bombicon");
+  mPowerBombDecoration = mLoadedHudFrame->FindWidget("model_bombdeco");
+  if (mPowerBombDecoration != nullptr) {
+    mPowerBombDecoration->SetColor(gpTweakGuiColors->GetMorphBallEnergyDecoColor());
+  }
+  if (mDarkVisor != nullptr && mDarkVisorBacking != nullptr) {
+    const CPlayerState::EPlayerVisor visor =
+        mgr.GetPlayer(mPlayerIndex)->GetPlayerState()->GetCurrentVisor();
+    mDarkVisor->SetIsVisible(visor == CPlayerState::kPV_Dark);
+    mDarkVisorBacking->SetIsVisible(visor == CPlayerState::kPV_Dark);
+  }
+
+  for (int i = 0; i < 3; ++i) {
+    CGuiWidget* indicator = mLoadedHudFrame->FindWidget(CBasics::Stringize("model_bombcount%d", i));
+    if (indicator != nullptr) {
+      mBombIndicators.push_back(indicator);
+      indicator->SetVisibility(false, kTM_Children);
+    }
+  }
+  if (mAutomapperModel != nullptr) {
+    mAutomapperModel->SetDrawFlags(CGuiWidget::kGMDF_Additive);
+    mAutomapperModel->SetDepthWrite(true);
+    mAutomapperModel->SetColor(CColor(uchar(0), uchar(0), uchar(0), uchar(1)));
+  }
+  mThreatRoot = mLoadedHudFrame->FindWidget("basewidget_threat");
+  if (mFreeLookLeft != nullptr) {
+    mFreeLookLeftTransform = mFreeLookLeft->GetWorldTransform();
+  }
+  if (mFreeLookRight != nullptr) {
+    mFreeLookRightTransform = mFreeLookRight->GetWorldTransform();
+  }
+
+  for (int i = 0; i < 14; ++i) {
+    CGuiWidget* tank = mLoadedHudFrame->FindWidget(CBasics::Stringize("model_Etankfill0%db", i));
+    if (tank != nullptr) {
+      tank->SetIsVisible(false);
+      mFilledEnergyTanks.push_back(tank);
+    }
+  }
+  for (int i = 0; i < 14; ++i) {
+    CGuiWidget* tank = mLoadedHudFrame->FindWidget(CBasics::Stringize("model_Etankempty0%d", i));
+    if (tank != nullptr) {
+      tank->SetIsVisible(false);
+      mEmptyEnergyTanks.push_back(tank);
+    }
+  }
+  if (mEnergyBracket != nullptr) {
+    mEnergyBracketTransform = mEnergyBracket->GetWorldTransform();
+  }
+  if (mEnergyBar != nullptr) {
+    const CColor empty = ModulateColor(gpTweakGuiColors->GetEnergyBarEmptyColor());
+    const CColor filled = ModulateColor(gpTweakGuiColors->GetEnergyBarFilledColor());
+    const CColor shadow = ModulateColor(gpTweakGuiColors->GetEnergyBarShadowColor());
+    mEnergyBar->SetMaxEnergy(CPlayerState::GetBaseHealthCapacity());
+    mEnergyBar->SetFilledColor(filled);
+    mEnergyBar->SetShadowColor(shadow);
+    mEnergyBar->SetEmptyColor(empty);
+    mEnergyBar->SetFilledDrainSpeed(gpTweakGui->GetEnergyBarFilledDrainSpeed());
+    mEnergyBar->SetShadowDrainSpeed(gpTweakGui->GetEnergyBarShadowDrainSpeed());
+    mEnergyBar->SetShadowDrainDelay(gpTweakGui->GetEnergyBarShadowDrainDelay());
+    mEnergyBar->SetIsAlwaysResetTimer(gpTweakGui->GetEnergyBarAlwaysResetDelay());
+    mEnergyBar->SetTesselation(0.1f);
+    if (mNextState == kHS_Ball) {
+      mEnergyBar->SetCoordFunc(BallEnergyCoordFunc);
+    } else {
+      mEnergyBar->SetCoordFunc(CombatEnergyCoordFunc);
+    }
+  }
+
+  for (int i = 0; i < 5; ++i) {
+    CGuiWidget* segment = mLoadedHudFrame->FindWidget(CBasics::Stringize("model_darkbeam%d", i));
+    if (segment != nullptr) {
+      segment->SetIsVisible(false);
+      segment->SetColor(gpTweakGuiColors->GetDarkAmmoTankEmptyUnselectedColor());
+      mDarkAmmoSegments.push_back(segment);
+    }
+  }
+  for (int i = 0; i < 5; ++i) {
+    CAuiBitmapMeter* meter = static_cast< CAuiBitmapMeter* >(
+        mLoadedHudFrame->FindWidget(CBasics::Stringize("barmeter_darkammo%d", i)));
+    if (meter != nullptr) {
+      meter->SetIsVisible(false);
+      meter->SetColor(gpTweakGuiColors->GetDarkAmmoMeterUnselectedFillColor());
+      meter->SetShadowColor(gpTweakGuiColors->GetDarkAmmoMeterUnselectedShadowColor());
+      mDarkAmmoMeters.push_back(meter);
+    }
+  }
+  for (int i = 0; i < 5; ++i) {
+    CGuiWidget* segment = mLoadedHudFrame->FindWidget(CBasics::Stringize("model_lightbeam%d", i));
+    if (segment != nullptr) {
+      segment->SetIsVisible(false);
+      segment->SetColor(gpTweakGuiColors->GetLightAmmoTankEmptyUnselectedColor());
+      mLightAmmoSegments.push_back(segment);
+    }
+  }
+  for (int i = 0; i < 5; ++i) {
+    CAuiBitmapMeter* meter = static_cast< CAuiBitmapMeter* >(
+        mLoadedHudFrame->FindWidget(CBasics::Stringize("barmeter_lightammo%d", i)));
+    if (meter != nullptr) {
+      meter->SetIsVisible(false);
+      meter->SetColor(gpTweakGuiColors->GetLightAmmoMeterUnselectedFillColor());
+      meter->SetShadowColor(gpTweakGuiColors->GetLightAmmoMeterUnselectedShadowColor());
+      mLightAmmoMeters.push_back(meter);
+    }
+  }
+  if (mLightAmmoIcon != nullptr) {
+    mLightAmmoIcon->SetColor(gpTweakGuiColors->GetLightAmmoIconUnselectedColor());
+    mLightAmmoIcon->SetIsVisible(false);
+  }
+  if (mDarkAmmoIcon != nullptr) {
+    mDarkAmmoIcon->SetColor(gpTweakGuiColors->GetDarkAmmoIconUnselectedColor());
+    mDarkAmmoIcon->SetIsVisible(false);
+  }
+  if (mLightAmmoDigits != nullptr) {
+    mLightAmmoDigits->TextSupport().SetFontColor(
+        gpTweakGuiColors->GetLightAmmoDigitsUnselectedColor());
+    mLightAmmoDigits->TextSupport().SetOutlineColor(
+        gpTweakGuiColors->GetLightAmmoDigitsOutlineColor());
+  }
+  if (mDarkAmmoDigits != nullptr) {
+    mDarkAmmoDigits->TextSupport().SetFontColor(
+        gpTweakGuiColors->GetDarkAmmoDigitsUnselectedColor());
+    mDarkAmmoDigits->TextSupport().SetOutlineColor(
+        gpTweakGuiColors->GetDarkAmmoDigitsOutlineColor());
+  }
+  if (mMissileDigits != nullptr) {
+    mMissileDigits->TextSupport().SetFontColor(
+        gpTweakGuiColors->GetCombatMissileDigitsForegroundColor());
+    mMissileDigits->TextSupport().SetOutlineColor(
+        gpTweakGuiColors->GetCombatMissileDigitsOutlineColor());
+    if (mMissileFraction != nullptr) {
+      mMissileFraction->SetColor(gpTweakGuiColors->GetCombatMissileDigitsForegroundColor());
+    }
+  }
+
+  if (mLoadedHelmetFrame != nullptr) {
+    CGuiCamera* camera = mLoadedHelmetFrame->GetFrameCamera();
+    const CGuiCamera* hudCamera = mLoadedHudFrame->GetFrameCamera();
+    camera->SetParms(hudCamera->GetParms());
+    camera->SetO2WTransform(CTransform4f::Translate(hudCamera->GetLocalPosition()));
+  }
+  UpdateHelmetWidgets();
+  UpdateHudWidgetColors();
 }
 
 void CSamusHud::InitializeFrameGluePermanent() {
-  // TODO: bind the memo text, A-button and message root.
+  mMessagePane = static_cast< CGuiTextPane* >(mLoadedMemoFrame->FindWidget("textpane_message"));
+  mMessageAButton = mLoadedMemoFrame->FindWidget("model_abutton");
+  mMessageRoot = mLoadedMemoFrame->FindWidget("basewidget_message");
+  if (mMessageRoot != nullptr) {
+    for (CGuiWidget* child = static_cast< CGuiWidget* >(mMessageRoot->ChildObject());
+         child != nullptr; child = static_cast< CGuiWidget* >(child->NextSibling())) {
+      child->SetDepthTest(false);
+    }
+    mMessageRoot->SetVisibility(false, kTM_Children);
+  }
+  mMessageAButton = mLoadedMemoFrame->FindWidget("model_abutton");
+  if (mMessagePane != nullptr) {
+    mMessagePane->TextSupport().SetFontColor(gpTweakGuiColors->GetHUDMemoTextForegroundColor());
+    mMessagePane->TextSupport().SetOutlineColor(gpTweakGuiColors->GetHUDMemoTextOutlineColor());
+    mMessagePane->TextSupport().SetControlTXTRMap(&gpGameState->GameOptions().GetControlTXTRMap());
+  }
 }
 
 void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamage,
