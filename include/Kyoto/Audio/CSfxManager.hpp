@@ -24,7 +24,13 @@ struct SPhaserAuxParameters;
 
 class CSfxManager {
 public:
-  enum ESfxChannels { kSC_Invalid = -1, kSC_Default = 0, kSC_Game, kSC_PauseScreen };
+  enum ESfxChannels {
+    kSC_Invalid = -1,
+    kSC_Default = 0,
+    kSC_Game,
+    kSC_PauseScreen,
+    kSC_SoftPaused // Guessed name: selected by CStateManager while gameplay is soft-paused.
+  };
   enum ESfxAudibility { kSA_Inaudible, kSA_Low, kSA_Medium, kSA_High };
 
   class CBaseSfxWrapper {

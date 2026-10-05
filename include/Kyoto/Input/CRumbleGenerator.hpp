@@ -24,6 +24,7 @@ public:
   void Update(float);
   void HardStopAll();
   void SetDisabled(const bool disabled);
+  bool GetDisabled() const { return mDisabled; }
 };
 
 CHECK_SIZEOF(CRumbleGenerator, 0x44);
