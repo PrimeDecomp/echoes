@@ -741,9 +741,10 @@ void CEnvFxManager::UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 
     }
 
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      CVectorFixed8_8& particle = grid.mParticles[j];
-      particle += snowForces[force];
-      particle.mZ &= 0x3fff;
+      const CVectorFixed8_8 particle = grid.mParticles[j];
+      const CVectorFixed8_8& delta = snowForces[force];
+      grid.mParticles[j] = CVectorFixed8_8(particle.mX + delta.mX, particle.mY + delta.mY,
+                                          (particle.mZ + delta.mZ) & 0x3fff);
       force = (force + 1) & 0xff;
     }
   }
@@ -759,9 +760,10 @@ void CEnvFxManager::UpdateDriftingParticles(
       continue;
     }
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      CVectorFixed8_8& particle = grid.mParticles[j];
-      particle += snowForces[force];
-      particle.mZ &= 0x3fff;
+      const CVectorFixed8_8 particle = grid.mParticles[j];
+      const CVectorFixed8_8& delta = snowForces[force];
+      grid.mParticles[j] = CVectorFixed8_8(particle.mX + delta.mX, particle.mY + delta.mY,
+                                          (particle.mZ + delta.mZ) & 0x3fff);
       force = (force + 1) & 0xff;
     }
   }
