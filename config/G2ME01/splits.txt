@@ -844,6 +844,10 @@ MetroidPrime/Weapons/CPlasmaProjectile.cpp:
 MetroidPrime/Player/CPlayerOrbit.cpp:
 	.text       start:0x8011BFA8 end:0x80123510
 	.ctors      start:0x803A5524 end:0x803A5528
+	.bss        start:0x803DAB28 end:0x803DAB70
+	.sdata      start:0x804182C8 end:0x80418300
+	.sbss       start:0x80419168 end:0x80419180
+	.sdata2     start:0x8041BD58 end:0x8041BDE8
 
 MetroidPrime/CGameCollision.cpp:
 	.text       start:0x80123510 end:0x801285DC

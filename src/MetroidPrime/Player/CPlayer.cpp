@@ -10,6 +10,8 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
@@ -22,6 +24,10 @@
 
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
+
+const bool gkAutoAim = false;
+const bool gkAutoAimAtOrbitedObject = true;
+const int gkMorphBallOrbitMode = 1;
 
 const float CPlayer::skDefaultHudFadeOutSpeed = 0.5f;
 const float CPlayer::skDefaultHudFadeInSpeed = 2.5f;
@@ -101,8 +107,8 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDoneSidewaysDashing(false)
 , mOrbitSource(2)
 , mOrbitingEnemy(false)
-, x591_(false)
-, x594_(0.f)
+, mOrbitTargetLineOfSightClear(false)
+, mOrbitOcclusionTimer(0.f)
 , mOrbitCandidateIndex(0)
 , mOrbitCandidateRefreshFrames(0x14)
 , mDashSpeedMultiplier(1.5f)
@@ -235,7 +241,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mHitWallDuringMove(false)
 , mSelectFluidBallSound(false)
 , x1269_27_(true)
-, x1269_28_(false)
+, mExtendTargetDistance(false)
 , mInterpolatingControlDir(false)
 , x1269_30_(false)
 , x1269_31_(false)
@@ -291,8 +297,8 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDarkAetherDamageSfx()
 , mSafeZoneHealSfx()
 , mCharacterIndex(charIdx)
-, x133c_(CVector3f::Zero())
-, x1348_(CVector3f::Zero())
+, mPreviousCameraForwardPoint(CVector3f::Zero())
+, mPreviousEyePosition(CVector3f::Zero())
 , mScreenPosition(0, 0)
 , mSafeZoneHealSfxTimer(0.f)
 , mDarkAetherDamage(0.f)
@@ -371,9 +377,8 @@ void CPlayer::UpdateGunTransform(const CVector3f& position, CStateManager& mgr) 
   // TODO: Recover the remaining target behavior.
 }
 
-const CTransform4f& CPlayer::fn_80019360() const {
-  // TODO: Return the first-person camera transform through its shared interface.
-  return GetTransform();
+const CTransform4f& CPlayer::GetFirstPersonCameraTransform() const {
+  return mCameraManager->GetFirstPersonCamera()->GetGunFollowTransform();
 }
 
 void CPlayer::UpdateArmAndGunTransforms(float dt, CStateManager& mgr) {

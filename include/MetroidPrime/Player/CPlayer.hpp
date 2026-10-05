@@ -91,9 +91,14 @@ public:
   };
   enum EPlayerOrbitRequest {
     kOR_StopOrbit,
+    kOR_Default = 3,
+    kOR_InvalidateTarget = 6,
+    kOR_BadVerticalAngle = 7,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
+    kOR_LostGrappleLineOfSight = 12,
     kOR_BoostBall = 13,          // Guessed name; requested when a boost charge releases.
+    kOR_TargetingThroughDoor = 14,
   };
   enum EPlayerZoneInfo {
     kZI_Targeting,
@@ -472,7 +477,7 @@ public:
   float GetAcceleration() const;
   float GetAverageSpeed() const;
   CVector3f GetDampedClampedVelocityWR() const;
-  void fn_8011c3c0();
+  void UpdateScreenSpaceMotion();
   void UpdateGrappleArmTransform(const CVector3f& offset, CStateManager& mgr, float dt);
   void ApplyGrappleForces(const CFinalInput& input, CStateManager& mgr, float dt);
   bool ValidateFPPosition(CVector3f position, CStateManager& mgr);
@@ -482,7 +487,7 @@ public:
   void BreakGrapple(EPlayerOrbitRequest request, CStateManager& mgr);
   void SetOrbitRequest(EPlayerOrbitRequest request, CStateManager& mgr);
   void SetOrbitRequestForTarget(TUniqueId target, EPlayerOrbitRequest request, CStateManager& mgr);
-  void fn_8011eac4(EPlayerOrbitRequest request, CStateManager& mgr);
+  void SetOrbitRequestForOtherPlayers(EPlayerOrbitRequest request, CStateManager& mgr);
   bool InGrappleJumpCooldown() const;
   void PreventFallingCameraPitch();
   void OrbitCarcass(CStateManager& mgr);
@@ -497,7 +502,7 @@ public:
   void SetOrbitPosition(float distance);
   void UpdateAimTarget(CStateManager& mgr);
   void UpdateAimTargetTimer(float dt);
-  bool ValidateAimTargetId(TUniqueId target, CStateManager& mgr, float dt);
+  bool ValidateAimTargetId(TUniqueId target, CStateManager& mgr);
   bool ValidateObjectForMode(TUniqueId target, CStateManager& mgr) const;
   void UpdateAimCandidates(CStateManager& mgr);
   TUniqueId FindAimTargetId(CStateManager& mgr);
@@ -510,7 +515,7 @@ public:
                                     EPlayerZoneInfo zone, CStateManager& mgr);
   void FindOrbitableObjects(const rstl::reserved_vector< TUniqueId, 1024 >& candidates,
                             rstl::reserved_vector< TUniqueId, 64 >& objects, EPlayerZoneInfo zone,
-                            EPlayerZoneType type, CStateManager& mgr, bool offScreen);
+                            EPlayerZoneType type, CStateManager& mgr, bool onScreenTest);
   bool WithinOrbitScreenBox(const CVector3f& screenPosition, EPlayerZoneInfo zone,
                             EPlayerZoneType type) const;
   bool WithinOrbitScreenEllipse(const CVector3f& screenPosition, EPlayerZoneInfo zone) const;
@@ -544,6 +549,10 @@ public:
   bool fn_8022b974(const CFinalInput& input) const;
   bool FireBeamPressed(const CFinalInput& input) const;
   bool FireBeamHeld(const CFinalInput& input) const;
+  bool IsAligningGrappleSwingTurn() const { return (x126a_ & 0x10) != 0; }
+  void SetAligningGrappleSwingTurn(bool aligning) {
+    x126a_ = (x126a_ & ~0x10) | (aligning ? 0x10 : 0);
+  }
   bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
   void ResetPlayerHintState(CStateManager& mgr);
   void UpdatePlayerHints(CStateManager& mgr);
@@ -561,12 +570,12 @@ public:
   void fn_80011fc0() const;
   void fn_80016a6c(float value);
   void fn_80016a74(float value);
-  const CTransform4f& fn_80019360() const;
+  const CTransform4f& GetFirstPersonCameraTransform() const;
   void UpdateAimPrediction(const CTransform4f& transform, CStateManager& mgr);
   void* GetMaskTextureData() const;
   void* GetIndirectTextureData() const;
   void* GetReflectionTextureData() const;
-  CVector3f fn_8011ca08() const;
+  CVector3f GetCameraForwardPoint() const;
   int ValidateCurrentOrbitTargetId(CStateManager& mgr);
   bool ValidateOrbitTargetIdAndPointer(TUniqueId target, const CStateManager& mgr) const;
   TUniqueId fn_8022af0c(CStateManager& mgr, uint controls, TUniqueId source, float duration,
@@ -628,12 +637,12 @@ private:
   bool mDoneSidewaysDashing;                                     // 0x588
   uint mOrbitSource;                                             // 0x58c
   bool mOrbitingEnemy;                                           // 0x590
-  bool x591_;                                                    // 0x591
-  float x594_;                                                   // 0x594
+  bool mOrbitTargetLineOfSightClear;                             // 0x591
+  float mOrbitOcclusionTimer;                                    // 0x594
   int mOrbitCandidateIndex;                                      // 0x598
   int mOrbitCandidateRefreshFrames;                              // 0x59c
-  float x5a0_;                                                   // 0x5a0
-  float x5a4_;                                                   // 0x5a4
+  float mOrbitTargetDistance;                                    // 0x5a0
+  float mOrbitTargetScreenDistance;                              // 0x5a4
   float mDashSpeedMultiplier;                                    // 0x5a8
   bool mNoStrafeDashBlend;                                       // 0x5ac
   float mDashDuration;                                           // 0x5b0
@@ -764,7 +773,7 @@ private:
   bool mHitWallDuringMove : 1;
   bool mSelectFluidBallSound : 1;
   bool x1269_27_ : 1;
-  bool x1269_28_ : 1;
+  bool mExtendTargetDistance : 1;
   bool mInterpolatingControlDir : 1;
   bool x1269_30_ : 1;
   bool x1269_31_ : 1;
@@ -822,8 +831,8 @@ private:
   CSfxHandle mDarkAetherDamageSfx;
   CSfxHandle mSafeZoneHealSfx;
   int mCharacterIndex;
-  CVector3f x133c_;
-  CVector3f x1348_;
+  CVector3f mPreviousCameraForwardPoint;
+  CVector3f mPreviousEyePosition;
   CVector2i mScreenPosition;
   float mSafeZoneHealSfxTimer;
   float mDarkAetherDamage;
@@ -858,5 +867,9 @@ private:
 };
 CHECK_SIZEOF(CPlayer, 0x14c8)
 typedef char CPlayerVisorSteamSizeCheck[check_sizeof< CPlayer::CVisorSteam, 0x28 >::value];
+
+extern const bool gkAutoAim;
+extern const bool gkAutoAimAtOrbitedObject;
+extern const int gkMorphBallOrbitMode;
 
 #endif // _CPLAYER

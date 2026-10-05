@@ -1523,7 +1523,7 @@ void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManage
 
       if (mBoostChargeTime >= gpTweakBall->GetBoostBallMinChargeTime() || activateBoost) {
         if (kBoostBallBreaksOrbit) {
-          mPlayer.fn_8011eac4(CPlayer::kOR_BoostBall, mgr);
+          mPlayer.SetOrbitRequestForOtherPlayers(CPlayer::kOR_BoostBall, mgr);
         }
 
         if (GetBallBoostState() == kBBS_BoostAvailable) {

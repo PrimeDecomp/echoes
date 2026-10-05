@@ -210,6 +210,8 @@ public:
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
   bool GetDrawEnabled() const { return mDrawEnabled; } // Guessed name
   bool GetTakesProjectedShadow() const { return mTakesProjectedShadow; }
+  bool GetDoTargetDistanceTest() const { return mDoTargetDistanceTest; }
+  uint GetTargetableVisorFlags() const { return mTargetableVisorFlags; }
   void SetDoTargetDistanceTest(bool enabled) { mDoTargetDistanceTest = enabled; }
 
   void RemoveMaterial(EMaterialTypes, EMaterialTypes, EMaterialTypes, EMaterialTypes,
