@@ -39,6 +39,7 @@ public:
   void SetSfxVolume(int, bool);
   uint GetSfxVolume() const { return sfxVol; }
   void SetMusicVolume(int, bool);
+  uint GetMusicVolume() const { return musicVol; }
   void SetSurroundMode(CAudioSys::ESurroundModes, bool);
 
   int GetHudAlphaRaw() const;

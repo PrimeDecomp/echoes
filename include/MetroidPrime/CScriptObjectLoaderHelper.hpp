@@ -63,6 +63,7 @@ public:
   void RegisterScriptObjects(rstl::vector< CEntity* > objects, CStateManager& mgr);
   // Name and parameters corroborated by the Echoes Wii SEL export.
   SGeneratedObject GenerateScriptObject(const TEditorId& editorId, CStateManager& mgr);
+  bool IsGeneratingObject() const { return mGeneratingObject; }
 
 private:
   typedef rstl::map< TEditorId, SScriptObjectStream > TScriptObjectMap;
