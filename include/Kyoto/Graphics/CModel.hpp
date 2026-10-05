@@ -58,6 +58,7 @@ public:
   void PreDrawModel(const CModelFlags& flags) const;
   bool IsLoaded(int matIdx) const;
   bool IsDefinitelyOpaque() const;
+  int GetNumMaterialSets() const { return mMatSets.size(); }
   const CAABox& GetAABB() const;
   void UnlockTextures();
   const float* GetPositions() const;

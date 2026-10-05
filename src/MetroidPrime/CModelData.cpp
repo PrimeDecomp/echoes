@@ -116,11 +116,35 @@ void CModelData::Touch(const CStateManager& mgr, int shaderIdx) const {
 }
 
 void CModelData::Touch(EWhichModel which, int shaderIdx) const {
-  // TODO: Touch the selected static or animated model only when textures are locked.
+  if (!mTexturesLocked) {
+    return;
+  }
+  if (HasAnimation()) {
+    PickAnimatedModel(which).GetModel()->Touch(shaderIdx);
+  } else {
+    PickStaticModel(which)->Touch(shaderIdx);
+  }
 }
 
 void CModelData::Touch() const {
-  // TODO: Touch every shader in all three model variants when textures are locked.
+  if (!mTexturesLocked) {
+    return;
+  }
+  if (HasAnimation()) {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      const CModel& model = **PickAnimatedModel(static_cast< EWhichModel >(which)).GetModel();
+      for (int shader = 0; shader < model.GetNumMaterialSets(); ++shader) {
+        model.Touch(shader);
+      }
+    }
+  } else {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      const CModel& model = **PickStaticModel(static_cast< EWhichModel >(which));
+      for (int shader = 0; shader < model.GetNumMaterialSets(); ++shader) {
+        model.Touch(shader);
+      }
+    }
+  }
 }
 
 void CModelData::RenderParticles(const CFrustumPlanes& planes) const {
@@ -261,8 +285,10 @@ float CModelData::GetAnimationDuration(int anim) const {
 bool CModelData::GetIsLoop() const { return HasAnimation() && mAnimData->GetIsLoop(); }
 
 bool CModelData::IsDefinitelyOpaque(EWhichModel which) const {
-  // TODO: Query the selected CModel's opaque-material flag after its interface is recovered.
-  return false;
+  if (HasAnimation()) {
+    return PickAnimatedModel(which).GetModel()->IsDefinitelyOpaque();
+  }
+  return mNormalModel && PickStaticModel(which)->IsDefinitelyOpaque();
 }
 
 void CModelData::SetEchoModel(const rstl::pair< CAssetId, CAssetId >& assets) {
@@ -354,12 +380,36 @@ bool CModelData::IsLoaded(int shaderIdx) const {
 }
 
 int CModelData::GetNumShaders() const {
-  // TODO: Return the normal CModel's shader-vector size; CModel's layout is still absent.
+  if (HasAnimation()) {
+    return mAnimData->GetModelData()->GetModel()->GetNumMaterialSets();
+  }
+  if (mNormalModel) {
+    return (*mNormalModel)->GetNumMaterialSets();
+  }
   return 1;
 }
 
 void CModelData::LockTextures() {
-  // TODO: Lock textures for every model variant and set mTexturesLocked once.
+  if (mTexturesLocked) {
+    return;
+  }
+  mTexturesLocked = true;
+  const int shaderCount = GetNumShaders();
+  if (HasAnimation()) {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      CModel& model = **PickAnimatedModel(static_cast< EWhichModel >(which)).GetModel();
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.UnlockTextures();
+      }
+    }
+  } else {
+    for (int which = kWM_Normal; which <= kWM_Echo; ++which) {
+      CModel& model = **PickStaticModel(static_cast< EWhichModel >(which));
+      for (int shader = 0; shader < shaderCount; ++shader) {
+        model.UnlockTextures();
+      }
+    }
+  }
 }
 
 void CModelData::SetScale(const CVector3f& scale) {
