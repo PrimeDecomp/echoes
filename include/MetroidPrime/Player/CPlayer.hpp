@@ -10,6 +10,7 @@
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CControlMapper.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
+#include "MetroidPrime/CGameHint.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CGunDrawBlockSet.hpp"
@@ -91,13 +92,14 @@ public:
   };
   enum EPlayerOrbitRequest {
     kOR_StopOrbit,
+    kOR_EnterMorphBall = 2, // Target-derived: interrupts orbit on entering Morph Ball.
     kOR_Default = 3,
     kOR_InvalidateTarget = 6,
     kOR_BadVerticalAngle = 7,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
     kOR_LostGrappleLineOfSight = 12,
-    kOR_BoostBall = 13,          // Guessed name; requested when a boost charge releases.
+    kOR_BoostBall = 13, // Guessed name; requested when a boost charge releases.
     kOR_TargetingThroughDoor = 14,
   };
   enum EPlayerZoneInfo {
@@ -450,9 +452,9 @@ public:
   void ActivateMorphBallCamera(CStateManager& mgr);
   void fn_80184294(EPlayerMorphBallState state);
   void fn_801842c8(float dt, CStateManager& mgr, EPlayerMorphBallState state);
-  bool fn_801843d0(CStateManager& mgr, EPlayerMorphBallState state);
+  bool PrepareToLeaveMorphBallState(float dt, CStateManager& mgr, EPlayerMorphBallState state);
   void fn_80184a60(float dt, CStateManager& mgr, EPlayerMorphBallState state);
-  void fn_80184ba4(CStateManager& mgr);
+  void PrepareToEnterMorphBallState(float dt, CStateManager& mgr);
   void TransitionFromMorphBallState(float dt, CStateManager& mgr);
   void TransitionToMorphBallState(float dt, CStateManager& mgr);
   bool fn_801858cc(float dt, CStateManager& mgr);
@@ -551,11 +553,12 @@ public:
   void SetRezbitState(ERezbitState state);
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
+  void ResetRezbitRecoveryInput();
   bool BoostHeld(const CFinalInput& input) const; // Guessed name.
-  bool fn_8022b7f4(const CFinalInput& input) const;
+  bool ChargeBeamHeld(const CFinalInput& input) const;
   bool JumpPressed(const CFinalInput& input) const;
   bool JumpHeld(const CFinalInput& input) const;
-  bool fn_8022b974(const CFinalInput& input) const;
+  bool AutoFireHeld(const CFinalInput& input) const;
   bool FireBeamPressed(const CFinalInput& input) const;
   bool FireBeamHeld(const CFinalInput& input) const;
   bool IsAligningGrappleSwingTurn() const { return (x126a_ & 0x10) != 0; }
@@ -564,8 +567,8 @@ public:
   }
   bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
   void ResetPlayerHintState(CStateManager& mgr);
-  void UpdatePlayerHints(CStateManager& mgr);
-  void fn_8022c338(float dt, CStateManager& mgr);
+  void CalculatePlayerControlDirection(CStateManager& mgr);
+  void UpdatePlayerControlDirection(float dt, CStateManager& mgr);
 
   void LeaveMorphBallState(CStateManager& mgr);
   void EnterMorphBallState(CStateManager& mgr, EPlayerMorphBallState state);
@@ -587,8 +590,8 @@ public:
   CVector3f GetCameraForwardPoint() const;
   int ValidateCurrentOrbitTargetId(CStateManager& mgr);
   bool ValidateOrbitTargetIdAndPointer(TUniqueId target, const CStateManager& mgr) const;
-  TUniqueId fn_8022af0c(CStateManager& mgr, uint controls, TUniqueId source, float duration,
-                        int breakType);
+  TUniqueId DisableControls(CStateManager& mgr, uint controls, TUniqueId source, float duration,
+                            CGameHint::EBreakHintType breakType);
 
 private:
   NPlayer::EPlayerMovementState mMovementState;                  // 0x2d0
@@ -735,8 +738,8 @@ private:
   float mIceBreakJumpTimeout;
   ERezbitState mRezbitState;
   CGunDrawBlockSet mRezbitGunDrawBlocks;
-  TUniqueId mRezbitEffectId;
-  float mRezbitRecoveryTimer;
+  TUniqueId mRezbitControlHintId;
+  float mRezbitVirusMemoTimer;
   CMorphBall* mMorphBall; // 0x1174
   CPlayerCameraBob* mCameraBob;
   CSfxHandle mLandingSfx;
@@ -773,10 +776,10 @@ private:
   bool x1268_24_ : 1;
   bool mDrawCrosshairs : 1;
   bool x1268_26_ : 1;
-  bool x1268_27_ : 1;
-  bool x1268_28_ : 1;
+  bool mCanEnterMorphBall : 1;
+  bool mCanLeaveMorphBall : 1;
   bool mSpiderBallControlXY : 1; // Guessed name (Prime)
-  bool x1268_30_ : 1;
+  bool mControlDirectionOverridden : 1;
   bool mInSafeZone : 1;
   bool x1269_24_ : 1;
   bool mHitWallDuringMove : 1;
@@ -784,7 +787,7 @@ private:
   bool x1269_27_ : 1;
   bool mExtendTargetDistance : 1;
   bool mInterpolatingControlDir : 1;
-  bool x1269_30_ : 1;
+  bool mOutOfBallLookAtHint : 1;
   bool x1269_31_ : 1;
   uchar x126a_;
   bool x126b_24_ : 1;
@@ -869,7 +872,7 @@ private:
   uint mRezbitRecoveryInputCount;
   CControlMapper mControlMapper;
   CHintManager* mControlHintManager;
-  TUniqueId x14bc_;
+  TUniqueId mPlayerHintControlHintId;
   float x14c0_;
   TUniqueId mEnemyLockOnActorId;
   char mEnemyLockOnCount;

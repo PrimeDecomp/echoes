@@ -214,7 +214,7 @@ void CPlayer::TransitionFromMorphBallState(float dt, CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::fn_80184ba4(CStateManager& mgr) {
+void CPlayer::PrepareToEnterMorphBallState(float dt, CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
@@ -222,7 +222,8 @@ void CPlayer::fn_80184a60(float dt, CStateManager& mgr, EPlayerMorphBallState st
   // TODO: Recover the remaining target behavior.
 }
 
-bool CPlayer::fn_801843d0(CStateManager& mgr, EPlayerMorphBallState state) {
+bool CPlayer::PrepareToLeaveMorphBallState(float dt, CStateManager& mgr,
+                                           EPlayerMorphBallState state) {
   // TODO: Recover the remaining target behavior.
   return false;
 }

@@ -26,6 +26,18 @@ public:
 
     SCallback() : mInvoke(nullptr), mContext(nullptr) { memset(mCallable, 0, sizeof(mCallable)); }
 
+    template < class T >
+    SCallback(T* object, void (T::*method)(CStateManager&))
+    : mInvoke(&InvokeMember< T >), mContext(object) {
+      memcpy(mCallable, &method, sizeof(method));
+    }
+
+    template < class T >
+    SCallback(T* object, void (T::*method)())
+    : mInvoke(&InvokeMemberWithoutArgs< T >), mContext(object) {
+      memcpy(mCallable, &method, sizeof(method));
+    }
+
     bool IsNull() const {
       for (int i = 0; i < sizeof(mCallable); ++i) {
         if (mCallable[i] != 0) {
@@ -44,6 +56,22 @@ public:
     FInvoke mInvoke;
     void* mContext;
     char mCallable[16]; // Original callable representation remains unresolved.
+
+  private:
+    template < class T >
+    static void InvokeMember(void* object, const void* callable, CStateManager& mgr, CHintState&) {
+      void (T::*method)(CStateManager&);
+      memcpy(&method, callable, sizeof(method));
+      (static_cast< T* >(object)->*method)(mgr);
+    }
+
+    template < class T >
+    static void InvokeMemberWithoutArgs(void* object, const void* callable, CStateManager&,
+                                        CHintState&) {
+      void (T::*method)();
+      memcpy(&method, callable, sizeof(method));
+      (static_cast< T* >(object)->*method)();
+    }
   };
 
   CGameHint(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,

@@ -2161,6 +2161,10 @@ MetroidPrime/CControlHintManager.cpp:
 
 MetroidPrime/Player/CPlayerHints.cpp:
 	.text       start:0x8022AF0C end:0x8022C4C4
+	.rodata     start:0x803AD348 end:0x803AD3A0
+	.data       start:0x803B8760 end:0x803B8778
+	.sdata      start:0x804188C0 end:0x804188C8
+	.sdata2     start:0x8041DB10 end:0x8041DB30
 
 MetroidPrime/ScriptObjects/CScriptControlHint.cpp:
 	.text       start:0x8022C4C4 end:0x8022D1EC
