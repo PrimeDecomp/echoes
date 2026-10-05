@@ -41,6 +41,11 @@ public:
 
   float DeltaTime() const { return mDt; }
 
+  float GetAnalogLeftX() const { return mAnaLeftX; }
+  float GetAnalogLeftY() const { return mAnaLeftY; }
+  float GetAnalogRightX() const { return mAnaRightX; }
+  float GetAnalogRightY() const { return mAnaRightY; }
+
   uint ControllerNumber() const { return mControllerIdx; }
 
   float ALAUp() const { return mAnaLeftY > 0.f ? mAnaLeftY : 0.f; }
