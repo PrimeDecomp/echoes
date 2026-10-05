@@ -63,13 +63,14 @@ private:
   ushort* mLeafStatus;
   uchar x34_unknown[4];
   uint mEnd;
-  int mGeometryStart;
+  int mGeometryTriangleCount;
 };
 CHECK_SIZEOF(CCollisionCacheIterator, 0x40)
 
 // Guessed name
 class CCollisionCache {
   friend class CCollisionCacheWriter;
+  friend class CCollisionCacheIterator;
 
 public:
   CCollisionCache(const CAABox& bounds, int x2c, int x30, ushort x34);
