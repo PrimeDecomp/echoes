@@ -40,10 +40,13 @@ public:
   virtual void KnockBack(CStateManager& mgr, const CKnockBackInfo& info) = 0;
   virtual CDamageVulnerability* DamageVulnerability();
   virtual void TakeDamage(const CVector3f& direction, float magnitude);
-  // Names and unused parameters of these four slots are Prime-based hypotheses.
+  // CanBeShot, IsListening and GetOrigin retain Prime-based name/signature hypotheses.
   virtual bool CanBeShot(const CStateManager&, int) { return true; }
   virtual bool IsListening() const { return false; }
-  virtual bool Listen(const CVector3f&, EListenNoiseType) { return false; }
+  // Prime-derived name; Echoes dispatch and REL listeners establish the extra manager argument.
+  virtual bool Listen(CStateManager& mgr, const CVector3f& position, EListenNoiseType type) {
+    return false;
+  }
   virtual CVector3f GetOrigin(const CStateManager&, const CTeamAiRole&, const CVector3f&) const {
     return GetTranslation();
   }
