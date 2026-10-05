@@ -66,6 +66,15 @@ public:
   GetSplashEffect(float scale) const;
   int GetSplashIndex(float scale) const;
   const CColor& GetSplashColor() const { return mSplashColor; }
+  const rstl::optional_object< TLockedToken< CGenDescription > >& GetVisorRunoffEffect() const {
+    return mVisorRunoffEffect;
+  }
+  const rstl::optional_object< TLockedToken< CGenDescription > >&
+  GetUnmorphVisorRunoffEffect() const {
+    return mUnmorphVisorRunoffEffect;
+  }
+  TSfxId GetVisorRunoffSfx() const { return mVisorRunoffSfx; }
+  TSfxId GetUnmorphVisorRunoffSfx() const { return mUnmorphVisorRunoffSfx; }
   CVector2f GetFluidUVExtent(const CAABox& bounds) const; // Guessed name
   void CalculateRenderBounds();
   void ClearSplashInhabitants(); // Guessed name
