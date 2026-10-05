@@ -188,8 +188,11 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
     CVectorFixed8_8 position = mParticles[base + segment];
     uchar alpha = 0x7f;
     CGX::Begin(GX_LINESTRIP, GX_VTXFMT6, 8);
-    for (int point = 0; point < 8; ++point) {
-      segment = (segment + 7) & 7;
+    for (int point = 0; point < 7; ++point) {
+      --segment;
+      if (segment < 0) {
+        segment = 7;
+      }
       const CVectorFixed8_8& delta = mParticles[base + segment];
       const CVectorFixed8_8 next(position.mX + delta.mX, position.mY + delta.mY,
                                  position.mZ + delta.mZ);
@@ -211,9 +214,6 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
       GXTexCoord2u8(0, alpha);
       alpha -= 15;
       position = next;
-      if (point == 6) {
-        break;
-      }
     }
     CGX::End();
   }
