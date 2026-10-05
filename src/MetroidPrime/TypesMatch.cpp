@@ -1,4 +1,5 @@
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/Weapons/CPlasmaProjectile.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
@@ -112,6 +113,9 @@
   cls* TCastToPtr< cls >(CEntity & entity) {                                                       \
     return static_cast< cls* >(entity.TypesMatch(id));                                             \
   }
+
+CAST_TO_REF_IMPL(CSwarmBasics, kET_SwarmBasics)
+CAST_TO_PTR_IMPL(CSwarmBasics, kET_SwarmBasics)
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CPlasmaProjectile::~CPlasmaProjectile() {}

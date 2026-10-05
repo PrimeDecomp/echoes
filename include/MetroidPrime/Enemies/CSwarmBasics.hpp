@@ -127,6 +127,7 @@ public:
 
   int GetBoidCount() const { return mBoids.size(); }
   const CVector3f& GetLastKilledOffset() const { return mLastKilledOffset; }
+  int GetCurrentLockOnId() const { return mLockOnIndex; }
 
 private:
   // Opaque owned allocation: cleanup is established, but its element type is unresolved.

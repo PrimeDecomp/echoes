@@ -54,6 +54,7 @@ public:
   static void SetGlobalSeed(uint seed);
   void SetParticleTranslationOffset(const CVector3f& offset); // Guessed name
   TLockedToken< CWeaponDescription > GetWeaponDescription() const { return mWeaponDesc; }
+  bool IsProjectileActive() const { return mActive; }
   CElementGen* GetAttachedPS1() const { return mAPSMGen; }
   double GameTime() const { return mCurTime; }
   int GetCurrentFrame() const { return mCurFrame; }
