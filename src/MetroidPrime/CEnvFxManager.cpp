@@ -826,10 +826,10 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
         const short y = static_cast< short >(
             random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
         const short x = static_cast< short >(random.Range(0.f, grid.mExtent.GetX() - 20.f));
-        for (int point = 0; point < 8; ++point) {
-          grid.mParticles[base + point] = CVectorFixed8_8();
-        }
         grid.mParticles[base + current] = CVectorFixed8_8(x, y, z);
+        for (int point = 1; point < 8; ++point) {
+          grid.mParticles[base + ((current + point) & 7)] = CVectorFixed8_8();
+        }
       } else if (frame % period == 0) {
         const int current = ((frame - 1) / period) & 7;
         const int next = (current + 1) & 7;
