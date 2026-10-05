@@ -186,7 +186,7 @@ bool CPlayer::SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mg
   if ((hint.GetOverrideFlags() & 0x400000) != 0 && mMorphBallState != kMS_Morphed) {
     SetOrbitRequest(kOR_EnterMorphBall, mgr);
     mGun->Holster(mgr);
-    mGravityBoostActive = false;
+    mGravityBoostUsed = false;
     EnterMorphBallState(mgr, kMS_Unmorphed);
     PrepareToEnterMorphBallState(0.f, mgr);
     ActivateMorphBallCamera(mgr);

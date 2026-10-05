@@ -75,6 +75,14 @@ public:
   EBallCameraBehaviour GetBehaviourType() const { return mBehaviour; }
   TUniqueId GetTooCloseActorId() const { return mTooCloseActorId; }
   float GetTooCloseActorDistance() const { return mTooCloseActorDist; }
+  bool TransitionToMorphBallState(CStateManager& mgr);
+  bool TransitionFromMorphBallState(CStateManager& mgr);
+  // Reconstructed accessors; see CPlayerDynamics research.
+  void SetLookAtPosition(const CVector3f& position) { mLookPos = position; }
+  void ResetLookAtPosition() {
+    mLookPos = mFixedLookPos;
+    mLookPosAhead = mFixedLookPos;
+  }
   void InvalidateSpline();
 
 private:
@@ -141,10 +149,8 @@ private:
 
   bool UpdateTransitionToBallCamera(CStateManager& mgr);
   bool UpdateTransitionToBallCamera(float dt, CStateManager& mgr);
-  bool TransitionToMorphBallState(CStateManager& mgr);
   bool CheckFailsafeToMorphBallState(CStateManager& mgr);
   bool UpdateTransitionFromBallCamera(CStateManager& mgr);
-  bool TransitionFromMorphBallState(CStateManager& mgr);
   bool CheckFailsafeFromMorphBallState(CStateManager& mgr);
 
   EBallCameraBehaviour mBehaviour;

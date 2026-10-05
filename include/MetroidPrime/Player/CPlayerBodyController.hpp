@@ -58,6 +58,15 @@ public:
 
   int GetLocomotionMode() const { return mLocomotion.mLocomotionMode; }
 
+  // Reconstructed accessors for the existing native animation masks.
+  bool IsMoving() const { return (mAnimationFlags & kAF_Moving) != 0; }
+  bool IsFastLocomotion() const { return (mAnimationFlags & kAF_FastLocomotion) != 0; }
+  bool IsLocomotionActive() const { return (mAnimationFlags & kAF_LocomotionActive) != 0; }
+  bool IsMorphTransitionActive() const {
+    return (mAnimationFlags & kAF_MorphTransitionActive) != 0;
+  }
+  void SetLocomotionMode(int mode) { mLocomotion.SetLocomotionMode(mode); }
+
   bool IsAnimationOver() const { return (mAnimationFlags & kAF_AnimationOver) != 0; }
 
   const CPASDatabase& GetPASDatabase() const;

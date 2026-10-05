@@ -29,6 +29,7 @@ public:
   void UpdateElevation(CStateManager& mgr);
   void UpdateTransform(CStateManager& mgr, float dt);
   void SkipCinematic();
+  void DeferBallTransitionProcessing() { mDeferBallTransitionProcessing = true; }
   void SetLockCamera(bool lock) { mLockCamera = lock; }
   const CTransform4f& GetGunFollowTransform() const;
   void UpdateFluidEffects(CStateManager& mgr); // Guessed name

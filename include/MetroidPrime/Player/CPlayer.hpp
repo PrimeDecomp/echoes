@@ -92,6 +92,7 @@ public:
   };
   enum EPlayerOrbitRequest {
     kOR_StopOrbit,
+    kOR_Respawn, // Target-derived: teleport/respawn resets this player and other players orbit.
     kOR_EnterMorphBall = 2, // Target-derived: interrupts orbit on entering Morph Ball.
     kOR_Default = 3,
     kOR_InvalidateTarget = 6,
@@ -218,7 +219,7 @@ public:
   const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
   bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
-  const CVector3f& GetLeaveMorphDirection() const { return xfe8_; }
+  const CVector3f& GetLeaveMorphDirection() const { return mLeaveMorphDir; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
@@ -259,6 +260,7 @@ public:
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
   CCameraManager* CameraManager() { return mCameraManager; }
+  bool IsOutOfBallLookAtHintActor() const { return (x126a_ & 1) != 0; }
   bool IsOverrideRadarRadius() const { return (x126a_ & 4) != 0; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
@@ -340,7 +342,7 @@ public:
   void SetControlDirectionInterpolation(float duration);
   void ResetControlDirectionInterpolation();
   void SetPlayerHitWallDuringMove();
-  void SetPlayerIsSlidingOnWall(bool sliding) { x1269_24_ = sliding; }
+  void SetPlayerIsSlidingOnWall(bool sliding) { mSlidingOnWall = sliding; }
   void SetAimTarget(TUniqueId target);
   void UpdateAssistedAiming(const CTransform4f& transform, CStateManager& mgr);
   void UpdateGunTransform(const CVector3f& position, CStateManager& mgr);
@@ -400,7 +402,7 @@ public:
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
   TUniqueId GetRidingPlatform() const { return mRidingPlatform; }
   const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
-  const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
+  const CVector3f& GetLastVelocity() const { return mLastVelocity; }        // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
   bool GetFreeLookStickState() const { return mLookAnalogHeld; }
@@ -450,15 +452,15 @@ public:
   void UpdateMorphBallTransition(float dt, CStateManager& mgr);
   void UpdateTransitionFilter(float dt, CStateManager& mgr);
   void ActivateMorphBallCamera(CStateManager& mgr);
-  void fn_80184294(EPlayerMorphBallState state);
-  void fn_801842c8(float dt, CStateManager& mgr, EPlayerMorphBallState state);
+  void RequestScrewAttackTransition(EPlayerMorphBallState state);
+  void BeginUnmorphTransition(float dt, CStateManager& mgr, EPlayerMorphBallState state);
   bool PrepareToLeaveMorphBallState(float dt, CStateManager& mgr, EPlayerMorphBallState state);
-  void fn_80184a60(float dt, CStateManager& mgr, EPlayerMorphBallState state);
+  void BeginMorphTransition(float dt, CStateManager& mgr, EPlayerMorphBallState state);
   void PrepareToEnterMorphBallState(float dt, CStateManager& mgr);
-  void TransitionFromMorphBallState(float dt, CStateManager& mgr);
-  void TransitionToMorphBallState(float dt, CStateManager& mgr);
-  bool fn_801858cc(float dt, CStateManager& mgr);
-  void fn_80185a88(float dt, CStateManager& mgr);
+  void SetOutOfBallReadyAnimation(float dt, CStateManager& mgr);
+  void UpdatePlayerBodyController(float dt, CStateManager& mgr);
+  bool UpdatePlayerRagDoll(float dt, CStateManager& mgr);
+  void SetIntoBallReadyAnimation(float dt, EPlayerMorphBallState state);
   float UpdateCameraBob(float dt, CStateManager& mgr);
   void SetEyeZBias(float bias);
   float GetUnbiasedEyeHeight() const;
@@ -479,7 +481,8 @@ public:
   float ForwardInput(const CFinalInput& input, float turnInput) const;
   void ComputeMovement(const CFinalInput& input, CStateManager& mgr, float dt);
   void ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr);
-  void fn_801892a0(float dt, CStateManager& mgr);
+  CVector3f CalculateLeftStickEdgePosition(float strafeInput, float forwardInput) const;
+  void BeginSidewaysDash(float strafeInput, CStateManager& mgr);
   void FinishSidewaysDash();
   bool SidewaysDashAllowed(float strafeInput, float forwardInput, const CFinalInput& input) const;
   void UpdateStepCameraZBias(float dt, CStateManager& mgr);
@@ -605,12 +608,12 @@ private:
   float mJumpCameraTimer;                                        // 0x30c
   int mJumpPresses;                                              // 0x310
   float mFallCameraTimer;                                        // 0x314
-  float x318_;                                                   // 0x318
+  float mAirborneTimer;                                          // 0x318
   bool mCancelCameraPitch;                                       // 0x31c
   float mTimeSinceJump;                                          // 0x320
-  float x324_;                                                   // 0x324
-  float x328_;                                                   // 0x328
-  CVector3f x32c_;                                               // 0x32c
+  float mTimeSinceDoubleJump;                                    // 0x324
+  float mTimeSinceScrewAttackRequest;                            // 0x328
+  CVector3f mLastJumpPosition;                                   // 0x32c
   CVector3f mLastSpaceJumpPosition;                              // 0x338
   ESurfaceRestraints mSurfaceRestraint;                          // 0x344
   rstl::reserved_vector< float, 6 > mAccelerationTable;          // 0x348
@@ -706,7 +709,7 @@ private:
   float mFlatMoveSpeed;                        // 0xfcc
   CVector3f mLookDir;                          // 0xfd0
   CVector3f mMoveDir;
-  CVector3f xfe8_;
+  CVector3f mLeaveMorphDir;
   CVector3f mLastPosForDirCalc;
   CVector3f mGunDir;
   float mTimeMoving;
@@ -744,7 +747,7 @@ private:
   CPlayerCameraBob* mCameraBob;
   CSfxHandle mLandingSfx;
   float mLandingSfxTimer;
-  CSfxHandle x1184_;
+  CSfxHandle mDashSfx;
   CSfxHandle x1188_;
   int x118c_;
   float x1190_;
@@ -769,8 +772,8 @@ private:
   TUniqueId mRidingPlatform;
   float mGravityBoostDuration;
   CSfxHandle mGravityBoostSfx;
-  CSfxHandle x1258_;
-  bool mGravityBoostActive;
+  CSfxHandle mGravityBoostEndSfx;
+  bool mGravityBoostUsed;
   CColor mScreenFilterColor;
   CHintManager* mPlayerHintManager;
   bool x1268_24_ : 1;
@@ -781,10 +784,10 @@ private:
   bool mSpiderBallControlXY : 1; // Guessed name (Prime)
   bool mControlDirectionOverridden : 1;
   bool mInSafeZone : 1;
-  bool x1269_24_ : 1;
+  bool mSlidingOnWall : 1;
   bool mHitWallDuringMove : 1;
   bool mSelectFluidBallSound : 1;
-  bool x1269_27_ : 1;
+  bool mStepCameraZBiasDirty : 1;
   bool mExtendTargetDistance : 1;
   bool mInterpolatingControlDir : 1;
   bool mOutOfBallLookAtHint : 1;
@@ -792,12 +795,12 @@ private:
   uchar x126a_;
   bool x126b_24_ : 1;
   bool x126b_25_ : 1;
-  bool x126b_26_ : 1;
+  bool x126b_26_ : 1; // Fluid type 2; semantic name unresolved (see Dynamics research).
   bool x126b_27_ : 1;
   bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
-  bool mLandingStrikePending : 1; // Guessed name; hard-landing gun reaction pending.
+  bool mLandingStrikePending : 1;   // Guessed name; hard-landing gun reaction pending.
   bool mDampBoostEntryVelocity : 1; // Guessed name: player hint flag 0x800000.
   float mDeathFadeDuration;
   float mDeathFadeDelay;
@@ -880,6 +883,9 @@ private:
 CHECK_SIZEOF(CPlayer, 0x14c8)
 typedef char CPlayerVisorSteamSizeCheck[check_sizeof< CPlayer::CVisorSteam, 0x28 >::value];
 
+extern const bool kDoubleJumpBreaksOrbit;
+extern const bool kDashDoubleJumpBreaksOrbit;
+extern const bool gkFreeLookPreventsOrbitMovement;
 extern const bool gkAutoAim;
 extern const bool gkAutoAimAtOrbitedObject;
 extern const int gkMorphBallOrbitMode;
