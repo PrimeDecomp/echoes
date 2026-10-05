@@ -25,6 +25,7 @@ public:
 
   // Guessed name; selects the separate script provider.
   void SetScriptCameraId(TUniqueId uid);
+  TUniqueId GetScriptCameraId() const { return mScriptCameraId; }
 
 private:
   TUniqueId mScriptCameraId;

@@ -25,6 +25,7 @@ public:
 
   // Guessed helper names.
   void SetScriptCameraId(TUniqueId uid);
+  TUniqueId GetScriptCameraId() const { return mScriptCameraId; }
   void UpdateTargetPosition(CStateManager& mgr);
   CVector3f ConstrainLookDirection(const CVector3f& direction, CStateManager& mgr);
 
