@@ -1,14 +1,22 @@
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetaRender/SModelRenderData.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Graphics/CCubeMaterial.hpp"
 #include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CDrawablePlaneObject.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/IObjectStore.hpp"
+#include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CVector2i.hpp"
+#include "Kyoto/Math/CVector3d.hpp"
+#include "Kyoto/Particles/CParticleGen.hpp"
+#include "WorldFormat/CMetroidModelInstance.hpp"
 #include "rstl/math.hpp"
 
+#include "dolphin/os/OSCache.h"
 #include <string.h>
 
 // NonMatching scaffold: unfinished rendering passes are explicitly marked below.
@@ -53,7 +61,16 @@ uint Buckets::GetWorkspaceSize() {
 }
 
 void Buckets::Init(void* workspace) {
-  // TODO: placement-construct the bucket containers in the aligned caller-owned workspace.
+  uchar* data = reinterpret_cast< uchar* >((reinterpret_cast< uint >(workspace) + 3) & ~3);
+  sData = new (data) DrawableList;
+  data += sizeof(DrawableList);
+  sBuckets = new (data) BucketList;
+  data += sizeof(BucketList);
+  sPlaneObjectData = new (data) PlaneList;
+  data += sizeof(PlaneList);
+  sPlaneObjectBucket = new (data) PlaneBucketList;
+  sBuckets->resize(50, Bucket());
+  sMinMaxDistance = skWorstMinMaxDistance;
 }
 
 void Buckets::Shutdown() {
@@ -170,38 +187,114 @@ CCubeRenderer::CCubeRenderer(IObjectStore& store, COsContext& context, CMemorySy
 , mRequestedMaterialMode(0) {
   memset(mBlackTex.Lock(), 0, 32);
   mBlackTex.UnLock();
+  GenerateReflectionTex();
   GenerateFogVolumeRampTex();
   GenerateSphereRampTex();
   GenerateAlphaMaskRampTex();
   GenerateScanRampTex();
-  GenerateReflectionTex();
   sRenderer = this;
   Buckets::Shutdown();
 }
 
 CGraphicsPalette* CCubeRenderer::ClonePalette(const TLockedToken< CTexture >& texture) {
-  // TODO: copy the texture palette's format, entry count and entries.
-  return nullptr;
+  const CGraphicsPalette* palette = texture->GetPalette();
+  CGraphicsPalette* result =
+      rs_new CGraphicsPalette(palette->GetFormat(), palette->GetEntryCount());
+  memcpy(result->Lock(), palette->GetPaletteData(), result->GetEntryCount() * sizeof(ushort));
+  result->UnLock();
+  return result;
 }
 
 void CCubeRenderer::GenerateReflectionTex() {
-  // TODO: reconstruct this rendering pass.
+  const float radius = 14.f;
+  const float halfScale = 128.f;
+  ushort* data = static_cast< ushort* >(mReflectionRamp.Lock());
+  int texel = 0;
+  for (int yBlock = 0; yBlock < 8; ++yBlock) {
+    for (int xBlock = 0; xBlock < 8; ++xBlock) {
+      for (int y = 0; y < 4; ++y) {
+        for (int x = 0; x < 4; ++x) {
+          float fx = 0.f;
+          float fy = 0.f;
+          CVector2f vec(static_cast< float >(xBlock * 4 + (x - 14)),
+                        static_cast< float >(yBlock * 4 + (y - 14)));
+          const float mag = vec.Magnitude();
+          if (mag <= radius) {
+            vec.Normalize();
+            vec *= (radius - mag) / radius;
+            fx = vec.GetX();
+            fy = vec.GetY();
+          }
+          const float scaledX = halfScale * fx + halfScale;
+          const int ix = static_cast< int >(CMath::Clamp(0.f, scaledX, 255.f));
+          const float scaledY = halfScale * fy + halfScale;
+          const int iy = static_cast< int >(CMath::Clamp(0.f, scaledY, 255.f));
+          data[texel++] = static_cast< ushort >((iy & 0xff) | ((ix & 0xff) << 8));
+        }
+      }
+    }
+  }
+  mReflectionRamp.UnLock();
 }
 
 void CCubeRenderer::GenerateFogVolumeRampTex() {
-  // TODO: reconstruct this rendering pass.
+  uchar* data = static_cast< uchar* >(mFogVolumeRamp.Lock());
+  memset(data, 0xff, 0x10000);
+  for (int y = 0, yOff = 0; y < 2048; ++y, yOff += 32) {
+    const int tileXBase = (y % 32) * 8;
+    const int tileYBase = (y / 32) * 4;
+    for (int x = 0; x < 32; ++x) {
+      const int tileX = tileXBase + (x & 7);
+      const int tileY = tileYBase + (x >> 3);
+      const uint tmp = static_cast< uint >((tileY << 16) | (tileX << 8) | 0x7f);
+      const double t = static_cast< double >(tmp) / 16777215.0;
+      const double a = (-(150.0 / (t * (750.f - 0.2f) - 750.0)) - 0.2f) * 3.0 / (750.f - 0.2f);
+      const float value = CMath::Clamp< float >(0.f, a, 1.f);
+      data[yOff + x] = CCast::ToUint8(0.5f * (value * value + value) * 255.f);
+    }
+  }
+  mFogVolumeRamp.UnLock();
 }
 
 void CCubeRenderer::GenerateSphereRampTex() {
-  // TODO: reconstruct this rendering pass.
+  const int height = 32;
+  const int width = 32;
+  const float halfRes = (height - 1) / 2.f;
+  uchar* data = static_cast< uchar* >(mSphereRamp.Lock());
+  for (int y = 0; y < height; ++y) {
+    const int start = y * width;
+    for (int x = 0; x < width; ++x) {
+      float fx = static_cast< float >(((y % 4) << 3) + (x & 7));
+      float fy = static_cast< float >(((y / 4) << 2) + (x >> 3));
+      fx = fx / halfRes - 1.f;
+      fy = fy / halfRes - 1.f;
+      const float mag = CMath::SqrtF(fx * fx + fy * fy);
+      const float value = CMath::Clamp(0.f, 1.f - mag * mag, 1.f);
+      data[start + x] = static_cast< uchar >(value * 255.f);
+    }
+  }
+  mSphereRamp.UnLock();
 }
 
 void CCubeRenderer::GenerateAlphaMaskRampTex() {
-  // TODO: reconstruct this rendering pass.
+  uchar* data = static_cast< uchar* >(mAlphaMaskRamp.Lock());
+  for (uint y = 0; y < 16; ++y) {
+    const uchar value = y < 8 ? 0 : 0xff;
+    for (int x = 0; x < 8; ++x) {
+      data[y * 8 + x] = value;
+    }
+  }
+  mAlphaMaskRamp.UnLock();
 }
 
 void CCubeRenderer::GenerateScanRampTex() {
-  // TODO: reconstruct this rendering pass.
+  uchar* data = static_cast< uchar* >(mScanRamp.Lock());
+  memset(data, 0xff, 8);
+  memset(data + 8, 0, 8);
+  memset(data + 16, 0xff, 8);
+  memset(data + 24, 0, 8);
+  DCFlushRange(data, 32);
+  mScanRamp.UnLock();
 }
 
 CCubeRenderer::~CCubeRenderer() {
@@ -218,7 +311,28 @@ void CCubeRenderer::AddStaticGeometry(const rstl::vector< CMetroidModelInstance 
                                       const rstl::vector< uint >* ambientLightIds,
                                       const rstl::vector< signed char >* ambientLightIndices,
                                       int areaId) {
-  // TODO: reconstruct this rendering pass.
+  if (FindStaticGeometry(geometry) == mAreaListItems.end()) {
+    rstl::auto_ptr< rstl::vector< rstl::auto_ptr< CCubeModel > > > models =
+        rs_new rstl::vector< rstl::auto_ptr< CCubeModel > >();
+    rstl::auto_ptr< rstl::vector< TCachedToken< CTexture > > > textures =
+        rs_new rstl::vector< TCachedToken< CTexture > >();
+    if (!geometry->empty()) {
+      CCubeModel::MakeTexturesFromMats(geometry->front().GetMaterialPointer(), *textures,
+                                     mObjStore, false);
+      models->reserve(geometry->size());
+      for (int i = 0; i < geometry->size(); ++i) {
+        const CMetroidModelInstance& instance = (*geometry)[i];
+        models->push_back(rs_new CCubeModel(
+            const_cast< rstl::vector< void* >* >(&instance.GetSurfaces()), textures.get(),
+            instance.GetMaterialPointer(), instance.GetVertexPointer(), instance.GetNormalPointer(),
+            instance.GetColorPointer(), instance.GetTCPointer(), instance.GetPackedTCPointer(),
+            instance.GetBoundingBox(), instance.GetFlags(), false, i));
+      }
+    }
+    mAreaListItems.push_back(CAreaListItem(geometry, octTree, surfaces, ambientLightIds,
+                                        ambientLightIndices, textures, models, areaId));
+    GXInvalidateVtxCache();
+  }
 }
 
 rstl::list< CCubeRenderer::CAreaListItem >::iterator
@@ -247,15 +361,55 @@ void CCubeRenderer::SetWorldViewpoint(const CTransform4f& xf) {
 }
 
 void CCubeRenderer::BeginScene() {
-  // TODO: reconstruct this rendering pass.
+  const int width = CGraphics::GetViewport().mWidth;
+  const int height = CGraphics::GetViewport().mHeight;
+  CGraphics::SetUseVideoFilter(true);
+  CGraphics::SetViewport(0, 0, width, height);
+  CGraphics::SetClearColor(CColor(static_cast< uchar >(0), 0, 0, 0));
+  CGraphics::SetCullMode(kCM_Front);
+  CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+  CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
+  CGraphics::SetPerspective(75.f, 1.3333334f, 1.f, 4096.f);
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  CGraphics::TickRenderTimings();
+  if (mSilhouetteMaskCountdown != 0) {
+    --mSilhouetteMaskCountdown;
+    if (mSilhouetteMaskCountdown == 0) {
+      mSilhouetteMask->ScheduleDeletion();
+      mSilhouetteMask = nullptr;
+    }
+  }
+  mCurrentRGBA6 = mRequestRGBA6;
+  if (!mPersistRGBA6) {
+    mRequestRGBA6 = false;
+  }
+  GXSetPixelFmt(mCurrentRGBA6 ? GX_PF_RGBA6_Z24 : GX_PF_RGB8_Z24, GX_ZC_LINEAR);
+  if (mPreserveDestinationAlpha) {
+    mPreserveDestinationAlpha = false;
+  } else {
+    GXSetAlphaUpdate(GX_TRUE);
+  }
+  CGX::SetDstAlpha(true, 0);
+  CGraphics::BeginScene();
 }
 
 void CCubeRenderer::EndScene() {
-  // TODO: reconstruct this rendering pass.
+  mPersistRGBA6 = !CGraphics::IsBeginSceneClearFb();
+  CGraphics::EndScene();
+  if (mReflectionAge < 2) {
+    ++mReflectionAge;
+  } else {
+    mReflectionTex = nullptr;
+  }
+  CGraphics::SetClearColor(CColor(static_cast< uchar >(0), 0, 0, 0));
 }
 
 void CCubeRenderer::AddParticleGen(const CParticleGen& gen) {
-  // TODO: reconstruct this rendering pass.
+  const rstl::optional_object< CAABox > bounds = const_cast< CParticleGen& >(gen).GetBounds();
+  if (bounds) {
+    const CVector3f closest = bounds->ClosestPointAlongVector(mViewPlane.GetNormal());
+    Buckets::Insert(closest, *bounds, kDT_Particle, &gen, mViewPlane, 0, true);
+  }
 }
 
 void CCubeRenderer::AddParticleGen(const CParticleGen& gen, const CVector3f& pos,
@@ -265,7 +419,19 @@ void CCubeRenderer::AddParticleGen(const CParticleGen& gen, const CVector3f& pos
 
 void CCubeRenderer::AddPlaneObject(const void* obj, const CAABox& bounds, const CPlane& plane,
                                    int type) {
-  // TODO: reconstruct this rendering pass.
+  static const CVector3f sOptimalPlane(0.f, 0.f, 1.f);
+  const CVector3f closest = bounds.ClosestPointAlongVector(mViewPlane.GetNormal());
+  const float closeDistance = mViewPlane.GetHeight(closest);
+  const CVector3f furthest = bounds.FurthestPointAlongVector(mViewPlane.GetNormal());
+  const float farDistance = mViewPlane.GetHeight(furthest);
+  if (closeDistance >= 0.f || farDistance >= 0.f) {
+    const bool zOnly = plane.GetNormal() == sOptimalPlane;
+    const CVector3f viewPosition = CGraphics::GetViewMatrix().GetTranslation();
+    const bool invertTest = zOnly ? !(viewPosition.GetZ() < plane.GetConstant())
+                                 : !(plane.GetHeight(viewPosition) < 0.f);
+    Buckets::InsertPlaneObject(closeDistance, farDistance, bounds, invertTest, plane, zOnly,
+                              static_cast< EDrawableType >(type + kDT_Actor), obj);
+  }
 }
 
 void CCubeRenderer::AddDrawable(const void* obj, const CVector3f& pos, const CAABox& bounds,
@@ -279,16 +445,35 @@ void CCubeRenderer::AddDrawable(const void* obj, const CVector3f& pos, const CAA
 }
 
 void CCubeRenderer::SetupRendererStates(bool depthWrite) {
-  // TODO: reconstruct this rendering pass.
+  CGraphics::DisableAllLights();
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  CGraphics::SetAmbientColor(CColor(0));
+  CGraphics::SetDepthWriteMode(true, kE_LEqual, depthWrite);
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_Or, kAF_Always, 0);
+  CCubeMaterial::ResetCachedMaterials();
+  GXSetTevColor(GX_TEVREG1, mWorldLightColor.GetGXColor());
 }
 
 void CCubeRenderer::SetupCGraphicsStates() {
-  // TODO: reconstruct this rendering pass.
+  const GXColor white = {255, 255, 255, 255};
+  CGraphics::DisableAllLights();
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  CTevCombiners::ResetStates();
+  CGraphics::SetAmbientColor(CColor(0.4f, 0.4f, 0.4f, 1.f));
+  CGX::SetChanMatColor(CGX::Channel0, white);
+  CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+  CGX::SetChanCtrl(CGX::Channel1, false, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE,
+                   GX_AF_NONE);
+  CCubeMaterial::EnsureTevsDirect();
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_Or, kAF_Always, 0);
 }
 
 void CCubeRenderer::AddWorldSurface(short modelIndex, ushort surfaceIndex, uint blend,
                                     const CAABox& bounds) {
-  // TODO: reconstruct this rendering pass.
+  const uint surface = (static_cast< uint >(static_cast< ushort >(modelIndex)) << 16) | surfaceIndex;
+  const CVector3f closest = bounds.ClosestPointAlongVector(mViewPlane.GetNormal());
+  Buckets::Insert(closest, bounds, kDT_WorldSurface, reinterpret_cast< const void* >(surface),
+                  mViewPlane, blend == 0x50004 ? 1 : 0, false);
 }
 
 void CCubeRenderer::DrawRenderBucketsDebug() {}
@@ -318,7 +503,24 @@ void CCubeRenderer::PrimColor(float r, float g, float b, float a) { mPrimColor.S
 void CCubeRenderer::PrimColor(const CColor& color) { mPrimColor = color; }
 
 void CCubeRenderer::BeginPrimitive(EPrimitiveType primitive, int count) {
-  // TODO: reconstruct this rendering pass.
+  const GXVtxDescList desc[4] = {
+      {GX_VA_POS, GX_DIRECT},
+      {GX_VA_NRM, GX_DIRECT},
+      {GX_VA_CLR0, GX_DIRECT},
+      {GX_VA_NULL, GX_NONE},
+  };
+  CGX::SetChanCtrl(CGX::Channel0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE,
+                   GX_AF_NONE);
+  CGX::SetNumChans(1);
+  CGX::SetNumTexGens(0);
+  CGX::SetNumTevStages(1);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  mPrimVertCount = count;
+  CGX::SetVtxDescv(desc);
+  CGX::Begin(GXPrimitive(primitive), GX_VTXFMT0, count);
 }
 
 void CCubeRenderer::BeginLines(int count) { BeginPrimitive(kPT_Lines, count); }
@@ -332,13 +534,19 @@ void CCubeRenderer::BeginTriangleStrip(int count) { BeginPrimitive(kPT_TriangleS
 void CCubeRenderer::BeginTriangleFan(int count) { BeginPrimitive(kPT_TriangleFan, count); }
 
 void CCubeRenderer::PrimVertex(const CVector3f& vertex) {
-  // TODO: reconstruct this rendering pass.
+  --mPrimVertCount;
+  GXPosition3f32(vertex.GetX(), vertex.GetY(), vertex.GetZ());
+  GXNormal3f32(mPrimNormal.GetX(), mPrimNormal.GetY(), mPrimNormal.GetZ());
+  GXColor1u32(mPrimColor.GetColor_u32());
 }
 
 void CCubeRenderer::PrimNormal(const CVector3f& normal) { mPrimNormal = normal; }
 
 void CCubeRenderer::EndPrimitive() {
-  // TODO: reconstruct this rendering pass.
+  while (mPrimVertCount != 0) {
+    PrimVertex(CVector3f::Zero());
+  }
+  CGX::End();
 }
 
 void CCubeRenderer::SetAmbientColor(const CColor& color) { CGraphics::SetAmbientColor(color); }
@@ -353,8 +561,15 @@ void CCubeRenderer::SetPerspective(float fovy, float aspect, float znear, float 
 
 rstl::pair< CVector2f, CVector2f > CCubeRenderer::SetViewportOrtho(bool centered, float znear,
                                                                    float zfar) {
-  // TODO: configure the viewport-derived orthographic projection.
-  return rstl::pair< CVector2f, CVector2f >(CVector2f(0.f, 0.f), CVector2f(0.f, 0.f));
+  const CViewport& vp = CGraphics::GetViewport();
+  const float left = static_cast< float >(centered ? -vp.mWidth / 2 : 0);
+  const float top = static_cast< float >(centered ? -vp.mHeight / 2 : 0);
+  const float right = static_cast< float >(centered ? vp.mWidth / 2 : vp.mWidth);
+  const float bottom = static_cast< float >(centered ? vp.mHeight / 2 : vp.mHeight);
+  CGraphics::SetOrtho(left, right, bottom, top, znear, zfar);
+  CGraphics::SetViewPointMatrix(CTransform4f::Identity());
+  CGraphics::SetModelMatrix(CTransform4f::Identity());
+  return rstl::pair< CVector2f, CVector2f >(CVector2f(left, top), CVector2f(right, bottom));
 }
 
 void CCubeRenderer::SetViewport(int left, int top, int width, int height) {
@@ -458,23 +673,118 @@ int CCubeRenderer::GetStaticWorldDataSize() {
 }
 
 void CCubeRenderer::DrawFogFan(const CVector3f* vertices, int count) {
-  // TODO: reconstruct this rendering pass.
+  if (count < 3) {
+    return;
+  }
+  CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, static_cast< ushort >(count));
+  for (int i = 0; i < count; ++i) {
+    GXPosition3f32(vertices[i].GetX(), vertices[i].GetY(), vertices[i].GetZ());
+  }
+  CGX::End();
 }
 
 void CCubeRenderer::DrawFogFans(const CPlane* planes, int planeCount, const CVector3f* vertices,
                                 int vertexCount, int front, int back) {
-  // TODO: reconstruct this rendering pass.
+  if (back == front) {
+    DrawFogFans(planes, planeCount, vertices, vertexCount, front, back + 1);
+  } else if (back == planeCount) {
+    DrawFogFan(vertices, vertexCount);
+  } else {
+    rstl::reserved_vector< CVector3f, 20 > clippedVertices;
+    rstl::reserved_vector< bool, 20 > clippedFlags;
+    const CPlane& plane = planes[back];
+    for (int i = 0; i < vertexCount; ++i) {
+      clippedFlags.push_back(!plane.IsFacing(vertices[i]));
+    }
+    for (int i = 0; i < vertexCount; ++i) {
+      const int next = i != vertexCount - 1 ? i + 1 : 0;
+      const int clippedMask = clippedFlags[i] | (clippedFlags[next] << 1);
+      if ((clippedMask & 1) == 0) {
+        clippedVertices.push_back(vertices[i]);
+      }
+      if (clippedMask == 1 || clippedMask == 2) {
+        const float t = plane.ClipLineSegment(vertices[i], vertices[next]);
+        if (t > 0.f && t < 1.f) {
+          clippedVertices.push_back(CVector3f::Lerp(vertices[i], vertices[next], t));
+        }
+      }
+    }
+    if (clippedVertices.size() >= 3) {
+      DrawFogFans(planes, planeCount, clippedVertices.data(), clippedVertices.size(), front,
+                  back + 1);
+    }
+  }
 }
 
 void CCubeRenderer::DrawFogSlices(const CPlane* planes, int planeCount, int planeIndex,
                                   const CVector3f& center, float extent) {
-  // TODO: reconstruct this rendering pass.
+  static const int edges[3][2] = {{1, 2}, {0, 2}, {0, 1}};
+  const CPlane& plane = planes[planeIndex];
+  rstl::reserved_vector< CVector3d, 4 > doubleCorners;
+  rstl::reserved_vector< CVector3f, 4 > corners;
+  int axis = 0;
+  if (fabs(plane.GetNormal().GetY()) > fabs(plane.GetNormal().GetX())) {
+    axis = 1;
+  }
+  if (fabs(plane.GetNormal().GetZ()) > fabs(plane.GetNormal()[axis])) {
+    axis = 2;
+  }
+  const CVector3d projectedCenter(center - plane.GetHeight(center) * plane.GetNormal());
+  float axisSign = plane.GetNormal()[axis] < 0.f ? 1.f : -1.f;
+  if (axis == 1) {
+    axisSign = -axisSign;
+  }
+  CVector3d offsetA(0.0, 0.0, 0.0);
+  CVector3d offsetB(0.0, 0.0, 0.0);
+  offsetA[edges[axis][0]] = extent;
+  offsetB[edges[axis][1]] = extent * axisSign;
+  doubleCorners.push_back(projectedCenter - offsetA - offsetB);
+  doubleCorners.push_back(projectedCenter + offsetA - offsetB);
+  doubleCorners.push_back(projectedCenter + offsetA + offsetB);
+  doubleCorners.push_back(projectedCenter - offsetA + offsetB);
+  for (int i = 0; i < 4; ++i) {
+    const CVector3d normal(plane.GetNormal());
+    const CVector3d& corner = doubleCorners[i];
+    const double height = corner.GetX() * normal.GetX() + corner.GetY() * normal.GetY() +
+                          corner.GetZ() * normal.GetZ() - plane.GetConstant();
+    const CVector3d projected = corner - height * normal;
+    corners.push_back(CVector3f(projected.GetX(), projected.GetY(), projected.GetZ()));
+  }
+  DrawFogFans(planes, planeCount, corners.data(), doubleCorners.size(), planeIndex, 0);
 }
 
 void CCubeRenderer::RenderFogVolumeModel(const CAABox& bounds, const CModel* model,
                                          const CTransform4f& modelView, CTransform4f view,
                                          const CSkinnedModel* skinnedModel) {
-  // TODO: reconstruct this rendering pass.
+  if (model == nullptr && skinnedModel == nullptr) {
+    const CAABox transformedBounds = bounds.GetTransformedAABox(modelView);
+    const CAABox worldBounds = transformedBounds;
+    static const GXVtxDescList desc[] = {{GX_VA_POS, GX_DIRECT}, {GX_VA_NULL, GX_NONE}};
+    CGX::SetVtxDescv(desc);
+    const CUnitVector3f forward(view.GetForward());
+    const CVector3f& min = worldBounds.GetMinPoint();
+    const CVector3f max = -worldBounds.GetMaxPoint();
+    const CPlane planes[7] = {
+        CPlane(min.GetX(), CVector3f::Right()),
+        CPlane(max.GetX(), CVector3f::Left()),
+        CPlane(min.GetY(), CVector3f::Forward()),
+        CPlane(max.GetY(), CVector3f::Back()),
+        CPlane(min.GetZ(), CVector3f::Up()),
+        CPlane(max.GetZ(), CVector3f::Down()),
+        CPlane(CVector3f::Dot(view.GetTranslation(), forward) + 0.2f + 0.1f, forward),
+    };
+    CGraphics::SetModelMatrix(CTransform4f::Identity());
+    const CVector3f dimensions = worldBounds.GetMaxPoint() - worldBounds.GetMinPoint();
+    const float maxExtent = rstl::max_val(rstl::max_val(dimensions.GetZ(), dimensions.GetY()),
+                                        dimensions.GetX());
+    const float sliceExtent = maxExtent * 2.f;
+    for (int i = 0; i < 7; ++i) {
+      DrawFogSlices(planes, 7, i, worldBounds.GetCenterPoint(), sliceExtent);
+    }
+  } else if (skinnedModel == nullptr) {
+    model->Touch(0);
+    model->DolphinDrawFlat(CModel::kDF_All);
+  }
 }
 
 void CCubeRenderer::RenderFogVolume(const CColor& color, const CAABox& bounds,
@@ -498,8 +808,40 @@ void CCubeRenderer::SetRequestedMaterialMode(int mode) {
   }
 }
 
+namespace {
+struct fog_sorter {
+  bool operator()(const CCubeRenderer::CFogVolumeListItem& first,
+                  const CCubeRenderer::CFogVolumeListItem& second) const {
+    const CTransform4f& view = CGraphics::GetViewMatrix();
+    const CVector3f position = view.GetTranslation();
+    const CAABox firstBounds = first.mBounds.GetTransformedAABox(first.mTransform);
+    const CAABox secondBounds = second.mBounds.GetTransformedAABox(second.mTransform);
+    const bool insideFirst = firstBounds.PointInside(
+        CVector3f(position.GetX(), position.GetY(), firstBounds.GetMinPoint().GetZ()));
+    const bool insideSecond = secondBounds.PointInside(
+        CVector3f(position.GetX(), position.GetY(), secondBounds.GetMinPoint().GetZ()));
+    if (insideFirst != insideSecond) {
+      return insideFirst;
+    }
+    const CVector3f forward = view.GetForward();
+    const float firstDistance =
+        CVector3f::Dot(forward, firstBounds.FurthestPointAlongVector(forward));
+    const float secondDistance =
+        CVector3f::Dot(forward, secondBounds.FurthestPointAlongVector(forward));
+    return firstDistance < secondDistance;
+  }
+};
+} // namespace
+
 void CCubeRenderer::PostRenderFogs() {
-  // TODO: reconstruct this rendering pass.
+  mFogVolumes.sort(fog_sorter());
+  for (rstl::list< CFogVolumeListItem >::iterator fog = mFogVolumes.begin();
+       fog != mFogVolumes.end(); ++fog) {
+    CGraphics::SetModelMatrix(fog->mTransform);
+    ReallyRenderFogVolume(fog->mColor, fog->mBounds, fog->mModel ? **fog->mModel : nullptr,
+                          fog->mSkinnedModel);
+  }
+  mFogVolumes.clear();
 }
 
 CCubeRenderer::CFogVolumeListItem::CFogVolumeListItem(const CTransform4f& xf, const CColor& color,
@@ -515,12 +857,81 @@ CCubeRenderer::CFogVolumeListItem::CFogVolumeListItem(const CTransform4f& xf, co
 
 void CCubeRenderer::DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
                                           const CColor& color, float amount) {
-  // TODO: reconstruct this rendering pass.
+  texture.Load(GX_TEXMAP0, CTexture::kCM_Clamp);
+  CGX::SetNumIndStages(0);
+  CGX::SetNumTevStages(2);
+  CGX::SetNumTexGens(2);
+  CGX::SetNumChans(0);
+  CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
+  CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_KONST);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_APREV, GX_CA_ZERO);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
+  CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR_NULL);
+  CGX::SetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
+
+  const CAABox& bounds = model.GetAABB();
+  CTransform4f xf = CTransform4f::RotateX(CRelAngle::FromRadians(-0.7853982f));
+  const CAABox rotatedBounds = bounds.GetTransformedAABox(xf);
+  const CVector3f translation = -rotatedBounds.GetMinPoint();
+  const CVector3f dimensions = rotatedBounds.GetMaxPoint() - rotatedBounds.GetMinPoint();
+  xf = (CTransform4f::Scale(5.f / dimensions.GetX(), 5.f / dimensions.GetY(),
+                            5.f / dimensions.GetZ()) * CTransform4f::Translate(translation)) * xf;
+  const CAABox transformedBounds = bounds.GetTransformedAABox(xf);
+  (void)transformedBounds;
+  const float y = -(1.f - amount) * 6.f + 1.f;
+  const float x = -0.85f * amount - 0.15f;
+  const float post0[3][4] = {
+      {1.f, 1.f, 0.f, amount}, {0.f, 0.f, 1.f, y}, {0.f, 0.f, 0.f, 1.f},
+  };
+  const float post1[3][4] = {
+      {1.f, 1.f, 0.f, x}, {0.f, 0.f, 1.f, y}, {0.f, 0.f, 0.f, 1.f},
+  };
+  GXLoadTexMtxImm(xf.GetCStyleMatrix(), GX_TEXMTX0, GX_MTX3x4);
+  GXLoadTexMtxImm(post0, GX_PTTEXMTX0, GX_MTX3x4);
+  GXLoadTexMtxImm(post1, GX_PTTEXMTX1, GX_MTX3x4);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, false, GX_PTTEXMTX0);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, false, GX_PTTEXMTX1);
+  CGX::SetAlphaCompare(GX_GREATER, 0, GX_AOP_AND, GX_ALWAYS, 0);
+  CGX::SetZMode(true, GX_LEQUAL, true);
+  model.DrawFlat(CModelFlags(CModelFlags::kT_Opaque, CColor::White()), true, true);
+  CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
 void CCubeRenderer::DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
                                   bool unsortedOnly) {
-  // TODO: reconstruct this rendering pass.
+  const char blendMode = static_cast< char >(flags.GetTrans());
+  if (blendMode < 7) {
+    if (blendMode < 5) {
+      CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
+    } else {
+      CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+    }
+  } else {
+    CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_CLEAR);
+  }
+  const uint otherFlags = flags.GetOtherFlags();
+  CGX::SetZMode(true, (otherFlags & CModelFlags::kF_DepthCompare) ? GX_LEQUAL : GX_ALWAYS,
+                (otherFlags & CModelFlags::kF_DepthUpdate) != 0);
+  CGX::SetNumTevStages(1);
+  CGX::SetNumTexGens(1);
+  CGX::SetNumChans(0);
+  CGX::SetNumIndStages(0);
+  CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_KONST);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+  CGX::SetTevKColor(GX_KCOLOR0, flags.GetColorRef().GetGXColor());
+  CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetTevDirect(GX_TEVSTAGE0);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_IDENTITY, false, GX_PTIDENTITY);
+  model.DrawFlat(flags, true, !unsortedOnly);
 }
 
 void CCubeRenderer::DrawScreenFilter(const CColor& color0, const CColor& color1,
@@ -540,7 +951,7 @@ void CCubeRenderer::DrawScanRing(float radius, float thickness, float alpha, flo
 }
 
 void CCubeRenderer::SetGXRegister1Color(const CColor& color) {
-  // TODO: reconstruct this rendering pass.
+  GXSetTevColor(GX_TEVREG1, color.GetGXColor());
 }
 
 void CCubeRenderer::SetWorldLightFadeLevel(float level) {
@@ -581,13 +992,25 @@ void CCubeRenderer::DrawOverlappingWorldModelIDs(int areaId, rstl::vector< uint 
 }
 
 void* CCubeRenderer::GetRenderToTexBuffer(int index) {
-  // TODO: recover ownership of the shared render-to-texture workspace.
-  return nullptr;
+  return static_cast< uchar* >(CGraphics::GetDolphinSpareBuffer()) +
+         (static_cast< uint >(index * CGraphics::GetSpareBufferSize()) >> 4);
 }
 
 void CCubeRenderer::CopyScreenTex(uint divisor, bool half, void* dest, GXTexFmt format,
                                   bool clear) const {
-  // TODO: reconstruct this rendering pass.
+  const CViewport& viewport = CGraphics::GetViewport();
+  GXSetTexCopySrc(viewport.mLeft, viewport.mTop + viewport.mHeight - viewport.mHeight / divisor,
+                 viewport.mWidth / divisor, viewport.mHeight / divisor);
+  const uint width = half ? viewport.mWidth / 2 : viewport.mWidth;
+  const uint height = half ? viewport.mHeight / 2 : viewport.mHeight;
+  GXSetTexCopyDst(width / divisor, height / divisor, format, half);
+  const CColor clearColor = CGraphics::GetClearColor();
+  CGraphics::SetClearColor(CColor(0));
+  GXSetColorUpdate(false);
+  GXCopyTex(dest ? dest : CGraphics::GetDolphinSpareBuffer(), clear);
+  GXSetColorUpdate(true);
+  GXPixModeSync();
+  CGraphics::SetClearColor(clearColor);
 }
 
 void CCubeRenderer::DoPhazonSuitIndirectAlphaBlur(float scale, float amount) {
@@ -613,40 +1036,109 @@ void CCubeRenderer::RenderSilhouette(
 }
 
 void CCubeRenderer::AllocatePhazonSuitMaskTexture() {
-  // TODO: reconstruct this rendering pass.
+  mRequestRGBA6 = true;
+  if (!mSilhouetteMask.get()) {
+    const CViewport& viewport = CGraphics::GetViewport();
+    mSilhouetteMask = rs_new CTexture(kTF_I8, viewport.mWidth >> 2, viewport.mHeight >> 2, 1);
+  }
+  mSilhouetteMaskCountdown = 2;
 }
 
 float CCubeRenderer::GetRandomInterpolation(float time, float period, int seed) {
-  // TODO: interpolate between deterministic random values.
-  return 0.f;
+  const float scaledTime = time / period;
+  const float fraction = scaledTime - static_cast< int >(scaledTime);
+  const uint frame = static_cast< uint >(scaledTime - fraction);
+  CRandom16 first(seed + frame);
+  CRandom16 second(seed + frame + 1);
+  const float firstValue = first.Float();
+  const float secondValue = second.Float();
+  return firstValue * (1.f - fraction) + secondValue * fraction;
 }
 
 void CCubeRenderer::PopulateNoiseTexCoords(float time,
                                            rstl::reserved_vector< CVector2f, 9 >& coords) {
-  // TODO: reconstruct this rendering pass.
+  for (int y = 0; y < 3; ++y) {
+    for (int x = 0; x < 3; ++x) {
+      coords.push_back(CVector2f(x * 0.5f, y * 0.5f));
+    }
+  }
+  const float scaledTime = time / 0.1f;
+  CRandom16 random(static_cast< uint >(scaledTime) + 200);
+  const int index = random.Range(0, 8);
+  const int axis = random.Range(0, 1);
+  float fraction = scaledTime - static_cast< int >(scaledTime);
+  if (fraction >= 0.5f) {
+    fraction = -(fraction - 1.f);
+  }
+  if (random.Range(0, 1) != 0) {
+    fraction *= -1.f;
+  }
+  coords[index][axis] += fraction;
 }
 
 bool CCubeRenderer::EnableSilhouetteRender() {
-  // TODO: allocate/copy the silhouette mask and update render state.
-  return false;
+  mRequestRGBA6 = true;
+  if (!IsRGBA6Current()) {
+    return false;
+  }
+  mRenderingSilhouette = true;
+  GXSetAlphaUpdate(true);
+  GXSetColorUpdate(false);
+  CGX::SetDstAlpha(false, 0);
+  CGX::SetNumTevStages(1);
+  CGX::SetNumTexGens(1);
+  CGX::SetNumChans(0);
+  CGX::SetNumIndStages(0);
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_KONST);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+  const CColor color(static_cast< uchar >(0), 0, 0, 255);
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
+  CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetTevDirect(GX_TEVSTAGE0);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR);
+  return true;
 }
 
 void CCubeRenderer::DrawSilhouetteNoise(const SSilhouetteNoise& noise) {
   // TODO: reconstruct this rendering pass.
 }
 
-void CCubeRenderer::fn_802679DC(const void* unused, const CModel& model, const CModelFlags& flags) {
-  // TODO: reconstruct this rendering pass.
+void CCubeRenderer::fn_802679DC(const void* unused, const SModelRenderData& model,
+                              const CModelFlags& flags) {
+  const uint otherFlags = flags.GetOtherFlags();
+  CGX::SetZMode(true, (otherFlags & CModelFlags::kF_DepthCompare) ? GX_LEQUAL : GX_ALWAYS,
+                (otherFlags & CModelFlags::kF_DepthUpdate) != 0);
+  model.DrawFlat(flags, true, true);
 }
 
 void CCubeRenderer::LoadEnvironmentTextureMatrix(uint matrix, uint postMatrix,
                                                  const CTransform4f& xf, bool alternate) {
-  // TODO: reconstruct this rendering pass.
+  CTransform4f textureTransform = xf * CGraphics::GetModelMatrix();
+  textureTransform.SetTranslation(CVector3f::Zero());
+  GXLoadTexMtxImm(textureTransform.GetCStyleMatrix(), matrix, GX_MTX3x4);
+  static const float environmentMatrix[3][4] = {
+      {0.5f, 0.f, 0.f, 0.5f}, {0.f, 0.f, 0.5f, 0.5f}, {0.f, 0.f, 0.f, 1.f},
+  };
+  static const float alternateMatrix[3][4] = {
+      {2.f, 0.f, 0.f, 1.f}, {0.f, 0.f, 2.f, 0.f}, {0.f, 0.f, 0.f, 1.f},
+  };
+  GXLoadTexMtxImm(alternate ? alternateMatrix : environmentMatrix, postMatrix, GX_MTX3x4);
 }
 
 void CCubeRenderer::LoadScrollingTextureMatrix(uint matrix, const CVector2f& scroll,
                                                const CVector2f& scale) {
-  // TODO: reconstruct this rendering pass.
+  const float seconds = CGraphics::GetSecondsMod900();
+  const float textureMatrix[3][4] = {
+      {scale.GetX(), 0.f, 0.f, seconds * scroll.GetX()},
+      {0.f, scale.GetY(), 0.f, seconds * scroll.GetY()},
+      {0.f, 0.f, 0.f, 1.f},
+  };
+  GXLoadTexMtxImm(textureMatrix, matrix, GX_MTX3x4);
 }
 
 void CCubeRenderer::DrawDarkWorldVolume(const CVector3f& pos, const CVector3f& scale, uchar mix,
@@ -679,21 +1171,88 @@ void CCubeRenderer::GetScreenMipInfo(int width, int height, int mipCount, GXTexF
 }
 
 void CCubeRenderer::SetupScreenCopyStates() {
-  // TODO: reconstruct this rendering pass.
+  CGraphics::SetFog(kRFM_None, 0.f, 0.f, CColor::Black());
+  CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
+  static const GXVtxDescList desc[] = {
+      {GX_VA_POS, GX_DIRECT}, {GX_VA_TEX0, GX_DIRECT}, {GX_VA_NULL, GX_NONE},
+  };
+  CGX::SetVtxDescv(desc);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetNumTexGens(1);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
+  CGX::SetNumTevStages(1);
+  CGX::SetBlendMode(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
+  CGX::SetZMode(false, GX_ALWAYS, false);
 }
 
 void CCubeRenderer::DrawTexturedScreenQuad(int left, int top, int width, int height) {
-  // TODO: reconstruct this rendering pass.
+  CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, 4);
+  GXPosition3f32(left, 0.5f, top);
+  GXTexCoord2f32(0.f, 0.f);
+  GXPosition3f32(left, 0.5f, top + height);
+  GXTexCoord2f32(0.f, 1.f);
+  GXPosition3f32(left + width, 0.5f, top + height);
+  GXTexCoord2f32(1.f, 1.f);
+  GXPosition3f32(left + width, 0.5f, top);
+  GXTexCoord2f32(1.f, 0.f);
+  CGX::End();
 }
 
-void* CCubeRenderer::GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
+void CCubeRenderer::GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
                                            int left, int top, int width, int height) {
-  // TODO: copy successive framebuffer mip levels into the render workspace.
-  return nullptr;
+  const CViewport viewport = CGraphics::GetViewport();
+  uchar* data = static_cast< uchar* >(CGraphics::GetDolphinSpareBuffer());
+  const int copyLeft = viewport.mLeft + left;
+  const int copyTop = viewport.mTop + top;
+  const CTransform4f view = CGraphics::GetViewMatrix();
+  const CGraphics::CProjectionState projection = CGraphics::GetProjectionState();
+  width &= ~1;
+  height &= ~1;
+  bool statesSet = false;
+  for (int mip = 0; mip < mipCount; ++mip) {
+    int size;
+    int mipWidth;
+    int mipHeight;
+    GetScreenMipInfo(width, height, 1, copyFormat, &size, &mipWidth, &mipHeight);
+    GXSetTexCopySrc(copyLeft, copyTop, mipWidth * 2, mipHeight * 2);
+    GXSetTexCopyDst(mipWidth, mipHeight, copyFormat, true);
+    GXCopyTex(data, false);
+    if (mip + 1 == mipCount) {
+      GXPixModeSync();
+    } else {
+      GXTexObj texture;
+      GXInitTexObj(&texture, data, mipWidth, mipHeight, loadFormat, GX_CLAMP, GX_CLAMP, false);
+      GXInitTexObjLOD(&texture, GX_LINEAR, GX_LINEAR, 0.f, 0.f, 0.f, false, false, GX_ANISO_1);
+      GXLoadTexObj(&texture, CGraphics::kSpareBufferTexMapID);
+      CTexture::InvalidateTexmap(CGraphics::kSpareBufferTexMapID);
+      GXInvalidateTexRegion(CGraphics::GetSpareTextureRegion());
+      GXPixModeSync();
+      if (!statesSet) {
+        CGraphics::SetOrtho(0.f, viewport.mWidth, 0.f, viewport.mHeight, -4096.f, 4096.f);
+        CGraphics::SetViewPointMatrix(CTransform4f::Identity());
+        CGraphics::SetModelMatrix(CTransform4f::Identity());
+        SetupScreenCopyStates();
+        statesSet = true;
+      }
+      DrawTexturedScreenQuad(left, top, mipWidth, mipHeight);
+      data += size;
+      width = mipWidth;
+      height = mipHeight;
+    }
+  }
+  if (statesSet) {
+    CGraphics::SetProjectionState(projection);
+    CGraphics::SetViewPointMatrix(view);
+  }
 }
 
-void CCubeRenderer::GenerateScreenMipmaps(int mipCount, bool depth) {
-  // TODO: reconstruct this rendering pass.
+void CCubeRenderer::GenerateScreenMipmaps(int mipCount, bool alpha) {
+  const CViewport& viewport = CGraphics::GetViewport();
+  GenerateScreenMipmaps(mipCount, alpha ? GX_CTF_A8 : GX_CTF_R8, GX_TF_I8, 0, 0,
+                        viewport.mWidth, viewport.mHeight);
 }
 
 void CCubeRenderer::SetMaterialMode(int mode) {
@@ -841,7 +1400,30 @@ void CCubeRenderer::DrawDarkWorldCloud(float time, const CVector3f& scale, const
 
 void CCubeRenderer::DrawModelNoise(const SModelRenderData& model, const CColor& color,
                                    bool additive) {
-  // TODO: reconstruct this rendering pass.
+  void* noise = reinterpret_cast< void* >(((mRandom.Next() + 31) & ~31) + 0x8000);
+  CGraphics::LoadDolphinSpareTexture(96, 96, GX_TF_IA4, noise, CGraphics::kSpareBufferTexMapID);
+  CGX::SetBlendMode(GX_BM_BLEND, additive ? GX_BL_ONE : GX_BL_SRCALPHA,
+                    additive ? GX_BL_ONE : GX_BL_INVSRCALPHA, GX_LO_CLEAR);
+  CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+  CGX::SetZMode(true, GX_LEQUAL, false);
+  CGX::SetTevDirect(GX_TEVSTAGE0);
+  CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
+  if (additive) {
+    CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_ZERO);
+  } else {
+    CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_ONE, GX_CC_KONST);
+  }
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
+  CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
+  CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
+  CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, CGraphics::kSpareBufferTexMapID, GX_COLOR_NULL);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, false, GX_PTIDENTITY);
+  CGX::SetNumIndStages(0);
+  CGX::SetNumTevStages(1);
+  CGX::SetNumTexGens(1);
+  CGX::SetNumChans(0);
+  model.DrawFlat(CModelFlags(CModelFlags::kT_Opaque, CColor::White()), true, false);
 }
 
 uint GetRendererWorkspaceSize() { return Buckets::GetWorkspaceSize(); }

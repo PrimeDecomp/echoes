@@ -159,7 +159,8 @@ public:
   void DrawModelNoise(const SModelRenderData& model, const CColor& color, bool additive) override;
   bool EnableSilhouetteRender() override;
   // TODO: identify the unused argument and original method name.
-  void fn_802679DC(const void* unused, const CModel& model, const CModelFlags& flags) override;
+  void fn_802679DC(const void* unused, const SModelRenderData& model,
+                   const CModelFlags& flags) override;
   // Guessed name
   void DrawSilhouetteNoise(const SSilhouetteNoise& noise) override;
   void SetWireframeFlags(int flags) override;
@@ -219,9 +220,9 @@ public:
   // Guessed name
   void SetMaterialMode(int mode);
   // Guessed name
-  static void GenerateScreenMipmaps(int mipCount, bool depth);
+  static void GenerateScreenMipmaps(int mipCount, bool alpha);
   // Guessed name
-  static void* GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
+  static void GenerateScreenMipmaps(int mipCount, GXTexFmt copyFormat, GXTexFmt loadFormat,
                                      int left, int top, int width, int height);
   // Guessed name
   static void DrawTexturedScreenQuad(int left, int top, int width, int height);

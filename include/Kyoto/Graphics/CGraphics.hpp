@@ -376,6 +376,7 @@ public:
   static const Mtx& GetGXModelViewInvXpose() { return mGxModelViewInvXpose; }
   static void* GetDolphinSpareBuffer() { return mpSpareBuffer; }
   static int GetSpareBufferSize() { return mSpareBufferSize; }
+  static GXTexRegion* GetSpareTextureRegion() { return &mTexRegions[0]; }
   static void SetProgressiveMode(bool b);
   static bool GetProgressiveMode();
   static bool CanSetProgressiveMode();

@@ -15,6 +15,13 @@ public:
 
   const rstl::vector< void* >& GetSurfaces() const { return mSurfaces; }
   const void* GetVertexPointer() const { return mPositions; }
+  const void* GetMaterialPointer() const { return mMaterialData; }
+  const void* GetNormalPointer() const { return mNormals; }
+  const void* GetColorPointer() const { return mColors; }
+  const void* GetTCPointer() const { return mTexCoords; }
+  const void* GetPackedTCPointer() const { return mPackedTexCoords; }
+  const CAABox& GetBoundingBox() const { return mWorldBounds; }
+  int GetFlags() const { return mVisorFlags; }
 
   // Guessed names. The resource stores cumulative surface counts followed by indices.
   ushort GetSurfaceCountInGroup(int group) const {
