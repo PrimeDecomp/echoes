@@ -128,6 +128,7 @@ public:
     EMemoryCardPort GetCardPort();
     int GetFileNo();
     int GetFileBlocks();
+    bool IsRepairingHeader() const { return mStatus == kS_RepairHeader; }
 
     rstl::vector< uchar >& LoadedData() { return mLoadedData; }
     rstl::vector< uchar >& SaveBuffer() { return mSaveBuffer; }
