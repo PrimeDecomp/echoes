@@ -97,9 +97,9 @@ void CScriptSpawnPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
         }
 
         if (player->GetCameraManager()->IsInCinematicCamera()) {
-          player->fn_80019E40(mgr, 0);
+          player->ResetPlayerState(mgr, 0);
         } else {
-          player->fn_80019E40(mgr, 1);
+          player->ResetPlayerState(mgr, 1);
         }
       }
       CEntity::SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);

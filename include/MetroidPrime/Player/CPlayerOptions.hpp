@@ -14,14 +14,14 @@ public:
 
   void PutTo(CBitStreamWriter& out) const;
   void SetRumbleEnabled(bool enabled);
-  void SetUnknownFlag(bool value); // Guessed name; the second flag's meaning remains unresolved.
+  void SetInvertYAxis(bool value); // Target-derived: reverses multiplayer free-look pitch input.
 
   bool GetRumbleEnabled() const { return mRumbleEnabled; }
-  bool GetUnknownFlag() const { return x1_; }
+  bool GetInvertYAxis() const { return mInvertYAxis; }
 
 private:
   bool mRumbleEnabled;
-  bool x1_;
+  bool mInvertYAxis;
 };
 
 CHECK_SIZEOF(CPlayerOptions, 2)

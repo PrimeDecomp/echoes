@@ -16,7 +16,7 @@ class CWorldShadow;
 // Guessed name. Shared CEntity-derived gun interface, independently constructed by Echoes.
 class CPlayerGunBase : public CEntity {
 public:
-  enum EGunHolsterState { kGHS_Drawing, kGHS_Holstered, kGHS_Drawn, kGHS_Holstering };
+  enum EGunHolsterState { kGHS_Holstered, kGHS_Drawing, kGHS_Drawn, kGHS_Holstering };
 
   CPlayerGunBase(const rstl::string& name, TUniqueId playerId, const CVector3f& scale,
                  int maxSplashes);
@@ -27,7 +27,7 @@ public:
   virtual void AddToRenderer(const CStateManager& mgr) const = 0;
   virtual void Render(const CStateManager& mgr, const CVector3f& cameraTranslation,
                       const CModelFlags& flags) const = 0;
-  virtual void DamageRumble(const CVector3f& position, float damage) = 0;
+  virtual void DamageRumble(const CVector3f& position, float damage, const CStateManager& mgr) = 0;
   virtual void Reset(CStateManager& mgr);
   virtual void Update(float dt, CStateManager& mgr);
   virtual float GetBeamVelocity() const = 0;
@@ -42,6 +42,12 @@ public:
   TUniqueId GetPlayerUniqueId() const { return mPlayerUniqueId; }
   bool GetMissileMode() const { return mMissileMode; }
   bool AreBombsDisabled() const { return mBombsDisabled; }
+  void SetBombsDisabled(bool disabled) { mBombsDisabled = disabled; }
+  EGunHolsterState GetGunHolsterState() const { return mGunHolsterState; }
+  float GetGunHolsterRemTime() const { return mGunHolsterRemTime; }
+  void SetTransform(const CTransform4f& xf) { mTransform = xf; }
+  const CTransform4f& GetTransform() const { return mTransform; }
+  void SetAssistAimTransform(const CTransform4f& xf) { mAssistAimXf = xf; }
   uint GetFiring() const { return mFiredWeaponFlags; }
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;

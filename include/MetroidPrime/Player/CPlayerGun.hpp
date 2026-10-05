@@ -105,7 +105,7 @@ public:
   void AddToRenderer(const CStateManager& mgr) const override;
   void Render(const CStateManager& mgr, const CVector3f& cameraTranslation,
               const CModelFlags& flags) const override;
-  void DamageRumble(const CVector3f& position, float damage) override;
+  void DamageRumble(const CVector3f& position, float damage, const CStateManager& mgr) override;
   void Reset(CStateManager& mgr) override;
   void Update(float dt, CStateManager& mgr) override;
   float GetBeamVelocity() const override;
@@ -118,6 +118,8 @@ public:
   void InitializeStateMachine(CStateManager& mgr) override;
 
   CVector3f GetRainSplashPosition() const;
+  const CTransform4f& GetGunWorldTransform() const { return mGunWorldXf; }
+  const CTransform4f& GetBeamLocalTransform() const { return mBeamLocalXf; }
   int GetBombsAvailable(CStateManager& mgr) const;
   TUniqueId DropPowerBomb(CStateManager& mgr) const;
   void DropBomb(EBWeapon type, CStateManager& mgr);
@@ -161,6 +163,7 @@ public:
   void ReturnToDefault(CStateManager& mgr, bool bigStrikeReset);
   void SetFidgetAnimBits(int animSet, bool holster);
   bool IsFidgetLoaded();
+  CFidget::EState GetFidgetState() const { return mFidget.GetState(); }
   void UnLoadFidget();
   void AsyncLoadFidget(CStateManager& mgr);
   void EnterFidget(CStateManager& mgr);

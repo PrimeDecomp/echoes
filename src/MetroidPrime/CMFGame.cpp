@@ -82,7 +82,7 @@ void CMFGame::RecordMultiplayerResults() const {
       const int deaths = player.GetItemAmount(CPlayerState::kIT_DiedCount);
       const CPlayerOptions& options = state.GameOptions().PlayerOptions(i);
       players.push_back(CGameState::SPlayerResult(selection, score, deaths,
-                                                options.GetUnknownFlag(), options.GetRumbleEnabled()));
+                                                options.GetInvertYAxis(), options.GetRumbleEnabled()));
     }
   } else if (gameMode == 'COIN') {
     for (int i = 0; i < playerCount; ++i) {
@@ -93,7 +93,7 @@ void CMFGame::RecordMultiplayerResults() const {
       const int deaths = player.GetItemAmount(CPlayerState::kIT_DiedCount);
       const CPlayerOptions& options = state.GameOptions().PlayerOptions(i);
       players.push_back(CGameState::SPlayerResult(selection, score, deaths,
-                                                options.GetUnknownFlag(), options.GetRumbleEnabled()));
+                                                options.GetInvertYAxis(), options.GetRumbleEnabled()));
     }
   }
   while (players.size() < 4) {

@@ -34,6 +34,8 @@ public:
   const CTransform4f& GetGunFollowTransform() const;
   void UpdateFluidEffects(CStateManager& mgr); // Guessed name
   void SetScriptPitchId(TUniqueId uid);
+  float GetPitch() const { return mPitch; }
+  TUniqueId GetScriptPitchId() const { return mPitchId; }
 
 private:
   float mOrbitCameraSpeed;

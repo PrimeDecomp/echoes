@@ -1262,7 +1262,7 @@ void CPlayer::PrepareToEnterMorphBallState(float dt, CStateManager& mgr) {
     if (!immediate) {
       mCameraManager->HintManager()->Reset(mgr);
       ballCamera->SetState(CBallCamera::kBCS_ToBall, mgr);
-      SetCameraState(kCS_Four, mgr);
+      SetCameraState(kCS_MorphBallTransition, mgr);
       mCameraManager->TransferCameraState(*mCameraManager->FirstPersonCamera(),
                                           *mCameraManager->BallCamera(), mgr);
       const CTransform4f xf = mCameraManager->GetFirstPersonCamera()->GetTransform();
@@ -1282,7 +1282,7 @@ void CPlayer::PrepareToEnterMorphBallState(float dt, CStateManager& mgr) {
       return;
     }
     ballCamera->SetState(CBallCamera::kBCS_ToBall, mgr);
-    SetCameraState(kCS_Four, mgr);
+    SetCameraState(kCS_MorphBallTransition, mgr);
     mCameraManager->TransferCameraState(*mCameraManager->FirstPersonCamera(),
                                         *mCameraManager->BallCamera(), mgr);
     const CTransform4f xf = mCameraManager->GetFirstPersonCamera()->GetTransform();
@@ -1292,7 +1292,7 @@ void CPlayer::PrepareToEnterMorphBallState(float dt, CStateManager& mgr) {
     mCameraManager->HintManager()->Reset(mgr);
   } else {
     ballCamera->SetState(CBallCamera::kBCS_ToBall, mgr);
-    SetCameraState(kCS_Four, mgr);
+    SetCameraState(kCS_MorphBallTransition, mgr);
     mCameraManager->TransferCameraState(*mCameraManager->FirstPersonCamera(),
                                         *mCameraManager->BallCamera(), mgr);
     const CTransform4f xf = mCameraManager->GetFirstPersonCamera()->GetTransform();
@@ -1310,7 +1310,7 @@ void CPlayer::BeginMorphTransition(float dt, CStateManager& mgr, EPlayerMorphBal
   SetIntoBallReadyAnimation(dt, state);
   SetMomentumWR(CVector3f::Zero());
   SetMorphBallState(kMS_Morphing, state);
-  SetCameraState(kCS_Four, mgr);
+  SetCameraState(kCS_MorphBallTransition, mgr);
   mLookDir = GetTransform().GetForward();
   mMoveDir = mLookDir;
   mMoveDir.SetZ(0.f);
@@ -1425,7 +1425,7 @@ void CPlayer::BeginUnmorphTransition(float dt, CStateManager& mgr, EPlayerMorphB
   AddMaterial(kMT_GroundCollider, mgr);
   SetMomentumWR(CVector3f::Zero());
   if (!immediate) {
-    SetCameraState(kCS_Four, mgr);
+    SetCameraState(kCS_MorphBallTransition, mgr);
   }
 }
 
@@ -1436,7 +1436,7 @@ void CPlayer::RequestScrewAttackTransition(EPlayerMorphBallState state) {
 }
 
 void CPlayer::ActivateMorphBallCamera(CStateManager& mgr) {
-  SetCameraState(kCS_Two, mgr);
+  SetCameraState(kCS_MorphBall, mgr);
   mCameraManager->BallCamera()->SetState(CBallCamera::kBCS_Default, mgr);
 }
 

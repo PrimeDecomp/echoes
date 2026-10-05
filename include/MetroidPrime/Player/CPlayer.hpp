@@ -65,9 +65,9 @@ public:
   enum EPlayerCameraState {
     kCS_FirstPerson,
     kCS_Ball,
-    kCS_Two,
+    kCS_MorphBall,
     kCS_Transitioning,
-    kCS_Four,
+    kCS_MorphBallTransition,
     kCS_Spawned,
   };
   enum EPlayerMorphBallState {
@@ -98,6 +98,7 @@ public:
     kOR_InvalidateTarget = 6,
     kOR_BadVerticalAngle = 7,
     kOR_ActivateOrbitSource = 8, // Guessed name, correlated with Prime's orbit-break request.
+    kOR_Freeze = 10,             // Target-derived: interrupts orbit when the player freezes.
     kOR_KnockBack = 11,          // Guessed name; knockback-driven orbit interruption.
     kOR_LostGrappleLineOfSight = 12,
     kOR_BoostBall = 13, // Guessed name; requested when a boost charge releases.
@@ -151,14 +152,21 @@ public:
   struct SFrozenResources {
     CAssetId mSteamTexture;
     CAssetId mIceTexture;
-    ushort mFreezeSfx;
-    ushort mBreakSfx;
+    ushort mSinglePlayerFreezeSfx;
+    ushort mMultiplayerFreezeSfx;
   };
   enum ETurretState { kTS_None, kTS_Entering, kTS_Exiting, kTS_Active, kTS_Four, kTS_Ejected };
-  enum EBreakFrozenState { kBFS_Break, kBFS_One, kBFS_Two };
+  enum EPlayerFlag {
+    kPF_NoDamageLoopSfx = 2,
+    kPF_AimingAtProjectile = 0x20,
+    kPF_NoMorphBallDamageTimer = 0x40
+  };
+
+  enum EBreakFrozenState { kBFS_Break, kBFS_BreakWithEffects, kBFS_Two };
   // Guessed state names; numeric values established by the Rezbit state handlers.
   enum ERezbitState { kRS_None, kRS_Infected, kRS_Recovering, kRS_Recovered };
   // Original Wii enum name; channel meanings remain unresolved on GameCube.
+  enum EFootstepSfx { kFS_None, kFS_Left, kFS_Right };
   enum EMultiPlayerSoundPan { kMSP_0, kMSP_1, kMSP_2, kMSP_3, kMSP_4 };
 
   CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
@@ -251,7 +259,7 @@ public:
 
   float fn_8000BE98() const { return GetDeathAlpha(); }
   void EmitMultiplayerBeamParticles(CStateManager& mgr);
-  void fn_80019E40(CStateManager&, int);
+  void ResetPlayerState(CStateManager&, int);
   void fn_8000d3ac(const CVector3f&, CStateManager&);
   bool fn_8000d40c(const CVector3f&, CStateManager&);
   CTweakPlayer* GetTweakPlayer() const;
@@ -260,8 +268,8 @@ public:
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
   CCameraManager* CameraManager() { return mCameraManager; }
-  bool IsOutOfBallLookAtHintActor() const { return (x126a_ & 1) != 0; }
-  bool IsOverrideRadarRadius() const { return (x126a_ & 4) != 0; }
+  bool IsOutOfBallLookAtHintActor() const { return (mPlayerFlags & 1) != 0; }
+  bool IsOverrideRadarRadius() const { return (mPlayerFlags & 4) != 0; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
   float GetEchoPulsePhase() const { return mEchoPulsePhase; }    // Guessed name
@@ -303,7 +311,7 @@ public:
   bool GetFrozenState() const;
   void Freeze(float timeout, CStateManager& mgr, CAssetId steamTexture, uint sfx,
               CAssetId iceTexture);
-  void BreakFrozenState(CStateManager& mgr, EBreakFrozenState state, bool playSound);
+  void BreakFrozenState(CStateManager& mgr, EBreakFrozenState state, bool recordEscape);
   void SetVisorSteam(float targetAlpha, float alphaInDuration, float alphaOutDuration,
                      CAssetId texture);
   const CVisorSteam& GetVisorSteam() const { return mVisorSteam; }
@@ -389,8 +397,8 @@ public:
   CElementGen* GetUnderwaterParticles() const { return mUnderwaterParticles.get(); }
   CElementGen* GetDarkAetherParticles() const { return mDarkAetherParticles.get(); }
   CColor GetDarkAetherDamageColor(const CStateManager& mgr, int view) const;
-  void fn_8000c124(float dt, CStateManager& mgr);
-  void fn_8000ce94(float dt, CStateManager& mgr);
+  void UpdateUnderwaterParticles(float dt, CStateManager& mgr);
+  void UpdateEchoVisorEffects(float dt, CStateManager& mgr);
   short GetSoundPan(EMultiPlayerSoundPan channel) const;
   int fn_8000d0ac(const CStateManager& mgr, int channel) const;
   CTransform4f GetTurretTransform(const CStateManager& mgr) const;
@@ -420,28 +428,30 @@ public:
 
   bool StartSamusVoiceSfx(ushort sfx, short volume, int priority);
   void ApplySubmergedPitchBend(CSfxHandle handle);
-  void fn_8000e85c(float dt);
+  void UpdateDamageTimers(float dt);
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
-  void fn_8000eba0();
+  void CollectBallTransitionAnimationTokens();
   uint GetDamageWeaponType() const; // Reconstructed name; retained damage-event weapon type.
   const CColor& GetScreenFilterColor() const { return mScreenFilterColor; } // Guessed name.
   TUniqueId GetEnemyLockOnActorId() const { return mEnemyLockOnActorId; }   // Guessed name.
   char GetEnemyLockOnCount() const { return mEnemyLockOnCount; }            // Guessed name.
   void TakeDamage(bool significant, const CVector3f& location, float damage, TUniqueId source,
-                  TUniqueId owner, const CWeaponMode& weapon, CStateManager& mgr);
+                  TUniqueId owner, const CDamageInfo& damageInfo, CStateManager& mgr);
   bool GetExplorationMode() const;
   bool GetCombatMode() const;
   void fn_80010bf4(CStateManager& mgr);
   void RenderGun(const CStateManager& mgr, const CVector3f& position) const;
   void fn_80012040(CStateManager& mgr);
   void RenderReflectedPlayer(CStateManager& mgr);
-  float fn_80012e14() const;
+  float GetMaximumPlayerPositiveVerticalVelocity(const CStateManager& mgr) const;
   void fn_80012eb8(CStateManager& mgr);
-  void fn_80015d64(float dt, const CFinalInput& input);
-  void fn_800165ec(CStateManager& mgr);
-  void fn_8001660c(CStateManager& mgr);
-  float fn_80016ce4(float dt, const CFinalInput& input, CStateManager& mgr);
-  void fn_80017358(float dt);
+  void UpdateCameraTimers(float dt, const CFinalInput& input);
+  void UpdateCameraState(CStateManager& mgr);
+  void UpdateCinematicState(CStateManager& mgr);
+  void UpdateFootstepSounds(float dt, const CFinalInput& input, CStateManager& mgr);
+  ushort GetMaterialSoundUnderPlayer(CStateManager& mgr, const ushort* table, int length,
+                                     ushort defaultId);
+  void UpdatePlayerSounds(float dt);
   void UpdatePlayerDrawFlags(CStateManager& mgr);
   bool fn_80019e20(const CStateManager& mgr) const;
 
@@ -564,9 +574,9 @@ public:
   bool AutoFireHeld(const CFinalInput& input) const;
   bool FireBeamPressed(const CFinalInput& input) const;
   bool FireBeamHeld(const CFinalInput& input) const;
-  bool IsAligningGrappleSwingTurn() const { return (x126a_ & 0x10) != 0; }
+  bool IsAligningGrappleSwingTurn() const { return (mPlayerFlags & 0x10) != 0; }
   void SetAligningGrappleSwingTurn(bool aligning) {
-    x126a_ = (x126a_ & ~0x10) | (aligning ? 0x10 : 0);
+    mPlayerFlags = (mPlayerFlags & ~0x10) | (aligning ? 0x10 : 0);
   }
   bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
   void ResetPlayerHintState(CStateManager& mgr);
@@ -576,7 +586,7 @@ public:
   void LeaveMorphBallState(CStateManager& mgr);
   void EnterMorphBallState(CStateManager& mgr, EPlayerMorphBallState state);
 
-  void fn_8000ba60(float dt, CStateManager& mgr);
+  void UpdateWaterInhabitants(float dt, CStateManager& mgr);
   void GetDamageSfx(float damage, TUniqueId source, TUniqueId owner, EWeaponType weaponType,
                     const CStateManager& mgr, ushort& impactSfx, ushort& loopSfx, ushort& voiceSfx);
   void SetMinimalAccelerationTimer(float duration);
@@ -626,7 +636,7 @@ private:
   EPlayerMorphBallState mSpawnedMorphBallState;                  // 0x390
   bool mScrewAttackTransitionPending;                            // 0x394
   EPlayerMorphBallState mScrewAttackTransitionState;             // 0x398
-  EPlayerMorphBallState x39c_;                                   // 0x39c
+  EPlayerMorphBallState mCinematicMorphBallState;                                   // 0x39c
   float mFallingTime;                                            // 0x3a0
   EPlayerOrbitState mOrbitState;                                 // 0x3a4
   EPlayerOrbitType mOrbitType;                                   // 0x3a8
@@ -678,8 +688,8 @@ private:
   bool mInFreeLook;                                              // 0x5f1
   bool mLookButtonHeld;                                          // 0x5f2
   bool mLookAnalogHeld;                                          // 0x5f3
-  bool x5f4_;                                                    // 0x5f4
-  bool x5f5_;                                                    // 0x5f5
+  bool mFreeLookAnglesHeld;                                      // 0x5f4
+  bool mFreeLookInputLatched;                                    // 0x5f5
   float mCurFreeLookCenteredTime;                                // 0x5f8
   float mFreeLookYawAngle;                                       // 0x5fc
   float mHorizFreeLookAngleVel;                                  // 0x600
@@ -738,26 +748,26 @@ private:
   float mVisorStaticAlpha;
   float mFrozenTimeout;
   int mIceBreakJumps;
-  float mIceBreakJumpTimeout;
+  float mFrozenDamage;
   ERezbitState mRezbitState;
   CGunDrawBlockSet mRezbitGunDrawBlocks;
   TUniqueId mRezbitControlHintId;
   float mRezbitVirusMemoTimer;
   CMorphBall* mMorphBall; // 0x1174
   CPlayerCameraBob* mCameraBob;
-  CSfxHandle mLandingSfx;
-  float mLandingSfxTimer;
+  CSfxHandle mDamageLoopSfx;
+  float mSamusVoiceTimeout;
   CSfxHandle mDashSfx;
-  CSfxHandle x1188_;
-  int x118c_;
-  float x1190_;
-  float x1194_;
-  ushort mSamusVoicePriority;
   CSfxHandle mSamusVoiceSfx;
+  int mSamusVoicePriority;
   float mDamageSfxTimer;
+  float mTimeSinceDamageImpactSfx;
   ushort mDamageLoopSfxId;
+  CSfxHandle mDarkAetherDamageLoopSfx;
+  float mDarkAetherDamageLoopSfxTimer;
+  ushort mDarkAetherDamageLoopSfxId;
   float mFootstepSfxTimer;
-  int mFootstepSfx;
+  int mFootstepSfxSel;
   CVector3f mLastVelocity;
   CVisorSteam mVisorSteam;
   float x11e4_;
@@ -776,7 +786,7 @@ private:
   bool mGravityBoostUsed;
   CColor mScreenFilterColor;
   CHintManager* mPlayerHintManager;
-  bool x1268_24_ : 1;
+  bool mVisorChangeRequested : 1;
   bool mDrawCrosshairs : 1;
   bool x1268_26_ : 1;
   bool mCanEnterMorphBall : 1;
@@ -792,9 +802,9 @@ private:
   bool mInterpolatingControlDir : 1;
   bool mOutOfBallLookAtHint : 1;
   bool x1269_31_ : 1;
-  uchar x126a_;
+  uchar mPlayerFlags;
   bool x126b_24_ : 1;
-  bool x126b_25_ : 1;
+  bool mHoldScreenFilterAlpha : 1;
   bool x126b_26_ : 1; // Fluid type 2; semantic name unresolved (see Dynamics research).
   bool x126b_27_ : 1;
   bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
@@ -824,7 +834,7 @@ private:
   float mRadarXYRadiusOverride;
   float mRadarZRadiusOverride;
   float mAttachedActorStruggle;
-  int x12dc_;
+  int mFramesSinceDamageSfx;
   float x12e0_;
   float mDamageColorTimer;
   uint x12e8_;
@@ -842,9 +852,9 @@ private:
   int mControlScheme;
   float mEchoPulsePhase;  // Guessed name: normalized repeating Echo Visor pulse phase
   uint mEchoPulseCounter; // Guessed name: incremented whenever the echo pulse phase wraps.
-  int x132c_;
-  CSfxHandle mDarkAetherDamageSfx;
-  CSfxHandle mSafeZoneHealSfx;
+  int mEchoVisorAuxEffectId;
+  CSfxHandle mEchoPulseLeftSfx;
+  CSfxHandle mEchoPulseRightSfx;
   int mCharacterIndex;
   CVector3f mPreviousCameraForwardPoint;
   CVector3f mPreviousEyePosition;

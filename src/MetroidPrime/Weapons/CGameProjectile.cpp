@@ -381,7 +381,7 @@ void CGameProjectile::ApplyDamageToOneActor(CStateManager& mgr, const CDamageInf
     if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
       mAppliedDamageToPlayer = true;
       if (HasAttrib(kPA_PlayerUnFreeze) && player->GetFrozenState()) {
-        player->BreakFrozenState(mgr, CPlayer::kBFS_One, false);
+        player->BreakFrozenState(mgr, CPlayer::kBFS_BreakWithEffects, false);
       }
     }
   }

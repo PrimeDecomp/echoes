@@ -500,7 +500,7 @@ void CPlayerKnockBackMgr::ApplyKnockBackEffects(CActor& actor, CStateManager& mg
                                                 const CKnockBackInfo& info) {
   if (CPlayer* player = TCastToPtr< CPlayer >(&actor)) {
     if (player->GetFrozenState() && (mActiveParameters.mFlags & kRF_BreakFreeze)) {
-      player->BreakFrozenState(mgr, CPlayer::kBFS_One, false);
+      player->BreakFrozenState(mgr, CPlayer::kBFS_BreakWithEffects, false);
     }
     if (mBurnRemainingTime > 0.f && (mActiveParameters.mFlags & kRF_DouseFire)) {
       DouseFlames();

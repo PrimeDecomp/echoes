@@ -1753,7 +1753,7 @@ void CBallCamera::UpdateLookAtPosition(float dt, CStateManager& mgr, bool telepo
 
 CVector3f CBallCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
   const CPlayer& player = GetPlayer(mgr);
-  if (player.GetCameraState() == CPlayer::kCS_Four) {
+  if (player.GetCameraState() == CPlayer::kCS_MorphBallTransition) {
     const CVector3f firstPersonPos =
         GetCameraManager(mgr).GetFirstPersonCamera()->GetScanObjectIndicatorPosition(mgr);
     float factor = 1.f - player.GetMorphBallTransitionFactor();
@@ -1914,7 +1914,7 @@ void CBallCamera::Think(float dt, CStateManager& mgr) {
   }
 
   const CPlayer::EPlayerCameraState cameraState = player.GetCameraState();
-  if (cameraState != CPlayer::kCS_Ball && cameraState != CPlayer::kCS_Four &&
+  if (cameraState != CPlayer::kCS_Ball && cameraState != CPlayer::kCS_MorphBallTransition &&
       cameraState != CPlayer::kCS_Transitioning && !mForceProcessing) {
     if (collisionActor != nullptr) {
       collisionActor->SetActive(false);

@@ -18,9 +18,9 @@ public:
   , mRadiusDamageAmount(mDamage)
   , mDamageRadius(0.f)
   , mKnockbackPower(0.f)
-  , x14_(0xffff)
-  , x16_(0xffff)
-  , x18_(0xffff)
+  , mDamageSfxId(0xffff)
+  , mDamageLoopSfxId(0xffff)
+  , mSamusVoiceSfxId(0xffff)
   , mNoImmunity(false)
   , x1a_25_(false) {}
 
@@ -32,9 +32,9 @@ public:
   , mRadiusDamageAmount(damage)
   , mDamageRadius(radius)
   , mKnockbackPower(knockback)
-  , x14_(0xffff)
-  , x16_(0xffff)
-  , x18_(0xffff)
+  , mDamageSfxId(0xffff)
+  , mDamageLoopSfxId(0xffff)
+  , mSamusVoiceSfxId(0xffff)
   , mNoImmunity(noImmunity)
   , x1a_25_(!noImmunity) {}
 
@@ -48,6 +48,9 @@ public:
 
   ushort GetWeaponMode1() const { return mWeaponMode.GetRawType(); }
   const CWeaponMode& GetWeaponMode() const { return mWeaponMode; }
+  ushort GetDamageSfxId() const { return mDamageSfxId; }
+  ushort GetDamageLoopSfxId() const { return mDamageLoopSfxId; }
+  ushort GetSamusVoiceSfxId() const { return mSamusVoiceSfxId; }
 
   void SetWeaponMode(const CWeaponMode& mode) { mWeaponMode = mode; }
 
@@ -89,9 +92,9 @@ private:
   float mRadiusDamageAmount;
   float mDamageRadius;
   float mKnockbackPower;
-  ushort x14_;
-  ushort x16_;
-  ushort x18_;
+  ushort mDamageSfxId;
+  ushort mDamageLoopSfxId;
+  ushort mSamusVoiceSfxId;
   bool mNoImmunity : 1;
   bool x1a_25_ : 1;
 };

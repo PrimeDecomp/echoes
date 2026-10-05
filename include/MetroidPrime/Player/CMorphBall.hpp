@@ -98,6 +98,7 @@ public:
   CTransform4f GetSwooshToWorld() const;
   float GetBallRadius() const;
   float GetBallTouchRadius() const;
+  const CCollisionInfoList& GetCollisionInfos() const { return mCollisionInfos; }
   CAABox GetRenderBounds(const CStateManager& mgr) const; // Guessed name
 
   void LoadMorphBallModel();
