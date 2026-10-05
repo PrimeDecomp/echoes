@@ -10,6 +10,7 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
+#include "Kyoto/CRandom16.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -17,7 +18,9 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CActorLights.hpp"
+#include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
@@ -80,6 +83,7 @@ bool gUseSurfaceHack = false;
 CPlayer::ESurfaceRestraints gSR_Hack = CPlayer::kSR_Normal;
 
 static CColor skLaggedBurnDeathColor(uchar(255), uchar(255), uchar(192), uchar(255));
+static CColor skImplosionColor(uchar(170), uchar(84), uchar(255), uchar(255));
 
 static const char* const kGunLocator = "GUN_LCTR";
 
@@ -2102,22 +2106,326 @@ void CPlayer::UpdateModelScale(CStateManager& mgr) {
   mBallTransitionBeamModel->SetScale(modelScale);
 }
 
-void CPlayer::fn_80012040(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::RenderReflectedPlayer(CStateManager& mgr) {
+  const bool screwAttack = mMorphBall->InScrewAttackMode();
+  if (mMorphBallState != kMS_Morphed || screwAttack) {
+    SetCalculateLighting(true);
+    if (mCameraState == kCS_FirstPerson) {
+      CActor::PreRender(mgr);
+      SetPreRenderClipped(false);
+    }
+    CPhysicsActor::Render(mgr);
+    if (HasTransitionBeamModel()) {
+      mBallTransitionBeamModel->Render(mgr, mGunWorldXf, nullptr,
+                                       CModelFlags::Normal().UseShaderSet(mTransitionBeamShader));
+    }
+    RenderMultiplayerBeamParticles(mgr);
+  } else {
+    mMorphBall->Render(mgr, GetActorLights());
+  }
 }
 
-// Guessed name
-void CPlayer::fn_80011fc0() const {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::RenderIceModel(const CModelFlags& flags) const {
+  const CAnimData* animation = GetModelData()->GetAnimationData();
+  if (animation->GetIceModel()) {
+    const CSkinnedModel& iceModel = **(*animation->GetIceModel());
+    animation->Render(iceModel, CModelFlags::Normal());
+  }
 }
 
 rstl::pair< bool, CColor > CPlayer::GetHackedEffectColor() const {
-  // TODO: Recover the per-frame hacked-effect color selection.
+  if (mPlayerState->GetItemCapacity(CPlayerState::kIT_HackedEffect) != 0) {
+    const float time = 2.f * CGraphics::GetSecondsMod900();
+    float cycle = time - int(time * 0.1f) * 10.f;
+    if (cycle == 10.f) {
+      cycle = 0.f;
+    }
+
+    const float whole = floor(cycle);
+    CRandom16 random(static_cast< uint >(whole));
+    if (cycle - whole > random.Float()) {
+      return rstl::pair< bool, CColor >(true, CColor::Grey());
+    }
+    return rstl::pair< bool, CColor >(true, CColor::White());
+  }
   return rstl::pair< bool, CColor >(false, CColor::Black());
 }
 
 void CPlayer::Render(const CStateManager& mgr) const {
-  // TODO: Recover the remaining target behavior.
+  if (mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId() &&
+      mPlayerState->GetItemAmount(CPlayerState::kIT_Invisibility) != 0 &&
+      mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Dark) {
+    return;
+  }
+  if (mTurretState == kTS_Active || mTurretState == kTS_Four || mTurretState == kTS_Entering) {
+    return;
+  }
+
+  const bool currentPlayer = mgr.GetCurrentRenderPlayer() == this;
+  const bool screwAttack = mMorphBall->InScrewAttackMode();
+  if ((IsMorphBallTransitioning() || !currentPlayer) && GetFrozenState() &&
+      !mKnockBackManager.IsBurnDeath() && mMorphBallState != kMS_Morphed) {
+    CPhysicsActor::Render(mgr);
+    RenderIceModel(CModelFlags::Normal());
+  }
+  RenderThirdPersonGrappleBeam(mgr);
+  const rstl::pair< bool, CColor > hackedColor = GetHackedEffectColor();
+
+  if (!currentPlayer) {
+    if (!GetRenderParticleDatabaseInside()) {
+      GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnFirst();
+    }
+    const bool renderBody = mMorphBallState != kMS_Morphed || screwAttack;
+    bool normalRender = true;
+    if (renderBody) {
+      if (GetPointGeneratorParticles() && mKnockBackManager.IsBurnDeath()) {
+        if (const CTexture* texture = mgr.GetActorModelParticles()->GetAshyTexture(*this)) {
+          mgr.SetupParticleHook(*this);
+          const float burnAlpha = mKnockBackManager.GetBurnDeathAlpha();
+          const CColor color = mKnockBackManager.IsImploding()
+                                   ? skImplosionColor.WithAlphaOf(burnAlpha)
+                               : mKnockBackManager.IsLaggedBurnDeath() ? skLaggedBurnDeathColor
+                                                                       : CColor::Black();
+          GetModelData()->DisintegrateDraw(mgr, GetTransform(), *texture, color, burnAlpha);
+          normalRender = false;
+          CSkinnedModel::ClearPointGeneratorFunc();
+          mgr.GetActorModelParticles()->Render(mgr, *this);
+        }
+      }
+
+      if (hackedColor.first) {
+        if (GetPointGeneratorParticles()) {
+          mgr.SetupParticleHook(*this);
+        }
+        GetModelData()->RenderNoise(mgr, GetTransform(), hackedColor.second, true);
+        if (HasTransitionBeamModel()) {
+          mBallTransitionBeamModel->RenderNoise(CModelData::kWM_Normal, mGunWorldXf,
+                                                hackedColor.second, true);
+        }
+        normalRender = false;
+        if (GetPointGeneratorParticles()) {
+          CSkinnedModel::ClearPointGeneratorFunc();
+          mgr.GetActorModelParticles()->Render(mgr, *this);
+        }
+        RenderMultiplayerBeamParticles(mgr);
+      }
+
+      if (normalRender) {
+        CPhysicsActor::Render(mgr);
+        if (HasTransitionBeamModel()) {
+          if (mgr.IsMultiplayer()) {
+            mBallTransitionBeamModel->Touch();
+          } else {
+            mBallTransitionBeamModel->Touch(mgr, 0);
+          }
+          const int destinationAlpha = GetRenderAlphaBufferAlpha(mgr);
+          if (destinationAlpha != -1) {
+            gpRender->SetDestinationAlpha(destinationAlpha);
+          }
+          CModelFlags flags(mPlayerDrawFlags.UseShaderSet(mTransitionBeamShader));
+          if (mgr.GetRenderVisorMode() == CStateManager::kRVM_Dark &&
+              mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId()) {
+            flags = flags.DepthCompareUpdate(false, false);
+          }
+          mBallTransitionBeamModel->Render(mgr, mGunWorldXf, GetActorLights(), flags);
+          if (destinationAlpha != -1) {
+            gpRender->DisableDestinationAlpha();
+          }
+        }
+        RenderMultiplayerBeamParticles(mgr);
+      }
+      if (!GetRenderParticleDatabaseInside()) {
+        GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsNormallyAddedToRenderer();
+        GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnLast();
+      }
+      if (normalRender) {
+        return;
+      }
+    }
+  }
+
+  bool doRender = mCameraState != kCS_Spawned;
+  if (!doRender) {
+    if (const CCinematicCamera* camera =
+            TCastToConstPtr< CCinematicCamera >(*mCameraManager->GetCurrentCamera(mgr, true))) {
+      doRender = mMorphBallState == kMS_Morphed && (camera->GetFlags() & 0x40);
+    }
+  }
+  if ((mCameraState == kCS_FirstPerson || !doRender) &&
+      !mCameraManager->ShouldBypassInterpolationCamera()) {
+    return;
+  }
+
+  const int destinationAlpha = GetRenderAlphaBufferAlpha(mgr);
+  if (destinationAlpha != -1) {
+    gpRender->SetDestinationAlpha(destinationAlpha);
+  }
+  bool doTransitionRender = false;
+  bool touchBall = false;
+  bool touchGun = false;
+  bool doBallRender = false;
+  const bool drawDarkAether =
+      GetDarkAetherDamage() > 0.f && mDarkAetherThirdPersonParticles.get() != nullptr;
+  switch (mMorphBallState) {
+  case kMS_Unmorphed:
+    CPhysicsActor::Render(mgr);
+    if (HasTransitionBeamModel()) {
+      if (mgr.IsMultiplayer()) {
+        mBallTransitionBeamModel->Touch();
+      } else {
+        mBallTransitionBeamModel->Touch(mgr, 0);
+      }
+      mBallTransitionBeamModel->Render(mgr, mGunWorldXf, GetActorLights(),
+                                       mPlayerDrawFlags.UseShaderSet(mTransitionBeamShader));
+    }
+    RenderMultiplayerBeamParticles(mgr);
+    break;
+  case kMS_Morphing:
+    touchBall = true;
+    doTransitionRender = true;
+    doBallRender = mSpawnedMorphBallState != kMS_Morphed;
+    break;
+  case kMS_Unmorphing:
+    touchGun = true;
+    doTransitionRender = true;
+    doBallRender = !mMorphBall->InScrewAttackMode();
+    break;
+  case kMS_Morphed:
+    if (screwAttack) {
+      touchGun = true;
+      doTransitionRender = true;
+    } else {
+      mMorphBall->Render(mgr, GetActorLights());
+      if (destinationAlpha != -1) {
+        gpRender->SetDestinationAlpha(destinationAlpha);
+      }
+    }
+    break;
+  }
+  if (drawDarkAether) {
+    mDarkAetherThirdPersonParticles->Render();
+  }
+  if (mUnderwaterThirdPersonParticles.get() != nullptr &&
+      mUnderwaterThirdPersonParticles->GetParticleCount() > 0) {
+    mUnderwaterThirdPersonParticles->Render();
+  }
+  if (mCameraManager->ShouldBypassInterpolationCamera() && mMorphBallState != kMS_Morphed) {
+    doTransitionRender = true;
+  }
+  if (touchBall) {
+    mMorphBall->TouchModel(mgr);
+  }
+  if (touchGun) {
+    mGun->TouchModel(mgr);
+  }
+
+  if (doTransitionRender) {
+    if (!GetRenderParticleDatabaseInside()) {
+      GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnFirst();
+    }
+    if (hackedColor.first) {
+      if (GetPointGeneratorParticles()) {
+        mgr.SetupParticleHook(*this);
+      }
+      GetModelData()->RenderNoise(mgr, GetTransform(), hackedColor.second, true);
+      if (HasTransitionBeamModel()) {
+        mBallTransitionBeamModel->RenderNoise(CModelData::kWM_Normal, mGunWorldXf,
+                                              hackedColor.second, true);
+      }
+      if (GetPointGeneratorParticles()) {
+        CSkinnedModel::ClearPointGeneratorFunc();
+        mgr.GetActorModelParticles()->Render(mgr, *this);
+      }
+    } else {
+      CPhysicsActor::Render(mgr);
+      if (HasTransitionBeamModel()) {
+        mBallTransitionBeamModel->Render(
+            CModelData::kWM_Normal, mGunWorldXf, GetActorLights(),
+            mPlayerDrawFlags.UseShaderSet(mTransitionBeamShader).DepthCompareUpdate(true, true));
+      }
+      RenderMultiplayerBeamParticles(mgr);
+      if (screwAttack) {
+        mMorphBall->RenderScrewAttackJumpEffects();
+      }
+
+      if (doBallRender) {
+        float morphFactor = mMorphTime / mMorphDuration;
+        float ballAlphaStart = 0.75f;
+        float ballAlphaMag = 4.f;
+        if (mMorphBallState == kMS_Unmorphing) {
+          morphFactor = 1.f - morphFactor;
+          ballAlphaStart = 0.875f;
+          ballAlphaMag = 8.f;
+        }
+        bool alphaBlend = true;
+        const CModelFlags::ETrans blendMode = mPlayerDrawFlags.GetTrans();
+        if (static_cast< char >(blendMode) > 6) {
+          CColor color = mPlayerDrawFlags.GetColor();
+          if (blendMode == CModelFlags::kT_Additive) {
+            color = color.WithAlphaModulatedBy(morphFactor);
+          } else if (blendMode == CModelFlags::kT_Additive2) {
+            color = CColor::Lerp(CColor::Black(), color, morphFactor);
+          }
+          const CModelFlags flags(
+              mPlayerDrawFlags.UseShaderSet(mMorphBall->GetMorphballModelShader()), blendMode,
+              color);
+          mMorphBall->GetModel().Render(mgr, mMorphBall->GetBallToWorld(), GetActorLights(), flags);
+          alphaBlend = false;
+        }
+        if (alphaBlend) {
+          if (morphFactor > ballAlphaStart) {
+            const float alpha =
+                CMath::Clamp(0.f, ballAlphaMag * (morphFactor - ballAlphaStart), 1.f);
+            const CModelFlags& flags = CModelFlags::AlphaBlended(CColor(1.f, 1.f, 1.f, alpha))
+                                           .UseShaderSet(mMorphBall->GetMorphballModelShader());
+            mMorphBall->GetModel().Render(mgr, mMorphBall->GetBallToWorld(), GetActorLights(),
+                                          flags);
+          }
+          if (mMorphBallState == kMS_Morphing) {
+            if (morphFactor > 0.5f) {
+              const float transition = (morphFactor - 0.5f) / 0.5f;
+              const float rotate = 1.f - transition;
+              const float scale = 0.75f * rotate + 1.f;
+              float ballAlpha;
+              if (transition < 0.1f) {
+                ballAlpha = 0.f;
+              } else if (transition < 0.2f) {
+                ballAlpha = (transition - 0.1f) / 0.1f;
+              } else if (transition < 0.9f) {
+                ballAlpha = 1.f;
+              } else {
+                ballAlpha = 1.f - (morphFactor - 0.9f) / (1.f - 0.9f);
+              }
+              ballAlpha *= 0.5f;
+              const CRelAngle theta = CRelAngle::FromDegrees(360.f * rotate);
+              if (ballAlpha > 0.f) {
+                const CTransform4f transform = mMorphBall->GetBallToWorld() *
+                                               CTransform4f::RotateZ(theta) *
+                                               CTransform4f::Scale(scale, scale, scale);
+                const CModelFlags& flags =
+                    CModelFlags::Additive(ballAlpha).DepthCompareUpdate(true, false);
+                mMorphBall->GetModel().Render(
+                    mgr, transform, GetActorLights(),
+                    flags.UseShaderSet(mMorphBall->GetMorphballModelShader()));
+                if (const CModelData* glass = mMorphBall->GetSpiderBallGlassModel()) {
+                  glass->Render(mgr, transform, GetActorLights(),
+                                flags.UseShaderSet(mMorphBall->GetSpiderBallGlassModelShader()));
+                }
+              }
+            }
+            mMorphBall->RenderMorphBallTransitionFlash(mgr);
+          }
+        }
+      }
+    }
+    if (!GetRenderParticleDatabaseInside()) {
+      GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsNormallyAddedToRenderer();
+      GetModelData()->GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnLast();
+    }
+  }
+  if (destinationAlpha != -1) {
+    gpRender->DisableDestinationAlpha();
+  }
 }
 
 void CPlayer::RenderGun(const CStateManager& mgr, const CVector3f& position) const {
@@ -2146,8 +2454,15 @@ void CPlayer::RenderGun(const CStateManager& mgr, const CVector3f& position) con
   }
 }
 
-void CPlayer::fn_80010f4c(const CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::RenderThirdPersonGrappleBeam(const CStateManager& mgr) const {
+  if (mgr.GetCurrentRenderPlayer() != this) {
+    CGrappleArm* grappleArm = mGun->GrappleArm();
+    if (grappleArm && grappleArm->GetActive() &&
+        grappleArm->GetAnimState() != CGrappleArm::kAS_Done) {
+      const CTransform4f grappleXf = GetTransform() * GetScaledLocatorTransform(mGrappleLocator);
+      mGun->GrappleArm()->RenderGrappleBeam(mgr, grappleXf.GetTranslation(), false);
+    }
+  }
 }
 
 void CPlayer::UpdateTransitionAlpha(CStateManager& mgr) {
@@ -3305,8 +3620,15 @@ void CPlayer::EmitMultiplayerBeamParticles(CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::fn_8000bbb4(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::RenderMultiplayerBeamParticles(const CStateManager& mgr) const {
+  if (mgr.IsMultiplayer() && mgr.GetCurrentRenderPlayerIndex() != GetPlayerIndex()) {
+    if (mBeamParticles.get()) {
+      mBeamParticles->Render();
+    }
+    if (mBeamAuxParticles.get()) {
+      mBeamAuxParticles->Render();
+    }
+  }
 }
 
 CPlayerState::EBeamId CPlayer::GetCurrentBeam() const {

@@ -95,6 +95,10 @@ public:
   int GetLastFloorCollisionFrame() const { return mLastFloorCollisionFrame; }
   CVector3f GetBallPosition() const; // Guessed name
   CTransform4f GetBallToWorld() const;
+  const CModelData& GetModel() const { return *mBallModel; }
+  uint GetMorphballModelShader() const { return mBallModelShader; }
+  const CModelData* GetSpiderBallGlassModel() const { return mSpiderBallGlassModel.get(); }
+  uint GetSpiderBallGlassModelShader() const { return mSpiderBallGlassModelShader; }
   CTransform4f GetSwooshToWorld() const;
   float GetBallRadius() const;
   float GetBallTouchRadius() const;

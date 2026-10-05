@@ -36,6 +36,7 @@ public:
   bool IsRagDollPending() const { return mRagDollPending; }
   bool IsLaggedBurnDeath() const { return mLaggedBurnDeath; }
   bool IsBurnDeath() const { return mBurnDeath; }
+  bool IsImploding() const { return mImploding; }
   void Burn(float duration, float damagePerSecond, TUniqueId owner);
   void DouseFlames();
   void StopBurnDeath(CStateManager& mgr, CPlayer& player);

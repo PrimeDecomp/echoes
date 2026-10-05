@@ -391,7 +391,7 @@ public:
 
   void SkipMorphTransition();
   void StopSounds();
-  void fn_8000bbb4(CStateManager& mgr);
+  void RenderMultiplayerBeamParticles(const CStateManager& mgr) const; // Guessed name.
   void SetMultiplayerBeamAuxParticlesEnabled(CStateManager& mgr, bool createNew);
   float
   GetDarkWorldDamageExposureFraction() const; // Guessed name; normalized grace-period exposure.
@@ -443,7 +443,7 @@ public:
   bool GetCombatMode() const;
   void UpdateTransitionAlpha(CStateManager& mgr); // Guessed name; morph-transition opacity.
   void RenderGun(const CStateManager& mgr, const CVector3f& position) const;
-  void fn_80012040(CStateManager& mgr);
+  void RenderReflectedPlayer(CStateManager& mgr);
   void UpdateModelScale(CStateManager& mgr); // Guessed name; adjusts the viewed player's scale.
   float GetMaximumPlayerPositiveVerticalVelocity(const CStateManager& mgr) const;
   void fn_80012eb8(CStateManager& mgr);
@@ -590,9 +590,9 @@ public:
   void GetDamageSfx(float damage, TUniqueId source, TUniqueId owner, EWeaponType weaponType,
                     const CStateManager& mgr, ushort& impactSfx, ushort& loopSfx, ushort& voiceSfx);
   void SetMinimalAccelerationTimer(float duration);
-  void fn_80010f4c(const CStateManager& mgr);
+  void RenderThirdPersonGrappleBeam(const CStateManager& mgr) const; // Guessed name.
   rstl::pair< bool, CColor > GetHackedEffectColor() const;
-  void fn_80011fc0() const;
+  void RenderIceModel(const CModelFlags& flags) const;
   void fn_80016a6c(float value);
   void fn_80016a74(float value);
   const CTransform4f& GetFirstPersonCameraTransform() const;
