@@ -220,6 +220,8 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+  int GetCreatureSize() const { return mCreatureSize; }
+  const CPlane& GetIngSnatchingPlane() const { return mIngSnatchingPlane; }
 
   bool GetVerticalMovement() const { return mVerticalMovement; }
 
