@@ -318,6 +318,7 @@ public:
   void SetInMapScreen(bool inMapScreen) { mInMapScreen = inMapScreen; }
   bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
+  void SetGameState(EGameState state);
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
   bool GetWantsToEnterSaveGameScreen() const { return mDeferredTransition == kSMT_SaveGame; }
   bool HasSaveGameScreen() const { return !mSaveGameScreen.null(); }

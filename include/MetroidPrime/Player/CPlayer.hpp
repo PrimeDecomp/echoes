@@ -203,6 +203,7 @@ public:
   float GetGunAlpha() const { return mGunAlpha; }
   const CSegId& GetGunParticleLocator() const { return mGunParticleLocator; }
   float GetFlatMoveSpeed() const { return mFlatMoveSpeed; }
+  float GetMoveSpeed() const { return mMoveSpeed; }
   bool DampsBoostEntryVelocity() const { return mDampBoostEntryVelocity; }
   const CVector3f& GetLastSpaceJumpPosition() const { return mLastSpaceJumpPosition; }
   void SetLastSpaceJumpPosition(const CVector3f& pos) { mLastSpaceJumpPosition = pos; }
@@ -348,6 +349,7 @@ public:
   CHintManager* GetControlHintManager();
   const CHintManager* GetControlHintManager() const;
   CControlMapper& GetControlMapper() { return mControlMapper; }
+  const CControlMapper& GetControlMapper() const { return mControlMapper; }
   CPlayerGun* GetPlayerGun();
   const CPlayerGun* GetPlayerGun() const;
   ETurretState GetTurretState() const { return mTurretState; }
