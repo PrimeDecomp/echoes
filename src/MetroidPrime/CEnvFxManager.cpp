@@ -618,11 +618,14 @@ void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
   float phase = 0.f;
   const float speed = type == kEFX_DarkWorld ? 5.f : 1.f;
   for (int i = 255; i >= 0; --i) {
-    float forceX = g_SnowForces[i][0];
-    float forceY = g_SnowForces[i][1];
+    float forceX;
+    float forceY;
     if (type == kEFX_Unknown5) {
       forceX = CMath::FastSinR(phase) + 0.2f * random.Range(-1.f, 1.f);
       forceY = CMath::FastCosR(phase) + 0.2f * random.Range(-1.f, 1.f);
+    } else {
+      forceX = g_SnowForces[i][0];
+      forceY = g_SnowForces[i][1];
     }
     const CVector3f previous = accumulated;
     const float scaledDt = dt * speed;
