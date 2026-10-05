@@ -14,6 +14,7 @@ struct SSaveHeader {
 
   SSaveHeader(uint signature, int saveIdx);
   explicit SSaveHeader(CInputStream& in);
+  void SetSavePresent(int idx, const bool present) { mSavePresent[idx] = present; }
   void PutTo(COutputStream& out) const;
 };
 CHECK_SIZEOF(SSaveHeader, 0xc)
