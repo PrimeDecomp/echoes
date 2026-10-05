@@ -193,8 +193,31 @@ void CGuiTextSupport::ClearRenderBuffer() {
 
 void CGuiTextSupport::Update(float dt) {
   if (mTypewriterEnabled) {
-    // TODO: update each primitive's alpha using its start time and character fade/rate,
-    // once CTextRenderBuffer's primitive access interface is recovered.
+    CTextRenderBuffer* buffer = GetCurrentPageRenderBuffer();
+    if (buffer != nullptr) {
+      float characterStartTime = 0.f;
+      for (int i = 0; i < buffer->GetNumPrimitives(); ++i) {
+        for (int j = 0; j < mPrimitiveStartTimes.size(); ++j) {
+          const rstl::pair< float, int >& start = mPrimitiveStartTimes[j];
+          if (start.second < i) {
+            continue;
+          }
+          if (start.second != i) {
+            break;
+          }
+          characterStartTime = start.first;
+          break;
+        }
+        CTextRenderBuffer::Primitive primitive = buffer->GetPrimitive(i);
+        float alpha = rstl::min_val(
+            1.f, rstl::max_val(0.f, (mCurrentTime - characterStartTime) / mCharacterFadeTime));
+        characterStartTime += 1.f / mCharacterRate;
+        CColor color(primitive.mColor);
+        color.SetAlpha(alpha);
+        primitive.mColor = color.GetColor_u32();
+        buffer->SetPrimitive(primitive, i);
+      }
+    }
     mCurrentTime += dt;
   }
   mCurrentTimeMod900 = fmod(mCurrentTimeMod900 + dt, 900.0);
@@ -253,16 +276,17 @@ void CGuiTextSupport::SetPage(int page) {
   mCurrentTime = 0.f;
 }
 
-const CTextRenderBuffer* CGuiTextSupport::GetCurrentPageRenderBuffer() const {
+CTextRenderBuffer* CGuiTextSupport::GetCurrentPageRenderBuffer() const {
   if (mRenderBuffer && !mMultipage) {
     return mRenderBuffer.get_ptr();
   }
   if (mMultipage && mPages.size() > mPageCounter) {
-    rstl::list< CTextRenderBuffer >::const_iterator it = mPages.begin();
-    for (int i = 0; i != mPageCounter; ++i) {
-      ++it;
+    int i = 0;
+    for (rstl::list< CTextRenderBuffer >::iterator it = mPages.begin();; ++it, ++i) {
+      if (i == mPageCounter) {
+        return &*it;
+      }
     }
-    return &*it;
   }
   return nullptr;
 }

@@ -55,7 +55,7 @@ public:
   float GetCurrentAnimationOverAge() const;
   int GetTotalPageCount();
   void SetPage(int page);
-  const CTextRenderBuffer* GetCurrentPageRenderBuffer() const;
+  CTextRenderBuffer* GetCurrentPageRenderBuffer() const;
   const rstl::pair< CVector2i, CVector2i >& GetBounds();
 
   int GetTextBoundingWidth() const { return mExtentX; }
