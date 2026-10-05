@@ -6,6 +6,8 @@
 #include "rstl/StringExtras.hpp"
 #include "rstl/algorithm.hpp"
 
+#include <stdlib.h>
+
 CTextParser::CTextParser(IObjectStore& store) : mObjectStore(store) {}
 
 void CTextParser::ParseText(CTextExecuteBuffer& buffer, const wchar_t* str, int len,
@@ -64,20 +66,142 @@ TToken< CRasterFont > CTextParser::GetFont(const wchar_t* str, int len) {
   return mObjectStore.GetObj(SObjectTag('FONT', id));
 }
 
-CFontImageDef
-CTextParser::GetImage(const wchar_t* str, int len,
-                      const rstl::vector< rstl::pair< CAssetId, CAssetId > >* textureMap) {
-  // TODO: parse static/animated image tags, crop factors and remapped texture IDs.
-  return CFontImageDef(rstl::vector< TToken< CTexture > >(), 0.f, CVector2f(1.f, 1.f));
+CFontImageDef CTextParser::GetImage(const wchar_t* str, int len,
+                                    const rstl::vector< rstl::pair< CAssetId, CAssetId > >* vec) {
+  const rstl::string text = CStringExtras::ConvertToANSI(rstl::wstring(str, len));
+  int commaCount = 0;
+  int pos = 0;
+  while (true) {
+    pos = text.find(',', pos);
+    if (pos == -1) {
+      break;
+    }
+    ++commaCount;
+    ++pos;
+  }
+  if (commaCount > 0) {
+    const rstl::vector< rstl::string > tokens =
+        CStringExtras::TokenizeString(text, ",", commaCount + 1);
+    if (rstl::operator==(rstl::istring(tokens[0].c_str()), rstl::istring_l("A"))) {
+      const float fps = atof(tokens[1].c_str());
+      rstl::vector< TToken< CTexture > > textures;
+      textures.reserve(tokens.size() - 2);
+      for (int i = 2; i < tokens.size(); ++i) {
+        textures.push_back(
+            mObjectStore.GetObj(SObjectTag('TXTR', GetAssetIdFromString(tokens[i], vec))));
+      }
+      return CFontImageDef(textures, fps, CVector2f(1.f, 1.f));
+    }
+    if (rstl::operator==(rstl::istring(tokens[0].c_str()), rstl::istring_l("SA")) &&
+        tokens.size() >= 5) {
+      const float fps = atof(tokens[1].c_str());
+      const float cropX = atof(tokens[2].c_str());
+      const float cropY = atof(tokens[3].c_str());
+      rstl::vector< TToken< CTexture > > textures;
+      textures.reserve(tokens.size() - 4);
+      for (int i = 4; i < tokens.size(); ++i) {
+        textures.push_back(
+            mObjectStore.GetObj(SObjectTag('TXTR', GetAssetIdFromString(tokens[i], vec))));
+      }
+      return CFontImageDef(textures, fps, CVector2f(cropX, cropY));
+    }
+    if (rstl::operator==(rstl::istring(tokens[0].c_str()), rstl::istring_l("SI")) &&
+        tokens.size() == 4) {
+      const float cropX = atof(tokens[1].c_str());
+      const float cropY = atof(tokens[2].c_str());
+      return CFontImageDef(
+          mObjectStore.GetObj(SObjectTag('TXTR', GetAssetIdFromString(tokens[3], vec))),
+          CVector2f(cropX, cropY));
+    }
+  }
+  return CFontImageDef(mObjectStore.GetObj(SObjectTag('TXTR', GetAssetIdFromString(text, vec))),
+                       CVector2f(1.f, 1.f));
 }
 
 uint CTextParser::HandleUserTag(CTextExecuteBuffer& buffer, const wchar_t* str, int len) {
   return 0;
 }
 
-void CTextParser::ParseTag(CTextExecuteBuffer& buffer, const wchar_t* str, int len,
-                           const rstl::vector< rstl::pair< CAssetId, CAssetId > >* textureMap) {
-  // TODO: dispatch font/image, color, spacing, justification and state-stack tags.
+void CTextParser::ParseTag(CTextExecuteBuffer& buffer, const wchar_t* string, int len,
+                           const rstl::vector< rstl::pair< CAssetId, CAssetId > >* vec) {
+  if (BeginsWith(string, len, L"font=")) {
+    TToken< CRasterFont > font = GetFont(string + 5, len - 5);
+    buffer.AddFont(font);
+  } else if (BeginsWith(string, len, L"image=")) {
+    CFontImageDef texture = GetImage(string + 6, len - 6, vec);
+    buffer.AddImage(texture);
+  } else if (BeginsWith(string, len, L"fg-color=")) {
+    buffer.AddColor(kCT_Foreground, ParseColor(string + 9, len - 9));
+  } else if (BeginsWith(string, len, L"main-color=")) {
+    buffer.AddColor(kCT_Main, ParseColor(string + 11, len - 11));
+  } else if (BeginsWith(string, len, L"geometry-color=")) {
+    buffer.AddColor(kCT_Geometry, ParseColor(string + 11, len - 11));
+  } else if (BeginsWith(string, len, L"outline-color=")) {
+    buffer.AddColor(kCT_Outline, ParseColor(string + 14, len - 14));
+  } else if (BeginsWith(string, len, L"color")) {
+    int idx = string[6] - L'0';
+    if (idx < 0 || idx > 9) {
+      return;
+    }
+    const wchar_t* str_remain = string + 7;
+    len -= 7;
+    if (*str_remain >= L'0' && *str_remain <= L'9') {
+      wchar_t tmp = *str_remain;
+      ++str_remain;
+      len--;
+      idx = (idx * 10) + (tmp - L'0');
+    }
+    if (Equals(str_remain + 10, len - 10, L"no")) {
+      buffer.AddRemoveColorOverride(idx);
+    } else {
+      buffer.AddColorOverride(idx, ParseColor(str_remain + 10, len - 10));
+    }
+  } else if (BeginsWith(string, len, L"line-spacing=")) {
+    const float v = (float)ParseInt(string + 13, len - 13, true);
+    buffer.AddLineSpacing(v / 100.f);
+  } else if (BeginsWith(string, len, L"line-extra-space=")) {
+    buffer.AddLineExtraSpace(ParseInt(string + 17, len - 17, true));
+  } else if (BeginsWith(string, len, L"character-extra-space=")) {
+    buffer.AddCharacterExtraSpace(ParseInt(string + 22, len - 22, true));
+  } else if (BeginsWith(string, len, L"just=")) {
+    if (Equals(string + 5, len - 5, L"left")) {
+      buffer.AddJustification(kJustification_Left);
+    } else if (Equals(string + 5, len - 5, L"center")) {
+      buffer.AddJustification(kJustification_Center);
+    } else if (Equals(string + 5, len - 5, L"right")) {
+      buffer.AddJustification(kJustification_Right);
+    } else if (Equals(string + 5, len - 5, L"full")) {
+      buffer.AddJustification(kJustification_Full);
+    } else if (Equals(string + 5, len - 5, L"nleft")) {
+      buffer.AddJustification(kJustification_NLeft);
+    } else if (Equals(string + 5, len - 5, L"ncenter")) {
+      buffer.AddJustification(kJustification_NCenter);
+    } else if (Equals(string + 5, len - 5, L"nright")) {
+      buffer.AddJustification(kJustification_NRight);
+    }
+  } else if (BeginsWith(string, len, L"vjust=")) {
+    if (Equals(string + 6, len - 6, L"top")) {
+      buffer.AddVerticalJustification(kVerticalJustification_Top);
+    } else if (Equals(string + 6, len - 6, L"center")) {
+      buffer.AddVerticalJustification(kVerticalJustification_Center);
+    } else if (Equals(string + 6, len - 6, L"bottom")) {
+      buffer.AddVerticalJustification(kVerticalJustification_Bottom);
+    } else if (Equals(string + 6, len - 6, L"full")) {
+      buffer.AddVerticalJustification(kVerticalJustification_Full);
+    } else if (Equals(string + 6, len - 6, L"ntop")) {
+      buffer.AddVerticalJustification(kVerticalJustification_NTop);
+    } else if (Equals(string + 6, len - 6, L"ncenter")) {
+      buffer.AddVerticalJustification(kVerticalJustification_NCenter);
+    } else if (Equals(string + 6, len - 6, L"nbottom")) {
+      buffer.AddVerticalJustification(kVerticalJustification_NBottom);
+    }
+  } else if (Equals(string, len, L"push")) {
+    buffer.AddPushState();
+  } else if (Equals(string, len, L"pop")) {
+    buffer.AddPopState();
+  } else {
+    HandleUserTag(buffer, string, len);
+  }
 }
 
 bool CTextParser::BeginsWith(const wchar_t* str, int len, const wchar_t* prefix) {
