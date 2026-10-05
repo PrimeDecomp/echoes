@@ -404,7 +404,7 @@ int CStateManager::SpecialSkipCinematic() {
     if (entity == nullptr) {
       SetSkipCinematicSpecialFunction(kInvalidUniqueId);
     } else if (CScriptSpecialFunction* special = TCastToPtr< CScriptSpecialFunction >(entity)) {
-      const bool wasSkipping = mSkippingCinematic;
+      const bool wasSkipping = IsSkippingCinematic();
       mSkippingCinematic = true;
 
       if (special->GetFunction() == CScriptSpecialFunction::kSF_CinematicSkip) {
