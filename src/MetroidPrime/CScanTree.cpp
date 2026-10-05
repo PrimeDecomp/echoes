@@ -1,4 +1,7 @@
 #include "MetroidPrime/CScanTree.hpp"
+#include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "Kyoto/CDvdRequest.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
@@ -415,9 +418,11 @@ CScanTree::CScanTree()
 
 void CScanTree::LoadAsync() {}
 
-void CScanTree::ReserveNodes(int count) {}
+void CScanTree::ReserveNodes(int count) { mNodes.reserve(count); }
 
-void CScanTree::AddNode(CScanTreeNode* node) {}
+void CScanTree::AddNode(CScanTreeNode* node) {
+  mNodes.push_back_unsafe(rstl::rc_ptr< CScanTreeNode >(node));
+}
 
 void CScanTree::SetRootNode(int node) { mRootNode = node; }
 
@@ -437,11 +442,36 @@ void CScanTree::InitializeNodePositions(int node) {}
 
 bool CScanTree::PollLoad() {}
 
-void CScanTree::SelectNode(int node) {}
+void CScanTree::SelectNode(int node) {
+  SelectNode(node, gpTweakGui->GetLogBookTransitionTime());
+}
 
-void CScanTree::SelectNode(int node, float duration) {}
+void CScanTree::SelectNode(int node, float duration) {
+  mPreviousNode = mSelectedNode;
+  mSelectedNode = node;
+  if (!CMath::IsEpsilon(duration, 0.f, FLT_EPSILON)) {
+    mTransition = 1.f;
+    mTransitionDuration = duration;
+  } else {
+    mTransition = 0.f;
+    mTransitionDuration = 1.f;
+  }
+}
 
-void CScanTree::SelectScan(CAssetId scannableInfo, float duration) {}
+void CScanTree::SelectScan(CAssetId scannableInfo, float duration) {
+  int index = 0;
+  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+       it != mNodes.end(); ++it, ++index) {
+    if ((*it)->GetNodeType() == CScanTreeNode::kNT_Scan ||
+        (*it)->GetNodeType() == CScanTreeNode::kNT_Inventory) {
+      const rstl::rc_ptr< CScanTreeScan > scan(*it);
+      if (scannableInfo == scan->GetScannableInfo()) {
+        SelectNode(index, duration);
+        return;
+      }
+    }
+  }
+}
 
 int CScanTree::GetSelectedNode() const { return mSelectedNode; }
 
@@ -449,22 +479,38 @@ int CScanTree::GetPreviousNode() const { return mPreviousNode; }
 
 float CScanTree::GetTransition() const { return mTransition; }
 
-bool CScanTree::IsLoaded() const {}
+bool CScanTree::IsLoaded() const { return mLoadRequest.get() == nullptr; }
 
-rstl::rc_ptr< CScanTreeNode > CScanTree::GetNode(int node) const {}
+rstl::rc_ptr< CScanTreeNode > CScanTree::GetNode(int node) const { return mNodes[node]; }
 
 int CScanTree::GetRootNode() const { return mRootNode; }
 
 void CScanTree::ScaleChildren(int node, float otherScale, float selectedScale,
                               bool excludeOptions) {}
 
-void CScanTree::UpdateLayout() {}
+void CScanTree::UpdateLayout(float) {}
 
-float CScanTree::GetLayoutProgress() const {}
+float CScanTree::GetLayoutProgress() const {
+  if (!CMath::IsEpsilon(mInitialLayoutTransition, 0.f, FLT_EPSILON)) {
+    return 1.f - mInitialLayoutTransition;
+  }
+  const float collapse = gpTweakGui->GetLogBookNodeCollapseMotion().EvaluateAt(1.f - mTransition);
+  const float expand = gpTweakGui->GetLogBookNodeExpandMotion().EvaluateAt(1.f - mTransition);
+  return collapse < expand ? expand : collapse;
+}
 
 void CScanTree::UpdateNodePhysics(float dt) {}
 
-void CScanTree::Update(float dt) {}
+void CScanTree::Update(float dt) {
+  const float transition = mTransition - dt / mTransitionDuration;
+  mTransition = transition < 0.f ? 0.f : transition;
+  const float initialLayout = mInitialLayoutTransition - dt / 0.3f;
+  mInitialLayoutTransition = initialLayout < 0.f ? 0.f : initialLayout;
+  if (mSelectedNode != -1) {
+    UpdateNodePhysics(dt);
+    UpdateLayout(dt);
+  }
+}
 
 void CScanTree::RefreshViewed(CStateManager& mgr) {}
 

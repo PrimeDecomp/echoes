@@ -549,16 +549,16 @@ float CTweakGui::GetLogBookSelectedTextScale() const { return mData->logBook.sel
 
 float CTweakGui::GetLogBookTransitionTime() const { return mData->logBook.transitionTime; }
 
-const CMayaSpline& CTweakGui::GetLogBookNodeCollapseMotion() const {
-  return mData->logBook.nodeCollapseMotion;
+CMayaSpline& CTweakGui::GetLogBookNodeCollapseMotion() const {
+  return const_cast< CMayaSpline& >(mData->logBook.nodeCollapseMotion);
 }
 
 const CMayaSpline& CTweakGui::GetLogBookSelectedNodeCollapseMotion() const {
   return mData->logBook.selectedNodeCollapseMotion;
 }
 
-const CMayaSpline& CTweakGui::GetLogBookNodeExpandMotion() const {
-  return mData->logBook.nodeExpandMotion;
+CMayaSpline& CTweakGui::GetLogBookNodeExpandMotion() const {
+  return const_cast< CMayaSpline& >(mData->logBook.nodeExpandMotion);
 }
 
 float CTweakGui::GetLogBookRotationSpeed() const { return mData->logBook.rotationSpeed; }
