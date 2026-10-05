@@ -43,6 +43,11 @@ public:
   int GetShadowLightIndex() const { return mShadowLightIdx; }
   const CColor& GetAmbientColor() const { return mAmbientColor; }
   uint GetFramesBetweenRecalculation() const { return mAreaUpdateFramePeriod; }
+  int GetMaxAreaLights() const { return mMaxAreaLights; }
+  void SetMaxAreaLights(int v) { mMaxAreaLights = v; }
+  void SetMaxDynamicLights(int v) { mMaxDynamicLights = v; }
+  void SetInArea(bool v) { mInArea = v; }
+  void SetFindNearestDynamicLights(bool v) { mFindNearestDynamicLights = v; }
 
   void SetCastShadows(bool v) { mCastShadows = v; }
   void SetAmbientColor(const CColor& color) { mAmbientColor = color; }

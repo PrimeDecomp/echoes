@@ -64,6 +64,7 @@ class CWeaponMgr;
 class CFluidPlaneManager;
 class CDamageInfo;
 class CAABox;
+class CPlane;
 class CTexture;
 class CProjectedShadow;
 
@@ -175,6 +176,7 @@ public:
   void Touch(); // Prime-correlated name.
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
+  void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
