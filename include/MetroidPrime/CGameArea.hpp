@@ -286,6 +286,8 @@ public:
   Dock& DockNC(int index) { return mDocks[index]; }
   void SetActive(bool active) { mActive = active; }
   void SetValidationPaused(bool paused) { mValidationPaused = paused; }
+  CObjectList* ObjectList() { return mPostConstructed->mAreaObjectList.get(); }
+  const CObjectList* GetObjectList() const { return mPostConstructed->mAreaObjectList.get(); }
   const CObjectList* ObjectList() const { return mPostConstructed->mAreaObjectList.get(); }
   void AddDock(TUniqueId uid); // Guessed name.
 
