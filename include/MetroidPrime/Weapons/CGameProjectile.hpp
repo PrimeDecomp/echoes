@@ -63,6 +63,8 @@ public:
   const CVector3f& GetPreviousPos() const { return mPreviousPos; }
   TUniqueId GetHomingTargetId() const { return mHomingTargetId; }
   bool GetWeaponActive() const { return mActive; }
+  void SetTouchedDock(TUniqueId uid) { mTouchedDock = uid; } // Guessed name
+  void SetX4104(bool flag) { x410_4_ = flag; }
   CProjectileTouchResult CanCollideWithTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithGameObject(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithComplexCollision(CActor& actor, CStateManager& mgr);

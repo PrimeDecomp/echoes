@@ -221,6 +221,8 @@ public:
   void MissileClosing(CStateManager& mgr, int message, float dt);
   void EventHandler(CStateManager& mgr, int message, float dt);
 
+  int GetAbsorbedPhazonShots() const { return mAbsorbedPhazonShots; }
+
 private:
   typedef void (CPlayerGun::*RenderFunc)(const CStateManager&, const CVector3f&, bool,
                                          const CTransform4f&, const CTransform4f&,

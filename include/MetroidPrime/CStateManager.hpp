@@ -277,6 +277,9 @@ public:
   const rstl::list< CEntity* >& GetDoorList() const {
     return mFilteredObjectLists[0]->GetObjects();
   }
+  const rstl::list< CEntity* >& GetDockList() const {
+    return mFilteredObjectLists[3]->GetObjects();
+  }
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
