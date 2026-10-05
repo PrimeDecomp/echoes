@@ -31,6 +31,7 @@ public:
   void Draw(const CStateManager& mgr) const;
   void Update(float dt, const CStateManager& mgr);
   float GetMessageTextAlpha() const;
+  const rstl::vector< SScanHierarchyNode >& GetHierarchy() const { return mHierarchy; }
 
 private:
   void InitializeFlatFrame(const CStateManager& mgr);
