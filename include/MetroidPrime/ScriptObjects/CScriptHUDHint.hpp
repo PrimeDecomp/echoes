@@ -35,6 +35,10 @@ public:
   CTexture* GetTexture() const;
   TTextureCoordinates GetTextureCoordinates() const;
 
+  float GetMinScreenSize() const { return mMinScreenSize; }
+  float GetMaxScreenSize() const { return mMaxScreenSize; }
+  float GetIconScale() const { return mIconScale; }
+
 private:
   rstl::optional_object< TLockedToken< CTexture > > mHudTexture;
   // Guessed names. The HUD renderer clamps the projected icon size to these limits.

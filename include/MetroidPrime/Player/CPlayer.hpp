@@ -217,6 +217,10 @@ public:
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
   const CVector3f& GetOrbitPoint() const { return mOrbitPoint; }
   TUniqueId GetOrbitTargetId() const { return mOrbitTargetId; }
+  EPlayerOrbitRequest GetOrbitRequest() const {
+    return static_cast< EPlayerOrbitRequest >(mOrbitRequest);
+  }
+  TUniqueId GetScanningObject() const { return mScanningObject; }
   TUniqueId GetOrbitNextTargetId() const { return mOrbitNextTargetId; }
   CMorphBall* GetMorphBall() { return mMorphBall; }
   const CMorphBall* GetMorphBall() const { return mMorphBall; }
@@ -285,6 +289,7 @@ public:
   void UpdateVisorState(const CFinalInput& input, float dt, CStateManager& mgr);
   void UpdateVisorTransition(float dt, CStateManager& mgr);
   void UpdateCrosshairsState(const CFinalInput& input);
+  bool GetDrawCrosshairs() const { return mDrawCrosshairs; }
   void UpdateFrozenState(const CFinalInput& input, CStateManager& mgr);
   bool GetFrozenState() const;
   void Freeze(float timeout, CStateManager& mgr, CAssetId steamTexture, uint sfx,

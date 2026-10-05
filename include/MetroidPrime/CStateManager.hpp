@@ -280,6 +280,9 @@ public:
   const rstl::list< CEntity* >& GetDockList() const {
     return mFilteredObjectLists[3]->GetObjects();
   }
+  const rstl::list< CEntity* >& GetGrapplePointList() const {
+    return mFilteredObjectLists[5]->GetObjects();
+  }
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);

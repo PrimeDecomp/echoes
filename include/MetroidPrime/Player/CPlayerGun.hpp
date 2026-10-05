@@ -222,6 +222,13 @@ public:
   void EventHandler(CStateManager& mgr, int message, float dt);
 
   int GetAbsorbedPhazonShots() const { return mAbsorbedPhazonShots; }
+  float GetSeekerChargeFactor() const { return mSeekerChargeFactor; }
+  int GetMaxSeekerTargets() const { return mMaxSeekerTargets; }
+  const rstl::reserved_vector< rstl::pair< TUniqueId, float >, 5 >& GetSeekerTargets() const {
+    return mSeekerTargets;
+  }
+  float GetAllSeekersLockedTime() const { return mAllSeekersLockedTime; }
+  CPlayerState::EBeamId GetPrimaryWeaponId() const { return mCurrentBeamId; }
 
 private:
   typedef void (CPlayerGun::*RenderFunc)(const CStateManager&, const CVector3f&, bool,
