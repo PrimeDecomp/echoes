@@ -67,6 +67,7 @@ public:
   int GetSplashIndex(float scale) const;
   const CColor& GetSplashColor() const { return mSplashColor; }
   const CFluidPlaneCPU& GetFluidPlane() const { return *mFluidPlane; }
+  float GetMorphFactor() const { return mMorphFactor; }
   const CColor& GetUnderwaterFogColor() const { return mInsideFogColor; }
   float GetFogNoGravSuitDist() const { return x310_; }
   float GetFogNoGravSuitFactor() const { return x314_; }

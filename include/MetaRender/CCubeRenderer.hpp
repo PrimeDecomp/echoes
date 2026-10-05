@@ -297,6 +297,7 @@ public:
   bool GetReflectionFlag() const { return mReflectionDirty; }
   void SetReflectionFlag() { mReflectionDirty = true; }
   const CTexture& GetSphereRamp() const { return mSphereRamp; } // Guessed name
+  const CTexture& GetBlackTexture() const { return mBlackTex; }
   const CTexture& GetAlphaMaskRamp() const { return mAlphaMaskRamp; }
   int GetMaterialMode() const { return mCurrentMaterialMode; }
   static CCubeRenderer* That() { return sRenderer; }
