@@ -392,7 +392,70 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
                                        CPhysicsActor& actor, const CCollisionPrimitive& primitive,
                                        const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                                        float dtFraction, uint failsafeTicks, float impulseScale) {
-  // TODO: Recover the native stuck/partial-update counters and last motion-state interfaces.
+  actor.MoveCollisionPrimitive(CVector3f::Zero());
+  if (dtFraction > 0.5f) {
+    actor.SetNumTicksPartialUpdate(actor.GetNumTicksPartialUpdate() + 1);
+  }
+
+  if (actor.GetNumTicksPartialUpdate() <= 1 &&
+      !DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                                     actor.GetMaterialFilter(), nearList)) {
+    actor.SetLastNonCollidingState(actor.GetMotionState());
+    actor.SetNumTicksStuck(0);
+    return;
+  }
+
+  actor.SetNumTicksPartialUpdate(0);
+  actor.SetNumTicksStuck(actor.GetNumTicksStuck() + 1);
+  if (actor.GetNumTicksStuck() < failsafeTicks) {
+    return;
+  }
+
+  const CMotionState oldState = actor.GetMotionState();
+  const CMotionState lastState = actor.GetLastNonCollidingState();
+  actor.SetMotionState(lastState);
+  if (!DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                                     actor.GetMaterialFilter(), nearList)) {
+    actor.SetLastNonCollidingState(
+        CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
+                     0.5f * lastState.GetVelocity(),
+                     0.5f * lastState.GetAngularMomentum()));
+    actor.SetNumTicksStuck(0);
+    return;
+  }
+
+  CVector3f recoveryImpulse = CVector3f::Zero();
+  if (impulseScale != 0.f) {
+    CCollisionInfoList collisions;
+    TUniqueId id = kInvalidUniqueId;
+    DetectCollision_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
+                           actor.GetMaterialFilter(), nearList, id, collisions);
+    if (collisions.GetCount() != 0) {
+      CVector3f normal = CVector3f::Zero();
+      for (int i = 0; i < collisions.GetCount(); ++i) {
+        normal += collisions[i].GetNormalLeft();
+      }
+      if (normal.IsNonZero()) {
+        normal = normal.AsNormalized();
+      }
+      recoveryImpulse = actor.GetMass() * impulseScale * normal;
+    }
+  }
+
+  actor.SetMotionState(oldState);
+  const rstl::optional_object< CVector3f > displacement =
+      FindNonIntersectingVector(mgr, actor, primitive);
+  if (displacement.valid()) {
+    actor.SetMotionState(
+        CMotionState(oldState.GetTranslation() + *displacement, oldState.GetOrientation(),
+                     oldState.GetVelocity() + recoveryImpulse, oldState.GetAngularMomentum()));
+    actor.SetLastNonCollidingState(actor.GetMotionState());
+  } else {
+    actor.SetLastNonCollidingState(
+        CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
+                     0.5f * lastState.GetVelocity() + recoveryImpulse,
+                     0.5f * lastState.GetAngularMomentum()));
+  }
 }
 
 rstl::optional_object< CVector3f >

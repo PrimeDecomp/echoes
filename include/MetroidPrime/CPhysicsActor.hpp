@@ -172,6 +172,10 @@ public:
   void SetLastFloorPlaneNormal(const rstl::optional_object< CVector3f >& normal) {
     mLastFloorPlaneNormal = normal;
   }
+  uint GetNumTicksStuck() const { return mNumTicksStuck; }
+  void SetNumTicksStuck(uint count) { mNumTicksStuck = count; }
+  uint GetNumTicksPartialUpdate() const { return mNumTicksPartialUpdate; }
+  void SetNumTicksPartialUpdate(uint count) { mNumTicksPartialUpdate = count; }
 
   float GetCoefficientOfRestitutionModifier() const;
   void SetCoefficientOfRestitutionModifier(float modifier);
