@@ -20,6 +20,11 @@
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTev.h"
 #include "rstl/auto_ptr.hpp"
+#include "Collision/CCollidableAABox.hpp"
+#include "Collision/CMaterialFilter.hpp"
+#include "Collision/CInternalRayCastStructure.hpp"
+#include "Collision/CRayCastResult.hpp"
+#include "MetroidPrime/CGameCollision.hpp"
 
 // The target stores the largest finite single-precision value directly.
 static const float skMaximumBlockingHeight = 3.402823466e+38F;
@@ -391,7 +396,102 @@ void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
 void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
                                        const CTransform4f& camXf, const CTransform4f& xf,
                                        const CTransform4f& invXf) {
-  // TODO: Resolve ceilings, blocker triggers and water surfaces, then update splash visibility.
+  const CPlayer* player = mgr.GetPlayer(0);
+  const CVector3f playerPos = player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed
+                                  ? camXf.GetTranslation()
+                                  : player->GetBallPosition();
+  const CVector3f localPos = invXf * playerPos;
+  const CVector2i localPlayerPos(real_to_fixed8_8(localPos.GetX()),
+                                  real_to_fixed8_8(localPos.GetY()));
+  mLastBlockedGridIdx = -1;
+  mEnableSplash = false;
+
+  rstl::reserved_vector< TUniqueId, 1024 > blockList;
+  bool blockListBuilt = false;
+  int blockedGrids = 0;
+  for (int i = 0; i < mGrids.size(); ++i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    if (blockedGrids < 8 && grid.IsDirty()) {
+      if (type == kEFX_UnderwaterFlake || type == kEFX_Unknown5) {
+        grid.SetVisibility(rstl::pair< bool, float >(true, -skMaximumBlockingHeight));
+      } else {
+        const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+            CMaterialList(kMT_Solid, kMT_Trigger),
+            CMaterialList(kMT_ProjectilePassthrough, kMT_SeeThrough));
+        const CVector2i gridPos = grid.GetStart();
+        const CVector3f localGrid(fixed8_8_to_real(gridPos.GetX()),
+                                  fixed8_8_to_real(gridPos.GetY()), 0.f);
+        const CVector3f start = xf * localGrid + 500.f * CVector3f::Up();
+        const CVector3f down = CVector3f::Down();
+        if (type == kEFX_Unknown6 || type == kEFX_Unknown7) {
+          bool visible = CGameCollision::RayStaticLineOfSightTest(mgr, start, down, 1000.f,
+                                                                   filter);
+          if (visible) {
+            if (!blockListBuilt) {
+              BuildBlockObjectList(blockList, mgr);
+              blockListBuilt = true;
+            }
+            for (int j = 0; j < blockList.size(); ++j) {
+              const CScriptTrigger* trigger =
+                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(blockList[j]));
+              if (trigger == nullptr) {
+                continue;
+              }
+              const rstl::optional_object< CAABox > bounds = trigger->GetTouchBounds();
+              if (bounds) {
+                const CCollidableAABox box(*bounds, CMaterialList(kMT_Trigger));
+                const CInternalRayCastStructure ray(start, down, 1000.f,
+                                                    CTransform4f::Identity(), filter);
+                if (box.CastRayInternal(ray).IsValid()) {
+                  visible = false;
+                  break;
+                }
+              }
+            }
+          }
+          grid.SetVisibility(rstl::pair< bool, float >(visible, visible ? -10000.f : 0.f));
+        } else {
+          CRayCastResult best =
+              CGameCollision::RayStaticIntersection(mgr, start, down, 1000.f, filter);
+          if (best.IsValid()) {
+            if (!blockListBuilt) {
+              BuildBlockObjectList(blockList, mgr);
+              blockListBuilt = true;
+            }
+            for (int j = 0; j < blockList.size(); ++j) {
+              const CScriptTrigger* trigger =
+                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(blockList[j]));
+              if (trigger == nullptr) {
+                continue;
+              }
+              const rstl::optional_object< CAABox > bounds = trigger->GetTouchBounds();
+              if (bounds) {
+                const CCollidableAABox box(*bounds, CMaterialList(kMT_Trigger));
+                const CInternalRayCastStructure ray(start, down, 1000.f,
+                                                    CTransform4f::Identity(), filter);
+                const CRayCastResult hit = box.CastRayInternal(ray);
+                if (hit.IsValid() && hit.GetTime() < best.GetTime()) {
+                  best = hit;
+                }
+              }
+            }
+          }
+          grid.SetVisibility(rstl::pair< bool, float >(best.IsValid(), best.GetPoint().GetZ()));
+        }
+        ++blockedGrids;
+      }
+      grid.SetDirty(false);
+    }
+
+    const CVector2i end = grid.GetStart() + grid.GetSize();
+    if (localPlayerPos.GetX() >= grid.GetStart().GetX() &&
+        localPlayerPos.GetY() >= grid.GetStart().GetY() && localPlayerPos.GetX() < end.GetX() &&
+        localPlayerPos.GetY() < end.GetY() && grid.GetVisibility().first &&
+        grid.GetVisibility().second <= playerPos.GetZ()) {
+      mEnableSplash = true;
+      mLastBlockedGridIdx = i;
+    }
+  }
 }
 
 void CEnvFxManager::UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces) {
