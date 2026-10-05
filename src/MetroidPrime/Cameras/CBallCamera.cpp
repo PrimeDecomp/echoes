@@ -1173,7 +1173,7 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
     }
   } else {
     float targetColliderMag = 1.f;
-    if (mPrevClearLOS && player->GetMoveSpeed() < 1.f) {
+    if (mPrevClearLOS && player->GetMoveSpeed() < 1.2f) {
       targetColliderMag = 0.25f;
     }
     mColliderMag += 2.f * ((targetColliderMag - mColliderMag) * dt);
@@ -1903,14 +1903,14 @@ void CBallCamera::Think(float dt, CStateManager& mgr) {
         UpdateUsingSpline(dt, mgr);
       }
       break;
-    case kBCB_FixedTransform: {
-      const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(
-          CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr));
-      if (hint != nullptr) {
-        SetTransform(hint->GetTransform());
-      }
+    case kBCB_FixedTransform:
+      SetTransform(mFixedTransform);
       break;
-    }
+    case kBCB_Unknown7:
+      mLookPos += mBallDelta;
+      mLookPosAhead += mBallDelta;
+      mFixedLookPos += mBallDelta;
+      break;
     default:
       break;
     }
