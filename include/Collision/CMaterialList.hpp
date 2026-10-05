@@ -2,6 +2,7 @@
 #define _CMATERIALLIST
 
 #include "types.h"
+#include "rstl/construct.hpp"
 
 class CInputStream;
 
@@ -132,5 +133,9 @@ private:
   // static CMaterialList kEverything;
 };
 CHECK_SIZEOF(CMaterialList, 0x8)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMaterialList)
+}
 
 #endif // _CMATERIALLIST
