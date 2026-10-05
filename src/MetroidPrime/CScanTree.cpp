@@ -11,7 +11,11 @@
 #include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeCategory.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeMenu.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeScan.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeSlider.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEditorProperties.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeCategory.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeInventory.hpp"
@@ -68,9 +72,70 @@ struct SlideShowScanIdLess {
 CScanTreeInventory::~CScanTreeInventory() {}
 
 CScanTreeNode* LoadScanTreeNode(uint type, int* id, const rstl::vector< int >& children,
-                                CInputStream& input) {}
+                                CInputStream& input) {
+  switch (type) {
+  case 'SCND': {
+    int nodeId = *id;
+    return LoadScanTreeCategory(&nodeId, children, input);
+  }
+  case 'SCSN': {
+    int nodeId = *id;
+    return LoadScanTreeScan(&nodeId, input);
+  }
+  case 'SCIN': {
+    int nodeId = *id;
+    return LoadScanTreeInventory(&nodeId, input);
+  }
+  case 'SCMN': {
+    int nodeId = *id;
+    return LoadScanTreeMenu(&nodeId, input);
+  }
+  case 'SCSL': {
+    int nodeId = *id;
+    return LoadScanTreeSlider(&nodeId, input);
+  }
+  default:
+    return nullptr;
+  }
+}
 
-void ReadScanTree(CInputStream& input, CScanTree& tree) {}
+void ReadScanTree(CInputStream& input, CScanTree& tree) {
+  if (input.Get< uint >() != 'TREE') {
+    return;
+  }
+  tree.SetRootNode(input.Get< int >());
+  if (input.Get< uchar >() != 1) {
+    return;
+  }
+  int nodeCount = input.Get< int >();
+  tree.ReserveNodes(nodeCount);
+  while (nodeCount-- != 0) {
+    const uint type = input.Get< uint >();
+    int remaining = input.Get< ushort >() - 6;
+    int id = input.Get< int >();
+    rstl::vector< int > children;
+    int childCount = input.Get< ushort >();
+    children.reserve(childCount);
+    for (int i = 0; i < childCount; i++) {
+      input.Get< uint >();
+      input.Get< uint >();
+      children.push_back_unsafe(static_cast< ushort >(input.Get< uint >()));
+      remaining -= 12;
+    }
+    const uint start = input.GetReadPosition();
+    input.Get< uint >();
+    input.Get< ushort >();
+    int loadId = id;
+    CScanTreeNode* node = LoadScanTreeNode(type, &loadId, children, input);
+    if (node != nullptr) {
+      tree.AddNode(node);
+    }
+    remaining -= input.GetReadPosition() - start;
+    for (int i = 0; i < remaining; ++i) {
+      input.Get< uchar >();
+    }
+  }
+}
 
 CScanTreeNode::CScanTreeNode(int id, const SLdrTransform& transform, CAssetId nameStringTable,
                              const rstl::string& nameStringName)
@@ -478,7 +543,7 @@ void CScanTree::InitializeHierarchy() {
     if ((*it)->GetNodeType() == CScanTreeNode::kNT_Category) {
       const rstl::rc_ptr< CScanTreeCategory > category(*it);
       const int childCount = category->GetChildCount();
-      for (int i = 0; i < childCount; ++i) {
+      for (int i = 0; i < childCount; i++) {
         const int child = category->GetChild(i);
         mNodes[child]->SetParentNode(category->GetId());
         if (category->GetSelectedChild() == -1 && mNodes[child]->IsVisible()) {
@@ -501,7 +566,7 @@ bool CScanTree::UpdateNodeVisibility(CStateManager& mgr, int node) {
   if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       if (UpdateNodeVisibility(mgr, category->GetChild(i))) {
         visible = true;
       }
@@ -528,7 +593,7 @@ void CScanTree::RefreshVisibility(CStateManager& mgr) {
   if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(root);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       const int index = category->GetChild(i);
       const rstl::rc_ptr< CScanTreeNode > child = mNodes[index];
       if (child->GetNameStringName() == kLogbookCategoryName ||
@@ -553,7 +618,7 @@ rstl::pair< uint, uint > CScanTree::GetScanCounts() const {
   if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(root);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       const rstl::rc_ptr< CScanTreeNode > child = mNodes[category->GetChild(i)];
       if (child->GetNameStringName() == kLogbookCategoryName) {
         const uint total = child->GetDescendantCount();
@@ -570,7 +635,7 @@ void CScanTree::RandomizeChildPositions(int node) {
   if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       const int child = category->GetChild(i);
       const float angle = mRandom.Range(0.f, 2.f * M_PIF);
       const float height = mRandom.Range(-branchLength, branchLength);
@@ -593,7 +658,7 @@ void CScanTree::InitializeNodePositions(int node) {
   if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       const int child = category->GetChild(i);
       const float angle = mRandom.Range(0.f, 2.f * M_PIF);
       const float height = mRandom.Range(-branchLength, branchLength);
@@ -607,7 +672,7 @@ void CScanTree::InitializeNodePositions(int node) {
       mNodes[child]->SetPosition(position);
       mNodes[child]->SetDisplayPosition(position);
     }
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       InitializeNodePositions(category->GetChild(i));
     }
   }
@@ -836,7 +901,7 @@ void CScanTree::UpdateViewedCategories() {
   if (root->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(root);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       const int index = category->GetChild(i);
       const rstl::rc_ptr< CScanTreeNode > child = mNodes[index];
       if (child->GetNameStringName() == kLogbookCategoryName ||
@@ -856,7 +921,7 @@ bool CScanTree::UpdateCategoryViewed(int node) {
   if (treeNode->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(treeNode);
     const int childCount = category->GetChildCount();
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0; i < childCount; i++) {
       if (!UpdateCategoryViewed(category->GetChild(i))) {
         allViewed = false;
       }
@@ -946,9 +1011,21 @@ CVector3f CScanTree::CalculateNeighborForce(const rstl::rc_ptr< CScanTreeCategor
 }
 
 CScanTreeCategory* LoadScanTreeCategory(int* id, const rstl::vector< int >& children,
-                                        CInputStream& input) {}
+                                        CInputStream& input) {
+  SLdrScanTreeCategory sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeCategory.inc"
 
-CScanTreeScan* LoadScanTreeScan(int* id, CInputStream& input) {}
+  return rs_new CScanTreeCategory(*id & 0xffff, children, sldrThis.editorProperties.transform,
+                                  sldrThis.nodeName, sldrThis.stringName);
+}
+
+CScanTreeScan* LoadScanTreeScan(int* id, CInputStream& input) {
+  SLdrScanTreeScan sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeScan.inc"
+
+  return rs_new CScanTreeScan(*id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName,
+                              sldrThis.scannableInfo.scannableInfo0, sldrThis.stringName);
+}
 
 CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
   SLdrScanTreeInventory sldrThis;
@@ -962,6 +1039,23 @@ CScanTreeInventory* LoadScanTreeInventory(int* id, CInputStream& input) {
                                    sldrThis.stringName);
 }
 
-CScanTreeMenu* LoadScanTreeMenu(int* id, CInputStream& input) {}
+CScanTreeMenu* LoadScanTreeMenu(int* id, CInputStream& input) {
+  SLdrScanTreeMenu sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeMenu.inc"
 
-CScanTreeSlider* LoadScanTreeSlider(int* id, CInputStream& input) {}
+  return rs_new CScanTreeMenu(
+      *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName, sldrThis.stringName,
+      static_cast< CScanTreeMenu::ESetting >(sldrThis.unknown_0x0261a4e0), sldrThis.menuStringTable,
+      sldrThis.stringTableOption1, sldrThis.menuValue1, sldrThis.stringTableOption2,
+      sldrThis.menuValue2, sldrThis.stringTableOption3, sldrThis.menuValue3,
+      sldrThis.stringTableOption4, sldrThis.menuValue4);
+}
+
+CScanTreeSlider* LoadScanTreeSlider(int* id, CInputStream& input) {
+  SLdrScanTreeSlider sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrScanTreeSlider.inc"
+
+  return rs_new CScanTreeSlider(*id & 0xffff, sldrThis.editorProperties.transform,
+                                sldrThis.nodeName, sldrThis.stringName,
+                                static_cast< CScanTreeSlider::ESetting >(sldrThis.unknown_0x0261a4e0));
+}
