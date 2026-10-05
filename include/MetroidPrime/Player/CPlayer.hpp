@@ -162,19 +162,13 @@ public:
     ushort mMultiplayerFreezeSfx;
   };
   enum ETurretState { kTS_None, kTS_Entering, kTS_Exiting, kTS_Active, kTS_Four, kTS_Ejected };
-  enum EPlayerFlag {
-    kPF_NoDamageLoopSfx = 2,
-    kPF_NoSafeZoneHealing = 0x80,
-    kPF_AimingAtProjectile = 0x20,
-    kPF_NoMorphBallDamageTimer = 0x40
-  };
 
   enum EBreakFrozenState { kBFS_Break, kBFS_BreakWithEffects, kBFS_Two };
   // Guessed state names; numeric values established by the Rezbit state handlers.
   enum ERezbitState { kRS_None, kRS_Infected, kRS_Recovering, kRS_Recovered };
   // Original Wii enum name; channel meanings remain unresolved on GameCube.
   enum EFootstepSfx { kFS_None, kFS_Left, kFS_Right };
-  enum EMultiPlayerSoundPan { kMSP_0, kMSP_1, kMSP_2, kMSP_3, kMSP_4 };
+  enum EMultiPlayerSoundPan { kMSP_0, kMSP_1, kMSP_2, kMSP_3, kMSP_4, kMSP_Player = 4 };
 
   CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
           CAssetId stateMachine, float mass, float stepUp, float stepDown, float ballRadius,
@@ -275,8 +269,8 @@ public:
   void SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManager& mgr);
   const CCameraManager* GetCameraManager() const { return mCameraManager; }
   CCameraManager* CameraManager() { return mCameraManager; }
-  bool IsOutOfBallLookAtHintActor() const { return (mPlayerFlags & 1) != 0; }
-  bool IsOverrideRadarRadius() const { return (mPlayerFlags & 4) != 0; }
+  bool IsOutOfBallLookAtHintActor() const { return mOutOfBallLookAtHintActor; }
+  bool IsOverrideRadarRadius() const { return mOverrideRadarRadius; }
   float GetRadarXYRadiusOverride() const { return mRadarXYRadiusOverride; }
   float GetRadarZRadiusOverride() const { return mRadarZRadiusOverride; }
   float GetEchoPulsePhase() const { return mEchoPulsePhase; }    // Guessed name
@@ -364,6 +358,7 @@ public:
   void UpdateArmAndGunTransforms(float dt, CStateManager& mgr);
   void ForceGunOrientation(const CTransform4f& transform, CStateManager& mgr);
   void UpdateGunAlpha(const CStateManager& mgr);
+  void UpdateDebugCamera(CStateManager& mgr);
   bool HasTransitionBeamModel() const;
   void AsyncLoadSuit(CStateManager& mgr);
   void UpdateWaterSurfaceCameraBias(CStateManager& mgr);
@@ -581,10 +576,8 @@ public:
   bool AutoFireHeld(const CFinalInput& input) const;
   bool FireBeamPressed(const CFinalInput& input) const;
   bool FireBeamHeld(const CFinalInput& input) const;
-  bool IsAligningGrappleSwingTurn() const { return (mPlayerFlags & 0x10) != 0; }
-  void SetAligningGrappleSwingTurn(bool aligning) {
-    mPlayerFlags = (mPlayerFlags & ~0x10) | (aligning ? 0x10 : 0);
-  }
+  bool IsAligningGrappleSwingTurn() const { return mAligningGrappleSwingTurn; }
+  void SetAligningGrappleSwingTurn(bool aligning) { mAligningGrappleSwingTurn = aligning; }
   bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
   void ResetPlayerHintState(CStateManager& mgr);
   void CalculatePlayerControlDirection(CStateManager& mgr);
@@ -715,7 +708,7 @@ private:
   rstl::single_ptr< CPlayerGun > mGun; // 0xebc
   float mGunAlpha;                     // 0xec0
   CModelFlags mPlayerDrawFlags;
-  int xed0_; // 0xed0
+  int mTransitionBeamShader;
   rstl::single_ptr< CPlayerTargeting > mTargeting;
   rstl::single_ptr< CPlayerBodyController > mBodyController;
   CPlayerKnockBackMgr mKnockBackManager;
@@ -809,11 +802,18 @@ private:
   bool mInterpolatingControlDir : 1;
   bool mOutOfBallLookAtHint : 1;
   bool mIgnoreDarkWorldDamage : 1;
-  uchar mPlayerFlags;
-  bool x126b_24_ : 1;
+  bool mNoSafeZoneHealing : 1;
+  bool mNoMorphBallDamageTimer : 1;
+  bool mAimingAtProjectile : 1;
+  bool mAligningGrappleSwingTurn : 1;
+  bool mNewScanScanning : 1;
+  bool mOverrideRadarRadius : 1;
+  bool mNoDamageLoopSfx : 1;
+  bool mOutOfBallLookAtHintActor : 1;
+  bool mModelDepthUpdateEnabled : 1; // Guessed name; controls model depth writes in PreRender.
   bool mHoldScreenFilterAlpha : 1;
   bool x126b_26_ : 1; // Fluid type 2; semantic name unresolved (see Dynamics research).
-  bool x126b_27_ : 1;
+  bool mBeamParticleDescriptionsInitialized : 1;
   bool mDeathRenderingSuppressed : 1; // Guessed name; suppresses gun and actor rendering.
   bool mDeathFadeEnabled : 1;
   bool mUseAlternateBeam : 1;
@@ -842,7 +842,7 @@ private:
   float mRadarZRadiusOverride;
   float mAttachedActorStruggle;
   int mFramesSinceDamageSfx;
-  float x12e0_;
+  float mSamusExhaustedVoiceTimer;
   float mDamageColorTimer;
   uint x12e8_;
   uint x12ec_;

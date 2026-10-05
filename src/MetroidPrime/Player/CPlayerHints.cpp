@@ -111,10 +111,10 @@ void CPlayer::ResetPlayerHintState(CStateManager& mgr) {
   mExtendTargetDistance = false;
   mOutOfBallLookAtHint = false;
   mSpiderBallControlXY = false;
-  mPlayerFlags &= ~1;
+  mOutOfBallLookAtHintActor = false;
   mIgnoreDarkWorldDamage = false;
-  mPlayerFlags &= ~0x80;
-  mPlayerFlags &= ~0x40;
+  mNoSafeZoneHealing = false;
+  mNoMorphBallDamageTimer = false;
   mLandingStrikePending = false;
   mMorphBall->SetBoostEnabled(true);
   ResetControlDirectionInterpolation();
@@ -137,10 +137,10 @@ bool CPlayer::SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mg
   mExtendTargetDistance = (hint.GetOverrideFlags() & 4) != 0;
   mOutOfBallLookAtHint = (hint.GetOverrideFlags() & 8) != 0;
   mSpiderBallControlXY = (hint.GetOverrideFlags() & 0x10) != 0;
-  mPlayerFlags = (mPlayerFlags & ~1) | ((hint.GetOverrideFlags() & 0x4000) ? 1 : 0);
+  mOutOfBallLookAtHintActor = (hint.GetOverrideFlags() & 0x4000) != 0;
   mIgnoreDarkWorldDamage = (hint.GetOverrideFlags() & 0x8000) != 0;
-  mPlayerFlags = (mPlayerFlags & ~0x80) | ((hint.GetOverrideFlags() & 0x10000) ? 0x80 : 0);
-  mPlayerFlags = (mPlayerFlags & ~0x40) | ((hint.GetOverrideFlags() & 0x20000) ? 0x40 : 0);
+  mNoSafeZoneHealing = (hint.GetOverrideFlags() & 0x10000) != 0;
+  mNoMorphBallDamageTimer = (hint.GetOverrideFlags() & 0x20000) != 0;
   mMorphBall->SetBoostEnabled(!(hint.GetOverrideFlags() & 0x100));
 
   bool switchedVisor = false;
