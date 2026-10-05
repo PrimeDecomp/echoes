@@ -448,11 +448,10 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
                          oldState.GetVelocity() + recoveryImpulse, oldState.GetAngularMomentum()));
         actor.SetLastNonCollidingState(actor.GetMotionState());
       } else {
-        actor.SetMotionState(
+        actor.SetLastNonCollidingState(
             CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
                          0.5f * lastState.GetVelocity() + recoveryImpulse,
                          lastState.GetAngularMomentum() * 0.5f));
-        actor.SetLastNonCollidingState(actor.GetMotionState());
       }
     }
   } else {
@@ -671,7 +670,7 @@ void CGameCollision::MoveAndCollide(CStateManager& mgr, CPhysicsActor& actor, fl
                                           collisions, backfaced);
         if (backfaced.GetCount() != 0) {
           collisionFilter.Filter(backfaced, filtered);
-          if (filtered.GetCount() == 0 && isPlayer) {
+          if (filtered.GetCount() == 0 && actor.GetMaterialList().HasMaterial(kMT_Player)) {
             const CMotionState lastState = actor.GetLastNonCollidingState();
             actor.SetMotionState(
                 CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
@@ -722,6 +721,7 @@ void CGameCollision::MoveAndCollide(CStateManager& mgr, CPhysicsActor& actor, fl
   }
   actor.ClearForcesAndTorques();
   actor.MoveCollisionPrimitive(CVector3f::Zero());
+  cached = actor.GetCollisionCache();
   if (cached != nullptr && localCache && !skipStaticCache) {
     *cached = *localCache;
   }
