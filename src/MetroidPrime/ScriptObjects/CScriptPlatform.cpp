@@ -297,7 +297,7 @@ void CScriptPlatform::PreThink(float dt, CStateManager& mgr) {
     return;
   }
   if (x48d_25_) {
-    fn_800a0200(mInitialTime, mgr);
+    ResetMotion(mInitialTime, mgr);
     x48d_25_ = false;
   }
   if (!mMotionActive && !mMotionTransformed && x450_ == kInvalidUniqueId &&
@@ -885,7 +885,7 @@ CQuaternion CScriptPlatform::CalculateRotationDelta() {
   return CQuaternion::FromMatrix(delta);
 }
 
-void CScriptPlatform::fn_800a0200(float time, CStateManager& mgr) {
+void CScriptPlatform::ResetMotion(float time, CStateManager& mgr) {
   CTransform4f xf = mInitialTransform;
   xf.SetTranslation(GetTranslation());
   CActor::SetTransform(xf);
@@ -898,7 +898,7 @@ void CScriptPlatform::fn_800a0200(float time, CStateManager& mgr) {
   }
 }
 
-void CScriptPlatform::fn_8009f4e4(const CTransform4f& xf) {
+void CScriptPlatform::SetTransformIfNoPositionSpline(const CTransform4f& xf) {
   if (!mSplineController.get() || mSplineController->GetPositionKnotCount() == 0) {
     CActor::SetTransform(xf);
     mMotionTransformed = true;

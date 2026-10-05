@@ -64,10 +64,10 @@ public:
                            CStateManager& mgr) const;
   virtual CQuaternion Move(float dt, CStateManager& mgr);
 
-  void fn_800a0200(float time, CStateManager& mgr);
+  void ResetMotion(float time, CStateManager& mgr); // Reconstructed name.
   CQuaternion CalculateRotationDelta(); // Guessed name
   void SetTransformExplicitly(const CTransform4f& xf);
-  void fn_8009f4e4(const CTransform4f& xf);
+  void SetTransformIfNoPositionSpline(const CTransform4f& xf); // Reconstructed name.
   bool IsSlave(TUniqueId id) const;
   bool RemoveRider(TUniqueId id); // Guessed name
   bool IsRider(TUniqueId id) const;
