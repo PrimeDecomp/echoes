@@ -1,23 +1,23 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 
-#include "MetroidPrime/Player/CPlayer.hpp"
-#include "MetroidPrime/CCameraManager.hpp"
-#include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptCameraPitch.hpp"
-#include "MetroidPrime/TCastTo.hpp"
-#include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "Kyoto/Particles/CGenDescription.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CMain.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptCameraPitch.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
-#include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
-#include "Kyoto/Audio/CSfxManager.hpp"
-#include "Kyoto/Particles/CGenDescription.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 
@@ -59,7 +59,9 @@ void CFirstPersonCamera::UpdateElevation(CStateManager& mgr) {
 }
 
 void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
-  if (gpMain->IsMaxSpeed()) { return; }
+  if (gpMain->IsMaxSpeed()) {
+    return;
+  }
   CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetWatchedObject()));
   if (player == nullptr) {
     SetTransform(CTransform4f::Identity());
@@ -76,7 +78,7 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
   if (player->IsInFreeLook()) {
     const float freeLookPitch = player->GetFreeLookAngleX();
     float angle = mPitch + freeLookPitch;
-    if (fabs(freeLookPitch) >= 0.00001f) {
+    if (!CMath::IsEpsilon(freeLookPitch, 0.f, 0.00001f)) {
       if (freeLookPitch <= 0.f) {
         angle = (mPitch + tweak->GetVerticalFreeLookAngleVel()) *
                     (freeLookPitch / tweak->GetVerticalFreeLookAngleVel()) +
@@ -184,6 +186,9 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
         newFront.Normalize();
       }
       angularStep *= tweak->GetFirstPersonCameraSpeed();
+      if (mPitchTransitionTimer > 0.f) {
+        angularStep *= 0.2f;
+      }
       float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
       float t = acosf(angle) / angularStep;
       t = CMath::Clamp(0.f, t, 1.f);
@@ -241,7 +246,8 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
       float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
       float t = acosf(angle) / scaledAngle.AsRadians();
       t = CMath::Clamp(0.f, t, 1.f);
-      gunRotation = CQuaternion::LookAt(newFront, lookDir, CRelAngle::FromRadians(scaledAngle.AsRadians() * t));
+      gunRotation = CQuaternion::LookAt(newFront, lookDir,
+                                        CRelAngle::FromRadians(scaledAngle.AsRadians() * t));
       break;
     }
     case CPlayer::kOS_ForcedOrbitObject:
@@ -314,10 +320,10 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     angularStep *= tweak->GetFreeLookSpeed();
     float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
     if (CMath::AbsF(angle) < 0.999999f) {
-      const float damping = CMath::EaseInOut(1.f - angle, CMath::kET_Quadratic, 0.8f, 0.4f,
-                                             2.f, 4.f, 1.f);
-      gunRotation = CQuaternion::LookAt(newFront, lookDir,
-                                        CRelAngle::FromRadians(angularStep * damping));
+      const float damping =
+          CMath::EaseInOut(1.f - angle, CMath::kET_Quadratic, 0.f, 0.8f, 0.4f, 2.f, 4.f);
+      gunRotation =
+          CQuaternion::LookAt(newFront, lookDir, CRelAngle::FromRadians(angularStep * damping));
     }
   }
 
@@ -377,7 +383,7 @@ void CFirstPersonCamera::Think(float dt, CStateManager& mgr) {
     }
     if (player->GetMorphballTransitionState() != CPlayer::kMS_Unmorphed) {
       if (player->GetMorphballTransitionState() != CPlayer::kMS_Unmorphing ||
-          !CMath::IsEpsilon(player->GetMorphBallTransitionProgress(), 1.f, 0.00001f)) {
+          !CMath::IsEpsilon(player->GetMorphBallTransitionFactor(), 1.f, 0.00001f)) {
         return;
       }
     }
@@ -432,10 +438,9 @@ void CFirstPersonCamera::UpdateFluidEffects(CStateManager& mgr) {
     // The original checks the visor effect before using the unmorph effect here.
     if (water->GetVisorRunoffEffect()) {
       mgr.AddObject(rs_new CHUDBillboardEffect(
-          rstl::optional_object< TToken< CGenDescription > >(
-              *water->GetUnmorphVisorRunoffEffect()),
-          rstl::optional_object_null(), mgr.AllocateUniqueId(), true,
-          rstl::string_l("WaterSheets"), CHUDBillboardEffect::GetNearClipDistance(mgr, GetControllerNumber()),
+          rstl::optional_object< TToken< CGenDescription > >(*water->GetUnmorphVisorRunoffEffect()),
+          rstl::optional_object_null(), mgr.AllocateUniqueId(), true, rstl::string_l("WaterSheets"),
+          CHUDBillboardEffect::GetNearClipDistance(mgr, GetControllerNumber()),
           CHUDBillboardEffect::GetScaleForPOV(mgr), GetControllerNumber(), CColor::White(),
           CVector3f::One(), CVector3f::Zero(), false));
     }
@@ -447,8 +452,8 @@ void CFirstPersonCamera::UpdateFluidEffects(CStateManager& mgr) {
     if (water->GetVisorRunoffEffect()) {
       mgr.AddObject(rs_new CHUDBillboardEffect(
           rstl::optional_object< TToken< CGenDescription > >(*water->GetVisorRunoffEffect()),
-          rstl::optional_object_null(), mgr.AllocateUniqueId(), true,
-          rstl::string_l("WaterSheets"), CHUDBillboardEffect::GetNearClipDistance(mgr, GetControllerNumber()),
+          rstl::optional_object_null(), mgr.AllocateUniqueId(), true, rstl::string_l("WaterSheets"),
+          CHUDBillboardEffect::GetNearClipDistance(mgr, GetControllerNumber()),
           CHUDBillboardEffect::GetScaleForPOV(mgr), GetControllerNumber(), CColor::White(),
           CVector3f::One(), CVector3f::Zero(), false));
     }

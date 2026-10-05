@@ -251,7 +251,6 @@ public:
   float GetEchoPulsePhase() const { return mEchoPulsePhase; }    // Guessed name
   uint GetEchoPulseCounter() const { return mEchoPulseCounter; } // Guessed name
   EPlayerCameraState GetCameraState() const { return mCameraState; }
-  float GetMorphBallTransitionProgress() const { return GetMorphBallTransitionFactor(); }
   bool GetDoneSidewaysDashing() const { return mDoneSidewaysDashing; }
 
   void Update(float dt, CStateManager& mgr);
