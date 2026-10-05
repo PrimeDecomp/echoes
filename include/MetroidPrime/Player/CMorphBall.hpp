@@ -104,7 +104,7 @@ public:
   void LoadMorphBallModel();
   static CModelData* GetMorphBallModel(const rstl::string& name, float radius);
   void TouchModel(const CStateManager& mgr) const;
-  void PreRender(CStateManager& mgr, const CFrustumPlanes& frustum);
+  void PreRender(CStateManager& mgr);
   void Render(const CStateManager& mgr, const CActorLights* lights) const;
   void RenderDamageEffects(const CStateManager& mgr, const CTransform4f& transform) const;
   void RenderScrewAttackJumpEffects() const; // Guessed name

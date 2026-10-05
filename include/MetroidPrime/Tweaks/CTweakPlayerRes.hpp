@@ -27,6 +27,12 @@ public:
   CAssetId GetBallTransitionBeamResIdMultiplayer(CPlayerState::EBeamId beam) const;
   CAssetId GetCinematicBeamResId(CPlayerState::EBeamId beam) const;
   CAssetId GetCinematicGrappleResId() const;
+  const CMayaSpline& GetMorphAlphaSpline() const { return mMorphAlphaSpline; }
+  const CMayaSpline& GetUnmorphAlphaSpline() const { return mUnmorphAlphaSpline; }
+  const CMayaSpline& GetMultiplayerMorphAlphaSpline() const { return mMultiplayerMorphAlphaSpline; }
+  const CMayaSpline& GetMultiplayerUnmorphAlphaSpline() const {
+    return mMultiplayerUnmorphAlphaSpline;
+  }
 
 private:
   void CacheResources();
@@ -60,10 +66,10 @@ private:
   CAssetId mCinematicGrapple;
   float mCinematicMoveOutofIntoPlayerDistance;
   // Guessed names
-  CMayaSpline mUnmorphAlphaSpline;
   CMayaSpline mMorphAlphaSpline;
-  CMayaSpline mMultiplayerUnmorphAlphaSpline;
+  CMayaSpline mUnmorphAlphaSpline;
   CMayaSpline mMultiplayerMorphAlphaSpline;
+  CMayaSpline mMultiplayerUnmorphAlphaSpline;
   CMayaSpline mMovementControlSpline;
   const SLdrTweakPlayerRes* mData;
 };

@@ -126,7 +126,7 @@ public:
 
   void SetIsDarkWorld(bool);
   CGameMode& GetGameMode();
-  const CGameMode& GetGameMode() const;
+  CGameMode& GetGameMode() const;
   void SetGameMode(CGameMode* mode);                                           // name inferred
   SPreviousGameResults& PreviousGameResults() { return mPreviousGameResults; } // Guessed name
   int GetGameModeType() const { return mPreviousGameResults.mGameMode; }       // name inferred

@@ -29,14 +29,17 @@
 #include "MetroidPrime/CPlayerHintManager.hpp"
 #include "MetroidPrime/CRumbleManager.hpp"
 #include "MetroidPrime/CSafeZoneManager.hpp"
+#include "MetroidPrime/CSlideShow.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CSteeringBehaviors.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
+#include "MetroidPrime/Factories/CScannableObjectInfo.hpp"
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 #include "MetroidPrime/HUD/CSamusHud.hpp"
+#include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CGrappleArm.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
@@ -2020,19 +2023,83 @@ void CPlayer::UpdateGunAlpha(const CStateManager& mgr) {
 }
 
 void CPlayer::AddToRenderer(const CStateManager& mgr) const {
-  // TODO: Recover the remaining target behavior.
+  if (mDeathRenderingSuppressed) {
+    return;
+  }
+
+  if (mCameraState != kCS_FirstPerson || mMorphBallState != kMS_Morphed) {
+    mGun->AddToRenderer(mgr);
+  }
+  CActor::AddToRenderer(mgr);
 }
 
 void CPlayer::PreRenderAllViewports(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  if (mMorphBallState == kMS_Morphed && !mMorphBall->InScrewAttackMode()) {
+    const CAABox& bounds = mMorphBall->GetRenderBounds(mgr);
+    SetOtherBounds(bounds);
+    SetRenderBounds(bounds);
+    UpdatePortalSystemState(mgr);
+  } else if (mRagDoll.get() && mRagDoll->IsPrimed()) {
+    mRagDoll->PreRenderAllViewports(*this, 0.2f);
+    UpdatePortalSystemState(mgr);
+  } else {
+    ModelData()->SetScale(CVector3f(1.8f, 1.8f, 1.8f));
+    CActor::PreRenderAllViewports(mgr);
+  }
 }
 
 void CPlayer::PreRender(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  if (GetUniqueId() == mgr.GetCurrentRenderPlayer()->GetUniqueId()) {
+    UpdateScreenSpaceMotion();
+  }
+  UpdateTransitionAlpha(mgr);
+  UpdatePlayerDrawFlags(mgr);
+
+  const bool screwAttack = mMorphBallState == kMS_Morphed && mMorphBall->InScrewAttackMode();
+  if (mRagDoll.get() && mRagDoll->IsPrimed()) {
+    mRagDoll->PreRender(GetTranslation(), *ModelData());
+  }
+
+  if (mMorphBallState == kMS_Morphed && mSpawnedMorphBallState == kMS_Unmorphed && !screwAttack) {
+    SetCalculateLighting(false);
+    mMorphBall->PreRender(mgr);
+  } else {
+    SetCalculateLighting(true);
+    if (mMorphBallState == kMS_Unmorphed) {
+      mGun->PreRender(mgr, mCameraManager->GetGlobalCameraTranslation(mgr, true));
+    }
+  }
+
+  if (mMorphBallState != kMS_Unmorphed && !mCameraManager->IsInCinematicCamera() &&
+      !mgr.IsMultiplayer() && mDeathTime <= 0.f) {
+    mMorphBall->CreateBallShadow();
+    mMorphBall->RenderToShadowTex(mgr);
+  } else {
+    mMorphBall->DeleteBallShadow();
+  }
+
+  const bool darkVisor = mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Dark &&
+                         mgr.GetCurrentRenderPlayer()->GetUniqueId() != GetUniqueId();
+  SetModelFlags(GetModelFlags().DepthCompareUpdate(!darkVisor, mModelDepthUpdateEnabled));
+  UpdateModelScale(mgr);
+  CActor::PreRender(mgr);
 }
 
-void CPlayer::RenderReflectedPlayer(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::UpdateModelScale(CStateManager& mgr) {
+  float scale = 1.8f;
+  if (mgr.GetCurrentRenderPlayer() == this) {
+    switch (mMorphBallState) {
+    case kMS_Unmorphed:
+    case kMS_Morphing:
+    case kMS_Unmorphing:
+      scale = 1.68f;
+      break;
+    }
+  }
+
+  const CVector3f modelScale(scale, scale, scale);
+  ModelData()->SetScale(modelScale);
+  mBallTransitionBeamModel->SetScale(modelScale);
 }
 
 void CPlayer::fn_80012040(CStateManager& mgr) {
@@ -2054,15 +2121,90 @@ void CPlayer::Render(const CStateManager& mgr) const {
 }
 
 void CPlayer::RenderGun(const CStateManager& mgr, const CVector3f& position) const {
-  // TODO: Recover the remaining target behavior.
+  if (mCameraManager->IsInCinematicCamera() || mTurretState == kTS_Active ||
+      mCameraManager->ShouldBypassInterpolationCamera()) {
+    return;
+  }
+
+  CGrappleArm* grappleArm = mGun->GrappleArm();
+  if (grappleArm && grappleArm->GetActive() &&
+      grappleArm->GetAnimState() != CGrappleArm::kAS_Done) {
+    grappleArm->RenderGrappleBeam(mgr, position, true);
+  }
+
+  bool isInScanVisor = mPlayerState->GetActiveVisor(mgr) == CPlayerState::kPV_Scan;
+  float visorTransitionFactor = mPlayerState->GetVisorTransitionFactor();
+  bool scanComplete = isInScanVisor && visorTransitionFactor >= 1.f;
+  if (scanComplete != true &&
+      ((mCameraManager->IsInFPCamera() && mCameraState == kCS_FirstPerson) ||
+       (mMorphBallState == kMS_Morphing &&
+        mGun->GetGunHolsterState() == CPlayerGunBase::kGHS_Holstering))) {
+    CModelFlags flags = mPlayerState->GetItemAmount(CPlayerState::kIT_Invisibility, true) != 0
+                            ? CModelFlags(GetModelFlags(), false, 0)
+                            : CModelFlags::AlphaBlended(mGunAlpha);
+    mGun->Render(mgr, position, flags);
+  }
 }
 
 void CPlayer::fn_80010f4c(const CStateManager& mgr) {
   // TODO: Recover the remaining target behavior.
 }
 
-void CPlayer::fn_80010bf4(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+void CPlayer::UpdateTransitionAlpha(CStateManager& mgr) {
+  if (mgr.GetCurrentRenderPlayer() == this) {
+    const EPlayerMorphBallState state = mMorphBallState;
+    const CGameCamera* camera = mCameraManager->GetCurrentCamera(mgr, false);
+    const float morphTime = mMorphTime;
+    switch (state) {
+    case kMS_Morphing: {
+      if (mgr.IsMultiplayer()) {
+        mAlpha = gpTweakPlayerRes->GetMultiplayerMorphAlphaSpline().EvaluateAt(morphTime);
+      } else {
+        mAlpha = gpTweakPlayerRes->GetMorphAlphaSpline().EvaluateAt(morphTime);
+      }
+
+      const float distance =
+          CMath::Limit((camera->GetTranslation() - GetEyePosition()).Magnitude() / 3.f, 1.f);
+      const float halfDuration = mMorphDuration * 0.5f;
+      if (morphTime > halfDuration) {
+        mAlpha = gpTweakPlayerRes->GetMorphAlphaSpline().EvaluateAt(
+            (1.f - distance) * mMorphDuration * 0.5f + halfDuration);
+      }
+      break;
+    }
+    case kMS_Unmorphing: {
+      if (mgr.IsMultiplayer()) {
+        mAlpha = gpTweakPlayerRes->GetMultiplayerUnmorphAlphaSpline().EvaluateAt(morphTime);
+      } else {
+        mAlpha = gpTweakPlayerRes->GetUnmorphAlphaSpline().EvaluateAt(morphTime);
+      }
+
+      const float distance =
+          CMath::Limit((camera->GetTranslation() - GetEyePosition()).Magnitude() / 3.f, 1.f);
+      const float halfDuration = mMorphDuration * 0.5f;
+      if (morphTime > halfDuration) {
+        mAlpha = gpTweakPlayerRes->GetUnmorphAlphaSpline().EvaluateAt(
+            (1.f - distance) * mMorphDuration * 0.5f + halfDuration);
+      }
+      break;
+    }
+    default:
+      mAlpha = 1.f;
+      break;
+    }
+  } else {
+    mAlpha = 1.f;
+  }
+
+  if (mMorphBallState == kMS_Unmorphing &&
+      mMorphBall->GetBallState() == CMorphBall::kBS_ScrewAttackRecovery) {
+    if (GetMorphBallTransitionFactor() > 0.5f) {
+      mAlpha = 1.f - 2.f * (GetMorphBallTransitionFactor() - 0.5f);
+    } else {
+      mAlpha = 1.f;
+    }
+  }
+  mAlpha = CMath::Clamp(0.f, mAlpha, 1.f);
 }
 
 bool CPlayer::GetCombatMode() const {
@@ -2091,7 +2233,54 @@ bool CPlayer::GetExplorationMode() const {
 }
 
 void CPlayer::SetScanningState(EPlayerScanState state, CStateManager& mgr) {
-  // TODO: Scan completion, camera and sound side effects.
+  if (mScanState == state) {
+    return;
+  }
+
+  mgr.SetGameState(CStateManager::kGS_Running);
+  if (mScanState == kSS_ScanComplete) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mScanningObject))) {
+      actor->OnScanStateChange(kSS_Done, mgr);
+    }
+  }
+
+  switch (state) {
+  case kSS_NotScanning:
+    if (mScanState == kSS_Scanning || mScanState == kSS_ScanComplete) {
+      if (mNewScanScanning) {
+        FinishNewScan(mgr);
+      }
+    }
+    mScanningTime = 0.f;
+    mCurScanTime = 0.f;
+    if (!GetTweakPlayer()->GetScanRetention()) {
+      if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOrbitTargetId()))) {
+        if (actor->GetMaterialList().HasMaterial(kMT_Scannable)) {
+          if (const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo()) {
+            if (mPlayerState->GetScanTime(scanInfo->GetScannableObjectId()) < 1.f) {
+              mPlayerState->SetScanTime(scanInfo->GetScannableObjectId(), 0.f);
+            }
+          }
+        }
+      }
+    }
+    mScanningObject = kInvalidUniqueId;
+    mScanningObjectId = kInvalidAssetId;
+    break;
+  case kSS_Scanning:
+    mScanningObject = GetOrbitTargetId();
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mScanningObject))) {
+      mScanningObjectId = actor->GetScannableObjectInfo()->GetScannableObjectId();
+    }
+    break;
+  case kSS_ScanComplete:
+    if (!mgr.IsMultiplayer() && GetTweakPlayer()->GetScanFreezesGame()) {
+      mgr.SetGameState(CStateManager::kGS_SoftPaused);
+    }
+    mScanningObject = GetOrbitTargetId();
+    break;
+  }
+
   mScanState = state;
 }
 
@@ -2125,7 +2314,106 @@ bool CPlayer::ValidateScanning(const CFinalInput& input, CStateManager& mgr) con
 }
 
 void CPlayer::UpdateScanningState(const CFinalInput& input, CStateManager& mgr, float dt) {
-  // TODO: Recover the remaining target behavior.
+  if (mPlayerState->GetCurrentVisor() != CPlayerState::kPV_Scan) {
+    SetScanningState(kSS_NotScanning, mgr);
+    return;
+  }
+
+  if (mScanState != kSS_NotScanning && mScanningObject != GetOrbitTargetId() &&
+      GetOrbitTargetId() != kInvalidUniqueId) {
+    SetScanningState(kSS_NotScanning, mgr);
+  }
+
+  switch (mScanState) {
+  case kSS_NotScanning:
+    if (ValidateScanning(input, mgr)) {
+      if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(GetOrbitTargetId()))) {
+        const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo();
+        if (TCastToPtr< CPlayer >(actor)) {
+          if (mPlayerState->GetItemAmount(CPlayerState::kIT_ScanVirus, true) == 0) {
+            return;
+          }
+          mPlayerState->SetScanTime(scanInfo->GetScannableObjectId(), 0.f);
+        }
+
+        float scanTime = mPlayerState->GetScanTime(scanInfo->GetScannableObjectId());
+        if (scanTime >= 1.f) {
+          mNewScanScanning = false;
+          scanTime = 1.f;
+        } else {
+          mNewScanScanning = true;
+        }
+
+        SetScanningState(kSS_Scanning, mgr);
+        mScanningTime = scanTime * scanInfo->GetTotalDownloadTime();
+        mCurScanTime = 0.f;
+      }
+    }
+    break;
+  case kSS_Scanning:
+    if (ValidateScanning(input, mgr)) {
+      if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(GetOrbitTargetId()))) {
+        if (const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo()) {
+          if (mScanningObjectId != scanInfo->GetScannableObjectId()) {
+            mScanningTime = 0.f;
+            mCurScanTime = 0.f;
+            mScanningObjectId = scanInfo->GetScannableObjectId();
+          }
+
+          float totalTime = scanInfo->GetTotalDownloadTime();
+          mScanningTime = rstl::min_val(mScanningTime + dt, totalTime);
+          mCurScanTime += dt;
+          mPlayerState->SetScanTime(scanInfo->GetScannableObjectId(), mScanningTime / totalTime);
+          if (mScanningTime >= totalTime && mCurScanTime >= gpTweakGui->GetScanSidesStartTime()) {
+            SetScanningState(kSS_ScanComplete, mgr);
+            if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
+              const int hackedPlayers =
+                  player->GetPlayerState()->GetItemAmount(CPlayerState::kIT_HackedEffect, true);
+              player->GetPlayerState()->SetItemAmount(CPlayerState::kIT_HackedEffect,
+                                                      hackedPlayers | (1 << GetPlayerIndex()));
+              if (mgr.IsMultiplayer()) {
+                const CGameState& gameState = *gpGameState;
+                CGMMultiplayer& gameMode = static_cast< CGMMultiplayer& >(gameState.GetGameMode());
+                gameMode.OnPlayerScanned(mgr, player->GetUniqueId(), GetUniqueId());
+              }
+
+              bool allScanned = true;
+              for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+                if (i != GetPlayerIndex()) {
+                  CPlayerState* playerState = mgr.GetPlayer(i)->GetPlayerState();
+                  if (!(playerState->GetItemAmount(CPlayerState::kIT_HackedEffect, true) &
+                        (1 << GetPlayerIndex()))) {
+                    allScanned = false;
+                    break;
+                  }
+                }
+              }
+
+              if (allScanned) {
+                mPlayerState->StartTransitionToVisor(CPlayerState::kPV_Combat);
+                mPlayerState->ReInitializePowerUp(CPlayerState::kIT_ScanVisor, 0);
+                CPlayerState::CPowerUp& virus = mPlayerState->PowerUp(CPlayerState::kIT_ScanVirus);
+                virus.mTimeLeft = -1.f;
+                virus.mAmount = 0;
+                virus.mCapacity = 0;
+                mgr.DisplayAlertAboutOutOfAmmo(*this, CPlayerState::kIT_ScanVirus);
+              }
+            }
+          }
+        }
+      } else {
+        SetScanningState(kSS_NotScanning, mgr);
+      }
+    } else {
+      SetScanningState(kSS_NotScanning, mgr);
+    }
+    break;
+  case kSS_ScanComplete:
+    if (!ValidateScanning(input, mgr)) {
+      SetScanningState(kSS_NotScanning, mgr);
+    }
+    break;
+  }
 }
 
 void CPlayer::Touch(CActor& actor, CStateManager& mgr) {
@@ -2626,7 +2914,31 @@ void CPlayer::GetDamageSfx(float damage, TUniqueId source, TUniqueId owner, EWea
 float CPlayer::GetAttachedActorStruggle() const { return mAttachedActorStruggle; }
 
 void CPlayer::FinishNewScan(CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  if (mgr.IsMultiplayer()) {
+    return;
+  }
+
+  const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOrbitTargetId()));
+  if (!actor || !actor->GetMaterialList().HasMaterial(kMT_Scannable)) {
+    return;
+  }
+
+  const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo();
+  if (!scanInfo) {
+    return;
+  }
+
+  if (mPlayerState->GetScanTime(scanInfo->GetScannableObjectId()) >= 1.f &&
+      IsDataLoreResearchScan(scanInfo->GetScannableObjectId())) {
+    rstl::pair< int, int > scanCompletion = mgr.CalculateScanCompletionRate();
+    CAssetId message = UpdatePersistentScanPercent(mPlayerState->GetLogScans(),
+                                                   scanCompletion.first, scanCompletion.second);
+    if (message != kInvalidAssetId) {
+      mgr.ShowPausedHUDMemo(message, 0.f);
+    }
+    mPlayerState->SetScanCompletionRateFirst(scanCompletion.first);
+    mPlayerState->SetScanCompletionRateSecond(scanCompletion.second);
+  }
 }
 
 bool CPlayer::IsEnergyLow() const {
