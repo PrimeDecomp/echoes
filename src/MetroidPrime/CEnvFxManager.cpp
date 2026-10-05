@@ -614,7 +614,6 @@ void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
   }
 
   CVector3f accumulated = CVector3f::Zero();
-  CVectorFixed8_8 previous;
   CRandom16 random(99);
   float phase = 0.f;
   const float speed = type == kEFX_DarkWorld ? 5.f : 1.f;
@@ -625,19 +624,19 @@ void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
       forceX = CMath::FastSinR(phase) + 0.2f * random.Range(-1.f, 1.f);
       forceY = CMath::FastCosR(phase) + 0.2f * random.Range(-1.f, 1.f);
     }
-    accumulated += CVector3f(inverseScale.GetX() * dt * speed * forceX,
-                              inverseScale.GetY() * dt * speed * forceY, 0.f);
-    const CVectorFixed8_8 current(real_to_fixed8_8(accumulated.GetX()),
-                                   real_to_fixed8_8(accumulated.GetY()),
-                                   real_to_fixed8_8(accumulated.GetZ()));
-    snowForces.push_back(CVectorFixed8_8(current.mX - previous.mX, current.mY - previous.mY,
-                                         current.mZ - previous.mZ));
-    previous = current;
+    const CVector3f previous = accumulated;
+    const float scaledDt = dt * speed;
+    accumulated += CVector3f(inverseScale.GetX() * (forceX * scaledDt),
+                              inverseScale.GetY() * (forceY * scaledDt), 0.f);
+    const CVector3f delta = accumulated - previous;
+    snowForces.push_back(CVectorFixed8_8(real_to_fixed8_8(delta.GetX()),
+                                         real_to_fixed8_8(delta.GetY()),
+                                         real_to_fixed8_8(delta.GetZ())));
     phase += 0.024543693f;
   }
-  snowForces[0].mX -= real_to_fixed8_8(accumulated.GetX());
-  snowForces[0].mY -= real_to_fixed8_8(accumulated.GetY());
-  snowForces[0].mZ -= real_to_fixed8_8(accumulated.GetZ());
+  snowForces[0].mX = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mX) - accumulated.GetX());
+  snowForces[0].mY = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mY) - accumulated.GetY());
+  snowForces[0].mZ = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mZ) - accumulated.GetZ());
 
   if (type == kEFX_DarkWorld) {
     const int forceIndex = static_cast< int >(20.f * CGraphics::GetSecondsMod900()) % 255;
