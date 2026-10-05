@@ -36,6 +36,8 @@ static int g_TrailSecondaryAxis = 2;
 static float g_TrailPrimaryScale;
 static float g_TrailDecayRate;
 static int g_TrailPrimaryAxis;
+static const CColor skTrailColor6(0.6f, 0.71f, 0.48f, 0.175f);
+static const CColor skTrailColor7(0.f, 0.f, 1.f, 0.175f);
 
 CEnvFxManagerGrid::CEnvFxManagerGrid(const CVector2i& position, const CVector2i& extent,
                                      const rstl::vector< CVectorFixed8_8 >& initialParticles,
@@ -165,8 +167,7 @@ void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
-  const CColor baseColor = type == kEFX_Unknown6 ? CColor(0.6f, 0.71f, 0.48f, 0.175f)
-                                                    : CColor(0.f, 0.f, 1.f, 0.175f);
+  const CColor& baseColor = type == kEFX_Unknown6 ? skTrailColor6 : skTrailColor7;
   const int period = g_TrailPeriod;
   for (int trail = 0; trail < mParticles.size() / 8; ++trail) {
     const int frame = mTrailFrames[trail];
