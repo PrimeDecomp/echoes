@@ -68,37 +68,37 @@ namespace rstl {
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TUniqueId)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TEditorId)
 
+// The native pickup, seeker and area-damage containers use the conservative
+// element policy for these combinations. Other ID pairs inherit the member traits.
 template <>
-struct is_trivially_destructible< pair< TEditorId, TUniqueId > > {
-  enum { value = true };
+struct is_trivially_destructible< pair< int, TEditorId > > {
+  enum { value = false };
 };
 
 template <>
-inline void construct< pair< TEditorId, TUniqueId > >(
-    void* dest, const pair< TEditorId, TUniqueId >& src) {
-  *static_cast< pair< TEditorId, TUniqueId >* >(dest) = src;
-}
-
-template <>
-struct is_trivially_destructible< pair< TUniqueId, TUniqueId > > {
-  enum { value = true };
+struct use_assignment_for_construction< pair< int, TEditorId > > {
+  enum { value = false };
 };
 
 template <>
-inline void construct< pair< TUniqueId, TUniqueId > >(void* dest,
-                                                      const pair< TUniqueId, TUniqueId >& src) {
-  *static_cast< pair< TUniqueId, TUniqueId >* >(dest) = src;
-}
-
-template <>
-struct is_trivially_destructible< pair< TEditorId, bool > > {
-  enum { value = true };
+struct is_trivially_destructible< pair< TUniqueId, int > > {
+  enum { value = false };
 };
 
 template <>
-inline void construct< pair< TEditorId, bool > >(void* dest, const pair< TEditorId, bool >& src) {
-  *static_cast< pair< TEditorId, bool >* >(dest) = src;
-}
+struct use_assignment_for_construction< pair< TUniqueId, int > > {
+  enum { value = false };
+};
+
+template <>
+struct is_trivially_destructible< pair< TUniqueId, float > > {
+  enum { value = false };
+};
+
+template <>
+struct use_assignment_for_construction< pair< TUniqueId, float > > {
+  enum { value = false };
+};
 } // namespace rstl
 
 // struct TGameScriptId {

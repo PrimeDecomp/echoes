@@ -16,11 +16,16 @@
     enum { value = true }; \
   };
 
+#define RSTL_DECLARE_ASSIGNMENT_CONSTRUCTION(T) \
+  template <> \
+  struct use_assignment_for_construction< T > { \
+    enum { value = true }; \
+  };
+
+// This describes rstl's copy policy, not trivial default construction.
 #define RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(T) \
   RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(T) \
-  inline void construct_impl(void* dest, const T& src) { \
-    *static_cast< T* >(dest) = src; \
-  }
+  RSTL_DECLARE_ASSIGNMENT_CONSTRUCTION(T)
 
 namespace rstl {
 template < typename T >
@@ -33,18 +38,27 @@ struct is_trivially_destructible< T* > {
   enum { value = true };
 };
 
+// Opt in only when assignment implements the required copy behavior. A trivial
+// destructor alone does not establish that the type is copyable or assignable.
 template < typename T >
-void construct_impl(void* dest, const T& src);
+struct use_assignment_for_construction {
+  enum { value = false };
+};
 
 template < typename T >
-inline void construct_impl(void* dest, const T& src) {
-  new (dest) T(src);
-}
+struct use_assignment_for_construction< T* > {
+  enum { value = true };
+};
+
+template < typename T, bool UseAssignment >
+struct construction_policy {
+  static void construct(void* dest, const T& src) { new (dest) T(src); }
+};
 
 template < typename T >
-inline void construct_impl(void* dest, T* const& src) {
-  *static_cast< T** >(dest) = src;
-}
+struct construction_policy< T, true > {
+  static void construct(void* dest, const T& src) { *static_cast< T* >(dest) = src; }
+};
 
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(char)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(signed char)
@@ -59,7 +73,7 @@ RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(ushort)
 
 template < typename T >
 inline void construct(void* dest, const T& src) {
-  construct_impl(dest, src);
+  construction_policy< T, use_assignment_for_construction< T >::value >::construct(dest, src);
 }
 
 template < typename T >

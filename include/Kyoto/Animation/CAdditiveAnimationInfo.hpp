@@ -2,6 +2,7 @@
 #define _CADDITIVEANIMATIONINFO
 
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "rstl/construct.hpp"
 
 class CAdditiveAnimationInfo {
 public:
@@ -17,5 +18,9 @@ private:
   float mFadeInDur;
   float mFadeOutDur;
 };
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CAdditiveAnimationInfo)
+} // namespace rstl
 
 #endif
