@@ -31,6 +31,9 @@ public:
   struct SPlayerResult {
     SPlayerResult()
     : mPlayerSelection(0), mScore(0), mDeaths(0), xc_(false), mRumbleEnabled(false) {}
+    SPlayerResult(uint playerSelection, int score, int deaths, bool option, bool rumbleEnabled)
+    : mPlayerSelection(playerSelection), mScore(score), mDeaths(deaths), xc_(option)
+    , mRumbleEnabled(rumbleEnabled) {}
     explicit SPlayerResult(CBitStreamReader& in);
     void PutTo(CBitStreamWriter& out) const;
 

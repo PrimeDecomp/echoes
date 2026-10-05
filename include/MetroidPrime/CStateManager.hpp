@@ -55,6 +55,7 @@ class CWorldLayerState;
 class CStateManagerContainer;
 class CInputStream;
 class CStateManager;
+class CInGameGuiManagerSet;
 
 namespace SL {
 class CSortedListManager;
@@ -110,6 +111,19 @@ public:
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
   ~CStateManager();
 
+  void FrameBegin(uint frame);
+  void FrameEnd();
+  void Update(float dt, CArchitectureQueue& queue);
+  void ProcessInput(const CFinalInput& input);
+  void InitializeState(CAssetId world, TAreaId area, CAssetId saveWorld);
+  void DeleteSaveGameScreen();
+  int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
+  bool PrepareAreaTransition(TAreaId area); // Guessed name.
+  rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
+  bool HasPendingLayerLoads() const; // Guessed name, from the area query.
+  void UpdateDynamicLayers(); // Guessed name, from the area update.
+  void SetRandomAvailable(bool available) { mSkippingCinematic = available; }
+
   TUniqueId AllocateUniqueId();
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
   uint MaskUIdNumPlayers(TUniqueId id) const;
@@ -124,6 +138,7 @@ public:
   void ShowPausedHUDMemo(CAssetId strg, float time);
   void QueueMessage(int frameCount, CAssetId msg, float f1);
   int GetHUDMessageFrameCount() const { return mHudMessageFrameCount; }
+  CAssetId GetPauseHUDMessage() const { return mPauseHudMessage; }
   // float GetHUDMessageTime() const { return mHudMessageTime; }
   void IncrementHUDMessageFrameCounter() { ++mHudMessageFrameCount; }
 
@@ -152,6 +167,12 @@ public:
                          TUniqueId weapon, const CDamageInfo& damage);
   void KillPlayer(float remainingHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
+  void PreRender(uint playerIndex); // Prime-correlated name.
+  void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
+  void SetupPlayerViewport(uint playerIndex); // Guessed name.
+  void DrawUnusedViewport(int viewportIndex); // Guessed name.
+  void EndPlayerRender(); // Guessed name.
+  void Touch(); // Prime-correlated name.
 
   bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
@@ -280,10 +301,14 @@ public:
   void EnterMessageScreen(uint, float);
   bool GetWantsToEnterMapScreen() const { return mDeferredTransition == kSMT_MapScreen; }
   bool GetInMapScreen() const { return mInMapScreen; }
+  bool GetShowSoftTransition() const { return mShowSoftTransition; }
+  void SetInMapScreen(bool inMapScreen) { mInMapScreen = inMapScreen; }
   bool GetWantsToEnterPauseScreen() const { return mDeferredTransition == kSMT_PauseGame; }
   void SetCinematicPause(bool paused) { mCinematicPause = paused; } // Guessed name
   bool GetWantsToEnterLogBookScreen() const { return mDeferredTransition == kSMT_LogBook; }
   bool GetWantsToEnterSaveGameScreen() const { return mDeferredTransition == kSMT_SaveGame; }
+  bool HasSaveGameScreen() const { return !mSaveGameScreen.null(); }
+  TAreaId GetPendingDockArea() const { return mPendingDockArea; }
   bool GetWantsToEnterMessageScreen() const { return mDeferredTransition == kSMT_MessageScreen; }
 
   const CCameraManager* GetCameraManager(int playerIndex) const {

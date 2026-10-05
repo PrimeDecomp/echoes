@@ -56,7 +56,7 @@ private:
 
   void SetFlowState(EFlowState state);
   void RecordMultiplayerResults() const;
-  void FinishMultiplayerGame();
+  void FinishMultiplayerGame(CArchitectureQueue& queue);
   void EndGame(CArchitectureQueue& queue);
   void DrawWorld(bool singleViewport) const;
   void DrawGui(bool singleViewport) const;
@@ -76,7 +76,7 @@ private:
   float mTransitionFadeTime;
   bool mInitialized : 1;
   bool mPlayerAlive : 1;
-  bool mEndGameFrameCaptured : 1;
+  mutable bool mEndGameFrameCaptured : 1;
   bool mTransitionFromDarkWorld : 1;
   bool x44_4 : 1;
 };

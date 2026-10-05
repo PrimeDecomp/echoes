@@ -63,23 +63,21 @@ bool CInGameGuiManagerSet::CheckLoadComplete(const CStateManager& mgr) {
     for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
       CToken token = gpSimplePool->GetObj(*it);
       token.Lock();
-      mPreloadTokens.push_back(token);
+      mPreloadTokens.push_back_unsafe(token);
     }
     mPreloadDGRP.Unlock();
+    const char* hudFrameName = CSamusHud::GetHudFrameName(mgr.GetViewportLayoutIndex());
     mHudFrameLoader = rs_new CGuiFrameLoader(
-        gpResourceFactory
-            ->GetResourceIdByName(CSamusHud::GetHudFrameName(mgr.GetViewportLayoutIndex()))
-            ->id,
-        *gpResourceFactory, *gpSimplePool);
+        gpResourceFactory->GetResourceIdByName(hudFrameName)->id, *gpResourceFactory, *gpSimplePool);
     mMemoFrameLoader = rs_new CGuiFrameLoader(
         gpResourceFactory->GetResourceIdByName(skMemoFrameNames[mgr.GetViewportLayoutIndex()])->id,
         *gpResourceFactory, *gpSimplePool);
-    if (mgr.IsMultiplayer()) {
-      mMultiplayerGui = rs_new CMultiplayerGui(mgr);
-    } else {
+    if (!mgr.IsMultiplayer()) {
       mDarkMaskFrameLoader =
           rs_new CGuiFrameLoader(gpResourceFactory->GetResourceIdByName("FRME_DarkVisorMask")->id,
                                  *gpResourceFactory, *gpSimplePool);
+    } else {
+      mMultiplayerGui = rs_new CMultiplayerGui(mgr);
     }
     if (mgr.GetViewportLayoutIndex() == 0) {
       mHelmetFrameLoader =
@@ -90,7 +88,10 @@ bool CInGameGuiManagerSet::CheckLoadComplete(const CStateManager& mgr) {
   }
   // Fall through: each phase can complete in the same call.
   case kLP_PreloadDeps:
-    if (!mHudFrameLoader->IsFinishedLoading() || !mMemoFrameLoader->IsFinishedLoading()) {
+    if (!mHudFrameLoader->IsFinishedLoading()) {
+      return false;
+    }
+    if (!mMemoFrameLoader->IsFinishedLoading()) {
       return false;
     }
     if (!mDarkMaskFrameLoader.null() && !mDarkMaskFrameLoader->IsFinishedLoading()) {
@@ -106,7 +107,7 @@ bool CInGameGuiManagerSet::CheckLoadComplete(const CStateManager& mgr) {
       }
     }
     mLoadPhase = kLP_LoadPlayerGui;
-    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
       mPlayerGuiManagers.push_back(rstl::auto_ptr< CInGameGuiManager >(
           rs_new CInGameGuiManager(mgr, *mHudFrameLoader, *mMemoFrameLoader,
                                    mHelmetFrameLoader.get(), mDarkMaskFrameLoader.get(), i)));
@@ -194,10 +195,13 @@ void CInGameGuiManagerSet::DrawMultiplayerGui() const {
 }
 
 void CInGameGuiManagerSet::ProcessControllerInput(const CStateManager& mgr,
-                                                  const CFinalInput& input, float dt) {
+                                                  const CFinalInput& input,
+                                                  CArchitectureQueue& queue) {
+  const int controller = input.ControllerNumber();
   for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
-    if (mgr.GetPlayerState(i)->GetPlayerSelection() == input.ControllerNumber()) {
-      mPlayerGuiManagers[i]->ProcessControllerInput(mgr, input, dt);
+    const int selection = mgr.GetPlayerState(i)->GetPlayerSelection();
+    if (selection == controller) {
+      mPlayerGuiManagers[i]->ProcessControllerInput(mgr, input, queue);
       break;
     }
   }
@@ -210,8 +214,8 @@ bool CInGameGuiManagerSet::GetIsGameDraw() const {
   return mPlayerGuiManagers[0]->GetIsGameDraw();
 }
 
-void CInGameGuiManagerSet::StopSounds() {
+void CInGameGuiManagerSet::StopSounds(const CStateManager& mgr) {
   if (mPlayerGuiManagers.size() == 1) {
-    mPlayerGuiManagers[0]->StopSounds();
+    mPlayerGuiManagers[0]->StopSounds(mgr);
   }
 }

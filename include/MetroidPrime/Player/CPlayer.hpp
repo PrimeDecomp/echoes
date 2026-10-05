@@ -289,6 +289,7 @@ public:
                      CAssetId texture);
   const CVisorSteam& GetVisorSteam() const { return mVisorSteam; }
   float GetVisorSteamAlpha() const { return mVisorSteam.GetAlpha(); }
+  float GetVisorStaticAlpha() const { return mVisorStaticAlpha; }
   static const float skDefaultHudFadeOutSpeed;
   // Guessed name. Hard landing sounds by material, indexed by multiplayer.
   static const ushort skPlayerLandSfxHard[2][26];

@@ -36,6 +36,7 @@ public:
   static CGuiWidget* Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool, uint version);
 
   CVector3f ConvertToScreenSpace(const CVector3f& point) const;
+  UCameraParms GetParms() const { return mCameraParms; }
 
 private:
   EProjection mProjection;
