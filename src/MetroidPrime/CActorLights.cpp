@@ -144,7 +144,7 @@ void CActorLights::ActivateLights() const {
       const float distance = (mLastActorPos - light.GetPosition()).Magnitude();
       if (light.GetRadius() > 0.001f) {
         const float fraction = distance / light.GetRadius();
-        if (fraction >= 0.8f) {
+        if (!(fraction < 0.8f)) {
           const float faded = 1.f - 5.f * (fraction - 0.8f);
           intensity = faded > 0.f ? faded : 0.f;
         }
@@ -460,8 +460,8 @@ void CActorLights::BuildDynamicLightList(const CStateManager& mgr, const CAABox&
   const CVector3f lightingPos = bounds.GetCenterPoint() + mLightingPositionOffset;
   CVector3f ambient = CVector3f::Zero();
   for (int i = 0; i < mExplicitLightIds.size() && mDynamicLights.size() < 4; ++i) {
-    const CGameLight* gameLight =
-        TCastToConstPtr< CGameLight >(mgr.GetObjectById(mExplicitLightIds[i]));
+    const CScriptDynamicLight* gameLight =
+        TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(mExplicitLightIds[i]));
     if (gameLight == nullptr || !gameLight->GetActive()) {
       continue;
     }
@@ -582,7 +582,7 @@ void CActorLights::BuildFaceLightList(const CStateManager& mgr, const CGameArea&
             reflectedLight.GetAttenuationQuadratic());
 
     CVector3f cameraToExplosion = cameraTransform.TransposeMultiply(explosion->GetTranslation());
-    if (!(CVector3f::Dot(CVector3f::Forward(), cameraToExplosion) >= 0.f)) {
+    if (CVector3f::Dot(CVector3f::Forward(), cameraToExplosion) < 0.f) {
       continue;
     }
     cameraToExplosion[kDY] =
@@ -609,7 +609,7 @@ void CActorLights::BuildFaceLightList(const CStateManager& mgr, const CGameArea&
     mDynamicLights.clear();
   }
   if (grayscale > 0.03f) {
-    const float attenuation = grayscale / 0.03f;
+    const float attenuation = 1.f / (0.03f / grayscale);
     for (int i = 0; i < mDynamicLights.size(); ++i) {
       CLight& light = mDynamicLights[i];
       light.SetAttenuation(light.GetAttenuationConstant() * attenuation,
