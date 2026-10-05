@@ -1,11 +1,15 @@
 #ifndef _CSFXMANAGER
 #define _CSFXMANAGER
 
+#include "Kyoto/Audio/CAuxEffectManager.hpp"
+#include "Kyoto/Audio/CSfxPitchBend.hpp"
+
 #include "types.h"
 
 #include "Kyoto/Audio/CAudioSys.hpp"
 #include "Kyoto/Audio/CSfxHandle.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 
 #include <musyx/musyx.h>
@@ -21,7 +25,7 @@ struct SPhaserAuxParameters;
 class CSfxManager {
 public:
   enum ESfxChannels { kSC_Invalid = -1, kSC_Default = 0, kSC_Game, kSC_PauseScreen };
-  enum ESfxAudibility { kSA_Aud0, kSA_Aud1, kSA_Aud2, kSA_Aud3 };
+  enum ESfxAudibility { kSA_Inaudible, kSA_Low, kSA_Medium, kSA_High };
 
   class CBaseSfxWrapper {
   public:
@@ -159,7 +163,7 @@ public:
   };
 
   struct SListener { // Guessed name
-    SListener() : mActive(false) {}
+    SListener();
     CSfxListener mListener;
     bool mActive;
   };
@@ -264,12 +268,22 @@ public:
   static int AddAuxEffect(int area, const SND_AUX_CHORUS& params, uchar volume, int priority);
   static int AddAuxEffect(int area, const SND_AUX_REVERBSTD& params, uchar volume, int priority);
   static int AddAuxEffect(int area, const SND_AUX_DELAY& params, uchar volume, int priority);
-  static int AddAuxEffect(int area, const SFlangerAuxParameters& params, uchar volume, int priority);
-  static int AddAuxEffect(int area, const SBitcrusherAuxParameters& params, uchar volume, int priority);
+  static int AddAuxEffect(int area, const SFlangerAuxParameters& params, uchar volume,
+                          int priority);
+  static int AddAuxEffect(int area, const SBitcrusherAuxParameters& params, uchar volume,
+                          int priority);
   static int AddAuxEffect(int area, const SPhaserAuxParameters& params, uchar volume, int priority);
-  // The eighth effect overload and effect-update interface remain unidentified.
+  static int AddAuxEffect(int area, const SFilteredDelayAuxParameters& params, uchar volume,
+                          int priority);
 
 private:
+  static void UpdatePitchBends(float dt);
+  static int RegisterAuxEffect(const CAuxEffect& effect);
+  static CAuxEffectManager mAuxEffectManager;
+  static rstl::reserved_vector< CAuxEffect, 10 > mAuxEffects;
+  static rstl::reserved_vector< CSfxPitchBend, 8 > mPitchBends;
+  static int mNextAuxEffectId;
+  static rstl::pair< int, bool > mStudioState;
   static CSfxChannel mChannels[4];
   static ESfxChannels mCurrentChannel;
   static bool mDoUpdate;
@@ -286,7 +300,6 @@ private:
   static int mLowPassFrequency;
   static rstl::reserved_vector< SAreaVolume, 10 > mAreaVolumes;
   static int mCurrentArea;
-  static bool mCurrentStudio;
 };
 
 inline CSfxManager::CBaseSfxWrapper::~CBaseSfxWrapper() {}
