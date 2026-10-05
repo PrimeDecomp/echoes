@@ -152,7 +152,7 @@ void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCa
         break;
       case 'AABX':
         if (cache.GetDynamicGeometryMode() != 2) {
-          geometry = COBBTree::GetPrebuiltTree(COBBTree::kPBT_UnitCube);
+          geometry = &iterator.GetGeometry();
           transform = MakeAABoxCacheTransform(
               *actor, static_cast< const CCollidableAABox& >(primitive));
         }
@@ -161,11 +161,7 @@ void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCa
         if (cache.GetDynamicGeometryMode() != 2) {
           transform = MakeSphereCacheTransform(
               *actor, static_cast< const CCollidableSphere& >(primitive));
-          const float scale = transform.GetRight().Magnitude();
-          geometry = COBBTree::GetPrebuiltTree(
-              scale < 2.f ? COBBTree::kPBT_UnitSphereLow
-                          : scale < 5.f ? COBBTree::kPBT_UnitSphereMedium
-                                        : COBBTree::kPBT_UnitSphereHigh);
+          geometry = &iterator.GetGeometry();
         }
         break;
       }
