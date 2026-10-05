@@ -441,13 +441,13 @@ void CModelData::SetEchoModel(const rstl::pair< CAssetId, CAssetId >& assets) {
     return;
   }
 
-  TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
   if (HasAnimation() && assets.second != 0 &&
       gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
     TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
     mAnimData->SetXRayModel(model, skin);
   } else {
-    mEchoModel = model;
+    mEchoModel = TLockedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
   }
 }
 
@@ -456,13 +456,13 @@ void CModelData::SetDarkModel(const rstl::pair< CAssetId, CAssetId >& assets) {
     return;
   }
 
-  TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
   if (HasAnimation() && assets.second != 0 &&
       gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
     TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
     mAnimData->SetInfraModel(model, skin);
   } else {
-    mDarkModel = model;
+    mDarkModel = TLockedToken< CModel >(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
   }
 }
 
