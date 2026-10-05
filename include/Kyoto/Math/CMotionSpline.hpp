@@ -33,6 +33,8 @@ public:
   CVector3f GetTangentByTime(float time) const;        // Guessed name.
   CVector3f GetTangentByLength(float distance) const;  // Guessed name.
   void CalculateLength();
+  void Reset(uint count);
+  void AddKnotAndControlPoint(const CVector3f& point);
   void SetKnotAndControlPoint(uint index, const CVector3f& point, bool recalculateLength);
 
   float GetLength() const { return mLength; }
@@ -58,10 +60,8 @@ private:
   void SetKnot(uint index, CVector3f point, bool recalculateLength);
   void AddKnot(const CVector3f& point);
   void AddControlPoint(const CVector3f& point);
-  void AddKnotAndControlPoint(const CVector3f& point);
   void ResetKnots(uint count);
   void ResetControlPoints(uint count);
-  void Reset(uint count);
   void GetSurroundingPoints(int index, rstl::reserved_vector< CVector3f, 4 >& points) const;
   float CalculateCatmullRomLength(int index) const;
   float CalculateRoundedCatmullRomLength(int index) const;

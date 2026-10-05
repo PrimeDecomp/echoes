@@ -211,6 +211,7 @@ public:
   const CVector3f& GetControlDirFlat() const { return mControlDirFlat; }
   bool GetSpiderBallControlXY() const { return mSpiderBallControlXY; }
   const CVector3f& GetMovementDirection() const { return mMoveDir; }
+  const CVector3f& GetLeaveMorphDirection() const { return xfe8_; }
   NPlayer::EPlayerMovementState GetPlayerMovementState() const { return mMovementState; }
   EGrappleState GetGrappleState() const { return mGrappleState; }
   EPlayerOrbitState GetOrbitState() const { return mOrbitState; }
