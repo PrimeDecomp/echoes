@@ -35,16 +35,12 @@ public:
     float mFogNearZ;
     float mFogFarZ;
     GXColor mFogColor;
-    uchar x14_;
-    uchar x15_;
 
     SFogParams() : mFogStartZ(0.f), mFogEndZ(1.f), mFogNearZ(0.1f), mFogFarZ(1.f) {
       mFogColor.a = 0;
       mFogColor.b = 0;
       mFogColor.g = 0;
       mFogColor.r = 0;
-      x14_ = 0;
-      x15_ = 0;
     }
   };
 
@@ -77,6 +73,8 @@ public:
     STexState mTexStates[8];
     uint mAlphaCompare;
     SFogParams mFogParams;
+    bool mDstAlphaEnabled;
+    uchar mDstAlpha;
 
     SGXState();
   };
