@@ -24,7 +24,7 @@ static int sPOICacheReferenceCount;
 CAnimData::CAnimData(
     CAssetId selfId, const CCharacterInfo& charInfo, int defaultAnim, int charIdx, bool loop,
     const TLockedToken< CCharLayoutInfo >& layoutData, const TToken< CSkinnedModel >& modelData,
-    const rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > >& iceModelData,
+    const rstl::optional_object< TLockedToken< CSkinnedModel > >& iceModelData,
     const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& spatialPrimitive,
     const rstl::ncrc_ptr< CAnimSysContext >& animCtx,
     const rstl::rc_ptr< CAnimationManager >& animMgr,

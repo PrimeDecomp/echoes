@@ -39,7 +39,6 @@ class CSkinRules;
 struct CAdvancementDeltas;
 struct SAdvancementResults;
 class CSkinnedModel;
-class CSkinnedModelWithAvgNormals;
 class CTransitionManager;
 class CModelFlags;
 class CPrimitive;
@@ -55,7 +54,7 @@ public:
   CAnimData(
       CAssetId selfId, const CCharacterInfo& charInfo, int defaultAnim, int charIdx, bool loop,
       const TLockedToken< CCharLayoutInfo >& layoutData, const TToken< CSkinnedModel >& modelData,
-      const rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > >& iceModelData,
+      const rstl::optional_object< TLockedToken< CSkinnedModel > >& iceModelData,
       const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& spatialPrimitive,
       const rstl::ncrc_ptr< CAnimSysContext >& animCtx,
       const rstl::rc_ptr< CAnimationManager >& animMgr,
@@ -162,6 +161,9 @@ public:
   void SetAnimDir(EAnimDir dir) { mAnimDir = dir; }
   EAnimDir GetAnimDir() const { return mAnimDir; }
   const TLockedToken< CSkinnedModel >& GetModelData() const { return mModelData; }
+  const rstl::optional_object< TLockedToken< CSkinnedModel > >& GetIceModel() const {
+    return mIceModelData;
+  }
   CSkinnedModel* GetXRayModel() const { return mXrayModel.GetPtr(); }
   CSkinnedModel* GetInfraModel() const { return mInfraModel.GetPtr(); }
   int GetCharacterIndex() const { return mCharIdx; }
@@ -200,7 +202,7 @@ private:
   CCharacterInfo mCharInfo;
   TLockedToken< CCharLayoutInfo > mLayoutData;
   TLockedToken< CSkinnedModel > mModelData;
-  rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > > mIceModelData;
+  rstl::optional_object< TLockedToken< CSkinnedModel > > mIceModelData;
   rstl::optional_object< TLockedToken< CSpatialPrimitive > > mSpatialPrimitive;
   rstl::rc_ptr< CSkinnedModel > mXrayModel;
   rstl::rc_ptr< CSkinnedModel > mInfraModel;

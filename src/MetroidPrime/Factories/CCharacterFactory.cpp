@@ -86,10 +86,10 @@ CCharacterFactory::CreateCharacter(int charIdx, bool loop,
   const CAssetId iceModelId = charInfo.GetIceModelId();
   const CAssetId iceSkinId = charInfo.GetIceSkinRulesId();
   const SObjectTag iceTag(1, iceModelId);
-  rstl::optional_object< TLockedToken< CSkinnedModelWithAvgNormals > > iceModel;
+  rstl::optional_object< TLockedToken< CSkinnedModel > > iceModel;
   if (iceModelId != kInvalidAssetId && iceSkinId != kInvalidAssetId && iceModelId != 0 &&
       iceSkinId != 0) {
-    iceModel = TLockedToken< CSkinnedModelWithAvgNormals >(mCacheResPool.GetObj(
+    iceModel = TLockedToken< CSkinnedModel >(mCacheResPool.GetObj(
         iceTag, CVParamTransfer(rs_new TObjOwnerParam< const CCharacterInfo* >(&charInfo))));
   }
 
