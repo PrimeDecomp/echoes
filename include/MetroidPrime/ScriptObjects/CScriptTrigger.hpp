@@ -31,7 +31,6 @@ public:
     void SetObjectId(TUniqueId id) { mId = id; }
     const rstl::list< TUniqueId >& GetTriggers() const { return mTriggers; }
     rstl::list< TUniqueId >& Triggers() { return mTriggers; }
-    void AddTrigger(TUniqueId id) { mTriggers.push_back(id); }
 
   private:
     TUniqueId mId;

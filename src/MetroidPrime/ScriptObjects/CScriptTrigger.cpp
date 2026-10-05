@@ -4,9 +4,11 @@
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
+#include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -18,6 +20,7 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
+#include "rstl/algorithm.hpp"
 
 CScriptTrigger::CScriptTrigger(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                const CVector3f& position, const CAABox& bounds,
@@ -54,7 +57,7 @@ void CScriptTrigger::Touch(CActor& actor, CStateManager& mgr) {
 
   uint testFlags = kTFL_None;
   int playerIndex = -1;
-  CPlayer* player = TCastToPtr< CPlayer >(&actor);
+  CPlayer* player = TCastToPtr< CPlayer >(actor);
   if (player) {
     playerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
     bool eligible = true;
@@ -71,14 +74,13 @@ void CScriptTrigger::Touch(CActor& actor, CStateManager& mgr) {
           mgr.GetForceTriggerId(playerIndex) != kInvalidUniqueId) {
         return;
       }
-      const bool screwAttack = player->GetMorphBall()->InScrewAttackMode();
       if ((mFlags & 0x10000006) == 0x10000000) {
-        if (screwAttack) {
+        if (player->GetMorphBall()->InScrewAttackMode()) {
           testFlags |= kTFL_DetectScrewAttack;
         }
-      } else if ((mFlags & (kTFL_DetectMorphedPlayer | kTFL_DetectUnmorphedPlayer)) !=
-                 (kTFL_DetectMorphedPlayer | kTFL_DetectUnmorphedPlayer)) {
-        if (!screwAttack) {
+      } else if ((mFlags & kTFL_DetectMorphedPlayer) == 0 ||
+                 (mFlags & kTFL_DetectUnmorphedPlayer) == 0) {
+        if (!player->GetMorphBall()->InScrewAttackMode()) {
           if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
             testFlags |= kTFL_DetectMorphedPlayer;
             if (player->GetMorphBall()->GetTimeNotInBoost() < 0.15f) {
@@ -100,21 +102,22 @@ void CScriptTrigger::Touch(CActor& actor, CStateManager& mgr) {
   if (IsAI(mgr, actor)) {
     testFlags |= kTFL_DetectAI;
   }
-  if (const CBouncyGrenade* grenade = TCastToPtr< CBouncyGrenade >(&actor)) {
-    if ((grenade->GetFlags() & 4) != 0) {
+  if (TCastToPtr< CBouncyGrenade >(actor)) {
+    if ((static_cast< const CBouncyGrenade& >(actor).GetFlags() & 4) != 0) {
       testFlags |= kTFL_DetectAI;
     }
   }
-  if (TCastToPtr< CGameProjectile >(&actor)) {
+  if (TCastToPtr< CGameProjectile >(actor)) {
     testFlags |= kTFL_DetectProjectiles;
-  } else if (const CWeapon* weapon = TCastToPtr< CWeapon >(&actor)) {
-    if ((weapon->GetAttribField() & CWeapon::kPA_Bombs) != 0) {
+  } else if (TCastToPtr< CWeapon >(actor)) {
+    const CWeapon& weapon = static_cast< const CWeapon& >(actor);
+    if ((weapon.GetAttribField() & CWeapon::kPA_TriggerBomb) == CWeapon::kPA_TriggerBomb) {
       testFlags |= kTFL_DetectBombs;
-    } else if ((weapon->GetAttribField() & CWeapon::kPA_PowerBombs) != 0) {
+    } else if ((weapon.GetAttribField() & CWeapon::kPA_PowerBombs) == CWeapon::kPA_PowerBombs) {
       testFlags |= kTFL_DetectPowerBombs;
     }
   }
-  if (TCastToPtr< CGameCamera >(&actor)) {
+  if (TCastToPtr< CGameCamera >(actor)) {
     testFlags = kTFL_DetectCamera;
   }
   if ((mFlags & 0x4000000) != 0) {
@@ -125,15 +128,17 @@ void CScriptTrigger::Touch(CActor& actor, CStateManager& mgr) {
     InhabitantRejected(actor, mgr);
     return;
   }
-  CScriptTrigger* target = this;
-  if (mAttachedTrigger != kInvalidUniqueId) {
-    target = TCastToPtr< CScriptTrigger >(mgr.GetObjectByIdFromListAll(mAttachedTrigger));
-    if (!target || !target->GetActive()) {
-      return;
+  const TUniqueId connectedId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
+  if (mAttachedTrigger == kInvalidUniqueId) {
+    const int trackedPlayer = player && (testFlags & 0x10000006) != 0 ? playerIndex : -1;
+    AddInhabitant(mgr, trackedPlayer, actor.GetUniqueId(), GetUniqueId());
+  } else if (CScriptTrigger* target =
+                 TCastToPtr< CScriptTrigger >(mgr.ObjectById(connectedId))) {
+    if (target->GetActive()) {
+      const int trackedPlayer = player && (testFlags & 0x10000006) != 0 ? playerIndex : -1;
+      target->AddInhabitant(mgr, trackedPlayer, actor.GetUniqueId(), GetUniqueId());
     }
   }
-  const int trackedPlayer = player && (testFlags & 0x10000006) != 0 ? playerIndex : -1;
-  target->AddInhabitant(mgr, trackedPlayer, actor.GetUniqueId(), GetUniqueId());
 }
 
 CScriptTrigger::CObjectTracker::CObjectTracker(TUniqueId id, TUniqueId triggerId) : mId(id) {
@@ -142,7 +147,7 @@ CScriptTrigger::CObjectTracker::CObjectTracker(TUniqueId id, TUniqueId triggerId
 
 void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueId id,
                                    TUniqueId triggerId) {
-  CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(id));
+  CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id));
   if (!actor) {
     return;
   }
@@ -157,7 +162,7 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
           return;
         }
       }
-      it->AddTrigger(triggerId);
+      it->Triggers().push_back(triggerId);
       return;
     }
   }
@@ -171,20 +176,22 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
   }
   NotifyInhabitantAdded(*actor, mgr);
 
-  const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59), CMaterialList());
   if (mDeactivateOnEntered) {
-    mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
-                                 kSS_InvalidState));
-    if (actor->GetHealthInfo() && mDamageInfo.GetDamage() > 0.f) {
+    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
+                                    kSS_InvalidState));
+    if (actor->HealthInfo() && mDamageInfo.GetDamage() > 0.f) {
+      const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+          CMaterialList(kMT_Unknown59), CMaterialList());
       mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), mDamageInfo, filter,
                       CVector3f::Zero());
     }
   }
   if (mFlags & kTFL_KillOnEnter) {
-    if (const CHealthInfo* health = actor->GetHealthInfo()) {
-      const CDamageInfo damage(CWeaponMode(kWT_Power, false, false, true),
-                               10.f * health->GetHP(), 0.f, 0.f);
+    if (CHealthInfo* health = actor->HealthInfo()) {
+      static CWeaponMode killWeaponMode(kWT_Power, false, false, true);
+      const CDamageInfo damage(killWeaponMode, 10.f * health->GetHP(), 0.f, 0.f);
+      const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+          CMaterialList(kMT_Unknown59), CMaterialList());
       mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), damage, filter, CVector3f::Zero());
     }
   }
@@ -271,7 +278,7 @@ void CScriptTrigger::NotifyInhabitantIdle(CActor& actor, CStateManager& mgr) {
 }
 
 void CScriptTrigger::UpdateCameraInhabitant(TUniqueId id, CStateManager& mgr) {
-  CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.GetObjectByIdFromListAll(id));
+  CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(id));
   if (!camera || !(mFlags & kTFL_DetectCamera)) {
     return;
   }
@@ -281,18 +288,27 @@ void CScriptTrigger::UpdateCameraInhabitant(TUniqueId id, CStateManager& mgr) {
     return;
   }
 
-  const bool inside = BoundsOverlap(*cameraBounds);
   if (HasInhabitant(id)) {
-    if (!inside && RemoveInhabitant(id, mgr)) {
-      NotifyInhabitantExited(*camera, mgr);
+    if (!BoundsOverlap(*cameraBounds)) {
+      for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
+           it != mInhabitants.end(); ++it) {
+        if (it->GetObjectId() == id) {
+          mInhabitants.erase(it);
+          NotifyInhabitantExited(*camera, mgr);
+          break;
+        }
+      }
     }
-  } else if (inside) {
-    CScriptTrigger* target = this;
+  } else if (BoundsOverlap(*cameraBounds)) {
+    const TUniqueId connectedId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     if (mAttachedTrigger != kInvalidUniqueId) {
-      target = TCastToPtr< CScriptTrigger >(mgr.GetObjectByIdFromListAll(mAttachedTrigger));
-    }
-    if (target && target->GetActive()) {
-      target->AddInhabitant(mgr, camera->GetControllerNumber(), id, GetUniqueId());
+      if (CScriptTrigger* target = TCastToPtr< CScriptTrigger >(mgr.ObjectById(connectedId))) {
+        if (target->GetActive()) {
+          target->AddInhabitant(mgr, camera->GetControllerNumber(), id, GetUniqueId());
+        }
+      }
+    } else {
+      AddInhabitant(mgr, camera->GetControllerNumber(), id, GetUniqueId());
     }
   }
 }
@@ -309,18 +325,21 @@ void CScriptTrigger::SetPlayerInside(CStateManager& mgr, bool inside, int player
     mPlayerEnvironmentDamage[playerIndex] = false;
   }
 
-  if (inside) {
-    if (mDamageInfo.GetDamage() > 0.f &&
+  if (!inside) {
+    if (mgr.GetForceTriggerId(playerIndex) == GetUniqueId()) {
+      mgr.SetForceTriggerId(playerIndex, kInvalidUniqueId);
+    }
+  } else {
+    if (!(mDamageInfo.GetDamage() <= 0.f) &&
         player->GetDamageVulnerability()->WeaponHits(mDamageInfo.GetWeaponMode(), 0)) {
       player->PushSustainedDamage();
       mPlayerEnvironmentDamage[playerIndex] = true;
     }
-  } else if (mgr.GetForceTriggerId(playerIndex) == GetUniqueId()) {
-    mgr.SetForceTriggerId(playerIndex, kInvalidUniqueId);
   }
 }
 
 void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
+  rstl::optional_object< CDamageInfo > damage;
   bool exited = false;
   for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
        it != mInhabitants.end();) {
@@ -334,7 +353,7 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
         break;
       }
     }
-    CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(id));
+    CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id));
     if (!actor) {
       mInhabitants.erase(it);
       if (playerIndex != -1) {
@@ -350,7 +369,7 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
       rstl::list< TUniqueId >::iterator nextTrigger = triggerId;
       ++nextTrigger;
       CScriptTrigger* trigger =
-          TCastToPtr< CScriptTrigger >(mgr.GetObjectByIdFromListAll(*triggerId));
+          TCastToPtr< CScriptTrigger >(mgr.ObjectById(*triggerId));
       bool valid = trigger != nullptr;
       if (valid && playerIndex != -1) {
         const CPlayer* player = mgr.GetPlayer(playerIndex);
@@ -388,11 +407,13 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
       if (!actorBounds || !triggerBounds || !trigger->BoundsOverlap(*actorBounds)) {
         contributingTriggers.erase(triggerId);
       } else {
-        if (actor->GetHealthInfo() && trigger->mDamageInfo.GetDamage() > 0.f) {
-          const CDamageInfo damage(trigger->mDamageInfo, dt);
+        if (actor->HealthInfo() && trigger->mDamageInfo.GetDamage() > 0.f) {
+          if (!damage) {
+            damage = CDamageInfo(trigger->mDamageInfo, dt);
+          }
           const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
               CMaterialList(kMT_Unknown59), CMaterialList());
-          mgr.ApplyDamage(GetUniqueId(), id, trigger->GetUniqueId(), damage, filter,
+          mgr.ApplyDamage(GetUniqueId(), id, trigger->GetUniqueId(), *damage, filter,
                           CVector3f::Zero());
         }
         if (trigger->mForceMagnitude > 0.f) {
@@ -402,7 +423,7 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
               forceScale = actorBounds->GetBooleanIntersection(*triggerBounds).GetVolume() /
                            actorBounds->GetVolume();
             }
-            const CVector3f force = forceScale * trigger->mForceField;
+            const CVector3f force = forceScale * mForceField;
             if (trigger->mFlags & kTFL_UseCollisionImpulses) {
               physics->ApplyImpulseWR((60.f * dt) * force, CAxisAngle::Identity());
               physics->UseCollisionImpulses();
@@ -428,8 +449,8 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
     it = next;
   }
   if (exited && mDeactivateOnExited) {
-    mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
-                                 kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
+                                    kSS_InvalidState));
   }
 }
 
@@ -438,11 +459,8 @@ bool CScriptTrigger::HasInhabitant(TUniqueId id) const {
        it != mInhabitants.end(); ++it) {
     if (it->GetObjectId() == id) {
       const rstl::list< TUniqueId >& triggers = it->GetTriggers();
-      for (rstl::list< TUniqueId >::const_iterator trigger = triggers.begin();
-           trigger != triggers.end(); ++trigger) {
-        if (*trigger == GetUniqueId()) {
-          return true;
-        }
+      if (rstl::find(triggers.begin(), triggers.end(), GetUniqueId()) != triggers.end()) {
+        return true;
       }
     }
   }
@@ -458,9 +476,8 @@ void CScriptTrigger::InhabitantExited(CActor&, CStateManager&) {}
 void CScriptTrigger::InhabitantRejected(CActor&, CStateManager&) {}
 
 bool CScriptTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) const {
-  if (const CGameCamera* camera = TCastToPtr< CGameCamera >(&actor)) {
-    return mgr.GetCameraManager(camera->GetControllerNumber())->GetCurrentCameraId(false) ==
-           actor.GetUniqueId();
+  if (const CGameCamera* camera = TCastToPtr< CGameCamera >(actor)) {
+    return camera->CameraManager(mgr).GetCurrentCameraId(true) == actor.GetUniqueId();
   }
   return true;
 }
@@ -478,22 +495,28 @@ bool CScriptTrigger::IsAI(CStateManager& mgr, CActor& actor) const {
 }
 
 bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateManager& mgr) {
-  CActor* oldActor = TCastToPtr< CActor >(mgr.ObjectById(oldId));
-  CActor* newActor = TCastToPtr< CActor >(mgr.ObjectById(newId));
+  const CActor* oldActor = TCastToConstPtr< CActor >(mgr.GetObjectById(oldId));
+  const CActor* newActor = TCastToConstPtr< CActor >(mgr.GetObjectById(newId));
   if (oldActor == nullptr || newActor == nullptr) {
     return false;
   }
 
   const bool alreadyInside = HasInhabitant(newId);
-  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
-       ++it) {
-    if (it->GetObjectId() == oldId) {
-      if (alreadyInside) {
-        mInhabitants.erase(it);
-        return false;
+  if (!alreadyInside) {
+    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
+         it != mInhabitants.end(); ++it) {
+      if (it->GetObjectId() == oldId) {
+        it->SetObjectId(newId);
+        return true;
       }
-      it->SetObjectId(newId);
-      return true;
+    }
+  } else {
+    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin();
+         it != mInhabitants.end(); ++it) {
+      if (it->GetObjectId() == oldId) {
+        mInhabitants.erase(it);
+        break;
+      }
     }
   }
   return false;
@@ -535,12 +558,14 @@ CEntity* LoadTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
 #include "MetroidPrime/ScriptLoader/SLdrTrigger.inc"
 
   const CVector3f halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
-  const CTransform4f transform = LdrToTransform4f(sldrThis.editorProperties);
+  const CAABox bounds(-halfExtent, halfExtent);
+  const CVector3f forceField =
+      mgr.GetWorld()->GetAreaAlways(info.GetAreaId()).GetTM().Rotate(sldrThis.trigger.forceField);
   return rs_new CScriptTrigger(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.editorProperties.transform.position, CAABox(-halfExtent, halfExtent),
+      sldrThis.editorProperties.transform.position, bounds,
       LdrToDamageInfo(sldrThis.trigger.damage),
-      transform.Rotate(sldrThis.trigger.forceField), sldrThis.trigger.flagsTrigger,
+      forceField, sldrThis.trigger.flagsTrigger,
       sldrThis.deactivateOnEnter, sldrThis.deactivateOnExit);
 }
