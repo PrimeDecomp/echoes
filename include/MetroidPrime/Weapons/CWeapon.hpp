@@ -13,6 +13,7 @@ public:
     kPA_Charged = 1 << 2,
     kPA_Phazon = 1 << 6,
     kPA_ComboShot = 1 << 7,
+    kPA_TriggerBomb = 1 << 8,
     kPA_PowerBombs = 1 << 9, // Guessed name, based on CPowerBomb construction.
     kPA_BigProjectile = 1 << 10,
     kPA_DamageFalloff = 1 << 13,

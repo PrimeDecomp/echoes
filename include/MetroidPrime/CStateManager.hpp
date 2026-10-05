@@ -243,6 +243,12 @@ public:
   ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
   int GetNumPlayers() const { return mNumPlayers; }
+  TUniqueId GetForceTriggerId(int playerIndex) const {
+    return TUniqueId(mForceTriggerIds[playerIndex]);
+  }
+  void SetForceTriggerId(int playerIndex, TUniqueId id) {
+    mForceTriggerIds[playerIndex] = id.value;
+  }
   int GetViewportLayoutIndex() const; // Guessed name
   typedef rstl::reserved_vector< rstl::reserved_vector< CCameraFilterPass, 11 >, 4 >
       TCameraFilterPasses;
@@ -352,7 +358,8 @@ public:
   CCameraManager* mCameraManagers[4];
   CRumbleManager* mRumbleManagers[4];
   CFinalInput mFinalInputs[4];
-  char x15ec_[0xc];
+  char x15ec_[4];
+  ushort mForceTriggerIds[4]; // 0x15f0: packed current force-field trigger IDs, one per player.
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
   CPlayerState* mPlayerState;
   CCameraManager* mCameraManager;
