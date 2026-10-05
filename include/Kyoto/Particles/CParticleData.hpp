@@ -21,6 +21,7 @@ public:
   : mDuration(duration), mParticle(tag), mBone(bone), mScale(scale), mParentMode(mode) {}
 
   CParticleData(CInputStream& in);
+  EParentedMode GetParentedMode() const { return mParentMode; }
 
 private:
   int mDuration;
