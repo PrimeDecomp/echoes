@@ -8,6 +8,8 @@
 
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Animation/CSkinnedModel.hpp"
+#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
@@ -17,6 +19,8 @@
 #include "Kyoto/SObjectTag.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetaRender/SModelRenderData.hpp"
+#include "MetroidPrime/Factories/CCharacterFactory.hpp"
+#include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
 
 #include <dolphin/mtx.h>
 
@@ -57,8 +61,14 @@ CModelData::CModelData(const CAnimRes& res)
 , mRenderUnsortedParts(true)
 , mRenderFullEchoModel(false)
 , mAmbientColor(CColor::White()) {
-  // TODO: Create the character through CCharacterFactoryBuilder. A negative default animation
-  // selects the character's default; pass the model scale to the resulting CAnimData.
+  TLockedToken< CCharacterFactory > factory(gpCharacterFactoryBuilder->GetFactory(res));
+  int defaultAnim = res.GetDefaultAnim();
+  if (defaultAnim < 0) {
+    defaultAnim = factory->GetCharInfo(res.GetCharacterNodeId()).GetDefaultAnimation();
+  }
+  mAnimData = factory->CreateCharacter(res.GetCharacterNodeId(), res.CanLoop(), factory,
+                                       defaultAnim);
+  mAnimData->SetModelScale(mScale);
 }
 
 CModelData::~CModelData() {}
@@ -292,9 +302,10 @@ bool CModelData::IsAnimating() const { return HasAnimation() && mAnimData->IsAni
 
 CAdvancementDeltas CModelData::AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid,
                                                 bool advTree, float cameraDistance) {
-  // TODO: Delegate to CAnimData::Advance with the manager's embedded random generator.
-  // CStateManager's declaration does not yet expose that recovered member.
-  return skNullAdvance;
+  if (!HasAnimation()) {
+    return skNullAdvance;
+  }
+  return mAnimData->Advance(dt, cameraDistance, mScale, &mgr, *mgr.Random(), aid, advTree);
 }
 
 CAdvancementDeltas CModelData::AdvanceAnimation(float dt, CRandom16& random, bool advTree) {
@@ -427,11 +438,33 @@ bool CModelData::IsDefinitelyOpaque(EWhichModel which) const {
 }
 
 void CModelData::SetEchoModel(const rstl::pair< CAssetId, CAssetId >& assets) {
-  // TODO: Validate CMDL/CSKR resources and replace the static token or animated Echo model.
+  if (assets.first == 0 || gpResourceFactory->GetResourceTypeById(assets.first) != 'CMDL') {
+    return;
+  }
+
+  TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+  if (HasAnimation() && assets.second != 0 &&
+      gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
+    mAnimData->SetXRayModel(model, skin);
+  } else {
+    mEchoModel = model;
+  }
 }
 
 void CModelData::SetDarkModel(const rstl::pair< CAssetId, CAssetId >& assets) {
-  // TODO: Validate CMDL/CSKR resources and replace the static token or animated Dark model.
+  if (assets.first == 0 || gpResourceFactory->GetResourceTypeById(assets.first) != 'CMDL') {
+    return;
+  }
+
+  TLockedToken< CModel > model(gpSimplePool->GetObj(SObjectTag('CMDL', assets.first)));
+  if (HasAnimation() && assets.second != 0 &&
+      gpResourceFactory->GetResourceTypeById(assets.second) == 'CSKR') {
+    TLockedToken< CSkinRules > skin(gpSimplePool->GetObj(SObjectTag('CSKR', assets.second)));
+    mAnimData->SetInfraModel(model, skin);
+  } else {
+    mDarkModel = model;
+  }
 }
 
 const TLockedToken< CModel >& CModelData::PickStaticModel(EWhichModel which) const {

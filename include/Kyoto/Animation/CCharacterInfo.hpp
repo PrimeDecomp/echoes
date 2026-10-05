@@ -38,6 +38,7 @@ public:
   CAssetId GetIceSkinRulesId() const { return mCksrOverlay; }
   CAssetId GetSpatialPrimitiveId() const { return mSpatialPrimitiveId; }
   bool GetAnimatedScale() const { return mAnimatedScale; }
+  uint GetDefaultAnimation() const { return xa4_; }
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }
   const CParticleResData& GetParticleResData() const { return mPartRes; }
   const TEffectList& GetEffects() const { return mEffects; }
