@@ -34,7 +34,10 @@ void CGroundMovement::CheckFalling(CPhysicsActor& actor, CStateManager& mgr, flo
       break;
     }
   }
-  if (outOfBounds) {
+  if (!outOfBounds) {
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
+                                    kSM_Falling, kSS_InvalidState));
+  } else {
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
                                     kSM_OnFloor, kSS_InvalidState));
     actor.SetAngularVelocityWR(actor.GetAngularVelocityWR() * 0.98f);
@@ -42,9 +45,6 @@ void CGroundMovement::CheckFalling(CPhysicsActor& actor, CStateManager& mgr, flo
     velocity.SetZ(0.f);
     actor.SetVelocityOR(velocity);
     actor.SetMomentumWR(CVector3f::Zero());
-  } else {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                    kSM_Falling, kSS_InvalidState));
   }
 }
 
