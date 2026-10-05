@@ -92,6 +92,10 @@ public:
   void ReturnToDefault(CStateManager& mgr, float delay, bool reset);
   void SetStateFlags(uint flags); // Guessed name.
   uint GetStateFlags() const { return mStateFlags; }
+  CGunController* GunController() { return mGunController.get(); }
+  bool IsGrappling() const { return (mStateFlags & kSF_Grappling) != 0; }
+  bool IsLoadingDependencies() const { return mDependenciesLoading; }
+  void SetAuxTransform(const CTransform4f& xf) { mAuxTransform = xf; }
   EArmState GetAnimState() const { return mAnimationState; }
   bool IsGrappleBeamActive() const { return mBeamActive; }
   CTransform4f GetTransform() const { return mTransform; }

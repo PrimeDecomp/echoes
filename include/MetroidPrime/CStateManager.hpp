@@ -158,6 +158,7 @@ public:
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
   int GetWeaponIdCount(TUniqueId owner, EWeaponType type);
+  bool CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const;
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
@@ -245,6 +246,7 @@ public:
   ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
   int GetNumPlayers() const { return mNumPlayers; }
+  CWeaponMgr* GetWeaponMgr() const { return mWeaponMgr; }
   TUniqueId GetForceTriggerId(int playerIndex) const {
     return TUniqueId(mForceTriggerIds[playerIndex]);
   }
