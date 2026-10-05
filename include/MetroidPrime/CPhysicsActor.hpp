@@ -45,6 +45,7 @@ public:
   void SetTranslation(const CVector3f& translation) { mTranslation = translation; }
   const CNUQuaternion& GetOrientation() const { return mOrientation; }
   const CVector3f& GetVelocity() const { return mVelocity; }
+  void SetVelocity(const CVector3f& velocity) { mVelocity = velocity; }
   const CAxisAngle& GetAngularMomentum() const { return mAngularMomentum; }
 
   // Guessed name; tests a motion delta, not an identity orientation.
@@ -164,6 +165,13 @@ public:
     mAngularImpulse = angularImpulse;
   }
   void SetLastNonCollidingState(const CMotionState& state) { mLastNonCollidingState = state; }
+  CMotionState GetLastNonCollidingState() const { return mLastNonCollidingState; }
+  const rstl::optional_object< CVector3f >& GetLastFloorPlaneNormal() const {
+    return mLastFloorPlaneNormal;
+  }
+  void SetLastFloorPlaneNormal(const rstl::optional_object< CVector3f >& normal) {
+    mLastFloorPlaneNormal = normal;
+  }
 
   float GetCoefficientOfRestitutionModifier() const;
   void SetCoefficientOfRestitutionModifier(float modifier);

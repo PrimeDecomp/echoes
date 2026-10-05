@@ -326,6 +326,7 @@ public:
   void SetControlDirectionInterpolation(float duration);
   void ResetControlDirectionInterpolation();
   void SetPlayerHitWallDuringMove();
+  void SetPlayerIsSlidingOnWall(bool sliding) { x1269_24_ = sliding; }
   void SetAimTarget(TUniqueId target);
   void UpdateAssistedAiming(const CTransform4f& transform, CStateManager& mgr);
   void UpdateGunTransform(const CVector3f& position, CStateManager& mgr);
