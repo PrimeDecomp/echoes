@@ -24,14 +24,14 @@
 
 bool CScriptSound::sFirstInFrame;
 
-extern "C" int fn_8009DCE8(int volume) {
+static int ScaleByMusicVolume(int volume) {
   const float musicVolume = float(int(gpGameState->GameOptions().GetMusicVolume()));
   CMayaSpline& volumeCurve = gpTweakGame->GetMusicVolumeSpline();
   const float musicScale = volumeCurve.EvaluateAt(musicVolume);
   return CCast::FtoS(float(volume * musicScale) / 127.f);
 }
 
-extern "C" CVector3f fn_8009DD94(const CStateManager& mgr,
+static CVector3f GetClosestSoundPosition(const CStateManager& mgr,
                                    const rstl::vector< TUniqueId >& sources) {
   CVector3f nearest = CVector3f::Zero();
   float nearestDistSq = 3.402823466e38f;
@@ -155,7 +155,7 @@ void CScriptSound::Think(float dt, CStateManager& mgr) {
 
   if (mSfxHandle && !mNonEmitter) {
     if (!mPositionSources.empty()) {
-      SetTranslation(fn_8009DD94(mgr, mPositionSources));
+      SetTranslation(GetClosestSoundPosition(mgr, mPositionSources));
     }
     const CVector3f& position = GetTranslation();
     if (!close_enough(mEmitterPosition, position)) {
@@ -247,23 +247,25 @@ void CScriptSound::Think(float dt, CStateManager& mgr) {
     }
   }
   if (mScaleByMusicVolume) {
-    const uchar volume = fn_8009DCE8(mCurrentMaxVolume);
+    const uchar volume = ScaleByMusicVolume(mCurrentMaxVolume);
     CSfxManager::SfxVolume(mSfxHandle, volume);
   }
 }
 
 void CScriptSound::SetMaxVolume(short volume) {
   mVolume = volume;
-  if (mSfxHandle) {
-    if (mNonEmitter) {
-      CSfxManager::SfxVolume(mSfxHandle,
-                             uchar(mScaleByMusicVolume ? fn_8009DCE8(volume) : volume));
-    } else {
-      const CVector3f position = GetTranslation();
-      mCurrentMaxVolume = mVolume;
-      mMaxVolume = mCurrentMaxVolume;
-      CSfxManager::UpdateEmitter(mSfxHandle, position, CVector3f::Zero(), uchar(volume));
-    }
+  if (!mSfxHandle) {
+    return;
+  }
+
+  if (mNonEmitter) {
+    CSfxManager::SfxVolume(mSfxHandle,
+                           uchar(mScaleByMusicVolume ? ScaleByMusicVolume(volume) : volume));
+  } else {
+    const CVector3f position = GetTranslation();
+    mCurrentMaxVolume = mVolume;
+    mMaxVolume = mCurrentMaxVolume;
+    CSfxManager::UpdateEmitter(mSfxHandle, position, CVector3f::Zero(), uchar(volume));
   }
 }
 
@@ -355,7 +357,7 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
         }
       }
       mCurrentMaxVolume = volume;
-      const short startVolume = mScaleByMusicVolume ? fn_8009DCE8(volume) : volume;
+      const short startVolume = mScaleByMusicVolume ? ScaleByMusicVolume(volume) : volume;
       if (mWorldSfx) {
         areaId = CSfxManager::kAllAreas;
       }
