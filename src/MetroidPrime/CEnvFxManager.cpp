@@ -814,7 +814,7 @@ void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) 
       lifetime -= dt * g_TrailDecayRate;
       ++frame;
       const int base = trail * 8;
-      if (lifetime > 0.f) {
+      if (!(lifetime <= 0.f)) {
         if (frame % period == 0) {
           const int current = ((frame - 1) / period) & 7;
           const int next = (current + 1) & 7;
@@ -876,7 +876,7 @@ void CEnvFxManager::UpdateDarkWorldParticles(
       float& lifetime = grid.mParticleLifetimes[j];
       lifetime -= lifetimeDelta;
       CVectorFixed8_8& particle = grid.mParticles[j];
-      if (lifetime > 0.f) {
+      if (!(lifetime <= 0.f)) {
         const CVectorFixed8_8& force = snowForces[(firstForce + random.Next()) & 0xff];
         const float elapsed = 1.f - lifetime;
         const float elapsedSquared = elapsed * elapsed;
