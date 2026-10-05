@@ -33,6 +33,7 @@
 #include "rstl/StringExtras.hpp"
 #include "rstl/list.hpp"
 #include "dolphin/os.h"
+#include <float.h>
 
 // Guessed names.
 static CColor sDarkPointLightColor(uchar(80), uchar(49), uchar(130), uchar(255));
@@ -117,7 +118,7 @@ void CWorldTransManager::DisableTransition() {
   mModelData = nullptr;
   mTextData = nullptr;
   mSubtitleData = nullptr;
-  mDarkWorldInfo.clear();
+  mDarkWorldInfo = rstl::optional_object< CDarkWorldInfo >();
   mPortalTransition = nullptr;
   mGoingUp = false;
 }
@@ -255,7 +256,7 @@ void CWorldTransManager::StartTransition() {
 }
 
 void CWorldTransManager::EndTransition() {
-  mCharacterFactory.clear();
+  mCharacterFactory = rstl::optional_object< TLockedToken< CCharacterFactory > >();
   DisableTransition();
 }
 
@@ -379,21 +380,21 @@ void CWorldTransManager::UpdateLights(float dt) {
 
   rstl::vector< CLight >& lights = mModelData->mLights;
   lights.clear();
+  CColor pointColor = CColor::White();
   CColor movingColor = CColor::White();
-  CColor shaftColor = CColor::White();
   if (mLongShaft) {
-    shaftColor = CColor(uchar(215), uchar(220), uchar(193), uchar(225));
+    movingColor = CColor(uchar(215), uchar(220), uchar(193), uchar(225));
   }
   if (mDarkWorldInfo) {
+    pointColor = sDarkPointLightColor;
     movingColor = sDarkMovingLightColor;
-    shaftColor = sDarkPointLightColor;
   }
 
   const CVector3f lightPos(0.f, 1.2f, 0.f);
-  CLight light = CLight::BuildPoint(lightPos, movingColor);
+  CLight light = CLight::BuildPoint(lightPos, pointColor);
   light.SetAttenuation(0.f, 0.f, 0.1f);
   CLight movingLight = light;
-  movingLight.SetColor(shaftColor);
+  movingLight.SetColor(movingColor);
   movingLight.SetPosition(lightPos + CVector3f(0.f, 0.f, 2.f * mLightOffset - mLightHeight));
 
   float intensity = 1.f;
@@ -406,9 +407,9 @@ void CWorldTransManager::UpdateLights(float dt) {
     CLight wrappedLight = light;
     wrappedLight.SetPosition(lightPos + CVector3f(0.f, 0.f,
                                                  mGoingUp ? mLightHeight : -mLightHeight));
-    wrappedLight.SetColor(CColor::Lerp(CColor::Black(), movingColor, 1.f - intensity));
+    wrappedLight.SetColor(CColor::Lerp(CColor::Black(), pointColor, 1.f - intensity));
     lights.push_back(wrappedLight);
-    movingLight.SetColor(CColor::Lerp(CColor::Black(), shaftColor, intensity));
+    movingLight.SetColor(CColor::Lerp(CColor::Black(), movingColor, intensity));
   }
   lights.push_back(movingLight);
   movingLight.SetPosition(CVector3f(movingLight.GetPosition().GetX(), -1.2f,
@@ -626,6 +627,7 @@ void CWorldTransManager::EnableTransition(CAssetId fontId, CAssetId stringId, in
                                            CColor::White(), CColor::Black(),
                                            CColor::White(), gpSimplePool);
     mSubtitleData->SetText(rstl::wstring_l(L""));
+    mSubtitleData->SetGeometryColor(CColor::Black());
   }
   mStrTable = TToken< CStringTable >(gpSimplePool->GetObj(SObjectTag('STRG', stringId)));
   mStrTable->Lock();
@@ -690,7 +692,8 @@ void CWorldTransManager::UpdateText(float dt) {
     if (mDisplaySubtitles && !mSubtitleData.null()) {
       const float elapsed = rstl::max_val(0.f, mCurTime - mTextStartTime - mSubtitleFadeInDelay);
       const float fraction = rstl::min_val(1.f, elapsed / mSubtitleFadeTime);
-      mSubtitleData->SetFontColor(CColor::White().WithAlphaOf(0.75f * fraction * fraction));
+      mSubtitleData->SetGeometryColor(
+          CColor::White().WithAlphaOf(0.75f * fraction * fraction));
       mSubtitleData->Update(dt);
     }
     const float printed = mTextData->GetNumCharactersPrinted();
@@ -701,6 +704,8 @@ void CWorldTransManager::UpdateText(float dt) {
     }
   }
 
+  float endDelay = mTextEndDelay;
+  bool textReadyToFinish = true;
   if (mIntroText && mStrTable && mStrTable->IsLoaded()) {
     const CStringTable& strings = ***mStrTable;
     if (!mIntroAudioStopped && mCurTime >= mTextStartTime + 27.25f) {
@@ -708,38 +713,68 @@ void CWorldTransManager::UpdateText(float dt) {
       CStreamAudioManager::StopSoftwareAudio(CStreamAudioManager::kSC_OneShot,
                                               rstl::string_l(""));
     }
+    endDelay = mStrIdx + 1 == strings.GetStringCount() ? 4.f : (mStrIdx & 1 ? 0.5f : 2.f);
     if (mIntroTextFadeTimer > 0.f) {
       mIntroTextFadeTimer = rstl::max_val(0.f, mIntroTextFadeTimer - 2.f * dt);
+      mTextData->SetGeometryColor(CColor::White().WithAlphaOf(mIntroTextFadeTimer));
     }
-    const bool finalPage = mStrIdx == strings.GetStringCount() - 1;
-    const float pageDelay = finalPage ? 4.f : (mStrIdx & 1 ? 0.5f : 2.f);
-    if (mIntroTextFadeTimer <= 0.f &&
-        mTextElapsedTime > 1.f + mTextData->GetTotalAnimationTime() + pageDelay) {
-      if (mStrIdx + 1 < strings.GetStringCount()) {
+    if (mStrIdx == strings.GetStringCount() - 1 &&
+        mTextData->GetTotalAnimationTime() < mTextElapsedTime) {
+      mTextData->SetTypeWriteEffectOptions(false, 0.f, FLT_MAX);
+      static float flashTime = 0.f;
+      static bool flashBlue = false;
+      flashTime += dt;
+      if (flashTime > 0.25f) {
+        flashBlue = !flashBlue;
+        flashTime = 0.f;
+        rstl::wstring text(strings.GetString(mStrIdx));
+        const char* markup = flashBlue ? static_cast< const char* >("&main-color=#89D6FF;_")
+                                       : static_cast< const char* >("&main-color=#000000;_");
+        text.append(CStringExtras::ConvertToUNICODE(rstl::string(markup)));
+        mTextData->SetText(text);
+      }
+    }
+
+    const float pageCompletion = 1.f + mTextData->GetTotalAnimationTime() + endDelay;
+    if (mTextElapsedTime <= pageCompletion) {
+      textReadyToFinish = false;
+    } else if (!mIntroTextSeen && mStrIdx + 1 < strings.GetStringCount()) {
+      static bool pageFadeStarted = false;
+      if ((mStrIdx + 1) & 1 && !pageFadeStarted) {
+        pageFadeStarted = true;
+        mIntroTextFadeTimer = 1.f;
+      } else if (mIntroTextFadeTimer <= 0.f) {
         ++mStrIdx;
-        const rstl::wstring text(strings.GetString(mStrIdx));
+        rstl::wstring text(strings.GetString(mStrIdx));
         if (mStrIdx & 1) {
+          if (mStrIdx + 1 == strings.GetStringCount()) {
+            text.append(rstl::wstring_l(L"_"));
+          }
           mTextData->SetText(text);
           mSfxInterval = 0.f;
           mTextElapsedTime = 0.f;
+          mIntroTextFadeTimer = 0.f;
         } else {
           mTextData->AddText(text);
+          pageFadeStarted = false;
         }
+        mTextData->SetGeometryColor(CColor::White());
         if (mDisplaySubtitles && mStrIdx + 1 < strings.GetStringCount()) {
           mSubtitleData->SetText(rstl::wstring(strings.GetString(mStrIdx + 1)));
         }
-      } else {
-        mIntroTextFadeTimer = 1.f;
       }
+      textReadyToFinish = false;
+    } else if (mIntroTextFadeTimer > 0.f) {
+      textReadyToFinish = false;
     }
   }
 
   if (mStopSoon) {
-    const float completion = 1.f + mTextData->GetTotalAnimationTime() + mTextEndDelay;
-    if (mTextElapsedTime > completion && mCurTime - mStopTime > 1.f) {
-      mTransitionFinished = true;
-      if (mIntroText) {
+    const float completion = 1.f + mTextData->GetTotalAnimationTime() + endDelay;
+    if (textReadyToFinish && mTextElapsedTime > completion) {
+      if (mCurTime - mStopTime > 1.f) {
         gpGameState->SystemOptions().FindEnvironmentVariable("SeenIntroText")->Set(1);
+        mTransitionFinished = true;
       }
       if (mIntroText && mIntroTextSeen && !mIntroAudioStopped) {
         mIntroAudioStopped = true;
