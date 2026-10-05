@@ -30,12 +30,15 @@
 #include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/CResFactory.hpp"
+#include "Kyoto/CDvdRequest.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CCubeModel.hpp"
+#include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "dolphin/os/OSCache.h"
@@ -47,8 +50,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// Structure-first scaffold. The scan-tree, GUI and model-viewer bodies remain incomplete.
-// Native definitions follow the target's deferred-emission order.
+// Echoes combines the scan tree, options and model viewer in this screen.
 
 CPauseScreen::CPauseScreen()
 : mSelectedNodeTexture(gpSimplePool->GetObj("TXTR_ScanNetworkSelected"))
@@ -305,11 +307,11 @@ void CPauseScreen::Initialize(const CStateManager& mgr) {
   char text[256];
   sprintf(text, "%d%%", scanPercentage);
   mScanPercentage->TextSupport().SetText(
-      rstl::wstring(gpStringTable->GetString("ScansPercentage")) +
+      gpStringTable->GetString("ScansPercentage") +
           CStringExtras::ConvertToUNICODE(rstl::string(text)), false);
   sprintf(text, "%d%%", mgr.GetPlayerState(0)->GetItemPercentageRatio());
   mItemPercentage->TextSupport().SetText(
-      rstl::wstring(gpStringTable->GetString("ItemsPercentage")) +
+      gpStringTable->GetString("ItemsPercentage") +
           CStringExtras::ConvertToUNICODE(rstl::string(text)), false);
 
   mOpenedFromScan = false;
@@ -1378,7 +1380,7 @@ void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origi
     draw.mDepth = 0.f;
     draw.mStyle = 1;
     draw.mAlpha = mScanTree.GetLayoutProgress();
-    nodes.push_back(draw);
+    nodes.push_back_unsafe(draw);
   }
   if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
     const CScanTreeCategory& category = static_cast< const CScanTreeCategory& >(*node);
@@ -1407,7 +1409,7 @@ void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origi
       draw.mDepth = 0.f;
       draw.mStyle = style;
       draw.mAlpha = alpha;
-      nodes.push_back(draw);
+      nodes.push_back_unsafe(draw);
       DrawConnection(view, position, childPosition,
                      CColor::Modulate(gpTweakGui->GetLogBookNodeColor(), brightness), 1.f);
     }
@@ -1767,7 +1769,7 @@ void CPauseScreen::RenderModels(const CTransform4f& xf, const CModelFlags& flags
           if (locator.size() != 0) {
             const CSegId id = animation.GetLocatorSegId(locator);
             const CTransform4f locatorXf = animation.GetLocatorTransform(id, nullptr);
-            if (locator.find(rstl::string("LCTR")) == -1) {
+            if (locator.find("LCTR") == -1) {
               const CTransform4f attachment =
                   locatorXf * layout->GetLinearRotations()[id.val()].BuildTransform4f();
               mModels[i]->Render(CModelData::kWM_Normal, xf * attachment, mActorLights.get(), flags);
@@ -1785,8 +1787,112 @@ void CPauseScreen::RenderModels(const CTransform4f& xf, const CModelFlags& flags
   }
 }
 
-void CPauseScreen::DrawModelView(const CTransform4f&, float) const {
-  // TODO: draw the scan sweep, fading model and selected-cursor overlay.
+void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
+  const float flash = CMath::Clamp(
+      0.f, const_cast< CMayaSpline& >(gpTweakGui->GetLogBookScanObjectFadeInSpline()).EvaluateAt(mModelFade), 1.f);
+  if (!close_enough(mModelFade, 1.f)) {
+    CCubeRenderer::That()->SetRequestRGBA6(true);
+    GXSetColorUpdate(GX_FALSE);
+    CCubeModel::SetRenderModelBlack(true);
+    gpRender->SetDepthReadWrite(false, false);
+    static const int maskAlpha[] = {64, 128};
+    static const float radii[] = {0.075f, 0.025f};
+    static const float phases[] = {2.0734513f, 103.67256f};
+    for (int layer = 0; layer < 2; ++layer) {
+      CGX::SetDstAlpha(true, maskAlpha[layer]);
+      const float radius = radii[layer];
+      for (int i = 0; i < 3; ++i) {
+        const float angle = 6.2831855f * i / 3.f + phases[layer];
+        const float x = radius * CMath::FastCosR(angle);
+        const float z = radius * CMath::FastSinR(angle);
+        RenderModels(CTransform4f::Translate(x, 0.f, z) * xf,
+                     CModelFlags(CModelFlags::kT_Opaque, 1.f), false);
+      }
+    }
+    CGX::SetDstAlpha(true, 255);
+    RenderModels(CTransform4f(xf), CModelFlags(CModelFlags::kT_Opaque, 1.f), false);
+    CCubeModel::SetRenderModelBlack(false);
+    GXSetColorUpdate(GX_TRUE);
+    CGX::SetDstAlpha(false, 0);
+  }
+  CGraphics::SetCullMode(kCM_Front);
+  RenderModels(CTransform4f(xf), CModelFlags(CModelFlags::kT_Blend, alpha * mAlpha), true);
+  CGraphics::SetCullMode(kCM_None);
+  if (!close_enough(mModelFade, 1.f)) {
+    GXSetAlphaUpdate(GX_FALSE);
+    CGX::SetDstAlpha(true, 0);
+    CTexture* sweep = mScanSweepTexture.GetObject();
+    if (sweep != nullptr) {
+      const CGraphics::CProjectionState projection = CGraphics::GetProjectionState();
+      const CTransform4f view = CGraphics::GetViewMatrix();
+      const rstl::pair< CVector2f, CVector2f > viewport =
+          gpRender->SetViewportOrtho(true, -4096.f, 4096.f);
+      CGX::SetChanCtrl(CGX::Channel0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL,
+                       GX_DF_NONE, GX_AF_NONE);
+      mStripedTexture.Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
+      CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
+      CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
+      CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
+                          GX_PTIDENTITY);
+      CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
+      CGX::SetTevDirect(GX_TEVSTAGE0);
+      const CColor color = CColor::Modulate(gpTweakGui->GetLogBookScanObjectFadeInFlashColor(),
+                                            CColor(flash, flash, flash, 1.f));
+      CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
+      CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
+      static const GXVtxDescList descriptors[] = {
+          {GX_VA_POS, GX_DIRECT}, {GX_VA_TEX0, GX_DIRECT}, {GX_VA_NULL, GX_NONE}};
+      CGX::SetVtxDescv(descriptors);
+      CGX::SetNumTexGens(1);
+      CGX::SetNumTevStages(1);
+      CGX::SetNumChans(0);
+      CGX::SetNumIndStages(0);
+      gpRender->SetDepthReadWrite(false, false);
+      CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+      CGraphics::SetBlendMode(kBM_Blend, kBF_DstAlpha, kBF_One, kLO_Clear);
+      const float left = viewport.first.GetX();
+      const float bottom = viewport.first.GetY();
+      const float right = viewport.second.GetX();
+      const float top = viewport.second.GetY();
+      const float texCoord = (top - bottom) / mStripedTexture.GetHeight();
+      CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+      GXPosition3f32(left, 0.f, bottom);
+      GXTexCoord2f32(0.f, texCoord);
+      GXPosition3f32(right, 0.f, bottom);
+      GXTexCoord2f32(texCoord, texCoord);
+      GXPosition3f32(left, 0.f, top);
+      GXTexCoord2f32(0.f, 0.f);
+      GXPosition3f32(right, 0.f, top);
+      GXTexCoord2f32(texCoord, 0.f);
+      CGX::End();
+      sweep->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+      static const float speeds[] = {1.5f, 0.38f, -2.f, 0.6f, -0.6f};
+      static const float scales[] = {1.f, 0.41f, 0.21f, 0.13f, 0.21f};
+      for (int i = 0; i < 5; ++i) {
+        const float phase = mModelFade * speeds[i];
+        const float position = (phase - CMath::FloorF(phase)) * (top - bottom);
+        const CVector2f low(left - 1.f, top - position);
+        const CVector2f high(right + 1.f, top - -(scales[i] * sweep->GetHeight() - position));
+        CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+        GXPosition3f32(low.GetX(), 0.f, low.GetY());
+        GXTexCoord2f32(0.f, 0.f);
+        GXPosition3f32(low.GetX(), 0.f, high.GetY());
+        GXTexCoord2f32(0.f, 1.f);
+        GXPosition3f32(high.GetX(), 0.f, low.GetY());
+        GXTexCoord2f32(1.f, 0.f);
+        GXPosition3f32(high.GetX(), 0.f, high.GetY());
+        GXTexCoord2f32(1.f, 1.f);
+        CGX::End();
+      }
+      CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+      CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+      CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
+      CGraphics::SetProjectionState(projection);
+      CGraphics::SetViewPointMatrix(view);
+      CGraphics::SetCullMode(kCM_Front);
+    }
+  }
 }
 
 void CPauseScreen::UpdateHistoryText() {
@@ -1927,3 +2033,15 @@ CVector3f CPauseScreen::GetModelPosition() const {
       (1.f - mLegendHiddenAmount) * position + mLegendHiddenAmount * hiddenPosition;
   return (1.f - mModelZoomAmount) * legendPosition + mModelZoomAmount * mModelPan;
 }
+
+CScanTreeMenu::~CScanTreeMenu() {}
+
+CScanTreeSlider::~CScanTreeSlider() {}
+
+CScanTreeScan::~CScanTreeScan() {}
+
+CScanTreeCategory::~CScanTreeCategory() {}
+
+CScanTreeNode::~CScanTreeNode() {}
+
+CScanTree::~CScanTree() {}
