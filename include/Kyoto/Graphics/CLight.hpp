@@ -3,6 +3,7 @@
 
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/construct.hpp"
 
 enum ELightType {
   kLT_Spot = 0,
@@ -87,5 +88,9 @@ private:
   mutable bool mRadiusDirty : 1;
 };
 CHECK_SIZEOF(CLight, 0x50)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CLight)
+}
 
 #endif // _CLIGHT
