@@ -1,5 +1,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 
+#include "Collision/CRayCastResult.hpp"
+
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
@@ -12,6 +14,7 @@
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CProjectedShadow.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
+#include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
 #include "MetroidPrime/CWorld.hpp"
@@ -23,19 +26,21 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
 #include "Kyoto/Basics/RAssertDolphin.hpp"
+#include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Graphics/CModel.hpp"
 
 #include "rstl/vector.hpp"
 #include "rstl/algorithm.hpp"
 
 #include <float.h>
 
-float CStateManager::GetEscapeSequenceTimer() const { return gpGameState->GetEscapeTime(); }
 
 const int gkPVSEnabled = 1;
 
@@ -180,9 +185,198 @@ void CStateManager::BuildDynamicLightListForWorld() {
   rstl::sort(mDynamicActorLights.begin(), mDynamicActorLights.end(), CActorLightPredicate());
 }
 
+void CStateManager::UpdateObjectInLists(CEntity& entity) {
+  for (rstl::reserved_vector< CObjectList*, 8 >::iterator it = mDynamicObjectLists.begin();
+       it != mDynamicObjectLists.end(); ++it) {
+    const bool contained =
+        static_cast< const CObjectList* >(*it)->GetObjectById(entity.GetUniqueId()) != nullptr;
+    if (contained && !(*it)->IsQualified(entity)) {
+      (*it)->RemoveObject(entity.GetUniqueId());
+    } else if (!contained) {
+      (*it)->AddObject(entity);
+    }
+  }
+
+  for (rstl::reserved_vector< CFilteredObjectList*, 6 >::iterator it =
+           mDynamicFilteredObjectLists.begin();
+       it != mDynamicFilteredObjectLists.end(); ++it) {
+    CFilteredObjectList* list = *it;
+    const bool contained = list->Contains(entity);
+    if (contained && !list->IsQualified(entity)) {
+      list->RemoveObject(entity);
+    } else if (!contained) {
+      list->AddObject(entity);
+    }
+  }
+}
+
+CRayCastResult CStateManager::RayWorldIntersection(
+    TUniqueId& idOut, const CVector3f& position, const CVector3f& direction, float length,
+    const CMaterialFilter& filter, const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const {
+  return CGameCollision::RayWorldIntersection(*this, idOut, position, direction, length, filter,
+                                              nearList);
+}
+
+CRayCastResult CStateManager::RayStaticIntersection(const CVector3f& position,
+                                                    const CVector3f& direction, float length,
+                                                    const CMaterialFilter& filter) const {
+  return CGameCollision::RayStaticIntersection(*this, position, direction, length, filter);
+}
+
+void CStateManager::AddObject(CEntity* entity) {
+  if (entity != nullptr) {
+    AddObject(*entity);
+  }
+}
+
+void CStateManager::BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                  const CAABox& bounds, const CMaterialFilter& filter,
+                                  const CActor* ignoreActor) const {
+  mSortedListManager->BuildNearList(nearList, bounds, filter, ignoreActor);
+}
+
 void CStateManager::BuildColliderList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
-                                    const CActor& actor, const CAABox& bounds) const {
+                                      const CActor& actor, const CAABox& bounds) const {
   mSortedListManager->BuildNearList(nearList, actor, bounds);
+}
+
+void CStateManager::BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                  const CVector3f& position, const CVector3f& direction,
+                                  float length, const CMaterialFilter& filter,
+                                  const CActor* ignoreActor) const {
+  mSortedListManager->BuildNearList(nearList, position, direction, length, filter, ignoreActor);
+}
+
+void CStateManager::AreaLoaded(TAreaId area) {
+  mMailbox->SendMsgs(area, *this);
+  mEnvFxManager->AreaLoaded();
+}
+
+void CStateManager::PrepareAreaUnload(TAreaId area) {
+  const rstl::list< CEntity* >& doors = GetDoorList();
+  for (rstl::list< CEntity* >::const_iterator it = doors.begin(); it != doors.end(); ++it) {
+    CScriptDoor* door = static_cast< CScriptDoor* >(*it);
+    if (door->IsConnectedToArea(*this, area)) {
+      door->ForceClosed(*this);
+    }
+  }
+
+  ScriptObjectLoaderHelper().FreeScriptObjects(area, *this);
+}
+
+void CStateManager::AreaUnloaded(TAreaId area) {}
+
+CEntity* CStateManager::ObjectById(TUniqueId uid) {
+  return mObjectLists[kOL_All]->GetObjectById(uid);
+}
+
+void CStateManager::FrameEnd() {
+  CModel::FrameDone();
+  gpSimplePool->Flush();
+}
+
+void CStateManager::SetupParticleHook(const CActor& actor) const {
+  mActorModelParticles->SetupHook(actor.GetUniqueId());
+}
+
+void CStateManager::ResetEscapeSequenceTimer(float time) {
+  gpGameState->SetEscapeTime(time);
+  mEscapeTotalTime = time;
+}
+
+float CStateManager::GetEscapeSequenceTimer() const { return gpGameState->GetEscapeTime(); }
+
+void CStateManager::AddWeaponId(TUniqueId owner, EWeaponType type) {
+  mWeaponMgr->IncrCount(owner, type);
+}
+
+void CStateManager::RemoveWeaponId(TUniqueId owner, EWeaponType type) {
+  mWeaponMgr->DecrCount(owner, type);
+}
+
+int CStateManager::GetWeaponIdCount(TUniqueId owner, EWeaponType type) {
+  return mWeaponMgr->GetNumActive(owner, type);
+}
+
+bool CStateManager::RenderLastHUD(const TUniqueId& uid) {
+  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderLast;
+  if (list.size() == list.capacity()) {
+    return false;
+  }
+  list.push_back(uid);
+  return true;
+}
+
+bool CStateManager::RenderLast(TUniqueId uid) {
+  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderLastUnderGun;
+  if (list.size() == list.capacity()) {
+    return false;
+  }
+  list.push_back(uid);
+  return true;
+}
+
+bool CStateManager::RenderLastOverlay(const TUniqueId& uid) {
+  rstl::reserved_vector< TUniqueId, 20 >& list = mStateManagerContainer->mRenderBeforeAreas;
+  if (list.size() == list.capacity()) {
+    return false;
+  }
+  list.push_back(uid);
+  return true;
+}
+
+void CStateManager::SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx) {
+  mBossId = bossId;
+  mBossHealth = maxEnergy;
+  mBossLanguageTableIndex = stringIdx;
+}
+
+void CStateManager::DeliverScriptMsg(const CScriptMsg& msg) {
+  if (CEntity* entity = ObjectById(msg.GetId())) {
+    entity->AcceptScriptMsg(*this, msg);
+  }
+}
+
+void CStateManager::SendScriptMsg(CEntity* target, TUniqueId sender, EScriptObjectMessage message,
+                                  TUniqueId actor) {
+  if (target != nullptr) {
+    SendScriptMsg(CScriptMsg(sender, actor, target->GetUniqueId(), message, kSS_InvalidState));
+  }
+}
+
+void CStateManager::SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
+                                  TUniqueId actor) {
+  SendScriptMsg(CScriptMsg(sender, actor, target, message, kSS_InvalidState));
+}
+
+float CStateManager::IntegrateVisorFog(float fog) const {
+  const CPlayerState* playerState = mPlayerState;
+  if (playerState->GetActiveVisor(*this) == CPlayerState::kPV_Scan) {
+    return fog * (1.f - playerState->GetVisorTransitionFactor());
+  }
+  return fog;
+}
+
+bool CStateManager::HasPendingLayerLoads() const {
+  for (CGameArea::CConstChainIterator it = mWorld->GetChainHead(CWorld::kC_Alive);
+       it != CWorld::skGlobalEnd; ++it) {
+    if (it->HasPendingLayerLoads()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void CStateManager::SetPortalTransition(rstl::single_ptr< CPortalTransition >& transition) {
+  mPortalTransition = transition;
+}
+
+rstl::single_ptr< CPortalTransition >& CStateManager::TakePortalTransition() {
+  return mPortalTransition;
+}
+
+CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
+  return mStateManagerContainer->mScriptObjectLoader;
 }
 
 struct queryOutput {
