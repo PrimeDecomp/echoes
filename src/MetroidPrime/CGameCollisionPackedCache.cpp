@@ -265,8 +265,10 @@ bool CGameCollision::DetectCollision_Cached_Moving(
     CCollisionInfo& collision, double& distance) {
   bool hit = false;
   if (!filter.GetExcludeList().HasMaterial(kMT_NoStaticCollision)) {
-    hit = DetectStaticCollision_Cached_Moving(mgr, cache, primitive, transform, filter, direction,
-                                              collision, distance);
+    if (DetectStaticCollision_Cached_Moving(mgr, cache, primitive, transform, filter, direction,
+                                            collision, distance)) {
+      hit = true;
+    }
   }
   TUniqueId dynamicId = kInvalidUniqueId;
   if (DetectDynamicCollisionMoving(primitive, transform, nearList, direction, dynamicId, collision,
