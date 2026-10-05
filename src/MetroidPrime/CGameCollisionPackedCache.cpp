@@ -11,6 +11,7 @@
 #include "WorldFormat/CCollidableOBBTreeGroup.hpp"
 #include "WorldFormat/CCollisionCache.hpp"
 #include "WorldFormat/CMetroidAreaCollider.hpp"
+#include "WorldFormat/COBBTree.hpp"
 
 namespace {
 const CMaterialList kImplicitGeometryMaterials(kMT_Unknown59, kMT_Unknown60);
@@ -91,7 +92,93 @@ void CGameCollision::BuildCollisionCache(const CStateManager& mgr, CCollisionCac
 void CGameCollision::UpdateCollisionCache(const CStateManager& mgr, CCollisionCache& cache,
                                           rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                                           ECacheUpdatePolicy policy) {
-  // TODO: Reconcile packed geometry, transforms and per-ID status before applying the policy.
+  uchar status[1024] = {};
+  CCollisionCacheIterator iterator;
+
+  for (;;) {
+    const uint result = cache.SkipGeometry(iterator);
+    if (result == uint(-1)) {
+      for (int i = 0; i < nearList.size(); ++i) {
+        const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(nearList[i]));
+        if (actor && status[i] != 1 && CacheActorGeometry(mgr, cache, actor)) {
+          status[i] = 1;
+        }
+      }
+
+      if (policy == kCUP_RemoveCachedNearListIds) {
+        int statusIndex = 0;
+        for (rstl::reserved_vector< TUniqueId, 1024 >::iterator id = nearList.begin();
+             id != nearList.end(); ++statusIndex) {
+          if (status[statusIndex] == 1) {
+            id = nearList.erase(id);
+          } else {
+            ++id;
+          }
+        }
+      }
+      return;
+    }
+
+    const short objectId = iterator.GetObjectId();
+    if (objectId == kInvalidUniqueId.value) {
+      continue;
+    }
+
+    bool removeGeometry = true;
+    for (int i = 0; i < nearList.size(); ++i) {
+      if (nearList[i].value != objectId) {
+        continue;
+      }
+
+      const CPhysicsActor* actor =
+          TCastToConstPtr< CPhysicsActor >(mgr.GetObjectById(nearList[i]));
+      if (!actor) {
+        continue;
+      }
+
+      const CCollisionPrimitive& primitive = *actor->GetCollisionPrimitive();
+      const CCollisionPrimitiveData* geometry = nullptr;
+      CTransform4f transform = CTransform4f::Identity();
+      switch (primitive.GetPrimType()) {
+      case 'OBTG':
+        geometry = static_cast< const CCollidableOBBTreeGroup& >(primitive).GetOBBTree(0);
+        transform = actor->GetPrimitiveTransform();
+        break;
+      case 'AABX':
+        if (cache.GetDynamicGeometryMode() != 2) {
+          geometry = COBBTree::GetPrebuiltTree(COBBTree::kPBT_UnitCube);
+          transform = MakeAABoxCacheTransform(
+              *actor, static_cast< const CCollidableAABox& >(primitive));
+        }
+        break;
+      case 'SPHR':
+        if (cache.GetDynamicGeometryMode() != 2) {
+          transform = MakeSphereCacheTransform(
+              *actor, static_cast< const CCollidableSphere& >(primitive));
+          const float scale = transform.GetRight().Magnitude();
+          geometry = COBBTree::GetPrebuiltTree(
+              scale < 2.f ? COBBTree::kPBT_UnitSphereLow
+                          : scale < 5.f ? COBBTree::kPBT_UnitSphereMedium
+                                        : COBBTree::kPBT_UnitSphereHigh);
+        }
+        break;
+      }
+
+      if (geometry) {
+        const bool matches = iterator.MatchesGeometry(
+            objectId, geometry, transform, actor->GetMaterialList().GetValue());
+        status[i] = matches ? 1 : 2;
+        if (matches) {
+          removeGeometry = false;
+        }
+        break;
+      }
+    }
+
+    if (removeGeometry) {
+      cache.RemoveGeometry(iterator);
+    }
+  }
 }
 
 bool CGameCollision::CacheActorGeometry(const CStateManager& mgr, CCollisionCache& cache,
