@@ -41,6 +41,8 @@ public:
 
   const float& GetMaximumPitch() const { return mMaxPitch; }
 
+  bool GetLocoAnimChangeAtEndOfAnimOnly() const { return mChangeLocoAtEndOfAnimOnly; }
+
   pas::EAnimationState GetCurrentStateId() const { return mState; }
 
   pas::EAnimationState GetCurrentAdditiveStateId() const { return mAdditiveState; }
