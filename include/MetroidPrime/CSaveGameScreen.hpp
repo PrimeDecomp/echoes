@@ -45,6 +45,10 @@ public:
 
   CIOWin::EMessageReturn Update(float dt);
   bool PumpLoad();
+
+  // Guessed name; the stored completion result is read by CStateManager.
+  CIOWin::EMessageReturn GetMessageReturn() const { return mIowRet; }
+
   void ProcessUserInput(const CFinalInput& input);
   void Draw() const;
   const CGameState::GameFileStateInfo* GetGameData(int idx) const;

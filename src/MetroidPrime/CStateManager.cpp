@@ -134,10 +134,12 @@ int CStateManager::GetViewportLayoutIndex() const {
   if (mNumPlayers == 1u) {
     return 0;
   }
-  if (mNumPlayers != 2u) {
-    return 2;
+
+  int layout = 2;
+  if (mNumPlayers == 2u) {
+    layout = 1;
   }
-  return 1;
+  return layout;
 }
 
 void CStateManager::AddProjectedShadow(CProjectedShadow* shadow) {
@@ -418,6 +420,11 @@ int CStateManager::SpecialSkipCinematic() {
   return result;
 }
 
+void CStateManager::DeleteSaveGameScreen() {
+  mInSaveUI = mSaveGameScreen->GetMessageReturn() == CIOWin::kMR_Exit;
+  mSaveGameScreen = nullptr;
+}
+
 void CStateManager::SetGameState(EGameState state) {
   if (mGameState == state) {
     return;
@@ -539,7 +546,7 @@ CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
 CStateManager::~CStateManager() {}
 
 TUniqueId CStateManager::AllocateUniqueId() {
-  const ushort lastIndex = mNextFreeIndex;
+  ushort lastIndex = mNextFreeIndex;
   ushort ourIndex;
   do {
     ourIndex = mNextFreeIndex;
