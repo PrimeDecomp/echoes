@@ -37,6 +37,7 @@ public:
 
   float GetLength() const { return mLength; }
   float GetDuration() const { return mDuration; }
+  void SetDuration(float duration) { mDuration = duration; }
   uint GetControlPointCount() const { return mControlPoints.size(); }
   uint GetKnotCount() const { return mKnots.size(); }
   CVector3f GetKnot(uint index) const; // Guessed name; respects closed-loop index wrapping.

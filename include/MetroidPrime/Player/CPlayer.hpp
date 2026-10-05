@@ -381,6 +381,7 @@ public:
   float GetAttachedActorStruggle() const;
 
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
+  TUniqueId GetRidingPlatform() const { return mRidingPlatform; }
   const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
