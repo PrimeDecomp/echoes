@@ -199,9 +199,12 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
           GXTexCoord2u8(0, alpha);
           alpha -= 15;
         }
-        GXPosition3s16(next.mX - ((delta.mX * fraction) >> 8),
-                       next.mY - ((delta.mY * fraction) >> 8),
-                       next.mZ - ((delta.mZ * fraction) >> 8));
+        const short dx = position.mX - next.mX;
+        const short dy = position.mY - next.mY;
+        const short dz = position.mZ - next.mZ;
+        GXPosition3s16(next.mX + ((dx * fraction) >> 8),
+                       next.mY + ((dy * fraction) >> 8),
+                       next.mZ + ((dz * fraction) >> 8));
       } else {
         GXPosition3s16(position.mX, position.mY, position.mZ);
       }
