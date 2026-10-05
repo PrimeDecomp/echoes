@@ -405,7 +405,7 @@ public:
   int fn_8000d0ac(const CStateManager& mgr, int channel) const;
   CTransform4f GetTurretTransform(const CStateManager& mgr) const;
   void fn_8000d540(const CFinalInput& input, CStateManager& mgr);
-  void fn_8000d5dc(const CFinalInput& input, CStateManager& mgr);
+  void ProcessTurretInput(const CFinalInput& input, CStateManager& mgr); // Guessed name.
   void ExitTurret(CStateManager& mgr);
   float GetAttachedActorStruggle() const;
 
@@ -446,7 +446,7 @@ public:
   void RenderReflectedPlayer(CStateManager& mgr);
   void UpdateModelScale(CStateManager& mgr); // Guessed name; adjusts the viewed player's scale.
   float GetMaximumPlayerPositiveVerticalVelocity(const CStateManager& mgr) const;
-  void fn_80012eb8(CStateManager& mgr);
+  void ResolveUnmorphCollision(CStateManager& mgr); // Guessed name.
   void UpdateCameraTimers(float dt, const CFinalInput& input);
   void UpdateCameraState(CStateManager& mgr);
   void UpdateCinematicState(CStateManager& mgr);
@@ -740,8 +740,8 @@ private:
   float mMorphTime;
   float mMorphDuration;
   float mAlpha;
-  bool x1144_24_ : 1;
-  bool x1144_25_ : 1;
+  bool mCanStartUnmorphTransition : 1; // Guessed name.
+  bool mCanStartMorphTransition : 1;   // Guessed name.
   float mStaticTimer;
   float mStaticOutSpeed;
   float mStaticInSpeed;
@@ -893,7 +893,7 @@ private:
   CControlMapper mControlMapper;
   rstl::single_ptr< CHintManager > mControlHintManager;
   TUniqueId mPlayerHintControlHintId;
-  float x14c0_;
+  float mBackwardInput; // Guessed name: cached unfiltered backward command.
   TUniqueId mEnemyLockOnActorId;
   char mEnemyLockOnCount;
 };

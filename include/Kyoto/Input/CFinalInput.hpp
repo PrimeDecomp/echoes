@@ -41,6 +41,8 @@ public:
 
   float DeltaTime() const { return mDt; }
 
+  void SetDeltaTime(float dt) { mDt = dt; }
+
   float GetAnalogLeftX() const { return mAnaLeftX; }
   float GetAnalogLeftY() const { return mAnaLeftY; }
   float GetAnalogRightX() const { return mAnaRightX; }
