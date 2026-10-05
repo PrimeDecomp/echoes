@@ -26,7 +26,7 @@ extern const int gkPVSEnabled;
 #include "rstl/auto_ptr.hpp"
 #include "rstl/bit_vector.hpp"
 #include "rstl/list.hpp"
-#include "rstl/map.hpp"
+#include "rstl/multimap.hpp"
 #include "rstl/pair.hpp"
 #include "rstl/rc_ptr.hpp"
 #include "rstl/reserved_vector.hpp"
@@ -57,6 +57,7 @@ class CStateManagerContainer;
 class CInputStream;
 class CStateManager;
 class CInGameGuiManagerSet;
+class CDependencyGroup;
 
 namespace SL {
 class CSortedListManager;
@@ -99,7 +100,7 @@ class CStateManager : public TOneStatic< CStateManager > {
   };
 
 public:
-  typedef rstl::map< TEditorId, TUniqueId > TIdList;
+  typedef rstl::multimap< TEditorId, TUniqueId > TIdList;
   typedef rstl::pair< TIdList::const_iterator, TIdList::const_iterator > TIdListResult;
 
   // Guessed phase names, derived from world initialization.
@@ -168,7 +169,7 @@ public:
                    const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
                          TUniqueId weapon, const CDamageInfo& damage);
-  void KillPlayer(float remainingHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
+  void KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
   void PreRender(uint playerIndex);                // Prime-correlated name.
   void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
@@ -214,6 +215,7 @@ public:
   TIdListResult GetIdListForScript(TEditorId) const;
 
   CWorld* World() { return mWorld; }
+  bool HasWorld() const; // Prime-correlated name.
   CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
   CScriptMailbox* Mailbox() const { return mMailbox.GetPtr(); }
   void QuitGame() { mQuitGame = true; }
@@ -295,10 +297,12 @@ public:
                         const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& info, int);
 
   void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
-  void fn_8003BF84(CEntity*);
-  void fn_800412EC(TUniqueId);
+  // Guessed names, recovered from script deletion and object-list consumers.
+  void AddToGraveyard(CEntity* entity);
+  void RemoveObject(TUniqueId id);
   bool IsMultiplayer() const; // Guessed name
-  void fn_8003BE54();
+  void DispatchScriptMessages(); // Guessed name.
+  void ThinkNewObjects(float dt); // Guessed name.
   void InformListeners(const CVector3f& position, EListenNoiseType type);
   void Think(float dt);
   void MoveActors(float dt);
@@ -365,7 +369,7 @@ public:
   rstl::reserved_vector< rstl::auto_ptr< CFilteredObjectList >, 6 > mFilteredObjectLists;
   rstl::reserved_vector< CFilteredObjectList*, 6 > mDynamicFilteredObjectLists;
   MapWorldInfoAreas mAllocatedObjectIndices;
-  char x8d4_[0x18];
+  rstl::list< TUniqueId > mNewObjectIds; // Guessed name: IDs awaiting their first update.
   ScriptMsgArray mScriptMsgs;
   CArchitectureQueue* mArchQueue;
   int mNumPlayers;
@@ -388,12 +392,13 @@ public:
   CEnvFxManager* mEnvFxManager;               // 0x1630
   CActorModelParticles* mActorModelParticles; // 0x1634
   CSafeZoneManager* mSafeZoneManager; // 0x1638, target-derived pointee and role.
-  char mUnknownData1[0x40];
+  TIdList mScriptIdMap;
+  TToken< CDependencyGroup > mAudioGroupDependencies; // Guessed name, from audio initialization.
+  rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > mPlayerStateOwners; // Guessed name.
   rstl::rc_ptr< CScriptMailbox > mMailbox;
   rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
   rstl::rc_ptr< CWorldTransManager > mWorldTransManager;
-  CWorldLayerState* mCurrentWorldLayerState;
-  int* x1698;
+  rstl::ncrc_ptr< CWorldLayerState > mCurrentWorldLayerState;
   rstl::single_ptr< CSaveGameScreen > mSaveGameScreen; // x169C
   TAreaId mNextAreaId;                                 // x16a0
   TAreaId mPreviousAreaId;
@@ -460,7 +465,13 @@ public:
   bool mUnkFlagB7 : 1;
   bool mUnkFlagB8 : 1;
 };
-// CHECK_OFFSETOF(CStateManager, mWorld, 0x1604)
-// CHECK_OFFSETOF(CStateManager, mEnvFxManager, 0x1630)
+CHECK_SIZEOF(CStateManager, 0x2950)
+CHECK_OFFSETOF(CStateManager, mNewObjectIds, 0x8d4)
+CHECK_OFFSETOF(CStateManager, mWorld, 0x1604)
+CHECK_OFFSETOF(CStateManager, mEnvFxManager, 0x1630)
+CHECK_OFFSETOF(CStateManager, mScriptIdMap, 0x163c)
+CHECK_OFFSETOF(CStateManager, mAudioGroupDependencies, 0x1650)
+CHECK_OFFSETOF(CStateManager, mPlayerStateOwners, 0x1658)
+CHECK_OFFSETOF(CStateManager, mCurrentWorldLayerState, 0x1694)
 
 #endif // _CSTATEMANAGER

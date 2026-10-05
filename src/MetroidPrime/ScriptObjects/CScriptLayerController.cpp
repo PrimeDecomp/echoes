@@ -107,7 +107,7 @@ TAreaId CScriptLayerController::GetAreaIdAndWorldLayerState(CStateManager& mgr,
   const TAreaId area = mgr.World()->GetAreaIdForSaveId(mAreaSaveId);
   if (area != kInvalidAreaId) {
     if (layers != nullptr) {
-      *layers = mgr.mCurrentWorldLayerState;
+      *layers = mgr.mCurrentWorldLayerState.GetPtr();
     }
     return area;
   }
