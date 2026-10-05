@@ -1,7 +1,11 @@
 #include "MetroidPrime/CEnvFxManager.hpp"
 
-#include "Kyoto/CRandom16.hpp"
+#include "Collision/CCollidableAABox.hpp"
+#include "Collision/CInternalRayCastStructure.hpp"
+#include "Collision/CMaterialFilter.hpp"
+#include "Collision/CRayCastResult.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/CRandom16.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
@@ -9,28 +13,28 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
-#include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
-#include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CMain.hpp"
+#include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTev.h"
 #include "rstl/auto_ptr.hpp"
-#include "Collision/CCollidableAABox.hpp"
-#include "Collision/CMaterialFilter.hpp"
-#include "Collision/CInternalRayCastStructure.hpp"
-#include "Collision/CRayCastResult.hpp"
-#include "MetroidPrime/CGameCollision.hpp"
 
 // The target stores the largest finite single-precision value directly.
 static const float skMaximumBlockingHeight = 3.402823466e+38F;
 static float g_SnowForces[256][2];
+static float g_DarkWorldForceSpeed = 5.f;
+static float g_DarkWorldRiseSpeed = 4.f;
+static float g_DarkWorldImpulseScale = 2.5f;
+static float g_DarkWorldImpulseRate = 20.f;
 static int g_TrailPeriod = 8;
 static int g_TrailSecondaryAxis = 2;
 static float g_TrailPrimaryScale;
@@ -103,16 +107,17 @@ void CEnvFxManagerGrid::RenderRainParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
-  int count = mParticles.size();
   short zx = real_to_fixed8_8(0.2f * camXf.Get02());
   short zy = real_to_fixed8_8(0.2f * camXf.Get12());
   short zz = real_to_fixed8_8(0.2f * camXf.Get22());
   short xx = real_to_fixed8_8(0.2f * camXf.Get00());
   short xy = real_to_fixed8_8(0.2f * camXf.Get10());
   short xz = real_to_fixed8_8(0.2f * camXf.Get20());
+  const int count = mParticles.size();
   CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  const CVectorFixed8_8* particles = mParticles.data();
   for (int i = count - 1; i >= 0; --i) {
-    CVectorFixed8_8 particle = mParticles[i];
+    CVectorFixed8_8 particle = particles[i];
     GXPosition3s16(particle.mX, particle.mY, particle.mZ);
     GXTexCoord2u8(0, 0);
     particle.mX += zx;
@@ -135,16 +140,17 @@ void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
-  const int count = mParticles.size();
   const short zx = real_to_fixed8_8(0.2f * camXf.Get02());
   const short zy = real_to_fixed8_8(0.2f * camXf.Get12());
   const short zz = real_to_fixed8_8(0.2f * camXf.Get22());
   const short xx = real_to_fixed8_8(0.2f * camXf.Get00());
   const short xy = real_to_fixed8_8(0.2f * camXf.Get10());
   const short xz = real_to_fixed8_8(0.2f * camXf.Get20());
+  const int count = mParticles.size();
   CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  const CVectorFixed8_8* particles = mParticles.data();
   for (int i = count - 1; i >= 0; --i) {
-    CVectorFixed8_8 particle = mParticles[i];
+    CVectorFixed8_8 particle = particles[i];
     GXPosition3s16(particle.mX, particle.mY, particle.mZ);
     GXTexCoord2u8(0, 0);
     particle.mX += zx;
@@ -167,47 +173,42 @@ void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
-  const CColor& baseColor = type == kEFX_Unknown6 ? skTrailColor6 : skTrailColor7;
-  const int period = g_TrailPeriod;
-  for (int trail = 0; trail < mParticles.size() / 8; ++trail) {
-    const int frame = mTrailFrames[trail];
+  const int count = mParticles.size() / 8;
+  const int* frames = mTrailFrames.data();
+  const float* lifetimes = mParticleLifetimes.data();
+  const CVectorFixed8_8* particles = mParticles.data();
+  for (int trail = 0; trail < count; ++trail) {
+    const int frame = frames[trail];
     const int base = trail * 8;
-    int segment = (frame / period) & 7;
-    const short fraction = static_cast< short >(
-        256.f * static_cast< float >(frame % period) / static_cast< float >(period));
-    const float lifetime = mParticleLifetimes[trail];
-    float colorAlpha = baseColor.GetAlpha();
-    if (lifetime < 0.2f) {
-      colorAlpha = colorAlpha * lifetime / 0.2f;
-    } else if (lifetime > 0.8f) {
-      colorAlpha = colorAlpha * (1.f - lifetime) / 0.2f;
-    }
-    const CColor color = baseColor.WithAlphaOf(colorAlpha);
-    GXSetTevColor(GX_TEVREG1, color.GetGXColor());
-
-    CVectorFixed8_8 position = mParticles[base + segment];
+    int segment = (frame / g_TrailPeriod) % 8;
+    const short fraction = real_to_fixed8_8(static_cast< float >(frame % g_TrailPeriod) /
+                                            static_cast< float >(g_TrailPeriod));
+    CColor color = type == kEFX_Unknown6 ? skTrailColor6 : skTrailColor7;
+    CVectorFixed8_8 position = particles[base + segment];
     uchar alpha = 0x7f;
+    const float lifetime = lifetimes[trail];
+    if (lifetime < 0.2f) {
+      color.SetAlpha(color.GetAlpha() * lifetime / 0.2f);
+    } else if (lifetime > 0.8f) {
+      color.SetAlpha(color.GetAlpha() * (1.f - lifetime) / 0.2f);
+    }
+    GXSetTevColor(GX_TEVREG1, color.GetGXColor());
     CGX::Begin(GX_LINESTRIP, GX_VTXFMT6, 8);
-    for (int point = 0; point < 7; ++point) {
-      --segment;
-      if (segment < 0) {
+    for (int point = 0; point < 8; ++point) {
+      if (--segment < 0) {
         segment = 7;
       }
-      const CVectorFixed8_8& delta = mParticles[base + segment];
-      const CVectorFixed8_8 next(position.mX + delta.mX, position.mY + delta.mY,
-                                 position.mZ + delta.mZ);
-      if (point == 0 || point == 6) {
-        if (point == 6) {
-          GXPosition3s16(position.mX, position.mY, position.mZ);
-          GXTexCoord2u8(0, alpha);
-          alpha -= 15;
-        }
-        const short dx = position.mX - next.mX;
-        const short dy = position.mY - next.mY;
-        const short dz = position.mZ - next.mZ;
-        GXPosition3s16(next.mX + ((dx * fraction) >> 8),
-                       next.mY + ((dy * fraction) >> 8),
-                       next.mZ + ((dz * fraction) >> 8));
+      const CVectorFixed8_8 next = position + particles[base + segment];
+      if (point == 0) {
+        const CVectorFixed8_8 interpolated = next + (position - next) * fraction;
+        GXPosition3s16(interpolated.mX, interpolated.mY, interpolated.mZ);
+      } else if (point == 6) {
+        GXPosition3s16(position.mX, position.mY, position.mZ);
+        GXTexCoord2u8(0, alpha);
+        alpha -= 15;
+        ++point;
+        const CVectorFixed8_8 interpolated = next + (position - next) * fraction;
+        GXPosition3s16(interpolated.mX, interpolated.mY, interpolated.mZ);
       } else {
         GXPosition3s16(position.mX, position.mY, position.mZ);
       }
@@ -220,16 +221,17 @@ void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
 }
 
 void CEnvFxManagerGrid::RenderUnderwaterParticles(const CTransform4f& camXf) {
-  int count = mParticles.size();
   short zx = real_to_fixed8_8(0.5f * camXf.Get02());
   short zy = real_to_fixed8_8(0.5f * camXf.Get12());
   short zz = real_to_fixed8_8(0.5f * camXf.Get22());
   short xx = real_to_fixed8_8(0.5f * camXf.Get00());
   short xy = real_to_fixed8_8(0.5f * camXf.Get10());
   short xz = real_to_fixed8_8(0.5f * camXf.Get20());
+  const int count = mParticles.size();
   CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  const CVectorFixed8_8* particles = mParticles.data();
   for (int i = count - 1; i >= 0; --i) {
-    CVectorFixed8_8 particle = mParticles[i];
+    CVectorFixed8_8 particle = particles[i];
     GXPosition3s16(particle.mX, particle.mY, particle.mZ);
     GXTexCoord2u8(0, 0);
     particle.mX += zx;
@@ -261,8 +263,8 @@ bool CEnvFxManagerGrid::SetupRender(const CTransform4f& xf, const CTransform4f& 
   const CTransform4f gridXf = xf * CTransform4f::Translate(gridX, gridY, 0.f);
   gpRender->SetModelMatrix(gridXf);
 
-  if (type == kEFX_Snow || type == kEFX_Rain || type == kEFX_DarkWorld ||
-      type == kEFX_Unknown5 || type == kEFX_Unknown6 || type == kEFX_Unknown7) {
+  if (type == kEFX_Snow || type == kEFX_Rain || type == kEFX_DarkWorld || type == kEFX_Unknown5 ||
+      type == kEFX_Unknown6 || type == kEFX_Unknown7) {
     const CVector3f localUp = invXf * (mBlock.second * CVector3f::Up());
     float texMtx[2][4] = {{0.f, 0.f, 0.f, 0.f}, {0.f, 0.f, 10.f, 0.f}};
     texMtx[1][3] = -(10.f * localUp.GetZ() + 0.5f);
@@ -319,23 +321,28 @@ void CEnvFxManagerGrid::RenderDarkWorldParticles(const CTransform4f& xf, const C
     const uchar red = static_cast< uchar >(255.f * brightness);
     const uchar green = static_cast< uchar >(red * lifetime);
     const uchar alpha = static_cast< uchar >(255.f * -(remainingSquared * remainingSquared - 1.f));
-    CGX::SetTevKColor(GX_KCOLOR0, CColor(red, green, red, alpha).GetGXColor());
+    GXSetTevKColor(GX_KCOLOR0, CColor(red, green, red, alpha).GetGXColor());
 
-    const CVectorFixed8_8& particle = mParticles[i];
-    const CVectorFixed8_8& offset = offsets[i & 15];
+    CGX::Begin(GX_QUADS, GX_VTXFMT6, 4);
+    const CVectorFixed8_8 particle = mParticles[i] + offsets[i & 15];
     const CVectorFixed8_8& up = upDeltas[i & 15];
     const CVectorFixed8_8& right = rightDeltas[i & 15];
-    const short x = particle.mX + offset.mX;
-    const short y = particle.mY + offset.mY;
-    const short z = particle.mZ + offset.mZ;
-    CGX::Begin(GX_QUADS, GX_VTXFMT6, 4);
-    GXPosition3s16(x, y, z);
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
     GXTexCoord2u8(0, 0);
-    GXPosition3s16(x + up.mX, y + up.mY, z + up.mZ);
+    int x = particle.mX + up.mX;
+    int y = particle.mY + up.mY;
+    int z = particle.mZ + up.mZ;
+    GXPosition3s16(x, y, z);
     GXTexCoord2u8(0, 2);
-    GXPosition3s16(x + up.mX + right.mX, y + up.mY + right.mY, z + up.mZ + right.mZ);
+    x += right.mX;
+    y += right.mY;
+    z += right.mZ;
+    GXPosition3s16(x, y, z);
     GXTexCoord2u8(2, 2);
-    GXPosition3s16(x + right.mX, y + right.mY, z + right.mZ);
+    x -= up.mX;
+    y -= up.mY;
+    z -= up.mZ;
+    GXPosition3s16(x, y, z);
     GXTexCoord2u8(2, 0);
     CGX::End();
   }
@@ -378,13 +385,13 @@ void CEnvFxManager::AsyncLoadResources(CStateManager& mgr) {
   for (int playerIndex = 0; playerIndex < mgr.GetNumPlayers(); ++playerIndex) {
     const TUniqueId id = mgr.AllocateUniqueId();
     mEnvRainSplashIds[playerIndex] = id;
-    CHUDBillboardEffect* effect = new CHUDBillboardEffect(
-        rstl::optional_object< TToken< CGenDescription > >(*mEnvRainSplash),
-        rstl::optional_object< TToken< CElectricDescription > >(), id, true,
-        rstl::string_l("VisorRainSplashes"),
-        CHUDBillboardEffect::GetNearClipDistance(mgr, playerIndex),
-        CHUDBillboardEffect::GetScaleForPOV(mgr), playerIndex, CColor::White(),
-        CVector3f::One(), CVector3f::Zero(), false);
+    CHUDBillboardEffect* effect =
+        new CHUDBillboardEffect(rstl::optional_object< TToken< CGenDescription > >(*mEnvRainSplash),
+                                rstl::optional_object< TToken< CElectricDescription > >(), id, true,
+                                rstl::string_l("VisorRainSplashes"),
+                                CHUDBillboardEffect::GetNearClipDistance(mgr, playerIndex),
+                                CHUDBillboardEffect::GetScaleForPOV(mgr), playerIndex,
+                                CColor::White(), CVector3f::One(), CVector3f::Zero(), false);
     effect->SetRunIndefinitely(true);
     mgr.AddObject(effect);
   }
@@ -459,7 +466,7 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
 
   const float densityDelta = mTargetFxDensity - mFxDensity;
   mFxDensity += rstl::min_val(1.f, CMath::AbsF(densityDelta) / 0.15f) *
-                CMath::Limit(densityDelta, dt * mMaxDensityDeltaSpeed / 11000.f);
+                CMath::Limit(densityDelta, dt * (mMaxDensityDeltaSpeed / 11000.f));
 
   const CVector3f scale = GetParticleBoundsToWorldScale();
   const CVector3f inverseScale(1.f / scale.GetX(), 1.f / scale.GetY(), 1.f / scale.GetZ());
@@ -544,37 +551,57 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
   int cellParticleCount = static_cast< int >(mFxDensity * maxParticleCount);
   const bool trails = type == kEFX_Unknown6 || type == kEFX_Unknown7;
   if (trails) {
-    maxParticleCount &= ~7;
-    cellParticleCount &= ~7;
+    maxParticleCount -= maxParticleCount % 8;
+    cellParticleCount -= cellParticleCount % 8;
   }
 
   static uint seed = 0;
   CRandom16 random(seed);
+  const bool darkWorld = type == kEFX_DarkWorld;
+  const bool leavingDarkWorld = !darkWorld && mPreviousFxType == kEFX_DarkWorld;
+  const bool leavingTrails = (type != kEFX_Unknown6 && mPreviousFxType == kEFX_Unknown6) ||
+                             (type != kEFX_Unknown7 && mPreviousFxType == kEFX_Unknown7);
+  if (leavingDarkWorld || leavingTrails) {
+    for (int i = 0; i < mGrids.size(); ++i) {
+      mGrids[i].mParticleLifetimes = rstl::vector< float >();
+    }
+    if (leavingTrails) {
+      for (int i = 0; i < mGrids.size(); ++i) {
+        mGrids[i].mTrailFrames = rstl::vector< int >();
+      }
+    }
+  }
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    if (!grid.mBlock.first) {
+    if (!grid.GetVisibility().first) {
       continue;
     }
     rstl::vector< CVectorFixed8_8 >& particles = grid.mParticles;
-    if (particles.size() < cellParticleCount) {
-      particles.reserve(maxParticleCount);
-      if (type == kEFX_DarkWorld) {
-        grid.mParticleLifetimes.reserve(maxParticleCount);
-      } else if (trails) {
-        grid.mParticleLifetimes.reserve(maxParticleCount / 8);
-        grid.mTrailFrames.reserve(maxParticleCount / 8);
+    if (cellParticleCount > particles.size() ||
+        ((darkWorld || trails) && cellParticleCount > grid.mParticleLifetimes.size())) {
+      if (cellParticleCount > particles.capacity() ||
+          ((darkWorld || trails) && cellParticleCount > grid.mParticleLifetimes.capacity())) {
+        particles.reserve(maxParticleCount);
+        if (darkWorld) {
+          grid.mParticleLifetimes.reserve(maxParticleCount);
+        }
+        if (trails) {
+          grid.mParticleLifetimes.reserve(maxParticleCount / 8);
+          grid.mTrailFrames.reserve(maxParticleCount / 8);
+        }
       }
-      while (particles.size() < cellParticleCount) {
+      const int remaining = cellParticleCount - particles.size();
+      for (int j = 0; j < remaining; ++j) {
         // The retail dark-world branch uses the caller's frame delta for X rather than
         // drawing another random value.
-        const short x = type == kEFX_DarkWorld
-                            ? static_cast< short >(dt)
-                            : static_cast< short >(random.Range(
-                                  0.f, static_cast< float >(grid.mExtent.GetX()) -
-                                           (trails ? 20.f : 0.f)));
+        const short x =
+            type == kEFX_DarkWorld
+                ? static_cast< short >(dt)
+                : static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetX()) -
+                                                             (trails ? 20.f : 0.f)));
         short z;
         if (type == kEFX_DarkWorld) {
-          z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
+          z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.GetVisibility().second)).GetZ());
         } else if (trails) {
           z = static_cast< short >(random.Range(20.f, 16363.f));
         } else {
@@ -590,6 +617,7 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
           grid.mTrailFrames.push_back(8 * g_TrailPeriod * random.Range(0, 100));
           for (int point = 1; point < 8; ++point) {
             particles.push_back(CVectorFixed8_8());
+            ++j;
           }
         }
       }
@@ -614,52 +642,57 @@ void CEnvFxManager::CalculateSnowForces(const CVectorFixed8_8& zVec,
   }
 
   CVector3f accumulated = CVector3f::Zero();
+  CVector3f previous = accumulated;
   CRandom16 random(99);
-  float phase = 0.f;
-  const float speed = type == kEFX_DarkWorld ? 5.f : 1.f;
-  for (int i = 255; i >= 0; --i) {
-    float forceX;
-    float forceY;
-    if (type == kEFX_Unknown5) {
-      forceX = CMath::FastSinR(phase) + 0.2f * random.Range(-1.f, 1.f);
-      forceY = CMath::FastCosR(phase) + 0.2f * random.Range(-1.f, 1.f);
-    } else {
-      forceX = g_SnowForces[i][0];
-      forceY = g_SnowForces[i][1];
+  const float (*forces)[2] = g_SnowForces;
+  if (forces != nullptr) {
+    float phase = 0.f;
+    const float speed = type == kEFX_DarkWorld ? g_DarkWorldForceSpeed : 1.f;
+    for (int i = 255; i >= 0; --i) {
+      float forceX;
+      float forceY;
+      if (type == kEFX_DarkWorld) {
+        // Retail samples these values before replacing them with the static forces below.
+        const float randomX = random.Range(-1.f, 1.f);
+        forceX = CMath::FastSinR(phase) + 0.2f * randomX;
+        const float randomY = random.Range(-1.f, 1.f);
+        forceY = CMath::FastCosR(phase) + 0.2f * randomY;
+      }
+      if (type == kEFX_Unknown5) {
+        forceX = CMath::FastSinR(phase) + 0.2f * random.Range(-1.f, 1.f);
+        forceY = CMath::FastCosR(phase) + 0.2f * random.Range(-1.f, 1.f);
+      } else {
+        forceX = forces[i][0];
+        forceY = forces[i][1];
+      }
+      const float scaledDt = dt * speed;
+      accumulated += CVector3f::ByElementMultiply(
+          inverseScale, CVector3f(forceX * scaledDt, forceY * scaledDt, 0.f));
+      snowForces.push_back(CVectorFixed8_8::FromCVector3f(accumulated - previous));
+      previous = accumulated;
+      phase += 0.024543693f;
     }
-    const CVector3f previous = accumulated;
-    const float scaledDt = dt * speed;
-    accumulated += CVector3f(inverseScale.GetX() * (forceX * scaledDt),
-                              inverseScale.GetY() * (forceY * scaledDt), 0.f);
-    const CVector3f delta = accumulated - previous;
-    snowForces.push_back(CVectorFixed8_8(real_to_fixed8_8(delta.GetX()),
-                                         real_to_fixed8_8(delta.GetY()),
-                                         real_to_fixed8_8(delta.GetZ())));
-    phase += 0.024543693f;
+    snowForces[0] = CVectorFixed8_8::FromCVector3f(snowForces[0].ToCVector3f() - accumulated);
   }
-  snowForces[0].mX = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mX) - accumulated.GetX());
-  snowForces[0].mY = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mY) - accumulated.GetY());
-  snowForces[0].mZ = real_to_fixed8_8(fixed8_8_to_real(snowForces[0].mZ) - accumulated.GetZ());
 
   if (type == kEFX_DarkWorld) {
-    const int forceIndex = static_cast< int >(20.f * CGraphics::GetSecondsMod900()) % 255;
-    const CVectorFixed8_8 impulse = snowForces[forceIndex];
-    const int impulseScale = static_cast< int >(256.f * 2.5f);
-    const short zVelocity = real_to_fixed8_8(4.f * dt * inverseScale.GetZ());
+    const int forceIndex = static_cast< int >(
+        CMath::FastFmod(g_DarkWorldImpulseRate * CGraphics::GetSecondsMod900(), 255.f));
+    const CVectorFixed8_8 velocity = CVectorFixed8_8::FromCVector3f(
+        CVector3f::ByElementMultiply(inverseScale, CVector3f(0.f, 0.f, g_DarkWorldRiseSpeed * dt)));
+    const CVectorFixed8_8 delta =
+        snowForces[forceIndex] * real_to_fixed8_8(g_DarkWorldImpulseScale) + velocity;
     for (int i = 0; i < snowForces.size(); ++i) {
-      snowForces[i].mX += static_cast< short >((impulse.mX * impulseScale) >> 8) + zVec.mX;
-      snowForces[i].mY += static_cast< short >((impulse.mY * impulseScale) >> 8) + zVec.mY;
-      snowForces[i].mZ += static_cast< short >((impulse.mZ * impulseScale) >> 8) + zVelocity + zVec.mZ;
+      snowForces[i] = snowForces[i] + delta + zVec;
     }
     return;
   }
   const float zDeltaTime = type == kEFX_Unknown5 ? 0.f : dt;
   for (int i = 0; i < snowForces.size(); ++i) {
-    const CVector3f delta = CVector3f::ByElementMultiply(
-        inverseScale, zDeltaTime * mSnowZDeltas[i & 15]);
-    snowForces[i].mX += real_to_fixed8_8(delta.GetX()) + zVec.mX;
-    snowForces[i].mY += real_to_fixed8_8(delta.GetY()) + zVec.mY;
-    snowForces[i].mZ += real_to_fixed8_8(delta.GetZ()) + zVec.mZ;
+    const CVector3f delta =
+        CVector3f::ByElementMultiply(inverseScale, zDeltaTime * mSnowZDeltas[i & 15]);
+    const CVectorFixed8_8 fixedDelta = CVectorFixed8_8::FromCVector3f(delta);
+    snowForces[i] = snowForces[i] + fixedDelta + zVec;
   }
 }
 
@@ -670,9 +703,9 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
   const CVector3f playerPos = player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed
                                   ? camXf.GetTranslation()
                                   : player->GetBallPosition();
-  const CVector3f localPos = invXf * playerPos;
+  const CVector3f& localPos = CVector3f(invXf * playerPos);
   const CVector2i localPlayerPos(real_to_fixed8_8(localPos.GetX()),
-                                  real_to_fixed8_8(localPos.GetY()));
+                                 real_to_fixed8_8(localPos.GetY()));
   mLastBlockedGridIdx = -1;
   mEnableSplash = false;
 
@@ -688,31 +721,36 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
         const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
             CMaterialList(kMT_Unknown59, kMT_Trigger),
             CMaterialList(kMT_NoPlatformCollision, kMT_SeeThrough));
-        const CVector2i gridPos = grid.GetStart();
+        const CVector2i& gridPos = CVector2i(grid.GetStart() + grid.GetSize() * 0);
         const CVector3f localGrid(fixed8_8_to_real(gridPos.GetX()),
                                   fixed8_8_to_real(gridPos.GetY()), 0.f);
         const CVector3f start = xf * localGrid + 500.f * CVector3f::Up();
         const CVector3f down = CVector3f::Down();
-        if (type == kEFX_Unknown6 || type == kEFX_Unknown7) {
-          bool visible = CGameCollision::RayStaticLineOfSightTest(mgr, start, down, 1000.f,
-                                                                   filter);
+        CRayCastResult best = CRayCastResult::MakeInvalid();
+        const bool trails = type >= kEFX_Unknown6 && type <= kEFX_Unknown7;
+        if (trails) {
+          bool visible = CGameCollision::RayStaticLineOfSightTest(mgr, start, down, 1000.f, filter);
           if (visible) {
             if (!blockListBuilt) {
               BuildBlockObjectList(blockList, mgr);
               blockListBuilt = true;
             }
-            for (int j = 0; j < blockList.size(); ++j) {
+            for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator it = blockList.begin();
+                 it != blockList.end(); ++it) {
               const CScriptTrigger* trigger =
-                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(blockList[j]));
+                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(*it));
               if (trigger == nullptr) {
                 continue;
               }
               const rstl::optional_object< CAABox > bounds = trigger->GetTouchBounds();
-              if (bounds) {
+              if (!bounds) {
+                continue;
+              }
+              {
                 const CCollidableAABox box(*bounds, CMaterialList(kMT_Trigger));
-                const CInternalRayCastStructure ray(start, down, 1000.f,
-                                                    CTransform4f::Identity(), filter);
-                if (box.CastRayInternal(ray).IsValid()) {
+                const CRayCastResult hit =
+                    box.CastRay(start, down, 1000.f, filter, CTransform4f::Identity());
+                if (hit.IsValid()) {
                   visible = false;
                   break;
                 }
@@ -721,38 +759,40 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
           }
           grid.SetVisibility(rstl::pair< bool, float >(visible, visible ? -10000.f : 0.f));
         } else {
-          CRayCastResult best =
-              CGameCollision::RayStaticIntersection(mgr, start, down, 1000.f, filter);
-          if (best.IsValid()) {
-            const CMaterialFilter floorOrTrigger =
-                CMaterialFilter::MakeInclude(CMaterialList(kMT_Trigger, kMT_Floor));
-            if (!floorOrTrigger.Passes(best.GetMaterial())) {
-              best = CRayCastResult::MakeInvalid();
-            }
+          best = CGameCollision::RayStaticIntersection(mgr, start, down, 1000.f, filter);
+          const CMaterialFilter floorOrTrigger =
+              CMaterialFilter::MakeInclude(CMaterialList(kMT_Trigger, kMT_Floor));
+          if (!floorOrTrigger.Passes(best.GetMaterial())) {
+            best = CRayCastResult(CRayCastResult::kI_Invalid);
           }
           if (best.IsValid()) {
             if (!blockListBuilt) {
               BuildBlockObjectList(blockList, mgr);
               blockListBuilt = true;
             }
-            for (int j = 0; j < blockList.size(); ++j) {
+            for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator it = blockList.begin();
+                 it != blockList.end(); ++it) {
               const CScriptTrigger* trigger =
-                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(blockList[j]));
+                  TCastToConstPtr< CScriptTrigger >(mgr.GetObjectById(*it));
               if (trigger == nullptr) {
                 continue;
               }
               const rstl::optional_object< CAABox > bounds = trigger->GetTouchBounds();
-              if (bounds) {
+              if (!bounds) {
+                continue;
+              }
+              {
                 const CCollidableAABox box(*bounds, CMaterialList(kMT_Trigger));
-                const CInternalRayCastStructure ray(start, down, 1000.f,
-                                                    CTransform4f::Identity(), filter);
-                const CRayCastResult hit = box.CastRayInternal(ray);
+                const CRayCastResult hit =
+                    box.CastRay(start, down, 1000.f, filter, CTransform4f::Identity());
                 if (hit.IsValid() && hit.GetTime() < best.GetTime()) {
                   best = hit;
                 }
               }
             }
           }
+        }
+        if (!trails) {
           grid.SetVisibility(rstl::pair< bool, float >(best.IsValid(), best.GetPoint().GetZ()));
         }
         ++blockedGrids;
@@ -774,16 +814,16 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
 void CEnvFxManager::UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces) {
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    uint force = static_cast< uint >(mFirstSnowForce);
-    if (!grid.mBlock.first) {
+    int force = static_cast< int >(mFirstSnowForce);
+    if (!grid.GetVisibility().first) {
       continue;
     }
 
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      const CVectorFixed8_8 particle = grid.mParticles[j];
-      const CVectorFixed8_8& delta = snowForces[force];
-      grid.mParticles[j] = CVectorFixed8_8(particle.mX + delta.mX, particle.mY + delta.mY,
-                                          (particle.mZ + delta.mZ) & 0x3fff);
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      CVectorFixed8_8 next = particle + snowForces[force];
+      next.mZ &= 0x3fff;
+      particle = next;
       force = (force + 1) & 0xff;
     }
   }
@@ -794,81 +834,67 @@ void CEnvFxManager::UpdateDriftingParticles(
     const CTransform4f& invXf) {
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    uint force = static_cast< uint >(mFirstSnowForce);
-    if (!grid.mBlock.first) {
+    int force = static_cast< int >(mFirstSnowForce);
+    if (!grid.GetVisibility().first) {
       continue;
     }
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      const CVectorFixed8_8 particle = grid.mParticles[j];
-      const CVectorFixed8_8& delta = snowForces[force];
-      grid.mParticles[j] = CVectorFixed8_8(particle.mX + delta.mX, particle.mY + delta.mY,
-                                          (particle.mZ + delta.mZ) & 0x3fff);
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      CVectorFixed8_8 next = particle + snowForces[force];
+      next.mZ &= 0x3fff;
+      particle = next;
       force = (force + 1) & 0xff;
     }
   }
 }
 
 void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) {
-  static const float kSecondaryOffsets[8] = {-0.6f, 1.2f, -0.9f, 0.3f,
-                                              -0.4f, 0.9f, -2.f, 0.4f};
+  static const float kSecondaryOffsets[8] = {-0.6f, 1.2f, -0.9f, 0.3f, -0.4f, 0.9f, -2.f, 0.4f};
   static const float kPrimaryOffsets[7] = {0.3f, 0.9f, 0.5f, 0.8f, 0.4f, 0.7f, 0.2f};
   static uint seed = 0;
   CRandom16 random(seed);
-  const int period = g_TrailPeriod;
-  const int primaryAxis = g_TrailPrimaryAxis;
-  const int secondaryAxis = g_TrailSecondaryAxis;
-  const float primaryScale = g_TrailPrimaryScale;
+  const short zDelta = zVec.mZ;
 
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    if (!grid.mBlock.first) {
+    if (!grid.GetVisibility().first) {
       continue;
     }
-    for (int trail = 0; trail < grid.mParticles.size() / 8; ++trail) {
-      float& lifetime = grid.mParticleLifetimes[trail];
-      int& frame = grid.mTrailFrames[trail];
-      lifetime -= dt * g_TrailDecayRate;
-      ++frame;
+    const int count = grid.mParticles.size() / 8;
+    for (int trail = 0; trail < count; ++trail) {
+      grid.mParticleLifetimes[trail] -= dt * g_TrailDecayRate;
+      ++grid.mTrailFrames[trail];
       const int base = trail * 8;
-      if (lifetime <= 0.f) {
-        lifetime = 1.f;
-        frame = period * random.Range(0, 100);
-        const int current = (frame / period) & 7;
+      if (grid.mParticleLifetimes[trail] <= 0.f) {
+        grid.mParticleLifetimes[trail] = 1.f;
+        grid.mTrailFrames[trail] = g_TrailPeriod * random.Range(0, 100);
+        const int current = (grid.mTrailFrames[trail] / g_TrailPeriod) % 8;
         const short z = static_cast< short >(random.Range(20.f, 16363.f));
-        const short y = static_cast< short >(
-            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        const short y =
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
         const short x = static_cast< short >(random.Range(0.f, grid.mExtent.GetX() - 20.f));
         grid.mParticles[base + current] = CVectorFixed8_8(x, y, z);
         for (int point = 1; point < 8; ++point) {
-          grid.mParticles[base + ((current + point) & 7)] = CVectorFixed8_8();
+          grid.mParticles[base + ((current + point) % 8)] = CVectorFixed8_8();
         }
-      } else if (frame % period == 0) {
-        const int current = ((frame - 1) / period) & 7;
-        const int next = (current + 1) & 7;
-        CVectorFixed8_8& currentPoint = grid.mParticles[base + current];
-        CVectorFixed8_8& nextPoint = grid.mParticles[base + next];
-        nextPoint = currentPoint;
-        if (frame % (period * 2) == 0) {
-          const short delta = real_to_fixed8_8(primaryScale * kPrimaryOffsets[trail % 7]);
-          if (primaryAxis == 0) {
-            nextPoint.mX += delta;
-          } else {
-            nextPoint.mZ += delta;
-          }
+      } else if (grid.mTrailFrames[trail] % g_TrailPeriod == 0) {
+        const int current = ((grid.mTrailFrames[trail] - 1) / g_TrailPeriod) % 8;
+        const int next = (current + 1) % 8;
+        grid.mParticles[base + next] = grid.mParticles[base + current];
+        if (grid.mTrailFrames[trail] % (g_TrailPeriod * 2) == 0) {
+          const short delta = real_to_fixed8_8(g_TrailPrimaryScale * kPrimaryOffsets[trail % 7]);
+          grid.mParticles[base + next][g_TrailPrimaryAxis] += delta;
         } else {
-          const short delta = real_to_fixed8_8(kSecondaryOffsets[(frame / (period * 2)) & 7]);
-          if (secondaryAxis == 0) {
-            nextPoint.mX += delta;
-          } else {
-            nextPoint.mZ += delta;
-          }
+          const short delta = real_to_fixed8_8(
+              kSecondaryOffsets[(grid.mTrailFrames[trail] / (g_TrailPeriod * 2)) % 8]);
+          grid.mParticles[base + next][g_TrailSecondaryAxis] += delta;
         }
-        currentPoint.mX -= nextPoint.mX;
-        currentPoint.mY -= nextPoint.mY;
-        currentPoint.mZ -= nextPoint.mZ;
+        grid.mParticles[base + current] =
+            grid.mParticles[base + current] - grid.mParticles[base + next];
       }
-      CVectorFixed8_8& point = grid.mParticles[base + ((frame / period) & 7)];
-      point.mZ = (point.mZ + zVec.mZ) & 0x3fff;
+      CVectorFixed8_8& point =
+          grid.mParticles[base + ((grid.mTrailFrames[trail] / g_TrailPeriod) % 8)];
+      point.mZ = (zDelta + point.mZ) & 0x3fff;
     }
   }
   seed = random.GetSeed();
@@ -878,36 +904,32 @@ void CEnvFxManager::UpdateDarkWorldParticles(
     float dt, rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
     const CTransform4f& invXf) {
   const int firstForce = static_cast< int >(mFirstSnowForce);
-  const float lifetimeDelta = dt / 3.f;
+  const float lifetimeDelta = (1.f / 3.f) * dt;
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    if (!grid.mBlock.first) {
+    if (!grid.GetVisibility().first) {
       continue;
     }
     CRandom16 random(99);
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      float& lifetime = grid.mParticleLifetimes[j];
-      lifetime -= lifetimeDelta;
-      CVectorFixed8_8& particle = grid.mParticles[j];
-      if (lifetime <= 0.f) {
-        lifetime = 1.f;
-        const short z = real_to_fixed8_8(
-            (invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
-        const short y = static_cast< short >(
-            random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
-        const short x = static_cast< short >(
-            random.Range(0.f, static_cast< float >(grid.mExtent.GetX())));
-        particle = CVectorFixed8_8(x, y, z);
+      grid.mParticleLifetimes[j] -= lifetimeDelta;
+      if (grid.mParticleLifetimes[j] <= 0.f) {
+        grid.mParticleLifetimes[j] = 1.f;
+        const short z =
+            real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.GetVisibility().second)).GetZ());
+        const short y =
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
+        const short x =
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetX())));
+        grid.mParticles[j] = CVectorFixed8_8(x, y, z);
       } else {
         const CVectorFixed8_8& force = snowForces[(firstForce + random.Next()) & 0xff];
-        const float elapsed = 1.f - lifetime;
-        const float elapsedSquared = elapsed * elapsed;
-        const float growth = 2.f * elapsedSquared * elapsedSquared;
+        const float elapsed = 1.f - grid.mParticleLifetimes[j];
+        const float growth = 2.f * (elapsed * (elapsed * (elapsed * elapsed)));
         const short forceScale = real_to_fixed8_8(1.f + growth);
-        particle.mX += (force.mX * forceScale) >> 8;
-        particle.mY += (force.mY * forceScale) >> 8;
-        particle.mZ += (force.mZ * forceScale) >> 8;
+        CVectorFixed8_8 particle = grid.mParticles[j] + force * forceScale;
         particle.mZ += real_to_fixed8_8(dt * growth);
+        grid.mParticles[j] = particle;
       }
     }
   }
@@ -918,11 +940,12 @@ void CEnvFxManager::UpdateRainParticles(const CVectorFixed8_8& zVec, const CVect
   const short deltaZ = zVec.GetZ() + real_to_fixed8_8(-40.f * dt * inverseScale.GetZ());
   for (int i = mGrids.size() - 1; i >= 0; --i) {
     CEnvFxManagerGrid& grid = mGrids[i];
-    if (!grid.mBlock.first) {
+    if (!grid.GetVisibility().first) {
       continue;
     }
     for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
-      grid.mParticles[j].mZ = (grid.mParticles[j].mZ + deltaZ) & 0x3fff;
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      particle.mZ = (deltaZ + particle.mZ) & 0x3fff;
     }
   }
 }
@@ -954,8 +977,7 @@ void CEnvFxManager::UpdateVisorSplash(CStateManager& mgr, float dt, const CTrans
   float forwardRate = 0.f;
   if (mEnableSplash && upness >= -0.1f) {
     const CPlayer* player = mgr.GetPlayer(0);
-    const CVector3f localVelocity =
-        player->GetTransform().TransposeRotate(player->GetVelocityWR());
+    const CVector3f localVelocity = player->GetTransform().TransposeRotate(player->GetVelocityWR());
     if (localVelocity.CanBeNormalized()) {
       const float speed = localVelocity.Magnitude();
       forwardRate = rstl::min_val(1.f, speed / 60.f) *
@@ -1017,8 +1039,7 @@ void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
   CGX::SetNumChans(0);
   CGX::SetNumTexGens(2);
   CGX::SetNumTevStages(2);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
@@ -1029,8 +1050,7 @@ void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
 
   BlankFirstSnowflakeMip(***mTxtrSnowFlake);
   (*mTxtrSnowFlake)->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP1, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
   CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_ZERO);
@@ -1050,8 +1070,7 @@ void CEnvFxManager::SetupDriftingParticleTevs(CStateManager& mgr) {
   CGX::SetNumChans(0);
   CGX::SetNumTexGens(2);
   CGX::SetNumTevStages(2);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
@@ -1061,8 +1080,7 @@ void CEnvFxManager::SetupDriftingParticleTevs(CStateManager& mgr) {
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
   BlankFirstSnowflakeMip(***mTxtrSnowFlake);
   (*mTxtrSnowFlake)->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP1, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE1);
   CGX::SetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_TEXC, GX_CC_CPREV, GX_CC_ZERO);
@@ -1079,8 +1097,7 @@ void CEnvFxManager::SetupDarkWorldTevs() {
   GXSetVtxAttrFmt(GX_VTXFMT6, GX_VA_POS, GX_POS_XYZ, GX_S16, 8);
   GXSetVtxAttrFmt(GX_VTXFMT6, GX_VA_TEX0, GX_TEX_ST, GX_S8, 1);
   CGX::SetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_CLEAR);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
@@ -1104,16 +1121,14 @@ void CEnvFxManager::SetupUnderwaterTevs(const CTransform4f& invXf, CStateManager
   CGX::SetNumChans(0);
   CGX::SetNumTexGens(2);
   CGX::SetNumTevStages(2);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
   CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
   BlankFirstSnowflakeMip(***mUnderwaterFlake);
   (*mUnderwaterFlake)->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP1, GX_COLOR_NULL);
 
   float waterTop = skMaximumBlockingHeight;
@@ -1156,8 +1171,7 @@ void CEnvFxManager::SetupRainTevs() {
                    GX_AF_NONE);
   CGX::SetNumTexGens(1);
   CGX::SetNumTevStages(1);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -1185,8 +1199,7 @@ void CEnvFxManager::SetupParticleTrailTevs(CStateManager& mgr) {
   CGX::SetNumTexGens(1);
   CGX::SetNumTevStages(1);
   CGraphics::SetAlphaCompare(kAF_Greater, 0, kAO_And, kAF_Always, 0);
-  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE,
-                      GX_PTIDENTITY);
+  CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_ZERO);
@@ -1244,15 +1257,14 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
       const CVector3f up = cameraRotation * CVector3f(0.f, 0.f, size);
       const CVector3f right = cameraRotation * CVector3f(size, 0.f, 0.f);
       const CVector3f offset = -0.5f * up - 0.5f * right;
-      upDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(up.GetX()),
-                                         real_to_fixed8_8(up.GetY()),
+      upDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(up.GetX()), real_to_fixed8_8(up.GetY()),
                                          real_to_fixed8_8(up.GetZ())));
       rightDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(right.GetX()),
                                             real_to_fixed8_8(right.GetY()),
                                             real_to_fixed8_8(right.GetZ())));
       offsets.push_back(CVectorFixed8_8(real_to_fixed8_8(offset.GetX()),
-                                       real_to_fixed8_8(offset.GetY()),
-                                       real_to_fixed8_8(offset.GetZ())));
+                                        real_to_fixed8_8(offset.GetY()),
+                                        real_to_fixed8_8(offset.GetZ())));
     }
     for (int i = 0; i < mGrids.size(); ++i) {
       mGrids[i].RenderDarkWorldParticles(xf, invXf, camXf, mFxDensity, offsets.data(),
@@ -1292,12 +1304,10 @@ void CEnvFxManager::UpdateRainSounds(float dt, CStateManager& mgr) {
     const CTransform4f camXf = mgr.GetCameraManager(0)->GetCurrentCameraTransform(mgr, true);
     const uchar volume = static_cast< uchar >(mRainSoundFade * CalcRainVolume(mFxDensity));
     if (!mRainSoundActive) {
-      mLeftRainSound = CSfxManager::AddEmitter(0x2841, CVector3f::Zero(),
-                                               CSfxManager::kAllAreas, true, true,
-                                               CSfxManager::kMaxPriority);
-      mRightRainSound = CSfxManager::AddEmitter(0x2842, CVector3f::Zero(),
-                                                CSfxManager::kAllAreas, true, true,
-                                                CSfxManager::kMaxPriority);
+      mLeftRainSound = CSfxManager::AddEmitter(0x2841, CVector3f::Zero(), CSfxManager::kAllAreas,
+                                               true, true, CSfxManager::kMaxPriority);
+      mRightRainSound = CSfxManager::AddEmitter(0x2842, CVector3f::Zero(), CSfxManager::kAllAreas,
+                                                true, true, CSfxManager::kMaxPriority);
       mRainSoundActive = true;
     }
     CSfxManager::UpdateEmitter(mLeftRainSound, camXf.GetTranslation() - camXf.GetRight(),
@@ -1330,8 +1340,7 @@ void CEnvFxManager::BuildBlockObjectList(rstl::reserved_vector< TUniqueId, 1024 
        index = objects.GetNextObjectIndex(index)) {
     const CEntity* entity = objects[index];
     const CScriptTrigger* trigger = TCastToConstPtr< CScriptTrigger >(entity);
-    if (trigger != nullptr &&
-        (trigger->GetTriggerFlags() & kTFL_BlockEnvironmentalEffects) != 0) {
+    if (trigger != nullptr && (trigger->GetTriggerFlags() & kTFL_BlockEnvironmentalEffects) != 0) {
       list.push_back(entity->GetUniqueId());
     }
   }
