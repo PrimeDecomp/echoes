@@ -2120,45 +2120,14 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
   }
 
   switch (mBehaviour) {
-  case kBCB_Default:
-    if (flags & 0x20) {
-      TeleportLookAtStuff(mgr);
-      if (flags & 0x40000) {
-        const CTransform4f current = CameraManager(mgr).GetCurrentCameraTransform(mgr, false);
-        CVector3f direction = player.GetTranslation() - current.GetTranslation();
-        direction.SetZ(0.f);
-        if (direction.IsMagnitudeSafe()) {
-          direction.Normalize();
-        } else {
-          direction = player.GetMovementDirection();
-        }
-        TeleportCamera(FindDesiredTransform(direction, mgr), mgr);
-      } else {
-        TeleportCamera(CTransform4f::LookAt(hint->GetTranslation(), mLookPos, CVector3f::Up()),
-                       mgr);
-      }
-    }
-    break;
-  case kBCB_FreezeLookPosition:
-  case kBCB_HintInitializePosition:
-    if (flags & 0x20) {
-      TeleportLookAtStuff(mgr);
-      float distance = mCurMinDistance;
-      float elevation = mElevation;
-      ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
-      const CVector3f desiredPos =
-          FindDesiredPosition(distance, elevation, player.GetMovementDirection(), mgr, false);
-      TeleportCamera(CTransform4f::LookAt(desiredPos, mLookPos, CVector3f::Up()), mgr);
-    }
-    break;
   case kBCB_HintBallToCam: {
     mOverrideBallToCam = info.GetWorldOffset();
     const CVector3f ballPos = player.GetBallPosition();
     CVector3f cameraPos = ballPos + mOverrideBallToCam;
     if (flags & 0x1) {
-      CVector3f direction(-mOverrideBallToCam.GetX(), -mOverrideBallToCam.GetY(), 0.f);
-      direction.Normalize();
       const CVector2f flatOffset(mOverrideBallToCam.GetX(), mOverrideBallToCam.GetY());
+      const CVector3f direction =
+          -CVector3f(flatOffset.GetX(), flatOffset.GetY(), 0.f).AsNormalized();
       cameraPos = FindDesiredPosition(flatOffset.Magnitude(), mOverrideBallToCam.GetZ(), direction,
                                       mgr, false);
     }
@@ -2170,15 +2139,44 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
     mOverrideBallToCam = hint->GetTransform().Rotate(mHintLocalOffset);
     CVector3f cameraPos = player.GetBallPosition() + mOverrideBallToCam;
     if (flags & 0x1) {
-      CVector3f direction(-mOverrideBallToCam.GetX(), -mOverrideBallToCam.GetY(), 0.f);
-      direction.Normalize();
       const CVector2f flatOffset(mOverrideBallToCam.GetX(), mOverrideBallToCam.GetY());
+      const CVector3f direction =
+          -CVector3f(flatOffset.GetX(), flatOffset.GetY(), 0.f).AsNormalized();
       cameraPos = FindDesiredPosition(flatOffset.Magnitude(), mOverrideBallToCam.GetZ(), direction,
                                       mgr, false);
     }
     TeleportCamera(CTransform4f::LookAt(cameraPos, mLookPos, CVector3f::Up()), mgr);
     break;
   }
+  case kBCB_Default:
+    if (flags & 0x20) {
+      if (flags & 0x40000) {
+        const CTransform4f current = CameraManager(mgr).GetCurrentCameraTransform(mgr, false);
+        CVector3f direction = player.GetTranslation() - current.GetTranslation();
+        direction.SetZ(0.f);
+        if (direction.IsMagnitudeSafe()) {
+          direction.Normalize();
+        } else {
+          direction = Player(mgr).GetMovementDirection();
+        }
+        TeleportCamera(FindDesiredTransform(direction, mgr), mgr);
+      } else {
+        TeleportCamera(CTransform4f::LookAt(hint->GetTranslation(), mLookPos, CVector3f::Up()),
+                       mgr);
+      }
+    }
+    break;
+  case kBCB_FreezeLookPosition:
+  case kBCB_HintInitializePosition:
+    if (flags & 0x20) {
+      float distance = mCurMinDistance;
+      float elevation = mElevation;
+      ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
+      const CVector3f desiredPos =
+          FindDesiredPosition(distance, elevation, player.GetMovementDirection(), mgr, false);
+      TeleportCamera(CTransform4f::LookAt(desiredPos, mLookPos, CVector3f::Up()), mgr);
+    }
+    break;
   default:
     break;
   }
