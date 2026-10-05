@@ -66,6 +66,7 @@ public:
     kCS_Ball,
     kCS_Two,
     kCS_Transitioning,
+    kCS_Four,
     kCS_Spawned,
   };
   enum EPlayerMorphBallState {
@@ -348,6 +349,7 @@ public:
   CPlayerGun* GetPlayerGun();
   const CPlayerGun* GetPlayerGun() const;
   ETurretState GetTurretState() const { return mTurretState; }
+  float GetTurretTimer() const { return mTurretTimer; }
   bool IsInTurret() const;
   TUniqueId GetTurretId() const;
   void SetTurretState(ETurretState state, CStateManager& mgr);
@@ -380,6 +382,12 @@ public:
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }         // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
+  float GetFreeLookAngleX() const { return mFreeLookPitchAngle; }
+  float GetFreeLookAngleZ() const { return mFreeLookYawAngle; }
+  float GetJumpCameraTimer() const { return mJumpCameraTimer; }
+  float GetFallCameraTimer() const { return mFallCameraTimer; }
+  bool GetOrbitLockAcquired() const { return mOrbitLockEstablished; }
+  CPlayerCameraBob* CameraBobObject() { return mCameraBob; }
   bool GetSelectFluidBallSound() const { return mSelectFluidBallSound; }
   void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
