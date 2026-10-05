@@ -442,8 +442,12 @@ void CGroundMovement::MoveGroundCollider_New(
   rstl::optional_object< CCollisionCache > localCache;
   if (cachePtr == nullptr || !motionVolume.Inside(cachePtr->GetBounds())) {
     const float padding = cachePtr != nullptr ? 0.5f : 0.f;
-    const CAABox cacheBounds(motionVolume.GetMinPoint() - CVector3f(padding, padding, padding),
-                             motionVolume.GetMaxPoint() + CVector3f(padding, padding, padding));
+    const CVector3f paddingVector(padding, padding, padding);
+    CVector3f minPoint = motionVolume.GetMinPoint();
+    CVector3f maxPoint = motionVolume.GetMaxPoint();
+    minPoint -= paddingVector;
+    maxPoint += paddingVector;
+    const CAABox cacheBounds(minPoint, maxPoint);
     cachePtr = new (localCache.prepare_emplace())
         CCollisionCache(cacheBounds, cachePtr != nullptr ? cachePtr->GetDynamicGeometryMode() : 1,
                         0, ushort(0xffff));
@@ -505,7 +509,8 @@ void CGroundMovement::MoveGroundCollider_New(
       SMovementOptions stepOptions = options;
       stepOptions.mAlwaysClip = noJump;
       stepOptions.mWallElasticConstant = 0.03f;
-      const CVector3f& movement = before.GetTranslation() - after.GetTranslation();
+      CVector3f movement = before.GetTranslation();
+      movement -= after.GetTranslation();
       float movementMag = movement.MagSquared();
       float quarterStepUp = 0.25f * stepUp;
       rstl::reserved_vector< CPhysicsState, 2 > states;
@@ -526,8 +531,9 @@ void CGroundMovement::MoveGroundCollider_New(
           done = true;
         }
         if (useStepUp > 0.0005f) {
-          actor.SetTranslation(actor.GetTranslation() +
-                               CVector3f(0.f, 0.f, static_cast< float >(useStepUp)));
+          CVector3f translation = actor.GetTranslation();
+          translation += CVector3f(0.f, 0.f, static_cast< float >(useStepUp));
+          actor.SetTranslation(translation);
           SMoveObjectResult stepResult;
           CMaterialList stepMaterial =
               MoveObjectAnalytical(mgr, actor, dt, nearList, cache, stepOptions, stepResult);
@@ -542,16 +548,23 @@ void CGroundMovement::MoveGroundCollider_New(
             useStepDown = 0.0;
           }
           float minStep = rstl::min_val(useStepDown, useStepUp);
-          CVector3f endPosition = actor.GetTranslation() - minStep * CVector3f(0.f, 0.f, 1.f);
+          CVector3f step(0.f, 0.f, 1.f);
+          step *= minStep;
+          CVector3f endPosition = actor.GetTranslation();
+          endPosition -= step;
           bool floor =
               downCollision.IsValid() && CGameCollision::CanBlock(downCollision.GetMaterialLeft(),
                                                                   downCollision.GetNormalLeft());
-          const CVector3f& stepMovement = before.GetTranslation() - endPosition;
+          CVector3f stepMovement = before.GetTranslation();
+          stepMovement -= endPosition;
           float stepDelta = stepMovement.MagSquared();
           if (floor && movementMag < stepDelta) {
             useStepDown = rstl::max_val(useStepDown - 0.0005f, 0.0);
-            const CVector3f& up = CVector3f(0.f, 0.f, 1.f);
-            actor.SetTranslation(actor.GetTranslation() - static_cast< float >(useStepDown) * up);
+            CVector3f step(0.f, 0.f, 1.f);
+            step *= static_cast< float >(useStepDown);
+            CVector3f translation = actor.GetTranslation();
+            translation -= step;
+            actor.SetTranslation(translation);
             states.push_back(actor.GetPhysicsState());
             stepDeltas.push_back(stepDelta);
             collisions.push_back(downCollision);
@@ -619,7 +632,9 @@ void CGroundMovement::MoveGroundCollider_New(
     TUniqueId id = kInvalidUniqueId;
     if (useStepDown > static_cast< double >(FLT_EPSILON)) {
       CTransform4f transform = actor.GetTransform();
-      transform.SetTranslation(transform.GetTranslation() + CVector3f(0.f, 0.f, 0.0005f));
+      CVector3f translation = transform.GetTranslation();
+      translation += CVector3f(0.f, 0.f, 0.0005f);
+      transform.SetTranslation(translation);
       if (!CGameCollision::DetectCollisionBoolean_Cached(mgr, cache, *actor.GetCollisionPrimitive(),
                                                          transform, actor.GetMaterialFilter(),
                                                          nearList)) {
@@ -640,7 +655,9 @@ void CGroundMovement::MoveGroundCollider_New(
         !CGameCollision::CanBlock(info.GetMaterialLeft(), info.GetNormalLeft())) {
       if (zOffset > 0.f) {
         CTransform4f transform = actor.GetTransform();
-        transform.SetTranslation(transform.GetTranslation() - CVector3f(0.f, 0.f, zOffset));
+        CVector3f translation = transform.GetTranslation();
+        translation -= CVector3f(0.f, 0.f, zOffset);
+        transform.SetTranslation(translation);
       }
       if (info.IsValid()) {
         player.SetPlayerIsSlidingOnWall(true);
@@ -650,9 +667,12 @@ void CGroundMovement::MoveGroundCollider_New(
           const float speed = flatVelocity.Magnitude();
           if (speed < 5.f) {
             if (speed > 0.2f) {
-              actor.SetVelocityWR(1.2f * flatVelocity);
+              flatVelocity *= 1.2f;
+              actor.SetVelocityWR(flatVelocity);
             } else {
-              actor.SetVelocityWR(0.5f * actor.GetTransform().GetForward());
+              CVector3f velocity = actor.GetTransform().GetForward();
+              velocity *= 0.5f;
+              actor.SetVelocityWR(velocity);
             }
           }
         }
@@ -663,8 +683,11 @@ void CGroundMovement::MoveGroundCollider_New(
       mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
                                       kSM_Landed, kSS_InvalidState));
       useStepDown = rstl::max_val(useStepDown - 0.0005f, 0.0);
-      const CVector3f& up = CVector3f(0.f, 0.f, 1.f);
-      actor.SetTranslation(actor.GetTranslation() - static_cast< float >(useStepDown) * up);
+      CVector3f step(0.f, 0.f, 1.f);
+      step *= static_cast< float >(useStepDown);
+      CVector3f translation = actor.GetTranslation();
+      translation -= step;
+      actor.SetTranslation(translation);
       CEntity* entity = mgr.ObjectById(id);
       if (TCastToPtr< CScriptPlatform >(entity)) {
         mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId,
