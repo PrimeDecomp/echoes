@@ -542,8 +542,6 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
       while (particles.size() < cellParticleCount) {
         const short x = static_cast< short >(random.Range(
             0.f, static_cast< float >(grid.mExtent.GetX()) - (trails ? 20.f : 0.f)));
-        const short y =
-            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
         short z;
         if (type == kEFX_DarkWorld) {
           z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.mBlock.second)).GetZ());
@@ -552,6 +550,8 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
         } else {
           z = real_to_fixed8_8(random.Range(0.f, 63.f));
         }
+        const short y =
+            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
         particles.push_back(CVectorFixed8_8(x, y, z));
         if (type == kEFX_DarkWorld) {
           grid.mParticleLifetimes.push_back(random.Float());
