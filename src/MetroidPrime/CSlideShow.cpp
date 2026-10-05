@@ -1,6 +1,5 @@
 #include "MetroidPrime/CSlideShow.hpp"
 
-#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStaticAudioPlayer.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
@@ -10,14 +9,15 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Text/CGuiTextSupport.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
-#include "MetroidPrime/HUD/CHudDecoInterfaceScan.hpp"
-#include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/CArchMsgParmUserInput.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
+#include "MetroidPrime/Decode.hpp"
+#include "MetroidPrime/HUD/CHudDecoInterfaceScan.hpp"
+#include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
@@ -158,8 +158,8 @@ CSlideShow::CSlideShow()
   }
   SetTexturesLocked(mStickTextures, true);
   const rstl::reserved_vector< CAssetId, 2 >* buttons[] = {
-      &gpTweakPlayerRes->mLTrigger, &gpTweakPlayerRes->mRTrigger,
-      &gpTweakPlayerRes->mBButton, &gpTweakPlayerRes->mYButton};
+      &gpTweakPlayerRes->mLTrigger, &gpTweakPlayerRes->mRTrigger, &gpTweakPlayerRes->mBButton,
+      &gpTweakPlayerRes->mYButton};
   mButtonTextures.reserve(8);
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 2; ++j) {
@@ -174,10 +174,10 @@ CSlideShow::~CSlideShow() {
 }
 
 uchar CSlideShow::GetGalleriesUnlocked() {
-  uchar flags = 0;
+  uint flags = 0;
   if (gpGameState != nullptr) {
-    CPersistentOptions& options = gpGameState->SystemOptions();
-    const int percent = options.FindEnvironmentVariable("PercentScans")->GetValue();
+    const int percent =
+        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans")->GetValue();
     if (percent >= 40) {
       flags |= 1;
     }
@@ -190,10 +190,12 @@ uchar CSlideShow::GetGalleriesUnlocked() {
     if (percent >= 100) {
       flags |= 8;
     }
-    if (options.FindEnvironmentVariable("NormalModeCompleted")->GetValue() != 0) {
+    if (gpGameState->SystemOptions().FindEnvironmentVariable("NormalModeCompleted")->GetValue() !=
+        0) {
       flags |= 16;
     }
-    if (options.FindEnvironmentVariable("HardModeCompleted")->GetValue() != 0) {
+    if (gpGameState->SystemOptions().FindEnvironmentVariable("HardModeCompleted")->GetValue() !=
+        0) {
       flags |= 32;
     }
   }
@@ -327,8 +329,8 @@ CIOWin::EMessageReturn CSlideShow::OnMessage(const CArchitectureMessage& msg,
     const CStringTable& strings = ***mGalleryNames;
     mGalleryLabels.reserve(mGalleryTXTRDeps.size());
     for (int i = 0; i < mGalleryTXTRDeps.size(); ++i) {
-      mGalleryLabels.push_back(rstl::wstring(strings.GetString(
-          CBasics::Stringize("GalleryName%d", i + 1))));
+      mGalleryLabels.push_back(
+          rstl::wstring(strings.GetString(CBasics::Stringize("GalleryName%d", i + 1))));
     }
     mPhase = 3;
   }
@@ -389,8 +391,8 @@ CIOWin::EMessageReturn CSlideShow::OnMessage(const CArchitectureMessage& msg,
       AdvanceSlide(mRepeatTimer > 0.f);
       mRepeatTimer = 0.f;
     }
-    const float idleTime = IsControlsAnimating() ? 0.f :
-                           gpTweakSlideShow->GetSlideNumberHideDelay();
+    const float idleTime =
+        IsControlsAnimating() ? 0.f : gpTweakSlideShow->GetSlideNumberHideDelay();
     mIdleTimer = CMath::Clamp(0.f, mIdleTimer + dt, idleTime);
     if (mIdleTimer >= gpTweakSlideShow->GetSlideNumberHideDelay()) {
       mSlideNumberTimer += dt;
@@ -432,14 +434,13 @@ void CSlideShow::Draw() const {
     DrawControls();
   }
   if (mIntroFade || mOutroFade) {
-    float alpha = mFadeTimer /
-                  (mIntroFade ? gpTweakSlideShow->GetFadeInTime() :
-                                gpTweakSlideShow->GetFadeOutTime());
+    float alpha = mFadeTimer / (mIntroFade ? gpTweakSlideShow->GetFadeInTime()
+                                           : gpTweakSlideShow->GetFadeOutTime());
+    alpha = CMath::Clamp(0.f, alpha, 1.f);
     if (mOutroFade) {
       alpha = 1.f - alpha;
     }
-    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend,
-                                  CCameraFilterPass::kFS_Fullscreen,
+    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_Fullscreen,
                                   CColor::Black().WithAlphaOf(alpha), nullptr, 1.f);
   }
 }
@@ -477,8 +478,7 @@ rstl::pair< int, int > CStateManager::CalculateScanCompletionRate() const {
       continue;
     }
     rstl::vector< CPlayerState::SPersistentState::SScanState >::const_iterator state =
-        rstl::binary_find(scanStates.begin(), scanStates.end(), node.mScan,
-                          SlideShowScanIdLess());
+        rstl::binary_find(scanStates.begin(), scanStates.end(), node.mScan, SlideShowScanIdLess());
     const bool finished = state != scanStates.end() && state->mProgress == 0xff;
     for (int parent = node.mParent; parent != -1; parent = hierarchy[parent].mParent) {
       if (parent == logbook) {
@@ -495,12 +495,13 @@ rstl::pair< int, int > CStateManager::CalculateScanCompletionRate() const {
 CAssetId UpdatePersistentScanPercent(int previous, int current, int total) {
   if (previous != current) {
     static const char* const unlockMessages[] = {
-        "STRG_SlideShow_Unlock1_", "STRG_SlideShow_Unlock2_",
-        "STRG_SlideShow_Unlock3_", "STRG_SlideShow_Unlock4_"};
+        "STRG_SlideShow_Unlock1_", "STRG_SlideShow_Unlock2_", "STRG_SlideShow_Unlock3_",
+        "STRG_SlideShow_Unlock4_"};
     const float interval = gpTweakSlideShow->GetScanPercentInterval();
     const float previousPercent = 100.f * (float(previous) / total);
     const float currentPercent = 100.f * (float(current) / total);
-    CEnvironmentVariable* saved = gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans");
+    CEnvironmentVariable* saved =
+        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans");
     const int scanPercent = int(currentPercent);
     const int previousStep = int(rstl::max_val(0.f, previousPercent - 20.f) / interval);
     const int step = int(rstl::max_val(0.f, currentPercent - 20.f) / interval);
@@ -547,7 +548,6 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
     mGallery = (mGallery + 1) % mGalleries.size();
     mSlide = -1;
     mGalleryChanged = true;
-    mShowSlideNumber = true;
     changed = true;
     AdvanceSlide(true);
   } else if (input.PDPLeft()) {
@@ -557,22 +557,21 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
     }
     mSlide = -1;
     mGalleryChanged = true;
-    mShowSlideNumber = true;
     changed = true;
     AdvanceSlide(true);
-  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleRight, input) || input.PA()) {
+  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleLeft, input) || input.PA()) {
     changed = true;
     AdvanceSlide(true);
-  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleLeft, input)) {
+  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleRight, input)) {
     changed = true;
     AdvanceSlide(false);
   } else {
-    const float right = mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
-    if (right != 0.f || input.DA()) {
+    const float next = mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
+    if (next != 0.f || input.DA()) {
       mRepeatTimer = rstl::max_val(0.f, mRepeatTimer) + input.DeltaTime();
     } else {
-      const float left = mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
-      if (left != 0.f) {
+      const float previous = mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
+      if (previous != 0.f) {
         mRepeatTimer = rstl::min_val(0.f, mRepeatTimer) - input.DeltaTime();
       } else {
         mRepeatTimer = 0.f;
@@ -617,8 +616,7 @@ CIOWin::EMessageReturn CSlideShow::AdvanceSlide(bool forward) {
 }
 
 void CSlideShow::LoadSlide() {
-  if (mSlideB.mTextures.empty() &&
-      (mSlideA.mGallery != mGallery || mSlideA.mSlide != mSlide)) {
+  if (mSlideB.mTextures.empty() && (mSlideA.mGallery != mGallery || mSlideA.mSlide != mSlide)) {
     const SGalleryData& gallery = mGalleries[mGallery];
     mSlideA.mStopLoading = true;
     const int first = mSlide == 0 ? 0 : gallery.mSlides[mSlide - 1].first;
@@ -723,8 +721,8 @@ void CSlideShow::SetZoomSfx(bool active) {
 void CSlideShow::UpdateMusicVolume(float time, float fadeTime) {
   if (!mAudio.null()) {
     const float volume = CMath::Clamp(0.f, time / fadeTime, 1.f);
-    mAudio->SetVolume(static_cast< uchar >(0.7421875f * volume *
-                                          gpGameState->GameOptions().GetMusicVolume()));
+    mAudio->SetVolume(
+        static_cast< uchar >(0.7421875f * volume * gpGameState->GameOptions().GetMusicVolume()));
     mAudio->StartMixOut();
   }
 }
@@ -799,14 +797,14 @@ void CSlideShow::DrawControls() const {
   if (mControlsText.null()) {
     return;
   }
-  const float fadeTime = mShowControls ? gpTweakSlideShow->GetFadeInTime() :
-                                         gpTweakSlideShow->GetFadeOutTime();
+  const float fadeTime =
+      mIntroFade ? gpTweakSlideShow->GetFadeInTime() : gpTweakSlideShow->GetFadeOutTime();
   mControlsText->SetGeometryColor(CColor::White().WithAlphaModulatedBy(mControlsAlpha * fadeTime));
-  CGraphics::SetCullMode(kCM_None);
   gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
-  gpRender->SetDepthReadWrite(false, false);
   gpRender->SetModelMatrix(
       CTransform4f::Translate(0.f, 0.f, 32.f + CGraphics::GetViewport().mHeight));
+  CGraphics::SetCullMode(kCM_None);
+  gpRender->SetDepthReadWrite(false, false);
   mControlsText->Render();
 }
 
@@ -838,7 +836,8 @@ CIOWin::EMessageReturn CSlideShow::SSlideData::ProcessUserInput(const CFinalInpu
     const float back = mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
     const float left = mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
     const float right = mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
-    const float speed = gpTweakContents->TweakSlideShow.translationMultiplier * textureSize / 1024.f;
+    const float speed =
+        gpTweakContents->TweakSlideShow.translationMultiplier * textureSize / 1024.f;
     mVpOffset[0] -= speed * left;
     mVpOffset[0] += speed * right;
     mVpOffset[1] += speed * forward;
