@@ -10,6 +10,7 @@
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
+#include "MetroidPrime/CProjectedShadow.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
@@ -118,6 +119,11 @@ int CStateManager::GetViewportLayoutIndex() const {
   return 1;
 }
 
+void CStateManager::AddProjectedShadow(CProjectedShadow* shadow) {
+  shadow->SetNextShadow(mProjectedShadows);
+  mProjectedShadows = shadow;
+}
+
 void CStateManager::BuildDynamicLightListForWorld() {
   if (mRenderVisorMode != kRVM_Normal || mNumPlayers >= 3u) {
     mDynamicLights = rstl::vector< CLight >();
@@ -187,6 +193,7 @@ CStateManager::CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&,
 : mNextFreeIndex(0)
 , mBossId(kInvalidUniqueId)
 , mSpecialFunctionId(kInvalidUniqueId)
+, mProjectedShadows(nullptr)
 , mPlanes()
 , mPendingDockArea(kInvalidAreaId)
 , mPendingDock(0)

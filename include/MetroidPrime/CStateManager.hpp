@@ -64,6 +64,7 @@ class CFluidPlaneManager;
 class CDamageInfo;
 class CAABox;
 class CTexture;
+class CProjectedShadow;
 
 typedef rstl::bit_vector<> MapWorldInfoAreas;
 
@@ -208,6 +209,7 @@ public:
   void SetActorAreaId(CActor& actor, TAreaId);
   // Guessed names.
   void SetPortalTransition(rstl::single_ptr< CPortalTransition >& transition);
+  void AddProjectedShadow(CProjectedShadow* shadow);
   void SetPendingDockTransition(TAreaId area, int dock, bool showSoftTransition) {
     mPendingDockArea = area;
     mPendingDock = dock;
@@ -368,7 +370,7 @@ public:
   ERenderVisorMode mRenderVisorMode;
   TUniqueId mSpecialFunctionId;
   float mHudMessageTime;        // 0x2454
-  int x2458;                    // unk type
+  CProjectedShadow* mProjectedShadows; // 0x2458; head of this frame's shadow list.
   int mHudMessageFrameCount;    // 0x245c
   int mPausedHudMemoFrameCount; // 0x2460
   CAssetId mPausedHudMemoAssetId;
