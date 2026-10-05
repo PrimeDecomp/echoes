@@ -153,10 +153,13 @@ public:
   const CVector3f& GetVelocityWR() const { return mVelocity; }
   const CAxisAngle& GetAngularVelocityWR() const { return mAngularVelocity; }
   const CVector3f& GetMomentumWR() const { return mMomentum; }
+  CVector3f& MomentumWR() { return mMomentum; }
   void SetMomentumWR(const CVector3f& momentum) { mMomentum = momentum; }
   const CVector3f& GetForceWR() const { return mForce; }
+  CVector3f& ForceWR() { return mForce; }
   void SetForceWR(const CVector3f& force) { mForce = force; }
   const CVector3f& GetImpulseWR() const { return mImpulse; }
+  CVector3f& ImpulseWR() { return mImpulse; }
   void SetImpulseWR(const CVector3f& impulse) { mImpulse = impulse; }
   const CAxisAngle& GetTorqueWR() const { return mTorque; }
   void SetTorqueWR(const CAxisAngle& torque) { mTorque = torque; }

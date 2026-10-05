@@ -134,8 +134,4 @@ private:
 };
 CHECK_SIZEOF(CBouncyGrenade, 0x390)
 
-namespace rstl {
-RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CMaterialList)
-}
-
 #endif // _CBOUNCYGRENADE

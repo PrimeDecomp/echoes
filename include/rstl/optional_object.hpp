@@ -57,6 +57,13 @@ public:
     m_valid = true;
     return data();
   }
+  T* prepare_emplace() {
+    if (m_valid) {
+      rstl::destroy(get_ptr());
+    }
+    m_valid = true;
+    return get_ptr();
+  }
   T* get_ptr() { return reinterpret_cast< T* >(m_data); }
   const T* get_ptr() const { return reinterpret_cast< const T* >(m_data); }
   bool valid() const { return m_valid; }
