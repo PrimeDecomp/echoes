@@ -98,6 +98,7 @@ public:
   const CHealthInfo* GetHealthInfo() const override {
     return mHealthInfo.valid() ? &*mHealthInfo : nullptr;
   }
+  uint GetFlags() const { return mFlags; }
   rstl::optional_object< CAABox > GetTouchBounds() const override;
   void Touch(CActor& act, CStateManager& mgr) override;
 
