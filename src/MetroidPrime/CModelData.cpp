@@ -7,6 +7,7 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
 #include "Kyoto/Animation/CSegId.hpp"
+#include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
@@ -140,8 +141,11 @@ void CModelData::RenderUnsortedParts(EWhichModel which, const CTransform4f& xf,
 
 void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace,
                                        const SModelDataMultipassContext& context) {
-  // TODO: For each pass, set its color and portal plane, then draw the skinned model
-  // with the corresponding flags and 64-bit surface mask.
+  for (int i = 0; i < context.mCount; ++i) {
+    gpRender->SetGXRegister1Color(context.mColors[i]);
+    PortalPlane::SetCurrentPlane(context.mPlanes[i]);
+    context.mModel.DolphinDrawFromWorkspace(workspace, 6, context.mFlags[i], context.mMasks[i]);
+  }
 }
 
 void CModelData::DisintegrateDraw(EWhichModel which, const CTransform4f& xf,
@@ -212,7 +216,29 @@ void CModelData::RenderModelMultipleTimesWithFlags(EWhichModel which, const CTra
                                                    const CModelFlags* flags, const u64* masks,
                                                    const CColor* colors, const CPlane* planes,
                                                    int count) const {
-  // TODO: Set scaled transform and lighting, then submit the static passes or skinning callback.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  if (lights == nullptr || which == kWM_Dark) {
+    CGraphics::DisableAllLights();
+    gpRender->SetAmbientColor(mAmbientColor);
+  } else {
+    lights->ActivateLights();
+  }
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    SModelDataMultipassContext context = {model, flags, masks, colors, planes, count};
+    model.Draw(&mAnimData->Pose(),
+               reinterpret_cast< CSkinnedModel::TDrawFunc >(&MultipassDrawCallback),
+               &context);
+  } else {
+    const CModel& model = **PickStaticModel(which);
+    for (int i = 0; i < count; ++i) {
+      gpRender->SetGXRegister1Color(colors[i]);
+      model.Draw(masks[i], flags[i]);
+    }
+  }
 }
 
 void CModelData::Touch(const CStateManager& mgr, int shaderIdx) const {
