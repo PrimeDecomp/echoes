@@ -147,7 +147,19 @@ void CModelData::MultipassDrawCallback(const SSkinningWorkspace& workspace,
 void CModelData::DisintegrateDraw(EWhichModel which, const CTransform4f& xf,
                                   const CTexture& texture, const CColor& color,
                                   float amount) const {
-  // TODO: Submit the static or posed model through the renderer's model-input wrapper.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelDisintegrate(renderData, texture, color, amount);
+  } else {
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelDisintegrate(renderData, texture, color, amount);
+  }
 }
 
 void CModelData::DisintegrateDraw(const CStateManager& mgr, const CTransform4f& xf,
@@ -158,7 +170,19 @@ void CModelData::DisintegrateDraw(const CStateManager& mgr, const CTransform4f& 
 
 void CModelData::RenderNoise(EWhichModel which, const CTransform4f& xf, const CColor& color,
                              bool additive) const {
-  // TODO: Submit the scaled static or posed model to the noise-rendering path.
+  const CTransform4f modelXf = xf * CTransform4f::Scale(mScale);
+  gpRender->SetModelMatrix(modelXf);
+  CGraphics::DisableAllLights();
+
+  if (HasAnimation()) {
+    const CSkinnedModel& model = PickAnimatedModel(which);
+    mAnimData->SetupRender();
+    const SModelRenderData renderData(model, mAnimData->Pose());
+    gpRender->DrawModelNoise(renderData, color, additive);
+  } else {
+    const SModelRenderData renderData(**PickStaticModel(which));
+    gpRender->DrawModelNoise(renderData, color, additive);
+  }
 }
 
 void CModelData::RenderNoise(const CStateManager& mgr, const CTransform4f& xf, const CColor& color,

@@ -513,7 +513,7 @@ CCubeRenderer::CFogVolumeListItem::CFogVolumeListItem(const CTransform4f& xf, co
                : rstl::optional_object_null())
 , mSkinnedModel(skinnedModel) {}
 
-void CCubeRenderer::DrawModelDisintegrate(const CModel& model, const CTexture& texture,
+void CCubeRenderer::DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
                                           const CColor& color, float amount) {
   // TODO: reconstruct this rendering pass.
 }
@@ -839,7 +839,8 @@ void CCubeRenderer::DrawDarkWorldCloud(float time, const CVector3f& scale, const
   // TODO: reconstruct this rendering pass.
 }
 
-void CCubeRenderer::DrawModelNoise(const CModel& model, const CColor& color, bool additive) {
+void CCubeRenderer::DrawModelNoise(const SModelRenderData& model, const CColor& color,
+                                   bool additive) {
   // TODO: reconstruct this rendering pass.
 }
 
