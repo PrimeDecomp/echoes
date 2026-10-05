@@ -87,7 +87,7 @@ void CGuiTextSupport::SetText(const rstl::wstring& text, bool multipage) {
 void CGuiTextSupport::AddText(const rstl::wstring& text) {
   if (mRenderBuffer) {
     mPrimitiveStartTimes.reserve(mPrimitiveStartTimes.size() + 1);
-    mPrimitiveStartTimes.push_back(
+    mPrimitiveStartTimes.push_back_unsafe(
         rstl::pair< float, int >(rstl::max_val(GetCurrentAnimationOverAge(), mCurrentTime),
                                  mRenderBuffer->GetNumPrimitives()));
   }
@@ -96,7 +96,7 @@ void CGuiTextSupport::AddText(const rstl::wstring& text) {
 }
 
 void CGuiTextSupport::SetWordWrap(bool wordWrap) {
-  if (mProperties.mWordWrap != wordWrap) {
+  if (wordWrap != mProperties.mWordWrap) {
     mProperties.mWordWrap = wordWrap;
     ClearRenderBuffer();
   }
