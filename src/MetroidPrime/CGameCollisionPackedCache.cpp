@@ -294,6 +294,7 @@ bool CGameCollision::DetectStaticCollision_Cached(const CStateManager& mgr, CCol
     grownBounds.Include(cache.GetBounds());
     cache.SetBounds(grownBounds);
     BuildCollisionCache(mgr, cache, CMaterialFilter());
+    IsUser(0);
   }
 
   switch (primitive.GetPrimType()) {
@@ -337,6 +338,7 @@ bool CGameCollision::DetectStaticCollisionBoolean_Cached(const CStateManager& mg
     grownBounds.Include(cache.GetBounds());
     cache.SetBounds(grownBounds);
     BuildCollisionCache(mgr, cache, CMaterialFilter());
+    IsUser(0);
   }
 
   switch (primitive.GetPrimType()) {
@@ -379,6 +381,7 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
     grownBounds.Include(cache.GetBounds());
     cache.SetBounds(grownBounds);
     BuildCollisionCache(mgr, cache, CMaterialFilter());
+    IsUser(0);
   }
 
   if (primitive.GetPrimType() == 'AABX') {
