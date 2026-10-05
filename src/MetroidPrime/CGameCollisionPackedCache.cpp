@@ -410,14 +410,14 @@ void CGameCollision::CollisionFailsafe(const CStateManager& mgr, CCollisionCache
       return;
     }
 
-    const CMotionState oldState = actor.GetMotionState();
-    const CMotionState lastState = actor.GetLastNonCollidingState();
-    actor.SetMotionState(lastState);
+    const CMotionState& oldState = actor.GetMotionState();
+    const CMotionState& lastState = actor.GetLastNonCollidingState();
+    actor.SetMotionState(CMotionState(lastState));
     if (!DetectCollisionBoolean_Cached(mgr, cache, primitive, actor.GetPrimitiveTransform(),
                                        actor.GetMaterialFilter(), nearList)) {
       actor.SetLastNonCollidingState(
           CMotionState(lastState.GetTranslation(), lastState.GetOrientation(),
-                       0.5f * lastState.GetVelocity(), 0.5f * lastState.GetAngularMomentum()));
+                       0.5f * lastState.GetVelocity(), lastState.GetAngularMomentum() * 0.5f));
       actor.SetNumTicksStuck(0);
     } else {
       CVector3f recoveryImpulse = CVector3f::Zero();
