@@ -113,6 +113,16 @@ public:
   // Guessed names: Combat and Scan share the normal rendering mode.
   enum ERenderVisorMode { kRVM_Normal, kRVM_Echo, kRVM_Dark };
 
+  // Reconstructed indices, established by construction and qualification predicates.
+  enum EFilteredObjectListType {
+    kFOL_Door,
+    kFOL_Dock,
+    kFOL_Type124, // The qualifying entity type's class remains unidentified.
+    kFOL_ForgottenObject,
+    kFOL_GameCamera,
+    kFOL_GrapplePoint
+  };
+
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
                 const rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 >&,
                 const rstl::ncrc_ptr< CWorldTransManager >&,
@@ -225,12 +235,12 @@ public:
   TUniqueId GetIdForScript(TEditorId eid) const;
   TIdListResult GetIdListForScript(TEditorId) const;
 
-  CWorld* World() { return mWorld; }
+  CWorld* World() { return mWorld.get(); }
   bool HasWorld() const; // Prime-correlated name.
   CWorldTransManager* WorldTransManager() const { return mWorldTransManager.GetPtr(); }
   CScriptMailbox* Mailbox() const { return mMailbox.GetPtr(); }
   void QuitGame() { mQuitGame = true; }
-  const CWorld* GetWorld() const { return mWorld; }
+  const CWorld* GetWorld() const { return mWorld.get(); }
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
   CEnvFxManager* EnvFxManager() { return mEnvFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return mEnvFxManager; }
@@ -310,6 +320,7 @@ public:
   void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
   // Guessed names, recovered from script deletion and object-list consumers.
   void AddToGraveyard(CEntity* entity);
+  void ClearGraveyard(); // Prime-correlated name; deletes the queued entity batches.
   void RemoveObject(TUniqueId id);
   bool IsMultiplayer() const; // Guessed name
   void DispatchScriptMessages(); // Guessed name.
@@ -393,7 +404,7 @@ public:
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
   CPlayerState* mPlayerState;
   CCameraManager* mCameraManager;
-  CWorld* mWorld;                                                 // 0x1604
+  rstl::single_ptr< CWorld > mWorld; // Native teardown owns and deletes the world.
   rstl::list< rstl::reserved_vector< CEntity*, 32 > > mGraveyard; // 0x1608
   rstl::single_ptr< CStateManagerContainer > mStateManagerContainer;
   SL::CSortedListManager* mSortedListManager;
@@ -405,9 +416,9 @@ public:
   TIdList mScriptIdMap;
   TToken< CDependencyGroup > mAudioGroupDependencies; // Guessed name, from audio initialization.
   rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > mPlayerStateOwners; // Guessed name.
-  rstl::rc_ptr< CScriptMailbox > mMailbox;
-  rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
-  rstl::rc_ptr< CWorldTransManager > mWorldTransManager;
+  rstl::ncrc_ptr< CScriptMailbox > mMailbox;
+  rstl::ncrc_ptr< CMapWorldInfo > mMapWorldInfo;
+  rstl::ncrc_ptr< CWorldTransManager > mWorldTransManager;
   rstl::ncrc_ptr< CWorldLayerState > mCurrentWorldLayerState;
   rstl::single_ptr< CSaveGameScreen > mSaveGameScreen; // x169C
   TAreaId mNextAreaId;                                 // x16a0

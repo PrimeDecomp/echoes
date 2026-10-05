@@ -49,9 +49,7 @@ public:
   , mEmpty_prev(reinterpret_cast< node* >(&mEmpty_prev))
   , mEmpty_next(reinterpret_cast< node* >(&mEmpty_prev))
   , mCount(0) {
-    destroy_helper dh(this);
     insert(end(), other.begin(), other.end());
-    dh.release();
   }
 
   list& operator=(const list& other) {

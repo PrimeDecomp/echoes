@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include "Kyoto/Math/CVector3f.hpp"
+#include "rstl/construct.hpp"
 
 typedef const float (*ConstMtxPtr)[4];
 
@@ -181,5 +182,9 @@ private:
 bool operator==(const CTransform4f& lhs, const CTransform4f& rhs);
 
 CHECK_SIZEOF(CTransform4f, 0x30)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CTransform4f)
+}
 
 #endif // _CTRANSFORM4F
