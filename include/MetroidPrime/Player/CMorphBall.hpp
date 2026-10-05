@@ -73,6 +73,7 @@ public:
   EBallBoostState GetBallBoostState() const;
   void SetBallBoostState(EBallBoostState state);
   EBombJumpState GetBombJumpState() const;
+  void SetBallState(EBallState state) { mBallState = state; }
   EBallState GetBallState() const { return mBallState; }
   int GetBallAnimationIndex() const { return mBallAnimationIndex; }
   void SetBoostEnabled(bool enabled) { mBoostEnabled = enabled; }
@@ -84,6 +85,7 @@ public:
   bool IsProjectile() const;
   void SetAsProjectile(bool projectile);
   void SetDamageTimer(float time);
+  float GetCloseToCollisionTime() const { return mCloseToCollisionTime; }
   void SetDisableSpiderBallTime(float time);
   void TakeDamage(float damage);
 
@@ -211,7 +213,7 @@ private:
   static const SMorphBallModelInfo skSpiderBallCharacter[3];
   static const SMorphBallModelInfo skSpiderBallLowPoly[3];
   static const SMorphBallModelInfo skBoostBallCharacter[3]; // Guessed name
-  static const SMorphBallModelInfo skBoostBallLowPoly[3];  // Guessed name
+  static const SMorphBallModelInfo skBoostBallLowPoly[3];   // Guessed name
   static const SMorphBallModelInfo skSpiderBallGlass[3];
   static const SMorphBallModelInfo skFrozenBall[3];
   static const uint skBallGlowColorIdx[3];
@@ -328,8 +330,7 @@ private:
   CVector3f mVelocityBeforeFailsafe; // Guessed name
   CVector3f mVelocityAfterFailsafe;  // Guessed name: adds an upward recovery velocity.
   bool mBoostEnabled : 1;
-  bool mTouchedFloorDuringBoost
-      : 1; // Guessed name; set by IsFloor, cleared on boost/morph.
+  bool mTouchedFloorDuringBoost : 1; // Guessed name; set by IsFloor, cleared on boost/morph.
   float mBoostChargeTime;
   float mTimeNotInBoost;
   float x1028_; // Zero-initialized; no other access identified in this TU.

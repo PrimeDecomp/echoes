@@ -66,7 +66,14 @@ public:
     }
     return rad;
   }
-  // WrapTwoPi__5CMathFf weak
+  static float WrapTwoPi(float rad) {
+    if (rad > M_2PIF) {
+      rad = FastFmod(rad, M_2PIF);
+    } else if (rad < 0.f) {
+      rad = M_2PIF + FastFmod(rad, M_2PIF);
+    }
+    return rad;
+  }
   template < typename T >
   static const T& Min(const T& a, const T& b);
   template < typename T >
@@ -99,8 +106,8 @@ public:
   static float GetCatmullRomSplinePoint(float a, float b, float c, float d, float t);
   // Guessed names, based on the native spline basis and normalized-bisector formulas.
   static CVector3f GetHermiteSplinePoint(const CVector3f& a, const CVector3f& b,
-                                        const CVector3f& tangentA, const CVector3f& tangentB,
-                                        float t);
+                                         const CVector3f& tangentA, const CVector3f& tangentB,
+                                         float t);
   static CVector3f GetCatmullRomSplineTangent(const CVector3f& a, const CVector3f& b,
                                               const CVector3f& c, const CVector3f& d, float t);
   static CVector3f GetBSplinePoint(const CVector3f& a, const CVector3f& b, const CVector3f& c,

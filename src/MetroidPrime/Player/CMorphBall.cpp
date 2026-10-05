@@ -1765,7 +1765,7 @@ void CMorphBall::UpdateScrewAttackRecovery(float dt) {
 
   if (endRecovery ||
       strcmp(mPlayer.BodyController()->GetBodyState().GetName(), "Locomotion") == 0) {
-    mPlayer.fn_80184294(CPlayer::kMS_Morphed);
+    mPlayer.RequestScrewAttackTransition(CPlayer::kMS_Morphed);
   }
 }
 
@@ -2311,7 +2311,7 @@ bool CMorphBall::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node,
                                  EUserEventType type) {
   if (type == kUE_EventStart && mPlayer.GetMorphballTransitionState() == CPlayer::kMS_Morphed &&
       mBallState == kBS_ScrewAttackRecovery) {
-    mPlayer.fn_80184294(CPlayer::kMS_Morphed);
+    mPlayer.RequestScrewAttackTransition(CPlayer::kMS_Morphed);
     return true;
   }
   return false;

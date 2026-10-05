@@ -64,8 +64,10 @@ public:
                            CStateManager& mgr) const;
   virtual CQuaternion Move(float dt, CStateManager& mgr);
 
+  bool IsMotionActive() const { return mMotionActive; } // Reconstructed name.
+
   void ResetMotion(float time, CStateManager& mgr); // Reconstructed name.
-  CQuaternion CalculateRotationDelta(); // Guessed name
+  CQuaternion CalculateRotationDelta();             // Guessed name
   void SetTransformExplicitly(const CTransform4f& xf);
   void SetTransformIfNoPositionSpline(const CTransform4f& xf); // Reconstructed name.
   bool IsSlave(TUniqueId id) const;

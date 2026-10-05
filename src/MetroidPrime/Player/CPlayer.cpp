@@ -25,6 +25,9 @@
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
 
+const bool kDoubleJumpBreaksOrbit = false;
+const bool kDashDoubleJumpBreaksOrbit = false;
+const bool gkFreeLookPreventsOrbitMovement = true;
 const bool gkAutoAim = false;
 const bool gkAutoAimAtOrbitedObject = true;
 const int gkMorphBallOrbitMode = 1;
@@ -66,9 +69,9 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mFallCameraTimer(0.f)
 , mCancelCameraPitch(false)
 , mTimeSinceJump(1000.f)
-, x324_(1000.0f)
-, x328_(0.f)
-, x32c_(CVector3f::Zero())
+, mTimeSinceDoubleJump(1000.0f)
+, mTimeSinceScrewAttackRequest(0.f)
+, mLastJumpPosition(CVector3f::Zero())
 , mLastSpaceJumpPosition(CVector3f::Zero())
 , mSurfaceRestraint(kSR_Normal)
 , mAccelerationTable()
@@ -162,7 +165,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mFlatMoveSpeed(0.f)
 , mLookDir(xf.GetForward())
 , mMoveDir(xf.GetForward())
-, xfe8_(xf.GetForward())
+, mLeaveMorphDir(xf.GetForward())
 , mLastPosForDirCalc(GetTranslation())
 , mGunDir(xf.GetForward())
 , mTimeMoving(0.f)
@@ -200,7 +203,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mCameraBob(nullptr)
 , mLandingSfx()
 , mLandingSfxTimer(0.f)
-, x1184_()
+, mDashSfx()
 , x1188_()
 , x118c_(0)
 , x1190_(0.f)
@@ -225,8 +228,8 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mRidingPlatform(kInvalidUniqueId)
 , mGravityBoostDuration(0.f)
 , mGravityBoostSfx()
-, x1258_()
-, mGravityBoostActive(false)
+, mGravityBoostEndSfx()
+, mGravityBoostUsed(false)
 , mScreenFilterColor(1.f, 1.f, 1.f, 0.f)
 , mPlayerHintManager(nullptr)
 , x1268_24_(false)
@@ -237,10 +240,10 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mSpiderBallControlXY(false)
 , mControlDirectionOverridden(false)
 , mInSafeZone(false)
-, x1269_24_(false)
+, mSlidingOnWall(false)
 , mHitWallDuringMove(false)
 , mSelectFluidBallSound(false)
-, x1269_27_(true)
+, mStepCameraZBiasDirty(true)
 , mExtendTargetDistance(false)
 , mInterpolatingControlDir(false)
 , mOutOfBallLookAtHint(false)

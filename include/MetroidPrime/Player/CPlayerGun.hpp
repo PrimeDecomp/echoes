@@ -166,6 +166,7 @@ public:
   void EnterFidget(CStateManager& mgr);
   void UpdateGunIdle(float dt, CStateManager& mgr);
   void UpdateGunMotion(float dt, CStateManager& mgr);
+  void AddBombReloadTime(float time) { mBombReloadTimer += time; }
   void UpdateTimers(float dt);
   void UpdateFreeLook(float dt, CStateManager& mgr);
   void UpdateLeftArmTransform();
