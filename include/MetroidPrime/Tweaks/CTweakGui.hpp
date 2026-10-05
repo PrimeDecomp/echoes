@@ -109,9 +109,9 @@ public:
   float GetScanWindowActiveWidth() const;
   float GetScanWindowIdleHeight() const;
   float GetScanWindowIdleWidth() const;
-  CMayaSpline& GetScanObjectScaleTransitionSpline() const;
-  CMayaSpline& GetScanObjectRotationTransitionSpline() const;
-  CMayaSpline& GetScanObjectTranslateTransitionSpline() const;
+  const CMayaSpline& GetScanObjectScaleTransitionSpline() const;
+  const CMayaSpline& GetScanObjectRotationTransitionSpline() const;
+  const CMayaSpline& GetScanObjectTranslateTransitionSpline() const;
   float GetScanSidesEndTime() const;
   float GetScanSidesStartTime() const;
   float GetScanSidesDuration() const;
@@ -237,9 +237,9 @@ public:
   float GetLogBookTextScale() const;
   float GetLogBookSelectedTextScale() const;
   float GetLogBookTransitionTime() const;
-  CMayaSpline& GetLogBookNodeCollapseMotion() const;
-  CMayaSpline& GetLogBookSelectedNodeCollapseMotion() const;
-  CMayaSpline& GetLogBookNodeExpandMotion() const;
+  const CMayaSpline& GetLogBookNodeCollapseMotion() const;
+  const CMayaSpline& GetLogBookSelectedNodeCollapseMotion() const;
+  const CMayaSpline& GetLogBookNodeExpandMotion() const;
   float GetLogBookRotationSpeed() const;
   float GetLogBookNodeScale() const;
   float GetLogBookSelectedNodeScale() const;

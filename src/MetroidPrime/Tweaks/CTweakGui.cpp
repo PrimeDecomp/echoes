@@ -207,16 +207,16 @@ float CTweakGui::GetScanSidesEndTime() const {
 
 float CTweakGui::GetScanObjectModelScale() const { return mData->misc.scanObjectModelScale; }
 
-CMayaSpline& CTweakGui::GetScanObjectTranslateTransitionSpline() const {
-  return const_cast< CMayaSpline& >(mData->misc.scanObjectTranslateTransitionSpline);
+const CMayaSpline& CTweakGui::GetScanObjectTranslateTransitionSpline() const {
+  return mData->misc.scanObjectTranslateTransitionSpline;
 }
 
-CMayaSpline& CTweakGui::GetScanObjectRotationTransitionSpline() const {
-  return const_cast< CMayaSpline& >(mData->misc.scanObjectRotationTransitionSpline);
+const CMayaSpline& CTweakGui::GetScanObjectRotationTransitionSpline() const {
+  return mData->misc.scanObjectRotationTransitionSpline;
 }
 
-CMayaSpline& CTweakGui::GetScanObjectScaleTransitionSpline() const {
-  return const_cast< CMayaSpline& >(mData->misc.scanObjectScaleTransitionSpline);
+const CMayaSpline& CTweakGui::GetScanObjectScaleTransitionSpline() const {
+  return mData->misc.scanObjectScaleTransitionSpline;
 }
 
 float CTweakGui::GetBallViewportYReduction() const { return mData->misc.unknown_0xeeb7839b; }
@@ -549,16 +549,16 @@ float CTweakGui::GetLogBookSelectedTextScale() const { return mData->logBook.sel
 
 float CTweakGui::GetLogBookTransitionTime() const { return mData->logBook.transitionTime; }
 
-CMayaSpline& CTweakGui::GetLogBookNodeCollapseMotion() const {
-  return const_cast< CMayaSpline& >(mData->logBook.nodeCollapseMotion);
+const CMayaSpline& CTweakGui::GetLogBookNodeCollapseMotion() const {
+  return mData->logBook.nodeCollapseMotion;
 }
 
-CMayaSpline& CTweakGui::GetLogBookSelectedNodeCollapseMotion() const {
-  return const_cast< CMayaSpline& >(mData->logBook.selectedNodeCollapseMotion);
+const CMayaSpline& CTweakGui::GetLogBookSelectedNodeCollapseMotion() const {
+  return mData->logBook.selectedNodeCollapseMotion;
 }
 
-CMayaSpline& CTweakGui::GetLogBookNodeExpandMotion() const {
-  return const_cast< CMayaSpline& >(mData->logBook.nodeExpandMotion);
+const CMayaSpline& CTweakGui::GetLogBookNodeExpandMotion() const {
+  return mData->logBook.nodeExpandMotion;
 }
 
 float CTweakGui::GetLogBookRotationSpeed() const { return mData->logBook.rotationSpeed; }
