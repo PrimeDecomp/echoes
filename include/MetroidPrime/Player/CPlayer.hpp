@@ -219,6 +219,7 @@ public:
   const CMorphBall* GetMorphBall() const { return mMorphBall; }
   CPlayerState* GetPlayerState() { return mPlayerState; }
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
+  CPlayerKnockBackMgr& GetKnockBackManager() { return mKnockBackManager; }
   const CPlayerTargeting* GetTargeting() const { return mTargeting; }
 
   CPlayerBodyController* BodyController() { return mBodyController; }
