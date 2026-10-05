@@ -128,7 +128,35 @@ void CEnvFxManagerGrid::RenderSnowParticles(const CTransform4f& camXf) {
 }
 
 void CEnvFxManagerGrid::RenderDriftingParticles(const CTransform4f& camXf) {
-  RenderSnowParticles(camXf);
+  const int count = mParticles.size();
+  const short zx = real_to_fixed8_8(0.2f * camXf.Get02());
+  const short zy = real_to_fixed8_8(0.2f * camXf.Get12());
+  const short zz = real_to_fixed8_8(0.2f * camXf.Get22());
+  const short xx = real_to_fixed8_8(0.2f * camXf.Get00());
+  const short xy = real_to_fixed8_8(0.2f * camXf.Get10());
+  const short xz = real_to_fixed8_8(0.2f * camXf.Get20());
+  CGX::Begin(GX_QUADS, GX_VTXFMT6, count * 4);
+  for (int i = count - 1; i >= 0; --i) {
+    CVectorFixed8_8 particle = mParticles[i];
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 0);
+    particle.mX += zx;
+    particle.mY += zy;
+    particle.mZ += zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(0, 2);
+    particle.mX += xx;
+    particle.mY += xy;
+    particle.mZ += xz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 2);
+    particle.mX -= zx;
+    particle.mY -= zy;
+    particle.mZ -= zz;
+    GXPosition3s16(particle.mX, particle.mY, particle.mZ);
+    GXTexCoord2u8(2, 0);
+  }
+  CGX::End();
 }
 
 void CEnvFxManagerGrid::RenderParticleTrails(EEnvFxType type) {
@@ -724,8 +752,19 @@ void CEnvFxManager::UpdateSnowParticles(rstl::reserved_vector< CVectorFixed8_8, 
 void CEnvFxManager::UpdateDriftingParticles(
     float dt, rstl::reserved_vector< CVectorFixed8_8, 256 >& snowForces,
     const CTransform4f& invXf) {
-  // The target retains the dt and transform arguments, but uses the snow update body.
-  UpdateSnowParticles(snowForces);
+  for (int i = mGrids.size() - 1; i >= 0; --i) {
+    CEnvFxManagerGrid& grid = mGrids[i];
+    uint force = static_cast< uint >(mFirstSnowForce);
+    if (!grid.mBlock.first) {
+      continue;
+    }
+    for (int j = grid.mParticles.size() - 1; j >= 0; --j) {
+      CVectorFixed8_8& particle = grid.mParticles[j];
+      particle += snowForces[force];
+      particle.mZ &= 0x3fff;
+      force = (force + 1) & 0xff;
+    }
+  }
 }
 
 void CEnvFxManager::UpdateParticleTrails(float dt, const CVectorFixed8_8& zVec) {
