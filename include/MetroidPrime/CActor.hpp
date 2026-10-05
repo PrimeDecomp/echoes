@@ -196,6 +196,7 @@ public:
   bool GetShadowDirty() const { return mShadowDirty; }
   bool GetMuted() const { return mMuted; }
   bool GetRenderParticleDatabaseInside() const { return mRenderParticleDBInside; }
+  uint GetValidTargetPlayers() const { return mValidTargetPlayers; }
 
   void SetTransformDirty(bool b) { mNotInSortedLists = b; }
   void SetTransformDirtySpare(bool b) { mTransformDirty = b; }

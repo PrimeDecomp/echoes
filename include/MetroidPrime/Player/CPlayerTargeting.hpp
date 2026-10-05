@@ -25,6 +25,7 @@ public:
   };
 
   explicit CPlayerTargeting(TUniqueId playerId);
+  TUniqueId GetResolvedTargetId() const { return mResolvedTargetId; }
   TUniqueId GetScanTargetId(const CStateManager& mgr, int paletteIndex) const;
   TUniqueId ResolveScanTarget(const CStateManager& mgr, TUniqueId id) const;
   void Draw(CStateManager& mgr, const CInGameGuiManagerSet& gui) const;

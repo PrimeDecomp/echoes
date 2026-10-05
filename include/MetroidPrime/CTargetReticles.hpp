@@ -26,6 +26,20 @@ public:
                                    CTargetReticleRenderState& out,
                                    const CTargetReticleRenderState& b, float t);
 
+  void SetTargetId(TUniqueId id) { mTarget = id; }
+  void SetFactor(float factor) { mFactor = factor; }
+  void SetIsOrbitZoneIdlePosition(bool idle) { mOrbitZoneIdlePosition = idle; }
+  void SetRadiusWorld(float radius) { mRadius = radius; }
+  void SetTargetPositionWorld(const CVector3f& position) { mPosition = position; }
+  void SetMinViewportClampScale(float scale) { mMinimumViewportScale = scale; }
+
+  TUniqueId GetTargetId() const { return mTarget; }
+  float GetRadiusWorld() const { return mRadius; }
+  CVector3f GetTargetPositionWorld() const { return mPosition; }
+  float GetFactor() const { return mFactor; }
+  float GetMinViewportClampScale() const { return mMinimumViewportScale; }
+  bool GetIsOrbitZoneIdlePosition() const { return mOrbitZoneIdlePosition; }
+
 private:
   TUniqueId mTarget;
   float mRadius;
@@ -124,18 +138,18 @@ private:
   float mGrapplePointFactorB;
   TUniqueId mVulnerabilityTarget;
   CDamageVulnerability mTargetVulnerability;
-  float mCrosshairsScale;
-  float mSeekerAngle;
+  float mTargetHealth;
+  float mTargetHealthShadow;
   float mCrosshairsDrawScale;
-  float x274;
-  float x278;
+  float mSeekerRotationAngle;
+  float mFlowerRotationAngle;
   bool mMissileActive;
   float mMissileBracketTimer;
   float mMissileBracketScaleTimer;
   CPlayerState::EBeamId mBeam;
   float mChargeGaugeOvershootTimer;
   float mLockOnTimer;
-  float x294;
+  float mNextTargetFade;
   float mLockFireTimer;
   float mFullChargeFadeTimer;
   float mScanBracketFactor;

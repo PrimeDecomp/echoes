@@ -40,6 +40,8 @@ public:
   virtual void InitializeStateMachine(CStateManager& mgr) = 0;
 
   TUniqueId GetPlayerUniqueId() const { return mPlayerUniqueId; }
+  bool GetMissileMode() const { return mMissileMode; }
+  uint GetFiring() const { return mFiredWeaponFlags; }
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
   CWorldShadow* GetWorldShadow();
