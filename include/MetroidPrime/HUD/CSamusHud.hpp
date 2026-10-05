@@ -26,7 +26,7 @@ class CGuiWidget;
 class CGuiTextPane;
 class CGuiCamera;
 class CAuiEnergyBarT01;
-class CAuiMeter;
+class CAuiBitmapMeter;
 class CHudVisorBeamMenu;
 class CHudRadarInterface;
 class CHudBossEnergyInterface;
@@ -39,13 +39,14 @@ public:
   enum ETransitionState { kTS_Idle, kTS_FadeOut, kTS_Loading, kTS_FadeIn };
 
   struct SCachedHudLight {
-    SCachedHudLight()
-    : mPosition(CVector3f::Zero())
-    , mColor(CColor::White())
-    , mAttenuationConstant(0.f)
-    , mAttenuationLinear(0.f)
-    , mAttenuationQuadratic(0.f)
-    , mFade(0.f) {}
+    SCachedHudLight(const CVector3f& position, const CColor& color, float constant, float linear,
+                    float quadratic, float fade)
+    : mPosition(position)
+    , mColor(color)
+    , mAttenuationConstant(constant)
+    , mAttenuationLinear(linear)
+    , mAttenuationQuadratic(quadratic)
+    , mFade(fade) {}
     CVector3f mPosition;
     CColor mColor;
     float mAttenuationConstant;
@@ -98,6 +99,8 @@ public:
   static rstl::pair< CVector3f, CVector3f > CombatEnergyCoordFunc(float t);
 
 private:
+  static const char* const
+      skHudElementNames[17]; // Guessed name; Prime-correlated profiling labels.
   void DrawBossLockOnWarning() const;
   void UpdateBossLockOnWarning(float dt, const CStateManager& mgr);
   void SetMessage(const rstl::wstring& text, const CHUDMemoParms& info);
@@ -125,7 +128,7 @@ private:
   bool IsCachedLightInAreaLights(const SCachedHudLight& light, const CActorLights& lights) const;
   void fn_8006653c(const CStateManager& mgr, bool init);
   void UpdateThreatAssessment(float dt, const CStateManager& mgr);
-  bool ResolveLockOnTexture();
+  void ResolveLockOnTexture();
   void UpdateBallMode(const CStateManager& mgr);
   void UpdateBeamAmmo(const CStateManager& mgr, bool init);
   void UpdateMissile(float dt, const CStateManager& mgr, bool init);
@@ -265,17 +268,17 @@ private:
   CTransform4f mEnergyBracketTransform;
   CGuiWidget* mEnergyBracket;
   CAuiEnergyBarT01* mEnergyBar;
-  CAuiMeter* mMissileGauge;
+  CAuiBitmapMeter* mMissileGauge;
   rstl::reserved_vector< CGuiWidget*, 5 > mDarkAmmoSegments;
-  rstl::reserved_vector< CAuiMeter*, 5 > mDarkAmmoMeters;
+  rstl::reserved_vector< CAuiBitmapMeter*, 5 > mDarkAmmoMeters;
   rstl::reserved_vector< CGuiWidget*, 5 > mLightAmmoSegments;
-  rstl::reserved_vector< CAuiMeter*, 5 > mLightAmmoMeters;
+  rstl::reserved_vector< CAuiBitmapMeter*, 5 > mLightAmmoMeters;
   float x7ec;
   CGuiWidget* mDecorationRoot;
   CGuiWidget* mThreatIcon;
   CGuiWidget* mThreatBar;
   CGuiWidget* mThreatRoot;
-  CAuiMeter* mThreatGauge;
+  CAuiBitmapMeter* mThreatGauge;
   CGuiWidget* mMissileIcon;
   CGuiWidget* mLightAmmoIcon;
   CGuiWidget* mDarkAmmoIcon;

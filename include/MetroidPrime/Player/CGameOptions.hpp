@@ -9,8 +9,8 @@
 
 #include "Kyoto/Audio/CAudioSys.hpp"
 #include "Kyoto/SObjectTag.hpp"
-#include "MetroidPrime/TGameTypes.hpp"
 #include "MetroidPrime/Player/CPlayerOptions.hpp"
+#include "MetroidPrime/TGameTypes.hpp"
 
 class CBitStreamReader;
 class CBitStreamWriter;
@@ -53,6 +53,7 @@ public:
   void SetIsHintSystemEnabled(bool);
   bool GetIsHintSystemEnabled() const { return hintSystem; }
   void SetFlag3(bool);
+  bool GetIsHudEnglish() const { return unk; } // Guessed name; selects STRG_HudEngOnly.
   void SetInvertYAxis(bool);
   void SetIsRumbleEnabled(bool rumble);
   bool GetIsRumbleEnabled() const { return rumble; }

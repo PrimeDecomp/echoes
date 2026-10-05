@@ -104,6 +104,7 @@ public:
   void SetDepthTest(bool enabled) { mDepthTest = enabled; }
 
   void SetDepthWrite(bool enabled) { mDepthWrite = enabled; }
+  void SetDrawFlags(EGuiModelDrawFlags flags) { mDrawFlags = flags; }
 
 protected:
   void ReadUnusedThing(CInputStream& in);

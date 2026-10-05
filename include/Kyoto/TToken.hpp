@@ -72,6 +72,7 @@ template < typename T >
 class TLockedToken {
 public:
   TLockedToken() {}
+  TLockedToken(T* item) : mToken(item), mItem(item) { mToken.Lock(); }
   TLockedToken(const CToken& token) : mToken(token), mItem(*mToken) {}
   TLockedToken(const TLockedToken< T >& token) : mToken(token), mItem(*token) { mToken.Lock(); }
 

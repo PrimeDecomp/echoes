@@ -37,6 +37,7 @@ public:
 
   CVector3f ConvertToScreenSpace(const CVector3f& point) const;
   UCameraParms GetParms() const { return mCameraParms; }
+  void SetParms(const UCameraParms& parms) { mCameraParms = parms; }
 
 private:
   EProjection mProjection;
