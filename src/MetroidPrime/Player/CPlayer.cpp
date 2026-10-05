@@ -9,20 +9,25 @@
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
+#include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CControlHintManager.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CHintManager.hpp"
+#include "MetroidPrime/CPlayerHintManager.hpp"
 #include "MetroidPrime/CRumbleManager.hpp"
+#include "MetroidPrime/CSafeZoneManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CSteeringBehaviors.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
@@ -36,6 +41,8 @@
 #include "MetroidPrime/Player/CPlayerBodyController.hpp"
 #include "MetroidPrime/Player/CPlayerCameraBob.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
+#include "MetroidPrime/Player/CPlayerStuckTracker.hpp"
+#include "MetroidPrime/Player/CPlayerTargeting.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
@@ -45,9 +52,14 @@
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
+#include "MetroidPrime/Weapons/WeaponCommon.hpp"
+#include "MetroidPrime/Weapons/WeaponTypes.hpp"
+#include "dolphin/os/OSCache.h"
 #include "rstl/math.hpp"
 #include <float.h>
 #include <math.h>
+#include <string.h>
 
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
@@ -71,6 +83,15 @@ static TVisorToItemMapping skVisorToItemMapping[4] = {
     TVisorToItemMapping(CPlayerState::kIT_EchoVisor, CControlMapper::kC_XrayVisor),
     TVisorToItemMapping(CPlayerState::kIT_ScanVisor, CControlMapper::kC_EnviroVisor),
     TVisorToItemMapping(CPlayerState::kIT_DarkVisor, CControlMapper::kC_ThermoVisor)};
+
+static CDamageVulnerability::TWeaponVulnerability skDarkSuitVulnerabilities[2] = {
+    CDamageVulnerability::TWeaponVulnerability(kWT_AreaLight, CWeaponTypeVulnerability::Immune()),
+    CDamageVulnerability::TWeaponVulnerability(kWT_AreaDark, CWeaponTypeVulnerability::Immune())};
+
+static CDamageVulnerability::TWeaponVulnerability skLightSuitVulnerabilities[2] = {
+    CDamageVulnerability::TWeaponVulnerability(kWT_AreaDark, CWeaponTypeVulnerability::Immune()),
+    CDamageVulnerability::TWeaponVulnerability(kWT_PoisonWater2,
+                                               CWeaponTypeVulnerability::Immune())};
 
 static const ushort skLeftStepSounds[2][26] = {
     {0xffff, 0x0084, 0x00a0, 0x05d8, 0x1d44, 0xffff, 0x009e, 0x1c19, 0x00a2,
@@ -107,14 +128,14 @@ CVector3f CCollisionInfoList::GetCombinedNormalLeft() const {
 }
 
 CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
-                 const CVector3f& playerScale, float mass, float stepUp, float stepDown,
-                 float ballRadius, const CMaterialList& ml, CPlayerState* playerState,
-                 CCameraManager* cameraManager, bool multiplayer, int playerIndex,
-                 int controlScheme, int charIdx)
+                 CAssetId stateMachine, float mass, float stepUp, float stepDown, float ballRadius,
+                 const CMaterialList& ml, CPlayerState* playerState, CCameraManager* cameraManager,
+                 bool multiplayer, int playerIndex, int controlScheme, int charIdx)
 : CPhysicsActor(uid, CBasics::Stringize("CPlayer (%d)", playerIndex),
                 CEntityInfo(kInvalidAreaId, CEntity::NullConnectionList, true), 0, xf,
                 CAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), 0, true), ml, aabb,
-                SMoverData(mass), CActorParameters::None(), StepData(stepUp, stepDown, 1))
+                SMoverData(mass), CActorParameters::None().HotInThermal(true),
+                StepData(stepUp, stepDown, 1))
 
 , mMovementState(NPlayer::kMS_OnGround)
 , mBallTransitionsRes()
@@ -127,6 +148,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mJumpCameraTimer(0.f)
 , mJumpPresses(0)
 , mFallCameraTimer(0.f)
+, mAirborneTimer(0.f)
 , mCancelCameraPitch(false)
 , mTimeSinceJump(1000.f)
 , mTimeSinceDoubleJump(1000.0f)
@@ -177,7 +199,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDashSpeedMultiplier(1.5f)
 , mNoStrafeDashBlend(false)
 , mDashDuration(0.5f)
-, mStrafeDashBlendDuration(0.449f)
+, mStrafeDashBlendDuration(0.45f)
 , mScanState(kSS_NotScanning)
 , mScanningTime(0.f)
 , mCurScanTime(0.f)
@@ -215,27 +237,29 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mGunAlpha(1.f)
 , mPlayerDrawFlags(CModelFlags::kT_Opaque, 1.f)
 , xed0_(0)
-, mTargeting(nullptr)
+, mTargeting(rs_new CPlayerTargeting(uid))
 , mBodyController(nullptr)
 , mKnockBackManager()
 , mRagDoll(nullptr)
-, mPlayerStuckTracker(nullptr)
+, mPlayerStuckTracker(rs_new CPlayerStuckTracker())
 , mMoveSpeedAvg()
 , mMoveSpeed(0.f)
 , mFlatMoveSpeed(0.f)
-, mLookDir(xf.GetForward())
-, mMoveDir(xf.GetForward())
-, mLeaveMorphDir(xf.GetForward())
+, mLookDir(GetTransform().GetForward())
+, mMoveDir(GetTransform().GetForward())
+, mLeaveMorphDir(GetTransform().GetForward())
 , mLastPosForDirCalc(GetTranslation())
-, mGunDir(xf.GetForward())
+, mGunDir(GetTransform().GetForward())
 , mTimeMoving(0.f)
-, mControlDir(xf.GetForward())
-, mControlDirFlat(xf.GetForward())
+, mControlDir(GetTransform().GetForward())
+, mControlDirFlat(GetTransform().GetForward())
 , mVariaSuitVulnerability(CDamageVulnerability::NormalVulnerabilty())
-, mDarkSuitVulnerability(mVariaSuitVulnerability)
-, mLightSuitVulnerability(mDarkSuitVulnerability)
-, mImmuneVulnerability(CDamageVulnerability::ImmuneVulnerabilty())
-, mScrewAttackVulnerability(mImmuneVulnerability)
+, mDarkSuitVulnerability(mVariaSuitVulnerability, skDarkSuitVulnerabilities, 2,
+                         CDamageVulnerability::kOF_Normal)
+, mLightSuitVulnerability(mDarkSuitVulnerability, skLightSuitVulnerabilities, 2,
+                          CDamageVulnerability::kOF_Normal)
+, mImmuneVulnerability(CDamageVulnerability::ReflectVulnerabilty())
+, mScrewAttackVulnerability(CDamageVulnerability::ReflectVulnerabilty())
 , mWasDamaged(false)
 , mWasDamagedPrev(false)
 , mDamageAmount(0.f)
@@ -260,7 +284,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mRezbitControlHintId(kInvalidUniqueId)
 , mRezbitVirusMemoTimer(0.f)
 , mMorphBall(nullptr)
-, mCameraBob(nullptr)
+, mCameraBob(rs_new CPlayerCameraBob(CPlayerCameraBob::kCBT_One))
 , mDamageLoopSfx()
 , mSamusVoiceTimeout(0.f)
 , mDashSfx()
@@ -291,7 +315,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mGravityBoostEndSfx()
 , mGravityBoostUsed(false)
 , mScreenFilterColor(1.f, 1.f, 1.f, 0.f)
-, mPlayerHintManager(nullptr)
+, mPlayerHintManager(rs_new CPlayerHintManager(playerIndex, rstl::string_l("Player Hint Manager")))
 , mVisorChangeRequested(false)
 , mDrawCrosshairs(false)
 , x1268_26_(true)
@@ -307,7 +331,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mExtendTargetDistance(false)
 , mInterpolatingControlDir(false)
 , mOutOfBallLookAtHint(false)
-, x1269_31_(false)
+, mIgnoreDarkWorldDamage(false)
 , mPlayerFlags(0)
 , x126b_24_(true)
 , mHoldScreenFilterAlpha(false)
@@ -352,7 +376,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mTurretTimer(0.f)
 , mPlayerState(playerState)
 , mCameraManager(cameraManager)
-, mFrozenResources(nullptr)
+, mFrozenResources(rs_new SFrozenResources())
 , mControlScheme(controlScheme)
 , mEchoPulsePhase(0.f)
 , mEchoPulseCounter(0)
@@ -366,10 +390,16 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mDarkWorldDamageExposureTime(0.f)
 , mDarkAetherDamage(0.f)
 , mDarkAetherDamageFlashTime(0.f)
-, mDarkAetherParticleDescriptions(nullptr)
+, mDarkAetherParticleDescriptions(
+      rs_new rstl::pair< TToken< CGenDescription >, TToken< CGenDescription > >(
+          gpSimplePool->GetObj("PART_DarkWorldDamageEffects"),
+          gpSimplePool->GetObj("PART_DarkWorldDamageEffectsThirdPerson")))
 , mDarkAetherParticles(nullptr)
 , mDarkAetherThirdPersonParticles(nullptr)
-, mUnderwaterParticleDescriptions(nullptr)
+, mUnderwaterParticleDescriptions(
+      rs_new rstl::pair< TToken< CGenDescription >, TToken< CGenDescription > >(
+          gpSimplePool->GetObj("PART_UnderWaterEffects"),
+          gpSimplePool->GetObj("PART_UnderWaterEffectsThirdPerson")))
 , mUnderwaterParticles(nullptr)
 , mUnderwaterThirdPersonParticles(nullptr)
 , mGunParticleLocator()
@@ -379,35 +409,92 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mParticleBeam(static_cast< CPlayerState::EBeamId >(-1))
 , mBeamAuxParticles(nullptr)
 , mPlayerIndex(playerIndex)
-, mReflectionTextureData(nullptr)
-, mIndirectTextureData(nullptr)
-, mMaskTextureData(nullptr)
+, mReflectionTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
+, mIndirectTextureData(CMemory::Alloc(0x1000, IAllocator::kHI_RoundUpLen))
+, mMaskTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
 , mRezbitRecoveryDirection(0)
 , mRezbitRecoveryInputCount(0)
-, mControlMapper(controlScheme)
-, mControlHintManager(nullptr)
+, mControlMapper(0)
+, mControlHintManager(
+      rs_new CControlHintManager(playerIndex, rstl::string_l("Control Hint Manager")))
 , mPlayerHintControlHintId(kInvalidUniqueId)
 , x14c0_(0.f)
 , mEnemyLockOnActorId(kInvalidUniqueId)
 , mEnemyLockOnCount(0) {
-  // TODO: Construct targeting, body controller, failsafe, camera bob and hint managers.
-  // TODO: Acquire beam/particle resources and reflection buffers, initialize control mapping,
-  //       apply suit-specific vulnerabilities, and configure animation/lighting.
+  SetRenderParticleDatabaseInside(false);
+  SetUpdateDuringCinematicSkip(false);
+
+  memset(mReflectionTextureData.get(), 0, 0x800);
+  memset(mIndirectTextureData.get(), 0, 0x1000);
+  memset(mMaskTextureData.get(), 0, 0x800);
+  DCFlushRange(mReflectionTextureData.get(), 0x800);
+  DCFlushRange(mIndirectTextureData.get(), 0x1000);
+  DCFlushRange(mMaskTextureData.get(), 0x800);
+
+  CAssetId beam = gpTweakPlayerRes->GetBallTransitionBeamResId(mTransitionBeam);
+  if (multiplayer) {
+    beam = gpTweakPlayerRes->GetBallTransitionBeamResIdMultiplayer(mTransitionBeam);
+  }
+  CModelData beamModel(CStaticRes(beam, CVector3f(1.8f, 1.8f, 1.8f)));
+  mBallTransitionBeamModel = beamModel.IsNull() ? nullptr : rs_new CModelData(beamModel);
+  if (!multiplayer && mBallTransitionBeamModel.get() && !mBallTransitionBeamModel->IsNull()) {
+    mBallTransitionBeamModel->Touch();
+  }
   mMorphBall = rs_new CMorphBall(*this, ballRadius, multiplayer);
+  mBodyController = rs_new CPlayerBodyController(*this, stateMachine);
+
+  SetInertiaTensorScalar(GetMass());
+  SetLastNonCollidingState(GetMotionState());
+  mGun->SetTransform(GetTransform());
+  mGun->GrappleArm()->SetTransform(GetTransform());
+  const CAABox bounds = GetModelData()->GetBounds(CTransform4f::Identity());
+  mBallTransHeight = bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ();
+  SetCalculateLighting(true);
+  ActorLights()->SetCastShadows(true);
+  if (multiplayer) {
+    ActorLights()->SetMaxAreaLights(2);
+  }
+
+  mMoveDir.SetZ(0.f);
+  if (mMoveDir.CanBeNormalized()) {
+    mMoveDir.Normalize();
+  }
+  mAccelerationTable.push_back(0.074f);
+  mAccelerationTable.push_back(0.296f);
+  mAccelerationTable.push_back(0.296f);
+  mAccelerationTable.push_back(1.f);
+  SetMaxVelocityAfterCollision(25.f);
+
+  CAnimData* animation = AnimationData();
+  mGrappleLocator = animation->GetLocatorSegId(rstl::string_l("L_wrist"));
+  mGunParticleLocator = animation->GetLocatorSegId(rstl::string_l("GUN_Particle_LCTR"));
+  animation->SetAnimationTreeLimit(16);
+  ModelData()->SetScale(CVector3f(1.8f, 1.8f, 1.8f));
+  mBallTransitionBeamModel->SetScale(CVector3f(1.8f, 1.8f, 1.8f));
+  CollectBallTransitionAnimationTokens();
+
+  const CWeaponTypeVulnerability darkWorldDamage(
+      1.f - GetTweakPlayer()->GetDarkWorldDamageReduction(), CWeaponTypeVulnerability::kE_Normal,
+      false);
+  mDarkSuitVulnerability.SetVulnerability(kWT_AreaDark, darkWorldDamage);
+  mImmuneVulnerability.SetVulnerability(
+      kWT_CannonBall, mVariaSuitVulnerability.GetVulnerability(CWeaponMode(kWT_CannonBall)));
+  mImmuneVulnerability.SetVulnerability(
+      kWT_UnknownSource, mVariaSuitVulnerability.GetVulnerability(CWeaponMode(kWT_UnknownSource)));
+  mScrewAttackVulnerability = mImmuneVulnerability;
+  mScrewAttackVulnerability.SetVulnerability(kWT_AreaDark, darkWorldDamage);
+  mControlMapper.Reset();
+  mControlMapper.SetControlScheme(mControlScheme);
 }
 
 CPlayer::~CPlayer() {
-  for (rstl::vector< CToken >::iterator it = mBeamEffectTokens.begin();
-       it != mBeamEffectTokens.end(); ++it) {
-    it->Unlock();
-  }
-  // TODO: Release targeting, body controller, camera bob, failsafe and hint managers
-  //       once their owning interfaces are recovered.
-  CMemory::Free(mReflectionTextureData);
-  CMemory::Free(mIndirectTextureData);
-  CMemory::Free(mMaskTextureData);
-  delete mFrozenResources;
-  delete mMorphBall;
+  NWeaponTypes::unlock_tokens(mBeamEffectTokens);
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mReflectionTextureData.release());
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mIndirectTextureData.release());
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mMaskTextureData.release());
 }
 
 void CPlayer::ResetPlayerState(CStateManager& mgr, int state) {
@@ -2307,9 +2394,9 @@ bool CPlayer::IsInTurret() const {
   return mTurretState == kTS_Active || mTurretState == kTS_Entering;
 }
 
-const CHintManager* CPlayer::GetPlayerHintManager() const { return mPlayerHintManager; }
+const CHintManager* CPlayer::GetPlayerHintManager() const { return mPlayerHintManager.get(); }
 
-CHintManager* CPlayer::GetPlayerHintManager() { return mPlayerHintManager; }
+CHintManager* CPlayer::GetPlayerHintManager() { return mPlayerHintManager.get(); }
 
 int CPlayer::fn_8000d0ac(const CStateManager& mgr, int channel) const {
   // TODO: Select the per-viewport sound-pan table.
@@ -2367,7 +2454,145 @@ void CPlayer::UpdateEchoVisorEffects(float dt, CStateManager& mgr) {
 }
 
 void CPlayer::UpdateDarkAetherDamage(float dt, CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  bool noDamage = true;
+  if (!mgr.GetIsDarkWorld()) {
+    mInSafeZone = true;
+  } else {
+    mInSafeZone = mgr.GetSafeZoneManager()->IsObjectInSafeZone(*this, mgr);
+    if (mInSafeZone) {
+      mDarkWorldDamageExposureTime =
+          rstl::max_val(0.f, mDarkWorldDamageExposureTime -
+                                 dt * GetTweakPlayer()->GetDarkWorldDamageRecoveryRate());
+      if (!(mPlayerFlags & kPF_NoSafeZoneHealing)) {
+        CPlayerState* state = mPlayerState;
+        const float maxHealth = state->CalculateHealth();
+        const CHealthInfo* health = state->HealthInfo();
+        if (health && health->GetHP() < maxHealth) {
+          const float previousHealth = health->GetHP();
+          mPlayerState->IncrementHealth(dt);
+          if (!mCameraManager->IsInCinematicCamera()) {
+            const float currentHealth = health->GetHP();
+            if (int(previousHealth) < int(currentHealth) && currentHealth < maxHealth) {
+              CSfxManager::SfxStart(0x246f, 50, GetSoundPan(kMSP_4), CSfxManager::kAllAreas, false,
+                                    false, CSfxManager::kMedPriority);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (!mgr.GetIsDarkWorld() || mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
+    mDarkWorldDamageExposureTime = 0.f;
+    mDarkAetherDamageFlashTime = 0.f;
+    if (mDarkAetherParticles.get()) {
+      mDarkAetherParticles = nullptr;
+      mDarkAetherThirdPersonParticles = nullptr;
+      mDarkAetherParticleDescriptions->first.Unlock();
+      mDarkAetherParticleDescriptions->second.Unlock();
+    }
+  } else {
+    if (!mInSafeZone) {
+      mDarkWorldDamageExposureTime += dt;
+      const float gracePeriod = GetTweakPlayer()->GetDarkWorldDamageGracePeriod();
+      if (mDarkWorldDamageExposureTime >= gracePeriod) {
+        if (!mIgnoreDarkWorldDamage) {
+          mgr.ApplyDamage(
+              kInvalidUniqueId, GetUniqueId(), kInvalidUniqueId,
+              CDamageInfo(GetTweakPlayer()->GetDarkWorldDamageInfo(), dt),
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+              CVector3f::Zero());
+        }
+        mDarkWorldDamageExposureTime = gracePeriod;
+        mDarkAetherDamageFlashTime += dt;
+        if (mDarkAetherDamageFlashTime > 0.75f) {
+          mDarkAetherDamageFlashTime -= 0.75f;
+        }
+        noDamage = false;
+      }
+    }
+
+    const float targetDamage =
+        mIgnoreDarkWorldDamage
+            ? 0.f
+            : mDarkWorldDamageExposureTime / GetTweakPlayer()->GetDarkWorldDamageGracePeriod();
+    const float damageStep = dt / GetTweakPlayer()->GetDarkWorldDamageGracePeriod();
+    if (targetDamage < mDarkAetherDamage) {
+      mDarkAetherDamage = rstl::max_val(0.f, mDarkAetherDamage - damageStep);
+    } else {
+      mDarkAetherDamage = rstl::min_val(1.f, mDarkAetherDamage + damageStep);
+    }
+    float particleRate = mDarkAetherDamage;
+    if (mPlayerState->HasPowerUp(CPlayerState::kIT_DarkSuit)) {
+      particleRate *= GetTweakPlayer()->GetDarkSuitEffectGenerationScale();
+    }
+
+    if (!mDarkAetherParticles.get()) {
+      mDarkAetherParticleDescriptions->first.Lock();
+      mDarkAetherParticleDescriptions->second.Lock();
+      if (mDarkAetherParticleDescriptions->first.IsLoaded() &&
+          mDarkAetherParticleDescriptions->second.IsLoaded()) {
+        mDarkAetherParticles = rs_new CElementGen(mDarkAetherParticleDescriptions->first);
+        mDarkAetherThirdPersonParticles =
+            rs_new CElementGen(mDarkAetherParticleDescriptions->second);
+      }
+    }
+    if (mDarkAetherParticles.get()) {
+      mDarkAetherParticles->SetGeneratorRate(mInSafeZone ? 0.f : particleRate);
+      mDarkAetherThirdPersonParticles->SetGeneratorRate(mInSafeZone ? 0.f : particleRate);
+      if (mMorphBallState == kMS_Unmorphed) {
+        if (particleRate > 0.f) {
+          mDarkAetherParticles->SetTranslation(mGun->GetRainSplashPosition());
+        }
+        mDarkAetherParticles->Update(dt);
+        mDarkAetherThirdPersonParticles->DestroyParticles();
+      } else {
+        if (particleRate > 0.f) {
+          const float radius = mMorphBall->GetBallRadius();
+          CRandom16* random = mgr.Random();
+          CVector3f direction = CVector3f::Zero();
+          do {
+            const float x = random->Range(-1.f, 1.f);
+            const float y = random->Range(-1.f, 1.f);
+            const float z = random->Range(0.f, 1.f);
+            direction = CVector3f(x, y, z);
+          } while (!direction.CanBeNormalized());
+          direction.Normalize();
+          const CVector3f position =
+              GetTranslation() + CVector3f(0.f, 0.f, radius) + radius * direction;
+          mDarkAetherThirdPersonParticles->SetGlobalOrientAndTrans(CTransform4f::Identity());
+          mDarkAetherThirdPersonParticles->SetTranslation(position);
+          mDarkAetherThirdPersonParticles->SetOrientation(CTransform4f::Identity());
+        }
+        mDarkAetherThirdPersonParticles->Update(dt);
+        mDarkAetherParticles->DestroyParticles();
+      }
+    }
+
+    if (noDamage) {
+      mDarkAetherDamageFlashTime = 0.f;
+    }
+    if (!mCameraManager->IsInCinematicCamera()) {
+      const bool playSound = mDarkAetherDamage > 0.1f && mDarkAetherThirdPersonParticles.get();
+      if (playSound && !(mPlayerFlags & kPF_NoDamageLoopSfx) && mFramesSinceDamageSfx > 1) {
+        ushort sound = 0x2193;
+        if (mPlayerState->HasPowerUp(CPlayerState::kIT_DarkSuit)) {
+          sound = 0x0437;
+        }
+        if (mDarkAetherDamageLoopSfxId != sound || !mDarkAetherDamageLoopSfx) {
+          if (mDarkAetherDamageLoopSfx) {
+            CSfxManager::SfxStop(mDarkAetherDamageLoopSfx);
+          }
+          mDarkAetherDamageLoopSfxId = sound;
+          mDarkAetherDamageLoopSfx =
+              CSfxManager::SfxStart(sound, 127, GetSoundPan(kMSP_4), CSfxManager::kAllAreas, false,
+                                    true, CSfxManager::kMedPriority);
+        }
+        CSfxManager::SfxVolume(mDarkAetherDamageLoopSfx, uchar(127.f * GetDarkAetherDamage()));
+        mDarkAetherDamageLoopSfxTimer = 0.25f;
+      }
+    }
+  }
 }
 
 void CPlayer::UpdateUnderwaterParticles(float dt, CStateManager& mgr) {
@@ -2496,9 +2721,9 @@ void CPlayer::StopSounds() {
   mMorphBall->StopSounds();
 }
 
-const CHintManager* CPlayer::GetControlHintManager() const { return mControlHintManager; }
+const CHintManager* CPlayer::GetControlHintManager() const { return mControlHintManager.get(); }
 
-CHintManager* CPlayer::GetControlHintManager() { return mControlHintManager; }
+CHintManager* CPlayer::GetControlHintManager() { return mControlHintManager.get(); }
 
 bool CPlayer::IsOnGround() const { return mMovementState == NPlayer::kMS_OnGround; }
 

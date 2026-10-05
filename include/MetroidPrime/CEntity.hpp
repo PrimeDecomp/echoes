@@ -40,6 +40,7 @@ public:
   const bool GetActive() const { return mActive; }
   bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
   bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }
+  void SetUpdateDuringCinematicSkip(bool update) { mUpdateDuringCinematicSkip = update; }
   uint GetCastFlags() const { return mCastFlags; }
 
   // might be fake?

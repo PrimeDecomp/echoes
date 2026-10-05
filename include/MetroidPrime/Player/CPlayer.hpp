@@ -150,6 +150,12 @@ public:
   };
   // Guessed name; resources used to display and break the frozen state.
   struct SFrozenResources {
+    SFrozenResources()
+    : mSteamTexture(0x6fc03d46)
+    , mIceTexture(0x2b757945)
+    , mSinglePlayerFreezeSfx(0x1aeb)
+    , mMultiplayerFreezeSfx(0x281b) {}
+
     CAssetId mSteamTexture;
     CAssetId mIceTexture;
     ushort mSinglePlayerFreezeSfx;
@@ -158,6 +164,7 @@ public:
   enum ETurretState { kTS_None, kTS_Entering, kTS_Exiting, kTS_Active, kTS_Four, kTS_Ejected };
   enum EPlayerFlag {
     kPF_NoDamageLoopSfx = 2,
+    kPF_NoSafeZoneHealing = 0x80,
     kPF_AimingAtProjectile = 0x20,
     kPF_NoMorphBallDamageTimer = 0x40
   };
@@ -170,7 +177,7 @@ public:
   enum EMultiPlayerSoundPan { kMSP_0, kMSP_1, kMSP_2, kMSP_3, kMSP_4 };
 
   CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAssetId resId,
-          const CVector3f& playerScale, float mass, float stepUp, float stepDown, float ballRadius,
+          CAssetId stateMachine, float mass, float stepUp, float stepDown, float ballRadius,
           const CMaterialList& ml, CPlayerState*, CCameraManager*, bool, int playerIndex, int,
           int charIdx);
 
@@ -238,14 +245,14 @@ public:
   }
   TUniqueId GetScanningObject() const { return mScanningObject; }
   TUniqueId GetOrbitNextTargetId() const { return mOrbitNextTargetId; }
-  CMorphBall* GetMorphBall() { return mMorphBall; }
-  const CMorphBall* GetMorphBall() const { return mMorphBall; }
+  CMorphBall* GetMorphBall() { return mMorphBall.get(); }
+  const CMorphBall* GetMorphBall() const { return mMorphBall.get(); }
   CPlayerState* GetPlayerState() { return mPlayerState; }
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
   CPlayerKnockBackMgr& GetKnockBackManager() { return mKnockBackManager; }
-  const CPlayerTargeting* GetTargeting() const { return mTargeting; }
+  const CPlayerTargeting* GetTargeting() const { return mTargeting.get(); }
 
-  CPlayerBodyController* BodyController() { return mBodyController; }
+  CPlayerBodyController* BodyController() { return mBodyController.get(); }
 
   const CPlayerRagDoll* GetPlayerRagDoll() const { return mRagDoll.get(); }
 
@@ -421,8 +428,8 @@ public:
   float GetJumpCameraTimer() const { return mJumpCameraTimer; }
   float GetFallCameraTimer() const { return mFallCameraTimer; }
   bool GetOrbitLockAcquired() const { return mOrbitLockEstablished; }
-  CPlayerCameraBob* CameraBobObject() { return mCameraBob; }
-  const CPlayerCameraBob* CameraBobObject() const { return mCameraBob; }
+  CPlayerCameraBob* CameraBobObject() { return mCameraBob.get(); }
+  const CPlayerCameraBob* CameraBobObject() const { return mCameraBob.get(); }
   bool GetSelectFluidBallSound() const { return mSelectFluidBallSound; }
   void SetSelectFluidBallSound(bool select) { mSelectFluidBallSound = select; }
 
@@ -636,7 +643,7 @@ private:
   EPlayerMorphBallState mSpawnedMorphBallState;                  // 0x390
   bool mScrewAttackTransitionPending;                            // 0x394
   EPlayerMorphBallState mScrewAttackTransitionState;             // 0x398
-  EPlayerMorphBallState mCinematicMorphBallState;                                   // 0x39c
+  EPlayerMorphBallState mCinematicMorphBallState;                // 0x39c
   float mFallingTime;                                            // 0x3a0
   EPlayerOrbitState mOrbitState;                                 // 0x3a4
   EPlayerOrbitType mOrbitType;                                   // 0x3a8
@@ -709,11 +716,11 @@ private:
   float mGunAlpha;                     // 0xec0
   CModelFlags mPlayerDrawFlags;
   int xed0_; // 0xed0
-  CPlayerTargeting* mTargeting;
-  CPlayerBodyController* mBodyController;
+  rstl::single_ptr< CPlayerTargeting > mTargeting;
+  rstl::single_ptr< CPlayerBodyController > mBodyController;
   CPlayerKnockBackMgr mKnockBackManager;
   rstl::single_ptr< CPlayerRagDoll > mRagDoll;
-  CPlayerStuckTracker* mPlayerStuckTracker;
+  rstl::single_ptr< CPlayerStuckTracker > mPlayerStuckTracker;
   TReservedAverage< float, 20 > mMoveSpeedAvg; // 0xf74
   float mMoveSpeed;                            // 0xfc8
   float mFlatMoveSpeed;                        // 0xfcc
@@ -753,8 +760,8 @@ private:
   CGunDrawBlockSet mRezbitGunDrawBlocks;
   TUniqueId mRezbitControlHintId;
   float mRezbitVirusMemoTimer;
-  CMorphBall* mMorphBall; // 0x1174
-  CPlayerCameraBob* mCameraBob;
+  rstl::single_ptr< CMorphBall > mMorphBall; // 0x1174
+  rstl::single_ptr< CPlayerCameraBob > mCameraBob;
   CSfxHandle mDamageLoopSfx;
   float mSamusVoiceTimeout;
   CSfxHandle mDashSfx;
@@ -785,7 +792,7 @@ private:
   CSfxHandle mGravityBoostEndSfx;
   bool mGravityBoostUsed;
   CColor mScreenFilterColor;
-  CHintManager* mPlayerHintManager;
+  rstl::single_ptr< CHintManager > mPlayerHintManager;
   bool mVisorChangeRequested : 1;
   bool mDrawCrosshairs : 1;
   bool x1268_26_ : 1;
@@ -801,7 +808,7 @@ private:
   bool mExtendTargetDistance : 1;
   bool mInterpolatingControlDir : 1;
   bool mOutOfBallLookAtHint : 1;
-  bool x1269_31_ : 1;
+  bool mIgnoreDarkWorldDamage : 1;
   uchar mPlayerFlags;
   bool x126b_24_ : 1;
   bool mHoldScreenFilterAlpha : 1;
@@ -848,7 +855,7 @@ private:
   short mPlayerSoundPan[5];
   CPlayerState* mPlayerState;     // 0x1314
   CCameraManager* mCameraManager; // 0x1318
-  SFrozenResources* mFrozenResources;
+  rstl::single_ptr< SFrozenResources > mFrozenResources;
   int mControlScheme;
   float mEchoPulsePhase;  // Guessed name: normalized repeating Echo Visor pulse phase
   uint mEchoPulseCounter; // Guessed name: incremented whenever the echo pulse phase wraps.
@@ -878,13 +885,13 @@ private:
   CPlayerState::EBeamId mParticleBeam;
   rstl::single_ptr< CElementGen > mBeamAuxParticles;
   int mPlayerIndex;
-  void* mReflectionTextureData;
-  void* mIndirectTextureData;
-  void* mMaskTextureData;
+  rstl::single_ptr< void > mReflectionTextureData;
+  rstl::single_ptr< void > mIndirectTextureData;
+  rstl::single_ptr< void > mMaskTextureData;
   uint mRezbitRecoveryDirection;
   uint mRezbitRecoveryInputCount;
   CControlMapper mControlMapper;
-  CHintManager* mControlHintManager;
+  rstl::single_ptr< CHintManager > mControlHintManager;
   TUniqueId mPlayerHintControlHintId;
   float x14c0_;
   TUniqueId mEnemyLockOnActorId;

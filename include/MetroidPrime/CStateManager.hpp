@@ -37,6 +37,7 @@ class CWorld;
 class CPortalTransition;
 class CArchitectureQueue;
 class CEnvFxManager;
+class CSafeZoneManager;
 class CEntity;
 class CActor;
 class CMaterialFilter;
@@ -220,6 +221,7 @@ public:
   bool IsFullyInitialized() const { return mInitPhase == kIP_Done; }
   CEnvFxManager* EnvFxManager() { return mEnvFxManager; }
   const CEnvFxManager* GetEnvFxManager() const { return mEnvFxManager; }
+  const CSafeZoneManager* GetSafeZoneManager() const { return mSafeZoneManager; }
   CRandom16* Random() { return &mRandom; }
   int GetUpdateFrameIdx() const { return mUpdateFrameIdx; }
   int GetRenderFrameIndex() const { return mRenderFrameIndex; } // Guessed name
@@ -385,7 +387,7 @@ public:
   CFluidPlaneManager* mFluidPlaneManager;
   CEnvFxManager* mEnvFxManager;               // 0x1630
   CActorModelParticles* mActorModelParticles; // 0x1634
-  void* x1638;
+  CSafeZoneManager* mSafeZoneManager; // 0x1638, target-derived pointee and role.
   char mUnknownData1[0x40];
   rstl::rc_ptr< CScriptMailbox > mMailbox;
   rstl::rc_ptr< CMapWorldInfo > mMapWorldInfo;
