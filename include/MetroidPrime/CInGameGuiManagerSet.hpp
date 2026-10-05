@@ -26,9 +26,10 @@ public:
   CInGameGuiManagerSet(const CStateManager& mgr, CArchitectureQueue& queue);
   ~CInGameGuiManagerSet();
 
-  void StopSounds();
+  void StopSounds(const CStateManager& mgr);
   bool GetIsGameDraw() const;
-  void ProcessControllerInput(const CStateManager& mgr, const CFinalInput& input, float dt);
+  void ProcessControllerInput(const CStateManager& mgr, const CFinalInput& input,
+                              CArchitectureQueue& queue);
   void DrawMultiplayerGui() const;
   void UpdateMultiplayerGui(float dt, const CStateManager& mgr);
   void Update(const CStateManager& mgr, float dt, CArchitectureQueue& queue, bool cameraActive,

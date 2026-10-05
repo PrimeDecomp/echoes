@@ -194,10 +194,13 @@ void CInGameGuiManagerSet::DrawMultiplayerGui() const {
 }
 
 void CInGameGuiManagerSet::ProcessControllerInput(const CStateManager& mgr,
-                                                  const CFinalInput& input, float dt) {
+                                                  const CFinalInput& input,
+                                                  CArchitectureQueue& queue) {
+  const int controller = input.ControllerNumber();
   for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
-    if (mgr.GetPlayerState(i)->GetPlayerSelection() == input.ControllerNumber()) {
-      mPlayerGuiManagers[i]->ProcessControllerInput(mgr, input, dt);
+    const int selection = mgr.GetPlayerState(i)->GetPlayerSelection();
+    if (selection == controller) {
+      mPlayerGuiManagers[i]->ProcessControllerInput(mgr, input, queue);
       break;
     }
   }
@@ -210,8 +213,8 @@ bool CInGameGuiManagerSet::GetIsGameDraw() const {
   return mPlayerGuiManagers[0]->GetIsGameDraw();
 }
 
-void CInGameGuiManagerSet::StopSounds() {
+void CInGameGuiManagerSet::StopSounds(const CStateManager& mgr) {
   if (mPlayerGuiManagers.size() == 1) {
-    mPlayerGuiManagers[0]->StopSounds();
+    mPlayerGuiManagers[0]->StopSounds(mgr);
   }
 }

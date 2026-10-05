@@ -56,7 +56,7 @@ private:
 
   void SetFlowState(EFlowState state);
   void RecordMultiplayerResults() const;
-  void FinishMultiplayerGame();
+  void FinishMultiplayerGame(CArchitectureQueue& queue);
   void EndGame(CArchitectureQueue& queue);
   void DrawWorld(bool singleViewport) const;
   void DrawGui(bool singleViewport) const;

@@ -1,6 +1,7 @@
 #include "MetroidPrime/CInGameGuiManager.hpp"
 
 #include "GuiSys/CGuiFrame.hpp"
+#include "GuiSys/CGuiCamera.hpp"
 #include "GuiSys/CGuiFrameLoader.hpp"
 #include "GuiSys/CGuiHeadWidget.hpp"
 #include "GuiSys/CGuiWidgetDrawParms.hpp"
@@ -19,26 +20,37 @@
 #include "MetroidPrime/CPauseScreen.hpp"
 #include "MetroidPrime/CPauseScreenBlur.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CGameMode.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CTurretHud.hpp"
 #include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CPlayerVisor.hpp"
 #include "MetroidPrime/Player/CSamusFaceReflection.hpp"
 #include "rstl/algorithm.hpp"
 
-// Structure-first scaffold. This is not a functional replacement for the original object.
+static const char* const skInGameGuiDGRPs[] = {
+    "InGameGui_DGRP", "grappleArm_DGRP", "Bomb_DGRP", "Common_DGRP", "Ice_DGRP", "Phazon_DGRP",
+    "Plasma_DGRP", "Power_DGRP", "Wave_DGRP", "BallTransition_DGRP", "SamusFace_DGRP",
+    "SamusBallCMDL_DGRP"};
+
+static float skMapScreenCameraOffset = 2.f;
 
 CInGameGuiManager::CInGameGuiManager(const CStateManager& mgr, CGuiFrameLoader& hud,
                                      CGuiFrameLoader& memo, CGuiFrameLoader* helmet,
                                      CGuiFrameLoader* darkMask, int playerIndex)
 : mPlayerIndex(playerIndex)
-, mIsSinglePlayer(mgr.GetNumPlayers() == 1)
+, mIsSinglePlayer(mgr.GetViewportLayoutIndex() == 0)
 , mDeathDot(gpSimplePool->GetObj("TXTR_DeathDot"))
 , mFaceplateDecoration(mgr, playerIndex)
-, mPlayerVisor(nullptr)
-, mSamusHud(nullptr)
-, mAutoMapper(nullptr)
+, mPlayerVisor(rs_new CPlayerVisor(mgr, playerIndex))
+, mSamusHud(rs_new CSamusHud(mgr, hud, memo, helmet, playerIndex))
+, mAutoMapper(mIsSinglePlayer ? rs_new CAutoMapper(mgr, playerIndex) : nullptr)
 , mSamusReflection(nullptr)
-, mPauseScreenBlur(nullptr)
+, mPauseScreenBlur(rs_new CPauseScreenBlur())
 , mQuitScreen(nullptr)
 , mMessageScreen(nullptr)
 , mPauseScreen(nullptr)
@@ -48,24 +60,30 @@ CInGameGuiManager::CInGameGuiManager(const CStateManager& mgr, CGuiFrameLoader& 
 , mPauseScreenDGRPs(LockPauseScreenDependencies())
 , mPrevState(kIGGS_Zero)
 , mNextState(kIGGS_Zero)
-, mHelmetVisMode(0)
-, mEnableTargetingManager(0)
-, mEnableAutoMapper(0)
-, mHudVisMode(0)
-, mEnablePlayerVisor(0)
+, mHelmetVisMode(gpTweakGui->GetHelmetVisMode())
+, mEnableTargetingManager(gpTweakGui->GetEnableTargetingManager())
+, mEnableAutoMapper(gpTweakGui->GetEnableAutoMapper())
+, mHudVisMode(gpTweakGui->GetHudVisMode())
+, mEnablePlayerVisor(gpTweakGui->GetEnablePlayerVisor())
 , mAutoMapperRotation(CQuaternion::NoRotation())
 , mAutoMapperOffset(CVector3f::Zero())
 , mCameraRotation(CQuaternion::NoRotation())
 , mCameraOffset(CVector3f::Zero())
 , mMapCameraTransform(CTransform4f::Identity())
-, mVisorStaticAlpha(0.f)
+, mVisorStaticAlpha(mgr.GetPlayer(playerIndex)->GetVisorStaticAlpha())
 , mDarkOuterMask(nullptr)
 , mLoaded(false)
 , mPlayerAlive(true)
 , mDeferTransition(false) {
   mDeathDot.Lock();
-  // TODO: construct visor/HUD/mapper/blur, read cached tweak/player values and lock game-mode
-  // DGRPs.
+  if (gpGameState->GetGameMode().GetGameModeType() == 'SNGL') {
+    mInGameGuiDGRPs.reserve(12);
+    for (uint i = 0; i < 12; ++i) {
+      TToken< CDependencyGroup > token = gpSimplePool->GetObj(skInGameGuiDGRPs[i]);
+      token.Lock();
+      mInGameGuiDGRPs.push_back(token);
+    }
+  }
   if (darkMask != nullptr) {
     mDarkMaskFrame = rstl::auto_ptr< CGuiFrame >(darkMask->CreateFrame());
   }
@@ -87,9 +105,47 @@ bool CInGameGuiManager::CheckDGRPLoadComplete() {
   return true;
 }
 
-bool CInGameGuiManager::CheckLoadComplete(const CStateManager&) {
-  // TODO: finish the mask, HUD, mapper and dependency loads before initializing textures.
-  return false;
+bool CInGameGuiManager::CheckLoadComplete(const CStateManager& mgr) {
+  if (mLoaded) {
+    return true;
+  }
+  if (!CheckDGRPLoadComplete()) {
+    return false;
+  }
+  if (mDarkMaskFrame.get() != nullptr) {
+    if (!mDarkMaskFrame->GetIsFinishedLoading()) {
+      return false;
+    }
+    mDarkOuterMask = mDarkMaskFrame->FindWidget("model_dark_outermask");
+  }
+  if (mAutoMapper.null()) {
+    CGuiWidget* mapWidget = mSamusHud->GetLoadedHudFrame()->FindWidget(rstl::string_l("model_automapper"));
+    if (mapWidget) {
+      mapWidget->SetVisibility(false, kTM_Children);
+    }
+  }
+  if ((!mAutoMapper.null() && !mAutoMapper->CheckLoadComplete()) ||
+      !mSamusHud->CheckLoadComplete(mgr) || !mDeathDot.IsLoaded()) {
+    return false;
+  }
+
+  if (!mAutoMapper.null()) {
+    CGuiWidget* root = mSamusHud->GetAutomapperRoot();
+    CGuiCamera* camera = mSamusHud->GetHudCamera();
+    if (root && camera) {
+      CTransform4f rotation = root->GetWorldTransform();
+      rotation.Orthonormalize();
+      mAutoMapperRotation = CQuaternion::FromMatrix(rotation);
+      mAutoMapperOffset = root->GetWorldTransform().GetTranslation();
+      mCameraRotation = CQuaternion::NoRotation();
+      mCameraOffset = camera->GetWorldTransform().GetTranslation() +
+                      CVector3f(0.f, skMapScreenCameraOffset, gpTweakAutoMapper->GetCamVerticalOffset());
+      mMapCameraTransform = CTransform4f(mCameraRotation.BuildTransform(), mCameraOffset);
+    }
+  }
+  InitializeDumpableARAMTextures();
+  mLoaded = true;
+  return true;
 }
 
 bool CInGameGuiManager::GetIsGameDraw() const {
@@ -116,10 +172,15 @@ void CInGameGuiManager::DrawDarkVisorMask() const {
   }
 }
 
-void CInGameGuiManager::DrawScanVisor(float, const CStateManager&, const CColor&, const CColor&,
-                                      const CColor&, const CColor*, int, const CVector3f&) const {
-  // TODO: forward the visor dimensions, color palette and camera direction to the renderer.
-  // The effect's source name remains unresolved.
+void CInGameGuiManager::DrawScanVisor(float time, const CStateManager& mgr, const CColor& sweepColor,
+                                      const CColor& inactiveColor, const CColor& inactiveExternalColor,
+                                      const CColor* palette, int paletteSize,
+                                      const CVector3f& direction) const {
+  if (!mPlayerVisor.null()) {
+    const CVector2i size = mPlayerVisor->GetScanWindowViewportSize(mgr);
+    gpRender->DrawScanVisor(time, float(size.GetX()), float(size.GetY()), sweepColor, inactiveColor,
+                             inactiveExternalColor, palette, paletteSize, direction);
+  }
 }
 
 void CInGameGuiManager::Draw(const CStateManager&) const {
@@ -130,8 +191,32 @@ void CInGameGuiManager::Update(const CStateManager&, float, CRandom16&, CArchite
   // TODO: update per-player presentation, pause screens, audio and state transitions.
 }
 
-void CInGameGuiManager::ProcessControllerInput(const CStateManager&, const CFinalInput&, float) {
-  // TODO: route input to the quit screen, map, pause screen or HUD according to GUI state.
+void CInGameGuiManager::ProcessControllerInput(const CStateManager& mgr,
+                                               const CFinalInput& input,
+                                               CArchitectureQueue& queue) {
+  if (!mQuitScreen.null()) {
+    mQuitScreen->ProcessUserInput(input);
+  } else if (IsInPausedState()) {
+    if (mPrevState >= kIGGS_MapScreen && mPrevState <= kIGGS_QuitGame &&
+        mNextState >= kIGGS_MapScreen && mNextState <= kIGGS_QuitGame) {
+      if (mPrevState == kIGGS_MapScreen) {
+        if (mAutoMapper->IsInMapperState(CAutoMapper::kAMS_MapScreen) ||
+            mAutoMapper->IsInMapperState(CAutoMapper::kAMS_MapScreenUniverse)) {
+          mAutoMapper->ProcessControllerInput(input, const_cast< CStateManager& >(mgr));
+          if (mAutoMapper->CanLeaveMapScreen(mgr)) {
+            BeginStateTransition(kIGGS_InGame, mgr);
+          }
+        }
+      } else if (mPrevState == kIGGS_PauseSaveGame) {
+      } else if (mPrevState == kIGGS_PauseHUDMessage) {
+        mMessageScreen->ProcessControllerInput(input);
+      } else if (!mPauseScreen.null()) {
+        mPauseScreen->ProcessControllerInput(input);
+      }
+    }
+  } else {
+    mSamusHud->ProcessControllerInput(input);
+  }
 }
 
 void CInGameGuiManager::UpdateAutoMapper(const CStateManager&, float) {
@@ -319,7 +404,9 @@ bool CInGameGuiManager::TryReloadAreaTextures() {
   return complete;
 }
 
-void CInGameGuiManager::StopSounds() {
-  // TODO: destroy the quit screen and stop HUD sounds. The HUD declaration currently requires an
-  // unused manager argument, but this entry point receives no manager; reconcile that API first.
+void CInGameGuiManager::StopSounds(const CStateManager& mgr) {
+  mQuitScreen = nullptr;
+  if (!mSamusHud.null()) {
+    mSamusHud->StopSounds(mgr);
+  }
 }

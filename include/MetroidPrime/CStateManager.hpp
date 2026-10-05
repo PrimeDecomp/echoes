@@ -111,6 +111,19 @@ public:
                 const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
   ~CStateManager();
 
+  void FrameBegin(uint frame);
+  void FrameEnd();
+  void Update(float dt, CArchitectureQueue& queue);
+  void ProcessInput(const CFinalInput& input);
+  void InitializeState(CAssetId world, TAreaId area, CAssetId saveWorld);
+  void DeleteSaveGameScreen();
+  int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
+  bool PrepareAreaTransition(TAreaId area); // Guessed name.
+  rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
+  bool HasPendingLayerLoads() const; // Guessed name, from the area query.
+  void UpdateDynamicLayers(); // Guessed name, from the area update.
+  void SetRandomAvailable(bool available) { mSkippingCinematic = available; }
+
   TUniqueId AllocateUniqueId();
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
   uint MaskUIdNumPlayers(TUniqueId id) const;

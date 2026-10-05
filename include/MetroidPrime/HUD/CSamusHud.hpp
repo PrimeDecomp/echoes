@@ -74,6 +74,8 @@ public:
   void LeaveFirstPerson(const CStateManager& mgr);
   void StopSounds(const CStateManager& mgr);
   CGuiFrame* GetLoadedHudFrame() const { return mLoadedHudFrame; }
+  CGuiCamera* GetHudCamera() const { return mHudCamera; }
+  CGuiWidget* GetAutomapperRoot() const { return mAutomapperRoot; }
   void ProcessControllerInput(const CFinalInput& input);
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
   static CHudDecoInterfaceScan* GetScanInterface(int playerIndex);

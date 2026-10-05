@@ -46,11 +46,12 @@ public:
   void Draw(const CStateManager& mgr) const;
   void Update(const CStateManager& mgr, float dt, CRandom16& random, CArchitectureQueue& queue,
               bool cameraActive);
-  void ProcessControllerInput(const CStateManager& mgr, const CFinalInput& input, float dt);
+  void ProcessControllerInput(const CStateManager& mgr, const CFinalInput& input,
+                              CArchitectureQueue& queue);
   bool CheckLoadComplete(const CStateManager& mgr);
   void PauseGame(const CStateManager& mgr, EInGameGuiState state);
   void ShowPauseGameHudMessage(const CStateManager& mgr, CAssetId message, float time);
-  void StopSounds(); // Guessed name
+  void StopSounds(const CStateManager& mgr); // Guessed name
   void BeginStateTransition(EInGameGuiState state, const CStateManager& mgr);
   bool IsInPausedState() const; // Guessed name
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);

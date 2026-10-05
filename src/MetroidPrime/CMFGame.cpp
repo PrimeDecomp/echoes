@@ -20,6 +20,15 @@
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "rstl/math.hpp"
+#include "MetroidPrime/CGameGlobalObjects.hpp"
+#include "MetroidPrime/CGameResultsScreen.hpp"
+#include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Player/CWorldTransManager.hpp"
+#include "MetroidPrime/Cameras/CCinematicCamera.hpp"
+#include "MetroidPrime/TCastTo.hpp"
+#include "Kyoto/Audio/CMidiManager.hpp"
+#include "Kyoto/CFrameDelayedKiller.hpp"
+#include "Kyoto/Input/IController.hpp"
 
 bool CMFGame::mMultiplayerGuiActive;
 
@@ -103,7 +112,7 @@ CGameState::SPreviousGameResults::SPreviousGameResults(
 , mPlayerCount(playerCount)
 , mPlayers(players) {}
 
-void CMFGame::FinishMultiplayerGame() {
+void CMFGame::FinishMultiplayerGame(CArchitectureQueue& queue) {
   gpGameState->PreviousGameResults().mShowResults = true;
   gpMain->SetRestartMode(CMain::kRM_Default);
   SetFlowState(kFS_MultiplayerResults);
@@ -314,7 +323,303 @@ void CMFGame::DrawWorld(bool singleViewport) const {
 }
 
 CIOWin::EMessageReturn CMFGame::OnMessage(const CArchitectureMessage& message,
-                                          CArchitectureQueue& queue) {}
+                                          CArchitectureQueue& queue) {
+  switch (message.GetType()) {
+  case kAM_FrameBegin:
+    mStateManager->FrameBegin(MakeMsg::GetParmFrameBegin(message).GetInt32());
+    break;
+  case kAM_TimerTick: {
+    const bool wasInitialized = mInitialized;
+    mInitialized = true;
+    const float dt = MakeMsg::GetParmTimerTick(message).GetReal();
+    if (!mStateManager->mSaveGameScreen.null() &&
+        mStateManager->mSaveGameScreen->Update(dt) != kMR_Normal && mFlowState == kFS_Paused) {
+      mStateManager->DeleteSaveGameScreen();
+    }
+
+    if (mTransitionPhase != kTP_None) {
+      if (mStateManager->GetShowSoftTransition()) {
+        mTransitionFadeTime = rstl::max_val(0.f, mTransitionFadeTime - dt);
+      } else {
+        mTransitionFadeTime = 0.f;
+      }
+      switch (mTransitionPhase) {
+      case kTP_FadeOut:
+        if (mTransitionFadeTime == 0.f) {
+          mTransitionPhase = kTP_Load;
+          mTransitionFadeTime = 1.f;
+        }
+        break;
+      case kTP_Load:
+        if (mPortalTransition.null() || mPortalTransition->IsReady()) {
+          if (mTransitionFadeTime == 0.f) {
+            mTransitionPhase = kTP_Play;
+          }
+        } else {
+          mTransitionFadeTime = 1.f;
+        }
+        break;
+      case kTP_FadeIn:
+        if (mTransitionFadeTime != 0.f) {
+          break;
+        }
+        mTransitionPhase = kTP_Complete;
+        mTransitionFadeTime = 1.f;
+        // Fall through.
+      case kTP_Complete:
+        if (mTransitionFadeTime == 0.f) {
+          mTransitionPhase = kTP_None;
+          mTransitionFadeTime = 1.f;
+        }
+        break;
+      }
+    }
+    if (mFlowState == kFS_Zero) {
+      SetFlowState(kFS_InGame);
+    }
+
+    switch (mFlowState) {
+    case kFS_PortalTransition:
+      for (uint i = 0; i < uint(mStateManager->GetNumPlayers()); ++i) {
+        mGuiManager->Update(*mStateManager, dt, queue, IsCameraActiveFlow(), i);
+      }
+      mPortalTransitionTime += dt;
+      if (mTransitionPhase > kTP_FadeOut && mTransitionPhase < kTP_Complete &&
+          !mPortalTransition.null()) {
+        mPortalTransition->Update(dt);
+      }
+      if (!mStateManager->IsFullyInitialized()) {
+        mStateManager->InitializeState(mStateManager->GetWorld()->GetWorldAssetId(),
+                                       mStateManager->mPendingDockArea, kInvalidAssetId);
+        return kMR_Exit;
+      }
+      if (mPortalTransition.null() || mPortalTransition->IsFinished()) {
+        if (mTransitionPhase == kTP_Play) {
+          mTransitionPhase = kTP_FadeIn;
+          mTransitionFadeTime = 1.f;
+        }
+        if (mTransitionPhase == kTP_Complete) {
+          mStateManager->SetRandomAvailable(true);
+          mStateManager->Update(dt, queue);
+          mStateManager->SetRandomAvailable(false);
+          mStateManager->mPendingDockArea = kInvalidAreaId;
+          SetFlowState(kFS_InGame);
+          mPortalTransition = nullptr;
+        }
+      }
+      return kMR_Exit;
+    case kFS_State8:
+      mFlowTime += dt;
+      mStateManager->UpdateDynamicLayers();
+      if (!mStateManager->HasPendingLayerLoads() && mFlowTime >= 1.f / 60.f) {
+        mStateManager->mUnkFlagB4 = false;
+        SetFlowState(kFS_InGame);
+      }
+      return kMR_Exit;
+    case kFS_CinematicSkip: {
+      mFlowTime += dt;
+      const CCinematicCamera* cineCam = TCastToConstPtr< CCinematicCamera >(
+          *mStateManager->GetCameraManager(0)->GetCurrentCamera(*mStateManager, true));
+      bool finished = true;
+      if (cineCam) {
+        finished = false;
+        const bool canSkip = (cineCam->GetFlags() & 0x800) ||
+                             ((cineCam->GetFlags() & 8) && cineCam->CanSkip(*mStateManager));
+        if (canSkip && mFlowTime >= 1.f && mStateManager->SpecialSkipCinematic() == 1) {
+          finished = true;
+        }
+        if ((cineCam->GetFlags() & 0x10) && mSkippedCineCam != cineCam->GetScriptCameraId()) {
+          finished = true;
+        }
+      }
+      if (finished) {
+        SetFlowState(kFS_InGame);
+        break;
+      }
+    }
+    // Fall through.
+    case kFS_InGame:
+      if (mStateManager->mPendingDockArea != kInvalidAreaId) {
+        if (mTransitionPhase == kTP_None) {
+          mTransitionPhase = kTP_FadeOut;
+          mTransitionFromDarkWorld = mStateManager->GetIsDarkWorld();
+        }
+        if (mTransitionPhase == kTP_Load) {
+          mStateManager->SetRandomAvailable(true);
+          if (mStateManager->PrepareAreaTransition(mStateManager->mPendingDockArea)) {
+            SetFlowState(kFS_PortalTransition);
+            mPortalTransition = mStateManager->TakePortalTransition();
+            mPortalTransitionTime = 0.f;
+            if (!mGuiManager.IsNull()) {
+              mGuiManager->StopSounds(*mStateManager);
+            }
+          } else {
+            mTransitionFadeTime = 1.f;
+          }
+          mStateManager->SetRandomAvailable(false);
+        }
+        break;
+      }
+
+      mStateManager->SetRandomAvailable(true);
+      switch (mStateManager->mDeferredTransition) {
+      case kSMT_InGame:
+        mStateManager->Update(dt, queue);
+        if (mStateManager->mQuitGame) {
+          CGraphics::SetIsBeginSceneClearFb(false);
+        }
+        break;
+      case kSMT_MapScreen:
+        EnterMapScreen();
+        break;
+      case kSMT_PauseGame:
+        PauseGame();
+        break;
+      case kSMT_Unk:
+        EnterLogBook();
+        break;
+      case kSMT_LogBook:
+        SaveGame();
+        break;
+      case kSMT_SaveGame:
+        EnterPauseScreenState5();
+        break;
+      case kSMT_MessageScreen:
+        EnterMessageScreen(mStateManager->mHudMessageTime);
+        break;
+      }
+      if (gpGameState->GetGameMode().IsGameOver()) {
+        if (mStateManager->IsMultiplayer()) {
+          SetFlowState(kFS_MultiplayerEndFade);
+        } else {
+          EndGame(queue);
+        }
+      }
+      if (!mStateManager->IsMultiplayer() && mPlayerAlive &&
+          !mStateManager->GetPlayerState(0)->IsPlayerAlive()) {
+        PlayerDied();
+      }
+      mStateManager->SetRandomAvailable(false);
+      break;
+    case kFS_Paused:
+      if (!mGuiManager->IsInPausedState()) {
+        UnpauseGame();
+        if (mStateManager->GetPauseHUDMessage() != kInvalidAssetId) {
+          mStateManager->IncrementHUDMessageFrameCounter();
+        }
+      }
+      break;
+    case kFS_PlayerDied:
+      if (gpGameState->GetGameMode().IsGameOver()) {
+        EndGame(queue);
+      } else {
+        mStateManager->SetRandomAvailable(true);
+        mStateManager->Update(dt, queue);
+        mStateManager->SetRandomAvailable(false);
+      }
+      break;
+    case kFS_MultiplayerEndFade:
+      if (mMultiplayerEndFadeTime < 1.f) {
+        mMultiplayerEndFadeTime = rstl::min_val(mMultiplayerEndFadeTime + dt, 1.f);
+        if (mMultiplayerEndFadeTime == 1.f) {
+          FinishMultiplayerGame(queue);
+        }
+      }
+      break;
+    case kFS_MultiplayerResults:
+      if (mEndGameFrameCaptured) {
+        CIOWin* screen = rs_new CGameResultsScreen(*gpGameState);
+        queue.Push(MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, 9, 10, screen));
+        queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
+      }
+      break;
+    }
+    for (uint i = 0; i < uint(mStateManager->GetNumPlayers()); ++i) {
+      mGuiManager->Update(*mStateManager, dt, queue, IsCameraActiveFlow(), i);
+    }
+    if (IsCameraActiveFlow()) {
+      mGuiManager->UpdateMultiplayerGui(dt, *mStateManager);
+    }
+    if (!wasInitialized) {
+      gpGameState->WorldTransitionManager()->EndTransition();
+    }
+    return kMR_Exit;
+  }
+  case kAM_UserInput: {
+    if (!mInitialized || (mTransitionPhase != kTP_None && mTransitionPhase != kTP_Complete)) {
+      break;
+    }
+    CArchMsgParmUserInput parm = MakeMsg::GetParmUserInput(message);
+    CFinalInput input = parm.GetUserInput();
+    bool stopRumble = true;
+    if (input.ControllerNumber() == 0 && !mStateManager->mSaveGameScreen.null()) {
+      mStateManager->mSaveGameScreen->ProcessUserInput(input);
+    }
+    if (mFlowState == kFS_InGame) {
+      if (mMultiplayerGuiActive) {
+        queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
+        mMultiplayerGuiActive = false;
+      }
+      if (mStateManager->mUnkFlagB4) {
+        SetFlowState(kFS_State8);
+        mFlowTime = 0.f;
+        return kMR_Normal;
+      }
+      const CCinematicCamera* cineCam = TCastToConstPtr< CCinematicCamera >(
+          *mStateManager->GetCameraManager(0)->GetCurrentCamera(*mStateManager, true));
+      if (input.PStart() && !cineCam && gpGameState->GetGameMode().GetGameModeType() != 'FRND' &&
+          gpGameState->GetGameMode().GetGameModeType() != 'SNGL') {
+        for (uint i = 0; i < uint(mStateManager->GetNumPlayers()); ++i) {
+          if (mStateManager->GetPlayerState(i)->GetPlayerSelection() == input.ControllerNumber()) {
+            mGuiManager->GetPlayerGuiManager(i).PauseGame(*mStateManager, kIGGS_QuitGame);
+            SetFlowState(kFS_Paused);
+            break;
+          }
+        }
+      }
+      if (input.ControllerNumber() == 0 && input.PStart()) {
+        if (cineCam) {
+          const bool canSkip = (cineCam->GetFlags() & 0x800) ||
+                               ((cineCam->GetFlags() & 8) && cineCam->CanSkip(*mStateManager));
+          if (canSkip && !mStateManager->IsMultiplayer() &&
+              gpGameState->GetGameMode().GetGameModeType() != 'FRND') {
+            CMidiManager::StopAll();
+            mSkippedCineCam = cineCam->GetScriptCameraId();
+            SetFlowState(kFS_CinematicSkip);
+            mFlowTime = 0.f;
+            return kMR_Normal;
+          }
+        } else if (gpGameState->GetGameMode().GetGameModeType() != 'FRND') {
+          mStateManager->DeferStateTransition(kSMT_Unk);
+        }
+      }
+      mStateManager->SetRandomAvailable(true);
+      mStateManager->ProcessInput(input);
+      mStateManager->SetRandomAvailable(false);
+      stopRumble = false;
+    }
+    mGuiManager->ProcessControllerInput(*mStateManager, input, queue);
+    if (stopRumble) {
+      gpController->SetMotorState(kIOP_Player1, kMS_Stop);
+      gpController->SetMotorState(kIOP_Player2, kMS_Stop);
+      gpController->SetMotorState(kIOP_Player3, kMS_Stop);
+      gpController->SetMotorState(kIOP_Player4, kMS_Stop);
+    }
+    break;
+  }
+  case kAM_FrameEnd:
+    mStateManager->FrameEnd();
+    if (mStateManager->mQuitGame) {
+      queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
+    }
+    break;
+  case kAM_QuitGameplay:
+    RecordMultiplayerResults();
+    CFrameDelayedKiller::StallAndFlushAllAllocations();
+    return kMR_RemoveIOWin;
+  }
+  return kMR_Normal;
+}
 
 void CMFGame::SetFlowState(EFlowState state) {
   if (mFlowState == kFS_CinematicSkip) {
