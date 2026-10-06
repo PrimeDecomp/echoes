@@ -7,7 +7,7 @@
 class CScriptRepulsor : public CActor {
 public:
   // Guessed names; the cylindrical test ignores the vertical displacement.
-  enum EShape { kS_Sphere, kS_Cylinder };
+  enum EShape { kS_Invalid = -1, kS_Sphere, kS_Cylinder };
   // Guessed names, derived from the consumers of each flag.
   enum EFlags { kF_RepelPlayer = 1, kF_UseForwardVector = 2 };
 
