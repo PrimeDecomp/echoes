@@ -985,7 +985,12 @@ config.libs = [
             Object(NonMatching, "Kyoto/Animation/CFBStreamedCompression.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CHierarchyPoseBuilder.cpp"),
             Object(NonMatching, "Kyoto/Animation/CInt32POINode.cpp"),
-            Object(NonMatching, "Kyoto/Animation/CParticlePOINode.cpp"),
+            Object(
+                MatchingFor("G2ME01"),
+                "Kyoto/Animation/CParticlePOINode.cpp",
+                # The target inlines the nine-argument constructor into CopyNodeMinusStartTime.
+                extra_cflags=['-pragma "inline_max_size(150)"'],
+            ),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CPOINode.cpp"),
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CSegId.cpp"),
             Object(NonMatching, "Kyoto/Animation/CSegStatementSet.cpp"),
