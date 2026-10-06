@@ -28,6 +28,11 @@ public:
                          float high, float scale);
   static float PhongBlob(float t, float exponent);
   static bool SolveQuadratic(float a, float b, float c, float& plus, float& minus);
+  // Reconstructed solver names; coefficients are ordered from constant to leading term.
+  static uint SolveCubic(const float* coefficients, float* roots);
+  static uint SolveQuartic(const float* coefficients, float* roots);
+  static int SolveCubicDouble(double c0, double c1, double c2, double c3, double epsilon,
+                              double* roots);
 
   static float FastFmod(float x, float y) {
     int v = static_cast< int >(x * (1.f / y));
@@ -108,6 +113,9 @@ public:
   static CVector3f GetHermiteSplinePoint(const CVector3f& a, const CVector3f& b,
                                          const CVector3f& tangentA, const CVector3f& tangentB,
                                          float t);
+  static CVector3f GetHermiteSplineTangent(const CVector3f& a, const CVector3f& b,
+                                         const CVector3f& tangentA, const CVector3f& tangentB,
+                                         float t);
   static CVector3f GetCatmullRomSplineTangent(const CVector3f& a, const CVector3f& b,
                                               const CVector3f& c, const CVector3f& d, float t);
   static CVector3f GetBSplinePoint(const CVector3f& a, const CVector3f& b, const CVector3f& c,
@@ -162,6 +170,8 @@ public:
   }
 
   static int FloorPowerOfTwo(int v);
+  // Target-derived name: returns the base-two exponent, with zero mapped to zero.
+  static int FloorLog2(uint v);
 };
 
 template < typename T >
