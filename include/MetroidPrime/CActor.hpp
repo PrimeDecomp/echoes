@@ -191,6 +191,7 @@ public:
   bool GetTransformDirty() const { return mNotInSortedLists; }
   bool GetTransformDirtySpare() const { return mTransformDirty; }
   bool GetPreRenderHasMoved() const { return mActorLightsDirty; }
+  bool GetRenderBoundsDirty() const { return mRenderBoundsDirty; }
   bool GetPreRenderClipped() const { return mOutOfFrustum; }
   bool GetCalculateLighting() const { return mCalculateLighting && HasActorLights(); }
   bool GetDrawShadow() const { return mShadowEnabled; }
@@ -202,6 +203,7 @@ public:
   void SetTransformDirty(bool b) { mNotInSortedLists = b; }
   void SetTransformDirtySpare(bool b) { mTransformDirty = b; }
   void SetPreRenderHasMoved(bool b) { mActorLightsDirty = b; }
+  void SetRenderBoundsDirty(bool dirty) { mRenderBoundsDirty = dirty; }
   void SetPreRenderClipped(bool b) { mOutOfFrustum = b; }
   void SetCalculateLighting(bool b);
   void SetDrawShadow(bool enabled);
