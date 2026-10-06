@@ -94,18 +94,30 @@ float CTweakBall::GetBallForwardBrakingAcceleration(int surface) const {
 
 float CTweakBall::GetBallSlipFactor(int surface) const {
   switch (surface) {
-  default:
   case 0:
+  default:
+    return 10000.0f;
+
   case 1:
-  case 3:
-    return 10000.f;
+    return 10000.0f;
+
   case 2:
-    return 1000.f;
+    return 1000.0f;
+
+  case 3:
+    return 10000.0f;
+
   case 4:
+    return 2000.0f;
+
   case 5:
+    return 2000.0f;
+
   case 6:
+    return 2000.0f;
+
   case 7:
-    return 2000.f;
+    return 2000.0f;
   }
 }
 
