@@ -100,4 +100,8 @@ private:
 };
 CHECK_SIZEOF(CDamageInfo, 0x1c)
 
+namespace NGunUtils {
+CDamageInfo DifficultyModifyDamageInfo(const CDamageInfo& damage);
+}
+
 #endif // _CDAMAGEINFO
