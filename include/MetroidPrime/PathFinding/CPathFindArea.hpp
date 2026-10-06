@@ -98,7 +98,12 @@ public:
   void SetTransform(const CTransform4f& transform);
   int GetPointIndex(const CPFPoint& point) const; // Guessed name
   int& GetPointLink(int index) { return mPointLinks[index]; }
-  uint& GetPointLinkData(int index) { return mPointLinkData[index]; }
+  float& GetPointLinkCost(int index) { return mPointLinkCosts[index]; }
+  int GetNumPoints() const { return mPoints.size(); }
+  const CPFPoint& GetPoint(int index) const { return mPoints[index]; }
+  CPFPointSearchState* GetPointSearchState() { return mPointSearchState.get(); }
+  bool PointPathExists(const CPFPoint* source, const CPFPoint* destination);
+  bool PointPathExists(int source, int destination);
   CVector3f GetClosestPoint() const { return mClosestPoint; }
   int GetNumRegions() const { return mRegions.size(); }
   CPFRegion& GetRegion(int index) { return mRegions[index]; }
@@ -143,7 +148,7 @@ private:
   rstl::prereserved_vector< CPFPoint > mPoints;
   rstl::prereserved_vector< int > mPointLinks;
   rstl::prereserved_vector< uint > mPointConnections;
-  rstl::prereserved_vector< uint > mPointLinkData; // Guessed name; encoding unresolved.
+  rstl::prereserved_vector< float > mPointLinkCosts;
   rstl::vector< CPFRegionData > mRegionData;
   CTransform4f mTransform;
 };

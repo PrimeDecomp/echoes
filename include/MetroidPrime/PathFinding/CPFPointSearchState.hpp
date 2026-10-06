@@ -5,12 +5,21 @@
 
 class CPFPointSearchState { // Guessed name
 public:
-  struct SPointData {    // Guessed name
-    int mPointIndex;     // Guessed name
-    SPointData* mParent; // Guessed name
-    float mPathCost;     // Guessed name
-    float mHeuristic;    // Guessed name
-    uchar mFlags;        // Guessed name
+  struct SPointData { // Guessed name
+    SPointData()
+    : mPointIndex(-1)
+    , mParent(nullptr)
+    , mPathCost(0.f)
+    , mHeuristic(0.f)
+    , mDiscovered(false)
+    , mClosed(false) {}
+
+    int mPointIndex;      // Guessed name
+    SPointData* mParent;  // Guessed name
+    float mPathCost;      // Guessed name
+    float mHeuristic;     // Guessed name
+    bool mDiscovered : 1; // Target-derived: retained after removal from the heap.
+    bool mClosed : 1;     // Target-derived: set after expansion.
   };
   typedef char SPointDataSizeCheck[sizeof(SPointData) == 0x14 ? 1 : -1];
 
@@ -20,6 +29,7 @@ public:
   void PushOpenPoint(SPointData* point);         // Guessed name
   SPointData& GetPointData(int point);           // Guessed name
   void Reset();                                  // Guessed name
+  bool HasOpenPoints() const { return !mOpenPoints.empty(); }
 
 private:
   int mPointCount;                         // Guessed name
