@@ -13,33 +13,7 @@ struct SLdrSurroundPan {
   float surroundPan; // 0x482b88aa
 };
 
-inline SLdrSurroundPan::SLdrSurroundPan() {
-  pan = 0.0f;
-  surroundPan = 0.0f;
-}
-
-inline SLdrSurroundPan::~SLdrSurroundPan() {}
-
-inline void LoadTypedefSurroundPan(SLdrSurroundPan& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0xdf4353a3: {
-      sldrThis.pan = input.ReadFloat();
-      break;
-    }
-    case 0x482b88aa: {
-      sldrThis.surroundPan = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefSurroundPan(SLdrSurroundPan& data, CInputStream& input);
 
 struct SLdrSound {
   SLdrSound();

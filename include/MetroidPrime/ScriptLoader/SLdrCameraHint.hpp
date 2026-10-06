@@ -13,28 +13,7 @@ struct SLdrCameraBehaviour {
   int behaviourType; // 0xc1e747ad
 };
 
-inline SLdrCameraBehaviour::SLdrCameraBehaviour() {
-  behaviourType = 0;
-}
-
-inline SLdrCameraBehaviour::~SLdrCameraBehaviour() {}
-
-inline void LoadTypedefCameraBehaviour(SLdrCameraBehaviour& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0xc1e747ad: {
-      sldrThis.behaviourType = input.ReadInt32();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraBehaviour(SLdrCameraBehaviour& data, CInputStream& input);
 
 struct SLdrCameraDistance {
   SLdrCameraDistance();
@@ -44,33 +23,7 @@ struct SLdrCameraDistance {
   float distance; // 0xc3bf43be
 };
 
-inline SLdrCameraDistance::SLdrCameraDistance() {
-  field_override = false;
-  distance = 8.0f;
-}
-
-inline SLdrCameraDistance::~SLdrCameraDistance() {}
-
-inline void LoadTypedefCameraDistance(SLdrCameraDistance& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0xc3bf43be: {
-      sldrThis.distance = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraDistance(SLdrCameraDistance& data, CInputStream& input);
 
 struct SLdrCameraOffset {
   SLdrCameraOffset();
@@ -80,33 +33,7 @@ struct SLdrCameraOffset {
   CVector3f offset; // 0x46477064
 };
 
-inline SLdrCameraOffset::SLdrCameraOffset() : offset(CVector3f::Zero()) {
-  field_override = false;
-  offset = CVector3f(0.0f, 1.0f, 1.0f);
-}
-
-inline SLdrCameraOffset::~SLdrCameraOffset() {}
-
-inline void LoadTypedefCameraOffset(SLdrCameraOffset& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0x46477064: {
-      sldrThis.offset = CVector3f(input);
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraOffset(SLdrCameraOffset& data, CInputStream& input);
 
 struct SLdrCameraFOV {
   SLdrCameraFOV();
@@ -116,33 +43,7 @@ struct SLdrCameraFOV {
   float fOV; // 0x123cac0e
 };
 
-inline SLdrCameraFOV::SLdrCameraFOV() {
-  field_override = false;
-  fOV = 55.0f;
-}
-
-inline SLdrCameraFOV::~SLdrCameraFOV() {}
-
-inline void LoadTypedefCameraFOV(SLdrCameraFOV& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0x123cac0e: {
-      sldrThis.fOV = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraFOV(SLdrCameraFOV& data, CInputStream& input);
 
 struct SLdrCameraHintStructC {
   SLdrCameraHintStructC();
@@ -188,33 +89,7 @@ struct SLdrCameraSpeed {
   float speed; // 0x6392404e
 };
 
-inline SLdrCameraSpeed::SLdrCameraSpeed() {
-  field_override = false;
-  speed = 120.0f;
-}
-
-inline SLdrCameraSpeed::~SLdrCameraSpeed() {}
-
-inline void LoadTypedefCameraSpeed(SLdrCameraSpeed& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0x6392404e: {
-      sldrThis.speed = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraSpeed(SLdrCameraSpeed& data, CInputStream& input);
 
 struct SLdrCameraZOffset {
   SLdrCameraZOffset();
@@ -224,33 +99,7 @@ struct SLdrCameraZOffset {
   float zOffset; // 0x8033f9a3
 };
 
-inline SLdrCameraZOffset::SLdrCameraZOffset() {
-  field_override = false;
-  zOffset = 2.7f;
-}
-
-inline SLdrCameraZOffset::~SLdrCameraZOffset() {}
-
-inline void LoadTypedefCameraZOffset(SLdrCameraZOffset& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0x8033f9a3: {
-      sldrThis.zOffset = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraZOffset(SLdrCameraZOffset& data, CInputStream& input);
 
 struct SLdrCameraHintStructA {
   SLdrCameraHintStructA();
