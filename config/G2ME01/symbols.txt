@@ -1162,7 +1162,7 @@ GetModifiedDamageInfo__13CStateManagerCF9TUniqueId9TUniqueId9TUniqueIdRC11CDamag
 KillPlayer__13CStateManagerFf9TUniqueId9TUniqueId = .text:0x8003E154; // type:function size:0x108
 ApplyDamage__13CStateManagerF9TUniqueId9TUniqueId9TUniqueIdRC11CDamageInfoRC15CMaterialFilterRC9CVector3f = .text:0x8003E25C; // type:function size:0x4A8
 SendDamageScriptMsgs__13CStateManagerFR6CActor9TUniqueIdRC11CDamageInfo = .text:0x8003E704; // type:function size:0x1A4
-DisplayAlertAboutOutOfAmmo__13CStateManagerCFRC7CPlayerQ212CPlayerState9EItemType = .text:0x8003E8A8; // type:function size:0x2AC align:4
+DisplayAlertAboutOutOfAmmo__13CStateManagerFRC7CPlayerQ212CPlayerState9EItemType = .text:0x8003E8A8; // type:function size:0x2AC align:4
 UpdateAreaSounds__13CStateManagerFv = .text:0x8003EB54; // type:function size:0xB8 align:4
 FrameEnd__13CStateManagerFv = .text:0x8003EC0C; // type:function size:0x34 align:4
 ProcessPlayerInput__13CStateManagerFv = .text:0x8003EC40; // type:function size:0xB8 align:4
@@ -2348,7 +2348,7 @@ insert__Q24rstl45vector<9TUniqueId,Q24rstl17rmemory_allocator>FQ24rstl110pointer
 insert_into<Q24rstl35const_counting_iterator<9TUniqueId>>__Q24rstl45vector<9TUniqueId,Q24rstl17rmemory_allocator>FQ24rstl110pointer_iterator<9TUniqueId,Q24rstl45vector<9TUniqueId,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>iQ24rstl35const_counting_iterator<9TUniqueId> = .text:0x8008429C; // type:function size:0x4F0
 HasId__12CPlayerStateCF9TUniqueId = .text:0x8008478C; // type:function size:0xD0 align:4
 GetIds__12CPlayerStateCFv = .text:0x8008485C; // type:function size:0x8
-DecrementAmmoAndDisplayAlertIfOut__12CPlayerStateFRC13CStateManagerQ212CPlayerState9EItemTypei = .text:0x80084864; // type:function size:0x90 scope:global
+DecrementAmmoAndDisplayAlertIfOut__12CPlayerStateFR13CStateManagerQ212CPlayerState9EItemTypei = .text:0x80084864; // type:function size:0x90 scope:global
 IncrementChargeBeamFactor__12CPlayerStateFf = .text:0x800848F4; // type:function size:0x34 scope:global align:4
 SetPersistentState__12CPlayerStateFRCQ212CPlayerState16SPersistentState = .text:0x80084928; // type:function size:0x78 scope:global
 __as__Q212CPlayerState16SPersistentStateFRCQ212CPlayerState16SPersistentState = .text:0x800849A0; // type:function size:0x68 scope:global

@@ -658,8 +658,8 @@ void CPlayerState::IncrementChargeBeamFactor(float delta) {
   mChargeBeamFactor = rstl::min_val(rstl::max_val(mChargeBeamFactor + delta, 0.f), 1.f);
 }
 
-void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(const CStateManager& mgr,
-                                                     CPlayerState::EItemType type, int quantity) {
+void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(CStateManager& mgr,
+                                                  CPlayerState::EItemType type, int quantity) {
   int oldAmount = GetItemAmount(type);
   DecrPickUp(type, quantity);
   if (oldAmount > 0 && GetItemAmount(type) == 0) {
