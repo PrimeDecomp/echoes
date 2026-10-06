@@ -156,7 +156,7 @@ static const bool skDisablePlayerTargeting = false;
 extern "C" void fn_8003FF1C(CStateManager*);
 extern "C" void fn_8003FF20(CStateManager*);
 
-bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {
+bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) {
   return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
 }
 
@@ -235,6 +235,25 @@ bool area_sorter::operator()(const CGameArea* a, const CGameArea* b) const {
   return aDot > bDot;
 }
 } // namespace
+
+CLight::CLight(const CLight& other)
+: mPos(other.mPos)
+, mDir(other.mDir)
+, mColor(other.mColor)
+, mType(other.mType)
+, mSpotCutoff(other.mSpotCutoff)
+, mDistC(other.mDistC)
+, mDistL(other.mDistL)
+, mDistQ(other.mDistQ)
+, mAngleC(other.mAngleC)
+, mAngleL(other.mAngleL)
+, mAngleQ(other.mAngleQ)
+, mPriority(other.mPriority)
+, mLightId(other.mLightId)
+, mCachedRadius(other.mCachedRadius)
+, mCachedIntensity(other.mCachedIntensity)
+, mIntensityDirty(other.mIntensityDirty)
+, mRadiusDirty(other.mRadiusDirty) {}
 
 bool CStateManager::IsActorVisible(const CActor& actor) const {
   if (actor.UsesPortalVisibility()) {
@@ -1097,11 +1116,12 @@ void CStateManager::DrawDarkVisor(const CInGameGuiManagerSet& gui) {
 }
 
 void CStateManager::DrawDarkWorldCloud(CPlayerState::EPlayerVisor visor) {
-  if (mDarkWorldCloudTime > 0.f) {
+  if (mDarkWorldCloud.mTime > 0.f) {
     switch (visor) {
     case CPlayerState::kPV_Combat:
     case CPlayerState::kPV_Scan:
-      gpRender->DrawDarkWorldCloud(mDarkWorldCloudTime, mDarkWorldCloudScale, mDarkWorldCloudColor);
+      gpRender->DrawDarkWorldCloud(mDarkWorldCloud.mTime, mDarkWorldCloud.mScale,
+                                   mDarkWorldCloud.mColor);
       break;
     default:
       break;
@@ -1613,6 +1633,15 @@ bool CStateManager::RenderLastOverlay(const TUniqueId& uid) {
   return true;
 }
 
+bool CStateManager::RenderFirstSorted(const TUniqueId& uid) {
+  CStateManagerContainer* container = mStateManagerContainer.get();
+  if (container->mRenderFirstSorted.size() == container->mRenderFirstSorted.capacity()) {
+    return false;
+  }
+  container->mRenderFirstSorted.push_back(uid);
+  return true;
+}
+
 int CStateManager::SpecialSkipCinematic() {
   int result = 0;
   if (mSpecialFunctionId != kInvalidUniqueId) {
@@ -1743,13 +1772,20 @@ bool CStateManager::CanEnterMapScreen() {
   if (hint != nullptr && !hint->CanContinue()) {
     return false;
   }
-  return TCastToConstPtr< CCinematicCamera >(*mCameraManagers[0]->GetCurrentCamera(*this, true)) ==
-         nullptr;
+  if (TCastToConstPtr< CCinematicCamera >(*mCameraManagers[0]->GetCurrentCamera(*this, true)) !=
+      nullptr) {
+    return false;
+  }
+  return true;
 }
 
 void CStateManager::DeleteSaveGameScreen() {
   mInSaveUI = mSaveGameScreen->GetMessageReturn() == CIOWin::kMR_Exit;
   mSaveGameScreen = nullptr;
+}
+
+void CStateManager::CreateSaveGameScreen() {
+  mSaveGameScreen = rs_new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
 }
 
 void CStateManager::SetGameState(EGameState state) {
@@ -1943,6 +1979,10 @@ CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
+const CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() const {
+  return mStateManagerContainer->mScriptObjectLoader;
+}
+
 CScopedProfiler::CScopedProfiler(const rstl::string& name, bool enabled) {}
 
 const bool gkWorldOnlyReflection = false;
@@ -2017,10 +2057,7 @@ CStateManager::CStateManager(
 , mVisAreaId(-1)
 , mPendingDockArea(kInvalidAreaId)
 , mPendingDock(0)
-, mUnknown0x2908(CTransform4f::Identity())
-, mDarkWorldCloudScale(CVector3f::Zero())
-, mDarkWorldCloudTime(0.f)
-, mDarkWorldCloudColor(CColor::Black())
+, mDarkWorldCloud()
 , mReadyToRender(false)
 , mQuitGame(false)
 , mUnkFlagA3(true)
@@ -2517,10 +2554,7 @@ bool CStateManager::PrepareAreaTransition(TAreaId areaId) {
   mRandomAvailable = randomWasAvailable;
   mPlayers[0]->StopSounds();
   SetIsDarkWorld(!mIsDarkWorld);
-  mUnknown0x2908 = CTransform4f::Identity();
-  mDarkWorldCloudScale = CVector3f::Zero();
-  mDarkWorldCloudTime = 0.f;
-  mDarkWorldCloudColor = CColor::Black();
+  mDarkWorldCloud = SDarkWorldCloud();
   return true;
 }
 

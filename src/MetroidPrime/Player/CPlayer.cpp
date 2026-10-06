@@ -57,6 +57,7 @@
 #include "MetroidPrime/Player/CPlayerTargeting.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
@@ -94,6 +95,13 @@ CPlayer::ESurfaceRestraints gSR_Hack = CPlayer::kSR_Normal;
 
 static CColor skLaggedBurnDeathColor(uchar(255), uchar(255), uchar(192), uchar(255));
 static CColor skImplosionColor(uchar(170), uchar(84), uchar(255), uchar(255));
+
+// Guessed names
+static CVector3f skZeroVector(0.f, 0.f, 0.f);
+static CVector3f skUpVector(0.f, 0.f, 1.f);
+static CRayCastResult skInvalidRayCastResult(CRayCastResult::kI_Invalid);
+static CCollisionInfo skInvalidCollisionInfo(CCollisionInfo::kI_Invalid);
+static CAABox skNullBox(CAABox::MakeNullBox());
 
 static const char* const kGunLocator = "GUN_LCTR";
 static const char* const kBeamThirdPersonFxGroup = "BeamThirdPersonFx_DGRP";
@@ -195,7 +203,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
                  bool multiplayer, int playerIndex, int controlScheme, int charIdx)
 : CPhysicsActor(uid, CBasics::Stringize("CPlayer (%d)", playerIndex),
                 CEntityInfo(kInvalidAreaId, CEntity::NullConnectionList, true), 0, xf,
-                CAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), 0, true), ml, aabb,
+                CAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), -1, true), ml, aabb,
                 SMoverData(mass), CActorParameters::None().HotInThermal(true),
                 StepData(stepUp, stepDown, 1))
 
@@ -297,7 +305,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mAimTargetScreenDistance(10000.f)
 , mGun(rs_new CPlayerGun(uid, multiplayer))
 , mGunAlpha(1.f)
-, mPlayerDrawFlags(CModelFlags::kT_Opaque, 1.f)
+, mPlayerDrawFlags(CModelFlags(CModelFlags::kT_Opaque, 1.f))
 , mTransitionBeamShader(0)
 , mTargeting(rs_new CPlayerTargeting(uid))
 , mBodyController(nullptr)
@@ -365,7 +373,7 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mViewportScaleX(1.f)
 , mViewportScaleY(1.f)
 , mTransitionSuit(CPlayerState::kPS_Varia)
-, mAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), 0, true)
+, mAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), -1, true)
 , mTransitionBeam(CPlayerState::kBI_Power)
 , mBallTransitionBeamModel(nullptr)
 , mGunWorldXf(CTransform4f::Identity())
@@ -2337,7 +2345,15 @@ void CPlayer::UpdateMorphBallState(const CFinalInput& input, float dt, CStateMan
       bool failed = true;
       if (mCanStartUnmorphTransition) {
         CVector3f posDelta = CVector3f::Zero();
-        if (CanLeaveMorphBallState(mgr, posDelta)) {
+        if (!CanLeaveMorphBallState(mgr, posDelta)) {
+          if (state == kMS_Morphed) {
+            ResolveUnmorphCollision(mgr);
+            mMorphDuration = screwAttackOutOfBallDuration;
+            mMorphTime = 0.f;
+            failed = false;
+            BeginUnmorphTransition(dt, mgr, state);
+          }
+        } else {
           if (state == kMS_Morphed) {
             mMorphDuration = screwAttackOutOfBallDuration;
           } else {
@@ -2347,12 +2363,6 @@ void CPlayer::UpdateMorphBallState(const CFinalInput& input, float dt, CStateMan
           mMorphTime = 0.f;
           BeginUnmorphTransition(dt, mgr, state);
           failed = false;
-        } else if (state == kMS_Morphed) {
-          ResolveUnmorphCollision(mgr);
-          mMorphDuration = screwAttackOutOfBallDuration;
-          mMorphTime = 0.f;
-          failed = false;
-          BeginUnmorphTransition(dt, mgr, state);
         }
       }
       if (failed) {
@@ -3545,7 +3555,8 @@ CVector3f CPlayer::GetHomingPosition(const CStateManager& mgr, float dt) const {
 }
 
 const CDamageVulnerability* CPlayer::GetDamageVulnerability() const {
-  return GetDamageVulnerability(CVector3f::Zero(), CVector3f(0.f, 0.f, 1.f), CDamageInfo());
+  return GetDamageVulnerability(CVector3f::Zero(), CVector3f::Up(),
+                                CDamageInfo(CWeaponMode(kWT_Power), 0.f, 0.f, 0.f, false, false));
 }
 
 const CDamageVulnerability* CPlayer::GetDamageVulnerability(const CVector3f& position,
@@ -3884,8 +3895,7 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
           displacement.SetZ(0.f);
           if (displacement.Magnitude() < 4.f && CMath::AbsF(verticalOffset) < 5.f) {
             mgr.ApplyDamage(GetUniqueId(), mgr.GetPlayer(i)->GetUniqueId(), GetUniqueId(),
-                            crushDamage,
-                            CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)),
+                            crushDamage, CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)),
                             CVector3f::Zero());
           }
         }
@@ -4013,12 +4023,27 @@ void CPlayer::ProcessTurretActions(const CFinalInput& input, CStateManager& mgr)
 }
 
 bool CPlayer::fn_8000d40c(const CVector3f& direction, CStateManager& mgr) {
-  // TODO: Check the turret's allowed horizontal aiming cone.
-  return false;
+  CPlayerTurret* turret = static_cast< CPlayerTurret* >(
+      CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId))));
+  if (turret != nullptr) {
+    CVector3f flatDirection(direction.ToVec2f(), 0.f);
+    if (!flatDirection.CanBeNormalized()) {
+      return true;
+    }
+    const float angle = acos(CVector3f::Dot(-flatDirection, -GetTransform().GetForward()));
+    if (angle > turret->GetMaxAimAngle()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void CPlayer::fn_8000d3ac(const CVector3f& direction, CStateManager& mgr) {
-  // TODO: Recover the remaining target behavior.
+  CPlayerTurret* turret =
+      static_cast< CPlayerTurret* >(CastToPlayerTurret(mgr.ObjectById(mTurretId)));
+  if (turret != nullptr) {
+    turret->SetTargetPosition(direction);
+  }
 }
 
 CTransform4f CPlayer::GetTurretTransform(CStateManager& mgr) const {
