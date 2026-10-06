@@ -40,8 +40,10 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
+#include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CGameStateEnvVarManager.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
@@ -2518,6 +2520,59 @@ void CStateManager::ProcessRadiusDamage(const CActor& source, CActor& damagee, T
           ApplyRadiusDamage(source, position, *actor, owner, damage);
         }
       }
+    }
+  }
+}
+
+void CStateManager::ApplyDamageToWorld(TUniqueId owner, CActor& projectile,
+                                       const CVector3f& position, const CDamageInfo& info,
+                                       const CMaterialFilter& filter) {
+  const CMaterialFilter useFilter = filter;
+  const float radius = info.GetRadius();
+  const float negativeRadius = -radius;
+  const CAABox bounds(position + CVector3f(negativeRadius, negativeRadius, negativeRadius),
+                      position + CVector3f(radius, radius, radius));
+
+  const CWeapon* const weapon = TCastToConstPtr< CWeapon >(&projectile);
+  bool bomb = false;
+  if (weapon != nullptr) {
+    bomb =
+        weapon->HasAttrib(CWeapon::kPA_TriggerBomb) || weapon->HasAttrib(CWeapon::kPA_PowerBombs);
+  }
+
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  BuildNearList(nearList, bounds, useFilter, &projectile);
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    CActor* const actor = static_cast< CActor* >(ObjectById(*it));
+    CPlayer* const player = TCastToPtr< CPlayer >(actor);
+    CEntity* const snakeWeed = CastToSnakeWeedSwarm(actor);
+    CSwarmBasics* const swarm = TCastToPtr< CSwarmBasics >(actor);
+
+    if (bomb && player != nullptr && actor->GetUniqueId() == weapon->GetOwnerId()) {
+      if (player->GetFrozenState()) {
+        CEnvironmentVariable* const freezeInstructions =
+            gpGameState->SystemOptions().FindEnvironmentVariable("FreezeInstructionsMorphBall");
+        freezeInstructions->Set(freezeInstructions->GetValue() + 1);
+        const int playerIndex = MaskUIdNumPlayers(player->GetUniqueId());
+        CSamusHud::DisplayHudMemo(rstl::wstring_l(L""),
+                                  CHUDMemoParms(0.f, true, true, true, 1 << playerIndex, true));
+        player->BreakFrozenState(*this, CPlayer::kBFS_BreakWithEffects, false);
+      } else if (weapon->HasAttrib(CWeapon::kPA_TriggerBomb)) {
+        player->BombJump(position, *this);
+      }
+    } else if (actor != nullptr && actor->GetUniqueId() != owner) {
+      TestBombHittingWater(projectile, position, *actor);
+      if (TestRayDamage(position, *actor, nearList)) {
+        ApplyRadiusDamage(projectile, position, *actor, owner, info);
+      }
+    }
+
+    if (snakeWeed != nullptr) {
+      SnakeWeed_ApplyRadiusDamage(*snakeWeed, position, info, *this);
+    }
+    if (swarm != nullptr) {
+      swarm->ApplyRadiusDamage(position, info, *this);
     }
   }
 }

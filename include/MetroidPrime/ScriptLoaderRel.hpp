@@ -326,8 +326,8 @@ void SetSPlayerTurret_FuncPtrs(SPlayerTurret_FuncPtrs*);
 
 // Guessed descriptive names for the existing REL member bridges.
 void SafeZone_ApplyRenderEffect(CEntity& entity, CStateManager& mgr);
-void SnakeWeed_ApplyRadiusDamage(CEntity& entity, const CVector3f& position,
-                                 const CDamageInfo& damage, CStateManager& mgr);
+void SnakeWeed_ApplyRadiusDamage(CEntity& entity, CVector3f position, const CDamageInfo& damage,
+                                 CStateManager& mgr);
 void PlayerActor_TouchModels(CEntity& entity, CStateManager& mgr);
 CTransform4f PlayerTurret_GetCameraTransform(CEntity& entity, CStateManager& mgr);
 CTransform4f PlayerTurret_GetTurretTransform(CEntity& entity, CStateManager& mgr);

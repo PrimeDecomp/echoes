@@ -152,8 +152,8 @@ CEntity* LoadSnakeWeedSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo
   return gLoader_SnakeWeed->mLoadSnakeWeedSwarm(mgr, input, info);
 }
 
-void SnakeWeed_ApplyRadiusDamage(CEntity& entity, const CVector3f& position,
-                                 const CDamageInfo& damage, CStateManager& mgr) {
+void SnakeWeed_ApplyRadiusDamage(CEntity& entity, CVector3f position, const CDamageInfo& damage,
+                                 CStateManager& mgr) {
   (entity.*(gLoader_SnakeWeed->mApplyRadiusDamage))(position, damage, mgr);
 }
 
