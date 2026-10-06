@@ -1,14 +1,22 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 
 #include "Kyoto/Animation/CCharAnimTime.hpp"
+#include "Kyoto/Animation/CPASAnimParmData.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CAnimData.hpp"
+#include "MetroidPrime/CGenericFSM2State.hpp"
+#include "MetroidPrime/CPositionalParticleData.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
-#include "MetroidPrime/CGenericFSM2State.hpp"
+#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
+#include "MetroidPrime/Weapons/CProjectileInfo.hpp"
+
+#include <float.h>
 
 const float CPatterned::skDamageHitTime = 0.33f;
 const float CPatterned::skActorApproachDistance = 3.f;
@@ -169,8 +177,17 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
   // TODO: Enable the actor's damage/echo flags and apply pinfo.mEchoParameters.
 }
 
-void CPatterned::BuildBodyController(EBodyType) {
-  // TODO: Construct the body controller and configure the additive-reaction knockback options.
+void CPatterned::BuildBodyController(EBodyType body) {
+  if (!mBodyController.null()) {
+    return;
+  }
+
+  mBodyController = rs_new CBodyController(*this, mTurnSpeed, body);
+
+  const CPASAnimParmData params(pas::kAS_AdditiveReaction, CPASAnimParm::FromEnum(0));
+  const rstl::pair< float, int > bestAnim =
+      mBodyController->GetPASDatabase().FindBestAnimation(params, -1);
+  mKnockBackController.EnableShock(bestAnim.first > 0.f);
 }
 
 void CPatterned::SetupStateMachine(CStateManager&) {
@@ -224,22 +241,53 @@ CVector3f CPatterned::GetGunEyePos() const {
 }
 
 bool CPatterned::ApplyBoneTracking() const {
-  // TODO: Also test the body controller's frozen state and knockback flinch timer.
-  return mAlive;
+  if (!mAlive || mBodyController->IsFrozen() ||
+      mKnockBackController.GetFlinchRemainingTime() > 0.f) {
+    return false;
+  }
+  return true;
 }
 
-float CPatterned::GetAnimationDistance(const CPASAnimParmData&) const {
-  // TODO: Select the best PAS animation and read its root-motion displacement.
+float CPatterned::GetAnimationDistance(const CPASAnimParmData& params) const {
+  float distance = 1.f;
+  const rstl::pair< float, int > bestAnim =
+      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
+
+  if (bestAnim.first > FLT_EPSILON) {
+    const CAnimData* animData = GetAnimationData();
+    const float duration = animData->GetAnimationDuration(bestAnim.second);
+    distance = animData->GetAverageVelocity(bestAnim.second);
+    distance *= duration;
+  }
+
+  return distance;
+}
+
+float CPatterned::GetAnimationDuration(const CPASAnimParmData& params) const {
+  const rstl::pair< float, int > bestAnim =
+      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
+  if (bestAnim.first > FLT_EPSILON) {
+    return GetAnimationData()->GetAnimationDuration(bestAnim.second);
+  }
   return 0.f;
 }
 
-float CPatterned::GetAnimationDuration(const CPASAnimParmData&) const {
-  // TODO: Select the best PAS animation and return its duration.
-  return 0.f;
-}
-
-void CPatterned::SetupPlayerCollision(bool) {
-  // TODO: Update the player's material in the include/exclude filter for the collider mode.
+void CPatterned::SetupPlayerCollision(bool enabled) {
+  if (enabled) {
+    CMaterialList include = GetMaterialFilter().GetIncludeList();
+    CMaterialList exclude = GetMaterialFilter().GetExcludeList();
+    const CMaterialList playerMaterial(kMT_Player);
+    include.Add(playerMaterial);
+    exclude.Remove(playerMaterial);
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
+  } else {
+    CMaterialList include = GetMaterialFilter().GetIncludeList();
+    CMaterialList exclude = GetMaterialFilter().GetExcludeList();
+    const CMaterialList playerMaterial(kMT_Player);
+    include.Remove(playerMaterial);
+    exclude.Add(playerMaterial);
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
+  }
 }
 
 CScriptCoverPoint* CPatterned::GetCoverPoint(CStateManager& mgr, const TUniqueId id) const {
@@ -296,9 +344,8 @@ void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   }
 }
 
-void CPatterned::ApplyKnockBackFollowUp(CStateManager&, const CVector3f&,
-                                       CKnockBackMgr::EFollowUp, float, float, TUniqueId,
-                                       TUniqueId) {
+void CPatterned::ApplyKnockBackFollowUp(CStateManager&, const CVector3f&, CKnockBackMgr::EFollowUp,
+                                        float, float, TUniqueId, TUniqueId) {
   // TODO: Apply the knockback rule's follow-up (freeze, burn, shock, death or disintegration).
 }
 
@@ -355,8 +402,15 @@ void CPatterned::InitializeStateMachine(CStateManager& mgr) {
   mStateMachine->SetState(mgr, *this, rstl::string("Start"));
 }
 
-void CPatterned::Touch(CActor&, CStateManager&) {
-  // TODO: Apply contact damage with the configured cooldown and actor material filter.
+void CPatterned::Touch(CActor& actor, CStateManager& mgr) {
+  if (mAlive) {
+    if (CGameProjectile* projectile = TCastToPtr< CGameProjectile >(actor)) {
+      if (TCastToPtr< CPlayer >(
+              const_cast< CEntity* >(mgr.GetObjectById(projectile->GetOwnerId())))) {
+        mHitByPlayerProjectile = true;
+      }
+    }
+  }
 }
 
 void CPatterned::CollidedWith(const TUniqueId&, const CCollisionInfoList&, CStateManager&) {
@@ -373,16 +427,43 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
   CActor::DoUserAnimEvent(mgr, node, type, dt);
 }
 
-void CPatterned::Burn(CStateManager&, float, float) {
-  // TODO: Check knockback options and Light vulnerability before starting fire damage.
+void CPatterned::Burn(CStateManager&, float duration, float damage) {
+  if (mKnockBackController.IsBurnEnabled() &&
+      GetDamageVulnerability()->WeaponHits(CWeaponMode(kWT_Light), 0)) {
+    mBodyController->SetOnFire(duration);
+    mPendingFireDamage = damage;
+  }
 }
 
-void CPatterned::Shock(CStateManager&, float, float) {
-  // TODO: Check knockback options and Annihilator vulnerability before starting electric damage.
+void CPatterned::Shock(CStateManager&, float duration, float damage) {
+  if (mKnockBackController.IsShockEnabled() &&
+      GetDamageVulnerability()->WeaponHits(CWeaponMode(kWT_Annihilator), 0)) {
+    mBodyController->SetElectrocuting(duration);
+    mPendingShockDamage = damage;
+  }
 }
 
-void CPatterned::Freeze(CStateManager&, const CVector3f&, CUnitVector3f, float, float) {
-  // TODO: Freeze the body controller and start model frost effects.
+void CPatterned::Freeze(CStateManager&, const CVector3f&, CUnitVector3f, float duration,
+                        float intoFreezeDuration) {
+  if (mLostMassiveFrozenHP) {
+    mDieIf80PercFrozen = true;
+  }
+
+  bool playSfx = false;
+  if (intoFreezeDuration < 0.f) {
+    intoFreezeDuration = mIntoFreezeDuration;
+  }
+  if (mBodyController->IsFrozen()) {
+    mBodyController->Freeze(intoFreezeDuration, duration, mOutOfFreezeDuration);
+  } else if (!mBodyController->IsElectrocuting() && !mBodyController->IsOnFire()) {
+    mBodyController->Freeze(intoFreezeDuration, duration, mOutOfFreezeDuration);
+    playSfx = true;
+  }
+
+  if (playSfx) {
+    CSfxManager::AddEmitter(mFrozenSfx, GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                            CSfxManager::kMedPriority);
+  }
 }
 
 float CPatterned::GetDeathTimeScale() const {
@@ -440,12 +521,16 @@ bool CPatterned::IsBeingSnatched() const {
   return mIngPossessionBlend > 0.f && mIngPossessionBlend < 1.f && mIngModel.valid();
 }
 
-void CPatterned::RenderSystemsToBeDrawnFirst(const CStateManager&, uint, uint) const {
-  // TODO: Draw the animation particle database's first-pass systems.
+void CPatterned::RenderSystemsToBeDrawnFirst(const CStateManager&, uint mask, uint target) const {
+  if (mDrawParticles) {
+    GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnFirstPOICheck(mask, target);
+  }
 }
 
-void CPatterned::RenderSystemsToBeDrawnLast(const CStateManager&, uint, uint) const {
-  // TODO: Draw the animation particle database's last-pass systems.
+void CPatterned::RenderSystemsToBeDrawnLast(const CStateManager&, uint mask, uint target) const {
+  if (mDrawParticles) {
+    GetAnimationData()->GetParticleDB().RenderSystemsToBeDrawnLastPOICheck(mask, target);
+  }
 }
 
 void CPatterned::fn_80074e54(const CModelFlags&) const {
@@ -534,17 +619,36 @@ CScannableObjectInfo* CPatterned::GetScannableObjectInfo() const {
                                                   : CActor::GetScannableObjectInfo();
 }
 
-CEnergyProjectile* CPatterned::LaunchProjectile(const CTransform4f&, CStateManager&, int, uint,
-                                                bool, const CImpactVisorEffect&, const CVector3f&) {
-  // TODO: Check projectile resource/count limits, construct the energy projectile and add it.
-  return nullptr;
+CEnergyProjectile* CPatterned::LaunchProjectile(const CTransform4f& xf, CStateManager& mgr,
+                                                int maxProjectiles, uint attributes, bool homing,
+                                                const CImpactVisorEffect& visorEffect,
+                                                const CVector3f& scale) {
+  CEnergyProjectile* projectile = nullptr;
+  CProjectileInfo* projectileInfo = ProjectileInfo();
+  if (projectileInfo->Token().IsLoaded()) {
+    if (mgr.CanCreateProjectile(GetUniqueId(), kWT_AI, maxProjectiles)) {
+      projectile = rs_new CEnergyProjectile(
+          true, ProjectileInfo()->Token(), kWT_AI, xf, kMT_Character, ProjectileInfo()->GetDamage(),
+          mgr.AllocateUniqueId(), GetCurrentAreaId(), GetUniqueId(),
+          homing ? mgr.GetPlayer(0)->GetUniqueId() : kInvalidUniqueId, attributes, false, scale,
+          visorEffect, false, true, false, 1.f, 4.f, 4.f);
+
+      if (projectile != nullptr) {
+        mgr.AddObject(projectile);
+      }
+    }
+  }
+
+  return projectile;
 }
 
 EWeaponCollisionResponseTypes CPatterned::GetCollisionResponseType(const CVector3f& position,
                                                                    const CVector3f& direction,
                                                                    const CWeaponMode& mode,
                                                                    int attributes) const {
-  // TODO: Return no response for Dark shots while frozen.
+  if (mBodyController->IsFrozen() && mode.GetRawType() == kWT_Dark) {
+    return kWCR_None;
+  }
   return CAi::GetCollisionResponseType(position, direction, mode, attributes);
 }
 
@@ -562,25 +666,41 @@ bool CPatterned::IsOnStaticGround() const { return mOnStaticGround; }
 
 bool CPatterned::TryToBeCaptured(CStateManager&) { return false; }
 
-CCharAnimTime CPatterned::GetTimeOfUserEventForAnimation(const CPASAnimParmData&,
-                                                         EUserEventType) const {
-  // TODO: Select the PAS animation and query its event time.
-  return CCharAnimTime();
+CCharAnimTime CPatterned::GetTimeOfUserEventForAnimation(const CPASAnimParmData& params,
+                                                         EUserEventType event) const {
+  const rstl::pair< float, int > bestAnim =
+      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
+  if (bestAnim.first > FLT_EPSILON) {
+    return GetAnimationData()->GetTimeOfUserEventForAnimation(bestAnim.second, event);
+  }
+  return CCharAnimTime::Infinity();
 }
 
-int CPatterned::GetNumUserEventsForAnimation(const CPASAnimParmData&, EUserEventType) const {
-  // TODO: Select the PAS animation and query its event count.
+int CPatterned::GetNumUserEventsForAnimation(const CPASAnimParmData& params,
+                                             EUserEventType event) const {
+  const rstl::pair< float, int > bestAnim =
+      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
+  if (bestAnim.first > FLT_EPSILON) {
+    return GetAnimationData()->CountUserEventsForAnimation(bestAnim.second, event);
+  }
   return 0;
 }
 
 float CPatterned::GetAverageAttackTime() const {
-  // TODO: Divide by the body's movement/time scale when positive.
+  const float timeScale = mBodyController->GetTimeScale();
+  if (timeScale > 0.f) {
+    return mAverageAttackTime / timeScale;
+  }
   return mAverageAttackTime;
 }
 
-void CPatterned::AddParticleEffect(CStateManager&, const CTransform4f&, float, CAssetId, uint,
-                                   int) {
-  // TODO: Add the PART effect to the animation's particle database.
+void CPatterned::AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, float particleScale,
+                                   CAssetId particle, uint name, int flags) {
+  if (HasAnimation()) {
+    AnimationData()->GetParticleDB().AddParticleEffect(
+        name, flags, CPositionalParticleData(0, SObjectTag('PART', particle), xf, particleScale),
+        GetModelData()->GetScale(), &mgr, GetCurrentAreaId(), 0);
+  }
 }
 
 CAABox CPatterned::GetScanVisorRenderBounds(const CStateManager&) const {

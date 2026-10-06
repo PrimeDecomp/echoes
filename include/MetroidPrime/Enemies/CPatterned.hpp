@@ -176,14 +176,14 @@ public:
                                                EUserEventType event) const;
   int GetNumUserEventsForAnimation(const CPASAnimParmData& params, EUserEventType event) const;
   float GetAverageAttackTime() const;
-  void AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, float duration,
-                         CAssetId particle, uint flags, int index);
+  void AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, float particleScale,
+                         CAssetId particle, uint name, int flags);
   void fn_800747a4(CAssetId model, CAssetId skinRules);
   void fn_80074e54(const CModelFlags& flags) const;
   // Guessed name; dispatches the selected knockback follow-up effect.
   void ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
-                               CKnockBackMgr::EFollowUp followUp, float duration,
-                               float secondaryDuration, TUniqueId source, TUniqueId owner);
+                              CKnockBackMgr::EFollowUp followUp, float duration,
+                              float secondaryDuration, TUniqueId source, TUniqueId owner);
   void fn_8007850c(CStateManager& mgr);
 
   void Start(CStateManager& mgr, EStateMsg msg, float dt);
