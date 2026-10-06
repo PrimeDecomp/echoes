@@ -62,18 +62,14 @@ void CScriptSubtitle::Think(float dt, CStateManager& mgr) {
     float opacity = mTargetFadeOpacity;
     if (mFadeInTime != 0.f) {
       const float next = mFadeOpacity + dt / mFadeInTime;
-      if (opacity >= next) {
-        opacity = next;
-      }
+      opacity = opacity >= next ? next : opacity;
     }
     mFadeOpacity = opacity;
   } else if (mTargetFadeOpacity < mFadeOpacity) {
     float opacity = mTargetFadeOpacity;
     if (mFadeOutTime != 0.f) {
       const float next = mFadeOpacity - dt / mFadeOutTime;
-      if (next >= opacity) {
-        opacity = next;
-      }
+      opacity = next >= opacity ? next : opacity;
     }
     mFadeOpacity = opacity;
   }
