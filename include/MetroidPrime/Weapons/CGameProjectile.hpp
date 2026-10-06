@@ -101,7 +101,7 @@ protected:
   TUniqueId mProjectileLight;
   CAssetId mWpscId;
   TUniqueId mTouchedDock; // Guessed name
-  int x404_;              // Copied from the state manager on XCRT; meaning unresolved.
+  int mCreationRenderFrameIndex; // Reconstructed name: render frame recorded on Create.
   float mMinHomingDist;
   float mHomingTurnRateScale; // Guessed name
   bool mActive : 1;

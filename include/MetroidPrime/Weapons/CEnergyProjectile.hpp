@@ -58,7 +58,7 @@ private:
   // Guessed name; the original owns a sorted list of IDs and expiry times.
   class CCollisionCooldowns {
   public:
-    explicit CCollisionCooldowns(float duration) : mDefaultDuration(duration) {}
+    explicit CCollisionCooldowns(float duration);
     bool Contains(TUniqueId id) const;
     void Add(TUniqueId id);
     void Add(TUniqueId id, float duration);
