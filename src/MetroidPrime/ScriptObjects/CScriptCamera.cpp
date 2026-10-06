@@ -8,6 +8,7 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 class CScriptTimeKeyframe; // Guessed name; shared with the path-camera connection code.
@@ -36,36 +37,6 @@ void CScriptCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
   switch (message) {
-  case kSM_Activate: {
-    const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(msg.GetOriginator()));
-    const int index = player ? mgr.MaskUIdNumPlayers(msg.GetOriginator()) : 0;
-    mgr.CameraManager(index)->AddCinemaCamera(GetUniqueId(), mgr);
-    mHasBeenViewed = WasViewed(mgr);
-    break;
-  }
-  case kSM_Deactivate: {
-    CPlayer* player = TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()));
-    const int index = player ? mgr.MaskUIdNumPlayers(msg.GetOriginator()) : 0;
-    CCameraManager& cameras = *mgr.CameraManager(index);
-    if (cameras.GetCinematicCamera()->GetScriptCameraId() == GetUniqueId()) {
-      cameras.StopCinematics(mgr);
-      if (player) {
-        player->GetMorphBall()->LoadMorphBallModel();
-      }
-    }
-    if ((mFlags & kF_CinematicPause) != 0) {
-      mgr.SetCinematicPause(false);
-    }
-    break;
-  }
-  case kSM_Stop:
-  case kSM_Start: {
-    const CPlayer* player =
-        TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()));
-    const int index = player ? mgr.MaskUIdNumPlayers(msg.GetOriginator()) : 0;
-    mgr.CameraManager(index)->SetCinematicPaused(message == kSM_Stop);
-    break;
-  }
   case kSM_AreaLoaded: {
     ScriptCameraSpline::Initialise(*this, kSS_CameraPath, kSM_Attach, kSS_CameraTarget, kSM_Attach,
                                    mgr, mSpline);
@@ -79,6 +50,57 @@ void CScriptCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mTimeKeyframeId = TCastToConstPtr< CScriptTimeKeyframe >(mgr.GetObjectById(timeKeyframe))
                           ? timeKeyframe
                           : kInvalidUniqueId;
+    break;
+  }
+  case kSM_Activate: {
+    const TUniqueId originator = msg.GetOriginator();
+    const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(originator));
+    if (!player) {
+      mgr.CameraManager(0)->AddCinemaCamera(GetUniqueId(), mgr);
+    } else {
+      mgr.CameraManager(mgr.MaskUIdNumPlayers(originator))->AddCinemaCamera(GetUniqueId(), mgr);
+    }
+    mHasBeenViewed = WasViewed(mgr);
+    break;
+  }
+  case kSM_Deactivate: {
+    const TUniqueId originator = msg.GetOriginator();
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator));
+    if (!player) {
+      CCameraManager& cameras = *mgr.CameraManager(0);
+      if (cameras.GetCinematicCamera()->GetScriptCameraId() == GetUniqueId()) {
+        cameras.StopCinematics(mgr);
+      }
+    } else {
+      CCameraManager& cameras = *mgr.CameraManager(mgr.MaskUIdNumPlayers(originator));
+      if (cameras.GetCinematicCamera()->GetScriptCameraId() == GetUniqueId()) {
+        cameras.StopCinematics(mgr);
+        player->GetMorphBall()->LoadMorphBallModel();
+      }
+    }
+    if ((mFlags & kF_CinematicPause) != 0) {
+      mgr.SetCinematicPause(false);
+    }
+    break;
+  }
+  case kSM_Start: {
+    const TUniqueId originator = msg.GetOriginator();
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator));
+    if (!player) {
+      mgr.CameraManager(0)->SetCinematicPaused(false);
+    } else {
+      mgr.CameraManager(mgr.MaskUIdNumPlayers(originator))->SetCinematicPaused(false);
+    }
+    break;
+  }
+  case kSM_Stop: {
+    const TUniqueId originator = msg.GetOriginator();
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator));
+    if (!player) {
+      mgr.CameraManager(0)->SetCinematicPaused(true);
+    } else {
+      mgr.CameraManager(mgr.MaskUIdNumPlayers(originator))->SetCinematicPaused(true);
+    }
     break;
   }
   default:
@@ -106,4 +128,17 @@ void CScriptCamera::RotateSplines(const CQuaternion& rotation, const CVector3f& 
   mSpline.LookAtSpline().Rotate(rotation, origin);
 }
 
-CEntity* LoadCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}
+CEntity* LoadCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrCamera sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrCamera.inc"
+
+  return rs_new CScriptCamera(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.animationTime, sldrThis.flagsCinematicCamera, sldrThis.unknown_0xd4b29446,
+      sldrThis.motionControlSpline, sldrThis.targetControlSpline, sldrThis.fOVSpline,
+      sldrThis.rollSpline,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
+      static_cast< CMotionSpline::ESplineType >(sldrThis.targetSplineType.type),
+      sldrThis.slowmoControlSpline);
+}
