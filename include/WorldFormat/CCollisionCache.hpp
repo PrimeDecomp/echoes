@@ -86,8 +86,26 @@ public:
   uint SkipGeometry(CCollisionCacheIterator& iterator);
   uint ReadGeometry(CCollisionCacheIterator& iterator);
   void ReadLeaf(CCollisionCacheIterator& iterator);
-  const CCachedCollisionSurface* NextTriangle(CCollisionCacheIterator& iterator) const;
-  // Guessed names. Weak copies are emitted in CMorphBall.
+  // Guessed names. Weak copies are emitted in CSurfaceAlignmentHelper.
+  const CCachedCollisionSurface* NextTriangle(CCollisionCacheIterator& iterator) const {
+    if (iterator.mTrianglesRemaining != 0) {
+      const CCachedCollisionSurface* surface =
+          reinterpret_cast< const CCachedCollisionSurface* >(&mData[iterator.mOffset]);
+      --iterator.mTrianglesRemaining;
+      iterator.mLeafExhausted = iterator.mTrianglesRemaining == 0;
+      iterator.mOffset += GetTriangleStride();
+      return surface;
+    }
+    // The existing reader declarations are nonconst, but only advance the iterator.
+    CCollisionCache* cache = const_cast< CCollisionCache* >(this);
+    if (iterator.mLeavesRemaining == 0) {
+      cache->ReadGeometry(iterator);
+    }
+    --iterator.mLeavesRemaining;
+    cache->ReadLeaf(iterator);
+    return NextTriangle(iterator);
+  }
+  // Weak copies are emitted in CMorphBall.
   SCachedCollisionSlot* NextTriangle(CCollisionCacheIterator& iterator) {
     if (iterator.mTrianglesRemaining != 0) {
       SCachedCollisionSlot* slot =
@@ -129,7 +147,7 @@ public:
     iterator.mTrianglesRemaining = 0;
     iterator.mLeafExhausted = true;
   }
-  int GetTriangleStride() const;
+  int GetTriangleStride() const { return sizeof(SCachedCollisionSlot) / sizeof(ushort); }
 
 private:
   CAABox mBounds; // Guessed names

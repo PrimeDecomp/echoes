@@ -256,30 +256,6 @@ void CCollisionCache::ReadLeaf(CCollisionCacheIterator& iterator) {
   iterator.mLeafExhausted = true;
 }
 
-const CCachedCollisionSurface*
-CCollisionCache::NextTriangle(CCollisionCacheIterator& iterator) const {
-  if (iterator.mTrianglesRemaining != 0) {
-    const CCachedCollisionSurface* surface =
-        reinterpret_cast< const CCachedCollisionSurface* >(mData.data() + iterator.mOffset);
-    --iterator.mTrianglesRemaining;
-    iterator.mLeafExhausted = iterator.mTrianglesRemaining == 0;
-    iterator.mOffset += GetTriangleStride();
-    return surface;
-  }
-  // The existing reader declarations are nonconst, but only advance the iterator.
-  CCollisionCache* cache = const_cast< CCollisionCache* >(this);
-  if (iterator.mLeavesRemaining == 0) {
-    cache->ReadGeometry(iterator);
-  }
-  --iterator.mLeavesRemaining;
-  cache->ReadLeaf(iterator);
-  return NextTriangle(iterator);
-}
-
-int CCollisionCache::GetTriangleStride() const {
-  return sizeof(SCachedCollisionSlot) / sizeof(ushort);
-}
-
 void CCollisionCache::Reset() {
   mData.clear();
   mData = rstl::vector< ushort, rstl::locked_cache_allocator >(
