@@ -245,6 +245,8 @@ public:
   const CMorphBall* GetMorphBall() const { return mMorphBall.get(); }
   CPlayerState* GetPlayerState() { return mPlayerState; }
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
+  float GetViewportScaleX() const { return mViewportScaleX; }
+  float GetViewportScaleY() const { return mViewportScaleY; }
   CPlayerKnockBackMgr& GetKnockBackManager() { return mKnockBackManager; }
   const CPlayerTargeting* GetTargeting() const { return mTargeting.get(); }
 
@@ -595,8 +597,8 @@ public:
   void RenderThirdPersonGrappleBeam(const CStateManager& mgr) const; // Guessed name.
   rstl::pair< bool, CColor > GetHackedEffectColor() const;
   void RenderIceModel(const CModelFlags& flags) const;
-  void fn_80016a6c(float value);
-  void fn_80016a74(float value);
+  void SetViewportScaleY(float value); // Target-derived names; GUI scale consumers.
+  void SetViewportScaleX(float value);
   const CTransform4f& GetFirstPersonCameraTransform() const;
   void UpdateAimPrediction(const CTransform4f& transform, CStateManager& mgr);
   void* GetMaskTextureData() const;
@@ -772,8 +774,8 @@ private:
   int mFootstepSfxSel;
   CVector3f mLastVelocity;
   CVisorSteam mVisorSteam;
-  float x11e4_;
-  float x11e8_;
+  float mViewportScaleX; // Target-derived: combined with camera-filter width scales.
+  float mViewportScaleY; // Target-derived: combined with camera-filter height scales.
   CPlayerState::EPlayerSuit mTransitionSuit;
   CAnimRes mAnimRes;
   CPlayerState::EBeamId mTransitionBeam;

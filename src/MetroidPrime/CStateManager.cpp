@@ -87,6 +87,7 @@
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/CTimeProvider.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CGraphicsPalette.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
@@ -1061,6 +1062,51 @@ void CStateManager::DrawDarkWorldCloud(CPlayerState::EPlayerVisor visor) {
 
 void CStateManager::RenderEchoEmitters(const CEchoEmitter* emitters) const {
   CEchoEmitter::RenderEmitters(*this, emitters);
+}
+
+void CStateManager::SetupViewForDraw(const CViewport& viewport) {
+  const CPlayer* player = mCurrentRenderPlayer;
+  const CGameCamera* camera = mCameraManager->GetCurrentCamera(*this, true);
+  const CTransform4f cameraTransform = mCameraManager->GetCurrentCameraTransform(*this, true);
+  gpRender->SetWorldViewpoint(cameraTransform);
+  CCubeModel::SetNewPlayerPositionAndTime(player->GetTranslation(), CStopwatch::GetGlobalTimerObj());
+
+  float widthScale = player->GetViewportScaleX();
+  float heightScale = player->GetViewportScaleY();
+  for (int i = 0; i < 11; ++i) {
+    const CCameraFilterPass& filter = mCameraFilterPasses[mCurrentRenderPlayerIndex][i];
+    const float filterWidth = filter.GetWidthScale();
+    if (filterWidth < widthScale) {
+      widthScale = filterWidth;
+    }
+    const float filterHeight = filter.GetHeightScale();
+    if (filterHeight < heightScale) {
+      heightScale = filterHeight;
+    }
+  }
+
+  const float scaledWidth = widthScale * static_cast< float >(viewport.mWidth);
+  const float scaledHeight = heightScale * static_cast< float >(viewport.mHeight);
+  const int width = static_cast< int >(scaledWidth);
+  const int height = (static_cast< int >(scaledHeight) / 2) * 2;
+  const int left = viewport.mLeft + (viewport.mWidth - width) / 2;
+  const bool splitScreen = IsMultiplayer() && !mCameraManagers[0]->IsInFullScreenCinematic();
+  const float topScale = splitScreen ? 0.25f : 0.5f;
+  const int top = viewport.mTop + static_cast< int >(topScale * (viewport.mHeight - height));
+  const float aspect = (widthScale * camera->GetAspectRatio()) / heightScale;
+  const float tangent = static_cast< float >(tan(CMath::Deg2Rad(0.5f * camera->GetFov())));
+  const float fieldOfView = 2.f * static_cast< float >(atan(tangent * heightScale));
+
+  gpRender->SetViewport(left, top, width, height);
+  CGraphics::SetDepthRange(0.125f, 1.f);
+  gpRender->SetPerspective(360.f * CMath::Rad2Rev(fieldOfView), scaledWidth, scaledHeight,
+                           camera->GetNearClipDistance(), camera->GetFarClipDistance());
+  mPlanes = CFrustumPlanes(cameraTransform, fieldOfView, aspect,
+                           camera->GetNearClipDistance(), false, 100.f);
+  gpRender->PrimColor(CColor::White());
+  gpRender->SetModelMatrix(CTransform4f::Identity());
+  mFluidPlaneManager->StartFrame(false);
+  gpRender->SetDebugOption(IRenderer::kDO_PVSState, 1);
 }
 
 void CStateManager::DrawWorld(const CInGameGuiManagerSet& gui) {
@@ -2262,6 +2308,41 @@ void CStateManager::InitializeState(CAssetId worldId, TAreaId areaId, CAssetId m
     }
   }
   mRandomAvailable = randomWasAvailable;
+}
+
+bool CStateManager::PrepareAreaTransition(TAreaId areaId) {
+  TAreaId areaToKeep = areaId;
+  if (!mWorld->UnloadAllAreasExcept(*this, areaToKeep)) {
+    return false;
+  }
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    mRumbleManagers[i]->HardStopAll();
+  }
+  mPendingDockArea = areaId;
+  mInitPhase = kIP_LoadFirstArea;
+
+  CObjectList* objects = mObjectLists[kOL_All].get();
+  for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+    CEntity& entity = *(*objects)[i];
+    if (entity.GetCurrentAreaId() != kInvalidAreaId) {
+      entity.SetCurrentAreaId(areaId);
+    }
+    if (TCastToPtr< CWeapon >(&entity) != nullptr) {
+      DeleteObjectRequest(entity.GetUniqueId());
+    }
+  }
+
+  const bool randomWasAvailable = IsRandomAvailable();
+  mRandomAvailable = true;
+  mPlayers[0]->GetPlayerGun()->Reset(*this);
+  mRandomAvailable = randomWasAvailable;
+  mPlayers[0]->StopSounds();
+  SetIsDarkWorld(!mIsDarkWorld);
+  mUnknown0x2908 = CTransform4f::Identity();
+  mDarkWorldCloudScale = CVector3f::Zero();
+  mDarkWorldCloudTime = 0.f;
+  mDarkWorldCloudColor = CColor::Black();
+  return true;
 }
 
 const CEntity* CStateManager::GetObjectById(TUniqueId uid) const {
