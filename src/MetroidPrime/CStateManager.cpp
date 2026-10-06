@@ -48,6 +48,8 @@
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Graphics/CGraphicsPalette.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
@@ -140,6 +142,148 @@ bool area_sorter::operator()(const CGameArea* a, const CGameArea* b) const {
   return aDot > bDot;
 }
 } // namespace
+
+bool CStateManager::IsActorVisible(const CActor& actor) const {
+  if (actor.UsesPortalVisibility()) {
+    const CPortalArea* portals =
+        mWorld->GetAreaAlways(actor.GetCurrentAreaId()).GetPostConstructed()->mPortalArea.get();
+    if (portals != nullptr) {
+      return portals->GetVisibleActors().GetObjectById(actor.GetUniqueId()) != nullptr;
+    }
+  }
+
+  for (rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 >::const_iterator it =
+           mAreaFrusta.begin();
+       it != mAreaFrusta.end(); ++it) {
+    if (it->first == actor.GetCurrentAreaId().Value()) {
+      if (!it->second.BoxInFrustumPlanes(actor.GetOtherBounds())) {
+        return false;
+      }
+      break;
+    }
+  }
+
+  return mPlanes.BoxInFrustumPlanes(actor.GetOtherBounds());
+}
+
+ushort CStateManager::ReturnFirstIfSingleElseSecond(uint single, uint multi) const {
+  return IsMultiplayer() ? multi : single;
+}
+
+void CStateManager::AddDrawableActor(const CActor& actor, const CVector3f& pos,
+                                     const CAABox& bounds) const {
+  actor.SetAddedToken(mObjectDrawToken + 1);
+  gpRender->AddDrawable(&actor, pos, bounds, 0,
+                        actor.UsesAlphaSorting() ? IRenderer::kDS_AlphaSortedCallback
+                                                 : IRenderer::kDS_SortedCallback);
+}
+
+void CStateManager::AddDrawableActorPlane(const CActor& actor, const CPlane& plane,
+                                          const CAABox& bounds) const {
+  actor.SetAddedToken(mObjectDrawToken + 1);
+  gpRender->AddPlaneObject(&actor, bounds, plane, 0);
+}
+
+void CStateManager::CalculatePlayerViewport(int viewportIndex, int* left, int* bottom, int* width,
+                                            int* height) const {
+  int numPlayers = GetNumPlayers();
+  if (mCameraManagers[0]->IsInFullScreenCinematic()) {
+    numPlayers = 1;
+  }
+
+  const int fullWidth = CGraphics::GetRenderMode().fbWidth;
+  const int fullHeight = CGraphics::GetRenderMode().xfbHeight;
+  int viewportLeft = 0;
+  int viewportBottom = 0;
+  int viewportWidth = fullWidth / 2;
+  int viewportHeight = fullHeight / 2;
+
+  if (numPlayers == 1) {
+    viewportWidth = fullWidth;
+    viewportHeight = fullHeight;
+    viewportLeft = 0;
+    viewportBottom = 0;
+  } else if (numPlayers == 2) {
+    viewportWidth = fullWidth;
+    viewportLeft = 0;
+    switch (viewportIndex) {
+    case 0:
+      viewportBottom = viewportHeight;
+      break;
+    case 1:
+      viewportBottom = 0;
+      break;
+    }
+  } else {
+    switch (viewportIndex) {
+    case 0:
+      viewportLeft = 0;
+      viewportBottom = viewportHeight;
+      break;
+    case 1:
+      viewportLeft = viewportWidth;
+      viewportBottom = viewportHeight;
+      break;
+    case 2:
+      viewportLeft = 0;
+      viewportBottom = 0;
+      break;
+    case 3:
+      viewportLeft = viewportWidth;
+      viewportBottom = 0;
+      break;
+    }
+  }
+
+  if (left != nullptr) {
+    *left = viewportLeft;
+  }
+  if (bottom != nullptr) {
+    *bottom = viewportBottom;
+  }
+  if (width != nullptr) {
+    *width = viewportWidth;
+  }
+  if (height != nullptr) {
+    *height = viewportHeight;
+  }
+}
+
+void CStateManager::SetupPlayerViewport(uint playerIndex) {
+  mCurrentRenderPlayerIndex = playerIndex;
+
+  int left, bottom, width, height;
+  CalculatePlayerViewport(mNumPlayers > 2u ? mPlayerStates[playerIndex]->GetPlayerSelection()
+                                           : playerIndex,
+                          &left, &bottom, &width, &height);
+  CGraphics::SetViewport(left, bottom, width, height);
+  CGraphics::SetScissor(left, bottom, width, height);
+
+  const CViewport& viewport = CGraphics::GetViewport();
+  const float pixelAspect = CGraphics::GetPixelAspectRatio();
+  const float viewportAspect = float(viewport.mWidth) / float(viewport.mHeight);
+  mCameraManagers[mCurrentRenderPlayerIndex]->SetAspectRatio(pixelAspect * viewportAspect, *this);
+
+  mCurrentRenderPlayer = mPlayers[playerIndex];
+  mPlayerState = mPlayerStates[playerIndex];
+  mCameraManager = mCameraManagers[playerIndex];
+}
+
+void CStateManager::DrawUnusedViewport(int viewportIndex) {
+  int left, bottom, width, height;
+  CalculatePlayerViewport(viewportIndex, &left, &bottom, &width, &height);
+  CGraphics::SetViewport(left, bottom, width, height);
+  CGraphics::SetScissor(left, bottom, width, height);
+
+  const CTexture* texture = mUnusedViewportTexture->GetObject();
+  if (texture != nullptr) {
+    CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
+    CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
+    gpRender->SetBlendMode_Replace();
+    gpRender->SetDepthReadWrite(false, false);
+    CGraphics::Render2D(*texture, 0, 0, width, height, CColor::White().WithAlphaOf(1.f));
+  }
+}
 
 int CStateManager::GetViewportLayoutIndex() const {
   if (mNumPlayers == 1u) {
@@ -737,6 +881,15 @@ void CStateManager::ClearGraveyard() {
   }
   mGraveyard.clear();
 }
+
+void CStateManager::FrameBegin(uint frame) {
+  mRenderFrameIndex = frame;
+  CTexture::sCurrentFrameCount = mRenderFrameIndex;
+  CGraphicsPalette::sCurrentFrameCount = mRenderFrameIndex;
+  SwapOutTexturesToARAM(2, 0x180000);
+}
+
+void CStateManager::SwapOutTexturesToARAM(int, uint) {}
 
 const bool CStateManager::MemoryAllocatorAllocationFailedCallback(const void* context, uint) {
   return static_cast< CStateManager* >(const_cast< void* >(context))->SwapOutAllPossibleMemory();

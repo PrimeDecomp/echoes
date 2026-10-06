@@ -433,8 +433,11 @@ CVector3f CCameraManager::GetGlobalCameraTranslation(const CStateManager& mgr,
 
 bool CCameraManager::IsInCinematicCamera() const { return mCinematicCameraId != kInvalidUniqueId; }
 
-bool CCameraManager::fn_801ABD68() const {
-  return IsInCinematicCamera() && (mCinematicCamera->GetFlags() & 0x2) != 0;
+bool CCameraManager::IsInFullScreenCinematic() const {
+  if (IsInCinematicCamera()) {
+    return (mCinematicCamera->GetFlags() & 0x2) != 0;
+  }
+  return false;
 }
 
 bool CCameraManager::IsInBallCamera() const { return mCurCameraId == mBallCamera->GetUniqueId(); }

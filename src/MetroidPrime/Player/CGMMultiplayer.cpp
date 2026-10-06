@@ -189,7 +189,7 @@ int CGMMultiplayer::GetResultIndex() const { return mResultIndex; }
 bool CGMMultiplayer::IsGameOver() { return mGameOver; }
 
 void CGMMultiplayer::UpdateTimer(float dt, CStateManager& mgr) {
-  if (!mgr.GetCameraManager(0)->fn_801ABD68()) {
+  if (!mgr.GetCameraManager(0)->IsInFullScreenCinematic()) {
     mElapsedTime += dt;
   }
 }
