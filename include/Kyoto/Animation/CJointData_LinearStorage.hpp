@@ -25,10 +25,13 @@ public:
   // Guessed name; clears flags without modifying the stored pose.
   void ResetFlags();
 
+  uchar* GetRotations() { return mRotations; }
   const uchar* GetRotations() const { return mRotations; }
 
+  uchar* GetTranslations() { return mTranslations; }
   const uchar* GetTranslations() const { return mTranslations; }
 
+  uchar* GetScales() { return mScales; }
   const uchar* GetScales() const { return mScales; }
 
   int GetStride() const { return mStride; }
