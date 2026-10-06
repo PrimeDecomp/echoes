@@ -163,6 +163,9 @@ public:
   CPBCDeathReactionCmd(const CVector3f& direction, EDeathReactionMode mode)
   : CPlayerBodyStateCmd(kPBSC_DeathReaction), mDirection(direction), mMode(mode) {}
 
+  const CVector3f& GetDirection() const { return mDirection; }
+  EDeathReactionMode GetMode() const { return mMode; }
+
 private:
   CVector3f mDirection;
   EDeathReactionMode mMode;

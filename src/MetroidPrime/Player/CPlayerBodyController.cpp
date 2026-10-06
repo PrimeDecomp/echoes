@@ -3,10 +3,13 @@
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Animation/CPASDatabase.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Math/CQuaternion.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include <string.h>
@@ -78,8 +81,16 @@ CPlayerBodyController::CPlayerBodyController(CPlayer& player, CAssetId stateMach
 , mStateMachineResource(gpSimplePool->GetObj(SObjectTag('AFSM', stateMachine)))
 , mAnimationId(-1)
 , mAnimationDuration(0.f)
-, mAnimationFlags(0)
-, mReactionFlags(0) {
+, mAnimationOver(false)
+, mStateMachinesInitialized(false)
+, mMoving(false)
+, mFastLocomotion(false)
+, mLocomotionActive(false)
+, mAiming(false)
+, mUnfreezing(false)
+, mMorphTransitionActive(false)
+, mDeathReactionOver(false)
+, mDeathReactionActive(false) {
   mStateMachineResource.Lock();
 
   const CAnimData& animData = *player.GetAnimationData();
@@ -92,41 +103,38 @@ CPlayerBodyController::CPlayerBodyController(CPlayer& player, CAssetId stateMach
 }
 
 void CPlayerBodyController::ResetStates(CStateManager& mgr) {
-  if ((mAnimationFlags & kAF_StateMachinesInitialized) == 0) {
+  if (!mStateMachinesInitialized) {
     return;
   }
 
-  if (!mBodyState.HasState() || strcmp(mBodyState.GetName(), "Start") != 0) {
+  if (mBodyState.GetCurrentState() == nullptr || strcmp("Start", mBodyState.GetName()) != 0) {
     mBodyState.SetState(mgr, *this, rstl::string_l("Start"));
   }
-  if (!mAdditiveState.HasState() || strcmp(mAdditiveState.GetName(), "AdditiveIdle") != 0) {
+  if (mAdditiveState.GetCurrentState() == nullptr ||
+      strcmp("AdditiveIdle", mAdditiveState.GetName()) != 0) {
     mAdditiveState.SetState(mgr, *this, rstl::string_l("AdditiveIdle"));
   }
 }
 
 void CPlayerBodyController::Update(float dt, CStateManager& mgr) {
-  if ((mAnimationFlags & kAF_StateMachinesInitialized) == 0) {
-    TrySetupStateMachines(mgr);
-    return;
-  }
+  if (mStateMachinesInitialized) {
+    SetPlaybackRate(1.f);
+    mAnimationOver =
+        !mPlayer->GetAnimationData()->IsAnimTimeRemaining(dt, rstl::string_l("Whole Body"));
+    CheckDeathCommands(mgr);
+    mBodyState.Update(mgr, *this, dt);
+    mAdditiveState.Update(mgr, *this, dt);
+    mCommandMgr.ClearCmds();
 
-  SetPlaybackRate(1.f);
-  if (mPlayer->GetAnimationData()->IsAnimTimeRemaining(dt, rstl::string_l("Whole Body"))) {
-    mAnimationFlags &= ~kAF_AnimationOver;
+    if (mPendingAnimation.valid()) {
+      mPlayer->AnimationData()->SetAnimation(mPendingAnimation->mParameters,
+                                             mPendingAnimation->mNoTransition);
+      mPlayer->ModelData()->EnableLooping(mPendingAnimation->mLooping);
+      mAnimationId = mPendingAnimation->mParameters.GetAnimationId();
+      mPendingAnimation = rstl::optional_object< SAnimationRequest >();
+    }
   } else {
-    mAnimationFlags |= kAF_AnimationOver;
-  }
-  CheckDeathCommands(mgr);
-  mBodyState.Update(mgr, *this, dt);
-  mAdditiveState.Update(mgr, *this, dt);
-  mCommandMgr.ClearCmds();
-
-  if (mPendingAnimation.valid()) {
-    mPlayer->AnimationData()->SetAnimation(mPendingAnimation->mParameters,
-                                           mPendingAnimation->mNoTransition);
-    mPlayer->ModelData()->EnableLooping(mPendingAnimation->mLooping);
-    mAnimationId = mPendingAnimation->mParameters.GetAnimationId();
-    mPendingAnimation = rstl::optional_object< SAnimationRequest >();
+    TrySetupStateMachines(mgr);
   }
 }
 
@@ -174,7 +182,7 @@ const CStateMachine* CPlayerBodyController::GetStateMachine() {
 }
 
 void CPlayerBodyController::TrySetupStateMachines(CStateManager& mgr) {
-  if (!mBodyState.HasState() && GetStateMachine() != nullptr) {
+  if (mBodyState.GetCurrentState() == nullptr && GetStateMachine() != nullptr) {
     SetupStateMachines(mgr);
   }
 }
@@ -186,25 +194,31 @@ void CPlayerBodyController::SetupStateMachines(CStateManager& mgr) {
   mBodyState.SetStateFunctions(skStateFunctions, 26);
   mAdditiveState.SetTriggerFunctions(skTriggerFunctions, 22);
   mAdditiveState.SetStateFunctions(skStateFunctions, 26);
-  mAnimationFlags |= kAF_StateMachinesInitialized;
+  mStateMachinesInitialized = true;
   ResetStates(mgr);
 }
 
 void CPlayerBodyController::CheckDeathCommands(CStateManager& mgr) {
   if (mCommandMgr.GetCmd(kPBSC_DeathReaction) != nullptr &&
-      (!mBodyState.HasState() ||
-       (mReactionFlags & (kRF_DeathReactionActive | kRF_DeathReactionOver)) == 0)) {
+      (mBodyState.GetCurrentState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("Dead"));
   }
   if (mCommandMgr.GetCmd(kPBSC_GibDeath) != nullptr &&
-      (!mBodyState.HasState() ||
-       (mReactionFlags & (kRF_DeathReactionActive | kRF_DeathReactionOver)) == 0)) {
+      (mBodyState.GetCurrentState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("GibDeath"));
   }
 }
 
 void CPlayerBodyController::PlayGunReaction(CStateManager& mgr) {
-  // TODO: Recover the player-gun action-mask accessor before implementing this reaction.
+  if (mPlayer != nullptr &&
+      (static_cast< const CPlayer* >(mPlayer)->GetPlayerGun()->GetFiring() & 0xf) != 0) {
+    const CPASDatabase& database = GetPASDatabase();
+    const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_GunReaction));
+    const rstl::pair< float, int > best = database.FindBestAnimation(parameters, *mgr.Random(), -1);
+    if (best.second != -1) {
+      mPlayer->AnimationData()->AddAdditiveAnimation(best.second, 1.f, false, true);
+    }
+  }
 }
 
 bool CPlayerBodyController::StateOver(CStateManager&, const float&) {
@@ -236,7 +250,8 @@ bool CPlayerBodyController::HeavyHit(CStateManager&, const float&) {
 }
 
 bool CPlayerBodyController::Delay(CStateManager&, const float& arg) {
-  return arg < mBodyState.GetTime();
+  const float delay = arg;
+  return mBodyState.GetTime() > delay;
 }
 
 bool CPlayerBodyController::IsMorphball(CStateManager&, const float&) {
@@ -250,41 +265,38 @@ bool CPlayerBodyController::IsFirstPerson(CStateManager&, const float&) {
 }
 
 void CPlayerBodyController::Start(CStateManager&, int, float) {
-  mReactionFlags &= ~(kRF_DeathReactionOver | kRF_DeathReactionActive);
-  mAnimationFlags &= ~kAF_MorphTransitionActive;
+  mDeathReactionOver = false;
+  mDeathReactionActive = false;
+  mMorphTransitionActive = false;
 }
 
 void CPlayerBodyController::Locomotion(CStateManager& mgr, int msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     mLocomotion.Start(mgr, *this);
-    mAnimationFlags |= kAF_LocomotionActive;
+    mLocomotionActive = true;
     break;
   case kStateMsg_Update:
-    if (mLocomotion.mCategory != SLocomotionState::kC_Idle) {
-      mAnimationFlags |= kAF_Moving;
-    } else {
-      mAnimationFlags &= ~kAF_Moving;
-    }
-    if (mLocomotion.mCategory == SLocomotionState::kC_ForwardFast) {
-      mAnimationFlags |= kAF_FastLocomotion;
-    } else {
-      mAnimationFlags &= ~kAF_FastLocomotion;
-    }
+    mMoving = mLocomotion.mCategory != SLocomotionState::kC_Idle;
+    mFastLocomotion = mLocomotion.mCategory == SLocomotionState::kC_ForwardFast;
     mLocomotion.Update(dt, mgr, *this);
     break;
   case kStateMsg_Deactivate:
     mLocomotion.Shutdown(*this);
-    mAnimationFlags &= ~(kAF_FastLocomotion | kAF_LocomotionActive);
+    mFastLocomotion = false;
+    mLocomotionActive = false;
     break;
   }
 }
 
 void CPlayerBodyController::Morphball(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Locomotion),
                                       CPASAnimParm::FromEnum(8), CPASAnimParm::FromEnum(0));
     SelectAnimation(parameters, *mgr.Random());
+    break;
+  }
   }
 }
 
@@ -293,22 +305,18 @@ void CPlayerBodyController::MorphToBall(CStateManager& mgr, int msg, float) {
   case kStateMsg_Activate: {
     const CPBCMorphToBallCmd* command =
         static_cast< const CPBCMorphToBallCmd* >(mCommandMgr.GetCmd(kPBSC_MorphToBall));
-    if (command == nullptr) {
-      mBodyStatePhase = kSP_Over;
-      return;
-    }
-    const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
-                                      CPASAnimParm::FromEnum(command->GetTransitionType()),
-                                      CPASAnimParm::FromEnum(command->GetAnimationVariant()),
-                                      CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
-    SelectAnimation(parameters, *mgr.Random());
-    mBodyStatePhase = kSP_Active;
-    if (command->GetAnimationVariant() != 1) {
-      mAnimationFlags |= kAF_Moving;
+    if (command != nullptr) {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
+                                        CPASAnimParm::FromEnum(command->GetTransitionType()),
+                                        CPASAnimParm::FromEnum(command->GetAnimationVariant()),
+                                        CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
+      SelectAnimation(parameters, *mgr.Random());
+      mBodyStatePhase = kSP_Active;
+      mMoving = command->GetAnimationVariant() != 1;
+      mMorphTransitionActive = true;
     } else {
-      mAnimationFlags &= ~kAF_Moving;
+      mBodyStatePhase = kSP_Over;
     }
-    mAnimationFlags |= kAF_MorphTransitionActive;
     break;
   }
   case kStateMsg_Update:
@@ -317,7 +325,7 @@ void CPlayerBodyController::MorphToBall(CStateManager& mgr, int msg, float) {
     }
     break;
   case kStateMsg_Deactivate:
-    mAnimationFlags &= ~kAF_MorphTransitionActive;
+    mMorphTransitionActive = false;
     break;
   }
 }
@@ -327,32 +335,30 @@ void CPlayerBodyController::MorphToPlayer(CStateManager& mgr, int msg, float) {
   case kStateMsg_Activate: {
     const CPBCMorphToPlayerCmd* command =
         static_cast< const CPBCMorphToPlayerCmd* >(mCommandMgr.GetCmd(kPBSC_MorphToPlayer));
-    if (command == nullptr) {
-      mBodyStatePhase = kSP_Over;
-      return;
-    }
-    const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
-                                      CPASAnimParm::FromEnum(command->GetTransitionType()),
-                                      CPASAnimParm::FromEnum(command->GetAnimationVariant()),
-                                      CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
-    SelectAnimation(parameters, *mgr.Random());
-    mBodyStatePhase = kSP_Active;
-    if (command->GetAnimationVariant() != 1) {
-      mAnimationFlags |= kAF_Moving;
+    if (command != nullptr) {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
+                                        CPASAnimParm::FromEnum(command->GetTransitionType()),
+                                        CPASAnimParm::FromEnum(command->GetAnimationVariant()),
+                                        CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
+      SelectAnimation(parameters, *mgr.Random());
+      mBodyStatePhase = kSP_Active;
+      mMoving = command->GetAnimationVariant() != 1;
+      mMorphTransitionActive = true;
     } else {
-      mAnimationFlags &= ~kAF_Moving;
+      mBodyStatePhase = kSP_Over;
     }
-    mAnimationFlags |= kAF_MorphTransitionActive;
     break;
   }
   case kStateMsg_Update:
-    if (IsAnimationOver() ||
-        (mCommandMgr.GetCmd(kPBSC_ContinueLocomotion) != nullptr && mBodyState.GetTime() > 0.3f)) {
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    } else if (mCommandMgr.GetCmd(kPBSC_ContinueLocomotion) != nullptr &&
+               mBodyState.GetTime() > 0.3f) {
       mBodyStatePhase = kSP_Over;
     }
     break;
   case kStateMsg_Deactivate:
-    mAnimationFlags &= ~kAF_MorphTransitionActive;
+    mMorphTransitionActive = false;
     break;
   }
 }
@@ -360,7 +366,7 @@ void CPlayerBodyController::MorphToPlayer(CStateManager& mgr, int msg, float) {
 void CPlayerBodyController::PlayerJump(CStateManager& mgr, int msg, float) {
   switch (msg) {
   case kStateMsg_Activate:
-    mAnimationFlags |= kAF_Moving;
+    mMoving = true;
     mBodyStatePhase = kSP_Active;
     mJump.Start(mgr, *this);
     break;
@@ -378,7 +384,7 @@ void CPlayerBodyController::PlayerJump(CStateManager& mgr, int msg, float) {
 void CPlayerBodyController::PlayerGrapple(CStateManager& mgr, int msg, float) {
   switch (msg) {
   case kStateMsg_Activate:
-    mAnimationFlags |= kAF_Moving;
+    mMoving = true;
     mBodyStatePhase = kSP_Active;
     mGrapple.Start(mgr, *this);
     break;
@@ -396,7 +402,7 @@ void CPlayerBodyController::PlayerGrapple(CStateManager& mgr, int msg, float) {
 void CPlayerBodyController::PlayerDash(CStateManager& mgr, int msg, float) {
   switch (msg) {
   case kStateMsg_Activate:
-    mAnimationFlags |= kAF_Moving;
+    mMoving = true;
     mBodyStatePhase = kSP_Active;
     mDash.Start(mgr, *this);
     break;
@@ -428,14 +434,51 @@ void CPlayerBodyController::KnockBack(CStateManager& mgr, int msg, float) {
   }
 }
 
-void CPlayerBodyController::Dead(CStateManager&, int, float) {
-  // TODO: Recover death-animation selection and its orientation adjustment.
+void CPlayerBodyController::Dead(CStateManager& mgr, int msg, float) {
+  switch (msg) {
+  case kStateMsg_Activate: {
+    mMoving = false;
+    mDeathReactionActive = true;
+    const CPBCDeathReactionCmd* command =
+        static_cast< const CPBCDeathReactionCmd* >(mCommandMgr.GetCmd(kPBSC_DeathReaction));
+    if (command != nullptr) {
+      const CVector3f localDirection =
+          mPlayer->GetTransform().TransposeRotate(command->GetDirection());
+      const float angle = CMath::ClampRadians(atan2(localDirection.GetY(), localDirection.GetX()));
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_DeathReaction),
+                                        CPASAnimParm::FromReal32((180.f / M_PIF) * angle),
+                                        CPASAnimParm::FromEnum(command->GetMode()));
+      const CPASDatabase& database = GetPASDatabase();
+      const rstl::pair< float, int > best =
+          database.FindBestAnimation(parameters, *mgr.Random(), -1);
+      RequestAnimation(CAnimPlaybackParms(best.second, -1, 1.f, true), false, false);
+      const CPASAnimState* state = database.GetAnimState(kPAS_DeathReaction);
+      const CPASAnimParm adjust = state->GetAnimParmData(best.second, 2);
+      if (adjust.GetBoolValue()) {
+        const CPASAnimParm offset = state->GetAnimParmData(best.second, 0);
+        const float offsetAngle = (M_PIF / 180.f) * offset.GetReal32Value();
+        const CRelAngle rotation = CRelAngle::FromRadians(angle - offsetAngle);
+        const CQuaternion& current = CQuaternion::FromMatrix(mPlayer->GetTransform());
+        const CQuaternion& orientation = current * CQuaternion::ZRotation(rotation);
+        CPlayer& player = *mPlayer;
+        player.SetTransform(orientation.BuildTransform4f(player.GetTranslation()));
+      }
+    }
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mDeathReactionOver = true;
+    }
+    break;
+  }
 }
 
 void CPlayerBodyController::GibDeath(CStateManager&, int msg, float) {
   if (msg == kStateMsg_Activate) {
-    mAnimationFlags &= ~kAF_Moving;
-    mReactionFlags |= kRF_DeathReactionOver | kRF_DeathReactionActive;
+    mMoving = false;
+    mDeathReactionOver = true;
+    mDeathReactionActive = true;
   }
 }
 
@@ -501,7 +544,7 @@ void CPlayerBodyController::AdditiveUnFreeze(CStateManager& mgr, int msg, float)
   switch (msg) {
   case kStateMsg_Activate:
     mAdditiveStatePhase = kSP_Active;
-    mAnimationFlags |= kAF_Unfreezing;
+    mUnfreezing = true;
     mAdditiveReaction.Start(mgr, *this);
     break;
   case kStateMsg_Update:
@@ -511,7 +554,7 @@ void CPlayerBodyController::AdditiveUnFreeze(CStateManager& mgr, int msg, float)
     break;
   case kStateMsg_Deactivate:
     mAdditiveReaction.Shutdown(*this);
-    mAnimationFlags &= ~kAF_Unfreezing;
+    mUnfreezing = false;
     break;
   }
 }
@@ -519,14 +562,14 @@ void CPlayerBodyController::AdditiveUnFreeze(CStateManager& mgr, int msg, float)
 void CPlayerBodyController::AdditiveAim(CStateManager& mgr, int msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    mAnimationFlags |= kAF_Aiming;
+    mAiming = true;
     mAdditiveAim.Start(mgr, *this);
     break;
   case kStateMsg_Update:
     mAdditiveAim.Update(dt, mgr, *this);
     break;
   case kStateMsg_Deactivate:
-    mAnimationFlags &= ~kAF_Aiming;
+    mAiming = false;
     mAdditiveAim.Shutdown(*this);
     break;
   }
@@ -535,57 +578,87 @@ void CPlayerBodyController::AdditiveAim(CStateManager& mgr, int msg, float dt) {
 bool CPlayerBodyController::WallSlideJump(CStateManager&, const float&) {
   const CPBCMorphToScrewAttackCmd* command =
       static_cast< const CPBCMorphToScrewAttackCmd* >(mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack));
-  return command != nullptr && command->GetTransitionType() == 4;
+  if (command != nullptr) {
+    return command->GetTransitionType() == 4;
+  }
+  return false;
 }
 
 bool CPlayerBodyController::TransitionToScrewAttack(CStateManager&, const float&) {
   const CPBCMorphToScrewAttackCmd* command =
       static_cast< const CPBCMorphToScrewAttackCmd* >(mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack));
-  return command != nullptr && command->GetTransitionType() == 2;
+  if (command != nullptr) {
+    return command->GetTransitionType() == 2;
+  }
+  return false;
 }
 
 bool CPlayerBodyController::ScrewAttackExpired(CStateManager&, const float&) {
-  if (mPlayer == nullptr) {
-    return false;
+  CPlayer* player = mPlayer;
+  if (player != nullptr && player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+    const CMorphBall* ball = player->GetMorphBall();
+    if (!ball->InScrewAttackMode()) {
+      return true;
+    }
+    if (ball->GetBallState() == CMorphBall::kBS_ScrewAttackRecovery &&
+        player->GetPlayerMovementState() != NPlayer::kMS_OnGround) {
+      return true;
+    }
+    if (mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack) != nullptr) {
+      return true;
+    }
   }
-  if (mPlayer->GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
-    return true;
-  }
-  const CMorphBall& ball = *mPlayer->GetMorphBall();
-  return !ball.InScrewAttackMode() ||
-         (ball.GetBallState() == CMorphBall::kBS_ScrewAttackRecovery &&
-          mPlayer->GetPlayerMovementState() != NPlayer::kMS_OnGround) ||
-         mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack) != nullptr;
+  return false;
 }
 
 bool CPlayerBodyController::ScrewAttackHitGround(CStateManager&, const float&) {
-  if (mPlayer == nullptr) {
-    return false;
+  CPlayer* player = mPlayer;
+  if (player != nullptr) {
+    const bool onGround = player->GetPlayerMovementState() == NPlayer::kMS_OnGround;
+    if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed &&
+        player->GetMorphBall()->GetScrewAttackGroundedFrames() > 1) {
+      return true;
+    }
+    if ((player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed ||
+         player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphing) &&
+        onGround) {
+      return true;
+    }
   }
-  const CPlayer::EPlayerMorphBallState state = mPlayer->GetMorphballTransitionState();
-  if (state == CPlayer::kMS_Morphed) {
-    return mPlayer->GetMorphBall()->GetBallState() > CMorphBall::kBS_Boost;
-  }
-  return (state == CPlayer::kMS_Unmorphed || state == CPlayer::kMS_Unmorphing) &&
-         mPlayer->GetPlayerMovementState() == NPlayer::kMS_OnGround;
+  return false;
 }
 
 bool CPlayerBodyController::StartWallJump(CStateManager&, const float&) {
   const CPBCMorphToScrewAttackCmd* command =
       static_cast< const CPBCMorphToScrewAttackCmd* >(mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack));
-  return command != nullptr && command->GetTransitionType() == 5;
+  if (command != nullptr) {
+    return command->GetTransitionType() == 5;
+  }
+  return false;
 }
 
 bool CPlayerBodyController::WallSlideExpired(CStateManager&, const float&) {
-  return mPlayer != nullptr &&
-         (mPlayer->GetMorphballTransitionState() != CPlayer::kMS_Morphed ||
-          mPlayer->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttackWallJump);
+  if (mPlayer != nullptr) {
+    if (mPlayer->GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
+      return true;
+    }
+    if (mPlayer->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttackWallJump) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool CPlayerBodyController::WallJumpScrewAttackExpired(CStateManager&, const float&) {
-  return mPlayer != nullptr &&
-         (mPlayer->GetMorphballTransitionState() != CPlayer::kMS_Morphed ||
-          mPlayer->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttackWallJump);
+  if (mPlayer != nullptr) {
+    if (mPlayer->GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
+      return true;
+    }
+    if (mPlayer->GetMorphBall()->GetBallState() != CMorphBall::kBS_ScrewAttackWallJump) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void CPlayerBodyController::MorphToScrewAttack(CStateManager& mgr, int msg, float) {
@@ -593,17 +666,17 @@ void CPlayerBodyController::MorphToScrewAttack(CStateManager& mgr, int msg, floa
   case kStateMsg_Activate: {
     const CPBCMorphToScrewAttackCmd* command = static_cast< const CPBCMorphToScrewAttackCmd* >(
         mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack));
-    if (command == nullptr) {
+    if (command != nullptr) {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
+                                        CPASAnimParm::FromEnum(command->GetTransitionType()),
+                                        CPASAnimParm::FromEnum(command->GetAnimationVariant()),
+                                        CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
+      SelectAnimation(parameters, *mgr.Random());
+      mBodyStatePhase = kSP_Active;
+      mMoving = true;
+    } else {
       mBodyStatePhase = kSP_Over;
-      return;
     }
-    const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
-                                      CPASAnimParm::FromEnum(command->GetTransitionType()),
-                                      CPASAnimParm::FromEnum(command->GetAnimationVariant()),
-                                      CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
-    SelectAnimation(parameters, *mgr.Random());
-    mBodyStatePhase = kSP_Active;
-    mAnimationFlags |= kAF_Moving;
     break;
   }
   case kStateMsg_Update:
@@ -611,41 +684,63 @@ void CPlayerBodyController::MorphToScrewAttack(CStateManager& mgr, int msg, floa
       mBodyStatePhase = kSP_Over;
     }
     break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::ScrewAttack(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate ||
-      (msg == kStateMsg_Update && mCommandMgr.GetCmd(kPBSC_Locomotion) != nullptr)) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Locomotion),
                                       CPASAnimParm::FromEnum(9), CPASAnimParm::FromEnum(0));
     SelectAnimation(parameters, *mgr.Random());
-    if (msg == kStateMsg_Activate) {
-      mBodyStatePhase = kSP_Active;
+    mBodyStatePhase = kSP_Active;
+    break;
+  }
+  case kStateMsg_Update:
+    if (mCommandMgr.GetCmd(kPBSC_Locomotion) != nullptr) {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Locomotion),
+                                        CPASAnimParm::FromEnum(9), CPASAnimParm::FromEnum(0));
+      SelectAnimation(parameters, *mgr.Random());
     }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::WallSlide(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Locomotion),
                                       CPASAnimParm::FromEnum(10), CPASAnimParm::FromEnum(0));
     SelectLoopingAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::TransitionOutOfWallSlide(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
                                       CPASAnimParm::FromEnum(6), CPASAnimParm::FromEnum(1),
                                       CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
     SelectAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-    mAnimationFlags &= ~kAF_FastLocomotion;
-  } else if (msg == kStateMsg_Update) {
+    mFastLocomotion = false;
+    break;
+  }
+  case kStateMsg_Update:
     if (IsAnimationOver()) {
       const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Jump),
                                         CPASAnimParm::FromEnum(0), CPASAnimParm::FromEnum(2));
@@ -654,97 +749,155 @@ void CPlayerBodyController::TransitionOutOfWallSlide(CStateManager& mgr, int msg
     if (mPlayer != nullptr && mPlayer->GetPlayerMovementState() == NPlayer::kMS_OnGround) {
       mBodyStatePhase = kSP_Over;
     }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::WallSlideLand(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPBCJumpCmd* command = static_cast< const CPBCJumpCmd* >(mCommandMgr.GetCmd(kPBSC_Jump));
-    const int variant = command != nullptr ? command->GetAnimationVariant() : 0;
     const int parameter = command != nullptr ? command->GetJumpParameter() : 3;
+    const int variant = command != nullptr ? command->GetAnimationVariant() : 0;
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Jump),
                                       CPASAnimParm::FromEnum(variant),
                                       CPASAnimParm::FromEnum(parameter));
     SelectAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-    mAnimationFlags &= ~kAF_FastLocomotion;
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    mFastLocomotion = false;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::TransitionOutOfWallScrewAttack(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
                                       CPASAnimParm::FromEnum(3), CPASAnimParm::FromEnum(1),
                                       CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
     SelectAnimation(parameters, *mgr.Random());
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::TransitionToWallScrewAttack(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
                                       CPASAnimParm::FromEnum(4), CPASAnimParm::FromEnum(1),
                                       CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
     SelectAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::WallJumpScrewAttack(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Locomotion),
                                       CPASAnimParm::FromEnum(9), CPASAnimParm::FromEnum(0));
     SelectAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
-void CPlayerBodyController::TransitionOutOfScrewAttack(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+void CPlayerBodyController::TransitionOutOfScrewAttack(CStateManager& mgr, int msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPBCMorphToScrewAttackCmd* command = static_cast< const CPBCMorphToScrewAttackCmd* >(
         mCommandMgr.GetCmd(kPBSC_MorphToScrewAttack));
-    const int transition = command != nullptr ? command->GetTransitionType() : 3;
-    const int variant = command != nullptr ? command->GetAnimationVariant() : 1;
-    const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
-                                      CPASAnimParm::FromEnum(transition),
-                                      CPASAnimParm::FromEnum(variant),
-                                      CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
-    SelectAnimation(parameters, *mgr.Random());
-    mAnimationFlags &= ~kAF_Moving;
+    if (command != nullptr) {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
+                                        CPASAnimParm::FromEnum(command->GetTransitionType()),
+                                        CPASAnimParm::FromEnum(command->GetAnimationVariant()),
+                                        CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
+      SelectAnimation(parameters, *mgr.Random());
+    } else {
+      const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
+                                        CPASAnimParm::FromEnum(3), CPASAnimParm::FromEnum(1),
+                                        CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
+      SelectAnimation(parameters, *mgr.Random());
+    }
+    mMoving = false;
     mBodyStatePhase = kSP_Active;
-  } else if (msg == kStateMsg_Update) {
+    break;
+  }
+  case kStateMsg_Update:
     if (IsAnimationOver()) {
       const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_Jump),
                                         CPASAnimParm::FromEnum(0), CPASAnimParm::FromEnum(2));
       SelectLoopingAnimation(parameters, *mgr.Random());
     }
-    if (ScrewAttackHitGround(mgr, 0.f)) {
+    if (ScrewAttackHitGround(mgr, static_cast< float >(dt))) {
       mBodyStatePhase = kSP_Over;
     }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 void CPlayerBodyController::TransitionOutOfScrewAttackFloor(CStateManager& mgr, int msg, float) {
-  if (msg == kStateMsg_Activate) {
+  switch (msg) {
+  case kStateMsg_Activate: {
     const CPASAnimParmData parameters(static_cast< pas::EAnimationState >(kPAS_MorphTransition),
                                       CPASAnimParm::FromEnum(1), CPASAnimParm::FromEnum(3),
                                       CPASAnimParm::FromEnum(GetAnimationSet(mgr)));
     SelectAnimation(parameters, *mgr.Random());
     mBodyStatePhase = kSP_Active;
-    mAnimationFlags |= kAF_Moving;
-  } else if (msg == kStateMsg_Update && IsAnimationOver()) {
-    mBodyStatePhase = kSP_Over;
+    mMoving = true;
+    break;
+  }
+  case kStateMsg_Update:
+    if (IsAnimationOver()) {
+      mBodyStatePhase = kSP_Over;
+    }
+    break;
+  case kStateMsg_Deactivate:
+    break;
   }
 }
 
 int CPlayerBodyController::GetAnimationSet(CStateManager& mgr) const {
-  return mgr.IsMultiplayer() ? 2 : 0;
+  int set = 0;
+  if (mgr.IsMultiplayer()) {
+    set = 2;
+  }
+  return set;
 }
