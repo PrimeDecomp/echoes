@@ -16,7 +16,7 @@ CSplinePlaneCameraSurface::CSplinePlaneCameraSurface(const CMayaSpline& spline, 
 
 CSplinePlaneCameraSurface::~CSplinePlaneCameraSurface() {}
 
-CVector3f CSplinePlaneCameraSurface::GetSurfacePoint(const CVector3f& point) {
+CVector3f CSplinePlaneCameraSurface::GetSurfacePoint(CVector3f point) {
   const CVector3f relative = mPlane.GetClosestPoint(point) - mCenter;
   const float a = CMath::Limit(CVector3f::Dot(mAxisA, relative), 0.5f * mWidth);
   const float b = CMath::Limit(CVector3f::Dot(mAxisB, relative), 0.5f * mHeight);

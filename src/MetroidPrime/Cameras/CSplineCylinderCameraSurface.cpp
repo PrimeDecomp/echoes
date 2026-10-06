@@ -12,7 +12,7 @@ CSplineCylinderCameraSurface::CSplineCylinderCameraSurface(const CMayaSpline& sp
 
 CSplineCylinderCameraSurface::~CSplineCylinderCameraSurface() {}
 
-CVector3f CSplineCylinderCameraSurface::GetSurfacePoint(const CVector3f& point) {
+CVector3f CSplineCylinderCameraSurface::GetSurfacePoint(CVector3f point) {
   const CVector3f surfacePoint = CCylinderCameraSurface::GetSurfacePoint(point);
   const CVector3f relative = surfacePoint - GetCylinder().GetAxis().GetRefPoint();
   const float axialDistance = CMath::Limit(

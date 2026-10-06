@@ -1,5 +1,7 @@
 #include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
 
+#include "Kyoto/Math/CRelAngle.hpp"
+
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CGameHint.hpp"
 #include "MetroidPrime/CHintManager.hpp"
@@ -39,8 +41,147 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
   if (!GetActive()) {
     return;
   }
-  // TODO: Recover surface projection, spring tracking, type-specific offsets and spline/FOV
-  // updates.
+
+  CVector3f playerPosition = Player(mgr).GetBallPosition();
+  CTransform4f xf = GetTransform();
+  const CScriptSurfaceCamera* camera =
+      TCastToConstPtr< CScriptSurfaceCamera >(mgr.ObjectById(mScriptCameraId));
+  if (camera != nullptr && camera->GetSurface() != nullptr) {
+    CCameraSurface* surface = camera->GetSurface();
+
+    if (!(camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetAlongSurface)) {
+      playerPosition += camera->GetPlayerOffset();
+    }
+
+    if (camera->GetFlags() & CScriptSurfaceCamera::kSF_FollowPlayerDirectly) {
+      mTrackedPlayerPosition = playerPosition;
+    } else {
+      const CVector3f toTracked = mTrackedPlayerPosition - playerPosition;
+      if (toTracked.CanBeNormalized()) {
+        const float distance = toTracked.Magnitude();
+        if (!CMath::IsEpsilon(distance, 0.1f, 1.0e-5f)) {
+          const float spring = mPlayerPositionSpring.ApplyDistanceSpring(0.f, distance, dt);
+          mTrackedPlayerPosition = playerPosition + spring * toTracked.AsNormalized();
+        } else {
+          mTrackedPlayerPosition = playerPosition;
+        }
+      }
+    }
+
+    CVector3f position = surface->GetSurfacePoint(mTrackedPlayerPosition);
+    if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetAlongSurface) {
+      switch (camera->GetSurfaceType()) {
+      case CScriptSurfaceCamera::kST_Cylinder:
+      case CScriptSurfaceCamera::kST_SplineCylinder: {
+        position +=
+            camera->GetTransform().Rotate(CVector3f(0.f, 0.f, camera->GetPlayerOffset().GetZ()));
+        if (const CCylinderCameraSurface* cylinderSurface =
+                static_cast< CCylinderCameraSurface* >(camera->GetSurface())) {
+          const CCylinder cylinder = cylinderSurface->GetCylinder();
+          const CVector3f axisPoint = cylinder.GetAxisPoint(position);
+          const CVector3f radial = position - axisPoint;
+          const float radius = radial.Magnitude();
+          if (radius > 0.001f) {
+            const float offsetX = camera->GetPlayerOffset().GetX();
+            CRelAngle angle = CRelAngle::FromRadians(offsetX / radius);
+            if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetIsDegrees) {
+              angle = CRelAngle::FromDegrees(offsetX);
+            }
+            const CQuaternion rotation =
+                CQuaternion::AxisAngle(cylinder.GetAxis().GetNormal(), angle);
+            position = surface->GetSurfacePoint(axisPoint + rotation.Transform(radial));
+          }
+        }
+        break;
+      }
+      case CScriptSurfaceCamera::kST_Sphere:
+        if (const CSphereCameraSurface* sphereSurface =
+                static_cast< CSphereCameraSurface* >(camera->GetSurface())) {
+          const CSphere sphere = sphereSurface->GetSphere();
+          CVector3f axis = CVector3f::Zero();
+          CVector3f center = sphere.GetCenter();
+          float angle = 0.f;
+          if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetX(), 0.f, 1.0e-5f)) {
+            axis = CVector3f::Up();
+            angle = camera->GetPlayerOffset().GetX();
+            center.SetZ(position.GetZ());
+          }
+          if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetY(), 0.f, 1.0e-5f)) {
+            axis = CVector3f::Forward();
+            angle = camera->GetPlayerOffset().GetY();
+            center.SetY(position.GetY());
+          }
+          if (!CMath::IsEpsilon(camera->GetPlayerOffset().GetZ(), 0.f, 1.0e-5f)) {
+            axis = CVector3f::Right();
+            angle = -camera->GetPlayerOffset().GetZ();
+            center.SetX(position.GetX());
+          }
+          if (angle != 0.f) {
+            const CVector3f radial = position - center;
+            const float radius = radial.Magnitude();
+            if (radius > 0.001f) {
+              CRelAngle theta = CRelAngle::FromRadians(angle / radius);
+              if (camera->GetFlags() & CScriptSurfaceCamera::kSF_OffsetIsDegrees) {
+                theta = CRelAngle::FromDegrees(angle);
+              }
+              const CQuaternion rotation = CQuaternion::AxisAngle(CUnitVector3f(axis), theta);
+              position = surface->GetSurfacePoint(center + rotation.Transform(radial));
+            }
+          }
+        }
+        break;
+      default:
+        position += camera->GetTransform().Rotate(camera->GetPlayerOffset());
+        position = surface->GetSurfacePoint(position);
+        break;
+      }
+    }
+    xf.SetTranslation(position);
+  }
+
+  const CVector3f ballPosition = Player(mgr).GetBallPosition();
+  camera = TCastToConstPtr< CScriptSurfaceCamera >(mgr.GetObjectById(mScriptCameraId));
+  if (camera) {
+    if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
+      mPlayerSplineDistance =
+          camera->GetPlayerSpline().FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
+    }
+    if (camera->GetTargetSpline().GetControlPointCount() != 0) {
+      mTargetSplineDistance =
+          camera->GetTargetSpline().FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
+    }
+  }
+
+  const CVector3f lookTarget = GetScanObjectIndicatorPosition(mgr);
+  CVector3f lookDirection = lookTarget - GetTranslation();
+  lookDirection.SetZ(0.f);
+  if (lookDirection.IsMagnitudeSafe()) {
+    xf = CTransform4f::LookAt(xf.GetTranslation(), lookTarget, CVector3f::Up());
+  }
+
+  const CMayaSpline& fovSpline = camera->GetFovSpline();
+  if (fovSpline.GetKnotCount() != 0) {
+    if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
+      float progress = mPlayerSplineDistance / camera->GetPlayerSpline().GetLength();
+      SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
+    } else if (camera->GetTargetSpline().GetControlPointCount() != 0) {
+      float progress = mTargetSplineDistance / camera->GetTargetSpline().GetLength();
+      SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
+    } else {
+      SetTargetFov(fovSpline.EvaluateAt(0.f));
+    }
+  }
+
+  if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
+    const CGameHint* hint = GetCameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
+    if (hint) {
+      const CVector3f position = xf.GetTranslation();
+      xf = CTransform4f::LookAt(position, position + hint->GetTransform().GetForward(),
+                                CVector3f::Up());
+    }
+  }
+
+  SetTransform(xf);
   CActor::Think(dt, mgr);
 }
 
@@ -53,41 +194,36 @@ void CSurfaceCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
 }
 
 CVector3f CSurfaceCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
-  CVector3f target = GetCameraManager(mgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
+  // The native helpers used here take a mutable manager.
+  CStateManager& stateMgr = const_cast< CStateManager& >(mgr);
+  CVector3f target = CameraManager(stateMgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
   const CScriptSurfaceCamera* camera =
       TCastToConstPtr< CScriptSurfaceCamera >(mgr.GetObjectById(mScriptCameraId));
-  if (!camera) {
-    return target;
-  }
-  if (camera->GetFlags() & CScriptSurfaceCamera::kSF_TargetBallPosition) {
-    return GetPlayer(mgr).GetBallPosition();
-  }
-  const CMotionSpline& targetSpline = camera->GetTargetSpline();
-  if (targetSpline.GetControlPointCount() == 0) {
-    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(camera->GetTargetId()))) {
+  if (camera) {
+    if (camera->GetFlags() & CScriptSurfaceCamera::kSF_TargetBallPosition) {
+      return Player(stateMgr).GetBallPosition();
+    }
+    const CMotionSpline& targetSpline = camera->GetTargetSpline();
+    if (targetSpline.GetControlPointCount() != 0) {
+      float progress = CMath::Clamp(0.f, mTargetSplineDistance / targetSpline.GetLength(), 1.f);
+      if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
+        progress =
+            CMath::Clamp(0.f, mPlayerSplineDistance / camera->GetPlayerSpline().GetLength(), 1.f);
+      }
+      const float time = camera->GetTargetControlSpline().EvaluateAt(progress);
+      target = targetSpline.GetPositionByTime(time * targetSpline.GetDuration());
+    } else if (const CActor* actor =
+                   TCastToConstPtr< CActor >(mgr.GetObjectById(camera->GetTargetId()))) {
       target = actor->GetTranslation();
     }
-  } else {
-    float progress = mTargetSplineDistance / targetSpline.GetLength();
-    if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
-      progress = mPlayerSplineDistance / camera->GetPlayerSpline().GetLength();
-    }
-    // Native ordered comparisons map an unordered progress value to zero.
-    if (!(0.f <= progress)) {
-      progress = 0.f;
-    } else if (!(1.f >= progress)) {
-      progress = 1.f;
-    }
-    const float time = camera->GetTargetControlSpline().EvaluateAt(progress);
-    target = targetSpline.GetPositionByTime(time * targetSpline.GetDuration());
-  }
-  if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
-    const CGameHint* hint = GetCameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
-    if (hint) {
-      const CVector3f direction = hint->GetTransform().GetForward();
-      const CVector3f position = GetTranslation();
-      target = position +
-               CVector3f::Dot(direction, GetPlayer(mgr).GetBallPosition() - position) * direction;
+    if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
+      const CGameHint* hint = CameraManager(stateMgr).GetHintManager()->GetCurrentHint(mgr);
+      if (hint) {
+        const CVector3f direction = hint->GetTransform().GetForward();
+        target = GetTranslation() +
+                 CVector3f::Dot(direction, Player(stateMgr).GetBallPosition() - GetTranslation()) *
+                     direction;
+      }
     }
   }
   return target;

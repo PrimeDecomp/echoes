@@ -13,7 +13,7 @@
 class CCameraSurface {
 public:
   CCameraSurface();
-  virtual CVector3f GetSurfacePoint(const CVector3f& point) = 0;
+  virtual CVector3f GetSurfacePoint(CVector3f point) = 0;
   virtual bool IsPointInside(const CVector3f& point) = 0;
   virtual ~CCameraSurface() = 0;
 };
@@ -25,9 +25,11 @@ public:
   explicit CSphereCameraSurface(const CSphere& sphere);
 
   // CCameraSurface
-  CVector3f GetSurfacePoint(const CVector3f& point) override;
+  CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSphereCameraSurface() override;
+
+  CSphere GetSphere() const { return mSphere; }
 
 private:
   CSphere mSphere;
@@ -41,7 +43,7 @@ public:
                       const CVector3f& center, float width, float height);
 
   // CCameraSurface
-  CVector3f GetSurfacePoint(const CVector3f& point) override;
+  CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CPlaneCameraSurface() override;
 
@@ -61,13 +63,13 @@ public:
   CCylinderCameraSurface(const CCylinder& cylinder, float height);
 
   // CCameraSurface
-  CVector3f GetSurfacePoint(const CVector3f& point) override;
+  CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CCylinderCameraSurface() override;
 
-protected:
-  CCylinder GetCylinder() const { return mCylinder; }
+  const CCylinder& GetCylinder() const { return mCylinder; }
 
+protected:
   float GetHeight() const { return mHeight; }
 
 private:
@@ -83,7 +85,7 @@ public:
                                const CVector3f& referenceDirection, float height);
 
   // CCameraSurface
-  CVector3f GetSurfacePoint(const CVector3f& point) override;
+  CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSplineCylinderCameraSurface() override;
 
@@ -101,7 +103,7 @@ public:
                             float height);
 
   // CCameraSurface
-  CVector3f GetSurfacePoint(const CVector3f& point) override;
+  CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSplinePlaneCameraSurface() override;
 
