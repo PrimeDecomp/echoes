@@ -5,6 +5,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSteam.hpp"
 
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "rstl/math.hpp"
@@ -69,4 +71,19 @@ void CScriptSteam::Think(float dt, CStateManager& mgr) {
       player->SetVisorSteam(0.f, mAlphaInDuration, mAlphaOutDuration, kInvalidAssetId);
     }
   }
+}
+
+CEntity* LoadSteam(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSteam sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSteam.inc"
+
+  const CVector3f halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
+  const CAABox bounds = CAABox(-halfExtent, halfExtent);
+  return rs_new CScriptSteam(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                             LdrToEntityInfo(info, sldrThis.editorProperties),
+                             sldrThis.editorProperties.transform.position, bounds,
+                             LdrToDamageInfo(sldrThis.trigger.damage), sldrThis.trigger.forceField,
+                             sldrThis.trigger.flagsTrigger, sldrThis.steam, sldrThis.strength,
+                             sldrThis.fadeInRate, sldrThis.fadeOutRate, sldrThis.radius,
+                             sldrThis.unknown_0xa366c949);
 }
