@@ -280,7 +280,7 @@ public:
 private:
   // Guessed names.
   void RemoveLoopedSoundAt(int index);
-  uchar GetVisorSoundVolume(const CStateManager& mgr) const;
+  uint GetVisorSoundVolume(const CStateManager& mgr) const;
   void PlayLoopedSound(ushort sfxId, int flags, float fallOff, float maxDist, uchar minVol,
                        uchar maxVol, bool nonEmitter, int area, bool useAcoustics,
                        const CSegId& locator, ushort pitchStart, ushort pitchEnd,
