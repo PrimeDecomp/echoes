@@ -53,7 +53,7 @@ public:
   void CreateCameras(CStateManager& mgr);
   void UpdateCameras(float dt, CStateManager& mgr);
   void ResetCameras(CStateManager& mgr);
-  void UpdateFogState(); // Guessed name
+  void UpdateFogState(CStateManager& mgr); // Guessed name; target caller passes an unused manager.
   TUniqueId GetCurrentCameraId(bool selector) const;
   CGameCamera* CurrentCamera(CStateManager& mgr, bool selector);
   const CGameCamera* GetCurrentCamera(const CStateManager& mgr, bool selector) const;

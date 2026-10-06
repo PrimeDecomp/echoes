@@ -48,16 +48,19 @@
 #include "Kyoto/Audio/CAudioGroupSet.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
+#include "Kyoto/Basics/CStopwatch.hpp"
 #include "Kyoto/Basics/RAssertDolphin.hpp"
 #include "Kyoto/CARAMManager.hpp"
 #include "Kyoto/CARAMToken.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/CTimeProvider.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CGraphicsPalette.hpp"
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "Weapons/CDecal.hpp"
@@ -68,6 +71,18 @@
 #include <float.h>
 
 const int gkPVSEnabled = 1;
+
+// Prime-correlated role; the selected original stores false.
+extern const bool gkWorldOnlyReflection;
+
+// Guessed class/name. Native callers construct stack scopes around named profiling
+// regions; the release initializer has no observable state or cleanup.
+class CScopedProfiler {
+public:
+  CScopedProfiler(const rstl::string& name, bool enabled);
+};
+
+static s64 sPreRenderStepTime;
 
 bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {
   return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
@@ -512,6 +527,89 @@ void CStateManager::Touch() {
   EndPlayerRender();
 }
 
+void CStateManager::PreRender(uint playerIndex) {
+  CTimeProvider timeProvider(mCurTimeMod900);
+  SetupPlayerViewport(playerIndex);
+  if (!mReadyToRender) {
+    return;
+  }
+
+  CStopwatch timer;
+  switch (mPlayerState->GetActiveVisor(*this)) {
+  case CPlayerState::kPV_Combat:
+  case CPlayerState::kPV_Scan:
+    mRenderVisorMode = kRVM_Normal;
+    break;
+  case CPlayerState::kPV_Echo:
+    mRenderVisorMode = kRVM_Echo;
+    break;
+  case CPlayerState::kPV_Dark:
+    mRenderVisorMode = kRVM_Dark;
+    break;
+  default:
+    break;
+  }
+
+  mStateManagerContainer->mRenderBeforeAreas.clear();
+  mStateManagerContainer->mRenderFirstSorted.clear();
+  mStateManagerContainer->mRenderLast.clear();
+  mStateManagerContainer->mRenderLastUnderGun.clear();
+  mStateManagerContainer->mRenderLastAfterCameraFilters.clear();
+  mProjectedShadows = nullptr;
+
+  mWorld->PreRender();
+  BuildDynamicLightListForWorld();
+  const CGameCamera* camera = mCameraManager->GetCurrentCamera(*this, true);
+  const CTransform4f cameraTransform = mCameraManager->GetCurrentCameraTransform(*this, true);
+  CFrustumPlanes frustum(cameraTransform, CRelAngle::FromDegrees(camera->GetFov()).AsRadians(),
+                         camera->GetAspectRatio(), camera->GetNearClipDistance(), false, 100.f);
+  mPlanes = frustum;
+  SetupAreaFrusta();
+
+  for (CGameArea::CChainIterator it = GetWorld()->ChainHead(CWorld::kC_Alive);
+       it != CWorld::AliveAreasEnd(); ++it) {
+    CGameArea& area = *it;
+    if (area.GetOcclusionState() != CGameArea::kOS_Visible) {
+      continue;
+    }
+    CObjectList* const objects = area.GetPostConstructed()->mAreaObjectList.get();
+    CObjectList* const visibleActors = area.GetPostConstructed()->mVisibleActorList.get();
+    if (playerIndex == 0u) {
+      visibleActors->Clear();
+      CScopedProfiler profile(rstl::string_l("*PreRender:PreRenderAllViewports"), true);
+      for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+        CActor* actor = TCastToPtr< CActor >((*objects)[i]);
+        if (actor != nullptr && actor->GetActive() && actor->GetDrawEnabled()) {
+          visibleActors->AddObject(*actor);
+          actor->PreRenderAllViewports(*this);
+        }
+      }
+    }
+
+    {
+      CScopedProfiler profile(rstl::string_l("*PreRender:Portals"), true);
+      if (CPortalArea* portal = area.GetPostConstructed()->mPortalArea.get()) {
+        const CCameraManager* cameraManager = mCameraManager;
+        portal->PreRender(*this, *cameraManager->GetCurrentCamera(*this, true),
+                          cameraManager->GetCurrentCameraTransform(*this, true));
+      }
+    }
+    {
+      CScopedProfiler profile(rstl::string_l("*PreRender:Actors"), true);
+      for (int i = visibleActors->GetFirstObjectIndex(); i != -1;
+           i = visibleActors->GetNextObjectIndex(i)) {
+        static_cast< CActor* >((*visibleActors)[i])->PreRender(*this);
+      }
+    }
+  }
+
+  if (!gkWorldOnlyReflection) {
+    CacheReflection();
+  }
+  mCameraManagers[playerIndex]->UpdateFogState(*this);
+  sPreRenderStepTime = timer.GetElapsedMicros();
+}
+
 void CStateManager::SetAreaClipPlane(TAreaId area, const CPlane& plane) {
   rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 >::iterator it = mAreaFrusta.begin();
   for (; it != mAreaFrusta.end(); ++it) {
@@ -576,6 +674,44 @@ void CStateManager::SetupAreaFrusta() {
 }
 
 CGameArea::CConstChainIterator CWorld::GetAliveAreasEnd() { return skGlobalEnd; }
+
+void CStateManager::ReflectionDrawer(void* context, const CVector3f& point) {
+  CStateManager* manager = static_cast< CStateManager* >(context);
+  manager->DrawReflection(point);
+}
+
+void CStateManager::CacheReflection() {
+  if (mRenderVisorMode == kRVM_Normal && !IsMultiplayer()) {
+    gpRender->CacheReflection(ReflectionDrawer, this, !gkWorldOnlyReflection);
+  }
+}
+
+void CStateManager::DrawReflection(const CVector3f& point) {
+  CPlayer* player = mPlayers[mCurrentRenderPlayerIndex];
+  CAABox playerBounds = player->GetBoundingBox();
+  CVector3f playerPosition = playerBounds.GetCenterPoint();
+  const CVector3f viewPosition =
+      playerPosition - 3.5f * CVector3f(playerPosition.GetX() - point.GetX(),
+                                        playerPosition.GetY() - point.GetY(),
+                                        playerPosition.GetZ() - playerPosition.GetZ())
+                                  .AsNormalized();
+  CTransform4f reflectionTransform =
+      CTransform4f::LookAt(viewPosition, playerPosition, CVector3f(0.f, 0.f, -1.f));
+  const CTransform4f backupView = CGraphics::GetViewMatrix();
+  CGraphics::SetViewPointMatrix(reflectionTransform);
+
+  const CGameCamera& camera = *mCameraManager->GetCurrentCamera(*this, true);
+  const CViewport& viewport = CGraphics::GetViewport();
+  const float height = static_cast< float >(viewport.mHeight);
+  const float width = static_cast< float >(viewport.mWidth);
+  const CGraphics::CProjectionState backupProjection = CGraphics::GetProjectionState();
+  gpRender->SetPerspective(camera.GetFov(), width, height, camera.GetNearClipDistance(),
+                           camera.GetFarClipDistance());
+  player->RenderReflectedPlayer(*this);
+
+  CGraphics::SetViewPointMatrix(backupView);
+  CGraphics::SetProjectionState(backupProjection);
+}
 
 void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) const {
   switch (mPlayerState->GetActiveVisor(*this)) {
@@ -886,6 +1022,10 @@ rstl::single_ptr< CPortalTransition >& CStateManager::TakePortalTransition() {
 CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
+
+CScopedProfiler::CScopedProfiler(const rstl::string& name, bool enabled) {}
+
+const bool gkWorldOnlyReflection = false;
 
 CStateManager::CStateManager(
     const rstl::ncrc_ptr< CScriptMailbox >& mailbox,

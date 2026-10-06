@@ -170,7 +170,7 @@ void CCameraManager::ResetCameras(CStateManager& mgr) {
   }
 }
 
-void CCameraManager::UpdateFogState() {
+void CCameraManager::UpdateFogState(CStateManager& mgr) {
   mWasFogEnabled = mFogEnabled;
   mFogEnabled = !mFog.IsFogDisabled();
 }

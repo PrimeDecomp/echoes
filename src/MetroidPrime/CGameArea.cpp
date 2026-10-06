@@ -633,7 +633,7 @@ void CGameArea::PostConstructArea() {
   }
 
   mPostConstructed->mAreaObjectList = rs_new CAreaObjectList(mSelfIdx);
-  mPostConstructed->xfc_ = rs_new CAreaObjectList(mSelfIdx);
+  mPostConstructed->mVisibleActorList = rs_new CAreaObjectList(mSelfIdx);
   mPostConstructed->mAreaFog = rs_new CAreaFog;
   fn_80054F74();
 }
