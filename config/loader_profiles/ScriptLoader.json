@@ -1,0 +1,30 @@
+{
+  "template_ref": "3189a3b55fce5da5a26616a05411a5736a3105da",
+  "sources": [
+    "Structs/SLdrAnimationSet.cpp",
+    "Structs/SLdrDamageInfo.cpp",
+    "Structs/SLdrGrappleParameters.cpp",
+    "Structs/SLdrHealthInfo.cpp",
+    "Structs/SLdrScannableParameters.cpp",
+    "Structs/SLdrVector2f.cpp",
+    "Structs/SLdrCameraShakerData.cpp",
+    "Structs/SLdrWeaponVulnerability.cpp",
+    "Structs/SLdrDamageVulnerability.cpp",
+    "Structs/SLdrLightParameters.cpp",
+    "Structs/SLdrPlasmaBeamInfo.cpp",
+    "Structs/SLdrShockWaveInfo.cpp",
+    "Structs/SLdrTransform.cpp",
+    "Structs/SLdrTriggerInfo.cpp",
+    "Structs/SLdrVisorParameters.cpp",
+    "Structs/SLdrActorParameters.cpp",
+    "Structs/SLdrEditorProperties.cpp",
+    "Structs/SLdrPatternedAITypedef.cpp",
+    "Structs/SLdrPlayerItem.cpp",
+    "Structs/SLdrGuiWidgetProperties.cpp",
+    "Structs/SLdrBasicSwarmProperties.cpp",
+    "Structs/SLdrAudioPlaybackParms.cpp",
+    "Structs/SLdrCommand.cpp",
+    "Structs/SLdrEchoParameters.cpp"
+  ],
+  "aggregate": "ScriptLoaderDefinitions.inc"
+}
