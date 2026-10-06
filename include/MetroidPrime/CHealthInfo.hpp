@@ -10,33 +10,43 @@ class CHealthInfo {
 public:
   CHealthInfo(float hp, float resist);
 
-  void SetHP(float hp) { healthB = hp; }
-  void SetKnockbackResistance(float resist) { knockbackResistance = resist; }
+  void SetHP(float hp) { mHealth = hp; }
 
-  float GetKnockBackResistance() const { return knockbackResistance; }
+  void SetKnockbackResistance(float resist) { mKnockbackResistance = resist; }
 
-  float GetHP() const { return healthB; }
-  float GetInitialHP() const { return healthA; } // Guessed name.
-  TUniqueId GetDamageId1() const { return uidA; } // Guessed name; primary death attribution ID.
-  TUniqueId GetDamageId2() const { return uidB; } // Guessed name; fallback death attribution ID.
-  const CWeaponMode& GetCauseOfDeathWeapon() const { return weaponModeA; } // Guessed name.
-  bool GetDamageFlag() const { return flagA; } // Guessed name; the flag's role is unresolved.
+  float GetKnockBackResistance() const { return mKnockbackResistance; }
 
-  void SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId, TUniqueId, bool, bool);
-  void fn_8014206C(const CWeaponMode&, TUniqueId, TUniqueId, bool);
+  float GetHP() const { return mHealth; }
+
+  float GetInitialHP() const { return mInitialHealth; } // Guessed name.
+
+  TUniqueId GetDamageId1() const { return mDeathDamageOwner; } // Guessed name.
+
+  TUniqueId GetDamageId2() const { return mDeathDamageSource; } // Guessed name.
+
+  const CWeaponMode& GetCauseOfDeathWeapon() const { return mDeathWeaponMode; } // Guessed name.
+
+  bool GetDamageFlag() const { return mFrozenAtDeath; } // Guessed name; victim was frozen.
+
+  // SetCauseOfDeathWeapon is an original Wii export; parameter names are guessed.
+  void SetCauseOfDeathWeapon(CWeaponMode mode, TUniqueId owner, TUniqueId source, const bool frozen,
+                             bool radiusDamage);
+  // Guessed name; native damage attribution distinguishes weapon owner and source.
+  void SetLastDamageWeapon(CWeaponMode mode, TUniqueId owner, TUniqueId source, bool radiusDamage);
 
 private:
-  float healthA;
-  float healthB;
-  float knockbackResistance;
-  CWeaponMode weaponModeA;
-  TUniqueId uidA;
-  TUniqueId uidB;
-  CWeaponMode weaponModeB;
-  TUniqueId uidC;
-  TUniqueId uidD;
-  bool flagA : 1;
-  bool flagB : 1;
+  // Guessed names, corroborated by construction and native damage/death consumers.
+  float mInitialHealth;
+  float mHealth;
+  float mKnockbackResistance;
+  CWeaponMode mDeathWeaponMode;
+  TUniqueId mDeathDamageOwner;
+  TUniqueId mDeathDamageSource;
+  CWeaponMode mLastDamageWeaponMode;
+  TUniqueId mLastDamageOwner;
+  TUniqueId mLastDamageSource;
+  bool mFrozenAtDeath : 1;
+  bool mLastDamageWasRadius : 1;
 };
 CHECK_SIZEOF(CHealthInfo, 0x20)
 
