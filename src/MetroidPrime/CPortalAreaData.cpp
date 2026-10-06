@@ -5,8 +5,6 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
-#include "float.h"
-
 CPortalAreaData::SBoundingTreeNode::SBoundingTreeNode(CInputStream& in)
 : mBounds(in), mLeft(in.ReadInt16()), mRight(in.ReadInt16()), mVolumeIndex(in.ReadInt16()) {}
 
@@ -37,7 +35,7 @@ CPortalAreaData::SPortal::SPortal(CInputStream& in)
 : mVertices(in), mPlane(in), mVolumeIndexStart(in.ReadUint16()) {}
 
 float CPortalAreaData::SPortal::DistanceToPoint(const CVector3f& point) const {
-  float minDistance = FLT_MAX;
+  float minDistance = 3.4028235e38f;
   for (int i = 0; i < mVertices.size() - 2; ++i) {
     const float distance = CollisionUtil::TriPointSqrDist_Float(
         point, mVertices[0], mVertices[i + 1], mVertices[i + 2], nullptr, nullptr);
@@ -67,15 +65,24 @@ bool CPortalAreaData::SVolume::Intersects(const CAABox& bounds, int node) const 
   const CVector3f closest = bounds.ClosestPointAlongVector(entry.mPlane.GetNormal());
   const CVector3f furthest = bounds.FurthestPointAlongVector(entry.mPlane.GetNormal());
   if (entry.mPlane.IsFacing(closest)) {
-    return entry.mFront == -1 || Intersects(bounds, entry.mFront);
+    if (entry.mFront != -1) {
+      return Intersects(bounds, entry.mFront);
+    }
+    return true;
   }
   if (!entry.mPlane.IsFacing(furthest)) {
-    return entry.mBack != -1 && Intersects(bounds, entry.mBack);
+    if (entry.mBack != -1) {
+      return Intersects(bounds, entry.mBack);
+    }
+    return false;
   }
   if (entry.mFront == -1 || Intersects(bounds, entry.mFront)) {
     return true;
   }
-  return entry.mBack != -1 && Intersects(bounds, entry.mBack);
+  if (entry.mBack != -1 && Intersects(bounds, entry.mBack)) {
+    return true;
+  }
+  return false;
 }
 
 CPortalAreaData::CPortalAreaData(CInputStream& in)
