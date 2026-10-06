@@ -48,12 +48,20 @@ from typing import Protocol
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
-# The XML labels these as PAL additions. G2ME01's native record has nine icons;
-# retain the existing layout for other builds until their binaries are checked.
+# Selected-build omissions established from native readers, constructors and users.
+# Retain the existing layout for other builds until their binaries are checked.
 G2ME01_ABSENT_PROPERTIES: dict[str, frozenset[int]] = {
+    # The XML labels these as PAL additions; G2ME01 has nine icons.
     "SLdrTweakPlayerRes_AutoMapperIcons": frozenset(
         {0x5096BFA5, 0xF4E6E0EB, 0x65700CCC, 0xA0D73242, 0x5291EB5F}
     ),
+    # G2ME01 reader 8023C490 and ctor 8023C6E0 use nine fields in 0x24 bytes.
+    "SLdrTextProperties": frozenset(
+        {0x1A996292, 0x05EFF913, 0x45830901, 0xD8A2EEF0}
+    ),
+    # G2ME01 LoadSubtitle 8020DB08 and TextPane ctor 8020038C have one text record.
+    "SLdrSubtitle": frozenset({0xC8E441FA, 0x53A7F7A7, 0xEB1B90C2}),
+    "SLdrTextPane": frozenset({0xC8E441FA}),
 }
 
 KEYWORDS: set[str] = {
@@ -812,12 +820,14 @@ class Generator:
                 property_id(child): child
                 for child in prop.node.findall("SubProperties/Element")
             }
-            result: list[str] = []
+            overrides: list[tuple[str | None, list[str]]] = []
             for member in struct.fields:
                 actual = replace(member, node=children[property_id(member.node)])
                 if ET.tostring(actual.node) != ET.tostring(member.node):
-                    result.extend(self.defaults(actual, target + "." + member.name))
-            return result
+                    overrides.append(
+                        (member.condition, self.defaults(actual, target + "." + member.name))
+                    )
+            return conditional_lines(overrides)
         if is_invalid_sound(prop):
             return []  # Initialized to -1 in the initializer list.
         default = prop.node.find("DefaultValue")
@@ -1083,7 +1093,7 @@ class Generator:
                 (
                     prop.condition,
                     [
-                        "  " + line
+                        line if line.startswith("#") else "  " + line
                         for line in self.defaults(prop, prop.name)
                     ],
                 )

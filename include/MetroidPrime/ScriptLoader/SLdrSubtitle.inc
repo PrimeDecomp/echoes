@@ -21,6 +21,7 @@ for (int i = 0; i < propertyCount; ++i) {
     sldrThis.textPositionY = input.ReadInt32();
     break;
   }
+#if VERSION != VERSION_G2ME01
   case 0xc8e441fa: {
     LoadTypedefTextProperties(sldrThis.japanTextProperties, input);
     break;
@@ -33,6 +34,7 @@ for (int i = 0; i < propertyCount; ++i) {
     sldrThis.japanTextPositionY = input.ReadInt32();
     break;
   }
+#endif
   case 0xfd95ed2a: {
     sldrThis.stringTable = CAssetId(input.ReadInt32());
     break;
