@@ -53,6 +53,7 @@ public:
   void PlayImpactSound(const CVector3f& position, EWeaponCollisionResponseTypes type); // Guessed name
   void InitializeMuzzleOffset(float duration, CStateManager& mgr); // Guessed name
   void SetExplodePending(bool pending) { mExplodePending = pending; }
+  bool HasExploded() const { return mHasExploded; }
 
 private:
   // Guessed name; the original owns a sorted list of IDs and expiry times.
