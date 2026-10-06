@@ -3,6 +3,10 @@
 #include "Kyoto/Audio/CAuxEffectParameters.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrRoomAcoustics.hpp"
+
 CScriptRoomAcoustics::CScriptRoomAcoustics(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint volumeScale,
     int priority, bool reverbHi, bool reverbHiDisable, float reverbHiTime, float reverbHiPreDelay,
@@ -195,4 +199,30 @@ void CScriptRoomAcoustics::DisableAuxCallbacks() {
     CSfxManager::RemoveAuxEffect(mAuxEffectId);
     mAuxEffectId = 0;
   }
+}
+
+CEntity* LoadRoomAcoustics(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrRoomAcoustics sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrRoomAcoustics.inc"
+
+  return rs_new CScriptRoomAcoustics(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.roomVolume, sldrThis.priority,
+      sldrThis.reverbHiEnabled, sldrThis.unknown_0x3263c26e, sldrThis.reverbHiTime,
+      sldrThis.reverbHiPreDelay, sldrThis.reverbHiDamping, sldrThis.reverbHiColoration,
+      sldrThis.reverbHiCrossTalk, sldrThis.reverbHiMix, sldrThis.chorusEnabled,
+      sldrThis.chorusBaseDelay, sldrThis.chorusVariation, sldrThis.chorusPeriod,
+      sldrThis.reverbStdEnabled, sldrThis.unknown_0x4a5bbf90, sldrThis.reverbStdTime,
+      sldrThis.reverbStdPreDelay, sldrThis.reverbStdDamping, sldrThis.reverbStdColoration,
+      sldrThis.reverbStdMix, sldrThis.delayEnabled, sldrThis.delay0, sldrThis.delay1,
+      sldrThis.delay2, sldrThis.delayFeedback0, sldrThis.delayFeedback1, sldrThis.delayFeedback2,
+      sldrThis.delayOutput0, sldrThis.delayOutput1, sldrThis.delayOutput2, sldrThis.flangerEnabled,
+      sldrThis.flangerDelay, sldrThis.flangerDelayPhase, sldrThis.flangerDry,
+      sldrThis.flangerFeedback, sldrThis.flangerLFODepth, sldrThis.flangerLFOFrequency,
+      sldrThis.flangerLFOWave, sldrThis.flangerOut, sldrThis.bitcrusherEnabled,
+      float(sldrThis.unknown_0xf51a1d6a), sldrThis.bitcrusherGain / 24.5f,
+      float(sldrThis.bitcrusherBitDepth) / 24.f, sldrThis.bitcrusherSampleRateReduction / 40.f,
+      sldrThis.phaserEnabled, sldrThis.phaserFrequency * 0.25f, sldrThis.phaserFeedback / 0.99f,
+      (1.f + sldrThis.phaserInvert) * 0.5f, sldrThis.phaserMix,
+      (sldrThis.phaserSweep - 200.f) / 7800.f);
 }
