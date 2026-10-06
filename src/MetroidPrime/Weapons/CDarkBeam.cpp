@@ -16,7 +16,7 @@ void CDarkBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
 
 void CDarkBeam::Update(float dt, CStateManager& mgr) {}
 
-void CDarkBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
+void CDarkBeam::Fire(const TToken< CWeaponDescription >& projectile, bool underwater,
                      float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                      CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                      ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,

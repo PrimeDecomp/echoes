@@ -103,7 +103,7 @@ void CPowerBeam::Update(float dt, CStateManager& mgr) {
   }
 }
 
-void CPowerBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
+void CPowerBeam::Fire(const TToken< CWeaponDescription >& projectile, bool underwater,
                       float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                       CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                       ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
