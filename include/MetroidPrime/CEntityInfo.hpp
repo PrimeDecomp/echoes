@@ -21,6 +21,7 @@ enum EEntityType {
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
   kET_Bomb = 14,
+  kET_BouncingBomb = 15, // Target-derived class tag.
   kET_BouncyGrenade = 16,
   kET_CinematicCamera = 17,
   kET_CollisionActor = 18,
@@ -85,6 +86,8 @@ enum EEntityType {
   kET_ScriptTeamAi = 88,
   kET_ScriptSwitch = 86,
   kET_ScriptTargetingPoint = 87,
+  kET_ScriptTextPane = 89, // Target-derived class tag.
+  kET_ScriptTimeKeyframe = 90, // Target-derived class tag.
   kET_ScriptTimer = 91,
   kET_ScriptTrigger = 92,
   kET_ScriptTriggerEllipsoid = 93,
@@ -100,7 +103,9 @@ enum EEntityType {
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
+  kET_SpacePirate = 132, // Target-derived class tag.
   kET_PlayerTurret = 138, // Guessed name; turret-HUD REL dispatch target.
+  kET_TargetableProjectile = 152, // Target-derived class tag.
   kET_PowerBomb = 156,
   kET_ScriptForgottenObject = 160,
 };

@@ -3,8 +3,6 @@
 
 SSpacePirate_FuncPtrs* gLoader_SpacePirate; // Guessed global name.
 
-CEntity* CSpacePirate::TypesMatch(int typeId) const {}
-
 void SetSSpacePirate_FuncPtrs(SSpacePirate_FuncPtrs* callbacks) { gLoader_SpacePirate = callbacks; }
 
 // Guessed loader name.

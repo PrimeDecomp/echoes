@@ -17,16 +17,6 @@ CScriptTimeKeyframe::CScriptTimeKeyframe(TUniqueId uid, const rstl::string& name
 
 CScriptTimeKeyframe::~CScriptTimeKeyframe() {}
 
-CEntity* CScriptTimeKeyframe::TypesMatch(int typeId) const {
-  if (typeId == 90) {
-    return const_cast< CScriptTimeKeyframe* >(this);
-  }
-  if (typeId > 90) {
-    return nullptr;
-  }
-  return CEntity::TypesMatch(typeId);
-}
-
 void CScriptTimeKeyframe::SetTime(float time, CStateManager& mgr) {
   mTime = time;
   ApplyTime(kInvalidUniqueId, mgr);
