@@ -1200,8 +1200,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Runtime/ptmf.c"),
             Object(MatchingFor("G2ME01"), "Runtime/runtime.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
-            # TODO: need to implement all
-            Object(NonMatching, "Runtime/Gecko_ExceptionPPC.cp"),
+            Object(NonMatching, "Runtime/Gecko_ExceptionPPC.cp", extra_cflags=["-RTTI on", "-Cpp_exceptions on"]),
             Object(MatchingFor("G2ME01"), "Runtime/__mem.c"),
         ],
     },
