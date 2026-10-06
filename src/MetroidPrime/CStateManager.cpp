@@ -37,6 +37,7 @@
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
@@ -2071,6 +2072,72 @@ void CStateManager::SendDamageScriptMsgs(CActor& damagee, TUniqueId source,
   }
   if (state != kSS_InvalidState) {
     damagee.SendScriptMsgs(state, *this, kSM_None);
+  }
+}
+
+void CStateManager::ApplyDamage(TUniqueId damagerId, TUniqueId damageeId, TUniqueId owner,
+                                 const CDamageInfo& damage, const CMaterialFilter& filter,
+                                 const CVector3f& knockbackDirection) {
+  // The native comparison uses the raw unsigned halfword, not the signed enum getter.
+  if (damage.GetWeaponMode().GetRawType() == kWT_None) {
+    return;
+  }
+
+  const CDamageInfo info = GetModifiedDamageInfo(damagerId, owner, damageeId, damage);
+  const CEntity* damagerEntity = GetObjectById(damagerId);
+  CEntity* damageeEntity = ObjectById(damageeId);
+  const CActor* const damager = TCastToConstPtr< CActor >(damagerEntity);
+  CActor* const damagee = TCastToPtr< CActor >(damageeEntity);
+  const bool isPlayer = TCastToConstPtr< CPlayer >(damageeEntity) != nullptr;
+  if (damagee == nullptr) {
+    return;
+  }
+
+  if (damagee->GetHealthInfo() != nullptr) {
+    CVector3f position(0.f, 0.f, 0.f);
+    CVector3f direction(1.f, 0.f, 0.f);
+    if (damager != nullptr) {
+      position = damager->GetTransform().GetTranslation();
+      direction = damager->GetTransform().GetForward();
+    }
+
+    const bool useWeaponDirection = damager != nullptr || isPlayer;
+    const CDamageVulnerability* vulnerability =
+        useWeaponDirection ? damagee->GetDamageVulnerability(position, direction, info)
+                           : damagee->GetDamageVulnerability();
+    if (info.GetWeaponMode().GetRawType() == kWT_None ||
+        vulnerability->WeaponHits(info.GetWeaponMode(), 0)) {
+      const float localDamage = info.GetDamage(*vulnerability);
+      if (localDamage > 0.f) {
+        ApplyLocalDamage(position, direction, *damagee, localDamage, damagerId, owner, info, 0);
+      }
+      SendDamageScriptMsgs(*damagee, damagerId, info);
+      SendScriptMsg(damagee, damagerId, kSM_Damage);
+    } else {
+      damagee->SendScriptMsgs(kSS_ResistedDamage, *this, kInvalidUniqueId, kSM_None);
+      SendScriptMsg(damagee, damagerId, kSM_ResistedDamage);
+    }
+
+    float knockbackX = knockbackDirection.GetX();
+    float knockbackY = knockbackDirection.GetY();
+    if (damager != nullptr && info.GetKnockBackPower(*vulnerability, 0.f) > 0.f) {
+      const CVector3f defaultDirection =
+          damagee->GetTransform().GetTranslation() - damager->GetTransform().GetTranslation();
+      const CVector3f& useDirection =
+          knockbackDirection.IsNonZero() ? knockbackDirection : defaultDirection;
+      knockbackX = useDirection.GetX();
+      knockbackY = useDirection.GetY();
+    }
+    const CVector3f knockback(knockbackX, knockbackY, 0.0001f);
+    ApplyKnockBack(*damagee, damagerId, owner, info, *vulnerability, knockback.AsNormalized(), 0.f);
+  }
+
+  if (damager != nullptr && info.GetRadius() > 0.f) {
+    ProcessRadiusDamage(*damager, *damagee, owner, info, filter);
+  }
+  CSwarmBasics* swarm = TCastToPtr< CSwarmBasics >(damageeEntity);
+  if (swarm != nullptr && damager != nullptr) {
+    swarm->ApplyRadiusDamage(damager->GetTranslation(), info, *this);
   }
 }
 

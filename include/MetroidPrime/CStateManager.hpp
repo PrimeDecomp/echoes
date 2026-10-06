@@ -177,7 +177,8 @@ public:
 
   void SendScriptMsg(const CScriptMsg& msg);
   void DeliverScriptMsg(const CScriptMsg& msg); // Guessed name
-  void SendScriptMsg(CEntity*, TUniqueId, EScriptObjectMessage, TUniqueId);
+  void SendScriptMsg(CEntity* target, TUniqueId sender, EScriptObjectMessage message,
+                     TUniqueId actor = kInvalidUniqueId);
   void SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
                      TUniqueId actor); // Guessed overload name.
 
@@ -194,7 +195,7 @@ public:
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
-  void ApplyDamage(TUniqueId damager, TUniqueId damagee, TUniqueId weapon,
+  void ApplyDamage(TUniqueId damager, TUniqueId damagee, TUniqueId owner,
                    const CDamageInfo& damage, const CMaterialFilter& filter,
                    const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
