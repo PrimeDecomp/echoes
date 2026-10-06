@@ -32,6 +32,12 @@ public:
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
+  const CSpindleCameraParameters& GetParameters() const { return mParameters; }
+  const CMotionSpline& GetTargetSpline() const { return mTargetSpline; }
+  const CMayaSpline& GetTargetControlSpline() const { return mTargetControlSpline; }
+  const CMotionSpline& GetPlayerSpline() const { return mPlayerSpline; }
+  CTransform4f GetOrigXf() const { return mOrigXf; }
+
 private:
   CSpindleCameraParameters mParameters;
   CMotionSpline mTargetSpline;
