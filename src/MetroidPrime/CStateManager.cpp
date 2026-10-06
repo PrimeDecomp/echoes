@@ -64,10 +64,14 @@
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 
 #include "Kyoto/Audio/CAudioGroupSet.hpp"
@@ -79,6 +83,7 @@
 #include "Kyoto/CARAMToken.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CFrameDelayedKiller.hpp"
+#include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/CTimeProvider.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
@@ -86,6 +91,7 @@
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CQuaternion.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
@@ -127,6 +133,16 @@ static char sEscapeRumbleInitialized;
 
 // Prime-correlated name; native underwater ranges for the two bomb attributes.
 static const float skBombUnderwaterRanges[2] = {2.f, 4.f};
+
+static const char* const skAudioGroupDependencies[3] = {
+    "audio_groups_single_player_DGRP", "audio_groups_front_end_DGRP",
+    "audio_groups_multi_player_DGRP"};
+static const char* const skSinglePlayerAnimController = "SinglePlayerAnimCtrl";
+static const char* const skMultiplayerAnimController = "PlayerAnimCtrl";
+static const char* const skUnusedViewportTexture = "TXTR_Metroid2LogoSm";
+
+// Guessed name. The original immutable flag is false; its defining TU is unresolved.
+static const bool skDisablePlayerTargeting = false;
 
 // Both retained release hooks contain only a return instruction. Their sole known
 // callers pass this manager; no exported name or body establishes a semantic name.
@@ -1498,8 +1514,8 @@ int CStateManager::SpecialSkipCinematic() {
     if (entity == nullptr) {
       SetSkipCinematicSpecialFunction(kInvalidUniqueId);
     } else if (CScriptSpecialFunction* special = TCastToPtr< CScriptSpecialFunction >(entity)) {
-      const bool wasSkipping = IsSkippingCinematic();
-      mSkippingCinematic = true;
+      const bool randomWasAvailable = IsRandomAvailable();
+      mRandomAvailable = true;
 
       if (special->GetFunction() == CScriptSpecialFunction::kSF_CinematicSkip) {
         mCameraManagers[0]->StopCinematics(*this);
@@ -1508,7 +1524,7 @@ int CStateManager::SpecialSkipCinematic() {
         result = 2;
       }
       special->SkipCinematic(*this);
-      mSkippingCinematic = wasSkipping;
+      mRandomAvailable = randomWasAvailable;
     }
   }
   return result;
@@ -1747,7 +1763,7 @@ CStateManager::CStateManager(
 , mUnknown0x16b4(0)
 , mShadowTex(gpSimplePool->GetObj("DefaultShadow"))
 , mRandom(0)
-, mSkippingCinematic(false)
+, mRandomAvailable(false)
 , mGameState(kGS_Running)
 , mInitPhase(kIP_LoadAudioGroups)
 , mCameraFilterPasses(4, rstl::reserved_vector< CCameraFilterPass, 11 >(11, CCameraFilterPass()))
@@ -1847,7 +1863,7 @@ CStateManager::~CStateManager() {
     mRumbleManagers[i]->HardStopAll();
   }
   mEnvFxManager->Cleanup();
-  mSkippingCinematic = true;
+  mRandomAvailable = true;
 
   CObjectList& objects = *mObjectLists[kOL_All];
   ClearGraveyard();
@@ -1985,6 +2001,267 @@ TUniqueId CStateManager::AllocateUniqueId() {
   mAllocatedObjectIndices[ourIndex] = true;
 
   return TUniqueId(mObjectIndexArray[ourIndex], ourIndex);
+}
+
+void CStateManager::CreateStandardGameObjects() {
+  mNumPlayers = gpGameState->GetGameMode().GetNumPlayers();
+  CTweakPlayerGun* playerGunTweak = gpTweakPlayerGunSingle.get();
+  if (mNumPlayers > 1u) {
+    playerGunTweak = gpTweakPlayerGunMulti.get();
+  }
+  gpTweakPlayerGun = playerGunTweak;
+
+  mCameraManagers[0] = &mStateManagerContainer->mCameraManager0;
+  mCameraManagers[1] = &mStateManagerContainer->mCameraManager1;
+  mCameraManagers[2] = &mStateManagerContainer->mCameraManager2;
+  mCameraManagers[3] = &mStateManagerContainer->mCameraManager3;
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    const TUniqueId uid = AllocateUniqueId();
+    const CVector3f position(5.f * (i & 1), 0.f, 5.f * (i & 2));
+    const CRelAngle angle = CRelAngle::FromDegrees(129.6f);
+    const CMatrix3f matrix =
+        CQuaternion::AxisAngle(CUnitVector3f(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes), angle)
+            .BuildTransform();
+    const CTransform4f transform = CTransform4f::FromColumns(
+        matrix.GetColumn(kDX), matrix.GetColumn(kDY), matrix.GetColumn(kDZ), position);
+
+    CTweakPlayer* tweak = gpTweakPlayerA.get();
+    const int controlScheme = mPlayerStateOwners[i]->GetControlScheme();
+    if (controlScheme == 1) {
+      tweak = gpTweakPlayerB.get();
+    }
+    const float stepUp = tweak->GetStepUpHeight();
+    const float stepDown = tweak->GetStepDownHeight();
+    const float height = tweak->GetPlayerHeight();
+    const float radius = tweak->GetPlayerRadius();
+    const float ballRadius = tweak->GetBallRadius();
+    const CAABox bounds(CVector3f(-radius, -radius, 0.f), CVector3f(radius, radius, height));
+
+    const SObjectTag* animationController = gpResourceFactory->GetResourceIdByName(
+        IsMultiplayer() ? skMultiplayerAnimController : skSinglePlayerAnimController);
+    const CAssetId stateMachine = animationController ? animationController->id : kInvalidAssetId;
+    mPlayerStates[i] = mPlayerStateOwners[i].GetPtr();
+    int characterIndex = 3;
+    if (IsMultiplayer()) {
+      characterIndex = 0;
+    }
+    mPlayers[i] = rs_new CPlayer(
+        uid, transform, bounds, gpTweakPlayerRes->GetBallTransitionANCSId(), stateMachine,
+        200.f, stepUp, stepDown, ballRadius,
+        CMaterialList(kMT_Player, kMT_Unknown59, kMT_GroundCollider, kMT_Target, kMT_NoPlayerCollision),
+        mPlayerStates[i], mCameraManagers[i], mNumPlayers > 1u, i,
+        mPlayerStateOwners[i]->GetControlScheme(), characterIndex);
+  }
+
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    AddObject(*mPlayers[i]);
+    if (!skDisablePlayerTargeting) {
+      mPlayers[i]->AddMaterial(kMT_Orbit, kMT_Scannable, *this);
+    }
+  }
+
+  float fieldOfView = gpTweakGame->GetFieldOfView();
+  if (mNumPlayers == 2u) {
+    fieldOfView = gpTweakGame->GetTwoPlayerFieldOfView();
+  }
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    mCameraManagers[i]->SetFirstPersonFOV(fieldOfView);
+    mCameraManagers[i]->CreateCameras(*this);
+  }
+  mEnvFxManager->AsyncLoadResources(*this);
+}
+
+void CStateManager::SpawnPlayer(CScriptSpawnPoint& spawnPoint, uint playerIndex) {
+  CPlayer& player = *mPlayers[playerIndex];
+  CPlayerState& state = *player.GetPlayerState();
+  const CVector3f position = spawnPoint.GetTransform().GetTranslation();
+  CVector3f forward = spawnPoint.GetTransform().GetForward();
+  forward.SetZ(0.f);
+  if (forward.CanBeNormalized()) {
+    player.Teleport(CTransform4f::LookAt(position, position + forward, CVector3f::Up()),
+                    *this, true);
+    player.SetSpawnedMorphBallState(
+        spawnPoint.IsMorphed() ? CPlayer::kMS_Morphed : CPlayer::kMS_Unmorphed, *this);
+    player.ResetPlayerState(*this, 1);
+  }
+
+  if (gpGameState->GetGameMode().IsMultiplayer() || gpGameState->GetInitPowerupsAtFirstSpawn()) {
+    gpGameState->SetDeferPowerupInit(false);
+    for (int i = CPlayerState::kIT_PowerBeam; i < CPlayerState::kIT_Max; ++i) {
+      const CPlayerState::EItemType item = static_cast< CPlayerState::EItemType >(i);
+      if (state.GetItemCapacity2(item) < spawnPoint.GetItemCapacity(item)) {
+        state.AddPowerUp(item, spawnPoint.GetItemCapacity(item) - state.GetItemCapacity2(item));
+      }
+      if (state.GetItemAmount(item, true) < spawnPoint.GetItemAmount(item)) {
+        state.IncrPickUp(item, spawnPoint.GetItemAmount(item) - state.GetItemAmount(item, true));
+      }
+    }
+  }
+
+  const uint spawnedPlayerIndex = player.GetPlayerIndex();
+  const CGameState& gameState = *gpGameState;
+  gameState.GetGameMode().OnPlayerSpawned(*this, spawnedPlayerIndex);
+  spawnPoint.SendSpawnMessage(*this, player);
+  player.AsyncLoadSuit(*this);
+}
+
+void CStateManager::InitializeState(CAssetId worldId, TAreaId areaId, CAssetId mreaId) {
+  const bool randomWasAvailable = IsRandomAvailable();
+  mRandomAvailable = true;
+  if (mInitPhase == kIP_LoadAudioGroups) {
+    if (!IsMultiplayer()) {
+      CAudioGrpSetLoc::sInSinglePlayer = true;
+    }
+    if (gpGameState->AudioGroups().empty()) {
+      const int gameMode = gpGameState->GetGameMode().GetGameModeType();
+      int dependencyIndex = 2;
+      if (gameMode == 'SNGL') {
+        dependencyIndex = 0;
+      }
+      if (gameMode == 'FRND') {
+        dependencyIndex = 1;
+      }
+      mAudioGroupDependencies =
+          TToken< CDependencyGroup >(gpSimplePool->GetObj(skAudioGroupDependencies[dependencyIndex]));
+      mAudioGroupDependencies.Lock();
+    }
+    mInitPhase = kIP_LoadWorld;
+  }
+
+  if (mInitPhase == kIP_LoadWorld) {
+    if (gpGameState->AudioGroups().empty()) {
+      if (!mAudioGroupDependencies.IsLoaded()) {
+        return;
+      }
+      CDependencyGroup& dependencies = **mAudioGroupDependencies;
+      rstl::vector< TCachedToken< CAudioGrpSetLoc > >& audioGroups = gpGameState->AudioGroups();
+      const rstl::vector< SObjectTag >& tags = dependencies.GetObjectTagVector();
+      audioGroups.reserve(tags.size());
+      for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
+        if (it->type == 'AGSC') {
+          audioGroups.push_back_unsafe(TCachedToken< CAudioGrpSetLoc >(gpSimplePool->GetObj(*it)));
+        }
+      }
+      mAudioGroupDependencies.Unlock();
+      for (rstl::vector< TCachedToken< CAudioGrpSetLoc > >::iterator it = audioGroups.begin();
+           it != audioGroups.end(); ++it) {
+        it->Lock();
+      }
+    }
+    CreateStandardGameObjects();
+    mWorld = rs_new CWorld(*gpSimplePool, *gpResourceFactory, worldId);
+    mInitPhase = kIP_LoadFirstArea;
+  }
+
+  if (mInitPhase == kIP_LoadFirstArea) {
+    if (!mShadowTex.IsLoaded()) {
+      return;
+    }
+    if (mNumPlayers == 3u && mUnusedViewportTexture.null()) {
+      mUnusedViewportTexture =
+          rs_new TCachedToken< CTexture >(gpSimplePool->GetObj(skUnusedViewportTexture));
+      mUnusedViewportTexture->Lock();
+      return;
+    }
+    if (!mUnusedViewportTexture.null() && !mUnusedViewportTexture->IsLoaded()) {
+      return;
+    }
+    if (!mWorld->CheckWorldComplete(this, areaId, mreaId)) {
+      return;
+    }
+    mNextAreaId = mWorld->GetCurrentAreaId();
+    CGameArea* area = mWorld->Area(GetNextAreaId());
+    if (mWorld->ScheduleAreaToLoad(area, *this)) {
+      area->StartStreamIn(*this);
+      return;
+    }
+    mInitPhase = kIP_Done;
+  }
+
+  SetCurrentAreaId(mNextAreaId);
+  gpGameState->CurrentWorldState().SetAreaId(mNextAreaId);
+  mWorld->TravelToArea(mNextAreaId, *this, CWorld::kATT_SkipAdjacent);
+  CObjectList* allObjects = mObjectLists[kOL_All].get();
+  for (int i = allObjects->GetFirstObjectIndex(); i != -1; i = allObjects->GetNextObjectIndex(i)) {
+    DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, (*allObjects)[i]->GetUniqueId(),
+                               kSM_WorldLoaded, kSS_InvalidState));
+  }
+
+  if (mPendingDockArea != kInvalidAreaId) {
+    CObjectList* objects = mObjectLists[kOL_All].get();
+    for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+      CActor& actor = *static_cast< CActor* >((*objects)[i]);
+      const TAreaId actorArea = actor.GetCurrentAreaId();
+      SetActorAreaId(actor, kInvalidAreaId);
+      SetActorAreaId(actor, actorArea);
+    }
+  }
+
+  int nextSpawn = 0;
+  if (mPendingDockArea != kInvalidAreaId) {
+    CScriptDock* dock = nullptr;
+    CObjectList* objects = mObjectLists[kOL_All].get();
+    for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+      if (CScriptDock* candidate = TCastToPtr< CScriptDock >((*objects)[i])) {
+        if (candidate->GetDockId() == mPendingDock) {
+          dock = candidate;
+          break;
+        }
+      }
+    }
+    CScriptSpawnPoint* spawn = nullptr;
+    if (dock != nullptr) {
+      spawn = TCastToPtr< CScriptSpawnPoint >(
+          ObjectById(dock->FindConnectedObject(*this, kSS_MaxReached, kSM_Activate)));
+    }
+    if (spawn != nullptr) {
+      SpawnPlayer(*spawn, 0);
+      nextSpawn = 1;
+    }
+  }
+
+  if (!IsMultiplayer()) {
+    if (nextSpawn == 0) {
+      CObjectList* objects = mObjectLists[kOL_All].get();
+      for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+        if (CScriptSpawnPoint* spawn = TCastToPtr< CScriptSpawnPoint >((*objects)[i])) {
+          if (spawn->GetActive() && spawn->IsFirstSpawn()) {
+            SpawnPlayer(*spawn, nextSpawn);
+            break;
+          }
+        }
+      }
+    }
+  } else {
+    rstl::vector< TUniqueId > spawnPoints;
+    spawnPoints.reserve(mNumPlayers);
+    CObjectList* objects = mObjectLists[kOL_All].get();
+    for (int i = objects->GetFirstObjectIndex(); i != -1; i = objects->GetNextObjectIndex(i)) {
+      if (CScriptSpawnPoint* spawn = TCastToPtr< CScriptSpawnPoint >((*objects)[i])) {
+        if (spawn->GetActive() && spawn->IsFirstSpawn()) {
+          spawnPoints.reserve(spawnPoints.size() + 1);
+          spawnPoints.push_back_unsafe(spawn->GetUniqueId());
+        }
+      }
+    }
+    while (!spawnPoints.empty() && spawnPoints.size() < spawnPoints.capacity()) {
+      spawnPoints.push_back_unsafe(spawnPoints.front());
+    }
+    CRandom16 random(CStopwatch::GetGlobalMicros());
+    rstl::random_shuffle(spawnPoints.begin(), spawnPoints.end(), random);
+    for (uint i = 0; i < mNumPlayers; ++i) {
+      const int startingSpawn = nextSpawn;
+      do {
+        if (CScriptSpawnPoint* spawn = TCastToPtr< CScriptSpawnPoint >(ObjectById(spawnPoints[nextSpawn]))) {
+          SpawnPlayer(*spawn, i);
+          nextSpawn = (nextSpawn + 1) % spawnPoints.size();
+          break;
+        }
+        nextSpawn = (nextSpawn + 1) % spawnPoints.size();
+      } while (nextSpawn != startingSpawn);
+    }
+  }
+  mRandomAvailable = randomWasAvailable;
 }
 
 const CEntity* CStateManager::GetObjectById(TUniqueId uid) const {

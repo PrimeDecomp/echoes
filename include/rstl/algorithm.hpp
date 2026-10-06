@@ -65,6 +65,19 @@ void __sort3(T& a, T& b, T& c, const Cmp comp) {
   }
 }
 
+// Reconstructed from the native multiplayer spawn shuffle. Random is copied:
+// consuming this shuffle does not advance the caller's random generator.
+template < typename It, typename Random >
+void random_shuffle(It first, It last, Random random) {
+  if (first == last) {
+    return;
+  }
+  for (It next = first + 1; next != last; ++next) {
+    const int count = next - first;
+    iter_swap(next, first + random.Next() % (count + 1));
+  }
+}
+
 template < typename It, class Cmp >
 void __insertion_sort(It first, It last, Cmp cmp) {
   It next = first;

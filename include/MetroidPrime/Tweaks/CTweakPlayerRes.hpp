@@ -15,6 +15,7 @@ public:
   ~CTweakPlayerRes() {}
 
   CAssetId GetSaveStationIcon() const { return mSaveStationIcon; }
+  CAssetId GetBallTransitionANCSId() const { return mBallTransitionsANCS; }
   CAssetId GetMissileStationIcon() const { return mMissileStationIcon; }
   CAssetId GetElevatorIcon() const { return mElevatorIcon; }
   CAssetId GetPortalIcon() const { return mPortalIcon; }
