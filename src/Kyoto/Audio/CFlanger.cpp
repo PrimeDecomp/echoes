@@ -49,8 +49,8 @@ CFlanger::CFlanger(AudioMasterCallback audioMaster)
   setProgram(0);
   setNumInputs(3);
   setNumOutputs(3);
-  canProcessReplacing(true);
   hasVu(true);
+  canProcessReplacing(true);
   setUniqueID('FGRC');
   suspend();
 }

@@ -105,7 +105,7 @@ CPhaser::CPhaser(AudioMasterCallback audioMaster)
   setNumInputs(2);
   setNumOutputs(2);
   setUniqueID('SSPH');
-  canProcessReplacing(true);
+  hasVu(true);
   canMono(true);
   strcpy(mProgramName, "SSPH");
 }
