@@ -57,6 +57,7 @@ public:
   TLockedToken< CModel >& Model() { return mModel; }
   const TLockedToken< CModel >& GetModel() const { return mModel; }
   const TLockedToken< CCharLayoutInfo >& GetLayoutInfo() const { return mLayoutInfo; }
+  void SetLayoutInfo(const TToken< CCharLayoutInfo >& layout) { mLayoutInfo = layout; }
   const TLockedToken< CSkinRules >& GetSkinRules() const { return mSkinRules; }
 
   CSkinnedModelState MakeDefaultStorage() const;

@@ -185,7 +185,7 @@ public:
   float GetAverageAttackTime() const;
   void AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, float particleScale,
                          CAssetId particle, uint name, int flags);
-  void fn_800747a4(CAssetId model, CAssetId skinRules);
+  void BuildIngModel(CAssetId model, CAssetId skinRules);
   void RenderIceModelWithFlags(const CModelFlags& flags) const;
   // Guessed name; dispatches the selected knockback follow-up effect.
   void ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,

@@ -3,10 +3,13 @@
 #include "Collision/CCollisionInfoList.hpp"
 #include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/Animation/CCharAnimTime.hpp"
+#include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Animation/CInt32POINode.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
+#include "Kyoto/Animation/CSkinRules.hpp"
 #include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
@@ -21,6 +24,7 @@
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
@@ -161,7 +165,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mMoveScale(1.f, 1.f, 1.f)
 , mIngSnatchingPlane(CVector3f::Zero(), CVector3f::Forward())
 , mDisintegrationOrigin(CVector3f::Zero()) {
-  fn_800747a4(mIngPossessionData.ingPossessedModel, mIngPossessionData.ingPossessedSkinRules);
+  BuildIngModel(mIngPossessionData.ingPossessedModel, mIngPossessionData.ingPossessedSkinRules);
   if (pinfo.mDeathExplosionParticle != kInvalidAssetId) {
     mDeathExplosionParticle =
         gpSimplePool->GetObj(SObjectTag('PART', pinfo.mDeathExplosionParticle));
@@ -243,16 +247,76 @@ void CPatterned::SetupStateMachine(CStateManager&) {
 }
 
 void CPatterned::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  const TUniqueId sender = msg.GetSenderId();
+  const EScriptObjectMessage message = msg.GetMessage();
   CAi::AcceptScriptMsg(mgr, msg);
-  // TODO: Restore registration, floor, activation, deletion and damage-message handling.
+
+  switch (message) {
+  case kSM_Create:
+    if (mColliderType != kCT_One) {
+      CMaterialList include = GetMaterialFilter().GetIncludeList();
+      CMaterialList exclude = GetMaterialFilter().GetExcludeList();
+      CMaterialList charMat(kMT_Character);
+      include.Remove(charMat);
+      exclude.Add(charMat);
+      SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
+    }
+    SetAngularEnabled(true);
+    SetIngPossessed(mIngPossessionData.isAnEncounter, 0.f, mgr);
+    UpdateIngPossession(1000.f);
+    break;
+  case kSM_LandedOnStaticGround:
+    if (!mVerticalMovement) {
+      mOnStaticGround = true;
+    }
+    break;
+  case kSM_Landed:
+    if (!mVerticalMovement) {
+      SetMomentumWR(CVector3f::Zero());
+      AddMaterial(kMT_GroundCollider, mgr);
+    }
+    mOnGround = true;
+    break;
+  case kSM_Falling:
+    if (!mVerticalMovement && mBodyController->GetPercentageFrozen() == 0.f) {
+      SetMomentumWR(CVector3f(0.f, 0.f, -GetWeight()));
+      RemoveMaterial(kMT_GroundCollider, mgr);
+    }
+    mOnGround = false;
+    mOnStaticGround = false;
+    break;
+  case kSM_Activate:
+    mLatestLeashPosition = GetTranslation();
+    break;
+  case kSM_Delete:
+    mStateMachine->Reset(mgr, *this);
+    break;
+  case kSM_Damage:
+    if (TCastToPtr< CGameProjectile >(const_cast< CEntity* >(mgr.GetObjectById(sender)))) {
+      mHitByPlayerProjectile = true;
+    }
+    break;
+  case kSM_ResistedDamage:
+    if (CGameProjectile* projectile =
+            TCastToPtr< CGameProjectile >(const_cast< CEntity* >(mgr.GetObjectById(sender)))) {
+      if (TCastToPtr< CPlayer >(
+              const_cast< CEntity* >(mgr.GetObjectById(projectile->GetOwnerId())))) {
+        mHitByPlayerProjectile = true;
+      }
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 void CPatterned::SetDestPos(const CVector3f& position) { mDestPos = position; }
 
 CVector3f CPatterned::GetGunEyePos() const {
+  CVector3f origin = GetTranslation();
   const CAABox& bounds = GetBaseBoundingBox();
-  return GetTranslation() +
-         CVector3f(0.f, 0.f, 0.6f * (bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ()));
+  origin[kDZ] += 0.6f * (bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ());
+  return origin;
 }
 
 bool CPatterned::ApplyBoneTracking() const {
@@ -879,7 +943,7 @@ void CPatterned::CollidedWith(const TUniqueId& id, const CCollisionInfoList& lis
 
         if (jumpOnHead) {
           mgr.ApplyDamage(GetUniqueId(), player->GetUniqueId(), GetUniqueId(), contactDamage,
-                          CMaterialFilter::skPassEverything, -player->GetVelocityWR());
+                          CMaterialFilter::GetPassEverything(), -player->GetVelocityWR());
           player->SetTimeSinceJump(1000.f);
         } else if (mAlive && mBodyController->GetPercentageFrozen() != 1.f) {
           mgr.ApplyDamage(
@@ -1255,8 +1319,23 @@ void CPatterned::RenderIceModelWithFlags(const CModelFlags& flags) const {
   }
 }
 
-void CPatterned::RenderIngSnatchingTransition(const CStateManager&) const {
-  // TODO: Render the normal/possessed models on opposite sides of the snatching plane.
+void CPatterned::RenderIngSnatchingTransition(const CStateManager& mgr) const {
+  const CVector3f normal = GetIngSnatchingNormal(mIngPossessionBlend);
+  const CVector3f point = GetIngSnatchingPoint(mIngPossessionBlend);
+  CAnimData* animData = const_cast< CAnimData* >(GetAnimationData());
+  const CVector3f& overlap = (0.5f * GetIngSnatchingModelOverlapSize()) * normal;
+
+  const CVector3f& ingPoint = point - overlap;
+  const CPlane ingPlane(ingPoint, CUnitVector3f(normal, CUnitVector3f::kN_No));
+  GetModelData()->SetupWorldSpacePortalPlane(GetTransform(), ingPlane);
+  animData->SetSkinnedModel(*mIngModel);
+  CPhysicsActor::Render(mgr);
+
+  const CVector3f& normalPoint = point + overlap;
+  const CPlane normalPlane(normalPoint, CUnitVector3f(-1.f * normal, CUnitVector3f::kN_No));
+  GetModelData()->SetupWorldSpacePortalPlane(GetTransform(), normalPlane);
+  animData->SetSkinnedModel(mNormalModel);
+  CPhysicsActor::Render(mgr);
 }
 
 CVector3f CPatterned::GetIngSnatchingNormal(float) const { return CVector3f::Up(); }
@@ -1269,24 +1348,52 @@ CVector3f CPatterned::GetIngSnatchingPoint(float t) const {
 
 float CPatterned::GetIngSnatchingModelOverlapSize() const { return 0.f; }
 
-void CPatterned::fn_800747a4(CAssetId, CAssetId) {
-  // TODO: Build the possessed skinned model using the actor's shared character layout.
+void CPatterned::BuildIngModel(CAssetId model, CAssetId skinRules) {
+  if (model != kInvalidAssetId && skinRules != kInvalidAssetId) {
+    mIngModel = rstl::optional_object< TLockedToken< CSkinnedModel > >(rs_new CSkinnedModel(
+        gpSimplePool->GetObj(SObjectTag('CMDL', model)),
+        gpSimplePool->GetObj(SObjectTag('CSKR', skinRules)),
+        GetAnimationData()->GetModelData()->GetLayoutInfo()));
+    (*mIngModel)->SetLayoutInfo(GetAnimationData()->GetModelData()->GetLayoutInfo());
+  }
 }
 
 bool CPatterned::CanBeIngPossessed(CStateManager&) const { return mAlive && mIngModel.valid(); }
 
 bool CPatterned::CanBeUnPossessed(CStateManager&) const { return true; }
 
-void CPatterned::SetIngPossessed(bool possessed, CStateManager& mgr) {
-  SetIngPossessed(possessed, 1.f, mgr);
-  // TODO: Derive possession delay/duration from the current animation's EventStart/EventStop POIs.
+void CPatterned::SetIngPossessed(bool possessed, CStateManager&) {
+  if (!IsIngPossessed() && possessed) {
+    if (mIngPossessionData.unknown_0xb68c0aa3) {
+      *HealthInfo() = LdrToHealthInfo(mIngPossessionData.ingPossessedHealth);
+    }
+    mIngPossessionDelay = 0.f;
+    mIngPossessionDuration = 1.f;
+
+    const int animation = mIngPossessionData.unknown_0x2befc1bf;
+    if (animation != -1) {
+      const CCharAnimTime start =
+          GetAnimationData()->GetTimeOfUserEventForAnimation(animation, kUE_EventStart);
+      if (start != CCharAnimTime::Infinity()) {
+        mIngPossessionDelay = start.GetSeconds();
+      }
+      const CCharAnimTime stop =
+          GetAnimationData()->GetTimeOfUserEventForAnimation(animation, kUE_EventStop);
+      if (stop != CCharAnimTime::Infinity()) {
+        mIngPossessionDuration = rstl::max_val(0.f, stop.GetSeconds() - mIngPossessionDelay);
+      } else {
+        mIngPossessionDuration = rstl::max_val(
+            0.f, GetAnimationData()->GetAnimationDuration(animation) - mIngPossessionDelay);
+      }
+    }
+  }
+  mIngPossessionTarget = possessed ? 1.f : 0.f;
 }
 
 void CPatterned::SetIngPossessed(bool possessed, float duration, CStateManager&) {
   if (!IsIngPossessed() && possessed) {
     if (mIngPossessionData.unknown_0xb68c0aa3) {
-      *HealthInfo() = CHealthInfo(mIngPossessionData.ingPossessedHealth.health,
-                                  mIngPossessionData.ingPossessedHealth.hI_KnockBackResistance);
+      *HealthInfo() = LdrToHealthInfo(mIngPossessionData.ingPossessedHealth);
     }
     mIngPossessionDelay = 0.f;
     mIngPossessionDuration = duration;
@@ -1301,16 +1408,16 @@ bool CPatterned::IsIngPossessed() const {
 void CPatterned::UpdateIngPossession(float dt) {
   if (mIngPossessionBlend < mIngPossessionTarget) {
     const float delta = mIngPossessionDuration > 0.f ? dt / mIngPossessionDuration : 1.f;
-    if (mIngPossessionDelay > 0.f) {
-      mIngPossessionDelay -= dt;
-    } else {
-      mIngPossessionBlend = CMath::Min(1.f, mIngPossessionBlend + delta);
+    if (mIngPossessionDelay <= 0.f) {
+      mIngPossessionBlend = rstl::min_val(mIngPossessionBlend + delta, 1.f);
       if (mIngPossessionBlend == 1.f && mIngModel) {
         AnimationData()->SetSkinnedModel(*mIngModel);
       }
+    } else {
+      mIngPossessionDelay -= dt;
     }
   } else if (mIngPossessionBlend > mIngPossessionTarget) {
-    mIngPossessionBlend = CMath::Max(0.f, mIngPossessionBlend - dt);
+    mIngPossessionBlend = rstl::max_val(0.f, mIngPossessionBlend - dt);
     if (mIngPossessionBlend == 0.f) {
       AnimationData()->SetSkinnedModel(mNormalModel);
     }

@@ -107,6 +107,7 @@ public:
   virtual bool IsOnStaticGround() const;
   virtual float GetWeight() const;
   float GetMass() const { return mMass; }
+  void SetAngularEnabled(bool enabled) { mAngularEnabled = enabled; } // Guessed from Prime.
   CCollisionCache* GetCollisionCache() const; // Guessed name; borrowed mutable cache.
   void SetMass(float mass);
   void SetInertiaTensorScalar(float tensor);
