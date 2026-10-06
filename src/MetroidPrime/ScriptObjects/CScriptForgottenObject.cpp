@@ -13,7 +13,9 @@
 static const float skDefaultAlpha = 1.f;
 CScriptForgottenObject::CScriptForgottenObject(const TUniqueId uid, const CEntityInfo& info,
                                                const rstl::string& name)
-: CEntity(uid, info, name, 0), x24_(kInvalidUniqueId), x28_(kInvalidUniqueId) {}
+: CEntity(uid, info, name, 0)
+, mDepthOnlyActorId(kInvalidUniqueId)
+, mAlphaMaskActorId(kInvalidUniqueId) {}
 
 TUniqueId CScriptForgottenObject::DisableTargetRendering(CStateManager& mgr,
                                                          const EScriptObjectState state) const {
@@ -30,16 +32,21 @@ TUniqueId CScriptForgottenObject::DisableTargetRendering(CStateManager& mgr,
 void CScriptForgottenObject::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CEntity::AcceptScriptMsg(mgr, msg);
   if (msg.GetMessage() == kSM_AreaLoaded) {
-    x24_ = DisableTargetRendering(mgr, kSS_Zero);
-    x28_ = DisableTargetRendering(mgr, kSS_MaxReached);
+    mDepthOnlyActorId = DisableTargetRendering(mgr, kSS_Zero);
+    mAlphaMaskActorId = DisableTargetRendering(mgr, kSS_MaxReached);
   }
 }
 
-void CScriptForgottenObject::Render1(CStateManager& mgr) { RenderInternal(mgr, x24_, false); }
+void CScriptForgottenObject::RenderDepthOnly(CStateManager& mgr) {
+  RenderInternal(mgr, mDepthOnlyActorId, false);
+}
 
-void CScriptForgottenObject::Render2(CStateManager& mgr) { RenderInternal(mgr, x28_, true); }
+void CScriptForgottenObject::RenderAlphaMask(CStateManager& mgr) {
+  RenderInternal(mgr, mAlphaMaskActorId, true);
+}
 
-void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid, bool b) const {
+void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid,
+                                            bool writeAlphaMask) const {
   if (!GetActive()) {
     return;
   }
@@ -47,13 +54,13 @@ void CScriptForgottenObject::RenderInternal(CStateManager& mgr, TUniqueId uid, b
   CGX::SetColorUpdate(false);
   if (actor && !actor->GetPreRenderClipped()) {
     const CModelData* data = actor->GetModelData();
-    if (b) {
+    if (writeAlphaMask) {
       gpRender->SetDestinationAlpha(255);
     } else {
       gpRender->DisableDestinationAlpha();
     }
     data->Render(mgr, actor->GetTransform(), nullptr, CModelFlags::Normal());
-    if (b) {
+    if (writeAlphaMask) {
       gpRender->DisableDestinationAlpha();
     }
   }

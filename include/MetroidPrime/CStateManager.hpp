@@ -221,11 +221,17 @@ public:
   // Reconstructed phase names, derived from DrawWorld's native area/PVS setup.
   void GatherVisibleAreas(TVisibleAreas& areas, TAreaVisibility& visibility);
   void PrepareWorldRendering(const TVisibleAreas& areas, const TAreaVisibility& visibility);
+  // Reconstructed names/signatures from native render-phase callers and consumers.
+  void SetupViewForDraw(const CViewport& viewport);
+  void DrawUnsortedGeometry(const TVisibleAreas& areas, uint mask, uint targetMask,
+                            CPlayerState::EPlayerVisor visor);
+  void DrawDarkVisor(const CInGameGuiManagerSet& gui);
   void SetupParticleDrawMask(); // Reconstructed name; filters CParticleGen draw flags.
   static void SetParticleAlphaUpdate(bool disable); // Reconstructed name.
   void CapturePlayerTextures(); // Reconstructed name; reflection, indirect and mask buffers.
+  void RenderForgottenObjects(); // Reconstructed name; depth-only and alpha-mask passes.
   // Reconstructed name; the selected renderer bodies do not consume the two masks.
-  void DrawSpecialGeometry(const TAreaId& area, CPlayerState::EPlayerVisor visor, uint mask,
+  void DrawSpecialGeometry(TAreaId area, CPlayerState::EPlayerVisor visor, uint mask,
                            uint targetMask);
   void RenderActorQueue(rstl::reserved_vector< TUniqueId, 20 >& queue,
                         const rstl::string& profileName);

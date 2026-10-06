@@ -3,10 +3,14 @@
 #include "Collision/CRayCastResult.hpp"
 
 #include "MetroidPrime/CActor.hpp"
+#include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
+#include "MetroidPrime/CDecalManager.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
 #include "MetroidPrime/CEntity.hpp"
+#include "MetroidPrime/CEnvFxManager.hpp"
+#include "MetroidPrime/CFluidPlaneManager.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CGameHint.hpp"
 #include "MetroidPrime/CGameLight.hpp"
@@ -36,12 +40,14 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/Player/CPlayerTargeting.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -77,6 +83,7 @@
 #include "rstl/math.hpp"
 #include "rstl/vector.hpp"
 
+#include <alloca.h>
 #include <float.h>
 
 const int gkPVSEnabled = 1;
@@ -893,7 +900,7 @@ void CStateManager::RenderAreaActors(bool& deferPlayerRender, CEchoEmitter*& emi
   }
 }
 
-void CStateManager::DrawSpecialGeometry(const TAreaId& area, CPlayerState::EPlayerVisor visor, uint,
+void CStateManager::DrawSpecialGeometry(TAreaId area, CPlayerState::EPlayerVisor visor, uint,
                                         uint) {
   switch (visor) {
   case CPlayerState::kPV_Echo:
@@ -940,6 +947,140 @@ void CStateManager::DrawDarkWorldCloud(CPlayerState::EPlayerVisor visor) {
 
 void CStateManager::RenderEchoEmitters(const CEchoEmitter* emitters) const {
   CEchoEmitter::RenderEmitters(*this, emitters);
+}
+
+void CStateManager::DrawWorld(const CInGameGuiManagerSet& gui) {
+  CScopedProfiler profile(rstl::string_l("*TotalDrawWorld"), true);
+  SetRendererWorkspace(alloca(GetRendererWorkspaceSize()));
+
+  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  CTimeProvider timeProvider(mCurTimeMod900);
+  CViewport viewport = CGraphics::GetViewport();
+  viewport.mTop = CGraphics::GetViewportTop(viewport.mTop);
+  SetupViewForDraw(viewport);
+  const CTransform4f viewMatrix(CGraphics::GetViewMatrix());
+
+  TVisibleAreas areas;
+  TAreaVisibility visibility;
+  GatherVisibleAreas(areas, visibility);
+  CPlayer* const player = mCurrentRenderPlayer;
+  PrepareWorldRendering(areas, visibility);
+  uint mask = 0;
+  uint targetMask = 0;
+  GetWorldGeometryMasks(mask, targetMask, visor);
+  gpRender->SetRequestedMaterialMode(visor == CPlayerState::kPV_Dark ? 1 : 0);
+  SetupParticleDrawMask();
+  SetParticleAlphaUpdate(visor == CPlayerState::kPV_Echo);
+
+  RenderActorQueue(mStateManagerContainer->mRenderBeforeAreas,
+                   rstl::string_l("*RenderBeforeAreas"));
+  DrawUnsortedGeometry(areas, mask, targetMask, visor);
+  DrawSky(areas, visor);
+  RenderActorQueue(mStateManagerContainer->mRenderFirstSorted,
+                   rstl::string_l("*renderFirstSorted"));
+
+  bool deferPlayerRender = false;
+  CEchoEmitter* emitters = nullptr;
+  for (int i = 0; i < areas.size(); ++i) {
+    const CGameArea& area = *areas[i];
+    SetupFogForArea(area);
+    gpRender->SetWorldLightFadeLevel(area.GetPostConstructed()->mWorldLightingLevel);
+    RenderAreaActors(deferPlayerRender, emitters, area, visibility[i]);
+    DrawSpecialGeometry(area.GetId(), visor, mask, targetMask);
+    ++mObjectDrawToken;
+
+    if (area.GetId() == mVisAreaId) {
+      CScopedProfiler decalProfile(rstl::string_l("*Decal+ActorParticleStragglers"), true);
+      CDecalManager::AddToRenderer(*this);
+      mActorModelParticles->AddStragglersToRenderer(*this);
+      if (mProjectedShadows) {
+        CScopedProfiler shadowProfile(rstl::string_l("*Projected"), true);
+        for (const CProjectedShadow* shadow = mProjectedShadows; shadow;
+             shadow = shadow->GetNextShadow()) {
+          shadow->Render(*this);
+        }
+      }
+    }
+    if (area.GetId() == mCurrentRenderPlayer->GetCurrentAreaId()) {
+      CScopedProfiler shadowProfile(rstl::string_l("*IDBasedShadows"), true);
+      player->GetMorphBall()->DrawBallShadow(*this);
+    }
+
+    CScopedProfiler sortedProfile(rstl::string_l("*AllSortedGeometry"), true);
+    const int mode = visor == CPlayerState::kPV_Scan ? 1 : 0;
+    if (visor != CPlayerState::kPV_Echo) {
+      gpRender->DrawSortedGeometry(mode, area.GetId().Value());
+    } else {
+      gpRender->DrawSortedGeometry(mode, -2);
+    }
+  }
+
+  {
+    CScopedProfiler envProfile(rstl::string_l("*EnvFxManager"), true);
+    mEnvFxManager->Render(*this);
+  }
+  if (deferPlayerRender) {
+    CScopedProfiler playerProfile(rstl::string_l("*2ndPlayerRender"), true);
+    player->Render(*this);
+  }
+  if (visor == CPlayerState::kPV_Scan) {
+    CScopedProfiler visorProfile(rstl::string_l("*GameVisor"), true);
+    CapturePlayerTextures();
+    mCurrentRenderPlayer->GetTargeting()->Draw(*this, gui);
+  }
+  {
+    CScopedProfiler fogProfile(rstl::string_l("*PostRenderFogs"), true);
+    gpRender->PostRenderFogs();
+  }
+  DrawDarkWorldEffects(visor);
+  {
+    CScopedProfiler fluidProfile(rstl::string_l("*FluidPlaneManagerEndFrame"), true);
+    mFluidPlaneManager->EndFrame();
+    gpRender->SetWorldFog(kRFM_None, 0.f, 1.f, CColor::Black());
+  }
+  {
+    CScopedProfiler gunProfile(rstl::string_l("*PlayerGun"), true);
+    player->RenderGun(*this, mCameraManager->GetGlobalCameraTranslation(*this, true));
+  }
+  RenderActorQueue(mStateManagerContainer->mRenderLastUnderGun,
+                   rstl::string_l("*RenderLastUnderGun"));
+  DrawDarkWorldCloud(visor);
+  if (!mStateManagerContainer->mRenderLast.empty()) {
+    CGraphics::SetDepthRange(4.f / 256.f, 8.f / 256.f);
+    RenderActorQueue(mStateManagerContainer->mRenderLast, rstl::string_l("*RenderLast"));
+    CGraphics::SetDepthRange(0.125f, 1.f);
+  }
+  if (gkWorldOnlyReflection) {
+    CScopedProfiler reflectionProfile(rstl::string_l("*PlayerReflection"), true);
+    CacheReflection();
+  }
+
+  SetParticleAlphaUpdate(false);
+  CParticleGen::sDrawFlags = 0;
+  CParticleGen::sDrawMask = 0;
+  gpRender->SetRequestedMaterialMode(0);
+  switch (visor) {
+  case CPlayerState::kPV_Dark:
+    RenderForgottenObjects();
+    DrawDarkVisor(gui);
+    break;
+  case CPlayerState::kPV_Echo:
+    gpRender->DrawScreenFilter(gpTweakGui->GetEchoBaseColor(), gpTweakGui->GetEchoOutlineColor(),
+                               gpTweakGui->GetEchoRingColor());
+    RenderEchoEmitters(emitters);
+    break;
+  default:
+    break;
+  }
+
+  ResetViewAfterDraw(viewport, viewMatrix);
+  {
+    CScopedProfiler filterProfile(rstl::string_l("*DrawAdditionalFilters"), true);
+    DrawAdditionalFilters();
+  }
+  RenderActorQueue(mStateManagerContainer->mRenderLastAfterCameraFilters,
+                   rstl::string_l("*RenderLastAfterCameraFilters"));
+  ReleaseRendererWorkspace();
 }
 
 void CStateManager::ResetViewAfterDraw(const CViewport& viewport, const CTransform4f& viewMatrix) {
@@ -1350,6 +1491,25 @@ void CStateManager::CapturePlayerTextures() {
                                   textureWidth, textureHeight);
     }
   }
+}
+
+void CStateManager::RenderForgottenObjects() {
+  const float depthFar = CGraphics::GetDepthFar();
+  const float depthNear = CGraphics::GetDepthNear();
+  const CFilteredObjectList* list = mFilteredObjectLists[kFOL_ForgottenObject].get();
+
+  CGraphics::SetDepthRange(1.f / 256.f, 2.5f / 256.f);
+  for (rstl::list< CEntity* >::const_iterator it = list->GetObjects().begin();
+       it != list->GetObjects().end(); ++it) {
+    TCastToPtr< CScriptForgottenObject >(*it)->RenderDepthOnly(*this);
+  }
+
+  CGraphics::SetDepthRange(2.5f / 256.f, 4.f / 256.f);
+  for (rstl::list< CEntity* >::const_iterator it = list->GetObjects().begin();
+       it != list->GetObjects().end(); ++it) {
+    TCastToPtr< CScriptForgottenObject >(*it)->RenderAlphaMask(*this);
+  }
+  CGraphics::SetDepthRange(depthNear, depthFar);
 }
 
 void CStateManager::UpdateDynamicLayers() {
