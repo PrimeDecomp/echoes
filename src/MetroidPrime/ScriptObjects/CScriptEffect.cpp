@@ -2,6 +2,7 @@
 
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CEffectWaypointPredicate.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
@@ -22,18 +23,6 @@
 
 uint CScriptEffect::mNumParticlesDrawing = 0;
 uint CScriptEffect::mNumParticlesUpdating = 0;
-
-namespace {
-// Guessed name. Effect paths only accept script waypoints.
-class CEffectWaypointPredicate : public CValidEntityPredicate {
-public:
-  // CValidEntityPredicate
-  ~CEffectWaypointPredicate() override;
-  bool IsValid(const CStateManager& mgr, TUniqueId id) const override {
-    return TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(id)) != nullptr;
-  }
-};
-} // namespace
 
 CScriptEffect::CScriptEffect(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
@@ -158,9 +147,7 @@ void CScriptEffect::Think(float dt, CStateManager& mgr) {
   }
 }
 
-namespace {
 CEffectWaypointPredicate::~CEffectWaypointPredicate() {}
-} // namespace
 
 void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const bool oldEmitting = mEmitting;
