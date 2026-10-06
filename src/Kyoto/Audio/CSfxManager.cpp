@@ -12,8 +12,8 @@
 #include <math.h>
 
 CSfxManager::CSfxChannel CSfxManager::mChannels[4];
-rstl::reserved_vector< CSfxManager::SLowPassFilter, 8 > CSfxManager::mLowPassFilters;
 rstl::reserved_vector< CSfxManager::SLowPassFilter, 8 > CSfxManager::mAreaLowPassFilters;
+rstl::reserved_vector< CSfxManager::SLowPassFilter, 8 > CSfxManager::mLowPassFilters;
 rstl::auto_ptr< CToken > CSfxManager::mpTranslationTableToken;
 rstl::reserved_vector< CSfxManager::CSfxEmitterWrapper, 64 > CSfxManager::mEmitterWrapperPool;
 rstl::reserved_vector< CSfxManager::CSfxWrapper, 64 > CSfxManager::mWrapperPool;
@@ -1170,7 +1170,7 @@ void CSfxManager::RemoveLowPassAreaFilter(int id) {
 }
 
 bool CSfxManager::IsLowPassAreaFilterEnabled() {
-  return !mAreaLowPassFilters.empty() && mCurrentChannel == kSC_Game;
+  return mAreaLowPassFilters.size() > 0 && mCurrentChannel == kSC_Game;
 }
 
 int CSfxManager::GetLowPassAreaFrequency() { return mAreaLowPassFrequency; }
@@ -1217,7 +1217,7 @@ void CSfxManager::RemoveLowPassFilter(int id) {
 }
 
 bool CSfxManager::IsLowPassEnabled() {
-  return !mLowPassFilters.empty() && mCurrentChannel == kSC_Game;
+  return mLowPassFilters.size() > 0 && mCurrentChannel == kSC_Game;
 }
 
 int CSfxManager::GetLowPassFrequency() { return mLowPassFrequency; }
