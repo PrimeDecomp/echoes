@@ -38,7 +38,10 @@ bool CElementGen::sMoveRedToAlphaBuffer;
 struct CParticleListItemViewPointComp {
   bool operator()(const CElementGen::CParticleListItem& a,
                   const CElementGen::CParticleListItem& b) const {
-    return a.mViewPoint.GetY() > b.mViewPoint.GetY();
+    if (a.mViewPoint.GetY() > b.mViewPoint.GetY()) {
+      return true;
+    }
+    return false;
   }
 };
 
@@ -46,7 +49,10 @@ struct CParticleListItemViewPointComp {
 struct CTexturedParticleListItemViewPointComp {
   bool operator()(const CElementGen::CTexturedParticleListItem& a,
                   const CElementGen::CTexturedParticleListItem& b) const {
-    return a.mViewPoint.GetY() > b.mViewPoint.GetY();
+    if (a.mViewPoint.GetY() > b.mViewPoint.GetY()) {
+      return true;
+    }
+    return false;
   }
 };
 
@@ -272,8 +278,9 @@ CElementGen::CElementGen(TToken< CGenDescription > description, EModelOrientatio
 CElementGen::~CElementGen() {
   --sParticleSystemAliveCount;
   sParticleAliveCount -= mParticles.size();
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    delete mActivePartChildren[i];
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    delete (*it);
   }
 }
 
@@ -290,8 +297,9 @@ void CElementGen::ShutDown() { sStaticListInitialized = false; }
 
 void CElementGen::SetTranslation(const CVector3f& translation) {
   mTranslation = translation;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    CParticleGen* child = mActivePartChildren[i];
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    CParticleGen* child = (*it);
     switch (child->Get4CharId()) {
     case 'ELSC':
       child->SetTranslation(translation + mSEPO);
@@ -308,15 +316,17 @@ void CElementGen::SetTranslation(const CVector3f& translation) {
 
 void CElementGen::SetGlobalTranslation(const CVector3f& translation) {
   mGlobalTranslation = translation;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetGlobalTranslation(translation);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetGlobalTranslation(translation);
   }
 }
 
 void CElementGen::SetModulationColor(const CColor& color) {
   mModuColor = color;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetModulationColor(color);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetModulationColor(color);
   }
 }
 
@@ -324,46 +334,58 @@ const CColor& CElementGen::GetModulationColor() const { return mModuColor; }
 
 void CElementGen::SetGlobalScale(const CVector3f& scale) {
   mGlobalScale = scale;
-  for (int i = 0; i < 3; ++i) {
-    if (close_enough(mGlobalScale[i], 0.f, 0.0001f)) {
-      mGlobalScale[i] = 0.0001f * (mGlobalScale[i] < 0.f ? -1.f : 1.f);
-    }
+  if (close_enough(mGlobalScale.GetX(), 0.f, 0.0001f)) {
+    mGlobalScale.SetX(0.0001f * CMath::Sign(mGlobalScale.GetX()));
   }
-  mGlobalScaleTransform = CTransform4f::Scale(mGlobalScale);
+  if (close_enough(mGlobalScale.GetY(), 0.f, 0.0001f)) {
+    mGlobalScale.SetY(0.0001f * CMath::Sign(mGlobalScale.GetY()));
+  }
+  if (close_enough(mGlobalScale.GetZ(), 0.f, 0.0001f)) {
+    mGlobalScale.SetZ(0.0001f * CMath::Sign(mGlobalScale.GetZ()));
+  }
+  mGlobalScaleTransform = CTransform4f::Scale(mGlobalScale.GetX(), mGlobalScale.GetY(), mGlobalScale.GetZ());
   mGlobalScaleTransformInverse = CTransform4f::Scale(
       1.f / mGlobalScale.GetX(), 1.f / mGlobalScale.GetY(), 1.f / mGlobalScale.GetZ());
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetGlobalScale(scale);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetGlobalScale(scale);
   }
 }
 
 void CElementGen::SetLocalScale(const CVector3f& scale) {
   mLocalScale = scale;
-  for (int i = 0; i < 3; ++i) {
-    if (close_enough(mLocalScale[i], 0.f, 0.0001f)) {
-      mLocalScale[i] = 0.0001f * (mLocalScale[i] < 0.f ? -1.f : 1.f);
-    }
+  if (close_enough(mLocalScale.GetX(), 0.f, 0.0001f)) {
+    mLocalScale.SetX(0.0001f * CMath::Sign(mLocalScale.GetX()));
   }
-  mLocalScaleTransform = CTransform4f::Scale(mLocalScale);
+  if (close_enough(mLocalScale.GetY(), 0.f, 0.0001f)) {
+    mLocalScale.SetY(0.0001f * CMath::Sign(mLocalScale.GetY()));
+  }
+  if (close_enough(mLocalScale.GetZ(), 0.f, 0.0001f)) {
+    mLocalScale.SetZ(0.0001f * CMath::Sign(mLocalScale.GetZ()));
+  }
+  mLocalScaleTransform = CTransform4f::Scale(mLocalScale.GetX(), mLocalScale.GetY(), mLocalScale.GetZ());
   mLocalScaleTransformInverse = CTransform4f::Scale(
       1.f / mLocalScale.GetX(), 1.f / mLocalScale.GetY(), 1.f / mLocalScale.GetZ());
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetLocalScale(scale);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetLocalScale(scale);
   }
 }
 
 void CElementGen::SetOrientation(const CTransform4f& orientation) {
   mOrientation = orientation;
   mOrientationInverse = mOrientation.GetQuickInverse().BuildMatrix3f();
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetOrientation(orientation);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetOrientation(orientation);
   }
 }
 
 void CElementGen::SetGlobalOrientation(const CTransform4f& orientation) {
   mGlobalOrientation.SetRotation(orientation);
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetGlobalOrientation(mGlobalOrientation);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetGlobalOrientation(mGlobalOrientation);
   }
 }
 
@@ -530,8 +552,9 @@ bool CElementGen::UpdateVelocitySource(int sourceIndex, int particleFrame, CPart
   }
   if (expired) {
     particle.mEndFrame = -1;
+    return true;
   }
-  return expired;
+  return false;
 }
 
 void CElementGen::UpdateExistingParticles() {
@@ -715,7 +738,7 @@ void CElementGen::CreateNewParticles(int count) {
 
 void CElementGen::UpdatePSTranslationAndOrientation() {
   CGlobalRandom random(mRandState);
-  if (mCurFrame <= mPSLT) {
+  if (mPSLT >= mCurFrame) {
     if (mLoadedGenDesc->mPOFS) {
       mLoadedGenDesc->mPOFS->GetValue(mCurFrame, mPOFS);
     }
@@ -813,9 +836,9 @@ CParticleGen* CElementGen::ConstructChildParticleSystem(
 
 CParticleGen* CElementGen::ConstructChildParticleSystem(const CToken& description, uint type,
                                                         ushort seed) const {
-  const EOptionalSystemFlags boundsFlags = mEnableDynamicBounds ? kOSF_One : kOSF_DisableBounds;
-  const EOptionalSystemFlags flags =
-      EOptionalSystemFlags((mEnableOPTS ? kOSF_Two : kOSF_One) | boundsFlags);
+  const int boundsFlags = mEnableDynamicBounds ? kOSF_One : kOSF_DisableBounds;
+  const int optsFlags = mEnableOPTS ? kOSF_Two : kOSF_One;
+  const EOptionalSystemFlags flags = EOptionalSystemFlags(optsFlags | boundsFlags);
   return ConstructChildParticleSystem(
       description, type, seed, flags, mModelsUseLights, mParticleEmission, mTranslation,
       mOrientation, mGlobalTranslation, mGlobalOrientation, mGlobalScale, mModuColor, mLocalScale);
@@ -927,8 +950,9 @@ void CElementGen::UpdateChildParticleSystems(double dt) {
 
 void CElementGen::SetParticleEmission(bool emission) {
   mParticleEmission = emission;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->SetParticleEmission(emission);
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->SetParticleEmission(emission);
   }
 }
 
@@ -940,8 +964,9 @@ void CElementGen::ForceParticleCreation(int count) {
 
 void CElementGen::EndLifetime() {
   mPSLT = 0;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    CParticleGen* child = mActivePartChildren[i];
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    CParticleGen* child = (*it);
     if (child->Get4CharId() == 'PART') {
       static_cast< CElementGen* >(child)->EndLifetime();
     } else {
@@ -953,34 +978,42 @@ void CElementGen::EndLifetime() {
 void CElementGen::DestroyParticles() {
   sParticleAliveCount -= mParticles.size();
   mParticles.clear();
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    mActivePartChildren[i]->DestroyParticles();
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    (*it)->DestroyParticles();
   }
   mActiveParticleCount = 0;
   mRecursiveParticleCount = GetParticleCountAllInternal();
 }
 
 bool CElementGen::IsSystemDeletable() {
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    if (!mActivePartChildren[i]->IsSystemDeletable()) {
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin(),
+                                               end = mActivePartChildren.end();
+       it != end; ++it) {
+    if (!(*it)->IsSystemDeletable()) {
       return false;
     }
   }
-  return mCurFrame > mPSLT && mActiveParticleCount == 0;
+  if (mPSLT < mCurFrame && static_cast< int >(mActiveParticleCount) == 0) {
+    return true;
+  }
+  return false;
 }
 
 void CElementGen::Render() {
   CStopwatch stopwatch;
   mBackupLightActive = CGraphics::GetLightMask();
   CGraphics::DisableAllLights();
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    if (mActivePartChildren[i]->ShouldDraw()) {
-      mActivePartChildren[i]->Render();
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    CParticleGen* child = *it;
+    if (child->ShouldDraw()) {
+      child->Render();
     }
   }
 
   CParticleGlobals::SParticleSystem system('PART', this);
-  if (!mParticles.empty() && ShouldDraw()) {
+  if (mParticles.size() > 0 && ShouldDraw()) {
     if (mLoadedGenDesc->mPMDL || mLoadedGenDesc->mPMUS) {
       RenderModels();
     }
@@ -1015,10 +1048,10 @@ void CElementGen::RenderBasicParticlesNoRotTS(const CTransform4f& xf) const {
     const CParticle& particle = mParticles[i];
     const CVector3f viewPos = xf * particle.mPos;
     const float halfSize = 0.5f * particle.mLineLengthOrSize;
-    const uint color = particle.mColor.GetColor_u32();
     float x = viewPos.GetX() + halfSize;
     const float y = viewPos.GetY();
     float z = viewPos.GetZ() + halfSize;
+    const uint color = particle.mColor.GetColor_u32();
 
     GXPosition3f32(x, y, z);
     GXColor1u32(color);
@@ -1045,16 +1078,16 @@ void CElementGen::RenderBasicParticlesRotTS(const CTransform4f& xf) const {
   for (int i = 0; i < mParticles.size(); ++i) {
     const CParticle& particle = mParticles[i];
     const CVector3f viewPos = xf * particle.mPos;
+    const float x = viewPos.GetX();
+    const float y = viewPos.GetY();
+    const float z = viewPos.GetZ();
     const uint color = particle.mColor.GetColor_u32();
     const float halfSize = 0.5f * particle.mLineLengthOrSize;
-    const float theta = CRelAngle::FromDegrees(particle.mLineWidthOrRota).AsRadians();
+    const float theta = particle.mLineWidthOrRota * (M_PIF / 180.f);
     const float sinT = CMath::FastSinR(theta) * halfSize;
     const float cosT = CMath::FastCosR(theta) * halfSize;
     const float sinPlusCos = sinT + cosT;
     const float sinMinusCos = sinT - cosT;
-    const float x = viewPos.GetX();
-    const float y = viewPos.GetY();
-    const float z = viewPos.GetZ();
 
     GXPosition3f32(x + sinPlusCos, y, z - sinMinusCos);
     GXColor1u32(color);
@@ -1079,11 +1112,11 @@ void CElementGen::RenderBasicParticlesNoRotNoTS(const CTransform4f& xf) const {
     const CParticle& particle = mParticles[i];
     const CVector3f viewPos =
         xf * ((particle.mPos - particle.mPrevPos) * mTimeDeltaScale + particle.mPrevPos);
-    const uint color = particle.mColor.GetColor_u32();
     const float halfSize = 0.5f * particle.mLineLengthOrSize;
     float x = viewPos.GetX() + halfSize;
     const float y = viewPos.GetY();
     float z = viewPos.GetZ() + halfSize;
+    const uint color = particle.mColor.GetColor_u32();
 
     GXPosition3f32(x, y, z);
     GXColor1u32(color);
@@ -1111,16 +1144,16 @@ void CElementGen::RenderBasicParticlesRotNoTS(const CTransform4f& xf) const {
     const CParticle& particle = mParticles[i];
     const CVector3f viewPos =
         xf * ((particle.mPos - particle.mPrevPos) * mTimeDeltaScale + particle.mPrevPos);
+    const float x = viewPos.GetX();
+    const float y = viewPos.GetY();
+    const float z = viewPos.GetZ();
     const uint color = particle.mColor.GetColor_u32();
-    const float halfSize = 0.5f * particle.mLineLengthOrSize;
-    const float theta = CRelAngle::FromDegrees(particle.mLineWidthOrRota).AsRadians();
+    const float halfSize = particle.mLineLengthOrSize * 0.5f;
+    const float theta = particle.mLineWidthOrRota * (M_PIF / 180.f);
     const float sinT = CMath::FastSinR(theta) * halfSize;
     const float cosT = CMath::FastCosR(theta) * halfSize;
     const float sinPlusCos = sinT + cosT;
     const float sinMinusCos = sinT - cosT;
-    const float x = viewPos.GetX();
-    const float y = viewPos.GetY();
-    const float z = viewPos.GetZ();
 
     GXPosition3f32(x + sinPlusCos, y, z - sinMinusCos);
     GXColor1u32(color);
@@ -1177,7 +1210,7 @@ void CElementGen::RenderBasicParticlesRotTSModulated(const CTransform4f& xf) con
     const CVector3f viewPos = xf * particle.mPos;
     const uint color = CColor::Modulate(mModuColor, particle.mColor).GetColor_u32();
     const float halfSize = 0.5f * particle.mLineLengthOrSize;
-    const float theta = CRelAngle::FromDegrees(particle.mLineWidthOrRota).AsRadians();
+    const float theta = particle.mLineWidthOrRota * (M_PIF / 180.f);
     const float sinT = CMath::FastSinR(theta) * halfSize;
     const float cosT = CMath::FastCosR(theta) * halfSize;
     const float sinPlusCos = sinT + cosT;
@@ -1243,7 +1276,7 @@ void CElementGen::RenderBasicParticlesRotNoTSModulated(const CTransform4f& xf) c
         xf * ((particle.mPos - particle.mPrevPos) * mTimeDeltaScale + particle.mPrevPos);
     const uint color = CColor::Modulate(mModuColor, particle.mColor).GetColor_u32();
     const float halfSize = 0.5f * particle.mLineLengthOrSize;
-    const float theta = CRelAngle::FromDegrees(particle.mLineWidthOrRota).AsRadians();
+    const float theta = particle.mLineWidthOrRota * (M_PIF / 180.f);
     const float sinT = CMath::FastSinR(theta) * halfSize;
     const float cosT = CMath::FastCosR(theta) * halfSize;
     const float sinPlusCos = sinT + cosT;
@@ -2896,33 +2929,46 @@ int CElementGen::GetParticleCountAll() const { return mRecursiveParticleCount; }
 
 int CElementGen::GetParticleCountAllInternal() const {
   int count = mActiveParticleCount;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    CParticleGen* child = mActivePartChildren[i];
-    if (child->Get4CharId() == 'PART') {
-      count += static_cast< CElementGen* >(child)->GetParticleCountAll();
-    } else {
-      count += child->GetParticleCount();
-    }
+  for (rstl::vector< CParticleGen* >::const_iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    CParticleGen* child = (*it);
+    count += child->Get4CharId() == 'PART' ? static_cast< CElementGen* >(child)->GetParticleCountAll()
+                                           : child->GetParticleCount();
   }
   return count;
 }
 
 int CElementGen::GetSystemCount() {
   int count = static_cast< int >(mActiveParticleCount) > 0;
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    count += mActivePartChildren[i]->GetSystemCount();
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin(),
+                                               end = mActivePartChildren.end();
+       it != end; ++it) {
+    count += (*it)->GetSystemCount();
   }
   return count;
 }
 
 void CElementGen::AccumulateBounds(const CVector3f& position, float size) {
-  for (int i = 0; i < 3; ++i) {
-    if (position[i] > mAabbMax[i]) {
-      mAabbMax[i] = position[i];
-    }
-    if (position[i] < mAabbMin[i]) {
-      mAabbMin[i] = position[i];
-    }
+  const float x = position.GetX();
+  const float y = position.GetY();
+  const float z = position.GetZ();
+  if (x > mAabbMax.GetX()) {
+    mAabbMax.SetX(x);
+  }
+  if (x < mAabbMin.GetX()) {
+    mAabbMin.SetX(x);
+  }
+  if (y > mAabbMax.GetY()) {
+    mAabbMax.SetY(y);
+  }
+  if (y < mAabbMin.GetY()) {
+    mAabbMin.SetY(y);
+  }
+  if (z > mAabbMax.GetZ()) {
+    mAabbMax.SetZ(z);
+  }
+  if (z < mAabbMin.GetZ()) {
+    mAabbMin.SetZ(z);
   }
   if (size > mMaxSize) {
     mMaxSize = size;
@@ -2933,8 +2979,9 @@ void CElementGen::BuildParticleSystemBounds() {
   CAABox childBounds = CAABox::MakeMaxInvertedBox();
   bool accumulated = false;
   if (mEnableDynamicBounds) {
-    for (int i = 0; i < mActivePartChildren.size(); ++i) {
-      rstl::optional_object< CAABox > bounds = mActivePartChildren[i]->GetBounds();
+    for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+         it != mActivePartChildren.end(); ++it) {
+      rstl::optional_object< CAABox > bounds = (*it)->GetBounds();
       if (bounds) {
         accumulated = true;
         childBounds.AccumulateBounds(bounds->GetMinPoint());
@@ -3004,14 +3051,17 @@ float CElementGen::GetGenerationRate() {
   float rate = 0.f;
   if (mLoadedGenDesc->mGRTE->GetValue(mCurFrame, rate)) {
     return 0.f;
+  } else {
+    rate = rstl::max_val(0.f, rate * mGeneratorRate);
+    return rate;
   }
-  return rstl::max_val(0.f, rate * mGeneratorRate);
 }
 
 void CElementGen::SetGeneratorRate(float rate) {
   mGeneratorRate = rstl::max_val(rate, 0.f);
-  for (int i = 0; i < mActivePartChildren.size(); ++i) {
-    CParticleGen* child = mActivePartChildren[i];
+  for (rstl::vector< CParticleGen* >::iterator it = mActivePartChildren.begin();
+       it != mActivePartChildren.end(); ++it) {
+    CParticleGen* child = (*it);
     if (child->Get4CharId() == 'PART') {
       child->SetGeneratorRate(mGeneratorRate);
     }
