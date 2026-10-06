@@ -2,8 +2,9 @@
 
 // Reconstructed operation names; original spellings are unknown.
 void CStateManager::ScriptMsgArray::Append(const CScriptMsg& msg) {
-  mMessages[mWriteIndex] = msg;
-  mWriteIndex = (mWriteIndex + 1) % kCapacity;
+  const uint writeIndex = mWriteIndex;
+  mMessages[writeIndex] = msg;
+  mWriteIndex = (writeIndex + 1) % kCapacity;
 }
 
 CScriptMsg CStateManager::ScriptMsgArray::Dequeue() {
@@ -13,8 +14,8 @@ CScriptMsg CStateManager::ScriptMsgArray::Dequeue() {
 }
 
 int CStateManager::ScriptMsgArray::GetCount() const {
-  if (mWriteIndex >= mReadIndex) {
-    return mWriteIndex - mReadIndex;
+  if (mWriteIndex < mReadIndex) {
+    return kCapacity - mReadIndex + mWriteIndex;
   }
-  return kCapacity - mReadIndex + mWriteIndex;
+  return mWriteIndex - mReadIndex;
 }
