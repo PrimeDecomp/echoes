@@ -261,6 +261,10 @@ namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(SConnection)
 } // namespace rstl
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(SConnection)
+} // namespace rstl
+
 class CEntityInfo {
   TAreaId mAreaId;
   rstl::vector< SConnection > mConnections;

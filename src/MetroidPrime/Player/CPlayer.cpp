@@ -600,8 +600,8 @@ void CPlayer::ResetPlayerState(CStateManager& mgr, int state) {
       cameraId = mCameraManager->GetBallCamera()->GetUniqueId();
     }
     mCameraManager->Reset(cameraId, mgr);
-    GetPlayerHintManager()->Reset(mgr);
-    GetControlHintManager()->Reset(mgr);
+    GetPlayerHintManager()->RefreshHint(mgr);
+    GetControlHintManager()->RefreshHint(mgr);
     ResetPlayerHintState(mgr);
     mMorphBall->SetBallState(CMorphBall::kBS_Normal);
     if (mgr.IsMultiplayer()) {
@@ -1362,7 +1362,7 @@ void CPlayer::SetSpawnedMorphBallState(EPlayerMorphBallState state, CStateManage
     case kMS_Morphed: {
       EnterMorphBallState(mgr, kMS_Unmorphed);
       ActivateMorphBallCamera(mgr);
-      mCameraManager->HintManager()->Reset(mgr);
+      mCameraManager->HintManager()->RefreshHint(mgr);
       mCameraManager->BallCamera()->Reset(CreateTransformFromMovementDirection(), mgr);
       mGun->Holster(mgr);
       break;
@@ -1419,7 +1419,7 @@ void CPlayer::UpdateCinematicState(CStateManager& mgr) {
       case kMS_Morphed:
         EnterMorphBallState(mgr, kMS_Unmorphed);
         ActivateMorphBallCamera(mgr);
-        mCameraManager->HintManager()->Reset(mgr);
+        mCameraManager->HintManager()->RefreshHint(mgr);
         mCameraManager->BallCamera()->Reset(CreateTransformFromMovementDirection(), mgr);
         break;
       default:
@@ -3858,7 +3858,96 @@ CVector3f CPlayer::GetOrbitPosition(const CStateManager& mgr) const {
 }
 
 void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
-  // TODO: Apply entry/exit camera, collision, controls and animation changes.
+  switch (state) {
+  case kTS_Entering: {
+    CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
+    if (turret != nullptr) {
+      mTurretTimer = 0.f;
+      Stop();
+      SetVelocityWR(CVector3f::Zero());
+      mGun->Holster(mgr);
+      RemoveMaterial(kMT_Unknown59, mgr);
+      SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
+      mBodyController->CommandMgr().DeliverCmd(CPBCMorphToBallCmd(0, 2));
+    } else {
+      SetTurretState(kTS_None, mgr);
+      return;
+    }
+    SetScanningState(kSS_NotScanning, mgr);
+
+    if (mgr.IsMultiplayer()) {
+      const CDamageInfo crushDamage(CWeaponMode(kWT_Power), 1000.f, 0.f, 1.f, true);
+      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+        if (i != GetPlayerIndex()) {
+          CVector3f displacement = mgr.GetPlayer(i)->GetTranslation() - GetTranslation();
+          const float verticalOffset = displacement.GetZ();
+          displacement.SetZ(0.f);
+          if (displacement.Magnitude() < 4.f && CMath::AbsF(verticalOffset) < 5.f) {
+            mgr.ApplyDamage(GetUniqueId(), mgr.GetPlayer(i)->GetUniqueId(), GetUniqueId(),
+                            crushDamage,
+                            CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)),
+                            CVector3f::Zero());
+          }
+        }
+      }
+
+      const CGameState& gameState = *gpGameState;
+      gameState.GetGameMode().NotifyStop(mgr, GetUniqueId());
+      mPlayerState->ReInitializePowerUp(CPlayerState::kIT_HackedEffect, 0);
+      CPlayerState::CPowerUp& powerUp = mPlayerState->PowerUp(CPlayerState::kIT_HackedEffect);
+      powerUp.mTimeLeft = -1.f;
+      powerUp.mAmount = 0;
+      powerUp.mCapacity = 0;
+      mgr.DisplayAlertAboutOutOfAmmo(*this, CPlayerState::kIT_HackedEffect);
+      mPlayerState->ReInitializePowerUp(CPlayerState::kIT_Invisibility, 0);
+      powerUp = mPlayerState->GetPowerUp(CPlayerState::kIT_Invisibility);
+      powerUp.mTimeLeft = 0.f;
+      powerUp.mAmount = 0;
+      powerUp.mCapacity = 0;
+      mPlayerState->ReInitializePowerUp(CPlayerState::kIT_DoubleDamage, 0);
+      powerUp = mPlayerState->GetPowerUp(CPlayerState::kIT_DoubleDamage);
+      powerUp.mTimeLeft = 0.f;
+      powerUp.mAmount = 0;
+      powerUp.mCapacity = 0;
+      mPlayerState->ReInitializePowerUp(CPlayerState::kIT_Invincibility, 0);
+      powerUp = mPlayerState->GetPowerUp(CPlayerState::kIT_Invincibility);
+      powerUp.mTimeLeft = 0.f;
+      powerUp.mAmount = 0;
+      powerUp.mCapacity = 0;
+    }
+    break;
+  }
+  case kTS_Active: {
+    CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
+    if (turret != nullptr) {
+      SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
+    }
+    break;
+  }
+  case kTS_Exiting: {
+    CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId));
+    if (turret != nullptr) {
+      PlayerTurret_ExitTurret(*turret, mgr);
+      CVector3f position = GetTurretTransform(mgr).GetTranslation();
+      position.SetZ(position.GetZ() - GetEyeHeight());
+      SetTranslation(position);
+    }
+    CVector3f velocity = 30.f * -PlayerTurret_GetCameraTransform(*turret, mgr).GetForward();
+    velocity.SetZ(30.f);
+    SetVelocityWR(velocity);
+    AddMaterial(kMT_Unknown59, mgr);
+    mBodyController->CommandMgr().DeliverCmd(CPBCMorphToPlayerCmd(1, 0));
+    mTurretGunDrawBlocks.RemovePlayer(mgr, mPlayerIndex);
+    break;
+  }
+  case kTS_None:
+    mTurretId = kInvalidUniqueId;
+    mTurretGunDrawBlocks.RemovePlayer(mgr, mPlayerIndex);
+    break;
+  case kTS_Ejected:
+  default:
+    break;
+  }
   mTurretState = state;
 }
 
@@ -3893,7 +3982,7 @@ void CPlayer::EjectFromTurret(TUniqueId turret, CStateManager& mgr) {
 }
 
 void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
-  if (CEntity* turret = TryCast(mgr.ObjectById(mTurretId), kET_PlayerTurret)) {
+  if (CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId))) {
     switch (mTurretState) {
     case kTS_Entering:
       SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
@@ -3914,7 +4003,7 @@ void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
 }
 
 void CPlayer::ProcessTurretActions(const CFinalInput& input, CStateManager& mgr) {
-  if (CEntity* turret = TryCast(mgr.ObjectById(mTurretId), kET_PlayerTurret)) {
+  if (CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId))) {
     if (JumpPressed(input)) {
       ExitTurret(mgr);
     } else {
@@ -3933,7 +4022,7 @@ void CPlayer::fn_8000d3ac(const CVector3f& direction, CStateManager& mgr) {
 }
 
 CTransform4f CPlayer::GetTurretTransform(CStateManager& mgr) const {
-  CEntity* turret = TryCast(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)), kET_PlayerTurret);
+  CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
   if (turret) {
     CTransform4f transform = PlayerTurret_GetTurretTransform(*turret, mgr);
     if (mTurretState == kTS_Entering) {
