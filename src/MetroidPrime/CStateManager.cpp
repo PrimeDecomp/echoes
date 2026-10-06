@@ -1535,6 +1535,16 @@ bool CStateManager::RenderLastHUD(const TUniqueId& uid) {
   return true;
 }
 
+bool CStateManager::RenderLastAfterCameraFilters(const TUniqueId& uid) {
+  CStateManagerContainer* container = mStateManagerContainer.get();
+  if (container->mRenderLastAfterCameraFilters.size() ==
+      container->mRenderLastAfterCameraFilters.capacity()) {
+    return false;
+  }
+  container->mRenderLastAfterCameraFilters.push_back(uid);
+  return true;
+}
+
 bool CStateManager::RenderLast(TUniqueId uid) {
   CStateManagerContainer* container = mStateManagerContainer.get();
   if (container->mRenderLastUnderGun.size() == container->mRenderLastUnderGun.capacity()) {
