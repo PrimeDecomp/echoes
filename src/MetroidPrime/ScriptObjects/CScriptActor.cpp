@@ -4,9 +4,12 @@
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptColorModulate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "WorldFormat/CCollidableOBBTreeGroup.hpp"
 
 #include "Kyoto/Animation/CInt32POINode.hpp"
@@ -234,9 +237,17 @@ void CScriptActor::FireProjectile(CStateManager& mgr, const rstl::string& locato
     return;
   }
 
-  // TODO: check the owner's AI projectile limit, then create and add CEnergyProjectile
-  // with this transform and mProjectileInfo->GetDamage(). Its Echoes interface is not
-  // reconstructed yet; do not substitute another projectile class.
+  if (!mgr.CanCreateProjectile(GetUniqueId(), kWT_AI, 1)) {
+    return;
+  }
+
+  CEnergyProjectile* projectile = rs_new CEnergyProjectile(
+      true, mProjectileInfo->Token(), kWT_AI, xf, kMT_Character, mProjectileInfo->GetDamage(),
+      mgr.AllocateUniqueId(), GetCurrentAreaId(), GetUniqueId(), kInvalidUniqueId, kPA_None, false,
+      CVector3f(1.f, 1.f, 1.f), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
+  if (projectile != nullptr) {
+    mgr.AddObject(projectile);
+  }
 }
 
 void CScriptActor::SetPortalPlane(const CPlane& plane) {
@@ -279,6 +290,50 @@ CTransform4f CScriptActor::GetPrimitiveTransform() const {
   CTransform4f xf = GetTransform();
   xf.SetTranslation(xf.GetTranslation() + GetPrimitiveOffset());
   return xf;
+}
+
+CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrActor sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrActor.inc"
+
+  CMaterialList materials;
+  if (sldrThis.immovable) {
+    materials.Add(kMT_Immovable);
+  }
+  if (sldrThis.isSolid) {
+    materials.Add(kMT_Unknown59);
+  }
+  if (sldrThis.isCameraThrough) {
+    materials.Add(kMT_CameraPassthrough);
+  }
+  if (sldrThis.isScanThrough) {
+    materials.Add(kMT_ScanPassthrough);
+  }
+
+  const rstl::optional_object< CModelData > model =
+      LdrToModelData(sldrThis.editorProperties.transform.scale, sldrThis.model,
+                     sldrThis.animationInformation, sldrThis.isLoop);
+  if (!model.valid()) {
+    return nullptr;
+  }
+
+  const CAABox bounds =
+      sldrThis.collisionBox == CVector3f::Zero()
+          ? model->GetBounds(LdrToTransform4f(sldrThis.editorProperties).GetRotation())
+          : LoadCAABox(mgr, info.GetAreaId(), sldrThis.editorProperties.transform.scale,
+                       LdrToTransform4f(sldrThis.editorProperties), sldrThis.collisionBox,
+                       sldrThis.collisionOffset);
+
+  return rs_new CScriptActor(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), *model, bounds, materials, sldrThis.mass,
+      sldrThis.gravity, LdrToHealthInfo(sldrThis.health),
+      LdrToDamageVulnerability(sldrThis.vulnerability), LdrToActorParameters(sldrThis.actorInformation),
+      LdrToEchoParameters(sldrThis.echoInformation), sldrThis.isLoop, sldrThis.renderTextureSet,
+      sldrThis.drawsShadow, sldrThis.scaleAnimation, sldrThis.aiShootThrough,
+      sldrThis.randomAnimationOffset, sldrThis.projectile,
+      LdrToDamageInfo(sldrThis.projectileDamage), sldrThis.collisionModel);
 }
 
 bool CScriptActor::CheckActorRenderOnly() const {
