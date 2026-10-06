@@ -179,7 +179,7 @@ short CSfxManager::CSfxEmitterWrapper::GetAudible(const CVector3f& position) {
   if (distanceSquared < maxDistanceSquared * 0.5f) {
     return kSA_Medium;
   }
-  return distanceSquared < maxDistanceSquared ? kSA_Low : kSA_Inaudible;
+  return static_cast< ESfxAudibility >(distanceSquared < maxDistanceSquared);
 }
 
 SND_VOICEID CSfxManager::CSfxEmitterWrapper::GetVoice() const {
@@ -275,12 +275,11 @@ void CSfxManager::StopAndRemoveAllEmitters() {
   for (int i = 0; i < 4; ++i) {
     CSfxChannel& channel = mChannels[i];
     for (int j = 0; j < channel.mSounds.size(); ++j) {
-      CBaseSfxWrapper* sound = channel.mSounds[j];
-      if (sound != nullptr) {
-        if (sound->IsPlaying()) {
-          sound->Stop();
+      if (channel.mSounds[j] != nullptr) {
+        if (channel.mSounds[j]->IsPlaying()) {
+          channel.mSounds[j]->Stop();
         }
-        sound->Release();
+        channel.mSounds[j]->Release();
         channel.mSounds[j] = nullptr;
       }
     }
@@ -1132,14 +1131,14 @@ int CSfxManager::AddAuxEffect(int area, const SFilteredDelayAuxParameters& param
 }
 
 int CSfxManager::AddLowPassAreaFilter(int frequency, float duration) {
-  if (mAreaLowPassFilters.size() == mAreaLowPassFilters.capacity()) {
-    return 0;
+  if (mAreaLowPassFilters.size() < mAreaLowPassFilters.capacity()) {
+    if (++mNextAreaFilterId == 0) {
+      mNextAreaFilterId = 1;
+    }
+    mAreaLowPassFilters.push_back(SLowPassFilter(frequency, duration, mNextAreaFilterId));
+    return mNextAreaFilterId;
   }
-  if (++mNextAreaFilterId == 0) {
-    ++mNextAreaFilterId;
-  }
-  mAreaLowPassFilters.push_back(SLowPassFilter(frequency, duration, mNextAreaFilterId));
-  return mNextAreaFilterId;
+  return 0;
 }
 
 void CSfxManager::UpdateLowPassAreaFilters(float dt) {
@@ -1179,14 +1178,14 @@ bool CSfxManager::IsLowPassAreaFilterEnabled() {
 int CSfxManager::GetLowPassAreaFrequency() { return mAreaLowPassFrequency; }
 
 int CSfxManager::AddLowPassFilter(int frequency, float duration) {
-  if (mLowPassFilters.size() == mLowPassFilters.capacity()) {
-    return 0;
+  if (mLowPassFilters.size() < mLowPassFilters.capacity()) {
+    if (++mNextFilterId == 0) {
+      mNextFilterId = 1;
+    }
+    mLowPassFilters.push_back(SLowPassFilter(frequency, duration, mNextFilterId));
+    return mNextFilterId;
   }
-  if (++mNextFilterId == 0) {
-    ++mNextFilterId;
-  }
-  mLowPassFilters.push_back(SLowPassFilter(frequency, duration, mNextFilterId));
-  return mNextFilterId;
+  return 0;
 }
 
 void CSfxManager::UpdateLowPassFilters(float dt) {
