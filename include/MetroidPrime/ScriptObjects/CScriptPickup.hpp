@@ -15,8 +15,10 @@ public:
                 const CTransform4f& xf, const CModelData& mData, const CActorParameters& aParams,
                 const SEchoParameters& echo, const CAABox& aabb, CPlayerState::EItemType itemType,
                 int amount, int capacityIncrease, int itemPercentageIncrease, CAssetId pickupEffect,
-                bool absoluteValue, bool unknown, bool autoSpin, bool blinkOut, float lifetime,
-                float respawnTime, float fadeTime, float activateDelay, float, float, float, float, const CVector3f& orbitOffset);
+                bool absoluteValue, bool canHomeByDefault, bool autoSpin, bool blinkOut,
+                float lifetime, float respawnTime, float fadeTime, float activateDelay,
+                float pickupEffectLifetime, float autoHomeRange, float delayUntilHome,
+                float homingSpeed, const CVector3f& orbitOffset);
 
   // CEntity
   ~CScriptPickup();
@@ -30,13 +32,15 @@ public:
   void Touch(CActor&, CStateManager&) override;
   void PreRender(CStateManager&) override;
   void AddToRenderer(const CStateManager&) const override;
+  CVector3f GetOrbitPosition(const CStateManager& mgr) const override;
 
   CPlayerState::EItemType GetItem() const;
   int GetAmount() const { return mAmount; }
   int GetCapacity() const { return mCapacity; }
-  void SetSpawned();
+  void SetWasGenerated(CStateManager& mgr);
   bool IsVisible() const;
-  void ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* playerState, CPlayerState::EItemType itemType);
+  void ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* playerState,
+                                 CPlayerState::EItemType itemType);
 
 private:
   CPlayerState::EItemType mItemType; // x158
@@ -45,7 +49,7 @@ private:
   int mPercentageIncrease;
   float mLifeTime;
   float mRespawnTime;
-  float x170;
+  float mRespawnTimer;
   float mFadeTime;
   float mCurTime;
   float mTractorTime;
@@ -57,18 +61,19 @@ private:
   float mTransformZ;
   rstl::optional_object< TToken< CGenDescription > > mPickupParticleDesc;
   CAABox mTouchBounds;
-  int x1bc;
-  int x1c0;
+  int mFramesSinceLastSeen;
+  int mHomingPlayerIndex;
   CVector3f mOrbitOffset;
-  bool mUnknownProp : 1;
-  bool mGenerated : 1;  // unk
-  bool mInTractor : 1;  // unk
+  bool mCanHomeByDefault : 1;
+  bool mInTractor : 1;
+  bool mEnableTractorTest : 1;
   bool mAbsoluteValue : 1;
-  bool mEnableTractorTest : 1;  // unk
+  bool mSuppressDeathScriptMsgs : 1;
   bool mAutoSpin : 1;
-  bool mUnk2 : 1;
-  bool mUnk3 : 1;
+  bool mRenderedThisFrame : 1;
+  bool mSuppressBobbing : 1;
   bool mBlinkOut : 1;
 };
+CHECK_SIZEOF(CScriptPickup, 0x1d8)
 
 #endif // _CSCRIPTPICKUP
