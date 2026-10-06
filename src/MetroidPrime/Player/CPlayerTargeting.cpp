@@ -333,7 +333,8 @@ CPlayerTargeting::EScanState CPlayerTargeting::GetScanState(CStateManager& mgr,
   return scan->IsCritical() ? kSS_CriticalUnscanned : kSS_Unscanned;
 }
 
-void CPlayerTargeting::PrepareStaticGeometry(const CStateManager& mgr, TAreaId areaId) const {
+void CPlayerTargeting::PrepareStaticGeometry(const CStateManager& mgr,
+                                             const TAreaId& areaId) const {
   const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(mPlayerId));
   if (!player || player->GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Scan) {
     return;

@@ -7942,7 +7942,7 @@ GetScanTargetId__16CPlayerTargetingCFRC13CStateManageri = .text:0x801ECF44; // t
 ResolveScanTarget__16CPlayerTargetingCFRC13CStateManager9TUniqueId = .text:0x801ECFA8; // type:function size:0xF8
 __dt__25CActiveScanPointPredicateFv = .text:0x801ED0A0; // type:function size:0x60 scope:weak align:4
 Draw__16CPlayerTargetingCFR13CStateManagerRC20CInGameGuiManagerSet = .text:0x801ED100; // type:function size:0x5FC align:4
-PrepareStaticGeometry__16CPlayerTargetingCFRC13CStateManager7TAreaId = .text:0x801ED6FC; // type:function size:0x198
+PrepareStaticGeometry__16CPlayerTargetingCFRC13CStateManagerRC7TAreaId = .text:0x801ED6FC; // type:function size:0x198
 __dt__Q24rstl52vector<Q24rstl9pair<i,i>,Q24rstl17rmemory_allocator>Fv = .text:0x801ED894; // type:function size:0x54 scope:weak
 GetScanState__16CPlayerTargetingCFR13CStateManagerRC9TUniqueId = .text:0x801ED8E8; // type:function size:0x198
 GetHighlightColor__16CPlayerTargetingCFR13CStateManagerRC9TUniqueId = .text:0x801EDA80; // type:function size:0xFC
@@ -10759,7 +10759,7 @@ FindOverlappingWorldModels__13CCubeRendererFRQ24rstl37vector<Ui,Q24rstl17rmemory
 FindOrAddLightSet__13CCubeRendererFUi = .text:0x8026A290; // type:function size:0x70 align:4
 SetWorldLightFadeLevel__13CCubeRendererFf = .text:0x8026A300; // type:function size:0x38 align:4
 SetGXRegister1Color__13CCubeRendererFRC6CColor = .text:0x8026A338; // type:function size:0x30 align:4
-DrawScanRing__13CCubeRendererFfffffi = .text:0x8026A368; // type:function size:0x57C align:4
+DrawEchoVisorGeometry__13CCubeRendererFfffffi = .text:0x8026A368; // type:function size:0x57C align:4
 DrawScanSurface__13CCubeRendererFiRC10CCubeModelRCQ221CMetroidModelInstance14CSurfaceGroupsUsb = .text:0x8026A8E4; // type:function size:0xDC
 DrawScreenFilter__13CCubeRendererFRC6CColorRC6CColorRC6CColor = .text:0x8026A9C0; // type:function size:0x8F8 align:4
 DrawModelFlat__13CCubeRendererFRC16SModelRenderDataRC11CModelFlagsb = .text:0x8026B2B8; // type:function size:0x1A4 align:4

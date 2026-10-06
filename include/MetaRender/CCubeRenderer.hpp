@@ -94,8 +94,8 @@ public:
   // Guessed name
   void DrawSpecialGeometry(int areaId) override;
   // Guessed name
-  void DrawScanRing(float radius, float thickness, float alpha, float fade, float scanTime,
-                    int areaId) override;
+  void DrawEchoVisorGeometry(float pulsePhase, float bigRingScale, float bigRingFadeStart,
+                             float auraSmallSize, float auraBigSize, int areaId) override;
   // Guessed name
   void DrawUnsortedGeometryAlpha(int areaId) override;
   // Guessed name

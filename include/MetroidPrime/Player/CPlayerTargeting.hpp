@@ -29,7 +29,7 @@ public:
   TUniqueId GetScanTargetId(const CStateManager& mgr, int paletteIndex) const;
   TUniqueId ResolveScanTarget(const CStateManager& mgr, TUniqueId id) const;
   void Draw(CStateManager& mgr, const CInGameGuiManagerSet& gui) const;
-  void PrepareStaticGeometry(const CStateManager& mgr, TAreaId areaId) const;
+  void PrepareStaticGeometry(const CStateManager& mgr, const TAreaId& areaId) const;
   int GetScanTargetIndex(const CStateManager& mgr, TUniqueId id) const;
   void Update(float dt, CStateManager& mgr);
 

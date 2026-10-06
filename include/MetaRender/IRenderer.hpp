@@ -92,8 +92,8 @@ public:
   // Guessed name
   virtual void DrawSpecialGeometry(int areaId) = 0;
   // Guessed name
-  virtual void DrawScanRing(float radius, float thickness, float alpha, float fade, float scanTime,
-                            int areaId) = 0;
+  virtual void DrawEchoVisorGeometry(float pulsePhase, float bigRingScale, float bigRingFadeStart,
+                                     float auraSmallSize, float auraBigSize, int areaId) = 0;
   // Guessed name
   virtual void DrawUnsortedGeometryAlpha(int areaId) = 0;
   // Guessed name
