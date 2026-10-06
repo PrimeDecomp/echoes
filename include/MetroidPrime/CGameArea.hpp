@@ -188,7 +188,8 @@ public:
     rstl::single_ptr< CStaticGeometryMap > mStaticGeometryMap;
     rstl::single_ptr< CPortalArea > mPortalArea;
     rstl::single_ptr< CAreaObjectList > mAreaObjectList;
-    rstl::single_ptr< CAreaObjectList > xfc_;
+    rstl::single_ptr< CAreaObjectList >
+        mVisibleActorList; // Guessed name; built once for all viewports.
     rstl::single_ptr< CAreaFog > mAreaFog;
     rstl::vector< rstl::auto_ptr< char > > mLayerScriptBuffers;
     rstl::vector< int > mLayerScriptSizes;

@@ -205,6 +205,9 @@ public:
   void Touch();                                    // Prime-correlated name.
   void TouchSky();                                 // Prime-correlated name.
   void TouchPlayerActor();                         // Prime-correlated name; mutable REL shim.
+  static void ReflectionDrawer(void* context, const CVector3f& point); // Prime-correlated name.
+  void CacheReflection();                                              // Prime-correlated name.
+  void DrawReflection(const CVector3f& point);                         // Prime-correlated name.
 
   void AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
