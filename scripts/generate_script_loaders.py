@@ -46,6 +46,20 @@ from textwrap import dedent
 from typing import Protocol
 
 REPOSITORY = "PrimeDecomp/retro-script-object-templates"
+# Hard-coded for now: typedef loaders of Tweaks whose target reads the property count
+# as a signed 16-bit value into a ushort (and, for Collision, the size as a ushort).
+TWEAKS_USHORT_COUNT_STRUCTS = {
+    "TweakPlayer_Collision",
+    "TweakPlayer_Frozen",
+    "TweakPlayer_GrappleBeam",
+    "TweakPlayer_Misc",
+    "TweakPlayer_Motion",
+    "TweakPlayer_Orbit",
+    "TweakGame_TimeLimitChoices",
+    "TweakPlayerGun_Beam_Combo",
+}
+TWEAKS_USHORT_SIZE_STRUCTS = {"TweakPlayer_Collision"}
+
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
 # Selected-build omissions established from native readers, constructors and users.
@@ -1140,11 +1154,17 @@ class Generator:
     def render_tagged_reader(
         self, struct: Struct, parameter: str, indent: str = "  "
     ) -> list[str]:
+        name = struct.name.removeprefix("SLdr")
+        if name in TWEAKS_USHORT_COUNT_STRUCTS:
+            count = "  const ushort propertyCount = input.ReadInt16();"
+        else:
+            count = "  const int propertyCount = input.ReadUint16();"
+        size_type = "ushort" if name in TWEAKS_USHORT_SIZE_STRUCTS else "u16"
         lines = [
-            "  const int propertyCount = input.ReadUint16();",
+            count,
             "  for (int i = 0; i < propertyCount; ++i) {",
             "    const uint propertyId = input.Get< uint >();",
-            "    const u16 propertySize = input.ReadUint16();",
+            f"    const {size_type} propertySize = input.ReadUint16();",
             "    switch (propertyId) {",
         ]
         cases: list[tuple[str | None, list[str]]] = []
@@ -1387,6 +1407,9 @@ def profile_files(
     if aggregate is not None:
         # Preserve definition and first-include order: both affect MWCC output.
         includes: dict[str, None] = {}
+        if aggregate == "Tweaks.inc":
+            includes['#include "dolphin/types.h"'] = None
+            includes[""] = None
         bodies: list[str] = []
         for name in sources:
             lines = selected.pop(name).splitlines()
