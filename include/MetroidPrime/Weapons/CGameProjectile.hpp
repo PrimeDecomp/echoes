@@ -60,6 +60,11 @@ public:
                                      TUniqueId id, const CVector3f& direction);
 
   CAABox GetProjectileBounds() const;
+
+  CProjectileWeapon& Projectile() { return mProjectile; }
+
+  void SetMinHomingDistance(float distance) { mMinHomingDist = distance; }
+
   const CVector3f& GetPreviousPos() const { return mPreviousPos; }
   TUniqueId GetHomingTargetId() const { return mHomingTargetId; }
   bool GetWeaponActive() const { return mActive; }
