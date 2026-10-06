@@ -57,13 +57,14 @@ private:
   typedef rstl::pair< TUniqueId, SRayInfo > TRay;
   typedef rstl::reserved_vector< TRay, 8 > TRays;
   typedef rstl::pair< TUniqueId, TUniqueId > TTargetRay;
+  typedef rstl::reserved_vector< TTargetRay, 8 > TTargetRays;
 
   float mRadius;
   float mRaySpawnTimer;
   CProjectileInfo mRayProjectile;
   CBeamInfo mRayBeamInfo;
   TRays mRays;
-  rstl::reserved_vector< TTargetRay, 8 > mTargetRays;
+  TTargetRays mTargetRays;
   bool mRayListsDirty : 1;
 };
 CHECK_SIZEOF(CLightComboProjectile, 0x6f0)
