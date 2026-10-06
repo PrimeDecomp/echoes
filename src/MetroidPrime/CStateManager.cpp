@@ -30,6 +30,7 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
@@ -38,6 +39,7 @@
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
+#include "Kyoto/Audio/CAudioGroupSet.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/Basics/RAssertDolphin.hpp"
@@ -305,7 +307,7 @@ void CStateManager::SetCurrentAreaId(TAreaId area) {
     if (!mMapWorldInfo->IsAreaVisited(currentArea)) {
       mMapWorldInfo->SetAreaVisited(currentArea, true);
       CMapWorldInfo* mapInfo = mMapWorldInfo.GetPtr();
-      CWorld* world = mWorld;
+      CWorld* world = mWorld.get();
       CMapWorld* mapWorld = world->GetMapWorld();
       mapWorld->RecalculateWorldSphere(*mapInfo, *world);
     }
@@ -333,7 +335,7 @@ void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) con
 void CStateManager::SetActorAreaId(CActor& actor, const TAreaId area) {
   const int oldArea = actor.GetCurrentAreaId().Value();
   if (oldArea != area.Value()) {
-    CWorld* world = mWorld;
+    CWorld* world = mWorld.get();
     if (oldArea != kInvalidAreaId.Value()) {
       CGameArea* oldAreaObject = world->Area(TAreaId(oldArea));
       if (oldAreaObject->GetPhase() > CGameArea::kP_FinishScriptObjects) {
@@ -639,12 +641,12 @@ CStateManager::CStateManager(
   mObjectLists[kOL_Platform] = rs_new CPlatformList();
   mObjectLists[kOL_Trigger] = rs_new CTriggerList();
 
-  mFilteredObjectLists[1] = rs_new CFilteredDockList();
-  mFilteredObjectLists[0] = rs_new CFilteredDoorList();
-  mFilteredObjectLists[2] = rs_new CFilteredType124List();
-  mFilteredObjectLists[3] = rs_new CFilteredForgottenObjectList();
-  mFilteredObjectLists[4] = rs_new CFilteredGameCameraList();
-  mFilteredObjectLists[5] = rs_new CFilteredGrapplePointList();
+  mFilteredObjectLists[kFOL_Dock] = rs_new CFilteredDockList();
+  mFilteredObjectLists[kFOL_Door] = rs_new CFilteredDoorList();
+  mFilteredObjectLists[kFOL_Type124] = rs_new CFilteredType124List();
+  mFilteredObjectLists[kFOL_ForgottenObject] = rs_new CFilteredForgottenObjectList();
+  mFilteredObjectLists[kFOL_GameCamera] = rs_new CFilteredGameCameraList();
+  mFilteredObjectLists[kFOL_GrapplePoint] = rs_new CFilteredGrapplePointList();
 
   for (int i = 0; i < mObjectLists.size(); ++i) {
     CObjectList* list = mObjectLists[i].get();
@@ -668,7 +670,73 @@ CStateManager::CStateManager(
   gpMain->SetThirtyFps(gpGameState->GetGameMode().GetNumPlayers() == 2);
 }
 
-CStateManager::~CStateManager() {}
+CStateManager::~CStateManager() {
+  mTearingDown = true;
+  CMemory::OffsetFakeStatics(-(mObjectLists.size() * sizeof(CObjectList) +
+                              mFilteredObjectLists.size() * sizeof(CFilteredObjectList) + 0x12c));
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    mRumbleManagers[i]->HardStopAll();
+  }
+  mEnvFxManager->Cleanup();
+  mSkippingCinematic = true;
+
+  CObjectList& objects = *mObjectLists[kOL_All];
+  ClearGraveyard();
+  for (int i = 0; i != kMaxObjects; ++i) {
+    CEntity* entity = objects[i];
+    if (entity != nullptr && TCastToPtr< CPlayer >(entity) == nullptr &&
+        TCastToPtr< CGameCamera >(entity) == nullptr) {
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity->GetUniqueId(),
+                                 kSM_Delete, kSS_InvalidState));
+    }
+  }
+  for (int i = 0; i != kMaxObjects; ++i) {
+    CEntity* entity = objects[i];
+    if (entity != nullptr && TCastToPtr< CPlayer >(entity) == nullptr &&
+        TCastToPtr< CGameCamera >(entity) == nullptr) {
+      RemoveObject(entity->GetUniqueId());
+      delete entity;
+    }
+  }
+  ClearGraveyard();
+
+  const CFilteredObjectList cameras(*mFilteredObjectLists[kFOL_GameCamera]);
+  const rstl::list< CEntity* >& cameraObjects = cameras.GetObjects();
+  for (rstl::list< CEntity* >::const_iterator it = cameraObjects.begin();
+       it != cameraObjects.end(); ++it) {
+    if (CGameCamera* camera = TCastToPtr< CGameCamera >(*it)) {
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, camera->GetUniqueId(),
+                                 kSM_Delete, kSS_InvalidState));
+      RemoveObject(camera->GetUniqueId());
+      delete camera;
+    }
+  }
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    if (CPlayer* player = mPlayers[i]) {
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, player->GetUniqueId(),
+                                 kSM_Delete, kSS_InvalidState));
+      RemoveObject(player->GetUniqueId());
+      delete player;
+    }
+  }
+
+  CGameCollision::UninitializeCollision();
+  CMemory::SetOutOfMemoryCallback(nullptr, nullptr);
+  gpMain->SetThirtyFps(false);
+  CAudioGrpSetLoc::sInSinglePlayer = false;
+}
+
+void CStateManager::ClearGraveyard() {
+  for (rstl::list< rstl::reserved_vector< CEntity*, 32 > >::iterator it = mGraveyard.begin();
+       it != mGraveyard.end(); ++it) {
+    rstl::reserved_vector< CEntity*, 32 >& batch = *it;
+    for (rstl::reserved_vector< CEntity*, 32 >::iterator entity = batch.begin();
+         entity != batch.end(); ++entity) {
+      delete *entity;
+    }
+  }
+  mGraveyard.clear();
+}
 
 const bool CStateManager::MemoryAllocatorAllocationFailedCallback(const void* context, uint) {
   return static_cast< CStateManager* >(const_cast< void* >(context))->SwapOutAllPossibleMemory();
@@ -750,7 +818,7 @@ void CStateManager::SetIsDarkWorld(bool b) {
   gpGameState->SetIsDarkWorld(mIsDarkWorld);
 }
 
-bool CStateManager::HasWorld() const { return mWorld != nullptr; }
+bool CStateManager::HasWorld() const { return !mWorld.null(); }
 
 void CStateManager::AddObject(CEntity& entity) {
   const TUniqueId id = entity.GetUniqueId();
