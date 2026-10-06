@@ -14,13 +14,20 @@
 namespace {
 const CMaterialList skImplicitWorldMaterials(kMT_Unknown59, kMT_Unknown60);
 
-inline int ReadSignedDisplayListShort(const uchar* data) {
-  return static_cast< short >((uint(data[0]) << 8) | data[1]);
+// Display-list shorts are big-endian, like the indices CDisplayListReader reads.
+inline ushort ReadShort(const uchar* data) {
+  uchar bytes[2];
+  bytes[0] = data[0];
+  bytes[1] = data[1];
+  return *reinterpret_cast< const ushort* >(bytes);
 }
 
-inline bool IntersectTriangle(const CVector3f& a, const CVector3f& b, const CVector3f& c,
-                              const CLine& line, const CMaterialList& material,
-                              CRayCastResult& result, float& nearest) {
+inline const CVector3f& GetPosition(const CVector3f* positions, const uchar* vertex) {
+  return positions[static_cast< short >(ReadShort(vertex))];
+}
+
+inline bool RayTriangleIntersection(const CLine& line, const CVector3f& a, const CVector3f& b,
+                                    const CVector3f& c, float& nearest) {
   const CVector3f edge1 = b - a;
   const CVector3f edge2 = c - a;
   const CVector3f cross0 = CVector3f::Cross(line.GetNormal(), edge2);
@@ -32,7 +39,7 @@ inline bool IntersectTriangle(const CVector3f& a, const CVector3f& b, const CVec
   const float inverse = 1.f / determinant;
   const CVector3f displacement = line.GetRefPoint() - a;
   const float u = inverse * CVector3f::Dot(displacement, cross0);
-  if (u < 0.f || !(u <= 1.f)) {
+  if (u < 0.f || u > 1.f) {
     return false;
   }
 
@@ -43,14 +50,26 @@ inline bool IntersectTriangle(const CVector3f& a, const CVector3f& b, const CVec
   }
 
   const float v = inverse * CVector3f::Dot(cross1, line.GetNormal());
-  if (v < 0.f || !(u + v <= 1.f)) {
+  if (v < 0.f || u + v > 1.f) {
     return false;
   }
 
   nearest = distance;
-  result = CRayCastResult(distance, line.GetRefPoint() + distance * line.GetNormal(),
-                          CPlane(a, b, c), material);
   return true;
+}
+
+inline void IntersectTriangle(const CVector3f* positions, const uchar* va, const uchar* vb,
+                              const uchar* vc, const CLine& line, const CCubeMaterial& material,
+                              CRayCastResult& result, float& nearest) {
+  const CVector3f& a = GetPosition(positions, va);
+  const CVector3f& b = GetPosition(positions, vb);
+  const CVector3f& c = GetPosition(positions, vc);
+  if (RayTriangleIntersection(line, a, b, c, nearest)) {
+    CMaterialList hitMaterial(kMT_Unknown59, kMT_Unknown60);
+    hitMaterial.Add(CMaterialList(material.GetMaterialMask()));
+    result = CRayCastResult(nearest, line.GetRefPoint() + nearest * line.GetNormal(),
+                            CPlane(a, b, c), hitMaterial);
+  }
 }
 } // namespace
 
@@ -59,60 +78,70 @@ int RenderGeometryRayCast::RaySurfaceIntersection(const CCubeSurface& surface,
                                                   const CVector3f* positions, const CLine& line,
                                                   CRayCastResult& result, float& nearest) {
   const uint descriptor = material.GetVertexDesc();
+  const int size = surface.GetDisplayListSize();
   int stride = 0;
   for (int i = 0; i < 16; ++i) {
-    const uint type = (descriptor >> (i * 2)) & 3;
-    if (type == 2) {
+    switch (static_cast< GXAttrType >((descriptor >> (i * 2)) & 3)) {
+    case GX_NONE:
+    case GX_DIRECT:
+      break;
+    case GX_INDEX8:
       ++stride;
-    } else if (type == 3) {
+      break;
+    case GX_INDEX16:
       stride += 2;
+      break;
     }
   }
 
-  CMaterialList hitMaterial(material.GetMaterialMask());
-  hitMaterial.Add(kMT_Unknown59);
-  hitMaterial.Add(kMT_Unknown60);
   const uchar* displayList = static_cast< const uchar* >(surface.GetDisplayList());
   int triangles = 0;
   int offset = 0;
-  while (offset < int(surface.GetDisplayListSize())) {
-    const uint primitive = displayList[offset++] & 0xfc;
-    if (primitive == 0) {
+  while (offset < size) {
+    const int primitive = displayList[offset++] & 0xfc;
+    if (primitive == GX_NOP) {
       continue;
     }
-    const int count = ReadSignedDisplayListShort(displayList + offset);
+    const short count = ReadShort(displayList + offset);
     offset += 2;
-    const uchar* vertices = displayList + offset;
+
     switch (primitive) {
-    case GX_TRIANGLESTRIP:
-      triangles += count - 2;
-      for (int i = 2; i < count; ++i) {
-        const int a = (i & 1) ? i - 1 : i - 2;
-        const int b = (i & 1) ? i - 2 : i - 1;
-        IntersectTriangle(positions[ReadSignedDisplayListShort(vertices + a * stride)],
-                          positions[ReadSignedDisplayListShort(vertices + b * stride)],
-                          positions[ReadSignedDisplayListShort(vertices + i * stride)], line,
-                          hitMaterial, result, nearest);
-      }
-      break;
-    case GX_TRIANGLES:
+    case GX_TRIANGLES: {
       triangles += count / 3;
-      for (int i = 0; i < count; i += 3) {
-        IntersectTriangle(positions[ReadSignedDisplayListShort(vertices + i * stride)],
-                          positions[ReadSignedDisplayListShort(vertices + (i + 1) * stride)],
-                          positions[ReadSignedDisplayListShort(vertices + (i + 2) * stride)], line,
-                          hitMaterial, result, nearest);
+      int vertexOffset = offset;
+      for (int i = 0; i < count; i += 3, vertexOffset += stride * 3) {
+        const uchar* vertex = displayList + vertexOffset;
+        IntersectTriangle(positions, vertex, vertex + stride, vertex + stride * 2, line, material,
+                          result, nearest);
       }
       break;
-    case GX_TRIANGLEFAN:
+    }
+    case GX_TRIANGLEFAN: {
       triangles += count - 2;
+      const uchar* first = displayList + offset;
+      const uchar* previous = first + stride;
+      const uchar* current = previous + stride;
       for (int i = 2; i < count; ++i) {
-        IntersectTriangle(positions[ReadSignedDisplayListShort(vertices)],
-                          positions[ReadSignedDisplayListShort(vertices + (i - 1) * stride)],
-                          positions[ReadSignedDisplayListShort(vertices + i * stride)], line,
-                          hitMaterial, result, nearest);
+        IntersectTriangle(positions, first, previous, current, line, material, result, nearest);
+        previous = current;
+        current += stride;
       }
       break;
+    }
+    case GX_TRIANGLESTRIP: {
+      triangles += count - 2;
+      const uchar* vertices = displayList + offset;
+      for (int i = 2; i < count; ++i) {
+        if (i & 1) {
+          IntersectTriangle(positions, vertices + stride * (i - 1), vertices + stride * (i - 2),
+                            vertices + stride * i, line, material, result, nearest);
+        } else {
+          IntersectTriangle(positions, vertices + stride * (i - 2), vertices + stride * (i - 1),
+                            vertices + stride * i, line, material, result, nearest);
+        }
+      }
+      break;
+    }
     }
     offset += count * stride;
   }
@@ -125,10 +154,7 @@ CRayCastResult RenderGeometryRayCast::RayWorldIntersection(const CStateManager& 
                                                            const CMaterialFilter& filter,
                                                            rstl::pair< TAreaId, int >* modelOut) {
   CRayCastResult result;
-  if (length <= 0.f) {
-    length = 100000.f;
-  }
-  float nearest = length;
+  float nearest = length > 0.f ? length : 100000.f;
   const CMaterialFilter worldFilter = filter.WithImplicitMaterials(skImplicitWorldMaterials);
   if (worldFilter.GetType() == CMaterialFilter::kFT_Never) {
     return result;
@@ -137,7 +163,7 @@ CRayCastResult RenderGeometryRayCast::RayWorldIntersection(const CStateManager& 
   const CLine line(origin, CUnitVector3f(direction, CUnitVector3f::kN_No));
   CAABox bounds = CAABox::MakeMaxInvertedBox();
   bounds.AccumulateBounds(origin);
-  bounds.AccumulateBounds(origin + length * direction);
+  bounds.AccumulateBounds(origin + nearest * direction);
   const CWorld& world = *mgr.GetWorld();
   for (CGameArea::CConstChainIterator area = world.GetChainHead(CWorld::kC_Alive);
        area != CWorld::skGlobalEnd; ++area) {
@@ -165,8 +191,9 @@ CRayCastResult RenderGeometryRayCast::RayWorldIntersection(const CStateManager& 
           continue;
         }
         const CMetroidModelInstance& model = post.mModelInstances[areaSurface.mModelIndex];
-        const ushort count = model.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-        const ushort* indices = model.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = model.GetSurfaceGroups();
+        const ushort count = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
         for (ushort i = 0; i < count; ++i) {
           const CCubeSurface surface(model.GetSurfaces()[indices[i]]);
           const CAABox surfaceBounds = surface.GetBounds();

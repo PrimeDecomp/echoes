@@ -686,7 +686,12 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyGrapple.cpp"),
             Object(NonMatching, "MetroidPrime/CPortalArea.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/ScriptCameraSpline.cpp"),
-            Object(NonMatching, "MetroidPrime/RenderGeometryRayCast.cpp"),
+            Object(
+                NonMatching,
+                "MetroidPrime/RenderGeometryRayCast.cpp",
+                # The target inlines the triangle test at every call site, far past the default limit.
+                extra_cflags=['-pragma "inline_max_size(3000)"', '-pragma "inline_max_total_size(10000)"'],
+            ),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerData.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCameraShakerManager.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAIWaypoint.cpp"),
