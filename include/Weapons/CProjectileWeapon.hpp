@@ -60,6 +60,7 @@ public:
   CElementGen* GetAttachedPS1() const { return mAPSMGen; }
   double GameTime() const { return mCurTime; }
   int GetCurrentFrame() const { return mCurFrame; }
+  void SetCollisionResponseDelay(int frames) { x160_ = frames; }
   int GetLifetime() const { return mLifetime; }
 
 private:

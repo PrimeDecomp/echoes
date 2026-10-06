@@ -217,6 +217,9 @@ enum EScriptObjectMessage {
 
   // Guessed lifecycle names from DKCR HD, corroborated by Echoes consumers.
   kSM_Create = 0x58435254,
+  kSM_XEPZ = 0x5845505a, // Guessed name; Phazon-pool entry.
+  kSM_XIPZ = 0x5849505a, // Guessed name; Phazon-pool update.
+  kSM_XXPZ = 0x5858505a, // Guessed name; Phazon-pool exit.
   kSM_XENZ = 0x58454e5a, // Guessed name; makes a flagged bouncy grenade explode.
   kSM_Clear = 0x58434c52, // Guessed DKCR HD name; clears an effect's particles.
   kSM_AreaLoaded = 0x58414c44,
