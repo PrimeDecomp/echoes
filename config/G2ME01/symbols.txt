@@ -10491,7 +10491,7 @@ __dt__Q24rstl63vector<Q215CPortalAreaData8SBspNode,Q24rstl17rmemory_allocator>Fv
 __dt__Q24rstl62vector<Q215CPortalAreaData7SPortal,Q24rstl17rmemory_allocator>Fv = .text:0x80255B28; // type:function size:0x84 scope:weak
 fn_80255BAC = .text:0x80255BAC; // type:function size:0x38
 fn_80255BE4 = .text:0x80255BE4; // type:function size:0x1C
-fn_80255C00 = .text:0x80255C00; // type:function size:0x54 scope:weak
+__dt__Q24rstl36vector<s,Q24rstl17rmemory_allocator>Fv = .text:0x80255C00; // type:function size:0x54 scope:weak
 __dt__Q215CPortalAreaData13CBoundingTreeFv = .text:0x80255C54; // type:function size:0x54 scope:weak align:4
 __dt__Q24rstl73vector<Q215CPortalAreaData17SBoundingTreeNode,Q24rstl17rmemory_allocator>Fv = .text:0x80255CA8; // type:function size:0x84 scope:weak
 __ct__15CPortalAreaDataFR12CInputStream = .text:0x80255D2C; // type:function size:0x7C align:4
@@ -24863,7 +24863,7 @@ lbl_8041E288 = .sdata2:0x8041E288; // type:object size:0x8 align:4 data:float
 lbl_8041E2D0 = .sdata2:0x8041E2D0; // type:object size:0x4 align:4 data:float
 lbl_8041E2D4 = .sdata2:0x8041E2D4; // type:object size:0x4 align:4 data:float
 lbl_8041E2D8 = .sdata2:0x8041E2D8; // type:object size:0x8 align:4 data:float
-lbl_8041E2E0 = .sdata2:0x8041E2E0; // type:object size:0x2
+studios$1256 = .sdata2:0x8041E2E0; // type:object size:0x2 scope:local
 lbl_8041E2E2 = .sdata2:0x8041E2E2; // type:object size:0x2 data:2byte
 kMedPriority__11CSfxManager = .sdata2:0x8041E2E4; // type:object size:0x2 data:2byte
 kInternalInvalidSfxId__11CSfxManager = .sdata2:0x8041E2E6; // type:object size:0x2 data:2byte

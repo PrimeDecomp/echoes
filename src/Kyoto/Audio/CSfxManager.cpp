@@ -535,15 +535,16 @@ void CSfxManager::SetDuration(CSfxHandle handle, float duration) {
 }
 
 void CSfxManager::SetChannel(ESfxChannels channel) {
-  if (channel == mCurrentChannel) {
+  ESfxChannels current = mCurrentChannel;
+  if (channel == current) {
     return;
   }
   if (channel == kSC_Default) {
     mAreaLowPassFilters.clear();
     mLowPassFilters.clear();
   }
-  if (mCurrentChannel != kSC_Invalid) {
-    TurnOffChannel(mCurrentChannel);
+  if (current != kSC_Invalid) {
+    TurnOffChannel(current);
   }
   TurnOnChannel(channel);
   mCurrentChannel = channel;
@@ -838,7 +839,7 @@ int CSfxManager::GetRank(CBaseSfxWrapper* sound) {
   }
   for (int i = 0; i < 4; ++i) {
     if (channel.mListeners[i].mActive) {
-      const short audible = sound->GetAudible(channel.mListeners[i].mListener.mPosition);
+      const int audible = sound->GetAudible(channel.mListeners[i].mListener.mPosition);
       if (audible == kSA_Inaudible) {
         rank = 0;
       } else {
@@ -853,7 +854,9 @@ bool CSfxManager::LoadTranslationTable(CSimplePool* pool, const SObjectTag* tag)
   if (tag == nullptr) {
     return false;
   }
-  delete mpTranslationTable;
+  if (mpTranslationTable != nullptr) {
+    delete mpTranslationTable;
+  }
   mpTranslationTable = nullptr;
   mpTranslationTableToken = rs_new CToken(pool->GetObj(*tag));
   mpTranslationTableToken->Lock();
@@ -1023,7 +1026,7 @@ uchar CSfxManager::GetStudio(int area) {
   if (area == kAllAreas || area == mStudioState.first) {
     return studios[mStudioState.second];
   }
-  return studios[!mStudioState.second];
+  return studios[mStudioState.second ? 0 : 1];
 }
 
 void CSfxManager::AddPitchBend(const CSfxPitchBend& pitchBend) {
@@ -1072,7 +1075,7 @@ int CSfxManager::RegisterAuxEffect(const CAuxEffect& effect) {
     }
   }
   if (slot == nullptr) {
-    if (mAuxEffects.size() == mAuxEffects.capacity()) {
+    if (mAuxEffects.size() >= mAuxEffects.capacity()) {
       return 0;
     }
     mAuxEffects.push_back(effect);
