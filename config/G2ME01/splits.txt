@@ -3910,6 +3910,7 @@ Runtime/Gecko_ExceptionPPC.cp:
 	.rodata     start:0x803B03B0 end:0x803B0448
 	.data       start:0x803BBFD8 end:0x803BC0C0
 	.bss        start:0x803E0640 end:0x803E0650
+	.sdata      start:0x80418CB0 end:0x80418CC0
 
 Runtime/abort_exit.c:
 	.text       start:0x803470DC end:0x80347268
