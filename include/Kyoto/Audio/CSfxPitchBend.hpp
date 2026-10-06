@@ -10,7 +10,7 @@ public:
   // Guessed method names, supported by the manager's update/apply/retire sequence.
   void Update(float dt);
   bool IsFinished() const;
-  CSfxHandle GetHandle() const { return mHandle; }
+  const CSfxHandle& GetHandle() const { return mHandle; }
   ushort GetPitch() const { return mPitch; }
 
 private:
