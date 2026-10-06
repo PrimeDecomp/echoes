@@ -25,7 +25,7 @@ private:
   CVector3f mDestinationPosition;
   TUniqueId mFaceTarget;
   bool mInPosition : 1;
-  bool x26_25_ : 1;
+  bool mUseLocomotionFacing : 1;
 };
 CHECK_SIZEOF(CPathFindNavigation, 0x28)
 
