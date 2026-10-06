@@ -47,6 +47,18 @@ public:
   , mAnimating(true) {}
 
   int GetAnimationId() const { return mAnimA; }
+  int GetSecondAnimationId() const { return mAnimB; }
+  float GetBlendFactor() const { return mBlendWeight; }
+  bool GetIsPlayAnimation() const { return mAnimating; }
+  const CVector3f* GetTargetPos() const { return mTargetPos; }
+  bool GetIsUseLocator() const { return mUseLocator; }
+  const CQuaternion* GetDeltaOrient() const { return mDeltaOrient; }
+  const CTransform4f* GetObjectXform() const { return mObjectXf; }
+  const CVector3f* GetObjectScale() const { return mObjectScale; }
+
+  void SetAnimationId(int id) { mAnimA = id; }
+  void SetSecondAnimationId(int id) { mAnimB = id; }
+  void SetBlendFactor(float factor) { mBlendWeight = factor; }
 };
 CHECK_SIZEOF(CAnimPlaybackParms, 0x24)
 

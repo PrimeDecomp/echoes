@@ -15,6 +15,9 @@ class CAnimPOIData;
 
 class CAnimFormatUnion {
 public:
+  // Format names reconstructed from the concrete classes selected by the target.
+  enum EFormat { kF_AnimSource = 0, kF_FBStreamedCompression = 2 };
+
   CAnimFormatUnion(CInputStream& in, IObjectStore& store);
   ~CAnimFormatUnion();
 
@@ -42,6 +45,26 @@ public:
   ~CAllFormatsAnimSource();
 
   int GetType() const { return mFormatUnion.GetType(); }
+  CCharAnimTime GetAnimationDuration() const {
+    switch (GetType()) {
+    case CAnimFormatUnion::kF_AnimSource:
+      return AsCAnimSource().GetAnimationDuration();
+    case CAnimFormatUnion::kF_FBStreamedCompression:
+      return AsCFBStreamedCompression().GetAnimationDuration();
+    default:
+      return AsCAnimSource().GetAnimationDuration();
+    }
+  }
+  float GetAverageVelocity() const {
+    switch (GetType()) {
+    case CAnimFormatUnion::kF_AnimSource:
+      return AsCAnimSource().GetAverageVelocity();
+    case CAnimFormatUnion::kF_FBStreamedCompression:
+      return AsCFBStreamedCompression().GetAverageVelocity();
+    default:
+      return AsCAnimSource().GetAverageVelocity();
+    }
+  }
   const CAnimSource& AsCAnimSource() const { return mFormatUnion.AsCAnimSource(); }
   const CFBStreamedCompression& AsCFBStreamedCompression() const {
     return mFormatUnion.AsCFBStreamedCompression();
@@ -69,6 +92,6 @@ inline TSubAnimTypeToken< T >::TSubAnimTypeToken(const TLockedToken< CAllFormats
 }
 
 CFactoryFnReturn AnimSourceFactory(const SObjectTag& tag, CInputStream& in,
-                                         const CVParamTransfer& param);
+                                   const CVParamTransfer& param);
 
 #endif // _CALLFORMATSANIMSOURCE

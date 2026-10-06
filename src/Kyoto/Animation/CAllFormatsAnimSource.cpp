@@ -13,10 +13,10 @@ CAnimFormatUnion::CAnimFormatUnion(CInputStream& in, IObjectStore& store) {
 
 CAnimFormatUnion::~CAnimFormatUnion() {
   switch (mFormatType) {
-  case 0:
+  case kF_AnimSource:
     reinterpret_cast< CAnimSource* >(mFormatData)->~CAnimSource();
     break;
-  case 2:
+  case kF_FBStreamedCompression:
     reinterpret_cast< CFBStreamedCompression* >(mFormatData)->~CFBStreamedCompression();
     break;
   default:
@@ -27,10 +27,10 @@ CAnimFormatUnion::~CAnimFormatUnion() {
 void CAnimFormatUnion::SubConstruct(uchar* ptr, const uint format, CInputStream& in,
                                     IObjectStore& store) {
   switch (format) {
-  case 0:
+  case kF_AnimSource:
     new (ptr) CAnimSource(in);
     break;
-  case 2:
+  case kF_FBStreamedCompression:
     new (ptr) CFBStreamedCompression(in, store);
     break;
   default:
@@ -53,9 +53,9 @@ rstl::ownership_transfer< IAnimReader >
 CAllFormatsAnimSource::GetNewReader(const TLockedToken< CAllFormatsAnimSource >& tok,
                                     const CCharAnimTime& time, const CAnimPOIData* poiData) {
   switch (tok->GetType()) {
-  case 0:
+  case CAnimFormatUnion::kF_AnimSource:
     return rs_new CAnimSourceReader(TSubAnimTypeToken< CAnimSource >(tok), time, poiData);
-  case 2:
+  case CAnimFormatUnion::kF_FBStreamedCompression:
     return rs_new CFBStreamedAnimReader(TSubAnimTypeToken< CFBStreamedCompression >(tok), time,
                                         poiData);
   default:
