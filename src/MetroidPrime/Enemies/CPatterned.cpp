@@ -2,10 +2,13 @@
 
 #include "Kyoto/Animation/CCharAnimTime.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
+#include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
+#include "MetroidPrime/BodyState/CBodyState.hpp"
+#include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
@@ -27,6 +30,9 @@ const float CPatterned::skActorApproachDistance = 3.f;
 const CColor CPatterned::skDamageColor(0.5f, 0.f, 0.f, 1.f);
 const CColor CPatterned::skHitsWithoutDamageColor(0.5f, 0.5f, 0.f, 1.f);
 const CColor CPatterned::skFrozenColor(0x321F50FF);
+const CColor CPatterned::skDisintegrateColor(0xFFFFC0FF);
+const CColor CPatterned::skBlackDeathColor(0xAA54FF00);
+const CColor CPatterned::skDisintegrationColor(0xFFFFFF00);
 
 static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Unknown59, kMT_Orbit,
                                                   kMT_Target, kMT_SeekerTarget);
@@ -115,10 +121,10 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mDrawParticles(true)
 , mEnableStateMachine(true)
 , mStateControlledMassiveDeath(true)
-, x422_26_(0)
-, x422_28_(false)
-, x422_29_(false)
-, x422_30_(false)
+, mDisabledAnimationDeltas(0)
+, mUseDisintegrationPlane(false)
+, mBlackDeath(false)
+, mDisintegrating(false)
 , mStopPhysics(false)
 , x423_24_(false)
 , mSuppressKnockBack(false)
@@ -342,9 +348,8 @@ void CPatterned::Death(CStateManager& mgr, const CVector3f& direction, EScriptOb
       if (mLookAtDeathDir && mXDamageDelay <= 0.f && direction.IsNonZero()) {
         const CVector3f pos = GetTranslation();
         const CVector3f target = pos - direction;
-        const CTransform4f deathXf =
-            CTransform4f::LookAt(pos, target) *
-            CTransform4f::RotateX(CRelAngle::FromRadians(0.7853982f));
+        const CTransform4f deathXf = CTransform4f::LookAt(pos, target) *
+                                     CTransform4f::RotateX(CRelAngle::FromRadians(0.7853982f));
         SetTransform(deathXf);
       }
     } else {
@@ -584,8 +589,23 @@ void CPatterned::CollidedWith(const TUniqueId&, const CCollisionInfoList&, CStat
   // TODO: Recover ground/static-ground flags, collision response and linked script messages.
 }
 
-void CPatterned::ThinkAboutMove(float) {
-  // TODO: Apply scaled animation translation/rotation and account for frozen/disabled movement.
+void CPatterned::ThinkAboutMove(float dt) {
+  if (dt > 0.f) {
+    if (!(mDisabledAnimationDeltas & kADF_Translation) &&
+        mBodyController->GetBodyStateInfo().GetCurrentState()->ApplyAnimationDeltas()) {
+      const CVector3f scale = GetModelData()->GetScale();
+      const CVector3f scaledDelta = CVector3f::ByElementMultiply(
+          CVector3f::ByElementMultiply(scale, mPosDelta), mMoveScale);
+      if (!mVerticalMovement && !mOnGround) {
+        MoveInOneFrameOR(scaledDelta, dt);
+      } else {
+        MoveToOR(scaledDelta, dt);
+      }
+    }
+    if (!(mDisabledAnimationDeltas & kADF_Rotation)) {
+      RotateToOR(mRotDelta, dt);
+    }
+  }
 }
 
 void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
@@ -699,8 +719,63 @@ CVector3f CPatterned::GetOrbitPosition(const CStateManager& mgr) const {
 }
 
 void CPatterned::PreRender(CStateManager& mgr) {
+  if (mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Echo) {
+    SetCalculateLighting(false);
+    ActorLights()->BuildConstantAmbientLighting(CColor::White());
+  } else {
+    SetCalculateLighting(true);
+  }
+
+  CColor color = mColor;
+  const uchar alpha = GetModelAlphau8(mgr);
+  if (alpha < 255) {
+    if (color.GetRedu8() == 0 && color.GetGreenu8() == 0 && color.GetBlueu8() == 0) {
+      color = CColor::White();
+    }
+
+    if (mBlackDeath || mDisintegrating) {
+      SetModelFlags(CModelFlags(CModelFlags::kT_ColorLerp,
+                                mBlackDeath
+                                    ? skBlackDeathColor.WithAlphaOf((255 - alpha) / 255.f)
+                                    : skDisintegrationColor.WithAlphaOf((255 - alpha) / 255.f)));
+
+      const CAABox bounds = GetOtherBounds();
+      const CVector3f center = bounds.GetCenterPoint();
+      const CUnitVector3f normal(center - mDisintegrationOrigin);
+      const uchar planeAlpha = GetModelAlphau8(mgr);
+      const CVector3f extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
+      float width = extent.GetX();
+      if (CMath::AbsF(normal.GetY()) > CMath::AbsF(normal.GetX())) {
+        width = extent.GetY();
+      }
+      if (CMath::AbsF(normal.GetZ()) > CMath::AbsF(normal.GetY())) {
+        width = extent.GetZ();
+      }
+      mIngSnatchingPlane = CPlane(center - (planeAlpha / 255.f - 0.5f) * width * normal, normal);
+    } else if (mLaggedBurnDeath) {
+      const uchar stripedAlpha = alpha > 127 ? (alpha - 128) * 2 : 255;
+      SetModelFlags(
+          CModelFlags(CModelFlags::kT_ColorLerp,
+                      CColor(skDisintegrateColor.GetRedu8(), skDisintegrateColor.GetGreenu8(),
+                             skDisintegrateColor.GetBlueu8(), (stripedAlpha * stripedAlpha) >> 8)));
+    } else if (mBurning) {
+      SetModelFlags(CModelFlags::AlphaBlended(CColor::Black()));
+    } else {
+      SetModelFlags(CModelFlags::AlphaBlended(
+          CColor(color.GetRedu8(), color.GetGreenu8(), color.GetBlueu8(), alpha)));
+    }
+  } else if (color.GetRedu8() != 0 || color.GetGreenu8() != 0 || color.GetBlueu8() != 0) {
+    SetModelFlags(CModelFlags(
+        CModelFlags::kT_Two, CColor(color.GetRedu8(), color.GetGreenu8(), color.GetBlueu8(), 255)));
+  } else {
+    SetModelFlags(CModelFlags::Normal());
+  }
+
   CActor::PreRender(mgr);
-  // TODO: Restore actor lighting, frozen/possession models and particle preparation.
+  if (mUseDisintegrationPlane || (mIngPossessionBlend > 0.f && mIngPossessionBlend < 1.f)) {
+    SetModelFlags(
+        CModelFlags(GetModelFlags(), GetModelFlags().GetOtherFlags() | CModelFlags::kF_Unknown80));
+  }
 }
 
 bool CPatterned::CanRenderUnsorted(const CStateManager& mgr) const {
@@ -722,8 +797,51 @@ void CPatterned::PreRenderAllViewports(CStateManager& mgr) {
 }
 
 void CPatterned::Render(const CStateManager& mgr) const {
-  // TODO: Restore model flags, damage color and possession-transition rendering.
-  CPhysicsActor::Render(mgr);
+  uint mask = 0;
+  uint target = 0;
+  if (mDrawParticles) {
+    mgr.GetCharacterRenderMaskAndTarget(mask, target);
+  }
+  RenderSystemsToBeDrawnFirst(mgr, mask, target);
+
+  if (mUseDisintegrationPlane) {
+    GetModelData()->SetupWorldSpacePortalPlane(GetTransform(), mIngSnatchingPlane);
+  }
+
+  if (mBurning) {
+    const CTexture* ashyTexture = mgr.GetActorModelParticles()->GetAshyTexture(*this);
+    const uchar alpha = GetModelAlphau8(mgr);
+    if (ashyTexture && ((!mLaggedBurnDeath && alpha <= 255) || alpha <= 127)) {
+      if (GetPointGeneratorParticles()) {
+        mgr.SetupParticleHook(*this);
+      }
+
+      if (mBlackDeath || mDisintegrating) {
+        CPhysicsActor::Render(mgr);
+      } else if (HasModelData()) {
+        const CColor disColor = mLaggedBurnDeath ? skDisintegrateColor : CColor::Black();
+        const float t = (mLaggedBurnDeath ? 0.0078740157f : 0.0039215689f) * CCast::ToReal32(alpha);
+        GetModelData()->DisintegrateDraw(mgr, GetTransform(), *ashyTexture, disColor, t);
+      }
+
+      if (GetPointGeneratorParticles()) {
+        CSkinnedModel::ClearPointGeneratorFunc();
+        mgr.GetActorModelParticles()->Render(mgr, *this);
+      }
+    } else {
+      CPhysicsActor::Render(mgr);
+    }
+  } else if (IsBeingSnatched() == true) {
+    RenderIngSnatchingTransition(mgr);
+  } else {
+    CPhysicsActor::Render(mgr);
+  }
+
+  if (mBodyController->IsFrozen() && !mBurning) {
+    RenderIceModelWithFlags(CModelFlags::Normal());
+  }
+
+  RenderSystemsToBeDrawnLast(mgr, mask, target);
 }
 
 bool CPatterned::IsBeingSnatched() const {
@@ -742,8 +860,13 @@ void CPatterned::RenderSystemsToBeDrawnLast(const CStateManager&, uint mask, uin
   }
 }
 
-void CPatterned::fn_80074e54(const CModelFlags&) const {
-  // TODO: Draw the animation's ice model with the adjusted model flags.
+void CPatterned::RenderIceModelWithFlags(const CModelFlags& flags) const {
+  const CAnimData* animData = GetAnimationData();
+  CModelFlags useFlags = flags.UseShaderSet(0);
+  const rstl::optional_object< TLockedToken< CSkinnedModel > >& iceModel = animData->GetIceModel();
+  if (iceModel.valid()) {
+    animData->Render(***iceModel, useFlags);
+  }
 }
 
 void CPatterned::RenderIngSnatchingTransition(const CStateManager&) const {
@@ -867,7 +990,15 @@ void CPatterned::PreThink(float dt, CStateManager& mgr) {
 }
 
 void CPatterned::AddToRenderer(const CStateManager& mgr) const {
-  // TODO: Queue the animation particle database with the current render mask/target.
+  if (mDrawParticles && HasModelData()) {
+    uint mask;
+    uint target;
+    mgr.GetCharacterRenderMaskAndTarget(mask, target);
+    const CAnimData* animData = GetAnimationData();
+    if (animData) {
+      animData->GetParticleDB().AddToRendererClippedMasked(mgr.GetFrustumPlanes(), mask, target);
+    }
+  }
   CActor::AddToRenderer(mgr);
 }
 

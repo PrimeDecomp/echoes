@@ -47,6 +47,8 @@ public:
   enum EFlavorType { kFT_Zero, kFT_One };
   enum EMovementType { kMT_Ground, kMT_Flyer };
   enum EColliderType { kCT_Zero, kCT_One };
+  // Guessed names; flags in the established two-bit animation-delta field.
+  enum EAnimationDeltaFlags { kADF_Translation = 1, kADF_Rotation = 2 };
 
   typedef TStateMachineStateBase< CPatterned > StateMachine;
 
@@ -54,7 +56,10 @@ public:
   static const float skActorApproachDistance;
   static const CColor skDamageColor;
   static const CColor skHitsWithoutDamageColor;
-  static const CColor skFrozenColor; // Guessed name; native frozen-interpolation endpoint.
+  static const CColor skFrozenColor;         // Guessed name; native frozen-interpolation endpoint.
+  static const CColor skDisintegrateColor;   // Guessed Prime name; native ash tint.
+  static const CColor skBlackDeathColor;     // Guessed name; native purple death tint.
+  static const CColor skDisintegrationColor; // Guessed name; native white death tint.
 
   CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string& name, EFlavorType flavor,
              const CEntityInfo& info, const CTransform4f& xf, const CModelData& modelData,
@@ -180,7 +185,7 @@ public:
   void AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, float particleScale,
                          CAssetId particle, uint name, int flags);
   void fn_800747a4(CAssetId model, CAssetId skinRules);
-  void fn_80074e54(const CModelFlags& flags) const;
+  void RenderIceModelWithFlags(const CModelFlags& flags) const;
   // Guessed name; dispatches the selected knockback follow-up effect.
   void ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
                               CKnockBackMgr::EFollowUp followUp, float duration,
@@ -313,10 +318,10 @@ private:
   uint mDrawParticles : 1;
   uint mEnableStateMachine : 1;
   uint mStateControlledMassiveDeath : 1;
-  uint x422_26_ : 2;
-  uint x422_28_ : 1;
-  uint x422_29_ : 1;
-  uint x422_30_ : 1;
+  uint mDisabledAnimationDeltas : 2; // Guessed name; translation and rotation gates.
+  uint mUseDisintegrationPlane : 1;  // Guessed name; enables plane clipping.
+  uint mBlackDeath : 1;              // Guessed name; purple implosion/death path.
+  uint mDisintegrating : 1;          // Guessed name; white disintegration path.
   uint mStopPhysics : 1;
   uint x423_24_ : 1;
   uint mSuppressKnockBack : 1;

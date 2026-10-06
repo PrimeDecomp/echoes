@@ -9,8 +9,9 @@ class CModelFlags {
 public:
   enum ETrans {
     kT_Opaque = 0,
-    kT_One = 1, // ?
-    kT_Two = 2, // ?
+    kT_One = 1,       // ?
+    kT_Two = 2,       // ?
+    kT_ColorLerp = 3, // Guessed name; native two-stage TEV color interpolation.
     kT_Blend = 5,
     kT_Additive = 7,
     kT_Additive2 = 8,
