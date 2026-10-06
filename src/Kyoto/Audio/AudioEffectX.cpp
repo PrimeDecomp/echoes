@@ -42,13 +42,13 @@ long AudioEffectX::dispatcher(long opcode, long index, long value, void* ptr, fl
     return offlinePrepare(static_cast< VstOfflineTask* >(ptr), value);
   case kEO_OfflineRun:
     return offlineRun(static_cast< VstOfflineTask* >(ptr), value);
-  case kEO_ProcessVariableIo:
-    return processVariableIo(static_cast< VstVariableIo* >(ptr)) ? 1 : 0;
   case kEO_SetSpeakerArrangement:
     return setSpeakerArrangement(reinterpret_cast< VstSpeakerArrangement* >(value),
                                  static_cast< VstSpeakerArrangement* >(ptr))
                ? 1
                : 0;
+  case kEO_ProcessVariableIo:
+    return processVariableIo(static_cast< VstVariableIo* >(ptr)) ? 1 : 0;
   case kEO_SetBlockSizeAndSampleRate:
     setBlockSizeAndSampleRate(value, option);
     return 1;
@@ -68,18 +68,18 @@ long AudioEffectX::dispatcher(long opcode, long index, long value, void* ptr, fl
     return vendorSpecific(index, value, ptr, option);
   case kEO_CanDo:
     return canDo(static_cast< char* >(ptr));
-  case kEO_GetTailSize:
-    return getGetTailSize();
-  case kEO_Idle:
-    return fxIdle();
   case kEO_GetIcon:
     return reinterpret_cast< long >(getIcon());
   case kEO_SetViewPosition:
     return setViewPosition(index, value) ? 1 : 0;
+  case kEO_GetTailSize:
+    return getGetTailSize();
+  case kEO_Idle:
+    return fxIdle();
   case kEO_GetParameterProperties:
     return getParameterProperties(index, static_cast< VstParameterProperties* >(ptr)) ? 1 : 0;
   case kEO_KeysRequired:
-    return !keysRequired();
+    return keysRequired() ? 0 : 1;
   case kEO_GetVstVersion:
     return getVstVersion();
   default:

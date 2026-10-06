@@ -60,17 +60,17 @@ public:
 
   virtual void setNumOutputs(long count) { mEffect.mNumOutputs = count; }
 
-  virtual void canProcessReplacing(bool state = true);
-  virtual void programsAreChunks(bool state = true);
-  virtual void canMono(bool state = true);
   virtual void hasVu(bool state = true);
   virtual void hasClip(bool state = true);
-
-  virtual AEffect* getAeffect() { return &mEffect; }
+  virtual void canMono(bool state = true);
+  virtual void canProcessReplacing(bool state = true);
+  virtual void programsAreChunks(bool state = true);
 
   virtual void setRealtimeQualities(long qualities) { mEffect.mRealtimeQualities = qualities; }
 
   virtual void setOfflineQualities(long qualities) { mEffect.mOfflineQualities = qualities; }
+
+  virtual void setInitialDelay(long delay) { mEffect.mInitialDelay = delay; }
 
   virtual float getSampleRate() { return mSampleRate; }
 
@@ -86,6 +86,8 @@ public:
   virtual void ms2string(float samples, char* text);
   virtual void float2string(float value, char* text);
   virtual void int2string(long value, char* text);
+
+  AEffect* getAeffect() { return &mEffect; }
 
 protected:
   float mSampleRate;

@@ -33,12 +33,12 @@ void processClassReplacing(AEffect* effect, float** inputs, float** outputs, lon
   static_cast< AudioEffect* >(effect->mObject)->processReplacing(inputs, outputs, sampleFrames);
 }
 
-AudioEffect::AudioEffect(AudioMasterCallback audioMaster, long numPrograms, long numParameters)
-: mEditor(nullptr)
-, mAudioMaster(audioMaster)
-, mNumPrograms(numPrograms)
-, mNumParameters(numParameters)
-, mCurrentProgram(0) {
+AudioEffect::AudioEffect(AudioMasterCallback audioMaster, long numPrograms, long numParameters) {
+  mAudioMaster = audioMaster;
+  mEditor = nullptr;
+  mNumPrograms = numPrograms;
+  mNumParameters = numParameters;
+  mCurrentProgram = 0;
   memset(&mEffect, 0, sizeof(mEffect));
   mEffect.mMagic = 'VstP';
   mEffect.mDispatcher = dispatchEffectClass;
@@ -65,7 +65,10 @@ AudioEffect::AudioEffect(AudioMasterCallback audioMaster, long numPrograms, long
   mBlockSize = 1024;
 }
 
-AudioEffect::~AudioEffect() { delete mEditor; }
+AudioEffect::~AudioEffect() {
+  if (mEditor != nullptr)
+    delete mEditor;
+}
 
 long AudioEffect::dispatcher(long opcode, long index, long value, void* ptr, float option) {
   long result = 0;
@@ -98,9 +101,6 @@ long AudioEffect::dispatcher(long opcode, long index, long value, void* ptr, flo
   case kEO_GetParameterName:
     getParameterName(index, static_cast< char* >(ptr));
     break;
-  case kEO_GetVu:
-    result = static_cast< long >(32767.0 * getVu());
-    break;
   case kEO_SetSampleRate:
     setSampleRate(option);
     break;
@@ -112,6 +112,9 @@ long AudioEffect::dispatcher(long opcode, long index, long value, void* ptr, flo
       suspend();
     else
       resume();
+    break;
+  case kEO_GetVu:
+    result = static_cast< long >(32767.0 * getVu());
     break;
   case kEO_EditGetRect:
     if (mEditor != nullptr)
@@ -216,32 +219,38 @@ void AudioEffect::hasClip(bool state) {
 void AudioEffect::dB2string(float value, char* text) {
   if (value <= 0.f)
     strcpy(text, "  -oo   ");
-  else
-    float2string(static_cast< float >(20.0 * static_cast< float >(log10(value))), text);
+  else {
+    float dB = log10(value);
+    float2string(static_cast< float >(20.0 * dB), text);
+  }
 }
 
 void AudioEffect::Hz2string(float samples, char* text) {
   float sampleRate = getSampleRate();
-  if (samples == 0.f)
+  if (!samples)
     float2string(0.f, text);
   else
     float2string(sampleRate / samples, text);
 }
 
 void AudioEffect::ms2string(float samples, char* text) {
-  float sampleRate = getSampleRate();
-  float2string(static_cast< float >(1000.0 * samples / sampleRate), text);
+  float2string(static_cast< float >(samples * 1000.0 / getSampleRate()), text);
 }
 
 void AudioEffect::float2string(float value, char* text) {
-  char buffer[32];
-  double magnitude = value;
-  bool negative = false;
   long length = 0;
+  long negative = 0;
+  char buffer[32];
+  char* digit;
+  double magnitude, integer, fraction;
+  double ten = 10.0;
+
+  magnitude = value;
   if (magnitude < 0.0) {
+    negative = 1;
+    value = -value;
     magnitude = -magnitude;
-    negative = true;
-    length = 1;
+    length++;
     if (magnitude > 9999999.0) {
       strcpy(buffer, " Huge!  ");
       return;
@@ -251,49 +260,51 @@ void AudioEffect::float2string(float value, char* text) {
     return;
   }
 
-  buffer[31] = 0;
-  buffer[30] = '.';
-  double integer = floor(magnitude);
-  buffer[29] = static_cast< char >(static_cast< long >(fmod(integer, 10.0)) + '0');
-  integer /= 10.0;
-  length += 2;
-  char* digit = buffer + 28;
+  digit = buffer + 31;
+  *digit-- = 0;
+  *digit-- = '.';
+  length++;
+
+  integer = floor(magnitude);
+  *digit-- = static_cast< char >(static_cast< long >(fmod(integer, ten)) + '0');
+  integer /= ten;
+  length++;
   while (integer >= 1.0 && length < 8) {
-    *digit-- = static_cast< char >(static_cast< long >(fmod(integer, 10.0)) + '0');
-    integer /= 10.0;
-    ++length;
+    *digit-- = static_cast< char >(static_cast< long >(fmod(integer, ten)) + '0');
+    integer /= ten;
+    length++;
   }
   if (negative)
     *digit-- = '-';
   strcpy(text, digit + 1);
+  if (length >= 8)
+    return;
 
-  if (length < 8) {
-    buffer[31] = 0;
-    digit = buffer + 30;
-    double fraction = fmod(magnitude, 1.0);
-    fraction *= pow(10.0, 8 - length);
-    while (length < 8) {
-      if (fraction <= 0.0)
-        *digit-- = '0';
-      else {
-        *digit-- = static_cast< char >(static_cast< long >(fmod(fraction, 10.0)) + '0');
-        fraction /= 10.0;
-      }
-      ++length;
+  digit = buffer + 31;
+  *digit-- = 0;
+  fraction = fmod(magnitude, 1.0);
+  fraction *= pow(ten, static_cast< double >(8 - length));
+  while (length < 8) {
+    if (fraction <= 0.0)
+      *digit-- = '0';
+    else {
+      *digit-- = static_cast< char >(static_cast< long >(fmod(fraction, ten)) + '0');
+      fraction /= 10.0;
     }
-    strcat(text, digit + 1);
+    length++;
   }
+  strcat(text, digit + 1);
 }
 
 void AudioEffect::int2string(long value, char* text) {
-  if (value >= 100000000)
+  char buffer[32];
+  if (value >= 100000000) {
     strcpy(text, " Huge!  ");
-  else {
-    char buffer[9];
-    sprintf(buffer, "%7d", value);
-    buffer[8] = 0;
-    strcpy(text, buffer);
+    return;
   }
+  sprintf(buffer, "%7d", value);
+  buffer[8] = 0;
+  strcpy(text, buffer);
 }
 
 void AudioEffect::setParameterAutomated(long index, float value) {

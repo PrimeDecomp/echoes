@@ -19,7 +19,7 @@ CBitcrusher::CBitcrusher(AudioMasterCallback audioMaster)
   setNumInputs(2);
   setNumOutputs(2);
   setUniqueID('Bits');
-  canProcessReplacing(true);
+  hasVu(true);
   strcpy(mProgramName, "Bitcrusher VST");
 }
 
