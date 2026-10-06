@@ -231,6 +231,7 @@ enum EScriptObjectMessage {
   kSM_Falling = 0x584f4646,
   kSM_Launching = 0x584c4155, // Guessed DKCR HD name; jump/hurled launch notification.
   kSM_Landed = 0x584c4e44, // Guessed DKCR HD name; landing notification.
+  kSM_LandedOnStaticGround = 0x584c5347, // Guessed DKCR HD name; native static-ground notification.
   // Guessed Prime names, correlated with the native player message handler.
   kSM_OnIceSurface = 0x584f4e49,
   kSM_OnMudSlowSurface = 0x584f4e4f,
