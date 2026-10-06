@@ -8,6 +8,8 @@ public:
   static CGuiWidgetDrawParms sDefaultDrawParms;
   static const CGuiWidgetDrawParms& Default() { return sDefaultDrawParms; }
 
+  explicit CGuiWidgetDrawParms(float alpha) : mAlpha(alpha), mCameraOffset(0.f, 0.f, 0.f) {}
+
   CGuiWidgetDrawParms(float alpha, const CVector3f& offset)
   : mAlpha(alpha), mCameraOffset(offset) {}
 

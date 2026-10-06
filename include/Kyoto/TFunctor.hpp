@@ -51,6 +51,32 @@ private:
   CMethodPtrStore mMethod;
 };
 
+// Prime-correlated names; the Echoes bridge forwards one argument through a member pointer.
+template < class T, typename P1 >
+class TNonStaticCallback1 {
+public:
+  typedef void (T::*MethodPtr)(P1);
+
+  static void Function(const void* object, const void* method, P1 p1) {
+    MethodPtr callback;
+    memcpy(&callback, method, sizeof(callback));
+    (static_cast< T* >(const_cast< void* >(object))->*callback)(p1);
+  }
+};
+
+template < class T, typename P1 >
+class TFunctor1FromMethod {
+public:
+  typedef void (T::*MethodPtr)(P1);
+
+  static TFunctor1< P1 > Make(T& object, MethodPtr method) {
+    char methodData[sizeof(method)];
+    memcpy(methodData, &method, sizeof(method));
+    return TFunctor1< P1 >(TNonStaticCallback1< T, P1 >::Function, &object, methodData,
+                           sizeof(method));
+  }
+};
+
 template < class Arg1, class Arg2 >
 class TFunctor2 {
 public:

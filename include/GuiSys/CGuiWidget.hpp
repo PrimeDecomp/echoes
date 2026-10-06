@@ -95,6 +95,7 @@ public:
   short GetWorkerId() const { return mWorkerId; }
 
   bool GetIsSelectable() const { return mIsSelectable; }
+  void SetIsSelectable(bool selectable) { mIsSelectable = selectable; }
 
   const CColor& GetColor() const { return mColor; }
   const CColor& GetModifiedColor() const { return mColor2; }
