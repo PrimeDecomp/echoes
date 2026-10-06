@@ -11976,7 +11976,7 @@ CopyRotationsAndOffsets__24RotationAndOffsetStorageFRCQ24rstl48vector<11CQuatern
 GetRotationsAndOffsets__24RotationAndOffsetStorageFRCQ24rstl48vector<11CQuaternion,Q24rstl17rmemory_allocator>RCQ24rstl45vector<9CVector3f,Q24rstl17rmemory_allocator>Ui = .text:0x802A2AF8; // type:function size:0xD4
 __ct__24RotationAndOffsetStorageFRCQ224RotationAndOffsetStorage25CRotationAndOffsetVectorsUi = .text:0x802A2BCC; // type:function size:0x98
 DataSizeInBytes__24RotationAndOffsetStorageFUiUiUi = .text:0x802A2C64; // type:function size:0x14
-fn_802A2C78 = .text:0x802A2C78; // type:function size:0x1C
+clamp_zero_to_one__Ff = .text:0x802A2C78; // type:function size:0x1C scope:local
 __dt__17CAnimSourceReaderFv = .text:0x802A2C94; // type:function size:0x88 align:4
 __dt__21CAnimSourceReaderBaseFv = .text:0x802A2D1C; // type:function size:0xB0
 __dt__15IAnimSourceInfoFv = .text:0x802A2DCC; // type:function size:0x48 align:4
