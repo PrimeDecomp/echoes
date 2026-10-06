@@ -28,7 +28,7 @@ public:
   EMessageReturn OnMessage(const CArchitectureMessage& msg, CArchitectureQueue& queue) override;
   void Draw() const override;
 
-private:
+  enum EGameMode { kGM_Deathmatch = 'DTHM', kGM_Coin = 'COIN' };
   enum ELoadState { kLS_Initial, kLS_PreloadMusic, kLS_LoadDependencies, kLS_Ready = 4 };
   enum EPhase { kP_Initial, kP_Intro, kP_Results, kP_FadeOut };
   enum EPlayerResult { kPR_Winner, kPR_Loser, kPR_Tied };
@@ -44,9 +44,9 @@ private:
   };
 
   struct SPlayerResults {
-    SPlayerResults(uint playerSelection, int playerIndex, CPlayerState::EBeamId beam,
-                   int coins, int frags, int deaths, int rank, EPlayerResult result,
-                   bool coinGame, bool fourPlayers, CRandom16& random);
+    SPlayerResults(uint playerSelection, int playerIndex, CPlayerState::EBeamId beam, int coins,
+                   int frags, int deaths, int rank, EPlayerResult result, bool coinGame,
+                   bool fourPlayers, CRandom16& random);
     ~SPlayerResults();
 
     void LoadTextAndFrame();
@@ -80,6 +80,7 @@ private:
   typedef char SPlayerScoreSizeCheck[sizeof(SPlayerScore) == 0x10 ? 1 : -1];
   typedef char SPlayerResultsSizeCheck[sizeof(SPlayerResults) == 0x98 ? 1 : -1];
 
+private:
   void GatherResults(CGameState& state);
   void BuildText();
   void Update(float dt);
