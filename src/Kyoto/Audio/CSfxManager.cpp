@@ -510,21 +510,26 @@ void CSfxManager::KillAll(ESfxChannels channel) {
 
 void CSfxManager::StopSound(ESfxChannels channel, CSfxHandle handle) {
   CSfxChannel& sounds = mChannels[channel];
-  if (handle.GetIndex() < sounds.mSounds.size()) {
-    CBaseSfxWrapper* sound = sounds.mSounds[handle.GetIndex()];
-    if (sound != nullptr && sound->GetSfxHandle() == handle) {
-      mDoUpdate = true;
-      if (sound->IsPlaying()) {
-        sound->Stop();
-      }
-      sound->Release();
-      sounds.mSounds[handle.GetIndex()] = nullptr;
-      return;
+  const int index = handle.GetIndex();
+  if (index < 0 || index >= sounds.mSounds.size()) {
+    if (channel != kSC_Game) {
+      StopSound(kSC_Game, handle);
     }
+    return;
   }
-  if (channel != kSC_Game) {
-    StopSound(kSC_Game, handle);
+  CBaseSfxWrapper* sound = sounds.mSounds[index];
+  if (sound == nullptr || handle != sound->GetSfxHandle()) {
+    if (channel != kSC_Game) {
+      StopSound(kSC_Game, handle);
+    }
+    return;
   }
+  mDoUpdate = true;
+  if (sound->IsPlaying()) {
+    sound->Stop();
+  }
+  sound->Release();
+  sounds.mSounds[handle.GetIndex()] = nullptr;
 }
 
 void CSfxManager::SetDuration(CSfxHandle handle, float duration) {
@@ -870,13 +875,14 @@ bool CSfxManager::LoadTranslationTable(CSimplePool* pool, const SObjectTag* tag)
 }
 
 ushort CSfxManager::TranslateSFXID(ushort id) {
-  if (mpTranslationTable != nullptr && id < mpTranslationTable->size()) {
-    const short translated = (*mpTranslationTable)[id];
-    if (translated >= 0) {
-      return translated;
-    }
+  if (mpTranslationTable == nullptr || id >= mpTranslationTable->size()) {
+    return kInternalInvalidSfxId;
   }
-  return kInternalInvalidSfxId;
+  short translated = (*mpTranslationTable)[id];
+  if (translated < 0) {
+    return kInternalInvalidSfxId;
+  }
+  return translated;
 }
 
 void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, int currentArea) {
@@ -1253,9 +1259,9 @@ int CSfxManager::GetLowPassFrequency(CBaseSfxWrapper* sound) {
 
 uchar CSfxManager::GetAreaVolume(int area) {
   if (area != kAllAreas) {
-    for (int i = 0; i < mAreaVolumes.size(); ++i) {
-      if (mAreaVolumes[i].mArea == area) {
-        return mAreaVolumes[i].mVolume;
+    for (SAreaVolume* it = mAreaVolumes.begin(); it != mAreaVolumes.end(); ++it) {
+      if (area == it->mArea) {
+        return it->mVolume;
       }
     }
   }
@@ -1263,25 +1269,36 @@ uchar CSfxManager::GetAreaVolume(int area) {
 }
 
 void CSfxManager::SetAreaVolume(int area, uchar volume) {
-  for (int i = 0; i < mAreaVolumes.size(); ++i) {
-    if (mAreaVolumes[i].mArea == area) {
-      mAreaVolumes[i].mVolume = volume;
-      return;
+  SAreaVolume* it;
+  for (it = mAreaVolumes.begin(); it != mAreaVolumes.end(); ++it) {
+    if (area == it->mArea) {
+      it->mVolume = volume;
+      break;
     }
   }
-  for (int i = 0; i < mAreaVolumes.size(); ++i) {
-    if (mAreaVolumes[i].mArea == kAllAreas) {
-      mAreaVolumes[i].mArea = area;
-      mAreaVolumes[i].mVolume = volume;
+  if (it != mAreaVolumes.end()) {
+    return;
+  }
+  for (it = mAreaVolumes.begin(); it != mAreaVolumes.end(); ++it) {
+    if (it->mArea == kAllAreas) {
+      it->mArea = area;
+      it->mVolume = volume;
       return;
     }
   }
 }
 
 void CSfxManager::SetIgnoreAreaLowPass(CSfxHandle handle, bool ignore) {
-  if (IsQueued(handle)) {
-    mChannels[mCurrentChannel].mSounds[handle.GetIndex()]->SetIgnoreAreaLowPass(ignore);
+  CSfxChannel& channel = mChannels[mCurrentChannel];
+  const int index = handle.GetIndex();
+  if (index < 0 || index >= channel.mSounds.size()) {
+    return;
   }
+  CBaseSfxWrapper* sound = channel.mSounds[index];
+  if (sound == nullptr || handle != sound->GetSfxHandle()) {
+    return;
+  }
+  sound->SetIgnoreAreaLowPass(ignore);
 }
 
 CSfxManager::CSfxWrapper::~CSfxWrapper() {}
