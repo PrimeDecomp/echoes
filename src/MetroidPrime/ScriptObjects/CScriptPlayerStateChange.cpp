@@ -1,6 +1,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptPlayerStateChange.hpp"
 
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPlayerStateChange.hpp"
 
 CScriptPlayerStateChange::CScriptPlayerStateChange(TUniqueId uid, const rstl::string& name,
                                                    const CEntityInfo& info,
@@ -23,6 +25,17 @@ void CScriptPlayerStateChange::AcceptScriptMsg(CStateManager& mgr, const CScript
   }
 
   CEntity::AcceptScriptMsg(mgr, msg);
+}
+
+CEntity* LoadPlayerStateChange(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPlayerStateChange sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPlayerStateChange.inc"
+
+  return rs_new CScriptPlayerStateChange(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                         LdrToEntityInfo(info, sldrThis.editorProperties),
+                                         CPlayerState::EItemType(sldrThis.itemToChange.value),
+                                         sldrThis.amount, sldrThis.capacityIncrease,
+                                         sldrThis.command, sldrThis.commandAction);
 }
 
 CScriptPlayerStateChange::~CScriptPlayerStateChange() {}
