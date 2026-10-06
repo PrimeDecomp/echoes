@@ -42,6 +42,7 @@ public:
   const CEntity* operator[](int idx) const;
 
   int size() const { return mCount; }
+  bool IsDynamic() const { return mDynamic; } // Guessed name, from manager registration.
   int GetFirstObjectIndex() const { return mFirstId; }
   int GetNextObjectIndex(int idx) const {
     if (idx != -1) {
@@ -56,7 +57,7 @@ private:
   EGameObjectList mListType;
   short mFirstId;
   short mCount;
-  bool x200c_;
+  bool mDynamic; // Guessed name: qualification can change after registration.
 };
 CHECK_SIZEOF(CObjectList, 0x2010)
 

@@ -412,7 +412,7 @@ CIOWin::EMessageReturn CMFGame::OnMessage(const CArchitectureMessage& message,
       mFlowTime += dt;
       mStateManager->UpdateDynamicLayers();
       if (!mStateManager->HasPendingLayerLoads() && mFlowTime >= 1.f / 60.f) {
-        mStateManager->mUnkFlagB4 = false;
+        mStateManager->mLayerRestartPending = false;
         SetFlowState(kFS_InGame);
       }
       return kMR_Exit;
@@ -560,7 +560,7 @@ CIOWin::EMessageReturn CMFGame::OnMessage(const CArchitectureMessage& message,
         queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
         mMultiplayerGuiActive = false;
       }
-      if (mStateManager->mUnkFlagB4) {
+      if (mStateManager->mLayerRestartPending) {
         SetFlowState(kFS_State8);
         mFlowTime = 0.f;
         return kMR_Normal;

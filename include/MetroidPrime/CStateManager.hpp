@@ -18,6 +18,7 @@ extern const int gkPVSEnabled;
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CLight.hpp"
 #include "Kyoto/Input/CFinalInput.hpp"
+#include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TOneStatic.hpp"
@@ -91,6 +92,8 @@ class CStateManager : public TOneStatic< CStateManager > {
     uint mWriteIndex;
     uint mReadIndex;
 
+    ScriptMsgArray() : mWriteIndex(0), mReadIndex(0) {}
+
     // Reconstructed operation names; the original spellings are unknown.
     void Append(const CScriptMsg& msg);
     int GetCount() const;
@@ -111,8 +114,16 @@ public:
   enum ERenderVisorMode { kRVM_Normal, kRVM_Echo, kRVM_Dark };
 
   CStateManager(const rstl::ncrc_ptr< CScriptMailbox >&, const rstl::ncrc_ptr< CMapWorldInfo >&,
-                const rstl::ncrc_ptr< CPlayerState >&, const rstl::ncrc_ptr< CWorldTransManager >&);
+                const rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 >&,
+                const rstl::ncrc_ptr< CWorldTransManager >&,
+                const rstl::ncrc_ptr< CWorldLayerState >&);
   ~CStateManager();
+
+  // Prime-correlated names; callback signatures and behavior are target-derived.
+  static void RendererDrawCallback(const void* drawable, const void* context, int type);
+  void RecursiveDrawTree(TUniqueId uid) const;
+  static const bool MemoryAllocatorAllocationFailedCallback(const void* context, uint size);
+  bool SwapOutAllPossibleMemory();
 
   void FrameBegin(uint frame);
   void FrameEnd();
@@ -245,17 +256,17 @@ public:
   }
 
   const CFrustumPlanes& GetFrustumPlanes() const { return mPlanes; }
-  const CTexture* GetShadowTex() const { return mShadowTex; }
+  const CTexture* GetShadowTex() const { return mShadowTex.GetObject(); }
   CFluidPlaneManager* GetFluidPlaneManager() const { return mFluidPlaneManager; }
   ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
   int GetNumPlayers() const { return mNumPlayers; }
   CWeaponMgr* GetWeaponMgr() const { return mWeaponMgr; }
   TUniqueId GetForceTriggerId(int playerIndex) const {
-    return TUniqueId(mForceTriggerIds[playerIndex]);
+    return mForceTriggerIds[playerIndex];
   }
   void SetForceTriggerId(int playerIndex, TUniqueId id) {
-    mForceTriggerIds[playerIndex] = id.value;
+    mForceTriggerIds[playerIndex] = id;
   }
   int GetViewportLayoutIndex() const; // Guessed name
   typedef rstl::reserved_vector< rstl::reserved_vector< CCameraFilterPass, 11 >, 4 >
@@ -378,8 +389,7 @@ public:
   CCameraManager* mCameraManagers[4];
   CRumbleManager* mRumbleManagers[4];
   CFinalInput mFinalInputs[4];
-  char x15ec_[4];
-  ushort mForceTriggerIds[4];    // 0x15f0: packed current force-field trigger IDs, one per player.
+  rstl::reserved_vector< TUniqueId, 4 > mForceTriggerIds;
   CPlayer* mCurrentRenderPlayer; // 0x15f8, guessed name
   CPlayerState* mPlayerState;
   CCameraManager* mCameraManager;
@@ -404,12 +414,13 @@ public:
   TAreaId mPreviousAreaId;
   int mRenderFrameIndex; // Guessed name: visibility age used by projectile impacts.
   int mUpdateFrameIdx;   // 16AC
-  char x16b0_[8];
+  uint mObjectDrawToken; // Prime-correlated name; deduplicates actor rendering.
+  // Constructor writes zero; no runtime consumer identified in the selected DOL.
+  uint mUnknown0x16b4;
   // Guessed names: actor-specific exclusions and the renderer's world-light list.
   rstl::vector< rstl::pair< TUniqueId, CLight > > mDynamicActorLights;
   rstl::vector< CLight > mDynamicLights;
-  char x16d8_[8];       // Token storage; full resource ownership remains unresolved here.
-  CTexture* mShadowTex; // 0x16e0
+  TCachedToken< CTexture > mShadowTex;
   CRandom16 mRandom;
   bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
   char x16e9_[3];
@@ -417,53 +428,60 @@ public:
   EInitPhase mInitPhase;
   TCameraFilterPasses mCameraFilterPasses; // 0x16f4
   TCameraBlurPasses mCameraBlurPasses;     // 0x1e98
-  char x242c_[8];
+  int mHintIdx; // Prime-correlated names, from hint selection and HUD memo dispatch.
+  uint mHintPeriods;
 
   CAssetId mPauseHudMessage; // 0x2434
   float mEscapeTotalTime;
-  float x243c;
+  float mCurTimeMod900; // Prime-correlated name; drives CTimeProvider during rendering.
   TUniqueId mBossId; // 0x2440
   float mBossHealth;
   uint mBossLanguageTableIndex;
   ERenderVisorMode mRenderVisorMode;
   TUniqueId mSpecialFunctionId;
+  TUniqueId mPlayerActorHead; // Prime-correlated name; identifies the model-touch actor.
   float mHudMessageTime;               // 0x2454
   CProjectedShadow* mProjectedShadows; // 0x2458; head of this frame's shadow list.
   int mHudMessageFrameCount;           // 0x245c
   int mPausedHudMemoFrameCount;        // 0x2460
   CAssetId mPausedHudMemoAssetId;
-  float x2468;
+  float mQueuedHudMemoDismissalDelay; // Guessed name, from the queued memo's parameters.
   CAssetId mMapTeleportWorldId; // Guessed name
   EStateManagerTransition mDeferredTransition;
 
-  char mUnknownData3[4];
+  // Guessed names: one cached line-of-sight result per multiplayer player pair.
+  uchar mPlayerLineOfSightPairs;
+  uchar mNextPlayerLineOfSightPair;
   CFrustumPlanes mPlanes;        // 0x2478
   int mCurrentRenderPlayerIndex; // Guessed name
-  char mUnknownData4[0x28f8 - 0x24e0];
+  TAreaId mVisAreaId; // Prime-correlated role: area containing the render viewpoint.
+  rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 > mAreaFrusta; // Guessed name.
   TAreaId mPendingDockArea;                                // Guessed name.
   int mPendingDock;                                        // Guessed name.
   rstl::single_ptr< CPortalTransition > mPortalTransition; // Guessed name.
-  char x2904_[0x2938 - 0x2904];
+  rstl::single_ptr< TCachedToken< CTexture > > mUnusedViewportTexture; // Guessed name.
+  // Identity-initialized and reset during area transitions; no other consumer identified.
+  CTransform4f mUnknown0x2908;
 
-  CVector3f x2938;
-  float x2944;
-  CColor x2948;
-  bool mUnkFlagA1 : 1;
+  // Guessed names from the renderer's DrawDarkWorldCloud arguments.
+  CVector3f mDarkWorldCloudScale;
+  float mDarkWorldCloudTime;
+  CColor mDarkWorldCloudColor;
+  bool mReadyToRender : 1; // Guessed name: set after the first update, gates PreRender.
   bool mQuitGame : 1;
-  bool mUnkFlagA3 : 1;
+  bool mUnkFlagA3 : 1; // Increment/Decrement script toggle; runtime purpose unresolved.
   bool mInMapScreen : 1;
   bool mInSaveUI : 1; // Prime-correlated name
   bool mCinematicPause : 1;
   bool mIsFullThreat : 1;       // Prime-correlated name
   bool mIsDarkWorld : 1;        // 0x294c
   bool mShowSoftTransition : 1; // Guessed name.
-  bool mUnkFlagB2 : 1;
+  bool mTearingDown : 1; // Guessed name: set on entry to the destructor.
   bool mDispatchingScriptMessages : 1;
-  bool mUnkFlagB4 : 1;
-  bool mUnkFlagB5 : 1;
-  bool mUnkFlagB6 : 1;
-  bool mUnkFlagB7 : 1;
-  bool mUnkFlagB8 : 1;
+  bool mLayerRestartPending : 1; // Guessed name, from layer activation and game-flow consumers.
+  // Guessed names: per-player depletion within the current update, not warning history.
+  uint mLightAmmoDepletedPlayers : 4;
+  uint mDarkAmmoDepletedPlayers : 4;
 };
 CHECK_SIZEOF(CStateManager, 0x2950)
 CHECK_OFFSETOF(CStateManager, mNewObjectIds, 0x8d4)
@@ -473,5 +491,15 @@ CHECK_OFFSETOF(CStateManager, mScriptIdMap, 0x163c)
 CHECK_OFFSETOF(CStateManager, mAudioGroupDependencies, 0x1650)
 CHECK_OFFSETOF(CStateManager, mPlayerStateOwners, 0x1658)
 CHECK_OFFSETOF(CStateManager, mCurrentWorldLayerState, 0x1694)
+CHECK_OFFSETOF(CStateManager, mForceTriggerIds, 0x15ec)
+CHECK_OFFSETOF(CStateManager, mObjectDrawToken, 0x16b0)
+CHECK_OFFSETOF(CStateManager, mShadowTex, 0x16d8)
+CHECK_OFFSETOF(CStateManager, mHintIdx, 0x242c)
+CHECK_OFFSETOF(CStateManager, mPlayerActorHead, 0x2452)
+CHECK_OFFSETOF(CStateManager, mPlayerLineOfSightPairs, 0x2474)
+CHECK_OFFSETOF(CStateManager, mAreaFrusta, 0x24e4)
+CHECK_OFFSETOF(CStateManager, mUnusedViewportTexture, 0x2904)
+CHECK_OFFSETOF(CStateManager, mUnknown0x2908, 0x2908)
+CHECK_OFFSETOF(CStateManager, mDarkWorldCloudScale, 0x2938)
 
 #endif // _CSTATEMANAGER

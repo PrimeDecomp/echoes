@@ -247,6 +247,15 @@ public:
   int GetRenderAlphaBufferAlpha(const CStateManager& mgr) const;
 
   void SetNextDrawNode(TUniqueId id) { mNextDrawNode = id; }
+
+  TUniqueId GetDrawParent() const { return mNextDrawNode; }
+
+  uint GetDrawToken() const { return mDrawnToken; }
+
+  uint GetAddedToken() const { return mAddedToken; }
+
+  void SetDrawToken(uint token) const { const_cast< CActor* >(this)->mDrawnToken = token; }
+
   void SetPvsIndex(int index) { mPvsIndex = index; }
 
   void SetTransformDirty();
