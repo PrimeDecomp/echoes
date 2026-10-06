@@ -7,7 +7,7 @@
 #include "rstl/single_ptr.hpp"
 
 class CCollisionCache;
-class CCachedCollisionSurface;
+struct SCachedCollisionSlot;
 class CElementGen;
 class CGenDescription;
 
@@ -40,9 +40,25 @@ public:
   void Touch(CActor& actor, CStateManager& mgr) override;
 
 private:
+  enum EParticleFlag {
+    kPF_Damaged = 0,
+    kPF_Escaped = 1,
+  };
+  // Guessed layout: the particle's advanced values are reused as integer homing state.
+  struct SParticleState {
+    union {
+      float mUnassigned;
+      int mTargetSlot;
+    };
+    uint mFlags;
+
+    bool HasFlag(int bit) const { return (mFlags >> bit) & 1; }
+    void SetFlag(int bit) { mFlags |= 1 << bit; }
+  };
+
   void UpdateParticles(CStateManager& mgr);
   bool FindNearestTriangle(float radius, const CVector3f& position, CVector3f& closest,
-                           const CCachedCollisionSurface*& surface, CVector3f& barycentric);
+                           const SCachedCollisionSlot*& slot, CVector3f& barycentric);
 
   CAABox mCollisionBounds;
   rstl::single_ptr< CElementGen > mParticleGen;
@@ -50,8 +66,8 @@ private:
   TUniqueId mLightId;
   CAssetId mParticleAssetId;
   rstl::reserved_vector< TUniqueId, 16 > mTargetIds;
-  int mNextParticleTarget;
-  int mParticleUpdatePhase;
+  uint mNextParticleTarget;
+  uint mParticleUpdatePhase;
   float mElapsedTime;
   float x220_; // Native initialization is six; the remaining Touch comparisons have no effect.
   float mGeneratorRate;
