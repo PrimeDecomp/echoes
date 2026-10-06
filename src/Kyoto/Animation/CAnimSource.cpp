@@ -10,44 +10,11 @@
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
-namespace {
-const float kInterpolationThreshold = 0.0001f;
-
-// Frame/weight calculation shared by the source samplers.
-float GetFrameAndWeight(const CCharAnimTime& time, const CCharAnimTime& interval, uint& frame) {
-#ifdef __MWERKS__
-  const float inverseInterval = __fres(interval.GetSeconds());
-#else
-  const float inverseInterval = 1.f / interval.GetSeconds();
-#endif
-  frame = static_cast< uint >(time.GetSeconds() * inverseInterval);
-  float remainder = time.GetSeconds() - interval.GetSeconds() * frame;
-  if (close_enough(remainder, 0.f)) {
-    remainder = 0.f;
-  }
-  return CMath::Clamp(0.f, remainder * inverseInterval, 1.f);
+// Guessed name, corroborated by Prime and the native frame-sampling consumers.
+static float clamp_zero_to_one(float value) {
+  const float nonnegative = CMath::FastFSel(value, value, 0.f);
+  return CMath::FastFSel(value - 1.f, 1.f, nonnegative);
 }
-
-CQuaternion SampleRotation(const CQuaternion& a, const CQuaternion& b, float weight) {
-  if (1.f - weight < kInterpolationThreshold) {
-    return b;
-  }
-  if (weight < kInterpolationThreshold) {
-    return a;
-  }
-  return CAnimMathUtils::Slerp(a, b, weight);
-}
-
-CVector3f SampleVector(const CVector3f& a, const CVector3f& b, float weight) {
-  if (1.f - weight < kInterpolationThreshold) {
-    return b;
-  }
-  if (weight < kInterpolationThreshold) {
-    return a;
-  }
-  return CVector3f::Lerp(a, b, weight);
-}
-} // namespace
 
 uint RotationAndOffsetStorage::DataSizeInBytes(uint rotationsPerFrame, uint offsetsPerFrame,
                                                uint numFrames) {
@@ -68,31 +35,38 @@ RotationAndOffsetStorage::GetRotationsAndOffsets(const rstl::vector< CQuaternion
                                                  uint numFrames) {
   mRotationsPerFrame = rotations.size() / numFrames;
   mOffsetsPerFrame = offsets.size() / numFrames;
-  const uint words =
-      DataSizeInBytes(mRotationsPerFrame, mOffsetsPerFrame, numFrames) / sizeof(uint);
-  rstl::auto_ptr< uint > storage(rs_new uint[words + 1]);
+  rstl::auto_ptr< uint > storage(rs_new uint[DataSizeInBytes(rotations.size() / numFrames, //
+                                                             offsets.size() / numFrames,   //
+                                                             numFrames                     //
+                                                             ) /
+                                                 4 +
+                                             1]);
   CopyRotationsAndOffsets(rotations, offsets, numFrames, reinterpret_cast< float* >(storage.get()));
+
   return storage;
 }
 
 void RotationAndOffsetStorage::CopyRotationsAndOffsets(const rstl::vector< CQuaternion >& rotations,
                                                        const rstl::vector< CVector3f >& offsets,
-                                                       uint numFrames, float* buffer) {
+                                                       const uint numFrames, float* buf) {
   const uint rotationsPerFrame = rotations.size() / numFrames;
   const uint offsetsPerFrame = offsets.size() / numFrames;
-  for (uint frame = 0; frame < numFrames; ++frame) {
-    for (uint channel = 0; channel < rotationsPerFrame; ++channel) {
-      const CQuaternion& rotation = rotations[channel * numFrames + frame];
-      *buffer++ = rotation.GetScalar();
-      *buffer++ = rotation.AxisX();
-      *buffer++ = rotation.AxisY();
-      *buffer++ = rotation.AxisZ();
+
+  for (int frame = 0; frame < numFrames; frame++) {
+    int i = 0;
+    for (int rotation = 0; i < rotationsPerFrame; rotation += numFrames, i++) {
+      const CQuaternion& q = rotations[frame + rotation];
+      *(buf++) = q.GetScalar();
+      *(buf++) = q.AxisX();
+      *(buf++) = q.AxisY();
+      *(buf++) = q.AxisZ();
     }
-    for (uint channel = 0; channel < offsetsPerFrame; ++channel) {
-      const CVector3f& offset = offsets[channel * numFrames + frame];
-      *buffer++ = offset.GetX();
-      *buffer++ = offset.GetY();
-      *buffer++ = offset.GetZ();
+    i = 0;
+    for (int offset = 0; offset < offsetsPerFrame; offset++, i += numFrames) {
+      const CVector3f& o = offsets[frame + i];
+      *(buf++) = o.GetX();
+      *(buf++) = o.GetY();
+      *(buf++) = o.GetZ();
     }
   }
 }
@@ -137,34 +111,68 @@ bool CAnimSource::HasScale(const CSegId& seg) const {
   return mScaleChannels[mSegmentChannels[seg.val()]] >= 0;
 }
 
-CVector3f CAnimSource::GetOffset(const CSegId& seg, const CCharAnimTime& time) const {
-  uint frame;
-  const float weight = GetFrameAndWeight(time, mInterval, frame);
-  const int channel = mSegmentChannels[seg.val()];
-  if (channel < 0 || !HasOffset(seg)) {
-    return CVector3f::Zero();
+CVector3f CAnimSource::GetOffset(const CSegId& seg, const CCharAnimTime& animTime) const {
+  const float frameTime = animTime.GetSeconds();
+  float interval = mInterval.GetSeconds();
+#ifdef __MWERKS__
+  const float invTime = __fres(interval);
+#else
+  const float invTime = 1.f / interval;
+#endif
+  const uint frame = static_cast< uint >(frameTime * invTime);
+  float time = interval * frame;
+  time = frameTime - time;
+
+  if (CMath::AbsF(time) < Real32::Epsilon()) {
+    time = 0.f;
   }
-  const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
-  const uint offsetChannel = mOffsetChannels[channel];
-  return CVector3f::Lerp(mStorage.GetOffset(offsetChannel, frame),
-                         mStorage.GetOffset(offsetChannel, nextFrame), weight);
+
+  time = clamp_zero_to_one(time * invTime);
+
+  int channel = mSegmentChannels[seg.val()];
+  if (channel >= 0 && HasOffset(seg)) {
+    const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
+    channel = mOffsetChannels[channel];
+    const CVector3f& a = mStorage.GetOffset(channel, frame);
+    const CVector3f& b = mStorage.GetOffset(channel, nextFrame);
+    return CVector3f::Lerp(a, b, time);
+  }
+
+  return CVector3f::Zero();
 }
 
-CQuaternion CAnimSource::GetRotation(const CSegId& seg, const CCharAnimTime& time) const {
+CQuaternion CAnimSource::GetRotation(const CSegId& seg, const CCharAnimTime& animTime) const {
+  const float interval = GetTimePerFrame().GetSeconds();
+#ifdef __MWERKS__
+  const float invTime = __fres(interval);
+#else
+  const float invTime = 1.f / interval;
+#endif
   const int channel = mSegmentChannels[seg.val()];
-  if (channel < 0 || !HasRotation(seg)) {
-    return CQuaternion::NoRotation();
+  if (channel >= 0 && HasRotation(seg)) {
+    const float frameTime = animTime.GetSeconds();
+    const uint frame = static_cast< uint >(frameTime * invTime);
+    float time = interval * frame;
+    time = frameTime - time;
+
+    if (CMath::AbsF(time) < Real32::Epsilon()) {
+      time = 0.f;
+    }
+
+    time = clamp_zero_to_one(time * invTime);
+    const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
+    const CQuaternion& a = mStorage.GetRotation(channel, frame);
+    const CQuaternion& b = mStorage.GetRotation(channel, nextFrame);
+    return CAnimMathUtils::Slerp(a, b, time);
   }
-  uint frame;
-  const float weight = GetFrameAndWeight(time, mInterval, frame);
-  const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
-  return CAnimMathUtils::Slerp(mStorage.GetRotation(channel, frame),
-                               mStorage.GetRotation(channel, nextFrame), weight);
+
+  return CQuaternion::NoRotation();
 }
 
 void CAnimSource::CalcAverageVelocity() {
-  const uint channel = mOffsetChannels[mSegmentChannels[0]];
+  const float invDuration = 1.f / mDuration.GetSeconds();
   float distance = 0.f;
+  const uint channel = mOffsetChannels[mSegmentChannels[0]];
   for (uint frame = 1; frame < mFrameCount; ++frame) {
     const CVector3f delta =
         mStorage.GetOffset(channel, frame) - mStorage.GetOffset(channel, frame - 1);
@@ -173,90 +181,254 @@ void CAnimSource::CalcAverageVelocity() {
       distance += magnitude;
     }
   }
-  mAverageVelocity = distance / mDuration.GetSeconds();
+
+  distance *= invDuration;
+  mAverageVelocity = distance;
 }
 
 void CAnimSource::GetSegStatement(const CSegId& seg, uint frame, uint nextFrame, float weight,
                                   CSegStatement& statement) const {
   const int channel = mSegmentChannels[seg.val()];
-  if (HasRotation(seg)) {
-    statement.Set(SampleRotation(mStorage.GetRotation(channel, frame),
-                                 mStorage.GetRotation(channel, nextFrame), weight));
-  }
-  if (HasOffset(seg)) {
-    const uint offsetChannel = mOffsetChannels[channel];
-    statement.Set(SampleVector(mStorage.GetOffset(offsetChannel, frame),
-                               mStorage.GetOffset(offsetChannel, nextFrame), weight));
+  const float inverseWeight = 1.f - weight;
+  if (inverseWeight < CAnimMathUtils::kInterpolationThreshold) {
+    if (HasRotation(seg)) {
+      statement.Set(mStorage.GetRotation(channel, nextFrame));
+    }
+    if (HasOffset(seg)) {
+      statement.Set(mStorage.GetOffset(mOffsetChannels[channel], nextFrame));
+    }
+  } else if (weight < CAnimMathUtils::kInterpolationThreshold) {
+    if (HasRotation(seg)) {
+      statement.Set(mStorage.GetRotation(channel, frame));
+    }
+    if (HasOffset(seg)) {
+      statement.Set(mStorage.GetOffset(mOffsetChannels[channel], frame));
+    }
+  } else {
+    if (HasRotation(seg)) {
+      const CQuaternion& a = mStorage.GetRotation(channel, frame);
+      const CQuaternion& b = mStorage.GetRotation(channel, nextFrame);
+      statement.Set(CAnimMathUtils::Slerp(a, b, weight));
+    }
+    if (HasOffset(seg)) {
+      const uint offsetChannel = mOffsetChannels[channel];
+      const CVector3f& a = mStorage.GetOffset(offsetChannel, frame);
+      const CVector3f& b = mStorage.GetOffset(offsetChannel, nextFrame);
+      statement.Set(inverseWeight * a + weight * b);
+    }
   }
 }
 
 void CAnimSource::GetSegStatementSet(const CSegIdList& list, CSegStatementSet& set,
                                      const CCharAnimTime& time) const {
-  uint frame;
-  const float weight = GetFrameAndWeight(time, mInterval, frame);
+  const float frameTime = time.GetSeconds();
+  const float interval = GetTimePerFrame().GetSeconds();
+#ifdef __MWERKS__
+  const float inverseInterval = __fres(interval);
+#else
+  const float inverseInterval = 1.f / interval;
+#endif
+  const uint frame = static_cast< uint >(frameTime * inverseInterval);
+  float remainder = interval * frame;
+  remainder = frameTime - remainder;
+  if (CMath::AbsF(remainder) < Real32::Epsilon()) {
+    remainder = 0.f;
+  }
+  const float weight = clamp_zero_to_one(remainder * inverseInterval);
   const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
-  for (int i = 0; i < list.GetCount(); ++i) {
-    const CSegId& seg = list.mSegList[i];
+  const int count = list.GetCount();
+  const float inverseWeight = 1.f - weight;
+  for (int i = 0; i < count; ++i) {
+    const CSegId seg = list.mSegList[i];
     const int channel = mSegmentChannels[seg.val()];
-    CSegStatement& statement = set[seg];
-    if (channel < 0) {
-      statement.Set(CQuaternion::NoRotation());
-      continue;
-    }
-    GetSegStatement(seg, frame, nextFrame, weight, statement);
-    if (HasScale(seg)) {
-      const uint scaleChannel = mScaleChannels[channel];
-      statement.SetScale(SampleVector(mScales[frame * mScalesPerFrame + scaleChannel],
-                                      mScales[nextFrame * mScalesPerFrame + scaleChannel], weight));
+    if (channel >= 0) {
+      CSegStatement& statement = set[seg];
+      GetSegStatement(seg, frame, nextFrame, weight, statement);
+      if (HasScale(seg)) {
+        const uint scaleChannel = mScaleChannels[channel];
+        if (inverseWeight < CAnimMathUtils::kInterpolationThreshold) {
+          statement.SetScale(mScales[nextFrame * mScalesPerFrame + scaleChannel]);
+        } else if (weight < CAnimMathUtils::kInterpolationThreshold) {
+          statement.SetScale(mScales[frame * mScalesPerFrame + scaleChannel]);
+        } else {
+          const CVector3f& a = mScales[frame * mScalesPerFrame + scaleChannel];
+          const CVector3f& b = mScales[nextFrame * mScalesPerFrame + scaleChannel];
+          statement.SetScale(inverseWeight * a + weight * b);
+        }
+      }
+    } else {
+      set[seg].Set(CQuaternion::NoRotation());
     }
   }
 }
 
 void CAnimSource::GetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
                              const CCharAnimTime& time) const {
-  uint frame;
-  const float weight = GetFrameAndWeight(time, mInterval, frame);
+  const float frameTime = time.GetSeconds();
+  const float interval = GetTimePerFrame().GetSeconds();
+#ifdef __MWERKS__
+  const float inverseInterval = __fres(interval);
+#else
+  const float inverseInterval = 1.f / interval;
+#endif
+  const uint frame = static_cast< uint >(frameTime * inverseInterval);
+  float remainder = interval * frame;
+  remainder = frameTime - remainder;
+  if (CMath::AbsF(remainder) < Real32::Epsilon()) {
+    remainder = 0.f;
+  }
+  const float weight = clamp_zero_to_one(remainder * inverseInterval);
   const uint nextFrame = frame == mFrameCount - 1 ? 0 : frame + 1;
   const bool hasScales = !mScales.empty();
   const bool hasOffsets = mStorage.GetOffsetCount() != 0;
+  const int count = mRotationChannels.size();
   if (!hasScales && data.HasScales()) {
     data.ResetScales();
   }
-  if (hasScales || hasOffsets) {
-    data.SetHasOffsets(true);
-  }
-  if (hasScales) {
-    data.SetHasScales(true);
-  }
 
-  uint rotationChannel = 0;
-  uint offsetChannel = 0;
-  uint scaleChannel = 0;
-  for (int i = 0; i < mRotationChannels.size(); ++i) {
-    if (mRotationChannels[i] == -1) {
-      data.Rotation(i) = CQuaternion::NoRotation();
+  uint copyFrame = ~0u;
+  const float inverseWeight = 1.f - weight;
+  uchar* rotations = data.GetRotations();
+  uchar* offsets = data.GetTranslations();
+  uchar* scales = data.GetScales();
+  const int stride = data.GetStride();
+  if (inverseWeight < CAnimMathUtils::kInterpolationThreshold) {
+    copyFrame = nextFrame;
+  } else if (weight < CAnimMathUtils::kInterpolationThreshold) {
+    copyFrame = frame;
+  }
+  const signed char* rotationChannels = mRotationChannels.data();
+  const signed char* offsetChannels = mOffsetChannels.data();
+  const signed char* scaleChannels = mScaleChannels.data();
+  const CVector3f* referenceOffsets = layout.GetLinearParentOffsets().data();
+
+  if (copyFrame != ~0u) {
+    const CQuaternion* sourceRotations =
+        reinterpret_cast< const CQuaternion* >(mStorage.StartForFrame(copyFrame));
+    const CVector3f* sourceOffsets = reinterpret_cast< const CVector3f* >(
+        mStorage.StartForFrame(copyFrame) + mStorage.GetRotationCount() * 4);
+    if (!hasScales && !hasOffsets) {
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) = *sourceRotations++;
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        rotations += stride;
+      }
+    } else if (!hasScales && hasOffsets) {
+      data.SetHasOffsets(true);
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) = *sourceRotations++;
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        if (offsetChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(offsets) = *sourceOffsets++;
+        } else {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              data.UsesZeroOffsets() ? CVector3f::Zero() : *referenceOffsets;
+        }
+        rotations += stride;
+        offsets += stride;
+        ++referenceOffsets;
+      }
     } else {
-      data.Rotation(i) = SampleRotation(mStorage.GetRotation(rotationChannel, frame),
-                                        mStorage.GetRotation(rotationChannel, nextFrame), weight);
-      ++rotationChannel;
-    }
-    if (hasScales || hasOffsets) {
-      if (mOffsetChannels[i] == -1) {
-        data.Translation(i) =
-            data.UsesZeroOffsets() ? CVector3f::Zero() : layout.GetLinearParentOffsets()[i];
-      } else {
-        data.Translation(i) = SampleVector(mStorage.GetOffset(offsetChannel, frame),
-                                           mStorage.GetOffset(offsetChannel, nextFrame), weight);
-        ++offsetChannel;
+      data.SetHasOffsets(true);
+      data.SetHasScales(true);
+      const CVector3f* sourceScales = mScales.data() + copyFrame * mScalesPerFrame;
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) = *sourceRotations++;
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        if (offsetChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(offsets) = *sourceOffsets++;
+        } else {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              data.UsesZeroOffsets() ? CVector3f::Zero() : *referenceOffsets;
+        }
+        if (scaleChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(scales) = *sourceScales++;
+        } else {
+          *reinterpret_cast< CVector3f* >(scales) = CVector3f::One();
+        }
+        rotations += stride;
+        offsets += stride;
+        ++referenceOffsets;
+        scales += stride;
       }
     }
-    if (hasScales) {
-      if (mScaleChannels[i] == -1) {
-        data.Scale(i) = CVector3f::One();
-      } else {
-        data.Scale(i) = SampleVector(mScales[frame * mScalesPerFrame + scaleChannel],
-                                     mScales[nextFrame * mScalesPerFrame + scaleChannel], weight);
-        ++scaleChannel;
+  } else {
+    const CQuaternion* priorRotations =
+        reinterpret_cast< const CQuaternion* >(mStorage.StartForFrame(frame));
+    const CQuaternion* nextRotations =
+        reinterpret_cast< const CQuaternion* >(mStorage.StartForFrame(nextFrame));
+    const CVector3f* priorOffsets = reinterpret_cast< const CVector3f* >(
+        mStorage.StartForFrame(frame) + mStorage.GetRotationCount() * 4);
+    const CVector3f* nextOffsets = reinterpret_cast< const CVector3f* >(
+        mStorage.StartForFrame(nextFrame) + mStorage.GetRotationCount() * 4);
+    if (!hasScales && !hasOffsets) {
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) =
+              CAnimMathUtils::Slerp(*priorRotations++, *nextRotations++, weight);
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        rotations += stride;
+      }
+    } else if (!hasScales && hasOffsets) {
+      data.SetHasOffsets(true);
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) =
+              CAnimMathUtils::Slerp(*priorRotations++, *nextRotations++, weight);
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        if (offsetChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              inverseWeight * *priorOffsets++ + weight * *nextOffsets++;
+        } else {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              data.UsesZeroOffsets() ? CVector3f::Zero() : *referenceOffsets;
+        }
+        rotations += stride;
+        offsets += stride;
+        ++referenceOffsets;
+      }
+    } else {
+      data.SetHasOffsets(true);
+      data.SetHasScales(true);
+      const CVector3f* priorScales = mScales.data() + frame * mScalesPerFrame;
+      const CVector3f* nextScales = mScales.data() + nextFrame * mScalesPerFrame;
+      for (int i = 0; i < count; ++i) {
+        if (rotationChannels[i] != -1) {
+          *reinterpret_cast< CQuaternion* >(rotations) =
+              CAnimMathUtils::Slerp(*priorRotations++, *nextRotations++, weight);
+        } else {
+          *reinterpret_cast< CQuaternion* >(rotations) = CQuaternion::NoRotation();
+        }
+        if (offsetChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              inverseWeight * *priorOffsets++ + weight * *nextOffsets++;
+        } else {
+          *reinterpret_cast< CVector3f* >(offsets) =
+              data.UsesZeroOffsets() ? CVector3f::Zero() : *referenceOffsets;
+        }
+        if (scaleChannels[i] != -1) {
+          *reinterpret_cast< CVector3f* >(scales) =
+              inverseWeight * *priorScales++ + weight * *nextScales++;
+        } else {
+          *reinterpret_cast< CVector3f* >(scales) = CVector3f::One();
+        }
+        rotations += stride;
+        offsets += stride;
+        ++referenceOffsets;
+        scales += stride;
       }
     }
   }
@@ -264,6 +436,9 @@ void CAnimSource::GetSegData(const CCharLayoutInfo& layout, CJointData_LinearSto
 
 uint CAnimSource::GetSize() const {
   // The original accounting omits the scale-channel map and scale keys.
-  return sizeof(CAnimSource) + mSegmentChannels.size() + mRotationChannels.size() +
-         mOffsetChannels.size() + mFrameCount * mStorage.GetFrameSizeInBytes();
+  uint size = sizeof(CAnimSource) + mSegmentChannels.size();
+  size += mRotationChannels.size();
+  size += mOffsetChannels.size();
+  size += mFrameCount * mStorage.GetFrameSizeInBytes();
+  return size;
 }
