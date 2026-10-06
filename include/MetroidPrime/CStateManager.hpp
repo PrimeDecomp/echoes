@@ -271,6 +271,8 @@ public:
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
+  // Prime-correlated name; native Echoes visor masks omit the thawed parameter.
+  void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
 
