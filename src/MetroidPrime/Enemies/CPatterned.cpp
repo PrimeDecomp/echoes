@@ -1,6 +1,9 @@
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 
+#include "Collision/CCollisionInfoList.hpp"
+#include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/Animation/CCharAnimTime.hpp"
+#include "Kyoto/Animation/CInt32POINode.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -20,7 +23,9 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
+#include "MetroidPrime/Weapons/CImpactVisorEffect.hpp"
 #include "MetroidPrime/Weapons/CProjectileInfo.hpp"
 
 #include <float.h>
@@ -134,8 +139,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mDamageCooldownTimer(-1.f)
 , mColor(0.f, 0.f, 0.f, 1.f)
 , mDamageColor(skDamageColor)
-, mPosDelta(CVector3f::Zero())
-, mRotDelta(CQuaternion::NoRotation())
+, mAnimationDeltas(CVector3f::Zero(), CQuaternion::NoRotation())
 , mNormalModel(GetAnimationData()->GetModelData())
 , mDeathSfx(pinfo.mDeathSfx)
 , mIceShatterSfx(pinfo.mIceShatterSfx)
@@ -496,9 +500,135 @@ void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   }
 }
 
-void CPatterned::ApplyKnockBackFollowUp(CStateManager&, const CVector3f&, CKnockBackMgr::EFollowUp,
-                                        float, float, TUniqueId, TUniqueId) {
-  // TODO: Apply the knockback rule's follow-up (freeze, burn, shock, death or disintegration).
+void CPatterned::ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
+                                        CKnockBackMgr::EFollowUp followUp, float duration,
+                                        float secondaryDuration, TUniqueId source,
+                                        TUniqueId owner) {
+  if (mPendingMassiveDeath || mPendingMassiveFrozenDeath) {
+    return;
+  }
+
+  switch (followUp) {
+  case CKnockBackMgr::kFU_Slow:
+    if (mBodyController->IsFrozen()) {
+      CUnitVector3f dir = GetTransform().TransposeRotate(direction);
+      Freeze(mgr, CVector3f::Zero(), dir, secondaryDuration, 0.f);
+    } else {
+      mBodyController->SetTimeScale(rstl::max_val(mBodyController->GetTimeScale() - duration, 0.f));
+      if (mBodyController->GetTimeScale() == 0.f) {
+        CUnitVector3f dir = GetTransform().TransposeRotate(direction);
+        Freeze(mgr, CVector3f::Zero(), dir, secondaryDuration, 0.f);
+        mBodyController->SetTimeScale(1.f);
+      }
+    }
+    break;
+  case CKnockBackMgr::kFU_BurnPhase:
+    if (source != kInvalidUniqueId) {
+      if (mBodyController->IsOnFire()) {
+        Burn(mgr, secondaryDuration, gpTweakPlayerGun->GetAIBurnDamage());
+        mBodyController->SetFireDamageBuildup(0.f);
+      } else {
+        mBodyController->SetFireDamageBuildup(
+            rstl::min_val(duration + mBodyController->GetFireDamageBuildup(), 1.f));
+        if (mBodyController->GetFireDamageBuildup() == 1.f) {
+          Burn(mgr, secondaryDuration, gpTweakPlayerGun->GetAIBurnDamage());
+          mBodyController->SetFireDamageBuildup(0.f);
+        }
+      }
+    }
+    break;
+  case CKnockBackMgr::kFU_Freeze: {
+    CVector3f pos = CVector3f::Zero();
+    CUnitVector3f dir = GetTransform().TransposeRotate(direction);
+    Freeze(mgr, pos, dir, duration, -1.f);
+    break;
+  }
+  case CKnockBackMgr::kFU_Shock:
+    Shock(mgr, duration, -1.f);
+    break;
+  case CKnockBackMgr::kFU_Burn:
+    Burn(mgr, duration, gpTweakPlayerGun->GetAIBurnDamage());
+    break;
+  case CKnockBackMgr::kFU_ImmediateExplosion:
+    Shock(mgr, duration, -1.f);
+    break;
+  case CKnockBackMgr::kFU_BlackDeath:
+  case CKnockBackMgr::kFU_ImmediateDisintegration: {
+    const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(source));
+    if (!weapon) {
+      break;
+    }
+
+    mDisintegrationOrigin = weapon->GetTranslation();
+    if (followUp == CKnockBackMgr::kFU_BlackDeath) {
+      mBlackDeath = true;
+    } else {
+      mDisintegrating = true;
+      mFadeOnDeathTime = 1.5f;
+    }
+    mStopPhysics = true;
+    mUseDisintegrationPlane = true;
+    mKnockBackController.EnableExplodeDeath(false);
+    Burn(mgr, duration, -1.f);
+    Death(mgr, CVector3f::Zero(), kSS_DeathRattle);
+    mPendingMassiveDeath = mPendingMassiveFrozenDeath = false;
+    mFadeToDeath = mBurning = true;
+    mBurnThinkRateTimer = 1.5f;
+    mDrawParticles = false;
+    mBodyController->DouseFlames();
+
+    CActorModelParticles* particles = mgr.ActorModelParticles();
+    particles->StopFire(*this);
+    particles->StartBurnDeath(*this, mgr);
+    particles->StartImplosion(*this, mDisintegrationOrigin, mBlackDeath);
+    const CColor& color = CColor::White();
+    mColor.Set(color.GetRedu8(), color.GetGreenu8(), color.GetBlueu8(), mColor.GetAlphau8());
+    break;
+  }
+  case CKnockBackMgr::kFU_LaggedBurnDeath:
+    mLaggedBurnDeath = true;
+  case CKnockBackMgr::kFU_BurnDeath: {
+    Burn(mgr, duration, -1.f);
+    Death(mgr, CVector3f::Zero(), kSS_DeathRattle);
+    mPendingMassiveDeath = mPendingMassiveFrozenDeath = false;
+    mFadeToDeath = mBurning = true;
+    mBurnThinkRateTimer = 1.5f;
+    mDrawParticles = false;
+    mBodyController->DouseFlames();
+
+    CActorModelParticles* particles = mgr.ActorModelParticles();
+    particles->StopFire(*this);
+    particles->StartBurnDeath(*this, mgr);
+    if (!mLaggedBurnDeath) {
+      particles->DoFirePop(*this);
+      particles->StartAsh(*this);
+    }
+    break;
+  }
+  case CKnockBackMgr::kFU_Death:
+    Death(mgr, CVector3f::Zero(), kSS_DeathRattle);
+    break;
+  case CKnockBackMgr::kFU_ExplodeDeath:
+    Death(mgr, CVector3f::Zero(), kSS_DeathRattle);
+    if (GetDeathExplosionParticle().valid() || mDeathExplosionElectric.valid()) {
+      mBodyController->CommandMgr().Reset();
+      MassiveDeath(mgr);
+    } else if (mBodyController->IsFrozen()) {
+      mBodyController->FrozenBreakout();
+    }
+    break;
+  case CKnockBackMgr::kFU_IceDeath:
+    Death(mgr, CVector3f::Zero(), kSS_DeathRattle);
+    if (mIceDeathExplosionParticle.valid()) {
+      mBodyController->CommandMgr().Reset();
+      MassiveFrozenDeath(mgr);
+    } else if (mBodyController->IsFrozen()) {
+      mBodyController->FrozenBreakout();
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 void CPatterned::UpdateAlphaDelta(CStateManager& mgr, float dt) {
@@ -548,9 +678,157 @@ void CPatterned::UpdateHitDamageTime(float dt) {
   }
 }
 
+bool rstl::operator==(const char* lhs, const rstl::string& rhs) {
+  return rhs.compare(lhs, -1) == 0;
+}
+
 void CPatterned::Think(float dt, CStateManager& mgr) {
   CActor::Think(dt, mgr);
-  // TODO: Restore death, body/animation, continuous damage, movement and leash updates.
+  if (!GetActive()) {
+    return;
+  }
+
+  if (mDieIf80PercFrozen && mBodyController->GetPercentageFrozen() > 0.8f) {
+    mPendingMassiveFrozenDeath = true;
+  }
+
+  if (!mAlive) {
+    if ((mPendingMassiveDeath || mPendingMassiveFrozenDeath) && mXDamageDelay <= 0.f) {
+      if (mPendingMassiveFrozenDeath) {
+        SendScriptMsgs(kSS_AboutToMassivelyDie, mgr, kInvalidUniqueId, kSM_None);
+        MassiveFrozenDeath(mgr);
+      } else {
+        SendScriptMsgs(kSS_AboutToMassivelyDie, mgr, kInvalidUniqueId, kSM_None);
+        MassiveDeath(mgr);
+      }
+      return;
+    }
+
+    mXDamageDelay -= dt;
+    if (mStateControlledMassiveDeath && mStateMachine->GetName() != nullptr) {
+      const bool isDead = mStateMachine->GetName() == rstl::string_l("Dead");
+      if (isDead && mStateMachine->GetTime() > 15.f) {
+        MassiveDeath(mgr);
+      }
+    }
+  }
+
+  UpdateAlphaDelta(mgr, dt);
+  UpdateIngPossession(dt);
+  mLastHP = GetHealthInfo()->GetHP();
+  if (!mStateMachine->HasState()) {
+    InitializeStateMachine(mgr);
+  }
+
+  CVector3f diffVec = mLatestPredictedTranslation - GetTranslation();
+  if (!mVerticalMovement) {
+    diffVec.SetZ(0.f);
+  }
+  if (CVector3f::Dot(diffVec, diffVec) > 0.1f * dt) {
+    mPredictedLeashTime += dt;
+  } else {
+    mPredictedLeashTime = 0.f;
+  }
+
+  if (mKnockBackController.IsShockEnabled()) {
+    if (mBodyController->IsElectrocuting()) {
+      mgr.ActorModelParticles()->StartElectric(*this);
+      if (mPendingShockDamage > 0.f && mAlive) {
+        const CDamageInfo shockDamage =
+            CDamageInfo(CWeaponMode(kWT_Annihilator), mPendingShockDamage, 0.f, 0.f, false, false);
+        mgr.ApplyDamage(
+            kInvalidUniqueId, GetUniqueId(), kInvalidUniqueId, CDamageInfo(shockDamage, dt),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+            CVector3f::Zero());
+      }
+    } else if (mPendingShockDamage != 0.f) {
+      mPendingShockDamage = 0.f;
+      mBodyController->DouseElectrocuting();
+      mgr.ActorModelParticles()->StopElectric(*this);
+    }
+  }
+
+  if (mBodyController->IsOnFire()) {
+    if (mAlive) {
+      mgr.ActorModelParticles()->LightDudeOnFire(*this);
+      const CDamageInfo fireDamage =
+          CDamageInfo(CWeaponMode(kWT_Light), mPendingFireDamage, 0.f, 0.f, false, false);
+      mgr.ApplyDamage(
+          kInvalidUniqueId, GetUniqueId(), kInvalidUniqueId, CDamageInfo(fireDamage, dt),
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+          CVector3f::Zero());
+    }
+  } else {
+    if (mPendingFireDamage > 0.f) {
+      mPendingFireDamage = 0.f;
+    }
+    if (mBodyController->IsFrozen()) {
+      mgr.ActorModelParticles()->StopFire(*this);
+    }
+  }
+
+  if (mBurning) {
+    mAlphaDelta = -1.f / GetFadeOnDeathTime();
+  }
+  if (mPendingDeath) {
+    mPendingDeath = false;
+    Death(mgr, GetTransform().GetForward(), kSS_DeathRattle);
+  }
+
+  float thinkDt;
+  if (mAlive) {
+    thinkDt = dt;
+  } else {
+    thinkDt = dt * GetDeathTimeScale();
+  }
+  mBodyController->Update(thinkDt, mgr);
+  mBodyController->MultiplyPlaybackRate(mSpeed * mBodyController->GetTimeScale());
+
+  mAnimationDeltas =
+      UpdateAnimation(thinkDt, mgr, !(mBodyController->GetPercentageFrozen() >= 1.f));
+  if (mEnableStateMachine && mBodyController->GetPercentageFrozen() < 1.f) {
+    mStateMachine->Update(mgr, *this, thinkDt);
+  }
+  ThinkAboutMove(thinkDt);
+  mKnockBackController.Update(thinkDt, mgr, *this);
+
+  const CMotionState motion = PredictMotion(thinkDt);
+  mLatestPredictedTranslation = GetTranslation() + motion.GetTranslation();
+  mSolidCollision = false;
+  mBlockingCollision = false;
+  if (mCurDamageRemTime > 0.f) {
+    mCurDamageRemTime -= dt;
+  }
+  if (mBurning && mBurnThinkRateTimer > dt) {
+    mBurnThinkRateTimer -= dt;
+  }
+  if (!mBlackDeath && !mDisintegrating) {
+    UpdateHitDamageTime(dt);
+  }
+
+  if (mBodyController->GetPercentageFrozen() != 1.f) {
+    if (mLatestLeashPosition == CVector3f::Zero()) {
+      mLatestLeashPosition = GetTranslation();
+    }
+    float playerLeashRadius = mPlayerLeashRadius;
+    if (playerLeashRadius != 0.f) {
+      if ((GetTranslation() - mgr.GetPlayer(0)->GetTranslation()).MagSquared() >
+          playerLeashRadius * playerLeashRadius) {
+        mCurPlayerLeashTime += dt;
+      } else {
+        mCurPlayerLeashTime = 0.f;
+      }
+    } else {
+      mCurPlayerLeashTime = 0.f;
+    }
+  } else {
+    StopLoopedSounds();
+  }
+
+  mWaypointNavigation.Update(dt);
+  if (mStopPhysics) {
+    Stop();
+  }
 }
 
 void CPatterned::InitializeStateMachine(CStateManager& mgr) {
@@ -585,8 +863,57 @@ void CPatterned::Touch(CActor& actor, CStateManager& mgr) {
   }
 }
 
-void CPatterned::CollidedWith(const TUniqueId&, const CCollisionInfoList&, CStateManager&) {
-  // TODO: Recover ground/static-ground flags, collision response and linked script messages.
+void CPatterned::CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
+                              CStateManager& mgr) {
+  if (mCurDamageRemTime <= 0.f) {
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(id));
+    if (player != nullptr) {
+      bool jumpOnHead = player->GetTimeSinceJump() < 5.f && list.GetCount() != 0 &&
+                        list[0].GetNormalLeft().GetZ() > 0.707f;
+
+      if (mAlive || jumpOnHead) {
+        CDamageInfo contactDamage = GetContactDamage();
+        if (!mAlive || mBodyController->IsFrozen()) {
+          contactDamage.SetDamage(0.f);
+        }
+
+        if (jumpOnHead) {
+          mgr.ApplyDamage(GetUniqueId(), player->GetUniqueId(), GetUniqueId(), contactDamage,
+                          CMaterialFilter::skPassEverything, -player->GetVelocityWR());
+          player->SetTimeSinceJump(1000.f);
+        } else if (mAlive && mBodyController->GetPercentageFrozen() != 1.f) {
+          mgr.ApplyDamage(
+              GetUniqueId(), player->GetUniqueId(), GetUniqueId(), contactDamage,
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+              CVector3f::Zero());
+        }
+
+        mCurDamageRemTime = mDamageWaitTime;
+      }
+    }
+  }
+
+  static CMaterialList skSolidTypes(kMT_Unknown59, kMT_Ceiling, kMT_Wall, kMT_Floor, kMT_Character);
+
+  mSolidCollision = true;
+  for (int i = 0; i < list.GetCount(); ++i) {
+    const CCollisionInfo& info = list[i];
+    if (info.GetMaterialLeft().SharesMaterials(skSolidTypes)) {
+      if (info.GetMaterialLeft().HasMaterial(kMT_Floor)) {
+        if (!mIsFlyer) {
+          continue;
+        }
+      } else if (GetVelocityWR().IsNonZero() &&
+                 CVector3f::Dot(info.GetNormalLeft(), GetVelocityWR()) >= 0.f) {
+        continue;
+      }
+
+      mBlockingCollision = true;
+      return;
+    }
+  }
+
+  CPhysicsActor::CollidedWith(id, list, mgr);
 }
 
 void CPatterned::ThinkAboutMove(float dt) {
@@ -595,7 +922,7 @@ void CPatterned::ThinkAboutMove(float dt) {
         mBodyController->GetBodyStateInfo().GetCurrentState()->ApplyAnimationDeltas()) {
       const CVector3f scale = GetModelData()->GetScale();
       const CVector3f scaledDelta = CVector3f::ByElementMultiply(
-          CVector3f::ByElementMultiply(scale, mPosDelta), mMoveScale);
+          CVector3f::ByElementMultiply(scale, mAnimationDeltas.GetOffsetDelta()), mMoveScale);
       if (!mVerticalMovement && !mOnGround) {
         MoveInOneFrameOR(scaledDelta, dt);
       } else {
@@ -603,14 +930,73 @@ void CPatterned::ThinkAboutMove(float dt) {
       }
     }
     if (!(mDisabledAnimationDeltas & kADF_Rotation)) {
-      RotateToOR(mRotDelta, dt);
+      RotateToOR(mAnimationDeltas.GetOrientationDelta(), dt);
     }
   }
 }
 
 void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
                                  float dt) {
-  // TODO: Restore projectile, material, damage-window, movement and body-state events.
+  switch (type) {
+  case kUE_Projectile: {
+    const CTransform4f lctrXf = GetLctrTransform(node.GetLocatorName());
+    const CVector3f aimPos = mgr.GetPlayer(0)->GetAimPosition(mgr, 0.f);
+    const CVector3f forward = lctrXf.GetForward();
+
+    if (CVector3f::Dot(forward, (aimPos - lctrXf.GetTranslation()).AsNormalized()) > 0.f) {
+      const CTransform4f lookAtXf = CTransform4f::LookAt(lctrXf.GetTranslation(), aimPos);
+      LaunchProjectile(lookAtXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect(),
+                       CVector3f(1.f, 1.f, 1.f));
+    } else {
+      LaunchProjectile(lctrXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect(),
+                       CVector3f(1.f, 1.f, 1.f));
+    }
+    break;
+  }
+  case kUE_DamageOn: {
+    const CVector3f scale = GetModelData()->GetScale();
+    const CTransform4f& lctrXf = GetLocatorTransform(node.GetLocatorName());
+    CVector3f xfOrigin = CVector3f::ByElementMultiply(scale, lctrXf.GetTranslation());
+    xfOrigin = GetTransform() * xfOrigin;
+    const CVector3f margin = CVector3f::ByElementMultiply(scale, CVector3f(1.f, 1.f, 0.5f));
+    const CAABox touchBounds(xfOrigin - margin, xfOrigin + margin);
+
+    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      CPlayer* player = mgr.GetPlayer(i);
+      if (touchBounds.DoBoundsOverlap(player->GetBoundingBox())) {
+        mgr.ApplyDamage(
+            GetUniqueId(), player->GetUniqueId(), GetUniqueId(), GetContactDamage(),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+            CVector3f::Zero());
+      }
+    }
+    break;
+  }
+  case kUE_Delete:
+    if (!mAlive) {
+      if (!mFadeToDeath) {
+        mAlphaDelta = -1.f / GetFadeOnDeathTime();
+        mFadeToDeath = true;
+      }
+      RemoveMaterial(kMT_Character, kMT_Unknown59, kMT_Target, kMT_Orbit, mgr);
+      AddMaterial(kMT_NoPlatformCollision, mgr);
+    } else {
+      DeathDelete(mgr);
+    }
+    break;
+  case kUE_BreakLockOn:
+    RemoveMaterial(kMT_Target, kMT_Orbit, mgr);
+    break;
+  case kUE_BecomeShootThrough:
+    AddMaterial(kMT_NoPlatformCollision, mgr);
+    break;
+  case kUE_RemoveCollision:
+    RemoveMaterial(kMT_Unknown59, mgr);
+    break;
+  default:
+    break;
+  }
+
   CActor::DoUserAnimEvent(mgr, node, type, dt);
 }
 

@@ -75,6 +75,10 @@ public:
 
   void SetTimeScale(float scale) { mTimeScale = scale; } // Guessed name
 
+  float GetFireDamageBuildup() const { return mFireDamageBuildup; } // Guessed name.
+
+  void SetFireDamageBuildup(float buildup) { mFireDamageBuildup = buildup; } // Guessed name.
+
   bool IsAnimationOver() const { return mAnimationOver; }
 
   bool GetIsActive() const { return mActive; }
