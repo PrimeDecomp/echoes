@@ -2,8 +2,6 @@
 
 #include "Kyoto/Particles/CElementGen.hpp"
 
-CEntity* CBouncingBomb::TypesMatch(int typeId) const {}
-
 CBouncingBomb::CBouncingBomb(TToken< CGenDescription > particle,
                              TToken< CGenDescription > explosion, TUniqueId uid, TAreaId areaId,
                              TUniqueId ownerId, float fuseTime, float touchRadius, EWeaponType type,

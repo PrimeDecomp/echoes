@@ -2,8 +2,6 @@
 
 #include "MetroidPrime/ScriptLoader.hpp"
 
-CEntity* CScriptTextPane::TypesMatch(int typeId) const {}
-
 CScriptTextPane::CScriptTextPane(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CVector3f& pivotOffset, float width, float height, int extentX, int extentY,

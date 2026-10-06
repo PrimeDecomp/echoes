@@ -28,13 +28,6 @@ CTargetableProjectile::CTargetableProjectile(
 
 CTargetableProjectile::~CTargetableProjectile() {}
 
-CEntity* CTargetableProjectile::TypesMatch(int typeId) const {
-  if (typeId == 0x98) {
-    return const_cast< CTargetableProjectile* >(this);
-  }
-  return CEnergyProjectile::TypesMatch(typeId);
-}
-
 void CTargetableProjectile::ResolveCollisionWithActor(const CRayCastResult& result, CActor& actor,
                                                       CStateManager& mgr) {
   if (actor.TypesMatch(0x98) != nullptr) {
