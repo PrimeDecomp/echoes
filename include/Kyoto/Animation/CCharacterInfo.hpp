@@ -43,11 +43,11 @@ public:
   CAssetId GetIceSkinRulesId() const { return mCksrOverlay; }
   CAssetId GetSpatialPrimitiveId() const { return mSpatialPrimitiveId; }
   bool GetAnimatedScale() const { return mAnimatedScale; }
-  uint GetDefaultAnimation() const { return xa4_; }
+  uint GetDefaultAnimation() const { return mDefaultAnimation; }
   const CPASDatabase& GetPASDatabase() const { return mPasDatabase; }
   const CParticleResData& GetParticleResData() const { return mPartRes; }
   const TEffectList& GetEffects() const { return mEffects; }
-  const rstl::vector< int >& GetAnimationIndexList() const { return mAnimIdxs; }
+  const rstl::vector< uint >& GetAnimationIndexList() const { return mAnimIdxs; }
   const rstl::vector< rstl::pair< rstl::string, CAABox > >& GetAnimBBoxList() const {
     return mAabbs;
   }
@@ -61,15 +61,15 @@ private:
   CAssetId mCmdl;
   CAssetId mCksr;
   CAssetId mCinf;
-  rstl::vector< rstl::pair< int, rstl::pair< rstl::string, rstl::string > > > mAnimInfo;
+  rstl::vector< rstl::pair< int, rstl::string > > mAnimInfo;
   CPASDatabase mPasDatabase;
   CParticleResData mPartRes;
-  uint xa4_;
+  uint mDefaultAnimation;
   rstl::vector< rstl::pair< rstl::string, CAABox > > mAabbs;
   TEffectList mEffects;
   CAssetId mCmdlOverlay;
   CAssetId mCksrOverlay;
-  rstl::vector< int > mAnimIdxs;
+  rstl::vector< uint > mAnimIdxs;
   CAssetId mSpatialPrimitiveId; // Guessed name: CSPP resource.
   bool mAnimatedScale;          // Guessed name.
   rstl::vector< rstl::pair< uint, CAABox > > mAnimBoundsById;

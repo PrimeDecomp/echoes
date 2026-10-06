@@ -5,11 +5,15 @@
 CCharacterInfo::CParticleResData::CParticleResData(CInputStream& in, ushort tableCount)
 : mPart(in), mSwhc(in), mElscB(in) {
   if (tableCount > 5) {
-    mElscA = rstl::vector< CAssetId >(in);
+    const rstl::vector< CAssetId > resources(in);
+    mElscA = rstl::vector< CAssetId >(resources.begin(), resources.end());
   }
+
   if (tableCount > 8) {
-    mSpsc = rstl::vector< CAssetId >(in);
-    mSrsc = rstl::vector< CAssetId >(in);
+    const rstl::vector< CAssetId > spawnResources(in);
+    mSpsc = rstl::vector< CAssetId >(spawnResources.begin(), spawnResources.end());
+    const rstl::vector< CAssetId > sortedResources(in);
+    mSrsc = rstl::vector< CAssetId >(sortedResources.begin(), sortedResources.end());
   }
 }
 
@@ -22,7 +26,7 @@ CCharacterInfo::CCharacterInfo(CInputStream& in)
 , mAnimInfo(in)
 , mPasDatabase(in.Get< CPASDatabase >())
 , mPartRes(in, mTableCount)
-, xa4_(in.Get< uint >())
+, mDefaultAnimation(in.Get< uint >())
 , mCmdlOverlay(kInvalidAssetId)
 , mCksrOverlay(kInvalidAssetId)
 , mSpatialPrimitiveId(kInvalidAssetId)
@@ -41,7 +45,7 @@ CCharacterInfo::CCharacterInfo(CInputStream& in)
     mCksrOverlay = 0;
   }
   if (mTableCount > 4) {
-    mAnimIdxs = rstl::vector< int >(in);
+    mAnimIdxs = rstl::vector< uint >(in);
   }
   if (mTableCount > 6) {
     mSpatialPrimitiveId = in.Get< CAssetId >();
