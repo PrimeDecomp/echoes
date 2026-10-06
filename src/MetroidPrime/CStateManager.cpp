@@ -7,8 +7,10 @@
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CGameHint.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/CHintManager.hpp"
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
@@ -28,9 +30,13 @@
 #include "MetroidPrime/GameObjectLists.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
@@ -463,6 +469,114 @@ void CStateManager::FrameEnd() {
   gpSimplePool->Flush();
 }
 
+void CStateManager::Touch() {
+  TouchSky();
+  TouchPlayerActor();
+
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    SetupPlayerViewport(i);
+    const CPlayer* const player = mPlayers[i];
+    bool touchModel = false;
+    bool touchBall = false;
+    bool touchGun = false;
+    switch (player->GetMorphballTransitionState()) {
+    case CPlayer::kMS_Unmorphed:
+      touchGun = true;
+      break;
+    case CPlayer::kMS_Morphed:
+      touchBall = true;
+      break;
+    case CPlayer::kMS_Morphing:
+      touchBall = true;
+      touchModel = true;
+      break;
+    case CPlayer::kMS_Unmorphing:
+      touchGun = true;
+      touchModel = true;
+      break;
+    default:
+      break;
+    }
+
+    if (touchGun) {
+      player->GetPlayerGun()->TouchModel(*this);
+    }
+    if (touchModel) {
+      player->GetModelData()->Touch(*this, 0);
+    }
+    if (touchBall) {
+      player->GetMorphBall()->TouchModel(*this);
+    }
+  }
+
+  EndPlayerRender();
+}
+
+void CStateManager::SetAreaClipPlane(TAreaId area, const CPlane& plane) {
+  rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 >::iterator it = mAreaFrusta.begin();
+  for (; it != mAreaFrusta.end(); ++it) {
+    if (it->first == area.Value()) {
+      CFrustumPlanes& frustum = it->second;
+      if (frustum.GetPlanes().size() < 6u) {
+        frustum.AddPlane(plane);
+      }
+      break;
+    }
+  }
+
+  if (it == mAreaFrusta.end()) {
+    CFrustumPlanes frustum = CFrustumPlanes();
+    frustum.AddPlane(plane);
+    mAreaFrusta.push_back(rstl::pair< int, CFrustumPlanes >(area.Value(), frustum));
+  }
+}
+
+void CStateManager::SetupAreaFrusta() {
+  mVisAreaId = GetVisAreaId();
+  mAreaFrusta.clear();
+  const CTransform4f cameraTransform = mCameraManager->GetCurrentCameraTransform(*this, true);
+
+  for (CGameArea::CConstChainIterator it = GetWorld()->GetChainHead(CWorld::kC_Alive);
+       it != CWorld::GetAliveAreasEnd(); ++it) {
+    const CGameArea& area = *it;
+    if (area.GetOcclusionState() != CGameArea::kOS_Visible || area.GetId() == mVisAreaId) {
+      continue;
+    }
+
+    bool foundDock = false;
+    const IGameArea::Dock* selectedDock = nullptr;
+    for (int i = 0; i < area.GetDockCount(); ++i) {
+      const IGameArea::Dock& dock = area.GetDock(i);
+      if (dock.GetConnectedAreaId(dock.GetReferenceCount()) == mVisAreaId) {
+        if (!foundDock) {
+          selectedDock = &dock;
+          foundDock = true;
+        } else {
+          foundDock = false;
+          break;
+        }
+      }
+    }
+    if (!foundDock) {
+      continue;
+    }
+
+    const CVector3f position = cameraTransform.GetTranslation();
+    const CVector3f* vertices = selectedDock->GetPlaneVertices().data();
+    const CVector3f normal = CVector3f::Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]);
+    const CVector3f delta = position - vertices[0];
+    if (CVector3f::Dot(delta, normal) > 0.f) {
+      CFrustumPlanes frustum;
+      for (int i = 0; i < 4; ++i) {
+        frustum.AddPlane(CPlane(position, vertices[i], vertices[(i + 1) % 4]));
+      }
+      mAreaFrusta.push_back(rstl::pair< int, CFrustumPlanes >(area.GetId().Value(), frustum));
+    }
+  }
+}
+
+CGameArea::CConstChainIterator CWorld::GetAliveAreasEnd() { return skGlobalEnd; }
+
 void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) const {
   switch (mPlayerState->GetActiveVisor(*this)) {
   case CPlayerState::kPV_Echo:
@@ -474,6 +588,96 @@ void CStateManager::DrawSpaceWarp(const CVector3f& position, float strength) con
 
   const CGameCamera* camera = mCameraManager->GetCurrentCamera(*this, true);
   gpRender->DrawSpaceWarp(camera->ConvertToScreenSpace(position), strength);
+}
+
+void CStateManager::TouchSky() { GetWorld()->TouchSky(); }
+
+void CStateManager::TouchPlayerActor() {
+  if (mPlayerActorHead != kInvalidUniqueId) {
+    const CEntity* entity = GetObjectById(mPlayerActorHead);
+    if (entity != nullptr) {
+      PlayerActor_TouchModels(*const_cast< CEntity* >(entity), *this);
+    }
+  }
+}
+
+// Guessed local names. The target excludes these materials when testing dock visibility.
+static EMaterialTypes VisAreaExcludeMaterial1 = kMT_NoPlatformCollision;
+static EMaterialTypes VisAreaExcludeMaterial2 = kMT_CameraPassthrough;
+static EMaterialTypes VisAreaIncludeMaterial = kMT_Unknown59;
+
+TAreaId CStateManager::GetVisAreaId() const {
+  const TAreaId currentArea = GetWorld()->GetCurrentAreaId();
+  if (IsMultiplayer()) {
+    return currentArea;
+  }
+
+  const CWorld* world = GetWorld();
+  int visibleAreas = 0;
+  for (CGameArea::CConstChainIterator it = world->GetChainHead(CWorld::kC_Alive);
+       it != CWorld::skGlobalEnd; ++it) {
+    if (it->GetOcclusionState() == CGameArea::kOS_Visible) {
+      ++visibleAreas;
+    }
+  }
+  if (visibleAreas == 1) {
+    return currentArea;
+  }
+
+  const CGameCamera* camera = mCameraManagers[0]->GetCurrentCamera(*this, true);
+  bool checkDocks = false;
+  if (mCameraManagers[0]->IsInBallCamera()) {
+    checkDocks = true;
+  }
+  if (mCameraManagers[0]->GetHintManager()->HasHint(*this) &&
+      mCameraManagers[0]->GetHintManager()->GetCurrentHint(*this)->GetAcrossAreas()) {
+    checkDocks = true;
+  }
+  if (mCameraManagers[0]->IsInCinematicCamera()) {
+    checkDocks = false;
+  }
+  if (!checkDocks) {
+    return currentArea;
+  }
+
+  const CVector3f position = camera->GetTranslation();
+  CAABox bounds(position, position);
+  const rstl::optional_object< CAABox >& playerBounds = mPlayers[0]->GetTouchBounds();
+  bounds.AccumulateBounds(playerBounds->GetMinPoint());
+  bounds.AccumulateBounds(playerBounds->GetMaxPoint());
+
+  const rstl::list< CEntity* >& docks = GetDockList();
+  for (rstl::list< CEntity* >::const_iterator it = docks.begin(); it != docks.end(); ++it) {
+    const CScriptDock* dock = static_cast< const CScriptDock* >(*it);
+    if (dock == nullptr || dock->GetAreaId() != currentArea) {
+      continue;
+    }
+    const CAABox dockBounds = dock->GetBoundingBox();
+    if (!bounds.DoBoundsOverlap(dockBounds)) {
+      continue;
+    }
+    const TAreaId connectedArea = dock->GetCurrentConnectedAreaId(*this);
+    if (world->GetArea(connectedArea)->GetOcclusionState() != CGameArea::kOS_Visible ||
+        !dock->HasPointCrossedDock(*this, position)) {
+      continue;
+    }
+
+    const CGameArea& currentAreaObject = *world->GetArea(currentArea);
+    const CVector3f delta = dockBounds.GetCenterPoint() - position;
+    const float distance = delta.Magnitude();
+    if (distance < FLT_EPSILON) {
+      return connectedArea;
+    }
+    const CVector3f direction = (1.f / distance) * delta;
+    const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+        CMaterialList(VisAreaIncludeMaterial),
+        CMaterialList(VisAreaExcludeMaterial1, VisAreaExcludeMaterial2));
+    if (CGameCollision::RayStaticLineOfSightTest(currentAreaObject, position, direction, distance,
+                                                 filter)) {
+      return connectedArea;
+    }
+  }
+  return currentArea;
 }
 
 void CStateManager::SetActorAreaId(CActor& actor, const TAreaId area) {

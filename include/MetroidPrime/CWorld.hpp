@@ -113,6 +113,7 @@ public:
     return CGameArea::CConstChainIterator(mChainHeads[size_t(chain)]);
   }
   static CGameArea::CConstChainIterator skGlobalEnd;
+  static CGameArea::CConstChainIterator GetAliveAreasEnd();
   static CGameArea::CChainIterator AliveAreasEnd() { return skGlobalNonConstEnd; }
 
   const CGameArea& GetAreaAlways(TAreaId id) const { return *mAreas[id.Value()]; }

@@ -21,6 +21,9 @@ public:
 
   const rstl::reserved_vector< CPlane, 6 >& GetPlanes() const { return mPlanes; }
 
+  // Guessed name; callers must respect the six-plane capacity.
+  void AddPlane(const CPlane& plane) { mPlanes.push_back(plane); }
+
   bool BoxInFrustumPlanes(const CAABox& box) const;
   bool BoxInFrustumPlanes(const rstl::optional_object< CAABox >& box) const;
   int BoxFrustumPlanesCheck(const CAABox& box) const;
