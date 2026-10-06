@@ -31,7 +31,6 @@ public:
   void Render(CStateManager& mgr) const;
   float GetDarkWorldFilterAmount(const CTransform4f& cameraTransform) const;
 
-private:
   // Reconstructed record/member names; the native record has no established export.
   struct SZone {
     SZone(const TUniqueId& id, const CVector3f& position, const CVector3f& halfExtents,
@@ -43,6 +42,9 @@ private:
     float mScaleFactor;
   };
 
+  const rstl::reserved_vector< SZone, 64 >& GetZones() const { return mZones; }
+
+private:
   int FindSafeZone(const TUniqueId& id) const;
 
   rstl::reserved_vector< SZone, 64 > mZones;

@@ -65,11 +65,14 @@
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
+#include "MetaRender/AmbientLightScale.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "Weapons/CDecal.hpp"
+#include "WorldFormat/CPVSAreaSet.hpp"
 
 #include "rstl/algorithm.hpp"
+#include "rstl/math.hpp"
 #include "rstl/vector.hpp"
 
 #include <float.h>
@@ -488,6 +491,65 @@ void CStateManager::FrameEnd() {
   gpSimplePool->Flush();
 }
 
+bool CStateManager::GetVisSetForArea(const TAreaId area, const TAreaId visibleArea,
+                                     CPVSVisSet& visibility) const {
+  if (visibleArea == kInvalidAreaId) {
+    return false;
+  }
+
+  CVector3f closestDockPoint = CGraphics::GetViewMatrix().GetTranslation();
+  const CVector3f viewPoint = closestDockPoint;
+  bool hasClosestDock = false;
+  if (area == visibleArea) {
+    hasClosestDock = true;
+  } else {
+    const CGameArea* visArea = mWorld->GetArea(visibleArea);
+    if (visArea->IsLoaded()) {
+      const int dockCount = visArea->GetDockCount();
+      for (int i = 0; i < dockCount; ++i) {
+        const IGameArea::Dock& dock = visArea->GetDock(i);
+        const int connectionCount = dock.GetDockRefs().size();
+        for (int connection = 0; connection < connectionCount; ++connection) {
+          if (dock.GetConnectedAreaId(connection) != area) {
+            continue;
+          }
+
+          const rstl::reserved_vector< CVector3f, 4 >& vertices = dock.GetPlaneVertices();
+          const CVector3f center = 0.25f * (vertices[0] + vertices[1] + vertices[2] + vertices[3]);
+          if (hasClosestDock &&
+              !((center - viewPoint).MagSquared() < (closestDockPoint - viewPoint).MagSquared())) {
+            continue;
+          }
+
+          closestDockPoint = center;
+          hasClosestDock = true;
+        }
+      }
+    }
+  }
+
+  int setState = 0;
+  if (hasClosestDock) {
+    setState = 1;
+    const CGameArea* targetArea = mWorld->GetArea(area);
+    const CPVSAreaSet* areaSet = targetArea->GetPostConstructed()->mPvs.get();
+    if (areaSet != nullptr) {
+      setState = 2;
+      CPVSVisOctree& octree = areaSet->GetVisOctree();
+      const CTransform4f& inverseTransform =
+          mWorld->GetArea(area)->GetPostConstructed()->mInverseTransform;
+      const CVector3f localPoint = inverseTransform * closestDockPoint;
+      CPVSVisSet set = octree.GetVisSet(localPoint);
+      if (set.GetState() == kVSS_NodeFound) {
+        setState = 3;
+        visibility = set;
+      }
+    }
+  }
+
+  return setState == 3;
+}
+
 void CStateManager::Touch() {
   TouchSky();
   TouchPlayerActor();
@@ -707,6 +769,47 @@ void CStateManager::SetupAreaFrusta() {
 }
 
 CGameArea::CConstChainIterator CWorld::GetAliveAreasEnd() { return skGlobalEnd; }
+
+void CStateManager::GatherVisibleAreas(TVisibleAreas& areas, TAreaVisibility& visibility) {
+  for (CGameArea::CConstChainIterator it = mWorld->GetChainHead(CWorld::kC_Alive);
+       it != CWorld::GetAliveAreasEnd() && areas.size() != areas.capacity(); ++it) {
+    if (it->GetOcclusionState() == CGameArea::kOS_Visible) {
+      areas.push_back(&*it);
+    }
+  }
+
+  rstl::sort(areas.begin(), areas.end(),
+             area_sorter(CGraphics::GetViewMatrix().GetForward(), mVisAreaId));
+
+  for (TVisibleAreas::iterator it = areas.begin(); it != areas.end(); ++it) {
+    CPVSVisSet set(kVSS_OutOfBounds);
+    GetVisSetForArea((*it)->GetId(), mVisAreaId, set);
+    visibility.push_back(set);
+  }
+}
+
+void CStateManager::PrepareWorldRendering(const TVisibleAreas& areas,
+                                          const TAreaVisibility& visibility) {
+  rstl::reserved_vector< rstl::pair< int, const CPVSVisSet* >, 5 > pvsSets;
+  for (int i = 0; i < areas.size(); ++i) {
+    pvsSets.push_back(
+        rstl::pair< int, const CPVSVisSet* >(areas[i]->GetId().Value(), &visibility[i]));
+  }
+
+  const rstl::reserved_vector< CSafeZoneManager::SZone, 64 >& zones = mSafeZoneManager->GetZones();
+  rstl::reserved_vector< rstl::pair< int, float >, 64 > ambientLights;
+  const int count = rstl::min_val(zones.capacity(), zones.size());
+  for (int i = 0; i < count; ++i) {
+    const TEditorId editorId = GetEditorIdForUniqueId(zones[i].mId);
+    if (editorId != kInvalidEditorId) {
+      ambientLights.push_back(MakeAmbientLightScale(editorId.value, zones[i].mScaleFactor));
+    }
+  }
+
+  gpRender->PrepareWorldRendering(
+      pvsSets.data(), pvsSets.size(), mPlanes, &mAreaFrusta, mDynamicLights,
+      !ambientLights.empty() ? ambientLights.data() : nullptr, ambientLights.size());
+}
 
 void CStateManager::GetWorldGeometryMasks(uint& mask, uint& targetMask,
                                           CPlayerState::EPlayerVisor visor) {
