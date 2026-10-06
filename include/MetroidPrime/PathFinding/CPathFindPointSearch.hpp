@@ -10,14 +10,18 @@ class CPFPoint;
 
 class CPathFindPointSearch {
 public:
+  // Guessed result names, derived from native search and distance-check branches.
+  enum EResult { kR_Success, kR_NoPath, kR_NoConnection };
+  enum EClosestPointResult { kCPR_Success, kCPR_OutOfRange, kCPR_NoPoint };
+
   explicit CPathFindPointSearch(CPFArea* area);
-  int Search(const CPFPoint& source, const CPFPoint& destination);
-  int FindClosestPhysicalPoint(const CVector3f& position, int& point,
-                               const CPathFindPointSearchFilter& filter) const;
+  EResult Search(const CPFPoint& source, const CPFPoint& destination);
+  EClosestPointResult FindClosestPhysicalPoint(const CVector3f& position, int& point,
+                                              const CPathFindPointSearchFilter& filter) const;
   CVector3f GetSplinePoint(int waypoint, float t) const; // Guessed name
 
 private:
-  int SearchInternal(const CPFPoint& source, const CPFPoint& destination); // Guessed name
+  EResult SearchInternal(const CPFPoint& source, const CPFPoint& destination); // Guessed name
   float Heuristic(int point, const CVector3f& destination) const;          // Guessed name
 
   CPFArea* mArea;                                    // Guessed name

@@ -10,7 +10,8 @@
 
 void CPFPoint::Fixup(CPFArea& area) {
   mLinks = mNumLinks ? &area.GetPointLink(reinterpret_cast< intptr_t >(mLinks)) : nullptr;
-  mLinkData = mNumLinks ? &area.GetPointLinkData(reinterpret_cast< intptr_t >(mLinkData)) : nullptr;
+  mLinkCosts =
+      mNumLinks ? &area.GetPointLinkCost(reinterpret_cast< intptr_t >(mLinkCosts)) : nullptr;
 }
 
 CPFRegionData::CPFRegionData()

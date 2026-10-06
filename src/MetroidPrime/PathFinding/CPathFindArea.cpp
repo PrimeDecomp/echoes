@@ -135,8 +135,8 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
       mPointLinks.set_size(numPointLinks);
       mPointLinks.set_data(static_cast< int* >(stream.GetBlock(numPointLinks, sizeof(int))));
       const int numLinkData = stream.ReadInt32();
-      mPointLinkData.set_size(numLinkData);
-      mPointLinkData.set_data(static_cast< uint* >(stream.GetBlock(numLinkData, sizeof(uint))));
+      mPointLinkCosts.set_size(numLinkData);
+      mPointLinkCosts.set_data(static_cast< float* >(stream.GetBlock(numLinkData, sizeof(float))));
       const int numPointWords = (numPoints * (numPoints - 1) / 2 + 31) / 32;
       mPointConnections.set_size(numPointWords);
       mPointConnections.set_data(
@@ -145,7 +145,7 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
         mPoints[i].Fixup(*this);
       }
     }
-    // TODO: identify the point-search workspace's native class before binding its constructor.
+    mPointSearchState = rs_new CPFPointSearchState(mPoints.size());
   }
 }
 
@@ -280,10 +280,34 @@ void CPFArea::SetTransform(const CTransform4f& transform) {
 
 int CPFArea::GetPointIndex(const CPFPoint& point) const { return &point - &mPoints[0]; }
 
+bool CPFArea::PointPathExists(int source, int destination) {
+  if (source == destination) {
+    return true;
+  }
+
+  const int count = mPoints.size();
+  if (source > destination) {
+    rstl::swap(source, destination);
+  }
+  const int totalConnections = count * (count - 1) / 2;
+  const int remainingConnections = (count - source - 1) * (count - source) / 2;
+  const uint bit = totalConnections - remainingConnections + destination - (source + 1);
+  return (mPointConnections[bit / 32] >> (bit % 32)) & 1;
+}
+
+bool CPFArea::PointPathExists(const CPFPoint* source, const CPFPoint* destination) {
+  if (!source || !destination) {
+    return false;
+  }
+  if (source == destination) {
+    return true;
+  }
+  return PointPathExists(source - mPoints.data(), destination - mPoints.data());
+}
+
 CPFArea::~CPFArea() {}
 
-CFactoryFnReturn FPathFindAreaFactory(const SObjectTag& tag,
-                                            const rstl::auto_ptr< uchar >& data, int size,
-                                            const CVParamTransfer& xfer) {
+CFactoryFnReturn FPathFindAreaFactory(const SObjectTag& tag, const rstl::auto_ptr< uchar >& data,
+                                      int size, const CVParamTransfer& xfer) {
   return rs_new CPFArea(data, size);
 }

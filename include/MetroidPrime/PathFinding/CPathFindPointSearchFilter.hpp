@@ -6,6 +6,9 @@
 class CPathFindPointSearchFilter {
 public:
   CPathFindPointSearchFilter(float maxDistance, uint flags, int connectedPoint);
+  float GetMaxDistance() const { return mMaxDistance; }
+  uint GetFlags() const { return mFlags; }
+  int GetConnectedPoint() const { return mConnectedPoint; }
 
 private:
   float mMaxDistance;  // Guessed name

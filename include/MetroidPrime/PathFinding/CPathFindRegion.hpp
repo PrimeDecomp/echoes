@@ -19,13 +19,17 @@ public:
   void Fixup(CPFArea& area);
   const CVector3f& GetPosition() const { return mPosition; }
   void SetPosition(const CVector3f& position) { mPosition = position; }
+  uint GetFlags() const { return mFlags; }
+  int GetNumLinks() const { return mNumLinks; }
+  int GetLink(int index) const { return mLinks[index]; }
+  float GetLinkCost(int index) const { return mLinkCosts[index]; }
 
 private:
   CVector3f mPosition;
-  uint xc_;
+  uint mFlags;
   int mNumLinks;
   int* mLinks;
-  uint* mLinkData; // Guessed name; per-link data encoding remains unresolved.
+  float* mLinkCosts; // Target-derived from accumulated path-cost updates.
 };
 CHECK_SIZEOF(CPFPoint, 0x1c)
 
