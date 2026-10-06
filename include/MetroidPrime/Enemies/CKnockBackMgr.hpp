@@ -117,6 +117,12 @@ public:
 
   void EnableAnimReaction(EAnimReaction reaction, bool enabled);
   void EnableAllAnimReactions(bool enabled);
+  void EnableShock(bool enabled) { mEnableShock = enabled; } // Guessed name.
+
+  bool IsBurnEnabled() const { return mEnableBurn; } // Guessed name.
+
+  bool IsShockEnabled() const { return mEnableShock; } // Guessed name.
+
   bool IsAnimReactionEnabled(EAnimReaction reaction) const;
   void SetAnimReactionRange(EAnimReaction minimum, EAnimReaction maximum);
   CVector3f GetKnockBackDirection(const CVector3f& direction, const CActor& actor) const;

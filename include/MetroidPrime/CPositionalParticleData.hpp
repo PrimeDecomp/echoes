@@ -7,6 +7,10 @@
 // Original class name exported by the Echoes Wii build.
 class CPositionalParticleData {
 public:
+  CPositionalParticleData(int duration, const SObjectTag& particle, const CTransform4f& transform,
+                          float scale)
+  : mDuration(duration), mParticle(particle), mTransform(transform), mScale(scale) {}
+
   int GetDuration() const { return mDuration; }
   const SObjectTag& GetParticleAssetInfo() const { return mParticle; }
   const CTransform4f& GetTransform() const { return mTransform; }

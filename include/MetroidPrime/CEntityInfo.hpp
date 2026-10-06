@@ -138,6 +138,10 @@ enum EScriptObjectState {
   kSS_UnFrozen = 0x5546525a,
   kSS_Dead = 0x44454144,
   kSS_DeathRattle = 0x5241544c, // Guessed Prime-correlated name; native damage-death state.
+  // Guessed DKCR HD names; native Patterned massive-damage connections establish the tags.
+  kSS_XDamage = 0x58444d47,
+  kSS_DarkXDamage = 0x44524b58,
+  kSS_IceXDamage = 0x49444d47, // Guessed DKCR HD name; native massive frozen death tag.
   kSS_Generate = 0x47454e52,
   kSS_ReflectedDamage = 0x52454644,
   kSS_Damage = 0x44414d47, // Guessed name; DAMG damage notification state.

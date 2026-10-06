@@ -132,6 +132,9 @@ public:
   void SetEchoEmitter(bool enabled, CEchoEmitter* emitter);
   CEchoEmitter* EchoEmitter() { return mEchoEmitter.get(); }
   CEchoEmitter* EchoEmitter() const { return mEchoEmitter.get(); }
+
+  bool GetEchoEmitterEnabled() const { return mEchoEmitterEnabled; } // Guessed accessor name.
+
   CEchoEmitter* AllocateEchoEmitter(bool enabled, const CAABox& bounds,
                                     const SEchoParameters& parameters);
   void SetValidTarget(int playerIndex, bool enabled);
@@ -211,6 +214,13 @@ public:
   void SetMuted(bool b);
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
+
+  void SetDamageHighlight(bool enabled) { mDamageHighlight = enabled; } // Guessed accessor name.
+
+  void SetHighlightedInDarkVisor(bool enabled) {
+    mHighlightedInDarkVisor = enabled;
+  } // Guessed name.
+
   bool GetDrawEnabled() const { return mDrawEnabled; } // Guessed name
   bool GetTakesProjectedShadow() const { return mTakesProjectedShadow; }
   bool GetDoTargetDistanceTest() const { return mDoTargetDistanceTest; }
