@@ -3111,6 +3111,11 @@ const bool CStateManager::MultiRayCollideWorld(const CMRay& ray,
   return visible;
 }
 
+CPlane CScriptWater::GetWRSurfacePlane() const {
+  return CPlane(GetTriggerBoundsWR().GetMaxPoint().GetZ(),
+                CUnitVector3f(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes));
+}
+
 const bool
 CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
                              const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const {
