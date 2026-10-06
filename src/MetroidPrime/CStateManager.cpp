@@ -65,10 +65,12 @@
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
+#include "Kyoto/Particles/CElementGen.hpp"
 #include "MetaRender/AmbientLightScale.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "Weapons/CDecal.hpp"
+#include "Weapons/CProjectileWeapon.hpp"
 #include "WorldFormat/CPVSAreaSet.hpp"
 
 #include "rstl/algorithm.hpp"
@@ -705,6 +707,12 @@ void CStateManager::SetupFogForArea(const CGameArea& area) const {
   }
 }
 
+void CStateManager::SetParticleAlphaUpdate(bool disable) {
+  CDecal::SetDisableAlphaUpdate(disable);
+  CElementGen::sMoveRedToAlphaBuffer = disable;
+  CProjectileWeapon::SetDisableAlphaUpdates(disable);
+}
+
 void CStateManager::SetAreaClipPlane(TAreaId area, const CPlane& plane) {
   rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 >::iterator it = mAreaFrusta.begin();
   for (; it != mAreaFrusta.end(); ++it) {
@@ -882,6 +890,20 @@ void CStateManager::RenderAreaActors(bool& deferPlayerRender, CEchoEmitter*& emi
         emitters = emitter;
       }
     }
+  }
+}
+
+void CStateManager::DrawSpecialGeometry(const TAreaId& area, CPlayerState::EPlayerVisor visor, uint,
+                                        uint) {
+  switch (visor) {
+  case CPlayerState::kPV_Echo:
+    break;
+  case CPlayerState::kPV_Scan:
+    gpRender->DrawSpecialGeometryAlpha(area.Value());
+    break;
+  default:
+    gpRender->DrawSpecialGeometry(area.Value());
+    break;
   }
 }
 
@@ -1265,6 +1287,69 @@ float CStateManager::IntegrateVisorFog(float fog) const {
 uint CStateManager::MaskUIdNumPlayers(TUniqueId id) const {
   const uint index = id.Value();
   return index < static_cast< uint >(mNumPlayers) ? index : 0;
+}
+
+void CStateManager::SetupParticleDrawMask() {
+  const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
+  uint flags = 0;
+  uint mask = 8;
+  switch (visor) {
+  case CPlayerState::kPV_Echo:
+    flags |= 8;
+    break;
+  case CPlayerState::kPV_Combat:
+  case CPlayerState::kPV_Scan:
+    mask |= 1;
+    break;
+  case CPlayerState::kPV_Dark:
+    mask |= 2;
+    break;
+  default:
+    break;
+  }
+
+  uint drawMask = mask | 0x10;
+  if (mIsDarkWorld) {
+    drawMask = mask | 4;
+  }
+  CParticleGen::sDrawFlags = flags;
+  CParticleGen::sDrawMask = drawMask;
+}
+
+void CStateManager::CapturePlayerTextures() {
+  uint textureWidth = 32;
+  uint textureHeight = 64;
+  if (IsMultiplayer()) {
+    textureHeight /= 2;
+  }
+  if (mNumPlayers >= 3u) {
+    textureWidth /= 2;
+  }
+
+  int left, bottom, width, height;
+  if (!gpRender->IsRGBA6Current()) {
+    const uint textureSize = textureWidth * textureHeight;
+    for (uint i = 0; i < mNumPlayers; ++i) {
+      CalculatePlayerViewport(mNumPlayers > 2u ? mPlayerStates[i]->GetPlayerSelection() : i, &left,
+                              &bottom, &width, &height);
+      CBasics::ZeroMemory(mPlayers[i]->GetReflectionTextureData(), textureSize);
+      CBasics::ZeroMemory(mPlayers[i]->GetIndirectTextureData(), textureSize);
+      CBasics::ZeroMemory(mPlayers[i]->GetMaskTextureData(), textureSize);
+    }
+  } else {
+    for (uint i = 0; i < mNumPlayers; ++i) {
+      CalculatePlayerViewport(mNumPlayers > 2u ? mPlayerStates[i]->GetPlayerSelection() : i, &left,
+                              &bottom, &width, &height);
+      const int textureLeft = left + width / 2 - textureWidth / 2;
+      const int textureTop = CGraphics::GetViewportTop(bottom) + height / 2 - textureHeight / 2;
+      gpRender->CopyTextureRegion(mPlayers[i]->GetReflectionTextureData(), 0, textureLeft,
+                                  textureTop, textureWidth, textureHeight);
+      gpRender->CopyTextureRegion(mPlayers[i]->GetIndirectTextureData(), 1, textureLeft, textureTop,
+                                  textureWidth, textureHeight);
+      gpRender->CopyTextureRegion(mPlayers[i]->GetMaskTextureData(), 2, textureLeft, textureTop,
+                                  textureWidth, textureHeight);
+    }
+  }
 }
 
 void CStateManager::UpdateDynamicLayers() {

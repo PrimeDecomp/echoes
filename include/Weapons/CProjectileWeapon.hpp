@@ -52,6 +52,8 @@ public:
   rstl::optional_object< CAABox > GetBounds() const;
   static float GetTickTime();
   static void SetGlobalSeed(uint seed);
+  // Guessed name
+  static void SetDisableAlphaUpdates(bool disable) { sDisableAlphaUpdates = disable; }
   void SetParticleTranslationOffset(const CVector3f& offset); // Guessed name
   TLockedToken< CWeaponDescription > GetWeaponDescription() const { return mWeaponDesc; }
   bool IsProjectileActive() const { return mActive; }

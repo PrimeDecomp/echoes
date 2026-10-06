@@ -3238,6 +3238,7 @@ Kyoto/Particles/CParticleDataFactory.cpp:
 
 Kyoto/Particles/CParticleGen.cpp:
 	.text       start:0x802E80B4 end:0x802E8198
+	.sbss       start:0x80419A9C end:0x80419AA8 align:4
 
 Kyoto/Particles/CParticleGlobals.cpp:
 	.text       start:0x802E8198 end:0x802E82C4
