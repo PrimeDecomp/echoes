@@ -163,7 +163,7 @@ private:
   float mZAmplitude;
   float mSwingT;
   EArmState mAnimationState;
-  uint mStateFlags;
+  int mStateFlags;
   uint mSoundSetIndex;
   int mAnimSfxPitch;
   rstl::pair< ushort, CSfxHandle > mAnimSfx;
