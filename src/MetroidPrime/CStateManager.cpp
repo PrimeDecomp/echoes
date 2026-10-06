@@ -7,6 +7,7 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CDecalManager.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
@@ -1997,6 +1998,237 @@ void CStateManager::RemoveObject(TUniqueId id) {
   mAllocatedObjectIndices[id.Value()] = false;
 }
 
+void CStateManager::SendDamageScriptMsgs(CActor& damagee, TUniqueId source,
+                                         const CDamageInfo& damage) {
+  damagee.SendScriptMsgs(kSS_Damage, *this, kSM_None);
+  EScriptObjectState state = kSS_InvalidState;
+  switch (damage.GetWeaponMode1()) {
+  case kWT_Power:
+    state = kSS_PowerDamage;
+    break;
+  case kWT_Dark:
+    state = kSS_DarkDamage;
+    break;
+  case kWT_Light:
+    state = kSS_LightDamage;
+    break;
+  case kWT_Annihilator:
+    state = kSS_AnnihilatorDamage;
+    break;
+  case kWT_Bomb:
+    state = kSS_BombDamage;
+    break;
+  case kWT_PowerBomb:
+    state = kSS_PowerBombDamage;
+    break;
+  case kWT_Missile:
+    state = kSS_MissileDamage;
+    break;
+  case kWT_BoostBall:
+    state = kSS_BoostBallDamage;
+    break;
+  case kWT_CannonBall:
+    state = kSS_CannonBallDamage;
+    break;
+  case kWT_ScrewAttack:
+    state = kSS_ScrewAttackDamage;
+    break;
+  case kWT_Phazon:
+    state = kSS_PhazonDamage;
+    break;
+  case kWT_AI:
+    state = kSS_AIDamage;
+    break;
+  case kWT_PoisonWater1:
+    state = kSS_PoisonWaterDamage;
+    break;
+  case kWT_PoisonWater2:
+    state = kSS_PoisonWaterDamage;
+    break;
+  case kWT_Lava:
+    state = kSS_LavaDamage;
+    break;
+  case kWT_Heat:
+    state = kSS_HeatDamage;
+    break;
+  case kWT_Unused1:
+    state = kSS_ColdDamage;
+    break;
+  case kWT_AreaDark:
+    state = kSS_AreaDarkDamage;
+    break;
+  case kWT_AreaLight:
+    state = kSS_AreaLightDamage;
+    break;
+  case kWT_UnknownSource:
+    state = kSS_UnknownSourceDamage;
+    break;
+  case kWT_SafeZone:
+    state = kSS_InvalidState;
+    break;
+  default:
+    break;
+  }
+  if (state != kSS_InvalidState) {
+    damagee.SendScriptMsgs(state, *this, kSM_None);
+  }
+}
+
+void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {
+  CPlayer* player = TCastToPtr< CPlayer >(ObjectById(victim));
+  if (player != nullptr) {
+    PlayerState(MaskUIdNumPlayers(victim))->SetPlayerAlive(false);
+
+    if (previousHealth >= 0.f) {
+      const CGameState& gameState = *gpGameState;
+      CGameMode& gameMode = gameState.GetGameMode();
+      gameMode.OnPlayerKilled(*this, victim, killer);
+    }
+
+    if (!IsMultiplayer()) {
+      CSfxManager::KillAll(CSfxManager::kSC_Game);
+      CStreamAudioManager::FadeOutSoftwareAudio(CStreamAudioManager::kSC_Default, 0.5f);
+    }
+  }
+}
+
+CDamageInfo CStateManager::GetModifiedDamageInfo(TUniqueId damager, TUniqueId owner,
+                                                 TUniqueId damagee,
+                                                 const CDamageInfo& damage) const {
+  const CPatterned* patterned = TCastToConstPtr< CPatterned >(GetObjectById(damager));
+  if (patterned == nullptr) {
+    patterned = TCastToConstPtr< CPatterned >(GetObjectById(owner));
+  }
+
+  if (patterned != nullptr) {
+    if (patterned->IsIngPossessed()) {
+      CDamageInfo result = damage;
+      result.SetDamage(damage.GetDamage() * patterned->GetIngPossessedDamageMultiplier());
+      return result;
+    }
+    return damage;
+  }
+
+  if (gpGameState->GetHardModeEnabled() &&
+      TCastToConstPtr< CPlayer >(GetObjectById(owner)) != nullptr) {
+    bool aiDamage = false;
+    if (TCastToConstPtr< CPatterned >(GetObjectById(damagee)) != nullptr) {
+      aiDamage = true;
+    } else if (const CCollisionActor* collision =
+                   TCastToConstPtr< CCollisionActor >(GetObjectById(damagee))) {
+      if (TCastToConstPtr< CPatterned >(GetObjectById(collision->GetOwnerId())) != nullptr) {
+        aiDamage = true;
+      }
+    }
+    if (aiDamage) {
+      return NGunUtils::DifficultyModifyDamageInfo(damage);
+    }
+  }
+  return damage;
+}
+
+bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee,
+                                     float damage, TUniqueId uid1, TUniqueId uid2,
+                                     const CDamageInfo& damageInfo, int unkParam) {
+  CHealthInfo* healthInfo = damagee.HealthInfo();
+  if (!healthInfo || damage < 0.0f) {
+    return false;
+  }
+
+  float hp = healthInfo->GetHP();
+  if (hp <= 0.0f) {
+    RecordDamageSource(damagee, uid1, damageInfo, false, unkParam);
+    return true;
+  }
+
+  CPlayer* player = TCastToPtr< CPlayer >(damagee);
+
+  if (player && player->GetTurretState() != CPlayer::kTS_None) {
+    if (player->GetTurretState() != CPlayer::kTS_Active) {
+      return false;
+    }
+    // These inherited turret helpers forward the damage position and test its direction.
+    // Their complete interfaces remain unresolved; see the radius-damage research notes.
+    player->fn_8000d3ac(pos, *this);
+    if (!player->fn_8000d40c(dir, *this)) {
+      return false;
+    }
+  }
+  TUniqueId playerId = player ? player->GetUniqueId() : kInvalidUniqueId;
+  if (player) {
+    int playerIndex = MaskUIdNumPlayers(playerId);
+    CPlayerState& playerState = *PlayerState(playerIndex);
+
+    if (GetCameraManager(playerIndex)->IsInCinematicCamera()) {
+      return false;
+    }
+
+    if (gpGameState->GetHardModeEnabled()) {
+      switch ((EWeaponType)damageInfo.GetWeaponMode1()) {
+      case kWT_Power:
+      case kWT_Dark:
+      case kWT_Light:
+      case kWT_Annihilator:
+      case kWT_Bomb:
+      case kWT_PowerBomb:
+      case kWT_Missile:
+      case kWT_BoostBall:
+      case kWT_CannonBall:
+      case kWT_ScrewAttack:
+      case kWT_AI:
+      case kWT_PoisonWater1:
+      case kWT_PoisonWater2:
+      case kWT_Lava:
+      case kWT_Heat:
+      case kWT_Unused1:
+      case kWT_AreaDark:
+        damage *= gpGameState->GetHardModeDamageMultiplier();
+        break;
+      }
+    }
+
+    float damageReduction = 0.0f;
+
+    if (playerState.HasPowerUp(CPlayerState::kIT_VariaSuit)) {
+      damageReduction = player->GetTweakPlayer()->GetVariaSuitDamageReduction();
+    }
+    if (playerState.HasPowerUp(CPlayerState::kIT_DarkSuit)) {
+      float reduction = player->GetTweakPlayer()->GetDarkSuitDamageReduction();
+      if (reduction > damageReduction) {
+        damageReduction = reduction;
+      }
+    }
+    if (playerState.HasPowerUp(CPlayerState::kIT_LightSuit)) {
+      float reduction = player->GetTweakPlayer()->GetLightSuitDamageReduction();
+      if (reduction > damageReduction) {
+        damageReduction = reduction;
+      }
+    }
+    if (playerState.GetItemAmount(CPlayerState::kIT_AbsorbAttack, true) != 0) {
+      float reduction = 1.5f;
+      if (reduction > damageReduction) {
+        damageReduction = reduction;
+      }
+    }
+    if (playerState.GetItemAmount(CPlayerState::kIT_LightShield, true) != 0) {
+      // TODO: flag
+      float reduction = 0.75f;
+      if (reduction > damageReduction) {
+        damageReduction = reduction;
+      }
+    }
+    if (playerState.GetItemAmount(CPlayerState::kIT_DarkShield, true) != 0) {
+      // TODO: flag
+      float reduction = 0.75f;
+      if (reduction > damageReduction) {
+        damageReduction = reduction;
+      }
+    }
+    hp = playerState.CalculateHealth();
+    damage = -(damageReduction * damage - damage);
+  }
+}
+
 void CStateManager::TestBombHittingWater(const CActor& source, const CVector3f& position,
                                          CActor& damagee) {
   int index = 0;
@@ -2092,6 +2324,78 @@ CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
   return true;
 }
 
+void CStateManager::ApplyRadiusDamage(const CActor& source, const CVector3f& position,
+                                      CActor& damagee, TUniqueId owner, const CDamageInfo& damage) {
+  const CDamageInfo info(
+      GetModifiedDamageInfo(source.GetUniqueId(), owner, damagee.GetUniqueId(), damage));
+  CVector3f delta = damagee.GetTranslation() - position;
+  if (!(delta.MagSquared() < info.GetRadius() * info.GetRadius())) {
+    if (!damagee.GetTouchBounds()) {
+      return;
+    }
+    if (!CCollidableSphere::Sphere_AABox_Bool(CSphere(position, info.GetRadius()),
+                                              *damagee.GetTouchBounds())) {
+      return;
+    }
+  }
+
+  float radius = info.GetRadius();
+  radius = radius > FLT_EPSILON ? delta.Magnitude() / radius : 0.f;
+  radius = rstl::min_val(radius, 1.f);
+  if (radius > 0.f) {
+    delta.Normalize();
+  }
+
+  const CDamageVulnerability* vulnerability =
+      radius > 0.f ? damagee.GetDamageVulnerability(position, delta, info)
+                   : damagee.GetDamageVulnerability();
+  if (vulnerability->WeaponHits(info.GetWeaponMode(), 1)) {
+    const float localDamage = info.GetRadiusDamage(*vulnerability);
+    if (localDamage > 0.f) {
+      ApplyLocalDamage(position, delta, damagee, localDamage, source.GetUniqueId(), owner, info, 1);
+    }
+    SendDamageScriptMsgs(damagee, source.GetUniqueId(), info);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_Damage, kInvalidUniqueId);
+  } else {
+    damagee.SendScriptMsgs(kSS_ResistedDamage, *this, kInvalidUniqueId, kSM_None);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_ResistedDamage, kInvalidUniqueId);
+  }
+
+  const CVector3f knockbackDelta =
+      damagee.GetTransform().GetTranslation() - source.GetTransform().GetTranslation();
+  const CVector3f knockbackDirection(knockbackDelta.GetX(), knockbackDelta.GetY(), 0.0001f);
+  ApplyKnockBack(damagee, source.GetUniqueId(), owner, info, *vulnerability,
+                 knockbackDirection.AsNormalized(), radius);
+}
+
+void CStateManager::ProcessRadiusDamage(const CActor& source, CActor& damagee, TUniqueId owner,
+                                        const CDamageInfo& damage, const CMaterialFilter& filter) {
+  CMaterialFilter localFilter = filter;
+  const TUniqueId sourceId = source.GetUniqueId();
+  const TUniqueId damageeId = damagee.GetUniqueId();
+  const float radius = damage.GetRadius();
+  const CVector3f position(source.GetTranslation());
+  const float negativeRadius = -radius;
+  const CAABox bounds(position + CVector3f(negativeRadius, negativeRadius, negativeRadius),
+                      position + CVector3f(radius, radius, radius));
+
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  BuildNearList(nearList, bounds, localFilter, nullptr);
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    CActor* actor = static_cast< CActor* >(ObjectById(*it));
+    if (actor != nullptr) {
+      const TUniqueId actorId = actor->GetUniqueId();
+      if (sourceId != actorId && owner != actorId && damageeId != actorId) {
+        TestBombHittingWater(source, position, *actor);
+        if (TestRayDamage(position, *actor, nearList)) {
+          ApplyRadiusDamage(source, position, *actor, owner, damage);
+        }
+      }
+    }
+  }
+}
+
 void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner,
                                    const CDamageInfo& damage,
                                    const CDamageVulnerability& vulnerability,
@@ -2131,124 +2435,6 @@ void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId ow
     }
   } else if (patterned != nullptr) {
     patterned->KnockBack(*this, info);
-  }
-}
-
-void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {
-  CPlayer* player = TCastToPtr< CPlayer >(ObjectById(victim));
-  if (player != nullptr) {
-    PlayerState(MaskUIdNumPlayers(victim))->SetPlayerAlive(false);
-
-    if (previousHealth >= 0.f) {
-      const CGameState& gameState = *gpGameState;
-      CGameMode& gameMode = gameState.GetGameMode();
-      gameMode.OnPlayerKilled(*this, victim, killer);
-    }
-
-    if (!IsMultiplayer()) {
-      CSfxManager::KillAll(CSfxManager::kSC_Game);
-      CStreamAudioManager::FadeOutSoftwareAudio(CStreamAudioManager::kSC_Default, 0.5f);
-    }
-  }
-}
-
-bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee,
-                                     float damage, const TUniqueId& uid1, const TUniqueId& uid2,
-                                     const CDamageInfo& damageInfo, int unkParam) {
-  CHealthInfo* healthInfo = damagee.HealthInfo();
-  if (!healthInfo || damage < 0.0f) {
-    return false;
-  }
-
-  float hp = healthInfo->GetHP();
-  if (hp <= 0.0f) {
-    fn_8003dd88(damagee, uid1, damageInfo, false, unkParam);
-    return true;
-  }
-
-  CPlayer* player = TCastToPtr< CPlayer >(damagee);
-
-  if (player && player->Get_x12f8() != 0) {
-    if (player->Get_x12f8() != 3) {
-      return false;
-    }
-    player->fn_8000d3ac(pos, *this);
-    if (!player->fn_8000d40c(dir, *this)) {
-      return false;
-    }
-  }
-  TUniqueId playerId = player ? player->GetUniqueId() : kInvalidUniqueId;
-  if (player) {
-    int playerIndex = MaskUIdNumPlayers(playerId);
-    CPlayerState& playerState = *PlayerState(playerIndex);
-
-    if (GetCameraManager(playerIndex)->IsInCinematicCamera()) {
-      return false;
-    }
-
-    if (gpGameState->GetHardModeEnabled()) {
-      switch ((EWeaponType)damageInfo.GetWeaponMode1()) {
-      case kWT_Power:
-      case kWT_Dark:
-      case kWT_Light:
-      case kWT_Annihilator:
-      case kWT_Bomb:
-      case kWT_PowerBomb:
-      case kWT_Missile:
-      case kWT_BoostBall:
-      case kWT_CannonBall:
-      case kWT_ScrewAttack:
-      case kWT_AI:
-      case kWT_PoisonWater1:
-      case kWT_PoisonWater2:
-      case kWT_Lava:
-      case kWT_Heat:
-      case kWT_Unused1:
-      case kWT_AreaDark:
-        damage *= gpGameState->GetHardModeDamageMultiplier();
-        break;
-      }
-    }
-
-    float damageReduction = 0.0f;
-
-    if (playerState.HasPowerUp(CPlayerState::kIT_VariaSuit)) {
-      damageReduction = player->GetTweakPlayer()->GetVariaSuitDamageReduction();
-    }
-    if (playerState.HasPowerUp(CPlayerState::kIT_DarkSuit)) {
-      float reduction = player->GetTweakPlayer()->GetDarkSuitDamageReduction();
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
-    }
-    if (playerState.HasPowerUp(CPlayerState::kIT_LightSuit)) {
-      float reduction = player->GetTweakPlayer()->GetLightSuitDamageReduction();
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
-    }
-    if (playerState.GetItemAmount(CPlayerState::kIT_AbsorbAttack, true) != 0) {
-      float reduction = 1.5f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
-    }
-    if (playerState.GetItemAmount(CPlayerState::kIT_LightShield, true) != 0) {
-      // TODO: flag
-      float reduction = 0.75f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
-    }
-    if (playerState.GetItemAmount(CPlayerState::kIT_DarkShield, true) != 0) {
-      // TODO: flag
-      float reduction = 0.75f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
-    }
-    hp = playerState.CalculateHealth();
-    damage = -(damageReduction * damage - damage);
   }
 }
 

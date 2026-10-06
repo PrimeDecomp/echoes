@@ -138,7 +138,28 @@ enum EScriptObjectState {
   kSS_Dead = 0x44454144,
   kSS_Generate = 0x47454e52,
   kSS_ReflectedDamage = 0x52454644,
-  kSS_Damage = 0x44414d47, // Guessed name; ADMG damage notification state.
+  kSS_Damage = 0x44414d47, // Guessed name; DAMG damage notification state.
+  kSS_ResistedDamage = 0x52455344, // Guessed DKCR HD name; native resisted-damage branch.
+  // Guessed names; native weapon-to-damage-state dispatch establishes each tag.
+  kSS_PowerDamage = 0x44505752,
+  kSS_DarkDamage = 0x4444524b,
+  kSS_LightDamage = 0x444c4754,
+  kSS_AnnihilatorDamage = 0x44414e4e,
+  kSS_BombDamage = 0x44424d42,
+  kSS_PowerBombDamage = 0x4450424d,
+  kSS_MissileDamage = 0x444d4953,
+  kSS_BoostBallDamage = 0x4442414c,
+  kSS_CannonBallDamage = 0x4443414e,
+  kSS_ScrewAttackDamage = 0x44534357,
+  kSS_PhazonDamage = 0x4450485a,
+  kSS_AIDamage = 0x44424149,
+  kSS_PoisonWaterDamage = 0x44505754,
+  kSS_LavaDamage = 0x444c4156,
+  kSS_HeatDamage = 0x44484f54,
+  kSS_ColdDamage = 0x44434c44,
+  kSS_AreaDarkDamage = 0x44414452,
+  kSS_AreaLightDamage = 0x44414c47,
+  kSS_UnknownSourceDamage = 0x44554e53,
   kSS_InheritBounds = 0x49424e44,
   kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
   kSS_InternalState01 = 0x49533031, // Guessed name
@@ -194,6 +215,7 @@ enum EScriptObjectMessage {
   kSM_XEXF = 0x58455846, // Native fluid-exit tag.
   kSM_XINS = 0x58494e53, // Guessed name; sent to the player when an ice impact touches them.
   kSM_Damage = 0x58444d47, // Guessed DKCR HD name; damage notification.
+  kSM_ResistedDamage = 0x58524447, // Guessed DKCR HD name; native resisted-damage branch.
   kSM_XHIT = 0x58484954,
   kSM_XAOV = 0x58414f56, // Native projectile visor-impact tag.
   kSM_AIUpdateDisabled = 0x58415544, // Guessed DKCR HD name; patterned update disabled.

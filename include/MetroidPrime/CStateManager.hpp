@@ -199,11 +199,18 @@ public:
                    const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
                          TUniqueId weapon, const CDamageInfo& damage);
+  void ProcessRadiusDamage(const CActor& source, CActor& damagee, TUniqueId owner,
+                           const CDamageInfo& damage, const CMaterialFilter& filter);
+  // Guessed name; dispatches general and weapon-specific damage connection states.
+  void SendDamageScriptMsgs(CActor& damagee, TUniqueId source, const CDamageInfo& damage);
   // Prime-correlated names, with the selected Echoes damage-reaction interfaces.
   void TestBombHittingWater(const CActor& source, const CVector3f& position, CActor& damagee);
   void ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner, const CDamageInfo& damage,
                       const CDamageVulnerability& vulnerability, const CVector3f& direction,
                       float dampen);
+  // Guessed name; possession and difficulty adjustment before direct/radius damage.
+  CDamageInfo GetModifiedDamageInfo(TUniqueId damager, TUniqueId owner, TUniqueId damagee,
+                                    const CDamageInfo& damage) const;
   void KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
   void PreRender(uint playerIndex);                // Prime-correlated name.
@@ -378,9 +385,12 @@ public:
   void UpdateActorInSortedLists(CActor*);
 
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
-                        const TUniqueId& uid1, const TUniqueId& uid2, const CDamageInfo& info, int);
+                        TUniqueId uid1, TUniqueId uid2, const CDamageInfo& info, int);
 
-  void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
+  // Guessed name; records the last damage source and, on lethal hits, death attribution.
+  // The final context flag's complete interface remains under investigation.
+  void RecordDamageSource(CActor& damagee, TUniqueId source, const CDamageInfo& info,
+                          bool lethal, int damageContext);
   // Guessed names, recovered from script deletion and object-list consumers.
   void AddToGraveyard(CEntity* entity);
   void ClearGraveyard(); // Prime-correlated name; deletes the queued entity batches.
