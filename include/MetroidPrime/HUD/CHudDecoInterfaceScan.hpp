@@ -3,9 +3,10 @@
 #include "Kyoto/CDvdRequest.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
 #include "Kyoto/TToken.hpp"
-#include "MetroidPrime/TGameTypes.hpp"
 #include "MetroidPrime/HUD/CScanHistory.hpp"
+#include "MetroidPrime/TGameTypes.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/single_ptr.hpp"
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
 class CGuiFrame;
@@ -49,8 +50,8 @@ private:
   rstl::auto_ptr< CGuiFrame > mFlatFrame;
   CGuiFrame* mLoadedFlatFrame;
   const TLockedToken< CStringTable >& mStrings;
-  CScanDisplay* mScanDisplay; // Owned; construction/destruction awaits its shared interface.
-  TUniqueId mLatestHudPoi;
+  rstl::single_ptr< CScanDisplay > mScanDisplay;
+  TUniqueId mLatestOrbitTarget;
   TUniqueId mLatestScanningObject;
   int mLatestScanState;
   float mScanningTime;
