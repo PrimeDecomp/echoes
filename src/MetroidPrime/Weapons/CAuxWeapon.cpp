@@ -115,9 +115,8 @@ void CAuxWeapon::FireProjectile(float dt, EWeaponType type, bool underwater, boo
                                 bool adjustSpawn, int comboId, uint attributes,
                                 const CTransform4f& xf, TUniqueId homingId, ushort soundId,
                                 CStateManager& mgr) {
-  TToken< CWeaponDescription > description(
-      isCombo ? static_cast< const TToken< CWeaponDescription >& >(mCombos[comboId])
-              : static_cast< const TToken< CWeaponDescription >& >(mMissile));
+  const CToken& missile = mMissile;
+  TToken< CWeaponDescription > description(isCombo ? mCombos[comboId].GetToken() : missile);
   CDamageInfo damage = isCombo ? gpTweakPlayerGun->GetComboDamage(CPlayerState::EBeamId(comboId))
                                : gpTweakPlayerGun->GetMissileDamage();
   const int multiplayer = mgr.IsMultiplayer() ? 1 : 0;
