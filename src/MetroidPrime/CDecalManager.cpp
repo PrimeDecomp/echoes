@@ -43,12 +43,21 @@ CHECK_SIZEOF(CDecalTriangleCollector, 0x24)
 
 bool CDecalTriangleCollector::OnTriangle(const CDisplayListReader& reader, const uchar* a,
                                          const uchar* b, const uchar* c) {
-  const CVector3f vertA = mPositions[reader.GetVertexIndex(a, GX_VA_POS)];
-  const CVector3f vertB = mPositions[reader.GetVertexIndex(b, GX_VA_POS)];
-  const CVector3f vertC = mPositions[reader.GetVertexIndex(c, GX_VA_POS)];
+  const uint indexA = reader.GetVertexIndex(a, GX_VA_POS);
+  const uint indexB = reader.GetVertexIndex(b, GX_VA_POS);
+  const uint indexC = reader.GetVertexIndex(c, GX_VA_POS);
+
+  const CVector3f vertA = mPositions[indexA];
+  const CVector3f vertB = mPositions[indexB];
+  const CVector3f vertC = mPositions[indexC];
+
   if (CollisionUtil::TriBoxOverlap(mCenter, mHalfExtent, vertA, vertB, vertC)) {
-    mSurfaces.push_back(CCollisionSurface(vertA, vertB, vertC, ~u64(0)));
+    if (mSurfaces.size() == mSurfaces.capacity()) {
+      mSurfaces.reserve(mSurfaces.capacity() * 2);
+    }
+    mSurfaces.push_back_unsafe(CCollisionSurface(vertA, vertB, vertC, ~u64(0)));
   }
+
   return true;
 }
 } // namespace
