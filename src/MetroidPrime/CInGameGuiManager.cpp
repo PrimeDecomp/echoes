@@ -445,15 +445,15 @@ void CInGameGuiManager::Update(const CStateManager& mgr, float dt, CRandom16& ra
   CPlayer& player = *const_cast< CPlayer* >(mgr.GetPlayer(mPlayerIndex));
   mPlayerAlive = player.GetPlayerState()->IsPlayerAlive();
   if (mgr.GetCameraManager(mPlayerIndex)->IsInCinematicCamera()) {
-    player.fn_80016a74(1.f);
-    player.fn_80016a6c(1.f);
+    player.SetViewportScaleX(1.f);
+    player.SetViewportScaleY(1.f);
   } else {
     const float scaleX = rstl::min_val(mSamusHud->GetDesiredViewportScaleX(),
                                      mPlayerVisor->GetDesiredViewportScaleX(mgr));
     const float scaleY = rstl::min_val(mSamusHud->GetDesiredViewportScaleY(),
                                      mPlayerVisor->GetDesiredViewportScaleY(mgr));
-    player.fn_80016a74(scaleX);
-    player.fn_80016a6c(scaleY);
+    player.SetViewportScaleX(scaleX);
+    player.SetViewportScaleY(scaleY);
   }
   mPauseScreenBlur->Update(dt, mgr, mDumpedTextures.empty());
 

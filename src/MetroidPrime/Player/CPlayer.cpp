@@ -362,8 +362,8 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mFootstepSfxSel(0)
 , mLastVelocity(CVector3f::Zero())
 , mVisorSteam(0.f, 0.f, 0.f, kInvalidAssetId)
-, x11e4_(1.f)
-, x11e8_(1.f)
+, mViewportScaleX(1.f)
+, mViewportScaleY(1.f)
 , mTransitionSuit(CPlayerState::kPS_Varia)
 , mAnimRes(resId, charIdx, CVector3f(1.8f, 1.8f, 1.8f), 0, true)
 , mTransitionBeam(CPlayerState::kBI_Power)
@@ -1329,9 +1329,9 @@ void CPlayer::SetVisorSteam(float targetAlpha, float alphaInDuration, float alph
   mVisorSteam.SetSteam(targetAlpha, alphaInDuration, alphaOutDuration, texture);
 }
 
-void CPlayer::fn_80016a74(float value) { x11e4_ = value; }
+void CPlayer::SetViewportScaleX(float value) { mViewportScaleX = value; }
 
-void CPlayer::fn_80016a6c(float value) { x11e8_ = value; }
+void CPlayer::SetViewportScaleY(float value) { mViewportScaleY = value; }
 
 void CPlayer::SetMorphBallState(EPlayerMorphBallState state, EPlayerMorphBallState spawnedState) {
   mMorphBallState = state;
