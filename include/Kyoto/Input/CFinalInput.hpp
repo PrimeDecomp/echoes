@@ -48,7 +48,7 @@ public:
   float GetAnalogRightX() const { return mAnaRightX; }
   float GetAnalogRightY() const { return mAnaRightY; }
 
-  uint ControllerNumber() const { return mControllerIdx; }
+  int ControllerNumber() const { return mControllerIdx; }
 
   float ALAUp() const { return mAnaLeftY > 0.f ? mAnaLeftY : 0.f; }
 
@@ -188,7 +188,7 @@ public:
 
 private:
   float mDt;
-  uint mControllerIdx;
+  int mControllerIdx;
   float mAnaLeftX;
   float mAnaLeftY;
   float mAnaRightX;

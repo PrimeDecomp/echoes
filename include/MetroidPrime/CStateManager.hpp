@@ -45,6 +45,9 @@ class CEntity;
 class CActor;
 class CMaterialFilter;
 class CRayCastResult;
+class CCollisionResponseData;
+class CWeaponMode;
+class CVector2f;
 class CScriptMailbox;
 class CMapWorldInfo;
 class CPlayerState;
@@ -273,6 +276,17 @@ public:
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
   // Prime-correlated name; native Echoes visor masks omit the thawed parameter.
+  // Prime-correlated name; spawns the impact particle effect and sound for a weapon hit.
+  void DoCollisionResponse(const CCollisionResponseData& responseData,
+                           const CRayCastResult& rayCast, const TUniqueId& uid,
+                           const CWeaponMode& weaponMode, bool flag);
+  // Guessed name; forwards to the renderer unless the echo visor or light world applies.
+  void DrawDarkWorldVolume(const CVector3f& pos, const CVector3f& scale, uchar mix, uchar alpha,
+                           bool inside, float lod, const CVector2f& scroll1,
+                           const CVector2f& scroll2, const CVector2f& texScale1,
+                           const CVector2f& texScale2, const CTexture& environment,
+                           const CTexture& cloud1, const CTexture& cloud2, CColor color,
+                           CColor additiveColor, bool cylinder) const;
   void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
@@ -392,6 +406,7 @@ public:
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
+  rstl::optional_object< CAABox > CalculateObjectBounds(CActor& actor); // Guessed name
   void UpdateSortedLists(); // Prime-correlated name; updates every registered actor's bounds.
 
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
@@ -417,6 +432,7 @@ public:
   void MoveActors(float dt);
   // Guessed name; advances the cached multiplayer player-pair line-of-sight test.
   void UpdatePlayerLineOfSight(float dt);
+  bool CanEnterMapScreen(); // Guessed name; false while a hint blocks it or a cinematic plays.
   void ProcessPlayerInput();      // Guessed name; routes each player's selected controller input.
   void CrossTouchActors();        // Prime-correlated name; sends mutual overlap Touch callbacks.
   void UpdateHintState(float dt); // Prime-correlated name; maps hint locations and queues memos.
@@ -490,7 +506,7 @@ public:
   rstl::list< TUniqueId > mNewObjectIds; // Guessed name: IDs awaiting their first update.
   ScriptMsgArray mScriptMsgs;
   CArchitectureQueue* mArchQueue;
-  int mNumPlayers;
+  uint mNumPlayers;
   CPlayer* mPlayers[4];
   CPlayerState* mPlayerStates[4];
   CCameraManager* mCameraManagers[4];

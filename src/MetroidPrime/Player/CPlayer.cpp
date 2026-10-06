@@ -2126,7 +2126,7 @@ void CPlayer::UpdateFrozenState(const CFinalInput& input, CStateManager& mgr) {
   Stop();
 }
 
-void CPlayer::ProcessInput(float dt, const CFinalInput& input, CStateManager& mgr) {
+void CPlayer::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
   static_cast< CControlHintManager* >(mControlHintManager.get())
       ->ProcessInput(input, mControlMapper, mgr);
   mBackwardInput = mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input,
@@ -2146,7 +2146,7 @@ void CPlayer::ProcessInput(float dt, const CFinalInput& input, CStateManager& mg
     return;
   }
 
-  dt = activeInput.DeltaTime();
+  const float dt = activeInput.DeltaTime();
   if (mMorphBallState != kMS_Morphed) {
     UpdateScanningState(activeInput, mgr, dt);
   }

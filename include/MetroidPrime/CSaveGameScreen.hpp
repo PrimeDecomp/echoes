@@ -49,6 +49,7 @@ public:
   // Guessed name; the stored completion result is read by CStateManager.
   CIOWin::EMessageReturn GetMessageReturn() const { return mIowRet; }
 
+  EUIType GetUIType() const { return mUiType; } // Guessed name
   void ProcessUserInput(const CFinalInput& input);
   void Draw() const;
   const CGameState::GameFileStateInfo* GetGameData(int idx) const;

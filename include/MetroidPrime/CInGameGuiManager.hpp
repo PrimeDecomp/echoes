@@ -55,6 +55,7 @@ public:
   void BeginStateTransition(EInGameGuiState state, const CStateManager& mgr);
   bool IsInPausedState() const; // Guessed name
   void PrepareScanDisplay(const CStateManager& mgr, int playerIndex);
+  void DrawDarkVisorMask(const CStateManager& mgr) const; // Guessed name
   // Guessed name; forwards the scan palette and camera direction to the renderer.
   void DrawScanVisor(float time, const CStateManager& mgr, const CColor& sweepColor,
                      const CColor& inactiveColor, const CColor& inactiveExternalColor,
@@ -75,7 +76,6 @@ private:
   void TryCompleteStateTransition();
   bool IsTransitionReady() const; // Guessed name
   void UpdateAutoMapper(const CStateManager& mgr, float dt);
-  void DrawDarkVisorMask() const; // Guessed name
 
   int mPlayerIndex;
   bool mIsSinglePlayer;
