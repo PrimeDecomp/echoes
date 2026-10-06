@@ -3,6 +3,10 @@
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrActorRotate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptEffect.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptActorRotate::~CScriptActorRotate() {}
@@ -12,26 +16,17 @@ void CScriptActorRotate::StopRotation() { mPlaying = false; }
 void CScriptActorRotate::StartRotation() { mPlaying = true; }
 
 void CScriptActorRotate::SetCurrentTime(float time) {
-  if (time < 0.f) {
-    mCurrentTime = 0.f;
-  } else if (time > mDuration) {
-    mCurrentTime = mDuration;
-  } else {
-    mCurrentTime = time;
-  }
+  mCurrentTime = CMath::Clamp(0.f, time, mDuration);
 }
 
 void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   bool accepted = false;
 
-  if (message == kSM_Activate) {
-    CEntity::AcceptScriptMsg(mgr, msg);
-    accepted = true;
-  }
-
   switch (message) {
   case kSM_Activate:
+    CEntity::AcceptScriptMsg(mgr, msg);
+    accepted = true;
   case kSM_AreaLoaded:
     mTargetId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     if ((mFlags & kF_AutoStart) == 0 || !GetActive()) {
@@ -41,8 +36,7 @@ void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
   case kSM_Action:
   case kSM_Next:
     if (GetActive()) {
-      const CEntity* target = mgr.GetObjectById(mTargetId);
-      if (target != nullptr && target->TypesMatch(kET_ScriptActorRotate) != nullptr) {
+      if (TCastToConstPtr< CScriptActorRotate >(mgr.GetObjectById(mTargetId))) {
         StartRotation();
         mCurrentTime = 0.f;
       } else {
@@ -50,10 +44,16 @@ void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
       }
     }
     break;
-  case kSM_Deactivate:
-    // TODO: clear this controller's ID on connected script platforms.
+  case kSM_Deactivate: {
+    const rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Play);
+    for (int i = 0; i < ids.size(); ++i) {
+      if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(ids[i]))) {
+        platform->SetActorRotateId(kInvalidUniqueId);
+      }
+    }
     StopRotation();
     break;
+  }
   case kSM_Start:
     StartRotation();
     break;
@@ -76,18 +76,27 @@ void CScriptActorRotate::UpdateActors(bool next, CStateManager& mgr) {
 
   mActors.clear();
   const rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Play);
-  mActors.reserve(ids.size());
-  for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(*it))) {
-      mActors.push_back(rstl::pair< TUniqueId, CTransform4f >(*it, actor->GetTransform()));
+  if (ids.size() > 0) {
+    mActors.reserve(ids.size());
+    for (int i = 0; i < ids.size(); ++i) {
+      if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(ids[i]))) {
+        mActors.push_back(rstl::pair< TUniqueId, CTransform4f >(
+            actor->GetUniqueId(), actor->GetTransform().GetRotation()));
+      }
+      if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(ids[i]))) {
+        platform->SetActorRotateId(GetUniqueId());
+      }
     }
-    // TODO: record this controller on any connected script platform.
   }
 
   SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
   if (!mActors.empty()) {
     StartRotation();
-    mCurrentTime = next ? mDuration : 0.f;
+    if (next) {
+      mCurrentTime = mDuration;
+    } else {
+      mCurrentTime = 0.f;
+    }
   }
 }
 
@@ -100,8 +109,7 @@ void CScriptActorRotate::Think(float dt, CStateManager& mgr) {
     mCurrentTime += dt;
   }
 
-  CEntity* target = mgr.GetObjectByIdFromListAll(mTargetId);
-  if (target != nullptr && target->TypesMatch(kET_ScriptActorRotate) != nullptr) {
+  if (TCastToPtr< CScriptActorRotate >(mgr.ObjectById(mTargetId))) {
     UpdateTargetRotation(mgr);
   } else {
     UpdateActorRotations(dt, mgr);
@@ -110,20 +118,20 @@ void CScriptActorRotate::Think(float dt, CStateManager& mgr) {
 
 void CScriptActorRotate::UpdateTargetRotation(CStateManager& mgr) {
   CheckEnd(mgr);
-  CEntity* entity = mgr.GetObjectByIdFromListAll(mTargetId);
-  if (entity == nullptr) {
-    return;
-  }
-  CScriptActorRotate* target =
-      static_cast< CScriptActorRotate* >(entity->TypesMatch(kET_ScriptActorRotate));
+  CScriptActorRotate* target = TCastToPtr< CScriptActorRotate >(mgr.ObjectById(mTargetId));
   if (target == nullptr) {
     return;
   }
 
-  const CTransform4f rotation =
-      CTransform4f::RotateZ(CRelAngle::FromDegrees(mZRotation.EvaluateAt(mCurrentTime))) *
-      CTransform4f::RotateY(CRelAngle::FromDegrees(mYRotation.EvaluateAt(mCurrentTime))) *
-      CTransform4f::RotateX(CRelAngle::FromDegrees(mXRotation.EvaluateAt(mCurrentTime)));
+  const float xAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mXRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  const float yAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mYRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  const float zAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mZRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  const CTransform4f rotation = CTransform4f::RotateZ(CRelAngle::FromRadians(zAngle)) *
+                                CTransform4f::RotateY(CRelAngle::FromRadians(yAngle)) *
+                                CTransform4f::RotateX(CRelAngle::FromRadians(xAngle));
   target->SetActorTransforms(rotation);
 }
 
@@ -136,12 +144,110 @@ void CScriptActorRotate::SetActorTransforms(const CTransform4f& rotation) {
 
 void CScriptActorRotate::UpdateActorRotations(float dt, CStateManager& mgr) {
   CheckEnd(mgr);
-  // TODO: apply the sampled rotation and scale splines to each connected actor. The
-  // transform composition and platform-specific path still need target verification.
+  float xAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mXRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  float yAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mYRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  float zAngle =
+      CMath::ClampRadians(CRelAngle::FromDegrees(mZRotation.EvaluateAt(mCurrentTime)).AsRadians());
+  if ((mFlags & kF_AngularVelocity) != 0) {
+    xAngle = dt * CRelAngle::FromDegrees(mXRotation.EvaluateAt(mCurrentTime)).AsRadians();
+    yAngle = dt * CRelAngle::FromDegrees(mYRotation.EvaluateAt(mCurrentTime)).AsRadians();
+    zAngle = dt * CRelAngle::FromDegrees(mZRotation.EvaluateAt(mCurrentTime)).AsRadians();
+  }
+
+  const CTransform4f rotation = CTransform4f::RotateZ(CRelAngle::FromRadians(zAngle)) *
+                                CTransform4f::RotateY(CRelAngle::FromRadians(yAngle)) *
+                                CTransform4f::RotateX(CRelAngle::FromRadians(xAngle));
+  for (rstl::vector< rstl::pair< TUniqueId, CTransform4f > >::iterator it = mActors.begin();
+       it != mActors.end(); ++it) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(it->first))) {
+      if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(it->first))) {
+        if ((mFlags & kF_AngularVelocity) != 0) {
+          if ((mFlags & kF_LocalRotation) != 0) {
+            CTransform4f xf = platform->GetTransform() * rotation;
+            xf.Orthonormalize();
+            platform->SetTransformExplicitly(xf);
+          } else {
+            CTransform4f xf = rotation * platform->GetTransform();
+            xf.Orthonormalize();
+            platform->SetTransformExplicitly(xf);
+          }
+        } else {
+          if ((mFlags & kF_LocalRotation) != 0) {
+            CTransform4f xf = it->second * rotation;
+            xf.Orthonormalize();
+            platform->SetTransformExplicitly(xf);
+          } else {
+            CTransform4f xf = rotation * it->second;
+            xf.Orthonormalize();
+            platform->SetTransformExplicitly(xf);
+          }
+        }
+      } else {
+        if (!mPlaying) {
+          mCurrentTransform = rotation;
+        }
+        if ((mFlags & kF_AngularVelocity) != 0) {
+          if ((mFlags & kF_LocalRotation) != 0) {
+            CTransform4f xf = actor->GetTransform() * mCurrentTransform;
+            xf.Orthonormalize();
+            xf.SetTranslation(actor->GetTranslation());
+            actor->SetTransform(xf);
+          } else {
+            CTransform4f xf = mCurrentTransform * actor->GetTransform();
+            xf.Orthonormalize();
+            xf.SetTranslation(actor->GetTranslation());
+            actor->SetTransform(xf);
+          }
+        } else {
+          if ((mFlags & kF_LocalRotation) != 0) {
+            CTransform4f xf = it->second * mCurrentTransform;
+            xf.Orthonormalize();
+            xf.SetTranslation(actor->GetTranslation());
+            actor->SetTransform(xf);
+          } else {
+            CTransform4f xf = mCurrentTransform * it->second;
+            xf.Orthonormalize();
+            xf.SetTranslation(actor->GetTranslation());
+            actor->SetTransform(xf);
+          }
+        }
+      }
+
+      CScriptEffect* effect = TCastToPtr< CScriptEffect >(actor);
+      CVector3f scale(1.f, 1.f, 1.f);
+      if (actor->HasModelData()) {
+        scale = actor->GetModelData()->GetScale();
+      } else if (effect) {
+        scale = effect->GetGlobalScale();
+      }
+      if (!mXScale.GetKnots().empty()) {
+        scale.SetX(mXScale.EvaluateAt(mCurrentTime));
+      }
+      if (!mYScale.GetKnots().empty()) {
+        scale.SetY(mYScale.EvaluateAt(mCurrentTime));
+      }
+      if (!mZScale.GetKnots().empty()) {
+        scale.SetZ(mZScale.EvaluateAt(mCurrentTime));
+      }
+      if (actor->HasModelData()) {
+        actor->ModelData()->SetScale(scale);
+      } else if (effect) {
+        effect->SetGlobalScale(scale);
+      }
+    }
+  }
+
+  if (mPlaying) {
+    mCurrentTransform = rotation;
+  } else {
+    mCurrentTransform = CTransform4f::Identity();
+  }
 }
 
 void CScriptActorRotate::CheckEnd(CStateManager& mgr) {
-  if (mCurrentTime < mDuration) {
+  if (!(mCurrentTime >= mDuration)) {
     return;
   }
   SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
@@ -176,24 +282,26 @@ CScriptActorRotate::CScriptActorRotate(TUniqueId uid, const rstl::string& name,
   if ((mFlags & kF_DurationFromSplines) != 0) {
     mDuration = mXRotation.GetMaxTime();
     float maxTime = mYRotation.GetMaxTime();
-    if (maxTime > mDuration) {
-      mDuration = maxTime;
-    }
+    mDuration = maxTime < mDuration ? mDuration : maxTime;
     maxTime = mZRotation.GetMaxTime();
-    if (maxTime > mDuration) {
-      mDuration = maxTime;
-    }
+    mDuration = maxTime < mDuration ? mDuration : maxTime;
     maxTime = mXScale.GetMaxTime();
-    if (maxTime > mDuration) {
-      mDuration = maxTime;
-    }
+    mDuration = maxTime < mDuration ? mDuration : maxTime;
     maxTime = mYScale.GetMaxTime();
-    if (maxTime > mDuration) {
-      mDuration = maxTime;
-    }
+    mDuration = maxTime < mDuration ? mDuration : maxTime;
     maxTime = mZScale.GetMaxTime();
-    if (maxTime > mDuration) {
-      mDuration = maxTime;
-    }
+    mDuration = maxTime < mDuration ? mDuration : maxTime;
   }
+}
+
+CEntity* LoadActorRotate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrActorRotate sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrActorRotate.inc"
+
+  return rs_new CScriptActorRotate(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.flagsActorRotate,
+      sldrThis.rotationControls.xRotation, sldrThis.rotationControls.yRotation,
+      sldrThis.rotationControls.zRotation, sldrThis.scaleControls.xScale,
+      sldrThis.scaleControls.yScale, sldrThis.scaleControls.zScale, sldrThis.duration);
 }

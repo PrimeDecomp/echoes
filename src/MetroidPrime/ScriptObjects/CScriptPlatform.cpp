@@ -68,7 +68,7 @@ CScriptPlatform::CScriptPlatform(
 , mRollSpline(nullptr)
 , mYawSpline(nullptr)
 , mPitchSpline(nullptr)
-, x450_(kInvalidUniqueId)
+, mActorRotateId(kInvalidUniqueId)
 , x452_(kInvalidUniqueId)
 , mLookAtTarget(kInvalidUniqueId)
 , mRandomAnimationOffset(randomAnimationOffset)
@@ -300,7 +300,7 @@ void CScriptPlatform::PreThink(float dt, CStateManager& mgr) {
     ResetMotion(mInitialTime, mgr);
     x48d_25_ = false;
   }
-  if (!mMotionActive && !mMotionTransformed && x450_ == kInvalidUniqueId &&
+  if (!mMotionActive && !mMotionTransformed && mActorRotateId == kInvalidUniqueId &&
       x452_ == kInvalidUniqueId) {
     return;
   }
@@ -478,7 +478,7 @@ void CScriptPlatform::Think(float dt, CStateManager& mgr) {
                                                      0.f);
       }
     }
-    if ((mMotionActive || mMotionTransformed || x450_ != kInvalidUniqueId) &&
+    if ((mMotionActive || mMotionTransformed || mActorRotateId != kInvalidUniqueId) &&
         (!mStaticSlaves.empty() || !mDynamicSlaves.empty())) {
       TMovedList moved;
       DragSlaves(mgr, moved);
