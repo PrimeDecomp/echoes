@@ -175,7 +175,7 @@ void CPlayerBodyController::SelectLoopingAnimation(const CPASAnimParmData& param
 }
 
 const CStateMachine* CPlayerBodyController::GetStateMachine() {
-  if (mStateMachineResource.IsLoaded()) {
+  if (mStateMachineResource.TryCache()) {
     return mStateMachineResource.GetObject();
   }
   return nullptr;

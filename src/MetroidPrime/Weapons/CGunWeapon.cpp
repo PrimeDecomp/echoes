@@ -591,18 +591,18 @@ void CGunWeapon::LoadFxIdle(float dt, CStateManager& mgr) {
   }
   bool loaded = true;
   for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
-    if (!mMuzzleEffects[i].IsLoaded() || !mWeapons[i].IsLoaded()) {
+    if (!mMuzzleEffects[i].TryCache() || !mWeapons[i].TryCache()) {
       loaded = false;
       break;
     }
   }
   for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
-    if (!mFrozenEffects[i].IsLoaded()) {
+    if (!mFrozenEffects[i].TryCache()) {
       loaded = false;
       break;
     }
   }
-  if (!mXferEffect.IsLoaded()) {
+  if (!mXferEffect.TryCache()) {
     loaded = false;
   }
   if (loaded) {

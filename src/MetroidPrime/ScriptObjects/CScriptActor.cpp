@@ -233,7 +233,7 @@ void CScriptActor::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node
 
 void CScriptActor::FireProjectile(CStateManager& mgr, const rstl::string& locator) {
   const CTransform4f xf = GetTransform() * GetScaledLocatorTransform(locator);
-  if (!mProjectileInfo->Token().IsLoaded()) {
+  if (!mProjectileInfo->Token().TryCache()) {
     return;
   }
 

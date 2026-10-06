@@ -171,7 +171,7 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     mLoadPhase = kP_LoadingMap;
   }
   case kP_LoadingMap: {
-    if (!mMapWorld->IsLoaded()) {
+    if (!mMapWorld->TryCache()) {
       return false;
     }
     if (mCurAreaId == kInvalidAreaId) {
@@ -191,7 +191,7 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     mSkyboxActive = true;
     mSkyboxVisible = false;
     if (mSkyboxWorld) {
-      if (!mSkyboxWorld->IsLoaded()) {
+      if (!mSkyboxWorld->TryCache()) {
         return false;
       }
       CModel* skybox = mSkyboxWorld->GetObject();
@@ -496,7 +496,7 @@ bool CDummyWorld::ICheckWorldComplete() {
     mPhase = kP_LoadingMap;
   }
   case kP_LoadingMap: {
-    if (!mMapWorld->IsLoaded()) {
+    if (!mMapWorld->TryCache()) {
       return false;
     }
 
@@ -661,7 +661,7 @@ void CWorld::Update(float dt) {
     } else {
       if (!mSkyboxWorldLoaded) {
         mSkyboxWorld->Lock();
-        if (mSkyboxWorld->IsLoaded()) {
+        if (mSkyboxWorld->TryCache()) {
           CModel* skybox = mSkyboxWorld->GetObject();
           skybox->Touch(0);
           if (skybox->IsLoaded(0)) {

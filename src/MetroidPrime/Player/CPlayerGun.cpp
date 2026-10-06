@@ -560,7 +560,7 @@ void CPlayerGun::ComboActive(CStateManager& mgr, int message, float dt) {
   case kSM_Enter: {
     mComboFiring = true;
     TCachedToken< CGenDescription >& transfer = mCurrentBeam->GetTransferEffect();
-    if (transfer.IsLoaded()) {
+    if (transfer.TryCache()) {
       mComboTransferGenerator = rstl::auto_ptr< CElementGen >(rs_new CElementGen(transfer));
       mComboTransferGenerator->SetGlobalOrientation(CTransform4f::Identity());
     }
@@ -789,7 +789,7 @@ bool CPlayerGun::GetBeamAmmoTypeAndCosts(bool combo, CStateManager& mgr,
 }
 
 CStateMachine* CPlayerGun::GetStateMachine() {
-  return mStateMachineToken.IsLoaded() ? *mStateMachineToken : nullptr;
+  return mStateMachineToken.TryCache() ? *mStateMachineToken : nullptr;
 }
 
 void CPlayerGun::PollStateMachine(CStateManager& mgr) {

@@ -243,20 +243,20 @@ void CScanDisplay::Update(float dt, float scanningTime, const CStateManager& mgr
   }
 
   mDataDotTexture.Lock();
-  mDataDotTexture.IsLoaded();
+  mDataDotTexture.TryCache();
   if (mScanTexture) {
     mScanTexture->Lock();
-    mScanTexture->IsLoaded();
+    mScanTexture->TryCache();
   }
   if (mScanModelToken) {
     mScanModelToken->Lock();
-    mScanModelToken->IsLoaded();
+    mScanModelToken->TryCache();
   }
 
   if (!mHistoryStrings.empty()) {
     rstl::vector< TCachedToken< CStringTable > >::iterator it = mHistoryStrings.begin();
     for (; it != mHistoryStrings.end(); ++it) {
-      if (!it->IsLoaded()) {
+      if (!it->TryCache()) {
         break;
       }
     }
@@ -368,7 +368,7 @@ void CScanDisplay::Update(float dt, float scanningTime, const CStateManager& mgr
         }
       }
       if (scanningTime >= mScannableInfo->GetTotalDownloadTime() && mScanString &&
-          mScanString->IsLoaded()) {
+          mScanString->TryCache()) {
         if (mScanComplete || mHistory.empty()) {
           mState = kSS_ViewingScan;
           mXAlpha = 1.f;

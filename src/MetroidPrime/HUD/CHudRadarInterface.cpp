@@ -65,8 +65,8 @@ void CHudRadarInterface::SetColor(const CColor& color) {
 }
 
 void CHudRadarInterface::Update(float dt, const CStateManager& mgr) {
-  mRadarPaint.IsLoaded();
-  mBigRing.IsLoaded();
+  mRadarPaint.TryCache();
+  mBigRing.TryCache();
 }
 
 void CHudRadarInterface::Draw(const CStateManager& mgr, float alpha) const {

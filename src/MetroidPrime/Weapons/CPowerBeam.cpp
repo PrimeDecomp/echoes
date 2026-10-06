@@ -94,7 +94,7 @@ void CPowerBeam::Update(float dt, CStateManager& mgr) {
     return;
 
   if (CGunWeapon::IsLoaded() && !mLoaded) {
-    mLoaded = mShotSmoke->IsLoaded() && mPower2nd1->IsLoaded();
+    mLoaded = mShotSmoke->TryCache() && mPower2nd1->TryCache();
     if (mLoaded) {
       // x234_shotSmokeGen = rs_new CElementGen(x21c_shotSmoke);
       mShotSmokeGen = new CElementGen(*mShotSmoke);

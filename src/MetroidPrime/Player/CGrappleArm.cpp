@@ -229,7 +229,7 @@ void CGrappleArm::TryInitializeStateMachine(CStateManager& mgr) {
 }
 
 CStateMachine* CGrappleArm::GetStateMachine() {
-  if (mStateMachineToken.IsLoaded()) {
+  if (mStateMachineToken.TryCache()) {
     return mStateMachineToken.GetObject();
   }
   return nullptr;

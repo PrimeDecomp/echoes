@@ -235,7 +235,7 @@ void CPlasmaProjectile::UpdateFx(const CTransform4f& xf, float dt, CStateManager
   if (!GetActive()) {
     return;
   }
-  mTexturesLoaded = mTexture.IsLoaded() && mGlowTexture.IsLoaded();
+  mTexturesLoaded = mTexture.TryCache() && mGlowTexture.TryCache();
   CauseDamage(mExpansionState == kES_Attack || mExpansionState == kES_Sustain);
   CBeamProjectile::UpdateFx(xf, dt, mgr);
   UpdatePlayerEffects(dt, mgr);

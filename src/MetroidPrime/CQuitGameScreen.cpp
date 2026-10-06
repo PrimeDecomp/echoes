@@ -53,7 +53,7 @@ void CQuitGameScreen::Draw() const {
 }
 
 EQuitAction CQuitGameScreen::Update(float dt) {
-  if (mLoadedFrame == nullptr && mFrame.IsLoaded()) {
+  if (mLoadedFrame == nullptr && mFrame.TryCache()) {
     FinishedLoading();
   }
   return mAction;

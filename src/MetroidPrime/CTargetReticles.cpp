@@ -651,7 +651,7 @@ void CCompoundTargetReticle::DrawGrappleGroup(const CMatrix3f& rotation, const C
   if (mNoDrawTicks > 0) {
     return;
   }
-  const_cast< TCachedToken< CModel >& >(mGrapple).IsLoaded();
+  const_cast< TCachedToken< CModel >& >(mGrapple).TryCache();
   if (mGrapple.GetObject() == nullptr || mPreviousState == kRS_Scan) {
     return;
   }
@@ -799,7 +799,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
   }
 
   if (lockConfirm) {
-    const_cast< TCachedToken< CModel >& >(mLockConfirm).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mLockConfirm).TryCache();
     if (CModel* const model = mLockConfirm.GetObject()) {
       CTweakTargeting* tweak = gpTweakTargeting.get();
       float scale = CalculateClampedScale(
@@ -825,7 +825,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
   if (lockReticule) {
     // Target flower
-    const_cast< TCachedToken< CModel >& >(mTargetFlower).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mTargetFlower).TryCache();
     if (CModel* const model = mTargetFlower.GetObject()) {
       float scale = CalculateClampedScale(
           position, radius, minVpClampScale * gpTweakTargeting->GetFlowerMinRadiusViewport(),
@@ -850,7 +850,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
     // Missile bracket
     if (mMissileBracketTimer != 0.f) {
-      const_cast< TCachedToken< CModel >& >(mMissileBracket).IsLoaded();
+      const_cast< TCachedToken< CModel >& >(mMissileBracket).TryCache();
       if (CModel* const bracketModel = mMissileBracket.GetObject()) {
         float bracketScale = CalculateClampedScale(
             position, radius,
@@ -899,7 +899,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
       for (i = 0; i < 9; ++i) {
         const SOuterItemInfo& info = mOuterBeamIconSquares[i];
-        const_cast< TCachedToken< CModel >& >(info.mModel).IsLoaded();
+        const_cast< TCachedToken< CModel >& >(info.mModel).TryCache();
         CModel* const outerModel = info.mModel.GetObject();
         if (outerModel != nullptr) {
           CRelAngle outerAngle = CRelAngle::FromRadians(info.mRotationAngle);
@@ -919,7 +919,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
     // Charge gauge
     {
-      const_cast< SOuterItemInfo& >(mChargeGauge).mModel.IsLoaded();
+      const_cast< SOuterItemInfo& >(mChargeGauge).mModel.TryCache();
       if (CModel* const gaugeModel = mChargeGauge.mModel.GetObject()) {
         float gaugeScale = CalculateClampedScale(
             position, radius, minVpClampScale * gpTweakTargeting->GetOuterIconMinRadiusViewport(),
@@ -958,7 +958,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
                 .DepthCompareUpdate(false, false));
 
         // Charge ticks
-        const_cast< TCachedToken< CModel >& >(mChargeTickFirst).IsLoaded();
+        const_cast< TCachedToken< CModel >& >(mChargeTickFirst).TryCache();
         CModel* const tickModel = mChargeTickFirst.GetObject();
         if (tickModel != nullptr) {
           int numTicks =
@@ -979,7 +979,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
     // Inner beam icon
     if (mLockOnTimer > 0.f) {
-      const_cast< TCachedToken< CModel >& >(mInnerBeamIcon).IsLoaded();
+      const_cast< TCachedToken< CModel >& >(mInnerBeamIcon).TryCache();
       if (CModel* const beamModel = mInnerBeamIcon.GetObject()) {
         const CColor* iconColor = &CColor::White();
 
@@ -1003,7 +1003,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
     // Lock fire
     if (mLockFireTimer > 0.f) {
-      const_cast< TCachedToken< CModel >& >(mLockFire).IsLoaded();
+      const_cast< TCachedToken< CModel >& >(mLockFire).TryCache();
       if (CModel* const fireModel = mLockFire.GetObject()) {
         CTweakTargeting* tweak = gpTweakTargeting.get();
         float lockFireFactor = mLockFireTimer / tweak->GetLockFireAnimTime();
@@ -1029,7 +1029,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
 
     // Lock dagger
     if (mLockOnTimer > 0.f) {
-      const_cast< TCachedToken< CModel >& >(mLockDagger).IsLoaded();
+      const_cast< TCachedToken< CModel >& >(mLockDagger).TryCache();
       if (CModel* const daggerModel = mLockDagger.GetObject()) {
         float daggerScale = CalculateClampedScale(
             position, radius, minVpClampScale * gpTweakTargeting->GetLockDaggerMinRadiusViewport(),
@@ -1073,7 +1073,7 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
     if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mVulnerabilityTarget))) {
       if (actor->GetHealthInfo() && !close_enough(actor->GetHealthInfo()->GetInitialHP(), 0.f)) {
         float initialHealth = actor->GetHealthInfo()->GetInitialHP();
-        const_cast< TCachedToken< CTexture >& >(mQuarterCurve).IsLoaded();
+        const_cast< TCachedToken< CTexture >& >(mQuarterCurve).TryCache();
         if (CTexture* texture = mQuarterCurve.GetObject()) {
           texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
           float shadowAlpha = 0.5f * lockBreakAlpha;
@@ -1157,7 +1157,7 @@ void CCompoundTargetReticle::DrawSeeker(const CMatrix3f& rotation, const CStateM
   float minimumScale = mNextGroupInterpolated.GetMinViewportClampScale();
   float visorFactor = mgr.GetPlayerState(mPlayerIndex)->GetVisorTransitionFactor();
   if (scanReticle && visorFactor > 0.f) {
-    const_cast< TCachedToken< CModel >& >(mSeeker).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mSeeker).TryCache();
     if (CModel* const model = mSeeker.GetObject()) {
       CTweakTargeting* tweak = gpTweakTargeting.get();
       float scale = CalculateClampedScale(position, radius,
@@ -1176,7 +1176,7 @@ void CCompoundTargetReticle::DrawSeeker(const CMatrix3f& rotation, const CStateM
   }
 
   if (factor > 0.f) {
-    const_cast< TCachedToken< CModel >& >(mSeeker).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mSeeker).TryCache();
     if (CModel* const model = mSeeker.GetObject()) {
       CTweakTargeting* tweak = gpTweakTargeting.get();
       float scale = CalculateClampedScale(position, radius,
@@ -1197,7 +1197,7 @@ void CCompoundTargetReticle::DrawSeeker(const CMatrix3f& rotation, const CStateM
 
 void CCompoundTargetReticle::DrawCrosshairs(const CMatrix3f& rotation) const {
   if (mNoDrawTicks <= 0 && mCrosshairsDrawScale > 0.f) {
-    const_cast< TCachedToken< CModel >& >(mCrosshairs).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mCrosshairs).TryCache();
     CModel* const model = mCrosshairs.GetObject();
     if (model == nullptr) {
       return;
@@ -1227,9 +1227,9 @@ void CCompoundTargetReticle::DrawScanTargetGroup(const CMatrix3f& rotation,
     return;
   }
 
-  const_cast< TCachedToken< CModel >& >(mScanTargetCenter).IsLoaded();
-  const_cast< TCachedToken< CModel >& >(mScanTargetLeft).IsLoaded();
-  const_cast< TCachedToken< CModel >& >(mScanTargetRight).IsLoaded();
+  const_cast< TCachedToken< CModel >& >(mScanTargetCenter).TryCache();
+  const_cast< TCachedToken< CModel >& >(mScanTargetLeft).TryCache();
+  const_cast< TCachedToken< CModel >& >(mScanTargetRight).TryCache();
   CModel* const center = mScanTargetCenter.GetObject();
   CModel* const left = mScanTargetLeft.GetObject();
   CModel* const right = mScanTargetRight.GetObject();
@@ -1280,7 +1280,7 @@ void CCompoundTargetReticle::DrawNextLockOnGroup(const CMatrix3f& rotation,
   float chargeFactor = gun->GetSeekerChargeFactor();
   int maximumTargets = gun->GetMaxSeekerTargets();
   if (chargeFactor > 0.75f) {
-    const_cast< TCachedToken< CModel >& >(mSeekerMissileCrosshair).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mSeekerMissileCrosshair).TryCache();
     if (CModel* const crosshair = mSeekerMissileCrosshair.GetObject()) {
       float factor = (chargeFactor - 0.75f) / 0.25f;
       gpRender->SetModelMatrix(CTransform4f(rotation, mTargetPosition) *
@@ -1316,7 +1316,7 @@ void CCompoundTargetReticle::DrawNextLockOnGroup(const CMatrix3f& rotation,
     }
   }
 
-  const_cast< TCachedToken< CModel >& >(mSeekerMissileLockConfirm).IsLoaded();
+  const_cast< TCachedToken< CModel >& >(mSeekerMissileLockConfirm).TryCache();
   CModel* const confirm = mSeekerMissileLockConfirm.GetObject();
   if (confirm == nullptr) {
     return;
@@ -1367,7 +1367,7 @@ void CCompoundTargetReticle::DrawNextLockOnGroup(const CMatrix3f& rotation,
                 .DepthCompareUpdate(false, false));
       }
 
-      const_cast< TCachedToken< CTexture >& >(mRadarPaintFirst).IsLoaded();
+      const_cast< TCachedToken< CTexture >& >(mRadarPaintFirst).TryCache();
       CTexture* texture = mRadarPaintFirst.GetObject();
       if (paint && texture != nullptr) {
         texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
@@ -1668,7 +1668,7 @@ COrbitPointMarker::COrbitPointMarker(int playerIndex)
   mOrbitPointModel.Lock();
 }
 
-bool COrbitPointMarker::CheckLoadComplete() { return mOrbitPointModel.IsLoaded(); }
+bool COrbitPointMarker::CheckLoadComplete() { return mOrbitPointModel.TryCache(); }
 
 void COrbitPointMarker::Update(float dt, const CStateManager& mgr) {
   mCurrentTime += dt;
@@ -1733,7 +1733,7 @@ void COrbitPointMarker::Update(float dt, const CStateManager& mgr) {
 
 void COrbitPointMarker::Draw(const CStateManager& mgr) const {
   if ((mLastFreeOrbit || mInterpolationTimer > 0.f) && gpTweakTargeting->GetDrawOrbitPoint()) {
-    const_cast< TCachedToken< CModel >& >(mOrbitPointModel).IsLoaded();
+    const_cast< TCachedToken< CModel >& >(mOrbitPointModel).TryCache();
     if (mOrbitPointModel.GetObject() != nullptr) {
       const CGameCamera& camera = *mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true);
       CTransform4f cameraXf =

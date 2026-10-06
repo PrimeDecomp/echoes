@@ -297,8 +297,8 @@ bool CAutoMapper::CheckLoadComplete() {
         return false;
       }
     }
-    if (mMiniMapSamus.IsLoaded() && mHintBeacon.IsLoaded() && mCompassModel.IsLoaded() &&
-        mCompassShellModel.IsLoaded()) {
+    if (mMiniMapSamus.TryCache() && mHintBeacon.TryCache() && mCompassModel.TryCache() &&
+        mCompassShellModel.TryCache()) {
       mLoadPhase = kLP_LoadUniverse;
     } else {
       return false;
@@ -306,7 +306,7 @@ bool CAutoMapper::CheckLoadComplete() {
   }
   // Fall through after the map resources are ready.
   case kLP_LoadUniverse:
-    if (mMapu.IsLoaded()) {
+    if (mMapu.TryCache()) {
       const int numWorlds = mMapu.GetObject()->GetNumMapWorldDatas();
       mDummyWorlds =
           rstl::vector< rstl::auto_ptr< IWorld > >(numWorlds, rstl::auto_ptr< IWorld >());
@@ -739,7 +739,7 @@ void CAutoMapper::ProcessControllerInput(const CFinalInput& input, CStateManager
   }
 
   if (mTextpaneInstructions != nullptr && mMapMode != kMM_Teleport) {
-    if (mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded()) {
+    if (mAreaHintDesc.valid() && mAreaHintDesc->TryCache()) {
       mTextpaneHint->TextSupport().SetText(rstl::wstring(mAreaHintDesc->GetObject()->GetString(0)));
       mBasewidgetHintgroup->SetVisibility(true, kTM_Children);
       mTextpaneInstructions1->TextSupport().SetText(rstl::wstring_l(L""));
@@ -1436,7 +1436,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
   }
 
   if (mFrmeMapScreenBackground.get() != nullptr && mFrmeBackgroundInitialized == nullptr &&
-      mFrmeMapScreenBackground->IsLoaded()) {
+      mFrmeMapScreenBackground->TryCache()) {
     mFrmeBackgroundInitialized = mFrmeMapScreenBackground->GetObject();
     mBackgroundHexagons.reserve(100);
     for (int i = 0; i < 100; ++i) {
@@ -1451,7 +1451,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
   }
 
   if (mFrmeMapScreen.get() != nullptr && mFrmeInitialized == nullptr &&
-      mFrmeMapScreen->IsLoaded()) {
+      mFrmeMapScreen->TryCache()) {
     mFrmeInitialized = mFrmeMapScreen->GetObject();
     mTextpaneLabel = static_cast< CGuiTextPane* >(mFrmeInitialized->FindWidget("textpane_label"));
     mTextpaneLabel->TextSupport().SetFontColor(gpTweakAutoMapper->GetTitleColor());
@@ -1578,7 +1578,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
     if (mTextpaneXicon != nullptr) {
       mTextpaneXicon->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
       mTextpaneXicon->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
-      if (!(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded())) {
+      if (!(mAreaHintDesc.valid() && mAreaHintDesc->TryCache())) {
         mTextpaneXicon->TextSupport().SetText(rstl::wstring(gpStringTable->GetString(
             mDarkWorldBlend < 0.5f ? "InstructionSwitchMap" : "InstructionSwitchMapLight")));
       }
@@ -1692,7 +1692,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
     right1->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());
     right1->TextSupport().SetOutlineColor(gpTweakAutoMapper->GetTextOutlineColor());
 
-    if (!(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded()) && mMapMode != kMM_Teleport) {
+    if (!(mAreaHintDesc.valid() && mAreaHintDesc->TryCache()) && mMapMode != kMM_Teleport) {
       mTextpaneRight->TextSupport().SetText(rstl::wstring(
           gpStringTable->GetString(mState == kAMS_MapScreenUniverse ? "InstructionsRightUniverse"
                                                                     : "InstructionsRightWorld")));
@@ -1776,7 +1776,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
     }
   } else {
     if (!close_enough(mDarkWorldBlend, 0.f) && !close_enough(mDarkWorldBlend, 1.f) &&
-        !(mAreaHintDesc.valid() && mAreaHintDesc->IsLoaded())) {
+        !(mAreaHintDesc.valid() && mAreaHintDesc->TryCache())) {
       mTextpaneXicon->TextSupport().SetText(rstl::wstring(gpStringTable->GetString(
           mDarkWorldBlend < 0.5f ? "InstructionSwitchMap" : "InstructionSwitchMapLight")));
     }
@@ -1888,7 +1888,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
   }
   if (mTextpaneAreaname != nullptr) {
     if (mMapAreaString.valid()) {
-      if (mMapAreaString->IsLoaded()) {
+      if (mMapAreaString->TryCache()) {
         mTextpaneAreaname->TextSupport().SetText(
             rstl::wstring(mMapAreaString->GetObject()->GetString(0)));
         mTextpaneAreaname->TextSupport().SetFontColor(gpTweakAutoMapper->GetTextColor());

@@ -153,7 +153,7 @@ bool CInGameGuiManager::CheckLoadComplete(const CStateManager& mgr) {
     }
   }
   if ((!mAutoMapper.null() && !mAutoMapper->CheckLoadComplete()) ||
-      !mSamusHud->CheckLoadComplete(mgr) || !mDeathDot.IsLoaded()) {
+      !mSamusHud->CheckLoadComplete(mgr) || !mDeathDot.TryCache()) {
     return false;
   }
 

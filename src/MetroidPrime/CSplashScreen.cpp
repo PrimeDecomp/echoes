@@ -75,8 +75,8 @@ CIOWin::EMessageReturn CSplashScreen::OnMessage(const CArchitectureMessage& mess
   switch (message.GetType()) {
   case kAM_TimerTick: {
     mTexturesLoaded = true;
-    if ((mSplashTexture.valid() && !mSplashTexture->IsLoaded()) ||
-        (mPressStartTexture.valid() && !mPressStartTexture->IsLoaded())) {
+    if ((mSplashTexture.valid() && !mSplashTexture->TryCache()) ||
+        (mPressStartTexture.valid() && !mPressStartTexture->TryCache())) {
       mTexturesLoaded = false;
     }
     if (!mTexturesLoaded) {

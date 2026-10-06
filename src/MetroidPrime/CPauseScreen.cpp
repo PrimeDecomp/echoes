@@ -394,7 +394,7 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
   }
   if (mLoadState == kLS_ScanInfo) {
     if (!mScanInfo.null()) {
-      if (!mScanInfo->IsLoaded()) {
+      if (!mScanInfo->TryCache()) {
         return true;
       }
       const CScannableObjectInfo& scan = *mScanInfo->GetObject();
@@ -433,7 +433,7 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
   }
   if (mLoadState == kLS_ScanText) {
     if (!mScanStrings.null()) {
-      if (!mScanStrings->IsLoaded()) {
+      if (!mScanStrings->TryCache()) {
         return true;
       }
       mMessage->TextSupport().SetText(rstl::wstring(mScanStrings->GetObject()->GetString(2)), true);
@@ -539,18 +539,18 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
   if (mFrame.null()) {
     return false;
   }
-  mFont.IsLoaded();
-  mUnselectedNodeTexture.IsLoaded();
-  mSelectedNodeTexture.IsLoaded();
-  mParentNodeTexture.IsLoaded();
-  mSelectedCursorTexture.IsLoaded();
-  mHighlightTexture.IsLoaded();
-  mSliderModel.IsLoaded();
-  mSliderEndModel.IsLoaded();
-  mSliderCenterModel.IsLoaded();
-  mMenuArrowModel.IsLoaded();
-  mOptionBackgroundModel.IsLoaded();
-  mScanSweepTexture.IsLoaded();
+  mFont.TryCache();
+  mUnselectedNodeTexture.TryCache();
+  mSelectedNodeTexture.TryCache();
+  mParentNodeTexture.TryCache();
+  mSelectedCursorTexture.TryCache();
+  mHighlightTexture.TryCache();
+  mSliderModel.TryCache();
+  mSliderEndModel.TryCache();
+  mSliderCenterModel.TryCache();
+  mMenuArrowModel.TryCache();
+  mOptionBackgroundModel.TryCache();
+  mScanSweepTexture.TryCache();
   if (!mNodesTouched) {
     TouchVisibleNodes();
     mNodesTouched = true;

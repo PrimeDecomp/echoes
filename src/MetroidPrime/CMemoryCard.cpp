@@ -84,7 +84,7 @@ bool CSaveWorldIntermediate::InitializePump() {
     }
   } else {
     if (!mSaveWorld.null()) {
-      if (mSaveWorld->IsLoaded()) {
+      if (mSaveWorld->TryCache()) {
         return true;
       }
     } else {
@@ -99,14 +99,14 @@ bool CMemoryCard::InitializePump() {
     for (rstl::vector< MemoryWorld >::iterator it = mMemoryWorlds.begin();
          it != mMemoryWorlds.end(); ++it) {
       CSaveWorldMemory& memory = it->second;
-      if (memory.mWorldName.valid() && !memory.mWorldName->IsLoaded()) {
+      if (memory.mWorldName.valid() && !memory.mWorldName->TryCache()) {
         return false;
       }
-      if (memory.mDarkWorldName.valid() && !memory.mDarkWorldName->IsLoaded()) {
+      if (memory.mDarkWorldName.valid() && !memory.mDarkWorldName->TryCache()) {
         return false;
       }
     }
-    return mHints.IsLoaded();
+    return mHints.TryCache();
   }
 
   bool done = true;

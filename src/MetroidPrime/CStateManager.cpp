@@ -2200,7 +2200,7 @@ void CStateManager::InitializeState(CAssetId worldId, TAreaId areaId, CAssetId m
   }
 
   if (mInitPhase == kIP_LoadFirstArea) {
-    if (!mShadowTex.IsLoaded()) {
+    if (!mShadowTex.TryCache()) {
       return;
     }
     if (mNumPlayers == 3u && mUnusedViewportTexture.null()) {
@@ -2209,7 +2209,7 @@ void CStateManager::InitializeState(CAssetId worldId, TAreaId areaId, CAssetId m
       mUnusedViewportTexture->Lock();
       return;
     }
-    if (!mUnusedViewportTexture.null() && !mUnusedViewportTexture->IsLoaded()) {
+    if (!mUnusedViewportTexture.null() && !mUnusedViewportTexture->TryCache()) {
       return;
     }
     if (!mWorld->CheckWorldComplete(this, areaId, mreaId)) {
