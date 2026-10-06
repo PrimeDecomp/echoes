@@ -378,7 +378,7 @@ void CSfxManager::UpdateEmitter(CSfxHandle handle, const CVector3f& position,
                                 const CVector3f& direction, uchar maxVolume) {
   CSfxChannel& channel = mChannels[mCurrentChannel];
   const int index = handle.GetIndex();
-  if (index >= channel.mSounds.size()) {
+  if (index < 0 || index >= channel.mSounds.size()) {
     return;
   }
   CSfxEmitterWrapper* sound = static_cast< CSfxEmitterWrapper* >(channel.mSounds[index]);
@@ -429,28 +429,32 @@ void CSfxManager::SfxStop(ESfxChannels channel, CSfxHandle handle) { StopSound(c
 void CSfxManager::SfxVolume(CSfxHandle handle, uchar volume) {
   CSfxChannel& channel = mChannels[mCurrentChannel];
   const int index = handle.GetIndex();
-  if (index >= channel.mSounds.size()) {
+  if (index < 0 || index >= channel.mSounds.size()) {
     return;
   }
-  CSfxWrapper* sound = static_cast< CSfxWrapper* >(channel.mSounds[index]);
-  if (sound == nullptr || handle != sound->GetSfxHandle()) {
+  CBaseSfxWrapper* base = channel.mSounds[index];
+  if (base == nullptr || handle != base->GetSfxHandle()) {
     return;
   }
+  CSfxWrapper* sound = static_cast< CSfxWrapper* >(base);
   const uchar areaVolume = GetAreaVolume(sound->GetArea());
-  if (areaVolume != 127) {
-    volume = areaVolume * rstl::min_val(int(volume), 127) / 127;
-  }
-  volume = rstl::max_val(1, rstl::min_val(int(volume), 127));
-  sound->SetVolume(volume);
+  const uchar scaled = areaVolume == 127
+                           ? volume
+                           : uchar(areaVolume * rstl::min_val(volume, uchar(127)) / 127);
+  const uchar clamped = scaled < 1 ? 1 : (scaled > 127 ? 127 : scaled);
+  sound->SetVolume(clamped);
   if (!mMuted && sound->IsPlaying()) {
-    CAudioSys::SfxVolume(sound->GetVoice(), volume);
+    CAudioSys::SfxVolume(sound->GetVoice(), clamped);
   }
 }
 
 void CSfxManager::SfxPan(CSfxHandle handle, uchar pan) {
+  if (!handle) {
+    return;
+  }
   CSfxChannel& channel = mChannels[mCurrentChannel];
   const int index = handle.GetIndex();
-  if (index >= channel.mSounds.size()) {
+  if (index < 0 || index >= channel.mSounds.size()) {
     return;
   }
   CBaseSfxWrapper* sound = channel.mSounds[index];
@@ -466,9 +470,12 @@ void CSfxManager::SfxPan(CSfxHandle handle, uchar pan) {
 }
 
 void CSfxManager::SfxSpan(CSfxHandle handle, uchar span) {
+  if (!handle) {
+    return;
+  }
   CSfxChannel& channel = mChannels[mCurrentChannel];
   const int index = handle.GetIndex();
-  if (index >= channel.mSounds.size()) {
+  if (index < 0 || index >= channel.mSounds.size()) {
     return;
   }
   CBaseSfxWrapper* sound = channel.mSounds[index];
@@ -523,7 +530,7 @@ void CSfxManager::StopSound(ESfxChannels channel, CSfxHandle handle) {
 void CSfxManager::SetDuration(CSfxHandle handle, float duration) {
   CSfxChannel& channel = mChannels[mCurrentChannel];
   const int index = handle.GetIndex();
-  if (index >= channel.mSounds.size()) {
+  if (index < 0 || index >= channel.mSounds.size()) {
     return;
   }
   CBaseSfxWrapper* sound = channel.mSounds[index];
@@ -1225,9 +1232,11 @@ bool CSfxManager::IsLowPassEnabled() {
 int CSfxManager::GetLowPassFrequency() { return mLowPassFrequency; }
 
 bool CSfxManager::ShouldApplyLowPass(CBaseSfxWrapper* sound) {
-  return (sound->GetArea() != kAllAreas && IsLowPassAreaFilterEnabled() &&
-          !sound->GetIgnoreAreaLowPass()) ||
-         (sound->UseAcoustics() && IsLowPassEnabled());
+  if (sound->GetArea() != kAllAreas && IsLowPassAreaFilterEnabled() &&
+      !sound->GetIgnoreAreaLowPass()) {
+    return true;
+  }
+  return sound->UseAcoustics() && IsLowPassEnabled();
 }
 
 int CSfxManager::GetLowPassFrequency(CBaseSfxWrapper* sound) {
