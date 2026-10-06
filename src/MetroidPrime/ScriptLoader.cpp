@@ -239,10 +239,17 @@ NamedScriptLoader g_LoaderFuncs[] = {
     NamedScriptLoader('TEL1', &LoadWorldTeleporter),
 };
 
+int g_LoaderFuncCount = ARRAY_SIZE(g_LoaderFuncs);
+
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& collisionSize,
                   const CVector3f& collisionOffset) {
-  const CAABox box(-collisionSize * 0.5f + collisionOffset, collisionSize * 0.5f + collisionOffset);
-  return box.GetTransformedAABox(mgr.GetWorld()->GetAreaAlways(areaId).GetTM());
+  const CAABox box(-collisionSize.GetX() * 0.5f + collisionOffset.GetX(),
+                   -collisionSize.GetY() * 0.5f + collisionOffset.GetY(),
+                   -collisionSize.GetZ() * 0.5f + collisionOffset.GetZ(),
+                   collisionSize.GetX() * 0.5f + collisionOffset.GetX(),
+                   collisionSize.GetY() * 0.5f + collisionOffset.GetY(),
+                   collisionSize.GetZ() * 0.5f + collisionOffset.GetZ());
+  return box.GetTransformedAABox(mgr.GetWorld()->GetAreaAlways(areaId).GetTM().GetRotation());
 }
 
 CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& scale,
@@ -250,9 +257,11 @@ CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& sc
                   const CVector3f& collisionOffset) {
   const CVector3f scaledSize = collisionSize * scale;
   const CVector3f offset = collisionOffset * scale;
-  const CAABox box(-scaledSize * 0.5f + offset, scaledSize * 0.5f + offset);
-  const CAABox transformed = box.GetTransformedAABox(transform);
-  return transformed.GetTransformedAABox(mgr.GetWorld()->GetAreaAlways(areaId).GetTM());
+  CAABox box(-scaledSize.GetX() * 0.5f + offset.GetX(), -scaledSize.GetY() * 0.5f + offset.GetY(),
+             -scaledSize.GetZ() * 0.5f + offset.GetZ(), scaledSize.GetX() * 0.5f + offset.GetX(),
+             scaledSize.GetY() * 0.5f + offset.GetY(), scaledSize.GetZ() * 0.5f + offset.GetZ());
+  box = box.GetTransformedAABox(transform.GetRotation());
+  return box.GetTransformedAABox(mgr.GetWorld()->GetAreaAlways(areaId).GetTM().GetRotation());
 }
 
 CTransform4f ConvertEditorEulerToTransform4f(const CVector3f& orientation,
@@ -535,13 +544,16 @@ ERglFogMode FogSelectionToFogMode(int selection) {
 
 FScriptLoader GetScriptLoaderForType(FourCC type) {
   static bool sorted = false;
-  NamedScriptLoader* const end = g_LoaderFuncs + ARRAY_SIZE(g_LoaderFuncs);
   if (!sorted) {
-    rstl::sort(g_LoaderFuncs, end);
+    rstl::sort(g_LoaderFuncs, g_LoaderFuncs + g_LoaderFuncCount);
     sorted = true;
   }
 
   const NamedScriptLoader key(type, nullptr);
-  const NamedScriptLoader* const loader = rstl::binary_find(g_LoaderFuncs, end, key);
-  return loader == end ? nullptr : loader->mLoader;
+  const NamedScriptLoader* const loader =
+      rstl::binary_find(g_LoaderFuncs, g_LoaderFuncs + g_LoaderFuncCount, key);
+  if (loader && loader != g_LoaderFuncs + g_LoaderFuncCount) {
+    return loader->mLoader;
+  }
+  return nullptr;
 }
