@@ -69,6 +69,7 @@ public:
   TUniqueId GetHomingTargetId() const { return mHomingTargetId; }
   bool GetWeaponActive() const { return mActive; }
   void SetTouchedDock(TUniqueId uid) { mTouchedDock = uid; } // Guessed name
+  void SetHomingTurnRateScale(float scale) { mHomingTurnRateScale = scale; }
   void SetX4104(bool flag) { x410_4_ = flag; }
   CProjectileTouchResult CanCollideWithTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithGameObject(CActor& actor, CStateManager& mgr);

@@ -42,8 +42,8 @@ private:
                         float target);         // Guessed name
   void ResetWorldLighting(CStateManager& mgr); // Guessed name
   // Guessed name
-  void FireProjectile(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
-                      float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
+  void FireProjectile(const TToken< CWeaponDescription >& projectile, bool underwater, float dt,
+                      CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                       CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                       ushort soundId, float damageFactor, float projectileScale,
                       float projectileFactor);
