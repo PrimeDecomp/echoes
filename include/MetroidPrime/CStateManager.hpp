@@ -371,7 +371,7 @@ public:
   ushort ReturnFirstIfSingleElseSecond(uint single, uint multi) const; // Guessed name.
   CPlayer* GetPlayer(int index) { return mPlayers[index]; }
   const CPlayer* GetPlayer(int index) const { return mPlayers[index]; }
-  CPlayer* Player(int index) { return mPlayers[index]; }
+  CPlayer* Player(int index) const { return mPlayers[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *mObjectLists[id]; }
   bool IsRandomAvailable() const { return mRandomAvailable; }
@@ -468,7 +468,7 @@ public:
     return mCameraManager;
   } // Guessed name
   const CPlayerState* GetPlayerState(int playerIndex) const { return mPlayerStates[playerIndex]; }
-  CPlayerState* PlayerState(int playerIndex) { return mPlayerStates[playerIndex]; }
+  CPlayerState* PlayerState(int playerIndex) const { return mPlayerStates[playerIndex]; }
   CRumbleManager* RumbleManager(int playerIndex) { return mRumbleManagers[playerIndex]; }
   CArchitectureQueue& ArchQueue() { return *mArchQueue; }
   TUniqueId GetSkipCinematicSpecialFunction() const { return mSpecialFunctionId; }

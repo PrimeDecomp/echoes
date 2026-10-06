@@ -240,6 +240,7 @@ public:
     return static_cast< EPlayerOrbitRequest >(mOrbitRequest);
   }
   TUniqueId GetScanningObject() const { return mScanningObject; }
+  bool IsNewScanScanning() const { return mNewScanScanning; }
   TUniqueId GetOrbitNextTargetId() const { return mOrbitNextTargetId; }
   CMorphBall* GetMorphBall() { return mMorphBall.get(); }
   const CMorphBall* GetMorphBall() const { return mMorphBall.get(); }
