@@ -23,6 +23,7 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
+#include "MetroidPrime/Player/GunResNames.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
@@ -30,34 +31,13 @@
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
 #include "Weapons/CWeaponDescription.hpp"
 
-static const char* const skWeaponNames[] = {
-    "PowerBeam", "PowerBall",  "IceBeam",    "IceBall",
-    "WaveBeam",  "WaveBall_1", "PlasmaBeam", "PlasmaBall",
-};
-static const char* const skMuzzleNames[] = {
-    "PowerMuzzle", "PowerCharge", "IceMuzzle",    "IceCharge",
-    "WaveMuzzle",  "WaveCharge",  "PlasmaMuzzle", "PlasmaCharge",
-};
-static const char* const skFrozenNames[] = {
-    "powerFrozen", "Ice2nd_2", "iceFrozen",    "Ice2nd_2",
-    "waveFrozen",  "Ice2nd_2", "plasmaFrozen", "Ice2nd_2",
-};
-static const char* const skDependencyNames[] = {"Power_DGRP", "Ice_DGRP", "Wave_DGRP",
-                                                "Plasma_DGRP"};
-static const char* const skBeamNames[] = {"Power", "Ice", "Wave", "Plasma"};
-
-static const char* const skBeamXferNames[] = {
-    "PowerXfer",
-    "IceXfer",
-    "WaveXfer",
-    "PlasmaXfer",
-};
-
-const char* CGunWeapon::skMuzzleLocator = "LBEAM";
-const char* CGunWeapon::skElbowLocator = "elbow";
+const char* const CGunWeapon::skMuzzleLocator = "LBEAM";
+const char* const CGunWeapon::skElbowLocator = "elbow";
 
 CPlayerState::EBeamId GetWeaponIndex(EWeaponType type) {
   switch (type) {
+  case kWT_Power:
+    return CPlayerState::kBI_Power;
   case kWT_Dark:
     return CPlayerState::kBI_Dark;
   case kWT_Light:
@@ -72,8 +52,8 @@ CPlayerState::EBeamId GetWeaponIndex(EWeaponType type) {
 CGunWeapon::CGunWeapon(EWeaponType type, TUniqueId playerId, const CVector3f& scale, int flags)
 : mScale(scale)
 , mCurrentPlayerSuit(CPlayerState::kPS_Varia)
-, mArmModel(gpSimplePool->GetObj("VariaArm"))
-, mXferEffect(gpSimplePool->GetObj(skBeamXferNames[GetWeaponIndex(type)]))
+, mArmModel(gpSimplePool->GetObj(NWeaponRes::kVariaArm))
+, mXferEffect(gpSimplePool->GetObj(NWeaponRes::skBeamXferNames[GetWeaponIndex(type)]))
 , mRainSplashGenerator(nullptr)
 , mWeaponType(type)
 , mPlayerId(playerId)
@@ -159,8 +139,13 @@ void CGunWeapon::EnterComboFire(CStateManager& mgr) {
 }
 
 bool CGunWeapon::IsChargeAnimOver() const {
-  return !mEnableCharge || !mSolidModelData->GetAnimationData()->IsAnimTimeRemaining(
-                               0.001f, rstl::string_l("Whole Body"));
+  if (mEnableCharge) {
+    if (mSolidModelData->GetAnimationData()->IsAnimTimeRemaining(0.001f,
+                                                                 rstl::string_l("Whole Body"))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void CGunWeapon::PlayAnim(NWeaponTypes::EGunAnimType type, bool loop) {
@@ -174,7 +159,10 @@ void CGunWeapon::PlayAnim(NWeaponTypes::EGunAnimType type, bool loop) {
 }
 
 float CGunWeapon::GetAnimDuration(NWeaponTypes::EGunAnimType type) const {
-  if (!mLoaded || int(type) < 0 || int(type) > 11) {
+  if (!mLoaded) {
+    return 0.f;
+  }
+  if (int(type) < 0 || int(type) > 11) {
     return 0.f;
   }
   return mSolidModelData->GetAnimationData()->GetAnimationDuration(mAnimIds[type]);
@@ -273,29 +261,34 @@ void CGunWeapon::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
 
 void CGunWeapon::UpdateMuzzleFx(float dt, const CVector3f& scale, const CVector3f& pos,
                                 bool emitting) {
-  if (CElementGen* effect = GetMuzzleFx(mMuzzleEffectIdx)) {
-    effect->SetGlobalTranslation(pos);
-    effect->SetGlobalScale(scale);
-    effect->SetParticleEmission(emitting);
-    effect->Update(dt);
+  if (!mMuzzleGenerators.empty() && mMuzzleGenerators[mMuzzleEffectIdx].get()) {
+    mMuzzleGenerators[mMuzzleEffectIdx].get()->SetGlobalTranslation(pos);
+    mMuzzleGenerators[mMuzzleEffectIdx].get()->SetGlobalScale(scale);
+    mMuzzleGenerators[mMuzzleEffectIdx].get()->SetParticleEmission(emitting);
+    mMuzzleGenerators[mMuzzleEffectIdx].get()->Update(dt);
   }
 }
 
 CElementGen* CGunWeapon::GetMuzzleFx(int index) const {
-  return mMuzzleGenerators.empty() ? nullptr : mMuzzleGenerators[index].get();
+  if (!mMuzzleGenerators.empty()) {
+    if (CElementGen* gen = mMuzzleGenerators[index].get()) {
+      return gen;
+    }
+  }
+  return nullptr;
 }
 
 void CGunWeapon::DrawMuzzleFx(const CStateManager& mgr) const {
-  if (mLoaded) {
-    if (CElementGen* effect = GetMuzzleFx(mMuzzleEffectIdx)) {
+  if (mLoaded && !mMuzzleGenerators.empty()) {
+    if (CElementGen* effect = mMuzzleGenerators[mMuzzleEffectIdx].get()) {
       effect->Render();
     }
   }
 }
 
 void CGunWeapon::ActivateCharge(bool enable, bool resetEffect) {
-  if (mLoaded) {
-    if (CElementGen* effect = GetMuzzleFx(mMuzzleEffectIdx)) {
+  if (mLoaded && !mMuzzleGenerators.empty()) {
+    if (CElementGen* effect = mMuzzleGenerators[mMuzzleEffectIdx].get()) {
       effect->SetParticleEmission(false);
     }
   }
@@ -460,32 +453,33 @@ CDamageInfo CGunWeapon::GetDamageInfo(CStateManager& mgr, CPlayerState::EChargeS
   if (chargeState == CPlayerState::kCS_Normal) {
     return info.mNormal.ApplyDoubleDamage(*GetPlayer(mgr)->GetPlayerState());
   }
+  const CDamageInfo& charged = info.mCharged;
   if (chargeFactor == 1.f) {
-    return info.mCharged.ApplyDoubleDamage(*GetPlayer(mgr)->GetPlayerState());
+    return charged.ApplyDoubleDamage(*GetPlayer(mgr)->GetPlayerState());
   }
-  CDamageInfo damage(info.mCharged.GetWeaponMode(), chargeFactor * info.mCharged.GetDamage(),
-                     chargeFactor * info.mCharged.GetRadius(),
-                     chargeFactor * info.mCharged.GetKnockBackPower());
-  damage.SetRadiusDamage(chargeFactor * info.mCharged.GetRadiusDamage());
-  damage.SetApplyRadiusDamage(false);
+  CDamageInfo damage(charged.GetWeaponMode(), chargeFactor * charged.GetDamage(),
+                     chargeFactor * charged.GetRadius(), chargeFactor * charged.GetKnockBackPower(),
+                     false, false);
+  damage.SetRadiusDamage(chargeFactor * charged.GetRadiusDamage());
   return damage.ApplyDoubleDamage(*GetPlayer(mgr)->GetPlayerState());
 }
 
 CAABox CGunWeapon::GetBounds() const {
-  if (!mSolidModelData) {
-    return CAABox::Identity();
-  }
-
-  if (!mBounds) {
-    mBounds = CAABox::MakeMaxInvertedBox();
-    const rstl::vector< rstl::pair< rstl::string, CAABox > >& boxes =
-        mSolidModelData->GetAnimationData()->GetCharacterInfo().GetAnimBBoxList();
-    for (int i = 0; i < boxes.size(); ++i) {
-      mBounds->AccumulateBounds(boxes[i].second.GetMinPoint());
-      mBounds->AccumulateBounds(boxes[i].second.GetMaxPoint());
+  if (mSolidModelData) {
+    if (!mBounds) {
+      mBounds = CAABox::MakeMaxInvertedBox();
+      CAABox& bounds = *mBounds;
+      const rstl::vector< rstl::pair< rstl::string, CAABox > >& boxes =
+          mSolidModelData->GetAnimationData()->GetCharacterInfo().GetAnimBBoxList();
+      for (int i = 0; i < boxes.size(); ++i) {
+        const CAABox& box = boxes[i].second;
+        bounds.AccumulateBounds(box.GetMinPoint());
+        bounds.AccumulateBounds(box.GetMaxPoint());
+      }
     }
+    return *mBounds;
   }
-  return *mBounds;
+  return CAABox::Identity();
 }
 
 CAABox CGunWeapon::GetBounds(const CTransform4f& xf) const {
@@ -516,11 +510,11 @@ void CGunWeapon::Load(CStateManager& mgr, bool subtypeBasePose) {
   mFrozenGenerator = nullptr;
   mGunCharacter->Lock();
   mXferEffect.Lock();
-  for (int i = 0; i < mMuzzleEffects.size(); ++i) {
+  for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
     mMuzzleEffects[i].Lock();
     mWeapons[i].Lock();
   }
-  for (int i = 0; i < mFrozenEffects.size(); ++i) {
+  for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
     mFrozenEffects[i].Lock();
   }
 }
@@ -559,24 +553,24 @@ void CGunWeapon::AllocResPools(CPlayerState::EBeamId beam) {
   for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
     const int idx = beam * 2 + i;
     mMuzzleEffects.push_back(
-        TCachedToken< CGenDescription >(gpSimplePool->GetObj(skMuzzleNames[idx])));
+        TCachedToken< CGenDescription >(gpSimplePool->GetObj(NWeaponRes::skMuzzleNames[idx])));
     mWeapons.push_back(
-        TCachedToken< CWeaponDescription >(gpSimplePool->GetObj(skWeaponNames[idx])));
+        TCachedToken< CWeaponDescription >(gpSimplePool->GetObj(NWeaponRes::skWeaponNames[idx])));
   }
   for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
     const int idx = beam * 2 + i;
     mFrozenEffects.push_back(
-        TCachedToken< CGenDescription >(gpSimplePool->GetObj(skFrozenNames[idx])));
+        TCachedToken< CGenDescription >(gpSimplePool->GetObj(NWeaponRes::skFrozenNames[idx])));
   }
 }
 
 void CGunWeapon::FreeResPools() {
   mXferEffect.Unlock();
-  for (int i = 0; i < mMuzzleEffects.size(); ++i) {
+  for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
     mMuzzleEffects[i].Unlock();
     mWeapons[i].Unlock();
   }
-  for (int i = 0; i < mFrozenEffects.size(); ++i) {
+  for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
     mFrozenEffects[i].Unlock();
   }
   mAnims = rstl::vector< CToken >();
@@ -586,12 +580,16 @@ void CGunWeapon::LoadFxIdle(float dt, CStateManager& mgr) {
   if (!NWeaponTypes::are_tokens_ready(mDeps)) {
     return;
   }
-  if ((mLoadFlags & 2) == 2 && (mLoadFlags & 4) == 4 && (mLoadFlags & 0x10) == 0x10) {
+  if ((mLoadFlags & 2) && (mLoadFlags & 4) && (mLoadFlags & 0x10)) {
     return;
   }
   bool loaded = true;
   for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
-    if (!mMuzzleEffects[i].TryCache() || !mWeapons[i].TryCache()) {
+    if (!mMuzzleEffects[i].TryCache()) {
+      loaded = false;
+      break;
+    }
+    if (!mWeapons[i].TryCache()) {
       loaded = false;
       break;
     }
@@ -623,18 +621,23 @@ void CGunWeapon::LoadAnimations() {
   BuildAnimationIdList(animData);
   const CPASAnimState* state = animData.GetPASDatabase().GetAnimState(pas::kAS_LoopReaction);
   rstl::vector< int > animIds;
-  animIds.reserve(state->GetNumAnims());
-  for (int i = 0; i < state->GetNumAnims(); ++i) {
+  const int numAnims = state->GetNumAnims();
+  animIds.reserve(numAnims);
+  for (int i = 0; i < numAnims; ++i) {
     animIds.push_back_unsafe(state->GetAnimInfoByIndex(i)->GetAnimId());
   }
   NWeaponTypes::get_token_vector(animData, animIds, mAnims, true);
-  const int defaultAnim = mSubtypeBasePose ? 0 : 10;
-  animData.SetAnimation(CAnimPlaybackParms(mAnimIds[defaultAnim], -1, 1.f, true), true);
+  int defaultAnim = 10;
+  if (mSubtypeBasePose) {
+    defaultAnim = 0;
+  }
+  mSolidModelData->AnimationData()->SetAnimation(
+      CAnimPlaybackParms(mAnimIds[defaultAnim], -1, 1.f, true), true);
 }
 
 bool CGunWeapon::IsAnimsLoaded() const {
-  for (int i = 0; i < mAnims.size(); ++i) {
-    if (!mAnims[i].IsLoaded()) {
+  for (rstl::vector< CToken >::const_iterator it = mAnims.begin(); it != mAnims.end(); ++it) {
+    if (!it->IsLoaded()) {
       return false;
     }
   }
@@ -646,7 +649,10 @@ void CGunWeapon::LockTokens() {
   NWeaponTypes::lock_tokens(mDeps);
 }
 
-void CGunWeapon::UnlockTokens() { NWeaponTypes::unlock_tokens(mDeps); }
+void CGunWeapon::UnlockTokens() {
+  mArmModel.Unlock();
+  NWeaponTypes::unlock_tokens(mDeps);
+}
 
 void CGunWeapon::ReleaseResources(CStateManager& mgr) {
   if (!mgr.IsMultiplayer()) {
@@ -654,11 +660,11 @@ void CGunWeapon::ReleaseResources(CStateManager& mgr) {
     mFrozenGenerator = nullptr;
     mMuzzleGenerators = rstl::reserved_vector< rstl::auto_ptr< CElementGen >, 2 >();
     mXferEffect.Unlock();
-    for (int i = 0; i < mMuzzleEffects.size(); ++i) {
+    for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
       mMuzzleEffects[i].Unlock();
       mWeapons[i].Unlock();
     }
-    for (int i = 0; i < mFrozenEffects.size(); ++i) {
+    for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
       mFrozenEffects[i].Unlock();
     }
     NWeaponTypes::unlock_tokens(mDeps);
@@ -667,22 +673,25 @@ void CGunWeapon::ReleaseResources(CStateManager& mgr) {
 
 void CGunWeapon::FillTokenVector(const rstl::vector< SObjectTag >& tags,
                                  rstl::vector< CToken >& objects, bool includeTxtr) {
-  for (int i = 0; i < tags.size(); ++i) {
-    CToken token = gpSimplePool->GetObj(tags[i]);
-    if (includeTxtr || token.GetReferenceType() != 'TXTR') {
-      objects.push_back(token);
+  for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
+    CToken token = gpSimplePool->GetObj(*it);
+    if (!includeTxtr && token.GetReferenceType() == 'TXTR') {
+      continue;
     }
+    objects.push_back_unsafe(token);
   }
 }
 
 void CGunWeapon::BuildDependencyList(CPlayerState::EBeamId beam) {
   const TLockedToken< CDependencyGroup > dependencies =
-      gpSimplePool->GetObj(skDependencyNames[beam]);
-  const TLockedToken< CDependencyGroup > animDependencies = gpSimplePool->GetObj("Power_Anim_DGRP");
-  mDeps.reserve(dependencies->GetObjectTagVector().size() +
-                animDependencies->GetObjectTagVector().size());
-  FillTokenVector(dependencies->GetObjectTagVector(), mDeps, true);
-  FillTokenVector(animDependencies->GetObjectTagVector(), mDeps, false);
+      gpSimplePool->GetObj(NWeaponRes::skDependencyNames[beam]);
+  const TLockedToken< CDependencyGroup > animDependencies =
+      gpSimplePool->GetObj(NWeaponRes::kPowerAnimDependencyGroup);
+  const rstl::vector< SObjectTag >& depTags = dependencies->GetObjectTagVector();
+  const rstl::vector< SObjectTag >& animTags = animDependencies->GetObjectTagVector();
+  mDeps.reserve(depTags.size() + animTags.size());
+  FillTokenVector(depTags, mDeps, true);
+  FillTokenVector(animTags, mDeps, false);
 }
 
 void CGunWeapon::AsyncLoadFidget(CStateManager& mgr, SamusGun::EFidgetType type, int animSet) {
@@ -698,11 +707,14 @@ void CGunWeapon::UnLoadFidget() {
 }
 
 bool CGunWeapon::IsFidgetLoaded() {
-  return !mGunController.null() && mGunController->IsFidgetLoaded();
+  if (mGunController.null()) {
+    return false;
+  }
+  return mGunController->IsFidgetLoaded();
 }
 
 void CGunWeapon::AsyncLoadSuitArm() {
-  mSuitArmModelData.clear();
+  mSuitArmModelData = rstl::optional_object< CModelData >();
   mArmModel.Lock();
   mSuitArmLocked = true;
 }
@@ -710,7 +722,7 @@ void CGunWeapon::AsyncLoadSuitArm() {
 void CGunWeapon::LoadSuitArm() {
   if (mArmModel.IsLoaded()) {
     mSuitArmModelData =
-        CModelData(CStaticRes(NWeaponTypes::get_asset_id_from_name("VariaArm"), mScale));
+        CModelData(CStaticRes(NWeaponTypes::get_asset_id_from_name(NWeaponRes::kVariaArm), mScale));
     mSuitArmLocked = false;
     if (!x271_26) {
       mSuitArmModelData->LockTextures();
@@ -733,9 +745,19 @@ void CGunWeapon::PointGenerator(const CSkinnedModel& model, const SSkinningWorks
 }
 
 void CGunWeapon::EnableFrozenEffect(EFrozenFxType type) {
-  if ((type == kFFT_Frozen || type == kFFT_Thawed) && mFrozenEffect != type) {
-    mFrozenGenerator = rs_new CElementGen(mFrozenEffects[type - 1]);
-    mFrozenGenerator->SetGlobalScale(mScale);
+  switch (type) {
+  case kFFT_Thawed:
+    if (mFrozenEffect != kFFT_Thawed) {
+      mFrozenGenerator = rs_new CElementGen(mFrozenEffects[1]);
+      mFrozenGenerator->SetGlobalScale(mScale);
+    }
+    break;
+  case kFFT_Frozen:
+    if (mFrozenEffect != kFFT_Frozen) {
+      mFrozenGenerator = rs_new CElementGen(mFrozenEffects[0]);
+      mFrozenGenerator->SetGlobalScale(mScale);
+    }
+    break;
   }
   mFrozenEffect = type;
 }
@@ -825,7 +847,7 @@ void CGunWeapon::InitializeResources(CStateManager& mgr) {
   if (!mResourcesAllocated) {
     AllocResPools(mBeamId);
     BuildDependencyList(mBeamId);
-    mAncsId = NWeaponTypes::get_asset_id_from_name(skBeamNames[mBeamId]);
+    mAncsId = NWeaponTypes::get_asset_id_from_name(NWeaponRes::skBeamNames[mBeamId]);
     mGunCharacter = TToken< CAnimCharacterSet >(gpSimplePool->GetObj(SObjectTag('ANCS', mAncsId)));
     mResourcesAllocated = true;
     mCurrentPlayerSuit =
@@ -836,11 +858,13 @@ void CGunWeapon::InitializeResources(CStateManager& mgr) {
 }
 
 void CGunWeapon::BuildAnimationIdList(const CAnimData& animData) {
+  const CPASDatabase& db = animData.GetPASDatabase();
   mAnimIds.clear();
   mAnimIds.reserve(21);
   for (int i = 0; i < 21; ++i) {
     const CPASAnimParmData parms(pas::EAnimationState(9), CPASAnimParm::FromEnum(i));
-    mAnimIds.push_back_unsafe(animData.GetPASDatabase().FindBestAnimation(parms, -1).second);
+    const rstl::pair< float, int > best = db.FindBestAnimation(parms, -1);
+    mAnimIds.push_back_unsafe(best.second);
   }
 
   mShootAnimIds.clear();
