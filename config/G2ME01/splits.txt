@@ -2929,6 +2929,7 @@ Kyoto/Animation/CInt32POINode.cpp:
 
 Kyoto/Animation/CParticlePOINode.cpp:
 	.text       start:0x802B1980 end:0x802B1AD0
+	.sdata2     start:0x8041E400 end:0x8041E410
 
 Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1AD0 end:0x802B1D10
