@@ -12,9 +12,11 @@ public:
   enum EFlag {
     kF_AutoStart = 1,
     kF_Loop = 2,
+    kF_LocalRotation = 4,
     kF_DurationFromSplines = 8,
     kF_AdvanceTime = 0x10,
     kF_ExternalTime = 0x20,
+    kF_AngularVelocity = 0x40,
   };
 
   CScriptActorRotate(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, uint flags,

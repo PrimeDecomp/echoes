@@ -86,6 +86,7 @@ public:
   void fn_800a3d18();
   void StopMotion(); // Guessed name
   void SetControlledAnimation(bool controlled) { mControlledAnimation = controlled; }
+  void SetActorRotateId(TUniqueId id) { mActorRotateId = id; } // Guessed name.
   float GetMotionDuration() const { return mMotionDuration; } // Guessed name
 
   typedef rstl::reserved_vector< ushort, 1024 > TMovedList;
@@ -134,7 +135,7 @@ private:
   rstl::single_ptr< CMayaSpline > mRollSpline;
   rstl::single_ptr< CMayaSpline > mYawSpline;
   rstl::single_ptr< CMayaSpline > mPitchSpline;
-  TUniqueId x450_;
+  TUniqueId mActorRotateId;
   TUniqueId x452_;
   TUniqueId mLookAtTarget;
   float mRandomAnimationOffset;
