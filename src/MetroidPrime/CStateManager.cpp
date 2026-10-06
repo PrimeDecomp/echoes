@@ -2137,7 +2137,7 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
 
   float hp = healthInfo->GetHP();
   if (hp <= 0.0f) {
-    fn_8003dd88(damagee, uid1, damageInfo, false, unkParam);
+    RecordDamageSource(damagee, uid1, damageInfo, false, unkParam);
     return true;
   }
 

@@ -387,7 +387,10 @@ public:
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
                         TUniqueId uid1, TUniqueId uid2, const CDamageInfo& info, int);
 
-  void fn_8003dd88(CActor&, TUniqueId, const CDamageInfo& info, bool, int);
+  // Guessed name; records the last damage source and, on lethal hits, death attribution.
+  // The final context flag's complete interface remains under investigation.
+  void RecordDamageSource(CActor& damagee, TUniqueId source, const CDamageInfo& info,
+                          bool lethal, int damageContext);
   // Guessed names, recovered from script deletion and object-list consumers.
   void AddToGraveyard(CEntity* entity);
   void ClearGraveyard(); // Prime-correlated name; deletes the queued entity batches.
