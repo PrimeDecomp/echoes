@@ -123,6 +123,7 @@ public:
   }
   const rstl::vector< uchar >& GetCheckpointGameState() const { return mCheckpointGameState; }
   void ClearAudioGroups() { mAudioGroups.clear(); }
+  rstl::vector< TCachedToken< CAudioGrpSetLoc > >& AudioGroups() { return mAudioGroups; }
 
   void SetIsDarkWorld(bool);
   CGameMode& GetGameMode();

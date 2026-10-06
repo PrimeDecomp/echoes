@@ -54,6 +54,7 @@ class CPatterned;
 class CCameraManager;
 class CRumbleManager;
 class CSaveGameScreen;
+class CScriptSpawnPoint;
 class CActorModelParticles;
 class CWorldLayerState;
 class CStateManagerContainer;
@@ -149,14 +150,17 @@ public:
   void FrameEnd();
   void Update(float dt, CArchitectureQueue& queue);
   void ProcessInput(const CFinalInput& input);
-  void InitializeState(CAssetId world, TAreaId area, CAssetId saveWorld);
+  void InitializeState(CAssetId world, TAreaId area, CAssetId mreaId);
+  // Guessed name; teleports a player, applies spawn inventory and notifies the game mode.
+  void SpawnPlayer(CScriptSpawnPoint& spawnPoint, uint playerIndex);
+  void CreateStandardGameObjects(); // Prime-correlated name; per-player construction in Echoes.
   void DeleteSaveGameScreen();
   int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
   bool PrepareAreaTransition(TAreaId area);                      // Guessed name.
   rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
   bool HasPendingLayerLoads() const; // Guessed name, from the area query.
   void UpdateDynamicLayers();        // Guessed name, from the area update.
-  void SetRandomAvailable(bool available) { mSkippingCinematic = available; }
+  void SetRandomAvailable(bool available) { mRandomAvailable = available; }
 
   TUniqueId AllocateUniqueId();
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
@@ -367,7 +371,7 @@ public:
   CPlayer* Player(int index) { return mPlayers[index]; }
 
   CObjectList& ObjectListById(EGameObjectList id) { return *mObjectLists[id]; }
-  bool IsSkippingCinematic() const { return mSkippingCinematic; }
+  bool IsRandomAvailable() const { return mRandomAvailable; }
   const CObjectList& GetObjectListById(EGameObjectList id) const { return *mObjectLists[id]; }
   const rstl::vector< rstl::pair< TUniqueId, CLight > >& GetDynamicActorLights() const {
     return mDynamicActorLights;
@@ -522,7 +526,7 @@ public:
   rstl::vector< CLight > mDynamicLights;
   TCachedToken< CTexture > mShadowTex;
   CRandom16 mRandom;
-  bool mSkippingCinematic : 1; // 0x16e8; set while a cinematic is being skipped.
+  bool mRandomAvailable : 1; // Target-derived: permits random-dependent game updates.
   char x16e9_[3];
   EGameState mGameState;
   EInitPhase mInitPhase;

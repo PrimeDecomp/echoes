@@ -123,7 +123,7 @@ void CElitePirateGrenadeLauncher::UpdateLauncherAnimation() {
 }
 
 void CElitePirateGrenadeLauncher::LaunchGrenadeProjectile(CStateManager& mgr) {
-  if (mgr.IsSkippingCinematic() && HasAnimation()) {
+  if (mgr.IsRandomAvailable() && HasAnimation()) {
     const CPASAnimParmData parms(pas::kAS_AdditiveFlinch);
     const rstl::pair< float, int > anim =
         GetAnimationData()->GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
