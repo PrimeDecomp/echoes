@@ -425,6 +425,8 @@ public:
   float GetFreeLookAngleX() const { return mFreeLookPitchAngle; }
   float GetFreeLookAngleZ() const { return mFreeLookYawAngle; }
   float GetJumpCameraTimer() const { return mJumpCameraTimer; }
+  float GetTimeSinceJump() const { return mTimeSinceJump; } // Guessed from Prime and native contact handling.
+  void SetTimeSinceJump(float time) { mTimeSinceJump = time; } // Guessed name.
   float GetFallCameraTimer() const { return mFallCameraTimer; }
   bool GetOrbitLockAcquired() const { return mOrbitLockEstablished; }
   CPlayerCameraBob* CameraBobObject() { return mCameraBob.get(); }

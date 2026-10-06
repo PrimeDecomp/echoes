@@ -10,6 +10,7 @@
 #include "MetroidPrime/Enemies/CWaypointNavigation.hpp"
 #include "MetroidPrime/TStateMachineState.hpp"
 
+#include "Kyoto/Animation/CAdvancementDeltas.hpp"
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Animation/CharacterCommon.hpp"
 #include "Kyoto/Math/CPlane.hpp"
@@ -331,8 +332,7 @@ private:
   float mDamageCooldownTimer;
   CColor mColor;
   CColor mDamageColor;
-  CVector3f mPosDelta;
-  CQuaternion mRotDelta;
+  CAdvancementDeltas mAnimationDeltas; // Guessed name; animation translation and rotation.
   TLockedToken< CSkinnedModel > mNormalModel;
   rstl::optional_object< TLockedToken< CSkinnedModel > > mIngModel;
   rstl::single_ptr< CBodyController > mBodyController;

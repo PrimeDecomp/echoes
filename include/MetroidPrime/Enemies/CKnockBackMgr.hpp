@@ -119,6 +119,8 @@ public:
   void EnableAllAnimReactions(bool enabled);
   void EnableShock(bool enabled) { mEnableShock = enabled; } // Guessed name.
 
+  void EnableExplodeDeath(bool enabled) { mEnableExplodeDeath = enabled; } // Guessed name.
+
   bool IsBurnEnabled() const { return mEnableBurn; } // Guessed name.
 
   bool IsShockEnabled() const { return mEnableShock; } // Guessed name.
