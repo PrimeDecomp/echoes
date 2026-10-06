@@ -18,7 +18,7 @@
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "MetroidPrime/Tweaks/CTweakSlideShow.hpp"
 #include "MetroidPrime/Tweaks/CTweakTargeting.hpp"
-#include "../ScriptLoader/Tweaks.cpp"
+#include "MetroidPrime/ScriptLoader/Tweaks.inc"
 
 const char* gkTweakContainer = "Standard.NTWK";
 STweaks_FuncPtrs REL_loader_Tweaks;

@@ -82,7 +82,7 @@
     "SLdrTweakCameraBob.cpp",
     "SLdrTweakPlayer.cpp"
   ],
-  "aggregate": "Tweaks.cpp",
+  "aggregate": "Tweaks.inc",
   "duplicates": {
     "SLdrTweakPlayer2": "SLdrTweakPlayer",
     "SLdrTweakPlayerGun2": "SLdrTweakPlayerGun",
