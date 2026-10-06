@@ -4,6 +4,8 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
+class CGameCamera;
+
 // Guessed class name
 class CAnnihilatorProjectile : public CEnergyProjectile {
 public:
@@ -38,7 +40,7 @@ private:
   static void GatherTargetCandidates(CStateManager& mgr,
                                      rstl::vector< STargetCandidate >& candidates,
                                      const CActor& source, const CTransform4f& xf, TUniqueId owner,
-                                     const CTransform4f* projection, float projectileSpeed,
+                                     const CGameCamera* projection, float projectileSpeed,
                                      float projectileTurnRate, float radius, float height,
                                      float turnTestDistance);
   static bool CanTargetActor(CStateManager& mgr, TUniqueId owner,
