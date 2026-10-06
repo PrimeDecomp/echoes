@@ -114,8 +114,8 @@ CPathFindPointSearchFilter::CPathFindPointSearchFilter(float maxDistance, uint f
 
 CPathFindPointSearch::CPathFindPointSearch(CPFArea* area) : mArea(area) {}
 
-int CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, int& point,
-                                                   const CPathFindPointSearchFilter& filter) const {
+CPathFindPointSearch::EClosestPointResult CPathFindPointSearch::FindClosestPhysicalPoint(
+    const CVector3f& position, int& point, const CPathFindPointSearchFilter& filter) const {
   CPFArea* area = mArea;
   if (area) {
     float closestDistanceSq = kMaxPointDistanceSq;
@@ -140,20 +140,21 @@ int CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, in
     }
     if (found) {
       if (closestDistanceSq < filter.GetMaxDistance() * filter.GetMaxDistance()) {
-        return 0;
+        return kCPR_Success;
       }
-      return 1;
+      return kCPR_OutOfRange;
     }
   }
-  return 2;
+  return kCPR_NoPoint;
 }
 
-int CPathFindPointSearch::Search(const CPFPoint& source, const CPFPoint& destination) {
+CPathFindPointSearch::EResult CPathFindPointSearch::Search(const CPFPoint& source,
+                                                        const CPFPoint& destination) {
   mWaypoints.clear();
   if (mArea && mArea->PointPathExists(&source, &destination)) {
     return SearchInternal(destination, source);
   }
-  return 2;
+  return kR_NoConnection;
 }
 
 CVector3f CPathFindPointSearch::GetSplinePoint(int waypoint, float t) const {
@@ -179,7 +180,8 @@ float CPathFindPointSearch::Heuristic(int point, const CVector3f& destination) c
   return CMath::FastSqrtF(CVector3f::Dot(delta, delta));
 }
 
-int CPathFindPointSearch::SearchInternal(const CPFPoint& source, const CPFPoint& destination) {
+CPathFindPointSearch::EResult CPathFindPointSearch::SearchInternal(const CPFPoint& source,
+                                                                const CPFPoint& destination) {
   CPFPointSearchState* state = mArea->GetPointSearchState();
   if (state) {
     state->Reset();
@@ -202,7 +204,7 @@ int CPathFindPointSearch::SearchInternal(const CPFPoint& source, const CPFPoint&
              point = point->mParent) {
           mWaypoints.push_back(mArea->GetPoint(point->mPointIndex).GetPosition());
         }
-        return 0;
+        return kR_Success;
       }
 
       const CPFPoint& point = mArea->GetPoint(current->mPointIndex);
@@ -235,5 +237,5 @@ int CPathFindPointSearch::SearchInternal(const CPFPoint& source, const CPFPoint&
       current->mClosed = true;
     }
   }
-  return 1;
+  return kR_NoPath;
 }
