@@ -130,10 +130,10 @@ void TStateMachineState< T >::Setup(const CStateMachine* machine) {
   mStateFunctions.reserve(stateCount);
   mTriggerFunctions.reserve(triggerCount);
   for (int i = 0; i < stateCount; ++i) {
-    mStateFunctions.push_back_unsafe(StateFunc());
+    mStateFunctions.push_back_unsafe(nullptr);
   }
   for (int i = 0; i < triggerCount; ++i) {
-    mTriggerFunctions.push_back_unsafe(TriggerFunc());
+    mTriggerFunctions.push_back_unsafe(nullptr);
   }
 }
 

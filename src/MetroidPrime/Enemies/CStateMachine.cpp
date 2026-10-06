@@ -1,6 +1,8 @@
 #include "MetroidPrime/Enemies/CStateMachine.hpp"
 
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/TStateMachineState.hpp"
 
 void CTrigger::Setup(const char* name, bool lnot, float arg, CTrigger* andTrigger) {
   if (name != nullptr) {
@@ -95,3 +97,5 @@ CStateMachine::CStateMachine(CInputStream& in) {
     mTriggers[i].SetIndex(i);
   }
 }
+
+template class TStateMachineState< CPatterned >;
