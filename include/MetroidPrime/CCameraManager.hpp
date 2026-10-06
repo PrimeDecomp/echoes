@@ -75,6 +75,7 @@ public:
   void SetCinematicPaused(bool paused); // Guessed name
   CTransform4f GetCurrentCameraTransform(const CStateManager& mgr, bool selector) const;
   const CGameArea::CAreaFog& GetFog() const { return mFog; } // Guessed name
+  bool IsFogEnabled() const { return mFogEnabled; } // Guessed name, cached after fog update.
   CVector3f GetGlobalCameraTranslation(const CStateManager& mgr, bool selector) const;
 
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);

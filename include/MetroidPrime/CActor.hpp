@@ -131,6 +131,7 @@ public:
   float GetDistanceToCamera(CStateManager& mgr) const;
   void SetEchoEmitter(bool enabled, CEchoEmitter* emitter);
   CEchoEmitter* EchoEmitter() { return mEchoEmitter.get(); }
+  CEchoEmitter* EchoEmitter() const { return mEchoEmitter.get(); }
   CEchoEmitter* AllocateEchoEmitter(bool enabled, const CAABox& bounds,
                                     const SEchoParameters& parameters);
   void SetValidTarget(int playerIndex, bool enabled);
@@ -260,6 +261,7 @@ public:
   void SetDrawToken(uint token) const { const_cast< CActor* >(this)->mDrawnToken = token; }
 
   void SetPvsIndex(int index) { mPvsIndex = index; }
+  int GetPvsIndex() const { return mPvsIndex; }
 
   void SetTransformDirty();
 
