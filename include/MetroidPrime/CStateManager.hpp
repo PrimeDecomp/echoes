@@ -203,6 +203,8 @@ public:
                                int* height) const;
   void EndPlayerRender();                          // Guessed name.
   void Touch();                                    // Prime-correlated name.
+  void TouchSky();                                 // Prime-correlated name.
+  void TouchPlayerActor();                         // Prime-correlated name; mutable REL shim.
 
   void AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
@@ -310,7 +312,7 @@ public:
     return mFilteredObjectLists[0]->GetObjects();
   }
   const rstl::list< CEntity* >& GetDockList() const {
-    return mFilteredObjectLists[3]->GetObjects();
+    return mFilteredObjectLists[kFOL_Dock]->GetObjects();
   }
   const rstl::list< CEntity* >& GetGrapplePointList() const {
     return mFilteredObjectLists[5]->GetObjects();
@@ -348,6 +350,8 @@ public:
   uint GetBossStringIdx() const { return mBossLanguageTableIndex; }
   float IntegrateVisorFog(float f) const;
   void SetAreaClipPlane(TAreaId area, const CPlane& plane); // Guessed name
+  TAreaId GetVisAreaId() const; // Prime-correlated name; camera/dock visibility selection.
+  void SetupAreaFrusta();       // Guessed name: builds dock-edge planes for visible areas.
   void EnterMapScreen() { DeferStateTransition(kSMT_MapScreen); }
   void EnterPauseScreen() { DeferStateTransition(kSMT_PauseGame); }
   void EnterLogBookScreen() { DeferStateTransition(kSMT_LogBook); }
