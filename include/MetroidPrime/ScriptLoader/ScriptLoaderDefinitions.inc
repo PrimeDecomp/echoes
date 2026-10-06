@@ -2,6 +2,7 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrCameraHint.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrSplineType.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrTextProperties.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrDamageInfo.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrGrappleParameters.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrHealthInfo.hpp"
@@ -163,6 +164,96 @@ void LoadTypedefSplineType(SLdrSplineType& sldrThis, CInputStream& input) {
       sldrThis.type = input.ReadInt32();
       break;
     }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrTextProperties::SLdrTextProperties() : foregroundColor(CColor::Green()), outlineColor(CColor::Green()), geometryColor(CColor::Green()), defaultFont(kInvalidAssetId) {
+  textBoundingWidth = 1;
+  textBoundingHeight = 1;
+#if VERSION != VERSION_G2ME01
+  lineSpacing = 100.0f;
+  lineExtraSpace = 0;
+  characterExtraSpace = 0;
+#endif
+  foregroundColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  outlineColor = CColor(0.0f, 0.0f, 0.0f, 1.0f);
+  geometryColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  horizontalJustification = 0;
+  verticalJustification = 0;
+  wrapText = true;
+#if VERSION != VERSION_G2ME01
+  drawShadow = false;
+#endif
+}
+
+SLdrTextProperties::~SLdrTextProperties() {}
+
+void LoadTypedefTextProperties(SLdrTextProperties& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xee521dc6: {
+      sldrThis.textBoundingWidth = input.ReadInt32();
+      break;
+    }
+    case 0xf2d36abb: {
+      sldrThis.textBoundingHeight = input.ReadInt32();
+      break;
+    }
+#if VERSION != VERSION_G2ME01
+    case 0x1a996292: {
+      sldrThis.lineSpacing = input.ReadFloat();
+      break;
+    }
+    case 0x05eff913: {
+      sldrThis.lineExtraSpace = input.ReadInt32();
+      break;
+    }
+    case 0x45830901: {
+      sldrThis.characterExtraSpace = input.ReadInt32();
+      break;
+    }
+#endif
+    case 0x3f39e635: {
+      sldrThis.foregroundColor = CColor(input);
+      break;
+    }
+    case 0x60d78569: {
+      sldrThis.outlineColor = CColor(input);
+      break;
+    }
+    case 0x5908ef39: {
+      sldrThis.geometryColor = CColor(input);
+      break;
+    }
+    case 0x0db9f8b6: {
+      sldrThis.defaultFont = CAssetId(input.ReadInt32());
+      break;
+    }
+    case 0x18dd95cd: {
+      sldrThis.horizontalJustification = input.ReadInt32();
+      break;
+    }
+    case 0x42091548: {
+      sldrThis.verticalJustification = input.ReadInt32();
+      break;
+    }
+    case 0x330573e9: {
+      sldrThis.wrapText = input.ReadBool();
+      break;
+    }
+#if VERSION != VERSION_G2ME01
+    case 0xd8a2eef0: {
+      sldrThis.drawShadow = input.ReadBool();
+      break;
+    }
+#endif
     default:
       input.ReadBytes(nullptr, propertySize);
       break;

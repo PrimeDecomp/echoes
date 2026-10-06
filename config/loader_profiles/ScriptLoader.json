@@ -1,5 +1,5 @@
 {
-  "template_ref": "3189a3b55fce5da5a26616a05411a5736a3105da",
+  "template_ref": "c39a4701defd3b55aa8567c4cf193dba36c06e30",
   "sources": [
     "Structs/SLdrAnimationSet.cpp",
     "Structs/SLdrCameraBehaviour.cpp",
@@ -7,6 +7,7 @@
     "Structs/SLdrCameraFOV.cpp",
     "Structs/SLdrCameraSpeed.cpp",
     "Structs/SLdrSplineType.cpp",
+    "Structs/SLdrTextProperties.cpp",
     "Structs/SLdrCameraZOffset.cpp",
     "Structs/SLdrDamageInfo.cpp",
     "Structs/SLdrGrappleParameters.cpp",

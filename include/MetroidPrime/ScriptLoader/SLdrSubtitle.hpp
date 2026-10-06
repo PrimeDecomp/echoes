@@ -15,26 +15,39 @@ struct SLdrSubtitle {
   SLdrTextProperties textProperties; // 0xe0543e66
   int textPositionX; // 0xc33a87c7
   int textPositionY; // 0x7b86e0a2
+#if VERSION != VERSION_G2ME01
   SLdrTextProperties japanTextProperties; // 0xc8e441fa
   int japanTextPositionX; // 0x53a7f7a7
   int japanTextPositionY; // 0xeb1b90c2
+#endif
   CAssetId stringTable; // 0xfd95ed2a
   int initialStringIndex; // 0x6ce46689
   float fadeInTime; // 0x90aa341f
   float fadeOutTime; // 0x7c269ebc
 };
 
-inline SLdrSubtitle::SLdrSubtitle() : editorProperties(), textProperties(), japanTextProperties(), stringTable(kInvalidAssetId) {
+inline SLdrSubtitle::SLdrSubtitle()
+: editorProperties()
+, textProperties()
+#if VERSION != VERSION_G2ME01
+, japanTextProperties()
+#endif
+, stringTable(kInvalidAssetId)
+{
+#if VERSION != VERSION_G2ME01
   textProperties.lineSpacing = 100.0f;
   textProperties.lineExtraSpace = 0;
   textProperties.characterExtraSpace = 0;
+#endif
   textPositionX = 0;
   textPositionY = 0;
+#if VERSION != VERSION_G2ME01
   japanTextProperties.textBoundingWidth = 640;
   japanTextProperties.textBoundingHeight = 448;
-  japanTextProperties.unknown_0x18dd95cd = 1;
+  japanTextProperties.horizontalJustification = 1;
   japanTextPositionX = 0;
   japanTextPositionY = 100;
+#endif
   initialStringIndex = 0;
   fadeInTime = 0.0f;
   fadeOutTime = 0.0f;

@@ -16,7 +16,9 @@ struct SLdrTextPane {
   SLdrEditorProperties editorProperties; // 0x255a4580
   rstl::string guiLabel; // 0x73939407
   SLdrTextProperties textProperties; // 0xe0543e66
+#if VERSION != VERSION_G2ME01
   SLdrTextProperties japanTextProperties; // 0xc8e441fa
+#endif
   CVector3f pivotOffset; // 0xdef21bf5
   CAssetId defaultString; // 0xe7ac3927
   rstl::string defaultStringName; // 0xd501c87e
@@ -28,14 +30,28 @@ struct SLdrTextPane {
   bool depth_Backwards; // 0x35dc43d0
 };
 
-inline SLdrTextPane::SLdrTextPane() : editorProperties(), guiLabel(), textProperties(), japanTextProperties(), pivotOffset(CVector3f::Zero()), defaultString(kInvalidAssetId), defaultStringName() {
+inline SLdrTextPane::SLdrTextPane()
+: editorProperties()
+, guiLabel()
+, textProperties()
+#if VERSION != VERSION_G2ME01
+, japanTextProperties()
+#endif
+, pivotOffset(CVector3f::Zero())
+, defaultString(kInvalidAssetId)
+, defaultStringName()
+{
   textProperties.textBoundingWidth = 80;
   textProperties.textBoundingHeight = 10;
+#if VERSION != VERSION_G2ME01
   textProperties.lineSpacing = 100.0f;
   textProperties.lineExtraSpace = 0;
   textProperties.characterExtraSpace = 0;
+#endif
+#if VERSION != VERSION_G2ME01
   japanTextProperties.textBoundingWidth = 80;
   japanTextProperties.textBoundingHeight = 10;
+#endif
   blend_Mode = 1;
   fadeInTime = 0.25f;
   fadeOutTime = 0.25f;

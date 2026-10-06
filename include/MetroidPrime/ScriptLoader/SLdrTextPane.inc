@@ -18,10 +18,12 @@ for (int i = 0; i < propertyCount; ++i) {
     LoadTypedefTextProperties(sldrThis.textProperties, input);
     break;
   }
+#if VERSION != VERSION_G2ME01
   case 0xc8e441fa: {
     LoadTypedefTextProperties(sldrThis.japanTextProperties, input);
     break;
   }
+#endif
   case 0xdef21bf5: {
     sldrThis.pivotOffset = CVector3f(input);
     break;
