@@ -37,7 +37,8 @@
 static TUniqueId skHomingPickupId = kInvalidUniqueId;
 static float skDrawInDistance = 30.f;
 static float skMultiplayerDrawInDistance = 12.f;
-static const float skMaxHomingDistanceSquared = 3.4028234663852886e+38f;
+// The largest finite single-precision value is (2 - epsilon) * 2^127.
+static const float skMaxHomingDistanceSquared = (2.f - FLT_EPSILON) * 1.7014118346046923e+38f;
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, const CModelData& modelData,
