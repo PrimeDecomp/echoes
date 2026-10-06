@@ -35,7 +35,7 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
       break;
     case kSM_Decrement:
       if (mCurrent == 0 && !mWrap) {
-        break;
+        return;
       }
       if (mCurrent == 0) {
         SendScriptMsgs(kSS_NonZero, mgr, kSM_None);
@@ -53,7 +53,7 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
       break;
     case kSM_Increment:
       if (mCurrent == mMax && !mWrap) {
-        break;
+        return;
       }
       if (mCurrent == 0) {
         SendScriptMsgs(kSS_NonZero, mgr, kSM_None);
