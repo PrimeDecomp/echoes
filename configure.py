@@ -677,6 +677,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGSFidget.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGSFreeLook.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGunBase.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Player/GunResNames.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCamera.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSpindleCamera.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPathCamera.cpp"),
