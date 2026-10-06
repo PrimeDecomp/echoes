@@ -19,6 +19,7 @@ public:
   EClosestPointResult FindClosestPhysicalPoint(const CVector3f& position, int& point,
                                               const CPathFindPointSearchFilter& filter) const;
   CVector3f GetSplinePoint(int waypoint, float t) const; // Guessed name
+  const rstl::reserved_vector< CVector3f, 32 >& GetWaypoints() const { return mWaypoints; }
 
 private:
   EResult SearchInternal(const CPFPoint& source, const CPFPoint& destination); // Guessed name
