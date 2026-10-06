@@ -13,7 +13,9 @@ public:
 
   explicit CGameStateEnvVarManager(EVariableScope scope);
   CGameStateEnvVarManager(EVariableScope scope, CBitStreamReader& in);
-  CEnvironmentVariable* FindEnvironmentVariable(const char* name);
+  // Const per the original R3ME01 SEL export GetEnvVar__23CGameStateEnvVarManagerCFPCc; callers
+  // still modify the returned variable.
+  CEnvironmentVariable* FindEnvironmentVariable(const char* name) const;
   void InitializeMemoryState();
   void PutTo(CBitStreamWriter& out) const;
 

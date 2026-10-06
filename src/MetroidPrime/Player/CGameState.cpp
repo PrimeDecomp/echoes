@@ -24,11 +24,16 @@
 
 #include <string.h>
 
-// Guessed name. Layer-name prefixes select which game mode owns each layer.
-static rstl::pair< const char*, uint > sGameModeLayers[] = {
-    rstl::pair< const char*, uint >("Deathmatch", 'DTHM'),
-    rstl::pair< const char*, uint >("Samus01", 'SNGL'),
-    rstl::pair< const char*, uint >("Coins", 'COIN'),
+// Guessed names. Layer-name prefixes select which game mode owns each layer.
+struct SGameModeLayer {
+  SGameModeLayer(const char* prefix, uint mode) : first(prefix), second(mode) {}
+  const char* first;
+  uint second;
+};
+static SGameModeLayer sGameModeLayers[] = {
+    SGameModeLayer("Deathmatch", 'DTHM'),
+    SGameModeLayer("Samus01", 'SNGL'),
+    SGameModeLayer("Coins", 'COIN'),
 };
 
 uint CEnvironmentVariable::GetBitCount(uint value) {
@@ -45,12 +50,13 @@ CEnvironmentVariable::CEnvironmentVariable(int minimum, int maximum, int value)
 }
 
 CEnvironmentVariable::CEnvironmentVariable(int minimum, int maximum, CBitStreamReader& in)
-: mMin(minimum), mMax(maximum), mValue(minimum + in.ReadBits(GetBitCount(maximum - minimum))) {
+: mMin(minimum), mMax(maximum), mValue(mMin + in.ReadBits(GetBitCount(mMax - mMin))) {
   ClampToMinMax();
 }
 
 void CEnvironmentVariable::PutTo(CBitStreamWriter& out) const {
-  out.WriteBits(mValue - mMin, GetBitCount(mMax - mMin));
+  const uint value = mValue - mMin;
+  out.WriteBits(value, GetBitCount(mMax - mMin));
 }
 
 void CEnvironmentVariable::Set(int value) {
@@ -78,15 +84,16 @@ CGameStateEnvVarManager::CGameStateEnvVarManager(EVariableScope scope, CBitStrea
   }
 }
 
-CEnvironmentVariable* CGameStateEnvVarManager::FindEnvironmentVariable(const char* name) {
-  rstl::map< rstl::string, CEnvironmentVariable >::iterator it =
+CEnvironmentVariable* CGameStateEnvVarManager::FindEnvironmentVariable(const char* name) const {
+  rstl::map< rstl::string, CEnvironmentVariable >::const_iterator it =
       mVariables.find(rstl::string_l(name));
-  return it == mVariables.end() ? nullptr : &it->second;
+  return it != mVariables.end() ? const_cast< CEnvironmentVariable* >(&it->second) : nullptr;
 }
 
 void CGameStateEnvVarManager::AddVariable(const rstl::string& name,
                                           const CEnvironmentVariable& variable) {
-  if (mVariables.find(name) == mVariables.end()) {
+  rstl::map< rstl::string, CEnvironmentVariable >::const_iterator it = mVariables.find(name);
+  if (it == mVariables.end()) {
     mVariables.insert(rstl::pair< rstl::string, CEnvironmentVariable >(name, variable));
   }
 }
@@ -198,7 +205,7 @@ CWorldState::CWorldState(CAssetId worldId)
 CWorldState::CWorldState(CBitStreamReader& in, CAssetId worldId,
                          const CWorldSaveGameInfo& saveWorld)
 : mWorldId(worldId)
-, mAreaId(kInvalidAreaId)
+, mAreaId(-1)
 , mMailbox(nullptr)
 , mMapWorldInfo(nullptr)
 , mDesiredAreaAssetId(kInvalidAssetId)
@@ -385,14 +392,15 @@ void ConfigureGameModeLayers() {
        area < gpMemoryCard->GetSaveWorldMemory(gpGameState->CurrentWorldAssetId()).GetAreaCount();
        ++area) {
     rstl::rc_ptr< CWorldLayerState > layers = gpGameState->CurrentWorldState().GetLayerState();
-    int layerCount = layers->GetAreaLayerCount(TAreaId(area));
+    CWorldLayerState& state = *layers;
+    int layerCount = state.GetAreaLayerCount(TAreaId(area));
     for (int layer = 0; layer < layerCount; ++layer) {
       for (int i = 0; i < 3; ++i) {
-        bool active = sGameModeLayers[i].second == gpGameState->GetGameMode().GetGameModeType();
+        bool active = sGameModeLayers[i].second - gpGameState->GetGameMode().GetGameModeType() == 0;
         const char* prefix = sGameModeLayers[i].first;
-        const rstl::string& name = layers->GetLayerName(TAreaId(area), TLayerId(layer));
+        const rstl::string& name = state.GetLayerName(TAreaId(area), TLayerId(layer));
         if (strncmp(prefix, name.data(), strlen(prefix)) == 0) {
-          layers->SetLayerActive(TAreaId(area), TLayerId(layer), active);
+          state.SetLayerActive(TAreaId(area), TLayerId(layer), active);
         }
       }
     }
@@ -458,9 +466,10 @@ void CGameState::InitializeMemoryWorlds() {
   const rstl::vector< CMemoryCard::MemoryWorld >& worlds = gpMemoryCard->GetMemoryWorlds();
   for (rstl::vector< CMemoryCard::MemoryWorld >::const_iterator it = worlds.begin();
        it != worlds.end(); ++it) {
+    const CSaveWorldMemory& world = it->second;
     rstl::rc_ptr< CWorldLayerState > layers = StateForWorld(it->first).GetLayerState();
-    layers->InitializeWorldLayers(it->second.GetDefaultLayerStates(), it->second.GetLayerNames(),
-                                  it->second.GetLayerNameOffsets());
+    layers->InitializeWorldLayers(world.GetDefaultLayerStates(), world.GetLayerNames(),
+                                  world.GetLayerNameOffsets());
   }
 }
 
@@ -496,20 +505,22 @@ void CGameState::PutTo(CBitStreamWriter& out) {
   out.GetOutputStream().WriteUint8(worlds.size());
   rstl::auto_ptr< uchar > buffer(rs_new uchar[0x400]);
   for (AUTO(it, worlds.begin()); it != worlds.end(); ++it) {
+    const CAssetId worldId = it->first;
     TLockedToken< CWorldSaveGameInfo > saveWorld =
         gpSimplePool->GetObj(SObjectTag('SAVW', it->second.GetSaveWorldAssetId()));
-    CWorldState& state = StateForWorld(it->first);
+    const CWorldSaveGameInfo& saveInfo = **saveWorld;
+    CWorldState& state = StateForWorld(worldId);
     uint bitCount;
     {
       CMemoryStreamOut stream(buffer.get(), 0x400);
       CBitStreamWriter writer(stream);
-      state.PutTo(writer, **saveWorld);
+      state.PutTo(writer, saveInfo);
       stream.Flush();
       bitCount = writer.GetWrittenBits();
     }
-    out.GetOutputStream().WriteUint32(it->first);
+    out.GetOutputStream().WriteUint32(worldId);
     out.GetOutputStream().WriteUint16(bitCount);
-    state.PutTo(out, **saveWorld);
+    state.PutTo(out, saveInfo);
   }
   out.GetOutputStream().WriteUint32('GMND');
 }
