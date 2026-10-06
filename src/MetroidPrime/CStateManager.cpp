@@ -4,6 +4,7 @@
 #include "Collision/CRayCastResult.hpp"
 #include "Collision/CollisionUtil.hpp"
 
+#include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
@@ -27,6 +28,7 @@
 #include "MetroidPrime/CPortalArea.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CProjectedShadow.hpp"
+#include "MetroidPrime/CRumbleManager.hpp"
 #include "MetroidPrime/CSafeZoneManager.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
 #include "MetroidPrime/CScriptMailbox.hpp"
@@ -35,7 +37,7 @@
 #include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
-#include "MetroidPrime/BodyState/CBodyController.hpp"
+#include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
@@ -49,6 +51,7 @@
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Player/CPlayerTargeting.hpp"
+#include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
@@ -82,6 +85,9 @@
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
+#include "Kyoto/Particles/CParticleElectric.hpp"
+#include "Kyoto/Particles/CParticleSpawnSystem.hpp"
+#include "Kyoto/Particles/CSortedParticleSystem.hpp"
 #include "MetaRender/AmbientLightScale.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
@@ -112,6 +118,11 @@ static s64 sPreRenderStepTime;
 
 // Prime-correlated name; native underwater ranges for the two bomb attributes.
 static const float skBombUnderwaterRanges[2] = {2.f, 4.f};
+
+// Both retained release hooks contain only a return instruction. Their sole known
+// callers pass this manager; no exported name or body establishes a semantic name.
+extern "C" void fn_8003FF1C(CStateManager*);
+extern "C" void fn_8003FF20(CStateManager*);
 
 bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {
   return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
@@ -1913,6 +1924,20 @@ void CStateManager::SetIsDarkWorld(bool b) {
 
 bool CStateManager::HasWorld() const { return !mWorld.null(); }
 
+void CStateManager::UpdateSortedLists() {
+  if (mWorld.get() == nullptr) {
+    return;
+  }
+
+  CObjectList* actorList = mObjectLists[kOL_Actor].get();
+  for (int i = actorList->GetFirstObjectIndex(); i != -1; i = actorList->GetNextObjectIndex(i)) {
+    CActor* actor = static_cast< CActor* >((*actorList)[i]);
+    if (actor != nullptr) {
+      UpdateActorInSortedLists(actor);
+    }
+  }
+}
+
 void CStateManager::AddObject(CEntity& entity) {
   const TUniqueId id = entity.GetUniqueId();
   if (entity.GetEditorId() != kInvalidEditorId) {
@@ -2748,6 +2773,17 @@ bool CStateManager::IsMultiplayer() const {
   return v != 'SNGL' && v != 'FRND';
 }
 
+void CStateManager::MovePlatforms(float dt) {
+  CObjectList* platformList = mObjectLists[kOL_Platform].get();
+  for (int i = platformList->GetFirstObjectIndex(); i != -1;
+       i = platformList->GetNextObjectIndex(i)) {
+    CPhysicsActor* actor = static_cast< CPhysicsActor* >((*platformList)[i]);
+    if (actor != nullptr && actor->GetActive() && actor->GetMass() != 0.f) {
+      CGameCollision::Move(*this, *actor, dt, nullptr);
+    }
+  }
+}
+
 void CStateManager::MoveActors(float dt) {
   CObjectList* physicsList = mObjectLists[kOL_PhysicsActor].get();
   for (int i = physicsList->GetFirstObjectIndex(); i != -1;
@@ -2832,4 +2868,208 @@ void CStateManager::Think(float dt) {
       }
     }
   }
+}
+
+void CStateManager::PreThinkObjects(float dt) {
+  if (!IsMultiplayer() && mPlayers[0]->GetDeathTime() > 0.f) {
+    mPlayers[0]->DoPreThink(dt, *this);
+    return;
+  }
+
+  CObjectList* allList = mObjectLists[kOL_All].get();
+  if (mGameState == kGS_SoftPaused) {
+    for (int i = allList->GetFirstObjectIndex(); i != -1; i = allList->GetNextObjectIndex(i)) {
+      CScriptEffect* effect = TCastToPtr< CScriptEffect >((*allList)[i]);
+      if (effect != nullptr) {
+        effect->PreThink(dt, *this);
+      }
+    }
+  } else {
+    for (int i = allList->GetFirstObjectIndex(); i != -1; i = allList->GetNextObjectIndex(i)) {
+      CEntity* entity = (*allList)[i];
+      if (entity != nullptr && TCastToPtr< CGameCamera >(entity) == nullptr) {
+        entity->PreThink(dt, *this);
+      }
+    }
+  }
+}
+
+void CStateManager::PostUpdatePlayer(float dt) {
+  for (uint i = 0; i < mNumPlayers; ++i) {
+    mPlayers[i]->PostUpdate(dt, *this);
+  }
+}
+
+void CStateManager::Update(float inputDt, CArchitectureQueue& queue) {
+  mArchQueue = &queue;
+  float dt = inputDt;
+  float cameraDt = inputDt;
+  if (mCameraManagers[0]->IsInCinematicCamera()) {
+    const CCinematicCamera* camera = mCameraManagers[0]->GetCinematicCamera();
+    if ((camera->GetFlags() & 0x200) != 0) {
+      dt *= camera->GetSlowMotionScale();
+    }
+    if (gpMain->IsMaxSpeed()) {
+      dt *= 2.f;
+      cameraDt *= 2.f;
+    }
+  }
+
+  CElementGen::SetGlobalSeed(mUpdateFrameIdx);
+  CParticleElectric::SetGlobalSeed(mUpdateFrameIdx);
+  CParticleSpawnSystem::SetGlobalSeed(mUpdateFrameIdx);
+  CSortedParticleSystem::SetGlobalSeed(mUpdateFrameIdx);
+  CDecal::SetGlobalSeed(mUpdateFrameIdx);
+  CProjectileWeapon::SetGlobalSeed(mUpdateFrameIdx);
+  mCurTimeMod900 += dt;
+  if (mCurTimeMod900 > 900.f) {
+    mCurTimeMod900 -= 900.f;
+  }
+  mPauseHudMessage = kInvalidAssetId;
+  mLightAmmoDepletedPlayers = 0;
+  mDarkAmmoDepletedPlayers = 0;
+  CScriptEffect::ResetParticleCounts();
+  fn_8003FF1C(this);
+  fn_8003FF20(this);
+
+  const bool playerDead = !IsMultiplayer() && mPlayers[0]->GetDeathTime() > 0.f;
+  if (mGameState == kGS_Running) {
+    if (!IsMultiplayer() && !mCameraManagers[0]->IsInCinematicCamera()) {
+      gpGameState->SetTotalPlayTime(dt + gpGameState->GetTotalPlayTime());
+      UpdateHintState(dt);
+    }
+
+    for (int player = 0; player < 4; ++player) {
+      for (int pass = 0; pass < 11; ++pass) {
+        mCameraFilterPasses[player][pass].Update(dt);
+        mCameraBlurPasses[player][pass].Update(dt);
+      }
+    }
+
+    for (int item = 0; item < CPlayerState::kIT_Max; ++item) {
+      for (uint player = 0; player < mNumPlayers; ++player) {
+        const CPlayerState::EItemType type = static_cast< CPlayerState::EItemType >(item);
+        CPlayerState::CPowerUp& powerUp = mPlayerStates[player]->PowerUp(type);
+        if (powerUp.mTimeLeft > 0.f) {
+          powerUp.mTimeLeft -= dt;
+          if (powerUp.mTimeLeft < 0.f) {
+            powerUp.mTimeLeft = 0.f;
+            powerUp.mAmount = 0;
+            if (item >= CPlayerState::kIT_SuperMissile && item <= CPlayerState::kIT_SonicBoom) {
+              powerUp.mCapacity = 0;
+            }
+            switch (type) {
+            case CPlayerState::kIT_SwitchVisorCombat:
+            case CPlayerState::kIT_SwitchVisorScan:
+            case CPlayerState::kIT_SwitchVisorDark:
+            case CPlayerState::kIT_SwitchVisorEcho:
+              mPlayerStates[player]->StartTransitionToVisor(CPlayerState::kPV_Combat);
+              break;
+            default:
+              break;
+            }
+            if (item == CPlayerState::kIT_ScanVirus) {
+              mPlayerStates[player]->StartTransitionToVisor(CPlayerState::kPV_Combat);
+              mPlayerStates[player]->ReInitializePowerUp(CPlayerState::kIT_ScanVisor, 0);
+            }
+            DisplayAlertAboutOutOfAmmo(*mPlayers[player], type);
+          }
+        }
+      }
+    }
+    mSafeZoneManager->Update(dt, *this);
+  }
+
+  if (mGameState != kGS_Paused && dt > FLT_EPSILON) {
+    PreThinkObjects(dt);
+    mFluidPlaneManager->Update(dt);
+  }
+  if (mGameState == kGS_Running) {
+    if (!playerDead) {
+      CDecalManager::Update(dt, *this);
+    }
+    UpdateSortedLists();
+    if (dt > FLT_EPSILON && !playerDead) {
+      MovePlatforms(dt);
+      MoveActors(dt);
+    }
+    UpdatePlayerLineOfSight(dt);
+    ProcessPlayerInput();
+    if (mGameState != kGS_SoftPaused) {
+      for (uint player = 0; player < mNumPlayers; ++player) {
+        CGameCollision::Move(*this, *mPlayers[player], dt, nullptr);
+      }
+    }
+    UpdateSortedLists();
+    if (!playerDead) {
+      CrossTouchActors();
+    }
+  } else {
+    ProcessPlayerInput();
+  }
+  if (!playerDead && mGameState == kGS_Running) {
+    mActorModelParticles->Update(dt, *this);
+  }
+  if ((mGameState == kGS_Running || mGameState == kGS_SoftPaused) && dt > FLT_EPSILON) {
+    Think(dt);
+  }
+
+  if (mPausedHudMemoFrameCount == mHudMessageFrameCount) {
+    ShowPausedHUDMemo(mPausedHudMemoAssetId, mQueuedHudMemoDismissalDelay);
+    --mPausedHudMemoFrameCount;
+    mPausedHudMemoAssetId = kInvalidAssetId;
+  }
+  if (!playerDead && mGameState == kGS_Running && !IsMultiplayer() &&
+      !mCameraManagers[0]->IsInCinematicCamera()) {
+    UpdateEscapeSequenceTimer(dt);
+  }
+  mWorld->Update(dt);
+  UpdateDynamicLayers();
+  for (uint player = 0; player < mNumPlayers; ++player) {
+    mRumbleManagers[player]->Update(dt);
+  }
+  if (!playerDead) {
+    mEnvFxManager->Update(dt, *this);
+  }
+  UpdateAreaSounds();
+  mWorld->Area(GetNextAreaId())->UpdateDocks(*this);
+  mReadyToRender = true;
+
+  if (mInMapScreen) {
+    CHintOptions& hintOptions = gpGameState->HintOptions();
+    const CHintOptions::SHintState* hint = hintOptions.GetCurrentDisplayedHint();
+    if (hint != nullptr && hint->CanContinue()) {
+      hintOptions.DismissDisplayedHint();
+    }
+    mInMapScreen = false;
+  }
+  const CGameState& gameState = *gpGameState;
+  gameState.GetGameMode().Update(dt, *this);
+  ThinkNewObjects(dt);
+  if (mGameState != kGS_SoftPaused) {
+    for (uint player = 0; player < mNumPlayers; ++player) {
+      mCameraManagers[player]->Update(cameraDt, *this);
+    }
+  }
+  ThinkNewObjects(dt);
+  if (mGameState != kGS_Paused) {
+    PostUpdatePlayer(dt);
+  }
+  gpGameState->CurrentWorldState().SetAreaId(mNextAreaId);
+  mWorld->TravelToArea(mNextAreaId, *this, CWorld::kATT_LoadAdjacent);
+  ClearGraveyard();
+  ++mUpdateFrameIdx;
+  mArchQueue = nullptr;
+}
+
+void CStateManager::UpdateAreaSounds() {
+  rstl::reserved_vector< int, 10 > areaIds;
+  areaIds.clear();
+  for (CGameArea::CConstChainIterator area = mWorld->GetChainHead(CWorld::kC_Alive);
+       area != CWorld::GetAliveAreasEnd(); ++area) {
+    if (area->GetOcclusionState() == CGameArea::kOS_Visible) {
+      areaIds.push_back(area->GetId().Value());
+    }
+  }
+  CSfxManager::SetActiveAreas(areaIds, mNextAreaId.Value());
 }
