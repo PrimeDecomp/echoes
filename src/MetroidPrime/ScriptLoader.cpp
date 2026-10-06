@@ -265,6 +265,8 @@ CTransform4f ConvertEditorEulerToTransform4f(const CVector3f& orientation,
                                    matrix.GetColumn(kDZ), position);
 }
 
+#include "MetroidPrime/ScriptLoader/ScriptLoaderDefinitions.inc"
+
 CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data) {
   const EWeaponType type = static_cast< EWeaponType >(data.dI_WeaponType);
   CDamageInfo result(CWeaponMode(type, false, false, type == kWT_UnknownSource), data.dI_Damage,

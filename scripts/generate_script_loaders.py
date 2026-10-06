@@ -193,6 +193,11 @@ NATIVE_INDEXED_RECORDS = {
 # the templates have nothing to override (SLdrPickup::SLdrPickup, G2ME01 0x800B40B4).
 # Record -> property-ID paths to re-store. Values and C++ names come from XML.
 NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
+    # SLdrActorParameters, G2ME01 0x8023F534: ambient color and visor re-stores.
+    "SLdrActorParameters": (
+        (0xB028DB0E, 0xA33E5B0E),
+        (0x05AD250E, 0xCA19E8C6),
+    ),
     # SLdrAmbientAI, G2ME01 0x801795D8: two actor defaults, no editor re-store.
     "SLdrAmbientAI": (
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
@@ -1017,6 +1022,21 @@ class Generator:
 
     def render_definitions(self, struct: Struct, prefix: str) -> list[str]:
         name = struct.name
+        if not struct.is_object and name in NATIVE_INSTANCE_DEFAULTS:
+            # A shared record's re-stores must not become defaults of its users.
+            node = copy.deepcopy(struct.node)
+            self.apply_native_instance_defaults(name, node)
+            children = {
+                property_id(child): child
+                for child in node.findall("SubProperties/Element")
+            }
+            struct = replace(
+                struct,
+                fields=[
+                    replace(prop, node=children[property_id(prop.node)])
+                    for prop in struct.fields
+                ],
+            )
         parameter = "data" if struct.is_object else "sldrThis"
         initializers: list[tuple[str | None, str]] = []
         for prop in struct.fields:
@@ -1171,7 +1191,8 @@ class Generator:
             "Structs/SLdrAnimationSet.cpp": dedent("""\
                 #include "MetroidPrime/ScriptLoader/Structs/SLdrAnimationSet.hpp"
 
-                SLdrAnimationSet::SLdrAnimationSet() : ancs(kInvalidAssetId), character_index(0), initial_anim(0) {}
+                // G2ME01 0x802422E4 leaves character_index uninitialized.
+                SLdrAnimationSet::SLdrAnimationSet() : ancs(kInvalidAssetId), initial_anim(-1) {}
 
                 SLdrAnimationSet::~SLdrAnimationSet() {}
 
@@ -1309,9 +1330,9 @@ def read_profile(
     aggregate = data.get("aggregate")
     if aggregate is not None and (
         not isinstance(aggregate, str)
-        or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\.cpp", aggregate)
+        or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\.(cpp|inc)", aggregate)
     ):
-        raise TemplateError("Profile aggregate must be a C++ filename")
+        raise TemplateError("Profile aggregate must be a C++ source or definition fragment")
     duplicates = data.get("duplicates", {})
     if not isinstance(duplicates, dict) or any(
         not isinstance(name, str)
