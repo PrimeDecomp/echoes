@@ -2143,10 +2143,12 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
 
   CPlayer* player = TCastToPtr< CPlayer >(damagee);
 
-  if (player && player->Get_x12f8() != 0) {
-    if (player->Get_x12f8() != 3) {
+  if (player && player->GetTurretState() != CPlayer::kTS_None) {
+    if (player->GetTurretState() != CPlayer::kTS_Active) {
       return false;
     }
+    // These inherited turret helpers forward the damage position and test its direction.
+    // Their complete interfaces remain unresolved; see the radius-damage research notes.
     player->fn_8000d3ac(pos, *this);
     if (!player->fn_8000d40c(dir, *this)) {
       return false;
