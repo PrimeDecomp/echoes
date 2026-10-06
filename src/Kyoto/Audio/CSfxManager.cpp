@@ -583,19 +583,22 @@ void CSfxManager::TurnOffChannel(ESfxChannels channel) {
 }
 
 void CSfxManager::TurnOnChannel(ESfxChannels channel) {
-  mDoUpdate = true;
   mCurrentChannel = channel;
   CSfxChannel& sounds = mChannels[channel];
-  for (int i = 0; i < sounds.mListeners.size(); ++i) {
-    if (!sounds.mListeners[i].mActive) {
-      continue;
+  mDoUpdate = true;
+  bool hasListener = false;
+  for (int i = 0; i < 4; ++i) {
+    if (sounds.mListeners[i].mActive) {
+      hasListener = true;
+      break;
     }
+  }
+  if (hasListener) {
     for (int j = 0; j < sounds.mSounds.size(); ++j) {
       if (sounds.mSounds[j] != nullptr) {
         sounds.mSounds[j]->UpdateEmitter();
       }
     }
-    break;
   }
 }
 
@@ -908,7 +911,7 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
     }
     const int* area = areas.begin();
     for (; area != areas.end(); ++area) {
-      if (*area == volume->mArea) {
+      if (volume->mArea == *area) {
         break;
       }
     }
@@ -918,7 +921,7 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
   }
   if (currentArea != mStudioState.first) {
     mStudioState.first = currentArea;
-    mStudioState.second = !mStudioState.second;
+    mStudioState.second = (uchar)!mStudioState.second;
   }
   for (const int* area = areas.begin(); area != areas.end(); ++area) {
     int priority = -1;
@@ -926,8 +929,8 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
     for (CAuxEffect* effect = mAuxEffects.begin(); effect != mAuxEffects.end(); ++effect) {
       if (effect->IsRegistered() && effect->GetArea() == *area &&
           effect->GetPriority() > priority) {
-        priority = effect->GetPriority();
         best = effect;
+        priority = effect->GetPriority();
       }
     }
     if (best == mAuxEffects.end() || best->IsActive()) {
@@ -939,8 +942,10 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
         effect->SetActive(false);
       }
     }
-    const uchar bus =
-        best->GetArea() == mStudioState.first ? mStudioState.second : !mStudioState.second;
+    int bus = mStudioState.second;
+    if (best->GetArea() != mStudioState.first) {
+      bus = mStudioState.second ? 0 : 1;
+    }
     best->SetProcessingId(
         mAuxEffectManager.AddEffect(bus, *best, CAuxEffectManager::kEC_Parallel, true));
     best->SetActive(true);
@@ -949,13 +954,12 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
     break;
   }
   for (int i = 0; i < channel.mSounds.size(); ++i) {
-    CBaseSfxWrapper* sound = channel.mSounds[i];
-    if (sound == nullptr) {
+    if (channel.mSounds[i] == nullptr) {
       continue;
     }
-    const int soundArea = sound->GetArea();
+    const int soundArea = channel.mSounds[i]->GetArea();
     if (soundArea == kAllAreas) {
-      sound->SetInArea(true);
+      channel.mSounds[i]->SetInArea(true);
     } else {
       bool inArea = false;
       for (const int* area = areas.begin(); area != areas.end(); ++area) {
@@ -964,7 +968,7 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
         }
       }
       mDoUpdate = true;
-      sound->SetInArea(inArea);
+      channel.mSounds[i]->SetInArea(inArea);
     }
   }
 }
