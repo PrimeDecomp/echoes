@@ -494,10 +494,10 @@ void CSfxManager::KillAll(ESfxChannels channel) {
   CSfxChannel& sounds = mChannels[channel];
   for (int i = 0; i < sounds.mSounds.size(); ++i) {
     CBaseSfxWrapper* sound = sounds.mSounds[i];
+    if (sound != nullptr && sound->IsPlaying()) {
+      sound->Stop();
+    }
     if (sound != nullptr) {
-      if (sound->IsPlaying()) {
-        sound->Stop();
-      }
       sound->Release();
     }
     sounds.mSounds[i] = nullptr;
@@ -566,19 +566,17 @@ CSfxManager::ESfxChannels CSfxManager::GetChannel() { return mCurrentChannel; }
 void CSfxManager::TurnOffChannel(ESfxChannels channel) {
   CSfxChannel& sounds = mChannels[channel];
   for (int i = 0; i < sounds.mSounds.size(); ++i) {
-    CBaseSfxWrapper* sound = sounds.mSounds[i];
-    if (sound != nullptr) {
-      if (sound->IsLooped()) {
-        sound->UpdateEmitterSilent();
+    if (sounds.mSounds[i] != nullptr) {
+      if (sounds.mSounds[i]->IsLooped()) {
+        sounds.mSounds[i]->UpdateEmitterSilent();
       } else {
-        sound->Stop();
+        sounds.mSounds[i]->Stop();
       }
     }
   }
   for (int i = 0; i < sounds.mSounds.size(); ++i) {
-    CBaseSfxWrapper* sound = sounds.mSounds[i];
-    if (sound != nullptr && !sound->IsLooped()) {
-      sound->Release();
+    if (sounds.mSounds[i] != nullptr && !sounds.mSounds[i]->IsLooped()) {
+      sounds.mSounds[i]->Release();
       sounds.mSounds[i] = nullptr;
     }
   }
@@ -973,52 +971,54 @@ void CSfxManager::SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, 
 
 CSfxManager::CSfxEmitterWrapper*
 CSfxManager::AllocateCSfxEmitterWrapper(const CSfxEmitterWrapper& sound) {
+  CSfxEmitterWrapper* result = nullptr;
   for (int i = 0; i < mEmitterWrapperPool.size(); ++i) {
     if (mEmitterWrapperPool[i].Available()) {
       mEmitterWrapperPool[i] = sound;
-      return &mEmitterWrapperPool[i];
+      result = &mEmitterWrapperPool[i];
+      break;
     }
   }
-  if (mEmitterWrapperPool.size() == mEmitterWrapperPool.capacity()) {
-    return nullptr;
+  if (result == nullptr && mEmitterWrapperPool.size() != mEmitterWrapperPool.capacity()) {
+    mEmitterWrapperPool.push_back(sound);
+    result = &mEmitterWrapperPool.back();
   }
-  mEmitterWrapperPool.push_back(sound);
-  return &mEmitterWrapperPool.back();
+  return result;
 }
 
 CSfxManager::CSfxWrapper* CSfxManager::AllocateCSfxWrapper(const CSfxWrapper& sound) {
+  CSfxWrapper* result = nullptr;
   for (int i = 0; i < mWrapperPool.size(); ++i) {
     if (mWrapperPool[i].Available()) {
       mWrapperPool[i] = sound;
-      return &mWrapperPool[i];
+      result = &mWrapperPool[i];
+      break;
     }
   }
-  if (mWrapperPool.size() == mWrapperPool.capacity()) {
-    return nullptr;
+  if (result == nullptr && mWrapperPool.size() != mWrapperPool.capacity()) {
+    mWrapperPool.push_back(sound);
+    result = &mWrapperPool.back();
   }
-  mWrapperPool.push_back(sound);
-  return &mWrapperPool.back();
+  return result;
 }
 
 void CSfxManager::SetMuted(bool muted) {
   CSfxChannel& channel = mChannels[mCurrentChannel];
-  mMuted = muted;
   mDoUpdate = true;
+  mMuted = muted;
   if (muted) {
     for (int i = 0; i < channel.mSounds.size(); ++i) {
-      CBaseSfxWrapper* sound = channel.mSounds[i];
-      if (sound != nullptr) {
-        if (sound->IsLooped()) {
-          sound->UpdateEmitterSilent();
+      if (channel.mSounds[i] != nullptr) {
+        if (channel.mSounds[i]->IsLooped()) {
+          channel.mSounds[i]->UpdateEmitterSilent();
         } else {
-          sound->Stop();
+          channel.mSounds[i]->Stop();
         }
       }
     }
     for (int i = 0; i < channel.mSounds.size(); ++i) {
-      CBaseSfxWrapper* sound = channel.mSounds[i];
-      if (sound != nullptr && !sound->IsLooped()) {
-        sound->Release();
+      if (channel.mSounds[i] != nullptr && !channel.mSounds[i]->IsLooped()) {
+        channel.mSounds[i]->Release();
         channel.mSounds[i] = nullptr;
       }
     }
