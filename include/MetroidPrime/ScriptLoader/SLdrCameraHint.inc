@@ -50,11 +50,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x664c450a: {
-    LoadTypedefCameraHintStructC(sldrThis.cameraHintStructB, input);
+    LoadTypedefCameraAngleRange(sldrThis.attitudeRange, input);
     break;
   }
   case 0xc82395fa: {
-    LoadTypedefCameraHintStructC(sldrThis.cameraHintStructB_0xc82395fa, input);
+    LoadTypedefCameraAngleRange(sldrThis.azimuthRange, input);
     break;
   }
   case 0x645eb009: {
@@ -78,15 +78,15 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x934e392c: {
-    LoadTypedefCameraHintStructA(sldrThis.cameraHintStructA1, input);
+    LoadTypedefCameraPositionInterpolation(sldrThis.positionInterpolationOn, input);
     break;
   }
   case 0x9e8631f1: {
-    LoadTypedefUnknownStruct9(sldrThis.unknown_0x9e8631f1, input);
+    LoadTypedefCameraRotationInterpolation(sldrThis.rotationInterpolation, input);
     break;
   }
   case 0x138729a7: {
-    LoadTypedefCameraHintStructA(sldrThis.cameraHintStructA, input);
+    LoadTypedefCameraPositionInterpolation(sldrThis.positionInterpolationOff, input);
     break;
   }
   default:

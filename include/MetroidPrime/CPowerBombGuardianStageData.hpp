@@ -8,8 +8,9 @@ struct CPowerBombGuardianStageData {
   CPowerBombGuardianStageData(float minTimeBetweenAttacks, float maxTimeBetweenAttacks,
                               float minTimeBetweenShots, float maxTimeBetweenShots,
                               uchar minShotsInABurst, uchar maxShotsInABurst,
-                              float projectileGravityMultiplier, float unknown18,
-                              float doubleShotChance, uchar unknown20, uchar unknown21)
+                              float projectileGravityMultiplier, float waypointTargetSpreadRadius,
+                              float doubleShotChance, uchar minAttacksPerDoubleShot,
+                              uchar maxAttacksPerDoubleShot)
   : mMinTimeBetweenAttacks(minTimeBetweenAttacks)
   , mMaxTimeBetweenAttacks(maxTimeBetweenAttacks)
   , mMinTimeBetweenShots(minTimeBetweenShots)
@@ -17,10 +18,10 @@ struct CPowerBombGuardianStageData {
   , mMinShotsInABurst(minShotsInABurst)
   , mMaxShotsInABurst(maxShotsInABurst)
   , mProjectileGravityMultiplier(projectileGravityMultiplier)
-  , x18_(unknown18)
+  , mWaypointTargetSpreadRadius(waypointTargetSpreadRadius)
   , mDoubleShotChance(doubleShotChance)
-  , x20_(unknown20)
-  , x21_(unknown21) {}
+  , mMinAttacksPerDoubleShot(minAttacksPerDoubleShot)
+  , mMaxAttacksPerDoubleShot(maxAttacksPerDoubleShot) {}
 
   float mMinTimeBetweenAttacks;
   float mMaxTimeBetweenAttacks;
@@ -29,10 +30,10 @@ struct CPowerBombGuardianStageData {
   uchar mMinShotsInABurst;
   uchar mMaxShotsInABurst;
   float mProjectileGravityMultiplier;
-  float x18_; // Serialized property 0xd356c997; meaning unresolved.
+  float mWaypointTargetSpreadRadius; // Target-derived name; serialized property 0xd356c997.
   float mDoubleShotChance;
-  uchar x20_; // Serialized property 0x87cc8ba4; meaning unresolved.
-  uchar x21_; // Serialized property 0x6491357e; meaning unresolved.
+  uchar mMinAttacksPerDoubleShot; // Serialized property 0x87cc8ba4; name matches its property ID.
+  uchar mMaxAttacksPerDoubleShot; // Serialized property 0x6491357e; name matches its property ID.
 };
 CHECK_SIZEOF(CPowerBombGuardianStageData, 0x24)
 

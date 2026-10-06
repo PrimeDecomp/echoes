@@ -21,84 +21,13 @@ struct SLdrPowerBombGuardianStageProperties {
   int minShotsInABurst; // 0x64d482d5
   int maxShotsInABurst; // 0xc3e002ac
   float powerBombProjectileGravityMultiplier; // 0xbb4b6680
-  float unknown_0xd356c997; // 0xd356c997
+  float waypointTargetSpreadRadius; // non-matching name, 0xd356c997
   float doubleShotChance; // 0xca6ac43a
-  int unknown_0x87cc8ba4; // 0x87cc8ba4
-  int unknown_0x6491357e; // 0x6491357e
+  int minAttacksPerDoubleShot; // 0x87cc8ba4
+  int maxAttacksPerDoubleShot; // 0x6491357e
 };
 
-inline SLdrPowerBombGuardianStageProperties::SLdrPowerBombGuardianStageProperties() {
-  minTimeBetweenAttacks = 2.0f;
-  maxTimeBetweenAttacks = 2.0f;
-  minTimeBetweenShots = 1.0f;
-  maxTimeBetweenShots = 1.0f;
-  minShotsInABurst = 1;
-  maxShotsInABurst = 1;
-  powerBombProjectileGravityMultiplier = 1.0f;
-  unknown_0xd356c997 = 1.0f;
-  doubleShotChance = 0.5f;
-  unknown_0x87cc8ba4 = 10;
-  unknown_0x6491357e = 10;
-}
-
-inline SLdrPowerBombGuardianStageProperties::~SLdrPowerBombGuardianStageProperties() {}
-
-inline void LoadTypedefPowerBombGuardianStageProperties(SLdrPowerBombGuardianStageProperties& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x95e7a2c2: {
-      sldrThis.minTimeBetweenAttacks = input.ReadFloat();
-      break;
-    }
-    case 0x76ba1c18: {
-      sldrThis.maxTimeBetweenAttacks = input.ReadFloat();
-      break;
-    }
-    case 0x3eb2de35: {
-      sldrThis.minTimeBetweenShots = input.ReadFloat();
-      break;
-    }
-    case 0xe50d8dd2: {
-      sldrThis.maxTimeBetweenShots = input.ReadFloat();
-      break;
-    }
-    case 0x64d482d5: {
-      sldrThis.minShotsInABurst = input.ReadInt32();
-      break;
-    }
-    case 0xc3e002ac: {
-      sldrThis.maxShotsInABurst = input.ReadInt32();
-      break;
-    }
-    case 0xbb4b6680: {
-      sldrThis.powerBombProjectileGravityMultiplier = input.ReadFloat();
-      break;
-    }
-    case 0xd356c997: {
-      sldrThis.unknown_0xd356c997 = input.ReadFloat();
-      break;
-    }
-    case 0xca6ac43a: {
-      sldrThis.doubleShotChance = input.ReadFloat();
-      break;
-    }
-    case 0x87cc8ba4: {
-      sldrThis.unknown_0x87cc8ba4 = input.ReadInt32();
-      break;
-    }
-    case 0x6491357e: {
-      sldrThis.unknown_0x6491357e = input.ReadInt32();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefPowerBombGuardianStageProperties(SLdrPowerBombGuardianStageProperties& data, CInputStream& input);
 
 struct SLdrSporbBase {
   SLdrSporbBase();

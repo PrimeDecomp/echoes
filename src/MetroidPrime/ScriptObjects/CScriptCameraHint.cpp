@@ -30,13 +30,13 @@ CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& in
   if (sldrThis.fieldOfView.field_override) {
     overrideFlags |= 0x10;
   }
-  if (sldrThis.cameraHintStructB.field_override) {
+  if (sldrThis.attitudeRange.field_override) {
     overrideFlags |= 0x20;
   }
   if (sldrThis.angularSpeed.field_override) {
     overrideFlags |= 0x80;
   }
-  if (sldrThis.cameraHintStructB_0xc82395fa.field_override) {
+  if (sldrThis.azimuthRange.field_override) {
     overrideFlags |= 0x40;
   }
   if (sldrThis.zOffset.field_override) {
@@ -56,12 +56,12 @@ CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       sldrThis.flagsCameraHint, overrideFlags, sldrThis.minSpeedDistance.distance,
       sldrThis.maxSpeedDistance.distance, sldrThis.backwardsDistance.distance,
       sldrThis.lookAtOffset.offset, sldrThis.worldOffset, sldrThis.fieldOfView.fOV,
-      sldrThis.cameraHintStructB.angle * (M_PIF / 180.f),
-      sldrThis.cameraHintStructB_0xc82395fa.angle * (M_PIF / 180.f),
+      sldrThis.attitudeRange.angle * (M_PIF / 180.f),
+      sldrThis.azimuthRange.angle * (M_PIF / 180.f),
       sldrThis.angularSpeed.speed * (M_PIF / 180.f), sldrThis.zOffset.zOffset,
       sldrThis.interpolateOnTime, sldrThis.interpolateOffTime,
-      sldrThis.interpolateControlTime, sldrThis.cameraHintStructA1.type,
-      sldrThis.unknown_0x9e8631f1.type, sldrThis.cameraHintStructA.type,
+      sldrThis.interpolateControlTime, sldrThis.positionInterpolationOn.type,
+      sldrThis.rotationInterpolation.type, sldrThis.positionInterpolationOff.type,
       acrossAreas);
 }
 

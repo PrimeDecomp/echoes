@@ -504,8 +504,9 @@ LdrToPowerBombGuardianStageData(const SLdrPowerBombGuardianStageProperties& data
       data.minTimeBetweenAttacks, data.maxTimeBetweenAttacks, data.minTimeBetweenShots,
       data.maxTimeBetweenShots, static_cast< uchar >(data.minShotsInABurst),
       static_cast< uchar >(data.maxShotsInABurst), data.powerBombProjectileGravityMultiplier,
-      data.unknown_0xd356c997, data.doubleShotChance, static_cast< uchar >(data.unknown_0x87cc8ba4),
-      static_cast< uchar >(data.unknown_0x6491357e));
+      data.waypointTargetSpreadRadius, data.doubleShotChance,
+      static_cast< uchar >(data.minAttacksPerDoubleShot),
+      static_cast< uchar >(data.maxAttacksPerDoubleShot));
 }
 
 CEntityInfo& LdrToEntityInfo(CEntityInfo& info, const SLdrEditorProperties& data) {

@@ -1,5 +1,5 @@
 {
-  "template_ref": "c39a4701defd3b55aa8567c4cf193dba36c06e30",
+  "template_ref": "25fb176050d332894b1ad1a595d0d214309b7d6b",
   "sources": [
     "Structs/SLdrAnimationSet.cpp",
     "Structs/SLdrCameraBehaviour.cpp",
@@ -38,7 +38,11 @@
     "Structs/SLdrBasicSwarmProperties.cpp",
     "Structs/SLdrAudioPlaybackParms.cpp",
     "Structs/SLdrCommand.cpp",
-    "Structs/SLdrEchoParameters.cpp"
+    "Structs/SLdrEchoParameters.cpp",
+    "Structs/SLdrCameraPositionInterpolation.cpp",
+    "Structs/SLdrCameraRotationInterpolation.cpp",
+    "Structs/SLdrCameraAngleRange.cpp",
+    "Structs/SLdrPowerBombGuardianStageProperties.cpp"
   ],
   "aggregate": "ScriptLoaderDefinitions.inc"
 }
