@@ -37,8 +37,6 @@
 static TUniqueId skHomingPickupId = kInvalidUniqueId;
 static float skDrawInDistance = 30.f;
 static float skMultiplayerDrawInDistance = 12.f;
-// The largest finite single-precision value is (2 - epsilon) * 2^127.
-static const float skMaxHomingDistanceSquared = (2.f - FLT_EPSILON) * 1.7014118346046923e+38f;
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, const CModelData& modelData,
@@ -255,7 +253,7 @@ void CScriptPickup::Think(float dt, CStateManager& mgr) {
   skHomingPickupId = GetUniqueId();
 
   if (mgr.IsMultiplayer() && mCanHomeByDefault && mAutoHomeRange > 0.f && mDelayUntilHome <= 0.f) {
-    float closestDistance = skMaxHomingDistanceSquared;
+    float closestDistance = FLT_MAX;
     int closestPlayer = 0;
     for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
       CPlayer* player = mgr.GetPlayer(i);
@@ -291,7 +289,7 @@ void CScriptPickup::Think(float dt, CStateManager& mgr) {
   }
 
   if (!mInTractor) {
-    float closestDistance = skMaxHomingDistanceSquared;
+    float closestDistance = FLT_MAX;
     for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
       const float drawInDistance =
           mgr.IsMultiplayer() ? skMultiplayerDrawInDistance : skDrawInDistance;
