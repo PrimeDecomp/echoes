@@ -22,6 +22,7 @@ class CElectricDescription;
 class CEnergyProjectile;
 class CGenDescription;
 class CImpactVisorEffect;
+class CPathFindPointSearch;
 class CPathFindSearch;
 class CPatterned;
 class CProjectileInfo;
@@ -121,7 +122,11 @@ public:
   CPathFindSearch* GetSearchPath() const {
     return const_cast< CPatterned* >(this)->GetSearchPath();
   }
-  virtual void* fn_80073c7c() { return nullptr; }
+  // Guessed name; the point-based path used by CIngSpotPathFindNavigation.
+  virtual CPathFindPointSearch* GetPointSearchPath() { return nullptr; }
+  CPathFindPointSearch* GetPointSearchPath() const {
+    return const_cast< CPatterned* >(this)->GetPointSearchPath();
+  }
   virtual CDamageInfo GetContactDamage() const;
   virtual void UpdateHitDamageTime(float dt);
   virtual void SetupStateMachine(CStateManager& mgr);
