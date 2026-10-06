@@ -162,6 +162,11 @@ public:
   CTransform4f GetLctrTransform(const CSegId& id) const;
   bool IsBeingSnatched() const;
   bool IsIngPossessed() const;
+
+  float GetIngPossessedDamageMultiplier() const {
+    return mIngPossessionData.ingPossessedDamageMultiplier;
+  }
+
   void UpdateIngPossession(float dt);
   CEnergyProjectile* LaunchProjectile(const CTransform4f& xf, CStateManager& mgr,
                                       int maxProjectiles, uint attributes, bool homing,

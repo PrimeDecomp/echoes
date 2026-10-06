@@ -7,6 +7,7 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
 #include "MetroidPrime/CDecalManager.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
@@ -1997,140 +1998,79 @@ void CStateManager::RemoveObject(TUniqueId id) {
   mAllocatedObjectIndices[id.Value()] = false;
 }
 
-void CStateManager::TestBombHittingWater(const CActor& source, const CVector3f& position,
-                                         CActor& damagee) {
-  int index = 0;
-  if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(source)) {
-    const int attributes = weapon->GetAttribField();
-    if ((attributes & (CWeapon::kPA_TriggerBomb | CWeapon::kPA_PowerBombs)) != 0) {
-      if ((attributes & CWeapon::kPA_PowerBombs) != 0) {
-        index = 1;
-      }
-      if (CScriptWater* const water = TCastToPtr< CScriptWater >(damagee)) {
-        const CVector3f hitPosition(position.GetX(), position.GetY(),
-                                    water->GetTriggerBoundsWR().GetMaxPoint().GetZ());
-        const float depth = -water->GetWRSurfacePlane().GetHeight(position);
-        if (depth <= skBombUnderwaterRanges[index] && depth > 0.f) {
-          const float splashFactor = 1.f - depth / skBombUnderwaterRanges[index];
-          if (index == 0) {
-            mFluidPlaneManager->CreateSplash(source.GetUniqueId(), *this, *water, hitPosition,
-                                             splashFactor, true);
-          }
-        }
-      }
-    }
+void CStateManager::SendDamageScriptMsgs(CActor& damagee, TUniqueId source,
+                                         const CDamageInfo& damage) {
+  damagee.SendScriptMsgs(kSS_Damage, *this, kSM_None);
+  EScriptObjectState state = kSS_InvalidState;
+  switch (damage.GetWeaponMode1()) {
+  case kWT_Power:
+    state = kSS_PowerDamage;
+    break;
+  case kWT_Dark:
+    state = kSS_DarkDamage;
+    break;
+  case kWT_Light:
+    state = kSS_LightDamage;
+    break;
+  case kWT_Annihilator:
+    state = kSS_AnnihilatorDamage;
+    break;
+  case kWT_Bomb:
+    state = kSS_BombDamage;
+    break;
+  case kWT_PowerBomb:
+    state = kSS_PowerBombDamage;
+    break;
+  case kWT_Missile:
+    state = kSS_MissileDamage;
+    break;
+  case kWT_BoostBall:
+    state = kSS_BoostBallDamage;
+    break;
+  case kWT_CannonBall:
+    state = kSS_CannonBallDamage;
+    break;
+  case kWT_ScrewAttack:
+    state = kSS_ScrewAttackDamage;
+    break;
+  case kWT_Phazon:
+    state = kSS_PhazonDamage;
+    break;
+  case kWT_AI:
+    state = kSS_AIDamage;
+    break;
+  case kWT_PoisonWater1:
+    state = kSS_PoisonWaterDamage;
+    break;
+  case kWT_PoisonWater2:
+    state = kSS_PoisonWaterDamage;
+    break;
+  case kWT_Lava:
+    state = kSS_LavaDamage;
+    break;
+  case kWT_Heat:
+    state = kSS_HeatDamage;
+    break;
+  case kWT_Unused1:
+    state = kSS_ColdDamage;
+    break;
+  case kWT_AreaDark:
+    state = kSS_AreaDarkDamage;
+    break;
+  case kWT_AreaLight:
+    state = kSS_AreaLightDamage;
+    break;
+  case kWT_UnknownSource:
+    state = kSS_UnknownSourceDamage;
+    break;
+  case kWT_SafeZone:
+    state = kSS_InvalidState;
+    break;
+  default:
+    break;
   }
-}
-
-const bool CStateManager::MultiRayCollideWorld(const CMRay& ray,
-                                               const CMaterialFilter& filter) const {
-  CVector3f offset2 =
-      CVector3f(ray.GetDirection().GetY(), -ray.GetDirection().GetZ(), ray.GetDirection().GetX());
-  CVector3f offset = CVector3f::Cross(offset2, ray.GetDirection()).AsNormalized();
-  offset2 = 0.35355338f * CVector3f::Cross(ray.GetDirection(), offset);
-  offset *= 0.35355338f;
-
-  bool visible = false;
-  for (int i = 0; i < 4; ++i) {
-    const CVector3f start =
-        ray.GetStart() + ((i & 1) ? offset : -offset) + ((i & 2) ? -offset2 : offset2);
-    visible = CGameCollision::RayStaticLineOfSightTest(*this, start, ray.GetDirection(),
-                                                       ray.GetLength(), filter);
-    if (visible) {
-      break;
-    }
-  }
-  return visible;
-}
-
-const bool
-CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
-                             const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const {
-  if (damagee.GetHealthInfo() == nullptr) {
-    return false;
-  }
-
-  // Material 59's semantic name remains unresolved; the native filter uses it,
-  // rather than Prime's Solid material, and excludes NoPlatformCollision.
-  static const CMaterialList include = CMaterialList(kMT_Unknown59);
-  static const CMaterialList exclude =
-      CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Occluder, kMT_Character);
-  static const CMaterialFilter filter =
-      CMaterialFilter(include, exclude, CMaterialFilter::kFT_IncludeExclude);
-
-  const rstl::optional_object< CAABox > bounds = damagee.GetTouchBounds();
-  if (!bounds) {
-    return false;
-  }
-
-  const CVector3f center = bounds->GetCenterPoint();
-  CVector3f direction = center - position;
-  if (direction.CanBeNormalized()) {
-    const float length = direction.Magnitude();
-    direction *= 1.f / length;
-    if (RayCollideWorld(position, center, nearList, filter, &damagee)) {
-      return true;
-    }
-
-    const CMRay ray = CMRay(position, direction, length);
-    if (!MultiRayCollideWorld(ray, filter)) {
-      return false;
-    }
-
-    float depth;
-    CVector3f normal = CVector3f::Zero();
-    const int count = CollisionUtil::RayAABoxIntersection(ray, *bounds, normal, depth);
-    if (count == 0) {
-      return true;
-    }
-    if (count == 1) {
-      return true;
-    }
-    return CGameCollision::RayDynamicLineOfSightTest(*this, position, direction, depth * length,
-                                                     filter, nearList, &damagee);
-  }
-  return true;
-}
-
-void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner,
-                                   const CDamageInfo& damage,
-                                   const CDamageVulnerability& vulnerability,
-                                   const CVector3f& direction, float dampen) {
-  const CWeaponTypeVulnerability weaponVulnerability =
-      vulnerability.GetVulnerability(damage.GetWeaponMode());
-  if (!weaponVulnerability.WeaponHurts()) {
-    return;
-  }
-
-  const CHealthInfo* health = actor.GetHealthInfo();
-  if (health == nullptr) {
-    return;
-  }
-
-  const float power = (1.f - dampen) * damage.GetKnockBackPower();
-  const float resistance = health->GetKnockBackResistance();
-  CPlayer* player = TCastToPtr< CPlayer >(actor);
-  CPatterned* patterned = TCastToPtr< CPatterned >(actor);
-  const bool alive = health->GetHP() > 0.f;
-  const CKnockBackInfo info(direction, source, owner, damage, dampen == 0.f);
-  if (player != nullptr) {
-    player->GetKnockBackManager().KnockBack(*this, *player, info);
-    return;
-  }
-
-  if (patterned == nullptr && !alive) {
-    if (power > resistance) {
-      if (CPhysicsActor* const physics = TCastToPtr< CPhysicsActor >(actor)) {
-        const CVector3f impulse = direction * (1.5f * ((power - resistance) * physics->GetMass()));
-        // The native impulse gate uses material 59; its semantic name is unresolved.
-        if (!physics->GetMaterialList().HasMaterial(kMT_Immovable) &&
-            physics->GetMaterialList().HasMaterial(kMT_Unknown59)) {
-          physics->ApplyImpulseWR(impulse, CAxisAngle::Identity());
-        }
-      }
-    }
-  } else if (patterned != nullptr) {
-    patterned->KnockBack(*this, info);
+  if (state != kSS_InvalidState) {
+    damagee.SendScriptMsgs(state, *this, kSM_None);
   }
 }
 
@@ -2152,8 +2092,43 @@ void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId
   }
 }
 
+CDamageInfo CStateManager::GetModifiedDamageInfo(TUniqueId damager, TUniqueId owner,
+                                                 TUniqueId damagee,
+                                                 const CDamageInfo& damage) const {
+  const CPatterned* patterned = TCastToConstPtr< CPatterned >(GetObjectById(damager));
+  if (patterned == nullptr) {
+    patterned = TCastToConstPtr< CPatterned >(GetObjectById(owner));
+  }
+
+  if (patterned != nullptr) {
+    if (patterned->IsIngPossessed()) {
+      CDamageInfo result = damage;
+      result.SetDamage(damage.GetDamage() * patterned->GetIngPossessedDamageMultiplier());
+      return result;
+    }
+    return damage;
+  }
+
+  if (gpGameState->GetHardModeEnabled() &&
+      TCastToConstPtr< CPlayer >(GetObjectById(owner)) != nullptr) {
+    bool aiDamage = false;
+    if (TCastToConstPtr< CPatterned >(GetObjectById(damagee)) != nullptr) {
+      aiDamage = true;
+    } else if (const CCollisionActor* collision =
+                   TCastToConstPtr< CCollisionActor >(GetObjectById(damagee))) {
+      if (TCastToConstPtr< CPatterned >(GetObjectById(collision->GetOwnerId())) != nullptr) {
+        aiDamage = true;
+      }
+    }
+    if (aiDamage) {
+      return NGunUtils::DifficultyModifyDamageInfo(damage);
+    }
+  }
+  return damage;
+}
+
 bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee,
-                                     float damage, const TUniqueId& uid1, const TUniqueId& uid2,
+                                     float damage, TUniqueId uid1, TUniqueId uid2,
                                      const CDamageInfo& damageInfo, int unkParam) {
   CHealthInfo* healthInfo = damagee.HealthInfo();
   if (!healthInfo || damage < 0.0f) {
@@ -2249,6 +2224,215 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
     }
     hp = playerState.CalculateHealth();
     damage = -(damageReduction * damage - damage);
+  }
+}
+
+void CStateManager::TestBombHittingWater(const CActor& source, const CVector3f& position,
+                                         CActor& damagee) {
+  int index = 0;
+  if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(source)) {
+    const int attributes = weapon->GetAttribField();
+    if ((attributes & (CWeapon::kPA_TriggerBomb | CWeapon::kPA_PowerBombs)) != 0) {
+      if ((attributes & CWeapon::kPA_PowerBombs) != 0) {
+        index = 1;
+      }
+      if (CScriptWater* const water = TCastToPtr< CScriptWater >(damagee)) {
+        const CVector3f hitPosition(position.GetX(), position.GetY(),
+                                    water->GetTriggerBoundsWR().GetMaxPoint().GetZ());
+        const float depth = -water->GetWRSurfacePlane().GetHeight(position);
+        if (depth <= skBombUnderwaterRanges[index] && depth > 0.f) {
+          const float splashFactor = 1.f - depth / skBombUnderwaterRanges[index];
+          if (index == 0) {
+            mFluidPlaneManager->CreateSplash(source.GetUniqueId(), *this, *water, hitPosition,
+                                             splashFactor, true);
+          }
+        }
+      }
+    }
+  }
+}
+
+const bool CStateManager::MultiRayCollideWorld(const CMRay& ray,
+                                               const CMaterialFilter& filter) const {
+  CVector3f offset2 =
+      CVector3f(ray.GetDirection().GetY(), -ray.GetDirection().GetZ(), ray.GetDirection().GetX());
+  CVector3f offset = CVector3f::Cross(offset2, ray.GetDirection()).AsNormalized();
+  offset2 = 0.35355338f * CVector3f::Cross(ray.GetDirection(), offset);
+  offset *= 0.35355338f;
+
+  bool visible = false;
+  for (int i = 0; i < 4; ++i) {
+    const CVector3f start =
+        ray.GetStart() + ((i & 1) ? offset : -offset) + ((i & 2) ? -offset2 : offset2);
+    visible = CGameCollision::RayStaticLineOfSightTest(*this, start, ray.GetDirection(),
+                                                       ray.GetLength(), filter);
+    if (visible) {
+      break;
+    }
+  }
+  return visible;
+}
+
+const bool
+CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
+                             const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const {
+  if (damagee.GetHealthInfo() == nullptr) {
+    return false;
+  }
+
+  // Material 59's semantic name remains unresolved; the native filter uses it,
+  // rather than Prime's Solid material, and excludes NoPlatformCollision.
+  static const CMaterialList include = CMaterialList(kMT_Unknown59);
+  static const CMaterialList exclude =
+      CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Occluder, kMT_Character);
+  static const CMaterialFilter filter =
+      CMaterialFilter(include, exclude, CMaterialFilter::kFT_IncludeExclude);
+
+  const rstl::optional_object< CAABox > bounds = damagee.GetTouchBounds();
+  if (!bounds) {
+    return false;
+  }
+
+  const CVector3f center = bounds->GetCenterPoint();
+  CVector3f direction = center - position;
+  if (direction.CanBeNormalized()) {
+    const float length = direction.Magnitude();
+    direction *= 1.f / length;
+    if (RayCollideWorld(position, center, nearList, filter, &damagee)) {
+      return true;
+    }
+
+    const CMRay ray = CMRay(position, direction, length);
+    if (!MultiRayCollideWorld(ray, filter)) {
+      return false;
+    }
+
+    float depth;
+    CVector3f normal = CVector3f::Zero();
+    const int count = CollisionUtil::RayAABoxIntersection(ray, *bounds, normal, depth);
+    if (count == 0) {
+      return true;
+    }
+    if (count == 1) {
+      return true;
+    }
+    return CGameCollision::RayDynamicLineOfSightTest(*this, position, direction, depth * length,
+                                                     filter, nearList, &damagee);
+  }
+  return true;
+}
+
+void CStateManager::ApplyRadiusDamage(const CActor& source, const CVector3f& position,
+                                      CActor& damagee, TUniqueId owner, const CDamageInfo& damage) {
+  const CDamageInfo info(
+      GetModifiedDamageInfo(source.GetUniqueId(), owner, damagee.GetUniqueId(), damage));
+  CVector3f delta = damagee.GetTranslation() - position;
+  if (!(delta.MagSquared() < info.GetRadius() * info.GetRadius())) {
+    if (!damagee.GetTouchBounds()) {
+      return;
+    }
+    if (!CCollidableSphere::Sphere_AABox_Bool(CSphere(position, info.GetRadius()),
+                                              *damagee.GetTouchBounds())) {
+      return;
+    }
+  }
+
+  float radius = info.GetRadius();
+  radius = radius > FLT_EPSILON ? delta.Magnitude() / radius : 0.f;
+  radius = rstl::min_val(radius, 1.f);
+  if (radius > 0.f) {
+    delta.Normalize();
+  }
+
+  const CDamageVulnerability* vulnerability =
+      radius > 0.f ? damagee.GetDamageVulnerability(position, delta, info)
+                   : damagee.GetDamageVulnerability();
+  if (vulnerability->WeaponHits(info.GetWeaponMode(), 1)) {
+    const float localDamage = info.GetRadiusDamage(*vulnerability);
+    if (localDamage > 0.f) {
+      ApplyLocalDamage(position, delta, damagee, localDamage, source.GetUniqueId(), owner, info, 1);
+    }
+    SendDamageScriptMsgs(damagee, source.GetUniqueId(), info);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_Damage, kInvalidUniqueId);
+  } else {
+    damagee.SendScriptMsgs(kSS_ResistedDamage, *this, kInvalidUniqueId, kSM_None);
+    SendScriptMsg(&damagee, source.GetUniqueId(), kSM_ResistedDamage, kInvalidUniqueId);
+  }
+
+  const CVector3f knockbackDelta =
+      damagee.GetTransform().GetTranslation() - source.GetTransform().GetTranslation();
+  const CVector3f knockbackDirection(knockbackDelta.GetX(), knockbackDelta.GetY(), 0.0001f);
+  ApplyKnockBack(damagee, source.GetUniqueId(), owner, info, *vulnerability,
+                 knockbackDirection.AsNormalized(), radius);
+}
+
+void CStateManager::ProcessRadiusDamage(const CActor& source, CActor& damagee, TUniqueId owner,
+                                        const CDamageInfo& damage, const CMaterialFilter& filter) {
+  CMaterialFilter localFilter = filter;
+  const TUniqueId sourceId = source.GetUniqueId();
+  const TUniqueId damageeId = damagee.GetUniqueId();
+  const float radius = damage.GetRadius();
+  const CVector3f position(source.GetTranslation());
+  const float negativeRadius = -radius;
+  const CAABox bounds(position + CVector3f(negativeRadius, negativeRadius, negativeRadius),
+                      position + CVector3f(radius, radius, radius));
+
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  BuildNearList(nearList, bounds, localFilter, nullptr);
+  for (rstl::reserved_vector< TUniqueId, 1024 >::iterator it = nearList.begin();
+       it != nearList.end(); ++it) {
+    CActor* actor = static_cast< CActor* >(ObjectById(*it));
+    if (actor != nullptr) {
+      const TUniqueId actorId = actor->GetUniqueId();
+      if (sourceId != actorId && owner != actorId && damageeId != actorId) {
+        TestBombHittingWater(source, position, *actor);
+        if (TestRayDamage(position, *actor, nearList)) {
+          ApplyRadiusDamage(source, position, *actor, owner, damage);
+        }
+      }
+    }
+  }
+}
+
+void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner,
+                                   const CDamageInfo& damage,
+                                   const CDamageVulnerability& vulnerability,
+                                   const CVector3f& direction, float dampen) {
+  const CWeaponTypeVulnerability weaponVulnerability =
+      vulnerability.GetVulnerability(damage.GetWeaponMode());
+  if (!weaponVulnerability.WeaponHurts()) {
+    return;
+  }
+
+  const CHealthInfo* health = actor.GetHealthInfo();
+  if (health == nullptr) {
+    return;
+  }
+
+  const float power = (1.f - dampen) * damage.GetKnockBackPower();
+  const float resistance = health->GetKnockBackResistance();
+  CPlayer* player = TCastToPtr< CPlayer >(actor);
+  CPatterned* patterned = TCastToPtr< CPatterned >(actor);
+  const bool alive = health->GetHP() > 0.f;
+  const CKnockBackInfo info(direction, source, owner, damage, dampen == 0.f);
+  if (player != nullptr) {
+    player->GetKnockBackManager().KnockBack(*this, *player, info);
+    return;
+  }
+
+  if (patterned == nullptr && !alive) {
+    if (power > resistance) {
+      if (CPhysicsActor* const physics = TCastToPtr< CPhysicsActor >(actor)) {
+        const CVector3f impulse = direction * (1.5f * ((power - resistance) * physics->GetMass()));
+        // The native impulse gate uses material 59; its semantic name is unresolved.
+        if (!physics->GetMaterialList().HasMaterial(kMT_Immovable) &&
+            physics->GetMaterialList().HasMaterial(kMT_Unknown59)) {
+          physics->ApplyImpulseWR(impulse, CAxisAngle::Identity());
+        }
+      }
+    }
+  } else if (patterned != nullptr) {
+    patterned->KnockBack(*this, info);
   }
 }
 
