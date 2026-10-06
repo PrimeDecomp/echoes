@@ -278,6 +278,8 @@ public:
   static int sParticleSystemAliveCount;
 
 public:
+  static void SetGlobalSeed(const ushort seed) { sSeed = seed; }
+
   // Hypothesis: the sbss flag read by the G2ME01 CElementGen render paths.
   static bool sMoveRedToAlphaBuffer;
   static bool sEnableAlphaModulation; // Guessed name; distinct from sMoveRedToAlphaBuffer.
