@@ -116,7 +116,8 @@ void CProjectedShadow::RenderShadowBuffer(CStateManager& mgr, int count,
   for (int i = 0; i < count; ++i) {
     const CModelData& modelData = *models[i];
     const CTransform4f& modelTransform = *transforms[i];
-    CGraphics::SetModelMatrix(modelTransform * CTransform4f::Scale(CVector3f(modelData.GetScale())));
+    CGraphics::SetModelMatrix(modelTransform *
+                              CTransform4f::Scale(CVector3f(modelData.GetScale())));
     if (const CAnimData* animData = modelData.GetAnimationData()) {
       CSkinnedModel& skinnedModel = modelData.PickAnimatedModel(CModelData::kWM_Normal);
       animData->SetupRender();
@@ -159,8 +160,7 @@ void CProjectedShadow::Render(const CStateManager& mgr) const {
     return;
   }
 
-  const CAABox bounds =
-      ScaleAndTranslateBounds(mBounds, mTranslation, rstl::max_val(1.f, mScale));
+  const CAABox bounds = ScaleAndTranslateBounds(mBounds, mTranslation, rstl::max_val(1.f, mScale));
   mTexture.Load(GX_TEXMAP7, CTexture::kCM_Clamp);
   CGraphics::DisableAllLights();
   if (mPersistent) {
@@ -214,7 +214,7 @@ void CProjectedShadow::Render(const CStateManager& mgr) const {
   CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, false, GX_PTTEXMTX0);
   if (mProjectOnActors) {
     rstl::reserved_vector< TUniqueId, 1024 > nearList;
-    mgr.BuildNearList(nearList, queryBounds, CMaterialFilter::skPassEverything, nullptr);
+    mgr.BuildNearList(nearList, queryBounds, CMaterialFilter::GetPassEverything(), nullptr);
     for (AUTO(it, nearList.begin()); it != nearList.end(); ++it) {
       const CActor* actor = static_cast< const CActor* >(mgr.GetObjectById(*it));
       if (actor && actor->CanDrawStatic() && actor->GetTakesProjectedShadow()) {

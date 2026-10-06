@@ -11,7 +11,7 @@ CGenericFSM2::CGenericFSM2(CInputStream& in) {}
 
 CGenericFSM2::~CGenericFSM2() {}
 
-const CState2* CGenericFSM2::ResolveNode(uint target) const {}
+const CState2* CGenericFSM2::ResolveNode(uint target) const { return nullptr; }
 
 SStateMachine2SerializedTransition::SStateMachine2SerializedTransition(CInputStream& in) {}
 
@@ -22,7 +22,7 @@ CState2State::CState2State(const CState2State& other)
 
 CState2State::~CState2State() {}
 
-CState2::EType CState2State::GetType() const {}
+CState2::EType CState2State::GetType() const { return kType_Code; }
 
 void CState2State::Setup(const rstl::string& name,
                          const rstl::vector< SStateMachine2Transition >& transitions) {}
@@ -49,7 +49,7 @@ CState2Trigger::CState2Trigger(const CState2Trigger& other)
 
 CState2Trigger::~CState2Trigger() {}
 
-CState2::EType CState2Trigger::GetType() const {}
+CState2::EType CState2Trigger::GetType() const { return kType_Trigger; }
 
 void CState2Trigger::Setup(const rstl::string& name, const float& argument, bool negate,
                            const rstl::vector< SStateMachine2Transition >& transitions) {}
@@ -61,10 +61,10 @@ CState2SubMachine::CState2SubMachine(const CState2SubMachine& other)
 
 CState2SubMachine::~CState2SubMachine() {}
 
-CState2::EType CState2SubMachine::GetType() const {}
+CState2::EType CState2SubMachine::GetType() const { return kType_SubMachine; }
 
 void CState2SubMachine::Setup(const rstl::string& name,
                               const rstl::vector< SStateMachine2Transition >& transitions,
                               CAssetId assetId) {}
 
-const CGenericFSM2* CState2SubMachine::GetMachine() const {}
+const CGenericFSM2* CState2SubMachine::GetMachine() const { return nullptr; }

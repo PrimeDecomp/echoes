@@ -602,7 +602,7 @@ void CMorphBall::ComputeLiftForces(const CVector3f& controlForce, const CVector3
                               primitiveBounds.GetMaxPoint() + liftBoundsOffset);
       if (CGameCollision::DetectStaticCollisionBoolean(
               mgr, CCollidableAABox(liftBounds, CMaterialList(LiftBoundsMaterial)),
-              CTransform4f::Identity(), CMaterialFilter::skPassEverything)) {
+              CTransform4f::Identity(), CMaterialFilter::GetPassEverything())) {
         const CVector3f liftPos =
             primitiveXf.GetTranslation() + CVector3f(0.f, 0.f, 1.75f * GetBallRadius());
         const CVector3f liftDir = avgControlForce * (1.f / avgControlForceMag);

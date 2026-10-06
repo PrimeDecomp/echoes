@@ -1498,8 +1498,7 @@ config.libs = [
     Rel(
         "Tweaks",
         [
-            Object(NonMatching, "MetroidPrime/Tweaks/Tweaks.cpp"),
-            Object(NonMatching, "MetroidPrime/ScriptLoader/Tweaks.cpp"),
+            Object(Matching, "MetroidPrime/Tweaks/Tweaks.cpp"),
         ],
         # Native generated constructors address each float constant separately.
         extra_cflags=["-pool off"],

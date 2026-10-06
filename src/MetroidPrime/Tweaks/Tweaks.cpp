@@ -18,9 +18,9 @@
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "MetroidPrime/Tweaks/CTweakSlideShow.hpp"
 #include "MetroidPrime/Tweaks/CTweakTargeting.hpp"
+#include "../ScriptLoader/Tweaks.cpp"
 
-#include "dolphin/types.h"
-
+const char* gkTweakContainer = "Standard.NTWK";
 STweaks_FuncPtrs REL_loader_Tweaks;
 
 CTweakContents::CTweakContents() {}

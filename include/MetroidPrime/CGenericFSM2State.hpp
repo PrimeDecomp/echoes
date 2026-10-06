@@ -83,7 +83,9 @@ template < class T >
 CGenericFSM2State< T >::~CGenericFSM2State() {}
 
 template < class T >
-int CGenericFSM2State< T >::GetType() const {}
+int CGenericFSM2State< T >::GetType() const {
+  return 0;
+}
 
 template < class T >
 void CGenericFSM2State< T >::Reset(CStateManager& mgr, T& owner) {}
@@ -104,16 +106,24 @@ template < class T >
 void CGenericFSM2State< T >::Update(CStateManager& mgr, T& owner, float dt) {}
 
 template < class T >
-bool CGenericFSM2State< T >::HasState() const {}
+bool CGenericFSM2State< T >::HasState() const {
+  return false;
+}
 
 template < class T >
-const char* CGenericFSM2State< T >::GetName() const {}
+const char* CGenericFSM2State< T >::GetName() const {
+  return nullptr;
+}
 
 template < class T >
-float CGenericFSM2State< T >::GetTime() const {}
+float CGenericFSM2State< T >::GetTime() const {
+  return 0.f;
+}
 
 template < class T >
-float CGenericFSM2State< T >::GetDelay() const {}
+float CGenericFSM2State< T >::GetDelay() const {
+  return 0.f;
+}
 
 template < class T >
 void CGenericFSM2State< T >::SetDelay(float delay) {}

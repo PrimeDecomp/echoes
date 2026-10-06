@@ -109,7 +109,7 @@ CFactoryFnReturn FPortalAreaDataFactory(const SObjectTag&, CInputStream&, const 
 CFactoryFnReturn FStringListFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag&, CInputStream&,
                                                         const CVParamTransfer&);
-CFactoryFnReturn FRuleSetFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
+
 
 class CCharacterFactoryBuilder;
 class CGameState;
@@ -840,6 +840,8 @@ CGameState::~CGameState() {}
 
 void CMain::ResetGameState() {}
 
-int CMain::GetLanguage() const {}
+int CMain::GetLanguage() const {
+  return 0;
+}
 
 void CMain::UpdateStreamedAudio() {}
