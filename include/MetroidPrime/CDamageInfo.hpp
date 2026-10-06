@@ -22,9 +22,9 @@ public:
   , mDamageLoopSfxId(0xffff)
   , mSamusVoiceSfxId(0xffff)
   , mNoImmunity(false)
-  , x1a_25_(false) {}
+  , mApplyRadiusDamage(false) {}
 
-  // The x1a_25_ initializer is inferred from the two known argument patterns.
+  // The mApplyRadiusDamage initializer is inferred from the two known argument patterns.
   CDamageInfo(const CWeaponMode& mode, float damage, float radius, float knockback,
               bool noImmunity = false)
   : mWeaponMode(mode)
@@ -36,11 +36,22 @@ public:
   , mDamageLoopSfxId(0xffff)
   , mSamusVoiceSfxId(0xffff)
   , mNoImmunity(noImmunity)
-  , x1a_25_(!noImmunity) {}
+  , mApplyRadiusDamage(!noImmunity) {}
+
+  CDamageInfo(const CWeaponMode& mode, float damage, float radius, float knockback, bool noImmunity,
+              bool applyRadiusDamage)
+  : mWeaponMode(mode)
+  , mDamage(damage)
+  , mRadiusDamageAmount(damage)
+  , mDamageRadius(radius)
+  , mKnockbackPower(knockback)
+  , mDamageSfxId(0xffff)
+  , mDamageLoopSfxId(0xffff)
+  , mSamusVoiceSfxId(0xffff)
+  , mNoImmunity(noImmunity)
+  , mApplyRadiusDamage(applyRadiusDamage) {}
 
   CDamageInfo(CInputStream& in);
-  CDamageInfo(const SLdrTDamageInfo& data, bool charged = false, bool comboed = false,
-              bool noImmunity = false, bool flag = false);
   CDamageInfo(const CDamageInfo&, float);
   void SetDamageFromVulnerability(const CDamageVulnerability& dVuln, float damage);
 
@@ -58,8 +69,8 @@ public:
   void SetRadius(float r) { mDamageRadius = r; }
   float GetKnockBackPower() const { return mKnockbackPower; }
   float GetKnockBackPower(const CDamageVulnerability& vulnerability, float distance) const;
-  bool GetX1a25() const { return x1a_25_; }
-  void SetX1a25(bool flag) { x1a_25_ = flag; }
+  bool ShouldApplyRadiusDamage() const { return mApplyRadiusDamage; }
+  void SetApplyRadiusDamage(bool flag) { mApplyRadiusDamage = flag; }
   void SetKnockBackPower(float k) { mKnockbackPower = k; }
   float GetDamage() const { return mDamage; }
   void SetDamage(float d) { mDamage = d; }
@@ -96,9 +107,12 @@ private:
   ushort mDamageLoopSfxId;
   ushort mSamusVoiceSfxId;
   bool mNoImmunity : 1;
-  bool x1a_25_ : 1;
+  bool mApplyRadiusDamage : 1;
 };
 CHECK_SIZEOF(CDamageInfo, 0x1c)
+
+CDamageInfo LdrToDamageInfo(const SLdrTDamageInfo& data, bool charged = false, bool comboed = false,
+                            bool noImmunity = false, bool applyRadiusDamage = false);
 
 namespace NGunUtils {
 CDamageInfo DifficultyModifyDamageInfo(const CDamageInfo& damage);

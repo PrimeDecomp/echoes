@@ -6,19 +6,22 @@
 
 void CTweakPlayerGun::BuildCache() {
   mBeamInfo.clear();
-  mBeamInfo.push_back(SWeaponInfo(mData->weapons.power_Beam.delayBetweenShots,
-                                  CDamageInfo(mData->weapons.power_Beam.damageInfo.normal),
-                                  CDamageInfo(mData->weapons.power_Beam.damageInfo.charged, true)));
-  mBeamInfo.push_back(SWeaponInfo(mData->weapons.dark_Beam.delayBetweenShots,
-                                  CDamageInfo(mData->weapons.dark_Beam.damageInfo.normal),
-                                  CDamageInfo(mData->weapons.dark_Beam.damageInfo.charged, true)));
-  mBeamInfo.push_back(SWeaponInfo(mData->weapons.light_Beam.delayBetweenShots,
-                                  CDamageInfo(mData->weapons.light_Beam.damageInfo.normal),
-                                  CDamageInfo(mData->weapons.light_Beam.damageInfo.charged, true)));
+  mBeamInfo.push_back(
+      SWeaponInfo(mData->weapons.power_Beam.delayBetweenShots,
+                  LdrToDamageInfo(mData->weapons.power_Beam.damageInfo.normal),
+                  LdrToDamageInfo(mData->weapons.power_Beam.damageInfo.charged, true)));
+  mBeamInfo.push_back(
+      SWeaponInfo(mData->weapons.dark_Beam.delayBetweenShots,
+                  LdrToDamageInfo(mData->weapons.dark_Beam.damageInfo.normal),
+                  LdrToDamageInfo(mData->weapons.dark_Beam.damageInfo.charged, true)));
+  mBeamInfo.push_back(
+      SWeaponInfo(mData->weapons.light_Beam.delayBetweenShots,
+                  LdrToDamageInfo(mData->weapons.light_Beam.damageInfo.normal),
+                  LdrToDamageInfo(mData->weapons.light_Beam.damageInfo.charged, true)));
   mBeamInfo.push_back(
       SWeaponInfo(mData->weapons.annihilator_Beam.delayBetweenShots,
-                  CDamageInfo(mData->weapons.annihilator_Beam.damageInfo.normal),
-                  CDamageInfo(mData->weapons.annihilator_Beam.damageInfo.charged, true)));
+                  LdrToDamageInfo(mData->weapons.annihilator_Beam.damageInfo.normal),
+                  LdrToDamageInfo(mData->weapons.annihilator_Beam.damageInfo.charged, true)));
 }
 
 const SWeaponInfo& CTweakPlayerGun::GetBeamInfo(CPlayerState::EBeamId beam) const {
@@ -26,7 +29,7 @@ const SWeaponInfo& CTweakPlayerGun::GetBeamInfo(CPlayerState::EBeamId beam) cons
 }
 
 CDamageInfo CTweakPlayerGun::GetDarkBeamBlobDamage() const {
-  return CDamageInfo(mData->weapons.dark_Beam_Blob);
+  return LdrToDamageInfo(mData->weapons.dark_Beam_Blob);
 }
 
 SWeaponInfo::SWeaponInfo(float coolDown, const CDamageInfo& normal, const CDamageInfo& charged)
@@ -34,30 +37,30 @@ SWeaponInfo::SWeaponInfo(float coolDown, const CDamageInfo& normal, const CDamag
 
 SWeaponInfo CTweakPlayerGun::GetPhazonBeamInfo() const {
   return SWeaponInfo(mData->weapons.phazon_Beam.delayBetweenShots,
-                     CDamageInfo(mData->weapons.phazon_Beam.damageInfo.normal),
-                     CDamageInfo(mData->weapons.phazon_Beam.damageInfo.charged, true));
+                     LdrToDamageInfo(mData->weapons.phazon_Beam.damageInfo.normal),
+                     LdrToDamageInfo(mData->weapons.phazon_Beam.damageInfo.charged, true));
 }
 
 CDamageInfo CTweakPlayerGun::GetMissileDamage() const {
-  return CDamageInfo(mData->weapons.missile);
+  return LdrToDamageInfo(mData->weapons.missile);
 }
 
-CDamageInfo CTweakPlayerGun::GetBombInfo() const { return CDamageInfo(mData->weapons.bomb); }
+CDamageInfo CTweakPlayerGun::GetBombInfo() const { return LdrToDamageInfo(mData->weapons.bomb); }
 
 CDamageInfo CTweakPlayerGun::GetPowerBombInfo() const {
-  return CDamageInfo(mData->weapons.power_Bomb);
+  return LdrToDamageInfo(mData->weapons.power_Bomb);
 }
 
 CDamageInfo CTweakPlayerGun::GetBlackHoleDamage() const {
-  return CDamageInfo(mData->beam_Misc.blackhole_Dark, false, true, true);
+  return LdrToDamageInfo(mData->beam_Misc.blackhole_Dark, false, true, true);
 }
 
 CDamageInfo CTweakPlayerGun::GetSunBurstRaysDamage() const {
-  return CDamageInfo(mData->beam_Misc.sunBurstRays_Light, false, true, true, true);
+  return LdrToDamageInfo(mData->beam_Misc.sunBurstRays_Light, false, true, true, true);
 }
 
 CDamageInfo CTweakPlayerGun::GetImploderDamage() const {
-  return CDamageInfo(mData->beam_Misc.imploder_Annihilator, false, true, true, true);
+  return LdrToDamageInfo(mData->beam_Misc.imploder_Annihilator, false, true, true, true);
 }
 
 float CTweakPlayerGun::GetAIBurnDamage() const { return mData->beam_Misc.aIBurnDamage; }
@@ -100,13 +103,13 @@ CDamageInfo CTweakPlayerGun::GetComboDamage(CPlayerState::EBeamId beam) const {
   switch (beam) {
   default:
   case CPlayerState::kBI_Power:
-    return CDamageInfo(mData->beam_Combo.superMissile_Power, false, true);
+    return LdrToDamageInfo(mData->beam_Combo.superMissile_Power, false, true);
   case CPlayerState::kBI_Dark:
-    return CDamageInfo(mData->beam_Combo.darkCombo_Dark, false, true);
+    return LdrToDamageInfo(mData->beam_Combo.darkCombo_Dark, false, true);
   case CPlayerState::kBI_Light:
-    return CDamageInfo(mData->beam_Combo.lightCombo_Light, false, true);
+    return LdrToDamageInfo(mData->beam_Combo.lightCombo_Light, false, true);
   case CPlayerState::kBI_Annihilator:
-    return CDamageInfo(mData->beam_Combo.annihilatorCombo_Annihilator, false, true);
+    return LdrToDamageInfo(mData->beam_Combo.annihilatorCombo_Annihilator, false, true);
   }
 }
 

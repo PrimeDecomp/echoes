@@ -308,11 +308,11 @@ float CTweakBall::GetSpiderBallBoostScalar() const {
 }
 
 CDamageInfo CTweakBall::GetBoostBallDamage() const {
-  return CDamageInfo(mData->boostBall.boostBallDamage);
+  return LdrToDamageInfo(mData->boostBall.boostBallDamage);
 }
 
 CDamageInfo CTweakBall::GetCannonBallDamage() const {
-  return CDamageInfo(mData->cannonBall.cannonBallDamage);
+  return LdrToDamageInfo(mData->cannonBall.cannonBallDamage);
 }
 
 float CTweakBall::GetBoostBallCollisionKnockBackSpeed() const {
@@ -378,13 +378,13 @@ float CTweakBall::GetScrewAttackWallJumpGravity() const {
 }
 
 CDamageInfo CTweakBall::GetScrewAttackDamage() const {
-  return CDamageInfo(mData->screwAttack.screwAttackDamage);
+  return LdrToDamageInfo(mData->screwAttack.screwAttackDamage);
 }
 
 float CTweakBall::GetDeathBallDamageDelay() const { return mData->deathBall.deathBallDamageDelay; }
 
 CDamageInfo CTweakBall::GetDeathBallDamage() const {
-  return CDamageInfo(mData->deathBall.deathBallDamage);
+  return LdrToDamageInfo(mData->deathBall.deathBallDamage);
 }
 
 float CTweakBall::GetBoostBallChargeTimeTable(int index) const {

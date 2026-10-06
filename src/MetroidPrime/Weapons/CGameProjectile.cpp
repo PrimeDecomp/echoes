@@ -371,7 +371,7 @@ void CGameProjectile::FluidFXThink(EFluidState state, CScriptWater& water, CStat
 void CGameProjectile::ApplyDamageToOneActor(CStateManager& mgr, const CDamageInfo& damageInfo,
                                             TUniqueId id, const CVector3f& direction) {
   if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
-    if (!damageInfo.GetX1a25()) {
+    if (!damageInfo.ShouldApplyRadiusDamage()) {
       mgr.ApplyDamage(GetUniqueId(), actor->GetUniqueId(), GetOwnerId(), damageInfo, GetFilter(),
                       direction);
     } else {

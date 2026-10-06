@@ -385,7 +385,7 @@ void CGunWeapon::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
                              factor * info.mCharged.GetRadius(),
                              factor * info.mCharged.GetKnockBackPower());
     phazonDamage.SetRadiusDamage(factor * info.mCharged.GetRadiusDamage());
-    phazonDamage.SetX1a25(false);
+    phazonDamage.SetApplyRadiusDamage(false);
     scale = factor * CVector3f::One();
     damage = phazonDamage;
   }
@@ -467,7 +467,7 @@ CDamageInfo CGunWeapon::GetDamageInfo(CStateManager& mgr, CPlayerState::EChargeS
                      chargeFactor * info.mCharged.GetRadius(),
                      chargeFactor * info.mCharged.GetKnockBackPower());
   damage.SetRadiusDamage(chargeFactor * info.mCharged.GetRadiusDamage());
-  damage.SetX1a25(false);
+  damage.SetApplyRadiusDamage(false);
   return damage.ApplyDoubleDamage(*GetPlayer(mgr)->GetPlayerState());
 }
 
