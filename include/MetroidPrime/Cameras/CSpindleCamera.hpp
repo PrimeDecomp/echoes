@@ -19,7 +19,7 @@ enum ESpindleInput {
 class CSpindleCameraInterpolant {
 public:
   CSpindleCameraInterpolant(ESpindleInput input, const CMayaSpline& spline);
-  float InterpolateValue(float input);
+  float InterpolateValue(float input) const;
   ESpindleInput GetInput() const { return mInput; }
 
 private:
@@ -48,6 +48,24 @@ public:
                            const CSpindleCameraInterpolant& constraintFlipAngle,
                            const CSpindleCameraInterpolant& fov);
   virtual ~CSpindleCameraParameters();
+
+  uint GetFlags() const { return mFlags; }
+  const CSpindleCameraInterpolant& GetAngularSpeed() const { return mAngularSpeed; }
+  const CSpindleCameraInterpolant& GetLinearSpeed() const { return mLinearSpeed; }
+  const CSpindleCameraInterpolant& GetMotionRadius() const { return mMotionRadius; }
+  const CSpindleCameraInterpolant& GetRadialOffset() const { return mRadialOffset; }
+  const CSpindleCameraInterpolant& GetDesiredAngularOffset() const { return mDesiredAngularOffset; }
+  const CSpindleCameraInterpolant& GetMinAngularOffset() const { return mMinAngularOffset; }
+  const CSpindleCameraInterpolant& GetMaxAngularOffset() const { return mMaxAngularOffset; }
+  const CSpindleCameraInterpolant& GetLookAtAngularOffset() const { return mLookAtAngularOffset; }
+  const CSpindleCameraInterpolant& GetLookAtZOffset() const { return mLookAtZOffset; }
+  const CSpindleCameraInterpolant& GetZOffset() const { return mZOffset; }
+  const CSpindleCameraInterpolant& GetAngularConstraint() const { return mAngularConstraint; }
+  const CSpindleCameraInterpolant& GetAngularDampening() const { return mAngularDampening; }
+  const CSpindleCameraInterpolant& GetDesiredAngularSpeed() const { return mDesiredAngularSpeed; }
+  const CSpindleCameraInterpolant& GetDeactivateRadius() const { return mDeactivateRadius; }
+  const CSpindleCameraInterpolant& GetConstraintFlipAngle() const { return mConstraintFlipAngle; }
+  const CSpindleCameraInterpolant& GetFov() const { return mFov; }
 
 private:
   uint mFlags;
@@ -94,7 +112,7 @@ public:
 private:
   float CalculateTargetSplineDistance(CStateManager& mgr) const;
   float GetInVar(const CSpindleCameraInterpolant& interpolant) const;
-  float GetInterpolant(CSpindleCameraInterpolant& interpolant) const;
+  float GetInterpolant(const CSpindleCameraInterpolant& interpolant) const;
 
   TUniqueId mSpindleCameraId;
   rstl::reserved_vector< float, 8 > mInVars;
