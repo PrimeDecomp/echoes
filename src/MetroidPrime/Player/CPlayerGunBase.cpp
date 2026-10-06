@@ -1,11 +1,297 @@
 #include "MetroidPrime/Player/CPlayerGunBase.hpp"
 
 #include "Kyoto/Input/CFinalInput.hpp"
+#include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CQuaternion.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CControlHintManager.hpp"
+#include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CRainSplashGenerator.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorldShadow.hpp"
+#include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerControls.hpp"
+#include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
+
+void CPlayerGunBase::RemoveGunDrawBlock() {
+  if (mGunDrawBlockCount != 0) {
+    --mGunDrawBlockCount;
+  }
+}
+
+void CPlayerGunBase::AddGunDrawBlock() { ++mGunDrawBlockCount; }
+
+CPlayer* CPlayerGunBase::GetPlayerFromAll(CStateManager& mgr) const {
+  return TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(mPlayerUniqueId));
+}
+
+CPlayer* CPlayerGunBase::GetPlayer(CStateManager& mgr) const {
+  return TCastToPtr< CPlayer >(mgr.ObjectById(mPlayerUniqueId));
+}
+
+void CPlayerGunBase::UpdateTransform(CStateManager& mgr, const CVector3f& position,
+                                     const CTransform4f& rotation, CTransform4f& result) {
+  CUnitVector3f axis(rotation.GetColumn(kDX));
+  switch (mGunHolsterState) {
+  case kGHS_Drawing: {
+    float t = CMath::Limit(mGunHolsterRemTime / 0.45f, 1.f);
+    if (t > 0.01f) {
+      CQuaternion quat = CQuaternion::AxisAngle(
+          axis, CRelAngle::FromRadians(-t * gpTweakPlayerGun->GetFixedVerticalAim()));
+      result = quat.BuildTransform4f() * rotation.GetRotation();
+      result.SetTranslation(position);
+    }
+    break;
+  }
+  case kGHS_Holstered: {
+    CQuaternion quat = CQuaternion::AxisAngle(
+        axis, CRelAngle::FromRadians(-gpTweakPlayerGun->GetFixedVerticalAim()));
+    result = quat.BuildTransform4f() * rotation.GetRotation();
+    result.SetTranslation(position);
+    break;
+  }
+  case kGHS_Holstering: {
+    float t = 1.f - CMath::Limit(mGunHolsterRemTime / gpTweakPlayerGun->GetGunHolsterTime(), 1.f);
+    if (GetPlayer(mgr)->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+      t = 1.f - CMath::Limit(mGunHolsterRemTime / 0.1f, 1.f);
+    }
+    if (t > 0.01f) {
+      CQuaternion quat = CQuaternion::AxisAngle(
+          axis, CRelAngle::FromRadians(-t * gpTweakPlayerGun->GetFixedVerticalAim()));
+      result = quat.BuildTransform4f() * rotation.GetRotation();
+      result.SetTranslation(position);
+    }
+    break;
+  }
+  default:
+    break;
+  }
+  mTransform = result;
+}
+
+void CPlayerGunBase::UpdateGunHolster(const CFinalInput& input, CStateManager& mgr) {
+  float dt = input.DeltaTime();
+  CPlayer* player = GetPlayer(mgr);
+  switch (mGunHolsterState) {
+  case kGHS_Drawn: {
+    bool shouldHolster = false;
+    if (player->GetTweakPlayerControls()->GetGunButtonTogglesHolster()) {
+      if (player->GetControlMapper().GetPressInput(CControlMapper::kC_ToggleHolster, input)) {
+        shouldHolster = true;
+      }
+      if (!player->FireBeamHeld(input) &&
+          !player->GetControlMapper().GetDigitalInput(CControlMapper::kC_MissileOrPowerBomb,
+                                                      input) &&
+          player->GetTweakPlayerControls()->GetGunNotFiringHolstersGun()) {
+        mGunHolsterRemTime -= dt;
+        if (mGunHolsterRemTime <= 0.f) {
+          shouldHolster = true;
+        }
+      }
+    } else {
+      if (!player->FireBeamHeld(input) && !player->GetControlMapper().GetDigitalInput(
+                                              CControlMapper::kC_MissileOrPowerBomb, input)) {
+        if (player->GetTweakPlayerControls()->GetGunNotFiringHolstersGun()) {
+          mGunHolsterRemTime -= dt;
+        }
+      } else {
+        mGunHolsterRemTime = gpTweakPlayerGun->GetGunNotFiringTime();
+      }
+    }
+    if (shouldHolster) {
+      HolsterGun(mgr);
+    }
+    break;
+  }
+  case kGHS_Drawing:
+    if (mGunHolsterRemTime > 0.f) {
+      mGunHolsterRemTime -= dt;
+    } else {
+      mGunHolsterState = kGHS_Drawn;
+      mGunHolsterRemTime = gpTweakPlayerGun->GetGunNotFiringTime();
+    }
+    break;
+  case kGHS_Holstered: {
+    if (GetPlayer(mgr)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed) {
+      mPressedInputFlags = 0;
+      mReleasedInputFlags = 0;
+      mLastInputFlags = 0;
+      mInputFlags = 0;
+    }
+    bool draw = false;
+    if (player->FireBeamHeld(input) ||
+        player->GetControlMapper().GetDigitalInput(CControlMapper::kC_MissileOrPowerBomb, input) ||
+        player->GetGrappleState() == CPlayer::kGS_None) {
+      draw = true;
+    } else if (player->GetTweakPlayerControls()->GetGunButtonTogglesHolster()) {
+      if (player->GetControlMapper().GetPressInput(CControlMapper::kC_ToggleHolster, input)) {
+        draw = true;
+      }
+    }
+    CPlayerState* playerState = player->GetPlayerState();
+    if (playerState->GetCurrentVisor() == CPlayerState::kPV_Scan ||
+        playerState->GetTransitioningVisor() == CPlayerState::kPV_Scan ||
+        player->GetMorphballTransitionState() != CPlayer::kMS_Unmorphed ||
+        mGunDrawBlockCount != 0) {
+      draw = false;
+    }
+    if (draw) {
+      DrawGun(mgr);
+    }
+    break;
+  }
+  case kGHS_Holstering:
+    if (GetPlayer(mgr)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed) {
+      mPressedInputFlags = 0;
+      mReleasedInputFlags = 0;
+      mLastInputFlags = 0;
+      mInputFlags = 0;
+    }
+    if (mGunHolsterRemTime > 0.f) {
+      mGunHolsterRemTime -= dt;
+    } else {
+      mGunHolsterState = kGHS_Holstered;
+    }
+    break;
+  default:
+    break;
+  }
+}
+
+void CPlayerGunBase::DrawGun(CStateManager& mgr) {
+  if (mGunHolsterState == kGHS_Holstered && !GetPlayer(mgr)->InGrappleJumpCooldown()) {
+    mGunHolsterState = kGHS_Drawing;
+    mGunHolsterRemTime = 0.45f;
+  }
+}
+
+void CPlayerGunBase::HolsterGun(CStateManager& mgr) {
+  if (mGunHolsterState == kGHS_Holstered || mGunHolsterState == kGHS_Holstering) {
+    return;
+  }
+  CPlayer* player = GetPlayerFromAll(mgr);
+  float holsterTime = gpTweakPlayerGun->GetGunHolsterTime();
+  if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+    holsterTime = 0.1f;
+  }
+  if (mGunHolsterState == kGHS_Drawing) {
+    mGunHolsterRemTime = holsterTime * (1.f - mGunHolsterRemTime / 0.45f);
+  } else {
+    mGunHolsterRemTime = holsterTime;
+  }
+  mGunHolsterState = kGHS_Holstering;
+  player->SetAimTarget(kInvalidUniqueId);
+}
+
+void CPlayerGunBase::Holster(CStateManager& mgr) {
+  mGunHolsterState = kGHS_Holstered;
+  mGunHolsterRemTime = 0.f;
+  GetPlayerFromAll(mgr)->SetAimTarget(kInvalidUniqueId);
+}
+
+static uint ReleasedFlags(uint last, uint current) { return last & (last ^ current); }
+
+static uint PressedFlags(uint last, uint current) { return current & (last ^ current); }
+
+CWorldShadow* CPlayerGunBase::GetWorldShadow() { return mWorldShadow.get(); }
+const CWorldShadow* CPlayerGunBase::GetWorldShadow() const { return mWorldShadow.get(); }
+
+void CPlayerGunBase::DeleteGunLight(CStateManager& mgr) {
+  if (mLightId != kInvalidUniqueId) {
+    mgr.DeleteObjectRequest(mLightId);
+    mLightId = kInvalidUniqueId;
+  }
+}
+
+void CPlayerGunBase::CreateGunLight(CStateManager& mgr) {
+  if (mLightId == kInvalidUniqueId) {
+    mLightId = mgr.AllocateUniqueId();
+    mgr.AddObject(rs_new CGameLight(mLightId, kInvalidAreaId, false, rstl::string_l(""), mTransform,
+                                    mPlayerUniqueId,
+                                    CLight::BuildDirectional(CVector3f::Forward(), CColor::Black()),
+                                    mLightId.Value() & 0x3ff, 0, 0.f));
+  }
+}
+
+void CPlayerGunBase::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  EScriptObjectMessage message = msg.GetMessage();
+  CPlayer* player = GetPlayer(mgr);
+  switch (message) {
+  case kSM_Create:
+    mSoundVolume = player->GetSoundPan(CPlayer::kMSP_3);
+    CreateGunLight(mgr);
+    break;
+  case kSM_Delete:
+    DeleteGunLight(mgr);
+    break;
+  case kSM_XEPZ:
+  case kSM_XIPZ:
+    mInPhazonPool = true;
+    break;
+  case kSM_XXPZ:
+    mInPhazonPool = false;
+    break;
+  case kSM_XENF:
+  case kSM_XINF:
+  case kSM_XEXF:
+    break;
+  default:
+    break;
+  }
+  CEntity::AcceptScriptMsg(mgr, msg);
+}
+
+void CPlayerGunBase::Update(float dt, CStateManager& mgr) {
+  mUnderwater = GetPlayer(mgr)->GetCameraManager()->GetBallCamera()->GetFluidCount() != 0;
+  mFiredWeaponFlags = 0;
+  if (mCooldown > 0.f) {
+    mCooldown -= dt;
+  }
+  if (mSecondaryCooldown > 0.f) {
+    mSecondaryCooldown -= dt;
+  }
+  if (mRainSplashGenerator.get() != nullptr) {
+    mRainSplashGenerator->Update(dt, mgr);
+  }
+}
+
+void CPlayerGunBase::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
+  CPlayer* player = GetPlayer(mgr);
+  const bool morphed = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed;
+  const bool bigStrike = mInBigStrike && !morphed;
+  const bool frozen = player->GetFrozenState() && !morphed;
+  if (bigStrike || frozen ||
+      static_cast< const CControlHintManager* >(player->GetControlHintManager())
+          ->HasDisableFlags(1, mgr)) {
+    mPressedInputFlags = 0;
+    mReleasedInputFlags = 0;
+    mLastInputFlags = 0;
+    mInputFlags = 0;
+    return;
+  }
+  mInputFlags = player->FireBeamHeld(input) ? 1 : 0;
+  mInputFlags |= player->ChargeBeamHeld(input) ? 4 : 0;
+  mInputFlags |=
+      player->GetControlMapper().GetDigitalInput(CControlMapper::kC_MissileOrPowerBomb, input) ? 2
+                                                                                               : 0;
+  mInputFlags |= player->AutoFireHeld(input) ? 8 : 0;
+  mReleasedInputFlags = ReleasedFlags(mLastInputFlags, mInputFlags);
+  mPressedInputFlags = PressedFlags(mLastInputFlags, mInputFlags);
+  mLastInputFlags = mInputFlags;
+}
+
+void CPlayerGunBase::Reset(CStateManager& mgr) {
+  const bool wasInBigStrike = mInBigStrike;
+  mInBigStrike = true;
+  ProcessInput(CFinalInput(), mgr);
+  mInBigStrike = wasInBigStrike;
+  mGunDrawBlockCount = 0;
+}
+
+CPlayerGunBase::~CPlayerGunBase() {}
 
 CPlayerGunBase::CPlayerGunBase(const rstl::string& name, TUniqueId playerId, const CVector3f& scale,
                                int maxSplashes)
@@ -35,82 +321,3 @@ CPlayerGunBase::CPlayerGunBase(const rstl::string& name, TUniqueId playerId, con
 , mInBigStrike(false)
 , mMissileMode(false)
 , mInPhazonPool(false) {}
-
-CPlayerGunBase::~CPlayerGunBase() {}
-
-CPlayer* CPlayerGunBase::GetPlayer(CStateManager& mgr) const {
-  return TCastToPtr< CPlayer >(mgr.ObjectById(mPlayerUniqueId));
-}
-
-CPlayer* CPlayerGunBase::GetPlayerFromAll(CStateManager& mgr) const {
-  return TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(mPlayerUniqueId));
-}
-
-CWorldShadow* CPlayerGunBase::GetWorldShadow() { return mWorldShadow.get(); }
-const CWorldShadow* CPlayerGunBase::GetWorldShadow() const { return mWorldShadow.get(); }
-void CPlayerGunBase::AddGunDrawBlock() { ++mGunDrawBlockCount; }
-void CPlayerGunBase::RemoveGunDrawBlock() {
-  if (mGunDrawBlockCount != 0) {
-    --mGunDrawBlockCount;
-  }
-}
-
-void CPlayerGunBase::Reset(CStateManager& mgr) {
-  const bool wasInBigStrike = mInBigStrike;
-  mInBigStrike = true;
-  ProcessInput(CFinalInput(), mgr);
-  mInBigStrike = wasInBigStrike;
-  mGunDrawBlockCount = 0;
-}
-
-void CPlayerGunBase::Update(float dt, CStateManager& mgr) {
-  // TODO: Read underwater state from this player's current camera.
-  mFiredWeaponFlags = 0;
-  if (mCooldown > 0.f) {
-    mCooldown -= dt;
-  }
-  if (mSecondaryCooldown > 0.f) {
-    mSecondaryCooldown -= dt;
-  }
-  mRainSplashGenerator->Update(dt, mgr);
-}
-
-void CPlayerGunBase::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
-  // TODO: Populate fire/charge/missile flags using the player's input mapping and strike gates.
-}
-
-void CPlayerGunBase::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  // TODO: Gun-light lifecycle, player sound volume, and Phazon-pool entry/exit messages.
-  CEntity::AcceptScriptMsg(mgr, msg);
-}
-
-void CPlayerGunBase::UpdateTransform(CStateManager& mgr, const CVector3f& position,
-                                     const CTransform4f& rotation, CTransform4f& result) {
-  // TODO: Apply the holster-state quaternion rotation and update mTransform.
-}
-
-void CPlayerGunBase::UpdateGunHolster(const CFinalInput& input, CStateManager& mgr) {
-  // TODO: Resolve scan/cinematic/input transitions and advance drawing/holstering timers.
-}
-
-void CPlayerGunBase::DrawGun(CStateManager& mgr) {
-  // TODO: Check grapple cooldown before entering Drawing with the draw timer.
-}
-
-void CPlayerGunBase::HolsterGun(CStateManager& mgr) {
-  // TODO: Select the normal/morph holster duration, reverse a partial draw, and clear aim.
-}
-
-void CPlayerGunBase::Holster(CStateManager& mgr) {
-  mGunHolsterState = kGHS_Holstered;
-  mGunHolsterRemTime = 0.f;
-  // TODO: Clear the player's aim target.
-}
-
-void CPlayerGunBase::CreateGunLight(CStateManager& mgr) {
-  // TODO: Allocate/register the gun's CGameLight and store its unique ID.
-}
-
-void CPlayerGunBase::DeleteGunLight(CStateManager& mgr) {
-  // TODO: Free the script light before invalidating its ID.
-}
