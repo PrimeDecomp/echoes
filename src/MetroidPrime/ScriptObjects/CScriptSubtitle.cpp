@@ -1,6 +1,11 @@
 #include "MetroidPrime/ScriptObjects/CScriptSubtitle.hpp"
 
+#include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Math/CMath.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSubtitle.hpp"
 
 CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                  int positionX, int positionY, int extentX, int extentY,
@@ -22,19 +27,130 @@ CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const 
 , mFadeOpacity(0.f)
 , mTargetFadeOpacity(0.f) {}
 
-void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {}
+void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  CActor::AcceptScriptMsg(mgr, msg);
+  if (!GetActive()) {
+    return;
+  }
 
-void CScriptSubtitle::Think(float dt, CStateManager& mgr) {}
+  switch (msg.GetMessage()) {
+  case kSM_Increment:
+    SetStringIndex(mgr, mStringIndex + 1);
+    break;
+  case kSM_Decrement:
+    SetStringIndex(mgr, mStringIndex - 1);
+    break;
+  case kSM_SetToZero:
+    SetStringIndex(mgr, 0);
+    break;
+  case kSM_SetToMax:
+    SetStringIndex(mgr, mStringTable->GetStringCount() - 1);
+    break;
+  case kSM_Start:
+    mTargetFadeOpacity = 1.f;
+    break;
+  case kSM_Stop:
+    mTargetFadeOpacity = 0.f;
+    break;
+  default:
+    break;
+  }
+}
 
-void CScriptSubtitle::PreRender(CStateManager& mgr) {}
+void CScriptSubtitle::Think(float dt, CStateManager& mgr) {
+  if (mTargetFadeOpacity > mFadeOpacity) {
+    float opacity = mTargetFadeOpacity;
+    if (mFadeInTime != 0.f) {
+      const float next = mFadeOpacity + dt / mFadeInTime;
+      if (opacity >= next) {
+        opacity = next;
+      }
+    }
+    mFadeOpacity = opacity;
+  } else if (mTargetFadeOpacity < mFadeOpacity) {
+    float opacity = mTargetFadeOpacity;
+    if (mFadeOutTime != 0.f) {
+      const float next = mFadeOpacity - dt / mFadeOutTime;
+      if (next >= opacity) {
+        opacity = next;
+      }
+    }
+    mFadeOpacity = opacity;
+  }
+}
 
-void CScriptSubtitle::Render(const CStateManager& mgr) const {}
+void CScriptSubtitle::PreRender(CStateManager& mgr) {
+  const TUniqueId uid = GetUniqueId();
+  mgr.RenderLastAfterCameraFilters(uid);
+}
 
-void CScriptSubtitle::SetStringIndex(CStateManager& mgr, int index) {}
+void CScriptSubtitle::Render(const CStateManager& mgr) const {
+  mTextSupport.SetGeometryColor(GetModelFlags().GetColor().WithAlphaModulatedBy(mFadeOpacity));
+  if (mFadeOpacity > 0.f) {
+    gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
+    gpRender->SetDepthReadWrite(false, false);
+    switch (GetModelFlags().GetTrans()) {
+    case CModelFlags::kT_Opaque:
+    case CModelFlags::kT_One:
+    case CModelFlags::kT_Two:
+    case CModelFlags::kT_Blend:
+    case CModelFlags::kT_Additive2:
+      gpRender->SetBlendMode_AlphaBlended();
+      break;
+    case CModelFlags::kT_Additive:
+      gpRender->SetBlendMode_AdditiveAlpha();
+      break;
+    default:
+      break;
+    }
 
-void CScriptSubtitle::RefreshText() {}
+    const CViewport& viewport = CGraphics::GetViewport();
+    gpRender->SetModelMatrix(
+        CTransform4f::Translate(viewport.mWidth / 640.f * mPositionX, 0.f,
+                                viewport.mHeight / 448.f * (448.f - mPositionY)));
+    mTextSupport.Render();
+  }
+}
+
+void CScriptSubtitle::SetStringIndex(CStateManager& mgr, int index) {
+  if (index == mStringIndex) {
+    return;
+  }
+
+  const int lastIndex = mStringTable->GetStringCount() - 1;
+  if (index == 0) {
+    SendScriptMsgs(kSS_Zero, mgr, kSM_None);
+  } else if (index == lastIndex) {
+    SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+  }
+  mStringIndex = CMath::ClampI(0, index, lastIndex);
+  RefreshText();
+}
+
+void CScriptSubtitle::RefreshText() {
+  mTextSupport.SetText(rstl::wstring_l(mStringTable->GetString(mStringIndex)));
+}
 
 // Guessed loader name.
-CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {}
+CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrSubtitle sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrSubtitle.inc"
+
+  if (sldrThis.stringTable == kInvalidAssetId) {
+    return nullptr;
+  }
+
+  return rs_new CScriptSubtitle(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.textPositionX,
+      sldrThis.textPositionY, sldrThis.textProperties.textBoundingWidth,
+      sldrThis.textProperties.textBoundingHeight, sldrThis.textProperties.foregroundColor,
+      sldrThis.textProperties.outlineColor, sldrThis.textProperties.geometryColor,
+      sldrThis.textProperties.defaultFont, sldrThis.stringTable, sldrThis.initialStringIndex,
+      sldrThis.fadeInTime, sldrThis.fadeOutTime,
+      CGuiTextProperties(sldrThis.textProperties.wrapText,
+                         EJustification(sldrThis.textProperties.horizontalJustification),
+                         EVerticalJustification(sldrThis.textProperties.verticalJustification)));
+}
 
 CScriptSubtitle::~CScriptSubtitle() {}

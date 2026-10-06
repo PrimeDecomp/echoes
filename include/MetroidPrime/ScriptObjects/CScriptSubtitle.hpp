@@ -32,7 +32,7 @@ private:
   // Guessed member names.
   float mPositionX;
   float mPositionY;
-  CGuiTextSupport mTextSupport;
+  mutable CGuiTextSupport mTextSupport;
   CColor mGeometryColor;
   TLockedToken< CStringTable > mStringTable;
   int mStringIndex;

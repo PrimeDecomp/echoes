@@ -192,6 +192,7 @@ public:
   bool RenderLast(TUniqueId uid);               // Guessed name.
   bool RenderLastOverlay(const TUniqueId& uid); // Guessed name.
   bool RenderLastHUD(const TUniqueId& uid);     // Guessed name.
+  bool RenderLastAfterCameraFilters(const TUniqueId& uid); // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
