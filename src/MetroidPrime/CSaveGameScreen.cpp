@@ -239,7 +239,7 @@ bool CSaveGameScreen::PumpLoad() {
   const TCachedToken< CTexture >& banner = mTxtrSaveBanner;
   const TCachedToken< CTexture >& icon0 = mTxtrSaveIcon0;
   const TCachedToken< CTexture >& icon1 = mTxtrSaveIcon1;
-  if (!banner.IsLoaded() || !icon0.IsLoaded() || !icon1.IsLoaded() || !mStrgMemoryCard.IsLoaded()) {
+  if (!banner.IsLoaded() || !icon0.IsLoaded() || !icon1.IsLoaded() || !mStrgMemoryCard.TryCache()) {
     return false;
   }
   for (rstl::vector< TToken< CWorldSaveGameInfo > >::const_iterator it = mSaveWorlds.begin();
@@ -248,7 +248,7 @@ bool CSaveGameScreen::PumpLoad() {
       return false;
     }
   }
-  if (mFrmeGenericMenu.IsLoaded()) {
+  if (mFrmeGenericMenu.TryCache()) {
     mLoadedFrame = mFrmeGenericMenu.GetObject();
     mTextpaneMessage = static_cast< CGuiTextPane* >(mLoadedFrame->FindWidget("textpane_message"));
     mTablegroupChoices =

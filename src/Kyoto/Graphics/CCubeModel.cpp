@@ -244,7 +244,7 @@ bool CCubeModel::TryLockTextures() const {
     bool texturesLoading = false;
     for (int i = 0; i < mTextures->size(); ++i) {
       (*mTextures)[i].Lock();
-      if (!(*mTextures)[i].IsLoaded()) {
+      if (!(*mTextures)[i].TryCache()) {
         texturesLoading = true;
       } else if (!(*mTextures)[i].GetObject()->LoadToMRAM()) {
         texturesLoading = true;

@@ -85,11 +85,11 @@ bool CMapWorld::CMapAreaData::IsLoaded() const {
   if (!mArea.HasLock()) {
     return false;
   }
-  return mArea.IsLoaded();
+  return mArea.TryCache();
 }
 
 CMapArea* CMapWorld::CMapAreaData::GetMapArea() const {
-  mArea.IsLoaded();
+  mArea.TryCache();
   return mArea.GetObject();
 }
 

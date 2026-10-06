@@ -59,7 +59,7 @@ void CAuiBitmapMeter::SetDecreaseSpeed(float speed) { mDecreaseSpeed = speed; }
 
 void CAuiBitmapMeter::Update(float dt) {
   if (mTexture) {
-    mTexture->IsLoaded();
+    mTexture->TryCache();
   }
 
   if (mTargetFraction < mCurrentFraction) {

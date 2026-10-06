@@ -67,7 +67,7 @@ void CInGameQuitScreen::ProcessUserInput(const CFinalInput& input) {
 
 EQuitAction CInGameQuitScreen::Update(float dt, CStateManager& mgr) {
   if (mReadyFrame == nullptr) {
-    if (mFrame.IsLoaded()) {
+    if (mFrame.TryCache()) {
       FinishedLoading();
     }
   } else if (!mQuitConfirmation.null()) {

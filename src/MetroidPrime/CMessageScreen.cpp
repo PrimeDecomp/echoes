@@ -35,7 +35,7 @@ CMessageScreen::~CMessageScreen() {}
 bool CMessageScreen::Update(float dt, float blurAmt) {
   mBlurAmt = blurAmt;
   if (!mLoadedMsgScreen) {
-    const bool ready = mMsgScreen.IsLoaded() && mMsg.IsLoaded();
+    const bool ready = mMsgScreen.TryCache() && mMsg.TryCache();
     if (ready) {
       mLoadedMsgScreen = mMsgScreen.GetObject();
       mTextpane_message =

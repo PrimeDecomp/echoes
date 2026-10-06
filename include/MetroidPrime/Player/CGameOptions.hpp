@@ -77,6 +77,9 @@ public:
   static void fn_80161C7C(bool);
 
 private:
+  friend class CScanTreeMenu;
+  friend class CScanTreeSlider;
+
   CAudioSys::ESurroundModes soundMode;
   int screenBrightness;
   int screenXOffset;

@@ -1429,7 +1429,7 @@ void CSamusHud::UpdateBallMode(const CStateManager& mgr) {
 
 void CSamusHud::ResolveLockOnTexture() {
   if (mLockedOnIndicator) {
-    mLockedOnIndicator->IsLoaded();
+    mLockedOnIndicator->TryCache();
   }
 }
 
@@ -2433,7 +2433,7 @@ void CSamusHud::Draw(const CStateManager& mgr, float alpha, uint helmetVisibilit
       break;
     }
   }
-  if (!drawDamage || !mDamageRingTexture.IsLoaded()) {
+  if (!drawDamage || !mDamageRingTexture.TryCache()) {
     return;
   }
 

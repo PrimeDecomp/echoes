@@ -733,7 +733,7 @@ CIOWin::EMessageReturn CAutoSave::OnMessage(const CArchitectureMessage& msg,
     const float dt = MakeMsg::GetParmTimerTick(msg).GetReal();
     switch (mState) {
     case kS_LoadAudio:
-      if (!mAudioGroup.IsLoaded()) {
+      if (!mAudioGroup.TryCache()) {
         return kMR_Exit;
       }
       mState = kS_Saving;

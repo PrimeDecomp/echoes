@@ -59,7 +59,7 @@ CMapUniverse::~CMapUniverse() {}
 
 void CMapUniverse::Draw(const CMapUniverseDrawParms& parms, const CVector3f& pos, float depth1,
                         float depth2) const {
-  if (mHexagonToken.IsLoaded()) {
+  if (mHexagonToken.TryCache()) {
     int surfaceCount = 0;
     int numSurfaces = mHexagonToken.GetObject()->GetNumSurfaces();
     for (int i = 0; i < mWorldDatas.size(); ++i) {

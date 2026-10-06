@@ -1450,7 +1450,7 @@ CEnergyProjectile* CPatterned::LaunchProjectile(const CTransform4f& xf, CStateMa
                                                 const CVector3f& scale) {
   CEnergyProjectile* projectile = nullptr;
   CProjectileInfo* projectileInfo = ProjectileInfo();
-  if (projectileInfo->Token().IsLoaded()) {
+  if (projectileInfo->Token().TryCache()) {
     if (mgr.CanCreateProjectile(GetUniqueId(), kWT_AI, maxProjectiles)) {
       projectile = rs_new CEnergyProjectile(
           true, ProjectileInfo()->Token(), kWT_AI, xf, kMT_Character, ProjectileInfo()->GetDamage(),

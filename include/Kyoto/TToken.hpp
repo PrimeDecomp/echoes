@@ -41,7 +41,7 @@ public:
   const CToken& GetToken() const { return *this; }
 
   bool IsLoaded() const { return mItem != nullptr || CToken::IsLoaded(); }
-  bool IsLoaded() {
+  bool TryCache() {
     if (mItem != nullptr) {
       return true;
     }

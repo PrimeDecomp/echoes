@@ -108,7 +108,7 @@ void CAuiEnergyBarT01::Update(const float dt) {
   }
 
   if (mTexture) {
-    mTexture->IsLoaded();
+    mTexture->TryCache();
   }
 
   CGuiWidget::Update(dt);

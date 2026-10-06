@@ -224,7 +224,7 @@ void CAuxWeapon::Load(int beam, CStateManager& mgr) {
   LoadIdle();
 }
 
-void CAuxWeapon::LoadIdle() { mIsLoaded = mCombos[mLoadBeamId].IsLoaded(); }
+void CAuxWeapon::LoadIdle() { mIsLoaded = mCombos[mLoadBeamId].TryCache(); }
 
 void CAuxWeapon::FreeComboVoiceId() {
   CSfxManager::SfxStop(mComboSfx);

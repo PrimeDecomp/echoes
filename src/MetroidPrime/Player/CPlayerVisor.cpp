@@ -443,13 +443,13 @@ void CPlayerVisor::LockUnlockAssets() {
     mScanFrameBottomLeftCorner.Lock();
     mScanFrameStretchCorner.Lock();
     mScanFrameLowerRight.Lock();
-    mScanFrameFixedCorner.IsLoaded();
-    mScanFrameCenterLeft.IsLoaded();
-    mScanFrameCenterTop.IsLoaded();
-    mScanFrameWindow.IsLoaded();
-    mScanFrameBottomLeftCorner.IsLoaded();
-    mScanFrameStretchCorner.IsLoaded();
-    mScanFrameLowerRight.IsLoaded();
+    mScanFrameFixedCorner.TryCache();
+    mScanFrameCenterLeft.TryCache();
+    mScanFrameCenterTop.TryCache();
+    mScanFrameWindow.TryCache();
+    mScanFrameBottomLeftCorner.TryCache();
+    mScanFrameStretchCorner.TryCache();
+    mScanFrameLowerRight.TryCache();
   } else {
     mScanFrameFixedCorner.Unlock();
     mScanFrameCenterLeft.Unlock();
