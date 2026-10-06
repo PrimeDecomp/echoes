@@ -48,14 +48,22 @@ public:
     return *reinterpret_cast< const CQuaternion* >(mComputedFloats + index * mValuesPerChannel);
   }
   const CVector3f& GetVector(uint index) const {
-    return *reinterpret_cast< const CVector3f* >(mComputedFloats + index * mValuesPerChannel + 4);
+    return *reinterpret_cast< const CVector3f* >(mComputedFloats +
+                                                 (index * mValuesPerChannel + kRotationValueCount));
   }
   const CVector3f& GetScale(uint index) const {
-    uint offset = index * mValuesPerChannel + 4 + (mHasOffsetData ? 4 : 0);
-    return *reinterpret_cast< const CVector3f* >(mComputedFloats + offset);
+    uint offset = kRotationValueCount;
+    if (mHasOffsetData) {
+      offset += kOffsetValueCount;
+    }
+    return *reinterpret_cast< const CVector3f* >(mComputedFloats +
+                                                 (offset + index * mValuesPerChannel));
   }
 
 private:
+  static const uchar kRotationValueCount; // Guessed name.
+  static const uchar kOffsetValueCount;   // Guessed name.
+
   void Allocate(uint channelCount);
   uchar GetValuesPerChannel() const; // Guessed name.
 
@@ -135,33 +143,8 @@ template < typename T >
 class CBitLevelLoader {
 public:
   explicit CBitLevelLoader(T& input) : mInput(&input), mWord(Input(*mInput)), mBit(0) {}
-  uint LoadUnsigned(uint bits) {
-    uint result = 0;
-    uint shift = 0;
-    while (bits != 0) {
-      uint count = rstl::min_val(32 - mBit, bits);
-      uint highShift = 32 - count;
-      result |= ((mWord >> mBit) << highShift) >> (highShift - shift);
-      mBit += count;
-      shift += count;
-      bits -= count;
-      if (mBit == 32) {
-        mBit = 0;
-        mWord = Input(*mInput);
-      }
-    }
-    return result;
-  }
-  int LoadSigned(uint bits) {
-    if (bits == 0) {
-      return 0;
-    }
-    uint value = LoadUnsigned(bits);
-    if (value & (1u << (bits - 1))) {
-      value |= ~0u << bits;
-    }
-    return value;
-  }
+  uint LoadUnsigned(uint bits);
+  int LoadSigned(uint bits);
 
 private:
   static uint Input(T& input);
@@ -169,6 +152,38 @@ private:
   uint mWord;
   uint mBit;
 };
+
+template < typename T >
+uint CBitLevelLoader< T >::LoadUnsigned(uint bits) {
+  uint remaining = bits;
+  uint result = 0;
+  uint shift = 0;
+  while (remaining != 0) {
+    uint count = rstl::min_val(32 - mBit, remaining);
+    uint highShift = 32 - count;
+    result |= ((mWord >> mBit) << highShift) >> (highShift - shift);
+    mBit += count;
+    shift += count;
+    remaining -= count;
+    if (mBit == 32) {
+      mBit = 0;
+      mWord = Input(*mInput);
+    }
+  }
+  return result;
+}
+
+template < typename T >
+int CBitLevelLoader< T >::LoadSigned(uint bits) {
+  if (bits == 0) {
+    return 0;
+  }
+  uint value = LoadUnsigned(bits);
+  if (value & (1 << (bits - 1))) {
+    value |= ~0u << bits;
+  }
+  return value;
+}
 
 template <>
 inline uint
@@ -179,15 +194,7 @@ CBitLevelLoader< CMemoryInputToBitLevelLoader >::Input(CMemoryInputToBitLevelLoa
 
 class CSegIdToIndexConverter {
 public:
-  explicit CSegIdToIndexConverter(const CFBStreamedAnimReaderTotals& totals) {
-    for (uint i = 0; i < 100; ++i) {
-      mIndices[i] = ~0u;
-    }
-    for (uint i = 0; i < totals.NumEntries(); ++i) {
-      mIndices[totals.GetSegId(i)] = i;
-    }
-    CCharAnimMemoryMetrics::AddToTotalSize(sizeof(mIndices), CCharAnimMemoryMetrics::kASS_Two);
-  }
+  explicit CSegIdToIndexConverter(const CFBStreamedAnimReaderTotals& totals);
   ~CSegIdToIndexConverter() {
     CCharAnimMemoryMetrics::SubtractFromTotalSize(sizeof(mIndices),
                                                   CCharAnimMemoryMetrics::kASS_Two);

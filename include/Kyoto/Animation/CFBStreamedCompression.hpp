@@ -85,30 +85,38 @@ class CFBBitCompressedDataChannelHeader {
 public:
   explicit CFBBitCompressedDataChannelHeader(CInputStream& in);
   uint GetWidth() const { return *mWidth; }
-  short GetInitialValue(uint component) const {
-    if (component == SignComponent) {
-      return 0;
-    }
-    uint index = component;
-    if (SignComponent < Components) {
-      --index;
-    }
-    return TLoadedVal< short >::Read(reinterpret_cast< const uchar* >(this) + sizeof(ushort) +
-                                     index * 3);
-  }
-  uint GetBitCount(uint component) const {
-    if (SignComponent < Components && component == SignComponent) {
-      return 1;
-    }
-    return reinterpret_cast< const uchar* >(
-        this)[sizeof(ushort) + component * 3 + 2 - 3 * (SignComponent < Components)];
-  }
+  short GetInitialValue(uint component) const;
+  uint GetBitCount(uint component) const;
   const uchar* AfterEnd() const;
   uint GetSumOfBitCounts() const;
 
 private:
   TLoadedVal< ushort > mWidth;
 };
+
+template < uint Components, uint ConstantComponent, uint SignComponent >
+short CFBBitCompressedDataChannelHeader< Components, ConstantComponent,
+                                         SignComponent >::GetInitialValue(uint component) const {
+  if (component == SignComponent) {
+    return 0;
+  }
+  uint index = component;
+  if (SignComponent < Components) {
+    --index;
+  }
+  return TLoadedVal< short >::Read(reinterpret_cast< const uchar* >(this) + sizeof(ushort) +
+                                   index * 3);
+}
+
+template < uint Components, uint ConstantComponent, uint SignComponent >
+uint CFBBitCompressedDataChannelHeader< Components, ConstantComponent, SignComponent >::GetBitCount(
+    uint component) const {
+  if (SignComponent < Components && component == SignComponent) {
+    return 1;
+  }
+  return reinterpret_cast< const uchar* >(
+      this)[sizeof(ushort) + component * 3 + 2 - 3 * (SignComponent < Components)];
+}
 
 template < uint Components, uint ConstantComponent, uint SignComponent >
 CFBBitCompressedDataChannelHeader< Components, ConstantComponent, SignComponent >::
@@ -284,7 +292,9 @@ public:
   }
   static uint Uint32sForBitCount(uint bits) { return bits % 32 == 0 ? bits / 32 : bits / 32 + 1; }
   uint FrameAfter(uint frame) const {
-    FrameIterator it(reinterpret_cast< const uint* >(this + 1) + frame / 32, 1u << (frame % 32));
+    uint word = frame / 32;
+    uint bit = frame - word * 32;
+    FrameIterator it(reinterpret_cast< const uint* >(this + 1) + word, 1u << bit);
     do {
       ++frame;
       Advance(it);
