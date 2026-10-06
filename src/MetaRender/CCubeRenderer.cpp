@@ -1913,8 +1913,10 @@ int CCubeRenderer::DrawScanSurface(int areaSurfaceIndex, const CCubeModel& model
   return result;
 }
 
-void CCubeRenderer::DrawScanRing(float radius, float thickness, float alpha, float fade,
-                                 float scanTime, int areaId) {
+// Guessed name
+void CCubeRenderer::DrawEchoVisorGeometry(float pulsePhase, float bigRingScale,
+                                          float bigRingFadeStart, float auraSmallSize,
+                                          float auraBigSize, int areaId) {
   SetupRendererStates(true);
   mRequestRGBA6 = true;
   CGX::SetDstAlpha(false, 0);
@@ -1938,13 +1940,14 @@ void CCubeRenderer::DrawScanRing(float radius, float thickness, float alpha, flo
   CGX::SetNumTexGens(2);
 
   CColor ringAlpha(0x000000ffu);
-  if (!(radius <= alpha)) {
-    ringAlpha.SetAlpha(static_cast< uchar >(255.f * (1.f - (radius - alpha) / (1.f - alpha))));
+  if (!(pulsePhase <= bigRingFadeStart)) {
+    ringAlpha.SetAlpha(static_cast< uchar >(
+        255.f * (1.f - (pulsePhase - bigRingFadeStart) / (1.f - bigRingFadeStart))));
   }
   GXSetTevColor(GX_TEVREG1, ringAlpha.GetGXColor());
   const CTransform4f& view = CGraphics::GetViewMatrix();
-  const float ringScale = 1.f / (1.f + radius * thickness);
-  const float extent = scanTime * (1.f - radius) + fade * radius;
+  const float ringScale = 1.f / (1.f + pulsePhase * bigRingScale);
+  const float extent = auraBigSize * (1.f - pulsePhase) + auraSmallSize * pulsePhase;
   const float volumeScale = 1.f / extent;
   const CTransform4f ringMatrix(ringScale, 0.f, 0.f, ringScale * -view.Get03() + 0.5f, 0.f,
                                 ringScale, 0.f, ringScale * -view.Get13() + 0.5f, 0.f, 0.f, 0.f,
@@ -1953,7 +1956,7 @@ void CCubeRenderer::DrawScanRing(float radius, float thickness, float alpha, flo
                                   volumeScale, 0.f, volumeScale * -view.Get13() + 0.5f, 0.f, 0.f,
                                   0.f, 1.f);
   const CVector3f spread(extent, extent, 4096.f);
-  const CAABox scanBounds(view.GetTranslation() - spread, view.GetTranslation() + spread);
+  const CAABox echoBounds(view.GetTranslation() - spread, view.GetTranslation() + spread);
   GXLoadTexMtxImm(ringMatrix.GetCStyleMatrix(), GX_TEXMTX0, GX_MTX2x4);
   GXLoadTexMtxImm(volumeMatrix.GetCStyleMatrix(), GX_TEXMTX1, GX_MTX2x4);
   GXLoadTexMtxImm(volumeMatrix.GetCStyleMatrix(), GX_TEXMTX2, GX_MTX2x4);
@@ -1979,7 +1982,7 @@ void CCubeRenderer::DrawScanRing(float radius, float thickness, float alpha, flo
       model.SetArraysCurrent();
       const CMetroidModelInstance::CSurfaceGroups drawGroups(groups);
       DrawScanSurface(i - 1, model, drawGroups, surface.mSurfaceGroupIndex,
-                      scanBounds.DoBoundsOverlap(surface.mBounds));
+                      echoBounds.DoBoundsOverlap(surface.mBounds));
     }
     GXSetColorUpdate(true);
     GXSetAlphaUpdate(true);

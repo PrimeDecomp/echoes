@@ -847,6 +847,36 @@ void CStateManager::RenderActorQueue(rstl::reserved_vector< TUniqueId, 20 >& que
   }
 }
 
+void CStateManager::DrawUnsortedGeometry(const TVisibleAreas& areas, uint mask, uint targetMask,
+                                         CPlayerState::EPlayerVisor visor) {
+  CScopedProfiler profile(rstl::string_l("*UnsortedStaticGeom"), true);
+  const CPlayer* const player = mCurrentRenderPlayer;
+  const CPlayerTargeting* const targeting = player->GetTargeting();
+
+  for (int i = areas.size() - 1; i >= 0; --i) {
+    const CGameArea& area = *areas[i];
+    const TAreaId id = area.GetId();
+    SetupFogForArea(area);
+    gpRender->SetWorldLightFadeLevel(area.GetPostConstructed()->mWorldLightingLevel);
+    targeting->PrepareStaticGeometry(*this, id);
+
+    switch (visor) {
+    case CPlayerState::kPV_Echo:
+      gpRender->DrawEchoVisorGeometry(
+          player->GetEchoPulsePhase(), gpTweakGui->GetEchoBigRingScale(),
+          gpTweakGui->GetEchoBigRingFadeStart(), gpTweakGui->GetEchoAuraSmallSize(),
+          gpTweakGui->GetEchoAuraBigSize(), id.Value());
+      break;
+    case CPlayerState::kPV_Scan:
+      gpRender->DrawUnsortedGeometryAlpha(id.Value());
+      break;
+    default:
+      gpRender->DrawUnsortedGeometry(id.Value());
+      break;
+    }
+  }
+}
+
 void CStateManager::DrawSky(const TVisibleAreas& areas, CPlayerState::EPlayerVisor visor) {
   mWorld->TouchSky();
   if (visor == CPlayerState::kPV_Echo) {
