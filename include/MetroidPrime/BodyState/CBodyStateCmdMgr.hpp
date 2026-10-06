@@ -511,6 +511,7 @@ public:
   void BlendSteeringCmds();
   void ClearLocomotionCmds();
   void SetSteeringSpeedRange(float minimum, float maximum);
+  void SetSteeringBlendMode(ESteeringBlendMode mode) { mSteeringMode = mode; }
   void Reset();
   CBodyStateCmd* GetCmd(EBodyStateCmd cmd);
   const CBodyStateCmd* GetCmd(EBodyStateCmd cmd) const;

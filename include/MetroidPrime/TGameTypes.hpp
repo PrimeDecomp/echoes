@@ -16,6 +16,7 @@ extern const TAreaId kInvalidAreaId;
 extern const TEditorId kInvalidEditorId;
 extern const TEditorId kUnkId;
 extern const TUniqueId kInvalidUniqueId;
+extern const float kDefaultGravityAccel; // Guessed name; 9.81 * 2.5 in TGameTypes .sdata2
 
 struct TAreaId {
   int value;

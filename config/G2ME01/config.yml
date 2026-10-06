@@ -283,6 +283,14 @@ modules:
     hash: f3ab11c967c58f4483a4264fbeb1ba4a837e8719
     splits: config/G2ME01/rels/Ripper/splits.txt
     symbols: config/G2ME01/rels/Ripper/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__10SLdrRipperFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
+      - __dt__Q24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>Fv
   # Module ID 55
   - object: files/RelProd/SandBoss.rel
     hash: 0a28cddbe1a04c8c4ca2bf6a6750d0467b9e805e

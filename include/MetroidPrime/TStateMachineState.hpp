@@ -40,7 +40,7 @@ public:
     CodeFunc mFunction;
   };
 
-  virtual ~TStateMachineStateBase() {}
+  virtual ~TStateMachineStateBase();
   virtual int GetType() const = 0;
   virtual void Reset(CStateManager& mgr, T& owner) = 0;
   virtual void SetStateFunctions(const SStateFunction* functions, int count) = 0;
