@@ -1,6 +1,7 @@
 #ifndef _CPATTERNED
 #define _CPATTERNED
 
+#include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CSteeringBehaviors.hpp"
 #include "MetroidPrime/Enemies/CAi.hpp"
 #include "MetroidPrime/Enemies/CAiKnockBackMgr.hpp"
@@ -34,6 +35,7 @@ class CCharAnimTime;
 
 enum EPatternedAI {
   kPAI_DarkSamus = 7,
+  kPAI_Ripper = 0x30, // Guessed name; Ripper REL constructor.
 };
 
 template <>
@@ -73,10 +75,10 @@ public:
              const CPatternedInfo& patternedInfo, EMovementType movement, EColliderType collider,
              EBodyType body, const CActorParameters& params);
   // CEntity
-  ~CPatterned() override;
-  CEntity* TypesMatch(int typeId) const override;
+  ~CPatterned() override {}
   void PreThink(float dt, CStateManager& mgr) override;
   void Think(float dt, CStateManager& mgr) override;
+  CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
   // CActor
@@ -89,7 +91,7 @@ public:
   const CDamageVulnerability* GetDamageVulnerability(const CVector3f& position,
                                                      const CVector3f& direction,
                                                      const CDamageInfo& damage) const override;
-  rstl::optional_object< CAABox > GetTouchBounds() const override { return GetBoundingBox(); }
+  rstl::optional_object< CAABox > GetTouchBounds() const override;
   void Touch(CActor& actor, CStateManager& mgr) override;
   CVector3f GetOrbitPosition(const CStateManager& mgr) const override;
   CVector3f GetAimPosition(const CStateManager& mgr, float dt) const override;
@@ -143,11 +145,11 @@ public:
   virtual void SetAttackTarget(CStateManager& mgr, TUniqueId target);
   virtual TUniqueId GetAttackTarget() const { return kInvalidUniqueId; }
   virtual bool IsOnGround() const { return mOnGround; }
-  virtual float GetGravityConstant() const { return CPhysicsActor::GravityConstant(); }
-  virtual bool IsScanVisorSelfRender() const { return false; }
+  virtual float GetGravityConstant() const { return kDefaultGravityAccel; }
+  virtual bool IsScanVisorSelfRender() const;
   virtual CAABox GetScanVisorRenderBounds(const CStateManager&) const;
   virtual void ScanVisorRender(const CStateManager&, const CTransform4f&,
-                               const CModelFlags&) const {}
+                               const CModelFlags&) const;
   virtual const rstl::optional_object< TCachedToken< CGenDescription > >&
   GetDeathExplosionParticle() const {
     return mDeathExplosionParticle;
@@ -242,6 +244,7 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+  EFlavorType GetFlavorType() const { return mFlavor; }
   bool IsMakingBigStrike() const { return mIsMakingBigStrike; }
   float GetDamageDuration() const { return mDamageDuration; }
   int GetCreatureSize() const { return mCreatureSize; }
@@ -260,9 +263,10 @@ public:
 
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
 
+  CAiKnockBackMgr& KnockBackController() { return mKnockBackController; }
   const CAiKnockBackMgr& GetKnockBackController() const { return mKnockBackController; }
 
-private:
+protected:
   TUniqueId mDestObj;
   CVector3f mDestPos;
   CVector3f mReflectedDestPos;
@@ -376,5 +380,11 @@ private:
   CSegId mLockOnTarget;
 };
 CHECK_SIZEOF(CPatterned, 0x7c0)
+
+// Defined after the class: a REL that never builds an optional_object< CAABox > itself calls
+// the constructor out of line here (weak copy at the end of the module), like the originals.
+inline rstl::optional_object< CAABox > CPatterned::GetTouchBounds() const {
+  return GetBoundingBox();
+}
 
 #endif

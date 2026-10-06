@@ -59,6 +59,9 @@ TWEAKS_USHORT_COUNT_STRUCTS = {
     "TweakPlayerGun_Beam_Combo",
 }
 TWEAKS_USHORT_SIZE_STRUCTS = {"TweakPlayer_Collision"}
+# Script object loaders whose target keeps the property count in a u16 (LoadRipper,
+# Ripper.rel .text 0x178; with an int count the loop allocates registers differently).
+U16_COUNT_STRUCTS = {"Ripper"}
 
 PROFILE_DIRECTORY = Path(__file__).resolve().parent.parent / "config" / "loader_profiles"
 
@@ -240,6 +243,12 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
     ),
     "SLdrPickup": (
         (0x255A4580, 0x5D298A43),
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
+    # LoadRipper, Ripper.rel .text 0x178: knockback resistance, ambient color and visor.
+    "SLdrRipper": (
+        (0xB3774750, 0xCF90D15E, 0x3A2D17E4),
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
@@ -1157,6 +1166,8 @@ class Generator:
         name = struct.name.removeprefix("SLdr")
         if name in TWEAKS_USHORT_COUNT_STRUCTS:
             count = "  const ushort propertyCount = input.ReadInt16();"
+        elif name in U16_COUNT_STRUCTS:
+            count = "  const u16 propertyCount = input.ReadUint16();"
         else:
             count = "  const int propertyCount = input.ReadUint16();"
         size_type = "ushort" if name in TWEAKS_USHORT_SIZE_STRUCTS else "u16"

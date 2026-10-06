@@ -257,6 +257,9 @@ struct SConnection {
   SConnection(EScriptObjectState state, EScriptObjectMessage msg, TEditorId id)
   : state(state), msg(msg), objId(id) {}
 };
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(SConnection)
+} // namespace rstl
 
 class CEntityInfo {
   TAreaId mAreaId;
@@ -270,7 +273,6 @@ class CEntityInfo {
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& connections, bool active,
               TEditorId eid = kInvalidEditorId);
-  ~CEntityInfo();
 
   TAreaId GetAreaId() const { return mAreaId; }
   const rstl::vector< SConnection >& GetConnectionList() const { return mConnections; }
