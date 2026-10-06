@@ -312,7 +312,7 @@ public:
   void SetChargeBeamFactor(float factor) { mChargeBeamFactor = factor; }
   float GetChargeAnimStart() const { return mChargeAnimStart; }
   void IncrementChargeBeamFactor(float);
-  void DecrementAmmoAndDisplayAlertIfOut(const CStateManager&, EItemType, int quantity);
+  void DecrementAmmoAndDisplayAlertIfOut(CStateManager&, EItemType, int quantity);
 
 private:
   int mPlayerIndex;

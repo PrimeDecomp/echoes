@@ -24,6 +24,7 @@
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
+#include "MetroidPrime/CMemoryCard.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
 #include "MetroidPrime/CPortalArea.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
@@ -39,9 +40,11 @@
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
+#include "MetroidPrime/HUD/CHUDMemoParms.hpp"
 #include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
@@ -83,11 +86,13 @@
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CParticleElectric.hpp"
 #include "Kyoto/Particles/CParticleSpawnSystem.hpp"
 #include "Kyoto/Particles/CSortedParticleSystem.hpp"
+#include "Kyoto/Text/CStringTable.hpp"
 #include "MetaRender/AmbientLightScale.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
@@ -115,6 +120,10 @@ public:
 };
 
 static s64 sPreRenderStepTime;
+
+// Prime-correlated lazy initialization; Echoes schedules rumble rather than camera shakes.
+static float sNextEscapeRumble;
+static char sEscapeRumbleInitialized;
 
 // Prime-correlated name; native underwater ranges for the two bomb attributes.
 static const float skBombUnderwaterRanges[2] = {2.f, 4.f};
@@ -1377,6 +1386,71 @@ void CStateManager::ResetEscapeSequenceTimer(float time) {
 }
 
 float CStateManager::GetEscapeSequenceTimer() const { return gpGameState->GetEscapeTime(); }
+
+void CStateManager::UpdateEscapeSequenceTimer(float dt) {
+  if (close_enough(mEscapeTotalTime, 0.f)) {
+    mEscapeTotalTime = gpGameState->GetEscapeTime();
+  }
+  const float totalTime = mEscapeTotalTime;
+  if (gpGameState->GetEscapeTime() > 0.f) {
+    gpGameState->SetEscapeTime(rstl::max_val(FLT_EPSILON, gpGameState->GetEscapeTime() - dt));
+    if (gpGameState->GetEscapeTime() <= FLT_EPSILON && mPlayerStates[0]->IsPlayerAlive()) {
+      KillPlayer(0.f, mPlayers[0]->GetUniqueId(), kInvalidUniqueId);
+    }
+
+    if (!sEscapeRumbleInitialized) {
+      sEscapeRumbleInitialized = true;
+      sNextEscapeRumble = 0.f;
+    }
+    sNextEscapeRumble -= dt;
+    if (sNextEscapeRumble < 0.f) {
+      const float factor = 1.f - gpGameState->GetEscapeTime() / totalTime;
+      mRumbleManagers[0]->Rumble(*this, kRFX_PlayerBump, 0.75f, kRP_One);
+      sNextEscapeRumble = -12.f * (factor * factor) + 15.f;
+    }
+  }
+}
+
+void CStateManager::UpdateHintState(float dt) {
+  CHintOptions& hintOptions = gpGameState->HintOptions();
+  hintOptions.Update(dt, *this);
+
+  int nextHintIdx = -1;
+  int hintPeriods = -1;
+  const CHintOptions::SHintState* currentHint = hintOptions.GetCurrentDisplayedHint();
+  if (currentHint != nullptr) {
+    const CGameHintInfo::CGameHint& nextHint =
+        gpMemoryCard->GetHints()[hintOptions.GetNextHintIdx()];
+    const rstl::vector< CGameHintInfo::SHintLocation >& locations = nextHint.GetLocations();
+    for (int i = 0; i < static_cast< int >(locations.size()); ++i) {
+      const CGameHintInfo::SHintLocation& location = locations[i];
+      const int areaId = location.mAreaId.Value();
+      const CAssetId worldId = location.mMlvlId;
+      CWorldState& worldState = gpGameState->StateForWorld(worldId);
+      rstl::rc_ptr< CMapWorldInfo > mapWorldInfo = worldState.MapWorldInfo();
+      mapWorldInfo->SetIsMapped(TAreaId(areaId), true);
+    }
+
+    if (currentHint->mTime < nextHint.GetTextTime()) {
+      nextHintIdx = hintOptions.GetNextHintIdx();
+      hintPeriods = static_cast< int >(currentHint->mTime / CGameHintInfo::skHintTextTime);
+    }
+  }
+
+  if (nextHintIdx != mHintIdx || hintPeriods != static_cast< int >(mHintPeriods)) {
+    if (nextHintIdx == -1) {
+      CSamusHud::DisplayHudMemo(rstl::wstring_l(L""),
+                               CHUDMemoParms(0.f, true, true, true, 15, true));
+    } else {
+      const CAssetId stringId = gpMemoryCard->GetHints()[nextHintIdx].GetStringId();
+      CSamusHud::DeferHintMemo(stringId, hintPeriods,
+                             CHUDMemoParms(0.f, true, false, true, 15, true));
+    }
+
+    mHintIdx = nextHintIdx;
+    mHintPeriods = hintPeriods;
+  }
+}
 
 void CStateManager::AddWeaponId(TUniqueId owner, EWeaponType type) {
   mWeaponMgr->IncrCount(owner, type);
@@ -2816,6 +2890,50 @@ void CStateManager::MoveActors(float dt) {
   }
 }
 
+void CStateManager::CrossTouchActors() {
+  CObjectList* actorList = mObjectLists[kOL_Actor].get();
+  bool visits[kMaxObjects];
+  memset(visits, 0, sizeof(visits));
+
+  for (int i = actorList->GetFirstObjectIndex(); i != -1; i = actorList->GetNextObjectIndex(i)) {
+    CActor* actor = static_cast< CActor* >((*actorList)[i]);
+    if (actor != nullptr && actor->GetActive() && actor->GetCallTouch()) {
+      const rstl::optional_object< CAABox > touchBounds = actor->GetTouchBounds();
+      if (!touchBounds) {
+        continue;
+      }
+      if (!actor->GetUpdateDuringCinematicSkip() && gpMain->IsMaxSpeed()) {
+        continue;
+      }
+
+      rstl::reserved_vector< TUniqueId, kMaxObjects > nearList;
+      const CMaterialFilter filter = actor->GetMaterialList().HasMaterial(kMT_Trigger) &&
+                                             TCastToPtr< CMetroidAlpha >(actor) == nullptr
+                                         ? CMaterialFilter::MakeExclude(CMaterialList(kMT_Trigger))
+                                         : CMaterialFilter::GetPassEverything();
+      BuildNearList(nearList, *touchBounds, filter, actor);
+
+      for (const TUniqueId* uid = nearList.begin(); uid != nearList.end(); ++uid) {
+        CActor* other = static_cast< CActor* >(ObjectById(*uid));
+        if (other != nullptr) {
+          const rstl::optional_object< CAABox > otherBounds = other->GetTouchBounds();
+          if (!other->GetActive() || !otherBounds) {
+            continue;
+          }
+
+          if (!visits[other->GetUniqueId().Value()]) {
+            if (touchBounds->DoBoundsOverlap(*otherBounds)) {
+              actor->Touch(*other, *this);
+              other->Touch(*actor, *this);
+            }
+            visits[actor->GetUniqueId().Value()] = true;
+          }
+        }
+      }
+    }
+  }
+}
+
 void CStateManager::ThinkEntity(float dt, CEntity& entity) { entity.Think(dt, *this); }
 
 bool CStateManager::ShouldUpdatePatterned(const CPatterned& actor) {
@@ -3072,4 +3190,45 @@ void CStateManager::UpdateAreaSounds() {
     }
   }
   CSfxManager::SetActiveAreas(areaIds, mNextAreaId.Value());
+}
+
+void CStateManager::DisplayAlertAboutOutOfAmmo(const CPlayer& player,
+                                            CPlayerState::EItemType type) {
+  CObjectList* allList = mObjectLists[kOL_All].get();
+  for (int i = allList->GetFirstObjectIndex(); i != -1; i = allList->GetNextObjectIndex(i)) {
+    CScriptSpecialFunction* const special = TCastToPtr< CScriptSpecialFunction >((*allList)[i]);
+    if (special != nullptr && special->GetFunction() == CScriptSpecialFunction::kSF_ItemDepletion) {
+      special->OnItemDepleted(*this, player.GetPlayerIndex(), type);
+    }
+  }
+
+  if (mPlayerStates[player.GetPlayerIndex()]->GetItemAmount(type, true) != 0) {
+    return;
+  }
+  const uint playerIndex = MaskUIdNumPlayers(player.GetUniqueId());
+  CHUDMemoParms memoInfo(3.f, true, false, false, 1 << playerIndex, true);
+  switch (type) {
+  case CPlayerState::kIT_LightAmmo:
+    if (mDarkAmmoDepletedPlayers & (1 << player.GetPlayerIndex())) {
+      CSamusHud::DisplayHudMemo(rstl::wstring(gpStringTable->GetString("BothAmmoDepleted")),
+                               memoInfo);
+    } else {
+      CSamusHud::DisplayHudMemo(rstl::wstring(gpStringTable->GetString("LightAmmoDepleted")),
+                               memoInfo);
+    }
+    mLightAmmoDepletedPlayers |= 1 << player.GetPlayerIndex();
+    break;
+  case CPlayerState::kIT_DarkAmmo:
+    if (mLightAmmoDepletedPlayers & (1 << player.GetPlayerIndex())) {
+      CSamusHud::DisplayHudMemo(rstl::wstring(gpStringTable->GetString("BothAmmoDepleted")),
+                               memoInfo);
+    } else {
+      CSamusHud::DisplayHudMemo(rstl::wstring(gpStringTable->GetString("DarkAmmoDepleted")),
+                               memoInfo);
+    }
+    mDarkAmmoDepletedPlayers |= 1 << player.GetPlayerIndex();
+    break;
+  default:
+    break;
+  }
 }
