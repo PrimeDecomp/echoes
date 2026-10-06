@@ -23,6 +23,7 @@ public:
 
   CVector3f GetPositionByTime(float time, const CTransform4f& xf, const CStateManager& mgr);
   CQuaternion GetOrientationByTime(float time, const CTransform4f& xf, const CStateManager& mgr);
+  using CGameSpline::GetPositionByLength;
   CVector3f GetPositionByLength(float distance, const CTransform4f& xf, const CStateManager& mgr);
   CQuaternion GetOrientationByLength(float positionDistance, float targetDistance,
                                      const CTransform4f& xf, const CStateManager& mgr);

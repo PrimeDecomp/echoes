@@ -38,6 +38,11 @@ public:
   const CFirstPersonCamera* GetFirstPersonCamera() const { return mFpCamera; }
   const CBallCamera* GetBallCamera() const { return mBallCamera; }
   const CInterpolationCamera* GetInterpolationCamera() const { return mInterpCamera; }
+  CInterpolationCamera* InterpolationCamera() { return mInterpCamera; }
+  CPathCamera* PathCamera() { return mPathCamera; }
+  CSpindleCamera* SpindleCamera() { return mSpindleCamera; }
+  CSurfaceCamera* SurfaceCamera() { return mSurfaceCamera; }
+  CFixedCamera* FixedCamera() { return mFixedCamera; }
   const CPathCamera* GetPathCamera() const { return mPathCamera; }
   CBallCamera* BallCamera() { return mBallCamera; }
   const CCinematicCamera* GetCinematicCamera() const { return mCinematicCamera; }
@@ -101,7 +106,7 @@ public:
   void SetFixedCamera(TUniqueId uid, const CTransform4f& xf, CStateManager& mgr); // Guessed name
   void ClearFixedCamera();                                                        // Guessed name
   void SetSurfaceCamera(TUniqueId uid, CStateManager& mgr);                       // Guessed name
-  void ClearSurfaceCamera();                                                      // Guessed name
+  void ClearSurfaceCamera(CStateManager& mgr);                                    // Guessed name
   float GetCameraBobMagnitude() const;
   void AddCamera(TUniqueId uid, CStateManager& mgr);                                // Guessed name
   void UpdateCameraHistory(CStateManager& mgr);                                     // Guessed name

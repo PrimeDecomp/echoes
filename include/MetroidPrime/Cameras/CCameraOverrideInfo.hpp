@@ -28,6 +28,11 @@ public:
   float GetAnglePerSecond() const { return mAnglePerSecond; }
   float GetElevation() const { return mElevation; }
   float GetControlInterpDur() const { return mControlInterpDur; }
+  float GetInterpolateOnTime() const { return mInterpolateOnTime; }
+  float GetInterpolateOffTime() const { return mInterpolateOffTime; }
+  int GetInterpolateOnType() const { return mInterpolateOnType; }
+  int GetInterpolationMode() const { return mInterpolationMode; }
+  int GetInterpolateOffType() const { return mInterpolateOffType; }
 
 private:
   uint mFlags;

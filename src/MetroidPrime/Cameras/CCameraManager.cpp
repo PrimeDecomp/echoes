@@ -553,7 +553,7 @@ void CCameraManager::SetSurfaceCamera(TUniqueId uid, CStateManager& mgr) {
   }
 }
 
-void CCameraManager::ClearSurfaceCamera() {
+void CCameraManager::ClearSurfaceCamera(CStateManager& mgr) {
   mSurfaceCamera->SetActive(false);
   mSurfaceCamera->SetScriptCameraId(kInvalidUniqueId);
 }
@@ -609,7 +609,7 @@ void CCameraManager::Reset(TUniqueId uid, CStateManager& mgr) {
   ResetCameras(mgr);
   ClearPathCamera();
   ClearSpindleCamera();
-  ClearSurfaceCamera();
+  ClearSurfaceCamera(mgr);
   ClearFixedCamera();
   mCameraHintManager->Reset(mgr);
   mCameraShakeManager->Reset();

@@ -84,6 +84,10 @@ public:
     mLookPosAhead = mFixedLookPos;
   }
   void InvalidateSpline();
+  CTransform4f FindDesiredTransform(CVector3f direction, CStateManager& mgr);
+  void SetClampVelTimer(float timer) { mClampVelTimer = timer; }
+  void SetFixedTransform(const CTransform4f& xf) { mFixedTransform = xf; }
+  void UpdateLookAtPosition(float dt, CStateManager& mgr, bool teleport);
 
 private:
   // Guessed name
@@ -112,7 +116,6 @@ private:
                               float& distance, const CStateManager& mgr, int controllerIdx);
   CVector3f FindDesiredPosition(float distance, float elevation, CVector3f direction,
                                 CStateManager& mgr, bool fullTest);
-  CTransform4f FindDesiredTransform(CVector3f direction, CStateManager& mgr);
   bool ConstrainElevationAndDistance(float& elevation, float& distance, float dt,
                                      CStateManager& mgr);
   CVector3f ConstrainYawAngle(const CPlayer& player, float yawSpeed, float dampenAngle, float dt,
@@ -135,7 +138,6 @@ private:
   void UpdateUsingColliders(float dt, CStateManager& mgr);
   void UpdateUsingFreeLook(float dt, CStateManager& mgr);
   void UpdateUsingTransitions(float dt, CStateManager& mgr);
-  void UpdateLookAtPosition(float dt, CStateManager& mgr, bool teleport);
   void UpdateObjectTooCloseId(CStateManager& mgr);
   void UpdateAnglePerSecond(float dt);
   CVector3f ComputeVelocity(CVector3f currentVelocity, CVector3f positionDelta, float dt);
