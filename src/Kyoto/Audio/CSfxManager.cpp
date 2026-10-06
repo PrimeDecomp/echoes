@@ -1151,18 +1151,18 @@ int CSfxManager::AddLowPassAreaFilter(int frequency, float duration) {
 void CSfxManager::UpdateLowPassAreaFilters(float dt) {
   mAreaLowPassFrequency = 44100;
   bool haveFrequency = false;
-  for (int i = 0; i < mAreaLowPassFilters.size();) {
-    SLowPassFilter& filter = mAreaLowPassFilters[i];
-    filter.mTimeRemaining -= dt;
-    if (filter.mTimed && !(filter.mTimeRemaining > 0.f)) {
-      mAreaLowPassFilters.erase(mAreaLowPassFilters.begin() + i);
+  for (SLowPassFilter* it = mAreaLowPassFilters.begin(); it != mAreaLowPassFilters.end();) {
+    it->mTimeRemaining -= dt;
+    const bool active = !it->mTimed || it->mTimeRemaining > 0.f;
+    if (!active) {
+      it = mAreaLowPassFilters.erase(it);
       continue;
     }
-    if (!haveFrequency || filter.mFrequency < mAreaLowPassFrequency) {
-      mAreaLowPassFrequency = filter.mFrequency;
+    if (!haveFrequency || it->mFrequency < mAreaLowPassFrequency) {
+      mAreaLowPassFrequency = it->mFrequency;
       haveFrequency = true;
     }
-    ++i;
+    ++it;
   }
 }
 
@@ -1170,9 +1170,9 @@ void CSfxManager::RemoveLowPassAreaFilter(int id) {
   if (id == 0) {
     return;
   }
-  for (int i = 0; i < mAreaLowPassFilters.size(); ++i) {
-    if (mAreaLowPassFilters[i].mId == id) {
-      mAreaLowPassFilters.erase(mAreaLowPassFilters.begin() + i);
+  for (SLowPassFilter* it = mAreaLowPassFilters.begin(); it != mAreaLowPassFilters.end(); ++it) {
+    if (id == it->mId) {
+      mAreaLowPassFilters.erase(it);
       return;
     }
   }
@@ -1198,18 +1198,18 @@ int CSfxManager::AddLowPassFilter(int frequency, float duration) {
 void CSfxManager::UpdateLowPassFilters(float dt) {
   mLowPassFrequency = 44100;
   bool haveFrequency = false;
-  for (int i = 0; i < mLowPassFilters.size();) {
-    SLowPassFilter& filter = mLowPassFilters[i];
-    filter.mTimeRemaining -= dt;
-    if (filter.mTimed && !(filter.mTimeRemaining > 0.f)) {
-      mLowPassFilters.erase(mLowPassFilters.begin() + i);
+  for (SLowPassFilter* it = mLowPassFilters.begin(); it != mLowPassFilters.end();) {
+    it->mTimeRemaining -= dt;
+    const bool active = !it->mTimed || it->mTimeRemaining > 0.f;
+    if (!active) {
+      it = mLowPassFilters.erase(it);
       continue;
     }
-    if (!haveFrequency || filter.mFrequency < mLowPassFrequency) {
-      mLowPassFrequency = filter.mFrequency;
+    if (!haveFrequency || it->mFrequency < mLowPassFrequency) {
+      mLowPassFrequency = it->mFrequency;
       haveFrequency = true;
     }
-    ++i;
+    ++it;
   }
 }
 
@@ -1217,9 +1217,9 @@ void CSfxManager::RemoveLowPassFilter(int id) {
   if (id == 0) {
     return;
   }
-  for (int i = 0; i < mLowPassFilters.size(); ++i) {
-    if (mLowPassFilters[i].mId == id) {
-      mLowPassFilters.erase(mLowPassFilters.begin() + i);
+  for (SLowPassFilter* it = mLowPassFilters.begin(); it != mLowPassFilters.end(); ++it) {
+    if (id == it->mId) {
+      mLowPassFilters.erase(it);
       return;
     }
   }
