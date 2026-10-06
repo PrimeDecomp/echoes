@@ -1,17 +1,34 @@
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
+#include "MetroidPrime/CDecalManager.hpp"
+#include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Cameras/CCameraShakerManager.hpp"
+#include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
+#include "MetroidPrime/Weapons/CBlackHole.hpp"
+#include "MetroidPrime/Weapons/CHomingBlob.hpp"
 
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CRealElement.hpp"
 #include "Weapons/CCollisionResponseData.hpp"
+#include "rstl/algorithm.hpp"
+
+// Reconstructed names for Echoes-specific impact controls.
+static const uint skPiercingAttribute = 1 << 21;
+static const uint skForceImpactEffectsAttribute = 1 << 5;
+static ushort skImpactVisibilityFrameWindow = 8;
 
 #define MATERIAL_FLAG(material) (u64(1) << material)
 const CMaterialList CEnergyProjectile::kCheckMaterial(
@@ -76,9 +93,35 @@ bool CEnergyProjectile::Explode(const CVector3f& position, const CVector3f& norm
     return false;
   }
 
-  // TODO: piercing-projectile checks also track the last hit actor and collision-actor
-  // owner. Keep that path distinct from the ordinary impact handled below.
+  const TUniqueId lastHitActor = mLastResolvedObj;
+  CPlayer* player = TCastToPtr< CPlayer >(const_cast< CEntity* >(mgr.GetObjectById(lastHitActor)));
+  const int playerIndex = player != nullptr ? mgr.MaskUIdNumPlayers(lastHitActor) : -1;
+  bool piercing = (GetAttribField() & skPiercingAttribute) == skPiercingAttribute &&
+                  lastHitActor != kInvalidUniqueId;
+  if (piercing) {
+    if (mCollisionCooldowns.Contains(lastHitActor)) {
+      return false;
+    }
+    if ((mgr.IsMultiplayer() && player != nullptr) ||
+        TCastToPtr< CPatterned >(mgr.ObjectById(lastHitActor)) != nullptr) {
+      mCollisionCooldowns.Add(lastHitActor);
+    } else if (CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(
+                   const_cast< CEntity* >(mgr.GetObjectById(lastHitActor)))) {
+      mCollisionCooldowns.Add(lastHitActor);
+      const TUniqueId owner = collisionActor->GetOwnerId();
+      if (TCastToPtr< CPatterned >(mgr.ObjectById(owner)) != nullptr) {
+        if (mCollisionCooldowns.Contains(owner)) {
+          return false;
+        }
+        mCollisionCooldowns.Add(owner);
+      }
+    } else {
+      piercing = false;
+    }
+  }
+
   const CVector3f offsetPosition = position + 0.01f * normal;
+  bool done = true;
   const CWeaponTypeVulnerability response =
       vulnerability.GetVulnerability(GetCurrentDamageInfo().GetWeaponMode());
   const bool hurts = !close_enough(response.mDamageMultiplier, 0.f) &&
@@ -89,24 +132,173 @@ bool CEnergyProjectile::Explode(const CVector3f& position, const CVector3f& norm
 
   SetTranslation(offsetPosition);
   if (deflected) {
+    done = false;
     mHomingTargetId = kInvalidUniqueId;
     mHasExploded = false;
     mCollisionCooldowns.Add(hitActor);
   } else {
     mHasExploded = true;
-    StopProjectile(mgr);
-    // TODO: place the configured camera shaker at the impact and submit it to each player.
+    if (!piercing || lastHitActor == kInvalidUniqueId) {
+      StopProjectile(mgr);
+    }
+    if (mCameraShakerDirty) {
+      mCameraShaker.SetPosition(position);
+      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+        mgr.CameraManager(i)->CameraShakerManager()->AddCameraShaker(mCameraShaker, mgr, false,
+                                                                     false);
+      }
+    }
   }
 
   PlayImpactSound(position, type);
-  // TODO: notify AI listeners, preserve piercing motion, and create the impact entity,
-  // decal/platform attachment, Dark homing-blob/black-hole or Annihilator implosion.
+  mgr.InformListeners(position, kLNT_ProjectileExplode);
+  CProjectileWeapon& projectile = Projectile();
   rstl::optional_object< TLockedToken< CGenDescription > > particle = GetImpactParticle(mgr);
   if (!particle.valid()) {
-    particle = mProjectile.CollisionOccured(type, deflected, false, false, offsetPosition, normal,
-                                            CVector3f::Zero());
+    particle = projectile.CollisionOccured(type, !done, false, piercing, offsetPosition, normal,
+                                           CVector3f::Zero());
   }
-  return !deflected;
+  if (particle.valid()) {
+    CTransform4f particleXf = CTransform4f::LookAt(CVector3f::Zero(), normal);
+    if (mOrientImpactToOwner) {
+      if (CActor* owner = TCastToPtr< CActor >(mgr.ObjectById(GetOwnerId()))) {
+        particleXf =
+            CTransform4f::LookAt(CVector3f::Zero(), owner->GetTranslation() - GetTranslation());
+      }
+    }
+    particleXf.SetTranslation(offsetPosition);
+    const bool underwaterPower =
+        (GetType() == kWT_Power && GetFilter().GetExcludeList().HasMaterial(kMT_Player)) &&
+        mInWater;
+    if (!underwaterPower) {
+      if ((GetAttribField() & skForceImpactEffectsAttribute) == skForceImpactEffectsAttribute ||
+          uint(mgr.GetRenderFrameIndex() - mLastVisibleFrame) < skImpactVisibilityFrameWindow ||
+          uint(mgr.GetRenderFrameIndex()) == uint(mCreationRenderFrameIndex)) {
+        if (!mSuppressDecal && mgr.GetNumPlayers() <= 2) {
+          const rstl::optional_object< TLockedToken< CDecalDescription > > decal =
+              projectile.GetDecalForCollision(type);
+          if (decal.valid()) {
+            CDecalManager::AddDecal(*decal, particleXf,
+                                    CUnitVector3f(mInitialDirection, CUnitVector3f::kN_No), mgr);
+          }
+        }
+
+        CVector3f scale = CVector3f::One();
+        bool cameraClose = false;
+        if (!mgr.IsMultiplayer() &&
+            mgr.GetPlayer(0)->GetCameraState() == CPlayer::kCS_FirstPerson) {
+          const CVector3f delta =
+              particleXf.GetTranslation() -
+              mgr.CameraManager(0)->GetCurrentCamera(mgr, true)->GetTranslation();
+          const float distance = delta.Magnitude();
+          if (distance < mImpactScaleDistance) {
+            const float factor = 0.75f * (distance / mImpactScaleDistance) + 0.25f;
+            scale = CVector3f(factor, factor, factor);
+          }
+          cameraClose = distance < mCloseImpactDistance;
+        }
+        if (!cameraClose && gpMain->GetAverageTickTime() + gpMain->GetAverageDrawTime() > 0.8f) {
+          cameraClose = true;
+        }
+        uint flags = 2;
+        if (cameraClose) {
+          flags |= 1;
+        }
+        if (projectile.GetWeaponDescription()->mFC60) {
+          flags |= 4;
+        }
+        if (mgr.IsMultiplayer()) {
+          flags |= 8;
+        }
+        CEntity* explosion = rs_new CExplosion(
+            *particle, mgr.AllocateUniqueId(),
+            CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true, kInvalidEditorId),
+            rstl::string_l("Projectile collision response"), particleXf, flags, scale,
+            CColor::White(), mgr.IsMultiplayer() ? playerIndex : -1);
+        if ((GetAttribField() & (kPA_Dark | kPA_Charged)) == (kPA_Dark | kPA_Charged)) {
+          if (CActor* next = TCastToPtr< CActor >(mgr.ObjectById(GetDrawParent()))) {
+            next->SetNextDrawNode(explosion->GetUniqueId());
+          }
+        }
+        mgr.AddObject(explosion);
+        if (CActor* hit = TCastToPtr< CActor >(mgr.ObjectById(hitActor))) {
+          bool hasPlatform = false;
+          CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(hit);
+          if (platform != nullptr) {
+            hasPlatform = true;
+          } else if (hit->GetMaterialList().HasMaterial(kMT_PlatformSlave)) {
+            CObjectList& platforms = mgr.ObjectListById(kOL_Platform);
+            for (int i = platforms.GetFirstObjectIndex(); i != -1;
+                 i = platforms.GetNextObjectIndex(i)) {
+              CScriptPlatform* other = static_cast< CScriptPlatform* >(platforms[i]);
+              if (other->IsSlave(hitActor)) {
+                platform = other;
+                hasPlatform = true;
+                break;
+              }
+            }
+          }
+          if (hasPlatform) {
+            platform->AddSlave(explosion->GetUniqueId(), mgr, rstl::optional_object_null());
+          }
+        }
+      }
+    } else {
+      mDead = true;
+    }
+
+    if ((GetAttribField() & (kPA_Dark | kPA_Charged)) == (kPA_Dark | kPA_Charged)) {
+      const TLockedToken< CGenDescription > blobParticle =
+          gpSimplePool->GetObj("HomingBlobSpread1");
+      const float chargeFactor = CMath::Clamp(0.25f, mChargeFactor, 1.f);
+      static const CAABox skChargedDarkImpactBounds(CVector3f(-7.f, -7.f, -7.f),
+                                                    CVector3f(7.f, 7.f, 7.f));
+      const int impactPlayer = mgr.IsMultiplayer() ? playerIndex : -1;
+      const float homingAcceleration = mgr.IsMultiplayer() ? 0.095f : 0.06f;
+      const float targetSearchRadius = mgr.IsMultiplayer() ? 11.f : 7.f;
+      CActor* blob = rs_new CHomingBlob(
+          blobParticle, mgr.AllocateUniqueId(), GetCurrentAreaId(), GetOwnerId(), true,
+          skChargedDarkImpactBounds.GetTransformedAABox(particleXf),
+          gpTweakPlayerGun->GetDarkBeamBlobDamage(), impactPlayer,
+          rstl::string_l("CHomingBlobImpact"), particleXf, CHomingBlob::kMF_FollowPlayerArea,
+          chargeFactor, 0.5f, 1.f, 9.f, targetSearchRadius, homingAcceleration);
+      SetNextDrawNode(blob->GetUniqueId());
+      mgr.AddObject(blob);
+    } else if ((GetAttribField() & (kPA_Dark | kPA_ComboShot)) == (kPA_Dark | kPA_ComboShot)) {
+      const rstl::optional_object< TToken< CGenDescription > > blackHoleParticle =
+          TToken< CGenDescription >(gpSimplePool->GetObj("DarkBlackHole"));
+      CBlackHole* blackHole = rs_new CBlackHole(
+          blackHoleParticle, mgr.AllocateUniqueId(), kInvalidAreaId, GetOwnerId(),
+          CTransform4f::Translate(position), gpTweakPlayerGun->GetBlackHoleDamage(),
+          rstl::string_l("DarkBlackHole"), 0.f, 15.f,
+          CBlackHole::kF_PullPlayers | CBlackHole::kF_CreationSound);
+      mgr.AddObject(blackHole);
+    } else if (HasAttrib(kPA_Dark)) {
+      const TLockedToken< CGenDescription > blobParticle =
+          gpSimplePool->GetObj("HomingBlobSpreadRegularBeam");
+      static const CAABox skRegularDarkImpactBounds(CVector3f(-2.f, -2.f, -2.f),
+                                                    CVector3f(2.f, 2.f, 2.f));
+      const int impactPlayer = mgr.IsMultiplayer() ? playerIndex : -1;
+      const float homingAcceleration = mgr.IsMultiplayer() ? 0.095f : 0.06f;
+      CActor* blob = rs_new CHomingBlob(
+          blobParticle, mgr.AllocateUniqueId(), GetCurrentAreaId(), GetOwnerId(), true,
+          skRegularDarkImpactBounds.GetTransformedAABox(particleXf),
+          gpTweakPlayerGun->GetDarkBeamBlobDamage(), impactPlayer,
+          rstl::string_l("CHomingBlobImpact"), particleXf,
+          CHomingBlob::kMF_FollowPlayerArea | CHomingBlob::kMF_SkipInitialTargets, 1.f, 0.2f, 1.f,
+          1.f, 7.f, homingAcceleration);
+      SetNextDrawNode(blob->GetUniqueId());
+      mgr.AddObject(blob);
+    } else if ((GetAttribField() & (kPA_Annihilator | kPA_ComboShot)) ==
+               (kPA_Annihilator | kPA_ComboShot)) {
+      CBlackHole* imploder = rs_new CBlackHole(
+          rstl::optional_object_null(), mgr.AllocateUniqueId(), kInvalidAreaId, GetOwnerId(),
+          CTransform4f::Translate(position), gpTweakPlayerGun->GetImploderDamage(),
+          rstl::string_l("AnnihilatorImploder"), 20.f, 1.7f, 0);
+      mgr.AddObject(imploder);
+    }
+  }
+  return done;
 }
 
 void CEnergyProjectile::PreRenderAllViewports(CStateManager& mgr) {
@@ -363,27 +555,30 @@ CAABox CEnergyProjectile::GetSortingBounds(const CStateManager& mgr) const {
 }
 
 bool CEnergyProjectile::CCollisionCooldowns::Contains(TUniqueId id) const {
-  for (rstl::list< rstl::pair< TUniqueId, float > >::const_iterator it = mEntries.begin();
-       it != mEntries.end(); ++it) {
-    if (it->first == id) {
-      return true;
-    }
-  }
-  return false;
+  const rstl::list< rstl::pair< TUniqueId, float > >::const_iterator it = rstl::binary_find(
+      mEntries.begin(), mEntries.end(), rstl::pair< TUniqueId, float >(id, mDefaultDuration),
+      rstl::pair_sorter_finder< rstl::pair< TUniqueId, float >, rstl::less< TUniqueId > >(
+          rstl::less< TUniqueId >()));
+  return it != mEntries.end();
 }
 
 void CEnergyProjectile::CCollisionCooldowns::Add(TUniqueId id) { Add(id, mDefaultDuration); }
 
 void CEnergyProjectile::CCollisionCooldowns::Add(TUniqueId id, float duration) {
-  rstl::list< rstl::pair< TUniqueId, float > >::iterator it = mEntries.begin();
-  for (; it != mEntries.end() && it->first < id; ++it) {
-  }
-  if (it != mEntries.end() && it->first == id) {
+  const rstl::pair< TUniqueId, float > entry(id, duration);
+  const rstl::pair_sorter_finder< rstl::pair< TUniqueId, float >, rstl::less< TUniqueId > >
+      compareIds((rstl::less< TUniqueId >()));
+  rstl::list< rstl::pair< TUniqueId, float > >::iterator it = rstl::binary_find(
+      mEntries.begin(), mEntries.end(), entry, compareIds);
+  if (it != mEntries.end()) {
     it->second = duration;
   } else {
-    mEntries.insert(it, rstl::pair< TUniqueId, float >(id, duration));
+    mEntries.insert(rstl::lower_bound(mEntries.begin(), mEntries.end(), entry, compareIds), entry);
   }
 }
+
+CEnergyProjectile::CCollisionCooldowns::CCollisionCooldowns(float duration)
+: mDefaultDuration(duration) {}
 
 void CEnergyProjectile::CCollisionCooldowns::Update(float dt) {
   for (rstl::list< rstl::pair< TUniqueId, float > >::iterator it = mEntries.begin();

@@ -68,7 +68,7 @@ CGameProjectile::CGameProjectile(bool active, const TToken< CWeaponDescription >
 , mProjectileLight(kInvalidUniqueId)
 , mWpscId(description.GetTag().GetId())
 , mTouchedDock(kInvalidUniqueId)
-, x404_(0)
+, mCreationRenderFrameIndex(0)
 , mMinHomingDist(0.f)
 , mHomingTurnRateScale(1.f)
 , mActive(true)
@@ -334,7 +334,7 @@ CGameProjectile::RayCollisionCheckWithWorld(TUniqueId& idOut, const CVector3f& s
 void CGameProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Create:
-    x404_ = mgr.GetRenderFrameIndex();
+    mCreationRenderFrameIndex = mgr.GetRenderFrameIndex();
     break;
   case kSM_Delete:
     DeleteProjectileLight(mgr);
