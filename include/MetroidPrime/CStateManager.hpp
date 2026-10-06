@@ -20,6 +20,7 @@ extern const int gkPVSEnabled;
 #include "Kyoto/Input/CFinalInput.hpp"
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "Kyoto/Math/CVector3f.hpp"
+#include "Kyoto/PVS/CPVSVisSet.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TOneStatic.hpp"
 #include "Kyoto/TToken.hpp"
@@ -61,7 +62,6 @@ class CStateManager;
 class CInGameGuiManagerSet;
 class CDependencyGroup;
 class CEchoEmitter;
-class CPVSVisSet;
 class CGameArea;
 struct CViewport;
 
@@ -216,6 +216,11 @@ public:
 
   // Reconstructed render-phase names, supported by native calls and profiling strings.
   typedef rstl::reserved_vector< const CGameArea*, 5 > TVisibleAreas;
+  typedef rstl::reserved_vector< CPVSVisSet, 5 > TAreaVisibility;
+  bool GetVisSetForArea(TAreaId area, TAreaId visibleArea, CPVSVisSet& visibility) const;
+  // Reconstructed phase names, derived from DrawWorld's native area/PVS setup.
+  void GatherVisibleAreas(TVisibleAreas& areas, TAreaVisibility& visibility);
+  void PrepareWorldRendering(const TVisibleAreas& areas, const TAreaVisibility& visibility);
   void RenderActorQueue(rstl::reserved_vector< TUniqueId, 20 >& queue,
                         const rstl::string& profileName);
   void GetWorldGeometryMasks(uint& mask, uint& targetMask, CPlayerState::EPlayerVisor visor);

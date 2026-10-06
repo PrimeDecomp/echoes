@@ -869,7 +869,7 @@ config.libs = [
             Object(NonMatching, "Weapons/CWeaponDescription.cpp"),
             Object(Matching, "Weapons/CDecalDescription.cpp"),
             Object(NonMatching, "MetaRender/CCubeRenderer.cpp"),
-            Object(NonMatching, "MetaRender/AmbientLightScale.cpp"),
+            Object(MatchingFor("G2ME01"), "MetaRender/AmbientLightScale.cpp"),
             Object(NonMatching, "GuiSys/CAuiMeter.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiCamera.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiCompoundWidget.cpp"),
