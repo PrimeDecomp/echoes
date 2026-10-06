@@ -21,6 +21,7 @@ public:
     CWaypointTimes(const CWaypointTimes& other);
     virtual ~CWaypointTimes();
 
+    TUniqueId GetWaypointId() const { return mWaypointId; } // Guessed name
     float GetFirstTime() const;                  // Guessed name
     float FindNextForwardTime(float time) const; // Guessed name
     bool HasCrossedTime(float oldTime, float newTime, float duration, bool passedEnd,
