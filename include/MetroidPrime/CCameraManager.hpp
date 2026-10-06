@@ -79,7 +79,7 @@ public:
 
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);
   bool IsInCinematicCamera() const;
-  bool fn_801ABD68() const;    // Cinematic-camera flag query; meaning unresolved.
+  bool IsInFullScreenCinematic() const; // Guessed name, from viewport and timer consumers.
   bool IsInBallCamera() const; // Guessed name
   bool IsInFPCamera() const;
   bool IsInterpolationCameraActive() const;

@@ -136,6 +136,8 @@ public:
   bool SwapOutAllPossibleMemory();
 
   void FrameBegin(uint frame);
+  // Prime-correlated name; the native hook is empty in this build.
+  void SwapOutTexturesToARAM(int mode, uint bytes);
   void FrameEnd();
   void Update(float dt, CArchitectureQueue& queue);
   void ProcessInput(const CFinalInput& input);
@@ -196,10 +198,13 @@ public:
   void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
   void SetupPlayerViewport(uint playerIndex);      // Guessed name.
   void DrawUnusedViewport(int viewportIndex);      // Guessed name.
+  // Guessed name; output pointers are independently optional in the native body.
+  void CalculatePlayerViewport(int viewportIndex, int* left, int* bottom, int* width,
+                               int* height) const;
   void EndPlayerRender();                          // Guessed name.
   void Touch();                                    // Prime-correlated name.
 
-  bool AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
+  void AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;

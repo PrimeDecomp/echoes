@@ -253,6 +253,9 @@ public:
   uint GetDrawToken() const { return mDrawnToken; }
 
   uint GetAddedToken() const { return mAddedToken; }
+  void SetAddedToken(uint token) const { const_cast< CActor* >(this)->mAddedToken = token; }
+  bool UsesAlphaSorting() const { return mAlphaSorted; }             // Guessed accessor name.
+  bool UsesPortalVisibility() const { return mUsePortalVisibility; } // Guessed accessor name.
 
   void SetDrawToken(uint token) const { const_cast< CActor* >(this)->mDrawnToken = token; }
 

@@ -188,8 +188,8 @@ void CMFGame::Draw() const {
   if (!mStateManager.IsNull()) {
     mStateManager->Touch();
   }
-  const bool singleViewport =
-      mStateManager->IsMultiplayer() && mStateManager->GetCameraManager(0)->fn_801ABD68();
+  const bool singleViewport = mStateManager->IsMultiplayer() &&
+                              mStateManager->GetCameraManager(0)->IsInFullScreenCinematic();
 
   switch (mFlowState) {
   case kFS_InGame:
