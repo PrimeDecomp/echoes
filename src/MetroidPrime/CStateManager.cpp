@@ -1,6 +1,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 
+#include "Collision/CMRay.hpp"
 #include "Collision/CRayCastResult.hpp"
+#include "Collision/CollisionUtil.hpp"
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CActorModelParticles.hpp"
@@ -424,6 +426,41 @@ CRayCastResult CStateManager::RayStaticIntersection(const CVector3f& position,
                                                     const CVector3f& direction, float length,
                                                     const CMaterialFilter& filter) const {
   return CGameCollision::RayStaticIntersection(*this, position, direction, length, filter);
+}
+
+bool CStateManager::RayCollideWorld(const CVector3f& start, const CVector3f& end,
+                                    const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                    const CMaterialFilter& filter,
+                                    const CActor* ignoreActor) const {
+  return RayCollideWorldInternal(start, end, filter, nearList, ignoreActor);
+}
+
+bool CStateManager::RayCollideWorld(const CVector3f& start, const CVector3f& end,
+                                    const CMaterialFilter& filter, const CActor* ignoreActor) {
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  CVector3f direction = end - start;
+  const float length = direction.Magnitude();
+  direction *= 1.f / length;
+
+  BuildNearList(nearList, start, direction, length, filter, ignoreActor);
+  return RayCollideWorldInternal(start, end, filter, nearList, ignoreActor);
+}
+
+const bool CStateManager::RayCollideWorldInternal(
+    const CVector3f& start, const CVector3f& end, const CMaterialFilter& filter,
+    const rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CActor* ignoreActor) const {
+  CVector3f direction = end - start;
+  bool visible = true;
+  if (direction.CanBeNormalized()) {
+    const float length = direction.Magnitude();
+    direction *= 1.f / length;
+    visible = CGameCollision::RayStaticLineOfSightTest(*this, start, direction, length, filter);
+    if (visible) {
+      visible = CGameCollision::RayDynamicLineOfSightTest(*this, start, direction, length, filter,
+                                                          nearList, ignoreActor);
+    }
+  }
+  return visible;
 }
 
 void CStateManager::AddObject(CEntity* entity) {
@@ -1952,6 +1989,76 @@ void CStateManager::RemoveObject(TUniqueId id) {
     mFilteredObjectLists[i]->RemoveObject(id);
   }
   mAllocatedObjectIndices[id.Value()] = false;
+}
+
+const bool CStateManager::MultiRayCollideWorld(const CMRay& ray,
+                                               const CMaterialFilter& filter) const {
+  CVector3f offset2 =
+      CVector3f(ray.GetDirection().GetY(), -ray.GetDirection().GetZ(), ray.GetDirection().GetX());
+  CVector3f offset = CVector3f::Cross(offset2, ray.GetDirection()).AsNormalized();
+  offset2 = 0.35355338f * CVector3f::Cross(ray.GetDirection(), offset);
+  offset *= 0.35355338f;
+
+  bool visible = false;
+  for (int i = 0; i < 4; ++i) {
+    const CVector3f start =
+        ray.GetStart() + ((i & 1) ? offset : -offset) + ((i & 2) ? -offset2 : offset2);
+    visible = CGameCollision::RayStaticLineOfSightTest(*this, start, ray.GetDirection(),
+                                                       ray.GetLength(), filter);
+    if (visible) {
+      break;
+    }
+  }
+  return visible;
+}
+
+const bool
+CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
+                             const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const {
+  if (damagee.GetHealthInfo() == nullptr) {
+    return false;
+  }
+
+  // Material 59's semantic name remains unresolved; the native filter uses it,
+  // rather than Prime's Solid material, and excludes NoPlatformCollision.
+  static const CMaterialList include = CMaterialList(kMT_Unknown59);
+  static const CMaterialList exclude =
+      CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Occluder, kMT_Character);
+  static const CMaterialFilter filter =
+      CMaterialFilter(include, exclude, CMaterialFilter::kFT_IncludeExclude);
+
+  const rstl::optional_object< CAABox > bounds = damagee.GetTouchBounds();
+  if (!bounds) {
+    return false;
+  }
+
+  const CVector3f center = bounds->GetCenterPoint();
+  CVector3f direction = center - position;
+  if (direction.CanBeNormalized()) {
+    const float length = direction.Magnitude();
+    direction *= 1.f / length;
+    if (RayCollideWorld(position, center, nearList, filter, &damagee)) {
+      return true;
+    }
+
+    const CMRay ray = CMRay(position, direction, length);
+    if (!MultiRayCollideWorld(ray, filter)) {
+      return false;
+    }
+
+    float depth;
+    CVector3f normal = CVector3f::Zero();
+    const int count = CollisionUtil::RayAABoxIntersection(ray, *bounds, normal, depth);
+    if (count == 0) {
+      return true;
+    }
+    if (count == 1) {
+      return true;
+    }
+    return CGameCollision::RayDynamicLineOfSightTest(*this, position, direction, depth * length,
+                                                     filter, nearList, &damagee);
+  }
+  return true;
 }
 
 void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {

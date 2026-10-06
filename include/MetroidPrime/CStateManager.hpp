@@ -75,6 +75,7 @@ class CAABox;
 class CPlane;
 class CTexture;
 class CProjectedShadow;
+class CMRay;
 
 typedef rstl::bit_vector<> MapWorldInfoAreas;
 
@@ -264,6 +265,14 @@ public:
   bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
                        const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                        const CMaterialFilter& filter, const CActor* ignoreActor) const;
+  // Prime-correlated names; selected-build ray and damage-visibility behavior.
+  const bool RayCollideWorldInternal(const CVector3f& start, const CVector3f& end,
+                                     const CMaterialFilter& filter,
+                                     const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
+                                     const CActor* ignoreActor) const;
+  const bool MultiRayCollideWorld(const CMRay& ray, const CMaterialFilter& filter) const;
+  const bool TestRayDamage(const CVector3f& position, const CActor& damagee,
+                           const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const;
   CRayCastResult
   RayWorldIntersection(TUniqueId& idOut, const CVector3f& position, const CVector3f& direction,
                        float length, const CMaterialFilter& filter,

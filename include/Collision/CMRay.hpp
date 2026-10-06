@@ -18,6 +18,7 @@ public:
   const CVector3f& GetStart() const { return mStart; }
   const CVector3f& GetDelta() const { return mDelta; }
   const CVector3f& GetDirection() const { return mDirection; }
+  float GetLength() const { return mLength; }
 
 private:
   CVector3f mStart;
