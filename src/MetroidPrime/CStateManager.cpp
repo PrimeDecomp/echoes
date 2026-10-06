@@ -5,6 +5,7 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
+#include "MetroidPrime/CEchoEmitter.hpp"
 #include "MetroidPrime/CEntity.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CGameHint.hpp"
@@ -18,6 +19,7 @@
 #include "MetroidPrime/CPortalArea.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CProjectedShadow.hpp"
+#include "MetroidPrime/CSafeZoneManager.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
 #include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CSortedLists.hpp"
@@ -43,6 +45,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 
 #include "Kyoto/Audio/CAudioGroupSet.hpp"
@@ -61,6 +64,7 @@
 #include "Kyoto/Graphics/CModel.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/PVS/CPVSVisSet.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "Weapons/CDecal.hpp"
@@ -610,6 +614,35 @@ void CStateManager::PreRender(uint playerIndex) {
   sPreRenderStepTime = timer.GetElapsedMicros();
 }
 
+bool CStateManager::SetupFogForDraw() const {
+  switch (mPlayerState->GetActiveVisor(*this)) {
+  case CPlayerState::kPV_Echo: {
+    const CTweakGui* tweak = gpTweakGui.get();
+    gpRender->SetWorldFog(tweak->GetEchoFogMode(), tweak->GetEchoFogNearZ(),
+                          tweak->GetEchoFogFarZ(), CColor::White());
+    return true;
+  }
+  default:
+    return false;
+  case CPlayerState::kPV_Combat:
+  case CPlayerState::kPV_Scan:
+  case CPlayerState::kPV_Dark: {
+    const CGameArea::CAreaFog* fog = &mCameraManager->GetFog();
+    if (fog->IsFogDisabled()) {
+      return false;
+    }
+    fog->SetCurrent();
+    return true;
+  }
+  }
+}
+
+void CStateManager::SetupFogForArea(const CGameArea& area) const {
+  if (!SetupFogForDraw()) {
+    area.GetAreaFog()->SetCurrent();
+  }
+}
+
 void CStateManager::SetAreaClipPlane(TAreaId area, const CPlane& plane) {
   rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 >::iterator it = mAreaFrusta.begin();
   for (; it != mAreaFrusta.end(); ++it) {
@@ -674,6 +707,143 @@ void CStateManager::SetupAreaFrusta() {
 }
 
 CGameArea::CConstChainIterator CWorld::GetAliveAreasEnd() { return skGlobalEnd; }
+
+void CStateManager::GetWorldGeometryMasks(uint& mask, uint& targetMask,
+                                          CPlayerState::EPlayerVisor visor) {
+  int bit = 1;
+  if (visor == CPlayerState::kPV_Dark) {
+    bit = 2;
+  }
+  mask = 1u << bit;
+  targetMask = 0;
+}
+
+void CStateManager::RenderActorQueue(rstl::reserved_vector< TUniqueId, 20 >& queue,
+                                     const rstl::string& profileName) {
+  if (!queue.empty()) {
+    CScopedProfiler profile(profileName, true);
+    for (rstl::reserved_vector< TUniqueId, 20 >::const_iterator it = queue.begin();
+         it != queue.end(); ++it) {
+      static_cast< const CActor* >(GetObjectById(*it))->Render(*this);
+    }
+  }
+}
+
+void CStateManager::DrawSky(const TVisibleAreas& areas, CPlayerState::EPlayerVisor visor) {
+  mWorld->TouchSky();
+  if (visor == CPlayerState::kPV_Echo) {
+    return;
+  }
+
+  bool fogEnabled = false;
+  CScopedProfiler profile(rstl::string_l("*Sky"), true);
+  if (visor == CPlayerState::kPV_Scan) {
+    gpRender->SetDestinationAlpha(0);
+  }
+  if (mCameraManager->IsFogEnabled()) {
+    gpRender->SetWorldFog(kRFM_PerspLin, 0.f, 0.05f, mCameraManager->GetFog().GetColor());
+    fogEnabled = true;
+  } else {
+    gpRender->SetWorldFog(kRFM_None, 0.f, 1.f, CColor::Black());
+  }
+  mWorld->DrawSky(CTransform4f::Translate(CGraphics::GetViewMatrix().GetTranslation()), fogEnabled);
+  if (!areas.empty()) {
+    SetupFogForArea(*areas[areas.size() - 1]);
+  }
+}
+
+void CStateManager::RenderAreaActors(bool& deferPlayerRender, CEchoEmitter*& emitters,
+                                     const CGameArea& area, const CPVSVisSet& visibility) {
+  CScopedProfiler profile(rstl::string_l("*AllActorRender"), true);
+  const CObjectList* const actors = area.GetPostConstructed()->mVisibleActorList.get();
+  CPlayer* const player = mCurrentRenderPlayer;
+  for (int index = actors->GetFirstObjectIndex(); index != -1;
+       index = actors->GetNextObjectIndex(index)) {
+    const CActor* actor = static_cast< const CActor* >((*actors)[index]);
+    if (actor->GetPvsIndex() != -1 &&
+        visibility.GetVisible(actor->GetPvsIndex()) == kVSS_EndOfTree) {
+      continue;
+    }
+    if (actor == player) {
+      if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
+          player->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed) {
+        CScopedProfiler playerProfile(rstl::string_l("*1stPlayerRender"), true);
+        player->AddToRenderer(*this);
+      } else {
+        deferPlayerRender = true;
+      }
+    } else {
+      actor->AddToRenderer(*this);
+      if (CEchoEmitter* emitter = actor->EchoEmitter()) {
+        emitter->SetNextEmitter(emitters);
+        emitters = emitter;
+      }
+    }
+  }
+}
+
+void CStateManager::DrawDarkWorldEffects(CPlayerState::EPlayerVisor visor) {
+  if (mIsDarkWorld) {
+    switch (visor) {
+    case CPlayerState::kPV_Dark:
+      mSafeZoneManager->Render(*this);
+      break;
+    case CPlayerState::kPV_Combat:
+    case CPlayerState::kPV_Scan:
+      mSafeZoneManager->Render(*this);
+      gpRender->DrawDarkWorldFilter(mSafeZoneManager->GetDarkWorldFilterAmount(
+          mCameraManager->GetCurrentCamera(*this, true)->GetTransform()));
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+void CStateManager::DrawDarkWorldCloud(CPlayerState::EPlayerVisor visor) {
+  if (mDarkWorldCloudTime > 0.f) {
+    switch (visor) {
+    case CPlayerState::kPV_Combat:
+    case CPlayerState::kPV_Scan:
+      gpRender->DrawDarkWorldCloud(mDarkWorldCloudTime, mDarkWorldCloudScale, mDarkWorldCloudColor);
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+void CStateManager::RenderEchoEmitters(const CEchoEmitter* emitters) const {
+  CEchoEmitter::RenderEmitters(*this, emitters);
+}
+
+void CStateManager::ResetViewAfterDraw(const CViewport& viewport, const CTransform4f& viewMatrix) {
+  gpRender->SetViewport(viewport.mLeft, viewport.mTop, viewport.mWidth, viewport.mHeight);
+  const CGameCamera* camera = mCameraManager->GetCurrentCamera(*this, true);
+  CFrustumPlanes frustum(viewMatrix, CRelAngle::FromDegrees(camera->GetFov()).AsRadians(),
+                         camera->GetAspectRatio(), camera->GetNearClipDistance(), false, 100.f);
+  mPlanes = frustum;
+
+  const float height = CGraphics::GetViewport().mHeight;
+  const float width = CGraphics::GetViewport().mWidth;
+  gpRender->SetPerspective(camera->GetFov(), width, height, camera->GetNearClipDistance(),
+                           camera->GetFarClipDistance());
+}
+
+void CStateManager::DrawAdditionalFilters() {
+  for (int i = 0; i < 11; ++i) {
+    mCameraBlurPasses[mCurrentRenderPlayerIndex][i].Draw();
+    mCameraFilterPasses[mCurrentRenderPlayerIndex][i].Draw();
+  }
+
+  if (gpGameState->GetEscapeTime() < 1.f && gpGameState->GetEscapeTime() > 0.f &&
+      !mCameraManager->IsInCinematicCamera()) {
+    const float escapeTime = gpGameState->GetEscapeTime();
+    const CColor color = CColor::White().WithAlphaOf(1.f - escapeTime);
+    CCameraFilterPass::DrawFilter(CCameraFilterPass::kFT_Add, CCameraFilterPass::kFS_Fullscreen,
+                                  color, nullptr, 1.f);
+  }
+}
 
 void CStateManager::ReflectionDrawer(void* context, const CVector3f& point) {
   CStateManager* manager = static_cast< CStateManager* >(context);

@@ -74,7 +74,7 @@ public:
   void SetLoadPauseState(bool);
   void PauseAndUnpauseAreaLoading();
   void TouchSky() const;
-  void DrawSky(const CTransform4f& xf, bool noFog) const;
+  void DrawSky(const CTransform4f& xf, const bool noFog) const;
   void StopSounds();
   bool ScheduleAreaToLoad(CGameArea* area, CStateManager& mgr);
   void MoveToChain(CGameArea* area, EChain chain);

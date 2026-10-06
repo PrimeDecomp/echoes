@@ -32,6 +32,7 @@ extern const int gkPVSEnabled;
 #include "rstl/rc_ptr.hpp"
 #include "rstl/reserved_vector.hpp"
 #include "rstl/single_ptr.hpp"
+#include "rstl/string.hpp"
 #include "rstl/vector.hpp"
 
 class CWorld;
@@ -59,6 +60,10 @@ class CInputStream;
 class CStateManager;
 class CInGameGuiManagerSet;
 class CDependencyGroup;
+class CEchoEmitter;
+class CPVSVisSet;
+class CGameArea;
+struct CViewport;
 
 namespace SL {
 class CSortedListManager;
@@ -208,6 +213,22 @@ public:
   static void ReflectionDrawer(void* context, const CVector3f& point); // Prime-correlated name.
   void CacheReflection();                                              // Prime-correlated name.
   void DrawReflection(const CVector3f& point);                         // Prime-correlated name.
+
+  // Reconstructed render-phase names, supported by native calls and profiling strings.
+  typedef rstl::reserved_vector< const CGameArea*, 5 > TVisibleAreas;
+  void RenderActorQueue(rstl::reserved_vector< TUniqueId, 20 >& queue,
+                        const rstl::string& profileName);
+  void GetWorldGeometryMasks(uint& mask, uint& targetMask, CPlayerState::EPlayerVisor visor);
+  void DrawSky(const TVisibleAreas& areas, CPlayerState::EPlayerVisor visor);
+  void RenderAreaActors(bool& deferPlayerRender, CEchoEmitter*& emitters, const CGameArea& area,
+                        const CPVSVisSet& visibility);
+  void DrawDarkWorldEffects(CPlayerState::EPlayerVisor visor);
+  void DrawDarkWorldCloud(CPlayerState::EPlayerVisor visor);
+  void RenderEchoEmitters(const CEchoEmitter* emitters) const;
+  bool SetupFogForDraw() const;                      // Prime-correlated name.
+  void SetupFogForArea(const CGameArea& area) const; // Prime-correlated name.
+  void ResetViewAfterDraw(const CViewport& viewport, const CTransform4f& viewMatrix);
+  void DrawAdditionalFilters(); // Prime-correlated name; includes per-player filter passes.
 
   void AddDrawableActor(const CActor& actor, const CVector3f& pos, const CAABox& bounds) const;
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
