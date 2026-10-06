@@ -269,7 +269,7 @@ CDamageInfo LdrToDamageInfo(const SLdrDamageInfo& data) {
   const EWeaponType type = static_cast< EWeaponType >(data.dI_WeaponType);
   CDamageInfo result(CWeaponMode(type, false, false, type == kWT_UnknownSource), data.dI_Damage,
                      data.dI_Radius, data.dI_KnockBackPower);
-  result.SetX1a25(false);
+  result.SetApplyRadiusDamage(false);
   return result;
 }
 

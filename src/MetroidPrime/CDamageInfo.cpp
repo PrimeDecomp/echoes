@@ -73,7 +73,7 @@ CDamageInfo::CDamageInfo(const CDamageInfo& other, float dt)
 , mDamageLoopSfxId(other.mDamageLoopSfxId)
 , mSamusVoiceSfxId(other.mSamusVoiceSfxId)
 , mNoImmunity(true)
-, x1a_25_(other.x1a_25_) {}
+, mApplyRadiusDamage(other.mApplyRadiusDamage) {}
 
 void CDamageInfo::SetDamageFromVulnerability(const CDamageVulnerability& dVuln, float damage) {
   const float multiplier = dVuln.GetVulnerability(mWeaponMode).mDamageMultiplier;

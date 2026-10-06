@@ -138,7 +138,7 @@ CKnockBackMgr::EKnockBackWeaponType CKnockBackMgr::GetKnockBackWeaponType(const 
     return kKBWT_Light;
   case kWT_Annihilator:
     if (mode.IsCharged()) {
-      if (info.GetX1a25()) {
+      if (info.ShouldApplyRadiusDamage()) {
         return kKBWT_AnnihilatorChargedEffect;
       }
       return kKBWT_AnnihilatorCharged;
