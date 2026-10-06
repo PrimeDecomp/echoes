@@ -44,6 +44,11 @@ struct TStateMachineFunctionTypes< CPatterned > {
   typedef bool (CPatterned::*TriggerFunc)(CStateManager&, const CTriggerData&) const;
 };
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TStateMachineFunctionTypes< CPatterned >::StateFunc)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(TStateMachineFunctionTypes< CPatterned >::TriggerFunc)
+} // namespace rstl
+
 class CPatterned : public CAi {
 public:
   enum EFlavorType { kFT_Zero, kFT_One };
