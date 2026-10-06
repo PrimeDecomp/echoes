@@ -39,9 +39,6 @@ private:
     double mRawInput;
   };
 
-  // Shared scaffold implementation of the two native processing paths.
-  void ProcessSamples(float** inputs, float** outputs, long sampleFrames, bool replacing);
-
   float mFrequency;
   float mFeedback;
   float mInvert;

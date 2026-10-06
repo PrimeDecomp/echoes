@@ -4,76 +4,6 @@
 #include <math.h>
 #include <string.h>
 
-void CPhaser::ProcessSamples(float** inputs, float** outputs, long sampleFrames, bool replacing) {
-  float* input[3] = {inputs[0], inputs[1], inputs[2]};
-  float* output[3] = {outputs[0], outputs[1], outputs[2]};
-  while (--sampleFrames >= 0) {
-    for (int channel = 0; channel < 3; ++channel) {
-      SFilterCoefficient& filter = mCoefficients[channel];
-      filter.mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[channel] / mSampleRate;
-      filter.mCoefficient =
-          (1.0 - filter.mAngularFrequencyRatio) / (1.0 + filter.mAngularFrequencyRatio);
-    }
-    if (mInvert > 0.5) {
-      mFeedbackSign = 1.0;
-      mInvert = 1.f;
-    } else {
-      mFeedbackSign = -1.0;
-      mInvert = 0.f;
-    }
-    // Snapshot all inputs before writing outputs, including aliased buffers.
-    for (int channel = 0; channel < 3; ++channel)
-      mInputs[channel].mRawInput = *input[channel]++;
-    for (int channel = 0; channel < 3; ++channel)
-      mInputs[channel].mFeedbackInput =
-          mFeedbackSign * 0.999999 * mFeedback * (1.2e-7 + mHistory[channel].mOutputs[3]) +
-          mInputs[channel].mRawInput;
-
-    for (int channel = 0; channel < 3; ++channel) {
-      SFilterHistory& history = mHistory[channel];
-      double value = mInputs[channel].mFeedbackInput;
-      for (int stage = 0; stage < 4; ++stage) {
-        history.mOutputs[stage] =
-            mCoefficients[channel].mCoefficient * (value + history.mOutputs[stage]) -
-            history.mInputs[stage];
-        // Native surround stages 0/1 repeat right-channel stores instead of advancing
-        // surround input history. Those right-channel values are already stored.
-        if (channel != 2 || stage >= 2)
-          history.mInputs[stage] = value;
-        value = history.mOutputs[stage];
-      }
-    }
-
-    mLFORate = 0.02 + (replacing ? 5.98 : 3.98) * mFrequency;
-    mLFOPhase += mLFORate * mLFOPhaseStep;
-    while (mLFOPhase >= 2048.0)
-      mLFOPhase -= 2048.0;
-    while (mLFOPhase < 0.0)
-      mLFOPhase += 2048.0;
-    mLFOIndex = static_cast< int >(mLFOPhase);
-    mLFOFraction = mLFOPhase - mLFOIndex;
-    mLeftLFO =
-        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
-    mRightLFO = -mLeftLFO;
-    mSurroundLFO = mLeftLFO;
-
-    for (int channel = 0; channel < 3; ++channel) {
-      const float mixed = static_cast< float >(mInputs[channel].mRawInput * mDry +
-                                               mHistory[channel].mOutputs[3] * mWet);
-      if (replacing)
-        *output[channel]++ = mixed;
-      else
-        *output[channel]++ += mixed;
-    }
-    mLeftLFO = (1.0 + mLeftLFO) * 0.5;
-    mRightLFO = (1.0 + mRightLFO) * 0.5;
-    const float sweep = 100.f + 7800.f * mSweepRange;
-    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * sweep;
-    mChannelFrequency[1] = mBaseFrequency + mRightLFO * sweep;
-    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * sweep;
-  }
-}
-
 CPhaser::CPhaser(AudioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 8, 6)
 , mFrequency(0.2f)
@@ -241,9 +171,213 @@ void CPhaser::getParameterLabel(long index, char* label) {
 }
 
 void CPhaser::process(float** inputs, float** outputs, long sampleFrames) {
-  ProcessSamples(inputs, outputs, sampleFrames, false);
+  float* input0 = inputs[0];
+  float* input1 = inputs[1];
+  float* input2 = inputs[2];
+  float* output0 = outputs[0];
+  float* output1 = outputs[1];
+  float* output2 = outputs[2];
+  SFilterHistory& left = mHistory[0];
+  SFilterHistory& right = mHistory[1];
+  SFilterHistory& surround = mHistory[2];
+  while (--sampleFrames >= 0) {
+    mCoefficients[0].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[0] / mSampleRate;
+    mCoefficients[0].mCoefficient = (1.0 - mCoefficients[0].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[0].mAngularFrequencyRatio);
+    mCoefficients[1].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[1] / mSampleRate;
+    mCoefficients[1].mCoefficient = (1.0 - mCoefficients[1].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[1].mAngularFrequencyRatio);
+    mCoefficients[2].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[2] / mSampleRate;
+    mCoefficients[2].mCoefficient = (1.0 - mCoefficients[2].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[2].mAngularFrequencyRatio);
+    if (mInvert <= 0.5) {
+      mFeedbackSign = -1.0;
+      mInvert = 0.f;
+    } else {
+      mFeedbackSign = 1.0;
+      mInvert = 1.f;
+    }
+    mInputs[0].mRawInput = *input0++;
+    mInputs[1].mRawInput = *input1++;
+    mInputs[2].mRawInput = *input2++;
+    mInputs[0].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + left.mOutputs[3])) + mInputs[0].mRawInput;
+    mInputs[1].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + right.mOutputs[3])) +
+        mInputs[1].mRawInput;
+    mInputs[2].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + surround.mOutputs[3])) +
+        mInputs[2].mRawInput;
+    left.mOutputs[0] =
+        mCoefficients[0].mCoefficient * (mInputs[0].mFeedbackInput + left.mOutputs[0]) -
+        left.mInputs[0];
+    left.mInputs[0] = mInputs[0].mFeedbackInput;
+    left.mOutputs[1] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[0] + left.mOutputs[1]) - left.mInputs[1];
+    left.mInputs[1] = left.mOutputs[0];
+    left.mOutputs[2] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[1] + left.mOutputs[2]) - left.mInputs[2];
+    left.mInputs[2] = left.mOutputs[1];
+    left.mOutputs[3] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[2] + left.mOutputs[3]) - left.mInputs[3];
+    left.mInputs[3] = left.mOutputs[2];
+    right.mOutputs[0] =
+        mCoefficients[1].mCoefficient * (mInputs[1].mFeedbackInput + right.mOutputs[0]) -
+        right.mInputs[0];
+    right.mInputs[0] = mInputs[1].mFeedbackInput;
+    right.mOutputs[1] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[0] + right.mOutputs[1]) - right.mInputs[1];
+    right.mInputs[1] = right.mOutputs[0];
+    right.mOutputs[2] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[1] + right.mOutputs[2]) - right.mInputs[2];
+    right.mInputs[2] = right.mOutputs[1];
+    right.mOutputs[3] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[2] + right.mOutputs[3]) - right.mInputs[3];
+    right.mInputs[3] = right.mOutputs[2];
+    surround.mOutputs[0] =
+        mCoefficients[2].mCoefficient * (mInputs[2].mFeedbackInput + surround.mOutputs[0]) -
+        surround.mInputs[0];
+    right.mInputs[0] = mInputs[2].mFeedbackInput;
+    surround.mOutputs[1] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[0] + surround.mOutputs[1]) -
+        surround.mInputs[1];
+    right.mInputs[1] = surround.mOutputs[0];
+    surround.mOutputs[2] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[1] + surround.mOutputs[2]) -
+        surround.mInputs[2];
+    surround.mInputs[2] = surround.mOutputs[1];
+    surround.mOutputs[3] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[2] + surround.mOutputs[3]) -
+        surround.mInputs[3];
+    surround.mInputs[3] = surround.mOutputs[2];
+    mLFORate = 0.02 + 3.98 * mFrequency;
+    mLFOPhase += mLFORate * mLFOPhaseStep;
+    while (mLFOPhase >= 2048.0) {
+      mLFOPhase -= 2048.0;
+    }
+    while (mLFOPhase < 0.0) {
+      mLFOPhase += 2048.0;
+    }
+    mLFOIndex = static_cast< int >(mLFOPhase);
+    mLFOFraction = mLFOPhase - mLFOIndex;
+    mLeftLFO =
+        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
+    mRightLFO = -mLeftLFO;
+    mSurroundLFO = mLeftLFO;
+    *output0++ += static_cast< float >(mInputs[0].mRawInput * mDry + left.mOutputs[3] * mWet);
+    *output1++ += static_cast< float >(mInputs[1].mRawInput * mDry + right.mOutputs[3] * mWet);
+    *output2++ += static_cast< float >(mInputs[2].mRawInput * mDry + surround.mOutputs[3] * mWet);
+    mLeftLFO = (1.0 + mLeftLFO) * 0.5;
+    mRightLFO = (1.0 + mRightLFO) * 0.5;
+    const float sweep = 100.f + 7800.f * mSweepRange;
+    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * sweep;
+    mChannelFrequency[1] = mBaseFrequency + mRightLFO * sweep;
+    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * sweep;
+  }
 }
 
 void CPhaser::processReplacing(float** inputs, float** outputs, long sampleFrames) {
-  ProcessSamples(inputs, outputs, sampleFrames, true);
+  float* input0 = inputs[0];
+  float* input1 = inputs[1];
+  float* input2 = inputs[2];
+  float* output0 = outputs[0];
+  float* output1 = outputs[1];
+  float* output2 = outputs[2];
+  SFilterHistory& left = mHistory[0];
+  SFilterHistory& right = mHistory[1];
+  SFilterHistory& surround = mHistory[2];
+  while (--sampleFrames >= 0) {
+    mCoefficients[0].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[0] / mSampleRate;
+    mCoefficients[0].mCoefficient = (1.0 - mCoefficients[0].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[0].mAngularFrequencyRatio);
+    mCoefficients[1].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[1] / mSampleRate;
+    mCoefficients[1].mCoefficient = (1.0 - mCoefficients[1].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[1].mAngularFrequencyRatio);
+    mCoefficients[2].mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[2] / mSampleRate;
+    mCoefficients[2].mCoefficient = (1.0 - mCoefficients[2].mAngularFrequencyRatio) /
+                                    (1.0 + mCoefficients[2].mAngularFrequencyRatio);
+    if (mInvert <= 0.5) {
+      mFeedbackSign = -1.0;
+      mInvert = 0.f;
+    } else {
+      mFeedbackSign = 1.0;
+      mInvert = 1.f;
+    }
+    mInputs[0].mRawInput = *input0++;
+    mInputs[1].mRawInput = *input1++;
+    mInputs[2].mRawInput = *input2++;
+    mInputs[0].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + left.mOutputs[3])) + mInputs[0].mRawInput;
+    mInputs[1].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + right.mOutputs[3])) +
+        mInputs[1].mRawInput;
+    mInputs[2].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + surround.mOutputs[3])) +
+        mInputs[2].mRawInput;
+    left.mOutputs[0] =
+        mCoefficients[0].mCoefficient * (mInputs[0].mFeedbackInput + left.mOutputs[0]) -
+        left.mInputs[0];
+    left.mInputs[0] = mInputs[0].mFeedbackInput;
+    left.mOutputs[1] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[0] + left.mOutputs[1]) - left.mInputs[1];
+    left.mInputs[1] = left.mOutputs[0];
+    left.mOutputs[2] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[1] + left.mOutputs[2]) - left.mInputs[2];
+    left.mInputs[2] = left.mOutputs[1];
+    left.mOutputs[3] =
+        mCoefficients[0].mCoefficient * (left.mOutputs[2] + left.mOutputs[3]) - left.mInputs[3];
+    left.mInputs[3] = left.mOutputs[2];
+    right.mOutputs[0] =
+        mCoefficients[1].mCoefficient * (mInputs[1].mFeedbackInput + right.mOutputs[0]) -
+        right.mInputs[0];
+    right.mInputs[0] = mInputs[1].mFeedbackInput;
+    right.mOutputs[1] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[0] + right.mOutputs[1]) - right.mInputs[1];
+    right.mInputs[1] = right.mOutputs[0];
+    right.mOutputs[2] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[1] + right.mOutputs[2]) - right.mInputs[2];
+    right.mInputs[2] = right.mOutputs[1];
+    right.mOutputs[3] =
+        mCoefficients[1].mCoefficient * (right.mOutputs[2] + right.mOutputs[3]) - right.mInputs[3];
+    right.mInputs[3] = right.mOutputs[2];
+    surround.mOutputs[0] =
+        mCoefficients[2].mCoefficient * (mInputs[2].mFeedbackInput + surround.mOutputs[0]) -
+        surround.mInputs[0];
+    right.mInputs[0] = mInputs[2].mFeedbackInput;
+    surround.mOutputs[1] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[0] + surround.mOutputs[1]) -
+        surround.mInputs[1];
+    right.mInputs[1] = surround.mOutputs[0];
+    surround.mOutputs[2] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[1] + surround.mOutputs[2]) -
+        surround.mInputs[2];
+    surround.mInputs[2] = surround.mOutputs[1];
+    surround.mOutputs[3] =
+        mCoefficients[2].mCoefficient * (surround.mOutputs[2] + surround.mOutputs[3]) -
+        surround.mInputs[3];
+    surround.mInputs[3] = surround.mOutputs[2];
+    mLFORate = 0.02 + 5.98 * mFrequency;
+    mLFOPhase += mLFORate * mLFOPhaseStep;
+    while (mLFOPhase >= 2048.0) {
+      mLFOPhase -= 2048.0;
+    }
+    while (mLFOPhase < 0.0) {
+      mLFOPhase += 2048.0;
+    }
+    mLFOIndex = static_cast< int >(mLFOPhase);
+    mLFOFraction = mLFOPhase - mLFOIndex;
+    mLeftLFO =
+        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
+    mRightLFO = -mLeftLFO;
+    mSurroundLFO = mLeftLFO;
+    *output0++ = static_cast< float >(mInputs[0].mRawInput * mDry + left.mOutputs[3] * mWet);
+    *output1++ = static_cast< float >(mInputs[1].mRawInput * mDry + right.mOutputs[3] * mWet);
+    *output2++ = static_cast< float >(mInputs[2].mRawInput * mDry + surround.mOutputs[3] * mWet);
+    mLeftLFO = (1.0 + mLeftLFO) * 0.5;
+    mRightLFO = (1.0 + mRightLFO) * 0.5;
+    const float sweep = 100.f + 7800.f * mSweepRange;
+    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * sweep;
+    mChannelFrequency[1] = mBaseFrequency + mRightLFO * sweep;
+    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * sweep;
+  }
 }
