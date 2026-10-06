@@ -303,7 +303,7 @@ private:
   CPlayerState::EBeamId mCurrentBeamId;
   CPlayerState::EBeamId mNextBeamId;
   int mSoundSetIndex;
-  uint mFidgetAnimBits;
+  int mFidgetAnimBits;
   int mAnimSfxPitch;
   int mBombCount;
   int mRapidFireShots;
