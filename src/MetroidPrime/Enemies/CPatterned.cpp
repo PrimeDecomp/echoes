@@ -26,7 +26,7 @@ const float CPatterned::skDamageHitTime = 0.33f;
 const float CPatterned::skActorApproachDistance = 3.f;
 const CColor CPatterned::skDamageColor(0.5f, 0.f, 0.f, 1.f);
 const CColor CPatterned::skHitsWithoutDamageColor(0.5f, 0.5f, 0.f, 1.f);
-const CColor CPatterned::skFrozenColor(uchar(50), uchar(31), uchar(80));
+const CColor CPatterned::skFrozenColor(0x321F50FF);
 
 static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Unknown59, kMT_Orbit,
                                                   kMT_Target, kMT_SeekerTarget);
