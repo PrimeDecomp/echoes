@@ -39,6 +39,9 @@ public:
   void Get(float& r, float& g, float& b, float& a) const;
   void Get(float& r, float& g, float& b) const;
   // TODO check. Maybe this calls SetAlpha(uchar)?
+  void SetRed(float r) { mR = CCast::ToUint8(r * 255.f); }
+  void SetGreen(float g) { mG = CCast::ToUint8(g * 255.f); }
+  void SetBlue(float b) { mB = CCast::ToUint8(b * 255.f); }
   void SetAlpha(float a) { mA = CCast::ToUint8(a * 255.f); }
   void SetAlpha(uchar a) { mRgba = (mRgba & ~0xff) | a; }
 
