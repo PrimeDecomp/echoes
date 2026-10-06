@@ -93,52 +93,45 @@ void AudioEffectX::wantEvents(long filter) {
 }
 
 VstTimeInfo* AudioEffectX::getTimeInfo(long filter) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetTime, 0, filter, nullptr, 0.f);
-  return reinterpret_cast< VstTimeInfo* >(result);
+    return reinterpret_cast< VstTimeInfo* >(mAudioMaster(&mEffect, kAM_GetTime, 0, filter, nullptr, 0.f));
+  return nullptr;
 }
 
 long AudioEffectX::tempoAt(long position) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_TempoAt, 0, position, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_TempoAt, 0, position, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::getNumAutomatableParameters() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetNumAutomatableParameters, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetNumAutomatableParameters, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::getParameterQuantization() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetParameterQuantization, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetParameterQuantization, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 bool AudioEffectX::ioChanged() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_IOChanged, 0, 0, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_IOChanged, 0, 0, nullptr, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::needIdle() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_NeedIdle, 0, 0, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_NeedIdle, 0, 0, nullptr, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::sizeWindow(long width, long height) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_SizeWindow, width, height, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_SizeWindow, width, height, nullptr, 0.f) != 0;
+  return false;
 }
 
 float AudioEffectX::updateSampleRate() {
@@ -154,52 +147,45 @@ long AudioEffectX::updateBlockSize() {
 }
 
 long AudioEffectX::getInputLatency() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetInputLatency, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetInputLatency, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::getOutputLatency() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetOutputLatency, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetOutputLatency, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 AEffect* AudioEffectX::getPreviousPlug(long input) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetPreviousPlug, 0, 0, nullptr, 0.f);
-  return reinterpret_cast< AEffect* >(result);
+    return reinterpret_cast< AEffect* >(mAudioMaster(&mEffect, kAM_GetPreviousPlug, 0, 0, nullptr, 0.f));
+  return nullptr;
 }
 
 AEffect* AudioEffectX::getNextPlug(long output) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetNextPlug, 0, 0, nullptr, 0.f);
-  return reinterpret_cast< AEffect* >(result);
+    return reinterpret_cast< AEffect* >(mAudioMaster(&mEffect, kAM_GetNextPlug, 0, 0, nullptr, 0.f));
+  return nullptr;
 }
 
 long AudioEffectX::willProcessReplacing() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_WillReplaceOrAccumulate, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_WillReplaceOrAccumulate, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::getCurrentProcessLevel() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetCurrentProcessLevel, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetCurrentProcessLevel, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::getAutomationState() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetAutomationState, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetAutomationState, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 void AudioEffectX::wantAsyncOperation(bool state) {
@@ -217,38 +203,33 @@ void AudioEffectX::hasExternalBuffer(bool state) {
 }
 
 bool AudioEffectX::offlineRead(VstOfflineTask* task, VstOfflineOption option, bool readSource) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OfflineRead, readSource, option, task, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_OfflineRead, readSource, option, task, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::offlineWrite(VstOfflineTask* task, VstOfflineOption option) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OfflineWrite, 0, option, task, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_OfflineWrite, 0, option, task, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::offlineStart(VstAudioFile* files, long count, long newCount) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OfflineStart, newCount, count, files, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_OfflineStart, newCount, count, files, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::offlineGetCurrentPass() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OfflineGetCurrentPass, 0, 0, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_OfflineGetCurrentPass, 0, 0, nullptr, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::offlineGetCurrentMetaPass() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OfflineGetCurrentMetaPass, 0, 0, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_OfflineGetCurrentMetaPass, 0, 0, nullptr, 0.f) != 0;
+  return false;
 }
 
 void AudioEffectX::setOutputSamplerate(float sampleRate) {
@@ -258,47 +239,41 @@ void AudioEffectX::setOutputSamplerate(float sampleRate) {
 
 bool AudioEffectX::getSpeakerArrangement(VstSpeakerArrangement* input,
                                          VstSpeakerArrangement* output) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetSpeakerArrangement, 0, reinterpret_cast< long >(input),
-                          output, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_GetSpeakerArrangement, 0, reinterpret_cast< long >(input),
+                          output, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::getHostVendorString(char* text) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetVendorString, 0, 0, text, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_GetVendorString, 0, 0, text, 0.f) != 0;
+  return false;
 }
 
 bool AudioEffectX::getHostProductString(char* text) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetProductString, 0, 0, text, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_GetProductString, 0, 0, text, 0.f) != 0;
+  return false;
 }
 
 long AudioEffectX::getHostVendorVersion() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetVendorVersion, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetVendorVersion, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 long AudioEffectX::hostVendorSpecific(long firstArgument, long secondArgument, void* ptr,
                                       float option) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_VendorSpecific, firstArgument, secondArgument, ptr, option);
-  return result;
+    return mAudioMaster(&mEffect, kAM_VendorSpecific, firstArgument, secondArgument, ptr, option);
+  return 0;
 }
 
 bool AudioEffectX::canHostDo(char* text) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_CanDo, 0, 0, text, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_CanDo, 0, 0, text, 0.f) != 0;
+  return false;
 }
 
 void AudioEffectX::isSynth(bool state) {
@@ -316,36 +291,31 @@ void AudioEffectX::noTail(bool state) {
 }
 
 long AudioEffectX::getHostLanguage() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetLanguage, 0, 0, nullptr, 0.f);
-  return result;
+    return mAudioMaster(&mEffect, kAM_GetLanguage, 0, 0, nullptr, 0.f);
+  return 0;
 }
 
 void* AudioEffectX::openWindow(VstWindow* window) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_OpenWindow, 0, 0, window, 0.f);
-  return reinterpret_cast< void* >(result);
+    return reinterpret_cast< void* >(mAudioMaster(&mEffect, kAM_OpenWindow, 0, 0, window, 0.f));
+  return nullptr;
 }
 
 bool AudioEffectX::closeWindow(VstWindow* window) {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_CloseWindow, 0, 0, window, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_CloseWindow, 0, 0, window, 0.f) != 0;
+  return false;
 }
 
 void* AudioEffectX::getDirectory() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_GetDirectory, 0, 0, nullptr, 0.f);
-  return reinterpret_cast< void* >(result);
+    return reinterpret_cast< void* >(mAudioMaster(&mEffect, kAM_GetDirectory, 0, 0, nullptr, 0.f));
+  return nullptr;
 }
 
 bool AudioEffectX::updateDisplay() {
-  long result = 0;
   if (mAudioMaster != nullptr)
-    result = mAudioMaster(&mEffect, kAM_UpdateDisplay, 0, 0, nullptr, 0.f);
-  return result != 0;
+    return mAudioMaster(&mEffect, kAM_UpdateDisplay, 0, 0, nullptr, 0.f) != 0;
+  return false;
 }
