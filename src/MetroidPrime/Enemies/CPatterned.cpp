@@ -4,8 +4,12 @@
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
+#include "MetroidPrime/CActorModelParticles.hpp"
 #include "MetroidPrime/CAnimData.hpp"
+#include "MetroidPrime/CEchoEmitter.hpp"
+#include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/CGenericFSM2State.hpp"
 #include "MetroidPrime/CPositionalParticleData.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
@@ -22,6 +26,7 @@ const float CPatterned::skDamageHitTime = 0.33f;
 const float CPatterned::skActorApproachDistance = 3.f;
 const CColor CPatterned::skDamageColor(0.5f, 0.f, 0.f, 1.f);
 const CColor CPatterned::skHitsWithoutDamageColor(0.5f, 0.5f, 0.f, 1.f);
+const CColor CPatterned::skFrozenColor(uchar(50), uchar(31), uchar(80));
 
 static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Unknown59, kMT_Orbit,
                                                   kMT_Target, kMT_SeekerTarget);
@@ -101,8 +106,8 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mPendingMassiveFrozenDeath(false)
 , mIsFlyer(movement == kMT_Flyer)
 , mPathOverCount(0)
+, mBurning(false)
 , mLaggedBurnDeath(false)
-, x421_26_(false)
 , mPendingDeath(false)
 , mLostMassiveFrozenHP(false)
 , mDieIf80PercFrozen(false)
@@ -313,33 +318,175 @@ void CPatterned::SetCoverPoint(CScriptCoverPoint* point, TUniqueId& id) {
   id = point->GetUniqueId();
 }
 
-void CPatterned::Death(CStateManager&, const CVector3f&, EScriptObjectState) {
-  // TODO: Select massive/frozen/animated death, change materials, and send the requested state.
+void CPatterned::Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) {
+  if (mAlive) {
+    mBodyController->SetTimeScale(1.f);
+    if (!mBodyController->IsOnFire()) {
+      const CWeaponMode deathWeapon = GetHealthInfo()->GetCauseOfDeathWeapon();
+      if (deathWeapon.IsComboed() &&
+          (deathWeapon.GetType() == kWT_Dark || deathWeapon.GetType() == kWT_Annihilator)) {
+        mPendingMassiveFrozenDeath = false;
+        mPendingMassiveDeath = false;
+      } else {
+        mLostMassiveFrozenHP = (mLastHP - GetHealthInfo()->GetHP()) >= mFrozenXDamageThreshold;
+        if (mLostMassiveFrozenHP && mIceDeathExplosionParticle.valid() &&
+            mBodyController->GetPercentageFrozen() > 0.8f) {
+          mPendingMassiveFrozenDeath = true;
+        } else if ((mLastHP - GetHealthInfo()->GetHP()) >= mXDamageThreshold) {
+          mPendingMassiveDeath = true;
+        }
+      }
+    }
+
+    if (mPendingMassiveDeath || mPendingMassiveFrozenDeath) {
+      if (mLookAtDeathDir && mXDamageDelay <= 0.f && direction.IsNonZero()) {
+        const CVector3f pos = GetTranslation();
+        const CVector3f target = pos - direction;
+        const CTransform4f deathXf =
+            CTransform4f::LookAt(pos, target) *
+            CTransform4f::RotateX(CRelAngle::FromRadians(0.7853982f));
+        SetTransform(deathXf);
+      }
+    } else {
+      if (mStateMachine->HasState()) {
+        mStateMachine->SetState(mgr, *this, rstl::string_l("Dead"));
+      }
+      RemoveMaterial(kMT_GroundCollider, mgr);
+      if (!mBurning && !mLaggedBurnDeath) {
+        mVerticalMovement = false;
+      }
+    }
+
+    mAlive = false;
+    SetHighlightedInDarkVisor(false);
+    IssueDeathBodyCommand(mgr, direction);
+    if (CanBeUnPossessed(mgr) == true) {
+      SetIngPossessed(false, mgr);
+    }
+    if (state != kSS_InvalidState) {
+      SendScriptMsgs(state, mgr, GetUniqueId(), kSM_None);
+    }
+  }
 }
 
-void CPatterned::IssueDeathBodyCommand(CStateManager&, const CVector3f&) {
-  // TODO: Submit the appropriate die, fall or hurled body-state command.
+void CPatterned::IssueDeathBodyCommand(CStateManager& mgr, const CVector3f& direction) {
+  if (!mBodyController->ShouldPlayDeathAnims()) {
+    return;
+  }
+
+  if (mBodyController->HasBodyState(pas::kAS_Hurled) &&
+      mBodyController->GetBodyType() == kBT_Flyer) {
+    mBodyController->CommandMgr().DeliverCmd(CBCHurledCmd(-direction, CVector3f::Zero()));
+  } else if (mBodyController->HasBodyState(pas::kAS_Fall)) {
+    const EScriptObjectState state = IsIngPossessed() ? kSS_DarkXDamage : kSS_XDamage;
+    if (!mPendingMassiveDeath || CheckConnectedObject(mgr, state, kSM_None) == kInvalidUniqueId) {
+      mBodyController->CommandMgr().DeliverCmd(CBCKnockDownCmd(-direction, pas::kS_One));
+    }
+  }
 }
 
-void CPatterned::CreateXDamageParticles(CStateManager&) const {
-  // TODO: Instantiate the configured particle/electric death effects at the scaled locator.
+void CPatterned::CreateXDamageParticles(CStateManager& mgr) const {
+  const rstl::optional_object< TCachedToken< CGenDescription > >& deathParticle =
+      GetDeathExplosionParticle();
+  const rstl::optional_object< TCachedToken< CElectricDescription > >& deathElectric =
+      mDeathExplosionElectric;
+
+  if (deathParticle.valid() || deathElectric.valid()) {
+    CTransform4f xf(GetTransform());
+    const CVector3f offset =
+        CVector3f::ByElementMultiply(GetModelData()->GetScale(), mDeathExplosionOffset);
+    xf.SetTranslation(GetTransform() * offset);
+
+    if (deathParticle.valid()) {
+      CExplosion* explosion = rs_new CExplosion(
+          TLockedToken< CGenDescription >(*deathParticle), mgr.AllocateUniqueId(),
+          CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true), rstl::string_l(""),
+          xf, 0, CVector3f(1.f, 1.f, 1.f), CColor::White(), -1);
+      if (explosion) {
+        mgr.AddObject(explosion);
+      }
+    }
+
+    if (deathElectric.valid()) {
+      CExplosion* explosion = rs_new CExplosion(
+          TLockedToken< CElectricDescription >(*deathElectric), mgr.AllocateUniqueId(),
+          CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true), rstl::string_l(""),
+          xf, 0, CVector3f(1.f, 1.f, 1.f), CColor::White(), -1);
+      if (explosion) {
+        mgr.AddObject(explosion);
+      }
+    }
+  }
 }
 
-void CPatterned::fn_8007850c(CStateManager&) {
-  // TODO: Instantiate the ice-death explosion with the actor's scaled offset.
+void CPatterned::GenerateIceDeathExplosion(CStateManager& mgr) {
+  const rstl::optional_object< TCachedToken< CGenDescription > >& deathParticle =
+      mIceDeathExplosionParticle;
+  if (deathParticle.valid()) {
+    CTransform4f xf(GetTransform());
+    const CVector3f offset =
+        CVector3f::ByElementMultiply(GetModelData()->GetScale(), mIceDeathExplosionOffset);
+    xf.SetTranslation(GetTransform() * offset);
+
+    if (deathParticle.valid()) {
+      CExplosion* explosion = rs_new CExplosion(
+          TLockedToken< CGenDescription >(*deathParticle), mgr.AllocateUniqueId(),
+          CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true), rstl::string_l(""),
+          xf, 0, CVector3f(1.f, 1.f, 1.f), CColor::White(), -1);
+      if (explosion) {
+        mgr.AddObject(explosion);
+      }
+    }
+  }
 }
 
-void CPatterned::MassiveDeath(CStateManager&) {
-  // TODO: Death effects, sound, script notification and object deletion.
+void CPatterned::MassiveDeath(CStateManager& mgr) {
+  const ushort sfx = mDeathSfx;
+  CSfxManager::AddEmitter(sfx, GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                          CSfxManager::kMedPriority);
+
+  if (!mBurning) {
+    const CWeaponMode deathWeapon = GetHealthInfo()->GetCauseOfDeathWeapon();
+    if (deathWeapon.GetType() == kWT_Dark && deathWeapon.IsCharged() == true) {
+      SendScriptMsgs(kSS_IceXDamage, mgr, kInvalidUniqueId, kSM_None);
+    } else if (IsIngPossessed() == true) {
+      SendScriptMsgs(kSS_DarkXDamage, mgr, kInvalidUniqueId, kSM_None);
+    } else {
+      SendScriptMsgs(kSS_XDamage, mgr, kInvalidUniqueId, kSM_None);
+    }
+    CreateXDamageParticles(mgr);
+  }
+
+  DeathDelete(mgr);
+  mPendingMassiveDeath = mPendingMassiveFrozenDeath = false;
+  // Native post-death flag; no identified reader establishes its purpose.
+  x423_24_ = true;
 }
 
-void CPatterned::MassiveFrozenDeath(CStateManager&) {
-  // TODO: Ice-death effects, sound, script notification and object deletion.
+void CPatterned::MassiveFrozenDeath(CStateManager& mgr) {
+  if (mIceShatterSfx == CSfxManager::kInternalInvalidSfxId) {
+    mIceShatterSfx = mDeathSfx;
+  }
+
+  CSfxManager::AddEmitter(mIceShatterSfx, GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                          CSfxManager::kMedPriority);
+  CSfxManager::AddEmitter(mIceVocalSfx, GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                          CSfxManager::kMedPriority);
+  SendScriptMsgs(kSS_IceXDamage, mgr, kInvalidUniqueId, kSM_None);
+  GenerateIceDeathExplosion(mgr);
+
+  for (uint player = 0; player < mgr.GetNumPlayers(); ++player) {
+    const CVector3f playerDelta = mgr.GetPlayer(player)->GetTranslation() - GetTranslation();
+    const float toPlayerDist = playerDelta.Magnitude();
+  }
+
+  DeathDelete(mgr);
+  mPendingMassiveDeath = mPendingMassiveFrozenDeath = false;
 }
 
 void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   const CHealthInfo* health = GetHealthInfo();
-  if (!mLaggedBurnDeath && health != nullptr && !mSuppressKnockBack) {
+  if (!mBurning && health != nullptr && !mSuppressKnockBack) {
     mKnockBackController.KnockBack(mgr, *this, info);
   }
 }
@@ -366,14 +513,34 @@ void CPatterned::UpdateAlphaDelta(CStateManager& mgr, float dt) {
   }
   Shadow()->SetUserAlpha(alpha);
   mColor.SetAlpha(alpha);
-  // TODO: Propagate alpha to the actor's particle database.
+  AnimationData()->GetParticleDB().SetModulationColorAllActiveEffects(CColor(1.f, 1.f, 1.f, alpha));
 }
 
 void CPatterned::UpdateHitDamageTime(float dt) {
+  CEchoEmitter* emitter = EchoEmitter();
   if (mDamageCooldownTimer > 0.f) {
-    mDamageCooldownTimer = CMath::Max(0.f, mDamageCooldownTimer - dt);
+    CColor baseColor = CColor::Black();
+    if (mBodyController->IsFrozen()) {
+      baseColor =
+          CColor::Lerp(CColor::Black(), skFrozenColor, mBodyController->GetPercentageFrozen());
+    }
+
+    mDamageCooldownTimer = rstl::max_val(mDamageCooldownTimer - dt, 0.f);
+    const float t = rstl::min_val(1.f, mDamageCooldownTimer / skDamageHitTime);
+    if (emitter) {
+      emitter->SetDamageExplicit(t);
+    }
+    const CColor& color = CColor::Lerp(baseColor, mDamageColor, t);
+    mColor.Set(color.GetRedu8(), color.GetGreenu8(), color.GetBlueu8(), mColor.GetAlphau8());
+    SetDamageHighlight(mDamageCooldownTimer > 0.f);
+  } else if (mBodyController->IsFrozen()) {
+    const CColor& color =
+        CColor::Lerp(CColor::Black(), skFrozenColor, mBodyController->GetPercentageFrozen());
+    mColor.Set(color.GetRedu8(), color.GetGreenu8(), color.GetBlueu8(), mColor.GetAlphau8());
+    if (emitter) {
+      emitter->SetDamageExplicit(0.f);
+    }
   }
-  // TODO: Restore frozen/hit color interpolation and the actor-light damage response.
 }
 
 void CPatterned::Think(float dt, CStateManager& mgr) {
@@ -467,11 +634,22 @@ void CPatterned::Freeze(CStateManager&, const CVector3f&, CUnitVector3f, float d
 }
 
 float CPatterned::GetDeathTimeScale() const {
-  return CMath::Max(0.1f, mLaggedBurnDeath ? mBurnThinkRateTimer / 1.5f : 1.f);
+  return CMath::Max(0.1f, mBurning ? mBurnThinkRateTimer / 1.5f : 1.f);
 }
 
 void CPatterned::DeathDelete(CStateManager& mgr) {
-  // TODO: Restore the special cases that retain or deactivate dead actors.
+  mSuppressKnockBack = true;
+  if (!mStateMachine->HasState()) {
+    InitializeStateMachine(mgr);
+  }
+  SendScriptMsgs(kSS_Dead, mgr, GetUniqueId(), kSM_None);
+
+  if (mBodyController->IsElectrocuting()) {
+    mPendingShockDamage = 0.f;
+    mBodyController->DouseElectrocuting();
+    mgr.ActorModelParticles()->StopElectric(*this);
+  }
+
   mgr.DeleteObjectRequest(GetUniqueId());
 }
 
@@ -488,9 +666,32 @@ CTransform4f CPatterned::GetLctrTransform(const CSegId& id) const {
   return GetTransform() * locator;
 }
 
-CVector3f CPatterned::GetAimPosition(const CStateManager& mgr, float dt) const {
-  // TODO: Use the lock-on locator, scaled bounds and predicted motion as the target does.
-  return CPhysicsActor::GetAimPosition(mgr, dt);
+CVector3f CPatterned::GetAimPosition(const CStateManager&, float dt) const {
+  CVector3f offset = CVector3f::Zero();
+  if (dt > 0.f) {
+    const CMotionState motion = PredictMotion(dt);
+    offset = motion.GetTranslation();
+  }
+
+  if (mLockOnTarget.val() != 0xff) {
+    const CAnimData* animData = GetModelData()->GetAnimationData();
+    const CTransform4f locatorXf = animData->GetLocatorTransform(mLockOnTarget, 0);
+    const CVector3f scale = GetModelData()->GetScale();
+    const CVector3f scaledOrigin = CVector3f::ByElementMultiply(scale, locatorXf.GetTranslation());
+
+    if (GetTouchBounds()) {
+      offset += GetTouchBounds()->ClampToBox(GetTransform() * scaledOrigin);
+    } else {
+      const CAABox& baseBox = GetBaseBoundingBox();
+      const CAABox primBox(baseBox.GetMinPoint() + GetPrimitiveOffset(),
+                           baseBox.GetMaxPoint() + GetPrimitiveOffset());
+      offset += GetTransform() * primBox.ClampToBox(scaledOrigin);
+    }
+  } else {
+    offset += GetBoundingBox().GetCenterPoint();
+  }
+
+  return offset;
 }
 
 CVector3f CPatterned::GetOrbitPosition(const CStateManager& mgr) const {
@@ -503,13 +704,21 @@ void CPatterned::PreRender(CStateManager& mgr) {
 }
 
 bool CPatterned::CanRenderUnsorted(const CStateManager& mgr) const {
-  // TODO: Reject the animation's special sorted-render mode.
+  if (GetAnimationData()->GetParticleDB().AreAnySystemsDrawnWithModel()) {
+    return false;
+  }
   return CActor::CanRenderUnsorted(mgr);
 }
 
 void CPatterned::PreRenderAllViewports(CStateManager& mgr) {
   CActor::PreRenderAllViewports(mgr);
-  // TODO: Restore particle-light updates and frozen model effects.
+  if (GetEchoEmitterEnabled()) {
+    const CAABox& bounds =
+        HasModelData() ? GetModelData()->GetBounds(GetTransform()) : GetOtherBounds();
+    const CVector3f center = bounds.GetCenterPoint();
+    const CVector3f halfExtent = 0.375f * (bounds.GetMaxPoint() - bounds.GetMinPoint());
+    EchoEmitter()->SetBounds(CAABox(center - halfExtent, center + halfExtent));
+  }
 }
 
 void CPatterned::Render(const CStateManager& mgr) const {

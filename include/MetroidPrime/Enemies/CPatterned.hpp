@@ -54,6 +54,7 @@ public:
   static const float skActorApproachDistance;
   static const CColor skDamageColor;
   static const CColor skHitsWithoutDamageColor;
+  static const CColor skFrozenColor; // Guessed name; native frozen-interpolation endpoint.
 
   CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string& name, EFlavorType flavor,
              const CEntityInfo& info, const CTransform4f& xf, const CModelData& modelData,
@@ -184,7 +185,7 @@ public:
   void ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
                               CKnockBackMgr::EFollowUp followUp, float duration,
                               float secondaryDuration, TUniqueId source, TUniqueId owner);
-  void fn_8007850c(CStateManager& mgr);
+  void GenerateIceDeathExplosion(CStateManager& mgr); // Guessed Prime-correlated name.
 
   void Start(CStateManager& mgr, EStateMsg msg, float dt);
   void Patrol(CStateManager& mgr, EStateMsg msg, float dt);
@@ -303,8 +304,8 @@ private:
   uint mPendingMassiveFrozenDeath : 1;
   uint mIsFlyer : 1;
   uint mPathOverCount : 2;
-  uint mLaggedBurnDeath : 1;
-  uint x421_26_ : 1;
+  uint mBurning : 1;         // Guessed Prime name; native burn-death rendering gate.
+  uint mLaggedBurnDeath : 1; // Guessed Prime name; delays fire-pop and ash effects.
   uint mPendingDeath : 1;
   uint mLostMassiveFrozenHP : 1;
   uint mDieIf80PercFrozen : 1;

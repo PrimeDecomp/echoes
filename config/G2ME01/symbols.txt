@@ -2213,7 +2213,7 @@ ApplyKnockBackFollowUp__10CPatternedFR13CStateManagerRC9CVector3fQ213CKnockBackM
 KnockBack__10CPatternedFR13CStateManagerRC14CKnockBackInfo = .text:0x800781A4; // type:function size:0x94 align:4
 MassiveFrozenDeath__10CPatternedFR13CStateManager = .text:0x80078238; // type:function size:0x15C align:4
 MassiveDeath__10CPatternedFR13CStateManager = .text:0x80078394; // type:function size:0x178 align:4
-fn_8007850c__10CPatternedFR13CStateManager = .text:0x8007850C; // type:function size:0x1F4
+GenerateIceDeathExplosion__10CPatternedFR13CStateManager = .text:0x8007850C; // type:function size:0x1F4
 CreateXDamageParticles__10CPatternedCFR13CStateManager = .text:0x80078700; // type:function size:0x364 align:4
 IssueDeathBodyCommand__10CPatternedFR13CStateManagerRC9CVector3f = .text:0x80078A64; // type:function size:0x258 align:4
 __dt__15CBCKnockDownCmdFv = .text:0x80078CBC; // type:function size:0x5C scope:weak align:4
@@ -20457,7 +20457,7 @@ lbl_80418FE0 = .sbss:0x80418FE0; // type:object size:0x1 data:byte
 lbl_80418FE4 = .sbss:0x80418FE4; // type:object size:0x4 data:4byte
 lbl_80418FE8 = .sbss:0x80418FE8; // type:object size:0x4 data:4byte
 lbl_80418FEC = .sbss:0x80418FEC; // type:object size:0x4 data:4byte
-lbl_80418FF0 = .sbss:0x80418FF0; // type:object size:0x1 data:byte
+skFrozenColor__10CPatterned = .sbss:0x80418FF0; // type:object size:0x4 data:4byte
 lbl_80418FF4 = .sbss:0x80418FF4; // type:object size:0x1 data:byte
 lbl_80418FF8 = .sbss:0x80418FF8; // type:object size:0x1 data:byte
 lbl_80418FFC = .sbss:0x80418FFC; // type:object size:0x1 data:byte
