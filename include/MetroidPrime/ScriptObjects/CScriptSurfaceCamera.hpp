@@ -9,8 +9,11 @@
 // Guessed name; script settings and geometry are separate from the runtime camera.
 class CScriptSurfaceCamera : public CActor {
 public:
-  // Guessed names for the two target-selection flags established by native consumers.
+  // Guessed names established by native consumers; 0x4 makes the offset an angle in degrees.
   enum ESurfaceFlags {
+    kSF_FollowPlayerDirectly = 0x1,
+    kSF_OffsetAlongSurface = 0x2,
+    kSF_OffsetIsDegrees = 0x4,
     kSF_TargetBallPosition = 0x8,
     kSF_ProjectTargetAlongHintForward = 0x10,
   };
@@ -41,7 +44,7 @@ public:
   uint GetFlags() const { return mFlags; }
   ESurfaceType GetSurfaceType() const { return mSurfaceType; }
   CCameraSurface* GetSurface() const { return mSurface.get(); }
-  const CVector3f& GetPlayerOffset() const { return mPlayerOffset; }
+  CVector3f GetPlayerOffset() const { return mPlayerOffset; }
   const CMotionSpline& GetPlayerSpline() const { return mPlayerSpline; }
   const CMotionSpline& GetTargetSpline() const { return mTargetSpline; }
   CMayaSpline& GetTargetControlSpline() const { return mTargetControlSpline; }
