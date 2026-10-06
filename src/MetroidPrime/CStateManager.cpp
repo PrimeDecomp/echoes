@@ -18,6 +18,7 @@
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CHintManager.hpp"
+#include "MetroidPrime/CKnockBackInfo.hpp"
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
@@ -52,9 +53,11 @@
 #include "MetroidPrime/ScriptObjects/CScriptForgottenObject.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
+#include "MetroidPrime/Weapons/CWeapon.hpp"
 
 #include "Kyoto/Audio/CAudioGroupSet.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -101,6 +104,9 @@ public:
 };
 
 static s64 sPreRenderStepTime;
+
+// Prime-correlated name; native underwater ranges for the two bomb attributes.
+static const float skBombUnderwaterRanges[2] = {2.f, 4.f};
 
 bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const {
   return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
@@ -1991,6 +1997,31 @@ void CStateManager::RemoveObject(TUniqueId id) {
   mAllocatedObjectIndices[id.Value()] = false;
 }
 
+void CStateManager::TestBombHittingWater(const CActor& source, const CVector3f& position,
+                                         CActor& damagee) {
+  int index = 0;
+  if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(source)) {
+    const int attributes = weapon->GetAttribField();
+    if ((attributes & (CWeapon::kPA_TriggerBomb | CWeapon::kPA_PowerBombs)) != 0) {
+      if ((attributes & CWeapon::kPA_PowerBombs) != 0) {
+        index = 1;
+      }
+      if (CScriptWater* const water = TCastToPtr< CScriptWater >(damagee)) {
+        const CVector3f hitPosition(position.GetX(), position.GetY(),
+                                    water->GetTriggerBoundsWR().GetMaxPoint().GetZ());
+        const float depth = -water->GetWRSurfacePlane().GetHeight(position);
+        if (depth <= skBombUnderwaterRanges[index] && depth > 0.f) {
+          const float splashFactor = 1.f - depth / skBombUnderwaterRanges[index];
+          if (index == 0) {
+            mFluidPlaneManager->CreateSplash(source.GetUniqueId(), *this, *water, hitPosition,
+                                             splashFactor, true);
+          }
+        }
+      }
+    }
+  }
+}
+
 const bool CStateManager::MultiRayCollideWorld(const CMRay& ray,
                                                const CMaterialFilter& filter) const {
   CVector3f offset2 =
@@ -2059,6 +2090,48 @@ CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
                                                      filter, nearList, &damagee);
   }
   return true;
+}
+
+void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner,
+                                   const CDamageInfo& damage,
+                                   const CDamageVulnerability& vulnerability,
+                                   const CVector3f& direction, float dampen) {
+  const CWeaponTypeVulnerability weaponVulnerability =
+      vulnerability.GetVulnerability(damage.GetWeaponMode());
+  if (!weaponVulnerability.WeaponHurts()) {
+    return;
+  }
+
+  const CHealthInfo* health = actor.GetHealthInfo();
+  if (health == nullptr) {
+    return;
+  }
+
+  const float power = (1.f - dampen) * damage.GetKnockBackPower();
+  const float resistance = health->GetKnockBackResistance();
+  CPlayer* player = TCastToPtr< CPlayer >(actor);
+  CPatterned* patterned = TCastToPtr< CPatterned >(actor);
+  const bool alive = health->GetHP() > 0.f;
+  const CKnockBackInfo info(direction, source, owner, damage, dampen == 0.f);
+  if (player != nullptr) {
+    player->GetKnockBackManager().KnockBack(*this, *player, info);
+    return;
+  }
+
+  if (patterned == nullptr && !alive) {
+    if (power > resistance) {
+      if (CPhysicsActor* const physics = TCastToPtr< CPhysicsActor >(actor)) {
+        const CVector3f impulse = direction * (1.5f * ((power - resistance) * physics->GetMass()));
+        // The native impulse gate uses material 59; its semantic name is unresolved.
+        if (!physics->GetMaterialList().HasMaterial(kMT_Immovable) &&
+            physics->GetMaterialList().HasMaterial(kMT_Unknown59)) {
+          physics->ApplyImpulseWR(impulse, CAxisAngle::Identity());
+        }
+      }
+    }
+  } else if (patterned != nullptr) {
+    patterned->KnockBack(*this, info);
+  }
 }
 
 void CStateManager::KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer) {

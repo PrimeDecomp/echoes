@@ -76,6 +76,7 @@ class CPlane;
 class CTexture;
 class CProjectedShadow;
 class CMRay;
+class CDamageVulnerability;
 
 typedef rstl::bit_vector<> MapWorldInfoAreas;
 
@@ -198,6 +199,11 @@ public:
                    const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
                          TUniqueId weapon, const CDamageInfo& damage);
+  // Prime-correlated names, with the selected Echoes damage-reaction interfaces.
+  void TestBombHittingWater(const CActor& source, const CVector3f& position, CActor& damagee);
+  void ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId owner, const CDamageInfo& damage,
+                      const CDamageVulnerability& vulnerability, const CVector3f& direction,
+                      float dampen);
   void KillPlayer(float previousHealth, TUniqueId victim, TUniqueId killer); // Guessed name.
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
   void PreRender(uint playerIndex);                // Prime-correlated name.
