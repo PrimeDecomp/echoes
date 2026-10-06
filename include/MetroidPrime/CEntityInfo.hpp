@@ -93,6 +93,7 @@ enum EEntityType {
   kET_ScriptVisorFlare = 96,
   kET_ScriptWater = 97,
   kET_ScriptWorldTeleporter = 98,
+  kET_SnakeWeedSwarm = 99, // Native REL type query; class spelling corroborated by Wii export.
   kET_SpindleCamera = 100,
   kET_SurfaceCamera = 101, // Guessed name; runtime surface camera.
   kET_SwarmBasics = 102, // Native TypesMatch tag, correlated with swarm consumers.

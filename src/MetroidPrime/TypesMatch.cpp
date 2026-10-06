@@ -117,6 +117,8 @@
 CAST_TO_REF_IMPL(CSwarmBasics, kET_SwarmBasics)
 CAST_TO_PTR_IMPL(CSwarmBasics, kET_SwarmBasics)
 
+CEntity* CastToSnakeWeedSwarm(CEntity* entity) { return TryCast(entity, kET_SnakeWeedSwarm); }
+
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CPlasmaProjectile::~CPlasmaProjectile() {}
 
