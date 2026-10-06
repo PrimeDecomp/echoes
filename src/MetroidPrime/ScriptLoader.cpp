@@ -409,7 +409,9 @@ CPatternedInfo LdrToPatternedInfo(const SLdrPatternedAITypedef& data,
   result.mFrozenXDamageThreshold = data.unknown_0x66cdc6e8;
   result.mXDamageDelay = data.xDamageDelay;
   result.mDeathSfx = data.sound_XDamage;
-  result.mAnimationParameters = LdrToAnimationParameters(data.animationInformation);
+  result.mAnimationParameters = CAnimationParameters(data.animationInformation.ancs,
+                                                     data.animationInformation.character_index,
+                                                     data.animationInformation.initial_anim);
   result.mIntoFreezeDuration = data.unknown_0x87d22d43;
   result.mOutOfFreezeDuration = data.unknown_0xf0790c1b;
   result.mFreezeDuration = data.freezeDuration;
@@ -504,8 +506,9 @@ LdrToPowerBombGuardianStageData(const SLdrPowerBombGuardianStageProperties& data
       data.minTimeBetweenAttacks, data.maxTimeBetweenAttacks, data.minTimeBetweenShots,
       data.maxTimeBetweenShots, static_cast< uchar >(data.minShotsInABurst),
       static_cast< uchar >(data.maxShotsInABurst), data.powerBombProjectileGravityMultiplier,
-      data.unknown_0xd356c997, data.doubleShotChance, static_cast< uchar >(data.unknown_0x87cc8ba4),
-      static_cast< uchar >(data.unknown_0x6491357e));
+      data.waypointTargetSpreadRadius, data.doubleShotChance,
+      static_cast< uchar >(data.minAttacksPerDoubleShot),
+      static_cast< uchar >(data.maxAttacksPerDoubleShot));
 }
 
 CEntityInfo& LdrToEntityInfo(CEntityInfo& info, const SLdrEditorProperties& data) {

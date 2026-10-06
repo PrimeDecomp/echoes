@@ -45,41 +45,15 @@ struct SLdrCameraFOV {
 
 void LoadTypedefCameraFOV(SLdrCameraFOV& data, CInputStream& input);
 
-struct SLdrCameraHintStructC {
-  SLdrCameraHintStructC();
-  ~SLdrCameraHintStructC();
+struct SLdrCameraAngleRange {
+  SLdrCameraAngleRange();
+  ~SLdrCameraAngleRange();
 
   bool field_override; // 0x7ff86ee2
   float angle; // 0x382a1973
 };
 
-inline SLdrCameraHintStructC::SLdrCameraHintStructC() {
-  field_override = false;
-  angle = 90.0f;
-}
-
-inline SLdrCameraHintStructC::~SLdrCameraHintStructC() {}
-
-inline void LoadTypedefCameraHintStructC(SLdrCameraHintStructC& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0x7ff86ee2: {
-      sldrThis.field_override = input.ReadBool();
-      break;
-    }
-    case 0x382a1973: {
-      sldrThis.angle = input.ReadFloat();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraAngleRange(SLdrCameraAngleRange& data, CInputStream& input);
 
 struct SLdrCameraSpeed {
   SLdrCameraSpeed();
@@ -101,65 +75,23 @@ struct SLdrCameraZOffset {
 
 void LoadTypedefCameraZOffset(SLdrCameraZOffset& data, CInputStream& input);
 
-struct SLdrCameraHintStructA {
-  SLdrCameraHintStructA();
-  ~SLdrCameraHintStructA();
+struct SLdrCameraPositionInterpolation {
+  SLdrCameraPositionInterpolation();
+  ~SLdrCameraPositionInterpolation();
 
   int type; // 0xf53dcdd6
 };
 
-inline SLdrCameraHintStructA::SLdrCameraHintStructA() {
-  type = 0;
-}
+void LoadTypedefCameraPositionInterpolation(SLdrCameraPositionInterpolation& data, CInputStream& input);
 
-inline SLdrCameraHintStructA::~SLdrCameraHintStructA() {}
-
-inline void LoadTypedefCameraHintStructA(SLdrCameraHintStructA& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0xf53dcdd6: {
-      sldrThis.type = input.ReadInt32();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
-
-struct SLdrUnknownStruct9 {
-  SLdrUnknownStruct9();
-  ~SLdrUnknownStruct9();
+struct SLdrCameraRotationInterpolation {
+  SLdrCameraRotationInterpolation();
+  ~SLdrCameraRotationInterpolation();
 
   int type; // 0xf53dcdd6
 };
 
-inline SLdrUnknownStruct9::SLdrUnknownStruct9() {
-  type = 1;
-}
-
-inline SLdrUnknownStruct9::~SLdrUnknownStruct9() {}
-
-inline void LoadTypedefUnknownStruct9(SLdrUnknownStruct9& sldrThis, CInputStream& input) {
-  const int propertyCount = input.ReadUint16();
-  for (int i = 0; i < propertyCount; ++i) {
-    const uint propertyId = input.Get< uint >();
-    const u16 propertySize = input.ReadUint16();
-    switch (propertyId) {
-    case 0xf53dcdd6: {
-      sldrThis.type = input.ReadInt32();
-      break;
-    }
-    default:
-      input.ReadBytes(nullptr, propertySize);
-      break;
-    }
-  }
-}
+void LoadTypedefCameraRotationInterpolation(SLdrCameraRotationInterpolation& data, CInputStream& input);
 
 struct SLdrCameraHint {
   SLdrCameraHint();
@@ -176,19 +108,19 @@ struct SLdrCameraHint {
   SLdrCameraOffset lookAtOffset; // 0x8d0a9113
   CVector3f worldOffset; // 0xefebe838
   SLdrCameraFOV fieldOfView; // 0xf71c36f2
-  SLdrCameraHintStructC cameraHintStructB; // non-matching name, 0x664c450a
-  SLdrCameraHintStructC cameraHintStructB_0xc82395fa; // non-matching name, 0xc82395fa
+  SLdrCameraAngleRange attitudeRange; // non-matching name, 0x664c450a
+  SLdrCameraAngleRange azimuthRange; // non-matching name, 0xc82395fa
   SLdrCameraSpeed angularSpeed; // 0x645eb009
   SLdrCameraZOffset zOffset; // 0x80cfbb54
   float interpolateOffTime; // 0x2ae08be1
   float interpolateOnTime; // 0x4361d075
   float interpolateControlTime; // 0xc91ef813
-  SLdrCameraHintStructA cameraHintStructA1; // non-matching name, 0x934e392c
-  SLdrUnknownStruct9 unknown_0x9e8631f1; // 0x9e8631f1
-  SLdrCameraHintStructA cameraHintStructA; // non-matching name, 0x138729a7
+  SLdrCameraPositionInterpolation positionInterpolationOn; // non-matching name, 0x934e392c
+  SLdrCameraRotationInterpolation rotationInterpolation; // non-matching name, 0x9e8631f1
+  SLdrCameraPositionInterpolation positionInterpolationOff; // non-matching name, 0x138729a7
 };
 
-inline SLdrCameraHint::SLdrCameraHint() : editorProperties(), behaviour(), minSpeedDistance(), maxSpeedDistance(), backwardsDistance(), lookAtOffset(), worldOffset(CVector3f::Zero()), fieldOfView(), cameraHintStructB(), cameraHintStructB_0xc82395fa(), angularSpeed(), zOffset(), cameraHintStructA1(), unknown_0x9e8631f1(), cameraHintStructA() {
+inline SLdrCameraHint::SLdrCameraHint() : editorProperties(), behaviour(), minSpeedDistance(), maxSpeedDistance(), backwardsDistance(), lookAtOffset(), worldOffset(CVector3f::Zero()), fieldOfView(), attitudeRange(), azimuthRange(), angularSpeed(), zOffset(), positionInterpolationOn(), rotationInterpolation(), positionInterpolationOff() {
   priority = 50;
   timer = 0.0f;
   flagsCameraHint = 0x0000011eu;

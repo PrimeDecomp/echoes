@@ -21,8 +21,8 @@ struct SLdrTextProperties {
   CColor outlineColor; // 0x60d78569
   CColor geometryColor; // 0x5908ef39
   CAssetId defaultFont; // 0x0db9f8b6
-  int horizontalJustification; // non-matching name, 0x18dd95cd
-  int verticalJustification; // non-matching name, 0x42091548
+  int horizontalJustification; // 0x18dd95cd
+  int verticalJustification; // 0x42091548
   bool wrapText; // 0x330573e9
 #if VERSION != VERSION_G2ME01
   bool drawShadow; // 0xd8a2eef0

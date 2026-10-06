@@ -29,6 +29,7 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrAudioPlaybackParms.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrCommand.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrEchoParameters.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSporbBase.hpp"
 
 // G2ME01 0x802422E4 leaves character_index uninitialized.
 SLdrAnimationSet::SLdrAnimationSet() : ancs(kInvalidAssetId), initial_anim(-1) {}
@@ -2491,6 +2492,153 @@ void LoadTypedefEchoParameters(SLdrEchoParameters& sldrThis, CInputStream& input
     }
     case 0xf87a15e7: {
       sldrThis.forcedMinimumVis = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrCameraPositionInterpolation::SLdrCameraPositionInterpolation() {
+  type = 0;
+}
+
+SLdrCameraPositionInterpolation::~SLdrCameraPositionInterpolation() {}
+
+void LoadTypedefCameraPositionInterpolation(SLdrCameraPositionInterpolation& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xf53dcdd6: {
+      sldrThis.type = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrCameraRotationInterpolation::SLdrCameraRotationInterpolation() {
+  type = 1;
+}
+
+SLdrCameraRotationInterpolation::~SLdrCameraRotationInterpolation() {}
+
+void LoadTypedefCameraRotationInterpolation(SLdrCameraRotationInterpolation& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0xf53dcdd6: {
+      sldrThis.type = input.ReadInt32();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrCameraAngleRange::SLdrCameraAngleRange() {
+  field_override = false;
+  angle = 90.0f;
+}
+
+SLdrCameraAngleRange::~SLdrCameraAngleRange() {}
+
+void LoadTypedefCameraAngleRange(SLdrCameraAngleRange& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x7ff86ee2: {
+      sldrThis.field_override = input.ReadBool();
+      break;
+    }
+    case 0x382a1973: {
+      sldrThis.angle = input.ReadFloat();
+      break;
+    }
+    default:
+      input.ReadBytes(nullptr, propertySize);
+      break;
+    }
+  }
+}
+
+SLdrPowerBombGuardianStageProperties::SLdrPowerBombGuardianStageProperties() {
+  minTimeBetweenAttacks = 2.0f;
+  maxTimeBetweenAttacks = 2.0f;
+  minTimeBetweenShots = 1.0f;
+  maxTimeBetweenShots = 1.0f;
+  minShotsInABurst = 1;
+  maxShotsInABurst = 1;
+  powerBombProjectileGravityMultiplier = 1.0f;
+  waypointTargetSpreadRadius = 1.0f;
+  doubleShotChance = 0.5f;
+  minAttacksPerDoubleShot = 10;
+  maxAttacksPerDoubleShot = 10;
+}
+
+SLdrPowerBombGuardianStageProperties::~SLdrPowerBombGuardianStageProperties() {}
+
+void LoadTypedefPowerBombGuardianStageProperties(SLdrPowerBombGuardianStageProperties& sldrThis, CInputStream& input) {
+  const int propertyCount = input.ReadUint16();
+  for (int i = 0; i < propertyCount; ++i) {
+    const uint propertyId = input.Get< uint >();
+    const u16 propertySize = input.ReadUint16();
+    switch (propertyId) {
+    case 0x95e7a2c2: {
+      sldrThis.minTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x76ba1c18: {
+      sldrThis.maxTimeBetweenAttacks = input.ReadFloat();
+      break;
+    }
+    case 0x3eb2de35: {
+      sldrThis.minTimeBetweenShots = input.ReadFloat();
+      break;
+    }
+    case 0xe50d8dd2: {
+      sldrThis.maxTimeBetweenShots = input.ReadFloat();
+      break;
+    }
+    case 0x64d482d5: {
+      sldrThis.minShotsInABurst = input.ReadInt32();
+      break;
+    }
+    case 0xc3e002ac: {
+      sldrThis.maxShotsInABurst = input.ReadInt32();
+      break;
+    }
+    case 0xbb4b6680: {
+      sldrThis.powerBombProjectileGravityMultiplier = input.ReadFloat();
+      break;
+    }
+    case 0xd356c997: {
+      sldrThis.waypointTargetSpreadRadius = input.ReadFloat();
+      break;
+    }
+    case 0xca6ac43a: {
+      sldrThis.doubleShotChance = input.ReadFloat();
+      break;
+    }
+    case 0x87cc8ba4: {
+      sldrThis.minAttacksPerDoubleShot = input.ReadInt32();
+      break;
+    }
+    case 0x6491357e: {
+      sldrThis.maxAttacksPerDoubleShot = input.ReadInt32();
       break;
     }
     default:
