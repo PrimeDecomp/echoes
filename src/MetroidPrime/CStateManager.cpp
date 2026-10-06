@@ -35,6 +35,7 @@
 #include "MetroidPrime/CWeaponMgr.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
+#include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
@@ -2194,21 +2195,61 @@ CDamageInfo CStateManager::GetModifiedDamageInfo(TUniqueId damager, TUniqueId ow
   return damage;
 }
 
+void CStateManager::RecordDamageSource(CActor& damagee, TUniqueId source, const CDamageInfo& info,
+                                       bool lethal, bool radiusDamage) {
+  CHealthInfo* const health = damagee.HealthInfo();
+  if (health == nullptr) {
+    return;
+  }
+
+  bool frozen = false;
+  if (lethal) {
+    CPatterned* const patterned = TCastToPtr< CPatterned >(&damagee);
+    if (patterned != nullptr) {
+      frozen = patterned->BodyController()->IsFrozen();
+    } else {
+      CPlayer* const player = TCastToPtr< CPlayer >(&damagee);
+      if (player != nullptr) {
+        frozen = player->GetFrozenState();
+      }
+    }
+  }
+
+  const CWeapon* const weapon = TCastToConstPtr< CWeapon >(GetObjectById(source));
+  if (weapon != nullptr) {
+    health->SetLastDamageWeapon(weapon->GetCurrentDamageInfo().GetWeaponMode(),
+                                weapon->GetOwnerId(), source, radiusDamage);
+    if (lethal) {
+      health->SetCauseOfDeathWeapon(weapon->GetCurrentDamageInfo().GetWeaponMode(),
+                                    weapon->GetOwnerId(), source, frozen, radiusDamage);
+    }
+  } else {
+    health->SetLastDamageWeapon(info.GetWeaponMode(), source, source, radiusDamage);
+    if (lethal) {
+      health->SetCauseOfDeathWeapon(info.GetWeaponMode(), source, source, frozen, radiusDamage);
+    }
+  }
+}
+
 bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee,
-                                     float damage, TUniqueId uid1, TUniqueId uid2,
-                                     const CDamageInfo& damageInfo, int unkParam) {
+                                     float damage, TUniqueId source, TUniqueId owner,
+                                     const CDamageInfo& damageInfo, bool radiusDamage) {
   CHealthInfo* healthInfo = damagee.HealthInfo();
   if (!healthInfo || damage < 0.0f) {
     return false;
   }
 
-  float hp = healthInfo->GetHP();
-  if (hp <= 0.0f) {
-    RecordDamageSource(damagee, uid1, damageInfo, false, unkParam);
+  const float oldHp = healthInfo->GetHP();
+  float hp = oldHp;
+  if (oldHp <= 0.0f) {
+    RecordDamageSource(damagee, source, damageInfo, false, radiusDamage);
     return true;
   }
 
+  float useDamage = damage;
   CPlayer* player = TCastToPtr< CPlayer >(damagee);
+  CPatterned* patterned = TCastToPtr< CPatterned >(damagee);
+  CScriptDoor* door = TCastToPtr< CScriptDoor >(damagee);
 
   if (player && player->GetTurretState() != CPlayer::kTS_None) {
     if (player->GetTurretState() != CPlayer::kTS_Active) {
@@ -2231,69 +2272,87 @@ bool CStateManager::ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir,
     }
 
     if (gpGameState->GetHardModeEnabled()) {
-      switch ((EWeaponType)damageInfo.GetWeaponMode1()) {
-      case kWT_Power:
-      case kWT_Dark:
-      case kWT_Light:
-      case kWT_Annihilator:
-      case kWT_Bomb:
-      case kWT_PowerBomb:
-      case kWT_Missile:
-      case kWT_BoostBall:
-      case kWT_CannonBall:
-      case kWT_ScrewAttack:
-      case kWT_AI:
+      switch (damageInfo.GetWeaponMode().GetRawType()) {
+      case kWT_Phazon:
       case kWT_PoisonWater1:
       case kWT_PoisonWater2:
       case kWT_Lava:
       case kWT_Heat:
       case kWT_Unused1:
       case kWT_AreaDark:
-        damage *= gpGameState->GetHardModeDamageMultiplier();
+      case kWT_AreaLight:
+        break;
+      default:
+        useDamage *= gpGameState->GetHardModeDamageMultiplier();
         break;
       }
     }
 
     float damageReduction = 0.0f;
+    const EWeaponType weaponType = EWeaponType(damageInfo.GetWeaponMode().GetRawType());
+    const bool lightDamage = weaponType == kWT_Light;
+    const bool darkDamage = weaponType == kWT_Dark;
 
     if (playerState.HasPowerUp(CPlayerState::kIT_VariaSuit)) {
       damageReduction = player->GetTweakPlayer()->GetVariaSuitDamageReduction();
     }
     if (playerState.HasPowerUp(CPlayerState::kIT_DarkSuit)) {
       float reduction = player->GetTweakPlayer()->GetDarkSuitDamageReduction();
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
+      damageReduction = rstl::max_val(reduction, damageReduction);
     }
     if (playerState.HasPowerUp(CPlayerState::kIT_LightSuit)) {
       float reduction = player->GetTweakPlayer()->GetLightSuitDamageReduction();
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
+      damageReduction = rstl::max_val(reduction, damageReduction);
     }
     if (playerState.GetItemAmount(CPlayerState::kIT_AbsorbAttack, true) != 0) {
       float reduction = 1.5f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
+      damageReduction = rstl::max_val(reduction, damageReduction);
     }
-    if (playerState.GetItemAmount(CPlayerState::kIT_LightShield, true) != 0) {
-      // TODO: flag
+    if (playerState.GetItemAmount(CPlayerState::kIT_LightShield, true) != 0 && !darkDamage) {
       float reduction = 0.75f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
+      damageReduction = rstl::max_val(reduction, damageReduction);
     }
-    if (playerState.GetItemAmount(CPlayerState::kIT_DarkShield, true) != 0) {
-      // TODO: flag
+    if (playerState.GetItemAmount(CPlayerState::kIT_DarkShield, true) != 0 && !lightDamage) {
       float reduction = 0.75f;
-      if (reduction > damageReduction) {
-        damageReduction = reduction;
-      }
+      damageReduction = rstl::max_val(reduction, damageReduction);
     }
     hp = playerState.CalculateHealth();
-    damage = -(damageReduction * damage - damage);
+    useDamage = -(damageReduction * useDamage - useDamage);
   }
+
+  const float damagedHp = oldHp - useDamage;
+  if (damagedHp < hp) {
+    hp = damagedHp;
+  }
+  healthInfo->SetHP(hp);
+  const bool significant = hp < oldHp;
+  RecordDamageSource(damagee, source, damageInfo, hp <= 0.f, radiusDamage);
+
+  if (player != nullptr) {
+    if (damageInfo.GetWeaponMode().IsInstantKill()) {
+      useDamage = hp;
+      hp = 0.f;
+      healthInfo->SetHP(hp);
+    }
+    // The native caller snapshots the complete damage record before player reactions.
+    player->TakeDamage(significant, pos, useDamage, source, owner, CDamageInfo(damageInfo), *this);
+    const CGameState& gameState = *gpGameState;
+    gameState.GetGameMode().OnPlayerDamaged(*this, playerId, owner, useDamage);
+    if (hp <= 0.f) {
+      KillPlayer(oldHp, playerId, owner);
+    }
+  } else if (patterned != nullptr) {
+    if (significant) {
+      patterned->TakeDamage(dir, useDamage);
+      hp = patterned->GetHealthInfo()->GetHP();
+    }
+    if (hp <= 0.f) {
+      patterned->Death(*this, dir, kSS_DeathRattle);
+    }
+  } else if (door != nullptr && significant && hp <= 0.f) {
+    door->SetBurnOrigin(pos);
+  }
+  return significant;
 }
 
 void CStateManager::TestBombHittingWater(const CActor& source, const CVector3f& position,

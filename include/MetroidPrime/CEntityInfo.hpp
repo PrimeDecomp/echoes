@@ -136,6 +136,7 @@ enum EScriptObjectState {
   kSS_CameraTime = 0x4354494d,
   kSS_UnFrozen = 0x5546525a,
   kSS_Dead = 0x44454144,
+  kSS_DeathRattle = 0x5241544c, // Guessed Prime-correlated name; native damage-death state.
   kSS_Generate = 0x47454e52,
   kSS_ReflectedDamage = 0x52454644,
   kSS_Damage = 0x44414d47, // Guessed name; DAMG damage notification state.

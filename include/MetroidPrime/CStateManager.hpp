@@ -386,12 +386,13 @@ public:
   void UpdateActorInSortedLists(CActor*);
 
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
-                        TUniqueId uid1, TUniqueId uid2, const CDamageInfo& info, int);
+                        TUniqueId source, TUniqueId owner, const CDamageInfo& info,
+                        bool radiusDamage);
 
   // Guessed name; records the last damage source and, on lethal hits, death attribution.
-  // The final context flag's complete interface remains under investigation.
-  void RecordDamageSource(CActor& damagee, TUniqueId source, const CDamageInfo& info,
-                          bool lethal, int damageContext);
+  // The last flag distinguishes the native radius and direct callers.
+  void RecordDamageSource(CActor& damagee, TUniqueId source, const CDamageInfo& info, bool lethal,
+                          bool radiusDamage);
   // Guessed names, recovered from script deletion and object-list consumers.
   void AddToGraveyard(CEntity* entity);
   void ClearGraveyard(); // Prime-correlated name; deletes the queued entity batches.
