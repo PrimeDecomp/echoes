@@ -1469,7 +1469,7 @@ GuiSys/CGuiTextPane.cpp:
 	.sdata2     start:0x8041F358 end:0x8041F390
 
 Kyoto/Text/CGuiTextSupport.cpp:
-	.text       start:0x8027B23C end:0x8027B6D4
+	.text       start:0x8027B23C end:0x8027BAF0
 
 GuiSys/CGuiWidget.cpp:
 	.text       start:0x8027DBB8 end:0x8027E5EC
@@ -1807,7 +1807,7 @@ Kyoto/Graphics/CTevCombiners.cpp:
 	.ctors      start:0x803A59A8 end:0x803A59AC
 
 Kyoto/Graphics/DolphinCGraphics.cpp:
-	.text       start:0x802BFD44 end:0x802C13F0
+	.text       start:0x802BFD44 end:0x802C1444
 
 Kyoto/Graphics/DolphinCPalette.cpp:
 	.text       start:0x802C4204 end:0x802C44C4
@@ -2622,7 +2622,7 @@ Dolphin/os/OSResetSW.c:
 	.text       start:0x803744F4 end:0x80374880
 
 Dolphin/os/OSRtc.c:
-	.text       start:0x80374B34 end:0x80375234
+	.text       start:0x80374880 end:0x80375234
 
 Dolphin/os/OSSync.c:
 	.text       start:0x80375530 end:0x803755B4
