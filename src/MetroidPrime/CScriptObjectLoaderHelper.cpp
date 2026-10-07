@@ -164,13 +164,82 @@ CScriptObjectLoaderHelper::GetBuildForScript(TEditorId editorId) const {
   return rstl::pair< const SScriptObjectStream*, TEditorId >(nullptr, kInvalidEditorId);
 }
 
-void CScriptObjectLoaderHelper::FreeScriptObjects(TAreaId area, CStateManager& mgr) {
-  // TODO: area-object deletion and message-queue draining; nonfunctional scaffold.
-}
-
 void CScriptObjectLoaderHelper::RemoveLayerObjects(TAreaId area, TLayerId layer,
                                                    CStateManager& mgr) {
-  // TODO: collect matching instances, delete them and drain messages; nonfunctional scaffold.
+  const int areaNum = area.Value();
+  const int layerNum = layer.Value();
+  rstl::vector< TUniqueId > ids;
+  ids.reserve(mgr.mScriptIdMap.size());
+  CStateManager::TIdList::iterator it = mgr.mScriptIdMap.begin();
+  while (it != mgr.mScriptIdMap.end()) {
+    CStateManager::TIdList::iterator cur = it;
+    ++it;
+    if (cur->first.AreaNum() == areaNum && cur->first.LayerNum() == layerNum) {
+      ids.push_back_unsafe(cur->second);
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+    mgr.DeleteObjectRequest(*it);
+    if (mgr.mScriptMsgs.GetCount() > 64) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
+}
+
+void CScriptObjectLoaderHelper::FreeScriptObjects(TAreaId area, CStateManager& mgr) {
+  mgr.DispatchScriptMessages();
+
+  rstl::vector< TUniqueId > ids;
+  ids.reserve(mgr.mScriptIdMap.size());
+  CStateManager::TIdList::iterator scriptIt = mgr.mScriptIdMap.begin();
+  while (scriptIt != mgr.mScriptIdMap.end()) {
+    CStateManager::TIdList::iterator cur = scriptIt;
+    ++scriptIt;
+    if (cur->first.AreaNum() == area.Value()) {
+      ids.push_back_unsafe(cur->second);
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+    mgr.DeleteObjectRequest(*it);
+    if (mgr.mScriptMsgs.GetCount() > 64) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
+
+  CGameArea* gameArea = mgr.World()->Area(area);
+  if (gameArea->IsLoaded()) {
+    CObjectList* areaObjects = gameArea->ObjectList();
+    ids.reserve(areaObjects->size());
+    for (int i = areaObjects->GetFirstObjectIndex(); i != -1;
+         i = areaObjects->GetNextObjectIndex(i)) {
+      CEntity* ent = (*areaObjects)[i];
+      if (ent != nullptr && !ent->IsNotInArea()) {
+        ids.push_back_unsafe(ent->GetUniqueId());
+      }
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+    mgr.DeleteObjectRequest(*it);
+    if (mgr.mScriptMsgs.GetCount() > 64) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
+
+  TScriptObjectMap::iterator generatedIt = mGeneratedScriptObjects.begin();
+  while (generatedIt != mGeneratedScriptObjects.end()) {
+    TScriptObjectMap::iterator cur = generatedIt;
+    ++generatedIt;
+    if (cur->first.AreaNum() == area.Value()) {
+      mGeneratedScriptObjects.erase(cur);
+    }
+  }
+  mgr.ClearGraveyard();
 }
 
 void CScriptObjectLoaderHelper::BeginLayerLoad(SLoadContext& context,
