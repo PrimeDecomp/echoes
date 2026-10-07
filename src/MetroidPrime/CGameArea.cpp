@@ -33,6 +33,7 @@
 #include <alloca.h>
 #include <dolphin/dvd.h>
 #include <dolphin/os/OSCache.h>
+#include <float.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -1963,8 +1964,8 @@ void CGameArea::UpdateDocks(CStateManager& mgr) {
     return;
   }
 
-  float nearestDistance = 3.402823466e+38f;
-  float secondDistance = 3.402823466e+38f;
+  float nearestDistance = FLT_MAX;
+  float secondDistance = FLT_MAX;
   CScriptDock* nearest = nullptr;
   CScriptDock* second = nullptr;
   const CPlayer& player = *mgr.GetPlayer(0);

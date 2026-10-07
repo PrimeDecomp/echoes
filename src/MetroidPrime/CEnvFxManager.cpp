@@ -27,9 +27,10 @@
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXTev.h"
 #include "rstl/auto_ptr.hpp"
+#include <float.h>
 
 // The target stores the largest finite single-precision value directly.
-static const float skMaximumBlockingHeight = 3.402823466e+38F;
+static const float skMaximumBlockingHeight = FLT_MAX;
 static float g_SnowForces[256][2];
 static float g_DarkWorldForceSpeed = 5.f;
 static float g_DarkWorldRiseSpeed = 4.f;

@@ -4,6 +4,7 @@
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include <float.h>
 
 CPortalAreaData::SBoundingTreeNode::SBoundingTreeNode(CInputStream& in)
 : mBounds(in), mLeft(in.ReadInt16()), mRight(in.ReadInt16()), mVolumeIndex(in.ReadInt16()) {}
@@ -35,7 +36,7 @@ CPortalAreaData::SPortal::SPortal(CInputStream& in)
 : mVertices(in), mPlane(in), mVolumeIndexStart(in.ReadUint16()) {}
 
 float CPortalAreaData::SPortal::DistanceToPoint(const CVector3f& point) const {
-  float minDistance = 3.4028235e38f;
+  float minDistance = FLT_MAX;
   for (int i = 0; i < mVertices.size() - 2; ++i) {
     const float distance = CollisionUtil::TriPointSqrDist_Float(
         point, mVertices[0], mVertices[i + 1], mVertices[i + 2], nullptr, nullptr);

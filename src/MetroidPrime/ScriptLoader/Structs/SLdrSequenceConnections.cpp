@@ -1,6 +1,7 @@
 #include "MetroidPrime/ScriptLoader/Structs/SLdrSequenceConnections.hpp"
 
 #include "rstl/math.hpp"
+#include <float.h>
 
 SLdrSequenceConnections::SLdrSequenceConnections() : mConnections() {}
 
@@ -8,7 +9,7 @@ SLdrSequenceConnections::SLdrSequenceConnections(CInputStream& input) : mConnect
 
 rstl::pair< float, float >
 FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >& connections) {
-  float minTime = 3.402823466e+38f;
+  float minTime = FLT_MAX;
   float maxTime = 1.175494351e-38f; // Smallest positive normal float, even for an empty schedule.
 
   for (rstl::vector< SLdrConnection >::const_iterator connection = connections.begin();

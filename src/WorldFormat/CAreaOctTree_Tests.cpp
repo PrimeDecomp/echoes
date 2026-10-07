@@ -5,7 +5,12 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CVector3i.hpp"
 #include "float.h"
+
 #include "rstl/algorithm.hpp"
+
+// This unit reads the MSL __float_max global instead of folding the constant.
+#undef FLT_MAX
+#define FLT_MAX (*(float*)__float_max)
 
 struct SSubdivision {
   int count;

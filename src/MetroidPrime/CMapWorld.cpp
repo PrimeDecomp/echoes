@@ -518,8 +518,8 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
 void CMapWorld::RecalculateWorldSphere(const CMapWorldInfo& mwInfo, const IWorld& wld) const {
   rstl::vector< CVector2f > coords;
   coords.reserve(mAreas.size() * 8);
-  float zMin = 3.402823466e+38F;
-  float zMax = -3.402823466e+38F;
+  float zMin = FLT_MAX;
+  float zMax = -FLT_MAX;
   for (int i = 0; i < mAreas.size(); ++i) {
     if (IsMapAreaValid(wld, i, true)) {
       CMapArea* area = GetMapArea(i);
@@ -620,7 +620,7 @@ static Circle2 ExactCircle3(const CVector2f& a, const CVector2f& b, const CVecto
     result.Radius() = offset.MagSquared();
   } else {
     result.Center() = CVector2f::Zero();
-    result.Radius() = 3.402823466e+38F;
+    result.Radius() = FLT_MAX;
   }
   return result;
 }
@@ -639,7 +639,7 @@ static Circle2 UpdateSupport2(int idx, CVector2f** points, Support& support) {
   Circle2 circles[3];
   float distance;
   int best = -1;
-  float minRadius = 3.402823466e+38F;
+  float minRadius = FLT_MAX;
   circles[0] = ExactCircle2(a, point);
   if (PointInsideCircle(b, circles[0], distance)) {
     minRadius = circles[0].GetRadius();
@@ -670,8 +670,8 @@ static Circle2 UpdateSupport3(int idx, CVector2f** points, Support& support) {
   float distance;
   int best = -1;
   int fallback = -1;
-  float minRadius = 3.402823466e+38F;
-  float minDistance = 3.402823466e+38F;
+  float minRadius = FLT_MAX;
+  float minDistance = FLT_MAX;
 
   circles[0] = ExactCircle2(a, point);
   if (PointInsideCircle(b, circles[0], distance)) {

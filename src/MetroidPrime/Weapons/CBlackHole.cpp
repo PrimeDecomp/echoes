@@ -67,7 +67,7 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
   if (mElapsedTime > 30.f) {
     mgr.DeleteObjectRequest(GetUniqueId());
   } else {
-    if (mElapsedTime > 0.f && mElapsedTime < 3.4028235e38f) {
+    if (mElapsedTime > 0.f && mElapsedTime < FLT_MAX) {
       mOrigDamageInfo.SetRadius(mRadius);
       ApplyDamageToWorld(GetTranslation(), mgr);
     }
