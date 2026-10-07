@@ -232,9 +232,9 @@ rstl::vector< int > CMapWorld::GetVisibleAreas(const IWorld& wld,
       continue;
     }
     const CMapArea* area = GetMapArea(i);
-    if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, area->IsInDarkWorld()),
+    if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, GetMapArea(i)->IsInDarkWorld()),
                                        mwInfo.IsAreaVisible(i))) {
-      areas.push_back(i);
+      areas.push_back_unsafe(i);
     }
   }
   return areas;
@@ -523,7 +523,7 @@ void CMapWorld::RecalculateWorldSphere(const CMapWorldInfo& mwInfo, const IWorld
   for (int i = 0; i < mAreas.size(); ++i) {
     if (IsMapAreaValid(wld, i, true)) {
       CMapArea* area = GetMapArea(i);
-      if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, area->IsInDarkWorld()),
+      if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, GetMapArea(i)->IsInDarkWorld()),
                                          mwInfo.IsAreaVisible(i))) {
         CAABox box = area->GetBoundingBox().GetTransformedAABox(area->GetAreaPostTransform(wld, i));
         for (int j = 0; j < 8; ++j) {
