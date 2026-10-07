@@ -18,8 +18,8 @@ int CGSFidget::SetAnim(CAnimData& data, int type, int gunId, int animSet, CState
       CPASAnimParmData(pas::kAS_Getup, CPASAnimParm::FromEnum(type), CPASAnimParm::FromInt32(gunId),
                        CPASAnimParm::FromInt32(animSet)),
       *mgr.Random(), -1);
-  const bool loop =
-      pas.GetAnimState(pas::kAS_Getup)->GetAnimParmData(anim.second, 3).GetBoolValue();
+  CPASAnimParm loopParm = pas.GetAnimState(pas::kAS_Getup)->GetAnimParmData(anim.second, 3);
+  const bool loop = loopParm.GetBoolValue();
   mGunId = gunId;
   mAnimSet = animSet;
   if (anim.second != -1) {
