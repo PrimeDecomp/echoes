@@ -1,6 +1,5 @@
 #include "MetroidPrime/Weapons/CBeamProjectile.hpp"
 
-void fn_80049ED8(CActor*, CStateManager&);
 
 CBeamProjectile::CBeamProjectile(const TToken< CWeaponDescription >& description,
                                  const rstl::string& name, EWeaponType type, const CTransform4f& xf,
@@ -40,10 +39,10 @@ rstl::optional_object< CAABox > CBeamProjectile::GetTouchBounds() const {
 }
 
 void CBeamProjectile::PreRenderAllViewports(CStateManager& mgr) {
-  const CAABox bounds = mLocalBounds.GetTransformedAABox(mXf);
+  const CAABox& bounds = mLocalBounds.GetTransformedAABox(mXf);
   SetOtherBounds(bounds);
   SetRenderBounds(bounds);
-  fn_80049ED8(this, mgr);
+  UpdatePortalSystemState(mgr);
 }
 
 void CBeamProjectile::ResetBeam(CStateManager&, bool) {
