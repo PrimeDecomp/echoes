@@ -20,7 +20,6 @@ class CWeaponDescription;
 class CAuxWeapon {
 public:
   explicit CAuxWeapon(TUniqueId playerId);
-  ~CAuxWeapon();
 
   void Fire(float dt, bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
             const CTransform4f& xf, CStateManager& mgr, EWeaponType type, TUniqueId homingId,
@@ -43,8 +42,9 @@ private:
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
   CPlayer* FindPlayer(CStateManager& mgr) const;
   void FreeComboVoiceId();
-  void FireLightCombo(float dt, bool underwater, int comboId, uint attributes, const CTransform4f& xf,
-                      TUniqueId homingId, CStateManager& mgr); // Guessed name.
+  void FireLightCombo(float dt, bool underwater, int comboId, uint attributes,
+                      const CTransform4f& xf, TUniqueId homingId,
+                      CStateManager& mgr); // Guessed name.
   void FireProjectile(float dt, EWeaponType type, bool underwater, bool isCombo, bool adjustSpawn,
                       int comboId, uint attributes, const CTransform4f& xf, TUniqueId homingId,
                       ushort soundId, CStateManager& mgr);

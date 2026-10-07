@@ -12,7 +12,7 @@ public:
 
   // Guessed names
   virtual CRuleValue GetConditionValue(FourCC condition) const = 0;
-  virtual bool ExecuteAction(const CRuleAction& action) = 0;
+  virtual int ExecuteAction(const CRuleAction& action) = 0;
 
 protected:
   TLockedToken< CRuleSet > mRules; // Guessed name

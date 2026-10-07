@@ -137,6 +137,7 @@ public:
   };
 
   enum EPlayerVisor {
+    kPV_Invalid = -1, // Guessed name; CImpactVisorEffect without a forced visor.
     kPV_Combat,
     kPV_Echo,
     kPV_Scan,
@@ -290,6 +291,7 @@ public:
   float CalculateHealth();
 
   int GetLogScans() const { return mScanCompletionRateFirst; }
+  int GetTotalLogScans() const { return mScanCompletionRateSecond; }
   void SetScanCompletionRateFirst(int rate) { mScanCompletionRateFirst = rate; }
   void SetScanCompletionRateSecond(int rate) { mScanCompletionRateSecond = rate; }
 
@@ -304,8 +306,8 @@ public:
 
   SPersistentState& GetPersistentState();
   uint GetPlayerSelection() const { return mPersistentState.mPlayerSelection; } // Guessed name
-  uint GetTeamIndex() const { return mPersistentState.mTeamIndex; } // Guessed name
-  uint GetControlScheme() const { return mPersistentState.mControlScheme; } // Target-derived.
+  uint GetTeamIndex() const { return mPersistentState.mTeamIndex; }             // Guessed name
+  uint GetControlScheme() const { return mPersistentState.mControlScheme; }     // Target-derived.
   const CPowerUp& GetPowerUp(EItemType type) const { return mPowerups[type]; }
   CPowerUp& PowerUp(EItemType type) { return mPowerups[type]; }
   void SetPersistentState(const SPersistentState&);

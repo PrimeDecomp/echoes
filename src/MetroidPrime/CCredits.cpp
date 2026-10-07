@@ -225,19 +225,27 @@ CIOWin::EMessageReturn CPlayMovie::OnMessage(const CArchitectureMessage& msg,
               gpTweakGui->GetCompletionScreenUnlockOutlineColor(), CColor::White(), gpSimplePool);
           mUnlockText->SetTypeWriteEffectOptions(true, 1.f, 15.f);
           if (!gpGameState->SystemOptions()
+                   .EnvVars()
                    .FindEnvironmentVariable("NormalModeCompleted")
                    ->GetValue()) {
-            gpGameState->SystemOptions().FindEnvironmentVariable("NormalModeCompleted")->Set(1);
+            gpGameState->SystemOptions()
+                .EnvVars()
+                .FindEnvironmentVariable("NormalModeCompleted")
+                ->Set(1);
             mUnlockText->AddText(
                 rstl::wstring(mCompletionScreenStrings->GetString("HardModeUnlocked")));
             mUnlockText->AddText(CStringExtras::ConvertToUNICODE(rstl::string_l("\n")));
             mUnlockText->AddText(
                 rstl::wstring(mCompletionScreenStrings->GetString("GalleryUnlocked")));
           } else if (!gpGameState->SystemOptions()
+                          .EnvVars()
                           .FindEnvironmentVariable("HardModeCompleted")
                           ->GetValue() &&
                      gpGameState->GetHardModeEnabled()) {
-            gpGameState->SystemOptions().FindEnvironmentVariable("HardModeCompleted")->Set(1);
+            gpGameState->SystemOptions()
+                .EnvVars()
+                .FindEnvironmentVariable("HardModeCompleted")
+                ->Set(1);
             mUnlockText->AddText(
                 rstl::wstring(mCompletionScreenStrings->GetString("HardModeGalleryUnlocked")));
           }

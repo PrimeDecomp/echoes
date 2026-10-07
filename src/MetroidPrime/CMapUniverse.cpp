@@ -76,8 +76,11 @@ void CMapUniverse::Draw(const CMapUniverseDrawParms& parms, const CVector3f& pos
     for (int w = 0; w < mWorldDatas.size(); ++w) {
       const CMapWorldData& world = mWorldDatas[w];
       if (gpGameState->StateForWorld(world.GetWorldAssetId()).GetMapWorldInfo()->IsAnythingSet()) {
-        const float worldAlpha =
-            alpha * (parms.GetTeleportMode() && world.GetWorldLabel() == "TempleHub" ? 0.2f : 1.f);
+        float alphaScale = 1.f;
+        if (parms.GetTeleportMode() && world.GetWorldLabel() == "TempleHub") {
+          alphaScale = 0.2f;
+        }
+        const float worldAlpha = alpha * alphaScale;
         const bool selected = w == parms.GetFocusWorldIndex();
         const CColor surfaceColor =
             selected ? world.GetSurfaceColorSelected().WithAlphaModulatedBy(worldAlpha)

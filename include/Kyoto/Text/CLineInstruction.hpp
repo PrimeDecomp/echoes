@@ -7,19 +7,7 @@
 class CLineInstruction : public CInstruction {
 public:
   CLineInstruction(int words, int width, int height, EJustification justification,
-                   EVerticalJustification verticalJustification, bool imageBaseline)
-  : mWordCount(words)
-  , mCurrentX(width)
-  , mCurrentY(height)
-  , mLargestFontHeight(0)
-  , mLargestFontWidth(0)
-  , mLargestFontBaseline(0)
-  , mLargestImageHeight(0)
-  , mLargestImageWidth(0)
-  , mLargestImageBaseline(0)
-  , mJustification(justification)
-  , mVerticalJustification(verticalJustification)
-  , mImageBaseline(imageBaseline) {}
+                   EVerticalJustification verticalJustification, const bool imageBaseline);
 
   // CInstruction
   void Invoke(CFontRenderState& state, CTextRenderBuffer* buffer) const override;

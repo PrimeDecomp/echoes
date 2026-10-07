@@ -348,7 +348,7 @@ void CBodyController::UpdateFrozenInfo(float dt, CStateManager& mgr) {
       mBodyStateInfo.GetCurrentAdditiveStateId() != pas::kAS_AdditiveReaction) {
     UnFreeze();
     if (mActor) {
-      mActor->SendScriptMsgs(kSS_UnFrozen, mgr, kInvalidUniqueId, kSM_None);
+      mActor->SendScriptMsgs(kSS_UnFrozen, mgr);
     }
     return;
   }

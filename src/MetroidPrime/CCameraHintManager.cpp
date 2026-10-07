@@ -133,7 +133,7 @@ bool CCameraHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool area
     cameras->ClearSurfaceCamera(mgr);
     cameras->ClearFixedCamera();
     if (interpolate && !cameras->IsInterpolationCameraActive()) {
-      cameras->SetCurrentCameraId(targetCamera->GetUniqueId());
+      cameras->SetCurrentCameraId(targetCamera->GetUniqueId(), mgr);
     }
     break;
   }
@@ -153,7 +153,7 @@ bool CCameraHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool area
       return true;
     }
   } else if (ballCamera->GetState() == CBallCamera::kBCS_FromBall) {
-    cameras->SetCurrentCameraId(cameras->BallCamera()->GetUniqueId());
+    cameras->SetCurrentCameraId(cameras->BallCamera()->GetUniqueId(), mgr);
     cameras->BallCamera()->TeleportCamera(oldXf, mgr);
     return true;
   }
@@ -166,7 +166,7 @@ bool CCameraHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool area
          oldHint->GetInfo().GetBehaviourType() == CBallCamera::kBCB_FreezeLookPosition)) {
       if (interpolate && !cameras->IsInterpolationCameraActive() &&
           cameras->InterpolationCamera()->GetTargetId() == targetCamera->GetUniqueId()) {
-        cameras->SetCurrentCameraId(targetCamera->GetUniqueId());
+        cameras->SetCurrentCameraId(targetCamera->GetUniqueId(), mgr);
       }
     } else {
       if (targetCamera->GetUniqueId() == cameras->BallCamera()->GetUniqueId()) {
@@ -195,7 +195,7 @@ bool CCameraHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool area
     if (currentCamera->GetUniqueId() != cameras->FirstPersonCamera()->GetUniqueId() &&
         newHint->GetInfo().GetBehaviourType() != CBallCamera::kBCB_Default &&
         newHint->GetInfo().GetBehaviourType() != CBallCamera::kBCB_FreezeLookPosition) {
-      cameras->SetCurrentCameraId(targetCamera->GetUniqueId());
+      cameras->SetCurrentCameraId(targetCamera->GetUniqueId(), mgr);
       if ((newHint->GetInfo().GetFlags() & 0x1000000) == 0) {
         cameras->StartScreenFlash();
       }
@@ -338,7 +338,7 @@ void CCameraHintManager::TeleportInitialPosition(const CScriptCameraHint* hint,
   if ((hint->GetInfo().GetFlags() & 0x2000) != 0) {
     cameras->CinematicCut(mgr);
   }
-  cameras->SetCurrentCameraId(ballCamera->GetUniqueId());
+  cameras->SetCurrentCameraId(ballCamera->GetUniqueId(), mgr);
   ballCamera->SetWatchedObject(mgr.GetPlayer(GetPlayerIndex())->GetUniqueId());
   if ((hint->GetInfo().GetFlags() & 0x1000000) == 0) {
     cameras->StartScreenFlash();
@@ -459,28 +459,25 @@ bool CCameraHintManager::SelectHintFromStack(CHintState* hint, CStateManager& mg
 }
 
 bool CCameraHintManager::HasBallCameraInitialPositionHint(const CStateManager& mgr) const {
-  if (!HasHint(mgr)) {
-    return false;
+  if (HasHint(mgr)) {
+    const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(GetCurrentHint(mgr));
+    if (hint) {
+      switch (hint->GetInfo().GetBehaviourType()) {
+      case CBallCamera::kBCB_HintBallToCam:
+      case CBallCamera::kBCB_Unknown4:
+      case CBallCamera::kBCB_Unknown5:
+      case CBallCamera::kBCB_Unknown7:
+      case CBallCamera::kBCB_Unknown8:
+      case CBallCamera::kBCB_Unknown9:
+      case CBallCamera::kBCB_HintLocalOffset:
+      case CBallCamera::kBCB_FixedTransform:
+        return true;
+      default:
+        break;
+      }
+    }
   }
-
-  const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(GetCurrentHint(mgr));
-  if (!hint) {
-    return false;
-  }
-
-  switch (hint->GetInfo().GetBehaviourType()) {
-  case CBallCamera::kBCB_HintBallToCam:
-  case CBallCamera::kBCB_Unknown4:
-  case CBallCamera::kBCB_Unknown5:
-  case CBallCamera::kBCB_Unknown7:
-  case CBallCamera::kBCB_Unknown8:
-  case CBallCamera::kBCB_Unknown9:
-  case CBallCamera::kBCB_HintLocalOffset:
-  case CBallCamera::kBCB_FixedTransform:
-    return true;
-  default:
-    return false;
-  }
+  return false;
 }
 
 void CCameraHintManager::RefreshHint(CStateManager& mgr) {

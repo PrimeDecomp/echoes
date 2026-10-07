@@ -195,10 +195,7 @@ CBitLevelLoader< CMemoryInputToBitLevelLoader >::Input(CMemoryInputToBitLevelLoa
 class CSegIdToIndexConverter {
 public:
   explicit CSegIdToIndexConverter(const CFBStreamedAnimReaderTotals& totals);
-  ~CSegIdToIndexConverter() {
-    CCharAnimMemoryMetrics::SubtractFromTotalSize(sizeof(mIndices),
-                                                  CCharAnimMemoryMetrics::kASS_Two);
-  }
+  ~CSegIdToIndexConverter();
   uint SegIdToIndex(uint seg) const { return mIndices[seg]; }
 
 private:

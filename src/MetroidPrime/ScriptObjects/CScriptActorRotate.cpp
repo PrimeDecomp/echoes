@@ -15,7 +15,7 @@ void CScriptActorRotate::StopRotation() { mPlaying = false; }
 
 void CScriptActorRotate::StartRotation() { mPlaying = true; }
 
-void CScriptActorRotate::SetCurrentTime(float time) {
+void CScriptActorRotate::SetCurrentTime(float time, CStateManager&) {
   mCurrentTime = CMath::Clamp(0.f, time, mDuration);
 }
 
@@ -29,20 +29,31 @@ void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
     accepted = true;
   case kSM_AreaLoaded:
     mTargetId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
-    if ((mFlags & kF_AutoStart) == 0 || !GetActive()) {
-      break;
+    if ((mFlags & kF_AutoStart) != 0 && GetActive()) {
+      if (!TCastToConstPtr< CScriptActorRotate >(mgr.GetObjectById(mTargetId))) {
+        UpdateActors(message == kSM_Next, mgr);
+      } else {
+        StartRotation();
+        mCurrentTime = 0.f;
+      }
     }
-    // Fall through: activation may start the rotation.
+    break;
   case kSM_Action:
   case kSM_Next:
     if (GetActive()) {
-      if (TCastToConstPtr< CScriptActorRotate >(mgr.GetObjectById(mTargetId))) {
+      if (!TCastToConstPtr< CScriptActorRotate >(mgr.GetObjectById(mTargetId))) {
+        UpdateActors(message == kSM_Next, mgr);
+      } else {
         StartRotation();
         mCurrentTime = 0.f;
-      } else {
-        UpdateActors(message == kSM_Next, mgr);
       }
     }
+    break;
+  case kSM_Start:
+    StartRotation();
+    break;
+  case kSM_Stop:
+    StopRotation();
     break;
   case kSM_Deactivate: {
     const rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Play);
@@ -54,12 +65,6 @@ void CScriptActorRotate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
     StopRotation();
     break;
   }
-  case kSM_Start:
-    StartRotation();
-    break;
-  case kSM_Stop:
-    StopRotation();
-    break;
   default:
     break;
   }
@@ -80,7 +85,7 @@ void CScriptActorRotate::UpdateActors(bool next, CStateManager& mgr) {
     mActors.reserve(ids.size());
     for (int i = 0; i < ids.size(); ++i) {
       if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(ids[i]))) {
-        mActors.push_back(rstl::pair< TUniqueId, CTransform4f >(
+        mActors.push_back_unsafe(rstl::pair< TUniqueId, CTransform4f >(
             actor->GetUniqueId(), actor->GetTransform().GetRotation()));
       }
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(mgr.ObjectById(ids[i]))) {
@@ -89,7 +94,7 @@ void CScriptActorRotate::UpdateActors(bool next, CStateManager& mgr) {
     }
   }
 
-  SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_Play, mgr);
   if (!mActors.empty()) {
     StartRotation();
     if (next) {
@@ -250,7 +255,7 @@ void CScriptActorRotate::CheckEnd(CStateManager& mgr) {
   if (!(mCurrentTime >= mDuration)) {
     return;
   }
-  SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_Zero, mgr);
   if ((mFlags & kF_Loop) != 0) {
     mCurrentTime -= mDuration;
   } else {

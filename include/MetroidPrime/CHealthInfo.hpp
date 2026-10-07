@@ -24,6 +24,8 @@ public:
 
   TUniqueId GetDamageId2() const { return mDeathDamageSource; } // Guessed name.
 
+  TUniqueId GetLastDamageSource() const { return mLastDamageSource; } // Guessed name.
+
   const CWeaponMode& GetCauseOfDeathWeapon() const { return mDeathWeaponMode; } // Guessed name.
 
   bool GetDamageFlag() const { return mFrozenAtDeath; } // Guessed name; victim was frozen.

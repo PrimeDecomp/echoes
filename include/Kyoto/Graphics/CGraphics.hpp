@@ -368,7 +368,7 @@ public:
 
   static void SetUseVideoFilter(bool b);
   static bool GetDolphinLastFrameAbove() { return mLastFrameUsedAbove; }
-  static GXBool GetUseVideoFilter();
+  static bool GetUseVideoFilter();
   static int GetFrameCounter();
   static const CTransform4f& GetGXModelView() {
     return *reinterpret_cast< const CTransform4f* >(mGxModelView);
@@ -399,7 +399,7 @@ public:
   static const GXTexMapID kSpareBufferTexMapID;
 
 private:
-  static void ConfigureVideo(bool initial, bool progressive); // Guessed name
+  static void ConfigureVideo(bool initial, uchar progressive); // Guessed name
   static void UpdateVertexDataStream();
   static void ResetVertexDataStream(bool initial);
   static void FlushStream();
@@ -476,7 +476,7 @@ private:
   static bool mUseNormalMatrix;
   static bool mIsGXModelMatrixIdentity;
   static bool mFirstFrame;
-  static GXBool mUseVideoFilter;
+  static bool mUseVideoFilter;
   static float mBrightness;
 };
 

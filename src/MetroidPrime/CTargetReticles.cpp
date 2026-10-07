@@ -66,7 +66,8 @@ static float offshoot_func(float amplitude, float angularScale, float time) {
 }
 
 static float calculate_premultiplied_overshoot_offset(float overshoot) {
-  return 2.f * (M_PIF - static_cast< float >(asin(1.f / overshoot)));
+  const float angle = static_cast< float >(asin(1.f / overshoot));
+  return 2.f * (M_PIF - angle);
 }
 
 CCompoundTargetReticle::SOuterItemInfo::SOuterItemInfo(const char* modelName)
@@ -168,10 +169,12 @@ EReticleState CCompoundTargetReticle::GetDesiredReticleState(const CStateManager
   switch (mgr.GetPlayerState(mPlayerIndex)->GetCurrentVisor()) {
   case CPlayerState::kPV_Scan:
     return kRS_Scan;
-  case CPlayerState::kPV_Dark:
-    return kRS_Dark;
   case CPlayerState::kPV_Echo:
     return kRS_Echo;
+  case CPlayerState::kPV_Combat:
+    return kRS_Combat;
+  case CPlayerState::kPV_Dark:
+    return kRS_Dark;
   default:
     return kRS_Combat;
   }
@@ -574,7 +577,7 @@ void CCompoundTargetReticle::UpdateNextLockOnGroup(float dt, const CStateManager
           kInvalidUniqueId, 1.f, lag ? mLaggingTargetPosition : mTargetPosition, 0.f, 1.f, true);
       mNextGroupDuration = gpTweakTargeting->GetNextLockOnExitDuration();
       mNextGroupTimer = mNextGroupDuration;
-      mNextTargetId = nextTargetId;
+      mNextTargetId = kInvalidUniqueId;
     } else {
       mNextGroupA = mNextGroupInterpolated;
       mNextGroupA.SetIsOrbitZoneIdlePosition(false);
@@ -632,7 +635,7 @@ void CCompoundTargetReticle::Draw(const CStateManager& mgr, bool hideLockOn) con
     if (!hideLockOn) {
       DrawCurrLockOnGroup(rotation, mgr);
       DrawSeeker(rotation, mgr);
-      DrawCrosshairs(rotation);
+      DrawCrosshairs(rotation, mgr);
       DrawScanTargetGroup(rotation, mgr);
       DrawNextLockOnGroup(rotation, mgr);
       DrawOrbitZoneGroup(rotation, mgr);
@@ -652,7 +655,10 @@ void CCompoundTargetReticle::DrawGrappleGroup(const CMatrix3f& rotation, const C
     return;
   }
   const_cast< TCachedToken< CModel >& >(mGrapple).TryCache();
-  if (mGrapple.GetObject() == nullptr || mPreviousState == kRS_Scan) {
+  if (mGrapple.GetObject() == nullptr) {
+    return;
+  }
+  if (mPreviousState == kRS_Scan) {
     return;
   }
 
@@ -1195,7 +1201,8 @@ void CCompoundTargetReticle::DrawSeeker(const CMatrix3f& rotation, const CStateM
   }
 }
 
-void CCompoundTargetReticle::DrawCrosshairs(const CMatrix3f& rotation) const {
+void CCompoundTargetReticle::DrawCrosshairs(const CMatrix3f& rotation,
+                                            const CStateManager& mgr) const {
   if (mNoDrawTicks <= 0 && mCrosshairsDrawScale > 0.f) {
     const_cast< TCachedToken< CModel >& >(mCrosshairs).TryCache();
     CModel* const model = mCrosshairs.GetObject();
@@ -1203,7 +1210,7 @@ void CCompoundTargetReticle::DrawCrosshairs(const CMatrix3f& rotation) const {
       return;
     }
 
-    CColor color = gpTweakTargeting->GetCrosshairsColor();
+    const CColor& color = gpTweakTargeting->GetCrosshairsColor();
     gpRender->SetModelMatrix(CTransform4f(rotation, mTargetPosition) *
                              CTransform4f::Scale(mCrosshairsDrawScale));
     model->Draw(CModelFlags::Additive(color.WithAlphaModulatedBy(mCrosshairsDrawScale))
@@ -1233,37 +1240,36 @@ void CCompoundTargetReticle::DrawScanTargetGroup(const CMatrix3f& rotation,
   CModel* const center = mScanTargetCenter.GetObject();
   CModel* const left = mScanTargetLeft.GetObject();
   CModel* const right = mScanTargetRight.GetObject();
-  if (center == nullptr || left == nullptr || right == nullptr) {
-    return;
-  }
+  if (center != nullptr && left != nullptr && right != nullptr) {
 
-  const CColor& crosshairColor = gpTweakTargeting->GetScanLockCrossHairColor();
-  float factor = mScanTargetFactor * skScanLockLayoutScale[mgr.GetViewportLayoutIndex()];
-  gpRender->SetModelMatrix(CTransform4f(rotation, mTargetPosition) *
-                           CTransform4f::Scale(factor * gpTweakTargeting->GetScanLockScale()));
-  center->Draw(CModelFlags::Additive(crosshairColor.WithAlphaModulatedBy(factor))
+    const CColor& crosshairColor = gpTweakTargeting->GetScanLockCrossHairColor();
+    float factor = mScanTargetFactor * skScanLockLayoutScale[mgr.GetViewportLayoutIndex()];
+    gpRender->SetModelMatrix(CTransform4f(rotation, mTargetPosition) *
+                             CTransform4f::Scale(factor * gpTweakTargeting->GetScanLockScale()));
+    center->Draw(CModelFlags::Additive(crosshairColor.WithAlphaModulatedBy(factor))
+                     .DepthCompareUpdate(false, false));
+
+    CTweakTargeting* tweak = gpTweakTargeting.get();
+    CColor bracketColor = CColor::Lerp(tweak->GetScanLockUnlockedColor(),
+                                       tweak->GetScanLockLockedColor(), mScanBracketFactor);
+    tweak = gpTweakTargeting.get();
+    gpRender->SetModelMatrix(
+        CTransform4f(rotation, mTargetPosition) *
+        CTransform4f::Scale(factor * tweak->GetScanLockScale()) *
+        CTransform4f::Translate((1.f - mScanBracketFactor) * -tweak->GetScanLockTranslation(), 0.f,
+                                0.f));
+    left->Draw(CModelFlags::Additive(bracketColor.WithAlphaModulatedBy(factor))
                    .DepthCompareUpdate(false, false));
 
-  CTweakTargeting* tweak = gpTweakTargeting.get();
-  CColor bracketColor = CColor::Lerp(tweak->GetScanLockUnlockedColor(),
-                                     tweak->GetScanLockLockedColor(), mScanBracketFactor);
-  tweak = gpTweakTargeting.get();
-  gpRender->SetModelMatrix(
-      CTransform4f(rotation, mTargetPosition) *
-      CTransform4f::Scale(factor * tweak->GetScanLockScale()) *
-      CTransform4f::Translate((1.f - mScanBracketFactor) * -tweak->GetScanLockTranslation(), 0.f,
-                              0.f));
-  left->Draw(CModelFlags::Additive(bracketColor.WithAlphaModulatedBy(factor))
-                 .DepthCompareUpdate(false, false));
-
-  tweak = gpTweakTargeting.get();
-  gpRender->SetModelMatrix(
-      CTransform4f(rotation, mTargetPosition) *
-      CTransform4f::Scale(factor * tweak->GetScanLockScale()) *
-      CTransform4f::Translate((1.f - mScanBracketFactor) * tweak->GetScanLockTranslation(), 0.f,
-                              0.f));
-  right->Draw(CModelFlags::Additive(bracketColor.WithAlphaModulatedBy(factor))
-                  .DepthCompareUpdate(false, false));
+    tweak = gpTweakTargeting.get();
+    gpRender->SetModelMatrix(
+        CTransform4f(rotation, mTargetPosition) *
+        CTransform4f::Scale(factor * tweak->GetScanLockScale()) *
+        CTransform4f::Translate((1.f - mScanBracketFactor) * tweak->GetScanLockTranslation(), 0.f,
+                                0.f));
+    right->Draw(CModelFlags::Additive(bracketColor.WithAlphaModulatedBy(factor))
+                    .DepthCompareUpdate(false, false));
+  }
 }
 
 void CCompoundTargetReticle::DrawNextLockOnGroup(const CMatrix3f& rotation,
@@ -1500,11 +1506,12 @@ CVector3f CCompoundTargetReticle::CalculatePositionWorld(const CActor& actor,
 CVector3f CCompoundTargetReticle::CalculateOrbitZoneReticlePosition(const CStateManager& mgr,
                                                                     bool lag) const {
   const CGameCamera& camera = *mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true);
+  const CPlayer* player = mgr.GetPlayer(mPlayerIndex);
   float halfFov = camera.GetFov() * 0.5f;
-  float halfHeight = static_cast< float >(
-      mgr.GetPlayer(mPlayerIndex)->GetTweakPlayer()->GetOrbitZoneHeight(CPlayer::kZI_Targeting));
+  float halfHeight =
+      static_cast< float >(player->GetTweakPlayer()->GetOrbitZoneHeight(CPlayer::kZI_Targeting));
   float distance = 224.f / halfHeight;
-  distance /= CMath::SlowTangentR(halfFov * (1.f / 360.f) * (2.f * M_PIF));
+  distance /= static_cast< float >(tan(halfFov * (1.f / 360.f) * (2.f * M_PIF)));
 
   CTransform4f cameraXf = mgr.GetCameraManager(mPlayerIndex)->GetCurrentCameraTransform(mgr, true);
   CVector3f forward = cameraXf.GetForward();
@@ -1523,20 +1530,20 @@ float CCompoundTargetReticle::CalculateClampedScale(CVector3f position, float sc
                                                     float clampMax, const CStateManager& mgr,
                                                     int playerIndex) {
   float layoutScale = skViewportLayoutScale[mgr.GetViewportLayoutIndex()];
-  clampMin *= layoutScale;
-  clampMax *= layoutScale;
+  const float minScale = layoutScale * clampMin;
+  const float maxScale = layoutScale * clampMax;
   const CCameraManager* cameraManager = mgr.GetCameraManager(playerIndex);
   const CGameCamera& camera = *cameraManager->GetCurrentCamera(mgr, true);
   CTransform4f cameraXf = cameraManager->GetCurrentCameraTransform(mgr, true);
-  CVector3f viewSpace =
-      camera.GetTransform().TransposeRotate(position - camera.GetTransform().GetTranslation());
+  const CTransform4f& camXf = camera.GetTransform();
+  CVector3f viewSpace = camXf.TransposeRotate(position - camXf.GetTranslation());
   float projectedX = camera.GetPerspectiveMatrix().MultiplyOneOverW(viewSpace).GetX();
   float pixelScale = camera.GetPerspectiveMatrix()
                          .MultiplyOneOverW(viewSpace + CVector3f(scale, 0.f, 0.f))
                          .GetX() -
                      projectedX;
   pixelScale *= 640.f * layoutScale;
-  return scale * (CMath::Clamp(clampMin, pixelScale, clampMax) / pixelScale);
+  return scale * (CMath::Clamp(minScale, pixelScale, maxScale) / pixelScale);
 }
 
 CTargetReticleRenderState::CTargetReticleRenderState(TUniqueId target, float radius,

@@ -1,25 +1,25 @@
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 
 #include "Collision/CMaterialFilter.hpp"
+#include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
-#include "Kyoto/Math/CloseEnough.hpp"
-#include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAnimData.hpp"
-#include "MetroidPrime/CAxisAngle.hpp"
 #include "MetroidPrime/CArchitectureMessage.hpp"
 #include "MetroidPrime/CArchitectureQueue.hpp"
+#include "MetroidPrime/CAxisAngle.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CCredits.hpp"
 #include "MetroidPrime/CEnvFxManager.hpp"
 #include "MetroidPrime/CGameArea.hpp"
-#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
@@ -28,14 +28,13 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Decode.hpp"
-#include "MetroidPrime/Player/CMorphBall.hpp"
+#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "MetroidPrime/Player/CGMSinglePlayer.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
-#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
+#include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
-#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrDamageActor.hpp"
@@ -53,6 +52,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWorldTeleporter.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
 static const ERumbleFxId skRumbleFxList[6] = {
     kRFX_Twenty, kRFX_One, kRFX_TwentyOne, kRFX_TwentyTwo, kRFX_TwentyThree, kRFX_Zero,
@@ -141,7 +141,8 @@ void CScriptSpecialFunction::AddToRenderer(const CStateManager& mgr) const {
 void CScriptSpecialFunction::PreRenderFogVolume(CStateManager& mgr) {
   CVector3f max = GetTranslation() + mVectorParm;
   max.SetZ(max.GetZ() + mValue1);
-  SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(CAABox(GetTranslation() - mVectorParm, max)));
+  const CAABox box(GetTranslation() - mVectorParm, max);
+  SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(box));
 }
 
 void CScriptSpecialFunction::PreRenderViewFrustumTester(CStateManager& mgr) {
@@ -149,7 +150,7 @@ void CScriptSpecialFunction::PreRenderViewFrustumTester(CStateManager& mgr) {
 }
 
 void CScriptSpecialFunction::PreRenderPlayerFrustumTester(CStateManager& mgr) {
-  if (mIntParm2 == mgr.GetCurrentRenderPlayerIndex()) {
+  if (static_cast< uint >(mIntParm2) == mgr.GetCurrentRenderPlayerIndex()) {
     SetInFrustum(mgr.GetFrustumPlanes().PointInFrustumPlanes(GetTranslation()));
   }
 }
@@ -159,13 +160,14 @@ void CScriptSpecialFunction::PreRenderSilhouette(CStateManager& mgr) {
   if (mSilhouetteStrength <= 0.f) {
     return;
   }
-  CActor* act = TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
+  CActor* act =
+      TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
   if (!act || !act->GetActive()) {
     return;
   }
-    SetOtherBounds(act->GetOtherBounds());
-    SetRenderBounds(act->GetOtherBounds());
-    SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(act->GetOtherBounds()));
+  SetOtherBounds(act->GetOtherBounds());
+  SetRenderBounds(act->GetOtherBounds());
+  SetInFrustum(mgr.GetFrustumPlanes().BoxInFrustumPlanes(act->GetOtherBounds()));
 }
 
 void CScriptSpecialFunction::PreRenderBillboard(CStateManager& mgr) {
@@ -220,13 +222,13 @@ void CScriptSpecialFunction::RenderFogVolume(const CStateManager& mgr) const {
 }
 
 void CScriptSpecialFunction::RenderSilhouette(const CStateManager& mgr) const {
-  const CActor* act =
-      TCastToConstPtr< CActor >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
+  const CActor* act = TCastToConstPtr< CActor >(
+      mgr.GetObjectById(FindConnectedObject(mgr, kSS_Connect, kSM_Attach)));
   if (!act || !act->GetActive() || !act->GetDrawEnabled()) {
     return;
   }
 
-  CCubeRenderer* renderer = gpRender;
+  CCubeRenderer* const renderer = gpRender;
   renderer->AllocatePhazonSuitMaskTexture();
   renderer->CopyScreenTex(3, true, CGraphics::GetDolphinSpareBuffer(), GX_TF_RGB565, false);
   CGX::SetDstAlpha(true, 0xff);
@@ -242,8 +244,8 @@ void CScriptSpecialFunction::RenderSilhouette(const CStateManager& mgr) const {
 void CScriptSpecialFunction::RenderBillboard() const {
   CCubeRenderer::That()->GetSphereRamp().Load(GX_TEXMAP0, CTexture::kCM_Repeat);
   const CTransform4f& view = CGraphics::GetViewMatrix();
-  const CVector3f pos = (mIntParm1 & 2) ? view.GetTranslation() + view.GetForward() * 10.f
-                                         : GetTranslation();
+  const CVector3f pos =
+      (mIntParm1 & 2) ? view.GetTranslation() + view.GetForward() * 10.f : GetTranslation();
   float alpha = mValue4;
   if (!(mIntParm1 & 2)) {
     const CVector3f delta = pos - view.GetTranslation();
@@ -348,11 +350,11 @@ void CScriptSpecialFunction::AcceptShotSpinner(CStateManager& mgr, const CScript
   switch (msg.GetMessage()) {
   case kSM_Increment:
     mShotSpinnerImpulse = rstl::max_val(0.f, rstl::min_val(mShotSpinnerImpulse + 1.f, 1.f));
-    SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Play, mgr);
     break;
   case kSM_SetToMax:
     mShotSpinnerImpulse = mValue3;
-    SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Play, mgr);
     break;
   case kSM_SetToZero:
     mShotSpinnerImpulse = -0.5f * mValue3;
@@ -407,7 +409,7 @@ void CScriptSpecialFunction::AcceptSaveStation(CStateManager& mgr, const CScript
       const bool noCard = gpGameState->GetCardSerial() == 0;
       mgr.PlayerState(0)->IncrPickUp(CPlayerState::kIT_EnergyTanks, 1);
       if (noCard) {
-        SendScriptMsgs(kSS_Closed, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Closed, mgr);
       } else if (!noCard) {
         mgr.EnterSaveGameScreen();
         mDoSave = true;
@@ -439,14 +441,14 @@ void CScriptSpecialFunction::AcceptRadialDamage(CStateManager& mgr, const CScrip
     CDamageInfo info = mDamageInfo;
     info.SetRadius(mValue1);
     if ((mIntParm1 & 4) != 0) {
-      mgr.ApplyDamage(GetUniqueId(), msg.GetOriginator(), kInvalidUniqueId, info,
-                      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
-                                                          CMaterialList()),
-                      CVector3f::Zero());
+      mgr.ApplyDamage(
+          GetUniqueId(), msg.GetOriginator(), kInvalidUniqueId, info,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+          CVector3f::Zero());
     } else {
-      mgr.ApplyDamageToWorld(GetUniqueId(), *this, GetTranslation(), info,
-                             CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
-                                                                 CMaterialList()));
+      mgr.ApplyDamageToWorld(
+          GetUniqueId(), *this, GetTranslation(), info,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()));
     }
     if ((mIntParm1 & 2) != 0) {
       mgr.DeleteObjectRequest(GetUniqueId());
@@ -490,7 +492,7 @@ void CScriptSpecialFunction::AcceptBossEnergyBar(CStateManager& mgr, const CScri
 
 void CScriptSpecialFunction::AcceptEndGame(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Action) {
-    gpGameState->GetGameMode().EndGame(mIntParm1, mgr);
+    static_cast< const CGameState* >(gpGameState)->GetGameMode().EndGame(mIntParm1, mgr);
   }
 }
 
@@ -520,7 +522,8 @@ void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& 
   if (msg.GetMessage() == kSM_Action) {
     int rumbFxIdx = static_cast< int >(mValue2);
     mgr.IsMultiplayer();
-    if (rumbFxIdx >= 0 && rumbFxIdx < static_cast< int >(sizeof(skRumbleFxList) / sizeof(ERumbleFxId))) {
+    if (rumbFxIdx >= 0 &&
+        rumbFxIdx < static_cast< int >(sizeof(skRumbleFxList) / sizeof(ERumbleFxId))) {
       ERumbleFxId rumbFx = skRumbleFxList[rumbFxIdx];
       uint flags = mValue3;
       if ((flags & 1) != 0) {
@@ -528,8 +531,7 @@ void CScriptSpecialFunction::AcceptRumble(CStateManager& mgr, const CScriptMsg& 
       } else {
         CVector3f pos = GetTranslation();
         if ((flags & 2) != 0) {
-          TUniqueId uid = msg.GetSenderId();
-          if (const CActor* act = TCastToConstPtr< CActor >(mgr.GetObjectById(uid))) {
+          if (const CActor* act = TCastToConstPtr< CActor >(mgr.GetObjectById(msg.GetSenderId()))) {
             pos = act->GetTranslation();
           }
         }
@@ -543,7 +545,7 @@ void CScriptSpecialFunction::AcceptInventoryActivator(CStateManager& mgr, const 
   if (msg.GetMessage() == kSM_Action) {
     for (int i = 0; i < static_cast< uint >(mgr.GetNumPlayers()); ++i) {
       if (mgr.PlayerState(i)->HasPowerUp(mItem)) {
-        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Zero, mgr);
         return;
       }
     }
@@ -593,7 +595,7 @@ void CScriptSpecialFunction::AcceptPlayerInArea(CStateManager& mgr, const CScrip
   case kSM_Action:
   case kSM_SetToZero:
     if (!mgr.IsMultiplayer() && mgr.GetPlayer(0)->GetCurrentAreaId() == GetCurrentAreaId()) {
-      SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Zero, mgr);
     }
     break;
   }
@@ -647,7 +649,7 @@ void CScriptSpecialFunction::AcceptEnding(CStateManager& mgr, const CScriptMsg& 
         break;
       }
       if (send) {
-        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Zero, mgr);
       }
     }
   }
@@ -655,9 +657,9 @@ void CScriptSpecialFunction::AcceptEnding(CStateManager& mgr, const CScriptMsg& 
 
 void CScriptSpecialFunction::AcceptPlayerVelocity(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Action) {
-    CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)));
-    TUniqueId originator = msg.GetOriginator();
-    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator));
+    CActor* actor =
+        TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)));
+    CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()));
     if (player) {
       CVector3f dir = (actor->GetTranslation() - player->GetTranslation()).AsNormalized();
       player->SetVelocityWR(mValue1 * dir);
@@ -670,9 +672,9 @@ void CScriptSpecialFunction::AcceptDarkWorld(CStateManager& mgr, const CScriptMs
   case kSM_AreaLoaded:
     if (GetActive()) {
       if (mgr.GetIsDarkWorld()) {
-        SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Zero, mgr);
       } else {
-        SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_MaxReached, mgr);
       }
     }
     break;
@@ -683,7 +685,7 @@ void CScriptSpecialFunction::fn_80107a58(CStateManager& mgr, const CScriptMsg& m
   if (msg.GetMessage() == kSM_Action) {
     uint player = mIntParm1;
     if (player < mgr.GetNumPlayers()) {
-      gpGameState->GetGameMode().RespawnPlayer(mgr, player);
+      static_cast< const CGameState* >(gpGameState)->GetGameMode().RespawnPlayer(mgr, player);
     }
   }
 }
@@ -694,7 +696,9 @@ void CScriptSpecialFunction::AcceptPlayerSpawnPoint(CStateManager& mgr, const CS
     if (player < mgr.GetNumPlayers()) {
       TUniqueId spawn = FindConnectedObject(mgr, kSS_Play, kSM_Activate);
       if (TCastToConstPtr< CScriptSpawnPoint >(mgr.GetObjectById(spawn))) {
-        gpGameState->GetGameMode().SetSpawnPoint(mIntParm1, spawn);
+        static_cast< const CGameState* >(gpGameState)
+            ->GetGameMode()
+            .SetSpawnPoint(mIntParm1, spawn);
       }
     }
   }
@@ -891,10 +895,10 @@ void CScriptSpecialFunction::AcceptDamageActor(CStateManager& mgr, const CScript
     for (rstl::vector< TUniqueId >::const_iterator it = ids.begin(); it != ids.end(); ++it) {
       if (CActor* act = TCastToPtr< CActor >(mgr.ObjectById(*it))) {
         if (act->GetActive()) {
-          mgr.ApplyDamage(msg.GetOriginator(), act->GetUniqueId(), msg.GetOriginator(), info,
-                          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
-                                                              CMaterialList()),
-                          CVector3f::Zero());
+          mgr.ApplyDamage(
+              msg.GetOriginator(), act->GetUniqueId(), msg.GetOriginator(), info,
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+              CVector3f::Zero());
         }
       }
     }
@@ -983,7 +987,7 @@ void CScriptSpecialFunction::AcceptAreaDocks(CStateManager& mgr, const CScriptMs
 void CScriptSpecialFunction::AcceptEnvironmentVariable(CStateManager& mgr, const CScriptMsg& msg) {
   CEnvironmentVariable* var;
   if (mFunction == kSF_SystemStateEnvVarController) {
-    var = gpGameState->SystemOptions().FindEnvironmentVariable(mStringParm.data());
+    var = gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable(mStringParm.data());
   } else {
     var = gpGameState->PersistentOptions().FindEnvironmentVariable(mStringParm.data());
   }
@@ -997,10 +1001,10 @@ void CScriptSpecialFunction::AcceptEnvironmentVariable(CStateManager& mgr, const
       break;
     case kSM_SetToZero:
       if (var->GetValue() == var->GetMaximum()) {
-        SendScriptMsgs(kSS_Opened, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Opened, mgr);
       }
       if (var->GetValue() == var->GetMinimum()) {
-        SendScriptMsgs(kSS_Closed, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Closed, mgr);
       }
       break;
     }
@@ -1020,8 +1024,8 @@ void CScriptSpecialFunction::AcceptMultiplayerResult(CStateManager& mgr, const C
           CStateManager::TIdList::const_iterator current = search.first;
           CStateManager::TIdList::const_iterator end = search.second;
           while (current != end) {
-            mgr.SendScriptMsg(
-                CScriptMsg(GetUniqueId(), msg.GetOriginator(), current->second, conn.msg, conn.state));
+            mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), current->second, conn.msg,
+                                         msg.GetOriginator(), conn.state));
             ++current;
           }
         }
@@ -1054,8 +1058,8 @@ void CScriptSpecialFunction::AcceptCredits(CStateManager& mgr, const CScriptMsg&
     gpGameState->WorldTransitionManager()->WaitForModelsAndTextures();
     CIOWin* credits = rs_new CCredits();
     CArchitectureQueue& queue = mgr.ArchQueue();
-    queue.Push(
-        MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kCreditsMsgPriority, kCreditsDrawPriority, credits));
+    queue.Push(MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kCreditsMsgPriority,
+                                          kCreditsDrawPriority, credits));
   }
 }
 
@@ -1388,22 +1392,23 @@ void CScriptSpecialFunction::ThinkSaveStation(float dt, CStateManager& mgr) {
   if (mDoSave && !mgr.GetWantsToEnterSaveGameScreen()) {
     mDoSave = false;
     if (mgr.GetInSaveUI()) {
-      SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_MaxReached, mgr);
     } else {
-      SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Zero, mgr);
     }
   }
 }
 
 void CScriptSpecialFunction::ThinkPlayerFollowLocator(float dt, CStateManager& mgr) {
-  if (const CActor* act =
-          TCastToConstPtr< CActor >(mgr.GetObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)))) {
+  if (const CActor* act = TCastToConstPtr< CActor >(
+          mgr.GetObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)))) {
     CTransform4f xf = act->HasAnimation()
                           ? act->GetTransform() * act->GetScaledLocatorTransform(mStringParm)
                           : act->GetTransform();
     if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(mLastOriginatorPlayer))) {
       CTransform4f playerXf =
-          CTransform4f::Translate(CVector3f(0.f, 0.f, -player->GetMorphBall()->GetBallRadius())) * xf;
+          CTransform4f::Translate(CVector3f(0.f, 0.f, -player->GetMorphBall()->GetBallRadius())) *
+          xf;
       player->SetTransform(playerXf);
       player->SetVelocityWR(CVector3f::Zero());
       player->SetAngularVelocityWR(CAxisAngle::Identity());
@@ -1414,8 +1419,8 @@ void CScriptSpecialFunction::ThinkPlayerFollowLocator(float dt, CStateManager& m
 
 void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr,
                                                     ESpinnerControllerMode mode) {
-  const ushort sfx1 = mSfx1;
-  const ushort sfx3 = mSfx3;
+  ushort sfx1 = static_cast< ushort >(mSfx1);
+  ushort sfx3 = static_cast< ushort >(mSfx3);
   const float value1 = mValue1;
   const float value2 = mValue2;
   const float value4 = mValue4;
@@ -1457,7 +1462,7 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       float mag = angVel.CanBeNormalized() ? angVel.Magnitude() : 0.f;
       const float spinImpulse = isMorphed ? 0.025f * mag : 0.f;
       if (spinImpulse > mPreviousSpinnerSpeed) {
-        SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Play, mgr);
       }
 
       mPreviousSpinnerSpeed = spinImpulse;
@@ -1504,7 +1509,7 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       mSfx3Played = true;
     }
 
-    SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_MaxReached, mgr);
     noSfxPlayed = false;
   } else {
     mSfx3Played = false;
@@ -1516,7 +1521,7 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       mSfx2Played = true;
     }
 
-    SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Zero, mgr);
     noSfxPlayed = false;
   } else {
     mSfx2Played = false;
@@ -1532,10 +1537,10 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       } else {
         mVolumeAverage.AddValue(0.f);
       }
-      const rstl::optional_object< float >& volume = mVolumeAverage.GetAverage();
-      float pitch = movingForward ? value4 : 1.f;
-      AddOrUpdateEmitter(pitch, 0.f, 1.f, mSfxHandle, sfx1, GetTranslation(),
-                         static_cast< uchar >(volume.data()));
+      const float& volume = mVolumeAverage.GetAverage().data();
+      const float pitch = movingForward ? value4 : 1.f;
+      AddOrUpdateEmitter(pitch, 200.f, 1.f, mSfxHandle, sfx1, GetTranslation(),
+                         static_cast< uchar >(volume));
     }
   } else {
     DeleteEmitter(mSfxHandle);
@@ -1554,14 +1559,13 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       if (splineControl) {
         plat->SetMotionTime(mSpinnerPosition * plat->GetMotionDuration(), mgr);
       } else {
-        const CAnimData* animData = plat->GetAnimationData();
-        const float dur =
-            mSpinnerPosition * animData->GetAnimationDuration(animData->GetCurrentAnimation());
+        const float dur = mSpinnerPosition * plat->GetAnimationData()->GetAnimationDuration(
+                                                 plat->GetAnimationData()->GetCurrentAnimation());
         plat->AnimationData()->SetPhase(0.f);
         plat->AnimationData()->SetPlaybackRate(1.f);
         CAdvancementDeltas deltas = plat->UpdateAnimation(dur, mgr, true);
-        plat->SetTransform(mSpinnerInitialXf * deltas.GetOrientationDelta().BuildTransform4f(
-                                                   deltas.GetOffsetDelta()));
+        plat->SetTransform(mSpinnerInitialXf *
+                           deltas.GetOrientationDelta().BuildTransform4f(deltas.GetOffsetDelta()));
       }
     }
 
@@ -1570,7 +1574,7 @@ void CScriptSpecialFunction::ThinkSpinnerController(float dt, CStateManager& mgr
       if (!rot->IsPlaying()) {
         rot->UpdateActors(false, mgr);
       }
-      rot->SetCurrentTime(mSpinnerPosition * rot->GetDuration());
+      rot->SetCurrentTime(mSpinnerPosition * rot->GetDuration(), mgr);
       if (mSfx3Played || (mSfx2Played && !mSpinnerCanMove)) {
         rot->UpdateActorRotations(dt, mgr);
         rot->StopRotation();
@@ -1617,7 +1621,7 @@ void CScriptSpecialFunction::ThinkObjectFollowLocator(float dt, CStateManager& m
     }
   }
 
-  const CActor* followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
+  const CActor* const followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
   if (followedAct == kInvalidUniqueId || !followed) {
     return;
   }
@@ -1710,9 +1714,9 @@ void CScriptSpecialFunction::ThinkChaffTarget(float dt, CStateManager& mgr) {
 
 void CScriptSpecialFunction::ThinkRainSimulator(float dt, CStateManager& mgr) {
   if (static_cast< float >(static_cast< uint >(mgr.GetUpdateFrameIdx()) % 3600) / 3600.f < 0.5f) {
-    SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_MaxReached, mgr);
   } else {
-    SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Zero, mgr);
   }
 }
 
@@ -1727,7 +1731,7 @@ void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
     if (!inArea || immune) {
       mInAreaDamage = false;
       player->PopSustainedDamage();
-      SendScriptMsgs(kSS_Exited, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Exited, mgr);
       mgr.SetIsFullThreat(false);
       return;
     }
@@ -1736,14 +1740,15 @@ void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
   } else {
     mInAreaDamage = true;
     player->PushSustainedDamage();
-    SendScriptMsgs(kSS_Entered, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Entered, mgr);
     mgr.SetIsFullThreat(true);
   }
 
   CDamageInfo dInfo(CWeaponMode(kWT_Heat), mValue1 * dt, 0.f, 0.f, true);
-  mgr.ApplyDamage(GetUniqueId(), player->GetUniqueId(), GetUniqueId(), dInfo,
-                  CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-                  CVector3f::Zero());
+  mgr.ApplyDamage(
+      GetUniqueId(), player->GetUniqueId(), GetUniqueId(), dInfo,
+      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+      CVector3f::Zero());
 }
 
 void CScriptSpecialFunction::ThinkActorScale(float dt, CStateManager& mgr) {
@@ -1779,11 +1784,11 @@ void CScriptSpecialFunction::ThinkPlayerInArea(float dt, CStateManager& mgr) {
   if (mgr.GetPlayer(0)->GetCurrentAreaId() == GetCurrentAreaId()) {
     if (!mPlayerInArea) {
       mPlayerInArea = true;
-      SendScriptMsgs(kSS_Entered, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Entered, mgr);
     }
   } else if (mPlayerInArea) {
     mPlayerInArea = false;
-    SendScriptMsgs(kSS_Exited, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Exited, mgr);
   }
 }
 
@@ -1836,7 +1841,10 @@ void CScriptSpecialFunction::ThinkConnectedEffectPlane(float dt, CStateManager& 
   if (CActor* act =
           TCastToPtr< CActor >(mgr.ObjectById(FindConnectedObject(mgr, kSS_Play, kSM_Activate)))) {
     const CTransform4f& xf = act->GetTransform();
-    CPlane plane(act->GetTranslation(), CUnitVector3f(-1.f * xf.Get02(), -1.f * xf.Get12(), -1.f * xf.Get22()));
+    const float x = -1.f * xf.Get02();
+    const float y = -1.f * xf.Get12();
+    const float z = -1.f * xf.Get22();
+    CPlane plane(act->GetTranslation(), CUnitVector3f(x, y, z));
     rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_Play, kSM_Deactivate);
     for (int i = 0; i < ids.size(); ++i) {
       if (CScriptActor* scriptActor = TCastToPtr< CScriptActor >(mgr.ObjectById(ids[i]))) {
@@ -1849,10 +1857,13 @@ void CScriptSpecialFunction::ThinkConnectedEffectPlane(float dt, CStateManager& 
 void CScriptSpecialFunction::ThinkSilhouette(float dt, CStateManager& mgr) {
   if (mTargetSilhouetteStrength > mSilhouetteStrength) {
     mSilhouetteStrength += dt / mValue2;
-    mSilhouetteStrength = mSilhouetteStrength < mTargetSilhouetteStrength ? mSilhouetteStrength : mTargetSilhouetteStrength;
+    const float target = mTargetSilhouetteStrength;
+    mSilhouetteStrength = mSilhouetteStrength < target ? mSilhouetteStrength : target;
   } else if (mTargetSilhouetteStrength < mSilhouetteStrength) {
     mSilhouetteStrength -= dt / mValue2;
-    mSilhouetteStrength = mTargetSilhouetteStrength < mSilhouetteStrength ? mSilhouetteStrength : mTargetSilhouetteStrength;
+    mSilhouetteStrength = mTargetSilhouetteStrength < mSilhouetteStrength
+                              ? mSilhouetteStrength
+                              : mTargetSilhouetteStrength;
   }
 }
 
@@ -1864,13 +1875,10 @@ void CScriptSpecialFunction::ThinkMapTeleport(float dt, CStateManager& mgr) {
       if (CScriptWorldTeleporter* teleporter =
               TCastToPtr< CScriptWorldTeleporter >(mgr.ObjectById(*it))) {
         bool active = teleporter->GetWorldId() == worldId;
-        mgr.SendScriptMsg(teleporter, GetUniqueId(),
-                          active ? kSM_Activate : kSM_Deactivate,
-                          kInvalidUniqueId);
+        mgr.SendScriptMsg(teleporter, GetUniqueId(), active ? kSM_Activate : kSM_Deactivate);
       }
     }
-    SendScriptMsgs(mgr.World()->GetWorldAssetId() == worldId ? kSS_Zero : kSS_MaxReached, mgr,
-                   kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(mgr.World()->GetWorldAssetId() == worldId ? kSS_Zero : kSS_MaxReached, mgr);
     mgr.SetMapTeleportWorldId(kInvalidAssetId);
   }
 }
@@ -1899,9 +1907,9 @@ void CScriptSpecialFunction::ThinkAreaOcclusion(float dt, CStateManager& mgr) {
   int state = mgr.World()->Area(GetCurrentAreaId())->GetOcclusionState();
   if (state != mIntParm1) {
     if (state == CGameArea::kOS_Occluded) {
-      SendScriptMsgs(kSS_InternalState00, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_InternalState00, mgr);
     } else if (state == CGameArea::kOS_Visible) {
-      SendScriptMsgs(kSS_InternalState01, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_InternalState01, mgr);
     }
     mIntParm1 = state;
   }
@@ -1912,15 +1920,15 @@ void CScriptSpecialFunction::ThinkMultiplayerEndConditions(float dt, CStateManag
     float elapsed = gpGameState->GetGameMode().GetElapsedTime();
     if (gpGameState->GetGameMode().GetMatchTimeLimit() - elapsed <= 61.f) {
       mIntParm1 = 1;
-      SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_MaxReached, mgr);
     }
   }
   if (mIntParm2 == 0) {
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       if (gpGameState->GetGameMode().GetGameModeType() == 'DTHM' &&
           gpGameState->GetGameMode().IsNearScoreLimit(mgr, i)) {
         mIntParm2 = 1;
-        SendScriptMsgs(kSS_Arrived, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_Arrived, mgr);
       }
     }
   }
@@ -1960,24 +1968,22 @@ void CScriptSpecialFunction::ThinkObjectFollowJoint(float dt, CStateManager& mgr
   }
 
   if (followerAct != kInvalidUniqueId && followedAct != kInvalidUniqueId) {
-    const CActor* followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
-    CActor* follower = TCastToPtr< CActor >(mgr.ObjectById(followerAct));
+    const CActor* const followed = TCastToConstPtr< CActor >(mgr.GetObjectById(followedAct));
+    CActor* const follower = TCastToPtr< CActor >(mgr.ObjectById(followerAct));
     if (followed && follower) {
       const CCharLayoutInfo* layout =
           followed->GetModelData()->GetAnimationData()->GetCharLayoutInfo();
       CSegId id = layout->GetSegIdFromString(mStringParm);
-      CTransform4f xf =
-          followed->GetTransform() * followed->GetScaledLocatorTransform(id) *
-          layout->GetLinearRotations()[id.val()].BuildTransform4f();
+      CTransform4f xf = followed->GetTransform() * followed->GetScaledLocatorTransform(id) *
+                        layout->GetLinearRotations()[id.val()].BuildTransform4f();
       follower->SetTransform(xf);
     }
   }
 }
 
 void CScriptSpecialFunction::ThinkRezbitState(float dt, CStateManager& mgr) {
-  uint player = mLastOriginatorPlayer == kInvalidUniqueId
-                    ? 0
-                    : mgr.MaskUIdNumPlayers(mLastOriginatorPlayer);
+  uint player =
+      mLastOriginatorPlayer == kInvalidUniqueId ? 0 : mgr.MaskUIdNumPlayers(mLastOriginatorPlayer);
   if (mgr.GetPlayer(player)->GetRezbitState() == CPlayer::kRS_Recovered) {
     mValue2 -= dt;
     if (mValue2 <= 0.f) {
@@ -2008,7 +2014,7 @@ void CScriptSpecialFunction::DeleteEmitter(CSfxHandle& handle) {
 }
 
 void CScriptSpecialFunction::SkipCinematic(CStateManager& mgr) {
-  SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+  SendScriptMsgs(kSS_Zero, mgr);
   mgr.SetSkipCinematicSpecialFunction(kInvalidUniqueId);
 }
 
@@ -2050,11 +2056,11 @@ void CScriptSpecialFunction::OnItemDepleted(CStateManager& mgr, int playerIndex,
 void CScriptSpecialFunction::SendFrustumMessages(CStateManager& mgr) {
   if (mFrustumEntered) {
     mFrustumEntered = false;
-    SendScriptMsgs(kSS_Entered, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Entered, mgr);
   }
   if (mFrustumExited) {
     mFrustumExited = false;
-    SendScriptMsgs(kSS_Exited, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Exited, mgr);
   }
 }
 
@@ -2081,11 +2087,10 @@ void CScriptSpecialFunction::PreRenderAllViewports(CStateManager& mgr) {
       if (fog->GetFogMode() == kRFM_None) {
         return;
       }
-      mgr.SetAreaClipPlane(
-          GetCurrentAreaId(),
-          CPlane(fog->GetRange().GetY() +
-                     CVector3f::Dot(camXf.GetForward(), camXf.GetTranslation()),
-                 CUnitVector3f(camXf.GetForward(), CUnitVector3f::kN_No)));
+      mgr.SetAreaClipPlane(GetCurrentAreaId(),
+                           CPlane(fog->GetRange().GetY() +
+                                      CVector3f::Dot(camXf.GetForward(), camXf.GetTranslation()),
+                                  CUnitVector3f(camXf.GetForward(), CUnitVector3f::kN_No)));
     } else {
       CPlane plane(GetTranslation(), CUnitVector3f(GetTransform().GetUp()));
       const CVector3f point = plane.GetNormal() * plane.GetConstant();
@@ -2107,13 +2112,11 @@ CEntity* LoadSpecialFunction(CStateManager& mgr, CInputStream& input, CEntityInf
 
   return rs_new CScriptSpecialFunction(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties),
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
       static_cast< CScriptSpecialFunction::ESpecialFunction >(sldrThis.function),
       sldrThis.stringParm, sldrThis.valueParm, sldrThis.valueParm2, sldrThis.valueParm3,
-      sldrThis.valueParm4, sldrThis.intParm1, sldrThis.intParm2, CVector3f::Zero(),
-      CColor::Black(), CDamageInfo(),
-      static_cast< CPlayerState::EItemType >(sldrThis.inventoryItemParm.value),
+      sldrThis.valueParm4, sldrThis.intParm1, sldrThis.intParm2, CVector3f::Zero(), CColor::Black(),
+      CDamageInfo(), static_cast< CPlayerState::EItemType >(sldrThis.inventoryItemParm.value),
       static_cast< ushort >(sldrThis.sound1), static_cast< ushort >(sldrThis.sound2),
       static_cast< ushort >(sldrThis.sound3));
 }
@@ -2124,12 +2127,12 @@ CEntity* LoadFogVolume(CStateManager& mgr, CInputStream& input, CEntityInfo& inf
 
   return rs_new CScriptSpecialFunction(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_FogVolume,
-      rstl::string_l(""), sldrThis.fogBobHeight, sldrThis.fogBobFreq, 0.f, 0.f, 0, 0,
-      sldrThis.editorProperties.transform.scale, sldrThis.fogColor, CDamageInfo(),
-      CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
-      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      CScriptSpecialFunction::kSF_FogVolume, rstl::string_l(""), sldrThis.fogBobHeight,
+      sldrThis.fogBobFreq, 0.f, 0.f, 0, 0, sldrThis.editorProperties.transform.scale,
+      sldrThis.fogColor, CDamageInfo(), CPlayerState::kIT_Invalid,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId);
 }
 
 CEntity* LoadSilhouette(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -2138,13 +2141,12 @@ CEntity* LoadSilhouette(CStateManager& mgr, CInputStream& input, CEntityInfo& in
 
   return rs_new CScriptSpecialFunction(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_Silhouette,
-      rstl::string_l(""), sldrThis.unknown_0x82bad3ee, sldrThis.fadeInTime,
-      sldrThis.fadeOutTime, 0.f, 0, 0, sldrThis.editorProperties.transform.scale,
-      sldrThis.silhouetteColor, CDamageInfo(), CPlayerState::kIT_Invalid,
-      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
-      CSfxManager::kInternalInvalidSfxId);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      CScriptSpecialFunction::kSF_Silhouette, rstl::string_l(""), sldrThis.unknown_0x82bad3ee,
+      sldrThis.fadeInTime, sldrThis.fadeOutTime, 0.f, 0, 0,
+      sldrThis.editorProperties.transform.scale, sldrThis.silhouetteColor, CDamageInfo(),
+      CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
 }
 
 CEntity* LoadRadialDamage(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -2164,12 +2166,11 @@ CEntity* LoadRadialDamage(CStateManager& mgr, CInputStream& input, CEntityInfo& 
 
   return rs_new CScriptSpecialFunction(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_RadialDamage,
-      rstl::string_l(""), sldrThis.radius, 0.f, 0.f, 0.f, flags, 0, CVector3f::Zero(),
-      CColor::Black(), LdrToDamageInfo(sldrThis.damage), CPlayerState::kIT_Invalid,
-      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
-      CSfxManager::kInternalInvalidSfxId);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      CScriptSpecialFunction::kSF_RadialDamage, rstl::string_l(""), sldrThis.radius, 0.f, 0.f, 0.f,
+      flags, 0, CVector3f::Zero(), CColor::Black(), LdrToDamageInfo(sldrThis.damage),
+      CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
 }
 
 CEntity* LoadEnvFxDensityController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -2180,10 +2181,9 @@ CEntity* LoadEnvFxDensityController(CStateManager& mgr, CInputStream& input, CEn
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), CTransform4f::Identity(),
       CScriptSpecialFunction::kSF_EnvFxDensityController, rstl::string_l(""), sldrThis.density,
-      static_cast< float >(sldrThis.fadeSpeed), 0.f, 0.f, 0, 0, CVector3f::Zero(),
-      CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
-      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
-      CSfxManager::kInternalInvalidSfxId);
+      static_cast< float >(sldrThis.fadeSpeed), 0.f, 0.f, 0, 0, CVector3f::Zero(), CColor::Black(),
+      CDamageInfo(), CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
 }
 
 CEntity* LoadRumbleEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -2196,8 +2196,8 @@ CEntity* LoadRumbleEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       ConvertEditorEulerToTransform4f(CVector3f::Zero(),
                                       sldrThis.editorProperties.transform.position),
       CScriptSpecialFunction::kSF_RumbleEffect, rstl::string_l(""), sldrThis.radius,
-      static_cast< float >(sldrThis.effect), static_cast< float >(sldrThis.flagsRumble), 0.f, 0,
-      0, CVector3f::Zero(), CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
+      static_cast< float >(sldrThis.effect), static_cast< float >(sldrThis.flagsRumble), 0.f, 0, 0,
+      CVector3f::Zero(), CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
       CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
       CSfxManager::kInternalInvalidSfxId);
 }
@@ -2224,11 +2224,10 @@ CEntity* LoadSpinner(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
                                       sldrThis.editorProperties.transform.position),
       sldrThis.shotSpinner ? CScriptSpecialFunction::kSF_ShotSpinnerController
                            : CScriptSpecialFunction::kSF_SpinnerController,
-      rstl::string(), sldrThis.forwardSpeed, sldrThis.backwardSpeed,
-      sldrThis.unknown_0x449dd059, sldrThis.unknown_0xfc849759, flags, 0, CVector3f::Zero(),
-      CColor::Black(), CDamageInfo(), CPlayerState::kIT_Invalid,
-      static_cast< ushort >(sldrThis.loopSound), static_cast< ushort >(sldrThis.startSound),
-      static_cast< ushort >(sldrThis.stopSound));
+      rstl::string(), sldrThis.forwardSpeed, sldrThis.backwardSpeed, sldrThis.unknown_0x449dd059,
+      sldrThis.unknown_0xfc849759, flags, 0, CVector3f::Zero(), CColor::Black(), CDamageInfo(),
+      CPlayerState::kIT_Invalid, static_cast< ushort >(sldrThis.loopSound),
+      static_cast< ushort >(sldrThis.startSound), static_cast< ushort >(sldrThis.stopSound));
 }
 
 CEntity* LoadDamageActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -2237,12 +2236,11 @@ CEntity* LoadDamageActor(CStateManager& mgr, CInputStream& input, CEntityInfo& i
 
   return rs_new CScriptSpecialFunction(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), CScriptSpecialFunction::kSF_DamageActor,
-      rstl::string_l(""), 0.f, 0.f, 0.f, 0.f, 0, 0, CVector3f::Zero(), CColor::Black(),
-      LdrToDamageInfo(sldrThis.damage), CPlayerState::kIT_Invalid,
-      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId,
-      CSfxManager::kInternalInvalidSfxId);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      CScriptSpecialFunction::kSF_DamageActor, rstl::string_l(""), 0.f, 0.f, 0.f, 0.f, 0, 0,
+      CVector3f::Zero(), CColor::Black(), LdrToDamageInfo(sldrThis.damage),
+      CPlayerState::kIT_Invalid, CSfxManager::kInternalInvalidSfxId,
+      CSfxManager::kInternalInvalidSfxId, CSfxManager::kInternalInvalidSfxId);
 }
 
 CScriptSpecialFunction::~CScriptSpecialFunction() {}

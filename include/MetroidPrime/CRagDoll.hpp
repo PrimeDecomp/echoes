@@ -95,7 +95,7 @@ protected:
     CRagDollParticle* mP1;
     CRagDollParticle* mP2;
     float mLength;
-    EInequality mInequality;
+    int mInequality;
   };
 
   class CRagDollJointConstraint {

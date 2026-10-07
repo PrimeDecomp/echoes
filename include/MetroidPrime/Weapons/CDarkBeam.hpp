@@ -15,7 +15,7 @@ public:
   void PostRenderGunFx(const CStateManager& mgr, const CTransform4f& xf) override;
   void UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
                    const CTransform4f& xf) override;
-  void Fire(const TToken< CWeaponDescription >& projectile, bool underwater, float dt,
+  void Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater, float dt,
             CPlayerState::EChargeStage chargeState, const CTransform4f& xf, CStateManager& mgr,
             TUniqueId homingTarget, uint projectileAttributes, ushort soundId,
             TUniqueId* projectileId, CSfxHandle* soundHandle, float chargeFactor1,

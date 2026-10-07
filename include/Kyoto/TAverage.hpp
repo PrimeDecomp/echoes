@@ -17,34 +17,37 @@ T GetAverageValue(const T* ptr, int count) {
 }
 
 template < typename T >
-class TAverage : rstl::vector< T > {
+class TAverage {
 public:
   TAverage() {}
-  explicit TAverage(int capacity) { this->reserve(capacity); }
+  explicit TAverage(int capacity) { mValues.reserve(capacity); }
   TAverage(int capacity, const T& value);
 
   void AddValue(const T& value);
   rstl::optional_object< T > GetAverage() const {
-    if (this->empty()) {
+    if (mValues.empty()) {
       return rstl::optional_object_null();
     } else {
-      return GetAverageValue(this->data(), this->size());
+      return GetAverageValue(mValues.data(), mValues.size());
     }
   }
+
+private:
+  rstl::vector< T > mValues;
 };
 
 template < typename T >
 TAverage< T >::TAverage(int capacity, const T& value) {
-  this->resize(capacity, value);
+  mValues.resize(capacity, value);
 }
 
 template < typename T >
 void TAverage< T >::AddValue(const T& value) {
-  if (this->size() == this->capacity()) {
+  if (mValues.size() == mValues.capacity()) {
     // TODO ?
-    this->mCount -= 1;
+    mValues.mCount -= 1;
   }
-  this->insert(this->begin(), value);
+  mValues.insert(mValues.begin(), value);
 }
 
 #endif // _TAVERAGE

@@ -27,6 +27,7 @@ public:
   bool IsNonEmitter() const;
   void SetSoundModifierAttached(bool attached); // Guessed name.
   ushort GetSoundId() const { return mSoundId; }
+  short GetVolume() const { return mVolume; } // Guessed name.
   static float GetOccludedVolumeAmount(const CVector3f& pos, const CStateManager& mgr);
 
 private:

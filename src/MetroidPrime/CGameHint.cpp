@@ -25,23 +25,22 @@ CGameHint::CGameHint(TUniqueId uid, const rstl::string& name, const CEntityInfo&
 CGameHint::~CGameHint() {}
 
 void CGameHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (!mgr.IsMultiplayer()) {
-    CActor::AcceptScriptMsg(mgr, msg);
-    return;
-  }
-
-  CScriptMsg forwarded = msg;
-  switch (msg.GetMessage()) {
-  case kSM_Deactivate:
-  case kSM_Decrement:
-  case kSM_Increment:
-    if (CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(msg.GetOriginator()))) {
-      forwarded = CScriptMsg(msg.GetSenderId(), camera->Player(mgr).GetUniqueId(), msg.GetId(),
-                             msg.GetMessage(), msg.GetState());
+  if (mgr.IsMultiplayer()) {
+    CScriptMsg forwarded = msg;
+    switch (msg.GetMessage()) {
+    case kSM_Deactivate:
+    case kSM_Decrement:
+    case kSM_Increment:
+      if (CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(msg.GetOriginator()))) {
+        forwarded = CScriptMsg(msg.GetSenderId(), msg.GetId(), msg.GetMessage(),
+                               camera->Player(mgr).GetUniqueId(), msg.GetState());
+      }
+      break;
+    default:
+      break;
     }
-    break;
-  default:
-    break;
+    CActor::AcceptScriptMsg(mgr, forwarded);
+  } else {
+    CActor::AcceptScriptMsg(mgr, msg);
   }
-  CActor::AcceptScriptMsg(mgr, forwarded);
 }

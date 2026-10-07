@@ -38,10 +38,7 @@ private:
   AdvanceViewForTransitionalPeriod(const CCharAnimTime& time);
 
   // Guessed name.
-  static uint GetLoopPOIHash() {
-    static uint hash = CPOINode::GetHashForString("Loop");
-    return hash;
-  }
+  static uint GetLoopPOIHash();
 
   CCharAnimTime mTransDur;
   CCharAnimTime mTimeInTrans;

@@ -40,6 +40,9 @@ public:
   const CCollisionEdge& GetEdge(uint index) const { return mEdges[index]; }
 
 protected:
+  // Guessed name. The triangle accessors index edges through a ushort formal.
+  const CCollisionEdge& GetTriangleEdge(ushort index) const { return mEdges[index]; }
+
   int mMaterialCount;
   int mVertexCount;
   int mEdgeCount;

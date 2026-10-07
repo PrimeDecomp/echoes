@@ -6,6 +6,11 @@
 #include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 
+namespace rstl {
+typedef reserved_vector< pair< int, float >, 8 > TLocomotionAnimRow;
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(TLocomotionAnimRow)
+} // namespace rstl
+
 class CActor;
 
 class CBSLocomotion : public CBodyState {
@@ -42,7 +47,7 @@ public:
   explicit CBSBiPedLocomotion(CActor& actor);
 
   // CBodyState
-  ~CBSBiPedLocomotion() override;
+  ~CBSBiPedLocomotion() override {}
   bool IsMoving() const override;
   void Start(CBodyController& bc, CStateManager& mgr) override;
   pas::EAnimationState UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) override;
@@ -71,7 +76,7 @@ public:
   explicit CBSRestrictedLocomotion(CActor& actor);
 
   // CBodyState
-  ~CBSRestrictedLocomotion() override;
+  ~CBSRestrictedLocomotion() override {}
   bool IsMoving() const override;
 
   // CBSLocomotion

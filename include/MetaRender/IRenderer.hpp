@@ -148,7 +148,7 @@ public:
   virtual void DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
                                      const CColor& color, float amount) = 0;
   virtual void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
-                             bool unsortedOnly) = 0;
+                             const bool unsortedOnly) = 0;
   // Guessed name
   virtual void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
                                         const CVector3f& origin, const CColor& color,
@@ -159,7 +159,7 @@ public:
   virtual bool EnableSilhouetteRender() = 0;
   // Unused virtual draw entry; original name and first parameter type are unresolved.
   virtual void fn_802679DC(const void* unused, const SModelRenderData& model,
-                          const CModelFlags& flags) = 0;
+                           const CModelFlags& flags) = 0;
   // Guessed name
   virtual void DrawSilhouetteNoise(const SSilhouetteNoise& noise) = 0;
   virtual void SetWireframeFlags(int flags) = 0;

@@ -80,7 +80,7 @@ public:
   virtual void PostRenderGunFx(const CStateManager& mgr, const CTransform4f& xf);
   virtual void UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
                            const CTransform4f& xf);
-  virtual void Fire(const TToken< CWeaponDescription >& projectile, bool underwater, float dt,
+  virtual void Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater, float dt,
                     CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                     CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                     ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
@@ -96,7 +96,7 @@ public:
   virtual void UpdateMuzzleFx(float dt, const CVector3f& scale, const CVector3f& pos,
                               bool emitting);
   virtual void ActivateCharge(bool enable, bool resetEffect);
-  virtual void OnChargeReset() {} // Guessed name; default charge-reset hook.
+  virtual void OnChargeReset() {}                       // Guessed name; default charge-reset hook.
   virtual void InitializeResources(CStateManager& mgr); // Guessed name
 
   virtual void Load(CStateManager& mgr, bool subtypeBasePose);
@@ -113,7 +113,9 @@ public:
 
   EWeaponType GetType() const { return mWeaponType; }
   const TCachedToken< CWeaponDescription >&
-  GetProjectileToken(CPlayerState::EChargeStage stage) const { return mWeapons[stage]; }
+  GetProjectileToken(CPlayerState::EChargeStage stage) const {
+    return mWeapons[stage];
+  }
   TUniqueId GetPlayerId() const { return mPlayerId; }
   EMaterialTypes GetPlayerMaterial() const { return mPlayerMaterial; }
 

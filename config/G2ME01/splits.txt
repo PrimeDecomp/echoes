@@ -1488,6 +1488,7 @@ MetroidPrime/Player/CGrappleArm.cpp:
 
 MetroidPrime/Player/CFidget.cpp:
 	.text       start:0x801C6B20 end:0x801C6DF0
+	.sdata2     start:0x8041D0C8 end:0x8041D0F0
 
 MetroidPrime/Player/CPlayerGun.cpp:
 	.text       start:0x801C6DF0 end:0x801D2F0C
@@ -1509,7 +1510,9 @@ MetroidPrime/Weapons/CAnnihilatorBeam.cpp:
 
 MetroidPrime/Weapons/CPowerBeam.cpp:
 	.text       start:0x801D4FC8 end:0x801D5C70
+	.rodata     start:0x803AAB80 end:0x803AAB88
 	.data       start:0x803B72B0 end:0x803B7310
+	.sdata2     start:0x8041D248 end:0x8041D258
 
 MetroidPrime/Weapons/CAuxWeapon.cpp:
 	.text       start:0x801D5C70 end:0x801D6BDC

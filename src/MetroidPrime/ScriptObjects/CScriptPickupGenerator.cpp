@@ -153,8 +153,8 @@ CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) co
   }
 }
 
-bool CPickupGeneratorRuleEvaluator::SetAmountRange(float chance, int ruleSlot, int minimum,
-                                                   int maximum) {
+int CPickupGeneratorRuleEvaluator::SetAmountRange(float chance, int ruleSlot, int minimum,
+                                                  int maximum) {
   if (mManager->Random()->Range(0.f, 100.f) <= chance) {
     mMinimumAmounts[ruleSlot] = minimum;
     mMaximumAmounts[ruleSlot] = maximum;
@@ -163,7 +163,7 @@ bool CPickupGeneratorRuleEvaluator::SetAmountRange(float chance, int ruleSlot, i
   return true;
 }
 
-bool CPickupGeneratorRuleEvaluator::ExecuteAction(const CRuleAction& action) {
+int CPickupGeneratorRuleEvaluator::ExecuteAction(const CRuleAction& action) {
   const float chance = action.GetProperty(0).GetFloat();
   int minimum = 1;
   if (action.GetPropertyCount() > 1) {
@@ -219,7 +219,7 @@ int CPickupGeneratorRuleEvaluator::GetRandomAmount(CStateManager& mgr, int ruleS
 
 CScriptPickupGenerator::CScriptPickupGenerator(TUniqueId uid, const rstl::string& name,
                                                const CEntityInfo& info, const CVector3f& offset,
-                                               CAssetId rules, bool offsetIsLocalSpace)
+                                               CAssetId rules, const bool offsetIsLocalSpace)
 : CEntity(uid, info, name, 0)
 , mOffset(offset)
 , mRuleEvaluator(rules)
@@ -252,10 +252,10 @@ void CScriptPickupGenerator::GetTargets(CStateManager& mgr, TUniqueId sender,
   }
 }
 
-CHealthInfo* CScriptPickupGenerator::GetTargetHealthInfo(CStateManager& mgr,
-                                                         TUniqueId targetId) const {
-  CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(targetId));
-  return actor != nullptr ? actor->HealthInfo() : nullptr;
+const CHealthInfo* CScriptPickupGenerator::GetTargetHealthInfo(CStateManager& mgr,
+                                                               TUniqueId targetId) const {
+  const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(targetId));
+  return actor != nullptr ? actor->GetHealthInfo() : nullptr;
 }
 
 static inline void AddSpawnablePickup(const CPickupGeneratorRuleEvaluator& evaluator,
@@ -432,8 +432,8 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       const CScriptPickupGenerator* generator =
           TCastToConstPtr< CScriptPickupGenerator >(mgr.ObjectById(ids.first->second));
       if (generator != nullptr) {
-        mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), sender, generator->GetUniqueId(),
-                                        kSM_SetToZero, kSS_GeneratorConnection));
+        mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), generator->GetUniqueId(), kSM_SetToZero,
+                                        sender, kSS_GeneratorConnection));
       }
     }
 

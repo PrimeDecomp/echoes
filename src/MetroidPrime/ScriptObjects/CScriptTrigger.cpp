@@ -26,7 +26,7 @@ CScriptTrigger::CScriptTrigger(TUniqueId uid, const rstl::string& name, const CE
                                const CVector3f& position, const CAABox& bounds,
                                const CDamageInfo& damage, const CVector3f& forceField, uint flags,
                                bool deactivateOnEntered, bool deactivateOnExited)
-: CActor(uid, name, info, 0, CTransform4f::Translate(position), CModelData(),
+: CActor(uid, name, info, 0, CTransform4f::Translate(position), CModelData::CModelDataNull(),
          CMaterialList(kMT_Trigger), CActorParameters::None(), kInvalidUniqueId)
 , mAttachedTrigger(kInvalidUniqueId)
 , mDamageInfo(damage)
@@ -176,8 +176,7 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
   NotifyInhabitantAdded(*actor, mgr);
 
   if (mDeactivateOnEntered) {
-    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
-                                    kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), GetUniqueId(), kSM_Deactivate));
     if (actor->HealthInfo() && mDamageInfo.GetDamage() > 0.f) {
       const CMaterialFilter filter =
           CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
@@ -211,10 +210,11 @@ rstl::optional_object< CAABox > CScriptTrigger::GetTouchBounds() const {
 }
 
 void CScriptTrigger::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_AreaLoaded) {
+  const EScriptObjectMessage message = msg.GetMessage();
+  if (message == kSM_AreaLoaded) {
     mAttachedTrigger = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
   }
-  if (GetActive() && (msg.GetMessage() == kSM_Deactivate || msg.GetMessage() == kSM_Delete)) {
+  if (GetActive() && (message == kSM_Deactivate || message == kSM_Delete)) {
     ClearInhabitants(mgr);
     for (int i = 0; i < 4; ++i) {
       SetPlayerInside(mgr, false, i);
@@ -237,7 +237,7 @@ bool CScriptTrigger::BoundsOverlap(const CAABox& bounds) const {
 void CScriptTrigger::ClearInhabitants(CStateManager& mgr) {
   for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
        ++it) {
-    int playerIndex = -1;
+    int playerIndex = kInvalidPlayerIndex;
     for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       if (mgr.GetPlayer(i)->GetUniqueId() == it->GetObjectId()) {
         playerIndex = i;
@@ -245,7 +245,7 @@ void CScriptTrigger::ClearInhabitants(CStateManager& mgr) {
       }
     }
     if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(it->GetObjectId()))) {
-      if (playerIndex != -1) {
+      if (playerIndex != kInvalidPlayerIndex) {
         SetPlayerInside(mgr, false, playerIndex);
       }
       NotifyInhabitantExited(*actor, mgr);
@@ -268,21 +268,27 @@ void CScriptTrigger::NotifyInhabitantAdded(CActor& actor, CStateManager& mgr) {
   }
 }
 
-void CScriptTrigger::NotifyInhabitantIdle(CActor& actor, CStateManager& mgr) {
-  InhabitantIdle(actor, mgr);
+void CScriptTrigger::NotifyInhabitantIdle(CActor& actor, CStateManager& mgr, float dt) {
+  InhabitantIdle(actor, mgr, dt);
   if (ShouldSendScriptMsgs(actor, mgr)) {
     SendScriptMsgs(kSS_Inside, mgr, actor.GetUniqueId(), kSM_None);
   }
 }
 
-void CScriptTrigger::UpdateCameraInhabitant(TUniqueId id, CStateManager& mgr) {
+void CScriptTrigger::UpdateCameraInhabitant(const TUniqueId& id, CStateManager& mgr) {
   CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(id));
-  if (!camera || !(mFlags & kTFL_DetectCamera)) {
+  if (!camera) {
+    return;
+  }
+  if (!(mFlags & kTFL_DetectCamera)) {
     return;
   }
   const rstl::optional_object< CAABox > triggerBounds = GetTouchBounds();
   const rstl::optional_object< CAABox > cameraBounds = camera->GetTouchBounds();
-  if (!triggerBounds || !cameraBounds) {
+  if (!triggerBounds) {
+    return;
+  }
+  if (!cameraBounds) {
     return;
   }
 
@@ -441,13 +447,12 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
       }
       NotifyInhabitantExited(*actor, mgr);
     } else {
-      NotifyInhabitantIdle(*actor, mgr);
+      NotifyInhabitantIdle(*actor, mgr, dt);
     }
     it = next;
   }
   if (exited && mDeactivateOnExited) {
-    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, GetUniqueId(), kSM_Deactivate,
-                                    kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), GetUniqueId(), kSM_Deactivate));
   }
 }
 
@@ -466,7 +471,7 @@ bool CScriptTrigger::HasInhabitant(TUniqueId id) const {
 
 void CScriptTrigger::InhabitantAdded(CActor&, CStateManager&) {}
 
-void CScriptTrigger::InhabitantIdle(CActor&, CStateManager&) {}
+void CScriptTrigger::InhabitantIdle(CActor&, CStateManager&, float) {}
 
 void CScriptTrigger::InhabitantExited(CActor&, CStateManager&) {}
 
@@ -474,7 +479,10 @@ void CScriptTrigger::InhabitantRejected(CActor&, CStateManager&) {}
 
 bool CScriptTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager& mgr) const {
   if (const CGameCamera* camera = TCastToPtr< CGameCamera >(actor)) {
-    return camera->CameraManager(mgr).GetCurrentCameraId(true) == actor.GetUniqueId();
+    const TUniqueId cameraId = camera->GetUniqueId();
+    if (camera->CameraManager(mgr).GetCurrentCameraId(true) != cameraId) {
+      return false;
+    }
   }
   return true;
 }
@@ -492,20 +500,22 @@ bool CScriptTrigger::IsAI(CStateManager& mgr, CActor& actor) const {
   return false;
 }
 
-bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateManager& mgr) {
+uchar CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateManager& mgr) {
   const CActor* oldActor = TCastToConstPtr< CActor >(mgr.GetObjectById(oldId));
   const CActor* newActor = TCastToConstPtr< CActor >(mgr.GetObjectById(newId));
   if (oldActor == nullptr || newActor == nullptr) {
     return false;
   }
 
+  bool replaced = false;
   const bool alreadyInside = HasInhabitant(newId);
   if (!alreadyInside) {
     for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
          ++it) {
       if (it->GetObjectId() == oldId) {
         it->SetObjectId(newId);
-        return true;
+        replaced = true;
+        break;
       }
     }
   } else {
@@ -517,46 +527,54 @@ bool CScriptTrigger::ReplaceInhabitant(TUniqueId oldId, TUniqueId newId, CStateM
       }
     }
   }
-  return false;
+  return replaced;
 }
 
-bool CScriptTrigger::RemoveInhabitantIfOutside(TUniqueId id, CStateManager& mgr) {
-  if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(id))) {
-    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
-         ++it) {
-      if (it->GetObjectId() == id) {
-        const rstl::optional_object< CAABox > bounds = GetTouchBounds();
-        const rstl::optional_object< CAABox > actorBounds = actor->GetTouchBounds();
-        if (bounds && actorBounds && !BoundsOverlap(*actorBounds)) {
-          mInhabitants.erase(it);
-          return true;
-        }
-        return false;
-      }
-    }
+uchar CScriptTrigger::RemoveInhabitantIfOutside(TUniqueId id, CStateManager& mgr) {
+  const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(id));
+  if (actor == nullptr) {
+    return false;
   }
-  return false;
-}
-
-bool CScriptTrigger::RemoveInhabitant(TUniqueId id, CStateManager& mgr) {
-  if (TCastToConstPtr< CActor >(mgr.GetObjectById(id)) != nullptr) {
-    for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
-         ++it) {
-      if (it->GetObjectId() == id) {
+  bool removed = false;
+  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+       ++it) {
+    if (it->GetObjectId() == id) {
+      const rstl::optional_object< CAABox > bounds = GetTouchBounds();
+      const rstl::optional_object< CAABox > actorBounds = actor->GetTouchBounds();
+      if (bounds && actorBounds && !BoundsOverlap(*actorBounds)) {
         mInhabitants.erase(it);
-        return true;
+        removed = true;
       }
+      break;
     }
   }
-  return false;
+  return removed;
+}
+
+uchar CScriptTrigger::RemoveInhabitant(TUniqueId id, CStateManager& mgr) {
+  if (TCastToConstPtr< CActor >(mgr.GetObjectById(id)) == nullptr) {
+    return false;
+  }
+  bool removed = false;
+  for (rstl::list< CObjectTracker >::iterator it = mInhabitants.begin(); it != mInhabitants.end();
+       ++it) {
+    if (it->GetObjectId() == id) {
+      mInhabitants.erase(it);
+      removed = true;
+      break;
+    }
+  }
+  return removed;
 }
 
 CEntity* LoadTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrTrigger sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrTrigger.inc"
 
-  const CVector3f halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
-  const CAABox bounds(-halfExtent, halfExtent);
+  const float hx = 0.5f * sldrThis.editorProperties.transform.scale.GetX();
+  const float hy = 0.5f * sldrThis.editorProperties.transform.scale.GetY();
+  const float hz = 0.5f * sldrThis.editorProperties.transform.scale.GetZ();
+  const CAABox bounds(CVector3f(-hx, -hy, -hz), CVector3f(hx, hy, hz));
   const CVector3f forceField =
       mgr.GetWorld()->GetAreaAlways(info.GetAreaId()).GetTM().Rotate(sldrThis.trigger.forceField);
   return rs_new CScriptTrigger(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

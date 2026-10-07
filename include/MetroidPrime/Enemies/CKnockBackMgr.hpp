@@ -96,7 +96,7 @@ public:
 
   // CRuleSetEvaluator
   CRuleValue GetConditionValue(FourCC condition) const override;
-  bool ExecuteAction(const CRuleAction& action) override;
+  int ExecuteAction(const CRuleAction& action) override;
 
   // CKnockBackMgr
   virtual void Update(float dt, CStateManager& mgr, CActor& actor);
@@ -117,11 +117,16 @@ public:
 
   void EnableAnimReaction(EAnimReaction reaction, bool enabled);
   void EnableAllAnimReactions(bool enabled);
-  void EnableShock(bool enabled) { mEnableShock = enabled; } // Guessed name.
+  void EnableShock(bool enabled) { mEnableShock = enabled; }                     // Guessed name.
+  void EnableBurn(bool enabled) { mEnableBurn = enabled; }                       // Guessed name.
+  void EnableLaggedBurnDeath(bool enabled) { mEnableLaggedBurnDeath = enabled; } // Guessed name.
+  void EnableFreeze(bool enabled) { mEnableFreeze = enabled; }                   // Guessed name.
+  void EnableBurnDeath(bool enabled) { mEnableBurnDeath = enabled; }             // Guessed name.
 
   void EnableExplodeDeath(bool enabled) { mEnableExplodeDeath = enabled; } // Guessed name.
 
   bool IsBurnEnabled() const { return mEnableBurn; } // Guessed name.
+  void SetLocomotionDuringElectrocution(bool enabled) { mLocomotionDuringElectrocution = enabled; }
 
   bool IsShockEnabled() const { return mEnableShock; } // Guessed name.
 
@@ -135,6 +140,9 @@ public:
   void DeferFollowUp(float delay, EFollowUp followUp, float duration);
   float CalculateExtraHurlVelocity(CStateManager& mgr, float magnitude, float resistance) const;
 
+  EAnimReaction GetAnimReaction() const { return mActiveParameters.mReaction; } // Guessed name.
+
+  EAnimReaction GetActiveReaction() const { return mActiveParameters.mReaction; } // Guessed name.
   EFollowUp GetFollowUp() const { return mActiveParameters.mFollowUp; }
 
   float GetFollowUpDuration() const { return mActiveParameters.mFollowUpDuration; }

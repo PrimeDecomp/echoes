@@ -17,6 +17,21 @@ extern IRenderer* gpRender;
 
 static const CColor& skIdentityColorMultiply = CColor::White();
 
+// Debug name tables; the code using them is dead-stripped in the target, but the strings remain.
+static const char* skFilterTypeNames[] = {
+    "PassThru   ", "Multiply   ", "Invert     ", "Add        ", "Subtract   ",
+    "Blend      ", "WideScreen ", "SceneAdd   ", "NoColor    ",
+};
+static const char* skFilterShapeNames[] = {
+    "FullScreen                      ", "FullScreenHalvesLeftRight       ",
+    "FullScreenHalvesTopBottom       ", "FullScreenQuarters              ",
+    "CinemaBars                      ", "ScanLinesEven                   ",
+    "ScanLinesOdd                    ", "RandomStatic                    ",
+    "DialogBox                       ", "CinematicPlaceholderLabel       ",
+    "CookieCutterDepthRandomStatic   ",
+};
+static const char* skBlurTypeNames[] = {"NoBlur  ", "LoBlur  ", "HiBlur  "};
+
 // Guessed names for the original dialog-box settings.
 static float sDialogBoxOffsetY = -135.f;
 static float sDialogBoxWidth = 600.f;
@@ -231,11 +246,11 @@ void CCameraFilterPass::DrawWideScreen(const CColor& color, const CTexture* tex,
     float v = static_cast< float >(rand() % 16384) / 16384.f;
     CGraphics::StreamColor(color);
     CGraphics::StreamTexcoord(v, 1.f);
-    CGraphics::StreamVertex(CVector3f(lt.GetX() - 10.f, 0.f, lt.GetY() + barHeight * lod));
+    CGraphics::StreamVertex(CVector3f(lt.GetX() - 10.f, 0.f, lt.GetY() - -(barHeight * lod)));
     CGraphics::StreamTexcoord(v, 0.f);
     CGraphics::StreamVertex(CVector3f(lt.GetX() - 10.f, 0.f, lt.GetY()));
     CGraphics::StreamTexcoord(1.f + v, 1.f);
-    CGraphics::StreamVertex(CVector3f(10.f + rb.GetX(), 0.f, lt.GetY() + barHeight * lod));
+    CGraphics::StreamVertex(CVector3f(10.f + rb.GetX(), 0.f, lt.GetY() - -(barHeight * lod)));
     CGraphics::StreamTexcoord(1.f + v, 0.f);
     CGraphics::StreamVertex(CVector3f(10.f + rb.GetX(), 0.f, lt.GetY()));
     CGraphics::StreamEnd();
@@ -341,7 +356,8 @@ void CCameraFilterPass::DrawDialogBox(const CColor& color, const CTexture* textu
   CGraphics::StreamEnd();
 }
 
-void CCameraFilterPass::DrawCinematicPlaceholderLabel() {
+void CCameraFilterPass::DrawCinematicPlaceholderLabel(const CColor& color, const CTexture* texture,
+                                                      float alpha) {
   const CViewport viewport = CGraphics::GetViewport();
   gpRender->SetDepthReadWrite(false, false);
   gpRender->SetModelMatrix(CTransform4f::Identity());
@@ -441,7 +457,7 @@ void CCameraFilterPass::DrawFilterShape(EFilterShape shape, const CColor& color,
     DrawDialogBox(color, tex, lod);
     break;
   case kFS_CinematicPlaceholderLabel:
-    DrawCinematicPlaceholderLabel();
+    DrawCinematicPlaceholderLabel(color, tex, lod);
     break;
   case kFS_CookieCutterDepthRandomStatic:
     DrawRandomStatic(color, lod, true);

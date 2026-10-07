@@ -4,9 +4,9 @@
 #include "types.h"
 
 #include "rstl/auto_ptr.hpp"
+#include "rstl/pair.hpp"
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
-#include "rstl/pair.hpp"
 
 #include "Kyoto/CDvdFile.hpp"
 #include "Kyoto/IObjectStore.hpp"
@@ -75,7 +75,7 @@ private:
   rstl::auto_ptr< CDvdRequest > mDvdReq;
   rstl::vector< uchar > mHeaderData;
   uint mResTableOffset;
-  uint mResTableCount;
+  int mResTableCount;
   int mFakeStaticSize;
   const void* mAramBase;
   rstl::vector< rstl::pair< rstl::string, SObjectTag > > mNameList;

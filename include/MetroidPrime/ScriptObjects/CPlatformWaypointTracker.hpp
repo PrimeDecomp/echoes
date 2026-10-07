@@ -22,8 +22,8 @@ public:
     virtual ~CWaypointTimes();
 
     TUniqueId GetWaypointId() const { return mWaypointId; } // Guessed name
-    float GetFirstTime() const;                  // Guessed name
-    float FindNextForwardTime(float time) const; // Guessed name
+    float GetFirstTime() const;                             // Guessed name
+    float FindNextForwardTime(float time) const;            // Guessed name
     bool HasCrossedTime(float oldTime, float newTime, float duration, bool passedEnd,
                         bool passedStart, bool forward) const; // Guessed name
 
@@ -34,15 +34,15 @@ public:
   };
 
   CPlatformWaypointTracker(float duration, TUniqueId owner);
-  virtual ~CPlatformWaypointTracker();
+  virtual ~CPlatformWaypointTracker() {}
 
   void Build(TUniqueId firstWaypoint, const CMotionSpline& motion, CMayaSpline& control,
              bool removeClosingTime, CStateManager& mgr); // Guessed name
   void SendArrivals(float time, bool passedEnd, bool passedStart, bool forward,
-                    CMayaSpline& control, CStateManager& mgr);       // Guessed name
-  void SetTime(float time);                                          // Guessed name
-  float GetWaypointTime(TUniqueId waypoint) const;                   // Guessed name
-  float FindNextWaypointTime(float time, TUniqueId& waypoint) const; // Guessed name
+                    CMayaSpline& control, CStateManager& mgr);               // Guessed name
+  void SetTime(float time);                                                  // Guessed name
+  float GetWaypointTime(TUniqueId waypoint, const CStateManager& mgr) const; // Guessed name
+  float FindNextWaypointTime(float time, TUniqueId& waypoint) const;         // Guessed name
 
 private:
   rstl::vector< CWaypointTimes > mWaypoints; // Guessed name

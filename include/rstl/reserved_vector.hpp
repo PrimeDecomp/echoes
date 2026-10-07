@@ -44,7 +44,10 @@ public:
     mCount = 0;
   }
 
-  ~reserved_vector() { destroy_elements(); }
+  ~reserved_vector() {
+    RSTL_PRECONDITION(mCount >= 0);
+    destroy_elements();
+  }
 
   void push_back(const T& in) {
     construct(data() + mCount, in);
@@ -100,14 +103,13 @@ private:
     if (is_trivially_destructible< T >::value) {
       return;
     }
+    RSTL_PRECONDITION(mCount >= 0);
     T* ptr = data();
     for (int i = 0; i < mCount; ++i) {
       destroy(&ptr[i]);
     }
   }
 };
-
-
 
 template < typename T, int N >
 inline reserved_vector< T, N >& reserved_vector< T, N >::operator=(const reserved_vector& other) {

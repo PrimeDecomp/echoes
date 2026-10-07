@@ -10,9 +10,9 @@ CTargetableProjectile::CTargetableProjectile(
     const TToken< CWeaponDescription >& deflectedDescription, TUniqueId homingTarget, uint attribs,
     const CImpactVisorEffect& visorEffect, const CVector3f& scale)
 : CEnergyProjectile(true, description, type, xf, excludeMaterial, damage, uid, areaId, owner,
-                    homingTarget, attribs | kPA_PartialCharge | ::kPA_PlasmaProjectile |
-                                      kPA_BigProjectile,
-                    false, scale, visorEffect, false, true, false, 1.f, 4.f, 4.f)
+                    homingTarget,
+                    attribs | kPA_PartialCharge | ::kPA_PlasmaProjectile | kPA_BigProjectile, false,
+                    scale, visorEffect, false, true, false, 1.f, 4.f, 4.f)
 , mDeflectedWeaponDescription(deflectedDescription)
 , mDeflectedDamage(deflectedDamage)
 , mDeflectToOwner(true) {
@@ -30,7 +30,7 @@ CTargetableProjectile::~CTargetableProjectile() {}
 
 void CTargetableProjectile::ResolveCollisionWithActor(const CRayCastResult& result, CActor& actor,
                                                       CStateManager& mgr) {
-  if (actor.TypesMatch(0x98) != nullptr) {
+  if (TCastToPtr< CTargetableProjectile >(actor) != nullptr) {
     return;
   }
 
@@ -52,21 +52,21 @@ CVector3f CTargetableProjectile::GetAimPosition(const CStateManager& mgr, float 
 bool CTargetableProjectile::Explode(const CVector3f& position, const CVector3f& normal,
                                     EWeaponCollisionResponseTypes type, CStateManager& mgr,
                                     const CDamageVulnerability& vulnerability, TUniqueId hitActor) {
-  const bool exploded = CEnergyProjectile::Explode(position, normal, type, mgr, vulnerability,
-                                                  hitActor);
+  const bool exploded =
+      CEnergyProjectile::Explode(position, normal, type, mgr, vulnerability, hitActor);
   if (!GetWeaponActive() && mDeflectToOwner) {
     const TUniqueId projectileOwner = mHitProjectileOwner;
     CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(projectileOwner));
     if (player != nullptr) {
-      const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOwnerId()));
+      const CActor* const actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOwnerId()));
       if (actor != nullptr) {
         const TUniqueId uid = mgr.AllocateUniqueId();
         const CVector3f aimPosition = actor->GetAimPosition(mgr, 0.f);
         CEnergyProjectile* projectile = rs_new CEnergyProjectile(
             true, mDeflectedWeaponDescription, GetType(),
             CTransform4f::LookAt(mProjectile.GetTranslation(), aimPosition, CVector3f::Up()),
-            kMT_Player, mDeflectedDamage, uid, GetCurrentAreaId(), projectileOwner, GetOwnerId(),
-            0, false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
+            kMT_Player, mDeflectedDamage, uid, GetCurrentAreaId(), projectileOwner, GetOwnerId(), 0,
+            false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
         mgr.AddObject(*projectile);
         projectile->AddMaterial(kMT_Orbit, mgr);
         player->SetAimTarget(uid);

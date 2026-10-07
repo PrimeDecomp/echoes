@@ -11,7 +11,7 @@ public:
              uint priority, float lifeTime, const CEntityInfo* info = nullptr);
 
   // CEntity
-  ~CGameLight() override;
+  ~CGameLight() override {}
   CEntity* TypesMatch(int typeId) const override;
   void Think(float dt, CStateManager& mgr) override;
 

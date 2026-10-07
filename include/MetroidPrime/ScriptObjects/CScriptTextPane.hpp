@@ -30,6 +30,7 @@ public:
   bool CanRenderUnsorted(const CStateManager& mgr) const override;
 
   void SetRenderScale(float scale);
+  CGuiTextSupport& TextSupport() { return mTextSupport; } // Guessed name.
 
 private:
   // Guessed member names.

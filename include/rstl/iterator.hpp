@@ -79,7 +79,7 @@ inline void advance(It& it, S count) {
 }
 
 template < typename It, typename S >
-It advance_iterator(It it, S count) {
+inline It advance_iterator(It it, S count) {
   It result = it;
   advance(result, count);
   return result;

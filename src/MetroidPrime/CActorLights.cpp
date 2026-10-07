@@ -1,22 +1,22 @@
 #include "MetroidPrime/CActorLights.hpp"
 
+#include "Collision/CMaterialFilter.hpp"
+#include "Collision/CollisionUtil.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CSphere.hpp"
 #include "Kyoto/PVS/CPVSVisSet.hpp"
-#include "Collision/CollisionUtil.hpp"
-#include "Collision/CMaterialFilter.hpp"
-#include "MetroidPrime/CGameLight.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CExplosion.hpp"
-#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
-#include "MetaRender/CCubeRenderer.hpp"
 #include "WorldFormat/CPVSAreaSet.hpp"
 #include "WorldFormat/CWorldLight.hpp"
 #include "rstl/algorithm.hpp"
@@ -26,7 +26,7 @@
 #include <float.h>
 
 const float CActorLights::kDefaultMinPosChange = 0.1f;
-const int CActorLights::kInvalidShadowLightIndex = -1;
+const uint CActorLights::kInvalidShadowLightIndex = -1;
 int CActorLights::sFrameSchedulerCount = 0;
 static bool sUseOverflowLight = true;
 
@@ -45,7 +45,9 @@ struct SLightValue {
   , mVisibility(visibility) {}
 
   struct CPredicate {
-    bool operator()(SLightValue& a, SLightValue& b) const { return a.mColorMag > b.mColorMag; }
+    bool operator()(const SLightValue& a, const SLightValue& b) const {
+      return a.mColorMag > b.mColorMag;
+    }
   };
 };
 CHECK_SIZEOF(SLightValue, 0x1c);
@@ -125,8 +127,8 @@ void CActorLights::ActivateLights() const {
       CLight light = mAreaLights[0];
       const CColor& color = light.GetColor();
       const float level = 1.f - static_cast< int >(mBrightLightLag) / 15.f;
-      light.SetColor(CColor(color.GetRed() * level, color.GetGreen() * level,
-                            color.GetBlue() * level, 1.f));
+      light.SetColor(
+          CColor(color.GetRed() * level, color.GetGreen() * level, color.GetBlue() * level, 1.f));
       CGraphics::LoadLight(kLight0, light);
     } else {
       CGraphics::LoadLight(kLight0, mAreaLights[0]);
@@ -152,9 +154,9 @@ void CActorLights::ActivateLights() const {
       ambientR += 0.1f;
       ambientG += 0.1f;
       ambientB += 0.1f;
-      const CLight converted = CLight::BuildCustom(
-          light.GetPosition(), CVector3f::Up(), CColor(intensity, intensity, intensity, 1.f),
-          1.f, 0.f, 0.f, 1.f, 0.f, 0.f);
+      const CLight converted = CLight::BuildCustom(light.GetPosition(), CVector3f::Up(),
+                                                   CColor(intensity, intensity, intensity, 1.f),
+                                                   1.f, 0.f, 0.f, 1.f, 0.f, 0.f);
       CGraphics::LoadLight(static_cast< ERglLight >(lightIdx), converted);
     } else {
       CGraphics::LoadLight(static_cast< ERglLight >(lightIdx), light);
@@ -205,12 +207,12 @@ void CActorLights::MergeOverflowLight(CLight& out, CVector3f& color, const CLigh
 
 bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea& area,
                                       const CAABox& bounds) {
-  const CGameArea::CPostConstructed* post = area.GetPostConstructed();
-  const rstl::vector< CWorldLight >& initialLights = mLayer2 ? post->mLightsB : post->mLightsA;
+  const rstl::vector< CWorldLight >& initialLights =
+      mLayer2 ? area.GetPostConstructed()->mLightsB : area.GetPostConstructed()->mLightsA;
   mHasAreaLights = !initialLights.empty();
   if (!mHasAreaLights || !mInArea) {
     if (mDisableWorldLights) {
-      mWorldLightingLevel = post->mWorldLightingLevel;
+      mWorldLightingLevel = area.GetPostConstructed()->mWorldLightingLevel;
     }
     mShadowLightArrIdx = kInvalidShadowLightIndex;
     return true;
@@ -223,7 +225,7 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
     }
     mLastUpdateFrame = mgr.GetRenderFrameIndex();
     position = bounds.GetCenterPoint() + mLightingPositionOffset;
-    if (mWorldLightingLevel == post->mWorldLightingLevel &&
+    if (mWorldLightingLevel == area.GetPostConstructed()->mWorldLightingLevel &&
         (mLastActorPos - position).MagSquared() < mActorPositionDeltaUpdateThreshold) {
       return false;
     }
@@ -236,27 +238,32 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
     position = bounds.GetCenterPoint() + mLightingPositionOffset;
     mLastActorPos = position;
   }
-  mWorldLightingLevel = post->mWorldLightingLevel;
+  mWorldLightingLevel = area.GetPostConstructed()->mWorldLightingLevel;
   mDirty = false;
   mAid = area.GetId();
   mShadowLightArrIdx = kInvalidShadowLightIndex;
 
-  const rstl::vector< CWorldLight >& worldLights = mLayer2 ? post->mLightsB : post->mLightsA;
-  const rstl::vector< CLight >& lights = mLayer2 ? post->mGfxLightsB : post->mGfxLightsA;
-  SLightValue* values = static_cast< SLightValue* >(alloca(worldLights.size() * sizeof(SLightValue)));
+  const rstl::vector< CWorldLight >& worldLights =
+      mLayer2 ? area.GetPostConstructed()->mLightsB : area.GetPostConstructed()->mLightsA;
+  const rstl::vector< CLight >& lights =
+      mLayer2 ? area.GetPostConstructed()->mGfxLightsB : area.GetPostConstructed()->mGfxLightsA;
+  SLightValue* values =
+      static_cast< SLightValue* >(alloca(worldLights.size() * sizeof(SLightValue)));
   int valueCount = 0;
   CVector3f localAmbient = CVector3f::Zero();
-  const CPVSAreaSet* areaPVS = post->mPvs.get();
+  const CPVSAreaSet* areaPVS = area.GetPostConstructed()->mPvs.get();
   const bool usePVS = areaPVS != nullptr && gkPVSEnabled == 1;
-  const bool useSecondLayer = mLayer2 && (!usePVS || areaPVS->GetNum2ndLights() != 0);
+  const bool useSecondLayer = mLayer2 ? (usePVS ? areaPVS->GetNum2ndLights() != 0 : true) : false;
   CPVSVisSet centerSet(kVSS_OutOfBounds);
   CPVSVisSet maxSet(kVSS_OutOfBounds);
   CPVSVisSet minSet(kVSS_OutOfBounds);
   if (usePVS) {
-    const CTransform4f& inverse = post->mInverseTransform;
-    centerSet = areaPVS->GetVisOctree().GetVisSet(inverse * position);
-    maxSet = areaPVS->GetVisOctree().GetVisSet(inverse * bounds.GetMaxPoint());
-    minSet = areaPVS->GetVisOctree().GetVisSet(inverse * bounds.GetMinPoint());
+    centerSet =
+        areaPVS->GetVisOctree().GetVisSet(area.GetPostConstructed()->mInverseTransform * position);
+    maxSet = areaPVS->GetVisOctree().GetVisSet(area.GetPostConstructed()->mInverseTransform *
+                                               bounds.GetMaxPoint());
+    minSet = areaPVS->GetVisOctree().GetVisSet(area.GetPostConstructed()->mInverseTransform *
+                                               bounds.GetMinPoint());
   }
 
   for (int i = 0; i < lights.size(); ++i) {
@@ -267,9 +274,9 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
     }
     EPVSVisSetState visibility = kVSS_OutOfBounds;
     if (usePVS && worldLights[i].DoesCastShadows()) {
-      const uint feature =
+      const int feature =
           useSecondLayer ? area.Get2ndPVSLightFeature(i) : area.Get1stPVSLightFeature(i);
-      if (feature != uint(-1)) {
+      if (feature != -1) {
         visibility = centerSet.GetVisible(feature);
         if (visibility != kVSS_NodeFound) {
           visibility = CPVSVisSet::CombineStates(visibility, maxSet.GetVisible(feature));
@@ -298,8 +305,8 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
   }
 
   CVector3f overflowAmbient = CVector3f::Zero();
-  CLight overflowLight = CLight::BuildCustom(CVector3f::Zero(), CVector3f::Zero(),
-                                             CColor::Black(), 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+  CLight overflowLight = CLight::BuildCustom(CVector3f::Zero(), CVector3f::Zero(), CColor::Black(),
+                                             0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
   CVector3f overflowColor = CVector3f::Zero();
   float overflowMagnitude = 0.f;
   const bool useOverflowLight = !mAmbienceGenerated && sUseOverflowLight;
@@ -315,7 +322,8 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
     if (mAreaLights.size() < maxAreaLights) {
       bool contact = true;
       const int lightIndex = value.mAreaLightIdx;
-      const bool castsShadows = worldLights[lightIndex].DoesCastShadows() && mCastShadows;
+      const bool castsShadows =
+          worldLights[lightIndex].DoesCastShadows() == true && mCastShadows == true;
       const bool outOfBounds = usePVS && value.mVisibility == kVSS_OutOfBounds;
       if (castsShadows) {
         const CLight& light = lights[lightIndex];
@@ -323,7 +331,8 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
         CVector3f delta = light.GetPosition() - rayStart;
         const float distance = delta.Magnitude();
         const bool shadowCandidate = mFindShadowLight &&
-                                     mShadowLightArrIdx == kInvalidShadowLightIndex &&
+                                     static_cast< uint >(mShadowLightArrIdx) ==
+                                         static_cast< uint >(kInvalidShadowLightIndex) &&
                                      light.GetType() != kLT_LocalAmbient && distance > 2.f &&
                                      !bounds.PointInside(light.GetPosition());
         bool useShadow = shadowCandidate;
@@ -332,20 +341,31 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
               mAreaLights.empty() ||
               (mAreaLights.size() == 1 &&
                value.mColorMag / values[mostSignificantLight].mColorMag > 0.5f);
-          useShadow = significant &&
-                      value.mColorMag / value.mAccumulatedMag >
-                          mShadowDynamicRangeThreshold / (1.f + mShadowDynamicRangeThreshold);
+          useShadow = significant;
+          if (significant) {
+            useShadow = value.mColorMag / value.mAccumulatedMag >
+                        mShadowDynamicRangeThreshold / (1.f + mShadowDynamicRangeThreshold);
+          }
         }
         if (useShadow) {
           mShadowLightArrIdx = mAreaLights.size();
           mShadowLightIdx = lightIndex;
         } else if (!outOfBounds) {
           delta *= 1.f / distance;
-          contact = CGameCollision::RayStaticLineOfSightTest(area, rayStart, delta, distance, filter);
+          contact =
+              CGameCollision::RayStaticLineOfSightTest(area, rayStart, delta, distance, filter);
           if (i == 0) {
-            mInBrightLight = contact;
+            if (contact) {
+              mInBrightLight = true;
+            } else {
+              mInBrightLight = false;
+            }
             if (mBrightLightIdx != lightIndex) {
-              mBrightLightLag = contact ? 0 : 15;
+              if (contact) {
+                mBrightLightLag = 0;
+              } else {
+                mBrightLightLag = 15;
+              }
               mBrightLightIdx = lightIndex;
             }
             mUseBrightLightLag = false;
@@ -376,12 +396,19 @@ bool CActorLights::BuildAreaLightList(const CStateManager& mgr, const CGameArea&
   if (mDisableAmbientLights) {
     mAmbientColor = CColor::Black();
   } else {
-    mAmbientColor.Set(localAmbient.GetX() > 1.f ? 1.f : localAmbient.GetX(),
-                      localAmbient.GetY() > 1.f ? 1.f : localAmbient.GetY(),
-                      localAmbient.GetZ() > 1.f ? 1.f : localAmbient.GetZ(), 1.f);
+    if (localAmbient.GetX() > 1.f) {
+      localAmbient.SetX(1.f);
+    }
+    if (localAmbient.GetY() > 1.f) {
+      localAmbient.SetY(1.f);
+    }
+    if (localAmbient.GetZ() > 1.f) {
+      localAmbient.SetZ(1.f);
+    }
+    mAmbientColor = CColor(localAmbient.GetX(), localAmbient.GetY(), localAmbient.GetZ(), 1.f);
   }
-  if (post->mWorldLightingLevel < 1.f) {
-    MultiplyLightingLevels(post->mWorldLightingLevel);
+  if (area.GetPostConstructed()->mWorldLightingLevel < 1.f) {
+    MultiplyLightingLevels(area.GetPostConstructed()->mWorldLightingLevel);
   }
   return true;
 }
@@ -415,11 +442,10 @@ void CActorLights::AddOverflowToLights(const CLight& light, const CVector3f& col
 
 void CActorLights::MoveAmbienceToLights(const CVector3f& color) {
   if (mAmbienceGenerated || !sUseOverflowLight || mAreaLights.empty()) {
-    const CVector3f ambient(mAmbientColor.GetRed(), mAmbientColor.GetGreen(),
-                            mAmbientColor.GetBlue());
-    const CVector3f combined = ambient + color / 3.f;
-    mAmbientColor.Set(rstl::min_val(1.f, combined.GetX()), rstl::min_val(1.f, combined.GetY()),
-                      rstl::min_val(1.f, combined.GetZ()), 1.f);
+    const float red = rstl::min_val(1.f, (1.f / 3.f) * color.GetX() + mAmbientColor.GetRed());
+    const float green = rstl::min_val(1.f, (1.f / 3.f) * color.GetY() + mAmbientColor.GetGreen());
+    const float blue = rstl::min_val(1.f, (1.f / 3.f) * color.GetZ() + mAmbientColor.GetBlue());
+    mAmbientColor.Set(red, green, blue, 1.f);
     return;
   }
 
@@ -427,8 +453,8 @@ void CActorLights::MoveAmbienceToLights(const CVector3f& color) {
   float r, g, b;
   light.GetColor().Get(r, g, b);
   CVector3f useColor = color + CVector3f(r, g, b);
-  const float maxComponent =
-      rstl::max_val(rstl::max_val(useColor.GetX(), useColor.GetY()), useColor.GetZ());
+  float maxComponent = rstl::max_val(useColor.GetX(), useColor.GetY());
+  maxComponent = rstl::max_val(maxComponent, useColor.GetZ());
   if (maxComponent > FLT_EPSILON) {
     useColor *= 1.f / maxComponent;
   }
@@ -437,18 +463,15 @@ void CActorLights::MoveAmbienceToLights(const CVector3f& color) {
 
 // Guessed name.
 bool CActorLights::IsLightExcluded(const CStateManager& mgr, TUniqueId id) const {
-  if (id == kInvalidUniqueId) {
-    return false;
+  if (id != kInvalidUniqueId) {
+    if (const CScriptDynamicLight* light =
+            TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(TUniqueId(id)))) {
+      if (!((mLayer2 && light->UsesLayerTwo()) || (!mLayer2 && light->UsesLayerOne()))) {
+        return true;
+      }
+    }
   }
-  const CScriptDynamicLight* light =
-      TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(id));
-  if (light == nullptr) {
-    return false;
-  }
-  if (mLayer2) {
-    return !light->UsesLayerTwo();
-  }
-  return !light->UsesLayerOne();
+  return false;
 }
 
 void CActorLights::BuildDynamicLightList(const CStateManager& mgr, const CAABox& bounds) {
@@ -457,8 +480,8 @@ void CActorLights::BuildDynamicLightList(const CStateManager& mgr, const CAABox&
   mDynamicLights.clear();
   mDynamicAmbientColor = CColor::Black();
 
-  const CVector3f lightingPos = bounds.GetCenterPoint() + mLightingPositionOffset;
   CVector3f ambient = CVector3f::Zero();
+  const CVector3f lightingPos = bounds.GetCenterPoint() + mLightingPositionOffset;
   for (int i = 0; i < mExplicitLightIds.size() && mDynamicLights.size() < 4; ++i) {
     const CScriptDynamicLight* gameLight =
         TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(mExplicitLightIds[i]));
@@ -477,11 +500,10 @@ void CActorLights::BuildDynamicLightList(const CStateManager& mgr, const CAABox&
   const rstl::vector< rstl::pair< TUniqueId, CLight > >& lights = mgr.GetDynamicActorLights();
   if (!mFindNearestDynamicLights) {
     for (int i = 0; i < lights.size() && mDynamicLights.size() < mMaxDynamicLights; ++i) {
-      const rstl::pair< TUniqueId, CLight >& entry = lights[i];
-      if (IsLightExcluded(mgr, entry.first)) {
+      if (IsLightExcluded(mgr, lights[i].first)) {
         continue;
       }
-      const CLight& light = entry.second;
+      const CLight& light = lights[i].second;
       if (light.GetType() == kLT_Hard && mExcludeSpecialDynamicLights) {
         continue;
       }
@@ -495,15 +517,14 @@ void CActorLights::BuildDynamicLightList(const CStateManager& mgr, const CAABox&
       }
     }
   } else {
-    uint ids[4];
+    int ids[4];
     float radii[4] = {-1.f, -1.f, -1.f, -1.f};
     const int explicitCount = mDynamicLights.size();
     for (int i = 0; i < lights.size() && mDynamicLights.size() < 4; ++i) {
-      const rstl::pair< TUniqueId, CLight >& entry = lights[i];
-      if (IsLightExcluded(mgr, entry.first)) {
+      if (IsLightExcluded(mgr, lights[i].first)) {
         continue;
       }
-      const CLight& light = entry.second;
+      const CLight& light = lights[i].second;
       if (light.GetType() == kLT_Hard && mExcludeSpecialDynamicLights) {
         continue;
       }
@@ -554,32 +575,28 @@ void CActorLights::BuildFaceLightList(const CStateManager& mgr, const CGameArea&
 
   const CObjectList& lights = mgr.GetObjectListById(kOL_GameLight);
   CVector3f accumulatedColor = CVector3f::Zero();
-  for (int i = lights.GetFirstObjectIndex();
-       i != -1 && mDynamicLights.size() < mMaxDynamicLights;
+  for (int i = lights.GetFirstObjectIndex(); i != -1 && mDynamicLights.size() < mMaxDynamicLights;
        i = lights.GetNextObjectIndex(i)) {
     const CEntity* entity = lights[i];
     if (entity == nullptr || !entity->GetActive()) {
       continue;
     }
-    const CGameLight* gameLight = TCastToConstPtr< CGameLight >(entity);
-    if (gameLight == nullptr) {
-      continue;
-    }
+    const CGameLight* const gameLight = TCastToConstPtr< CGameLight >(entity);
     const CExplosion* explosion =
         TCastToConstPtr< CExplosion >(mgr.GetObjectById(gameLight->GetParentId()));
     if (explosion == nullptr) {
       continue;
     }
 
-    const CLight originalLight = gameLight->GetLight();
+    const CLight& originalLight = gameLight->GetLight();
     CLight reflectedLight(originalLight);
-    reflectedLight.SetAttenuation(
-        gpTweakGui->GetFaceReflectionLightFalloffMultConstant() *
-            reflectedLight.GetAttenuationConstant(),
-        gpTweakGui->GetFaceReflectionLightFalloffMultLinear() *
-            reflectedLight.GetAttenuationLinear(),
-        gpTweakGui->GetFaceReflectionLightFalloffMultQuadratic() *
-            reflectedLight.GetAttenuationQuadratic());
+    const float constant = reflectedLight.GetAttenuationConstant() *
+                           gpTweakGui->GetFaceReflectionLightFalloffMultConstant();
+    const float linear = reflectedLight.GetAttenuationLinear() *
+                         gpTweakGui->GetFaceReflectionLightFalloffMultLinear();
+    const float quadratic = reflectedLight.GetAttenuationQuadratic() *
+                            gpTweakGui->GetFaceReflectionLightFalloffMultQuadratic();
+    reflectedLight.SetAttenuation(constant, linear, quadratic);
 
     CVector3f cameraToExplosion = cameraTransform.TransposeMultiply(explosion->GetTranslation());
     if (CVector3f::Dot(CVector3f::Forward(), cameraToExplosion) < 0.f) {
@@ -587,34 +604,34 @@ void CActorLights::BuildFaceLightList(const CStateManager& mgr, const CGameArea&
     }
     cameraToExplosion[kDY] =
         -cameraToExplosion[kDY] + CTweakGui::FaceReflectionDistanceDebugValueToActualValue(
-                                       gpTweakGui->GetFaceReflectionDistanceDebugValue());
+                                      gpTweakGui->GetFaceReflectionDistanceDebugValue());
     cameraToExplosion[kDZ] =
         -cameraToExplosion[kDZ] + CTweakGui::FaceReflectionHeightDebugValueToActualValue(
-                                       gpTweakGui->GetFaceReflectionHeightDebugValue());
+                                      gpTweakGui->GetFaceReflectionHeightDebugValue());
     reflectedLight.SetPosition(cameraTransform * cameraToExplosion);
 
     if (CollisionUtil::AABoxSphereIntersection(
             aabb, CSphere(originalLight.GetPosition(), originalLight.GetRadius()))) {
-      accumulatedColor += reflectedLight.GetNormalIndependentLightingAtPoint(
-          cameraTransform.GetTranslation());
+      accumulatedColor +=
+          reflectedLight.GetNormalIndependentLightingAtPoint(cameraTransform.GetTranslation());
       if (originalLight.GetIntensity() > FLT_EPSILON && originalLight.GetRadius() > FLT_EPSILON) {
         mDynamicLights.push_back(reflectedLight);
       }
     }
   }
 
-  const float grayscale = 0.3f * accumulatedColor.GetX() +
-                          0.6f * accumulatedColor.GetY() + 0.1f * accumulatedColor.GetZ();
+  const float grayscale = 0.3f * accumulatedColor.GetX() + 0.6f * accumulatedColor.GetY() +
+                          0.1f * accumulatedColor.GetZ();
   if (grayscale < 0.012f) {
     mDynamicLights.clear();
   }
   if (grayscale > 0.03f) {
     const float attenuation = 1.f / (0.03f / grayscale);
-    for (int i = 0; i < mDynamicLights.size(); ++i) {
-      CLight& light = mDynamicLights[i];
-      light.SetAttenuation(light.GetAttenuationConstant() * attenuation,
-                           light.GetAttenuationLinear() * attenuation,
-                           light.GetAttenuationQuadratic() * attenuation);
+    for (rstl::reserved_vector< CLight, 4 >::iterator it = mDynamicLights.begin();
+         it != mDynamicLights.end(); ++it) {
+      it->SetAttenuation(it->GetAttenuationConstant() * attenuation,
+                         it->GetAttenuationLinear() * attenuation,
+                         it->GetAttenuationQuadratic() * attenuation);
     }
   }
 }
@@ -624,11 +641,11 @@ void CActorLights::BuildFakeLightList(const rstl::vector< CLight >& lights, cons
   mAreaLights.clear();
   mDynamicLights.clear();
 
-  for (int i = 0; i < lights.size(); ++i) {
-    mDynamicLights.push_back(lights[i]);
-    if (i == 3) {
+  for (int i = 0; i < 4; ++i) {
+    if (i == lights.size()) {
       break;
     }
+    mDynamicLights.push_back(lights[i]);
   }
 }
 

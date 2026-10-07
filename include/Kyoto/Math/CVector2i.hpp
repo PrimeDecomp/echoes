@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+#include "rstl/construct.hpp"
+
 class CVector2i {
 public:
   CVector2i() : mX(0), mY(0) {}
@@ -33,5 +35,9 @@ bool operator==(const CVector2i& lhs, const CVector2i& rhs);
 bool operator!=(const CVector2i& lhs, const CVector2i& rhs);
 CVector2i operator*(const CVector2i& lhs, int rhs);
 CVector2i operator/(const CVector2i& lhs, int rhs);
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CVector2i)
+} // namespace rstl
 
 #endif // _CVECTOR2I

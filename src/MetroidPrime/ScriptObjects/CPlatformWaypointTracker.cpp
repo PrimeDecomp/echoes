@@ -14,8 +14,6 @@
 CPlatformWaypointTracker::CPlatformWaypointTracker(float duration, TUniqueId owner)
 : mLastTime(0.f), mDuration(duration), mOwnerId(owner) {}
 
-CPlatformWaypointTracker::~CPlatformWaypointTracker() {}
-
 void CPlatformWaypointTracker::Build(TUniqueId firstWaypoint, const CMotionSpline& motion,
                                      CMayaSpline& control, bool removeClosingTime,
                                      CStateManager& mgr) {
@@ -78,7 +76,7 @@ void CPlatformWaypointTracker::SendArrivals(float time, bool passedEnd, bool pas
     CScriptWaypoint* waypoint =
         TCastToPtr< CScriptWaypoint >(mgr.ObjectById(mWaypoints[i].GetWaypointId()));
     if (waypoint && sendArrival) {
-      mgr.SendScriptMsg(waypoint, mOwnerId, EScriptObjectMessage('ARRV'), kInvalidUniqueId);
+      mgr.SendScriptMsg(waypoint, mOwnerId, EScriptObjectMessage('ARRV'));
     }
   }
   mLastTime = time;
@@ -86,7 +84,8 @@ void CPlatformWaypointTracker::SendArrivals(float time, bool passedEnd, bool pas
 
 void CPlatformWaypointTracker::SetTime(float time) { mLastTime = time; }
 
-float CPlatformWaypointTracker::GetWaypointTime(TUniqueId waypoint) const {
+float CPlatformWaypointTracker::GetWaypointTime(TUniqueId waypoint,
+                                                const CStateManager& mgr) const {
   for (int i = 0; i < mWaypoints.size(); ++i) {
     if (mWaypoints[i].GetWaypointId() == waypoint) {
       return mWaypoints[i].GetFirstTime();
@@ -151,7 +150,11 @@ bool CPlatformWaypointTracker::CWaypointTimes::HasCrossedTime(float oldTime, flo
                                                               bool forward) const {
   const float minTime = rstl::min_val(newTime, oldTime);
   const float maxTime = rstl::max_val(newTime, oldTime);
-  const TTimeList& times = forward ? mForwardTimes : mBackwardTimes;
+  const TTimeList* timesPtr = &mForwardTimes;
+  if (!forward) {
+    timesPtr = &mBackwardTimes;
+  }
+  const TTimeList& times = *timesPtr;
 
   if (!passedEnd && !passedStart) {
     for (int i = 0; i < times.size(); ++i) {
@@ -166,9 +169,8 @@ bool CPlatformWaypointTracker::CWaypointTimes::HasCrossedTime(float oldTime, flo
       }
     }
   } else {
-    const float closingTime = duration - minTime;
     for (int i = 0; i < times.size(); ++i) {
-      if (times[i] < maxTime || times[i] >= closingTime) {
+      if (times[i] < maxTime || times[i] >= duration - minTime) {
         return true;
       }
     }

@@ -22,10 +22,12 @@ bool CMaterialFilter::Passes(const CMaterialList& other) const {
 CMaterialFilter CMaterialFilter::WithImplicitMaterials(const CMaterialList& materials) const {
   switch (mType) {
   case kFT_Always:
-  case kFT_Never:
     return *this;
   case kFT_Include:
-    return mInclude.SharesMaterials(materials) ? CMaterialFilter() : *this;
+    if (mInclude.SharesMaterials(materials)) {
+      return CMaterialFilter();
+    }
+    return *this;
   case kFT_Exclude:
     if (mExclude.SharesMaterials(materials)) {
       return CMaterialFilter(CMaterialList(), CMaterialList(0x00000000FFFFFFFF), kFT_Never);
@@ -38,6 +40,8 @@ CMaterialFilter CMaterialFilter::WithImplicitMaterials(const CMaterialList& mate
     if (mExclude.SharesMaterials(materials)) {
       return CMaterialFilter(CMaterialList(), CMaterialList(0x00000000FFFFFFFF), kFT_Never);
     }
+    return *this;
+  case kFT_Never:
     return *this;
   }
   return CMaterialFilter();

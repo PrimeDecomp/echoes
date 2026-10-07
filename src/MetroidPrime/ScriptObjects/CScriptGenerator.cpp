@@ -60,7 +60,7 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
       if (it->msg == kSM_Activate) {
         activations.push_back_unsafe(it->objId);
       } else {
-        mgr.SendScriptMsg(mgr.GetIdForScript(it->objId), GetUniqueId(), it->msg, kInvalidUniqueId);
+        mgr.SendScriptMsg(mgr.GetIdForScript(it->objId), GetUniqueId(), it->msg);
       }
     }
 
@@ -136,8 +136,8 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
                                                     generatedActor->ModelData()->GetScale());
             }
           }
-          mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, generated.mUniqueId,
-                                          kSM_Activate, kSS_InvalidState));
+          mgr.DeliverScriptMsg(
+              CScriptMsg(GetUniqueId(), generatedEntity->GetUniqueId(), kSM_Activate));
         }
       }
 

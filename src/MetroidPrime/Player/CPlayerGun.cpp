@@ -28,7 +28,7 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
-#include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
+#include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/Player/CGrappleArm.hpp"
@@ -1066,7 +1066,7 @@ void CPlayerGun::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
         const TUniqueId attachedActor = player.GetAttachedActorId();
         if (attachedActor != kInvalidUniqueId) {
           metroidAttached =
-              TCastToConstPtr< CMetroidAlpha >(mgr.GetObjectById(attachedActor)) != nullptr;
+              TCastToConstPtr< CMetroid >(mgr.GetObjectById(attachedActor)) != nullptr;
         }
       }
     }
@@ -2869,11 +2869,16 @@ void CPlayerGun::RenderGun(const CStateManager& mgr, const CVector3f& cameraTran
 
 CVector3f CPlayerGun::ConvertToScreenSpace(const CVector3f& position,
                                            const CGameCamera& camera) const {
-  const CVector3f viewPosition =
-      camera.GetTransform().TransposeRotate(position - camera.GetTransform().GetTranslation());
-  if (viewPosition.IsNonZero()) {
-    return CGraphics::GetPerspectiveProjectionMatrix().MultiplyOneOverW(viewPosition);
+  CVector3f viewPos = camera.GetTransform().TransposeRotate(
+      CVector3f(position.GetX() - camera.GetTransform().Get03(),
+                position.GetY() - camera.GetTransform().Get13(),
+                position.GetZ() - camera.GetTransform().Get23()));
+  CVector3f screenPos(viewPos);
+
+  if (screenPos.IsNonZero()) {
+    return CGraphics::GetPerspectiveProjectionMatrix().MultiplyOneOverW(screenPos);
   }
+
   return CVector3f(-1.f, -1.f, 1.f);
 }
 

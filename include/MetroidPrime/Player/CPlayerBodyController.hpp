@@ -10,6 +10,12 @@
 #include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 
+namespace rstl {
+// The locomotion table's per-mode rows are copied bitwise (bitwise_copy<13> + trailing word).
+typedef reserved_vector< pair< int, float >, 13 > LocomotionAnimRow;
+RSTL_DECLARE_BITWISE_CONSTRUCTION(LocomotionAnimRow)
+} // namespace rstl
+
 class CPlayer;
 class CActor;
 class CPASDatabase;

@@ -48,7 +48,7 @@ public:
   void SetTransform(const CTransform4f& xf) { mTransform = xf; }
   const CTransform4f& GetTransform() const { return mTransform; }
   void SetAssistAimTransform(const CTransform4f& xf) { mAssistAimXf = xf; }
-  uint GetFiring() const { return mFiredWeaponFlags; }
+  int GetFiring() const { return mFiredWeaponFlags; }
   CPlayer* GetPlayer(CStateManager& mgr) const;
   CPlayer* GetPlayerFromAll(CStateManager& mgr) const;
   CWorldShadow* GetWorldShadow();

@@ -12,7 +12,7 @@ public:
     kN_Yes,
   };
   CUnitVector3f(CInputStream& in) : CVector3f(in) { Normalize(); }
-  CUnitVector3f(float x, float y, float z) : CVector3f(x, y, z) {}
+  CUnitVector3f(const float x, const float y, const float z) : CVector3f(x, y, z) {}
   CUnitVector3f(float x, float y, float z, ENormalize normalize) : CVector3f(x, y, z) {
     if (normalize == kN_Yes) {
       Normalize();

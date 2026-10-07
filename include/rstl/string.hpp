@@ -287,8 +287,8 @@ int basic_string< _CharTp, Traits, Alloc >::find(const _CharTp* other, int pos, 
   int length = 0;
   const _CharTp* end = other;
   while ((count == -1 || length < count) && *end != Traits::eos()) {
-    ++length;
     ++end;
+    ++length;
   }
   const int found = internal_search(begin() + pos, this->end(), other, end);
   int result = found + pos;
@@ -366,7 +366,7 @@ typedef basic_string< char, case_insensitive_char_traits< char > > istring;
 
 inline bool operator<(const string& lhs, const string& rhs) { return lhs.compare(rhs) < 0; }
 
-inline bool operator==(const string& lhs, const char* rhs) { return lhs.compare(rhs) == 0; }
+bool operator==(const string& lhs, const char* rhs);
 
 bool operator==(const char* lhs, const string& rhs);
 bool operator!=(const string& lhs, const char* rhs);

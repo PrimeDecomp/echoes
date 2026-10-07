@@ -12,7 +12,8 @@ CScriptSequenceTimer::CScriptSequenceTimer(TUniqueId uid, const rstl::string& na
                                            const CEntityInfo& info,
                                            const SLdrSequenceConnections& connections,
                                            float startTime, float maxTime, float loopStartTime,
-                                           bool autoStart, bool loop, bool takeExternalTime)
+                                           const bool autoStart, const bool loop,
+                                           const bool takeExternalTime)
 : CEntity(uid, info, name, 0)
 , mStartTime(startTime)
 , mCurrentTime(startTime)
@@ -37,7 +38,7 @@ void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
   mCurrentTime = time;
 
   bool wrapped = false;
-  if (mLoop && mMaxTime <= mCurrentTime) {
+  if (mLoop && mCurrentTime >= mMaxTime) {
     wrapped = true;
     mCurrentTime = mLoopStartTime + float(fmod(mCurrentTime, mMaxTime));
   }
@@ -54,8 +55,14 @@ void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
     for (rstl::vector< float >::iterator activation = connection->mActivation.first.begin();
          activation != connection->mActivation.first.end(); ++activation) {
       const float activationTime = *activation;
-      const bool crossed = wrapped ? upperTime <= activationTime || activationTime < lowerTime
-                                   : lowerTime <= activationTime && activationTime < upperTime;
+      bool crossed = false;
+      if (!wrapped) {
+        if (lowerTime <= activationTime && activationTime < upperTime) {
+          crossed = true;
+        }
+      } else if (upperTime <= activationTime || activationTime < lowerTime) {
+        crossed = true;
+      }
       if (!crossed) {
         continue;
       }
@@ -63,13 +70,13 @@ void CScriptSequenceTimer::ApplyTime(float time, CStateManager& mgr) {
       const SConnection& target = GetConnectionList()[connectionIndex];
       const CStateManager::TIdListResult ids = mgr.GetIdListForScript(target.objId);
       for (CStateManager::TIdList::const_iterator id = ids.first; id != ids.second; ++id) {
-        mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), mStartMessage.GetOriginator(), id->second,
-                                     target.msg, target.state));
+        mgr.SendScriptMsg(CScriptMsg(GetUniqueId(), id->second, target.msg,
+                                     mStartMessage.GetOriginator(), target.state));
       }
     }
   }
 
-  if (!mLoop && mMaxTime <= mCurrentTime) {
+  if (!mLoop && mCurrentTime >= mMaxTime) {
     SendScriptMsgs(kSS_MaxReached, mgr, mStartMessage.GetOriginator(), kSM_None);
     mRunning = false;
   }
@@ -96,7 +103,7 @@ void CScriptSequenceTimer::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
   CEntity::AcceptScriptMsg(mgr, msg);
 }
 
-void CScriptSequenceTimer::SetCurrentTime(float time) {
+void CScriptSequenceTimer::SetCurrentTime(float time, CStateManager&) {
   mCurrentTime = float(fmod(time, mMaxTime));
 }
 

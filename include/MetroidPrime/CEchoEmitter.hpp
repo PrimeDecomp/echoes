@@ -41,6 +41,7 @@ public:
   void SetBounds(const CAABox& bounds) { mBounds = bounds; }
   void SetParameters(const SEchoParameters& parameters) { mParameters = parameters; }
   bool IsPendingDeletion() const { return mPendingDeletion; }
+  void SetActive(bool active) { mActive = active; } // Guessed name.
   void SetNextEmitter(CEchoEmitter* next) { mNextEmitter = next; }
 
 private:

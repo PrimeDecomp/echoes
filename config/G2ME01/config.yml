@@ -5,6 +5,9 @@ splits: config/G2ME01/splits.txt
 symbols: config/G2ME01/symbols.txt
 quick_analysis: true # Faster reruns after full analysis
 mw_comment_version: 11 # GC 2.7 linker
+# Unreferenced constant present in the original DOL.
+force_active:
+  - kUnkPlayerIndexZero
 extract:
   - symbol: sDefaultFontData
     binary: MetroidPrime/DefaultFontData.bin

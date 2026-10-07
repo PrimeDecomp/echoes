@@ -30,7 +30,7 @@ public:
   CEntity* TypesMatch(int typeId) const override;
   void Think(float dt, CStateManager& mgr) override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
-  void SetActive(bool active) override;
+  void SetActive(const bool active) override;
 
   // CActor
   void PreRender(CStateManager& mgr) override;
@@ -43,7 +43,7 @@ public:
   void SetGlobalTranslation(const CVector3f& translation);
   void SetGlobalScale(const CVector3f& scale);
   CVector3f GetGlobalScale() const;             // Guessed name.
-  CToken GetDescription() const; // Guessed name; returns an owning resource handle.
+  CToken GetDescription() const;                // Guessed name; returns an owning resource handle.
   bool IsEmitting() const { return mEmitting; } // Guessed name; independent of GetActive().
   static void ResetParticleCounts();
 
@@ -93,7 +93,7 @@ private:
   uint mUseLocalTranslation : 1;
   uint mDestroyParticlesOnDeactivate : 1;
   uint mOrientToSpline : 1;
-  ERenderOrder mRenderOrder : 2;
+  uint mRenderOrder : 2;
 };
 CHECK_SIZEOF(CScriptEffect, 0x2d0)
 

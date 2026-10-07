@@ -46,14 +46,15 @@ public:
   }
 
   virtual CVector3f GetExplosionNormal() const { return CVector3f::Up(); }
+  bool HasExploded() const { return mHasExploded; }
 
   void SetEchoVisorMaxVolume(uchar volume);
   void SetCombatVisorMaxVolume(uchar volume);
   void SetCameraShakerData(const CCameraShakerData& data);
-  void PlayImpactSound(const CVector3f& position, EWeaponCollisionResponseTypes type); // Guessed name
+  void PlayImpactSound(const CVector3f& position,
+                       EWeaponCollisionResponseTypes type);        // Guessed name
   void InitializeMuzzleOffset(float duration, CStateManager& mgr); // Guessed name
   void SetExplodePending(bool pending) { mExplodePending = pending; }
-  bool HasExploded() const { return mHasExploded; }
 
 private:
   // Guessed name; the original owns a sorted list of IDs and expiry times.

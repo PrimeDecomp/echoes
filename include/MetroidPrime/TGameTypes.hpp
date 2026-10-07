@@ -17,6 +17,8 @@ extern const TEditorId kInvalidEditorId;
 extern const TEditorId kUnkId;
 extern const TUniqueId kInvalidUniqueId;
 extern const float kDefaultGravityAccel; // Guessed name; 9.81 * 2.5 in TGameTypes .sdata2
+extern const uint kInvalidPlayerIndex;
+extern const uint kUnkPlayerIndexZero;
 
 struct TAreaId {
   int value;

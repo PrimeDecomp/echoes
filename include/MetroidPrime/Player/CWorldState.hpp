@@ -13,7 +13,6 @@ class CWorldState {
 public:
   explicit CWorldState(CAssetId worldId);
   CWorldState(CBitStreamReader& in, CAssetId worldId, const CWorldSaveGameInfo& saveWorld);
-  ~CWorldState();
 
   void PutTo(CBitStreamWriter& out, const CWorldSaveGameInfo& saveWorld) const;
   CAssetId GetWorldAssetId() const;

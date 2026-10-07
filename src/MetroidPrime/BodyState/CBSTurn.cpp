@@ -15,10 +15,11 @@
 CBSTurn::CBSTurn() : mRotateSpeed(0.f), mDest(0.f, 0.f), mTurnDir(pas::kTD_Invalid) {}
 
 void CBSTurn::Start(CBodyController& bc, CStateManager& mgr) {
-  const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
+  const CTransform4f& xf = bc.GetOwner().GetTransform();
+  const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
   mDest = bc.GetCommandMgr().GetFaceVector().ToVec2f();
   const float deltaAngle = CMath::Rad2Deg(CVector2f::GetAngleDiff(lookDir, mDest));
-  const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
+  const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
   mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
 
   const CPASDatabase& db = bc.GetPASDatabase();
@@ -28,11 +29,11 @@ void CBSTurn::Start(CBodyController& bc, CStateManager& mgr) {
   const rstl::pair< float, int > best = db.FindBestAnimation(parms, *mgr.Random(), -1);
   bc.SetCurrentAnimation(CAnimPlaybackParms(best.second, -1, 1.f, true), false, false);
 
-  const float animAngle =
-      db.GetAnimState(pas::kAS_Turn)->GetAnimParmData(best.second, 1).GetReal32Value();
-  mRotateSpeed = CRelAngle::FromDegrees(mTurnDir == pas::kTD_Left ? animAngle - deltaAngle
-                                                                  : deltaAngle - animAngle)
-                     .AsRadians();
+  const CPASAnimParm animParm = db.GetAnimState(pas::kAS_Turn)->GetAnimParmData(best.second, 1);
+  mRotateSpeed =
+      CRelAngle::FromDegrees(mTurnDir == pas::kTD_Left ? animParm.GetReal32Value() - deltaAngle
+                                                       : deltaAngle - animParm.GetReal32Value())
+          .AsRadians();
   float playbackRate = bc.GetTimeScale();
   if (const CPatterned* patterned = TCastToPtr< CPatterned >(&bc.GetOwner())) {
     playbackRate *= patterned->GetSpeed();
@@ -41,9 +42,7 @@ void CBSTurn::Start(CBodyController& bc, CStateManager& mgr) {
     playbackRate = 1.f;
   }
   const float timeRem = bc.GetAnimTimeRemaining() / playbackRate;
-  if (timeRem > 0.f) {
-    mRotateSpeed /= timeRem;
-  }
+  mRotateSpeed = timeRem > 0.f ? mRotateSpeed / timeRem : mRotateSpeed;
 }
 
 pas::EAnimationState CBSTurn::UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) {
@@ -57,12 +56,19 @@ pas::EAnimationState CBSTurn::UpdateBody(float dt, CBodyController& bc, CStateMa
 void CBSTurn::Shutdown(CBodyController&) {}
 
 bool CBSTurn::FacingDest(CBodyController& bc) const {
-  const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
-  const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
+  const CTransform4f& xf = bc.GetOwner().GetTransform();
+  const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
+  const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
   if (mTurnDir == pas::kTD_Left) {
-    return CVector2f::Dot(leftDir, mDest) < 0.f;
+    if (CVector2f::Dot(leftDir, mDest) < 0.f) {
+      return true;
+    }
+  } else {
+    if (CVector2f::Dot(leftDir, mDest) > 0.f) {
+      return true;
+    }
   }
-  return CVector2f::Dot(leftDir, mDest) > 0.f;
+  return false;
 }
 
 pas::EAnimationState CBSTurn::GetBodyStateTransition(float dt, CBodyController& bc) {
@@ -120,8 +126,9 @@ void CBSFlyerTurn::Start(CBodyController& bc, CStateManager& mgr) {
     CBSTurn::Start(bc, mgr);
   } else {
     mDest = bc.GetCommandMgr().GetFaceVector().ToVec2f();
-    const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
-    const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
+    const CTransform4f& xf = bc.GetOwner().GetTransform();
+    const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
+    const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
     mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
 
     const CPASAnimParmData parms(pas::kAS_Locomotion, CPASAnimParm::FromEnum(pas::kLA_Idle),
@@ -134,20 +141,22 @@ void CBSFlyerTurn::Start(CBodyController& bc, CStateManager& mgr) {
 }
 
 pas::EAnimationState CBSFlyerTurn::UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) {
+  pas::EAnimationState state;
   if (bc.GetPASDatabase().GetAnimState(pas::kAS_Turn)->HasAnims()) {
-    return CBSTurn::UpdateBody(dt, bc, mgr);
-  }
-
-  const pas::EAnimationState state = GetBodyStateTransition(dt, bc);
-  if (state == pas::kAS_Invalid) {
-    const CVector3f& face = bc.GetCommandMgr().GetFaceVector();
-    if (face.IsNonZero()) {
-      mDest = face.ToVec2f();
-      const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
-      const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
-      mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
+    state = CBSTurn::UpdateBody(dt, bc, mgr);
+  } else {
+    state = GetBodyStateTransition(dt, bc);
+    if (state == pas::kAS_Invalid) {
+      const CVector3f face = bc.GetCommandMgr().GetFaceVector();
+      if (face.IsNonZero()) {
+        mDest = face.ToVec2f();
+        const CTransform4f& xf = bc.GetOwner().GetTransform();
+        const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
+        const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
+        mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
+      }
+      bc.FaceDirection(CVector3f(mDest, 0.f), dt);
     }
-    bc.FaceDirection(CVector3f(mDest, 0.f), dt);
   }
   return state;
 }
@@ -160,8 +169,9 @@ void CBSPitchableFlyerTurn::Start(CBodyController& bc, CStateManager& mgr) {
     CBSTurn::Start(bc, mgr);
   } else {
     mDest = bc.GetCommandMgr().GetFaceVector().ToVec2f();
-    const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
-    const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
+    const CTransform4f& xf = bc.GetOwner().GetTransform();
+    const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
+    const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
     mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
 
     const CPASAnimParmData parms(pas::kAS_Locomotion, CPASAnimParm::FromEnum(pas::kLA_Idle),
@@ -175,38 +185,46 @@ void CBSPitchableFlyerTurn::Start(CBodyController& bc, CStateManager& mgr) {
 
 pas::EAnimationState CBSPitchableFlyerTurn::UpdateBody(float dt, CBodyController& bc,
                                                        CStateManager& mgr) {
+  pas::EAnimationState state;
   if (bc.GetPASDatabase().GetAnimState(pas::kAS_Turn)->HasAnims()) {
-    return CBSTurn::UpdateBody(dt, bc, mgr);
-  }
-
-  const pas::EAnimationState state = GetBodyStateTransition(dt, bc);
-  if (state == pas::kAS_Invalid) {
-    const CVector3f face = bc.GetCommandMgr().GetFaceVector();
-    if (face.IsNonZero()) {
-      mFaceDirection = face;
-      const CVector2f lookDir = bc.GetOwner().GetTransform().GetForward().ToVec2f();
-      const CVector2f leftDir(lookDir.GetY(), -lookDir.GetX());
-      mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
-    }
-
-    if (const CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
-      const CVector3f forward = actor->GetTransform().GetForward();
-      const CVector3f flatForward = forward.DropZ().AsNormalized();
-      const CVector3f flatFace = face.DropZ();
-      bc.FaceDirection3D(flatFace, flatForward, dt);
-
-      CVector3f pitchDirection(forward.GetX(), forward.GetY(), face.GetZ());
-      pitchDirection.Normalize();
-      if (!close_enough(flatForward, pitchDirection)) {
-        const float angle = rstl::min_val(CVector3f::GetAngleDiff(face, flatFace),
-                                          bc.GetBodyStateInfo().GetMaximumPitch());
-        pitchDirection =
-            CVector3f::Slerp(flatForward, pitchDirection, CRelAngle::FromRadians(angle));
+    state = CBSTurn::UpdateBody(dt, bc, mgr);
+  } else {
+    state = GetBodyStateTransition(dt, bc);
+    if (state == pas::kAS_Invalid) {
+      const CVector3f face = bc.GetCommandMgr().GetFaceVector();
+      if (face.IsNonZero()) {
+        mFaceDirection = face;
+        const CTransform4f& xf = bc.GetOwner().GetTransform();
+        const CVector2f lookDir = CVector2f(xf.Get01(), xf.Get11());
+        const CVector2f leftDir = CVector2f(lookDir[1], -lookDir[0]);
+        mTurnDir = CVector2f::Dot(leftDir, mDest) > 0.f ? pas::kTD_Left : pas::kTD_Right;
       }
-      bc.FaceDirection3D(pitchDirection, forward, dt);
 
-      const CVector3f right = actor->GetTransform().GetRight();
-      bc.FaceDirection3D(right.DropZ(), right, dt);
+      if (const CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
+        const CVector3f forward = actor->GetTransform().GetForward();
+        CVector3f flatForward = forward;
+        const CVector3f faceDir = face;
+        flatForward.SetZ(0.f);
+        flatForward.Normalize();
+        CVector3f flatFace = faceDir;
+        flatFace.SetZ(0.f);
+        bc.FaceDirection3D(flatFace, flatForward, dt);
+
+        CVector3f pitchDirection = forward;
+        pitchDirection.SetZ(faceDir.GetZ());
+        pitchDirection.Normalize();
+        if (!close_enough(flatForward, pitchDirection)) {
+          const CRelAngle angle = CRelAngle::FromRadians(rstl::min_val< const float& >(
+              CVector3f::GetAngleDiff(faceDir, flatFace), bc.GetBodyStateInfo().GetMaximumPitch()));
+          pitchDirection = CVector3f::Slerp(flatForward, pitchDirection, angle);
+        }
+        bc.FaceDirection3D(pitchDirection, forward, dt);
+
+        const CVector3f right = actor->GetTransform().GetRight();
+        CVector3f flatRight = right;
+        flatRight.SetZ(0.f);
+        bc.FaceDirection3D(flatRight, right, dt);
+      }
     }
   }
   return state;

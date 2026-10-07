@@ -6,7 +6,7 @@
 class CScriptTimer : public CEntity {
 public:
   CScriptTimer(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, float startTime,
-               float maxRandDelay, bool loop, bool autoStart);
+               float maxRandDelay, const bool loop, const bool autoStart);
 
   // CEntity
   ~CScriptTimer() override;

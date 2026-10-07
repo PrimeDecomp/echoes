@@ -124,7 +124,7 @@ private:
                        CStateManager& mgr);
   void UpdatePlayerMovement(float dt, CStateManager& mgr);
   CVector3f InterpolateCameraElevation(CVector3f position, float dt);
-  bool ShouldResetSpline(CStateManager& mgr) const;
+  uchar ShouldResetSpline(CStateManager& mgr) const;
   void BuildSpline(CStateManager& mgr);
   void UpdateUsingSpline(float dt, CStateManager& mgr);
   // Collision-search helpers whose original names remain unresolved.

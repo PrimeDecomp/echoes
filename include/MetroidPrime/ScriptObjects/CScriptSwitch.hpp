@@ -13,6 +13,8 @@ public:
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
 
+  bool IsOpened() const { return mOpened; } // Guessed name.
+
 private:
   bool mOpened;
   bool mCloseOnOpened;

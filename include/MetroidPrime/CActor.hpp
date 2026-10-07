@@ -184,6 +184,7 @@ public:
 
   const CModelFlags& GetModelFlags() const { return mDrawFlags; }
   void SetModelFlags(const CModelFlags& flags) { mDrawFlags = flags; }
+  void SetModelColor(const CColor& color) { mDrawFlags.SetColor(color); } // Guessed name.
 
   const CMaterialList& GetMaterialList() const { return mMaterial; }
   CMaterialList& MaterialList() { return mMaterial; }
@@ -266,11 +267,11 @@ public:
   uint GetDrawToken() const { return mDrawnToken; }
 
   uint GetAddedToken() const { return mAddedToken; }
-  void SetAddedToken(uint token) const { const_cast< CActor* >(this)->mAddedToken = token; }
+  void SetAddedToken(uint token) const { mAddedToken = token; }
   bool UsesAlphaSorting() const { return mAlphaSorted; }             // Guessed accessor name.
   bool UsesPortalVisibility() const { return mUsePortalVisibility; } // Guessed accessor name.
 
-  void SetDrawToken(uint token) const { const_cast< CActor* >(this)->mDrawnToken = token; }
+  void SetDrawToken(uint token) const { mDrawnToken = token; }
 
   void SetPvsIndex(int index) { mPvsIndex = index; }
   int GetPvsIndex() const { return mPvsIndex; }
@@ -308,8 +309,8 @@ private:
   rstl::reserved_vector< TUniqueId, 4 > mPreviousFluidIds;
   bool mFluidIdsChanged : 1;
   TUniqueId mNextDrawNode;
-  int mDrawnToken;
-  int mAddedToken;
+  mutable int mDrawnToken;
+  mutable int mAddedToken;
   int mPvsIndex;
   uchar mMaxVol;
   uchar mNormalVolume;

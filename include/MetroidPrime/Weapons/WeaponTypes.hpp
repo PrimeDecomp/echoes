@@ -38,14 +38,11 @@ class CWeaponMode {
 public:
   explicit CWeaponMode(EWeaponType type = kWT_None, const bool charged = false,
                        const bool comboed = false, const bool instaKill = false)
-  : mWeaponType(uint(type))
-  , mCharged(charged)
-  , mComboed(comboed)
-  , mInstantKill(instaKill) {}
+  : mWeaponType(uint(type)), mCharged(charged), mComboed(comboed), mInstantKill(instaKill) {}
 
   CWeaponMode(int type, int flags) : mWeaponType(uint(type)) {}
 
-  EWeaponType GetType() const { return EWeaponType(short(mWeaponType)); }
+  EWeaponType GetType() const { return EWeaponType(mWeaponType); }
   ushort GetRawType() const { return ushort(mWeaponType); }
 
   bool IsCharged() const { return mCharged; }
