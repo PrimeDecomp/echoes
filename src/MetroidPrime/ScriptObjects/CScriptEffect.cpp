@@ -9,6 +9,8 @@
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -449,3 +451,33 @@ CGameSplineDesc::CGameSplineDesc(const SLdrSpline& spline, CMotionSpline::ESplin
 : mSpline(spline), mType(type), mDuration(duration), mClosedLoop(closedLoop) {}
 
 CScriptEffect::~CScriptEffect() {}
+
+CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrEffect sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrEffect.inc"
+
+  if (sldrThis.particleEffect == kInvalidAssetId) {
+    return nullptr;
+  }
+  if (gpResourceFactory->GetResourceTypeById(sldrThis.particleEffect) == 0) {
+    return nullptr;
+  }
+
+  const CGameSplineDesc spline(
+      sldrThis.motionControlSpline,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
+      sldrThis.motionSplineDuration, sldrThis.motionSplinePathLoops);
+  LdrToEntityInfo(info, sldrThis.editorProperties);
+  info.SetActive(true);
+  return rs_new CScriptEffect(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name, info,
+      LdrToTransform4f(sldrThis.editorProperties), sldrThis.editorProperties.transform.scale,
+      sldrThis.particleEffect, sldrThis.unknown_0x3df5a489, sldrThis.restartOnActivate,
+      sldrThis.editorProperties.active, sldrThis.unknown_0xee538174, sldrThis.unknown_0xa94b0efd,
+      sldrThis.unknown_0x93756968, sldrThis.unknown_0x0b94597d, sldrThis.unknown_0xd0e8a496,
+      sldrThis.unknown_0xa8bb6c61, sldrThis.unknown_0x7589d549, sldrThis.unknown_0xa7d7d767,
+      sldrThis.unknown_0xfe69615c, sldrThis.visibleInScanOrNormal, sldrThis.visibleInDark,
+      sldrThis.visibleInEcho, LdrToLightParameters(sldrThis.lighting), sldrThis.deleteWhenDone,
+      spline, sldrThis.unknown_0x73e63382, sldrThis.unknown_0xbe931927, sldrThis.unknown_0x608ecac5,
+      static_cast< CScriptEffect::ERenderOrder >(sldrThis.renderOrder));
+}

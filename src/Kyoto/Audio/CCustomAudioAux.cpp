@@ -4,7 +4,6 @@
 #include "Kyoto/Audio/CBitcrusher.hpp"
 #include "Kyoto/Audio/CFlanger.hpp"
 #include "Kyoto/Audio/CPhaser.hpp"
-#include "Kyoto/Basics/CCast.hpp"
 
 static const int kBufferSamples = 160;
 static const float kSampleScale = 16777215.f;
@@ -26,11 +25,11 @@ void ProcessCustomAux(uchar reason, SND_AUX_INFO* info, SAuxEffectProcessingStat
                        processing->mSurroundBuffer};
   for (int sample = 0; sample < kBufferSamples; ++sample) {
     processing->mLeftBuffer[sample] =
-        kInvSampleScale * CCast::LtoF(info->data.bufferUpdate.left[sample]);
+        kInvSampleScale * static_cast< float >(info->data.bufferUpdate.left[sample]);
     processing->mRightBuffer[sample] =
-        kInvSampleScale * CCast::LtoF(info->data.bufferUpdate.right[sample]);
+        kInvSampleScale * static_cast< float >(info->data.bufferUpdate.right[sample]);
     processing->mSurroundBuffer[sample] =
-        kInvSampleScale * CCast::LtoF(info->data.bufferUpdate.surround[sample]);
+        kInvSampleScale * static_cast< float >(info->data.bufferUpdate.surround[sample]);
   }
 
   AEffect* effect = processing->mEffectDescriptor;
@@ -41,11 +40,11 @@ void ProcessCustomAux(uchar reason, SND_AUX_INFO* info, SAuxEffectProcessingStat
 
   for (int sample = 0; sample < kBufferSamples; ++sample) {
     info->data.bufferUpdate.left[sample] =
-        CCast::FtoL(kSampleScale * processing->mLeftBuffer[sample]);
+        static_cast< long >(kSampleScale * processing->mLeftBuffer[sample]);
     info->data.bufferUpdate.right[sample] =
-        CCast::FtoL(kSampleScale * processing->mRightBuffer[sample]);
+        static_cast< long >(kSampleScale * processing->mRightBuffer[sample]);
     info->data.bufferUpdate.surround[sample] =
-        CCast::FtoL(kSampleScale * processing->mSurroundBuffer[sample]);
+        static_cast< long >(kSampleScale * processing->mSurroundBuffer[sample]);
   }
 }
 

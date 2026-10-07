@@ -1,5 +1,11 @@
 #include "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.hpp"
 
+#include "MetroidPrime/CGameArea.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrTriggerOrientated.hpp"
+
 CScriptTriggerOrientated::CScriptTriggerOrientated(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CVector3f& extents,
     const CTransform4f& xf, const CDamageInfo& damage, const CVector3f& forceField, uint flags,
@@ -13,7 +19,7 @@ CScriptTriggerOrientated::CScriptTriggerOrientated(
 }
 
 rstl::optional_object< CAABox > CScriptTriggerOrientated::GetTouchBounds() const {
-  return rstl::optional_object< CAABox >(mWorldBounds);
+  return mWorldBounds;
 }
 
 void CScriptTriggerOrientated::Touch(CActor& actor, CStateManager& mgr) {
@@ -38,3 +44,17 @@ void CScriptTriggerOrientated::Think(float dt, CStateManager& mgr) {
 }
 
 const COBBox& CScriptTriggerOrientated::GetOBBox() const { return mWorldOBBox; }
+
+CEntity* LoadTriggerOrientated(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrTriggerOrientated sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrTriggerOrientated.inc"
+
+  const CVector3f forceField =
+      mgr.GetWorld()->GetAreaAlways(info.GetAreaId()).GetTM().Rotate(sldrThis.trigger.forceField);
+  return rs_new CScriptTriggerOrientated(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      0.5f * sldrThis.editorProperties.transform.scale, LdrToTransform4f(sldrThis.editorProperties),
+      LdrToDamageInfo(sldrThis.trigger.damage), forceField, sldrThis.trigger.flagsTrigger,
+      sldrThis.deactivateOnEnter, sldrThis.deactivateOnExit);
+}

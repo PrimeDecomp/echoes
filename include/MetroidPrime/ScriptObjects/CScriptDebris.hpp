@@ -126,7 +126,7 @@ private:
   float mBounceSoundSpeedThreshold;
   float mBounceSoundVolumeDecay;
   uchar mBounceSoundVolume;
-  int mUpdateFrameIndex;
+  uint mUpdateFrameIndex;
 };
 CHECK_SIZEOF(CScriptDebris, 0x3b0)
 

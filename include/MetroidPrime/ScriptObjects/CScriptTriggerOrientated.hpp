@@ -14,8 +14,8 @@ public:
 
   // CEntity
   ~CScriptTriggerOrientated() override {}
-  CEntity* TypesMatch(int typeId) const override;
   void Think(float dt, CStateManager& mgr) override;
+  CEntity* TypesMatch(int typeId) const override;
 
   // CActor
   rstl::optional_object< CAABox > GetTouchBounds() const override;
