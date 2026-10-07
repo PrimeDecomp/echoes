@@ -3,6 +3,8 @@
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrColorModulate.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "math.h"
 #include "rstl/math.hpp"
@@ -333,3 +335,17 @@ void CScriptColorModulate::CopyTargetColor(CStateManager& mgr) {
 }
 
 CScriptColorModulate::~CScriptColorModulate() {}
+
+CEntity* LoadColorModulate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrColorModulate sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrColorModulate.inc"
+
+  return rs_new CScriptColorModulate(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.color_A, sldrThis.color_B,
+      static_cast< CScriptColorModulate::EBlendMode >(sldrThis.blend_Mode), sldrThis.time_A2B,
+      sldrThis.time_B2A, sldrThis.do_Reverse, sldrThis.reset_Target_When_Done,
+      sldrThis.depth_Compare, sldrThis.depth_Update, sldrThis.depth_Backwards, sldrThis.autoStart,
+      sldrThis.updateTime, sldrThis.loopForever, sldrThis.externalTime,
+      sldrThis.copyModelColorToColorA, sldrThis.controlSpline);
+}
