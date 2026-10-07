@@ -62,41 +62,70 @@ bool COBBox::LineIntersectsBox(const CMRay& ray, CVector3f& point, float& penetr
 
 CQuad COBBox::GetQuad(CAABox::EBoxFaceId face) const {
   switch (face) {
-  case CAABox::kF_YMin:
-    return CQuad(mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()));
-  case CAABox::kF_YMax:
-    return CQuad(mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()));
-  case CAABox::kF_XMin:
-    return CQuad(mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()));
-  case CAABox::kF_XMax:
-    return CQuad(mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()));
-  case CAABox::kF_ZMax:
-    return CQuad(mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()));
-  case CAABox::kF_ZMin:
-    return CQuad(mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ()));
-  default:
-    return CQuad(mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ()),
-                 mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()),
-                 mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ()));
+  case CAABox::kF_YMin: {
+    const CVector3f v3 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 =
+        mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 = mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  case CAABox::kF_YMax: {
+    const CVector3f v3 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 =
+        mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 = mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  case CAABox::kF_XMin: {
+    const CVector3f v3 =
+        mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 = mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  case CAABox::kF_XMax: {
+    const CVector3f v3 =
+        mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 = mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  case CAABox::kF_ZMax: {
+    const CVector3f v3 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v2 = mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v1 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 = mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  case CAABox::kF_ZMin: {
+    const CVector3f v3 =
+        mTransform * CVector3f(-mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 = mTransform * CVector3f(mExtents.GetX(), mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 =
+        mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v0 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
+  default: {
+    const CVector3f v3 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v2 =
+        mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), -mExtents.GetZ());
+    const CVector3f v1 = mTransform * CVector3f(mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    const CVector3f v0 =
+        mTransform * CVector3f(-mExtents.GetX(), -mExtents.GetY(), mExtents.GetZ());
+    return CQuad(v0, v1, v2, v3);
+  }
   }
 }
 
