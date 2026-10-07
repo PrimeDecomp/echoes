@@ -1,4 +1,9 @@
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
+#include "Kyoto/Animation/CAnimTreeNode.hpp"
+#include "Kyoto/Animation/CCharAnimTime.hpp"
+#include "MetroidPrime/CAnimData.hpp"
+#include "MetroidPrime/CModelData.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
@@ -132,8 +137,35 @@ float CCinematicCamera::GetMoveOutofIntoAlpha() const {
 
 CVector3f CCinematicCamera::CalculateMoveOutofIntoEyePosition(bool outOfEye,
                                                               const CStateManager& mgr) const {
-  // Partial scaffold: the default eye position is established. The linked CScriptActor path
-  // samples L_eye/R_eye at the current or final animation time and returns their midpoint;
-  // it requires the actor's unresolved player-actor flag, not a raw-offset substitute.
-  return GetPlayer(mgr).GetEyePosition();
+  static const char* leftEyeName = "L_eye";
+  static const char* rightEyeName = "R_eye";
+  CVector3f eyePos = GetPlayer(mgr).GetEyePosition();
+  if (const CScriptCamera* camera =
+          TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
+    if (const CScriptActor* actor =
+            TCastToConstPtr< CScriptActor >(mgr.GetObjectById(camera->GetCameraActorId()))) {
+      if (actor->IsPlayerActor() && actor->HasAnimation()) {
+        const CAnimData* animData = actor->GetAnimationData();
+        const rstl::ncrc_ptr< CAnimTreeNode >& root = animData->GetAnimationTree();
+        if (root.GetPtr()) {
+          const CModelData* modelData = actor->GetModelData();
+          const CSegId leftEye = animData->GetLocatorSegId(rstl::string_l(leftEyeName));
+          const CSegId rightEye = animData->GetLocatorSegId(rstl::string_l(rightEyeName));
+          if (leftEye != CSegId::Invalid() && rightEye != CSegId::Invalid()) {
+            const CCharAnimTime time =
+                outOfEye ? CCharAnimTime::ZeroFlat() : root->GetSteadyStateAnimInfo().GetDuration();
+            const CCharAnimTime* timePtr = outOfEye ? nullptr : &time;
+            const CTransform4f leftLocal =
+                modelData->GetScaledLocatorTransformDynamic(rstl::string_l(leftEyeName), timePtr);
+            const CTransform4f leftWorld = actor->GetTransform() * leftLocal;
+            const CTransform4f rightLocal =
+                modelData->GetScaledLocatorTransformDynamic(rstl::string_l(rightEyeName), timePtr);
+            const CTransform4f rightWorld = actor->GetTransform() * rightLocal;
+            eyePos = (leftWorld.GetTranslation() + rightWorld.GetTranslation()) * 0.5f;
+          }
+        }
+      }
+    }
+  }
+  return eyePos;
 }
