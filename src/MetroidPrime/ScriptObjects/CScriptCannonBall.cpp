@@ -25,8 +25,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
   switch (msg.GetMessage()) {
 
   case kSM_Increment: {
-    if (CPlayer* player =
-            TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()))) {
+    if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()))) {
       CMorphBall* morph = player->GetMorphBall();
       CTransform4f xf = morph->GetSurfaceToWorld();
       player->SetTransform(
@@ -84,7 +83,7 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
   if (!m_flag2) {
     return;
   }
-  CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.GetObjectByIdFromListAll(m_scriptObject));
+  CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.ObjectById(m_scriptObject));
   if (!effect) {
     return;
   }
@@ -141,9 +140,10 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
 }
 
 void CScriptCannonBall::TrackedShot::OnIncrementMsg(CStateManager& mgr, bool param) {
-  m_b = param;
-  m_flag2 = param;
-  if (param != 0) {
+  const bool value = param;
+  m_b = value;
+  m_flag2 = value;
+  if (value) {
     m_updateFrameIdx = mgr.GetUpdateFrameIdx();
     m_f = 1.0f;
   }
