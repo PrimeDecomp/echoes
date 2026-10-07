@@ -106,6 +106,7 @@ inline void destroy_impl(It begin, It end) {
 
 template < typename It >
 inline void destroy(It begin, It end) {
+  RSTL_PRECONDITION(begin <= end);
   destroy_impl(begin, end);
 }
 
