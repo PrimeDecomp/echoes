@@ -327,7 +327,7 @@ void CPlayerKnockBackMgr::ExplodeDeath(CStateManager& mgr, CPlayer& player,
 void CPlayerKnockBackMgr::Freeze(float duration, CPlayer& player) {
   if (!player.GetMorphBall()->InScrewAttackMode()) {
     mFreezePending = true;
-    mFreezeDuration = mActiveParameters.mFollowUpDuration;
+    mFreezeDuration = duration;
   }
 }
 
