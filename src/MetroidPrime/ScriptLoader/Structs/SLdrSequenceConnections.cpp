@@ -10,7 +10,7 @@ SLdrSequenceConnections::SLdrSequenceConnections(CInputStream& input) : mConnect
 rstl::pair< float, float >
 FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >& connections) {
   float minTime = FLT_MAX;
-  float maxTime = 1.175494351e-38f; // Smallest positive normal float, even for an empty schedule.
+  float maxTime = FLT_MIN;
 
   for (rstl::vector< SLdrConnection >::const_iterator connection = connections.begin();
        connection != connections.end(); ++connection) {
