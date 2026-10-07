@@ -108,7 +108,7 @@ bool CWorld::CheckWorldComplete(CStateManager* mgr, TAreaId aid, CAssetId mreaId
     }
     CMemoryInStream in(mLoadBuf.get(), mBufSize);
     in.ReadInt32();
-    int version = in.ReadInt32();
+    int version = in.ReadUint32();
     mStrgId = in.ReadInt32();
     if (version >= 22u) {
       mDarkStrgId = in.ReadInt32();
