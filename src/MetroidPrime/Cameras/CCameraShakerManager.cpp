@@ -171,9 +171,11 @@ CVector3f CCameraShakerManager::GetTranslation(const CStateManager& mgr) const {
   if (mgr.GetNumPlayers() == 2) {
     scale = 0.75f;
   }
-  const CVector3f translation = scale * mTranslation;
-  const float x = CMath::Clamp(-1.f, translation.GetX(), 1.f);
-  const float y = CMath::Clamp(-1.f, translation.GetY(), 0.25f);
-  const float z = CMath::Clamp(-1.f, translation.GetZ(), 1.f);
+  float x = scale * mTranslation.GetX();
+  float y = scale * mTranslation.GetY();
+  float z = scale * mTranslation.GetZ();
+  x = CMath::Clamp(-1.f, x, 1.f);
+  y = CMath::Clamp(-1.f, y, 0.25f);
+  z = CMath::Clamp(-1.f, z, 1.f);
   return CVector3f(x, y, z);
 }
