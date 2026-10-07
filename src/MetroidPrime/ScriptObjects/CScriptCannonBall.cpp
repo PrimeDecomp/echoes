@@ -32,7 +32,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       player->SetTransform(
           CTransform4f(xf.BuildMatrix3f(), player->GetTranslation())); // todo use position
       morph->SwitchToTire();
-      m_fields[player->GetPlayerIndex()].OnIncrementMsg(mgr, 1);
+      m_fields[player->GetPlayerIndex()].OnIncrementMsg(mgr, true);
     }
     break;
   }
@@ -77,7 +77,7 @@ void CScriptCannonBall::Think(float dt, CStateManager& mgr) {
   }
 }
 
-CScriptCannonBall::TrackedShot::TrackedShot(TUniqueId id, bool b)
+CScriptCannonBall::TrackedShot::TrackedShot(TUniqueId id, const bool b)
 : m_scriptObject(id), m_f(1.0), m_updateFrameIdx(0), m_b(b) {}
 
 void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int index) {
@@ -97,8 +97,8 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
   }
   if (m_b) {
     if (!effect->IsEmitting()) {
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Activate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, effect->GetUniqueId(), kSM_Activate));
       player->GetPlayerState()->SetItemAmount(CPlayerState::kIT_CannonBall, 1);
     }
 
@@ -121,8 +121,8 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
     }
     if (disable) {
 
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Deactivate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, effect->GetUniqueId(), kSM_Deactivate));
       player->GetPlayerState()->SetItemAmount(CPlayerState::kIT_CannonBall, 0);
       m_b = false;
     }
@@ -131,8 +131,8 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
     m_f -= dt / 0.25f;
     if (m_f < 0.0f) {
       m_f = 0.0f;
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Deactivate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, effect->GetUniqueId(), kSM_Deactivate));
       m_flag2 = false;
     }
   }
@@ -141,10 +141,11 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
   effect->SetModelFlags(CModelFlags(CModelFlags::kT_One, color));
 }
 
-void CScriptCannonBall::TrackedShot::OnIncrementMsg(CStateManager& mgr, int param) {
-  // m_b = param;
-  // m_flag2 = param;
-  if (param == 0) {
+void CScriptCannonBall::TrackedShot::OnIncrementMsg(CStateManager& mgr, bool param) {
+  const bool b = param;
+  m_b = b;
+  m_flag2 = b;
+  if (!b) {
     return;
   }
   m_updateFrameIdx = mgr.GetUpdateFrameIdx();

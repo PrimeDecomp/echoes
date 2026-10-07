@@ -44,7 +44,10 @@ public:
     mCount = 0;
   }
 
-  ~reserved_vector() { destroy_elements(); }
+  ~reserved_vector() {
+    RSTL_PRECONDITION(mCount >= 0);
+    destroy_elements();
+  }
 
   void push_back(const T& in) {
     construct(data() + mCount, in);
@@ -85,8 +88,8 @@ public:
     if (mCount == count) {
       return;
     }
-    if (count < mCount) {
-      destroy(data() + count, data() + mCount);
+    if (mCount > count) {
+      destroy(begin() + count, end());
     } else {
       uninitialized_fill_n(data() + mCount, count - mCount, item);
     }
@@ -100,6 +103,7 @@ private:
     if (is_trivially_destructible< T >::value) {
       return;
     }
+    RSTL_PRECONDITION(mCount >= 0);
     T* ptr = data();
     for (int i = 0; i < mCount; ++i) {
       destroy(&ptr[i]);

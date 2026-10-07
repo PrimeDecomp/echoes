@@ -19,18 +19,23 @@ void CFluidUVMotion::CalculateFluidLayerOffset(float t, int layerIndex, float of
   const SFluidLayerMotion& layer = mFluidLayers[layerIndex];
   const float speedT = t * layer.mOoTimeToWrap;
   const float cycleT = speedT - floorf(speedT);
-  float localX = 0.f;
-  float localY = 0.f;
+  float localY;
+  float localX;
   switch (layer.mMotion) {
   case kFM_Linear:
     localX = cycleT;
+    localY = 0.f;
     break;
   case kFM_Circular:
     localY = layer.mMagnitude * CMath::FastSinR(M_2PIF * cycleT);
     localX = layer.mMagnitude * CMath::FastCosR(M_2PIF * cycleT);
     break;
   case kFM_Oscillate:
+    localY = 0.f;
     localX = layer.mMagnitude * CMath::FastCosR(M_2PIF * cycleT);
+    break;
+  default:
+    localY = localX = 0.f;
     break;
   }
 

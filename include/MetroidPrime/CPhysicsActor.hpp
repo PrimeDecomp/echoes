@@ -107,7 +107,6 @@ public:
   virtual bool IsOnStaticGround() const;
   virtual float GetWeight() const;
   float GetMass() const { return mMass; }
-  void SetAngularEnabled(bool enabled) { mAngularEnabled = enabled; } // Guessed from Prime.
   CCollisionCache* GetCollisionCache() const; // Guessed name; borrowed mutable cache.
   void SetMass(float mass);
   void SetInertiaTensorScalar(float tensor);
@@ -200,6 +199,8 @@ public:
   void AddMotionState(const CMotionState& state);
   bool GetMovable() const { return mMovable; }
   void SetMovable(bool v) { mMovable = v; }
+  bool GetAngularEnabled() const { return mAngularEnabled; }
+  void SetAngularEnabled(bool v) { mAngularEnabled = v; }
 
   void MoveToWR(const CVector3f&, float);
   void MoveToInOneFrameWR(const CVector3f&, float);

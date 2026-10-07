@@ -37,7 +37,8 @@ CGuiTableGroup* CGuiTableGroup::Create(CGuiFrame* frame, CInputStream& in, CSimp
     in.ReadInt32();
     in.ReadInt16();
     in.ReadUint16();
-    selectWrapAround = in.ReadBool();
+    const bool wrap = in.ReadBool();
+    selectWrapAround = wrap;
     in.ReadBool();
     in.ReadFloat();
     in.ReadFloat();
@@ -48,7 +49,8 @@ CGuiTableGroup* CGuiTableGroup::Create(CGuiFrame* frame, CInputStream& in, CSimp
     in.ReadUint16();
     in.ReadUint16();
   } else {
-    selectWrapAround = in.ReadBool();
+    const bool wrap = in.ReadBool();
+    selectWrapAround = wrap;
   }
 
   CGuiTableGroup* group = rs_new CGuiTableGroup(parms, selectWrapAround);

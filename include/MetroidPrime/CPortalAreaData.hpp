@@ -29,7 +29,7 @@ public:
     bool Intersects(const CAABox& bounds, int node) const;
 
     rstl::vector< SBspNode > mNodes;
-    ushort mPortalIndexStart;
+    short mPortalIndexStart;
     CAABox mBounds;
   };
 
@@ -40,7 +40,7 @@ public:
 
     rstl::reserved_vector< CVector3f, 4 > mVertices;
     CPlane mPlane;
-    ushort mVolumeIndexStart;
+    short mVolumeIndexStart;
   };
 
   struct SBoundingTreeNode {

@@ -5,6 +5,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPathCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 // Guessed name, supported by the time-keyframe loader and connected-object updates.
@@ -170,4 +171,19 @@ void CScriptPathCamera::RotateSplines(const CQuaternion& rotation, const CVector
   mPlayerSpline.Rotate(rotation, origin);
 }
 
-CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}
+CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPathCamera sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPathCamera.inc"
+  return rs_new CScriptPathCamera(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.distance, sldrThis.speed,
+      sldrThis.angularSpeed * (M_PIF / 180.f), sldrThis.dampenDistance, sldrThis.flagsPathCamera,
+      sldrThis.unknown_0xd4b29446, sldrThis.initialPosition,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
+      static_cast< CMotionSpline::ESplineType >(sldrThis.targetSplineType.type),
+      sldrThis.motionControlSpline, sldrThis.targetControlSpline, sldrThis.fOVSpline,
+      sldrThis.speedControlSpline,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.playerSplineType.type),
+      sldrThis.playerSplineLoops, CMayaSpline(sldrThis.perpendicularDistanceControlSpline),
+      CMayaSpline(sldrThis.perpendicularInterpControlSpline));
+}

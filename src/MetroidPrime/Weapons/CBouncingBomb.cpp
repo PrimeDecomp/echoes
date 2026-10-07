@@ -32,7 +32,13 @@ CBouncingBomb::CBouncingBomb(TToken< CGenDescription > particle,
 , mExplosionElapsed(0.f)
 , mBounceCount(0)
 , mIsNotDetonated(true)
-, mDisableFuse(false) {}
+, mDisableFuse(false) {
+  mParticle->SetGlobalTranslation(xf.GetTranslation());
+  mExplosionParticle->SetGlobalTranslation(xf.GetTranslation());
+  if (mFuseTime < 0.f) {
+    mDisableFuse = true;
+  }
+}
 
 CBouncingBomb::~CBouncingBomb() {}
 

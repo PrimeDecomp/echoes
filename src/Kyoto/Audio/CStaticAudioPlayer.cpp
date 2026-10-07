@@ -44,9 +44,7 @@ void CStaticAudioPlayer::AICallback() {
 
 void CStaticAudioPlayer::RunDMACallback(const FAudioCallback callback) {
   CInterruptGuard interrupts;
-  const rstl::reserved_vector< FAudioCallback, 4 >::iterator it =
-      rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback);
-  if (it == sAICallbacks.end()) {
+  if (rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback) == sAICallbacks.end()) {
     sAICallbacks.push_back(callback);
   }
 
@@ -188,7 +186,7 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
 }
 
 void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int numSamples,
-                                          int startSample, int sampleEnd, int sampleStart, int vol,
+                                          int startSample, int sampleEnd, const int sampleStart, int vol,
                                           g72x_state& state) {
   ushort* outCursor = out;
   const ushort* inCursor = in;

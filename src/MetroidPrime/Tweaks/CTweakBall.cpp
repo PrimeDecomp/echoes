@@ -17,10 +17,10 @@ float CTweakBall::GetMaxBallTranslationAcceleration(int surface) const {
     return mData->movement.forwardAccelOrganic;
   case 4:
     return mData->movement.forwardAccelWater;
-  case 5:
-    return mData->movement.forwardAccelPhazon;
   case 6:
     return mData->movement.forwardAccelLava;
+  case 5:
+    return mData->movement.forwardAccelPhazon;
   case 7:
     return mData->movement.forwardAccelShrubbery;
   }
@@ -39,10 +39,10 @@ float CTweakBall::GetBallTranslationFriction(int surface) const {
     return mData->movement.movementFrictionOrganic;
   case 4:
     return mData->movement.movementFrictionWater;
-  case 5:
-    return mData->movement.movementFrictionPhazon;
   case 6:
     return mData->movement.movementFrictionLava;
+  case 5:
+    return mData->movement.movementFrictionPhazon;
   case 7:
     return mData->movement.movementFrictionShrubbery;
   }
@@ -61,10 +61,10 @@ float CTweakBall::GetBallTranslationMaxSpeed(int surface) const {
     return mData->movement.forwardMaxSpeedOrganic;
   case 4:
     return mData->movement.forwardMaxSpeedWater;
-  case 5:
-    return mData->movement.forwardMaxSpeedPhazon;
   case 6:
     return mData->movement.forwardMaxSpeedLava;
+  case 5:
+    return mData->movement.forwardMaxSpeedPhazon;
   case 7:
     return mData->movement.forwardMaxSpeedShrubbery;
   }
@@ -83,10 +83,10 @@ float CTweakBall::GetBallForwardBrakingAcceleration(int surface) const {
     return mData->movement.ballForwardBrakingAccelOrganic;
   case 4:
     return mData->movement.ballForwardBrakingAccelWater;
-  case 5:
-    return mData->movement.ballForwardBrakingAccelPhazon;
   case 6:
     return mData->movement.ballForwardBrakingAccelLava;
+  case 5:
+    return mData->movement.ballForwardBrakingAccelPhazon;
   case 7:
     return mData->movement.ballForwardBrakingAccelShrubbery;
   }
@@ -96,14 +96,19 @@ float CTweakBall::GetBallSlipFactor(int surface) const {
   switch (surface) {
   default:
   case 0:
+    return 10000.f;
   case 1:
-  case 3:
     return 10000.f;
   case 2:
     return 1000.f;
+  case 3:
+    return 10000.f;
   case 4:
-  case 5:
+    return 2000.f;
   case 6:
+    return 2000.f;
+  case 5:
+    return 2000.f;
   case 7:
     return 2000.f;
   }

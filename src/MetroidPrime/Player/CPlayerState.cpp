@@ -655,7 +655,7 @@ void CPlayerState::SetPersistentState(const CPlayerState::SPersistentState& s) {
 }
 
 void CPlayerState::IncrementChargeBeamFactor(float delta) {
-  mChargeBeamFactor = rstl::min_val(rstl::max_val(mChargeBeamFactor + delta, 0.f), 1.f);
+  mChargeBeamFactor = CMath::Clamp(0.f, mChargeBeamFactor + delta, 1.f);
 }
 
 void CPlayerState::DecrementAmmoAndDisplayAlertIfOut(CStateManager& mgr,

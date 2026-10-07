@@ -229,7 +229,7 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
     }
   }
 
-  SetTransform(ValidateCameraTransform(GetTransform(), oldTransform));
+  SetTransform(ValidateCameraTransform(GetTransform(), oldTransform, dt));
   SetTranslation(position);
   TeleportCamera(position, mgr);
   mToBallTransition->mPlayerXf = player.GetTransform();

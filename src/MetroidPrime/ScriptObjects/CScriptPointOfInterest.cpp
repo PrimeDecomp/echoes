@@ -33,7 +33,7 @@ void CScriptPointOfInterest::Render(const CStateManager&) const {}
 void CScriptPointOfInterest::AddToRenderer(const CStateManager&) const {}
 
 void CScriptPointOfInterest::Think(float dt, CStateManager& mgr) {
-  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
     SetValidTarget(i, mgr.GetPlayerState(i)->GetCurrentVisor() == CPlayerState::kPV_Scan);
   }
   CActor::Think(dt, mgr);

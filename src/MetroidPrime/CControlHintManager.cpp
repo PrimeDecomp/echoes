@@ -29,7 +29,7 @@ bool CControlHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool are
 }
 
 void CControlHintManager::ClearHint(CStateManager& mgr, bool areaChanged) {
-  ClearCurrentHint(10000);
+  SetCurrentHint(kInvalidUniqueId, 10000);
   mgr.GetPlayer(GetPlayerIndex())->GetControlMapper().ResetCommandFilters();
 }
 
@@ -92,26 +92,29 @@ TUniqueId CControlHintManager::CreateHint(CStateManager& mgr, const rstl::string
                                           CGameHint::SCallback onBreak, float breakDelay,
                                           int acrossAreas) {
   const rstl::vector< SConnection > connections;
-  CScriptControlHint* hint = rs_new CScriptControlHint(
-      mgr.AllocateUniqueId(), name, CEntityInfo(kInvalidAreaId, connections, true, kUnkId),
+  CEntity* ent = rs_new CScriptControlHint(
+      mgr.AllocateUniqueId(), name,
+      CEntityInfo(kInvalidAreaId, connections, true, kInvalidEditorId),
       CTransform4f::Identity(), priority, timer, disableFlags, commandStates, breakType, 1,
       requiredPresses, unknown16c, onExpire, onBreak, breakDelay, acrossAreas);
-  if (!hint) {
-    return kInvalidUniqueId;
+  if (ent) {
+    mgr.AddObject(ent);
+    AddHint(ent->GetUniqueId(), sender, mgr);
+    return ent->GetUniqueId();
   }
-  mgr.AddObject(hint);
-  AddHint(hint->GetUniqueId(), sender, mgr);
-  return hint->GetUniqueId();
+  return kInvalidUniqueId;
 }
 
-bool CControlHintManager::HasDisableFlags(uint flags, const CStateManager& mgr) const {
+uchar CControlHintManager::HasDisableFlags(uint flags, const CStateManager& mgr) const {
+  bool ret = false;
   for (rstl::vector< SHint >::const_iterator it = GetHints().begin(); it != GetHints().end();
        ++it) {
     const CScriptControlHint* hint =
         TCastToConstPtr< CScriptControlHint >(mgr.GetObjectById(it->mState.GetHintId()));
     if (hint && (hint->GetDisableFlags() & flags)) {
-      return true;
+      ret = true;
+      break;
     }
   }
-  return false;
+  return ret;
 }

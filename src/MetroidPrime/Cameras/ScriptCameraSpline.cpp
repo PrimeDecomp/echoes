@@ -76,7 +76,10 @@ void ScriptCameraSpline::Initialise(const CEntity& entity, EScriptObjectState po
 float ScriptCameraSpline::ClampLength(const CMotionSpline& spline, const CVector3f& position,
                                      bool checkObstructions, const CMaterialFilter& filter,
                                      const CStateManager& mgr) {
-  if (spline.GetKnotCount() == 0 || spline.IsClosedLoop()) {
+  if (spline.GetKnotCount() == 0) {
+    return 0.f;
+  }
+  if (spline.IsClosedLoop()) {
     return 0.f;
   }
 

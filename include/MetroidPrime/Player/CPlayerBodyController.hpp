@@ -10,6 +10,12 @@
 #include "rstl/pair.hpp"
 #include "rstl/reserved_vector.hpp"
 
+namespace rstl {
+// The locomotion table's per-mode rows are copied bitwise (bitwise_copy<13> + trailing word).
+typedef reserved_vector< pair< int, float >, 13 > LocomotionAnimRow;
+RSTL_DECLARE_BITWISE_CONSTRUCTION(LocomotionAnimRow)
+} // namespace rstl
+
 class CPlayer;
 class CActor;
 class CPASDatabase;
@@ -58,20 +64,18 @@ public:
 
   float GetCurrentAnimationDuration() const { return mAnimationDuration; }
 
-  bool IsUnfreezing() const { return (mAnimationFlags & kAF_Unfreezing) != 0; }
+  bool IsUnfreezing() const { return mUnfreezing; }
 
   int GetLocomotionMode() const { return mLocomotion.mLocomotionMode; }
 
   // Reconstructed accessors for the existing native animation masks.
-  bool IsMoving() const { return (mAnimationFlags & kAF_Moving) != 0; }
-  bool IsFastLocomotion() const { return (mAnimationFlags & kAF_FastLocomotion) != 0; }
-  bool IsLocomotionActive() const { return (mAnimationFlags & kAF_LocomotionActive) != 0; }
-  bool IsMorphTransitionActive() const {
-    return (mAnimationFlags & kAF_MorphTransitionActive) != 0;
-  }
+  bool IsMoving() const { return mMoving; }
+  bool IsFastLocomotion() const { return mFastLocomotion; }
+  bool IsLocomotionActive() const { return mLocomotionActive; }
+  bool IsMorphTransitionActive() const { return mMorphTransitionActive; }
   void SetLocomotionMode(int mode) { mLocomotion.SetLocomotionMode(mode); }
 
-  bool IsAnimationOver() const { return (mAnimationFlags & kAF_AnimationOver) != 0; }
+  bool IsAnimationOver() const { return mAnimationOver; }
 
   const CPASDatabase& GetPASDatabase() const;
   void MultiplyPlaybackRate(float rate);
@@ -79,24 +83,11 @@ public:
   void SelectAnimation(const CPASAnimParmData& parameters, CRandom16& random);
   bool IsAnimationLooping() const;
 
-  bool IsDeathReactionOver() const { return (mReactionFlags & kRF_DeathReactionOver) != 0; }
+  bool IsDeathReactionOver() const { return mDeathReactionOver; }
 
-  bool IsDeathReactionActive() const { return (mReactionFlags & kRF_DeathReactionActive) != 0; }
+  bool IsDeathReactionActive() const { return mDeathReactionActive; }
 
 private:
-  enum EAnimationFlags {
-    kAF_AnimationOver = 0x80,
-    kAF_StateMachinesInitialized = 0x40,
-    kAF_Moving = 0x20,
-    kAF_FastLocomotion = 0x10,
-    kAF_LocomotionActive = 0x8,
-    kAF_Aiming = 0x4,
-    kAF_Unfreezing = 0x2,
-    kAF_MorphTransitionActive = 0x1
-  };
-
-  enum EReactionFlags { kRF_DeathReactionOver = 0x80, kRF_DeathReactionActive = 0x40 };
-
   enum EStatePhase { kSP_Invalid = -1, kSP_Active = 2, kSP_Over = 3 };
 
   struct SLocomotionState {
@@ -225,7 +216,7 @@ private:
     void Shutdown(CPlayerBodyController& controller);
     void UpdatePitch(float dt, const CVector3f& direction, CPlayerBodyController& controller);
 
-    int mAvailableAnimations[3];
+    uint mAvailableAnimations[3];
     int mAnimationIds[3][4];
     float mYawLimits[2];
     float mPitchLimits[2];
@@ -346,9 +337,16 @@ private:
   int mAnimationId;
   float mAnimationDuration;
   rstl::optional_object< SAnimationRequest > mPendingAnimation;
-  // Packed native flag bytes. Only investigated animation/reaction masks are exposed.
-  uchar mAnimationFlags;
-  uchar mReactionFlags;
+  bool mAnimationOver : 1;
+  bool mStateMachinesInitialized : 1;
+  bool mMoving : 1;
+  bool mFastLocomotion : 1;
+  bool mLocomotionActive : 1;
+  bool mAiming : 1;
+  bool mUnfreezing : 1;
+  bool mMorphTransitionActive : 1;
+  bool mDeathReactionOver : 1;
+  bool mDeathReactionActive : 1;
 };
 CHECK_SIZEOF(CPlayerBodyController, 0x794)
 

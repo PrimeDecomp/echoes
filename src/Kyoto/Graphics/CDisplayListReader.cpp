@@ -92,15 +92,14 @@ uint CDisplayListReader::GetVertexIndex(const uchar* vertex, GXAttr attribute) c
 }
 
 bool CDisplayListReader::EnumerateTriangles(IDisplayListTriangleCallback& callback) const {
-  const uchar* displayList = mDisplayList;
-  const int size = mSize;
   int offset = 0;
-  while (offset < size) {
+  const uchar* displayList = mDisplayList;
+  while (offset < mSize) {
     const GXPrimitive primitive = static_cast< GXPrimitive >(displayList[offset++] & 0xfc);
     if (primitive == GX_NOP) {
       continue;
     }
-    const ushort count = ReadDisplayListShort(displayList + offset);
+    const int count = ReadDisplayListShort(displayList + offset);
     offset += 2;
 
     switch (primitive) {
@@ -116,15 +115,17 @@ bool CDisplayListReader::EnumerateTriangles(IDisplayListTriangleCallback& callba
       break;
     }
     case GX_TRIANGLEFAN: {
+      const int stride = mVertexStride;
       const uchar* first = displayList + offset;
-      const uchar* previous = first + mVertexStride;
-      const uchar* current = previous + mVertexStride;
+      int previous = offset + stride;
+      int current = previous + stride;
       for (int i = 2; i < count; ++i) {
-        if (!callback.OnTriangle(*this, first, previous, current)) {
+        const int last = previous;
+        previous = current;
+        current += stride;
+        if (!callback.OnTriangle(*this, first, displayList + last, displayList + previous)) {
           return false;
         }
-        previous = current;
-        current += mVertexStride;
       }
       break;
     }

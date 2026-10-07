@@ -20,8 +20,8 @@ void CPlayerBodyController::SAdditiveReactionState::Start(CStateManager& mgr,
     mLooping = command->IsLooping();
     const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_AdditiveReaction),
                                 CPASAnimParm::FromEnum(mType));
-    const rstl::pair< float, int > best =
-        controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+    const CPASDatabase& database = controller.GetPASDatabase();
+    const rstl::pair< float, int > best = database.FindBestAnimation(parms, *mgr.Random(), -1);
     mAnimationId = best.second;
     if (mAnimationId != -1) {
       controller.GetPlayer().AnimationData()->AddAdditiveAnimation(mAnimationId, 1.f, mLooping,
@@ -47,12 +47,13 @@ bool CPlayerBodyController::SAdditiveReactionState::Update(CStateManager& mgr,
       controller.GetPlayer().StopLoopedSounds();
     }
   } else {
-    if (!animation.IsAdditiveAnimation(mAnimationId)) {
-      return false;
-    }
-    const rstl::rc_ptr< CAnimTreeNode > tree = animation.GetAdditiveAnimationTree(mAnimationId);
-    if (tree && close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f)) {
-      StopAnimation(controller);
+    if (animation.IsAdditiveAnimationActive(mAnimationId)) {
+      const rstl::rc_ptr< CAnimTreeNode > tree = animation.GetAdditiveAnimationTree(mAnimationId);
+      if (tree && close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f)) {
+        StopAnimation(controller);
+        return false;
+      }
+    } else {
       return false;
     }
   }

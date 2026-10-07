@@ -90,9 +90,9 @@ void CAnimSourceReader::VGetSegData(const CCharLayoutInfo& layout,
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimSourceReader::VClone() const {
-  return rs_new CAnimSourceReader(mSource, mPOIData, mCurTime, mSteadyStateInfo, mPassedBoolCount,
-                                  mPassedIntCount, mPassedParticleCount, mPassedSoundCount,
-                                  mBoolStates, mInt32States, mParticleStates);
+  return rstl::ownership_transfer< IAnimReader >(rs_new CAnimSourceReader(
+      mSource, mPOIData, mCurTime, mSteadyStateInfo, mPassedBoolCount, mPassedIntCount,
+      mPassedParticleCount, mPassedSoundCount, mBoolStates, mInt32States, mParticleStates));
 }
 
 SAdvancementResults CAnimSourceReader::VReverseView(const CCharAnimTime& dt) {

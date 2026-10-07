@@ -234,17 +234,17 @@ void CPhysicsActor::MoveToInOneFrameWR(const CVector3f& trans, float d) {
 
 CVector3f CPhysicsActor::GetMoveToORImpulseWR(const CVector3f& trans, float d) const {
   CVector3f impulse = GetTransform().Rotate(trans);
-  return (GetMass() * impulse) / d;
+  return (1.f / d) * (GetMass() * impulse);
 }
 
 CVector3f CPhysicsActor::GetRotateToORAngularMomentumWR(const CQuaternion& q, float d) const {
   if (q.GetScalar() > 0.99999976f) {
     return CVector3f::Zero();
   } else {
-    const CVector3f rotated = GetTransform().Rotate(q.GetVector());
-
-    float ac = acos(q.GetScalar());
-    return rotated.AsNormalized() * ((ac * 2.0f) * (1.0f / d)) * mInertiaTensor;
+    const CQuaternion rotated(q.GetScalar(), GetTransform().Rotate(q.GetVector()));
+    const double ac = acos(q.GetScalar());
+    return (rotated.GetVector().AsNormalized() * ((2.f * static_cast< float >(ac)) * (1.f / d))) *
+           mInertiaTensor;
   }
 }
 
@@ -306,6 +306,10 @@ void CPhysicsActor::SetInertiaTensorScalar(float tensor) {
 
 const CCollisionPrimitive* CPhysicsActor::GetCollisionPrimitive() const {
   return &mCollisionPrimitive;
+}
+
+void CPhysicsActor::SetCollisionPrimitive(const CCollidableAABox& primitive) {
+  mCollisionPrimitive = primitive;
 }
 
 void CPhysicsActor::MoveCollisionPrimitive(const CVector3f& offset) {

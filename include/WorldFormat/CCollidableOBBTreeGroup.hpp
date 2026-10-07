@@ -39,7 +39,7 @@ public:
                                  CCollisionInfo& info);
 
   // Guessed name for the Echoes collision-cache addition.
-  void CacheTree(CCollisionCache& cache, const CTransform4f& xf, short ownerId, u64 material) const;
+  void CacheTree(CCollisionCache& cache, const CTransform4f& xf, ushort ownerId, u64 material) const;
 
 private:
   rstl::auto_ptr< COBBTreeGroup > mOwnedContainer;

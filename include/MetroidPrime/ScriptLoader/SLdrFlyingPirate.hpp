@@ -52,7 +52,7 @@ struct SLdrFlyingPirate {
   float unknown_0x7ac85cb6; // 0x7ac85cb6
 };
 
-inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), actorInformation(), projectile(kInvalidAssetId), projectileDamage(), missile(kInvalidAssetId), missileDamage(), wPSC(kInvalidAssetId), rocketPackExplosion(kInvalidAssetId), rocketPackExplosionDamage(), landingCloudDirt(kInvalidAssetId), landingCloudDust(kInvalidAssetId), landingCloudSnow(kInvalidAssetId) {
+inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), actorInformation(), projectile(kInvalidAssetId), projectileDamage(), sound_Projectile(-1), missile(kInvalidAssetId), missileDamage(), wPSC(kInvalidAssetId), rocketPackExplosion(kInvalidAssetId), rocketPackExplosionDamage(), sound_Impact(-1), sound_Spiral(-1), landingCloudDirt(kInvalidAssetId), landingCloudDust(kInvalidAssetId), landingCloudSnow(kInvalidAssetId), sound_Hurled(-1), sound_Death(-1) {
   patterned.turnSpeed = 360.0f;
   patterned.detectionAngle = 90.0f;
   patterned.minAttackRange = 15.0f;
@@ -67,12 +67,13 @@ inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), a
   patterned.health.hI_KnockBackResistance = 5.0f;
   patterned.collisionHeight = 6.0f;
   patterned.stepUpHeight = 0.30000001f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   searchRadius = 20.0f;
   hearingRadius = 20.0f;
   unknown_0x20daf45e = 0;
   projectileDamage.dI_WeaponType = 9;
   projectileDamage.dI_Damage = 5.0f;
-  sound_Projectile = 0;
   missileDamage.dI_WeaponType = 9;
   missileDamage.dI_Damage = 10.0f;
   missileDamage.dI_Radius = 5.0f;
@@ -86,13 +87,9 @@ inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), a
   minimumMissileTime = 10.0f;
   missileTimeVariation = 10.0f;
   flightThrust = 1000.0f;
-  sound_Impact = 0;
-  sound_Spiral = 0;
   landChance = 25.0f;
   intraBurstShotTime = 0.1f;
   intraBurstShotVariation = 0.050000001f;
-  sound_Hurled = 0;
-  sound_Death = 0;
   doubleAttackChance = 25.0f;
   unknown_0x3427d27f = 25.0f;
   stopHomingRange = 8.0f;

@@ -22,7 +22,7 @@ void get_token_vector(CAnimData& animData, int animIdx, rstl::vector< CToken >& 
 void get_token_vector(CAnimData& animData, const rstl::vector< int >& animIdxs,
                       rstl::vector< CToken >& tokensOut, bool preLock);
 void primitive_set_to_token_vector(const rstl::set< CPrimitive >& primSet,
-                                   rstl::vector< CToken >& tokensOut, bool preLock);
+                                   rstl::vector< CToken >& tokensOut, const bool preLock);
 void lock_tokens(rstl::vector< CToken >& tokens);
 void unlock_tokens(rstl::vector< CToken >& tokens);
 bool are_tokens_ready(const rstl::vector< CToken >& tokens);

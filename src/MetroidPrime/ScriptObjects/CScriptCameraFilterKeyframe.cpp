@@ -28,7 +28,7 @@ void CScriptCameraFilterKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScr
       const int stage = mFilterStage;
       const CCameraFilterPass::EFilterType type = mType;
       const CCameraFilterPass::EFilterShape shape = mShape;
-      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
         mgr.CameraFilterPass(i, stage).SetFilter(type, shape, mTimeIn, mColor, mTxtr);
       }
     }
@@ -36,7 +36,7 @@ void CScriptCameraFilterKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScr
   case kSM_Decrement:
     if (GetActive()) {
       const int stage = mFilterStage;
-      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
         mgr.CameraFilterPass(i, stage).DisableFilter(mTimeOut);
       }
     }
@@ -46,7 +46,7 @@ void CScriptCameraFilterKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScr
       const int stage = mFilterStage;
       const CCameraFilterPass::EFilterType type = mType;
       const CCameraFilterPass::EFilterShape shape = mShape;
-      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
         mgr.CameraFilterPass(i, stage).SetFilter(type, shape, 0.f, mColor, mTxtr);
       }
     }
@@ -55,7 +55,7 @@ void CScriptCameraFilterKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScr
   case kSM_SetToZero:
     if (GetActive()) {
       const int stage = mFilterStage;
-      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
         mgr.CameraFilterPass(i, stage).DisableFilter(0.f);
       }
     }

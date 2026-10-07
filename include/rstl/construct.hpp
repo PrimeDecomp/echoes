@@ -60,6 +60,35 @@ struct construction_policy< T, true > {
   static void construct(void* dest, const T& src) { *static_cast< T* >(dest) = src; }
 };
 
+// Bitwise construction copies the object as doubles in an out-of-line routine (one weak
+// instance per size), skipping both the copy constructor and the placement-new null check.
+template < int N >
+void bitwise_copy(void* dest, const void* src);
+
+template < int N >
+void bitwise_copy(void* dest, const void* src) {
+  for (int i = 0; i < N; ++i) {
+    static_cast< double* >(dest)[i] = static_cast< const double* >(src)[i];
+  }
+}
+
+// A trailing 4-byte remainder is copied inline after the double-word block.
+#define RSTL_DECLARE_BITWISE_CONSTRUCTION(T) \
+  template <> \
+  struct use_assignment_for_construction< T > { \
+    enum { value = true }; \
+  }; \
+  template <> \
+  struct construction_policy< T, true > { \
+    static void construct(void* dest, const T& src) { \
+      bitwise_copy< sizeof(T) / sizeof(double) >(dest, &src); \
+      if (sizeof(T) % sizeof(double) != 0) { \
+        static_cast< uint* >(dest)[sizeof(T) / sizeof(uint) - 1] = \
+            reinterpret_cast< const uint* >(&src)[sizeof(T) / sizeof(uint) - 1]; \
+      } \
+    } \
+  };
+
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(char)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(signed char)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(uchar)
@@ -70,6 +99,7 @@ RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(uint)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(unsigned long)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(short)
 RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(ushort)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(u64)
 
 template < typename T >
 inline void construct(void* dest, const T& src) {
@@ -105,6 +135,7 @@ inline void destroy_impl(It begin, It end) {
 
 template < typename It >
 inline void destroy(It begin, It end) {
+  RSTL_PRECONDITION(begin <= end);
   destroy_impl(begin, end);
 }
 

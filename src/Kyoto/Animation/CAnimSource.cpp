@@ -11,9 +11,16 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 // Guessed name, corroborated by Prime and the native frame-sampling consumers.
-static float clamp_zero_to_one(float value) {
-  const float nonnegative = CMath::FastFSel(value, value, 0.f);
-  return CMath::FastFSel(value - 1.f, 1.f, nonnegative);
+static float clamp_zero_to_one(register float value) {
+  register float out;
+  register float zero = 0.f;
+  register float one = 1.f;
+  asm {
+    fsel out, value, value, zero
+    fsubs value, value, one
+    fsel out, value, one, out
+  }
+  return out;
 }
 
 uint RotationAndOffsetStorage::DataSizeInBytes(uint rotationsPerFrame, uint offsetsPerFrame,

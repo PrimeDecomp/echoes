@@ -6,6 +6,7 @@
 #include "MetroidPrime/TGameTypes.hpp"
 #include "MetroidPrime/HUD/CScanHistory.hpp"
 #include "rstl/auto_ptr.hpp"
+#include "rstl/single_ptr.hpp"
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
 class CGuiFrame;
@@ -49,7 +50,7 @@ private:
   rstl::auto_ptr< CGuiFrame > mFlatFrame;
   CGuiFrame* mLoadedFlatFrame;
   const TLockedToken< CStringTable >& mStrings;
-  CScanDisplay* mScanDisplay; // Owned; construction/destruction awaits its shared interface.
+  rstl::single_ptr< CScanDisplay > mScanDisplay;
   TUniqueId mLatestHudPoi;
   TUniqueId mLatestScanningObject;
   int mLatestScanState;

@@ -20,7 +20,6 @@ class CWeaponDescription;
 class CAuxWeapon {
 public:
   explicit CAuxWeapon(TUniqueId playerId);
-  ~CAuxWeapon();
 
   void Fire(float dt, bool underwater, int currentBeam, CPlayerState::EChargeStage chargeState,
             const CTransform4f& xf, CStateManager& mgr, EWeaponType type, TUniqueId homingId,

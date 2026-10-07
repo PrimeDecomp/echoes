@@ -325,9 +325,8 @@ void CPakFile::EnsureWorldPakReady() {
     RebuildResourceLists(resources);
     if (mBuildDepList) {
       mDepList.reserve(mResTableCount);
-      const SResInfo* info = resources.data();
-      for (int i = 0; i < mResTableCount; ++i, ++info)
-        mDepList.push_back_unsafe(info->GetId());
+      for (int i = 0; i < mResTableCount; ++i)
+        mDepList.push_back_unsafe(resources[i].GetId());
     }
     mStashedInARAM = false;
     UpdateFakeStaticSize();

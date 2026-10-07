@@ -57,31 +57,12 @@ struct CMoviePlayer::SIndexLoad {
   rstl::single_ptr< uchar > mBuffer;
   int mState;
 
-  ~SIndexLoad();
+  ~SIndexLoad() {}
 
   SIndexLoad()
   : mBuffer(static_cast< uchar* >(CMemory::Alloc(64, IAllocator::kHI_RoundUpLen)))
   , mState(0) {}
 };
-CMoviePlayer::SIndexLoad::~SIndexLoad() {}
-
-CMoviePlayer::CTHPTextureSet::CTHPTextureSet(void* y, void* u, void* v, void* audio)
-: mY(static_cast< uchar* >(y))
-, mU(static_cast< uchar* >(u))
-, mV(static_cast< uchar* >(v))
-, mAudio(static_cast< uchar* >(audio))
-, mAudioSamples(0)
-, mAudioSamplesConsumed(0) {}
-
-CMoviePlayer::CTHPTextureSet::CTHPTextureSet(const CTHPTextureSet& other)
-: mY(other.mY)
-, mU(other.mU)
-, mV(other.mV)
-, mAudio(other.mAudio)
-, mAudioSamples(other.mAudioSamples)
-, mAudioSamplesConsumed(other.mAudioSamplesConsumed) {}
-
-CMoviePlayer::CTHPTextureSet::~CTHPTextureSet() {}
 
 const unsigned char skInterlacePattern[32] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

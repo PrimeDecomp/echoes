@@ -21,7 +21,8 @@ CScriptCameraShaker::CScriptCameraShaker(TUniqueId uid, const rstl::string& name
 }
 
 void CScriptCameraShaker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_Action) {
+  switch (msg.GetMessage()) {
+  case kSM_Action:
     if (mShakeData.GetFlags() & 0x80) {
       const CActor* actor = nullptr;
       if (msg.GetOriginator() != kInvalidUniqueId) {
@@ -38,27 +39,39 @@ void CScriptCameraShaker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
         mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetOcclusionState() !=
             CGameArea::kOS_Occluded) {
       if (mShakeData.GetFlags() & 2) {
-        for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
+        for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
           mPlayerShakeIds[i] = mgr.CameraManager(i)->CameraShakerManager()->AddCameraShaker(
               mShakeData, mgr, true, true);
         }
-      } else if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()))) {
-        const int managerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
-        mPlayerShakeIds[player->GetPlayerIndex()] =
-            mgr.CameraManager(managerIndex)->CameraShakerManager()->AddCameraShaker(
-                mShakeData, mgr, true, true);
+      } else {
+        const TUniqueId originator = msg.GetOriginator();
+        if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator))) {
+          const int managerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
+          mPlayerShakeIds[player->GetPlayerIndex()] =
+              mgr.CameraManager(managerIndex)
+                  ->CameraShakerManager()
+                  ->AddCameraShaker(mShakeData, mgr, true, true);
+        }
       }
     }
-  } else if (msg.GetMessage() == kSM_Stop) {
+    break;
+  case kSM_Stop:
     if (mShakeData.GetFlags() & 2) {
-      for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
+      for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
         mgr.CameraManager(i)->CameraShakerManager()->RemoveCameraShaker(mPlayerShakeIds[i]);
       }
-    } else if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()))) {
-      const int managerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
-      mgr.CameraManager(managerIndex)->CameraShakerManager()->RemoveCameraShaker(
-          mPlayerShakeIds[player->GetPlayerIndex()]);
+    } else {
+      const TUniqueId originator = msg.GetOriginator();
+      if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(originator))) {
+        const int managerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
+        mgr.CameraManager(managerIndex)
+            ->CameraShakerManager()
+            ->RemoveCameraShaker(mPlayerShakeIds[player->GetPlayerIndex()]);
+      }
     }
+    break;
+  default:
+    break;
   }
   CEntity::AcceptScriptMsg(mgr, msg);
 }

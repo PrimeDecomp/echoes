@@ -47,14 +47,14 @@ void CScriptControllerAction::Think(float dt, CStateManager& mgr) {
 
   if (GetActive() && mPressed != oldPressed) {
     if (mPressed) {
-      SendScriptMsgs(kSS_Opened, mgr, kSM_None);
+      SendScriptMsgs(kSS_Opened, mgr);
       return;
     }
 
-    SendScriptMsgs(kSS_Closed, mgr, kSM_None);
+    SendScriptMsgs(kSS_Closed, mgr);
     if (mDeactivateOnClose) {
       SetActive(false);
-      SendScriptMsgs(kSS_Inactive, mgr, kSM_None);
+      SendScriptMsgs(kSS_Inactive, mgr);
     }
   }
 }

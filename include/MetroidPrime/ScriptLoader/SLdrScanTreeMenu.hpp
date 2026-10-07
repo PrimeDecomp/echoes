@@ -26,7 +26,12 @@ struct SLdrScanTreeMenu {
   int menuValue4; // 0x67621600
 };
 
-inline SLdrScanTreeMenu::SLdrScanTreeMenu() : editorProperties(), nodeName(kInvalidAssetId), stringName(), unknown_0x0261a4e0(), menuStringTable(kInvalidAssetId), stringTableOption1(), menuValue1(), stringTableOption2(), menuValue2(), stringTableOption3(), menuValue3(), stringTableOption4(), menuValue4() {
+inline SLdrScanTreeMenu::SLdrScanTreeMenu() : editorProperties(), nodeName(kInvalidAssetId), stringName(), menuStringTable(kInvalidAssetId), stringTableOption1(), stringTableOption2(), stringTableOption3(), stringTableOption4() {
+  unknown_0x0261a4e0 = 0;
+  menuValue1 = 0;
+  menuValue2 = 1;
+  menuValue3 = 2;
+  menuValue4 = 3;
 }
 
 inline SLdrScanTreeMenu::~SLdrScanTreeMenu() {}

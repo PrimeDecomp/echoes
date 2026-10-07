@@ -9,7 +9,7 @@ class CPlayer;
 
 // Guessed helper names; these are native weapon-sound helpers, not CSfxManager overloads.
 CSfxHandle AddEmitter(const CActor& actor, ushort sfx, bool useAcoustics, bool looped,
-                      short priority, uchar maxVolume, uchar minVolume, float maxDistance,
+                      const short priority, uchar maxVolume, uchar minVolume, float maxDistance,
                       float distanceCompensation);
 CSfxHandle PlaySfxForPlayer(CPlayer* player, ushort sfx, short pan, int area, bool underwater,
                             bool looped);

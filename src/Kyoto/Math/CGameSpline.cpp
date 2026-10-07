@@ -54,8 +54,7 @@ CQuaternion CGameSpline::GetOrientationByTime(float time) {
   const uint end = mPositionSpline.ValidateKnotIndex(start + 1);
   float span = mPositionSpline.GetKnotTime(end) - mPositionSpline.GetKnotTime(start);
   if (end < start) {
-    span = mDuration - mPositionSpline.GetKnotTime(start);
-    span = mPositionSpline.GetKnotTime(end) + span;
+    span = mPositionSpline.GetKnotTime(end) + (mDuration - mPositionSpline.GetKnotTime(start));
   }
   if (span < 0.01f) {
     return mOrientations[start];
@@ -81,8 +80,8 @@ CQuaternion CGameSpline::GetOrientationByLength(float distance) {
   const uint end = mPositionSpline.ValidateKnotIndex(start + 1);
   float span = mPositionSpline.GetKnotLength(end) - mPositionSpline.GetKnotLength(start);
   if (end < start) {
-    span = mPositionSpline.GetLength() - mPositionSpline.GetKnotLength(start);
-    span = mPositionSpline.GetKnotLength(end) + span;
+    span = mPositionSpline.GetKnotLength(end) +
+           (mPositionSpline.GetLength() - mPositionSpline.GetKnotLength(start));
   }
   if (span < 0.01f) {
     return mOrientations[start];

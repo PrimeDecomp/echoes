@@ -126,8 +126,6 @@ CBeamProjectile::~CBeamProjectile() {}
 
 CScriptTargetingPoint::~CScriptTargetingPoint() {}
 
-CGameLight::~CGameLight() {}
-
 CScriptRoomAcoustics::~CScriptRoomAcoustics() {}
 
 CScriptDamageableTriggerOrientated::~CScriptDamageableTriggerOrientated() {}

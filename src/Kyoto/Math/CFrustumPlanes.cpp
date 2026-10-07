@@ -13,7 +13,7 @@ static CUnitVector3f CreateNormal(const CVector3f& a, const CVector3f& b,
 
 CFrustumPlanes::CFrustumPlanes(const CTransform4f& xf, float fov, float aspect, float nearZ,
                                bool useFarPlane, float farZ) {
-  float halfFov = fov * 0.5f;
+  float halfFov = fov / 2.f;
   const float cosV = static_cast< float >(cos(halfFov));
   const float sinV = static_cast< float >(sin(halfFov));
   const float verticalLength = nearZ / cosV;

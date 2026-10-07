@@ -43,7 +43,7 @@ CSpindleCameraParameters::~CSpindleCameraParameters() {}
 
 CSpindleCamera::CSpindleCamera(TUniqueId uid, const CTransform4f& xf, bool active, int index,
                                int controllerIdx)
-: CGameCamera(uid, rstl::string("Spindle Camera"),
+: CGameCamera(uid, rstl::string_l("Spindle Camera"),
               CEntityInfo(kInvalidAreaId, NullConnectionList, active), xf,
               CCameraManager::GetDefaultThirdPersonVerticalFOV(),
               CCameraManager::GetDefaultFirstPersonNearClipDistance(),

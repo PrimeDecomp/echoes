@@ -27,10 +27,15 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCoverPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CGameProjectile.hpp"
+#include "rstl/math.hpp"
+#include "MetroidPrime/CGenericFSM2State.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Weapons/CImpactVisorEffect.hpp"
 #include "MetroidPrime/Weapons/CProjectileInfo.hpp"
+
+#include <float.h>
 
 #include <float.h>
 
@@ -209,41 +214,43 @@ void CPatterned::BuildBodyController(EBodyType body) {
   mKnockBackController.EnableShock(bestAnim.first > 0.f);
 }
 
+static const CPatterned::StateMachine::STriggerFunction triggers[] = {
+    {"Leash", &CPatterned::Leash},
+    {"SpotPlayer", &CPatterned::SpotPlayer},
+    {"PlayerSpot", &CPatterned::PlayerSpot},
+    {"InRange", &CPatterned::InRange},
+    {"InMaxRange", &CPatterned::InMaxRange},
+    {"InDetectionRange", &CPatterned::InDetectionRange},
+    {"PathShagged", &CPatterned::PathShagged},
+    {"PathOver", &CPatterned::PathOver},
+    {"PathFound", &CPatterned::PathFound},
+    {"Delay", &CPatterned::Delay},
+    {"RandomDelay", &CPatterned::RandomDelay},
+    {"FixedDelay", &CPatterned::FixedDelay},
+    {"HasPatrolPath", &CPatterned::HasPatrolPath},
+    {"Attacked", &CPatterned::Attacked},
+    {"OffLine", &CPatterned::OffLine},
+    {"AnimOver", &CPatterned::AnimOver},
+    {"NoPathNodes", &CPatterned::NoPathNodes},
+    {"TooClose", &CPatterned::TooClose},
+    {"Landed", &CPatterned::Landed},
+    {"InPosition", &CPatterned::InPosition},
+    {"Stuck", &CPatterned::Stuck},
+    {"CodeTrigger", &CPatterned::CodeTrigger},
+    {"Random", &CPatterned::Random},
+    {"FixedRandom", &CPatterned::FixedRandom},
+};
+static const CPatterned::StateMachine::SStateFunction states[] = {
+    {"Start", &CPatterned::Start},
+    {"Dead", &CPatterned::Dead},
+    {"PathFind", &CPatterned::PathFind},
+    {"Patrol", &CPatterned::Patrol},
+};
+
 void CPatterned::SetupStateMachine(CStateManager&) {
-  static const StateMachine::STriggerFunction triggers[] = {
-      {"Leash", &CPatterned::Leash},
-      {"SpotPlayer", &CPatterned::SpotPlayer},
-      {"PlayerSpot", &CPatterned::PlayerSpot},
-      {"InRange", &CPatterned::InRange},
-      {"InMaxRange", &CPatterned::InMaxRange},
-      {"InDetectionRange", &CPatterned::InDetectionRange},
-      {"PathShagged", &CPatterned::PathShagged},
-      {"PathOver", &CPatterned::PathOver},
-      {"PathFound", &CPatterned::PathFound},
-      {"Delay", &CPatterned::Delay},
-      {"RandomDelay", &CPatterned::RandomDelay},
-      {"FixedDelay", &CPatterned::FixedDelay},
-      {"HasPatrolPath", &CPatterned::HasPatrolPath},
-      {"Attacked", &CPatterned::Attacked},
-      {"OffLine", &CPatterned::OffLine},
-      {"AnimOver", &CPatterned::AnimOver},
-      {"NoPathNodes", &CPatterned::NoPathNodes},
-      {"TooClose", &CPatterned::TooClose},
-      {"Landed", &CPatterned::Landed},
-      {"InPosition", &CPatterned::InPosition},
-      {"Stuck", &CPatterned::Stuck},
-      {"CodeTrigger", &CPatterned::CodeTrigger},
-      {"Random", &CPatterned::Random},
-      {"FixedRandom", &CPatterned::FixedRandom},
-  };
-  static const StateMachine::SStateFunction states[] = {
-      {"Start", &CPatterned::Start},
-      {"Dead", &CPatterned::Dead},
-      {"PathFind", &CPatterned::PathFind},
-      {"Patrol", &CPatterned::Patrol},
-  };
-  mStateMachine->SetTriggerFunctions(triggers, ARRAY_SIZE(triggers));
-  mStateMachine->SetStateFunctions(states, ARRAY_SIZE(states));
+  StateMachine* stateMachine = mStateMachine.get();
+  stateMachine->SetTriggerFunctions(triggers, ARRAY_SIZE(triggers));
+  stateMachine->SetStateFunctions(states, ARRAY_SIZE(states));
 }
 
 void CPatterned::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
@@ -313,40 +320,37 @@ void CPatterned::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 void CPatterned::SetDestPos(const CVector3f& position) { mDestPos = position; }
 
 CVector3f CPatterned::GetGunEyePos() const {
-  CVector3f origin = GetTranslation();
+
+  CVector3f translation = GetTranslation();
   const CAABox& bounds = GetBaseBoundingBox();
-  origin[kDZ] += 0.6f * (bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ());
-  return origin;
+  translation[kDZ] += 0.6f * (bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ());
+  return translation;
 }
 
 bool CPatterned::ApplyBoneTracking() const {
-  if (!mAlive || mBodyController->IsFrozen() ||
-      mKnockBackController.GetFlinchRemainingTime() > 0.f) {
-    return false;
+  if (mAlive && !GetBodyController()->IsFrozen() &&
+      !(mKnockBackController.GetFlinchRemainingTime() > 0.f)) {
+    return true;
   }
-  return true;
+  return false;
 }
 
-float CPatterned::GetAnimationDistance(const CPASAnimParmData& params) const {
+float CPatterned::GetAnimationDistance(const CPASAnimParmData& parms) const {
   float distance = 1.f;
-  const rstl::pair< float, int > bestAnim =
-      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
-
-  if (bestAnim.first > FLT_EPSILON) {
+  const rstl::pair< float, int > best = GetAnimationData()->GetPASDatabase().FindBestAnimation(parms, -1);
+  if (best.first > FLT_EPSILON) {
     const CAnimData* animData = GetAnimationData();
-    const float duration = animData->GetAnimationDuration(bestAnim.second);
-    distance = animData->GetAverageVelocity(bestAnim.second);
-    distance *= duration;
+    const float dur = animData->GetAnimationDuration(best.second);
+    const float vel = animData->GetAverageVelocity(best.second);
+    distance = vel * dur;
   }
-
   return distance;
 }
 
-float CPatterned::GetAnimationDuration(const CPASAnimParmData& params) const {
-  const rstl::pair< float, int > bestAnim =
-      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
-  if (bestAnim.first > FLT_EPSILON) {
-    return GetAnimationData()->GetAnimationDuration(bestAnim.second);
+float CPatterned::GetAnimationDuration(const CPASAnimParmData& parms) const {
+  const rstl::pair< float, int > best = GetAnimationData()->GetPASDatabase().FindBestAnimation(parms, -1);
+  if (best.first > FLT_EPSILON) {
+    return GetAnimationData()->GetAnimationDuration(best.second);
   }
   return 0.f;
 }
@@ -367,6 +371,7 @@ void CPatterned::SetupPlayerCollision(bool enabled) {
     exclude.Add(playerMaterial);
     SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
   }
+
 }
 
 CScriptCoverPoint* CPatterned::GetCoverPoint(CStateManager& mgr, const TUniqueId id) const {
@@ -899,30 +904,35 @@ void CPatterned::InitializeStateMachine(CStateManager& mgr) {
   if (mStateMachine->HasState()) {
     return;
   }
-  if (mStateMachine->GetType() == 1) {
-    CGenericFSM2* machine = GetStateMachine2();
-    if (!machine) {
-      return;
-    }
-    static_cast< CGenericFSM2State< CPatterned >* >(mStateMachine.get())->Setup(*machine);
-  } else {
+  switch (mStateMachine->GetType()) {
+  case 0: {
     CStateMachine* machine = GetStateMachine();
-    if (!machine) {
-      return;
+    if (machine) {
+      static_cast< TStateMachineState< CPatterned >* >(mStateMachine.get())->Setup(machine);
+      SetupStateMachine(mgr);
+      mStateMachine->SetState(mgr, *this, rstl::string_l("Start"));
     }
-    static_cast< TStateMachineState< CPatterned >* >(mStateMachine.get())->Setup(machine);
+    break;
   }
-  SetupStateMachine(mgr);
-  mStateMachine->SetState(mgr, *this, rstl::string("Start"));
+  case 1: {
+    CGenericFSM2* machine = GetStateMachine2();
+    if (machine) {
+      static_cast< CGenericFSM2State< CPatterned >* >(mStateMachine.get())->Setup(*machine);
+      SetupStateMachine(mgr);
+      mStateMachine->SetState(mgr, *this, rstl::string_l("Start"));
+    }
+    break;
+  }
+  }
 }
 
 void CPatterned::Touch(CActor& actor, CStateManager& mgr) {
-  if (mAlive) {
-    if (CGameProjectile* projectile = TCastToPtr< CGameProjectile >(actor)) {
-      if (TCastToPtr< CPlayer >(
-              const_cast< CEntity* >(mgr.GetObjectById(projectile->GetOwnerId())))) {
-        mHitByPlayerProjectile = true;
-      }
+  if (!mAlive) {
+    return;
+  }
+  if (CGameProjectile* projectile = TCastToPtr< CGameProjectile >(actor)) {
+    if (TCastToPtr< CPlayer >(const_cast< CEntity* >(mgr.GetObjectById(projectile->GetOwnerId())))) {
+      mHitByPlayerProjectile = true;
     }
   }
 }
@@ -1104,7 +1114,7 @@ void CPatterned::Freeze(CStateManager&, const CVector3f&, CUnitVector3f, float d
 }
 
 float CPatterned::GetDeathTimeScale() const {
-  return CMath::Max(0.1f, mBurning ? mBurnThinkRateTimer / 1.5f : 1.f);
+  return rstl::max_val(mBurning ? mBurnThinkRateTimer / 1.5f : 1.f, 0.1f);
 }
 
 void CPatterned::DeathDelete(CStateManager& mgr) {
@@ -1113,27 +1123,30 @@ void CPatterned::DeathDelete(CStateManager& mgr) {
     InitializeStateMachine(mgr);
   }
   SendScriptMsgs(kSS_Dead, mgr, GetUniqueId(), kSM_None);
-
-  if (mBodyController->IsElectrocuting()) {
+  if (GetBodyController()->IsElectrocuting()) {
     mPendingShockDamage = 0.f;
-    mBodyController->DouseElectrocuting();
+    BodyController()->DouseElectrocuting();
     mgr.ActorModelParticles()->StopElectric(*this);
   }
-
   mgr.DeleteObjectRequest(GetUniqueId());
 }
 
-CDamageInfo CPatterned::GetContactDamage() const { return mAlive ? mContactDamage : CDamageInfo(); }
+CDamageInfo CPatterned::GetContactDamage() const {
+  if (!mAlive) {
+    return CDamageInfo();
+  }
+  return mContactDamage;
+}
 
 CTransform4f CPatterned::GetLctrTransform(const rstl::string& name) const {
-  return GetLctrTransform(GetAnimationData()->GetLocatorSegId(name));
+  return GetTransform() * GetScaledLocatorTransform(name);
 }
 
 CTransform4f CPatterned::GetLctrTransform(const CSegId& id) const {
   CTransform4f locator = GetAnimationData()->GetLocatorTransform(id, nullptr);
-  locator.SetTranslation(
-      CVector3f::ByElementMultiply(GetModelData()->GetScale(), locator.GetTranslation()));
-  return GetTransform() * locator;
+  CVector3f scaled =
+      CVector3f::ByElementMultiply(GetModelData()->GetScale(), locator.GetTranslation());
+  return GetTransform() * CTransform4f(locator.BuildMatrix3f(), scaled);
 }
 
 CVector3f CPatterned::GetAimPosition(const CStateManager&, float dt) const {
@@ -1229,10 +1242,9 @@ void CPatterned::PreRender(CStateManager& mgr) {
 }
 
 bool CPatterned::CanRenderUnsorted(const CStateManager& mgr) const {
-  if (GetAnimationData()->GetParticleDB().AreAnySystemsDrawnWithModel()) {
-    return false;
-  }
-  return CActor::CanRenderUnsorted(mgr);
+  return GetAnimationData()->GetParticleDB().AreAnySystemsDrawnWithModel()
+             ? false
+             : CActor::CanRenderUnsorted(mgr);
 }
 
 void CPatterned::PreRenderAllViewports(CStateManager& mgr) {
@@ -1295,7 +1307,7 @@ void CPatterned::Render(const CStateManager& mgr) const {
 }
 
 bool CPatterned::IsBeingSnatched() const {
-  return mIngPossessionBlend > 0.f && mIngPossessionBlend < 1.f && mIngModel.valid();
+  return mIngPossessionBlend > 0.f && mIngPossessionBlend < 1.f && mIngModel.valid() == true;
 }
 
 void CPatterned::RenderSystemsToBeDrawnFirst(const CStateManager&, uint mask, uint target) const {
@@ -1343,7 +1355,7 @@ CVector3f CPatterned::GetIngSnatchingNormal(float) const { return CVector3f::Up(
 CVector3f CPatterned::GetIngSnatchingPoint(float t) const {
   const CAABox bounds = GetBoundingBox();
   const float height = bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ();
-  return GetTranslation() + height * (1.f - t) * GetIngSnatchingNormal(t);
+  return GetTranslation() + height * ((1.f - t) * GetIngSnatchingNormal(t));
 }
 
 float CPatterned::GetIngSnatchingModelOverlapSize() const { return 0.f; }
@@ -1425,7 +1437,7 @@ void CPatterned::UpdateIngPossession(float dt) {
 }
 
 const CDamageVulnerability* CPatterned::GetDamageVulnerability() const {
-  if (mIngPossessionBlend < mIngPossessionTarget) {
+  if (mIngPossessionTarget > mIngPossessionBlend) {
     return &CDamageVulnerability::ImmuneVulnerabilty();
   }
   if (IsIngPossessed() && mIngPossessionData.unknown_0xb68c0aa3) {
@@ -1440,8 +1452,10 @@ const CDamageVulnerability* CPatterned::GetDamageVulnerability(const CVector3f&,
 }
 
 CScannableObjectInfo* CPatterned::GetScannableObjectInfo() const {
-  return IsIngPossessed() && !mIngScanInfo.null() ? **mIngScanInfo
-                                                  : CActor::GetScannableObjectInfo();
+  if (IsIngPossessed() && !mIngScanInfo.null()) {
+    return **mIngScanInfo;
+  }
+  return CActor::GetScannableObjectInfo();
 }
 
 CEnergyProjectile* CPatterned::LaunchProjectile(const CTransform4f& xf, CStateManager& mgr,
@@ -1471,7 +1485,7 @@ EWeaponCollisionResponseTypes CPatterned::GetCollisionResponseType(const CVector
                                                                    const CVector3f& direction,
                                                                    const CWeaponMode& mode,
                                                                    int attributes) const {
-  if (mBodyController->IsFrozen() && mode.GetRawType() == kWT_Dark) {
+  if (GetBodyController()->IsFrozen() && mode.GetType() == kWT_Dark) {
     return kWCR_None;
   }
   return CAi::GetCollisionResponseType(position, direction, mode, attributes);
@@ -1487,8 +1501,7 @@ void CPatterned::AddToRenderer(const CStateManager& mgr) const {
     uint mask;
     uint target;
     mgr.GetCharacterRenderMaskAndTarget(mask, target);
-    const CAnimData* animData = GetAnimationData();
-    if (animData) {
+    if (const CAnimData* animData = GetAnimationData()) {
       animData->GetParticleDB().AddToRendererClippedMasked(mgr.GetFrustumPlanes(), mask, target);
     }
   }
@@ -1499,28 +1512,26 @@ bool CPatterned::IsOnStaticGround() const { return mOnStaticGround; }
 
 bool CPatterned::TryToBeCaptured(CStateManager&) { return false; }
 
-CCharAnimTime CPatterned::GetTimeOfUserEventForAnimation(const CPASAnimParmData& params,
-                                                         EUserEventType event) const {
-  const rstl::pair< float, int > bestAnim =
-      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
-  if (bestAnim.first > FLT_EPSILON) {
-    return GetAnimationData()->GetTimeOfUserEventForAnimation(bestAnim.second, event);
+CCharAnimTime CPatterned::GetTimeOfUserEventForAnimation(const CPASAnimParmData& parms,
+                                                         EUserEventType type) const {
+  const rstl::pair< float, int > best = GetAnimationData()->GetPASDatabase().FindBestAnimation(parms, -1);
+  if (best.first > FLT_EPSILON) {
+    return GetAnimationData()->GetTimeOfUserEventForAnimation(best.second, type);
   }
-  return CCharAnimTime::Infinity();
+  return CCharAnimTime(CCharAnimTime::kT_Infinity, 1.f);
 }
 
-int CPatterned::GetNumUserEventsForAnimation(const CPASAnimParmData& params,
-                                             EUserEventType event) const {
-  const rstl::pair< float, int > bestAnim =
-      GetAnimationData()->GetCharacterInfo().GetPASDatabase().FindBestAnimation(params, -1);
-  if (bestAnim.first > FLT_EPSILON) {
-    return GetAnimationData()->CountUserEventsForAnimation(bestAnim.second, event);
+int CPatterned::GetNumUserEventsForAnimation(const CPASAnimParmData& parms,
+                                             EUserEventType type) const {
+  const rstl::pair< float, int > best = GetAnimationData()->GetPASDatabase().FindBestAnimation(parms, -1);
+  if (best.first > FLT_EPSILON) {
+    return GetAnimationData()->CountUserEventsForAnimation(best.second, type);
   }
   return 0;
 }
 
 float CPatterned::GetAverageAttackTime() const {
-  const float timeScale = mBodyController->GetTimeScale();
+  const float timeScale = GetBodyController()->GetTimeScale();
   if (timeScale > 0.f) {
     return mAverageAttackTime / timeScale;
   }
@@ -1536,8 +1547,11 @@ void CPatterned::AddParticleEffect(CStateManager& mgr, const CTransform4f& xf, f
   }
 }
 
+bool CPatterned::IsScanVisorSelfRender() const { return false; }
+
 CAABox CPatterned::GetScanVisorRenderBounds(const CStateManager&) const {
   return CAABox::Identity();
 }
 
-CPatterned::~CPatterned() {}
+void CPatterned::ScanVisorRender(const CStateManager&, const CTransform4f&,
+                                 const CModelFlags&) const {}

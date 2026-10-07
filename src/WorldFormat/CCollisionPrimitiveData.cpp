@@ -68,15 +68,17 @@ CCollisionPrimitiveData::~CCollisionPrimitiveData() {
     CMemory::Free(x28_);
   }
 
+  CollisionPrimitiveDataCache::sGenerations[mCacheId] &=
+      ~CollisionPrimitiveDataCache::kRC_Occupied;
   ++CollisionPrimitiveDataCache::gGeometryRevision;
-  CollisionPrimitiveDataCache::sGenerations[mCacheId] &= ~CollisionPrimitiveDataCache::kRC_Occupied;
 }
 
 CCollisionSurface CCollisionPrimitiveData::GetTriangle(uint index) const {
   const ushort triangleIndex = index;
   const u64 flags = mMaterials[mSurfaceMaterials[triangleIndex]];
-  const CCollisionEdge& edge0 = mEdges[mSurfaceIndices[triangleIndex * 3]];
-  const CCollisionEdge& edge1 = mEdges[mSurfaceIndices[triangleIndex * 3 + 1]];
+  const int base = triangleIndex * 3;
+  const CCollisionEdge& edge0 = GetTriangleEdge(mSurfaceIndices[base]);
+  const CCollisionEdge& edge1 = GetTriangleEdge(mSurfaceIndices[base + 1]);
   if (flags & kFlippedTriangle) {
     return CCollisionSurface(mVertices[edge0.GetVertIndex2()], mVertices[edge0.GetVertIndex1()],
                              mVertices[edge1.GetVertIndex1()], flags);
@@ -87,9 +89,9 @@ CCollisionSurface CCollisionPrimitiveData::GetTriangle(uint index) const {
 
 CCollisionSurface CCollisionPrimitiveData::GetTriangle(ushort index, const CTransform4f* xf) const {
   const u64 flags = mMaterials[mSurfaceMaterials[index]];
-  const CCollisionEdge& edge0 = mEdges[mSurfaceIndices[index * 3]];
-  const CCollisionEdge& edge1 = mEdges[mSurfaceIndices[index * 3 + 1]];
-
+  const int base = index * 3;
+  const CCollisionEdge& edge0 = GetTriangleEdge(mSurfaceIndices[base]);
+  const CCollisionEdge& edge1 = GetTriangleEdge(mSurfaceIndices[base + 1]);
   if (xf != nullptr) {
     if (flags & kFlippedTriangle) {
       return CCollisionSurface(*xf * mVertices[edge0.GetVertIndex2()],
@@ -161,10 +163,13 @@ static ushort AllocateId() {
     memset(sGenerations, 0, sizeof(sGenerations));
   }
 
-  do {
+  while (true) {
     ++sLastId;
     sLastId %= kRC_Size;
-  } while (sGenerations[sLastId] >= kRC_Occupied);
+    if (sGenerations[sLastId] < kRC_Occupied) {
+      break;
+    }
+  }
 
   ++sGenerations[sLastId];
   sGenerations[sLastId] |= kRC_Occupied;

@@ -72,11 +72,11 @@ void CPlayerBodyController::SAdditiveAimState::Update(float dt, CStateManager& m
       static_cast< const CPBCAimCmd* >(controller.CommandMgr().GetCmd(kPBSC_Aim));
   CVector3f direction = CVector3f::Zero();
   if (command) {
-    direction = command->GetDirection();
+    CVector3f aim = command->GetDirection();
     if (mCategory == kC_LocomotionMode5) {
-      direction.SetZ(-direction.GetZ());
+      aim.SetZ(-aim.GetZ());
     }
-    direction = controller.GetPlayer().GetTransform().TransposeRotate(direction);
+    direction = controller.GetPlayer().GetTransform().TransposeRotate(aim);
   }
 
   if (direction.CanBeNormalized()) {

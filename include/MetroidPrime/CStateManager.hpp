@@ -52,6 +52,7 @@ class CWorldTransManager;
 class CPlayer;
 class CPatterned;
 class CCameraManager;
+class CCollisionResponseData;
 class CRumbleManager;
 class CSaveGameScreen;
 class CScriptSpawnPoint;
@@ -155,6 +156,7 @@ public:
   void SpawnPlayer(CScriptSpawnPoint& spawnPoint, uint playerIndex);
   void CreateStandardGameObjects(); // Prime-correlated name; per-player construction in Echoes.
   void DeleteSaveGameScreen();
+  void CreateSaveGameScreen(); // Guessed name.
   int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
   bool PrepareAreaTransition(TAreaId area);                      // Guessed name.
   rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
@@ -164,6 +166,7 @@ public:
 
   TUniqueId AllocateUniqueId();
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
+  const CScriptObjectLoaderHelper& GetScriptObjectLoaderHelper() const; // Guessed name
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return mIsDarkWorld; }
@@ -185,13 +188,14 @@ public:
   void SendScriptMsg(CEntity* target, TUniqueId sender, EScriptObjectMessage message,
                      TUniqueId actor = kInvalidUniqueId);
   void SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
-                     TUniqueId actor); // Guessed overload name.
+                     TUniqueId actor = kInvalidUniqueId); // Guessed overload name.
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
   bool RenderLast(TUniqueId uid);               // Guessed name.
   bool RenderLastOverlay(const TUniqueId& uid); // Guessed name.
   bool RenderLastHUD(const TUniqueId& uid);     // Guessed name.
+  bool RenderFirstSorted(const TUniqueId& uid); // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
@@ -221,6 +225,7 @@ public:
   void DrawSpaceWarp(const CVector3f& position, float strength) const;
   void PreRender(uint playerIndex);                // Prime-correlated name.
   void DrawWorld(const CInGameGuiManagerSet& gui); // Prime-correlated name.
+  void DrawDebugStuff() const; // Prime-correlated name; empty in retail.
   void SetupPlayerViewport(uint playerIndex);      // Guessed name.
   void DrawUnusedViewport(int viewportIndex);      // Guessed name.
   // Guessed name; output pointers are independently optional in the native body.
@@ -271,8 +276,6 @@ public:
   void AddDrawableActorPlane(const CActor& actor, const CPlane& plane, const CAABox& bounds) const;
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
-  // Prime-correlated name; native Echoes visor masks omit the thawed parameter.
-  void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
 
@@ -298,6 +301,9 @@ public:
   RayWorldIntersection(TUniqueId& idOut, const CVector3f& position, const CVector3f& direction,
                        float length, const CMaterialFilter& filter,
                        const rstl::reserved_vector< TUniqueId, 1024 >& nearList) const;
+  // Original name from the Wii SEL exports.
+  void DoCollisionResponse(const CCollisionResponseData& data, const CRayCastResult& result,
+                           TUniqueId id, const CDamageInfo& damage, bool unknown);
   CRayCastResult RayStaticIntersection(const CVector3f& position, const CVector3f& direction,
                                        float length, const CMaterialFilter& filter) const;
   void BuildNearList(rstl::reserved_vector< TUniqueId, 1024 >& nearList, const CVector3f& position,
@@ -344,11 +350,13 @@ public:
   }
 
   const CFrustumPlanes& GetFrustumPlanes() const { return mPlanes; }
+  // Guessed name. Selects the particle render mask for the active visor.
+  void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   const CTexture* GetShadowTex() const { return mShadowTex.GetObject(); }
   CFluidPlaneManager* GetFluidPlaneManager() const { return mFluidPlaneManager; }
   ERenderVisorMode GetRenderVisorMode() const { return mRenderVisorMode; }
 
-  int GetNumPlayers() const { return mNumPlayers; }
+  uint GetNumPlayers() const { return mNumPlayers; }
   CWeaponMgr* GetWeaponMgr() const { return mWeaponMgr; }
   TUniqueId GetForceTriggerId(int playerIndex) const {
     return mForceTriggerIds[playerIndex];
@@ -382,6 +390,9 @@ public:
   const rstl::list< CEntity* >& GetDoorList() const {
     return mFilteredObjectLists[0]->GetObjects();
   }
+  const rstl::list< CEntity* >& GetParasiteList() const { // Guessed name
+    return mFilteredObjectLists[kFOL_Type124]->GetObjects();
+  }
   const rstl::list< CEntity* >& GetDockList() const {
     return mFilteredObjectLists[kFOL_Dock]->GetObjects();
   }
@@ -391,6 +402,7 @@ public:
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
+  rstl::optional_object< CAABox > CalculateObjectBounds(CActor& actor);
   void UpdateSortedLists(); // Prime-correlated name; updates every registered actor's bounds.
 
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
@@ -454,6 +466,7 @@ public:
   bool GetWantsToEnterSaveGameScreen() const { return mDeferredTransition == kSMT_SaveGame; }
   bool HasSaveGameScreen() const { return !mSaveGameScreen.null(); }
   TAreaId GetPendingDockArea() const { return mPendingDockArea; }
+  void SetPendingDockArea(TAreaId area) { mPendingDockArea = area; }
   bool GetWantsToEnterMessageScreen() const { return mDeferredTransition == kSMT_MessageScreen; }
 
   const CCameraManager* GetCameraManager(int playerIndex) const {
@@ -477,6 +490,14 @@ public:
   void SetIsFullThreat(bool value) { mIsFullThreat = value; }
 
   bool fn_800366e4(const CActor*) const;
+  // Name and signature from the Wii MP2 SEL export.
+  void AddDarkWorldSphereToRenderer(const CVector3f& pos, const CVector3f& scale, uchar alpha,
+                                    uchar insideAlpha, bool inside, float spotSize,
+                                    const CVector2f& scroll1, const CVector2f& scroll2,
+                                    const CVector2f& texScale1, const CVector2f& texScale2,
+                                    const CTexture& environment, const CTexture& cloud1,
+                                    const CTexture& cloud2, CColor color, CColor additiveColor,
+                                    bool cylinder) const;
 
 public:
   ushort mNextFreeIndex;

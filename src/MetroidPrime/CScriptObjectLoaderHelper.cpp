@@ -87,16 +87,17 @@ CScriptObjectLoaderHelper::LoadScriptObject(TAreaId area, FourCC type, uint leng
 
 CScriptObjectLoaderHelper::SGeneratedObject
 CScriptObjectLoaderHelper::GenerateScriptObject(const TEditorId& editorId, CStateManager& mgr) {
-  const bool wasGenerating = mGeneratingObject;
+  const bool wasGenerating = IsGeneratingObject();
   mGeneratingObject = true;
   const rstl::pair< const SScriptObjectStream*, TEditorId > build = GetBuildForScript(editorId);
-  const TAreaId areaId(build.second.AreaNum());
-  if (build.first != nullptr && mgr.World()->GetArea(areaId)->IsLoaded()) {
+  const int areaNum = build.second.AreaNum();
+  const CWorld* world = mgr.World();
+  if (build.first != nullptr && world->GetArea(TAreaId(areaNum))->IsLoaded()) {
     const rstl::pair< const uchar*, int > buffer =
-        mgr.World()->GetArea(areaId)->GetGeneratedScriptBuffer();
+        world->GetArea(TAreaId(areaNum))->GetGeneratedScriptBuffer();
     CMemoryInStream in(buffer.first + build.first->mPosition, build.first->mLength);
     const SGeneratedObject generated =
-        LoadScriptObject(areaId, build.first->mType, build.first->mLength, in, mgr);
+        LoadScriptObject(TAreaId(areaNum), build.first->mType, build.first->mLength, in, mgr);
     if (generated.mEntity != nullptr) {
       mgr.AddObject(generated.mEntity);
     }
@@ -131,8 +132,7 @@ void CScriptObjectLoaderHelper::InitScriptObjects(rstl::vector< TEditorId >& ids
   const TEditorId* editorIds = ids.data();
   for (int i = 0; i < count; ++i) {
     if (editorIds[i] != kInvalidEditorId) {
-      const CScriptMsg message(kInvalidUniqueId, kInvalidUniqueId, mgr.GetIdForScript(editorIds[i]),
-                               kSM_AreaLoaded, kSS_InvalidState);
+      const CScriptMsg message(kInvalidUniqueId, mgr.GetIdForScript(editorIds[i]), kSM_AreaLoaded);
       mgr.DeliverScriptMsg(message);
     }
   }
@@ -148,8 +148,7 @@ void CScriptObjectLoaderHelper::RegisterScriptObjects(rstl::vector< CEntity* > o
 
   for (int i = 0; i < objects.size(); ++i) {
     if (objects[i] != nullptr) {
-      const CScriptMsg message(kInvalidUniqueId, kInvalidUniqueId, objects[i]->GetUniqueId(),
-                               kSM_AreaLoaded, kSS_InvalidState);
+      const CScriptMsg message(kInvalidUniqueId, objects[i]->GetUniqueId(), kSM_AreaLoaded);
       mgr.DeliverScriptMsg(message);
     }
   }
@@ -165,12 +164,76 @@ CScriptObjectLoaderHelper::GetBuildForScript(TEditorId editorId) const {
 }
 
 void CScriptObjectLoaderHelper::FreeScriptObjects(TAreaId area, CStateManager& mgr) {
-  // TODO: area-object deletion and message-queue draining; nonfunctional scaffold.
+  mgr.DispatchScriptMessages();
+  rstl::vector< TUniqueId > ids;
+  ids.reserve(mgr.mScriptIdMap.size());
+  const CStateManager::TIdList& idMap = mgr.mScriptIdMap;
+  for (CStateManager::TIdList::const_iterator it = idMap.begin(); it != idMap.end();) {
+    CStateManager::TIdList::const_iterator cur = it++;
+    if (cur->first.AreaNum() == area.Value()) {
+      ids.push_back_unsafe(cur->second);
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator id = ids.begin(); id != ids.end(); ++id) {
+    mgr.DeleteObjectRequest(*id);
+    if (mgr.mScriptMsgs.GetCount() > 0x40) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
+
+  CGameArea* gameArea = mgr.World()->Area(area);
+  if (gameArea->GetPhase() == CGameArea::kP_Loaded) {
+    CObjectList& objects = *gameArea->ObjectList();
+    ids.reserve(objects.size());
+    for (int i = objects.GetFirstObjectIndex(); i != -1; i = objects.GetNextObjectIndex(i)) {
+      CEntity* entity = objects[i];
+      if (entity != nullptr && !entity->IsNotInArea()) {
+        ids.push_back_unsafe(entity->GetUniqueId());
+      }
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator id = ids.begin(); id != ids.end(); ++id) {
+    mgr.DeleteObjectRequest(*id);
+    if (mgr.mScriptMsgs.GetCount() > 0x40) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
+
+  for (TScriptObjectMap::iterator it = mGeneratedScriptObjects.begin();
+       it != mGeneratedScriptObjects.end();) {
+    TScriptObjectMap::iterator cur = it++;
+    if (cur->first.AreaNum() == area.Value()) {
+      mGeneratedScriptObjects.erase(cur);
+    }
+  }
+  mgr.ClearGraveyard();
 }
 
 void CScriptObjectLoaderHelper::RemoveLayerObjects(TAreaId area, TLayerId layer,
                                                    CStateManager& mgr) {
-  // TODO: collect matching instances, delete them and drain messages; nonfunctional scaffold.
+  const int areaNum = area.Value();
+  const int layerNum = layer.Value();
+  rstl::vector< TUniqueId > ids;
+  ids.reserve(mgr.mScriptIdMap.size());
+  const CStateManager::TIdList& idMap = mgr.mScriptIdMap;
+  for (CStateManager::TIdList::const_iterator it = idMap.begin(); it != idMap.end();) {
+    CStateManager::TIdList::const_iterator cur = it++;
+    if (areaNum == cur->first.AreaNum() && layerNum == cur->first.LayerNum()) {
+      ids.push_back_unsafe(cur->second);
+    }
+  }
+  for (rstl::vector< TUniqueId >::const_iterator id = ids.begin(); id != ids.end(); ++id) {
+    mgr.DeleteObjectRequest(*id);
+    if (mgr.mScriptMsgs.GetCount() > 0x40) {
+      mgr.DispatchScriptMessages();
+    }
+  }
+  ids.clear();
+  mgr.DispatchScriptMessages();
 }
 
 void CScriptObjectLoaderHelper::BeginLayerLoad(SLoadContext& context,
@@ -179,7 +242,7 @@ void CScriptObjectLoaderHelper::BeginLayerLoad(SLoadContext& context,
   context.mStream = in;
   context.mRemainingObjects = ReadScriptLayerHeader(*in);
   context.mEditorIds = &ids;
-  ids.reserve(context.mRemainingObjects);
+  context.mEditorIds->reserve(context.mRemainingObjects);
   context.mObjects.reserve(context.mRemainingObjects + context.mObjects.size());
 }
 
@@ -187,10 +250,10 @@ bool CScriptObjectLoaderHelper::ContinueLayerLoad(SLoadContext& context, uint ti
                                                   CStateManager& mgr) {
   CStopwatch timer;
   while (context.mRemainingObjects != 0) {
-    const FourCC type = context.mStream->Get< FourCC >();
-    const uint length = context.mStream->ReadUint16();
-    const SGeneratedObject loaded =
-        LoadScriptObject(context.mAreaId, type, length, *context.mStream, mgr);
+    CInputStream& in = *context.mStream;
+    const FourCC type = in.Get< FourCC >();
+    const uint length = in.ReadUint16();
+    const SGeneratedObject loaded = LoadScriptObject(context.mAreaId, type, length, in, mgr);
     if (loaded.mEditorId != kInvalidEditorId) {
       context.mEditorIds->push_back_unsafe(loaded.mEditorId);
       context.mObjects.push_back_unsafe(loaded.mEntity);

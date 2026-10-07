@@ -1151,7 +1151,7 @@ void CPlayer::UpdateFootstepSounds(float dt, const CFinalInput& input, CStateMan
       !mLookButtonHeld) {
     char sfxVol = 127;
     mFootstepSfxTimer += dt;
-    float turn = TurnInput(input);
+    float turn = TurnInput(input, mgr);
     const float forward = fabsf(ForwardInput(input, turn));
     turn = fabsf(turn);
     float sfxDelay = 0.f;
@@ -1439,7 +1439,7 @@ void CPlayer::SetCameraState(EPlayerCameraState state, CStateManager& mgr) {
   CCameraManager* cameraManager = mCameraManager;
   switch (state) {
   case kCS_FirstPerson: {
-    cameraManager->SetCurrentCameraId(cameraManager->GetFirstPersonCamera()->GetUniqueId());
+    cameraManager->SetCurrentCameraId(cameraManager->GetFirstPersonCamera()->GetUniqueId(), mgr);
     const bool ballLight =
         mgr.GetIsDarkWorld() && mPlayerState->GetItemAmount(CPlayerState::kIT_LightSuit);
     mMorphBall->SetBallLightActive(mgr, ballLight);
@@ -1448,12 +1448,12 @@ void CPlayer::SetCameraState(EPlayerCameraState state, CStateManager& mgr) {
   case kCS_MorphBall:
     if (cameraManager->GetCurrentCameraId(false) ==
         cameraManager->GetFirstPersonCamera()->GetUniqueId()) {
-      cameraManager->SetCurrentCameraId(cameraManager->BallCamera()->GetUniqueId());
+      cameraManager->SetCurrentCameraId(cameraManager->BallCamera()->GetUniqueId(), mgr);
     }
     mMorphBall->SetBallLightActive(mgr, true);
     break;
   case kCS_MorphBallTransition:
-    cameraManager->SetCurrentCameraId(cameraManager->BallCamera()->GetUniqueId());
+    cameraManager->SetCurrentCameraId(cameraManager->BallCamera()->GetUniqueId(), mgr);
     mMorphBall->SetBallLightActive(mgr, true);
     break;
   case kCS_Spawned: {
@@ -2244,7 +2244,7 @@ void CPlayer::ProcessInput(float dt, const CFinalInput& input, CStateManager& mg
           mControlMapper.GetPressInput(CControlMapper::kC_TurnRight, activeInput);
       const bool forward = mControlMapper.GetPressInput(CControlMapper::kC_Forward, activeInput);
       const bool backward = mControlMapper.GetPressInput(CControlMapper::kC_Backward, activeInput);
-      const bool jump = JumpPressed(activeInput);
+      const uchar jump = JumpPressed(activeInput);
       if (turnLeft || turnRight || forward || backward || jump) {
         const float step = 600.f * dt;
         mAttachedActorStruggle += dt * step;
@@ -2319,7 +2319,7 @@ void CPlayer::UpdateMorphBallState(const CFinalInput& input, float dt, CStateMan
       (morphPressed && playerState->GetItemAmount(CPlayerState::kIT_MorphBall, true) != 0)) {
     switch (mMorphBallState) {
     case kMS_Unmorphed:
-      if (CanEnterMorphBallState() && mCanStartMorphTransition) {
+      if (CanEnterMorphBallState(mgr, 0.f) && mCanStartMorphTransition) {
         mMorphTime = 0.f;
         if (state == kMS_Morphed) {
           mMorphDuration = screwAttackIntoBallDuration;
@@ -3291,7 +3291,7 @@ void CPlayer::SetHudDisable(float staticTimer, float fadeOutSpeed, float fadeInS
   }
 }
 
-bool CPlayer::CanEnterMorphBallState() const {
+bool CPlayer::CanEnterMorphBallState(CStateManager& mgr, float dt) const {
   if (mGrappleState != kGS_None || !mCanEnterMorphBall) {
     return false;
   }
@@ -3436,7 +3436,7 @@ float CPlayer::GetPrevDamageAmount() const { return mPrevDamageAmount; }
 
 CVector3f CPlayer::GetDamageLocationWR() const { return mDamageLocation; }
 
-uint CPlayer::GetDamageWeaponType() const { return mDamageWeaponType; }
+int CPlayer::GetDamageWeaponType() const { return mDamageWeaponType; }
 
 void CPlayer::FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) {
   if (mMorphBallState == kMS_Morphed) {

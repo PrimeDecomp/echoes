@@ -161,8 +161,7 @@ private:
                                     CCollisionInfo&);
   static bool InternalCollideBoolean(const CInternalCollisionStructure&);
 
-  uint x4_;
-  CMaterialList mMaterial;
+  CMaterialList mMaterial; // 0x4 is alignment padding
 };
 CHECK_SIZEOF(CCollisionPrimitive, 0x10)
 

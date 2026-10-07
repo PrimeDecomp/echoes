@@ -206,7 +206,7 @@ void vector< T, Alloc >::insert_into(iterator at, int n, In in) {
     long atIdx = at - begin();
     T* const newItems = newData;
     int newIdx = 0;
-    for (int i = 0; i < atIdx; ++newIdx, ++i) {
+    for (long i = 0; i < atIdx; ++newIdx, ++i) {
       construct(newItems + newIdx, data()[i]);
     }
     for (int i = 0; i < n; ++input, ++newIdx, ++i) {

@@ -80,20 +80,35 @@ void CParticleDatabase::CacheParticleDesc(const SObjectTag& tag) {
 void CParticleDatabase::InsertParticleGen(bool oneShot, int flags, uint name,
                                           const rstl::auto_ptr< CParticleGenInfo >& gen) {
   DrawMap* map;
-  switch (flags & 0x60) {
-  case 0x20:
-    map = oneShot ? &mFirstDraw : &mFirstDrawLoop;
-    break;
-  case 0x40:
-    map = oneShot ? &mLastDraw : &mLastDrawLoop;
-    break;
-  default:
-    map = oneShot ? &mRendererDraw : &mRendererDrawLoop;
-    break;
+  if (oneShot) {
+    switch (flags & 0x60) {
+    case 0x20:
+      map = &mFirstDraw;
+      break;
+    case 0x40:
+      map = &mLastDraw;
+      break;
+    default:
+      map = &mRendererDraw;
+      break;
+    }
+  } else {
+    switch (flags & 0x60) {
+    case 0x20:
+      map = &mFirstDrawLoop;
+      break;
+    case 0x40:
+      map = &mLastDrawLoop;
+      break;
+    default:
+      map = &mRendererDrawLoop;
+      break;
+    }
   }
   map->insert(DrawMap::value_type(name, gen));
-  if (flags & 0x60)
+  if ((flags & 0x60) != 0) {
     mAnySystemsDrawnWithModel = true;
+  }
 }
 
 void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleData& data,
@@ -227,36 +242,24 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CPositiona
 }
 
 CParticleGenInfo* CParticleDatabase::GetParticleEffect(uint name) {
-  {
-    DrawMap::iterator it = mRendererDrawLoop.find(name);
-    if (it != mRendererDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mFirstDrawLoop.find(name);
-    if (it != mFirstDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mLastDrawLoop.find(name);
-    if (it != mLastDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mRendererDraw.find(name);
-    if (it != mRendererDraw.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mFirstDraw.find(name);
-    if (it != mFirstDraw.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mLastDraw.find(name);
-    if (it != mLastDraw.end())
-      return it->second.get();
-  }
+  DrawMap::iterator it = mRendererDrawLoop.find(name);
+  if (it != mRendererDrawLoop.end())
+    return it->second.get();
+  it = mFirstDrawLoop.find(name);
+  if (it != mFirstDrawLoop.end())
+    return it->second.get();
+  it = mLastDrawLoop.find(name);
+  if (it != mLastDrawLoop.end())
+    return it->second.get();
+  it = mRendererDraw.find(name);
+  if (it != mRendererDraw.end())
+    return it->second.get();
+  it = mFirstDraw.find(name);
+  if (it != mFirstDraw.end())
+    return it->second.get();
+  it = mLastDraw.find(name);
+  if (it != mLastDraw.end())
+    return it->second.get();
   return nullptr;
 }
 
@@ -472,7 +475,7 @@ void CParticleDatabase::DeleteAllLights(CStateManager* mgr) {
 }
 
 void CParticleDatabase::DeleteAllLightsForParticleDB(CStateManager* mgr, const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     it->second->DeleteLight(mgr);
   }
 }
@@ -485,7 +488,7 @@ void CParticleDatabase::SuspendAllActiveEffects(CStateManager* mgr) {
 
 void CParticleDatabase::SuspendAllActiveEffectsForParticleDB(CStateManager* mgr,
                                                              const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     SetParticleEffectState(it->second.get(), false, mgr);
   }
 }
@@ -501,7 +504,7 @@ void CParticleDatabase::SetModulationColorAllActiveEffects(const CColor& color) 
 
 void CParticleDatabase::SetModulationColorAllActiveEffectsForParticleDB(const CColor& color,
                                                                         const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     if (it->second.get())
       it->second->SetModulationColor(color);
   }
@@ -517,7 +520,7 @@ void CParticleDatabase::DestroyAllActiveParticles() {
 }
 
 void CParticleDatabase::DestroyParticlesForParticleDB(const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     it->second->DestroyParticles();
   }
 }

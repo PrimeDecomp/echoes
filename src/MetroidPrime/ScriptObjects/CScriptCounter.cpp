@@ -21,14 +21,14 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
     switch (message) {
     case kSM_SetToZero:
       mCurrent = 0;
-      SendScriptMsgs(kSS_Zero, mgr, kSM_None);
+      SendScriptMsgs(kSS_Zero, mgr);
       if (mAutoReset) {
         mCurrent = mInitial;
       }
       break;
     case kSM_SetToMax:
       mCurrent = mMax;
-      SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+      SendScriptMsgs(kSS_MaxReached, mgr);
       if (mAutoReset) {
         mCurrent = mInitial;
       }
@@ -38,14 +38,14 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
         return;
       }
       if (mCurrent == 0) {
-        SendScriptMsgs(kSS_NonZero, mgr, kSM_None);
+        SendScriptMsgs(kSS_NonZero, mgr);
       }
       --mCurrent;
       if (mCurrent == -mMax) {
         mCurrent = 0;
       }
       if (mCurrent == 0) {
-        SendScriptMsgs(kSS_Zero, mgr, kSM_None);
+        SendScriptMsgs(kSS_Zero, mgr);
         if (mAutoReset) {
           mCurrent = mInitial;
         }
@@ -56,17 +56,17 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
         return;
       }
       if (mCurrent == 0) {
-        SendScriptMsgs(kSS_NonZero, mgr, kSM_None);
+        SendScriptMsgs(kSS_NonZero, mgr);
       }
       ++mCurrent;
       if (mWrap && mCurrent == mMax) {
         mCurrent = 0;
       }
       if (mCurrent == 0) {
-        SendScriptMsgs(kSS_Zero, mgr, kSM_None);
+        SendScriptMsgs(kSS_Zero, mgr);
       }
       if (mCurrent == mMax) {
-        SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+        SendScriptMsgs(kSS_MaxReached, mgr);
         if (mAutoReset) {
           mCurrent = mInitial;
         }
@@ -86,7 +86,7 @@ void CScriptCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
 CScriptCounter::~CScriptCounter() {}
 
 CScriptCounter::CScriptCounter(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                               int initial, int max, bool autoReset, bool wrap)
+                               int initial, int max, const bool autoReset, const bool wrap)
 : CEntity(uid, info, name, 0)
 , mInitial(initial)
 , mCurrent(initial)

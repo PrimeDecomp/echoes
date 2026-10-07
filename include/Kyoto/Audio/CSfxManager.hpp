@@ -92,7 +92,7 @@ public:
                        CSfxHandle handle, bool useAcoustics, int area);
 
     // CBaseSfxWrapper
-    ~CSfxEmitterWrapper();
+    ~CSfxEmitterWrapper() {}
     bool IsPlaying() const override;
     bool IsEmitter() const override;
     void Play() override;
@@ -127,7 +127,7 @@ public:
                 CSfxHandle handle, bool useAcoustics, int area);
 
     // CBaseSfxWrapper
-    ~CSfxWrapper();
+    ~CSfxWrapper() {}
     bool IsPlaying() const override;
     bool IsEmitter() const override;
     void Play() override;
@@ -210,12 +210,12 @@ public:
                              const short priority = kMedPriority);
   static CSfxHandle AddEmitter(ushort id, const CVector3f& position, int area = kAllAreas,
                                bool useAcoustics = false, bool looped = false,
-                               short priority = kMedPriority);
+                               const short priority = kMedPriority);
   static CSfxHandle AddEmitter(ushort id, const CVector3f& position, uchar volume, int area,
                                bool useAcoustics, bool looped, short priority);
   static CSfxHandle AddEmitter(CAudioSys::C3DEmitterParmData& params, int area = kAllAreas,
                                bool useAcoustics = false, bool looped = false,
-                               short priority = kMedPriority);
+                               const short priority = kMedPriority);
   static void RemoveEmitter(CSfxHandle handle);
   static void UpdateEmitter(CSfxHandle handle, const CVector3f& position,
                             const CVector3f& direction, uchar maxVolume);
@@ -246,7 +246,7 @@ public:
   static void SetActiveAreas(const rstl::reserved_vector< int, 10 >& areas, int currentArea);
   static ushort TranslateSFXID(ushort id);
   static bool LoadTranslationTable(CSimplePool* pool, const SObjectTag* tag);
-  static CSfxHandle LocateHandle();
+  static CSfxHandle LocateHandle(int priority);
   static int GetRank(CBaseSfxWrapper* sound);
   static CSfxWrapper* AllocateCSfxWrapper(const CSfxWrapper& sound);
   static CSfxEmitterWrapper* AllocateCSfxEmitterWrapper(const CSfxEmitterWrapper& sound);

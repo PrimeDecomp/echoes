@@ -45,9 +45,11 @@ CAreaOctTree::Node CAreaOctTree::Node::GetChild(int index) const {
 }
 
 CAreaOctTree::TriListReference CAreaOctTree::Node::GetTriangleArray() const {
-  // Include the leaf bounds prefix so the empty reference's count is valid too.
-  static const ushort skDeadArray[sizeof(CAABox) / sizeof(ushort) + 1] = {0};
-  return TriListReference(mNodeType == kTT_Leaf ? mPtr : static_cast< const void* >(skDeadArray));
+  static const ushort skDeadArray[2] = {0, 0};
+  if (mNodeType != kTT_Leaf) {
+    return TriListReference(skDeadArray);
+  }
+  return TriListReference(mPtr);
 }
 
 CAreaOctTree::CAreaOctTree(const CAABox& bounds, Node::ETreeType treeType, const uchar* buffer,

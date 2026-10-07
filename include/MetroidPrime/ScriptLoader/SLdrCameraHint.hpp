@@ -53,12 +53,7 @@ struct SLdrCameraHintStructC {
   float angle; // 0x382a1973
 };
 
-inline SLdrCameraHintStructC::SLdrCameraHintStructC() {
-  field_override = false;
-  angle = 90.0f;
-}
-
-inline SLdrCameraHintStructC::~SLdrCameraHintStructC() {}
+// The SLdrCameraHintStructC constructor/destructor are out of line in the ScriptLoader TU (unsplit).
 
 inline void LoadTypedefCameraHintStructC(SLdrCameraHintStructC& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
@@ -108,11 +103,7 @@ struct SLdrCameraHintStructA {
   int type; // 0xf53dcdd6
 };
 
-inline SLdrCameraHintStructA::SLdrCameraHintStructA() {
-  type = 0;
-}
-
-inline SLdrCameraHintStructA::~SLdrCameraHintStructA() {}
+// The SLdrCameraHintStructA constructor/destructor are out of line in the ScriptLoader TU (unsplit).
 
 inline void LoadTypedefCameraHintStructA(SLdrCameraHintStructA& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
@@ -138,11 +129,7 @@ struct SLdrUnknownStruct9 {
   int type; // 0xf53dcdd6
 };
 
-inline SLdrUnknownStruct9::SLdrUnknownStruct9() {
-  type = 1;
-}
-
-inline SLdrUnknownStruct9::~SLdrUnknownStruct9() {}
+// The SLdrUnknownStruct9 constructor/destructor are out of line in the ScriptLoader TU (unsplit).
 
 inline void LoadTypedefUnknownStruct9(SLdrUnknownStruct9& sldrThis, CInputStream& input) {
   const int propertyCount = input.ReadUint16();
@@ -189,6 +176,7 @@ struct SLdrCameraHint {
 };
 
 inline SLdrCameraHint::SLdrCameraHint() : editorProperties(), behaviour(), minSpeedDistance(), maxSpeedDistance(), backwardsDistance(), lookAtOffset(), worldOffset(CVector3f::Zero()), fieldOfView(), cameraHintStructB(), cameraHintStructB_0xc82395fa(), angularSpeed(), zOffset(), cameraHintStructA1(), unknown_0x9e8631f1(), cameraHintStructA() {
+  editorProperties.unknown_0x5d298a43 = 3;
   priority = 50;
   timer = 0.0f;
   flagsCameraHint = 0x0000011eu;

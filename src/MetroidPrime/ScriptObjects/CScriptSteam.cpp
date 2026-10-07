@@ -36,7 +36,7 @@ CScriptSteam::~CScriptSteam() {}
 void CScriptSteam::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_Deactivate:
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       mgr.Player(i)->SetVisorSteam(0.f, mAlphaInDuration, mAlphaOutDuration, kInvalidAssetId);
     }
     break;
@@ -53,7 +53,7 @@ void CScriptSteam::Think(float dt, CStateManager& mgr) {
   }
 
   CScriptTrigger::Think(dt, mgr);
-  for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     CPlayer* player = mgr.Player(i);
     if (GetPlayerInside(i) &&
         mgr.GetCameraManager(i)->GetCurrentCamera(mgr, true)->GetFluidCount() == 0) {
@@ -73,12 +73,22 @@ void CScriptSteam::Think(float dt, CStateManager& mgr) {
   }
 }
 
+SLdrSteam::SLdrSteam() : editorProperties(), trigger(), steam(kInvalidAssetId) {
+  editorProperties.transform.scale = CVector3f(1.f, 1.f, 1.f);
+  strength = 0.34999999f;
+  fadeInRate = 1.0f;
+  fadeOutRate = 2.0f;
+  radius = 0.0f;
+  unknown_0xa366c949 = false;
+}
+
 CEntity* LoadSteam(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSteam sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSteam.inc"
 
-  const CVector3f halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
-  const CAABox bounds = CAABox(-halfExtent, halfExtent);
+  const CVector3f& halfExtent = 0.5f * sldrThis.editorProperties.transform.scale;
+  const CVector3f negHalfExtent = -(sldrThis.editorProperties.transform.scale * 0.5f);
+  const CAABox bounds = CAABox(negHalfExtent, halfExtent);
   return rs_new CScriptSteam(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
                              LdrToEntityInfo(info, sldrThis.editorProperties),
                              sldrThis.editorProperties.transform.position, bounds,

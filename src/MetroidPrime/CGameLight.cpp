@@ -6,8 +6,8 @@
 CGameLight::CGameLight(TUniqueId uid, TAreaId areaId, bool active, const rstl::string& name,
                        const CTransform4f& xf, TUniqueId parentId, const CLight& light,
                        uint sourceId, uint priority, float lifeTime, const CEntityInfo* info)
-: CActor(uid, name, info ? *info : CEntityInfo(areaId, NullConnectionList, active), 0, xf,
-         CModelData(), CMaterialList(kMT_NoStepLogic), CActorParameters::None(), kInvalidUniqueId)
+: CActor(uid, name, info == nullptr ? CEntityInfo(areaId, NullConnectionList, active) : *info, 0, xf,
+         CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic), CActorParameters::None(), kInvalidUniqueId)
 , mParentId(parentId)
 , mLight(light)
 , mSourceId(sourceId)

@@ -23,13 +23,13 @@ struct SLdrGhostBehave {
 };
 
 inline SLdrGhostBehave::SLdrGhostBehave() {
-  lurk = -0.0f;
-  heckle = 0.0f;
-  attack = 0.0f;
-  move = 0.0f;
-  lurkTime = 0.0f;
-  chargeAttack = 0.0f;
-  numBolts = 0;
+  lurk = 25.0f;
+  heckle = 25.0f;
+  attack = 25.0f;
+  move = 25.0f;
+  lurkTime = 2.0f;
+  chargeAttack = 50.0f;
+  numBolts = 1;
 }
 
 inline SLdrGhostBehave::~SLdrGhostBehave() {}
@@ -109,7 +109,7 @@ struct SLdrChozoGhost {
   int midChance; // 0x1b272781
 };
 
-inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actorInformation(), unknown_0x54151870(kInvalidAssetId), damageInfo(), unknown_0x3a58089c(kInvalidAssetId), damageInfo_0x1ff047a9(), far(), mid(), near(), projectileVisorEffect(kInvalidAssetId) {
+inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actorInformation(), unknown_0x54151870(kInvalidAssetId), damageInfo(), unknown_0x3a58089c(kInvalidAssetId), damageInfo_0x1ff047a9(), far(), mid(), near(), sound_Impact(-1), sound_PhazeIn(-1), sound_PhazeOut(-1), projectileVisorEffect(kInvalidAssetId), sound_ProjectileVisor(-1) {
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 25.0f;
   patterned.minAttackRange = 8.0f;
@@ -122,6 +122,8 @@ inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actor
   patterned.health.hI_KnockBackResistance = 10.0f;
   patterned.collisionHeight = 4.5f;
   patterned.creatureSize = 1;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   hearingRadius = 20.0f;
   fadeOutDelay = 2.5f;
   attackDelay = 1.0f;
@@ -129,30 +131,26 @@ inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actor
   damageInfo.dI_Damage = 10.0f;
   damageInfo_0x1ff047a9.dI_Damage = 5.0f;
   far.lurk = 20.0f;
+  far.heckle = 0.0f;
   far.attack = 60.0f;
   far.move = 20.0f;
-  far.lurkTime = 2.0f;
-  far.numBolts = 1;
+  far.chargeAttack = 0.0f;
   mid.lurk = 20.0f;
   mid.heckle = 10.0f;
   mid.attack = 60.0f;
   mid.move = 10.0f;
-  mid.lurkTime = 2.0f;
   mid.chargeAttack = 20.0f;
   mid.numBolts = 3;
+  near.lurk = 0.0f;
+  near.heckle = 0.0f;
   near.attack = 100.0f;
-  near.lurkTime = 2.0f;
-  near.chargeAttack = 50.0f;
+  near.move = 0.0f;
   near.numBolts = 2;
-  sound_Impact = 0;
   disablePlayerGunTime = 1.5f;
-  sound_PhazeIn = 0;
-  sound_PhazeOut = 0;
   unknown_0xec76940c = 0;
   projectileStopHomingRange = 8.0f;
   unknown_0xfe9eac26 = 0;
   hurlRecoverTime = 1.5f;
-  sound_ProjectileVisor = 0;
   nearToMidDistance = 20.0f;
   midToFarDistance = 45.0f;
   nearChance = 40;

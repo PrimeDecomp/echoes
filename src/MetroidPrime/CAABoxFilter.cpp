@@ -5,16 +5,17 @@
 
 void CAABoxFilter::FilterBoxFloorCollisions(const CCollisionInfoList& in, CCollisionInfoList& out) {
   float minZ = 10000.f;
-  for (int i = 0; i < in.GetCount(); ++i) {
-    const CCollisionInfo& info = in[i];
+  const CCollisionInfo* end = in.End();
+  for (const CCollisionInfo* it = in.Begin(); it != end; ++it) {
+    const CCollisionInfo& info = *it;
     if (info.GetMaterialLeft().HasMaterial(kMT_Wall) && info.GetPoint().GetZ() < minZ) {
       minZ = info.GetPoint().GetZ();
     }
   }
 
   CCollisionInfoList temp;
-  for (int i = 0; i < in.GetCount(); ++i) {
-    const CCollisionInfo& info = in[i];
+  for (const CCollisionInfo* it = in.Begin(); it != in.End(); ++it) {
+    const CCollisionInfo& info = *it;
     if (info.GetMaterialLeft().HasMaterial(kMT_Floor)) {
       if (info.GetPoint().GetZ() < minZ) {
         temp.Add(info);

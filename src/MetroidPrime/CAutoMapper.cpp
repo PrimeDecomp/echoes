@@ -45,6 +45,7 @@
 
 static const char* const skFRME_MapScreen = "FRME_MapScreen";
 static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
+static const char* const skModelHex = "model_hex";
 
 // Guessed name
 struct SMapKeyEntry {
@@ -109,42 +110,56 @@ void CAutoMapper::SAutoMapperRenderState::InterpolateWithClamp(const SAutoMapper
                                                                SAutoMapperRenderState& out,
                                                                const SAutoMapperRenderState& b,
                                                                float t) {
-  const float ct = CMath::Clamp(0.f, t, 1.f);
-  const float easeIn = CMath::Clamp(0.f, ct * ct * ct, 1.f);
-  const float omt = 1.f - ct;
-  const float easeOut = CMath::Clamp(0.f, 1.f - omt * omt * omt, 1.f);
+  float ct = CMath::Clamp(0.f, t, 1.f);
+  float easeIn = CMath::Clamp(0.f, ct * ct * ct, 1.f);
+  float omt = 1.f - ct;
+  float omtCubed = omt * omt * omt;
+  float easeOut = CMath::Clamp(0.f, 1.f - omtCubed, 1.f);
+
   float easeInOut;
-  if (ct < 0.5f) {
-    easeInOut = CMath::Clamp(0.f, 1.f - (0.5f * CMath::SqrtF(2.f * omt - 1.f) + 0.5f), 1.f);
-  } else {
+  if (ct >= 0.5f) {
     easeInOut = CMath::Clamp(0.f, 0.5f * CMath::SqrtF(2.f * ct - 1.f) + 0.5f, 1.f);
+  } else {
+    easeInOut = CMath::Clamp(0.f, 1.f - (0.5f * CMath::SqrtF(2.f * omt - 1.f) + 0.5f), 1.f);
   }
-  const float eases[5] = {0.f, ct, easeOut, easeIn, easeInOut};
+
+  float eases[5] = {0.f, ct, easeOut, easeIn, easeInOut};
 
   if (b.mViewportEase != kE_None) {
-    out.mViewportSize = CVector2i::Lerp(a.mViewportSize, b.mViewportSize, eases[b.mViewportEase]);
+    float easeB = eases[b.mViewportEase];
+    out.mViewportSize = CVector2i::Lerp(a.mViewportSize, b.mViewportSize, easeB);
   }
+
   if (b.mCamEase != kE_None) {
-    const float ease = eases[b.mCamEase];
-    out.mCamOrientation = CQuaternion::Slerp(a.mCamOrientation, b.mCamOrientation, ease);
-    out.mCamDist = Lerp(a.mCamDist, b.mCamDist, ease);
-    out.mCamAngle = Lerp(a.mCamAngle, b.mCamAngle, ease);
+    float easeB = eases[b.mCamEase];
+    out.mCamOrientation = CQuaternion::Slerp(a.mCamOrientation, b.mCamOrientation, easeB);
+    out.mCamDist = Lerp(a.mCamDist, b.mCamDist, easeB);
+    out.mCamAngle = Lerp(a.mCamAngle, b.mCamAngle, easeB);
   }
+
   if (b.mPointEase != kE_None) {
-    out.mAreaPoint = CVector3f::Lerp(a.mAreaPoint, b.mAreaPoint, eases[b.mPointEase]);
+    float eB = eases[b.mPointEase];
+    out.mAreaPoint = CVector3f::Lerp(a.mAreaPoint, b.mAreaPoint, eB);
   }
+
   if (b.mDepth1Ease != kE_None) {
-    out.mDrawDepth1 = Lerp(a.mDrawDepth1, b.mDrawDepth1, eases[b.mDepth1Ease]);
+    float eB = eases[b.mDepth1Ease];
+    out.mDrawDepth1 = Lerp(a.mDrawDepth1, b.mDrawDepth1, eB);
   }
+
   if (b.mDepth2Ease != kE_None) {
-    out.mDrawDepth2 = Lerp(a.mDrawDepth2, b.mDrawDepth2, eases[b.mDepth2Ease]);
+    float eB = eases[b.mDepth2Ease];
+    out.mDrawDepth2 = Lerp(a.mDrawDepth2, b.mDrawDepth2, eB);
   }
+
   if (b.mAlphaEase != kE_None) {
-    const float ease = eases[b.mAlphaEase];
-    out.mAlphaSurfaceVisited = Lerp(a.mAlphaSurfaceVisited, b.mAlphaSurfaceVisited, ease);
-    out.mAlphaOutlineVisited = Lerp(a.mAlphaOutlineVisited, b.mAlphaOutlineVisited, ease);
-    out.mAlphaSurfaceUnvisited = Lerp(a.mAlphaSurfaceUnvisited, b.mAlphaSurfaceUnvisited, ease);
-    out.mAlphaOutlineUnvisited = Lerp(a.mAlphaOutlineUnvisited, b.mAlphaOutlineUnvisited, ease);
+    float eB = eases[b.mAlphaEase];
+    out.mAlphaSurfaceVisited = Lerp(a.mAlphaSurfaceVisited, b.mAlphaSurfaceVisited, eB);
+    out.mAlphaOutlineVisited = Lerp(a.mAlphaOutlineVisited, b.mAlphaOutlineVisited, eB);
+    out.mAlphaSurfaceUnvisited =
+        Lerp(a.mAlphaSurfaceUnvisited, b.mAlphaSurfaceUnvisited, eB);
+    out.mAlphaOutlineUnvisited =
+        Lerp(a.mAlphaOutlineUnvisited, b.mAlphaOutlineUnvisited, eB);
   }
 }
 
@@ -307,9 +322,9 @@ bool CAutoMapper::CheckLoadComplete() {
   // Fall through after the map resources are ready.
   case kLP_LoadUniverse:
     if (mMapu.IsLoaded()) {
-      const int numWorlds = mMapu.GetObject()->GetNumMapWorldDatas();
-      mDummyWorlds =
-          rstl::vector< rstl::auto_ptr< IWorld > >(numWorlds, rstl::auto_ptr< IWorld >());
+      const CMapUniverse* mapu = mMapu.GetObject();
+      mDummyWorlds = rstl::vector< rstl::auto_ptr< IWorld > >(mapu->GetNumMapWorldDatas(),
+                                                              rstl::auto_ptr< IWorld >());
       SetCurWorldAssetId(mWorld->IGetWorldAssetId());
       mLoadPhase = kLP_Done;
     } else {
@@ -793,7 +808,7 @@ void CAutoMapper::ProcessControllerInput(const CFinalInput& input, CStateManager
 
   if (input.PY()) {
     int paneMode =
-        gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->GetValue();
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AutoMapperPaneMode")->GetValue();
     if (mMapMode == kMM_Teleport) {
       switch (paneMode) {
       case 1:
@@ -821,7 +836,7 @@ void CAutoMapper::ProcessControllerInput(const CFinalInput& input, CStateManager
         break;
       }
     }
-    gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->Set(paneMode);
+    gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AutoMapperPaneMode")->Set(paneMode);
   }
 
   if ((gpGameState->ControlMapper().GetPressInput(CControlMapper::kC_MapScreen, input) ||
@@ -975,8 +990,10 @@ void CAutoMapper::ProcessMapRotateInput(const CFinalInput& input, const CStateMa
     float minCamRotateX = gpTweakAutoMapper->GetMinCamRotateX();
     float maxCamRotateX = gpTweakAutoMapper->GetMaxCamRotateX();
     const CEulerAngles eulers = CEulerAngles::FromQuaternion(mRenderState0.mCamOrientation);
-    CAbsAngle angX = CAbsAngle::FromRadians(eulers.GetX());
-    CAbsAngle angZ = CAbsAngle::FromRadians(eulers.GetZ());
+    float ez = eulers.GetZ();
+    float ex = eulers.GetX();
+    CAbsAngle angX = CAbsAngle::FromRadians(ex);
+    CAbsAngle angZ = CAbsAngle::FromRadians(ez);
 
     float dt = deltaFrames * gpTweakAutoMapper->GetRotateDegPerFrame();
 
@@ -1008,6 +1025,11 @@ void CAutoMapper::ProcessMapZoomInput(const CFinalInput& input, const CStateMana
   float oldDist = mRenderState0.mCamDist;
   switch (mZoomState) {
   case kZS_None:
+    if (zoomIn)
+      nextZoomState = kZS_In;
+    else if (zoomOut)
+      nextZoomState = kZS_Out;
+    break;
   case kZS_In:
     if (zoomIn)
       nextZoomState = kZS_In;
@@ -1118,7 +1140,7 @@ void CAutoMapper::ProcessMapPanInput(const CFinalInput& input, const CStateManag
     }
   } else {
     SetShouldPanningSoundBePlaying(false);
-    float speed = gpTweakAutoMapper->GetCamPanUnitsPerFrame() * GetBaseMapScreenCameraMoveSpeed();
+    float speed = GetBaseMapScreenCameraMoveSpeed() * gpTweakAutoMapper->GetCamPanUnitsPerFrame();
     if (mState == kAMS_MapScreen) {
       const CMapWorld* mapWorld = mWorld->IGetMapWorld();
       const CMapArea* area = mapWorld->GetMapArea(mCurAreaId.value);
@@ -1441,7 +1463,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
     mBackgroundHexagons.reserve(100);
     for (int i = 0; i < 100; ++i) {
       CGuiWidget* hexagon =
-          mFrmeBackgroundInitialized->FindWidget(CBasics::Stringize("%s%d", "model_hex", i));
+          mFrmeBackgroundInitialized->FindWidget(CBasics::Stringize("%s%d", skModelHex, i));
       if (hexagon != nullptr) {
         mBackgroundHexagons.push_back_unsafe(hexagon);
         hexagon->SetDepthWrite(false);
@@ -1660,7 +1682,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
       model->SetColor(gpTweakAutoMapper->GetBlackColor());
     }
 
-    gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->Set(1);
+    gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AutoMapperPaneMode")->Set(1);
     mLeftPanePos = 1.f;
     if (mMapMode == kMM_Teleport) {
       mTextpaneInstructions1->TextSupport().SetText(rstl::wstring_l(L""));
@@ -1741,7 +1763,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
   }
 
   const float step = 2.f * dt;
-  switch (gpGameState->SystemOptions().FindEnvironmentVariable("AutoMapperPaneMode")->GetValue()) {
+  switch (gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AutoMapperPaneMode")->GetValue()) {
   case 0:
     mLeftPanePos -= step;
     mYButtonPanePos -= step;
@@ -2059,11 +2081,11 @@ void CAutoMapper::ResetInterpolationTimer(float duration) {
 CAutoMapper::SAutoMapperRenderState
 CAutoMapper::BuildMiniMapWorldRenderState(const CStateManager& mgr, const CQuaternion& rot,
                                           int areaId) const {
-  const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
   SAutoMapperRenderState ret(
       GetMiniMapViewportSize(),
       CQuaternion::MadeLocalToFirst(rot, GetMiniMapCameraOrientation(mgr)),
-      tweak->GetMiniCamDistance(), tweak->GetMiniCamAngle(), GetAreaPointOfInterest(mgr, areaId),
+      gpTweakAutoMapper->GetMiniCamDistance(), gpTweakAutoMapper->GetMiniCamAngle(),
+      GetAreaPointOfInterest(mgr, areaId),
       GetMapAreaMiniMapDrawDepth(), GetMapAreaMiniMapDrawDepth(),
       GetMapAreaMiniMapDrawAlphaSurfaceVisited(mgr), GetMapAreaMiniMapDrawAlphaOutlineVisited(mgr),
       GetMapAreaMiniMapDrawAlphaSurfaceUnvisited(mgr),
@@ -2119,9 +2141,9 @@ CAutoMapper::SAutoMapperRenderState::SAutoMapperRenderState(const SAutoMapperRen
 CAutoMapper::SAutoMapperRenderState
 CAutoMapper::BuildMapScreenUniverseRenderState(const CStateManager& mgr, const CQuaternion& rot,
                                                int areaId) const {
-  const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
-  SAutoMapperRenderState ret(GetMapScreenViewportSize(), rot, tweak->GetMapScreenMapUniverseDefaultCameraDistance(),
-                             tweak->GetCamAngle(), GetAreaPointOfInterest(mgr, areaId),
+  SAutoMapperRenderState ret(GetMapScreenViewportSize(), rot,
+                             gpTweakAutoMapper->GetMapScreenMapUniverseDefaultCameraDistance(),
+                             gpTweakAutoMapper->GetCamAngle(), GetAreaPointOfInterest(mgr, areaId),
                              GetMapAreaMaxDrawDepth(mgr, areaId),
                              GetMapAreaMaxDrawDepth(mgr, areaId), 0.f, 0.f, 0.f, 0.f);
   ret.mViewportEase = SAutoMapperRenderState::kE_Out;
@@ -2238,6 +2260,10 @@ int CAutoMapper::FindTeleportArea(const CMapWorld& world) const {
   }
   return -1;
 }
+
+namespace rstl {
+bool operator==(const string& lhs, const char* rhs) { return lhs.compare(rhs) == 0; }
+} // namespace rstl
 
 rstl::pair< int, int > CAutoMapper::FindClosestVisibleWorld(const CVector3f& point,
                                                             const CUnitVector3f& camDir,
@@ -2484,7 +2510,7 @@ void CAutoMapper::UpdateTempleKeys(const CStateManager& mgr) {
 }
 
 void CAutoMapper::SetCurAreaId(int areaId) {
-  if (mCurAreaId.Value() != areaId &&
+  if (mCurAreaId != TAreaId(areaId) &&
       (close_enough(mDarkWorldBlend, 0.f) || close_enough(mDarkWorldBlend, 1.f)) &&
       mState != kAMS_MiniMap) {
     if (mTransitionState == kTS_Idle) {

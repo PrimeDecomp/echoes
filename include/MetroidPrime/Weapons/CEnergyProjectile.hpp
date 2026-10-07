@@ -46,6 +46,7 @@ public:
   }
 
   virtual CVector3f GetExplosionNormal() const { return CVector3f::Up(); }
+  bool HasExploded() const { return mHasExploded; }
 
   void SetEchoVisorMaxVolume(uchar volume);
   void SetCombatVisorMaxVolume(uchar volume);

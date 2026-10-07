@@ -14,6 +14,7 @@ struct SLdrGuiPlayerJoinManager {
 
 inline SLdrGuiPlayerJoinManager::SLdrGuiPlayerJoinManager() : editorProperties() {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 3;
 }
 
 inline SLdrGuiPlayerJoinManager::~SLdrGuiPlayerJoinManager() {}

@@ -4,26 +4,30 @@
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
-#include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
+#include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDock.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptDock::CScriptDock(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                          const CVector3f& position, const CVector3f& extent, int dock, TAreaId area,
                          int dockReferenceCount, bool loadConnected, bool isVirtual,
                          bool showSoftTransition)
-: CPhysicsActor(uid, name, info, 0, CTransform4f::Translate(position), CModelData(),
-                CMaterialList(kMT_Trigger, kMT_Immovable, kMT_AIBlock),
-                CAABox(-(0.5f * extent), 0.5f * extent), SMoverData(1.f), CActorParameters::None(),
-                StepData(0.3f, 0.3f, 0))
+: CPhysicsActor(
+      uid, name, info, 0, CTransform4f::Translate(position), CModelData::CModelDataNull(),
+      CMaterialList(kMT_Trigger, kMT_Immovable, kMT_AIBlock),
+      CAABox(CVector3f(-(0.5f * extent.GetX()), -(0.5f * extent.GetY()), -(0.5f * extent.GetZ())),
+             CVector3f(0.5f * extent.GetX(), 0.5f * extent.GetY(), 0.5f * extent.GetZ())),
+      SMoverData(1.f), CActorParameters::None(), skDefaultStepData)
 , mDockReferenceCount(dockReferenceCount)
 , mDock(dock)
 , mArea(area)
 , mDockState(kDS_InNextRoom)
 , mDockReferenced(false)
-, mLoadConnected(loadConnected && !isVirtual)
+, mLoadConnected(isVirtual ? false : loadConnected)
 , mAreaPostConstructed(false)
 , mIsVirtual(isVirtual)
 , mShowSoftTransition(showSoftTransition) {}
@@ -38,7 +42,7 @@ void CScriptDock::Touch(CActor& actor, CStateManager& mgr) {
   if (TCastToPtr< CPlayer >(actor)) {
     mDockState = kDS_PlayerTouched;
   }
-  if (CMetroidAlpha* metroid = TCastToPtr< CMetroidAlpha >(actor)) {
+  if (CMetroid* metroid = TCastToPtr< CMetroid >(actor)) {
     metroid->OnDockTouch(mgr);
   }
 }
@@ -53,12 +57,12 @@ rstl::optional_object< CAABox > CScriptDock::GetTouchBounds() const {
 void CScriptDock::SetLoadConnected(CStateManager& mgr, bool loadConnected, bool pauseValidation) {
   CGameArea* area = mgr.World()->Area(mArea);
   const IGameArea::Dock& dock = area->GetDock(mDock);
-  const TAreaId connectedArea = dock.GetConnectedAreaId(dock.GetReferenceCount());
-  if (connectedArea != kInvalidAreaId) {
-    mgr.World()->Area(connectedArea)->SetValidationPaused(pauseValidation);
+  if (dock.GetConnectedAreaId(dock.GetReferenceCount()) != kInvalidAreaId) {
+    mgr.World()->Area(dock.GetConnectedAreaId(dock.GetReferenceCount()))->SetValidationPaused(pauseValidation);
   }
 
-  if (loadConnected != dock.GetShouldLoadOther(dock.GetReferenceCount())) {
+  const bool shouldLoad = dock.GetShouldLoadOther(dock.GetReferenceCount());
+  if (loadConnected != shouldLoad) {
     area->DockNC(mDock).SetShouldLoadOther(dock.GetReferenceCount(), loadConnected);
   }
 }
@@ -70,7 +74,10 @@ void CScriptDock::InitializeConnectedArea(CStateManager& mgr) {
 void CScriptDock::AreaUnloaded(CStateManager&) {}
 
 void CWorld::PropogateAreaChain(CGameArea::EOcclusionState state, CGameArea* area, CWorld* world) {
-  if (!area->IsLoaded() || state == area->GetOcclusionState()) {
+  if (!area->IsLoaded()) {
+    return;
+  }
+  if (state == area->GetOcclusionState()) {
     return;
   }
 
@@ -95,10 +102,11 @@ void CWorld::PropogateAreaChain(CGameArea::EOcclusionState state, CGameArea* are
 void CGameArea::AddDock(TUniqueId uid) { mPostConstructed->mDockIds.push_back(uid); }
 
 void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  switch (msg.GetMessage()) {
+  const EScriptObjectMessage message = msg.GetMessage();
+  switch (message) {
   case kSM_Create: {
-    CGameArea* area = mgr.World()->Area(mArea);
-    if (mDock >= area->GetDockCount()) {
+    CGameArea* area = mgr.World()->Area(GetAreaId());
+    if (area->GetDockCount() <= mDock) {
       return;
     }
     IGameArea::Dock& dock = area->DockNC(mDock);
@@ -115,10 +123,9 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   case kSM_WorldLoaded: {
     UpdateAreaActivateFlags(mgr);
-    CMaterialList include = GetMaterialFilter().GetIncludeList();
-    include.Add(kMT_AIBlock);
-    SetMaterialFilter(
-        CMaterialFilter::MakeIncludeExclude(include, GetMaterialFilter().GetExcludeList()));
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
+        GetMaterialFilter().GetIncludeList().Union(CMaterialList(kMT_AIBlock)),
+        GetMaterialFilter().GetExcludeList()));
     break;
   }
   case kSM_Unload:
@@ -151,11 +158,7 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     if (mgr.GetNextAreaId() != mArea) {
       return;
     }
-    if (!mIsVirtual) {
-      SetLoadConnected(mgr, true, false);
-      break;
-    }
-
+    if (mIsVirtual) {
     for (int i = 0; i < mgr.GetWorld()->GetNumAreas(); ++i) {
       CGameArea* area = mgr.World()->Area(TAreaId(i));
       for (int j = 0; j < area->GetDockCount(); ++j) {
@@ -169,11 +172,13 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mgr.SetPendingDockTransition(GetCurrentConnectedAreaId(mgr),
                                  dock.GetOtherDockNumber(dock.GetReferenceCount()),
                                  mShowSoftTransition);
-    const TUniqueId transitionId = FindConnectedObject(mgr, kSS_Play, kSM_None);
-    if (const CScriptPortalTransition* portal =
-            TCastToConstPtr< CScriptPortalTransition >(mgr.GetObjectById(transitionId))) {
-      rstl::single_ptr< CPortalTransition > transition = portal->CreateTransition(mgr);
+    if (const CScriptPortalTransition* portal = TCastToConstPtr< CScriptPortalTransition >(
+            mgr.GetObjectById(FindConnectedObject(mgr, kSS_Play, kSM_None)))) {
+      rstl::single_ptr< CPortalTransition > transition(portal->CreateTransition(mgr));
       mgr.SetPortalTransition(transition);
+    }
+    } else {
+      SetLoadConnected(mgr, true, false);
     }
     break;
   }
@@ -187,8 +192,9 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
           mgr.GetWorld()->GetAreaAlways(mgr.GetNextAreaId()).GetDock(mDock);
       areaId = dock.GetConnectedAreaId(dock.GetReferenceCount());
     }
-    if (mgr.GetWorld()->DoesAreaExist(areaId) && mgr.GetWorld()->IsAreaValid(areaId)) {
-      CWorld::PropogateAreaChain(msg.GetMessage() == kSM_Increment ? CGameArea::kOS_Visible
+    if (areaId.Value() >= 0 && mgr.GetWorld()->GetNumAreas() > areaId.Value() &&
+        mgr.GetWorld()->IsAreaValid(areaId)) {
+      CWorld::PropogateAreaChain(message == kSM_Increment ? CGameArea::kOS_Visible
                                                                    : CGameArea::kOS_Occluded,
                                  mgr.World()->Area(areaId), mgr.World());
     }
@@ -212,8 +218,11 @@ void CScriptDock::Think(float dt, CStateManager& mgr) {
     const CGameArea& area = mgr.GetWorld()->GetAreaAlways(connectedArea);
     if (mAreaPostConstructed != area.IsLoaded()) {
       mAreaPostConstructed = area.IsLoaded();
-      SendScriptMsgs(mAreaPostConstructed ? kSS_MaxReached : kSS_Zero, mgr, kInvalidUniqueId,
-                     kSM_None);
+      if (mAreaPostConstructed) {
+        SendScriptMsgs(kSS_MaxReached, mgr);
+      } else {
+        SendScriptMsgs(kSS_Zero, mgr);
+      }
     }
   }
 
@@ -242,14 +251,16 @@ void CScriptDock::Think(float dt, CStateManager& mgr) {
 
 bool CScriptDock::HasPointCrossedDock(const CStateManager& mgr, const CVector3f& point) const {
   const IGameArea::Dock& dock = mgr.GetWorld()->GetAreaAlways(mgr.GetNextAreaId()).GetDock(mDock);
-  const rstl::reserved_vector< CVector3f, 4 >& vertices = dock.GetPlaneVertices();
-  return CPlane(vertices[0], vertices[1], vertices[2]).IsFacing(point);
+  const CVector3f* vertices = dock.GetPlaneVertices().data();
+  const CPlane plane(vertices[0], vertices[1], vertices[2]);
+  return plane.IsFacing(point);
 }
 
 CPlane CScriptDock::GetPlane(const CStateManager& mgr) const {
   const IGameArea::Dock& dock = mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetDock(mDock);
-  const rstl::reserved_vector< CVector3f, 4 >& vertices = dock.GetPlaneVertices();
-  return CPlane(vertices[0], vertices[1], vertices[2]);
+  const CVector3f* vertices = dock.GetPlaneVertices().data();
+  const CPlane plane(vertices[0], vertices[1], vertices[2]);
+  return plane;
 }
 
 int CScriptDock::GetDockReference(const CStateManager& mgr) const {
@@ -266,10 +277,12 @@ void CScriptDock::UpdateAreaActivateFlags(CStateManager& mgr) {
   }
 
   const IGameArea::Dock& dock = area.GetDock(mDock);
-  for (int i = 0; i < dock.GetDockRefs().size(); ++i) {
+  const int count = dock.GetDockRefs().size();
+  for (int i = 0; i < count; ++i) {
+    const bool active = dock.GetReferenceCount() == i;
     const TAreaId connectedArea = dock.GetConnectedAreaId(i);
     if (connectedArea != kInvalidAreaId) {
-      mgr.World()->Area(connectedArea)->SetActive(dock.GetReferenceCount() == i);
+      mgr.World()->Area(connectedArea)->SetActive(active);
     }
   }
   mgr.SetCurrentAreaId(mgr.GetNextAreaId());
@@ -277,7 +290,7 @@ void CScriptDock::UpdateAreaActivateFlags(CStateManager& mgr) {
 
 TAreaId CScriptDock::GetCurrentConnectedAreaId(const CStateManager& mgr) const {
   if (mgr.GetWorld()->GetNumAreas() > mArea.Value()) {
-    const CGameArea& area = mgr.GetWorld()->GetAreaAlways(mArea);
+    const CGameArea& area = mgr.GetWorld()->GetAreaAlways(TAreaId(mArea));
     if (area.GetDockCount() > mDock) {
       const IGameArea::Dock& dock = area.GetDock(mDock);
       return dock.GetConnectedAreaId(dock.GetReferenceCount());
@@ -287,10 +300,11 @@ TAreaId CScriptDock::GetCurrentConnectedAreaId(const CStateManager& mgr) const {
 }
 
 TUniqueId CScriptDock::GetConnectedScriptDockId(const CStateManager& mgr) const {
-  const IGameArea::Dock& dock = mgr.GetWorld()->GetAreaAlways(mArea).GetDock(mDock);
+  const TAreaId area = mArea;
+  const IGameArea::Dock& dock = mgr.GetWorld()->GetAreaAlways(area).GetDock(mDock);
   const int otherDock = dock.GetOtherDockNumber(dock.GetReferenceCount());
   const TAreaId connectedArea = dock.GetConnectedAreaId(dock.GetReferenceCount());
-  const CObjectList& objects = *mgr.GetWorld()->GetAreaAlways(connectedArea).ObjectList();
+  CObjectList& objects = *const_cast< CGameArea& >(mgr.GetWorld()->GetAreaAlways(connectedArea)).ObjectList();
   for (int i = objects.GetFirstObjectIndex(); i != -1; i = objects.GetNextObjectIndex(i)) {
     if (const CScriptDock* nextDock = TCastToConstPtr< CScriptDock >(objects[i])) {
       if (nextDock->GetDockId() == otherDock) {
@@ -299,4 +313,16 @@ TUniqueId CScriptDock::GetConnectedScriptDockId(const CStateManager& mgr) const 
     }
   }
   return kInvalidUniqueId;
+}
+
+CEntity* LoadDock(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDock sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDock.inc"
+
+  return rs_new CScriptDock(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                            LdrToEntityInfo(info, sldrThis.editorProperties),
+                            sldrThis.editorProperties.transform.position,
+                            sldrThis.editorProperties.transform.scale, sldrThis.dockNumber,
+                            TAreaId(sldrThis.areaNumber), 0, sldrThis.loadConnectedImmediate,
+                            sldrThis.isVirtual, sldrThis.showSoftTransition);
 }

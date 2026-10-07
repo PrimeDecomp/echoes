@@ -3,8 +3,8 @@
 #include "Kyoto/Basics/CBasics.hpp"
 
 static const int skChildCounts[] = {0, 2, 2, 4, 2, 4, 4, 8};
-static const int skAxes[][3] = {
-    {-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}, {0, 1, 2}, {-1, -1, -1}, {0, 2, 1}, {2, 0, 1},
+static const int skAxes[] = {
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, -1, -1, -1, 0, 2, 1, 2, 0, 1,
 };
 
 inline const CAreaRenderOctTree::Node* CAreaRenderOctTree::GetNode(int index) const {
@@ -63,8 +63,9 @@ CAABox CAreaRenderOctTree::Node::GetNodeBounds(const CAABox& bounds, int childIn
   case kS_XZ:
   case kS_ZX: {
     const CVector3f center = bounds.GetCenterPoint();
-    const int a = skAxes[flags][0];
-    const int b = skAxes[flags][1];
+    const int idx = flags * 3;
+    const int a = skAxes[idx];
+    const int b = skAxes[idx + 1];
     switch (childIndex) {
     case 0:
       max[a] = center[a];
@@ -124,7 +125,7 @@ void CAreaRenderOctTree::Node::RecursiveBuildOverlaps(uint* bitmap, const CAreaR
     } else {
       const int childCount = GetChildCount();
       for (int i = 0; i < childCount; ++i) {
-        const Node* child = tree.GetNode(CBasics::SwapBytes(mChildren[i]));
+        const Node* child = tree.GetNode(mChildren[i]);
         child->RecursiveBuildOverlaps(bitmap, tree, GetNodeBounds(bounds, i), testBounds);
       }
     }

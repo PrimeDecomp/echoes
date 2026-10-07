@@ -61,8 +61,9 @@ struct SLdrDebrisExtended {
   float disablePhysicsThreshold; // 0x295f05b7
 };
 
-inline SLdrDebrisExtended::SLdrDebrisExtended() : editorProperties(), movementDirection(CVector3f::Zero()), startColor(CColor::Green()), endColor(CColor::Green()), finalScale(CVector3f::Zero()), positionOffset(CVector3f::Zero()), model(kInvalidAssetId), actorInformation(), particle1(kInvalidAssetId), particleSystem1Scale(CVector3f::Zero()), particle2(kInvalidAssetId), particleSystem2Scale(CVector3f::Zero()), deathParticle(kInvalidAssetId), deathParticleSystemScale(CVector3f::Zero()) {
+inline SLdrDebrisExtended::SLdrDebrisExtended() : editorProperties(), movementDirection(CVector3f::Zero()), startColor(CColor::Green()), endColor(CColor::Green()), finalScale(CVector3f::Zero()), positionOffset(CVector3f::Zero()), model(kInvalidAssetId), actorInformation(), particle1(kInvalidAssetId), bounceSound(-1), particleSystem1Scale(CVector3f::Zero()), particle2(kInvalidAssetId), particleSystem2Scale(CVector3f::Zero()), deathParticle(kInvalidAssetId), deathParticleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 3;
   coneSpread = 180.0f;
   movementDirection = CVector3f(0.0f, 0.0f, 1.0f);
   minimumSpeed = 5.0f;
@@ -80,7 +81,8 @@ inline SLdrDebrisExtended::SLdrDebrisExtended() : editorProperties(), movementDi
   finalScale = CVector3f(1.0f, 1.0f, 1.0f);
   unknown_0x417f4a91 = 0.375f;
   gravity = 25.0f;
-  bounceSound = 0;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   maxBounceSounds = 1;
   bounceSoundVolumeDecay = 1.0f;
   bounceSoundSpeedThreshold = 1.0f;

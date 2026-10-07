@@ -63,7 +63,7 @@ public:
 
   uint ResourceSize(const SObjectTag& tag) const { return mResLoader.ResourceSize(tag); }
 
-  void AsyncIdle(uint time, bool);
+  void AsyncIdle(uint time, const bool);
 
   CResLoader& GetResLoader() { return mResLoader; }
   CFactoryMgr& GetFactoryMgr() { return mFactoryMgr; }

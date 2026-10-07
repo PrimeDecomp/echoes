@@ -44,6 +44,12 @@ public:
                   const rstl::auto_ptr< rstl::vector< rstl::auto_ptr< CCubeModel > > >& models,
                   int areaId);
 
+    const rstl::vector< CMetroidModelInstance >* GetModelVector() const { return mGeometry; }
+    const rstl::vector< SAreaSurface >* GetSurfaces() const { return mSurfaces; } // Guessed name
+    const rstl::vector< rstl::auto_ptr< CCubeModel > >* GetModelList() const {
+      return mModels.get();
+    }
+
     const rstl::vector< CMetroidModelInstance >* mGeometry;
     const CAreaRenderOctTree* mOctTree;
     const rstl::vector< SAreaSurface >* mSurfaces;
@@ -150,7 +156,7 @@ public:
   void DrawModelDisintegrate(const SModelRenderData& model, const CTexture& texture,
                              const CColor& color, float amount) override;
   void DrawModelFlat(const SModelRenderData& model, const CModelFlags& flags,
-                     bool unsortedOnly) override;
+                     const bool unsortedOnly) override;
   // Guessed name
   void DrawModelWithTextureMask(const SModelRenderData& model, const CTexture& texture,
                                 const CVector3f& origin, const CColor& color, float scale) override;
@@ -234,7 +240,7 @@ public:
   static void LoadScrollingTextureMatrix(uint matrix, const CVector2f& scroll,
                                          const CVector2f& scale);
   // Guessed name
-  static void LoadEnvironmentTextureMatrix(uint matrix, uint postMatrix, const CTransform4f& xf,
+  static bool LoadEnvironmentTextureMatrix(uint matrix, uint postMatrix, const CTransform4f& xf,
                                            bool alternate);
   // Guessed name
   static void PopulateNoiseTexCoords(float time, rstl::reserved_vector< CVector2f, 9 >& coords);
@@ -261,8 +267,8 @@ public:
   uchar FindOrAddLightSet(uint lightSet);
   // Guessed name
   int DrawScanSurface(int areaSurfaceIndex, const CCubeModel& model,
-                      const CMetroidModelInstance::CSurfaceGroups& groups, ushort group,
-                      bool intersects);
+                      CMetroidModelInstance::CSurfaceGroups groups, ushort group,
+                      bool intersects, int prevResult);
   void ReallyRenderFogVolume(const CColor& color, const CAABox& bounds, const CModel* model,
                              const CSkinnedModel* skinnedModel);
   static void RenderFogVolumeModel(const CAABox& bounds, const CModel* model,
@@ -303,8 +309,10 @@ public:
   static CCubeRenderer* That() { return sRenderer; }
 
 private:
+  struct SGeometryTag {};
   template < bool Special, bool Alpha >
-  void DrawGeometry(int areaId);
+  void DrawGeometry(int areaId, const char* name, const SGeometryTag&, const SGeometryTag&,
+                    const SGeometryTag&, const SGeometryTag&, const SGeometryTag&);
 
   IFactory& mFactory;
   IObjectStore& mObjStore;

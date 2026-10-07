@@ -23,7 +23,7 @@ public:
 
   CConditionalRelayQuery(EBoolean boolean, CPlayerState::EItemType item, EField field,
                           EComparison comparison, int value);
-  bool IsConditionSatisfied(const CStateManager& mgr, uint playerIndex) const;
+  bool IsConditionSatisfied(CStateManager& mgr, uint playerIndex) const;
   EBoolean GetBoolean() const { return mBoolean; }
 
 private:
@@ -50,7 +50,7 @@ public:
 
 private:
   void OnSetToZero(CStateManager& mgr, TUniqueId originator);
-  bool VerifyConditions(const CStateManager& mgr, TUniqueId originator) const;
+  bool VerifyConditions(CStateManager& mgr, TUniqueId originator) const;
 
   uint mPlayerMask;
   rstl::reserved_vector< CConditionalRelayQuery, 4 > mConditions;

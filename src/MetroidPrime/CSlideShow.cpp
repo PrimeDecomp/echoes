@@ -28,11 +28,19 @@
 #include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
 
+// Unreferenced; only the pooled strings survive in the final binary.
+static const char* skSlideShowPrefix = "slideshow";
+static const char* const skGalleryPrefix = "Gallery";
+static const char* skGalleryBorderModel = "CMDL_GalleryBorder";
+static const char skImageTag[] = "&image=";
+static const char skImageTagEnd[] = ";";
+static const char* const skLogbookName = "Logbook";
+
 static CVector2f sZeroVector(0.f, 0.f);
-static rstl::string sSlideShowMusic;
+static rstl::string sSlideShowMusic = rstl::string_l("");
 
 static int GetStickDirection(float up, float down, float left, float right) {
-  uchar direction = 0;
+  uint direction = 0;
   if (up > 0.f) {
     direction |= 1;
   }
@@ -48,20 +56,20 @@ static int GetStickDirection(float up, float down, float left, float right) {
   switch (direction) {
   case 1:
     return 1;
-  case 2:
-    return 5;
-  case 4:
-    return 3;
   case 5:
     return 2;
+  case 4:
+    return 3;
   case 6:
     return 4;
+  case 2:
+    return 5;
+  case 10:
+    return 6;
   case 8:
     return 7;
   case 9:
     return 8;
-  case 10:
-    return 6;
   default:
     return 0;
   }
@@ -77,17 +85,25 @@ static void DrawTexture(const rstl::auto_ptr< TToken< CTexture > >& token, const
   const float width = texture.GetWidth();
   const float height = texture.GetHeight();
   const CViewport& viewport = CGraphics::GetViewport();
-  const int left = viewportOffset != nullptr ? int(viewportOffset->GetX()) : viewport.mLeft;
-  const int top = viewportOffset != nullptr ? int(viewportOffset->GetY()) : viewport.mTop;
-  const int vpWidth = viewportSize != nullptr ? int(viewportSize->GetX()) : viewport.mWidth;
-  const int vpHeight = viewportSize != nullptr ? int(viewportSize->GetY()) : viewport.mHeight;
+  int left = viewport.mLeft;
+  int top = viewport.mTop;
+  int vpWidth = viewport.mWidth;
+  int vpHeight = viewport.mHeight;
+  if (viewportOffset != nullptr) {
+    left = int(viewportOffset->GetX());
+    top = int(viewportOffset->GetY());
+  }
+  if (viewportSize != nullptr) {
+    vpWidth = int(viewportSize->GetX());
+    vpHeight = int(viewportSize->GetY());
+  }
   CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
   CGraphics::SetOrtho(left, left + vpWidth, top + vpHeight, top, -1.f, 1.f);
   CGraphics::SetViewPointMatrix(CTransform4f::Identity());
   CGraphics::SetModelMatrix(CTransform4f::Translate(offset));
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
-  texture.Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+  texture.Load(GX_TEXMAP0, CTexture::kCM_Clamp);
   CGraphics::StreamBegin(kP_Quads);
   CGraphics::StreamColor(color);
   CGraphics::StreamTexcoord(0.f, 0.f);
@@ -173,11 +189,11 @@ CSlideShow::~CSlideShow() {
   gpResourceFactory->GetResLoader().RemovePakFile(gpTweakSlideShow->GetPakFile());
 }
 
-uchar CSlideShow::GetGalleriesUnlocked() {
+uint CSlideShow::GetGalleriesUnlocked() {
   uint flags = 0;
   if (gpGameState != nullptr) {
     const int percent =
-        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans")->GetValue();
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("PercentScans")->GetValue();
     if (percent >= 40) {
       flags |= 1;
     }
@@ -190,11 +206,11 @@ uchar CSlideShow::GetGalleriesUnlocked() {
     if (percent >= 100) {
       flags |= 8;
     }
-    if (gpGameState->SystemOptions().FindEnvironmentVariable("NormalModeCompleted")->GetValue() !=
+    if (gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("NormalModeCompleted")->GetValue() !=
         0) {
       flags |= 16;
     }
-    if (gpGameState->SystemOptions().FindEnvironmentVariable("HardModeCompleted")->GetValue() !=
+    if (gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("HardModeCompleted")->GetValue() !=
         0) {
       flags |= 32;
     }
@@ -215,7 +231,7 @@ void CSlideShow::BuildGalleryLists(uint flags) {
     }
 
     const int textureCount = dep->GetT()->GetObjectTagVector().size();
-    mGalleries.push_back(SGalleryData(i));
+    mGalleries.push_back_unsafe(SGalleryData(i));
     SGalleryData& gallery = mGalleries.back();
     gallery.mTextures.reserve(textureCount);
     gallery.mSlides.reserve(textureCount);
@@ -229,7 +245,7 @@ void CSlideShow::BuildGalleryLists(uint flags) {
       rstl::string name = CBasics::Stringize("%s_%02d_%03d", "slideshow", i, slide);
       const SObjectTag* tag = gpResourceFactory->GetResourceIdByName(name.data());
       if (tag != nullptr) {
-        gallery.mTextures.push_back(tag);
+        gallery.mTextures.push_back_unsafe(tag);
         column = 1;
         ++tiles;
         columns = 1;
@@ -239,7 +255,7 @@ void CSlideShow::BuildGalleryLists(uint flags) {
         name.append(CBasics::Stringize("_%02d%02d", column, row), -1);
         tag = gpResourceFactory->GetResourceIdByName(name.data());
         if (tag != nullptr) {
-          gallery.mTextures.push_back(tag);
+          gallery.mTextures.push_back_unsafe(tag);
           ++column;
           ++tiles;
           columns = column;
@@ -248,7 +264,7 @@ void CSlideShow::BuildGalleryLists(uint flags) {
       }
       if (tag == nullptr) {
         if (missingRows == 1 && tiles > 0) {
-          gallery.mSlides.push_back(rstl::pair< int, int >(gallery.mTextures.size(), columns));
+          gallery.mSlides.push_back_unsafe(rstl::pair< int, int >(gallery.mTextures.size(), columns));
           ++slide;
           row = 0;
           missingRows = 0;
@@ -270,11 +286,14 @@ void CSlideShow::BuildGalleryLists(uint flags) {
 
 bool CSlideShow::LoadTXTRDep(const char* name) {
   const SObjectTag* tag = gpResourceFactory->GetResourceIdByName(name);
-  if (tag == nullptr || tag->type != 'DGRP') {
+  if (tag != nullptr && tag->type == 'DGRP') {
+    if (mGalleryTXTRDeps.size() + 1 > mGalleryTXTRDeps.capacity()) {
+      mGalleryTXTRDeps.reserve(mGalleryTXTRDeps.size() + 1);
+    }
+    mGalleryTXTRDeps.push_back_unsafe(TToken< CDependencyGroup >(gpSimplePool->GetObj(*tag)));
+  } else {
     return false;
   }
-  mGalleryTXTRDeps.reserve(mGalleryTXTRDeps.size() + 1);
-  mGalleryTXTRDeps.push_back(TToken< CDependencyGroup >(gpSimplePool->GetObj(*tag)));
   return true;
 }
 
@@ -305,7 +324,7 @@ CIOWin::EMessageReturn CSlideShow::OnMessage(const CArchitectureMessage& msg,
     if (mGalleryTXTRDeps.empty()) {
       mGalleryTXTRDeps.reserve(8);
       for (int i = 1;; ++i) {
-        const rstl::string name = CBasics::Stringize("Gallery%02d_DGRP", i);
+        const rstl::string name = CBasics::Stringize("%s%02d_DGRP", skGalleryPrefix, i);
         if (!LoadTXTRDep(name.data())) {
           break;
         }
@@ -434,9 +453,10 @@ void CSlideShow::Draw() const {
     DrawControls();
   }
   if (mIntroFade || mOutroFade) {
-    float alpha = mFadeTimer / (mIntroFade ? gpTweakSlideShow->GetFadeInTime()
-                                           : gpTweakSlideShow->GetFadeOutTime());
-    alpha = CMath::Clamp(0.f, alpha, 1.f);
+    float alpha = CMath::Clamp(0.f,
+                               mFadeTimer / (mIntroFade ? gpTweakSlideShow->GetFadeInTime()
+                                                        : gpTweakSlideShow->GetFadeOutTime()),
+                               1.f);
     if (mOutroFade) {
       alpha = 1.f - alpha;
     }
@@ -468,7 +488,7 @@ rstl::pair< int, int > CStateManager::CalculateScanCompletionRate() const {
       GetPlayerState(0)->ScanStates();
   int logbook = -1;
   for (int i = 0; i < hierarchy.size(); ++i) {
-    if (hierarchy[i].mName == "Logbook") {
+    if (hierarchy[i].mName == skLogbookName) {
       logbook = i;
     }
   }
@@ -500,14 +520,14 @@ CAssetId UpdatePersistentScanPercent(int previous, int current, int total) {
     const float interval = gpTweakSlideShow->GetScanPercentInterval();
     const float previousPercent = 100.f * (float(previous) / total);
     const float currentPercent = 100.f * (float(current) / total);
-    CEnvironmentVariable* saved =
-        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans");
+    const int saved =
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("PercentScans")->GetValue();
     const int scanPercent = int(currentPercent);
     const int previousStep = int(rstl::max_val(0.f, previousPercent - 20.f) / interval);
     const int step = int(rstl::max_val(0.f, currentPercent - 20.f) / interval);
-    const bool firstTime = scanPercent > saved->GetValue();
+    const bool firstTime = scanPercent > saved;
     if (firstTime) {
-      saved->Set(scanPercent);
+      gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("PercentScans")->Set(scanPercent);
     }
     if (step > previousStep) {
       const int message = CMath::Clamp(0, step - 1, 3);
@@ -519,71 +539,71 @@ CAssetId UpdatePersistentScanPercent(int previous, int current, int total) {
 }
 
 CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
-  if (mDisableInput || mPhase != 5) {
-    return kMR_Exit;
-  }
-  if (IsControlsAnimating()) {
-    UpdateControlsText(input);
-  }
-  if (input.PB()) {
-    SetPanSfx(false);
-    SetZoomSfx(false);
-    CSfxManager::SfxStart(0x5b7, 127, 64);
-    mDisableInput = true;
-    mOutroFade = true;
-    return kMR_Exit;
-  }
-  if (input.PY()) {
-    SetShowControls(!mShowControls);
-    if (mShowControls) {
-      mGalleryChanged = true;
-      CSfxManager::SfxStart(0x5b3, 127, 64);
-    } else {
-      CSfxManager::SfxStart(0x5b2, 127, 64);
+  if (!mDisableInput && mPhase == 5) {
+    if (IsControlsAnimating()) {
+      UpdateControlsText(input);
     }
-  }
-  bool changed = false;
-  const CControlMapper& mapper = gpGameState->ControlMapper();
-  if (input.PDPRight()) {
-    mGallery = (mGallery + 1) % mGalleries.size();
-    mSlide = -1;
-    mGalleryChanged = true;
-    changed = true;
-    AdvanceSlide(true);
-  } else if (input.PDPLeft()) {
-    --mGallery;
-    if (mGallery < 0) {
-      mGallery = mGalleries.size() - 1;
+    if (input.PB()) {
+      SetPanSfx(false);
+      SetZoomSfx(false);
+      CSfxManager::SfxStart(0x5b7, 127, 64);
+      mDisableInput = true;
+      mOutroFade = true;
+      return kMR_Exit;
     }
-    mSlide = -1;
-    mGalleryChanged = true;
-    changed = true;
-    AdvanceSlide(true);
-  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleLeft, input) || input.PA()) {
-    changed = true;
-    AdvanceSlide(true);
-  } else if (mapper.GetPressInput(CControlMapper::kC_MapCircleRight, input)) {
-    changed = true;
-    AdvanceSlide(false);
-  } else {
-    const float next = mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
-    if (next != 0.f || input.DA()) {
-      mRepeatTimer = rstl::max_val(0.f, mRepeatTimer) + input.DeltaTime();
-    } else {
-      const float previous = mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
-      if (previous != 0.f) {
-        mRepeatTimer = rstl::min_val(0.f, mRepeatTimer) - input.DeltaTime();
+    if (input.PY()) {
+      SetShowControls(!mShowControls);
+      if (mShowControls) {
+        mGalleryChanged = true;
+        CSfxManager::SfxStart(0x5b3, 127, 64);
       } else {
-        mRepeatTimer = 0.f;
+        CSfxManager::SfxStart(0x5b2, 127, 64);
       }
     }
-  }
-  if (changed) {
-    mRepeatTimer = 0.f;
-    mIdleTimer = 0.f;
-  }
-  if (mSlideA.IsReady()) {
-    return mSlideA.ProcessUserInput(input);
+    bool changed = false;
+    if (input.PDPRight()) {
+      mGallery = (mGallery + 1) % mGalleries.size();
+      mSlide = -1;
+      mGalleryChanged = true;
+      changed = true;
+      AdvanceSlide(true);
+    } else if (input.PDPLeft()) {
+      --mGallery;
+      if (mGallery < 0) {
+        mGallery = mGalleries.size() - 1;
+      }
+      mSlide = -1;
+      mGalleryChanged = true;
+      changed = true;
+      AdvanceSlide(true);
+    } else if (gpGameState->ControlMapper().GetPressInput(CControlMapper::kC_MapCircleLeft,
+                                                            input) ||
+               input.PA()) {
+      changed = true;
+      AdvanceSlide(true);
+    } else if (gpGameState->ControlMapper().GetPressInput(CControlMapper::kC_MapCircleRight,
+                                                            input)) {
+      changed = true;
+      AdvanceSlide(false);
+    } else if (gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleLeft,
+                                                             input) ||
+               input.DA()) {
+      mRepeatTimer = rstl::max_val(0.f, mRepeatTimer);
+      mRepeatTimer += input.DeltaTime();
+    } else if (gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleRight,
+                                                             input)) {
+      mRepeatTimer = rstl::min_val(0.f, mRepeatTimer);
+      mRepeatTimer -= input.DeltaTime();
+    } else {
+      mRepeatTimer = 0.f;
+    }
+    if (changed) {
+      mRepeatTimer = 0.f;
+      mIdleTimer = 0.f;
+    }
+    if (mSlideA.IsReady()) {
+      return mSlideA.ProcessUserInput(input);
+    }
   }
   return kMR_Exit;
 }
@@ -591,7 +611,11 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
 CIOWin::EMessageReturn CSlideShow::AdvanceSlide(bool forward) {
   if (!mGalleries.empty()) {
     CSfxManager::SfxStart(0x5b6, 127, 64);
-    mSlide += forward ? 1 : -1;
+    if (forward) {
+      ++mSlide;
+    } else {
+      --mSlide;
+    }
     const int gallery = mGallery;
     if (mSlide < 0) {
       --mGallery;
@@ -625,7 +649,7 @@ void CSlideShow::LoadSlide() {
     for (int i = first; i < end; ++i) {
       const SObjectTag* tag = gallery.mTextures[i];
       if (tag != nullptr && gpResourceFactory->GetResourceTypeById(tag->GetId()) == 'TXTR') {
-        mSlideB.mTextures.push_back(STexture());
+        mSlideB.mTextures.push_back_unsafe(STexture());
         mSlideB.mTextures.back().mToken = rs_new TToken< CTexture >(gpSimplePool->GetObj(*tag));
       }
     }
@@ -654,43 +678,52 @@ void CSlideShow::UpdateControlsText(const CFinalInput& input) {
   if (mControlsText.null()) {
     return;
   }
-  const CControlMapper& mapper = gpGameState->ControlMapper();
-  mCStick = GetStickDirection(mapper.GetAnalogInput(CControlMapper::kC_MapMoveForward, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input));
-  mLStick = GetStickDirection(mapper.GetAnalogInput(CControlMapper::kC_MapCircleDown, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapCircleUp, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input),
-                              mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input));
-  mRTrigger = mapper.GetAnalogInput(CControlMapper::kC_MapZoomIn, input) > 0.f ? 1 : 0;
-  mLTrigger = mapper.GetAnalogInput(CControlMapper::kC_MapZoomOut, input) > 0.f ? 1 : 0;
-  const CStringTable& strings = ***mGalleryNames;
+  {
+    const CControlMapper& mapper = gpGameState->ControlMapper();
+    mCStick = GetStickDirection(mapper.GetAnalogInput(CControlMapper::kC_MapMoveForward, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input));
+  }
+  {
+    const CControlMapper& mapper = gpGameState->ControlMapper();
+    mLStick = GetStickDirection(mapper.GetAnalogInput(CControlMapper::kC_MapCircleDown, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapCircleUp, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input),
+                                mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input));
+  }
+  const float zoomIn =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapZoomIn, input);
+  const float zoomOut =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapZoomOut, input);
+  mRTrigger = zoomIn > 0.f ? 1 : 0;
+  mLTrigger = zoomOut > 0.f ? 1 : 0;
   rstl::wstring text;
   text.reserve(256);
+  const CStringTable& strings = ***mGalleryNames;
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=SI,0.6,1.0,%8.8X;", gpTweakPlayerRes->mLStick[mLStick])));
+      CBasics::Stringize("%sSI,0.6,1.0,%8.8X%s", skImageTag, gpTweakPlayerRes->mLStick[mLStick], skImageTagEnd)));
   text.append(strings.GetString("Browse"), -1);
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l("   ")));
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=%8.8X;", gpTweakPlayerRes->mLTrigger[mLTrigger])));
+      CBasics::Stringize("%s%8.8X%s", skImageTag, gpTweakPlayerRes->mLTrigger[mLTrigger], skImageTagEnd)));
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l(" ")));
   text.append(strings.GetString("Zoom"), -1);
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l(" ")));
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=%8.8X;", gpTweakPlayerRes->mRTrigger[mRTrigger])));
+      CBasics::Stringize("%s%8.8X%s", skImageTag, gpTweakPlayerRes->mRTrigger[mRTrigger], skImageTagEnd)));
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l("  ")));
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=SI,0.6,1.0,%8.8X;", gpTweakPlayerRes->mCStick[mCStick])));
+      CBasics::Stringize("%sSI,0.6,1.0,%8.8X%s", skImageTag, gpTweakPlayerRes->mCStick[mCStick], skImageTagEnd)));
   text.append(strings.GetString("Pan"), -1);
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l("   ")));
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=SI,1.0,1.0,%8.8X;", gpTweakPlayerRes->mYButton[0])));
+      CBasics::Stringize("%sSI,1.0,1.0,%8.8X%s", skImageTag, gpTweakPlayerRes->mYButton[0], skImageTagEnd)));
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l(" ")));
   text.append(strings.GetString("Instructions"), -1);
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l("   ")));
   text.append(CStringExtras::ConvertToUNICODE(
-      CBasics::Stringize("&image=SI,0.6,1.0,%8.8X;", gpTweakPlayerRes->mBButton[0])));
+      CBasics::Stringize("%sSI,0.6,1.0,%8.8X%s", skImageTag, gpTweakPlayerRes->mBButton[0], skImageTagEnd)));
   text.append(CStringExtras::ConvertToUNICODE(rstl::string_l(" ")));
   text.append(strings.GetString("Quit"), -1);
   mControlsText->SetText(text);
@@ -721,8 +754,9 @@ void CSlideShow::SetZoomSfx(bool active) {
 void CSlideShow::UpdateMusicVolume(float time, float fadeTime) {
   if (!mAudio.null()) {
     const float volume = CMath::Clamp(0.f, time / fadeTime, 1.f);
-    mAudio->SetVolume(
-        static_cast< uchar >(0.7421875f * volume * gpGameState->GameOptions().GetMusicVolume()));
+    const uchar musicVolume =
+        CCast::ToUint8(0.7421875f * volume * int(gpGameState->GameOptions().GetMusicVolume()));
+    mAudio->SetVolume(musicVolume);
     mAudio->StartMixOut();
   }
 }
@@ -763,11 +797,13 @@ void CSlideShow::DrawSlideNumber() const {
   if (mSlideNumberText.null()) {
     return;
   }
+  const int height = CGraphics::GetViewport().mHeight;
   const float fadeTime = gpTweakSlideShow->GetSlideNumberTransitionTime();
-  const float alpha = CMath::Clamp(0.f, (fadeTime - mSlideNumberTimer) / fadeTime, 1.f);
+  const float alpha = CMath::Clamp(
+      0.f, (fadeTime - mSlideNumberTimer) / gpTweakSlideShow->GetSlideNumberTransitionTime(), 1.f);
   const rstl::pair< CVector2i, CVector2i >& bounds = mSlideNumberText->GetBounds();
   const float textHeight = bounds.second.GetY() - bounds.first.GetY();
-  const float y = 2.f * CGraphics::GetViewport().mHeight - mSlideNumberOffset - textHeight;
+  const float y = 2.f * height - mSlideNumberOffset - textHeight;
   CGraphics::SetCullMode(kCM_None);
   gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
   gpRender->SetDepthReadWrite(false, false);
@@ -788,43 +824,49 @@ void CSlideShow::UpdateSlideNumber(float dt) {
     for (int i = 0; i < mGallery; ++i) {
       slide += mGalleries[i].mSlides.size();
     }
-    mSlideNumberText->SetText(CBasics::Stringize("%d/%d", slide + 1, mTotalSlides));
+    rstl::string text = CBasics::Stringize("%d/%d", slide + 1, mTotalSlides);
+    mSlideNumberText->SetText(text);
     mSlideNumberText->Update(dt);
   }
 }
 
 void CSlideShow::DrawControls() const {
-  if (mControlsText.null()) {
-    return;
+  if (CGuiTextSupport* text = mControlsText.get()) {
+    const float fadeTime =
+        mIntroFade ? gpTweakSlideShow->GetFadeInTime() : gpTweakSlideShow->GetFadeOutTime();
+    text->SetGeometryColor(CColor::White().WithAlphaOf(mControlsAlpha * fadeTime));
+    const int height = CGraphics::GetViewport().mHeight;
+    gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
+    gpRender->SetModelMatrix(CTransform4f::Translate(0.f, 0.f, 32.f + height));
+    CGraphics::SetCullMode(kCM_None);
+    gpRender->SetDepthReadWrite(false, false);
+    mControlsText->Render();
   }
-  const float fadeTime =
-      mIntroFade ? gpTweakSlideShow->GetFadeInTime() : gpTweakSlideShow->GetFadeOutTime();
-  mControlsText->SetGeometryColor(CColor::White().WithAlphaModulatedBy(mControlsAlpha * fadeTime));
-  gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
-  gpRender->SetModelMatrix(
-      CTransform4f::Translate(0.f, 0.f, 32.f + CGraphics::GetViewport().mHeight));
-  CGraphics::SetCullMode(kCM_None);
-  gpRender->SetDepthReadWrite(false, false);
-  mControlsText->Render();
 }
 
 CIOWin::EMessageReturn CSlideShow::SSlideData::ProcessUserInput(const CFinalInput& input) {
   if (IsReady()) {
     const CViewport& viewport = CGraphics::GetViewport();
-    const float aspect = float(viewport.mWidth) / viewport.mHeight;
-    const float textureSize = rstl::max_val(mTextureWidth, mTextureHeight);
+    const int vpWidth = viewport.mWidth;
+    const int vpHeight = viewport.mHeight;
     const CControlMapper& mapper = gpGameState->ControlMapper();
+    const float aspect = float(vpWidth) / vpHeight;
+    const float textureHeight = mTextureHeight;
+    const float textureWidth = mTextureWidth;
+    const float textureSize = rstl::max_val(textureWidth, textureHeight);
     const float zoomIn = mapper.GetAnalogInput(CControlMapper::kC_MapZoomIn, input);
     const float zoomOut = mapper.GetAnalogInput(CControlMapper::kC_MapZoomOut, input);
     const float zoom = textureSize * (zoomOut - zoomIn) / 1024.f;
     const CVector2f oldSize = mVpSize;
     if (zoom != 0.f) {
       CVector2f offset = mVpSize;
-      const float delta = gpTweakContents->TweakSlideShow.scaleMultiplier * zoom;
+      const float delta = zoom * gpTweakSlideShow->GetScaleMultiplier();
       mVpSize[0] += aspect * delta;
       mVpSize[1] += delta;
-      mVpSize[0] = CMath::Clamp(float(viewport.mWidth), mVpSize.GetX(), mCanvasSize.GetX());
-      mVpSize[1] = CMath::Clamp(float(viewport.mHeight), mVpSize.GetY(), mCanvasSize.GetY());
+      const float minWidth = vpWidth;
+      mVpSize[0] = CMath::Clamp(minWidth, mVpSize.GetX(), mCanvasSize.GetX());
+      const float minHeight = vpHeight;
+      mVpSize[1] = CMath::Clamp(minHeight, mVpSize.GetY(), mCanvasSize.GetY());
       offset -= mVpSize;
       offset /= 2.f;
       mVpOffset += offset;
@@ -832,12 +874,16 @@ CIOWin::EMessageReturn CSlideShow::SSlideData::ProcessUserInput(const CFinalInpu
     mParent->SetZoomSfx(!(oldSize == mVpSize));
 
     const CVector2f oldOffset = mVpOffset;
-    const float forward = mapper.GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
-    const float back = mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
-    const float left = mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
-    const float right = mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
-    const float speed =
-        gpTweakContents->TweakSlideShow.translationMultiplier * textureSize / 1024.f;
+    const float forward =
+        gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
+    const float back =
+        gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
+    const float left =
+        gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
+    const float right =
+        gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
+    const float speed = rstl::max_val(mTextureWidth, mTextureHeight) *
+                        gpTweakSlideShow->GetTranslationMultiplier() / 1024.f;
     mVpOffset[0] -= speed * left;
     mVpOffset[0] += speed * right;
     mVpOffset[1] += speed * forward;
@@ -845,8 +891,8 @@ CIOWin::EMessageReturn CSlideShow::SSlideData::ProcessUserInput(const CFinalInpu
     mVpOffset[0] = CMath::Clamp(0.f, mVpOffset.GetX(), mCanvasSize.GetX() - mVpSize.GetX());
     mVpOffset[1] = CMath::Clamp(0.f, mVpOffset.GetY(), mCanvasSize.GetY() - mVpSize.GetY());
 
-    const float availableX = mTextureWidth / 2.f - mVpSize.GetX() / 2.f;
-    const float availableY = mTextureHeight / 2.f - mVpSize.GetY() / 2.f;
+    const float availableX = textureWidth / 2.f - mVpSize.GetX() / 2.f;
+    const float availableY = textureHeight / 2.f - mVpSize.GetY() / 2.f;
     const float halfX = rstl::max_val(0.f, availableX);
     const float halfY = rstl::max_val(0.f, availableY);
     mVpOffset[0] =
@@ -895,7 +941,10 @@ const bool CSlideShow::SSlideData::IsLoaded() const {
   if (mTextures.empty()) {
     return false;
   }
-  const bool loaded = !mTextures.front().mToken.null() && mTextures.front().mToken->IsLoaded();
+  bool loaded = true;
+  if (mTextures.front().mToken.null() || !mTextures.front().mToken->IsLoaded()) {
+    loaded = false;
+  }
   if (!mStopLoading) {
     for (int i = 0; i < mTextures.size(); ++i) {
       if (!mTextures[i].mToken.null()) {
@@ -948,7 +997,8 @@ void CSlideShow::SSlideData::Reset() {
   mVpOffset = sZeroVector;
   mVpSize = sZeroVector;
   mCanvasSize = sZeroVector;
-  mMulColor = CColor::White().WithAlphaOf(0.f);
+  mMulColor = CColor::White();
+  mMulColor.SetAlpha(0.f);
 }
 
 bool CSlideShow::GetIsContinueDraw() const { return false; }

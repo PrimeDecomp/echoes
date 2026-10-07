@@ -25,7 +25,7 @@ void CTrigger::Setup(const char* name, bool lnot, float arg, CState* state) {
 CState::CState(const char* name)
 : mIndex(0), mNumTriggers(0), mFirstTrigger(nullptr), mComment(false) {
   strncpy(mName, name, sizeof(mName));
-  if (strlen(mName) > 1) {
+  if (strlen(mName) >= 2) {
     mComment = mName[0] == '/' && mName[1] == '/';
   }
 }

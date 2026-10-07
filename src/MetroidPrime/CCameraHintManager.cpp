@@ -34,28 +34,25 @@ bool CCameraHintManager::SelectHintFromStack(CHintState* hint, CStateManager& mg
 }
 
 bool CCameraHintManager::HasBallCameraInitialPositionHint(const CStateManager& mgr) const {
-  if (!HasHint(mgr)) {
-    return false;
+  if (HasHint(mgr)) {
+    const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(GetCurrentHint(mgr));
+    if (hint) {
+      switch (hint->GetInfo().GetBehaviourType()) {
+      case CBallCamera::kBCB_HintBallToCam:
+      case CBallCamera::kBCB_Unknown4:
+      case CBallCamera::kBCB_Unknown5:
+      case CBallCamera::kBCB_Unknown7:
+      case CBallCamera::kBCB_Unknown8:
+      case CBallCamera::kBCB_Unknown9:
+      case CBallCamera::kBCB_HintLocalOffset:
+      case CBallCamera::kBCB_FixedTransform:
+        return true;
+      default:
+        break;
+      }
+    }
   }
-
-  const CScriptCameraHint* hint = TCastToConstPtr< CScriptCameraHint >(GetCurrentHint(mgr));
-  if (!hint) {
-    return false;
-  }
-
-  switch (hint->GetInfo().GetBehaviourType()) {
-  case CBallCamera::kBCB_HintBallToCam:
-  case CBallCamera::kBCB_Unknown4:
-  case CBallCamera::kBCB_Unknown5:
-  case CBallCamera::kBCB_Unknown7:
-  case CBallCamera::kBCB_Unknown8:
-  case CBallCamera::kBCB_Unknown9:
-  case CBallCamera::kBCB_HintLocalOffset:
-  case CBallCamera::kBCB_FixedTransform:
-    return true;
-  default:
-    return false;
-  }
+  return false;
 }
 
 void CCameraHintManager::RefreshHint(CStateManager& mgr) {
@@ -86,6 +83,6 @@ void CCameraHintManager::OnHintRemoved(CStateManager& mgr) {
   CCameraManager* cameras = mgr.CameraManager(GetPlayerIndex());
   cameras->ClearPathCamera();
   cameras->ClearSpindleCamera();
-  cameras->ClearSurfaceCamera();
+  cameras->ClearSurfaceCamera(mgr);
   cameras->ClearFixedCamera();
 }

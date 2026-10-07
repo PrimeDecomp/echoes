@@ -235,8 +235,10 @@ bool CAuxWeapon::HasChargeCombo(int beam, CStateManager& mgr) const {
   static const CPlayerState::EItemType skChargeCombos[] = {
       CPlayerState::kIT_SuperMissile, CPlayerState::kIT_Darkburst, CPlayerState::kIT_Sunburst,
       CPlayerState::kIT_SonicBoom};
-  const CPlayerState::EItemType item = skChargeCombos[beam];
-  return item != CPlayerState::kIT_Invalid && FindPlayer(mgr)->GetPlayerState()->HasPowerUp(item);
+  if (skChargeCombos[beam] != CPlayerState::kIT_Invalid) {
+    return FindPlayer(mgr)->GetPlayerState()->HasPowerUp(skChargeCombos[beam]);
+  }
+  return false;
 }
 
 CPlayer* CAuxWeapon::FindPlayer(CStateManager& mgr) const {

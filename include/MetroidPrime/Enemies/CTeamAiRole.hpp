@@ -46,6 +46,7 @@ public:
   int GetRoleIndex() const { return mRoleIndex; }
   const CVector3f& GetTeamPosition() const { return mPosition; }
   TUniqueId GetTargetId() const { return mTargetId; }
+  void SetTargetId(TUniqueId id) { mTargetId = id; } // Guessed name
 
 private:
   TUniqueId mOwnerId;

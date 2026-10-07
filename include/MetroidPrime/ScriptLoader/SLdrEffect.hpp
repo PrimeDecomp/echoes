@@ -42,6 +42,7 @@ struct SLdrEffect {
 };
 
 inline SLdrEffect::SLdrEffect() : editorProperties(), particleEffect(kInvalidAssetId), lighting(), motionSplineType(), motionControlSpline() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   unknown_0x3df5a489 = false;
   restartOnActivate = false;
   unknown_0xee538174 = false;
@@ -59,6 +60,7 @@ inline SLdrEffect::SLdrEffect() : editorProperties(), particleEffect(kInvalidAss
   deleteWhenDone = false;
   unknown_0xbe931927 = false;
   renderOrder = 0;
+  lighting.ambientColor = CColor(1.f, 1.f, 1.f, 1.f);
   motionSplinePathLoops = false;
   motionSplineDuration = 10.0f;
   unknown_0x73e63382 = false;

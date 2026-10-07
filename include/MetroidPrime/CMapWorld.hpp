@@ -133,7 +133,7 @@ public:
   int GetCurrentMapAreaDepth(const IWorld& world, int areaId) const;
   rstl::vector< int > GetVisibleAreas(const IWorld& world, const CMapWorldInfo& info) const;
   bool IsMapAreaValid(const IWorld& world, int areaId, bool checkLoad) const;
-  bool IsMapAreasStreaming() const;
+  uchar IsMapAreasStreaming() const;
   void RecalculateWorldSphere(const CMapWorldInfo& info, const IWorld& world) const;
   CVector3f ConstrainToWorldVolume(const CVector3f& point, const CVector3f& lookVec) const;
   void Draw(const CMapWorldDrawParms& parms, int curArea, int otherArea, float depth1, float depth2,

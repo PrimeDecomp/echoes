@@ -137,6 +137,7 @@ public:
   };
 
   enum EPlayerVisor {
+    kPV_Invalid = -1, // Guessed name; CImpactVisorEffect without a forced visor.
     kPV_Combat,
     kPV_Echo,
     kPV_Scan,
@@ -290,6 +291,7 @@ public:
   float CalculateHealth();
 
   int GetLogScans() const { return mScanCompletionRateFirst; }
+  int GetTotalLogScans() const { return mScanCompletionRateSecond; }
   void SetScanCompletionRateFirst(int rate) { mScanCompletionRateFirst = rate; }
   void SetScanCompletionRateSecond(int rate) { mScanCompletionRateSecond = rate; }
 

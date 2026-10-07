@@ -5,6 +5,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrBallTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "rstl/math.hpp"
@@ -27,7 +29,7 @@ CScriptBallTrigger::CScriptBallTrigger(TUniqueId uid, const rstl::string& name,
 , mAttractionAngle(attractionAngle)
 , mAttractionDistance(attractionDistance)
 , mAttractionDirection(CVector3f::Zero())
-, mCapturedPlayerIndex(-1)
+, mCapturedPlayerIndex(kInvalidPlayerIndex)
 , mNoBallMovement(noBallMovement) {
   if (attractionDirection.CanBeNormalized()) {
     mAttractionDirection = attractionDirection.AsNormalized();
@@ -38,12 +40,14 @@ CScriptBallTrigger::~CScriptBallTrigger() {}
 
 void CScriptBallTrigger::InhabitantAdded(CActor& actor, CStateManager& mgr) {
   if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
-    if (mCapturedPlayerIndex == -1u || mCapturedPlayerIndex == player->GetPlayerIndex()) {
+    if (mCapturedPlayerIndex == kInvalidPlayerIndex ||
+        mCapturedPlayerIndex == player->GetPlayerIndex()) {
       mCapturedPlayerIndex = player->GetPlayerIndex();
       player->GetMorphBall()->SetBallBoostState(CMorphBall::kBBS_BoostDisabled);
       const CVector3f position =
           GetTranslation() - CVector3f(0.f, 0.f, player->GetMorphBall()->GetBallRadius());
-      player->Teleport(CTransform4f(player->GetTransform().BuildMatrix3f(), position), mgr, false);
+      const CTransform4f xf(player->GetTransform().BuildMatrix3f(), position);
+      player->Teleport(xf, mgr, false);
     }
   }
 }
@@ -51,7 +55,7 @@ void CScriptBallTrigger::InhabitantAdded(CActor& actor, CStateManager& mgr) {
 void CScriptBallTrigger::InhabitantExited(CActor& actor, CStateManager&) {
   if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
     if (mCapturedPlayerIndex == player->GetPlayerIndex()) {
-      mCapturedPlayerIndex = -1;
+      mCapturedPlayerIndex = kInvalidPlayerIndex;
     }
     player->GetMorphBall()->SetBallBoostState(CMorphBall::kBBS_BoostAvailable);
   }
@@ -64,9 +68,9 @@ void CScriptBallTrigger::Think(float dt, CStateManager& mgr) {
 
   CScriptTriggerOrientated::Think(dt, mgr);
 
-  for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     CPlayer& player = *mgr.GetPlayer(i);
-    if (mCapturedPlayerIndex != -1u && mCapturedPlayerIndex != i) {
+    if (mCapturedPlayerIndex != kInvalidPlayerIndex && mCapturedPlayerIndex != i) {
       continue;
     }
 
@@ -88,8 +92,7 @@ void CScriptBallTrigger::Think(float dt, CStateManager& mgr) {
       if (angleCos < CVector3f::Dot(-direction, mAttractionDirection) &&
           distance < mAttractionDistance) {
         const float attraction = mAttractionForce * (mAttractionDistance / (distance * distance));
-        const float maxForce = 1.f / dt * distance;
-        const float force = rstl::min_val(attraction, maxForce);
+        const float force = rstl::min_val(attraction, 1.f / dt * distance);
         player.ApplyForceWR(force * (player.GetMass() * direction), CAxisAngle::Identity());
       }
     }
@@ -106,7 +109,7 @@ void CScriptBallTrigger::Think(float dt, CStateManager& mgr) {
 
 void CScriptBallTrigger::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   if (msg.GetMessage() == kSM_Deactivate && GetActive()) {
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       CPlayer& player = *mgr.GetPlayer(i);
       if (HasInhabitant(player.GetUniqueId())) {
         player.GetMorphBall()->SetBallBoostState(CMorphBall::kBBS_BoostAvailable);
@@ -119,9 +122,22 @@ void CScriptBallTrigger::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
 
 bool CScriptBallTrigger::ShouldSendScriptMsgs(CActor& actor, CStateManager&) const {
   const CPlayer* player = TCastToPtr< CPlayer >(actor);
-  if (player != nullptr && mCapturedPlayerIndex != -1u) {
+  if (player != nullptr && mCapturedPlayerIndex != kInvalidPlayerIndex) {
     const bool captured = player->GetPlayerIndex() == mCapturedPlayerIndex;
     return captured;
   }
   return true;
+}
+
+CEntity* LoadBallTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrBallTrigger sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrBallTrigger.inc"
+
+  return rs_new CScriptBallTrigger(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.editorProperties.transform.scale, LdrToDamageInfo(sldrThis.trigger.damage),
+      sldrThis.trigger.forceField, sldrThis.trigger.flagsTrigger, sldrThis.attractionForce,
+      sldrThis.attractionAngle, sldrThis.attractionDistance, CVector3f(sldrThis.attractionDirection),
+      sldrThis.noBallMovement);
 }

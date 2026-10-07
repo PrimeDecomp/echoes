@@ -84,13 +84,13 @@ void CAnimTreeAnimReaderContainer::VGetSegData(const CCharLayoutInfo& layout,
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimTreeAnimReaderContainer::VClone() const {
-  return rs_new CAnimTreeAnimReaderContainer(mReader->VClone(), mName, mAnimDbIdx);
+  return rs_new CAnimTreeAnimReaderContainer(mReader->Clone(), mName, mAnimDbIdx);
 }
 
 CAnimTreeEffectiveContribution
 CAnimTreeAnimReaderContainer::VGetContributionOfHighestInfluence() const {
   return CAnimTreeEffectiveContribution(1.f, mName, mReader->VGetSteadyStateAnimInfo(),
-                                        mReader->VGetTimeRemaining(), mAnimDbIdx);
+                                        mReader->GetTimeRemaining(), mAnimDbIdx);
 }
 
 rstl::optional_object< rstl::ownership_transfer< IAnimReader > >

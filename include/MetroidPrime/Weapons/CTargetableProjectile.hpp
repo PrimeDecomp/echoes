@@ -29,6 +29,8 @@ public:
                EWeaponCollisionResponseTypes type, CStateManager& mgr,
                const CDamageVulnerability& vulnerability, TUniqueId hitActor) override;
 
+  void SetDeflectToOwner(bool deflect) { mDeflectToOwner = deflect; } // Guessed name.
+
 private:
   TToken< CWeaponDescription > mDeflectedWeaponDescription;
   CDamageInfo mDeflectedDamage;

@@ -21,6 +21,7 @@ struct SLdrStreamedAudio {
 };
 
 inline SLdrStreamedAudio::SLdrStreamedAudio() : editorProperties(), songFile() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   defaultAudio = false;
   fadeInTime = 0.25f;
   fadeOutTime = 0.25f;

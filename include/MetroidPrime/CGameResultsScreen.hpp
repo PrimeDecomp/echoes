@@ -28,7 +28,6 @@ public:
   EMessageReturn OnMessage(const CArchitectureMessage& msg, CArchitectureQueue& queue) override;
   void Draw() const override;
 
-private:
   enum ELoadState { kLS_Initial, kLS_PreloadMusic, kLS_LoadDependencies, kLS_Ready = 4 };
   enum EPhase { kP_Initial, kP_Intro, kP_Results, kP_FadeOut };
   enum EPlayerResult { kPR_Winner, kPR_Loser, kPR_Tied };
@@ -55,7 +54,7 @@ private:
     void Draw() const;
     void SetupLights();
 
-    uint mPlayerSelection;
+    int mPlayerSelection;
     int mPlayerIndex;
     CPlayerState::EBeamId mBeam;
     int mCoins;
@@ -77,13 +76,32 @@ private:
     rstl::auto_ptr< CGuiTextSupport > mScoreText;
     rstl::auto_ptr< CGuiTextSupport > mDeathsText;
   };
+  struct SFragSorter {
+    bool operator()(const SPlayerScore& a, const SPlayerScore& b) const {
+      if (a.mFrags == b.mFrags) {
+        return a.mDeaths < b.mDeaths;
+      }
+      return a.mFrags > b.mFrags;
+    }
+  };
+
+  struct SCoinSorter {
+    bool operator()(const SPlayerScore& a, const SPlayerScore& b) const {
+      if (a.mCoins == b.mCoins) {
+        return a.mDeaths < b.mDeaths;
+      }
+      return a.mCoins > b.mCoins;
+    }
+  };
+
+private:
   typedef char SPlayerScoreSizeCheck[sizeof(SPlayerScore) == 0x10 ? 1 : -1];
   typedef char SPlayerResultsSizeCheck[sizeof(SPlayerResults) == 0x98 ? 1 : -1];
 
   void GatherResults(CGameState& state);
   void BuildText();
   void Update(float dt);
-  void UpdateIntro();
+  void UpdateIntro(float dt);
   static void SetViewport(int playerSelection, bool fourPlayers);
   static float CalculateFade(float start, float duration, float time);
 

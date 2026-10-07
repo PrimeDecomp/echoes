@@ -15,7 +15,8 @@ COBBTree::SIndexData::SIndexData(CInputStream& in)
 , x60_(in)
 , mVertices(in) {}
 
-inline void COBBTree::BindIndexData() {
+COBBTree::COBBTree(const SIndexData& indexData, const CNode* root)
+: mMemsize(root->GetMemoryUsage()), mAllocator(0), mIndexData(indexData), mRoot(root) {
   mMaterialCount = mIndexData.mMaterials.size();
   mVertexCount = mIndexData.mVertices.size();
   mEdgeCount = mIndexData.mEdges.size();
@@ -29,11 +30,6 @@ inline void COBBTree::BindIndexData() {
   x28_ = mIndexData.x60_.data();
   mVertices = mIndexData.mVertices.data();
   mOwnsArrays = false;
-}
-
-COBBTree::COBBTree(const SIndexData& indexData, const CNode* root)
-: mMemsize(root->GetMemoryUsage()), mAllocator(0), mIndexData(indexData), mRoot(root) {
-  BindIndexData();
   CNode::SetAllocator(nullptr);
 }
 
@@ -48,13 +44,29 @@ COBBTree::COBBTree(CInputStream& in)
 , mAllocator(mMemsize)
 , mIndexData(in)
 , mRoot(nullptr) {
-  BindIndexData();
+  mMaterialCount = mIndexData.mMaterials.size();
+  mVertexCount = mIndexData.mVertices.size();
+  mEdgeCount = mIndexData.mEdges.size();
+  mTriangleCount = mIndexData.mSurfaceIndices.size() / 3;
+  mMaterials = mIndexData.mMaterials.data();
+  mVertexMaterials = mIndexData.mVertMaterials.data();
+  mEdgeMaterials = mIndexData.mEdgeMaterials.data();
+  mSurfaceMaterials = mIndexData.mSurfaceMaterials.data();
+  mEdges = mIndexData.mEdges.data();
+  mSurfaceIndices = mIndexData.mSurfaceIndices.data();
+  x28_ = mIndexData.x60_.data();
+  mVertices = mIndexData.mVertices.data();
+  mOwnsArrays = false;
   CNode::SetAllocator(&mAllocator);
   mRoot = rs_new CNode(in);
 }
 
 COBBTree::~COBBTree() {
-  CNode::SetAllocator(mAllocator.GetPoolMemSize() ? &mAllocator : nullptr);
+  if (mAllocator.GetPoolMemSize() != 0) {
+    CNode::SetAllocator(&mAllocator);
+  } else {
+    CNode::SetAllocator(nullptr);
+  }
   delete mRoot;
 }
 
@@ -62,7 +74,7 @@ CAABox COBBTree::CalculateLocalAABox() const {
   if (mRoot) {
     return mRoot->GetOBB().CalculateAABox(CTransform4f::Identity());
   }
-  return CAABox(CVector3f::Zero(), CVector3f::Zero());
+  return CAABox(0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
 }
 
 rstl::auto_ptr< COBBTree > COBBTree::BuildOrientedBoundingBoxTree(const CVector3f& extent,
@@ -128,10 +140,11 @@ uint COBBTree::CNode::GetMemoryUsage() const {
 void COBBTree::CNode::SetAllocator(CSimpleAllocator* allocator) { spAllocator = allocator; }
 
 void* COBBTree::CNode::operator new(size_t size, const char* file, int line) {
-  if (!spAllocator) {
+  if (spAllocator == nullptr) {
     return rs_new char[size];
+  } else {
+    return spAllocator->Alloc(size);
   }
-  return spAllocator->Alloc(size);
 }
 
 void COBBTree::CNode::operator delete(void* ptr, size_t size) {

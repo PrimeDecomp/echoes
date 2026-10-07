@@ -12,9 +12,6 @@ struct SLdrTextProperties {
 
   int textBoundingWidth; // 0xee521dc6
   int textBoundingHeight; // 0xf2d36abb
-  float lineSpacing; // 0x1a996292
-  int lineExtraSpace; // 0x05eff913
-  int characterExtraSpace; // 0x45830901
   CColor foregroundColor; // 0x3f39e635
   CColor outlineColor; // 0x60d78569
   CColor geometryColor; // 0x5908ef39
@@ -22,7 +19,6 @@ struct SLdrTextProperties {
   int unknown_0x18dd95cd; // 0x18dd95cd
   int unknown_0x42091548; // 0x42091548
   bool wrapText; // 0x330573e9
-  bool drawShadow; // 0xd8a2eef0
 };
 
 void LoadTypedefTextProperties(SLdrTextProperties& data, CInputStream& input);

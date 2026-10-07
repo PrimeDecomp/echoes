@@ -141,7 +141,7 @@ void CJointData_LinearStorage::Add(const CJointData_LinearStorage& other, float 
       CVector3f& translation = *reinterpret_cast< CVector3f* >(translations);
       const CVector3f& sourceTranslation =
           *reinterpret_cast< const CVector3f* >(sourceTranslations);
-      translation += weight * sourceTranslation;
+      translation = translation + weight * sourceTranslation;
       translations += stride;
       sourceTranslations += sourceStride;
     }
@@ -159,7 +159,7 @@ void CJointData_LinearStorage::Add(const CJointData_LinearStorage& other, float 
       CVector3f& translation = *reinterpret_cast< CVector3f* >(translations);
       const CVector3f& sourceTranslation =
           *reinterpret_cast< const CVector3f* >(sourceTranslations);
-      translation += weight * sourceTranslation;
+      translation = translation + weight * sourceTranslation;
       translations += stride;
       sourceTranslations += sourceStride;
 

@@ -26,14 +26,14 @@ CVector3f CCylinderCameraSurface::GetSurfacePoint(const CVector3f& point) {
 bool CCylinderCameraSurface::IsPointInside(const CVector3f& point) {
   const CVector3f surfacePoint = mCylinder.GetSurfacePoint(point);
   const CVector3f relative = surfacePoint - mCylinder.GetAxis().GetRefPoint();
+  const float magnitude = relative.Magnitude();
   const float axialDistance =
-      relative.Magnitude() *
-      CVector3f::Dot(relative.AsNormalized(), mCylinder.GetAxis().GetNormal());
-  if (0.5f * mHeight < CMath::AbsF(axialDistance)) {
+      magnitude * CVector3f::Dot(relative.AsNormalized(), mCylinder.GetAxis().GetNormal());
+  if (CMath::AbsF(axialDistance) > 0.5f * mHeight) {
     return false;
   }
 
   const CVector3f radial =
       point - (mCylinder.GetAxis().GetRefPoint() + axialDistance * mCylinder.GetAxis().GetNormal());
-  return !(mCylinder.GetRadius() < radial.Magnitude());
+  return !(radial.Magnitude() > mCylinder.GetRadius());
 }

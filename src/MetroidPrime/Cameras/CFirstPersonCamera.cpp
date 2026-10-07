@@ -363,16 +363,14 @@ void CFirstPersonCamera::SkipCinematic() {
 
 void CFirstPersonCamera::Think(float dt, CStateManager& mgr) {
   CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetWatchedObject()));
-  if (!player || player->HealthInfo()->GetHP() <= 0.f) {
+  if (!player || (player && player->GetHealthInfo()->GetHP() <= 0.f)) {
     return;
   }
   if (mFluidEffectsPending) {
     UpdateFluidEffects(mgr);
     mFluidEffectsPending = false;
   }
-  if (mDeferBallTransitionProcessing) {
-    mDeferBallTransitionProcessing = false;
-  } else {
+  if (!mDeferBallTransitionProcessing) {
     if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
       if (player->GetCameraState() != CPlayer::kCS_Spawned) {
         return;
@@ -387,6 +385,8 @@ void CFirstPersonCamera::Think(float dt, CStateManager& mgr) {
         return;
       }
     }
+  } else {
+    mDeferBallTransitionProcessing = false;
   }
   if (mPitchTransitionTimer > 0.f) {
     mPitchTransitionTimer -= dt;
@@ -394,7 +394,7 @@ void CFirstPersonCamera::Think(float dt, CStateManager& mgr) {
   const CTransform4f previous = GetTransform();
   UpdateElevation(mgr);
   UpdateTransform(mgr, dt);
-  SetTransform(ValidateCameraTransform(GetTransform(), previous));
+  SetTransform(ValidateCameraTransform(GetTransform(), previous, dt));
   if (mCloseInTimer > 0.f) {
     mCloseInTimer -= dt;
   }
@@ -414,8 +414,12 @@ const CTransform4f& CFirstPersonCamera::GetGunFollowTransform() const { return m
 
 void CFirstPersonCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CGameCamera::AcceptScriptMsg(mgr, msg);
-  if (msg.GetMessage() == kSM_AreaLoaded) {
+  switch (msg.GetMessage()) {
+  case kSM_AreaLoaded:
     mPitchId = kInvalidUniqueId;
+    break;
+  default:
+    break;
   }
 }
 
@@ -423,9 +427,9 @@ CVector3f CFirstPersonCamera::GetScanObjectIndicatorPosition(const CStateManager
   return GetTranslation() + 5.f * GetTransform().GetForward();
 }
 
-void CFirstPersonCamera::UnkVtable84() {}
+void CFirstPersonCamera::UnkVtable84(TUniqueId fluidId, CStateManager& mgr) {}
 
-void CFirstPersonCamera::UnkVtable88(TUniqueId fluidId) {
+void CFirstPersonCamera::UnkVtable88(TUniqueId fluidId, CStateManager& mgr) {
   mFluidEffectsPending = true;
   mPendingFluidId = fluidId;
 }

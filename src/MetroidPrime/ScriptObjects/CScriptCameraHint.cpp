@@ -8,6 +8,7 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrCameraHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPathCamera.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptSpindleCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -50,8 +51,8 @@ CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& in
 
   return rs_new CScriptCameraHint(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), sldrThis.priority, sldrThis.timer,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.priority, sldrThis.timer,
       static_cast< CBallCamera::EBallCameraBehaviour >(sldrThis.behaviour.behaviourType),
       sldrThis.flagsCameraHint, overrideFlags, sldrThis.minSpeedDistance.distance,
       sldrThis.maxSpeedDistance.distance, sldrThis.backwardsDistance.distance,
@@ -59,10 +60,9 @@ CEntity* LoadCameraHint(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       sldrThis.cameraHintStructB.angle * (M_PIF / 180.f),
       sldrThis.cameraHintStructB_0xc82395fa.angle * (M_PIF / 180.f),
       sldrThis.angularSpeed.speed * (M_PIF / 180.f), sldrThis.zOffset.zOffset,
-      sldrThis.interpolateOnTime, sldrThis.interpolateOffTime,
-      sldrThis.interpolateControlTime, sldrThis.cameraHintStructA1.type,
-      sldrThis.unknown_0x9e8631f1.type, sldrThis.cameraHintStructA.type,
-      acrossAreas);
+      sldrThis.interpolateOnTime, sldrThis.interpolateOffTime, sldrThis.interpolateControlTime,
+      sldrThis.cameraHintStructA1.type, sldrThis.unknown_0x9e8631f1.type,
+      sldrThis.cameraHintStructA.type, acrossAreas);
 }
 
 CCameraOverrideInfo::CCameraOverrideInfo(
@@ -91,8 +91,6 @@ CCameraOverrideInfo::CCameraOverrideInfo(
 , mInterpolationMode(interpolationMode)
 , mInterpolateOffType(interpolateOffType) {}
 
-CCameraOverrideInfo::~CCameraOverrideInfo() {}
-
 CScriptCameraHint::CScriptCameraHint(TUniqueId uid, const rstl::string& name,
                                      const CEntityInfo& info, const CTransform4f& xf, int priority,
                                      float timer, CBallCamera::EBallCameraBehaviour behaviour,
@@ -118,9 +116,11 @@ CScriptCameraHint::~CScriptCameraHint() {}
 void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   const TUniqueId sender = msg.GetSenderId();
-  uint playerIndex = 0;
+  uint playerIndex;
   if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(msg.GetOriginator()))) {
     playerIndex = mgr.MaskUIdNumPlayers(msg.GetOriginator());
+  } else {
+    playerIndex = 0;
   }
   if (const CGameCamera* camera =
           TCastToConstPtr< CGameCamera >(mgr.GetObjectById(msg.GetOriginator()))) {
@@ -152,7 +152,8 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       }
     }
 
-    if (message == kSM_Follow) {
+    switch (message) {
+    case kSM_Follow: {
       if (!GetActive()) {
         SetActive(true);
       }
@@ -168,15 +169,23 @@ void CScriptCameraHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
         position.SetZ(mOrigXf.GetTranslation().GetZ());
         SetTransform(CTransform4f::LookAt(position, position + direction));
 
-        if (mOverrideInfo.GetBehaviourType() == CBallCamera::kBCB_Unknown8) {
+        switch (mOverrideInfo.GetBehaviourType()) {
+        case CBallCamera::kBCB_Unknown8:
           // The script spindle actor is distinct from the runtime CSpindleCamera.
-          if (CActor* camera = static_cast< CActor* >(
-                  TryCast(mgr.ObjectById(mDelegatedCameraId), kET_ScriptSpindleCamera))) {
+          if (CScriptSpindleCamera* camera =
+                  TCastToPtr< CScriptSpindleCamera >(mgr.ObjectById(mDelegatedCameraId))) {
             camera->SetTransform(GetTransform());
           }
+          break;
+        default:
+          break;
         }
       }
       hints->AddHint(GetUniqueId(), sender, mgr);
+      break;
+    }
+    default:
+      break;
     }
   }
 
@@ -195,7 +204,7 @@ void CScriptCameraHint::SetPathCameraPosition(const CVector3f& position, CStateM
 }
 
 void CScriptCameraHint::SetPathCameraRotation(const CQuaternion& rotation, const CVector3f& pivot,
-                                             CStateManager& mgr) const {
+                                              CStateManager& mgr) const {
   if (CScriptPathCamera* camera =
           TCastToPtr< CScriptPathCamera >(mgr.ObjectById(mDelegatedCameraId))) {
     camera->RotateSplines(rotation, pivot);

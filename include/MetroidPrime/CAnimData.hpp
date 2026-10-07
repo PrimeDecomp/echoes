@@ -28,6 +28,7 @@
 class CAnimationManager;
 class CAnimSysContext;
 class CAnimTreeNode;
+class IMetaTrans;
 class CCharacterFactory;
 class CCharLayoutInfo;
 class CJointData_LinearStorage;
@@ -103,6 +104,7 @@ public:
   void PreRender();
   void SetupRender() const;
   void Render(const CSkinnedModel& model, const CModelFlags& flags) const;
+  void RenderAuxiliary(const CFrustumPlanes& planes) const;
   void RecalcPoseBuilder(const CCharAnimTime* time) const;
   float GetAnimationDuration(int anim) const;
   float GetAnimTimeRemaining(const rstl::string& name) const;
@@ -118,6 +120,8 @@ public:
                                    const rstl::ncrc_ptr< CAnimTreeNode >& tree) const;
   // Guessed names.
   int CountUserEventsForAnimation(int anim, EUserEventType type) const;
+  static void Touch(const CSkinnedModel& model, int shaderIdx);
+  static void Touch(const CSkinnedModel& model); // Guessed name; touches every material set.
   int CountUserEvents(EUserEventType type, const CCharAnimTime& time,
                       const rstl::ncrc_ptr< CAnimTreeNode >& tree) const;
 
@@ -172,6 +176,9 @@ public:
   const CCharacterInfo& GetCharacterInfo() const { return mCharInfo; }
   const CPASDatabase& GetPASDatabase() const { return mCharInfo.GetPASDatabase(); }
   CParticleDatabase& GetParticleDB() { return mParticleDB; }
+  // Guessed names; gun turrets drive a joint rotation directly and rebuild the pose.
+  CJointData_LinearStorage& JointData() const { return *mJointData; }
+  void BuildPose(const CJointData_LinearStorage& data) const { mPose.BuildPose(**mLayoutData, data); }
   const CParticleDatabase& GetParticleDB() const { return mParticleDB; }
   const CBoolPOINode* GetBoolPOIList(int& count) const {
     count = mPassedBoolCount;
@@ -193,10 +200,12 @@ public:
   static void InitializeCache();
   static void FreeCache();
 
+  // Guessed name. Returns the transition that would be used to start the requested animation.
+  rstl::rc_ptr< IMetaTrans > BuildMetaTransition(const CAnimPlaybackParms& parms) const;
+
 private:
   // Guessed names.
   rstl::ncrc_ptr< CAnimTreeNode > BuildAnimationTree(const CAnimPlaybackParms& parms) const;
-  rstl::rc_ptr< IMetaTrans > BuildMetaTransition(const CAnimPlaybackParms& parms) const;
 
   TLockedToken< CCharacterFactory > mCharFactory;
   CCharacterInfo mCharInfo;
@@ -234,8 +243,8 @@ private:
   uchar mAnimationJustStarted : 1;
   mutable uchar mPoseBuilt : 1;
   uchar mAnimatedScale : 1;
-  uchar mUniformScale : 1;
-  uchar mUseFastSlerp : 1;
+  bool mUniformScale : 1;
+  bool mUseFastSlerp : 1;
   mutable CPoseAsTransforms_Linear mPose;
   mutable CHierarchyPoseBuilder mPoseBuilder;
   mutable rstl::auto_ptr< CJointData_LinearStorage > mJointData;

@@ -15,6 +15,9 @@
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDebris.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDebrisExtended.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 
@@ -369,7 +372,7 @@ void CScriptDebris::Think(float dt, CStateManager& mgr) {
 
 void CScriptDebris::Touch(CActor& other, CStateManager& mgr) {
   if (mDieOnProjectile && TCastToPtr< CGameProjectile >(other)) {
-    SendScriptMsgs(kSS_Dead, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Dead, mgr);
     mgr.DeleteObjectRequest(GetUniqueId());
   }
 }
@@ -449,7 +452,7 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
             SetBoundingBox(touchBounds ? *touchBounds : bounds);
           }
 
-          mgr.SendScriptMsg(actor, GetUniqueId(), kSM_Activate, kInvalidUniqueId);
+          mgr.SendScriptMsg(actor, GetUniqueId(), kSM_Activate);
           break;
         }
         mgr.DeleteObjectRequest(generated.mUniqueId);
@@ -539,10 +542,65 @@ void CScriptDebris::SetSolid(bool solid) {
         CMaterialList(kMT_Unknown59),
         CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_NoPlatformCollision)));
   } else {
-    CMaterialList excluded(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile, kMT_Unknown59);
-    excluded.Add(kMT_NoPlatformCollision);
-    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(CMaterialList(), excluded));
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
+        CMaterialList(), CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile,
+                                       kMT_Unknown59, kMT_NoPlatformCollision)));
   }
 }
 
 void CScriptDebris::DisablePhysics() { SetMovable(false); }
+
+CEntity* LoadDebris(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDebris sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDebris.inc"
+
+  const bool noModel = sldrThis.model == kInvalidAssetId;
+  if (!noModel && gpResourceFactory->GetResourceTypeById(sldrThis.model) == 0) {
+    return nullptr;
+  }
+  return rs_new CScriptDebris(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      noModel ? CModelData::CModelDataNull()
+              : CModelData(CStaticRes(sldrThis.model, sldrThis.editorProperties.transform.scale)),
+      LdrToActorParameters(sldrThis.actorInformation), sldrThis.particle,
+      sldrThis.particleSystemScale, sldrThis.impulse, sldrThis.impulseVariance,
+      sldrThis.fadeOutColor, sldrThis.mass, sldrThis.unknown_0x417f4a91, sldrThis.lifeTime,
+      static_cast< CScriptDebris::EScaleType >(sldrThis.scaleType), sldrThis.isCollider,
+      sldrThis.unknown_0x4edb1d0e, sldrThis.randomSpin);
+}
+
+CEntity* LoadDebrisExtended(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDebrisExtended sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDebrisExtended.inc"
+
+  const bool noModel = sldrThis.model == kInvalidAssetId;
+  if (!noModel && gpResourceFactory->GetResourceTypeById(sldrThis.model) == 0) {
+    return nullptr;
+  }
+  // The native loader passes the maximum spin speed for both angular bounds.
+  return rs_new CScriptDebris(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      noModel ? CModelData::CModelDataNull()
+              : CModelData(CStaticRes(sldrThis.model, sldrThis.editorProperties.transform.scale)),
+      LdrToActorParameters(sldrThis.actorInformation), sldrThis.coneSpread,
+      sldrThis.movementDirection, sldrThis.minimumSpeed, sldrThis.maximumSpeed,
+      sldrThis.maximumSpinSpeed, sldrThis.maximumSpinSpeed, sldrThis.minimumLifeTime,
+      sldrThis.maximumLifeTime, sldrThis.disableCollisionTime, sldrThis.fadeInEndPercentage,
+      sldrThis.fadeOutStartPercentage, sldrThis.startColor, sldrThis.endColor,
+      sldrThis.scaleStartPercentage, sldrThis.editorProperties.transform.scale,
+      sldrThis.finalScale, sldrThis.unknown_0x417f4a91, sldrThis.gravity, sldrThis.positionOffset,
+      sldrThis.bounceSound, sldrThis.maxBounceSounds, sldrThis.bounceSoundSpeedThreshold,
+      sldrThis.bounceSoundVolumeDecay, sldrThis.particle1, sldrThis.particleSystem1Scale,
+      sldrThis.particleSystem1UsesGlobalTranslation, sldrThis.particleSystem1WaitForParticlesToDie,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.particleSystem1Orientation),
+      sldrThis.particle2, sldrThis.particleSystem2Scale,
+      sldrThis.particleSystem2UsesGlobalTranslation, sldrThis.particleSystem2WaitForParticlesToDie,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.particleSystem2Orientation),
+      sldrThis.deathParticle, sldrThis.deathParticleSystemScale,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.deathParticleSystemOrientation),
+      sldrThis.isCollider, sldrThis.isShootable, sldrThis.dieOnCollision,
+      sldrThis.unknown_0xdcaa0f22, sldrThis.flickerOnFadeOut, sldrThis.disablePhysicsThreshold,
+      sldrThis.unknown_0x4edb1d0e, sldrThis.unknown_0x723d42d6);
+}

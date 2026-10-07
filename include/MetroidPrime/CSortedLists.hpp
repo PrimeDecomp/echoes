@@ -34,7 +34,7 @@ CHECK_SIZEOF(SNode, 0x2c)
 
 struct SSortedList {
   short mIds[1024]; // Node indices, without TUniqueId version bits.
-  uint mSize;
+  int mSize;
 
   SSortedList() : mSize(0) {
     for (int i = 0; i < 1024; ++i) {

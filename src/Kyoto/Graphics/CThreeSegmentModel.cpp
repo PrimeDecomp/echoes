@@ -117,10 +117,12 @@ CThreeSegmentModel::CThreeSegmentModel(const TToken< CModel >& model, float lowe
 CThreeSegmentModel::~CThreeSegmentModel() {
   CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
                                         mPositions.release());
-  for (int i = 0; i < kS_Count; ++i) {
-    CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
-                                          mDisplayLists[i].release());
-  }
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mDisplayLists[0].release());
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mDisplayLists[1].release());
+  CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
+                                        mDisplayLists[2].release());
 }
 
 void CThreeSegmentModel::SetSegmentTransforms(int matrixGroup, const CTransform4f& lower,
@@ -143,10 +145,9 @@ void CThreeSegmentModel::DrawDisplayList(int index) const {
 }
 
 void CThreeSegmentModel::SetMaterialCurrent(const CModelFlags& flags) const {
-  const CModel& model = *mModel.GetObject();
-  model.PreDrawModel(flags);
-  model.Touch(0);
-  const CCubeModel& cubeModel = *model.GetModelInstance();
+  mModel.GetObject()->PreDrawModel(flags);
+  mModel.GetObject()->Touch(0);
+  const CCubeModel& cubeModel = *mModel.GetObject()->GetModelInstance();
   const CCubeSurface surface(cubeModel.GetModelInstance().Surfaces().front());
   cubeModel.GetMaterial(surface).SetCurrent(flags, surface, cubeModel);
   cubeModel.SetArraysCurrent();

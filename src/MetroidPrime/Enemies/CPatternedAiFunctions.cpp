@@ -23,7 +23,8 @@ void CPatterned::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
 }
 
 void CPatterned::Dead(CStateManager& mgr, EStateMsg msg, float) {
-  if (msg == kStateMsg_Update) {
+  switch (msg) {
+  case kStateMsg_Update:
     mBodyController->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_Die));
     if (!mFadeToDeath && mBodyController->GetBodyStateInfo().GetCurrentState()->IsDead()) {
       mFadeToDeath = true;
@@ -31,6 +32,7 @@ void CPatterned::Dead(CStateManager& mgr, EStateMsg msg, float) {
       RemoveMaterial(kMT_Character, kMT_Unknown59, kMT_Target, kMT_Orbit, mgr);
       AddMaterial(kMT_NoPlatformCollision, mgr);
     }
+    break;
   }
 }
 
@@ -69,10 +71,9 @@ void CPatterned::PathFind(CStateManager& mgr, EStateMsg msg, float) {
 }
 
 void CPatterned::fn_801524fc(CStateManager& mgr) {
-  CPathFindSearch* search = GetSearchPath();
-  if (search->Search(GetTranslation(), mDestPos) == CPathFindSearch::kR_Success) {
+  if (GetSearchPath()->Search(GetTranslation(), mDestPos) == CPathFindSearch::kR_Success) {
     mReflectedDestPos = GetTranslation();
-    SetDestPos(search->GetPoint());
+    SetDestPos(GetSearchPath()->GetPoint());
     mInPosition = false;
     ApproachDest(mgr);
   }
@@ -81,12 +82,15 @@ void CPatterned::fn_801524fc(CStateManager& mgr) {
 bool CPatterned::OffLine(CStateManager&, const CTriggerData& data) const {
   const CVector3f fromStart = GetTranslation() - mReflectedDestPos;
   CVector3f segment = mDestPos - mReflectedDestPos;
-  float distanceSquared = fromStart.MagSquared();
-  if (CVector3f::Dot(segment, fromStart) > 0.f) {
+  float distanceSquared;
+  if (CVector3f::Dot(segment, fromStart) <= 0.f) {
+    distanceSquared = fromStart.MagSquared();
+  } else {
     segment.Normalize();
     const CVector3f fromEnd = GetTranslation() - mDestPos;
     const float along = CVector3f::Dot(segment, fromStart);
-    distanceSquared = (fromStart - along * segment).MagSquared();
+    const CVector3f perp = fromStart - along * segment;
+    distanceSquared = perp.MagSquared();
     if (CVector3f::Dot(segment, fromEnd) > 0.f) {
       distanceSquared = fromEnd.MagSquared();
     }
@@ -95,8 +99,9 @@ bool CPatterned::OffLine(CStateManager&, const CTriggerData& data) const {
 }
 
 bool CPatterned::InRange(CStateManager& mgr, const CTriggerData&) const {
+  const float magSq = (mgr.GetPlayer(0)->GetTranslation() - GetTranslation()).MagSquared();
   const float range = 0.5f * (mMinAttackRange + mMaxAttackRange);
-  return (mgr.GetPlayer(0)->GetTranslation() - GetTranslation()).MagSquared() < range * range;
+  return magSq < range * range;
 }
 
 bool CPatterned::TooClose(CStateManager& mgr, const CTriggerData&) const {
@@ -110,30 +115,41 @@ bool CPatterned::InMaxRange(CStateManager& mgr, const CTriggerData&) const {
 }
 
 bool CPatterned::InDetectionRange(CStateManager& mgr, const CTriggerData&) const {
+  const float heightRangeSq = mDetectionHeightRange * mDetectionHeightRange;
+  const float rangeSq = mDetectionRange * mDetectionRange;
+  const CVector3f position = GetTranslation();
   for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
-    const CVector3f delta = mgr.GetPlayer(i)->GetTranslation() - GetTranslation();
-    if (delta.MagSquared() < mDetectionRange * mDetectionRange &&
-        (mDetectionHeightRange <= 0.f ||
-         delta.GetZ() * delta.GetZ() < mDetectionHeightRange * mDetectionHeightRange)) {
-      return true;
+    const CVector3f delta = mgr.GetPlayer(i)->GetTranslation() - position;
+    if (delta.MagSquared() < rangeSq) {
+      if (mDetectionHeightRange > 0.f) {
+        if (delta.GetZ() * delta.GetZ() < heightRangeSq) {
+          return true;
+        }
+      } else {
+        return true;
+      }
     }
   }
   return false;
 }
 
 bool CPatterned::Leash(CStateManager&, const CTriggerData&) const {
-  return mCurPlayerLeashTime > mPlayerLeashTime &&
-         (mLatestLeashPosition - GetTranslation()).MagSquared() > mLeashRadius * mLeashRadius;
+  bool leash = mCurPlayerLeashTime > mPlayerLeashTime;
+  if (leash) {
+    const float magSq = (mLatestLeashPosition - GetTranslation()).MagSquared();
+    leash = leash && magSq > mLeashRadius * mLeashRadius;
+  }
+  return leash;
 }
 
 bool CPatterned::SpotPlayer(CStateManager& mgr, const CTriggerData&) const {
   const CVector3f eye = GetGunEyePos();
   const CVector3f forward = GetTransform().GetForward();
-  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
     const CVector3f delta = mgr.GetPlayer(i)->GetAimPosition(mgr, 0.f) - eye;
     const float forwardDistance = CVector3f::Dot(delta, forward);
     if (forwardDistance > 0.f &&
-        delta.MagSquared() * mDetectionAngle < forwardDistance * forwardDistance) {
+        forwardDistance * forwardDistance > delta.MagSquared() * mDetectionAngle) {
       return true;
     }
   }
@@ -163,8 +179,8 @@ bool CPatterned::PlayerSpot(CStateManager& mgr, const CTriggerData&) const {
 }
 
 bool CPatterned::Landed(CStateManager&, const CTriggerData&) const {
-  const bool landed = mOnGround && !mPrevOnGround;
-  mPrevOnGround = mOnGround;
+  bool landed = mOnGround && !mPrevOnGround;
+  const_cast< CPatterned* >(this)->mPrevOnGround = mOnGround;
   return landed;
 }
 
@@ -214,6 +230,10 @@ bool CPatterned::HasPatrolPath(CStateManager& mgr, const CTriggerData&) const {
 
 bool CPatterned::InPosition(CStateManager&, const CTriggerData&) const { return mInPosition; }
 
+bool CPatterned::GetAnimOver(CStateManager&, const CTriggerData&) const {
+  return mAnimationState.IsOver();
+}
+
 bool CPatterned::AnimOver(CStateManager& mgr, const CTriggerData& data) const {
   return GetAnimOver(mgr, data);
 }
@@ -233,7 +253,8 @@ bool CPatterned::RandomDelay(CStateManager&, const CTriggerData& data) const {
 }
 
 bool CPatterned::FixedDelay(CStateManager&, const CTriggerData&) const {
-  return mStateMachine->GetTime() > mStateMachine->GetDelay();
+  const StateMachine* machine = mStateMachine.get();
+  return machine->GetTime() > machine->GetDelay();
 }
 
 bool CPatterned::CodeTrigger(CStateManager&, const CTriggerData&) const {
@@ -307,7 +328,7 @@ TUniqueId CPatterned::GetConnectedObject(CStateManager& mgr, EScriptObjectState 
       const CEntity* entity = mgr.GetObjectById(id);
       if (entity && entity->GetActive()) {
         ids.push_back(id);
-        if (ids.size() == ids.capacity()) {
+        if (ids.capacity() - ids.size() <= 0) {
           break;
         }
       }
@@ -356,9 +377,7 @@ void CPatterned::ApplyScreenShake(CStateManager& mgr, const CVector3f& position,
   if (uid == kInvalidUniqueId) {
     uid = FindConnectedObject(mgr, kSS_Footstep, kSM_Attach);
   }
-  CScriptCameraShaker* shaker = static_cast< CScriptCameraShaker* >(
-      TryCast(mgr.ObjectById(uid), kET_ScriptCameraShaker));
-  if (shaker) {
+  if (CScriptCameraShaker* shaker = TCastToPtr< CScriptCameraShaker >(mgr.ObjectById(uid))) {
     CCameraShakerData data = shaker->GetShakeData();
     data.SetPosition(position);
     mgr.CameraManager(0)->CameraShakerManager()->AddCameraShaker(data, mgr, false, false);

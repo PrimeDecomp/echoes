@@ -1,9 +1,5 @@
 #include "GuiSys/CGuiWidgetIdDB.hpp"
 
-namespace {
-extern const short kInvalidWidgetId;
-}
-
 CGuiWidgetIdDB::CGuiWidgetIdDB()
 : mInvalidWidgetName(rstl::string_l("kGSYS_InvalidWidgetID")) {}
 
@@ -20,7 +16,7 @@ short CGuiWidgetIdDB::AddWidget(const rstl::string& name) {
     mNames.push_back_unsafe(name);
     id = mNames.size() - 1;
   }
-  return id;
+  return static_cast< short >(id);
 }
 
 short CGuiWidgetIdDB::FindWidgetID(const rstl::string& name) const {
@@ -33,6 +29,4 @@ short CGuiWidgetIdDB::FindWidgetID(const rstl::string& name) const {
   return kInvalidWidgetId;
 }
 
-namespace {
-const short kInvalidWidgetId = -1;
-}
+const short CGuiWidgetIdDB::kInvalidWidgetId = -1;

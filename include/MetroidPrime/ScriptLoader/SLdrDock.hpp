@@ -18,6 +18,7 @@ struct SLdrDock {
 };
 
 inline SLdrDock::SLdrDock() : editorProperties() {
+  editorProperties.transform.scale = CVector3f(1.0f, 1.0f, 1.0f);
   dockNumber = 0;
   areaNumber = 0;
   isVirtual = false;

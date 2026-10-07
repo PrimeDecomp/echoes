@@ -23,7 +23,7 @@ bool CFilteredObjectList::Contains(const CEntity& entity) const {
 
 void CFilteredObjectList::AddObject(CEntity& entity) {
   if (IsQualified(entity)) {
-    mObjects.push_front(&entity);
+    mObjects.push_back(&entity);
   }
 }
 
@@ -57,8 +57,11 @@ bool CFilteredDockList::IsQualified(const CEntity& entity) const {
 
 CFilteredType124List::CFilteredType124List() : CFilteredObjectList(false) {}
 
+// Unidentified TCastToPtr specialization for entity type 124, emitted in TypesMatch.cpp.
+extern "C" CEntity* fn_800981F4(const CEntity& entity);
+
 bool CFilteredType124List::IsQualified(const CEntity& entity) const {
-  return entity.TypesMatch(124) != nullptr;
+  return fn_800981F4(entity) != nullptr;
 }
 
 CFilteredForgottenObjectList::CFilteredForgottenObjectList() : CFilteredObjectList(false) {}

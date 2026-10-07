@@ -38,8 +38,9 @@ void CMissileRepeller::Update(CStateManager& mgr, const CActor& actor, float dt)
   const CVector3f center = actor.GetAimPosition(mgr, 0.f) + mOffset;
   const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Projectile));
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
-  const CVector3f extent = mRadius * CVector3f::One();
-  mgr.BuildNearList(nearList, CAABox(center - extent, center + extent), filter, &actor);
+  mgr.BuildNearList(nearList,
+                    CAABox(center - mRadius * CVector3f::One(), center + mRadius * CVector3f::One()),
+                    filter, &actor);
 
   const rstl::reserved_vector< TUniqueId, 10 > previousProjectiles = mDeflectedProjectiles;
   mDeflectedProjectiles.clear();
@@ -63,8 +64,9 @@ void CMissileRepeller::Update(CStateManager& mgr, const CActor& actor, float dt)
       projectile->SetMinHomingDistance(mRadius);
 
       CProjectileWeapon& weapon = projectile->Projectile();
-      const CVector3f axis = CVector3f::Cross(
-          delta + (projectile->GetTranslation() - projectile->GetPreviousPos()), delta);
+      const CVector3f dir =
+          delta + (projectile->GetTranslation() - projectile->GetPreviousPos());
+      const CVector3f axis = CVector3f::Cross(dir, delta);
       if (axis.CanBeNormalized()) {
         const CQuaternion rotation = CQuaternion::AxisAngle(
             CUnitVector3f(axis), CRelAngle::FromDegrees(dt * mDeflectionRate));
@@ -110,8 +112,9 @@ void CMissileRepeller::Render(const CStateManager& mgr, const CActor& actor) con
     const CGameProjectile* projectile = TCastToConstPtr< CGameProjectile >(mgr.GetObjectById(*it));
     if (projectile) {
       const float distance = (center - projectile->GetTranslation()).Magnitude();
+      const float ratio = distance / mRadius;
       mgr.DrawSpaceWarp(projectile->GetTranslation(),
-                        mSpaceWarpStrength * (1.f - rstl::min_val(distance / mRadius, 1.f)));
+                        mSpaceWarpStrength * (1.f - rstl::min_val(ratio, 1.f)));
     }
   }
 }

@@ -49,9 +49,12 @@ inline SLdrParasite::SLdrParasite() : editorProperties(), patterned(), actorInfo
   patterned.contactDamage.dI_Damage = 10.0f;
   patterned.contactDamage.dI_KnockBackPower = 5.0f;
   patterned.damageWaitTime = 3.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.collisionRadius = 0.2f;
   patterned.collisionHeight = 5.0f;
   patterned.unknown_0xe287d8dd = 0.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   telegraphDistance = 10.0f;
   waypointApproachDistance = 2.5f;
   wallTurnSpeed = 360.0f;

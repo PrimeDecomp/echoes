@@ -19,10 +19,10 @@ int CRainSplashGenerator::GetNextBestPt(int point, const CSkinnedModel& model,
                                         const SSkinningWorkspace& workspace, int count,
                                         CRandom16& random, float minZ) {
   int nextPoint = point;
-  const CVector3f reference = model.GetSkinnedPosition(workspace, point);
   float maxDistance = 0.f;
+  const CVector3f reference = model.GetSkinnedPosition(workspace, point);
   for (int i = 0; i < 3; ++i) {
-    const int index = random.Range(0, count - 1);
+    int index = random.Range(0, count - 1);
     const CVector3f vertex = model.GetSkinnedPosition(workspace, index);
     const float distance = (reference - vertex).MagSquared();
     const CVector3f normal = model.GetSkinnedNormal(workspace, index);
@@ -54,7 +54,7 @@ CRainSplashGenerator::CRainSplashGenerator(const CVector3f& scale, int maxSplash
 , mForceRaining(false) {
   mRainSplashes.reserve(maxSplashes);
   for (int i = 0; i < maxSplashes; ++i) {
-    mRainSplashes.push_back(SRainSplash());
+    mRainSplashes.push_back_unsafe(SRainSplash());
   }
 }
 
@@ -69,22 +69,21 @@ void CRainSplashGenerator::AddPoint(const CVector3f& position) {
 
 void CRainSplashGenerator::GeneratePoints(const CSkinnedModel& model,
                                           const SSkinningWorkspace& workspace) {
-  if (!mRaining || !(mGenerateTimer > mGenerateInterval)) {
-    return;
-  }
-  int point = mCurrentPoint;
-  for (int i = 0; i < mGenerationRate; ++i) {
-    if (mQueueSize >= mRainSplashes.size()) {
-      break;
+  const int numPoints = model.GetSkinRules()->GetNumPoints();
+  if (mRaining && mGenerateTimer > mGenerateInterval) {
+    int point = mCurrentPoint;
+    for (int i = 0; i < mGenerationRate; ++i) {
+      if (mQueueSize >= mRainSplashes.size()) {
+        break;
+      }
+      const int nextPoint = GetNextBestPt(point, model, workspace, numPoints, mRandom, mMinZ);
+      AddPoint(CVector3f::ByElementMultiply(
+          mScale, model.GetSkinnedPosition(workspace, nextPoint)));
+      point = nextPoint;
     }
-    const int nextPoint = GetNextBestPt(point, model, workspace,
-                                        model.GetSkinRules()->GetNumPoints(), mRandom, mMinZ);
-    AddPoint(CVector3f::ByElementMultiply(
-        mScale, model.GetSkinnedPosition(workspace, nextPoint)));
-    point = nextPoint;
+    mCurrentPoint = point;
+    mGenerateTimer = 0.f;
   }
-  mCurrentPoint = point;
-  mGenerateTimer = 0.f;
 }
 
 CVector3f CRainSplashGenerator::GeneratePoint(const CSkinnedModel& model,
@@ -95,7 +94,8 @@ CVector3f CRainSplashGenerator::GeneratePoint(const CSkinnedModel& model,
                                      model.GetSkinnedPosition(workspace, mCurrentPoint));
 }
 
-void CRainSplashGenerator::UpdateRainSplashRange(CStateManager& mgr, int start, int end, float dt) {
+void CRainSplashGenerator::UpdateRainSplashRange(CStateManager& mgr, const int start, int end,
+                                                 float dt) {
   for (int i = start; i < end; ++i) {
     SRainSplash& splash = mRainSplashes[i];
     splash.Update(dt, mgr);
@@ -129,17 +129,25 @@ void CRainSplashGenerator::Update(float dt, CStateManager& mgr) {
   if (!raining) {
     const int neededFx = mgr.GetWorld()->GetNeededEnvFx();
     const CEnvFxManager& envFx = *mgr.GetEnvFxManager();
-    if (neededFx != kEFX_None && envFx.IsSplashActive() && envFx.GetRainMagnitude() != 0.f &&
-        neededFx == kEFX_Rain) {
-      raining = true;
-      magnitude = envFx.GetRainMagnitude();
+    if (neededFx != kEFX_None && envFx.IsSplashActive()) {
+      const float rainMag = envFx.GetRainMagnitude();
+      if (rainMag != 0.f) {
+        switch (neededFx) {
+        case kEFX_Rain:
+          raining = true;
+          magnitude = rainMag;
+          break;
+        }
+      }
     }
   }
 
   if (raining) {
     UpdateRainSplashes(mgr, magnitude, dt);
+    mRaining = true;
+  } else {
+    mRaining = false;
   }
-  mRaining = raining;
 }
 
 void CRainSplashGenerator::Draw(const CTransform4f& xf) const {
@@ -230,8 +238,10 @@ void CRainSplashGenerator::SSplashLine::Draw(float alpha, float dt,
   }
 }
 
+const uchar kSplashLineWidth = 3;
+
 CRainSplashGenerator::SRainSplash::SRainSplash()
-: mLines(SSplashLine()), mPosition(CVector3f::Zero()), x70_(0.f) {}
+: mLines(4, SSplashLine()), mPosition(CVector3f::Zero()), x70_(0.f) {}
 
 void CRainSplashGenerator::SRainSplash::Update(float dt, CStateManager& mgr) {
   for (rstl::reserved_vector< SSplashLine, 4 >::iterator it = mLines.begin();
@@ -248,7 +258,7 @@ void CRainSplashGenerator::SRainSplash::Draw(float alpha, float dt,
   }
 }
 
-bool CRainSplashGenerator::SRainSplash::IsActive() const {
+uchar CRainSplashGenerator::SRainSplash::IsActive() const {
   bool active = false;
   for (rstl::reserved_vector< SSplashLine, 4 >::const_iterator it = mLines.begin();
        it != mLines.end(); ++it) {

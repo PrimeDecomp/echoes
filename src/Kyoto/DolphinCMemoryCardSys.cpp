@@ -133,8 +133,8 @@ ECardResult CMemoryCardSys::CCardFileInfo::PumpCardRead() {
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::WriteSaveSlot(int slot) {
-  void* data = mSlots[mSlot].mData.data();
   const int offset = slot * mSlotSize + 0x2000;
+  void* data = mSlots[mSlot].mData.data();
   DCStoreRange(data, mSlotSize);
   return static_cast< ECardResult >(
       CARDWriteAsync(&mFileInfo, data, mSlotSize, offset, nullptr));

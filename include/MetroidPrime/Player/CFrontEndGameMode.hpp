@@ -10,6 +10,9 @@
 // Class name from the Wii MP2 SEL (SetPlayerData__17CFrontEndGameMode...). Members are guessed.
 class CFrontEndPlayerData {
 public:
+  CFrontEndPlayerData(uint playerSelection, const CPlayerOptions& options)
+  : mPlayerSelection(playerSelection), mOptions(options) {}
+
   uint mPlayerSelection;
   CPlayerOptions mOptions;
 };

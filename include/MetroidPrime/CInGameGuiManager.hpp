@@ -68,7 +68,7 @@ private:
   bool CheckDGRPLoadComplete();
   void InitializeDumpableARAMTextures();
   void DestroyAreaTextures(const CStateManager& mgr);
-  bool TryReloadAreaTextures();
+  uchar TryReloadAreaTextures();
   bool IsTextureInPauseScreen(CAssetId id) const;
   void EnsureStates(const CStateManager& mgr);
   void DoStateTransition(const CStateManager& mgr);

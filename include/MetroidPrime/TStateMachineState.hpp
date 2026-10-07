@@ -40,7 +40,7 @@ public:
     CodeFunc mFunction;
   };
 
-  virtual ~TStateMachineStateBase() {}
+  virtual ~TStateMachineStateBase();
   virtual int GetType() const = 0;
   virtual void Reset(CStateManager& mgr, T& owner) = 0;
   virtual void SetStateFunctions(const SStateFunction* functions, int count) = 0;
@@ -90,6 +90,9 @@ public:
   float GetRandom() const { return mRandom; }
   float GetFixedRandom() const { return mFixedRandom; }
   bool GetCodeTrigger() const { return mCodeTrigger; }
+  void SetCodeTrigger() { mCodeTrigger = true; }
+  const CState* GetCurrentState() const { return mState; } // Guessed name
+  const CState* GetState() const { return mState; }
 
 private:
   void CallState(const CState& state, CStateManager& mgr, T& owner, EStateMsg msg, float arg);

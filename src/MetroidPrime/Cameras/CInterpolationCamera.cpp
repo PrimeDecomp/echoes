@@ -13,14 +13,18 @@
 #include "MetroidPrime/TCastTo.hpp"
 
 namespace {
-const CMaterialFilter skCollisionFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_Unknown59, kMT_Wall, kMT_Floor, kMT_Ceiling),
-    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough));
+// Guessed names.
+const CMaterialList skCollisionIncludeList =
+    CMaterialList(kMT_Unknown59, kMT_Wall, kMT_Floor, kMT_Ceiling);
+const CMaterialList skCollisionExcludeList =
+    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+const CMaterialFilter skCollisionFilter =
+    CMaterialFilter::MakeIncludeExclude(skCollisionIncludeList, skCollisionExcludeList);
 }
 
 CInterpolationCamera::CInterpolationCamera(TUniqueId uid, const CTransform4f& xf, int index,
                                            int controllerIdx)
-: CGameCamera(uid, rstl::string("Interpolation Camera"),
+: CGameCamera(uid, rstl::string_l("Interpolation Camera"),
               CEntityInfo(kInvalidAreaId, NullConnectionList, false), xf,
               CCameraManager::GetDefaultThirdPersonVerticalFOV(),
               CCameraManager::GetDefaultFirstPersonNearClipDistance(),
@@ -203,7 +207,8 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
   mRotationFinished = false;
   mTime = 0.f;
 
-  CGameCamera* source = TCastToPtr< CGameCamera >(mgr.ObjectById(from));
+  CGameCamera* source = const_cast< CGameCamera* >(
+      TCastToConstPtr< CGameCamera >(mgr.GetObjectById(from)));
   const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(to));
   SetTransform(mStartTransform);
   if (!target) {
@@ -218,7 +223,7 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
   mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
   mInitialDistance = (target->GetTranslation() - xf.GetTranslation()).Magnitude();
   if (source) {
-    CameraManager(mgr).TransferCameraState(*source, *this, mgr);
+    const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
     SetTransform(xf);
     SetFov(source->GetFov());
     InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
@@ -231,7 +236,7 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
 
 void CInterpolationCamera::EndInterpolation(EEndReason reason, CStateManager& mgr) {
   SetActive(false);
-  CCameraManager& cameraManager = CameraManager(mgr);
+  CCameraManager& cameraManager = const_cast< CCameraManager& >(GetCameraManager(mgr));
   CGameCamera* target = TCastToPtr< CGameCamera >(mgr.ObjectById(mTargetId));
   if (!target) {
     return;
@@ -240,20 +245,23 @@ void CInterpolationCamera::EndInterpolation(EEndReason reason, CStateManager& mg
     if (reason == kER_Completed) {
       cameraManager.TransferCameraState(*this, *target, mgr);
     }
-    cameraManager.SetCurrentCameraId(mTargetId);
+    cameraManager.SetCurrentCameraId(mTargetId, mgr);
   } else {
-    const CPlayer::EPlayerMorphBallState state = GetPlayer(mgr).GetMorphballTransitionState();
-    if (state == CPlayer::kMS_Unmorphed || state == CPlayer::kMS_Unmorphing) {
-      CFirstPersonCamera* camera = cameraManager.FirstPersonCamera();
+    switch (Player(mgr).GetMorphballTransitionState()) {
+    case CPlayer::kMS_Unmorphed:
+    case CPlayer::kMS_Unmorphing:
       if (reason == kER_Completed) {
-        cameraManager.TransferCameraState(*this, *camera, mgr);
+        cameraManager.TransferCameraState(*this, *cameraManager.FirstPersonCamera(), mgr);
       }
-      cameraManager.SetCurrentCameraId(camera->GetUniqueId());
-    } else {
+      cameraManager.SetCurrentCameraId(cameraManager.FirstPersonCamera()->GetUniqueId(), mgr);
+      break;
+    default: {
       const CBallCamera* camera = cameraManager.GetBallCamera();
       cameraManager.SetupInterpolation(GetTransform(), GetUniqueId(), camera->GetUniqueId(), false,
                                        kPM_Direct, kRM_LinearSlerp, mgr, true, 1.f,
                                        camera->GetFov());
+      break;
+    }
     }
   }
 }
@@ -274,9 +282,9 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
     return;
   }
 
-  const CVector3f position = target->GetTranslation();
+  const CVector3f position = target->GetTransform().GetTranslation();
   mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
-  bool done = true;
+  bool done;
   switch (mPositionMode) {
   case kPM_Direct:
     done = InterpolatePosition(dt, xf, position, mgr);
@@ -284,8 +292,11 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
   case kPM_Spline:
     done = InterpolateSpline(dt, xf, position, mgr);
     break;
+  default:
+    done = true;
+    break;
   }
-  xf = ValidateCameraTransform(xf, oldXf);
+  xf = ValidateCameraTransform(xf, oldXf, dt);
   SetTransform(xf);
   if (done) {
     EndInterpolation(kER_Completed, mgr);
@@ -298,10 +309,11 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
       } else {
         direction = xf.GetForward();
       }
-      if (mgr.RayStaticIntersection(GetTranslation(), direction, 3.f, skCollisionFilter)
-              .IsValid()) {
+      const CRayCastResult result =
+          mgr.RayStaticIntersection(GetTranslation(), direction, 3.f, skCollisionFilter);
+      if (result.IsValid()) {
         EndInterpolation(kER_Obstruction, mgr);
-        CameraManager(mgr).StartScreenFlash();
+        const_cast< CCameraManager& >(GetCameraManager(mgr)).StartScreenFlash();
       }
     }
   }

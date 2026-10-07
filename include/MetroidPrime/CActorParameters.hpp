@@ -155,12 +155,12 @@ private:
   CVisorParameters mVisor;                      // x50
   uchar mMaxVolume;                             // x54
   uchar mMaxEchoVolume;                         // x55
-  uchar mUseGlobalRenderTime : 1;               // x56
-  uchar mForceRenderUnsorted : 1;
-  uchar mHighlightedInDarkVisor : 1;
-  uchar mTakesProjectedShadow : 1;
-  uchar mAlphaSorted : 1;
-  uchar mRenderFullEchoModel : 1; // Guessed name.
+  bool mUseGlobalRenderTime : 1;               // x56
+  bool mForceRenderUnsorted : 1;
+  bool mHighlightedInDarkVisor : 1;
+  bool mTakesProjectedShadow : 1;
+  bool mAlphaSorted : 1;
+  bool mRenderFullEchoModel : 1; // Guessed name.
   float mFadeInTime; // x58
   float mFadeOutTime; // x5c
 };

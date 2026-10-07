@@ -2,11 +2,17 @@
 
 #include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/Cameras/CBallCamera.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/Cameras/CCameraSpring.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CUnitVector3f.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
 
 CGameCamera::CGameCamera(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                          const CTransform4f& xf, float fov, float nearZ, float farZ, float aspect,
@@ -34,7 +40,7 @@ void CGameCamera::SetAspectRatio(float aspect) {
 }
 
 const CMatrix4f& CGameCamera::GetPerspectiveMatrix() const {
-  if (mPerspDirty) {
+  if (mPerspDirty == true) {
     mPerspectiveMatrix = CGraphics::CalculatePerspectiveMatrix(GetFov(), mAspect, mZnear, mZfar);
     mPerspDirty = false;
   }
@@ -94,7 +100,9 @@ CMatrix4f CMatrix4f::GetInverse() const {
 }
 
 CVector3f CGameCamera::ConvertToWorldSpace(const CVector3f& position) const {
-  return GetTransform() * GetPerspectiveMatrix().GetInverse().MultiplyOneOverW(position);
+  const CVector3f viewPos = GetPerspectiveMatrix().GetInverse().MultiplyOneOverW(position);
+  const CVector3f result = GetTransform() * viewPos;
+  return result;
 }
 
 float CCameraSpring::ApplyDistanceSpring(float target, float current, float dt) {
@@ -120,15 +128,42 @@ void CGameCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
 }
 
-void CGameCamera::SetActive(bool active) {
+void CGameCamera::SetActive(const bool active) {
   CActor::SetActive(active);
   SetDrawEnabled(false);
 }
 
 CTransform4f CGameCamera::ValidateCameraTransform(const CTransform4f& newXf,
-                                                  const CTransform4f& oldXf) {
-  // TODO: Recover orthonormalization and the Echoes-specific horizon/inversion corrections.
-  return newXf;
+                                                  const CTransform4f& oldXf, float dt) {
+  CTransform4f xf(newXf);
+  if (!close_enough(newXf.GetColumn(kDX).Magnitude(), 1.f) ||
+      !close_enough(newXf.GetColumn(kDY).Magnitude(), 1.f) ||
+      !close_enough(newXf.GetColumn(kDZ).Magnitude(), 1.f)) {
+    xf.Orthonormalize();
+  }
+  const float dot = CMath::Limit(CVector3f::Dot(newXf.GetColumn(kDY), CVector3f::Up()), 1.f);
+  if (CMath::AbsF(dot) > 0.999f) {
+    xf = oldXf;
+  }
+  CVector3f forward = xf.GetColumn(kDY);
+  forward.SetZ(0.f);
+  if (xf.GetColumn(kDZ).GetZ() < -0.2f) {
+    if (forward.CanBeNormalized()) {
+      xf = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward);
+    } else {
+      xf = oldXf;
+    }
+  }
+  if (!close_enough(xf.GetColumn(kDX).GetZ(), 0.f, 0.01f) &&
+      close_enough(xf.GetColumn(kDZ).GetZ(), 0.f, 0.01f)) {
+    if (forward.IsMagnitudeSafe()) {
+      xf = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward);
+    } else {
+      xf = oldXf;
+    }
+  }
+  xf.SetTranslation(newXf.GetTranslation());
+  return xf;
 }
 
 CPlayer& CGameCamera::Player(CStateManager& mgr) const { return *mgr.GetPlayer(mControllerIdx); }
@@ -171,22 +206,23 @@ void CGameCamera::ResetFovInterpolation(float fov) {
 }
 
 void CGameCamera::InterpolateFOV(float fov, float duration, float delay) {
-  if (duration > 0.f) {
-    mFovInterpolation.Set(delay, duration, duration, GetFov(), fov, kInvalidUniqueId);
-  } else {
+  if (duration <= 0.f) {
     ResetFovInterpolation(fov);
+  } else {
+    mFovInterpolation.Set(delay, duration, duration, GetFov(), fov, kInvalidUniqueId);
   }
 }
 
 void CGameCamera::InterpolateFOV(float startFov, float duration, float delay, TUniqueId cameraId,
                                  CStateManager& mgr) {
-  CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(cameraId));
+  CGameCamera* camera =
+      TCastToPtr< CGameCamera >(const_cast< CEntity* >(mgr.GetObjectById(cameraId)));
   if (camera != nullptr) {
     const float target = camera->GetFov();
-    if (duration > 0.f) {
-      mFovInterpolation.Set(delay, duration, duration, startFov, target, cameraId);
-    } else {
+    if (duration <= 0.f) {
       ResetFovInterpolation(target);
+    } else {
+      mFovInterpolation.Set(delay, duration, duration, startFov, target, cameraId);
     }
   }
 }
@@ -195,38 +231,74 @@ void CGameCamera::UpdatePerspective(float dt, CStateManager& mgr) {
   if (mFovInterpolation.mDelay > 0.f) {
     mFovInterpolation.mDelay -= dt;
   } else if (mFovInterpolation.mRemaining > 0.f) {
-    CGameCamera* camera = TCastToPtr< CGameCamera >(mgr.ObjectById(mFovInterpolation.mCameraId));
+    CGameCamera* camera = TCastToPtr< CGameCamera >(
+        const_cast< CEntity* >(mgr.GetObjectById(mFovInterpolation.mCameraId)));
     if (camera != nullptr && camera->GetUniqueId() != GetUniqueId()) {
       SetTargetFov(camera->GetFov());
     }
 
     mFovInterpolation.mRemaining -= dt;
-    if (mFovInterpolation.mRemaining > 0.f) {
+    if (mFovInterpolation.mRemaining <= 0.f) {
+      SetFov(GetTargetFov());
+    } else {
+      const float delta = GetFov() - GetTargetFov();
       const float t =
           CMath::Clamp(0.f, mFovInterpolation.mRemaining / mFovInterpolation.mDuration, 1.f);
-      SetFov((GetFov() - GetTargetFov()) * t + GetTargetFov());
-    } else {
-      SetFov(GetTargetFov());
+      SetFov(delta * t + GetTargetFov());
     }
-  } else if (CMath::AbsF(GetFov() - GetTargetFov()) >= 0.00001f) {
+  } else if (!(CMath::AbsF(GetFov() - GetTargetFov()) < 0.00001f)) {
     SetFov(GetTargetFov());
   }
 }
 
 CVector3f CGameCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
-  // TODO: Use the watched actor's target position, falling back to the player's ball camera.
-  return GetTranslation();
+  if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(mWatchedObject))) {
+    return CameraManager(const_cast< CStateManager& >(mgr))
+        .BallCamera()
+        ->GetScanObjectIndicatorPosition(mgr);
+  }
+  const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mWatchedObject));
+  if (actor == nullptr) {
+    return CameraManager(const_cast< CStateManager& >(mgr))
+        .BallCamera()
+        ->GetScanObjectIndicatorPosition(mgr);
+  }
+  return actor->GetScanObjectIndicatorPosition(mgr);
 }
 
 rstl::optional_object< CAABox > CGameCamera::GetTouchBounds() const {
   return CAABox(GetTranslation(), GetTranslation());
 }
 
-void CGameCamera::UnkVtable84() {}
+void CGameCamera::UnkVtable84(TUniqueId fluidId, CStateManager& mgr) {}
 
-void CGameCamera::UnkVtable88(TUniqueId fluidId) {}
+void CGameCamera::UnkVtable88(TUniqueId fluidId, CStateManager& mgr) {}
 
 void CGameCamera::ClearFluidList(CStateManager& mgr) {
-  // TODO: Notify the camera's overlapping triggers before the inherited actor cleanup.
+  const rstl::reserved_vector< TUniqueId, 4 > fluids = GetFluidList();
+  for (int i = 0; i < fluids.size(); ++i) {
+    if (CScriptWater* water = TCastToPtr< CScriptWater >(mgr.ObjectById(fluids[i]))) {
+      water->RemoveInhabitant(GetUniqueId(), mgr);
+    }
+  }
   CActor::ClearFluidList(mgr);
+}
+
+CGameCamera::SFovInterpolation::SFovInterpolation(float delay, float remaining, float duration,
+                                                  float current, float target, TUniqueId cameraId)
+: mDelay(delay)
+, mRemaining(remaining)
+, mDuration(duration)
+, mCurrent(current)
+, mTarget(target)
+, mCameraId(cameraId) {}
+
+void CGameCamera::SFovInterpolation::Set(float delay, float remaining, float duration,
+                                         float current, float target, TUniqueId cameraId) {
+  mDelay = delay;
+  mRemaining = remaining;
+  mDuration = duration;
+  mCurrent = current;
+  mTarget = target;
+  mCameraId = cameraId;
 }

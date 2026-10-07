@@ -330,11 +330,9 @@ public:
   CFBStreamedCompression(CInputStream& in, IObjectStore& store);
   ~CFBStreamedCompression();
 
-  CCharAnimTime GetAnimationDuration() const { return MainHeader().GetMaxTime(); }
+  CCharAnimTime GetAnimationDuration() const;
   float GetAverageVelocity() const { return mAverageVelocity; }
-  bool HasScaleData() const {
-    return GetPerChannelHeaderList(TimeHeader(MainHeader())).HasScaleData();
-  }
+  bool HasScaleData() const;
   CSteadyStateAnimInfo GetSteadyStateAnimInfo() const {
     return CSteadyStateAnimInfo(MainHeader().IsLooping(), GetAnimationDuration(), mRootOffset);
   }

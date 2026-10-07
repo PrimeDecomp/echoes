@@ -59,7 +59,7 @@ private:
   bool CanApplyKnockBackForce(CStateManager& mgr, CPlayer& player,
                               const CKnockBackInfo& info) const;
   void StartBlackHoleDeath(CStateManager& mgr, TUniqueId source, CPlayer& player);
-  void UpdateImplosion(CStateManager& mgr, CPlayer& player);
+  void UpdateImplosion(float dt, CStateManager& mgr, CPlayer& player);
 
   float mBurnRemainingTime;
   float mBurnDamagePerSecond;

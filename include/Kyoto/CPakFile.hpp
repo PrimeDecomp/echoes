@@ -75,7 +75,7 @@ private:
   rstl::auto_ptr< CDvdRequest > mDvdReq;
   rstl::vector< uchar > mHeaderData;
   uint mResTableOffset;
-  uint mResTableCount;
+  int mResTableCount;
   int mFakeStaticSize;
   const void* mAramBase;
   rstl::vector< rstl::pair< rstl::string, SObjectTag > > mNameList;

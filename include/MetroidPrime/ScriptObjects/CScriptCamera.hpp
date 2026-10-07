@@ -40,7 +40,7 @@ public:
   uint GetFlags() const { return mFlags; }
   TUniqueId GetCameraActorId() const { return mCameraActorId; }
   TUniqueId GetTimeKeyframeId() const { return mTimeKeyframeId; }
-  bool HasBeenViewed() const { return mHasBeenViewed; }
+  const bool HasBeenViewed() const { return mHasBeenViewed; }
 
 private:
   mutable CScriptCameraSpline mSpline;

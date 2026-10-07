@@ -241,6 +241,8 @@ public:
   }
   TUniqueId GetScanningObject() const { return mScanningObject; }
   TUniqueId GetOrbitNextTargetId() const { return mOrbitNextTargetId; }
+  void SetOrbitNextTargetId(TUniqueId id) { mOrbitNextTargetId = id; } // Guessed name
+  TUniqueId GetAimTarget() const { return mAimTarget; }
   CMorphBall* GetMorphBall() { return mMorphBall.get(); }
   const CMorphBall* GetMorphBall() const { return mMorphBall.get(); }
   CPlayerState* GetPlayerState() { return mPlayerState; }
@@ -297,9 +299,10 @@ public:
   float GetMorphBallTransitionFactor() const {
     return mMorphDuration == 0.f ? 0.f : CMath::Clamp(0.f, mMorphTime / mMorphDuration, 1.f);
   }
-  bool CanEnterMorphBallState() const;
+  bool CanEnterMorphBallState(CStateManager& mgr, float dt) const;
   bool CanLeaveMorphBallState(CStateManager& mgr, CVector3f& position) const;
   bool AttachActorToPlayer(TUniqueId actor, bool disableGun);
+  void EnableLeaveMorphBall(bool enabled) { mCanStartUnmorphTransition = enabled; } // Prime name.
   void DetachActorFromPlayer();
   void UpdateScanningState(const CFinalInput& input, CStateManager& mgr, float dt);
   bool ValidateScanning(const CFinalInput& input, CStateManager& mgr) const;
@@ -328,9 +331,17 @@ public:
   static int SfxIdFromMaterial(const CMaterialList& mat, const ushort* idList, int tableLen,
                                ushort defId);
   static const float skDefaultHudFadeInSpeed;
+  // Guessed names. Morph-transition scan-line filter timing, defined beside the HUD fade speeds.
+  static const float skTransitionFilterStartTime;
+  static const float skTransitionFilterFadeInTime;
+  static const float skTransitionFilterFadeOutTime;
+  static const float skTransitionFilterHoldTime;
+  static const float skTransitionFilterEndTime;
+  static const float skTransitionFilterMaxAlpha;
   void SetHudDisable(float staticTimer, float fadeOutSpeed = skDefaultHudFadeOutSpeed,
                      float fadeInSpeed = skDefaultHudFadeInSpeed);
   float GetStaticTimer() const { return mStaticTimer; }
+  void SetNoDamageLoopSfx(bool noSfx) { mNoDamageLoopSfx = noSfx; }
   bool WasDamaged() const;
   float GetDamageAmount() const;
   float GetPrevDamageAmount() const;
@@ -340,6 +351,7 @@ public:
 
   // Guessed names; native knockback and death-effect consumers.
   void SetDeathFadeEnabled(bool enabled) { mDeathFadeEnabled = enabled; }
+  void SetHoldScreenFilterAlpha(bool hold) { mHoldScreenFilterAlpha = hold; } // Guessed name
 
   void SetDeathFadeDuration(float duration) { mDeathFadeDuration = duration; }
 
@@ -381,6 +393,8 @@ public:
   const CControlMapper& GetControlMapper() const { return mControlMapper; }
   CPlayerGun* GetPlayerGun();
   const CPlayerGun* GetPlayerGun() const;
+  // Guessed name: inline gun access used by REL code (the out-of-line accessors above are DOL-only).
+  const CPlayerGun* GetGun() const { return mGun.get(); }
   ETurretState GetTurretState() const { return mTurretState; }
   float GetTurretTimer() const { return mTurretTimer; }
   bool IsInTurret() const;
@@ -416,6 +430,7 @@ public:
   TUniqueId GetAttachedActorId() const { return mAttachedActor; }
   TUniqueId GetRidingPlatform() const { return mRidingPlatform; }
   const CPlayerEnergyDrain& GetEnergyDrain() const { return mEnergyDrain; } // Guessed name
+  CPlayerEnergyDrain& GetEnergyDrain() { return mEnergyDrain; }
   const CVector3f& GetLastVelocity() const { return mLastVelocity; }        // Guessed name
   bool IsInFreeLook() const { return mInFreeLook; }
   bool IsLookButtonHeld() const { return mLookButtonHeld; }
@@ -439,7 +454,7 @@ public:
   void UpdateDamageTimers(float dt);
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
   void CollectBallTransitionAnimationTokens();
-  uint GetDamageWeaponType() const; // Reconstructed name; retained damage-event weapon type.
+  int GetDamageWeaponType() const; // Reconstructed name; retained damage-event weapon type.
   const CColor& GetScreenFilterColor() const { return mScreenFilterColor; } // Guessed name.
   TUniqueId GetEnemyLockOnActorId() const { return mEnemyLockOnActorId; }   // Guessed name.
   char GetEnemyLockOnCount() const { return mEnemyLockOnCount; }            // Guessed name.
@@ -477,7 +492,7 @@ public:
   void PrepareToEnterMorphBallState(float dt, CStateManager& mgr);
   void SetOutOfBallReadyAnimation(float dt, CStateManager& mgr);
   void UpdatePlayerBodyController(float dt, CStateManager& mgr);
-  bool UpdatePlayerRagDoll(float dt, CStateManager& mgr);
+  uchar UpdatePlayerRagDoll(float dt, CStateManager& mgr);
   void SetIntoBallReadyAnimation(float dt, EPlayerMorphBallState state);
   float UpdateCameraBob(float dt, CStateManager& mgr);
   void SetEyeZBias(float bias);
@@ -494,15 +509,16 @@ public:
   void CalculatePlayerMovementDirection(float dt, const CVector3f& displacement);
   void SetMoveState(NPlayer::EPlayerMovementState state, CStateManager& mgr);
   float JumpInput(const CFinalInput& input, CStateManager& mgr);
-  float TurnInput(const CFinalInput& input) const;
+  float TurnInput(const CFinalInput& input, CStateManager& mgr) const;
   float StrafeInput(const CFinalInput& input) const;
   float ForwardInput(const CFinalInput& input, float turnInput) const;
   void ComputeMovement(const CFinalInput& input, CStateManager& mgr, float dt);
   void ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr);
   CVector3f CalculateLeftStickEdgePosition(float strafeInput, float forwardInput) const;
   void BeginSidewaysDash(float strafeInput, CStateManager& mgr);
-  void FinishSidewaysDash();
-  bool SidewaysDashAllowed(float strafeInput, float forwardInput, const CFinalInput& input) const;
+  void FinishSidewaysDash(CStateManager& mgr);
+  bool SidewaysDashAllowed(float strafeInput, float forwardInput, const CFinalInput& input,
+                           CStateManager& mgr) const;
   void UpdateStepCameraZBias(float dt, CStateManager& mgr);
   void UpdateBombJumpStuff();
   float GetGravity() const;
@@ -563,7 +579,7 @@ public:
   void UpdateOrbitSelection(const CFinalInput& input, CStateManager& mgr);
   void UpdateOrbitOrientation(CStateManager& mgr);
   void UpdateOrbitTarget(CStateManager& mgr);
-  float GetOrbitMaxLockDistance() const;
+  float GetOrbitMaxLockDistance(CStateManager& mgr) const;
   float GetOrbitMaxTargetDistance() const;
   int ValidateOrbitTargetId(TUniqueId target, CStateManager& mgr) const;
   void StopRezbitState(CStateManager& mgr);
@@ -575,16 +591,16 @@ public:
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
   void ResetRezbitRecoveryInput();
-  bool BoostHeld(const CFinalInput& input) const; // Guessed name.
-  bool ChargeBeamHeld(const CFinalInput& input) const;
-  bool JumpPressed(const CFinalInput& input) const;
-  bool JumpHeld(const CFinalInput& input) const;
-  bool AutoFireHeld(const CFinalInput& input) const;
-  bool FireBeamPressed(const CFinalInput& input) const;
-  bool FireBeamHeld(const CFinalInput& input) const;
+  uchar BoostHeld(const CFinalInput& input) const; // Guessed name.
+  uchar ChargeBeamHeld(const CFinalInput& input) const;
+  uchar JumpPressed(const CFinalInput& input) const;
+  uchar JumpHeld(const CFinalInput& input) const;
+  uchar AutoFireHeld(const CFinalInput& input) const;
+  uchar FireBeamPressed(const CFinalInput& input) const;
+  uchar FireBeamHeld(const CFinalInput& input) const;
   bool IsAligningGrappleSwingTurn() const { return mAligningGrappleSwingTurn; }
   void SetAligningGrappleSwingTurn(bool aligning) { mAligningGrappleSwingTurn = aligning; }
-  bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
+  const bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);
   void ResetPlayerHintState(CStateManager& mgr);
   void CalculatePlayerControlDirection(CStateManager& mgr);
   void UpdatePlayerControlDirection(float dt, CStateManager& mgr);
@@ -613,6 +629,8 @@ public:
                             CGameHint::EBreakHintType breakType);
 
 private:
+  friend class CSamusHud;
+
   NPlayer::EPlayerMovementState mMovementState;                  // 0x2d0
   rstl::vector< CToken > mBallTransitionsRes;                    // 0x2d4
   TUniqueId mAttachedActor;                                      // 0x2e4
@@ -633,7 +651,7 @@ private:
   CVector3f mLastSpaceJumpPosition;                              // 0x338
   ESurfaceRestraints mSurfaceRestraint;                          // 0x344
   rstl::reserved_vector< float, 6 > mAccelerationTable;          // 0x348
-  uint mCurAcceleration;                                         // 0x364
+  int mCurAcceleration;                                          // 0x364
   float mAccelerationChangeTimer;                                // 0x368
   CAABox mFpBounds;                                              // 0x36c
   float mBallTransHeight;                                        // 0x384
@@ -894,7 +912,7 @@ private:
   rstl::single_ptr< void > mReflectionTextureData;
   rstl::single_ptr< void > mIndirectTextureData;
   rstl::single_ptr< void > mMaskTextureData;
-  uint mRezbitRecoveryDirection;
+  int mRezbitRecoveryDirection;
   uint mRezbitRecoveryInputCount;
   CControlMapper mControlMapper;
   rstl::single_ptr< CHintManager > mControlHintManager;

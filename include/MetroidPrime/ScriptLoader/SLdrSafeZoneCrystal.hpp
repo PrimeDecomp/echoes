@@ -45,6 +45,9 @@ struct SLdrSafeZoneCrystal {
 };
 
 inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal() : editorProperties(), actorParameters(), scannableInfoCollapsed(kInvalidAssetId), scannableInfoEntangled(kInvalidAssetId), scannableInfoLight(kInvalidAssetId), scannableInfoAnnihilator(kInvalidAssetId), collapsedEffect(kInvalidAssetId), expandedEffect(kInvalidAssetId), entangledEffect(kInvalidAssetId), hurtfulEffect(kInvalidAssetId), echoEffect(kInvalidAssetId), normalCrystal(kInvalidAssetId), entangledCrystal(kInvalidAssetId), hurtfulCrystal(kInvalidAssetId), echoCrystal(kInvalidAssetId), powerBeamRefreshEffect(kInvalidAssetId), hitRadius(CVector3f::Zero()), hitOffset(CVector3f::Zero()), effectOffset(CVector3f::Zero()), unknown_0xbbbee60b() {
+  editorProperties.unknown_0x5d298a43 = 3;
+  actorParameters.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorParameters.visor.visorFlags = 0x0000000fu;
   safezoneType = 0;
   initiallyEntangled = false;
   maxTimeExpanded = 5.0f;

@@ -10,7 +10,8 @@ class CLight;
 
 class CProjectileTouchResult {
 public:
-  CProjectileTouchResult(TUniqueId actorId, const rstl::optional_object< CRayCastResult >& result)
+  CProjectileTouchResult(const TUniqueId& actorId,
+                         const rstl::optional_object< CRayCastResult >& result)
   : mActorId(actorId), mRayCastResult(result) {}
 
   TUniqueId GetActorId() const { return mActorId; }
@@ -70,6 +71,7 @@ public:
   bool GetWeaponActive() const { return mActive; }
   void SetTouchedDock(TUniqueId uid) { mTouchedDock = uid; } // Guessed name
   void SetX4104(bool flag) { x410_4_ = flag; }
+  void SetHomingTurnRateScale(float scale) { mHomingTurnRateScale = scale; } // Guessed name
   CProjectileTouchResult CanCollideWithTrigger(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithGameObject(CActor& actor, CStateManager& mgr);
   CProjectileTouchResult CanCollideWithComplexCollision(CActor& actor, CStateManager& mgr);
@@ -86,6 +88,7 @@ public:
   static EProjectileAttrib GetBeamAttribType(EWeaponType type);
 
 protected:
+  void SetLastResolvedObject(TUniqueId uid) { mLastResolvedObj = uid; }
   CTransform4f mInitialTransform; // Guessed name
   CImpactVisorEffect mVisorEffect;
   CProjectileWeapon mProjectile;

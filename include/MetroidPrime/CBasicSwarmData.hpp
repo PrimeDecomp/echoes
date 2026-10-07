@@ -11,6 +11,7 @@ struct SLdrBasicSwarmProperties;
 // Name corroborated by the Echoes Wii conversion export; member names are reconstructed.
 class CBasicSwarmData {
   friend CBasicSwarmData LdrToBasicSwarmData(const SLdrBasicSwarmProperties& data);
+  friend class CSwarmBasics;
 
 public:
   CBasicSwarmData(const CDamageInfo& damage, const CHealthInfo& health,
@@ -39,9 +40,9 @@ private:
   int mNumDeathParticles;
   int mAttackerCount;
   float mAttackProximity;
+  float mAttackTimer;
   float mSafeZoneAvoidancePriority;
   float mTurnRate;
-  float mAttackTimer;
   ushort mLocomotionLoopedSound;
   ushort mAttackLoopedSound;
   float mSoundFallOff;

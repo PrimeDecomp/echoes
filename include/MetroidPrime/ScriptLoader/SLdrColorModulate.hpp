@@ -31,6 +31,7 @@ struct SLdrColorModulate {
 };
 
 inline SLdrColorModulate::SLdrColorModulate() : editorProperties(), color_A(CColor::Green()), color_B(CColor::Green()), controlSpline() {
+  editorProperties.unknown_0x5d298a43 = 3;
   color_A = CColor(1.0f, 1.0f, 1.0f, 0.0f);
   color_B = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   blend_Mode = 0;

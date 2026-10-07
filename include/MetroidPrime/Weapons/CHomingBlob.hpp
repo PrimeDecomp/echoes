@@ -60,7 +60,7 @@ private:
   float mEscapeDistanceSquared;
   float mTargetSearchRadius;
   float mHomingAcceleration;
-  int mPlayerIndex;
+  uint mPlayerIndex;
   int mModeFlags;
   bool mFollowPlayerArea : 1;
   bool mHasRenderBounds : 1;

@@ -24,7 +24,7 @@ void CScriptSpiderBallWaypoint::AcceptScriptMsg(CStateManager& mgr, const CScrip
     break;
   case static_cast< EScriptObjectMessage >('ARRV'):
     if (GetActive()) {
-      SendScriptMsgs(kSS_Arrived, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Arrived, mgr);
     }
     break;
   default:

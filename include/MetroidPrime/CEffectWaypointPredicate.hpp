@@ -9,7 +9,7 @@
 // Guessed name. Effect and time-keyframe paths only accept script waypoints.
 class CEffectWaypointPredicate : public CValidEntityPredicate {
 public:
-  ~CEffectWaypointPredicate() override;
+  ~CEffectWaypointPredicate() override {}
 
   bool IsValid(const CStateManager& mgr, TUniqueId id) const override {
     return TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(id)) != nullptr;

@@ -185,6 +185,16 @@ public:
   , mOverrideAnim(animId != -1)
   , mInterruptKnockBack(false) {}
 
+  CBCGenerateCmd(pas::EGenerateType type, const CVector3f& targetPos, bool targetTransform = false,
+                 bool overrideAnim = false)
+  : CBodyStateCmd(kBSC_Generate)
+  , mType(type)
+  , mTargetPos(targetPos)
+  , mAnimId(-1)
+  , mTargetTransform(targetTransform)
+  , mOverrideAnim(overrideAnim)
+  , mInterruptKnockBack(false) {}
+
   pas::EGenerateType GetGenerateType() const { return mType; }
   bool UseSpecialAnimId() const { return mOverrideAnim; }
   int GetSpecialAnimId() const { return mAnimId; }
@@ -473,6 +483,11 @@ public:
   void DeliverCmd(const CBCLocomotionCmd& cmd);
   void DeliverCmd(EBodyStateCmd cmd);
 
+  void DeliverCmd(const CBCGetupCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mGetup = cmd;
+  }
+
   void DeliverCmd(const CBCStepCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mStep = cmd;
@@ -488,6 +503,31 @@ public:
     mKnockBack = cmd;
   }
 
+  void DeliverCmd(const CBCLoopAttackCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mLoopAttack = cmd;
+  }
+
+  void DeliverCmd(const CBCProjectileAttackCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mProjectileAttack = cmd;
+  }
+
+  void DeliverCmd(const CBCGenerateCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mGenerate = cmd;
+  }
+
+  void DeliverCmd(const CBCMeleeAttackCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mMeleeAttack = cmd;
+  }
+
+  void DeliverCmd(const CBCLoopHitReactionCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mLoopHitReaction = cmd;
+  }
+
   void DeliverCmd(const CBCHurledCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mHurled = cmd;
@@ -498,9 +538,24 @@ public:
     mSlide = cmd;
   }
 
+  void DeliverCmd(const CBCLoopReactionCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mLoopReaction = cmd;
+  }
+
+  void DeliverCmd(const CBCTauntCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mTaunt = cmd;
+  }
+
   void DeliverCmd(const CBCJumpCmd& cmd) {
     DeliverCmd(cmd.GetCommandId());
     mJump = cmd;
+  }
+
+  void DeliverCmd(const CBCAdditiveFlinchCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mAdditiveFlinch = cmd;
   }
 
   void DeliverCmd(const CBCAdditiveReactionCmd& cmd) {
@@ -508,9 +563,20 @@ public:
     mAdditiveReaction = cmd;
   }
 
+  void DeliverCmd(const CBCAdditiveAimCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mAdditiveAim = cmd;
+  }
+
+  void DeliverCmd(const CBCScriptedCmd& cmd) {
+    DeliverCmd(cmd.GetCommandId());
+    mScripted = cmd;
+  }
+
   void BlendSteeringCmds();
   void ClearLocomotionCmds();
   void SetSteeringSpeedRange(float minimum, float maximum);
+  void SetSteeringBlendMode(ESteeringBlendMode mode) { mSteeringMode = mode; }
   void Reset();
   CBodyStateCmd* GetCmd(EBodyStateCmd cmd);
   const CBodyStateCmd* GetCmd(EBodyStateCmd cmd) const;
@@ -525,6 +591,7 @@ public:
   void SetTargetVector(const CVector3f& target) { mTarget = target; }
 
   const CVector3f& GetAdditiveTargetVector() const { return mAdditiveTarget; }
+  void DeliverAdditiveTargetVector(const CVector3f& target) { mAdditiveTarget = target; }
 
 private:
   CVector3f mMove;

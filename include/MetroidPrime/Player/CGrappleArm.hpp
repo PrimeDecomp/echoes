@@ -90,7 +90,7 @@ public:
   void EnterFidget(CStateManager& mgr, int type, int gunId, int animSet);
   void EnterStruck(CStateManager& mgr, float angle, bool bigStrike, bool notInFreeLook);
   void ReturnToDefault(CStateManager& mgr, float delay, bool reset);
-  void SetStateFlags(uint flags); // Guessed name.
+  void SetStateFlags(int flags); // Guessed name.
   uint GetStateFlags() const { return mStateFlags; }
   CGunController* GunController() { return mGunController.get(); }
   bool IsGrappling() const { return (mStateFlags & kSF_Grappling) != 0; }
@@ -163,7 +163,7 @@ private:
   float mZAmplitude;
   float mSwingT;
   EArmState mAnimationState;
-  uint mStateFlags;
+  int mStateFlags;
   uint mSoundSetIndex;
   int mAnimSfxPitch;
   rstl::pair< ushort, CSfxHandle > mAnimSfx;

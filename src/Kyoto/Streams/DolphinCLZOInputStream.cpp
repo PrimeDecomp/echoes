@@ -11,7 +11,7 @@ get_buffer_and_size(CInputStream& in, unsigned long compressedLen, unsigned long
   uchar* dest = buffer.get();
   while (written != decompressedLen) {
     uint blockLen = 0x4000;
-    uint compressedBlockLen = in.ReadUint16();
+    uint compressedBlockLen = static_cast< ushort >(in.ReadUint16());
     const uchar* source = static_cast< const uchar* >(in.Get(compressedBlockLen));
     CLZOSupport::Inflate(source, compressedBlockLen, dest, blockLen);
     dest += blockLen;

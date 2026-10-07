@@ -29,7 +29,7 @@ public:
   bool GetIsContinueDraw() const override;
   void Draw() const override;
 
-  static uchar GetGalleriesUnlocked();
+  static uint GetGalleriesUnlocked();
 
 private:
   struct SGalleryData {

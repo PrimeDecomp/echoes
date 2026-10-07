@@ -48,7 +48,7 @@ CStreamAudioManager::ESoftwareChannel CScriptStreamedMusic::IsOneShot(bool loop)
 
 void CScriptStreamedMusic::Think(float dt, CStateManager& mgr) {
   if (mPreloadPending && mPreload->IsReady()) {
-    SendScriptMsgs(static_cast< EScriptObjectState >(0x41525256), mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(static_cast< EScriptObjectState >(0x41525256), mgr);
     mPreloadPending = false;
   }
 }

@@ -25,6 +25,7 @@ private:
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CPASAnimInfo)
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CPASAnimInfo)
 } // namespace rstl
 
 CHECK_SIZEOF(CPASAnimInfo, 0x28)

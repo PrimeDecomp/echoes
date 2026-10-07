@@ -18,6 +18,8 @@
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 
+class CScriptPlayerTurret;
+
 static const char* const skTurretFrameNames[] = {"FRME_TurretHud4Combat", "FRME_TurretHud2Combat",
                                                  "FRME_TurretHud4Combat"};
 
@@ -64,18 +66,21 @@ void CTurretHud::UpdateEnergy(const CStateManager& mgr) {
     return;
   }
   const CPlayer* player = mgr.GetPlayer(mPlayerIndex);
-  if (player->GetTurretState() != CPlayer::kTS_Active ||
-      player->GetTurretId() == kInvalidUniqueId) {
+  if (player->GetTurretState() != CPlayer::kTS_Active) {
     return;
   }
-  CEntity* turret =
-      TryCast(const_cast< CEntity* >(mgr.GetObjectById(player->GetTurretId())), kET_PlayerTurret);
+  if (player->GetTurretId() == kInvalidUniqueId) {
+    return;
+  }
+  const TUniqueId turretId = player->GetTurretId();
+  CEntity* turret = reinterpret_cast< CEntity* >(
+      TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(turretId))));
   if (turret == nullptr) {
     return;
   }
 
-  const CActor* hull =
-      TCastToConstPtr< CActor >(mgr.GetObjectById(PlayerTurret_GetHullActorId(*turret)));
+  const TUniqueId hullId = PlayerTurret_GetHullActorId(*turret);
+  const CActor* hull = TCastToConstPtr< CActor >(mgr.GetObjectById(hullId));
   if (const CHealthInfo* health = hull->GetHealthInfo()) {
     mHullEnergy->SetMaxEnergy(health->GetInitialHP());
     mHullEnergy->SetCurrEnergy(health->GetHP(), CAuiEnergyBarT01::kSM_Instant);

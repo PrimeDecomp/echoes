@@ -24,7 +24,7 @@ CHintState* CHintManager::GetBestHintState() {
 const CHintState* CHintManager::GetHintState(TUniqueId hint) const {
   for (rstl::vector< SHint >::const_iterator it = mHints.begin(); it != mHints.end(); ++it) {
     if (it->mState.GetHintId() == hint) {
-      return &it->mState;
+      return &(*it).mState;
     }
   }
   return nullptr;
@@ -57,7 +57,7 @@ bool CHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool areaChange
 
 void CHintManager::ClearHint(CStateManager& mgr, bool areaChanged) { ClearCurrentHint(1000); }
 
-bool CHintManager::ProcessRemovedHints(CStateManager& mgr) {
+uchar CHintManager::ProcessRemovedHints(CStateManager& mgr) {
   bool removedCurrent = false;
   if (!mRemovedHints.empty()) {
     for (rstl::vector< THintSender >::iterator request = mRemovedHints.begin();
@@ -110,9 +110,10 @@ bool CHintManager::ProcessAddedHints(CStateManager& mgr) {
 
       bool found = false;
       for (rstl::vector< SHint >::iterator it = mHints.begin(); it != mHints.end(); ++it) {
-        if (it->mState.GetHintId() == hint) {
-          it->mState.AddSender(request->second);
-          it->mState.SetForceRemoval(false);
+        CHintState& state = it->mState;
+        if (state.GetHintId() == hint) {
+          state.AddSender(request->second);
+          state.SetForceRemoval(false);
           found = true;
           break;
         }
@@ -169,7 +170,7 @@ void CHintManager::Update(float dt, CStateManager& mgr) {
   }
 
   const bool added = ProcessAddedHints(mgr);
-  const bool removed = ProcessRemovedHints(mgr);
+  const uchar removed = ProcessRemovedHints(mgr);
   bool areaChanged = false;
   const TAreaId area = mgr.GetPlayer(mPlayerIndex)->GetCurrentAreaId();
   if (area != mAreaId) {

@@ -37,11 +37,11 @@ public:
   int GetStride() const { return mStride; }
 
   CQuaternion& Rotation(int index) {
-    return *reinterpret_cast< CQuaternion* >(mRotations + index * mStride);
+    return *reinterpret_cast< CQuaternion* >(mRotations + mStride * index);
   }
 
   const CQuaternion& Rotation(int index) const {
-    return *reinterpret_cast< const CQuaternion* >(mRotations + index * mStride);
+    return *reinterpret_cast< const CQuaternion* >(mRotations + mStride * index);
   }
 
   CVector3f& Translation(int index) {

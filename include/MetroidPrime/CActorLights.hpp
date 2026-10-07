@@ -39,8 +39,8 @@ public:
   uint GetActiveAreaLightCount() const { return mAreaLights.size(); }
   const CLight& GetLight(uint idx) const;
 
-  bool GetNeedsRelight() const { return mDirty == TRUE; }
-  bool HasShadowLight() const { return mShadowLightArrIdx != -1; }
+  bool GetNeedsRelight() const { return mDirty; }
+  bool HasShadowLight() const { return mShadowLightArrIdx != kInvalidShadowLightIndex; }
   int GetShadowLightIndex() const { return mShadowLightIdx; }
   int GetShadowLightArrayIndex() const { return mShadowLightArrIdx; }
   const CColor& GetAmbientColor() const { return mAmbientColor; }
@@ -63,9 +63,10 @@ public:
   void SetShadowDynamicRangeThreshold(float t) { mShadowDynamicRangeThreshold = t; }
   void SetWorldLightingLevel(float level) { mWorldLightingLevel = level; }
   // Guessed name; native registration reserves the final available slot.
-  void AddExplicitLightId(TUniqueId id) {
-    if (mExplicitLightIds.size() + 1 < mExplicitLightIds.capacity()) {
-      mExplicitLightIds.push_back(id);
+  void AddExplicitLightId(const TUniqueId& id) {
+    rstl::reserved_vector< TUniqueId, 4 >& ids = mExplicitLightIds;
+    if (ids.size() + 1 < ids.capacity()) {
+      ids.push_back(id);
     }
   }
   void SetNeedsRelight(bool v) { mDirty = v; }
@@ -116,7 +117,7 @@ private:
   // Guessed name: rejects a light entity when it is disabled for the selected light layer.
   bool IsLightExcluded(const CStateManager& mgr, TUniqueId id) const;
 
-  static const int kInvalidShadowLightIndex;
+  static const uint kInvalidShadowLightIndex;
   static int sFrameSchedulerCount;
 };
 CHECK_SIZEOF(CActorLights, 0x2e4)

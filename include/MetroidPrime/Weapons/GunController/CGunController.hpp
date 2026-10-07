@@ -27,7 +27,7 @@ public:
   ~CGunController() {}
 
   void Reset();
-  bool Update(float dt, CStateManager& mgr);
+  int Update(float dt, CStateManager& mgr);
   void EnterIdle(CStateManager& mgr);
   void EnterFreeLook(CStateManager& mgr, int gunId, int setId);
   void EnterStruck(CStateManager& mgr, float angle, bool bigStrike, bool notInFreeLook);

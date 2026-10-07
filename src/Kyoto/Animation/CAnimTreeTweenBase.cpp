@@ -42,11 +42,14 @@ bool CAnimTreeTweenBase::VHasOffset(const CSegId& seg) const {
 }
 
 CVector3f CAnimTreeTweenBase::VGetOffset(const CSegId& seg) const {
-  const float weight = GetBlendingWeight();
-  if (weight >= 1.f) {
+  float blend_weight = GetBlendingWeight();
+  if (blend_weight >= 1.0) {
     return mB->VGetOffset(seg);
+  } else {
+    CVector3f start_offset = mA->VGetOffset(seg);
+    CVector3f end_offset = mB->VGetOffset(seg);
+    return start_offset.Lerp(start_offset, end_offset, blend_weight);
   }
-  return CVector3f::Lerp(mA->VGetOffset(seg), mB->VGetOffset(seg), weight);
 }
 
 CQuaternion CAnimTreeTweenBase::VGetRotation(const CSegId& seg) const {

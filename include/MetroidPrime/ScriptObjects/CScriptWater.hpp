@@ -25,9 +25,9 @@ public:
                float unknown2, float unknown3, const CFluidUVMotion& uvMotion,
                const CColor& splashColor, const CColor& insideFogColor, CAssetId splashParticle1,
                CAssetId splashParticle2, CAssetId splashParticle3, CAssetId visorRunoffParticle,
-               CAssetId unmorphVisorRunoffParticle, TSfxId visorRunoffSfx,
-               TSfxId unmorphVisorRunoffSfx, TSfxId splashSfx1, TSfxId splashSfx2,
-               TSfxId splashSfx3, const CColor& fogColor, float fogBias, float fogMagnitude,
+               CAssetId unmorphVisorRunoffParticle, int visorRunoffSfx,
+               int unmorphVisorRunoffSfx, int splashSfx1, int splashSfx2,
+               int splashSfx3, const CColor& fogColor, float fogBias, float fogMagnitude,
                float fogSpeed, float viscosity, bool displaySurface, float unknownScale,
                const CVector2f& uvScale, const CVector2f& uvOffset, const CVector2f& surfaceScale,
                bool useDynamicLights, float unknown4, float unknown5, float unknown6,
@@ -53,7 +53,7 @@ public:
 
   // CScriptTrigger
   void InhabitantAdded(CActor& actor, CStateManager& mgr) override;
-  void InhabitantIdle(CActor& actor, CStateManager& mgr) override;
+  void InhabitantIdle(CActor& actor, CStateManager& mgr, float dt) override;
   void InhabitantExited(CActor& actor, CStateManager& mgr) override;
 
   bool CanRippleAtPoint(const CVector3f& point) const;
@@ -61,13 +61,14 @@ public:
   void SetupGridClipping(CStateManager& mgr, int computeVerts);
   void SetMorphing(bool morphing);
   float GetSplashEffectScale(float scale) const;
-  TSfxId GetSplashSound(float scale) const;
+  int GetSplashSound(float scale) const;
   const rstl::optional_object< TLockedToken< CGenDescription > >&
   GetSplashEffect(float scale) const;
   int GetSplashIndex(float scale) const;
   const CColor& GetSplashColor() const { return mSplashColor; }
   const CFluidPlaneCPU& GetFluidPlane() const { return *mFluidPlane; }
   float GetMorphFactor() const { return mMorphFactor; }
+  bool IsMorphing() const { return mMorphing; } // Guessed name
   const CColor& GetUnderwaterFogColor() const { return mInsideFogColor; }
   float GetFogNoGravSuitDist() const { return x310_; }
   float GetFogNoGravSuitFactor() const { return x314_; }
@@ -137,7 +138,7 @@ private:
   int mPatchDimX;
   int mPatchDimY;
   rstl::single_ptr< char > mTileIntersects;
-  rstl::single_ptr< bool > mVertIntersects;
+  rstl::single_ptr< char > mVertIntersects;
   rstl::single_ptr< char > mPatchIntersects;
   int mComputedGridCellCount;
   float x310_;

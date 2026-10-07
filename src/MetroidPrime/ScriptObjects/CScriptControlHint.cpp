@@ -30,6 +30,7 @@ CScriptControlHint::CScriptControlHint(TUniqueId uid, const rstl::string& name,
     mCommandEnabled[CControlMapper::kC_AutoFireBeam] = false;
     mCommandEnabled[CControlMapper::kC_ChargeBeam] = false;
     mCommandEnabled[CControlMapper::kC_ChargeBeam2] = false;
+    mCommandEnabled[CControlMapper::kC_ChargeBeam2] = false;
   }
   if (mDisableFlags & kDF_Movement) {
     mCommandEnabled[CControlMapper::kC_Backward] = false;
@@ -119,6 +120,9 @@ void CScriptControlHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
       player->GetControlHintManager()->AddHint(GetUniqueId(), sender, mgr);
     }
     break;
+  case kSM_AreaLoaded:
+  case kSM_Delete:
+    break;
   default:
     break;
   }
@@ -128,7 +132,7 @@ void CScriptControlHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
 // Guessed helper name, based on the loader's nonzero-command conversion.
 static void AppendCommand(CControlMapper::ECommands command, int state,
                           CScriptControlHint::TCommandStates& commands) {
-  if (command != CControlMapper::kC_None) {
+  if (static_cast< uint >(command) != CControlMapper::kC_None) {
     commands.push_back(rstl::pair< CControlMapper::ECommands, int >(command, state));
   }
 }

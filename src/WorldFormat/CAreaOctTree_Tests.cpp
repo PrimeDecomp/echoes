@@ -18,41 +18,45 @@ CHECK_SIZEOF(SSubdivision, 0x10)
 static bool _close_enough(float a, float b, float epsilon) { return CMath::AbsF(a - b) <= epsilon; }
 
 static bool BoxLineTest(const CAABox& box, const CLine& line, float& lowT, float& highT) {
+
   const CVector3f& min = box.GetMinPoint();
   const CVector3f& max = box.GetMaxPoint();
-  const CVector3f& origin = line.GetRefPoint();
-  const CUnitVector3f& direction = line.GetNormal();
+  CVector3f lineRefPoint = line.GetRefPoint();
+  CUnitVector3f lineNormal = line.GetNormal();
   lowT = -FLT_MAX;
   highT = FLT_MAX;
 
-  for (int i = 0; i < 3; ++i) {
-    if (_close_enough(direction[i], 0.f, 0.0001f)) {
-      if (origin[i] < min[i] || origin[i] > max[i]) {
+  for (int i = 0; i < 3; i++) {
+    if (_close_enough(lineNormal[i], 0.f, 0.0001f)) {
+      if (lineRefPoint[i] < min[i] || lineRefPoint[i] > max[i]) {
         return false;
       }
     } else {
-      const float reciprocal = 1.f / direction[i];
-      if (direction[i] < 0.f) {
-        const float nearDistance = max[i] - origin[i];
-        const float farDistance = min[i] - origin[i];
-        if (nearDistance < lowT * direction[i]) {
-          lowT = nearDistance * reciprocal;
+
+      if (lineNormal[i] < 0.f) {
+        const float tmpN = (1.f / lineNormal[i]);
+        const float tmpH = max[i] - lineRefPoint[i];
+        const float tmpL = min[i] - lineRefPoint[i];
+        if (tmpH < lowT * lineNormal[i]) {
+          lowT = tmpH * tmpN;
         }
-        if (farDistance > highT * direction[i]) {
-          highT = farDistance * reciprocal;
+        if (tmpL > highT * lineNormal[i]) {
+          highT = tmpL * tmpN;
         }
       } else {
-        const float nearDistance = min[i] - origin[i];
-        const float farDistance = max[i] - origin[i];
-        if (nearDistance > lowT * direction[i]) {
-          lowT = nearDistance * reciprocal;
+        const float tmpN = (1.f / lineNormal[i]);
+        const float tmpL = min[i] - lineRefPoint[i];
+        const float tmpH = max[i] - lineRefPoint[i];
+        if (tmpL > lowT * lineNormal[i]) {
+          lowT = tmpL * tmpN;
         }
-        if (farDistance < highT * direction[i]) {
-          highT = farDistance * reciprocal;
+        if (tmpH < highT * lineNormal[i]) {
+          highT = tmpH * tmpN;
         }
       }
     }
   }
+
   return lowT <= highT;
 }
 

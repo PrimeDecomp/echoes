@@ -13,7 +13,7 @@ CScriptSurfaceCamera::CScriptSurfaceCamera(
     uint flags, CCameraSurface* surface, ESurfaceType surfaceType, const CVector3f& playerOffset,
     CMotionSpline::ESplineType targetType, const CMayaSpline& targetControlSpline, bool targetLoops,
     CMotionSpline::ESplineType playerType, bool playerLoops, const CMayaSpline& fovSpline)
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_NoStepLogic),
+: CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
          CActorParameters::None(), kInvalidUniqueId)
 , mFlags(flags)
 , mSurfaceType(surfaceType)
@@ -34,22 +34,29 @@ void CScriptSurfaceCamera::Think(float dt, CStateManager& mgr) {
 void CScriptSurfaceCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
-  if (GetActive() && message == kSM_AreaLoaded) {
-    mTargetId = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
-    if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(mTargetId))) {
+  if (GetActive()) {
+    switch (message) {
+    case kSM_AreaLoaded: {
+      mTargetId = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
+      if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(mTargetId))) {
+        rstl::vector< CVector3f > positions;
+        rstl::vector< CQuaternion > orientations;
+        ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraTarget, kSM_Attach, positions,
+                                             orientations, mgr);
+        mTargetSpline.Initialise(positions);
+      }
       rstl::vector< CVector3f > positions;
       rstl::vector< CQuaternion > orientations;
-      ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraTarget, kSM_Attach, positions,
-                                           orientations, mgr);
-      mTargetSpline.Initialise(positions);
+      const TUniqueId player = FindConnectedObject(mgr, kSS_CameraPlayer, kSM_Attach);
+      if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(player))) {
+        ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraPlayer, kSM_Attach, positions,
+                                             orientations, mgr);
+        mPlayerSpline.Initialise(positions);
+      }
+      break;
     }
-    rstl::vector< CVector3f > positions;
-    rstl::vector< CQuaternion > orientations;
-    const TUniqueId player = FindConnectedObject(mgr, kSS_CameraPlayer, kSM_Attach);
-    if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(player))) {
-      ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraPlayer, kSM_Attach, positions,
-                                           orientations, mgr);
-      mPlayerSpline.Initialise(positions);
+    default:
+      break;
     }
   }
 }

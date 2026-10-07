@@ -188,8 +188,9 @@ void CHudRadarInterface::DrawRadarPaint(const CVector3f& position, float radius,
   const float zDelta = CMath::AbsF(position.GetZ() - parms.mPlayerPos.GetZ());
   const float distance = delta.Magnitude();
   if (distance <= parms.mXyRadius && zDelta <= parms.mZRadius) {
-    if (zDelta > parms.mZCloseRadius) {
-      alpha *= 1.f - (zDelta - parms.mZCloseRadius) / (parms.mZRadius - parms.mZCloseRadius);
+    const float zClose = parms.mZCloseRadius;
+    if (zDelta > zClose) {
+      alpha *= 1.f - (zDelta - zClose) / (parms.mZRadius - zClose);
     }
     const CVector2f xyPosition(position.GetX(), position.GetY());
     const CVector2f scaled = (xyPosition - playerPos) * parms.mScopeScalar;
@@ -208,8 +209,10 @@ void CHudRadarInterface::DrawRadarPaint(const CVector3f& position, float radius,
     const CVector3f forward =
         parms.mPreTranslate * CVector3f(direction.GetX(), 0.f, direction.GetY());
     const CVector3f up(0.f, 1.f, 0.f);
-    const CTransform4f edgeTransform =
-        CTransform4f::FromColumns(CVector3f::Cross(up, forward), up, forward, edgePosition);
+    const CVector3f right = CVector3f::Cross(up, forward);
+    const CTransform4f edgeTransform(right.GetX(), up.GetX(), forward.GetX(), edgePosition.GetX(),
+                                     right.GetY(), up.GetY(), forward.GetY(), edgePosition.GetY(),
+                                     right.GetZ(), up.GetZ(), forward.GetZ(), edgePosition.GetZ());
 
     texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
     gpRender->SetModelMatrix(parms.mPostTranslate * edgeTransform);
@@ -244,9 +247,8 @@ void CHudRadarInterface::DrawEchoPulse(const CPlayer& player,
   const float scopeRadius =
       player.GetEchoPulsePhase() * gpTweakGui->GetEchoPulseRadiusScale() / parms.mXyRadius;
   const float clampedRadius = rstl::min_val(1.3f, scopeRadius);
-  const float alpha =
-      parms.mAlpha * (1.f - rstl::min_val(1.f, rstl::max_val(0.f, scopeRadius) / 1.2f));
-  CGraphics::StreamColor(gpTweakGuiColors->GetRadarEchoPulseColor().WithAlphaOf(alpha));
+  CGraphics::StreamColor(gpTweakGuiColors->GetRadarEchoPulseColor().WithAlphaOf(
+      parms.mAlpha * (1.f - rstl::min_val(1.f, rstl::max_val(0.f, scopeRadius) / 1.2f))));
 
   const float radius = 1.6f * clampedRadius;
   CGraphics::StreamBegin(kP_TriangleStrip);

@@ -17,10 +17,9 @@ public:
   virtual EType GetType() const = 0;
 
 protected:
-  CState2() : mName(rstl::string_l("")) {}
-  rstl::string mName; // Guessed name.
+  CState2() {}
 };
-CHECK_SIZEOF(CState2, 0x14)
+CHECK_SIZEOF(CState2, 0x4)
 
 // Guessed name.
 struct SStateMachine2Transition {
@@ -51,6 +50,7 @@ public:
              const rstl::vector< SStateMachine2Transition >& transitions); // Guessed name.
 
 private:
+  rstl::string mName;                                    // Guessed name.
   rstl::vector< SStateMachine2Transition > mTransitions; // Guessed name.
 };
 CHECK_SIZEOF(CState2State, 0x24)
@@ -69,6 +69,7 @@ public:
              const rstl::vector< SStateMachine2Transition >& transitions); // Guessed name.
 
 private:
+  rstl::string mName;                                    // Guessed name.
   rstl::vector< SStateMachine2Transition > mTransitions; // Guessed name.
 };
 CHECK_SIZEOF(CState2Code, 0x24)
@@ -87,6 +88,7 @@ public:
              const rstl::vector< SStateMachine2Transition >& transitions); // Guessed name.
 
 private:
+  rstl::string mName;                                    // Guessed name.
   float mArgument;                                       // Guessed name.
   rstl::vector< SStateMachine2Transition > mTransitions; // Guessed name.
   bool mNegate : 1;                                      // Guessed name.
@@ -108,6 +110,7 @@ public:
   const CGenericFSM2* GetMachine() const; // Guessed name.
 
 private:
+  rstl::string mName;                                    // Guessed name.
   rstl::vector< SStateMachine2Transition > mTransitions; // Guessed name.
   rstl::optional_object< CToken > mMachine;              // Guessed name.
 };

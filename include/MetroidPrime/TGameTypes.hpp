@@ -16,6 +16,9 @@ extern const TAreaId kInvalidAreaId;
 extern const TEditorId kInvalidEditorId;
 extern const TEditorId kUnkId;
 extern const TUniqueId kInvalidUniqueId;
+extern const uint kInvalidPlayerIndex;
+extern const uint kUnkPlayerIndexZero;
+extern const float kDefaultGravityAccel;
 
 struct TAreaId {
   int value;
@@ -38,6 +41,7 @@ struct TEditorId {
   uint Value() const { return value & 0x3FFFFFF; }
   uint Id() const { return value & 0xffff; }
   int AreaNum() const { return (value >> 16) & 0x3ff; }
+  int LayerNum() const { return value >> 26; } // Guessed name
 
   void PutTo(COutputStream&) const;
 

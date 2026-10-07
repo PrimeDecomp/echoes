@@ -10,7 +10,8 @@ CFactoryFnReturn FProjectileWeaponDataFactory(const SObjectTag& tag, CInputStrea
                                               const CVParamTransfer& transfer) {
   rstl::rc_ptr< IVParamObj > obj = transfer.GetObj();
   CSimplePool* pool = static_cast< TObjOwnerParam< CSimplePool* >* >(obj.GetPtr())->GetData();
-  return CProjectileWeaponDataFactory::GetGeneratorDesc(in, pool);
+  CWeaponDescription* desc = CProjectileWeaponDataFactory::GetGeneratorDesc(in, pool);
+  return desc;
 }
 
 CWeaponDescription* CProjectileWeaponDataFactory::GetGeneratorDesc(CInputStream& in,
@@ -67,6 +68,9 @@ bool CProjectileWeaponDataFactory::CreateWPSM(CWeaponDescription* desc, CInputSt
       }
       break;
     }
+    case 'DP1C':
+      desc->mDP1C = CParticleDataFactory::GetBool(in);
+      break;
     case 'AP11':
       desc->mAP11 = CParticleDataFactory::GetBool(in);
       break;
@@ -81,6 +85,9 @@ bool CProjectileWeaponDataFactory::CreateWPSM(CWeaponDescription* desc, CInputSt
       }
       break;
     }
+    case 'DP2C':
+      desc->mDP2C = CParticleDataFactory::GetBool(in);
+      break;
     case 'AP21':
       desc->mAP21 = CParticleDataFactory::GetBool(in);
       break;
@@ -143,6 +150,63 @@ bool CProjectileWeaponDataFactory::CreateWPSM(CWeaponDescription* desc, CInputSt
     case 'OFST':
       desc->mOFST = CParticleDataFactory::GetVectorElement(in);
       break;
+    case 'RB1A':
+      desc->mRB1A = CParticleDataFactory::GetBool(in);
+      break;
+    case 'B1TX':
+      desc->mB1TX = CParticleDataFactory::GetTextureElement(in, pool);
+      break;
+    case 'B1PO':
+      desc->mB1PO = CParticleDataFactory::GetVectorElement(in);
+      break;
+    case 'B1SE':
+      desc->mB1SE = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'B1RT':
+      desc->mB1RT = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'B1CL':
+      desc->mB1CL = CParticleDataFactory::GetColorElement(in);
+      break;
+    case 'RB2A':
+      desc->mRB2A = CParticleDataFactory::GetBool(in);
+      break;
+    case 'B2TX':
+      desc->mB2TX = CParticleDataFactory::GetTextureElement(in, pool);
+      break;
+    case 'B2PO':
+      desc->mB2PO = CParticleDataFactory::GetVectorElement(in);
+      break;
+    case 'B2SE':
+      desc->mB2SE = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'B2RT':
+      desc->mB2RT = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'B2CL':
+      desc->mB2CL = CParticleDataFactory::GetColorElement(in);
+      break;
+    case 'TTEX':
+      desc->mTTEX = CParticleDataFactory::GetTextureElement(in, pool);
+      break;
+    case 'TLPO':
+      desc->mTLPO = CParticleDataFactory::GetVectorElement(in);
+      break;
+    case 'TSZE':
+      desc->mTSZE = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'TLEN':
+      desc->mTLEN = CParticleDataFactory::GetRealElement(in);
+      break;
+    case 'TSCL':
+      desc->mTSCL = CParticleDataFactory::GetColorElement(in);
+      break;
+    case 'TECL':
+      desc->mTECL = CParticleDataFactory::GetColorElement(in);
+      break;
+    case 'RTLA':
+      desc->mRTLA = CParticleDataFactory::GetBool(in);
+      break;
     case 'HOMG':
       desc->mHOMG = CParticleDataFactory::GetBool(in);
       break;
@@ -187,74 +251,11 @@ bool CProjectileWeaponDataFactory::CreateWPSM(CWeaponDescription* desc, CInputSt
     case 'FC60':
       desc->mFC60 = CParticleDataFactory::GetBool(in);
       break;
-    case 'DP1C':
-      desc->mDP1C = CParticleDataFactory::GetBool(in);
-      break;
-    case 'DP2C':
-      desc->mDP2C = CParticleDataFactory::GetBool(in);
-      break;
-    case 'EELT':
-      desc->mEELT = CParticleDataFactory::GetBool(in);
-      break;
     case 'RWPE':
       desc->mRWPE = CParticleDataFactory::GetBool(in);
       break;
-    case 'B1TX':
-      desc->mB1TX = CParticleDataFactory::GetTextureElement(in, pool);
-      break;
-    case 'B1PO':
-      desc->mB1PO = CParticleDataFactory::GetVectorElement(in);
-      break;
-    case 'B1CL':
-      desc->mB1CL = CParticleDataFactory::GetColorElement(in);
-      break;
-    case 'B1SE':
-      desc->mB1SE = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'B1RT':
-      desc->mB1RT = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'RB1A':
-      desc->mRB1A = CParticleDataFactory::GetBool(in);
-      break;
-    case 'B2TX':
-      desc->mB2TX = CParticleDataFactory::GetTextureElement(in, pool);
-      break;
-    case 'B2PO':
-      desc->mB2PO = CParticleDataFactory::GetVectorElement(in);
-      break;
-    case 'B2CL':
-      desc->mB2CL = CParticleDataFactory::GetColorElement(in);
-      break;
-    case 'B2SE':
-      desc->mB2SE = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'B2RT':
-      desc->mB2RT = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'RB2A':
-      desc->mRB2A = CParticleDataFactory::GetBool(in);
-      break;
-    case 'TTEX':
-      desc->mTTEX = CParticleDataFactory::GetTextureElement(in, pool);
-      break;
-    case 'TLPO':
-      desc->mTLPO = CParticleDataFactory::GetVectorElement(in);
-      break;
-    case 'TSCL':
-      desc->mTSCL = CParticleDataFactory::GetColorElement(in);
-      break;
-    case 'TECL':
-      desc->mTECL = CParticleDataFactory::GetColorElement(in);
-      break;
-    case 'TSZE':
-      desc->mTSZE = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'TLEN':
-      desc->mTLEN = CParticleDataFactory::GetRealElement(in);
-      break;
-    case 'RTLA':
-      desc->mRTLA = CParticleDataFactory::GetBool(in);
+    case 'EELT':
+      desc->mEELT = CParticleDataFactory::GetBool(in);
       break;
     case 'BHBT':
       desc->mBHBT = CParticleDataFactory::GetBool(in);

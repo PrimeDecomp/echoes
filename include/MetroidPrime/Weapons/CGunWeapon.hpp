@@ -205,8 +205,8 @@ protected:
   bool mModelTouchEnabled : 1;       // Guessed name
   bool x271_26 : 1;
 
-  static const char* skMuzzleLocator;
-  static const char* skElbowLocator;
+  static const char* const skMuzzleLocator;
+  static const char* const skElbowLocator;
 
   void AllocResPools(CPlayerState::EBeamId beam);
   void FreeResPools();

@@ -21,6 +21,7 @@ struct SLdrHUDHint {
 };
 
 inline SLdrHUDHint::SLdrHUDHint() : editorProperties(), hudTexture(kInvalidAssetId) {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   unknown_0x6078a651 = 15.0f;
   unknown_0xf00bb6bb = 16.0f;
   iconScale = 1.0f;

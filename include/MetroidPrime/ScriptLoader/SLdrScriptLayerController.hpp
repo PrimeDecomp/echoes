@@ -13,16 +13,11 @@ struct SLdrMasterLayer {
   int layer;
 };
 
-inline SLdrMasterLayer::SLdrMasterLayer() : areaID() {
-  layer = 0;
-}
+inline SLdrMasterLayer::SLdrMasterLayer() : areaID(-1) {}
 
 inline SLdrMasterLayer::~SLdrMasterLayer() {}
 
-inline void LoadTypedefMasterLayer(SLdrMasterLayer& sldrThis, CInputStream& input) {
-  sldrThis.areaID = input.ReadInt32();
-  sldrThis.layer = input.ReadInt32();
-}
+void LoadTypedefMasterLayer(SLdrMasterLayer& sldrThis, CInputStream& input);
 
 struct SLdrScriptLayerController {
   SLdrScriptLayerController();

@@ -22,8 +22,10 @@ CAnimTreeDoubleChild::~CAnimTreeDoubleChild() {}
 uint CAnimTreeDoubleChild::VGetBoolPOIList(const CCharAnimTime& time, CBoolPOINode* listOut,
                                            uint capacity, uint iterator, int additive) const {
   uint count = mA->GetBoolPOIList(time, listOut, capacity, iterator, additive);
-  count += mB->GetBoolPOIList(time, listOut, capacity, iterator + count, additive);
-  count = rstl::min_val(count, capacity);
+  count += mB->GetBoolPOIList(time, listOut, capacity, count + iterator, additive);
+  if (count > capacity) {
+    count = capacity;
+  }
   qsort(listOut, count, sizeof(CBoolPOINode), CPOINode::compare);
   return count;
 }
@@ -31,8 +33,10 @@ uint CAnimTreeDoubleChild::VGetBoolPOIList(const CCharAnimTime& time, CBoolPOINo
 uint CAnimTreeDoubleChild::VGetInt32POIList(const CCharAnimTime& time, CInt32POINode* listOut,
                                             uint capacity, uint iterator, int additive) const {
   uint count = mA->GetInt32POIList(time, listOut, capacity, iterator, additive);
-  count += mB->GetInt32POIList(time, listOut, capacity, iterator + count, additive);
-  count = rstl::min_val(count, capacity);
+  count += mB->GetInt32POIList(time, listOut, capacity, count + iterator, additive);
+  if (count > capacity) {
+    count = capacity;
+  }
   qsort(listOut, count, sizeof(CInt32POINode), CPOINode::compare);
   return count;
 }
@@ -40,8 +44,10 @@ uint CAnimTreeDoubleChild::VGetInt32POIList(const CCharAnimTime& time, CInt32POI
 uint CAnimTreeDoubleChild::VGetParticlePOIList(const CCharAnimTime& time, CParticlePOINode* listOut,
                                                uint capacity, uint iterator, int additive) const {
   uint count = mA->GetParticlePOIList(time, listOut, capacity, iterator, additive);
-  count += mB->GetParticlePOIList(time, listOut, capacity, iterator + count, additive);
-  count = rstl::min_val(count, capacity);
+  count += mB->GetParticlePOIList(time, listOut, capacity, count + iterator, additive);
+  if (count > capacity) {
+    count = capacity;
+  }
   qsort(listOut, count, sizeof(CParticlePOINode), CPOINode::compare);
   return count;
 }
@@ -49,8 +55,10 @@ uint CAnimTreeDoubleChild::VGetParticlePOIList(const CCharAnimTime& time, CParti
 uint CAnimTreeDoubleChild::VGetSoundPOIList(const CCharAnimTime& time, CSoundPOINode* listOut,
                                             uint capacity, uint iterator, int additive) const {
   uint count = mA->GetSoundPOIList(time, listOut, capacity, iterator, additive);
-  count += mB->GetSoundPOIList(time, listOut, capacity, iterator + count, additive);
-  count = rstl::min_val(count, capacity);
+  count += mB->GetSoundPOIList(time, listOut, capacity, count + iterator, additive);
+  if (count > capacity) {
+    count = capacity;
+  }
   qsort(listOut, count, sizeof(CSoundPOINode), CPOINode::compare);
   return count;
 }
@@ -70,13 +78,20 @@ CParticleData::EParentedMode CAnimTreeDoubleChild::VGetParticlePOIState(uint nam
 CAnimTreeEffectiveContribution CAnimTreeDoubleChild::VGetContributionOfHighestInfluence() const {
   CAnimTreeEffectiveContribution a = mA->GetContributionOfHighestInfluence();
   CAnimTreeEffectiveContribution b = mB->GetContributionOfHighestInfluence();
-  a.mContributionWeight *= GetLeftChildWeight();
-  b.mContributionWeight *= GetRightChildWeight();
-  return a.mContributionWeight > b.mContributionWeight ? a : b;
+  const float leftWeight = a.GetContributionWeight() * GetLeftChildWeight();
+  const float rightWeight = b.GetContributionWeight() * GetRightChildWeight();
+  return leftWeight > rightWeight
+             ? CAnimTreeEffectiveContribution(leftWeight, a.GetPrimitiveName(),
+                                              a.GetSteadyStateAnimInfo(), a.GetTimeRemaining(),
+                                              a.GetAnimDatabaseIndex())
+             : CAnimTreeEffectiveContribution(rightWeight, b.GetPrimitiveName(),
+                                              b.GetSteadyStateAnimInfo(), b.GetTimeRemaining(),
+                                              b.GetAnimDatabaseIndex());
 }
 
 uint CAnimTreeDoubleChild::VGetNumChildren() const {
-  return mA->VGetNumChildren() + mB->VGetNumChildren() + 2;
+  const uint rightCount = mB->VGetNumChildren();
+  return mA->VGetNumChildren() + 2 + rightCount;
 }
 
 CAnimTreeDoubleChild::CDoubleChildAdvancementResult::CDoubleChildAdvancementResult(
@@ -152,7 +167,10 @@ rstl::rc_ptr< CAnimTreeNode > CAnimTreeDoubleChild::VGetBestUnblendedChild() con
   }
 
   rstl::rc_ptr< CAnimTreeNode > best = child->GetBestUnblendedChild();
-  return best ? best : child;
+  if (!best) {
+    return child;
+  }
+  return best;
 }
 
 void CAnimTreeDoubleChild::VGetWeightedReaders(

@@ -32,6 +32,7 @@ struct SLdrDebris {
 
 inline SLdrDebris::SLdrDebris() : editorProperties(), impulseVariance(CVector3f::Zero()), fadeOutColor(CColor::Green()), model(kInvalidAssetId), actorInformation(), particle(kInvalidAssetId), particleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
+  editorProperties.unknown_0x5d298a43 = 3;
   impulse = 20.0f;
   impulseVariance = CVector3f(20.0f, 20.0f, 25.0f);
   fadeOutColor = CColor(1.0f, 0.0f, 0.0f, 0.0f);
@@ -40,6 +41,8 @@ inline SLdrDebris::SLdrDebris() : editorProperties(), impulseVariance(CVector3f:
   lifeTime = 1.0f;
   scaleType = 0;
   randomSpin = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   particleSystemScale = CVector3f(1.0f, 1.0f, 1.0f);
   isCollider = true;
   unknown_0x4edb1d0e = false;

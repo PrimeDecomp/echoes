@@ -61,7 +61,6 @@ public:
   CModelData();
   CModelData(const CAnimRes&);
   CModelData(const CStaticRes&);
-  CModelData(const CModelData& other);
   ~CModelData();
 
   CAdvancementDeltas AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid, bool advTree,
@@ -97,6 +96,7 @@ public:
   CAdvancementDeltas AdvanceAnimationIgnoreParticles(float dt, CRandom16& rand, bool advTree);
   int GetNumShaders() const;
   // Guessed name.
+  void SetRenderUnsortedParts(bool enabled) { mRenderUnsortedParts = enabled; }
   void LockTextures();
   void SetupWorldSpacePortalPlane(const CTransform4f& xf, const CPlane& plane) const;
 
@@ -136,7 +136,7 @@ public:
   bool IsAnimating() const;
   float GetAnimationDuration(int anim) const;
   void EnableLooping(bool enable);
-  static CModelData CModelDataNull();
+  static CModelData CModelDataNull() { return CModelData(); }
   static EWhichModel GetRenderingModel(const CStateManager& mgr);
   static EWhichModel GetRenderingModel(const CStateManager& mgr, const CPlayerState& playerState);
 

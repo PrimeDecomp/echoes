@@ -28,7 +28,7 @@ struct CDvdFileARAM {
   , mAramOffset(0)
   , mBufferLen(0)
   , mBufferIndex(0) {}
-  ~CDvdFileARAM();
+  ~CDvdFileARAM() {}
 
   ARQRequest mARQRequest;
   struct SDvdInfo {
@@ -247,8 +247,6 @@ CDvdFile::CDvdFile(const char* filename)
     TryARAMFile();
   }
 }
-
-CDvdFileARAM::~CDvdFileARAM() {}
 
 CDvdFile::~CDvdFile() { CloseFile(); }
 

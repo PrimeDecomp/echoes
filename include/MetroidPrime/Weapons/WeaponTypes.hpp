@@ -45,7 +45,7 @@ public:
 
   CWeaponMode(int type, int flags) : mWeaponType(uint(type)) {}
 
-  EWeaponType GetType() const { return EWeaponType(short(mWeaponType)); }
+  EWeaponType GetType() const { return EWeaponType(mWeaponType); }
   ushort GetRawType() const { return ushort(mWeaponType); }
 
   bool IsCharged() const { return mCharged; }

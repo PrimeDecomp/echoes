@@ -1,53 +1,58 @@
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
 
-#include "Kyoto/Graphics/CColor.hpp"
-#include "MetroidPrime/CActorParameters.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
-#include "MetroidPrime/CEchoEmitter.hpp"
-#include "MetroidPrime/CEntityInfo.hpp"
+// #include "MetroidPrime/CArtifactDoll.hpp"
 #include "MetroidPrime/CExplosion.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CEchoEmitter.hpp"
+#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
+#include "Kyoto/Graphics/CColor.hpp"
+#include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CEntityInfo.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/SEchoParameters.hpp"
 
-#include "MetroidPrime/CCameraManager.hpp"
-#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
-#include "MetroidPrime/HUD/CSamusHud.hpp"
+// #include "MetroidPrime/Cameras/CCameraManager.hpp"
+// #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+// #include "MetroidPrime/Player/CPlayerGun.hpp"
+#include "MetroidPrime/HUD/CSamusHud.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
+// #include "MetroidPrime/HUD/CSamusHud.hpp"
 
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrPickup.hpp"
 
+#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Math/CAbsAngle.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
-#include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 
 #include "rstl/math.hpp"
 #include <float.h>
 
-static TUniqueId skHomingPickupId = kInvalidUniqueId;
 static float skDrawInDistance = 30.f;
 static float skMultiplayerDrawInDistance = 12.f;
+static bool skHomingPickupIdInit;                     // Guessed name.
+static TUniqueId skHomingPickupId = kInvalidUniqueId; // Guessed name.
 
 CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, const CModelData& modelData,
                              const CActorParameters& aParams, const SEchoParameters& echo,
                              const CAABox& aabb, CPlayerState::EItemType itemType, int amount,
                              int capacityIncrease, int itemPercentageIncrease,
-                             CAssetId pickupEffect, bool absoluteValue, bool canHomeByDefault,
-                             bool autoSpin, bool blinkOut, float lifeTime, float respawnTime,
-                             float fadeTime, float activateDelay, float pickupEffectLifetime,
-                             float autoHomeRange, float delayUntilHome, float homingSpeed,
-                             const CVector3f& orbitOffset)
+                             CAssetId pickupEffect, bool absoluteValue, bool unknown, bool autoSpin,
+                             bool blinkOut, float lifeTime, float respawnTime, float fadeTime,
+                             float activateDelay, float pickupEffectLifetime, float autoHomeRange,
+                             float delayUntilHome, float homingSpeed, const CVector3f& orbitOffset)
 : CActor(uid, name, info, 0, xf, modelData, CMaterialList(), aParams, kInvalidUniqueId)
 , mItemType(itemType)
 , mAmount(amount)
@@ -69,7 +74,7 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
 , mFramesSinceLastSeen(0)
 , mHomingPlayerIndex(0)
 , mOrbitOffset(orbitOffset)
-, mCanHomeByDefault(canHomeByDefault)
+, mCanHomeByDefault(unknown)
 , mInTractor(false)
 , mEnableTractorTest(false)
 , mAbsoluteValue(absoluteValue)
@@ -78,9 +83,8 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
 , mRenderedThisFrame(true)
 , mSuppressBobbing(false)
 , mBlinkOut(blinkOut) {
-  static bool homingInitialized = false;
-  if (!homingInitialized) {
-    homingInitialized = true;
+  if (!skHomingPickupIdInit) {
+    skHomingPickupIdInit = true;
     skHomingPickupId = kInvalidUniqueId;
   }
 
@@ -94,7 +98,8 @@ CScriptPickup::CScriptPickup(TUniqueId uid, const rstl::string& name, const CEnt
   }
 
   if (mFadeTime) {
-    SetModelFlags(CModelFlags::AlphaBlended(0.f).DepthCompareUpdate(true, false));
+    CModelFlags flags = CModelFlags::AlphaBlended(0.f);
+    SetModelFlags(flags.DepthCompareUpdate(true, false));
   }
 
   AllocateEchoEmitter(true, CAABox(GetTranslation(), GetTranslation()), echo);
@@ -319,11 +324,15 @@ void CScriptPickup::Think(float dt, CStateManager& mgr) {
 }
 
 void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
-  if (!GetActive() || !IsVisible()) {
+  if (!GetActive()) {
+    return;
+  }
+  if (!IsVisible()) {
     return;
   }
   if (CPlayer* player = TCastToPtr< CPlayer >(act)) {
-    int playerIndex = mgr.MaskUIdNumPlayers(player->GetUniqueId());
+    const TUniqueId playerId = player->GetUniqueId();
+    int playerIndex = mgr.MaskUIdNumPlayers(playerId);
     CPlayerState* playerState = mgr.PlayerState(playerIndex);
     if (!playerState->IsPlayerAlive())
       return;
@@ -333,9 +342,9 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
     if (mPickupParticleDesc) {
       mgr.AddObject(rs_new CExplosion(
           TLockedToken< CGenDescription >(*mPickupParticleDesc), mgr.AllocateUniqueId(),
-          CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true, kInvalidEditorId),
-          rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0, CVector3f(1.f, 1.f, 1.f),
-          CColor::White(), -1));
+          CEntityInfo(GetCurrentAreaId(), CEntity::NullConnectionList, true),
+          rstl::string_l("Explosion - Pickup Effect"), GetTransform(), 0,
+          CVector3f(1.f, 1.f, 1.f), CColor::White(), -1));
     }
 
     int previousAmount = playerState->GetItemAmount(itemType);
@@ -349,7 +358,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       playerState->SetItemAmount(itemType, mAmount);
     }
     playerState->SetTimeLeft(itemType, mPickupEffectLifetime);
-    SendScriptMsgs(kSS_Arrived, mgr, player->GetUniqueId(), kSM_None);
+    SendScriptMsgs(kSS_Arrived, mgr, playerId, kSM_None);
     if (mRespawnTime == 0.0f) {
       mSuppressDeathScriptMsgs = true;
       mgr.DeleteObjectRequest(GetUniqueId());
@@ -360,7 +369,7 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       mFadeTime = 0.25f;
     }
 
-    if (previousAmount < playerState->GetItemAmount(itemType)) {
+    if (playerState->GetItemAmount(itemType) > previousAmount) {
       ShowAllKeysCollectedAlert(mgr, playerState, itemType);
     }
 
@@ -368,40 +377,45 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
       int total = playerState->GetTotalPickupCount();
       int colRate = playerState->CalculateItemCollectionRate();
       if (colRate == total) {
-        CAssetId id = gpResourceFactory->GetResourceIdByName("STRG_AllPickupsFound_2")->id;
-
+        CAssetId id =
+            gpResourceFactory
+                ->GetResourceIdByName("STRG_AllPickupsFound_2")
+                ->id;
+              
         mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
-        gpGameState->SystemOptions().FindEnvironmentVariable("AllPickupsFound")->Set(1);
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AllPickupsFound")->Set(1);
       }
     }
 
     if (!mgr.IsMultiplayer() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
       CPersistentOptions& opts = gpGameState->SystemOptions();
-      if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
-        opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
-        CSamusHud::DisplayHudMemo(rstl::wstring_l(gpStringTable->GetString("FirstPowerBombPickup")),
-                                  CHUDMemoParms(5.f, true, false, false, 1 << playerIndex, true));
+      if (opts.EnvVars().FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
+        opts.EnvVars().FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
+        CSamusHud::DisplayHudMemo(
+          rstl::wstring_l(gpStringTable->GetString("FirstPowerBombPickup")),
+          CHUDMemoParms(5.f, true, false, false, 1 << playerIndex, true)
+        );
       }
     }
     switch (itemType) {
-    case CPlayerState::kIT_SwitchVisorCombat:
-      playerState->StartTransitionToVisor(CPlayerState::kPV_Combat);
-      break;
-    case CPlayerState::kIT_SwitchVisorScan:
-      playerState->StartTransitionToVisor(CPlayerState::kPV_Scan);
-      break;
-    case CPlayerState::kIT_SwitchVisorDark:
-      playerState->StartTransitionToVisor(CPlayerState::kPV_Dark);
-      break;
-    case CPlayerState::kIT_SwitchVisorEcho:
-      playerState->StartTransitionToVisor(CPlayerState::kPV_Echo);
-      break;
+      case CPlayerState::kIT_SwitchVisorCombat:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Combat);
+        break;
+      case CPlayerState::kIT_SwitchVisorScan:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Scan);
+        break;
+      case CPlayerState::kIT_SwitchVisorDark:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Dark);
+        break;
+      case CPlayerState::kIT_SwitchVisorEcho:
+        playerState->StartTransitionToVisor(CPlayerState::kPV_Echo);
+        break;
     }
   }
 }
 
 rstl::optional_object< CAABox > CScriptPickup::GetTouchBounds() const {
-  const CVector3f& off = GetTranslation();
+  const CVector3f off = GetTranslation();
   return CAABox(mTouchBounds.GetMinPoint() + off, mTouchBounds.GetMaxPoint() + off);
 }
 
@@ -411,15 +425,17 @@ void CScriptPickup::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mTransformZ = GetTranslation().GetZ();
     break;
   case kSM_Create:
-    if (mgr.ScriptObjectLoaderHelper().IsGeneratingObject()) {
+    if (mgr.GetScriptObjectLoaderHelper().IsGeneratingObject()) {
       mSuppressBobbing = true;
     }
     break;
   case kSM_Delete:
     if (!mSuppressDeathScriptMsgs) {
-      SendScriptMsgs(kSS_Dead, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Dead, mgr, kSM_None);
     }
     skHomingPickupId = kInvalidUniqueId;
+    break;
+  default:
     break;
   }
   CActor::AcceptScriptMsg(mgr, msg);
@@ -440,8 +456,8 @@ void CScriptPickup::SetWasGenerated(CStateManager& mgr) {
   mSuppressBobbing = true;
 }
 
-CVector3f CScriptPickup::GetOrbitPosition(const CStateManager& mgr) const {
-  return GetTransform().Rotate(mOrbitOffset) + GetTranslation();
+CVector3f CScriptPickup::GetOrbitPosition(const CStateManager&) const {
+  return GetTranslation() + GetTransform().Rotate(mOrbitOffset);
 }
 
 void CScriptPickup::ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* playerState,
@@ -457,49 +473,51 @@ void CScriptPickup::ShowAllKeysCollectedAlert(CStateManager& mgr, CPlayerState* 
   case CPlayerState::kIT_TempleKey7:
   case CPlayerState::kIT_TempleKey8:
   case CPlayerState::kIT_TempleKey9:
-    if (playerState->GetItemAmount(CPlayerState::kIT_TempleKey1) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey2) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey3) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey4) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey5) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey6) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey7) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey8) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TempleKey9) > 0) {
+    if (playerState->GetItemAmount(CPlayerState::kIT_TempleKey1, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey2, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey3, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey4, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey5, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey6, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey7, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey8, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TempleKey9, true) > 0) {
       message = "STRG_AllTempleKeysFound";
     }
     break;
   case CPlayerState::kIT_AgonKey1:
   case CPlayerState::kIT_AgonKey2:
   case CPlayerState::kIT_AgonKey3:
-    if (playerState->GetItemAmount(CPlayerState::kIT_AgonKey1) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_AgonKey2) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_AgonKey3) > 0) {
+    if (playerState->GetItemAmount(CPlayerState::kIT_AgonKey1, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_AgonKey2, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_AgonKey3, true) > 0) {
       message = "STRG_AllSandKeysFound";
     }
     break;
   case CPlayerState::kIT_TorvusKey1:
   case CPlayerState::kIT_TorvusKey2:
   case CPlayerState::kIT_TorvusKey3:
-    if (playerState->GetItemAmount(CPlayerState::kIT_TorvusKey1) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TorvusKey2) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_TorvusKey3) > 0) {
+    if (playerState->GetItemAmount(CPlayerState::kIT_TorvusKey1, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TorvusKey2, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_TorvusKey3, true) > 0) {
       message = "STRG_AllSwampKeysFound";
     }
     break;
   case CPlayerState::kIT_HiveKey1:
   case CPlayerState::kIT_HiveKey2:
   case CPlayerState::kIT_HiveKey3:
-    if (playerState->GetItemAmount(CPlayerState::kIT_HiveKey1) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_HiveKey2) > 0 &&
-        playerState->GetItemAmount(CPlayerState::kIT_HiveKey3) > 0) {
+    if (playerState->GetItemAmount(CPlayerState::kIT_HiveKey1, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_HiveKey2, true) > 0 &&
+        playerState->GetItemAmount(CPlayerState::kIT_HiveKey3, true) > 0) {
       message = "STRG_AllCliffsKeysFound";
     }
     break;
+  default:
+    break;
   }
 
-  if (message) {
-    const CAssetId id = gpResourceFactory->GetResourceIdByName(message)->id;
+  if (message != nullptr) {
+    CAssetId id = gpResourceFactory->GetResourceIdByName(message)->id;
     mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
   }
 }
@@ -508,7 +526,7 @@ CAABox LoadCAABox(CStateManager& mgr, const TAreaId& areaId, const CVector3f& co
                   const CVector3f& collisionOffset);
 
 rstl::optional_object< CModelData > LdrToModelData(const CVector3f&, CAssetId asset,
-                                                   const SLdrAnimationSet&, bool);
+                                                  const SLdrAnimationSet&, bool);
 
 CEntity* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPickup sldrThis;
@@ -516,24 +534,27 @@ CEntity* LoadPickup(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
 
   rstl::optional_object< CModelData > modelData(
       LdrToModelData(sldrThis.editorProperties.transform.scale, sldrThis.model,
-                     sldrThis.animationInformation, true));
+                    sldrThis.animationInformation, true));
   if (!modelData) {
     return nullptr;
   }
 
-  CAABox box = LoadCAABox(mgr, info.GetAreaId(), sldrThis.collisionSize, sldrThis.collisionOffset);
+  CAABox box =
+      LoadCAABox(mgr, info.GetAreaId(), sldrThis.collisionSize, sldrThis.collisionOffset);
   if (sldrThis.collisionSize == CVector3f::Zero()) {
-    box = modelData->GetBounds(LdrToTransform4f(sldrThis.editorProperties).GetRotation());
+    box = modelData->GetBounds(CTransform4f(LdrToTransform4f(sldrThis.editorProperties)));
   }
-  return rs_new CScriptPickup(
+  return new CScriptPickup(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
-      *modelData, LdrToActorParameters(sldrThis.actorInformation),
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      LdrToTransform4f(sldrThis.editorProperties), *modelData,
+      LdrToActorParameters(sldrThis.actorInformation),
       LdrToEchoParameters(sldrThis.echoInformation), box,
       CPlayerState::EItemType(sldrThis.itemToGive.value), sldrThis.amount,
       sldrThis.capacityIncrease, sldrThis.itemPercentageIncrease, sldrThis.pickupEffect,
-      sldrThis.absoluteValue, sldrThis.canHomeByDefault, sldrThis.autoSpin, sldrThis.blinkOut,
-      sldrThis.lifetime, sldrThis.respawnTime, sldrThis.fadetime, sldrThis.activationDelay,
-      sldrThis.pickupEffectLifetime, sldrThis.autoHomeRange, sldrThis.delayUntilHome,
-      sldrThis.homingSpeed, CVector3f(sldrThis.orbitOffset));
+      sldrThis.absoluteValue, sldrThis.canHomeByDefault, sldrThis.autoSpin,
+      sldrThis.blinkOut,
+      sldrThis.lifetime, sldrThis.respawnTime, sldrThis.fadetime,
+      sldrThis.activationDelay, sldrThis.pickupEffectLifetime, sldrThis.autoHomeRange,
+      sldrThis.delayUntilHome, sldrThis.homingSpeed, CVector3f(sldrThis.orbitOffset));
 }

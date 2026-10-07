@@ -16,7 +16,7 @@ public:
     kPM_ContinuousSystem,
   };
 
-  CParticleData(int duration = 0, const SObjectTag& tag = SObjectTag(0, 0), CSegId bone = CSegId(0),
+  CParticleData(int duration = 0, const SObjectTag& tag = SObjectTag(0, 0), const CSegId& bone = CSegId(0),
                 float scale = 1.f, EParentedMode mode = kPM_Initial)
   : mDuration(duration), mParticle(tag), mBone(bone), mScale(scale), mParentMode(mode) {}
 

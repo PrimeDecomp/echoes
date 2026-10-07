@@ -18,6 +18,7 @@
 namespace rstl {
 class CWidgetFartherFromCamera {
 public:
+  CWidgetFartherFromCamera() {}
   bool operator()(const CGuiWidget* a, const CGuiWidget* b) const {
     return a->GetWorldPosition().GetY() > b->GetWorldPosition().GetY();
   }
@@ -28,20 +29,19 @@ uint CGuiFrame::ReadVersion(CInputStream& in) { return in.Get< uint >(); }
 
 rstl::vector< CToken > CGuiFrame::LoadAssets(CInputStream& in, CSimplePool* pool, uint version) {
   rstl::vector< CToken > assets;
-  if (version <= 1u) {
+  if (version > 1u) {
+    assets.reserve(in.ReadInt32());
+    for (int i = 0; i < assets.capacity(); ++i) {
+      const FourCC type = in.Get< uint >();
+      const CAssetId id = in.Get< uint >();
+      CToken token = pool->GetObj(SObjectTag(type, id));
+      token.Lock();
+      assets.push_back_unsafe(token);
+    }
+  } else {
     in.ReadInt32();
     in.ReadInt32();
     in.ReadInt32();
-    return assets;
-  }
-
-  assets.reserve(in.ReadInt32());
-  for (int i = 0; i < assets.capacity(); ++i) {
-    const FourCC type = in.Get< uint >();
-    const CAssetId id = in.Get< uint >();
-    CToken token = pool->GetObj(SObjectTag(type, id));
-    token.Lock();
-    assets.push_back(token);
   }
   return assets;
 }
@@ -71,7 +71,7 @@ void CGuiFrame::LoadWidgetsInGame(CInputStream& in, CSimplePool* pool, uint vers
   for (int i = 0; i < count; ++i) {
     CGuiWidget* widget = FGuiWidgetFactoryInGame(in.Get< uint >(), this, in, pool, version);
     if (widget->GetWidgetTypeID() != 'CAMR' && widget->GetWidgetTypeID() != 'LITE') {
-      mWidgets.push_back(widget);
+      mWidgets.push_back_unsafe(widget);
       const CGuiWidget::EWidgetUsageFlags flags = widget->GetWidgetUsageFlags();
       if (flags & CGuiWidget::kWUF_Draw) {
         ++drawCount;
@@ -97,16 +97,16 @@ void CGuiFrame::LoadWidgetsInGame(CInputStream& in, CSimplePool* pool, uint vers
     CGuiWidget* widget = *it;
     const CGuiWidget::EWidgetUsageFlags flags = widget->GetWidgetUsageFlags();
     if (flags & CGuiWidget::kWUF_Draw) {
-      mDrawWidgets.push_back(widget);
+      mDrawWidgets.push_back_unsafe(widget);
     }
     if (flags & CGuiWidget::kWUF_Update) {
-      mUpdateWidgets.push_back(widget);
+      mUpdateWidgets.push_back_unsafe(widget);
     }
     if (flags & CGuiWidget::kWUF_Input) {
-      mInputWidgets.push_back(widget);
+      mInputWidgets.push_back_unsafe(widget);
     }
     if (flags & CGuiWidget::kWUF_PreDraw) {
-      mPreDrawWidgets.push_back(widget);
+      mPreDrawWidgets.push_back_unsafe(widget);
     }
   }
   Initialize();
@@ -114,8 +114,9 @@ void CGuiFrame::LoadWidgetsInGame(CInputStream& in, CSimplePool* pool, uint vers
 
 void CGuiFrame::Initialize() {
   SortDrawOrder();
-  mRootWidget->RecalcWidgetColor(kTM_ChildrenAndSiblings);
-  mRootWidget->DispatchInitialize();
+  CGuiWidget* root = mRootWidget;
+  root->RecalcWidgetColor(kTM_ChildrenAndSiblings);
+  root->DispatchInitialize();
 }
 
 void CGuiFrame::Draw(const CGuiWidgetDrawParms& parms) const {
@@ -180,8 +181,9 @@ void CGuiFrame::ProcessUserInput(const CFinalInput& input) {
   rstl::list< CGuiWidget* > activeWidgets;
   for (rstl::vector< CGuiWidget* >::const_iterator it = mInputWidgets.begin();
        it != mInputWidgets.end(); ++it) {
-    if ((*it)->GetIsActive()) {
-      activeWidgets.push_back(*it);
+    CGuiWidget* widget = *it;
+    if (widget->GetIsActive()) {
+      activeWidgets.push_back(widget);
     }
   }
   for (rstl::list< CGuiWidget* >::iterator it = activeWidgets.begin(); it != activeWidgets.end();
@@ -245,7 +247,7 @@ void CGuiFrame::SortDrawOrder() {
 
 CGuiWidget* CGuiFrame::FindWidget(const rstl::string& name) const {
   const short id = mWidgetIds.FindWidgetID(name);
-  return id != -1 ? FindWidget(id) : nullptr;
+  return id != CGuiWidgetIdDB::kInvalidWidgetId ? FindWidget(id) : nullptr;
 }
 
 CGuiWidget* CGuiFrame::FindWidget(short id) const {
@@ -273,9 +275,9 @@ CGuiFrameLoader::~CGuiFrameLoader() {}
 bool CGuiFrameLoader::IsFinishedLoading() const { return mRequest->IsComplete(); }
 
 CGuiFrame* CGuiFrameLoader::CreateFrame() {
-  if (!mRequest->IsComplete()) {
-    return nullptr;
+  if (mRequest->IsComplete()) {
+    CMemoryInStream in(mBuffer.get(), mBufferLength);
+    return rs_new CGuiFrame(in, mPool);
   }
-  CMemoryInStream in(mBuffer.get(), mBufferLength);
-  return rs_new CGuiFrame(in, mPool);
+  return nullptr;
 }

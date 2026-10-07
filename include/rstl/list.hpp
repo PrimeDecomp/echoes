@@ -265,7 +265,7 @@ list< T, Alloc >::~list() {
     node* it = cur;
     node* next = cur->get_next();
     cur = next;
-    it->get_value()->~T();
+    rstl::destroy(it->get_value());
     mAllocator.deallocate(it);
   }
 }

@@ -11,6 +11,8 @@ public:
   short AddWidget(const rstl::string& name);
   short FindWidgetID(const rstl::string& name) const;
 
+  static const short kInvalidWidgetId;
+
 private:
   rstl::vector< rstl::string > mNames;
   short mUnresolved10;

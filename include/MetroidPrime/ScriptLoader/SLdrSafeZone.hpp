@@ -39,13 +39,8 @@ struct SLdrSafeZoneAttributes {
   CColor unknown_0xe68b1fa8; // 0xe68b1fa8
 };
 
-inline SLdrSafeZoneAttributes::SLdrSafeZoneAttributes() : darkVisorSpotTexture(kInvalidAssetId), shellEnvironmentMap(kInvalidAssetId), shell1Texture(kInvalidAssetId), shell2Texture(kInvalidAssetId), shellColor(CColor::Green()), unknown_0xe68b1fa8(CColor::Green()) {
-  turnOnSound = 0;
+inline SLdrSafeZoneAttributes::SLdrSafeZoneAttributes() : turnOnSound(-1), activeLoopSound(-1), turnOffSound(-1), playerEnterSound(-1), playerExitSound(-1), darkVisorSpotTexture(kInvalidAssetId), shellEnvironmentMap(kInvalidAssetId), shell1Texture(kInvalidAssetId), shell2Texture(kInvalidAssetId), shellColor(CColor::Green()), unknown_0xe68b1fa8(CColor::Green()) {
   unknown_0xd4839a3f = 0.0f;
-  activeLoopSound = 0;
-  turnOffSound = 0;
-  playerEnterSound = 0;
-  playerExitSound = 0;
   darkVisorSpotMaxSize = 50.0f;
   shell1AnimatedHorizRate = -0.039999999f;
   shell1AnimatedVertRate = -0.029999999f;
@@ -55,8 +50,8 @@ inline SLdrSafeZoneAttributes::SLdrSafeZoneAttributes() : darkVisorSpotTexture(k
   shell2AnimatedVertRate = 0.029999999f;
   shell2ScaleHoriz = 3.0f;
   shell2ScaleVert = 1.0f;
-  shellColor = CColor(0.094117999f, 0.49803901f, 0.49803901f, 1.0f);
-  unknown_0xe68b1fa8 = CColor(0.74901998f, 0.74901998f, 0.74901998f, 1.0f);
+  shellColor = CColor(0.094117999f, 0.5f, 0.5f, 1.0f);
+  unknown_0xe68b1fa8 = CColor(0.75f, 0.75f, 0.75f, 1.0f);
 }
 
 inline SLdrSafeZoneAttributes::~SLdrSafeZoneAttributes() {}
@@ -171,9 +166,8 @@ struct SLdrSafeZoneStructA {
 };
 
 inline SLdrSafeZoneStructA::SLdrSafeZoneStructA() : color(CColor::Green()), nearFarPlane(), distanceRate() {
-  enabled = true;
+  enabled = false;
   mode = 0;
-  nearFarPlane.x = 1.0f;
   colorRate = 0.0f;
 }
 
@@ -254,7 +248,8 @@ struct SLdrSafeZone {
   SLdrEchoParameters echoParameters; // 0x4476bed8
 };
 
-inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffect(kInvalidAssetId), normalAttributes(), hurtfulAttributes(), echoAttributes(), normalDamage(), hurtfulDamage(), mobileLightOffset(CVector3f::Zero()), unknown_0xe71b43e1(CColor::Green()), safeZoneStructA(), safeZoneStructA_0xafb855b8(), echoParameters() {
+inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffect(kInvalidAssetId), normalAttributes(), hurtfulAttributes(), echoAttributes(), normalDamage(), hurtfulDamage(), flashSound(-1), mobileLightOffset(CVector3f::Zero()), unknown_0xe71b43e1(CColor::Green()), safeZoneStructA(), safeZoneStructA_0xafb855b8(), echoParameters() {
+  editorProperties.unknown_0x5d298a43 = 3;
   deactivateOnEnter = false;
   deactivateOnExit = false;
   activationTime = 0.15000001f;
@@ -271,6 +266,7 @@ inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffec
   hurtfulAttributes.shell2ScaleHoriz = 10.0f;
   hurtfulAttributes.shell2ScaleVert = 12.0f;
   hurtfulAttributes.shellColor = CColor(1.0f, 0.73725498f, 0.39215699f, 1.0f);
+  hurtfulAttributes.unknown_0xe68b1fa8 = CColor(0.75f, 0.75f, 0.75f, 1.0f);
   echoAttributes.shell1AnimatedHorizRate = 0.039999999f;
   echoAttributes.shell1AnimatedVertRate = 0.0f;
   echoAttributes.shell1ScaleHoriz = 4.0f;
@@ -278,6 +274,7 @@ inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffec
   echoAttributes.shell2ScaleHoriz = 10.0f;
   echoAttributes.shell2ScaleVert = 12.0f;
   echoAttributes.shellColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
+  echoAttributes.unknown_0xe68b1fa8 = CColor(0.75f, 0.75f, 0.75f, 1.0f);
   normalDamage.dI_WeaponType = 20;
   hurtfulDamage.dI_WeaponType = 18;
   insideFadeStart = 3.0f;
@@ -285,24 +282,19 @@ inline SLdrSafeZone::SLdrSafeZone() : editorProperties(), trigger(), impactEffec
   insideFadeMinAlpha = 0.25f;
   flashTime = 1.0f;
   flashBrightness = 0.5f;
-  flashSound = 0;
   safezoneShape = 0;
   mobile = false;
   generateMobileLight = false;
-  unknown_0xe71b43e1 = CColor(0.73725498f, 1.0f, 1.0f, 0.247059f);
+  unknown_0xe71b43e1 = CColor(0.73725498f, 1.0f, 1.0f, 0.25f);
   unknown_0x9f638987 = 0.2f;
-  safeZoneStructA.enabled = false;
   safeZoneStructA.mode = 1;
   safeZoneStructA.color = CColor(0.73725498f, 1.0f, 1.0f, 1.0f);
-  safeZoneStructA.nearFarPlane.x = 0.0f;
   safeZoneStructA.nearFarPlane.y = 750.0f;
   safeZoneStructA.colorRate = 5.0f;
   safeZoneStructA.distanceRate.x = 5000.0f;
   safeZoneStructA.distanceRate.y = 5000.0f;
-  safeZoneStructA_0xafb855b8.enabled = false;
   safeZoneStructA_0xafb855b8.mode = 1;
-  safeZoneStructA_0xafb855b8.color = CColor(0.0f, 0.098039001f, 0.0f, 0.0f);
-  safeZoneStructA_0xafb855b8.nearFarPlane.x = 0.0f;
+  safeZoneStructA_0xafb855b8.color = CColor(0.0f, 0.1f, 0.0f, 0.0f);
   safeZoneStructA_0xafb855b8.nearFarPlane.y = 1000.0f;
   safeZoneStructA_0xafb855b8.colorRate = 5.0f;
   safeZoneStructA_0xafb855b8.distanceRate.x = 5000.0f;

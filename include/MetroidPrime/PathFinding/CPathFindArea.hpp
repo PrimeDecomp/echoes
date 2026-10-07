@@ -18,11 +18,7 @@
 class CPFOpenList {
 public:
   CPFOpenList();
-  void Clear() {
-    mRegion.Data()->SetOpenMore(&mRegion);
-    mRegion.Data()->SetOpenLess(&mRegion);
-    mBitSet.Clear();
-  }
+  void Clear();
   void Push(CPFRegion* region) {
     mBitSet.Add(region->GetIndex());
     CPFRegion* more = mRegion.Data()->GetOpenMore();
@@ -50,12 +46,7 @@ public:
     region->Data()->SetOpenMore(nullptr);
     region->Data()->SetOpenLess(nullptr);
   }
-  bool Test(CPFRegion* region) {
-    if (mBitSet.Test(region->GetIndex())) {
-      return true;
-    }
-    return false;
-  }
+  bool Test(CPFRegion* region);
 
 private:
   CPFBitSet mBitSet;

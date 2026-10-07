@@ -17,10 +17,9 @@ CGunMotion::CGunMotion(CAssetId ancsId, const CVector3f& scale)
 
 CGunMotion::~CGunMotion() {}
 
-bool CGunMotion::PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr, float angle,
+const bool CGunMotion::PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr, float angle,
                              bool bigStrike) {
-  CAnimData& data = *mModelData.AnimationData();
-  const CPASDatabase& pas = data.GetPASDatabase();
+  const CPASDatabase& pas = mModelData.AnimationData()->GetPASDatabase();
 
   bool loop = true;
   int animId = -1;
@@ -60,6 +59,7 @@ bool CGunMotion::PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr
 
   if (animId != -1) {
     mAnimPlaying = true;
+    CAnimData& data = *mModelData.AnimationData();
     data.EnableLooping(loop);
     data.SetAnimation(CAnimPlaybackParms(animId, -1, 1.f, true), false);
   }
@@ -68,8 +68,10 @@ bool CGunMotion::PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr
 
 void CGunMotion::Update(float dt, CStateManager& mgr) {
   mModelData.AdvanceAnimation(dt, mgr, kInvalidAreaId, true);
-  if (mGunController.Update(dt, mgr)) {
+  switch (mGunController.Update(dt, mgr)) {
+  case 1:
     mAnimPlaying = false;
+    break;
   }
 }
 

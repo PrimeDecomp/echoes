@@ -35,7 +35,7 @@ void CEchoEmitter::ResetPlayerState() {
 }
 
 void CEchoEmitter::ResetPlayerState(CStateManager& mgr) {
-  for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     mPlayerEchoTokens[i] = mgr.GetPlayer(i)->GetEchoPulseCounter() - 1;
     mPlayerEchoVisibility[i] = 0.f;
   }
@@ -57,15 +57,16 @@ void CEchoEmitter::Think(float dt, CStateManager& mgr) {
   }
 
   const CVector3f center = mBounds.GetCenterPoint();
-  for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    const CPlayer& player = *mgr.GetPlayer(i);
     float visibility =
         rstl::max_val(0.f, mPlayerEchoVisibility[i] - dt / mParameters.mVisibilityDecayTime);
-    const CPlayer& player = *mgr.GetPlayer(i);
     const uint pulseCounter = player.GetEchoPulseCounter();
     if (pulseCounter != mPlayerEchoTokens[i]) {
-      const CVector3f delta = (center - player.GetTranslation()).DropZ();
+      const float dx = center.GetX() - player.GetTranslation().GetX();
+      const float dy = center.GetY() - player.GetTranslation().GetY();
       const float radius = player.GetEchoPulsePhase() * gpTweakGui->GetEchoPulseRadiusScale();
-      if (delta.MagSquared() <= radius * radius) {
+      if (dx * dx + dy * dy + 0.f <= radius * radius) {
         visibility = 1.f;
         mPlayerEchoTokens[i] = pulseCounter;
       }
@@ -88,18 +89,26 @@ void CEchoEmitter::Render(const CStateManager& mgr) const {
   }
   const SProjection projection =
       ProjectPoints(corners.data(), corners.size(), corners.data(), nullptr);
+  const float depth = projection.mProjectedCenter.GetY();
   float minX = corners[0].GetX();
-  float maxX = minX;
   float minZ = corners[0].GetZ();
+  float maxX = minX;
   float maxZ = minZ;
   for (int i = 1; i < 8; ++i) {
-    minX = rstl::min_val(minX, corners[i].GetX());
-    maxX = rstl::max_val(maxX, corners[i].GetX());
-    minZ = rstl::min_val(minZ, corners[i].GetZ());
-    maxZ = rstl::max_val(maxZ, corners[i].GetZ());
+    if (corners[i].GetX() < minX) {
+      minX = corners[i].GetX();
+    }
+    if (corners[i].GetX() > maxX) {
+      maxX = corners[i].GetX();
+    }
+    if (corners[i].GetZ() < minZ) {
+      minZ = corners[i].GetZ();
+    }
+    if (corners[i].GetZ() > maxZ) {
+      maxZ = corners[i].GetZ();
+    }
   }
 
-  const float depth = projection.mProjectedCenter.GetY();
   rstl::reserved_vector< CVector3f, 4 > contour;
   contour.push_back(CVector3f(minX, depth, minZ));
   contour.push_back(CVector3f(maxX, depth, minZ));
@@ -112,16 +121,19 @@ void CEchoEmitter::DrawContour(const CVector3f* points, int count, int subdivisi
                                const SProjection& projection, const CStateManager& mgr) const {
   if (!mParameters.mOnlyEmitDamage) {
     const float visibility = mPlayerEchoVisibility[mgr.GetCurrentRenderPlayer()->GetPlayerIndex()];
+    const float inverse = 1.f - visibility;
     DrawWaves(points, count, subdivisions, projection, gpTweakGui->GetEchoOutlineColor(),
-              1.f + (1.f - visibility), 1.f - visibility, visibility);
+              1.f + inverse, inverse, visibility);
   }
   if (mDamage > 0.f) {
+    const float inverse = 1.f - mDamage;
     DrawWaves(points, count, subdivisions, projection, gpTweakGui->GetEchoDamageColor(),
-              1.f + (1.f - mDamage), 1.f - mDamage, mDamage);
+              1.f + inverse, inverse, mDamage);
   }
   if (mYellowDamage > 0.f) {
+    const float inverse = 1.f - mYellowDamage;
     DrawWaves(points, count, subdivisions, projection, gpTweakGui->GetEchoYellowDamageColor(),
-              1.f + (1.f - mYellowDamage), 1.f - mYellowDamage, mYellowDamage);
+              1.f + inverse, inverse, mYellowDamage);
   }
 }
 

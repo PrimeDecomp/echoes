@@ -4,76 +4,6 @@
 #include <math.h>
 #include <string.h>
 
-void CPhaser::ProcessSamples(float** inputs, float** outputs, long sampleFrames, bool replacing) {
-  float* input[3] = {inputs[0], inputs[1], inputs[2]};
-  float* output[3] = {outputs[0], outputs[1], outputs[2]};
-  while (--sampleFrames >= 0) {
-    for (int channel = 0; channel < 3; ++channel) {
-      SFilterCoefficient& filter = mCoefficients[channel];
-      filter.mAngularFrequencyRatio = 2.0 * M_PI * mChannelFrequency[channel] / mSampleRate;
-      filter.mCoefficient =
-          (1.0 - filter.mAngularFrequencyRatio) / (1.0 + filter.mAngularFrequencyRatio);
-    }
-    if (mInvert > 0.5) {
-      mFeedbackSign = 1.0;
-      mInvert = 1.f;
-    } else {
-      mFeedbackSign = -1.0;
-      mInvert = 0.f;
-    }
-    // Snapshot all inputs before writing outputs, including aliased buffers.
-    for (int channel = 0; channel < 3; ++channel)
-      mInputs[channel].mRawInput = *input[channel]++;
-    for (int channel = 0; channel < 3; ++channel)
-      mInputs[channel].mFeedbackInput =
-          mFeedbackSign * 0.999999 * mFeedback * (1.2e-7 + mHistory[channel].mOutputs[3]) +
-          mInputs[channel].mRawInput;
-
-    for (int channel = 0; channel < 3; ++channel) {
-      SFilterHistory& history = mHistory[channel];
-      double value = mInputs[channel].mFeedbackInput;
-      for (int stage = 0; stage < 4; ++stage) {
-        history.mOutputs[stage] =
-            mCoefficients[channel].mCoefficient * (value + history.mOutputs[stage]) -
-            history.mInputs[stage];
-        // Native surround stages 0/1 repeat right-channel stores instead of advancing
-        // surround input history. Those right-channel values are already stored.
-        if (channel != 2 || stage >= 2)
-          history.mInputs[stage] = value;
-        value = history.mOutputs[stage];
-      }
-    }
-
-    mLFORate = 0.02 + (replacing ? 5.98 : 3.98) * mFrequency;
-    mLFOPhase += mLFORate * mLFOPhaseStep;
-    while (mLFOPhase >= 2048.0)
-      mLFOPhase -= 2048.0;
-    while (mLFOPhase < 0.0)
-      mLFOPhase += 2048.0;
-    mLFOIndex = static_cast< int >(mLFOPhase);
-    mLFOFraction = mLFOPhase - mLFOIndex;
-    mLeftLFO =
-        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
-    mRightLFO = -mLeftLFO;
-    mSurroundLFO = mLeftLFO;
-
-    for (int channel = 0; channel < 3; ++channel) {
-      const float mixed = static_cast< float >(mInputs[channel].mRawInput * mDry +
-                                               mHistory[channel].mOutputs[3] * mWet);
-      if (replacing)
-        *output[channel]++ = mixed;
-      else
-        *output[channel]++ += mixed;
-    }
-    mLeftLFO = (1.0 + mLeftLFO) * 0.5;
-    mRightLFO = (1.0 + mRightLFO) * 0.5;
-    const float sweep = 100.f + 7800.f * mSweepRange;
-    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * sweep;
-    mChannelFrequency[1] = mBaseFrequency + mRightLFO * sweep;
-    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * sweep;
-  }
-}
-
 CPhaser::CPhaser(AudioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 8, 6)
 , mFrequency(0.2f)
@@ -81,32 +11,36 @@ CPhaser::CPhaser(AudioMasterCallback audioMaster)
 , mInvert(1.f)
 , mWet(0.5f)
 , mDry(0.5f)
-, mSweepRange(0.75f)
-, x1e8_(0.0)
-, x1f0_(0.0)
-, x1f8_(0.0)
-, mBaseFrequency(100.0)
-, mFeedbackSign(1.0)
-, mInitialFeedback(mFeedback)
-, mLFORate(0.0)
-, mLFOPhaseStep(2048.0 / mSampleRate)
-, mLFOPhase(0.0)
-, mFullCircle(8.0 * atan(1.0)) {
+, mSweepRange(0.75f) {
   for (int channel = 0; channel < 3; ++channel) {
     for (int stage = 0; stage < 4; ++stage) {
       mHistory[channel].mOutputs[stage] = 0.0;
+    }
+    for (int stage = 0; stage < 4; ++stage) {
       mHistory[channel].mInputs[stage] = 0.0;
     }
+  }
+  x1e8_ = 0.0;
+  x1f0_ = 0.0;
+  x1f8_ = 0.0;
+  mBaseFrequency = 100.0;
+  for (int channel = 0; channel < 3; ++channel) {
     mChannelFrequency[channel] = mBaseFrequency;
   }
+  mFeedbackSign = 1.0;
+  mInitialFeedback = mFeedback;
+  mLFORate = 0.0;
+  mLFOPhaseStep = 2048.0 / mSampleRate;
+  mLFOPhase = 0.0;
+  mFullCircle = 8.0 * atan(1.0);
   for (mTableBuildIndex = 0; mTableBuildIndex < 2049; ++mTableBuildIndex)
     mSineTable[mTableBuildIndex] = sin(mFullCircle * mTableBuildIndex / 2048.0);
 
   setNumInputs(2);
   setNumOutputs(2);
   setUniqueID('SSPH');
-  hasVu(true);
   canMono(true);
+  canProcessReplacing(true);
   strcpy(mProgramName, "SSPH");
 }
 
@@ -155,22 +89,28 @@ void CPhaser::setParameter(long index, float value) {
 }
 
 float CPhaser::getParameter(long index) {
+  float v = 0.f;
   switch (index) {
   case 0:
-    return mFrequency;
+    v = mFrequency;
+    break;
   case 1:
-    return mFeedback;
+    v = mFeedback;
+    break;
   case 2:
-    return mInvert;
+    v = mInvert;
+    break;
   case 3:
-    return mWet;
+    v = mWet;
+    break;
   case 4:
-    return mDry;
+    v = mDry;
+    break;
   case 5:
-    return mSweepRange;
-  default:
-    return 0.f;
+    v = mSweepRange;
+    break;
   }
+  return v;
 }
 
 void CPhaser::getParameterName(long index, char* name) {
@@ -205,7 +145,7 @@ void CPhaser::getParameterDisplay(long index, char* text) {
     float2string(0.999999f * mFeedback, text);
     break;
   case 2:
-    float2string(2.f * mInvert - 1.f, text);
+    float2string(2.f * mInvert + -1.f, text);
     break;
   case 3:
     dB2string(mWet, text);
@@ -231,6 +171,8 @@ void CPhaser::getParameterLabel(long index, char* label) {
     strcpy(label, "Fase");
     break;
   case 3:
+    strcpy(label, "dB");
+    break;
   case 4:
     strcpy(label, "dB");
     break;
@@ -241,9 +183,189 @@ void CPhaser::getParameterLabel(long index, char* label) {
 }
 
 void CPhaser::process(float** inputs, float** outputs, long sampleFrames) {
-  ProcessSamples(inputs, outputs, sampleFrames, false);
+  float* in1 = inputs[0];
+  float* in2 = inputs[1];
+  float* in3 = inputs[2];
+  float* out1 = outputs[0];
+  float* out2 = outputs[1];
+  float* out3 = outputs[2];
+  while (--sampleFrames >= 0) {
+    for (int channel = 0; channel < 3; ++channel) {
+      mCoefficients[channel].mAngularFrequencyRatio =
+          2.0 * M_PI * mChannelFrequency[channel] / mSampleRate;
+      mCoefficients[channel].mCoefficient = (1.0 - mCoefficients[channel].mAngularFrequencyRatio) /
+                                            (1.0 + mCoefficients[channel].mAngularFrequencyRatio);
+    }
+    if (mInvert <= 0.5) {
+      mFeedbackSign = -1.0;
+      mInvert = 0.f;
+    } else {
+      mFeedbackSign = 1.0;
+      mInvert = 1.f;
+    }
+    mInputs[0].mRawInput = *in1++;
+    mInputs[1].mRawInput = *in2++;
+    mInputs[2].mRawInput = *in3++;
+    mInputs[0].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[0].mOutputs[3])) +
+        mInputs[0].mRawInput;
+    mInputs[1].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[1].mOutputs[3])) +
+        mInputs[1].mRawInput;
+    mInputs[2].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[2].mOutputs[3])) +
+        mInputs[2].mRawInput;
+    mHistory[0].mOutputs[0] = mCoefficients[0].mCoefficient * (mInputs[0].mFeedbackInput + mHistory[0].mOutputs[0]) -
+                              mHistory[0].mInputs[0];
+    mHistory[0].mInputs[0] = mInputs[0].mFeedbackInput;
+    mHistory[0].mOutputs[1] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[0] + mHistory[0].mOutputs[1]) -
+                              mHistory[0].mInputs[1];
+    mHistory[0].mInputs[1] = mHistory[0].mOutputs[0];
+    mHistory[0].mOutputs[2] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[1] + mHistory[0].mOutputs[2]) -
+                              mHistory[0].mInputs[2];
+    mHistory[0].mInputs[2] = mHistory[0].mOutputs[1];
+    mHistory[0].mOutputs[3] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[2] + mHistory[0].mOutputs[3]) -
+                              mHistory[0].mInputs[3];
+    mHistory[0].mInputs[3] = mHistory[0].mOutputs[2];
+    mHistory[1].mOutputs[0] = mCoefficients[1].mCoefficient * (mInputs[1].mFeedbackInput + mHistory[1].mOutputs[0]) -
+                              mHistory[1].mInputs[0];
+    mHistory[1].mInputs[0] = mInputs[1].mFeedbackInput;
+    mHistory[1].mOutputs[1] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[0] + mHistory[1].mOutputs[1]) -
+                              mHistory[1].mInputs[1];
+    mHistory[1].mInputs[1] = mHistory[1].mOutputs[0];
+    mHistory[1].mOutputs[2] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[1] + mHistory[1].mOutputs[2]) -
+                              mHistory[1].mInputs[2];
+    mHistory[1].mInputs[2] = mHistory[1].mOutputs[1];
+    mHistory[1].mOutputs[3] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[2] + mHistory[1].mOutputs[3]) -
+                              mHistory[1].mInputs[3];
+    mHistory[1].mInputs[3] = mHistory[1].mOutputs[2];
+    mHistory[2].mOutputs[0] = mCoefficients[2].mCoefficient * (mInputs[2].mFeedbackInput + mHistory[2].mOutputs[0]) -
+                              mHistory[2].mInputs[0];
+    mHistory[1].mInputs[0] = mInputs[1].mFeedbackInput;
+    mHistory[2].mOutputs[1] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[0] + mHistory[2].mOutputs[1]) -
+                              mHistory[2].mInputs[1];
+    mHistory[1].mInputs[1] = mHistory[1].mOutputs[0];
+    mHistory[2].mOutputs[2] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[1] + mHistory[2].mOutputs[2]) -
+                              mHistory[2].mInputs[2];
+    mHistory[2].mInputs[2] = mHistory[2].mOutputs[1];
+    mHistory[2].mOutputs[3] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[2] + mHistory[2].mOutputs[3]) -
+                              mHistory[2].mInputs[3];
+    mHistory[2].mInputs[3] = mHistory[2].mOutputs[2];
+    mLFORate = 0.02 + 3.98 * mFrequency;
+    mLFOPhase += mLFORate * mLFOPhaseStep;
+    while (mLFOPhase >= 2048.0) {
+      mLFOPhase -= 2048.0;
+    }
+    while (mLFOPhase < 0.0) {
+      mLFOPhase += 2048.0;
+    }
+    mLFOIndex = static_cast< int >(mLFOPhase);
+    mLFOFraction = mLFOPhase - mLFOIndex;
+    mLeftLFO =
+        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
+    mRightLFO = -1.0 * mLeftLFO;
+    mSurroundLFO = mLeftLFO;
+    *out1++ += static_cast< float >(mInputs[0].mRawInput * mDry + mHistory[0].mOutputs[3] * mWet);
+    *out2++ += static_cast< float >(mInputs[1].mRawInput * mDry + mHistory[1].mOutputs[3] * mWet);
+    *out3++ += static_cast< float >(mInputs[2].mRawInput * mDry + mHistory[2].mOutputs[3] * mWet);
+    mLeftLFO = (mLeftLFO + 1.0) / 2.0;
+    mRightLFO = (mRightLFO + 1.0) / 2.0;
+    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * (100.f + 7800.f * mSweepRange);
+    mChannelFrequency[1] = mBaseFrequency + mRightLFO * (100.f + 7800.f * mSweepRange);
+    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * (100.f + 7800.f * mSweepRange);
+  }
 }
 
 void CPhaser::processReplacing(float** inputs, float** outputs, long sampleFrames) {
-  ProcessSamples(inputs, outputs, sampleFrames, true);
+  float* in1 = inputs[0];
+  float* in2 = inputs[1];
+  float* in3 = inputs[2];
+  float* out1 = outputs[0];
+  float* out2 = outputs[1];
+  float* out3 = outputs[2];
+  while (--sampleFrames >= 0) {
+    for (int channel = 0; channel < 3; ++channel) {
+      mCoefficients[channel].mAngularFrequencyRatio =
+          2.0 * M_PI * mChannelFrequency[channel] / mSampleRate;
+      mCoefficients[channel].mCoefficient = (1.0 - mCoefficients[channel].mAngularFrequencyRatio) /
+                                            (1.0 + mCoefficients[channel].mAngularFrequencyRatio);
+    }
+    if (mInvert <= 0.5) {
+      mFeedbackSign = -1.0;
+      mInvert = 0.f;
+    } else {
+      mFeedbackSign = 1.0;
+      mInvert = 1.f;
+    }
+    mInputs[0].mRawInput = *in1++;
+    mInputs[1].mRawInput = *in2++;
+    mInputs[2].mRawInput = *in3++;
+    mInputs[0].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[0].mOutputs[3])) +
+        mInputs[0].mRawInput;
+    mInputs[1].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[1].mOutputs[3])) +
+        mInputs[1].mRawInput;
+    mInputs[2].mFeedbackInput =
+        mFeedbackSign * (0.999999 * mFeedback * (1.2e-7 + mHistory[2].mOutputs[3])) +
+        mInputs[2].mRawInput;
+    mHistory[0].mOutputs[0] = mCoefficients[0].mCoefficient * (mInputs[0].mFeedbackInput + mHistory[0].mOutputs[0]) -
+                              mHistory[0].mInputs[0];
+    mHistory[0].mInputs[0] = mInputs[0].mFeedbackInput;
+    mHistory[0].mOutputs[1] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[0] + mHistory[0].mOutputs[1]) -
+                              mHistory[0].mInputs[1];
+    mHistory[0].mInputs[1] = mHistory[0].mOutputs[0];
+    mHistory[0].mOutputs[2] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[1] + mHistory[0].mOutputs[2]) -
+                              mHistory[0].mInputs[2];
+    mHistory[0].mInputs[2] = mHistory[0].mOutputs[1];
+    mHistory[0].mOutputs[3] = mCoefficients[0].mCoefficient * (mHistory[0].mOutputs[2] + mHistory[0].mOutputs[3]) -
+                              mHistory[0].mInputs[3];
+    mHistory[0].mInputs[3] = mHistory[0].mOutputs[2];
+    mHistory[1].mOutputs[0] = mCoefficients[1].mCoefficient * (mInputs[1].mFeedbackInput + mHistory[1].mOutputs[0]) -
+                              mHistory[1].mInputs[0];
+    mHistory[1].mInputs[0] = mInputs[1].mFeedbackInput;
+    mHistory[1].mOutputs[1] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[0] + mHistory[1].mOutputs[1]) -
+                              mHistory[1].mInputs[1];
+    mHistory[1].mInputs[1] = mHistory[1].mOutputs[0];
+    mHistory[1].mOutputs[2] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[1] + mHistory[1].mOutputs[2]) -
+                              mHistory[1].mInputs[2];
+    mHistory[1].mInputs[2] = mHistory[1].mOutputs[1];
+    mHistory[1].mOutputs[3] = mCoefficients[1].mCoefficient * (mHistory[1].mOutputs[2] + mHistory[1].mOutputs[3]) -
+                              mHistory[1].mInputs[3];
+    mHistory[1].mInputs[3] = mHistory[1].mOutputs[2];
+    mHistory[2].mOutputs[0] = mCoefficients[2].mCoefficient * (mInputs[2].mFeedbackInput + mHistory[2].mOutputs[0]) -
+                              mHistory[2].mInputs[0];
+    mHistory[1].mInputs[0] = mInputs[1].mFeedbackInput;
+    mHistory[2].mOutputs[1] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[0] + mHistory[2].mOutputs[1]) -
+                              mHistory[2].mInputs[1];
+    mHistory[1].mInputs[1] = mHistory[1].mOutputs[0];
+    mHistory[2].mOutputs[2] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[1] + mHistory[2].mOutputs[2]) -
+                              mHistory[2].mInputs[2];
+    mHistory[2].mInputs[2] = mHistory[2].mOutputs[1];
+    mHistory[2].mOutputs[3] = mCoefficients[2].mCoefficient * (mHistory[2].mOutputs[2] + mHistory[2].mOutputs[3]) -
+                              mHistory[2].mInputs[3];
+    mHistory[2].mInputs[3] = mHistory[2].mOutputs[2];
+    mLFORate = 0.02 + 5.98 * mFrequency;
+    mLFOPhase += mLFORate * mLFOPhaseStep;
+    while (mLFOPhase >= 2048.0) {
+      mLFOPhase -= 2048.0;
+    }
+    while (mLFOPhase < 0.0) {
+      mLFOPhase += 2048.0;
+    }
+    mLFOIndex = static_cast< int >(mLFOPhase);
+    mLFOFraction = mLFOPhase - mLFOIndex;
+    mLeftLFO =
+        mSineTable[mLFOIndex] + mLFOFraction * (mSineTable[mLFOIndex + 1] - mSineTable[mLFOIndex]);
+    mRightLFO = -1.0 * mLeftLFO;
+    mSurroundLFO = mLeftLFO;
+    *out1++ = static_cast< float >(mInputs[0].mRawInput * mDry + mHistory[0].mOutputs[3] * mWet);
+    *out2++ = static_cast< float >(mInputs[1].mRawInput * mDry + mHistory[1].mOutputs[3] * mWet);
+    *out3++ = static_cast< float >(mInputs[2].mRawInput * mDry + mHistory[2].mOutputs[3] * mWet);
+    mLeftLFO = (mLeftLFO + 1.0) / 2.0;
+    mRightLFO = (mRightLFO + 1.0) / 2.0;
+    mChannelFrequency[0] = mBaseFrequency + mLeftLFO * (100.f + 7800.f * mSweepRange);
+    mChannelFrequency[1] = mBaseFrequency + mRightLFO * (100.f + 7800.f * mSweepRange);
+    mChannelFrequency[2] = mBaseFrequency + mSurroundLFO * (100.f + 7800.f * mSweepRange);
+  }
 }

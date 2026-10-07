@@ -55,8 +55,8 @@ void CInGameQuitScreen::ProcessUserInput(const CFinalInput& input) {
     CSfxManager::SfxStart(0x5e1, 127, 64);
     mAction = kQA_No;
   } else {
-    const bool left = input.DLALeft() || input.DDPLeft();
-    const bool right = input.DLARight() || input.DDPRight();
+    bool left = input.DLALeft() || input.DDPLeft();
+    bool right = input.DLARight() || input.DDPRight();
     if (mLeftRepeat.Update(input.DeltaTime(), left) && left) {
       ChangeChoice(-1);
     } else if (!left && mRightRepeat.Update(input.DeltaTime(), right) && right) {
@@ -71,12 +71,14 @@ EQuitAction CInGameQuitScreen::Update(float dt, CStateManager& mgr) {
       FinishedLoading();
     }
   } else if (!mQuitConfirmation.null()) {
-    const EQuitAction action = mQuitConfirmation->Update(dt);
-    if (action == kQA_No) {
+    switch (mQuitConfirmation->Update(dt)) {
+    case kQA_No:
       mQuitConfirmation = rstl::auto_ptr< CQuitGameScreen >();
-    } else if (action == kQA_Yes) {
+      break;
+    case kQA_Yes:
       mAction = kQA_Yes;
       mQuitConfirmation = rstl::auto_ptr< CQuitGameScreen >();
+      break;
     }
   } else {
     mReadyFrame->Update(dt);
@@ -130,8 +132,8 @@ void CInGameQuitScreen::FinishedLoading() {
   SChoice quitChoice(mReadyFrame->FindWidget("model_quit_left"),
                      mReadyFrame->FindWidget("model_quit_right"), mQuitChoiceText);
   quitChoice.mOptions.reserve(2);
-  quitChoice.mOptions.push_back(rstl::wstring(gpStringTable->GetString("No")));
-  quitChoice.mOptions.push_back(rstl::wstring(gpStringTable->GetString("Yes")));
+  quitChoice.mOptions.push_back_unsafe(rstl::wstring(gpStringTable->GetString("No")));
+  quitChoice.mOptions.push_back_unsafe(rstl::wstring(gpStringTable->GetString("Yes")));
   mChoices.push_back(quitChoice);
 
   mMusicChoiceText = static_cast< CGuiTextPane* >(mReadyFrame->FindWidget("textpane_song_choice"));
@@ -147,17 +149,17 @@ void CInGameQuitScreen::FinishedLoading() {
   }
   for (int track = 0; track < 7; ++track) {
     bool unlocked = track == 0;
-    const CEnvironmentVariable* variable = gpGameState->SystemOptions().FindEnvironmentVariable(
+    const CEnvironmentVariable* variable = gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable(
         CBasics::Stringize("UnlockMusic%d", track));
     if (variable != nullptr) {
-      unlocked = variable->GetMaximum() == variable->GetValue();
+      unlocked = variable->GetValue() == variable->GetMaximum();
     }
     if (unlocked) {
       if (track == currentTrack) {
         musicChoice.mSelection = musicChoice.mOptions.size();
         mPreviousMusicSelection = musicChoice.mOptions.size();
       }
-      musicChoice.mOptions.push_back(
+      musicChoice.mOptions.push_back_unsafe(
           rstl::wstring(gpStringTable->GetString(CBasics::Stringize("MusicSelection%d", track))));
     }
   }
@@ -168,30 +170,29 @@ void CInGameQuitScreen::FinishedLoading() {
 }
 
 void CInGameQuitScreen::SetColors() {
-  const CColor selected(0xc8c8c8ff);
-  const CColor unselected(0x323232ff);
+  const CColor selected(uchar(200), uchar(200), uchar(200), uchar(255));
+  const CColor unselected(uchar(50), uchar(50), uchar(50), uchar(255));
+  const int selection = mChoiceTable->GetUserSelection();
   for (int i = 0; i < 2; ++i) {
-    mChoiceTable->GetWorkerWidget(i)->SetColor(i == mChoiceTable->GetUserSelection() ? selected
-                                                                                     : unselected);
+    CGuiWidget* widget = mChoiceTable->GetWorkerWidget(i);
+    widget->SetColor(i == selection ? selected : unselected);
   }
 }
 
 void CInGameQuitScreen::UpdateChoiceText() {
-  const CColor enabled(0xffffffff);
-  const CColor disabled(0x323232ff);
-  for (int i = 0; i < mChoices.size(); ++i) {
-    SChoice& choice = mChoices[i];
-    choice.mLeftArrow->SetColor(choice.mSelection == 0 ? disabled : enabled);
-    choice.mRightArrow->SetColor(choice.mSelection == choice.mOptions.size() - 1 ? disabled
-                                                                                 : enabled);
-    choice.mTextPane->TextSupport().SetText(choice.mOptions[choice.mSelection], false);
+  const CColor enabled(uchar(255), uchar(255), uchar(255), uchar(255));
+  const CColor disabled(uchar(50), uchar(50), uchar(50), uchar(255));
+  for (rstl::reserved_vector< SChoice, 2 >::iterator it = mChoices.begin(); it != mChoices.end(); ++it) {
+    it->mLeftArrow->SetColor(it->mSelection == 0 ? disabled : enabled);
+    it->mRightArrow->SetColor(it->mSelection == it->mOptions.size() - 1 ? disabled : enabled);
+    it->mTextPane->TextSupport().SetText(it->mOptions[it->mSelection], false);
   }
 }
 
 void CInGameQuitScreen::ChangeChoice(int direction) {
   SChoice& choice = mChoices[mChoiceTable->GetUserSelection()];
   const int previous = choice.mSelection;
-  choice.mSelection = CMath::Clamp(0, previous + direction, choice.mOptions.size() - 1);
+  choice.mSelection = CMath::Clamp(0, direction + choice.mSelection, choice.mOptions.size() - 1);
   UpdateChoiceText();
   if (previous != choice.mSelection) {
     CSfxManager::SfxStart(0x5e3, 127, 64);
@@ -203,29 +204,31 @@ void CInGameQuitScreen::ApplyMusicSelection(CStateManager& mgr) {
   int unlockedIndex = 0;
   for (int track = 0; track < 7; ++track) {
     bool unlocked = track == 0;
-    const CEnvironmentVariable* variable = gpGameState->SystemOptions().FindEnvironmentVariable(
+    const CEnvironmentVariable* variable = gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable(
         CBasics::Stringize("UnlockMusic%d", track));
     if (variable != nullptr) {
-      unlocked = variable->GetMaximum() == variable->GetValue();
+      unlocked = variable->GetValue() == variable->GetMaximum();
     }
     if (unlocked) {
-      if (unlockedIndex == mPreviousMusicSelection) {
+      if (mPreviousMusicSelection == unlockedIndex) {
         selectedTrack = track;
       }
       ++unlockedIndex;
     }
   }
 
-  CGameMode& mode = gpGameState->GetGameMode();
+  const CGameState& gameState = *gpGameState;
+  CGameMode& mode = gameState.GetGameMode();
   if (mode.GetGameModeType() == CFrontEndGameMode::kSGM_DeathMatch ||
       mode.GetGameModeType() == CFrontEndGameMode::kSGM_Coin) {
     static_cast< CGMMultiplayer& >(mode).SetMusicIndex(selectedTrack);
   }
 
-  CObjectList& actors = mgr.ObjectListById(kOL_Actor);
+  const CObjectList& actors = mgr.GetObjectListById(kOL_Actor);
   for (int index = actors.GetFirstObjectIndex(); index != -1;
        index = actors.GetNextObjectIndex(index)) {
-    const CScriptSpecialFunction* function = TCastToPtr< CScriptSpecialFunction >(actors[index]);
+    const CScriptSpecialFunction* function =
+        TCastToConstPtr< CScriptSpecialFunction >(actors[index]);
     if (function == nullptr ||
         function->GetFunction() != CScriptSpecialFunction::kSF_MultiplayerMusic) {
       continue;

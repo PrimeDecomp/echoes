@@ -27,7 +27,6 @@ public:
          const CColor& color, float cutoff);
   CLight(ELightType type, const CVector3f& pos, const CVector3f& direction, const CColor& color,
          float distC, float distL, float distQ, float angleC, float angleL, float angleQ);
-  CLight(const CLight&);
 
   void SetPosition(const CVector3f& pos);
   const CVector3f& GetPosition() const { return mPos; }
@@ -91,6 +90,7 @@ CHECK_SIZEOF(CLight, 0x50)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CLight)
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CLight)
 }
 
 #endif // _CLIGHT

@@ -37,17 +37,18 @@ TUniqueId FirstCollisionObjectId(const CCollisionInfoList& collisions) {
 
 CTransform4f MakeAABoxCacheTransform(const CPhysicsActor& actor, const CCollidableAABox& box) {
   const CAABox bounds = box.CalculateAABox(actor.GetPrimitiveTransform());
-  CTransform4f transform = CTransform4f::Scale(bounds.GetMaxPoint() - bounds.GetMinPoint());
+  CTransform4f transform =
+      CTransform4f::Scale(bounds.GetMaxPoint().GetX() - bounds.GetMinPoint().GetX(),
+                          bounds.GetMaxPoint().GetY() - bounds.GetMinPoint().GetY(),
+                          bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ());
   transform.SetTranslation(bounds.GetCenterPoint());
   return transform;
 }
 
 CTransform4f MakeSphereCacheTransform(const CPhysicsActor& actor, const CCollidableSphere& sphere) {
-  const CSphere& shape = sphere.GetSphere();
-  const CVector3f localCenter = shape.GetCenter();
-  const float radius = shape.GetRadius();
-  const CVector3f center = actor.GetPrimitiveTransform() * localCenter;
-  CTransform4f transform = CTransform4f::Scale(radius);
+  const CSphere shape = sphere.GetSphere();
+  const CVector3f center = actor.GetPrimitiveTransform() * shape.GetCenter();
+  CTransform4f transform = CTransform4f::Scale(shape.GetRadius());
   transform.SetTranslation(center);
   return transform;
 }
@@ -71,8 +72,10 @@ void CGameCollision::BuildCollisionCache(const CStateManager& mgr, CCollisionCac
     } else {
       mgr.BuildNearList(nearList, cache.GetBounds(), filter, nullptr);
     }
-    for (int i = 0; i < nearList.size(); ++i) {
-      CacheActorGeometry(mgr, cache, mgr.GetObjectById(nearList[i]));
+    for (rstl::reserved_vector< TUniqueId, 1024 >::iterator id = nearList.begin();
+         id != nearList.end(); ++id) {
+      const CEntity* entity = mgr.GetObjectById(*id);
+      CacheActorGeometry(mgr, cache, entity);
     }
   }
 }
@@ -90,9 +93,13 @@ void CGameCollision::BuildCollisionCache(const CStateManager& mgr, CCollisionCac
   if (cache.GetDynamicGeometryMode() != 0) {
     for (rstl::reserved_vector< TUniqueId, 1024 >::iterator id = nearList.begin();
          id != nearList.end();) {
-      if (CacheActorGeometry(mgr, cache, mgr.GetObjectById(*id)) &&
-          policy == kCUP_RemoveCachedNearListIds) {
-        id = nearList.erase(id);
+      const CEntity* entity = mgr.GetObjectById(*id);
+      if (CacheActorGeometry(mgr, cache, entity)) {
+        if (policy == kCUP_RemoveCachedNearListIds) {
+          id = nearList.erase(id);
+        } else {
+          ++id;
+        }
       } else {
         ++id;
       }
@@ -199,37 +206,32 @@ bool CGameCollision::CacheActorGeometry(const CStateManager& mgr, CCollisionCach
     return false;
   }
 
-  const CPhysicsActor* actor = TCastToConstPtr< CPhysicsActor >(entity);
-  if (!actor) {
-    return true;
+  if (const CPhysicsActor* actor = TCastToConstPtr< CPhysicsActor >(entity)) {
+    const CActor* owner = static_cast< const CActor* >(entity);
+    const CCollisionPrimitive& primitive = *actor->GetCollisionPrimitive();
+    if (primitive.GetPrimType() == 'OBTG') {
+      static_cast< const CCollidableOBBTreeGroup& >(primitive).CacheTree(
+          cache, actor->GetPrimitiveTransform(), owner->GetUniqueId().value,
+          owner->GetMaterialList().GetValue());
+    } else if (cache.GetDynamicGeometryMode() == 2) {
+      if (primitive.GetPrimType() == 'AABX') {
+        const CTransform4f transform =
+            MakeAABoxCacheTransform(*actor, static_cast< const CCollidableAABox& >(primitive));
+        CCollidableOBBTree::CacheAABox(cache, transform, owner->GetUniqueId().value,
+                                       owner->GetMaterialList().GetValue());
+      } else if (primitive.GetPrimType() == 'SPHR') {
+        const CTransform4f transform =
+            MakeSphereCacheTransform(*actor, static_cast< const CCollidableSphere& >(primitive));
+        CCollidableOBBTree::CacheSphere(cache, transform, owner->GetUniqueId().value,
+                                        owner->GetMaterialList().GetValue());
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
-
-  const CCollisionPrimitive& primitive = *actor->GetCollisionPrimitive();
-  if (primitive.GetPrimType() == 'OBTG') {
-    static_cast< const CCollidableOBBTreeGroup& >(primitive).CacheTree(
-        cache, actor->GetPrimitiveTransform(), entity->GetUniqueId().value,
-        actor->GetMaterialList().GetValue());
-    return true;
-  }
-  if (cache.GetDynamicGeometryMode() != 2) {
-    return false;
-  }
-
-  if (primitive.GetPrimType() == 'AABX') {
-    const CTransform4f transform =
-        MakeAABoxCacheTransform(*actor, static_cast< const CCollidableAABox& >(primitive));
-    CCollidableOBBTree::CacheAABox(cache, transform, entity->GetUniqueId().value,
-                                   actor->GetMaterialList().GetValue());
-    return true;
-  }
-  if (primitive.GetPrimType() == 'SPHR') {
-    const CTransform4f transform =
-        MakeSphereCacheTransform(*actor, static_cast< const CCollidableSphere& >(primitive));
-    CCollidableOBBTree::CacheSphere(cache, transform, entity->GetUniqueId().value,
-                                    actor->GetMaterialList().GetValue());
-    return true;
-  }
-  return false;
+  return true;
 }
 
 bool CGameCollision::DetectCollisionBoolean_Cached(
@@ -240,7 +242,10 @@ bool CGameCollision::DetectCollisionBoolean_Cached(
       DetectStaticCollisionBoolean_Cached(mgr, cache, primitive, transform, filter)) {
     return true;
   }
-  return DetectDynamicCollisionBoolean(primitive, transform, nearList, mgr);
+  if (DetectDynamicCollisionBoolean(primitive, transform, nearList, mgr)) {
+    return true;
+  }
+  return false;
 }
 
 bool CGameCollision::DetectCollision_Cached(
@@ -712,8 +717,7 @@ void CGameCollision::MoveAndCollide(CStateManager& mgr, CPhysicsActor& actor, fl
 
   const float remainingFraction = remainingDt / dt;
   if (!hadCollision && !actor.GetMaterialList().HasMaterial(kMT_GroundCollider)) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                    kSM_Falling, kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
   }
   if (isPlayer) {
     CollisionFailsafe(mgr, cache, actor, *actor.GetCollisionPrimitive(), nearbyActors,

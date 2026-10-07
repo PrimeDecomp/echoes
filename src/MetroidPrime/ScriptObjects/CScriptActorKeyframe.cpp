@@ -1,5 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptActorKeyframe.hpp"
 
+#include "Kyoto/Animation/IMetaTrans.hpp"
+
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
@@ -27,11 +29,6 @@ CScriptActorKeyframe::CScriptActorKeyframe(TUniqueId uid, const rstl::string& na
 
 void CScriptActorKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_AreaLoaded:
-    if (mAnimationId == -1) {
-      mAnimationId = 0;
-    }
-    break;
   case kSM_Action:
     if (GetActive()) {
       if (mUseOriginator && msg.GetOriginator() != kInvalidUniqueId) {
@@ -51,7 +48,12 @@ void CScriptActorKeyframe::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
       }
       mPlaying = true;
       mLifetime = mInitialLifetime;
-      SendScriptMsgs(kSS_Play, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Play, mgr);
+    }
+    break;
+  case kSM_AreaLoaded:
+    if (mAnimationId == -1) {
+      mAnimationId = 0;
     }
     break;
   default:
@@ -69,25 +71,28 @@ void CScriptActorKeyframe::UpdateEntity(TUniqueId uid, CStateManager& mgr) {
 
   if (actor) {
     if (!actor->GetActive()) {
-      mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, actor->GetUniqueId(),
-                                      kSM_Activate, kSS_InvalidState));
+      mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), actor->GetUniqueId(), kSM_Activate));
     }
     if (actor->HasAnimation()) {
-      CAnimData* animation = actor->AnimationData();
-      if (animation->IsAdditiveAnimation(mAnimationId)) {
-        animation->AddAdditiveAnimation(mAnimationId, 1.f, mLooping, mFadeOut);
+      if (actor->AnimationData()->IsAdditiveAnimation(mAnimationId)) {
+        actor->AnimationData()->AddAdditiveAnimation(mAnimationId, 1.f, mLooping, mFadeOut);
       } else {
-        // TODO: Echoes derives noTrans from the transition tree's type and clears
-        // an animation-data flag after starting the animation.
-        animation->SetAnimation(CAnimPlaybackParms(mAnimationId, -1, 1.f, true), false);
+        const CAnimPlaybackParms parms(mAnimationId, -1, 1.f, true);
+        const rstl::rc_ptr< IMetaTrans > transition(
+            actor->AnimationData()->BuildMetaTransition(parms));
+        uchar noTrans = false;
+        if (transition.GetPtr() && transition->GetType() == kMTT_Snap) {
+          noTrans = true;
+        }
+        actor->AnimationData()->SetAnimation(parms, noTrans);
         actor->ModelData()->EnableLooping(mLooping);
-        animation->MultiplyPlaybackRate(mPlaybackRate);
+        actor->AnimationData()->MultiplyPlaybackRate(mPlaybackRate);
+        actor->AnimationData()->SetPoseBuilt(false);
       }
     }
   } else if (CPatterned* ai = TCastToPtr< CPatterned >(entity)) {
-    CAnimData* animation = ai->AnimationData();
-    if (animation->IsAdditiveAnimation(mAnimationId)) {
-      animation->AddAdditiveAnimation(mAnimationId, 1.f, mLooping, mFadeOut);
+    if (ai->AnimationData()->IsAdditiveAnimation(mAnimationId)) {
+      ai->AnimationData()->AddAdditiveAnimation(mAnimationId, 1.f, mLooping, mFadeOut);
     } else {
       ai->BodyController()->CommandMgr().DeliverCmd(
           CBCScriptedCmd(mAnimationId, mLooping, mTimedLoop, mInitialLifetime));
@@ -107,23 +112,22 @@ void CScriptActorKeyframe::Think(float dt, CStateManager& mgr) {
           continue;
         }
 
-        CEntity* entity = mgr.ObjectById(mgr.GetIdForScript(it->objId));
+        const TUniqueId uid = mgr.GetIdForScript(it->objId);
+        CEntity* entity = mgr.ObjectById(uid);
         if (CScriptActor* actor = TCastToPtr< CScriptActor >(entity)) {
           if (actor->HasAnimation()) {
-            CAnimData* animation = actor->AnimationData();
-            if (animation->IsAdditiveAnimation(mAnimationId)) {
-              animation->DelAdditiveAnimation(mAnimationId);
-            } else if (animation->GetCurrentAnimation() == mAnimationId) {
+            if (actor->AnimationData()->IsAdditiveAnimation(mAnimationId)) {
+              actor->AnimationData()->DelAdditiveAnimation(mAnimationId);
+            } else if (actor->AnimationData()->GetCurrentAnimation() == mAnimationId) {
               actor->ModelData()->EnableLooping(false);
             }
           }
         } else if (CPatterned* ai = TCastToPtr< CPatterned >(entity)) {
-          CAnimData* animation = ai->AnimationData();
-          if (animation->IsAdditiveAnimation(mAnimationId)) {
-            animation->DelAdditiveAnimation(mAnimationId);
+          if (ai->AnimationData()->IsAdditiveAnimation(mAnimationId)) {
+            ai->AnimationData()->DelAdditiveAnimation(mAnimationId);
           } else if (ai->BodyController()->GetCurrentStateId() == pas::kAS_Scripted &&
-                     animation->GetCurrentAnimation() == mAnimationId) {
-            ai->BodyController()->CommandMgr().DeliverCmd(kBSC_ExitState);
+                     ai->AnimationData()->GetCurrentAnimation() == mAnimationId) {
+            ai->BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_ExitState));
           }
         }
       }

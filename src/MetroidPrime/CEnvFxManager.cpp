@@ -43,6 +43,9 @@ static int g_TrailPrimaryAxis;
 static const CColor skTrailColor6(0.6f, 0.71f, 0.48f, 0.175f);
 static const CColor skTrailColor7(0.f, 0.f, 1.f, 0.175f);
 
+// Empty no-argument hook called at the start of the CEnvFxManager constructor.
+extern "C" void fn_80168498() {}
+
 CEnvFxManagerGrid::CEnvFxManagerGrid(const CVector2i& position, const CVector2i& extent,
                                      const rstl::vector< CVectorFixed8_8 >& initialParticles,
                                      int reserve)
@@ -73,6 +76,7 @@ CEnvFxManager::CEnvFxManager()
 , mUnderwaterFlake(TLockedToken< CTexture >(gpSimplePool->GetObj("TXTR_UnderwaterFlake")))
 , mDarkWorldParticleTexture(gpSimplePool->GetObj("TXTR_DarkworldParticleTexture"))
 , mPreviousFxType(kEFX_None) {
+  fn_80168498();
   CRandom16 random(0);
   for (int i = 0; i < 4; ++i) {
     mEnvRainSplashIds.push_back(kInvalidUniqueId);
@@ -255,7 +259,10 @@ void CEnvFxManagerGrid::RenderUnderwaterParticles(const CTransform4f& camXf) {
 
 bool CEnvFxManagerGrid::SetupRender(const CTransform4f& xf, const CTransform4f& invXf,
                                     const CTransform4f& camXf, float density, EEnvFxType type) {
-  if (mParticles.empty() || !mBlock.first) {
+  if (mParticles.empty()) {
+    return false;
+  }
+  if (!mBlock.first) {
     return false;
   }
   const float gridX = fixed8_8_to_real(mPosition.GetX());
@@ -350,7 +357,7 @@ void CEnvFxManagerGrid::RenderDarkWorldParticles(const CTransform4f& xf, const C
 }
 
 CVector3f CEnvFxManager::GetParticleBoundsToWorldScale() const {
-  return (mParticleBounds.GetMaxPoint() - mParticleBounds.GetMinPoint()) / 127.f;
+  return (1.f / 127.f) * (mParticleBounds.GetMaxPoint() - mParticleBounds.GetMinPoint());
 }
 
 void CEnvFxManager::MoveWrapCells(EEnvFxType type, int moveX, int moveY) {
@@ -428,24 +435,26 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
   if (gpMain->IsMaxSpeed()) {
     return;
   }
-  const CCameraManager* cameraManager = mgr.GetCameraManager(0);
-  const CTransform4f camXf = cameraManager->GetCurrentCameraTransform(mgr, true);
+  const CTransform4f camXf = mgr.GetCameraManager(0)->GetCurrentCameraTransform(mgr, true);
   const EEnvFxType type = static_cast< EEnvFxType >(mgr.GetWorld()->GetNeededEnvFx());
-  if (type == kEFX_Unknown7) {
-    g_TrailPeriod = 8;
-    g_TrailPrimaryScale = 1.5f;
-    g_TrailDecayRate = 1.f / 3.f;
-    g_TrailPrimaryAxis = 0;
-    g_TrailSecondaryAxis = 2;
-  } else if (type == kEFX_Unknown6) {
+  switch (type) {
+  case kEFX_Unknown6:
     g_TrailPeriod = 2;
     g_TrailPrimaryScale = 6.f;
     g_TrailDecayRate = 1.f / 3.f;
     g_TrailPrimaryAxis = 2;
     g_TrailSecondaryAxis = 0;
+    break;
+  case kEFX_Unknown7:
+    g_TrailPeriod = 8;
+    g_TrailPrimaryScale = 1.5f;
+    g_TrailDecayRate = 1.f / 3.f;
+    g_TrailPrimaryAxis = 0;
+    g_TrailSecondaryAxis = 2;
+    break;
   }
 
-  if (cameraManager->GetCurrentCamera(mgr, true)->GetFluidCount() != 0) {
+  if (mgr.GetCameraManager(0)->GetCurrentCamera(mgr, true)->GetFluidCount() != 0) {
     mLastBlockedGridIdx = -1;
     mEnableSplash = false;
     SetSplashEffectRate(0.f, mgr);
@@ -471,9 +480,9 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
   const CVector3f scale = GetParticleBoundsToWorldScale();
   const CVector3f inverseScale(1.f / scale.GetX(), 1.f / scale.GetY(), 1.f / scale.GetZ());
   const CVector3f forwardPoint = camXf.GetTranslation() + 23.8125f * camXf.GetForward();
-  const CVector3f cellBase(forwardPoint.GetX() - CMath::ModF(forwardPoint.GetX(), 7.9375f),
-                           forwardPoint.GetY() - CMath::ModF(forwardPoint.GetY(), 7.9375f),
-                           forwardPoint.GetZ());
+  const CVector3f cellBase =
+      forwardPoint - CVector3f(CMath::ModF(forwardPoint.GetX(), 7.9375f),
+                               CMath::ModF(forwardPoint.GetY(), 7.9375f), 0.f);
   const CVector3f delta = mFocusCellPosition - cellBase;
   mFocusCellPosition = cellBase;
   MoveWrapCells(type, static_cast< int >(delta.GetX() / 7.9375f),
@@ -491,7 +500,7 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
   const CTransform4f xf = GetParticleBoundsToWorldTransform();
   const CTransform4f invXf = xf.GetInverse();
   UpdateBlockedGrids(mgr, type, camXf, xf, invXf);
-  CreateNewParticles(type, invXf, dt);
+  CreateNewParticles(type, invXf);
   mPreviousFxType = type;
 
   switch (type) {
@@ -524,33 +533,19 @@ void CEnvFxManager::Update(float dt, CStateManager& mgr) {
       256.f);
 }
 
-void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf, float dt) {
-  int maxParticleCount = 0;
-  switch (type) {
-  case kEFX_Snow:
-  case kEFX_Unknown5:
-    maxParticleCount = 0x1c98;
-    break;
-  case kEFX_Rain:
-    maxParticleCount = 11000;
-    break;
-  case kEFX_UnderwaterFlake:
-    maxParticleCount = 0xfeb;
-    break;
-  case kEFX_DarkWorld:
-    maxParticleCount = 0x2ee;
-    break;
-  case kEFX_Unknown6:
-  case kEFX_Unknown7:
-    maxParticleCount = 0x1c90;
-    break;
-  default:
-    break;
-  }
-  maxParticleCount /= 64;
-  int cellParticleCount = static_cast< int >(mFxDensity * maxParticleCount);
-  const bool trails = type == kEFX_Unknown6 || type == kEFX_Unknown7;
-  if (trails) {
+void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invXf) {
+  const int totalParticleCount = type == kEFX_Snow              ? 0x1c98
+                         : type == kEFX_Rain            ? 11000
+                         : type == kEFX_UnderwaterFlake ? 0xfeb
+                         : type == kEFX_DarkWorld       ? 0x2ee
+                         : type == kEFX_Unknown5        ? 0x1c98
+                         : type == kEFX_Unknown6        ? 0x1c90
+                         : type == kEFX_Unknown7        ? 0x1c90
+                                                        : 0;
+  const int perCell = totalParticleCount / 64;
+  int cellParticleCount = static_cast< int >(mFxDensity * perCell);
+  int maxParticleCount = perCell;
+  if (type == kEFX_Unknown6 || type == kEFX_Unknown7) {
     maxParticleCount -= maxParticleCount % 8;
     cellParticleCount -= cellParticleCount % 8;
   }
@@ -558,7 +553,8 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
   static uint seed = 0;
   CRandom16 random(seed);
   const bool darkWorld = type == kEFX_DarkWorld;
-  const bool leavingDarkWorld = !darkWorld && mPreviousFxType == kEFX_DarkWorld;
+  const bool leavingDarkWorld = type != kEFX_DarkWorld && mPreviousFxType == kEFX_DarkWorld;
+  const bool trails = type == kEFX_Unknown6 || type == kEFX_Unknown7;
   const bool leavingTrails = (type != kEFX_Unknown6 && mPreviousFxType == kEFX_Unknown6) ||
                              (type != kEFX_Unknown7 && mPreviousFxType == kEFX_Unknown7);
   if (leavingDarkWorld || leavingTrails) {
@@ -577,57 +573,59 @@ void CEnvFxManager::CreateNewParticles(EEnvFxType type, const CTransform4f& invX
       continue;
     }
     rstl::vector< CVectorFixed8_8 >& particles = grid.mParticles;
+    rstl::vector< float >& lifetimes = grid.mParticleLifetimes;
+    rstl::vector< int >& trailFrames = grid.mTrailFrames;
     if (cellParticleCount > particles.size() ||
-        ((darkWorld || trails) && cellParticleCount > grid.mParticleLifetimes.size())) {
+        ((trails || darkWorld) && cellParticleCount > lifetimes.size())) {
       if (cellParticleCount > particles.capacity() ||
-          ((darkWorld || trails) && cellParticleCount > grid.mParticleLifetimes.capacity())) {
+          ((trails || darkWorld) && cellParticleCount > lifetimes.capacity())) {
         particles.reserve(maxParticleCount);
         if (darkWorld) {
-          grid.mParticleLifetimes.reserve(maxParticleCount);
+          lifetimes.reserve(maxParticleCount);
         }
         if (trails) {
-          grid.mParticleLifetimes.reserve(maxParticleCount / 8);
-          grid.mTrailFrames.reserve(maxParticleCount / 8);
+          lifetimes.reserve(maxParticleCount / 8);
+          trailFrames.reserve(maxParticleCount / 8);
         }
       }
       const int remaining = cellParticleCount - particles.size();
       for (int j = 0; j < remaining; ++j) {
-        // The retail dark-world branch uses the caller's frame delta for X rather than
-        // drawing another random value.
-        const short x =
-            type == kEFX_DarkWorld
-                ? static_cast< short >(dt)
-                : static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetX()) -
-                                                             (trails ? 20.f : 0.f)));
-        short z;
-        if (type == kEFX_DarkWorld) {
-          z = real_to_fixed8_8((invXf * CVector3f(0.f, 0.f, grid.GetVisibility().second)).GetZ());
+        // X is left uninitialized on the dark-world path in retail.
+        float x;
+        int z;
+        if (darkWorld) {
+          z = static_cast< int >(
+              256.f * (invXf * CVector3f(0.f, 0.f, grid.GetVisibility().second)).GetZ());
         } else if (trails) {
-          z = static_cast< short >(random.Range(20.f, 16363.f));
+          x = random.Range(0.f, static_cast< float >(grid.mExtent.GetX()) - 20.f);
+          z = static_cast< int >(random.Range(20.f, 16363.f));
         } else {
-          z = real_to_fixed8_8(random.Range(0.f, 63.f));
+          x = random.Range(0.f, static_cast< float >(grid.mExtent.GetX()));
+          z = static_cast< int >(256.f * random.Range(0.f, 63.f));
         }
-        const short y =
-            static_cast< short >(random.Range(0.f, static_cast< float >(grid.mExtent.GetY())));
-        particles.push_back(CVectorFixed8_8(x, y, z));
-        if (type == kEFX_DarkWorld) {
-          grid.mParticleLifetimes.push_back(random.Float());
+        const int y = random.Range(0.f, static_cast< float >(grid.mExtent.GetY()));
+        particles.push_back_unsafe(
+            CVectorFixed8_8(static_cast< int >(x), y, z));
+        if (darkWorld) {
+          lifetimes.push_back_unsafe(random.Float());
         } else if (trails) {
-          grid.mParticleLifetimes.push_back(1.f);
-          grid.mTrailFrames.push_back(8 * g_TrailPeriod * random.Range(0, 100));
+          lifetimes.push_back_unsafe(1.f);
+          trailFrames.push_back_unsafe(g_TrailPeriod * random.Range(0, 100) * 8);
+        }
+        if (trails) {
           for (int point = 1; point < 8; ++point) {
-            particles.push_back(CVectorFixed8_8());
+            particles.push_back_unsafe(CVectorFixed8_8());
             ++j;
           }
         }
       }
     } else {
       particles.resize(cellParticleCount);
-      if (type == kEFX_DarkWorld) {
-        grid.mParticleLifetimes.resize(cellParticleCount);
+      if (darkWorld) {
+        lifetimes.resize(cellParticleCount);
       } else if (trails) {
-        grid.mParticleLifetimes.resize(cellParticleCount / 8);
-        grid.mTrailFrames.resize(cellParticleCount / 8);
+        lifetimes.resize(cellParticleCount / 8);
+        trailFrames.resize(cellParticleCount / 8);
       }
     }
   }
@@ -760,7 +758,7 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
           grid.SetVisibility(rstl::pair< bool, float >(visible, visible ? -10000.f : 0.f));
         } else {
           best = CGameCollision::RayStaticIntersection(mgr, start, down, 1000.f, filter);
-          const CMaterialFilter floorOrTrigger =
+          const CMaterialFilter& floorOrTrigger =
               CMaterialFilter::MakeInclude(CMaterialList(kMT_Trigger, kMT_Floor));
           if (!floorOrTrigger.Passes(best.GetMaterial())) {
             best = CRayCastResult(CRayCastResult::kI_Invalid);
@@ -1020,7 +1018,7 @@ void CEnvFxManager::BlankFirstSnowflakeMip(CTexture& tex) {
 }
 
 void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
-  const CCameraManager* cameraManager = mgr.GetCameraManager(0);
+  const CCameraManager* cameraManager = mgr.GetCurrentRenderCameraManager();
   const CGameCamera* camera = cameraManager->GetCurrentCamera(mgr, true);
   CColor color = CColor::White();
   if (camera->GetFluidCount() != 0) {
@@ -1059,7 +1057,8 @@ void CEnvFxManager::SetupSnowTevs(CStateManager& mgr) {
 }
 
 void CEnvFxManager::SetupDriftingParticleTevs(CStateManager& mgr) {
-  mgr.GetCameraManager(0)->GetCurrentCamera(mgr, true);
+  mgr.GetCurrentRenderCameraManager()->GetCurrentCamera(mgr, true);
+  const CColor color = CColor::Blue();
   gpRender->SetWorldFog(kRFM_PerspLin, 52.f, 57.f, CColor::Black());
   static const GXVtxDescList desc[] = {
       {GX_VA_POS, GX_DIRECT}, {GX_VA_TEX0, GX_DIRECT}, {GX_VA_NULL, GX_NONE}};
@@ -1075,7 +1074,7 @@ void CEnvFxManager::SetupDriftingParticleTevs(CStateManager& mgr) {
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
   CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, GX_CA_ZERO);
-  CGX::SetTevKColor(GX_KCOLOR0, CColor::Blue().GetGXColor());
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
   CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
   BlankFirstSnowflakeMip(***mTxtrSnowFlake);
@@ -1102,7 +1101,8 @@ void CEnvFxManager::SetupDarkWorldTevs() {
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_KONST, GX_CC_TEXC, GX_CC_ZERO);
   CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_KONST, GX_CA_TEXA, GX_CA_ZERO);
-  CGX::SetTevKColor(GX_KCOLOR0, CColor::White().GetGXColor());
+  const CColor& white = CColor::White();
+  CGX::SetTevKColor(GX_KCOLOR0, white.GetGXColor());
   CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
   mDarkWorldParticleTexture->Load(GX_TEXMAP0, CTexture::kCM_Clamp);
@@ -1177,14 +1177,17 @@ void CEnvFxManager::SetupRainTevs() {
   CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
   CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_RASA, GX_CA_KONST, GX_CA_ZERO);
   CGX::SetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-  CGX::SetTevKColor(GX_KCOLOR0, CColor(1.f, 1.f, 1.f, 0.15f).GetGXColor());
+  const CColor color = CColor(1.f, 1.f, 1.f, 0.15f);
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
   (*mTxtrEnvGradient)->Load(GX_TEXMAP0, CTexture::kCM_Clamp);
 }
 
 void CEnvFxManager::SetupParticleTrailTevs(CStateManager& mgr) {
-  const CGameCamera* camera = mgr.GetCameraManager(0)->GetCurrentCamera(mgr, true);
+  const CGameCamera* camera = mgr.GetCurrentRenderCameraManager()->GetCurrentCamera(mgr, true);
+  CColor color = CColor::White();
   if (camera->GetFluidCount() != 0) {
     gpRender->SetWorldFog(kRFM_PerspExp, 0.f, 35.f, CColor::Black());
+    color = CColor(1.f, 1.f, 1.f, 0.5f);
   } else {
     gpRender->SetWorldFog(kRFM_PerspLin, 52.f, 57.f, CColor::Black());
   }
@@ -1202,8 +1205,8 @@ void CEnvFxManager::SetupParticleTrailTevs(CStateManager& mgr) {
   CGX::SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
   CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
   CGX::SetStandardTevColorAlphaOp(GX_TEVSTAGE0);
-  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1, GX_CC_ZERO);
-  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_A1, GX_CA_ZERO);
+  CGX::SetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C0, GX_CC_ZERO);
+  CGX::SetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_A0, GX_CA_ZERO);
   (*mTxtrEnvGradient)->Load(GX_TEXMAP0, CTexture::kCM_Clamp);
 }
 
@@ -1256,7 +1259,7 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
       const float size = random.Range(0.05f, 0.7f);
       const CVector3f up = cameraRotation * CVector3f(0.f, 0.f, size);
       const CVector3f right = cameraRotation * CVector3f(size, 0.f, 0.f);
-      const CVector3f offset = -0.5f * up - 0.5f * right;
+      const CVector3f offset = 0.5f * -up - 0.5f * right;
       upDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(up.GetX()), real_to_fixed8_8(up.GetY()),
                                          real_to_fixed8_8(up.GetZ())));
       rightDeltas.push_back(CVectorFixed8_8(real_to_fixed8_8(right.GetX()),
@@ -1282,10 +1285,13 @@ void CEnvFxManager::Render(const CStateManager& mgr) {
 }
 
 static int CalcRainVolume(float density) {
+  float volume;
   if (density < 0.1f) {
-    return static_cast< int >(74.f * (density / 0.1f));
+    volume = 74.f * (density / 0.1f);
+  } else {
+    volume = 21.f * (density / 0.9f) + 74.f;
   }
-  return static_cast< int >(21.f * (density / 0.9f) + 74.f);
+  return static_cast< int >(volume);
 }
 
 static short CalcRainPitch(float density) { return static_cast< short >(8192.f * density); }

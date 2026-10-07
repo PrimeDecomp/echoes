@@ -69,7 +69,7 @@ void CPlayerKnockBackMgr::Update(float dt, CStateManager& mgr, CActor& actor) {
     mFreezePending = false;
   }
   UpdateBurning(dt, mgr, *player);
-  UpdateImplosion(mgr, *player);
+  UpdateImplosion(dt, mgr, *player);
   UpdateElectrocution(dt, mgr, *player);
 
   mRagDollDelay -= dt;
@@ -78,7 +78,7 @@ void CPlayerKnockBackMgr::Update(float dt, CStateManager& mgr, CActor& actor) {
     player->PlayerRagDoll() =
         rs_new CPlayerRagDoll(mgr, player, CSfxManager::kInternalInvalidSfxId, 0);
   }
-  if (mBurnDeath && dt < mBurnDeathRemainingTime) {
+  if (mBurnDeath && mBurnDeathRemainingTime > dt) {
     mBurnDeathRemainingTime -= dt;
   }
 }
@@ -92,15 +92,15 @@ void CPlayerKnockBackMgr::KnockBack(CStateManager& mgr, CActor& actor, const CKn
 
   const float power =
       info.GetDamageInfo().GetKnockBackPower(*player->GetDamageVulnerability(), 0.f);
-  if (IsAlive(*player) && power <= 0.f) {
+  if (IsAlive(actor) && power <= 0.f) {
     return;
   }
 
-  const CPlayer::EPlayerMorphBallState morphState = player->GetMorphballTransitionState();
-  mWasBall = morphState == CPlayer::kMS_Morphed || morphState == CPlayer::kMS_Morphing;
+  mWasBall = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
+             player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
   mWasFrozen = player->GetFrozenState();
   mWasOnGround = player->GetPlayerMovementState() == NPlayer::kMS_OnGround;
-  CKnockBackMgr::KnockBack(mgr, *player, info);
+  CKnockBackMgr::KnockBack(mgr, actor, info);
   if (CanApplyKnockBackForce(mgr, *player, info)) {
     ApplyPlayerKnockBackForce(*player, info.GetDirection(), power, 1.f);
   }
@@ -126,7 +126,7 @@ void CPlayerKnockBackMgr::ResetEffects(CStateManager& mgr, CPlayer& player) {
 }
 
 float CPlayerKnockBackMgr::GetBurnDeathAlpha() const {
-  return mBurnDeath ? mBurnDeathRemainingTime * 0.5f : 1.f;
+  return mBurnDeath ? mBurnDeathRemainingTime / 2.f : 1.f;
 }
 
 bool CPlayerKnockBackMgr::IsAlive(const CActor& actor) const {
@@ -145,7 +145,10 @@ CKnockBackMgr::ECharacterState CPlayerKnockBackMgr::GetCharacterState(const CAct
 
 bool CPlayerKnockBackMgr::HasAnimReaction(const CActor& actor, EAnimReaction reaction) const {
   const int state = skAnimationStates[reaction];
-  return state != -1 && actor.GetAnimationData()->GetPASDatabase().HasState(state);
+  if (state != -1) {
+    return actor.GetAnimationData()->GetPASDatabase().HasState(state);
+  }
+  return false;
 }
 
 void CPlayerKnockBackMgr::DoKnockBackAnimation(const CVector3f& direction, CStateManager& mgr,
@@ -236,22 +239,22 @@ void CPlayerKnockBackMgr::UpdateBurning(float dt, CStateManager& mgr, CPlayer& p
     mBurnRemainingTime -= dt;
   }
 
-  if (!(mBurnRemainingTime > 0.f)) {
+  if (mBurnRemainingTime > 0.f) {
+    if (player.GetPlayerState()->IsPlayerAlive()) {
+      mgr.ActorModelParticles()->LightDudeOnFire(player);
+      const CDamageInfo damage(CWeaponMode(kWT_Light), mBurnDamagePerSecond * dt, 0.f, FLT_EPSILON,
+                               false, false);
+      EnableAnimReaction(kAR_Flinch, false);
+      EnableAnimReaction(kAR_KnockBack, false);
+      mgr.ApplyDamage(player.GetUniqueId(), player.GetUniqueId(), mBurnOwner, damage,
+                      CMaterialFilter::MakeIncludeExclude(CMaterialList(sDamageMaterial),
+                                                          CMaterialList()),
+                      CVector3f::Zero());
+      EnableAnimReaction(kAR_Flinch, true);
+      EnableAnimReaction(kAR_KnockBack, true);
+    }
+  } else {
     DouseFlames();
-  } else if (player.GetPlayerState()->IsPlayerAlive()) {
-    mgr.ActorModelParticles()->LightDudeOnFire(player);
-    CDamageInfo damage;
-    damage.SetWeaponMode(CWeaponMode(kWT_Light));
-    damage.SetDamage(mBurnDamagePerSecond * dt);
-    damage.SetRadiusDamage(damage.GetDamage());
-    damage.SetKnockBackPower(FLT_EPSILON);
-    EnableAnimReaction(kAR_Flinch, false);
-    EnableAnimReaction(kAR_KnockBack, false);
-    mgr.ApplyDamage(player.GetUniqueId(), player.GetUniqueId(), mBurnOwner, damage,
-                    CMaterialFilter::MakeInclude(CMaterialList(sDamageMaterial)),
-                    CVector3f::Zero());
-    EnableAnimReaction(kAR_Flinch, true);
-    EnableAnimReaction(kAR_KnockBack, true);
   }
 }
 
@@ -356,12 +359,11 @@ void CPlayerKnockBackMgr::UpdateElectrocution(float dt, CStateManager& mgr, CPla
   if (mElectrocutionRemainingTime > 0.f) {
     if (player.GetPlayerState()->IsPlayerAlive()) {
       particles.StartElectric(player);
-      CDamageInfo damage;
-      damage.SetWeaponMode(CWeaponMode(kWT_Annihilator));
-      damage.SetDamage(mElectrocutionDamagePerSecond * dt);
-      damage.SetRadiusDamage(damage.GetDamage());
+      const CDamageInfo damage(CWeaponMode(kWT_Annihilator), mElectrocutionDamagePerSecond * dt,
+                               0.f, 0.f, false, false);
       mgr.ApplyDamage(mElectrocutionOwner, player.GetUniqueId(), mElectrocutionOwner, damage,
-                      CMaterialFilter::MakeInclude(CMaterialList(sDamageMaterial)),
+                      CMaterialFilter::MakeIncludeExclude(CMaterialList(sDamageMaterial),
+                                                          CMaterialList()),
                       CVector3f::Zero());
       player.BodyController()->CommandMgr().DeliverCmd(
           CPBCAdditiveReactionCmd(CPBCAdditiveReactionCmd::kART_Shock, true));
@@ -378,7 +380,8 @@ void CPlayerKnockBackMgr::UpdateElectrocution(float dt, CStateManager& mgr, CPla
 
 void CPlayerKnockBackMgr::ApplyPlayerKnockBackForce(CPlayer& player, const CVector3f& direction,
                                                     float power, float unused) {
-  float force = power * 500.f;
+  float force = power;
+  force *= 500.f;
   if (player.GetMorphballTransitionState() != CPlayer::kMS_Morphed &&
       player.GetSurfaceRestraint() == CPlayer::kSR_Air) {
     force /= 3.5f;
@@ -393,18 +396,25 @@ void CPlayerKnockBackMgr::ApplyPlayerKnockBackForce(CPlayer& player, const CVect
   const CVector3f velocity = player.GetVelocityWR();
   const float speed = velocity.Magnitude();
   const float limitedSpeed = rstl::min_val(speed, maximumSpeed);
-  if (CMath::IsEpsilon(limitedSpeed, 0.f, 0.00001f)) {
-    player.SetVelocityWR(CVector3f::Zero());
-  } else {
+  float adjustedSpeed = limitedSpeed;
+  if (!CMath::IsEpsilon(limitedSpeed, 0.f, 0.00001f)) {
     const CVector3f velocityDirection = (1.f / speed) * velocity;
-    float adjustedSpeed = limitedSpeed;
     if (player.GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
-      const CVector3f axis = player.GetSurfaceRestraint() == CPlayer::kSR_Air
-                                 ? player.GetTransform().GetRight()
-                                 : player.GetTransform().GetForward();
-      adjustedSpeed *= 0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+      if (player.GetSurfaceRestraint() != CPlayer::kSR_Air) {
+        adjustedSpeed =
+            limitedSpeed *
+            (0.65f + 0.35f * CMath::AbsF(CVector3f::Dot(player.GetTransform().GetForward(),
+                                                       velocityDirection)));
+      } else {
+        adjustedSpeed =
+            limitedSpeed *
+            (0.65f + 0.35f * CMath::AbsF(CVector3f::Dot(player.GetTransform().GetRight(),
+                                                       velocityDirection)));
+      }
     }
     player.SetVelocityWR(adjustedSpeed * velocityDirection);
+  } else {
+    player.SetVelocityWR(CVector3f::Zero());
   }
 }
 
@@ -423,7 +433,7 @@ bool CPlayerKnockBackMgr::CanApplyKnockBackForce(CStateManager& mgr, CPlayer& pl
       return false;
     }
   }
-  return !(mActiveParameters.mFlags & kRF_DisablePhysics);
+  return (mActiveParameters.mFlags & kRF_DisablePhysics) ? false : true;
 }
 
 void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniqueId source,
@@ -434,16 +444,20 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
   }
 
   EFollowUp followUp = mActiveParameters.mFollowUp;
-  CHealthInfo* health = player->HealthInfo();
+  const float hp = CMath::AbsF(player->GetHealthInfo()->GetHP());
   const bool burnDeath = followUp == kFU_LaggedBurnDeath ||
                          followUp == kFU_ImmediateDisintegration || followUp == kFU_BlackDeath ||
                          followUp == kFU_BurnDeath;
   const bool ball = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
                     player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
   if ((!burnDeath && !player->GetPlayerState()->IsPlayerAlive() &&
-       CMath::AbsF(health->GetHP()) > 15.f) ||
+       hp > 15.f) ||
       (followUp == kFU_Death && ball)) {
-    followUp = player->GetFrozenState() ? kFU_IceDeath : kFU_ExplodeDeath;
+    if (player->GetFrozenState()) {
+      followUp = kFU_IceDeath;
+    } else {
+      followUp = kFU_ExplodeDeath;
+    }
   }
 
   switch (followUp) {
@@ -453,22 +467,28 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
     break;
   case kFU_Shock:
   case kFU_ImmediateExplosion: {
-    TUniqueId damageOwner = owner;
-    if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner))) {
-      damageOwner = weapon->GetOwnerId();
-    }
+    const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner));
+    const TUniqueId damageOwner = weapon ? weapon->GetOwnerId() : owner;
     Shock(mActiveParameters.mFollowUpDuration, 2.f, *player, damageOwner);
     break;
   }
+  case kFU_BlackDeath:
+    StartBlackHoleDeath(mgr, source, *player);
+    break;
   case kFU_Burn:
     if (source != player->GetUniqueId()) {
-      TUniqueId damageOwner = owner;
-      if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner))) {
-        damageOwner = weapon->GetOwnerId();
-      }
-      Burn(mActiveParameters.mFollowUpDuration, gpTweakPlayerGun->GetPlayerBurnDamage(),
-           damageOwner);
+      const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner));
+      const TUniqueId damageOwner = weapon ? weapon->GetOwnerId() : owner;
+      const float duration = mActiveParameters.mFollowUpDuration;
+      Burn(duration, gpTweakPlayerGun->GetPlayerBurnDamage(), damageOwner);
     }
+    break;
+  case kFU_LaggedBurnDeath:
+    StartBurnDeath(mgr, *player, kBDT_Lagged);
+    break;
+  case kFU_BurnDeath:
+  case kFU_ImmediateDisintegration:
+    StartBurnDeath(mgr, *player, kBDT_Normal);
     break;
   case kFU_Death:
     player->SetDeathFadeEnabled(true);
@@ -480,16 +500,6 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
     break;
   case kFU_IceDeath:
     ExplodeDeath(mgr, *player, kEDT_Ice, owner);
-    break;
-  case kFU_BurnDeath:
-  case kFU_ImmediateDisintegration:
-    StartBurnDeath(mgr, *player, kBDT_Normal);
-    break;
-  case kFU_LaggedBurnDeath:
-    StartBurnDeath(mgr, *player, kBDT_Lagged);
-    break;
-  case kFU_BlackDeath:
-    StartBlackHoleDeath(mgr, source, *player);
     break;
   default:
     break;
@@ -527,7 +537,7 @@ void CPlayerKnockBackMgr::StartBlackHoleDeath(CStateManager& mgr, TUniqueId sour
   }
 }
 
-void CPlayerKnockBackMgr::UpdateImplosion(CStateManager& mgr, CPlayer& player) {
+void CPlayerKnockBackMgr::UpdateImplosion(float dt, CStateManager& mgr, CPlayer& player) {
   if (mImploding && player.GetDeathTime() > 1.5f) {
     mgr.ActorModelParticles()->StopImplosion(player);
   }

@@ -42,13 +42,15 @@ CActorModelParticles::CSystem::CSystem(const char* name) : mRefCount(0), mLoaded
 }
 
 void CActorModelParticles::CSystem::AddRef() {
-  if (++mRefCount == 1) {
+  ++mRefCount;
+  if (mRefCount == 1) {
     Lock();
   }
 }
 
 void CActorModelParticles::CSystem::DelRef() {
-  if (--mRefCount <= 0) {
+  --mRefCount;
+  if (mRefCount <= 0) {
     Unlock();
   }
 }
@@ -79,10 +81,15 @@ void CActorModelParticles::CSystem::Update() {
   if (mLoaded || mRefCount == 0) {
     return;
   }
+  bool notLoaded = false;
   for (rstl::vector< CToken >::const_iterator it = mTokens.begin(); it != mTokens.end(); ++it) {
     if (!it->IsLoaded()) {
-      return;
+      notLoaded = true;
+      break;
     }
+  }
+  if (notLoaded) {
+    return;
   }
   mLoaded = true;
 }
@@ -120,9 +127,11 @@ CActorModelParticles::CItem::~CItem() {
   if (mSfx) {
     CSfxManager::RemoveEmitter(mSfx);
   }
-  for (int i = 0; i < 8; ++i) {
-    if (mLockDeps & (1 << i)) {
-      mParent->DelTypeRef(static_cast< ESystemTypes >(i));
+  if (mLockDeps != 0) {
+    for (int i = 0; i < 8; ++i) {
+      if (mLockDeps & (1 << i)) {
+        mParent->DelTypeRef(static_cast< ESystemTypes >(i));
+      }
     }
   }
 }
@@ -892,8 +901,8 @@ void CActorModelParticles::InitializeSystemTypes() {
 }
 
 void CActorModelParticles::AddTypeRef(ESystemTypes type) {
-  mDgrps[type].AddRef();
   const uchar mask = 1 << type;
+  mDgrps[type].AddRef();
   if (!(mLoadedDeps & mask)) {
     mLoadingDeps |= mask;
   }

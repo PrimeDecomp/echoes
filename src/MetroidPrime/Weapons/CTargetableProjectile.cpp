@@ -37,7 +37,7 @@ CEntity* CTargetableProjectile::TypesMatch(int typeId) const {
 
 void CTargetableProjectile::ResolveCollisionWithActor(const CRayCastResult& result, CActor& actor,
                                                       CStateManager& mgr) {
-  if (actor.TypesMatch(0x98) != nullptr) {
+  if (TCastToPtr< CTargetableProjectile >(actor) != nullptr) {
     return;
   }
 
@@ -65,7 +65,7 @@ bool CTargetableProjectile::Explode(const CVector3f& position, const CVector3f& 
     const TUniqueId projectileOwner = mHitProjectileOwner;
     CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(projectileOwner));
     if (player != nullptr) {
-      const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOwnerId()));
+      const CActor* const actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOwnerId()));
       if (actor != nullptr) {
         const TUniqueId uid = mgr.AllocateUniqueId();
         const CVector3f aimPosition = actor->GetAimPosition(mgr, 0.f);

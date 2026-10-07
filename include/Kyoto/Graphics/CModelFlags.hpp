@@ -86,10 +86,16 @@ public:
   }
 
   ETrans GetTrans() const { return static_cast< ETrans >(mBlendMode); }
+  // Some native paths read the blend mode as a signed byte (lbz + extsb into one register);
+  // a value cast to signed char splits that into two registers instead.
+  ETrans GetTransSigned() const {
+    return static_cast< ETrans >(*reinterpret_cast< const signed char* >(&mBlendMode));
+  }
   int GetShaderSet() const { return mMatSetIdx; }
   uint GetOtherFlags() const { return mFlags; }
   CColor GetColor() const { return mColor; }
   const CColor& GetColorRef() const { return mColor; }
+  void SetColor(const CColor& color) { mColor = color; }
 
   bool operator==(const CModelFlags& other) const {
     // TODO: cast to char for extsb; see CScriptActor::PreRender

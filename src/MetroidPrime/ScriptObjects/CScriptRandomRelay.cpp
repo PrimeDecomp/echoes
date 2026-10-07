@@ -13,7 +13,7 @@
 
 CScriptRandomRelay::CScriptRandomRelay(TUniqueId uid, const rstl::string& name,
                                        const CEntityInfo& info, int sendSetSize,
-                                       int sendSetVariance, bool percentSize, bool randomChance)
+                                       int sendSetVariance, const bool percentSize, const bool randomChance)
 : CEntity(uid, info, name, 0)
 , mSendSetSize(sendSetSize)
 , mSendSetVariance(sendSetVariance)
@@ -45,7 +45,7 @@ void CScriptRandomRelay::SendLocalScriptMsgs(EScriptObjectState state, CStateMan
   case kSS_Zero: {
     if (mRandomChance) {
       if (mgr.Random()->Range(0, 100) <= mSendSetSize) {
-        SendScriptMsgs(kSS_Zero, mgr, originator, kSM_None);
+        SendScriptMsgs(state, mgr, originator, kSM_None);
       }
       break;
     }
@@ -55,48 +55,53 @@ void CScriptRandomRelay::SendLocalScriptMsgs(EScriptObjectState state, CStateMan
 
     rstl::vector< SConnection >::const_iterator conn = GetConnectionList().begin();
     for (; conn != GetConnectionList().end(); ++conn) {
-      if (conn->state == kSS_Zero) {
+      if (conn->state == state) {
         CObjectList& objList = mgr.ObjectListById(kOL_All);
         CStateManager::TIdListResult list = mgr.GetIdListForScript(conn->objId);
         if (!(list.first == list.second)) {
           for (CStateManager::TIdList::const_iterator it = list.first; it != list.second; ++it) {
             CEntity* ent = objList.GetObjectById(it->second);
             if (ent != nullptr && ent->GetActive()) {
-              objs.push_back(rstl::pair< CEntity*, EScriptObjectMessage >(ent, conn->msg));
+              if (objs.size() == objs.capacity()) {
+                objs.reserve(objs.size() * 2);
+              }
+              objs.push_back_unsafe(rstl::pair< CEntity*, EScriptObjectMessage >(ent, conn->msg));
             }
           }
         }
       }
     }
 
+    int count = objs.size();
     int targetSetSize =
-        mPercentSize ? int(0.5f + (float(mSendSetSize * objs.size()) / 100.f)) : mSendSetSize;
-    const short variance = float(mSendSetVariance) * (2.f * mgr.Random()->Float());
+        mPercentSize ? int(0.5f + (float(count * mSendSetSize) / 100.f)) : mSendSetSize;
+    const short variance = CCast::FtoS(float(mSendSetVariance) * (2.f * mgr.Random()->Float()));
     targetSetSize += variance - mSendSetVariance;
     targetSetSize = rstl::min_val(rstl::max_val(0, targetSetSize), 100);
 
-    while (objs.size() > targetSetSize) {
-      const int removeIdx = int(mgr.Random()->Float() * float(objs.size()) * 0.99f);
+    while (count > targetSetSize) {
       rstl::vector< rstl::pair< CEntity*, EScriptObjectMessage > >::iterator it = objs.begin();
-      for (int i = 0; i < removeIdx; ++i) {
+      int removeIdx = int(mgr.Random()->Float() * float(objs.size()) * 0.99f);
+      for (; removeIdx > 0; --removeIdx) {
         ++it;
-        if (it == objs.end()) {
+        if (objs.end() == it) {
           break;
         }
       }
-      if (it != objs.end()) {
+      if (objs.end() != it) {
         objs.erase(it);
+        --count;
       }
     }
 
     for (rstl::vector< rstl::pair< CEntity*, EScriptObjectMessage > >::iterator it = objs.begin();
-         it != objs.end(); ++it) {
+         objs.end() != it; ++it) {
       mgr.SendScriptMsg(it->first, GetUniqueId(), it->second, originator);
     }
     break;
   }
   default:
-    SendScriptMsgs(state, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(state, mgr);
     break;
   }
 }

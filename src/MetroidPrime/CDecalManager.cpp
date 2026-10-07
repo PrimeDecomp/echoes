@@ -12,6 +12,11 @@
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "rstl/math.hpp"
 
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CCollisionSurface)
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CCollisionSurface)
+} // namespace rstl
+
 rstl::reserved_vector< CDecalManager::SDecal, 64 > CDecalManager::mDecalPool;
 rstl::reserved_vector< int, 64 > CDecalManager::mActiveIndexList;
 int CDecalManager::mFreeIndex;
@@ -19,6 +24,8 @@ bool CDecalManager::mPoolInitialized = false;
 float CDecalManager::mDeltaTimeSinceLastDecalCreation;
 int CDecalManager::mLastDecalCreatedIndex;
 CAssetId CDecalManager::mLastDecalCreatedAssetId;
+
+// The target places this out-of-line constructor in this translation unit.
 
 namespace {
 const CMaterialList skImplicitWorldMaterials(kMT_Unknown59, kMT_Unknown60);
@@ -117,11 +124,14 @@ void CDecalManager::GatherWorldSurfaces(const CStateManager& mgr, const CAABox& 
     if (area->GetOcclusionState() != CGameArea::kOS_Visible) {
       continue;
     }
-    const CGameArea::CPostConstructed& post = *area->GetPostConstructed();
-    if (!post.mRenderOctTree) {
+    const CAreaRenderOctTree* const octreePtr = area->GetPostConstructed()->mRenderOctTree
+                                                    ? area->GetPostConstructed()->mRenderOctTree.get_ptr()
+                                                    : nullptr;
+    if (octreePtr == nullptr) {
       continue;
     }
-    const CAreaRenderOctTree& octree = *post.mRenderOctTree;
+    const CAreaRenderOctTree& octree = *octreePtr;
+    const CGameArea::CPostConstructed& post = *area->GetPostConstructed();
     rstl::vector< uint > bitmap(octree.GetBitmapWordCount(), 0);
     octree.FindOverlappingModels(bitmap.data(), bounds);
     for (uint word = 0; word < octree.GetBitmapWordCount(); ++word) {
@@ -137,8 +147,9 @@ void CDecalManager::GatherWorldSurfaces(const CStateManager& mgr, const CAABox& 
           continue;
         }
         const CMetroidModelInstance& model = post.mModelInstances[areaSurface.mModelIndex];
-        const ushort surfaceCount = model.GetSurfaceCountInGroup(areaSurface.mSurfaceGroupIndex);
-        const ushort* indices = model.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
+        const CMetroidModelInstance::CSurfaceGroups groups = model.GetSurfaceGroups();
+        const ushort surfaceCount = groups.GetSurfaceCount(areaSurface.mSurfaceGroupIndex);
+        const ushort* indices = groups.GetSurfaceIndices(areaSurface.mSurfaceGroupIndex);
         for (ushort i = 0; i < surfaceCount; ++i) {
           const CCubeSurface surface(model.GetSurfaces()[indices[i]]);
           const CAABox surfaceBounds = surface.GetBounds();

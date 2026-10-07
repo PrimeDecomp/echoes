@@ -36,7 +36,7 @@ void CWeapon::SetDamageFalloffSpeed(float speed) {
 void CWeapon::Think(float dt, CStateManager& mgr) {
   mCurTime += dt;
   if (HasAttrib(kPA_DamageFalloff)) {
-    const float scale = rstl::max_val(0.f, 1.f - mCurTime * mDamageFalloffSpeed);
+    const float scale = rstl::max_val(1.f - mCurTime * mDamageFalloffSpeed, 0.f);
     const float damage = scale * mOrigDamageInfo.GetDamage();
     const float radius = scale * mOrigDamageInfo.GetRadius();
     const float knockback = scale * mOrigDamageInfo.GetKnockBackPower();

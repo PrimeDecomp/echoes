@@ -34,8 +34,9 @@ CProjectedShadow::CProjectedShadow(int width, int height, uchar persistent, int 
 CProjectedShadow::~CProjectedShadow() { mTexture.ScheduleDeletion(); }
 
 void CProjectedShadow::ExpandBoundsForTexture() {
-  const float texelScale = 3.f / (mTexture.GetWidth() - 2);
-  const CVector3f offset(texelScale * mBounds.GetWidth(), texelScale * mBounds.GetHeight(), 0.f);
+  const float texelScale = 1.f / (mTexture.GetWidth() - 2);
+  const CVector3f offset(texelScale * (3.f * mBounds.GetWidth()),
+                         texelScale * (3.f * mBounds.GetHeight()), 0.f);
   mBounds = CAABox(mBounds.GetMinPoint() - offset, mBounds.GetMaxPoint() + offset);
 }
 

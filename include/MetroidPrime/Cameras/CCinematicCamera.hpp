@@ -20,7 +20,7 @@ public:
   void ProcessInput(const CFinalInput& input, CStateManager& mgr) override;
   void Reset(const CTransform4f& xf, CStateManager& mgr) override;
 
-  bool CanSkip(const CStateManager& mgr) const; // Guessed name
+  const bool CanSkip(const CStateManager& mgr) const; // Guessed name
   float GetMoveOutofIntoAlpha() const;
   CVector3f CalculateMoveOutofIntoEyePosition(bool outOfEye, const CStateManager& mgr) const;
 

@@ -23,7 +23,12 @@ public:
   const CAnimationParameters& GetAnimationParameters() const { return mAnimationParameters; }
   const CHealthInfo& GetHealthInfo() const { return mHealthInfo; }
   const CDamageVulnerability& GetDamageVulnerability() const { return mDamageVulnerability; }
+  const float& GetHalfExtent() const { return mHalfExtent; }
   uint GetPathfindingIndex() const { return mPathfindingIndex; }
+  float GetHeight() const { return mHeight; }
+  float GetDetectionRange() const { return mDetectionRange; }
+  float GetMinAttackRange() const { return mMinAttackRange; }
+  float GetMaxAttackRange() const { return mMaxAttackRange; }
 
 private:
   float mMass;

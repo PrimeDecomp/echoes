@@ -157,9 +157,9 @@ void CElitePirateGrenadeLauncher::UpdateGunTracking(float dt, CStateManager& mgr
   if (HasAnimation() && mStarted == 1 && IsTrackingPlayer()) {
     const float speed = dt * mSlowedSpeed;
     const CVector3f aimPosition = mgr.GetPlayer(mPlayerIndex)->GetAimPosition(mgr, 0.f);
-    float targetZ;
+    float targetZ = aimPosition.GetZ();
     if (IsNearHint(mgr, mgr.GetPlayer(mPlayerIndex)->GetTranslation()) == true) {
-      targetZ = aimPosition.GetZ() + 5.f;
+      targetZ += 5.f;
     } else {
       targetZ = GetTranslation().GetZ();
     }

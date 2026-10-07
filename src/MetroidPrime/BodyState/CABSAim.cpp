@@ -37,68 +37,77 @@ void CABSAim::Start(CBodyController& bc, CStateManager& mgr) {
     const CPASAnimParmData parms(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(i),
                                  CPASAnimParm::FromEnum(mAimType));
     mAnims[i] = bc.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1).second;
-    mAngles[i] = CRelAngle::FromDegrees(aimState->GetAnimParmData(mAnims[i], 2).GetReal32Value())
-                     .AsRadians();
+    const CPASAnimParm parm = aimState->GetAnimParmData(mAnims[i], 2);
+    mAngles[i] = CRelAngle::FromDegrees(parm.GetReal32Value()).AsRadians();
   }
 
-  mNeedsIdle = bc.CommandMgr().GetCmd(kBSC_AdditiveIdle) != nullptr;
+  mNeedsIdle = false;
+  if (bc.CommandMgr().GetCmd(kBSC_AdditiveIdle)) {
+    mNeedsIdle = true;
+  }
 }
 
 pas::EAnimationState CABSAim::UpdateBody(float dt, CBodyController& bc, CStateManager& mgr) {
   const pas::EAnimationState state = GetBodyStateTransition(dt, bc);
-  if (state != pas::kAS_Invalid)
-    return state;
+  if (state == pas::kAS_Invalid) {
+    const CVector3f target = bc.CommandMgr().GetAdditiveTargetVector();
+    if (target.CanBeNormalized()) {
+      const float maximumVelocity = 3.f;
+      const float maximumAcceleration = 10.f;
+      float hAngle = atan2f(target.GetX(), target.GetY());
+      hAngle = CMath::Clamp(-mAngles[0], hAngle, mAngles[1]) * (2.f / M_PIF);
+      float velocity =
+          CMath::Clamp(-maximumVelocity, (hAngle - mHWeight) * 0.25f / dt, maximumVelocity);
+      float acceleration = (velocity - mHWeightVel) / dt;
+      mHWeightVel += dt * CMath::Clamp(-maximumAcceleration, acceleration, maximumAcceleration);
 
-  const CVector3f target = bc.CommandMgr().GetAdditiveTargetVector();
-  if (target.CanBeNormalized()) {
-    const float maximumVelocity = 3.f;
-    const float maximumAcceleration = 10.f;
-    float hAngle = atan2f(target.GetX(), target.GetY());
-    hAngle = CMath::Clamp(-mAngles[0], hAngle, mAngles[1]) * (2.f / M_PIF);
-    float velocity =
-        CMath::Clamp(-maximumVelocity, (hAngle - mHWeight) * 0.25f / dt, maximumVelocity);
-    float acceleration = (velocity - mHWeightVel) / dt;
-    mHWeightVel += dt * CMath::Clamp(-maximumAcceleration, acceleration, maximumAcceleration);
+      float vAngle = atan2f(target.GetZ(), CMath::SqrtF(target.GetY() * target.GetY() +
+                                                       target.GetX() * target.GetX()));
+      vAngle = CMath::Clamp(-mAngles[3], vAngle, mAngles[2]) * (2.f / M_PIF);
+      velocity = CMath::Clamp(-maximumVelocity, (vAngle - mVWeight) * 0.25f / dt, maximumVelocity);
+      acceleration = (velocity - mVWeightVel) / dt;
+      mVWeightVel += dt * CMath::Clamp(-maximumAcceleration, acceleration, maximumAcceleration);
 
-    float vAngle = atan2f(target.GetZ(), target.ToVec2f().Magnitude());
-    vAngle = CMath::Clamp(-mAngles[3], vAngle, mAngles[2]) * (2.f / M_PIF);
-    velocity = CMath::Clamp(-maximumVelocity, (vAngle - mVWeight) * 0.25f / dt, maximumVelocity);
-    acceleration = (velocity - mVWeightVel) / dt;
-    mVWeightVel += dt * CMath::Clamp(-maximumAcceleration, acceleration, maximumAcceleration);
+      const float newHWeight = mHWeight + dt * mHWeightVel;
+      const float newVWeight = mVWeight + dt * mVWeightVel;
+      CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
+      if (newHWeight != mHWeight) {
+        const float weight = CMath::AbsF(newHWeight);
+        if (CMath::AbsF(mHWeight) > 0.f && mHWeight * newHWeight <= 0.f)
+          animData.DelAdditiveAnimation(mAnims[mHWeight < 0.f ? 0 : 1]);
+        if (weight > 0.f)
+          animData.AddAdditiveAnimation(mAnims[newHWeight < 0.f ? 0 : 1], weight, false, false);
+      }
+      if (newVWeight != mVWeight) {
+        const float weight = CMath::AbsF(newVWeight);
+        if (CMath::AbsF(mVWeight) > 0.f && mVWeight * newVWeight <= 0.f)
+          animData.DelAdditiveAnimation(mAnims[mVWeight > 0.f ? 2 : 3]);
+        if (weight > 0.f)
+          animData.AddAdditiveAnimation(mAnims[newVWeight > 0.f ? 2 : 3], weight, false, false);
+      }
+      mHWeight = newHWeight;
+      mVWeight = newVWeight;
+    } else {
+      if (mHWeight < 0.f) {
+        mHWeight = rstl::min_val(mHWeight + dt, 0.f);
+      } else {
+        mHWeight = rstl::max_val(mHWeight - dt, 0.f);
+      }
+      if (mVWeight < 0.f) {
+        mVWeight = rstl::min_val(mVWeight + dt, 0.f);
+      } else {
+        mVWeight = rstl::max_val(mVWeight - dt, 0.f);
+      }
 
-    const float newHWeight = mHWeight + dt * mHWeightVel;
-    const float newVWeight = mVWeight + dt * mVWeightVel;
-    CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
-    if (newHWeight != mHWeight) {
-      if (CMath::AbsF(mHWeight) > 0.f && mHWeight * newHWeight <= 0.f)
-        animData.DelAdditiveAnimation(mAnims[mHWeight < 0.f ? 0 : 1]);
-      if (CMath::AbsF(newHWeight) > 0.f)
-        animData.AddAdditiveAnimation(mAnims[newHWeight < 0.f ? 0 : 1], CMath::AbsF(newHWeight),
-                                      false, false);
+      CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
+      if (CMath::AbsF(mHWeight) > 0.f)
+        animData.AddAdditiveAnimation(mAnims[mHWeight < 0.f ? 0 : 1], CMath::AbsF(mHWeight), false,
+                                      true);
+      // The native no-target path uses the opposite vertical selection from active aiming.
+      if (CMath::AbsF(mVWeight) > 0.f)
+        animData.AddAdditiveAnimation(mAnims[mVWeight < 0.f ? 2 : 3], CMath::AbsF(mVWeight), false,
+                                      true);
     }
-    if (newVWeight != mVWeight) {
-      if (CMath::AbsF(mVWeight) > 0.f && mVWeight * newVWeight <= 0.f)
-        animData.DelAdditiveAnimation(mAnims[mVWeight > 0.f ? 2 : 3]);
-      if (CMath::AbsF(newVWeight) > 0.f)
-        animData.AddAdditiveAnimation(mAnims[newVWeight > 0.f ? 2 : 3], CMath::AbsF(newVWeight),
-                                      false, false);
-    }
-    mHWeight = newHWeight;
-    mVWeight = newVWeight;
-  } else {
-    mHWeight =
-        mHWeight < 0.f ? rstl::min_val(mHWeight + dt, 0.f) : rstl::max_val(mHWeight - dt, 0.f);
-    mVWeight =
-        mVWeight < 0.f ? rstl::min_val(mVWeight + dt, 0.f) : rstl::max_val(mVWeight - dt, 0.f);
-
-    CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
-    if (CMath::AbsF(mHWeight) > 0.f)
-      animData.AddAdditiveAnimation(mAnims[mHWeight < 0.f ? 0 : 1], CMath::AbsF(mHWeight), false,
-                                    true);
-    // The native no-target path uses the opposite vertical selection from active aiming.
-    if (CMath::AbsF(mVWeight) > 0.f)
-      animData.AddAdditiveAnimation(mAnims[mVWeight < 0.f ? 2 : 3], CMath::AbsF(mVWeight), false,
-                                    true);
   }
   return state;
 }

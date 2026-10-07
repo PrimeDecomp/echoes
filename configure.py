@@ -502,7 +502,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSLieOnGround.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBSLocomotion.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSStep.cpp"),
-            Object(NonMatching, "MetroidPrime/BodyState/CBSTurn.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSTurn.cpp"),
             Object(NonMatching, "MetroidPrime/BodyState/CBodyController.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSLoopAttack.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CTargetableProjectile.cpp"),
@@ -542,7 +542,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CAABoxFilter.cpp"),
             Object(NonMatching, "MetroidPrime/CGroundMovement.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTargetingPoint.cpp"),
-            Object(NonMatching, "MetroidPrime/BodyState/CBSWallHang.cpp"),
+            Object(Matching, "MetroidPrime/BodyState/CBSWallHang.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEMPulse.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudBossEnergyInterface.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudRadarInterface.cpp"),
@@ -559,7 +559,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaProperties.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CStaticInterference.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindSearch.cpp"),
-            Object(NonMatching, "MetroidPrime/PathFinding/CPathFindRegion.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/PathFinding/CPathFindRegion.cpp"),
             Object(NonMatching, "MetroidPrime/PathFinding/CPathFindArea.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/PathFinding/CPathFindSpline.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CHealthInfo.cpp"),
@@ -663,17 +663,17 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Player/CPlayerBodyKnockBack.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerRagDoll.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CGrappleArm.cpp"),
-            Object(NonMatching, "MetroidPrime/Player/CFidget.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Player/CFidget.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGun.cpp"),
-            Object(NonMatching, "MetroidPrime/Weapons/CDarkBeam.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Weapons/CDarkBeam.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CAnnihilatorBeam.cpp"),
-            Object(NonMatching, "MetroidPrime/Weapons/CPowerBeam.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Weapons/CPowerBeam.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CAuxWeapon.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGunMotion.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CLightBeam.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CGunWeapon.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGunController.cpp"),
-            Object(NonMatching, "MetroidPrime/Weapons/GunController/CGSComboFire.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Weapons/GunController/CGSComboFire.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGSFidget.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/GunController/CGSFreeLook.cpp"),
             Object(NonMatching, "MetroidPrime/Player/CPlayerGunBase.cpp"),
@@ -683,7 +683,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSequenceTimer.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTriggerEllipsoid.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptAreaDamage.cpp"),
-            Object(NonMatching, "MetroidPrime/Player/CPlayerBodyGrapple.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Player/CPlayerBodyGrapple.cpp"),
             Object(NonMatching, "MetroidPrime/CPortalArea.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/ScriptCameraSpline.cpp"),
             Object(NonMatching, "MetroidPrime/RenderGeometryRayCast.cpp"),
@@ -1484,10 +1484,74 @@ config.libs = [
         ],
     },
     Rel(
+        "ChozoGhost",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CChozoGhost.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "AtomicAlpha",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CAtomicAlpha.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "DestructibleBarrier",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptDestructibleBarrier.cpp"),
+        ],
+        # Float constants are addressed one by one, not through a pooled base register.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "EyeBall",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CEyeBall.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "FishCloud",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CFishCloud.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "FlyingPirate",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CFlyingPirate.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
         ],
+    ),
+    Rel(
+        "Metaree",
+        [
+            Object(Matching, "MetroidPrime/Enemies/CMetaree.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "Parasite",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CParasite.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "Ripper",
+        [
+            Object(Matching, "MetroidPrime/Enemies/CRipper.cpp"),
+        ],
+        extra_cflags=["-pool off"],
     ),
     Rel(
         "ScriptCannonBall",
@@ -1496,11 +1560,86 @@ config.libs = [
         ],
     ),
     Rel(
+        "ScriptGui",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiPlayerJoinManager.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiScreen.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiWidget.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiMenu.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiSlider.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/ScriptGuiRel.cpp"),
+        ],
+        # Loaders and option screens address each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "ScriptSafeZone",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSafeZone.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSafeZoneCrystal.cpp"),
+        ],
+        # Float constants are addressed separately, as in Tweaks.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "ScriptFrontEndDataNetwork",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptFrontEndDataNetwork.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "SwarmBasics",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSwarmBasics.cpp"),
+        ],
+        # The native module addresses each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "GunTurret",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CGunTurretBase.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CGunTurretTop.cpp"),
+        ],
+        # The loaders address each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "Tweaks",
         [
             Object(Matching, "MetroidPrime/Tweaks/Tweaks.cpp"),
         ],
         # Native generated constructors address each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "Metroid",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CMetroid.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CBabyMetroid.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "Puffer",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CPuffer.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "Tryclops",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CTryclops.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
+        "WallWalker",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CWallWalker.cpp"),
+        ],
         extra_cflags=["-pool off"],
     ),
 ]

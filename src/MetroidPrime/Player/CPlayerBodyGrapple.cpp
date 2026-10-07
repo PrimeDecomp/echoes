@@ -29,6 +29,7 @@ void CPlayerBodyController::SGrappleState::Start(CStateManager& mgr,
         PlaySwing(mgr, controller);
       }
       break;
+    case CPlayer::kGS_Swinging:
     default:
       PlaySwing(mgr, controller);
       break;
@@ -74,8 +75,8 @@ bool CPlayerBodyController::SGrappleState::TryPlayFiring(CStateManager& mgr,
   const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_Grapple),
                               CPASAnimParm::FromEnum(mAnimationVariant),
                               CPASAnimParm::FromEnum(kAP_Firing));
-  const rstl::pair< float, int > best =
-      controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+  const CPASDatabase& db = controller.GetPASDatabase();
+  const rstl::pair< float, int > best = db.FindBestAnimation(parms, *mgr.Random(), -1);
   if (best.first > FLT_EPSILON) {
     controller.RequestAnimation(CAnimPlaybackParms(best.second, -1, 1.f, true), true, false);
     mState = kS_Firing;
@@ -89,8 +90,8 @@ bool CPlayerBodyController::SGrappleState::TryPlayPull(CStateManager& mgr,
   const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_Grapple),
                               CPASAnimParm::FromEnum(mAnimationVariant),
                               CPASAnimParm::FromEnum(kAP_Pull));
-  const rstl::pair< float, int > best =
-      controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+  const CPASDatabase& db = controller.GetPASDatabase();
+  const rstl::pair< float, int > best = db.FindBestAnimation(parms, *mgr.Random(), -1);
   if (best.first > FLT_EPSILON) {
     controller.RequestAnimation(CAnimPlaybackParms(best.second, -1, 1.f, true), true, false);
     mState = kS_Pull;
@@ -104,8 +105,8 @@ void CPlayerBodyController::SGrappleState::PlaySwing(CStateManager& mgr,
   const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_Grapple),
                               CPASAnimParm::FromEnum(mAnimationVariant),
                               CPASAnimParm::FromEnum(kAP_Swinging));
-  const rstl::pair< float, int > best =
-      controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+  const CPASDatabase& db = controller.GetPASDatabase();
+  const rstl::pair< float, int > best = db.FindBestAnimation(parms, *mgr.Random(), -1);
   if (best.first > FLT_EPSILON) {
     controller.RequestAnimation(CAnimPlaybackParms(best.second, -1, 1.f, true), true, false);
     mState = kS_Swinging;

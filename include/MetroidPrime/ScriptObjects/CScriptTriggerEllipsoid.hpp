@@ -35,6 +35,7 @@ public:
   bool IsPointInside(const CVector3f& point) const; // Guessed name
   void SetScale(const CVector3f& scale);            // Guessed name
   const CVector3f& GetScale() const { return mScale; }
+  EShapeType GetShape() const { return mShape; } // Guessed name.
 
 private:
   static CAABox CalculateBounds(const CTransform4f& xf, const CVector3f& scale);

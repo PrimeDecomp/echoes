@@ -39,6 +39,7 @@ public:
   ushort GetSurfaceAreaIndex(int surface) const {
     return static_cast< const ushort* >(x74_)[surface * 2 + 2];
   }
+  const ushort* GetSurfaceRecords() const { return static_cast< const ushort* >(x74_); } // Guessed name
 
   // Guessed names. The resource stores cumulative surface counts followed by indices.
   ushort GetSurfaceCountInGroup(int group) const {

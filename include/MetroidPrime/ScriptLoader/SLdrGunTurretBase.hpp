@@ -2,6 +2,7 @@
 #ifndef _SLDRGUNTURRETBASE_HPP
 #define _SLDRGUNTURRETBASE_HPP
 
+#include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/ScriptLoader/Structs/SLdrActorParameters.hpp"
@@ -63,7 +64,7 @@ struct SLdrGunTurretBase {
   SLdrActorParameters actorInformation; // 0x7e397fed
 };
 
-inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), alwaysFF(-1), patterned(), actorInformation() {
+inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), alwaysFF(-1), gFFireShotSound(-1), pirateFireShotSound(-1), lockOnSound(-1), gunPanSound(-1), gFGunChargeSound(-1), pirateGunChargeSound(-1), gunLowerLoopedSound(-1), gunLowerOffSound(-1), gunRaiseLoopedSound(-1), gunRaiseOffSound(-1), pirateGunDeathLowerLoopedSound(-1), gFGunDeathLowerLoopedSound(-1), poleSparksSound(-1), patterned(), actorInformation() {
   attackDamage.dI_WeaponType = 11;
   attackDamage.dI_Damage = 5.0f;
   hurtSleepDelay = 2.0f;
@@ -92,21 +93,12 @@ inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage
   unknown_0x5cf12e9a = false;
   unknown_0x479d8dc4 = false;
   isPirateTurret = false;
-  gFFireShotSound = 0;
-  pirateFireShotSound = 0;
-  lockOnSound = 0;
-  gunPanSound = 0;
-  gFGunChargeSound = 0;
-  pirateGunChargeSound = 0;
-  gunLowerLoopedSound = 0;
-  gunLowerOffSound = 0;
-  gunRaiseLoopedSound = 0;
-  gunRaiseOffSound = 0;
-  pirateGunDeathLowerLoopedSound = 0;
-  gFGunDeathLowerLoopedSound = 0;
-  poleSparksSound = 0;
   maxAudibleDistance = 100.0f;
   soundFallOff = 0.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
+  patterned.echoParameters.isEchoEmitter = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrGunTurretBase::~SLdrGunTurretBase() {}

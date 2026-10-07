@@ -5,6 +5,9 @@ splits: config/G2ME01/splits.txt
 symbols: config/G2ME01/symbols.txt
 quick_analysis: true # Faster reruns after full analysis
 mw_comment_version: 11 # GC 2.7 linker
+# Unreferenced constant present in the original DOL.
+force_active:
+  - kUnkPlayerIndexZero
 extract:
   - symbol: sDefaultFontData
     binary: MetroidPrime/DefaultFontData.bin
@@ -23,6 +26,19 @@ modules:
     hash: ade8972eb74648c3c5c99caa022ff457ff2b27fd
     splits: config/G2ME01/rels/AtomicAlpha/splits.txt
     symbols: config/G2ME01/rels/AtomicAlpha/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__15SLdrAtomicAlphaFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__25TToken<15CGenDescription>Fv
+      - __dt__Q212CAtomicAlpha5SBombFv
+      - __dt__15CPathFindSearchFv
+      - __dt__15CProjectileInfoFv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
+      - __dt__Q24rstl50optional_object<31TLockedToken<15CGenDescription>>Fv
+      - __dt__Q24rstl52optional_object<Q218CImpactVisorEffect11SBlurEffect>Fv
   # Module ID 3
   - object: files/RelProd/DarkCommando.rel
     hash: d9c41deb88a9f9cbe7b0230c3aa1b1b0f822fd3e
@@ -223,6 +239,13 @@ modules:
     hash: aa817d3a343647edab8f50e05e5156863098c4d2
     splits: config/G2ME01/rels/Metaree/splits.txt
     symbols: config/G2ME01/rels/Metaree/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__11SLdrMetareeFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
   # Module ID 43
   - object: files/RelProd/MetareeSwarm.rel
     hash: e9b5a7bd0c482e1bfecfd104e9d805bf579df554
@@ -283,6 +306,14 @@ modules:
     hash: f3ab11c967c58f4483a4264fbeb1ba4a837e8719
     splits: config/G2ME01/rels/Ripper/splits.txt
     symbols: config/G2ME01/rels/Ripper/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__10SLdrRipperFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
+      - __dt__Q24rstl66basic_string<c,Q24rstl14char_traits<c>,Q24rstl17rmemory_allocator>Fv
   # Module ID 55
   - object: files/RelProd/SandBoss.rel
     hash: 0a28cddbe1a04c8c4ca2bf6a6750d0467b9e805e

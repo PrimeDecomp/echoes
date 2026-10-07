@@ -8,22 +8,20 @@ class CCollisionSurface {
 public:
   CCollisionSurface() {}
   CCollisionSurface(const CVector3f& a, const CVector3f& b, const CVector3f& c, u64 flags)
-  : mFlags(flags) {
-    mVertices[0] = a;
-    mVertices[1] = b;
-    mVertices[2] = c;
-  }
+  : mA(a), mB(b), mC(c), mFlags(flags) {}
 
-  CUnitVector3f GetNormal() const;
+  CVector3f GetNormal() const;
   CPlane GetPlane() const;
   CPlane GetEdgePlane(int edge) const; // Guessed name
   bool IsDegenerate() const;           // Guessed name
 
   u64 GetSurfaceFlags() const { return mFlags; }
-  const CVector3f& GetVert(int index) const { return mVertices[index]; }
+  const CVector3f& GetVert(int index) const { return (&mA)[index]; }
 
 private:
-  CVector3f mVertices[3];
+  CVector3f mA;
+  CVector3f mB;
+  CVector3f mC;
   u64 mFlags;
 };
 CHECK_SIZEOF(CCollisionSurface, 0x30)

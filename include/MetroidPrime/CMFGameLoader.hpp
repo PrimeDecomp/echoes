@@ -31,7 +31,7 @@ private:
 
   rstl::ncrc_ptr< CStateManager > mStateManager;
   rstl::ncrc_ptr< CInGameGuiManagerSet > mGuiManager;
-  uint mLoadedGunPakSets;
+  int mLoadedGunPakSets;
   bool mInitialized : 1;
   bool mTransitionFinished : 1;
 };

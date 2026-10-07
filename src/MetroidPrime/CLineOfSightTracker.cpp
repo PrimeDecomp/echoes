@@ -12,10 +12,10 @@ CLineOfSightTracker::CLineOfSightTracker(TUniqueId owner, CSegId segment,
                                          float minimumCheckInterval, float checkIntervalRange)
 : mOwner(owner)
 , mSegment(segment)
-, mRayFilter(CMaterialList(kMT_Unknown59),
-             CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor, kMT_NoPlatformCollision,
-                           kMT_ExcludeFromLineOfSightTest),
-             CMaterialFilter::kFT_IncludeExclude)
+, mRayFilter(CMaterialFilter::MakeIncludeExclude(
+      CMaterialList(kMT_Unknown59),
+      CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor, kMT_NoPlatformCollision,
+                    kMT_ExcludeFromLineOfSightTest)))
 , mTarget(kInvalidUniqueId)
 , mMinimumCheckInterval(minimumCheckInterval)
 , mCheckIntervalRange(checkIntervalRange)

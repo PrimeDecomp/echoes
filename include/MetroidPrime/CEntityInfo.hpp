@@ -29,6 +29,7 @@ enum EEntityType {
   kET_Explosion = 22,
   kET_FirstPersonCamera = 23,
   kET_FixedCamera = 24, // Guessed name; runtime fixed camera.
+  kET_FishCloud = 25, // Guessed name; FishCloud REL TypesMatch tag.
   kET_GameLight = 26,
   kET_HomingBlob = 27, // Guessed name; Dark impact's multi-target particle weapon.
   kET_HUDBillboardEffect = 28,
@@ -54,6 +55,7 @@ enum EEntityType {
   kET_ScriptDamageableTriggerOrientated = 50, // Guessed name.
   kET_DarkSamusBattleStage = 51,
   kET_ScriptDebris = 52,
+  kET_ScriptDestructibleBarrier = 53, // Guessed name.
   kET_ScriptDistanceFog = 54, // Guessed name; Prime has CScriptDistanceFog.
   kET_ScriptDock = 55,
   kET_ScriptDoor = 56,
@@ -144,6 +146,8 @@ enum EScriptObjectState {
   kSS_DarkXDamage = 0x44524b58,
   kSS_IceXDamage = 0x49444d47, // Guessed DKCR HD name; native massive frozen death tag.
   kSS_Generate = 0x47454e52,
+  kSS_GRNT = 0x47524e54, // Destructible barrier: generator for falling sections.
+  kSS_Down = 0x444f574e, // Guessed name; destructible barrier finished lowering.
   kSS_ReflectedDamage = 0x52454644,
   kSS_Damage = 0x44414d47, // Guessed name; DAMG damage notification state.
   kSS_ResistedDamage = 0x52455344, // Guessed DKCR HD name; native resisted-damage branch.
@@ -168,6 +172,7 @@ enum EScriptObjectState {
   kSS_AreaLightDamage = 0x44414c47,
   kSS_UnknownSourceDamage = 0x44554e53,
   kSS_InheritBounds = 0x49424e44,
+  kSS_Modify = 0x4d444659, // Prime name; fish cloud modifier connections.
   kSS_InternalState00 = 0x49533030, // Guessed name: base of the ten counter-condition states.
   kSS_InternalState01 = 0x49533031, // Guessed name
   // Guessed names; portal-transition connections use these internal states.
@@ -176,6 +181,39 @@ enum EScriptObjectState {
   kSS_InternalState05 = 0x49533035,
   kSS_InternalState06 = 0x49533036,
   kSS_ScanSource = 0x53434e53,
+  // Guessed names; GUI widget/menu states sent by the ScriptGui REL.
+  kSS_InternalState02 = 0x49533032,
+  kSS_InternalState07 = 0x49533037,
+  kSS_InternalState08 = 0x49533038,
+  kSS_InternalState09 = 0x49533039,
+  kSS_InternalState10 = 0x49533130,
+  kSS_InternalState11 = 0x49533131,
+  kSS_InternalState12 = 0x49533132,
+  kSS_InternalState13 = 0x49533133,
+  kSS_InternalState14 = 0x49533134,
+  kSS_InternalState15 = 0x49533135,
+  kSS_InternalState16 = 0x49533136,
+  kSS_InternalState17 = 0x49533137,
+  kSS_InternalState18 = 0x49533138,
+  kSS_InternalState19 = 0x49533139,
+  kSS_Locked = 0x4c4f434b,
+  kSS_Unlocked = 0x554c434b,
+  kSS_Frozen = 0x4652455a,
+  kSS_APRC = 0x41505243, // Native GUI accept-press tag, sent before kSS_PressA.
+  kSS_PressA = 0x50525341,
+  kSS_PressB = 0x50525342,
+  kSS_PressX = 0x50525358,
+  kSS_PressY = 0x50525359,
+  kSS_PressZ = 0x5052535a,
+  kSS_PressStart = 0x50525354,
+  kSS_Left = 0x4c454654,
+  kSS_Right = 0x52474854,
+  kSS_AIS1 = 0x41495331, // Native GUI connection tags; meaning unresolved.
+  kSS_AIS2 = 0x41495332,
+  kSS_AIS3 = 0x41495333,
+  kSS_DGNR = 0x44474e52, // Native save-screen failure tag; meaning unresolved.
+  kSS_Up = 0x55502020,
+  kSS_Approach = 0x41505243,
   kSS_InvalidState = 0xffffffff,
 };
 
@@ -188,6 +226,7 @@ enum EScriptObjectMessage {
   kSM_Load = 0x4c4f4144,
   kSM_Unload = 0x554c4f44,
   kSM_Activate = 0x41435456,
+  kSM_Alert = 0x414c5254, // Guessed Prime name; sets the Metroid alert flag.
   kSM_Deactivate = 0x44435456,
   kSM_ToggleActive = 0x54435456,
   kSM_SetToZero = 0x5a45524f,
@@ -209,10 +248,25 @@ enum EScriptObjectMessage {
   kSM_Kill = 0x4b494c4c,
   kSM_InternalMessage00 = 0x494d3030,
   kSM_InternalMessage01 = 0x494d3031,
+  kSM_InternalMessage02 = 0x494d3032, // Guessed name; GUI menu item-state refresh.
+  kSM_InternalMessage03 = 0x494d3033, // Guessed name.
+  kSM_InternalMessage04 = 0x494d3034, // Guessed name.
+  kSM_InternalMessage05 = 0x494d3035, // Guessed name.
+  kSM_InternalMessage06 = 0x494d3036, // Guessed name.
+  kSM_InternalMessage07 = 0x494d3037, // Guessed name.
+  kSM_InternalMessage08 = 0x494d3038, // Guessed name.
+  kSM_InternalMessage09 = 0x494d3039, // Guessed name.
+  kSM_InternalMessage10 = 0x494d3130, // Guessed name.
+  kSM_InternalMessage11 = 0x494d3131, // Guessed name.
+  kSM_InternalMessage12 = 0x494d3132, // Guessed name.
+  kSM_InternalMessage13 = 0x494d3133, // Guessed name.
+  kSM_InternalMessage14 = 0x494d3134, // Guessed name.
+  kSM_Escape = 0x45534350,            // Guessed name; clears a GUI widget's controllers.
 
   // Guessed lifecycle names from DKCR HD, corroborated by Echoes consumers.
   kSM_Create = 0x58435254,
   kSM_XENZ = 0x58454e5a, // Guessed name; makes a flagged bouncy grenade explode.
+  kSM_XEXZ = 0x5845585a, // Guessed name; paired with XENZ on safe-zone exit.
   kSM_Clear = 0x58434c52, // Guessed DKCR HD name; clears an effect's particles.
   kSM_AreaLoaded = 0x58414c44,
   kSM_WorldLoaded = 0x58574c44,
@@ -249,6 +303,10 @@ struct SConnection {
   SConnection(EScriptObjectState state, EScriptObjectMessage msg, TEditorId id)
   : state(state), msg(msg), objId(id) {}
 };
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(SConnection)
+} // namespace rstl
+
 
 class CEntityInfo {
   TAreaId mAreaId;
@@ -262,7 +320,6 @@ class CEntityInfo {
 public:
   CEntityInfo(TAreaId aid, const rstl::vector< SConnection >& connections, bool active,
               TEditorId eid = kInvalidEditorId);
-  ~CEntityInfo();
 
   TAreaId GetAreaId() const { return mAreaId; }
   const rstl::vector< SConnection >& GetConnectionList() const { return mConnections; }
@@ -284,8 +341,8 @@ public:
   , m_msg(kSM_None)
   , m_state(kSS_InvalidState) {}
 
-  CScriptMsg(TUniqueId sender, TUniqueId originator, TUniqueId id, EScriptObjectMessage msg,
-             EScriptObjectState state)
+  CScriptMsg(TUniqueId sender, TUniqueId id, EScriptObjectMessage msg,
+             TUniqueId originator = kInvalidUniqueId, EScriptObjectState state = kSS_InvalidState)
   : mSenderId(sender), m_originator(originator), m_id(id), m_msg(msg), m_state(state) {}
 
   TUniqueId GetSenderId() const { return mSenderId; } // Guessed name; native sender UID.

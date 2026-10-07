@@ -163,11 +163,7 @@ public:
   // CeilingF__5CMathFf global
   // ArcTangentR__5CMathFf global
   template < typename T >
-  static void Swap(T& a, T& b) {
-    T tmp = a;
-    a = b;
-    b = tmp;
-  }
+  static void Swap(T& a, T& b);
 
   static int FloorPowerOfTwo(int v);
   // Target-derived name: returns the base-two exponent, with zero mapped to zero.
@@ -183,4 +179,11 @@ template < typename T >
 const T& CMath::Max(const T& a, const T& b) {
   return a > b ? a : b;
 }
+template < typename T >
+void CMath::Swap(T& a, T& b) {
+  T tmp = a;
+  a = b;
+  b = tmp;
+}
+
 #endif // _CMATH

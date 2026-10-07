@@ -25,7 +25,7 @@
 #include "dolphin/gx.h"
 
 const int CPlasmaProjectile::kMaxPlasmaLights = 3;
-const float CPlasmaProjectile::kInvMaxPlasmaLights = 1.f / CCast::ToReal32(kMaxPlasmaLights - 1);
+const float CPlasmaProjectile::kInvMaxPlasmaLights = 1.f / (kMaxPlasmaLights - 1);
 static const CColor skCoreColor(1.f, 1.f, 1.f, 0.3f);
 
 CPlasmaProjectile::CPlasmaProjectile(const TToken< CWeaponDescription >& description,
@@ -143,7 +143,7 @@ float CPlasmaProjectile::UpdateBeamState(float dt, CStateManager& mgr) {
   case kES_Done:
     mShutdownTimer += dt;
     if (mShutdownTimer > mShutdownTime &&
-        (!mContactGen.get() || mContactGen->GetParticleCountAll() == 0)) {
+        (mContactGen.get() ? mContactGen->GetParticleCountAll() <= 0 : true)) {
       mExpansionState = kES_Inactive;
       ResetBeam(mgr, true);
     }
@@ -240,14 +240,15 @@ void CPlasmaProjectile::UpdateFx(const CTransform4f& xf, float dt, CStateManager
   CBeamProjectile::UpdateFx(xf, dt, mgr);
   UpdatePlayerEffects(dt, mgr);
 
+  rstl::reserved_vector< CVector3f, 8 >& cache = PointCache();
   if (mBeamAttributes & 1) {
-    rstl::reserved_vector< CVector3f, 8 >& cache = PointCache();
-    for (int i = 7; i > 0; --i) {
-      cache[i] = cache[i - 1];
+    for (int i = 1; i < 8; ++i) {
+      const int idx = 8 - i;
+      cache[idx] = cache[idx - 1];
     }
     cache[0] = GetCurrentPos();
   }
-  const bool contact = GetDamageType() != kDT_None && mEnableEnergyPulse;
+  const bool contact = GetDamageType() != kDT_None ? mEnableEnergyPulse : false;
   if (mContactGen.get()) {
     mContactPulseTimer -= dt;
     if (contact && mContactPulseTimer <= 0.f) {
@@ -315,17 +316,19 @@ void CPlasmaProjectile::Render(const CStateManager& mgr) const {
     gpRender->SetModelMatrix(xf);
     RenderBeam(3, 0.25f * mBeamWidth, mCoreColor, 4);
   }
+  const CColor& innerColor = mInnerColor;
+  const CColor& outerColor = mOuterColor;
   if (!(mBeamAttributes & 0x20)) {
     gpRender->SetModelMatrix(xf * CTransform4f::RotateY(CRelAngle::FromDegrees(mBeamAngle)));
-    RenderBeam(4, 0.5f * mBeamWidth, mInnerColor, 1);
+    RenderBeam(4, 0.5f * mBeamWidth, innerColor, 1);
   }
   if (!(mBeamAttributes & 0x40)) {
     gpRender->SetModelMatrix(xf * CTransform4f::RotateY(CRelAngle::FromDegrees(-mBeamAngle)));
-    RenderBeam(8, mBeamWidth, mOuterColor, 3);
+    RenderBeam(8, mBeamWidth, outerColor, 3);
   }
   if (!(mBeamAttributes & 0x80)) {
     gpRender->SetModelMatrix(xf);
-    RenderBeam(6, 1.25f * mBeamWidth, mOuterColor, 0xd);
+    RenderBeam(6, 1.25f * mBeamWidth, outerColor, 0xd);
   }
 }
 
@@ -339,7 +342,7 @@ void CPlasmaProjectile::Fire(const CTransform4f& xf, CStateManager& mgr, bool fl
   mInitialDamagePending = mInitialDamageEnabled;
   if (mBeamAttributes & 1) {
     rstl::reserved_vector< CVector3f, 8 >& cache = PointCache();
-    for (int i = 0; i < cache.size(); ++i) {
+    for (int i = 0; i < cache.capacity(); ++i) {
       cache[i] = xf.GetTranslation();
     }
   }
@@ -353,14 +356,16 @@ void CPlasmaProjectile::ResetBeam(CStateManager& mgr, bool fullReset) {
     mExpansionT = 0.f;
     mBeamAngle = 0.f;
     mShutdownTimer = 0.f;
+    mBeamAngle = 0.f;
     mContactPulseTimer = 0.f;
     mEnergyPulseTimer = 0.f;
     mPlayerEffectPulseTimer = 0.f;
     mExpansionState = kES_Inactive;
+    mFiring = false;
   } else {
+    mFiring = false;
     mExpansionState = kES_Release;
   }
-  mFiring = false;
   mPulseGen->SetParticleEmission(false);
   if (mContactGen.get()) {
     mContactGen->SetParticleEmission(false);
@@ -442,7 +447,7 @@ void CPlasmaProjectile::RenderBeam(int subdivisions, float width, const CColor& 
 }
 
 void CPlasmaProjectile::UpdateEnergyPulse(float dt) {
-  if (GetDamageType() != kDT_None && mEnableEnergyPulse) {
+  if (GetDamageType() != kDT_None ? mEnableEnergyPulse : false) {
     mEnergyPulseTimer -= dt;
     if (mEnergyPulseTimer <= 0.f) {
       mEnergyPulseTimer = 2.f * dt;
@@ -450,7 +455,7 @@ void CPlasmaProjectile::UpdateEnergyPulse(float dt) {
       const float lengthRatio = GetCurrentLength() / GetMaxLength();
       for (float t = 0.f; t <= lengthRatio; t += 0.1f) {
         const float y = t * GetMaxLength() + mEnergyPulseStartY;
-        if (y <= GetCurrentLength()) {
+        if (!(y > GetCurrentLength())) {
           mPulseGen->SetTranslation(CVector3f(0.f, y, 0.f));
           mPulseGen->ForceParticleCreation(1);
         }
@@ -467,7 +472,9 @@ void CPlasmaProjectile::RenderMotionBlur() const {
   gpRender->SetModelMatrix(CTransform4f::Identity());
   gpRender->SetBlendMode_AlphaBlended();
   const CVector3f origin = GetBeamTransform().GetTranslation();
-  const uint outerColor = mOuterColor.GetColor_u32();
+  CColor blurColor = mOuterColor;
+  blurColor.SetAlpha(mExpansion);
+  const uint outerColor = blurColor.GetColor_u32();
   const uint color0 = (outerColor & 0xffffff00) | 0x3f;
   const uint color1 = outerColor & 0xffffff00;
   static const GXVtxDescList vtxDesc[] = {
@@ -496,7 +503,25 @@ void CPlasmaProjectile::RenderMotionBlur() const {
 }
 
 void CPlasmaProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_Delete) {
+  switch (msg.GetMessage()) {
+  case kSM_Create: {
+    const TLockedToken< CWeaponDescription >& desc = mProjectile.GetWeaponDescription();
+    if (desc->mAPSM) {
+      mWeaponGen = rs_new CElementGen(*desc->mAPSM);
+    }
+    if (mWeaponGen.get() && mWeaponGen->SystemHasLight()) {
+      const uint sourceId = static_cast< const TToken< CWeaponDescription >& >(desc).GetTag().GetId();
+      CreatePlasmaLights(sourceId, mWeaponGen->GetLight(), mgr);
+    } else {
+      mWeaponGen = nullptr;
+    }
+    if (mDrawOwnerFirst) {
+      SetNextDrawNode(GetOwnerId());
+    }
+    mgr.AddWeaponId(GetOwnerId(), GetType());
+    break;
+  }
+  case kSM_Delete:
     mgr.RemoveWeaponId(GetOwnerId(), GetType());
     DeletePlasmaLights(mgr);
     if (mSustainedDamagePlayerId != kInvalidUniqueId) {
@@ -505,32 +530,20 @@ void CPlasmaProjectile::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
       }
       mSustainedDamagePlayerId = kInvalidUniqueId;
     }
-  } else if (msg.GetMessage() == kSM_Create) {
-    const TLockedToken< CWeaponDescription > desc = mProjectile.GetWeaponDescription();
-    if (desc->mAPSM) {
-      mWeaponGen = rs_new CElementGen(*desc->mAPSM);
-    }
-    if (mWeaponGen.get() && mWeaponGen->SystemHasLight()) {
-      CreatePlasmaLights(static_cast< const TToken< CWeaponDescription >& >(desc).GetTag().GetId(),
-                         mWeaponGen->GetLight(), mgr);
-    } else {
-      mWeaponGen = nullptr;
-    }
-    if (mDrawOwnerFirst) {
-      SetNextDrawNode(GetOwnerId());
-    }
-    mgr.AddWeaponId(GetOwnerId(), GetType());
+    break;
+  default:
+    break;
   }
   CGameProjectile::AcceptScriptMsg(mgr, msg);
 }
 
 void CPlasmaProjectile::SetLightsActive(bool active, CStateManager& mgr) {
-  for (int i = 0; i < mLights.size(); ++i) {
-    if (mLights[i] == kInvalidUniqueId) {
-      continue;
-    }
-    if (CGameLight* light = TCastToPtr< CGameLight >(mgr.ObjectById(mLights[i]))) {
-      light->SetActive(active);
+  for (rstl::vector< TUniqueId >::iterator it = mLights.begin(); it != mLights.end(); ++it) {
+    const TUniqueId& id = *it;
+    if (id != kInvalidUniqueId) {
+      if (CGameLight* light = TCastToPtr< CGameLight >(mgr.ObjectById(id))) {
+        light->SetActive(active);
+      }
     }
   }
 }
@@ -539,10 +552,11 @@ void CPlasmaProjectile::CreatePlasmaLights(uint sourceId, const CLight& light, C
   DeletePlasmaLights(mgr);
   mLights.reserve(kMaxPlasmaLights);
   for (int i = 0; i < kMaxPlasmaLights; ++i) {
+    const rstl::string name;
     const TUniqueId id = mgr.AllocateUniqueId();
-    mgr.AddObject(rs_new CGameLight(id, GetAreaIdForPersistence(), GetActive(), rstl::string(),
+    mgr.AddObject(rs_new CGameLight(id, GetAreaIdForPersistence(), GetActive(), name,
                                     GetTransform(), GetUniqueId(), light, sourceId, 0, 0.f));
-    mLights.push_back(id);
+    mLights.push_back_unsafe(id);
   }
 }
 
@@ -565,8 +579,9 @@ void CPlasmaProjectile::UpdateLights(float expansion, float dt, CStateManager& m
     for (rstl::vector< TUniqueId >::const_iterator it = mLights.begin(); it != mLights.end();
          ++it) {
       if (CGameLight* gameLight = TCastToPtr< CGameLight >(mgr.ObjectById(*it))) {
+        const CVector3f offset(0.f, y, 0.f);
         gameLight->SetTransform(CTransform4f::Identity());
-        gameLight->SetTranslation(GetBeamTransform() * CVector3f(0.f, y, 0.f));
+        gameLight->SetTranslation(GetBeamTransform() * offset);
         gameLight->SetLight(light);
       }
       y += spacing;
@@ -575,6 +590,6 @@ void CPlasmaProjectile::UpdateLights(float expansion, float dt, CStateManager& m
 }
 
 void CPlasmaProjectile::SetInitialDamage(float damage) {
-  mInitialDamage = damage;
   mInitialDamageEnabled = damage > 0.f;
+  mInitialDamage = damage;
 }

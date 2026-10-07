@@ -44,48 +44,48 @@ bool CInGameGuiManagerSet::CheckPlayerGuiLoadComplete(const CStateManager& mgr) 
   return true;
 }
 
-CMultiplayerGui::~CMultiplayerGui() {}
+inline CMultiplayerGui::~CMultiplayerGui() {}
 
-CInGameQuitScreen::~CInGameQuitScreen() {}
+inline CInGameQuitScreen::~CInGameQuitScreen() {}
 
-CSamusFaceReflection::~CSamusFaceReflection() {}
+inline CSamusFaceReflection::~CSamusFaceReflection() {}
 
-CInGameGuiManager::~CInGameGuiManager() {}
+inline CInGameGuiManager::~CInGameGuiManager() {}
 
 bool CInGameGuiManagerSet::CheckLoadComplete(const CStateManager& mgr) {
   switch (mLoadPhase) {
-  case kLP_LoadDepsGroup: {
-    if (!mPreloadDGRP.IsLoaded()) {
+  case kLP_LoadDepsGroup:
+    if (mPreloadDGRP.IsLoaded()) {
+      const rstl::vector< SObjectTag >& tags = mPreloadDGRP->GetObjectTagVector();
+      mPreloadTokens.reserve(tags.size());
+      for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
+        CToken token = gpSimplePool->GetObj(*it);
+        token.Lock();
+        mPreloadTokens.push_back_unsafe(token);
+      }
+      mPreloadDGRP.Unlock();
+      const char* hudFrameName = CSamusHud::GetHudFrameName(mgr.GetViewportLayoutIndex());
+      mHudFrameLoader = rs_new CGuiFrameLoader(
+          gpResourceFactory->GetResourceIdByName(hudFrameName)->id, *gpResourceFactory, *gpSimplePool);
+      mMemoFrameLoader = rs_new CGuiFrameLoader(
+          gpResourceFactory->GetResourceIdByName(skMemoFrameNames[mgr.GetViewportLayoutIndex()])->id,
+          *gpResourceFactory, *gpSimplePool);
+      if (!mgr.IsMultiplayer()) {
+        mDarkMaskFrameLoader =
+            rs_new CGuiFrameLoader(gpResourceFactory->GetResourceIdByName("FRME_DarkVisorMask")->id,
+                                   *gpResourceFactory, *gpSimplePool);
+      } else {
+        mMultiplayerGui = rs_new CMultiplayerGui(mgr);
+      }
+      if (mgr.GetViewportLayoutIndex() == 0) {
+        mHelmetFrameLoader =
+            rs_new CGuiFrameLoader(gpResourceFactory->GetResourceIdByName("FRME_Helmet")->id,
+                                   *gpResourceFactory, *gpSimplePool);
+      }
+      mLoadPhase = kLP_PreloadDeps;
+    } else {
       return false;
     }
-    const rstl::vector< SObjectTag >& tags = mPreloadDGRP->GetObjectTagVector();
-    mPreloadTokens.reserve(tags.size());
-    for (rstl::vector< SObjectTag >::const_iterator it = tags.begin(); it != tags.end(); ++it) {
-      CToken token = gpSimplePool->GetObj(*it);
-      token.Lock();
-      mPreloadTokens.push_back_unsafe(token);
-    }
-    mPreloadDGRP.Unlock();
-    const char* hudFrameName = CSamusHud::GetHudFrameName(mgr.GetViewportLayoutIndex());
-    mHudFrameLoader = rs_new CGuiFrameLoader(
-        gpResourceFactory->GetResourceIdByName(hudFrameName)->id, *gpResourceFactory, *gpSimplePool);
-    mMemoFrameLoader = rs_new CGuiFrameLoader(
-        gpResourceFactory->GetResourceIdByName(skMemoFrameNames[mgr.GetViewportLayoutIndex()])->id,
-        *gpResourceFactory, *gpSimplePool);
-    if (!mgr.IsMultiplayer()) {
-      mDarkMaskFrameLoader =
-          rs_new CGuiFrameLoader(gpResourceFactory->GetResourceIdByName("FRME_DarkVisorMask")->id,
-                                 *gpResourceFactory, *gpSimplePool);
-    } else {
-      mMultiplayerGui = rs_new CMultiplayerGui(mgr);
-    }
-    if (mgr.GetViewportLayoutIndex() == 0) {
-      mHelmetFrameLoader =
-          rs_new CGuiFrameLoader(gpResourceFactory->GetResourceIdByName("FRME_Helmet")->id,
-                                 *gpResourceFactory, *gpSimplePool);
-    }
-    mLoadPhase = kLP_PreloadDeps;
-  }
   // Fall through: each phase can complete in the same call.
   case kLP_PreloadDeps:
     if (!mHudFrameLoader->IsFinishedLoading()) {
@@ -197,8 +197,9 @@ void CInGameGuiManagerSet::DrawMultiplayerGui() const {
 void CInGameGuiManagerSet::ProcessControllerInput(const CStateManager& mgr,
                                                   const CFinalInput& input,
                                                   CArchitectureQueue& queue) {
+  int i = 0;
   const int controller = input.ControllerNumber();
-  for (uint i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
+  for (; i < mgr.GetNumPlayers(); ++i) {
     const int selection = mgr.GetPlayerState(i)->GetPlayerSelection();
     if (selection == controller) {
       mPlayerGuiManagers[i]->ProcessControllerInput(mgr, input, queue);

@@ -36,11 +36,13 @@ CMFGameLoader::CMFGameLoader()
   gResFactoryUnknown = 1;
   CModel::DisableTextureTimeout();
 
-  const bool showWorldName =
-      gpMain->GetRestartMode() == CMain::kRM_Default ||
+  bool showWorldName = false;
+  if (gpMain->GetRestartMode() == CMain::kRM_Default ||
       (gpMain->GetRestartMode() == CMain::kRM_None &&
        gpGameState->GetGameMode().GetGameModeType() == 'SNGL' &&
-       gpGameState->GetGameModeType() == 'FRND');
+       gpGameState->GetGameModeType() == 'FRND')) {
+    showWorldName = true;
+  }
   const bool introText = showWorldName && gpGameState->GetInitPowerupsAtFirstSpawn() &&
                          gpGameState->CurrentWorldAssetId() == skDefaultWorld.GetId();
   if (introText) {
@@ -54,8 +56,12 @@ CMFGameLoader::CMFGameLoader()
     const CAssetId world = gpGameState->CurrentWorldAssetId();
     if (gpMemoryCard->HasSaveWorldMemory(world)) {
       const CSaveWorldMemory& memory = gpMemoryCard->GetSaveWorldMemory(world);
-      const CAssetId name =
-          gpGameState->GetIsDarkWorld() ? memory.GetDarkWorldNameId() : memory.GetWorldNameId();
+      CAssetId name;
+      if (gpGameState->GetIsDarkWorld()) {
+        name = memory.GetDarkWorldNameId();
+      } else {
+        name = memory.GetWorldNameId();
+      }
       if (name != kInvalidAssetId) {
         gpGameState->WorldTransitionManager()->EnableTransition(
             kInvalidAssetId, name, 1, false, 0.1f, 16.f, 1.f, 0.f, 0.f, 0.f,
@@ -154,19 +160,23 @@ void CMFGameLoader::ScanLoadedGunPaks() {
     if (!pak->IsARAMPak()) {
       continue;
     }
-    const rstl::string& filename = pak->GetDvdFile().GetFilename();
-    const rstl::string name = CStringExtras::CreatePrefix(
-        CStringExtras::ConvertToLowerCase(filename), filename.length() - 4);
+    const rstl::string name =
+        CStringExtras::CreatePrefix(CStringExtras::ConvertToLowerCase(pak->GetDvdFile().GetFilename()),
+                                    pak->GetDvdFile().GetFilename().length() - 4);
     const rstl::vector< rstl::string >::const_iterator found =
         rstl::binary_find(names.begin(), names.end(), name);
-    if (found == names.end()) {
-      continue;
-    }
-    for (int set = 0; set < 3; ++set) {
-      if (*found == rstl::string_l(skGunPakSets[set][0]) ||
-          *found == rstl::string_l(skGunPakSets[set][1])) {
-        MarkGunPakSetLoaded(set);
-        return;
+    if (found != names.end()) {
+      bool marked = false;
+      for (int set = 0; set < 3; ++set) {
+        if (!CStringExtras::CompareCaseInsensitive(*found, rstl::string_l(skGunPakSets[set][0])) ||
+            !CStringExtras::CompareCaseInsensitive(*found, rstl::string_l(skGunPakSets[set][1]))) {
+          MarkGunPakSetLoaded(set);
+          marked = true;
+          break;
+        }
+      }
+      if (marked) {
+        break;
       }
     }
   }
@@ -177,41 +187,58 @@ void CMFGameLoader::MarkGunPakSetLoaded(int set) { mLoadedGunPakSets |= 1 << set
 void CMFGameLoader::ClearGunPakSetLoaded(int set) { mLoadedGunPakSets &= ~(1 << set); }
 
 bool CMFGameLoader::IsGunPakSetLoaded(int set) const {
-  return (mLoadedGunPakSets & (1 << set)) != 0;
+  return (mLoadedGunPakSets & (1 << set)) > 0;
 }
 
 void CMFGameLoader::SelectGunPakSet() {
-  int selected = 0;
-  if (gpGameState->GetGameMode().GetGameModeType() != 'SNGL') {
-    selected = gpGameState->GetGameMode().GetNumPlayers() <= 2 ? 1 : 2;
-  }
-  for (int set = 0; set < 3; ++set) {
-    if (set == selected) {
-      if (!IsGunPakSetLoaded(set)) {
-        LoadGunPakSet(set);
+  if (gpGameState->GetGameMode().GetGameModeType() == 'SNGL') {
+    for (int set = 0; set < 3; ++set) {
+      if (set == 0) {
+        if (!IsGunPakSetLoaded(set)) {
+          LoadGunPakSet(set);
+        }
+      } else if (IsGunPakSetLoaded(set)) {
+        UnloadGunPakSet(set);
       }
-    } else if (IsGunPakSetLoaded(set)) {
-      UnloadGunPakSet(set);
+    }
+  } else {
+    const uint numPlayers = gpGameState->GetGameMode().GetNumPlayers();
+    int selected = 1;
+    if (numPlayers > 2) {
+      selected = 2;
+    }
+    for (int set = 0; set < 3; ++set) {
+      if (set == selected) {
+        if (!IsGunPakSetLoaded(set)) {
+          LoadGunPakSet(set);
+        }
+      } else if (IsGunPakSetLoaded(set)) {
+        UnloadGunPakSet(set);
+      }
     }
   }
 }
 
 void CMFGameLoader::LoadGunPakSet(int set) {
-  CResLoader& loader = gpResourceFactory->GetResLoader();
-  loader.AddPakFileAsync(rstl::string_l(skGunPakSets[set][0]), true, false);
-  loader.AddPakFileAsync(rstl::string_l(skGunPakSets[set][1]), true, false);
-  if (strlen(skGunPakSets[set][2]) != 0) {
-    loader.AddPakFileAsync(rstl::string_l(skGunPakSets[set][2]), true, false);
+  const char* pak0 = skGunPakSets[set][0];
+  const char* pak1 = skGunPakSets[set][1];
+  const char* pak2 = skGunPakSets[set][2];
+  gpResourceFactory->GetResLoader().AddPakFileAsync(rstl::string_l(pak0), true, false);
+  gpResourceFactory->GetResLoader().AddPakFileAsync(rstl::string_l(pak1), true, false);
+  if (strlen(pak2) != 0) {
+    gpResourceFactory->GetResLoader().AddPakFileAsync(rstl::string_l(pak2), true, false);
   }
   MarkGunPakSetLoaded(set);
 }
 
 void CMFGameLoader::UnloadGunPakSet(int set) {
-  CResLoader& loader = gpResourceFactory->GetResLoader();
-  loader.RemovePakFile(rstl::string_l(skGunPakSets[set][0]));
-  loader.RemovePakFile(rstl::string_l(skGunPakSets[set][1]));
-  if (strlen(skGunPakSets[set][2]) != 0) {
-    loader.RemovePakFile(rstl::string_l(skGunPakSets[set][2]));
+  const char* pak0 = skGunPakSets[set][0];
+  const char* pak1 = skGunPakSets[set][1];
+  const char* pak2 = skGunPakSets[set][2];
+  gpResourceFactory->GetResLoader().RemovePakFile(rstl::string_l(pak0));
+  gpResourceFactory->GetResLoader().RemovePakFile(rstl::string_l(pak1));
+  if (strlen(pak2) != 0) {
+    gpResourceFactory->GetResLoader().RemovePakFile(rstl::string_l(pak2));
   }
   ClearGunPakSetLoaded(set);
 }
@@ -220,10 +247,10 @@ static rstl::vector< rstl::string > BuildGunPakList() {
   rstl::vector< rstl::string > names;
   names.reserve(9);
   for (int set = 0; set < 3; ++set) {
-    names.push_back(rstl::string_l(skGunPakSets[set][0]));
-    names.push_back(rstl::string_l(skGunPakSets[set][1]));
+    names.push_back_unsafe(rstl::string_l(skGunPakSets[set][0]));
+    names.push_back_unsafe(rstl::string_l(skGunPakSets[set][1]));
     if (strlen(skGunPakSets[set][2]) != 0) {
-      names.push_back(rstl::string_l(skGunPakSets[set][2]));
+      names.push_back_unsafe(rstl::string_l(skGunPakSets[set][2]));
     }
   }
   rstl::sort(names.begin(), names.end());

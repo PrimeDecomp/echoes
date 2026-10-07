@@ -40,12 +40,11 @@ class CBouncyGrenadeData {
   bool x4c_ : 1;
 
 public:
-  CBouncyGrenadeData(const SGrenadeVelocityInfo& velocityInfo, CDamageInfo damageInfo,
-                     uint numBounces, CAssetId elementGenId1, CAssetId elementGenId2,
-                     CAssetId elementGenId3, CAssetId elementGenId4, ushort bounceSfx,
-                     ushort explodeSfx, float explodeSfxFalloff, float explodeSfxMaxDist, float x44,
-                     float x48, bool x4c)
-  : mVelocityInfo(velocityInfo)
+  CBouncyGrenadeData(float mass, float speed, CDamageInfo damageInfo, uint numBounces,
+                     CAssetId elementGenId1, CAssetId elementGenId2, CAssetId elementGenId3,
+                     CAssetId elementGenId4, ushort bounceSfx, ushort explodeSfx,
+                     float explodeSfxFalloff, float explodeSfxMaxDist, float x44, float x48, bool x4c)
+  : mVelocityInfo(mass, speed)
   , mDamageInfo(damageInfo)
   , mNumBounces(numBounces)
   , mElementGenId1(elementGenId1)
@@ -108,7 +107,7 @@ public:
 
 private:
   void UpdateGrenadeFX(float dt, CStateManager& mgr);
-  void Explode(CStateManager& mgr, TUniqueId uid);
+  void Explode(CStateManager& mgr, TUniqueId uid = kInvalidUniqueId);
   void UpdateExplodeChecks(float dt, CStateManager& mgr);
   void Bounce(CStateManager& mgr, const CVector3f& normal, bool consumeBounce, bool home);
   bool IsArmed() const;

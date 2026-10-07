@@ -6,6 +6,12 @@
 #include "MetroidPrime/CEntity.hpp"
 #include "rstl/pair.hpp"
 
+namespace rstl {
+// The native actor list copies its id/transform records bitwise (bitwise_copy<6> + trailing word).
+typedef pair< TUniqueId, CTransform4f > ActorRotateRecord;
+RSTL_DECLARE_BITWISE_CONSTRUCTION(ActorRotateRecord)
+} // namespace rstl
+
 class CScriptActorRotate : public CEntity {
 public:
   // Guessed flag names from constructor, message and Think behavior.
@@ -32,7 +38,7 @@ public:
 
   void StartRotation();            // Guessed name.
   void StopRotation();             // Guessed name.
-  void SetCurrentTime(float time); // Guessed name.
+  void SetCurrentTime(float time, CStateManager& mgr); // Guessed name.
   void UpdateActors(bool next, CStateManager& mgr);
   void UpdateTargetRotation(CStateManager& mgr);           // Guessed name.
   void SetActorTransforms(const CTransform4f& xf);         // Guessed name.

@@ -115,7 +115,7 @@ CPauseScreen::CPauseScreen()
 , mOpenedFromScan(false)
 , mModelsReady(false) {
   const CEnvironmentVariable* legend =
-      gpGameState->SystemOptions().FindEnvironmentVariable("LogbookLegendVisible");
+      gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("LogbookLegendVisible");
   mLegendVisible = legend->GetMaximum() == legend->GetValue();
   InitializeStripedTexture();
   gpResourceFactory->GetResLoader().AddPakFileAsync(rstl::string("logbook"), false, false);
@@ -366,8 +366,9 @@ void CPauseScreen::RestoreTextures() {
            mTexturesToRestore.begin();
        it != mTexturesToRestore.end(); ++it) {
     CTexture& texture = **it->second;
+    const bool restore = it->first;
     bool transferred = false;
-    if (!texture.GetNoSwap() && it->first) {
+    if (!texture.GetNoSwap() && restore) {
       texture.LoadToARAM();
       if (texture.IsARAMTransferInProgress()) {
         while (texture.IsARAMTransferInProgress()) {
@@ -502,11 +503,11 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
         if (model->HasAnimation()) {
           CRandom16 random(0);
           model->AdvanceAnimation(0.02f, random, true);
-          const CAABox modelBounds = model->AnimationData()->CalcBoundingBoxFromModelVerts();
+          const CAABox& modelBounds = model->AnimationData()->CalcBoundingBoxFromModelVerts();
           bounds.AccumulateBounds(modelBounds.GetMinPoint());
           bounds.AccumulateBounds(modelBounds.GetMaxPoint());
         } else {
-          const CAABox modelBounds = model->GetBounds();
+          const CAABox& modelBounds = model->GetBounds();
           bounds.AccumulateBounds(modelBounds.GetMinPoint());
           bounds.AccumulateBounds(modelBounds.GetMaxPoint());
         }
@@ -980,7 +981,7 @@ void CPauseScreen::ProcessButtonInput(const CFinalInput& input) {
   } else if (input.PY()) {
     mLegendVisible = !mLegendVisible;
     gpGameState->SystemOptions()
-        .FindEnvironmentVariable("LogbookLegendVisible")
+        .EnvVars().FindEnvironmentVariable("LogbookLegendVisible")
         ->Set(mLegendVisible);
     if (!close_enough(mModelZoomAmount, 1.f)) {
       if (mLegendVisible) {
@@ -1069,7 +1070,7 @@ void CPauseScreen::ProcessSelectionInput(const CFinalInput& input) {
 void CPauseScreen::SetPanSound(bool playing) {
   if (playing) {
     if (mPanSfx == CSfxHandle()) {
-      mPanSfx = CSfxManager::SfxStart(300, 0x7f, 0x3f, CSfxManager::kAllAreas, false, true,
+      mPanSfx = CSfxManager::SfxStart(300, 0x7f, 0x3f, CSfxManager::kAllAreas, false, false,
                                       CSfxManager::kMedPriority);
     }
   } else if (mPanSfx != CSfxHandle()) {
@@ -1081,7 +1082,7 @@ void CPauseScreen::SetPanSound(bool playing) {
 void CPauseScreen::SetZoomSound(bool playing) {
   if (playing) {
     if (mZoomSfx == CSfxHandle()) {
-      mZoomSfx = CSfxManager::SfxStart(0x78, 0x7f, 0x3f, CSfxManager::kAllAreas, false, true,
+      mZoomSfx = CSfxManager::SfxStart(0x78, 0x7f, 0x3f, CSfxManager::kAllAreas, false, false,
                                        CSfxManager::kMedPriority);
     }
   } else if (mZoomSfx != CSfxHandle()) {
@@ -1454,7 +1455,7 @@ void CPauseScreen::DrawNodes(const CTransform4f& view, rstl::vector< SNodeDraw >
   for (rstl::vector< SNodeDraw >::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
     const float alpha = rstl::min_val(1.f, rstl::max_val(0.f, it->mAlpha));
     const CColor brightness(alpha, alpha, alpha, 1.f);
-    const CColor faded = brightness.WithAlphaOf(alpha);
+    const CColor& faded = brightness.WithAlphaOf(alpha);
     const CColor* textColor;
     const CColor* selectedTextColor;
     if (it->mNode->IsViewed()) {
@@ -1560,8 +1561,8 @@ void CPauseScreen::DrawNodeIcon(const CTransform4f& view, const CVector3f& posit
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
   CGraphics::SetModelMatrix(CTransform4f::Identity());
-  const CVector3f right = view.GetColumn(kDX);
   const CVector3f up = view.GetColumn(kDZ);
+  const CVector3f right = view.GetColumn(kDX);
   const float size = 0.2f * scale;
   CGraphics::StreamBegin(kP_Quads);
   CGraphics::StreamColor(color);
@@ -1640,7 +1641,7 @@ void CPauseScreen::DrawSlider(const CTransform4f& view, const CVector3f& positio
   const float halfWidth = centerWidth * 0.5f;
   const CTransform4f local = CTransform4f::Scale(scale * sliderScale) * view.GetRotation() *
                              CTransform4f::Translate(0.f, 0.f, textOffset);
-  const CTransform4f world = CTransform4f::Translate(position) * local;
+  const CTransform4f& world = CTransform4f::Translate(position) * local;
   const CColor selectionColor =
       gpTweakGui->GetLogBookSliderSelectionColor().WithAlphaModulatedBy(alpha);
   const CColor backgroundColor =

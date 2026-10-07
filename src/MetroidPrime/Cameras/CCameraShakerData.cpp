@@ -21,10 +21,12 @@ CCameraShakerData::CCameraShakerData(float attenuationDistance, float duration, 
 , mMaxAmplitude(0.f)
 , mLastThresholdTime(duration)
 , mFirstThresholdTime(0.f) {
-  if ((mFlags & kF_ExplicitDuration) == 0) {
+  if ((flags & kF_ExplicitDuration) == 0) {
     mDuration = mHorizontalMotion.GetMaxTime();
-    mDuration = rstl::max_val(mVerticalMotion.GetMaxTime(), mDuration);
-    mDuration = rstl::max_val(mForwardMotion.GetMaxTime(), mDuration);
+    float maxTime = mVerticalMotion.GetMaxTime();
+    mDuration = rstl::max_val(maxTime, mDuration);
+    maxTime = mForwardMotion.GetMaxTime();
+    mDuration = rstl::max_val(maxTime, mDuration);
   }
   mMaxAmplitude = GetMaxAmplitude();
 }
@@ -57,14 +59,17 @@ float CCameraShakerData::GetMaxAmplitude() {
 
 // Guessed name
 float CCameraShakerData::FindLastIntersection(float amplitude) {
-  const float horizontal = rstl::max_val(mHorizontalMotion.FindLastIntersection(-amplitude),
-                                         mHorizontalMotion.FindLastIntersection(amplitude));
-  const float vertical = rstl::max_val(mVerticalMotion.FindLastIntersection(-amplitude),
-                                       mVerticalMotion.FindLastIntersection(amplitude));
-  const float forward = rstl::max_val(mForwardMotion.FindLastIntersection(-amplitude),
-                                      mForwardMotion.FindLastIntersection(amplitude));
-  const float time = rstl::max_val(forward, rstl::max_val(vertical, horizontal));
-  return time < 0.f ? mDuration : time;
+  const float h0 = mHorizontalMotion.FindLastIntersection(-amplitude);
+  const float horizontal = rstl::max_val(h0, mHorizontalMotion.FindLastIntersection(amplitude));
+  const float v0 = mVerticalMotion.FindLastIntersection(-amplitude);
+  const float vertical = rstl::max_val(v0, mVerticalMotion.FindLastIntersection(amplitude));
+  const float f0 = mForwardMotion.FindLastIntersection(-amplitude);
+  const float forward = rstl::max_val(f0, mForwardMotion.FindLastIntersection(amplitude));
+  float time = rstl::max_val(forward, rstl::max_val(vertical, horizontal));
+  if (time < 0.f) {
+    time = mDuration;
+  }
+  return time;
 }
 
 // Guessed name

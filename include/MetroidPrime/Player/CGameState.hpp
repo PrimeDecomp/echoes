@@ -7,6 +7,7 @@
 #include "MetroidPrime/CControlMapper.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameOptions.hpp"
 #include "MetroidPrime/Player/CHintOptions.hpp"
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
@@ -77,7 +78,7 @@ public:
 
   CGameState();
   explicit CGameState(CBitStreamReader& in);
-  ~CGameState();
+  ~CGameState() {}
 
   void ReadSystemOptions(CInputStream& in);
   void PutTo(CBitStreamWriter& out);
@@ -165,8 +166,8 @@ private:
   CAssetId mWorldId;
   CAssetId mDesiredWorldId;
   rstl::vector< CWorldState > mWorldStates;
-  rstl::reserved_vector< rstl::rc_ptr< CPlayerState >, 4 > mPlayerStates;
-  rstl::rc_ptr< CWorldTransManager > mTransManager;
+  rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > mPlayerStates;
+  rstl::ncrc_ptr< CWorldTransManager > mTransManager;
   double mTotalPlayTime;
   float mEscapeTime;
   CPersistentOptions mSystemOptions;

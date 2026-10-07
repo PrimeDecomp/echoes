@@ -49,7 +49,8 @@ struct SLdrFishCloud {
   bool isHighlightedInDarkVisor; // 0xcd4c81a1
 };
 
-inline SLdrFishCloud::SLdrFishCloud() : editorProperties(), fishModel(kInvalidAssetId), animationInformation(), materialColor(CColor::Green()), deathEffect0(kInvalidAssetId), deathEffect1(kInvalidAssetId), deathEffect2(kInvalidAssetId), deathEffect3(kInvalidAssetId) {
+inline SLdrFishCloud::SLdrFishCloud() : editorProperties(), fishModel(kInvalidAssetId), animationInformation(), materialColor(CColor::Green()), deathEffect0(kInvalidAssetId), deathEffect1(kInvalidAssetId), deathEffect2(kInvalidAssetId), deathEffect3(kInvalidAssetId), deathSound(-1) {
+  editorProperties.unknown_0x5d298a43 = 3;
   active = true;
   fishCount = 20.0f;
   speed = 3.0f;
@@ -75,7 +76,6 @@ inline SLdrFishCloud::SLdrFishCloud() : editorProperties(), fishModel(kInvalidAs
   deathEffect1Count = 0;
   deathEffect2Count = 0;
   deathEffect3Count = 0;
-  deathSound = 0;
   unknown_0xc320a050 = true;
   isHighlightedInDarkVisor = true;
 }

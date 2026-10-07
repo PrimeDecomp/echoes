@@ -27,24 +27,64 @@ void CScannableObjectInfo::ReadProperties(CInputStream& input) {
   mCharacterIndices.push_back(sldrThis.animatedModel.character_index);
   mAnimationIndices.push_back(sldrThis.animatedModel.initial_anim);
 
-  mStaticModels.push_back(kInvalidAssetId);
+  mStaticModels.push_back(skInvalidModelId);
   mAnimatedModels.push_back(sldrThis.primarySecondAnimatedModel.ancs);
   mCharacterIndices.push_back(sldrThis.primarySecondAnimatedModel.character_index);
   mAnimationIndices.push_back(sldrThis.primarySecondAnimatedModel.initial_anim);
 
-  const SLdrScanInfoSecondaryModel* secondaryModels[] = {
-      &sldrThis.secondaryModel0, &sldrThis.secondaryModel1, &sldrThis.secondaryModel2,
-      &sldrThis.secondaryModel3, &sldrThis.secondaryModel4, &sldrThis.secondaryModel5,
-      &sldrThis.secondaryModel6, &sldrThis.secondaryModel7, &sldrThis.secondaryModel8,
-  };
-  for (int i = 0; i < 9; ++i) {
-    const SLdrScanInfoSecondaryModel& model = *secondaryModels[i];
-    mStaticModels.push_back(model.secondaryStaticModel);
-    mAnimatedModels.push_back(model.secondaryAnimatedModel.ancs);
-    mCharacterIndices.push_back(model.secondaryAnimatedModel.character_index);
-    mAnimationIndices.push_back(model.secondaryAnimatedModel.initial_anim);
-    mModelLocators.push_back(model.secondaryModelLocator);
-  }
+  mStaticModels.push_back(sldrThis.secondaryModel0.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel0.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel0.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel0.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel0.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel1.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel1.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel1.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel1.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel1.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel2.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel2.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel2.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel2.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel2.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel3.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel3.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel3.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel3.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel3.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel4.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel4.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel4.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel4.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel4.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel5.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel5.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel5.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel5.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel5.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel6.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel6.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel6.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel6.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel6.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel7.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel7.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel7.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel7.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel7.secondaryModelLocator);
+
+  mStaticModels.push_back(sldrThis.secondaryModel8.secondaryStaticModel);
+  mAnimatedModels.push_back(sldrThis.secondaryModel8.secondaryAnimatedModel.ancs);
+  mCharacterIndices.push_back(sldrThis.secondaryModel8.secondaryAnimatedModel.character_index);
+  mAnimationIndices.push_back(sldrThis.secondaryModel8.secondaryAnimatedModel.initial_anim);
+  mModelLocators.push_back(sldrThis.secondaryModel8.secondaryModelLocator);
 
   mModelInitialPitch = sldrThis.modelInitialPitch;
   mModelInitialYaw = sldrThis.modelInitialYaw;

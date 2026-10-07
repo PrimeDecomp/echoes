@@ -23,10 +23,14 @@ struct SLdrTryclops {
 inline SLdrTryclops::SLdrTryclops() : editorProperties(), patterned(), actorInformation() {
   patterned.minAttackRange = 0.0f;
   patterned.playerLeashRadius = 10.0f;
+  patterned.contactDamage.dI_WeaponType = 0;
   patterned.contactDamage.dI_Damage = 5.0f;
   patterned.contactDamage.dI_KnockBackPower = 1.0f;
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.collisionRadius = 0.60000002f;
   patterned.collisionHeight = 1.0f;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   attractForce = 20.0f;
   attractAngle = 45.0f;
   attractDistance = 4.0f;

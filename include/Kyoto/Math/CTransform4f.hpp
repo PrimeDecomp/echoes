@@ -127,10 +127,7 @@ public:
   void SetRotation(const CMatrix3f& rotation);
   void SetRotation(const CTransform4f& rotation);
   CVector3f TransposeMultiply(const CVector3f& in) const {
-    float x = in.GetX();
-    float y = in.GetY();
-    float z = in.GetZ();
-    return TransposeRotate(CVector3f(x - m03, y - m13, z - m23));
+    return TransposeRotate(CVector3f(in.GetX() - m03, in.GetY() - m13, in.GetZ() - m23));
   }
   CVector3f TransposeRotate(const CVector3f& in) const;
 
@@ -144,6 +141,8 @@ public:
     m13 += vec.GetY();
     m23 += vec.GetZ();
   }
+  void AddTranslationX(float x) { m03 += x; }
+  void AddTranslationY(float y) { m13 += y; }
   void AddTranslationZ(float z) { m23 += z; }
 
   CTransform4f& operator*=(const CTransform4f& other) {
@@ -185,6 +184,7 @@ CHECK_SIZEOF(CTransform4f, 0x30)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CTransform4f)
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CTransform4f)
 }
 
 #endif // _CTRANSFORM4F

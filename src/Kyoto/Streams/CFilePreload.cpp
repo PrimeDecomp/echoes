@@ -83,8 +83,9 @@ bool CFilePreloadData::IsReady() {
 }
 
 void CFilePreloadData::Read(void* dest, int offset, int length) {
+  int firstLength;
   const int chunk = offset / 0x4000;
-  int firstLength = (chunk + 1) * 0x4000 - offset;
+  firstLength = (chunk + 1) * 0x4000 - offset;
   if (length < firstLength) {
     firstLength = length;
   }
@@ -94,10 +95,7 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
   int remaining = length - firstLength;
   int nextChunk = chunk + 1;
   while (remaining != 0) {
-    int count = 0x4000;
-    if (remaining <= 0x4000) {
-      count = remaining;
-    }
+    const int count = remaining > 0x4000 ? 0x4000 : remaining;
     CopyAndFlush(output, mBuffers[nextChunk].get(), count);
     remaining -= count;
     output += count;

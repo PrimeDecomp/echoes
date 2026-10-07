@@ -1,6 +1,8 @@
 #include "MetroidPrime/ScriptObjects/CScriptEMPulse.hpp"
 
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrEMPulse.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -15,7 +17,7 @@ CScriptEMPulse::CScriptEMPulse(TUniqueId uid, const rstl::string& name, const CE
                                float minHudDisableAmount, float maxHudDisableAmount,
                                CAssetId particleId)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_Projectile),
-         CActorParameters(), kInvalidUniqueId)
+         CActorParameters::None(), kInvalidUniqueId)
 , mDuration(duration)
 , mFinalRadius(finalRadius)
 , mCurrentRadius(initialRadius)
@@ -25,6 +27,18 @@ CScriptEMPulse::CScriptEMPulse(TUniqueId uid, const rstl::string& name, const CE
 , mMinHudDisableAmount(minHudDisableAmount)
 , mMaxHudDisableAmount(maxHudDisableAmount)
 , mParticleDesc(gpSimplePool->GetObj(SObjectTag('PART', particleId))) {}
+
+CEntity* LoadEMPulse(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrEMPulse sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrEMPulse.inc"
+
+  return rs_new CScriptEMPulse(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                               LdrToEntityInfo(info, sldrThis.editorProperties),
+                               LdrToTransform4f(sldrThis.editorProperties), sldrThis.initialSize,
+                               sldrThis.finalSize, sldrThis.duration, sldrThis.minHudDisableTime,
+                               sldrThis.maxHudDisableTime, sldrThis.minHudDisableAmount,
+                               sldrThis.maxHudDisableAmount, sldrThis.explosion);
+}
 
 void CScriptEMPulse::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();

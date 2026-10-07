@@ -10,7 +10,11 @@
 #include "rstl/auto_ptr.hpp"
 #include "rstl/vector.hpp"
 
+class CAdvancementDeltas;
+class CAnimData;
 class CAnimRes;
+class CRelAngle;
+class CMarkerGrid;
 class CAreaCollisionCache;
 class CBasicSwarmData;
 class CElementGen;
@@ -29,6 +33,7 @@ public:
   public:
     CBoid(const CTransform4f& xf, uint index);
     bool GetActive() const { return mActive; }
+    float GetDistanceSquaredToSoundListener() const { return mDistanceSquaredToSoundListener; }
     CVector3f GetTranslation() const { return mTransform.GetTranslation(); }
     const CTransform4f& GetTransform() const { return mTransform; }
 
@@ -41,7 +46,7 @@ public:
     CColor mAmbientLighting;
     CBoid* mNext;
     float mFreezeTimer;
-    float x5c_;
+    float mTimeToExplode;
     float mLifeTime;
     CCollisionSurface mSurface;
     float mHealth;
@@ -52,9 +57,10 @@ public:
     TUniqueId xaa_;
     uint mFramesNotOnSurface : 8;
     uint mIndex : 10;
-    uint xac_ : 14;
-    signed char mPartitionIndex;
-    uchar xb1_;
+    uint mRemainingLaunchNotOnSurfaceFrames : 8;
+    uint xac_ : 6;
+    int mPartitionIndex : 8;
+    uint xb1_ : 8;
     bool mActive : 1;
     bool mInFrustum : 1;
     bool mLaunched : 1;
@@ -69,6 +75,9 @@ public:
     friend class CSwarmBasics;
     CVector3f mCenter;
     float mMagnitude;
+
+  public:
+    CRepulsor(CVector3f center, float magnitude) : mCenter(center), mMagnitude(magnitude) {}
   };
 
   // Original Wii enum type; enumerator names are guessed from native sound consumers.
@@ -125,6 +134,76 @@ public:
                                                   uint maxEmitters, ushort sfx,
                                                   ELoopedSoundType type);
 
+  // Guessed names for non-virtual helpers.
+  CAABox BoxForPosition(int x, int y, int z, float margin) const;
+  CAreaCollisionCache GetAreaCollisionCacheForPartition(int x, int y, int z) const;
+  void UpdateParticles(float dt);
+  void RenderParticles() const;
+  void CachePose(CModelData& modelData, SwarmRenderHelpers::CSwarmSkinnedModelState& state) const;
+  void DrawBoidSkinnedModel(const CBoid* boid, const SwarmRenderHelpers::CSwarmSkinnedModelState& state) const;
+  void UpdateSeekerTargets(CStateManager& mgr);
+  void AssignSeekerBoids(CStateManager& mgr, const rstl::vector< uint >& taken, uint numNeeded,
+                         rstl::vector< uint >& out);
+  void StopLoopedSound(CBoid& boid, rstl::vector< TLoopedSound >& sounds);
+  void AddParticle(const CTransform4f& xf);
+  void FreezeCollision(const CMarkerGrid& grid);
+  int EvaluateActiveBoidCount() const;
+  CVector3f FindClosestCell(const CVector3f& pos) const;
+  CBoid* GetClosestPartitionList(const CVector3f& pos) const;
+  uint UpdateLoopedSounds(uint maxEmitters, int partitionIndex,
+                          rstl::vector< TLoopedSound >& sounds);
+  bool AddLoopedSoundToHandlesList(CBoid& boid, rstl::vector< TLoopedSound >& sounds, ushort sfx);
+  void StartLoopedSound(CBoid& boid, rstl::vector< TLoopedSound >& sounds, ushort sfx, uint slot);
+  void UpdateLoopedSoundPositions(const rstl::vector< TLoopedSound >& sounds) const;
+  bool CanStartLoopedSound(const CBoid& boid, ELoopedSoundType type) const;
+  CSfxHandle AddLoopedEmitter(const CVector3f& pos, ushort sfx);
+  void UpdateEffects(CStateManager& mgr, CAnimData& animData, int volume);
+  void MoveBoid(CStateManager& mgr, CBoid& boid, const CVector3f& offsetDelta,
+                          float dt);
+  void UpdatePartition();
+  CBoid* GetListAt(const CVector3f& pos);
+  void BuildBoidNearList(const CBoid& boid, float radius,
+                         rstl::reserved_vector< CBoid*, 50 >& nearList);
+  void ApplySeparation(CBoid& boid, const rstl::reserved_vector< CBoid*, 50 >& nearList,
+                       CVector3f& ahead);
+  void ApplySeparation(CBoid& boid, const CVector3f& pos, float radius, float magnitude,
+                       CVector3f& ahead);
+  void ApplyCohesion(CBoid& boid, const rstl::reserved_vector< CBoid*, 50 >& nearList,
+                     CVector3f& ahead);
+  void ApplyCohesion(CBoid& boid, const CVector3f& pos, float radius, float magnitude,
+                     CVector3f& ahead);
+  void ApplyAttraction(CBoid& boid, const CVector3f& pos, float radius, float magnitude,
+                       CVector3f& ahead);
+  void ApplyAlignment(CBoid& boid, const rstl::reserved_vector< CBoid*, 50 >& nearList,
+                      CVector3f& ahead);
+  void ApplyBoundsAvoidance(CBoid& boid, const rstl::reserved_vector< CBoid*, 50 >& nearList,
+                            CVector3f& ahead);
+  void MoveToWayPoint(CBoid& boid, CStateManager& mgr, CVector3f& ahead);
+  TUniqueId GetWaypointForState(EScriptObjectState state, CStateManager& mgr);
+  void SetExplodeTimers(const CVector3f& pos, float radius, float minTime, float maxTime);
+  bool IsBoidVisibleForLockOn(const CStateManager& mgr, const CBoid& boid,
+                              const CVector3f& cameraPos, const CVector3f& cameraForward) const;
+  int GetLockOnIndex(CStateManager& mgr) const;
+  int FindBestLockOnIndex(CStateManager& mgr) const;
+  void UpdateLockOnBlend(int prevIndex, int newIndex, float dt);
+  void AddDoorRepulsors(CStateManager& mgr);
+  void UpdateLightComboBeam(CBoid& boid, CStateManager& mgr);
+  bool FindBestSurface(const CAreaCollisionCache& cache, CVector3f pos, float radius,
+                       CCollisionSurface& out);
+  CCollisionSurface FindBestCollisionInBox(CStateManager& mgr, const CVector3f& pos);
+  bool PointOnSurface(const CCollisionSurface& surface, const CVector3f& pos, const CPlane& plane);
+  CVector3f ProjectPointToPlane(const CVector3f& point, const CVector3f& planePoint,
+                                const CVector3f& normal);
+  CVector3f ProjectVectorToPlane(const CVector3f& point, const CVector3f& normal);
+  static CTransform4f ShortestRotationArcWrapped(const CVector3f& a, const CVector3f& b,
+                                                 const CRelAngle& angle);
+  void HardwareLight(const CStateManager& mgr, const CAABox& bounds) const;
+  CColor SoftwareLight(const CStateManager& mgr, const CAABox& bounds) const;
+  void FinishConstruction(); // Guessed name; empty in the base class.
+  void StopLocomotionSounds(); // Guessed name.
+  void QueueDeathMessage(CStateManager& mgr);   // Guessed name.
+  void FlushDeathMessages(CStateManager& mgr);  // Guessed name.
+
   int GetBoidCount() const { return mBoids.size(); }
   const CVector3f& GetLastKilledOffset() const { return mLastKilledOffset; }
   int GetCurrentLockOnId() const { return mLockOnIndex; }
@@ -159,7 +238,7 @@ private:
   float mDamageCooldown;
   float mBoidRadius;
   float mTouchRadius;
-  float mSafeZoneAvoidancePriority;
+  float mTurnRate; // Degrees per second.
   float mPlayerTouchRadius;
   CDamageInfo mDamage;
   CDamageInfo mRadiusDamage;
@@ -174,13 +253,22 @@ private:
   rstl::single_ptr< SwarmRenderHelpers::CSwarmSkinnedModelState > mSkinnedModelState;
   CModelData::EWhichModel mWhichModel;
   rstl::vector< CRepulsor > mDoorRepulsors;
-  rstl::optional_object< TCachedToken< CGenDescription > > mParticleDescription;
+  rstl::optional_object< TLockedToken< CGenDescription > > mParticleDescription;
   rstl::single_ptr< CElementGen > mParticleGenerator;
-  int mAttackerCount;
+  int mNumDeathParticles;
   int mNumBoids;
   int mMaxCreatedBoids;
   int mCreatedBoids;
-  ushort x4f0_;
+  bool x4f0_24_ : 1;
+  bool x4f0_25_ : 1;
+  bool x4f0_26_ : 1;
+  bool x4f0_27_ : 1;
+  bool x4f0_28_ : 1;
+  bool x4f0_29_ : 1;
+  bool x4f0_30_ : 1;
+  bool x4f0_31_ : 1;
+  bool x4f1_24_ : 1;
+  bool x4f1_25_ : 1;
   float x4f4_;
   ushort mLocomotionLoopedSound;
   ushort mAttackLoopedSound;
@@ -193,20 +281,27 @@ private:
   uchar mMaxLocomotionEmitters;
   uchar mMaxAttackEmitters;
   int x528_;
-  int x52c_;
-  int x530_;
-  int x534_;
+  int x52c_; // Boids still to spawn immediately.
+  int x530_; // Death messages sent this frame.
+  int x534_; // Death messages deferred to later frames.
   float mFreezeDuration;
   rstl::auto_ptr< CUnknownBuffer > x53c_;
   uint x544_;
   float mLifeTime;
-  uint x54c_;
+  bool x54c_24_ : 1;
+  bool x54c_25_ : 1;
+  bool x54c_26_ : 1;
+  bool x54c_27_ : 1;
+  bool x54c_28_ : 1;
+  bool x54c_29_ : 1;
+  bool x54c_30_ : 1;
+  bool x54c_31_ : 1;
   CVector3f x550_;
   float x55c_;
   int x560_;
   rstl::vector< TUniqueId > mSeekerTargets;
-  rstl::vector< int > x574_;
-  rstl::vector< int > mActiveBoidIndices;
+  rstl::vector< int > mSeekerBoidIndices; // Boid index per entry of mSeekerTargets.
+  rstl::vector< uint > mActiveBoidIndices;
 };
 NESTED_CHECK_SIZEOF(CSwarmBasics, CBoid, 0xb8)
 NESTED_CHECK_SIZEOF(CSwarmBasics, CRepulsor, 0x10)

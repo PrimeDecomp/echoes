@@ -2010,13 +2010,11 @@ void CGameArea::UpdateDocks(CStateManager& mgr) {
        it != mPostConstructed->mDockIds.end(); ++it) {
     if (const CScriptDock* dock = TCastToConstPtr< CScriptDock >(mgr.GetObjectById(*it))) {
       if (dock != nearest) {
-        mgr.SendScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, dock->GetUniqueId(),
-                                     kSM_SetToZero, kSS_InvalidState));
+        mgr.SendScriptMsg(CScriptMsg(kInvalidUniqueId, dock->GetUniqueId(), kSM_SetToZero));
       }
     }
   }
-  mgr.SendScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, nearest->GetUniqueId(),
-                               kSM_SetToMax, kSS_InvalidState));
+  mgr.SendScriptMsg(CScriptMsg(kInvalidUniqueId, nearest->GetUniqueId(), kSM_SetToMax));
 }
 
 void CGameArea::fn_80054F74() {}
@@ -2261,7 +2259,7 @@ void CGameArea::DisableDocks(CStateManager& mgr) {
     mPostConstructed->mDocksDisabled = true;
     for (rstl::list< TUniqueId >::const_iterator it = mPostConstructed->mDockIds.begin();
          it != mPostConstructed->mDockIds.end(); ++it) {
-      mgr.SendScriptMsg(*it, kInvalidUniqueId, kSM_SetToZero, kInvalidUniqueId);
+      mgr.SendScriptMsg(*it, kInvalidUniqueId, kSM_SetToZero);
     }
   }
 }

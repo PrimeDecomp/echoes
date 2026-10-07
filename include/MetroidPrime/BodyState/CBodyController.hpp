@@ -70,6 +70,7 @@ public:
   int GetCurrentAnimId() const { return mCurAnim; }
 
   float GetRestrictedFlyerMoveSpeed() const { return mRestrictedFlyerMoveSpeed; }
+  void SetRestrictedFlyerMoveSpeed(float speed) { mRestrictedFlyerMoveSpeed = speed; }
 
   float GetTimeScale() const { return mTimeScale; } // Guessed name
 

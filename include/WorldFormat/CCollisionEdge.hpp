@@ -2,6 +2,7 @@
 #define _CCOLLISIONEDGE
 
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "rstl/construct.hpp"
 
 class CCollisionEdge {
 public:
@@ -16,5 +17,9 @@ private:
   ushort mIndex2;
 };
 CHECK_SIZEOF(CCollisionEdge, 4)
+
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CCollisionEdge)
+} // namespace rstl
 
 #endif // _CCOLLISIONEDGE

@@ -108,7 +108,8 @@ void CScriptTimer::Reset(CStateManager& mgr) {
 CScriptTimer::~CScriptTimer() {}
 
 CScriptTimer::CScriptTimer(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                           float startTime, float maxRandDelay, bool loop, bool autoStart)
+                           float startTime, float maxRandDelay, const bool loop,
+                           const bool autoStart)
 : CEntity(uid, info, name, 0)
 , mStartFrame(0)
 , mTime(startTime)

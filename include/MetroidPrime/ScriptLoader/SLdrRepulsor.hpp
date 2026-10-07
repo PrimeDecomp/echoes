@@ -17,6 +17,7 @@ struct SLdrRepulsor {
 };
 
 inline SLdrRepulsor::SLdrRepulsor() : editorProperties() {
+  editorProperties.unknown_0x5d298a43 = 0x00000003u;
   shape = 0;
   radius = 1.0f;
   value = -1.0f;

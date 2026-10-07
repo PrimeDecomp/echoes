@@ -19,10 +19,10 @@ void CPlayerBodyController::SAdditiveFlinchState::Start(CStateManager& mgr,
     const CVector3f direction =
         controller.GetPlayer().GetTransform().TransposeRotate(command->GetDirection());
     const CAbsAngle angle = CAbsAngle::FromRadians(atan2(direction.GetY(), direction.GetX()));
+    const CPASDatabase& database = controller.GetPASDatabase();
     const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_AdditiveFlinch),
                                 CPASAnimParm::FromReal32(angle.AsDegrees()));
-    const rstl::pair< float, int > best =
-        controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+    const rstl::pair< float, int > best = database.FindBestAnimation(parms, *mgr.Random(), -1);
     mAnimationId = best.second;
     if (mAnimationId != -1) {
       controller.GetPlayer().AnimationData()->AddAdditiveAnimation(mAnimationId, 1.f, false, true);
@@ -37,7 +37,9 @@ bool CPlayerBodyController::SAdditiveFlinchState::Update(CStateManager& mgr,
   if (mAnimationId != -1) {
     const rstl::rc_ptr< CAnimTreeNode > tree =
         controller.GetPlayer().AnimationData()->GetAdditiveAnimationTree(mAnimationId);
-    return tree && !close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f);
+    if (tree && !close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f)) {
+      return true;
+    }
   }
   return false;
 }

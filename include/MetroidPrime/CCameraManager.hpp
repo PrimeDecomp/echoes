@@ -49,6 +49,11 @@ public:
   static float GetDefaultFirstPersonNearClipDistance();
   static float GetDefaultThirdPersonVerticalFOV();
 
+  static float sFirstPersonFOV;
+  static float sThirdPersonFOV;
+  static float sNearPlane;
+  static float sFarPlane;
+
   void SetAspectRatio(float aspect, CStateManager& mgr);
   void CreateCameras(CStateManager& mgr);
   void UpdateCameras(float dt, CStateManager& mgr);
@@ -57,7 +62,7 @@ public:
   TUniqueId GetCurrentCameraId(bool selector) const;
   CGameCamera* CurrentCamera(CStateManager& mgr, bool selector);
   const CGameCamera* GetCurrentCamera(const CStateManager& mgr, bool selector) const;
-  void SetCurrentCameraId(TUniqueId uid);
+  void SetCurrentCameraId(TUniqueId uid, CStateManager& mgr);
   void UpdateAudioListener(CStateManager& mgr);
   void UpdateFilters(float dt, CStateManager& mgr);
   float GetWaterFarDistance(CStateManager& mgr, const CScriptWater* water);
@@ -65,7 +70,7 @@ public:
   void TransferCameraTriggers(CGameCamera& from, CGameCamera& to,
                               CStateManager& mgr);                            // Guessed name
   void UpdateCameraTriggerOccupancy(CGameCamera& camera, CStateManager& mgr); // Guessed name
-  void UpdateCameraTriggers(TUniqueId uid, CStateManager& mgr);
+  void UpdateCameraTriggers(const TUniqueId& uid, CStateManager& mgr);
   void Update(float dt, CStateManager& mgr);
   void ProcessInput(const CFinalInput& input, CStateManager& mgr);
   void SetCinematicCameraId(CStateManager& mgr, TUniqueId uid); // Guessed name
@@ -101,9 +106,9 @@ public:
   void SetFixedCamera(TUniqueId uid, const CTransform4f& xf, CStateManager& mgr); // Guessed name
   void ClearFixedCamera();                                                        // Guessed name
   void SetSurfaceCamera(TUniqueId uid, CStateManager& mgr);                       // Guessed name
-  void ClearSurfaceCamera();                                                      // Guessed name
+  void ClearSurfaceCamera(CStateManager& mgr);                                    // Guessed name
   float GetCameraBobMagnitude() const;
-  void AddCamera(TUniqueId uid, CStateManager& mgr);                                // Guessed name
+  void AddCamera(const TUniqueId& uid, CStateManager& mgr);                                // Guessed name
   void UpdateCameraHistory(CStateManager& mgr);                                     // Guessed name
   void Reset(TUniqueId uid, CStateManager& mgr);                                    // Guessed name
   void StartScreenFlash();                                                          // Guessed name

@@ -52,18 +52,17 @@ CHECK_SIZEOF(CRezbitEffectIOWin, 0x20)
 CRezbitEffect::~CRezbitEffect() {}
 
 CElementGen* CRezbitEffect::CreateParticleEffect(CAssetId asset) {
-  if (asset == kInvalidAssetId) {
-    return nullptr;
+  if (asset != kInvalidAssetId) {
+    TCachedToken< CGenDescription > token(gpSimplePool->GetObj(SObjectTag('PART', asset)), true);
+    return rs_new CElementGen(token, CElementGen::kMOT_Normal, CElementGen::kOSF_One);
   }
-
-  TCachedToken< CGenDescription > token(gpSimplePool->GetObj(SObjectTag('PART', asset)), true);
-  return rs_new CElementGen(token, CElementGen::kMOT_Normal, CElementGen::kOSF_One);
+  return nullptr;
 }
 
 CRezbitEffect::CRezbitEffect(TUniqueId uid, const CEntityInfo& info,
                            const CRezbitEffectOptions& options)
-: CActor(uid, rstl::string_l("Rezbit Effect"), info, 0, CTransform4f::Identity(), CModelData(),
-         CMaterialList(), CActorParameters::None(), kInvalidUniqueId)
+: CActor(uid, rstl::string_l("Rezbit Effect"), info, 0, CTransform4f::Identity(),
+         CModelData::CModelDataNull(), CMaterialList(), CActorParameters::None(), kInvalidUniqueId)
 , mDuration(options.GetDuration())
 , mInterferenceTimeLowerBound(options.GetInterferenceTimeLowerBound())
 , mInterferenceEndTime(options.GetInterferenceEndTime())
@@ -135,19 +134,18 @@ void CRezbitEffect::Think(float dt, CStateManager& mgr) {
 void CRezbitEffect::PreRenderAllViewports(CStateManager& mgr) {}
 
 void CRezbitEffect::PreRender(CStateManager& mgr) {
+  const CCameraManager* cameraManager = mgr.GetCurrentRenderCameraManager();
   SetPreRenderClipped(true);
-  if (!mgr.GetCurrentRenderCameraManager()->IsInFPCamera()) {
-    return;
+  if (cameraManager->IsInFPCamera()) {
+    if (mInterferenceCooldown <= 0 && mElapsedTime < mInterferenceEndTime) {
+      CRandom16 random(static_cast< uint >(100.f * CGraphics::GetSecondsMod900()));
+      static_cast< CRezbitEffectIOWin* >(mIOWin.GetPtr())->SetFrameCount(random.Range(7, 30));
+      mInterferenceCooldown = 2;
+    } else {
+      --mInterferenceCooldown;
+    }
+    mgr.RenderLastHUD(GetUniqueId());
   }
-
-  if (mInterferenceCooldown > 0 || !(mElapsedTime < mInterferenceEndTime)) {
-    --mInterferenceCooldown;
-  } else {
-    CRandom16 random(static_cast< uint >(100.f * CGraphics::GetSecondsMod900()));
-    static_cast< CRezbitEffectIOWin* >(mIOWin.GetPtr())->SetFrameCount(random.Range(7, 30));
-    mInterferenceCooldown = 2;
-  }
-  mgr.RenderLastHUD(GetUniqueId());
 }
 
 void CRezbitEffect::Render(const CStateManager& mgr) const {

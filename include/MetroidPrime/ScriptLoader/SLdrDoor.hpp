@@ -42,7 +42,10 @@ struct SLdrDoor {
 };
 
 inline SLdrDoor::SLdrDoor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), animationInformation(), shellModel(kInvalidAssetId), blueShellModel(kInvalidAssetId), shellColor(CColor::Green()), burnTexture(kInvalidAssetId), actorInformation(), orbitOffset(CVector3f::Zero()), altScannable() {
+  editorProperties.unknown_0x5d298a43 = 3;
   shellColor = CColor(0.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   isOpen = true;
   isLocked = false;
   openAnimationTime = 0.5f;

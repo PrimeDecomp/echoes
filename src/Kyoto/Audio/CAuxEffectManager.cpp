@@ -54,12 +54,15 @@ CAuxEffectManager::CAuxEffectManager() : mNextId(0) {
 }
 
 void CAuxEffectManager::Initialize() {
-  for (int bus = 0; bus < 3; ++bus)
-    mContexts.push_back(SCallbackContext(this, bus));
-  for (int bus = 0; bus < 3; ++bus)
-    mBuses.push_back(TBus());
-  for (int bus = 0; bus < 3; ++bus)
-    mCallbackInstalled[bus] = false;
+  mContexts.push_back(SCallbackContext(this, 0));
+  mContexts.push_back(SCallbackContext(this, 1));
+  mContexts.push_back(SCallbackContext(this, 2));
+  mBuses.push_back(TBus());
+  mBuses.push_back(TBus());
+  mBuses.push_back(TBus());
+  mCallbackInstalled[0] = false;
+  mCallbackInstalled[1] = false;
+  mCallbackInstalled[2] = false;
 
   for (int bus = 0; bus < 3; ++bus) {
     CInterruptGuard interrupts;
@@ -72,13 +75,13 @@ void CAuxEffectManager::Initialize() {
 void CAuxEffectManager::Shutdown() {
   mContexts.clear();
   CInterruptGuard interrupts;
-  for (int bus = 0; bus < 3; ++bus)
+  for (uint bus = 0; bus < 3; ++bus)
     sndSetAuxProcessingCallbacks(kStudios[bus], nullptr, nullptr, SND_MIDI_NONE, 0, nullptr,
                                  nullptr, SND_MIDI_NONE, 0);
   for (int bus = 0; bus < mBuses.size(); ++bus) {
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      if (mBuses[bus][slot].GetState() != kES_Free)
-        mBuses[bus][slot].Shutdown();
+    for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it) {
+      if (it->GetState() != kES_Free)
+        it->Shutdown();
     }
   }
   mBuses.clear();
@@ -90,18 +93,22 @@ void CAuxEffectManager::Cleanup() {
     if (!mCallbackInstalled[bus])
       continue;
     int active = 0;
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      SEffectSlot& effect = mBuses[bus][slot];
-      if (effect.GetState() == kES_PendingCleanup)
-        effect.Shutdown();
-      if (effect.GetState() != kES_Free)
+    for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it) {
+      if (it->GetState() == kES_PendingCleanup) {
+        it->Shutdown();
+      } else if (it->GetState() != kES_Free) {
         ++active;
+      }
     }
     if (active == 0) {
-      {
+      if (bus == 2) {
         CInterruptGuard callbackInterrupts;
-        sndSetAuxProcessingCallbacks(kStudios[bus], bus == 2 ? NoEffectCallback : nullptr, nullptr,
-                                     SND_MIDI_NONE, 0, nullptr, nullptr, SND_MIDI_NONE, 0);
+        sndSetAuxProcessingCallbacks(kStudios[bus], NoEffectCallback, nullptr, SND_MIDI_NONE, 0,
+                                     nullptr, nullptr, SND_MIDI_NONE, 0);
+      } else {
+        CInterruptGuard callbackInterrupts;
+        sndSetAuxProcessingCallbacks(kStudios[bus], nullptr, nullptr, SND_MIDI_NONE, 0, nullptr,
+                                     nullptr, SND_MIDI_NONE, 0);
       }
       mCallbackInstalled[bus] = false;
     }
@@ -109,19 +116,18 @@ void CAuxEffectManager::Cleanup() {
 }
 
 void CAuxEffectManager::FadeOut(int bus, ECategory category) {
-  for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-    SEffectSlot& effect = mBuses[bus][slot];
-    switch (effect.GetState()) {
+  for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it) {
+    switch (it->GetState()) {
     case kES_Parallel:
     case kES_ParallelFadeIn:
       if (category == kEC_Parallel)
-        effect.SetState(kES_ParallelFadeOut);
+        it->SetState(kES_ParallelFadeOut);
       break;
     case kES_Serial:
     case kES_SerialFadeIn:
     case kES_SerialBypassFadeOut:
       if (category == kEC_Serial) {
-        effect.SetState(kES_SerialFadeOut);
+        it->SetState(kES_SerialFadeOut);
         SetHighestPrioritySerialState(bus, kES_SerialFadeIn);
       }
       break;
@@ -130,15 +136,15 @@ void CAuxEffectManager::FadeOut(int bus, ECategory category) {
 }
 
 void CAuxEffectManager::SetHighestPrioritySerialState(int bus, EState state) {
-  int highestPriority = -1;
   int selected = -1;
-  for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-    const SEffectSlot& effect = mBuses[bus][slot];
-    if (effect.GetState() == kES_Serial || effect.GetState() == kES_SerialFadeIn ||
-        effect.GetState() == kES_SerialBypassFadeOut) {
-      if (effect.GetPriority() > highestPriority) {
-        highestPriority = effect.GetPriority();
+  int highestPriority = -1;
+  int slot = 0;
+  for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it, ++slot) {
+    if (it->GetState() == kES_SerialBypassFadeOut || it->GetState() == kES_SerialFadeIn ||
+        it->GetState() == kES_Serial) {
+      if (it->GetPriority() > highestPriority) {
         selected = slot;
+        highestPriority = it->GetPriority();
       }
     }
   }
@@ -156,10 +162,9 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
     if (category == kEC_Parallel) {
       FadeOut(bus, category);
     } else {
-      for (int slot = 0; slot < effects.size(); ++slot) {
+      for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
         // Native priority comparison examines free slots, not active ones.
-        if (effects[slot].GetState() == kES_Free &&
-            effect.GetPriority() < effects[slot].GetPriority())
+        if (it->GetState() == kES_Free && it->GetPriority() > effect.GetPriority())
           primary = false;
       }
       if (primary)
@@ -168,23 +173,25 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
   }
   Cleanup();
 
+  // The id doubles as the one-based slot counter until a free slot is claimed.
   int id = 0;
   bool assigned = false;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    if (effects[slot].GetState() != kES_Free)
+  for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
+    ++id;
+    if (it->GetState() != kES_Free)
       continue;
     {
       CInterruptGuard interrupts;
-      id = (++mNextId << 4) | (bus << 2) | (slot + 1);
-      effects[slot].SetId(id);
-      effects[slot].SetFade(0.f);
-      effects[slot].SetEffect(effect);
-      effects[slot].SetState(category == kEC_Parallel ? kES_ParallelFadeIn
-                             : primary                ? kES_SerialFadeIn
-                                                      : kES_SerialBypassFadeOut);
-      effects[slot].Prepare();
+      id = (++mNextId << 4) | (id | (bus << 2));
+      it->SetId(id);
+      it->SetFade(0.f);
+      it->SetEffect(effect);
+      it->SetState(category == kEC_Parallel ? kES_ParallelFadeIn
+                   : primary                ? kES_SerialFadeIn
+                                            : kES_SerialBypassFadeOut);
+      it->Prepare();
+      assigned = true;
     }
-    assigned = true;
     break;
   }
   if (!assigned) {
@@ -193,7 +200,7 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
       return 0;
     }
     // New slots use a zero-based index; reused slots use one-based indices.
-    id = (++mNextId << 4) | (bus << 2) | effects.size();
+    id = (++mNextId << 4) | ((bus << 2) | effects.size());
     effects.push_back(SEffectSlot(
         0.f, category == kEC_Parallel ? kES_ParallelFadeIn : kES_SerialFadeIn, id, effect));
     effects.back().Prepare();
@@ -209,19 +216,18 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
 void CAuxEffectManager::RemoveEffect(int id) {
   CInterruptGuard interrupts;
   for (int bus = 0; bus < 3; ++bus) {
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      SEffectSlot& effect = mBuses[bus][slot];
-      if (effect.GetId() != id)
+    for (TBus::iterator it = mBuses[bus].begin(); it != mBuses[bus].end(); ++it) {
+      if (it->GetId() != id)
         continue;
-      switch (effect.GetState()) {
+      switch (it->GetState()) {
       case kES_Parallel:
       case kES_ParallelFadeIn:
-        effect.SetState(kES_ParallelFadeOut);
+        it->SetState(kES_ParallelFadeOut);
         break;
       case kES_Serial:
       case kES_SerialFadeIn:
       case kES_SerialBypassFadeOut:
-        effect.SetState(kES_SerialFadeOut);
+        it->SetState(kES_SerialFadeOut);
         break;
       }
       return;
@@ -237,8 +243,8 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
   int parallel = 0;
   int parallelFading = 0;
   int serial = 0;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    switch (effects[slot].GetState()) {
+  for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
+    switch (it->GetState()) {
     case kES_Parallel:
       ++parallel;
       break;
@@ -260,15 +266,15 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
   s32* buffers[3] = {info->data.bufferUpdate.left, info->data.bufferUpdate.right,
                      info->data.bufferUpdate.surround};
   if (parallel == 1 && parallelFading == 0) {
-    for (int slot = 0; slot < effects.size(); ++slot) {
-      if (effects[slot].GetState() == kES_Parallel)
-        effects[slot].Process(reason, info);
+    for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
+      if (it->GetState() == kES_Parallel)
+        it->Process(reason, info);
     }
   } else if (parallel != 0 || parallelFading != 0) {
     s32 mixed[3][kBufferSamples];
     memset(mixed, 0, sizeof(mixed));
-    for (int slot = 0; slot < effects.size(); ++slot) {
-      SEffectSlot& effect = effects[slot];
+    for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
+      SEffectSlot& effect = *it;
       const EState state = effect.GetState();
       if (state != kES_Parallel && state != kES_ParallelFadeIn && state != kES_ParallelFadeOut)
         continue;
@@ -321,8 +327,8 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
 
   if (serial == 0)
     return;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    SEffectSlot& effect = effects[slot];
+  for (TBus::iterator it = effects.begin(); it != effects.end(); ++it) {
+    SEffectSlot& effect = *it;
     const EState state = effect.GetState();
     if (state == kES_Serial) {
       effect.Process(reason, info);

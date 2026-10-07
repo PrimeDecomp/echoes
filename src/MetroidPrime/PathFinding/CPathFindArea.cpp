@@ -32,7 +32,9 @@ private:
   uchar* mCurrent;
 };
 
-inline uint CPFAreaOctree::GetChildIndex(const CVector3f& point) const {
+extern "C" void fn_80141594(int* out, CPFMemoryStream* stream) { *out = stream->ReadInt32(); }
+
+uint CPFAreaOctree::GetChildIndex(const CVector3f& point) const {
   uint index = 0;
   if (point[kDX] > mCenter[kDX]) {
     index = 1;
@@ -46,7 +48,7 @@ inline uint CPFAreaOctree::GetChildIndex(const CVector3f& point) const {
   return index;
 }
 
-inline rstl::prereserved_vector< CPFRegion* >*
+rstl::prereserved_vector< CPFRegion* >*
 CPFAreaOctree::GetRegionList(const CVector3f& point) {
   if (mIsLeaf) {
     return &mRegions;
@@ -72,7 +74,7 @@ inline void CPFAreaOctree::GetRegionListList(
 }
 
 CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
-: mBestPointDistSq(FLT_MAX)
+: mBestPointDistSq(3.4028235e38f)
 , mClosestPoint(CVector3f::Zero())
 , mCachedRegionList(nullptr)
 , mCachedRegionListPoint(CVector3f::Zero())
@@ -81,8 +83,11 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
 , mVersion(-1)
 , mData(data.release())
 , mTransform(CTransform4f::Identity()) {
+  int maxRegionNodes;
   CPFMemoryStream stream(mData.get(), size);
-  mVersion = stream.ReadInt32();
+  int version;
+  fn_80141594(&version, &stream);
+  mVersion = version;
 
   int numNodes = stream.ReadInt32();
   mNodes.set_size(numNodes);
@@ -90,13 +95,13 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
   int numLinks = stream.ReadInt32();
   mLinks.set_size(numLinks);
   mLinks.set_data(static_cast< CPFLink* >(stream.GetBlock(numLinks, sizeof(CPFLink))));
-  const int numRegions = stream.ReadInt32();
+  int numRegions = stream.ReadInt32();
   mRegions.set_size(numRegions);
   mRegions.set_data(static_cast< CPFRegion* >(stream.GetBlock(numRegions, sizeof(CPFRegion))));
   mRegionData.reserve(numRegions);
   CPFRegionData dataValue = CPFRegionData();
   mRegionData.resize(numRegions, dataValue);
-  int maxRegionNodes = 0;
+  maxRegionNodes = 0;
   int i;
   for (i = 0; i < numRegions; ++i) {
     mRegions[i].Fixup(*this, maxRegionNodes);
@@ -104,7 +109,7 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
   maxRegionNodes = maxRegionNodes > 4 ? maxRegionNodes : 4;
   mPolyPoints.reserve(maxRegionNodes);
 
-  int numWords = (numRegions * (numRegions - 1) / 2 + 31) / 32;
+  uint numWords = (numRegions * (numRegions - 1) / 2 + 31) / 32;
   mConnectionsGround.set_size(numWords);
   mConnectionsGround.set_data(static_cast< uint* >(stream.GetBlock(numWords, sizeof(uint))));
   mConnectionsFlyers.set_size(numWords);
@@ -141,11 +146,11 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
       mPointConnections.set_size(numPointWords);
       mPointConnections.set_data(
           static_cast< uint* >(stream.GetBlock(numPointWords, sizeof(uint))));
-      for (i = 0; i < numPoints; ++i) {
-        mPoints[i].Fixup(*this);
+      for (int j = 0; j < numPoints; ++j) {
+        mPoints[j].Fixup(*this);
       }
     }
-    mPointSearchState = rs_new CPFPointSearchState(mPoints.size());
+    mPointSearchState = rs_new CPFPointSearchState(numPoints);
   }
 }
 
@@ -162,8 +167,12 @@ int CPFArea::FindRegions(rstl::reserved_vector< CPFRegion*, 8 >& regions, const 
   for (int i = 0; i < list->size(); ++i) {
     CPFRegion* region = (*list)[i];
     if ((region->GetFlags() & 0xff & flags) && ((region->GetFlags() >> 16) & 0xff & indexMask) &&
-        region->IsPointInside(point) && (ignoreObstructions || !region->IsObstructed(flags)) &&
-        ((flags & 2) || (flags & 4) || region->PointHeight(point) < 3.f)) {
+        region->IsPointInside(point) &&
+        (ignoreObstructions ||
+         !(region->GetObstructionCount(kPFO_Unknown2) > 0 ||
+           ((flags & 0x100) != 0 && region->GetObstructionCount(kPFO_Unknown0) > 0) ||
+           ((flags & 0x200) != 0 && region->GetObstructionCount(kPFO_Unknown1) > 0))) &&
+        ((flags & 6) || region->PointHeight(point) < 3.f)) {
       regions.push_back(region);
       if (regions.size() == regions.capacity()) {
         break;
@@ -178,7 +187,11 @@ int CPFArea::FindRegions(rstl::reserved_vector< CPFRegion*, 8 >& regions, const 
   for (int i = 0; i < mOctreeRegions.size(); ++i) {
     CPFRegion* region = mOctreeRegions[i];
     if ((region->GetFlags() & 0xff & flags) && ((region->GetFlags() >> 16) & 0xff & indexMask) &&
-        region->Intersects(box) && (ignoreObstructions || !region->IsObstructed(flags)) &&
+        region->Intersects(box) &&
+        (ignoreObstructions ||
+         !(region->GetObstructionCount(kPFO_Unknown2) > 0 ||
+           ((flags & 0x100) != 0 && region->GetObstructionCount(kPFO_Unknown0) > 0) ||
+           ((flags & 0x200) != 0 && region->GetObstructionCount(kPFO_Unknown1) > 0))) &&
         ((flags & 6) ||
          region->PointHeight(box.ClosestPointAlongVector(region->GetNormal())) < 3.f)) {
       regions.push_back(region);
@@ -207,7 +220,10 @@ CPFRegion* CPFArea::FindClosestRegion(const CVector3f& point, uint flags, uint i
         region->Data()->SetCookie(mRegionFindCookie);
         if ((region->GetFlags() & 0xff & flags) &&
             ((region->GetFlags() >> 16) & 0xff & indexMask) &&
-            region->IsPointInsidePaddedAABox(point, padding) && !region->IsObstructed(flags)) {
+            !(region->GetObstructionCount(kPFO_Unknown2) > 0 ||
+              ((flags & 0x100) != 0 && region->GetObstructionCount(kPFO_Unknown0) > 0) ||
+              ((flags & 0x200) != 0 && region->GetObstructionCount(kPFO_Unknown1) > 0)) &&
+            region->IsPointInsidePaddedAABox(point, padding)) {
           uint startTick = OSGetTick();
           if ((flags & 6) || region->PointHeight(point) < 3.f) {
             if (region->FindBestPoint(mPolyPoints, point, flags, padding * padding)) {
@@ -229,11 +245,13 @@ CPFRegion* CPFArea::FindClosestRegion(const CVector3f& point, uint flags, uint i
 CVector3f CPFArea::FindClosestReachablePoint(rstl::reserved_vector< CPFRegion*, 8 >& regions,
                                              const CVector3f& point, uint flags, uint indexMask) {
   CVector3f result = CVector3f::Zero();
-  float closestDistanceSq = FLT_MAX;
+  float closestDistanceSq = 3.4028235e38f;
   for (int i = 0; i < GetNumRegions(); ++i) {
     CPFRegion& region = GetRegion(i);
     if ((region.GetFlags() & 0xff & flags) && ((region.GetFlags() >> 16) & 0xff & indexMask) &&
-        !region.IsObstructed(flags)) {
+        !(region.GetObstructionCount(kPFO_Unknown2) > 0 ||
+          ((flags & 0x100) != 0 && region.GetObstructionCount(kPFO_Unknown0) > 0) ||
+          ((flags & 0x200) != 0 && region.GetObstructionCount(kPFO_Unknown1) > 0))) {
       for (int j = 0; j < regions.size(); ++j) {
         CPFRegion* source = regions[j];
         if (PathExists(source, &region, flags)) {
@@ -257,23 +275,26 @@ bool CPFArea::PathExists(const CPFRegion* source, const CPFRegion* destination, 
   }
   int numRegions = GetNumRegions();
   int sourceIndex = source->GetIndex();
-  int destinationIndex = destination->GetIndex();
+  const int destIndex = destination->GetIndex();
+  int destinationIndex = destIndex;
+  const rstl::prereserved_vector< uint >& connections =
+      (flags & 2) ? mConnectionsFlyers : mConnectionsGround;
+  int lowIndex = sourceIndex;
   if (sourceIndex > destinationIndex) {
-    rstl::swap(sourceIndex, destinationIndex);
+    lowIndex = destinationIndex;
+    destinationIndex = sourceIndex;
   }
   int totalConnections = numRegions * (numRegions - 1) / 2;
-  int remainingConnections = (numRegions - sourceIndex - 1) * (numRegions - sourceIndex) / 2;
-  uint bit = totalConnections - remainingConnections + destinationIndex - (sourceIndex + 1);
-  if (flags & 2) {
-    return (mConnectionsFlyers[bit / 32] >> (bit % 32)) & 1;
-  }
-  return (mConnectionsGround[bit / 32] >> (bit % 32)) & 1;
+  int remainingConnections = (numRegions - lowIndex - 1) * (numRegions - lowIndex) / 2;
+  uint bit = totalConnections - remainingConnections + destinationIndex - (lowIndex + 1);
+  return (connections[bit / 32] >> (bit % 32)) & 1;
 }
 
 void CPFArea::SetTransform(const CTransform4f& transform) {
   const CTransform4f delta = mTransform.GetInverse() * transform;
   for (int i = 0; i < mPoints.size(); ++i) {
-    mPoints[i].SetPosition(transform.GetTranslation() + delta.Rotate(mPoints[i].GetPosition()));
+    CPFPoint& point = mPoints[i];
+    point.SetPosition(transform.GetTranslation() + delta.Rotate(point.GetPosition()));
   }
   mTransform = transform;
 }
@@ -305,7 +326,7 @@ bool CPFArea::PointPathExists(const CPFPoint* source, const CPFPoint* destinatio
   return PointPathExists(source - mPoints.data(), destination - mPoints.data());
 }
 
-CPFArea::~CPFArea() {}
+inline CPFArea::~CPFArea() {}
 
 CFactoryFnReturn FPathFindAreaFactory(const SObjectTag& tag, const rstl::auto_ptr< uchar >& data,
                                       int size, const CVParamTransfer& xfer) {

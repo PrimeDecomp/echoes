@@ -28,7 +28,7 @@ private:
   // Guessed names
   void ForceLand(CBodyController& bc, CStateManager& mgr);
   void UpdateAnimationVariant(CBodyController& bc);
-  pas::EAnimationState UpdateExitJump(CBodyController& bc, CStateManager& mgr);
+  pas::EAnimationState UpdateExitJump(float dt, CBodyController& bc, CStateManager& mgr);
 
   pas::EJumpState mState;
   pas::EJumpType mJumpType;

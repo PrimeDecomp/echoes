@@ -4,6 +4,8 @@
 #include "MetroidPrime/CKnockBackInfo.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 
+#include <string.h>
+
 // Guessed names for the reconstructed RULE reaction records.
 const CKnockBackMgr::SReactionParameters CKnockBackMgr::skDefaultParameters = {kAR_None, kFU_None,
                                                                                0.f, 0.f, 0};
@@ -111,53 +113,58 @@ CKnockBackMgr::EKnockBackWeaponType CKnockBackMgr::GetKnockBackWeaponType(const 
                                                                           EWeaponType weapon,
                                                                           bool direct) const {
   const CWeaponMode& mode = info.GetWeaponMode();
+  EKnockBackWeaponType type = kKBWT_Invalid;
   switch (weapon) {
   case kWT_Power:
     if (mode.IsCharged()) {
-      return kKBWT_PowerCharged;
+      type = kKBWT_PowerCharged;
+    } else if (mode.IsComboed()) {
+      type = kKBWT_PowerCombo;
+    } else {
+      type = kKBWT_Power;
     }
-    if (mode.IsComboed()) {
-      return kKBWT_PowerCombo;
-    }
-    return kKBWT_Power;
+    break;
   case kWT_Dark:
     if (mode.IsCharged()) {
-      return direct ? kKBWT_DarkChargedDirect : kKBWT_DarkChargedIndirect;
+      type = direct ? kKBWT_DarkChargedDirect : kKBWT_DarkChargedIndirect;
+    } else if (mode.IsComboed()) {
+      type = kKBWT_DarkCombo;
+    } else {
+      type = kKBWT_Dark;
     }
-    if (mode.IsComboed()) {
-      return kKBWT_DarkCombo;
-    }
-    return kKBWT_Dark;
+    break;
   case kWT_Light:
     if (mode.IsCharged()) {
-      return kKBWT_LightCharged;
+      type = kKBWT_LightCharged;
+    } else if (mode.IsComboed()) {
+      type = info.NoImmunity() ? kKBWT_LightMissile : kKBWT_LightCombo;
+    } else {
+      type = kKBWT_Light;
     }
-    if (mode.IsComboed()) {
-      return info.NoImmunity() ? kKBWT_LightMissile : kKBWT_LightCombo;
-    }
-    return kKBWT_Light;
+    break;
   case kWT_Annihilator:
     if (mode.IsCharged()) {
       if (info.ShouldApplyRadiusDamage()) {
-        return kKBWT_AnnihilatorChargedEffect;
+        type = kKBWT_AnnihilatorChargedEffect;
+      } else {
+        type = kKBWT_AnnihilatorCharged;
       }
-      return kKBWT_AnnihilatorCharged;
+    } else if (mode.IsComboed()) {
+      type = kKBWT_AnnihilatorCombo;
+    } else if (info.GetDamage() == 0.f && info.GetRadiusDamage() == 0.f &&
+               info.GetRadius() == 0.f && info.GetKnockBackPower() == 0.f) {
+      type = kKBWT_AnnihilatorNoDamage;
+    } else {
+      type = kKBWT_Annihilator;
     }
-    if (mode.IsComboed()) {
-      return kKBWT_AnnihilatorCombo;
-    }
-    if (info.GetDamage() == 0.f && info.GetRadiusDamage() == 0.f && info.GetRadius() == 0.f &&
-        info.GetKnockBackPower() == 0.f) {
-      return kKBWT_AnnihilatorNoDamage;
-    }
-    return kKBWT_Annihilator;
+    break;
   default:
+    if (weapon >= kWT_Power && weapon <= kWT_SafeZone) {
+      type = skWeaponTypes[weapon];
+    }
     break;
   }
-  if (weapon >= 0 && weapon < kWT_Max) {
-    return skWeaponTypes[weapon];
-  }
-  return kKBWT_Invalid;
+  return type;
 }
 
 CVector3f CKnockBackMgr::GetKnockBackDirection(const CVector3f& direction,
@@ -170,7 +177,7 @@ CVector3f CKnockBackMgr::GetKnockBackDirection(const CVector3f& direction,
 }
 
 void CKnockBackMgr::SelectDamageState(const CActor& actor, const CKnockBackInfo& info) {
-  mActiveParameters = skDefaultParameters;
+  memcpy(&mActiveParameters, &skDefaultParameters, sizeof(mActiveParameters));
   const CDamageInfo& damage = info.GetDamageInfo();
   mWeaponType = GetKnockBackWeaponType(damage, static_cast< EWeaponType >(damage.GetWeaponMode1()),
                                        info.IsDirect());
@@ -241,18 +248,20 @@ void CKnockBackMgr::ValidateState(const CActor& actor) {
     disableFollowUp = !mEnableSlow;
     break;
   case kFU_Freeze:
-  case kFU_FreezeBurn:
-  case kFU_FreezeDisintegration:
     disableFollowUp = !mEnableFreeze;
     break;
   case kFU_Shock:
     disableFollowUp = !mEnableShock;
     break;
   case kFU_Burn:
+    disableFollowUp = !mEnableBurn;
+    break;
   case kFU_BurnPhase:
     disableFollowUp = !mEnableBurn;
     break;
   case kFU_ExplodeDeath:
+    disableFollowUp = !mEnableExplodeDeath;
+    break;
   case kFU_IceDeath:
     disableFollowUp = !mEnableExplodeDeath;
     break;
@@ -260,9 +269,19 @@ void CKnockBackMgr::ValidateState(const CActor& actor) {
     disableFollowUp = !mEnableBurnDeath;
     break;
   case kFU_LaggedBurnDeath:
+    disableFollowUp = !mEnableLaggedBurnDeath;
+    break;
   case kFU_BlackDeath:
+    disableFollowUp = !mEnableLaggedBurnDeath;
+    break;
   case kFU_ImmediateDisintegration:
     disableFollowUp = !mEnableLaggedBurnDeath;
+    break;
+  case kFU_FreezeBurn:
+    disableFollowUp = !mEnableFreeze;
+    break;
+  case kFU_FreezeDisintegration:
+    disableFollowUp = !mEnableFreeze;
     break;
   default:
     break;
@@ -353,7 +372,7 @@ CRuleValue CKnockBackMgr::GetConditionValue(FourCC condition) const {
   }
 }
 
-bool CKnockBackMgr::ExecuteAction(const CRuleAction& action) {
+int CKnockBackMgr::ExecuteAction(const CRuleAction& action) {
   switch (action.GetId()) {
   case 'FLCH':
     mActiveParameters.mReaction = kAR_Flinch;

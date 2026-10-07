@@ -15,6 +15,7 @@ public:
   explicit COBBTreeGroup(rstl::auto_ptr< COBBTree >& tree);
 
   int NumTrees() const { return mTrees.size(); }
+  COBBTree* GetTree(int idx) const { return mTrees[idx].get(); } // Guessed name.
 
 private:
   friend class CCollidableOBBTreeGroup;

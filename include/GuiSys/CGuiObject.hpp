@@ -16,6 +16,10 @@ public:
   CVector3f GetLocalPosition() const;
   void SetLocalPosition(const CVector3f& pos);
   void SetO2PTransform(const CTransform4f& xf);
+  void SetLocalTransform(const CTransform4f& xf) {
+    mLocalXF = xf;
+    RecalculateTransforms();
+  }
   void SetO2WTransform(const CTransform4f& xf);
   void RotateReset();
   CVector3f RotateW2O(const CVector3f& vec) const;

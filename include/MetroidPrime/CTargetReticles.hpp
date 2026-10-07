@@ -76,7 +76,7 @@ public:
   void DrawNextLockOnGroup(const CMatrix3f& rotation, const CStateManager& mgr) const;
   void DrawScanTargetGroup(const CMatrix3f& rotation,
                            const CStateManager& mgr) const;                   // Guessed name
-  void DrawCrosshairs(const CMatrix3f& rotation) const;                       // Guessed name
+  void DrawCrosshairs(const CMatrix3f& rotation, const CStateManager& mgr) const; // Guessed name
   void DrawSeeker(const CMatrix3f& rotation, const CStateManager& mgr) const; // Guessed name
   void DrawCurrLockOnGroup(const CMatrix3f& rotation, const CStateManager& mgr) const;
   void DrawGrapplePoint(const CScriptGrapplePoint& point, float factor, const CStateManager& mgr,

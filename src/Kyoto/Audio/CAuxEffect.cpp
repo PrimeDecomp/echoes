@@ -1,7 +1,7 @@
 #include "Kyoto/Audio/CAuxEffect.hpp"
 
 CAuxEffect::CAuxEffect(const SND_AUX_REVERBHI& parameters, int area, uchar volume, int priority)
-: mType(kT_ReverbHI)
+: mType(kT_Invalid)
 , mArea(area)
 , mId(0)
 , mProcessingId(0)
@@ -10,11 +10,12 @@ CAuxEffect::CAuxEffect(const SND_AUX_REVERBHI& parameters, int area, uchar volum
 , mActive(false)
 , mRegistered(false)
 , mPrepared(false) {
+  mType = kT_ReverbHI;
   mReverbHI = parameters;
 }
 
 CAuxEffect::CAuxEffect(const SND_AUX_CHORUS& parameters, int area, uchar volume, int priority)
-: mType(kT_Chorus)
+: mType(kT_Invalid)
 , mArea(area)
 , mId(0)
 , mProcessingId(0)
@@ -23,11 +24,12 @@ CAuxEffect::CAuxEffect(const SND_AUX_CHORUS& parameters, int area, uchar volume,
 , mActive(false)
 , mRegistered(false)
 , mPrepared(false) {
+  mType = kT_Chorus;
   mChorus = parameters;
 }
 
 CAuxEffect::CAuxEffect(const SND_AUX_REVERBSTD& parameters, int area, uchar volume, int priority)
-: mType(kT_ReverbSTD)
+: mType(kT_Invalid)
 , mArea(area)
 , mId(0)
 , mProcessingId(0)
@@ -36,6 +38,7 @@ CAuxEffect::CAuxEffect(const SND_AUX_REVERBSTD& parameters, int area, uchar volu
 , mActive(false)
 , mRegistered(false)
 , mPrepared(false) {
+  mType = kT_ReverbSTD;
   mReverbSTD = parameters;
 }
 
