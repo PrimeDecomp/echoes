@@ -1,15 +1,10 @@
 #include "MetroidPrime/ScriptObjects/CScriptGenerator.hpp"
 
-#include "MetroidPrime/ScriptLoader.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrGenerator.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrGenerator.hpp"
 #include "MetroidPrime/TCastTo.hpp"
-
-namespace {
-// The generator's connection state is GRNT in G2ME01, distinct from GENR.
-const EScriptObjectState kGeneratorConnectionState = static_cast< EScriptObjectState >(0x47524e54);
-}
 
 CScriptGenerator::CScriptGenerator(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                    int spawnCount, bool noReuseFollowers, const CVector3f& offset,
@@ -36,7 +31,7 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
     followers.reserve(GetConnectionList().empty() ? 1 : GetConnectionList().size());
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
-      if (it->state != kGeneratorConnectionState || it->msg != kSM_Follow) {
+      if (it->state != kSS_GeneratorConnection || it->msg != kSM_Follow) {
         continue;
       }
       const TUniqueId uid = mgr.GetIdForScript(it->objId);
@@ -59,7 +54,7 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
     activations.reserve(GetConnectionList().size());
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
-      if (it->state != kGeneratorConnectionState) {
+      if (it->state != kSS_GeneratorConnection) {
         continue;
       }
       if (it->msg == kSM_Activate) {
@@ -77,8 +72,10 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
       if (activations.empty() || followers.empty()) {
         break;
       }
-      int activationIndex = static_cast< int >(0.99f * (mgr.Random()->Float() * activations.size()));
-      const int followerIndex = static_cast< int >(0.99f * (mgr.Random()->Float() * followers.size()));
+      int activationIndex =
+          static_cast< int >(0.99f * (mgr.Random()->Float() * activations.size()));
+      const int followerIndex =
+          static_cast< int >(0.99f * (mgr.Random()->Float() * followers.size()));
 
       CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
       for (int j = 0; j < activations.size(); ++j) {
@@ -135,7 +132,8 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
 
             const float scale = mgr.Random()->Range(mMinScale, mMaxScale);
             if (generatedActor->HasModelData()) {
-              generatedActor->ModelData()->SetScale(scale * generatedActor->ModelData()->GetScale());
+              generatedActor->ModelData()->SetScale(scale *
+                                                    generatedActor->ModelData()->GetScale());
             }
           }
           mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), kInvalidUniqueId, generated.mUniqueId,
@@ -160,9 +158,9 @@ CEntity* LoadGenerator(CStateManager& mgr, CInputStream& input, CEntityInfo& inf
   SLdrGenerator sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrGenerator.inc"
 
-  return rs_new CScriptGenerator(
-      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.randomCount,
-      sldrThis.uniqueLocations, sldrThis.offset, sldrThis.keepOrientation,
-      sldrThis.useOriginatorTransform, sldrThis.randomScaleMin, sldrThis.randomScaleMax);
+  return rs_new CScriptGenerator(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                 LdrToEntityInfo(info, sldrThis.editorProperties),
+                                 sldrThis.randomCount, sldrThis.uniqueLocations, sldrThis.offset,
+                                 sldrThis.keepOrientation, sldrThis.useOriginatorTransform,
+                                 sldrThis.randomScaleMin, sldrThis.randomScaleMax);
 }

@@ -12,11 +12,6 @@
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-namespace {
-// The generator's connection state is GRNT in G2ME01, distinct from GENR.
-const EScriptObjectState kGeneratorConnectionState = static_cast< EScriptObjectState >(0x47524e54);
-} // namespace
-
 CPickupGeneratorRuleEvaluator::CPickupGeneratorRuleEvaluator(CAssetId rules)
 : CRuleSetEvaluator(rules)
 , mManager(nullptr)
@@ -238,7 +233,7 @@ void CScriptPickupGenerator::GetTargets(CStateManager& mgr, TUniqueId sender,
   targets.reserve(GetConnectionList().size() > 1 ? GetConnectionList().size() : 1);
   for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
        it != GetConnectionList().end(); ++it) {
-    if (it->state != kGeneratorConnectionState || it->msg != kSM_Follow) {
+    if (it->state != kSS_GeneratorConnection || it->msg != kSM_Follow) {
       continue;
     }
 
@@ -375,7 +370,7 @@ void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
   int count = 0;
   for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
        it != GetConnectionList().end(); ++it) {
-    if (it->state == kGeneratorConnectionState && it->msg == kSM_Activate) {
+    if (it->state == kSS_GeneratorConnection && it->msg == kSM_Activate) {
       ++count;
     }
   }
@@ -384,7 +379,7 @@ void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
   for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
        it != GetConnectionList().end(); ++it) {
-    if (it->state != kGeneratorConnectionState || it->msg != kSM_Activate) {
+    if (it->state != kSS_GeneratorConnection || it->msg != kSM_Activate) {
       continue;
     }
 
@@ -397,7 +392,7 @@ void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
     } else if (const CScriptDebris* debris = TCastToConstPtr< CScriptDebris >(generated.mEntity)) {
       for (rstl::vector< SConnection >::const_iterator inner = debris->GetConnectionList().begin();
            inner != debris->GetConnectionList().end(); ++inner) {
-        if (inner->state != kGeneratorConnectionState || inner->msg != kSM_Activate) {
+        if (inner->state != kSS_GeneratorConnection || inner->msg != kSM_Activate) {
           continue;
         }
 
@@ -426,7 +421,7 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
 
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
-      if (it->state != kGeneratorConnectionState || it->msg != kSM_SetToZero) {
+      if (it->state != kSS_GeneratorConnection || it->msg != kSM_SetToZero) {
         continue;
       }
 
@@ -438,7 +433,7 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
           TCastToConstPtr< CScriptPickupGenerator >(mgr.ObjectById(ids.first->second));
       if (generator != nullptr) {
         mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), sender, generator->GetUniqueId(),
-                                        kSM_SetToZero, kGeneratorConnectionState));
+                                        kSM_SetToZero, kSS_GeneratorConnection));
       }
     }
 
