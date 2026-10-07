@@ -32,8 +32,11 @@ rstl::optional_object< CAABox > CBeamProjectile::GetTouchBounds() const {
   if (!GetActive() || !mEnableTouchDamage) {
     return rstl::optional_object_null();
   }
-  const CVector3f allowance(0.1f, 0.1f, 0.1f);
-  return CAABox(GetTranslation() - allowance, GetTranslation() + allowance);
+  const float allowance = 0.1f;
+  const CVector3f& position = GetTranslation();
+  return CAABox(position.GetX() - allowance, position.GetY() - allowance,
+                position.GetZ() - allowance, position.GetX() + allowance,
+                position.GetY() + allowance, position.GetZ() + allowance);
 }
 
 void CBeamProjectile::PreRenderAllViewports(CStateManager& mgr) {
