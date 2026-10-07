@@ -1226,7 +1226,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Runtime/alloc.c"),
             Object(MatchingFor("G2ME01"), "Runtime/errno.c"),
             Object(MatchingFor("G2ME01"), "Runtime/ansi_files.c"),
-            Object(MatchingFor("G2ME01"), "Runtime/ansi_fp.c"),
+            Object(MatchingFor("G2ME01", "G2MP01"), "Runtime/ansi_fp.c"),
             Object(MatchingFor("G2ME01", "G2MP01"), "Runtime/arith.c"),
             Object(MatchingFor("G2ME01", "G2MP01"), "Runtime/buffer_io.c"),
             Object(MatchingFor("G2ME01"), "Runtime/critical_regions.gamecube.c"),

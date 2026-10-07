@@ -2333,6 +2333,8 @@ Runtime/ansi_files.c:
 
 Runtime/ansi_fp.c:
 	.text       start:0x80347C8C end:0x8034B268
+	.rodata     start:0x803B17E0 end:0x803B18C0
+	.data       start:0x803BD458 end:0x803BD5C0
 	.sdata2     start:0x80420240 end:0x80420270
 
 Runtime/arith.c:
