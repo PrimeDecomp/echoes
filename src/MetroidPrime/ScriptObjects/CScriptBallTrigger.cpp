@@ -5,6 +5,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrBallTrigger.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "rstl/math.hpp"
@@ -14,13 +16,26 @@ static CVector3f calculate_ball_extents() {
   return CVector3f(extent, extent, extent);
 }
 
+CEntity* LoadBallTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrBallTrigger sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrBallTrigger.inc"
+
+  return rs_new CScriptBallTrigger(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.editorProperties.transform.scale, LdrToDamageInfo(sldrThis.trigger.damage),
+      sldrThis.trigger.forceField, sldrThis.trigger.flagsTrigger, sldrThis.attractionForce,
+      sldrThis.attractionAngle, sldrThis.attractionDistance, sldrThis.attractionDirection,
+      sldrThis.noBallMovement);
+}
+
 CScriptBallTrigger::CScriptBallTrigger(TUniqueId uid, const rstl::string& name,
                                        const CEntityInfo& info, const CTransform4f& xf,
                                        const CVector3f& scale, const CDamageInfo& damage,
                                        const CVector3f& forceField, uint flags,
                                        float attractionForce, float attractionAngle,
-                                       float attractionDistance,
-                                       const CVector3f& attractionDirection, bool noBallMovement)
+                                       float attractionDistance, CVector3f attractionDirection,
+                                       bool noBallMovement)
 : CScriptTriggerOrientated(uid, name, info, calculate_ball_extents(), xf, damage, forceField, flags,
                            false, false)
 , mAttractionForce(attractionForce)

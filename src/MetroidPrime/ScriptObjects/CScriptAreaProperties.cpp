@@ -7,12 +7,12 @@
 #include "MetroidPrime/ScriptLoader/SLdrAreaAttributes.hpp"
 
 CScriptAreaProperties::CScriptAreaProperties(TUniqueId uid, const CEntityInfo& info, float density,
-                                             float normalLightning, uint hasSkyBox,
+                                             float normalLightning, bool hasSkyBox,
                                              bool isDarkWorld, uint environmentEffects,
                                              CAssetId skyBoxAssetId, int phazonDamage, int unk1,
-                                             float unk2, float unk3, const CColor& color)
+                                             float unk2, float unk3, CColor color)
 
-: CEntity(uid, info, "AreaAttributes", false)
+: CEntity(uid, info, rstl::string_l("AreaAttributes"), false)
 , m_hasSkybox(hasSkyBox)
 , m_isDarkWorld(isDarkWorld)
 , m_environmentEffects(environmentEffects)
@@ -20,9 +20,10 @@ CScriptAreaProperties::CScriptAreaProperties(TUniqueId uid, const CEntityInfo& i
 , m_normalLightning(normalLightning)
 , m_skyBoxAssetId(skyBoxAssetId)
 , m_phazonDamage(phazonDamage)
-, skyBoxModel(hasSkyBox ? rstl::optional_object< TLockedToken< CModel > >(
-                              gpSimplePool->GetObj(SObjectTag('CMDL', skyBoxAssetId)))
-                        : rstl::optional_object_null())
+, skyBoxModel(hasSkyBox && skyBoxAssetId != kInvalidAssetId
+                  ? rstl::optional_object< TLockedToken< CModel > >(
+                        gpSimplePool->GetObj(SObjectTag('CMDL', skyBoxAssetId)))
+                  : rstl::optional_object_null())
 , x4c(unk1)
 , x50(unk2)
 , x54(unk3)
@@ -60,15 +61,14 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   }
 }
 
-CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input,
-                                          CEntityInfo& info) {
+CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrAreaAttributes sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrAreaAttributes.inc"
 
-  return new CScriptAreaProperties(
-      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.density, sldrThis.normalLighting, 0.0f, 0.0f, sldrThis.needSky, sldrThis.darkWorld,
-      sldrThis.environmentEffects, sldrThis.overrideSky, sldrThis.phazonDamage, 0, CColor::Black());
+  return rs_new CScriptAreaProperties(
+      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.density,
+      sldrThis.normalLighting, sldrThis.needSky, sldrThis.darkWorld, sldrThis.environmentEffects,
+      sldrThis.overrideSky, sldrThis.phazonDamage, 0, 0.f, 0.f, CColor::Black());
 }
 
 CScriptAreaProperties::~CScriptAreaProperties() {}

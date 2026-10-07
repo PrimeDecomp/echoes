@@ -1,4 +1,5 @@
 #include "Kyoto/Animation/CParticlePOINode.hpp"
+#include <float.h>
 
 CParticlePOINode::CParticlePOINode(CInputStream& in) : CPOINode(in), mData(in) {}
 
@@ -19,5 +20,5 @@ float CParticlePOINode::GetMaximumDistance() const {
   if (GetFlags() & 0x2000000) {
     return 20.f;
   }
-  return 3.4028235e38f;
+  return FLT_MAX;
 }

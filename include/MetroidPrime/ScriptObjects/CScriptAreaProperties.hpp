@@ -3,13 +3,12 @@
 
 #include "MetroidPrime/CEntity.hpp"
 
-#include "Kyoto/SObjectTag.hpp"
-#include "Kyoto/TToken.hpp"
 #include "Kyoto/Graphics/CColor.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/SObjectTag.hpp"
+#include "Kyoto/TToken.hpp"
 
 #include "rstl/optional_object.hpp"
-
 
 class CModel;
 class CScriptAreaProperties : public CEntity {
@@ -21,15 +20,16 @@ private:
   float m_normalLightning;
   CAssetId m_skyBoxAssetId;
   int m_phazonDamage;
-  rstl::optional_object< TLockedToken<CModel> > skyBoxModel;
+  rstl::optional_object< TLockedToken< CModel > > skyBoxModel;
   int x4c;
   float x50;
   float x54;
   CColor m_color;
 
 public:
-  CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float,
-                        uint hasSkyBox, bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float, const CColor&);
+  CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float, bool hasSkyBox,
+                        bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float,
+                        CColor);
   ~CScriptAreaProperties() override;
 
   bool GetNeedsSky() const { return m_hasSkybox; }

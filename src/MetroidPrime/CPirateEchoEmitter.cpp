@@ -24,7 +24,8 @@ CVector3f CPirateEchoEmitter::GetHeadPosition(const CPoseAsTransforms_Linear& po
   if (mUseHeadOnly) {
     return pose.GetOffset(mHead);
   }
-  return (pose.GetOffset(mHead) + pose.GetOffset(mRightWing) + pose.GetOffset(mLeftWing)) * (1.f / 3.f);
+  return (pose.GetOffset(mHead) + pose.GetOffset(mRightWing) + pose.GetOffset(mLeftWing)) *
+         (1.f / 3.f);
 }
 
 void CPirateEchoEmitter::Render(const CStateManager& mgr) const {
@@ -48,7 +49,7 @@ void CPirateEchoEmitter::Render(const CStateManager& mgr) const {
   points.push_back(rightAnkle);
   points.push_back(gun);
 
-  static const int skProjectionIndices[5] = {0, 8, 6, 4, 2};
+  const int skProjectionIndices[5] = {0, 8, 6, 4, 2};
   rstl::reserved_vector< CVector3f, 10 > contour;
   contour.resize(10);
   const SProjection projection =
@@ -56,11 +57,9 @@ void CPirateEchoEmitter::Render(const CStateManager& mgr) const {
 
   EnsureMinimumWidth(contour[8], contour[2], 0.5f);
   EnsureMinimumWidth(contour[6], contour[4], 0.25f);
-  const float upperHeight = rstl::max_val(contour[8].GetZ(), contour[2].GetZ());
-  const float lowerHeight = rstl::min_val(contour[8].GetZ(), contour[2].GetZ());
-  LimitHeight(contour[0], upperHeight, 0.25f);
-  LimitHeight(contour[6], lowerHeight, -0.25f);
-  LimitHeight(contour[4], lowerHeight, -0.25f);
+  LimitHeight(contour[0], rstl::max_val(contour[8].GetZ(), contour[2].GetZ()), 0.25f);
+  LimitHeight(contour[6], rstl::min_val(contour[8].GetZ(), contour[2].GetZ()), -0.25f);
+  LimitHeight(contour[4], rstl::min_val(contour[8].GetZ(), contour[2].GetZ()), -0.25f);
 
   const CVector3f& center = projection.mProjectedCenter;
   contour[9] = InterpolateContourPoint(contour[8], contour[6], center, 0.5f, 0.25f, 2.f);

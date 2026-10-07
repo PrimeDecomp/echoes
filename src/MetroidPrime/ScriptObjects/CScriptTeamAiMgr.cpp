@@ -104,8 +104,7 @@ const CTeamAiRole* CScriptTeamAiMgr::GetTeamAiRole(const CStateManager& mgr, TUn
 
 bool CScriptTeamAiMgr::CanStartAttack(EAttackType type, CStateManager& mgr, TUniqueId teamId,
                                       TUniqueId memberId) {
-  if (CScriptTeamAiMgr* team =
-          TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
+  if (CScriptTeamAiMgr* team = TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
     if (team->HasTeamAiRole(memberId)) {
       if (type == kAT_Melee) {
         return team->CanStartMeleeAttack(memberId);
@@ -120,8 +119,7 @@ bool CScriptTeamAiMgr::CanStartAttack(EAttackType type, CStateManager& mgr, TUni
 
 bool CScriptTeamAiMgr::StartAttack(EAttackType type, CStateManager& mgr, TUniqueId teamId,
                                    TUniqueId memberId) {
-  if (CScriptTeamAiMgr* team =
-          TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
+  if (CScriptTeamAiMgr* team = TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
     if (team->HasTeamAiRole(memberId)) {
       if (type == kAT_Melee) {
         return team->StartMeleeAttack(memberId);
@@ -136,8 +134,7 @@ bool CScriptTeamAiMgr::StartAttack(EAttackType type, CStateManager& mgr, TUnique
 
 void CScriptTeamAiMgr::EndAttack(EAttackType type, CStateManager& mgr, TUniqueId teamId,
                                  TUniqueId memberId, bool clearRole) {
-  if (CScriptTeamAiMgr* team =
-          TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
+  if (CScriptTeamAiMgr* team = TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(teamId))) {
     if (team->HasTeamAiRole(memberId)) {
       if (type == kAT_Melee) {
         team->EndMeleeAttack(memberId);
@@ -402,8 +399,7 @@ void CScriptTeamAiMgr::SpacingSort(CStateManager& mgr, const CVector3f& position
 
   float tierStagger = 4.5f;
   for (rstl::vector< CTeamAiRole >::iterator it = mRoles.begin(); it != mRoles.end(); ++it) {
-    if (const CPatterned* ai =
-            TCastToPtr< CPatterned >(mgr.ObjectById(it->GetOwnerId()))) {
+    if (const CPatterned* ai = TCastToPtr< CPatterned >(mgr.ObjectById(it->GetOwnerId()))) {
       const CAABox& bounds = ai->GetBaseBoundingBox();
       const float length = (bounds.GetMaxPoint().GetY() - bounds.GetMinPoint().GetY()) * 1.5f;
       if (length > tierStagger) {
@@ -417,8 +413,7 @@ void CScriptTeamAiMgr::SpacingSort(CStateManager& mgr, const CVector3f& position
   int maxTierSize = 3;
   for (rstl::vector< CTeamAiRole >::iterator it = mRoles.begin(); it != mRoles.end(); ++it) {
     CTeamAiRole& role = *it;
-    if (const CPatterned* ai =
-            TCastToPtr< CPatterned >(mgr.ObjectById(role.GetOwnerId()))) {
+    if (const CPatterned* ai = TCastToPtr< CPatterned >(mgr.ObjectById(role.GetOwnerId()))) {
       CVector3f delta = ai->GetTranslation() - position;
       delta.SetZ(0.f);
       CVector3f newPosition = delta.CanBeNormalized()
@@ -495,7 +490,7 @@ TUniqueId CScriptTeamAiMgr::FindBestIndividualAttackTarget(CStateManager& mgr, c
 
 TUniqueId CScriptTeamAiMgr::ChoosePlayer(const CStateManager& mgr, const CActor& actor) {
   TUniqueId target = kInvalidUniqueId;
-  float bestScore = 3.402823466e+38f;
+  float bestScore = FLT_MAX;
   const CVector3f forward = actor.GetTransform().GetForward();
   const CVector3f actorPos = actor.GetTranslation();
   for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {

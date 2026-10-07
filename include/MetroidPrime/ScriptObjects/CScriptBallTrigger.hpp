@@ -10,7 +10,7 @@ public:
                      const CTransform4f& xf, const CVector3f& scale, const CDamageInfo& damage,
                      const CVector3f& forceField, uint flags, float attractionForce,
                      float attractionAngle, float attractionDistance,
-                     const CVector3f& attractionDirection, bool noBallMovement);
+                     CVector3f attractionDirection, bool noBallMovement);
 
   // CEntity
   ~CScriptBallTrigger() override;

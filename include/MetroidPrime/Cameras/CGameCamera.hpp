@@ -65,23 +65,10 @@ private:
   // Guessed name
   struct SFovInterpolation {
     SFovInterpolation(float delay, float remaining, float duration, float current, float target,
-                      TUniqueId cameraId)
-    : mDelay(delay)
-    , mRemaining(remaining)
-    , mDuration(duration)
-    , mCurrent(current)
-    , mTarget(target)
-    , mCameraId(cameraId) {}
+                      TUniqueId cameraId);
 
     void Set(float delay, float remaining, float duration, float current, float target,
-             TUniqueId cameraId) {
-      mDelay = delay;
-      mRemaining = remaining;
-      mDuration = duration;
-      mCurrent = current;
-      mTarget = target;
-      mCameraId = cameraId;
-    }
+             TUniqueId cameraId);
 
     float mDelay;
     float mRemaining;

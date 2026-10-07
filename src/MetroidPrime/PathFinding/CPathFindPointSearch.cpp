@@ -6,9 +6,10 @@
 #include "Kyoto/Math/CMath.hpp"
 
 #include "rstl/algorithm.hpp"
+#include <float.h>
 
 namespace {
-const float kMaxPointDistanceSq = 3.402823466e+38f;
+const float kMaxPointDistanceSq = FLT_MAX;
 
 typedef CPFPointSearchState::SPointData PointData;
 typedef rstl::vector< PointData* >::iterator OpenPointIterator;
@@ -114,8 +115,9 @@ CPathFindPointSearchFilter::CPathFindPointSearchFilter(float maxDistance, uint f
 
 CPathFindPointSearch::CPathFindPointSearch(CPFArea* area) : mArea(area) {}
 
-CPathFindPointSearch::EClosestPointResult CPathFindPointSearch::FindClosestPhysicalPoint(
-    const CVector3f& position, int& point, const CPathFindPointSearchFilter& filter) const {
+CPathFindPointSearch::EClosestPointResult
+CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, int& point,
+                                               const CPathFindPointSearchFilter& filter) const {
   CPFArea* area = mArea;
   if (area) {
     float closestDistanceSq = kMaxPointDistanceSq;
@@ -149,7 +151,7 @@ CPathFindPointSearch::EClosestPointResult CPathFindPointSearch::FindClosestPhysi
 }
 
 CPathFindPointSearch::EResult CPathFindPointSearch::Search(const CPFPoint& source,
-                                                        const CPFPoint& destination) {
+                                                           const CPFPoint& destination) {
   mWaypoints.clear();
   if (mArea && mArea->PointPathExists(&source, &destination)) {
     return SearchInternal(destination, source);
@@ -181,7 +183,7 @@ float CPathFindPointSearch::Heuristic(int point, const CVector3f& destination) c
 }
 
 CPathFindPointSearch::EResult CPathFindPointSearch::SearchInternal(const CPFPoint& source,
-                                                                const CPFPoint& destination) {
+                                                                   const CPFPoint& destination) {
   CPFPointSearchState* state = mArea->GetPointSearchState();
   if (state) {
     state->Reset();

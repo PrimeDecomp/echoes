@@ -8,6 +8,20 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrEMPulse.hpp"
+
+CEntity* LoadEMPulse(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrEMPulse sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrEMPulse.inc"
+
+  return rs_new CScriptEMPulse(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                               LdrToEntityInfo(info, sldrThis.editorProperties),
+                               LdrToTransform4f(sldrThis.editorProperties), sldrThis.initialSize,
+                               sldrThis.finalSize, sldrThis.duration, sldrThis.minHudDisableTime,
+                               sldrThis.maxHudDisableTime, sldrThis.minHudDisableAmount,
+                               sldrThis.maxHudDisableAmount, sldrThis.explosion);
+}
 
 CScriptEMPulse::CScriptEMPulse(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                const CTransform4f& xf, float initialRadius, float finalRadius,

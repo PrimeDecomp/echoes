@@ -4,8 +4,8 @@
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CSaveRegion.hpp"
 #include "MetroidPrime/CScriptMailbox.hpp"
-#include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
 
 #include "Kyoto/Audio/CDSPStreamManager.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -58,8 +58,8 @@
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CMainFlow.hpp"
 #include "MetroidPrime/Decode.hpp"
-#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
@@ -109,7 +109,6 @@ CFactoryFnReturn FPortalAreaDataFactory(const SObjectTag&, CInputStream&, const 
 CFactoryFnReturn FStringListFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag&, CInputStream&,
                                                         const CVParamTransfer&);
-
 
 class CCharacterFactoryBuilder;
 class CGameState;
@@ -762,22 +761,23 @@ void CMain::AddWorldPaks() {
 void CMain::EnsureWorldPakReady(CAssetId id) {
   CResLoader& loader = gpResourceFactory->GetResLoader();
   for (int i = 0; i < loader.GetPakCount(); ++i) {
+    bool otherWorld = true;
     CPakFile& pak = *loader.GetPakFile(i);
     if (!pak.IsWorldPak()) {
       continue;
     }
     const rstl::vector< rstl::pair< rstl::string, SObjectTag > > names =
         pak.GetStringToObjectList();
-    bool containsWorld = false;
-    for (int j = 0; j < names.size(); ++j) {
-      if (names[j].second.GetId() == id) {
-        containsWorld = true;
+    for (rstl::vector< rstl::pair< rstl::string, SObjectTag > >::const_iterator it = names.begin();
+         it != names.end(); ++it) {
+      if (it->second.GetId() == id) {
+        otherWorld = false;
       }
     }
-    if (containsWorld) {
-      pak.EnsureWorldPakReady();
-    } else {
+    if (otherWorld) {
       pak.sub_80323554();
+    } else {
+      pak.EnsureWorldPakReady();
     }
   }
 }
@@ -838,10 +838,32 @@ CWorldState::~CWorldState() {}
 
 CGameState::~CGameState() {}
 
-void CMain::ResetGameState() {}
-
-int CMain::GetLanguage() const {
-  return 0;
+void CMain::ResetGameState() {
+  CPersistentOptions systemOptions = gpGameState->SystemOptions();
+  CGameOptions gameOptions = gpGameState->GameOptions();
+  rstl::reserved_vector< rstl::vector< uchar >, 3 > compressedGameOptions =
+      gpGameState->GetCompressedGameOptions();
+  rstl::vector< uchar > compressedMultiplayerOptions =
+      gpGameState->GetCompressedMultiplayerOptions();
+  CGameState::SPreviousGameResults previousResults = gpGameState->PreviousGameResults();
+  mGameGlobalObjects->GameState() = nullptr;
+  gpGameState = nullptr;
+  mGameGlobalObjects->GameState() = rs_new CGameState();
+  gpGameState = mGameGlobalObjects->GameState().get();
+  gpGameState->SystemOptions() = systemOptions;
+  gpGameState->GameOptions() = gameOptions;
+  gpGameState->GameOptions().EnsureOptions();
+  gpGameState->SetCompressedGameOptions(compressedGameOptions);
+  gpGameState->SetCompressedMultiplayerOptions(compressedMultiplayerOptions);
+  gpGameState->PreviousGameResults() = previousResults;
 }
 
-void CMain::UpdateStreamedAudio() {}
+int CMain::GetLanguage() const {
+  int language = mOsContext->GetLanguage();
+  if (language == 5) {
+    language = 0;
+  }
+  return language;
+}
+
+void CMain::UpdateStreamedAudio() { CStreamAudioManager::Update(1.f / 60.f); }

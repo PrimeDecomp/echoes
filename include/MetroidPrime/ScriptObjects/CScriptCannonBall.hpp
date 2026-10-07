@@ -17,7 +17,7 @@ public:
 
     void Think(float dt, CStateManager& mgr, int i);
     void FreeScriptObject(CStateManager& mgr);
-    void OnIncrementMsg(CStateManager& mgr, int);
+    void OnIncrementMsg(CStateManager& mgr, bool);
   };
 
   CScriptCannonBall(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,

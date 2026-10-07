@@ -444,9 +444,11 @@ public:
   bool IsPlayerDeadEnough(const CStateManager& mgr) const;
   void CollectBallTransitionAnimationTokens();
   uint GetDamageWeaponType() const; // Reconstructed name; retained damage-event weapon type.
-  const CColor& GetScreenFilterColor() const { return mScreenFilterColor; } // Guessed name.
-  TUniqueId GetEnemyLockOnActorId() const { return mEnemyLockOnActorId; }   // Guessed name.
-  char GetEnemyLockOnCount() const { return mEnemyLockOnCount; }            // Guessed name.
+  const CColor& GetScreenFilterColor() const { return mScreenFilterColor; }      // Guessed name.
+  void SetScreenFilterColor(const CColor& color) { mScreenFilterColor = color; } // Guessed name.
+  void SetHoldScreenFilterAlpha(bool hold) { mHoldScreenFilterAlpha = hold; }    // Guessed name.
+  TUniqueId GetEnemyLockOnActorId() const { return mEnemyLockOnActorId; }        // Guessed name.
+  char GetEnemyLockOnCount() const { return mEnemyLockOnCount; }                 // Guessed name.
   void TakeDamage(bool significant, const CVector3f& location, float damage, TUniqueId source,
                   TUniqueId owner, const CDamageInfo& damageInfo, CStateManager& mgr);
   bool GetExplorationMode() const;

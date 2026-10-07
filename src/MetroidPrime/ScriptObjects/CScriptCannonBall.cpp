@@ -15,7 +15,7 @@ CScriptCannonBall::CScriptCannonBall(TUniqueId uid, const rstl::string& name,
                                      const CEntityInfo& info, const CTransform4f& xf,
                                      CAssetId effect)
 
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(), CActorParameters::None(),
+: CActor(uid, name, info, 0, xf, CModelData::None(), CMaterialList(), CActorParameters::None(),
          kInvalidUniqueId)
 , m_effect(effect) {}
 
@@ -25,14 +25,13 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
   switch (msg.GetMessage()) {
 
   case kSM_Increment: {
-    if (CPlayer* player =
-            TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(msg.GetOriginator()))) {
+    if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(msg.GetOriginator()))) {
       CMorphBall* morph = player->GetMorphBall();
       CTransform4f xf = morph->GetSurfaceToWorld();
       player->SetTransform(
           CTransform4f(xf.BuildMatrix3f(), player->GetTranslation())); // todo use position
       morph->SwitchToTire();
-      m_fields[player->GetPlayerIndex()].OnIncrementMsg(mgr, 1);
+      m_fields[player->GetPlayerIndex()].OnIncrementMsg(mgr, true);
     }
     break;
   }
@@ -41,7 +40,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     for (int playerIndex = 0; playerIndex < mgr.GetNumPlayers(); ++playerIndex) {
       TUniqueId id = mgr.AllocateUniqueId();
 
-      CLightParameters lParams;
+      CLightParameters lParams = CLightParameters::None();
       CGameSplineDesc spline(SLdrSpline(), CMotionSpline::kST_Bezier, 1.0f, false);
 
       CScriptEffect* newEffect =
@@ -84,7 +83,7 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
   if (!m_flag2) {
     return;
   }
-  CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.GetObjectByIdFromListAll(m_scriptObject));
+  CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.ObjectById(m_scriptObject));
   if (!effect) {
     return;
   }
@@ -92,37 +91,35 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
   CPlayer* player = mgr.GetPlayer(index);
   if (m_f > 0.0f) {
     CTransform4f mat = player->GetMorphBall()->GetBallToWorld();
-    effect->SetTransform(
-        CTransform4f::LookAt(mat.GetTranslation(), mat.GetTranslation() + player->GetLookDir()));
+    const CVector3f position = mat.GetTranslation();
+    CTransform4f lookXf = CTransform4f::LookAt(position, position + player->GetLookDir());
+    effect->SetTransform(lookXf);
   }
   if (m_b) {
     if (!effect->IsEmitting()) {
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Activate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, effect->GetUniqueId(),
+                                         kSM_Activate, kSS_InvalidState));
       player->GetPlayerState()->SetItemAmount(CPlayerState::kIT_CannonBall, 1);
     }
 
     CMorphBall* morph = player->GetMorphBall();
 
-    int uVar4 = (morph->GetLastWallCollisionFrame() - m_updateFrameIdx) < 0;
-    int uVar3 = (morph->GetLastFloorCollisionFrame() - m_updateFrameIdx) < 0;
+    int uVar4 = morph->GetLastWallCollisionFrame() - m_updateFrameIdx;
+    uVar4 = uVar4 > 0 ? uVar4 : 0;
+    int uVar3 = morph->GetLastFloorCollisionFrame() - m_updateFrameIdx;
+    uVar3 = uVar3 > 0 ? uVar3 : 0;
     if (uVar3 < uVar4) {
       uVar3 = uVar4;
     }
-    bool disable = true;
-    if (uVar3 < 6 && morph->GetBallState() != CMorphBall::kBS_Spider) {
-      CPlayer::EPlayerMorphBallState state = CPlayer::kMS_Unmorphed;
-      if (player->GetSpawnedMorphballState() == CPlayer::kMS_Morphed) {
-        state = player->GetMorphballTransitionState();
-      }
-      if (state == CPlayer::kMS_Morphed) {
-        disable = false;
-      }
-    }
-    if (disable) {
+    if (uVar3 > 5 || morph->GetBallState() == CMorphBall::kBS_Spider ||
+        (player->GetSpawnedMorphballState() == CPlayer::kMS_Morphed
+             ? player->GetMorphballTransitionState()
+             : CPlayer::kMS_Unmorphed) != CPlayer::kMS_Morphed) {
 
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Deactivate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, effect->GetUniqueId(),
+                                         kSM_Deactivate, kSS_InvalidState));
       player->GetPlayerState()->SetItemAmount(CPlayerState::kIT_CannonBall, 0);
       m_b = false;
     }
@@ -131,30 +128,30 @@ void CScriptCannonBall::TrackedShot::Think(float dt, CStateManager& mgr, int ind
     m_f -= dt / 0.25f;
     if (m_f < 0.0f) {
       m_f = 0.0f;
-      effect->AcceptScriptMsg(mgr, CScriptMsg(kInvalidUniqueId, kInvalidUniqueId,
-                                              effect->GetUniqueId(), kSM_Deactivate, kSS_InvalidState));
+      effect->AcceptScriptMsg(mgr,
+                              CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, effect->GetUniqueId(),
+                                         kSM_Deactivate, kSS_InvalidState));
       m_flag2 = false;
     }
   }
 
-  CColor color = CColor::White().WithAlphaModulatedBy(m_f * player->fn_8000BE98());
+  CColor color = CColor::White().WithAlphaOf(m_f * player->fn_8000BE98());
   effect->SetModelFlags(CModelFlags(CModelFlags::kT_One, color));
 }
 
-void CScriptCannonBall::TrackedShot::OnIncrementMsg(CStateManager& mgr, int param) {
-  // m_b = param;
-  // m_flag2 = param;
-  if (param == 0) {
-    return;
+void CScriptCannonBall::TrackedShot::OnIncrementMsg(CStateManager& mgr, bool param) {
+  const bool value = param;
+  m_b = value;
+  m_flag2 = value;
+  if (value) {
+    m_updateFrameIdx = mgr.GetUpdateFrameIdx();
+    m_f = 1.0f;
   }
-  m_updateFrameIdx = mgr.GetUpdateFrameIdx();
-  m_f = 1.0f;
 }
 
 void CScriptCannonBall::TrackedShot::FreeScriptObject(CStateManager& mgr) {
   mgr.DeleteObjectRequest(m_scriptObject);
 }
-
 
 CEntity* REL_LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrCannonBall sldrThis;

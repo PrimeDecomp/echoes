@@ -7,8 +7,21 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCameraPitch.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadCameraPitch(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrCameraPitch sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrCameraPitch.inc"
+
+  return rs_new CScriptCameraPitch(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.forwardsPitch, sldrThis.backwardsPitch, sldrThis.playerSplineLoops,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.playerSplineType.type));
+}
 
 CScriptCameraPitch::CScriptCameraPitch(TUniqueId uid, const rstl::string& name,
                                        const CEntityInfo& info, const CTransform4f& xf,

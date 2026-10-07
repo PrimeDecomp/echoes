@@ -22,7 +22,6 @@ static const CVector3f skOneVector(1.f, 1.f, 1.f);
 uint CParticleSwoosh::mSwooshAliveCount = 0;
 static const double kFrameTime = 1.0 / 60.0;
 
-
 CParticleSwoosh::CParticleSwoosh(const TToken< CSwooshDescription > desc, const int leng)
 : mDesc(desc)
 , mCurFrame(0)
@@ -40,8 +39,7 @@ CParticleSwoosh::CParticleSwoosh(const TToken< CSwooshDescription > desc, const 
 , mCurParticle(0)
 , mParticleCount(0)
 , mSPLN(0)
-, mRand(mDesc->mCRND ? CCast::ToInt16(CStopwatch::GetGlobalMicros())
-                                  : CCast::ToInt16(99))
+, mRand(mDesc->mCRND ? CCast::ToInt16(CStopwatch::GetGlobalMicros()) : CCast::ToInt16(99))
 , x1cc_(0.f)
 , x1d0_(0.f)
 , mEmitting(true)
@@ -173,8 +171,7 @@ const bool CParticleSwoosh::Update(double dt) {
       mSwooshes[mCurParticle].mOrientation = mOrientation;
       if (mDesc->mIVEL) {
         mDesc->mIVEL->GetValue(mCurFrame, mSwooshes[mCurParticle].mVelocity);
-        mSwooshes[mCurParticle].mVelocity =
-            mOrientation * mSwooshes[mCurParticle].mVelocity;
+        mSwooshes[mCurParticle].mVelocity = mOrientation * mSwooshes[mCurParticle].mVelocity;
       }
       if (mDesc->mPOFS) {
         mDesc->mPOFS->GetValue(mCurFrame, mSwooshes[mCurParticle].mOffset);
@@ -213,8 +210,8 @@ void CParticleSwoosh::UpdateTranslationAndOrientation() {
     return;
   }
   mMaxRadius = 0.f;
-  mAabbMin = CVector3f(3.4028235e38f, 3.4028235e38f, 3.4028235e38f);
-  mAabbMax = CVector3f(-3.4028235e38f, -3.4028235e38f, -3.4028235e38f);
+  mAabbMin = CVector3f(FLT_MAX, FLT_MAX, FLT_MAX);
+  mAabbMax = CVector3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
   CParticleGlobals::SetParticleLifetime(mLENG);
   CParticleGlobals::SetEmitterTime(mCurFrame);
   int i = 0;
@@ -332,9 +329,8 @@ void CParticleSwoosh::Render() {
     } else {
       CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
     }
-    CGraphics::SetModelMatrix(CTransform4f::Translate(mGlobalTranslation) *
-                              mGlobalOrientation * mScaleXf *
-                              CTransform4f::Scale(mLocalScale));
+    CGraphics::SetModelMatrix(CTransform4f::Translate(mGlobalTranslation) * mGlobalOrientation *
+                              mScaleXf * CTransform4f::Scale(mLocalScale));
     CGraphics::SetCullMode(kCM_None);
     if (mDesc->mTEXR) {
       {
@@ -468,8 +464,7 @@ void CParticleSwoosh::Render2SidedNoSplineNoGaps() {
           const SSwooshData& otherSwoosh = mSwooshes[otherIdx];
           CVector3f delta = otherSwoosh.mTranslation - swoosh.mTranslation;
           if (otherIdx == mCurParticle) {
-            delta = swoosh.mTranslation -
-                    mSwooshes[(curIdx + 1) % mSwooshes.size()].mTranslation;
+            delta = swoosh.mTranslation - mSwooshes[(curIdx + 1) % mSwooshes.size()].mTranslation;
           }
           if (delta.CanBeNormalized()) {
             CVector3f deltaCross = CVector3f::Cross(delta, camToParticle - swoosh.mTranslation);
@@ -1167,8 +1162,8 @@ rstl::optional_object< CAABox > CParticleSwoosh::GetBounds() {
 
 void CParticleSwoosh::UpdateAllBounds() {
   mMaxRadius = 0.f;
-  mAabbMin = CVector3f(3.4028235e38f, 3.4028235e38f, 3.4028235e38f);
-  mAabbMax = CVector3f(-3.4028235e38f, -3.4028235e38f, -3.4028235e38f);
+  mAabbMin = CVector3f(FLT_MAX, FLT_MAX, FLT_MAX);
+  mAabbMax = CVector3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
   for (int i = 0; i < mSwooshes.capacity(); ++i) {
     SSwooshData& swoosh = mSwooshes.data()[i];
     if (!swoosh.mActive) {
@@ -1184,11 +1179,11 @@ void CParticleSwoosh::UpdateAllBounds() {
 
 void CParticleSwoosh::UpdateBounds(const CVector3f& pos) {
   mAabbMax = CVector3f(rstl::max_val(pos.GetX(), mAabbMax.GetX()),
-                           rstl::max_val(pos.GetY(), mAabbMax.GetY()),
-                           rstl::max_val(pos.GetZ(), mAabbMax.GetZ()));
+                       rstl::max_val(pos.GetY(), mAabbMax.GetY()),
+                       rstl::max_val(pos.GetZ(), mAabbMax.GetZ()));
   mAabbMin = CVector3f(rstl::min_val(pos.GetX(), mAabbMin.GetX()),
-                           rstl::min_val(pos.GetY(), mAabbMin.GetY()),
-                           rstl::min_val(pos.GetZ(), mAabbMin.GetZ()));
+                       rstl::min_val(pos.GetY(), mAabbMin.GetY()),
+                       rstl::min_val(pos.GetZ(), mAabbMin.GetZ()));
 }
 
 void CParticleSwoosh::UpdateMaxRadius(float radius) {

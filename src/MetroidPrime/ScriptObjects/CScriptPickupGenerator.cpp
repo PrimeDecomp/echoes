@@ -3,14 +3,20 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CObjectList.hpp"
+#include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrPickupGenerator.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptDebris.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPickup.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CPickupGeneratorRuleEvaluator::CPickupGeneratorRuleEvaluator(CAssetId rules)
-: CRuleSetEvaluator(rules), mManager(nullptr), mLastDamageWeapon(CWeaponMode()), mLastDamageFlag(false) {
+: CRuleSetEvaluator(rules)
+, mManager(nullptr)
+, mLastDamageWeapon(CWeaponMode())
+, mLastDamageFlag(false) {
   for (int i = 0; i < 16; ++i) {
     mMinimumAmounts[i] = 0;
     mMaximumAmounts[i] = 0;
@@ -64,26 +70,22 @@ CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) co
     return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile));
   case 'APBM':
     return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb));
-  case '%DAM':
-    {
-      const float capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
-      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) / capacity);
-    }
-  case '%LAM':
-    {
-      const float capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
-      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) / capacity);
-    }
-  case '%MSL':
-    {
-      const float capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
-      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Missile) / capacity);
-    }
-  case '%PBM':
-    {
-      const float capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
-      return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) / capacity);
-    }
+  case '%DAM': {
+    const float capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
+    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) / capacity);
+  }
+  case '%LAM': {
+    const float capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
+    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) / capacity);
+  }
+  case '%MSL': {
+    const float capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
+    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Missile) / capacity);
+  }
+  case '%PBM': {
+    const float capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
+    return CRuleValue(100.f * GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) / capacity);
+  }
   case 'CDAM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo));
   case 'CLAM':
@@ -94,38 +96,34 @@ CRuleValue CPickupGeneratorRuleEvaluator::GetConditionValue(FourCC condition) co
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_Powerbomb));
   case '?HLT':
     return CRuleValue(state.CalculateHealth() > GetEffectiveHealth(state));
-  case '?DBM':
-    {
-      bool result = false;
-      if (state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0) {
-        const int capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
-        if (GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) < capacity) {
-          result = true;
-        }
+  case '?DBM': {
+    bool result = false;
+    if (state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0) {
+      const int capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
+      if (GetEffectiveAmount(state, CPlayerState::kIT_DarkAmmo) < capacity) {
+        result = true;
       }
-      return CRuleValue(result);
     }
-  case '?LBM':
-    {
-      bool result = false;
-      if (state.GetItemCapacity(CPlayerState::kIT_LightBeam) > 0) {
-        const int capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
-        if (GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) < capacity) {
-          result = true;
-        }
+    return CRuleValue(result);
+  }
+  case '?LBM': {
+    bool result = false;
+    if (state.GetItemCapacity(CPlayerState::kIT_LightBeam) > 0) {
+      const int capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
+      if (GetEffectiveAmount(state, CPlayerState::kIT_LightAmmo) < capacity) {
+        result = true;
       }
-      return CRuleValue(result);
     }
-  case '?MSL':
-    {
-      const int capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
-      return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile) < capacity);
-    }
-  case '?PBM':
-    {
-      const int capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
-      return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) < capacity);
-    }
+    return CRuleValue(result);
+  }
+  case '?MSL': {
+    const int capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
+    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Missile) < capacity);
+  }
+  case '?PBM': {
+    const int capacity = state.GetItemCapacity(CPlayerState::kIT_Powerbomb);
+    return CRuleValue(GetEffectiveAmount(state, CPlayerState::kIT_Powerbomb) < capacity);
+  }
   case 'HDBM':
     return CRuleValue(state.GetItemCapacity(CPlayerState::kIT_DarkBeam) > 0);
   case 'HLBM':
@@ -233,21 +231,24 @@ CScriptPickupGenerator::~CScriptPickupGenerator() {}
 void CScriptPickupGenerator::GetTargets(CStateManager& mgr, TUniqueId sender,
                                         rstl::vector< TUniqueId >& targets) const {
   targets.reserve(GetConnectionList().size() > 1 ? GetConnectionList().size() : 1);
-  for (int i = 0; i < GetConnectionList().size(); ++i) {
-    const SConnection& connection = GetConnectionList()[i];
-    if (connection.state != kSS_Generate || connection.msg != kSM_Follow) {
+  for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+       it != GetConnectionList().end(); ++it) {
+    if (it->state != kSS_GeneratorConnection || it->msg != kSM_Follow) {
       continue;
     }
 
-    const TUniqueId id = mgr.GetIdForScript(connection.objId);
+    const TUniqueId id = mgr.GetIdForScript(it->objId);
+    if (id == kInvalidUniqueId) {
+      continue;
+    }
     const CEntity* entity = mgr.GetObjectById(id);
-    if (id != kInvalidUniqueId && entity != nullptr && entity->GetActive()) {
-      targets.push_back(id);
+    if (entity != nullptr && entity->GetActive()) {
+      targets.push_back_unsafe(id);
     }
   }
 
   if (targets.empty()) {
-    targets.push_back(sender);
+    targets.push_back_unsafe(sender);
   }
 }
 
@@ -257,63 +258,107 @@ CHealthInfo* CScriptPickupGenerator::GetTargetHealthInfo(CStateManager& mgr,
   return actor != nullptr ? actor->HealthInfo() : nullptr;
 }
 
+static inline void AddSpawnablePickup(const CPickupGeneratorRuleEvaluator& evaluator,
+                                      CStateManager& mgr, int ruleSlot, const TEditorId& editorId,
+                                      rstl::vector< rstl::pair< int, TEditorId > >& pickups) {
+  const int amount = evaluator.GetRandomAmount(mgr, ruleSlot);
+  if (amount != 0) {
+    pickups.push_back_unsafe(rstl::pair< int, TEditorId >(amount, editorId));
+  }
+}
+
 void CScriptPickupGenerator::GetSpawnablePickups(
     CStateManager& mgr, rstl::vector< rstl::pair< int, TEditorId > >& pickups, TUniqueId targetId) {
   mRuleEvaluator.Refresh(mgr, GetTargetHealthInfo(mgr, targetId));
   pickups.reserve(mPickupTemplates.size());
 
-  for (int i = 0; i < mPickupTemplates.size(); ++i) {
-    const SPickupTemplate& pickup = mPickupTemplates[i];
-    int ruleSlot = -1;
+  for (rstl::vector< SPickupTemplate >::const_iterator it = mPickupTemplates.begin();
+       it != mPickupTemplates.end(); ++it) {
+    const SPickupTemplate& pickup = *it;
     switch (pickup.mItem) {
-    case CPlayerState::kIT_Missile:
-      ruleSlot = pickup.mAmount < 6 ? 0 : 1;
-      break;
     case CPlayerState::kIT_HealthRefill:
-      ruleSlot = pickup.mAmount == 100  ? 5
-                 : pickup.mAmount == 50 ? 4
-                 : pickup.mAmount == 30 ? 3
-                                        : 2;
-      break;
-    case CPlayerState::kIT_Powerbomb:
-      ruleSlot = 6;
-      break;
-    case CPlayerState::kIT_LightAmmo:
-      ruleSlot = pickup.mAmount < 10 ? 9 : pickup.mAmount == 10 ? 7 : 11;
+      if (pickup.mAmount == 100) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 5, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount == 50) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 4, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount == 30) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 3, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 2, pickup.mEditorId, pickups);
+      }
       break;
     case CPlayerState::kIT_DarkAmmo:
-      ruleSlot = pickup.mAmount < 10 ? 10 : pickup.mAmount == 10 ? 8 : 12;
+      if (pickup.mAmount > 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 12, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount < 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 10, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 8, pickup.mEditorId, pickups);
+      }
+      break;
+    case CPlayerState::kIT_LightAmmo:
+      if (pickup.mAmount > 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 11, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount < 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 9, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 7, pickup.mEditorId, pickups);
+      }
       break;
     case CPlayerState::kIT_LightBeam:
-      ruleSlot = 13;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 13, pickup.mEditorId, pickups);
       break;
     case CPlayerState::kIT_DarkBeam:
-      ruleSlot = 14;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 14, pickup.mEditorId, pickups);
       break;
     case CPlayerState::kIT_AnnihilatorBeam:
-      ruleSlot = 15;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 15, pickup.mEditorId, pickups);
+      break;
+    case CPlayerState::kIT_Missile:
+      if (pickup.mAmount < 6) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 0, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 1, pickup.mEditorId, pickups);
+      }
+      break;
+    case CPlayerState::kIT_Powerbomb:
+      AddSpawnablePickup(mRuleEvaluator, mgr, 6, pickup.mEditorId, pickups);
       break;
     default:
       break;
-    }
-
-    if (ruleSlot >= 0) {
-      const int amount = mRuleEvaluator.GetRandomAmount(mgr, ruleSlot);
-      if (amount != 0) {
-        pickups.push_back_unsafe(rstl::pair< int, TEditorId >(amount, pickup.mEditorId));
-      }
     }
   }
 }
 
 void CScriptPickupGenerator::SpawnPickup(CStateManager& mgr, TEditorId templateId,
                                          TUniqueId targetId) const {
-  if (mgr.GetObjectByIdFromListAll(targetId) == nullptr) {
+  CEntity* target = mgr.ObjectById(targetId);
+  if (target == nullptr) {
     return;
   }
 
-  // The template is generated through CStateManagerContainer using templateId.
-  // TODO: Reconstruct CStateManagerContainer's generated-object API before creating the pickup.
+  const CScriptObjectLoaderHelper::SGeneratedObject generated =
+      mgr.ScriptObjectLoaderHelper().GenerateScriptObject(templateId, mgr);
+  if (generated.mUniqueId == kInvalidUniqueId) {
+    return;
+  }
+
+  CEntity* entity = generated.mEntity;
+  CActor* actor = TCastToPtr< CActor >(entity);
+  CScriptPickup* pickup = TCastToPtr< CScriptPickup >(entity);
+  const CActor* targetActor = TCastToConstPtr< CActor >(target);
+  const CSwarmBasics* targetSwarm = TCastToConstPtr< CSwarmBasics >(target);
+  if (actor != nullptr && targetSwarm != nullptr) {
+    actor->SetTranslation(targetSwarm->GetLastKilledOffset() + mOffset);
+  } else if (actor != nullptr && targetActor != nullptr) {
+    const CVector3f offset =
+        mOffsetIsLocalSpace ? targetActor->GetTransform().Rotate(mOffset) : mOffset;
+    actor->SetTranslation(targetActor->GetTranslation() + offset);
+  }
+  if (pickup != nullptr) {
+    pickup->SetWasGenerated(mgr);
+  }
+  mgr.SendScriptMsg(entity, GetUniqueId(), kSM_Activate, kInvalidUniqueId);
 }
 
 void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
@@ -323,29 +368,45 @@ void CScriptPickupGenerator::CachePickupTemplates(CStateManager& mgr) {
 
   mTemplatesCached = true;
   int count = 0;
-  for (int i = 0; i < GetConnectionList().size(); ++i) {
-    const SConnection& connection = GetConnectionList()[i];
-    // TODO: verify the FourCC for the state here
-    if (connection.state == kSS_Generate && connection.msg == kSM_Activate) {
+  for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+       it != GetConnectionList().end(); ++it) {
+    if (it->state == kSS_GeneratorConnection && it->msg == kSM_Activate) {
       ++count;
     }
   }
   mPickupTemplates.reserve(count);
 
-  for (int i = 0; i < GetConnectionList().size(); ++i) {
-    const SConnection& connection = GetConnectionList()[i];
-    if (connection.state != kSS_Generate || connection.msg != kSM_Activate) {
+  CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
+  for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+       it != GetConnectionList().end(); ++it) {
+    if (it->state != kSS_GeneratorConnection || it->msg != kSM_Activate) {
       continue;
     }
 
-    const TUniqueId id = mgr.GetIdForScript(connection.objId);
-    CScriptPickup* pickup = TCastToPtr< CScriptPickup >(mgr.GetObjectByIdFromListAll(id));
+    const CScriptObjectLoaderHelper::SGeneratedObject generated =
+        loader.GenerateScriptObject(it->objId, mgr);
+    const CScriptPickup* pickup = TCastToConstPtr< CScriptPickup >(generated.mEntity);
     if (pickup != nullptr) {
       mPickupTemplates.push_back_unsafe(
-          SPickupTemplate(pickup->GetItem(), pickup->GetAmount(), connection.objId));
+          SPickupTemplate(pickup->GetItem(), pickup->GetAmount(), it->objId));
+    } else if (const CScriptDebris* debris = TCastToConstPtr< CScriptDebris >(generated.mEntity)) {
+      for (rstl::vector< SConnection >::const_iterator inner = debris->GetConnectionList().begin();
+           inner != debris->GetConnectionList().end(); ++inner) {
+        if (inner->state != kSS_GeneratorConnection || inner->msg != kSM_Activate) {
+          continue;
+        }
+
+        const CScriptObjectLoaderHelper::SGeneratedObject innerGenerated =
+            loader.GenerateScriptObject(inner->objId, mgr);
+        const CScriptPickup* innerPickup = TCastToConstPtr< CScriptPickup >(innerGenerated.mEntity);
+        if (innerPickup != nullptr) {
+          mPickupTemplates.push_back_unsafe(
+              SPickupTemplate(innerPickup->GetItem(), innerPickup->GetAmount(), it->objId));
+        }
+        mgr.DeleteObjectRequest(innerGenerated.mUniqueId);
+      }
     }
-    // TODO: A non-pickup template can spawn a temporary actor with a Generate/Activate
-    // connection to a pickup. The generator's object-creation API is not yet reconstructed.
+    mgr.DeleteObjectRequest(generated.mUniqueId);
   }
 
   mgr.DispatchScriptMessages();
@@ -358,17 +419,39 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       sender = msg.GetSenderId();
     }
 
-    // TODO: Forward the zero message to linked generator objects before evaluating RULE.
+    for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+         it != GetConnectionList().end(); ++it) {
+      if (it->state != kSS_GeneratorConnection || it->msg != kSM_SetToZero) {
+        continue;
+      }
+
+      const CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (ids.first == ids.second) {
+        continue;
+      }
+      const CScriptPickupGenerator* generator =
+          TCastToConstPtr< CScriptPickupGenerator >(mgr.ObjectById(ids.first->second));
+      if (generator != nullptr) {
+        mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), sender, generator->GetUniqueId(),
+                                        kSM_SetToZero, kSS_GeneratorConnection));
+      }
+    }
+
     CachePickupTemplates(mgr);
+
+    rstl::vector< rstl::pair< int, TEditorId > > pickups;
+    GetSpawnablePickups(mgr, pickups, sender);
+    if (pickups.size() == 0) {
+      return;
+    }
 
     rstl::vector< TUniqueId > targets;
     GetTargets(mgr, sender, targets);
-    rstl::vector< rstl::pair< int, TEditorId > > pickups;
-    GetSpawnablePickups(mgr, pickups, sender);
-    for (int i = 0; i < pickups.size(); ++i) {
-      for (int count = 0; count < pickups[i].first; ++count) {
+    for (rstl::vector< rstl::pair< int, TEditorId > >::const_iterator it = pickups.begin();
+         it != pickups.end(); ++it) {
+      for (int i = 0; i < it->first; ++i) {
         const int index = int(mgr.Random()->Float() * targets.size() * 0.99f);
-        SpawnPickup(mgr, pickups[i].second, targets[index]);
+        SpawnPickup(mgr, it->second, targets[index]);
       }
     }
   }
@@ -383,8 +466,8 @@ CEntity* LoadPickupGenerator(CStateManager& mgr, CInputStream& input, CEntityInf
   if (sldrThis.rules == kInvalidAssetId) {
     return nullptr;
   }
-  return rs_new CScriptPickupGenerator(
-      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.offset, sldrThis.rules,
-      sldrThis.offsetIsLocalSpace);
+  return rs_new CScriptPickupGenerator(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                       LdrToEntityInfo(info, sldrThis.editorProperties),
+                                       sldrThis.offset, sldrThis.rules,
+                                       sldrThis.offsetIsLocalSpace);
 }

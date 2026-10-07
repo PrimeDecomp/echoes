@@ -885,7 +885,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiHeadWidget.cpp"),
             Object(NonMatching, "GuiSys/CGuiLight.cpp"),
             Object(NonMatching, "GuiSys/CGuiModel.cpp"),
-            Object(NonMatching, "GuiSys/CGuiObject.cpp"),
+            Object(NonMatching, "GuiSys/CGuiObject.cpp", extra_cflags=['-pragma "inline_max_size(500)"']),
             Object(NonMatching, "GuiSys/CGuiPane.cpp"),
             Object(MatchingFor("G2ME01"), "GuiSys/CGuiSliderGroup.cpp"),
             Object(NonMatching, "GuiSys/CGuiTableGroup.cpp"),

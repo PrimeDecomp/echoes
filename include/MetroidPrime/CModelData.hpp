@@ -63,6 +63,8 @@ public:
   CModelData(const CStaticRes&);
   ~CModelData();
 
+  static CModelData None() { return CModelData(); } // Guessed name
+
   CAdvancementDeltas AdvanceAnimation(float dt, CStateManager& mgr, TAreaId aid, bool advTree,
                                       float cameraDistance = 0.f);
   CAdvancementDeltas AdvanceAnimation(float dt, CRandom16& random, bool advTree);

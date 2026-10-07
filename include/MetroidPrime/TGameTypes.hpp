@@ -39,6 +39,7 @@ struct TEditorId {
   uint Value() const { return value & 0x3FFFFFF; }
   uint Id() const { return value & 0xffff; }
   int AreaNum() const { return (value >> 16) & 0x3ff; }
+  int LayerNum() const { return (value >> 26) & 0x3f; }
 
   void PutTo(COutputStream&) const;
 

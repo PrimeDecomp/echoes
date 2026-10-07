@@ -1,12 +1,13 @@
 #include "MetroidPrime/Weapons/CBlackHole.hpp"
 
-#include "MetroidPrime/CGameLight.hpp"
-#include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/TCastTo.hpp"
-#include "MetaRender/IRenderer.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
+#include "MetaRender/IRenderer.hpp"
+#include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
 
 #include <float.h>
@@ -28,9 +29,9 @@ CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >&
 , mPullConeAngleDegrees(360.f)
 , mAttractionRange(30.f)
 , mPullDirection(CVector3f::Zero())
-, mParticleGen(particle ? rs_new CElementGen(*particle, CElementGen::kMOT_Normal,
-                                            CElementGen::kOSF_One)
-                        : nullptr)
+, mParticleGen(particle
+                   ? rs_new CElementGen(*particle, CElementGen::kMOT_Normal, CElementGen::kOSF_One)
+                   : nullptr)
 , mSourceId(particle ? particle->GetTag().GetId() : kInvalidAssetId)
 , mLightId(kInvalidUniqueId)
 , mRadius(radius)
@@ -40,7 +41,7 @@ CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >&
 CBlackHole::~CBlackHole() {}
 
 void CBlackHole::ApplyDamageToWorld(const CVector3f& position, CStateManager& mgr) {
-  mgr.ApplyDamageToWorld(GetOwnerId(), *this, position, mCurDamageInfo, mFilter);
+  mgr.ApplyDamageToWorld(GetOwnerId(), *this, position, mCurDamageInfo, GetFilter());
 }
 
 void CBlackHole::Touch(CActor&, CStateManager&) {}
@@ -84,7 +85,43 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
     mElapsedTime += dt;
 
     if (mFlags & kF_PullPlayers) {
-      // TODO: recover the player pull/color operation and its unresolved player flag accessor.
+      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+        CPlayer* player = mgr.GetPlayer(i);
+        const bool isOwner = GetOwnerId() == player->GetUniqueId();
+        const CVector3f center = player->GetTouchBounds()->GetCenterPoint();
+        const CVector3f toHole = GetTranslation() - center;
+        const float distance = toHole.Magnitude();
+        const bool atCenter = distance < 5.f;
+        if (!atCenter && !isOwner) {
+          const CVector3f direction = toHole.AsNormalized();
+          if (static_cast< float >(cos(0.017453292f * mPullConeAngleDegrees)) <
+                  CVector3f::Dot(-direction, mPullDirection) &&
+              distance < mAttractionRange) {
+            const float speed = rstl::min_val(
+                (1.f / dt) * distance, mPullStrength * (mAttractionRange / (distance * distance)));
+            const CVector3f impulse = player->GetMass() * direction;
+            player->ApplyForceWR(speed * impulse, CAxisAngle::Identity());
+          }
+        }
+        if (atCenter && !isOwner) {
+          const CVector3f position = (GetTranslation() - center) + player->GetTranslation();
+          player->Stop();
+          player->MoveToWR(position, dt);
+        }
+
+        const bool insideRadius = distance < mRadius;
+        player->SetHoldScreenFilterAlpha(insideRadius);
+        if (insideRadius) {
+          static const CColor skFilterColor(uchar(120), uchar(135), uchar(70), uchar(0));
+          CColor filterColor = player->GetScreenFilterColor();
+          if (!(skFilterColor.WithAlphaOf(0.f) == filterColor.WithAlphaOf(0.f)) &&
+              filterColor.GetAlpha() == 0.f) {
+            filterColor = skFilterColor;
+          }
+          filterColor.SetAlpha(rstl::min_val(dt + filterColor.GetAlpha(), 1.f));
+          player->SetScreenFilterColor(filterColor);
+        }
+      }
     }
   }
 }
@@ -99,15 +136,18 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mOrigDamageInfo.SetRadius(mRadius);
 
     if (mFlags & kF_CreationSound) {
-      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0x1fda, 0x25aa), GetTranslation(),
-                             GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
+      static const ushort skCreationSfx[2] = {0x1fda, 0x25aa};
+      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(skCreationSfx[0], skCreationSfx[1]),
+                              GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                              CSfxManager::kMedPriority);
       mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     }
     if (!mParticleGen.null() && mParticleGen->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
+      const CAssetId sourceId = mSourceId;
       mgr.AddObject(rs_new CGameLight(mLightId, GetCurrentAreaId(), GetActive(), rstl::string_l(""),
                                       GetTransform(), GetUniqueId(), mParticleGen->GetLight(),
-                                      mSourceId, 1, 0.f));
+                                      sourceId, 1, 0.f));
     }
     break;
   case kSM_Delete:
@@ -127,7 +167,11 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 
 void CBlackHole::UpdateRadius() {
   if (!mParticleGen.null()) {
+    float radius = 0.f;
     const CElementGen::CAdvancedValues* data = mParticleGen->ParticleAdditionalData(0);
-    mRadius = data ? rstl::max_val(0.f, data->mValues[0]) : 0.f;
+    if (data) {
+      radius = rstl::max_val(0.f, data->mValues[0]);
+    }
+    mRadius = radius;
   }
 }

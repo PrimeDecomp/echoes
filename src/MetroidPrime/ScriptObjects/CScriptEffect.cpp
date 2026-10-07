@@ -446,10 +446,6 @@ void CScriptEffect::SetGlobalTranslation(const CVector3f& translation) {
   }
 }
 
-CGameSplineDesc::CGameSplineDesc(const SLdrSpline& spline, CMotionSpline::ESplineType type,
-                                 float duration, bool closedLoop)
-: mSpline(spline), mType(type), mDuration(duration), mClosedLoop(closedLoop) {}
-
 CScriptEffect::~CScriptEffect() {}
 
 CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {

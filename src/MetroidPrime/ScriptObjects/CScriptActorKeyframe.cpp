@@ -5,9 +5,30 @@
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrActorKeyframe.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadAIKeyframe(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  CScriptActorKeyframe* keyframe =
+      static_cast< CScriptActorKeyframe* >(LoadActorKeyframe(mgr, input, info));
+  if (keyframe != nullptr) {
+    keyframe->SetIsPassive(true);
+  }
+  return keyframe;
+}
+
+CEntity* LoadActorKeyframe(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrActorKeyframe sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrActorKeyframe.inc"
+
+  return rs_new CScriptActorKeyframe(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                     LdrToEntityInfo(info, sldrThis.editorProperties),
+                                     sldrThis.animation, sldrThis.loop, sldrThis.loopDuration,
+                                     false, sldrThis.unknown_0x6d62ef74, sldrThis.playbackRate);
+}
 
 CScriptActorKeyframe::CScriptActorKeyframe(TUniqueId uid, const rstl::string& name,
                                            const CEntityInfo& info, int animationId, bool looping,

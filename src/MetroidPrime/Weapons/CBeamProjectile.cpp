@@ -1,6 +1,7 @@
 #include "MetroidPrime/Weapons/CBeamProjectile.hpp"
 
-void fn_80049ED8(CActor*, CStateManager&);
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 
 CBeamProjectile::CBeamProjectile(const TToken< CWeaponDescription >& description,
                                  const rstl::string& name, EWeaponType type, const CTransform4f& xf,
@@ -32,15 +33,18 @@ rstl::optional_object< CAABox > CBeamProjectile::GetTouchBounds() const {
   if (!GetActive() || !mEnableTouchDamage) {
     return rstl::optional_object_null();
   }
-  const CVector3f allowance(0.1f, 0.1f, 0.1f);
-  return CAABox(GetTranslation() - allowance, GetTranslation() + allowance);
+  const float allowance = 0.1f;
+  const CVector3f& position = GetTranslation();
+  return CAABox(position.GetX() - allowance, position.GetY() - allowance,
+                position.GetZ() - allowance, position.GetX() + allowance,
+                position.GetY() + allowance, position.GetZ() + allowance);
 }
 
 void CBeamProjectile::PreRenderAllViewports(CStateManager& mgr) {
-  const CAABox bounds = mLocalBounds.GetTransformedAABox(mXf);
+  const CAABox& bounds = mLocalBounds.GetTransformedAABox(mXf);
   SetOtherBounds(bounds);
   SetRenderBounds(bounds);
-  fn_80049ED8(this, mgr);
+  UpdatePortalSystemState(mgr);
 }
 
 void CBeamProjectile::ResetBeam(CStateManager&, bool) {
@@ -72,12 +76,40 @@ void CBeamProjectile::UpdateFx(const CTransform4f& xf, float dt, CStateManager& 
   }
   mBeamLength = mGrowingBeamLength;
   mDamageType = kDT_None;
-  mPreviousPos = xf.GetTranslation();
-  SetTranslation(mPreviousPos + mGrowingBeamLength * xf.GetForward().AsNormalized());
-  mLocalBounds = CAABox(-mBeamRadius, 0.f, -mBeamRadius, mBeamRadius, mBeamLength, mBeamRadius);
-  mWorldBounds = mLocalBounds.GetTransformedAABox(xf);
+  const CVector3f origin = xf.GetTranslation();
+  const CVector3f beamEnd =
+      xf.GetTranslation() + mGrowingBeamLength * xf.GetForward().AsNormalized();
+  mPreviousPos = origin;
+  SetTranslation(beamEnd);
 
-  // TODO: build the near list, raycast, clip the beam and apply actor/world damage.
+  mLocalBounds = CAABox(-mBeamRadius, 0.f, -mBeamRadius, mBeamRadius, mBeamLength, mBeamRadius);
+  mWorldBounds = CAABox(CVector3f(-mBeamRadius, 0.f, -mBeamRadius),
+                        CVector3f(mBeamRadius, mGrowingBeamLength, mBeamRadius))
+                     .GetTransformedAABox(xf);
+
+  TUniqueId collideId = kInvalidUniqueId;
+  rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  mgr.BuildNearList(nearList, mWorldBounds,
+                    CMaterialFilter::MakeExclude(CMaterialList(kMT_ProjectilePassthrough)), this);
+
+  CRayCastResult res = RayCollisionCheckWithWorld(collideId, origin, beamEnd, mGrowingBeamLength,
+                                                  nearList, mgr, kSGT_CollisionGeometry);
+
+  if (TCastToPtr< CActor >(mgr.ObjectById(collideId))) {
+    SetCollisionResultData(kDT_Actor, res, collideId);
+    if (mEnableTouchDamage) {
+      ApplyDamageToActors(mgr, CDamageInfo(mCurDamageInfo, dt));
+    }
+  } else if (res.IsValid()) {
+    SetCollisionResultData(kDT_World, res, kInvalidUniqueId);
+    if (mEnableTouchDamage) {
+      mgr.ApplyDamageToWorld(GetOwnerId(), *this, res.GetPoint(), CDamageInfo(mCurDamageInfo, dt),
+                             GetFilter());
+    }
+  } else {
+    mCollisionPoint = xf * CVector3f(mBeamRadius, mBeamLength, mBeamRadius);
+    SetTranslation(mCollisionPoint);
+  }
   mXf = xf;
 }
 

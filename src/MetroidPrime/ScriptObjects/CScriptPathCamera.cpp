@@ -3,8 +3,9 @@
 #include "Kyoto/Math/CTransform4f.hpp"
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrPathCamera.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 // Guessed name, supported by the time-keyframe loader and connected-object updates.
@@ -111,7 +112,7 @@ CScriptPathCamera::CScriptPathCamera(
     const CMayaSpline& positionTimeSpline, const CMayaSpline& lookAtTimeSpline,
     const CMayaSpline& fovSpline, const CMayaSpline& speedControlSpline,
     CMotionSpline::ESplineType playerType, bool playerLoops,
-    const CMayaSpline& perpendicularDistanceSpline, const CMayaSpline& perpendicularInterpSpline)
+    CMayaSpline perpendicularDistanceSpline, CMayaSpline perpendicularInterpSpline)
 : CEntity(uid, info, name, 0)
 , mSpline(1.f, splineFlags, positionTimeSpline, lookAtTimeSpline, fovSpline,
           CMayaSpline(SLdrSpline::CreateFor(0.f, 0.f, 1.f, 1.f)), positionType, lookAtType)
@@ -170,4 +171,20 @@ void CScriptPathCamera::RotateSplines(const CQuaternion& rotation, const CVector
   mPlayerSpline.Rotate(rotation, origin);
 }
 
-CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& in, CEntityInfo& info) {}
+CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrPathCamera sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrPathCamera.inc"
+
+  return rs_new CScriptPathCamera(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.distance, sldrThis.speed,
+      0.017453292f * sldrThis.angularSpeed, sldrThis.dampenDistance, sldrThis.flagsPathCamera,
+      sldrThis.unknown_0xd4b29446, sldrThis.initialPosition,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
+      static_cast< CMotionSpline::ESplineType >(sldrThis.targetSplineType.type),
+      sldrThis.motionControlSpline, sldrThis.targetControlSpline, sldrThis.fOVSpline,
+      sldrThis.speedControlSpline,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.playerSplineType.type),
+      sldrThis.playerSplineLoops, sldrThis.perpendicularDistanceControlSpline,
+      sldrThis.perpendicularInterpControlSpline);
+}

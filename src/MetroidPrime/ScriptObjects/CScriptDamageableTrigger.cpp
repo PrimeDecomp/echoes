@@ -3,6 +3,8 @@
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDamageableTrigger.hpp"
 
 static CMaterialList skDamageableTriggerMaterials(kMT_Trigger, kMT_Immovable,
                                                   kMT_NonSolidDamageable);
@@ -18,6 +20,21 @@ make_damageable_trigger_materials(CScriptDamageableTrigger::ECanOrbit canOrbit,
     materials.Add(kMT_SeekerTarget);
   }
   return materials;
+}
+
+CEntity* LoadDamageableTrigger(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDamageableTrigger sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDamageableTrigger.inc"
+
+  return rs_new CScriptDamageableTrigger(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties),
+      sldrThis.editorProperties.transform.position, sldrThis.editorProperties.transform.scale,
+      LdrToHealthInfo(sldrThis.health), LdrToDamageVulnerability(sldrThis.vulnerability),
+      static_cast< CScriptDamageableTrigger::ECanOrbit >(sldrThis.orbitable),
+      static_cast< CScriptDamageableTrigger::ESeekerLockOn >(sldrThis.enableSeekerLockOn),
+      static_cast< CScriptDamageableTrigger::EInvulnerable >(sldrThis.invulnerable),
+      LdrToVisorParameters(sldrThis.visor));
 }
 
 CScriptDamageableTrigger::CScriptDamageableTrigger(

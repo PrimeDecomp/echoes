@@ -1,9 +1,13 @@
 #include "MetroidPrime/Enemies/CAi.hpp"
 
 #include "MetroidPrime/CActorLights.hpp"
+#include "MetroidPrime/CFluidPlaneManager.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 
 #include "Kyoto/CSimplePool.hpp"
+#include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "Kyoto/TToken.hpp"
 
@@ -45,33 +49,55 @@ CDamageVulnerability* CAi::DamageVulnerability() { return &mDamageVulnerability;
 void CAi::TakeDamage(const CVector3f&, float) {}
 
 void CAi::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_AreaLoaded) {
-    CMaterialList include = GetMaterialFilter().GetIncludeList();
-    include.Add(kMT_AIBlock);
-    SetMaterialFilter(
-        CMaterialFilter::MakeIncludeExclude(include, GetMaterialFilter().GetExcludeList()));
+  switch (msg.GetMessage()) {
+  case kSM_AreaLoaded: {
+    const CMaterialList& exclude = GetMaterialFilter().GetExcludeList();
+    CMaterialList include(kMT_AIBlock);
+    include.Union(GetMaterialFilter().GetIncludeList());
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
+    break;
+  }
+  default:
+    break;
   }
   CActor::AcceptScriptMsg(mgr, msg);
 }
 
-void CAi::FluidFXThink(EFluidState, CScriptWater&, CStateManager&) {
-  // TODO: Restore entry/exit splashes when the water and fluid-manager interfaces are available.
+void CAi::FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) {
+  switch (state) {
+  case kFS_EnteredFluid:
+  case kFS_LeftFluid: {
+    if (mgr.GetFluidPlaneManager()->GetLastSplashDeltaTime(GetUniqueId()) >= 0.2f) {
+      const float energy = 0.5f * GetMass() * GetVelocityWR().MagSquared();
+      if (energy > 500.f) {
+        const float intensity = 0.1f + 0.4f * (CMath::Min(energy, 30000.f) - 500.f) / 29500.f;
+        const CVector3f position(GetTranslation().GetX(), GetTranslation().GetY(),
+                                 water.GetTriggerBoundsWR().GetMaxPoint().GetZ());
+        mgr.GetFluidPlaneManager()->CreateSplash(GetUniqueId(), mgr, water, position, intensity,
+                                                 true);
+      }
+    }
+    break;
+  }
+  default:
+    break;
+  }
 }
 
 CStateMachine* CAi::GetStateMachine() {
-  if (!mStateMachine->IsLoaded()) {
-    return nullptr;
+  if (mStateMachine->IsLoaded()) {
+    TToken< CStateMachine > token(*mStateMachine);
+    return *token;
   }
-  TToken< CStateMachine > token(*mStateMachine);
-  return *token;
+  return nullptr;
 }
 
 CGenericFSM2* CAi::GetStateMachine2() {
-  if (!mStateMachine->IsLoaded()) {
-    return nullptr;
+  if (mStateMachine->IsLoaded()) {
+    TToken< CGenericFSM2 > token(*mStateMachine);
+    return *token;
   }
-  TToken< CGenericFSM2 > token(*mStateMachine);
-  return *token;
+  return nullptr;
 }
 
 EWeaponCollisionResponseTypes CAi::GetCollisionResponseType(const CVector3f&, const CVector3f&,

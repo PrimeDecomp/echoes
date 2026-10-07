@@ -14,8 +14,8 @@ public:
                     const CMayaSpline& positionTimeSpline, const CMayaSpline& lookAtTimeSpline,
                     const CMayaSpline& fovSpline, const CMayaSpline& speedControlSpline,
                     CMotionSpline::ESplineType playerType, bool playerLoops,
-                    const CMayaSpline& perpendicularDistanceSpline,
-                    const CMayaSpline& perpendicularInterpSpline);
+                    CMayaSpline perpendicularDistanceSpline,
+                    CMayaSpline perpendicularInterpSpline);
 
   // CEntity
   ~CScriptPathCamera() override;

@@ -1135,7 +1135,7 @@ void CActor::UpdatePortalSystemState(CStateManager& mgr) {
 }
 
 float CActor::GetDistanceToCamera(CStateManager& mgr) const {
-  float distanceSquared = 3.4028235e38f;
+  float distanceSquared = FLT_MAX;
   const CVector3f position = GetTranslation();
   for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     const CGameCamera* camera = mgr.GetCameraManager(i)->GetCurrentCamera(mgr, true);

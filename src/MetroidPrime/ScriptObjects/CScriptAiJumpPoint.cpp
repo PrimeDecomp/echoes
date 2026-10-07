@@ -1,8 +1,20 @@
 #include "MetroidPrime/ScriptObjects/CScriptAiJumpPoint.hpp"
 
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrAIJumpPoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadAIJumpPoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrAIJumpPoint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrAIJumpPoint.inc"
+
+  return rs_new CScriptAiJumpPoint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                   LdrToEntityInfo(info, sldrThis.editorProperties),
+                                   LdrToTransform4f(sldrThis.editorProperties), sldrThis.jumpApex,
+                                   sldrThis.type);
+}
 
 CScriptAiJumpPoint::CScriptAiJumpPoint(TUniqueId uid, const rstl::string& name,
                                        const CEntityInfo& info, const CTransform4f& xf,

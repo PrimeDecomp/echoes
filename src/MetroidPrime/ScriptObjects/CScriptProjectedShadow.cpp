@@ -5,7 +5,21 @@
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CProjectedShadow.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrShadowProjector.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadShadowProjector(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrShadowProjector sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrShadowProjector.inc"
+
+  return rs_new CScriptShadowProjector(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.shadowOffset, sldrThis.unknown_0xbca8b742, sldrThis.shadowScale,
+      sldrThis.shadowHeight, sldrThis.shadowAlpha, sldrThis.shadowFadeTime,
+      sldrThis.unknown_0x606e341c);
+}
 
 CScriptShadowProjector::CScriptShadowProjector(TUniqueId uid, const rstl::string& name,
                                                const CEntityInfo& info,

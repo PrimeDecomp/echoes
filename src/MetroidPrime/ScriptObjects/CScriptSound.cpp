@@ -19,8 +19,9 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Math/CMayaSpline.hpp"
-#include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Math/CQuad.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
+#include <float.h>
 
 bool CScriptSound::sFirstInFrame;
 
@@ -32,9 +33,9 @@ static int ScaleByMusicVolume(int volume) {
 }
 
 static CVector3f GetClosestSoundPosition(const CStateManager& mgr,
-                                   const rstl::vector< TUniqueId >& sources) {
+                                         const rstl::vector< TUniqueId >& sources) {
   CVector3f nearest = CVector3f::Zero();
-  float nearestDistSq = 3.402823466e38f;
+  float nearestDistSq = FLT_MAX;
   for (rstl::vector< TUniqueId >::const_iterator it = sources.begin(); it != sources.end(); ++it) {
     const CEntity* entity = mgr.GetObjectById(*it);
     if (!entity) {
@@ -334,9 +335,8 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
 
   short volume = mVolume;
   if (mEchoVisorVolume && !mgr.IsMultiplayer()) {
-    volume = mgr.GetPlayerState(0)->GetCurrentVisor() == CPlayerState::kPV_Echo
-                 ? mEchoVisorVolume
-                 : mVolume;
+    volume = mgr.GetPlayerState(0)->GetCurrentVisor() == CPlayerState::kPV_Echo ? mEchoVisorVolume
+                                                                                : mVolume;
   }
 
   if (mNonEmitter) {
@@ -353,7 +353,7 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
         }
         if (player) {
           pan = CCast::FtoS(63.f * (float(mPan) / 127.f - 0.5f) +
-                           float(player->GetSoundPan(CPlayer::kMSP_4)));
+                            float(player->GetSoundPan(CPlayer::kMSP_4)));
         }
       }
       mCurrentMaxVolume = volume;
@@ -361,8 +361,8 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
       if (mWorldSfx) {
         areaId = CSfxManager::kAllAreas;
       }
-      mSfxHandle = CSfxManager::SfxStart(mSoundId, startVolume, pan, areaId, mAcoustics,
-                                         mLooped, mPriority);
+      mSfxHandle =
+          CSfxManager::SfxStart(mSoundId, startVolume, pan, areaId, mAcoustics, mLooped, mPriority);
       if (mWorldSfx) {
         world->AddGlobalSound(mSoundId, mSfxHandle);
       }
@@ -371,8 +371,8 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
     const float occlusion = mOcclusionTest ? GetOccludedVolumeAmount(GetTranslation(), mgr) : 1.f;
     mMaxVolume = CCast::FtoUS(float(volume) * occlusion);
     mCurrentMaxVolume = mMaxVolume;
-    CAudioSys::C3DEmitterParmData data(mMaxDistance, mDistanceCompensation, 1,
-                                       uchar(mMaxVolume), uchar(mMinVolume));
+    CAudioSys::C3DEmitterParmData data(mMaxDistance, mDistanceCompensation, 1, uchar(mMaxVolume),
+                                       uchar(mMinVolume));
     data.mPos = GetTranslation();
     data.mSfxId = mSoundId;
     if (mLooped) {

@@ -38,6 +38,7 @@ public:
   // Reconstructed setter name; current-area reassignment is separate from persistence.
   void SetCurrentAreaId(TAreaId area) { mAreaId = area; }
   const bool GetActive() const { return mActive; }
+  bool IsNotInArea() const { return mNotInArea; } // Guessed name
   bool GetUpdateWhileOccluded() const { return mUpdateWhileOccluded; }
   bool GetUpdateDuringCinematicSkip() const { return mUpdateDuringCinematicSkip; }
   void SetUpdateDuringCinematicSkip(bool update) { mUpdateDuringCinematicSkip = update; }

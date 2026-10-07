@@ -1,7 +1,7 @@
 #include "MetroidPrime/CAutoMapper.hpp"
 
-#include "GuiSys/CGuiTextPane.hpp"
 #include "GuiSys/CGuiFrame.hpp"
+#include "GuiSys/CGuiTextPane.hpp"
 #include "GuiSys/CGuiWidgetDrawParms.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
@@ -18,6 +18,7 @@
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CDummyWorld.hpp"
 #include "MetroidPrime/CEulerAngles.hpp"
@@ -39,9 +40,9 @@
 #include "MetroidPrime/Tweaks/CTweakAutoMapper.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
-#include "MetaRender/CCubeRenderer.hpp"
 #include "rstl/StringExtras.hpp"
 #include "rstl/math.hpp"
+#include <float.h>
 
 static const char* const skFRME_MapScreen = "FRME_MapScreen";
 static const char* const skFRME_MapScreenBackground = "FRME_MapScreenBackground";
@@ -352,9 +353,9 @@ void CAutoMapper::SetupHintNavigation() {
       if (nextWorldId != currentWorldId) {
         mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_SwitchToUniverse, 0));
         mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_PanToWorld,
-                                               static_cast< int >(nextWorldId)));
+                                                 static_cast< int >(nextWorldId)));
         mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_SwitchToWorld,
-                                               static_cast< int >(nextWorldId)));
+                                                 static_cast< int >(nextWorldId)));
         currentWorldId = nextWorldId;
       } else {
         mHintSteps.push_back(SAutoMapperHintStep(SAutoMapperHintStep::kHST_ZoomOut, 0));
@@ -1276,7 +1277,7 @@ void CAutoMapper::Draw(const CStateManager& mgr, const CTransform4f& xf, float a
     const CMapUniverse::CMapWorldData& worldData =
         mapu->GetMapWorldDataByWorldId(gpGameState->CurrentWorldAssetId());
     const CTransform4f universeAreaXf = worldData.GetWorldTransform() * areaXf;
-    float minDistance = 3.4028234663852886e38f;
+    float minDistance = FLT_MAX;
     int closestHex = -1;
     for (int i = 0; i < worldData.GetNumMapAreaDatas(); ++i) {
       const float distance = (universeAreaXf.GetTranslation() -
@@ -1866,7 +1867,7 @@ void CAutoMapper::Update(float dt, CStateManager& mgr) {
     }
     if (world != nullptr) {
       stringId = mDarkWorldBlend < 0.5f ? world->IGetStringTableAssetId()
-                                      : world->IGetDarkStringTableAssetId();
+                                        : world->IGetDarkStringTableAssetId();
     }
   } else if (mWorld != nullptr) {
     const IGameArea* area = mWorld->IGetAreaAlways(mCurAreaId);
@@ -2120,10 +2121,10 @@ CAutoMapper::SAutoMapperRenderState
 CAutoMapper::BuildMapScreenUniverseRenderState(const CStateManager& mgr, const CQuaternion& rot,
                                                int areaId) const {
   const CTweakAutoMapper* tweak = gpTweakAutoMapper.get();
-  SAutoMapperRenderState ret(GetMapScreenViewportSize(), rot, tweak->GetMapScreenMapUniverseDefaultCameraDistance(),
-                             tweak->GetCamAngle(), GetAreaPointOfInterest(mgr, areaId),
-                             GetMapAreaMaxDrawDepth(mgr, areaId),
-                             GetMapAreaMaxDrawDepth(mgr, areaId), 0.f, 0.f, 0.f, 0.f);
+  SAutoMapperRenderState ret(
+      GetMapScreenViewportSize(), rot, tweak->GetMapScreenMapUniverseDefaultCameraDistance(),
+      tweak->GetCamAngle(), GetAreaPointOfInterest(mgr, areaId),
+      GetMapAreaMaxDrawDepth(mgr, areaId), GetMapAreaMaxDrawDepth(mgr, areaId), 0.f, 0.f, 0.f, 0.f);
   ret.mViewportEase = SAutoMapperRenderState::kE_Out;
   ret.mCamEase = SAutoMapperRenderState::kE_Linear;
   ret.mPointEase = SAutoMapperRenderState::kE_Out;
@@ -2193,7 +2194,7 @@ int CAutoMapper::FindClosestVisibleArea(const CVector3f& point, const CUnitVecto
   const CMapWorld* mapWorld = world.IGetMapWorld();
   int closestArea = -1;
   int closestOtherWorldArea = -1;
-  float minDistance = 3.402823466e+38f;
+  float minDistance = FLT_MAX;
   float minOtherWorldDistance = minDistance;
   const rstl::vector< int > areas = mapWorld->GetVisibleAreas(world, info);
   const bool inDarkWorld = mDarkWorldBlend >= 0.5f;
