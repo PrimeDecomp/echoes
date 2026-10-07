@@ -4,8 +4,8 @@
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CSaveRegion.hpp"
 #include "MetroidPrime/CScriptMailbox.hpp"
-#include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/CWorldLayerState.hpp"
+#include "MetroidPrime/ScriptLoaderRel.hpp"
 
 #include "Kyoto/Audio/CDSPStreamManager.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
@@ -58,8 +58,8 @@
 #include "MetroidPrime/CGameGlobalObjects.hpp"
 #include "MetroidPrime/CMainFlow.hpp"
 #include "MetroidPrime/Decode.hpp"
-#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
+#include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
@@ -109,7 +109,6 @@ CFactoryFnReturn FPortalAreaDataFactory(const SObjectTag&, CInputStream&, const 
 CFactoryFnReturn FStringListFactory(const SObjectTag&, CInputStream&, const CVParamTransfer&);
 CFactoryFnReturn FEditorGeometryToStaticGeometryFactory(const SObjectTag&, CInputStream&,
                                                         const CVParamTransfer&);
-
 
 class CCharacterFactoryBuilder;
 class CGameState;
@@ -762,22 +761,23 @@ void CMain::AddWorldPaks() {
 void CMain::EnsureWorldPakReady(CAssetId id) {
   CResLoader& loader = gpResourceFactory->GetResLoader();
   for (int i = 0; i < loader.GetPakCount(); ++i) {
+    bool otherWorld = true;
     CPakFile& pak = *loader.GetPakFile(i);
     if (!pak.IsWorldPak()) {
       continue;
     }
     const rstl::vector< rstl::pair< rstl::string, SObjectTag > > names =
         pak.GetStringToObjectList();
-    bool containsWorld = false;
-    for (int j = 0; j < names.size(); ++j) {
-      if (names[j].second.GetId() == id) {
-        containsWorld = true;
+    for (rstl::vector< rstl::pair< rstl::string, SObjectTag > >::const_iterator it = names.begin();
+         it != names.end(); ++it) {
+      if (it->second.GetId() == id) {
+        otherWorld = false;
       }
     }
-    if (containsWorld) {
-      pak.EnsureWorldPakReady();
-    } else {
+    if (otherWorld) {
       pak.sub_80323554();
+    } else {
+      pak.EnsureWorldPakReady();
     }
   }
 }
