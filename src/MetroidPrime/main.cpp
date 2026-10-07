@@ -576,7 +576,8 @@ bool CMain::CheckReset() {
 }
 
 void CMain::FillInAssetIDs() {
-  gpSimplePool->fn_8029c7e8(*gpResourceFactory->GetResourceIdByName("sound_lookup_ATBL"));
+  CSfxManager::LoadTranslationTable(gpSimplePool,
+                                    gpResourceFactory->GetResourceIdByName("sound_lookup_ATBL"));
 }
 
 CGameGlobalObjects::~CGameGlobalObjects() {}
