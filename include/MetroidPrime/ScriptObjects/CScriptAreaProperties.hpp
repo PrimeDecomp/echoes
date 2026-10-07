@@ -27,7 +27,7 @@ private:
   CColor m_color;
 
 public:
-  CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float, uint hasSkyBox,
+  CScriptAreaProperties(TUniqueId, const CEntityInfo&, float, float, bool hasSkyBox,
                         bool isDarkWorld, uint, CAssetId skyBoxAssetId, int, int, float, float,
                         CColor);
   ~CScriptAreaProperties() override;
