@@ -2798,7 +2798,10 @@ Runtime/math_ppc.c:
 	.text       start:0x8035336C end:0x80353390
 
 Dolphin/vi/vi.c:
-	.text       start:0x803536AC end:0x80355084
+	.text       start:0x803533B0 end:0x80355548
+	.data       start:0x803BDB28 end:0x803BDF10
+	.sdata      start:0x80419FF8 end:0x8041A008
+	.sbss       start:0x8041AFF8 end:0x8041B060
 
 Dolphin/card/CARDNet.c:
 	.text       start:0x8035DD94 end:0x8035DE58
