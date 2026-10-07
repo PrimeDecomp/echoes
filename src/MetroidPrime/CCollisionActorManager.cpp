@@ -91,120 +91,118 @@ CCollisionActorManager::CCollisionActorManager(
     const rstl::vector< CJointCollisionDescription >& descriptions, bool active)
 : mOwnerId(owner), mActive(active), mDestroyed(false), mPhysicsActive(true) {
   const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mOwnerId));
-  if (actor == nullptr)
-    return;
+  if (actor != nullptr) {
+    const CAnimData* animData = actor->GetAnimationData();
+    const CTransform4f worldXf = actor->GetTransform();
+    const CVector3f scale = actor->GetModelData()->GetScale();
+    const CTransform4f scaleXf = CTransform4f::Scale(scale);
+    mJointDescriptions.reserve(descriptions.size());
+    for (rstl::vector< CJointCollisionDescription >::const_iterator it = descriptions.begin();
+         it != descriptions.end(); ++it) {
+      CJointCollisionDescription desc = *it;
+      desc.ScaleAllBounds(scale);
+      const CTransform4f pivotXf =
+          GetWRLocatorTransform(*animData, desc.GetPivotId(), worldXf, scaleXf);
 
-  const CAnimData* animData = actor->GetAnimationData();
-  const CTransform4f& worldXf = actor->GetTransform();
-  const CVector3f& scale = actor->GetModelData()->GetScale();
-  const CTransform4f scaleXf = CTransform4f::Scale(scale);
-  mJointDescriptions.reserve(descriptions.size());
-  for (rstl::vector< CJointCollisionDescription >::const_iterator it = descriptions.begin();
-       it != descriptions.end(); ++it) {
-    CJointCollisionDescription desc = *it;
-    desc.ScaleAllBounds(scale);
-    const CTransform4f pivotXf =
-        GetWRLocatorTransform(*animData, desc.GetPivotId(), worldXf, scaleXf);
+      if (desc.GetNextId() != CSegId::Invalid()) {
+        const CTransform4f nextXf =
+            GetWRLocatorTransform(*animData, desc.GetNextId(), worldXf, scaleXf);
+        const float distance = (nextXf.GetTranslation() - pivotXf.GetTranslation()).Magnitude();
+        if (desc.GetType() == CJointCollisionDescription::kCT_OBBAutoSize) {
+          if (distance <= FLT_EPSILON)
+            continue;
 
-    if (desc.GetNextId() == CSegId::Invalid()) {
-      const TUniqueId id = mgr.AllocateUniqueId();
-      CCollisionActor* colActor;
-      if (desc.GetType() == CJointCollisionDescription::kCT_Sphere) {
-        colActor =
+          const CVector3f bounds(desc.GetBounds().GetX(), distance + desc.GetBounds().GetY(),
+                                 desc.GetBounds().GetZ());
+          const TUniqueId id = mgr.AllocateUniqueId();
+          CCollisionActor* colActor =
+              rs_new CCollisionActor(id, areaId, mOwnerId, bounds,
+                                     CVector3f(0.f, 0.5f * distance, 0.f), active, desc.GetMass());
+          if (desc.GetOrientationType() == CJointCollisionDescription::kOT_Pivot) {
+            colActor->SetTransform(pivotXf);
+          } else {
+            CVector3f up = pivotXf.GetColumn(kDZ);
+            const CVector3f direction =
+                (nextXf.GetTranslation() - pivotXf.GetTranslation()).AsNormalized();
+            if (fabsf(1.f - fabsf(CVector3f::Dot(direction, up))) < 100.f * FLT_EPSILON)
+              up = pivotXf.GetColumn(kDY);
+            colActor->SetTransform(CTransform4f::LookAt(pivotXf.GetTranslation(),
+                                                        pivotXf.GetTranslation() + direction, up));
+          }
+          mgr.AddObject(*colActor);
+          mJointDescriptions.push_back_unsafe(*it);
+          (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
+          continue;
+        }
+
+        const TUniqueId id = mgr.AllocateUniqueId();
+        CCollisionActor* colActor =
             rs_new CCollisionActor(id, areaId, mOwnerId, active, desc.GetRadius(), desc.GetMass());
-      } else if (desc.GetType() == CJointCollisionDescription::kCT_OBB) {
-        colActor = rs_new CCollisionActor(id, areaId, mOwnerId, desc.GetBounds(),
-                                          desc.GetPivotPoint(), active, desc.GetMass());
-      } else if (desc.GetType() == CJointCollisionDescription::kCT_OBBFromMayaPlugIn) {
-        colActor = rs_new CCollisionActor(id, areaId, mOwnerId, 0.5f * desc.GetBounds(),
-                                          CVector3f::Zero(), active, desc.GetMass());
-      } else {
-        colActor =
-            rs_new CCollisionActor(id, areaId, mOwnerId, desc.GetBounds(), active, desc.GetMass());
-      }
-
-      colActor->SetTransform(pivotXf);
-      if (desc.GetType() == CJointCollisionDescription::kCT_Sphere) {
-        colActor->SetTranslation(pivotXf.GetTranslation() + pivotXf.Rotate(desc.GetPivotPoint()));
-      } else if (desc.GetType() == CJointCollisionDescription::kCT_OBBFromMayaPlugIn) {
-        CTransform4f locatorXf = animData->GetLocatorTransform(desc.GetPivotId(), nullptr);
-        locatorXf.SetTranslation(CVector3f::ByElementMultiply(scale, locatorXf.GetTranslation()));
-        colActor->SetTransform(worldXf * locatorXf *
-                               CTransform4f(desc.GetOrientation(), desc.GetPivotPoint()));
-      } else {
-        colActor->SetTranslation(pivotXf.GetTranslation());
-      }
-      mgr.AddObject(colActor);
-      mJointDescriptions.push_back_unsafe(*it);
-      (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
-      continue;
-    }
-
-    const CTransform4f nextXf =
-        GetWRLocatorTransform(*animData, desc.GetNextId(), worldXf, scaleXf);
-    const float distance = (nextXf.GetTranslation() - pivotXf.GetTranslation()).Magnitude();
-    if (desc.GetType() == CJointCollisionDescription::kCT_OBBAutoSize) {
-      if (distance <= FLT_EPSILON)
-        continue;
-
-      const CVector3f bounds(desc.GetBounds().GetX(), distance + desc.GetBounds().GetY(),
-                             desc.GetBounds().GetZ());
-      const CVector3f center(0.f, 0.5f * distance, 0.f);
-      const TUniqueId id = mgr.AllocateUniqueId();
-      CCollisionActor* colActor =
-          rs_new CCollisionActor(id, areaId, mOwnerId, bounds, center, active, desc.GetMass());
-      if (desc.GetOrientationType() == CJointCollisionDescription::kOT_Pivot) {
         colActor->SetTransform(pivotXf);
+        mgr.AddObject(*colActor);
+        mJointDescriptions.push_back_unsafe(CJointCollisionDescription::SphereCollision(
+            desc.GetPivotId(), CVector3f::Zero(), desc.GetRadius(), desc.GetName(), 0.001f));
+        (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
+
+        const uint numSeparations = CCast::ToUint32(distance / desc.GetMaxSeparation());
+        if (numSeparations == 0)
+          continue;
+        mJointDescriptions.reserve(mJointDescriptions.capacity() + numSeparations);
+        const float pitch = distance / float(numSeparations + 1);
+        for (uint i = 0; i < numSeparations; ++i) {
+          const float separation = pitch * float(i + 1);
+          mJointDescriptions.push_back_unsafe(CJointCollisionDescription::SphereSubdivideCollision(
+              desc.GetPivotId(), desc.GetNextId(), desc.GetRadius(), separation,
+              CJointCollisionDescription::kOT_BetweenJoints, desc.GetName(), 0.001f));
+          const TUniqueId newId = mgr.AllocateUniqueId();
+          CCollisionActor* newActor = rs_new CCollisionActor(newId, areaId, mOwnerId, active,
+                                                             desc.GetRadius(), desc.GetMass());
+          CVector3f direction = pivotXf.GetColumn(kDY);
+          if (desc.GetOrientationType() == CJointCollisionDescription::kOT_BetweenJoints) {
+            CVector3f up = pivotXf.GetColumn(kDZ);
+            const CVector3f between =
+                (nextXf.GetTranslation() - pivotXf.GetTranslation()).AsNormalized();
+            if (fabsf(1.f - fabsf(CVector3f::Dot(between, up))) < 100.f * FLT_EPSILON)
+              up = direction;
+            direction = CTransform4f::LookAt(CVector3f::Zero(), between, up).GetColumn(kDY);
+          }
+          newActor->SetTransform(
+              CTransform4f::Translate(pivotXf.GetTranslation() + separation * direction));
+          mgr.AddObject(*newActor);
+          (mJointDescriptions.end() - 1)->SetCollisionActorId(newId);
+        }
       } else {
-        CVector3f up = pivotXf.GetColumn(kDZ);
-        const CVector3f direction =
-            (nextXf.GetTranslation() - pivotXf.GetTranslation()).AsNormalized();
-        if (fabsf(1.f - fabsf(CVector3f::Dot(direction, up))) < 100.f * FLT_EPSILON)
-          up = pivotXf.GetColumn(kDY);
-        colActor->SetTransform(CTransform4f::LookAt(pivotXf.GetTranslation(),
-                                                    pivotXf.GetTranslation() + direction, up));
-      }
-      mgr.AddObject(colActor);
-      mJointDescriptions.push_back_unsafe(*it);
-      (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
-      continue;
-    }
+        const TUniqueId id = mgr.AllocateUniqueId();
+        CCollisionActor* colActor;
+        if (desc.GetType() == CJointCollisionDescription::kCT_Sphere) {
+          colActor = rs_new CCollisionActor(id, areaId, mOwnerId, active, desc.GetRadius(),
+                                            desc.GetMass());
+        } else if (desc.GetType() == CJointCollisionDescription::kCT_OBB) {
+          colActor = rs_new CCollisionActor(id, areaId, mOwnerId, desc.GetBounds(),
+                                            desc.GetPivotPoint(), active, desc.GetMass());
+        } else if (desc.GetType() == CJointCollisionDescription::kCT_OBBFromMayaPlugIn) {
+          colActor = rs_new CCollisionActor(id, areaId, mOwnerId, 0.5f * desc.GetBounds(),
+                                            CVector3f::Zero(), active, desc.GetMass());
+        } else {
+          colActor = rs_new CCollisionActor(id, areaId, mOwnerId, desc.GetBounds(), active,
+                                            desc.GetMass());
+        }
 
-    const TUniqueId id = mgr.AllocateUniqueId();
-    CCollisionActor* colActor =
-        rs_new CCollisionActor(id, areaId, mOwnerId, active, desc.GetRadius(), desc.GetMass());
-    colActor->SetTransform(pivotXf);
-    mgr.AddObject(colActor);
-    mJointDescriptions.push_back_unsafe(CJointCollisionDescription::SphereCollision(
-        desc.GetPivotId(), CVector3f::Zero(), desc.GetRadius(), desc.GetName(), 0.001f));
-    (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
-
-    const uint numSeparations = CCast::ToUint32(distance / desc.GetMaxSeparation());
-    if (numSeparations == 0)
-      continue;
-    mJointDescriptions.reserve(mJointDescriptions.capacity() + numSeparations);
-    const float pitch = distance / float(numSeparations + 1);
-    for (uint i = 0; i < numSeparations; ++i) {
-      const float separation = pitch * float(i + 1);
-      mJointDescriptions.push_back_unsafe(CJointCollisionDescription::SphereSubdivideCollision(
-          desc.GetPivotId(), desc.GetNextId(), desc.GetRadius(), separation,
-          CJointCollisionDescription::kOT_BetweenJoints, desc.GetName(), 0.001f));
-      const TUniqueId newId = mgr.AllocateUniqueId();
-      CCollisionActor* newActor =
-          rs_new CCollisionActor(newId, areaId, mOwnerId, active, desc.GetRadius(), desc.GetMass());
-      CVector3f direction = pivotXf.GetColumn(kDY);
-      if (desc.GetOrientationType() == CJointCollisionDescription::kOT_BetweenJoints) {
-        CVector3f up = pivotXf.GetColumn(kDZ);
-        const CVector3f between =
-            (nextXf.GetTranslation() - pivotXf.GetTranslation()).AsNormalized();
-        if (fabsf(1.f - fabsf(CVector3f::Dot(between, up))) < 100.f * FLT_EPSILON)
-          up = direction;
-        direction = CTransform4f::LookAt(CVector3f::Zero(), between, up).GetColumn(kDY);
+        colActor->SetTransform(pivotXf);
+        if (desc.GetType() == CJointCollisionDescription::kCT_Sphere) {
+          colActor->SetTranslation(pivotXf.GetTranslation() + pivotXf.Rotate(desc.GetPivotPoint()));
+        } else if (desc.GetType() == CJointCollisionDescription::kCT_OBBFromMayaPlugIn) {
+          CTransform4f locatorXf = animData->GetLocatorTransform(desc.GetPivotId(), nullptr);
+          locatorXf.SetTranslation(CVector3f::ByElementMultiply(scale, locatorXf.GetTranslation()));
+          colActor->SetTransform(worldXf * locatorXf *
+                                 CTransform4f(desc.GetOrientation(), desc.GetPivotPoint()));
+        } else {
+          colActor->SetTranslation(pivotXf.GetTranslation());
+        }
+        mgr.AddObject(*colActor);
+        mJointDescriptions.push_back_unsafe(*it);
+        (mJointDescriptions.end() - 1)->SetCollisionActorId(id);
       }
-      newActor->SetTransform(
-          CTransform4f::Translate(pivotXf.GetTranslation() + separation * direction));
-      mgr.AddObject(newActor);
-      (mJointDescriptions.end() - 1)->SetCollisionActorId(newId);
     }
   }
 }
@@ -222,7 +220,7 @@ void CCollisionActorManager::Update(float dt, CStateManager& mgr, EUpdateOptions
     return;
 
   const CAnimData* animData = owner->GetAnimationData();
-  const CTransform4f& worldXf = owner->GetTransform();
+  const CTransform4f worldXf = owner->GetTransform();
   const CTransform4f scaleXf = CTransform4f::Scale(owner->GetModelData()->GetScale());
   for (int i = 0; i < mJointDescriptions.size(); ++i) {
     const CJointCollisionDescription& desc = mJointDescriptions[i];
@@ -341,8 +339,8 @@ void CCollisionActorManager::SetPhysicsActive(CStateManager& mgr, bool active) {
     CCollisionActor* actor =
         TCastToPtr< CCollisionActor >(mgr.ObjectById(mJointDescriptions[i].GetCollisionActorId()));
     if (actor != nullptr) {
-      actor->SetMovable(active);
-      actor->SetUseInSortedLists(active);
+      actor->SetMovable(mPhysicsActive);
+      actor->SetUseInSortedLists(mPhysicsActive);
     }
   }
 }
