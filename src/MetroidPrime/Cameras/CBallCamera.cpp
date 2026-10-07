@@ -325,9 +325,9 @@ CVector3f CBallCamera::ApplyColliders() {
 CVector3f CBallCamera::AvoidGeometryFull(const CTransform4f& xf,
                                          const rstl::reserved_vector< TUniqueId, 1024 >& nearList,
                                          CStateManager& mgr) {
-  mSmallColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 1, 4.f, nearList, mgr);
-  mMediumColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 3, 4.f, nearList, mgr);
-  mLargeColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 4, 4.f, nearList, mgr);
+  mSmallColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 1, 4.f, nearList, mgr);
+  mMediumColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 3, 4.f, nearList, mgr);
+  mLargeColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 4, 4.f, nearList, mgr);
   return ApplyColliders();
 }
 
@@ -336,18 +336,20 @@ CVector3f CBallCamera::AvoidGeometry(const CTransform4f& xf,
                                      CStateManager& mgr) {
   switch (mAvoidGeomCycle) {
   case 0:
-    mSmallColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 1, 4.f, nearList, mgr);
+    mSmallColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 1, 4.f, nearList, mgr);
     break;
   case 1:
-    mMediumColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 3, 4.f, nearList, mgr);
+    mMediumColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 3, 4.f, nearList, mgr);
     break;
   case 2:
+    mLargeColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 4, 4.f, nearList, mgr);
+    break;
   case 3:
-    mLargeColliders.UpdateColliders(xf, GetPlayer(mgr).GetBallPosition(), 4, 4.f, nearList, mgr);
+    mLargeColliders.UpdateColliders(xf, Player(mgr).GetBallPosition(), 4, 4.f, nearList, mgr);
     break;
   }
 
-  if (++mAvoidGeomCycle > 3) {
+  if (++mAvoidGeomCycle >= 4) {
     mAvoidGeomCycle = 0;
   }
   return ApplyColliders();
