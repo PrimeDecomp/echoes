@@ -1580,6 +1580,14 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "SwarmBasics",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CSwarmBasics.cpp"),
+        ],
+        # The native module addresses each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
