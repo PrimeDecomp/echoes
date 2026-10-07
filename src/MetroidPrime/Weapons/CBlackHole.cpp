@@ -1,12 +1,12 @@
 #include "MetroidPrime/Weapons/CBlackHole.hpp"
 
-#include "MetroidPrime/CGameLight.hpp"
-#include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/TCastTo.hpp"
-#include "MetaRender/IRenderer.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
+#include "MetaRender/IRenderer.hpp"
+#include "MetroidPrime/CGameLight.hpp"
+#include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
 
 #include <float.h>
@@ -28,9 +28,9 @@ CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >&
 , mPullConeAngleDegrees(360.f)
 , mAttractionRange(30.f)
 , mPullDirection(CVector3f::Zero())
-, mParticleGen(particle ? rs_new CElementGen(*particle, CElementGen::kMOT_Normal,
-                                            CElementGen::kOSF_One)
-                        : nullptr)
+, mParticleGen(particle
+                   ? rs_new CElementGen(*particle, CElementGen::kMOT_Normal, CElementGen::kOSF_One)
+                   : nullptr)
 , mSourceId(particle ? particle->GetTag().GetId() : kInvalidAssetId)
 , mLightId(kInvalidUniqueId)
 , mRadius(radius)
@@ -40,7 +40,7 @@ CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >&
 CBlackHole::~CBlackHole() {}
 
 void CBlackHole::ApplyDamageToWorld(const CVector3f& position, CStateManager& mgr) {
-  mgr.ApplyDamageToWorld(GetOwnerId(), *this, position, mCurDamageInfo, mFilter);
+  mgr.ApplyDamageToWorld(GetOwnerId(), *this, position, mCurDamageInfo, GetFilter());
 }
 
 void CBlackHole::Touch(CActor&, CStateManager&) {}
@@ -100,7 +100,7 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 
     if (mFlags & kF_CreationSound) {
       CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0x1fda, 0x25aa), GetTranslation(),
-                             GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
+                              GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
       mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     }
     if (!mParticleGen.null() && mParticleGen->SystemHasLight()) {
