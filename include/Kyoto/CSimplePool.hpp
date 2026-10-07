@@ -33,8 +33,6 @@ public:
   virtual void ObjectUnreferenced(const SObjectTag& tag);
   rstl::vector< SObjectTag > GetReferencedTags();
 
-  void fn_8029c7e8(const SObjectTag& tag);
-
 private:
   ResourceMap mResources;
   IFactory* mFactory;
