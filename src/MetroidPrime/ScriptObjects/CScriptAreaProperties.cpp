@@ -10,7 +10,7 @@ CScriptAreaProperties::CScriptAreaProperties(TUniqueId uid, const CEntityInfo& i
                                              float normalLightning, uint hasSkyBox,
                                              bool isDarkWorld, uint environmentEffects,
                                              CAssetId skyBoxAssetId, int phazonDamage, int unk1,
-                                             float unk2, float unk3, const CColor& color)
+                                             float unk2, float unk3, CColor color)
 
 : CEntity(uid, info, "AreaAttributes", false)
 , m_hasSkybox(hasSkyBox)
@@ -60,15 +60,14 @@ void CScriptAreaProperties::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   }
 }
 
-CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input,
-                                          CEntityInfo& info) {
+CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrAreaAttributes sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrAreaAttributes.inc"
 
-  return new CScriptAreaProperties(
-      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.density, sldrThis.normalLighting, 0.0f, 0.0f, sldrThis.needSky, sldrThis.darkWorld,
-      sldrThis.environmentEffects, sldrThis.overrideSky, sldrThis.phazonDamage, 0, CColor::Black());
+  return rs_new CScriptAreaProperties(
+      mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.density,
+      sldrThis.normalLighting, sldrThis.needSky, sldrThis.darkWorld, sldrThis.environmentEffects,
+      sldrThis.overrideSky, sldrThis.phazonDamage, 0, 0.f, 0.f, CColor::Black());
 }
 
 CScriptAreaProperties::~CScriptAreaProperties() {}
