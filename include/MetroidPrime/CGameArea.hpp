@@ -205,6 +205,8 @@ public:
     int mFirstAramSection;
     uint mFirstMaterialSection;
     rstl::vector< rstl::vector< CToken > > mLayerTokens;
+    rstl::vector< rstl::vector< CToken > >& GetLayerTokens() { return mLayerTokens; }
+    const rstl::vector< rstl::vector< CToken > >& GetLayerTokens() const { return mLayerTokens; }
     rstl::vector< rstl::pair< CARAMToken, int > > mAramTokens;
     uint mAramBytes;
     uint x174_;
@@ -229,6 +231,10 @@ public:
     rstl::list< TUniqueId > mDockIds;
     CTransform4f mInverseTransform;
     rstl::vector< rstl::vector< CRELFileToken > > mLayerRelTokens;
+    rstl::vector< rstl::vector< CRELFileToken > >& GetLayerRelTokens() { return mLayerRelTokens; }
+    const rstl::vector< rstl::vector< CRELFileToken > >& GetLayerRelTokens() const {
+      return mLayerRelTokens;
+    }
     rstl::vector< CRELFileToken* > mSortedRelTokens;
     rstl::vector< rstl::vector< TEditorId > > mLayerEditorIds;
     rstl::list< rstl::auto_ptr< CDvdRequest > > mLoadTransactions;
@@ -242,6 +248,13 @@ public:
     rstl::vector< bool > mActiveLayers;
     rstl::vector< uint > mLayerFileOffsets;
     rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > mLayerLoadTransactions;
+    rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >& GetLayerLoadTransactions() {
+      return mLayerLoadTransactions;
+    }
+    const rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >&
+    GetLayerLoadTransactions() const {
+      return mLayerLoadTransactions;
+    }
     uint mDependencyDmaHandle;
     rstl::single_ptr< uchar > mSerializedDependencies;
 
