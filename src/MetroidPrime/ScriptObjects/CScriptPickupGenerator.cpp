@@ -263,51 +263,74 @@ CHealthInfo* CScriptPickupGenerator::GetTargetHealthInfo(CStateManager& mgr,
   return actor != nullptr ? actor->HealthInfo() : nullptr;
 }
 
+static inline void AddSpawnablePickup(const CPickupGeneratorRuleEvaluator& evaluator,
+                                      CStateManager& mgr, int ruleSlot, const TEditorId& editorId,
+                                      rstl::vector< rstl::pair< int, TEditorId > >& pickups) {
+  const int amount = evaluator.GetRandomAmount(mgr, ruleSlot);
+  if (amount != 0) {
+    pickups.push_back_unsafe(rstl::pair< int, TEditorId >(amount, editorId));
+  }
+}
+
 void CScriptPickupGenerator::GetSpawnablePickups(
     CStateManager& mgr, rstl::vector< rstl::pair< int, TEditorId > >& pickups, TUniqueId targetId) {
   mRuleEvaluator.Refresh(mgr, GetTargetHealthInfo(mgr, targetId));
   pickups.reserve(mPickupTemplates.size());
 
-  for (int i = 0; i < mPickupTemplates.size(); ++i) {
-    const SPickupTemplate& pickup = mPickupTemplates[i];
-    int ruleSlot = -1;
+  for (rstl::vector< SPickupTemplate >::const_iterator it = mPickupTemplates.begin();
+       it != mPickupTemplates.end(); ++it) {
+    const SPickupTemplate& pickup = *it;
     switch (pickup.mItem) {
-    case CPlayerState::kIT_Missile:
-      ruleSlot = pickup.mAmount < 6 ? 0 : 1;
-      break;
     case CPlayerState::kIT_HealthRefill:
-      ruleSlot = pickup.mAmount == 100  ? 5
-                 : pickup.mAmount == 50 ? 4
-                 : pickup.mAmount == 30 ? 3
-                                        : 2;
-      break;
-    case CPlayerState::kIT_Powerbomb:
-      ruleSlot = 6;
-      break;
-    case CPlayerState::kIT_LightAmmo:
-      ruleSlot = pickup.mAmount < 10 ? 9 : pickup.mAmount == 10 ? 7 : 11;
+      if (pickup.mAmount == 100) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 5, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount == 50) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 4, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount == 30) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 3, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 2, pickup.mEditorId, pickups);
+      }
       break;
     case CPlayerState::kIT_DarkAmmo:
-      ruleSlot = pickup.mAmount < 10 ? 10 : pickup.mAmount == 10 ? 8 : 12;
+      if (pickup.mAmount > 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 12, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount < 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 10, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 8, pickup.mEditorId, pickups);
+      }
+      break;
+    case CPlayerState::kIT_LightAmmo:
+      if (pickup.mAmount > 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 11, pickup.mEditorId, pickups);
+      } else if (pickup.mAmount < 10) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 9, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 7, pickup.mEditorId, pickups);
+      }
       break;
     case CPlayerState::kIT_LightBeam:
-      ruleSlot = 13;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 13, pickup.mEditorId, pickups);
       break;
     case CPlayerState::kIT_DarkBeam:
-      ruleSlot = 14;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 14, pickup.mEditorId, pickups);
       break;
     case CPlayerState::kIT_AnnihilatorBeam:
-      ruleSlot = 15;
+      AddSpawnablePickup(mRuleEvaluator, mgr, 15, pickup.mEditorId, pickups);
+      break;
+    case CPlayerState::kIT_Missile:
+      if (pickup.mAmount < 6) {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 0, pickup.mEditorId, pickups);
+      } else {
+        AddSpawnablePickup(mRuleEvaluator, mgr, 1, pickup.mEditorId, pickups);
+      }
+      break;
+    case CPlayerState::kIT_Powerbomb:
+      AddSpawnablePickup(mRuleEvaluator, mgr, 6, pickup.mEditorId, pickups);
       break;
     default:
       break;
-    }
-
-    if (ruleSlot >= 0) {
-      const int amount = mRuleEvaluator.GetRandomAmount(mgr, ruleSlot);
-      if (amount != 0) {
-        pickups.push_back_unsafe(rstl::pair< int, TEditorId >(amount, pickup.mEditorId));
-      }
     }
   }
 }
@@ -401,17 +424,39 @@ void CScriptPickupGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       sender = msg.GetSenderId();
     }
 
-    // TODO: Forward the zero message to linked generator objects before evaluating RULE.
+    for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+         it != GetConnectionList().end(); ++it) {
+      if (it->state != kGeneratorConnectionState || it->msg != kSM_SetToZero) {
+        continue;
+      }
+
+      const CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
+      if (ids.first == ids.second) {
+        continue;
+      }
+      const CScriptPickupGenerator* generator =
+          TCastToConstPtr< CScriptPickupGenerator >(mgr.ObjectById(ids.first->second));
+      if (generator != nullptr) {
+        mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), sender, generator->GetUniqueId(),
+                                        kSM_SetToZero, kGeneratorConnectionState));
+      }
+    }
+
     CachePickupTemplates(mgr);
+
+    rstl::vector< rstl::pair< int, TEditorId > > pickups;
+    GetSpawnablePickups(mgr, pickups, sender);
+    if (pickups.size() == 0) {
+      return;
+    }
 
     rstl::vector< TUniqueId > targets;
     GetTargets(mgr, sender, targets);
-    rstl::vector< rstl::pair< int, TEditorId > > pickups;
-    GetSpawnablePickups(mgr, pickups, sender);
-    for (int i = 0; i < pickups.size(); ++i) {
-      for (int count = 0; count < pickups[i].first; ++count) {
+    for (rstl::vector< rstl::pair< int, TEditorId > >::const_iterator it = pickups.begin();
+         it != pickups.end(); ++it) {
+      for (int i = 0; i < it->first; ++i) {
         const int index = int(mgr.Random()->Float() * targets.size() * 0.99f);
-        SpawnPickup(mgr, pickups[i].second, targets[index]);
+        SpawnPickup(mgr, it->second, targets[index]);
       }
     }
   }
