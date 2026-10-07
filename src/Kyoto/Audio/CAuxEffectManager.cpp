@@ -240,8 +240,8 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
   int parallel = 0;
   int parallelFading = 0;
   int serial = 0;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    switch (effects[slot].GetState()) {
+  for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+    switch (slot->GetState()) {
     case kES_Parallel:
       ++parallel;
       break;
@@ -260,62 +260,75 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
   if (parallel == 0 && parallelFading == 0 && serial == 0)
     return;
 
-  s32* buffers[3] = {info->data.bufferUpdate.left, info->data.bufferUpdate.right,
-                     info->data.bufferUpdate.surround};
+  s32** buffers = &info->data.bufferUpdate.left;
   if (parallel == 1 && parallelFading == 0) {
-    for (int slot = 0; slot < effects.size(); ++slot) {
-      if (effects[slot].GetState() == kES_Parallel)
-        effects[slot].Process(reason, info);
+    for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+      if (slot->GetState() == kES_Parallel)
+        slot->Process(reason, info);
     }
   } else if (parallel != 0 || parallelFading != 0) {
     s32 mixed[3][kBufferSamples];
     memset(mixed, 0, sizeof(mixed));
-    for (int slot = 0; slot < effects.size(); ++slot) {
-      SEffectSlot& effect = effects[slot];
-      const EState state = effect.GetState();
-      if (state != kES_Parallel && state != kES_ParallelFadeIn && state != kES_ParallelFadeOut)
-        continue;
-      s32 scratch[3][kBufferSamples];
-      for (int channel = 0; channel < 3; ++channel)
+    for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+      switch (slot->GetState()) {
+      case kES_Parallel:
+      case kES_ParallelFadeIn:
+      case kES_ParallelFadeOut: {
+        s32 scratch[3][kBufferSamples];
         for (int sample = 0; sample < kBufferSamples; ++sample)
-          scratch[channel][sample] = buffers[channel][sample];
-      SND_AUX_INFO processed;
-      processed.data.bufferUpdate.left = scratch[0];
-      processed.data.bufferUpdate.right = scratch[1];
-      processed.data.bufferUpdate.surround = scratch[2];
-      effect.Process(reason, &processed);
+          for (int channel = 0; channel < 3; ++channel)
+            scratch[channel][sample] = buffers[channel][sample];
+        SND_AUX_INFO processed;
+        processed.data.bufferUpdate.left = scratch[0];
+        processed.data.bufferUpdate.right = scratch[1];
+        processed.data.bufferUpdate.surround = scratch[2];
+        slot->Process(reason, &processed);
 
-      float fade = effect.GetFade();
-      int sample = 0;
-      for (; sample < kBufferSamples; ++sample) {
-        for (int channel = 0; channel < 3; ++channel) {
-          mixed[channel][sample] +=
-              state == kES_Parallel
-                  ? scratch[channel][sample]
-                  : static_cast< s32 >(static_cast< float >(scratch[channel][sample]) * fade);
-        }
-        if (state == kES_ParallelFadeIn) {
-          fade += kFadeStep;
-          if (fade >= 1.f) {
-            effect.SetState(kES_Parallel);
-            fade = 1.f;
-            ++sample;
-            for (; sample < kBufferSamples; ++sample)
-              for (int channel = 0; channel < 3; ++channel)
-                mixed[channel][sample] += scratch[channel][sample];
-            break;
+        switch (slot->GetState()) {
+        case kES_Parallel:
+          for (int sample = 0; sample < kBufferSamples; ++sample)
+            for (int channel = 0; channel < 3; ++channel)
+              mixed[channel][sample] += scratch[channel][sample];
+          break;
+        case kES_ParallelFadeIn: {
+          float fade = slot->GetFade();
+          int sample = 0;
+          for (; sample < kBufferSamples; ++sample) {
+            for (int channel = 0; channel < 3; ++channel)
+              mixed[channel][sample] += static_cast< s32 >(scratch[channel][sample] * fade);
+            fade += kFadeStep;
+            if (fade >= 1.f) {
+              slot->SetState(kES_Parallel);
+              fade = 1.f;
+              ++sample;
+              for (; sample < kBufferSamples; ++sample)
+                for (int channel = 0; channel < 3; ++channel)
+                  mixed[channel][sample] += scratch[channel][sample];
+              break;
+            }
           }
-        } else if (state == kES_ParallelFadeOut) {
-          fade -= kFadeStep;
-          if (fade <= 0.f) {
-            effect.SetState(kES_PendingCleanup);
-            fade = 0.f;
-            break;
-          }
+          slot->SetFade(fade);
+          break;
         }
+        case kES_ParallelFadeOut: {
+          float fade = slot->GetFade();
+          for (int sample = 0; sample < kBufferSamples; ++sample) {
+            for (int channel = 0; channel < 3; ++channel)
+              mixed[channel][sample] += static_cast< s32 >(scratch[channel][sample] * fade);
+            fade -= kFadeStep;
+            if (fade <= 0.f) {
+              slot->SetState(kES_PendingCleanup);
+              fade = 0.f;
+              break;
+            }
+          }
+          slot->SetFade(fade);
+          break;
+        }
+        }
+        break;
       }
-      if (state != kES_Parallel)
-        effect.SetFade(fade);
+      }
     }
     for (int channel = 0; channel < 3; ++channel)
       for (int sample = 0; sample < kBufferSamples; ++sample)
@@ -324,21 +337,26 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
 
   if (serial == 0)
     return;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    SEffectSlot& effect = effects[slot];
+  for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+    SEffectSlot& effect = *slot;
     const EState state = effect.GetState();
-    if (state == kES_Serial) {
+    switch (state) {
+    case kES_Serial:
       effect.Process(reason, info);
       continue;
+    case kES_SerialBypassFadeOut:
+      if (effect.GetFade() == 0.f)
+        continue;
+      // Fall through.
+    case kES_SerialFadeIn:
+    case kES_SerialFadeOut:
+      break;
+    default:
+      continue;
     }
-    if (state != kES_SerialFadeIn && state != kES_SerialFadeOut && state != kES_SerialBypassFadeOut)
-      continue;
-    float fade = effect.GetFade();
-    if (state == kES_SerialBypassFadeOut && fade == 0.f)
-      continue;
     s32 scratch[3][kBufferSamples];
-    for (int channel = 0; channel < 3; ++channel)
-      for (int sample = 0; sample < kBufferSamples; ++sample)
+    for (int sample = 0; sample < kBufferSamples; ++sample)
+      for (int channel = 0; channel < 3; ++channel)
         scratch[channel][sample] = buffers[channel][sample];
     SND_AUX_INFO processed;
     processed.data.bufferUpdate.left = scratch[0];
@@ -346,6 +364,7 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
     processed.data.bufferUpdate.surround = scratch[2];
     effect.Process(reason, &processed);
 
+    float fade = effect.GetFade();
     for (int sample = 0; sample < kBufferSamples; ++sample) {
       const float dry = 1.f - fade;
       for (int channel = 0; channel < 3; ++channel) {
