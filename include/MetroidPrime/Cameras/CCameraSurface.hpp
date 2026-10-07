@@ -8,6 +8,8 @@
 #include "Kyoto/Math/CPlane.hpp"
 #include "Kyoto/Math/CSphere.hpp"
 
+class CScriptSurfaceCamera;
+
 // Guessed names: the SurfaceCamera loader owns these projection/containment objects.
 // No original class or method exports have been established for this family.
 class CCameraSurface {
@@ -31,6 +33,8 @@ public:
 
   CSphere GetSphere() const { return mSphere; }
 
+  friend class CScriptSurfaceCamera;
+
 private:
   CSphere mSphere;
 };
@@ -46,6 +50,8 @@ public:
   CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CPlaneCameraSurface() override;
+
+  friend class CScriptSurfaceCamera;
 
 private:
   CPlane mPlane;
@@ -72,6 +78,8 @@ public:
 protected:
   float GetHeight() const { return mHeight; }
 
+  friend class CScriptSurfaceCamera;
+
 private:
   CCylinder mCylinder;
   float mHeight;
@@ -88,6 +96,8 @@ public:
   CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSplineCylinderCameraSurface() override;
+
+  friend class CScriptSurfaceCamera;
 
 private:
   CMayaSpline mSpline;
@@ -106,6 +116,8 @@ public:
   CVector3f GetSurfacePoint(CVector3f point) override;
   bool IsPointInside(const CVector3f& point) override;
   ~CSplinePlaneCameraSurface() override;
+
+  friend class CScriptSurfaceCamera;
 
 private:
   CMayaSpline mSpline;

@@ -28,7 +28,44 @@ CScriptSurfaceCamera::CScriptSurfaceCamera(
 CScriptSurfaceCamera::~CScriptSurfaceCamera() {}
 
 void CScriptSurfaceCamera::Think(float dt, CStateManager& mgr) {
-  // TODO: Update the owned surface's geometry from this actor's current transform.
+  switch (mSurfaceType) {
+  case kST_Sphere: {
+    CSphereCameraSurface* surface = static_cast< CSphereCameraSurface* >(mSurface.get());
+    surface->mSphere = CSphere(GetTranslation(), surface->mSphere.GetRadius());
+    break;
+  }
+  case kST_Plane: {
+    CPlaneCameraSurface* surface = static_cast< CPlaneCameraSurface* >(mSurface.get());
+    surface->mPlane = CPlane(GetTranslation(), CUnitVector3f(GetTransform().GetForward()));
+    surface->mCenter = GetTranslation();
+    surface->mAxisA = GetTransform().GetRight();
+    surface->mAxisB = GetTransform().GetUp();
+    break;
+  }
+  case kST_Cylinder: {
+    CCylinderCameraSurface* surface = static_cast< CCylinderCameraSurface* >(mSurface.get());
+    surface->mCylinder = CCylinder(CLine(GetTranslation(), CUnitVector3f(GetTransform().GetUp())),
+                                   surface->mCylinder.GetRadius());
+    break;
+  }
+  case kST_SplinePlane: {
+    CSplinePlaneCameraSurface* surface = static_cast< CSplinePlaneCameraSurface* >(mSurface.get());
+    surface->mPlane = CPlane(GetTranslation(), CUnitVector3f(GetTransform().GetForward()));
+    surface->mCenter = GetTranslation();
+    surface->mAxisA = GetTransform().GetRight();
+    surface->mAxisB = GetTransform().GetUp();
+    break;
+  }
+  case kST_SplineCylinder: {
+    CSplineCylinderCameraSurface* surface =
+        static_cast< CSplineCylinderCameraSurface* >(mSurface.get());
+    static_cast< CCylinderCameraSurface* >(surface)->mCylinder =
+        CCylinder(CLine(GetTranslation(), CUnitVector3f(GetTransform().GetUp())),
+                  surface->GetCylinder().GetRadius());
+    surface->mReferenceDirection = GetTransform().GetForward().AsNormalized();
+    break;
+  }
+  }
 }
 
 void CScriptSurfaceCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
