@@ -21,7 +21,6 @@ public:
     bool mDiscovered : 1; // Target-derived: retained after removal from the heap.
     bool mClosed : 1;     // Target-derived: set after expansion.
   };
-  typedef char SPointDataSizeCheck[sizeof(SPointData) == 0x14 ? 1 : -1];
 
   explicit CPFPointSearchState(int pointCount);
   void UpdateOpenPoint(const SPointData& point); // Guessed name
@@ -36,6 +35,7 @@ private:
   rstl::vector< SPointData > mPointData;   // Guessed name
   rstl::vector< SPointData* > mOpenPoints; // Guessed name
 };
+NESTED_CHECK_SIZEOF(CPFPointSearchState, SPointData, 0x14)
 CHECK_SIZEOF(CPFPointSearchState, 0x24)
 
 #endif

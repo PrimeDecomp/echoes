@@ -32,7 +32,6 @@ public:
     TTimeList mForwardTimes;  // Guessed name
     TTimeList mBackwardTimes; // Guessed name
   };
-  typedef char WaypointTimesSizeCheck[sizeof(CWaypointTimes) == 0x50 ? 1 : -1];
 
   CPlatformWaypointTracker(float duration, TUniqueId owner);
   virtual ~CPlatformWaypointTracker();
@@ -51,6 +50,7 @@ private:
   float mDuration;                           // Guessed name
   TUniqueId mOwnerId;                        // Guessed name
 };
+NESTED_CHECK_SIZEOF(CPlatformWaypointTracker, CWaypointTimes, 0x50)
 CHECK_SIZEOF(CPlatformWaypointTracker, 0x20)
 
 #endif
