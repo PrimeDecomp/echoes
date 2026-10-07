@@ -1537,7 +1537,7 @@ bool CFlyingPirate::ShouldMove(CStateManager& mgr, const CTriggerData& data) con
   }
   CVector3f cross = CVector3f::Cross(delta, CVector3f::Up()).AsNormalized();
   CVector3f dest = GetTranslation() + random * cross;
-  dest.SetZ(mgr.GetPlayer(0)->GetTranslation().GetZ() + mData.mFlyingHeight);
+  dest[kDZ] = mgr.GetPlayer(0)->GetTranslation()[kDZ] + mData.GetFlyingHeight();
   const_cast< CFlyingPirate* >(this)->SetDestPos(dest);
   const_cast< CFlyingPirate* >(this)->mIsMoving = true;
   return true;

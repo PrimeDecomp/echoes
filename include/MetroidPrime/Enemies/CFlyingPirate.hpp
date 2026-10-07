@@ -38,6 +38,8 @@ public:
                       float projectileHomingDistance, float unknown_0xccf05648,
                       float unknown_0x2a90f9a9, float unknown_0x9ca8f357, float unknown_0x7ac85cb6);
 
+    const float GetFlyingHeight() const { return mFlyingHeight; }
+
     float mMaxCoverDistance;
     float mHearingDistance;
     uint mType;
