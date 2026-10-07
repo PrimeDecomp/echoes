@@ -7,6 +7,7 @@
 #include "Kyoto/Math/CVector2f.hpp"
 
 #include <float.h>
+#include <string.h>
 
 void CPFPoint::Fixup(CPFArea& area) {
   mLinks = mNumLinks ? &area.GetPointLink(reinterpret_cast< intptr_t >(mLinks)) : nullptr;
@@ -47,9 +48,7 @@ CPFRegion::CPFRegion()
 , mRegionIdx(0)
 , mCentroid(CVector3f::Zero())
 , mBounds(CAABox::MakeMaxInvertedBox()) {
-  for (int i = 0; i < 3; ++i) {
-    mObstructionCounts[i] = 0;
-  }
+  memset(mObstructionCounts, 0, sizeof(mObstructionCounts));
 }
 
 bool CPFRegion::IsPointInside(const CVector3f& point) const {
@@ -78,23 +77,26 @@ bool CPFRegion::IsPointInside(const CVector3f& point) const {
 }
 
 bool CPFRegion::Intersects(const CAABox& box) const {
-  if (!mBounds.DoBoundsOverlap(box)) {
-    return false;
-  }
-  for (int i = 0; i < GetNumNodes(); ++i) {
-    const CPFNode& node = GetNode(i);
-    const CVector3f point = box.FurthestPointAlongVector(node.GetNormal());
-    if (CVector3f::Dot(point - node.GetPos(), node.GetNormal()) < 0.f) {
-      return false;
+  bool result = false;
+  if (mBounds.DoBoundsOverlap(box)) {
+    int i;
+    for (i = 0; i < GetNumNodes(); ++i) {
+      const CPFNode& node = GetNode(i);
+      const CVector3f point = box.FurthestPointAlongVector(node.GetNormal());
+      if (CVector3f::Dot(point - node.GetPos(), node.GetNormal()) < 0.f) {
+        break;
+      }
+    }
+    if (i == GetNumNodes()) {
+      const CVector3f floorPoint = box.FurthestPointAlongVector(GetNormal());
+      if (CVector3f::Dot(floorPoint - GetNode(0).GetPos(), GetNormal()) >= 0.f) {
+        const CVector3f ceilingPoint = box.ClosestPointAlongVector(GetNormal());
+        result = CVector3f::Dot(ceilingPoint - GetNode(0).GetPos() - GetHeight() * CVector3f::Up(),
+                                GetNormal()) <= 0.f;
+      }
     }
   }
-  const CVector3f floorPoint = box.FurthestPointAlongVector(GetNormal());
-  if (CVector3f::Dot(floorPoint - GetNode(0).GetPos(), GetNormal()) < 0.f) {
-    return false;
-  }
-  const CVector3f ceilingPoint = box.ClosestPointAlongVector(GetNormal());
-  return CVector3f::Dot(ceilingPoint - GetNode(0).GetPos() - GetHeight() * CVector3f::Up(),
-                        GetNormal()) <= 0.f;
+  return result;
 }
 
 float CPFRegion::PointHeight(const CVector3f& point) const {
@@ -251,8 +253,25 @@ CVector3f CPFRegion::FitThroughLink3d(const CVector3f& source, const CPFLink& li
   const float sourceDistance = CVector3f::Dot(source - node.GetPos(), node.GetNormal());
   const float destinationDistance = CVector3f::Dot(node.GetPos() - destination, node.GetNormal());
   const float distance = sourceDistance + destinationDistance;
-  // The target uses the link midpoint; its horizontal interpolation is discarded.
-  CVector3f result = node.GetPos() + edge * 0.5f;
+  float t = 0.5f;
+  if (radius < 0.5f * link.Get2dWidth()) {
+    CVector2f edge2d(edge.GetX(), edge.GetY());
+    edge2d *= link.GetOO2dWidth();
+    const CVector3f sourceDelta = source - node.GetPos();
+    const float sourceAlong =
+        CVector2f::Dot(edge2d, CVector2f(sourceDelta.GetX(), sourceDelta.GetY()));
+    const CVector3f destinationDelta = destination - node.GetPos();
+    const float destinationAlong =
+        CVector2f::Dot(edge2d, CVector2f(destinationDelta.GetX(), destinationDelta.GetY()));
+    if (distance > FLT_EPSILON) {
+      // The original discards this horizontal interpolation value.
+      float along = (1.f / distance) *
+                    (destinationDistance * sourceAlong + sourceDistance * destinationAlong);
+      along = CMath::Clamp(radius, along, link.Get2dWidth() - radius);
+      along *= link.GetOO2dWidth();
+    }
+  }
+  CVector3f result = node.GetPos() + edge * t;
   if (halfHeight < 0.5f * height) {
     float minZ = halfHeight + result.GetZ();
     float maxZ = height + result.GetZ() - halfHeight;
