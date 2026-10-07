@@ -542,7 +542,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CAABoxFilter.cpp"),
             Object(NonMatching, "MetroidPrime/CGroundMovement.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTargetingPoint.cpp"),
-            Object(Matching, "MetroidPrime/BodyState/CBSWallHang.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/BodyState/CBSWallHang.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptEMPulse.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudBossEnergyInterface.cpp"),
             Object(NonMatching, "MetroidPrime/HUD/CHudRadarInterface.cpp"),
