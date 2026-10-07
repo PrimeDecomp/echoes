@@ -5,3 +5,7 @@ Sections:
 	.rodata     type:rodata align:32
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+REL/REL_Setup.cpp:
+	.text       start:0x00011AC0 end:0x00011C64
+	.rodata     start:0x00000890 end:0x00000914
