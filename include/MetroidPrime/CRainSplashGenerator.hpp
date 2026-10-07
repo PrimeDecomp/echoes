@@ -40,6 +40,7 @@ private:
     void SetActive();
   };
 
+public:
   struct SRainSplash {
     rstl::reserved_vector< SSplashLine, 4 > mLines;
     CVector3f mPosition;
@@ -52,7 +53,6 @@ private:
     void SetPoint(const CVector3f& position);
   };
 
-public:
   CRainSplashGenerator(const CVector3f& scale, int maxSplashes, int generationRate, float minZ,
                        float alpha);
   ~CRainSplashGenerator() {}
