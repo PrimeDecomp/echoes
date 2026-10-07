@@ -246,6 +246,8 @@ public:
     uint mMreaDataOffset;
     int mFirstScriptSection;
     rstl::vector< bool > mActiveLayers;
+    rstl::vector< bool >& GetActiveLayers() { return mActiveLayers; }
+    const rstl::vector< bool >& GetActiveLayers() const { return mActiveLayers; }
     rstl::vector< uint > mLayerFileOffsets;
     rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > mLayerLoadTransactions;
     rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >& GetLayerLoadTransactions() {

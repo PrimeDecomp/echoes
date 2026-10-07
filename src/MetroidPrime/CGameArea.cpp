@@ -298,7 +298,8 @@ bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
         for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::const_iterator it =
                  mPostConstructed->GetLayerLoadTransactions().begin();
              it != mPostConstructed->GetLayerLoadTransactions().end(); ++it) {
-          if (it->first == layer) {
+          const rstl::pair< int, rstl::auto_ptr< CDvdRequest > >& request = *it;
+          if (request.first == layer) {
             ++pending;
             break;
           }
@@ -356,7 +357,8 @@ void CGameArea::VerifyTokenList(CStateManager& mgr) {
         }
       }
       for (uint layer = 0; layer < layers.GetAreaLayerCount(mSelfIdx); ++layer) {
-        mPostConstructed->mActiveLayers[layer] = layers.IsLayerActive(mSelfIdx, TLayerId(layer));
+        mPostConstructed->GetActiveLayers()[layer] =
+            layers.IsLayerActive(mSelfIdx, TLayerId(layer));
       }
     }
   }
@@ -366,8 +368,8 @@ void CGameArea::VerifyTokenList(CStateManager& mgr) {
     mPostConstructed->GetLayerRelTokens().resize(relLayerCount, rstl::vector< CRELFileToken >());
   }
   if (!mRelModules.empty() && mPostConstructed->mSortedRelTokens.empty()) {
-    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
-      if (mPostConstructed->mActiveLayers[layer]) {
+    for (int layer = 0; layer < mPostConstructed->GetActiveLayers().size(); ++layer) {
+      if (mPostConstructed->GetActiveLayers()[layer]) {
         LoadLayerRelModules(mgr, TLayerId(layer));
       }
     }
@@ -748,8 +750,8 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
         it->GetObj();
       }
     }
-    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
-      if (mPostConstructed->mActiveLayers[layer]) {
+    for (int layer = 0; layer < mPostConstructed->GetActiveLayers().size(); ++layer) {
+      if (mPostConstructed->GetActiveLayers()[layer]) {
         mLayerPhases[layer] = kLP_Ready;
       }
     }
@@ -770,12 +772,12 @@ void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
 bool CGameArea::LoadScriptObjects(CStateManager& mgr) {
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
   CScriptObjectLoaderHelper::SLoadContext& context = *mPostConstructed->mScriptLoadState;
-  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
+  for (int i = 0; i < mPostConstructed->GetActiveLayers().size(); ++i) {
     const TLayerId layer(i);
     if (context.mLayerIndex != layer.Value()) {
       continue;
     }
-    if (mPostConstructed->mActiveLayers[i]) {
+    if (mPostConstructed->GetActiveLayers()[i]) {
       if (context.mRemainingObjects == 0) {
         const rstl::pair< const uchar*, int > buffer = GetLayerScriptBuffer(layer);
         rstl::auto_ptr< CInputStream > stream(rs_new CMemoryInStream(buffer.first, buffer.second));
@@ -795,13 +797,13 @@ bool CGameArea::LoadScriptObjects(CStateManager& mgr) {
       ++context.mLayerIndex;
     }
   }
-  const bool complete = context.mLayerIndex == mPostConstructed->mActiveLayers.size();
+  const bool complete = context.mLayerIndex == mPostConstructed->GetActiveLayers().size();
   return complete;
 }
 
 void CGameArea::FinishScriptObjects(CStateManager& mgr) {
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
-  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
+  for (int i = 0; i < mPostConstructed->GetActiveLayers().size(); ++i) {
     mPostConstructed->mMreaSectionBuffers[i + mPostConstructed->mFirstScriptSection].first =
         rstl::auto_ptr< char >();
     mPostConstructed->mLayerScriptBuffers[i] = rstl::auto_ptr< char >();
@@ -1098,7 +1100,7 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
         if (mPostConstructed->mFirstScriptSection == -1) {
           mPostConstructed->mFirstScriptSection = mPostConstructed->mMreaSectionBuffers.size();
         }
-        if (!mPostConstructed->mActiveLayers[layer]) {
+        if (!mPostConstructed->GetActiveLayers()[layer]) {
           load = false;
         }
         totalSize = sizes[firstSection];
@@ -1165,7 +1167,7 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
           if (scriptCount != mPostConstructed->mLayerFileOffsets.size()) {
             mPostConstructed->mLayerFileOffsets.resize(scriptCount, 0u);
           }
-          if (!mPostConstructed->mActiveLayers[layer]) {
+          if (!mPostConstructed->GetActiveLayers()[layer]) {
             load = false;
           }
           mPostConstructed->mLayerFileOffsets[layer] = mPostConstructed->mMreaDataOffset;
@@ -1462,12 +1464,11 @@ bool CGameArea::HasPendingLayerLoads() const {
 }
 
 int CGameArea::GetLayerRequestCount(const TLayerId layer) const {
-  const int layerIdx = layer.Value();
   int count = 0;
   typedef rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > TRequests;
   for (TRequests::iterator it = mPostConstructed->GetLayerLoadTransactions().begin();
        it != mPostConstructed->GetLayerLoadTransactions().end(); ++it) {
-    if (it->first == layerIdx) {
+    if (it->first == layer.Value()) {
       ++count;
     }
   }
