@@ -86,7 +86,7 @@ void CBoneTracking::SetMaxBoneRotation(float angle) { mMaxTrackingAngle = angle;
 void CBoneTracking::UpdateTracking(const CTransform4f& xf, const CVector3f& scale,
                                    const CVector3f& targetPosition, const CCharLayoutInfo& layout,
                                    CPoseAsTransforms_Linear& pose) {
-  const CSegId parent = mNoParent ? mSegId : layout.GetSegmentData(mSegId).GetParent();
+  const CSegId parent = mNoParent ? mSegId : layout.GetOriginalParent(mSegId);
   const CTransform4f parentXf = pose.GetTransform(parent);
   const CTransform4f boneXf = pose.GetTransform(mSegId);
   CTransform4f trackingXf = parentXf;
@@ -128,31 +128,35 @@ void CBoneTracking::UpdateTracking(const CTransform4f& xf, const CVector3f& scal
 }
 
 void CBoneTracking::UpdateInactive(const CCharLayoutInfo& layout, CPoseAsTransforms_Linear& pose) {
-  const CSegId parent = mNoParent ? mSegId : layout.GetSegmentData(mSegId).GetParent();
-  CQuaternion parentRotation = CQuaternion::FromMatrix(pose.GetRotation(parent));
-  CQuaternion boneRotation = CQuaternion::FromMatrix(pose.GetRotation(mSegId));
-  if (!mHasTrackedRotation) {
+  if (mHasTrackedRotation) {
+    const CSegId parent = mNoParent ? mSegId : layout.GetOriginalParent(mSegId);
+    const CMatrix3f parentMatrix = pose.GetRotation(parent);
+    const CMatrix3f boneMatrix = pose.GetRotation(mSegId);
+    CQuaternion parentRotation = CQuaternion::FromMatrix(parentMatrix).BuildNormalized();
+    CQuaternion boneRotation = CQuaternion::FromMatrix(boneMatrix).BuildNormalized();
+    const CQuaternion animationRotation =
+        mNoParent ? CQuaternion::NoRotation() : boneRotation * parentRotation.BuildInverted();
+    const CVector3f currentDir = mRotation.Transform(CVector3f::Forward());
+    const CVector3f animationDir = animationRotation.Transform(CVector3f::Forward());
+    const float angle = CVector3f::GetAngleDiff(currentDir, animationDir);
+    const float maxAngleDelta = mTime * mAngSpeed;
+    const float clampedAngle = CMath::Min(angle, maxAngleDelta);
+    if (clampedAngle <= 0.5f * maxAngleDelta) {
+      mHasTrackedRotation = false;
+      mRotation = animationRotation;
+    } else {
+      mRotation = CQuaternion::SlerpLocal(mRotation, animationRotation, clampedAngle / angle);
+    }
+    mRotation = mRotation.BuildNormalized();
+    pose.SetRotation(layout, mSegId, (parentRotation * mRotation).BuildTransform());
+  } else {
+    const CSegId parent = mNoParent ? mSegId : layout.GetOriginalParent(mSegId);
+    const CMatrix3f parentMatrix = pose.GetRotation(parent);
+    const CMatrix3f boneMatrix = pose.GetRotation(mSegId);
+    const CQuaternion parentRotation = CQuaternion::FromMatrix(parentMatrix);
+    const CQuaternion boneRotation = CQuaternion::FromMatrix(boneMatrix);
     mRotation =
         mNoParent ? CQuaternion::NoRotation() : boneRotation * parentRotation.BuildInverted();
     mRotation = mRotation.BuildNormalized();
-    return;
   }
-
-  parentRotation = parentRotation.BuildNormalized();
-  boneRotation = boneRotation.BuildNormalized();
-  const CQuaternion animationRotation =
-      mNoParent ? CQuaternion::NoRotation() : boneRotation * parentRotation.BuildInverted();
-  const CVector3f currentDir = mRotation.Transform(CVector3f::Forward());
-  const CVector3f animationDir = animationRotation.Transform(CVector3f::Forward());
-  const float angle = CVector3f::GetAngleDiff(currentDir, animationDir);
-  const float maxAngleDelta = mTime * mAngSpeed;
-  const float clampedAngle = CMath::Min(angle, maxAngleDelta);
-  if (clampedAngle <= 0.5f * maxAngleDelta) {
-    mHasTrackedRotation = false;
-    mRotation = animationRotation;
-  } else {
-    mRotation = CQuaternion::SlerpLocal(mRotation, animationRotation, clampedAngle / angle);
-  }
-  mRotation = mRotation.BuildNormalized();
-  pose.SetRotation(layout, mSegId, (parentRotation * mRotation).BuildTransform());
 }

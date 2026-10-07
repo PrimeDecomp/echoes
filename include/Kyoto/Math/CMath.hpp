@@ -80,9 +80,13 @@ public:
     return rad;
   }
   template < typename T >
-  static const T& Min(const T& a, const T& b);
+  static T Min(T a, T b) {
+    return a < b ? a : b;
+  }
   template < typename T >
-  static const T& Max(const T& a, const T& b);
+  static T Max(T a, T b) {
+    return a > b ? a : b;
+  }
   static float InvSqrtF(float x);
   static float FastArcCosR(float x);
   static float SlowCosineR(float x);
@@ -114,8 +118,8 @@ public:
                                          const CVector3f& tangentA, const CVector3f& tangentB,
                                          float t);
   static CVector3f GetHermiteSplineTangent(const CVector3f& a, const CVector3f& b,
-                                         const CVector3f& tangentA, const CVector3f& tangentB,
-                                         float t);
+                                           const CVector3f& tangentA, const CVector3f& tangentB,
+                                           float t);
   static CVector3f GetCatmullRomSplineTangent(const CVector3f& a, const CVector3f& b,
                                               const CVector3f& c, const CVector3f& d, float t);
   static CVector3f GetBSplinePoint(const CVector3f& a, const CVector3f& b, const CVector3f& c,
@@ -174,13 +178,4 @@ public:
   static int FloorLog2(uint v);
 };
 
-template < typename T >
-const T& CMath::Min(const T& a, const T& b) {
-  return a < b ? a : b;
-}
-
-template < typename T >
-const T& CMath::Max(const T& a, const T& b) {
-  return a > b ? a : b;
-}
 #endif // _CMATH
