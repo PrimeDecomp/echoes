@@ -23,24 +23,13 @@
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
+#include "MetroidPrime/Player/GunResNames.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 #include "MetroidPrime/Weapons/GunController/CGunController.hpp"
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
 #include "Weapons/CWeaponDescription.hpp"
-
-// Asset-name pointers defined in another TU (unsplit .sdata2).
-extern "C" const char* const lbl_8041D3BC; // "Power_Anim_DGRP"
-extern "C" const char* const lbl_8041D3C0; // "VariaArm"
-
-// Asset-name tables defined in another TU (unsplit .rodata).
-extern const char* const skWeaponNames[8];
-extern const char* const skMuzzleNames[8];
-extern const char* const skFrozenNames[8];
-extern const char* const skDependencyNames[4];
-extern const char* const skBeamNames[4];
-extern const char* const skBeamXferNames[4];
 
 const char* const CGunWeapon::skMuzzleLocator = "LBEAM";
 const char* const CGunWeapon::skElbowLocator = "elbow";
@@ -63,8 +52,8 @@ CPlayerState::EBeamId GetWeaponIndex(EWeaponType type) {
 CGunWeapon::CGunWeapon(EWeaponType type, TUniqueId playerId, const CVector3f& scale, int flags)
 : mScale(scale)
 , mCurrentPlayerSuit(CPlayerState::kPS_Varia)
-, mArmModel(gpSimplePool->GetObj(lbl_8041D3C0))
-, mXferEffect(gpSimplePool->GetObj(skBeamXferNames[GetWeaponIndex(type)]))
+, mArmModel(gpSimplePool->GetObj(NWeaponRes::kVariaArm))
+, mXferEffect(gpSimplePool->GetObj(NWeaponRes::skBeamXferNames[GetWeaponIndex(type)]))
 , mRainSplashGenerator(nullptr)
 , mWeaponType(type)
 , mPlayerId(playerId)
@@ -564,14 +553,14 @@ void CGunWeapon::AllocResPools(CPlayerState::EBeamId beam) {
   for (int i = 0; i < mMuzzleEffects.capacity(); ++i) {
     const int idx = beam * 2 + i;
     mMuzzleEffects.push_back(
-        TCachedToken< CGenDescription >(gpSimplePool->GetObj(skMuzzleNames[idx])));
+        TCachedToken< CGenDescription >(gpSimplePool->GetObj(NWeaponRes::skMuzzleNames[idx])));
     mWeapons.push_back(
-        TCachedToken< CWeaponDescription >(gpSimplePool->GetObj(skWeaponNames[idx])));
+        TCachedToken< CWeaponDescription >(gpSimplePool->GetObj(NWeaponRes::skWeaponNames[idx])));
   }
   for (int i = 0; i < mFrozenEffects.capacity(); ++i) {
     const int idx = beam * 2 + i;
     mFrozenEffects.push_back(
-        TCachedToken< CGenDescription >(gpSimplePool->GetObj(skFrozenNames[idx])));
+        TCachedToken< CGenDescription >(gpSimplePool->GetObj(NWeaponRes::skFrozenNames[idx])));
   }
 }
 
@@ -695,8 +684,9 @@ void CGunWeapon::FillTokenVector(const rstl::vector< SObjectTag >& tags,
 
 void CGunWeapon::BuildDependencyList(CPlayerState::EBeamId beam) {
   const TLockedToken< CDependencyGroup > dependencies =
-      gpSimplePool->GetObj(skDependencyNames[beam]);
-  const TLockedToken< CDependencyGroup > animDependencies = gpSimplePool->GetObj(lbl_8041D3BC);
+      gpSimplePool->GetObj(NWeaponRes::skDependencyNames[beam]);
+  const TLockedToken< CDependencyGroup > animDependencies =
+      gpSimplePool->GetObj(NWeaponRes::kPowerAnimDependencyGroup);
   const rstl::vector< SObjectTag >& depTags = dependencies->GetObjectTagVector();
   const rstl::vector< SObjectTag >& animTags = animDependencies->GetObjectTagVector();
   mDeps.reserve(depTags.size() + animTags.size());
@@ -732,7 +722,7 @@ void CGunWeapon::AsyncLoadSuitArm() {
 void CGunWeapon::LoadSuitArm() {
   if (mArmModel.IsLoaded()) {
     mSuitArmModelData =
-        CModelData(CStaticRes(NWeaponTypes::get_asset_id_from_name(lbl_8041D3C0), mScale));
+        CModelData(CStaticRes(NWeaponTypes::get_asset_id_from_name(NWeaponRes::kVariaArm), mScale));
     mSuitArmLocked = false;
     if (!x271_26) {
       mSuitArmModelData->LockTextures();
@@ -857,7 +847,7 @@ void CGunWeapon::InitializeResources(CStateManager& mgr) {
   if (!mResourcesAllocated) {
     AllocResPools(mBeamId);
     BuildDependencyList(mBeamId);
-    mAncsId = NWeaponTypes::get_asset_id_from_name(skBeamNames[mBeamId]);
+    mAncsId = NWeaponTypes::get_asset_id_from_name(NWeaponRes::skBeamNames[mBeamId]);
     mGunCharacter = TToken< CAnimCharacterSet >(gpSimplePool->GetObj(SObjectTag('ANCS', mAncsId)));
     mResourcesAllocated = true;
     mCurrentPlayerSuit =
