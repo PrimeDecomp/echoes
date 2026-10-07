@@ -239,6 +239,13 @@ modules:
     hash: aa817d3a343647edab8f50e05e5156863098c4d2
     splits: config/G2ME01/rels/Metaree/splits.txt
     symbols: config/G2ME01/rels/Metaree/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__11SLdrMetareeFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
   # Module ID 43
   - object: files/RelProd/MetareeSwarm.rel
     hash: e9b5a7bd0c482e1bfecfd104e9d805bf579df554
