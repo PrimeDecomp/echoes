@@ -72,6 +72,7 @@ public:
   };
 
   struct SIndexData {
+    SIndexData() {}
     explicit SIndexData(CInputStream& in);
 
     rstl::vector< u64 > mMaterials;
@@ -89,6 +90,7 @@ public:
   ~COBBTree();
 
   const CNode* GetRoot() const { return mRoot; }
+  const SIndexData& GetIndexData() const { return mIndexData; }
   CAABox CalculateLocalAABox() const;
 
   static rstl::auto_ptr< COBBTree > BuildOrientedBoundingBoxTree(const CVector3f& extent,

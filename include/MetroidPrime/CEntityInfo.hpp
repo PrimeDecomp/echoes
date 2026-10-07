@@ -217,6 +217,8 @@ enum EScriptObjectState {
   kSS_AIS3 = 0x41495333,
   kSS_DGNR = 0x44474e52, // Native save-screen failure tag; meaning unresolved.
   kSS_Up = 0x55502020,
+  kSS_Down = 0x444f574e, // Guessed name; destructible barrier finished lowering.
+  kSS_GRNT = 0x47524e54, // Destructible barrier: generator for falling sections.
   kSS_Approach = 0x41505243,
   kSS_InvalidState = 0xffffffff,
 };
