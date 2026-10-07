@@ -326,7 +326,7 @@ void CPlayerKnockBackMgr::ExplodeDeath(CStateManager& mgr, CPlayer& player,
 void CPlayerKnockBackMgr::Freeze(float duration, CPlayer& player) {
   if (!player.GetMorphBall()->InScrewAttackMode()) {
     mFreezePending = true;
-    mFreezeDuration = duration;
+    mFreezeDuration = mActiveParameters.mFollowUpDuration;
   }
 }
 
@@ -434,14 +434,13 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
   }
 
   EFollowUp followUp = mActiveParameters.mFollowUp;
-  CHealthInfo* health = player->HealthInfo();
+  const float health = CMath::AbsF(player->GetHealthInfo()->GetHP());
   const bool burnDeath = followUp == kFU_LaggedBurnDeath ||
                          followUp == kFU_ImmediateDisintegration || followUp == kFU_BlackDeath ||
                          followUp == kFU_BurnDeath;
   const bool ball = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
                     player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
-  if ((!burnDeath && !player->GetPlayerState()->IsPlayerAlive() &&
-       CMath::AbsF(health->GetHP()) > 15.f) ||
+  if ((!burnDeath && !player->GetPlayerState()->IsPlayerAlive() && health > 15.f) ||
       (followUp == kFU_Death && ball)) {
     followUp = player->GetFrozenState() ? kFU_IceDeath : kFU_ExplodeDeath;
   }
@@ -453,19 +452,18 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
     break;
   case kFU_Shock:
   case kFU_ImmediateExplosion: {
-    TUniqueId damageOwner = owner;
-    if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner))) {
-      damageOwner = weapon->GetOwnerId();
-    }
+    const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner));
+    const TUniqueId damageOwner = weapon ? weapon->GetOwnerId() : owner;
     Shock(mActiveParameters.mFollowUpDuration, 2.f, *player, damageOwner);
     break;
   }
+  case kFU_BlackDeath:
+    StartBlackHoleDeath(mgr, source, *player);
+    break;
   case kFU_Burn:
     if (source != player->GetUniqueId()) {
-      TUniqueId damageOwner = owner;
-      if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner))) {
-        damageOwner = weapon->GetOwnerId();
-      }
+      const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(owner));
+      const TUniqueId damageOwner = weapon ? weapon->GetOwnerId() : owner;
       Burn(mActiveParameters.mFollowUpDuration, gpTweakPlayerGun->GetPlayerBurnDamage(),
            damageOwner);
     }
@@ -481,15 +479,12 @@ void CPlayerKnockBackMgr::ApplyFollowUp(CActor& actor, CStateManager& mgr, TUniq
   case kFU_IceDeath:
     ExplodeDeath(mgr, *player, kEDT_Ice, owner);
     break;
-  case kFU_BurnDeath:
-  case kFU_ImmediateDisintegration:
-    StartBurnDeath(mgr, *player, kBDT_Normal);
-    break;
   case kFU_LaggedBurnDeath:
     StartBurnDeath(mgr, *player, kBDT_Lagged);
     break;
-  case kFU_BlackDeath:
-    StartBlackHoleDeath(mgr, source, *player);
+  case kFU_BurnDeath:
+  case kFU_ImmediateDisintegration:
+    StartBurnDeath(mgr, *player, kBDT_Normal);
     break;
   default:
     break;
