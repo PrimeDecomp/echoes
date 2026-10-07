@@ -224,14 +224,16 @@ void CScriptActor::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node
   unsigned char skipAnimEvent = 0;
 
   if (type == kUE_Projectile) {
-    if (mProjectileInfo.valid())
+    if (mProjectileInfo.valid()) {
       FireProjectile(mgr, node.GetLocatorName());
+    }
 
     skipAnimEvent = 1;
   }
 
-  if (skipAnimEvent == 0)
+  if (skipAnimEvent == 0) {
     CActor::DoUserAnimEvent(mgr, node, type, dt);
+  }
 }
 
 void CScriptActor::FireProjectile(CStateManager& mgr, const rstl::string& locator) {
