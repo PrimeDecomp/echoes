@@ -236,22 +236,23 @@ void CPlayerKnockBackMgr::UpdateBurning(float dt, CStateManager& mgr, CPlayer& p
     mBurnRemainingTime -= dt;
   }
 
-  if (!(mBurnRemainingTime > 0.f)) {
+  if (mBurnRemainingTime > 0.f) {
+    if (player.GetPlayerState()->IsPlayerAlive()) {
+      mgr.ActorModelParticles()->LightDudeOnFire(player);
+      const float damageAmount = mBurnDamagePerSecond * dt;
+      const CDamageInfo damage =
+          CDamageInfo(CWeaponMode(kWT_Light), damageAmount, 0.f, FLT_EPSILON);
+      EnableAnimReaction(kAR_Flinch, false);
+      EnableAnimReaction(kAR_KnockBack, false);
+      mgr.ApplyDamage(
+          player.GetUniqueId(), player.GetUniqueId(), mBurnOwner, damage,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(sDamageMaterial), CMaterialList()),
+          CVector3f::Zero());
+      EnableAnimReaction(kAR_Flinch, true);
+      EnableAnimReaction(kAR_KnockBack, true);
+    }
+  } else {
     DouseFlames();
-  } else if (player.GetPlayerState()->IsPlayerAlive()) {
-    mgr.ActorModelParticles()->LightDudeOnFire(player);
-    CDamageInfo damage;
-    damage.SetWeaponMode(CWeaponMode(kWT_Light));
-    damage.SetDamage(mBurnDamagePerSecond * dt);
-    damage.SetRadiusDamage(damage.GetDamage());
-    damage.SetKnockBackPower(FLT_EPSILON);
-    EnableAnimReaction(kAR_Flinch, false);
-    EnableAnimReaction(kAR_KnockBack, false);
-    mgr.ApplyDamage(player.GetUniqueId(), player.GetUniqueId(), mBurnOwner, damage,
-                    CMaterialFilter::MakeInclude(CMaterialList(sDamageMaterial)),
-                    CVector3f::Zero());
-    EnableAnimReaction(kAR_Flinch, true);
-    EnableAnimReaction(kAR_KnockBack, true);
   }
 }
 
@@ -352,25 +353,23 @@ void CPlayerKnockBackMgr::UpdateElectrocution(float dt, CStateManager& mgr, CPla
     mElectrocutionRemainingTime -= dt;
   }
 
-  CActorModelParticles& particles = *mgr.ActorModelParticles();
   if (mElectrocutionRemainingTime > 0.f) {
     if (player.GetPlayerState()->IsPlayerAlive()) {
-      particles.StartElectric(player);
-      CDamageInfo damage;
-      damage.SetWeaponMode(CWeaponMode(kWT_Annihilator));
-      damage.SetDamage(mElectrocutionDamagePerSecond * dt);
-      damage.SetRadiusDamage(damage.GetDamage());
-      mgr.ApplyDamage(mElectrocutionOwner, player.GetUniqueId(), mElectrocutionOwner, damage,
-                      CMaterialFilter::MakeInclude(CMaterialList(sDamageMaterial)),
-                      CVector3f::Zero());
+      mgr.ActorModelParticles()->StartElectric(player);
+      const float damageAmount = mElectrocutionDamagePerSecond * dt;
+      const CDamageInfo damage = CDamageInfo(CWeaponMode(kWT_Annihilator), damageAmount, 0.f, 0.f);
+      mgr.ApplyDamage(
+          mElectrocutionOwner, player.GetUniqueId(), mElectrocutionOwner, damage,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(sDamageMaterial), CMaterialList()),
+          CVector3f::Zero());
       player.BodyController()->CommandMgr().DeliverCmd(
           CPBCAdditiveReactionCmd(CPBCAdditiveReactionCmd::kART_Shock, true));
     } else {
-      particles.StopElectric(player);
+      mgr.ActorModelParticles()->StopElectric(player);
     }
   } else {
     if (mElectrocutionDamagePerSecond > 0.f) {
-      particles.StopElectric(player);
+      mgr.ActorModelParticles()->StopElectric(player);
     }
     DouseElectrocution();
   }
