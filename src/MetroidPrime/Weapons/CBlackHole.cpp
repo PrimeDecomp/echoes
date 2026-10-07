@@ -6,6 +6,7 @@
 #include "MetaRender/IRenderer.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
 
@@ -66,7 +67,7 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
   if (mElapsedTime > 30.f) {
     mgr.DeleteObjectRequest(GetUniqueId());
   } else {
-    if (mElapsedTime > 0.f && mElapsedTime < FLT_MAX) {
+    if (mElapsedTime > 0.f && mElapsedTime < 3.4028235e38f) {
       mOrigDamageInfo.SetRadius(mRadius);
       ApplyDamageToWorld(GetTranslation(), mgr);
     }
@@ -84,7 +85,43 @@ void CBlackHole::Think(float dt, CStateManager& mgr) {
     mElapsedTime += dt;
 
     if (mFlags & kF_PullPlayers) {
-      // TODO: recover the player pull/color operation and its unresolved player flag accessor.
+      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+        CPlayer* player = mgr.GetPlayer(i);
+        const bool isOwner = GetOwnerId() == player->GetUniqueId();
+        const CVector3f center = player->GetTouchBounds()->GetCenterPoint();
+        const CVector3f toHole = GetTranslation() - center;
+        const float distance = toHole.Magnitude();
+        const bool atCenter = distance < 5.f;
+        if (!atCenter && !isOwner) {
+          const CVector3f direction = toHole.AsNormalized();
+          if (static_cast< float >(cos(0.017453292f * mPullConeAngleDegrees)) <
+                  CVector3f::Dot(-direction, mPullDirection) &&
+              distance < mAttractionRange) {
+            const float speed = rstl::min_val(
+                (1.f / dt) * distance, mPullStrength * (mAttractionRange / (distance * distance)));
+            const CVector3f impulse = player->GetMass() * direction;
+            player->ApplyForceWR(speed * impulse, CAxisAngle::Identity());
+          }
+        }
+        if (atCenter && !isOwner) {
+          const CVector3f position = (GetTranslation() - center) + player->GetTranslation();
+          player->Stop();
+          player->MoveToWR(position, dt);
+        }
+
+        const bool insideRadius = distance < mRadius;
+        player->SetHoldScreenFilterAlpha(insideRadius);
+        if (insideRadius) {
+          static const CColor skFilterColor(uchar(120), uchar(135), uchar(70), uchar(0));
+          CColor filterColor = player->GetScreenFilterColor();
+          if (!(skFilterColor.WithAlphaOf(0.f) == filterColor.WithAlphaOf(0.f)) &&
+              filterColor.GetAlpha() == 0.f) {
+            filterColor = skFilterColor;
+          }
+          filterColor.SetAlpha(rstl::min_val(dt + filterColor.GetAlpha(), 1.f));
+          player->SetScreenFilterColor(filterColor);
+        }
+      }
     }
   }
 }
