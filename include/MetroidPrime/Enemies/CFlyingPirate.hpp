@@ -202,26 +202,26 @@ private:
   CSegId mHeadSegId;
   CBoneTracking mBoneTracking;
   CSegId mGunSegId;
-  float x7e4_;
+  float mBurstTimer; // Guessed name
   TUniqueId mTargetId;
   CBurstFire mBurstFire;
   pas::EStepDirection mDodgeDirection;
   float mHeight;
-  float x854_;
-  float x858_;
+  float mTimeSinceAttacked; // Guessed name
+  float mTimeSinceShotAt;   // Guessed name
   TUniqueId mAttackObjectId;
-  float x860_;
+  float mSpecialAttackTimer; // Guessed name
   rstl::reserved_vector< CSegId, 2 > mMissileSegments;
-  float x86c_;
-  CVector3f x870_;
-  CVector3f x87c_;
-  float x888_;
+  float mMissileTimer;           // Guessed name
+  CVector3f mFlightVelocity;     // Guessed name
+  CVector3f mFlightAcceleration; // Guessed name
+  float mCoverCheckTimer;        // Guessed name
   float mRagDollTimer;
   TUniqueId mTeamAiMgr;
   float mPitchBend;
-  float x898_;
+  float mTargetPitchBend; // Guessed name
   TUniqueId mPatrolTarget;
-  float x8a4_;
+  float mPatrolSpeed; // Guessed name
   CLineOfSightTracker mLineOfSightTracker;
   int mFireMissilesCheck;
   int mFireMissilesCheckInterval;
@@ -230,14 +230,14 @@ private:
   bool mIsAquaPirate : 1;
   mutable bool mHearShot : 1;
   bool mCanPatrol : 1;
-  bool x6a0_28_ : 1;
+  bool mAimAtTarget : 1; // Guessed name
   bool mCheckForProjectiles : 1;
-  bool x6a0_30_ : 1;
+  bool mShotAt : 1; // Guessed name
   bool mPrevInCineCam : 1;
   bool x6a1_25_ : 1;
   bool mIsAttackingObject : 1;
   bool x6a1_27_ : 1;
-  bool x6a1_28_ : 1;
+  bool mMissilePathBlocked : 1; // Guessed name
   bool mIsMoving : 1;
   bool mSpinToDeath : 1;
   bool mStopped : 1;
@@ -245,9 +245,9 @@ private:
   bool mAggressionChecked : 1;
   bool mJetpackActive : 1;
   bool mSparksActive : 1;
-  bool x6a2_28_ : 1;
-  bool xbba_29_ : 1;
-  bool xbba_30_ : 1;
+  bool mRetreatRequested : 1;  // Guessed name
+  bool mDeathSpinFinished : 1; // Guessed name
+  bool mBecameRagDoll : 1;     // Guessed name
 };
 CHECK_SIZEOF(CFlyingPirate, 0xBC0)
 
