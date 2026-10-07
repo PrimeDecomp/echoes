@@ -136,15 +136,18 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mOrigDamageInfo.SetRadius(mRadius);
 
     if (mFlags & kF_CreationSound) {
-      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0x1fda, 0x25aa), GetTranslation(),
-                              GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
+      static const ushort skCreationSfx[2] = {0x1fda, 0x25aa};
+      CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(skCreationSfx[0], skCreationSfx[1]),
+                              GetTranslation(), GetCurrentAreaId().Value(), true, false,
+                              CSfxManager::kMedPriority);
       mgr.InformListeners(GetTranslation(), kLNT_BombExplode);
     }
     if (!mParticleGen.null() && mParticleGen->SystemHasLight()) {
       mLightId = mgr.AllocateUniqueId();
+      const CAssetId sourceId = mSourceId;
       mgr.AddObject(rs_new CGameLight(mLightId, GetCurrentAreaId(), GetActive(), rstl::string_l(""),
                                       GetTransform(), GetUniqueId(), mParticleGen->GetLight(),
-                                      mSourceId, 1, 0.f));
+                                      sourceId, 1, 0.f));
     }
     break;
   case kSM_Delete:
@@ -164,7 +167,11 @@ void CBlackHole::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 
 void CBlackHole::UpdateRadius() {
   if (!mParticleGen.null()) {
+    float radius = 0.f;
     const CElementGen::CAdvancedValues* data = mParticleGen->ParticleAdditionalData(0);
-    mRadius = data ? rstl::max_val(0.f, data->mValues[0]) : 0.f;
+    if (data) {
+      radius = rstl::max_val(0.f, data->mValues[0]);
+    }
+    mRadius = radius;
   }
 }
