@@ -41,13 +41,14 @@ CScriptColorModulate::CScriptColorModulate(
 TUniqueId CScriptColorModulate::FadeInHelper(CStateManager& mgr, TUniqueId obj, float fadeTime) {
   const CEntity* entity = mgr.GetObjectById(obj);
   const TAreaId area = entity ? entity->GetCurrentAreaId() : mgr.GetNextAreaId();
+  const rstl::string name;
   const CActor* actor = TCastToConstPtr< CActor >(entity);
   const CModelFlags flags = actor ? actor->GetModelFlags() : CModelFlags::Normal();
   const uint depthFlags = flags.GetOtherFlags();
   const TUniqueId uid = mgr.AllocateUniqueId();
   CScriptColorModulate* mod = rs_new CScriptColorModulate(
-      uid, rstl::string(), CEntityInfo(area, NullConnectionList, true), CColor(1.f, 1.f, 1.f, 0.f),
-      CColor::White(), kBM_Alpha, fadeTime, 0.f, false, true,
+      uid, name, CEntityInfo(area, NullConnectionList, true), CColor(1.f, 1.f, 1.f, 0.f),
+      CColor(1.f, 1.f, 1.f, 1.f), kBM_Alpha, fadeTime, 0.f, false, true,
       (depthFlags & CModelFlags::kF_DepthCompare) != 0,
       (depthFlags & CModelFlags::kF_DepthUpdate) != 0,
       (depthFlags & CModelFlags::kF_DepthGreater) != 0, true, true, false, false, false,
@@ -63,12 +64,13 @@ TUniqueId CScriptColorModulate::FadeInHelper(CStateManager& mgr, TUniqueId obj, 
 TUniqueId CScriptColorModulate::FadeOutHelper(CStateManager& mgr, TUniqueId obj, float fadeTime) {
   const CEntity* entity = mgr.GetObjectById(obj);
   const TAreaId area = entity ? entity->GetCurrentAreaId() : mgr.GetNextAreaId();
+  const rstl::string name;
   const CActor* actor = TCastToConstPtr< CActor >(entity);
   const CModelFlags flags = actor ? actor->GetModelFlags() : CModelFlags::Normal();
   const uint depthFlags = flags.GetOtherFlags();
   const TUniqueId uid = mgr.AllocateUniqueId();
   CScriptColorModulate* mod = rs_new CScriptColorModulate(
-      uid, rstl::string(), CEntityInfo(area, NullConnectionList, true), CColor::White(),
+      uid, name, CEntityInfo(area, NullConnectionList, true), CColor(1.f, 1.f, 1.f, 1.f),
       CColor(1.f, 1.f, 1.f, 0.f), kBM_Alpha, fadeTime, 0.f, false, true,
       (depthFlags & CModelFlags::kF_DepthCompare) != 0,
       (depthFlags & CModelFlags::kF_DepthUpdate) != 0,
@@ -105,19 +107,19 @@ void CScriptColorModulate::SetTargetFlags(CStateManager& mgr, const CModelFlags&
 
 void CScriptColorModulate::End(CStateManager& mgr) {
   bool done = false;
-  if (mControlSpline.GetKnots().empty()) {
+  if (!mControlSpline.GetKnots().empty()) {
+    if (mLoopForever) {
+      mCurTime -= mControlSpline.GetMaxTime();
+      return;
+    }
+    done = true;
+  } else {
     if (mDoReverse && !mReversing) {
       mReversing = true;
       mFadeState = mFadeState == kFS_AtoB ? kFS_BtoA : kFS_AtoB;
     } else {
       done = true;
     }
-  } else {
-    if (mLoopForever) {
-      mCurTime -= mControlSpline.GetMaxTime();
-      return;
-    }
-    done = true;
   }
   mCurTime = 0.f;
   if (!done) {
@@ -128,8 +130,7 @@ void CScriptColorModulate::End(CStateManager& mgr) {
   if (mResetTargetWhenDone) {
     CModelFlags flags = CModelFlags::Normal().DepthCompareUpdate(mDepthCompare, mDepthUpdate);
     if (mDepthBackwards) {
-      flags = CModelFlags(flags, flags.GetOtherFlags() | CModelFlags::kF_DepthGreater |
-                                     CModelFlags::kF_Unknown200);
+      flags = flags.DepthBackwards();
     }
     SetTargetFlags(mgr, flags);
   }
@@ -201,31 +202,31 @@ void CScriptColorModulate::Think(float dt, CStateManager& mgr) {
   if (mUpdateTime && !mExternalTime) {
     mCurTime += dt;
   }
-  if (!mControlSpline.GetKnots().empty()) {
+  if (mControlSpline.GetKnots().empty()) {
+    switch (mFadeState) {
+    case kFS_AtoB: {
+      const float t = close_enough(mTimeA2B, 0.f) ? 1.f : rstl::min_val(1.f, mCurTime / mTimeA2B);
+      SetTargetFlags(mgr, CalculateFlags(CColor::Lerp(mColorA, mColorB, t)));
+      if (mCurTime > mTimeA2B) {
+        End(mgr);
+      }
+      break;
+    }
+    case kFS_BtoA: {
+      const float t = close_enough(mTimeB2A, 0.f) ? 1.f : rstl::min_val(1.f, mCurTime / mTimeB2A);
+      SetTargetFlags(mgr, CalculateFlags(CColor::Lerp(mColorB, mColorA, t)));
+      if (mCurTime > mTimeB2A) {
+        End(mgr);
+      }
+      break;
+    }
+    }
+  } else {
     const CColor color = CColor::Lerp(mColorA, mColorB, mControlSpline.EvaluateAt(mCurTime));
     SetTargetFlags(mgr, CalculateFlags(color));
     if (mCurTime >= mControlSpline.GetMaxTime()) {
       End(mgr);
     }
-    return;
-  }
-  switch (mFadeState) {
-  case kFS_AtoB: {
-    const float t = close_enough(mTimeA2B, 0.f) ? 1.f : rstl::min_val(1.f, mCurTime / mTimeA2B);
-    SetTargetFlags(mgr, CalculateFlags(CColor::Lerp(mColorA, mColorB, t)));
-    if (mCurTime > mTimeA2B) {
-      End(mgr);
-    }
-    break;
-  }
-  case kFS_BtoA: {
-    const float t = close_enough(mTimeB2A, 0.f) ? 1.f : rstl::min_val(1.f, mCurTime / mTimeB2A);
-    SetTargetFlags(mgr, CalculateFlags(CColor::Lerp(mColorB, mColorA, t)));
-    if (mCurTime > mTimeB2A) {
-      End(mgr);
-    }
-    break;
-  }
   }
 }
 
@@ -236,27 +237,47 @@ void CScriptColorModulate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
     return;
   }
   switch (message) {
-  case kSM_Increment:
+  case kSM_Increment: {
+    CopyTargetColor(mgr);
+    if (mReversing) {
+      mFadeState = mFadeState == kFS_AtoB ? kFS_BtoA : kFS_AtoB;
+      mReversing = false;
+    } else {
+      if (mEnable) {
+        if (mFadeState == kFS_AtoB) {
+          mCurTime = 0.f;
+        } else {
+          mCurTime = mTimeA2B - mTimeA2B * (mCurTime / mTimeB2A);
+        }
+      } else {
+        SetTargetFlags(mgr, CalculateFlags(mColorA));
+      }
+      mEnable = true;
+      mFadeState = kFS_AtoB;
+    }
+    if ((mFadeState == kFS_AtoB && mTimeA2B == 0.f) ||
+        (mFadeState == kFS_BtoA && mTimeB2A == 0.f)) {
+      Think(0.f, mgr);
+    }
+    break;
+  }
   case kSM_Decrement: {
     CopyTargetColor(mgr);
     if (mReversing) {
       mFadeState = mFadeState == kFS_AtoB ? kFS_BtoA : kFS_AtoB;
       mReversing = false;
     } else {
-      const bool forward = message == kSM_Increment;
       if (mEnable) {
         if (mFadeState == kFS_AtoB) {
           mCurTime = 0.f;
-        } else if (forward) {
-          mCurTime = mTimeA2B - mTimeA2B * (mCurTime / mTimeB2A);
         } else {
           mCurTime = mTimeB2A - mTimeB2A * (mCurTime / mTimeA2B);
         }
       } else {
-        SetTargetFlags(mgr, CalculateFlags(forward ? mColorA : mColorB));
+        SetTargetFlags(mgr, CalculateFlags(mColorB));
       }
       mEnable = true;
-      mFadeState = forward ? kFS_AtoB : kFS_BtoA;
+      mFadeState = kFS_BtoA;
     }
     if ((mFadeState == kFS_AtoB && mTimeA2B == 0.f) ||
         (mFadeState == kFS_BtoA && mTimeB2A == 0.f)) {
@@ -287,11 +308,14 @@ void CScriptColorModulate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
 // Guessed name
 void CScriptColorModulate::SetExternalTime(float time) {
   if (mExternalTime) {
-    if (mControlSpline.GetKnots().empty()) {
-      const float duration = mFadeState == kFS_BtoA ? mTimeB2A : mTimeA2B;
-      mCurTime = fmod(time, duration);
-    } else {
+    if (!mControlSpline.GetKnots().empty()) {
       mCurTime = time;
+    } else {
+      float duration = mTimeA2B;
+      if (mFadeState == kFS_BtoA) {
+        duration = mTimeB2A;
+      }
+      mCurTime = fmod(time, duration);
     }
   }
 }
