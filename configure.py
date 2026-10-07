@@ -711,7 +711,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CMFGameLoader.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CAnnihilatorProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/CLineOfSightTracker.cpp"),
-            Object(NonMatching, "MetroidPrime/CRuleSetEvaluator.cpp"),
+            Object(MatchingFor("G2MP01"), "MetroidPrime/CRuleSetEvaluator.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRuleSet.cpp"),
             Object(NonMatching, "MetroidPrime/CSurfaceAlignmentHelper.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CIngSpotPathFindNavigation.cpp"),
@@ -906,7 +906,7 @@ config.libs = [
             Object(MatchingFor("G2ME01", "G2MP01"), "Collision/CMaterialList.cpp"),
             Object(NonMatching, "Collision/CollisionUtil.cpp"),
             Object(NonMatching, "Collision/CCollidableSphere.cpp"),
-            Object(NonMatching, "Collision/CMaterialFilter.cpp"),
+            Object(MatchingFor("G2MP01"), "Collision/CMaterialFilter.cpp"),
             Object(NonMatching, "Collision/COBBox.cpp"),
             Object(MatchingFor("G2ME01"), "Collision/CMRay.cpp"),
             Object(NonMatching, "Collision/CSpatialPrimitive.cpp"),
@@ -987,7 +987,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "Kyoto/Animation/CHierarchyPoseBuilder.cpp"),
             Object(NonMatching, "Kyoto/Animation/CInt32POINode.cpp"),
             Object(
-                MatchingFor("G2ME01"),
+                MatchingFor("G2ME01", "G2MP01"),
                 "Kyoto/Animation/CParticlePOINode.cpp",
                 # The target inlines the nine-argument constructor into CopyNodeMinusStartTime.
                 extra_cflags=['-pragma "inline_max_size(150)"'],

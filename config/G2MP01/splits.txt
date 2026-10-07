@@ -939,6 +939,7 @@ MetroidPrime/Player/CPlayerStuckTracker.cpp:
 MetroidPrime/CSlideShow.cpp:
 	.text       start:0x8018C7A8 end:0x80191AEC
 	.ctors      start:0x803A5918 end:0x803A591C
+	.sdata2     start:0x8041DD68 end:0x8041DDB0
 
 MetroidPrime/CProjectedShadow.cpp:
 	.text       start:0x80191AEC end:0x801929FC
@@ -1111,6 +1112,7 @@ MetroidPrime/Player/CGrappleArm.cpp:
 
 MetroidPrime/Player/CFidget.cpp:
 	.text       start:0x801C6E54 end:0x801C7124
+	.sdata2     start:0x8041E3B8 end:0x8041E3E0
 
 MetroidPrime/Player/CPlayerGun.cpp:
 	.text       start:0x801C7124 end:0x801D3240
@@ -1127,6 +1129,7 @@ MetroidPrime/Weapons/CAnnihilatorBeam.cpp:
 
 MetroidPrime/Weapons/CPowerBeam.cpp:
 	.text       start:0x801D52FC end:0x801D5FA4
+	.sdata2     start:0x8041E538 end:0x8041E548
 
 MetroidPrime/Weapons/CAuxWeapon.cpp:
 	.text       start:0x801D5FA4 end:0x801D6F10
@@ -1145,6 +1148,7 @@ MetroidPrime/Weapons/CLightBeam.cpp:
 
 MetroidPrime/Weapons/CGunWeapon.cpp:
 	.text       start:0x801D8588 end:0x801DC4EC
+	.sdata2     start:0x8041E5E0 end:0x8041E5F8
 
 MetroidPrime/Weapons/GunController/CGunController.cpp:
 	.text       start:0x801DC4EC end:0x801DCF9C
@@ -1161,6 +1165,9 @@ MetroidPrime/Weapons/GunController/CGSFidget.cpp:
 MetroidPrime/Weapons/GunController/CGSFreeLook.cpp:
 	.text       start:0x801DD694 end:0x801DDA30
 	.sdata2     start:0x8041E620 end:0x8041E630
+
+MetroidPrime/Player/GunResNames.cpp:
+	.sdata2     start:0x8041E650 end:0x8041E6B8
 
 MetroidPrime/Player/CPlayerGunBase.cpp:
 	.text       start:0x801DDA30 end:0x801DEA80
@@ -1979,6 +1986,7 @@ Kyoto/Animation/CInt32POINode.cpp:
 
 Kyoto/Animation/CParticlePOINode.cpp:
 	.text       start:0x802B1D88 end:0x802B1ED8
+	.sdata2     start:0x8041F6E0 end:0x8041F6F0
 
 Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1ED8 end:0x802B2118
