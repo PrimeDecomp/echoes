@@ -120,7 +120,7 @@ void CMainFlow::SetGameState(EClientFlowStates state, CArchitectureQueue& queue)
         gpGameState->SetGameMode(rs_new CGMSinglePlayer());
         gpGameState->HintOptions().EnsureHintNextTime();
       } else {
-        fn_80143E88();
+        SelectInitialWorld();
       }
     }
     break;

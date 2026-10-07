@@ -32,7 +32,8 @@ private:
   uchar* mCurrent;
 };
 
-extern "C" void fn_80141594(int* out, CPFMemoryStream* stream) { *out = stream->ReadInt32(); }
+// Guessed name; out-of-line global in the original, reads one word through the stream cursor.
+void ReadStreamInt32(int* out, CPFMemoryStream* stream) { *out = stream->ReadInt32(); }
 
 uint CPFAreaOctree::GetChildIndex(const CVector3f& point) const {
   uint index = 0;
@@ -73,7 +74,7 @@ inline void CPFAreaOctree::GetRegionListList(
 }
 
 CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
-: mBestPointDistSq(3.4028235e38f)
+: mBestPointDistSq(FLT_MAX)
 , mClosestPoint(CVector3f::Zero())
 , mCachedRegionList(nullptr)
 , mCachedRegionListPoint(CVector3f::Zero())
@@ -85,7 +86,7 @@ CPFArea::CPFArea(const rstl::auto_ptr< uchar >& data, int size)
   int maxRegionNodes;
   CPFMemoryStream stream(mData.get(), size);
   int version;
-  fn_80141594(&version, &stream);
+  ReadStreamInt32(&version, &stream);
   mVersion = version;
 
   int numNodes = stream.ReadInt32();
@@ -244,7 +245,7 @@ CPFRegion* CPFArea::FindClosestRegion(const CVector3f& point, uint flags, uint i
 CVector3f CPFArea::FindClosestReachablePoint(rstl::reserved_vector< CPFRegion*, 8 >& regions,
                                              const CVector3f& point, uint flags, uint indexMask) {
   CVector3f result = CVector3f::Zero();
-  float closestDistanceSq = 3.4028235e38f;
+  float closestDistanceSq = FLT_MAX;
   for (int i = 0; i < GetNumRegions(); ++i) {
     CPFRegion& region = GetRegion(i);
     if ((region.GetFlags() & 0xff & flags) && ((region.GetFlags() >> 16) & 0xff & indexMask) &&

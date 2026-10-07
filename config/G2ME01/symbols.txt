@@ -5313,7 +5313,7 @@ uninitialized_fill_n<P13CPFRegionData,13CPFRegionData>__4rstlFP13CPFRegionDataiR
 construct<13CPFRegionData>__4rstlFPvRC13CPFRegionData = .text:0x801414E0; // type:function size:0x20
 construct__Q24rstl38construction_policy<13CPFRegionData,0>FPvRC13CPFRegionData = .text:0x80141500; // type:function size:0x28
 __ct__13CPFRegionDataFRC13CPFRegionData = .text:0x80141528; // type:function size:0x6C scope:weak
-fn_80141594 = .text:0x80141594; // type:function size:0x18
+ReadStreamInt32__FPiP15CPFMemoryStream = .text:0x80141594; // type:function size:0x18
 Fixup__13CPFAreaOctreeFR7CPFArea = .text:0x801415AC; // type:function size:0xF0
 GetRegionListList__13CPFAreaOctreeFRQ24rstl61reserved_vector<PQ24rstl31prereserved_vector<P9CPFRegion>,32>RC9CVector3ff = .text:0x8014169C; // type:function size:0xCC
 IsPointInsidePaddedAABox__13CPFAreaOctreeCFRC9CVector3ff = .text:0x80141768; // type:function size:0x94
@@ -5392,7 +5392,7 @@ __dt__17CFrontEndGameModeFv = .text:0x80143B94; // type:function size:0xB4
 __ct__17CFrontEndGameModeFRC17CFrontEndGameMode = .text:0x80143C48; // type:function size:0x8C
 __ct__Q24rstl40reserved_vector<19CFrontEndPlayerData,4>FRCQ24rstl40reserved_vector<19CFrontEndPlayerData,4> = .text:0x80143CD4; // type:function size:0x50
 ConfigureGameModeLayers__Fv = .text:0x80143D24; // type:function size:0x164
-fn_80143E88__Fv = .text:0x80143E88; // type:function size:0x238 align:4
+SelectInitialWorld__Fv = .text:0x80143E88; // type:function size:0x238 align:4
 InitializeMemoryStates__10CGameStateFv = .text:0x801440C0; // type:function size:0x80
 __ct__10CGameStateFR16CBitStreamReader = .text:0x80144140; // type:function size:0x684 align:4
 __as__12CHintOptionsFRC12CHintOptions = .text:0x801447C4; // type:function size:0x54 scope:weak

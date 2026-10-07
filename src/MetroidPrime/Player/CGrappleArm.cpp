@@ -17,6 +17,7 @@
 #include "MetroidPrime/CRumbleManager.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/GunResNames.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayer.hpp"
 #include "MetroidPrime/Weapons/GunController/CGunController.hpp"
@@ -24,15 +25,6 @@
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
 
 #include <string.h>
-
-// Asset-name pointers defined in another TU (unsplit .sdata2).
-extern "C" const char* const lbl_8041D360; // "SamusArmFSM"
-extern "C" const char* const lbl_8041D37C; // "grappleArm"
-extern "C" const char* const lbl_8041D380; // "grappleSegment"
-extern "C" const char* const lbl_8041D384; // "grappleClaw"
-extern "C" const char* const lbl_8041D388; // "grappleHit"
-extern "C" const char* const lbl_8041D38C; // "grappleMuzzle"
-extern "C" const char* const lbl_8041D390; // "grappleSwoosh"
 
 static const TStateMachineState< CGrappleArm >::STriggerFunction kTriggerFunctions[] = {
     {"HoldGun", &CGrappleArm::HoldGun},
@@ -52,8 +44,6 @@ static const TStateMachineState< CGrappleArm >::SStateFunction kStateFunctions[]
 
 static const char* const kGrappleLocator = "grapLocator_SDK";
 static const char* const kBeamLocators[] = {"LGBeam", "LGBeam", "LGBeamLight"};
-// Defined in another TU (unsplit .rodata).
-extern const char* const kGrappleGear[];
 static const rstl::pair< const char*, const char* > kSuitModels[] = {
     rstl::pair< const char*, const char* >("", ""),
     rstl::pair< const char*, const char* >("LeftArm_Dark_CMDL", "LeftArm_Dark_CSKR"),
@@ -68,23 +58,23 @@ CGrappleArm::CGrappleArm(const CVector3f& scale, TUniqueId playerId, bool multip
 : CEntity(kInvalidUniqueId, CEntity::NullEntityInfo, rstl::string_l("SamusArm"), 0)
 , mCurrentSuit(CPlayerState::kPS_Varia)
 , mLoadedSuit(CPlayerState::kPS_Invalid)
-, mArmModel(
-      CModelData(CAnimRes(NWeaponTypes::get_asset_id_from_name(lbl_8041D37C), 5, scale, -1, false)))
+, mArmModel(CModelData(
+      CAnimRes(NWeaponTypes::get_asset_id_from_name(NWeaponRes::kGrappleArm), 5, scale, -1, false)))
 , mGrappleGearModel(CModelData::CModelDataNull())
-, mArmCharacter(gpSimplePool->GetObj(lbl_8041D37C))
+, mArmCharacter(gpSimplePool->GetObj(NWeaponRes::kGrappleArm))
 , mBeamId(CPlayerState::kBI_Power)
-, mStateMachineToken(gpSimplePool->GetObj(lbl_8041D360))
+, mStateMachineToken(gpSimplePool->GetObj(NWeaponRes::kSamusArmFSM))
 , mTransform(CTransform4f::Identity())
 , mAuxTransform(CTransform4f::Identity())
 , mGrappleLocatorXf(CTransform4f::Identity())
 , mScale(scale)
 , mGrapplePointPosition(CVector3f::Zero())
 , mGunController(nullptr)
-, mGrappleSegment(gpSimplePool->GetObj(lbl_8041D380))
-, mGrappleClaw(gpSimplePool->GetObj(lbl_8041D384))
-, mGrappleHitDesc(gpSimplePool->GetObj(lbl_8041D388))
-, mGrappleMuzzle(gpSimplePool->GetObj(lbl_8041D38C))
-, mGrappleSwoosh(gpSimplePool->GetObj(lbl_8041D390))
+, mGrappleSegment(gpSimplePool->GetObj(NWeaponRes::kGrappleSegment))
+, mGrappleClaw(gpSimplePool->GetObj(NWeaponRes::kGrappleClaw))
+, mGrappleHitDesc(gpSimplePool->GetObj(NWeaponRes::kGrappleHit))
+, mGrappleMuzzle(gpSimplePool->GetObj(NWeaponRes::kGrappleMuzzle))
+, mGrappleSwoosh(gpSimplePool->GetObj(NWeaponRes::kGrappleSwoosh))
 , mSegmentGenerator(rs_new CElementGen(mGrappleSegment))
 , mClawGenerator(rs_new CElementGen(mGrappleClaw))
 , mHitGenerator(rs_new CElementGen(mGrappleHitDesc))
@@ -171,8 +161,8 @@ void CGrappleArm::BuildBeamDependencyList(bool multiplayer) {
 
   for (int i = 0; i < 4; ++i) {
     int charIdx = multiplayer ? 5 : i + 1;
-    CModelData model(CAnimRes(NWeaponTypes::get_asset_id_from_name(lbl_8041D37C), charIdx,
-                              CVector3f::One(), 0, true));
+    CModelData model(CAnimRes(NWeaponTypes::get_asset_id_from_name(NWeaponRes::kGrappleArm),
+                              charIdx, CVector3f::One(), 0, true));
     rstl::vector< SObjectTag > tags;
     model.GetAnimationData()->CollectAnimationResources(tags);
     rstl::vector< CToken > tokens;
@@ -685,9 +675,9 @@ void CGrappleArm::UpdateGrappleModel(CStateManager& mgr, CPlayerState::EPlayerSu
   if ((suit != mLoadedSuit && (force || hasGrapple)) ||
       (hasGrapple && mGrappleGearModel.IsNull() && suit != CPlayerState::kPS_Light)) {
     mLoadedSuit = suit;
-    if (strlen(kGrappleGear[mLoadedSuit]) != 0) {
-      mGrappleGearModel = CModelData(
-          CStaticRes(NWeaponTypes::get_asset_id_from_name(kGrappleGear[mLoadedSuit]), mScale));
+    if (strlen(NWeaponRes::kGrappleGear[mLoadedSuit]) != 0) {
+      mGrappleGearModel = CModelData(CStaticRes(
+          NWeaponTypes::get_asset_id_from_name(NWeaponRes::kGrappleGear[mLoadedSuit]), mScale));
     } else {
       mGrappleGearModel = CModelData::CModelDataNull();
     }

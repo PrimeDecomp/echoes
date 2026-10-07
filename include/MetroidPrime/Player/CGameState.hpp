@@ -206,6 +206,6 @@ extern CGameState* gpGameState;
 // Unidentified game-flow helpers in the CGameState text range.
 void StartGameFromFrontEnd();   // Guessed name
 void ConfigureGameModeLayers(); // Guessed name
-void fn_80143E88();
+void SelectInitialWorld();      // Guessed name
 
 #endif // _CGAMESTATE
