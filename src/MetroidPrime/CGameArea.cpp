@@ -240,8 +240,9 @@ void CGameArea::AddLayerTokens(int layer, rstl::vector< CToken >& tokens) {
   }
 
   const int first = mLayerDependencyOffsets[layer];
-  const int last = layer + 1 < mLayerDependencyOffsets.size() ? mLayerDependencyOffsets[layer + 1]
-                                                              : mDependencies2.size();
+  const int depCount = mDependencies2.size();
+  const int last =
+      layer + 1 < mLayerDependencyOffsets.size() ? mLayerDependencyOffsets[layer + 1] : depCount;
   for (int i = first; i < last; ++i) {
     const SObjectTag tag(mDependencies2[i].second, mDependencies2[i].first);
     if (tag.type == 'AGSC' && !gpSimplePool->HasObject(SObjectTag(tag))) {
