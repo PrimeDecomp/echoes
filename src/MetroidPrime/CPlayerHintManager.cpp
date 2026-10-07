@@ -24,7 +24,7 @@ bool CPlayerHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool area
 }
 
 void CPlayerHintManager::ClearHint(CStateManager& mgr, bool areaChanged) {
-  ClearCurrentHint(10000);
+  SetCurrentHint(kInvalidUniqueId, 10000);
   mgr.GetPlayer(GetPlayerIndex())->ResetPlayerHintState(mgr);
 }
 

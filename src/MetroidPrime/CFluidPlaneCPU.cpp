@@ -152,13 +152,16 @@ void CFluidPlaneCPU::ClipPolygonToPlane(const rstl::vector< CVector3f >& polygon
                                         const CPlane& plane, rstl::vector< CVector3f >& clipped) {
   for (int i = 0; i < polygon.size(); ++i) {
     const CVector3f& a = polygon[i];
-    const CVector3f& b = polygon[i + 1 < polygon.size() ? i + 1 : 0];
+    const CVector3f& b = polygon[i + 1 >= polygon.size() ? 0 : i + 1];
     const float da = -CVector3f::Dot(a, plane.GetNormal()) + plane.GetConstant();
     const float db = -CVector3f::Dot(b, plane.GetNormal()) + plane.GetConstant();
     if (da >= 0.f && db >= 0.f) {
       clipped.push_back_unsafe(b);
     } else if (!(da < 0.f && db < 0.f)) {
-      clipped.push_back_unsafe(a + (da / (da - db)) * (b - a));
+      const float t = da / (da - db);
+      clipped.push_back_unsafe(CVector3f(t * (b.GetX() - a.GetX()) + a.GetX(),
+                                         t * (b.GetY() - a.GetY()) + a.GetY(),
+                                         t * (b.GetZ() - a.GetZ()) + a.GetZ()));
       if (da < 0.f && db >= 0.f) {
         clipped.push_back_unsafe(b);
       }

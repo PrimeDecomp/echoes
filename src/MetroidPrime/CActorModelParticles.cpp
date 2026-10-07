@@ -901,8 +901,8 @@ void CActorModelParticles::InitializeSystemTypes() {
 }
 
 void CActorModelParticles::AddTypeRef(ESystemTypes type) {
-  mDgrps[type].AddRef();
   const uchar mask = 1 << type;
+  mDgrps[type].AddRef();
   if (!(mLoadedDeps & mask)) {
     mLoadingDeps |= mask;
   }

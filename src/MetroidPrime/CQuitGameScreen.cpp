@@ -112,6 +112,7 @@ void CQuitGameScreen::SetColors() {
   const CColor unselected(uchar(50), uchar(50), uchar(50), uchar(255));
   const int selection = mChoiceTable->GetUserSelection();
   for (int row = 0; row < 2; ++row) {
-    mChoiceTable->GetWorkerWidget(row)->SetColor(row == selection ? selected : unselected);
+    CGuiWidget* widget = mChoiceTable->GetWorkerWidget(row);
+    widget->SetColor(row == selection ? selected : unselected);
   }
 }

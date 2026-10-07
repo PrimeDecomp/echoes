@@ -41,24 +41,28 @@ CSaveGameScreen::EUIType CSaveGameScreen::SelectUIType() const {
   if (state == kS_Ready) {
     return kUIT_SaveReady;
   }
-  switch (error) {
-  case CMemoryCardDriver::kE_CardBroken:
+  if (error == CMemoryCardDriver::kE_CardBroken) {
     return kUIT_NeedsFormatBroken;
-  case CMemoryCardDriver::kE_CardWrongCharacterSet:
-    return kUIT_NeedsFormatEncoding;
-  case CMemoryCardDriver::kE_CardWrongDevice:
-    return kUIT_WrongDevice;
-  case CMemoryCardDriver::kE_CardFull:
-    return kUIT_InsufficientSpaceOKCheck;
-  case CMemoryCardDriver::kE_CardNon8KSectors:
-    return kUIT_IncompatibleCard;
-  case CMemoryCardDriver::kE_FileCorrupted:
-    return kUIT_SaveCorrupt;
-  case CMemoryCardDriver::kE_CardIOError:
-    return kUIT_CardDamaged;
-  default:
-    return kUIT_Empty;
   }
+  if (error == CMemoryCardDriver::kE_CardWrongCharacterSet) {
+    return kUIT_NeedsFormatEncoding;
+  }
+  if (error == CMemoryCardDriver::kE_CardWrongDevice) {
+    return kUIT_WrongDevice;
+  }
+  if (error == CMemoryCardDriver::kE_CardFull) {
+    return kUIT_InsufficientSpaceOKCheck;
+  }
+  if (error == CMemoryCardDriver::kE_CardNon8KSectors) {
+    return kUIT_IncompatibleCard;
+  }
+  if (error == CMemoryCardDriver::kE_FileCorrupted) {
+    return kUIT_SaveCorrupt;
+  }
+  if (error == CMemoryCardDriver::kE_CardIOError) {
+    return kUIT_CardDamaged;
+  }
+  return kUIT_Empty;
 }
 
 void CSaveGameScreen::SetUIText() {
@@ -216,7 +220,7 @@ CSaveGameScreen::CSaveGameScreen(ESaveContext saveContext, u64 cardSerial)
     TToken< CWorldSaveGameInfo > token =
         gpSimplePool->GetObj(SObjectTag('SAVW', it->second.GetSaveWorldAssetId()));
     token.Lock();
-    mSaveWorlds.push_back(token);
+    mSaveWorlds.push_back_unsafe(token);
   }
 }
 
@@ -533,6 +537,7 @@ void CSaveGameScreen::DoSelectionChange(CGuiTableGroup* caller, int oldSelection
 }
 
 void CSaveGameScreen::SetUIColors() {
-  mTablegroupChoices->SetColors(CColor(0xffffffff),
-                                CColor(uchar(160), uchar(160), uchar(160), uchar(200)));
+  const CColor selected(0xffffffff);
+  const CColor unselected(uchar(160), uchar(160), uchar(160), uchar(200));
+  mTablegroupChoices->SetColors(selected, unselected);
 }

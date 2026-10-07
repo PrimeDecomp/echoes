@@ -6,9 +6,6 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "rstl/math.hpp"
 
-// Native polynomial solver used by the accelerated interception path.
-extern "C" int fn_802CB918(const float* coefficients, float* roots);
-
 CSteeringBehaviors::CSteeringBehaviors() : x0_(M_PIF / 2.f) {}
 
 CVector3f CSteeringBehaviors::Flee(const CPhysicsActor& actor, const CVector3f& position) const {
@@ -19,8 +16,7 @@ CVector3f CSteeringBehaviors::Flee(const CPhysicsActor& actor, const CVector3f& 
   return actor.GetTransform().GetForward();
 }
 
-CVector3f CSteeringBehaviors::Seek(const CPhysicsActor& actor,
-                                   const CVector3f& destination) const {
+CVector3f CSteeringBehaviors::Seek(const CPhysicsActor& actor, const CVector3f& destination) const {
   const CVector3f delta = destination - actor.GetTranslation();
   if (delta.CanBeNormalized()) {
     return delta.AsNormalized();
@@ -31,14 +27,13 @@ CVector3f CSteeringBehaviors::Seek(const CPhysicsActor& actor,
 CVector3f CSteeringBehaviors::Arrival(const CPhysicsActor& actor, const CVector3f& destination,
                                       float dampingRadius) const {
   const CVector3f delta = destination - actor.GetTranslation();
-  if (!delta.CanBeNormalized()) {
-    return CVector3f::Zero();
+  if (delta.CanBeNormalized()) {
+    const float distanceSquared = delta.MagSquared();
+    const float radiusSquared = dampingRadius * dampingRadius;
+    const float weight = distanceSquared < radiusSquared ? distanceSquared / radiusSquared : 1.f;
+    return weight * delta.AsNormalized();
   }
-
-  const float distanceSquared = delta.MagSquared();
-  const float radiusSquared = dampingRadius * dampingRadius;
-  const float weight = distanceSquared < radiusSquared ? distanceSquared / radiusSquared : 1.f;
-  return weight * delta.AsNormalized();
+  return CVector3f::Zero();
 }
 
 CVector3f CSteeringBehaviors::Separation(const CPhysicsActor& actor, const CVector3f& position,
@@ -46,13 +41,13 @@ CVector3f CSteeringBehaviors::Separation(const CPhysicsActor& actor, const CVect
   const CVector3f delta = actor.GetTranslation() - position;
   const float distanceSquared = delta.MagSquared();
   const float radiusSquared = separation * separation;
+  CVector3f result = CVector3f::Zero();
   if (distanceSquared < radiusSquared) {
-    if (delta.CanBeNormalized()) {
-      return delta.AsNormalized() * (1.f - distanceSquared / radiusSquared);
-    }
-    return actor.GetTransform().GetForward();
+    const float weight = 1.f - distanceSquared / radiusSquared;
+    result =
+        delta.CanBeNormalized() ? weight * delta.AsNormalized() : actor.GetTransform().GetForward();
   }
-  return CVector3f::Zero();
+  return result;
 }
 
 CVector3f CSteeringBehaviors::Alignment(const CPhysicsActor& actor,
@@ -69,38 +64,38 @@ CVector3f CSteeringBehaviors::Alignment(const CPhysicsActor& actor,
   }
 
   const float angle = CVector3f::GetAngleDiff(actor.GetTransform().GetForward(), direction);
-  return direction * (angle / M_PIF);
+  direction *= angle / M_PIF;
+  return direction;
 }
 
 CVector3f CSteeringBehaviors::Cohesion(const CPhysicsActor& actor,
                                        rstl::reserved_vector< TUniqueId, 1024 >& list,
                                        float dampingRadius, const CStateManager& mgr) const {
   CVector3f destination = CVector3f::Zero();
-  if (list.empty()) {
-    return destination;
-  }
-
-  for (int i = 0; i < list.size(); ++i) {
-    if (const CActor* neighbor = static_cast< const CActor* >(mgr.GetObjectById(list[i]))) {
-      destination += neighbor->GetTranslation();
+  if (!list.empty()) {
+    for (int i = 0; i < list.size(); ++i) {
+      if (const CActor* neighbor = static_cast< const CActor* >(mgr.GetObjectById(list[i]))) {
+        destination += neighbor->GetTranslation();
+      }
     }
+    destination *= 1.f / list.size();
+    return Arrival(actor, destination, dampingRadius);
   }
-  destination *= 1.f / list.size();
-  return Arrival(actor, destination, dampingRadius);
+  return destination;
 }
 
 CVector2f CSteeringBehaviors::Separation2D(const CPhysicsActor& actor, const CVector2f& position,
                                            float separation) const {
+  CVector2f result = CVector2f::Zero();
   const CVector2f delta = actor.GetTranslation().ToVec2f() - position;
   const float distanceSquared = delta.MagSquared();
   const float radiusSquared = separation * separation;
   if (distanceSquared < radiusSquared) {
-    if (distanceSquared > FLT_EPSILON) {
-      return delta.AsNormalized() * (1.f - distanceSquared / radiusSquared);
-    }
-    return actor.GetTransform().GetForward().ToVec2f();
+    const float weight = 1.f - distanceSquared / radiusSquared;
+    result = distanceSquared > FLT_EPSILON ? delta.AsNormalized() * weight
+                                           : actor.GetTransform().GetForward().ToVec2f();
   }
-  return CVector2f::Zero();
+  return result;
 }
 
 bool CSteeringBehaviors::ProjectLinearIntersection(const CVector3f& origin, float speed,
@@ -132,9 +127,9 @@ bool CSteeringBehaviors::ProjectLinearIntersection(const CVector3f& origin, floa
   coefficients[3] = CVector3f::Dot(velocity, acceleration);
   coefficients[4] = 0.25f * acceleration.MagSquared();
 
-  float roots[4];
-  const int count = fn_802CB918(coefficients, roots);
   bool found = false;
+  float roots[4];
+  const uint count = CMath::SolveQuartic(coefficients, roots);
   for (int i = 0; i < count; ++i) {
     const float time = roots[i];
     if (time > 0.f) {
@@ -142,7 +137,8 @@ bool CSteeringBehaviors::ProjectLinearIntersection(const CVector3f& origin, floa
       intersection = position + velocity * time + 0.5f * time * time * acceleration;
     }
   }
-  return found;
+  const bool result = found;
+  return result;
 }
 
 bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, float speed, float dt,
@@ -152,14 +148,14 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
                                                     CVector3f& intersection) {
   if (speed > 0.f) {
     if (velocity.CanBeNormalized()) {
-      CVector3f radial((position - orbitPoint).DropZ());
+      CVector3f radial((position - orbitPoint).ToVec2f(), 0.f);
       if (radial.CanBeNormalized()) {
         CVector3f currentPosition = position;
         CVector3f currentVelocity = velocity;
         CVector3f delta = currentPosition - origin;
         float travelTime = delta.Magnitude() / speed;
         float elapsed = 0.f;
-        float previousRemaining = FLT_MAX;
+        float previousRemaining = 3.4028235e38f;
         float remaining = travelTime - elapsed;
         CVector3f radialUnit = radial.AsNormalized();
         CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
@@ -174,7 +170,7 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
 
           currentPosition += dt * currentVelocity;
           previousRemaining = remaining;
-          radial = (currentPosition - orbitPoint).DropZ();
+          radial = CVector3f((currentPosition - orbitPoint).ToVec2f(), 0.f);
           if (!radial.CanBeNormalized()) {
             break;
           }
@@ -206,14 +202,14 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
                                                     CVector3f& intersection) {
   bool found = false;
   if (speed > 0.f) {
-    CVector3f radial((position - orbitPoint).DropZ());
+    CVector3f radial((position - orbitPoint).ToVec2f(), 0.f);
     if (velocity.CanBeNormalized() && radial.CanBeNormalized()) {
       CVector3f currentPosition = position;
       CVector3f currentVelocity = velocity;
       CVector3f delta = currentPosition - origin;
       float travelTime = delta.Magnitude() / speed;
       float elapsed = 0.f;
-      float previousRemaining = FLT_MAX;
+      float previousRemaining = 3.4028235e38f;
       float remaining = travelTime - elapsed;
       CVector3f radialUnit = radial.AsNormalized();
       CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());
@@ -233,7 +229,7 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
         travelTime = delta.Magnitude() / speed;
         elapsed += dt;
         remaining = travelTime - elapsed;
-        radial = (currentPosition - orbitPoint).DropZ();
+        radial = CVector3f((currentPosition - orbitPoint).ToVec2f(), 0.f);
         if (!radial.CanBeNormalized()) {
           break;
         }
@@ -249,7 +245,8 @@ bool CSteeringBehaviors::ProjectOrbitalIntersection(const CVector3f& origin, flo
     }
   }
 
-  return found;
+  const bool result = found;
+  return result;
 }
 
 CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
@@ -258,7 +255,7 @@ CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
                                                      float preThinkDt) {
   CVector3f currentPosition = position;
   if (velocity.CanBeNormalized()) {
-    CVector3f radial((position - orbitPoint).DropZ());
+    CVector3f radial((position - orbitPoint).ToVec2f(), 0.f);
     if (radial.CanBeNormalized()) {
       CVector3f currentVelocity = velocity;
       float elapsed = 0.f;
@@ -269,7 +266,7 @@ CVector3f CSteeringBehaviors::ProjectOrbitalPosition(const CVector3f& position,
 
       while (elapsed < dt) {
         currentPosition += preThinkDt * currentVelocity;
-        radial = (currentPosition - orbitPoint).DropZ();
+        radial = CVector3f((currentPosition - orbitPoint).ToVec2f(), 0.f);
         if (radial.CanBeNormalized()) {
           radialUnit = radial.AsNormalized();
           CVector3f tangent = CVector3f::Cross(radialUnit, CVector3f::Up());

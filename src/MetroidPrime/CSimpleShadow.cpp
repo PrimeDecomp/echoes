@@ -2,6 +2,7 @@
 
 #include "Collision/CMaterialFilter.hpp"
 #include "Collision/CRayCastResult.hpp"
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Math/CAABox.hpp"
@@ -80,7 +81,7 @@ void CSimpleShadow::Render(const CTexture* tex) const {
   CGraphics::SetBlendMode(kBM_Blend, kBF_SrcAlpha, kBF_InvSrcAlpha, kLO_Clear);
   const float radius = mRadius * mScale;
   CGraphics::StreamBegin(kP_Quads);
-  CGraphics::StreamColor(CColor(1.f, 1.f, 1.f, mHeightAlpha * mUserAlpha));
+  CGraphics::StreamColor(0xffffff00 + CCast::ToUint8(255.f * (mHeightAlpha * mUserAlpha)));
   CGraphics::StreamTexcoord(0.f, 0.f);
   CGraphics::StreamVertex(CVector3f(-radius, 0.f, -radius));
   CGraphics::StreamTexcoord(0.f, 1.f);
@@ -101,7 +102,7 @@ float CSimpleShadow::GetMaxObjectHeight() const { return mMaxObjHeight; }
 void CSimpleShadow::SetAlwaysCalculateRadius(bool value) { mAlwaysCalculateRadius = value; }
 
 CAABox CSimpleShadow::GetBounds() const {
-  const CVector3f translation = mXf.GetTranslation();
+  const CVector3f& translation = mXf.GetTranslation();
   const float extent = mRadius * mScale;
   return CAABox(translation - CVector3f(extent, extent, extent),
                 translation + CVector3f(extent, extent, extent));

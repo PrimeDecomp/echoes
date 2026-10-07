@@ -1,16 +1,14 @@
 #include "MetroidPrime/CScanTree.hpp"
-#include "Kyoto/Math/CMath.hpp"
-#include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/Player/CPlayerState.hpp"
-#include "rstl/algorithm.hpp"
-#include "Kyoto/Math/CMayaSpline.hpp"
-#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/CDvdRequest.hpp"
 #include "Kyoto/CResFactory.hpp"
-#include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CMayaSpline.hpp"
 #include "Kyoto/Streams/CMemoryInStream.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
+#include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeCategory.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeInventory.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeMenu.hpp"
@@ -23,6 +21,8 @@
 #include "MetroidPrime/ScriptObjects/CScanTreeNode.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeScan.hpp"
 #include "MetroidPrime/ScriptObjects/CScanTreeSlider.hpp"
+#include "MetroidPrime/Tweaks/CTweakGui.hpp"
+#include "rstl/algorithm.hpp"
 
 // Guessed name.
 static const CPlayerState::EItemType kInventorySlotToItemType[] = {
@@ -662,7 +662,7 @@ void CScanTree::RefreshVisibility(CStateManager& mgr) {
     const rstl::rc_ptr< CScanTreeCategory > category(root);
     const int childCount = category->GetChildCount();
     for (int i = 0; i < childCount; i++) {
-      const int index = category->GetChild(i);
+      int index = category->GetChild(i);
       const rstl::rc_ptr< CScanTreeNode > child = mNodes[index];
       if (child->GetNameStringName() == kLogbookCategoryName ||
           child->GetNameStringName() == kSamusGearCategoryName) {
@@ -735,8 +735,7 @@ void CScanTree::InitializeNodePositions(int node) {
       const float planarRatio = CMath::SqrtF(1.f - ratioSquared);
       const float x = branchLength * planarRatio * CMath::FastCosR(angle);
       const float y = branchLength * planarRatio * CMath::FastSinR(angle);
-      const CVector3f position =
-          CVector3f(x, y, height) + category->GetPosition();
+      const CVector3f position = CVector3f(x, y, height) + category->GetPosition();
       mNodes[child]->SetPosition(position);
       mNodes[child]->SetDisplayPosition(position);
     }
@@ -761,9 +760,7 @@ bool CScanTree::PollLoad() {
   return true;
 }
 
-void CScanTree::SelectNode(int node) {
-  SelectNode(node, gpTweakGui->GetLogBookTransitionTime());
-}
+void CScanTree::SelectNode(int node) { SelectNode(node, gpTweakGui->GetLogBookTransitionTime()); }
 
 void CScanTree::SelectNode(int node, float duration) {
   mPreviousNode = mSelectedNode;
@@ -1128,7 +1125,7 @@ CScanTreeSlider* LoadScanTreeSlider(int* id, CInputStream& input) {
   SLdrScanTreeSlider sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrScanTreeSlider.inc"
 
-  return rs_new CScanTreeSlider(*id & 0xffff, sldrThis.editorProperties.transform,
-                                sldrThis.nodeName, sldrThis.stringName,
-                                static_cast< CScanTreeSlider::ESetting >(sldrThis.unknown_0x0261a4e0));
+  return rs_new CScanTreeSlider(
+      *id & 0xffff, sldrThis.editorProperties.transform, sldrThis.nodeName, sldrThis.stringName,
+      static_cast< CScanTreeSlider::ESetting >(sldrThis.unknown_0x0261a4e0));
 }

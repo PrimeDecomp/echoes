@@ -5,20 +5,23 @@
 
 void CAABoxFilter::FilterBoxFloorCollisions(const CCollisionInfoList& in, CCollisionInfoList& out) {
   float minZ = 10000.f;
-  for (const CCollisionInfo* info = in.Begin(); info != in.End(); ++info) {
-    if (info->GetMaterialLeft().HasMaterial(kMT_Wall) && info->GetPoint().GetZ() < minZ) {
-      minZ = info->GetPoint().GetZ();
+  const CCollisionInfo* end = in.End();
+  for (const CCollisionInfo* it = in.Begin(); it != end; ++it) {
+    const CCollisionInfo& info = *it;
+    if (info.GetMaterialLeft().HasMaterial(kMT_Wall) && info.GetPoint().GetZ() < minZ) {
+      minZ = info.GetPoint().GetZ();
     }
   }
 
   CCollisionInfoList temp;
-  for (const CCollisionInfo* info = in.Begin(); info != in.End(); ++info) {
-    if (info->GetMaterialLeft().HasMaterial(kMT_Floor)) {
-      if (info->GetPoint().GetZ() < minZ) {
-        temp.Add(*info);
+  for (const CCollisionInfo* it = in.Begin(); it != in.End(); ++it) {
+    const CCollisionInfo& info = *it;
+    if (info.GetMaterialLeft().HasMaterial(kMT_Floor)) {
+      if (info.GetPoint().GetZ() < minZ) {
+        temp.Add(info);
       }
     } else {
-      temp.Add(*info);
+      temp.Add(info);
     }
   }
   CollisionUtil::AddAverageToFront(temp, out);
