@@ -33,7 +33,8 @@ void AdjustPointHeap(OpenPointIterator first, int length, int hole, PointData* c
     }
     *(first + hole) = *(first + child);
     hole = child;
-    child = 2 * (child + 1);
+    ++child;
+    child *= 2;
   }
   *(first + hole) = point;
 }
@@ -45,7 +46,7 @@ void PopPointHeap(OpenPointIterator first, OpenPointIterator last, SPointCompare
     return;
   }
   if (length == 2) {
-    rstl::swap(*first, *--last);
+    rstl::iter_swap(first, last - 1);
   } else {
     PointData* point = *--last;
     *last = *first;
@@ -141,10 +142,9 @@ CPathFindPointSearch::FindClosestPhysicalPoint(const CVector3f& position, int& p
       }
     }
     if (found) {
-      if (closestDistanceSq < filter.GetMaxDistance() * filter.GetMaxDistance()) {
-        return kCPR_Success;
-      }
-      return kCPR_OutOfRange;
+      return closestDistanceSq < filter.GetMaxDistance() * filter.GetMaxDistance()
+                 ? kCPR_Success
+                 : kCPR_OutOfRange;
     }
   }
   return kCPR_NoPoint;

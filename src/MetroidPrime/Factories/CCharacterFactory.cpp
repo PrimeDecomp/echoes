@@ -68,7 +68,7 @@ CCharacterFactory::CCharacterFactory(CSimplePool& store,
   mSysContext = rstl::ncrc_ptr< CAnimSysContext >(
       rs_new CAnimSysContext(transDB, random, store, animSet.GetEventSets()));
   mAnimMgr = rs_new CAnimationManager(animDB, *mSysContext);
-  mTransMgr = rs_new CTransitionManager(*mSysContext);
+  mTransMgr = rs_new CTransitionManager(*mSysContext.GetPtr());
 
   rstl::vector< CPrimitive > primitives;
   animDB.NonConstCopy()->GetAllUniquePrimitives(primitives);

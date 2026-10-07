@@ -246,11 +246,11 @@ bool CLightComboProjectile::UpdateRayTarget(CStateManager& mgr, TUniqueId rayId,
                                             const CVector3f& position) {
   TRays::iterator it = rstl::find_by_key_nc(mRays, rayId);
   if (it != mRays.end()) {
-    CPlasmaProjectile* ray =
-        static_cast< CPlasmaProjectile* >(mgr.GetObjectByIdFromListAll(it->first));
+    CPlasmaProjectile* ray = static_cast< CPlasmaProjectile* >(mgr.ObjectById(it->first));
     if (ray && ray->GetActive()) {
       it->second.mTargetPosition = position;
-      ray->SetMaxLength(rstl::max_val(0.01f, (GetTranslation() - position).Magnitude() - 0.01f));
+      ray->SetMaxLength(rstl::max_val(
+          0.01f, (GetTranslation() - it->second.mTargetPosition).Magnitude() - 0.01f));
     }
   }
   return false;
@@ -261,13 +261,11 @@ void CLightComboProjectile::RequestRayReset(CStateManager& mgr, TUniqueId rayId,
   if (it == mRays.end()) {
     return;
   }
-  const CPlasmaProjectile* ray =
-      static_cast< CPlasmaProjectile* >(mgr.GetObjectByIdFromListAll(it->first));
-  if (!ray || (!ray->IsFiring() && (ray->GetActive() || !fullReset))) {
-    return;
+  const CPlasmaProjectile* ray = static_cast< CPlasmaProjectile* >(mgr.ObjectById(it->first));
+  if (ray && (ray->IsFiring() || (ray->GetActive() && fullReset))) {
+    it->second.mResetRequested = true;
+    it->second.mFullReset = fullReset;
   }
-  it->second.mResetRequested = true;
-  it->second.mFullReset = fullReset;
 }
 
 void CLightComboProjectile::FreeRays(CStateManager& mgr) {
@@ -280,9 +278,8 @@ void CLightComboProjectile::FreeRays(CStateManager& mgr) {
 void CLightComboProjectile::RequestRayResets(CStateManager& mgr, bool includeUntargeted,
                                              bool fullReset) {
   for (TRays::iterator it = mRays.begin(); it != mRays.end(); ++it) {
-    const CPlasmaProjectile* ray =
-        static_cast< CPlasmaProjectile* >(mgr.GetObjectByIdFromListAll(it->first));
-    if (!ray || (!ray->IsFiring() && (ray->GetActive() || !fullReset))) {
+    const CPlasmaProjectile* ray = static_cast< CPlasmaProjectile* >(mgr.ObjectById(it->first));
+    if (!ray || (!ray->IsFiring() && (!ray->GetActive() || !fullReset))) {
       continue;
     }
     SRayInfo& info = it->second;

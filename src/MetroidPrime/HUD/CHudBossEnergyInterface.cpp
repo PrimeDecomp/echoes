@@ -42,7 +42,7 @@ CHudBossEnergyInterface::CHudBossEnergyInterface(CGuiFrame& frame, int hudState)
   }
   mEnergyBar->SetTesselation(0.2f);
 
-  const CTweakGuiColors::SVisorColorScheme colors =
+  const CTweakGuiColors::SVisorColorScheme& colors =
       gpTweakGuiColors->GetVisorColorScheme(static_cast< CSamusHud::EHudState >(hudState));
   mEnergyBar->SetFilledColor(
       CColor::Modulate(colors.GetHUDHue(), gpTweakGuiColors->GetEnergyBarFilledColor()));

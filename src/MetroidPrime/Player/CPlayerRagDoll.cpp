@@ -10,6 +10,7 @@
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "rstl/math.hpp"
 
 static const rstl::string skParts[] = {
     rstl::string_l("Collar"),
@@ -46,7 +47,7 @@ CPlayerRagDoll::CPlayerRagDoll(CStateManager& mgr, CPlayer* player, ushort thudS
   SetNumLengthConstraints(47);
   SetNumJointConstraints(4);
 
-  const CVector3f scale = player->GetModelData()->GetScale();
+  const CVector3f& scale = player->GetModelData()->GetScale();
   const CTransform4f& xf = player->GetTransform();
   CAnimData* animData = player->AnimationData();
   animData->BuildPose();
@@ -134,26 +135,27 @@ void CPlayerRagDoll::Update(CStateManager& mgr, float dt, float waterTop) {
       float delta = mParticles[2].GetPosition().GetZ() - mParticles[5].GetPosition().GetZ();
       if (delta * delta > 0.0625f) {
         CVector3f adjustment(0.f, 0.f, (delta > 0.f ? delta - 0.25f : delta + 0.25f) * 0.1f);
-        mParticles[2].Position() -= adjustment;
-        mParticles[5].Position() += adjustment;
+        mParticles[2].Position() = mParticles[2].GetPosition() - adjustment;
+        mParticles[5].Position() = mParticles[5].GetPosition() + adjustment;
       }
       delta = mParticles[0].GetPosition().GetZ() -
               (mParticles[8].GetPosition().GetZ() + mParticles[11].GetPosition().GetZ()) * 0.5f;
       if (delta * delta > 0.0625f) {
         CVector3f adjustment(0.f, 0.f, (delta > 0.f ? delta - 0.25f : delta + 0.25f) * 0.1f);
-        mParticles[0].Position() -= adjustment;
+        mParticles[0].Position() = mParticles[0].GetPosition() - adjustment;
         adjustment[kDZ] *= 0.5f;
-        mParticles[8].Position() += adjustment;
-        mParticles[11].Position() += adjustment;
+        mParticles[8].Position() = mParticles[8].GetPosition() + adjustment;
+        mParticles[11].Position() = mParticles[11].GetPosition() + adjustment;
       }
     }
 
     CVector3f oldCenter = mParticles[8].GetPosition() * 0.25f +
                           mParticles[11].GetPosition() * 0.25f + mParticles[0].GetPosition() * 0.5f;
-    oldCenter[kDZ] = CMath::Min(mParticles[8].GetPosition().GetZ() - mParticles[8].GetRadius(),
-                                mParticles[11].GetPosition().GetZ() - mParticles[11].GetRadius());
     oldCenter[kDZ] =
-        CMath::Min(mParticles[0].GetPosition().GetZ() - mParticles[0].GetRadius(), oldCenter[kDZ]);
+        rstl::min_val(mParticles[8].GetPosition().GetZ() - mParticles[8].GetRadius(),
+                      mParticles[11].GetPosition().GetZ() - mParticles[11].GetRadius());
+    oldCenter[kDZ] = rstl::min_val(oldCenter[kDZ],
+                                   mParticles[0].GetPosition().GetZ() - mParticles[0].GetRadius());
     if (oldCenter.GetZ() < 0.5f + waterTop) {
       mTorsoImpulse *= 1000.f;
     }
@@ -166,10 +168,11 @@ void CPlayerRagDoll::Update(CStateManager& mgr, float dt, float waterTop) {
 
     CVector3f newCenter = mParticles[8].GetPosition() * 0.25f +
                           mParticles[11].GetPosition() * 0.25f + mParticles[0].GetPosition() * 0.5f;
-    newCenter[kDZ] = CMath::Min(mParticles[8].GetPosition().GetZ() - mParticles[8].GetRadius(),
-                                mParticles[11].GetPosition().GetZ() - mParticles[11].GetRadius());
     newCenter[kDZ] =
-        CMath::Min(mParticles[0].GetPosition().GetZ() - mParticles[0].GetRadius(), newCenter[kDZ]);
+        rstl::min_val(mParticles[8].GetPosition().GetZ() - mParticles[8].GetRadius(),
+                      mParticles[11].GetPosition().GetZ() - mParticles[11].GetRadius());
+    newCenter[kDZ] = rstl::min_val(newCenter[kDZ],
+                                   mParticles[0].GetPosition().GetZ() - mParticles[0].GetRadius());
     const CVector3f velocity = (1.f / dt) * (newCenter - oldCenter);
     mPlayer->SetTransform(CTransform4f::Identity());
     mPlayer->SetTranslation(newCenter);
@@ -180,7 +183,7 @@ void CPlayerRagDoll::Update(CStateManager& mgr, float dt, float waterTop) {
     if (impactVelocity > 2.5f && mSfxTimer < 0.f) {
       const CVector3f delta = mPlayer->GetTranslation() - mLastSfxPos;
       if (mInitSfx || delta.MagSquared() > 0.1f) {
-        float volume = CMath::Min(25.f * impactVelocity, 127.f);
+        float volume = rstl::min_val(127.f, 25.f * impactVelocity);
         CSfxManager::AddEmitter(mThudSfx, mPlayer->GetTranslation(), CCast::ToUint8(volume),
                                 mPlayer->GetCurrentAreaId().Value(), true, false,
                                 CSfxManager::kMedPriority);

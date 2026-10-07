@@ -24,10 +24,10 @@ bool CValidActiveEntityPredicate::IsValid(const CStateManager& mgr, TUniqueId id
 CValidActiveEntityPredicate::~CValidActiveEntityPredicate() {}
 
 void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectState state,
-                                         EScriptObjectMessage message,
-                                         rstl::vector< CVector3f >& positions,
-                                         rstl::vector< CQuaternion >& orientations,
-                                         CStateManager& mgr) {
+                                          EScriptObjectMessage message,
+                                          rstl::vector< CVector3f >& positions,
+                                          rstl::vector< CQuaternion >& orientations,
+                                          CStateManager& mgr) {
   if (state == static_cast< EScriptObjectState >(-1)) {
     return;
   }
@@ -51,8 +51,7 @@ void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectSt
     orientations.clear();
     orientations.reserve(visited.size());
     for (int i = 0; i < visited.size(); ++i) {
-      const CScriptWaypoint* point =
-          TCastToPtr< CScriptWaypoint >(mgr.ObjectById(visited[i]));
+      const CScriptWaypoint* point = TCastToPtr< CScriptWaypoint >(mgr.ObjectById(visited[i]));
       positions.push_back_unsafe(point->GetTranslation());
       orientations.push_back_unsafe(CQuaternion::FromMatrix(point->GetTransform()));
     }
@@ -60,10 +59,10 @@ void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectSt
 }
 
 void ScriptCameraSpline::Initialise(const CEntity& entity, EScriptObjectState positionState,
-                                   EScriptObjectMessage positionMessage,
-                                   EScriptObjectState targetState,
-                                   EScriptObjectMessage targetMessage, CStateManager& mgr,
-                                   CGameSpline& spline) {
+                                    EScriptObjectMessage positionMessage,
+                                    EScriptObjectState targetState,
+                                    EScriptObjectMessage targetMessage, CStateManager& mgr,
+                                    CGameSpline& spline) {
   rstl::vector< CVector3f > positions;
   rstl::vector< CQuaternion > orientations;
   rstl::vector< CVector3f > targets;
@@ -74,9 +73,12 @@ void ScriptCameraSpline::Initialise(const CEntity& entity, EScriptObjectState po
 }
 
 float ScriptCameraSpline::ClampLength(const CMotionSpline& spline, const CVector3f& position,
-                                     bool checkObstructions, const CMaterialFilter& filter,
-                                     const CStateManager& mgr) {
-  if (spline.GetKnotCount() == 0 || spline.IsClosedLoop()) {
+                                      bool checkObstructions, const CMaterialFilter& filter,
+                                      const CStateManager& mgr) {
+  if (spline.GetKnotCount() == 0) {
+    return 0.f;
+  }
+  if (spline.IsClosedLoop()) {
     return 0.f;
   }
 
@@ -94,10 +96,10 @@ float ScriptCameraSpline::ClampLength(const CMotionSpline& spline, const CVector
   }
 
   if (checkObstructions) {
-    const CRayCastResult firstHit = mgr.RayStaticIntersection(
-        first, firstDelta.AsNormalized(), firstDelta.Magnitude(), filter);
-    const CRayCastResult lastHit = mgr.RayStaticIntersection(
-        last, lastDelta.AsNormalized(), lastDelta.Magnitude(), filter);
+    const CRayCastResult firstHit =
+        mgr.RayStaticIntersection(first, firstDelta.AsNormalized(), firstDelta.Magnitude(), filter);
+    const CRayCastResult lastHit =
+        mgr.RayStaticIntersection(last, lastDelta.AsNormalized(), lastDelta.Magnitude(), filter);
     if (firstHit.IsValid()) {
       return spline.GetLength();
     }

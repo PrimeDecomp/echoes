@@ -26,38 +26,37 @@ void CABSLoopReaction::Start(CBodyController& bc, CStateManager& mgr) {
 }
 
 pas::EAnimationState CABSLoopReaction::UpdateBody(float dt, CBodyController& bc,
-                                                CStateManager& mgr) {
+                                                  CStateManager& mgr) {
   UpdateWeight(bc);
   pas::EAnimationState state = GetBodyStateTransition(dt, bc);
-  if (state != pas::kAS_Invalid)
-    return state;
-
-  CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
-  switch (mState) {
-  case pas::kLS_Begin:
-    if (bc.CommandMgr().GetCmd(kBSC_AdditiveIdle)) {
-      state = pas::kAS_AdditiveIdle;
-    } else {
-      const rstl::rc_ptr< CAnimTreeNode > tree = animData.GetAdditiveAnimationTree(mAnimationId);
-      if (!tree || close_enough(tree->VGetTimeRemaining().GetSeconds(), dt)) {
-        if (!SelectAnimation(bc, mgr, pas::kLS_Loop))
-          state = pas::kAS_AdditiveIdle;
+  if (state == pas::kAS_Invalid) {
+    CAnimData& animData = *bc.GetOwner().ModelData()->AnimationData();
+    switch (mState) {
+    case pas::kLS_Begin:
+      if (bc.CommandMgr().GetCmd(kBSC_AdditiveIdle)) {
+        state = pas::kAS_AdditiveIdle;
+      } else {
+        const rstl::rc_ptr< CAnimTreeNode > tree = animData.GetAdditiveAnimationTree(mAnimationId);
+        if (!tree || close_enough(tree->VGetTimeRemaining().GetSeconds(), dt)) {
+          if (!SelectAnimation(bc, mgr, pas::kLS_Loop))
+            state = pas::kAS_AdditiveIdle;
+        }
       }
+      break;
+    case pas::kLS_Loop:
+      if (bc.CommandMgr().GetCmd(kBSC_AdditiveIdle) && !SelectAnimation(bc, mgr, pas::kLS_End))
+        state = pas::kAS_AdditiveIdle;
+      break;
+    case pas::kLS_End: {
+      const rstl::rc_ptr< CAnimTreeNode > tree = animData.GetAdditiveAnimationTree(mAnimationId);
+      if (!tree || close_enough(tree->VGetTimeRemaining().GetSeconds(), dt))
+        state = pas::kAS_AdditiveIdle;
+      break;
     }
-    break;
-  case pas::kLS_Loop:
-    if (bc.CommandMgr().GetCmd(kBSC_AdditiveIdle) && !SelectAnimation(bc, mgr, pas::kLS_End))
+    default:
       state = pas::kAS_AdditiveIdle;
-    break;
-  case pas::kLS_End: {
-    const rstl::rc_ptr< CAnimTreeNode > tree = animData.GetAdditiveAnimationTree(mAnimationId);
-    if (!tree || close_enough(tree->VGetTimeRemaining().GetSeconds(), dt))
-      state = pas::kAS_AdditiveIdle;
-    break;
-  }
-  default:
-    state = pas::kAS_AdditiveIdle;
-    break;
+      break;
+    }
   }
   return state;
 }
@@ -84,7 +83,7 @@ pas::EAnimationState CABSLoopReaction::GetBodyStateTransition(float dt, CBodyCon
 }
 
 bool CABSLoopReaction::SelectAnimation(CBodyController& bc, CStateManager& mgr,
-                                     pas::ELoopState state) {
+                                       pas::ELoopState state) {
   if (mAnimationId != -1) {
     bc.GetOwner().ModelData()->AnimationData()->DelAdditiveAnimation(mAnimationId);
     mAnimationId = -1;
@@ -97,7 +96,7 @@ bool CABSLoopReaction::SelectAnimation(CBodyController& bc, CStateManager& mgr,
     mAnimationId = best.second;
     mState = state;
     bc.GetOwner().ModelData()->AnimationData()->AddAdditiveAnimation(
-        mAnimationId, mWeight, mState == pas::kLS_Loop, true);
+        mAnimationId, mWeight, static_cast< uchar >(mState == pas::kLS_Loop), true);
     return true;
   }
   return false;
@@ -112,6 +111,6 @@ void CABSLoopReaction::UpdateWeight(CBodyController& bc) {
   if (cmd) {
     mWeight = cmd->GetWeight();
     bc.GetOwner().ModelData()->AnimationData()->AddAdditiveAnimation(
-        mAnimationId, mWeight, mState == pas::kLS_Loop, true);
+        mAnimationId, mWeight, static_cast< uchar >(mState == pas::kLS_Loop), true);
   }
 }

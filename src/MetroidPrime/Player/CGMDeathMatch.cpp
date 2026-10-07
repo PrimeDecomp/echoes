@@ -11,7 +11,7 @@ CGMDeathMatch::CGMDeathMatch(int playerCount, int fragLimit, float timeLimit, bo
 , mPlayerCount(playerCount)
 , mFragLimit(fragLimit)
 , x40_24_(false)
-, mHasFragLimit(fragLimit > 0)
+, mHasFragLimit(mFragLimit > 0)
 , mHasTimeLimit(timeLimit > 0.f)
 , mAwardFrags(awardFrags)
 , mFragLimitReached(false)
@@ -78,7 +78,7 @@ bool CGMDeathMatch::IsGameOver() { return x40_24_ || CGMMultiplayer::IsGameOver(
 void CGMDeathMatch::EndGame(int resultIndex, CStateManager& mgr) {
   CGMMultiplayer::EndGame(resultIndex, mgr);
   for (int i = 0; i < mPlayerCount; ++i) {
-    const CPlayerState& state = *mgr.GetPlayerState(i);
+    const CPlayerState& state = *mgr.GetPlayerState(uint(i));
     SPlayerState& player = mPlayers[i];
     player.mScore = state.GetItemAmount(CPlayerState::kIT_FragCount);
     player.mDeaths = state.GetItemAmount(CPlayerState::kIT_DiedCount);

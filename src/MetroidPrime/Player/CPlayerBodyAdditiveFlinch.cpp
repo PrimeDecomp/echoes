@@ -12,17 +12,17 @@
 CPlayerBodyController::SAdditiveFlinchState::SAdditiveFlinchState() : mAnimationId(-1) {}
 
 void CPlayerBodyController::SAdditiveFlinchState::Start(CStateManager& mgr,
-                                                     CPlayerBodyController& controller) {
+                                                        CPlayerBodyController& controller) {
   const CPBCFlinchCmd* command =
       static_cast< const CPBCFlinchCmd* >(controller.CommandMgr().GetCmd(kPBSC_Flinch));
   if (command) {
     const CVector3f direction =
         controller.GetPlayer().GetTransform().TransposeRotate(command->GetDirection());
     const CAbsAngle angle = CAbsAngle::FromRadians(atan2(direction.GetY(), direction.GetX()));
+    const CPASDatabase& database = controller.GetPASDatabase();
     const CPASAnimParmData parms(static_cast< pas::EAnimationState >(kPAS_AdditiveFlinch),
-                                CPASAnimParm::FromReal32(angle.AsDegrees()));
-    const rstl::pair< float, int > best =
-        controller.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1);
+                                 CPASAnimParm::FromReal32(angle.AsDegrees()));
+    const rstl::pair< float, int > best = database.FindBestAnimation(parms, *mgr.Random(), -1);
     mAnimationId = best.second;
     if (mAnimationId != -1) {
       controller.GetPlayer().AnimationData()->AddAdditiveAnimation(mAnimationId, 1.f, false, true);
@@ -33,11 +33,13 @@ void CPlayerBodyController::SAdditiveFlinchState::Start(CStateManager& mgr,
 }
 
 bool CPlayerBodyController::SAdditiveFlinchState::Update(CStateManager& mgr,
-                                                      CPlayerBodyController& controller) {
+                                                         CPlayerBodyController& controller) {
   if (mAnimationId != -1) {
     const rstl::rc_ptr< CAnimTreeNode > tree =
         controller.GetPlayer().AnimationData()->GetAdditiveAnimationTree(mAnimationId);
-    return tree && !close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f);
+    if (tree && !close_enough(tree->VGetTimeRemaining().GetSeconds(), 0.f)) {
+      return true;
+    }
   }
   return false;
 }

@@ -89,7 +89,7 @@ int CCameraShakerManager::AddCameraShaker(const CCameraShakerData& data, CStateM
     shakeData.UpdateThresholdTimes();
   }
   const SShaker shaker(mNextId++, mPlayerIndex, shakeData, playSound, useThresholdTimes);
-  if (!mPendingRumble) {
+  if (mPendingRumble != true) {
     mPendingRumble = true;
     mRumbleCooldown = 0.5f;
   }
@@ -100,19 +100,20 @@ int CCameraShakerManager::AddCameraShaker(const CCameraShakerData& data, CStateM
 void CCameraShakerManager::SShaker::SetData(const CCameraShakerData& data) { mData = data; }
 
 void CCameraShakerManager::UpdateCameraShaker(int id, const CCameraShakerData& data) {
-  for (int i = 0; i < mShakers.size(); ++i) {
-    if (mShakers[i].mId == id) {
-      mShakers[i].SetData(data);
+  for (rstl::reserved_vector< SShaker, 8 >::iterator it = mShakers.begin(); it != mShakers.end();
+       ++it) {
+    if (id == it->mId) {
+      it->SetData(data);
       return;
     }
   }
 }
 
 void CCameraShakerManager::RemoveCameraShaker(int id) {
-  for (rstl::reserved_vector< SShaker, 8 >::iterator it = mShakers.begin(); it != mShakers.end();
-       ++it) {
-    if (it->mId == id) {
-      mShakers.erase(it);
+  for (rstl::reserved_vector< SShaker, 8 >::iterator it = mShakers.begin(); it != mShakers.end();) {
+    rstl::reserved_vector< SShaker, 8 >::iterator cur = it++;
+    if (id == cur->mId) {
+      mShakers.erase(cur);
       return;
     }
   }
@@ -166,9 +167,13 @@ void CCameraShakerManager::Update(float dt, CStateManager& mgr) {
 }
 
 CVector3f CCameraShakerManager::GetTranslation(const CStateManager& mgr) const {
-  const float scale = mgr.GetNumPlayers() == 2 ? 0.75f : 1.f;
+  float scale = 1.f;
+  if (mgr.GetNumPlayers() == 2) {
+    scale = 0.75f;
+  }
   const CVector3f translation = scale * mTranslation;
-  return CVector3f(CMath::Clamp(-1.f, translation.GetX(), 1.f),
-                   CMath::Clamp(-1.f, translation.GetY(), 0.25f),
-                   CMath::Clamp(-1.f, translation.GetZ(), 1.f));
+  const float x = CMath::Clamp(-1.f, translation.GetX(), 1.f);
+  const float y = CMath::Clamp(-1.f, translation.GetY(), 0.25f);
+  const float z = CMath::Clamp(-1.f, translation.GetZ(), 1.f);
+  return CVector3f(x, y, z);
 }

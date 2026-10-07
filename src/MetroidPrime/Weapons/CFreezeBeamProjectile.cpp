@@ -37,7 +37,7 @@ CFreezeBeamProjectile::CFreezeBeamProjectile(const TToken< CWeaponDescription >&
 bool CFreezeBeamProjectile::Explode(const CVector3f& position, const CVector3f& normal,
                                     EWeaponCollisionResponseTypes type, CStateManager& mgr,
                                     const CDamageVulnerability& vulnerability, TUniqueId hitActor) {
-  if (mIceImpactParticle.valid()) {
+  if (mIceImpactParticle.valid() == true) {
     CIceImpact* impact = rs_new CIceImpact(
         *mIceImpactParticle, mgr.AllocateUniqueId(), GetCurrentAreaId(), GetOwnerId(), true,
         rstl::string_l("Freeze Beam Ice Impact"), GetTransform(), 0, CVector3f(1.f, 1.f, 1.f),

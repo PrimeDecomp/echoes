@@ -5,6 +5,14 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 
+bool CPFOpenList::Test(CPFRegion* region) { return mBitSet.Test(region->GetIndex()); }
+
+void CPFOpenList::Clear() {
+  mRegion.Data()->SetOpenMore(&mRegion);
+  mRegion.Data()->SetOpenLess(&mRegion);
+  mBitSet.Clear();
+}
+
 CPFOpenList::CPFOpenList() {
   mRegion.SetData(&mRegionData);
   Clear();
@@ -48,7 +56,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
 
   CVector3f localSource = mArea->GetTransform().TransposeMultiply(source);
   CVector3f localDest = mArea->GetTransform().TransposeMultiply(destination);
-  if (!(mFlags & 2) && !(mFlags & 4)) {
+  if ((mFlags & 6) == 0) {
     localSource[kDZ] += 0.5f;
     localDest[kDZ] += 0.5f;
   }
@@ -61,7 +69,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
       mResult = kR_NoSourcePoint;
       return mResult;
     }
-    if (mFlags & 2 || mFlags & 4) {
+    if ((mFlags & 6) != 0) {
       outsideSource = true;
       points.push_back(localSource);
     }
@@ -77,7 +85,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
       mResult = kR_NoDestPoint;
       return mResult;
     }
-    if (mFlags & 2 || mFlags & 4) {
+    if ((mFlags & 6) != 0) {
       outsideDest = true;
     }
     destRegions.push_back(region);
@@ -90,7 +98,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
   for (i = 0; i < sourceRegions.size(); ++i) {
     for (j = 0; j < destRegions.size(); ++j) {
       if (sourceRegions[i] == destRegions[j]) {
-        if (!(mFlags & 2) && !(mFlags & 4)) {
+        if ((mFlags & 6) == 0) {
           destRegions[j]->DropToGround(localSource);
           destRegions[j]->DropToGround(localDest);
         }
@@ -158,7 +166,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
   if (pointCount + 1 >= points.capacity()) {
     includeDest = false;
   }
-  if (!(mFlags & 2) && !(mFlags & 4)) {
+  if ((mFlags & 6) == 0) {
     sourceRegion->DropToGround(localSource);
     destRegion->DropToGround(localDest);
   }
@@ -170,7 +178,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
     const CPFLink* link = region->GetPathLink();
     CPFRegion* linkRegion = &mArea->GetRegion(link->GetRegion());
     CVector3f midpoint = region->GetLinkMidPoint(*link);
-    if (mFlags & 2 || mFlags & 4) {
+    if ((mFlags & 6) != 0) {
       float height = CMath::Min(region->GetHeight(), linkRegion->GetHeight());
       float lower = halfHeight + midpoint[kDZ];
       float upper = height + midpoint[kDZ] - halfHeight;
@@ -191,7 +199,7 @@ CPathFindSearch::EResult CPathFindSearch::Search(const CVector3f& source,
     for (j = firstPoint; j <= (includeDest ? lastPoint : lastPoint - 1); ++j) {
       const CPFLink* link = region->GetPathLink();
       CPFRegion* linkRegion = &mArea->GetRegion(link->GetRegion());
-      if (mFlags & 2 || mFlags & 4) {
+      if ((mFlags & 6) != 0) {
         float height = CMath::Min(region->GetHeight(), linkRegion->GetHeight());
         points[j] = region->FitThroughLink3d(points[j - 1], *link, height, points[j + 1], mChRadius,
                                              halfHeight, mRootPosition);
@@ -240,7 +248,7 @@ bool CPathFindSearch::Search(rstl::reserved_vector< CPFRegion*, 8 >& sourceRegio
   CPFRegion* region;
   while ((region = openList.Pop()) != nullptr) {
     for (i = 0; i < destRegions.size(); ++i) {
-      if (destRegions[i] == region) {
+      if (region == destRegions[i]) {
         goto found;
       }
     }
@@ -249,7 +257,9 @@ bool CPathFindSearch::Search(rstl::reserved_vector< CPFRegion*, 8 >& sourceRegio
       CPFRegion* linkRegion = &mArea->GetRegion(region->GetLink(i)->GetRegion());
       if (linkRegion != region->Data()->GetParent() && (linkRegion->GetFlags() & 0xff & mFlags) &&
           ((linkRegion->GetFlags() >> 16) & 0xff & mIndexMask) &&
-          !linkRegion->IsObstructed(mFlags)) {
+          !(linkRegion->GetObstructionCount(kPFO_Unknown2) > 0 ||
+            ((mFlags & 0x100) != 0 && linkRegion->GetObstructionCount(kPFO_Unknown0) > 0) ||
+            ((mFlags & 0x200) != 0 && linkRegion->GetObstructionCount(kPFO_Unknown1) > 0))) {
         float distance =
             CMath::FastSqrtF((linkRegion->GetCentroid() - region->GetCentroid()).MagSquared());
         float parentG = region->Data()->GetG();
@@ -257,11 +267,13 @@ bool CPathFindSearch::Search(rstl::reserved_vector< CPFRegion*, 8 >& sourceRegio
         if ((!closedSet.Test(linkRegion->GetIndex()) && !openList.Test(linkRegion)) ||
             !(linkRegion->Data()->GetG() <= g)) {
           uint avoidance = mAvoidanceFilter & linkRegion->Data()->GetAvoidanceFlags();
-          float penalty = 1.f;
-          for (; avoidance != 0; avoidance >>= 1) {
-            if (avoidance & 1) {
-              g += 50.f * penalty;
-              penalty *= 2.f;
+          if (avoidance != 0) {
+            float penalty = 1.f;
+            for (; avoidance != 0; avoidance >>= 1) {
+              if (avoidance & 1) {
+                g += 50.f * penalty;
+                penalty *= 2.f;
+              }
             }
           }
           if (openList.Test(linkRegion)) {
@@ -305,7 +317,7 @@ CPathFindSearch::EResult CPathFindSearch::FindClosestReachablePoint(const CVecto
 
   CVector3f localSource = mArea->GetTransform().TransposeMultiply(source);
   CVector3f localDest = mArea->GetTransform().TransposeMultiply(destination);
-  if (!(mFlags & 2) && !(mFlags & 4)) {
+  if ((mFlags & 6) == 0) {
     localSource[kDZ] += 0.5f;
     localDest[kDZ] += 0.5f;
   }
@@ -333,7 +345,7 @@ CPathFindSearch::EResult CPathFindSearch::PathExists(const CVector3f& source,
 
   CVector3f localSource = mArea->GetTransform().TransposeMultiply(source);
   CVector3f localDest = mArea->GetTransform().TransposeMultiply(destination);
-  if (!(mFlags & 2) && !(mFlags & 4)) {
+  if ((mFlags & 6) == 0) {
     localSource[kDZ] += 0.5f;
     localDest[kDZ] += 0.5f;
   }
@@ -362,7 +374,7 @@ CPathFindSearch::EResult CPathFindSearch::OnPath(const CVector3f& point) const {
     return kR_InvalidArea;
   }
   CVector3f localPoint = mArea->GetTransform().TransposeMultiply(point);
-  if (!(mFlags & 2) && !(mFlags & 4)) {
+  if ((mFlags & 6) == 0) {
     localPoint[kDZ] += 0.5f;
   }
   rstl::reserved_vector< CPFRegion*, 8 > regions;
@@ -413,7 +425,7 @@ CPathFindSearch::EResult CPathFindSearch::GetHeightOfPointAboveMesh(const CVecto
   }
   for (int i = 0; i < regions.size(); ++i) {
     float candidate = regions[i]->PointHeight(localPoint);
-    if (i == 0 || (height < 0.f && height < candidate) || (height > 0.f && candidate < height)) {
+    if (i == 0 || (height < 0.f && candidate > height) || (height > 0.f && candidate < height)) {
       height = candidate;
     }
   }

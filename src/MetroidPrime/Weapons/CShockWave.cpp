@@ -201,7 +201,7 @@ void CShockWave::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
 
   CActor::AcceptScriptMsg(mgr, msg);
-  mgr.SendScriptMsg(mLightId, sender, message, kInvalidUniqueId);
+  mgr.SendScriptMsg(mLightId, sender, message);
 }
 
 CShockWave::~CShockWave() {}

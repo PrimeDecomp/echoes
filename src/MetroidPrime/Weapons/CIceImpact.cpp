@@ -31,7 +31,7 @@ CMarkerGrid::CMarkerGrid(const CAABox& bounds)
 uint CMarkerGrid::GetValue(uint x, uint y, uint z) const {
   const uint bitOffset = (x & 3) << 1;
   const uint gridOffset = (y << 2) + (z << 6) + (x >> 2);
-  return (mGridState[gridOffset] & (3 << bitOffset)) >> bitOffset;
+  return (mGridState[gridOffset] & (3U << bitOffset)) >> bitOffset;
 }
 
 bool CMarkerGrid::GetCoords(const CVector3f& point, uint& x, uint& y, uint& z) const {
@@ -39,7 +39,7 @@ bool CMarkerGrid::GetCoords(const CVector3f& point, uint& x, uint& y, uint& z) c
     return false;
   }
 
-  const CVector3f relative = point - mBounds.GetMinPoint();
+  const CVector3f& relative = point - mBounds.GetMinPoint();
   x = relative.GetX() / mGridUnits.GetX();
   y = relative.GetY() / mGridUnits.GetY();
   z = relative.GetZ() / mGridUnits.GetZ();
@@ -106,7 +106,7 @@ void CMarkerGrid::MarkCells(const CSphere& sphere, uint value) {
   }
 }
 
-CVector3f CMarkerGrid::GetWorldPositionForCell(uint x, uint y, uint z) const {
+CVector3f CMarkerGrid::GetWorldPositionForCell(uint x, const uint y, uint z) const {
   return CVector3f(x * mGridUnits.GetX(), y * mGridUnits.GetY(), z * mGridUnits.GetZ()) +
          mBounds.GetMinPoint() + 0.5f * mGridUnits;
 }
@@ -244,7 +244,7 @@ void CIceImpact::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
   CActor::AcceptScriptMsg(mgr, msg);
   if (mLightId != kInvalidUniqueId) {
-    mgr.SendScriptMsg(mLightId, sender, message, kInvalidUniqueId);
+    mgr.SendScriptMsg(mLightId, sender, message);
   }
 }
 
@@ -284,13 +284,13 @@ void CIceImpact::Touch(CActor& actor, CStateManager& mgr) {
     }
 
     if (CPlayer* player = TCastToPtr< CPlayer >(&actor)) {
-      mgr.SendScriptMsg(player->GetUniqueId(), kInvalidUniqueId, kSM_XINS, kInvalidUniqueId);
+      mgr.SendScriptMsg(player->GetUniqueId(), kInvalidUniqueId, kSM_XINS);
     }
   }
 }
 
 static bool pointInSphere(const CSphere& sphere, const CVector3f& point) {
-  const CVector3f delta = sphere.GetCenter() - point;
+  const CVector3f& delta = sphere.GetCenter() - point;
   return delta.MagSquared() <= sphere.GetRadius() * sphere.GetRadius();
 }
 
@@ -418,7 +418,7 @@ bool CIceImpact::SubdivideAndGenerateParticles(CStateManager& mgr, const CVector
     return false;
   }
 
-  const CVector3f edgeAB = b - a;
+  const CVector3f& edgeAB = b - a;
   const CVector3f edgeAC = c - a;
   const CVector3f cross = CVector3f::Cross(edgeAB, edgeAC);
   const float area = cross.Magnitude();
