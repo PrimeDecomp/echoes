@@ -1564,6 +1564,15 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "ScriptSafeZone",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSafeZone.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSafeZoneCrystal.cpp"),
+        ],
+        # Float constants are addressed separately, as in Tweaks.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
