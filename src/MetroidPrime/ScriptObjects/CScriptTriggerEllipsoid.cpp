@@ -73,26 +73,24 @@ bool CScriptTriggerEllipsoid::BoundsOverlap(const CAABox& bounds) const {
   const CVector3f scaledMax =
       GetTransform().TransposeRotate(bounds.GetMaxPoint() - origin) * mInverseScale;
 
-  float distanceSq = 0.f;
-  if (scaledMin.GetX() > 0.f) {
-    distanceSq += scaledMin.GetX() * scaledMin.GetX();
-  } else if (scaledMax.GetX() < 0.f) {
-    distanceSq += scaledMax.GetX() * scaledMax.GetX();
-  }
-  if (scaledMin.GetY() > 0.f) {
-    distanceSq += scaledMin.GetY() * scaledMin.GetY();
-  } else if (scaledMax.GetY() < 0.f) {
-    distanceSq += scaledMax.GetY() * scaledMax.GetY();
-  }
-
   if (mShape == kST_Cylinder) {
+    float distanceSq = 0.f;
+    for (int i = 0; i < 2; ++i) {
+      if (scaledMin[i] > 0.f) {
+        distanceSq += scaledMin[i] * scaledMin[i];
+      } else if (scaledMax[i] < 0.f) {
+        distanceSq += scaledMax[i] * scaledMax[i];
+      }
+    }
     return distanceSq < 1.f && scaledMax.GetZ() > -1.f && scaledMin.GetZ() < 1.f;
   }
-
-  if (scaledMin.GetZ() > 0.f) {
-    distanceSq += scaledMin.GetZ() * scaledMin.GetZ();
-  } else if (scaledMax.GetZ() < 0.f) {
-    distanceSq += scaledMax.GetZ() * scaledMax.GetZ();
+  float distanceSq = 0.f;
+  for (int i = 0; i < 3; ++i) {
+    if (scaledMin[i] > 0.f) {
+      distanceSq += scaledMin[i] * scaledMin[i];
+    } else if (scaledMax[i] < 0.f) {
+      distanceSq += scaledMax[i] * scaledMax[i];
+    }
   }
   return distanceSq < 1.f;
 }

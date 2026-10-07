@@ -54,6 +54,11 @@ public:
   static float GetDefaultFirstPersonNearClipDistance();
   static float GetDefaultThirdPersonVerticalFOV();
 
+  static float sFirstPersonFOV;
+  static float sThirdPersonFOV;
+  static float sNearPlane;
+  static float sFarPlane;
+
   void SetAspectRatio(float aspect, CStateManager& mgr);
   void CreateCameras(CStateManager& mgr);
   void UpdateCameras(float dt, CStateManager& mgr);
@@ -62,7 +67,7 @@ public:
   TUniqueId GetCurrentCameraId(bool selector) const;
   CGameCamera* CurrentCamera(CStateManager& mgr, bool selector);
   const CGameCamera* GetCurrentCamera(const CStateManager& mgr, bool selector) const;
-  void SetCurrentCameraId(TUniqueId uid);
+  void SetCurrentCameraId(TUniqueId uid, CStateManager& mgr);
   void UpdateAudioListener(CStateManager& mgr);
   void UpdateFilters(float dt, CStateManager& mgr);
   float GetWaterFarDistance(CStateManager& mgr, const CScriptWater* water);
@@ -70,7 +75,7 @@ public:
   void TransferCameraTriggers(CGameCamera& from, CGameCamera& to,
                               CStateManager& mgr);                            // Guessed name
   void UpdateCameraTriggerOccupancy(CGameCamera& camera, CStateManager& mgr); // Guessed name
-  void UpdateCameraTriggers(TUniqueId uid, CStateManager& mgr);
+  void UpdateCameraTriggers(const TUniqueId& uid, CStateManager& mgr);
   void Update(float dt, CStateManager& mgr);
   void ProcessInput(const CFinalInput& input, CStateManager& mgr);
   void SetCinematicCameraId(CStateManager& mgr, TUniqueId uid); // Guessed name
@@ -86,7 +91,7 @@ public:
   static const CGameCamera* CastGameCameratoFirstPersonCamera(const CGameCamera*);
   bool IsInCinematicCamera() const;
   bool IsInFullScreenCinematic() const; // Guessed name, from viewport and timer consumers.
-  bool IsInBallCamera() const; // Guessed name
+  bool IsInBallCamera() const;          // Guessed name
   bool IsInFPCamera() const;
   bool IsInterpolationCameraActive() const;
   bool ShouldBypassInterpolationCamera() const;
@@ -96,8 +101,8 @@ public:
   void SetupInterpolation(const CTransform4f& xf, TUniqueId from, TUniqueId to,
                           bool interpolateRotation,
                           CInterpolationCamera::EPositionMode positionMode,
-                          CInterpolationCamera::ERotationMode rotationMode,
-                          CStateManager& mgr, bool flag, float duration, float fov);
+                          CInterpolationCamera::ERotationMode rotationMode, CStateManager& mgr,
+                          bool flag, float duration, float fov);
   void CinematicCut(CStateManager& mgr);
   void SetPathCamera(TUniqueId uid, CStateManager& mgr);
   void ClearPathCamera(); // Guessed name
@@ -108,7 +113,7 @@ public:
   void SetSurfaceCamera(TUniqueId uid, CStateManager& mgr);                       // Guessed name
   void ClearSurfaceCamera(CStateManager& mgr);                                    // Guessed name
   float GetCameraBobMagnitude() const;
-  void AddCamera(TUniqueId uid, CStateManager& mgr);                                // Guessed name
+  void AddCamera(const TUniqueId& uid, CStateManager& mgr);                         // Guessed name
   void UpdateCameraHistory(CStateManager& mgr);                                     // Guessed name
   void Reset(TUniqueId uid, CStateManager& mgr);                                    // Guessed name
   void StartScreenFlash();                                                          // Guessed name
@@ -158,7 +163,7 @@ private:
   float mFogDensityFactor;
   float mFogDensitySpeed;
   float mFogDensityFactorTarget;
-  float mFluidFogTime;              // Guessed name
+  float mFluidFogTime; // Guessed name
   rstl::single_ptr< CHintManager > mCameraHintManager;
   rstl::single_ptr< CCameraShakerManager > mCameraShakeManager;
   float mFirstPersonFov;

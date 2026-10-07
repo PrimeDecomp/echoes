@@ -26,7 +26,7 @@ public:
 
 private:
   const uchar* mDisplayList;
-  uint mSize;
+  int mSize;
   uint mVertexDesc;
   uint mVertexStride;
 };

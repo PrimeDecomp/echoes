@@ -2,6 +2,11 @@
 
 #include "Kyoto/Math/CloseEnough.hpp"
 
+uint CAnimTreeTransition::GetLoopPOIHash() {
+  static uint hash = CPOINode::GetHashForString("Loop");
+  return hash;
+}
+
 CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                          const rstl::ncrc_ptr< CAnimTreeNode >& b,
@@ -11,7 +16,7 @@ CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
 , mTransDur(duration)
 , mTimeInTrans(0.f)
 , mRunA(runA)
-, mLoopA(a->VGetBoolPOIState(GetLoopPOIHash()))
+, mLoopA(a->GetBoolPOIState(GetLoopPOIHash()))
 , mInitialized(false) {}
 
 CAnimTreeTransition::CAnimTreeTransition(const bool characterSpaceBlend,
@@ -72,9 +77,9 @@ CAnimTreeTransition::AdvanceViewForTransitionalPeriod(const CCharAnimTime& time)
   const SAdvancementDeltas& rightDeltas = res.GetRightAdvancementDeltas();
   if (GetBlendRoot() & kBlendRoot_Offset)
     return rstl::pair< CCharAnimTime, SAdvancementDeltas >(
-        res.GetTrueAdvancement(),
+        trueAdvancement,
         SAdvancementDeltas::Interpolate(leftDeltas, rightDeltas, oldWeight, newWeight));
-  return rstl::pair< CCharAnimTime, SAdvancementDeltas >(res.GetTrueAdvancement(), rightDeltas);
+  return rstl::pair< CCharAnimTime, SAdvancementDeltas >(trueAdvancement, rightDeltas);
 }
 
 SAdvancementResults CAnimTreeTransition::VAdvanceView(const CCharAnimTime& time) {
@@ -110,27 +115,27 @@ SAdvancementResults CAnimTreeTransition::VAdvanceView(const CCharAnimTime& time)
 }
 
 rstl::ownership_transfer< IAnimReader > CAnimTreeTransition::VClone() const {
-  return rs_new CAnimTreeTransition(CharacterSpaceBlend(), Cast(mA->VClone()), Cast(mB->VClone()),
+  return rs_new CAnimTreeTransition(CharacterSpaceBlend(), Cast(mA->Clone()), Cast(mB->Clone()),
                                     mTransDur, mTimeInTrans, mRunA, mLoopA, GetBlendRoot(), mName,
                                     mInitialized);
 }
 
 float CAnimTreeTransition::VGetBlendingWeight() const {
   if (mTransDur.GreaterThanZero()) {
-    return mTimeInTrans.GetSeconds() / mTransDur.GetSeconds();
+    return (1.f / mTransDur.GetSeconds()) * mTimeInTrans.GetSeconds();
   }
   return 1.f;
 }
 
 CCharAnimTime CAnimTreeTransition::VGetTimeRemaining() const {
-  return rstl::max_val(mB->VGetTimeRemaining(), mTransDur - mTimeInTrans);
+  return rstl::max_val< const CCharAnimTime& >(mB->VGetTimeRemaining(), mTransDur - mTimeInTrans);
 }
 
 CSteadyStateAnimInfo CAnimTreeTransition::VGetSteadyStateAnimInfo() const {
   CSteadyStateAnimInfo info = mB->VGetSteadyStateAnimInfo();
-  return CSteadyStateAnimInfo(
-      info.IsLooping(), rstl::max_val< const CCharAnimTime& >(mTransDur, info.GetDuration()),
-      info.GetOffset());
+  return CSteadyStateAnimInfo(info.IsLooping(),
+                              rstl::max_val< const CCharAnimTime& >(mTransDur, info.GetDuration()),
+                              info.GetOffset());
 }
 
 rstl::string CAnimTreeTransition::CreatePrimitiveName(const rstl::ncrc_ptr< CAnimTreeNode >& a,
@@ -147,7 +152,10 @@ void CAnimTreeTransition::SetBlendingWeight(float weight) {
 rstl::rc_ptr< CAnimTreeNode > CAnimTreeTransition::VGetBestUnblendedChild() const {
   rstl::rc_ptr< CAnimTreeNode > right = GetRightChild();
   rstl::rc_ptr< CAnimTreeNode > best = right->GetBestUnblendedChild();
-  return best ? best : right;
+  if (!best) {
+    return right;
+  }
+  return best;
 }
 
 const int CAnimTreeTweenBase::kBlendRoot_Offset = 1;

@@ -20,9 +20,14 @@ public:
 
   class CTHPTextureSet {
   public:
-    CTHPTextureSet(void* y, void* u, void* v, void* audio);
-    CTHPTextureSet(const CTHPTextureSet& other);
-    ~CTHPTextureSet();
+    CTHPTextureSet(void* y, void* u, void* v, void* audio)
+    : mY(static_cast< uchar* >(y))
+    , mU(static_cast< uchar* >(u))
+    , mV(static_cast< uchar* >(v))
+    , mAudio(static_cast< uchar* >(audio))
+    , mAudioSamples(0)
+    , mAudioSamplesConsumed(0) {}
+    ~CTHPTextureSet() {}
 
     void* Y() { return mY.get(); }
 

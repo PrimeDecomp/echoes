@@ -11,6 +11,8 @@ struct SSkinningWorkspace;
 class CStateManager;
 class CTransform4f;
 
+extern const uchar kSplashLineWidth;
+
 class CRainSplashGenerator {
 private:
   struct SSplashLine {
@@ -29,7 +31,7 @@ private:
     , mEndY(0.f)
     , mSpeed(4.f)
     , mParabolaHeight(0.015625f)
-    , mLineWidth(3)
+    , mLineWidth(kSplashLineWidth)
     , mLength(1)
     , mActive(true) {}
 
@@ -45,7 +47,7 @@ private:
 
     SRainSplash();
     void Update(float dt, CStateManager& mgr);
-    bool IsActive() const;
+    uchar IsActive() const;
     void Draw(float alpha, float dt, const CVector3f& position) const;
     void SetPoint(const CVector3f& position);
   };
@@ -91,5 +93,9 @@ private:
                            float minZ);
 };
 CHECK_SIZEOF(CRainSplashGenerator, 0x4c)
+
+namespace rstl {
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CRainSplashGenerator::SRainSplash)
+}
 
 #endif // _CRAINSPLASHGENERATOR

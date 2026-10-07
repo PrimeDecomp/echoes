@@ -21,8 +21,11 @@ bool CGSComboFire::Update(CAnimData& data, float dt, CStateManager& mgr) {
     switch (mLoopState) {
     case 0:
       SetAnim(data, mGunId, 1, mgr, 0.f);
-      if (mGunId == 0 || mGunId == 1) {
+      switch (mGunId) {
+      case 0:
+      case 1:
         mOver = true;
+        break;
       }
       break;
     case 2:

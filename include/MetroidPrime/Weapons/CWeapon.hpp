@@ -25,7 +25,8 @@ public:
     kPA_Dark = 1 << 18,
     kPA_Light = 1 << 19,
     kPA_Annihilator = 1 << 20,
-    kPA_Bombs = 1 << 25, // Guessed name, based on CBomb construction.
+    kPA_Unknown22 = 1 << 22, // Name not recovered; WallWalker leg hits ignore it.
+    kPA_Bombs = 1 << 25,     // Guessed name, based on CBomb construction.
   };
 
   CWeapon(TUniqueId uid, TAreaId areaId, bool active, TUniqueId owner, EWeaponType type,
@@ -47,6 +48,14 @@ public:
   void FluidFXThink(EFluidState state, CScriptWater& water, CStateManager& mgr) override;
 
   void SetDamageFalloffSpeed(float speed);
+  void SetDamageDuration(float duration) {
+    mProjectileAttribs |= kPA_BigStrike;
+    mDamageDuration = duration;
+  }
+  void SetInterferenceDuration(float duration) {
+    mProjectileAttribs |= kPA_StaticInterference;
+    mInterferenceDuration = duration;
+  }
   int GetAttribField() const { return mProjectileAttribs; }
   bool HasAttrib(EProjectileAttrib attrib) const { return (mProjectileAttribs & attrib) == attrib; }
   TUniqueId GetOwnerId() const { return mOwnerId; }

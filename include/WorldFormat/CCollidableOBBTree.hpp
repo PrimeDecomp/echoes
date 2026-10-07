@@ -99,9 +99,9 @@ public:
   // Guessed names for Echoes's cache-building additions.
   bool CacheTree(CCollisionCacheWriter& writer, const COBBTree::CNode& node, const CTransform4f& xf,
                  const CVector3f& center, const CVector3f& halfExtent, const COBBox& obb) const;
-  static void CacheSphere(CCollisionCache& cache, const CTransform4f& xf, short ownerId,
+  static void CacheSphere(CCollisionCache& cache, const CTransform4f& xf, ushort ownerId,
                           u64 material);
-  static void CacheAABox(CCollisionCache& cache, const CTransform4f& xf, short ownerId,
+  static void CacheAABox(CCollisionCache& cache, const CTransform4f& xf, ushort ownerId,
                          u64 material);
 
 private:

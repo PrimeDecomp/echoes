@@ -21,7 +21,13 @@ class rc_ptr {
 public:
   rc_ptr() : mPtr(nullptr), mRefCount(&CRefData::sNull.mRefCount) { ++*mRefCount; }
   rc_ptr(const T* ptr) : mPtr(ptr), mRefCount(rs_new int(1)) {}
-  rc_ptr(const rc_ptr& other) : mPtr(other.mPtr), mRefCount(other.mRefCount) { ++*mRefCount; }
+  // The empty statements stand in for release-build precondition checks; they count toward
+  // MWCC's inline size limit (rbtree node ctors holding rc_ptr pairs are outlined).
+  rc_ptr(const rc_ptr& other) : mPtr(other.mPtr), mRefCount(other.mRefCount) {
+    ((void)0);
+    ((void)0);
+    ++*mRefCount;
+  }
   template < typename U >
   explicit rc_ptr(const rc_ptr< U >& other)
   : mPtr(static_cast< const T* >(other.GetPtr())), mRefCount(other.GetRefCountPtr()) {
@@ -76,6 +82,11 @@ class ncrc_ptr : public rc_ptr< T > {
 public:
   ncrc_ptr() {}
   ncrc_ptr(T* ptr) : rc_ptr< T >(ptr) {}
+  // Explicit copy ctor; its size keeps list<ncrc_ptr<T>>::create_node out of line.
+  ncrc_ptr(const ncrc_ptr& other) : rc_ptr< T >(other) {
+    ((void)0);
+    ((void)0);
+  }
   ncrc_ptr(const rc_ptr< T >& other) : rc_ptr< T >(other) {}
   ncrc_ptr& operator=(const rc_ptr< T >& other) {
     rc_ptr< T >::operator=(other);

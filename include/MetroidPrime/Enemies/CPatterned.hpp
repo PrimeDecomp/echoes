@@ -34,8 +34,12 @@ class CPASAnimParmData;
 class CCharAnimTime;
 
 enum EPatternedAI {
+  kPAI_AtomicAlpha = 0, // Guessed name; AtomicAlpha REL constructor.
   kPAI_DarkSamus = 7,
-  kPAI_Ripper = 0x30, // Guessed name; Ripper REL constructor.
+  kPAI_EyeBall = 0x10,    // Guessed name; EyeBall REL constructor.
+  kPAI_Metroid = 0x21,    // Guessed name; Metroid REL constructor.
+  kPAI_Ripper = 0x30,     // Guessed name; Ripper REL constructor.
+  kPAI_WallWalker = 0x4d, // Guessed name; WallWalker REL constructor.
 };
 
 template <>
@@ -148,8 +152,7 @@ public:
   virtual float GetGravityConstant() const { return kDefaultGravityAccel; }
   virtual bool IsScanVisorSelfRender() const;
   virtual CAABox GetScanVisorRenderBounds(const CStateManager&) const;
-  virtual void ScanVisorRender(const CStateManager&, const CTransform4f&,
-                               const CModelFlags&) const;
+  virtual void ScanVisorRender(const CStateManager&, const CTransform4f&, const CModelFlags&) const;
   virtual const rstl::optional_object< TCachedToken< CGenDescription > >&
   GetDeathExplosionParticle() const {
     return mDeathExplosionParticle;
@@ -227,7 +230,7 @@ public:
   bool HasPatrolPath(CStateManager& mgr, const CTriggerData& data) const;
   bool InPosition(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;
-  bool GetAnimOver(CStateManager&, const CTriggerData&) const { return mAnimationState.IsOver(); }
+  bool GetAnimOver(CStateManager&, const CTriggerData&) const;
   bool Stuck(CStateManager& mgr, const CTriggerData& data) const;
   bool Delay(CStateManager& mgr, const CTriggerData& data) const;
   bool RandomDelay(CStateManager& mgr, const CTriggerData& data) const;
@@ -244,6 +247,8 @@ public:
   void fn_801524fc(CStateManager& mgr);
 
   bool GetAlive() const { return mAlive; }
+  void SetPendingDeath(bool pending) { mPendingDeath = pending; }
+  TUniqueId GetDestObj() const { return mDestObj; }
   EFlavorType GetFlavorType() const { return mFlavor; }
   bool IsMakingBigStrike() const { return mIsMakingBigStrike; }
   float GetDamageDuration() const { return mDamageDuration; }
@@ -261,6 +266,10 @@ public:
 
   CBodyController* BodyController() { return mBodyController.get(); }
 
+  TStateMachineState< CPatterned >& StateMachineState() {
+    return static_cast< TStateMachineState< CPatterned >& >(*mStateMachine);
+  }
+
   const CBodyController* GetBodyController() const { return mBodyController.get(); }
 
   CAiKnockBackMgr& KnockBackController() { return mKnockBackController; }
@@ -276,7 +285,7 @@ protected:
   bool mBlockingCollision : 1; // Guessed name
   bool mOnGround : 1;
   bool mOnStaticGround : 1;
-  mutable bool mPrevOnGround : 1;
+  bool mPrevOnGround : 1;
   bool mEnergyAttractor : 1;
   bool mLookAtDeathDir : 1;
   bool x34d_25_ : 1;

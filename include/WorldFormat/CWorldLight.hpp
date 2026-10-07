@@ -43,6 +43,7 @@ CHECK_SIZEOF(CWorldLight, 0x48)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CWorldLight)
-}
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CWorldLight)
+} // namespace rstl
 
 #endif // _CWORLDLIGHT

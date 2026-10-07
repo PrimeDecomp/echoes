@@ -5,8 +5,8 @@
 
 #include "Collision/CInternalCollisionStructure.hpp"
 #include "Collision/CInternalRayCastStructure.hpp"
-#include "Collision/CRayCastResult.hpp"
 #include "Collision/CMaterialList.hpp"
+#include "Collision/CRayCastResult.hpp"
 
 #include "Kyoto/IObjectStore.hpp"
 #include "Kyoto/Math/CAABox.hpp"
@@ -161,8 +161,7 @@ private:
                                     CCollisionInfo&);
   static bool InternalCollideBoolean(const CInternalCollisionStructure&);
 
-  uint x4_;
-  CMaterialList mMaterial;
+  CMaterialList mMaterial; // 0x4 is alignment padding
 };
 CHECK_SIZEOF(CCollisionPrimitive, 0x10)
 

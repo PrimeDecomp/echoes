@@ -12,7 +12,7 @@ public:
                       float elevation, float interpolateOnTime, float interpolateOffTime,
                       float controlInterpDur, int interpolateOnType, int interpolationMode,
                       int interpolateOffType);
-  virtual ~CCameraOverrideInfo();
+  virtual ~CCameraOverrideInfo() {}
 
   CBallCamera::EBallCameraBehaviour GetBehaviourType() const { return mBehaviour; }
   uint GetFlags() const { return mFlags; }

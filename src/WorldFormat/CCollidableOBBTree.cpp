@@ -365,7 +365,7 @@ bool CCollidableOBBTree::CacheTree(CCollisionCacheWriter& writer, const COBBTree
       int count = leaf.GetSurfaceVector().size();
       writer.ReserveTriangles(count);
       for (int i = 0; i < count; ++i) {
-        ushort index = leaf.GetSurfaceVector()[i];
+        int index = leaf.GetSurfaceVector()[i];
         CCollisionSurface surface = GetOBBTree().GetTriangle(index, &xf);
         if (CollisionUtil::TriBoxOverlap(center, halfExtent, surface.GetVert(0), surface.GetVert(1),
                                          surface.GetVert(2))) {
@@ -386,7 +386,7 @@ bool CCollidableOBBTree::CacheTree(CCollisionCacheWriter& writer, const COBBTree
   return false;
 }
 
-void CCollidableOBBTree::CacheSphere(CCollisionCache& cache, const CTransform4f& xf, short ownerId,
+void CCollidableOBBTree::CacheSphere(CCollisionCache& cache, const CTransform4f& xf, ushort ownerId,
                                      u64 material) {
   float scale = xf.GetRight().Magnitude();
   COBBTree* tree;
@@ -410,7 +410,7 @@ void CCollidableOBBTree::CacheSphere(CCollisionCache& cache, const CTransform4f&
   primitive.CacheTree(writer, *tree->GetRoot(), xf, worldCenter, halfExtent, obb);
 }
 
-void CCollidableOBBTree::CacheAABox(CCollisionCache& cache, const CTransform4f& xf, short ownerId,
+void CCollidableOBBTree::CacheAABox(CCollisionCache& cache, const CTransform4f& xf, ushort ownerId,
                                     u64 material) {
   COBBTree* tree = COBBTree::GetPrebuiltTree(COBBTree::kPBT_UnitCube);
   CCollisionCacheWriter writer(cache);
@@ -484,7 +484,7 @@ bool CCollidableOBBTree::SphereCollideWithLeafMoving(const COBBTree::CLeafData& 
 
   int surfCount = leaf.GetSurfaceVector().size();
   for (int i = 0; i < surfCount; ++i) {
-    int triIdx = leaf.GetSurfaceVector()[i];
+    ushort triIdx = leaf.GetSurfaceVector()[i];
     CCollisionSurface surf = GetOBBTree().GetTriangle(triIdx, &xf);
     CMaterialList triMat(surf.GetSurfaceFlags());
     if (filter.Passes(triMat)) {
@@ -516,8 +516,7 @@ bool CCollidableOBBTree::SphereCollideWithLeafMoving(const COBBTree::CLeafData& 
 
           if (mag >= 0.0 && !outsideEdges[0] && !outsideEdges[1] && !outsideEdges[2] &&
               mag < dOut) {
-            const CVector3f& collisionPoint = intersectPoint - sphere.GetRadius() * surfNormal;
-            info = CCollisionInfo(collisionPoint, material,
+            info = CCollisionInfo(intersectPoint - sphere.GetRadius() * surfNormal, material,
                                   CMaterialList(triMat.GetValue() | GetMaterial().GetValue()),
                                   surfNormal, -1);
             ret = true;
@@ -555,7 +554,7 @@ bool CCollidableOBBTree::SphereCollideWithLeafMoving(const COBBTree::CLeafData& 
                                     (vtsRej.MagSquared() - sphere.GetRadius() * sphere.GetRadius());
                     if (discriminant >= 0.f) {
                       double inverse = 0.5 / edgeRejMagSq;
-                      double mag2 = inverse * (-b - sqrt(discriminant));
+                      double mag2 = inverse * (-static_cast< double >(b) - sqrt(discriminant));
                       if (mag2 >= 0.0) {
                         double t = mag2 * dirDotEdge + vtsDotEdge;
                         if (t >= 0.0 && t <= edgeVecMag && mag2 < dOut) {

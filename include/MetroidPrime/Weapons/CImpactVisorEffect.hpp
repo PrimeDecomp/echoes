@@ -13,6 +13,10 @@ class CImpactVisorEffect {
 public:
   // Guessed name
   struct SParticleEffect {
+    SParticleEffect(const rstl::optional_object< TLockedToken< CGenDescription > >& particle,
+                    TSfxId sound, bool sendCollideMessage)
+    : mParticle(particle), mSound(sound), mSendCollideMessage(sendCollideMessage) {}
+
     rstl::optional_object< TLockedToken< CGenDescription > > mParticle;
     TSfxId mSound;
     bool mSendCollideMessage : 1;
@@ -20,12 +24,39 @@ public:
 
   // Guessed name
   struct SBlurEffect {
+    SBlurEffect(int type, float amount, float fadeOutTime)
+    : mType(type), mAmount(amount), mFadeOutTime(fadeOutTime) {}
+
     int mType; // Camera blur mode; enum declaration is not recovered yet.
     float mAmount;
     float mFadeOutTime;
   };
 
   CImpactVisorEffect();
+  CImpactVisorEffect(const rstl::optional_object< SParticleEffect >& particleEffect,
+                     const rstl::optional_object< SBlurEffect >& blurEffect,
+                     const rstl::optional_object< rstl::pair< int, float > >& lowPassFilter)
+  : mParticleEffect(particleEffect)
+  , mBlurEffect(blurEffect)
+  , mLowPassFilter(lowPassFilter)
+  , mForcedVisor(CPlayerState::kPV_Invalid)
+  , mForcedVisorDuration(0.f) {}
+
+  // Guessed name.
+  static CImpactVisorEffect
+  ParticleEffect(const rstl::optional_object< TLockedToken< CGenDescription > >& particle,
+                 TSfxId sound, bool sendCollideMessage) {
+    return CImpactVisorEffect(rstl::optional_object< SParticleEffect >(
+                                  SParticleEffect(particle, sound, sendCollideMessage)),
+                              rstl::optional_object< SBlurEffect >(),
+                              rstl::optional_object< rstl::pair< int, float > >());
+  }
+
+  // Guessed name; same code as the DOL function named __ct__18CImpactVisorEffectFv.
+  static CImpactVisorEffect None() {
+    return CImpactVisorEffect(rstl::optional_object_null(), rstl::optional_object_null(),
+                              rstl::optional_object_null());
+  }
 
   const rstl::optional_object< SParticleEffect >& GetParticleEffect() const {
     return mParticleEffect;

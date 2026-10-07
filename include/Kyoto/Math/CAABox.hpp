@@ -88,6 +88,8 @@ public:
   // GetPointC__6CAABoxCFv weak
   // GetPointD__6CAABoxCFv weak
   // GetPointE__6CAABoxCFv weak
+  // Corner order guessed to follow GetPoint(int): bit 0 = X, bit 1 = Y, bit 2 = Z.
+  CVector3f GetPointE() const { return CVector3f(min.GetX(), min.GetY(), max.GetZ()); }
   // GetPointF__6CAABoxCFv weak
   // GetPointG__6CAABoxCFv weak
   // GetPointH__6CAABoxCFv weak

@@ -160,7 +160,7 @@ CSfxHandle PlaySfxForPlayer(CPlayer* player, ushort sfx, short pan, int area, bo
   return hnd;
 }
 
-CSfxHandle AddEmitter(const CActor& actor, ushort sfx, bool useAcoustics, bool looped,
+CSfxHandle AddEmitter(const CActor& actor, const ushort sfx, const bool useAcoustics, bool looped,
                       short priority, uchar maxVolume, uchar minVolume, float maxDistance,
                       float distanceCompensation) {
   CAudioSys::C3DEmitterParmData parms(maxDistance, distanceCompensation, 1, maxVolume, minVolume);

@@ -50,20 +50,21 @@ class CFluidHeightCompare {
 public:
   explicit CFluidHeightCompare(CStateManager& mgr) : mManager(mgr) {}
 
-  bool operator()(const TUniqueId& a, const TUniqueId& b) const;
+  bool operator()(TUniqueId a, TUniqueId b) const;
 
 private:
   CStateManager& mManager;
 };
 
-bool CFluidHeightCompare::operator()(const TUniqueId& a, const TUniqueId& b) const {
-  const CScriptWater* waterA = TCastToPtr< CScriptWater >(mManager.ObjectById(a));
-  const CScriptWater* waterB = TCastToPtr< CScriptWater >(mManager.ObjectById(b));
-  if (waterA == nullptr || waterB == nullptr) {
-    return false;
+bool CFluidHeightCompare::operator()(TUniqueId a, TUniqueId b) const {
+  const CScriptWater* waterA = TCastToConstPtr< CScriptWater >(mManager.GetObjectById(a));
+  const CScriptWater* waterB = TCastToConstPtr< CScriptWater >(mManager.GetObjectById(b));
+  if (waterA != nullptr && waterB != nullptr) {
+    const float heightA = waterA->GetWRSurfacePlane().GetClosestPoint(CVector3f::Zero()).GetZ();
+    const float heightB = waterB->GetWRSurfacePlane().GetClosestPoint(CVector3f::Zero()).GetZ();
+    return heightA < heightB;
   }
-  return waterA->GetWRSurfacePlane().GetClosestPoint(CVector3f::Zero()).GetZ() <
-         waterB->GetWRSurfacePlane().GetClosestPoint(CVector3f::Zero()).GetZ();
+  return false;
 }
 
 static CMaterialList MakeActorMaterialList(const CMaterialList& in,
@@ -231,11 +232,10 @@ CAdvancementDeltas CActor::UpdateAnimation(float dt, CStateManager& mgr, bool ad
 
 void CActor::StopLoopedSounds() {
   for (uint i = 0; i < mLoopingSoundCount; ++i) {
-    TLoopingSound& sound = mLoopingSounds[i];
-    if (const CSfxHandle& handle = sound.second.mHandle) {
+    if (const CSfxHandle& handle = mLoopingSounds[i].second.mHandle) {
       CSfxManager::RemoveEmitter(handle);
-      sound.first = InvalidSfxId;
-      sound.second = SSound(CSfxHandle(), CSegId::Invalid(), false);
+      mLoopingSounds[i].first = InvalidSfxId;
+      mLoopingSounds[i].second = SSound(CSfxHandle(), CSegId::Invalid(), false);
     }
   }
   mLoopingSoundCount = 0;
@@ -703,13 +703,13 @@ void CActor::FluidFXThink(EFluidState, CScriptWater&, CStateManager&) {}
 void CActor::OnScanStateChange(EScanState state, CStateManager& mgr) {
   switch (state) {
   case kSS_Start:
-    SendScriptMsgs(kSS_ScanProcessing, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_ScanProcessing, mgr);
     break;
   case kSS_Processing:
-    SendScriptMsgs(kSS_ScanStart, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_ScanStart, mgr);
     break;
   case kSS_Done:
-    SendScriptMsgs(kSS_ScanDone, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_ScanDone, mgr);
     break;
   }
 }
@@ -748,68 +748,71 @@ void CActor::ProcessSoundEvent(int sfxId, float weight, int flags, float fallOff
                                float pitchDuration, uchar minVol, uchar maxVol,
                                float distanceSquared, const CVector3f& position, int aid,
                                CStateManager& mgr, bool translateId) {
-  if (!(distanceSquared < maxDist * maxDist)) {
-    return;
-  }
+  if (distanceSquared < maxDist * maxDist) {
+    const ushort id = translateId ? static_cast< ushort >(sfxId) : static_cast< ushort >(sfxId);
+    if (sfxId & 0x20000) {
+      aid = CSfxManager::kAllAreas;
+    }
+    const bool useAcoustics = (flags & 0x80) == 0;
+    const bool looping = (sfxId & 0x80000000) != 0;
+    const bool nonEmitter = (sfxId & 0x40000000) != 0;
+    const bool continuousUpdate = (sfxId & 0x20000000) != 0;
+    const bool useEchoVolume = (sfxId & 0x40000) != 0;
+    uchar volume = maxVol;
+    if (useEchoVolume) {
+      volume = GetVisorSoundVolume(mgr);
+    }
+    uint musyxFlags = 0x1; // Continuous parameter update
+    if (flags & 0x8) {
+      musyxFlags |= 0x8; // Doppler FX
+    }
 
-  const ushort id = static_cast< ushort >(sfxId);
-  const bool nonEmitter = (sfxId & 0x40000000) != 0;
-  const bool useAcoustics = (flags & 0x80) == 0;
-  const bool useEchoVolume = (sfxId & 0x40000) != 0;
-  if (sfxId & 0x20000) {
-    aid = CSfxManager::kAllAreas;
-  }
-  const uchar volume = useEchoVolume ? GetVisorSoundVolume(mgr) : maxVol;
-  const uchar minimumVolume = rstl::min_val(minVol, volume);
-
-  uint musyxFlags = 0x1; // Continuous parameter update
-  if (flags & 0x8) {
-    musyxFlags |= 0x8; // Doppler FX
-  }
-
-  CAudioSys::C3DEmitterParmData parms(maxDist, fallOff, musyxFlags, volume, minimumVolume);
-  parms.mPos = locator.val() == 0
-                   ? position
-                   : (GetTransform() * GetScaledLocatorTransform(locator)).GetTranslation();
-  parms.mDir = CVector3f::Zero();
-  parms.mSfxId = id;
-
-  if (!(mgr.Random()->Float() <= weight)) {
-    return;
-  }
-
-  if (sfxId & 0x80000000) {
-    PlayLoopedSound(id, flags, fallOff, maxDist, minimumVolume, volume, nonEmitter, aid,
-                    useAcoustics, locator, pitchStart, pitchEnd, pitchDuration, useEchoVolume);
-  } else {
-    CSfxHandle handle;
-    if (nonEmitter) {
-      short pan = 64;
-      if (flags & 0x10000000) {
-        if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetUniqueId()))) {
-          pan = player->GetSoundPan(CPlayer::kMSP_4);
-        }
-      }
-      handle =
-          CSfxManager::SfxStart(id, 127, pan, aid, useAcoustics, false, CSfxManager::kMedPriority);
+    CAudioSys::C3DEmitterParmData parms(maxDist, fallOff, musyxFlags, volume,
+                                        rstl::min_val(minVol, volume));
+    if (locator.val() == 0) {
+      parms.mPos = position;
     } else {
-      handle = CSfxManager::AddEmitter(parms, aid, useAcoustics, false, CSfxManager::kMedPriority);
+      parms.mPos = (GetTransform() * GetScaledLocatorTransform(locator)).GetTranslation();
     }
-    if ((sfxId & 0x20000000) != 0 /* continuous update */) {
-      mNonLoopingSounds[mNextNonLoopingSfxHandle] = SSound(handle, locator, useEchoVolume);
-      mNextNonLoopingSfxHandle = (mNextNonLoopingSfxHandle + 1) % mNonLoopingSounds.size();
-    }
+    parms.mDir = CVector3f::Zero();
+    parms.mSfxId = id;
 
-    if (handle) {
-      if (mEnablePitchBend) {
-        CSfxManager::PitchBend(handle, mPitchBend);
-      }
-      if (pitchDuration <= 0.f) {
-        if (!mEnablePitchBend) {
-          CSfxManager::PitchBend(handle, pitchStart);
-        }
+    if (mgr.Random()->Float() <= weight) {
+      if (looping) {
+        PlayLoopedSound(id, flags, fallOff, maxDist, rstl::min_val(minVol, volume), volume,
+                        nonEmitter, aid, useAcoustics, locator, pitchStart, pitchEnd, pitchDuration,
+                        useEchoVolume);
       } else {
-        CSfxManager::AddPitchBend(CSfxPitchBend(handle, pitchStart, pitchEnd, pitchDuration));
+        CSfxHandle handle;
+        if (!nonEmitter) {
+          handle =
+              CSfxManager::AddEmitter(parms, aid, useAcoustics, false, CSfxManager::kMedPriority);
+        } else {
+          short pan = 64;
+          if (flags & 0x10000000) {
+            if (const CPlayer* player =
+                    TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetUniqueId()))) {
+              pan = player->GetSoundPan(CPlayer::kMSP_4);
+            }
+          }
+          handle = CSfxManager::SfxStart(id, 127, pan, aid, useAcoustics, false,
+                                         CSfxManager::kMedPriority);
+        }
+        if (continuousUpdate) {
+          mNonLoopingSounds[mNextNonLoopingSfxHandle] = SSound(handle, locator, useEchoVolume);
+          mNextNonLoopingSfxHandle = (mNextNonLoopingSfxHandle + 1) % mNonLoopingSounds.size();
+        }
+
+        if (handle) {
+          if (mEnablePitchBend) {
+            CSfxManager::PitchBend(handle, mPitchBend);
+          }
+          if (pitchDuration > 0.f) {
+            CSfxManager::AddPitchBend(CSfxPitchBend(handle, pitchStart, pitchEnd, pitchDuration));
+          } else if (!mEnablePitchBend) {
+            CSfxManager::PitchBend(handle, pitchStart);
+          }
+        }
       }
     }
   }
@@ -880,10 +883,15 @@ void CActor::RemoveInvalidFluidIds(CStateManager& mgr) {
 }
 
 void CActor::SetInFluid(CStateManager& mgr, bool inFluid, TUniqueId uid) {
-  rstl::reserved_vector< TUniqueId, 4 >::iterator it =
-      rstl::find(mFluidIds.begin(), mFluidIds.end(), uid);
   if (inFluid) {
-    if (it == mFluidIds.end() && mFluidIds.size() != mFluidIds.capacity()) {
+    bool found = false;
+    for (int i = 0; i < mFluidIds.size(); ++i) {
+      if (mFluidIds[i] == uid) {
+        found = true;
+        break;
+      }
+    }
+    if (!found && mFluidIds.size() != mFluidIds.capacity()) {
       if (!mFluidIdsChanged) {
         mFluidIdsChanged = true;
         mPreviousFluidIds = mFluidIds;
@@ -891,14 +899,28 @@ void CActor::SetInFluid(CStateManager& mgr, bool inFluid, TUniqueId uid) {
       mFluidIds.push_back(uid);
       rstl::sort(mFluidIds.begin(), mFluidIds.end(), CFluidHeightCompare(mgr));
     }
-  } else if (it != mFluidIds.end()) {
-    if (!mFluidIdsChanged) {
-      mFluidIdsChanged = true;
-      mPreviousFluidIds = mFluidIds;
+  } else {
+    for (rstl::reserved_vector< TUniqueId, 4 >::iterator it = mFluidIds.begin();
+         it != mFluidIds.end(); ++it) {
+      if (*it == uid) {
+        if (!mFluidIdsChanged) {
+          mFluidIdsChanged = true;
+          mPreviousFluidIds = mFluidIds;
+        }
+        mFluidIds.erase(it);
+        break;
+      }
     }
-    mFluidIds.erase(it);
   }
-  RemoveInvalidFluidIds(mgr);
+
+  rstl::reserved_vector< TUniqueId, 4 >::iterator it = mFluidIds.begin();
+  while (it != mFluidIds.end()) {
+    if (!TCastToConstPtr< CScriptWater >(mgr.GetObjectById(*it))) {
+      it = mFluidIds.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 const rstl::reserved_vector< TUniqueId, 4 >& CActor::GetFluidList() const { return mFluidIds; }
@@ -931,28 +953,28 @@ void CActor::UpdateSfxEmitters(CStateManager& mgr) {
   uint i = 0;
   const uint count = mNonLoopingSounds.size();
   for (; i < count; ++i) {
-    const SSound& sound = mNonLoopingSounds[i];
-    const CSegId& locator = sound.mLocator;
+    const CSegId& locator = mNonLoopingSounds[i].mLocator;
     const CVector3f soundPosition =
         locator.val() == 0 ? position
                            : (GetTransform() * GetScaledLocatorTransform(locator)).GetTranslation();
     uint volume = mMaxVol;
-    if (sound.mUseEchoVolume) {
+    if (mNonLoopingSounds[i].mUseEchoVolume) {
       volume = GetVisorSoundVolume(mgr);
     }
-    CSfxManager::UpdateEmitter(sound.mHandle, soundPosition, CVector3f::Zero(), volume);
+    CSfxManager::UpdateEmitter(mNonLoopingSounds[i].mHandle, soundPosition, CVector3f::Zero(),
+                               volume);
   }
   for (i = 0; i < mLoopingSoundCount; ++i) {
-    const TLoopingSound& sound = mLoopingSounds[i];
-    const CSegId& locator = sound.second.mLocator;
+    const CSegId& locator = mLoopingSounds[i].second.mLocator;
     const CVector3f soundPosition =
         locator.val() == 0 ? position
                            : (GetTransform() * GetScaledLocatorTransform(locator)).GetTranslation();
     uint volume = mMaxVol;
-    if (sound.second.mUseEchoVolume) {
+    if (mLoopingSounds[i].second.mUseEchoVolume) {
       volume = GetVisorSoundVolume(mgr);
     }
-    CSfxManager::UpdateEmitter(sound.second.mHandle, soundPosition, CVector3f::Zero(), volume);
+    CSfxManager::UpdateEmitter(mLoopingSounds[i].second.mHandle, soundPosition, CVector3f::Zero(),
+                               volume);
   }
 }
 
@@ -1014,7 +1036,7 @@ void CActor::PlayLoopedSound(ushort sfxId, int flags, float fallOff, float maxDi
   }
 }
 
-void CActor::AddLoopedSound(ushort sfxId, bool nonEmitter, int area, bool useAcoustics,
+void CActor::AddLoopedSound(ushort sfxId, bool nonEmitter, int area, const bool useAcoustics,
                             CAudioSys::C3DEmitterParmData& parameters, const CSegId& locator,
                             ushort pitchStart, ushort pitchEnd, float pitchDuration,
                             bool useEchoVolume) {
@@ -1027,18 +1049,15 @@ void CActor::AddLoopedSound(ushort sfxId, bool nonEmitter, int area, bool useAco
   }
 
   if (handle) {
-    TLoopingSound& sound = mLoopingSounds[mLoopingSoundCount];
-    sound.first = sfxId;
-    sound.second = SSound(handle, locator, useEchoVolume);
+    mLoopingSounds[mLoopingSoundCount].first = sfxId;
+    mLoopingSounds[mLoopingSoundCount].second = SSound(handle, locator, useEchoVolume);
     if (mEnablePitchBend) {
       CSfxManager::PitchBend(handle, mPitchBend);
     }
-    if (pitchDuration <= 0.f) {
-      if (!mEnablePitchBend) {
-        CSfxManager::PitchBend(handle, pitchStart);
-      }
-    } else {
+    if (pitchDuration > 0.f) {
       CSfxManager::AddPitchBend(CSfxPitchBend(handle, pitchStart, pitchEnd, pitchDuration));
+    } else if (!mEnablePitchBend) {
+      CSfxManager::PitchBend(handle, pitchStart);
     }
   }
   ++mLoopingSoundCount;
@@ -1135,7 +1154,7 @@ void CActor::UpdatePortalSystemState(CStateManager& mgr) {
 }
 
 float CActor::GetDistanceToCamera(CStateManager& mgr) const {
-  float distanceSquared = FLT_MAX;
+  float distanceSquared = 3.4028235e38f;
   const CVector3f position = GetTranslation();
   for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     const CGameCamera* camera = mgr.GetCameraManager(i)->GetCurrentCamera(mgr, true);

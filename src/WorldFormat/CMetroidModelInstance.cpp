@@ -44,10 +44,13 @@ SAreaSurface::SAreaSurface(CInputStream& in)
 
 ushort CMetroidModelInstance::CSurfaceGroups::GetSurfaceCount(int group) const {
   const ushort count = mData[group + 1];
-  return group == 0 ? count : count - mData[group];
+  if (group == 0) {
+    return count;
+  }
+  return count - mData[group];
 }
 
 const ushort* CMetroidModelInstance::CSurfaceGroups::GetSurfaceIndices(int group) const {
-  const ushort start = group == 0 ? 0 : mData[group];
-  return mData + mData[0] + 1 + start;
+  const int start = group != 0 ? mData[group] : 0;
+  return mData + (mData[0] + 1) + start;
 }

@@ -26,7 +26,7 @@
 bool CScriptSound::sFirstInFrame;
 
 static int ScaleByMusicVolume(int volume) {
-  const float musicVolume = float(int(gpGameState->GameOptions().GetMusicVolume()));
+  const float musicVolume = CCast::LtoF(gpGameState->GameOptions().GetMusicVolume());
   CMayaSpline& volumeCurve = gpTweakGame->GetMusicVolumeSpline();
   const float musicScale = volumeCurve.EvaluateAt(musicVolume);
   return CCast::FtoS(float(volume * musicScale) / 127.f);
@@ -92,8 +92,8 @@ CScriptSound::CScriptSound(TUniqueId uid, const rstl::string& name, const CEntit
                            short unknown1a2, bool looped, bool nonEmitter, bool playerRelativePan,
                            bool autoStart, bool occlusionTest, bool acoustics, bool worldSfx,
                            bool allowDuplicates, bool allAreas, bool scaleByMusicVolume, int pitch)
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_Trigger), CActorParameters::None(),
-         kInvalidUniqueId)
+: CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_Trigger),
+         CActorParameters::None(), kInvalidUniqueId)
 , mOcclusionUpdateTimer(0.f)
 , mSfxHandle()
 , mMaxVolume(0)
@@ -261,12 +261,13 @@ void CScriptSound::SetMaxVolume(short volume) {
 
   if (mNonEmitter) {
     CSfxManager::SfxVolume(mSfxHandle,
-                           uchar(mScaleByMusicVolume ? ScaleByMusicVolume(volume) : volume));
+                           uchar(mScaleByMusicVolume ? ScaleByMusicVolume(mVolume) : mVolume));
   } else {
     const CVector3f position = GetTranslation();
     mCurrentMaxVolume = mVolume;
     mMaxVolume = mCurrentMaxVolume;
-    CSfxManager::UpdateEmitter(mSfxHandle, position, CVector3f::Zero(), uchar(volume));
+    const uchar vol = mVolume;
+    CSfxManager::UpdateEmitter(mSfxHandle, position, CVector3f::Zero(), vol);
   }
 }
 
@@ -290,7 +291,7 @@ void CScriptSound::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
          it != GetConnectionList().end(); ++it) {
       if (it->state == kSS_Connect) {
-        if (mPositionSources.size() == mPositionSources.capacity()) {
+        if (mPositionSources.capacity() == mPositionSources.size()) {
           mPositionSources.reserve(mPositionSources.size() + 1);
         }
         mPositionSources.push_back_unsafe(mgr.GetIdForScript(it->objId));
@@ -386,7 +387,7 @@ void CScriptSound::PlaySound(CStateManager& mgr, const CScriptMsg* msg) {
 void CScriptSound::StopSound(CStateManager& mgr) {
   mPlayRequested = false;
   if (mWorldSfx && mNonEmitter) {
-    mgr.World()->StopGlobalSound(mSoundId);
+    mgr.World()->StopGlobalSound(GetSoundId());
     mSfxHandle.Clear();
   } else if (mSfxHandle) {
     CSfxManager::RemoveEmitter(mSfxHandle);

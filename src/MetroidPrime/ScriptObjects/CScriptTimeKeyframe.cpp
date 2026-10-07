@@ -41,13 +41,13 @@ void CScriptTimeKeyframe::ApplyTime(TUniqueId id, CStateManager& mgr) {
     }
 
     if (CScriptSequenceTimer* timer = TCastToPtr< CScriptSequenceTimer >(target)) {
-      timer->SetCurrentTime(mTime);
+      timer->SetCurrentTime(mTime, mgr);
     }
     if (CScriptColorModulate* color = TCastToPtr< CScriptColorModulate >(target)) {
       color->SetExternalTime(mTime);
     }
     if (CScriptActorRotate* rotate = TCastToPtr< CScriptActorRotate >(target)) {
-      rotate->SetCurrentTime(mTime);
+      rotate->SetCurrentTime(mTime, mgr);
     }
   }
 }

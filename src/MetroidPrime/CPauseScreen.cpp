@@ -115,7 +115,7 @@ CPauseScreen::CPauseScreen()
 , mOpenedFromScan(false)
 , mModelsReady(false) {
   const CEnvironmentVariable* legend =
-      gpGameState->SystemOptions().FindEnvironmentVariable("LogbookLegendVisible");
+      gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("LogbookLegendVisible");
   mLegendVisible = legend->GetMaximum() == legend->GetValue();
   InitializeStripedTexture();
   gpResourceFactory->GetResLoader().AddPakFileAsync(rstl::string("logbook"), false, false);
@@ -980,6 +980,7 @@ void CPauseScreen::ProcessButtonInput(const CFinalInput& input) {
   } else if (input.PY()) {
     mLegendVisible = !mLegendVisible;
     gpGameState->SystemOptions()
+        .EnvVars()
         .FindEnvironmentVariable("LogbookLegendVisible")
         ->Set(mLegendVisible);
     if (!close_enough(mModelZoomAmount, 1.f)) {

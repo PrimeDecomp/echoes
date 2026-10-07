@@ -1,4 +1,5 @@
 #include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/UserNames.hpp"
 
 #include "Collision/CCollidableAABoxSphere.hpp"
 #include "Collision/CCollidableSphere.hpp"
@@ -49,7 +50,6 @@ static float CollisionImpulseFiniteVsInfinite(float, float, float);
 static float CollisionImpulseFiniteVsFinite(float, float, float, float);
 static bool CollideCachedAABox(const CAreaCollisionCache&, const CAABox&, const CMaterialFilter&,
                                CCollisionInfoList&, const CCollisionPrimitive&);
-static void EnsureCacheBounds(const CStateManager&, CAreaCollisionCache&, const CAABox&);
 
 CMotionState CPhysicsActor::GetLastNonCollidingState() const { return mLastNonCollidingState; }
 
@@ -204,9 +204,11 @@ bool CGameCollision::RayStaticLineOfSightTest(const CStateManager& mgr, const CV
   if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
-  const CLine line(position, CUnitVector3f(direction, CUnitVector3f::kN_No));
+  const CWorld* world = mgr.GetWorld();
+  const CUnitVector3f unitDir = CUnitVector3f(direction.GetX(), direction.GetY(), direction.GetZ());
+  const CLine line(position, unitDir);
   const float maxDistance = length > 0.f ? length : 100000.f;
-  for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+  for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
        area != CWorld::skGlobalEnd; ++area) {
     const CAreaOctTree& tree = *area->GetPostConstructed()->mCollision;
     if (!tree.GetRootNode().LineTest(line, staticFilter, maxDistance)) {
@@ -223,9 +225,14 @@ bool CGameCollision::RayStaticLineOfSightTest(const CGameArea& area, const CVect
   if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
-  const CLine line(position, CUnitVector3f(direction, CUnitVector3f::kN_No));
-  const CAreaOctTree& tree = *area.GetPostConstructed()->mCollision;
-  return tree.GetRootNode().LineTest(line, staticFilter, length > 0.f ? length : 100000.f);
+  const CUnitVector3f unitDir = CUnitVector3f(direction.GetX(), direction.GetY(), direction.GetZ());
+  const CLine line(position, unitDir);
+  const float maxDistance = length > 0.f ? length : 100000.f;
+  if (!area.GetPostConstructed()->mCollision->GetRootNode().LineTest(line, staticFilter,
+                                                                     maxDistance)) {
+    return false;
+  }
+  return true;
 }
 
 CRayCastResult CGameCollision::RayStaticIntersection(const CStateManager& mgr,
@@ -237,17 +244,20 @@ CRayCastResult CGameCollision::RayStaticIntersection(const CStateManager& mgr,
   if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return result;
   }
-  const CLine line(position, CUnitVector3f(direction, CUnitVector3f::kN_No));
+  const CUnitVector3f unitDir = CUnitVector3f(direction.GetX(), direction.GetY(), direction.GetZ());
+  const CLine line(position, unitDir);
+  const CWorld* world = mgr.GetWorld();
   float closest = length > 0.f ? length : 100000.f;
-  for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+  for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
        area != CWorld::skGlobalEnd; ++area) {
     CAreaOctTree::SRayResult candidate;
     const CAreaOctTree& tree = *area->GetPostConstructed()->mCollision;
     tree.GetRootNode().LineTestEx(line, staticFilter, candidate, length);
-    if (candidate.mSurface && (length == 0.f || candidate.mT <= length) && candidate.mT < closest) {
+    if (candidate.mSurface && (length == 0.f || !(length < candidate.mT)) &&
+        candidate.mT < closest) {
+      closest = candidate.mT;
       result = CRayCastResult(candidate.mT, position + candidate.mT * direction, candidate.mPlane,
                               CMaterialList(candidate.mSurface->GetSurfaceFlags()));
-      closest = candidate.mT;
     }
   }
   return result;
@@ -257,11 +267,13 @@ void CGameCollision::BuildAreaCollisionCache(const CStateManager& mgr, CAreaColl
   cache.ClearCache();
   for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
        area != CWorld::skGlobalEnd; ++area) {
-    const CAreaOctTree& tree = *area->GetPostConstructed()->mCollision;
-    CMetroidAreaCollider::COctreeLeafCache leaves(tree, area->GetId().Value());
-    CMetroidAreaCollider::BuildOctreeLeafCache(tree.GetRootNode(), cache.GetCacheBounds(), leaves);
+    CMetroidAreaCollider::COctreeLeafCache leaves(*area->GetPostConstructed()->mCollision,
+                                                  area->GetId().Value());
+    CMetroidAreaCollider::BuildOctreeLeafCache(
+        area->GetPostConstructed()->mCollision->GetRootNode(), cache.GetCacheBounds(), leaves);
     cache.AddOctreeLeafCache(leaves);
   }
+  IsUser(0);
 }
 
 bool CGameCollision::DetectCollisionBoolean(
@@ -432,9 +444,10 @@ static bool CollideCachedAABox(const CAreaCollisionCache& cache, const CAABox& b
                                const CMaterialFilter& filter, CCollisionInfoList& collisions,
                                const CCollisionPrimitive& primitive) {
   bool hit = false;
-  for (uint i = 0; i < cache.GetNumCaches(); ++i) {
-    if (CMetroidAreaCollider::AABoxCollisionCheck_Cached(
-            cache.GetOctreeLeafCache(i), bounds, filter, primitive.GetMaterial(), collisions)) {
+  for (int i = 0; i < cache.GetNumCaches(); ++i) {
+    if (CMetroidAreaCollider::AABoxCollisionCheck_Cached(cache.GetOctreeLeafCache(i), bounds,
+                                                         filter, primitive.GetMaterial(),
+                                                         collisions) == true) {
       hit = true;
     }
   }
@@ -445,33 +458,44 @@ bool CGameCollision::DetectStaticCollision_Cached(
     const CStateManager& mgr, CAreaCollisionCache& cache, const CCollisionPrimitive& primitive,
     const CTransform4f& transform, const CMaterialFilter& filter, CCollisionInfoList& collisions) {
   const CMaterialFilter staticFilter = filter.WithImplicitMaterials(skStaticGeometryMaterials);
-  if (staticFilter.GetType() == CMaterialFilter::kFT_Never || primitive.GetPrimType() == 'OBTG') {
+  if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
+  if (primitive.GetPrimType() == 'OBTG') {
+    return false;
+  }
+  bool hit = false;
   const CAABox bounds = primitive.CalculateAABox(transform);
-  EnsureCacheBounds(mgr, cache, bounds);
+  if (!bounds.Inside(cache.GetCacheBounds())) {
+    const CVector3f margin(0.2f, 0.2f, 0.2f);
+    CAABox expanded(bounds.GetMinPoint() - margin, bounds.GetMaxPoint() + margin);
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMinPoint());
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMaxPoint());
+    cache.SetCacheBounds(expanded);
+    BuildAreaCollisionCache(mgr, cache);
+    IsUser(0);
+  }
   if (cache.HasCacheOverflowed()) {
     return DetectStaticCollision(mgr, primitive, transform, staticFilter, collisions);
   }
-  bool hit = false;
   if (primitive.GetPrimType() == 'AABX') {
     hit = CollideCachedAABox(cache, bounds, staticFilter, collisions, primitive);
   } else if (primitive.GetPrimType() == 'SPHR') {
-    const CSphere& localSphere = static_cast< const CCollidableSphere& >(primitive).GetSphere();
-    const CSphere sphere(transform * localSphere.GetCenter(), localSphere.GetRadius());
-    for (uint i = 0; i < cache.GetNumCaches(); ++i) {
+    const CSphere sphere = static_cast< const CCollidableSphere& >(primitive).Transform(transform);
+    for (int i = 0; i < static_cast< int >(cache.GetNumCaches()); ++i) {
       if (CMetroidAreaCollider::SphereCollisionCheck_Cached(cache.GetOctreeLeafCache(i), bounds,
                                                             sphere, primitive.GetMaterial(),
                                                             staticFilter, collisions)) {
         hit = true;
       }
     }
-  }
-  if (primitive.GetPrimType() == 'ABSH') {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
-    hit = DetectStaticCollision_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
-                                       staticFilter, collisions);
+    if (DetectStaticCollision_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
+                                     staticFilter, collisions)) {
+      hit = true;
+    }
     if (DetectStaticCollision_Cached(mgr, cache, compound.GetCollidableSphere(), transform,
                                      staticFilter, collisions)) {
       hit = true;
@@ -486,13 +510,17 @@ bool CGameCollision::DetectStaticCollision(const CStateManager& mgr,
                                            const CMaterialFilter& filter,
                                            CCollisionInfoList& collisions) {
   const CMaterialFilter staticFilter = filter.WithImplicitMaterials(skStaticGeometryMaterials);
-  if (staticFilter.GetType() == CMaterialFilter::kFT_Never || primitive.GetPrimType() == 'OBTG') {
+  if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
+    return false;
+  }
+  if (primitive.GetPrimType() == 'OBTG') {
     return false;
   }
   bool hit = false;
+  const CWorld* world = mgr.GetWorld();
   if (primitive.GetPrimType() == 'AABX') {
     const CAABox bounds = primitive.CalculateAABox(transform);
-    for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+    for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
          area != CWorld::skGlobalEnd; ++area) {
       if (CMetroidAreaCollider::AABoxCollisionCheck(*area->GetPostConstructed()->mCollision, bounds,
                                                     staticFilter, primitive.GetMaterial(),
@@ -502,9 +530,8 @@ bool CGameCollision::DetectStaticCollision(const CStateManager& mgr,
     }
   } else if (primitive.GetPrimType() == 'SPHR') {
     const CAABox bounds = primitive.CalculateAABox(transform);
-    const CSphere& localSphere = static_cast< const CCollidableSphere& >(primitive).GetSphere();
-    const CSphere sphere(transform * localSphere.GetCenter(), localSphere.GetRadius());
-    for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+    const CSphere sphere = static_cast< const CCollidableSphere& >(primitive).Transform(transform);
+    for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
          area != CWorld::skGlobalEnd; ++area) {
       if (CMetroidAreaCollider::SphereCollisionCheck(*area->GetPostConstructed()->mCollision,
                                                      bounds, sphere, primitive.GetMaterial(),
@@ -512,12 +539,13 @@ bool CGameCollision::DetectStaticCollision(const CStateManager& mgr,
         hit = true;
       }
     }
-  }
-  if (primitive.GetPrimType() == 'ABSH') {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
-    hit = DetectStaticCollision(mgr, compound.GetCollidableAABox(), transform, staticFilter,
-                                collisions);
+    if (DetectStaticCollision(mgr, compound.GetCollidableAABox(), transform, staticFilter,
+                              collisions)) {
+      hit = true;
+    }
     if (DetectStaticCollision(mgr, compound.GetCollidableSphere(), transform, staticFilter,
                               collisions)) {
       hit = true;
@@ -532,40 +560,55 @@ bool CGameCollision::DetectStaticCollisionBoolean_Cached(const CStateManager& mg
                                                          const CTransform4f& transform,
                                                          const CMaterialFilter& filter) {
   const CMaterialFilter staticFilter = filter.WithImplicitMaterials(skStaticGeometryMaterials);
-  if (staticFilter.GetType() == CMaterialFilter::kFT_Never || primitive.GetPrimType() == 'OBTG') {
+  if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
+  if (primitive.GetPrimType() == 'OBTG') {
+    return false;
+  }
+  bool hit = false;
   const CAABox bounds = primitive.CalculateAABox(transform);
-  EnsureCacheBounds(mgr, cache, bounds);
+  if (!bounds.Inside(cache.GetCacheBounds())) {
+    const CVector3f margin(0.2f, 0.2f, 0.2f);
+    CAABox expanded(bounds.GetMinPoint() - margin, bounds.GetMaxPoint() + margin);
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMinPoint());
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMaxPoint());
+    cache.SetCacheBounds(expanded);
+    BuildAreaCollisionCache(mgr, cache);
+    IsUser(0);
+  }
   if (cache.HasCacheOverflowed()) {
     return DetectStaticCollisionBoolean(mgr, primitive, transform, staticFilter);
   }
   if (primitive.GetPrimType() == 'AABX') {
-    for (uint i = 0; i < cache.GetNumCaches(); ++i) {
+    for (int i = 0; i < static_cast< int >(cache.GetNumCaches()); ++i) {
       if (CMetroidAreaCollider::AABoxCollisionCheckBoolean_Cached(cache.GetOctreeLeafCache(i),
                                                                   bounds, staticFilter)) {
-        return true;
+        hit = true;
+        break;
       }
     }
   } else if (primitive.GetPrimType() == 'SPHR') {
-    const CSphere& localSphere = static_cast< const CCollidableSphere& >(primitive).GetSphere();
-    const CSphere sphere(transform * localSphere.GetCenter(), localSphere.GetRadius());
-    for (uint i = 0; i < cache.GetNumCaches(); ++i) {
+    const CSphere sphere = static_cast< const CCollidableSphere& >(primitive).Transform(transform);
+    for (int i = 0; i < static_cast< int >(cache.GetNumCaches()); ++i) {
       if (CMetroidAreaCollider::SphereCollisionCheckBoolean_Cached(cache.GetOctreeLeafCache(i),
                                                                    bounds, sphere, staticFilter)) {
-        return true;
+        hit = true;
+        break;
       }
     }
-  }
-  if (primitive.GetPrimType() == 'ABSH') {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
-    return DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
-                                               staticFilter) ||
-           DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableSphere(),
-                                               transform, staticFilter);
+    if (DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableAABox(), transform,
+                                            staticFilter)) {
+      hit = true;
+    } else if (DetectStaticCollisionBoolean_Cached(mgr, cache, compound.GetCollidableSphere(),
+                                                   transform, staticFilter)) {
+      hit = true;
+    }
   }
-  return false;
+  return hit;
 }
 
 bool CGameCollision::DetectStaticCollisionBoolean(const CStateManager& mgr,
@@ -573,12 +616,16 @@ bool CGameCollision::DetectStaticCollisionBoolean(const CStateManager& mgr,
                                                   const CTransform4f& transform,
                                                   const CMaterialFilter& filter) {
   const CMaterialFilter staticFilter = filter.WithImplicitMaterials(skStaticGeometryMaterials);
-  if (staticFilter.GetType() == CMaterialFilter::kFT_Never || primitive.GetPrimType() == 'OBTG') {
+  if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
+  if (primitive.GetPrimType() == 'OBTG') {
+    return false;
+  }
+  const CWorld* world = mgr.GetWorld();
   if (primitive.GetPrimType() == 'AABX') {
     const CAABox bounds = primitive.CalculateAABox(transform);
-    for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+    for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
          area != CWorld::skGlobalEnd; ++area) {
       if (CMetroidAreaCollider::AABoxCollisionCheckBoolean(*area->GetPostConstructed()->mCollision,
                                                            bounds, staticFilter)) {
@@ -587,23 +634,24 @@ bool CGameCollision::DetectStaticCollisionBoolean(const CStateManager& mgr,
     }
   } else if (primitive.GetPrimType() == 'SPHR') {
     const CAABox bounds = primitive.CalculateAABox(transform);
-    const CSphere& localSphere = static_cast< const CCollidableSphere& >(primitive).GetSphere();
-    const CSphere sphere(transform * localSphere.GetCenter(), localSphere.GetRadius());
-    for (CGameArea::CConstChainIterator area = mgr.GetWorld()->GetChainHead(CWorld::kC_Alive);
+    const CSphere sphere = static_cast< const CCollidableSphere& >(primitive).Transform(transform);
+    for (CGameArea::CConstChainIterator area = world->GetChainHead(CWorld::kC_Alive);
          area != CWorld::skGlobalEnd; ++area) {
       if (CMetroidAreaCollider::SphereCollisionCheckBoolean(*area->GetPostConstructed()->mCollision,
                                                             bounds, sphere, staticFilter)) {
         return true;
       }
     }
-  }
-  if (primitive.GetPrimType() == 'ABSH') {
+  } else if (primitive.GetPrimType() == 'ABSH') {
     const CCollidableAABoxSphere& compound =
         static_cast< const CCollidableAABoxSphere& >(primitive);
-    return DetectStaticCollisionBoolean(mgr, compound.GetCollidableAABox(), transform,
-                                        staticFilter) ||
-           DetectStaticCollisionBoolean(mgr, compound.GetCollidableSphere(), transform,
-                                        staticFilter);
+    if (DetectStaticCollisionBoolean(mgr, compound.GetCollidableAABox(), transform, staticFilter)) {
+      return true;
+    }
+    if (DetectStaticCollisionBoolean(mgr, compound.GetCollidableSphere(), transform,
+                                     staticFilter)) {
+      return true;
+    }
   }
   return false;
 }
@@ -613,23 +661,35 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
     const CTransform4f& transform, const CMaterialFilter& filter, const CVector3f& direction,
     CCollisionInfo& collision, double& distance) {
   const CMaterialFilter staticFilter = filter.WithImplicitMaterials(skStaticGeometryMaterials);
-  if (staticFilter.GetType() == CMaterialFilter::kFT_Never || primitive.GetPrimType() == 'OBTG') {
+  if (staticFilter.GetType() == CMaterialFilter::kFT_Never) {
     return false;
   }
-  const CAABox bounds = primitive.CalculateAABox(transform);
+  if (primitive.GetPrimType() == 'OBTG') {
+    return false;
+  }
   const CVector3f displacement = float(distance) * direction;
+  const CAABox bounds = primitive.CalculateAABox(transform);
   CAABox sweptBounds(bounds);
   sweptBounds.AccumulateBounds(bounds.GetMinPoint() + displacement);
   sweptBounds.AccumulateBounds(bounds.GetMaxPoint() + displacement);
-  EnsureCacheBounds(mgr, cache, sweptBounds);
+  if (!sweptBounds.Inside(cache.GetCacheBounds())) {
+    const CVector3f margin(0.2f, 0.2f, 0.2f);
+    CAABox expanded(sweptBounds.GetMinPoint() - margin, sweptBounds.GetMaxPoint() + margin);
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMinPoint());
+    expanded.AccumulateBounds(cache.GetCacheBounds().GetMaxPoint());
+    cache.SetCacheBounds(expanded);
+    BuildAreaCollisionCache(mgr, cache);
+    IsUser(0);
+  }
 
   if (primitive.GetPrimType() == 'AABX') {
-    for (uint i = 0; i < cache.GetNumCaches(); ++i) {
+    for (int i = 0; i < static_cast< int >(cache.GetNumCaches()); ++i) {
       CCollisionInfo candidate;
       double candidateDistance = distance;
+      const float maxDistance = distance;
       if (CMetroidAreaCollider::MovingAABoxCollisionCheck_Cached(
               cache.GetOctreeLeafCache(i), bounds, staticFilter, CMaterialList(kMT_Unknown59),
-              direction, float(distance), candidate, candidateDistance) &&
+              direction, maxDistance, candidate, candidateDistance) &&
           candidateDistance < distance) {
         collision = candidate;
         distance = float(candidateDistance);
@@ -637,14 +697,14 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
     }
   } else if (primitive.GetPrimType() == 'SPHR') {
     const CSphere& sphere = static_cast< const CCollidableSphere& >(primitive).GetSphere();
-    for (uint i = 0; i < cache.GetNumCaches(); ++i) {
+    for (int i = 0; i < static_cast< int >(cache.GetNumCaches()); ++i) {
       CCollisionInfo candidate;
       double candidateDistance = distance;
+      const float maxDistance = distance;
       if (CMetroidAreaCollider::MovingSphereCollisionCheck_Cached(
               cache.GetOctreeLeafCache(i), bounds,
               CSphere(transform * sphere.GetCenter(), sphere.GetRadius()), staticFilter,
-              CMaterialList(kMT_Unknown59), direction, float(distance), candidate,
-              candidateDistance) &&
+              CMaterialList(kMT_Unknown59), direction, maxDistance, candidate, candidateDistance) &&
           candidateDistance < distance) {
         collision = candidate;
         distance = float(candidateDistance);
@@ -673,8 +733,8 @@ void CGameCollision::SendScriptMessages(CStateManager& mgr, CActor& actor, CActo
   CMaterialList materials;
   bool hasFloor = false;
   bool hasPlatform = false;
-  for (int i = 0; i < collisions.GetCount(); ++i) {
-    materials.Add(collisions[i].GetMaterialLeft());
+  for (const CCollisionInfo* it = collisions.Begin(); it != collisions.End(); ++it) {
+    materials.Add(it->GetMaterialLeft());
   }
   for (int i = 0; i < collisions.GetCount(); ++i) {
     const CCollisionInfo& collision = collisions[i];
@@ -687,18 +747,15 @@ void CGameCollision::SendScriptMessages(CStateManager& mgr, CActor& actor, CActo
   }
   SendMaterialMessage(mgr, materials, actor);
   if (hasFloor) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                    kSM_Landed, kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Landed));
     if (hasPlatform) {
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(other)) {
-        mgr.DeliverScriptMsg(
-            CScriptMsg(actor.GetUniqueId(), kInvalidUniqueId, platform->GetUniqueId(),
-                       static_cast< EScriptObjectMessage >('XONP'), kSS_InvalidState));
+        mgr.DeliverScriptMsg(CScriptMsg(actor.GetUniqueId(), platform->GetUniqueId(),
+                                        static_cast< EScriptObjectMessage >('XONP')));
       }
     } else {
-      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                      static_cast< EScriptObjectMessage >('XLSG'),
-                                      kSS_InvalidState));
+      mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(),
+                                      static_cast< EScriptObjectMessage >('XLSG')));
     }
   } else if (other != nullptr) {
     if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(&actor)) {
@@ -711,9 +768,8 @@ void CGameCollision::SendScriptMessages(CStateManager& mgr, CActor& actor, CActo
         }
       }
       if (hasPlatform) {
-        mgr.DeliverScriptMsg(
-            CScriptMsg(other->GetUniqueId(), kInvalidUniqueId, platform->GetUniqueId(),
-                       static_cast< EScriptObjectMessage >('XONP'), kSS_InvalidState));
+        mgr.DeliverScriptMsg(CScriptMsg(other->GetUniqueId(), platform->GetUniqueId(),
+                                        static_cast< EScriptObjectMessage >('XONP')));
       }
     }
   }
@@ -721,8 +777,8 @@ void CGameCollision::SendScriptMessages(CStateManager& mgr, CActor& actor, CActo
 
 void CGameCollision::SendMaterialMessage(CStateManager& mgr, const CMaterialList&, CActor& actor) {
   // Echoes always sends the normal-surface message here.
-  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, actor.GetUniqueId(),
-                                  static_cast< EScriptObjectMessage >('XOND'), kSS_InvalidState));
+  mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(),
+                                  static_cast< EScriptObjectMessage >('XOND')));
 }
 
 void CGameCollision::ShowCollisionResults(CCollisionInfoList&, const CColor&) {}
@@ -764,7 +820,7 @@ float CGameCollision::GetMinExtentForCollisionPrimitive(const CCollisionPrimitiv
   }
   if (primitive.GetPrimType() == 'AABX') {
     const CAABox& bounds = static_cast< const CCollidableAABox& >(primitive).GetBox();
-    const CVector3f extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
+    const CVector3f& extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
     return rstl::min_val(rstl::min_val(extent.GetX(), extent.GetY()), extent.GetZ());
   }
   if (primitive.GetPrimType() == 'ABSH') {
@@ -785,12 +841,8 @@ void CGameCollision::ResolveCollisions(CPhysicsActor& actor, CPhysicsActor* othe
     if (other != nullptr) {
       CollideWithDynamicBodyNoRot(actor, *other, collision, restitution, false);
     } else {
-      const CVector3f& normal = collision.GetNormalLeft();
-      const CUnitVector3f unitNormal(normal.CanBeNormalized() ? normal.AsNormalized()
-                                                              : CVector3f::Zero(),
-                                     CUnitVector3f::kN_No);
       CollideWithStaticBodyNoRot(actor, collision.GetMaterialLeft(), collision.GetMaterialRight(),
-                                 unitNormal, restitution, false);
+                                 CUnitVector3f(collision.GetNormalLeft()), restitution, false);
     }
   }
 }
@@ -864,15 +916,14 @@ void CGameCollision::CollideWithStaticBodyNoRot(CPhysicsActor& actor, const CMat
     return;
   }
   collisionNormal.Normalize();
-  const CVector3f velocity = actor.GetVelocityWR();
-  const float normalVelocity = CVector3f::Dot(velocity, collisionNormal);
+  const float normalVelocity = CVector3f::Dot(actor.GetVelocityWR(), collisionNormal);
   if (normalVelocity < -0.0001f) {
     const float impulse =
         CollisionImpulseFiniteVsInfinite(actor.GetMass(), normalVelocity, restitution);
     actor.ApplyImpulseWR(impulse * collisionNormal, CAxisAngle::Identity());
     actor.UseCollisionImpulses();
   } else {
-    const float speed = velocity.Magnitude();
+    const float speed = CVector3f(actor.GetVelocityWR()).Magnitude();
     const float cosAngle = speed > 0.001f ? normalVelocity / speed : 0.f;
     if (normalVelocity < 0.001f || cosAngle < 0.0008f) {
       actor.ApplyImpulseWR((0.05f * actor.GetMass()) * collisionNormal, CAxisAngle::Identity());
@@ -1086,7 +1137,7 @@ CGameCollision::FindNonIntersectingVector(const CStateManager& mgr, CPhysicsActo
       }
       if (mgr.GetWorld()->GetArea(mgr.GetNextAreaId())->GetAABB().PointInside(origOrigin + vec)) {
         if (mgr.RayCollideWorld(centerPoint, centerPoint + vec, nearList,
-                                CMaterialFilter::GetPassEverything(), &actor)) {
+                                CMaterialFilter::skPassEverything, &actor)) {
           xf.SetTranslation(origOrigin + vec);
           if (!DetectCollisionBoolean(mgr, prim, xf, actor.GetMaterialFilter(), nearList)) {
             return vec;
@@ -1159,14 +1210,3 @@ void CGameCollision::PushActorAwayFromWalls(CStateManager& mgr, CPhysicsActor& a
 }
 
 // Guessed name; shared source helper for the legacy cache's expanding query bounds.
-static void EnsureCacheBounds(const CStateManager& mgr, CAreaCollisionCache& cache,
-                              const CAABox& bounds) {
-  if (!bounds.Inside(cache.GetCacheBounds())) {
-    const CVector3f margin(0.2f, 0.2f, 0.2f);
-    CAABox expanded(bounds.GetMinPoint() - margin, bounds.GetMaxPoint() + margin);
-    expanded.AccumulateBounds(cache.GetCacheBounds().GetMinPoint());
-    expanded.AccumulateBounds(cache.GetCacheBounds().GetMaxPoint());
-    cache.SetCacheBounds(expanded);
-    CGameCollision::BuildAreaCollisionCache(mgr, cache);
-  }
-}

@@ -26,7 +26,7 @@ public:
   virtual void Fire(const CTransform4f& xf, CStateManager& mgr, bool flag) = 0;
 
   void SetMaxLength(float length);
-  void CauseDamage(bool damage) { mEnableTouchDamage = damage; }
+  void CauseDamage(const bool damage) { mEnableTouchDamage = damage; }
   EDamageType GetDamageType() const { return mDamageType; }
   const CVector3f& GetCurrentPos() const { return mCollisionPoint; }
   const CVector3f& GetSurfaceNormal() const { return mCollisionNormal; }
@@ -35,7 +35,7 @@ public:
   float GetMaxLength() const { return mMaxLength; }
   float GetInvMaxLength() const { return mInvMaxLength; }
   float GetMaxRadius() const { return mBeamRadius; }
-  TUniqueId GetCollisionActorId() const { return mCollisionActorId; }
+  const TUniqueId& GetCollisionActorId() const { return mCollisionActorId; }
   const rstl::reserved_vector< CVector3f, 8 >& GetPointCache() const { return mPointCache; }
   rstl::reserved_vector< CVector3f, 8 >& PointCache() { return mPointCache; }
 

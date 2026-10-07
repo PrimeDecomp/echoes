@@ -35,9 +35,9 @@
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerRagDoll.hpp"
 
-static const CMaterialList BallTransitionInclude(kMT_Unknown59);
-static const CMaterialList BallTransitionExclude(kMT_NoPlatformCollision, kMT_Player, kMT_Character,
-                                                 kMT_CameraPassthrough);
+static const CMaterialList BallTransitionInclude = CMaterialList(kMT_Unknown59);
+static const CMaterialList BallTransitionExclude =
+    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
 static const CMaterialFilter BallTransitionCollide =
     CMaterialFilter::MakeIncludeExclude(BallTransitionInclude, BallTransitionExclude);
 
@@ -52,19 +52,20 @@ CVector3f CPlayer::GetDampedClampedVelocityWR() const {
   if (mOrbitState == kOS_NoOrbit) {
     float friction = GetTweakPlayer()->GetPlayerTranslationFriction(GetSurfaceRestraint());
     if (GetSurfaceRestraint() == kSR_Air) {
-      friction =
-          3.5f * (CVector2f(localVelocity.GetX(), localVelocity.GetY()).Magnitude() / GetMass());
+      friction = 3.5f;
+      const CVector2f flatVelocity(localVelocity.GetX(), localVelocity.GetY());
+      friction *= flatVelocity.Magnitude() / GetMass();
     }
     friction *= acceleration;
     if (localVelocity.GetY() > 0.f) {
-      localVelocity.SetY(CMath::Max(0.f, localVelocity.GetY() - friction));
+      localVelocity.SetY(rstl::max_val(localVelocity.GetY() - friction, 0.f));
     } else {
-      localVelocity.SetY(CMath::Min(0.f, localVelocity.GetY() + friction));
+      localVelocity.SetY(rstl::min_val(localVelocity.GetY() + friction, 0.f));
     }
     if (localVelocity.GetX() > 0.f) {
-      localVelocity.SetX(CMath::Max(0.f, localVelocity.GetX() - friction));
+      localVelocity.SetX(rstl::max_val(localVelocity.GetX() - friction, 0.f));
     } else {
-      localVelocity.SetX(CMath::Min(0.f, localVelocity.GetX() + friction));
+      localVelocity.SetX(rstl::min_val(localVelocity.GetX() + friction, 0.f));
     }
   }
   const float maxSpeed = GetTweakPlayer()->GetPlayerTranslationMaxSpeed(GetSurfaceRestraint());
@@ -159,8 +160,8 @@ void CPlayer::UpdateStepCameraZBias(float dt, CStateManager& mgr) {
   mStepCameraZBiasDirty = false;
 }
 
-bool CPlayer::SidewaysDashAllowed(float strafeInput, float forwardInput,
-                                  const CFinalInput& input) const {
+bool CPlayer::SidewaysDashAllowed(float strafeInput, float forwardInput, const CFinalInput& input,
+                                  CStateManager& mgr) const {
   if (mSlidingOnWall || mHitWallDuringMove || mOrbitState != kOS_OrbitObject) {
     return false;
   }
@@ -179,29 +180,31 @@ bool CPlayer::SidewaysDashAllowed(float strafeInput, float forwardInput,
     const CVector3f stickEdge = CalculateLeftStickEdgePosition(strafeInput, forwardInput);
     const float inputMagnitude =
         CMath::SqrtF(strafeInput * strafeInput + forwardInput * forwardInput);
-    const float threshold = inputMagnitude / stickEdge.Magnitude();
-    if (threshold >= GetTweakPlayer()->GetDashStrafeInputThreshold()) {
+    const float edgeMagnitude = stickEdge.Magnitude();
+    if (inputMagnitude / edgeMagnitude >= GetTweakPlayer()->GetDashStrafeInputThreshold()) {
       return true;
     }
   }
   return false;
 }
 
-void CPlayer::FinishSidewaysDash() {
+void CPlayer::FinishSidewaysDash(CStateManager& mgr) {
   if (mSidewaysDashing) {
     mDoneSidewaysDashing = true;
     if (mMovementState != NPlayer::kMS_OnGround) {
-      const CVector3f velocity = GetVelocityWR();
+      const CVector3f vel = GetVelocityWR();
+      const CVector3f& velocity = vel;
       const CVector3f flatVelocity(CVector2f(velocity.GetX(), velocity.GetY()), 0.f);
       const float maxSpeed = skDashClampSpeeds[GetSurfaceRestraint()];
       const float speed = flatVelocity.Magnitude();
       if (speed > maxSpeed) {
-        float acceleration = 1.f;
-        if (mAccelerationChangeTimer > 0.f) {
-          acceleration = GetAcceleration();
-        }
+        const float acceleration = mAccelerationChangeTimer > 0.f ? GetAcceleration() : 1.f;
         const float scale = (speed - acceleration * (speed - maxSpeed)) / speed;
-        SetVelocityWR(CVector3f(scale * velocity.GetX(), scale * velocity.GetY(), velocity.GetZ()));
+        CVector3f newVelocity;
+        newVelocity.SetX(scale * velocity.GetX());
+        newVelocity.SetY(scale * velocity.GetY());
+        newVelocity.SetZ(velocity.GetZ());
+        SetVelocityWR(newVelocity);
       }
     }
   }
@@ -217,7 +220,7 @@ void CPlayer::BeginSidewaysDash(float strafeInput, CStateManager& mgr) {
   mDashTimer = 0.f;
   CVector3f velocity = GetVelocityWR();
   if (velocity.GetZ() > 0.f) {
-    velocity.SetZ(velocity.GetZ() * 0.1f);
+    velocity[kDZ] *= 0.1f;
     if (!mSlidingOnWall) {
       SetVelocityWR(velocity);
       mDashSfx =
@@ -228,16 +231,18 @@ void CPlayer::BeginSidewaysDash(float strafeInput, CStateManager& mgr) {
       mgr.RumbleManager(GetPlayerIndex())->Rumble(mgr, kRFX_PlayerBump, 0.24375f, kRP_One);
     }
   }
-  if (CVector3f::Dot(GetTransform().GetRight(), velocity) > 0.f) {
-    mBodyController->CommandMgr().DeliverCmd(CPBCDashCmd(1));
+  CPlayerBodyStateCmdMgr& cmdMgr = mBodyController->CommandMgr();
+  const CTransform4f& xf = GetTransform();
+  if (CVector3f::Dot(xf.GetRight(), velocity) > 0.f) {
+    cmdMgr.DeliverCmd(CPBCDashCmd(1));
   } else {
-    mBodyController->CommandMgr().DeliverCmd(CPBCDashCmd(0));
+    cmdMgr.DeliverCmd(CPBCDashCmd(0));
   }
 }
 
 void CPlayer::ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr) {
   const float strafeInput = StrafeInput(input);
-  const float forwardInput = ForwardInput(input, TurnInput(input));
+  const float forwardInput = ForwardInput(input, TurnInput(input, mgr));
   CVector3f orbitPoint = mOrbitPoint;
   orbitPoint.SetZ(GetTranslation().GetZ());
   const CVector3f orbitToPlayer = GetTranslation() - orbitPoint;
@@ -250,7 +255,7 @@ void CPlayer::ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr
     mDashButtonHoldTime += dt;
   }
   if (!mSidewaysDashing) {
-    if (SidewaysDashAllowed(strafeInput, forwardInput, input)) {
+    if (SidewaysDashAllowed(strafeInput, forwardInput, input, mgr)) {
       BeginSidewaysDash(strafeInput, mgr);
     }
     strafeVelocity *= strafeInput;
@@ -258,13 +263,13 @@ void CPlayer::ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr
     mDashTimer += dt;
     if (mMovementState == NPlayer::kMS_OnGround || mDashTimer >= mDashDuration || mSlidingOnWall ||
         mHitWallDuringMove || mOrbitState != kOS_OrbitObject) {
-      FinishSidewaysDash();
+      FinishSidewaysDash(mgr);
       strafeVelocity *= strafeInput;
-      CSfxManager::SfxStop(mDashSfx);
+      CSfxManager::RemoveEmitter(mDashSfx);
     } else {
       const ESurfaceRestraints restraint = GetSurfaceRestraint();
       if (mNoStrafeDashBlend) {
-        strafeVelocity = dt * (mDashSpeedMultiplier * skDashStrafeDistances[restraint]);
+        strafeVelocity = dt * (mDashSpeedMultiplier * skDashStrafeDistances[GetSurfaceRestraint()]);
       } else {
         float blend = CMath::Limit(mDashTimer / mStrafeDashBlendDuration, 1.f);
         blend = 1.f - blend;
@@ -297,7 +302,8 @@ void CPlayer::ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr
   orbitPoint += strafeVelocity * -useOrbitToPlayer.AsNormalized();
   const CVector2f flatVelocity(GetVelocityWR().GetX(), GetVelocityWR().GetY());
   const float flatVelocityY = flatVelocity.GetY();
-  CVector3f newVelocity = (1.f / dt) * (orbitPoint - GetTranslation());
+  const float invDt = 1.f / dt;
+  CVector3f newVelocity = invDt * (orbitPoint - GetTranslation());
   newVelocity.SetZ(GetVelocityWR().GetZ());
   CVector3f velocityDelta = newVelocity - CVector3f(flatVelocity.GetX(), flatVelocityY, 0.f);
   velocityDelta.SetZ(0.f);
@@ -315,7 +321,7 @@ void CPlayer::ComputeDash(const CFinalInput& input, float dt, CStateManager& mgr
 
 void CPlayer::ComputeMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
   const float jumpInput = JumpInput(input, mgr);
-  float turnInput = TurnInput(input);
+  float turnInput = TurnInput(input, mgr);
   const float forwardInput = ForwardInput(input, turnInput);
   const float strafeInput = StrafeInput(input);
   SetVelocityWR(GetDampedClampedVelocityWR());
@@ -416,7 +422,7 @@ void CPlayer::ComputeMovement(const CFinalInput& input, CStateManager& mgr, floa
       ApplyForceOR(CVector3f::Zero(),
                    CAxisAngle(CUnitVector3f(0.f, 0.f, 1.f, CUnitVector3f::kN_Yes), turnInput));
     }
-    FinishSidewaysDash();
+    FinishSidewaysDash(mgr);
   } else {
     switch (mOrbitState) {
     case kOS_OrbitObject:
@@ -510,7 +516,7 @@ float CPlayer::StrafeInput(const CFinalInput& input) const {
   return right - left;
 }
 
-float CPlayer::TurnInput(const CFinalInput& input) const {
+float CPlayer::TurnInput(const CFinalInput& input, CStateManager& mgr) const {
   float left = mControlMapper.GetAnalogInput(CControlMapper::kC_TurnLeft, input);
   float right = mControlMapper.GetAnalogInput(CControlMapper::kC_TurnRight, input);
   if (GetTweakPlayerControls()->GetFreeLookTurnsPlayer()) {
@@ -564,12 +570,11 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
     case kSR_Water:
       waterScale = GetTweakPlayer()->GetWaterJumpFactor();
       break;
+    case kSR_Lava:
+      waterScale = GetTweakPlayer()->GetLavaJumpFactor();
+      break;
     case kSR_Phazon:
       waterScale = GetTweakPlayer()->GetPhazonJumpFactor();
-      break;
-    case kSR_Lava:
-    case kSR_Shrubbery:
-      waterScale = GetTweakPlayer()->GetLavaJumpFactor();
       break;
     default:
       break;
@@ -585,14 +590,15 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
     verticalDoubleJumpAccel = GetTweakPlayer()->GetSidewaysVerticalDoubleJumpAccel();
     horizontalDoubleJumpAccel = GetTweakPlayer()->GetSidewaysHorizontalDoubleJumpAccel();
   }
-  if (mDistanceUnderWater >= .8f * GetEyeHeight()) {
+  const bool submerged = mDistanceUnderWater >= .8f * GetEyeHeight();
+  if (submerged) {
     doubleJumpImpulse *= waterScale;
   }
   if (mMovementState == NPlayer::kMS_ApplyJump) {
     const float threshold =
         GetTweakPlayer()->GetMaxDoubleJumpWindow() - GetTweakPlayer()->GetMinDoubleJumpWindow();
     if (JumpPressed(input)) {
-      if (mSjTimer <= threshold && mSjTimer > 0.f) {
+      if (threshold >= mSjTimer && mSjTimer > 0.f) {
         mLastSpaceJumpPosition = GetTranslation();
         SetMoveState(NPlayer::kMS_Jump, mgr);
         mBodyController->CommandMgr().DeliverCmd(CPlayerBodyStateCmd(kPBSC_DoubleJump));
@@ -602,9 +608,9 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
         mDashTimer = 0.f;
         mStrafeInputAtDash = StrafeInput(input);
         if (GetTweakPlayerControls()->GetImpulseDoubleJump()) {
-          ApplyImpulseWR(
-              CVector3f(0.f, 0.f, (doubleJumpImpulse - GetVelocityWR().GetZ()) * GetMass()),
-              CAxisAngle::Identity());
+          const CVector3f impulse(0.f, 0.f,
+                                  (doubleJumpImpulse - GetVelocityWR().GetZ()) * GetMass());
+          ApplyImpulseWR(impulse, CAxisAngle::Identity());
         }
         float inputMagnitude = mControlMapper.GetAnalogInput(CControlMapper::kC_Forward, input);
         if (inputMagnitude < mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input)) {
@@ -618,7 +624,9 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
       const CFirstPersonCamera* camera =
           mgr.GetCameraManager(GetPlayerIndex())->GetFirstPersonCamera();
       if (camera->GetFluidCount() == 0) {
-        CVector3f flatVelocity(GetVelocityWR().GetX(), GetVelocityWR().GetY(), 0.f);
+        CVector3f flatVelocity(GetVelocityWR().GetX(), GetVelocityWR().GetY(),
+                               GetVelocityWR().GetZ());
+        flatVelocity.SetZ(0.f);
         if (flatVelocity.CanBeNormalized()) {
           flatVelocity.Normalize();
         }
@@ -627,9 +635,9 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
             mJumpPresses == 2 && GetRezbitState() == kRS_None) {
           mTimeSinceScrewAttackRequest = 0.f;
           if (GetTweakPlayerControls()->GetImpulseDoubleJump()) {
-            ApplyImpulseWR(
-                CVector3f(0.f, 0.f, (doubleJumpImpulse - GetVelocityWR().GetZ()) * GetMass()),
-                CAxisAngle::Identity());
+            const CVector3f impulse(0.f, 0.f,
+                                    (doubleJumpImpulse - GetVelocityWR().GetZ()) * GetMass());
+            ApplyImpulseWR(impulse, CAxisAngle::Identity());
           }
           RequestScrewAttackTransition(kMS_Morphed);
         }
@@ -641,22 +649,22 @@ float CPlayer::JumpInput(const CFinalInput& input, CStateManager& mgr) {
     return GetGravity() * GetMass();
   }
   if (JumpHeld(input) ||
-      (mMovementState == NPlayer::kMS_Jump && mStartingJumpTimeout >= mMinJumpTimeout)) {
-    if (mMovementState == NPlayer::kMS_Jump) {
-      float inputMagnitude = mControlMapper.GetAnalogInput(CControlMapper::kC_Forward, input);
-      if (inputMagnitude < mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input)) {
-        inputMagnitude = mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input);
+      (mMovementState == NPlayer::kMS_Jump && mMinJumpTimeout <= mStartingJumpTimeout)) {
+    if (mMovementState != NPlayer::kMS_Jump) {
+      if (JumpPressed(input)) {
+        mLastJumpPosition = GetTranslation();
+        SetMoveState(NPlayer::kMS_Jump, mgr);
+        return waterScale * (verticalJumpAccel * GetMass());
       }
-      return waterScale *
-             ((verticalJumpAccel - inputMagnitude * (verticalJumpAccel - horizontalJumpAccel)) *
-              GetMass());
+      return 0.f;
     }
-    if (JumpPressed(input)) {
-      mLastJumpPosition = GetTranslation();
-      SetMoveState(NPlayer::kMS_Jump, mgr);
-      return waterScale * (verticalJumpAccel * GetMass());
+    float inputMagnitude = mControlMapper.GetAnalogInput(CControlMapper::kC_Forward, input);
+    if (inputMagnitude < mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input)) {
+      inputMagnitude = mControlMapper.GetAnalogInput(CControlMapper::kC_Backward, input);
     }
-    return 0.f;
+    return waterScale *
+           ((verticalJumpAccel - inputMagnitude * (verticalJumpAccel - horizontalJumpAccel)) *
+            GetMass());
   }
   if (mMovementState == NPlayer::kMS_Jump) {
     SetMoveState(NPlayer::kMS_ApplyJump, mgr);
@@ -1034,10 +1042,12 @@ float CPlayer::GetStepUpHeight() const {
 }
 
 float CPlayer::GetUnbiasedEyeHeight() const {
-  return mFpBounds.GetMaxPoint().GetZ() - GetTweakPlayer()->GetEyeOffset();
+  return mFpBounds.GetPointE().GetZ() - GetTweakPlayer()->GetEyeOffset();
 }
 
-float CPlayer::GetEyeHeight() const { return mEyeZBias + GetUnbiasedEyeHeight(); }
+float CPlayer::GetEyeHeight() const {
+  return mEyeZBias + (mFpBounds.GetPointE().GetZ() - GetTweakPlayer()->GetEyeOffset());
+}
 
 CVector3f CPlayer::GetEyePosition() const {
   return GetTranslation() + CVector3f(0.f, 0.f, GetEyeHeight());
@@ -1146,7 +1156,7 @@ void CPlayer::SetIntoBallReadyAnimation(float dt, EPlayerMorphBallState state) {
   }
 }
 
-bool CPlayer::UpdatePlayerRagDoll(float dt, CStateManager& mgr) {
+uchar CPlayer::UpdatePlayerRagDoll(float dt, CStateManager& mgr) {
   bool updated = false;
   if (mRagDoll.get()) {
     if (!mRagDoll->IsPrimed()) {
@@ -1156,7 +1166,7 @@ bool CPlayer::UpdatePlayerRagDoll(float dt, CStateManager& mgr) {
       SetTranslation(position);
       AnimationData()->SetPlaybackRate(0.f);
     } else {
-      float waterTop = -0.5f * FLT_MAX;
+      float waterTop = -1.7014117e38f;
       if (InFluidId() != kInvalidUniqueId) {
         if (const CScriptWater* water =
                 TCastToConstPtr< CScriptWater >(mgr.GetObjectById(InFluidId()))) {
@@ -1183,10 +1193,10 @@ void CPlayer::UpdatePlayerBodyController(float dt, CStateManager& mgr) {
     switch (mMorphBallState) {
     case kMS_Unmorphed:
       if (mOrbitState == kOS_Grapple || mGrappleState != kGS_None) {
-        if (mGrappleState == kGS_JumpOff) {
-          commandMgr.DeliverCmd(CPBCJumpCmd(0, 0));
-        } else {
+        if (mGrappleState != kGS_JumpOff) {
           commandMgr.DeliverCmd(CPBCGrappleCmd(0));
+        } else {
+          commandMgr.DeliverCmd(CPBCJumpCmd(0, 0));
         }
       } else if (mMovementState == NPlayer::kMS_ApplyJump || mMovementState == NPlayer::kMS_Jump) {
         if (mBodyController->IsFastLocomotion()) {
@@ -1213,7 +1223,8 @@ void CPlayer::UpdatePlayerBodyController(float dt, CStateManager& mgr) {
       if (!mBodyController->IsMoving()) {
         mBodyController->SetLocomotionMode(6);
       }
-      commandMgr.DeliverCmd(CPBCAimCmd(GetFirstPersonCameraTransform().GetForward()));
+      commandMgr.DeliverCmd(CPBCAimCmd(
+          static_cast< const CPlayer* >(this)->GetPlayerGun()->GetTransform().GetForward()));
     }
   }
   mBodyController->Update(dt, mgr);
@@ -1302,7 +1313,7 @@ void CPlayer::PrepareToEnterMorphBallState(float dt, CStateManager& mgr) {
     ballCamera->TeleportCamera(xf, mgr);
     ballCamera->ResetToTweaks(mgr);
     mCameraManager->SetPlayerCamera(mgr, ballCamera->GetUniqueId());
-    mCameraManager->SetCurrentCameraId(ballCamera->GetUniqueId());
+    mCameraManager->SetCurrentCameraId(ballCamera->GetUniqueId(), mgr);
   }
 }
 
@@ -1326,7 +1337,8 @@ void CPlayer::BeginMorphTransition(float dt, CStateManager& mgr, EPlayerMorphBal
   mGravityBoostUsed = false;
 }
 
-bool CPlayer::PrepareToLeaveMorphBallState(float dt, CStateManager& mgr, EPlayerMorphBallState state) {
+bool CPlayer::PrepareToLeaveMorphBallState(float dt, CStateManager& mgr,
+                                           EPlayerMorphBallState state) {
   CBallCamera* ballCamera = mCameraManager->BallCamera();
   ballCamera->TeleportCamera(mCameraManager->GetCurrentCameraTransform(mgr, false), mgr);
   if (mCameraManager->IsInterpolationCameraActive()) {
@@ -1351,8 +1363,8 @@ bool CPlayer::PrepareToLeaveMorphBallState(float dt, CStateManager& mgr, EPlayer
       direction = camToPlayer;
     }
     if (mOutOfBallLookAtHint) {
-      if (const CScriptPlayerHint* hint =
-              TCastToConstPtr< CScriptPlayerHint >(GetPlayerHintManager()->GetCurrentHint(mgr))) {
+      if (const CScriptPlayerHint* hint = TCastToConstPtr< CScriptPlayerHint >(
+              static_cast< const CPlayer* >(this)->GetPlayerHintManager()->GetCurrentHint(mgr))) {
         CVector3f delta = hint->GetTranslation() - GetTranslation();
         delta.SetZ(0.f);
         if (delta.CanBeNormalized()) {
@@ -1361,8 +1373,8 @@ bool CPlayer::PrepareToLeaveMorphBallState(float dt, CStateManager& mgr, EPlayer
       }
     }
     if (IsOutOfBallLookAtHintActor()) {
-      if (const CScriptPlayerHint* hint =
-              TCastToConstPtr< CScriptPlayerHint >(GetPlayerHintManager()->GetCurrentHint(mgr))) {
+      if (const CScriptPlayerHint* hint = TCastToConstPtr< CScriptPlayerHint >(
+              static_cast< const CPlayer* >(this)->GetPlayerHintManager()->GetCurrentHint(mgr))) {
         if (const CActor* actor =
                 TCastToConstPtr< CActor >(mgr.GetObjectById(hint->GetActorId()))) {
           CVector3f delta = actor->GetOrbitPosition(mgr) - GetTranslation();
@@ -1470,14 +1482,14 @@ void CPlayer::LeaveMorphBallState(CStateManager& mgr) {
   mVertFreeLookAngleVel = 0.f;
   mMorphBall->LeaveMorphBallState(mgr);
   mMorphBall->SetBallState(CMorphBall::kBS_Normal);
-  mCameraManager->TransferCameraState(*mCameraManager->BallCamera(),
-                                      *mCameraManager->FirstPersonCamera(), mgr);
+  CBallCamera& ball = *mCameraManager->BallCamera();
+  mCameraManager->TransferCameraState(ball, *mCameraManager->FirstPersonCamera(), mgr);
   mCameraManager->SetPlayerCamera(mgr, mCameraManager->GetFirstPersonCamera()->GetUniqueId());
   mCameraManager->BallCamera()->SetState(CBallCamera::kBCS_Default, mgr);
   mCameraManager->BallCamera()->SetFovAndTarget(CCameraManager::GetDefaultThirdPersonVerticalFOV());
   SetCameraState(kCS_FirstPerson, mgr);
   mCameraManager->FirstPersonCamera()->DeferBallTransitionProcessing();
-  mCameraManager->FirstPersonCamera()->PreThink(0.f, mgr);
+  mCameraManager->FirstPersonCamera()->Think(0.f, mgr);
   ForceGunOrientation(GetTransform(), mgr);
   mGun->DrawGun(mgr);
   if (!mgr.IsMultiplayer()) {
@@ -1488,27 +1500,37 @@ void CPlayer::LeaveMorphBallState(CStateManager& mgr) {
 void CPlayer::UpdateTransitionFilter(float dt, CStateManager& mgr) {
   const uint player = mgr.MaskUIdNumPlayers(GetUniqueId());
   CCameraFilterPass& filter = mgr.CameraFilterPass(player, 8);
-  if (mTransitionFilterTimer > 0.f) {
-    mTransitionFilterTimer += dt;
-    if (mTransitionFilterTimer > 1.25f) {
-      mTransitionFilterTimer = 0.f;
-      filter.DisableFilter(0.f);
-    } else if (mTransitionFilterTimer >= .95f) {
-      const float time = mTransitionFilterTimer - .95f;
-      float alpha;
-      if (time < .1f) {
-        alpha = .3f * time / .1f;
-      } else if (time < .15f) {
-        alpha = .3f;
-      } else {
-        alpha = .3f * (1.f - CMath::Limit((time - .15f) / .15f, 1.f));
-      }
-      filter.SetFilter(CCameraFilterPass::kFT_Add, CCameraFilterPass::kFS_ScanLinesEven, 0.f,
-                       CColor(0xffdf8900u).WithAlphaOf(alpha), kInvalidAssetId);
-    }
-  } else {
+  if (mTransitionFilterTimer <= 0.f) {
     filter.DisableFilter(0.f);
+    return;
   }
+
+  mTransitionFilterTimer += dt;
+  if (mTransitionFilterTimer > skTransitionFilterEndTime) {
+    mTransitionFilterTimer = 0.f;
+    filter.DisableFilter(0.f);
+    return;
+  }
+  if (mTransitionFilterTimer < skTransitionFilterStartTime) {
+    return;
+  }
+
+  const float time = mTransitionFilterTimer - skTransitionFilterStartTime;
+  CColor color(static_cast< uchar >(0xff), static_cast< uchar >(0xdf), static_cast< uchar >(0x89),
+               static_cast< uchar >(0xff));
+  if (time < skTransitionFilterFadeInTime) {
+    color.SetAlpha(
+        CCast::ToUint8(255.f * (skTransitionFilterMaxAlpha * time / skTransitionFilterFadeInTime)));
+  } else if (time >= skTransitionFilterHoldTime) {
+    color.SetAlpha(CCast::ToUint8(255.f * (skTransitionFilterMaxAlpha *
+                                           (1.f - CMath::Limit((time - skTransitionFilterHoldTime) /
+                                                                   skTransitionFilterFadeOutTime,
+                                                               1.f)))));
+  } else {
+    color.SetAlpha(CCast::ToUint8(255.f * skTransitionFilterMaxAlpha));
+  }
+  filter.SetFilter(CCameraFilterPass::kFT_Add, CCameraFilterPass::kFS_ScanLinesEven, 0.f, color,
+                   kInvalidAssetId);
 }
 
 void CPlayer::UpdateMorphBallTransition(float dt, CStateManager& mgr) {
@@ -1528,9 +1550,12 @@ void CPlayer::UpdateMorphBallTransition(float dt, CStateManager& mgr) {
     bounds.GetCenterPoint();
     ClearForcesAndTorques();
     SetAngularVelocityWR(CAxisAngle::Identity());
-    const bool cinematic = mCameraManager->IsInCinematicCamera();
+    bool cinematic = false;
+    if (mCameraManager->IsInCinematicCamera()) {
+      cinematic = true;
+    }
     if (mMorphTime >= mMorphDuration || cinematic) {
-      mTransitionFilterTimer = rstl::max_val(mTransitionFilterTimer, .95f);
+      mTransitionFilterTimer = rstl::max_val(mTransitionFilterTimer, skTransitionFilterStartTime);
       CVector3f displacement = CVector3f::Zero();
       if (CanLeaveMorphBallState(mgr, displacement)) {
         SetTranslation(GetTranslation() + displacement);
@@ -1545,9 +1570,12 @@ void CPlayer::UpdateMorphBallTransition(float dt, CStateManager& mgr) {
   case kMS_Morphing: {
     ClearForcesAndTorques();
     SetAngularVelocityWR(CAxisAngle::Identity());
-    const bool cinematic = mCameraManager->IsInCinematicCamera();
+    bool cinematic = false;
+    if (mCameraManager->IsInCinematicCamera()) {
+      cinematic = true;
+    }
     if (mMorphTime >= mMorphDuration || cinematic) {
-      if (CanEnterMorphBallState()) {
+      if (CanEnterMorphBallState(mgr, 1.f)) {
         ActivateMorphBallCamera(mgr);
         EnterMorphBallState(mgr, mSpawnedMorphBallState);
       } else {
@@ -1574,7 +1602,7 @@ void CPlayer::StartGravityBoost(CStateManager& mgr) {
       mMorphBallState == kMS_Unmorphed && GetFluidCount() != 0) {
     mGravityBoostDuration = GetTweakPlayer()->GetGravityBoostTime();
     CVector3f velocity = GetVelocityWR();
-    velocity.SetZ(velocity.GetZ() * 0.1f);
+    velocity[kDZ] *= 0.1f;
     SetVelocityWR(velocity);
     mGravityBoostSfx =
         CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x123, 0x30e), 127,
@@ -1602,7 +1630,7 @@ void CPlayer::ApplyGravityBoost(float dt, CStateManager& mgr) {
 
 void CPlayer::EndGravityBoost(CStateManager& mgr) {
   CVector3f velocity = GetVelocityWR();
-  velocity.SetZ(velocity.GetZ() * GetTweakPlayer()->GetGravityBoostCancelDampening());
+  velocity[kDZ] *= GetTweakPlayer()->GetGravityBoostCancelDampening();
   SetVelocityWR(velocity);
   mGravityBoostDuration = 0.f;
   if (mGravityBoostSfx) {

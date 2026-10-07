@@ -125,6 +125,28 @@ public:
   }
 };
 
+template < class Arg1, class Arg2, class Arg3 >
+class TFunctor3 {
+public:
+  typedef void (*Functor)(const void* object, const void* method, Arg1 arg1, Arg2 arg2, Arg3 arg3);
+
+  TFunctor3() : mFunctor(nullptr), mObject(nullptr) {}
+
+  TFunctor3(Functor functor, const void* object, const void* method, int size)
+  : mFunctor(functor), mObject(object), mMethod(method, size) {}
+
+  void operator()(Arg1 arg1, Arg2 arg2, Arg3 arg3) const {
+    mFunctor(mObject, mMethod.GetMethodPointer(), arg1, arg2, arg3);
+  }
+
+  operator bool() const { return !mMethod.IsNull(); }
+
+private:
+  Functor mFunctor;
+  const void* mObject;
+  CMethodPtrStore mMethod;
+};
+
 CHECK_SIZEOF(CMethodPtrStore, 0x10)
 
 #endif // _TFUNCTOR_HPP

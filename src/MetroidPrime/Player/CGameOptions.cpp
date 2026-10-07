@@ -1,21 +1,39 @@
 #include "MetroidPrime/Player/CGameOptions.hpp"
 
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Streams/CBitStreamReader.hpp"
 #include "Kyoto/Streams/CBitStreamWriter.hpp"
+#include "rstl/algorithm.hpp"
 
 #include "dolphin/os.h"
 
-extern "C" void fn_8029AF00(int, uchar);
-
 extern "C" bool lbl_804191E0;
 
-rstl::pair< CAssetId, CAssetId > sControllerAssets[] = {
-    rstl::pair< CAssetId, CAssetId >(0x2A13423E, 0xF13452F8),
-};
+// Guessed names; the original stored these as individual small-data words.
+static CAssetId skControlTXTR0A = 0x2A13C23E;
+static CAssetId skControlTXTR0B = 0xF13452F8;
+static CAssetId skControlTXTR1A = 0xA91A7703;
+static CAssetId skControlTXTR1B = 0xC042EC91;
+static CAssetId skControlTXTR2A = 0x12A12131;
+static CAssetId skControlTXTR2B = 0x5F556002;
+static CAssetId skControlTXTR3A = 0xA9798329;
+static CAssetId skControlTXTR3B = 0xB306E26F;
+static CAssetId skControlTXTR4A = 0xCD7B1ACA;
+static CAssetId skControlTXTR4B = 0x8ADA8184;
+static CAssetId skControlTXTR5A = 0x1A29C0E6;
+static CAssetId skControlTXTR5B = 0xF13452F8;
+static CAssetId skControlTXTR6A = 0x5D9F9796;
+static CAssetId skControlTXTR6B = 0xC042EC91;
+static CAssetId skControlTXTR7A = 0x951546A8;
+static CAssetId skControlTXTR7B = 0x5F556002;
+static CAssetId skControlTXTR8A = 0x7946C4C5;
+static CAssetId skControlTXTR8B = 0xB306E26F;
+static CAssetId skControlTXTR9A = 0x409AA72E;
+static CAssetId skControlTXTR9B = 0x8ADA8184;
 
 int CGameOptions_CalculateBits(uint v) {
   int iVar1;
@@ -35,7 +53,8 @@ void CGameOptions::InitSoundMode() {
   if (OSGetSoundMode() == 0) {
     soundMode = CAudioSys::kSM_Mono;
   } else {
-    soundMode = (soundMode != CAudioSys::kSM_Mono) ? soundMode : CAudioSys::kSM_Stereo;
+    CAudioSys::ESurroundModes mode = soundMode;
+    soundMode = (mode != CAudioSys::kSM_Mono) ? mode : CAudioSys::kSM_Stereo;
   }
 }
 
@@ -253,7 +272,7 @@ void CGameOptions::SetSfxVolume(int value, bool apply) {
   sfxVol = CMath::ClampI(0, value, 0x69);
   if (apply) {
     if (fn_80161C84()) {
-      fn_8029AF00(0, sfxVol);
+      CSfxManager::SetAreaVolume(0, sfxVol);
     } else {
       CAudioSys::SysSetSfxVolume(sfxVol, 1, true, true);
       CStreamAudioManager::SetSfxVolume(sfxVol);
@@ -297,7 +316,7 @@ void CGameOptions::SetInvertYAxis(bool active) { invertY = active; }
 
 void CGameOptions::SetIsRumbleEnabled(bool active) { rumble = active; }
 
-void CGameOptions::ToggleControls(bool flag) {
+void CGameOptions::ToggleControls(const bool flag) {
   swapBeamsControls = flag;
   if (flag) {
     SetControls(1);
@@ -308,16 +327,40 @@ void CGameOptions::ToggleControls(bool flag) {
 
 void CGameOptions::ResetControllerAssets(int controls) {
   switch (controls) {
-  case 1:
-    mControlTXTRMap.reserve(15);
-    for (int i = 0; i < 5; ++i) {
-      mControlTXTRMap.push_back(sControllerAssets[i]);
-    }
-    break;
   case 0:
     mControlTXTRMap = rstl::vector< rstl::pair< CAssetId, CAssetId > >();
     break;
-  default:
+  case 1:
+    if (mControlTXTRMap.empty()) {
+      const rstl::pair< CAssetId, CAssetId > stickRemap[5] = {
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR0A, skControlTXTR0B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR1A, skControlTXTR1B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR2A, skControlTXTR2B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR3A, skControlTXTR3B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR4A, skControlTXTR4B),
+      };
+      const rstl::pair< CAssetId, CAssetId > outlineRemap[5] = {
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR5A, skControlTXTR5B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR6A, skControlTXTR6B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR7A, skControlTXTR7B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR8A, skControlTXTR8B),
+          rstl::pair< CAssetId, CAssetId >(skControlTXTR9A, skControlTXTR9B),
+      };
+      mControlTXTRMap.reserve(15);
+      for (int i = 0; i < 5; ++i) {
+        const rstl::pair< CAssetId, CAssetId > entry = stickRemap[i];
+        mControlTXTRMap.push_back_unsafe(entry);
+        mControlTXTRMap.push_back_unsafe(
+            rstl::pair< CAssetId, CAssetId >(entry.second, entry.first));
+      }
+      for (int i = 0; i < 5; ++i) {
+        mControlTXTRMap.push_back_unsafe(outlineRemap[i]);
+      }
+      rstl::sort(
+          mControlTXTRMap.begin(), mControlTXTRMap.end(),
+          rstl::pair_sorter_finder< rstl::pair< CAssetId, CAssetId >, rstl::less< CAssetId > >(
+              rstl::less< CAssetId >()));
+    }
     break;
   }
 }

@@ -10,11 +10,10 @@ CConditionalRelayQuery::CConditionalRelayQuery(EBoolean boolean, CPlayerState::E
                                                EField field, EComparison comparison, int value)
 : mBoolean(boolean), mItem(item), mField(field), mComparison(comparison), mValue(value) {}
 
-bool CConditionalRelayQuery::IsConditionSatisfied(const CStateManager& mgr,
-                                                  uint playerIndex) const {
+bool CConditionalRelayQuery::IsConditionSatisfied(CStateManager& mgr, uint playerIndex) const {
   const CPlayerState& player = *mgr.GetPlayerState(playerIndex);
-  const int amount = mField == kF_Amount ? player.GetItemAmount(mItem, true)
-                                        : player.GetItemCapacity(mItem);
+  const int amount =
+      mField == kF_Amount ? player.GetItemAmount(mItem, true) : player.GetItemCapacity(mItem);
   switch (mComparison) {
   case kC_Equal:
     return amount == mValue;
@@ -29,27 +28,27 @@ bool CConditionalRelayQuery::IsConditionSatisfied(const CStateManager& mgr,
   case kC_LessOrEqual:
     return amount <= mValue;
   case kC_GreaterThanAllPlayers:
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
       if (i == playerIndex) {
         continue;
       }
       const CPlayerState& other = *mgr.GetPlayerState(i);
-      const int otherAmount = mField == kF_Amount ? other.GetItemAmount(mItem, true)
-                                                 : other.GetItemCapacity(mItem);
-      if (amount <= otherAmount + mValue) {
+      const int otherAmount =
+          mField == kF_Amount ? other.GetItemAmount(mItem, true) : other.GetItemCapacity(mItem);
+      if (otherAmount + mValue >= amount) {
         return false;
       }
     }
     return true;
   case kC_LessThanAllPlayers:
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
       if (i == playerIndex) {
         continue;
       }
       const CPlayerState& other = *mgr.GetPlayerState(i);
-      const int otherAmount = mField == kF_Amount ? other.GetItemAmount(mItem, true)
-                                                 : other.GetItemCapacity(mItem);
-      if (amount >= otherAmount - mValue) {
+      const int otherAmount =
+          mField == kF_Amount ? other.GetItemAmount(mItem, true) : other.GetItemCapacity(mItem);
+      if (otherAmount - mValue <= amount) {
         return false;
       }
     }
@@ -72,8 +71,12 @@ void CScriptConditionalRelay::AcceptScriptMsg(CStateManager& mgr, const CScriptM
   const TUniqueId originator = msg.GetOriginator();
   const EScriptObjectMessage message = msg.GetMessage();
   CEntity::AcceptScriptMsg(mgr, msg);
-  if (message == kSM_SetToZero) {
+  switch (message) {
+  case kSM_SetToZero:
     OnSetToZero(mgr, originator);
+    break;
+  default:
+    break;
   }
 }
 
@@ -94,10 +97,8 @@ void CScriptConditionalRelay::OnSetToZero(CStateManager& mgr, TUniqueId originat
   }
 }
 
-bool CScriptConditionalRelay::VerifyConditions(const CStateManager& mgr,
-                                               TUniqueId originator) const {
-  const int numPlayers = mgr.GetNumPlayers();
-  if (!(mPlayerMask & (1u << (numPlayers + 8)))) {
+bool CScriptConditionalRelay::VerifyConditions(CStateManager& mgr, TUniqueId originator) const {
+  if (!(mPlayerMask & (1u << (mgr.GetNumPlayers() + 8)))) {
     return false;
   }
   const bool requireAllPlayers = (mPlayerMask & 0x100) != 0;
@@ -108,7 +109,7 @@ bool CScriptConditionalRelay::VerifyConditions(const CStateManager& mgr,
       playerMask |= 1u << mgr.MaskUIdNumPlayers(originator);
     }
   }
-  for (uint i = 0; i < numPlayers; ++i) {
+  for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
     const CPlayerState& player = *mgr.GetPlayerState(i);
     if (mgr.IsMultiplayer() && !(playerMask & (1u << i)) &&
         !(playerMask & (1u << (player.GetTeamIndex() + 4)))) {
@@ -121,14 +122,21 @@ bool CScriptConditionalRelay::VerifyConditions(const CStateManager& mgr,
       if (query.GetBoolean() == CConditionalRelayQuery::kB_Disabled) {
         continue;
       }
-      const bool result = query.IsConditionSatisfied(mgr, i);
+      bool result = query.IsConditionSatisfied(mgr, i);
       if (first) {
-        first = false;
         satisfied = result;
-      } else if (query.GetBoolean() == CConditionalRelayQuery::kB_And) {
-        satisfied = satisfied && result;
-      } else if (query.GetBoolean() == CConditionalRelayQuery::kB_Or) {
-        satisfied = satisfied || result;
+        first = false;
+      } else {
+        switch (query.GetBoolean()) {
+        case CConditionalRelayQuery::kB_Disabled:
+          break;
+        case CConditionalRelayQuery::kB_And:
+          satisfied = satisfied && result;
+          break;
+        case CConditionalRelayQuery::kB_Or:
+          satisfied = satisfied || result;
+          break;
+        }
       }
     }
     if (requireAllPlayers) {
@@ -171,10 +179,10 @@ CEntity* LoadConditionalRelay(CStateManager& mgr, CInputStream& input, CEntityIn
       static_cast< CConditionalRelayQuery::EField >(sldrThis.conditional4.amountOrCapacity),
       static_cast< CConditionalRelayQuery::EComparison >(sldrThis.conditional4.condition),
       sldrThis.conditional4.value));
-  return rs_new CScriptConditionalRelay(
-      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.multiplayerMaskandNegate,
-      conditions, sldrThis.setToZeroOnAreaLoaded);
+  return rs_new CScriptConditionalRelay(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                        LdrToEntityInfo(info, sldrThis.editorProperties),
+                                        sldrThis.multiplayerMaskandNegate, conditions,
+                                        sldrThis.setToZeroOnAreaLoaded);
 }
 
 CScriptConditionalRelay::~CScriptConditionalRelay() {}

@@ -31,7 +31,7 @@ public:
   const CVector3f& GetNormalLeft() const { return mNormalLeft; }
   const CVector3f& GetNormalRight() const { return mNormalRight; }
   TUniqueId GetObjectId() const { return mObjectId; }
-  void SetObjectId(TUniqueId id) { mObjectId = id; }
+  void SetObjectId(const TUniqueId& id) { mObjectId = id; }
   void Swap();
 
 private:
@@ -51,6 +51,7 @@ CHECK_SIZEOF(CCollisionInfo, 0x60)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CCollisionInfo)
-}
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CCollisionInfo)
+} // namespace rstl
 
 #endif // _CCOLLISIONINFO

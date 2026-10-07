@@ -18,7 +18,7 @@ public:
   ~CGameCamera() override;
   CEntity* TypesMatch(int typeId) const override;
   void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
-  void SetActive(bool active) override;
+  void SetActive(const bool active) override;
 
   // CActor
   void ClearFluidList(CStateManager& mgr) override;
@@ -29,14 +29,15 @@ public:
   virtual void ProcessInput(const CFinalInput& input, CStateManager& mgr) = 0;
   virtual void Reset(const CTransform4f& xf, CStateManager& mgr) = 0;
   // Empty base implementations; names and unused parameters remain unresolved.
-  virtual void UnkVtable84();
-  virtual void UnkVtable88(TUniqueId fluidId);
+  virtual void UnkVtable84(TUniqueId fluidId, CStateManager& mgr);
+  virtual void UnkVtable88(TUniqueId fluidId, CStateManager& mgr);
 
   void SetAspectRatio(float aspect);
   const CMatrix4f& GetPerspectiveMatrix() const;
   CVector3f ConvertToScreenSpace(const CVector3f& position) const;
   CVector3f ConvertToWorldSpace(const CVector3f& position) const;
-  CTransform4f ValidateCameraTransform(const CTransform4f& newXf, const CTransform4f& oldXf);
+  CTransform4f ValidateCameraTransform(const CTransform4f& newXf, const CTransform4f& oldXf,
+                                       float dt);
 
   CPlayer& Player(CStateManager& mgr) const;
   const CPlayer& GetPlayer(const CStateManager& mgr) const;
@@ -64,6 +65,7 @@ public:
 private:
   // Guessed name
   struct SFovInterpolation {
+    // Both helpers are emitted out of line in the target.
     SFovInterpolation(float delay, float remaining, float duration, float current, float target,
                       TUniqueId cameraId);
 

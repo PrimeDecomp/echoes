@@ -45,7 +45,7 @@
 #include "MetroidPrime/CWorldLayerState.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
-#include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
+#include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
@@ -1846,13 +1846,13 @@ void CStateManager::DeliverScriptMsg(const CScriptMsg& msg) {
 void CStateManager::SendScriptMsg(CEntity* target, TUniqueId sender, EScriptObjectMessage message,
                                   TUniqueId actor) {
   if (target != nullptr) {
-    SendScriptMsg(CScriptMsg(sender, actor, target->GetUniqueId(), message, kSS_InvalidState));
+    SendScriptMsg(CScriptMsg(sender, target->GetUniqueId(), message, actor));
   }
 }
 
 void CStateManager::SendScriptMsg(TUniqueId target, TUniqueId sender, EScriptObjectMessage message,
                                   TUniqueId actor) {
-  SendScriptMsg(CScriptMsg(sender, actor, target, message, kSS_InvalidState));
+  SendScriptMsg(CScriptMsg(sender, target, message, actor));
 }
 
 float CStateManager::IntegrateVisorFog(float fog) const {
@@ -2131,8 +2131,7 @@ CStateManager::~CStateManager() {
     CEntity* entity = objects[i];
     if (entity != nullptr && TCastToPtr< CPlayer >(entity) == nullptr &&
         TCastToPtr< CGameCamera >(entity) == nullptr) {
-      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity->GetUniqueId(),
-                                  kSM_Delete, kSS_InvalidState));
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, entity->GetUniqueId(), kSM_Delete));
     }
   }
   for (int i = 0; i != kMaxObjects; ++i) {
@@ -2150,16 +2149,14 @@ CStateManager::~CStateManager() {
   for (rstl::list< CEntity* >::const_iterator it = cameraObjects.begin(); it != cameraObjects.end();
        ++it) {
     if (CGameCamera* camera = TCastToPtr< CGameCamera >(*it)) {
-      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, camera->GetUniqueId(),
-                                  kSM_Delete, kSS_InvalidState));
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, camera->GetUniqueId(), kSM_Delete));
       RemoveObject(camera->GetUniqueId());
       delete camera;
     }
   }
   for (uint i = 0; i < mNumPlayers; ++i) {
     if (CPlayer* player = mPlayers[i]) {
-      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, player->GetUniqueId(),
-                                  kSM_Delete, kSS_InvalidState));
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, player->GetUniqueId(), kSM_Delete));
       RemoveObject(player->GetUniqueId());
       delete player;
     }
@@ -2444,8 +2441,8 @@ void CStateManager::InitializeState(CAssetId worldId, TAreaId areaId, CAssetId m
   mWorld->TravelToArea(mNextAreaId, *this, CWorld::kATT_SkipAdjacent);
   CObjectList* allObjects = mObjectLists[kOL_All].get();
   for (int i = allObjects->GetFirstObjectIndex(); i != -1; i = allObjects->GetNextObjectIndex(i)) {
-    DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, (*allObjects)[i]->GetUniqueId(),
-                                kSM_WorldLoaded, kSS_InvalidState));
+    DeliverScriptMsg(
+        CScriptMsg(kInvalidUniqueId, (*allObjects)[i]->GetUniqueId(), kSM_WorldLoaded));
   }
 
   if (mPendingDockArea != kInvalidAreaId) {
@@ -2655,14 +2652,12 @@ void CStateManager::AddObject(CEntity& entity) {
     UpdateActorInSortedLists(actor);
   }
 
-  DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity.GetUniqueId(), kSM_Create,
-                              kSS_InvalidState));
+  DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, entity.GetUniqueId(), kSM_Create));
   if (entity.GetCurrentAreaId() != kInvalidAreaId && HasWorld()) {
     CGameArea* area = mWorld->Area(entity.GetCurrentAreaId());
     if (area->GetPhase() > CGameArea::kP_FinishDependencies &&
         area->GetPostConstructed()->mScriptObjectsInitialized) {
-      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, entity.GetUniqueId(),
-                                  kSM_AreaLoaded, kSS_InvalidState));
+      DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, entity.GetUniqueId(), kSM_AreaLoaded));
     }
   }
 }
@@ -3265,7 +3260,8 @@ void CStateManager::ApplyDamageToWorld(TUniqueId owner, CActor& projectile,
     if (bomb && player != nullptr && actor->GetUniqueId() == weapon->GetOwnerId()) {
       if (player->GetFrozenState()) {
         CEnvironmentVariable* const freezeInstructions =
-            gpGameState->SystemOptions().FindEnvironmentVariable("FreezeInstructionsMorphBall");
+            gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable(
+                "FreezeInstructionsMorphBall");
         freezeInstructions->Set(freezeInstructions->GetValue() + 1);
         const int playerIndex = MaskUIdNumPlayers(player->GetUniqueId());
         CSamusHud::DisplayHudMemo(rstl::wstring_l(L""),
@@ -3522,7 +3518,7 @@ void CStateManager::CrossTouchActors() {
 
       rstl::reserved_vector< TUniqueId, kMaxObjects > nearList;
       const CMaterialFilter filter = actor->GetMaterialList().HasMaterial(kMT_Trigger) &&
-                                             TCastToPtr< CMetroidAlpha >(actor) == nullptr
+                                             TCastToPtr< CMetroid >(actor) == nullptr
                                          ? CMaterialFilter::MakeExclude(CMaterialList(kMT_Trigger))
                                          : CMaterialFilter::GetPassEverything();
       BuildNearList(nearList, *touchBounds, filter, actor);

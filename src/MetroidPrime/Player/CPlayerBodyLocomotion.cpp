@@ -36,8 +36,9 @@ CPlayerBodyController::SLocomotionState::SLocomotionState(CActor& actor)
       const rstl::pair< float, int > best = database.FindBestAnimation(parms, -1);
       float speed = 0.f;
       if (best.second != -1) {
-        speed = actor.GetAverageAnimVelocity(best.second);
-        speed = category != 0 ? scale.GetY() * speed : 0.f;
+        const float velocity = actor.GetAverageAnimVelocity(best.second);
+        speed = velocity * scale.GetY();
+        speed = category != 0 ? speed : 0.f;
       }
       mAnims[mode][category] = rstl::pair< int, float >(best.second, speed);
     }
@@ -65,9 +66,10 @@ void CPlayerBodyController::SLocomotionState::Update(float dt, CStateManager& mg
     mPrimeTime += dt;
   }
 
+  const int mode = mLocomotionMode;
   const int previousMode = mPreviousLocomotionMode;
-  mPreviousLocomotionMode = mLocomotionMode;
-  UpdateAnimation(controller, previousMode != mLocomotionMode);
+  mPreviousLocomotionMode = mode;
+  UpdateAnimation(controller, mode != previousMode);
 }
 
 void CPlayerBodyController::SLocomotionState::Shutdown(CPlayerBodyController& controller) {
@@ -89,11 +91,12 @@ void CPlayerBodyController::SLocomotionState::UpdateAnimation(CPlayerBodyControl
   if (force || (mPrimeTime >= 0.2f && !mAnimationChangeDisabled)) {
     const ECategory previous = force ? kC_Invalid : mCategory;
     float speed = 0.f;
+    const CPlayerBodyStateCmdMgr& commands = controller.CommandMgr();
     const CPBCLocomotionCmd* command =
-        static_cast< const CPBCLocomotionCmd* >(controller.CommandMgr().GetCmd(kPBSC_Locomotion));
+        static_cast< const CPBCLocomotionCmd* >(commands.GetCmd(kPBSC_Locomotion));
     if (command) {
       speed = command->GetMovement().Magnitude();
-    } else if (controller.CommandMgr().GetCmd(kPBSC_ContinueLocomotion)) {
+    } else if (commands.GetCmd(kPBSC_ContinueLocomotion)) {
       if (CPlayer* player = TCastToPtr< CPlayer >(&controller.GetPlayer())) {
         speed = player->GetDampedClampedVelocityWR().ToVec2f().Magnitude();
       }
@@ -120,7 +123,11 @@ bool CPlayerBodyController::SLocomotionState::IsStrafing(
     const CPlayerBodyController& controller) const {
   const CPBCLocomotionCmd* command =
       static_cast< const CPBCLocomotionCmd* >(controller.CommandMgr().GetCmd(kPBSC_Locomotion));
-  return command && command->GetFacing().IsNonZero() && command->GetMovement().IsNonZero();
+  if (command && (command->GetFacing().GetX() != 0.f || command->GetFacing().GetY() != 0.f ||
+                  command->GetFacing().GetZ() != 0.f)) {
+    return command->GetMovement().IsNonZero();
+  }
+  return false;
 }
 
 void CPlayerBodyController::SLocomotionState::UpdateStrafe(float speed,
@@ -131,21 +138,25 @@ void CPlayerBodyController::SLocomotionState::UpdateStrafe(float speed,
   CVector3f movement = command->GetMovement();
   movement = controller.GetPlayer().GetTransform().TransposeRotate(movement);
   const CVector3f squared = CVector3f::ByElementMultiply(movement, movement);
-  EDirection direction;
-  if (squared.GetX() <= squared.GetY()) {
-    direction = movement.GetY() < 0.f ? kD_Backward : kD_Forward;
+  if ((squared.GetX() <= squared.GetY()) == false) {
+    if (movement.GetX() < 0.f) {
+      UpdateDirectional(speed, controller, previous, kD_Left);
+    } else {
+      UpdateDirectional(speed, controller, previous, kD_Right);
+    }
+  } else if (movement.GetY() < 0.f) {
+    UpdateDirectional(speed, controller, previous, kD_Backward);
   } else {
-    direction = movement.GetX() < 0.f ? kD_Left : kD_Right;
+    UpdateDirectional(speed, controller, previous, kD_Forward);
   }
-  UpdateDirectional(speed, controller, previous, direction);
 }
 
 void CPlayerBodyController::SLocomotionState::UpdateIdle(CPlayerBodyController& controller,
                                                          ECategory previous) {
   if (previous != kC_Idle) {
-    const rstl::pair< int, float >& idle = GetLocoAnimation(mPreviousLocomotionMode, kC_Idle);
-    if (idle.first != controller.GetCurrentAnimationId() || !controller.IsAnimationLooping()) {
-      controller.RequestAnimation(CAnimPlaybackParms(idle.first, -1, 1.f, true), true, false);
+    const int idle = GetLocoAnimation(mPreviousLocomotionMode, kC_Idle).first;
+    if (idle != controller.GetCurrentAnimationId() || !controller.IsAnimationLooping()) {
+      controller.RequestAnimation(CAnimPlaybackParms(idle, -1, 1.f, true), true, false);
       mPrimeTime = 0.f;
     }
     mCategory = kC_Idle;
@@ -156,13 +167,12 @@ void CPlayerBodyController::SLocomotionState::UpdateDirectional(float speed,
                                                                 CPlayerBodyController& controller,
                                                                 ECategory previous,
                                                                 EDirection direction) {
-  const rstl::pair< int, float >& slow =
-      GetLocoAnimation(mPreviousLocomotionMode, skDirectionalCategories[direction][0]);
-  const rstl::pair< int, float >& medium =
-      GetLocoAnimation(mPreviousLocomotionMode, skDirectionalCategories[direction][1]);
-  if (speed < slow.second) {
+  if (speed <
+      GetLocoAnimation(mPreviousLocomotionMode, skDirectionalCategories[direction][0]).second) {
     UpdateSlow(speed, controller, previous, direction);
-  } else if (speed < medium.second) {
+  } else if (speed <
+             GetLocoAnimation(mPreviousLocomotionMode, skDirectionalCategories[direction][1])
+                 .second) {
     UpdateMedium(speed, controller, previous, direction);
   } else {
     UpdateFast(speed, controller, previous, direction);
@@ -197,18 +207,20 @@ void CPlayerBodyController::SLocomotionState::UpdateMedium(float speed,
   const rstl::pair< int, float >& medium =
       GetLocoAnimation(mPreviousLocomotionMode, mediumCategory);
   const float weight = ComputeWeightPercentage(speed, slow, medium);
+  const int slowAnim = slow.first;
+  const int mediumAnim = medium.first;
   if (weight < 0.3f) {
     const float rate = slow.second > 0.f ? speed / slow.second : 1.f;
-    if (previous != slowCategory && slow.first != controller.GetCurrentAnimationId()) {
-      controller.RequestAnimation(CAnimPlaybackParms(slow.first, -1, 1.f, true), true, false);
+    if (previous != slowCategory && slowAnim != controller.GetCurrentAnimationId()) {
+      controller.RequestAnimation(CAnimPlaybackParms(slowAnim, -1, 1.f, true), true, false);
       mPrimeTime = 0.f;
     }
     controller.MultiplyPlaybackRate(rate);
     mCategory = slowCategory;
   } else {
     const float rate = rstl::min_val(speed / medium.second, 1.f);
-    if (previous != mediumCategory && medium.first != controller.GetCurrentAnimationId()) {
-      controller.RequestAnimation(CAnimPlaybackParms(medium.first, -1, 1.f, true), true, false);
+    if (previous != mediumCategory && mediumAnim != controller.GetCurrentAnimationId()) {
+      controller.RequestAnimation(CAnimPlaybackParms(mediumAnim, -1, 1.f, true), true, false);
       mPrimeTime = 0.f;
     }
     controller.MultiplyPlaybackRate(rate);
@@ -225,18 +237,20 @@ void CPlayerBodyController::SLocomotionState::UpdateFast(float speed,
       GetLocoAnimation(mPreviousLocomotionMode, mediumCategory);
   const rstl::pair< int, float >& fast = GetLocoAnimation(mPreviousLocomotionMode, fastCategory);
   const float weight = ComputeWeightPercentage(speed, medium, fast);
+  const int mediumAnim = medium.first;
+  const int fastAnim = fast.first;
   if (weight < 0.6f) {
     const float rate = medium.second > 0.f ? speed / medium.second : 1.f;
-    if (previous != mediumCategory && medium.first != controller.GetCurrentAnimationId()) {
-      controller.RequestAnimation(CAnimPlaybackParms(medium.first, -1, 1.f, true), true, false);
+    if (previous != mediumCategory && mediumAnim != controller.GetCurrentAnimationId()) {
+      controller.RequestAnimation(CAnimPlaybackParms(mediumAnim, -1, 1.f, true), true, false);
       mPrimeTime = 0.f;
     }
     controller.MultiplyPlaybackRate(rate);
     mCategory = mediumCategory;
   } else {
     const float rate = rstl::min_val(speed / fast.second, 1.f);
-    if (previous != fastCategory && fast.first != controller.GetCurrentAnimationId()) {
-      controller.RequestAnimation(CAnimPlaybackParms(fast.first, -1, 1.f, true), true, false);
+    if (previous != fastCategory && fastAnim != controller.GetCurrentAnimationId()) {
+      controller.RequestAnimation(CAnimPlaybackParms(fastAnim, -1, 1.f, true), true, false);
       mPrimeTime = 0.f;
     }
     controller.MultiplyPlaybackRate(rate);

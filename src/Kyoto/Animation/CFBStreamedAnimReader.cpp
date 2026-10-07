@@ -11,6 +11,15 @@
 const uchar CFBStreamedAnimReaderTotals::kRotationValueCount = 4;
 const uchar CFBStreamedAnimReaderTotals::kOffsetValueCount = 4;
 
+// The target emits these CFBStreamedCompression members in this translation unit.
+CCharAnimTime CFBStreamedCompression::GetAnimationDuration() const {
+  return MainHeader().GetMaxTime();
+}
+
+bool CFBStreamedCompression::HasScaleData() const {
+  return GetPerChannelHeaderList(TimeHeader(MainHeader())).HasScaleData();
+}
+
 bool CFBStreamedPerChannelHeaderList::HasOffsetData() const {
   for (const_iterator it = begin(); it != end(); ++it) {
     if (it->GetOffsetBitStorage().GetWidth() != 0) {
@@ -60,7 +69,7 @@ uchar CFBStreamedAnimReaderTotals::GetValuesPerChannel() const {
   if (mHasScaleData) {
     values += 4;
   }
-  return values;
+  return static_cast< uchar >(values);
 }
 
 void CFBStreamedAnimReaderTotals::Allocate(uint channelCount) {
@@ -208,8 +217,9 @@ void CFBStreamedPairOfTotals::SetTime(CMemoryInputToBitLevelLoader& input,
 }
 
 void CFBStreamedPairOfTotals::DoIncrement(CBitLevelLoader< CMemoryInputToBitLevelLoader >& loader) {
+  const CFBStreamedCompression& source = *mSource;
   ++mCurKey;
-  Prior().IncrementInto(loader, *mSource, Next());
+  Prior().IncrementInto(loader, source, Next());
 }
 
 float CFBStreamedPairOfTotals::GetT() const { return mAspects.GetT(); }
@@ -238,8 +248,8 @@ void CFBStreamedAnimReaderTotals::IncrementInto(
       output[5] = input[5] + loader.LoadSigned(offset.GetBitCount(1));
       output[6] = input[6] + loader.LoadSigned(offset.GetBitCount(2));
     }
-    input += 8;
     output += 8;
+    input += 8;
     if (mHasScaleData) {
       if (mHasScale[channel]) {
         const CFBStreamedPerChannelHeader::ScaleHeader& scale = it->GetScaleBitStorage();
@@ -247,11 +257,15 @@ void CFBStreamedAnimReaderTotals::IncrementInto(
         output[1] = input[1] + loader.LoadSigned(scale.GetBitCount(1));
         output[2] = input[2] + loader.LoadSigned(scale.GetBitCount(2));
       }
-      input += 4;
       output += 4;
+      input += 4;
     }
   }
   out.mCurKey = mCurKey + 1;
+}
+
+CSegIdToIndexConverter::~CSegIdToIndexConverter() {
+  CCharAnimMemoryMetrics::SubtractFromTotalSize(sizeof(mIndices), CCharAnimMemoryMetrics::kASS_Two);
 }
 
 CSegIdToIndexConverter::CSegIdToIndexConverter(const CFBStreamedAnimReaderTotals& totals) {
@@ -260,7 +274,8 @@ CSegIdToIndexConverter::CSegIdToIndexConverter(const CFBStreamedAnimReaderTotals
   }
   uint count = totals.NumEntries();
   for (uint i = 0; i < count; ++i) {
-    mIndices[totals.GetSegId(i)] = i;
+    const uint segId = totals.GetSegId(i);
+    mIndices[segId] = i;
   }
   CCharAnimMemoryMetrics::AddToTotalSize(sizeof(mIndices), CCharAnimMemoryMetrics::kASS_Two);
 }
@@ -282,7 +297,8 @@ CFBStreamedAnimReader::CFBStreamedAnimReader(
 CFBStreamedAnimReader::~CFBStreamedAnimReader() {}
 
 rstl::ownership_transfer< IAnimReader > CFBStreamedAnimReader::VClone() const {
-  return rs_new CFBStreamedAnimReader(mSource, mCurTime, mPOIData);
+  return rstl::ownership_transfer< IAnimReader >(
+      rs_new CFBStreamedAnimReader(mSource, mCurTime, mPOIData));
 }
 
 CCharAnimTime CFBStreamedAnimReader::VGetTimeRemaining() const {
@@ -415,9 +431,9 @@ void CFBStreamedAnimReader::VGetSegStatementSet(const CSegIdList& list, CSegStat
 }
 
 void CFBStreamedAnimReader::SetReadTime(const CCharAnimTime& time) const {
-  CCharAnimTime readTime(
-      rstl::min_val(time.GetSeconds(), mSteadyStateInfo.GetDuration().GetSeconds()));
-  mTotals.SetTime(mInput, mBitLoader, readTime);
+  mTotals.SetTime(
+      mInput, mBitLoader,
+      CCharAnimTime(rstl::min_val(time.GetSeconds(), mSteadyStateInfo.GetDuration().GetSeconds())));
 }
 
 CFBFullBodyAspectsForStream::CFBFullBodyAspectsForStream(

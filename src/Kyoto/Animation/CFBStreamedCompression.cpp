@@ -18,7 +18,8 @@ rstl::auto_ptr< uint > CFBStreamedCompression::GetRotationsAndOffsets(uint words
       static_cast< CFBStreamedPerChannelHeaderList* >(cursor);
   new (channels) CFBStreamedPerChannelHeaderList(in);
   const CFBStreamedPerChannelHeader& first = *channels->begin();
-  cursor = const_cast< uchar* >(channels->AfterEnd());
+  uchar* next = const_cast< uchar* >(channels->AfterEnd());
+  cursor = next;
   uint wordCount = static_cast< uint >(
       static_cast< float >(
           channels->GetSumOfBitCounts() * first.GetRotationBitStorage().GetWidth() + 31) /

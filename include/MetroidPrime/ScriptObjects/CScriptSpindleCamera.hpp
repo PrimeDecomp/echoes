@@ -5,8 +5,6 @@
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 
-struct SLdrSplineType;
-
 class CScriptSpindleCamera : public CActor {
 public:
   CScriptSpindleCamera(
@@ -24,8 +22,8 @@ public:
       const CSpindleCameraInterpolant& desiredAngularSpeed,
       const CSpindleCameraInterpolant& deactivateRadius,
       const CSpindleCameraInterpolant& constraintFlipAngle, const CSpindleCameraInterpolant& fov,
-      SLdrSplineType targetType, const CMayaSpline& targetControlSpline, bool targetLoops,
-      SLdrSplineType playerType, bool playerLoops);
+      const CMotionSpline::ESplineType& targetType, const CMayaSpline& targetControlSpline,
+      bool targetLoops, const CMotionSpline::ESplineType& playerType, bool playerLoops);
 
   // CEntity
   ~CScriptSpindleCamera() override;

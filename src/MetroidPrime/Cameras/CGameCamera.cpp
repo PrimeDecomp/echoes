@@ -5,7 +5,6 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CCameraSpring.hpp"
-#include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -41,7 +40,7 @@ void CGameCamera::SetAspectRatio(float aspect) {
 }
 
 const CMatrix4f& CGameCamera::GetPerspectiveMatrix() const {
-  if (mPerspDirty) {
+  if (mPerspDirty == true) {
     mPerspectiveMatrix = CGraphics::CalculatePerspectiveMatrix(GetFov(), mAspect, mZnear, mZfar);
     mPerspDirty = false;
   }
@@ -101,9 +100,9 @@ CMatrix4f CMatrix4f::GetInverse() const {
 }
 
 CVector3f CGameCamera::ConvertToWorldSpace(const CVector3f& position) const {
-  const CVector3f unprojected = GetPerspectiveMatrix().GetInverse().MultiplyOneOverW(position);
-  const CVector3f world = GetTransform() * unprojected;
-  return world;
+  const CVector3f viewPos = GetPerspectiveMatrix().GetInverse().MultiplyOneOverW(position);
+  const CVector3f result = GetTransform() * viewPos;
+  return result;
 }
 
 float CCameraSpring::ApplyDistanceSpring(float target, float current, float dt) {
@@ -129,45 +128,42 @@ void CGameCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
 }
 
-void CGameCamera::SetActive(bool active) {
+void CGameCamera::SetActive(const bool active) {
   CActor::SetActive(active);
   SetDrawEnabled(false);
 }
 
 CTransform4f CGameCamera::ValidateCameraTransform(const CTransform4f& newXf,
-                                                  const CTransform4f& oldXf) {
-  CTransform4f xfCpy(newXf);
-  if (!close_enough(newXf.GetRight().Magnitude(), 1.f, 1.1920929e-4f) ||
-      !close_enough(newXf.GetForward().Magnitude(), 1.f, 1.1920929e-4f) ||
-      !close_enough(newXf.GetUp().Magnitude(), 1.f, 1.1920929e-4f)) {
-    xfCpy.Orthonormalize();
+                                                  const CTransform4f& oldXf, float dt) {
+  CTransform4f xf(newXf);
+  if (!close_enough(newXf.GetColumn(kDX).Magnitude(), 1.f) ||
+      !close_enough(newXf.GetColumn(kDY).Magnitude(), 1.f) ||
+      !close_enough(newXf.GetColumn(kDZ).Magnitude(), 1.f)) {
+    xf.Orthonormalize();
   }
-
-  float dot = CVector3f::Dot(newXf.GetForward(), CVector3f::Up());
-  dot = CMath::Limit(dot, 1.f);
+  const float dot = CMath::Limit(CVector3f::Dot(newXf.GetColumn(kDY), CVector3f::Up()), 1.f);
   if (CMath::AbsF(dot) > 0.999f) {
-    xfCpy = oldXf;
+    xf = oldXf;
   }
-
-  CVector3f forward(xfCpy.GetForward().GetX(), xfCpy.GetForward().GetY(), 0.f);
-  if (xfCpy.GetUp().GetZ() < -0.2f) {
+  CVector3f forward = xf.GetColumn(kDY);
+  forward.SetZ(0.f);
+  if (xf.GetColumn(kDZ).GetZ() < -0.2f) {
     if (forward.CanBeNormalized()) {
-      xfCpy = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward, CVector3f::Up());
+      xf = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward);
     } else {
-      xfCpy = oldXf;
+      xf = oldXf;
     }
   }
-
-  if (!close_enough(xfCpy.GetRight().GetZ(), 0.f) && !close_enough(xfCpy.GetUp().GetZ(), 0.f)) {
+  if (!close_enough(xf.GetColumn(kDX).GetZ(), 0.f, 0.01f) &&
+      close_enough(xf.GetColumn(kDZ).GetZ(), 0.f, 0.01f)) {
     if (forward.IsMagnitudeSafe()) {
-      xfCpy = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward, CVector3f::Up());
+      xf = CTransform4f::LookAt(CUnitVector3f(CVector3f::Zero()), forward);
     } else {
-      xfCpy = oldXf;
+      xf = oldXf;
     }
   }
-
-  xfCpy.SetTranslation(newXf.GetTranslation());
-  return xfCpy;
+  xf.SetTranslation(newXf.GetTranslation());
+  return xf;
 }
 
 CPlayer& CGameCamera::Player(CStateManager& mgr) const { return *mgr.GetPlayer(mControllerIdx); }
@@ -219,7 +215,8 @@ void CGameCamera::InterpolateFOV(float fov, float duration, float delay) {
 
 void CGameCamera::InterpolateFOV(float startFov, float duration, float delay, TUniqueId cameraId,
                                  CStateManager& mgr) {
-  const CGameCamera* camera = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(cameraId));
+  CGameCamera* camera =
+      TCastToPtr< CGameCamera >(const_cast< CEntity* >(mgr.GetObjectById(cameraId)));
   if (camera != nullptr) {
     const float target = camera->GetFov();
     if (duration <= 0.f) {
@@ -234,8 +231,8 @@ void CGameCamera::UpdatePerspective(float dt, CStateManager& mgr) {
   if (mFovInterpolation.mDelay > 0.f) {
     mFovInterpolation.mDelay -= dt;
   } else if (mFovInterpolation.mRemaining > 0.f) {
-    const CGameCamera* camera =
-        TCastToConstPtr< CGameCamera >(mgr.GetObjectById(mFovInterpolation.mCameraId));
+    CGameCamera* camera = TCastToPtr< CGameCamera >(
+        const_cast< CEntity* >(mgr.GetObjectById(mFovInterpolation.mCameraId)));
     if (camera != nullptr && camera->GetUniqueId() != GetUniqueId()) {
       SetTargetFov(camera->GetFov());
     }
@@ -244,12 +241,12 @@ void CGameCamera::UpdatePerspective(float dt, CStateManager& mgr) {
     if (mFovInterpolation.mRemaining <= 0.f) {
       SetFov(GetTargetFov());
     } else {
-      const float fovDelta = GetFov() - GetTargetFov();
+      const float delta = GetFov() - GetTargetFov();
       const float t =
           CMath::Clamp(0.f, mFovInterpolation.mRemaining / mFovInterpolation.mDuration, 1.f);
-      SetFov(fovDelta * t + GetTargetFov());
+      SetFov(delta * t + GetTargetFov());
     }
-  } else if (!close_enough(GetFov(), GetTargetFov(), 0.00001f)) {
+  } else if (!(CMath::AbsF(GetFov() - GetTargetFov()) < 0.00001f)) {
     SetFov(GetTargetFov());
   }
 }
@@ -257,13 +254,13 @@ void CGameCamera::UpdatePerspective(float dt, CStateManager& mgr) {
 CVector3f CGameCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
   if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(mWatchedObject))) {
     return CameraManager(const_cast< CStateManager& >(mgr))
-        .GetBallCamera()
+        .BallCamera()
         ->GetScanObjectIndicatorPosition(mgr);
   }
   const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mWatchedObject));
-  if (!actor) {
+  if (actor == nullptr) {
     return CameraManager(const_cast< CStateManager& >(mgr))
-        .GetBallCamera()
+        .BallCamera()
         ->GetScanObjectIndicatorPosition(mgr);
   }
   return actor->GetScanObjectIndicatorPosition(mgr);
@@ -273,9 +270,9 @@ rstl::optional_object< CAABox > CGameCamera::GetTouchBounds() const {
   return CAABox(GetTranslation(), GetTranslation());
 }
 
-void CGameCamera::UnkVtable84() {}
+void CGameCamera::UnkVtable84(TUniqueId fluidId, CStateManager& mgr) {}
 
-void CGameCamera::UnkVtable88(TUniqueId fluidId) {}
+void CGameCamera::UnkVtable88(TUniqueId fluidId, CStateManager& mgr) {}
 
 void CGameCamera::ClearFluidList(CStateManager& mgr) {
   const rstl::reserved_vector< TUniqueId, 4 > fluids = GetFluidList();

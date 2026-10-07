@@ -172,7 +172,7 @@ public:
   void BeginLeaf(const CAABox& bounds);
   void ReserveWords(int count);
   void BeginGeometry(const CCollisionPrimitiveData& geometry, const CTransform4f* transform,
-                     short id, u64 flags);
+                     ushort id, u64 flags);
 
 private:
   CCollisionCache& mCache;

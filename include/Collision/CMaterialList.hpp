@@ -1,8 +1,8 @@
 #ifndef _CMATERIALLIST
 #define _CMATERIALLIST
 
-#include "types.h"
 #include "rstl/construct.hpp"
+#include "types.h"
 
 class CInputStream;
 
@@ -66,8 +66,8 @@ enum EMaterialTypes {
   kMT_ExcludeFromLineOfSightTest = 56,
   kMT_ExcludeFromRadar = 57,
   kMT_NoPlayerCollision = 58,
-  kMT_Unknown59 = 59, // Used by the Echoes Morph Ball collision sphere.
-  kMT_Unknown60 = 60, // Included in the implicit world-render geometry mask.
+  kMT_Unknown59 = 59,   // Used by the Echoes Morph Ball collision sphere.
+  kMT_Unknown60 = 60,   // Included in the implicit world-render geometry mask.
   kMT_SeekerTarget = 63 // Target-derived name: seeker lock-on eligibility.
 };
 
@@ -102,6 +102,16 @@ public:
     Add(m4);
     Add(m5);
   }
+  CMaterialList(const EMaterialTypes& m1, const EMaterialTypes& m2, const EMaterialTypes& m3,
+                const EMaterialTypes& m4, const EMaterialTypes& m5, const EMaterialTypes& m6)
+  : mValue(0) {
+    Add(m1);
+    Add(m2);
+    Add(m3);
+    Add(m4);
+    Add(m5);
+    Add(m6);
+  }
   explicit CMaterialList(u64 value) : mValue(value) {}
   // Guessed identity: adjacent to BitPosition; consumes one aligned 64-bit value.
   explicit CMaterialList(CInputStream& in);
@@ -111,9 +121,8 @@ public:
   void Add(const CMaterialList& material) { mValue |= material.mValue; }
   void Remove(EMaterialTypes material) { mValue &= ~(u64(1) << material); }
   void Remove(const CMaterialList& material) { mValue &= ~material.mValue; }
-  const CMaterialList& Union(const CMaterialList& other) {
-    mValue |= other.mValue;
-    return *this;
+  CMaterialList Union(const CMaterialList& other) const {
+    return CMaterialList(mValue | other.mValue);
   }
   bool HasMaterial(EMaterialTypes material) const {
     return (mValue & (u64(1) << material)) ? true : false;

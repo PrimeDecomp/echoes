@@ -69,25 +69,27 @@ void CFidget::Update(int fireButtonStates, bool bobbing, bool inStrikeCooldown, 
     mTimeSinceBobbing += dt;
   }
 
-  mFidgetDelayTimer += dt;
-  if (mFidgetDelayTimer > mTimeUntilFidget) {
-    mState = mgr.Random()->Next() % 100 > 50 ? kS_MajorFidget : kS_MinorFidget;
-    mFidgetDelayTimer = 0.f;
+  if (mState == kS_NoFidget) {
+    mFidgetDelayTimer += dt;
+    if (mFidgetDelayTimer > mTimeUntilFidget) {
+      mState = mgr.Random()->Next() % 100 > 50 ? kS_MajorFidget : kS_MinorFidget;
+      mFidgetDelayTimer = 0.f;
+    }
   }
   if (mHolsterTimeSinceFire > mTimeUntilHolster) {
     mState = kS_HolsterBeam;
   }
 
   switch (mState) {
-  case kS_MajorFidget:
-    mTimeUntilFidget = mgr.Random()->Range(20.f, 30.f);
-    mType = SamusGun::kFT_Major;
-    mAnimSet = mgr.Random()->Range(0, 5);
-    break;
   case kS_MinorFidget:
     mTimeUntilFidget = mgr.Random()->Range(20.f, 30.f);
     mType = SamusGun::kFT_Minor;
     mAnimSet = mgr.Random()->Range(0, 4);
+    break;
+  case kS_MajorFidget:
+    mTimeUntilFidget = mgr.Random()->Range(20.f, 30.f);
+    mType = SamusGun::kFT_Major;
+    mAnimSet = mgr.Random()->Range(0, 5);
     break;
   case kS_HolsterBeam:
     mType = SamusGun::kFT_Minor;

@@ -1,25 +1,24 @@
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
-#include "Kyoto/Animation/CAnimTreeNode.hpp"
-#include "Kyoto/Animation/CCharAnimTime.hpp"
-#include "MetroidPrime/CAnimData.hpp"
-#include "MetroidPrime/CModelData.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptTimeKeyframe.hpp"
 
+#include "Kyoto/Animation/CAnimTreeNode.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptCamera.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTimeKeyframe.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CCinematicCamera::CCinematicCamera(TUniqueId uid, const CTransform4f& xf, bool active, float fov,
                                    float nearZ, float farZ, float aspect, int index,
                                    int controllerIdx)
-: CGameCamera(uid, rstl::string("Cinematic Camera"),
+: CGameCamera(uid, rstl::string_l("Cinematic Camera"),
               CEntityInfo(kInvalidAreaId, NullConnectionList, active), xf, fov, nearZ, farZ, aspect,
               kInvalidUniqueId, index, controllerIdx)
 , mTime(0.f)
@@ -39,25 +38,26 @@ void CCinematicCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
   mSlowMotionScale = 1.f;
   if (const CScriptCamera* camera =
           TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
-    if (mFlags & CScriptCamera::kF_VerticalFov) {
-      SetFovAndTarget(camera->GetSpline().GetFovByTime(mTime));
+    CScriptCameraSpline& spline = camera->GetSpline();
+    if ((mFlags & CScriptCamera::kF_VerticalFov) != 0) {
+      SetFovAndTarget(spline.GetFovByTime(mTime));
     } else {
-      SetFovAndTarget(camera->GetSpline().GetFovByTime(mTime) / GetAspectRatio());
+      SetFovAndTarget(spline.GetFovByTime(mTime) / GetAspectRatio());
     }
     mMoveIntoEyePos = CalculateMoveOutofIntoEyePosition(false, mgr);
     Think(0.f, mgr);
   }
 }
 
-bool CCinematicCamera::CanSkip(const CStateManager& mgr) const {
+const bool CCinematicCamera::CanSkip(const CStateManager& mgr) const {
+  bool result = false;
   if (gpGameState->GetHardModeEnabled()) {
-    return true;
+    result = true;
+  } else if (const CScriptCamera* camera =
+                 TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
+    result = camera->HasBeenViewed();
   }
-  if (const CScriptCamera* camera =
-          TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
-    return camera->HasBeenViewed();
-  }
-  return false;
+  return result;
 }
 
 void CCinematicCamera::Think(float dt, CStateManager& mgr) {
@@ -70,16 +70,16 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
     mgr.CameraManager(GetControllerNumber())->StopCinematics(mgr);
     return;
   }
+  CScriptCameraSpline& spline = camera->GetSpline();
   if (!mPaused) {
     mTime += dt;
   }
 
-  CScriptCameraSpline& spline = camera->GetSpline();
   CTransform4f xf = camera->GetTransform();
   const float roll = spline.GetRollByTime(mTime);
   CVector3f up = CVector3f::Up();
-  if (!CMath::IsEpsilon(roll, 0.f, 0.0001f)) {
-    up = CQuaternion::YRotation(CRelAngle::FromDegrees(roll)).Transform(up);
+  if (!close_enough(roll, 0.f, 0.0001f)) {
+    up = CQuaternion::YRotation(CRelAngle::FromDegrees(roll)).Transform(CVector3f::Up());
   }
   xf.SetTranslation(spline.GetPositionByTime(mTime, xf, mgr));
   const CQuaternion orientation = spline.GetOrientationByTime(mTime, xf, mgr);
@@ -91,10 +91,10 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
     if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
       target = player.GetBallPosition();
     }
-    if ((target - xf.GetTranslation()).ToVec2f().Magnitude() >= 0.0011920929f) {
-      xf = CTransform4f::LookAt(xf.GetTranslation(), target, up);
-    } else {
+    if (CVector3f(target - xf.GetTranslation()).ToVec2f().Magnitude() < 0.0011920929f) {
       xf.SetTranslation(target);
+    } else {
+      xf = CTransform4f::LookAt(xf.GetTranslation(), target, up);
     }
   }
   SetTransform(xf);
@@ -109,7 +109,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   if (CScriptActor* actor =
           TCastToPtr< CScriptActor >(mgr.ObjectById(camera->GetCameraActorId()))) {
     if (actor->IsPlayerActor()) {
-      actor->SetModelFlags(CModelFlags(CModelFlags::kT_Blend, GetMoveOutofIntoAlpha()));
+      actor->SetModelFlags(CModelFlags::AlphaBlended(GetMoveOutofIntoAlpha()));
     }
   }
   if (mTime > camera->GetDuration()) {
@@ -145,33 +145,35 @@ float CCinematicCamera::GetMoveOutofIntoAlpha() const {
 
 CVector3f CCinematicCamera::CalculateMoveOutofIntoEyePosition(bool outOfEye,
                                                               const CStateManager& mgr) const {
-  static const char* leftEyeName = "L_eye";
-  static const char* rightEyeName = "R_eye";
-  CVector3f eyePos = GetPlayer(mgr).GetEyePosition();
-  if (const CScriptCamera* camera =
-          TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
-    if (const CScriptActor* actor =
-            TCastToConstPtr< CScriptActor >(mgr.GetObjectById(camera->GetCameraActorId()))) {
-      if (actor->IsPlayerActor() && actor->HasAnimation()) {
-        const CAnimData* animData = actor->GetAnimationData();
-        const rstl::ncrc_ptr< CAnimTreeNode >& root = animData->GetAnimationTree();
-        if (root.GetPtr()) {
-          const CModelData* modelData = actor->GetModelData();
-          const CSegId leftEye = animData->GetLocatorSegId(rstl::string_l(leftEyeName));
-          const CSegId rightEye = animData->GetLocatorSegId(rstl::string_l(rightEyeName));
-          if (leftEye != CSegId::Invalid() && rightEye != CSegId::Invalid()) {
-            const CCharAnimTime time =
-                outOfEye ? CCharAnimTime::ZeroFlat() : root->GetSteadyStateAnimInfo().GetDuration();
-            const CCharAnimTime* timePtr = outOfEye ? nullptr : &time;
-            const CTransform4f leftLocal =
-                modelData->GetScaledLocatorTransformDynamic(rstl::string_l(leftEyeName), timePtr);
-            const CTransform4f leftWorld = actor->GetTransform() * leftLocal;
-            const CTransform4f rightLocal =
-                modelData->GetScaledLocatorTransformDynamic(rstl::string_l(rightEyeName), timePtr);
-            const CTransform4f rightWorld = actor->GetTransform() * rightLocal;
-            eyePos = (leftWorld.GetTranslation() + rightWorld.GetTranslation()) * 0.5f;
-          }
-        }
+  static const char* skLeftEyeLocator = "L_eye";
+  static const char* skRightEyeLocator = "R_eye";
+  const CPlayer& player = Player(const_cast< CStateManager& >(mgr));
+  CVector3f eyePos = player.GetEyePosition();
+  const CScriptCamera* camera =
+      TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId));
+  if (camera == nullptr) {
+    return eyePos;
+  }
+  const CScriptActor* actor =
+      TCastToConstPtr< CScriptActor >(mgr.GetObjectById(camera->GetCameraActorId()));
+  if (actor && actor->IsPlayerActor() && actor->HasAnimation()) {
+    const CAnimData* animData = actor->GetModelData()->GetAnimationData();
+    const rstl::ncrc_ptr< CAnimTreeNode >& tree = animData->GetAnimationTree();
+    if (!tree.IsNull()) {
+      const CModelData* modelData = actor->GetModelData();
+      const CSegId leftEye = animData->GetLocatorSegId(rstl::string_l(skLeftEyeLocator));
+      const CSegId rightEye = animData->GetLocatorSegId(rstl::string_l(skRightEyeLocator));
+      if (leftEye != CSegId::Invalid() && rightEye != CSegId::Invalid()) {
+        const CCharAnimTime time =
+            outOfEye ? CCharAnimTime::ZeroFlat() : tree->VGetSteadyStateAnimInfo().GetDuration();
+        const CCharAnimTime* timePtr = outOfEye ? nullptr : &time;
+        const CTransform4f leftLocator =
+            modelData->GetScaledLocatorTransformDynamic(rstl::string_l(skLeftEyeLocator), timePtr);
+        const CTransform4f leftXf = actor->GetTransform() * leftLocator;
+        const CTransform4f rightLocator =
+            modelData->GetScaledLocatorTransformDynamic(rstl::string_l(skRightEyeLocator), timePtr);
+        const CTransform4f rightXf = actor->GetTransform() * rightLocator;
+        eyePos = 0.5f * (leftXf.GetTranslation() + rightXf.GetTranslation());
       }
     }
   }

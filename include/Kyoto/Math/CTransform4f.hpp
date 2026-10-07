@@ -144,6 +144,8 @@ public:
     m13 += vec.GetY();
     m23 += vec.GetZ();
   }
+  void AddTranslationX(float x) { m03 += x; }
+  void AddTranslationY(float y) { m13 += y; }
   void AddTranslationZ(float z) { m23 += z; }
 
   CTransform4f& operator*=(const CTransform4f& other) {
@@ -185,6 +187,7 @@ CHECK_SIZEOF(CTransform4f, 0x30)
 
 namespace rstl {
 RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CTransform4f)
-}
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CTransform4f)
+} // namespace rstl
 
 #endif // _CTRANSFORM4F

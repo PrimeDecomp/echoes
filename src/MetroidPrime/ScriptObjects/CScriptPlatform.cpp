@@ -185,12 +185,11 @@ void CScriptPlatform::AddRider(rstl::vector< SRiders >& riders, TUniqueId id,
     if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(id))) {
       rider.mTransform = CTransform4f::Translate(
           ridee->GetTransform().TransposeRotate(actor->GetTranslation() - ridee->GetTranslation()));
-      mgr.DeliverScriptMsg(CScriptMsg(ridee->GetUniqueId(), kInvalidUniqueId, actor->GetUniqueId(),
-                                      EScriptObjectMessage('XONP'), kSS_InvalidState));
+      mgr.DeliverScriptMsg(
+          CScriptMsg(ridee->GetUniqueId(), actor->GetUniqueId(), EScriptObjectMessage('XONP')));
     }
   } else {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, id,
-                                    EScriptObjectMessage('XONP'), kSS_InvalidState));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, id, EScriptObjectMessage('XONP')));
   }
   riders.reserve(riders.size() + 1);
   riders.push_back(rider);
@@ -216,8 +215,7 @@ void CScriptPlatform::DecayRiders(rstl::vector< SRiders >& riders, float dt, CSt
       if (*it->mDecayTimer <= 0.f) {
         const TUniqueId id = it->mUid;
         it = riders.erase(it);
-        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, kInvalidUniqueId, id,
-                                        EScriptObjectMessage('XONP'), kSS_InvalidState));
+        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, id, EScriptObjectMessage('XONP')));
         continue;
       }
     }
@@ -529,7 +527,7 @@ void CScriptPlatform::SetMotionTime(float time, CStateManager& mgr) {
 
 void CScriptPlatform::TeleportToWaypoint(TUniqueId id, CStateManager& mgr) {
   if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(id)) && mWaypointTracker.get()) {
-    const float time = mWaypointTracker->GetWaypointTime(id);
+    const float time = mWaypointTracker->GetWaypointTime(id, mgr);
     if (time >= 0.f) {
       SetMotionTime(time, mgr);
     }

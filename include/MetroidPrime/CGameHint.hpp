@@ -99,7 +99,7 @@ private:
   int mPriority;
   float mTimer;
   EBreakHintType mBreakType;
-  uint mDeleteOnRemoval;
+  int mDeleteOnRemoval;
   uint mRequiredPresses;
   float x16c_;
   SCallback mOnExpire;

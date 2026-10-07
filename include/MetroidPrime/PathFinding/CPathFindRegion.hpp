@@ -27,7 +27,7 @@ public:
 private:
   CVector3f mPosition;
   uint mFlags;
-  int mNumLinks;
+  uint mNumLinks;
   int* mLinks;
   float* mLinkCosts; // Target-derived from accumulated path-cost updates.
 };
@@ -136,8 +136,9 @@ public:
   void ModifyObstructionCount(EPathFindObstructions obstruction, int delta);
   int GetObstructionCount(EPathFindObstructions obstruction) const;
   bool IsObstructed(uint flags) const {
-    return mObstructionCounts[2] > 0 || ((flags & 0x100) != 0 && mObstructionCounts[0] > 0) ||
-           ((flags & 0x200) != 0 && mObstructionCounts[1] > 0);
+    return GetObstructionCount(kPFO_Unknown2) > 0 ||
+           ((flags & 0x100) != 0 && GetObstructionCount(kPFO_Unknown0) > 0) ||
+           ((flags & 0x200) != 0 && GetObstructionCount(kPFO_Unknown1) > 0);
   }
   bool IsPointInsidePaddedAABox(const CVector3f& point, float padding) const {
     return point[kDX] >= mBounds.GetMinPoint()[kDX] - padding &&

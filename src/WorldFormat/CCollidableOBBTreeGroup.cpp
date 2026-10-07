@@ -316,7 +316,7 @@ bool CCollidableOBBTreeGroup::CollideMovingSphere(const CInternalCollisionStruct
 }
 
 void CCollidableOBBTreeGroup::CacheTree(CCollisionCache& cache, const CTransform4f& xf,
-                                        short ownerId, u64 material) const {
+                                        ushort ownerId, u64 material) const {
   CTransform4f inverse = xf.GetQuickInverse();
   COBBox obb = COBBox::FromAABox(cache.GetBounds(), inverse);
   CVector3f center = cache.GetBounds().GetCenterPoint();

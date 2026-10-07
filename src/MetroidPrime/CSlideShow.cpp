@@ -201,7 +201,7 @@ uint CSlideShow::GetGalleriesUnlocked() {
   uint flags = 0;
   if (gpGameState != nullptr) {
     const int percent =
-        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans")->GetValue();
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("PercentScans")->GetValue();
     if (percent >= 40) {
       flags |= 1;
     }
@@ -214,12 +214,16 @@ uint CSlideShow::GetGalleriesUnlocked() {
     if (percent >= 100) {
       flags |= 8;
     }
-    if (gpGameState->SystemOptions().FindEnvironmentVariable("NormalModeCompleted")->GetValue() !=
-        0) {
+    if (gpGameState->SystemOptions()
+            .EnvVars()
+            .FindEnvironmentVariable("NormalModeCompleted")
+            ->GetValue() != 0) {
       flags |= 16;
     }
-    if (gpGameState->SystemOptions().FindEnvironmentVariable("HardModeCompleted")->GetValue() !=
-        0) {
+    if (gpGameState->SystemOptions()
+            .EnvVars()
+            .FindEnvironmentVariable("HardModeCompleted")
+            ->GetValue() != 0) {
       flags |= 32;
     }
   }
@@ -530,13 +534,16 @@ CAssetId UpdatePersistentScanPercent(int previous, int current, int total) {
     const float previousPercent = 100.f * (float(previous) / total);
     const float currentPercent = 100.f * (float(current) / total);
     const int saved =
-        gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans")->GetValue();
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("PercentScans")->GetValue();
     const int scanPercent = int(currentPercent);
     const int previousStep = int(rstl::max_val(0.f, previousPercent - 20.f) / interval);
     const int step = int(rstl::max_val(0.f, currentPercent - 20.f) / interval);
     const bool firstTime = scanPercent > saved;
     if (firstTime) {
-      gpGameState->SystemOptions().FindEnvironmentVariable("PercentScans")->Set(scanPercent);
+      gpGameState->SystemOptions()
+          .EnvVars()
+          .FindEnvironmentVariable("PercentScans")
+          ->Set(scanPercent);
     }
     if (step > previousStep) {
       const int message = CMath::Clamp(0, step - 1, 3);

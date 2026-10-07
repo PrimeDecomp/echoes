@@ -61,7 +61,7 @@ CBouncyGrenade::CBouncyGrenade(TUniqueId uid, const rstl::string& name, const CE
     mMaterialsToRemove = *extraMaterials;
   }
   const float mass = GetMass();
-  SetMomentumWR(CVector3f(0.f, 0.f, -CPhysicsActor::GravityConstant() * mass));
+  SetMomentumWR(CVector3f(0.f, 0.f, -kDefaultGravityAccel * mass));
   SetVelocityWR(velocity * xf.GetForward());
   mElementGenExplodeCombat->SetParticleEmission(false);
   mElementGenExplodeXRay->SetParticleEmission(false);
@@ -102,14 +102,14 @@ void CBouncyGrenade::CollidedWith(const TUniqueId& id, const CCollisionInfoList&
       const CCollisionInfo& info = list[i];
       if (info.GetMaterialLeft().SharesMaterials(skSolidTypes)) {
         if ((mFlags & 1) != 0 && !info.GetMaterialLeft().HasMaterial(kMT_SeekerTarget)) {
-          Explode(mgr, kInvalidUniqueId);
+          Explode(mgr);
         } else if (mNumBounces != 0) {
           const CVector3f normal = CVector3f::Dot(GetVelocityWR(), info.GetNormalLeft()) > 0.f
                                        ? info.GetNormalRight()
                                        : info.GetNormalLeft();
           Bounce(mgr, normal, true, true);
         } else {
-          Explode(mgr, kInvalidUniqueId);
+          Explode(mgr);
         }
         break;
       }
@@ -127,13 +127,13 @@ void CBouncyGrenade::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   case kSM_Damage:
     if (const CHealthInfo* health = GetHealthInfo()) {
       if (health->GetHP() <= 0.f) {
-        Explode(mgr, kInvalidUniqueId);
+        Explode(mgr);
       }
     }
     break;
   case kSM_XENZ:
     if (!mExploded && (mFlags & 4) != 0) {
-      Explode(mgr, kInvalidUniqueId);
+      Explode(mgr);
     }
     break;
   default:
@@ -202,8 +202,10 @@ void CBouncyGrenade::PreRenderAllViewports(CStateManager& mgr) {
     rstl::optional_object< CAABox > xrayBounds = mElementGenTrailXRay->GetBounds();
     if (xrayBounds.valid()) {
       if (bounds.valid()) {
-        bounds->AccumulateBounds(xrayBounds->GetMinPoint());
-        bounds->AccumulateBounds(xrayBounds->GetMaxPoint());
+        const CAABox& xrayBox = *xrayBounds;
+        CAABox& box = *bounds;
+        box.AccumulateBounds(xrayBox.GetMinPoint());
+        box.AccumulateBounds(xrayBox.GetMaxPoint());
       } else {
         bounds = xrayBounds;
       }
@@ -341,7 +343,7 @@ void CBouncyGrenade::UpdateExplodeChecks(float dt, CStateManager& mgr) {
   }
   mElapsedTime += dt;
   if (mElapsedTime >= 15.f) {
-    Explode(mgr, kInvalidUniqueId);
+    Explode(mgr);
     return;
   }
   if (IsArmed()) {
@@ -350,18 +352,18 @@ void CBouncyGrenade::UpdateExplodeChecks(float dt, CStateManager& mgr) {
     if (!moved.IsNonZero()) {
       mStationaryTime += dt;
       if (mStationaryTime >= 0.5f) {
-        Explode(mgr, kInvalidUniqueId);
+        Explode(mgr);
         return;
       }
     }
     mLastPosition += moved;
-    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
       const CPlayer* player = mgr.GetPlayer(i);
       const CVector3f playerPos =
           player->GetTranslation() + CVector3f(0.f, 0.f, 0.5f * player->GetEyeHeight());
       const CVector3f& delta = CVector3f(playerPos - translation);
       if (delta.MagSquared() < mExplodePlayerDistance * mExplodePlayerDistance) {
-        Explode(mgr, kInvalidUniqueId);
+        Explode(mgr);
         return;
       }
     }

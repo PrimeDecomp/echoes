@@ -55,15 +55,15 @@ public:
   rstl::auto_ptr< CActorLights > MakeActorLights() const;
 
 private:
-  bool mCastShadow;                               // x0
-  float mShadowScale;                             // x4
-  EShadowTessellation mShadowTesselation;         // x8
-  float mShadowAlpha;                             // xc
-  float mMaxShadowHeight;                         // x10
-  CColor mAmbientColor;                           // x14
-  bool mMakeLights : 1;                           // x18
+  bool mCastShadow;                       // x0
+  float mShadowScale;                     // x4
+  EShadowTessellation mShadowTesselation; // x8
+  float mShadowAlpha;                     // xc
+  float mMaxShadowHeight;                 // x10
+  CColor mAmbientColor;                   // x14
+  bool mMakeLights : 1;                   // x18
   bool mAmbientChannelOverflow : 1;
-  bool mDisableAmbientLights : 1; // Guessed name
+  bool mDisableAmbientLights : 1;                 // Guessed name
   EWorldLightingOptions mUseWorldLighting;        // x1c
   ELightRecalculationOptions mLightRecalculation; // x20
   int mUseLightSet;                               // x24
@@ -117,10 +117,10 @@ public:
   CActorParameters(const CLightParameters& lightParms, const CScannableParameters& scanParms,
                    const rstl::pair< CAssetId, CAssetId >& xrayAssets,
                    const rstl::pair< CAssetId, CAssetId >& thermalAssets,
-                   const CVisorParameters& visorParms, bool globalTimeProvider,
-                   bool renderUnsorted, bool highlightedInDarkVisor, bool takesProjectedShadow,
-                   bool alphaSorted, bool renderFullEchoModel, uchar maxVolume,
-                   uchar maxEchoVolume, float fadeInTime, float fadeOutTime);
+                   const CVisorParameters& visorParms, bool globalTimeProvider, bool renderUnsorted,
+                   bool highlightedInDarkVisor, bool takesProjectedShadow, bool alphaSorted,
+                   bool renderFullEchoModel, uchar maxVolume, uchar maxEchoVolume, float fadeInTime,
+                   float fadeOutTime);
 
   CActorParameters Scannable(const CScannableParameters& sParms) const;
   CActorParameters HotInThermal(bool hot) const;
@@ -148,21 +148,21 @@ public:
   static CActorParameters None() { return CActorParameters(); }
 
 private:
-  CLightParameters mLighting; // x0
-  CScannableParameters mScannable; // x3c
+  CLightParameters mLighting;                   // x0
+  CScannableParameters mScannable;              // x3c
   rstl::pair< CAssetId, CAssetId > mEchoAssets; // x40, model/skin
   rstl::pair< CAssetId, CAssetId > mDarkAssets; // x48, model/skin
   CVisorParameters mVisor;                      // x50
   uchar mMaxVolume;                             // x54
   uchar mMaxEchoVolume;                         // x55
-  uchar mUseGlobalRenderTime : 1;               // x56
-  uchar mForceRenderUnsorted : 1;
-  uchar mHighlightedInDarkVisor : 1;
-  uchar mTakesProjectedShadow : 1;
-  uchar mAlphaSorted : 1;
-  uchar mRenderFullEchoModel : 1; // Guessed name.
-  float mFadeInTime; // x58
-  float mFadeOutTime; // x5c
+  bool mUseGlobalRenderTime : 1;                // x56
+  bool mForceRenderUnsorted : 1;
+  bool mHighlightedInDarkVisor : 1;
+  bool mTakesProjectedShadow : 1;
+  bool mAlphaSorted : 1;
+  bool mRenderFullEchoModel : 1; // Guessed name.
+  float mFadeInTime;             // x58
+  float mFadeOutTime;            // x5c
 };
 CHECK_SIZEOF(CActorParameters, 0x60)
 

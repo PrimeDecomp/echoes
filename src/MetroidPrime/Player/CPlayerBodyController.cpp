@@ -107,10 +107,10 @@ void CPlayerBodyController::ResetStates(CStateManager& mgr) {
     return;
   }
 
-  if (mBodyState.GetCurrentState() == nullptr || strcmp("Start", mBodyState.GetName()) != 0) {
+  if (mBodyState.GetState() == nullptr || strcmp("Start", mBodyState.GetName()) != 0) {
     mBodyState.SetState(mgr, *this, rstl::string_l("Start"));
   }
-  if (mAdditiveState.GetCurrentState() == nullptr ||
+  if (mAdditiveState.GetState() == nullptr ||
       strcmp("AdditiveIdle", mAdditiveState.GetName()) != 0) {
     mAdditiveState.SetState(mgr, *this, rstl::string_l("AdditiveIdle"));
   }
@@ -182,7 +182,7 @@ const CStateMachine* CPlayerBodyController::GetStateMachine() {
 }
 
 void CPlayerBodyController::TrySetupStateMachines(CStateManager& mgr) {
-  if (mBodyState.GetCurrentState() == nullptr && GetStateMachine() != nullptr) {
+  if (mBodyState.GetState() == nullptr && GetStateMachine() != nullptr) {
     SetupStateMachines(mgr);
   }
 }
@@ -200,11 +200,11 @@ void CPlayerBodyController::SetupStateMachines(CStateManager& mgr) {
 
 void CPlayerBodyController::CheckDeathCommands(CStateManager& mgr) {
   if (mCommandMgr.GetCmd(kPBSC_DeathReaction) != nullptr &&
-      (mBodyState.GetCurrentState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
+      (mBodyState.GetState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("Dead"));
   }
   if (mCommandMgr.GetCmd(kPBSC_GibDeath) != nullptr &&
-      (mBodyState.GetCurrentState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
+      (mBodyState.GetState() == nullptr || !mDeathReactionActive && !mDeathReactionOver)) {
     mBodyState.SetState(mgr, *this, rstl::string_l("GibDeath"));
   }
 }

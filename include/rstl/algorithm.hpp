@@ -21,7 +21,7 @@ template < class It, class T >
 #ifndef RSTL_DONT_INLINE_ALGORITHM
 inline
 #endif
-It find(It first, It last, const T& val) {
+    It find(It first, It last, const T& val) {
   while (first != last && !(*first == val))
     ++first;
   return first;
@@ -110,7 +110,7 @@ void sort(It first, It last, Cmp cmp) {
   It end = last - 1;
   __sort3(*first, *mid, *end, cmp);
 
-  typename iterator_traits< It >::value_type pivot = *mid;
+  const typename iterator_traits< It >::value_type pivot = *mid;
   It it = first + 1;
   --end;
 

@@ -371,14 +371,14 @@ void CScriptPickup::Touch(CActor& act, CStateManager& mgr) {
         CAssetId id = gpResourceFactory->GetResourceIdByName("STRG_AllPickupsFound_2")->id;
 
         mgr.QueueMessage(mgr.GetHUDMessageFrameCount() + 1, id, 0.f);
-        gpGameState->SystemOptions().FindEnvironmentVariable("AllPickupsFound")->Set(1);
+        gpGameState->SystemOptions().EnvVars().FindEnvironmentVariable("AllPickupsFound")->Set(1);
       }
     }
 
     if (!mgr.IsMultiplayer() && itemType == CPlayerState::kIT_Powerbomb && mCapacity == 0) {
       CPersistentOptions& opts = gpGameState->SystemOptions();
-      if (opts.FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
-        opts.FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
+      if (opts.EnvVars().FindEnvironmentVariable("PowerbombPickupMessages")->GetValue() == 0) {
+        opts.EnvVars().FindEnvironmentVariable("PowerbombPickupMessages")->Set(1);
         CSamusHud::DisplayHudMemo(rstl::wstring_l(gpStringTable->GetString("FirstPowerBombPickup")),
                                   CHUDMemoParms(5.f, true, false, false, 1 << playerIndex, true));
       }

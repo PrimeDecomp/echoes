@@ -2,10 +2,10 @@
 
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Cameras/CScriptCameraSpline.hpp"
-#include "MetroidPrime/ScriptLoader/Structs/SLdrSplineType.hpp"
-#include "MetroidPrime/ScriptLoader/SLdrSpindleCamera.hpp"
-#include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrSpindleCamera.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrSplineType.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 CScriptSpindleCamera::CScriptSpindleCamera(
@@ -23,17 +23,17 @@ CScriptSpindleCamera::CScriptSpindleCamera(
     const CSpindleCameraInterpolant& desiredAngularSpeed,
     const CSpindleCameraInterpolant& deactivateRadius,
     const CSpindleCameraInterpolant& constraintFlipAngle, const CSpindleCameraInterpolant& fov,
-    SLdrSplineType targetType, const CMayaSpline& targetControlSpline, bool targetLoops,
-    SLdrSplineType playerType, bool playerLoops)
+    const CMotionSpline::ESplineType& targetType, const CMayaSpline& targetControlSpline,
+    bool targetLoops, const CMotionSpline::ESplineType& playerType, bool playerLoops)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
          CActorParameters::None(), kInvalidUniqueId)
 , mParameters(flags, angularSpeed, linearSpeed, motionRadius, radialOffset, desiredAngularOffset,
               minAngularOffset, maxAngularOffset, lookAtAngularOffset, lookAtZOffset, zOffset,
               angularConstraint, angularDampening, desiredAngularSpeed, deactivateRadius,
               constraintFlipAngle, fov)
-, mTargetSpline(targetLoops, 1.f, static_cast< CMotionSpline::ESplineType >(targetType.type))
+, mTargetSpline(targetLoops, 1.f, targetType)
 , mTargetControlSpline(targetControlSpline)
-, mPlayerSpline(playerLoops, 1.f, static_cast< CMotionSpline::ESplineType >(playerType.type))
+, mPlayerSpline(playerLoops, 1.f, playerType)
 , mOrigXf(xf) {}
 
 CScriptSpindleCamera::~CScriptSpindleCamera() {}
@@ -41,23 +41,30 @@ CScriptSpindleCamera::~CScriptSpindleCamera() {}
 void CScriptSpindleCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   CActor::AcceptScriptMsg(mgr, msg);
-  if (GetActive() && message == kSM_AreaLoaded) {
-    rstl::vector< CVector3f > targetPoints;
-    rstl::vector< CQuaternion > targetOrientations;
-    const TUniqueId target = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
-    if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(target))) {
-      ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraTarget, kSM_Attach, targetPoints,
-                                           targetOrientations, mgr);
-      mTargetSpline.Initialise(targetPoints);
-    }
+  if (GetActive()) {
+    switch (message) {
+    case kSM_AreaLoaded: {
+      rstl::vector< CVector3f > targetPoints;
+      rstl::vector< CQuaternion > targetOrientations;
+      const TUniqueId target = FindConnectedObject(mgr, kSS_CameraTarget, kSM_Attach);
+      if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(target))) {
+        ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraTarget, kSM_Attach, targetPoints,
+                                             targetOrientations, mgr);
+        mTargetSpline.Initialise(targetPoints);
+      }
 
-    rstl::vector< CVector3f > playerPoints;
-    rstl::vector< CQuaternion > playerOrientations;
-    const TUniqueId player = FindConnectedObject(mgr, kSS_CameraPlayer, kSM_Attach);
-    if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(player))) {
-      ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraPlayer, kSM_Attach, playerPoints,
-                                           playerOrientations, mgr);
-      mPlayerSpline.Initialise(playerPoints);
+      rstl::vector< CVector3f > playerPoints;
+      rstl::vector< CQuaternion > playerOrientations;
+      const TUniqueId player = FindConnectedObject(mgr, kSS_CameraPlayer, kSM_Attach);
+      if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(player))) {
+        ScriptCameraSpline::CollectWaypoints(*this, kSS_CameraPlayer, kSM_Attach, playerPoints,
+                                             playerOrientations, mgr);
+        mPlayerSpline.Initialise(playerPoints);
+      }
+      break;
+    }
+    default:
+      break;
     }
   }
 }
@@ -115,11 +122,13 @@ CEntity* LoadSpindleCamera(CStateManager& mgr, CInputStream& input, CEntityInfo&
 
   return rs_new CScriptSpindleCamera(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), sldrThis.flagsSpindleCamera, angularSpeed,
-      linearSpeed, motionRadius, radialOffset, desiredAngularOffset, minAngularOffset,
-      maxAngularOffset, lookAtAngularOffset, lookAtZOffset, zOffset, angularConstraint,
-      angularDampening, desiredAngularSpeed, deactivateRadius, constraintFlipAngle, fov,
-      sldrThis.targetSplineType, sldrThis.targetControlSpline, sldrThis.targetSplineLoops,
-      sldrThis.playerSplineType, sldrThis.playerSplineLoops);
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.flagsSpindleCamera, angularSpeed, linearSpeed, motionRadius, radialOffset,
+      desiredAngularOffset, minAngularOffset, maxAngularOffset, lookAtAngularOffset, lookAtZOffset,
+      zOffset, angularConstraint, angularDampening, desiredAngularSpeed, deactivateRadius,
+      constraintFlipAngle, fov,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.targetSplineType.type),
+      sldrThis.targetControlSpline, sldrThis.targetSplineLoops,
+      static_cast< CMotionSpline::ESplineType >(sldrThis.playerSplineType.type),
+      sldrThis.playerSplineLoops);
 }

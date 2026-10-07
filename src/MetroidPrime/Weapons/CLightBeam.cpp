@@ -58,8 +58,8 @@ void CLightBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
 
 void CLightBeam::Update(float dt, CStateManager& mgr) { CGunWeapon::Update(dt, mgr); }
 
-void CLightBeam::Fire(const TToken< CWeaponDescription >& projectile, bool underwater, float dt,
-                      CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
+void CLightBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
+                      float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                       CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                       ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
                       float chargeFactor1, float chargeFactor2) {

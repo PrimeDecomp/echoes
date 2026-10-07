@@ -6,7 +6,7 @@
 class CScriptMemoryRelay : public CEntity {
 public:
   CScriptMemoryRelay(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
-                     bool defaultActive, bool skipSendActive);
+                     const bool defaultActive, const bool skipSendActive);
 
   // CEntity
   ~CScriptMemoryRelay() override;

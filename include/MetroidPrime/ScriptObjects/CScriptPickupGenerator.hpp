@@ -17,7 +17,7 @@ public:
 
   // CRuleSetEvaluator
   CRuleValue GetConditionValue(FourCC condition) const override;
-  bool ExecuteAction(const CRuleAction& action) override;
+  int ExecuteAction(const CRuleAction& action) override;
 
   void Refresh(CStateManager& mgr, const CHealthInfo* health);
   int GetRandomAmount(CStateManager& mgr, int ruleSlot) const;
@@ -31,7 +31,7 @@ private:
     return state.GetHealthInfo().GetHP() + mPendingItemAmounts[CPlayerState::kIT_HealthRefill];
   }
 
-  bool SetAmountRange(float chance, int ruleSlot, int minimum, int maximum);
+  int SetAmountRange(float chance, int ruleSlot, int minimum, int maximum);
 
   CStateManager* mManager;
   CWeaponMode mLastDamageWeapon;
@@ -68,7 +68,7 @@ private:
   void GetSpawnablePickups(CStateManager& mgr,
                            rstl::vector< rstl::pair< int, TEditorId > >& pickups,
                            TUniqueId targetId);
-  CHealthInfo* GetTargetHealthInfo(CStateManager& mgr, TUniqueId targetId) const;
+  const CHealthInfo* GetTargetHealthInfo(CStateManager& mgr, TUniqueId targetId) const;
   void GetTargets(CStateManager& mgr, TUniqueId sender, rstl::vector< TUniqueId >& targets) const;
 
   CVector3f mOffset;

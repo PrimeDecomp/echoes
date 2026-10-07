@@ -35,6 +35,10 @@ protected:
   int GetPlayerIndex() const { return mPlayerIndex; }
   TUniqueId GetCurrentHintId() const { return mCurrentHintId; }
   int GetCurrentPriority() const { return mPriority; }
+  void SetCurrentHint(TUniqueId id, int priority) {
+    mCurrentHintId = id;
+    mPriority = priority;
+  }
   void ClearCurrentHint(int priority) {
     mCurrentHintId = kInvalidUniqueId;
     mPriority = priority;
@@ -58,7 +62,7 @@ private:
   static bool ContainsHint(const rstl::vector< THintSender >& hints, TUniqueId hint);
 
   bool ProcessAddedHints(CStateManager& mgr);
-  bool ProcessRemovedHints(CStateManager& mgr);
+  uchar ProcessRemovedHints(CStateManager& mgr);
   bool AddHintState(int priority, const CHintState& hint);
 
   int mPlayerIndex;

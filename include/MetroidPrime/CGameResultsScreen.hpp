@@ -55,7 +55,7 @@ public:
     void Draw() const;
     void SetupLights();
 
-    uint mPlayerSelection;
+    int mPlayerSelection;
     int mPlayerIndex;
     CPlayerState::EBeamId mBeam;
     int mCoins;
@@ -77,12 +77,29 @@ public:
     rstl::auto_ptr< CGuiTextSupport > mScoreText;
     rstl::auto_ptr< CGuiTextSupport > mDeathsText;
   };
+  struct SFragSorter {
+    bool operator()(const SPlayerScore& a, const SPlayerScore& b) const {
+      if (a.mFrags == b.mFrags) {
+        return a.mDeaths < b.mDeaths;
+      }
+      return a.mFrags > b.mFrags;
+    }
+  };
+
+  struct SCoinSorter {
+    bool operator()(const SPlayerScore& a, const SPlayerScore& b) const {
+      if (a.mCoins == b.mCoins) {
+        return a.mDeaths < b.mDeaths;
+      }
+      return a.mCoins > b.mCoins;
+    }
+  };
 
 private:
   void GatherResults(CGameState& state);
   void BuildText();
   void Update(float dt);
-  void UpdateIntro();
+  void UpdateIntro(float dt);
   static void SetViewport(int playerSelection, bool fourPlayers);
   static float CalculateFade(float start, float duration, float time);
 

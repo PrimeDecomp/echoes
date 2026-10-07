@@ -119,6 +119,7 @@ public:
   SAdvancementResults AdvanceView(const CCharAnimTime& time) { return VAdvanceView(time); }
   CCharAnimTime GetTimeRemaining() const { return VGetTimeRemaining(); }
   CSteadyStateAnimInfo GetSteadyStateAnimInfo() const { return VGetSteadyStateAnimInfo(); }
+  bool GetBoolPOIState(uint nameHash) const { return VGetBoolPOIState(nameHash); }
 
   uint GetBoolPOIList(const CCharAnimTime& time, CBoolPOINode* listOut, uint capacity,
                       uint iterator, int additive) const;

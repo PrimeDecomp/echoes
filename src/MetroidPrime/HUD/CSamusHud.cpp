@@ -127,9 +127,9 @@ const char* CSamusHud::GetHudFrameName(int viewportLayout) {
 }
 
 rstl::pair< CVector3f, CVector3f > CSamusHud::CombatEnergyCoordFunc(float t) {
-  const float angle = 0.5294118f * t - 0.20262942f;
-  const float x = 17.f * sin(angle);
-  const float y = 0.2f + (17.f * cos(angle) - 17.f);
+  const float angle = 0.5294118f * t + -0.20262942f;
+  const float x = 17.f * CMath::FastSinR(angle);
+  const float y = 0.2f + (17.f * CMath::FastCosR(angle) + -17.f);
   return rstl::pair< CVector3f, CVector3f >(CVector3f(x, y, 0.4f), CVector3f(x, y, 0.f));
 }
 
@@ -174,10 +174,13 @@ void CSamusHud::InitializeFrameGlueMutable(const CStateManager& mgr) {
   if (mLoadedHudFrame->FindWidget("textpane_beammenu") != nullptr) {
     const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
     const CPlayerState& playerState = *mgr.GetPlayerState(mPlayerIndex);
-    const CPlayerGun& gun = *player.GetPlayerGun();
-    const CPlayerState::EBeamId beam = player.GetMorphballTransitionState() == CPlayer::kMS_Morphed
-                                           ? playerState.GetCurrentBeam()
-                                           : gun.GetPrimaryWeaponId();
+    const CPlayerGun& gun = *player.mGun;
+    CPlayerState::EBeamId beam;
+    if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+      beam = playerState.GetCurrentBeam();
+    } else {
+      beam = gun.GetPrimaryWeaponId();
+    }
     mBeamMenu =
         rs_new CHudVisorBeamMenu(*mLoadedHudFrame, mHudStringTable, CHudVisorBeamMenu::kVBM_Beam,
                                  BuildPlayerHasBeams(mgr), beam, mgr.IsMultiplayer());
@@ -538,7 +541,7 @@ void CSamusHud::UpdateHudWidgetColors() {
 
 void CSamusHud::DisplayHudMemo(const rstl::wstring& text, const CHUDMemoParms& info) {
   for (int i = 0; i < 4; ++i) {
-    if (gpSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
+    if (info.EnabledForPlayer(i) && gpSamusHud[i] != nullptr) {
       gpSamusHud[i]->InternalDisplayHudMemo(text, info);
     }
   }
@@ -546,18 +549,22 @@ void CSamusHud::DisplayHudMemo(const rstl::wstring& text, const CHUDMemoParms& i
 
 void CSamusHud::DeferHintMemo(CAssetId stringTable, uint index, const CHUDMemoParms& info) {
   for (int i = 0; i < 4; ++i) {
-    if (gpSamusHud[i] != nullptr && info.EnabledForPlayer(i)) {
+    if (info.EnabledForPlayer(i) && gpSamusHud[i] != nullptr) {
       gpSamusHud[i]->InternalDeferHintMemo(stringTable, index, info);
     }
   }
 }
 
 bool CSamusHud::IsHudMemoVisible(int playerIndex) {
-  const CSamusHud* hud = gpSamusHud[playerIndex];
-  if (hud == nullptr || hud->mMessageRoot == nullptr || hud->mMessagePane == nullptr) {
+  if (gpSamusHud[playerIndex] == nullptr) {
     return false;
   }
-  return hud->mMessageRoot->GetIsVisible() || hud->mMessagePane->GetIsVisible();
+  if (gpSamusHud[playerIndex]->mMessageRoot == nullptr ||
+      gpSamusHud[playerIndex]->mMessagePane == nullptr) {
+    return false;
+  }
+  return gpSamusHud[playerIndex]->mMessageRoot->GetIsVisible() ||
+         gpSamusHud[playerIndex]->mMessagePane->GetIsVisible();
 }
 
 void CSamusHud::InternalDisplayHudMemo(const rstl::wstring& text, const CHUDMemoParms& info) {
@@ -699,11 +706,13 @@ CSamusHud::CSamusHud(const CStateManager& mgr, CGuiFrameLoader& hud, CGuiFrameLo
 }
 
 void CSamusHud::RefreshBeamMenu(const CStateManager& mgr, int playerIndex) {
-  CSamusHud* hud = gpSamusHud[playerIndex];
-  if (hud != nullptr) {
-    const rstl::reserved_vector< bool, 4 > enables = hud->BuildPlayerHasBeams(mgr);
-    if (!hud->mBeamMenu.null()) {
-      hud->mBeamMenu->SetPlayerHas(enables, mgr.GetPlayerState(playerIndex)->GetCurrentBeam());
+  if (gpSamusHud[playerIndex] != nullptr) {
+    const rstl::reserved_vector< bool, 4 > enables =
+        gpSamusHud[playerIndex]->BuildPlayerHasBeams(mgr);
+    CHudVisorBeamMenu* menu = gpSamusHud[playerIndex]->mBeamMenu.get();
+    const CPlayerState::EBeamId beam = mgr.GetPlayerState(playerIndex)->GetCurrentBeam();
+    if (menu != nullptr) {
+      menu->SetPlayerHas(enables, beam);
     }
   }
 }
@@ -721,7 +730,7 @@ CHudDecoInterfaceScan* CSamusHud::GetScanInterface(int playerIndex) {
 void CSamusHud::UpdateEnergyLow(float dt, const CStateManager& mgr) {
   const bool cineCam =
       TCastToConstPtr< CCinematicCamera >(
-          mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true)) != nullptr;
+          *mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true)) != nullptr;
   const float oldTimer = mEnergyLowTimer;
   mEnergyLowTimer = fmod(mEnergyLowTimer + dt, 0.5);
   mEnergyLowPulse =
@@ -732,12 +741,11 @@ void CSamusHud::UpdateEnergyLow(float dt, const CStateManager& mgr) {
     mEnergyLowFade = rstl::max_val(0.f, mEnergyLowFade - 2.f * dt);
   }
   if (mEnergyWarning != nullptr) {
-    CColor fontColor = gpTweakGuiColors->GetEnergyWarningColor();
-    fontColor.SetAlpha(mEnergyLowPulse * mEnergyLowFade);
-    mEnergyWarning->TextSupport().SetFontColor(fontColor);
-    CColor outlineColor = gpTweakGuiColors->GetEnergyWarningOutlineColor();
-    outlineColor.SetAlpha(mEnergyLowPulse * mEnergyLowFade);
-    mEnergyWarning->TextSupport().SetOutlineColor(outlineColor);
+    mEnergyWarning->TextSupport().SetFontColor(
+        gpTweakGuiColors->GetEnergyWarningColor().WithAlphaOf(mEnergyLowPulse * mEnergyLowFade));
+    mEnergyWarning->TextSupport().SetOutlineColor(
+        gpTweakGuiColors->GetEnergyWarningOutlineColor().WithAlphaOf(mEnergyLowPulse *
+                                                                     mEnergyLowFade));
   }
   if (!cineCam && mEnergyLow && mEnergyLowTimer < oldTimer) {
     CSfxManager::SfxStart(0x37, 127, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
@@ -755,24 +763,26 @@ CSamusHud::~CSamusHud() {
 bool CSamusHud::CheckLoadComplete(const CStateManager& mgr) {
   switch (mLoadPhase) {
   case kLP_Targeting:
-    if (!mTargetingManager.CheckLoadComplete()) {
+    if (mTargetingManager.CheckLoadComplete()) {
+      mLoadPhase = kLP_Frames;
+      InitializeFrameGlueMutable(mgr);
+      UpdateEnergy(0.f, mgr, true);
+      UpdateMissile(0.f, mgr, true);
+      UpdateBeamAmmo(mgr, true);
+      UpdateBallMode(mgr, true);
+      fn_8006653c(mgr, true);
+      ResolveLockOnTexture();
+    } else {
       return false;
     }
-    mLoadPhase = kLP_Frames;
-    InitializeFrameGlueMutable(mgr);
-    UpdateEnergy(0.f, mgr, true);
-    UpdateMissile(0.f, mgr, true);
-    UpdateBeamAmmo(mgr, true);
-    UpdateBallMode(mgr);
-    fn_8006653c(mgr, true);
-    ResolveLockOnTexture();
     // Fall through.
   case kLP_Frames:
-    if (!mLoadedHudFrame->GetIsFinishedLoading() ||
-        (mLoadedHelmetFrame != nullptr && !mLoadedHelmetFrame->GetIsFinishedLoading())) {
+    if (mLoadedHudFrame->GetIsFinishedLoading() &&
+        (mLoadedHelmetFrame == nullptr || mLoadedHelmetFrame->GetIsFinishedLoading())) {
+      mLoadPhase = kLP_Complete;
+    } else {
       return false;
     }
-    mLoadPhase = kLP_Complete;
     // Fall through.
   case kLP_Complete:
     return true;
@@ -784,17 +794,17 @@ bool CSamusHud::CheckLoadComplete(const CStateManager& mgr) {
 void CSamusHud::UpdateVisorAndBeamMenus(float dt, const CStateManager& mgr) {
   const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
-  const CPlayerGun& gun = *player.GetPlayerGun();
+  const CPlayerGun& gun = *player.mGun;
   if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
     const CPlayerState::EBeamId currentBeam = state.GetCurrentBeam();
     if (currentBeam != mMenuBeam) {
       mBallBeamTransition = 0.6f - mBallBeamTransition;
       mPreviousBallBeam = mMenuBeam;
     }
-    mBallBeamTransition = rstl::max_val(0.f, mBallBeamTransition - dt);
+    mBallBeamTransition = rstl::max_val(mBallBeamTransition - dt, 0.f);
     const float transition = (2.f * mBallBeamTransition - 0.6f) / 0.6f;
-    const CPlayerState::EBeamId selected = transition > 0.f ? mPreviousBallBeam : currentBeam;
     const CPlayerState::EBeamId pending = transition > 0.f ? mPreviousBallBeam : currentBeam;
+    const CPlayerState::EBeamId selected = transition > 0.f ? mPreviousBallBeam : currentBeam;
     mBeamMenuTransition = CMath::Clamp(0.f, CMath::AbsF(transition), 1.f);
     if (mBeamMenu.get() != nullptr) {
       mBeamMenu->SetSelection(selected, pending, mBeamMenuTransition);
@@ -822,14 +832,19 @@ void CSamusHud::UpdateVisorAndBeamMenus(float dt, const CStateManager& mgr) {
 
 void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
-  const CFirstPersonCamera* const camera =
-      TCastToConstPtr< CFirstPersonCamera >(player.GetCameraManager()->GetCurrentCamera(mgr, true));
+  const CGameCamera* const camera = CCameraManager::CastGameCameratoFirstPersonCamera(
+      player.GetCameraManager()->GetCurrentCamera(mgr, true));
   const bool inFreeLook = player.IsInFreeLook() && camera != nullptr &&
                           player.GetPlayerScanState() == CPlayer::kSS_NotScanning;
   const bool lookHeld = player.GetFreeLookStickState();
   if (mInFreeLook != inFreeLook) {
-    CSfxManager::SfxStart(inFreeLook ? 0x1b3 : 0x1b2, 127, player.GetSoundPan(CPlayer::kMSP_4),
-                          CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+    if (inFreeLook) {
+      CSfxManager::SfxStart(0x1b3, 127, player.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
+                            false, false, CSfxManager::kMedPriority);
+    } else {
+      CSfxManager::SfxStart(0x1b2, 127, player.GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas,
+                            false, false, CSfxManager::kMedPriority);
+    }
     mInFreeLook = inFreeLook;
   }
   const float threshold = 1.f - 60.f * (0.00001001358f * dt);
@@ -844,18 +859,11 @@ void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
   const bool crossed = (oldDot >= threshold && mFreeLookDirectionDot < threshold) ||
                        (oldDot < threshold && mFreeLookDirectionDot >= threshold);
   if (inFreeLook) {
-    mFreeLookFade = rstl::min_val(mFreeLookFade + dt, 0.5f);
+    mFreeLookFade = rstl::min_val(0.5f, mFreeLookFade + dt);
   } else {
     mFreeLookFade = rstl::max_val(0.f, mFreeLookFade - dt);
   }
-  if (close_enough(mFreeLookFade, 0.f)) {
-    if (mFreeLookLeft != nullptr) {
-      mFreeLookLeft->SetIsVisible(false);
-    }
-    if (mFreeLookRight != nullptr) {
-      mFreeLookRight->SetIsVisible(false);
-    }
-  } else {
+  if (!close_enough(mFreeLookFade, 0.f)) {
     const CVector3f scale(0.5f / mFreeLookFade, 0.5f / mFreeLookFade, 0.5f / mFreeLookFade);
     if (mFreeLookLeft != nullptr) {
       mFreeLookLeft->SetO2WTransform(mFreeLookLeftTransform * CTransform4f::Scale(scale));
@@ -865,25 +873,34 @@ void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
       mFreeLookRight->SetO2WTransform(mFreeLookRightTransform * CTransform4f::Scale(scale));
       mFreeLookRight->SetIsVisible(true);
     }
+  } else {
+    if (mFreeLookLeft != nullptr) {
+      mFreeLookLeft->SetIsVisible(false);
+    }
+    if (mFreeLookRight != nullptr) {
+      mFreeLookRight->SetIsVisible(false);
+    }
   }
   if (crossed) {
     mFreeLookSoundCycle = 0.f;
   } else if (mFreeLookSoundCycle < 0.05f) {
     mFreeLookSoundCycle = rstl::min_val(0.05f, mFreeLookSoundCycle + dt);
     if (mFreeLookSoundCycle == 0.05f) {
-      if (mFreeLookDirectionDot >= threshold) {
+      if (mFreeLookDirectionDot < threshold) {
+        if (!mFreeLookSound) {
+          mFreeLookSound =
+              CSfxManager::SfxStart(0x19b, 127, player.GetSoundPan(CPlayer::kMSP_4),
+                                    CSfxManager::kAllAreas, true, true, CSfxManager::kMedPriority);
+        }
+      } else {
         CSfxManager::SfxStop(mFreeLookSound);
         mFreeLookSound.Clear();
-      } else if (!mFreeLookSound) {
-        mFreeLookSound =
-            CSfxManager::SfxStart(0x19b, 127, player.GetSoundPan(CPlayer::kMSP_4),
-                                  CSfxManager::kAllAreas, true, true, CSfxManager::kMedPriority);
       }
     }
   }
   if (camera != nullptr) {
     const CMatrix3f cameraRotation = camera->GetTransform().BuildMatrix3f();
-    const CUnitVector3f cameraDirection(cameraRotation.GetColumn(1));
+    const CUnitVector3f cameraDirection(cameraRotation.GetColumn(kDY));
     CVector3f horizonDirection(cameraDirection.GetX(), cameraDirection.GetY(), 0.f);
     horizonDirection.Normalize();
     const float dot = CMath::Limit(CVector3f::Dot(cameraDirection, horizonDirection), 1.f);
@@ -902,10 +919,11 @@ void CSamusHud::UpdateFreeLook(float dt, const CStateManager& mgr) {
 }
 
 void CSamusHud::UpdateStaticInterference(float dt, const CStateManager& mgr) {
-  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
-  float interference = state.StaticInterference().GetTotalInterference();
+  float interference =
+      mgr.GetPlayerState(mPlayerIndex)->StaticInterference().GetTotalInterference();
   const float oldInterference = mStaticInterference;
-  if (mgr.IsMultiplayer() && state.GetItemCapacity(CPlayerState::kIT_HackedEffect) > 0) {
+  if (mgr.IsMultiplayer() &&
+      mgr.GetPlayerState(mPlayerIndex)->GetItemCapacity(CPlayerState::kIT_HackedEffect) > 0) {
     interference += 0.2f;
   }
   if (mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() != CPlayer::kMS_Unmorphed) {
@@ -921,17 +939,15 @@ void CSamusHud::UpdateStaticInterference(float dt, const CStateManager& mgr) {
   UpdateStaticSfx(mgr, mStaticSoundHigh, mStaticCycleHigh,
                   mgr.ReturnFirstIfSingleElseSecond(0x275, 0x265d), dt, oldInterference, 0.5f);
   if (mStaticInterference > 0.f) {
-    CColor color = CColor::White();
-    color.SetAlpha(mStaticInterference);
     mStaticFilter.SetFilter(CCameraFilterPass::kFT_Blend, CCameraFilterPass::kFS_RandomStatic, 0.f,
-                            color, kInvalidAssetId);
+                            CColor::White().WithAlphaOf(mStaticInterference), kInvalidAssetId);
   } else {
     mStaticFilter.DisableFilter(0.f);
   }
 }
 
 void CSamusHud::UpdateStaticSfx(const CStateManager& mgr, CSfxHandle& sound, float& cycle,
-                                ushort soundId, float dt, float previousInterference,
+                                const ushort soundId, float dt, float previousInterference,
                                 float threshold) {
   const bool crossed = (previousInterference > threshold && mStaticInterference <= threshold) ||
                        (previousInterference <= threshold && mStaticInterference > threshold);
@@ -961,8 +977,8 @@ void CSamusHud::UpdateHudColor() {
 }
 
 void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
-  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   const float energy = rstl::max_val(0.f, CMath::CeilingF(state.GetHealthInfo().GetHP()));
   const int numEnergyTanks = state.GetItemCapacity(CPlayerState::kIT_EnergyTanks);
   const bool energyLow = player.IsEnergyLow();
@@ -991,16 +1007,14 @@ void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
       mEnergyLow = energyLow;
     }
     for (int i = 0; i < mFilledEnergyTanks.size(); ++i) {
-      CGuiWidget* filled = mFilledEnergyTanks[i];
-      CGuiWidget* empty = mEmptyEnergyTanks[i];
-      if (filled != nullptr && empty != nullptr) {
+      if (mFilledEnergyTanks[i] != nullptr && mEmptyEnergyTanks[i] != nullptr) {
         if (i < numEnergyTanks) {
           const bool full = i < filledTanks;
-          filled->SetVisibility(full, kTM_Children);
-          empty->SetVisibility(!full, kTM_Children);
+          mFilledEnergyTanks[i]->SetVisibility(full, kTM_Children);
+          mEmptyEnergyTanks[i]->SetVisibility(!full, kTM_Children);
         } else {
-          filled->SetVisibility(false, kTM_Children);
-          empty->SetVisibility(false, kTM_Children);
+          mFilledEnergyTanks[i]->SetVisibility(false, kTM_Children);
+          mEmptyEnergyTanks[i]->SetVisibility(false, kTM_Children);
         }
       }
     }
@@ -1027,7 +1041,8 @@ void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
     CColor damageColor = CColor::Lerp(finalFilled, gpTweakGuiColors->GetEnergyBarDamageColor(),
                                       mDamageHighlightRemaining / mDamageHighlightDuration);
     if (mEnergyLow) {
-      damageColor = CColor::Lerp(damageColor, CColor(1.f, 0.f, 0.f, 1.f), mEnergyLowTimer);
+      const CColor red(1.f, 0.f, 0.f, 1.f);
+      damageColor = CColor::Lerp(damageColor, red, mEnergyLowTimer);
     }
     mEnergyBar->SetFilledColor(damageColor);
     mEnergyBar->SetShadowColor(finalShadow);
@@ -1037,7 +1052,8 @@ void CSamusHud::UpdateEnergy(float dt, const CStateManager& mgr, bool init) {
     }
   }
   if (mBossEnergy.get() != nullptr) {
-    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mgr.GetBossId()))) {
+    const TUniqueId bossId = mgr.GetBossId();
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(bossId))) {
       if (const CHealthInfo* health = actor->GetHealthInfo()) {
         const float bossEnergy = CMath::CeilingF(health->GetHP());
         const float maxEnergy = mgr.GetTotalBossEnergy();
@@ -1057,31 +1073,31 @@ void CSamusHud::UpdateMissile(float dt, const CStateManager& mgr, bool init) {
   if (mMissileDigits == nullptr) {
     return;
   }
-  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->GetPlayerGun();
   const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
-  const int enabled = !gun.GetMissileMode();
+  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->mGun;
+  const int enabled = gun.GetMissileMode() ? 0 : 1;
   const int missiles = state.GetItemAmount(CPlayerState::kIT_Missile, true);
   const int capacity = state.GetItemCapacity(CPlayerState::kIT_Missile);
   if (init || missiles != mMissileAmount || enabled != mMissileEnabled ||
-      capacity != mMissileCapacity || CMath::AbsF(mMissilePickupPulse) >= 0.00001f ||
-      CMath::AbsF(mMissileModeTransition) >= 0.00001f) {
+      capacity != mMissileCapacity || !close_enough(mMissilePickupPulse, 0.f) ||
+      !close_enough(mMissileModeTransition, 0.f)) {
     if (GetNextState() != kHS_Scan) {
       if (missiles > mMissileAmount) {
         mMissilePickupPulse = 0.5f;
       }
-      mMissilePickupPulse = rstl::max_val(0.f, mMissilePickupPulse - dt);
+      mMissilePickupPulse = rstl::max_val(mMissilePickupPulse - dt, 0.f);
       const float pickup = CMath::FastSinR(M_PIF * (mMissilePickupPulse / 0.5f));
       const CColor flash =
           CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetMissileGroupChangeFlash(), pickup);
-      mMissileModeTransition = rstl::max_val(0.f, mMissileModeTransition - 3.f * dt);
+      mMissileModeTransition = rstl::max_val(mMissileModeTransition - 3.f * dt, 0.f);
       if (mMissileEnabled != enabled) {
         mMissileModeTransition = 1.f;
       }
       const float transition =
           gun.GetMissileMode() ? mMissileModeTransition : 1.f - mMissileModeTransition;
-      const CColor active =
+      const CColor& active =
           CColor::Add(ModulateColor(gpTweakGuiColors->GetMissileGroupActiveColor()), flash);
-      const CColor inactive =
+      const CColor& inactive =
           CColor::Add(ModulateColor(gpTweakGuiColors->GetMissileGroupInactiveColor()), flash);
       const CColor& depletion = gpTweakGuiColors->GetMissileDepletionColor();
       const CColor iconColor =
@@ -1091,9 +1107,9 @@ void CSamusHud::UpdateMissile(float dt, const CStateManager& mgr, bool init) {
         mMissileIcon->SetColor(iconColor);
         mMissileIcon->SetVisibility(visible, kTM_Children);
       }
-      const CColor activeText =
+      const CColor& activeText =
           CColor::Add(ModulateColor(gpTweakGuiColors->GetActiveTextForegroundColor()), flash);
-      const CColor inactiveText =
+      const CColor& inactiveText =
           CColor::Add(ModulateColor(gpTweakGuiColors->GetInactiveTextForegroundColor()), flash);
       const CColor textColor =
           missiles == 0 ? depletion : CColor::Lerp(activeText, inactiveText, transition);
@@ -1124,19 +1140,19 @@ void CSamusHud::UpdateMissile(float dt, const CStateManager& mgr, bool init) {
     const float transition =
         gun.GetMissileMode() ? mMissileModeTransition : 1.f - mMissileModeTransition;
     const float pulse =
-        (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
-        0.5f;
+        (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) / 2.f;
     if (mMissileIcon != nullptr) {
-      const CColor base =
-          CColor::Lerp(ModulateColor(gpTweakGuiColors->GetMissileGroupActiveColor()),
-                       ModulateColor(gpTweakGuiColors->GetMissileGroupInactiveColor()), transition);
+      const CColor& activeColor = ModulateColor(gpTweakGuiColors->GetMissileGroupActiveColor());
+      const CColor& inactiveColor = ModulateColor(gpTweakGuiColors->GetMissileGroupInactiveColor());
+      const CColor base = CColor::Lerp(activeColor, inactiveColor, transition);
       const CColor color = CColor::Lerp(base, gpTweakGuiColors->GetMissileWarningColor(), pulse);
       mMissileIcon->SetColor(color);
     }
     if (mMissileDigits != nullptr) {
-      const CColor base = CColor::Lerp(
-          ModulateColor(gpTweakGuiColors->GetActiveTextForegroundColor()),
-          ModulateColor(gpTweakGuiColors->GetInactiveTextForegroundColor()), transition);
+      const CColor& activeColor = ModulateColor(gpTweakGuiColors->GetActiveTextForegroundColor());
+      const CColor& inactiveColor =
+          ModulateColor(gpTweakGuiColors->GetInactiveTextForegroundColor());
+      const CColor base = CColor::Lerp(activeColor, inactiveColor, transition);
       const CColor color = CColor::Lerp(base, gpTweakGuiColors->GetMissileWarningColor(), pulse);
       mMissileDigits->TextSupport().SetFontColor(color);
       if (mMissileFraction != nullptr) {
@@ -1152,36 +1168,27 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
   }
   const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
+  const CPlayerGun& gun = *player.mGun;
   CPlayerState::EBeamId beam;
   if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
     beam = mBallBeamTransition > 0.3f ? mPreviousBallBeam : state.GetCurrentBeam();
   } else {
-    beam = player.GetPlayerGun()->GetPrimaryWeaponId();
+    beam = gun.GetPrimaryWeaponId();
   }
   const float beamFactor = CMath::Clamp(0.f, mBeamMenuTransition, 1.f);
   const int darkAmmo = state.GetItemAmount(CPlayerState::kIT_DarkAmmo, true);
   const int lightAmmo = state.GetItemAmount(CPlayerState::kIT_LightAmmo, true);
-  if (init || darkAmmo != mDarkAmmo || beam != mAmmoBeam ||
+  if (init || mDarkAmmo != darkAmmo || beam != mAmmoBeam ||
       float(darkAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo)) *
                              gpTweakGui->GetMissileWarningThreshold() ||
-      CMath::AbsF(mDarkAmmoPickupPulse) >= 0.00001f ||
-      (CMath::AbsF(beamFactor) >= 0.00001f && CMath::AbsF(beamFactor - 1.f) >= 0.00001f)) {
-    if (state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) < 1 &&
-        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) < 1) {
-      if (mDarkAmmoIcon != nullptr) {
-        mDarkAmmoIcon->SetIsVisible(false);
-      }
-      for (int i = 0; i < mDarkAmmoSegments.size(); ++i) {
-        mDarkAmmoSegments[i]->SetColor(gpTweakGuiColors->GetDarkAmmoTankEmptyUnselectedColor());
-        mDarkAmmoMeters[i]->SetVisibility(false, kTM_Children);
-        mDarkAmmoSegments[i]->SetVisibility(false, kTM_Children);
-      }
-
-    } else {
+      !close_enough(mDarkAmmoPickupPulse, 0.f) ||
+      (!close_enough(beamFactor, 0.f) && !close_enough(beamFactor, 1.f))) {
+    if (state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) > 0 ||
+        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0) {
       if (darkAmmo > mDarkAmmo) {
         mDarkAmmoPickupPulse = 0.5f;
       }
-      mDarkAmmoPickupPulse = rstl::max_val(0.f, mDarkAmmoPickupPulse - 0.0166f);
+      mDarkAmmoPickupPulse = rstl::max_val(mDarkAmmoPickupPulse - 0.0166f, 0.f);
       const float pickup = CMath::FastSinR(M_PIF * (mDarkAmmoPickupPulse / 0.5f));
       const CColor flash =
           CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetDarkAmmoChangeFlash(), pickup);
@@ -1192,8 +1199,8 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
           float(darkAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_DarkAmmo)) *
                                  gpTweakGui->GetMissileWarningThreshold()) {
         warning =
-            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
-            0.5f;
+            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) /
+            2.f;
       }
       const CColor selectedEmpty =
           CColor::Lerp(gpTweakGuiColors->GetDarkAmmoTankEmptySelectedColor(),
@@ -1224,26 +1231,33 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
           CColor::Lerp(baseDigits, gpTweakGuiColors->GetDarkAmmoDigitWarningColor(), warning);
       if (mDarkAmmoDigits != nullptr) {
         mDarkAmmoDigits->TextSupport().SetFontColor(
-            darkAmmo == 0 ? gpTweakGuiColors->GetDarkAmmoDepletionColor() : digits);
+            darkAmmo != 0 ? digits : gpTweakGuiColors->GetDarkAmmoDepletionColor());
       }
       if (mDarkAmmoSegments.size() != 0) {
         const int perTank =
             CPlayerState::GetPowerUpMaxValue(CPlayerState::kIT_DarkAmmo) / mDarkAmmoSegments.size();
         const int capacity = state.GetItemCapacity(CPlayerState::kIT_DarkAmmo);
-        const int filledTanks = darkAmmo / perTank;
-        const int activeTanks = filledTanks + 1;
         const int capacityTanks = (capacity + perTank - 1) / perTank;
+        const int activeTanks = darkAmmo / perTank + 1;
+        const int remainder = darkAmmo % perTank;
         for (int i = 0; i < mDarkAmmoSegments.size(); ++i) {
           mDarkAmmoSegments[i]->SetVisibility(capacity != 0, kTM_Children);
           mDarkAmmoMeters[i]->SetVisibility(capacity != 0, kTM_Children);
           mDarkAmmoMeters[i]->SetColor(fill);
           mDarkAmmoMeters[i]->SetShadowColor(shadow);
-          mDarkAmmoSegments[i]->SetColor(i < capacityTanks ? full : empty);
-          mDarkAmmoMeters[i]->SetTargetFraction(i < activeTanks ? 1.f : 0.f);
+          if (i < capacityTanks) {
+            mDarkAmmoSegments[i]->SetColor(full);
+          } else {
+            mDarkAmmoSegments[i]->SetColor(empty);
+          }
+          if (i < activeTanks) {
+            mDarkAmmoMeters[i]->SetTargetFraction(1.f);
+          } else {
+            mDarkAmmoMeters[i]->SetTargetFraction(0.f);
+          }
         }
         if (activeTanks > 0 && activeTanks <= mDarkAmmoSegments.size()) {
-          mDarkAmmoMeters[filledTanks]->SetTargetFraction(float(darkAmmo - filledTanks * perTank) /
-                                                          float(perTank));
+          mDarkAmmoMeters[activeTanks - 1]->SetTargetFraction(float(remainder) / float(perTank));
         }
       }
       if (mDarkAmmoDigits != nullptr) {
@@ -1255,34 +1269,34 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
       mDarkAmmo = darkAmmo;
       if (mDarkAmmoIcon != nullptr) {
         mDarkAmmoIcon->SetIsVisible(true);
-        mDarkAmmoIcon->SetColor(darkAmmo < 1 ? empty : full);
+        if (darkAmmo > 0) {
+          mDarkAmmoIcon->SetColor(full);
+        } else {
+          mDarkAmmoIcon->SetColor(empty);
+        }
+      }
+    } else {
+      if (mDarkAmmoIcon != nullptr) {
+        mDarkAmmoIcon->SetIsVisible(false);
+      }
+      for (int i = 0; i < mDarkAmmoSegments.size(); ++i) {
+        mDarkAmmoSegments[i]->SetColor(gpTweakGuiColors->GetDarkAmmoTankEmptyUnselectedColor());
+        mDarkAmmoMeters[i]->SetVisibility(false, kTM_Children);
+        mDarkAmmoSegments[i]->SetVisibility(false, kTM_Children);
       }
     }
   }
-  if (init || lightAmmo != mLightAmmo || beam != mAmmoBeam ||
+  if (init || mLightAmmo != lightAmmo || beam != mAmmoBeam ||
       float(lightAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_LightAmmo)) *
                               gpTweakGui->GetMissileWarningThreshold() ||
-      CMath::AbsF(mLightAmmoPickupPulse) >= 0.00001f ||
-      (CMath::AbsF(beamFactor) >= 0.00001f && CMath::AbsF(beamFactor - 1.f) >= 0.00001f)) {
-    if (state.GetItemAmount(CPlayerState::kIT_LightBeam, true) < 1 &&
-        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) < 1) {
-      if (mLightAmmoIcon != nullptr) {
-        mLightAmmoIcon->SetIsVisible(false);
-      }
-      for (int i = 0; i < mLightAmmoSegments.size(); ++i) {
-        mLightAmmoSegments[i]->SetColor(gpTweakGuiColors->GetLightAmmoTankEmptyUnselectedColor());
-        mLightAmmoMeters[i]->SetVisibility(false, kTM_Children);
-        mLightAmmoSegments[i]->SetVisibility(false, kTM_Children);
-      }
-      if (mLightAmmoDigits != nullptr) {
-        mLightAmmoDigits->TextSupport().SetFontColor(
-            gpTweakGuiColors->GetLightAmmoDepletionColor());
-      }
-    } else {
+      !close_enough(mLightAmmoPickupPulse, 0.f) ||
+      (!close_enough(beamFactor, 0.f) && !close_enough(beamFactor, 1.f))) {
+    if (state.GetItemAmount(CPlayerState::kIT_LightBeam, true) > 0 ||
+        state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0) {
       if (lightAmmo > mLightAmmo) {
         mLightAmmoPickupPulse = 0.5f;
       }
-      mLightAmmoPickupPulse = rstl::max_val(0.f, mLightAmmoPickupPulse - 0.0166f);
+      mLightAmmoPickupPulse = rstl::max_val(mLightAmmoPickupPulse - 0.0166f, 0.f);
       const float pickup = CMath::FastSinR(M_PIF * (mLightAmmoPickupPulse / 0.5f));
       const CColor flash =
           CColor::Lerp(CColor::Black(), gpTweakGuiColors->GetLightAmmoChangeFlash(), pickup);
@@ -1294,8 +1308,8 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
           float(lightAmmo) <= float(state.GetItemCapacity(CPlayerState::kIT_LightAmmo)) *
                                   gpTweakGui->GetMissileWarningThreshold()) {
         warning =
-            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) *
-            0.5f;
+            (1.f + CMath::FastCosR(CMath::WrapPi(M_2PIF * CGraphics::GetSecondsMod900() / 1.5f))) /
+            2.f;
       }
       const CColor selectedEmpty =
           CColor::Lerp(gpTweakGuiColors->GetLightAmmoTankEmptySelectedColor(),
@@ -1327,26 +1341,33 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
           CColor::Lerp(baseDigits, gpTweakGuiColors->GetLightAmmoDigitWarningColor(), warning);
       if (mLightAmmoDigits != nullptr) {
         mLightAmmoDigits->TextSupport().SetFontColor(
-            lightAmmo == 0 ? gpTweakGuiColors->GetLightAmmoDepletionColor() : digits);
+            lightAmmo != 0 ? digits : gpTweakGuiColors->GetLightAmmoDepletionColor());
       }
       if (mLightAmmoMeters.size() != 0) {
         const int perTank = CPlayerState::GetPowerUpMaxValue(CPlayerState::kIT_LightAmmo) /
                             mLightAmmoSegments.size();
         const int capacity = state.GetItemCapacity(CPlayerState::kIT_LightAmmo);
-        const int filledTanks = lightAmmo / perTank;
-        const int activeTanks = filledTanks + 1;
         const int capacityTanks = (capacity + perTank - 1) / perTank;
+        const int activeTanks = lightAmmo / perTank + 1;
+        const int remainder = lightAmmo % perTank;
         for (int i = 0; i < mLightAmmoSegments.size(); ++i) {
           mLightAmmoSegments[i]->SetVisibility(capacity != 0, kTM_Children);
           mLightAmmoMeters[i]->SetVisibility(capacity != 0, kTM_Children);
           mLightAmmoMeters[i]->SetColor(fill);
           mLightAmmoMeters[i]->SetShadowColor(shadow);
-          mLightAmmoSegments[i]->SetColor(i < capacityTanks ? full : empty);
-          mLightAmmoMeters[i]->SetTargetFraction(i < activeTanks ? 1.f : 0.f);
+          if (i < capacityTanks) {
+            mLightAmmoSegments[i]->SetColor(full);
+          } else {
+            mLightAmmoSegments[i]->SetColor(empty);
+          }
+          if (i < activeTanks) {
+            mLightAmmoMeters[i]->SetTargetFraction(1.f);
+          } else {
+            mLightAmmoMeters[i]->SetTargetFraction(0.f);
+          }
         }
         if (activeTanks > 0 && activeTanks <= mLightAmmoSegments.size()) {
-          mLightAmmoMeters[filledTanks]->SetTargetFraction(
-              float(lightAmmo - filledTanks * perTank) / float(perTank));
+          mLightAmmoMeters[activeTanks - 1]->SetTargetFraction(float(remainder) / float(perTank));
         }
       }
       char buffer[16];
@@ -1356,32 +1377,48 @@ void CSamusHud::UpdateBeamAmmo(const CStateManager& mgr, bool init) {
       mLightAmmo = lightAmmo;
       if (mLightAmmoIcon != nullptr) {
         mLightAmmoIcon->SetIsVisible(true);
-        mLightAmmoIcon->SetColor(lightAmmo < 1 ? empty : full);
+        if (lightAmmo > 0) {
+          mLightAmmoIcon->SetColor(full);
+        } else {
+          mLightAmmoIcon->SetColor(empty);
+        }
+      }
+    } else {
+      if (mLightAmmoIcon != nullptr) {
+        mLightAmmoIcon->SetIsVisible(false);
+      }
+      for (int i = 0; i < mLightAmmoSegments.size(); ++i) {
+        mLightAmmoSegments[i]->SetColor(gpTweakGuiColors->GetLightAmmoTankEmptyUnselectedColor());
+        mLightAmmoMeters[i]->SetVisibility(false, kTM_Children);
+        mLightAmmoSegments[i]->SetVisibility(false, kTM_Children);
+      }
+      if (mLightAmmoDigits != nullptr) {
+        mLightAmmoDigits->TextSupport().SetFontColor(gpTweakGuiColors->GetMissileDepletionColor());
       }
     }
   }
   if (mNextState != kHS_Scan) {
     if (mLightAmmoDigits != nullptr) {
-      const bool available = state.GetItemAmount(CPlayerState::kIT_LightBeam, true) > 0 ||
-                             state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0;
-      mLightAmmoDigits->SetIsVisible(available);
+      mLightAmmoDigits->SetIsVisible(state.GetItemAmount(CPlayerState::kIT_LightBeam, true) > 0 ||
+                                     state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) >
+                                         0);
     }
     if (mDarkAmmoDigits != nullptr) {
-      const bool available = state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) > 0 ||
-                             state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) > 0;
-      mDarkAmmoDigits->SetIsVisible(available);
+      mDarkAmmoDigits->SetIsVisible(state.GetItemAmount(CPlayerState::kIT_DarkBeam, true) > 0 ||
+                                    state.GetItemAmount(CPlayerState::kIT_AnnihilatorBeam, true) >
+                                        0);
     }
   }
   mAmmoBeam = beam;
 }
 
-void CSamusHud::UpdateBallMode(const CStateManager& mgr) {
+void CSamusHud::UpdateBallMode(const CStateManager& mgr, bool) {
   if (mPowerBombDigits == nullptr && mPowerBombIcon == nullptr && mBombIndicators.size() != 3) {
     return;
   }
 
   const CPlayerState& playerState = *mgr.GetPlayerState(mPlayerIndex);
-  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->GetPlayerGun();
+  const CPlayerGun& gun = *mgr.GetPlayer(mPlayerIndex)->mGun;
   const int powerBombs = playerState.GetItemAmount(CPlayerState::kIT_Powerbomb, false);
   const int powerBombCapacity = playerState.GetItemCapacity(CPlayerState::kIT_Powerbomb);
   const int bombsAvailable = gun.GetBombsAvailable(const_cast< CStateManager& >(mgr));
@@ -1434,7 +1471,7 @@ void CSamusHud::ResolveLockOnTexture() {
 }
 
 void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
-  if (mgr.GetNumPlayers() >= 2) {
+  if (mgr.GetNumPlayers() > 1) {
     return;
   }
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
@@ -1456,16 +1493,20 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
         (trigger->GetTriggerFlags() &
          (kTFL_DetectMorphedPlayer | kTFL_DetectUnmorphedPlayer | kTFL_DetectScrewAttack)) != 0) {
       const rstl::optional_object< CAABox > touch = trigger->GetTouchBounds();
-      if (touch.valid() && touch->DoBoundsOverlap(bounds)) {
-        const CDamageInfo damage(CWeaponMode(kWT_Power), 0.f, 0.f, 0.f, true);
-        const CDamageVulnerability* vulnerability =
-            player.GetDamageVulnerability(CVector3f::Zero(), CVector3f::Up(), damage);
-        if (trigger->GetDamageInfo().GetDamage(*vulnerability) != 0.f && touch.valid()) {
-          const CAABox triggerBounds = *touch;
-          const float distance = CAABox::DistanceBetween(playerBounds, triggerBounds);
-          if (distance < threatDistance) {
-            threatDistance = distance;
-          }
+      if (!(touch.valid() && touch->DoBoundsOverlap(bounds))) {
+        continue;
+      }
+      const CDamageVulnerability* vulnerability =
+          player.GetDamageVulnerability(CVector3f::Zero(), CVector3f::Up(),
+                                        CDamageInfo(CWeaponMode(kWT_Power), 0.f, 0.f, 0.f, true));
+      if (trigger->GetDamageInfo().GetDamage(*vulnerability) == 0.f) {
+        continue;
+      }
+      if (touch.valid()) {
+        const CAABox triggerBounds = *touch;
+        const float distance = CAABox::DistanceBetween(playerBounds, triggerBounds);
+        if (distance < threatDistance) {
+          threatDistance = distance;
         }
       }
     }
@@ -1474,7 +1515,7 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
     threatDistance = 0.f;
   }
   const float exposure = player.GetDarkWorldDamageExposureFraction();
-  const float environmentThreat = mgr.GetIsDarkWorld() && exposure > 0.08f ? exposure : 0.f;
+  float environmentThreat = mgr.GetIsDarkWorld() && exposure > 0.08f ? exposure : 0.f;
   if (mThreatGauge != nullptr) {
     if (!close_enough(environmentThreat, 0.f) || threatDistance < range) {
       mThreatAmount = rstl::max_val(environmentThreat, 1.f - threatDistance / range);
@@ -1498,14 +1539,15 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
   if (!close_enough(environmentThreat, 0.f) || threatDistance <= range ||
       !close_enough(amount, 0.f)) {
     if (!close_enough(environmentThreat, 0.f) || threatDistance <= range) {
-      mThreatAnimationTime += 2.f * dt;
+      mThreatAnimationTime += 3.f * dt;
     }
-    float alpha = rstl::min_val(mThreatAnimationTime, 1.f);
+    const float animAlpha = rstl::min_val(1.f, mThreatAnimationTime);
     const float pulse =
-        amount >= 1.f ? (1.f - CMath::FastCosR(2.f * mThreatAnimationTime)) * 0.5f : 0.f;
+        amount < 1.f ? 0.f : (1.f - CMath::FastCosR(3.f * mThreatAnimationTime)) / 2.f;
     const CColor warning =
         CColor::Lerp(iconColor, gpTweakGuiColors->GetThreatWarningColor(), pulse);
-    alpha *= mScanInterface.null() ? 1.f : mScanInterface->GetMessageTextAlpha();
+    const float alpha =
+        animAlpha * (!mScanInterface.null() ? mScanInterface->GetMessageTextAlpha() : 1.f);
     if (mThreatRoot != nullptr) {
       mThreatRoot->SetVisibility(true, kTM_Children);
     }
@@ -1521,13 +1563,17 @@ void CSamusHud::UpdateThreatAssessment(float dt, const CStateManager& mgr) {
     }
   } else {
     if (mNextState == kHS_Scan) {
-      mThreatAnimationTime = CMath::Clamp(0.f, mThreatAnimationTime - 2.f * dt, 1.f);
+      mThreatAnimationTime = CMath::Clamp(0.f, mThreatAnimationTime - 3.f * dt, 1.f);
     } else {
-      mThreatAnimationTime += 2.f * dt;
+      mThreatAnimationTime += 3.f * dt;
     }
     const float alpha = rstl::min_val(1.f, mThreatAnimationTime);
     if (mThreatRoot != nullptr) {
-      mThreatRoot->SetVisibility(!close_enough(alpha, 0.f), kTM_Children);
+      if (close_enough(alpha, 0.f)) {
+        mThreatRoot->SetVisibility(false, kTM_Children);
+      } else {
+        mThreatRoot->SetVisibility(true, kTM_Children);
+      }
     }
     if (mThreatIcon != nullptr) {
       mThreatIcon->SetColor(ModulateColor(gpTweakGuiColors->GetThreatGroupInactiveColor())
@@ -1548,10 +1594,11 @@ void CSamusHud::fn_8006653c(const CStateManager&, bool) {}
 
 bool CSamusHud::IsCachedLightInAreaLights(const SCachedHudLight& light,
                                           const CActorLights& lights) const {
+  const CColor color = light.mColor;
   const uint count = lights.GetActiveAreaLightCount();
   for (uint i = 0; i < count; ++i) {
     const CLight& areaLight = lights.GetLight(i);
-    if (areaLight.GetColor() == light.mColor && areaLight.GetPosition() == light.mPosition) {
+    if (areaLight.GetColor() == color && areaLight.GetPosition() == light.mPosition) {
       return true;
     }
   }
@@ -1561,8 +1608,8 @@ bool CSamusHud::IsCachedLightInAreaLights(const SCachedHudLight& light,
 bool CSamusHud::IsAreaLightInCachedLights(const CLight& light) const {
   for (int i = 0; i < 3; ++i) {
     const SCachedHudLight& cached = mHudLights[i];
-    if (cached.mFade != 0.f && cached.mColor == light.GetColor() &&
-        cached.mPosition == light.GetPosition()) {
+    if (cached.mFade != 0.f && light.GetColor() == cached.mColor &&
+        light.GetPosition() == cached.mPosition) {
       return true;
     }
   }
@@ -1582,7 +1629,7 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
   if (mgr.GetViewportLayoutIndex() != 0) {
     return;
   }
-  const CFirstPersonCamera* const camera = TCastToConstPtr< CFirstPersonCamera >(
+  const CGameCamera* const camera = CCameraManager::CastGameCameratoFirstPersonCamera(
       mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true));
   if (camera == nullptr) {
     return;
@@ -1665,8 +1712,8 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
   for (int i = 0; i < mHudLights.size(); ++i) {
     const SCachedHudLight& light = mHudLights[i];
     const CVector3f toCamera = position - light.mPosition;
-    const CMatrix3f& rotation = camera->GetTransform().BuildMatrix3f().GetTranspose();
-    const CVector3f direction = rotation * toCamera.AsNormalized();
+    const CVector3f direction =
+        camera->GetTransform().BuildMatrix3f().GetTranspose() * toCamera.AsNormalized();
     const float distance = rstl::max_val(toCamera.Magnitude(), FLT_EPSILON);
     const float falloff = rstl::min_val(
         1.f,
@@ -1690,7 +1737,7 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
     if (entity == nullptr || !entity->GetActive()) {
       continue;
     }
-    const CScriptDynamicLight* dynamicLight = TCastToConstPtr< CScriptDynamicLight >(*entity);
+    const CScriptDynamicLight* dynamicLight = TCastToConstPtr< CScriptDynamicLight >(entity);
     if (dynamicLight != nullptr && !dynamicLight->UsesWorld()) {
       continue;
     }
@@ -1698,7 +1745,7 @@ void CSamusHud::UpdateHudDynamicLights(float dt, const CStateManager& mgr) {
     if (TCastToConstPtr< CGameProjectile >(mgr.GetObjectById(light->GetParentId()))) {
       continue;
     }
-    const CLight candidate = light->GetLight();
+    const CLight& candidate = light->GetLight();
     if (candidate.GetType() == kLT_Hard) {
       const float distanceSquared = (candidate.GetPosition() - position).MagSquared();
       const float radius = candidate.GetRadius();
@@ -1740,10 +1787,11 @@ CColor CSamusHud::GetVisorHudLightColor(const CColor& color, const CStateManager
   const float t = state.GetVisorTransitionFactor();
   CColor result = color;
   switch (visor) {
+  case CPlayerState::kPV_Combat:
+    break;
   case CPlayerState::kPV_Scan: {
-    const CColor& white = CColor::White();
     const CColor multiplier =
-        CColor::Lerp(white, gpTweakGuiColors->GetScanVisorHUDLightMultiply(), t);
+        CColor::Lerp(CColor::White(), gpTweakGuiColors->GetScanVisorHUDLightMultiply(), t);
     result = CColor::Modulate(result, multiplier);
     break;
   }
@@ -1761,7 +1809,7 @@ CColor CSamusHud::GetVisorHudLightColor(const CColor& color, const CStateManager
   return result;
 }
 
-void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr) {
+void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr, uint) {
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
   if (player.GetHealthInfo()->GetHP() <= 0.f) {
     mDamageFilterDuration = FLT_EPSILON;
@@ -1828,8 +1876,9 @@ void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr) {
   for (int i = 0; i < mDamageSectorRemaining.size(); ++i) {
     if (mDamageSectorRemaining[i] > 0.f) {
       mDamageSectorRemaining[i] = rstl::max_val(0.f, mDamageSectorRemaining[i] - dt);
-      mDamageSectorIntensity[i] = rstl::min_val(
-          1.f, (mDamageSectorRemaining[i] / mDamageSectorDurations[i]) * mDamageSectorIntensity[i]);
+      const float ratio = mDamageSectorRemaining[i] / mDamageSectorDurations[i];
+      const float intensity = mDamageSectorIntensity[i];
+      mDamageSectorIntensity[i] = rstl::min_val(1.f, ratio * intensity);
     }
   }
   if (mDamageHighlightRemaining > 0.f) {
@@ -1873,11 +1922,12 @@ void CSamusHud::UpdateHudDamage(float dt, const CStateManager& mgr) {
     mShakeTranslation =
         rstl::min_val(mShakeTranslationAmount, gpTweakGui->GetHUDDamageJostleMaxOffset()) *
         mDamagerToPlayer;
-    if (mHudCamera != nullptr) {
-      const CTransform4f& idle = mHudCamera->GetIdleXform();
-      const CVector3f translation =
+    if (mDecorationRoot != nullptr) {
+      const CTransform4f& idle = mDecorationRoot->GetIdleXform();
+      const CVector3f& translation =
           idle.GetTranslation() + gpTweakGui->GetHudDecoShakeTranslateGain() * mShakeTranslation;
-      mHudCamera->SetO2PTransform(CTransform4f(idle.BuildMatrix3f() * mShakeRotation, translation));
+      const CTransform4f xf(idle.BuildMatrix3f() * mShakeRotation, translation);
+      mDecorationRoot->SetO2PTransform(xf);
     }
   }
 }
@@ -1916,11 +1966,11 @@ void CSamusHud::UpdateStateTransition(float dt, const CStateManager& mgr) {
       return;
     }
   case kTS_Loading:
-    if (!mPendingHudFrame.null()) {
-      if (!mPendingHudFrame->IsFinishedLoading()) {
+    if (CGuiFrameLoader* loader = mPendingHudFrame.get()) {
+      if (!loader->IsFinishedLoading()) {
         return;
       }
-      mHudFrame = mPendingHudFrame->CreateFrame();
+      mHudFrame = loader->CreateFrame();
       mLoadedHudFrame = mHudFrame.get();
       mPendingHudFrame = nullptr;
       mPreviousState = mNextState;
@@ -1963,7 +2013,7 @@ void CSamusHud::UpdateStateTransition(float dt, const CStateManager& mgr) {
       mTransitionState = kTS_Idle;
     }
     break;
-  default:
+  case kTS_Idle:
     break;
   }
 }
@@ -2053,7 +2103,8 @@ void CSamusHud::UpdateHudMemo(float dt, const CStateManager& mgr) {
         mAButtonPulse -= 2.f;
       }
     }
-    mMessageAButton->SetColor(CColor::White().WithAlphaOf(CMath::AbsF(mAButtonPulse)));
+    const float a = CMath::AbsF(mAButtonPulse);
+    mMessageAButton->SetColor(CColor::White().WithAlphaOf(a));
     const bool pulseSound = !mgr.GetCameraManager(mPlayerIndex)->IsInCinematicCamera() &&
                             oldPulse < 0.f && mAButtonPulse >= 0.f &&
                             mMessageRoot->GetIsVisible() &&
@@ -2086,7 +2137,8 @@ void CSamusHud::UpdateHudMemo(float dt, const CStateManager& mgr) {
         mMessageText = rstl::wstring_l(L"");
       }
     }
-    mMessageRoot->SetColor(CColor::White().WithAlphaOf(rstl::min_val(messageAlpha, 1.f)));
+    const float rootAlpha = rstl::min_val(messageAlpha, 1.f);
+    mMessageRoot->SetColor(CColor::White().WithAlphaOf(rootAlpha));
   }
   const float printed = mMessagePane->TextSupport().GetNumCharactersPrinted();
   const float charsPerSound = gpTweakGui->GetWorldTransManagerCharsPerSfx();
@@ -2132,22 +2184,23 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     case CPlayer::kMS_Morphed:
       morphFactor = 1.f;
       break;
+    case CPlayer::kMS_Unmorphed:
+      morphFactor = 0.f;
+      break;
     case CPlayer::kMS_Morphing:
       morphFactor = player.GetMorphBallTransitionFactor();
       break;
     case CPlayer::kMS_Unmorphing:
       morphFactor = 1.f - player.GetMorphBallTransitionFactor();
       break;
-    default:
-      break;
     }
     mViewportScaleY = 1.f - morphFactor * gpTweakGui->GetBallViewportYReduction();
-    const float halfReduction = 0.5f * (float(CGraphics::GetRenderMode().xfbHeight) *
-                                        gpTweakGui->GetBallViewportYReduction());
-    const CVector3f idlePosition = mHudCamera->GetIdleXform().GetTranslation();
-    mHudCamera->SetO2PTransform(CTransform4f::Translate(CVector3f(
-        idlePosition.GetX(), idlePosition.GetY(),
-        ((1.f - morphFactor) * halfReduction - halfReduction) * 0.01f + idlePosition.GetZ())));
+    const float xfbHeight = float(int(CGraphics::GetRenderMode().xfbHeight));
+    const float halfReduction = 0.5f * (xfbHeight * gpTweakGui->GetBallViewportYReduction());
+    const CTransform4f& idle = mHudCamera->GetIdleXform();
+    const float zOffset = ((1.f - morphFactor) * halfReduction - halfReduction) * 0.01f;
+    const CVector3f translation(idle.Get03(), idle.Get13(), idle.Get23() + zOffset);
+    mHudCamera->SetO2PTransform(CTransform4f::Translate(translation));
   }
 
   const bool englishOnly = gpGameState->GameOptions().GetIsHudEnglish();
@@ -2161,6 +2214,7 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
       mBeamMenu->RefreshText();
     }
   }
+  const bool helmetVisible = helmetVisibility != 0;
   const bool firstPerson = player.GetMorphballTransitionState() == CPlayer::kMS_Unmorphed &&
                            !player.GetCameraManager()->IsInCinematicCamera();
   if (firstPerson != mFirstPerson) {
@@ -2185,7 +2239,7 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     mTargetingManager.Update(dt, mgr);
   }
   UpdateStaticInterference(dt, mgr);
-  if (helmetVisibility != 0) {
+  if (helmetVisible) {
     if (mNextState != kHS_None) {
       UpdateEnergy(dt, mgr, false);
       UpdateFreeLook(dt, mgr);
@@ -2194,7 +2248,7 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     UpdateBeamAmmo(mgr, false);
     UpdateMissile(dt, mgr, false);
     UpdateVisorAndBeamMenus(dt, mgr);
-    UpdateBallMode(mgr);
+    UpdateBallMode(mgr, false);
     ResolveLockOnTexture();
     if (!mRadar.null()) {
       mRadar->SetColor(ModulateColor(gpTweakGuiColors->GetRadarWidgetColor()));
@@ -2213,9 +2267,8 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     const float alpha = mScanInterface.null() ? 1.f : mScanInterface->GetMessageTextAlpha();
     mVisorMenu->UpdateHudAlpha(alpha);
     if (mVisorBracket != nullptr) {
-      CColor color = ModulateColor(gpTweakGuiColors->GetHUDDecorativeColor());
-      color.SetAlpha(alpha);
-      mVisorBracket->SetColor(color);
+      mVisorBracket->SetColor(
+          ModulateColor(gpTweakGuiColors->GetHUDDecorativeColor()).WithAlphaOf(alpha));
     }
     mVisorMenu->Update(dt, false);
   }
@@ -2223,9 +2276,9 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     mBeamMenu->Update(dt, false);
   }
   if (mDarkVisor != nullptr && mDarkVisorBacking != nullptr) {
-    const bool darkVisor = player.GetPlayerState()->GetCurrentVisor() == CPlayerState::kPV_Dark;
-    mDarkVisor->SetIsVisible(darkVisor);
-    mDarkVisorBacking->SetIsVisible(darkVisor);
+    const CPlayerState::EPlayerVisor visor = player.GetPlayerState()->GetCurrentVisor();
+    mDarkVisor->SetIsVisible(visor == CPlayerState::kPV_Dark);
+    mDarkVisorBacking->SetIsVisible(visor == CPlayerState::kPV_Dark);
   }
   if (player.WasDamaged() && mgr.GetGameState() == CStateManager::kGS_Running) {
     const CVector3f position = player.GetDamageLocationWR();
@@ -2233,12 +2286,12 @@ void CSamusHud::Update(float dt, const CStateManager& mgr, uint helmetVisibility
     const float previousDamage = player.GetPrevDamageAmount();
     ShowDamage(position, damage, previousDamage, mgr);
   }
-  UpdateHudDamage(dt, mgr);
+  UpdateHudDamage(dt, mgr, helmetVisibility);
 }
 
 rstl::reserved_vector< bool, 4 > CSamusHud::BuildPlayerHasVisors(const CStateManager& mgr) const {
-  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   rstl::reserved_vector< bool, 4 > result;
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   result.push_back(state.HasPowerUp(CPlayerState::kIT_CombatVisor));
   result.push_back(state.HasPowerUp(CPlayerState::kIT_EchoVisor));
   result.push_back(state.HasPowerUp(CPlayerState::kIT_ScanVisor));
@@ -2247,8 +2300,8 @@ rstl::reserved_vector< bool, 4 > CSamusHud::BuildPlayerHasVisors(const CStateMan
 }
 
 rstl::reserved_vector< bool, 4 > CSamusHud::BuildPlayerHasBeams(const CStateManager& mgr) const {
-  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   rstl::reserved_vector< bool, 4 > result;
+  const CPlayerState& state = *mgr.GetPlayerState(mPlayerIndex);
   result.push_back(state.HasPowerUp(CPlayerState::kIT_PowerBeam));
   result.push_back(state.HasPowerUp(CPlayerState::kIT_DarkBeam));
   result.push_back(state.HasPowerUp(CPlayerState::kIT_LightBeam));
@@ -2473,16 +2526,16 @@ void CSamusHud::Draw(const CStateManager& mgr, float alpha, uint helmetVisibilit
 }
 
 void CSamusHud::DrawHelmet(const CStateManager& mgr, float cameraYOffset) const {
-  if (mLoadedHelmetFrame == nullptr || mgr.GetPlayer(mPlayerIndex)->IsInTurret()) {
-    return;
-  }
-  const bool unmorphed =
-      mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed;
-  if (mLoadedHelmetFrame != nullptr && unmorphed && mNextState != kHS_Ball) {
-    const float alpha = mPreviousState == kHS_Ball ? mTransitionFactor : 1.f;
-    const CGuiWidgetDrawParms parms(alpha * gpGameState->GameOptions().GetHelmetAlpha(),
-                                    CVector3f(0.f, 15.f * cameraYOffset, 0.f));
-    mLoadedHelmetFrame->Draw(parms);
+  if (mLoadedHelmetFrame != nullptr && !mgr.GetPlayer(mPlayerIndex)->IsInTurret()) {
+    const bool unmorphed =
+        mgr.GetPlayer(mPlayerIndex)->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed;
+    if (mLoadedHelmetFrame != nullptr && unmorphed && mNextState != kHS_Ball) {
+      const CGameOptions& options = gpGameState->GameOptions();
+      const float alpha = mPreviousState == kHS_Ball ? mTransitionFactor : 1.f;
+      const CGuiWidgetDrawParms parms(alpha * options.GetHelmetAlpha(),
+                                      CVector3f(0.f, 15.f * cameraYOffset, 0.f));
+      mLoadedHelmetFrame->Draw(parms);
+    }
   }
 }
 
@@ -2531,7 +2584,7 @@ CSamusHud::EHudState CSamusHud::GetDesiredHudState(const CStateManager& mgr) con
 
 CRelAngle CSamusHud::GetRelativeDirection(const CVector3f& position,
                                           const CStateManager& mgr) const {
-  const CFirstPersonCamera* const camera = TCastToConstPtr< CFirstPersonCamera >(
+  const CGameCamera* const camera = CCameraManager::CastGameCameratoFirstPersonCamera(
       mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true));
   if (camera == nullptr) {
     return CRelAngle::FromRadians(0.f);
@@ -2545,7 +2598,10 @@ CRelAngle CSamusHud::GetRelativeDirection(const CVector3f& position,
   const CVector3f direction = flatPosition.AsNormalized();
   const float angle = acosf(CVector3f::Dot(forward, direction));
   const CVector3f cross = CVector3f::Cross(forward, direction);
-  return CRelAngle::FromRadians(cross.GetZ() <= 0.f ? angle : 2.f * M_PIF - angle);
+  if (cross.GetZ() > 0.f) {
+    return CRelAngle::FromRadians(2.f * M_PIF - angle);
+  }
+  return CRelAngle::FromRadians(angle);
 }
 
 void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamage,
@@ -2553,15 +2609,15 @@ void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamag
   if (position.IsNonZero() && !close_enough(damage, 0.f)) {
     const CRelAngle angle = GetRelativeDirection(position, mgr);
     const int sector = CMath::Clamp(0, int(12.f * (angle.AsRadians() / (2.f * M_PIF))), 11);
-    const float gain = damage * gpTweakGui->GetHUDFlashMagnitudeLinear() +
-                       gpTweakGui->GetHUDFlashMagnitudeConstant();
-    mDamageSectorIntensity[sector] = rstl::max_val(mDamageSectorIntensity[sector], gain);
+    mDamageSectorIntensity[sector] = rstl::max_val(
+        mDamageSectorIntensity[sector], damage * gpTweakGui->GetHUDFlashMagnitudeLinear() +
+                                            gpTweakGui->GetHUDFlashMagnitudeConstant());
     const float duration =
         rstl::max_val(FLT_EPSILON, damage * gpTweakGui->GetHUDFlashTimeScaleLinear() +
                                        gpTweakGui->GetHUDFlashTimeConstant());
-    mDamageSectorRemaining[sector] = rstl::max_val(mDamageSectorRemaining[sector], duration);
-    mDamageSectorDurations[sector] = mDamageSectorRemaining[sector];
-    mDamageHighlightDuration = mDamageSectorRemaining[sector];
+    mDamageSectorDurations[sector] = rstl::max_val(mDamageSectorDurations[sector], duration);
+    mDamageSectorRemaining[sector] = mDamageSectorDurations[sector];
+    mDamageHighlightDuration = mDamageSectorDurations[sector];
   }
   mDamageHighlightRemaining = mDamageHighlightDuration;
 
@@ -2569,22 +2625,22 @@ void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamag
   if (!player.GetFrozenState()) {
     const float duration =
         damage * gpTweakGui->GetFlashPassTimerLinear() + gpTweakGui->GetFlashPassTimerConstant();
-    if (mDamageFilterRemaining < duration) {
+    if (duration > mDamageFilterRemaining) {
       mDamageFilterGain = damage * gpTweakGui->GetFlashPassMagnitudeLinear() +
                           gpTweakGui->GetFlashPassMagnitudeConstant();
       mDamageFilterDuration = duration;
       mDamageFilterRemaining = mDamageFilterDuration;
       if (!mDamageSound && mgr.GetPendingDockArea() == kInvalidAreaId &&
           player.GetDamageWeaponType() != kWT_AreaDark) {
-        const CVector3f position = player.GetTransform().GetTranslation();
-        const ushort sound = mgr.ReturnFirstIfSingleElseSecond(0x955, 0x264d);
-        mDamageSound = CSfxManager::AddEmitter(sound, position, CSfxManager::kAllAreas, false, true,
-                                               CSfxManager::kMaxPriority);
+        mDamageSound =
+            CSfxManager::AddEmitter(mgr.ReturnFirstIfSingleElseSecond(0x955, 0x264d),
+                                    player.GetTransform().GetTranslation(), CSfxManager::kAllAreas,
+                                    false, true, CSfxManager::kMaxPriority);
       }
     }
   }
   if (position.IsNonZero()) {
-    const CFirstPersonCamera* const camera = TCastToConstPtr< CFirstPersonCamera >(
+    const CGameCamera* const camera = CCameraManager::CastGameCameratoFirstPersonCamera(
         mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true));
     if (camera != nullptr) {
       const CVector3f cameraToDamage = camera->GetTransform().GetQuickInverse() * position;
@@ -2593,7 +2649,7 @@ void CSamusHud::ShowDamage(CVector3f position, float damage, float previousDamag
       mShakeTranslationAmount = mShakeTranslationVelocity;
       const CVector3f& direction = cameraToDamage.CanBeNormalized()
                                        ? cameraToDamage.AsNormalized()
-                                       : CVector3f(CVector3f::Forward());
+                                       : static_cast< const CVector3f& >(CVector3f::Forward());
       mDamagerToPlayer = -1.f * direction;
       mShakeGain = previousDamage * gpTweakGui->GetHUDDamageDistortionMagnitudeLinear() +
                    gpTweakGui->GetHUDDamageDistortionMagnitudeConstant();
@@ -2618,7 +2674,7 @@ void CSamusHud::UpdateHudLag(float dt, const CStateManager& mgr) {
   }
 
   CUnitVector3f cameraDirection(mPreviousCameraDirection, CUnitVector3f::kN_No);
-  const CFirstPersonCamera* const camera = TCastToConstPtr< CFirstPersonCamera >(
+  const CGameCamera* const camera = CCameraManager::CastGameCameratoFirstPersonCamera(
       mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true));
   if (camera == nullptr) {
     mHudLag = CQuaternion::NoRotation();
@@ -2698,7 +2754,7 @@ void CSamusHud::SetMessage(const rstl::wstring& text, const CHUDMemoParms& info)
     mMessageRoot->SetVisibility(false, kTM_Children);
     CGuiWidget* pane = info.IsHintMemo() ? mMessageRoot : mMessagePane;
     if (!info.IsClearMemoWindow() || info.GetDisplayTime() != 0.f || mMessageTime != 0.f ||
-        text.size() != 0) {
+        text.length() != 0) {
       pane->SetVisibility(true, kTM_Children);
     }
     mMessagePane->TextSupport().SetTypeWriteEffectOptions(info.GetFadeInText(), 0.1f, 40.f);
@@ -2706,7 +2762,7 @@ void CSamusHud::SetMessage(const rstl::wstring& text, const CHUDMemoParms& info)
       mLastMessageSoundChars = 0.f;
       mMessagePane->TextSupport().SetCurTime(0.f);
       mMessagePane->TextSupport().SetText(text);
-    } else if (mMessagePane->TextSupport().GetText().size() == 0) {
+    } else if (mMessagePane->TextSupport().GetText().length() == 0) {
       mLastMessageSoundChars = 0.f;
       mMessagePane->TextSupport().AddText(text);
     } else {
@@ -2746,14 +2802,14 @@ void CSamusHud::UpdateBossLockOnWarning(float dt, const CStateManager& mgr) {
   }
   const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
   if (player.GetEnemyLockOnCount() == 0) {
-    if (mBossLockOnFrameLoader.get() != nullptr) {
-      mBossLockOnFrameLoader = nullptr;
+    if (!mBossLockOnFrameLoader.null()) {
+      mBossLockOnFrameLoader = rstl::auto_ptr< CGuiFrameLoader >();
     }
-    if (mBossLockOnFrame.get() != nullptr) {
-      mBossLockOnFrame = nullptr;
+    if (!mBossLockOnFrame.null()) {
+      mBossLockOnFrame = rstl::auto_ptr< CGuiFrame >();
     }
     if (mLockedOnIndicator) {
-      mLockedOnIndicator = rstl::optional_object_null();
+      mLockedOnIndicator.clear();
     }
     return;
   }
@@ -2774,17 +2830,17 @@ void CSamusHud::UpdateBossLockOnWarning(float dt, const CStateManager& mgr) {
           static_cast< CGuiTextPane* >(mBossLockOnFrame->FindWidget("textpane_warning"));
       if (warning != nullptr) {
         warning->TextSupport().SetText(
-            rstl::wstring_l(gpStringTable->GetString("EnemyLockedOnWarning")), false);
+            rstl::wstring(gpStringTable->GetString("EnemyLockedOnWarning")), false);
         warning->TextSupport().SetFontColor(gpTweakGui->GetLockOnIndicatorColor());
       }
     }
   }
   if (mBossLockOnFrame.get() != nullptr) {
     mBossLockOnFrame->Update(dt);
-    const int ringCount = rstl::min_val(int(player.GetEnemyLockOnCount()), 3);
+    const int ringCount = rstl::min_val(3, int(player.GetEnemyLockOnCount()));
     for (int i = 0; i < 3; ++i) {
       if (CGuiWidget* ring = mBossLockOnFrame->FindWidget(sBossLockOnRings[i])) {
-        const float intensity = 1.f - float(i) / 2.f;
+        const float intensity = 1.f - float(i) / 3.f;
         ring->SetColor(CColor::Modulate(gpTweakGui->GetLockOnIndicatorColor(),
                                         CColor(intensity, intensity, intensity, 1.f)));
         ring->SetVisibility(i < ringCount, kTM_Children);

@@ -14,7 +14,7 @@ class CVector3f;
 class CDamageInfo;
 class CFinalInput;
 class CSpacePirate;
-class CMetroidAlpha;
+class CMetroid;
 class CSplitterMainChassis;
 class CEffect;
 class CGenDescription;
@@ -107,9 +107,9 @@ CHECK_SIZEOF(SCannonBall_FuncPtrs, 0x4)
 void SetSCannonBall_FuncPtrs(SCannonBall_FuncPtrs* callbacks);
 
 struct SMetroid_FuncPtrs {
-  // Guessed member names; CMetroidAlpha is the existing reconstructed boundary owner.
+  // Guessed member names; CMetroid is the module class.
   FScriptLoader mLoadMetroid;
-  void (CMetroidAlpha::*mOnDockTouch)(CStateManager&);
+  void (CMetroid::*mOnDockTouch)(CStateManager&);
 };
 CHECK_SIZEOF(SMetroid_FuncPtrs, 0x10)
 void SetSMetroid_FuncPtrs(SMetroid_FuncPtrs* callbacks);

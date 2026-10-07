@@ -38,9 +38,11 @@ CWaypointNavigation::CWaypointNavigation()
 , mHorizontalMovement(false) {}
 
 void CWaypointNavigation::Update(float dt) {
-  if (mPauseRemainingTime > 0.f) {
-    mPauseRemainingTime -= dt;
+  float t = mPauseRemainingTime;
+  if (t > 0.f) {
+    t -= dt;
   }
+  mPauseRemainingTime = t;
 }
 
 void CWaypointNavigation::Patrol(CStateManager& mgr, EStateMsg msg, float, CPatterned& actor) {
@@ -119,19 +121,20 @@ void CWaypointNavigation::ApproachDest(CStateManager&, CPatterned& actor) {
     if (move.CanBeNormalized()) {
       move.Normalize();
     }
-    move = mMoveSpeed * move;
+    CVector3f velocity = mMoveSpeed * move;
+    ApplyWobbleSteering(velocity);
+    actor.BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(velocity, mFaceVector, 1.f));
   } else {
-    move = actor.GetBodyController()->GetCommandMgr().GetPreviousMoveVector();
+    CVector3f velocity = actor.GetBodyController()->GetCommandMgr().GetPreviousMoveVector();
+    ApplyWobbleSteering(velocity);
+    actor.BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(velocity, mFaceVector, 1.f));
   }
-  ApplyWobbleSteering(move);
-  actor.BodyController()->CommandMgr().DeliverCmd(CBCLocomotionCmd(move, mFaceVector, 1.f));
 }
 
 void CWaypointNavigation::UpdateDest(CStateManager& mgr, CPatterned& actor) {
   if (mInPosition && mDestination != kInvalidUniqueId) {
     mLastDestination = mDestination;
-    if (CScriptWaypoint* waypoint =
-            TCastToPtr< CScriptWaypoint >(mgr.ObjectById(mDestination))) {
+    if (CScriptWaypoint* waypoint = TCastToPtr< CScriptWaypoint >(mgr.ObjectById(mDestination))) {
       UpdateActorKeyframe(mgr, actor);
       mDestination = waypoint->NextWaypoint(mgr);
       if (mDestination != kInvalidUniqueId) {
@@ -139,27 +142,28 @@ void CWaypointNavigation::UpdateDest(CStateManager& mgr, CPatterned& actor) {
         mInPosition = false;
         if (const CScriptWaypoint* next =
                 TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(mDestination))) {
-          if (const CScriptAIWaypoint* aiWaypoint = TCastToConstPtr< CScriptAIWaypoint >(waypoint)) {
+          if (const CScriptAIWaypoint* aiWaypoint =
+                  TCastToConstPtr< CScriptAIWaypoint >(waypoint)) {
             mMoveSpeed = aiWaypoint->GetSpeed();
             if (aiWaypoint->GetFlags() & 2) {
-              actor.BodyController()->CommandMgr().DeliverCmd(
-                  CBCJumpCmd(next->GetTranslation(), pas::kJT_Normal, pas::kJS_IntoJump, 0,
-                             CBCJumpCmd::kFF_AmbushJump));
+              CBodyStateCmdMgr& cmdMgr = actor.BodyController()->CommandMgr();
+              cmdMgr.DeliverCmd(CBCJumpCmd(next->GetTranslation(), pas::kJT_Normal,
+                                           pas::kJS_IntoJump, 0, CBCJumpCmd::kFF_AmbushJump));
             } else if (aiWaypoint->GetFlags() & 4) {
               const TUniqueId nextId = next->NextWaypoint(mgr);
               if (nextId != kInvalidUniqueId) {
                 if (const CScriptWaypoint* end =
                         TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(nextId))) {
-                  actor.BodyController()->CommandMgr().DeliverCmd(
-                      CBCJumpCmd(next->GetTranslation(), end->GetTranslation()));
+                  CBodyStateCmdMgr& cmdMgr = actor.BodyController()->CommandMgr();
+                  cmdMgr.DeliverCmd(CBCJumpCmd(next->GetTranslation(), end->GetTranslation()));
                 }
               }
             }
           }
         }
       }
-      mgr.SendScriptMsg(waypoint, actor.GetUniqueId(),
-                        static_cast< EScriptObjectMessage >('ARRV'), actor.GetUniqueId());
+      mgr.SendScriptMsg(waypoint, actor.GetUniqueId(), static_cast< EScriptObjectMessage >('ARRV'),
+                        actor.GetUniqueId());
     }
   }
   if (mDestination != kInvalidUniqueId) {
@@ -172,9 +176,8 @@ void CWaypointNavigation::UpdateDest(CStateManager& mgr, CPatterned& actor) {
 void CWaypointNavigation::UpdateActorKeyframe(CStateManager& mgr, CPatterned& actor) {
   if (const CScriptWaypoint* waypoint =
           TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(mDestination))) {
-    const rstl::vector< TUniqueId > ids =
-        waypoint->FindConnectedObjects_if(mgr, kSS_Arrived, kSM_Action,
-                                          CValidPassiveKeyframePredicate());
+    const rstl::vector< TUniqueId > ids = waypoint->FindConnectedObjects_if(
+        mgr, kSS_Arrived, kSM_Action, CValidPassiveKeyframePredicate());
     for (int i = 0; i < ids.size(); ++i) {
       CScriptActorKeyframe* keyframe = static_cast< CScriptActorKeyframe* >(mgr.ObjectById(ids[i]));
       keyframe->UpdateEntity(actor.GetUniqueId(), mgr);
@@ -187,15 +190,17 @@ void CWaypointNavigation::ApplyWobbleSteering(CVector3f& movement) const {
     return;
   }
 
-  const CVector3f rotated = mWobbleSteering < 0.f
-                               ? CVector3f(movement.GetY(), -movement.GetX(), movement.GetZ())
-                               : CVector3f(-movement.GetY(), movement.GetX(), movement.GetZ());
-  const float strength = CMath::AbsF(mWobbleSteering);
-  movement = movement * (1.f - strength) + rotated * strength;
+  CVector3f rotated;
+  if (mWobbleSteering < 0.f) {
+    rotated = CVector3f(movement.GetY(), -movement.GetX(), movement.GetZ());
+  } else {
+    rotated = CVector3f(-movement.GetY(), movement.GetX(), movement.GetZ());
+  }
+  movement = CVector3f::Lerp(movement, rotated, CMath::AbsF(mWobbleSteering));
 }
 
 void CWaypointNavigation::ConfigureWobbleSteering(bool clockwise, float strength) {
-  if (clockwise) {
+  if (clockwise == true) {
     mWobbleSteering = strength;
   } else {
     mWobbleSteering = -1.f * strength;

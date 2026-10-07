@@ -7,6 +7,7 @@
 #include "MetroidPrime/CControlMapper.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
 
+#include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameOptions.hpp"
 #include "MetroidPrime/Player/CHintOptions.hpp"
 #include "MetroidPrime/Player/CPersistentOptions.hpp"
@@ -32,7 +33,10 @@ public:
     SPlayerResult()
     : mPlayerSelection(0), mScore(0), mDeaths(0), xc_(false), mRumbleEnabled(false) {}
     SPlayerResult(uint playerSelection, int score, int deaths, bool option, bool rumbleEnabled)
-    : mPlayerSelection(playerSelection), mScore(score), mDeaths(deaths), xc_(option)
+    : mPlayerSelection(playerSelection)
+    , mScore(score)
+    , mDeaths(deaths)
+    , xc_(option)
     , mRumbleEnabled(rumbleEnabled) {}
     explicit SPlayerResult(CBitStreamReader& in);
     void PutTo(CBitStreamWriter& out) const;
@@ -77,7 +81,7 @@ public:
 
   CGameState();
   explicit CGameState(CBitStreamReader& in);
-  ~CGameState();
+  ~CGameState() {}
 
   void ReadSystemOptions(CInputStream& in);
   void PutTo(CBitStreamWriter& out);
@@ -153,7 +157,7 @@ public:
   float GetHardModeWeaponMultiplier() const;
   bool GetHardModeEnabled() const { return mHardMode; }
   bool GetInitPowerupsAtFirstSpawn() const { return mInitPowerupsAtFirstSpawn; } // Guessed name
-  bool GetIsDarkWorld() const { return mIsDarkWorld; } // Guessed name
+  bool GetIsDarkWorld() const { return mIsDarkWorld; }                           // Guessed name
   double GetTotalPlayTime() const { return mTotalPlayTime; }
   rstl::rc_ptr< CPlayerState > GetPlayerState() const;
   rstl::rc_ptr< CPlayerState > GetPlayerState(int player) const;
@@ -165,8 +169,8 @@ private:
   CAssetId mWorldId;
   CAssetId mDesiredWorldId;
   rstl::vector< CWorldState > mWorldStates;
-  rstl::reserved_vector< rstl::rc_ptr< CPlayerState >, 4 > mPlayerStates;
-  rstl::rc_ptr< CWorldTransManager > mTransManager;
+  rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > mPlayerStates;
+  rstl::ncrc_ptr< CWorldTransManager > mTransManager;
   double mTotalPlayTime;
   float mEscapeTime;
   CPersistentOptions mSystemOptions;

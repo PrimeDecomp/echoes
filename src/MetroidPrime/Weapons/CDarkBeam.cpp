@@ -1,18 +1,22 @@
 #include "MetroidPrime/Weapons/CDarkBeam.hpp"
 
+#include "MetroidPrime/Player/GunResNames.hpp"
+
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
-static const ushort kFireSoundIds[2][2] = {
-    {0x1fc9, 0x1fc8},
-    {0x25ac, 0x25a6},
-};
+// Asset-name pointers defined in another TU (unsplit .sdata2).
+
+static const ushort kFireSounds[2][2] = {{0x1fc9, 0x1fc8}, {0x25ac, 0x25a6}};
 
 CDarkBeam::CDarkBeam(TUniqueId playerId, const CVector3f& scale, int flags)
-: CGunWeapon(kWT_Dark, playerId, scale, flags), mChargedProjectileId(kInvalidUniqueId) {}
+: CGunWeapon(kWT_Dark, playerId, scale, flags)
+, mChargedProjectileId(kInvalidUniqueId)
+, mEffectsLoaded(false)
+, mInEndEffect(false) {}
 
 CDarkBeam::~CDarkBeam() {}
 
@@ -21,7 +25,7 @@ void CDarkBeam::ReInitVariables() {
   mChargeGenerator = nullptr;
   mEffectsLoaded = false;
   mInEndEffect = false;
-  mChargedShotSound.Clear();
+  mChargedShotSound = CSfxHandle();
   mChargedProjectileId = kInvalidUniqueId;
   mEnabledSecondaryEffect = kSFT_None;
 }
@@ -29,10 +33,10 @@ void CDarkBeam::ReInitVariables() {
 void CDarkBeam::PreRenderGunFx(const CStateManager& mgr, const CTransform4f& xf) {}
 
 void CDarkBeam::PostRenderGunFx(const CStateManager& mgr, const CTransform4f& xf) {
-  if (mSmokeGenerator.get() != nullptr) {
+  if (!mSmokeGenerator.null()) {
     mSmokeGenerator->Render();
   }
-  if (mEnabledSecondaryEffect != kSFT_None && mChargeGenerator.get() != nullptr) {
+  if (mEnabledSecondaryEffect != kSFT_None && !mChargeGenerator.null()) {
     mChargeGenerator->Render();
   }
   CGunWeapon::PostRenderGunFx(mgr, xf);
@@ -40,19 +44,19 @@ void CDarkBeam::PostRenderGunFx(const CStateManager& mgr, const CTransform4f& xf
 
 void CDarkBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
                             const CTransform4f& xf) {
-  if (mSmokeGenerator.get() != nullptr) {
+  if (!mSmokeGenerator.null()) {
     CTransform4f locator =
         mSolidModelData->GetScaledLocatorTransform(rstl::string_l(CGunWeapon::skMuzzleLocator));
     mSmokeGenerator->SetTranslation(locator.GetTranslation());
     mSmokeGenerator->SetOrientation(locator.GetRotation());
     mSmokeGenerator->Update(dt);
   }
-  if (mChargeGenerator.get() != nullptr) {
+  if (!mChargeGenerator.null()) {
     if (mInEndEffect && mChargeGenerator->IsSystemDeletable()) {
       mEnabledSecondaryEffect = kSFT_None;
       mChargeGenerator = nullptr;
     }
-    if (mChargeGenerator.get() != nullptr && mEnabledSecondaryEffect != kSFT_None) {
+    if (mEnabledSecondaryEffect != kSFT_None) {
       if (mInEndEffect) {
         mChargeGenerator->SetTranslation(xf.GetTranslation());
         mChargeGenerator->SetOrientation(xf.GetRotation());
@@ -67,48 +71,48 @@ void CDarkBeam::UpdateGunFx(bool shotSmoke, float dt, const CStateManager& mgr,
 
 void CDarkBeam::Update(float dt, CStateManager& mgr) {
   CGunWeapon::Update(dt, mgr);
-
   if (!mEffectsLoaded) {
     mEffectsLoaded =
-        mSmokeEffect->IsLoaded() && mChargeEffect->IsLoaded() && mEndEffect->IsLoaded();
+        mSmokeEffect->TryCache() && mChargeEffect->TryCache() && mEndEffect->TryCache();
     if (mEffectsLoaded) {
       mSmokeGenerator = rs_new CElementGen(*mSmokeEffect);
       mSmokeGenerator->SetGlobalScale(mScale);
     }
   }
-
   if (mChargedProjectileId != kInvalidUniqueId && mChargedShotSound) {
-    bool stop = true;
-    CEnergyProjectile* projectile =
-        TCastToPtr< CEnergyProjectile >(mgr.ObjectById(mChargedProjectileId));
-    if (projectile != nullptr) {
+    bool finished = true;
+    if (const CEnergyProjectile* projectile =
+            TCastToConstPtr< CEnergyProjectile >(mgr.GetObjectById(mChargedProjectileId))) {
       if (projectile->HasExploded()) {
         CSfxManager::SfxStop(mChargedShotSound);
       } else {
-        stop = false;
+        finished = false;
       }
     }
-    if (stop) {
-      mChargedShotSound.Clear();
+    if (finished) {
+      mChargedShotSound = CSfxHandle();
       mChargedProjectileId = kInvalidUniqueId;
     }
   }
 }
 
-void CDarkBeam::Fire(const TToken< CWeaponDescription >& projectile, bool underwater, float dt,
-                     CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
+void CDarkBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
+                     float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                      CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                      ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
                      float chargeFactor1, float chargeFactor2) {
+  ushort sfx;
   if (soundId == CSfxManager::kInternalInvalidSfxId) {
-    soundId = kFireSoundIds[mgr.IsMultiplayer() ? 1 : 0][chargeState];
+    sfx = kFireSounds[mgr.IsMultiplayer() ? 1 : 0][chargeState];
+  } else {
+    sfx = soundId;
   }
   const bool charged = chargeState == CPlayerState::kCS_Charged;
   if (!charged) {
     ActivateCharge(false, true);
   }
   CGunWeapon::Fire(projectile, underwater, dt, chargeState, xf, mgr, homingTarget,
-                   projectileAttributes, soundId, charged ? &mChargedProjectileId : nullptr,
+                   projectileAttributes, sfx, charged ? &mChargedProjectileId : nullptr,
                    charged ? &mChargedShotSound : nullptr, chargeFactor1, 1.f);
 }
 
@@ -178,17 +182,17 @@ void CDarkBeam::EnableSecondaryFx(ESecondaryFxType type) {
   }
 }
 
-void CDarkBeam::InitializeResources(CStateManager& mgr) {
-  if (!mResourcesAllocated) {
-    CGunWeapon::InitializeResources(mgr);
-    mSmokeEffect = gpSimplePool->GetObj("IceSmoke");
-    mChargeEffect = gpSimplePool->GetObj("Ice2nd_1");
-    mEndEffect = gpSimplePool->GetObj("Ice2nd_2");
+void CDarkBeam::EnableFx(bool enable) {
+  if (!mSmokeGenerator.null()) {
+    mSmokeGenerator->SetParticleEmission(enable);
   }
 }
 
-void CDarkBeam::EnableFx(bool enable) {
-  if (mSmokeGenerator.get() != nullptr) {
-    mSmokeGenerator->SetParticleEmission(enable);
+void CDarkBeam::InitializeResources(CStateManager& mgr) {
+  if (!mResourcesAllocated) {
+    CGunWeapon::InitializeResources(mgr);
+    mSmokeEffect = gpSimplePool->GetObj(NWeaponRes::kIceSmoke);
+    mChargeEffect = gpSimplePool->GetObj(NWeaponRes::kIce2nd1);
+    mEndEffect = gpSimplePool->GetObj(NWeaponRes::kIce2nd2);
   }
 }

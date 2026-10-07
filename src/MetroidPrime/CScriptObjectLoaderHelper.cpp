@@ -133,8 +133,7 @@ void CScriptObjectLoaderHelper::InitScriptObjects(rstl::vector< TEditorId >& ids
   const TEditorId* editorIds = ids.data();
   for (int i = 0; i < count; ++i) {
     if (editorIds[i] != kInvalidEditorId) {
-      const CScriptMsg message(kInvalidUniqueId, kInvalidUniqueId, mgr.GetIdForScript(editorIds[i]),
-                               kSM_AreaLoaded, kSS_InvalidState);
+      const CScriptMsg message(kInvalidUniqueId, mgr.GetIdForScript(editorIds[i]), kSM_AreaLoaded);
       mgr.DeliverScriptMsg(message);
     }
   }
@@ -150,8 +149,7 @@ void CScriptObjectLoaderHelper::RegisterScriptObjects(rstl::vector< CEntity* > o
 
   for (int i = 0; i < objects.size(); ++i) {
     if (objects[i] != nullptr) {
-      const CScriptMsg message(kInvalidUniqueId, kInvalidUniqueId, objects[i]->GetUniqueId(),
-                               kSM_AreaLoaded, kSS_InvalidState);
+      const CScriptMsg message(kInvalidUniqueId, objects[i]->GetUniqueId(), kSM_AreaLoaded);
       mgr.DeliverScriptMsg(message);
     }
   }

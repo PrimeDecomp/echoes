@@ -26,6 +26,12 @@
 uint CScriptEffect::mNumParticlesDrawing = 0;
 uint CScriptEffect::mNumParticlesUpdating = 0;
 
+static inline CTransform4f StripTranslation(const CTransform4f& xf) {
+  CTransform4f result = xf;
+  result.SetTranslation(CVector3f::Zero());
+  return result;
+}
+
 CScriptEffect::CScriptEffect(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CVector3f& scale, CAssetId effectId, bool noTimerUnlessAreaOccluded,
@@ -36,7 +42,7 @@ CScriptEffect::CScriptEffect(
     bool darkVisorVisible, bool echoVisorVisible, const CLightParameters& lightParameters,
     bool dieWhenSystemsDone, const CGameSplineDesc& spline, bool useLocalTranslation,
     bool destroyParticlesOnDeactivate, bool orientToSpline, ERenderOrder renderOrder)
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_NoStepLogic),
+: CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
          CActorParameters::None().WithAlphaSorting(true), kInvalidUniqueId)
 , mLightId(kInvalidUniqueId)
 , mEffectId(effectId)
@@ -52,8 +58,8 @@ CScriptEffect::CScriptEffect(
 , mEffectLights(lightParameters.MakeActorLights().release())
 , mTriggerId(kInvalidUniqueId)
 , mDestroyDelayTimer(0.f)
-, mSpline(spline.GetDuration(), spline.IsClosedLoop(), spline.GetSpline(), SLdrSpline(),
-          spline.GetType(), spline.GetType())
+, mSpline(spline.GetDuration(), spline.IsClosedLoop() ? CGameSpline::kF_LoopPosition : 0,
+          spline.GetSpline(), SLdrSpline(), spline.GetType(), spline.GetType())
 , mSplineTime(0.f)
 , mEmitting(emitting)
 , mEnable(emitting)
@@ -63,7 +69,7 @@ CScriptEffect::CScriptEffect(
 , mCombatVisorVisible(combatVisorVisible)
 , mDarkVisorVisible(darkVisorVisible)
 , mEchoVisorVisible(echoVisorVisible)
-, mAnyVisorVisible(combatVisorVisible && darkVisorVisible && echoVisorVisible)
+, mAnyVisorVisible(echoVisorVisible && darkVisorVisible && combatVisorVisible)
 , mUseRateCamDistRange(useRateCamDistRange)
 , mDieWhenSystemsDone(dieWhenSystemsDone)
 , mCanRender(false)
@@ -74,8 +80,8 @@ CScriptEffect::CScriptEffect(
 , mOrientToSpline(orientToSpline)
 , mRenderOrder(renderOrder) {
   if (effectId != kInvalidAssetId) {
-    const FourCC type = gpResourceFactory->GetResourceTypeById(effectId);
-    mDescription = rs_new CToken(gpSimplePool->GetObj(SObjectTag(type, effectId)));
+    const FourCC type = gpResourceFactory->GetResourceTypeById(mEffectId);
+    mDescription = rs_new CToken(gpSimplePool->GetObj(SObjectTag(type, mEffectId)));
     CreateSystem(scale, lightParameters.GetAmbientColor());
   }
   SetDrawEnabled(true);
@@ -97,9 +103,7 @@ void CScriptEffect::Think(float dt, CStateManager& mgr) {
 
   if (GetTransformDirtySpare()) {
     if (!mParticleSystem.null()) {
-      CTransform4f orientation = GetTransform();
-      orientation.SetTranslation(CVector3f::Zero());
-      mParticleSystem->SetOrientation(orientation);
+      mParticleSystem->SetOrientation(StripTranslation(GetTransform()));
       if (mUseLocalTranslation) {
         mParticleSystem->SetTranslation(GetTranslation());
       } else {
@@ -112,11 +116,15 @@ void CScriptEffect::Think(float dt, CStateManager& mgr) {
     SetTransformDirtySpare(false);
   }
 
-  if ((!mNoTimerUnlessAreaOccluded ||
-       mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetOcclusionState() ==
-           CGameArea::kOS_Occluded) &&
-      mRemTime <= 0.f) {
-    return;
+  if (!mNoTimerUnlessAreaOccluded) {
+    if (mRemTime <= 0.f) {
+      return;
+    }
+  } else if (mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetOcclusionState() ==
+             CGameArea::kOS_Occluded) {
+    if (mRemTime <= 0.f) {
+      return;
+    }
   }
   mRemTime -= dt;
 
@@ -137,19 +145,24 @@ void CScriptEffect::Think(float dt, CStateManager& mgr) {
     }
     if (mDieWhenSystemsDone) {
       mDestroyDelayTimer += dt;
-      if (mDestroyDelayTimer > 15.f || IsSystemDeletable()) {
+      if (mDestroyDelayTimer > 15.f) {
+        mgr.DeleteObjectRequest(GetUniqueId());
+        return;
+      }
+      if (IsSystemDeletable()) {
         mgr.DeleteObjectRequest(GetUniqueId());
         return;
       }
     }
   }
   if (!mParticleSystem.null()) {
-    mParticleSystem->SetModulationColor(
-        GetModelFlags().GetTrans() != 0 ? GetModelFlags().GetColorRef() : CColor::White());
+    if (static_cast< char >(GetModelFlags().GetTrans()) != 0) {
+      mParticleSystem->SetModulationColor(GetModelFlags().GetColorRef());
+    } else {
+      mParticleSystem->SetModulationColor(CColor(0xFFFFFFFF));
+    }
   }
 }
-
-CEffectWaypointPredicate::~CEffectWaypointPredicate() {}
 
 void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const bool oldEmitting = mEmitting;
@@ -158,7 +171,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Activate:
     handled = true;
     if (!mEmitting) {
-      SendScriptMsgs(kSS_Active, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Active, mgr);
     }
     mEmitting = true;
     if (mRebuildSystemsOnActivate && !mParticleSystem.null()) {
@@ -170,18 +183,20 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Deactivate:
     handled = true;
     if (mEmitting) {
-      SendScriptMsgs(kSS_Inactive, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Inactive, mgr);
     }
     if (mDestroyParticlesOnDeactivate && !mParticleSystem.null()) {
       mParticleSystem->DestroyParticles();
     }
     mEmitting = false;
     break;
-  case kSM_ToggleActive:
+  case kSM_ToggleActive: {
     handled = true;
-    AcceptScriptMsg(mgr, CScriptMsg(msg.GetSenderId(), msg.GetOriginator(), msg.GetId(),
-                                    mEmitting ? kSM_Deactivate : kSM_Activate, msg.GetState()));
+    EScriptObjectMessage next = mEmitting ? kSM_Deactivate : kSM_Activate;
+    AcceptScriptMsg(
+        mgr, CScriptMsg(msg.GetSenderId(), msg.GetId(), next, msg.GetOriginator(), msg.GetState()));
     break;
+  }
   case kSM_AreaLoaded: {
     for (int i = 0; i < GetConnectionList().size(); ++i) {
       const SConnection& conn = GetConnectionList()[i];
@@ -194,8 +209,8 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
         }
       }
     }
-    const CEffectWaypointPredicate predicate;
-    if (FindConnectedObject_if(mgr, kSS_Connect, kSM_Attach, predicate) != kInvalidUniqueId) {
+    if (CheckConnectedObject_if(mgr, kSS_Connect, kSM_Attach, CEffectWaypointPredicate()) !=
+        kInvalidUniqueId) {
       mHasSpline = true;
       ScriptCameraSpline::Initialise(*this, kSS_Connect, kSM_Attach, kSS_CameraTarget, kSM_Follow,
                                      mgr, mSpline);
@@ -228,7 +243,7 @@ void CScriptEffect::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     CActor::AcceptScriptMsg(mgr, msg);
   }
   CActor* light = TCastToPtr< CActor >(mgr.ObjectById(mLightId));
-  mgr.SendScriptMsg(light, msg.GetSenderId(), msg.GetMessage(), kInvalidUniqueId);
+  mgr.SendScriptMsg(light, msg.GetSenderId(), msg.GetMessage());
   if (oldEmitting == mEmitting) {
     return;
   }
@@ -289,24 +304,26 @@ void CScriptEffect::UpdateGeneratorRate(CStateManager& mgr) {
   if (!mUseRateInverseCamDist && !mUseRateCamDistRange) {
     return;
   }
+  float rate = 1.f;
   float distanceSq =
       (mgr.GetCameraManager(0)->GetCurrentCamera(mgr, true)->GetTranslation() - GetTranslation())
           .MagSquared();
-  for (int i = 1; i < mgr.GetNumPlayers(); ++i) {
+  for (int i = 1; i < uint(mgr.GetNumPlayers()); ++i) {
     const float nextDistanceSq =
         (mgr.GetCameraManager(i)->GetCurrentCamera(mgr, true)->GetTranslation() - GetTranslation())
             .MagSquared();
-    distanceSq = rstl::max_val(distanceSq, nextDistanceSq);
+    if (nextDistanceSq > distanceSq) {
+      distanceSq = nextDistanceSq;
+    }
   }
   const float distance = distanceSq > 0.001f ? CMath::FastSqrtF(distanceSq) : 0.f;
-  float rate = 1.f;
   if (mUseRateInverseCamDist && distanceSq < mRateInverseCamDistSq) {
     rate = (1.f - mRateInverseCamDistRate) * (distance / mRateInverseCamDist) +
            mRateInverseCamDistRate;
   }
   if (mUseRateCamDistRange) {
-    const float t = rstl::min_val(1.f, rstl::max_val(0.f, distance - mRateCamDistRangeMin) /
-                                           (mRateCamDistRangeMax - mRateCamDistRangeMin));
+    const float range = mRateCamDistRangeMax - mRateCamDistRangeMin;
+    const float t = rstl::min_val(1.f, rstl::max_val(0.f, distance - mRateCamDistRangeMin) / range);
     rate = (1.f - t) * rate + t * mRateCamDistRangeFarRate;
   }
   mParticleSystem->SetGeneratorRate(rate);
@@ -316,33 +333,46 @@ void CScriptEffect::PreRender(CStateManager& mgr) {
   bool visible = false;
   if (!mCanRender) {
     mRemTime = rstl::max_val(mDurationResetWhileVisible, mRemTime);
-  } else if (mgr.fn_800366e4(this)) {
-    mRemTime = rstl::max_val(mDurationResetWhileVisible, mRemTime);
-    visible = true;
-    if (!mAnyVisorVisible) {
-      switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
-      case CPlayerState::kPV_Combat:
-      case CPlayerState::kPV_Scan:
-        visible = mCombatVisorVisible;
-        break;
-      case CPlayerState::kPV_Echo:
-        visible = mEchoVisorVisible;
-        break;
-      case CPlayerState::kPV_Dark:
-        visible = mDarkVisorVisible;
-        break;
+  } else {
+    const CAABox& bounds = GetOtherBounds();
+    if (mgr.IsActorVisible(*this)) {
+      mRemTime = rstl::max_val(mDurationResetWhileVisible, mRemTime);
+      visible = true;
+      if (!mAnyVisorVisible) {
+        switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+        case CPlayerState::kPV_Combat:
+        case CPlayerState::kPV_Scan:
+          visible = mCombatVisorVisible;
+          break;
+        case CPlayerState::kPV_Echo:
+          visible = mEchoVisorVisible;
+          break;
+        case CPlayerState::kPV_Dark:
+          visible = mDarkVisorVisible;
+          break;
+        }
       }
-    }
-    if (visible && !mEffectLights.null()) {
-      const CAABox& bounds = GetOtherBounds();
-      const CVector3f center = bounds.GetCenterPoint();
-      mEffectLights->BuildAreaLightList(mgr, mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()),
-                                        CAABox(center, center));
-      mEffectLights->BuildDynamicLightList(mgr, bounds);
+      if (visible && !mEffectLights.null()) {
+        const CVector3f center = bounds.GetCenterPoint();
+        mEffectLights->BuildAreaLightList(mgr, mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()),
+                                          CAABox(center, center));
+        mEffectLights->BuildDynamicLightList(mgr, bounds);
+      }
     }
   }
   SetPreRenderClipped(!visible);
-  // TODO: submit visible effects to the two special render queues for non-normal order.
+  if (visible) {
+    switch (mRenderOrder) {
+    case kRO_Normal:
+      break;
+    case kRO_Queue2:
+      mgr.RenderLast(GetUniqueId());
+      break;
+    case kRO_Queue1:
+      mgr.RenderFirstSorted(GetUniqueId());
+      break;
+    }
+  }
 }
 
 void CScriptEffect::ResetParticleCounts() {
@@ -358,13 +388,14 @@ bool CScriptEffect::CanRenderUnsorted(const CStateManager&) const { return false
 
 void CScriptEffect::PreRenderAllViewports(CStateManager& mgr) {
   const rstl::optional_object< CAABox > bounds =
-      mParticleSystem.null() ? rstl::optional_object< CAABox >() : mParticleSystem->GetBounds();
+      !mParticleSystem.null() ? mParticleSystem->GetBounds() : rstl::optional_object< CAABox >();
   if (bounds.valid()) {
     SetOtherBounds(*bounds);
     SetRenderBounds(*bounds);
     mCanRender = true;
   } else {
-    const CAABox emptyBounds(GetTranslation(), GetTranslation());
+    const CVector3f translation = GetTranslation();
+    const CAABox emptyBounds(translation, translation);
     SetOtherBounds(emptyBounds);
     SetRenderBounds(emptyBounds);
     mCanRender = false;
@@ -382,7 +413,7 @@ CAABox CScriptEffect::GetSortingBounds(const CStateManager& mgr) const {
   return CActor::GetSortingBounds(mgr);
 }
 
-void CScriptEffect::SetActive(bool active) {
+void CScriptEffect::SetActive(const bool active) {
   CActor::SetActive(active);
   SetDrawEnabled(true);
 }
@@ -390,42 +421,40 @@ void CScriptEffect::SetActive(bool active) {
 void CScriptEffect::CreateSystem(const CVector3f& scale, const CColor& color) {
   const FourCC type = gpResourceFactory->GetResourceTypeById(mEffectId);
   const CVector3f position = GetTransform().GetTranslation();
-  CTransform4f orientation = GetTransform();
-  orientation.SetTranslation(CVector3f::Zero());
   mParticleSystem = CElementGen::ConstructChildParticleSystem(
-      *mDescription, type, 0, CElementGen::kOSF_One, !mEffectLights.null(), mEmitting,
-      mUseLocalTranslation ? position : CVector3f::Zero(), orientation,
+      *mDescription, type, 0, CElementGen::kOSF_One, mEffectLights.get() != nullptr, mEmitting,
+      mUseLocalTranslation ? position : CVector3f::Zero(), StripTranslation(GetTransform()),
       mUseLocalTranslation ? CVector3f::Zero() : position, CTransform4f::Identity(), scale, color,
-      CVector3f::One());
+      CVector3f(1.f, 1.f, 1.f));
   UpdateModelLighting();
 }
 
 void CScriptEffect::UpdateSpline(float dt) {
-  if (!mHasSpline || !mEmitting) {
-    return;
-  }
-  mSplineTime += dt;
-  const float duration = mSpline.GetPositionSpline().GetDuration();
-  if (mSplineTime >= duration) {
-    mSplineTime = mLoopSpline ? 0.f : duration;
-  }
-  SetTranslation(mSpline.GetPositionByTime(mSplineTime));
-  if (mOrientToSpline) {
-    const float time = mSpline.GetDuration() * mSpline.PositionTimeSpline().EvaluateAt(mSplineTime);
-    const CVector3f forward = mSpline.GetPositionSpline().GetTangentByTime(time);
-    if (forward.CanBeNormalized()) {
-      CTransform4f xf = CTransform4f::Identity();
-      xf.SetTranslation(GetTranslation());
-      xf.SetColumn(kDY, forward);
-      CVector3f planar = forward.DropZ();
-      planar.Normalize();
-      if (CVector3f::Dot(forward, planar) < 0.99999f) {
-        const CQuaternion rotation = CQuaternion::LookAt(
-            CUnitVector3f(planar), CUnitVector3f(forward), CRelAngle::FromRadians(M_2PIF));
-        xf.SetColumn(kDZ, rotation.Transform(CVector3f::Up()));
+  if (mHasSpline && mEmitting) {
+    mSplineTime += dt;
+    if (mSplineTime >= mSpline.GetPositionSpline().GetDuration()) {
+      mSplineTime = mLoopSpline ? 0.f : mSpline.GetPositionSpline().GetDuration();
+    }
+    const CVector3f position = mSpline.GetPositionByTime(mSplineTime);
+    SetTranslation(position);
+    if (mOrientToSpline) {
+      const float time =
+          mSpline.GetDuration() * mSpline.PositionTimeSpline().EvaluateAt(mSplineTime);
+      const CVector3f forward = mSpline.GetPositionSpline().GetTangentByTime(time);
+      if (forward.CanBeNormalized()) {
+        CTransform4f xf = CTransform4f::Identity();
+        xf.SetTranslation(GetTranslation());
+        xf.SetColumn(kDY, forward);
+        CVector3f planar = forward.DropZ();
+        planar.Normalize();
+        if (CVector3f::Dot(forward, planar) < 0.99999f) {
+          const CQuaternion rotation = CQuaternion::LookAt(
+              CUnitVector3f(planar), CUnitVector3f(forward), CRelAngle::FromRadians(M_2PIF));
+          xf.SetColumn(kDZ, rotation.Transform(CVector3f::Up()));
+        }
+        xf.SetColumn(kDX, CVector3f::Cross(forward, xf.GetUp()));
+        SetTransform(xf);
       }
-      xf.SetColumn(kDX, CVector3f::Cross(forward, xf.GetUp()));
-      SetTransform(xf);
     }
   }
 }
@@ -437,7 +466,10 @@ void CScriptEffect::SetGlobalScale(const CVector3f& scale) {
 }
 
 CVector3f CScriptEffect::GetGlobalScale() const {
-  return mParticleSystem.null() ? CVector3f::One() : mParticleSystem->GetGlobalScale();
+  if (!mParticleSystem.null()) {
+    return mParticleSystem->GetGlobalScale();
+  }
+  return CVector3f(1.f, 1.f, 1.f);
 }
 
 void CScriptEffect::SetGlobalTranslation(const CVector3f& translation) {
@@ -458,11 +490,9 @@ CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
   if (gpResourceFactory->GetResourceTypeById(sldrThis.particleEffect) == 0) {
     return nullptr;
   }
-
-  const CGameSplineDesc spline(
-      sldrThis.motionControlSpline,
-      static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
-      sldrThis.motionSplineDuration, sldrThis.motionSplinePathLoops);
+  const CGameSplineDesc spline(sldrThis.motionControlSpline,
+                               CMotionSpline::ESplineType(sldrThis.motionSplineType.type),
+                               sldrThis.motionSplineDuration, sldrThis.motionSplinePathLoops);
   LdrToEntityInfo(info, sldrThis.editorProperties);
   info.SetActive(true);
   return rs_new CScriptEffect(
@@ -475,5 +505,5 @@ CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
       sldrThis.unknown_0xfe69615c, sldrThis.visibleInScanOrNormal, sldrThis.visibleInDark,
       sldrThis.visibleInEcho, LdrToLightParameters(sldrThis.lighting), sldrThis.deleteWhenDone,
       spline, sldrThis.unknown_0x73e63382, sldrThis.unknown_0xbe931927, sldrThis.unknown_0x608ecac5,
-      static_cast< CScriptEffect::ERenderOrder >(sldrThis.renderOrder));
+      CScriptEffect::ERenderOrder(sldrThis.renderOrder));
 }

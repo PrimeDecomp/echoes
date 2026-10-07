@@ -15,7 +15,7 @@ public:
   , mHeapAllocation(false)
   , mPreviousHeapAllocation(false)
   , mAllocationCount(0) {}
-  void Allocate(void*& out, uint size); // Guessed name
+  void Allocate(void*& out, int size); // Guessed name
 
   template < typename T >
   void allocate(T*& out, int count) {

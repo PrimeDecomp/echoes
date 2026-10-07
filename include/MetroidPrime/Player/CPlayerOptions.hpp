@@ -11,6 +11,8 @@ class CPlayerOptions {
 public:
   CPlayerOptions();
   explicit CPlayerOptions(CBitStreamReader& in);
+  CPlayerOptions(bool rumbleEnabled, bool invertYAxis)
+  : mRumbleEnabled(rumbleEnabled), mInvertYAxis(invertYAxis) {}
 
   void PutTo(CBitStreamWriter& out) const;
   void SetRumbleEnabled(bool enabled);

@@ -8,7 +8,7 @@
 #include "rstl/vector.hpp"
 
 // Guessed name. The system-wide options include cinematics and the selected save slot.
-class CPersistentOptions : public CGameStateEnvVarManager {
+class CPersistentOptions {
 public:
   CPersistentOptions();
   explicit CPersistentOptions(CBitStreamReader& in);
@@ -18,8 +18,11 @@ public:
   void SetCinematicState(rstl::pair< CAssetId, TEditorId > cinematicId, bool state);
   void SetSaveIdx(int idx) { mSaveIdx = idx; } // Guessed name
   int GetSaveIdx() const { return mSaveIdx; }
+  CGameStateEnvVarManager& EnvVars() { return mEnvVars; }
+  const CGameStateEnvVarManager& EnvVars() const { return mEnvVars; }
 
 private:
+  CGameStateEnvVarManager mEnvVars;
   rstl::vector< rstl::pair< CAssetId, TEditorId > > mCinematicStates;
   int mSaveIdx;
 };

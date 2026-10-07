@@ -1,4 +1,4 @@
-#include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
+#include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 
 SMetroid_FuncPtrs* gLoader_Metroid; // Guessed name.
@@ -9,4 +9,4 @@ CEntity* LoadMetroidAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& 
   return gLoader_Metroid->mLoadMetroid(mgr, input, info);
 }
 
-void CMetroidAlpha::OnDockTouch(CStateManager& mgr) { (this->*gLoader_Metroid->mOnDockTouch)(mgr); }
+void CMetroid::OnDockTouch(CStateManager& mgr) { (this->*gLoader_Metroid->mOnDockTouch)(mgr); }

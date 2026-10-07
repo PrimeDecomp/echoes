@@ -27,6 +27,10 @@ public:
   }
 
   CColor(const CColor& other) : mRgba(other.mRgba) {}
+  CColor& operator=(const CColor& other) {
+    mRgba = other.mRgba;
+    return *this;
+  }
 
   void Set(float r, float g, float b, float a);
   void Set(uchar r, uchar g, uchar b, uchar a = 255) {
@@ -44,6 +48,9 @@ public:
   void SetBlue(float b) { mB = CCast::ToUint8(b * 255.f); }
   void SetAlpha(float a) { mA = CCast::ToUint8(a * 255.f); }
   void SetAlpha(uchar a) { mRgba = (mRgba & ~0xff) | a; }
+  void SetRed(uchar r) { mR = r; }
+  void SetGreen(uchar g) { mG = g; }
+  void SetBlue(uchar b) { mB = b; }
 
   static CColor Lerp(const CColor& a, const CColor& b, float t);
   static uint Lerp(uint a, uint b, float t);

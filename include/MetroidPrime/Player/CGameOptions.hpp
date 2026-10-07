@@ -32,6 +32,12 @@ public:
   void EnsureOptions();
 
   void SetScreenBrightness(int, bool);
+  // Guessed names.
+  CAudioSys::ESurroundModes GetSurroundMode() const { return soundMode; }
+  int GetScreenBrightness() const { return screenBrightness; }
+  int GetScreenPositionX() const { return screenXOffset; }
+  int GetScreenPositionY() const { return screenYOffset; }
+  int GetScreenStretch() const { return screenStretch; }
   float TuneScreenBrightness();
   void SetScreenPositionX(int, bool);
   void SetScreenPositionY(int, bool);
@@ -72,6 +78,12 @@ public:
 
   void ResetControllerAssets(int);
   void SetControls(int);
+
+  // Guessed names; native defaults read by the ScriptGui REL options screen.
+  static const bool kDefaultHUDLag;
+  static const bool kDefaultInvertYAxis;
+  static const bool kDefaultRumble;
+  static const bool kDefaultHintSystem;
 
   static bool fn_80161C84();
   static void fn_80161C7C(bool);

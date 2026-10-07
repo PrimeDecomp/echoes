@@ -1,12 +1,15 @@
 #include "MetroidPrime/Weapons/CPowerBeam.hpp"
 
+#include "MetroidPrime/Player/GunResNames.hpp"
+
 #include "Kyoto/Audio/CSfxHandle.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 
-extern "C" ushort lbl_8041E2E6;
+static const ushort kFireSounds[2][2] = {{0xc6, 0xc3}, {0x25b5, 0x259b}};
 
 CPowerBeam::CPowerBeam(TUniqueId playerId, const CVector3f& scale, int unk)
 : CGunWeapon(kWT_Power, playerId, scale, unk)
@@ -103,18 +106,19 @@ void CPowerBeam::Update(float dt, CStateManager& mgr) {
   }
 }
 
-void CPowerBeam::Fire(const TToken< CWeaponDescription >& projectile, bool underwater,
+void CPowerBeam::Fire(const TCachedToken< CWeaponDescription >& projectile, bool underwater,
                       float dt, CPlayerState::EChargeStage chargeState, const CTransform4f& xf,
                       CStateManager& mgr, TUniqueId homingTarget, uint projectileAttributes,
                       ushort soundId, TUniqueId* projectileId, CSfxHandle* soundHandle,
                       float chargeFactor1, float chargeFactor2) {
-
-  if (soundId == lbl_8041E2E6) {
-    mgr.IsMultiplayer();
+  ushort sfx;
+  if (soundId == CSfxManager::kInternalInvalidSfxId) {
+    sfx = kFireSounds[mgr.IsMultiplayer() ? 1 : 0][chargeState];
+  } else {
+    sfx = soundId;
   }
-
   CGunWeapon::Fire(projectile, underwater, dt, chargeState, xf, mgr, homingTarget,
-                   projectileAttributes, soundId, projectileId, soundHandle, chargeFactor1,
+                   projectileAttributes, sfx, projectileId, soundHandle, chargeFactor1,
                    chargeFactor2);
 }
 
@@ -168,9 +172,9 @@ void CPowerBeam::EnableSecondaryFx(ESecondaryFxType type) {
 }
 
 void CPowerBeam::InitializeResources(CStateManager& mgr) {
-  if (mSubtypeBasePose == 0) {
+  if (!mResourcesAllocated) {
     CGunWeapon::InitializeResources(mgr);
-    mShotSmoke = gpSimplePool->GetObj("ShotSmoke");
-    mPower2nd1 = gpSimplePool->GetObj("Power2nd_1");
+    mShotSmoke = gpSimplePool->GetObj(NWeaponRes::kShotSmoke);
+    mPower2nd1 = gpSimplePool->GetObj(NWeaponRes::kPower2nd1);
   }
 }

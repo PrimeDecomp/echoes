@@ -9,7 +9,7 @@ public:
 
   uint GetComponentNameHash() const { return mNameHash; }
   const SObjectTag& GetParticleTag() const { return mTag; }
-  CSegId GetSegmentId() const { return mBone; }
+  const CSegId& GetSegmentId() const { return mBone; }
   float GetScale() const { return mScale; }
   CParticleData::EParentedMode GetParentedMode() const { return mParentedMode; }
   uint GetFlags() const { return mFlags; }

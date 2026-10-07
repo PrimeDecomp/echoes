@@ -6,8 +6,8 @@
 #include "MetroidPrime/ScriptLoader/SLdrMemoryRelay.hpp"
 
 CScriptMemoryRelay::CScriptMemoryRelay(TUniqueId uid, const rstl::string& name,
-                                       const CEntityInfo& info, bool defaultActive,
-                                       bool skipSendActive)
+                                       const CEntityInfo& info, const bool defaultActive,
+                                       const bool skipSendActive)
 : CEntity(uid, info, name, 0), mDefaultActive(defaultActive), mSkipSendActive(skipSendActive) {}
 
 CScriptMemoryRelay::~CScriptMemoryRelay() {}
@@ -17,7 +17,7 @@ void CScriptMemoryRelay::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
   case kSM_Activate:
     mgr.Mailbox()->AddMsg(GetEditorId());
     if (!mSkipSendActive) {
-      SendScriptMsgs(kSS_Active, mgr, kSM_None);
+      SendScriptMsgs(kSS_Active, mgr);
     }
     break;
   case kSM_Deactivate:

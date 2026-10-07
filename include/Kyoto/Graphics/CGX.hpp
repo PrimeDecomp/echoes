@@ -187,15 +187,7 @@ public:
 private:
   static void FlushChanCtrl(GXChannelID chan, ushort flags);
   static void update_fog(uint flags);
-  static void apply_fog() {
-    static const GXColor black = {0, 0, 0, 0};
-    GXSetFog(static_cast< GXFogType >(gpGXState->mFogType), gpGXState->mFogParams.mFogStartZ,
-             gpGXState->mFogParams.mFogEndZ, gpGXState->mFogParams.mFogNearZ,
-             gpGXState->mFogParams.mFogFarZ,
-             (gpGXState->mBlendMode & (7 << 5)) == (GX_BL_ONE << 5)
-                 ? black
-                 : gpGXState->mFogParams.mFogColor);
-  }
+  static void apply_fog();
 
   static SGXState sGXState;
   static SGXState* gpGXState;

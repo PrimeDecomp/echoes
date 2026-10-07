@@ -23,7 +23,7 @@ public:
 
   // Guessed name: result returned when a Generate connection creates an object.
   struct SGeneratedObject {
-    SGeneratedObject(TEditorId editorId, TUniqueId uniqueId, CEntity* entity)
+    SGeneratedObject(const TEditorId& editorId, const TUniqueId& uniqueId, CEntity* entity)
     : mEditorId(editorId), mUniqueId(uniqueId), mEntity(entity) {}
 
     TEditorId mEditorId;

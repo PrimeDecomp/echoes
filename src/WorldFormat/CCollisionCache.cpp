@@ -65,11 +65,11 @@ void CCollisionCacheWriter::BeginLeaf(const CAABox& bounds) {
 }
 
 void CCollisionCacheWriter::ReserveWords(int count) {
-  int required = mCache.mData.size() + count;
-  if (mCache.mData.capacity() < required) {
+  count += mCache.mData.size();
+  if (mCache.mData.capacity() < count) {
     uint oldAddress = reinterpret_cast< uint >(mCache.mData.data());
     int capacity = mCache.mData.capacity() * 2;
-    mCache.mData.reserve(capacity > required ? capacity : required * 2);
+    mCache.mData.reserve(capacity > count ? capacity : count * 2);
     // Translate packed cursors as addresses, including the initial null cursors.
     // Integer subtraction avoids subtracting pointers to different allocations.
     int delta =
@@ -84,7 +84,7 @@ void CCollisionCacheWriter::ReserveWords(int count) {
 }
 
 void CCollisionCacheWriter::BeginGeometry(const CCollisionPrimitiveData& geometry,
-                                          const CTransform4f* transform, short id, u64 flags) {
+                                          const CTransform4f* transform, ushort id, u64 flags) {
   FinishLeaf();
   mGeometryStart = mCache.mData.size();
   ReserveWords(40);
@@ -340,7 +340,7 @@ void CCollisionCacheIterator::Reset() {
   mLeafStatus = 0;
 }
 
-inline void rstl::locked_cache_allocator::Allocate(void*& out, uint size) {
+inline void rstl::locked_cache_allocator::Allocate(void*& out, int size) {
   if (size == 0) {
     out = 0;
     return;
