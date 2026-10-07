@@ -1914,8 +1914,8 @@ reserve__Q24rstl60vector<Q29CGameArea11ELayerPhase,Q24rstl17rmemory_allocator>Fi
 do_erase__Q24rstl82list<Q24rstl40pair<i,Q24rstl23auto_ptr<11CDvdRequest>>,Q24rstl17rmemory_allocator>FPQ34rstl82list<Q24rstl40pair<i,Q24rstl23auto_ptr<11CDvdRequest>>,Q24rstl17rmemory_allocator>4node = .text:0x800602BC; // type:function size:0xBC align:4
 __dt__Q24rstl82list<Q24rstl40pair<i,Q24rstl23auto_ptr<11CDvdRequest>>,Q24rstl17rmemory_allocator>Fv = .text:0x80060378; // type:function size:0xBC
 __dt__Q24rstl79list<Q24rstl37vector<Ui,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Fv = .text:0x80060434; // type:function size:0x88
-construct<11CWorldLight>__4rstlFPvRC11CWorldLight = .text:0x800604BC; // type:function size:0x20
-fn_800604DC = .text:0x800604DC; // type:function size:0x24
+destroy<Q24rstl37vector<Ui,Q24rstl17rmemory_allocator>>__4rstlFPQ24rstl37vector<Ui,Q24rstl17rmemory_allocator> = .text:0x800604BC; // type:function size:0x20
+destroy_impl<Q24rstl37vector<Ui,Q24rstl17rmemory_allocator>>__4rstlFPQ24rstl37vector<Ui,Q24rstl17rmemory_allocator> = .text:0x800604DC; // type:function size:0x24
 __dt__Q24rstl67list<Q29CGameArea20SUnresolvedListEntry,Q24rstl17rmemory_allocator>Fv = .text:0x80060500; // type:function size:0x74
 do_erase__Q24rstl65list<Q24rstl23auto_ptr<11CDvdRequest>,Q24rstl17rmemory_allocator>FPQ34rstl65list<Q24rstl23auto_ptr<11CDvdRequest>,Q24rstl17rmemory_allocator>4node = .text:0x80060574; // type:function size:0xB4
 __dt__Q24rstl65list<Q24rstl23auto_ptr<11CDvdRequest>,Q24rstl17rmemory_allocator>Fv = .text:0x80060628; // type:function size:0xB4
