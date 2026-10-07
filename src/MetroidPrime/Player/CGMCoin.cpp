@@ -85,13 +85,13 @@ bool CGMCoin::IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const
 
 bool CGMCoin::IsNearTimeLimit() const {
   const float remaining = GetMatchTimeLimit() - GetElapsedTime();
-  if (GetMatchTimeLimit() > 0.f) {
-    if (GetMatchTimeLimit() > 60.f) {
-      return remaining < 60.f;
-    }
-    return GetElapsedTime() > 0.5f * GetMatchTimeLimit();
+  if (GetMatchTimeLimit() <= 0.f) {
+    return false;
   }
-  return false;
+  if (GetMatchTimeLimit() <= 60.f) {
+    return 0.5f * GetMatchTimeLimit() < GetElapsedTime();
+  }
+  return remaining < 60.f;
 }
 
 int CGMCoin::GetCoinLimit() const { return mCoinLimit; }
