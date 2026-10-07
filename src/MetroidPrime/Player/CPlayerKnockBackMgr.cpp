@@ -393,18 +393,23 @@ void CPlayerKnockBackMgr::ApplyPlayerKnockBackForce(CPlayer& player, const CVect
   const CVector3f velocity = player.GetVelocityWR();
   const float speed = velocity.Magnitude();
   const float limitedSpeed = rstl::min_val(speed, maximumSpeed);
-  if (CMath::IsEpsilon(limitedSpeed, 0.f, 0.00001f)) {
-    player.SetVelocityWR(CVector3f::Zero());
-  } else {
+  if (!CMath::IsEpsilon(limitedSpeed, 0.f, 0.00001f)) {
     const CVector3f velocityDirection = (1.f / speed) * velocity;
     float adjustedSpeed = limitedSpeed;
     if (player.GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
-      const CVector3f axis = player.GetSurfaceRestraint() == CPlayer::kSR_Air
-                                 ? player.GetTransform().GetRight()
-                                 : player.GetTransform().GetForward();
-      adjustedSpeed *= 0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+      if (player.GetSurfaceRestraint() == CPlayer::kSR_Air) {
+        const CVector3f axis = player.GetTransform().GetRight();
+        adjustedSpeed *=
+            0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+      } else {
+        const CVector3f axis = player.GetTransform().GetForward();
+        adjustedSpeed *=
+            0.65f + (1.f - 0.65f) * CMath::AbsF(CVector3f::Dot(axis, velocityDirection));
+      }
     }
     player.SetVelocityWR(adjustedSpeed * velocityDirection);
+  } else {
+    player.SetVelocityWR(CVector3f::Zero());
   }
 }
 
