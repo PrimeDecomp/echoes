@@ -5,3 +5,36 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+MetroidPrime/ScriptObjects/CScriptGuiPlayerJoinManager.cpp:
+	.text       start:0x00000000 end:0x00000A30
+	.rodata     start:0x00000000 end:0x00000088
+	.data       start:0x00000000 end:0x00000028
+
+MetroidPrime/ScriptObjects/CScriptGuiScreen.cpp:
+	.text       start:0x00000A30 end:0x00006F70
+	.rodata     start:0x00000088 end:0x00000148
+	.data       start:0x00000028 end:0x000000D0
+
+MetroidPrime/ScriptObjects/CScriptGuiWidget.cpp:
+	.text       start:0x00006F70 end:0x00007CB0
+	.rodata     start:0x00000148 end:0x00000150
+	.data       start:0x000000D0 end:0x000000F0
+
+MetroidPrime/ScriptObjects/CScriptGuiMenu.cpp:
+	.text       start:0x00007CB0 end:0x00008E30
+	.rodata     start:0x00000150 end:0x00000158
+	.data       start:0x000000F0 end:0x00000110
+
+MetroidPrime/ScriptObjects/CScriptGuiSlider.cpp:
+	.text       start:0x00008E30 end:0x00009C24
+	.rodata     start:0x00000158 end:0x00000170
+	.data       start:0x00000110 end:0x00000130
+
+MetroidPrime/ScriptObjects/ScriptGuiRel.cpp:
+	.text       start:0x00009C24 end:0x00009CC8
+	.bss        start:0x00000000 end:0x00000014
+
+REL/REL_Setup.cpp:
+	.text       start:0x00009CC8 end:0x00009E6C
+	.rodata     start:0x00000170 end:0x000001F4

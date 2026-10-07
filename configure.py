@@ -1551,6 +1551,19 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "ScriptGui",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiPlayerJoinManager.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiScreen.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiWidget.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiMenu.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGuiSlider.cpp"),
+            Object(NonMatching, "MetroidPrime/ScriptObjects/ScriptGuiRel.cpp"),
+        ],
+        # Loaders and option screens address each float constant separately.
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
