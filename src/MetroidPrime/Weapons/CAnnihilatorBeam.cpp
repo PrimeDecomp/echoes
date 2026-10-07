@@ -24,10 +24,6 @@
 #include "Weapons/CWeaponDescription.hpp"
 #include "rstl/math.hpp"
 
-// Unnamed string pointer ("Plasma2nd_1") in another unit's sdata2.
-// Unnamed shared muzzle offset duration (0.5f) in another unit's sdata2.
-extern const float lbl_8041C620;
-
 static const ushort kSoundIds[2][2] = {{0x1FCC, 0x1FDC}, {0x25BF, 0x25BA}};
 
 CAnnihilatorBeam::CAnnihilatorBeam(TUniqueId playerId, const CVector3f& scale, int flags)
@@ -239,7 +235,7 @@ void CAnnihilatorBeam::FireProjectile(const TCachedToken< CWeaponDescription >& 
       proj->SetX4104(true);
     }
     proj->SetHomingTurnRateScale(projectileFactor);
-    proj->InitializeMuzzleOffset(lbl_8041C620, mgr);
+    proj->InitializeMuzzleOffset(0.5f, mgr);
     proj->SetFluidList(player->GetCameraManager()->GetFirstPersonCamera()->GetFluidList());
     proj->Think(dt, mgr);
   }
