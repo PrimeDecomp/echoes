@@ -192,11 +192,11 @@ private:
 
 extern CTevCombiners::CTevPass CTevPass_805a5ebc;
 
-extern int CTevColorVarSizeCheck[check_sizeof< CTevCombiners::ColorVar, 0x4 >::value];
-extern int CTevAlphaVarSizeCheck[check_sizeof< CTevCombiners::AlphaVar, 0x4 >::value];
-extern int CTevColorPassSizeCheck[check_sizeof< CTevCombiners::ColorPass, 0x10 >::value];
-extern int CTevAlphaPassSizeCheck[check_sizeof< CTevCombiners::AlphaPass, 0x10 >::value];
-extern int CTevOpSizeCheck[check_sizeof< CTevCombiners::CTevOp, 0x14 >::value];
-extern int CTevPassSizeCheck[check_sizeof< CTevCombiners::CTevPass, 0x4c >::value];
+NESTED_CHECK_SIZEOF(CTevCombiners, ColorVar, 0x4)
+NESTED_CHECK_SIZEOF(CTevCombiners, AlphaVar, 0x4)
+NESTED_CHECK_SIZEOF(CTevCombiners, ColorPass, 0x10)
+NESTED_CHECK_SIZEOF(CTevCombiners, AlphaPass, 0x10)
+NESTED_CHECK_SIZEOF(CTevCombiners, CTevOp, 0x14)
+NESTED_CHECK_SIZEOF(CTevCombiners, CTevPass, 0x4c)
 
 #endif // _CTEVCOMBINERS

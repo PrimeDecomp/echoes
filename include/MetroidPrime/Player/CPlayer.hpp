@@ -910,7 +910,7 @@ private:
   char mEnemyLockOnCount;
 };
 CHECK_SIZEOF(CPlayer, 0x14c8)
-typedef char CPlayerVisorSteamSizeCheck[check_sizeof< CPlayer::CVisorSteam, 0x28 >::value];
+NESTED_CHECK_SIZEOF(CPlayer, CVisorSteam, 0x28)
 
 extern const bool kDoubleJumpBreaksOrbit;
 extern const bool kDashDoubleJumpBreaksOrbit;

@@ -77,8 +77,6 @@ public:
     rstl::auto_ptr< CGuiTextSupport > mScoreText;
     rstl::auto_ptr< CGuiTextSupport > mDeathsText;
   };
-  typedef char SPlayerScoreSizeCheck[sizeof(SPlayerScore) == 0x10 ? 1 : -1];
-  typedef char SPlayerResultsSizeCheck[sizeof(SPlayerResults) == 0x98 ? 1 : -1];
 
 private:
   void GatherResults(CGameState& state);
@@ -112,6 +110,8 @@ private:
   CRandom16 mRandom;
   rstl::vector< SPlayerResults > mPlayerResults;
 };
+NESTED_CHECK_SIZEOF(CGameResultsScreen, SPlayerScore, 0x10)
+NESTED_CHECK_SIZEOF(CGameResultsScreen, SPlayerResults, 0x98)
 CHECK_SIZEOF(CGameResultsScreen, 0x8c)
 
 #endif // _CGAMERESULTSSCREEN
