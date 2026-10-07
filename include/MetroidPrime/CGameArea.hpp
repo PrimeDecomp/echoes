@@ -115,7 +115,7 @@ public:
     CColor GetColor() const;
     void Update(float dt);
     void SetCurrent() const;
-    ERglFogMode GetFogMode() const { return mFogMode; }       // Guessed name
+    ERglFogMode GetFogMode() const { return mFogMode; }     // Guessed name
     const CVector2f& GetRange() const { return mRangeCur; } // Guessed name
 
   private:
@@ -164,8 +164,9 @@ public:
     , mRequest(request) {}
   };
 
-  // These auxiliary types still need their payload layouts recovered.
-  struct SUnresolvedListEntry;
+  // Payload of CPostConstructed's list at 1ac. G2ME01 only constructs and destroys the empty
+  // list, so neither the payload's size nor its meaning is known.
+  struct SUnresolvedListEntry {};
 
   struct CPostConstructed {
     int mMreaVersion;
@@ -244,7 +245,6 @@ public:
     uint mDependencyDmaHandle;
     rstl::single_ptr< uchar > mSerializedDependencies;
 
-    // TODO: recover auxiliary payloads before defining construction and destruction.
     explicit CPostConstructed(const CGameArea& area);
     ~CPostConstructed();
   };
@@ -371,6 +371,8 @@ public:
   void DisableDocks(CStateManager& mgr);
   void EnableDocks();
   void fn_80054F74();
+
+  static float skEntityThinkDisableDelayOnOcclusion;
 
 private:
   TAreaId mSelfIdx;
