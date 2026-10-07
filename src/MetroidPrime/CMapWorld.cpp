@@ -178,7 +178,7 @@ void CMapWorld::SetWhichMapAreasLoaded(const IWorld& wld, int start, int count) 
   }
 }
 
-uchar CMapWorld::IsMapAreasStreaming() const {
+const bool CMapWorld::IsMapAreasStreaming() const {
   bool streaming = false;
   CMapAreaData* data = mListHeads[kMAL_Loading];
   while (data != nullptr) {

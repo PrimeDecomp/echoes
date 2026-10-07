@@ -116,8 +116,8 @@ private:
   void DrawBillboard(const CTransform4f& xf, const CVector3f& pos, float size, const CColor& color,
                      bool additive) const;
   uchar HandleRotation(const CFinalInput& input, CStateManager& mgr);
-  uchar HandleButtons(const CFinalInput& input, CStateManager& mgr);
-  uchar HandleStick(const CFinalInput& input, CStateManager& mgr);
+  const bool HandleButtons(const CFinalInput& input, CStateManager& mgr);
+  const bool HandleStick(const CFinalInput& input, CStateManager& mgr);
   void SetSelection(CStateManager& mgr, int index, bool immediate);
   CVector3f GetFalloff(float radius, float strength, const CVector3f& a, const CVector3f& b) const;
   CVector3f GetSeparation(const CStateManager& mgr, const SDataNetworkNode& node, int idx) const;

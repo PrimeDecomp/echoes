@@ -105,7 +105,7 @@ TUniqueId CControlHintManager::CreateHint(CStateManager& mgr, const rstl::string
   return kInvalidUniqueId;
 }
 
-uchar CControlHintManager::HasDisableFlags(uint flags, const CStateManager& mgr) const {
+const bool CControlHintManager::HasDisableFlags(uint flags, const CStateManager& mgr) const {
   bool ret = false;
   for (rstl::vector< SHint >::const_iterator it = GetHints().begin(); it != GetHints().end();
        ++it) {

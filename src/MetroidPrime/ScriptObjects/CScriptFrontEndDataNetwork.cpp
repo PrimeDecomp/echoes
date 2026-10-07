@@ -1073,7 +1073,7 @@ uchar CScriptFrontEndDataNetwork::HandleRotation(const CFinalInput& input, CStat
   return handled;
 }
 
-uchar CScriptFrontEndDataNetwork::HandleButtons(const CFinalInput& input, CStateManager& mgr) {
+const bool CScriptFrontEndDataNetwork::HandleButtons(const CFinalInput& input, CStateManager& mgr) {
   bool handled = false;
   SDataNetworkNode* node = &mNodes[mCurIndex];
   CScriptFrontEndDataNetwork* net = node->GetNetwork(mgr);
@@ -1125,7 +1125,7 @@ uchar CScriptFrontEndDataNetwork::HandleButtons(const CFinalInput& input, CState
   return handled;
 }
 
-uchar CScriptFrontEndDataNetwork::HandleStick(const CFinalInput& input, CStateManager& mgr) {
+const bool CScriptFrontEndDataNetwork::HandleStick(const CFinalInput& input, CStateManager& mgr) {
   bool handled = false;
   SDataNetworkNode& node = mNodes[mCurIndex];
   CScriptFrontEndDataNetwork* net = node.GetNetwork(mgr);

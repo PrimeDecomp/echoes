@@ -1156,7 +1156,7 @@ void CPlayer::SetIntoBallReadyAnimation(float dt, EPlayerMorphBallState state) {
   }
 }
 
-uchar CPlayer::UpdatePlayerRagDoll(float dt, CStateManager& mgr) {
+const bool CPlayer::UpdatePlayerRagDoll(float dt, CStateManager& mgr) {
   bool updated = false;
   if (mRagDoll.get()) {
     if (!mRagDoll->IsPrimed()) {

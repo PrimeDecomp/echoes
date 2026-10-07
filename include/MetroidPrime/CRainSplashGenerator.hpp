@@ -47,7 +47,7 @@ private:
 
     SRainSplash();
     void Update(float dt, CStateManager& mgr);
-    uchar IsActive() const;
+    const bool IsActive() const;
     void Draw(float alpha, float dt, const CVector3f& position) const;
     void SetPoint(const CVector3f& position);
   };

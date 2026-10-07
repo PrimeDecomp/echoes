@@ -498,7 +498,7 @@ public:
   void PrepareToEnterMorphBallState(float dt, CStateManager& mgr);
   void SetOutOfBallReadyAnimation(float dt, CStateManager& mgr);
   void UpdatePlayerBodyController(float dt, CStateManager& mgr);
-  uchar UpdatePlayerRagDoll(float dt, CStateManager& mgr);
+  const bool UpdatePlayerRagDoll(float dt, CStateManager& mgr);
   void SetIntoBallReadyAnimation(float dt, EPlayerMorphBallState state);
   float UpdateCameraBob(float dt, CStateManager& mgr);
   void SetEyeZBias(float bias);
@@ -597,13 +597,13 @@ public:
   ERezbitState GetRezbitState() const;
   void UpdateRezbitRecoveryInput(const CFinalInput& input);
   void ResetRezbitRecoveryInput();
-  uchar BoostHeld(const CFinalInput& input) const; // Guessed name.
-  uchar ChargeBeamHeld(const CFinalInput& input) const;
+  const bool BoostHeld(const CFinalInput& input) const; // Guessed name.
+  const bool ChargeBeamHeld(const CFinalInput& input) const;
   uchar JumpPressed(const CFinalInput& input) const;
-  uchar JumpHeld(const CFinalInput& input) const;
-  uchar AutoFireHeld(const CFinalInput& input) const;
-  uchar FireBeamPressed(const CFinalInput& input) const;
-  uchar FireBeamHeld(const CFinalInput& input) const;
+  const bool JumpHeld(const CFinalInput& input) const;
+  const bool AutoFireHeld(const CFinalInput& input) const;
+  const bool FireBeamPressed(const CFinalInput& input) const;
+  const bool FireBeamHeld(const CFinalInput& input) const;
   bool IsAligningGrappleSwingTurn() const { return mAligningGrappleSwingTurn; }
   void SetAligningGrappleSwingTurn(bool aligning) { mAligningGrappleSwingTurn = aligning; }
   const bool SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManager& mgr);

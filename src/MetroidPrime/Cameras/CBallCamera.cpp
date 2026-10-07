@@ -850,7 +850,7 @@ CVector3f CBallCamera::InterpolateCameraElevation(CVector3f position, float dt) 
   return pos;
 }
 
-uchar CBallCamera::ShouldResetSpline(CStateManager& mgr) const {
+const bool CBallCamera::ShouldResetSpline(CStateManager& mgr) const {
   bool ret = false;
   if (mState != kBCS_ToBall &&
       Player(mgr).GetMorphBall()->GetBallState() != CMorphBall::kBS_Spider &&

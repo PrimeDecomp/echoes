@@ -18,7 +18,7 @@ public:
   void ClearHint(CStateManager& mgr, bool areaChanged) override;
   bool SelectHintFromStack(CHintState* hint, CStateManager& mgr, bool areaChanged) override;
 
-  uchar HasDisableFlags(uint flags, const CStateManager& mgr) const;
+  const bool HasDisableFlags(uint flags, const CStateManager& mgr) const;
   TUniqueId CreateHint(CStateManager& mgr, const rstl::string& name, int priority, float timer,
                        uint disableFlags, const CScriptControlHint::TCommandStates& commandStates,
                        TUniqueId sender, CGameHint::EBreakHintType breakType, uint requiredPresses,

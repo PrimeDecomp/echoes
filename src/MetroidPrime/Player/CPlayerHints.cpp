@@ -192,7 +192,7 @@ const bool CPlayer::SetAreaPlayerHint(const CScriptPlayerHint& hint, CStateManag
   return switchedVisor;
 }
 
-uchar CPlayer::FireBeamHeld(const CFinalInput& input) const {
+const bool CPlayer::FireBeamHeld(const CFinalInput& input) const {
   bool held = false;
   if (mControlMapper.GetDigitalInput(CControlMapper::kC_FireOrBomb, input) ||
       mControlMapper.GetDigitalInput(CControlMapper::kC_FireOrBomb2, input)) {
@@ -201,7 +201,7 @@ uchar CPlayer::FireBeamHeld(const CFinalInput& input) const {
   return held;
 }
 
-uchar CPlayer::FireBeamPressed(const CFinalInput& input) const {
+const bool CPlayer::FireBeamPressed(const CFinalInput& input) const {
   bool pressed = false;
   if (mControlMapper.GetPressInput(CControlMapper::kC_FireOrBomb, input) ||
       mControlMapper.GetPressInput(CControlMapper::kC_FireOrBomb2, input)) {
@@ -210,7 +210,7 @@ uchar CPlayer::FireBeamPressed(const CFinalInput& input) const {
   return pressed;
 }
 
-uchar CPlayer::AutoFireHeld(const CFinalInput& input) const {
+const bool CPlayer::AutoFireHeld(const CFinalInput& input) const {
   bool held = false;
   if (mControlMapper.GetDigitalInput(CControlMapper::kC_AutoFireBeam, input)) {
     held = true;
@@ -218,7 +218,7 @@ uchar CPlayer::AutoFireHeld(const CFinalInput& input) const {
   return held;
 }
 
-uchar CPlayer::JumpHeld(const CFinalInput& input) const {
+const bool CPlayer::JumpHeld(const CFinalInput& input) const {
   bool held = false;
   if (mControlMapper.GetDigitalInput(CControlMapper::kC_JumpOrBoost, input) ||
       mControlMapper.GetDigitalInput(CControlMapper::kC_JumpOrBoost2, input)) {
@@ -236,7 +236,7 @@ uchar CPlayer::JumpPressed(const CFinalInput& input) const {
   return pressed;
 }
 
-uchar CPlayer::ChargeBeamHeld(const CFinalInput& input) const {
+const bool CPlayer::ChargeBeamHeld(const CFinalInput& input) const {
   bool held = false;
   if (mControlMapper.GetDigitalInput(CControlMapper::kC_ChargeBeam, input) ||
       mControlMapper.GetDigitalInput(CControlMapper::kC_ChargeBeam2, input)) {
@@ -245,7 +245,7 @@ uchar CPlayer::ChargeBeamHeld(const CFinalInput& input) const {
   return held;
 }
 
-uchar CPlayer::BoostHeld(const CFinalInput& input) const {
+const bool CPlayer::BoostHeld(const CFinalInput& input) const {
   bool held = false;
   if (mControlMapper.GetDigitalInput(CControlMapper::kC_BoostBall, input)) {
     held = true;
