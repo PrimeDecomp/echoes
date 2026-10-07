@@ -133,9 +133,11 @@ void bit_vector< Alloc >::insert(iterator at, int count, bool value) {
 template < typename Alloc >
 void bit_vector< Alloc >::make_room(int bit, int count) {
   int available = mData.size() * 32 - mSize;
-  while (available < count) {
-    mData.push_back(0u);
-    available += 32;
+  if (available < count) {
+    uint words = static_cast< uint >(count + 31 - available) >> 5;
+    while (words--) {
+      mData.push_back_unsafe(0u);
+    }
   }
   for (int i = mSize - 1; i >= bit; --i) {
     set_bit(i + count, get_bit(i));

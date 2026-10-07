@@ -69,7 +69,7 @@ void CTurretHud::UpdateEnergy(const CStateManager& mgr) {
     return;
   }
   CEntity* turret =
-      TryCast(const_cast< CEntity* >(mgr.GetObjectById(player->GetTurretId())), kET_PlayerTurret);
+      CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(player->GetTurretId())));
   if (turret == nullptr) {
     return;
   }

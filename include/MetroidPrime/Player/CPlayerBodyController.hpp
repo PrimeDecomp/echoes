@@ -39,7 +39,7 @@ public:
   CPlayerBodyController(CPlayer& player, CAssetId stateMachine);
 
   // CEntity
-  ~CPlayerBodyController() override;
+  ~CPlayerBodyController() override {}
 
   void Update(float dt, CStateManager& mgr);
   void ResetStates(CStateManager& mgr);

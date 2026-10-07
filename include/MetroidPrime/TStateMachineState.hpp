@@ -20,6 +20,18 @@ struct TStateMachineFunctionTypes {
   typedef bool (T::*TriggerFunc)(CStateManager&, const float&);
 };
 
+namespace rstl {
+template < class T >
+struct is_trivially_destructible< void (T::*)(CStateManager&, int, float) > {
+  enum { value = true };
+};
+
+template < class T >
+struct is_trivially_destructible< bool (T::*)(CStateManager&, const float&) > {
+  enum { value = true };
+};
+} // namespace rstl
+
 // Guessed name. AFSM and FSM2 dispatchers share this virtual interface.
 template < class T >
 class TStateMachineStateBase {

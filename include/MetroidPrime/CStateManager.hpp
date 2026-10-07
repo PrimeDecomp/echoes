@@ -45,6 +45,9 @@ class CEntity;
 class CActor;
 class CMaterialFilter;
 class CRayCastResult;
+class CCollisionResponseData;
+class CWeaponMode;
+class CVector2f;
 class CScriptMailbox;
 class CMapWorldInfo;
 class CPlayerState;
@@ -110,6 +113,20 @@ class CStateManager : public TOneStatic< CStateManager > {
     bool empty() const { return mWriteIndex == mReadIndex; }
   };
 
+  // Guessed name; reset together during area transitions. The transform has no identified consumer.
+  struct SDarkWorldCloud {
+    CTransform4f mTransform;
+    CVector3f mScale;
+    float mTime;
+    CColor mColor;
+
+    SDarkWorldCloud()
+    : mTransform(CTransform4f::Identity())
+    , mScale(CVector3f::Zero())
+    , mTime(0.f)
+    , mColor(CColor::Black()) {}
+  };
+
 public:
   typedef rstl::multimap< TEditorId, TUniqueId > TIdList;
   typedef rstl::pair< TIdList::const_iterator, TIdList::const_iterator > TIdListResult;
@@ -155,7 +172,8 @@ public:
   void SpawnPlayer(CScriptSpawnPoint& spawnPoint, uint playerIndex);
   void CreateStandardGameObjects(); // Prime-correlated name; per-player construction in Echoes.
   void DeleteSaveGameScreen();
-  int SpecialSkipCinematic(); // Prime-correlated name; Echoes returns a three-way result.
+  void CreateSaveGameScreen(); // Guessed name.
+  int SpecialSkipCinematic();  // Prime-correlated name; Echoes returns a three-way result.
   bool PrepareAreaTransition(TAreaId area);                      // Guessed name.
   rstl::single_ptr< CPortalTransition >& TakePortalTransition(); // Guessed name.
   bool HasPendingLayerLoads() const; // Guessed name, from the area query.
@@ -164,6 +182,7 @@ public:
 
   TUniqueId AllocateUniqueId();
   CScriptObjectLoaderHelper& ScriptObjectLoaderHelper();
+  const CScriptObjectLoaderHelper& ScriptObjectLoaderHelper() const;
   uint MaskUIdNumPlayers(TUniqueId id) const;
   void SetIsDarkWorld(bool);
   bool GetIsDarkWorld() const { return mIsDarkWorld; }
@@ -189,21 +208,21 @@ public:
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
-  bool RenderLast(TUniqueId uid);               // Guessed name.
-  bool RenderLastOverlay(const TUniqueId& uid); // Guessed name.
-  bool RenderLastHUD(const TUniqueId& uid);     // Guessed name.
+  bool RenderLast(TUniqueId uid);                          // Guessed name.
+  bool RenderLastOverlay(const TUniqueId& uid);            // Guessed name.
+  bool RenderLastHUD(const TUniqueId& uid);                // Guessed name.
+  bool RenderFirstSorted(const TUniqueId& uid);            // Guessed name.
   bool RenderLastAfterCameraFilters(const TUniqueId& uid); // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);
   int GetWeaponIdCount(TUniqueId owner, EWeaponType type);
-  bool CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) const;
+  bool CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed);
   void RemoveWeaponId(TUniqueId owner, EWeaponType type);
   void ApplyDamageToWorld(TUniqueId owner, CActor& projectile, const CVector3f& position,
                           const CDamageInfo& damage, const CMaterialFilter& filter);
-  void ApplyDamage(TUniqueId damager, TUniqueId damagee, TUniqueId owner,
-                   const CDamageInfo& damage, const CMaterialFilter& filter,
-                   const CVector3f& direction);
+  void ApplyDamage(TUniqueId damager, TUniqueId damagee, TUniqueId owner, const CDamageInfo& damage,
+                   const CMaterialFilter& filter, const CVector3f& direction);
   void ApplyRadiusDamage(const CActor& radiusSource, const CVector3f& position, CActor& damagee,
                          TUniqueId weapon, const CDamageInfo& damage);
   void ProcessRadiusDamage(const CActor& source, CActor& damagee, TUniqueId owner,
@@ -227,10 +246,10 @@ public:
   // Guessed name; output pointers are independently optional in the native body.
   void CalculatePlayerViewport(int viewportIndex, int* left, int* bottom, int* width,
                                int* height) const;
-  void EndPlayerRender();                          // Guessed name.
-  void Touch();                                    // Prime-correlated name.
-  void TouchSky();                                 // Prime-correlated name.
-  void TouchPlayerActor();                         // Prime-correlated name; mutable REL shim.
+  void EndPlayerRender();  // Guessed name.
+  void Touch();            // Prime-correlated name.
+  void TouchSky();         // Prime-correlated name.
+  void TouchPlayerActor(); // Prime-correlated name; mutable REL shim.
   static void ReflectionDrawer(void* context, const CVector3f& point); // Prime-correlated name.
   void CacheReflection();                                              // Prime-correlated name.
   void DrawReflection(const CVector3f& point);                         // Prime-correlated name.
@@ -249,7 +268,7 @@ public:
   void DrawDarkVisor(const CInGameGuiManagerSet& gui);
   void SetupParticleDrawMask(); // Reconstructed name; filters CParticleGen draw flags.
   static void SetParticleAlphaUpdate(bool disable); // Reconstructed name.
-  void CapturePlayerTextures(); // Reconstructed name; reflection, indirect and mask buffers.
+  void CapturePlayerTextures();  // Reconstructed name; reflection, indirect and mask buffers.
   void RenderForgottenObjects(); // Reconstructed name; depth-only and alpha-mask passes.
   // Reconstructed name; the selected renderer bodies do not consume the two masks.
   void DrawSpecialGeometry(TAreaId area, CPlayerState::EPlayerVisor visor, uint mask,
@@ -273,6 +292,17 @@ public:
   bool IsActorVisible(const CActor& actor) const; // Reconstructed name/qualification.
   void SetupParticleHook(const CActor& actor) const;
   // Prime-correlated name; native Echoes visor masks omit the thawed parameter.
+  // Prime-correlated name; spawns the impact particle effect and sound for a weapon hit.
+  void DoCollisionResponse(const CCollisionResponseData& responseData,
+                           const CRayCastResult& rayCast, const TUniqueId& uid,
+                           const CWeaponMode& weaponMode, bool flag);
+  // Guessed name; forwards to the renderer unless the echo visor or light world applies.
+  void DrawDarkWorldVolume(const CVector3f& pos, const CVector3f& scale, uchar mix, uchar alpha,
+                           bool inside, float lod, const CVector2f& scroll1,
+                           const CVector2f& scroll2, const CVector2f& texScale1,
+                           const CVector2f& texScale2, const CTexture& environment,
+                           const CTexture& cloud1, const CTexture& cloud2, CColor color,
+                           CColor additiveColor, bool cylinder) const;
   void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
@@ -351,12 +381,8 @@ public:
 
   int GetNumPlayers() const { return mNumPlayers; }
   CWeaponMgr* GetWeaponMgr() const { return mWeaponMgr; }
-  TUniqueId GetForceTriggerId(int playerIndex) const {
-    return mForceTriggerIds[playerIndex];
-  }
-  void SetForceTriggerId(int playerIndex, TUniqueId id) {
-    mForceTriggerIds[playerIndex] = id;
-  }
+  TUniqueId GetForceTriggerId(int playerIndex) const { return mForceTriggerIds[playerIndex]; }
+  void SetForceTriggerId(int playerIndex, TUniqueId id) { mForceTriggerIds[playerIndex] = id; }
   int GetViewportLayoutIndex() const; // Guessed name
   typedef rstl::reserved_vector< rstl::reserved_vector< CCameraFilterPass, 11 >, 4 >
       TCameraFilterPasses;
@@ -392,6 +418,7 @@ public:
   CMapWorldInfo* MapWorldInfo() { return mMapWorldInfo.GetPtr(); }
 
   void UpdateActorInSortedLists(CActor*);
+  rstl::optional_object< CAABox > CalculateObjectBounds(CActor& actor); // Guessed name
   void UpdateSortedLists(); // Prime-correlated name; updates every registered actor's bounds.
 
   bool ApplyLocalDamage(const CVector3f& pos, const CVector3f& dir, CActor& damagee, float damage,
@@ -417,8 +444,9 @@ public:
   void MoveActors(float dt);
   // Guessed name; advances the cached multiplayer player-pair line-of-sight test.
   void UpdatePlayerLineOfSight(float dt);
-  void ProcessPlayerInput();      // Guessed name; routes each player's selected controller input.
-  void CrossTouchActors();        // Prime-correlated name; sends mutual overlap Touch callbacks.
+  bool CanEnterMapScreen();  // Guessed name; false while a hint blocks it or a cinematic plays.
+  void ProcessPlayerInput(); // Guessed name; routes each player's selected controller input.
+  void CrossTouchActors();   // Prime-correlated name; sends mutual overlap Touch callbacks.
   void UpdateHintState(float dt); // Prime-correlated name; maps hint locations and queues memos.
   void UpdateEscapeSequenceTimer(float dt); // Prime-correlated name; updates saved escape time.
   void UpdateAreaSounds(); // Prime-correlated name; selects visible areas for the SFX manager.
@@ -429,7 +457,7 @@ public:
   // State transitions
   EGameState GetGameState() const { return mGameState; }
   void DeferStateTransition(EStateManagerTransition t);
-  void ResetEscapeSequenceTimer(float time);                             // Prime-correlated name
+  void ResetEscapeSequenceTimer(float time); // Prime-correlated name
   float GetEscapeSequenceTimer() const; // Prime-correlated name; saved GameState timer in Echoes.
   void SetBossParams(TUniqueId bossId, float maxEnergy, uint stringIdx); // Prime name
   TUniqueId GetBossId() const { return mBossId; }
@@ -490,7 +518,7 @@ public:
   rstl::list< TUniqueId > mNewObjectIds; // Guessed name: IDs awaiting their first update.
   ScriptMsgArray mScriptMsgs;
   CArchitectureQueue* mArchQueue;
-  int mNumPlayers;
+  uint mNumPlayers;
   CPlayer* mPlayers[4];
   CPlayerState* mPlayerStates[4];
   CCameraManager* mCameraManagers[4];
@@ -508,7 +536,7 @@ public:
   CFluidPlaneManager* mFluidPlaneManager;
   CEnvFxManager* mEnvFxManager;               // 0x1630
   CActorModelParticles* mActorModelParticles; // 0x1634
-  CSafeZoneManager* mSafeZoneManager; // 0x1638, target-derived pointee and role.
+  CSafeZoneManager* mSafeZoneManager;         // 0x1638, target-derived pointee and role.
   TIdList mScriptIdMap;
   TToken< CDependencyGroup > mAudioGroupDependencies; // Guessed name, from audio initialization.
   rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > mPlayerStateOwners; // Guessed name.
@@ -541,19 +569,19 @@ public:
   CAssetId mPauseHudMessage; // 0x2434
   float mEscapeTotalTime;
   float mCurTimeMod900; // Prime-correlated name; drives CTimeProvider during rendering.
-  TUniqueId mBossId; // 0x2440
+  TUniqueId mBossId;    // 0x2440
   float mBossHealth;
   uint mBossLanguageTableIndex;
   ERenderVisorMode mRenderVisorMode;
   TUniqueId mSpecialFunctionId;
-  TUniqueId mPlayerActorHead; // Prime-correlated name; identifies the model-touch actor.
+  TUniqueId mPlayerActorHead;          // Prime-correlated name; identifies the model-touch actor.
   float mHudMessageTime;               // 0x2454
   CProjectedShadow* mProjectedShadows; // 0x2458; head of this frame's shadow list.
   int mHudMessageFrameCount;           // 0x245c
   int mPausedHudMemoFrameCount;        // 0x2460
   CAssetId mPausedHudMemoAssetId;
   float mQueuedHudMemoDismissalDelay; // Guessed name, from the queued memo's parameters.
-  CAssetId mMapTeleportWorldId; // Guessed name
+  CAssetId mMapTeleportWorldId;       // Guessed name
   EStateManagerTransition mDeferredTransition;
 
   // Guessed names: one cached line-of-sight result per multiplayer player pair.
@@ -561,19 +589,14 @@ public:
   uchar mNextPlayerLineOfSightPair;
   CFrustumPlanes mPlanes;        // 0x2478
   int mCurrentRenderPlayerIndex; // Guessed name
-  TAreaId mVisAreaId; // Prime-correlated role: area containing the render viewpoint.
+  TAreaId mVisAreaId;            // Prime-correlated role: area containing the render viewpoint.
   rstl::reserved_vector< rstl::pair< int, CFrustumPlanes >, 10 > mAreaFrusta; // Guessed name.
-  TAreaId mPendingDockArea;                                // Guessed name.
-  int mPendingDock;                                        // Guessed name.
-  rstl::single_ptr< CPortalTransition > mPortalTransition; // Guessed name.
-  rstl::single_ptr< TCachedToken< CTexture > > mUnusedViewportTexture; // Guessed name.
-  // Identity-initialized and reset during area transitions; no other consumer identified.
-  CTransform4f mUnknown0x2908;
-
+  TAreaId mPendingDockArea;                                                   // Guessed name.
+  int mPendingDock;                                                           // Guessed name.
+  rstl::single_ptr< CPortalTransition > mPortalTransition;                    // Guessed name.
+  rstl::single_ptr< TCachedToken< CTexture > > mUnusedViewportTexture;        // Guessed name.
   // Guessed names from the renderer's DrawDarkWorldCloud arguments.
-  CVector3f mDarkWorldCloudScale;
-  float mDarkWorldCloudTime;
-  CColor mDarkWorldCloudColor;
+  SDarkWorldCloud mDarkWorldCloud;
   bool mReadyToRender : 1; // Guessed name: set after the first update, gates PreRender.
   bool mQuitGame : 1;
   bool mUnkFlagA3 : 1; // Increment/Decrement script toggle; runtime purpose unresolved.
@@ -583,7 +606,7 @@ public:
   bool mIsFullThreat : 1;       // Prime-correlated name
   bool mIsDarkWorld : 1;        // 0x294c
   bool mShowSoftTransition : 1; // Guessed name.
-  bool mTearingDown : 1; // Guessed name: set on entry to the destructor.
+  bool mTearingDown : 1;        // Guessed name: set on entry to the destructor.
   bool mDispatchingScriptMessages : 1;
   bool mLayerRestartPending : 1; // Guessed name, from layer activation and game-flow consumers.
   // Guessed names: per-player depletion within the current update, not warning history.
@@ -606,7 +629,6 @@ CHECK_OFFSETOF(CStateManager, mPlayerActorHead, 0x2452)
 CHECK_OFFSETOF(CStateManager, mPlayerLineOfSightPairs, 0x2474)
 CHECK_OFFSETOF(CStateManager, mAreaFrusta, 0x24e4)
 CHECK_OFFSETOF(CStateManager, mUnusedViewportTexture, 0x2904)
-CHECK_OFFSETOF(CStateManager, mUnknown0x2908, 0x2908)
-CHECK_OFFSETOF(CStateManager, mDarkWorldCloudScale, 0x2938)
+CHECK_OFFSETOF(CStateManager, mDarkWorldCloud, 0x2908)
 
 #endif // _CSTATEMANAGER
