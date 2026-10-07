@@ -342,9 +342,9 @@ void CBabyMetroid::AbsorbEnergy(CStateManager& mgr, EStateMsg msg, float dt) {
     const float scale = mInitialScale * (1.f - t) + mBabyMetroidScale * t;
     ModelData()->SetScale(CVector3f(scale, scale, scale));
     break;
+  }
   case kStateMsg_Deactivate:
     break;
-  }
   }
 }
 
@@ -381,13 +381,13 @@ void CBabyMetroid::TransformIntoMetroid(CStateManager& mgr, EStateMsg msg, float
     }
     if (CScriptEffect* effect = TCastToPtr< CScriptEffect >(mgr.ObjectById(xa68_))) {
       effect->SetTransform(GetTransform());
-    case kStateMsg_Deactivate:
-      break;
     }
     break;
   case kStateMsg_Update:
     StopLoopedSounds();
     mgr.DeleteObjectRequest(GetUniqueId());
+    break;
+  case kStateMsg_Deactivate:
     break;
   }
 }

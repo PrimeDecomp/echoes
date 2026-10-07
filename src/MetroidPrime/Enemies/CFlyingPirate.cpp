@@ -318,7 +318,7 @@ void CFlyingPirate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
   CPatterned::AcceptScriptMsg(mgr, msg);
   switch (message) {
-  case kSM_AreaLoaded:
+  case kSM_AreaLoaded: {
     for (AUTO(it, GetConnectionList().begin()); it != GetConnectionList().end(); ++it) {
       if (it->state == kSS_Retreat) {
         const TUniqueId id = mgr.GetIdForScript(it->objId);
@@ -341,6 +341,7 @@ void CFlyingPirate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     AnimationData()->SetEffectState(skEyes, true, mgr);
     mLineOfSightTracker.SetTarget(mgr.GetPlayer(0)->GetUniqueId());
     break;
+  }
   case kSM_Create: {
     const float range = mData.mMissileTimeVariation;
     const float delay = mData.mMinimumMissileTime;
