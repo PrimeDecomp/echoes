@@ -5,3 +5,13 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+MetroidPrime/ScriptObjects/CScriptDestructibleBarrier.cpp:
+	.text       start:0x00000000 end:0x00007358
+	.rodata     start:0x00000000 end:0x00000040
+	.data       start:0x00000000 end:0x000000D0
+	.bss        start:0x00000000 end:0x00000004
+
+REL/REL_Setup.cpp:
+	.text       start:0x00007358 end:0x000074FC
+	.rodata     start:0x00000040 end:0x000000C4
