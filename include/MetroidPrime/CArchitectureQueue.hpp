@@ -9,7 +9,7 @@
 
 class CArchitectureQueue {
 public:
-  void Push(const CArchitectureMessage& msg); // { x0_queue.push_back(msg); }
+  void Push(const CArchitectureMessage& msg) { mQueue.push_back(msg); }
   CArchitectureMessage Pop() {
     CArchitectureMessage result = *mQueue.begin();
     mQueue.pop_front();
