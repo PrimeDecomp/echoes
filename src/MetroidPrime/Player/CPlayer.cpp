@@ -631,11 +631,17 @@ void CPlayer::ResetPlayerState(CStateManager& mgr, int state) {
 bool CPlayer::fn_80019e20(const CStateManager& mgr) const { return IsPlayerDeadEnough(mgr); }
 
 bool CPlayer::IsMorphBallTransitioning() const {
-  return mMorphBallState == kMS_Morphing || mMorphBallState == kMS_Unmorphing;
+  switch (mMorphBallState) {
+  case kMS_Morphing:
+  case kMS_Unmorphing:
+    return true;
+  default:
+    return false;
+  }
 }
 
 void CPlayer::SetAimTarget(TUniqueId target) {
-  if (target == kInvalidUniqueId || target != mAimTarget) {
+  if (target == kInvalidUniqueId || mAimTarget != target) {
     mAimTargetAverage.clear();
   }
   mAimTarget = target;
@@ -1323,13 +1329,12 @@ void CPlayer::CVisorSteam::Reset() {
 
 void CPlayer::CVisorSteam::SetSteam(float targetAlpha, float alphaInDuration,
                                     float alphaOutDuration, CAssetId texture) {
-  if (mNextTexture != kInvalidAssetId && targetAlpha <= mNextTargetAlpha) {
-    return;
+  if (mNextTexture == kInvalidAssetId || targetAlpha > mNextTargetAlpha) {
+    mNextTargetAlpha = targetAlpha;
+    mNextAlphaInDuration = alphaInDuration;
+    mNextAlphaOutDuration = alphaOutDuration;
+    mNextTexture = texture;
   }
-  mNextTargetAlpha = targetAlpha;
-  mNextAlphaInDuration = alphaInDuration;
-  mNextAlphaOutDuration = alphaOutDuration;
-  mNextTexture = texture;
 }
 
 void CPlayer::SetVisorSteam(float targetAlpha, float alphaInDuration, float alphaOutDuration,
@@ -2567,10 +2572,12 @@ void CPlayer::AddToRenderer(const CStateManager& mgr) const {
     return;
   }
 
-  if (mCameraState != kCS_FirstPerson || mMorphBallState != kMS_Morphed) {
+  if (mCameraState != kCS_FirstPerson && mMorphBallState == kMS_Morphed) {
+    CActor::AddToRenderer(mgr);
+  } else {
     mGun->AddToRenderer(mgr);
+    CActor::AddToRenderer(mgr);
   }
-  CActor::AddToRenderer(mgr);
 }
 
 void CPlayer::PreRenderAllViewports(CStateManager& mgr) {
@@ -3297,12 +3304,19 @@ void CPlayer::SetHudDisable(float staticTimer, float fadeOutSpeed, float fadeInS
   mStaticOutSpeed = fadeOutSpeed;
   mStaticInSpeed = fadeInSpeed;
   if (mStaticOutSpeed == 0.f) {
-    mVisorStaticAlpha = mStaticTimer == 0.f ? 1.f : 0.f;
+    if (mStaticTimer == 0.f) {
+      mVisorStaticAlpha = 1.f;
+    } else {
+      mVisorStaticAlpha = 0.f;
+    }
   }
 }
 
 bool CPlayer::CanEnterMorphBallState(CStateManager& mgr, float dt) const {
-  if (mGrappleState != kGS_None || !mCanEnterMorphBall) {
+  if (mGrappleState != kGS_None) {
+    return false;
+  }
+  if (!mCanEnterMorphBall) {
     return false;
   }
   if (mPlayerState->GetItemAmount(CPlayerState::kIT_ScanVirus, true) != 0 &&
@@ -3857,8 +3871,14 @@ void CPlayer::FinishNewScan(CStateManager& mgr) {
 }
 
 bool CPlayer::IsEnergyLow() const {
-  return GetHealthInfo()->GetHP() <
-         (mPlayerState->GetItemCapacity(CPlayerState::kIT_EnergyTanks) > 3 ? 100.f : 30.f);
+  const float hp = GetHealthInfo()->GetHP();
+  float threshold;
+  if (mPlayerState->GetItemCapacity(CPlayerState::kIT_EnergyTanks) >= 4) {
+    threshold = 100.f;
+  } else {
+    threshold = 30.f;
+  }
+  return hp < threshold;
 }
 
 CVector3f CPlayer::GetOrbitPosition(const CStateManager& mgr) const {
