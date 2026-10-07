@@ -299,14 +299,14 @@ void CWorld::TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelTyp
     TAreaId* loadedIds = static_cast< TAreaId* >(alloca(maxLoaded * sizeof(TAreaId)));
     int loadedCount = 0;
     for (int i = 0; i < area->GetDockCount(); ++i) {
-      IGameArea::Dock& dock = const_cast< IGameArea::Dock& >(area->GetDock(i));
-      const int dockRefCount = dock.GetDockRefs().size();
+      IGameArea::Dock* const dock = &area->DockNC(i);
+      const int dockRefCount = dock->GetDockRefs().size();
       for (int j = 0; j < dockRefCount; ++j) {
-        if (!dock.GetLoadOtherBlocked(j))
+        if (!dock->GetLoadOtherBlocked(j))
           continue;
-        CGameArea* cArea = Area(dock.GetConnectedAreaId(j));
+        CGameArea* const cArea = Area(dock->GetConnectedAreaId(j));
         if (cArea->GetPhase() == CGameArea::kP_Allocate && cArea->GetCurChain() == kC_Deallocated) {
-          dock.SetLoadOtherBlocked(j, false);
+          dock->SetLoadOtherBlocked(j, false);
         }
         if (loadedCount < maxLoaded) {
           loadedIds[loadedCount] = cArea->GetId();
