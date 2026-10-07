@@ -114,19 +114,18 @@ void CAuxEffectManager::Cleanup() {
 }
 
 void CAuxEffectManager::FadeOut(int bus, ECategory category) {
-  for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-    SEffectSlot& effect = mBuses[bus][slot];
-    switch (effect.GetState()) {
+  for (SEffectSlot* effect = mBuses[bus].begin(); effect != mBuses[bus].end(); ++effect) {
+    switch (effect->GetState()) {
     case kES_Parallel:
     case kES_ParallelFadeIn:
       if (category == kEC_Parallel)
-        effect.SetState(kES_ParallelFadeOut);
+        effect->SetState(kES_ParallelFadeOut);
       break;
     case kES_Serial:
     case kES_SerialFadeIn:
     case kES_SerialBypassFadeOut:
       if (category == kEC_Serial) {
-        effect.SetState(kES_SerialFadeOut);
+        effect->SetState(kES_SerialFadeOut);
         SetHighestPrioritySerialState(bus, kES_SerialFadeIn);
       }
       break;
@@ -137,13 +136,13 @@ void CAuxEffectManager::FadeOut(int bus, ECategory category) {
 void CAuxEffectManager::SetHighestPrioritySerialState(int bus, EState state) {
   int highestPriority = -1;
   int selected = -1;
-  for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-    const SEffectSlot& effect = mBuses[bus][slot];
-    if (effect.GetState() == kES_Serial || effect.GetState() == kES_SerialFadeIn ||
-        effect.GetState() == kES_SerialBypassFadeOut) {
-      if (effect.GetPriority() > highestPriority) {
-        highestPriority = effect.GetPriority();
+  int slot = 0;
+  for (SEffectSlot* effect = mBuses[bus].begin(); effect != mBuses[bus].end(); ++effect, ++slot) {
+    if (effect->GetState() == kES_SerialBypassFadeOut || effect->GetState() == kES_SerialFadeIn ||
+        effect->GetState() == kES_Serial) {
+      if (effect->GetPriority() > highestPriority) {
         selected = slot;
+        highestPriority = effect->GetPriority();
       }
     }
   }
@@ -214,19 +213,18 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
 void CAuxEffectManager::RemoveEffect(int id) {
   CInterruptGuard interrupts;
   for (int bus = 0; bus < 3; ++bus) {
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      SEffectSlot& effect = mBuses[bus][slot];
-      if (effect.GetId() != id)
+    for (SEffectSlot* effect = mBuses[bus].begin(); effect != mBuses[bus].end(); ++effect) {
+      if (effect->GetId() != id)
         continue;
-      switch (effect.GetState()) {
+      switch (effect->GetState()) {
       case kES_Parallel:
       case kES_ParallelFadeIn:
-        effect.SetState(kES_ParallelFadeOut);
+        effect->SetState(kES_ParallelFadeOut);
         break;
       case kES_Serial:
       case kES_SerialFadeIn:
       case kES_SerialBypassFadeOut:
-        effect.SetState(kES_SerialFadeOut);
+        effect->SetState(kES_SerialFadeOut);
         break;
       }
       return;
