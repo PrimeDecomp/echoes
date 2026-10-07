@@ -260,7 +260,7 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
   if (parallel == 0 && parallelFading == 0 && serial == 0)
     return;
 
-  s32** buffers = &info->data.bufferUpdate.left;
+  s32 scratch[3][kBufferSamples];
   if (parallel == 1 && parallelFading == 0) {
     for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
       if (slot->GetState() == kES_Parallel)
@@ -274,10 +274,11 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
       case kES_Parallel:
       case kES_ParallelFadeIn:
       case kES_ParallelFadeOut: {
-        s32 scratch[3][kBufferSamples];
-        for (int sample = 0; sample < kBufferSamples; ++sample)
-          for (int channel = 0; channel < 3; ++channel)
-            scratch[channel][sample] = buffers[channel][sample];
+        for (int sample = 0; sample < kBufferSamples; ++sample) {
+          scratch[0][sample] = info->data.bufferUpdate.left[sample];
+          scratch[1][sample] = info->data.bufferUpdate.right[sample];
+          scratch[2][sample] = info->data.bufferUpdate.surround[sample];
+        }
         SND_AUX_INFO processed;
         processed.data.bufferUpdate.left = scratch[0];
         processed.data.bufferUpdate.right = scratch[1];
@@ -286,24 +287,28 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
 
         switch (slot->GetState()) {
         case kES_Parallel:
-          for (int sample = 0; sample < kBufferSamples; ++sample)
-            for (int channel = 0; channel < 3; ++channel)
-              mixed[channel][sample] += scratch[channel][sample];
+          for (int sample = 0; sample < kBufferSamples; ++sample) {
+            mixed[0][sample] += scratch[0][sample];
+            mixed[1][sample] += scratch[1][sample];
+            mixed[2][sample] += scratch[2][sample];
+          }
           break;
         case kES_ParallelFadeIn: {
           float fade = slot->GetFade();
           int sample = 0;
           for (; sample < kBufferSamples; ++sample) {
-            for (int channel = 0; channel < 3; ++channel)
-              mixed[channel][sample] += static_cast< s32 >(scratch[channel][sample] * fade);
+            mixed[0][sample] += static_cast< s32 >(scratch[0][sample] * fade);
+            mixed[1][sample] += static_cast< s32 >(scratch[1][sample] * fade);
+            mixed[2][sample] += static_cast< s32 >(scratch[2][sample] * fade);
             fade += kFadeStep;
             if (fade >= 1.f) {
               slot->SetState(kES_Parallel);
               fade = 1.f;
               ++sample;
               for (; sample < kBufferSamples; ++sample)
-                for (int channel = 0; channel < 3; ++channel)
-                  mixed[channel][sample] += scratch[channel][sample];
+                mixed[0][sample] += scratch[0][sample];
+              mixed[1][sample] += scratch[1][sample];
+              mixed[2][sample] += scratch[2][sample];
               break;
             }
           }
@@ -313,8 +318,9 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
         case kES_ParallelFadeOut: {
           float fade = slot->GetFade();
           for (int sample = 0; sample < kBufferSamples; ++sample) {
-            for (int channel = 0; channel < 3; ++channel)
-              mixed[channel][sample] += static_cast< s32 >(scratch[channel][sample] * fade);
+            mixed[0][sample] += static_cast< s32 >(scratch[0][sample] * fade);
+            mixed[1][sample] += static_cast< s32 >(scratch[1][sample] * fade);
+            mixed[2][sample] += static_cast< s32 >(scratch[2][sample] * fade);
             fade -= kFadeStep;
             if (fade <= 0.f) {
               slot->SetState(kES_PendingCleanup);
@@ -330,9 +336,11 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
       }
       }
     }
-    for (int channel = 0; channel < 3; ++channel)
-      for (int sample = 0; sample < kBufferSamples; ++sample)
-        buffers[channel][sample] = mixed[channel][sample];
+    for (int sample = 0; sample < kBufferSamples; ++sample) {
+      info->data.bufferUpdate.left[sample] = mixed[0][sample];
+      info->data.bufferUpdate.right[sample] = mixed[1][sample];
+      info->data.bufferUpdate.surround[sample] = mixed[2][sample];
+    }
   }
 
   if (serial == 0)
@@ -355,9 +363,11 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
       continue;
     }
     s32 scratch[3][kBufferSamples];
-    for (int sample = 0; sample < kBufferSamples; ++sample)
-      for (int channel = 0; channel < 3; ++channel)
-        scratch[channel][sample] = buffers[channel][sample];
+    for (int sample = 0; sample < kBufferSamples; ++sample) {
+      scratch[0][sample] = info->data.bufferUpdate.left[sample];
+      scratch[1][sample] = info->data.bufferUpdate.right[sample];
+      scratch[2][sample] = info->data.bufferUpdate.surround[sample];
+    }
     SND_AUX_INFO processed;
     processed.data.bufferUpdate.left = scratch[0];
     processed.data.bufferUpdate.right = scratch[1];
@@ -367,19 +377,31 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
     float fade = effect.GetFade();
     for (int sample = 0; sample < kBufferSamples; ++sample) {
       const float dry = 1.f - fade;
-      for (int channel = 0; channel < 3; ++channel) {
-        const float wet = static_cast< float >(scratch[channel][sample]) * fade;
-        buffers[channel][sample] =
-            static_cast< s32 >(dry * static_cast< float >(buffers[channel][sample]) + wet);
+      {
+        const float wet = static_cast< float >(scratch[0][sample]) * fade;
+        info->data.bufferUpdate.left[sample] = static_cast< s32 >(
+            dry * static_cast< float >(info->data.bufferUpdate.left[sample]) + wet);
+      }
+      {
+        const float wet = static_cast< float >(scratch[1][sample]) * fade;
+        info->data.bufferUpdate.right[sample] = static_cast< s32 >(
+            dry * static_cast< float >(info->data.bufferUpdate.right[sample]) + wet);
+      }
+      {
+        const float wet = static_cast< float >(scratch[2][sample]) * fade;
+        info->data.bufferUpdate.surround[sample] = static_cast< s32 >(
+            dry * static_cast< float >(info->data.bufferUpdate.surround[sample]) + wet);
       }
       if (state == kES_SerialFadeIn) {
         fade = rstl::min_val(1.f, fade + kFadeStep);
         if (fade == 1.f) {
           effect.SetState(kES_Serial);
           // Native full-wet copy includes the current sample.
-          for (; sample < kBufferSamples; ++sample)
-            for (int channel = 0; channel < 3; ++channel)
-              buffers[channel][sample] = scratch[channel][sample];
+          for (; sample < kBufferSamples; ++sample) {
+            info->data.bufferUpdate.left[sample] = scratch[0][sample];
+            info->data.bufferUpdate.right[sample] = scratch[1][sample];
+            info->data.bufferUpdate.surround[sample] = scratch[2][sample];
+          }
           break;
         }
       } else {
