@@ -1523,6 +1523,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "FishCloud",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CFishCloud.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
