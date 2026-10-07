@@ -18,7 +18,8 @@ public:
   void AddSender(TUniqueId sender);
   void RemoveSender(TUniqueId sender, CStateManager& mgr);
   TUniqueId GetFirstSender() const;
-  uchar ProcessInput(const CFinalInput& input, const CControlMapper& mapper, CStateManager& mgr);
+  const bool ProcessInput(const CFinalInput& input, const CControlMapper& mapper,
+                          CStateManager& mgr);
   void OnExpire(CStateManager& mgr);
 
   TUniqueId GetHintId() const { return mHintId; }
