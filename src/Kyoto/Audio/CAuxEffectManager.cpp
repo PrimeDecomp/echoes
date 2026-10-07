@@ -237,8 +237,8 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
     return;
   const SCallbackContext& context = *static_cast< SCallbackContext* >(user);
   TBus& effects = context.GetManager()->mBuses[context.GetBusIndex()];
-  int parallel = 0;
   int parallelFading = 0;
+  int parallel = 0;
   int serial = 0;
   for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
     switch (slot->GetState()) {
@@ -305,14 +305,15 @@ void CAuxEffectManager::AuxCallback(uchar reason, SND_AUX_INFO* info, void* user
               slot->SetState(kES_Parallel);
               fade = 1.f;
               ++sample;
-              for (; sample < kBufferSamples; ++sample)
-                mixed[0][sample] += scratch[0][sample];
-              mixed[1][sample] += scratch[1][sample];
-              mixed[2][sample] += scratch[2][sample];
               break;
             }
           }
           slot->SetFade(fade);
+          for (; sample < kBufferSamples; ++sample) {
+            mixed[0][sample] += scratch[0][sample];
+            mixed[1][sample] += scratch[1][sample];
+            mixed[2][sample] += scratch[2][sample];
+          }
           break;
         }
         case kES_ParallelFadeOut: {
