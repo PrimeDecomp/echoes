@@ -15,13 +15,17 @@
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CScriptObjectLoaderHelper.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDebris.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDebrisExtended.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 
 static CMaterialList skDebrisMaterials(kMT_Unknown59, kMT_Debris);
 
-static float debris_frand(CStateManager& mgr) {
-  return (1.f / 16383.5f) * static_cast< short >(mgr.Random()->Next() % 32767) - 1.f;
+static inline float debris_frand(CStateManager& mgr) {
+  const short value = static_cast< short >(mgr.Random()->Next() % 32767);
+  return (1.f / 16383.5f) * CCast::StoF(value) - 1.f;
 }
 
 static float debris_frand_range(CStateManager& mgr, float min, float max) {
@@ -35,6 +39,64 @@ static CVector3f debris_cone(CStateManager& mgr, float coneAngle, float minMag, 
   const float xy = magnitude * CMath::FastSqrtF(CMath::Max(0.f, 1.f - z * z));
   const float angle = M_2PIF * mgr.Random()->Float();
   return CVector3f(xy * CMath::FastCosR(angle), xy * CMath::FastSinR(angle), magnitude * z);
+}
+
+CEntity* LoadDebrisExtended(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDebrisExtended sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDebrisExtended.inc"
+
+  if (sldrThis.model != kInvalidAssetId &&
+      gpResourceFactory->GetResourceTypeById(sldrThis.model) == 0) {
+    return nullptr;
+  }
+
+  const CVector3f& scale = sldrThis.editorProperties.transform.scale;
+  return rs_new CScriptDebris(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.model == kInvalidAssetId ? CModelData::CModelDataNull()
+                                        : CModelData(CStaticRes(sldrThis.model, scale)),
+      LdrToActorParameters(sldrThis.actorInformation), sldrThis.coneSpread,
+      sldrThis.movementDirection, sldrThis.minimumSpeed, sldrThis.maximumSpeed,
+      sldrThis.maximumSpinSpeed, sldrThis.maximumSpinSpeed, sldrThis.minimumLifeTime,
+      sldrThis.maximumLifeTime, sldrThis.disableCollisionTime, sldrThis.fadeInEndPercentage,
+      sldrThis.fadeOutStartPercentage, sldrThis.startColor, sldrThis.endColor,
+      sldrThis.scaleStartPercentage, scale, sldrThis.finalScale, sldrThis.unknown_0x417f4a91,
+      sldrThis.gravity, sldrThis.positionOffset, sldrThis.bounceSound, sldrThis.maxBounceSounds,
+      sldrThis.bounceSoundSpeedThreshold, sldrThis.bounceSoundVolumeDecay, sldrThis.particle1,
+      sldrThis.particleSystem1Scale, sldrThis.particleSystem1UsesGlobalTranslation,
+      sldrThis.particleSystem1WaitForParticlesToDie,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.particleSystem1Orientation),
+      sldrThis.particle2, sldrThis.particleSystem2Scale,
+      sldrThis.particleSystem2UsesGlobalTranslation, sldrThis.particleSystem2WaitForParticlesToDie,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.particleSystem2Orientation),
+      sldrThis.deathParticle, sldrThis.deathParticleSystemScale,
+      static_cast< CScriptDebris::EOrientationType >(sldrThis.deathParticleSystemOrientation),
+      sldrThis.isCollider, sldrThis.isShootable, sldrThis.dieOnCollision,
+      sldrThis.unknown_0xdcaa0f22, sldrThis.flickerOnFadeOut, sldrThis.disablePhysicsThreshold,
+      sldrThis.unknown_0x4edb1d0e, sldrThis.unknown_0x723d42d6);
+}
+
+CEntity* LoadDebris(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDebris sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDebris.inc"
+
+  if (sldrThis.model != kInvalidAssetId &&
+      gpResourceFactory->GetResourceTypeById(sldrThis.model) == 0) {
+    return nullptr;
+  }
+
+  const CVector3f& scale = sldrThis.editorProperties.transform.scale;
+  return rs_new CScriptDebris(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.model == kInvalidAssetId ? CModelData::CModelDataNull()
+                                        : CModelData(CStaticRes(sldrThis.model, scale)),
+      LdrToActorParameters(sldrThis.actorInformation), sldrThis.particle,
+      sldrThis.particleSystemScale, sldrThis.impulse, sldrThis.impulseVariance,
+      sldrThis.fadeOutColor, sldrThis.mass, sldrThis.unknown_0x417f4a91, sldrThis.lifeTime,
+      static_cast< CScriptDebris::EScaleType >(sldrThis.scaleType), sldrThis.isCollider,
+      sldrThis.unknown_0x4edb1d0e, sldrThis.randomSpin);
 }
 
 CScriptDebris::CScriptDebris(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -383,23 +445,12 @@ rstl::optional_object< CAABox > CScriptDebris::GetTouchBounds() const {
 
 void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
-  case kSM_Delete:
-    if (!mKeepGeneratedObject && mGeneratedObject != kInvalidUniqueId) {
-      mgr.DeleteObjectRequest(mGeneratedObject);
-      mGeneratedObject = kInvalidUniqueId;
-    }
-    break;
-  case kSM_Unlock:
-    mGeneratedObject = kInvalidUniqueId;
-    mgr.DeleteObjectRequest(GetUniqueId());
-    break;
   case kSM_Activate:
     if (!GetActive()) {
       if (!mDebrisExtended) {
-        const float mass = GetMass();
-        const float z = mass * mVelocity.GetZ() * CMath::AbsF(debris_frand(mgr)) + mZImpulse;
-        const float y = mass * mVelocity.GetY() * debris_frand(mgr);
-        const float x = mass * mVelocity.GetX() * debris_frand(mgr);
+        const float z = GetMass() * mVelocity.GetZ() * CMath::AbsF(debris_frand(mgr)) + mZImpulse;
+        const float y = GetMass() * mVelocity.GetY() * debris_frand(mgr);
+        const float x = GetMass() * mVelocity.GetX() * debris_frand(mgr);
         const CVector3f impulse = GetTransform().GetColumn(kDZ) + CVector3f(x, y, z);
 
         CAxisAngle angularImpulse = CAxisAngle::Identity();
@@ -461,6 +512,16 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       ApplyImpulseWR(-mRestitution * GetConstantForceWR(), -mRestitution * GetAngularMomentumWR());
     }
     break;
+  case kSM_Delete:
+    if (!mKeepGeneratedObject && mGeneratedObject != kInvalidUniqueId) {
+      mgr.DeleteObjectRequest(mGeneratedObject);
+      mGeneratedObject = kInvalidUniqueId;
+    }
+    break;
+  case kSM_Unlock:
+    mGeneratedObject = kInvalidUniqueId;
+    mgr.DeleteObjectRequest(GetUniqueId());
+    break;
   default:
     break;
   }
@@ -471,7 +532,7 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 void CScriptDebris::PreRenderAllViewports(CStateManager& mgr) {
   CActor::PreRenderAllViewports(mgr);
 
-  const float time = CMath::Min(mCurTime, mDuration);
+  const float time = mDuration < mCurTime ? mDuration : mCurTime;
   const float relativeTime = time / mDuration;
   float fade = 0.f;
   if (relativeTime < mColorInT) {
@@ -479,9 +540,11 @@ void CScriptDebris::PreRenderAllViewports(CStateManager& mgr) {
       fade = 1.f - time / (mDuration * mColorInT);
     }
   } else if (relativeTime > mColorOutT) {
-    fade = (time - mDuration * mColorOutT) / (mDuration * (1.f - mColorOutT));
-    if (mFlickerOnFadeOut && mUpdateFrameIndex % 6 > 2) {
+    const bool flicker = mFlickerOnFadeOut && mUpdateFrameIndex % 6 > 2;
+    if (flicker) {
       fade = 1.f;
+    } else {
+      fade = (time - mDuration * mColorOutT) / (mDuration * (1.f - mColorOutT));
     }
   }
 
@@ -525,11 +588,11 @@ void CScriptDebris::CollidedWith(const TUniqueId& id, const CCollisionInfoList& 
   mCollisionNormal = list[0].GetNormalLeft();
   if (GetVelocityWR().Magnitude() > mBounceSoundSpeedThreshold &&
       mBounceSound != CSfxManager::kInternalInvalidSfxId && mBounceSoundCount < mMaxBounceSounds) {
-    CSfxManager::AddEmitter(mBounceSound, GetTranslation(), mBounceSoundVolume,
+    CSfxManager::AddEmitter(mBounceSound, CVector3f(GetTranslation()), mBounceSoundVolume,
                             GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
     ++mBounceSoundCount;
-    mBounceSoundVolume =
-        static_cast< uchar >(CMath::Max(0.f, mBounceSoundVolumeDecay * mBounceSoundVolume));
+    const float volume = mBounceSoundVolumeDecay * CCast::ToReal32(mBounceSoundVolume);
+    mBounceSoundVolume = CCast::ToUint8(0.f < volume ? volume : 0.f);
   }
 }
 
