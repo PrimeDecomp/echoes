@@ -45,6 +45,11 @@ public:
     mPtr += sizeof(int);
     return *result;
   }
+  uint ReadUint32() { // Guessed name.
+    uint* result = reinterpret_cast< uint* >(mPtr);
+    mPtr += sizeof(uint);
+    return *result;
+  }
   u64 ReadInt64() {
     u64* result = reinterpret_cast< u64* >(mPtr);
     mPtr = reinterpret_cast< uchar* >(result + 1);
@@ -105,7 +110,7 @@ inline int CInputStream::Get< int >(const TType< int >& type) {
 
 template <>
 inline uint CInputStream::Get< uint >(const TType< uint >& type) {
-  return ReadInt32();
+  return ReadUint32();
 }
 
 template <>
