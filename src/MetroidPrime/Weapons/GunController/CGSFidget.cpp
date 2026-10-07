@@ -30,6 +30,18 @@ int CGSFidget::SetAnim(CAnimData& data, int type, int gunId, int animSet, CState
   return anim.second;
 }
 
+void CGSFidget::LoadAnimAsync(CAnimData& data, int type, int gunId, int animSet,
+                              CStateManager& mgr) {
+  const CPASDatabase& pas = data.GetPASDatabase();
+  const rstl::pair< float, int > anim = pas.FindBestAnimation(
+      CPASAnimParmData(pas::kAS_Getup, CPASAnimParm::FromEnum(type), CPASAnimParm::FromInt32(gunId),
+                       CPASAnimParm::FromInt32(animSet)),
+      *mgr.Random(), -1);
+  if (anim.second != -1) {
+    NWeaponTypes::get_token_vector(data, anim.second, mAnims, true);
+  }
+}
+
 void CGSFidget::UnLoadAnim() {
   if (!mAnims.empty()) {
     mAnims = rstl::vector< CToken >();
