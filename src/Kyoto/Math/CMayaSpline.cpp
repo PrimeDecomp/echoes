@@ -223,6 +223,8 @@ CMayaSpline::CMayaSpline(CInputStream& in, int count)
 
 CMayaSpline::CMayaSpline() : mPreInfinity(0), mPostInfinity(0), mKnots(), mClampMode(0), mCache() {}
 
+static rstl::less< CMayaSplineKnot > sKnotLess;
+
 CMayaSpline::CMayaSpline(const rstl::vector< CMayaSplineKnot >& knots, int clampMode,
                          int preInfinity, int postInfinity, float minAmplitudeTime,
                          float maxAmplitudeTime)
@@ -233,7 +235,7 @@ CMayaSpline::CMayaSpline(const rstl::vector< CMayaSplineKnot >& knots, int clamp
 , mMinAmplitude(minAmplitudeTime)
 , mMaxAmplitude(maxAmplitudeTime)
 , mCache() {
-  rstl::sort(mKnots.begin(), mKnots.end(), rstl::less< CMayaSplineKnot >());
+  rstl::sort(mKnots.begin(), mKnots.end(), sKnotLess);
 }
 
 float CMayaSpline::EvaluateHermite(float time) const {
@@ -605,7 +607,7 @@ void CMayaSpline::FindIntersections(float amplitude,
   }
 
   float* last = intersections.begin();
-  for (float* next = last + 1; next < intersections.end(); ++next) {
+  for (float* next = intersections.begin() + 1; next <= intersections.end() - 1; ++next) {
     if (!CMath::IsEpsilon(*next, *last, 0.002f)) {
       *++last = *next;
     }
@@ -673,7 +675,8 @@ bool CMayaSpline::IsSegmentConstant(int knotIndex) const {
   }
   CVector2f tangentA = CVector2f::Zero();
   CVector2f tangentB = CVector2f::Zero();
-  mKnots[knotIndex].GetTangents(nullptr, &mKnots[knotIndex + 1], tangentA, tangentB);
+  const CMayaSplineKnot* next = &mKnots[knotIndex + 1];
+  mKnots[knotIndex].GetTangents(nullptr, next, tangentA, tangentB);
   if (CMath::IsEpsilon(mKnots[knotIndex].GetAmplitude(), 0.f, 1.e-5f) && tangentB.GetY() < 0.f) {
     tangentB.SetY(0.f);
   }
@@ -682,7 +685,8 @@ bool CMayaSpline::IsSegmentConstant(int knotIndex) const {
   }
   CVector2f nextTangentA = CVector2f::Zero();
   CVector2f nextTangentB = CVector2f::Zero();
-  mKnots[knotIndex + 1].GetTangents(&mKnots[knotIndex], nullptr, nextTangentA, nextTangentB);
+  const CMayaSplineKnot* prev = &mKnots[knotIndex];
+  mKnots[knotIndex + 1].GetTangents(prev, nullptr, nextTangentA, nextTangentB);
   if (CMath::IsEpsilon(mKnots[knotIndex + 1].GetAmplitude(), 0.f, 1.e-5f) &&
       nextTangentA.GetY() > 0.f) {
     nextTangentA.SetY(0.f);

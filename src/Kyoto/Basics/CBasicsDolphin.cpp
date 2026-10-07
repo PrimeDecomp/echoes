@@ -41,13 +41,13 @@ void CBasics::CopyMemory(void* dst, const void* src, uint size) {
     }
   } else {
     uchar* alignedDst = reinterpret_cast< uchar* >((reinterpret_cast< uint >(out) + 31) & ~31);
-    uint head = alignedDst - out;
     const uchar* alignedSrc =
         reinterpret_cast< const uchar* >((reinterpret_cast< uint >(in) + 31) & ~31);
+    int head = alignedDst - out;
     if (head != 0) {
       memcpy(out, in, head);
     }
-    uint blocks = (size - head) & ~31;
+    int blocks = (size - head) & ~31;
     if (blocks != 0) {
       uint n = blocks;
       uchar* blockDst = alignedDst;
@@ -67,7 +67,7 @@ void CBasics::CopyMemory(void* dst, const void* src, uint size) {
         blockDst += 32;
       }
     }
-    uint tail = size - head - blocks;
+    int tail = (int)size - head - blocks;
     if (tail != 0) {
       alignedSrc += blocks;
       alignedDst += blocks;
@@ -88,11 +88,11 @@ void CBasics::ZeroMemory(void* dst, uint size) {
     }
   } else {
     uchar* aligned = reinterpret_cast< uchar* >((reinterpret_cast< uint >(out) + 31) & ~31);
-    uint head = aligned - out;
+    int head = aligned - out;
     if (head != 0) {
       memset(out, 0, head);
     }
-    uint blocks = (size - head) & ~31;
+    int blocks = (size - head) & ~31;
     if (blocks != 0) {
       uint n = blocks;
       uchar* block = aligned;
@@ -102,7 +102,7 @@ void CBasics::ZeroMemory(void* dst, uint size) {
         block += 32;
       }
     }
-    uint tail = size - blocks - head;
+    int tail = (int)size - head - blocks;
     if (tail != 0) {
       aligned += blocks;
       memset(aligned, 0, tail);

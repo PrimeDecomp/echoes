@@ -5,6 +5,16 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include <stdio.h>
 
+static const char* const skDrawFlagNames[] = {
+    "kGUIModelDrawFlags_None",
+    "kGUIModelDrawFlags_RGBModulate",
+    "kGUIModelDrawFlags_AlphaBlend",
+    "kGUIModelDrawFlags_AdditiveAlpha",
+    "kGUIModelDrawFlags_TwoPassAddAndBlendAlpha",
+    "kGuiModelDrawFlags_DrawToAlphaBuffer",
+    "kGuiModelDrawFlags_2xModulateSolid",
+};
+
 CGuiWidget::CGuiWidgetParms::CGuiWidgetParms(CGuiFrame* frame, short selfId, short parentId,
                                              const CColor& color, EGuiModelDrawFlags drawFlags,
                                              bool cullFaces, bool defaultVisible,
@@ -43,9 +53,9 @@ CGuiWidget* CGuiWidget::CreateGroup(CGuiFrame* frame, CInputStream& in, CSimpleP
 
 CGuiWidget::CGuiWidgetParms CGuiWidget::ReadWidgetHeader(CGuiFrame* frame, CInputStream& in) {
   rstl::string name(in);
-  const short selfId = frame->WidgetIdDB().AddWidget(name);
+  short selfId = frame->WidgetIdDB().AddWidget(name);
   rstl::string parent(in);
-  const short parentId = frame->WidgetIdDB().AddWidget(parent);
+  short parentId = frame->WidgetIdDB().AddWidget(parent);
 
   in.ReadBool(); // Legacy animation-controller setting is no longer used.
   bool visible = in.ReadBool();
@@ -144,13 +154,19 @@ CGuiWidget* CGuiWidget::FindWidget(short id) {
 }
 
 void CGuiWidget::SetColor(const CColor& color) {
-  mColor = color;
-  RecalcWidgetColor(kTM_Children);
+  if (!(mColor == color)) {
+    mColor = color;
+    RecalcWidgetColor(kTM_Children);
+  }
 }
 
 void CGuiWidget::RecalcWidgetColor(ETraversalMode mode) {
   CGuiWidget* parent = static_cast< CGuiWidget* >(Parent());
-  mColor2 = parent != nullptr ? CColor::Modulate(mColor, parent->GetModifiedColor()) : mColor;
+  if (parent != nullptr) {
+    mColor2 = CColor::Modulate(mColor, parent->GetModifiedColor());
+  } else {
+    mColor2 = mColor;
+  }
 
   switch (mode) {
   case kTM_Single:
@@ -167,7 +183,7 @@ void CGuiWidget::RecalcWidgetColor(ETraversalMode mode) {
   }
 }
 
-void CGuiWidget::SetVisibility(bool visible, ETraversalMode mode) {
+void CGuiWidget::SetVisibility(const bool visible, ETraversalMode mode) {
   switch (mode) {
   case kTM_Single:
     break;
@@ -205,7 +221,7 @@ void CGuiWidget::SetIsVisible(bool visible) {
   OnVisible();
 }
 
-void CGuiWidget::SetIsActive(bool active) {
+void CGuiWidget::SetIsActive(const bool active) {
   if (mIsActive != active) {
     mIsActive = active;
     OnActivate();
@@ -225,8 +241,10 @@ void CGuiWidget::SetIdleXform(const CTransform4f& xf, bool reapply) {
 
 CGuiWidget* CGuiWidget::GetWorkerWidget(int workerId) {
   const CGuiWidget* widget = static_cast< const CGuiWidget* >(GetChildObject());
-  while (widget != nullptr && widget->GetWorkerId() != workerId) {
-    widget = static_cast< const CGuiWidget* >(widget->GetNextSibling());
+  for (; widget != nullptr; widget = static_cast< const CGuiWidget* >(widget->GetNextSibling())) {
+    if (workerId == widget->GetWorkerId()) {
+      break;
+    }
   }
   return const_cast< CGuiWidget* >(widget);
 }

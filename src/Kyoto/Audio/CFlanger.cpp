@@ -117,11 +117,10 @@ float CFlanger::GetLFOFrequency() { return 1.f - mLFOFrequencyComplement; }
 void CFlanger::setProgramName(char* name) { strcpy(mPrograms[mCurrentProgram].mName, name); }
 
 void CFlanger::getProgramName(char* name) {
-  const char* programName = mPrograms[mCurrentProgram].mName;
-  if (strcmp(programName, "Init") == 0)
-    sprintf(name, "%s %d", programName, mCurrentProgram + 1);
+  if (strcmp(mPrograms[mCurrentProgram].mName, "Init") == 0)
+    sprintf(name, "%s %d", mPrograms[mCurrentProgram].mName, mCurrentProgram + 1);
   else
-    strcpy(name, programName);
+    strcpy(name, mPrograms[mCurrentProgram].mName);
 }
 
 void CFlanger::suspend() {
@@ -350,50 +349,121 @@ void CFlanger::ProcessSamples(float* input, float* output, float* delayWrite, fl
   while (--sampleFrames >= 0) {
     float inputSample = *input++;
     float delayedSample = *delayRead++;
+    float mixedSample = inputSample;
     float oldOutput = *output;
-    float feedbackSample = inputSample + delayedSample * feedback;
-    float mixedSample = inputSample * dry;
+    inputSample += delayedSample * feedback;
+    mixedSample *= dry;
     mixedSample += delayedSample * wet;
     mixedSample *= volume;
     if (mixedSample > peak)
       peak = mixedSample;
-    *delayWrite++ = feedbackSample;
+    *delayWrite++ = inputSample;
     *output++ = oldOutput + mixedSample;
   }
   mPeak = peak;
 }
 
 void CFlanger::process(float** inputs, float** outputs, long sampleFrames) {
-  float* channelInputs[3] = {inputs[0], inputs[1], inputs[2]};
-  float* channelOutputs[3] = {outputs[0], outputs[1], outputs[2]};
-  int* writePositions[3] = {&mLeftWritePosition, &mRightWritePosition, &mSurroundWritePosition};
-  int* readPositions[3] = {&mLeftReadPosition, &mRightReadPosition, &mSurroundReadPosition};
-  rstl::auto_ptr< float >* delays[3] = {&mLeftDelay, &mRightDelay, &mSurroundDelay};
-  long remaining[3] = {sampleFrames, sampleFrames, sampleFrames};
-  while (remaining[0] > 0 || remaining[1] > 0 || remaining[2] > 0) {
-    for (int channel = 0; channel < 3; ++channel) {
-      if (remaining[channel] <= 0)
-        continue;
-      int& write = *writePositions[channel];
-      int& read = *readPositions[channel];
-      long count = remaining[channel];
-      if (mDelayBufferSamples - write < count)
-        count = mDelayBufferSamples - write;
-      if (mDelayBufferSamples - read < count)
-        count = mDelayBufferSamples - read;
-      float* delay = delays[channel]->get();
-      ProcessSamples(channelInputs[channel], channelOutputs[channel], delay + write, delay + read,
-                     count);
-      channelInputs[channel] += count;
-      channelOutputs[channel] += count;
-      write += count;
-      if (write >= mDelayBufferSamples)
-        write -= mDelayBufferSamples;
-      read += count;
-      if (read >= mDelayBufferSamples)
-        read -= mDelayBufferSamples;
-      remaining[channel] -= count;
-      UpdateChannelLFO(count, channel + 1);
+  long count;
+  long writeSpace;
+  long readSpace;
+  float* inLeft;
+  float* inRight;
+  float* inSurround;
+  float* outLeft;
+  float* outRight;
+  float* outSurround;
+  long remainingLeft, remainingRight, remainingSurround;
+  remainingLeft = remainingRight = remainingSurround = sampleFrames;
+  inLeft = inputs[0];
+  inRight = inputs[1];
+  inSurround = inputs[2];
+  outLeft = outputs[0];
+  outRight = outputs[1];
+  outSurround = outputs[2];
+  while (remainingLeft > 0 || remainingRight > 0 || remainingSurround > 0) {
+    if (remainingLeft > 0) {
+      writeSpace = mDelayBufferSamples - mLeftWritePosition;
+      if (writeSpace < remainingLeft || mDelayBufferSamples - mLeftReadPosition < remainingLeft) {
+        readSpace = mDelayBufferSamples - mLeftReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingLeft;
+      }
+      ProcessSamples(inLeft, outLeft, mLeftDelay.get() + mLeftWritePosition,
+                     mLeftDelay.get() + mLeftReadPosition, count);
+      inLeft += count;
+      outLeft += count;
+      mLeftWritePosition += count;
+      if (mLeftWritePosition >= mDelayBufferSamples) {
+        mLeftWritePosition -= mDelayBufferSamples;
+      }
+      mLeftReadPosition += count;
+      if (mLeftReadPosition >= mDelayBufferSamples) {
+        mLeftReadPosition -= mDelayBufferSamples;
+      }
+      remainingLeft -= count;
+      UpdateChannelLFO(count, 1);
+    }
+    if (remainingRight > 0) {
+      writeSpace = mDelayBufferSamples - mRightWritePosition;
+      if (writeSpace < remainingRight ||
+          mDelayBufferSamples - mRightReadPosition < remainingRight) {
+        readSpace = mDelayBufferSamples - mRightReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingRight;
+      }
+      ProcessSamples(inRight, outRight, mRightDelay.get() + mRightWritePosition,
+                     mRightDelay.get() + mRightReadPosition, count);
+      inRight += count;
+      outRight += count;
+      mRightWritePosition += count;
+      if (mRightWritePosition >= mDelayBufferSamples) {
+        mRightWritePosition -= mDelayBufferSamples;
+      }
+      mRightReadPosition += count;
+      if (mRightReadPosition >= mDelayBufferSamples) {
+        mRightReadPosition -= mDelayBufferSamples;
+      }
+      remainingRight -= count;
+      UpdateChannelLFO(count, 2);
+    }
+    if (remainingSurround > 0) {
+      writeSpace = mDelayBufferSamples - mSurroundWritePosition;
+      if (writeSpace < remainingSurround ||
+          mDelayBufferSamples - mSurroundReadPosition < remainingSurround) {
+        readSpace = mDelayBufferSamples - mSurroundReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingSurround;
+      }
+      ProcessSamples(inSurround, outSurround, mSurroundDelay.get() + mSurroundWritePosition,
+                     mSurroundDelay.get() + mSurroundReadPosition, count);
+      inSurround += count;
+      outSurround += count;
+      mSurroundWritePosition += count;
+      if (mSurroundWritePosition >= mDelayBufferSamples) {
+        mSurroundWritePosition -= mDelayBufferSamples;
+      }
+      mSurroundReadPosition += count;
+      if (mSurroundReadPosition >= mDelayBufferSamples) {
+        mSurroundReadPosition -= mDelayBufferSamples;
+      }
+      remainingSurround -= count;
+      UpdateChannelLFO(count, 3);
     }
   }
 }
@@ -408,50 +478,121 @@ void CFlanger::ProcessReplacingSamples(float* input, float* output, float* delay
   while (--sampleFrames >= 0) {
     float inputSample = *input++;
     float delayedSample = *delayRead++;
-    float feedbackSample = inputSample + delayedSample * feedback;
-    float mixedSample = inputSample * dry;
+    float mixedSample = inputSample;
+    inputSample += delayedSample * feedback;
+    mixedSample *= dry;
     mixedSample += delayedSample * wet;
     mixedSample *= volume;
     if (mixedSample > peak)
       peak = mixedSample;
-    *delayWrite++ = feedbackSample;
+    *delayWrite++ = inputSample;
     *output++ = mixedSample;
   }
   mPeak = peak;
 }
 
 void CFlanger::processReplacing(float** inputs, float** outputs, long sampleFrames) {
-  // Native replacing path selects index3; accumulating selects index2. Activation is unverified.
-  float* channelInputs[3] = {inputs[0], inputs[1], inputs[3]};
-  float* channelOutputs[3] = {outputs[0], outputs[1], outputs[3]};
-  int* writePositions[3] = {&mLeftWritePosition, &mRightWritePosition, &mSurroundWritePosition};
-  int* readPositions[3] = {&mLeftReadPosition, &mRightReadPosition, &mSurroundReadPosition};
-  rstl::auto_ptr< float >* delays[3] = {&mLeftDelay, &mRightDelay, &mSurroundDelay};
-  long remaining[3] = {sampleFrames, sampleFrames, sampleFrames};
-  while (remaining[0] > 0 || remaining[1] > 0 || remaining[2] > 0) {
-    for (int channel = 0; channel < 3; ++channel) {
-      if (remaining[channel] <= 0)
-        continue;
-      int& write = *writePositions[channel];
-      int& read = *readPositions[channel];
-      long count = remaining[channel];
-      if (mDelayBufferSamples - write < count)
-        count = mDelayBufferSamples - write;
-      if (mDelayBufferSamples - read < count)
-        count = mDelayBufferSamples - read;
-      float* delay = delays[channel]->get();
-      ProcessReplacingSamples(channelInputs[channel], channelOutputs[channel], delay + write,
-                              delay + read, count);
-      channelInputs[channel] += count;
-      channelOutputs[channel] += count;
-      write += count;
-      if (write >= mDelayBufferSamples)
-        write -= mDelayBufferSamples;
-      read += count;
-      if (read >= mDelayBufferSamples)
-        read -= mDelayBufferSamples;
-      remaining[channel] -= count;
-      UpdateChannelLFO(count, channel + 1);
+  long count;
+  long writeSpace;
+  long readSpace;
+  float* inLeft;
+  float* inRight;
+  float* inSurround;
+  float* outLeft;
+  float* outRight;
+  float* outSurround;
+  long remainingLeft, remainingRight, remainingSurround;
+  remainingLeft = remainingRight = remainingSurround = sampleFrames;
+  inLeft = inputs[0];
+  inRight = inputs[1];
+  inSurround = inputs[3];
+  outLeft = outputs[0];
+  outRight = outputs[1];
+  outSurround = outputs[3];
+  while (remainingLeft > 0 || remainingRight > 0 || remainingSurround > 0) {
+    if (remainingLeft > 0) {
+      writeSpace = mDelayBufferSamples - mLeftWritePosition;
+      if (writeSpace < remainingLeft || mDelayBufferSamples - mLeftReadPosition < remainingLeft) {
+        readSpace = mDelayBufferSamples - mLeftReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingLeft;
+      }
+      ProcessReplacingSamples(inLeft, outLeft, mLeftDelay.get() + mLeftWritePosition,
+                              mLeftDelay.get() + mLeftReadPosition, count);
+      inLeft += count;
+      outLeft += count;
+      mLeftWritePosition += count;
+      if (mLeftWritePosition >= mDelayBufferSamples) {
+        mLeftWritePosition -= mDelayBufferSamples;
+      }
+      mLeftReadPosition += count;
+      if (mLeftReadPosition >= mDelayBufferSamples) {
+        mLeftReadPosition -= mDelayBufferSamples;
+      }
+      remainingLeft -= count;
+      UpdateChannelLFO(count, 1);
+    }
+    if (remainingRight > 0) {
+      writeSpace = mDelayBufferSamples - mRightWritePosition;
+      if (writeSpace < remainingRight ||
+          mDelayBufferSamples - mRightReadPosition < remainingRight) {
+        readSpace = mDelayBufferSamples - mRightReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingRight;
+      }
+      ProcessReplacingSamples(inRight, outRight, mRightDelay.get() + mRightWritePosition,
+                              mRightDelay.get() + mRightReadPosition, count);
+      inRight += count;
+      outRight += count;
+      mRightWritePosition += count;
+      if (mRightWritePosition >= mDelayBufferSamples) {
+        mRightWritePosition -= mDelayBufferSamples;
+      }
+      mRightReadPosition += count;
+      if (mRightReadPosition >= mDelayBufferSamples) {
+        mRightReadPosition -= mDelayBufferSamples;
+      }
+      remainingRight -= count;
+      UpdateChannelLFO(count, 2);
+    }
+    if (remainingSurround > 0) {
+      writeSpace = mDelayBufferSamples - mSurroundWritePosition;
+      if (writeSpace < remainingSurround ||
+          mDelayBufferSamples - mSurroundReadPosition < remainingSurround) {
+        readSpace = mDelayBufferSamples - mSurroundReadPosition;
+        if (writeSpace < readSpace) {
+          count = writeSpace;
+        } else {
+          count = readSpace;
+        }
+      } else {
+        count = remainingSurround;
+      }
+      ProcessReplacingSamples(inSurround, outSurround,
+                              mSurroundDelay.get() + mSurroundWritePosition,
+                              mSurroundDelay.get() + mSurroundReadPosition, count);
+      inSurround += count;
+      outSurround += count;
+      mSurroundWritePosition += count;
+      if (mSurroundWritePosition >= mDelayBufferSamples) {
+        mSurroundWritePosition -= mDelayBufferSamples;
+      }
+      mSurroundReadPosition += count;
+      if (mSurroundReadPosition >= mDelayBufferSamples) {
+        mSurroundReadPosition -= mDelayBufferSamples;
+      }
+      remainingSurround -= count;
+      UpdateChannelLFO(count, 3);
     }
   }
 }

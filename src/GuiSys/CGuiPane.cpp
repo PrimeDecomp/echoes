@@ -62,21 +62,21 @@ void CGuiPane::ScaleDimensions(const CVector3f& scale) {
 }
 
 void CGuiPane::InitializeBuffers() {
-  mPanePoints[0] = -mWidth * 0.5f;
+  mPanePoints[0] = -mWidth / 2.f;
   mPanePoints[1] = 0.f;
-  mPanePoints[2] = mHeight * 0.5f;
+  mPanePoints[2] = mHeight / 2.f;
 
-  mPanePoints[3] = -mWidth * 0.5f;
+  mPanePoints[3] = -mWidth / 2.f;
   mPanePoints[4] = 0.f;
-  mPanePoints[5] = -mHeight * 0.5f;
+  mPanePoints[5] = -mHeight / 2.f;
 
-  mPanePoints[6] = mWidth * 0.5f;
+  mPanePoints[6] = mWidth / 2.f;
   mPanePoints[7] = 0.f;
-  mPanePoints[8] = mHeight * 0.5f;
+  mPanePoints[8] = mHeight / 2.f;
 
-  mPanePoints[9] = mWidth * 0.5f;
+  mPanePoints[9] = mWidth / 2.f;
   mPanePoints[10] = 0.f;
-  mPanePoints[11] = -mHeight * 0.5f;
+  mPanePoints[11] = -mHeight / 2.f;
 }
 
 void CGuiPane::SetDimensions(const CVector2f& dim, bool initVBO) {

@@ -1,8 +1,8 @@
 #include "rstl/StringExtras.hpp"
 #include "rstl/math.hpp"
 
-#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/Alloc/CMemory.hpp"
+#include "Kyoto/Basics/CCast.hpp"
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
@@ -63,10 +63,10 @@ int CStringExtras::CompareCaseInsensitive(const rstl::string& left, const rstl::
 rstl::string CStringExtras::ConvertToLowerCase(const rstl::string& str) {
   rstl::string ret(str);
   for (int i = 0; i < ret.length(); ++i) {
-    const unsigned char* before = reinterpret_cast< const unsigned char* >(ret.data());
+    const unsigned char& c = reinterpret_cast< const unsigned char* >(ret.data())[i];
     ret.reserve(ret.length());
-    char* after = const_cast< char* >(ret.data());
-    after[i] = ConvertToLowerCase(before[i]);
+    char& out = const_cast< char* >(ret.data())[i];
+    out = ConvertToLowerCase(c);
   }
   return ret;
 }

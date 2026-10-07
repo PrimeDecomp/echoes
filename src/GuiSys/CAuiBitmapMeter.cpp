@@ -32,6 +32,8 @@ CAuiBitmapMeter::CAuiBitmapMeter(const CGuiWidgetParms& parms, CSimplePool* pool
 
 CAuiBitmapMeter::~CAuiBitmapMeter() {}
 
+static const char* const skTextureId = "TextureId";
+
 CGuiWidget* CAuiBitmapMeter::Create(CGuiFrame* frame, CInputStream& in, CSimplePool* pool,
                                     uint version) {
   CGuiWidgetParms parms = ReadWidgetHeader(frame, in);

@@ -32,7 +32,7 @@ CProjectileWeapon::CProjectileWeapon(const TToken< CWeaponDescription >& descrip
 , mLocalOffset(CVector3f::Zero())
 , mInterpolationOffset(CVector3f::Zero())
 , mProjOffset(CVector3f::Zero())
-, mScale(CVector3f(1.f, 1.f, 1.f))
+, mScale(CVector3f::One())
 , mLocalOffset2(CVector3f::Zero())
 , mGlobalScale(scale)
 , mVelocity(CVector3f::Zero())
@@ -74,15 +74,16 @@ CProjectileWeapon::CProjectileWeapon(const TToken< CWeaponDescription >& descrip
   CGlobalRandom random(mRandom);
   mVMD2 = mWeaponDesc->mVMD2;
   mAPSO = mWeaponDesc->mAPSO;
+  const uint flag = mFlags & 1;
 
   if (mWeaponDesc->mAPSM) {
     mAPSMGen = rs_new CElementGen(*mWeaponDesc->mAPSM, CElementGen::kMOT_Normal,
-                                  (mFlags & 1) ? CElementGen::kOSF_Two : CElementGen::kOSF_One);
+                                  flag ? CElementGen::kOSF_Two : CElementGen::kOSF_One);
     mAPSMGen->SetGlobalScale(scale);
   }
   if (mWeaponDesc->mAPS2) {
     mAPS2Gen = rs_new CElementGen(*mWeaponDesc->mAPS2, CElementGen::kMOT_Normal,
-                                  (mFlags & 1) ? CElementGen::kOSF_Two : CElementGen::kOSF_One);
+                                  flag ? CElementGen::kOSF_Two : CElementGen::kOSF_One);
     mAPS2Gen->SetGlobalScale(scale);
   }
   if (mWeaponDesc->mASW1) {
@@ -108,11 +109,11 @@ CProjectileWeapon::CProjectileWeapon(const TToken< CWeaponDescription >& descrip
   }
   if (mWeaponDesc->mIORN) {
     CTransform4f orientation = CTransform4f::Identity();
-    CVector3f angles = CVector3f::Zero();
+    CVector3f angles(0.f, 0.f, 0.f);
     mWeaponDesc->mIORN->GetValue(0, angles);
-    orientation.RotateLocalZ(CRelAngle::FromDegrees(angles.GetX()));
+    orientation.RotateLocalX(CRelAngle::FromDegrees(angles.GetX()));
     orientation.RotateLocalY(CRelAngle::FromDegrees(angles.GetY()));
-    orientation.RotateLocalX(CRelAngle::FromDegrees(angles.GetZ()));
+    orientation.RotateLocalZ(CRelAngle::FromDegrees(angles.GetZ()));
     SetRelativeOrientation(orientation);
   } else {
     SetRelativeOrientation(CTransform4f::Identity());
@@ -121,13 +122,15 @@ CProjectileWeapon::CProjectileWeapon(const TToken< CWeaponDescription >& descrip
     mModel = *mWeaponDesc->GetOHEF();
   }
 
-  mHasBillboardEffects = mWeaponDesc->mB1TX || mWeaponDesc->mB2TX || mWeaponDesc->mTTEX;
+  if (mWeaponDesc->mB1TX || mWeaponDesc->mB2TX || mWeaponDesc->mTTEX) {
+    mHasBillboardEffects = true;
+  }
   mAP11 = mWeaponDesc->mAP11;
   mAP21 = mWeaponDesc->mAP21;
   mAS11 = mWeaponDesc->mAS11;
   mAS12 = mWeaponDesc->mAS12;
   mAS13 = mWeaponDesc->mAS13;
-  UpdateChildParticleSystems(GetTickTime(), false);
+  UpdateChildParticleSystems(1.f / 60.f, false);
   UpdateBillboardEffects();
 }
 
@@ -140,11 +143,15 @@ CProjectileWeapon::~CProjectileWeapon() {
   delete mSwoosh3;
 }
 
+// Guessed helper: the target multiplies the frame delta by an unfolded 1.0.
+static inline double GetTimeScale() { return 1.0; }
+
 bool CProjectileWeapon::Update(float dt) {
   CGlobalRandom random(mRandom);
   double actualTime = mCurFrame * (1.0 / 60.0);
   mChildSystemUpdateRate = 0;
   double useDt = close_enough(dt, 1.f / 60.f, 1.6666666851961054e-5f) ? 1.0 / 60.0 : dt;
+  useDt *= GetTimeScale();
   if (useDt < 0.0) {
     useDt = 0.0;
   }
@@ -193,7 +200,7 @@ void CProjectileWeapon::UpdateParticleFX() {
     mAPS2Gen->Update(1.f / 60.f);
   }
   for (int i = 0; i < mChildSystemUpdateRate; ++i) {
-    UpdateChildParticleSystems(GetTickTime(), false);
+    UpdateChildParticleSystems(1.f / 60.f, false);
   }
 }
 
@@ -213,7 +220,10 @@ void CProjectileWeapon::SetWorldSpaceOrientation(const CTransform4f& orientation
 }
 
 void CProjectileWeapon::UpdatePSTranslationAndOrientation() {
-  if (mCurFrame > mLifetime || !mActive) {
+  if (mLifetime < mCurFrame) {
+    return;
+  }
+  if (!mActive) {
     return;
   }
 
@@ -222,19 +232,20 @@ void CProjectileWeapon::UpdatePSTranslationAndOrientation() {
     mWeaponDesc->mPSVM->GetValue(mCurFrame, mVelocity, mLocalOffset);
   }
   if (mVMD2) {
-    mLocalOffset += mLocalXf * mVelocity;
+    const CVector3f velocity = mLocalXf * mVelocity;
+    mLocalOffset += velocity;
   } else {
     mLocalOffset += mVelocity;
   }
-  mVelocity += mGravity / 60.f;
+  mVelocity += mGravity * (1.f / 60.f);
 
   if (mWeaponDesc->mPSOV) {
-    CVector3f angles = CVector3f::Zero();
+    CVector3f angles(0.f, 0.f, 0.f);
     mWeaponDesc->mPSOV->GetValue(mCurFrame, angles);
     CTransform4f orientation = mLocalXf;
-    orientation.RotateLocalZ(CRelAngle::FromDegrees(angles.GetX()));
+    orientation.RotateLocalX(CRelAngle::FromDegrees(angles.GetX()));
     orientation.RotateLocalY(CRelAngle::FromDegrees(angles.GetY()));
-    orientation.RotateLocalX(CRelAngle::FromDegrees(angles.GetZ()));
+    orientation.RotateLocalZ(CRelAngle::FromDegrees(angles.GetZ()));
     SetRelativeOrientation(orientation);
   }
   if (mWeaponDesc->mPSCL) {
@@ -253,7 +264,8 @@ void CProjectileWeapon::UpdatePSTranslationAndOrientation() {
 
 void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnly) {
   double useDt = close_enough(dt, 1.f / 60.f, 1.6666666851961054e-5f) ? 1.0 / 60.0 : dt;
-  if (mAPSMGen || mAPS2Gen || mSwoosh1 || mSwoosh2 || mSwoosh3) {
+  const bool hasSystems = mAPSMGen || mAPS2Gen || mSwoosh1 || mSwoosh2 || mSwoosh3;
+  if (hasSystems) {
     const CVector3f translation = GetTranslation() - mParticleTranslationOffset;
     const CVector3f globalTranslation =
         mUseParticleTranslationOffset ? translation + mParticleTranslationOffset : translation;
@@ -284,7 +296,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
       if (!mWeaponDesc->mSPS1 && !translationOnly) {
         mAPSMGen->Update(useDt);
       }
-      if (mAPSMGen->IsSystemDeletable()) {
+      if (mAPSMGen->IsSystemDeletable() == true) {
         delete mAPSMGen;
         mAPSMGen = nullptr;
       }
@@ -315,7 +327,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
       if (!mWeaponDesc->mSPS2 && !translationOnly) {
         mAPS2Gen->Update(useDt);
       }
-      if (mAPS2Gen->IsSystemDeletable()) {
+      if (mAPS2Gen->IsSystemDeletable() == true) {
         delete mAPS2Gen;
         mAPS2Gen = nullptr;
       }
@@ -341,7 +353,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
         mSwoosh1->SetWarmUp();
         mSwoosh1->Update(0.0);
       }
-      if (mSwoosh1->IsSystemDeletable()) {
+      if (mSwoosh1->IsSystemDeletable() == true) {
         delete mSwoosh1;
         mSwoosh1 = nullptr;
       }
@@ -367,7 +379,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
         mSwoosh2->SetWarmUp();
         mSwoosh2->Update(0.0);
       }
-      if (mSwoosh2->IsSystemDeletable()) {
+      if (mSwoosh2->IsSystemDeletable() == true) {
         delete mSwoosh2;
         mSwoosh2 = nullptr;
       }
@@ -393,7 +405,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
         mSwoosh3->SetWarmUp();
         mSwoosh3->Update(0.0);
       }
-      if (mSwoosh3->IsSystemDeletable()) {
+      if (mSwoosh3->IsSystemDeletable() == true) {
         delete mSwoosh3;
         mSwoosh3 = nullptr;
       }
@@ -402,7 +414,7 @@ void CProjectileWeapon::UpdateChildParticleSystems(float dt, bool translationOnl
 
   if (x16c_ && !translationOnly) {
     x16c_->Update(useDt);
-    if (x16c_->IsSystemDeletable()) {
+    if (x16c_->IsSystemDeletable() == true) {
       delete x16c_;
       x16c_ = nullptr;
     }
@@ -418,60 +430,62 @@ void CProjectileWeapon::UpdateBillboardEffects() {
   CParticleGlobals::SetEmitterTime(mCurFrame);
   CParticleGlobals::SetParticleLifetime(mLifetime);
   CParticleGlobals::UpdateParticleLifetimeTweenValues(mCurFrame);
+  const CWeaponDescription& description = **mWeaponDesc;
 
-  if (mWeaponDesc->mB1TX) {
-    if (mWeaponDesc->mB1SE) {
-      mWeaponDesc->mB1SE->GetValue(mCurFrame, mBillboard1Size);
+  if (description.mB1TX) {
+    if (description.mB1SE) {
+      description.mB1SE->GetValue(mCurFrame, mBillboard1Size);
     }
-    if (mWeaponDesc->mB1PO) {
-      mWeaponDesc->mB1PO->GetValue(mCurFrame, mBillboard1Offset);
-    }
-  }
-  if (mWeaponDesc->mB2TX) {
-    if (mWeaponDesc->mB2SE) {
-      mWeaponDesc->mB2SE->GetValue(mCurFrame, mBillboard2Size);
-    }
-    if (mWeaponDesc->mB2PO) {
-      mWeaponDesc->mB2PO->GetValue(mCurFrame, mBillboard2Offset);
+    if (description.mB1PO) {
+      description.mB1PO->GetValue(mCurFrame, mBillboard1Offset);
     }
   }
-  if (mWeaponDesc->mTTEX) {
-    if (mWeaponDesc->mTSZE) {
-      mWeaponDesc->mTSZE->GetValue(mCurFrame, mTrailSize);
+  if (description.mB2TX) {
+    if (description.mB2SE) {
+      description.mB2SE->GetValue(mCurFrame, mBillboard2Size);
     }
-    if (mWeaponDesc->mTLEN) {
-      mWeaponDesc->mTLEN->GetValue(mCurFrame, mTrailLength);
+    if (description.mB2PO) {
+      description.mB2PO->GetValue(mCurFrame, mBillboard2Offset);
     }
-    if (mWeaponDesc->mTLPO) {
-      mWeaponDesc->mTLPO->GetValue(mCurFrame, mTrailOffset);
+  }
+  if (description.mTTEX) {
+    if (description.mTSZE) {
+      description.mTSZE->GetValue(mCurFrame, mTrailSize);
+    }
+    if (description.mTLEN) {
+      description.mTLEN->GetValue(mCurFrame, mTrailLength);
+    }
+    if (description.mTLPO) {
+      description.mTLPO->GetValue(mCurFrame, mTrailOffset);
     }
   }
 }
 
 const bool CProjectileWeapon::IsSystemDeletable() const {
+  bool ret = true;
   if (mAPSMGen && !mAPSMGen->IsSystemDeletable()) {
-    return false;
+    ret = false;
+  } else if (mAPS2Gen && !mAPS2Gen->IsSystemDeletable()) {
+    ret = false;
+  } else if (mSwoosh1 && !mSwoosh1->IsSystemDeletable()) {
+    ret = false;
+  } else if (mSwoosh2 && !mSwoosh2->IsSystemDeletable()) {
+    ret = false;
+  } else if (mSwoosh3 && !mSwoosh3->IsSystemDeletable()) {
+    ret = false;
+  } else if (x16c_ && !x16c_->IsSystemDeletable()) {
+    ret = false;
+  } else if (mActive) {
+    ret = mCurFrame >= mLifetime;
   }
-  if (mAPS2Gen && !mAPS2Gen->IsSystemDeletable()) {
-    return false;
-  }
-  if (mSwoosh1 && !mSwoosh1->IsSystemDeletable()) {
-    return false;
-  }
-  if (mSwoosh2 && !mSwoosh2->IsSystemDeletable()) {
-    return false;
-  }
-  if (mSwoosh3 && !mSwoosh3->IsSystemDeletable()) {
-    return false;
-  }
-  if (x16c_ && !x16c_->IsSystemDeletable()) {
-    return false;
-  }
-  return !mActive || mCurFrame >= mLifetime;
+  return ret;
 }
 
 void CProjectileWeapon::Render() const {
-  if (mCurFrame > mLifetime || !mActive) {
+  if (mCurFrame > mLifetime) {
+    return;
+  }
+  if (!mActive) {
     return;
   }
   if (mModel) {
@@ -544,9 +558,21 @@ void CProjectileWeapon::RenderBillboardEffects() const {
   CColor trailEndColor = CColor::Grey();
   float billboard1Rotation = 0.f;
   float billboard2Rotation = 0.f;
-  SUVElementSet billboard1UV = {0.f, 0.f, 1.f, 1.f};
-  SUVElementSet billboard2UV = {0.f, 0.f, 1.f, 1.f};
-  SUVElementSet trailUV = {0.f, 0.f, 1.f, 1.f};
+  SUVElementSet billboard1UV;
+  SUVElementSet billboard2UV;
+  SUVElementSet trailUV;
+  billboard1UV.xMin = 0.f;
+  billboard1UV.yMin = 0.f;
+  billboard1UV.xMax = 1.f;
+  billboard1UV.yMax = 1.f;
+  billboard2UV.xMin = 0.f;
+  billboard2UV.yMin = 0.f;
+  billboard2UV.xMax = 1.f;
+  billboard2UV.yMax = 1.f;
+  trailUV.xMin = 0.f;
+  trailUV.yMin = 0.f;
+  trailUV.xMax = 1.f;
+  trailUV.yMax = 1.f;
 
   if (description.mB1TX) {
     description.mB1TX->GetValueUV(mCurFrame, billboard1UV);
@@ -579,10 +605,10 @@ void CProjectileWeapon::RenderBillboardEffects() const {
   const CTransform4f orientation = GetTransform();
   CVector3f direction = orientation * GetVelocity();
   const float speed = direction.Magnitude();
-  if (speed <= FLT_EPSILON) {
-    direction = CVector3f(0.f, 1.f, 0.f);
-  } else {
+  if (speed > FLT_EPSILON) {
     direction *= 1.f / speed;
+  } else {
+    direction = CVector3f(0.f, 1.f, 0.f);
   }
   const CVector3f position = GetTranslation();
   const CTransform4f scale = CTransform4f::Scale(mGlobalScale);
@@ -745,9 +771,10 @@ CProjectileWeapon::CollisionOccured(EWeaponCollisionResponseTypes type, bool def
     if (useTarget && toTarget.CanBeNormalized()) {
       SetWorldSpaceOrientation(CTransform4f::LookAt(CVector3f::Zero(), toTarget.AsNormalized()));
     } else {
-      const CVector3f forward = GetTransform().GetForward();
-      SetWorldSpaceOrientation(CTransform4f::LookAt(
-          CVector3f::Zero(), forward - 2.f * CVector3f::Dot(normal, forward) * normal, normal));
+      const CVector3f& forward = GetTransform().GetForward();
+      const CTransform4f orientation = CTransform4f::LookAt(
+          CVector3f::Zero(), forward - 2.f * CVector3f::Dot(normal, forward) * normal, normal);
+      SetWorldSpaceOrientation(orientation);
     }
     return rstl::optional_object_null();
   }
@@ -876,7 +903,7 @@ rstl::optional_object< CAABox > CProjectileWeapon::GetBounds() const {
         rstl::max_val(rstl::max_val(mGlobalScale.GetX(), mGlobalScale.GetY()), mGlobalScale.GetZ());
     const float radius = (size + CMath::FastSqrtF(offsetSquared)) * scale;
     const CVector3f extent(radius, radius, radius);
-    const CVector3f center = GetTranslation();
+    const CVector3f& center = GetTranslation();
     result.AccumulateBounds(center - extent);
     result.AccumulateBounds(center + extent);
     hasBounds = true;
@@ -892,5 +919,5 @@ float CProjectileWeapon::GetTickTime() { return 1.f / 60.f; }
 void CProjectileWeapon::SetParticleTranslationOffset(const CVector3f& offset) {
   mUseParticleTranslationOffset = true;
   mParticleTranslationOffset = offset;
-  UpdateChildParticleSystems(GetTickTime(), true);
+  UpdateChildParticleSystems(1.f / 60.f, true);
 }

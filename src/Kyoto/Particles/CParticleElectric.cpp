@@ -182,8 +182,8 @@ void CParticleElectric::CalculatePoints() {
     mCalculatedVerts[0] = pos;
     const int segments = mSSEG - 1;
     const float segDiv = 1.f / static_cast< float >(segments);
-    CVector3f accum = mCalculatedVerts[0];
     const CVector3f segDelta = (fpos - pos) * segDiv;
+    CVector3f accum = mCalculatedVerts[0];
     for (int i = 1; i < segments; ++i) {
       const float r = mRandState.Range(-0.45f, 0.45f);
       mCalculatedVerts[i] = accum + segDelta * r;

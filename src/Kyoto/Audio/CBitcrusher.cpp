@@ -10,16 +10,16 @@ CBitcrusher::CBitcrusher(AudioMasterCallback audioMaster)
 , mDistortionType(0.f)
 , mGain(1.f)
 , mBitDepth(0.f)
-, mSampleRateReduction(1.f)
-, mSampleCounter(0) {
+, mSampleRateReduction(1.f) {
   mHeldSamples[1] = 0.f;
   mHeldSamples[0] = 0.f;
+  mSampleCounter = 0;
   // The native constructor does not initialize the surround held sample.
   canMono(true);
   setNumInputs(2);
   setNumOutputs(2);
   setUniqueID('Bits');
-  hasVu(true);
+  canProcessReplacing(true);
   strcpy(mProgramName, "Bitcrusher VST");
 }
 
@@ -47,18 +47,22 @@ void CBitcrusher::setParameter(long index, float value) {
 }
 
 float CBitcrusher::getParameter(long index) {
+  float ret = 0.f;
   switch (index) {
   case 0:
-    return mDistortionType;
+    ret = mDistortionType;
+    break;
   case 1:
-    return mGain;
+    ret = mGain;
+    break;
   case 2:
-    return mBitDepth;
+    ret = mBitDepth;
+    break;
   case 3:
-    return mSampleRateReduction;
-  default:
-    return 0.f;
+    ret = mSampleRateReduction;
+    break;
   }
+  return ret;
 }
 
 void CBitcrusher::getParameterName(long index, char* name) {
@@ -78,18 +82,19 @@ void CBitcrusher::getParameterName(long index, char* name) {
   }
 }
 
+// The native calls pass text as a stray trailing vararg.
 void CBitcrusher::getParameterDisplay(long index, char* text) {
   switch (index) {
   case 0:
     if (mDistortionType < 0.33)
-      sprintf(text, "%i", 1);
+      sprintf(text, "%i", 1, text);
     if (mDistortionType >= 0.33 && mDistortionType <= 0.66)
-      sprintf(text, "%i", 2);
+      sprintf(text, "%i", 2, text);
     if (mDistortionType > 0.66)
-      sprintf(text, "%i", 3);
+      sprintf(text, "%i", 3, text);
     break;
   case 1:
-    sprintf(text, "%f", 20.0 * static_cast< float >(log10(-16.f * mGain + 17.f)));
+    sprintf(text, "%f", 20.0 * static_cast< float >(log10(-16.f * mGain + 17.f)), text);
     break;
   case 2:
     sprintf(text, "%i", static_cast< int >(-23.f * mBitDepth + 24.f));

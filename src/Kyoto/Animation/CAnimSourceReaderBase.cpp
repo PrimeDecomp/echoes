@@ -12,7 +12,7 @@ uint _getPOIList(const CCharAnimTime& time, T* listOut, uint capacity, uint iter
   if (count > 0) {
     const CCharAnimTime& duration = sourceInfo.GetAnimationDuration();
     CCharAnimTime totalTime = curTime + time;
-    CCharAnimTime endTime = rstl::min_val(duration, totalTime);
+    CCharAnimTime endTime = rstl::min_val< const CCharAnimTime& >(duration, totalTime);
     if (passedCount < count) {
       int index = passedCount;
       const int initialIndex = index;
@@ -126,9 +126,10 @@ void CAnimSourceReaderBase::UpdatePOIStates() {
 }
 
 rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueBoolPOIs() const {
-  rstl::set< rstl::pair< uint, int > > result;
   const rstl::vector< CBoolPOINode >& nodes = mPOIData->GetBoolPOIStream();
-  for (int i = 0; i < nodes.size(); ++i) {
+  const int count = nodes.size();
+  rstl::set< rstl::pair< uint, int > > result;
+  for (int i = 0; i < count; ++i) {
     if (nodes[i].GetSaveState()) {
       result.insert(rstl::pair< uint, int >(nodes[i].GetNameHash(), nodes[i].GetIndex()));
     }
@@ -137,9 +138,10 @@ rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueBoolPOIs() 
 }
 
 rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueInt32POIs() const {
-  rstl::set< rstl::pair< uint, int > > result;
   const rstl::vector< CInt32POINode >& nodes = mPOIData->GetInt32POIStream();
-  for (int i = 0; i < nodes.size(); ++i) {
+  const int count = nodes.size();
+  rstl::set< rstl::pair< uint, int > > result;
+  for (int i = 0; i < count; ++i) {
     if (nodes[i].GetSaveState()) {
       result.insert(rstl::pair< uint, int >(nodes[i].GetNameHash(), nodes[i].GetIndex()));
     }
@@ -148,9 +150,10 @@ rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueInt32POIs()
 }
 
 rstl::set< rstl::pair< uint, int > > CAnimSourceReaderBase::GetUniqueParticlePOIs() const {
-  rstl::set< rstl::pair< uint, int > > result;
   const rstl::vector< CParticlePOINode >& nodes = mPOIData->GetParticlePOIStream();
-  for (int i = 0; i < nodes.size(); ++i) {
+  const int count = nodes.size();
+  rstl::set< rstl::pair< uint, int > > result;
+  for (int i = 0; i < count; ++i) {
     if (nodes[i].GetSaveState()) {
       result.insert(rstl::pair< uint, int >(nodes[i].GetNameHash(), nodes[i].GetIndex()));
     }

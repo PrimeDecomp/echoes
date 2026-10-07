@@ -3,9 +3,9 @@
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/CDvdFile.hpp"
 #include "Kyoto/CDvdRequest.hpp"
+#include "rstl/StringExtras.hpp"
 #include "rstl/auto_ptr.hpp"
 #include "rstl/list.hpp"
-#include "rstl/StringExtras.hpp"
 #include "rstl/vector.hpp"
 
 #include "dolphin/os/OSCache.h"
@@ -54,8 +54,8 @@ CFilePreloadData::CFilePreloadData(const rstl::string& path)
       length = remaining;
     }
     const uint alignedLength = (length + 31) & ~31;
-    rstl::auto_ptr< uchar > buffer(static_cast< uchar* >(
-        CMemory::Alloc(alignedLength, IAllocator::kHI_RoundUpLen)));
+    rstl::auto_ptr< uchar > buffer(
+        static_cast< uchar* >(CMemory::Alloc(alignedLength, IAllocator::kHI_RoundUpLen)));
     rstl::auto_ptr< CDvdRequest > request(
         file.AsyncSeekRead(buffer.get(), alignedLength, kSO_Set, offset));
     mBuffers.push_back_unsafe(buffer);
@@ -83,8 +83,9 @@ bool CFilePreloadData::IsReady() {
 }
 
 void CFilePreloadData::Read(void* dest, int offset, int length) {
+  int firstLength;
   const int chunk = offset / 0x4000;
-  int firstLength = (chunk + 1) * 0x4000 - offset;
+  firstLength = (chunk + 1) * 0x4000 - offset;
   if (length < firstLength) {
     firstLength = length;
   }
@@ -94,10 +95,7 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
   int remaining = length - firstLength;
   int nextChunk = chunk + 1;
   while (remaining != 0) {
-    int count = 0x4000;
-    if (remaining <= 0x4000) {
-      count = remaining;
-    }
+    const int count = remaining > 0x4000 ? 0x4000 : remaining;
     CopyAndFlush(output, mBuffers[nextChunk].get(), count);
     remaining -= count;
     output += count;
@@ -105,8 +103,8 @@ void CFilePreloadData::Read(void* dest, int offset, int length) {
   }
 }
 
-static rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator FindFile(
-    const rstl::string& path) {
+static rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator
+FindFile(const rstl::string& path) {
   for (rstl::list< rstl::auto_ptr< CFilePreloadData > >::iterator it = sPreloadedFiles.begin();
        it != sPreloadedFiles.end(); ++it) {
     const int comparison = CStringExtras::CompareCaseInsensitive((*it)->GetFilename(), path);
@@ -140,9 +138,7 @@ static void ReleaseFile(const rstl::string& path) {
 
 CFilePreload::CFilePreload(const rstl::string& path) : mData(AcquireFile(path)) {}
 
-CFilePreload::CFilePreload(const CFilePreload& other) : mData(other.mData) {
-  ++mData->mRefCount;
-}
+CFilePreload::CFilePreload(const CFilePreload& other) : mData(other.mData) { ++mData->mRefCount; }
 
 CFilePreload::~CFilePreload() { ReleaseFile(mData->GetFilename()); }
 

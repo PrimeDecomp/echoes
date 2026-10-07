@@ -135,6 +135,7 @@ void CDecal::RenderQuad(CQuadDecal& decal, const CDecalDescription::SQuadDescr& 
       return;
     }
     tex->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
+    tex.GetObj();
     CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
     desc.mTEX->GetValueUV(mFrameIdx, uvSet);
     if (redToAlpha) {
@@ -176,28 +177,29 @@ void CDecal::RenderQuad(CQuadDecal& decal, const CDecalDescription::SQuadDescr& 
     modXf.AddTranslation(decal.mOffset);
     CGraphics::SetModelMatrix(modXf);
     CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+    const float halfSize = decal.mHalfSize;
 
     if (decal.mRotation == 0.f) {
       // Vertex 0
-      GXPosition3f32(-decal.mHalfSize, 0.001f, decal.mHalfSize);
+      GXPosition3f32(-halfSize, 0.001f, halfSize);
       GXColor1u32(color.GetColor_u32());
       GXTexCoord2f32(uvSet.xMin, uvSet.yMax);
       // Vertex 1
-      GXPosition3f32(decal.mHalfSize, 0.001f, decal.mHalfSize);
+      GXPosition3f32(halfSize, 0.001f, halfSize);
       GXColor1u32(color.GetColor_u32());
       GXTexCoord2f32(uvSet.xMax, uvSet.yMax);
       // Vertex 2
-      GXPosition3f32(-decal.mHalfSize, 0.001f, -decal.mHalfSize);
+      GXPosition3f32(-halfSize, 0.001f, -halfSize);
       GXColor1u32(color.GetColor_u32());
       GXTexCoord2f32(uvSet.xMin, uvSet.yMin);
       // Vertex 3
-      GXPosition3f32(decal.mHalfSize, 0.001f, -decal.mHalfSize);
+      GXPosition3f32(halfSize, 0.001f, -halfSize);
       GXColor1u32(color.GetColor_u32());
       GXTexCoord2f32(uvSet.xMax, uvSet.yMin);
     } else {
       const CRelAngle ang = CRelAngle::FromDegrees(decal.mRotation);
-      const float sinSize = sine(ang) * decal.mHalfSize;
-      const float cosSize = cosine(ang) * decal.mHalfSize;
+      const float sinSize = sine(ang) * halfSize;
+      const float cosSize = cosine(ang) * halfSize;
       // Vertex 0
       GXPosition3f32(sinSize - cosSize, 0.001f, cosSize + sinSize);
       GXColor1u32(color.GetColor_u32());
@@ -283,8 +285,7 @@ void CDecal::RenderMdl() const {
   CGraphics::SetModelMatrix(worldXf);
 
   if (mDescription->mDMAB) {
-    const CModelFlags flags = CModelFlags::Additive(color).DepthCompareUpdate(true, false);
-    (*mDescription->mDMDL)->Draw(flags);
+    (*mDescription->mDMDL)->Draw(CModelFlags::Additive(color).DepthCompareUpdate(true, false));
   } else if (color.GetAlpha() == 1.f) {
     (*mDescription->mDMDL)->Draw(CModelFlags::Normal());
   } else {
@@ -304,15 +305,17 @@ void CDecal::Render() const {
   CGraphics::DisableAllLights();
   CParticleGlobals::SetEmitterTime(mFrameIdx);
 
-  if (!mDescription->mQuad1.mTEX.null() && !(mFlags & 1)) {
+  const CDecalDescription::SQuadDescr& quad1 = mDescription->mQuad1;
+  if (!quad1.mTEX.null() && !(mFlags & 1)) {
     CParticleGlobals::SetParticleLifetime(mQuad1.mLifetime);
     CParticleGlobals::UpdateParticleLifetimeTweenValues(mFrameIdx);
-    RenderQuad(mQuad1, mDescription->mQuad1);
+    RenderQuad(mQuad1, quad1);
   }
-  if (!mDescription->mQuad2.mTEX.null() && !(mFlags & 2)) {
+  const CDecalDescription::SQuadDescr& quad2 = mDescription->mQuad2;
+  if (!quad2.mTEX.null() && !(mFlags & 2)) {
     CParticleGlobals::SetParticleLifetime(mQuad2.mLifetime);
     CParticleGlobals::UpdateParticleLifetimeTweenValues(mFrameIdx);
-    RenderQuad(mQuad2, mDescription->mQuad2);
+    RenderQuad(mQuad2, quad2);
   }
   if (mDescription->mDMDL && (mFlags & 4) == 0) {
     CParticleGlobals::SetParticleLifetime(mModelLifetime);
@@ -344,15 +347,17 @@ void CDecal::CDecalPolygon::Render(const CColor& color, const CVector2f& uvOffse
   CGraphics::SetCullMode(kCM_None);
   const float near = CGraphics::GetDepthNear();
   const float far = CGraphics::GetDepthFar();
-  const CGraphics::CProjectionState& projection = CGraphics::GetProjectionState();
-  CGraphics::SetDepthRange(near, far - 0.1f / (projection.GetFar() - projection.GetNear()));
+  CGraphics::SetDepthRange(near, far - 0.1f / (CGraphics::GetProjectionState().GetFar() -
+                                               CGraphics::GetProjectionState().GetNear()));
   CGraphics::SetModelMatrix(CTransform4f::Identity());
   CGX::Begin(GX_TRIANGLEFAN, GX_VTXFMT0, mVertices.size());
   for (int i = 0; i < mVertices.size(); ++i) {
-    const SDecalVertex& vertex = mVertices[i];
-    GXPosition3f32(vertex.mPosition.GetX(), vertex.mPosition.GetY(), vertex.mPosition.GetZ());
+    const float y = mVertices[i].mPosition.GetY();
+    const float z = mVertices[i].mPosition.GetZ();
+    GXPosition3f32(mVertices[i].mPosition.GetX(), y, z);
     GXColor1u32(color.GetColor_u32());
-    GXTexCoord2f32(vertex.mUV.GetX() + uvOffset.GetX(), vertex.mUV.GetY() + uvOffset.GetY());
+    GXTexCoord2f32(mVertices[i].mUV.GetX() + uvOffset.GetX(),
+                   mVertices[i].mUV.GetY() + uvOffset.GetY());
   }
   CGX::End();
   CGraphics::SetDepthRange(near, far);

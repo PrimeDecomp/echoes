@@ -4,6 +4,7 @@
 #include "Kyoto/Basics/CStopwatch.hpp"
 #include "Kyoto/Graphics/CCubeModel.hpp"
 #include "Kyoto/Graphics/CCubeSurface.hpp"
+#include "Kyoto/Graphics/CDisplayListReader.hpp"
 #include "Kyoto/Graphics/CGX.hpp"
 #include "Kyoto/Graphics/CGX_Impl.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
@@ -16,10 +17,10 @@
 
 #include "MetaRender/CCubeRenderer.hpp"
 
+#include "rstl/math.hpp"
+
 #include <dolphin/mtx.h>
 #include <string.h>
-
-extern "C" int fn_8033B70C(uint vtxDesc, int attr);
 
 typedef void (*TTevHandler)(const uint*& materialData, uint firstTev, uint& tevCount,
                             uint& tcgCount);
@@ -32,8 +33,8 @@ static void SetupAlphaMaskVtxDesc(uint vtxDesc);
 
 static const float gkEpsilon32 = FLT_EPSILON;
 
-static CVector3f sPlayerPosition(CVector3f::Zero());
 CVector3f CCubeMaterial::sViewingFrom(0.f, 0.f, 0.f);
+static CVector3f sPlayerPosition(CVector3f::Zero());
 static CTransform4f sTextureProjectionTransform(CTransform4f::Identity());
 int sLastMaterialUnique = -1;
 static float sThrobX = 1.f;
@@ -83,7 +84,7 @@ void CCubeMaterial::SetupBlendMode(const uint blendFactors, const CModelFlags& f
                                    bool alphaTest) {
   GXBlendFactor newSrcFactor = static_cast< GXBlendFactor >(blendFactors & 0xFFFF);
   GXBlendFactor newDstFactor = static_cast< GXBlendFactor >(blendFactors >> 0x10);
-  CModelFlags::ETrans blendMode = flags.GetTrans();
+  CModelFlags::ETrans blendMode = flags.GetTransSigned();
 
   GXCompare alphaCompare;
   if (alphaTest) {
@@ -293,8 +294,8 @@ static void HandleAlphaMask(uint vtxDesc, uint& tevCount, uint& texCount, uint& 
   CGX::SetTevAlphaIn(stage, GX_CA_ZERO, GX_CA_APREV, GX_CA_TEXA, GX_CA_ZERO);
   CGX::SetTevOrder(stage, static_cast< GXTexCoordID >(sAlphaMaskTexCoord), texMap, GX_COLOR_NULL);
   CGraphics::SetAlphaCompare(kAF_Greater, 0, kAO_And, kAF_Always, 0);
-  CGX::LoadTexMtxImm(PortalPlane::GetTextureTransform().GetCStyleMatrix(),
-                     sAlphaMaskPostTexMtx, GX_MTX3x4);
+  CGX::LoadTexMtxImm(PortalPlane::GetTextureTransform().GetCStyleMatrix(), sAlphaMaskPostTexMtx,
+                     GX_MTX3x4);
   CGX::SetTexCoordGen(static_cast< GXTexCoordID >(sAlphaMaskTexCoord), GX_TG_MTX3x4, GX_TG_POS,
                       static_cast< GXTexMtx >(GX_PNMTX0), GX_FALSE,
                       static_cast< GXPTTexMtx >(sAlphaMaskPostTexMtx));
@@ -307,25 +308,24 @@ static void HandleAlphaMask(uint vtxDesc, uint& tevCount, uint& texCount, uint& 
 
 static void SetupAlphaMaskVtxDesc(uint vtxDesc) {
   CGX::SetVtxDescv_Compressed(vtxDesc);
-  if (fn_8033B70C(vtxDesc, GX_VA_TEX6MTXIDX) == GX_DIRECT && sAlphaMaskTexCoord < 8) {
+  if (CDisplayListReader::GetAttributeType(vtxDesc, GX_VA_TEX6MTXIDX) == GX_DIRECT &&
+      sAlphaMaskTexCoord < 8) {
     CGX::SetVtxDesc(GX_VA_TEX6MTXIDX, GX_NONE);
     CGX::SetVtxDesc(static_cast< GXAttr >(sAlphaMaskTexCoord + GX_VA_TEX0MTXIDX), GX_DIRECT);
   }
 }
 
 static void ModulateKColor(const CModelFlags& flags) {
-  CGX::SetTevKColor(GX_KCOLOR0,
-                    CColor::Modulate(flags.GetColor(), reinterpret_cast< const CColor& >(
-                                                           CGX::GetTevKColor(GX_KCOLOR0)))
-                        .GetGXColor());
+  const CColor flagsColor = flags.GetColor();
+  const CColor color = CColor::Modulate(
+      flagsColor, reinterpret_cast< const CColor& >(CGX::GetTevKColor(GX_KCOLOR0)));
+  CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
 }
 
 static bool TryModulateKColor(uint tevCount, uint& kColorCount, const CModelFlags& flags) {
-  const CModelFlags::ETrans blendMode = flags.GetTrans();
-  if (blendMode != CModelFlags::kT_Additive && blendMode != CModelFlags::kT_Blend) {
-    return false;
-  }
-  if (tevCount != 1) {
+  const char blendMode = flags.GetTrans();
+  if ((blendMode != CModelFlags::kT_Additive && blendMode != CModelFlags::kT_Blend) ||
+      tevCount != 1) {
     return false;
   }
   if (kColorCount == 1) {
@@ -347,7 +347,7 @@ static void HandleTransparency(uint& finalTevCount, uint& finalKColorCount,
     return;
   }
 
-  const CModelFlags::ETrans blendMode = modelFlags.GetTrans();
+  const CModelFlags::ETrans blendMode = modelFlags.GetTransSigned();
   const CColor color = modelFlags.GetColor();
 
   if (blendMode == 2) {
@@ -452,8 +452,8 @@ static void DoModelShadow(uint texCount, uint tcgCount) {
 }
 
 uint CCubeMaterial::HandleReflection(const GXTexMapID indTexSlot, const int indMtxScaleExp,
-                                     const uint tevCount, const uint texCount,
-                                     const uint tcgCount, const uint kColorCount) {
+                                     const uint tevCount, const uint texCount, const uint tcgCount,
+                                     const uint kColorCount) {
   bool usesTevReg2 = false;
   for (uint i = 0; i < tevCount; ++i) {
     if ((CGX::GetTevState(static_cast< GXTevStageID >(i)).mColorOps >> 9 & 3) == GX_TEVREG2) {
@@ -607,18 +607,20 @@ static void HandleDepth(uint modelFlags, uint matFlags) {
   GXCompare func;
   if ((modelFlags & CModelFlags::kF_DepthCompare) == 0) {
     func = GX_ALWAYS;
-  } else if ((modelFlags & CModelFlags::kF_Unknown200) == 0) {
-    func = GX_LEQUAL;
-  } else if ((modelFlags & CModelFlags::kF_DepthGreater) != 0) {
-    if ((modelFlags & CModelFlags::kF_DepthNonInclusive) != 0) {
-      func = GX_GREATER;
+  } else if ((modelFlags & CModelFlags::kF_Unknown200) != 0) {
+    if ((modelFlags & CModelFlags::kF_DepthGreater) != 0) {
+      if ((modelFlags & CModelFlags::kF_DepthNonInclusive) != 0) {
+        func = GX_GREATER;
+      } else {
+        func = GX_GEQUAL;
+      }
+    } else if ((modelFlags & CModelFlags::kF_DepthNonInclusive) != 0) {
+      func = GX_LESS;
     } else {
-      func = GX_GEQUAL;
+      func = GX_EQUAL;
     }
-  } else if ((modelFlags & CModelFlags::kF_DepthNonInclusive) != 0) {
-    func = GX_LESS;
   } else {
-    func = GX_EQUAL;
+    func = GX_LEQUAL;
   }
   CGX::SetZMode(true, func,
                 (modelFlags & CModelFlags::kF_DepthUpdate) == CModelFlags::kF_DepthUpdate &&
@@ -694,8 +696,7 @@ static void HandleThermalTevs(const uint*& materialData, uint firstTev, uint& te
     materialDataCur.words += 5;
     texMapTexCoordFlags.words += 1;
   }
-  const int texCoord =
-      HandleThermalTev(firstTev, materialDataCur.words, texMapTexCoordFlags.words);
+  const int texCoord = HandleThermalTev(firstTev, materialDataCur.words, texMapTexCoordFlags.words);
 
   scanner_t uvAnim;
   uvAnim.words = savedTexMapTexCoordFlags.words + matTevCount;
@@ -861,8 +862,7 @@ void CCubeMaterial::SetCurrent(const CModelFlags& flags, const CCubeSurface& sur
       texCount += 1;
       finalKColorCount += 1;
     } else if (finalTevCount != 0 &&
-               (CGX::GetTevState(static_cast< GXTevStageID >(finalTevCount - 1)).mColorOps >>
-                    9 &
+               (CGX::GetTevState(static_cast< GXTevStageID >(finalTevCount - 1)).mColorOps >> 9 &
                 3) != 0) {
       DoPassthru(finalTevCount);
       finalTevCount += 1;
@@ -898,8 +898,7 @@ void CCubeMaterial::EnsureViewDepStateCached(const CCubeSurface* surface) {
   }
 
   const CTransform4f& modelMtx = CGraphics::GetModelMatrix();
-  const CVector3f& playerPos =
-      modelMtx.TransposeRotate(sPlayerPosition - modelMtx.GetTranslation());
+  const CVector3f& playerPos = modelMtx.TransposeMultiply(sPlayerPosition);
   CVector3f points[2];
   points[1] = playerPos;
   sLastModelCached = sRenderingModel;
@@ -938,7 +937,7 @@ void CCubeMaterial::EnsureViewDepStateCached(const CCubeSurface* surface) {
 
   const CVector3f distVec = modelPoint - playerPoint;
   const float dist = distVec.Magnitude();
-  const float reflDist = CMath::Max(gkEpsilon32, dist - 0.5f * radius);
+  const float reflDist = rstl::max_val(dist - 0.5f * radius, gkEpsilon32);
 
   if (reflDist >= 5.f) {
     sReflectionAlpha = 0.f;
@@ -951,7 +950,7 @@ void CCubeMaterial::EnsureViewDepStateCached(const CCubeSurface* surface) {
   CGX::LoadTexMtxImm(xf.GetCStyleMatrix(), GX_TEXMTX6, GX_MTX3x4);
   CGX::LoadTexMtxImm(texMtx1, GX_PTTEXMTX6, GX_MTX3x4);
 
-  CVector3f dir = distVec / reflDist;
+  CVector3f dir = (1.f / reflDist) * distVec;
   CVector3f right = CVector3f::Cross(dir, CVector3f(0.f, 0.f, 1.f));
   float xScale = 0.32258067f;
   float yScale = 0.32258067f;
@@ -1023,8 +1022,10 @@ void CCubeModel::SetNewPlayerPositionAndTime(const CVector3f& pos, const CStopwa
   float throbAmplitudeY = 0.015f;
   float phaseX = 0.f;
   float phaseY = 1.f;
-  sThrobX = 1. / (1. - throbAmplitudeX * sin(time * frequency + phaseX));
-  sThrobY = 1. / (1. - throbAmplitudeY * sin(sLastTime * frequency + phaseY));
+  const float sinX = sin(time * frequency + phaseX);
+  sThrobX = 1.f / (1.f - throbAmplitudeX * sinX);
+  const float sinY = sin(sLastTime * frequency + phaseY);
+  sThrobY = 1.f / (1.f - throbAmplitudeY * sinY);
 }
 
 void CCubeModel::SetRenderModelBlack(bool v) {

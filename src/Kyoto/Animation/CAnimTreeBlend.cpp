@@ -8,7 +8,7 @@ rstl::ownership_transfer< IAnimReader > CAnimTreeBlend::VClone() const {
 float CAnimTreeBlend::VGetBlendingWeight() const { return mBlendWeight; }
 
 CCharAnimTime CAnimTreeBlend::VGetTimeRemaining() const {
-  return rstl::max_val(mA->VGetTimeRemaining(), mB->VGetTimeRemaining());
+  return rstl::max_val< const CCharAnimTime& >(mA->VGetTimeRemaining(), mB->VGetTimeRemaining());
 }
 
 CSteadyStateAnimInfo CAnimTreeBlend::VGetSteadyStateAnimInfo() const {
@@ -29,8 +29,9 @@ CSteadyStateAnimInfo CAnimTreeBlend::VGetSteadyStateAnimInfo() const {
     offset = offsetA + offsetB;
   }
 
-  return CSteadyStateAnimInfo(infoB.IsLooping(),
-                              rstl::max_val(infoA.GetDuration(), infoB.GetDuration()), offset);
+  return CSteadyStateAnimInfo(
+      infoB.IsLooping(),
+      rstl::max_val< const CCharAnimTime& >(infoA.GetDuration(), infoB.GetDuration()), offset);
 }
 
 rstl::string CAnimTreeBlend::CreatePrimitiveName(const rstl::ncrc_ptr< CAnimTreeNode >& a,
@@ -54,9 +55,12 @@ SAdvancementResults CAnimTreeBlend::VAdvanceView(const CCharAnimTime& time) {
       mCullSelector = 2;
   }
 
-  const CCharAnimTime remainder = rstl::max_val(resA.GetRemainder(), resB.GetRemainder());
+  const CCharAnimTime remainder =
+      rstl::max_val< const CCharAnimTime& >(resA.GetRemainder(), resB.GetRemainder());
+  const SAdvancementDeltas& deltasA = resA.mDeltas;
+  const SAdvancementDeltas& deltasB = resB.mDeltas;
   if (GetBlendRoot() & kBlendRoot_Offset)
-    return SAdvancementResults(
-        remainder, SAdvancementDeltas::Blend(resA.mDeltas, resB.mDeltas, GetBlendingWeight()));
+    return SAdvancementResults(remainder,
+                               SAdvancementDeltas::Blend(deltasA, deltasB, GetBlendingWeight()));
   return resB;
 }

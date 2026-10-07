@@ -24,10 +24,10 @@ void CGuiModel::UpdateDrawState(int drawFlags, CColor color) {
   }
 
   if (!(color == sDrawColor)) {
-    if (sDrawFlags == kGMDF_Alpha || sDrawFlags == kGMDF_Additive || drawFlags == kGMDF_Alpha ||
-        drawFlags == kGMDF_Additive) {
-      sDrawColor = color;
+    if (sDrawFlags == kGMDF_Alpha || sDrawFlags == kGMDF_Additive || drawFlags == kGMDF_Additive ||
+        drawFlags == kGMDF_Alpha) {
       sDrawFlags = drawFlags;
+      sDrawColor = color;
       CCubeMaterial::ResetTransparencyKColor();
       CCubeMaterial::ResetCachedMaterials();
     } else {

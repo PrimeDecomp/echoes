@@ -51,7 +51,7 @@ void ProcessCustomAux(uchar reason, SND_AUX_INFO* info, SAuxEffectProcessingStat
 static inline void PrepareProcessingState(SAuxEffectProcessingState& processing,
                                           AudioEffect* processor) {
   processing.mProcessor = processor;
-  processing.mEffectDescriptor = processor->getAeffect();
+  processing.mEffectDescriptor = processor->AudioEffect::getAeffect();
   processing.mLeftBuffer = rs_new float[kBufferSamples];
   processing.mRightBuffer = rs_new float[kBufferSamples];
   processing.mSurroundBuffer = rs_new float[kBufferSamples];
