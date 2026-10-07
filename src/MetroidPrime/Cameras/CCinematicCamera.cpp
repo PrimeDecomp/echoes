@@ -4,6 +4,7 @@
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptActor.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTimeKeyframe.hpp"
 
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
@@ -98,20 +99,27 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   }
   SetTransform(xf);
 
-  float fov = spline.GetFovByTime(mTime);
-  if ((mFlags & CScriptCamera::kF_VerticalFov) == 0) {
-    fov /= GetAspectRatio();
+  if ((mFlags & CScriptCamera::kF_VerticalFov) != 0) {
+    SetFovAndTarget(spline.GetFovByTime(mTime));
+  } else {
+    SetFovAndTarget(spline.GetFovByTime(mTime) / GetAspectRatio());
   }
-  SetTargetFov(fov);
   mMoveIntoEyePos = CalculateMoveOutofIntoEyePosition(false, mgr);
 
-  // TODO: fade the linked player actor using GetMoveOutofIntoAlpha once CScriptActor's
-  // player-actor flag is recovered in its shared interface.
+  if (CScriptActor* actor =
+          TCastToPtr< CScriptActor >(mgr.ObjectById(camera->GetCameraActorId()))) {
+    if (actor->IsPlayerActor()) {
+      actor->SetModelFlags(CModelFlags(CModelFlags::kT_Blend, GetMoveOutofIntoAlpha()));
+    }
+  }
   if (mTime > camera->GetDuration()) {
     mgr.CameraManager(GetControllerNumber())->StopCinematics(mgr);
   }
 
-  // TODO: forward mTime to the connected CScriptTimeKeyframe once its interface is recovered.
+  if (CScriptTimeKeyframe* keyframe =
+          TCastToPtr< CScriptTimeKeyframe >(mgr.ObjectById(camera->GetTimeKeyframeId()))) {
+    keyframe->SetTime(mTime, mgr);
+  }
   if ((mFlags & CScriptCamera::kF_SlowMotion) != 0) {
     mSlowMotionScale = camera->GetSlowMotionSpline().EvaluateAt(mTime);
   }
