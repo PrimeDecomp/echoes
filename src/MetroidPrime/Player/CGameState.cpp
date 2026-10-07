@@ -413,7 +413,8 @@ void CGameState::InitializeMemoryStates() {
   WriteBackupBuf();
 }
 
-void fn_80143E88() {
+// Guessed name; picks the world to boot into (InitialWorld if present, otherwise the front end).
+void SelectInitialWorld() {
   CMain::EnsureWorldPaksReady();
   gpGameState->AudioGroups().clear();
   const SObjectTag* initialWorld = gpResourceFactory->GetResourceIdByName("InitialWorld");
