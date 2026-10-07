@@ -35,25 +35,26 @@ bool CCollidableOBBTree::AABoxCollision(const COBBTree::CNode& node, const CTran
                                         const CMaterialList& material,
                                         const CMaterialFilter& filter, const CPlane* planes,
                                         CCollisionInfoList& infoList) const {
-  ++mTries;
-  if (!obb.OBBIntersectsBox(node.GetOBB())) {
-    ++mMisses;
-    return false;
-  }
-
-  node.SetHit(true);
-  if (node.IsLeaf()) {
-    return AABoxCollideWithLeaf(*node.GetLeafData(), xf, box, material, filter, planes, infoList);
-  }
-
   bool hit = false;
-  if (node.GetLeftNode() &&
-      AABoxCollision(*node.GetLeftNode(), xf, box, obb, material, filter, planes, infoList)) {
-    hit = true;
-  }
-  if (node.GetRightNode() &&
-      AABoxCollision(*node.GetRightNode(), xf, box, obb, material, filter, planes, infoList)) {
-    hit = true;
+  ++mTries;
+  if (obb.OBBIntersectsBox(node.GetOBB())) {
+    node.SetHit(true);
+    if (node.IsLeaf()) {
+      if (AABoxCollideWithLeaf(*node.GetLeafData(), xf, box, material, filter, planes, infoList)) {
+        hit = true;
+      }
+    } else {
+      if (node.GetLeftNode() &&
+          AABoxCollision(*node.GetLeftNode(), xf, box, obb, material, filter, planes, infoList)) {
+        hit = true;
+      }
+      if (node.GetRightNode() &&
+          AABoxCollision(*node.GetRightNode(), xf, box, obb, material, filter, planes, infoList)) {
+        hit = true;
+      }
+    }
+  } else {
+    ++mMisses;
   }
   return hit;
 }
@@ -94,25 +95,26 @@ bool CCollidableOBBTree::SphereCollision(const COBBTree::CNode& node, const CTra
                                          const CMaterialList& material,
                                          const CMaterialFilter& filter,
                                          CCollisionInfoList& infoList) const {
-  ++mTries;
-  if (!obb.OBBIntersectsBox(node.GetOBB())) {
-    ++mMisses;
-    return false;
-  }
-
-  node.SetHit(true);
-  if (node.IsLeaf()) {
-    return SphereCollideWithLeaf(*node.GetLeafData(), xf, sphere, material, filter, infoList);
-  }
-
   bool hit = false;
-  if (node.GetLeftNode() &&
-      SphereCollision(*node.GetLeftNode(), xf, sphere, obb, material, filter, infoList)) {
-    hit = true;
-  }
-  if (node.GetRightNode() &&
-      SphereCollision(*node.GetRightNode(), xf, sphere, obb, material, filter, infoList)) {
-    hit = true;
+  ++mTries;
+  if (obb.OBBIntersectsBox(node.GetOBB())) {
+    node.SetHit(true);
+    if (node.IsLeaf()) {
+      if (SphereCollideWithLeaf(*node.GetLeafData(), xf, sphere, material, filter, infoList)) {
+        hit = true;
+      }
+    } else {
+      if (node.GetLeftNode() &&
+          SphereCollision(*node.GetLeftNode(), xf, sphere, obb, material, filter, infoList)) {
+        hit = true;
+      }
+      if (node.GetRightNode() &&
+          SphereCollision(*node.GetRightNode(), xf, sphere, obb, material, filter, infoList)) {
+        hit = true;
+      }
+    }
+  } else {
+    ++mMisses;
   }
   return hit;
 }
@@ -217,26 +219,27 @@ bool CCollidableOBBTree::AABoxCollisionMoving(
     const CMaterialList& material, const CMaterialFilter& filter,
     const CMetroidAreaCollider::CMovingAABoxComponents& components, const CVector3f& direction,
     double& time, CCollisionInfo& info) const {
-  ++mTries;
-  if (!obb.OBBIntersectsBox(node.GetOBB())) {
-    ++mMisses;
-    return false;
-  }
-
-  node.SetHit(true);
-  if (node.IsLeaf()) {
-    return AABoxCollideWithLeafMoving(*node.GetLeafData(), xf, box, material, filter, components,
-                                      direction, time, info);
-  }
-
   bool hit = false;
-  if (node.GetLeftNode() && AABoxCollisionMoving(*node.GetLeftNode(), xf, box, obb, material,
-                                                 filter, components, direction, time, info)) {
-    hit = true;
-  }
-  if (node.GetRightNode() && AABoxCollisionMoving(*node.GetRightNode(), xf, box, obb, material,
-                                                  filter, components, direction, time, info)) {
-    hit = true;
+  ++mTries;
+  if (obb.OBBIntersectsBox(node.GetOBB())) {
+    node.SetHit(true);
+    if (node.IsLeaf()) {
+      if (AABoxCollideWithLeafMoving(*node.GetLeafData(), xf, box, material, filter, components,
+                                     direction, time, info)) {
+        hit = true;
+      }
+    } else {
+      if (node.GetLeftNode() && AABoxCollisionMoving(*node.GetLeftNode(), xf, box, obb, material,
+                                                     filter, components, direction, time, info)) {
+        hit = true;
+      }
+      if (node.GetRightNode() && AABoxCollisionMoving(*node.GetRightNode(), xf, box, obb, material,
+                                                      filter, components, direction, time, info)) {
+        hit = true;
+      }
+    }
+  } else {
+    ++mMisses;
   }
   return hit;
 }
@@ -433,26 +436,27 @@ bool CCollidableOBBTree::SphereCollisionMoving(const COBBTree::CNode& node, cons
                                                const CMaterialFilter& filter,
                                                const CVector3f& direction, double& time,
                                                CCollisionInfo& info) const {
-  ++mTries;
-  if (!obb.OBBIntersectsBox(node.GetOBB())) {
-    ++mMisses;
-    return false;
-  }
-
-  node.SetHit(true);
-  if (node.IsLeaf()) {
-    return SphereCollideWithLeafMoving(*node.GetLeafData(), xf, sphere, material, filter, direction,
-                                       time, info);
-  }
-
   bool hit = false;
-  if (node.GetLeftNode() && SphereCollisionMoving(*node.GetLeftNode(), xf, sphere, obb, material,
-                                                  filter, direction, time, info)) {
-    hit = true;
-  }
-  if (node.GetRightNode() && SphereCollisionMoving(*node.GetRightNode(), xf, sphere, obb, material,
-                                                   filter, direction, time, info)) {
-    hit = true;
+  ++mTries;
+  if (obb.OBBIntersectsBox(node.GetOBB())) {
+    node.SetHit(true);
+    if (node.IsLeaf()) {
+      if (SphereCollideWithLeafMoving(*node.GetLeafData(), xf, sphere, material, filter, direction,
+                                      time, info)) {
+        hit = true;
+      }
+    } else {
+      if (node.GetLeftNode() && SphereCollisionMoving(*node.GetLeftNode(), xf, sphere, obb,
+                                                      material, filter, direction, time, info)) {
+        hit = true;
+      }
+      if (node.GetRightNode() && SphereCollisionMoving(*node.GetRightNode(), xf, sphere, obb,
+                                                       material, filter, direction, time, info)) {
+        hit = true;
+      }
+    }
+  } else {
+    ++mMisses;
   }
   return hit;
 }
