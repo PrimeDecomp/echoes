@@ -62,7 +62,7 @@ private:
   static bool ContainsHint(const rstl::vector< THintSender >& hints, TUniqueId hint);
 
   bool ProcessAddedHints(CStateManager& mgr);
-  uchar ProcessRemovedHints(CStateManager& mgr);
+  const bool ProcessRemovedHints(CStateManager& mgr);
   bool AddHintState(int priority, const CHintState& hint);
 
   int mPlayerIndex;

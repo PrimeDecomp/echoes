@@ -57,7 +57,7 @@ bool CHintManager::SetHint(CHintState* hint, CStateManager& mgr, bool areaChange
 
 void CHintManager::ClearHint(CStateManager& mgr, bool areaChanged) { ClearCurrentHint(1000); }
 
-uchar CHintManager::ProcessRemovedHints(CStateManager& mgr) {
+const bool CHintManager::ProcessRemovedHints(CStateManager& mgr) {
   bool removedCurrent = false;
   if (!mRemovedHints.empty()) {
     for (rstl::vector< THintSender >::iterator request = mRemovedHints.begin();
