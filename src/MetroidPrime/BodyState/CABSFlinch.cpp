@@ -18,8 +18,9 @@ void CABSFlinch::Start(CBodyController& bc, CStateManager& mgr) {
   mWeight = cmd->GetWeight();
   mAnim = cmd->GetAnim();
   if (mAnim == -1) {
+    const CPASDatabase& db = bc.GetPASDatabase();
     const CPASAnimParmData parms(pas::kAS_AdditiveFlinch);
-    mAnim = bc.GetPASDatabase().FindBestAnimation(parms, *mgr.Random(), -1).second;
+    mAnim = db.FindBestAnimation(parms, *mgr.Random(), -1).second;
   }
 
   bc.GetOwner().ModelData()->AnimationData()->AddAdditiveAnimation(mAnim, mWeight, false, true);

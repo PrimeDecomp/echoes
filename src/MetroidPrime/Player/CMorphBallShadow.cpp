@@ -147,7 +147,7 @@ void CMorphBallShadow::Render(CStateManager& mgr, float alpha, const CTexture& s
   const CLight light = CLight::BuildDirectional(CVector3f::Down(), CColor(0.f, 0.f, 0.f, alpha));
   CGraphics::LoadLight(kLight0, light);
   const GXColor black = {0, 0, 0, 0};
-  CGX::SetChanAmbColor(CGX::Channel0, GXColor(black));
+  CGX::SetChanAmbColor(CGX::Channel0, black);
   const GXColor white = {255, 255, 255, 255};
   CGX::SetChanMatColor(CGX::Channel0, GXColor(white));
   CGX::SetNumChans(0);

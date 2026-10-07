@@ -3,8 +3,8 @@
 #include "Kyoto/Streams/COutputStream.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/Player/CPlayerListener.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/Player/CPlayerListener.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSpawnPoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "rstl/vector.hpp"
@@ -93,7 +93,8 @@ void CGMMultiplayer::NotifyListeners(CStateManager& mgr, uint sourceIndex, uint 
   if (targetIndex == uint(-1)) {
     return;
   }
-  for (rstl::set< TListener >::iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
+  for (rstl::set< TListener >::const_iterator it = mListeners.begin(); it != mListeners.end();
+       ++it) {
     if (it->first == targetIndex) {
       it->second->OnGameEvent(mgr, sourceIndex, targetIndex, event, value);
     }

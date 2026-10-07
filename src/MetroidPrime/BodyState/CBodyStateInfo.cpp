@@ -103,16 +103,16 @@ void CBodyStateInfo::SetupLocomotionStates(CActor& actor, EBodyType type) {
     mLocomotion = rs_new CBSFlyerLocomotion(actor, true);
     mTurn = rs_new CBSPitchableFlyerTurn();
     break;
-  case kBT_Floater:
-    mLocomotion = rs_new CBSFloaterLocomotion(actor);
-    mTurn = rs_new CBSTurn();
-    break;
   case kBT_WallWalker:
     mLocomotion = rs_new CBSWallWalkerLocomotion(actor);
     mTurn = rs_new CBSFlyerTurn();
     break;
   case kBT_AiMovedFlyer:
     mLocomotion = rs_new CBSAiMovedFlyerLocomotion(actor);
+    mTurn = rs_new CBSTurn();
+    break;
+  case kBT_Floater:
+    mLocomotion = rs_new CBSFloaterLocomotion(actor);
     mTurn = rs_new CBSTurn();
     break;
   case kBT_4WayBlended:

@@ -232,11 +232,12 @@ void CHudVisorBeamMenu::Update(float dt, const bool init) {
   case kAP_None:
     break;
   case kAP_Steady:
+    gpTweakGuiColors->GetVisorBeamMenuLozColor();
     for (int i = 0; i < 4; ++i) {
-      SMenuItem& item = mItems[i];
       const CColor iconBase = CColor::Modulate(
           palette[i], i == mSelectedItem ? gpTweakGuiColors->GetVisorBeamMenuIconSelectedColor()
                                          : gpTweakGuiColors->GetVisorBeamMenuIconUnselectedColor());
+      SMenuItem& item = mItems[i];
       const CColor& lozengeBase = i == mSelectedItem ? lozenge : inactive;
       const CColor icon =
           item.mOpacity == 0.f ? CColor(0) : CColor::Modulate(iconBase, iconFades[i]);
