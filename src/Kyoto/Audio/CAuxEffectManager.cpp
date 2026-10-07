@@ -54,10 +54,12 @@ CAuxEffectManager::CAuxEffectManager() : mNextId(0) {
 }
 
 void CAuxEffectManager::Initialize() {
-  for (int bus = 0; bus < 3; ++bus)
-    mContexts.push_back(SCallbackContext(this, bus));
-  for (int bus = 0; bus < 3; ++bus)
-    mBuses.push_back(TBus());
+  mContexts.push_back(SCallbackContext(this, 0));
+  mContexts.push_back(SCallbackContext(this, 1));
+  mContexts.push_back(SCallbackContext(this, 2));
+  mBuses.push_back(TBus());
+  mBuses.push_back(TBus());
+  mBuses.push_back(TBus());
   for (int bus = 0; bus < 3; ++bus)
     mCallbackInstalled[bus] = false;
 
@@ -72,13 +74,13 @@ void CAuxEffectManager::Initialize() {
 void CAuxEffectManager::Shutdown() {
   mContexts.clear();
   CInterruptGuard interrupts;
-  for (int bus = 0; bus < 3; ++bus)
+  for (uint bus = 0; bus < 3; ++bus)
     sndSetAuxProcessingCallbacks(kStudios[bus], nullptr, nullptr, SND_MIDI_NONE, 0, nullptr,
                                  nullptr, SND_MIDI_NONE, 0);
   for (int bus = 0; bus < mBuses.size(); ++bus) {
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      if (mBuses[bus][slot].GetState() != kES_Free)
-        mBuses[bus][slot].Shutdown();
+    for (SEffectSlot* slot = mBuses[bus].begin(); slot != mBuses[bus].end(); ++slot) {
+      if (slot->GetState() != kES_Free)
+        slot->Shutdown();
     }
   }
   mBuses.clear();
@@ -90,18 +92,21 @@ void CAuxEffectManager::Cleanup() {
     if (!mCallbackInstalled[bus])
       continue;
     int active = 0;
-    for (int slot = 0; slot < mBuses[bus].size(); ++slot) {
-      SEffectSlot& effect = mBuses[bus][slot];
-      if (effect.GetState() == kES_PendingCleanup)
-        effect.Shutdown();
-      if (effect.GetState() != kES_Free)
+    for (SEffectSlot* effect = mBuses[bus].begin(); effect != mBuses[bus].end(); ++effect) {
+      if (effect->GetState() == kES_PendingCleanup)
+        effect->Shutdown();
+      else if (effect->GetState() != kES_Free)
         ++active;
     }
     if (active == 0) {
-      {
+      if (bus == 2) {
         CInterruptGuard callbackInterrupts;
-        sndSetAuxProcessingCallbacks(kStudios[bus], bus == 2 ? NoEffectCallback : nullptr, nullptr,
-                                     SND_MIDI_NONE, 0, nullptr, nullptr, SND_MIDI_NONE, 0);
+        sndSetAuxProcessingCallbacks(kStudios[bus], NoEffectCallback, nullptr, SND_MIDI_NONE, 0,
+                                     nullptr, nullptr, SND_MIDI_NONE, 0);
+      } else {
+        CInterruptGuard callbackInterrupts;
+        sndSetAuxProcessingCallbacks(kStudios[bus], nullptr, nullptr, SND_MIDI_NONE, 0, nullptr,
+                                     nullptr, SND_MIDI_NONE, 0);
       }
       mCallbackInstalled[bus] = false;
     }
