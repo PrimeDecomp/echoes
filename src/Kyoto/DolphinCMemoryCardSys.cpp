@@ -46,8 +46,7 @@ CMemoryCardSys::CCardFileInfo::~CCardFileInfo() {
 
 ECardResult CMemoryCardSys::CCardFileInfo::Open() {
   const EMemoryCardPort port = GetCardPort();
-  ECardResult result =
-      static_cast< ECardResult >(CARDOpen(port, mFileName.data(), &mFileInfo));
+  ECardResult result = static_cast< ECardResult >(CARDOpen(port, mFileName.data(), &mFileInfo));
   mFileInfo.chan = port;
   if (result == kCR_READY) {
     CardStat stat;
@@ -82,8 +81,7 @@ ECardResult CMemoryCardSys::CCardFileInfo::StartRead() {
   mHeaderBuffer.assign(0x2000);
   mSlots[0].mData.assign(mSlotSize);
   mSlots[1].mData.assign(mSlotSize);
-  result =
-      static_cast< ECardResult >(CARDRead(&mFileInfo, mHeaderBuffer.data(), 0x2000, 0));
+  result = static_cast< ECardResult >(CARDRead(&mFileInfo, mHeaderBuffer.data(), 0x2000, 0));
   if (result == kCR_READY) {
     mStatus = kS_ReadHeader;
   }
@@ -121,8 +119,8 @@ ECardResult CMemoryCardSys::CCardFileInfo::PumpCardRead() {
     }
   } else if (mStatus == kS_ReadSlotA) {
     mStatus = kS_ReadSlotB;
-    result = static_cast< ECardResult >(CARDRead(&mFileInfo, mSlots[1].mData.data(),
-                                                 mSlotSize, mSlotSize + 0x2000));
+    result = static_cast< ECardResult >(
+        CARDRead(&mFileInfo, mSlots[1].mData.data(), mSlotSize, mSlotSize + 0x2000));
     if (result == kCR_READY) {
       return kCR_BUSY;
     }
@@ -133,11 +131,10 @@ ECardResult CMemoryCardSys::CCardFileInfo::PumpCardRead() {
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::WriteSaveSlot(int slot) {
-  void* data = mSlots[mSlot].mData.data();
   const int offset = slot * mSlotSize + 0x2000;
+  void* data = mSlots[mSlot].mData.data();
   DCStoreRange(data, mSlotSize);
-  return static_cast< ECardResult >(
-      CARDWriteAsync(&mFileInfo, data, mSlotSize, offset, nullptr));
+  return static_cast< ECardResult >(CARDWriteAsync(&mFileInfo, data, mSlotSize, offset, nullptr));
 }
 
 ECardResult CMemoryCardSys::CCardFileInfo::WriteFile() {
@@ -211,9 +208,7 @@ void CMemoryCardSys::CCardFileInfo::ResetHeaderInfo() {
   mIconToks = rstl::reserved_vector< Icon, 8 >();
 }
 
-void CMemoryCardSys::CCardFileInfo::SetComment(const rstl::string& comment) {
-  mComment = comment;
-}
+void CMemoryCardSys::CCardFileInfo::SetComment(const rstl::string& comment) { mComment = comment; }
 
 void CMemoryCardSys::CCardFileInfo::LockBannerToken(CAssetId bannerTxtr, CSimplePool& pool) {
   mBannerTex = bannerTxtr;
@@ -351,8 +346,7 @@ ECardResult CMemoryCardSys::CCardFileInfo::SelectSaveSlot() {
 ECardResult CMemoryCardSys::CCardFileInfo::CheckHeaderCrc() {
   const uint* data = reinterpret_cast< const uint* >(mHeaderBuffer.data());
   const uint crc = data[0];
-  return crc == CCRC32::Calculate(data + 1, 0x2000 - 4, 0xFFFFFFFF) ? kCR_READY
-                                                                    : kCR_CRC_MISMATCH;
+  return crc == CCRC32::Calculate(data + 1, 0x2000 - 4, 0xFFFFFFFF) ? kCR_READY : kCR_CRC_MISMATCH;
 }
 
 uint CardStat::GetFileLength() { return mStat.length; }

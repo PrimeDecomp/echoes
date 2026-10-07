@@ -37,9 +37,9 @@ CSortedParticleSystem::~CSortedParticleSystem() {
 const bool CSortedParticleSystem::Update(double dt) {
   CGlobalRandom random(mRandom);
   bool updated = false;
-  mCurSeconds += dt;
   double frameTime = mCurFrame * (1.0 / 60.0);
-  while (mCurSeconds > frameTime) {
+  mCurSeconds += dt;
+  while (frameTime < mCurSeconds) {
     CParticleGlobals::SetEmitterTime(mCurFrame);
     UpdateChildParticleSystems(1.0 / 60.0);
     frameTime += 1.0 / 60.0;
@@ -205,8 +205,9 @@ void CSortedParticleSystem::BuildParticleSystemBounds() {
        it != mChildren.end(); ++it) {
     rstl::optional_object< CAABox > bounds = (*it)->GetBounds();
     if (bounds) {
-      mBounds.AccumulateBounds(bounds->GetMinPoint());
-      mBounds.AccumulateBounds(bounds->GetMaxPoint());
+      const CAABox& box = *bounds;
+      mBounds.AccumulateBounds(box.GetMinPoint());
+      mBounds.AccumulateBounds(box.GetMaxPoint());
     }
   }
 }
@@ -223,10 +224,11 @@ void CSortedParticleSystem::UpdateChildParticleSystems(double dt) {
     if (!spawns.empty()) {
       const ushort backupSeed = sSeed;
       for (int i = 0; i < spawns.size(); ++i) {
+        CSpawnSystemKeyframeData::CSpawnSystemKeyframeInfo& info = spawns[i];
         const ushort seed = (i + mCurFrame + 1) * 100 + mRandom.GetSeed();
-        if (spawns[i].GetType() == 'PART' && mChildren.size() < mChildren.capacity()) {
+        if (info.GetType() == 'PART' && mChildren.size() < mChildren.capacity()) {
           CParticleGen* child = CElementGen::ConstructChildParticleSystem(
-              *spawns[i].GetToken(), spawns[i].GetType(), seed, mOptionalFlags, mModelsUseLights,
+              *info.GetToken(), info.GetType(), seed, mOptionalFlags, mModelsUseLights,
               mParticleEmission, CVector3f::Zero(), CTransform4f::Identity(), mGlobalTranslation,
               mGlobalOrientation, mGlobalScale, CColor::White(), CVector3f::One());
           if (child) {

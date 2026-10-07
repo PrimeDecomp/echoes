@@ -44,9 +44,7 @@ void CStaticAudioPlayer::AICallback() {
 
 void CStaticAudioPlayer::RunDMACallback(const FAudioCallback callback) {
   CInterruptGuard interrupts;
-  const rstl::reserved_vector< FAudioCallback, 4 >::iterator it =
-      rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback);
-  if (it == sAICallbacks.end()) {
+  if (rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback) == sAICallbacks.end()) {
     sAICallbacks.push_back(callback);
   }
 
@@ -163,8 +161,7 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
   int curSamp = mCurSamp / 2;
   int loopEndSamp = mLoopEndSamp / 2;
   int loopStartSamp = mLoopStartSamp / 2;
-  DecodeMonoAndMix(out, in, numSamples, curSamp, loopEndSamp, loopStartSamp, mVolume,
-                   mLeftState);
+  DecodeMonoAndMix(out, in, numSamples, curSamp, loopEndSamp, loopStartSamp, mVolume, mLeftState);
 
   int halfLen = mRsfLength / 2;
   DecodeMonoAndMix(out + 1, in + 1, numSamples, curSamp + halfLen, loopEndSamp + halfLen,
@@ -188,8 +185,8 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
 }
 
 void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int numSamples,
-                                          int startSample, int sampleEnd, int sampleStart, int vol,
-                                          g72x_state& state) {
+                                          int startSample, int sampleEnd, const int sampleStart,
+                                          int vol, g72x_state& state) {
   ushort* outCursor = out;
   const ushort* inCursor = in;
   int curSample = startSample;

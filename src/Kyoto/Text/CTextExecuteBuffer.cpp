@@ -66,7 +66,8 @@ void CTextExecuteBuffer::EndBlock() {
 }
 
 void CTextExecuteBuffer::AddFont(const TToken< CRasterFont >& font) {
-  Add(rs_new CFontInstruction(font));
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CFontInstruction(font));
+  Add(inst);
   mState.SetFont(font);
   if (font.IsLoaded()) {
     if (mCurrentBlock) {
@@ -82,25 +83,36 @@ void CTextExecuteBuffer::AddFont(const TToken< CRasterFont >& font) {
   }
 }
 
+int CFontImageDef::GetWidth() const {
+  TToken< CTexture > tex = mTextures[0];
+  return tex->GetWidth() * mCropFactor.GetX();
+}
+
+int CFontImageDef::GetHeight() const {
+  TToken< CTexture > tex = mTextures[0];
+  return tex->GetHeight() * mCropFactor.GetY();
+}
+
 void CTextExecuteBuffer::AddImage(const CFontImageDef& image) {
   if (!mCurrentLine) {
     StartNewLine();
   }
 
   if (mCurrentBlock && image.IsLoaded()) {
-    bool wrap = mState.IsWordWrapping();
-    if (wrap) {
-      const int width = mCurrentLine->GetWidth() + image.GetWidth();
-      wrap = width > mCurrentBlock->GetOutputWidth();
+    bool newLine = false;
+    bool overflow = false;
+    if (mState.IsWordWrapping() &&
+        mCurrentLine->GetWidth() + image.GetWidth() > mCurrentBlock->GetOutputWidth()) {
+      overflow = true;
     }
-    if (wrap) {
-      wrap = mCurrentLine->GetWordCount() > 0;
+    if (overflow && mCurrentLine->GetWordCount() > 0) {
+      newLine = true;
     }
-    if (wrap) {
+    if (newLine) {
       StartNewLine();
     }
     mCurrentLine->TestLargestImage(image.GetMonoWidth(), image.GetHeight(),
-                                  image.CalculateBaseline());
+                                   image.CalculateBaseline());
     if (mCurrentBlock->GetTextDirection() == kTD_Horizontal) {
       mCurrentLine->AddWidth(image.GetWidth());
       if (mCurrentLine->GetWidth() > image.GetWidth()) {
@@ -126,17 +138,20 @@ void CTextExecuteBuffer::AddRemoveColorOverride(int index) {
 }
 
 void CTextExecuteBuffer::AddLineSpacing(float spacing) {
-  Add(rs_new CLineSpacingInstruction(spacing));
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CLineSpacingInstruction(spacing));
+  Add(inst);
   mState.SetLineSpacing(spacing);
 }
 
 void CTextExecuteBuffer::AddLineExtraSpace(int spacing) {
-  Add(rs_new CLineExtraSpaceInstruction(spacing));
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CLineExtraSpaceInstruction(spacing));
+  Add(inst);
   mState.SetLineExtraSpace(spacing);
 }
 
 void CTextExecuteBuffer::AddCharacterExtraSpace(int spacing) {
-  Add(rs_new CCharacterExtraSpaceInstruction(spacing));
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CCharacterExtraSpaceInstruction(spacing));
+  Add(inst);
   mState.GetOptions().SetCharacterExtraSpace(spacing);
 }
 
@@ -155,12 +170,14 @@ void CTextExecuteBuffer::AddVerticalJustification(EVerticalJustification justifi
 }
 
 void CTextExecuteBuffer::AddPushState() {
-  Add(rs_new CPushStateInstruction());
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CPushStateInstruction());
+  Add(inst);
   mStateStack.push_front(mState);
 }
 
 void CTextExecuteBuffer::AddPopState() {
-  Add(rs_new CPopStateInstruction());
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CPopStateInstruction());
+  Add(inst);
   mState = mStateStack.front();
   mStateStack.pop_front();
   if (mCurrentLine->GetWidth() == 0) {
@@ -188,7 +205,8 @@ void CTextExecuteBuffer::TerminateLine(bool lastLine) {
 }
 
 void CTextExecuteBuffer::StartNewWord() {
-  mCurrentWord = Add(rs_new CWordInstruction());
+  rstl::ncrc_ptr< CInstruction > inst(rs_new CWordInstruction());
+  mCurrentWord = Add(inst);
   mCurrentX = 0;
   mCurrentY = 0;
   mCurrentWordX = mCurrentLine->GetWidth();
@@ -196,12 +214,29 @@ void CTextExecuteBuffer::StartNewWord() {
   mCurrentLine->IncWords();
 }
 
+CLineInstruction::CLineInstruction(int words, int width, int height, EJustification justification,
+                                   EVerticalJustification verticalJustification,
+                                   const bool imageBaseline)
+: mWordCount(words)
+, mCurrentX(width)
+, mCurrentY(height)
+, mLargestFontHeight(0)
+, mLargestFontWidth(0)
+, mLargestFontBaseline(0)
+, mLargestImageHeight(0)
+, mLargestImageWidth(0)
+, mLargestImageBaseline(0)
+, mJustification(justification)
+, mVerticalJustification(verticalJustification)
+, mImageBaseline(imageBaseline) {}
+
 void CTextExecuteBuffer::StartNewLine() {
   if (mCurrentLine) {
     TerminateLine(false);
   }
-  const rstl::ncrc_ptr< CInstruction > instruction = rs_new CLineInstruction(
-      0, 0, 0, mState.GetJustification(), mState.GetVerticalJustification(), mImageBaseline);
+  const rstl::ncrc_ptr< CInstruction > instruction =
+      rstl::ncrc_ptr< CInstruction >(rs_new CLineInstruction(
+          0, 0, 0, mState.GetJustification(), mState.GetVerticalJustification(), mImageBaseline));
   mCurrentWord = Add(instruction);
   mCurrentLine = static_cast< CLineInstruction* >(instruction.GetPtr());
   mSpaceDistance = 0;
@@ -238,9 +273,9 @@ int CTextExecuteBuffer::WrapOneLTR(const wchar_t* str, int len) {
         MoveWordLTR();
       }
       if (width + mCurrentLine->GetWidth() > mCurrentBlock->GetOutputWidth() && len > 1) {
-        rem = rstl::max_val(
-            1, rstl::min_val(len, 2 * ((mCurrentBlock->GetOutputWidth() - mCurrentLine->GetWidth()) /
-                                       mState.GetFont()->GetMonoWidth())));
+        rem = rstl::max_val(1, rstl::min_val(len, 2 * ((mCurrentBlock->GetOutputWidth() -
+                                                        mCurrentLine->GetWidth()) /
+                                                       mState.GetFont()->GetMonoWidth())));
         int rank = 5;
         do {
           --rem;
@@ -277,8 +312,8 @@ int CTextExecuteBuffer::WrapOneLTR(const wchar_t* str, int len) {
 }
 
 void CTextExecuteBuffer::AddStringFragment(const wchar_t* str, int len) {
+  int consumed = 0;
   if (mCurrentBlock->GetTextDirection() == kTD_Horizontal) {
-    int consumed = 0;
     while (consumed != len) {
       consumed += WrapOneLTR(str + consumed, len - consumed);
     }
@@ -389,7 +424,8 @@ CTextExecuteBuffer::BuildRenderBufferPages(const CVector2i& extent) const {
     CTextRenderBuffer buffer(CTextRenderBuffer::kM_AllocTally);
     {
       CFontRenderState state;
-      for (InstList::const_iterator it2 = mInstructions.begin(); it2 != mInstructions.end(); ++it2) {
+      for (InstList::const_iterator it2 = mInstructions.begin(); it2 != mInstructions.end();
+           ++it2) {
         (*it2)->Invoke(state, &buffer);
       }
     }

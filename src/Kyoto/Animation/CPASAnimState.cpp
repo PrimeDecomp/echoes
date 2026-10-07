@@ -206,11 +206,14 @@ float CPASAnimState::ComputeAngularPercentErrorWeight(uint idx, const CPASAnimPa
     error = CMath::AbsF(parm.GetEnumValue() - value.m_int);
     break;
   }
+  float ret;
   if (range > FLT_EPSILON) {
     const float weight = 1.f - (error > 0.5f * range ? range - error : error) / (0.5f * range);
-    return rstl::min_val(rstl::max_val(weight, 0.f), 1.f);
+    ret = rstl::min_val(rstl::max_val(weight, 0.f), 1.f);
+  } else {
+    ret = error < FLT_EPSILON ? 1.f : 0.f;
   }
-  return error < FLT_EPSILON ? 1.f : 0.f;
+  return ret;
 }
 
 int CPASAnimState::PickRandomAnimation(CRandom16& random) const {

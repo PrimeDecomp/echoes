@@ -14,11 +14,7 @@ static bool sDeferCallbacks;
 static int sDeferredCallbacks;
 
 CDSPStreamManager::CDSPStreamManager()
-: mDataOffset(0)
-, mFileCur(0)
-, mReadsPending(0)
-, mType(1)
-, mState(kSS_Idle) {}
+: mDataOffset(0), mFileCur(0), mReadsPending(0), mType(1), mState(kSS_Idle) {}
 
 SDSPStreamVoice::SDSPStreamVoice()
 : mBufferSize(0), mNumSamples(0), mType(1), mStreamId(-1), mUpperHalf(false), mFree(true) {}
@@ -87,8 +83,7 @@ int CDSPStreamManager::StartStreaming(const rstl::string& fileName, int volume, 
         stream.mPreload->Read(&stream.mHeader, 0, sizeof(SRSFHeader));
         DVDCallback(0, &stream.mFiles[0]);
       } else {
-        DVDReadAsyncPrio(&stream.mFiles[0], &stream.mHeader, sizeof(SRSFHeader), 0, DVDCallback,
-                         1);
+        DVDReadAsyncPrio(&stream.mFiles[0], &stream.mHeader, sizeof(SRSFHeader), 0, DVDCallback, 1);
       }
       break;
     }
@@ -354,8 +349,9 @@ void CDSPStreamManager::BufferStream() {
 
 u32 CDSPStreamManager::UpdateStream(void* buf1, u32 len1, void* buf2, u32 len2, u32 user) {
   CDSPStreamManager* stream = reinterpret_cast< CDSPStreamManager* >(user);
+  len1 += len2;
   u32 half = sVoices[stream->mVoices[0]].mNumSamples / 2;
-  if (len1 + len2 < half) {
+  if (len1 < half) {
     return 0;
   }
   if (stream->mReadsPending > 0) {
@@ -365,8 +361,7 @@ u32 CDSPStreamManager::UpdateStream(void* buf1, u32 len1, void* buf2, u32 len2, 
   return half;
 }
 
-u32 CDSPStreamManager::UpdateSecondaryStream(void* buf1, u32 len1, void* buf2, u32 len2,
-                                             u32 user) {
+u32 CDSPStreamManager::UpdateSecondaryStream(void* buf1, u32 len1, void* buf2, u32 len2, u32 user) {
   return 0;
 }
 
@@ -414,7 +409,7 @@ void CDSPStreamManager::UpdateVolume(int handle, int volume) {
     CDSPStreamManager& stream = sStreams[handle];
     if (stream.mState == kSS_Playing) {
       for (int* it = stream.mVoices.begin(); it != stream.mVoices.end(); ++it) {
-        SDSPStreamVoice& voice = sVoices[*it];
+        const SDSPStreamVoice& voice = sVoices[*it];
         sndStreamMixParameter(voice.mStreamId, volume, voice.mPan, 0, 0);
       }
     }
@@ -426,7 +421,8 @@ bool CDSPStreamManager::IsStreamAvailable(int handle) {
     return true;
   }
   CInterruptGuard guard;
-  int state = sStreams[handle].mState;
+  CDSPStreamManager& stream = sStreams[handle];
+  int state = stream.mState;
   return state != kSS_ReadingHeader && state != kSS_Priming;
 }
 
@@ -435,7 +431,8 @@ bool CDSPStreamManager::CanStop(int handle) {
     return true;
   }
   CInterruptGuard guard;
-  return sStreams[handle].mState == kSS_Idle;
+  CDSPStreamManager& stream = sStreams[handle];
+  return stream.mState == kSS_Idle;
 }
 
 int CDSPStreamManager::GetStreamState(int handle) {
@@ -443,7 +440,8 @@ int CDSPStreamManager::GetStreamState(int handle) {
     return kS_Oneshot;
   }
   CInterruptGuard guard;
-  if (sStreams[handle].mHeader.mLoopFlag != 0) {
+  CDSPStreamManager& stream = sStreams[handle];
+  if (stream.mHeader.mLoopFlag != 0) {
     return kS_Looping;
   }
   return kS_Oneshot;

@@ -3,6 +3,12 @@
 
 #include "Kyoto/Streams/CInputStream.hpp"
 
+static const char* const skLightTypeNames[] = {
+    "kGUI_LightTypeSpot",
+    "kGUI_LightTypePoint",
+    "kGUI_LightTypeDirectional",
+};
+
 CGuiLight* CGuiLight::Create(CGuiFrame* parent, CInputStream& in, CSimplePool* sp, uint version) {
   CGuiWidgetParms parms = ReadWidgetHeader(parent, in);
   CColor color = parms.mColor;

@@ -64,13 +64,20 @@ bool CGuiTextSupport::_GetIsTextSupportFinishedLoading() const {
   }
   if (mFont.valid()) {
     TToken< CRasterFont > font = *mFont;
-    return font.IsLoaded() && font->IsFinishedLoading();
+    if (!font.IsLoaded()) {
+      return false;
+    }
+    return font->IsFinishedLoading();
   }
-  return !mAssets.empty();
+  if (!mFont.valid() && mAssets.size() == 0) {
+    return false;
+  }
+  return true;
 }
 
 void CGuiTextSupport::SetText(const rstl::string& text, bool multipage) {
-  SetText(CStringExtras::ConvertToUNICODE(text), multipage);
+  const rstl::wstring wtext = CStringExtras::ConvertToUNICODE(text);
+  SetText(wtext, multipage);
 }
 
 void CGuiTextSupport::SetText(const rstl::wstring& text, bool multipage) {
@@ -136,7 +143,7 @@ void CGuiTextSupport::SetControlTXTRMap(
 void CGuiTextSupport::Render() const {
   CheckAndRebuildRenderBuffer();
   const CTransform4f oldModel = CGraphics::GetModelMatrix();
-  CGraphics::SetModelMatrix(oldModel * CTransform4f::Scale(1.f, 1.f, -1.f));
+  CGraphics::SetModelMatrix(oldModel * CTransform4f::Scale(CVector3f(1.f, 1.f, -1.f)));
   if (const CTextRenderBuffer* buffer = GetCurrentPageRenderBuffer()) {
     buffer->Render(mGeometryColor, mCurrentTimeMod900);
   }
@@ -170,17 +177,18 @@ bool CGuiTextSupport::CheckAndRebuildRenderBuffer() const {
   if ((!mMultipage && !mRenderBuffer) || (mMultipage && mPages.empty())) {
     CheckAndRebuildTextBuffer();
     mAssets = mExecuteBuffer.GetAssets();
-    if (!_GetIsTextSupportFinishedLoading()) {
+    if (_GetIsTextSupportFinishedLoading()) {
+      CheckAndRebuildTextBuffer();
+      if (mMultipage) {
+        mPages = mExecuteBuffer.BuildRenderBufferPages(CVector2i(mExtentX, mExtentY));
+      } else {
+        mRenderBuffer = mExecuteBuffer.BuildRenderBuffer();
+        mBounds = mRenderBuffer->GetTextBounds();
+      }
+      mExecuteBuffer.Clear();
+    } else {
       return false;
     }
-    CheckAndRebuildTextBuffer();
-    if (mMultipage) {
-      mPages = mExecuteBuffer.BuildRenderBufferPages(CVector2i(mExtentX, mExtentY));
-    } else {
-      mRenderBuffer = mExecuteBuffer.BuildRenderBuffer();
-      mBounds = mRenderBuffer->GetTextBounds();
-    }
-    mExecuteBuffer.Clear();
     const_cast< CGuiTextSupport* >(this)->Update(0.f);
   }
   return true;

@@ -30,8 +30,8 @@ static void* UploadCallback(u32 offset, u32 bytes) {
 }
 
 CFactoryFnReturn FAudioGroupSetLocDataFactory(const SObjectTag& tag,
-                                                    const rstl::auto_ptr< uchar >& data, int length,
-                                                    const CVParamTransfer& xfer) {
+                                              const rstl::auto_ptr< uchar >& data, int length,
+                                              const CVParamTransfer& xfer) {
   return rs_new CAudioGrpSetLoc(data, length);
 }
 
@@ -40,11 +40,11 @@ CAudioGrpSetLoc::CAudioGrpSetLoc(const rstl::auto_ptr< uchar >& data, int length
   CMemoryInStream in(data.get(), length);
   if (in.ReadInt32() <= 1) {
     rstl::string name(in);
-    const uint groupId = in.ReadUint16();
+    const uint groupId = static_cast< ushort >(in.ReadUint16());
     const int poolSize = in.ReadInt32();
     const int projectSize = in.ReadInt32();
     const int sampleDirSize = in.ReadInt32();
-    int sampleSize = in.ReadInt32();
+    const int sampleSize = in.ReadInt32();
 
     mPool = rs_new uchar[poolSize];
     in.ReadBytes(mPool.get(), poolSize);
@@ -54,14 +54,14 @@ CAudioGrpSetLoc::CAudioGrpSetLoc(const rstl::auto_ptr< uchar >& data, int length
     in.ReadBytes(mSampleDir.get(), sampleDirSize);
 
     uchar* samples = data.get() + in.GetReadPosition();
-    sampleSize = (sampleSize + 31) & ~31;
-    mAramAlloc = CARAMManager::Alloc(sampleSize, 1);
+    const int alignedSize = (sampleSize + 31) & ~31;
+    mAramAlloc = CARAMManager::Alloc(alignedSize, 1);
     if (mAramAlloc == CARAMManager::GetInvalidAlloc()) {
       return;
     }
 
     mStackBuffer = rs_new uchar[sndStackGetSize()];
-    mStackId = sndStackAdd(mStackBuffer.get(), mAramAlloc, sampleSize);
+    mStackId = sndStackAdd(mStackBuffer.get(), mAramAlloc, alignedSize);
     if (mStackId == -1) {
       CARAMManager::Free(mAramAlloc, 1);
       mAramAlloc = CARAMManager::GetInvalidAlloc();

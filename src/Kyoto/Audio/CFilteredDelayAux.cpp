@@ -26,7 +26,6 @@ void PrepareFilteredDelayAux(SFilteredDelayAuxParameters* parameters) {
   parameters->mBlockPositions[0] = 0;
   parameters->mBlockPositions[1] = 0;
   parameters->mBlockPositions[2] = 0;
-
   parameters->mLowPassCoefficient =
       static_cast< s32 >(128.f * (parameters->mLowPassFrequency / 32000.f));
   parameters->mHighPassCoefficient =
@@ -66,27 +65,27 @@ void ProcessFilteredDelayAux(uchar reason, SND_AUX_INFO* info,
                           parameters->mDelayBuffers[2]};
   const s32 lowPass = parameters->mLowPassCoefficient;
   const s32 highPass = parameters->mHighPassCoefficient;
+  const s32 lowPassInv = 128 - lowPass;
+  const s32 highPassInv = 128 - highPass;
   for (int channel = 0; channel < 3; ++channel) {
     const s32 output = parameters->mCurrentOutput[channel];
     const s32 feedback = parameters->mCurrentFeedback[channel];
     if (output != 0) {
-      s32* delay = delayBuffers[channel] + parameters->mBlockPositions[channel] * 160;
       s32* samples = channels[channel];
-      for (int sample = 0; sample < 160; ++sample, ++samples, ++delay) {
+      s32* delay = delayBuffers[channel] + parameters->mBlockPositions[channel] * 160;
+      for (int sample = 0; sample < 160; ++sample) {
         const s32 delayed = *delay;
         const s32 input = *samples;
         parameters->mLowPassHistory[channel] =
-            (delayed * lowPass + parameters->mLowPassHistory[channel] * (128 - lowPass)) >> 7;
+            (delayed * lowPass + parameters->mLowPassHistory[channel] * lowPassInv) >> 7;
         parameters->mHighPassHistory[channel] =
             (parameters->mLowPassHistory[channel] * highPass +
-             parameters->mHighPassHistory[channel] * (128 - highPass)) >>
+             parameters->mHighPassHistory[channel] * highPassInv) >>
             7;
-        *samples =
-            input +
-            (((parameters->mLowPassHistory[channel] - parameters->mHighPassHistory[channel]) *
-              output) >>
-             7);
-        *delay = input + ((delayed * feedback) >> 7);
+        const s32 band =
+            parameters->mLowPassHistory[channel] - parameters->mHighPassHistory[channel];
+        *samples++ = input + (band * output >> 7);
+        *delay++ = input + (delayed * feedback >> 7);
       }
 
       ++parameters->mBlockPositions[channel];

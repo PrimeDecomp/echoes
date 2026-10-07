@@ -387,8 +387,11 @@ bool CParticleSpawnSystem::IsSystemDeletable() {
       return false;
     }
   }
-  return mCurFrame > mLifetime || !mDescription->mSPWN ||
-         uint(mCurFrame) > mDescription->mSPWN->GetEndFrame();
+  if (mCurFrame <= mLifetime && mDescription->mSPWN &&
+      uint(mCurFrame) <= mDescription->mSPWN->GetEndFrame()) {
+    return false;
+  }
+  return true;
 }
 
 rstl::optional_object< CAABox > CParticleSpawnSystem::GetBounds() {
@@ -439,8 +442,9 @@ void CParticleSpawnSystem::BuildParticleSystemBounds() {
        ++it) {
     rstl::optional_object< CAABox > bounds = (*it)->GetBounds();
     if (bounds) {
-      mBounds.AccumulateBounds(bounds->GetMinPoint());
-      mBounds.AccumulateBounds(bounds->GetMaxPoint());
+      const CAABox& box = *bounds;
+      mBounds.AccumulateBounds(box.GetMinPoint());
+      mBounds.AccumulateBounds(box.GetMaxPoint());
     }
   }
 }
@@ -512,11 +516,11 @@ void CParticleSpawnSystem::UpdateVelocitySource(int index) {
 
 CVector3f CParticleSpawnSystem::GetTranslationOffset() const {
   switch (mTranslationMode) {
+  case kTM_Global:
+    return CVector3f::Zero();
   case kTM_None:
   case kTM_Local:
     return mTranslationOffset;
-  case kTM_Global:
-    return CVector3f::Zero();
   }
   return CVector3f::Zero();
 }
