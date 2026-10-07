@@ -838,10 +838,32 @@ CWorldState::~CWorldState() {}
 
 CGameState::~CGameState() {}
 
-void CMain::ResetGameState() {}
-
-int CMain::GetLanguage() const {
-  return 0;
+void CMain::ResetGameState() {
+  CPersistentOptions systemOptions = gpGameState->SystemOptions();
+  CGameOptions gameOptions = gpGameState->GameOptions();
+  rstl::reserved_vector< rstl::vector< uchar >, 3 > compressedGameOptions =
+      gpGameState->GetCompressedGameOptions();
+  rstl::vector< uchar > compressedMultiplayerOptions =
+      gpGameState->GetCompressedMultiplayerOptions();
+  CGameState::SPreviousGameResults previousResults = gpGameState->PreviousGameResults();
+  mGameGlobalObjects->GameState() = nullptr;
+  gpGameState = nullptr;
+  mGameGlobalObjects->GameState() = rs_new CGameState();
+  gpGameState = mGameGlobalObjects->GameState().get();
+  gpGameState->SystemOptions() = systemOptions;
+  gpGameState->GameOptions() = gameOptions;
+  gpGameState->GameOptions().EnsureOptions();
+  gpGameState->SetCompressedGameOptions(compressedGameOptions);
+  gpGameState->SetCompressedMultiplayerOptions(compressedMultiplayerOptions);
+  gpGameState->PreviousGameResults() = previousResults;
 }
 
-void CMain::UpdateStreamedAudio() {}
+int CMain::GetLanguage() const {
+  int language = mOsContext->GetLanguage();
+  if (language == 5) {
+    language = 0;
+  }
+  return language;
+}
+
+void CMain::UpdateStreamedAudio() { CStreamAudioManager::Update(1.f / 60.f); }
