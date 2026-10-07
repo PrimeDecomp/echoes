@@ -212,7 +212,7 @@ public:
   CVector3f TransformSpiderBallForcesXZ(CVector2f& forces, CStateManager& mgr) const;
   CVector3f TransformSpiderBallForcesXY(CVector2f& forces, CStateManager& mgr) const;
 
-private:
+  // Referenced by file-scope defaults in CMorphBall.cpp.
   static const SMorphBallModelInfo skBallCharacter[3];
   static const SMorphBallModelInfo skBallLowPoly[3];
   static const SMorphBallModelInfo skSpiderBallCharacter[3];
@@ -221,6 +221,8 @@ private:
   static const SMorphBallModelInfo skBoostBallLowPoly[3];   // Guessed name
   static const SMorphBallModelInfo skSpiderBallGlass[3];
   static const SMorphBallModelInfo skFrozenBall[3];
+
+private:
   static const uint skBallGlowColorIdx[3];
   static const uint skSpiderBallGlowColorIdx[3];
   static const uint skBoostBallGlowColorIdx[3]; // Guessed name
