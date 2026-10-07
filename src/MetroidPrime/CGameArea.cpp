@@ -1336,7 +1336,7 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
       for (int j = 0; j < it->second; ++j) {
         rstl::auto_ptr< char > section(buffer + offset);
         section.release();
-        offset += mPostConstructed->mMreaSectionBuffers[part].second;
+        offset += mPostConstructed->mMreaSectionBuffers.data()[part].second;
         mPostConstructed->mMreaSectionBuffers[part].first = section;
         ++part;
       }
