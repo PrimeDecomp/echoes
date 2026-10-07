@@ -247,18 +247,20 @@ inline int basic_string< _CharTp, Traits, Alloc >::internal_search(It first, It 
   if (otherFirst == otherLast) {
     return 0;
   }
-  It it = first;
   int index = 0;
-  for (; it != last; ++it, ++index) {
+  for (It it = first; it != last; ++it, ++index) {
     if (Traits::eq(*it, *otherFirst)) {
-      It candidate = it;
-      ++candidate;
-      OtherIt search = otherFirst;
-      ++search;
-      for (; search != otherLast; ++search, ++candidate) {
-        if (candidate == last || !Traits::eq(*candidate, *search)) {
+      It next = it;
+      ++next;
+      OtherIt search = otherFirst + 1;
+      const _CharTp* nextData = &*next;
+      while (search != otherLast && next != last) {
+        if (!Traits::eq(*nextData, *search)) {
           break;
         }
+        ++next;
+        ++nextData;
+        ++search;
       }
       if (search == otherLast) {
         return index;
@@ -356,6 +358,8 @@ inline bool basic_string< _CharTp, Traits, Alloc >::operator!=(const basic_strin
   return compare(other) != 0;
 }
 
+// Declare the out-of-line specializations (defined in rstl_strings.cpp and
+// CScriptStreamedMusic.cpp) before first use.
 typedef basic_string< wchar_t > wstring;
 typedef basic_string< char > string;
 typedef basic_string< char, case_insensitive_char_traits< char > > istring;
@@ -374,7 +378,11 @@ wstring wstring_l(const wchar_t* data);
 
 string string_l(const char* data);
 
-string operator+(const string& a, const string& b);
+inline string operator+(const string& a, const string& b) {
+  string result(a);
+  result.append(b);
+  return result;
+}
 inline wstring operator+(const wstring& a, const wstring& b) {
   wstring result(a);
   result.append(b);
