@@ -12,10 +12,13 @@
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CMapWorld.hpp"
 #include "MetroidPrime/CMapWorldInfo.hpp"
+#include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDock.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
@@ -24,6 +27,51 @@ static const CColor skResetColor(uchar(0), uchar(255), uchar(255), uchar(255));
 
 int CScriptDoor::FindAnimation(const CPASAnimParmData& parms) const {
   return HasAnimation() ? GetAnimationData()->FindBestAnimation(parms) : -1;
+}
+
+CEntity* LoadDoor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDoor sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDoor.inc"
+
+  rstl::optional_object< CModelData > model =
+      LdrToModelData(sldrThis.editorProperties.transform.scale, kInvalidAssetId,
+                     sldrThis.animationInformation, false);
+  if (!model) {
+    return nullptr;
+  }
+
+  const CAABox bounds =
+      sldrThis.collisionBox == CVector3f::Zero()
+          ? model->GetBounds(LdrToTransform4f(sldrThis.editorProperties).GetRotation())
+          : LoadCAABox(mgr, info.GetAreaId(), sldrThis.editorProperties.transform.scale,
+                       LdrToTransform4f(sldrThis.editorProperties), sldrThis.collisionBox,
+                       sldrThis.collisionOffset);
+
+  rstl::optional_object< CModelData > shellModel;
+  rstl::optional_object< CModelData > blueShellModel;
+  if (sldrThis.shellModel != kInvalidAssetId) {
+    shellModel =
+        CModelData(CStaticRes(sldrThis.shellModel, sldrThis.editorProperties.transform.scale));
+  }
+  if (sldrThis.blueShellModel != kInvalidAssetId) {
+    blueShellModel =
+        CModelData(CStaticRes(sldrThis.blueShellModel, sldrThis.editorProperties.transform.scale));
+  }
+  rstl::optional_object< TLockedToken< CTexture > > burnTexture;
+  if (sldrThis.burnTexture != kInvalidAssetId) {
+    burnTexture =
+        TLockedToken< CTexture >(gpSimplePool->GetObj(SObjectTag('TXTR', sldrThis.burnTexture)));
+  }
+
+  return rs_new CScriptDoor(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      *model, shellModel, blueShellModel, burnTexture, sldrThis.shellColor,
+      LdrToHealthInfo(sldrThis.health), LdrToDamageVulnerability(sldrThis.vulnerability),
+      LdrToActorParameters(sldrThis.actorInformation), sldrThis.altScannable.scannableInfo0,
+      sldrThis.orbitOffset, bounds, sldrThis.isOpen, sldrThis.isLocked, sldrThis.openAnimationTime,
+      sldrThis.closeAnimationTime, sldrThis.closeDelay, sldrThis.shieldFadeOutTime,
+      sldrThis.shieldFadeInTime, sldrThis.morphBallTunnel, sldrThis.horizontal);
 }
 
 CScriptDoor::CScriptDoor(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
@@ -133,6 +181,19 @@ void CScriptDoor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
 
   switch (message) {
+  case kSM_Close:
+    --mOpenRequestCount;
+    if (mOpenRequestCount < 0) {
+      mOpenRequestCount = 0;
+    }
+    if (mOpenRequestCount == 0 || (sender == mOpeningSenderDoorId && mDoorState != kDS_Closed)) {
+      if (mDoorState == kDS_WaitingForArea) {
+        SetDoorState(mgr, kDS_Closed);
+      } else if (mDoorState != kDS_Closed) {
+        SetDoorState(mgr, kDS_Closing);
+      }
+    }
+    break;
   case kSM_Open:
     if (!mIsOpen) {
       const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(sender));
@@ -146,17 +207,11 @@ void CScriptDoor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_Close:
-    --mOpenRequestCount;
-    if (mOpenRequestCount < 0) {
-      mOpenRequestCount = 0;
-    }
-    if (mOpenRequestCount == 0 || (sender == mOpeningSenderDoorId && mDoorState != kDS_Closed)) {
-      if (mDoorState == kDS_WaitingForArea) {
-        SetDoorState(mgr, kDS_Closed);
-      } else if (mDoorState != kDS_Closed) {
-        SetDoorState(mgr, kDS_Closing);
-      }
+  case kSM_AreaLoaded:
+    mDockId = FindConnectedObject(mgr, kSS_InvalidState, kSM_Increment);
+    mLockActorId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
+    if (mInitiallyLocked) {
+      SetLockState(mgr, kLS_Locked);
     }
     break;
   case kSM_Increment:
@@ -178,13 +233,6 @@ void CScriptDoor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       } else {
         mResetPending = true;
       }
-    }
-    break;
-  case kSM_AreaLoaded:
-    mDockId = FindConnectedObject(mgr, kSS_InvalidState, kSM_Increment);
-    mLockActorId = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
-    if (mInitiallyLocked) {
-      SetLockState(mgr, kLS_Locked);
     }
     break;
   }

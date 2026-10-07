@@ -6,9 +6,23 @@
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Enemies/CMetroidAlpha.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrDock.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptDoor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadDock(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrDock sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrDock.inc"
+
+  return rs_new CScriptDock(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                            LdrToEntityInfo(info, sldrThis.editorProperties),
+                            sldrThis.editorProperties.transform.position,
+                            sldrThis.editorProperties.transform.scale, sldrThis.dockNumber,
+                            sldrThis.areaNumber, 0, sldrThis.loadConnectedImmediate,
+                            sldrThis.isVirtual, sldrThis.showSoftTransition);
+}
 
 CScriptDock::CScriptDock(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                          const CVector3f& position, const CVector3f& extent, int dock, TAreaId area,
