@@ -13,10 +13,10 @@
 #include "float.h"
 
 CScriptSoundModifier::CScriptSoundModifier(TUniqueId uid, const rstl::string& name,
-                                           const CEntityInfo& info, float duration, bool autoReset,
-                                           bool autoStart, const CMayaSpline& volume,
-                                           const CMayaSpline& pan, const CMayaSpline& surroundPan,
-                                           const CMayaSpline& pitch)
+                                           const CEntityInfo& info, float duration,
+                                           const bool autoReset, const bool autoStart,
+                                           const CMayaSpline& volume, const CMayaSpline& pan,
+                                           const CMayaSpline& surroundPan, const CMayaSpline& pitch)
 : CEntity(uid, info, name, 0)
 , mVolume(volume)
 , mPan(pan)
@@ -31,8 +31,9 @@ CScriptSoundModifier::CScriptSoundModifier(TUniqueId uid, const rstl::string& na
 CScriptSoundModifier::~CScriptSoundModifier() {}
 
 void CScriptSoundModifier::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  const EScriptObjectMessage message = msg.GetMessage();
   if (GetActive()) {
-    switch (msg.GetMessage()) {
+    switch (message) {
     case kSM_AreaLoaded:
       mSounds = FindConnectedObjects(mgr, kSS_Connect, kSM_Attach);
       for (rstl::vector< TUniqueId >::const_iterator it = mSounds.begin(); it != mSounds.end();
@@ -81,20 +82,23 @@ void CScriptSoundModifier::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg&
 }
 
 uchar CScriptSoundModifier::GetCurrentVolume() {
-  return CCast::ToUint8(CMath::Clamp(0.f, 127.f * mVolume.EvaluateAt(mElapsedTime), 127.f));
+  const float volume = mVolume.EvaluateAt(mElapsedTime);
+  return CCast::ToUint8(CMath::Clamp(0.f, 127.f * volume, 127.f));
 }
 
 ushort CScriptSoundModifier::GetCurrentPitch() {
-  return CCast::FtoUS(CMath::Clamp(0.f, 8192.f * (1.f + mPitch.EvaluateAt(mElapsedTime)), 16383.f));
+  const float pitch = mPitch.EvaluateAt(mElapsedTime);
+  return CCast::FtoUS(CMath::Clamp(0.f, 8192.f * (1.f + pitch), 16383.f));
 }
 
 uchar CScriptSoundModifier::GetCurrentPan() {
-  return CCast::ToUint8(CMath::Clamp(0.f, 64.f * (1.f + mPan.EvaluateAt(mElapsedTime)), 127.f));
+  const float pan = mPan.EvaluateAt(mElapsedTime);
+  return CCast::ToUint8(CMath::Clamp(0.f, 64.f * (1.f + pan), 127.f));
 }
 
 uchar CScriptSoundModifier::GetCurrentSurroundPan() {
-  return CCast::ToUint8(
-      CMath::Clamp(0.f, 64.f * (1.f - mSurroundPan.EvaluateAt(mElapsedTime)), 127.f));
+  const float pan = mSurroundPan.EvaluateAt(mElapsedTime);
+  return CCast::ToUint8(CMath::Clamp(0.f, 64.f * (1.f - pan), 127.f));
 }
 
 void CScriptSoundModifier::Think(float dt, CStateManager& mgr) {
@@ -102,7 +106,7 @@ void CScriptSoundModifier::Think(float dt, CStateManager& mgr) {
     mElapsedTime += dt;
     if (mElapsedTime >= mDuration) {
       mRunning = false;
-      SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+      SendScriptMsgs(kSS_MaxReached, mgr);
       if (mAutoReset) {
         mElapsedTime = 0.f;
         if (mAutoStart) {

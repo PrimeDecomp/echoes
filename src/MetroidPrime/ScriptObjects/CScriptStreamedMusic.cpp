@@ -48,7 +48,7 @@ CStreamAudioManager::ESoftwareChannel CScriptStreamedMusic::IsOneShot(bool loop)
 
 void CScriptStreamedMusic::Think(float dt, CStateManager& mgr) {
   if (mPreloadPending && mPreload->IsReady()) {
-    SendScriptMsgs(static_cast< EScriptObjectState >(0x41525256), mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(static_cast< EScriptObjectState >(0x41525256), mgr);
     mPreloadPending = false;
   }
 }
@@ -56,7 +56,7 @@ void CScriptStreamedMusic::Think(float dt, CStateManager& mgr) {
 void CScriptStreamedMusic::StartStream() {
   if (!mPreload || mPreload->IsReady()) {
     CStreamAudioManager::PlaySoftwareAudio(IsOneShot(mLoop), mFileName, mFadeIn, mFadeOut,
-                                          static_cast< uchar >(mVolume), mMusic);
+                                           static_cast< uchar >(mVolume), mMusic);
   }
 }
 
@@ -132,8 +132,8 @@ void CScriptStreamedMusic::TweakOverride(CStateManager& mgr) {
 void CScriptStreamedMusic::SetStereoPair() {
   if (mFileIsDsp && mFileName.find('|', 0) == -1 && mFileName.size() >= 5) {
     if (CStringExtras::CompareCaseInsensitive(
-            rstl::string_l(mFileName.data() + mFileName.size() - 5),
-            rstl::string_l("L.dsp")) == 0) {
+            rstl::string_l(mFileName.data() + mFileName.size() - 5), rstl::string_l("L.dsp")) ==
+        0) {
       rstl::string right = rstl::string(mFileName.begin(), mFileName.end() - 5) + "R.dsp";
       if (CDvdFile::FileExists(right.data())) {
         mFileName = mFileName + '|' + right;
@@ -142,9 +142,7 @@ void CScriptStreamedMusic::SetStereoPair() {
   }
 }
 
-void CScriptStreamedMusic::StopNonDsp() {
-  CStreamAudioManager::FadeBackIn(mFadeOut);
-}
+void CScriptStreamedMusic::StopNonDsp() { CStreamAudioManager::FadeBackIn(mFadeOut); }
 
 void CScriptStreamedMusic::PlayNonDsp() {
   const char volume = mVolume;
@@ -232,6 +230,7 @@ CEntity* LoadStreamedAudio(CStateManager& mgr, CInputStream& input, CEntityInfo&
 
   return new CScriptStreamedMusic(
       mgr.AllocateUniqueId(), LdrToEntityInfo(info, sldrThis.editorProperties),
-      sldrThis.editorProperties.name, sldrThis.songFile, sldrThis.defaultAudio, sldrThis.fadeInTime, sldrThis.fadeOutTime,
-      sldrThis.volume, sldrThis.softwareChannel == 0, sldrThis.softwareIsMusic);
+      sldrThis.editorProperties.name, sldrThis.songFile, sldrThis.defaultAudio, sldrThis.fadeInTime,
+      sldrThis.fadeOutTime, sldrThis.volume, sldrThis.softwareChannel == 0,
+      sldrThis.softwareIsMusic);
 }

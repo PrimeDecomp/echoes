@@ -19,7 +19,8 @@ CScriptPlayerStateChange::CScriptPlayerStateChange(TUniqueId uid, const rstl::st
 void CScriptPlayerStateChange::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
   if (GetActive() && message == kSM_SetToZero) {
-    // Native code also discards a side-effect-free multiplayer query here.
+    // Native code discards the result of a multiplayer query here.
+    mgr.IsMultiplayer();
     mgr.PlayerState(0)->AddPowerUp(mItemType, mCapacityIncrease);
     mgr.PlayerState(0)->IncrPickUp(mItemType, mAmount);
   }

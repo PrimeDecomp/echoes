@@ -100,7 +100,7 @@ void CDamageEffect::Think(float dt, CStateManager& mgr) {
   }
 
   if (mAffectsVisor) {
-    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < uint(mgr.GetNumPlayers()); ++i) {
       CPlayer* player = mgr.Player(i);
       if (player->GetTouchBounds()->DoBoundsOverlap(*GetTouchBounds()) && !doFree &&
           particleCount > 0.5f) {

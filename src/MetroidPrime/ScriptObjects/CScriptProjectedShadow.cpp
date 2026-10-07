@@ -113,7 +113,7 @@ void CScriptShadowProjector::Think(float dt, CStateManager& mgr) {
       mOpacity = 0.f;
       mProjectedShadow = nullptr;
       mShadowInvalidated = false;
-      SendScriptMsgs(kSS_Zero, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Zero, mgr);
     }
   }
 }

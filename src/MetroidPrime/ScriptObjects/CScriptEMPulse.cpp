@@ -3,6 +3,8 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrEMPulse.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
 #include "Kyoto/Particles/CElementGen.hpp"
@@ -29,7 +31,7 @@ CScriptEMPulse::CScriptEMPulse(TUniqueId uid, const rstl::string& name, const CE
                                float minHudDisableAmount, float maxHudDisableAmount,
                                CAssetId particleId)
 : CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_Projectile),
-         CActorParameters(), kInvalidUniqueId)
+         CActorParameters::None(), kInvalidUniqueId)
 , mDuration(duration)
 , mFinalRadius(finalRadius)
 , mCurrentRadius(initialRadius)

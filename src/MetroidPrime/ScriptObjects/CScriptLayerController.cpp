@@ -12,7 +12,7 @@
 
 CScriptLayerController::CScriptLayerController(TUniqueId uid, const rstl::string& name,
                                                const CEntityInfo& info, uint areaSaveId, int layer,
-                                               bool isDynamic)
+                                               const bool isDynamic)
 : CEntity(uid, info, name, 0)
 , mAreaSaveId(areaSaveId)
 , mLayerId(layer)
@@ -31,11 +31,11 @@ void CScriptLayerController::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
   case kSM_Increment:
   case kSM_Unload:
   case kSM_Decrement: {
-    if (mAreaSaveId == 0xffffffff || mLayerId.Value() == -1) {
+    if (mAreaSaveId == 0xffffffff || static_cast< uint >(mLayerId.Value()) == 0xffffffff) {
       break;
     }
 
-    const bool active = msg.GetMessage() == kSM_Load || msg.GetMessage() == kSM_Increment;
+    bool active = msg.GetMessage() == kSM_Load || msg.GetMessage() == kSM_Increment;
     CWorldLayerState* layers = nullptr;
     const TAreaId areaId = GetAreaIdAndWorldLayerState(mgr, &layers);
     if (areaId == kInvalidAreaId) {
@@ -64,18 +64,26 @@ void CScriptLayerController::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
   case kSM_Play:
     if (mIsDynamic) {
       CWorldLayerState* layers = nullptr;
-      CGameArea* area = GetAreaForAreaId(mgr, GetAreaIdAndWorldLayerState(mgr, &layers));
+      const TAreaId areaId = GetAreaIdAndWorldLayerState(mgr, &layers);
+      CGameArea* area = GetAreaForAreaId(mgr, areaId);
       if (area != nullptr) {
         const TLayerId layer = mLayerId;
-        const CGameArea::ELayerPhase phase = area->GetLayerPhase(layer);
-        if (phase == CGameArea::kLP_Ready) {
+        switch (area->GetLayerPhase(layer)) {
+        case CGameArea::kLP_CancelPending:
+          return;
+        case CGameArea::kLP_Ready:
           area->ActivateLayerDynamic(mgr, layer);
-        } else if (phase == CGameArea::kLP_RestartPending || phase == CGameArea::kLP_Loading) {
+          break;
+        case CGameArea::kLP_RestartPending:
+        case CGameArea::kLP_Loading:
           mgr.mLayerRestartPending = true;
           mActivateWhenLoaded = true;
+          break;
         }
       }
     }
+    break;
+  case kSM_AreaLoaded:
     break;
   default:
     break;
@@ -86,11 +94,12 @@ void CScriptLayerController::Think(float dt, CStateManager& mgr) {
   if (GetActive() && (mWaitingForLoad || mActivateWhenLoaded)) {
     CWorldLayerState* layers = nullptr;
     const TLayerId layer = mLayerId;
-    CGameArea* area = GetAreaForAreaId(mgr, GetAreaIdAndWorldLayerState(mgr, &layers));
+    const TAreaId areaId = GetAreaIdAndWorldLayerState(mgr, &layers);
+    CGameArea* area = GetAreaForAreaId(mgr, areaId);
     if (area != nullptr && area->GetLayerPhase(layer) == CGameArea::kLP_Ready) {
       if (mWaitingForLoad) {
         mWaitingForLoad = false;
-        SendScriptMsgs(kSS_Arrived, mgr, kSM_None);
+        SendScriptMsgs(kSS_Arrived, mgr);
       }
       if (mActivateWhenLoaded) {
         mActivateWhenLoaded = false;
@@ -114,19 +123,18 @@ TAreaId CScriptLayerController::GetAreaIdAndWorldLayerState(CStateManager& mgr,
 
   const rstl::pair< CAssetId, TAreaId > worldAndArea =
       gpMemoryCard->GetAreaAndWorldIdForSaveId(mAreaSaveId);
-  if (worldAndArea.first == kInvalidAssetId) {
-    return kInvalidAreaId;
+  if (worldAndArea.first != kInvalidAssetId) {
+    CWorldState& worldState = gpGameState->StateForWorld(worldAndArea.first);
+    if (layers != nullptr) {
+      *layers = worldState.GetLayerState().GetPtr();
+    }
+    return worldAndArea.second;
   }
-
-  CWorldState& worldState = gpGameState->StateForWorld(worldAndArea.first);
-  if (layers != nullptr) {
-    *layers = worldState.GetLayerState().GetPtr();
-  }
-  return worldAndArea.second;
+  return kInvalidAreaId;
 }
 
 CGameArea* CScriptLayerController::GetAreaForAreaId(CStateManager& mgr, TAreaId area) {
-  if (area != kInvalidAreaId && mgr.World()->DoesAreaExist(area) &&
+  if (area.value != kInvalidAreaId.value && mgr.World()->DoesAreaExist(area) &&
       mgr.World()->IsAreaValid(area)) {
     return mgr.World()->Area(area);
   }
@@ -134,7 +142,6 @@ CGameArea* CScriptLayerController::GetAreaForAreaId(CStateManager& mgr, TAreaId 
 }
 
 CEntity* LoadScriptLayerController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
-  // TODO: the generated master-area default is zero; the native loader uses -1.
   SLdrScriptLayerController sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrScriptLayerController.inc"
   return rs_new CScriptLayerController(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

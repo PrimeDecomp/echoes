@@ -7,6 +7,9 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSubtitle.hpp"
 
+// Unnamed CStateManager render-list helper (native 0x80037944).
+extern "C" bool fn_80037944(CStateManager& mgr, TUniqueId uid);
+
 CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                  int positionX, int positionY, int extentX, int extentY,
                                  const CColor& fontColor, const CColor& outlineColor,
@@ -25,14 +28,19 @@ CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const 
 , mFadeInTime(fadeInTime)
 , mFadeOutTime(fadeOutTime)
 , mFadeOpacity(0.f)
-, mTargetFadeOpacity(0.f) {}
+, mTargetFadeOpacity(0.f) {
+  if (mStringIndex < 0 || mStringIndex >= mStringTable->GetStringCount()) {
+    mStringIndex = CMath::Clamp(0, mStringIndex, mStringTable->GetStringCount());
+  }
+  RefreshText();
+  SetModelFlags(CModelFlags::AlphaBlended(mGeometryColor));
+}
 
 void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CActor::AcceptScriptMsg(mgr, msg);
   if (!GetActive()) {
     return;
   }
-
   switch (msg.GetMessage()) {
   case kSM_Increment:
     SetStringIndex(mgr, mStringIndex + 1);
@@ -59,33 +67,25 @@ void CScriptSubtitle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
 
 void CScriptSubtitle::Think(float dt, CStateManager& mgr) {
   if (mTargetFadeOpacity > mFadeOpacity) {
-    float opacity = mTargetFadeOpacity;
-    if (mFadeInTime != 0.f) {
-      const float next = mFadeOpacity + dt / mFadeInTime;
-      opacity = opacity >= next ? next : opacity;
-    }
-    mFadeOpacity = opacity;
+    mFadeOpacity = mFadeInTime == 0.f
+                       ? mTargetFadeOpacity
+                       : rstl::min_val(mFadeOpacity + dt / mFadeInTime, mTargetFadeOpacity);
   } else if (mTargetFadeOpacity < mFadeOpacity) {
-    float opacity = mTargetFadeOpacity;
-    if (mFadeOutTime != 0.f) {
-      const float next = mFadeOpacity - dt / mFadeOutTime;
-      opacity = next >= opacity ? next : opacity;
-    }
-    mFadeOpacity = opacity;
+    mFadeOpacity = mFadeOutTime == 0.f
+                       ? mTargetFadeOpacity
+                       : rstl::max_val(mFadeOpacity - dt / mFadeOutTime, mTargetFadeOpacity);
   }
 }
 
-void CScriptSubtitle::PreRender(CStateManager& mgr) {
-  const TUniqueId uid = GetUniqueId();
-  mgr.RenderLastAfterCameraFilters(uid);
-}
+void CScriptSubtitle::PreRender(CStateManager& mgr) { fn_80037944(mgr, GetUniqueId()); }
 
 void CScriptSubtitle::Render(const CStateManager& mgr) const {
-  mTextSupport.SetGeometryColor(GetModelFlags().GetColor().WithAlphaModulatedBy(mFadeOpacity));
+  const_cast< CGuiTextSupport& >(mTextSupport)
+      .SetGeometryColor(GetModelFlags().GetColorRef().WithAlphaModulatedBy(mFadeOpacity));
   if (mFadeOpacity > 0.f) {
     gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
     gpRender->SetDepthReadWrite(false, false);
-    switch (GetModelFlags().GetTrans()) {
+    switch (static_cast< signed char >(GetModelFlags().GetTrans())) {
     case CModelFlags::kT_Opaque:
     case CModelFlags::kT_One:
     case CModelFlags::kT_Two:
@@ -99,11 +99,11 @@ void CScriptSubtitle::Render(const CStateManager& mgr) const {
     default:
       break;
     }
-
     const CViewport& viewport = CGraphics::GetViewport();
-    gpRender->SetModelMatrix(
-        CTransform4f::Translate(viewport.mWidth / 640.f * mPositionX, 0.f,
-                                viewport.mHeight / 448.f * (448.f - mPositionY)));
+    const CTransform4f xf = CTransform4f::Translate(
+        (static_cast< float >(viewport.mWidth) / 640.f) * mPositionX, 0.f,
+        (static_cast< float >(viewport.mHeight) / 448.f) * (448.f - mPositionY));
+    gpRender->SetModelMatrix(xf);
     mTextSupport.Render();
   }
 }
@@ -112,19 +112,19 @@ void CScriptSubtitle::SetStringIndex(CStateManager& mgr, int index) {
   if (index == mStringIndex) {
     return;
   }
-
-  const int lastIndex = mStringTable->GetStringCount() - 1;
+  const int maxIndex = mStringTable->GetStringCount() - 1;
   if (index == 0) {
-    SendScriptMsgs(kSS_Zero, mgr, kSM_None);
-  } else if (index == lastIndex) {
-    SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+    SendScriptMsgs(kSS_Zero, mgr);
+  } else if (index == maxIndex) {
+    SendScriptMsgs(kSS_MaxReached, mgr);
   }
-  mStringIndex = CMath::ClampI(0, index, lastIndex);
+  mStringIndex = CMath::Clamp(0, index, maxIndex);
   RefreshText();
 }
 
 void CScriptSubtitle::RefreshText() {
-  mTextSupport.SetText(rstl::wstring_l(mStringTable->GetString(mStringIndex)));
+  const wchar_t* text = mStringTable->GetString(mStringIndex);
+  mTextSupport.SetText(rstl::wstring_l(text));
 }
 
 // Guessed loader name.
@@ -135,7 +135,6 @@ CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info
   if (sldrThis.stringTable == kInvalidAssetId) {
     return nullptr;
   }
-
   return rs_new CScriptSubtitle(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.textPositionX,
@@ -144,9 +143,10 @@ CEntity* LoadSubtitle(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       sldrThis.textProperties.outlineColor, sldrThis.textProperties.geometryColor,
       sldrThis.textProperties.defaultFont, sldrThis.stringTable, sldrThis.initialStringIndex,
       sldrThis.fadeInTime, sldrThis.fadeOutTime,
-      CGuiTextProperties(sldrThis.textProperties.wrapText,
-                         EJustification(sldrThis.textProperties.horizontalJustification),
-                         EVerticalJustification(sldrThis.textProperties.verticalJustification)));
+      CGuiTextProperties(
+          sldrThis.textProperties.wrapText,
+          static_cast< EJustification >(sldrThis.textProperties.horizontalJustification),
+          static_cast< EVerticalJustification >(sldrThis.textProperties.verticalJustification)));
 }
 
 CScriptSubtitle::~CScriptSubtitle() {}

@@ -431,7 +431,7 @@ void CScriptDebris::Think(float dt, CStateManager& mgr) {
 
 void CScriptDebris::Touch(CActor& other, CStateManager& mgr) {
   if (mDieOnProjectile && TCastToPtr< CGameProjectile >(other)) {
-    SendScriptMsgs(kSS_Dead, mgr, kInvalidUniqueId, kSM_None);
+    SendScriptMsgs(kSS_Dead, mgr);
     mgr.DeleteObjectRequest(GetUniqueId());
   }
 }
@@ -500,7 +500,7 @@ void CScriptDebris::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
             SetBoundingBox(touchBounds ? *touchBounds : bounds);
           }
 
-          mgr.SendScriptMsg(actor, GetUniqueId(), kSM_Activate, kInvalidUniqueId);
+          mgr.SendScriptMsg(actor, GetUniqueId(), kSM_Activate);
           break;
         }
         mgr.DeleteObjectRequest(generated.mUniqueId);
@@ -602,9 +602,9 @@ void CScriptDebris::SetSolid(bool solid) {
         CMaterialList(kMT_Unknown59),
         CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_NoPlatformCollision)));
   } else {
-    CMaterialList excluded(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile, kMT_Unknown59);
-    excluded.Add(kMT_NoPlatformCollision);
-    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(CMaterialList(), excluded));
+    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
+        CMaterialList(), CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile,
+                                       kMT_Unknown59, kMT_NoPlatformCollision)));
   }
 }
 

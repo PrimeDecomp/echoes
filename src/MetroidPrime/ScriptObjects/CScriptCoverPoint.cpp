@@ -73,7 +73,8 @@ bool CScriptCoverPoint::Blown(const CVector3f& point) const {
     const CVector3f delta = point - GetTranslation();
     const CVector3f forward = GetTransform().GetForward();
     if (CVector3f::GetAngleDiff(forward, delta.DropZ()) <= mHorizontalSafeHalfAngle &&
-        CVector3f::GetAngleDiff(delta, delta.DropZ()) <= mVerticalSafeHalfAngle) {
+        CVector3f::GetAngleDiff(delta, CVector3f(delta.GetX(), delta.GetY(), 0.f)) <=
+            mVerticalSafeHalfAngle) {
       return false;
     }
   }

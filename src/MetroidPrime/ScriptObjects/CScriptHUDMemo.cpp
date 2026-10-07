@@ -24,6 +24,7 @@ CScriptHUDMemo::CScriptHUDMemo(TUniqueId uid, const rstl::string& name, const CE
 CScriptHUDMemo::~CScriptHUDMemo() {}
 
 void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  const EScriptObjectMessage message = msg.GetMessage();
   CHUDMemoParms parms = m_parms;
   if (m_useOriginator) {
     if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(msg.GetOriginator()))) {
@@ -33,7 +34,7 @@ void CScriptHUDMemo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
     }
   }
 
-  switch (msg.GetMessage()) {
+  switch (message) {
   case kSM_SetToZero:
     if (GetActive()) {
       if (m_dispType == kDT_MessageBox) {

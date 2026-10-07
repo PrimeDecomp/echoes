@@ -63,7 +63,7 @@ void CScriptVisorGoo::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       CEntity* effect = mgr.ObjectById(mEffectId);
       if (effect != nullptr) {
         if (mDeleteOnDeactivate) {
-          mgr.SendScriptMsg(effect, GetUniqueId(), kSM_Delete, kInvalidUniqueId);
+          mgr.SendScriptMsg(effect, GetUniqueId(), kSM_Delete);
         } else {
           CHUDBillboardEffect* hud = static_cast< CHUDBillboardEffect* >(effect);
           hud->GetParticleGen()->SetParticleEmission(false);
@@ -96,7 +96,7 @@ void CScriptVisorGoo::Think(float, CStateManager& mgr) {
       loaded = true;
     }
     if (loaded) {
-      for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+      for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
         CPlayer* player = mgr.GetPlayer(i);
         if (player->GetCameraState() != CPlayer::kCS_FirstPerson) {
           continue;
