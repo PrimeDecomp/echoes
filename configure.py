@@ -1597,6 +1597,14 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Metroid",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CMetroid.cpp"),
+            Object(NonMatching, "MetroidPrime/Enemies/CBabyMetroid.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
