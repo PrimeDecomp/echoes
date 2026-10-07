@@ -59,9 +59,9 @@ rstl::string CGameArea::IGetInternalAreaName() const { return mInternalAreaName;
 IGameArea::~IGameArea() {}
 
 int CGameArea::VerifyHeader() const {
-  if (!mPostConstructed->mMreaSectionBuffers.empty()) {
+  if (!mPostConstructed->GetSectionBuffers().empty()) {
     const int* header =
-        reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+        reinterpret_cast< const int* >(mPostConstructed->GetSectionBuffers().front().first.get());
     if (header[0] == 0xdeadbeef && header[1] >= 23 && header[1] <= 25) {
       return header[1];
     }
@@ -72,7 +72,7 @@ int CGameArea::VerifyHeader() const {
 int CGameArea::GetSectionIndex(int section) const {
   const int version = VerifyHeader();
   const int* header =
-      reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+      reinterpret_cast< const int* >(mPostConstructed->GetSectionBuffers().front().first.get());
   if (version >= 11) {
     switch (section) {
     case 0:
@@ -228,8 +228,8 @@ CGameArea::~CGameArea() {
 void CGameArea::ClearTokenList() {
   mLayerPhases.clear();
   if (mPostConstructed.get()) {
-    mPostConstructed->mLayerTokens.clear();
-    mPostConstructed->mLayerRelTokens.clear();
+    mPostConstructed->GetLayerTokens().clear();
+    mPostConstructed->GetLayerRelTokens().clear();
     mPostConstructed->mSortedRelTokens.clear();
   }
 }
@@ -265,11 +265,11 @@ bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
   if (!finished) {
     const bool loadTexturesToAram = mgr.IsFullyInitialized();
     int pending = 0;
-    for (int i = 0; i < mPostConstructed->mLayerTokens.size(); ++i) {
-      const int layer = i != 0 ? i - 1 : mPostConstructed->mLayerTokens.size() - 1;
+    for (int i = 0; i < mPostConstructed->GetLayerTokens().size(); ++i) {
+      const int layer = i != 0 ? i - 1 : mPostConstructed->GetLayerTokens().size() - 1;
       const int priorPending = pending;
       if (mLayerPhases[layer] == kLP_Loading) {
-        rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+        rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layer];
         for (int j = 0; j < tokens.size(); ++j) {
           CToken& token = tokens[j];
           if (token.IsLoaded()) {
@@ -296,15 +296,16 @@ bool CGameArea::UpdateDependencyLoading(CStateManager& mgr) {
         }
 
         for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::const_iterator it =
-                 mPostConstructed->mLayerLoadTransactions.begin();
-             it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
-          if (it->first == layer) {
+                 mPostConstructed->GetLayerLoadTransactions().begin();
+             it != mPostConstructed->GetLayerLoadTransactions().end(); ++it) {
+          const rstl::pair< int, rstl::auto_ptr< CDvdRequest > >& request = *it;
+          if (request.first == layer) {
             ++pending;
             break;
           }
         }
-        if (layer < mPostConstructed->mLayerRelTokens.size()) {
-          rstl::vector< CRELFileToken >& rels = mPostConstructed->mLayerRelTokens[layer];
+        if (layer < mPostConstructed->GetLayerRelTokens().size()) {
+          rstl::vector< CRELFileToken >& rels = mPostConstructed->GetLayerRelTokens()[layer];
           for (int j = 0; j < rels.size(); ++j) {
             if (!rels[j].IsLoaded()) {
               ++pending;
@@ -336,10 +337,11 @@ void CGameArea::VerifyTokenList(CStateManager& mgr) {
     ClearTokenList();
     mLayerPhases.resize(mLayerDependencyOffsets.size(), kLP_Inactive);
     mPostConstructed->mActiveLayers.resize(layers.GetAreaLayerCount(mSelfIdx), false);
-    mPostConstructed->mLayerTokens.resize(mLayerDependencyOffsets.size(), rstl::vector< CToken >());
+    mPostConstructed->GetLayerTokens().resize(mLayerDependencyOffsets.size(),
+                                              rstl::vector< CToken >());
 
     for (int layer = 0; layer < mLayerDependencyOffsets.size(); ++layer) {
-      rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+      rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layer];
       const int first = mLayerDependencyOffsets[layer];
       const int last = layer + 1 < mLayerDependencyOffsets.size()
                            ? mLayerDependencyOffsets[layer + 1]
@@ -351,22 +353,23 @@ void CGameArea::VerifyTokenList(CStateManager& mgr) {
     if (!mDependencies2.empty()) {
       for (int layer = mLayerDependencyOffsets.size() - 1; layer >= 0; --layer) {
         if (layers.IsLayerActive(mSelfIdx, TLayerId(layer))) {
-          AddLayerTokens(layer, mPostConstructed->mLayerTokens[layer]);
+          AddLayerTokens(layer, mPostConstructed->GetLayerTokens()[layer]);
         }
       }
       for (uint layer = 0; layer < layers.GetAreaLayerCount(mSelfIdx); ++layer) {
-        mPostConstructed->mActiveLayers[layer] = layers.IsLayerActive(mSelfIdx, TLayerId(layer));
+        mPostConstructed->GetActiveLayers()[layer] =
+            layers.IsLayerActive(mSelfIdx, TLayerId(layer));
       }
     }
   }
 
   const int relLayerCount = mRelOffsets.size() / 2;
-  if (relLayerCount != mPostConstructed->mLayerRelTokens.size()) {
-    mPostConstructed->mLayerRelTokens.resize(relLayerCount, rstl::vector< CRELFileToken >());
+  if (relLayerCount != mPostConstructed->GetLayerRelTokens().size()) {
+    mPostConstructed->GetLayerRelTokens().resize(relLayerCount, rstl::vector< CRELFileToken >());
   }
   if (!mRelModules.empty() && mPostConstructed->mSortedRelTokens.empty()) {
-    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
-      if (mPostConstructed->mActiveLayers[layer]) {
+    for (int layer = 0; layer < mPostConstructed->GetActiveLayers().size(); ++layer) {
+      if (mPostConstructed->GetActiveLayers()[layer]) {
         LoadLayerRelModules(mgr, TLayerId(layer));
       }
     }
@@ -379,11 +382,11 @@ void CGameArea::SortRelTokens(const CWorldLayerState& layers) {
     return;
   }
 
-  const int layerCount = mPostConstructed->mLayerRelTokens.size();
+  const int layerCount = mPostConstructed->GetLayerRelTokens().size();
   int count = 0;
   for (int layer = 0; layer < layerCount; ++layer) {
     if (mLayerPhases[layer] == kLP_Loading) {
-      count += mPostConstructed->mLayerRelTokens[layer].size();
+      count += mPostConstructed->GetLayerRelTokens()[layer].size();
     }
   }
 
@@ -392,7 +395,7 @@ void CGameArea::SortRelTokens(const CWorldLayerState& layers) {
   int cursor = 0;
   for (int layer = 0; layer < layerCount; ++layer) {
     if (mLayerPhases[layer] == kLP_Loading) {
-      rstl::vector< CRELFileToken >& tokens = mPostConstructed->mLayerRelTokens[layer];
+      rstl::vector< CRELFileToken >& tokens = mPostConstructed->GetLayerRelTokens()[layer];
       for (int i = 0; i < tokens.size(); ++i, ++cursor) {
         CRELFileToken& token = tokens[i];
         uint offset = 0;
@@ -417,7 +420,7 @@ void CGameArea::SortRelTokens(const CWorldLayerState& layers) {
 
 void CGameArea::FillInStaticGeometry() {
   rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >::const_iterator section =
-      mPostConstructed->mMreaSectionBuffers.begin() + mPostConstructed->mFirstMaterialSection;
+      mPostConstructed->GetSectionBuffers().begin() + mPostConstructed->mFirstMaterialSection;
   mPostConstructed->mFirstMaterial = reinterpret_cast< const uchar* >(section->first.get());
   mPostConstructed->mModelInstances.clear();
   ++section;
@@ -481,7 +484,7 @@ static inline CVector3f SwapVectorBytes(CVector3f vector) {
 void CGameArea::PostConstructArea() {
   mPostConstructed->mMreaVersion = VerifyHeader();
   rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >::const_iterator section =
-      mPostConstructed->mMreaSectionBuffers.begin();
+      mPostConstructed->GetSectionBuffers().begin();
   const SMreaHeader* header = reinterpret_cast< const SMreaHeader* >(section->first.get());
   for (int i = 0; i < 3; ++i) {
     CVector3f row = SwapVectorBytes(header->transform.GetRow(i));
@@ -495,7 +498,7 @@ void CGameArea::PostConstructArea() {
   if (header->version >= 24) {
     ++section;
   }
-  int firstGeometry = section - mPostConstructed->mMreaSectionBuffers.begin();
+  int firstGeometry = section - mPostConstructed->GetSectionBuffers().begin();
   mPostConstructed->mFirstMaterialSection = firstGeometry;
   ++section;
   mPostConstructed->mModelInstances.reserve(modelCount);
@@ -505,7 +508,7 @@ void CGameArea::PostConstructArea() {
     section += surfaces;
     section += 2;
   }
-  long geometryEnd = section - mPostConstructed->mMreaSectionBuffers.begin();
+  long geometryEnd = section - mPostConstructed->GetSectionBuffers().begin();
   if (header->renderOctreeSection != -1) {
     rstl::auto_ptr< const uchar > buffer(reinterpret_cast< const uchar* >(section->first.get()));
     buffer.release();
@@ -646,14 +649,14 @@ void CGameArea::PostConstructArea() {
   }
 
   int firstAram = firstGeometry;
-  for (; firstAram < mPostConstructed->mMreaSectionBuffers.size(); ++firstAram) {
-    if (mPostConstructed->mMreaSectionBuffers[firstAram].first.owner()) {
+  for (; firstAram < mPostConstructed->GetSectionBuffers().size(); ++firstAram) {
+    if (mPostConstructed->GetSectionBuffers()[firstAram].first.owner()) {
       break;
     }
   }
   int lastAram = geometryEnd;
   for (; firstAram < lastAram; --lastAram) {
-    if (mPostConstructed->mMreaSectionBuffers[lastAram].first.owner()) {
+    if (mPostConstructed->GetSectionBuffers()[lastAram].first.owner()) {
       break;
     }
   }
@@ -661,20 +664,20 @@ void CGameArea::PostConstructArea() {
     mPostConstructed->mFirstAramSection = firstAram;
     int bufferCount = 0;
     for (int i = firstAram; i < lastAram; ++i) {
-      if (mPostConstructed->mMreaSectionBuffers[i].first.owner()) {
+      if (mPostConstructed->GetSectionBuffers()[i].first.owner()) {
         ++bufferCount;
       }
     }
     mPostConstructed->mAramTokens.reserve(bufferCount);
     for (int part = firstAram; part < lastAram;) {
       int start = part;
-      int size = mPostConstructed->mMreaSectionBuffers[part++].second;
-      for (; part < lastAram && !mPostConstructed->mMreaSectionBuffers[part].first.owner();
+      int size = mPostConstructed->GetSectionBuffers()[part++].second;
+      for (; part < lastAram && !mPostConstructed->GetSectionBuffers()[part].first.owner();
            ++part) {
-        size += mPostConstructed->mMreaSectionBuffers[part].second;
+        size += mPostConstructed->GetSectionBuffers()[part].second;
       }
       mPostConstructed->mAramTokens.push_back_unsafe(rstl::pair< CARAMToken, int >(
-          CARAMToken(mPostConstructed->mMreaSectionBuffers[start].first.release(), size, 1),
+          CARAMToken(mPostConstructed->GetSectionBuffers()[start].first.release(), size, 1),
           part - start));
       if (GetOcclusionState() == kOS_Occluded) {
         CARAMToken& token = mPostConstructed->mAramTokens.back().first;
@@ -709,8 +712,8 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
     }
   }
   for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator it =
-           mPostConstructed->mLayerLoadTransactions.begin();
-       it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
+           mPostConstructed->GetLayerLoadTransactions().begin();
+       it != mPostConstructed->GetLayerLoadTransactions().end(); ++it) {
     if (it->second.get()) {
       if (!it->second->IsComplete()) {
         it->second->WaitUntilComplete();
@@ -722,11 +725,11 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
     DecompressAreaData();
   }
 
-  if (!mPostConstructed->mLayerRelTokens.empty()) {
-    for (int layer = 0; layer < mPostConstructed->mLayerRelTokens.size(); ++layer) {
-      for (int i = 0; i < mPostConstructed->mLayerRelTokens[layer].size(); ++i) {
-        mPostConstructed->mLayerRelTokens[layer][i].Load();
-        while (!mPostConstructed->mLayerRelTokens[layer][i].IsLoaded()) {
+  if (!mPostConstructed->GetLayerRelTokens().empty()) {
+    for (int layer = 0; layer < mPostConstructed->GetLayerRelTokens().size(); ++layer) {
+      for (int i = 0; i < mPostConstructed->GetLayerRelTokens()[layer].size(); ++i) {
+        mPostConstructed->GetLayerRelTokens()[layer][i].Load();
+        while (!mPostConstructed->GetLayerRelTokens()[layer][i].IsLoaded()) {
           gpRelFileManager->Update();
         }
       }
@@ -735,27 +738,27 @@ void CGameArea::FinishDependencyLoading(CStateManager& mgr) {
 
   if (GetTokenCount() == 0) {
     VerifyTokenList(mgr);
-    for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
-      for (rstl::vector< CToken >::iterator it = mPostConstructed->mLayerTokens[layer].begin();
-           it != mPostConstructed->mLayerTokens[layer].end(); ++it) {
+    for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
+      for (rstl::vector< CToken >::iterator it = mPostConstructed->GetLayerTokens()[layer].begin();
+           it != mPostConstructed->GetLayerTokens()[layer].end(); ++it) {
         it->Lock();
       }
     }
-    for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
-      for (rstl::vector< CToken >::iterator it = mPostConstructed->mLayerTokens[layer].begin();
-           it != mPostConstructed->mLayerTokens[layer].end(); ++it) {
+    for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
+      for (rstl::vector< CToken >::iterator it = mPostConstructed->GetLayerTokens()[layer].begin();
+           it != mPostConstructed->GetLayerTokens()[layer].end(); ++it) {
         it->GetObj();
       }
     }
-    for (int layer = 0; layer < mPostConstructed->mActiveLayers.size(); ++layer) {
-      if (mPostConstructed->mActiveLayers[layer]) {
+    for (int layer = 0; layer < mPostConstructed->GetActiveLayers().size(); ++layer) {
+      if (mPostConstructed->GetActiveLayers()[layer]) {
         mLayerPhases[layer] = kLP_Ready;
       }
     }
     mLayerPhases[mLayerDependencyOffsets.size() - 1] = kLP_Ready;
   }
   mPostConstructed->mLoadTransactions.clear();
-  mPostConstructed->mLayerLoadTransactions.clear();
+  mPostConstructed->GetLayerLoadTransactions().clear();
 }
 
 void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
@@ -769,12 +772,12 @@ void CGameArea::PrepareScriptObjects(CStateManager& mgr) {
 bool CGameArea::LoadScriptObjects(CStateManager& mgr) {
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
   CScriptObjectLoaderHelper::SLoadContext& context = *mPostConstructed->mScriptLoadState;
-  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
+  for (int i = 0; i < mPostConstructed->GetActiveLayers().size(); ++i) {
     const TLayerId layer(i);
     if (context.mLayerIndex != layer.Value()) {
       continue;
     }
-    if (mPostConstructed->mActiveLayers[i]) {
+    if (mPostConstructed->GetActiveLayers()[i]) {
       if (context.mRemainingObjects == 0) {
         const rstl::pair< const uchar*, int > buffer = GetLayerScriptBuffer(layer);
         rstl::auto_ptr< CInputStream > stream(rs_new CMemoryInStream(buffer.first, buffer.second));
@@ -794,14 +797,14 @@ bool CGameArea::LoadScriptObjects(CStateManager& mgr) {
       ++context.mLayerIndex;
     }
   }
-  const bool complete = context.mLayerIndex == mPostConstructed->mActiveLayers.size();
+  const bool complete = context.mLayerIndex == mPostConstructed->GetActiveLayers().size();
   return complete;
 }
 
 void CGameArea::FinishScriptObjects(CStateManager& mgr) {
   CScriptObjectLoaderHelper& loader = mgr.ScriptObjectLoaderHelper();
-  for (int i = 0; i < mPostConstructed->mActiveLayers.size(); ++i) {
-    mPostConstructed->mMreaSectionBuffers[i + mPostConstructed->mFirstScriptSection].first =
+  for (int i = 0; i < mPostConstructed->GetActiveLayers().size(); ++i) {
+    mPostConstructed->GetSectionBuffers()[i + mPostConstructed->mFirstScriptSection].first =
         rstl::auto_ptr< char >();
     mPostConstructed->mLayerScriptBuffers[i] = rstl::auto_ptr< char >();
   }
@@ -894,17 +897,17 @@ bool CGameArea::Invalidate(CStateManager* mgr) {
     }
 
     for (rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator it =
-             mPostConstructed->mLayerLoadTransactions.begin();
-         it != mPostConstructed->mLayerLoadTransactions.end();) {
+             mPostConstructed->GetLayerLoadTransactions().begin();
+         it != mPostConstructed->GetLayerLoadTransactions().end();) {
       rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > >::iterator cur = it;
       ++it;
       if (!cur->second->IsComplete()) {
         cur->second->PostCancelRequest();
       } else {
-        mPostConstructed->mLayerLoadTransactions.erase(cur);
+        mPostConstructed->GetLayerLoadTransactions().erase(cur);
       }
     }
-    if (!mPostConstructed->mLayerLoadTransactions.empty()) {
+    if (!mPostConstructed->GetLayerLoadTransactions().empty()) {
       return false;
     }
 
@@ -940,7 +943,7 @@ void CGameArea::ResetLayerData() {
 char* CGameArea::AllocNewAreaData(int offset, int size) {
   char* buffer = static_cast< char* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen));
   rstl::pair< rstl::auto_ptr< char >, int > section(buffer, size);
-  mPostConstructed->mMreaSectionBuffers.push_back_unsafe(section);
+  mPostConstructed->GetSectionBuffers().push_back_unsafe(section);
 
   const SObjectTag tag('MREA', mAreaAssetId);
   mPostConstructed->mLoadTransactions.push_back(
@@ -954,21 +957,21 @@ uint CGameArea::CalculateDependencyListByteCount() const {
 
 int CGameArea::GetNumPartSizes() const {
   const uint* header =
-      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+      reinterpret_cast< const uint* >(mPostConstructed->GetSectionBuffers().front().first.get());
   return header[16];
 }
 
 int CGameArea::GetNumCompressedBlocks() const {
   const uint* header =
-      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+      reinterpret_cast< const uint* >(mPostConstructed->GetSectionBuffers().front().first.get());
   return header[1] < 24 ? 0 : header[28];
 }
 
 bool CGameArea::ReloadAllUnloadedTextures() {
   bool finished = true;
 
-  for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
-    rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+  for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
+    rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layer];
     for (int i = 0; i < tokens.size(); ++i) {
       CToken& token = tokens[i];
       if (token.GetReferenceType() == 'TXTR' && token.IsLoaded() && token.HasLock()) {
@@ -987,8 +990,8 @@ bool CGameArea::ReloadAllUnloadedTextures() {
 bool CGameArea::UnloadAllloadedTextures() {
   bool finished = true;
 
-  for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
-    rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+  for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
+    rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layer];
     for (int i = 0; i < tokens.size(); ++i) {
       CToken& token = tokens[i];
       if (token.GetReferenceType() == 'TXTR' && token.IsLoaded() && token.HasLock()) {
@@ -1041,7 +1044,7 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
     mPhase = kP_LoadHeader;
     // Fall through.
   case kP_LoadHeader:
-    mPostConstructed->mMreaSectionBuffers.reserve(3);
+    mPostConstructed->GetSectionBuffers().reserve(3);
     AllocNewAreaData(0, 0x80);
     mPhase = kP_LoadSectionSizes;
     // Fall through.
@@ -1052,7 +1055,7 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
     }
     mPostConstructed->mMreaVersion = VerifyHeader();
     const int sectionBytes = ALIGN_UP(GetNumPartSizes() * 4, 32);
-    const int headerBytes = mPostConstructed->mMreaSectionBuffers[0].second;
+    const int headerBytes = mPostConstructed->GetSectionBuffers()[0].second;
     AllocNewAreaData(headerBytes, sectionBytes);
     if (mPostConstructed->mMreaVersion >= 24) {
       AllocNewAreaData(headerBytes + sectionBytes, ALIGN_UP(GetNumCompressedBlocks() * 16, 32));
@@ -1066,11 +1069,11 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
       break;
     }
     const int partCount = GetNumPartSizes();
-    mPostConstructed->mMreaSectionBuffers.reserve(partCount + 3);
-    int offset = mPostConstructed->mMreaSectionBuffers[0].second;
-    offset += mPostConstructed->mMreaSectionBuffers[1].second;
+    mPostConstructed->GetSectionBuffers().reserve(partCount + 3);
+    int offset = mPostConstructed->GetSectionBuffers()[0].second;
+    offset += mPostConstructed->GetSectionBuffers()[1].second;
     if (mPostConstructed->mMreaVersion >= 24) {
-      offset += mPostConstructed->mMreaSectionBuffers[2].second;
+      offset += mPostConstructed->GetSectionBuffers()[2].second;
     }
     mPostConstructed->mLoadedSectionCount = 0;
     mPostConstructed->mLoadedBlockCount = 0;
@@ -1085,19 +1088,19 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
       int totalSize = 0;
       const int partCount = GetNumPartSizes();
       const int* sizes =
-          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[1].first.get());
+          reinterpret_cast< const int* >(mPostConstructed->GetSectionBuffers()[1].first.get());
       const SObjectTag tag('MREA', mAreaAssetId);
       bool load = true;
       const int scriptStart = GetSectionIndex(1) - 2;
       const int scriptCount =
-          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[0].first.get())[15];
+          reinterpret_cast< const int* >(mPostConstructed->GetSectionBuffers()[0].first.get())[15];
       int endSection = firstSection;
       if (firstSection >= scriptStart && firstSection < scriptStart + scriptCount) {
         const int layer = firstSection - scriptStart;
         if (mPostConstructed->mFirstScriptSection == -1) {
-          mPostConstructed->mFirstScriptSection = mPostConstructed->mMreaSectionBuffers.size();
+          mPostConstructed->mFirstScriptSection = mPostConstructed->GetSectionBuffers().size();
         }
-        if (!mPostConstructed->mActiveLayers[layer]) {
+        if (!mPostConstructed->GetActiveLayers()[layer]) {
           load = false;
         }
         totalSize = sizes[firstSection];
@@ -1128,13 +1131,13 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
       mPostConstructed->mMreaDataOffset += totalSize;
       const int firstSize = sizes[firstSection];
       int offset = firstSize;
-      mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+      mPostConstructed->GetSectionBuffers().push_back_unsafe(
           rstl::pair< rstl::auto_ptr< char >, int >(buffer, firstSize));
       for (int i = firstSection + 1; i < endSection; ++i) {
         rstl::auto_ptr< char > section(buffer.get() + offset);
         section.release();
         const int size = sizes[i];
-        mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+        mPostConstructed->GetSectionBuffers().push_back_unsafe(
             rstl::pair< rstl::auto_ptr< char >, int >(section, size));
         offset += size;
       }
@@ -1145,26 +1148,26 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
       }
     } else {
       const int* sizes =
-          reinterpret_cast< const int* >(mPostConstructed->mMreaSectionBuffers[1].first.get());
+          reinterpret_cast< const int* >(mPostConstructed->GetSectionBuffers()[1].first.get());
       const SObjectTag tag('MREA', mAreaAssetId);
       const SMreaCompressedBlock& block = reinterpret_cast< const SMreaCompressedBlock* >(
-          mPostConstructed->mMreaSectionBuffers[2]
+          mPostConstructed->GetSectionBuffers()[2]
               .first.get())[mPostConstructed->mLoadedBlockCount];
       bool load = true;
       if (block.mSectionCount == 1) {
         const uint scriptStart = GetSectionIndex(1) - 2;
         const uint section = mPostConstructed->mLoadedSectionCount;
         const int scriptCount = reinterpret_cast< const int* >(
-            mPostConstructed->mMreaSectionBuffers[0].first.get())[15];
+            mPostConstructed->GetSectionBuffers()[0].first.get())[15];
         if (section >= scriptStart && section < scriptStart + scriptCount) {
           const int layer = section - scriptStart;
           if (mPostConstructed->mFirstScriptSection == -1) {
-            mPostConstructed->mFirstScriptSection = mPostConstructed->mMreaSectionBuffers.size();
+            mPostConstructed->mFirstScriptSection = mPostConstructed->GetSectionBuffers().size();
           }
           if (scriptCount != mPostConstructed->mLayerFileOffsets.size()) {
             mPostConstructed->mLayerFileOffsets.resize(scriptCount, 0u);
           }
-          if (!mPostConstructed->mActiveLayers[layer]) {
+          if (!mPostConstructed->GetActiveLayers()[layer]) {
             load = false;
           }
           mPostConstructed->mLayerFileOffsets[layer] = mPostConstructed->mMreaDataOffset;
@@ -1198,13 +1201,13 @@ bool CGameArea::StartStreamingMainArea(CStateManager& mgr) {
       mPostConstructed->mMreaDataOffset += readSize;
       const int firstSize = sizes[mPostConstructed->mLoadedSectionCount];
       int offset = firstSize;
-      mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+      mPostConstructed->GetSectionBuffers().push_back_unsafe(
           rstl::pair< rstl::auto_ptr< char >, int >(buffer, firstSize));
       for (int i = 1; i < block.mSectionCount; ++i) {
         rstl::auto_ptr< char > section(buffer.get() + offset);
         section.release();
         const int size = sizes[mPostConstructed->mLoadedSectionCount + i];
-        mPostConstructed->mMreaSectionBuffers.push_back_unsafe(
+        mPostConstructed->GetSectionBuffers().push_back_unsafe(
             rstl::pair< rstl::auto_ptr< char >, int >(section, size));
         offset += size;
       }
@@ -1336,8 +1339,8 @@ bool CGameArea::TransferARAMTokensOver(EARAMTransfer mode) {
       for (int j = 0; j < it->second; ++j) {
         rstl::auto_ptr< char > section(buffer + offset);
         section.release();
-        offset += mPostConstructed->mMreaSectionBuffers[part].second;
-        mPostConstructed->mMreaSectionBuffers[part].first = section;
+        offset += mPostConstructed->GetSectionBuffers()[part].second;
+        mPostConstructed->GetSectionBuffers()[part].first = section;
         ++part;
       }
     }
@@ -1355,7 +1358,7 @@ bool CGameArea::TransferTokensToARAM() {
   for (; it != mPostConstructed->mAramTokens.end(); ++it) {
     rstl::pair< CARAMToken, int >& entry = *it;
     for (int j = 0; j < entry.second; ++j) {
-      mPostConstructed->mMreaSectionBuffers[part].first = empty;
+      mPostConstructed->GetSectionBuffers()[part].first = empty;
       ++part;
     }
     const CARAMToken::EStatus oldStatus = entry.first.GetStatus();
@@ -1424,12 +1427,12 @@ void CGameArea::AliveUpdate(float dt) {
 
 void CGameArea::UpdateDynamicLayers(CStateManager& mgr) {
   typedef rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > TRequests;
-  if (!mPostConstructed->mLayerLoadTransactions.empty()) {
-    for (TRequests::iterator it = mPostConstructed->mLayerLoadTransactions.begin();
-         it != mPostConstructed->mLayerLoadTransactions.end();) {
+  if (!mPostConstructed->GetLayerLoadTransactions().empty()) {
+    for (TRequests::iterator it = mPostConstructed->GetLayerLoadTransactions().begin();
+         it != mPostConstructed->GetLayerLoadTransactions().end();) {
       if (it->second->IsComplete()) {
         ClearDecompressionRequest(it->second.get());
-        it = mPostConstructed->mLayerLoadTransactions.erase(it);
+        it = mPostConstructed->GetLayerLoadTransactions().erase(it);
       } else {
         ++it;
       }
@@ -1437,7 +1440,7 @@ void CGameArea::UpdateDynamicLayers(CStateManager& mgr) {
   }
   DecompressAreaData();
   if (mPostConstructed->mDecompressionRequests.empty()) {
-    for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
+    for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
       UpdateLayerLoading(mgr, TLayerId(layer));
     }
   }
@@ -1447,7 +1450,7 @@ bool CGameArea::HasPendingLayerLoads() const {
   if (!mPostConstructed->mDecompressionRequests.empty()) {
     return true;
   }
-  for (int i = 0; i < mPostConstructed->mLayerTokens.size(); ++i) {
+  for (int i = 0; i < mPostConstructed->GetLayerTokens().size(); ++i) {
     switch (mLayerPhases[i]) {
     case kLP_Inactive:
     case kLP_Ready:
@@ -1461,12 +1464,11 @@ bool CGameArea::HasPendingLayerLoads() const {
 }
 
 int CGameArea::GetLayerRequestCount(const TLayerId layer) const {
-  const int layerIdx = layer.Value();
   int count = 0;
   typedef rstl::list< rstl::pair< int, rstl::auto_ptr< CDvdRequest > > > TRequests;
-  for (TRequests::iterator it = mPostConstructed->mLayerLoadTransactions.begin();
-       it != mPostConstructed->mLayerLoadTransactions.end(); ++it) {
-    if (it->first == layerIdx) {
+  for (TRequests::iterator it = mPostConstructed->GetLayerLoadTransactions().begin();
+       it != mPostConstructed->GetLayerLoadTransactions().end(); ++it) {
+    if (it->first == layer.Value()) {
       ++count;
     }
   }
@@ -1489,7 +1491,7 @@ void CGameArea::UpdateLayerLoading(CStateManager& mgr, const TLayerId layer) {
     break;
   case kLP_Loading: {
     int pending = 0;
-    rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layerIdx];
+    rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layerIdx];
     for (int i = 0; i < tokens.size(); ++i) {
       CToken& token = tokens[i];
       if (token.IsLoaded()) {
@@ -1512,7 +1514,7 @@ void CGameArea::UpdateLayerLoading(CStateManager& mgr, const TLayerId layer) {
     }
 
     if (pending <= 80) {
-      rstl::vector< CRELFileToken >& rels = mPostConstructed->mLayerRelTokens[layerIdx];
+      rstl::vector< CRELFileToken >& rels = mPostConstructed->GetLayerRelTokens()[layerIdx];
       for (int i = 0; i < rels.size(); ++i) {
         rels[i].Load();
         if (!rels[i].IsLoaded()) {
@@ -1886,8 +1888,8 @@ void CGameArea::SetLoadPauseState(bool paused) {
   if (!ready) {
     mLoadPaused = paused;
     if (paused) {
-      for (int layer = 0; layer < mPostConstructed->mLayerTokens.size(); ++layer) {
-        rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layer];
+      for (int layer = 0; layer < mPostConstructed->GetLayerTokens().size(); ++layer) {
+        rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layer];
         for (int i = 0; i < tokens.size(); ++i) {
           if (!tokens[i].IsLoaded()) {
             tokens[i].Unlock();
@@ -2079,8 +2081,8 @@ void CGameArea::fn_80054F74() {}
 int CGameArea::GetTokenCount() const {
   int count = 0;
   if (mPostConstructed.get()) {
-    for (int i = 0; i < mPostConstructed->mLayerTokens.size(); ++i) {
-      count += mPostConstructed->mLayerTokens[i].size();
+    for (int i = 0; i < mPostConstructed->GetLayerTokens().size(); ++i) {
+      count += mPostConstructed->GetLayerTokens()[i].size();
     }
   }
   return count;
@@ -2095,8 +2097,8 @@ CGameArea::ELayerPhase CGameArea::GetLayerPhase(const TLayerId layer) const {
 
 rstl::vector< CRELFileToken >* CGameArea::GetLayerRelTokens(const TLayerId layer) const {
   if (mPostConstructed.get() && layer.Value() >= 0 &&
-      layer.Value() < mPostConstructed->mLayerRelTokens.size()) {
-    return &mPostConstructed->mLayerRelTokens[layer.Value()];
+      layer.Value() < mPostConstructed->GetLayerRelTokens().size()) {
+    return &mPostConstructed->GetLayerRelTokens()[layer.Value()];
   }
   return nullptr;
 }
@@ -2143,23 +2145,23 @@ void CGameArea::StartLayerLoad(CStateManager& mgr, const TLayerId layer) {
                        ? mLayerDependencyOffsets[layerIdx + 1]
                        : mDependencies2.size();
   const int count = last - first;
-  rstl::vector< CToken >& tokens = mPostConstructed->mLayerTokens[layerIdx];
+  rstl::vector< CToken >& tokens = mPostConstructed->GetLayerTokens()[layerIdx];
   if (tokens.capacity() == 0) {
     tokens.reserve(count);
   }
-  AddLayerTokens(layerIdx, mPostConstructed->mLayerTokens[layerIdx]);
+  AddLayerTokens(layerIdx, mPostConstructed->GetLayerTokens()[layerIdx]);
 
   if (mPostConstructed->mMreaVersion < 24) {
     const SObjectTag tag('MREA', mAreaAssetId);
     const int size = GetLayerScriptSize(layer);
     rstl::auto_ptr< char > buffer(
         static_cast< char* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen)));
-    mPostConstructed->mLayerLoadTransactions.push_back(
+    mPostConstructed->GetLayerLoadTransactions().push_back(
         rstl::pair< int, rstl::auto_ptr< CDvdRequest > >(
             layer.Value(),
             gpResourceFactory->GetResLoader().LoadResourcePartAsync(
                 tag, mPostConstructed->mLayerFileOffsets[layerIdx], size, buffer.get())));
-    mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection] =
+    mPostConstructed->GetSectionBuffers()[layerIdx + mPostConstructed->mFirstScriptSection] =
         rstl::pair< rstl::auto_ptr< char >, int >(buffer, size);
     mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >(buffer.get());
     mPostConstructed->mLayerScriptBuffers[layerIdx].release();
@@ -2168,9 +2170,9 @@ void CGameArea::StartLayerLoad(CStateManager& mgr, const TLayerId layer) {
     rstl::auto_ptr< CDvdRequest > request;
     const int size = GetLayerScriptSize(layer);
     ReadCompressedLayer(mPostConstructed->mLayerFileOffsets[layerIdx], request, buffer);
-    mPostConstructed->mLayerLoadTransactions.push_back(
+    mPostConstructed->GetLayerLoadTransactions().push_back(
         rstl::pair< int, rstl::auto_ptr< CDvdRequest > >(layer.Value(), request));
-    mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection] =
+    mPostConstructed->GetSectionBuffers()[layerIdx + mPostConstructed->mFirstScriptSection] =
         rstl::pair< rstl::auto_ptr< char >, int >(buffer, size);
     mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >(buffer.get());
     mPostConstructed->mLayerScriptBuffers[layerIdx].release();
@@ -2193,8 +2195,8 @@ void CGameArea::ClearLayer(CStateManager& mgr, const TLayerId layer) {
 
   const int layerIdx = layer.Value();
   RemoveLayerObjects(mgr, layer);
-  mPostConstructed->mLayerTokens[layerIdx] = rstl::vector< CToken >();
-  mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection].first =
+  mPostConstructed->GetLayerTokens()[layerIdx] = rstl::vector< CToken >();
+  mPostConstructed->GetSectionBuffers()[layerIdx + mPostConstructed->mFirstScriptSection].first =
       rstl::auto_ptr< char >();
   mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >();
   mLayerPhases[layerIdx] = kLP_Inactive;
@@ -2248,7 +2250,7 @@ void CGameArea::ActivateLayerDynamic(CStateManager& mgr, const TLayerId layer) {
   loader.InitScriptObjects(ids, mgr);
   mPostConstructed->mScriptObjectsInitialized = true;
 
-  mPostConstructed->mMreaSectionBuffers[layerIdx + mPostConstructed->mFirstScriptSection].first =
+  mPostConstructed->GetSectionBuffers()[layerIdx + mPostConstructed->mFirstScriptSection].first =
       rstl::auto_ptr< char >();
   mPostConstructed->mLayerScriptBuffers[layerIdx] = rstl::auto_ptr< char >();
   mLayerPhases[layerIdx] = kLP_Active;
@@ -2259,7 +2261,7 @@ void CGameArea::LoadLayerRelModules(CStateManager& mgr, const TLayerId layer) {
   const int first = mRelOffsets[layerIdx * 2];
   const int last = mRelOffsets[layerIdx * 2 + 1];
   const int count = last - first;
-  rstl::vector< CRELFileToken >& tokens = mPostConstructed->mLayerRelTokens[layerIdx];
+  rstl::vector< CRELFileToken >& tokens = mPostConstructed->GetLayerRelTokens()[layerIdx];
   if (count > 0 && count != tokens.size()) {
     mLayerPhases[layerIdx] = kLP_Loading;
     tokens.clear();
@@ -2340,16 +2342,16 @@ void CGameArea::ClearDecompressionRequest(CDvdRequest* request) {
 void CGameArea::ReadCompressedLayer(const int offset, rstl::auto_ptr< CDvdRequest >& request,
                                     rstl::auto_ptr< char >& buffer) {
   const uint* header =
-      reinterpret_cast< const uint* >(mPostConstructed->mMreaSectionBuffers.front().first.get());
+      reinterpret_cast< const uint* >(mPostConstructed->GetSectionBuffers().front().first.get());
   if (mPostConstructed->mMreaVersion < 24) {
     return;
   }
 
   const SMreaCompressedBlock* blocks = reinterpret_cast< const SMreaCompressedBlock* >(
-      mPostConstructed->mMreaSectionBuffers[2].first.get());
+      mPostConstructed->GetSectionBuffers()[2].first.get());
   uint blockOffset = 0;
   for (int i = 0; i < 3; ++i) {
-    blockOffset += mPostConstructed->mMreaSectionBuffers[i].second;
+    blockOffset += mPostConstructed->GetSectionBuffers()[i].second;
   }
   const int blockCount = header[28];
   for (int i = 0; i < blockCount; ++i) {
