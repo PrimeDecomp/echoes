@@ -33,11 +33,11 @@ void CCinematicCamera::Reset(const CTransform4f& xf, CStateManager& mgr) {
   mSlowMotionScale = 1.f;
   if (const CScriptCamera* camera =
           TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId))) {
-    float fov = camera->GetSpline().GetFovByTime(mTime);
-    if ((mFlags & CScriptCamera::kF_VerticalFov) == 0) {
-      fov /= GetAspectRatio();
+    if (mFlags & CScriptCamera::kF_VerticalFov) {
+      SetFovAndTarget(camera->GetSpline().GetFovByTime(mTime));
+    } else {
+      SetFovAndTarget(camera->GetSpline().GetFovByTime(mTime) / GetAspectRatio());
     }
-    SetTargetFov(fov);
     mMoveIntoEyePos = CalculateMoveOutofIntoEyePosition(false, mgr);
     Think(0.f, mgr);
   }
@@ -61,7 +61,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   const CScriptCamera* camera =
       TCastToConstPtr< CScriptCamera >(mgr.GetObjectById(mScriptCameraId));
   if (!camera) {
-    CameraManager(mgr).StopCinematics(mgr);
+    mgr.CameraManager(GetControllerNumber())->StopCinematics(mgr);
     return;
   }
   if (!mPaused) {
@@ -72,7 +72,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   CTransform4f xf = camera->GetTransform();
   const float roll = spline.GetRollByTime(mTime);
   CVector3f up = CVector3f::Up();
-  if (CMath::AbsF(roll) >= 0.0001f) {
+  if (!CMath::IsEpsilon(roll, 0.f, 0.0001f)) {
     up = CQuaternion::YRotation(CRelAngle::FromDegrees(roll)).Transform(up);
   }
   xf.SetTranslation(spline.GetPositionByTime(mTime, xf, mgr));
@@ -80,7 +80,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   xf = orientation.BuildTransform4f(xf.GetTranslation());
   xf = CTransform4f::LookAt(xf.GetTranslation(), xf.GetTranslation() + xf.GetForward(), up);
   if ((mFlags & CScriptCamera::kF_LookAtPlayer) != 0) {
-    const CPlayer& player = GetPlayer(mgr);
+    const CPlayer& player = Player(mgr);
     CVector3f target = player.GetEyePosition();
     if (player.GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
       target = player.GetBallPosition();
@@ -103,7 +103,7 @@ void CCinematicCamera::Think(float dt, CStateManager& mgr) {
   // TODO: fade the linked player actor using GetMoveOutofIntoAlpha once CScriptActor's
   // player-actor flag is recovered in its shared interface.
   if (mTime > camera->GetDuration()) {
-    CameraManager(mgr).StopCinematics(mgr);
+    mgr.CameraManager(GetControllerNumber())->StopCinematics(mgr);
   }
 
   // TODO: forward mTime to the connected CScriptTimeKeyframe once its interface is recovered.
