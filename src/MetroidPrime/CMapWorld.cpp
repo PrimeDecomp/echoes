@@ -523,7 +523,7 @@ void CMapWorld::RecalculateWorldSphere(const CMapWorldInfo& mwInfo, const IWorld
   for (int i = 0; i < mAreas.size(); ++i) {
     if (IsMapAreaValid(wld, i, true)) {
       CMapArea* area = GetMapArea(i);
-      if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, GetMapArea(i)->IsInDarkWorld()),
+      if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, area->IsInDarkWorld()),
                                          mwInfo.IsAreaVisible(i))) {
         CAABox box = area->GetBoundingBox().GetTransformedAABox(area->GetAreaPostTransform(wld, i));
         for (int j = 0; j < 8; ++j) {
@@ -574,7 +574,7 @@ void CMapWorld::ClearTraversedFlags() const {
 }
 
 CFactoryFnReturn FMapWorldFactory(const SObjectTag& tag, CInputStream& in,
-                                        const CVParamTransfer& param) {
+                                  const CVParamTransfer& param) {
   return CFactoryFnReturn(rs_new CMapWorld(in));
 }
 
