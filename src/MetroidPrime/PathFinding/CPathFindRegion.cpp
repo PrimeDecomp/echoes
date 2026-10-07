@@ -174,24 +174,24 @@ bool CPFRegion::FindBestPoint(rstl::vector< CVector3f >& polyPoints, const CVect
       const CPFNode& node = GetNode(i);
       const CPFNode& nextNode = GetNode((i + 1) % GetNumNodes());
       polyPoints.clear();
-      polyPoints.push_back(node.GetPos());
-      polyPoints.push_back(node.GetPos());
+      polyPoints.push_back_unsafe(node.GetPos());
+      polyPoints.push_back_unsafe(node.GetPos());
       polyPoints.back()[kDZ] += GetHeight();
-      polyPoints.push_back(nextNode.GetPos());
+      polyPoints.push_back_unsafe(nextNode.GetPos());
       polyPoints.back()[kDZ] += GetHeight();
-      polyPoints.push_back(nextNode.GetPos());
+      polyPoints.push_back_unsafe(nextNode.GetPos());
       found |= FindClosestPointOnPolygon(polyPoints, node.GetNormal(), point, true);
     }
   }
   polyPoints.clear();
   for (i = 0; i < GetNumNodes(); ++i) {
-    polyPoints.push_back(GetNode(i).GetPos());
+    polyPoints.push_back_unsafe(GetNode(i).GetPos());
   }
   found |= FindClosestPointOnPolygon(polyPoints, GetNormal(), point, false);
   if (flags & 6) {
     polyPoints.clear();
     for (i = GetNumNodes() - 1; i >= 0; --i) {
-      polyPoints.push_back(GetNode(i).GetPos());
+      polyPoints.push_back_unsafe(GetNode(i).GetPos());
       polyPoints.back()[kDZ] += GetHeight();
     }
     found |= FindClosestPointOnPolygon(polyPoints, -GetNormal(), point, false);
