@@ -160,10 +160,9 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
     if (category == kEC_Parallel) {
       FadeOut(bus, category);
     } else {
-      for (int slot = 0; slot < effects.size(); ++slot) {
+      for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
         // Native priority comparison examines free slots, not active ones.
-        if (effects[slot].GetState() == kES_Free &&
-            effect.GetPriority() < effects[slot].GetPriority())
+        if (slot->GetState() == kES_Free && slot->GetPriority() > effect.GetPriority())
           primary = false;
       }
       if (primary)
@@ -174,19 +173,20 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
 
   int id = 0;
   bool assigned = false;
-  for (int slot = 0; slot < effects.size(); ++slot) {
-    if (effects[slot].GetState() != kES_Free)
+  for (SEffectSlot* slot = effects.begin(); slot != effects.end(); ++slot) {
+    ++id;
+    if (slot->GetState() != kES_Free)
       continue;
     {
       CInterruptGuard interrupts;
-      id = (++mNextId << 4) | (bus << 2) | (slot + 1);
-      effects[slot].SetId(id);
-      effects[slot].SetFade(0.f);
-      effects[slot].SetEffect(effect);
-      effects[slot].SetState(category == kEC_Parallel ? kES_ParallelFadeIn
-                             : primary                ? kES_SerialFadeIn
-                                                      : kES_SerialBypassFadeOut);
-      effects[slot].Prepare();
+      id = (++mNextId << 4) | ((bus << 2) | id);
+      slot->SetId(id);
+      slot->SetFade(0.f);
+      slot->SetEffect(effect);
+      slot->SetState(category == kEC_Parallel ? kES_ParallelFadeIn
+                     : primary                ? kES_SerialFadeIn
+                                              : kES_SerialBypassFadeOut);
+      slot->Prepare();
     }
     assigned = true;
     break;
@@ -197,7 +197,7 @@ int CAuxEffectManager::AddEffect(int bus, const CAuxEffect& effect, ECategory ca
       return 0;
     }
     // New slots use a zero-based index; reused slots use one-based indices.
-    id = (++mNextId << 4) | (bus << 2) | effects.size();
+    id = (++mNextId << 4) | ((bus << 2) | effects.size());
     effects.push_back(SEffectSlot(
         0.f, category == kEC_Parallel ? kES_ParallelFadeIn : kES_SerialFadeIn, id, effect));
     effects.back().Prepare();
