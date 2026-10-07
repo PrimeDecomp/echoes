@@ -15,7 +15,7 @@ CSurfaceAlignmentHelper::CSurfaceAlignmentHelper()
       CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor)))
 , mAngularRate(180.f)
 , mMode(kM_None)
-, mCache(rs_new CCollisionCache(CAABox::mskNullBox, 2, 2, 0xffff)) {}
+, mCache(rs_new CCollisionCache(CAABox::MakeNullBox(), 2, 2, 0xffff)) {}
 
 CSurfaceAlignmentHelper::CSurfaceAlignmentHelper(const CMaterialFilter& filter)
 : mSurface(CVector3f::Zero(), CVector3f::Right(), CVector3f::Forward(), static_cast< u64 >(-1))
