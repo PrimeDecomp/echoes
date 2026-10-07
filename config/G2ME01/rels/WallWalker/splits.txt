@@ -5,3 +5,14 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+MetroidPrime/Enemies/CWallWalker.cpp:
+	.text       start:0x00000000 end:0x0000434C
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000138
+	.data       start:0x00000000 end:0x000002B0
+	.bss        start:0x00000000 end:0x00000004
+
+REL/REL_Setup.cpp:
+	.text       start:0x0000434C end:0x000044F0
+	.rodata     start:0x00000138 end:0x000001BC
