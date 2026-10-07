@@ -24,7 +24,7 @@ private:
 CHECK_SIZEOF(CEnergyDrainSource, 0x8)
 
 namespace rstl {
-RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CEnergyDrainSource)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(CEnergyDrainSource)
 }
 
 class CPlayerEnergyDrain {
