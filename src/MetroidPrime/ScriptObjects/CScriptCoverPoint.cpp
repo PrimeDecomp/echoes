@@ -2,6 +2,19 @@
 
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrCoverPoint.hpp"
+
+CEntity* LoadCoverPoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrCoverPoint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrCoverPoint.inc"
+
+  return rs_new CScriptCoverPoint(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.unknown_0x969de5ff, sldrThis.shouldCrouch, sldrThis.horizontalSafeAngle,
+      sldrThis.verticalSafeAngle, sldrThis.lockTime);
+}
 
 CScriptCoverPoint::CScriptCoverPoint(TUniqueId uid, const rstl::string& name,
                                      const CEntityInfo& info, const CTransform4f& xf, uint flags,

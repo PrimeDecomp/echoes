@@ -1,9 +1,22 @@
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 
 #include "Kyoto/Math/CloseEnough.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/SLdrGrapplePoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+
+CEntity* LoadGrapplePoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+  SLdrGrapplePoint sldrThis;
+#include "MetroidPrime/ScriptLoader/SLdrGrapplePoint.inc"
+
+  return rs_new CScriptGrapplePoint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                    LdrToEntityInfo(info, sldrThis.editorProperties),
+                                    LdrToTransform4f(sldrThis.editorProperties),
+                                    LdrToGrappleParameters(sldrThis.grappleInfo));
+}
 
 CScriptGrapplePoint::CScriptGrapplePoint(TUniqueId uid, const rstl::string& name,
                                          const CEntityInfo& info, const CTransform4f& xf,
@@ -25,9 +38,12 @@ rstl::optional_object< CAABox > CScriptGrapplePoint::GetTouchBounds() const {
 
 void CScriptGrapplePoint::Render(const CStateManager&) const {}
 
-void CScriptGrapplePoint::Think(float, CStateManager&) {
+void CScriptGrapplePoint::Think(float, CStateManager& mgr) {
   if (GetActive() && !close_enough(GetTranslation(), mPreviousPosition, 0.0001f)) {
-    // Native also evaluates a discarded cinematic-camera check; its purpose is unresolved.
+    if (mgr.GetUpdateFrameIdx() - mActivationFrame > 1 &&
+        mgr.GetCameraManager(0)->IsInCinematicCamera()) {
+      // Native evaluates this check but takes no action; its purpose is unresolved.
+    }
     mPreviousPosition = GetTranslation();
   }
 }
