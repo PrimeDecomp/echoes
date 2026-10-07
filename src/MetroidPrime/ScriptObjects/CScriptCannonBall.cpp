@@ -15,7 +15,7 @@ CScriptCannonBall::CScriptCannonBall(TUniqueId uid, const rstl::string& name,
                                      const CEntityInfo& info, const CTransform4f& xf,
                                      CAssetId effect)
 
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(), CActorParameters::None(),
+: CActor(uid, name, info, 0, xf, CModelData::None(), CMaterialList(), CActorParameters::None(),
          kInvalidUniqueId)
 , m_effect(effect) {}
 
@@ -40,7 +40,7 @@ void CScriptCannonBall::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
     for (int playerIndex = 0; playerIndex < mgr.GetNumPlayers(); ++playerIndex) {
       TUniqueId id = mgr.AllocateUniqueId();
 
-      CLightParameters lParams;
+      CLightParameters lParams = CLightParameters::None();
       CGameSplineDesc spline(SLdrSpline(), CMotionSpline::kST_Bezier, 1.0f, false);
 
       CScriptEffect* newEffect =

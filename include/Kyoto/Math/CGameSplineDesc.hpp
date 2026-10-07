@@ -8,7 +8,8 @@
 class CGameSplineDesc {
 public:
   CGameSplineDesc(const SLdrSpline& spline, CMotionSpline::ESplineType type, float duration,
-                  bool closedLoop);
+                  bool closedLoop)
+  : mSpline(spline), mType(type), mDuration(duration), mClosedLoop(closedLoop) {}
   ~CGameSplineDesc() {}
 
   const SLdrSpline& GetSpline() const { return mSpline; }
