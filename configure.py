@@ -1612,6 +1612,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "Tryclops",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CTryclops.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
