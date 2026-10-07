@@ -159,12 +159,6 @@ void CPlayerKnockBackMgr::DoKnockBackAnimation(const CVector3f& direction, CStat
   const bool biped = morphState == CPlayer::kMS_Unmorphed || morphState == CPlayer::kMS_Unmorphing;
   CPlayerBodyStateCmdMgr& commands = player->BodyController()->CommandMgr();
   switch (mActiveParameters.mReaction) {
-  case kAR_Flinch:
-    commands.DeliverCmd(CPBCFlinchCmd(-direction));
-    return;
-  case kAR_KnockBack:
-    commands.DeliverCmd(CPBCKnockBackCmd(-direction));
-    return;
   case kAR_Fall:
     if (!player->GetPlayerRagDoll() && biped &&
         player->GetPlayerMovementState() == NPlayer::kMS_OnGround) {
@@ -173,37 +167,44 @@ void CPlayerKnockBackMgr::DoKnockBackAnimation(const CVector3f& direction, CStat
       player->SetDeathFadeDuration(1.f);
       player->SetDeathFadeDelay(1.5f);
       const EFollowUp followUp = mActiveParameters.mFollowUp;
-      const bool burn = followUp == kFU_BurnDeath || followUp == kFU_LaggedBurnDeath ||
-                        followUp == kFU_ImmediateDisintegration || followUp == kFU_BlackDeath;
-      commands.DeliverCmd(CPBCDeathReactionCmd(-direction, burn ? CPBCDeathReactionCmd::kDRM_Burning
-                                                                : CPBCDeathReactionCmd::kDRM_Fall));
+      if (followUp == kFU_BurnDeath || followUp == kFU_LaggedBurnDeath ||
+          followUp == kFU_ImmediateDisintegration || followUp == kFU_BlackDeath) {
+        commands.DeliverCmd(CPBCDeathReactionCmd(-direction, CPBCDeathReactionCmd::kDRM_Burning));
+      } else {
+        commands.DeliverCmd(CPBCDeathReactionCmd(-direction, CPBCDeathReactionCmd::kDRM_Fall));
+      }
       mDeathAnimationStarted = true;
       return;
     }
-    break;
+    // Fall through to the hurled handling.
   case kAR_Hurled:
-    break;
+    if (!mRagDollPending && !player->GetPlayerRagDoll() && biped) {
+      player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
+      player->SetDeathFadeEnabled(true);
+      player->SetDeathFadeDuration(1.f);
+      player->SetDeathFadeDelay(1.5f);
+      // The target evaluates these calls but uses the original, unnormalized vector.
+      (void)CMath::SqrtF(7.5f * -player->GetGravity());
+      const CVector3f velocity = direction + 4.f * CVector3f::Up();
+      if (velocity.CanBeNormalized()) {
+        (void)velocity.AsNormalized();
+        player->SetVelocityWR(2.f * velocity);
+        player->SetMoveState(NPlayer::kMS_ApplyJump, mgr);
+      }
+      commands.DeliverCmd(CPBCDeathReactionCmd(-direction, CPBCDeathReactionCmd::kDRM_Hurled));
+      mDeathAnimationStarted = true;
+      mRagDollDelay = 0.1f;
+      mRagDollPending = true;
+    }
+    return;
+  case kAR_KnockBack:
+    commands.DeliverCmd(CPBCKnockBackCmd(-direction));
+    return;
+  case kAR_Flinch:
+    commands.DeliverCmd(CPBCFlinchCmd(-direction));
+    return;
   default:
     return;
-  }
-
-  if (!mRagDollPending && !player->GetPlayerRagDoll() && biped) {
-    player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
-    player->SetDeathFadeEnabled(true);
-    player->SetDeathFadeDuration(1.f);
-    player->SetDeathFadeDelay(1.5f);
-    // The target evaluates these calls but uses the original, unnormalized vector.
-    (void)CMath::SqrtF(7.5f * -player->GetGravity());
-    const CVector3f velocity = direction + 4.f * CVector3f::Up();
-    if (velocity.CanBeNormalized()) {
-      (void)velocity.AsNormalized();
-      player->SetVelocityWR(2.f * velocity);
-      player->SetMoveState(NPlayer::kMS_ApplyJump, mgr);
-    }
-    commands.DeliverCmd(CPBCDeathReactionCmd(-direction, CPBCDeathReactionCmd::kDRM_Hurled));
-    mDeathAnimationStarted = true;
-    mRagDollDelay = 0.1f;
-    mRagDollPending = true;
   }
 }
 
