@@ -4893,9 +4893,9 @@ __ct__17CPlasmaProjectileFRC28TToken<18CWeaponDescription>RCQ24rstl66basic_strin
 __sinit_CPlasmaProjectile_cpp = .text:0x8011BF6C; // type:function size:0x3C align:4
 FindScanTargetId__7CPlayerCFRC13CStateManager = .text:0x8011BFA8; // type:function size:0x384
 resize__Q24rstl22reserved_vector<Ui,62>FiRCUi = .text:0x8011C32C; // type:function size:0x7C scope:weak
-GetMaskTextureData__7CPlayerCFv = .text:0x8011C3A8; // type:function size:0x8 align:4
-GetIndirectTextureData__7CPlayerCFv = .text:0x8011C3B0; // type:function size:0x8
-GetReflectionTextureData__7CPlayerCFv = .text:0x8011C3B8; // type:function size:0x8
+GetDepthLowTextureData__7CPlayerCFv = .text:0x8011C3A8; // type:function size:0x8 align:4
+GetDepthHighTextureData__7CPlayerCFv = .text:0x8011C3B0; // type:function size:0x8
+GetScanTargetIdTextureData__7CPlayerCFv = .text:0x8011C3B8; // type:function size:0x8
 UpdateScreenSpaceMotion__7CPlayerFv = .text:0x8011C3C0; // type:function size:0x648 align:4
 GetCameraForwardPoint__7CPlayerCFv = .text:0x8011CA08; // type:function size:0x104
 UpdateGrappleArmTransform__7CPlayerFRC9CVector3fR13CStateManagerf = .text:0x8011CB0C; // type:function size:0x338

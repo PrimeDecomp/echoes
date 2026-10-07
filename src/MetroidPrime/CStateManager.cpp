@@ -1911,9 +1911,9 @@ void CStateManager::CapturePlayerTextures() {
     for (uint i = 0; i < mNumPlayers; ++i) {
       CalculatePlayerViewport(mNumPlayers > 2u ? mPlayerStates[i]->GetPlayerSelection() : i, &left,
                               &bottom, &width, &height);
-      CBasics::ZeroMemory(mPlayers[i]->GetReflectionTextureData(), textureSize);
-      CBasics::ZeroMemory(mPlayers[i]->GetIndirectTextureData(), textureSize);
-      CBasics::ZeroMemory(mPlayers[i]->GetMaskTextureData(), textureSize);
+      CBasics::ZeroMemory(mPlayers[i]->GetScanTargetIdTextureData(), textureSize);
+      CBasics::ZeroMemory(mPlayers[i]->GetDepthHighTextureData(), textureSize);
+      CBasics::ZeroMemory(mPlayers[i]->GetDepthLowTextureData(), textureSize);
     }
   } else {
     for (uint i = 0; i < mNumPlayers; ++i) {
@@ -1921,11 +1921,11 @@ void CStateManager::CapturePlayerTextures() {
                               &bottom, &width, &height);
       const int textureLeft = left + width / 2 - textureWidth / 2;
       const int textureTop = CGraphics::GetViewportTop(bottom) + height / 2 - textureHeight / 2;
-      gpRender->CopyTextureRegion(mPlayers[i]->GetReflectionTextureData(), 0, textureLeft,
+      gpRender->CopyTextureRegion(mPlayers[i]->GetScanTargetIdTextureData(), 0, textureLeft,
                                   textureTop, textureWidth, textureHeight);
-      gpRender->CopyTextureRegion(mPlayers[i]->GetIndirectTextureData(), 1, textureLeft, textureTop,
-                                  textureWidth, textureHeight);
-      gpRender->CopyTextureRegion(mPlayers[i]->GetMaskTextureData(), 2, textureLeft, textureTop,
+      gpRender->CopyTextureRegion(mPlayers[i]->GetDepthHighTextureData(), 1, textureLeft,
+                                  textureTop, textureWidth, textureHeight);
+      gpRender->CopyTextureRegion(mPlayers[i]->GetDepthLowTextureData(), 2, textureLeft, textureTop,
                                   textureWidth, textureHeight);
     }
   }

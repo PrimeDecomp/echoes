@@ -485,9 +485,9 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mParticleBeam(static_cast< CPlayerState::EBeamId >(-1))
 , mBeamAuxParticles(nullptr)
 , mPlayerIndex(playerIndex)
-, mReflectionTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
-, mIndirectTextureData(CMemory::Alloc(0x1000, IAllocator::kHI_RoundUpLen))
-, mMaskTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
+, mScanTargetIdTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
+, mDepthHighTextureData(CMemory::Alloc(0x1000, IAllocator::kHI_RoundUpLen))
+, mDepthLowTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
 , mRezbitRecoveryDirection(0)
 , mRezbitRecoveryInputCount(0)
 , mControlMapper(0)
@@ -500,12 +500,12 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
   SetRenderParticleDatabaseInside(false);
   SetUpdateDuringCinematicSkip(false);
 
-  memset(mReflectionTextureData.get(), 0, 0x800);
-  memset(mIndirectTextureData.get(), 0, 0x1000);
-  memset(mMaskTextureData.get(), 0, 0x800);
-  DCFlushRange(mReflectionTextureData.get(), 0x800);
-  DCFlushRange(mIndirectTextureData.get(), 0x1000);
-  DCFlushRange(mMaskTextureData.get(), 0x800);
+  memset(mScanTargetIdTextureData.get(), 0, 0x800);
+  memset(mDepthHighTextureData.get(), 0, 0x1000);
+  memset(mDepthLowTextureData.get(), 0, 0x800);
+  DCFlushRange(mScanTargetIdTextureData.get(), 0x800);
+  DCFlushRange(mDepthHighTextureData.get(), 0x1000);
+  DCFlushRange(mDepthLowTextureData.get(), 0x800);
 
   CAssetId beam = gpTweakPlayerRes->GetBallTransitionBeamResId(mTransitionBeam);
   if (multiplayer) {
@@ -566,11 +566,11 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 CPlayer::~CPlayer() {
   NWeaponTypes::unlock_tokens(mBeamEffectTokens);
   CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
-                                        mReflectionTextureData.release());
+                                        mScanTargetIdTextureData.release());
   CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
-                                        mIndirectTextureData.release());
+                                        mDepthHighTextureData.release());
   CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
-                                        mMaskTextureData.release());
+                                        mDepthLowTextureData.release());
 }
 
 void CPlayer::ResetPlayerState(CStateManager& mgr, int state) {

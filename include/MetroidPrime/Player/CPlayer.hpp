@@ -609,9 +609,9 @@ public:
   void SetViewportScaleX(float value);
   const CTransform4f& GetFirstPersonCameraTransform() const;
   void UpdateAimPrediction(const CTransform4f& transform, CStateManager& mgr);
-  void* GetMaskTextureData() const;
-  void* GetIndirectTextureData() const;
-  void* GetReflectionTextureData() const;
+  void* GetDepthLowTextureData() const;
+  void* GetDepthHighTextureData() const;
+  void* GetScanTargetIdTextureData() const;
   CVector3f GetCameraForwardPoint() const;
   int ValidateCurrentOrbitTargetId(CStateManager& mgr);
   bool ValidateOrbitTargetIdAndPointer(TUniqueId target, const CStateManager& mgr) const;
@@ -897,9 +897,12 @@ private:
   CPlayerState::EBeamId mParticleBeam;
   rstl::single_ptr< CElementGen > mBeamAuxParticles;
   int mPlayerIndex;
-  rstl::single_ptr< void > mReflectionTextureData;
-  rstl::single_ptr< void > mIndirectTextureData;
-  rstl::single_ptr< void > mMaskTextureData;
+  // EFB copies read by FindScanTargetId (see CStateManager::CapturePlayerTextures): an 8-bit
+  // alpha target id, then the 24-bit depth as a Z16 high word and a Z8L low byte. The retail
+  // object emits single_ptr<void> destructors for these, so they stay untyped.
+  rstl::single_ptr< void > mScanTargetIdTextureData;
+  rstl::single_ptr< void > mDepthHighTextureData;
+  rstl::single_ptr< void > mDepthLowTextureData;
   uint mRezbitRecoveryDirection;
   uint mRezbitRecoveryInputCount;
   CControlMapper mControlMapper;

@@ -1857,11 +1857,11 @@ void CPlayer::UpdateScreenSpaceMotion() {
 }
 
 // Guessed name
-void* CPlayer::GetReflectionTextureData() const { return mReflectionTextureData.get(); }
+void* CPlayer::GetScanTargetIdTextureData() const { return mScanTargetIdTextureData.get(); }
 
-void* CPlayer::GetIndirectTextureData() const { return mIndirectTextureData.get(); }
+void* CPlayer::GetDepthHighTextureData() const { return mDepthHighTextureData.get(); }
 
-void* CPlayer::GetMaskTextureData() const { return mMaskTextureData.get(); }
+void* CPlayer::GetDepthLowTextureData() const { return mDepthLowTextureData.get(); }
 
 TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
   uint width = 64;
@@ -1869,7 +1869,7 @@ TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
   TUniqueId selectedId = kInvalidUniqueId;
   uint selectedPalette = 0;
 
-  if (mReflectionTextureData.get() && mTargeting.get()) {
+  if (mScanTargetIdTextureData.get() && mTargeting.get()) {
     if (mgr.IsMultiplayer()) {
       width >>= 1;
     }
@@ -1879,7 +1879,7 @@ TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
 
     rstl::reserved_vector< uint, 62 > histogram;
     histogram.resize(62, 0u);
-    const uchar* paletteData = static_cast< const uchar* >(mReflectionTextureData.get());
+    const uchar* paletteData = static_cast< const uchar* >(mScanTargetIdTextureData.get());
     for (uint i = 0; i < width * height; ++i) {
       const uint palette = paletteData[i] >> 2;
       if (palette < 62) {
@@ -1902,9 +1902,9 @@ TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
     }
   }
 
-  const uchar* paletteData = static_cast< const uchar* >(mReflectionTextureData.get());
-  const ushort* depthData = static_cast< const ushort* >(mIndirectTextureData.get());
-  const uchar* lowDepthData = static_cast< const uchar* >(mMaskTextureData.get());
+  const uchar* paletteData = static_cast< const uchar* >(mScanTargetIdTextureData.get());
+  const ushort* depthData = static_cast< const ushort* >(mDepthHighTextureData.get());
+  const uchar* lowDepthData = static_cast< const uchar* >(mDepthLowTextureData.get());
   double totalDepth = 0.;
   uint sampleCount = 0;
   for (uint i = 0; i < width * height; ++i) {
@@ -1932,8 +1932,8 @@ TUniqueId CPlayer::FindScanTargetId(const CStateManager& mgr) const {
     }
   }
 
-  DCInvalidateRange(mReflectionTextureData.get(), 2048);
-  DCInvalidateRange(mIndirectTextureData.get(), 4096);
-  DCInvalidateRange(mMaskTextureData.get(), 2048);
+  DCInvalidateRange(mScanTargetIdTextureData.get(), 2048);
+  DCInvalidateRange(mDepthHighTextureData.get(), 4096);
+  DCInvalidateRange(mDepthLowTextureData.get(), 2048);
   return selectedId;
 }
