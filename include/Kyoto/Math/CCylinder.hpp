@@ -11,7 +11,7 @@ public:
   CCylinder(const CLine& axis, float radius) : mAxis(axis), mRadius(radius) {}
 
   bool PointInside(const CVector3f& point) const;
-  CVector3f GetSurfacePoint(const CVector3f& point) const;
+  CVector3f GetSurfacePoint(CVector3f point) const;
   CVector3f GetAxisPoint(CVector3f point) const;
 
   const CLine& GetAxis() const { return mAxis; }

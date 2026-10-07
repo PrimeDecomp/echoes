@@ -1,6 +1,6 @@
 #include "Kyoto/Math/CCylinder.hpp"
 
-CVector3f CCylinder::GetSurfacePoint(const CVector3f& point) const {
+CVector3f CCylinder::GetSurfacePoint(CVector3f point) const {
   CVector3f axisPoint(GetAxisPoint(point));
   return axisPoint + CVector3f(point - axisPoint).AsNormalized() * mRadius;
 }
