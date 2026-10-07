@@ -84,6 +84,23 @@ CGameStateEnvVarManager::CGameStateEnvVarManager(EVariableScope scope, CBitStrea
   }
 }
 
+void CGameStateEnvVarManager::LoadFields() {
+  if (mScope != kVS_System) {
+    return;
+  }
+  AddVariable(rstl::string_l("FreezeInstructionsFirstPerson"), CEnvironmentVariable(0, 3, 0));
+  AddVariable(rstl::string_l("FreezeInstructionsMorphBall"), CEnvironmentVariable(0, 3, 0));
+  AddVariable(rstl::string_l("PowerbombPickupMessages"), CEnvironmentVariable(0, 1, 0));
+  AddVariable(rstl::string_l("PercentScans"), CEnvironmentVariable(0, 100, 0));
+  AddVariable(rstl::string_l("NormalModeCompleted"), CEnvironmentVariable(0, 1, 0));
+  AddVariable(rstl::string_l("HardModeCompleted"), CEnvironmentVariable(0, 1, 0));
+  AddVariable(rstl::string_l("AllPickupsFound"), CEnvironmentVariable(0, 1, 0));
+  AddVariable(rstl::string_l("AutoMapperPaneMode"), CEnvironmentVariable(0, 2, 1));
+  AddVariable(rstl::string_l("LogbookLegendVisible"), CEnvironmentVariable(0, 1, 1));
+  AddVariable(rstl::string_l("IngAttachedWarningCount"), CEnvironmentVariable(0, 3, 0));
+  AddVariable(rstl::string_l("SeenIntroText"), CEnvironmentVariable(0, 1, 0));
+}
+
 CEnvironmentVariable* CGameStateEnvVarManager::FindEnvironmentVariable(const char* name) const {
   rstl::map< rstl::string, CEnvironmentVariable >::const_iterator it =
       mVariables.find(rstl::string_l(name));
