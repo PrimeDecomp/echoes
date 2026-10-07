@@ -126,8 +126,9 @@ CCollisionActorManager::CCollisionActorManager(
                 (nextXf.GetTranslation() - pivotXf.GetTranslation()).AsNormalized();
             if (fabsf(1.f - fabsf(CVector3f::Dot(direction, up))) < 100.f * FLT_EPSILON)
               up = pivotXf.GetColumn(kDY);
-            colActor->SetTransform(CTransform4f::LookAt(pivotXf.GetTranslation(),
-                                                        pivotXf.GetTranslation() + direction, up));
+            CTransform4f lookXf = CTransform4f::LookAt(
+                pivotXf.GetTranslation(), pivotXf.GetTranslation() + direction, up);
+            colActor->SetTransform(lookXf);
           }
           mgr.AddObject(*colActor);
           mJointDescriptions.push_back_unsafe(*it);
