@@ -11,6 +11,7 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 
 // Guessed name, corroborated by Prime and the native frame-sampling consumers.
+#ifdef __MWERKS__
 static float clamp_zero_to_one(register float value) {
   register float out;
   register float zero = 0.f;
@@ -22,6 +23,11 @@ static float clamp_zero_to_one(register float value) {
   }
   return out;
 }
+#else
+static float clamp_zero_to_one(float value) {
+  return value >= 1.f ? 1.f : value >= 0.f ? value : 0.f;
+}
+#endif
 
 uint RotationAndOffsetStorage::DataSizeInBytes(uint rotationsPerFrame, uint offsetsPerFrame,
                                                uint numFrames) {
