@@ -329,13 +329,20 @@ bool CPlayerGun::IsNotHolstered(CStateManager& mgr, const float& argument) {
 }
 
 bool CPlayerGun::StartCharge(CStateManager& mgr, const float& argument) {
-  if (mInBigStrike || mGunHolsterState != kGHS_Drawn || mChargePhase != kCP_Charging ||
-      !GetPlayer(mgr)->GetPlayerState()->ItemEnabled(CPlayerState::kIT_ChargeBeam)) {
-    return false;
+  CPlayerState* state = GetPlayer(mgr)->GetPlayerState();
+  if (!mInBigStrike && mGunHolsterState == kGHS_Drawn && mChargePhase == kCP_Charging &&
+      state->ItemEnabled(CPlayerState::kIT_ChargeBeam)) {
+    int cost = 0;
+    CPlayerState::EItemType ammoA = CPlayerState::kIT_Invalid;
+    CPlayerState::EItemType ammoB = CPlayerState::kIT_Invalid;
+    if (GetBeamAmmoTypeAndCosts(false, mgr, ammoA, ammoB, cost)) {
+      return true;
+    }
+    if (IsOutOfAmmoToShoot(mgr)) {
+      return true;
+    }
   }
-  CPlayerState::EItemType ammoA, ammoB;
-  int cost;
-  return GetBeamAmmoTypeAndCosts(false, mgr, ammoA, ammoB, cost) || IsOutOfAmmoToShoot(mgr);
+  return false;
 }
 
 bool CPlayerGun::InitiateCombo(CStateManager& mgr, const float& argument) {
@@ -421,7 +428,9 @@ bool CPlayerGun::ComboOver(CStateManager& mgr, const float& argument) {
 }
 
 bool CPlayerGun::InterruptEvent(CStateManager& mgr, const float& argument) {
-  mInterruptEvent = mInterruptEvent || ShouldHolster(mgr, argument);
+  if (!mInterruptEvent) {
+    mInterruptEvent = ShouldHolster(mgr, argument);
+  }
   return mInterruptEvent;
 }
 
@@ -879,16 +888,14 @@ void CPlayerGun::CGunMorph::StartWipe(EMorphDir direction) {
   if (direction == kMD_In && mGunState == kGS_InWipeDone) {
     return;
   }
-  if (mMorphDirection == direction || mGunState == kGS_OutWipe) {
-    if (mGunState != kGS_InWipe) {
-      mRemTime = mGunTransformTime - mRemTime;
-    }
-  } else {
+  if (mMorphDirection != direction && mGunState != kGS_OutWipe) {
     mRemTime = mGunTransformTime;
     mSpeed = 1.f / mGunTransformTime;
+  } else if (mGunState != kGS_InWipe) {
+    mRemTime = mGunTransformTime - mRemTime;
   }
   mMorphDirection = direction;
-  mGunState = direction == kMD_In ? kGS_InWipe : kGS_OutWipe;
+  mGunState = mMorphDirection == kMD_In ? kGS_InWipe : kGS_OutWipe;
   mMorphing = true;
 }
 
@@ -1524,7 +1531,11 @@ void CPlayerGun::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
 }
 
 CVector3f CPlayerGun::GetRainSplashPosition() const {
-  return mCurrentBeam != nullptr ? mCurrentBeam->GetRainSplashPosition() : CVector3f::Zero();
+  if (mCurrentBeam != nullptr) {
+    return mCurrentBeam->GetRainSplashPosition();
+  } else {
+    return CVector3f::Zero();
+  }
 }
 
 int CPlayerGun::GetBombsAvailable(CStateManager& mgr) const {
@@ -2737,26 +2748,26 @@ void CPlayerGun::UpdateTimers(float dt) {
 }
 
 void CPlayerGun::UpdateFreeLook(float dt, CStateManager& mgr) {
-  if (mFidget.GetState() != CFidget::kS_NoFidget) {
-    return;
-  }
-  CPlayer* player = GetPlayer(mgr);
-  if (!player->IsInFreeLook() || mMotionState.mMotionState != CMotionState::kMS_Zero ||
-      mInBigStrike) {
-    if (mInFreeLook) {
-      if (mBeamChangeState == kBCS_Idle && !mComboFiring) {
-        ReturnToDefault(mgr, mInBigStrike);
+  if (mFidget.GetState() == CFidget::kS_NoFidget) {
+    if (GetPlayer(mgr)->IsInFreeLook() && mMotionState.mMotionState == CMotionState::kMS_Zero &&
+        !mInBigStrike) {
+      if (mInFreeLook != true && mBeamChangeState == kBCS_Idle) {
+        if (mEnterFreeLookDelayTimer < 0.25f) {
+          mEnterFreeLookDelayTimer += dt;
+        }
+        if (mEnterFreeLookDelayTimer >= 0.25f && !mGrappleArm->IsLoadingDependencies()) {
+          EnterFreeLook(mgr);
+          mInFreeLook = true;
+        }
       }
-      mInFreeLook = false;
-    }
-    mEnterFreeLookDelayTimer = 0.f;
-  } else if (!mInFreeLook && mBeamChangeState == kBCS_Idle) {
-    if (mEnterFreeLookDelayTimer < 0.25f) {
-      mEnterFreeLookDelayTimer += dt;
-    }
-    if (mEnterFreeLookDelayTimer >= 0.25f && !mGrappleArm->IsLoadingDependencies()) {
-      EnterFreeLook(mgr);
-      mInFreeLook = true;
+    } else {
+      if (mInFreeLook) {
+        if (mBeamChangeState == kBCS_Idle && !mComboFiring) {
+          ReturnToDefault(mgr, mInBigStrike);
+        }
+        mInFreeLook = false;
+      }
+      mEnterFreeLookDelayTimer = 0.f;
     }
   }
 }
