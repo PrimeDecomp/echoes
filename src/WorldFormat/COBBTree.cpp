@@ -62,7 +62,7 @@ CAABox COBBTree::CalculateLocalAABox() const {
   if (mRoot) {
     return mRoot->GetOBB().CalculateAABox(CTransform4f::Identity());
   }
-  return CAABox(CVector3f::Zero(), CVector3f::Zero());
+  return CAABox(0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
 }
 
 rstl::auto_ptr< COBBTree > COBBTree::BuildOrientedBoundingBoxTree(const CVector3f& extent,
@@ -128,10 +128,10 @@ uint COBBTree::CNode::GetMemoryUsage() const {
 void COBBTree::CNode::SetAllocator(CSimpleAllocator* allocator) { spAllocator = allocator; }
 
 void* COBBTree::CNode::operator new(size_t size, const char* file, int line) {
-  if (!spAllocator) {
-    return rs_new char[size];
+  if (spAllocator) {
+    return spAllocator->Alloc(size);
   }
-  return spAllocator->Alloc(size);
+  return rs_new char[size];
 }
 
 void COBBTree::CNode::operator delete(void* ptr, size_t size) {

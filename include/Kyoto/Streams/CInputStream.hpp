@@ -115,9 +115,7 @@ inline unsigned long CInputStream::Get< unsigned long >(const TType< unsigned lo
 
 template <>
 inline u64 CInputStream::Get< u64 >(const TType< u64 >& type) {
-  const uint high = ReadInt32();
-  const uint low = ReadInt32();
-  return (static_cast< u64 >(high) << 32) | low;
+  return ReadInt64();
 }
 
 template <>
@@ -161,8 +159,10 @@ inline rstl::reserved_vector< T, N >::reserved_vector(CInputStream& in) : mCount
 
 #include "rstl/red_black_tree.hpp"
 template < typename T, typename P, int U, typename S, typename Cmp, typename Alloc >
-inline rstl::red_black_tree< T, P, U, S, Cmp, Alloc >::red_black_tree(
-    CInputStream& in, const S& selector, const Cmp& cmp, const Alloc& alloc)
+inline rstl::red_black_tree< T, P, U, S, Cmp, Alloc >::red_black_tree(CInputStream& in,
+                                                                      const S& selector,
+                                                                      const Cmp& cmp,
+                                                                      const Alloc& alloc)
 : mSelector(selector), mCmp(cmp), mAllocator(alloc), mCount(0) {
   const int count = in.Get< int >();
   for (int i = 0; i < count; ++i) {
