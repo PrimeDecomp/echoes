@@ -32,8 +32,13 @@ CWorldShadow::~CWorldShadow() {
 bool CWorldShadow::CanRender(const CStateManager& mgr) {
   if (mgr.IsMultiplayer())
     return false;
-  return !mgr.GetIsDarkWorld() &&
-         mgr.GetPlayerState()->GetActiveVisor(mgr) == CPlayerState::kPV_Combat;
+  if (!mgr.GetIsDarkWorld()) {
+    switch (mgr.GetPlayerState()->GetActiveVisor(mgr)) {
+    case CPlayerState::kPV_Combat:
+      return true;
+    }
+  }
+  return false;
 }
 
 void CWorldShadow::BuildLightShadowTexture(const CStateManager& mgr, TAreaId areaId,
@@ -147,7 +152,7 @@ void CWorldShadow::BuildLightShadowTexture(const CStateManager& mgr, TAreaId are
 
 void CWorldShadow::EnableModelProjectedShadow(const CTransform4f& transform, uint lightIndex,
                                               float scale) const {
-  static float sqrt2 = sqrt(2.0);
+  static float sqrt2 = sqrt(2.f);
   CTransform4f textureTransform = CTransform4f::LookAt(
       CVector3f::Zero(), mLightPosition - mObjectPosition, CVector3f(0.f, 0.f, 1.f));
   CTransform4f rotation = transform;

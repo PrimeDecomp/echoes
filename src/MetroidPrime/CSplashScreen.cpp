@@ -30,17 +30,18 @@ static const char* const skPressStartTextureName = "TXTR_HealthWarningPressStart
 
 // Guessed name; converts splash artwork coordinates to framebuffer coordinates.
 static CVector2f SplashToScreen(const CVector2f& point, bool healthWarning) {
+  const float videoWidth = CGraphics::Is50Hz() ? 720.f : 720.f;
   const float videoHeight = CGraphics::Is50Hz() ? 574.f : 480.f;
-  const float imageHeight = CGraphics::Is50Hz() ? 528.f : 448.f;
-  const float borderX = (720.f - 666.f) * 0.5f;
+  const float borderX = (videoWidth - 666.f) * 0.5f;
   const float borderY = (videoHeight - 448.f) * 0.5f;
+  const float imageHeight = CGraphics::Is50Hz() ? 528.f : 448.f;
+  const GXRenderModeObj& mode = CGraphics::GetRenderMode();
+  const float x = (borderX + 666.f * point.GetX() / 608.f - (videoWidth - 660.f) / 2.f) *
+                  (float(int(mode.fbWidth)) / 660.f);
   const float healthWarningTop = -23.f;
   const float y = healthWarning ? 448.f * (point.GetY() - healthWarningTop) / 471.f : point.GetY();
-  const GXRenderModeObj& mode = CGraphics::GetRenderMode();
-  return CVector2f((borderX + 666.f * point.GetX() / 608.f - (720.f - 660.f) * 0.5f) *
-                       (float(mode.fbWidth) / 660.f),
-                   (borderY + 448.f * (448.f - y) / imageHeight - borderY) *
-                       (float(mode.xfbHeight) / 448.f));
+  return CVector2f(x, (borderY + 448.f * (448.f - y) / imageHeight - borderY) *
+                          (float(int(mode.xfbHeight)) / 448.f));
 }
 
 // Guessed name; the progressive-check stage deliberately has no texture.
@@ -188,10 +189,13 @@ void CSplashScreen::Draw() const {
   const CColor tint = mSplash == kSplashScreen_Nintendo
                           ? CColor(uchar(220), uchar(0), uchar(0), uchar(255))
                           : CColor::White();
-  const float fadeStart = mSplash == kSplashScreen_HealthWarning ? 60.5f : 1.5f;
-  const float alpha = mSplashTimeout > fadeStart ? 1.f - (mSplashTimeout - fadeStart) / 0.5f
-                      : mSplashTimeout > 0.5f    ? 1.f
-                                                 : mSplashTimeout / 0.5f;
+  const float alpha = mSplash == kSplashScreen_HealthWarning
+                          ? (mSplashTimeout > 60.5f  ? 1.f - (mSplashTimeout - 60.5f) / 0.5f
+                             : mSplashTimeout > 0.5f ? 1.f
+                                                     : mSplashTimeout / 0.5f)
+                          : (mSplashTimeout > 1.5f   ? 1.f - (mSplashTimeout - 1.5f) / 0.5f
+                             : mSplashTimeout > 0.5f ? 1.f
+                                                     : mSplashTimeout / 0.5f);
 
   CGraphics::SetAlphaCompare(kAF_Always, 0, kAO_And, kAF_Always, 0);
   gpRender->SetModelMatrix(CTransform4f::Identity());
@@ -212,8 +216,10 @@ void CSplashScreen::Draw() const {
     CGraphics::SetOrtho(-10.f, 650.f, -5.5f, 484.5f, -1.f, 1.f);
   } else if (mSplash == kSplashScreen_Nintendo) {
     gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
-    const CVector2f topLeft = SplashToScreen(CVector2f(117.f, 258.f), false);
-    const CVector2f bottomRight = SplashToScreen(CVector2f(493.f, 154.f), false);
+    const CVector2f splashTopLeft(117.f, 258.f);
+    const CVector2f splashBottomRight(493.f, 154.f);
+    const CVector2f topLeft = SplashToScreen(splashTopLeft, false);
+    const CVector2f bottomRight = SplashToScreen(splashBottomRight, false);
     DrawSplashTexture(*tex, color, topLeft.GetX(), topLeft.GetY(), bottomRight.GetX(),
                       bottomRight.GetY());
   } else if (mSplash == kSplashScreen_HealthWarning) {
@@ -234,8 +240,10 @@ void CSplashScreen::Draw() const {
     }
   } else if (mSplash == kSplashScreen_Dolby) {
     gpRender->SetViewportOrtho(false, -4096.f, 4096.f);
-    const CVector2f topLeft = SplashToScreen(CVector2f(189.f, 262.f), false);
-    const CVector2f bottomRight = SplashToScreen(CVector2f(421.f, 150.f), false);
+    const CVector2f splashTopLeft(189.f, 262.f);
+    const CVector2f splashBottomRight(421.f, 150.f);
+    const CVector2f topLeft = SplashToScreen(splashTopLeft, false);
+    const CVector2f bottomRight = SplashToScreen(splashBottomRight, false);
     DrawSplashTexture(*tex, color, topLeft.GetX(), topLeft.GetY(), bottomRight.GetX(),
                       bottomRight.GetY());
   } else if (tex != nullptr) {
@@ -256,11 +264,13 @@ void CSplashScreen::Draw() const {
   const CTextColor unselected(dim, dim, dim, 255);
   text.AddColor(kCT_Foreground, selected);
   if (mProgressivePhase == kPP_Selection && mSplashTimeout <= 0.5f) {
+    const wchar_t* yes = skProgressiveYes;
+    const wchar_t* no = skProgressiveNo;
     text.AddString(rstl::wstring_l(skProgressiveQuestion));
     text.AddColor(kCT_Foreground, mProgressiveMode ? selected : unselected);
-    text.AddString(rstl::wstring_l(skProgressiveYes));
+    text.AddString(rstl::wstring_l(yes));
     text.AddColor(kCT_Foreground, mProgressiveMode ? unselected : selected);
-    text.AddString(rstl::wstring_l(skProgressiveNo));
+    text.AddString(rstl::wstring_l(no));
   } else if (mProgressivePhase == kPP_Confirmation) {
     sProgressiveModePrompt = false;
     text.AddString(mProgressiveMode ? rstl::wstring_l(skProgressiveEnabled)

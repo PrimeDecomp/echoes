@@ -53,13 +53,14 @@ void CBoneTracking::PreRender(const CStateManager& mgr, CAnimData& animData, con
                               const CVector3f& scale, bool tracking) {
   mPreRendered = true;
   if (mSegId != CSegId::Null()) {
-    const CCharLayoutInfo& layout = *animData.GetCharLayoutInfo();
     CPoseAsTransforms_Linear& pose = animData.Pose();
+    const CCharLayoutInfo& layout = *animData.GetCharLayoutInfo();
     const CActor* target = TCastToConstPtr< CActor >(mgr.GetObjectById(mTarget));
     if (mActive && tracking && (target || mTargetPosition.valid())) {
       mHasTrackedRotation = true;
       const CVector3f targetPosition = target ? target->GetAimPosition(mgr, 0.f) : *mTargetPosition;
-      if ((targetPosition - xf.GetTranslation()).MagSquared() <= mDisableTrackingDistanceSquared) {
+      const CVector3f delta = targetPosition - xf.GetTranslation();
+      if (delta.MagSquared() <= mDisableTrackingDistanceSquared) {
         UpdateTracking(xf, scale, targetPosition, layout, pose);
       } else {
         UpdateInactive(layout, pose);

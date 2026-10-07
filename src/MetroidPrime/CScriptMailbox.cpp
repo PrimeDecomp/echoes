@@ -49,7 +49,7 @@ void CScriptMailbox::SendMsgs(const TAreaId& areaId, CStateManager& mgr) {
   for (; it != mRelays.end(); ++it) {
     if (it->AreaNum() == areaId.Value()) {
       if (CEntity* entity = mgr.ObjectById(mgr.GetIdForScript(*it))) {
-        entity->SendScriptMsgs(kSS_Active, mgr, kInvalidUniqueId, kSM_None);
+        entity->SendScriptMsgs(kSS_Active, mgr);
       }
     }
   }

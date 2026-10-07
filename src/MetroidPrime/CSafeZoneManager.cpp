@@ -39,9 +39,10 @@ void CSafeZoneManager::AddOrUpdateSafeZone(CStateManager& mgr, const TUniqueId& 
       mZones.push_back(zone);
     }
   } else {
-    mZones[index].mPosition = position;
-    mZones[index].mHalfExtents = halfExtents;
-    mZones[index].mScaleFactor = scaleFactor;
+    SZone& zone = mZones[index];
+    zone.mPosition = position;
+    zone.mHalfExtents = halfExtents;
+    zone.mScaleFactor = scaleFactor;
   }
 }
 
@@ -55,8 +56,7 @@ void CSafeZoneManager::RemoveSafeZone(const TUniqueId& id) {
 void CSafeZoneManager::Render(CStateManager& mgr) const {
   rstl::reserved_vector< rstl::pair< float, CScriptSafeZone* >, 64 > visibleZones;
   const CVector3f forward = CGraphics::GetViewMatrix().GetForward();
-  const int count = rstl::min_val(mZones.size(), mZones.capacity());
-  for (int i = 0; i < count; ++i) {
+  for (int i = 0; i < rstl::min_val(mZones.capacity(), mZones.size()); ++i) {
     CScriptSafeZone* zone =
         TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(mZones[i].mId)));
     if (zone && mgr.IsActorVisible(*zone) &&
@@ -74,9 +74,10 @@ void CSafeZoneManager::Render(CStateManager& mgr) const {
 }
 
 bool CSafeZoneManager::IsObjectInSafeZone(const CActor& actor, const CStateManager& mgr) const {
-  for (int i = 0; i < mZones.size(); ++i) {
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
     const CScriptSafeZone* zone =
-        TCastToConstPtr< CScriptSafeZone >(mgr.GetObjectById(mZones[i].mId));
+        TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(it->mId)));
     if (zone && zone->HasInhabitant(actor.GetUniqueId())) {
       return true;
     }
@@ -86,9 +87,10 @@ bool CSafeZoneManager::IsObjectInSafeZone(const CActor& actor, const CStateManag
 
 bool CSafeZoneManager::IsObjectInHurtfulSafeZone(const CActor& actor,
                                                  const CStateManager& mgr) const {
-  for (int i = 0; i < mZones.size(); ++i) {
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
     const CScriptSafeZone* zone =
-        TCastToConstPtr< CScriptSafeZone >(mgr.GetObjectById(mZones[i].mId));
+        TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(it->mId)));
     if (zone && zone->IsHurtful() && zone->HasInhabitant(actor.GetUniqueId())) {
       return true;
     }
@@ -102,9 +104,10 @@ bool CSafeZoneManager::PointIsInSafeZone(const CStateManager& mgr, const CVector
 
 bool CSafeZoneManager::PointIsInHurtfulSafeZone(const CStateManager& mgr,
                                                 const CVector3f& point) const {
-  for (int i = 0; i < mZones.size(); ++i) {
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
     const CScriptSafeZone* zone =
-        TCastToConstPtr< CScriptSafeZone >(mgr.GetObjectById(mZones[i].mId));
+        TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(it->mId)));
     if (zone && zone->IsHurtful() && zone->IsPointInside(point)) {
       return true;
     }
@@ -114,9 +117,10 @@ bool CSafeZoneManager::PointIsInHurtfulSafeZone(const CStateManager& mgr,
 
 TUniqueId CSafeZoneManager::PointIsInWhichSafeZone(const CStateManager& mgr,
                                                    const CVector3f& point) const {
-  for (int i = 0; i < mZones.size(); ++i) {
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
     const CScriptSafeZone* zone =
-        TCastToConstPtr< CScriptSafeZone >(mgr.GetObjectById(mZones[i].mId));
+        TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(it->mId)));
     if (zone && zone->IsPointInside(point)) {
       return zone->GetUniqueId();
     }
@@ -126,9 +130,10 @@ TUniqueId CSafeZoneManager::PointIsInWhichSafeZone(const CStateManager& mgr,
 
 TUniqueId CSafeZoneManager::SphereTouchingWhichSafeZone(const CStateManager& mgr,
                                                         const CSphere& sphere) const {
-  for (int i = 0; i < mZones.size(); ++i) {
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
     const CScriptSafeZone* zone =
-        TCastToConstPtr< CScriptSafeZone >(mgr.GetObjectById(mZones[i].mId));
+        TCastToPtr< CScriptSafeZone >(const_cast< CEntity* >(mgr.GetObjectById(it->mId)));
     if (zone) {
       const CVector3f delta = sphere.GetCenter() - zone->GetTranslation();
       const float radius = zone->GetScale().GetX() + sphere.GetRadius();
@@ -141,31 +146,33 @@ TUniqueId CSafeZoneManager::SphereTouchingWhichSafeZone(const CStateManager& mgr
 }
 
 void CSafeZoneManager::Update(float, CStateManager& mgr) {
-  rstl::reserved_vector< SZone, 64 >::iterator it = mZones.begin();
-  while (it != mZones.end()) {
-    if (!mgr.GetObjectById(it->mId)) {
-      it = mZones.erase(it);
+  int i = 0;
+  while (i < mZones.size()) {
+    if (!mgr.GetObjectById(mZones[i].mId)) {
+      mZones.erase(mZones.begin() + i);
     } else {
-      ++it;
+      ++i;
     }
   }
 }
 
 float CSafeZoneManager::GetDarkWorldFilterAmount(const CTransform4f& cameraTransform) const {
+  float closest = 1.f;
   const CVector3f position = cameraTransform.GetTranslation();
   const CVector3f forward = cameraTransform.GetForward();
-  float closest = 1.f;
-  for (int i = 0; i < mZones.size(); ++i) {
-    const CVector3f delta = mZones[i].mPosition - position;
+  for (rstl::reserved_vector< SZone, 64 >::const_iterator it = mZones.begin(); it != mZones.end();
+       ++it) {
+    const CVector3f delta = it->mPosition - position;
     if (!delta.CanBeNormalized()) {
       continue;
     }
     const float distance = delta.Magnitude();
-    const float surfaceDistance = distance - mZones[i].mHalfExtents.GetX();
+    const float surfaceDistance = distance - it->mHalfExtents.GetX();
     if (surfaceDistance < 0.f || surfaceDistance > 10.f) {
       continue;
     }
-    const float projection = CVector3f::Dot(forward, delta) / distance * surfaceDistance / 10.f;
+    const float cosAngle = CVector3f::Dot(forward, delta) / distance;
+    const float projection = cosAngle * surfaceDistance / 10.f;
     if (projection >= 0.f && projection < closest) {
       closest = projection;
     }

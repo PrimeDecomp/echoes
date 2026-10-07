@@ -48,7 +48,7 @@ void CConsoleOutputWindow::Update(float dt) {
 
 void CConsoleOutputWindow::Draw() const {
   int row = 0;
-  const int startIndex = (mLineIndex + mLines.size() - 1) % mLines.size();
+  const int startIndex = (mLineIndex - 1 + mLines.size()) % mLines.size();
   int index = startIndex;
   const CColor color = CColor::White();
   CGraphics::SetDepthRange(0.f, 1.f);
@@ -56,10 +56,10 @@ void CConsoleOutputWindow::Draw() const {
 
   if (startIndex >= 0 && startIndex < mLines.size()) {
     const int lineCount = mLines.size();
-    do {
+    while (mLineTimers[index] > 0.f && row < lineCount) {
       mFont.DrawString(mLines[index].c_str(), 18, row * (mFont.GetFontSize() + 2) + 12, color);
-      index = (index + lineCount - 1) % lineCount;
+      index = (index - 1 + lineCount) % lineCount;
       ++row;
-    } while (mLineTimers[index] > 0.f && row < lineCount);
+    }
   }
 }

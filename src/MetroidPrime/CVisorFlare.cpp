@@ -23,7 +23,7 @@ CVisorFlare::CFlareDef::CFlareDef(const TToken< CTexture >& tex, float pos, floa
 CVisorFlare::CVisorFlare(EBlendMode blendMode, bool distanceScaled, float fadeTime,
                          float angularFalloff, float rotationScale, uint darkVisorMode,
                          uint combatVisorMode, const rstl::vector< CFlareDef >& flares,
-                         bool smallOcclusionTest, bool noOcclusionTest)
+                         const bool smallOcclusionTest, const bool noOcclusionTest)
 : mBlendMode(blendMode)
 , mFlareDefs(flares)
 , mAngularFalloff(angularFalloff)
@@ -37,8 +37,10 @@ CVisorFlare::CVisorFlare(EBlendMode blendMode, bool distanceScaled, float fadeTi
 , mNoOcclusionTest(noOcclusionTest)
 , mOcclusionAverage(smallOcclusionTest ? 2 : 10)
 , mOcclusionWarmupFrames(4)
-, mSavedFramebuffer(kTF_RGBA8, smallOcclusionTest ? 8 : 64, smallOcclusionTest ? 4 : 64, 1)
-, mOcclusionTexture(kTF_I8, smallOcclusionTest ? 8 : 32, smallOcclusionTest ? 4 : 32, 1) {}
+, mSavedFramebuffer(kTF_RGBA8, smallOcclusionTest ? short(8) : short(64),
+                    smallOcclusionTest ? short(4) : short(64), 1)
+, mOcclusionTexture(kTF_I8, smallOcclusionTest ? short(8) : short(32),
+                    smallOcclusionTest ? short(4) : short(32), 1) {}
 
 CVisorFlare::~CVisorFlare() {
   mSavedFramebuffer.ScheduleDeletion();
@@ -53,10 +55,11 @@ void CVisorFlare::Update(float dt, const CVector3f& pos, const CActor* actor, CS
     const rstl::optional_object< float > average = mOcclusionAverage.GetAverage();
     const float occlusion = average ? *average : 1.f;
     const CGameCamera& camera = *mgr.GetCameraManager(0)->GetCurrentCamera(mgr, true);
+    const CVector3f forward = camera.GetTransform().GetForward();
     const CVector3f direction = pos - camera.GetTransform().GetTranslation();
     mIntensity = 1.f - occlusion;
-    const float dot = CVector3f::Dot(direction.AsNormalized(), camera.GetTransform().GetForward());
-    mIntensity *= rstl::max_val(0.f, 1.f - 4.f * mAngularFalloff * (1.f - dot));
+    const float dot = CVector3f::Dot(direction.AsNormalized(), forward);
+    mIntensity *= rstl::max_val(0.f, 1.f - mAngularFalloff * 4.f * (1.f - dot));
   }
 }
 
@@ -92,7 +95,6 @@ void CVisorFlare::Render(const CVector3f& pos, const CActor& actor, const CState
 }
 
 void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr, int playerIndex) {
-  const CViewport& viewport = CGraphics::GetViewport();
   if (mOutsideFrustum) {
     mOcclusionAverage.AddValue(1.f);
     return;
@@ -102,8 +104,13 @@ void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr
     return;
   }
 
+  const bool largeTest = !mSmallOcclusionTest;
   const short width = mSmallOcclusionTest ? 8 : 64;
   const short height = mSmallOcclusionTest ? 4 : 64;
+  const CViewport& viewport = CGraphics::GetViewport();
+  const int vpTop = viewport.mTop;
+  const int vpWidth = viewport.mWidth;
+  const int vpHeight = viewport.mHeight;
   const int framebufferWidth = CGraphics::GetRenderMode().fbWidth;
   const int framebufferHeight = CGraphics::GetRenderMode().xfbHeight;
   CGraphics::DisableAllLights();
@@ -116,10 +123,10 @@ void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr
   const float screenY = 0.5f * screenPos.GetY() + 0.5f;
   const int left = (int(framebufferWidth * screenX) - width / 2) & ~1;
   const int top = (int(framebufferHeight * screenY) + height / 2) & ~1;
-  const int viewLeft = (int(viewport.mWidth * screenX) - width / 2) & ~1;
-  const int viewTop = (int(viewport.mHeight * screenY) + height / 2) & ~1;
-  if (left < 0 || left + width > framebufferWidth || top - height < viewport.mTop ||
-      top > framebufferHeight - viewport.mTop) {
+  const int viewLeft = (int(vpWidth * screenX) - width / 2) & ~1;
+  const int viewTop = (int(vpHeight * screenY) + height / 2) & ~1;
+  if (left < 0 || left + width > framebufferWidth || top - height < vpTop ||
+      top > framebufferHeight - vpTop) {
     mOcclusionAverage.AddValue(1.f);
     return;
   }
@@ -128,13 +135,14 @@ void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr
   CGraphics::SetUseVideoFilter(false);
   gpRender->SetDepthReadWrite(true, false);
   const CVector3f corner = camera.ConvertToWorldSpace(
-      CVector3f(2.f * (float(viewLeft) / viewport.mWidth) - 1.f,
-                2.f * (float(viewTop) / viewport.mHeight) - 1.f, screenPos.GetZ()));
+      CVector3f(-1.f + 2.f * (float(viewLeft) / vpWidth), -1.f + 2.f * (float(viewTop) / vpHeight),
+                screenPos.GetZ()));
   const CVector3f opposite = camera.ConvertToWorldSpace(
-      CVector3f(2.f * (float(viewLeft + width) / viewport.mWidth) - 1.f,
-                2.f * (float(viewTop + height) / viewport.mHeight) - 1.f, screenPos.GetZ()));
-  const float worldWidth = CVector3f::Dot(opposite - corner, right);
-  const float worldHeight = CVector3f::Dot(opposite - corner, up);
+      CVector3f(-1.f + 2.f * (float(viewLeft + width) / vpWidth),
+                -1.f + 2.f * (float(viewTop + height) / vpHeight), screenPos.GetZ()));
+  const CVector3f extent = opposite - corner;
+  const float worldWidth = CVector3f::Dot(extent, right);
+  const float worldHeight = CVector3f::Dot(extent, up);
 
   GXSetTexCopySrc(left, framebufferHeight - top, width, height);
   GXSetTexCopyDst(mSavedFramebuffer.GetWidth(), mSavedFramebuffer.GetHeight(), GX_TF_RGBA8, false);
@@ -159,7 +167,7 @@ void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr
   CGX::SetFog(fogType, fogStart, fogEnd, fogNear, fogFar, fogColor);
 
   GXSetTexCopySrc(left, framebufferHeight - top, width, height);
-  if (mSmallOcclusionTest) {
+  if (!largeTest) {
     GXSetTexCopyDst(width, height, GX_CTF_R8, false);
   } else {
     GXSetTexCopyDst(width / 2, height / 2, GX_CTF_R8, true);
@@ -172,40 +180,45 @@ void CVisorFlare::UpdateOcclusion(const CVector3f& pos, const CStateManager& mgr
   CGraphics::SetBlendMode(::kBM_Blend, kBF_One, kBF_Zero, kLO_Clear);
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
-  CGraphics::Render2D(mSavedFramebuffer, left, top - viewport.mTop, width, -height,
-                      CColor::White());
+  CGraphics::Render2D(mSavedFramebuffer, left, top - vpTop, width, -height, CColor::White());
 
-  if (mOcclusionWarmupFrames != 0) {
-    --mOcclusionWarmupFrames;
-    return;
-  }
-
-  const void* pixels = mOcclusionTexture.Lock();
-  DCInvalidateRange(const_cast< void* >(pixels),
-                    mOcclusionTexture.GetWidth() * mOcclusionTexture.GetHeight());
-  int visibleSamples = 0;
-  int sampleCount;
-  if (mSmallOcclusionTest) {
-    sampleCount = width * height;
-    const uchar* sample = static_cast< const uchar* >(pixels);
-    for (int i = 0; i < sampleCount; ++i) {
-      if (sample[i] != 0) {
-        ++visibleSamples;
-      }
+  if (mOcclusionWarmupFrames == 0) {
+    const void* pixels = mOcclusionTexture.Lock();
+    DCInvalidateRange(const_cast< void* >(pixels),
+                      mOcclusionTexture.GetWidth() * mOcclusionTexture.GetHeight());
+    int visibleSamples = 0;
+    int sampleCount;
+    if (!largeTest) {
+      sampleCount = width * height;
+    } else {
+      sampleCount = (width * height) >> 2;
     }
+    float ratio;
+    if (!largeTest) {
+      const uchar* sample = static_cast< const uchar* >(pixels);
+      for (int i = 0; i < sampleCount; ++i) {
+        if (sample[i] != 0) {
+          ++visibleSamples;
+        }
+      }
+      ratio = float(visibleSamples) / float(sampleCount);
+    } else {
+      const int blockCount = sampleCount >> 3;
+      // The original tests each eight-byte block as a double against zero.
+      const double* sample = static_cast< const double* >(pixels);
+      for (int i = 0; i < blockCount; ++i) {
+        if (sample[i] != 0.0) {
+          ++visibleSamples;
+        }
+      }
+      ratio = float(visibleSamples) / float(blockCount);
+    }
+    const float occlusion = 1.f - ratio;
+    mOcclusionTexture.UnLock();
+    mOcclusionAverage.AddValue(0.5f * (occlusion * occlusion + occlusion));
   } else {
-    sampleCount = width * height / 4 / 8;
-    // The original tests each eight-byte block as a double against zero.
-    const double* sample = static_cast< const double* >(pixels);
-    for (int i = 0; i < sampleCount; ++i) {
-      if (sample[i] != 0.0) {
-        ++visibleSamples;
-      }
-    }
+    --mOcclusionWarmupFrames;
   }
-  const float occlusion = 1.f - float(visibleSamples) / sampleCount;
-  mOcclusionTexture.UnLock();
-  mOcclusionAverage.AddValue(0.5f * (occlusion * occlusion + occlusion));
 }
 
 void CVisorFlare::RenderFlares(const CVector3f& pos, const CStateManager& mgr) const {
@@ -219,47 +232,49 @@ void CVisorFlare::RenderFlares(const CVector3f& pos, const CStateManager& mgr) c
   const CVector3f reflectedWorldPos = viewMatrix * reflectedPos;
   const CVector3f cameraForward = camera.GetTransform().GetForward();
   const CVector3f toFlare = flarePos - cameraPos;
-  if (close_enough(mIntensity, 0.f)) {
-    return;
-  }
-
-  float angle = 0.f;
-  if (!close_enough(mRotationScale, 0.f)) {
-    const CVector3f flareDir = toFlare.DropZ().AsNormalized();
-    const CVector3f cameraDir = cameraForward.DropZ().AsNormalized();
-    float relativeAngle = CMath::ArcCosineR(CVector3f::Dot(flareDir, cameraDir));
-    if (CVector3f::Cross(flareDir, cameraDir).GetZ() < 0.f) {
-      relativeAngle = -relativeAngle;
-    }
-    angle = mRotationScale * relativeAngle;
-  }
-
-  SetupRenderState(mgr);
-  for (int i = 0; i < mFlareDefs.size(); ++i) {
-    const CFlareDef& flare = mFlareDefs[i];
-    const CVector3f origin = CVector3f::Lerp(flarePos, reflectedWorldPos, flare.GetPosition());
-    const CTransform4f modelMatrix = CTransform4f::LookAt(origin, cameraPos);
-    gpRender->SetModelMatrix(modelMatrix);
-    float scale = 0.5f * mIntensity * flare.GetScale();
-    if (mDistanceScaled) {
-      const CVector3f distance = origin - cameraPos;
-      if (distance.CanBeNormalized()) {
-        scale *= distance.Magnitude();
+  if (!close_enough(mIntensity, 0.f)) {
+    float angle = 0.f;
+    if (!close_enough(mRotationScale, 0.f)) {
+      const CVector3f flareDir = toFlare.DropZ().AsNormalized();
+      const CVector3f cameraDir = cameraForward.DropZ().AsNormalized();
+      float relativeAngle = CMath::ArcCosineR(CVector3f::Dot(flareDir, cameraDir));
+      if (CVector3f::Cross(flareDir, cameraDir).GetZ() < 0.f) {
+        relativeAngle = -relativeAngle;
       }
+      angle = mRotationScale * relativeAngle;
     }
-    TLockedToken< CTexture > texture(flare.GetTexture());
-    if (flare.GetTexture().IsLoaded()) {
+
+    SetupRenderState(mgr);
+    for (int i = 0; i < mFlareDefs.size(); ++i) {
+      const CFlareDef& flare = mFlareDefs[i];
+      const CVector3f origin = CVector3f::Lerp(flarePos, reflectedWorldPos, flare.GetPosition());
+      const CTransform4f modelMatrix = CTransform4f::LookAt(origin, cameraPos);
+      gpRender->SetModelMatrix(modelMatrix);
+      float scale = 0.5f * mIntensity * flare.GetScale();
+      if (mDistanceScaled) {
+        const CVector3f distance = origin - cameraPos;
+        if (distance.CanBeNormalized()) {
+          scale *= distance.Magnitude();
+        }
+      }
+      TLockedToken< CTexture > texture(flare.GetTexture());
+      if (!flare.GetTexture().IsLoaded()) {
+        continue;
+      }
       texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      float sinScale = 0.f;
-      float cosScale = scale;
-      if (!close_enough(angle, 0.f)) {
+      float sinScale;
+      float cosScale;
+      if (close_enough(angle, 0.f)) {
+        sinScale = 0.f;
+        cosScale = scale;
+      } else {
         sinScale = scale * sine(CRelAngle::FromRadians(angle));
         cosScale = scale * cosine(CRelAngle::FromRadians(angle));
       }
       DrawStreamed(flare.GetColor(), sinScale, cosScale);
     }
+    ResetRenderState(mgr);
   }
-  ResetRenderState(mgr);
 }
 
 void CVisorFlare::DrawStreamed(const CColor& color, float sinScale, float cosScale) const {

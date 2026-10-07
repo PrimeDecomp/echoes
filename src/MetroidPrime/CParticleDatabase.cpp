@@ -80,20 +80,35 @@ void CParticleDatabase::CacheParticleDesc(const SObjectTag& tag) {
 void CParticleDatabase::InsertParticleGen(bool oneShot, int flags, uint name,
                                           const rstl::auto_ptr< CParticleGenInfo >& gen) {
   DrawMap* map;
-  switch (flags & 0x60) {
-  case 0x20:
-    map = oneShot ? &mFirstDraw : &mFirstDrawLoop;
-    break;
-  case 0x40:
-    map = oneShot ? &mLastDraw : &mLastDrawLoop;
-    break;
-  default:
-    map = oneShot ? &mRendererDraw : &mRendererDrawLoop;
-    break;
+  if (oneShot) {
+    switch (flags & 0x60) {
+    case 0x20:
+      map = &mFirstDraw;
+      break;
+    case 0x40:
+      map = &mLastDraw;
+      break;
+    default:
+      map = &mRendererDraw;
+      break;
+    }
+  } else {
+    switch (flags & 0x60) {
+    case 0x20:
+      map = &mFirstDrawLoop;
+      break;
+    case 0x40:
+      map = &mLastDrawLoop;
+      break;
+    default:
+      map = &mRendererDrawLoop;
+      break;
+    }
   }
   map->insert(DrawMap::value_type(name, gen));
-  if (flags & 0x60)
+  if ((flags & 0x60) != 0) {
     mAnySystemsDrawnWithModel = true;
+  }
 }
 
 void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleData& data,
@@ -115,10 +130,9 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleD
       if (it != mParticleDescs.end()) {
         rstl::ncrc_ptr< CParticleGen > system = rs_new CElementGen(*it->second);
         const uint particleLightId = lightId + GetGraphicLightId(system, *it->second);
-        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(),
-                                             data.GetSegmentId(), particleScale,
-                                             data.GetParentedMode(), flags, mgr, areaId,
-                                             particleLightId, kPGT_Normal);
+        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(), data.GetSegmentId(),
+                                             particleScale, data.GetParentedMode(), flags, mgr,
+                                             areaId, particleLightId, kPGT_Normal);
       }
       break;
     }
@@ -128,10 +142,9 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleD
       if (it != mSwooshDescs.end()) {
         rstl::ncrc_ptr< CParticleGen > system = rs_new CParticleSwoosh(*it->second, 0);
         const uint particleLightId = lightId + GetGraphicLightId(system, *it->second);
-        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(),
-                                             data.GetSegmentId(), particleScale,
-                                             data.GetParentedMode(), flags, mgr, areaId,
-                                             particleLightId, kPGT_Normal);
+        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(), data.GetSegmentId(),
+                                             particleScale, data.GetParentedMode(), flags, mgr,
+                                             areaId, particleLightId, kPGT_Normal);
       }
       break;
     }
@@ -141,10 +154,9 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleD
       if (it != mElectricDescs.end()) {
         rstl::ncrc_ptr< CParticleGen > system = rs_new CParticleElectric(*it->second);
         const uint particleLightId = lightId + GetGraphicLightId(system, *it->second);
-        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(),
-                                             data.GetSegmentId(), particleScale,
-                                             data.GetParentedMode(), flags, mgr, areaId,
-                                             particleLightId, kPGT_Normal);
+        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(), data.GetSegmentId(),
+                                             particleScale, data.GetParentedMode(), flags, mgr,
+                                             areaId, particleLightId, kPGT_Normal);
       }
       break;
     }
@@ -155,24 +167,23 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CParticleD
         rstl::ncrc_ptr< CParticleGen > system =
             rs_new CParticleSpawnSystem(*it->second, CElementGen::kOSF_One, false);
         const uint particleLightId = lightId + GetGraphicLightId(system, *it->second);
-        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(),
-                                             data.GetSegmentId(), particleScale,
-                                             data.GetParentedMode(), flags, mgr, areaId,
-                                             particleLightId, kPGT_Normal);
+        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(), data.GetSegmentId(),
+                                             particleScale, data.GetParentedMode(), flags, mgr,
+                                             areaId, particleLightId, kPGT_Normal);
       }
       break;
     }
     case 'SRSC': {
-      rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSortedParticleSystemDescription > > >::iterator it =
+      rstl::map< CAssetId,
+                 rstl::rc_ptr< TLockedToken< CSortedParticleSystemDescription > > >::iterator it =
           mSrscDescs.find(tag.GetId());
       if (it != mSrscDescs.end()) {
         rstl::ncrc_ptr< CParticleGen > system =
             rs_new CSortedParticleSystem(*it->second, CElementGen::kOSF_One, false);
         const uint particleLightId = lightId + GetGraphicLightId(system, *it->second);
-        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(),
-                                             data.GetSegmentId(), particleScale,
-                                             data.GetParentedMode(), flags, mgr, areaId,
-                                             particleLightId, kPGT_Normal);
+        gen = rs_new CParticleGenInfoGeneric(tag, system, data.GetDuration(), data.GetSegmentId(),
+                                             particleScale, data.GetParentedMode(), flags, mgr,
+                                             areaId, particleLightId, kPGT_Normal);
       }
       break;
     }
@@ -227,36 +238,24 @@ void CParticleDatabase::AddParticleEffect(uint name, int flags, const CPositiona
 }
 
 CParticleGenInfo* CParticleDatabase::GetParticleEffect(uint name) {
-  {
-    DrawMap::iterator it = mRendererDrawLoop.find(name);
-    if (it != mRendererDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mFirstDrawLoop.find(name);
-    if (it != mFirstDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mLastDrawLoop.find(name);
-    if (it != mLastDrawLoop.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mRendererDraw.find(name);
-    if (it != mRendererDraw.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mFirstDraw.find(name);
-    if (it != mFirstDraw.end())
-      return it->second.get();
-  }
-  {
-    DrawMap::iterator it = mLastDraw.find(name);
-    if (it != mLastDraw.end())
-      return it->second.get();
-  }
+  DrawMap::iterator it = mRendererDrawLoop.find(name);
+  if (it != mRendererDrawLoop.end())
+    return it->second.get();
+  it = mFirstDrawLoop.find(name);
+  if (it != mFirstDrawLoop.end())
+    return it->second.get();
+  it = mLastDrawLoop.find(name);
+  if (it != mLastDrawLoop.end())
+    return it->second.get();
+  it = mRendererDraw.find(name);
+  if (it != mRendererDraw.end())
+    return it->second.get();
+  it = mFirstDraw.find(name);
+  if (it != mFirstDraw.end())
+    return it->second.get();
+  it = mLastDraw.find(name);
+  if (it != mLastDraw.end())
+    return it->second.get();
   return nullptr;
 }
 
@@ -314,12 +313,11 @@ void CParticleDatabase::UpdateParticleGenDB(float dt, CAnimData& animData,
             animData.BuildPoseIfNecessary();
             CPoseAsTransforms_Linear& pose = animData.Pose();
             const CVector3f& offset = pose.GetOffset(seg);
-            CMatrix3f rotation = (info.GetFlags() & 0x10) ? CMatrix3f::Identity()
-                                                         : pose.GetRotation(seg);
+            CMatrix3f rotation =
+                (info.GetFlags() & 0x10) ? CMatrix3f::Identity() : pose.GetRotation(seg);
             if (info.GetFlags() & 0x10000)
               rotation = rotation * layout.GetLinearRotations()[seg.val()].BuildTransform();
-            const CVector3f scaledOffset(offset.GetX() * scale.GetX(),
-                                         offset.GetY() * scale.GetY(),
+            const CVector3f scaledOffset(offset.GetX() * scale.GetX(), offset.GetY() * scale.GetY(),
                                          offset.GetZ() * scale.GetZ());
             const CTransform4f composed = xf * CTransform4f(rotation, scaledOffset);
             info.SetCurTransform(composed.GetRotation());
@@ -344,8 +342,7 @@ void CParticleDatabase::UpdateParticleGenDB(float dt, CAnimData& animData,
           const CVector3f scaledOffset(offset.GetX() * scale.GetX(), offset.GetY() * scale.GetY(),
                                        offset.GetZ() * scale.GetZ());
           const CTransform4f composed = xf * CTransform4f(rotation, scaledOffset);
-          const CTransform4f& orientation =
-              (info.GetFlags() & 0x10) ? xf : composed;
+          const CTransform4f& orientation = (info.GetFlags() & 0x10) ? xf : composed;
           if (mode == CParticleData::kPM_ContinuousEmitter) {
             info.SetTranslation(composed.GetTranslation(), mgr);
             info.SetOrientation(orientation.GetRotation(), mgr);
@@ -472,7 +469,7 @@ void CParticleDatabase::DeleteAllLights(CStateManager* mgr) {
 }
 
 void CParticleDatabase::DeleteAllLightsForParticleDB(CStateManager* mgr, const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     it->second->DeleteLight(mgr);
   }
 }
@@ -485,7 +482,7 @@ void CParticleDatabase::SuspendAllActiveEffects(CStateManager* mgr) {
 
 void CParticleDatabase::SuspendAllActiveEffectsForParticleDB(CStateManager* mgr,
                                                              const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     SetParticleEffectState(it->second.get(), false, mgr);
   }
 }
@@ -501,7 +498,7 @@ void CParticleDatabase::SetModulationColorAllActiveEffects(const CColor& color) 
 
 void CParticleDatabase::SetModulationColorAllActiveEffectsForParticleDB(const CColor& color,
                                                                         const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     if (it->second.get())
       it->second->SetModulationColor(color);
   }
@@ -517,7 +514,7 @@ void CParticleDatabase::DestroyAllActiveParticles() {
 }
 
 void CParticleDatabase::DestroyParticlesForParticleDB(const DrawMap& map) {
-  for (DrawMap::const_iterator it = map.begin(); it != map.end(); ++it) {
+  for (DrawMap::const_iterator it = map.begin(); map.end() != it; ++it) {
     it->second->DestroyParticles();
   }
 }

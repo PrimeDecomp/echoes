@@ -137,7 +137,7 @@ void CExplosion::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
 
   CActor::AcceptScriptMsg(mgr, msg);
   if (mExplosionLight != kInvalidUniqueId) {
-    mgr.SendScriptMsg(mExplosionLight, sender, message, kInvalidUniqueId);
+    mgr.SendScriptMsg(mExplosionLight, sender, message);
   }
 }
 

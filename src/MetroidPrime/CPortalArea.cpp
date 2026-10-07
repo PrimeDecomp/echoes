@@ -17,7 +17,7 @@
 static int sPortalTraversalDepth;
 
 CPortalArea::SActorPool::SActorPool() : mNodes(SActorNode()) {
-  for (int i = 0; i < mNodes.size() - 1; ++i) {
+  for (int i = 0; i < mNodes.capacity() - 1; ++i) {
     mNodes[i].mNext = &mNodes[i + 1];
   }
   mFree = mNodes.data();
@@ -43,16 +43,19 @@ void CPortalArea::SActorList::AddActor(CActor& actor) {
 }
 
 bool CPortalArea::SActorList::RemoveActor(const TUniqueId& uid) {
+  SActorNode* head = mHead;
   SActorNode* previous = nullptr;
-  for (SActorNode* node = mHead; node != nullptr; node = node->mNext) {
+  for (SActorNode* node = head; node != nullptr; node = node->mNext) {
     if (node->mActor->GetUniqueId() == uid) {
-      if (previous != nullptr) {
-        previous->mNext = node->mNext;
-      } else {
+      if (head == node) {
         mHead = node->mNext;
+        mPool->FreeNode(node);
+        return true;
+      } else {
+        previous->mNext = node->mNext;
+        mPool->FreeNode(node);
+        return true;
       }
-      mPool->FreeNode(node);
-      return true;
     }
     previous = node;
   }
@@ -81,18 +84,19 @@ CPortalArea::CPortalArea(const TLockedToken< CPortalAreaData >& data)
 void CPortalArea::AddActor(CStateManager& mgr, CActor& actor) {
   rstl::reserved_vector< short, 64 > volumes;
   mData->FindOverlappingVolumes(actor.GetOtherBounds(), volumes);
-  if (volumes.empty()) {
-    mUnassignedActors.AddActor(actor);
-  } else {
+  if (!volumes.empty()) {
     for (int i = 0; i < volumes.size(); ++i) {
       mVolumes[volumes[i]].AddActor(actor);
     }
+  } else {
+    mUnassignedActors.AddActor(actor);
   }
   ++mActorCount;
 }
 
 bool CPortalArea::RemoveActor(CStateManager& mgr, const TUniqueId& uid) {
-  bool removed = mUnassignedActors.RemoveActor(uid);
+  bool removed = false;
+  removed |= mUnassignedActors.RemoveActor(uid);
   for (int i = 0; i < mVolumes.size(); ++i) {
     removed |= mVolumes[i].RemoveActor(uid);
   }
