@@ -47,14 +47,14 @@ void CScriptControllerAction::Think(float dt, CStateManager& mgr) {
 
   if (GetActive() && mPressed != oldPressed) {
     if (mPressed) {
-      SendScriptMsgs(kSS_Opened, mgr, kSM_None);
+      SendScriptMsgs(kSS_Opened, mgr);
       return;
     }
 
-    SendScriptMsgs(kSS_Closed, mgr, kSM_None);
+    SendScriptMsgs(kSS_Closed, mgr);
     if (mDeactivateOnClose) {
       SetActive(false);
-      SendScriptMsgs(kSS_Inactive, mgr, kSM_None);
+      SendScriptMsgs(kSS_Inactive, mgr);
     }
   }
 }
@@ -65,10 +65,10 @@ CEntity* LoadControllerAction(CStateManager& mgr, CInputStream& input, CEntityIn
 
   const int command = sldrThis.cmd.command;
   if (command > 0 && command <= 0x4c) {
-    return rs_new CScriptControllerAction(
-        mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-        LdrToEntityInfo(info, sldrThis.editorProperties),
-        static_cast< CControlMapper::ECommands >(command), false, 0, sldrThis.oneShot);
+    return rs_new CScriptControllerAction(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+                                          LdrToEntityInfo(info, sldrThis.editorProperties),
+                                          static_cast< CControlMapper::ECommands >(command), false,
+                                          0, sldrThis.oneShot);
   }
   return nullptr;
 }

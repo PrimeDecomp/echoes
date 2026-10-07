@@ -76,15 +76,14 @@ const CDamageVulnerability* CScriptActor::GetDamageVulnerability() const {
 void CScriptActor::Touch(CActor&, CStateManager&) {}
 
 rstl::optional_object< CAABox > CScriptActor::GetTouchBounds() const {
-  if (!GetActive() || !GetMaterialList().HasMaterial(kMT_Unknown59)) {
-    return rstl::optional_object_null();
+  if (GetActive() && GetMaterialList().HasMaterial(kMT_Unknown59)) {
+    CAABox bounds = GetBoundingBox();
+    if (!mCollisionPrimitive.null()) {
+      bounds.Include(mCollisionPrimitive->CalculateAABox(GetTransform()));
+    }
+    return bounds;
   }
-
-  CAABox bounds = GetBoundingBox();
-  if (!mCollisionPrimitive.null()) {
-    bounds.Include(mCollisionPrimitive->CalculateAABox(GetTransform()));
-  }
-  return bounds;
+  return rstl::optional_object_null();
 }
 
 void CScriptActor::Think(float dt, CStateManager& mgr) {
@@ -114,7 +113,7 @@ void CScriptActor::Think(float dt, CStateManager& mgr) {
       RotateToOR(deltas.GetOrientationDelta(), dt);
     }
     if (!timeRemaining && mAnimating && !loop) {
-      SendScriptMsgs(kSS_MaxReached, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_MaxReached, mgr);
       mAnimating = false;
       Stop();
     }
@@ -151,7 +150,7 @@ void CScriptActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   case kSM_Increment:
     if (!GetActive()) {
-      mgr.SendScriptMsg(this, GetUniqueId(), kSM_Activate, kInvalidUniqueId);
+      mgr.SendScriptMsg(this, GetUniqueId(), kSM_Activate);
       CScriptColorModulate::FadeInHelper(mgr, GetUniqueId(), mFadeInTime);
     }
     break;
@@ -263,10 +262,12 @@ void CScriptActor::AddToRenderer(const CStateManager& mgr) const {
     return;
   }
 
-  if (!mRenderImmediately) {
+  if (mRenderImmediately) {
+    if (!GetPreRenderClipped()) {
+      Render(mgr);
+    }
+  } else {
     CActor::AddToRenderer(mgr);
-  } else if (!GetPreRenderClipped()) {
-    Render(mgr);
   }
 }
 
@@ -283,13 +284,12 @@ const CCollisionPrimitive* CScriptActor::GetCollisionPrimitive() const {
 }
 
 CTransform4f CScriptActor::GetPrimitiveTransform() const {
-  if (mCollisionPrimitive.null()) {
-    return CTransform4f::Translate(GetTranslation() + GetPrimitiveOffset());
+  if (!mCollisionPrimitive.null()) {
+    CTransform4f xf = GetTransform();
+    xf.AddTranslation(GetPrimitiveOffset());
+    return xf;
   }
-
-  CTransform4f xf = GetTransform();
-  xf.SetTranslation(xf.GetTranslation() + GetPrimitiveOffset());
-  return xf;
+  return CTransform4f::Translate(GetTranslation() + GetPrimitiveOffset());
 }
 
 CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -326,10 +326,10 @@ CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
 
   return rs_new CScriptActor(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-      LdrToEntityInfo(info, sldrThis.editorProperties),
-      LdrToTransform4f(sldrThis.editorProperties), *model, bounds, materials, sldrThis.mass,
-      sldrThis.gravity, LdrToHealthInfo(sldrThis.health),
-      LdrToDamageVulnerability(sldrThis.vulnerability), LdrToActorParameters(sldrThis.actorInformation),
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      *model, bounds, materials, sldrThis.mass, sldrThis.gravity, LdrToHealthInfo(sldrThis.health),
+      LdrToDamageVulnerability(sldrThis.vulnerability),
+      LdrToActorParameters(sldrThis.actorInformation),
       LdrToEchoParameters(sldrThis.echoInformation), sldrThis.isLoop, sldrThis.renderTextureSet,
       sldrThis.drawsShadow, sldrThis.scaleAnimation, sldrThis.aiShootThrough,
       sldrThis.randomAnimationOffset, sldrThis.projectile,
@@ -337,7 +337,10 @@ CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
 }
 
 bool CScriptActor::CheckActorRenderOnly() const {
-  return GetMaterialList().HasMaterial(kMT_Immovable) &&
-         GetMaterialList().HasMaterial(kMT_CameraPassthrough) &&
-         !GetMaterialList().HasMaterial(kMT_Unknown59);
+  const bool unknown59 = GetMaterialList().HasMaterial(kMT_Unknown59);
+  const bool passthrough = GetMaterialList().HasMaterial(kMT_CameraPassthrough);
+  if (!GetMaterialList().HasMaterial(kMT_Immovable) || !passthrough || unknown59) {
+    return false;
+  }
+  return true;
 }

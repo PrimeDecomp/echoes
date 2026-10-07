@@ -1,5 +1,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptDynamicLight.hpp"
 
+#include "MetroidPrime/CEffectWaypointPredicate.hpp"
+
 #include "Kyoto/Math/CGameSplineDesc.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "MetroidPrime/CActorLights.hpp"
@@ -64,8 +66,9 @@ void CScriptDynamicLight::Think(float dt, CStateManager& mgr) {
 }
 
 void CScriptDynamicLight::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
-  if (msg.GetMessage() == kSM_AreaLoaded) {
-    if (CheckConnectedObject_if(mgr, kSS_CameraPath, kSM_Attach, CValidEntityPredicate()) !=
+  switch (msg.GetMessage()) {
+  case kSM_AreaLoaded:
+    if (CheckConnectedObject_if(mgr, kSS_CameraPath, kSM_Attach, CEffectWaypointPredicate()) !=
         kInvalidUniqueId) {
       mHasSpline = true;
       ScriptCameraSpline::Initialise(*this, kSS_CameraPath, kSM_Attach, kSS_CameraTarget,
@@ -75,15 +78,24 @@ void CScriptDynamicLight::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
     FindParent(mgr);
     FindTarget(mgr);
     UpdateLight(0.f);
+    break;
+  case kSM_Activate:
+    break;
+  case kSM_Create:
+    break;
+  case kSM_Delete:
+    break;
+  default:
+    break;
   }
   CActor::AcceptScriptMsg(mgr, msg);
 }
 
 void CScriptDynamicLight::FindLightReceivers(CStateManager& mgr) {
-  const rstl::vector< TUniqueId > receivers = FindConnectedObjects(mgr, kSS_Play, kSM_Activate);
   bool found = false;
+  const rstl::vector< TUniqueId > receivers = FindConnectedObjects(mgr, kSS_Play, kSM_Activate);
   for (int i = 0; i < receivers.size(); ++i) {
-    CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(receivers[i]));
+    CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(receivers[i]));
     if (actor && actor->HasActorLights()) {
       actor->ActorLights()->AddExplicitLightId(GetUniqueId());
       found = true;
@@ -98,7 +110,7 @@ void CScriptDynamicLight::FindLightReceivers(CStateManager& mgr) {
 void CScriptDynamicLight::FindParent(CStateManager& mgr) {
   const rstl::vector< TUniqueId > parents = FindConnectedObjects(mgr, kSS_Connect, kSM_Attach);
   for (int i = 0; i < parents.size(); ++i) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(parents[i]))) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(parents[i]))) {
       mParentId = actor->GetUniqueId();
       mParentTransform = ConvertEditorEulerToTransform4f(mDescription.mParentRotation,
                                                          mDescription.mParentTranslation);
@@ -107,8 +119,7 @@ void CScriptDynamicLight::FindParent(CStateManager& mgr) {
       if (!mDescription.mUseParentRotation) {
         mParentTransform = actor->GetTransform() * mParentTransform;
         SetTransform(mParentTransform);
-        mParentTransform.SetTranslation(mParentTransform.GetTranslation() +
-                                        actor->GetTranslation() * -1.f);
+        mParentTransform.AddTranslation(actor->GetTranslation() * -1.f);
       }
       break;
     }
@@ -118,51 +129,62 @@ void CScriptDynamicLight::FindParent(CStateManager& mgr) {
 void CScriptDynamicLight::FindTarget(CStateManager& mgr) {
   const rstl::vector< TUniqueId > targets = FindConnectedObjects(mgr, kSS_CameraTarget, kSM_Attach);
   for (int i = 0; i < targets.size(); ++i) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(targets[i]))) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(targets[i]))) {
       mTargetId = actor->GetUniqueId();
       break;
     }
   }
 }
 
+// Guessed helpers for the looping spline timers and the color clamp.
+static inline float UpdateSplineTimer(const CMayaSpline& spline, float& time, float dt,
+                                      float duration, bool loops) {
+  time += dt;
+  if (time >= duration) {
+    time = loops ? 0.f : duration;
+  }
+  return spline.EvaluateAt(time);
+}
+
+static inline float ClampToOne(float value) { return value < 1.f ? value : 1.f; }
+
 void CScriptDynamicLight::UpdateLight(float dt) {
   if (!GetActive()) {
     return;
   }
-  mIntensityTime += dt;
-  if (mIntensityTime >= mDescription.mIntensityDuration) {
-    mIntensityTime = mDescription.mIntensityLoops ? 0.f : mDescription.mIntensityDuration;
+  CLight& light = Light();
+  const ELightKind kind = mDescription.mKind;
+  const CMayaSpline& intensitySpline = mDescription.mIntensitySpline;
+  mIntensity = UpdateSplineTimer(intensitySpline, mIntensityTime, dt,
+                                 mDescription.mIntensityDuration, mDescription.mIntensityLoops);
+  if (kind == kLK_LocalAmbient || kind == kLK_Directional || kind == kLK_Spot) {
+    const float red = ClampToOne(mIntensity * mDescription.mColor.GetRed());
+    const float green = ClampToOne(mIntensity * mDescription.mColor.GetGreen());
+    const float blue = ClampToOne(mIntensity * mDescription.mColor.GetBlue());
+    const float alpha = ClampToOne(mIntensity * mDescription.mColor.GetAlpha());
+    const CColor color(red, green, blue, alpha);
+    light.SetColor(color);
   }
-  mIntensity = mDescription.mIntensitySpline.EvaluateAt(mIntensityTime);
-  if (mDescription.mKind == kLK_LocalAmbient || mDescription.mKind == kLK_Directional ||
-      mDescription.mKind == kLK_Spot) {
-    const float red = mIntensity * mDescription.mColor.GetRed();
-    const float green = mIntensity * mDescription.mColor.GetGreen();
-    const float blue = mIntensity * mDescription.mColor.GetBlue();
-    const float alpha = mIntensity * mDescription.mColor.GetAlpha();
-    // The target's upper-only limit returns one for unordered input as well.
-    Light().SetColor(CColor(CMath::Min(red, 1.f), CMath::Min(green, 1.f), CMath::Min(blue, 1.f),
-                            CMath::Min(alpha, 1.f)));
+  if (kind == kLK_Point || kind == kLK_Spot) {
+    const CMayaSpline& falloffSpline = mDescription.mFalloffSpline;
+    const float falloff = UpdateSplineTimer(
+        falloffSpline, mFalloffTime, dt, mDescription.mFalloffDuration, mDescription.mFalloffLoops);
+    const EFalloffType falloffType = mDescription.mFalloffType;
+    switch (kind) {
+    case kLK_Point:
+      light.SetAngleAttenuation(mIntensity, 0.f, 0.f);
+    case kLK_Spot:
+      light.SetAttenuation(falloffType == kFT_Constant ? 1.f : 0.f,
+                           falloffType == kFT_Linear ? falloff : 0.f,
+                           falloffType == kFT_Quadratic ? falloff : 0.f);
+      break;
+    }
   }
-  if (mDescription.mKind == kLK_Point || mDescription.mKind == kLK_Spot) {
-    mFalloffTime += dt;
-    if (mFalloffTime >= mDescription.mFalloffDuration) {
-      mFalloffTime = mDescription.mFalloffLoops ? 0.f : mDescription.mFalloffDuration;
-    }
-    const float falloff = mDescription.mFalloffSpline.EvaluateAt(mFalloffTime);
-    if (mDescription.mKind == kLK_Point) {
-      Light().SetAngleAttenuation(mIntensity, 0.f, 0.f);
-    }
-    Light().SetAttenuation(mDescription.mFalloffType == kFT_Constant ? 1.f : 0.f,
-                           mDescription.mFalloffType == kFT_Linear ? falloff : 0.f,
-                           mDescription.mFalloffType == kFT_Quadratic ? falloff : 0.f);
-  }
-  if (mDescription.mKind == kLK_Spot) {
-    mSpotlightTime += dt;
-    if (mSpotlightTime >= mDescription.mSpotlightDuration) {
-      mSpotlightTime = mDescription.mSpotlightLoops ? 0.f : mDescription.mSpotlightDuration;
-    }
-    Light().SetSpotCutoff(mDescription.mSpotlightSpline.EvaluateAt(mSpotlightTime));
+  if (kind == kLK_Spot) {
+    const CMayaSpline& spotlightSpline = mDescription.mSpotlightSpline;
+    light.SetSpotCutoff(UpdateSplineTimer(spotlightSpline, mSpotlightTime, dt,
+                                          mDescription.mSpotlightDuration,
+                                          mDescription.mSpotlightLoops));
   }
 }
 
@@ -172,52 +194,51 @@ void CScriptDynamicLight::UpdateSpline(float dt) {
     if (mSplineTime >= mSpline.GetPositionSpline().GetDuration()) {
       mSplineTime = mSplineLoops ? 0.f : mSpline.GetPositionSpline().GetDuration();
     }
-    SetTranslation(mSpline.GetPositionByTime(mSplineTime));
+    const CVector3f position = mSpline.GetPositionByTime(mSplineTime);
+    SetTranslation(position);
   }
 }
 
 void CScriptDynamicLight::UpdateParent(CStateManager& mgr) {
-  if (!GetActive() || mParentId == kInvalidUniqueId) {
-    return;
-  }
-  CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mParentId));
-  if (!actor) {
-    mParentId = kInvalidUniqueId;
-    return;
-  }
-  if (mUseParentLocator && mParentLocator == CSegId::Invalid() && actor->HasAnimation()) {
-    mParentLocator = actor->GetAnimationData()->GetLocatorSegId(mDescription.mLocatorName);
-    if (mParentLocator == CSegId::Invalid()) {
-      mUseParentLocator = false;
+  if (GetActive() && mParentId != kInvalidUniqueId) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mParentId))) {
+      if (mUseParentLocator && mParentLocator == CSegId::Invalid() && actor->HasModelData()) {
+        if (const CAnimData* animData = actor->GetAnimationData()) {
+          mParentLocator = animData->GetLocatorSegId(mDescription.mLocatorName);
+          if (mParentLocator == CSegId::Invalid()) {
+            mUseParentLocator = false;
+          }
+        }
+      }
+      if (mDescription.mUseParentRotation) {
+        const CTransform4f parent =
+            mParentLocator != CSegId::Invalid()
+                ? actor->GetTransform() * actor->GetScaledLocatorTransform(mParentLocator)
+                : actor->GetTransform();
+        SetTransform(parent * mParentTransform);
+      } else {
+        const CVector3f position =
+            mParentLocator != CSegId::Invalid()
+                ? (actor->GetTransform() * actor->GetScaledLocatorTransform(mParentLocator))
+                      .GetTranslation()
+                : actor->GetTranslation();
+        SetTranslation(position + mParentTransform.GetTranslation());
+      }
+    } else {
+      mParentId = kInvalidUniqueId;
     }
-  }
-  if (mDescription.mUseParentRotation) {
-    const CTransform4f parent =
-        mParentLocator == CSegId::Invalid()
-            ? actor->GetTransform()
-            : actor->GetTransform() * actor->GetScaledLocatorTransform(mParentLocator);
-    SetTransform(parent * mParentTransform);
-  } else {
-    const CVector3f position =
-        mParentLocator == CSegId::Invalid()
-            ? actor->GetTranslation()
-            : (actor->GetTransform() * actor->GetScaledLocatorTransform(mParentLocator))
-                  .GetTranslation();
-    SetTranslation(position + mParentTransform.GetTranslation());
   }
 }
 
 void CScriptDynamicLight::UpdateTarget(CStateManager& mgr) {
-  if (!GetActive() || mTargetId == kInvalidUniqueId) {
-    return;
-  }
-  CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mTargetId));
-  if (!actor) {
-    mTargetId = kInvalidUniqueId;
-  } else {
-    CTransform4f xf = CTransform4f::LookAt(GetTranslation(), actor->GetTranslation());
-    xf.SetTranslation(GetTranslation());
-    SetTransform(xf);
+  if (GetActive() && mTargetId != kInvalidUniqueId) {
+    if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mTargetId))) {
+      CTransform4f xf = CTransform4f::LookAt(GetTranslation(), actor->GetTranslation());
+      xf.SetTranslation(GetTranslation());
+      SetTransform(xf);
+    } else {
+      mTargetId = kInvalidUniqueId;
+    }
   }
 }
 
@@ -280,9 +301,13 @@ CEntity* LoadDynamicLight(CStateManager& mgr, CInputStream& input, CEntityInfo& 
                                 0.f, 0.f, 0.f, 0.f, 0.f);
     break;
   }
-  if (!light || description.mFalloffType < kFT_Constant ||
-      description.mFalloffType > kFT_Quadratic ||
-      description.mLightSet < CScriptDynamicLight::kLS_LayerOne ||
+  if (!light) {
+    return nullptr;
+  }
+  if (description.mFalloffType < kFT_Constant || description.mFalloffType > kFT_Quadratic) {
+    return nullptr;
+  }
+  if (description.mLightSet < CScriptDynamicLight::kLS_LayerOne ||
       description.mLightSet > CScriptDynamicLight::kLS_All) {
     return nullptr;
   }

@@ -24,7 +24,7 @@ void CScriptSpiderBallWaypoint::AcceptScriptMsg(CStateManager& mgr, const CScrip
     break;
   case static_cast< EScriptObjectMessage >('ARRV'):
     if (GetActive()) {
-      SendScriptMsgs(kSS_Arrived, mgr, kInvalidUniqueId, kSM_None);
+      SendScriptMsgs(kSS_Arrived, mgr);
     }
     break;
   default:
@@ -230,10 +230,7 @@ void CScriptSpiderBallWaypoint::AddToRenderer(const CStateManager& mgr) const {}
 
 void CScriptSpiderBallWaypoint::Render(const CStateManager& mgr) const { CActor::Render(mgr); }
 
-rstl::optional_object< CAABox > CScriptSpiderBallWaypoint::GetTouchBounds() const {
-  return mAabox;
-}
-
+rstl::optional_object< CAABox > CScriptSpiderBallWaypoint::GetTouchBounds() const { return mAabox; }
 
 CEntity* LoadSpiderBallWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSpiderBallWaypoint sldrThis;

@@ -6,7 +6,7 @@
 
 CScriptAdvancedCounter::CScriptAdvancedCounter(TUniqueId uid, const rstl::string& name,
                                                const CEntityInfo& info, int initial, int max,
-                                               bool autoReset,
+                                               const bool autoReset,
                                                const rstl::reserved_vector< int, 10 >& conditions)
 : CEntity(uid, info, name, 0)
 , mInitial(initial)
@@ -68,14 +68,14 @@ void CScriptAdvancedCounter::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
 
 void CScriptAdvancedCounter::SendCounterStates(CStateManager& mgr) {
   if (mCurrent == 0) {
-    SendScriptMsgs(kSS_Zero, mgr, kSM_None);
+    SendScriptMsgs(kSS_Zero, mgr);
   } else if (mCurrent == mMax) {
-    SendScriptMsgs(kSS_MaxReached, mgr, kSM_None);
+    SendScriptMsgs(kSS_MaxReached, mgr);
   }
 
   for (int i = 0; i < mConditions.size(); ++i) {
     if (mCurrent == mConditions[i]) {
-      SendScriptMsgs(static_cast< EScriptObjectState >(kSS_InternalState00 + i), mgr, kSM_None);
+      SendScriptMsgs(static_cast< EScriptObjectState >(kSS_InternalState00 + i), mgr);
     }
   }
 }

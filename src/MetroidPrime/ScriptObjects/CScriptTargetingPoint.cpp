@@ -19,7 +19,7 @@ void CScriptTargetingPoint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg
   switch (message) {
   case kSM_Deactivate:
   case kSM_Activate:
-    SendScriptMsgs(kSS_Attack, mgr, kSM_None);
+    SendScriptMsgs(kSS_Attack, mgr);
     break;
   default:
     break;

@@ -30,6 +30,7 @@ CScriptControlHint::CScriptControlHint(TUniqueId uid, const rstl::string& name,
     mCommandEnabled[CControlMapper::kC_AutoFireBeam] = false;
     mCommandEnabled[CControlMapper::kC_ChargeBeam] = false;
     mCommandEnabled[CControlMapper::kC_ChargeBeam2] = false;
+    mCommandEnabled[CControlMapper::kC_ChargeBeam2] = false;
   }
   if (mDisableFlags & kDF_Movement) {
     mCommandEnabled[CControlMapper::kC_Backward] = false;
@@ -119,6 +120,9 @@ void CScriptControlHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
       player->GetControlHintManager()->AddHint(GetUniqueId(), sender, mgr);
     }
     break;
+  case kSM_AreaLoaded:
+  case kSM_Delete:
+    break;
   default:
     break;
   }
@@ -128,7 +132,7 @@ void CScriptControlHint::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& m
 // Guessed helper name, based on the loader's nonzero-command conversion.
 static void AppendCommand(CControlMapper::ECommands command, int state,
                           CScriptControlHint::TCommandStates& commands) {
-  if (command != CControlMapper::kC_None) {
+  if (static_cast< uint >(command) != CControlMapper::kC_None) {
     commands.push_back(rstl::pair< CControlMapper::ECommands, int >(command, state));
   }
 }
@@ -138,30 +142,22 @@ CEntity* LoadControlHint(CStateManager& mgr, CInputStream& input, CEntityInfo& i
 #include "MetroidPrime/ScriptLoader/SLdrControlHint.inc"
 
   CScriptControlHint::TCommandStates commands;
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command1.command.command),
-      sldrThis.command1.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command2.command.command),
-      sldrThis.command2.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command3.command.command),
-      sldrThis.command3.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command4.command.command),
-      sldrThis.command4.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command5.command.command),
-      sldrThis.command5.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command6.command.command),
-      sldrThis.command6.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command7.command.command),
-      sldrThis.command7.state, commands);
-  AppendCommand(
-      static_cast< CControlMapper::ECommands >(sldrThis.command8.command.command),
-      sldrThis.command8.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command1.command.command),
+                sldrThis.command1.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command2.command.command),
+                sldrThis.command2.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command3.command.command),
+                sldrThis.command3.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command4.command.command),
+                sldrThis.command4.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command5.command.command),
+                sldrThis.command5.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command6.command.command),
+                sldrThis.command6.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command7.command.command),
+                sldrThis.command7.state, commands);
+  AppendCommand(static_cast< CControlMapper::ECommands >(sldrThis.command8.command.command),
+                sldrThis.command8.state, commands);
   return rs_new CScriptControlHint(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),

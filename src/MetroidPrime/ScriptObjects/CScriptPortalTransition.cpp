@@ -217,7 +217,7 @@ bool CPortalTransition::TouchModels() {
   if (mBeamModel) {
     if (mBeamModel->IsLoaded()) {
       mBeamModelData = CModelData(CStaticRes(mBeamModel->GetTag().GetId(), mSamusRes.GetScale()));
-      mBeamModel.clear();
+      mBeamModel = rstl::optional_object< CToken >();
     } else {
       ready = false;
     }
@@ -226,19 +226,20 @@ bool CPortalTransition::TouchModels() {
     if (mGrappleModel->IsLoaded()) {
       mGrappleModelData =
           CModelData(CStaticRes(mGrappleModel->GetTag().GetId(), mSamusRes.GetScale()));
-      mGrappleModel.clear();
+      mGrappleModel = rstl::optional_object< CToken >();
     } else {
       ready = false;
     }
   }
   if (mSuitModel && mSuitSkin) {
     if (mSuitModel->IsLoaded() && mSuitSkin->IsLoaded()) {
-      mSamusModelData = CModelData(CAnimRes(mSamusRes.GetId(), mSuitCharIdx, mSamusRes.GetScale(),
-                                            mSamusRes.GetDefaultAnim(), mSamusRes.CanLoop()));
+      const CModelData samusModel(CAnimRes(mSamusRes.GetId(), mSuitCharIdx, mSamusRes.GetScale(),
+                                           mSamusRes.GetDefaultAnim(), mSamusRes.CanLoop()));
+      mSamusModelData = samusModel;
       mSamusModelData.AnimationData()->SetAnimation(
           CAnimPlaybackParms(mSamusRes.GetDefaultAnim(), -1, 1.f, true), false);
-      mSuitModel.clear();
-      mSuitSkin.clear();
+      mSuitModel = rstl::optional_object< CToken >();
+      mSuitSkin = rstl::optional_object< CToken >();
     } else {
       ready = false;
     }
@@ -261,11 +262,17 @@ void CPortalTransition::UpdateLights() {
   static const CColor cool(0.05f, 0.f, 1.f, 1.f);
   mLights.clear();
   mLights.reserve(2);
-  mLights.push_back(
-      CLight::BuildDirectional(CVector3f::Forward(), mDirection == 2 ? CColor::White() : warm));
-  mLights.push_back(
-      CLight::BuildDirectional(CVector3f::Back(), mDirection == 2 ? CColor::White() : cool));
+  const CColor forwardColor = mDirection != 2 ? warm : CColor::White();
+  const CColor backColor = mDirection != 2 ? cool : CColor::White();
+  const CLight forwardLight = CLight::BuildDirectional(CVector3f::Forward(), forwardColor);
+  const CLight backLight = CLight::BuildDirectional(CVector3f::Back(), backColor);
+  mLights.push_back_unsafe(forwardLight);
+  mLights.push_back_unsafe(backLight);
 }
+
+// Guessed names
+static const char* const skGunLocator = "GUN_LCTR";
+static const char* const skGrappleLocator = "GRAPPLE_LCTR";
 
 void CPortalTransition::Update(float dt) {
   TouchModels();
@@ -288,8 +295,8 @@ void CPortalTransition::Update(float dt) {
   }
   mCurTime += dt;
   mSamusModelData.AdvanceAnimationIgnoreParticles(dt, mRandom, true);
-  mGunTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l("GUN_LCTR"));
-  mGrappleTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l("GRAPPLE_LCTR"));
+  mGunTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(skGunLocator));
+  mGrappleTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(skGrappleLocator));
   if (!mFirstEffect.null() && (mDirection != 1 || mCurTime >= 3.5f)) {
     mFirstEffect->Update(dt);
   }
@@ -297,12 +304,12 @@ void CPortalTransition::Update(float dt) {
     mSecondEffect->Update(dt);
   }
 
-  if (mCurTime <= 4.f || mDirection == 2) {
-    mModelFlags = CModelFlags::Normal();
-  } else {
+  if (mCurTime > 4.f && mDirection != 2) {
     mModelFlags =
         CModelFlags(CModelFlags::kT_Two, CColor::Lerp(CColor::Black(), CColor::White(),
                                                       rstl::min_val(0.5f, mCurTime - 4.f) / 0.5f));
+  } else {
+    mModelFlags = CModelFlags::Normal();
   }
   UpdateLights();
   if (mCameraPass == kCP_First && mFirstPassCamera && mSecondPassCamera &&
@@ -332,19 +339,21 @@ CTransform4f CPortalTransition::GetCameraTransform(ECameraPass pass) const {
     camera = &*mSecondPassCamera;
     time -= mFirstPassCamera ? mFirstPassCamera->GetDuration() : 0.f;
   }
-  if (camera == nullptr) {
-    return CTransform4f::Identity();
+  if (camera != nullptr) {
+    CVector3f position = camera->GetPositionByTime(time);
+    CVector3f lookAt = camera->GetLookAtByTime(time);
+    position = mCameraTransform * position;
+    lookAt = mCameraTransform * lookAt;
+    return CTransform4f::LookAt(position, lookAt, CVector3f::Up());
   }
-
-  const CVector3f position = mCameraTransform * camera->GetPositionByTime(time);
-  const CVector3f lookAt = mCameraTransform * camera->GetLookAtByTime(time);
-  return CTransform4f::LookAt(position, lookAt, CVector3f::Up());
+  return CTransform4f::Identity();
 }
 
 void CPortalTransition::Draw() const {
-  gpRender->SetPerspective(GetCameraFov(mCameraPass) * 0.7f, 1.42f,
-                           CCameraManager::GetDefaultFirstPersonNearClipDistance(),
-                           CCameraManager::GetDefaultFirstPersonFarClipDistance());
+  const float fov = GetCameraFov(mCameraPass);
+  const float znear = CCameraManager::GetDefaultFirstPersonNearClipDistance();
+  const float zfar = CCameraManager::GetDefaultFirstPersonFarClipDistance();
+  gpRender->SetPerspective(fov * 0.7f, 1.42f, znear, zfar);
   CGraphics::SetViewPointMatrix(GetCameraTransform(mCameraPass));
   CActorLights lights(0, CVector3f::Zero(), 4, 4, 0.f, false, false, false, false);
   lights.BuildFakeLightList(mLights, CColor(0.f, 0.f, 0.f, 1.f));
