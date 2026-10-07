@@ -101,6 +101,7 @@ public:
   node* create_node(node* prev, node* next, const T& val) {
     node* n;
     mAllocator.allocate(n, 1);
+    RSTL_PRECONDITION(n != nullptr);
     n->mPrev = prev;
     n->mNext = next;
     construct(n->get_value(), val);
@@ -265,7 +266,7 @@ list< T, Alloc >::~list() {
     node* it = cur;
     node* next = cur->get_next();
     cur = next;
-    it->get_value()->~T();
+    rstl::destroy(it->get_value());
     mAllocator.deallocate(it);
   }
 }

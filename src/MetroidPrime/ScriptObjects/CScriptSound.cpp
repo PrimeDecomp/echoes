@@ -284,7 +284,7 @@ void CScriptSound::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     if (GetActive() && mAutoStart) {
       mPlayRequested = true;
     }
-    mSelfFree = mgr.ScriptObjectLoaderHelper().IsGeneratingObject();
+    mSelfFree = mgr.GetScriptObjectLoaderHelper().IsGeneratingObject();
     break;
   case kSM_AreaLoaded:
     for (rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();

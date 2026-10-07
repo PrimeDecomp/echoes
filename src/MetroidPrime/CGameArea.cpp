@@ -50,6 +50,8 @@ private:
 };
 } // namespace
 
+float CGameArea::skEntityThinkDisableDelayOnOcclusion = 5.f;
+
 // The complex loading paths below remain scaffolds. This TU is NonMatching.
 
 rstl::string CGameArea::IGetInternalAreaName() const { return mInternalAreaName; }
@@ -96,6 +98,57 @@ int CGameArea::GetSectionIndex(int section) const {
     }
   }
   return -1;
+}
+
+CGameArea::CPostConstructed::CPostConstructed(const CGameArea& area)
+: mMreaVersion(-1)
+, mCollisionSize(0)
+, mBspTree(nullptr)
+, mPvs(nullptr)
+, mPvsVersion(0)
+, mPathArea(nullptr)
+, mStaticGeometryMap(nullptr)
+, mPortalArea(nullptr)
+, mAreaObjectList(nullptr)
+, mVisibleActorList(nullptr)
+, mAreaFog(nullptr)
+, mGeneratedScriptSize(0)
+, mScriptLoadState(nullptr)
+, mFirstMaterial(nullptr)
+, mAreaAttributes(nullptr)
+, mOcclusionState(kOS_Occluded)
+, mOcclusionFrameCount(0)
+, mOccludedTime(skEntityThinkDisableDelayOnOcclusion)
+, mFirstAramSection(-1)
+, mFirstMaterialSection(0)
+, mAramBytes(0)
+, x174_(0)
+, mModelsInMram(false)
+, mModelsConstructed(false)
+, x178_2_(false)
+, mOcclusionPinged(false)
+, mPvsHasActors(false)
+, mPvsHasLights(false)
+, mScriptObjectsInitialized(false)
+, mStreamingDelay(0)
+, mDocksDisabled(false)
+, mWorldLightingLevel(1.f)
+, mXraySpeed(0.f)
+, mXrayTarget(1.f)
+, mWeaponWorldLightingSpeed(0.f)
+, mWeaponWorldLightingTarget(1.f)
+, x190_(0)
+, mInverseTransform(area.GetTM().GetInverse())
+, mMreaSize(0)
+, mLoadedSectionCount(0)
+, mLoadedBlockCount(0)
+, mMreaDataOffset(0)
+, mFirstScriptSection(-1)
+, mDependencyDmaHandle(CARAMManager::GetInvalidDMAHandle())
+, mSerializedDependencies(nullptr) {}
+
+CGameArea::CPostConstructed::~CPostConstructed() {
+  CARAMManager::WaitForDMACompletion(mDependencyDmaHandle);
 }
 
 CGameArea::CGameArea(CInputStream& in, int index, int mlvlVersion)

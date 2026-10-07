@@ -309,7 +309,8 @@ void CWorld::TravelToArea(const TAreaId& aid, CStateManager& mgr, EAreaTravelTyp
           dock.SetLoadOtherBlocked(j, false);
         }
         if (loadedCount < maxLoaded) {
-          loadedIds[loadedCount++] = cArea->GetId();
+          loadedIds[loadedCount] = cArea->GetId();
+          ++loadedCount;
         }
       }
     }
@@ -543,7 +544,7 @@ TAreaId CDummyWorld::IGetAreaId(CAssetId id) const {
       }
     }
   }
-  return kInvalidAreaId;
+  return TAreaId(-1);
 }
 
 rstl::string CDummyWorld::IGetDefaultAudioTrack() const { return rstl::string_l(""); }

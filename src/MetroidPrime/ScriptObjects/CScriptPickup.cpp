@@ -411,7 +411,7 @@ void CScriptPickup::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mTransformZ = GetTranslation().GetZ();
     break;
   case kSM_Create:
-    if (mgr.ScriptObjectLoaderHelper().IsGeneratingObject()) {
+    if (mgr.GetScriptObjectLoaderHelper().IsGeneratingObject()) {
       mSuppressBobbing = true;
     }
     break;

@@ -1979,7 +1979,7 @@ CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
-const CScriptObjectLoaderHelper& CStateManager::ScriptObjectLoaderHelper() const {
+const CScriptObjectLoaderHelper& CStateManager::GetScriptObjectLoaderHelper() const {
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
