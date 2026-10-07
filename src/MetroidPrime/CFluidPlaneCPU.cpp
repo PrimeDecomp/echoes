@@ -32,8 +32,6 @@
 #include <math.h>
 #include <string.h>
 
-extern const bool gkWaterEnable;
-
 CFluidPlaneCPU::CFluidPlaneCPU(const CVector2f& extent, CAssetId colorMap, const CColor& baseColor,
                                CAssetId colorWarpMap, CAssetId glossMap, CAssetId lightMap,
                                CAssetId envMap, CAssetId distortionMap, bool useDynamicLights,

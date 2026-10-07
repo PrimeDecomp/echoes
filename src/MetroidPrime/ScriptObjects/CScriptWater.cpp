@@ -13,6 +13,7 @@
 #include "MetaRender/IRenderer.hpp"
 #include "MetroidPrime/CActorLights.hpp"
 #include "MetroidPrime/CCameraManager.hpp"
+#include "MetroidPrime/CFluidPlane.hpp"
 #include "MetroidPrime/CFluidPlaneCPU.hpp"
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CPhysicsActor.hpp"
@@ -24,10 +25,6 @@
 #include "MetroidPrime/ScriptLoader/SLdrWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
-
-extern const bool gkWaterFog;
-// Shared fluid constant (0.8f) defined next to gkWaterFog in another TU's .sdata2; name unknown.
-extern "C" const float lbl_8041B7C8;
 
 const float CScriptWater::kSplashScales[6] = {1.f, 3.f, 0.71f, 1.19f, 0.71f, 1.f};
 
@@ -577,7 +574,7 @@ void CScriptWater::SetupGridClipping(CStateManager& mgr, int computeVerts) {
   }
   const CVector3f down(0.f, 0.f, -1.f);
   const CAABox surfaceBounds = GetTriggerBoundsWR();
-  const float baseZ = surfaceBounds.GetMaxPoint().GetZ() + lbl_8041B7C8;
+  const float baseZ = surfaceBounds.GetMaxPoint().GetZ() + gkWaterGridRayMargin;
   const CAABox bounds = GetTriggerBoundsWR();
   int row = mComputedGridCellCount / (mGridDimX + 1);
   int column = mComputedGridCellCount % (mGridDimX + 1);
@@ -585,7 +582,7 @@ void CScriptWater::SetupGridClipping(CStateManager& mgr, int computeVerts) {
   const float height = mBounds.GetMaxPoint().GetZ() - mBounds.GetMinPoint().GetZ();
   float yOffset = 3.f * float(row);
   float xOffset = 3.f * float(column);
-  const float rayLength = 2.f * height + lbl_8041B7C8;
+  const float rayLength = 2.f * height + gkWaterGridRayMargin;
   const float length = rstl::min_val(rayLength, 120.f);
   const float baseX = bounds.GetMinPoint().GetX();
   const float baseY = bounds.GetMinPoint().GetY();
