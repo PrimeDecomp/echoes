@@ -2,7 +2,7 @@
 #include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Math/CMath.hpp"
 
-#include <dolphin/os/OSSerial.h>
+#include <dolphin/si.h>
 
 #include <string.h>
 
