@@ -1778,6 +1778,7 @@ Collision/CCollidableSphere.cpp:
 Collision/CMaterialFilter.cpp:
 	.text       start:0x80289AF8 end:0x80289E98
 	.ctors      start:0x803A5990 end:0x803A5994
+	.bss        start:0x80412318 end:0x80412330 align:4 common
 
 Collision/COBBox.cpp:
 	.text       start:0x80289E98 end:0x8028B37C
