@@ -8,8 +8,8 @@ CDamageInfo LdrToDamageInfo(const SLdrTDamageInfo& data, bool charged, bool comb
   const float radiusDamage = data.radiusDamageAmount;
   const float radius = data.damageRadius;
   const float knockback = data.knockBackPower;
-  const CWeaponMode mode =
-      CWeaponMode(static_cast< EWeaponType >(data.weaponType), charged, !charged && comboed);
+  const CWeaponMode mode = CWeaponMode(static_cast< EWeaponType >(data.weaponType), charged,
+                                       charged ? !charged : comboed);
   CDamageInfo result(mode, damage, radius, knockback, noImmunity, applyRadiusDamage);
   result.SetRadiusDamage(radiusDamage);
   return result;
