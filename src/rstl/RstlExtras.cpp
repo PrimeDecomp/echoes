@@ -8,8 +8,6 @@
 
 #include <string.h>
 
-extern "C" char* strchr(const char*, int);
-
 int CStringExtras::IndexOfSubstring(const rstl::string& left, const rstl::string& right) {
   int rightSize = right.length();
   if (rightSize == 0) {
