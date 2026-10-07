@@ -26,6 +26,19 @@ modules:
     hash: ade8972eb74648c3c5c99caa022ff457ff2b27fd
     splits: config/G2ME01/rels/AtomicAlpha/splits.txt
     symbols: config/G2ME01/rels/AtomicAlpha/symbols.txt
+    # These unreferenced functions are present in the original REL.
+    force_active:
+      - __dt__15SLdrAtomicAlphaFv
+      - __dt__15TToken<6CModel>Fv
+      - __dt__25TToken<15CGenDescription>Fv
+      - __dt__Q212CAtomicAlpha5SBombFv
+      - __dt__15CPathFindSearchFv
+      - __dt__15CProjectileInfoFv
+      - __dt__Q24rstl20auto_ptr<9CAnimData>Fv
+      - __dt__Q24rstl29optional_object<10CModelData>Fv
+      - __dt__Q24rstl40optional_object<21TLockedToken<6CModel>>Fv
+      - __dt__Q24rstl50optional_object<31TLockedToken<15CGenDescription>>Fv
+      - __dt__Q24rstl52optional_object<Q218CImpactVisorEffect11SBlurEffect>Fv
   # Module ID 3
   - object: files/RelProd/DarkCommando.rel
     hash: d9c41deb88a9f9cbe7b0230c3aa1b1b0f822fd3e

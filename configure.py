@@ -1501,6 +1501,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "AtomicAlpha",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CAtomicAlpha.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ForgottenObject",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptForgottenObject.cpp"),
