@@ -92,15 +92,16 @@ void CPlayerKnockBackMgr::KnockBack(CStateManager& mgr, CActor& actor, const CKn
 
   const float power =
       info.GetDamageInfo().GetKnockBackPower(*player->GetDamageVulnerability(), 0.f);
-  if (IsAlive(*player) && power <= 0.f) {
+  if (IsAlive(actor) && power <= 0.f) {
     return;
   }
 
-  const CPlayer::EPlayerMorphBallState morphState = player->GetMorphballTransitionState();
-  mWasBall = morphState == CPlayer::kMS_Morphed || morphState == CPlayer::kMS_Morphing;
+  const bool ball = player->GetMorphballTransitionState() == CPlayer::kMS_Morphed ||
+                    player->GetMorphballTransitionState() == CPlayer::kMS_Morphing;
+  mWasBall = ball;
   mWasFrozen = player->GetFrozenState();
   mWasOnGround = player->GetPlayerMovementState() == NPlayer::kMS_OnGround;
-  CKnockBackMgr::KnockBack(mgr, *player, info);
+  CKnockBackMgr::KnockBack(mgr, actor, info);
   if (CanApplyKnockBackForce(mgr, *player, info)) {
     ApplyPlayerKnockBackForce(*player, info.GetDirection(), power, 1.f);
   }
@@ -126,7 +127,7 @@ void CPlayerKnockBackMgr::ResetEffects(CStateManager& mgr, CPlayer& player) {
 }
 
 float CPlayerKnockBackMgr::GetBurnDeathAlpha() const {
-  return mBurnDeath ? mBurnDeathRemainingTime * 0.5f : 1.f;
+  return mBurnDeath ? 0.5f * mBurnDeathRemainingTime : 1.f;
 }
 
 bool CPlayerKnockBackMgr::IsAlive(const CActor& actor) const {
