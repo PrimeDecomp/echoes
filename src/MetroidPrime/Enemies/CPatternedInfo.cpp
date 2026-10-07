@@ -1,13 +1,47 @@
 #include "MetroidPrime/Enemies/CPatternedInfo.hpp"
+#include "Kyoto/Audio/CSfxManager.hpp"
 
 CPatternedInfo::~CPatternedInfo() {}
 
-CPatternedInfo::CPatternedInfo(const CHealthInfo& health,
-                             const CDamageVulnerability& vulnerability,
-                             CAssetId stateMachine, CAssetId stateMachine2)
-: mHealthInfo(health)
+CPatternedInfo::CPatternedInfo(const CHealthInfo& health, const CDamageVulnerability& vulnerability,
+                               CAssetId stateMachine, CAssetId stateMachine2)
+: mMass(0.f)
+, mSpeed(0.f)
+, mTurnSpeed(0.f)
+, mDetectionRange(0.f)
+, mDetectionHeightRange(0.f)
+, mDetectionAngle(0.f)
+, mMinAttackRange(0.f)
+, mMaxAttackRange(0.f)
+, mAverageAttackTime(0.f)
+, mAttackTimeVariation(0.f)
+, mLeashRadius(0.f)
+, mPlayerLeashRadius(0.f)
+, mPlayerLeashTime(0.f)
+, mDamageWaitTime(0.f)
+, mHealthInfo(health)
 , mDamageVulnerability(vulnerability)
+, mHalfExtent(0.f)
+, mHeight(0.f)
+, mBodyOrigin(0.f, 0.f, 0.f)
+, mStepUpHeight(0.f)
+, mXDamageThreshold(0.f)
+, mXDamageDelay(0.f)
+, mDeathSfx(0)
 , mAnimationParameters(kInvalidAssetId, -1, 0)
 , mStateMachineId(stateMachine)
 , mStateMachine2Id(stateMachine2)
+, mIntoFreezeDuration(3.f)
+, mOutOfFreezeDuration(0.f)
+, mFreezeDuration(0.f)
+, mDeathExplosionOffset(CVector3f::Zero())
+, mDeathExplosionParticle(kInvalidAssetId)
+, mDeathExplosionElectric(kInvalidAssetId)
+, mIceDeathExplosionOffset(CVector3f::Zero())
+, mIceDeathExplosionParticle(kInvalidAssetId)
+, mIceShatterSfx(CSfxManager::kInternalInvalidSfxId)
+, mIceVocalSfx(CSfxManager::kInternalInvalidSfxId)
+, mFrozenSfx(CSfxManager::kInternalInvalidSfxId)
+, mKnockBackRules(kInvalidAssetId)
+, mCreatureSize(0)
 , mEchoParameters(SEchoParameters::None()) {}
