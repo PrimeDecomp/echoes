@@ -586,6 +586,7 @@ MetroidPrime/ScriptObjects/CScriptCoverPoint.cpp:
 MetroidPrime/CFluidPlane.cpp:
 	.text       start:0x800EC978 end:0x800ECCDC
 	.data       start:0x803B3AA8 end:0x803B3AC0
+	.sdata2     start:0x8041B7C8 end:0x8041B7D4
 
 MetroidPrime/CFluidPlaneManager.cpp:
 	.text       start:0x800ECCDC end:0x800ED18C

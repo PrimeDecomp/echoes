@@ -43,4 +43,8 @@ protected:
 };
 CHECK_SIZEOF(CFluidPlane, 0xd0)
 
+extern const float gkWaterGridRayMargin; // Guessed name
+extern const bool gkWaterEnable;
+extern const bool gkWaterFog;
+
 #endif // _CFLUIDPLANE
