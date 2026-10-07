@@ -240,6 +240,12 @@ public:
     rstl::list< rstl::auto_ptr< CDvdRequest > > mLoadTransactions;
     rstl::list< SDecompressionRequest > mDecompressionRequests;
     rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > > mMreaSectionBuffers;
+    rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >& GetSectionBuffers() {
+      return mMreaSectionBuffers;
+    }
+    const rstl::vector< rstl::pair< rstl::auto_ptr< char >, int > >& GetSectionBuffers() const {
+      return mMreaSectionBuffers;
+    }
     int mMreaSize;
     uint mLoadedSectionCount;
     int mLoadedBlockCount;
