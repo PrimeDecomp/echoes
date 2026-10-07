@@ -114,10 +114,12 @@ void CScriptObjectLoaderHelper::LoadGeneratedScriptObjects(TAreaId area, CInputS
   while (remaining--) {
     const FourCC type = in.Get< FourCC >();
     const uint length = in.ReadUint16();
-    const uint position = in.GetReadPosition();
+    SScriptObjectStream stream;
+    stream.mType = type;
+    stream.mPosition = in.GetReadPosition();
+    stream.mLength = length;
     const TEditorId editorId = in.Get< uint >();
     if (editorId != kInvalidEditorId && GetBuildForScript(editorId).first == nullptr) {
-      const SScriptObjectStream stream = {type, position, length};
       mGeneratedScriptObjects.insert(
           rstl::pair< TEditorId, SScriptObjectStream >(editorId, stream));
     }
