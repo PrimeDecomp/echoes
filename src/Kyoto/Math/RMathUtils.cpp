@@ -769,3 +769,10 @@ float CMath::EaseInOut(float t, EEaseTypes ease, float easeIn, float easeOut, fl
 
   return range * Clamp(0.f, t, 1.f) + minimum;
 }
+
+template < typename T >
+void CMath::Swap(T& a, T& b) {
+  T tmp = a;
+  a = b;
+  b = tmp;
+}

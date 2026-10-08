@@ -19,6 +19,7 @@
 #include "MetroidPrime/CMain.hpp"
 #include "MetroidPrime/CPortalTransition.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
+#include "MetroidPrime/CScopedProfiler.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
@@ -34,13 +35,6 @@
 bool CMFGame::mMultiplayerGuiActive;
 
 static const char* const skMultiplayerEndAudio = "/Audio/multi-defbgm-speed-doon32.dsp";
-
-// Guessed class/name; see CStateManager.cpp. The release build keeps only empty stubs.
-class CScopedProfiler {
-public:
-  CScopedProfiler(const rstl::string& name, bool enabled);
-  static void BeginFrame(); // Guessed name; empty stub next to the constructor.
-};
 
 CMFGame::CMFGame(rstl::ncrc_ptr< CStateManager > stateManager,
                  const rstl::ncrc_ptr< CInGameGuiManagerSet >& guiManager,

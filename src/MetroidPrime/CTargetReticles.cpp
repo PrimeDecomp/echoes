@@ -20,6 +20,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
+#include "MetroidPrime/Enemies/CSandworm.hpp"
 #include "MetroidPrime/Factories/CScannableObjectInfo.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerGun.hpp"
@@ -33,9 +34,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-// Native reference cast for entity type 131; the concrete class remains unidentified.
-extern "C" CEntity* fn_80097FA8(const CEntity& entity);
 
 // Guessed name, corroborated by Prime.
 static CTargetReticleRenderState skZeroRenderState(kInvalidUniqueId, 1.f, CVector3f::Zero(), 0.f,
@@ -1492,7 +1490,7 @@ float CCompoundTargetReticle::CalculateRadiusWorld(const CActor& actor,
   }
   }
 
-  if (fn_80097FA8(actor)) {
+  if (TCastToConstPtr< CSandwormEye >(actor)) {
     radius = 0.f;
   }
   return radius > 0.f ? radius : 1.f;

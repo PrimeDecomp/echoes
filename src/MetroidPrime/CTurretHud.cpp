@@ -14,11 +14,10 @@
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
-
-class CScriptPlayerTurret;
 
 static const char* const skTurretFrameNames[] = {"FRME_TurretHud4Combat", "FRME_TurretHud2Combat",
                                                  "FRME_TurretHud4Combat"};
@@ -73,8 +72,8 @@ void CTurretHud::UpdateEnergy(const CStateManager& mgr) {
     return;
   }
   const TUniqueId turretId = player->GetTurretId();
-  CEntity* turret = reinterpret_cast< CEntity* >(
-      TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(turretId))));
+  CEntity* turret =
+      TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(turretId)));
   if (turret == nullptr) {
     return;
   }

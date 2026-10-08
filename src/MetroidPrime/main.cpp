@@ -1,5 +1,6 @@
 #include "MetroidPrime/CMain.hpp"
 
+#include "Kyoto/Alloc/CMemory.hpp"
 #include "Kyoto/Alloc/LockedCache.hpp"
 #include "MetroidPrime/CDamageVulnerability.hpp"
 #include "MetroidPrime/CSaveRegion.hpp"
@@ -144,6 +145,8 @@ static uchar sMainSpace[sizeof(CMain)];
 static u32 sARAMMemArray[3];
 
 bool CMain::IsMaxSpeed() { return mIsMaxSpeed; }
+
+extern "C" void __sys_free(const void* ptr) { CMemory::Free(ptr); }
 
 void CMain::SetMaxSpeed(const bool enabled) {
   if (enabled && !mIsMaxSpeed) {

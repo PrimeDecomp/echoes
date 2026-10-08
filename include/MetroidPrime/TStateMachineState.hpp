@@ -332,4 +332,7 @@ void TStateMachineState< T >::CallState(const CState& state, CStateManager& mgr,
   }
 }
 
+template < class T >
+TStateMachineStateBase< T >::~TStateMachineStateBase() {}
+
 #endif // _TSTATEMACHINESTATE

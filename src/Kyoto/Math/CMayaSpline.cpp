@@ -8,11 +8,6 @@
 #include "float.h"
 #include "math.h"
 
-// Polynomial solvers; original GameCube names have not been established.
-extern "C" int fn_802CB608(double c0, double c1, double c2, double c3, double tolerance,
-                           double* roots);
-extern "C" bool fn_802CC064(float a, float b, float c, float& rootA, float& rootB);
-
 CMayaSplineKnot::CMayaSplineKnot(CInputStream& in)
 : mTime(in.ReadFloat())
 , mAmplitude(in.ReadFloat())
@@ -563,7 +558,7 @@ void CMayaSpline::FindSegmentIntersections(float amplitude, int knotIndex,
   CalculateHermiteCoefficients(points, coefs);
   coefs[3] -= amplitude;
   double roots[4];
-  int count = fn_802CB608(coefs[3], coefs[2], coefs[1], coefs[0], FLT_EPSILON, roots);
+  int count = CMath::SolveCubicDouble(coefs[3], coefs[2], coefs[1], coefs[0], FLT_EPSILON, roots);
   const float start = mKnots[knotIndex].GetTime();
   const float end = mKnots[knotIndex + 1].GetTime();
   if (count < 0 && CMath::IsEpsilon(mKnots[knotIndex].GetAmplitude(), amplitude, 0.002f)) {
@@ -723,7 +718,7 @@ void CMayaSpline::FindSegmentExtrema(
     CalculateHermiteCoefficients(points, coefs);
     float rootA = 0.f;
     float rootB = 0.f;
-    bool found = fn_802CC064(3.f * coefs[0], 2.f * coefs[1], coefs[2], rootA, rootB);
+    bool found = CMath::SolveQuadratic(3.f * coefs[0], 2.f * coefs[1], coefs[2], rootA, rootB);
     const float start = mKnots[knotIndex].GetTime();
     const float end = mKnots[knotIndex + 1].GetTime();
     if (found) {

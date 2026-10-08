@@ -37,6 +37,7 @@
 #include "MetroidPrime/CRumbleManager.hpp"
 #include "MetroidPrime/CSafeZoneManager.hpp"
 #include "MetroidPrime/CSaveGameScreen.hpp"
+#include "MetroidPrime/CScopedProfiler.hpp"
 #include "MetroidPrime/CScriptMailbox.hpp"
 #include "MetroidPrime/CSortedLists.hpp"
 #include "MetroidPrime/CStateManagerContainer.hpp"
@@ -47,6 +48,7 @@
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
@@ -122,13 +124,6 @@
 
 const int gkPVSEnabled = 1;
 
-// Guessed class/name. Native callers construct stack scopes around named profiling
-// regions; the release initializer has no observable state or cleanup.
-class CScopedProfiler {
-public:
-  CScopedProfiler(const rstl::string& name, bool enabled);
-};
-
 static s64 sPreRenderStepTime;
 
 // Prime-correlated lazy initialization; Echoes schedules rumble rather than camera shakes.
@@ -147,8 +142,8 @@ static const char* const skUnusedViewportTexture = "TXTR_Metroid2LogoSm";
 
 // Both retained release hooks contain only a return instruction. Their sole known
 // callers pass this manager; no exported name or body establishes a semantic name.
-extern "C" void fn_8003FF1C(CStateManager*);
-extern "C" void fn_8003FF20(CStateManager*);
+extern "C" void fn_8003FF1C(CStateManager*) {}
+extern "C" void fn_8003FF20(CStateManager*) {}
 
 bool CStateManager::CanCreateProjectile(TUniqueId owner, EWeaponType type, int maxAllowed) {
   return mWeaponMgr->GetNumActive(owner, type) < maxAllowed;
@@ -1601,7 +1596,7 @@ bool CStateManager::RenderLastHUD(const TUniqueId& uid) {
   return true;
 }
 
-bool CStateManager::RenderLastAfterCameraFilters(const TUniqueId& uid) {
+bool CStateManager::RenderLastAfterCameraFilters(TUniqueId uid) {
   CStateManagerContainer* container = mStateManagerContainer.get();
   if (container->mRenderLastAfterCameraFilters.size() ==
       container->mRenderLastAfterCameraFilters.capacity()) {
@@ -1979,7 +1974,7 @@ const CScriptObjectLoaderHelper& CStateManager::GetScriptObjectLoaderHelper() co
   return mStateManagerContainer->mScriptObjectLoader;
 }
 
-CScopedProfiler::CScopedProfiler(const rstl::string& name, bool enabled) {}
+CScopedProfiler::CScopedProfiler(const rstl::string&, bool) {}
 
 CStateManager::CStateManager(
     const rstl::ncrc_ptr< CScriptMailbox >& mailbox,
@@ -3248,7 +3243,7 @@ void CStateManager::ApplyDamageToWorld(TUniqueId owner, CActor& projectile,
        it != nearList.end(); ++it) {
     CActor* const actor = static_cast< CActor* >(ObjectById(*it));
     CPlayer* const player = TCastToPtr< CPlayer >(actor);
-    CEntity* const snakeWeed = CastToSnakeWeedSwarm(actor);
+    CSnakeWeedSwarm* const snakeWeed = TCastToPtr< CSnakeWeedSwarm >(actor);
     CSwarmBasics* const swarm = TCastToPtr< CSwarmBasics >(actor);
 
     if (bomb && player != nullptr && actor->GetUniqueId() == weapon->GetOwnerId()) {
@@ -3879,3 +3874,5 @@ void CStateManager::DisplayAlertAboutOutOfAmmo(const CPlayer& player,
     break;
   }
 }
+
+void CScopedProfiler::BeginFrame() {}

@@ -104,7 +104,7 @@ CEntity* LoadAIKeyframe(CStateManager& mgr, CInputStream& input, CEntityInfo& in
 CEntity* LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadAIWaypoint(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadAmbientAI(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* LoadAreaAttributes(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadAreaProperties(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadAtomicAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadAtomicBeta(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info);

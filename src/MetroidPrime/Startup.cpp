@@ -20,6 +20,7 @@
 #include "MetroidPrime/DefaultFontTexture.inc"
 
 extern const char MetroidBuildInfo[] = BUILD_INFO;
+const char* const BuildTime = MetroidBuildInfo + BUILD_INFO_TAG_SIZE;
 
 class CCubeRenderer;
 class IController;

@@ -5,12 +5,6 @@ class CEntity;
 
 CEntity* TryCast(CEntity* entity, int typeId);
 
-// Guessed name; the REL bridge uses CEntity until the complete enemy layout is recovered.
-CEntity* CastToSnakeWeedSwarm(CEntity* entity);
-
-// Guessed name; the player turret class lives in a REL.
-CEntity* CastToPlayerTurret(CEntity* entity);
-
 template < class T >
 T* TCastToPtr(CEntity* p);
 

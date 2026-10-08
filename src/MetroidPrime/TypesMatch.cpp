@@ -1,9 +1,11 @@
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTextPane.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTimeKeyframe.hpp"
 #include "MetroidPrime/Weapons/CBouncingBomb.hpp"
 #include "MetroidPrime/Weapons/CTargetableProjectile.hpp"
 
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CEffect.hpp"
 #include "MetroidPrime/CEntity.hpp"
@@ -11,13 +13,15 @@
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
-#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CFixedCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
+#include "MetroidPrime/Enemies/CMetroid.hpp"
+#include "MetroidPrime/Enemies/CSandworm.hpp"
+#include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAIHint.hpp"
@@ -129,9 +133,17 @@
 CAST_TO_REF_IMPL(CSwarmBasics, kET_SwarmBasics)
 CAST_TO_PTR_IMPL(CSwarmBasics, kET_SwarmBasics)
 
-CEntity* CastToSnakeWeedSwarm(CEntity* entity) { return TryCast(entity, kET_SnakeWeedSwarm); }
+CAST_TO_PTR_IMPL(CScriptPlayerTurret, kET_ScriptPlayerTurret)
+CAST_TO_REF_IMPL(CScriptPlayerTurret, kET_ScriptPlayerTurret)
+CAST_TO_PTR_IMPL(CSandwormEye, kET_SandwormEye)
+CAST_TO_REF_IMPL(CSandwormEye, kET_SandwormEye)
+CAST_TO_PTR_IMPL(CSandworm, kET_Sandworm)
+CAST_TO_PTR_IMPL(CMetroid, kET_Metroid)
+CAST_TO_REF_IMPL(CMetroid, kET_Metroid)
+CAST_TO_REF_IMPL(CFirstPersonCamera, kET_FirstPersonCamera)
 
-CEntity* CastToPlayerTurret(CEntity* entity) { return TryCast(entity, kET_PlayerTurret); }
+CAST_TO_PTR_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
+CAST_TO_REF_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CPlasmaProjectile::~CPlasmaProjectile() {}

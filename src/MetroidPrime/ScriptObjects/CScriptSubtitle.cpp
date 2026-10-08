@@ -7,9 +7,6 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSubtitle.hpp"
 
-// Unnamed CStateManager render-list helper (native 0x80037944).
-extern "C" bool fn_80037944(CStateManager& mgr, TUniqueId uid);
-
 CScriptSubtitle::CScriptSubtitle(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                                  int positionX, int positionY, int extentX, int extentY,
                                  const CColor& fontColor, const CColor& outlineColor,
@@ -77,7 +74,9 @@ void CScriptSubtitle::Think(float dt, CStateManager& mgr) {
   }
 }
 
-void CScriptSubtitle::PreRender(CStateManager& mgr) { fn_80037944(mgr, GetUniqueId()); }
+void CScriptSubtitle::PreRender(CStateManager& mgr) {
+  mgr.RenderLastAfterCameraFilters(GetUniqueId());
+}
 
 void CScriptSubtitle::Render(const CStateManager& mgr) const {
   const_cast< CGuiTextSupport& >(mTextSupport)
