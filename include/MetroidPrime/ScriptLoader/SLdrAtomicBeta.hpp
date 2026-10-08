@@ -42,7 +42,10 @@ inline SLdrAtomicBeta::SLdrAtomicBeta()
 , beam(kInvalidAssetId)
 , beamDamage()
 , contactFx(kInvalidAssetId)
-, frozenVulnerability() {
+, frozenVulnerability()
+, sound_FlyLoop(-1)
+, sound_FlyLoopActivated(-1)
+, sound_ElectricityLoop(-1) {
   patterned.mass = 25.0f;
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 5.0f;
@@ -57,15 +60,15 @@ inline SLdrAtomicBeta::SLdrAtomicBeta()
   patterned.collisionRadius = 0.5f;
   patterned.collisionHeight = 1.5f;
   patterned.unknown_0xe287d8dd = 0.0f;
+  patterned.echoParameters.isEchoEmitter = true;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   beamFadeTime = 1.0f;
   beamRadius = 0.1f;
   hoverSpeed = 3.0f;
   normalRotateSpeed = 1.5f;
   chargingRotateSpeed = 5.0f;
   speedChangeRate = 1.0f;
-  sound_FlyLoop = 0;
-  sound_FlyLoopActivated = 0;
-  sound_ElectricityLoop = 0;
   damageDelay = 1.0f;
 }
 

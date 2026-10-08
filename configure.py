@@ -1729,6 +1729,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "AtomicBeta",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CAtomicBeta.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
