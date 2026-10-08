@@ -14,6 +14,7 @@ class CBasicSwarmData {
   friend class CSwarmBasics;
   friend class CMetareeSwarm;
   friend class CIngBlobSwarm;
+  friend class CPlantScarabSwarm;
 
 public:
   CBasicSwarmData(const CDamageInfo& damage, const CHealthInfo& health,

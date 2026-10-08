@@ -1792,6 +1792,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "PlantScarabSwarm",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CPlantScarabSwarm.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
