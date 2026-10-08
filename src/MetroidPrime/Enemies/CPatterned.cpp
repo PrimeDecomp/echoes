@@ -19,7 +19,7 @@
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CEchoEmitter.hpp"
 #include "MetroidPrime/CExplosion.hpp"
-#include "MetroidPrime/CGenericFSM2State.hpp"
+#include "MetroidPrime/CGenericFSM2StateImpl.hpp"
 #include "MetroidPrime/CPositionalParticleData.hpp"
 #include "MetroidPrime/CSimpleShadow.hpp"
 #include "MetroidPrime/CStateManager.hpp"

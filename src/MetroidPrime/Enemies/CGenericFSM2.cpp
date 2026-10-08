@@ -3,7 +3,7 @@
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/CSimplePool.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
-#include "MetroidPrime/CGenericFSM2State.hpp"
+#include "MetroidPrime/CGenericFSM2StateImpl.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 
 template class CGenericFSM2State< CPatterned >;
