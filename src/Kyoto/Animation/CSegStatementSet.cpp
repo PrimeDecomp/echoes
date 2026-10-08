@@ -1,12 +1,8 @@
 #include "Kyoto/Animation/CSegStatementSet.hpp"
 
 #include "Kyoto/Alloc/CMemory.hpp"
-#include "Kyoto/Animation/CSoundPOINode.hpp"
 
 #include <dolphin/os/OSCache.h>
-
-// The splits place this constant in the CSegStatementSet .sdata2 range.
-const ushort CSoundPOINode::skExtendedVersion = 1;
 
 namespace {
 const int kSegmentCount = 100;

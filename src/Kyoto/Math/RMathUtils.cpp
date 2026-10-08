@@ -5,9 +5,9 @@
 
 static const double skSqrtThree = CMath::SqrtD(3.0);
 
-// Reconstructed names for the native Perlin-noise helpers and shared permutation.
+// Guessed names for the Perlin-noise helpers and their permutation table.
 // Ken Perlin's reference permutation, stored twice so lookups never need to wrap.
-uchar skNoisePermutation[512] = {
+static uchar skNoisePermutation[512] = {
     151, 160, 137, 91,  90,  15,  131, 13,  201, 95,  96,  53,  194, 233, 7,   225, 140, 36,  103,
     30,  69,  142, 8,   99,  37,  240, 21,  10,  23,  190, 6,   148, 247, 120, 234, 75,  0,   26,
     197, 62,  94,  252, 219, 203, 117, 35,  11,  32,  57,  177, 33,  88,  237, 149, 56,  87,  174,

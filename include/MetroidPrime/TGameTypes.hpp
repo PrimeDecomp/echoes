@@ -16,9 +16,10 @@ extern const TAreaId kInvalidAreaId;
 extern const TEditorId kInvalidEditorId;
 extern const TEditorId kUnkId;
 extern const TUniqueId kInvalidUniqueId;
-extern const float kDefaultGravityAccel; // Guessed name; 9.81 * 2.5 in TGameTypes .sdata2
+// Guessed names
 extern const uint kInvalidPlayerIndex;
-extern const uint kUnkPlayerIndexZero;
+extern const uint kFirstPlayerIndex; // Unreferenced in the retail DOL.
+extern const float kDefaultGravityAccel;
 
 struct TAreaId {
   int value;

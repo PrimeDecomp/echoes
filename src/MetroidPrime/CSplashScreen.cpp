@@ -13,8 +13,6 @@
 
 #include "math.h"
 
-extern bool sProgressiveModePrompt;
-
 static const char* const skSplashScreenTextureNames[CSplashScreen::kSplashScreen_MAX] = {
     nullptr, "TXTR_HealthWarning", "TXTR_NintendoLogoNCL", "TXTR_RetroLogo", "TXTR_DolbyLogoNCL",
 };

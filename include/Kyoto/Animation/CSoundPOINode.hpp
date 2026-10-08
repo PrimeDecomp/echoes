@@ -7,10 +7,11 @@
 class CSoundPOINode : public CPOINode {
 public:
   CSoundPOINode(uint nameHash = -1, EPOIType type = kPT_Sound,
-                const CCharAnimTime& time = CCharAnimTime(), int index = -1, const bool unique = false,
-                float weight = 1.f, int charIdx = -1, int flags = 0, int sfxId = 0,
-                float fallOff = 0.f, float maxDist = 0.f, const CSegId& segId = CSegId(0),
-                ushort pitchStart = 0, ushort pitchEnd = 0, float pitchDuration = 0.f);
+                const CCharAnimTime& time = CCharAnimTime(), int index = -1,
+                const bool unique = false, float weight = 1.f, int charIdx = -1, int flags = 0,
+                int sfxId = 0, float fallOff = 0.f, float maxDist = 0.f,
+                const CSegId& segId = CSegId(0), ushort pitchStart = 0, ushort pitchEnd = 0,
+                float pitchDuration = 0.f);
   CSoundPOINode(CInputStream& in);
   ~CSoundPOINode() override;
 
@@ -24,9 +25,6 @@ public:
 
   static CSoundPOINode CopyNodeMinusStartTime(const CSoundPOINode& node,
                                               const CCharAnimTime& startTime);
-
-  // Stream nodes above this version carry the extra segment/ushort/float fields.
-  static const ushort skExtendedVersion;
 
 private:
   uint mSfxId;

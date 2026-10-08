@@ -4,6 +4,9 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "rstl/string.hpp"
 
+const ushort CPOINode::skExtendedVersion = 1;
+const uint CPOINode::skInvalidNameHash = uint(-1);
+
 static uint ReadNameHash(ushort version, CInputStream& in) {
   if (version >= 3) {
     // Skip the stored name; the hash follows it.

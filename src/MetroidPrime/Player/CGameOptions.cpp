@@ -11,9 +11,7 @@
 
 #include "dolphin/os.h"
 
-extern "C" {
-bool lbl_804191E0;
-}
+bool CGameOptions::sFrontEndActive;
 
 // Guessed names; the original stored these as individual small-data words.
 static CAssetId skControlTXTR0A = 0x2A13C23E;
@@ -60,9 +58,9 @@ void CGameOptions::InitSoundMode() {
   }
 }
 
-bool CGameOptions::fn_80161C84() { return lbl_804191E0; }
+bool CGameOptions::IsFrontEndActive() { return sFrontEndActive; }
 
-void CGameOptions::fn_80161C7C(bool x) { lbl_804191E0 = x; }
+void CGameOptions::SetFrontEndActive(bool active) { sFrontEndActive = active; }
 
 CGameOptions::CGameOptions()
 
@@ -273,7 +271,7 @@ void CGameOptions::SetScreenStretch(int value, bool apply) {
 void CGameOptions::SetSfxVolume(int value, bool apply) {
   sfxVol = CMath::ClampI(0, value, 0x69);
   if (apply) {
-    if (fn_80161C84()) {
+    if (IsFrontEndActive()) {
       CSfxManager::SetAreaVolume(0, sfxVol);
     } else {
       CAudioSys::SysSetSfxVolume(sfxVol, 1, true, true);

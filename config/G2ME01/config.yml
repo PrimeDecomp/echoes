@@ -7,7 +7,7 @@ quick_analysis: true # Faster reruns after full analysis
 mw_comment_version: 11 # GC 2.7 linker
 # Unreferenced constant present in the original DOL.
 force_active:
-  - kUnkPlayerIndexZero
+  - kFirstPlayerIndex
 extract:
   - symbol: sDefaultFontData
     binary: MetroidPrime/DefaultFontData.bin

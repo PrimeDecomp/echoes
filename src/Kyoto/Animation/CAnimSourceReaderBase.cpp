@@ -172,10 +172,11 @@ void CAnimSourceReaderBase::PostConstruct(const CCharAnimTime& time) {
   int boolCount = boolPOIs.size();
   int int32Count = int32POIs.size();
   int particleCount = particlePOIs.size();
-  mBoolStates.resize(boolCount, rstl::pair< uint, bool >(uint(-1), false));
-  mInt32States.resize(int32Count, rstl::pair< uint, int >(uint(-1), 0));
-  mParticleStates.resize(particleCount, rstl::pair< uint, CParticleData::EParentedMode >(
-                                            uint(-1), CParticleData::kPM_Initial));
+  mBoolStates.resize(boolCount, rstl::pair< uint, bool >(CPOINode::skInvalidNameHash, false));
+  mInt32States.resize(int32Count, rstl::pair< uint, int >(CPOINode::skInvalidNameHash, 0));
+  mParticleStates.resize(
+      particleCount, rstl::pair< uint, CParticleData::EParentedMode >(CPOINode::skInvalidNameHash,
+                                                                      CParticleData::kPM_Initial));
   for (rstl::set< rstl::pair< uint, int > >::const_iterator it = boolPOIs.begin();
        it != boolPOIs.end();) {
     uint name = it->first;

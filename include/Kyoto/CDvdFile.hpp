@@ -55,4 +55,7 @@ private:
 };
 CHECK_SIZEOF(CDvdFile, 0x28)
 
+// Guessed name. Set whenever a DVD read is issued or completes; retail code never reads it.
+extern bool gDvdActivity;
+
 #endif // _CDVDFILE

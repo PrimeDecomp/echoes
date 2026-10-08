@@ -25,6 +25,7 @@
 #include "MetroidPrime/Factories/CCharacterFactory.hpp"
 #include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/Tweaks/CTweakGame.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
@@ -39,9 +40,6 @@
 static CColor sDarkPointLightColor(uchar(80), uchar(49), uchar(130), uchar(255));
 static CColor sDarkMovingLightColor(uchar(156), uchar(123), uchar(200), uchar(255));
 static const char* const kIntroAudio = "/Audio/swanp-mae32.dsp";
-// Shared locator names; defined with the player code.
-extern const char* const kGunLocator;
-extern const char* const kGrappleLocator;
 
 // Guessed name; returns the current viewport dimensions.
 static CVector2i GetViewportSize() {

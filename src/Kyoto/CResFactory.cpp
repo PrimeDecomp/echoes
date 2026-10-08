@@ -10,9 +10,6 @@
 // Written by CMFGameLoader; its purpose is not yet identified.
 int gResFactoryUnknown = 2;
 
-// Shared by every default-constructed rc_ptr; the count starts high so it is never released.
-rstl::CRefData rstl::CRefData::sNull = {0x00FFFFFF, 0};
-
 CResFactory::CResFactory() {}
 
 CResFactory::~CResFactory() {}
