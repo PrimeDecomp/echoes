@@ -30,6 +30,7 @@ public:
 
   void SetArea(CPFArea* area) { mArea = area; }
   void SetPadding(const float pad) { mPadding = pad; }
+  void SetFlags(uint flags) { mFlags = flags; } // Guessed name
 
   const CVector3f& GetPoint() const {
     return mCurWaypoint + 1 < mWaypoints.size() ? mWaypoints[mCurWaypoint + 1]

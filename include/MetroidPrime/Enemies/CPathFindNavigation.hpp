@@ -14,6 +14,7 @@ public:
   void PathFind(CStateManager& mgr, EStateMsg msg, float dt, CPatterned& actor);
   void SetDestination(const CVector3f& position);
   void SetFaceTarget(const TUniqueId& id) { mFaceTarget = id; }
+  const CVector3f& GetDestinationPosition() const { return mDestinationPosition; } // Guessed name
 
 private:
   // Guessed names, recovered from the path-search and steering callers.

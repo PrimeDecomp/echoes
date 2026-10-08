@@ -24,6 +24,7 @@ public:
   TUniqueId GetJumpPoint() const { return mCurrentWaypoint; }
   TUniqueId GetJumpTarget() const { return mNextWaypoint; }
   float GetJumpApex() const { return mJumpApex; }
+  int GetType() const { return mType; } // Guessed name
 
 private:
   float mJumpApex;

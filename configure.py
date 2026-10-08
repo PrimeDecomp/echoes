@@ -1891,6 +1891,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "IngSpaceJumpGuardian",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIngSpaceJumpGuardian.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "AIMannedTurret",
         [
             Object(NonMatching, "MetroidPrime/Enemies/CAIMannedTurret.cpp"),
