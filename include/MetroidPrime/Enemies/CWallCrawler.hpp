@@ -13,8 +13,7 @@ class CScriptWaypoint;
 // is the closest relative. Member names follow Prime where the layout lines up.
 class CWallCrawler : public CPatterned {
 public:
-  enum EType { kT_WallWalker = 9 }; // Guessed name; other values are not recovered.
-  enum EConstraint { kC_None };     // Values are not recovered.
+  enum EType { kT_PillBug = 5, kT_WallWalker = 9 }; // Guessed names; other values are not recovered.
 
   CWallCrawler(EPatternedAI character, TUniqueId uid, const rstl::string& name, EFlavorType flavor,
                CEntityInfo& info, const CTransform4f& xf, const CModelData& mData,
@@ -38,17 +37,18 @@ public:
   // CPhysicsActor
   const CCollisionPrimitive* GetCollisionPrimitive() const override;
 
-  // CWallCrawler; slot 0x148, name and signature not recovered.
-  virtual CVector3f GetConstraintVector(CStateManager& mgr, const CActor& actor) const;
+  // CWallCrawler
+  virtual TUniqueId GetNextWaypoint(CStateManager& mgr, const CScriptWaypoint* waypoint,
+                                    bool reverse); // Guessed name; slot 0x148
 
-  void SetConstraint(CStateManager& mgr, EConstraint constraint);
+  void SetConstraint(CStateManager& mgr, int constraint);
   void UpdateConstraintPlane(CStateManager& mgr);
-  void UpdateWPDestination(CStateManager& mgr);
+  bool UpdateWPDestination(CStateManager& mgr);
   void AlignToFloor(CStateManager& mgr, float radius, const CVector3f& newPos, float dt);
   void AlignToPlane(const CUnitVector3f& normal, float dt);
   const CPlane& GetConstraintPlane() const;
-  void GetNextWaypoint(CStateManager& mgr, const CScriptWaypoint* waypoint, bool reverse);
   static CVector3f ProjectVectorToPlane(const CVector3f& vec, const CVector3f& planeDir);
+  static CVector3f GetClosestPointOnPlane(const CVector3f& point, const CPlane& plane); // Guessed name
 
 protected:
   CCollisionSurface mAlignSurface;
