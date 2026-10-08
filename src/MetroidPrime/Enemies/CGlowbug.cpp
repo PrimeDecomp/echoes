@@ -67,27 +67,27 @@ CGlowbug::CGlowbug(TUniqueId uid, const rstl::string& name, const CEntityInfo& i
                                gpSimplePool->GetObj(SObjectTag('PART', attackEchoEffect)), true),
                            CElementGen::kMOT_Normal, CElementGen::kOSF_One)))
 , mEffectIndex(0)
-, x7d9_(false)
-, x7dc_(0.f)
+, mHasBrokenApart(false)
+, mDeathTimer(0.f)
 , mAttackDamage(patternedInfo.GetContactDamage())
 , mAttackDuration(attackDuration)
-, x800_(0)
-, x804_(kInvalidUniqueId)
+, mAttackPhase(0)
+, mAttackTargetId(kInvalidUniqueId)
 , mMinAttackRange(patternedInfo.GetMinAttackRange())
 , mMaxAttackRange(patternedInfo.GetMaxAttackRange())
-, x810_(false)
+, mDamageApplied(false)
 , mAttackAimOffset(attackAimOffset)
 , mAttackTelegraphDuration(attackTelegraphDuration)
 , mAttackSound(attackSound)
 , mAttackTelegraphSound(attackTelegraphSound)
 , mAttackTelegraphEffect(attackTelegraphEffect)
-, x82c_(kInvalidUniqueId)
+, mBeamTargetId(kInvalidUniqueId)
 , mIsInDarkWorld(!isInLightWorld)
-, x830_(kInvalidUniqueId)
+, mCameraShakerId(kInvalidUniqueId)
 , mScanModel(scanModel == kInvalidAssetId
                  ? CModelData::None()
                  : CModelData(CStaticRes(scanModel, CVector3f(1.f, 1.f, 1.f))))
-, x880_(false) {
+, mDeathFlashPlayed(false) {
   rstl::vector< CAssetId > particles;
   particles.reserve(3);
   if (mDeathFlashEffect != kInvalidAssetId) {
@@ -121,7 +121,7 @@ void CGlowbug::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       if (it->state == static_cast< EScriptObjectState >('APRC')) { // Guessed state
         const TUniqueId id = mgr.GetIdForScript(it->objId);
         if (TCastToPtr< CScriptCameraShaker >(mgr.ObjectById(id))) {
-          x830_ = id;
+          mCameraShakerId = id;
         }
       }
     }
@@ -151,32 +151,33 @@ void CGlowbug::Think(float dt, CStateManager& mgr) {
   AnimationData()->GetParticleDB().SetModulationColorAllActiveEffects(hitColor);
 
   FindAttackTarget(mgr);
-  if (x804_ != kInvalidUniqueId) {
-    x82c_ = x804_;
+  if (mAttackTargetId != kInvalidUniqueId) {
+    mBeamTargetId = mAttackTargetId;
   }
 
-  if (mAttackEchoGen.get() != nullptr && x800_ == 2 && mAlive) {
+  if (mAttackEchoGen.get() != nullptr && mAttackPhase == 2 && mAlive) {
     mAttackEchoGen->SetGlobalTranslation(GetTranslation());
     mAttackEchoGen->Update(dt);
   }
 
-  if (mAttackElectric.get() != nullptr && x800_ == 2 && x82c_ != kInvalidUniqueId && mAlive) {
-    if (const CActor* target = TCastToConstPtr< CActor >(mgr.GetObjectById(x82c_))) {
+  if (mAttackElectric.get() != nullptr && mAttackPhase == 2 && mBeamTargetId != kInvalidUniqueId &&
+      mAlive) {
+    if (const CActor* target = TCastToConstPtr< CActor >(mgr.GetObjectById(mBeamTargetId))) {
       mAttackElectric->SetOverrideIPos(GetTranslation());
       mAttackElectric->SetOverrideFPos(target->GetAimPosition(mgr, 0.f) + mAttackAimOffset);
       mAttackElectric->Update(dt);
-      if (!x810_) {
+      if (!mDamageApplied) {
         mgr.ApplyDamage(
-            GetUniqueId(), x82c_, GetUniqueId(), mAttackDamage,
+            GetUniqueId(), mBeamTargetId, GetUniqueId(), mAttackDamage,
             CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
             CVector3f::Zero());
-        x810_ = true;
+        mDamageApplied = true;
         ProcessSoundEvent(mAttackSound, 1.f, 0, 0.1f, 100.f, CSegId(0), 0, 0, 0.f, 20, 127,
                           GetDistanceToCamera(mgr), GetTranslation(), mgr.GetNextAreaId().Value(),
                           mgr, true);
-        if (x830_ != kInvalidUniqueId) {
+        if (mCameraShakerId != kInvalidUniqueId) {
           if (const CScriptCameraShaker* shaker =
-                  TCastToConstPtr< CScriptCameraShaker >(mgr.GetObjectById(x830_))) {
+                  TCastToConstPtr< CScriptCameraShaker >(mgr.GetObjectById(mCameraShakerId))) {
             mgr.CameraManager(0)->CameraShakerManager()->AddCameraShaker(shaker->GetShakeData(),
                                                                          mgr, false, false);
           }
@@ -196,10 +197,10 @@ void CGlowbug::Render(const CStateManager& mgr) const {
     gpRender->SetDestinationAlpha(alpha);
   }
   CPatterned::Render(mgr);
-  if (mAttackElectric.get() != nullptr && x800_ == 2 && mAlive) {
+  if (mAttackElectric.get() != nullptr && mAttackPhase == 2 && mAlive) {
     mAttackElectric->Render();
   }
-  if (mAttackEchoGen.get() != nullptr && x800_ == 2 && mAlive) {
+  if (mAttackEchoGen.get() != nullptr && mAttackPhase == 2 && mAlive) {
     mAttackEchoGen->Render();
   }
   if (alpha != -1) {
@@ -246,7 +247,7 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
     }
     break;
   case kStateMsg_Update:
-    if (!x880_) {
+    if (!mDeathFlashPlayed) {
       char name[100];
       sprintf(name, "GLOWBUG_EFFECT%d-%d", mDeathFlashEffect, mEffectIndex++);
       AnimationData()->GetParticleDB().AddParticleEffect(
@@ -254,12 +255,12 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
           CParticleData(0, SObjectTag('PART', mDeathFlashEffect), CSegId(1), 1.f,
                         CParticleData::kPM_Initial),
           GetModelData()->GetScale(), &mgr, GetCurrentAreaId(), false, 0);
-      x880_ = true;
+      mDeathFlashPlayed = true;
     }
     BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_Die));
     if (mIsInDarkWorld) {
-      if (IsOnGround() && !x7d9_) {
-        x7d9_ = true;
+      if (IsOnGround() && !mHasBrokenApart) {
+        mHasBrokenApart = true;
         RemoveMaterial(kMT_Unknown59, mgr);
         AnimationData()->SetEffectState(rstl::string_l(skDeathGlowEffect), false, mgr);
         char name[100];
@@ -270,15 +271,15 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
                           CParticleData::kPM_Initial),
             GetModelData()->GetScale(), &mgr, GetCurrentAreaId(), false, 0);
         SendScriptMsgs(static_cast< EScriptObjectState >('DGNR'), mgr, kSM_None); // Guessed state
-      } else if (x7d9_) {
-        x7dc_ += dt;
-        if (x7dc_ > 1.f) {
+      } else if (mHasBrokenApart) {
+        mDeathTimer += dt;
+        if (mDeathTimer > 1.f) {
           DeathDelete(mgr);
         }
       }
     } else {
-      x7dc_ += dt;
-      if (x7dc_ > 1.f) {
+      mDeathTimer += dt;
+      if (mDeathTimer > 1.f) {
         DeathDelete(mgr);
       }
     }
@@ -289,8 +290,8 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
 void CGlowbug::Attack(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    x800_ = 2;
-    x810_ = false;
+    mAttackPhase = 2;
+    mDamageApplied = false;
     break;
   case kStateMsg_Update:
     break;
@@ -313,7 +314,7 @@ void CGlowbug::AttackTelegraph(CStateManager& mgr, EStateMsg msg, float dt) {
     ProcessSoundEvent(mAttackTelegraphSound, 1.f, 0, 0.1f, 100.f, CSegId(0), 0, 0, 0.f, 20, 127,
                       GetDistanceToCamera(mgr), GetTranslation(), mgr.GetNextAreaId().Value(), mgr,
                       true);
-    x800_ = 1;
+    mAttackPhase = 1;
     break;
   }
   case kStateMsg_Update:
@@ -326,7 +327,7 @@ void CGlowbug::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     AnimationData()->SetEffectState(rstl::string_l(skGlowEffect), true, mgr);
-    x800_ = 0;
+    mAttackPhase = 0;
     break;
   case kStateMsg_Update:
   case kStateMsg_Deactivate:
@@ -344,7 +345,7 @@ bool CGlowbug::AttackFinished(CStateManager& mgr, const CTriggerData& data) cons
 }
 
 bool CGlowbug::ShouldAttack(CStateManager& mgr, const CTriggerData& data) const {
-  return x804_ != kInvalidUniqueId && mCurDamageRemTime == 0.f;
+  return mAttackTargetId != kInvalidUniqueId && mCurDamageRemTime == 0.f;
 }
 
 bool CGlowbug::AnimOver(CStateManager& mgr, const CTriggerData& data) const {
@@ -352,7 +353,7 @@ bool CGlowbug::AnimOver(CStateManager& mgr, const CTriggerData& data) const {
 }
 
 void CGlowbug::FindAttackTarget(CStateManager& mgr) {
-  x804_ = kInvalidUniqueId;
+  mAttackTargetId = kInvalidUniqueId;
   float bestScore = FLT_MAX;
   CVector3f forward = GetTransform().GetColumn(kDY);
   const float angleWeight = mMaxAttackRange * mMaxAttackRange / M_PIF;
@@ -364,7 +365,7 @@ void CGlowbug::FindAttackTarget(CStateManager& mgr) {
       const float score = angle * angleWeight + toPlayer.MagSquared();
       if (score < bestScore) {
         bestScore = score;
-        x804_ = player->GetUniqueId();
+        mAttackTargetId = player->GetUniqueId();
       }
     }
   }

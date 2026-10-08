@@ -59,25 +59,25 @@ private:
   rstl::auto_ptr< CParticleElectric > mAttackElectric; // Guessed name
   rstl::auto_ptr< CElementGen > mAttackEchoGen;        // Guessed name
   uchar mEffectIndex;                                  // Guessed name
-  bool x7d9_;
-  float x7dc_;
-  CDamageInfo mAttackDamage; // Guessed name
-  float mAttackDuration;     // Guessed name
-  int x800_;
-  TUniqueId x804_;
-  float mMinAttackRange; // Guessed name
-  float mMaxAttackRange; // Guessed name
-  bool x810_;
-  CVector3f mAttackAimOffset;      // Guessed name
-  float mAttackTelegraphDuration;  // Guessed name
-  ushort mAttackSound;             // Guessed name
-  ushort mAttackTelegraphSound;    // Guessed name
-  CAssetId mAttackTelegraphEffect; // Guessed name
-  TUniqueId x82c_;
-  bool mIsInDarkWorld; // Guessed name
-  TUniqueId x830_;
-  CModelData mScanModel; // Guessed name
-  bool x880_;
+  bool mHasBrokenApart;                                // Guessed name
+  float mDeathTimer;                                   // Guessed name
+  CDamageInfo mAttackDamage;                           // Guessed name
+  float mAttackDuration;                               // Guessed name
+  int mAttackPhase;                                    // Guessed name
+  TUniqueId mAttackTargetId;                           // Guessed name
+  float mMinAttackRange;                               // Guessed name
+  float mMaxAttackRange;                               // Guessed name
+  bool mDamageApplied;                                 // Guessed name
+  CVector3f mAttackAimOffset;                          // Guessed name
+  float mAttackTelegraphDuration;                      // Guessed name
+  ushort mAttackSound;                                 // Guessed name
+  ushort mAttackTelegraphSound;                        // Guessed name
+  CAssetId mAttackTelegraphEffect;                     // Guessed name
+  TUniqueId mBeamTargetId;                             // Guessed name
+  bool mIsInDarkWorld;                                 // Guessed name
+  TUniqueId mCameraShakerId;                           // Guessed name
+  CModelData mScanModel;                               // Guessed name
+  bool mDeathFlashPlayed;                              // Guessed name
 };
 CHECK_SIZEOF(CGlowbug, 0x888)
 
