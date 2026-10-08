@@ -18,7 +18,8 @@
 #include <dolphin/gx.h>
 #include <float.h>
 
-CProjectedShadow::CProjectedShadow(int width, int height, uchar persistent, int projectionMode)
+CProjectedShadow::CProjectedShadow(int width, int height, const uchar persistent,
+                                   int projectionMode)
 : mTexture(kTF_I4, width, height, 1)
 , mBounds(CAABox::MakeMaxInvertedBox())
 , mScale(1.f)
