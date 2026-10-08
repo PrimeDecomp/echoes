@@ -25,7 +25,7 @@ CParticleDatabase::CParticleDatabase() : mUpdatesEnabled(true), mAnySystemsDrawn
 CParticleDatabase::~CParticleDatabase() {}
 
 template < class T, FourCC Type >
-static void CacheParticleId(const CAssetId& id,
+static void CacheParticleId(CAssetId id,
                             rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< T > > >& cache) {
   if (cache.find(id) == cache.end()) {
     rstl::rc_ptr< TLockedToken< T > > desc(
