@@ -1701,6 +1701,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptStreamedMovie",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptStreamedMovie.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
