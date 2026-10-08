@@ -33,6 +33,7 @@
 #include "MetroidPrime/Enemies/CPuffer.hpp"
 #include "MetroidPrime/Enemies/CRipper.hpp"
 #include "MetroidPrime/Enemies/CSandworm.hpp"
+#include "MetroidPrime/Enemies/CShredder.hpp"
 #include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
@@ -329,7 +330,7 @@ TYPES_MATCH_IMPL(CGunTurretTop, CPatterned, kET_GunTurretTop)
 // 148: class not declared yet (IngBoostBallGuardian REL); parent CPhysicsActor
 // 149: class not declared yet (Blogg REL); parent CPatterned
 TYPES_MATCH_IMPL(CWallWalker, CWallCrawler, kET_WallWalker)
-// 151: class not declared yet (Shredder REL); parent CPatterned
+TYPES_MATCH_IMPL(CShredder, CPatterned, kET_Shredder)
 TYPES_MATCH_IMPL(CTargetableProjectile, CEnergyProjectile, kET_TargetableProjectile)
 // 153: class not declared yet (AIMannedTurret REL); parent CAi
 // 154: class not declared yet (StoneToad REL); parent CPatterned

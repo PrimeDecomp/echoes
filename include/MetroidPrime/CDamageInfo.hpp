@@ -82,6 +82,7 @@ public:
   float GetRadiusDamage() const { return mRadiusDamageAmount; }
   void SetRadiusDamage(float r) { mRadiusDamageAmount = r; }
   float GetRadiusDamage(const CDamageVulnerability& dVuln) const;
+  float GetVulnerableDamage(const CDamageVulnerability& dVuln) const;
   bool NoImmunity() const { return mNoImmunity; }
   void SetNoImmunity(bool b) { mNoImmunity = b; }
   void MultiplyDamage(const float m) {
@@ -97,7 +98,6 @@ public:
   }
 
 private:
-  float GetVulnerableDamage(const CDamageVulnerability& dVuln) const;
   float GetVulnerableRadiusDamage(const CDamageVulnerability& dVuln) const;
   float GetVulnerableKnockBackPower(const CDamageVulnerability& dVuln, float distance) const;
 
