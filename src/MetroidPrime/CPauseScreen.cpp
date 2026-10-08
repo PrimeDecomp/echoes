@@ -1542,8 +1542,8 @@ void CPauseScreen::DrawNodeIcon(const CTransform4f& view, const CVector3f& posit
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
   CGraphics::SetModelMatrix(CTransform4f::Identity());
-  const CVector3f right = view.GetColumn(kDX);
   const CVector3f up = view.GetColumn(kDZ);
+  const CVector3f right = view.GetColumn(kDX);
   const float size = 0.2f * scale;
   CGraphics::StreamBegin(kP_Quads);
   CGraphics::StreamColor(color);
@@ -1565,9 +1565,9 @@ void CPauseScreen::DrawNodeLabel(const CTransform4f& view, const CVector3f& posi
     gpRender->SetBlendMode_AdditiveAlpha();
     mNodeText->SetText(node->GetName(), false);
     mNodeText->SetGeometryColor(color);
-    const float scale = gpTweakGui->GetLogBookTextScale();
-    const CVector3f offset(-mNodeText->GetTextBoundingWidth() * 0.5f, 0.f,
-                           -(1.2f * (0.2f * iconScale) * 0.5f) / (0.02f * scale));
+    const CVector3f offset(
+        -mNodeText->GetTextBoundingWidth() / 2.f, 0.f,
+        -(1.2f * (0.2f * iconScale) / 2.f) / (0.02f * gpTweakGui->GetLogBookTextScale()));
     const CTransform4f textXf = CTransform4f::Scale(0.02f * textScale) * view.GetRotation() *
                                 CTransform4f::Translate(offset);
     CGraphics::SetModelMatrix(CTransform4f::Translate(position) * textXf);
@@ -1722,23 +1722,26 @@ void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origi
 bool CPauseScreen::IsDone() const { return mDone; }
 
 void CPauseScreen::DrawModels(float alpha) const {
-  if (!mModels.empty() && mModelsReady) {
-    for (int i = 0; i < mModels.size(); ++i) {
-      CModelData* model = mModels[i].get();
-      if (model != nullptr && !model->IsNull()) {
-        if (!model->IsLoaded(0)) {
-          return;
-        }
-        model->Touch(CModelData::kWM_Normal, 0);
-        if (model->HasAnimation()) {
-          model->AnimationData()->PreRender();
-        }
+  if (mModels.empty() || !mModelsReady) {
+    return;
+  }
+
+  for (rstl::reserved_vector< rstl::auto_ptr< CModelData >, 11 >::const_iterator it =
+           mModels.begin();
+       it != mModels.end(); ++it) {
+    if (it->get() != nullptr && !(*it)->IsNull()) {
+      if (!(*it)->IsLoaded(0)) {
+        return;
+      }
+      (*it)->Touch(CModelData::kWM_Normal, 0);
+      if ((*it)->HasAnimation()) {
+        (*it)->AnimationData()->PreRender();
       }
     }
-    SetFog(false);
-    DrawModelView(mModelTransform, alpha);
-    SetFog(true);
   }
+  SetFog(false);
+  DrawModelView(mModelTransform, alpha);
+  SetFog(true);
 }
 
 void CPauseScreen::InitializeStripedTexture() {
