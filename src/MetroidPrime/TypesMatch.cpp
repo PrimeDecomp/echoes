@@ -17,6 +17,7 @@
 #include "MetroidPrime/Cameras/CPathCamera.hpp"
 #include "MetroidPrime/Cameras/CSpindleCamera.hpp"
 #include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
+#include "MetroidPrime/Enemies/CAIMannedTurret.hpp"
 #include "MetroidPrime/Enemies/CAi.hpp"
 #include "MetroidPrime/Enemies/CBabyMetroid.hpp"
 #include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
@@ -345,7 +346,7 @@ TYPES_MATCH_IMPL(CGlowbug, CPatterned, kET_Glowbug)
 TYPES_MATCH_IMPL(CWallWalker, CWallCrawler, kET_WallWalker)
 TYPES_MATCH_IMPL(CShredder, CPatterned, kET_Shredder)
 TYPES_MATCH_IMPL(CTargetableProjectile, CEnergyProjectile, kET_TargetableProjectile)
-// 153: class not declared yet (AIMannedTurret REL); parent CAi
+TYPES_MATCH_IMPL(CAIMannedTurret, CAi, kET_AIMannedTurret)
 TYPES_MATCH_IMPL(CStoneToad, CPatterned, kET_StoneToad)
 TYPES_MATCH_IMPL(CScriptFrontEndDataNetwork, CActor, kET_ScriptFrontEndDataNetwork)
 TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
@@ -622,7 +623,8 @@ CAST_TO_PTR_IMPL(CWallWalker, kET_WallWalker)
 // 151: class not declared yet (Shredder REL)
 CAST_TO_REF_IMPL(CTargetableProjectile, kET_TargetableProjectile)
 CAST_TO_PTR_IMPL(CTargetableProjectile, kET_TargetableProjectile)
-// 153: class not declared yet (AIMannedTurret REL)
+CAST_TO_REF_IMPL(CAIMannedTurret, kET_AIMannedTurret)
+CAST_TO_PTR_IMPL(CAIMannedTurret, kET_AIMannedTurret)
 CAST_TO_REF_IMPL(CStoneToad, kET_StoneToad)
 CAST_TO_PTR_IMPL(CStoneToad, kET_StoneToad)
 CAST_TO_REF_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)

@@ -137,6 +137,7 @@ enum EEntityType {
   kET_WallWalker = 150,                // Target-derived class tag.
   kET_Shredder = 151, // Target-derived class tag.
   kET_TargetableProjectile = 152,      // Target-derived class tag.
+  kET_AIMannedTurret = 153,            // Target-derived class tag.
   kET_StoneToad = 154, // Target-derived class tag.
   kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
@@ -162,6 +163,8 @@ enum EScriptObjectState {
   kSS_ScanDone = 0x53434e44,
   kSS_Patrol = 0x5054524c,
   kSS_Attack = 0x4154544b,
+  kSS_AttachToBase = 0x41544f42, // Guessed name; connection to the turret base actor.
+  kSS_AttachToCharacter = 0x4154434c, // Guessed name; connection to the rider actor.
   kSS_Retreat = 0x52545254, // Prime-correlated name; cover point's retreat connection.
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
