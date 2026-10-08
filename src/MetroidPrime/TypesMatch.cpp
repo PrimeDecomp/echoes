@@ -22,6 +22,7 @@
 #include "MetroidPrime/Enemies/CBouncyGrenade.hpp"
 #include "MetroidPrime/Enemies/CDarkSamusBattleStage.hpp"
 #include "MetroidPrime/Enemies/CFlyerSwarm.hpp"
+#include "MetroidPrime/Enemies/CGlowbug.hpp"
 #include "MetroidPrime/Enemies/CGunTurretBase.hpp"
 #include "MetroidPrime/Enemies/CGunTurretTop.hpp"
 #include "MetroidPrime/Enemies/CIngBlobSwarm.hpp"
@@ -323,7 +324,7 @@ TYPES_MATCH_IMPL(CScriptPlayerTurret, CActor, kET_ScriptPlayerTurret)
 TYPES_MATCH_IMPL(CGunTurretBase, CPatterned, kET_GunTurretBase)
 TYPES_MATCH_IMPL(CGunTurretTop, CPatterned, kET_GunTurretTop)
 // 141: class not declared yet (Kralee REL); parent CWallCrawler
-// 142: class not declared yet (Glowbug REL); parent CPatterned
+TYPES_MATCH_IMPL(CGlowbug, CPatterned, kET_Glowbug)
 // 143: class not declared yet (Sporb REL); parent CPatterned
 // 144: class not declared yet (Sporb REL); parent CPhysicsActor
 // 145: class not declared yet (Sporb REL); parent CPatterned

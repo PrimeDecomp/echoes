@@ -1771,6 +1771,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Glowbug",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CGlowbug.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
