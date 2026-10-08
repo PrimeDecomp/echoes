@@ -906,6 +906,8 @@ MetroidPrime/ScriptObjects/CDamageEffect.cpp:
 
 MetroidPrime/CPauseScreenBlur.cpp:
 	.text       start:0x8017F620 end:0x8017FC58
+	.rodata     start:0x803AA660 end:0x803AA678
+	.data       start:0x803B6D38 end:0x803B6D48
 	.sdata2     start:0x8041DBB0 end:0x8041DBC8
 
 MetroidPrime/CGameHintInfo.cpp:

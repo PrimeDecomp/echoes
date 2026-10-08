@@ -606,7 +606,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CSaveGameScreen.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Weapons/CElectricBeamProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CDamageEffect.cpp"),
-            Object(MatchingFor("G2ME01"), "MetroidPrime/CPauseScreenBlur.cpp"),
+            Object(Matching, "MetroidPrime/CPauseScreenBlur.cpp"),
             Object(NonMatching, "MetroidPrime/CGameHintInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CErrorOutputWindow.cpp"),
             Object(NonMatching, "MetroidPrime/CRainSplashGenerator.cpp"),
