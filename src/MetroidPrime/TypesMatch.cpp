@@ -43,6 +43,7 @@
 #include "MetroidPrime/Enemies/CShredder.hpp"
 #include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
+#include "MetroidPrime/Enemies/CSpankWeed.hpp"
 #include "MetroidPrime/Enemies/CStoneToad.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/Enemies/CWallCrawler.hpp"
@@ -322,7 +323,7 @@ TYPES_MATCH_IMPL(CRipper, CPatterned, kET_Ripper)
 TYPES_MATCH_IMPL(CSandworm, CPatterned, kET_Sandworm)
 TYPES_MATCH_IMPL(CSandwormEye, CActor, kET_SandwormEye)
 TYPES_MATCH_IMPL(CSpacePirate, CPatterned, kET_SpacePirate)
-// 133: class not declared yet (SpankWeed REL); parent CPatterned
+TYPES_MATCH_IMPL(CSpankWeed, CPatterned, kET_SpankWeed)
 // 134: class not declared yet (Splitter REL); parent CPatterned
 // 135: class not declared yet (Splitter REL); parent CPatterned
 // 136: class not declared yet (WispTentacle REL); parent CPatterned
@@ -592,7 +593,8 @@ CAST_TO_REF_IMPL(CSandwormEye, kET_SandwormEye)
 CAST_TO_PTR_IMPL(CSandwormEye, kET_SandwormEye)
 CAST_TO_REF_IMPL(CSpacePirate, kET_SpacePirate)
 CAST_TO_PTR_IMPL(CSpacePirate, kET_SpacePirate)
-// 133: class not declared yet (SpankWeed REL)
+CAST_TO_REF_IMPL(CSpankWeed, kET_SpankWeed)
+CAST_TO_PTR_IMPL(CSpankWeed, kET_SpankWeed)
 // 134: class not declared yet (Splitter REL)
 // 135: class not declared yet (Splitter REL)
 // 136: class not declared yet (WispTentacle REL)

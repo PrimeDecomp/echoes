@@ -70,6 +70,8 @@ public:
     }
   }
   void SetNeedsRelight(bool v) { mDirty = v; }
+  // Guessed name; the offset added to the actor position when selecting lights.
+  void SetLightingPositionOffset(const CVector3f& offset) { mLightingPositionOffset = offset; }
 
 private:
   rstl::reserved_vector< CLight, 4 > mAreaLights;

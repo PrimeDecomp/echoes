@@ -93,6 +93,10 @@ public:
                               rstl::set< CPrimitive >& primsOut) const;
 
   const CCharLayoutInfo* GetCharLayoutInfo() const { return *mLayoutData; }
+  // Guessed name; the optional CSPP collision primitive of the character.
+  const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& GetSpatialPrimitive() const {
+    return mSpatialPrimitive;
+  }
   CPoseAsTransforms_Linear& Pose() { return mPose; }             // Guessed name.
   const CPoseAsTransforms_Linear& Pose() const { return mPose; } // Guessed name.
   void SetPoseBuilt(bool built) { mPoseBuilt = built; }          // Guessed name.
@@ -175,9 +179,6 @@ public:
   float GetPlaybackRate() const { return mSpeedScale; }
   const CCharacterInfo& GetCharacterInfo() const { return mCharInfo; }
   const CPASDatabase& GetPASDatabase() const { return mCharInfo.GetPASDatabase(); }
-  const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& GetSpatialPrimitive() const {
-    return mSpatialPrimitive;
-  }
   CParticleDatabase& GetParticleDB() { return mParticleDB; }
   // Guessed names; gun turrets drive a joint rotation directly and rebuild the pose.
   CJointData_LinearStorage& JointData() const { return *mJointData; }
