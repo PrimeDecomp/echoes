@@ -125,9 +125,14 @@ bool RaySphereIntersection_Double(const CSphere& sphere, const CVector3f& pos, c
 int RayAABoxIntersection(const CVector3f& start, const CVector3f& direction, float length,
                          const CAABox& box) {
   const CMRay ray(start, direction, length);
-  float tMin = 0.f;
   float tMax = 0.f;
-  return RayAABoxIntersection(ray, box, tMin, tMax);
+  float tMin = 0.f;
+  const int result = RayAABoxIntersection(ray, box, tMin, tMax);
+  // The range test does not change the result, but the original still performs it.
+  if (result != 0 && tMin <= length) {
+    return result;
+  }
+  return result;
 }
 
 int RayAABoxIntersection(const CMRay& ray, const CAABox& box, CVector3f& normal,

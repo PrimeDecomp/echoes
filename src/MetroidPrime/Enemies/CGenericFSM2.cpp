@@ -81,10 +81,10 @@ CGenericFSM2::~CGenericFSM2() {}
 const CState2* CGenericFSM2::ResolveNode(uint target) const {
   const uint index = target & 0xffffff;
   switch (target >> 24) {
-  case 0:
-    return &mTriggers[index];
   case 1:
     return &mStates[index];
+  case 0:
+    return &mTriggers[index];
   case 2:
     return &mCodes[index];
   case 3:
