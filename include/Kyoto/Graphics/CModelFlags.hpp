@@ -82,6 +82,12 @@ public:
     return CModelFlags(*this, (GetOtherFlags() & ~kF_Unknown100) | kF_DepthGreater | kF_Unknown200);
   }
 
+  // Guessed name; the counterpart of DepthBackwards used when drawing the sky ripple.
+  CModelFlags DepthForwards() const {
+    return CModelFlags(*this, (GetOtherFlags() & ~(kF_DepthGreater | kF_DepthNonInclusive)) |
+                                  kF_Unknown100 | kF_Unknown200);
+  }
+
   ETrans GetTrans() const { return static_cast< ETrans >(mBlendMode); }
   // Some native paths read the blend mode as a signed byte (lbz + extsb into one register);
   // a value cast to signed char splits that into two registers instead.
