@@ -299,13 +299,14 @@ public:
   void DoCollisionResponse(const CCollisionResponseData& responseData,
                            const CRayCastResult& rayCast, const TUniqueId& uid,
                            const CWeaponMode& weaponMode, bool flag);
-  // Guessed name; forwards to the renderer unless the echo visor or light world applies.
-  void DrawDarkWorldVolume(const CVector3f& pos, const CVector3f& scale, uchar mix, uchar alpha,
-                           bool inside, float lod, const CVector2f& scroll1,
-                           const CVector2f& scroll2, const CVector2f& texScale1,
-                           const CVector2f& texScale2, const CTexture& environment,
-                           const CTexture& cloud1, const CTexture& cloud2, CColor color,
-                           CColor additiveColor, bool cylinder) const;
+  // Name from the Wii MP2 SEL export; forwards to the renderer unless the echo visor or light
+  // world applies.
+  void AddDarkWorldSphereToRenderer(const CVector3f& pos, const CVector3f& scale, uchar mix,
+                                    uchar alpha, bool inside, float lod, const CVector2f& scroll1,
+                                    const CVector2f& scroll2, const CVector2f& texScale1,
+                                    const CVector2f& texScale2, const CTexture& environment,
+                                    const CTexture& cloud1, const CTexture& cloud2, CColor color,
+                                    CColor additiveColor, bool cylinder) const;
   void GetCharacterRenderMaskAndTarget(uint& mask, uint& target) const;
   void BuildDynamicLightListForWorld(); // Guessed name, correlated with Prime.
   const CActorModelParticles* GetActorModelParticles() const { return mActorModelParticles; }
@@ -513,15 +514,6 @@ public:
   void SetUnkFlagA3(bool value) { mUnkFlagA3 = value; }
   bool GetInSaveUI() const { return mInSaveUI; }
   void SetIsFullThreat(bool value) { mIsFullThreat = value; }
-
-  // Name and signature from the Wii MP2 SEL export.
-  void AddDarkWorldSphereToRenderer(const CVector3f& pos, const CVector3f& scale, uchar alpha,
-                                    uchar insideAlpha, bool inside, float spotSize,
-                                    const CVector2f& scroll1, const CVector2f& scroll2,
-                                    const CVector2f& texScale1, const CVector2f& texScale2,
-                                    const CTexture& environment, const CTexture& cloud1,
-                                    const CTexture& cloud2, CColor color, CColor additiveColor,
-                                    bool cylinder) const;
 
 public:
   ushort mNextFreeIndex;

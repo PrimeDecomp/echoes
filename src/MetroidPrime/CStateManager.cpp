@@ -267,13 +267,11 @@ bool CStateManager::IsActorVisible(const CActor& actor) const {
   return mPlanes.BoxInFrustumPlanes(actor.GetOtherBounds());
 }
 
-void CStateManager::DrawDarkWorldVolume(const CVector3f& pos, const CVector3f& scale, uchar mix,
-                                        uchar alpha, bool inside, float lod,
-                                        const CVector2f& scroll1, const CVector2f& scroll2,
-                                        const CVector2f& texScale1, const CVector2f& texScale2,
-                                        const CTexture& environment, const CTexture& cloud1,
-                                        const CTexture& cloud2, CColor color, CColor additiveColor,
-                                        bool cylinder) const {
+void CStateManager::AddDarkWorldSphereToRenderer(
+    const CVector3f& pos, const CVector3f& scale, uchar mix, uchar alpha, bool inside, float lod,
+    const CVector2f& scroll1, const CVector2f& scroll2, const CVector2f& texScale1,
+    const CVector2f& texScale2, const CTexture& environment, const CTexture& cloud1,
+    const CTexture& cloud2, CColor color, CColor additiveColor, bool cylinder) const {
   const CPlayerState::EPlayerVisor visor = mPlayerState->GetActiveVisor(*this);
   if (mIsDarkWorld && visor != CPlayerState::kPV_Echo) {
     gpRender->DrawDarkWorldVolume(pos, scale, mix, alpha, inside, lod, scroll1, scroll2, texScale1,
