@@ -359,7 +359,8 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
                                   float& distance, const CStateManager& mgr, int controllerIdx) {
   CVector3f delta = to - from;
   float length = delta.Magnitude();
-  CVector3f direction = delta * (1.f / length);
+  const float invLength = 1.f / length;
+  CVector3f direction = delta * invLength;
   bool clear = true;
 
   if (length > 1.1920929e-6f) {
@@ -396,7 +397,8 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
                                                   kMT_Character, kMT_CameraPassthrough));
       CTransform4f testTransform = CTransform4f::Translate(from);
       const int stepCount = static_cast< uint >(length / 0.5f);
-      const CVector3f step = (1.f / stepCount) * delta;
+      const float stepScale = 1.f / stepCount;
+      const CVector3f step = stepScale * delta;
       for (int i = 0; i < stepCount; ++i) {
         CCollisionInfo hitInfo;
         double hitDistance = step.Magnitude();
