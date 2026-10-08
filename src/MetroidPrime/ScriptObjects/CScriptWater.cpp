@@ -568,7 +568,7 @@ void CScriptWater::SetupGridClipping(CStateManager& mgr, int computeVerts) {
   if (mComputedGridCellCount >= mGridCellCount) {
     return;
   }
-  static CMaterialFilter solidFilter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59));
+  static CMaterialFilter solidFilter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
   if (mVertIntersects.null()) {
     mVertIntersects = rs_new char[(mGridDimX + 1) * (mGridDimY + 1)];
   }

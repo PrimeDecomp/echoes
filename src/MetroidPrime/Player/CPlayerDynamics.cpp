@@ -35,9 +35,9 @@
 #include "MetroidPrime/Player/CPlayerGun.hpp"
 #include "MetroidPrime/Player/CPlayerRagDoll.hpp"
 
-static const CMaterialList BallTransitionInclude = CMaterialList(kMT_Unknown59);
+static const CMaterialList BallTransitionInclude = CMaterialList(kMT_Solid);
 static const CMaterialList BallTransitionExclude =
-    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough);
 static const CMaterialFilter BallTransitionCollide =
     CMaterialFilter::MakeIncludeExclude(BallTransitionInclude, BallTransitionExclude);
 

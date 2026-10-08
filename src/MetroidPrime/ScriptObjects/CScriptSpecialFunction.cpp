@@ -443,12 +443,12 @@ void CScriptSpecialFunction::AcceptRadialDamage(CStateManager& mgr, const CScrip
     if ((mIntParm1 & 4) != 0) {
       mgr.ApplyDamage(
           GetUniqueId(), msg.GetOriginator(), kInvalidUniqueId, info,
-          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
           CVector3f::Zero());
     } else {
       mgr.ApplyDamageToWorld(
           GetUniqueId(), *this, GetTranslation(), info,
-          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()));
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()));
     }
     if ((mIntParm1 & 2) != 0) {
       mgr.DeleteObjectRequest(GetUniqueId());
@@ -897,7 +897,7 @@ void CScriptSpecialFunction::AcceptDamageActor(CStateManager& mgr, const CScript
         if (act->GetActive()) {
           mgr.ApplyDamage(
               msg.GetOriginator(), act->GetUniqueId(), msg.GetOriginator(), info,
-              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
               CVector3f::Zero());
         }
       }
@@ -1745,10 +1745,9 @@ void CScriptSpecialFunction::ThinkAreaDamage(float dt, CStateManager& mgr) {
   }
 
   CDamageInfo dInfo(CWeaponMode(kWT_Heat), mValue1 * dt, 0.f, 0.f, true);
-  mgr.ApplyDamage(
-      GetUniqueId(), player->GetUniqueId(), GetUniqueId(), dInfo,
-      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-      CVector3f::Zero());
+  mgr.ApplyDamage(GetUniqueId(), player->GetUniqueId(), GetUniqueId(), dInfo,
+                  CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+                  CVector3f::Zero());
 }
 
 void CScriptSpecialFunction::ThinkActorScale(float dt, CStateManager& mgr) {

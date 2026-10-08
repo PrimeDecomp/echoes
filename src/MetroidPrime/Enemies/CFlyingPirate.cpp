@@ -76,7 +76,7 @@ static const SBurst skBurstsLandedOutOfView[] = {
 const float CFlyingPirate::skGravityConstant = 50.f;
 const float CFlyingPirate::skAquaGravityConstant = 5.f;
 
-static EMaterialTypes skSolidMaterial = kMT_Unknown59;
+static EMaterialTypes skSolidMaterial = kMT_Solid;
 
 static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"HearShot", static_cast< CPatterned::StateMachine::TriggerFunc >(&CFlyingPirate::HearShot)},
@@ -295,8 +295,8 @@ CFlyingPirate::CFlyingPirate(TUniqueId uid, const rstl::string& name, const CEnt
   mOnGround = !mIsFlyingPirate;
   mLineOfSightTracker.SetSegment(mHeadSegId);
   mLineOfSightTracker.SetRayFilter(CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59, kMT_Character),
-      CMaterialList(kMT_Player, kMT_CollisionActor, kMT_NoPlatformCollision,
+      CMaterialList(kMT_Solid, kMT_Character),
+      CMaterialList(kMT_Player, kMT_CollisionActor, kMT_ProjectilePassthrough,
                     kMT_ExcludeFromLineOfSightTest)));
 }
 
@@ -461,7 +461,7 @@ void CFlyingPirate::UpdateLandingSmoke(CStateManager& mgr, bool active) {
       }
       const CRayCastResult result = mgr.RayStaticIntersection(
           GetTranslation(), CVector3f::Down(), GetTranslation().GetZ() - particleLevel,
-          CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)));
+          CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid)));
       int index = 1;
       if (result.IsValid()) {
         const CMaterialList& material = result.GetMaterial();
@@ -551,7 +551,7 @@ void CFlyingPirate::CheckForProjectiles(CStateManager& mgr) {
 bool CFlyingPirate::LineOfSightTest(CStateManager& mgr, const CVector3f& start,
                                     const CVector3f& end, const CMaterialList& exclude) {
   const CMaterialFilter filter =
-      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), exclude);
+      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), exclude);
   return mgr.RayCollideWorld(start, end, filter, this);
 }
 
@@ -681,12 +681,12 @@ void CFlyingPirate::CheckFireMissiles(CStateManager& mgr) {
       const CVector3f end = xf.GetTranslation() + 3.f * xf.GetForward();
       switch (step) {
       case 0:
-        mMissilePathBlocked = !LineOfSightTest(mgr, end, GetTargetPos(mgr),
-                                               CMaterialList(kMT_Player, kMT_NoPlatformCollision));
+        mMissilePathBlocked = !LineOfSightTest(
+            mgr, end, GetTargetPos(mgr), CMaterialList(kMT_Player, kMT_ProjectilePassthrough));
         break;
       case 1:
-        mMissilePathBlocked = !LineOfSightTest(mgr, xf.GetTranslation(), end,
-                                               CMaterialList(kMT_Player, kMT_NoPlatformCollision));
+        mMissilePathBlocked = !LineOfSightTest(
+            mgr, xf.GetTranslation(), end, CMaterialList(kMT_Player, kMT_ProjectilePassthrough));
         break;
       }
     }
@@ -760,7 +760,7 @@ void CFlyingPirate::MassiveDeath(CStateManager& mgr) {
     mgr.AddObject(*explosion);
     mgr.ApplyDamageToWorld(
         GetUniqueId(), *this, GetTranslation(), mData.mDInfo,
-        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()));
+        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()));
     for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
     }
   }
@@ -1610,7 +1610,7 @@ bool CFlyingPirate::AnimOver(CStateManager& mgr, const CTriggerData& data) const
 void CFlyingPirate::Explode(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
-    RemoveMaterial(kMT_Target, kMT_Orbit, kMT_GroundCollider, kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Target, kMT_Orbit, kMT_GroundCollider, kMT_Solid, mgr);
     SetMomentumWR(CVector3f::Zero());
     if (!mFadeToDeath) {
       MassiveDeath(mgr);
@@ -1685,7 +1685,7 @@ bool CFlyingPirate::FireProjectile(CStateManager& mgr, float dt) {
       float dot = CVector3f::Dot(xf.GetForward(), delta);
       if (dot > 0.707f || (distance < 6.f && dot > 0.5f)) {
         if (LineOfSightTest(mgr, xf.GetTranslation(), origin,
-                            CMaterialList(kMT_Player, kMT_NoPlatformCollision))) {
+                            CMaterialList(kMT_Player, kMT_ProjectilePassthrough))) {
           origin += GetTransform().Rotate(mBurstFire.GetDistanceCompensatedError(distance, 6.f));
           const CTransform4f aimXf =
               CTransform4f::LookAt(xf.GetTranslation(), origin, CVector3f::Up());
@@ -1771,7 +1771,7 @@ void CFlyingPirate::CollidedWith(const TUniqueId& id, const CCollisionInfoList& 
   CPatterned::CollidedWith(id, list, mgr);
   if (!mAlive) {
     if (id == kInvalidUniqueId) {
-      static const CMaterialList skWorldMaterials(kMT_Unknown59, kMT_Wall, kMT_Floor);
+      static const CMaterialList skWorldMaterials(kMT_Solid, kMT_Wall, kMT_Floor);
       for (int i = 0; i < list.GetCount(); ++i) {
         if (list[i].GetMaterialLeft().SharesMaterials(skWorldMaterials)) {
           mDeathSpinFinished = true;

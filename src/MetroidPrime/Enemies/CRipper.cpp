@@ -22,9 +22,9 @@ static CPatterned::StateMachine::SStateFunction skStates[] = {
     {"Patrol", static_cast< CPatterned::StateMachine::StateFunc >(&CRipper::Patrol)},
 };
 
-static EMaterialTypes skIncludeMaterial = kMT_Unknown59;
+static EMaterialTypes skIncludeMaterial = kMT_Solid;
 static EMaterialTypes skExcludeMaterial1 = kMT_NoStaticCollision;
-static EMaterialTypes skExcludeMaterial2 = kMT_Unknown60;
+static EMaterialTypes skExcludeMaterial2 = kMT_NoPlatformCollision;
 static EMaterialTypes skExcludeMaterial3 = kMT_Platform;
 
 CRipper::CRipper(TUniqueId uid, const rstl::string& name, EFlavorType flavor,
@@ -92,7 +92,7 @@ void CRipper::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Create:
     BodyController()->Activate(mgr, pas::kAS_Invalid);
     AddMaterial(kMT_Immovable, mgr);
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     if (GetFlavorType() == kFT_One) {
       AddGrapplePoint(mgr);
       RemoveMaterial(kMT_Orbit, mgr);

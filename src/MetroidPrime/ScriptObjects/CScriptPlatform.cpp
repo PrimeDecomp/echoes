@@ -85,8 +85,8 @@ CScriptPlatform::CScriptPlatform(
 , x48d_25_(false)
 , mMotionTransformed(false) {
   SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59),
-      CMaterialList(kMT_NoStaticCollision, kMT_Unknown60, kMT_Platform)));
+      CMaterialList(kMT_Solid),
+      CMaterialList(kMT_NoStaticCollision, kMT_NoPlatformCollision, kMT_Platform)));
   SetMovable(false);
   if (HasAnimation()) {
     AnimationData()->EnableLooping(true);
@@ -589,11 +589,11 @@ void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
     mInitialTransform = GetTransform();
     fn_800a1df8();
     if ((mMotionFlags & 0x100) != 0) {
-      AddMaterial(kMT_Unknown59, mgr);
-      RemoveMaterial(kMT_NoPlatformCollision, mgr);
+      AddMaterial(kMT_Solid, mgr);
+      RemoveMaterial(kMT_ProjectilePassthrough, mgr);
     } else {
-      RemoveMaterial(kMT_Unknown59, mgr);
-      AddMaterial(kMT_NoPlatformCollision, mgr);
+      RemoveMaterial(kMT_Solid, mgr);
+      AddMaterial(kMT_ProjectilePassthrough, mgr);
     }
     for (int i = 0; i < GetConnectionList().size(); ++i) {
       const SConnection& connection = GetConnectionList()[i];
@@ -934,7 +934,7 @@ CEntity* LoadPlatform(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       motion.motionControlSpline,
       static_cast< CMotionSpline::ESplineType >(motion.motionSplineType.type), duration,
       (motion.motionFlagsPlatformMotion & 1) != 0);
-  CMaterialList materials(kMT_Unknown59, kMT_Immovable, kMT_Platform, kMT_Occluder);
+  CMaterialList materials(kMT_Solid, kMT_Immovable, kMT_Platform, kMT_Occluder);
   if (sldrThis.excludeFromLineOfSightTest) {
     materials.Add(kMT_ExcludeFromLineOfSightTest);
   }

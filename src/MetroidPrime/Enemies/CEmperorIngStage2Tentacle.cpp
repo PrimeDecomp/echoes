@@ -28,7 +28,7 @@ static const SJointPair skJoints[] = {
     {"joint8", "joint10", 0.25f}, {"joint10", "joint11", 0.25f},
 };
 
-static EMaterialTypes skTouchMaterial = kMT_Unknown59; // Guessed name
+static EMaterialTypes skTouchMaterial = kMT_Solid; // Guessed name
 
 static CPatterned::StateMachine::SStateFunction skStates[] = {
     {"Attack",
@@ -45,7 +45,7 @@ static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
                           &CEmperorIngStage2Tentacle::ShouldRetract)},
 };
 
-static EMaterialTypes skCollisionMaterial = kMT_Unknown59;          // Guessed name
+static EMaterialTypes skCollisionMaterial = kMT_Solid;              // Guessed name
 static EMaterialTypes skExcludeCollisionActor = kMT_CollisionActor; // Guessed name
 static EMaterialTypes skExcludeCharacter = kMT_Character;           // Guessed name
 static EMaterialTypes skExcludeAIPassthrough = kMT_AIPassthrough;   // Guessed name
@@ -83,7 +83,7 @@ void CEmperorIngStage2Tentacle::AcceptScriptMsg(CStateManager& mgr, const CScrip
   switch (msg.GetMessage()) {
   case kSM_Create:
     BodyController()->Activate(mgr, pas::kAS_Invalid);
-    RemoveMaterial(kMT_Unknown59, kMT_Orbit, mgr);
+    RemoveMaterial(kMT_Solid, kMT_Orbit, mgr);
     SetupCollisionActors(mgr);
     break;
   case kSM_Damage:

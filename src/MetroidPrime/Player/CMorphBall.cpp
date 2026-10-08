@@ -162,7 +162,6 @@ static rstl::reserved_vector< int, 64 > sWakeEffectForMaterial;
 // Ownership cleanup is supplied by the members' destructors.
 CMorphBall::~CMorphBall() {}
 
-// Material 59 has no established semantic name in this checkout.
 CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
 : mPlayer(player)
 , mLoadedModelId(-1)
@@ -173,9 +172,8 @@ CMorphBall::CMorphBall(CPlayer& player, float radius, bool multiplayer)
 , mTireMode(false)
 , mTireLeanAngle(0.f)
 , mBallTiltAngle(0.f)
-, mCollisionSphere(
-      CSphere(CVector3f(0.f, 0.f, radius), radius),
-      CMaterialList(kMT_Player, kMT_Unknown59, kMT_GroundCollider, kMT_NoPlayerCollision))
+, mCollisionSphere(CSphere(CVector3f(0.f, 0.f, radius), radius),
+                   CMaterialList(kMT_Player, kMT_Solid, kMT_GroundCollider, kMT_NoPlayerCollision))
 , mBallModel(GetMorphBallModel(
       rstl::string_l(multiplayer ? skMultiplayerBallModel : skDefaultBallModel), mRadius))
 , mBallModelShader(0)
@@ -779,8 +777,8 @@ float CMorphBall::CalculateSurfaceFriction() const {
   return friction;
 }
 
-static EMaterialTypes LiftBoundsMaterial = kMT_Unknown59; // Guessed name
-static EMaterialTypes LiftRayMaterial = kMT_Unknown59;    // Guessed name
+static EMaterialTypes LiftBoundsMaterial = kMT_Solid; // Guessed name
+static EMaterialTypes LiftRayMaterial = kMT_Solid;    // Guessed name
 
 void CMorphBall::ComputeLiftForces(const CVector3f& controlForce, const CVector3f& velocity,
                                    const CStateManager& mgr) {
@@ -1097,7 +1095,7 @@ void CMorphBall::CollidedWith(const TUniqueId& id, const CCollisionInfoList& lis
 }
 
 static EMaterialTypes CloseToCollisionMaterial1 = kMT_Player;    // Guessed name
-static EMaterialTypes CloseToCollisionMaterial2 = kMT_Unknown59; // Guessed name
+static EMaterialTypes CloseToCollisionMaterial2 = kMT_Solid;     // Guessed name
 
 bool CMorphBall::BallCloseToCollision(const CStateManager& mgr, float distance,
                                       const CMaterialFilter& filter) const {
@@ -1459,7 +1457,7 @@ bool CMorphBall::UpdateMarbleDynamics(CStateManager& mgr, float dt, const CVecto
   return aligned;
 }
 
-static EMaterialTypes BoostDamageMaterial = kMT_Unknown59; // Guessed name
+static EMaterialTypes BoostDamageMaterial = kMT_Solid; // Guessed name
 
 void CMorphBall::ApplyBoostBallDamage(CStateManager& mgr, TUniqueId id, const CDamageInfo& damage,
                                       float dt) {
@@ -1660,8 +1658,8 @@ void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
   mBoostEffectGen = rs_new CElementGen(mBoostEffect);
 }
 
-static EMaterialTypes BoostSphereMaterial = kMT_Unknown59;             // Guessed name
-static EMaterialTypes BoostNearListMaterial1 = kMT_Unknown59;          // Guessed name
+static EMaterialTypes BoostSphereMaterial = kMT_Solid;                 // Guessed name
+static EMaterialTypes BoostNearListMaterial1 = kMT_Solid;              // Guessed name
 static EMaterialTypes BoostNearListMaterial2 = kMT_NonSolidDamageable; // Guessed name
 
 void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManager& mgr, float dt) {
@@ -1836,17 +1834,12 @@ void CMorphBall::ComputeBoostBallMovement(const CFinalInput& input, CStateManage
 
 void CMorphBall::SetScrewAttackActive(bool active) { mForcedScrewJumpInput = active; }
 
-static EMaterialTypes ScrewAttackIncludeMaterial1 =
-    static_cast< EMaterialTypes >(34); // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial2 =
-    static_cast< EMaterialTypes >(43);                             // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial3 = kMT_Unknown59; // Guessed name
-static EMaterialTypes ScrewAttackIncludeMaterial4 =
-    static_cast< EMaterialTypes >(50); // Guessed name
-static EMaterialTypes ScrewAttackExcludeMaterial1 =
-    static_cast< EMaterialTypes >(35); // Guessed name
-static EMaterialTypes ScrewAttackExcludeMaterial2 =
-    static_cast< EMaterialTypes >(45); // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial1 = kMT_Trigger;            // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial2 = kMT_Immovable;          // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial3 = kMT_Solid;              // Guessed name
+static EMaterialTypes ScrewAttackIncludeMaterial4 = kMT_NonSolidDamageable; // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial1 = kMT_Projectile;         // Guessed name
+static EMaterialTypes ScrewAttackExcludeMaterial2 = kMT_PowerBomb;          // Guessed name
 
 void CMorphBall::ApplyScrewAttackDamage(float dt, CStateManager& mgr) {
   CDamageInfo damage = gpTweakBall->GetScrewAttackDamage();
@@ -2105,12 +2098,12 @@ struct SDeathBallCooldownFinder {
   TUniqueId mId;
 };
 
-static EMaterialTypes DeathBallIncludeMaterial1 = static_cast< EMaterialTypes >(34); // Guessed name
-static EMaterialTypes DeathBallIncludeMaterial2 = static_cast< EMaterialTypes >(43); // Guessed name
-static EMaterialTypes DeathBallIncludeMaterial3 = kMT_Unknown59;                     // Guessed name
-static EMaterialTypes DeathBallIncludeMaterial4 = static_cast< EMaterialTypes >(50); // Guessed name
-static EMaterialTypes DeathBallExcludeMaterial1 = static_cast< EMaterialTypes >(35); // Guessed name
-static EMaterialTypes DeathBallExcludeMaterial2 = static_cast< EMaterialTypes >(45); // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial1 = kMT_Trigger;            // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial2 = kMT_Immovable;          // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial3 = kMT_Solid;              // Guessed name
+static EMaterialTypes DeathBallIncludeMaterial4 = kMT_NonSolidDamageable; // Guessed name
+static EMaterialTypes DeathBallExcludeMaterial1 = kMT_Projectile;         // Guessed name
+static EMaterialTypes DeathBallExcludeMaterial2 = kMT_PowerBomb;          // Guessed name
 
 void CMorphBall::UpdateDeathBall(float dt, CStateManager& mgr) {
   rstl::vector< rstl::pair< TUniqueId, float > >::iterator it = mDeathBallDamageCooldowns.begin();
@@ -2589,7 +2582,7 @@ void CMorphBall::SwitchToMarble() {
   mTireInterpolationSpeed = -1.f;
 }
 
-static EMaterialTypes BallCloseToCollisionMaterial = kMT_Unknown59; // Guessed name
+static EMaterialTypes BallCloseToCollisionMaterial = kMT_Solid; // Guessed name
 
 void CMorphBall::UpdateBallDynamics(CStateManager& mgr, float dt) {
   CVector3f ballContactNormal(0.f, 0.f, 0.f);
@@ -3035,9 +3028,8 @@ void CMorphBall::SetSpiderBallSwingingState(bool swinging) {
 static EMaterialTypes SpiderNearListExcludeMaterial1 = kMT_Character;           // Guessed name
 static EMaterialTypes SpiderNearListExcludeMaterial2 = kMT_Player;              // Guessed name
 static EMaterialTypes SpiderNearListExcludeMaterial3 = kMT_Projectile;          // Guessed name
-static EMaterialTypes SpiderNearListExcludeMaterial4 = kMT_NoPlatformCollision; // Guessed name
-static EMaterialTypes SpiderCollisionSurfaceMaterial =
-    static_cast< EMaterialTypes >(61); // Guessed name
+static EMaterialTypes SpiderNearListExcludeMaterial4 = kMT_ProjectilePassthrough; // Guessed name
+static EMaterialTypes SpiderCollisionSurfaceMaterial = kMT_Unknown61;             // Guessed name
 
 bool CMorphBall::FindClosestSpiderBallWaypoint(CStateManager& mgr, const CVector3f& ballCenter,
                                                CVector3f& closestPoint,

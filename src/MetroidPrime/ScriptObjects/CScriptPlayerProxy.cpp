@@ -27,7 +27,7 @@
 
 #include <math.h>
 
-static EMaterialTypes sDamageMaterial = kMT_Unknown59; // Guessed name.
+static EMaterialTypes sDamageMaterial = kMT_Solid; // Guessed name.
 
 CScriptPlayerProxy::~CScriptPlayerProxy() {}
 

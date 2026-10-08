@@ -45,7 +45,7 @@ struct SSphereJointInfo {
 };
 static const SSphereJointInfo skIceJoints[] = {{"Skeleton_Root", 0.f}};
 
-static EMaterialTypes skContactMaterial = kMT_Unknown59;
+static EMaterialTypes skContactMaterial = kMT_Solid;
 
 static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"AnimOver", static_cast< CPatterned::StateMachine::TriggerFunc >(&CParasite::AnimOver)},
@@ -525,7 +525,7 @@ bool CParasite::PatrolPathOver(CStateManager&, const CTriggerData&) const {
   return mDestObj == kInvalidUniqueId;
 }
 
-static EMaterialTypes skWallMaterial = kMT_Unknown59;
+static EMaterialTypes skWallMaterial = kMT_Solid;
 
 bool CParasite::CloseToWall(CStateManager& mgr) const {
   static const CMaterialFilter kSolidFilter =
@@ -1130,8 +1130,8 @@ void CParasite::SetupIceZoomerCollision(CStateManager& mgr) {
         0.01f + mColSphere.GetSphere().GetRadius(), rstl::string_l(joint.name), 0.001f);
     descs.push_back_unsafe(desc);
   }
-  RemoveMaterial(kMT_Unknown59, mgr);
-  AddMaterial(kMT_NoPlatformCollision, mgr);
+  RemoveMaterial(kMT_Solid, mgr);
+  AddMaterial(kMT_ProjectilePassthrough, mgr);
   mCollisionActorManager =
       rs_new CCollisionActorManager(mgr, GetUniqueId(), GetCurrentAreaId(), descs, GetActive());
 }
@@ -1164,8 +1164,8 @@ void CParasite::UpdateCollisionActors(float dt, CStateManager& mgr) {
     }
     if (totalHP <= 0.f) {
       mVulnerable = true;
-      AddMaterial(kMT_Unknown59, mgr);
-      RemoveMaterial(kMT_NoPlatformCollision, mgr);
+      AddMaterial(kMT_Solid, mgr);
+      RemoveMaterial(kMT_ProjectilePassthrough, mgr);
       DestroyActorManager(mgr);
       ModelData()->AnimationData()->SetSkinnedModel(*mExtraModel);
       if (mType == kPT_IceZoomer) {

@@ -90,8 +90,8 @@ CScriptDoor::CScriptDoor(TUniqueId uid, const rstl::string& name, const CEntityI
                          float openTime, float closeTime, float closeDelay, float shieldFadeOutTime,
                          float shieldFadeInTime, bool ballDoor, bool horizontal)
 : CPhysicsActor(uid, name, info, 0, xf, model,
-                open ? CMaterialList(kMT_Unknown59, kMT_Immovable, kMT_Orbit)
-                     : CMaterialList(kMT_Immovable, kMT_Occluder, kMT_Unknown59, kMT_Orbit),
+                open ? CMaterialList(kMT_Solid, kMT_Immovable, kMT_Orbit)
+                     : CMaterialList(kMT_Immovable, kMT_Occluder, kMT_Solid, kMT_Orbit),
                 bounds, SMoverData(1.f), parameters, CPhysicsActor::skDefaultStepData)
 , mDoorState(open ? kDS_Open : kDS_Closed)
 , mOpenTime(openTime)
@@ -148,7 +148,7 @@ CScriptDoor::CScriptDoor(TUniqueId uid, const rstl::string& name, const CEntityI
 }
 
 rstl::optional_object< CAABox > CScriptDoor::GetTouchBounds() const {
-  if (GetActive() && GetMaterialList().HasMaterial(kMT_Unknown59)) {
+  if (GetActive() && GetMaterialList().HasMaterial(kMT_Solid)) {
     return GetBoundingBox();
   }
   return rstl::optional_object_null();
@@ -435,7 +435,7 @@ void CScriptDoor::SetDoorState(CStateManager& mgr, EDoorState state) {
     }
     break;
   case kDS_Open:
-    RemoveMaterial(kMT_Unknown59, kMT_Occluder, kMT_Orbit, kMT_Scannable, mgr);
+    RemoveMaterial(kMT_Solid, kMT_Occluder, kMT_Orbit, kMT_Scannable, mgr);
     ResetBurnOrigin();
     if (mResetPending) {
       ResetDoor(mgr);
@@ -449,9 +449,9 @@ void CScriptDoor::SetDoorState(CStateManager& mgr, EDoorState state) {
     mIsOpen = false;
     SetDoorAnimation(kDAT_Closing);
     if (GetScannableObjectInfo()) {
-      AddMaterial(kMT_Unknown59, kMT_Metal, kMT_Occluder, kMT_Orbit, kMT_Scannable, mgr);
+      AddMaterial(kMT_Solid, kMT_Metal, kMT_Occluder, kMT_Orbit, kMT_Scannable, mgr);
     } else {
-      AddMaterial(kMT_Unknown59, kMT_Metal, kMT_Occluder, kMT_Orbit, mgr);
+      AddMaterial(kMT_Solid, kMT_Metal, kMT_Occluder, kMT_Orbit, mgr);
     }
     for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       mgr.CameraManager(i)->BallCamera()->DoorClosing(GetUniqueId());

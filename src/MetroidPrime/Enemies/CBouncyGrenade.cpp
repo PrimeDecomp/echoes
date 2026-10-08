@@ -79,7 +79,7 @@ CBouncyGrenade::CBouncyGrenade(TUniqueId uid, const rstl::string& name, const CE
 
 void CBouncyGrenade::CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
                                   CStateManager& mgr) {
-  static const CMaterialList skSolidTypes(kMT_Unknown59, kMT_Ceiling, kMT_Wall, kMT_Floor,
+  static const CMaterialList skSolidTypes(kMT_Solid, kMT_Ceiling, kMT_Wall, kMT_Floor,
                                           kMT_Character);
   bool shouldExplode = false;
   if (id != mParentId) {
@@ -147,8 +147,8 @@ void CBouncyGrenade::Think(float dt, CStateManager& mgr) {
       mElementGenExplodeXRay->IsSystemDeletable()) {
     mgr.DeleteObjectRequest(GetUniqueId());
   }
-  if (mElapsedTime > 0.4f && !GetMaterialList().HasMaterial(kMT_Unknown59)) {
-    AddMaterial(kMT_Unknown59, mgr);
+  if (mElapsedTime > 0.4f && !GetMaterialList().HasMaterial(kMT_Solid)) {
+    AddMaterial(kMT_Solid, mgr);
   }
 }
 
@@ -284,10 +284,9 @@ void CBouncyGrenade::Explode(CStateManager& mgr, TUniqueId uid) {
   }
   const CDamageInfo& dInfo = mData.GetDamageInfo();
   if (uid != kInvalidUniqueId && !isParent) {
-    mgr.ApplyDamage(
-        GetUniqueId(), uid, GetUniqueId(), dInfo,
-        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-        CVector3f::Zero());
+    mgr.ApplyDamage(GetUniqueId(), uid, GetUniqueId(), dInfo,
+                    CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+                    CVector3f::Zero());
   }
   if (dInfo.GetRadius() > 1.f) {
     const CVector3f pos = GetTranslation();
@@ -316,12 +315,12 @@ void CBouncyGrenade::Explode(CStateManager& mgr, TUniqueId uid) {
                                    dInfo.GetRadius(), scale * dInfo.GetKnockBackPower());
             mgr.ApplyDamage(
                 GetUniqueId(), *it, GetUniqueId(), info,
-                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
                 CVector3f::Zero());
           } else {
             mgr.ApplyDamage(
                 GetUniqueId(), *it, GetUniqueId(), dInfo,
-                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
                 CVector3f::Zero());
           }
         }

@@ -76,7 +76,7 @@ void CMetareeSwarm::Think(float dt, CStateManager& mgr) {
   if (mAttackerCount == 0) {
     return;
   }
-  static CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59));
+  static CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
   const CVector3f playerPos = mgr.GetPlayer(0)->GetTranslation();
   uint attackers = 0;
   for (rstl::vector< CBoid >::const_iterator it = mBoids.begin(); it != mBoids.end(); ++it) {

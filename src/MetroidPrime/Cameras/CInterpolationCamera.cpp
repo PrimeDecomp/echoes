@@ -15,9 +15,9 @@
 namespace {
 // Guessed names.
 const CMaterialList skCollisionIncludeList =
-    CMaterialList(kMT_Unknown59, kMT_Wall, kMT_Floor, kMT_Ceiling);
+    CMaterialList(kMT_Solid, kMT_Wall, kMT_Floor, kMT_Ceiling);
 const CMaterialList skCollisionExcludeList =
-    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough);
 const CMaterialFilter skCollisionFilter =
     CMaterialFilter::MakeIncludeExclude(skCollisionIncludeList, skCollisionExcludeList);
 } // namespace

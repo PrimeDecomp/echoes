@@ -57,7 +57,7 @@ CScriptCoin::CScriptCoin(
     EOrientationType particleOr2, bool solid, bool dieOnProjectile, bool noBounce,
     bool constrainAngularImpulse, bool flickerOnFadeOut, float disablePhysicsThreshold,
     bool alternateStepData)
-: CPhysicsActor(uid, name, info, 0, xf, model, CMaterialList(kMT_Unknown59, kMT_Debris),
+: CPhysicsActor(uid, name, info, 0, xf, model, CMaterialList(kMT_Solid, kMT_Debris),
                 model.IsNull() ? CAABox(-0.5f * scale, 0.5f * scale)
                                : model.GetBounds(xf.GetRotation()),
                 SMoverData(1.f), params,
@@ -444,11 +444,11 @@ void CScriptCoin::CollidedWith(const TUniqueId& id, const CCollisionInfoList& li
 void CScriptCoin::SetSolid(bool solid) {
   if (solid) {
     SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(kMT_Unknown59), CMaterialList(kMT_Debris, kMT_Character, kMT_Player)));
+        CMaterialList(kMT_Solid), CMaterialList(kMT_Debris, kMT_Character, kMT_Player)));
   } else {
     SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
         CMaterialList(),
-        CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile, kMT_Unknown59)));
+        CMaterialList(kMT_Debris, kMT_Character, kMT_Player, kMT_Projectile, kMT_Solid)));
   }
 }
 

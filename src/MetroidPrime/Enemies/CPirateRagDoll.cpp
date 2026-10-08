@@ -55,7 +55,7 @@ CPirateRagDoll::CPirateRagDoll(CStateManager& mgr, CPatterned* actor, ushort thu
 , mPrevWaterTop(-FLT_MAX * 0.5f)
 , mInitSfx(true)
 , mActorAttached(false) {
-  mActor->RemoveMaterial(kMT_Unknown59, kMT_AIBlock, kMT_GroundCollider, mgr);
+  mActor->RemoveMaterial(kMT_Solid, kMT_AIBlock, kMT_GroundCollider, mgr);
   mActor->RemoveMaterial(kMT_Target, kMT_Orbit, mgr);
   mActor->HealthInfo()->SetHP(-1.f);
   SetNumParticles(14);
@@ -157,7 +157,7 @@ void CPirateRagDoll::Prime(CStateManager& mgr, const CTransform4f& xf, CModelDat
   max.SetZ((bounds.GetMaxPoint().GetZ() - bounds.GetMinPoint().GetZ()) * 0.5f +
            bounds.GetMinPoint().GetZ());
   mActor->SetBoundingBox(CAABox(bounds.GetMinPoint(), max));
-  mActor->RemoveMaterial(kMT_NoPlatformCollision, mgr);
+  mActor->RemoveMaterial(kMT_ProjectilePassthrough, mgr);
   CRagDoll::Prime(mgr, xf, modelData);
 }
 

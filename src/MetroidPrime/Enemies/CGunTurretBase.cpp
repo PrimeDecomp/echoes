@@ -356,7 +356,7 @@ bool CGunTurretBase::PlayerInRange(CStateManager& mgr, float range) const {
     if (x8bf_) {
       rstl::reserved_vector< TUniqueId, 1024 > nearList;
       static CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Character), CMaterialList(kMT_NoPlatformCollision, kMT_Player));
+          CMaterialList(kMT_Character), CMaterialList(kMT_ProjectilePassthrough, kMT_Player));
       const float r = mDetectionRange;
       const CAABox bounds(pos + CVector3f(-r, -r, -r), pos + CVector3f(r, r, r));
       mgr.BuildNearList(nearList, bounds, filter, this);
@@ -520,7 +520,7 @@ void CGunTurretBase::Withdraw(CStateManager& mgr, EStateMsg msg, float dt) {
     if (CGunTurretTop* top = TCastToPtr< CGunTurretTop >(mgr.ObjectById(mTopId))) {
       mGunVulnerability = *top->GetDamageVulnerability();
       *top->DamageVulnerability() = CDamageVulnerability::ImmuneVulnerabilty();
-      top->RemoveMaterial(kMT_Unknown59, mgr);
+      top->RemoveMaterial(kMT_Solid, mgr);
     }
     StopLoopedSounds();
     if (!mGunDestroyed) {
@@ -541,7 +541,7 @@ void CGunTurretBase::Spawn(CStateManager& mgr, EStateMsg msg, float dt) {
     mState = kS_Spawn;
     if (CGunTurretTop* top = TCastToPtr< CGunTurretTop >(mgr.ObjectById(mTopId))) {
       *top->DamageVulnerability() = mGunVulnerability;
-      top->AddMaterial(kMT_Unknown59, mgr);
+      top->AddMaterial(kMT_Solid, mgr);
       top->AddMaterial(kMT_RadarObject, mgr);
     }
     PlayLoopedSfx(mGunRaiseLoopedSfx, mgr);
@@ -689,10 +689,9 @@ void CGunTurretBase::Think(float dt, CStateManager& mgr) {
   }
 
   if (mHitTargetValid) {
-    mgr.ApplyDamage(
-        GetUniqueId(), mLastHitTarget, GetUniqueId(), mAttackDamage,
-        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-        CVector3f::Zero());
+    mgr.ApplyDamage(GetUniqueId(), mLastHitTarget, GetUniqueId(), mAttackDamage,
+                    CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+                    CVector3f::Zero());
     const CPatterned* patterned = TCastToConstPtr< CPatterned >(mgr.GetObjectById(mHitTarget));
     if (patterned && !patterned->GetAlive()) {
       mHitTarget = kInvalidUniqueId;
@@ -880,7 +879,7 @@ CActor* CGunTurretBase::FindTarget(CStateManager& mgr) {
       if (x8be_ && !mGunHit) {
         rstl::reserved_vector< TUniqueId, 1024 > nearList;
         static CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Character), CMaterialList(kMT_NoPlatformCollision, kMT_Player));
+            CMaterialList(kMT_Character), CMaterialList(kMT_ProjectilePassthrough, kMT_Player));
         const float r = mMaxAttackRange;
         const CVector3f pos = GetTranslation();
         const CAABox bounds(pos + CVector3f(-r, -r, -r), pos + CVector3f(r, r, r));
@@ -950,7 +949,7 @@ void CGunTurretBase::UpdateAttack(CStateManager& mgr, float dt) {
           rstl::reserved_vector< TUniqueId, 1024 > nearList;
           TUniqueId hitId = kInvalidUniqueId;
           static CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+              CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
           mgr.BuildNearList(nearList, firePos, topXf.GetColumn(kDY), 100.f, filter, this);
           const int signX = (mgr.Random()->Next() % 2) == 0 ? 1 : -1;
           const int signZ = (mgr.Random()->Next() % 2) == 0 ? 1 : -1;
@@ -1038,7 +1037,7 @@ void CGunTurretBase::LaunchProjectile(CStateManager& mgr) {
                      CTransform4f::RotateZ(CRelAngle::FromDegrees(angleZ)));
   CEnergyProjectile* projectile = rs_new CEnergyProjectile(
       true, mProjectileInfo.Token(), static_cast< EWeaponType >(mAttackDamage.GetWeaponMode1()), xf,
-      kMT_NoPlatformCollision, mProjectileInfo.GetDamage(), mgr.AllocateUniqueId(),
+      kMT_ProjectilePassthrough, mProjectileInfo.GetDamage(), mgr.AllocateUniqueId(),
       GetCurrentAreaId(), GetUniqueId(), kInvalidUniqueId, 0, false, CVector3f(1.f, 1.f, 1.f),
       CImpactVisorEffect::ParticleEffect(mPirateProjectileEffect,
                                          CSfxManager::kInternalInvalidSfxId, false),

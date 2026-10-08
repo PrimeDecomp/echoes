@@ -262,7 +262,7 @@ void CShredder::Explode(CStateManager& mgr) {
   if (!mExploded) {
     mgr.ApplyDamageToWorld(
         GetUniqueId(), *this, GetTranslation(), mExplosionDamage,
-        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()));
+        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()));
     mgr.InformListeners(GetTranslation(), static_cast< EListenNoiseType >(7)); // Guessed type
     MassiveDeath(mgr);
     mExploded = true;

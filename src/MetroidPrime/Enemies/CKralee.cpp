@@ -186,7 +186,7 @@ void CKralee::Think(float dt, CStateManager& mgr) {
       if (dz * dz + dx * dx + dy * dy < radiusSq) {
         mgr.ApplyDamage(
             GetUniqueId(), player->GetUniqueId(), GetUniqueId(), mWarpAttackDamage,
-            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
             CVector3f::Zero());
         mCurDamageRemTime = mDamageWaitTime;
       }

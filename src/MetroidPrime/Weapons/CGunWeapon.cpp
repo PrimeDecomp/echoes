@@ -383,7 +383,7 @@ void CGunWeapon::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
     damage = phazonDamage;
   }
   CEnergyProjectile* proj = rs_new CEnergyProjectile(
-      true, projectile, mWeaponType, xf, kMT_NoPlatformCollision, damage, mgr.AllocateUniqueId(),
+      true, projectile, mWeaponType, xf, kMT_ProjectilePassthrough, damage, mgr.AllocateUniqueId(),
       player->GetCurrentAreaId(), mPlayerId, homingTarget, chargeAttributes, underwater, scale,
       CImpactVisorEffect::None(), false, true, false, chargeFactor1, 4.f, 4.f);
   if (proj) {

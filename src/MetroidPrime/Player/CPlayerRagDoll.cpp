@@ -41,7 +41,7 @@ CPlayerRagDoll::CPlayerRagDoll(CStateManager& mgr, CPlayer* player, ushort thudS
 , mTorsoImpulse(CVector3f::Zero())
 , mOriginalBounds(player->GetBaseBoundingBox())
 , mInitSfx(true) {
-  mPlayer->RemoveMaterial(kMT_Unknown59, kMT_AIBlock, kMT_GroundCollider, mgr);
+  mPlayer->RemoveMaterial(kMT_Solid, kMT_AIBlock, kMT_GroundCollider, mgr);
   mPlayer->HealthInfo()->SetHP(-1.f);
   SetNumParticles(14);
   SetNumLengthConstraints(47);
@@ -249,5 +249,5 @@ void CPlayerRagDoll::PreRender(const CVector3f& pos, CModelData& modelData) {
 
 void CPlayerRagDoll::RestoreActorCollision(CStateManager& mgr) {
   mPlayer->SetBoundingBox(mOriginalBounds);
-  mPlayer->AddMaterial(kMT_Unknown59, kMT_GroundCollider, mgr);
+  mPlayer->AddMaterial(kMT_Solid, kMT_GroundCollider, mgr);
 }

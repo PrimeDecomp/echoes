@@ -47,8 +47,8 @@ const CColor CPatterned::skDisintegrateColor(0xFFFFC0FF);
 const CColor CPatterned::skBlackDeathColor(0xAA54FF00);
 const CColor CPatterned::skDisintegrationColor(0xFFFFFF00);
 
-static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Unknown59, kMT_Orbit,
-                                                  kMT_Target, kMT_SeekerTarget);
+static CMaterialList gkPatternedFlyerMaterialList(kMT_Character, kMT_Solid, kMT_Orbit, kMT_Target,
+                                                  kMT_SeekerTarget);
 static CMaterialList gkPatternedGroundMaterialList =
     CMaterialList(kMT_GroundCollider).Union(gkPatternedFlyerMaterialList);
 
@@ -968,7 +968,7 @@ void CPatterned::CollidedWith(const TUniqueId& id, const CCollisionInfoList& lis
     }
   }
 
-  static CMaterialList skSolidTypes(kMT_Unknown59, kMT_Ceiling, kMT_Wall, kMT_Floor, kMT_Character);
+  static CMaterialList skSolidTypes(kMT_Solid, kMT_Ceiling, kMT_Wall, kMT_Floor, kMT_Character);
 
   mSolidCollision = true;
   for (int i = 0; i < list.GetCount(); ++i) {
@@ -1053,8 +1053,8 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
         mAlphaDelta = -1.f / GetFadeOnDeathTime();
         mFadeToDeath = true;
       }
-      RemoveMaterial(kMT_Character, kMT_Unknown59, kMT_Target, kMT_Orbit, mgr);
-      AddMaterial(kMT_NoPlatformCollision, mgr);
+      RemoveMaterial(kMT_Character, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
+      AddMaterial(kMT_ProjectilePassthrough, mgr);
     } else {
       DeathDelete(mgr);
     }
@@ -1063,10 +1063,10 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
     RemoveMaterial(kMT_Target, kMT_Orbit, mgr);
     break;
   case kUE_BecomeShootThrough:
-    AddMaterial(kMT_NoPlatformCollision, mgr);
+    AddMaterial(kMT_ProjectilePassthrough, mgr);
     break;
   case kUE_RemoveCollision:
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     break;
   default:
     break;

@@ -401,7 +401,7 @@ CScriptDestructibleBarrier::CScriptDestructibleBarrier(
     int sfxChunkGenerated, int sfxChunkDestroyed, int sfxMoveDown, int sfxMoveUp, int sfxStop,
     bool startLowered, float lowerPercent, float lowerDelay, float moveSpeed)
 : CPhysicsActor(uid, name, info, 0, xf, leftModel,
-                CMaterialList(kMT_Unknown59, kMT_Immovable, kMT_Occluder), CAABox::MakeNullBox(),
+                CMaterialList(kMT_Solid, kMT_Immovable, kMT_Occluder), CAABox::MakeNullBox(),
                 SMoverData(1.f), actParms, CPhysicsActor::skDefaultStepData)
 , mHealthInfo(CHealthInfo(100000.f, healthInfo.GetKnockBackResistance()))
 , mChunkHealthInfo(healthInfo)

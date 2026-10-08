@@ -34,8 +34,8 @@
 #include <float.h>
 
 // The meanings of the two implicit static-geometry materials are not yet known.
-static EMaterialTypes sStaticGeometryMaterial0 = kMT_Unknown59;                     // Guessed name.
-static EMaterialTypes sStaticGeometryMaterial1 = static_cast< EMaterialTypes >(60); // Guessed name.
+static EMaterialTypes sStaticGeometryMaterial0 = kMT_Solid;               // Guessed name.
+static EMaterialTypes sStaticGeometryMaterial1 = kMT_NoPlatformCollision; // Guessed name.
 static const CMaterialList skStaticGeometryMaterials(sStaticGeometryMaterial0,
                                                      sStaticGeometryMaterial1);
 
@@ -688,7 +688,7 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
       double candidateDistance = distance;
       const float maxDistance = distance;
       if (CMetroidAreaCollider::MovingAABoxCollisionCheck_Cached(
-              cache.GetOctreeLeafCache(i), bounds, staticFilter, CMaterialList(kMT_Unknown59),
+              cache.GetOctreeLeafCache(i), bounds, staticFilter, CMaterialList(kMT_Solid),
               direction, maxDistance, candidate, candidateDistance) &&
           candidateDistance < distance) {
         collision = candidate;
@@ -704,7 +704,7 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
       if (CMetroidAreaCollider::MovingSphereCollisionCheck_Cached(
               cache.GetOctreeLeafCache(i), bounds,
               CSphere(transform * sphere.GetCenter(), sphere.GetRadius()), staticFilter,
-              CMaterialList(kMT_Unknown59), direction, maxDistance, candidate, candidateDistance) &&
+              CMaterialList(kMT_Solid), direction, maxDistance, candidate, candidateDistance) &&
           candidateDistance < distance) {
         collision = candidate;
         distance = float(candidateDistance);
@@ -942,7 +942,7 @@ void CGameCollision::Move(CStateManager& mgr, CPhysicsActor& actor, float dt,
       actor.AddMotionState(actor.PredictAngularMotion(dt));
     }
     actor.UseCollisionImpulses();
-    if (actor.GetMaterialList().HasMaterial(kMT_Unknown59)) {
+    if (actor.GetMaterialList().HasMaterial(kMT_Solid)) {
       if (actor.GetMaterialList().HasMaterial(kMT_Player)) {
         if (!gpMain->IsMaxSpeed() || mgr.GetPlayer(0)->ShouldSampleFailsafe(mgr)) {
           MovePlayer(mgr, actor, dt, colliderList);
@@ -1177,7 +1177,7 @@ void CGameCollision::PushActorAwayFromWalls(CStateManager& mgr, CPhysicsActor& a
   const CSphere sphere(center, radius);
   const CMaterialFilter filter = CMaterialFilter::MakeExclude(CMaterialList(kMT_Floor));
   if (DetectStaticCollisionBoolean_Cached(mgr, cache,
-                                          CCollidableSphere(sphere, CMaterialList(kMT_Unknown59)),
+                                          CCollidableSphere(sphere, CMaterialList(kMT_Solid)),
                                           CTransform4f::Identity(), filter)) {
     return;
   }
@@ -1200,7 +1200,7 @@ void CGameCollision::PushActorAwayFromWalls(CStateManager& mgr, CPhysicsActor& a
       BuildAreaCollisionCache(mgr, cache);
     }
     if (DetectStaticCollision_Cached_Moving(
-            mgr, cache, CCollidableSphere(sphere, CMaterialList(kMT_Unknown59)),
+            mgr, cache, CCollidableSphere(sphere, CMaterialList(kMT_Solid)),
             CTransform4f::Identity(), filter, direction, collision, collisionDistance)) {
       const float fraction = float(distance - collisionDistance) / distance / float(iterations);
       correction -= fraction * direction;

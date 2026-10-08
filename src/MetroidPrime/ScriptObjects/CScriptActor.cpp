@@ -76,7 +76,7 @@ const CDamageVulnerability* CScriptActor::GetDamageVulnerability() const {
 void CScriptActor::Touch(CActor&, CStateManager&) {}
 
 rstl::optional_object< CAABox > CScriptActor::GetTouchBounds() const {
-  if (GetActive() && GetMaterialList().HasMaterial(kMT_Unknown59)) {
+  if (GetActive() && GetMaterialList().HasMaterial(kMT_Solid)) {
     CAABox bounds = GetBoundingBox();
     if (!mCollisionPrimitive.null()) {
       bounds.Include(mCollisionPrimitive->CalculateAABox(GetTransform()));
@@ -307,7 +307,7 @@ CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
     materials.Add(kMT_Immovable);
   }
   if (sldrThis.isSolid) {
-    materials.Add(kMT_Unknown59);
+    materials.Add(kMT_Solid);
   }
   if (sldrThis.isCameraThrough) {
     materials.Add(kMT_CameraPassthrough);
@@ -343,9 +343,9 @@ CEntity* LoadActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
 }
 
 bool CScriptActor::CheckActorRenderOnly() const {
-  const bool unknown59 = GetMaterialList().HasMaterial(kMT_Unknown59);
+  const bool solid = GetMaterialList().HasMaterial(kMT_Solid);
   const bool passthrough = GetMaterialList().HasMaterial(kMT_CameraPassthrough);
-  if (!GetMaterialList().HasMaterial(kMT_Immovable) || !passthrough || unknown59) {
+  if (!GetMaterialList().HasMaterial(kMT_Immovable) || !passthrough || solid) {
     return false;
   }
   return true;

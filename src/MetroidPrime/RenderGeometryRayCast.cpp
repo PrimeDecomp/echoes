@@ -12,7 +12,7 @@
 #include <float.h>
 
 namespace {
-const CMaterialList skImplicitWorldMaterials(kMT_Unknown59, kMT_Unknown60);
+const CMaterialList skImplicitWorldMaterials(kMT_Solid, kMT_NoPlatformCollision);
 
 // Display-list shorts are big-endian, like the indices CDisplayListReader reads.
 inline ushort ReadShort(const uchar* data) {
@@ -65,7 +65,7 @@ inline void IntersectTriangle(const CVector3f* positions, const uchar* va, const
   const CVector3f& b = GetPosition(positions, vb);
   const CVector3f& c = GetPosition(positions, vc);
   if (RayTriangleIntersection(line, a, b, c, nearest)) {
-    CMaterialList hitMaterial(kMT_Unknown59, kMT_Unknown60);
+    CMaterialList hitMaterial(kMT_Solid, kMT_NoPlatformCollision);
     hitMaterial.Add(CMaterialList(material.GetMaterialMask()));
     result = CRayCastResult(nearest, line.GetRefPoint() + nearest * line.GetNormal(),
                             CPlane(a, b, c), hitMaterial);

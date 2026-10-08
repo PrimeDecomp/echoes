@@ -12,7 +12,7 @@
 #include "MetroidPrime/TCastTo.hpp"
 #include "rstl/math.hpp"
 
-static EMaterialTypes DamageMaterial = kMT_Unknown59;
+static EMaterialTypes DamageMaterial = kMT_Solid;
 static EMaterialTypes ProjectileMaterial = kMT_Projectile;
 
 CShockWave::CShockWave(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
