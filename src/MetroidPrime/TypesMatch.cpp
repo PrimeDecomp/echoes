@@ -87,6 +87,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRelay.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRepulsor.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptRiftPortal.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRoomAcoustics.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSequenceTimer.hpp"
@@ -254,7 +255,7 @@ TYPES_MATCH_IMPL(CScriptPointOfInterest, CActor, kET_ScriptPointOfInterest)
 TYPES_MATCH_IMPL(CScriptPortalTransition, CEntity, kET_ScriptPortalTransition)
 TYPES_MATCH_IMPL(CScriptRelay, CEntity, kET_ScriptRelay)
 TYPES_MATCH_IMPL(CScriptRepulsor, CActor, kET_ScriptRepulsor)
-// 75: class not declared yet (ScriptRiftPortal REL); parent CActor
+TYPES_MATCH_IMPL(CScriptRiftPortal, CActor, kET_ScriptRiftPortal)
 TYPES_MATCH_IMPL(CScriptRoomAcoustics, CEntity, kET_ScriptRoomAcoustics)
 TYPES_MATCH_IMPL(CScriptSound, CActor, kET_ScriptSound)
 TYPES_MATCH_IMPL(CScriptSoundModifier, CEntity, kET_ScriptSoundModifier)
