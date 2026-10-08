@@ -1324,10 +1324,10 @@ void CPauseScreen::Draw() const {
   gpRender->SetPerspective(30.f, viewport.mWidth, viewport.mHeight, 0.2f, 4096.f);
   CGraphics::SetModelMatrix(CTransform4f::Identity());
   const CTransform4f view = mViewRotation.BuildTransform4f();
-  const CVector3f camera(gpTweakGui->GetLogBookCameraXOffset(),
-                         -gpTweakGui->GetLogBookCameraDistance(),
-                         gpTweakGui->GetLogBookCameraZOffset());
-  const CVector3f zoomCamera(0.f, -gpTweakGui->GetLogBookCameraDistance(), 0.f);
+  const CVector3f camera(gpTweakGui->GetLogBookTreeHorizontalTranslation(),
+                         -gpTweakGui->GetLogBookTreeCameraDistance(),
+                         gpTweakGui->GetLogBookTreeVerticalTranslation());
+  const CVector3f zoomCamera(0.f, -gpTweakGui->GetLogBookTreeCameraDistance(), 0.f);
   const CVector3f cameraPosition =
       (1.f - mModelZoomAmount) * camera + mModelZoomAmount * zoomCamera;
   CGraphics::SetViewPointMatrix(view * CTransform4f::Translate(cameraPosition));
@@ -2055,7 +2055,8 @@ void CPauseScreen::UpdateHistoryColors() {
 }
 
 CVector3f CPauseScreen::GetDefaultModelPosition() {
-  return CVector3f(gpTweakGui->GetLogBookModelXOffset(), 0.f, gpTweakGui->GetLogBookModelZOffset());
+  return CVector3f(gpTweakGui->GetLogBookScanObjectHorizontalTranslation(), 0.f,
+                   gpTweakGui->GetLogBookScanObjectVerticalTranslation());
 }
 
 CVector3f CPauseScreen::GetModelPosition() const {

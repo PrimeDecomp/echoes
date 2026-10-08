@@ -349,7 +349,7 @@ void CCompoundTargetReticle::Update(float dt, const CStateManager& mgr) {
   // Missile shot / missile bracket scale
   if (gun->GetFiring() & 0x2) {
     if (!mMissileShot) {
-      mMissileBracketScaleTimer = gpTweakTargeting->GetMissileBracketScaleDuration();
+      mMissileBracketScaleTimer = gpTweakTargeting->GetMissileBracketMissileFireAnimTime();
     }
     mMissileShot = true;
   } else {
@@ -502,12 +502,12 @@ void CCompoundTargetReticle::UpdateCurrLockOnGroup(float dt, const CStateManager
   }
 
   if (mMissileBracketTimer != 0.f &&
-      mMissileBracketTimer < gpTweakTargeting->GetMissileBracketDuration()) {
+      mMissileBracketTimer < gpTweakTargeting->GetMissileBracketOpenHolsterTime()) {
     if (mMissileBracketTimer < 0.f) {
       mMissileBracketTimer = rstl::min_val(mMissileBracketTimer + dt, 0.f);
     } else {
-      mMissileBracketTimer =
-          rstl::min_val(mMissileBracketTimer + dt, gpTweakTargeting->GetMissileBracketDuration());
+      mMissileBracketTimer = rstl::min_val(mMissileBracketTimer + dt,
+                                           gpTweakTargeting->GetMissileBracketOpenHolsterTime());
     }
   }
 
@@ -863,12 +863,12 @@ void CCompoundTargetReticle::DrawCurrLockOnGroup(const CMatrix3f& rotation,
             minVpClampScale * gpTweakTargeting->GetMissileBracketMinRadiusViewport(),
             gpTweakTargeting->GetMissileBracketMaxRadiusViewport(), mgr, mPlayerIndex);
         CTweakTargeting* tweak = gpTweakTargeting.get();
-        float halfDur = 0.5f * tweak->GetMissileBracketScaleDuration();
+        float halfDur = 0.5f * tweak->GetMissileBracketMissileFireAnimTime();
         float t = CMath::AbsF((mMissileBracketScaleTimer - halfDur) / halfDur);
         float tscale = (1.f - t) * tweak->GetMissileBracketScaleEnd() +
                        t * tweak->GetMissileBracketScaleStart();
         float bracketFactor =
-            CMath::AbsF(mMissileBracketTimer) / tweak->GetMissileBracketDuration();
+            CMath::AbsF(mMissileBracketTimer) / tweak->GetMissileBracketOpenHolsterTime();
         float s = bracketFactor * bracketScale * tscale / factor;
 
         CMatrix3f scaleMtx = CMatrix3f::Scale(s);

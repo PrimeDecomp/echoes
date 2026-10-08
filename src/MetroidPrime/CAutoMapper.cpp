@@ -256,8 +256,9 @@ CAutoMapper::CAutoMapper(const CStateManager& mgr, int playerIndex)
       gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetElevatorIcon())));
   mMapIcons.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetPortalIcon())));
   mMapIcons.push_back(
-      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetDownArrowIcon())));
-  mMapIcons.push_back(gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetUpArrowIcon())));
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetMinesFirstBreakTopIcon())));
+  mMapIcons.push_back(
+      gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetMinesFirstBreakBottomIcon())));
   mMapIcons.push_back(
       gpSimplePool->GetObj(SObjectTag('TXTR', gpTweakPlayerRes->GetTranslatorDoorIcon())));
   for (CToken* it = mMapIcons.begin(); it != mMapIcons.end(); ++it) {

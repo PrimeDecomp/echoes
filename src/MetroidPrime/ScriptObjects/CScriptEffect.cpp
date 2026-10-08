@@ -504,6 +504,6 @@ CEntity* LoadEffect(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
       sldrThis.unknown_0xa8bb6c61, sldrThis.unknown_0x7589d549, sldrThis.unknown_0xa7d7d767,
       sldrThis.unknown_0xfe69615c, sldrThis.visibleInScanOrNormal, sldrThis.visibleInDark,
       sldrThis.visibleInEcho, LdrToLightParameters(sldrThis.lighting), sldrThis.deleteWhenDone,
-      spline, sldrThis.unknown_0x73e63382, sldrThis.unknown_0xbe931927, sldrThis.unknown_0x608ecac5,
-      CScriptEffect::ERenderOrder(sldrThis.renderOrder));
+      spline, sldrThis.splineMovesParticleEmitterOnly, sldrThis.destroyParticlesOnDeactivate,
+      sldrThis.adoptSplineOrientation, CScriptEffect::ERenderOrder(sldrThis.renderOrder));
 }

@@ -313,26 +313,28 @@ float CTweakGui::GetExplosionLightFalloffMultQuadratic() const {
   return mData->misc.unknown_0x79275f22;
 }
 
-float CTweakGui::GetLockOnIndicatorVerticalOffset() const { return mData->misc.unknown_0xf405af55; }
+float CTweakGui::GetLockedOnIndicatorRadius() const { return mData->misc.lockedOnIndicatorRadius; }
 
-float CTweakGui::GetLockOnIndicatorScale() const { return mData->misc.unknown_0x3f85eb28; }
+float CTweakGui::GetLockedOnIndicatorScale() const { return mData->misc.lockedOnIndicatorScale; }
 
-const CColor& CTweakGui::GetPlayerLockOnIndicatorColor(int playerSelection) const {
-  switch (playerSelection) {
+const CColor& CTweakGui::GetLockedOnIndicatorSlotColor(int slot) const {
+  switch (slot) {
   case 0:
-    return mData->misc.unknown_0x19c5f88b;
+    return mData->misc.lockedOnIndicatorSlot0Color;
   case 1:
-    return mData->misc.unknown_0xd84b274b;
+    return mData->misc.lockedOnIndicatorSlot1Color;
   case 2:
-    return mData->misc.unknown_0x41a9414a;
+    return mData->misc.lockedOnIndicatorSlot2Color;
   case 3:
-    return mData->misc.unknown_0x80279e8a;
+    return mData->misc.lockedOnIndicatorSlot3Color;
   default:
     return CColor::Green();
   }
 }
 
-const CColor& CTweakGui::GetLockOnIndicatorColor() const { return mData->misc.unknown_0x98d8e1ba; }
+const CColor& CTweakGui::GetLockedOnIndicatorEnemyColor() const {
+  return mData->misc.lockedOnIndicatorEnemyColor;
+}
 
 rstl::string CTweakGui::GetCreditsTable() const { return mData->credits.unknown_0x81fc78c2; }
 
@@ -613,15 +615,23 @@ float CTweakGui::GetLogBookFogFar() const { return mData->logBook.fogFar; }
 
 const CColor& CTweakGui::GetLogBookFogColor() const { return mData->logBook.fogColor; }
 
-float CTweakGui::GetLogBookCameraDistance() const { return mData->logBook.unknown_0xeef15783; }
+float CTweakGui::GetLogBookTreeCameraDistance() const { return mData->logBook.treeCameraDistance; }
 
-float CTweakGui::GetLogBookCameraZOffset() const { return mData->logBook.unknown_0x78055ab2; }
+float CTweakGui::GetLogBookTreeVerticalTranslation() const {
+  return mData->logBook.treeVerticalTranslation;
+}
 
-float CTweakGui::GetLogBookCameraXOffset() const { return mData->logBook.unknown_0x09e3197f; }
+float CTweakGui::GetLogBookTreeHorizontalTranslation() const {
+  return mData->logBook.treeHorizontalTranslation;
+}
 
-float CTweakGui::GetLogBookModelZOffset() const { return mData->logBook.unknown_0xfaffce1f; }
+float CTweakGui::GetLogBookScanObjectVerticalTranslation() const {
+  return mData->logBook.scanObjectVerticalTranslation;
+}
 
-float CTweakGui::GetLogBookModelXOffset() const { return mData->logBook.unknown_0xe5280e7c; }
+float CTweakGui::GetLogBookScanObjectHorizontalTranslation() const {
+  return mData->logBook.scanObjectHorizontalTranslation;
+}
 
 const CColor& CTweakGui::GetMapBackgroundColor() const {
   return mData->logBook.backgroundSweepColor;

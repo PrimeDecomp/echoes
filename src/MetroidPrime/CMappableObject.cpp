@@ -165,11 +165,11 @@ void CMappableObject::Draw(int curArea, const CMapWorldInfo& mwInfo, float alpha
   switch (mType) {
   case kMOT_DownArrow:
     iconColor = CColor((uchar)0xff, 0xff, 0x96, 0xff);
-    iconRes = gpTweakPlayerRes->GetDownArrowIcon();
+    iconRes = gpTweakPlayerRes->GetMinesFirstBreakTopIcon();
     break;
   case kMOT_UpArrow:
     iconColor = CColor((uchar)0xff, 0xff, 0x96, 0xff);
-    iconRes = gpTweakPlayerRes->GetUpArrowIcon();
+    iconRes = gpTweakPlayerRes->GetMinesFirstBreakBottomIcon();
     break;
   case kMOT_SaveStation:
     iconRes = gpTweakPlayerRes->GetSaveStationIcon();

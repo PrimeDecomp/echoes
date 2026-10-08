@@ -13,10 +13,10 @@ void CTweakPlayerRes::CacheResources() {
   mMissileStationIcon = ResolveAssetId(mData->autoMapperIcons.missileStationIcon);
   mElevatorIcon = ResolveAssetId(mData->autoMapperIcons.elevatorIconIcon);
   mPortalIcon = ResolveAssetId(mData->autoMapperIcons.portalIcon);
-  mDownArrowIcon = ResolveAssetId(mData->autoMapperIcons.unknown_0xfbf479ec);
-  mUpArrowIcon = ResolveAssetId(mData->autoMapperIcons.unknown_0x5566b6e4);
-  mSecondDownArrowIcon = ResolveAssetId(mData->autoMapperIcons.unknown_0x51fe3f1f);
-  mSecondUpArrowIcon = ResolveAssetId(mData->autoMapperIcons.unknown_0xa4127a5a);
+  mMinesFirstBreakTopIcon = ResolveAssetId(mData->autoMapperIcons.minesFirstBreakTopIcon);
+  mMinesFirstBreakBottomIcon = ResolveAssetId(mData->autoMapperIcons.minesFirstBreakBottomIcon);
+  mMinesSecondBreakTopIcon = ResolveAssetId(mData->autoMapperIcons.minesSecondBreakTopIcon);
+  mMinesSecondBreakBottomIcon = ResolveAssetId(mData->autoMapperIcons.minesSecondBreakBottomIcon);
   mTranslatorDoorIcon = ResolveAssetId(mData->autoMapperIcons.translatorDoorIcon);
 
   mLStick.clear();

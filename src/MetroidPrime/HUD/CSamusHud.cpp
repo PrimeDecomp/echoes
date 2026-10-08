@@ -2327,26 +2327,26 @@ void CSamusHud::DrawLockOnIndicators(const CStateManager& mgr,
        it != targets.end(); ++it) {
     if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(*it))) {
       const CRelAngle direction = GetRelativeDirection(actor->GetTranslation(), mgr);
-      const float scale = gpTweakGui->GetLockOnIndicatorScale() * extent / 100.f;
+      const float scale = gpTweakGui->GetLockedOnIndicatorScale() * extent / 100.f;
       gpRender->SetModelMatrix(CTransform4f(CMatrix3f::Scale(scale), CVector3f::Zero()) *
                                CTransform4f::RotateY(direction));
-      static const float verticalOffset = gpTweakGui->GetLockOnIndicatorVerticalOffset();
+      static const float radius = gpTweakGui->GetLockedOnIndicatorRadius();
       CGraphics::StreamBegin(kP_Quads);
       if (const CPlayer* player = TCastToConstPtr< CPlayer >(*actor)) {
-        CGraphics::StreamColor(gpTweakGui->GetPlayerLockOnIndicatorColor(
+        CGraphics::StreamColor(gpTweakGui->GetLockedOnIndicatorSlotColor(
             player->GetPlayerState()->GetPlayerSelection()));
       } else {
-        CGraphics::StreamColor(gpTweakGui->GetLockOnIndicatorColor());
+        CGraphics::StreamColor(gpTweakGui->GetLockedOnIndicatorEnemyColor());
       }
       for (int i = 0; i < 13; ++i) {
         CGraphics::StreamTexcoord(1.f, 1.f);
-        CGraphics::StreamVertex(1.f, 0.f, 1.f + verticalOffset);
+        CGraphics::StreamVertex(1.f, 0.f, 1.f + radius);
         CGraphics::StreamTexcoord(0.f, 1.f);
-        CGraphics::StreamVertex(1.f, 0.f, verticalOffset - 1.f);
+        CGraphics::StreamVertex(1.f, 0.f, radius - 1.f);
         CGraphics::StreamTexcoord(0.f, 0.f);
-        CGraphics::StreamVertex(-1.f, 0.f, verticalOffset - 1.f);
+        CGraphics::StreamVertex(-1.f, 0.f, radius - 1.f);
         CGraphics::StreamTexcoord(1.f, 0.f);
-        CGraphics::StreamVertex(-1.f, 0.f, 1.f + verticalOffset);
+        CGraphics::StreamVertex(-1.f, 0.f, 1.f + radius);
       }
       CGraphics::StreamEnd();
     }
@@ -2831,7 +2831,7 @@ void CSamusHud::UpdateBossLockOnWarning(float dt, const CStateManager& mgr) {
       if (warning != nullptr) {
         warning->TextSupport().SetText(
             rstl::wstring(gpStringTable->GetString("EnemyLockedOnWarning")), false);
-        warning->TextSupport().SetFontColor(gpTweakGui->GetLockOnIndicatorColor());
+        warning->TextSupport().SetFontColor(gpTweakGui->GetLockedOnIndicatorEnemyColor());
       }
     }
   }
@@ -2841,7 +2841,7 @@ void CSamusHud::UpdateBossLockOnWarning(float dt, const CStateManager& mgr) {
     for (int i = 0; i < 3; ++i) {
       if (CGuiWidget* ring = mBossLockOnFrame->FindWidget(sBossLockOnRings[i])) {
         const float intensity = 1.f - float(i) / 3.f;
-        ring->SetColor(CColor::Modulate(gpTweakGui->GetLockOnIndicatorColor(),
+        ring->SetColor(CColor::Modulate(gpTweakGui->GetLockedOnIndicatorEnemyColor(),
                                         CColor(intensity, intensity, intensity, 1.f)));
         ring->SetVisibility(i < ringCount, kTM_Children);
       }
