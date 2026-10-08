@@ -7,6 +7,10 @@
 // directly. Guessed class and member names; the gaps are unidentified.
 class CScriptPlayerTurret : public CActor {
 public:
+  // CEntity
+  ~CScriptPlayerTurret() override;
+  CEntity* TypesMatch(int typeId) const override;
+
   float GetMaxAimAngle() const { return mMaxAimAngle; }
   void SetTargetPosition(const CVector3f& position) { mTargetPosition = position; }
 
