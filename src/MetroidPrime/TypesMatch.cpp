@@ -34,6 +34,7 @@
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
 #include "MetroidPrime/Enemies/CPlantScarabSwarm.hpp"
+#include "MetroidPrime/Enemies/CPuddleSpore.hpp"
 #include "MetroidPrime/Enemies/CPuffer.hpp"
 #include "MetroidPrime/Enemies/CRipper.hpp"
 #include "MetroidPrime/Enemies/CSandworm.hpp"
@@ -345,7 +346,7 @@ TYPES_MATCH_IMPL(CScriptFrontEndDataNetwork, CActor, kET_ScriptFrontEndDataNetwo
 TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
 TYPES_MATCH_IMPL(CKrocuss, CPatterned, kET_Krocuss)
 // 158: class not declared yet (OctapedeSegment REL); parent CWallCrawler
-// 159: class not declared yet (PuddleSpore REL); parent CPatterned
+TYPES_MATCH_IMPL(CPuddleSpore, CPatterned, kET_PuddleSpore)
 TYPES_MATCH_IMPL(CScriptForgottenObject, CEntity, kET_ScriptForgottenObject)
 
 CAST_TO_REF_IMPL(CEntity, kET_Entity)

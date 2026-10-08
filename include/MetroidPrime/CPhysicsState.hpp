@@ -22,6 +22,7 @@ public:
   CVector3f GetImpulseWR() const { return mImpulse; }
   CAxisAngle GetTorque() const { return mTorque; }
   CAxisAngle GetAngularImpulseWR() const { return mAngularImpulse; }
+  void SetTranslation(const CVector3f& translation) { mTranslation = translation; } // Guessed name
   void SetConstantForceWR(const CVector3f& force) { mConstantForce = force; }
   void SetForceWR(const CVector3f& force) { mForce = force; }
 
