@@ -1,5 +1,6 @@
 #include "MetroidPrime/Enemies/CPatternedInfo.hpp"
 #include "Kyoto/Audio/CSfxManager.hpp"
+#include "MetroidPrime/CAnimRes.hpp"
 
 CPatternedInfo::~CPatternedInfo() {}
 
@@ -28,7 +29,7 @@ CPatternedInfo::CPatternedInfo(const CHealthInfo& health, const CDamageVulnerabi
 , mXDamageThreshold(0.f)
 , mXDamageDelay(0.f)
 , mDeathSfx(0)
-, mAnimationParameters(kInvalidAssetId, -1, 0)
+, mAnimationParameters(kInvalidAssetId, CAnimRes::kInvalidCharIdx, 0)
 , mStateMachineId(stateMachine)
 , mStateMachine2Id(stateMachine2)
 , mIntoFreezeDuration(3.f)

@@ -35,6 +35,7 @@ public:
   bool CanLoop() const { return mCanLoop; }
 
   static const int kDefaultCharIdx;
+  static const int kInvalidCharIdx; // Guessed name
 };
 CHECK_SIZEOF(CAnimRes, 0x1c)
 

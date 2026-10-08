@@ -474,7 +474,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/CDamageVulnerability.cpp"),
             Object(NonMatching, "MetroidPrime/CActorLights.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptLoader/Structs/SLdrIngPossessionData.cpp"),
-            Object(NonMatching, "MetroidPrime/Enemies/CPatternedInfo.cpp"),
+            Object(Matching, "MetroidPrime/Enemies/CPatternedInfo.cpp"),
             Object(NonMatching, "MetroidPrime/CSimpleShadow.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/CActorParameters.cpp"),
             Object(NonMatching, "MetroidPrime/CInGameGuiManagerSet.cpp"),
