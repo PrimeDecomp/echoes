@@ -33,6 +33,7 @@
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Enemies/CPlantScarabSwarm.hpp"
 #include "MetroidPrime/Enemies/CPuffer.hpp"
 #include "MetroidPrime/Enemies/CRipper.hpp"
 #include "MetroidPrime/Enemies/CSandworm.hpp"
@@ -291,7 +292,7 @@ TYPES_MATCH_IMPL(CWallCrawler, CPatterned, kET_WallCrawler)
 // 105: class not declared yet (BacteriaSwarm REL); parent CActor
 TYPES_MATCH_IMPL(CMetareeSwarm, CSwarmBasics, kET_MetareeSwarm)
 TYPES_MATCH_IMPL(CIngBlobSwarm, CSwarmBasics, kET_IngBlobSwarm)
-// 108: class not declared yet (PlantScarabSwarm REL); parent CSwarmBasics
+TYPES_MATCH_IMPL(CPlantScarabSwarm, CSwarmBasics, kET_PlantScarabSwarm)
 TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
 TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
 // kET_DarkSamus (111): class not declared yet (DarkSamus REL); parent CPatterned

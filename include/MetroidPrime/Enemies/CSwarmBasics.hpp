@@ -22,6 +22,7 @@ class CGenDescription;
 class CFlyerSwarm;
 class CMetareeSwarm;
 class CIngBlobSwarm;
+class CPlantScarabSwarm;
 
 namespace SwarmRenderHelpers {
 class CSwarmDisplayList;
@@ -35,6 +36,7 @@ public:
     friend class CFlyerSwarm;
     friend class CMetareeSwarm;
     friend class CIngBlobSwarm;
+    friend class CPlantScarabSwarm;
 
   public:
     CBoid(const CTransform4f& xf, uint index);
