@@ -3,6 +3,8 @@
 
 #include "MetroidPrime/CActor.hpp"
 #include "MetroidPrime/CDamageInfo.hpp"
+#include "MetroidPrime/ScriptLoader.hpp"
+#include "MetroidPrime/ScriptLoader/Structs/SLdrShockWaveInfo.hpp"
 
 class CElementGen;
 class CGenDescription;
@@ -10,6 +12,17 @@ class CElectricDescription;
 
 class CShockWaveInfo {
 public:
+  CShockWaveInfo(const SLdrShockWaveInfo& data)
+  : mShockWaveEffect(data.shockWaveEffect)
+  , mDamage(LdrToDamageInfo(data.damage))
+  , mRadius(data.radius)
+  , mInnerRadiusRatio(data.innerRadiusRatio)
+  , mRadialVelocity(data.radialVelocity)
+  , mRadialVelocityAcceleration(data.radialVelocityAcceleration)
+  , mVisorElectricEffect(data.visorElectricEffect)
+  , mVisorElectricSound(data.sound_VisorElectric)
+  , mHeight(data.height) {}
+
   CAssetId GetParticleDescId() const { return mShockWaveEffect; }
   const CDamageInfo& GetDamageInfo() const { return mDamage; }
   float GetInitialRadius() const { return mRadius; }
@@ -51,6 +64,7 @@ public:
   void Touch(CActor& actor, CStateManager& mgr) override;
 
   bool WasAlreadyDamaged(TUniqueId uid) const;
+  float GetRadius() const { return mRadius; } // Guessed name
 
 private:
   TUniqueId mParentId;

@@ -136,6 +136,7 @@ enum EEntityType {
   kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
   kET_Krocuss = 157, // Target-derived class tag.
+  kET_PuddleSpore = 159, // Target-derived class tag.
   kET_ScriptForgottenObject = 160,
 };
 

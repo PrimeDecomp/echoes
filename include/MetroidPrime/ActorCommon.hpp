@@ -96,6 +96,7 @@ enum EWeaponCollisionResponseTypes {
   kWCR_Unknown91,
   kWCR_AtomicBetaReflect,
   kWCR_AtomicAlphaReflect,
+  kWCR_PuddleSporeWeakSpot = 94, // Guessed name
   kWCR_Unknown107 = 107, // Last response in Echoes's extended reflection range.
   // Guessed names: target-derived fallback ranges, not individual enemy identities.
   kWCR_EnemyNormalFirst = 19,

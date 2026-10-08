@@ -1827,6 +1827,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "PuddleSpore",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CPuddleSpore.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
