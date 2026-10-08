@@ -4,6 +4,10 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrSpiderBallWaypoint.hpp"
 
+const uint kInvalidPlayerIndex = uint(-1);
+const uint kUnkPlayerIndexZero = 0;
+const float kDefaultGravityAccel = 9.81f * 2.5f;
+
 CScriptSpiderBallWaypoint::CScriptSpiderBallWaypoint(TUniqueId uid, const rstl::string& name,
                                                      const CEntityInfo& info,
                                                      const CTransform4f& xf, uint flags)
