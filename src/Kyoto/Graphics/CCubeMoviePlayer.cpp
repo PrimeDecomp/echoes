@@ -24,12 +24,11 @@
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTexture.h"
 
-extern bool lbl_804199CC;
 extern bool lbl_80419B9D;
 
 static rstl::string SelectMoviePath(const char* path) {
   rstl::string name(path);
-  if (lbl_804199CC) {
+  if (CGraphics::Is50Hz()) {
     rstl::string palName = name + "_pal";
     if (CDvdFile::FileExists(palName.data())) {
       return palName;

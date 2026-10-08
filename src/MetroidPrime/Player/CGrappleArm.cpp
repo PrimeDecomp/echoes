@@ -42,7 +42,7 @@ static const TStateMachineState< CGrappleArm >::SStateFunction kStateFunctions[]
     {"Fidget", &CGrappleArm::Fidget},
     {"Grappling", &CGrappleArm::Grappling}};
 
-static const char* const kGrappleLocator = "grapLocator_SDK";
+extern const char* const kGrappleLocator;
 static const char* const kBeamLocators[] = {"LGBeam", "LGBeam", "LGBeamLight"};
 static const rstl::pair< const char*, const char* > kSuitModels[] = {
     rstl::pair< const char*, const char* >("", ""),

@@ -11,7 +11,9 @@
 
 #include "dolphin/os.h"
 
-extern "C" bool lbl_804191E0;
+extern "C" {
+bool lbl_804191E0;
+}
 
 // Guessed names; the original stored these as individual small-data words.
 static CAssetId skControlTXTR0A = 0x2A13C23E;

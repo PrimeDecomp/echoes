@@ -83,6 +83,7 @@
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
 
+const bool kBoostBallBreaksOrbit = true; // Guessed name
 const bool kDoubleJumpBreaksOrbit = false;
 const bool kDashDoubleJumpBreaksOrbit = false;
 const bool gkFreeLookPreventsOrbitMovement = true;
@@ -103,7 +104,8 @@ static CRayCastResult skInvalidRayCastResult(CRayCastResult::kI_Invalid);
 static CCollisionInfo skInvalidCollisionInfo(CCollisionInfo::kI_Invalid);
 static CAABox skNullBox(CAABox::MakeNullBox());
 
-static const char* const kGunLocator = "GUN_LCTR";
+extern const char* const kGunLocator = "GUN_LCTR";
+extern const char* const kGrappleLocator = "grapLocator_SDK";
 static const char* const kBeamThirdPersonFxGroup = "BeamThirdPersonFx_DGRP";
 
 static const char* const skThirdPersonChargeNames[4] = {
