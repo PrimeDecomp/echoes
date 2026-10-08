@@ -8,6 +8,7 @@
 #include "Kyoto/Math/CVector2f.hpp"
 #include "Kyoto/SObjectTag.hpp"
 #include "MetroidPrime/CActorParameters.hpp"
+#include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CAnimationParameters.hpp"
 #include "MetroidPrime/CBasicSwarmData.hpp"
