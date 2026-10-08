@@ -9,7 +9,23 @@ class CMatrix4f {
 public:
   CMatrix4f(float, float, float, float, float, float, float, float, float, float, float, float,
             float, float, float, float);
-  CMatrix4f(const CMatrix4f& other);
+  CMatrix4f(const CMatrix4f& other)
+  : m00(other.m00)
+  , m01(other.m01)
+  , m02(other.m02)
+  , m03(other.m03)
+  , m10(other.m10)
+  , m11(other.m11)
+  , m12(other.m12)
+  , m13(other.m13)
+  , m20(other.m20)
+  , m21(other.m21)
+  , m22(other.m22)
+  , m23(other.m23)
+  , m30(other.m30)
+  , m31(other.m31)
+  , m32(other.m32)
+  , m33(other.m33) {}
 
   CVector3f operator*(const CVector3f& vec) const;
 
@@ -19,7 +35,7 @@ public:
   float Determinant() const;
 
   static const CMatrix4f& Identity() { return sIdentity; }
-  
+
 private:
   static const CMatrix4f sIdentity;
   float m00;
