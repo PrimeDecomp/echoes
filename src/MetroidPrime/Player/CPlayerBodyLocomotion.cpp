@@ -123,9 +123,11 @@ bool CPlayerBodyController::SLocomotionState::IsStrafing(
     const CPlayerBodyController& controller) const {
   const CPBCLocomotionCmd* command =
       static_cast< const CPBCLocomotionCmd* >(controller.CommandMgr().GetCmd(kPBSC_Locomotion));
-  if (command && (command->GetFacing().GetX() != 0.f || command->GetFacing().GetY() != 0.f ||
-                  command->GetFacing().GetZ() != 0.f)) {
-    return command->GetMovement().IsNonZero();
+  if (command) {
+    const CVector3f& facing = command->GetFacing();
+    const CVector3f& movement = command->GetMovement();
+    return (facing.GetX() != 0.f || facing.GetY() != 0.f || facing.GetZ() != 0.f) &&
+           (movement.GetX() != 0.f || movement.GetY() != 0.f || movement.GetZ() != 0.f);
   }
   return false;
 }

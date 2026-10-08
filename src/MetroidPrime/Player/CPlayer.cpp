@@ -3589,13 +3589,17 @@ const CDamageVulnerability* CPlayer::GetDamageVulnerability() const {
 const CDamageVulnerability* CPlayer::GetDamageVulnerability(const CVector3f& position,
                                                             const CVector3f& direction,
                                                             const CDamageInfo& damage) const {
-  if (mInvulnerabilityTimer > 0.f ||
-      mPlayerState->GetItemAmount(CPlayerState::kIT_Invincibility, true) != 0) {
+  if (mInvulnerabilityTimer > 0.f) {
+    return &mImmuneVulnerability;
+  }
+  if (mPlayerState->GetItemAmount(CPlayerState::kIT_Invincibility, true) != 0) {
     return &mImmuneVulnerability;
   }
   if (mMorphBall->InScrewAttackMode()) {
-    return mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit) ? &mImmuneVulnerability
-                                                                 : &mScrewAttackVulnerability;
+    if (mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
+      return &mImmuneVulnerability;
+    }
+    return &mScrewAttackVulnerability;
   }
   if (mMorphBallState == kMS_Morphed) {
     if (mImmuneTimer > 0.f && !damage.NoImmunity()) {
@@ -3608,8 +3612,10 @@ const CDamageVulnerability* CPlayer::GetDamageVulnerability(const CVector3f& pos
   if (mPlayerState->HasPowerUp(CPlayerState::kIT_LightSuit)) {
     return &mLightSuitVulnerability;
   }
-  return mPlayerState->HasPowerUp(CPlayerState::kIT_DarkSuit) ? &mDarkSuitVulnerability
-                                                              : &mVariaSuitVulnerability;
+  if (mPlayerState->HasPowerUp(CPlayerState::kIT_DarkSuit)) {
+    return &mDarkSuitVulnerability;
+  }
+  return &mVariaSuitVulnerability;
 }
 
 bool CPlayer::CanRenderUnsorted(const CStateManager& mgr) const { return false; }
@@ -4041,7 +4047,7 @@ void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
     case kTS_Ejected:
       SetTurretState(kTS_Four, mgr);
       break;
-    default:
+    case kTS_None:
       break;
     }
   }
