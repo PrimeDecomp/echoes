@@ -10,15 +10,15 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
   SLdrTweakPlayerRes_AutoMapperIcons();
   ~SLdrTweakPlayerRes_AutoMapperIcons();
 
-  rstl::string saveStationIcon;    // 0xe7014cda
-  rstl::string missileStationIcon; // 0x33c94749
-  rstl::string elevatorIconIcon;   // 0x9b36949e
-  rstl::string portalIcon;         // 0xafa1b87c
-  rstl::string unknown_0xfbf479ec; // 0xfbf479ec
-  rstl::string unknown_0x5566b6e4; // 0x5566b6e4
-  rstl::string unknown_0x51fe3f1f; // 0x51fe3f1f
-  rstl::string unknown_0xa4127a5a; // 0xa4127a5a
-  rstl::string translatorDoorIcon; // 0xf8403d18
+  rstl::string saveStationIcon;            // 0xe7014cda
+  rstl::string missileStationIcon;         // 0x33c94749
+  rstl::string elevatorIconIcon;           // 0x9b36949e
+  rstl::string portalIcon;                 // 0xafa1b87c
+  rstl::string minesFirstBreakTopIcon;     // 0xfbf479ec
+  rstl::string minesFirstBreakBottomIcon;  // 0x5566b6e4
+  rstl::string minesSecondBreakTopIcon;    // 0x51fe3f1f
+  rstl::string minesSecondBreakBottomIcon; // 0xa4127a5a
+  rstl::string translatorDoorIcon;         // 0xf8403d18
 #if VERSION != VERSION_G2ME01
   rstl::string mapIconG; // 0x5096bfa5
   rstl::string mapIconM; // 0xf4e6e0eb

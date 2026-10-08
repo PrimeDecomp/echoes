@@ -165,13 +165,13 @@ struct SLdrTweakGui_Misc {
   float unknown_0x5b888032;                       // 0x5b888032
   float unknown_0xb7322d26;                       // 0xb7322d26
   float unknown_0x79275f22;                       // 0x79275f22
-  float unknown_0xf405af55;                       // 0xf405af55
-  float unknown_0x3f85eb28;                       // 0x3f85eb28
-  CColor unknown_0x19c5f88b;                      // 0x19c5f88b
-  CColor unknown_0xd84b274b;                      // 0xd84b274b
-  CColor unknown_0x41a9414a;                      // 0x41a9414a
-  CColor unknown_0x80279e8a;                      // 0x80279e8a
-  CColor unknown_0x98d8e1ba;                      // 0x98d8e1ba
+  float lockedOnIndicatorRadius;                  // 0xf405af55
+  float lockedOnIndicatorScale;                   // 0x3f85eb28
+  CColor lockedOnIndicatorSlot0Color;             // 0x19c5f88b
+  CColor lockedOnIndicatorSlot1Color;             // 0xd84b274b
+  CColor lockedOnIndicatorSlot2Color;             // 0x41a9414a
+  CColor lockedOnIndicatorSlot3Color;             // 0x80279e8a
+  CColor lockedOnIndicatorEnemyColor;             // 0x98d8e1ba
 };
 
 void LoadTypedefTweakGui_Misc(SLdrTweakGui_Misc& data, CInputStream& input);
@@ -282,11 +282,11 @@ struct SLdrTweakGui_LogBook {
   float fogNear;                                // 0x4194622e
   float fogFar;                                 // 0x3935a756
   CColor fogColor;                              // 0xe578c0dd
-  float unknown_0xeef15783;                     // 0xeef15783
-  float unknown_0x78055ab2;                     // 0x78055ab2
-  float unknown_0x09e3197f;                     // 0x09e3197f
-  float unknown_0xfaffce1f;                     // 0xfaffce1f
-  float unknown_0xe5280e7c;                     // 0xe5280e7c
+  float treeCameraDistance;                     // 0xeef15783
+  float treeVerticalTranslation;                // 0x78055ab2
+  float treeHorizontalTranslation;              // 0x09e3197f
+  float scanObjectVerticalTranslation;          // 0xfaffce1f
+  float scanObjectHorizontalTranslation;        // 0xe5280e7c
   CColor backgroundSweepColor;                  // 0x647d9f91
   float backgroundSweepRadius;                  // 0x7120f18f
   float backgroundSweepTime;                    // 0x4def660d
