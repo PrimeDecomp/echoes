@@ -62,7 +62,7 @@ public:
   inline void resize(int size, const T& in = T());
   void assign(int size, const T& in = T());
   void reserve(int size);
-  iterator insert(iterator it, const T& value);
+  inline iterator insert(iterator it, const T& value);
 
   template < typename from_iterator >
   void insert(iterator it, from_iterator begin, from_iterator end) {

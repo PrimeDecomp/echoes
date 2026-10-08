@@ -60,11 +60,11 @@ public:
 
   int size() const { return mSize; }
   iterator begin();
-  iterator end();
+  inline iterator end();
   void reserve(int count) { mData.reserve(get_data_size(count)); }
   reference at(int bit);
   reference operator[](int bit);
-  void push_back(bool value);
+  inline void push_back(bool value);
   void insert(iterator at, int count, bool value);
 
   bool get_bit(int bit) { return (mData[get_real_index(bit)] & get_real_bit_mask(bit)) != 0; }
