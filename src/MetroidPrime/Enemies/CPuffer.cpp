@@ -37,8 +37,8 @@ CPuffer::CPuffer(TUniqueId uid, const rstl::string& name, const CEntityInfo& inf
                  CAssetId cloudSteam, float cloudSteamAlpha, bool cloudInCombatOrScan,
                  bool cloudInDark, bool cloudInEcho, const CDamageInfo& explosionDamage,
                  ushort sfxId)
-: CPatterned(static_cast< EPatternedAI >(45), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Flyer, kCT_One, static_cast< EBodyType >(5), actorParameters)
+: CPatterned(kPAI_Puffer, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_One, kBT_Floater, actorParameters)
 , mFace(xf.GetColumn(kDY))
 , mCloudEffect(gpSimplePool->GetObj(SObjectTag('PART', cloudEffect)))
 , mCloudDamage(cloudDamage)

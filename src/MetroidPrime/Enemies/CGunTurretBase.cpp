@@ -52,8 +52,8 @@ CGunTurretBase::CGunTurretBase(
     ushort gunLowerLoopedSfx, ushort gunLowerOffSfx, ushort gunRaiseLoopedSfx,
     ushort gunRaiseOffSfx, ushort pirateGunDeathLowerLoopedSfx, ushort gfGunDeathLowerLoopedSfx,
     ushort poleSparksSfx, float unknown80ce, float sfxFallOff, float sfxMaxDistance)
-: CPatterned(static_cast< EPatternedAI >(0x43), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Flyer, kCT_One, static_cast< EBodyType >(5), actorParameters)
+: CPatterned(kPAI_GunTurretBase, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_One, kBT_Floater, actorParameters)
 , mDetectionRange(patternedInfo.GetDetectionRange())
 , mMaxAttackRange(patternedInfo.GetMaxAttackRange())
 , mMinAttackRange(patternedInfo.GetMinAttackRange())

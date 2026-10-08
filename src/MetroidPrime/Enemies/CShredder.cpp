@@ -38,8 +38,8 @@ CShredder::CShredder(TUniqueId uid, const rstl::string& name, const CEntityInfo&
                      const CTransform4f& xf, const CModelData& modelData,
                      const CActorParameters& actorParams, const CPatternedInfo& patternedInfo,
                      const SLdrShredderData& data)
-: CPatterned(static_cast< EPatternedAI >(0x4e), uid, name, static_cast< EFlavorType >(0), info, xf,
-             modelData, patternedInfo, kMT_Flyer, kCT_Zero, kBT_Flyer, actorParams)
+: CPatterned(kPAI_Shredder, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_Zero, kBT_Flyer, actorParams)
 , mStartState(data.startState)
 , mExplosionDamage(LdrToDamageInfo(data.explosionDamage))
 , mMinHeight(data.minHeight)

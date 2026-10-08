@@ -134,8 +134,8 @@ CChozoGhost::CChozoGhost(
     const ushort sfxFadeOut, const uint w1, const float f2, const uint w2,
     const float hurlRecoverTime, const CAssetId projectileVisor, const ushort soundProjectileVisor,
     const float f3, const float f4, const uint nearChance, const uint midChance)
-: CPatterned(static_cast< EPatternedAI >(4), uid, name, kFT_Zero, info, xf, mData, pInfo, kMT_Flyer,
-             kCT_Zero, kBT_BiPedal, actParms)
+: CPatterned(kPAI_ChozoGhost, uid, name, kFT_Zero, info, xf, mData, pInfo, kMT_Flyer, kCT_Zero,
+             kBT_BiPedal, actParms)
 , mHearingRadius(hearingRadius)
 , mFadeOutDelay(fadeOutDelay)
 , mAttackDelay(attackDelay)

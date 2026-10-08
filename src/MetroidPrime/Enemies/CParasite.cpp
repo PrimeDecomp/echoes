@@ -95,10 +95,10 @@ CParasite::CParasite(TUniqueId uid, const rstl::string& name, EFlavorType flavor
                      const CDamageInfo& dInfo, ushort haltSfx, ushort getUpSfx, ushort crouchSfx,
                      CAssetId modelRes, CAssetId skinRes, float iceZoomerJointHP,
                      float wallWalkerF6, const CDamageInfo& dInfo2, const CActorParameters& aParams)
-: CWallCrawler(static_cast< EPatternedAI >(39), uid, name, flavor, info, xf, mData, pInfo,
-               kMT_Flyer, kCT_Zero, bodyType, aParams, pInfo.GetHalfExtent(), collisionCloseMargin,
-               alignAngVel, advanceWpRadius, playerObstructionMinDist, static_cast< EType >(type),
-               disableMove, wallWalkerF6, 0.167f, 0.6f, 1.5f, 0.6f, 1.5f)
+: CWallCrawler(kPAI_Parasite, uid, name, flavor, info, xf, mData, pInfo, kMT_Flyer, kCT_Zero,
+               bodyType, aParams, pInfo.GetHalfExtent(), collisionCloseMargin, alignAngVel,
+               advanceWpRadius, playerObstructionMinDist, static_cast< EType >(type), disableMove,
+               wallWalkerF6, 0.167f, 0.6f, 1.5f, 0.6f, 1.5f)
 , mStateProgress(-1)
 , x87c_(CVector3f::Zero())
 , mTargetPos(CVector3f::Zero())
@@ -1229,7 +1229,7 @@ CEntity* LoadParasite(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       static_cast< CPatterned::EFlavorType >(sldrThis.flavor),
       LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
-      *modelData, LdrToPatternedInfo(sldrThis.patterned, nullptr), static_cast< EBodyType >(6),
+      *modelData, LdrToPatternedInfo(sldrThis.patterned, nullptr), kBT_WallWalker,
       sldrThis.telegraphDistance, sldrThis.waypointApproachDistance, sldrThis.wallTurnSpeed,
       sldrThis.floorTurnSpeed, sldrThis.downTurnSpeed, sldrThis.stuckTime, sldrThis.stickyReach,
       sldrThis.behaviorInfluenceRadius, sldrThis.separationDistance, sldrThis.separationPriority,
@@ -1257,7 +1257,7 @@ CEntity* LoadBrizgee(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
   return rs_new CParasite(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name, CPatterned::kFT_Zero, info,
       LdrToTransform4f(sldrThis.editorProperties), *modelData,
-      LdrToPatternedInfo(sldrThis.patterned, nullptr), static_cast< EBodyType >(6), 10.f,
+      LdrToPatternedInfo(sldrThis.patterned, nullptr), kBT_WallWalker, 10.f,
       sldrThis.waypointApproachDistance, sldrThis.wallTurnSpeed, sldrThis.floorTurnSpeed,
       sldrThis.downTurnSpeed, 0.2f, 0.4f, 6.f, 2.6f, 1.f, 0.8f, 0.7f, 0.9f,
       sldrThis.forwardMovingPriority, 1.3f, 0.2f, sldrThis.visibleDistance,
@@ -1288,8 +1288,8 @@ CEntity* LoadCrystallite(CStateManager& mgr, CInputStream& input, CEntityInfo& i
   return rs_new CParasite(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name, CPatterned::kFT_Zero,
       LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
-      *modelData, LdrToPatternedInfo(sldrThis.patterned, nullptr), static_cast< EBodyType >(6),
-      10.f, sldrThis.waypointApproachDistance, sldrThis.wallTurnSpeed, sldrThis.floorTurnSpeed,
+      *modelData, LdrToPatternedInfo(sldrThis.patterned, nullptr), kBT_WallWalker, 10.f,
+      sldrThis.waypointApproachDistance, sldrThis.wallTurnSpeed, sldrThis.floorTurnSpeed,
       sldrThis.downTurnSpeed, 0.2f, 0.4f, 6.f, 2.6f, 1.f, 0.8f, 0.7f, 0.9f,
       sldrThis.forwardMovingPriority, 1.3f, 0.2f, sldrThis.visibleDistance, sldrThis.stunTime,
       false, CParasite::kPT_Crystallite, vulnerability, contactDamage,
