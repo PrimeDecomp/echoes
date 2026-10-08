@@ -1277,7 +1277,11 @@ MetroidPrime/Weapons/CBlackHole.cpp:
 MetroidPrime/CMFGameLoader.cpp:
 	.text       start:0x801F3DC0 end:0x801F4EAC
 	.ctors      start:0x803A5948 end:0x803A594C
+	.rodata     start:0x803AD808 end:0x803AD8A8
+	.data       start:0x803B8C68 end:0x803B8C88
+	.bss        start:0x803DC900 end:0x803DF250
 	.sdata      start:0x80419A68 end:0x80419A70
+	.sbss       start:0x8041A608 end:0x8041A610
 	.sdata2     start:0x8041E8C0 end:0x8041E8D8
 
 MetroidPrime/Weapons/CAnnihilatorProjectile.cpp:

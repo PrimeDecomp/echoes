@@ -755,13 +755,15 @@ void CGameState::SetDesiredWorldId(CAssetId worldId) { mDesiredWorldId = worldId
 
 rstl::rc_ptr< CPlayerState > CGameState::GetPlayerState() const { return mPlayerStates[0]; }
 
-rstl::rc_ptr< CPlayerState >& CGameState::PlayerState(int player) { return mPlayerStates[player]; }
+rstl::ncrc_ptr< CPlayerState >& CGameState::PlayerState(int player) {
+  return mPlayerStates[player];
+}
 
 rstl::rc_ptr< CPlayerState > CGameState::GetPlayerState(int player) const {
   return mPlayerStates[player];
 }
 
-rstl::rc_ptr< CWorldTransManager >& CGameState::WorldTransitionManager() { return mTransManager; }
+rstl::ncrc_ptr< CWorldTransManager >& CGameState::WorldTransitionManager() { return mTransManager; }
 
 void CGameState::SetTotalPlayTime(double time) {
   mTotalPlayTime = CMath::Clamp(0.0, time, 359999.0);

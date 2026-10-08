@@ -34,10 +34,11 @@ CMFGameLoader::CMFGameLoader()
   gResFactoryUnknown = 1;
   CModel::DisableTextureTimeout();
 
-  const bool showWorldName = gpMain->GetRestartMode() == CMain::kRM_Default ||
-                             (gpMain->GetRestartMode() == CMain::kRM_None &&
-                              gpGameState->GetGameMode().GetGameModeType() == 'SNGL' &&
-                              gpGameState->GetGameModeType() == 'FRND');
+  const CMain::ERestartMode restartMode = gpMain->GetRestartMode();
+  const bool showWorldName =
+      restartMode == CMain::kRM_Default ||
+      (restartMode == CMain::kRM_None && gpGameState->GetGameMode().GetGameModeType() == 'SNGL' &&
+       gpGameState->GetGameModeType() == 'FRND');
   const bool introText = showWorldName && gpGameState->GetInitPowerupsAtFirstSpawn() &&
                          gpGameState->CurrentWorldAssetId() == skDefaultWorld.GetId();
   if (introText) {
@@ -72,9 +73,9 @@ CMFGameLoader::~CMFGameLoader() {
 
 CIOWin::EMessageReturn CMFGameLoader::OnMessage(const CArchitectureMessage& message,
                                                 CArchitectureQueue& queue) {
-  rstl::rc_ptr< CWorldTransManager >& transition = gpGameState->WorldTransitionManager();
-  switch (message.GetType()) {
-  case kAM_UserInput: {
+  rstl::ncrc_ptr< CWorldTransManager >& transition = gpGameState->WorldTransitionManager();
+  const EArchMsgType type = message.GetType();
+  if (type == kAM_UserInput) {
     const CArchMsgParmUserInput parm = MakeMsg::GetParmUserInput(message);
     const CFinalInput& input = parm.GetUserInput();
     if (input.ControllerNumber() == 0 && input.PStart() && !transition.IsNull() &&
@@ -82,9 +83,7 @@ CIOWin::EMessageReturn CMFGameLoader::OnMessage(const CArchitectureMessage& mess
         mStateManager->IsFullyInitialized()) {
       transition->CheckIntroTextSeen();
     }
-    break;
-  }
-  case kAM_TimerTick: {
+  } else if (type == kAM_TimerTick) {
     const float dt = MakeMsg::GetParmTimerTick(message).GetReal();
     if (!gpResourceFactory->GetResLoader().AreAllPaksLoaded()) {
       gpResourceFactory->GetResLoader().AsyncIdlePakLoading();
@@ -100,12 +99,19 @@ CIOWin::EMessageReturn CMFGameLoader::OnMessage(const CArchitectureMessage& mess
 
     if (mStateManager.IsNull()) {
       transition->WaitForModelsAndTextures();
-      // TODO: Nonfunctional until the Echoes five-argument StateManager constructor is
-      // recovered: mailbox, map info, per-player owners, transition and world layers.
-      return kMR_Exit;
+      CWorldState& worldState = gpGameState->CurrentWorldState();
+      rstl::reserved_vector< rstl::ncrc_ptr< CPlayerState >, 4 > players;
+      for (uint i = 0; i < gpGameState->GetGameMode().GetNumPlayers(); ++i) {
+        players.push_back(gpGameState->PlayerState(i));
+      }
+      mStateManager = rstl::rc_ptr< CStateManager >(
+          rs_new CStateManager(worldState.Mailbox(), worldState.MapWorldInfo(), players, transition,
+                               worldState.GetLayerState()));
     }
     if (!mStateManager->IsFullyInitialized()) {
-      // TODO: Nonfunctional pending the shared StateManager::InitializeState interface.
+      CWorldState& worldState = gpGameState->CurrentWorldState();
+      mStateManager->InitializeState(worldState.GetWorldAssetId(), worldState.GetCurrentArea(),
+                                     worldState.GetDesiredAreaAssetId());
       return kMR_Exit;
     }
     if (mGuiManager.IsNull()) {
@@ -118,8 +124,7 @@ CIOWin::EMessageReturn CMFGameLoader::OnMessage(const CArchitectureMessage& mess
     transition->StartTextFadeOut();
     mTransitionFinished = transition->IsTransitionFinished();
     return kMR_Exit;
-  }
-  case kAM_FrameEnd:
+  } else if (type == kAM_FrameEnd) {
     if (mTransitionFinished) {
       CIOWin* game = rs_new CMFGame(mStateManager, mGuiManager, queue);
       queue.Push(MakeMsg::CreateCreateIOWin(kAMT_IOWinManager, kMFGameMsgPriority,
@@ -127,9 +132,6 @@ CIOWin::EMessageReturn CMFGameLoader::OnMessage(const CArchitectureMessage& mess
       CModel::EnableTextureTimeout();
       return kMR_RemoveIOWinAndExit;
     }
-    break;
-  default:
-    break;
   }
   return kMR_Exit;
 }
@@ -167,7 +169,7 @@ void CMFGameLoader::ScanLoadedGunPaks() {
         }
       }
       if (marked) {
-        return;
+        break;
       }
     }
   }
@@ -178,30 +180,35 @@ void CMFGameLoader::MarkGunPakSetLoaded(int set) { mLoadedGunPakSets |= 1 << set
 void CMFGameLoader::ClearGunPakSetLoaded(int set) { mLoadedGunPakSets &= ~(1 << set); }
 
 bool CMFGameLoader::IsGunPakSetLoaded(int set) const {
-  return (mLoadedGunPakSets & (1 << set)) != 0;
-}
-
-inline void CMFGameLoader::ApplyGunPakSelection(int selected) {
-  for (int set = 0; set < 3; ++set) {
-    if (set == selected) {
-      if (!IsGunPakSetLoaded(set)) {
-        LoadGunPakSet(set);
-      }
-    } else if (IsGunPakSetLoaded(set)) {
-      UnloadGunPakSet(set);
-    }
-  }
+  return (mLoadedGunPakSets & (1 << set)) > 0;
 }
 
 void CMFGameLoader::SelectGunPakSet() {
   if (gpGameState->GetGameMode().GetGameModeType() == 'SNGL') {
-    ApplyGunPakSelection(0);
+    for (int set = 0; set < 3; ++set) {
+      if (set == 0) {
+        if (!IsGunPakSetLoaded(set)) {
+          LoadGunPakSet(set);
+        }
+      } else if (IsGunPakSetLoaded(set)) {
+        UnloadGunPakSet(set);
+      }
+    }
   } else {
+    const uint numPlayers = gpGameState->GetGameMode().GetNumPlayers();
     int selected = 1;
-    if (gpGameState->GetGameMode().GetNumPlayers() > 2) {
+    if (numPlayers > 2) {
       selected = 2;
     }
-    ApplyGunPakSelection(selected);
+    for (int set = 0; set < 3; ++set) {
+      if (set == selected) {
+        if (!IsGunPakSetLoaded(set)) {
+          LoadGunPakSet(set);
+        }
+      } else if (IsGunPakSetLoaded(set)) {
+        UnloadGunPakSet(set);
+      }
+    }
   }
 }
 
