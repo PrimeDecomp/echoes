@@ -20,7 +20,7 @@ class CStateManager;
 class CInGameQuitScreen {
 public:
   explicit CInGameQuitScreen(int viewportLayout);
-  ~CInGameQuitScreen();
+  ~CInGameQuitScreen() {}
 
   EQuitAction Update(float dt, CStateManager& mgr);
   void ProcessUserInput(const CFinalInput& input);
