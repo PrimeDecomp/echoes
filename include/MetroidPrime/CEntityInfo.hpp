@@ -126,6 +126,7 @@ enum EEntityType {
   kET_ScriptPlayerTurret = 138,        // Target-derived class tag; turret-HUD REL dispatch target.
   kET_GunTurretBase = 139,             // Target-derived class tag.
   kET_GunTurretTop = 140,              // Target-derived class tag.
+  kET_Glowbug = 142, // Target-derived class tag.
   kET_WallWalker = 150,                // Target-derived class tag.
   kET_Shredder = 151, // Target-derived class tag.
   kET_TargetableProjectile = 152,      // Target-derived class tag.
