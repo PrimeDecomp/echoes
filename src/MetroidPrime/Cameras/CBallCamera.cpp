@@ -812,7 +812,8 @@ void CBallCamera::UpdatePlayerMovement(float dt, CStateManager& mgr) {
   mBallDeltaFlat = mBallDelta;
   mBallDeltaFlat.SetZ(0.f);
   const CVector3f& velocity = player.GetVelocityWR();
-  mBallVelFlat = CVector2f(velocity.GetX(), velocity.GetY()).Magnitude();
+  const CVector2f flatVelocity(velocity.GetX(), velocity.GetY());
+  mBallVelFlat = flatVelocity.Magnitude();
   mMaxBallVel = gpTweakBall->GetBallTranslationMaxSpeed(CPlayer::kSR_Normal);
   if (!mBallDeltaFlat.IsMagnitudeSafe() || mBallDeltaFlat.Magnitude() < dt) {
     mBallVelFlat = 0.f;
@@ -825,7 +826,9 @@ void CBallCamera::UpdatePlayerMovement(float dt, CStateManager& mgr) {
   if (camToBallFlat.IsMagnitudeSafe()) {
     camToBallFlat.Normalize();
     float dot = CMath::Limit(CVector3f::Dot(camToBallFlat, player.GetMovementDirection()), 1.f);
-    mObtuseDirection = CMath::AbsF(CMath::FastArcCosR(dot)) > 1.7453293f;
+    if (CMath::AbsF(CMath::FastArcCosR(dot)) > 1.7453293f) {
+      mObtuseDirection = true;
+    }
   }
 
   mSpeedFactor = CMath::Clamp(0.f, mBallVelFlat / mMaxBallVel, 1.f);
