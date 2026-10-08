@@ -804,7 +804,7 @@ void CPauseScreen::LoadScan(int nodeId) {
     mScanInfo->Lock();
     mPage = 0;
     mPageCount = 0;
-    mMessage->TextSupport().SetText(rstl::string(""), false);
+    mMessage->TextSupport().SetText(rstl::string_l(""), false);
     mModelPan = CVector3f::Zero();
     CSfxManager::SfxStart(0x56c, 0x7f, 0x3f);
   }
@@ -1579,7 +1579,7 @@ void CPauseScreen::DrawOptionBackground(const CTransform4f& view, const CVector3
                                         float alpha) const {
   const float scale = gpTweakGui->GetLogBookSelectedNodeScale();
   if (mOptionBackgroundModel.GetObject() != nullptr) {
-    const CVector3f offset(0.f, 0.01f, -(-0.05f + ((0.2f * scale) * 0.5f + 0.62136f)));
+    const CVector3f offset(0.f, 0.01f, -(-0.05f + ((0.2f * scale) / 2.f + 0.62136f)));
     const CTransform4f background =
         view.GetRotation() * CTransform4f::Translate(offset) * CTransform4f::Scale(0.18f);
     CGraphics::SetModelMatrix(CTransform4f::Translate(position) * background);
@@ -1600,7 +1600,7 @@ void CPauseScreen::DrawSliderNode(const CTransform4f& view, const CVector3f& ori
     mNodeText->SetText(node->GetName(), false);
     gpTweakGui->GetLogBookTextScale();
     const float textScale = 0.02f * scale;
-    const float textOffset = -mNodeText->GetTextBoundingWidth() * 0.5f;
+    const float textOffset = -mNodeText->GetTextBoundingWidth() / 2.f;
     const rstl::rc_ptr< CScanTreeSlider > slider(node);
     const float value = slider->GetNormalizedValue();
     const float defaultValue = slider->GetNormalizedDefaultValue();
@@ -1619,7 +1619,7 @@ void CPauseScreen::DrawSlider(const CTransform4f& view, const CVector3f& positio
                               float alpha) const {
   const float sliderScale = gpTweakGui->GetLogBookSliderScale();
   const float centerWidth = width - 4.094f;
-  const float halfWidth = centerWidth * 0.5f;
+  const float halfWidth = centerWidth / 2.f;
   const CTransform4f local = CTransform4f::Scale(scale * sliderScale) * view.GetRotation() *
                              CTransform4f::Translate(0.f, 0.f, textOffset);
   const CTransform4f world = CTransform4f::Translate(position) * local;
@@ -1675,7 +1675,7 @@ void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origi
     gpRender->SetBlendMode_AdditiveAlpha();
     const float labelScale = gpTweakGui->GetLogBookTextScale();
     const float scaledText = 0.02f * textScale;
-    CVector3f offset(-mNodeText->GetTextBoundingWidth() * 0.5f, 0.f,
+    CVector3f offset(-mNodeText->GetTextBoundingWidth() / 2.f, 0.f,
                      -(1.2f * (0.2f * nodeScale) * 0.5f) / (0.02f * labelScale));
     const float optionScale = 0.02f * gpTweakGui->GetLogBookMenuOptionScale();
     mNodeText->SetText(node->GetName(), false);

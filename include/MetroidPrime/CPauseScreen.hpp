@@ -112,8 +112,8 @@ private:
   static CVector3f GetDefaultModelPosition();
   CVector3f GetModelPosition() const;
 
-  rstl::reserved_vector< TToken< CTexture >, 9 > mLeftStickIcons;
-  rstl::reserved_vector< TToken< CTexture >, 9 > mRightStickIcons;
+  rstl::reserved_vector< CToken, 9 > mLeftStickIcons;
+  rstl::reserved_vector< CToken, 9 > mRightStickIcons;
   TCachedToken< CTexture > mSelectedNodeTexture;
   TCachedToken< CTexture > mUnselectedNodeTexture;
   TCachedToken< CTexture > mParentNodeTexture;
@@ -133,7 +133,7 @@ private:
   CQuaternion mViewRotation;
   CScanTree mScanTree;
   int x1f8_;
-  rstl::vector< CAssetId > x1fc_;
+  rstl::vector< int > x1fc_;
   rstl::auto_ptr< CGuiFrameLoader > mFrameLoader;
   rstl::auto_ptr< CGuiFrame > mFrame;
   CGuiTextPane* mMessage;
