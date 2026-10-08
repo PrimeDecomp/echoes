@@ -19,6 +19,7 @@ public:
   float GetPause() const { return mPause; }
   int GetLocatorIndex() const { return mLocatorIndex; } // Guessed accessor name.
   uint GetFlags() const { return x164_; } // Guessed accessor name; unknown bits are preserved.
+  int GetTurnPreference() const { return x168_; } // Guessed accessor name; 1 and 2 pick a side.
 
 private:
   float mSpeed;

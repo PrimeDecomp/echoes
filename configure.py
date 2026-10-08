@@ -1869,6 +1869,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "IngSpiderballGuardian",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIngSpiderballGuardian.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
