@@ -279,7 +279,7 @@ cflags_retro = [
     "-DMUSY_VERSION_PATCH=3",
 ]
 
-if config.version == "G2ME01":
+if config.version in ("G2ME01", "G2MP01"):
     cflags_retro.append('-pragma "inline_max_size(125)"')
 
 # Relocatable code cannot use the DOL's small-data bases.
