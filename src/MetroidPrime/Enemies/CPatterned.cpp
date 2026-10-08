@@ -1145,7 +1145,8 @@ CTransform4f CPatterned::GetLctrTransform(const rstl::string& name) const {
 }
 
 CTransform4f CPatterned::GetLctrTransform(const CSegId& id) const {
-  CTransform4f locator = GetAnimationData()->GetLocatorTransform(id, nullptr);
+  const CAnimData* animData = GetAnimationData();
+  CTransform4f locator = animData->GetLocatorTransform(id, nullptr);
   CVector3f scaled =
       CVector3f::ByElementMultiply(GetModelData()->GetScale(), locator.GetTranslation());
   return GetTransform() * CTransform4f(locator.BuildMatrix3f(), scaled);
@@ -1384,7 +1385,7 @@ void CPatterned::SetIngPossessed(bool possessed, CStateManager&) {
     mIngPossessionDelay = 0.f;
     mIngPossessionDuration = 1.f;
 
-    const int animation = mIngPossessionData.unknown_0x2befc1bf;
+    int animation = mIngPossessionData.unknown_0x2befc1bf;
     if (animation != -1) {
       const CCharAnimTime start =
           GetAnimationData()->GetTimeOfUserEventForAnimation(animation, kUE_EventStart);
