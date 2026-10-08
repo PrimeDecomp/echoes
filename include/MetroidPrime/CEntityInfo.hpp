@@ -36,6 +36,7 @@ enum EEntityType {
   kET_HomingBlob = 27, // Guessed name; Dark impact's multi-target particle weapon.
   kET_HUDBillboardEffect = 28,
   kET_IngPuddle = 29, // Target-derived class tag.
+  kET_IngSnatchingSwarm = 30, // Target-derived class tag.
   kET_PathCamera = 31,
   kET_Player = 32,
   kET_GameHint = 33, // Guessed name.
@@ -167,6 +168,7 @@ enum EScriptObjectState {
   kSS_Attack = 0x4154544b,
   kSS_AttachToBase = 0x41544f42, // Guessed name; connection to the turret base actor.
   kSS_AttachToCharacter = 0x4154434c, // Guessed name; connection to the rider actor.
+  kSS_IngSnatch = 0x49534e41, // Guessed name
   kSS_Retreat = 0x52545254, // Prime-correlated name; cover point's retreat connection.
   kSS_Play = 0x504c4159,
   kSS_Connect = 0x434f4e4e,
