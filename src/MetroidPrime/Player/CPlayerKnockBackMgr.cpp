@@ -520,7 +520,8 @@ void CPlayerKnockBackMgr::ApplyKnockBackEffects(CActor& actor, CStateManager& mg
 
 void CPlayerKnockBackMgr::StartBlackHoleDeath(CStateManager& mgr, TUniqueId source,
                                               CPlayer& player) {
-  if (const CActor* sourceActor = TCastToConstPtr< CActor >(mgr.GetObjectById(source))) {
+  const CActor* const sourceActor = TCastToConstPtr< CActor >(mgr.GetObjectById(source));
+  if (sourceActor != nullptr) {
     const CVector3f position = sourceActor->GetTranslation();
     mImploding = true;
     StartBurnDeath(mgr, player, kBDT_Normal);
