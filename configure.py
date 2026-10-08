@@ -1687,6 +1687,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "DarkSamusBattleStage",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CDarkSamusBattleStage.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
