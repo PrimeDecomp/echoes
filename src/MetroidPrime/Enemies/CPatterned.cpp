@@ -553,7 +553,7 @@ void CPatterned::MassiveFrozenDeath(CStateManager& mgr) {
   SendScriptMsgs(kSS_IceXDamage, mgr, kInvalidUniqueId, kSM_None);
   GenerateIceDeathExplosion(mgr);
 
-  for (uint player = 0; player < mgr.GetNumPlayers(); ++player) {
+  for (int player = 0; player < mgr.GetNumPlayers(); ++player) {
     const CVector3f playerDelta = mgr.GetPlayer(player)->GetTranslation() - GetTranslation();
     const float toPlayerDist = playerDelta.Magnitude();
   }
@@ -564,9 +564,10 @@ void CPatterned::MassiveFrozenDeath(CStateManager& mgr) {
 
 void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   const CHealthInfo* health = GetHealthInfo();
-  if (!mBurning && health != nullptr && !mSuppressKnockBack) {
-    mKnockBackController.KnockBack(mgr, *this, info);
+  if (mBurning || health == nullptr || mSuppressKnockBack) {
+    return;
   }
+  mKnockBackController.KnockBack(mgr, *this, info);
 }
 
 void CPatterned::ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
@@ -1036,7 +1037,7 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
     const CVector3f margin = CVector3f::ByElementMultiply(scale, CVector3f(1.f, 1.f, 0.5f));
     const CAABox touchBounds(xfOrigin - margin, xfOrigin + margin);
 
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       CPlayer* player = mgr.GetPlayer(i);
       if (touchBounds.DoBoundsOverlap(player->GetBoundingBox())) {
         mgr.ApplyDamage(
