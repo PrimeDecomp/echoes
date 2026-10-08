@@ -83,12 +83,18 @@
 // NonMatching structure pass; incomplete behavior is explicit below.
 // Definitions follow reverse target order for the TU's deferred-inlining emission.
 
+const bool gkAutoAim = false;
+const bool gkAutoAimAtOrbitedObject = false;
+const bool gkFreeLookPreventsOrbitMovement = true;
+const bool gkWorldOnlyReflection = false;
+const bool gkDisablePlayerTargeting = false;
+const bool kBoostBallBreaksOrbit = true;
 const bool kDoubleJumpBreaksOrbit = false;
 const bool kDashDoubleJumpBreaksOrbit = false;
-const bool gkFreeLookPreventsOrbitMovement = true;
-const bool gkAutoAim = false;
-const bool gkAutoAimAtOrbitedObject = true;
 const int gkMorphBallOrbitMode = 1;
+const uint kScanTargetTextureWidth = 32;
+const uint kScanTargetTextureHeight = 64;
+const uint kScanTargetTextureSize = kScanTargetTextureWidth * kScanTargetTextureHeight;
 
 bool gUseSurfaceHack = false;
 CPlayer::ESurfaceRestraints gSR_Hack = CPlayer::kSR_Normal;
@@ -103,7 +109,8 @@ static CRayCastResult skInvalidRayCastResult(CRayCastResult::kI_Invalid);
 static CCollisionInfo skInvalidCollisionInfo(CCollisionInfo::kI_Invalid);
 static CAABox skNullBox(CAABox::MakeNullBox());
 
-static const char* const kGunLocator = "GUN_LCTR";
+const char* const kGunLocator = "GUN_LCTR";
+const char* const kGrappleLocator = "GRAPPLE_LCTR";
 static const char* const kBeamThirdPersonFxGroup = "BeamThirdPersonFx_DGRP";
 
 static const char* const skThirdPersonChargeNames[4] = {
@@ -491,9 +498,9 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
 , mParticleBeam(static_cast< CPlayerState::EBeamId >(-1))
 , mBeamAuxParticles(nullptr)
 , mPlayerIndex(playerIndex)
-, mScanTargetIdTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
-, mDepthHighTextureData(CMemory::Alloc(0x1000, IAllocator::kHI_RoundUpLen))
-, mDepthLowTextureData(CMemory::Alloc(0x800, IAllocator::kHI_RoundUpLen))
+, mScanTargetIdTextureData(CMemory::Alloc(kScanTargetTextureSize, IAllocator::kHI_RoundUpLen))
+, mDepthHighTextureData(CMemory::Alloc(kScanTargetTextureSize * 2, IAllocator::kHI_RoundUpLen))
+, mDepthLowTextureData(CMemory::Alloc(kScanTargetTextureSize, IAllocator::kHI_RoundUpLen))
 , mRezbitRecoveryDirection(0)
 , mRezbitRecoveryInputCount(0)
 , mControlMapper(0)
@@ -506,12 +513,12 @@ CPlayer::CPlayer(TUniqueId uid, const CTransform4f& xf, const CAABox& aabb, CAss
   SetRenderParticleDatabaseInside(false);
   SetUpdateDuringCinematicSkip(false);
 
-  memset(mScanTargetIdTextureData.get(), 0, 0x800);
-  memset(mDepthHighTextureData.get(), 0, 0x1000);
-  memset(mDepthLowTextureData.get(), 0, 0x800);
-  DCFlushRange(mScanTargetIdTextureData.get(), 0x800);
-  DCFlushRange(mDepthHighTextureData.get(), 0x1000);
-  DCFlushRange(mDepthLowTextureData.get(), 0x800);
+  memset(mScanTargetIdTextureData.get(), 0, kScanTargetTextureSize);
+  memset(mDepthHighTextureData.get(), 0, kScanTargetTextureSize * 2);
+  memset(mDepthLowTextureData.get(), 0, kScanTargetTextureSize);
+  DCFlushRange(mScanTargetIdTextureData.get(), kScanTargetTextureSize);
+  DCFlushRange(mDepthHighTextureData.get(), kScanTargetTextureSize * 2);
+  DCFlushRange(mDepthLowTextureData.get(), kScanTargetTextureSize);
 
   CAssetId beam = gpTweakPlayerRes->GetBallTransitionBeamResId(mTransitionBeam);
   if (multiplayer) {

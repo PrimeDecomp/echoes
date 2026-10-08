@@ -85,10 +85,14 @@ public:
   static const bool kDefaultRumble;
   static const bool kDefaultHintSystem;
 
-  static bool fn_80161C84();
-  static void fn_80161C7C(bool);
+  // Guessed names; set while the front-end options screen exists, which makes
+  // SetSfxVolume adjust the area volume instead of the global one.
+  static bool IsFrontEndActive();
+  static void SetFrontEndActive(bool active);
 
 private:
+  static bool sFrontEndActive;
+
   friend class CScanTreeMenu;
   friend class CScanTreeSlider;
 

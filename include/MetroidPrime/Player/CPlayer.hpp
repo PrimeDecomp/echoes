@@ -933,11 +933,24 @@ private:
 CHECK_SIZEOF(CPlayer, 0x14c8)
 NESTED_CHECK_SIZEOF(CPlayer, CVisorSteam, 0x28)
 
-extern const bool kDoubleJumpBreaksOrbit;
-extern const bool kDashDoubleJumpBreaksOrbit;
-extern const bool gkFreeLookPreventsOrbitMovement;
 extern const bool gkAutoAim;
 extern const bool gkAutoAimAtOrbitedObject;
+extern const bool gkFreeLookPreventsOrbitMovement;
+extern const bool gkWorldOnlyReflection;
+extern const bool gkDisablePlayerTargeting; // Guessed name
+extern const bool kBoostBallBreaksOrbit;    // Guessed name
+extern const bool kDoubleJumpBreaksOrbit;
+extern const bool kDashDoubleJumpBreaksOrbit;
 extern const int gkMorphBallOrbitMode;
+
+// Guessed names; Samus model locators shared by the player and its transition copies.
+extern const char* const kGunLocator;
+extern const char* const kGrappleLocator;
+
+// Guessed names; size of the per-player scan target ID capture (8-bit IDs, 16-bit high depth,
+// 8-bit low depth) copied from the viewport centre each frame.
+extern const uint kScanTargetTextureWidth;
+extern const uint kScanTargetTextureHeight;
+extern const uint kScanTargetTextureSize;
 
 #endif // _CPLAYER

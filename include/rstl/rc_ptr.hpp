@@ -5,21 +5,17 @@
 #include "types.h"
 
 namespace rstl {
-class CRefData {
+// Reference count shared by every null rc_ptr; it starts high so it is never released.
+// The name comes from the Wii SEL export sNull__Q24rstl14rc_ptr_private.
+class rc_ptr_private {
 public:
-  CRefData() : mRefCount(0) {}
-  int AddRef() { return ++mRefCount; }
-  int DelRef() { return --mRefCount; }
-
-  int mRefCount;
-
-  static CRefData sNull;
+  static int sNull;
 };
 
 template < typename T >
 class rc_ptr {
 public:
-  rc_ptr() : mPtr(nullptr), mRefCount(&CRefData::sNull.mRefCount) { ++*mRefCount; }
+  rc_ptr() : mPtr(nullptr), mRefCount(&rc_ptr_private::sNull) { ++*mRefCount; }
   rc_ptr(const T* ptr) : mPtr(ptr), mRefCount(rs_new int(1)) {}
   // The empty statements stand in for release-build precondition checks; they count toward
   // MWCC's inline size limit (rbtree node ctors holding rc_ptr pairs are outlined).
@@ -57,7 +53,7 @@ public:
   void reset() {
     ReleaseData();
     mPtr = nullptr;
-    mRefCount = &CRefData::sNull.mRefCount;
+    mRefCount = &rc_ptr_private::sNull;
     ++*mRefCount;
   }
   T* operator->() const { return GetPtr(); }

@@ -14,9 +14,10 @@
 #include "string.h"
 
 static CDvdFile* sFirstARAM = nullptr;
-// The original names of these two mode/activity flags are not yet known.
-bool lbl_80419B9C = false;
-bool lbl_80419B9D = false;
+// Guessed name. Never set in retail; when set, transfers are driven by polling
+// IsARAMFileLoaded instead of from interrupt callbacks.
+static bool sPollingMode = false;
+bool gDvdActivity = false;
 
 struct CDvdFileARAM {
   CDvdFileARAM()
@@ -60,7 +61,7 @@ const char* DecodeARAMFile(const char* filename) {
 
 void CDvdFile::DVDARAMXferCallback(s32 result, DVDFileInfo* info) {
   CDvdFileARAM::SDvdInfo* ptr = reinterpret_cast< CDvdFileARAM::SDvdInfo* >(info);
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     DVDClose(&ptr->mDvdFileInfo);
   }
   ptr->mDvdFile->HandleDVDInterrupt();
@@ -76,7 +77,7 @@ void CDvdFile::HandleARAMInterrupt() {
 
   arFile->mGotARAMInterrupt = true;
 
-  if (!lbl_80419B9C && arFile->mGotARAMInterrupt && arFile->mGotDvdInterrupt) {
+  if (!sPollingMode && arFile->mGotARAMInterrupt && arFile->mGotDvdInterrupt) {
     PingARAMTransfer();
   }
 
@@ -89,7 +90,7 @@ void CDvdFile::HandleDVDInterrupt() {
 
   arFile->mGotDvdInterrupt = true;
 
-  if (!lbl_80419B9C && arFile->mGotARAMInterrupt && arFile->mGotDvdInterrupt) {
+  if (!sPollingMode && arFile->mGotARAMInterrupt && arFile->mGotDvdInterrupt) {
     PingARAMTransfer();
   }
 
@@ -121,7 +122,7 @@ void CDvdFile::PingARAMTransfer() {
     DVDFastOpen(mFileEntry, &aramFile->mInfo.mDvdFileInfo);
     DVDReadAsync(&aramFile->mInfo.mDvdFileInfo, aramFile->mBuffers[aramFile->mBufferIndex].get(),
                  length2, aramFile->mFileSize2, DVDARAMXferCallback);
-    lbl_80419B9D = true;
+    gDvdActivity = true;
     aramFile->mFileSize2 += length2;
     aramFile->mCurBufferLen -= length2;
   }
@@ -143,7 +144,7 @@ void CDvdFile::TryARAMFile() {
 
 void CDvdFile::PushARAMFileLoad() {
   BOOL enabled = true;
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     enabled = OSDisableInterrupts();
   }
   CDvdFile* file = sFirstARAM;
@@ -158,14 +159,14 @@ void CDvdFile::PushARAMFileLoad() {
       }
     }
   }
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     OSRestoreInterrupts(enabled);
   }
 }
 
 void CDvdFile::PopARAMFileLoad() {
   BOOL enabled = true;
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     enabled = OSDisableInterrupts();
   }
   CDvdFile* file = mARAMFile->mInfo.mNextfile;
@@ -175,7 +176,7 @@ void CDvdFile::PopARAMFileLoad() {
     file->StartARAMFileLoad();
   }
 
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     OSRestoreInterrupts(enabled);
   }
 }
@@ -186,7 +187,7 @@ bool CDvdFile::IsARAMFileLoaded() {
   }
 
   if (!mARAMPopped) {
-    if (lbl_80419B9C && mARAMFile->mGotARAMInterrupt && mARAMFile->mGotDvdInterrupt) {
+    if (sPollingMode && mARAMFile->mGotARAMInterrupt && mARAMFile->mGotDvdInterrupt) {
       PingARAMTransfer();
     }
     return false;
@@ -207,14 +208,14 @@ void CDvdFile::StartARAMFileLoad() {
   int len = rstl::min_val(mSize, 65536);
   aramFile->mCurBufferLen -= len;
   aramFile->mFileSize2 = len;
-  if (!lbl_80419B9C) {
+  if (!sPollingMode) {
     DVDFastOpen(mFileEntry, &aramFile->mInfo.mDvdFileInfo);
   } else {
     DVDOpen(const_cast< char* >(DecodeARAMFile(mFilename.data())), &aramFile->mInfo.mDvdFileInfo);
   }
   DVDReadAsync(&aramFile->mInfo.mDvdFileInfo, aramFile->mBuffers[0].get(), len, 0,
                DVDARAMXferCallback);
-  lbl_80419B9D = true;
+  gDvdActivity = true;
 }
 
 void CDvdFile::StallForARAMFile() {
@@ -264,13 +265,13 @@ void CDvdFile::SyncSeekRead(void* dest, uint len, ESeekOrigin origin, int offset
         mARAMBuffer + mOffset, dest, roundedLen, CARAMManager::kDMAPrio_One));
   } else {
     DVDFileInfo info;
-    if (!lbl_80419B9C) {
+    if (!sPollingMode) {
       DVDFastOpen(mFileEntry, &info);
     } else {
       DVDOpen(const_cast< char* >(DecodeARAMFile(mFilename.data())), &info);
     }
     DVDReadAsync(&info, dest, (len + 31) & ~31, mOffset, internalCallback);
-    lbl_80419B9D = true;
+    gDvdActivity = true;
     while (DVDGetCommandBlockStatus(&info.cb) != DVD_STATE_END) {
     }
     DVDClose(&info);
@@ -293,7 +294,7 @@ CDvdRequest* CDvdFile::AsyncSeekRead(void* dest, uint len, ESeekOrigin origin, i
     DVDFileInfo* info = &req->FileInfo();
     DVDFastOpen(mFileEntry, info);
     DVDReadAsync(info, dest, (len + 31) & ~31, mOffset, internalCallback);
-    lbl_80419B9D = true;
+    gDvdActivity = true;
     request = req;
   }
 
@@ -318,7 +319,7 @@ bool CDvdFile::FileExists(const char* filename) {
 void CDvdFile::internalCallback(s32 res, DVDFileInfo* info) {
   if (res != DVD_STATE_CANCELED) {
     DCInvalidateRange(info->cb.addr, info->cb.length);
-    lbl_80419B9D = true;
+    gDvdActivity = true;
   }
 }
 

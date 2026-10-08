@@ -10,6 +10,7 @@
 #include "MetroidPrime/Factories/CCharacterFactory.hpp"
 #include "MetroidPrime/Factories/CCharacterFactoryBuilder.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrPortalTransition.hpp"
@@ -270,10 +271,6 @@ void CPortalTransition::UpdateLights() {
   mLights.push_back_unsafe(backLight);
 }
 
-// Guessed names
-static const char* const skGunLocator = "GUN_LCTR";
-static const char* const skGrappleLocator = "GRAPPLE_LCTR";
-
 void CPortalTransition::Update(float dt) {
   TouchModels();
   if (mDirection == 2 && !IsReady()) {
@@ -295,8 +292,8 @@ void CPortalTransition::Update(float dt) {
   }
   mCurTime += dt;
   mSamusModelData.AdvanceAnimationIgnoreParticles(dt, mRandom, true);
-  mGunTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(skGunLocator));
-  mGrappleTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(skGrappleLocator));
+  mGunTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(kGunLocator));
+  mGrappleTransform = mSamusModelData.GetScaledLocatorTransform(rstl::string_l(kGrappleLocator));
   if (!mFirstEffect.null() && (mDirection != 1 || mCurTime >= 3.5f)) {
     mFirstEffect->Update(dt);
   }

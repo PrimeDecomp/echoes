@@ -136,7 +136,7 @@ float sInfiniteLoopTime;
 uint gARAMAllocationSize = (0x8f00 * 28 / 8) * 4;
 CIOWinManager* gpIOWinManager;
 CRELFileManager* gpRelFileManager;
-extern bool sProgressiveModePrompt; // Prime-correlated name; shared with CSplashScreen.
+bool sProgressiveModePrompt = true;
 
 #define UNUSED_STACK_VAL 0x7337D00D
 

@@ -42,6 +42,11 @@ public:
   static int compare(const void* a, const void* b);
   static uint GetHashForString(const char* str);
 
+  // Guessed names. Sound nodes above skExtendedVersion carry segment and pitch fields;
+  // skInvalidNameHash marks unused POI state slots.
+  static const ushort skExtendedVersion;
+  static const uint skInvalidNameHash;
+
 protected:
   ushort mVersion;
   uint mNameHash;

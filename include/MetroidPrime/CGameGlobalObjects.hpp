@@ -53,5 +53,6 @@ class IController;
 
 extern const TToken< CRasterFont >* gpDefaultFont;
 extern IController* gpController;
+extern bool sProgressiveModePrompt; // Prime name; cleared once the splash prompt is answered.
 
 #endif // _CGAMEGLOBALOBJECTS

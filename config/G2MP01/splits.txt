@@ -1995,6 +1995,7 @@ Kyoto/Animation/CParticlePOINode.cpp:
 
 Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1ED8 end:0x802B2118
+	.sdata2     start:0x8041F6F0 end:0x8041F6F8
 
 Kyoto/Animation/CSegId.cpp:
 	.text       start:0x802B2118 end:0x802B21C8
@@ -2245,6 +2246,7 @@ rstl/rstl_map.cpp:
 
 rstl/rstl_misc.cpp:
 	.text       start:0x802FDE10 end:0x802FDE4C
+	.sdata      start:0x80419E88 end:0x80419E90
 
 rstl/rstl_strings.cpp:
 	.text       start:0x802FDE4C end:0x802FF814

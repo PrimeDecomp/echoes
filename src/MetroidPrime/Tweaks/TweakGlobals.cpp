@@ -26,3 +26,4 @@ rstl::single_ptr< CTweakPlayerGun > gpTweakPlayerGunSingle;
 rstl::single_ptr< CTweakPlayerRes > gpTweakPlayerRes;
 rstl::single_ptr< CTweakSlideShow > gpTweakSlideShow;
 rstl::single_ptr< CTweakTargeting > gpTweakTargeting;
+CTweakPlayerGun* gpTweakPlayerGun;

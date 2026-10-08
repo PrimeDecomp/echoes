@@ -122,9 +122,6 @@
 
 const int gkPVSEnabled = 1;
 
-// Prime-correlated role; the selected original stores false.
-extern const bool gkWorldOnlyReflection;
-
 // Guessed class/name. Native callers construct stack scopes around named profiling
 // regions; the release initializer has no observable state or cleanup.
 class CScopedProfiler {
@@ -147,9 +144,6 @@ static const char* const skAudioGroupDependencies[3] = {"audio_groups_single_pla
 static const char* const skSinglePlayerAnimController = "SinglePlayerAnimCtrl";
 static const char* const skMultiplayerAnimController = "PlayerAnimCtrl";
 static const char* const skUnusedViewportTexture = "TXTR_Metroid2LogoSm";
-
-// Guessed name. The original immutable flag is false; its defining TU is unresolved.
-static const bool skDisablePlayerTargeting = false;
 
 // Both retained release hooks contain only a return instruction. Their sole known
 // callers pass this manager; no exported name or body establishes a semantic name.
@@ -1898,8 +1892,8 @@ void CStateManager::SetupParticleDrawMask() {
 }
 
 void CStateManager::CapturePlayerTextures() {
-  uint textureWidth = 32;
-  uint textureHeight = 64;
+  uint textureWidth = kScanTargetTextureWidth;
+  uint textureHeight = kScanTargetTextureHeight;
   if (IsMultiplayer()) {
     textureHeight /= 2;
   }
@@ -1986,8 +1980,6 @@ const CScriptObjectLoaderHelper& CStateManager::GetScriptObjectLoaderHelper() co
 }
 
 CScopedProfiler::CScopedProfiler(const rstl::string& name, bool enabled) {}
-
-const bool gkWorldOnlyReflection = false;
 
 CStateManager::CStateManager(
     const rstl::ncrc_ptr< CScriptMailbox >& mailbox,
@@ -2315,7 +2307,7 @@ void CStateManager::CreateStandardGameObjects() {
 
   for (uint i = 0; i < mNumPlayers; ++i) {
     AddObject(*mPlayers[i]);
-    if (!skDisablePlayerTargeting) {
+    if (!gkDisablePlayerTargeting) {
       mPlayers[i]->AddMaterial(kMT_Orbit, kMT_Scannable, *this);
     }
   }

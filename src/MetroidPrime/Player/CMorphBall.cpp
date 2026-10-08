@@ -1660,7 +1660,6 @@ void CMorphBall::EnterBoosting(CStateManager& mgr, bool skipImpulse) {
   mBoostEffectGen = rs_new CElementGen(mBoostEffect);
 }
 
-extern const bool kBoostBallBreaksOrbit;                               // Guessed name
 static EMaterialTypes BoostSphereMaterial = kMT_Unknown59;             // Guessed name
 static EMaterialTypes BoostNearListMaterial1 = kMT_Unknown59;          // Guessed name
 static EMaterialTypes BoostNearListMaterial2 = kMT_NonSolidDamageable; // Guessed name

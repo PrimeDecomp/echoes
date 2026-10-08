@@ -103,10 +103,10 @@ CScriptGuiFrontEndScreen::CScriptGuiFrontEndScreen(TUniqueId uid, const rstl::st
 , mGameStarted(false)
 , mOptionsDirty(false)
 , mMultipleControllers(false) {
-  CGameOptions::fn_80161C7C(true);
+  CGameOptions::SetFrontEndActive(true);
 }
 
-CScriptGuiFrontEndScreen::~CScriptGuiFrontEndScreen() { CGameOptions::fn_80161C7C(false); }
+CScriptGuiFrontEndScreen::~CScriptGuiFrontEndScreen() { CGameOptions::SetFrontEndActive(false); }
 
 void CScriptGuiFrontEndScreen::CollectWidgets(CStateManager& mgr) {
   TUniqueId defaultId = FindConnectedObject(mgr, kSS_XDamage, kSM_None);

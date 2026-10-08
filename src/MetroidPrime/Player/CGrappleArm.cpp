@@ -42,7 +42,7 @@ static const TStateMachineState< CGrappleArm >::SStateFunction kStateFunctions[]
     {"Fidget", &CGrappleArm::Fidget},
     {"Grappling", &CGrappleArm::Grappling}};
 
-static const char* const kGrappleLocator = "grapLocator_SDK";
+static const char* const skGrappleLocator = "grapLocator_SDK";
 static const char* const kBeamLocators[] = {"LGBeam", "LGBeam", "LGBeamLight"};
 static const rstl::pair< const char*, const char* > kSuitModels[] = {
     rstl::pair< const char*, const char* >("", ""),
@@ -125,7 +125,7 @@ CGrappleArm::CGrappleArm(const CVector3f& scale, TUniqueId playerId, bool multip
   CAnimData& animData = *mArmModel->AnimationData();
   animData.SetPoseBuilt(false);
   animData.BuildPose();
-  mGrappleLocator = animData.GetLocatorSegId(rstl::string_l(kGrappleLocator));
+  mGrappleLocator = animData.GetLocatorSegId(rstl::string_l(skGrappleLocator));
   for (int i = 0; i < 3; ++i) {
     mBeamLocators.push_back(animData.GetLocatorSegId(rstl::string_l(kBeamLocators[i])));
   }

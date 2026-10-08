@@ -129,7 +129,7 @@ MetroidPrime/Tweaks/TweakGlobals.cpp:
 	.text       start:0x800324A4 end:0x80032C3C
 	.ctors      start:0x803A54C0 end:0x803A54C4
 	.bss        start:0x803C67D0 end:0x803C68A0
-	.sbss       start:0x80418F28 end:0x80418F64
+	.sbss       start:0x80418F28 end:0x80418F68
 
 MetroidPrime/Weapons/CGameProjectile.cpp:
 	.text       start:0x80032C3C end:0x80036200
@@ -144,7 +144,7 @@ MetroidPrime/CStateManager.cpp:
 	.data       start:0x803B1ACC end:0x803B1B30 align:4
 	.bss        start:0x803C68A0 end:0x803DA858
 	.sdata      start:0x80417E58 end:0x80417EA8
-	.sbss       start:0x80418F64 end:0x80418FB8 align:4
+	.sbss       start:0x80418F68 end:0x80418FB8
 	.sdata2     start:0x8041A808 end:0x8041A8B8
 
 MetroidPrime/CEntity.cpp:
@@ -636,12 +636,13 @@ MetroidPrime/ScriptObjects/CScriptSpiderBallWaypoint.cpp:
 	.text       start:0x800E8C8C end:0x800E9BDC
 	.rodata     start:0x803A8B90 end:0x803A8B98
 	.data       start:0x803B3988 end:0x803B3A10
-	.sdata2     start:0x8041B740 end:0x8041B75C
+	.sdata2     start:0x8041B740 end:0x8041B750
 
 MetroidPrime/TGameTypes.cpp:
 	.text       start:0x800E9BDC end:0x800E9C14
 	.ctors      start:0x803A550C end:0x803A5510
 	.sbss       start:0x80419120 end:0x80419130
+	.sdata2     start:0x8041B750 end:0x8041B75C
 
 MetroidPrime/CPhysicsActor.cpp:
 	.text       start:0x800E9C14 end:0x800EBD40
@@ -3228,6 +3229,7 @@ Kyoto/Animation/CParticlePOINode.cpp:
 
 Kyoto/Animation/CPOINode.cpp:
 	.text       start:0x802B1AD0 end:0x802B1D10
+	.sdata2     start:0x8041E410 end:0x8041E418
 
 Kyoto/Animation/CSegId.cpp:
 	.text       start:0x802B1D10 end:0x802B1DC0
@@ -3241,7 +3243,6 @@ Kyoto/Animation/CSegStatementSet.cpp:
 	.rodata     start:0x803AEE48 end:0x803AEE50
 	.data       start:0x803B9B60 end:0x803B9B78
 	.sdata      start:0x80418AB0 end:0x80418AB8
-	.sdata2     start:0x8041E410 end:0x8041E418
 
 Kyoto/Animation/CTimeScaleFunctions.cpp:
 	.text       start:0x802B2088 end:0x802B2570
@@ -3634,7 +3635,7 @@ Kyoto/CResFactory.cpp:
 	.text       start:0x802F9E08 end:0x802FB69C
 	.rodata     start:0x803AFA98 end:0x803AFAA0
 	.data       start:0x803BAF08 end:0x803BAF28
-	.sdata      start:0x80418B90 end:0x80418BA0
+	.sdata      start:0x80418B90 end:0x80418B98
 
 Kyoto/CResLoader.cpp:
 	.text       start:0x802FB69C end:0x802FD3CC
@@ -3647,6 +3648,7 @@ rstl/rstl_map.cpp:
 rstl/rstl_misc.cpp:
 	.text       start:0x802FDAB8 end:0x802FDAF4
 	.rodata     start:0x803AFAB0 end:0x803AFAB8
+	.sdata      start:0x80418B98 end:0x80418BA0
 
 rstl/rstl_strings.cpp:
 	.text       start:0x802FDAF4 end:0x802FF4BC
