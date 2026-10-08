@@ -1750,6 +1750,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Shredder",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CShredder.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

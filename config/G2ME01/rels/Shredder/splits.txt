@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CShredder.cpp:
+	.text       start:0x00000000 end:0x00002940
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000080
+	.data       start:0x00000000 end:0x000001EC
+	.bss        start:0x00000000 end:0x00000004
+
 REL/REL_Setup.cpp:
 	.text       start:0x00002940 end:0x00002AE4
 	.rodata     start:0x00000080 end:0x00000104
