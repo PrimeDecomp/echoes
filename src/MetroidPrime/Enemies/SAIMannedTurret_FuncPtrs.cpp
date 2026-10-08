@@ -7,6 +7,6 @@ void SetSAIMannedTurret_FuncPtrs(SAIMannedTurret_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadAIMannedTurret(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_AIMannedTurret->mLoader(mgr, input, info);
 }

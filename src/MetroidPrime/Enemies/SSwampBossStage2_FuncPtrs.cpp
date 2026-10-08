@@ -7,6 +7,6 @@ void SetSSwampBossStage2_FuncPtrs(SSwampBossStage2_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadSwampBossStage2(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadSwampBossStage2(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_SwampBossStage2->mLoader(mgr, input, info);
 }

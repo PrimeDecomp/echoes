@@ -40,6 +40,11 @@ void CRelFile::FreeData() {
 }
 
 bool CRelFile::StartLoad() {
+#ifdef MONOLITHIC
+  // Completed REL sources are linked into the DOL; take the missing-file path
+  // so the request reports loaded without linking anything.
+  return false;
+#endif
   if (!CDvdFile::FileExists(mName.data())) {
     return false;
   }

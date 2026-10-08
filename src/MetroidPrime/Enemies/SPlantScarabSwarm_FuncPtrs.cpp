@@ -7,6 +7,6 @@ void SetSPlantScarabSwarm_FuncPtrs(SPlantScarabSwarm_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_PlantScarabSwarm->mLoader(mgr, input, info);
 }

@@ -5,7 +5,7 @@ SSandworm_FuncPtrs* gLoader_Sandworm; // Guessed name.
 
 void SetSSandworm_FuncPtrs(SSandworm_FuncPtrs* callbacks) { gLoader_Sandworm = callbacks; }
 
-CEntity* LoadSandworm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadSandworm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_Sandworm->mLoadSandworm(mgr, input, info);
 }
 

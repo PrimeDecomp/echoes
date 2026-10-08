@@ -7,6 +7,6 @@ void SetSEmperorIngStage1_FuncPtrs(SEmperorIngStage1_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadEmperorIngStage1(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadEmperorIngStage1(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_EmperorIngStage1->mLoader(mgr, input, info);
 }

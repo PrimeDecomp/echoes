@@ -7,6 +7,6 @@ void SetSScriptSkyRipple_FuncPtrs(SScriptSkyRipple_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadSkyRipple(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadSkyRipple(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_SkyRipple->mLoader(mgr, input, info);
 }

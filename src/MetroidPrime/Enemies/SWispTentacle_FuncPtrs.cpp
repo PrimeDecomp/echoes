@@ -7,6 +7,6 @@ void SetSWispTentacle_FuncPtrs(SWispTentacle_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadWispTentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadWispTentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_WispTentacle->mLoader(mgr, input, info);
 }

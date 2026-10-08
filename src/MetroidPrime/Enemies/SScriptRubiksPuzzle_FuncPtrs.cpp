@@ -7,6 +7,6 @@ void SetSScriptRubiksPuzzle_FuncPtrs(SScriptRubiksPuzzle_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadRubiksPuzzle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadRubiksPuzzle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_RubiksPuzzle->mLoader(mgr, input, info);
 }

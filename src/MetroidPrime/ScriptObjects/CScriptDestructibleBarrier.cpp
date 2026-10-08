@@ -916,6 +916,7 @@ CEntity* LoadDestructibleBarrier(CStateManager& mgr, CInputStream& input, CEntit
       sldrThis.unknown_0x0af428b4);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SDestructibleBarrier_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadDestructibleBarrier;
@@ -925,3 +926,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSDestructibleBarrier_FuncPtrs(nullptr); }
+#endif

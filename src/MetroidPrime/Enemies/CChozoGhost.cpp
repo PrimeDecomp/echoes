@@ -1069,6 +1069,7 @@ CEntity* LoadChozoGhost(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       sldrThis.nearChance, sldrThis.midChance);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SChozoGhost_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadChozoGhost;
@@ -1078,3 +1079,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSChozoGhost_FuncPtrs(nullptr); }
+#endif

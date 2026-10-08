@@ -197,6 +197,7 @@ CEntity* LoadPuffer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
       LdrToDamageInfo(sldrThis.explosionDamage), sldrThis.sound_Turn);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPuffer_FuncPtrs funcPtrs;
   funcPtrs.mLoadPuffer = &LoadPuffer;
@@ -206,3 +207,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSPuffer_FuncPtrs(nullptr); }
+#endif

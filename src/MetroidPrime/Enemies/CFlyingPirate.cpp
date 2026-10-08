@@ -1958,7 +1958,7 @@ void CFlyingPirate::SetupStateMachine(CStateManager& mgr) {
   stateMachine->SetStateFunctions(skStates, ARRAY_SIZE(skStates));
 }
 
-CEntity* REL_LoadFlyingPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFlyingPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFlyingPirate sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFlyingPirate.inc"
 
@@ -1990,13 +1990,15 @@ CEntity* REL_LoadFlyingPirate(CStateManager& mgr, CInputStream& input, CEntityIn
                               LdrToPatternedInfo(sldrThis.patterned, nullptr), data);
 }
 
+#ifndef MONOLITHIC
 static SFlyingPirate_FuncPtrs REL_loader_FlyingPirate;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_FlyingPirate.mLoader = REL_LoadFlyingPirate;
+  REL_loader_FlyingPirate.mLoader = LoadFlyingPirate;
   SetSFlyingPirate_FuncPtrs(&REL_loader_FlyingPirate);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSFlyingPirate_FuncPtrs(nullptr); }
+#endif

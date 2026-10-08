@@ -316,6 +316,7 @@ CEntity* LoadAtomicAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       sldrThis.homeWhileCharging);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SAtomicAlpha_FuncPtrs funcPtrs;
   funcPtrs.mLoadAtomicAlpha = &LoadAtomicAlpha;
@@ -325,3 +326,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSAtomicAlpha_FuncPtrs(nullptr); }
+#endif

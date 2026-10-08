@@ -384,7 +384,7 @@ void CEyeBall::Death(CStateManager& mgr, const CVector3f& direction, EScriptObje
   SetTransform(xf);
 }
 
-CEntity* REL_LoadEyeBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadEyeBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrEyeBall sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrEyeBall.inc"
 
@@ -408,13 +408,15 @@ CEntity* REL_LoadEyeBall(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       sldrThis.dropOff);
 }
 
+#ifndef MONOLITHIC
 SEyeBall_FuncPtrs REL_loader_EyeBall;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_EyeBall.mLoader = REL_LoadEyeBall;
+  REL_loader_EyeBall.mLoader = LoadEyeBall;
   SetSEyeBall_FuncPtrs(&REL_loader_EyeBall);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSEyeBall_FuncPtrs(nullptr); }
+#endif

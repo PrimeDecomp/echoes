@@ -7,6 +7,6 @@ void SetSFlyingPirate_FuncPtrs(SFlyingPirate_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadFlyingPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadFlyingPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_FlyingPirate->mLoader(mgr, input, info);
 }

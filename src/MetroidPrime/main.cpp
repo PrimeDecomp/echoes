@@ -232,7 +232,7 @@ void CMain::ShutdownSubsystems() {
     while (!tweaks.IsLoaded()) {
       gpRelFileManager->Update();
     }
-    FreeTweaks();
+    REL_ENTRY(FreeTweaks)();
     tweaks.Unload();
   }
   gpRelFileManager->WaitForAllFiles();
@@ -436,8 +436,8 @@ void CGameGlobalObjects::AddPaksAndFactories(COsContext& context) {
   gpController = nullptr;
   {
     CMemoryInStream stream(tweakData.get(), tweakFile.Length(), CMemoryInStream::kOS_NotOwned);
-    LoadTweaks(stream);
-    CreateTweakGlobals();
+    REL_ENTRY(LoadTweaks)(stream);
+    REL_ENTRY(CreateTweakGlobals)();
     tweaks.Unload();
   }
 

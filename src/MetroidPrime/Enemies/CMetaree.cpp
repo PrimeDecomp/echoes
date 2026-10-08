@@ -293,6 +293,7 @@ CEntity* LoadMetaree(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
       sldrThis.dropDelay, sldrThis.launchSpeed, sldrThis.turnSound);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SMetaree_FuncPtrs funcPtrs;
   funcPtrs.mLoadMetaree = &LoadMetaree;
@@ -302,3 +303,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSMetaree_FuncPtrs(nullptr); }
+#endif

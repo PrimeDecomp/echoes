@@ -76,6 +76,7 @@ CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInf
                                        sldrThis.editorProperties.name);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptForgottenObject_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadForgottenObject;
@@ -85,4 +86,5 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSScriptForgottenObject_FuncPtrs(nullptr); }
+#endif
 CScriptForgottenObject::~CScriptForgottenObject() {}

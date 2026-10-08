@@ -1298,6 +1298,7 @@ CEntity* LoadCrystallite(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SParasite_FuncPtrs funcPtrs;
   funcPtrs.mLoadParasite = &LoadParasite;
@@ -1309,3 +1310,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSParasite_FuncPtrs(nullptr); }
+#endif

@@ -1185,6 +1185,9 @@ CEntity* LoadGunTurretBase(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.soundFallOff, sldrThis.maxAudibleDistance);
 }
 
+#ifndef MONOLITHIC
+CEntity* LoadGunTurretTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+
 SGunTurretBase_FuncPtrs REL_loader_GunTurret;
 
 void SetRelLoaderFunctionToLoader() {
@@ -1196,5 +1199,6 @@ void SetRelLoaderFunctionToLoader() {
 void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 void RELExit() { SetSGunTurretBase_FuncPtrs(nullptr); }
+#endif
 
 CGunTurretBase::~CGunTurretBase() {}

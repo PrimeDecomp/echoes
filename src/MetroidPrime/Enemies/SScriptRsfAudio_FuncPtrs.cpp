@@ -7,6 +7,6 @@ void SetSScriptRsfAudio_FuncPtrs(SScriptRsfAudio_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadRsfAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadRsfAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_ScriptRsfAudio->mLoader(mgr, input, info);
 }

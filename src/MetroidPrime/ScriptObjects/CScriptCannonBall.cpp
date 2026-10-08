@@ -150,7 +150,7 @@ void CScriptCannonBall::TrackedShot::FreeScriptObject(CStateManager& mgr) {
   mgr.DeleteObjectRequest(m_scriptObject);
 }
 
-CEntity* REL_LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrCannonBall sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrCannonBall.inc"
 
@@ -161,13 +161,15 @@ CEntity* REL_LoadCannonBall(CStateManager& mgr, CInputStream& input, CEntityInfo
   );
 }
 
+#ifndef MONOLITHIC
 SCannonBall_FuncPtrs REL_loader_CannonBall;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_CannonBall.mLoadCannonBall = REL_LoadCannonBall;
+  REL_loader_CannonBall.mLoadCannonBall = LoadCannonBall;
   SetSCannonBall_FuncPtrs(&REL_loader_CannonBall);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSCannonBall_FuncPtrs(nullptr); }
+#endif

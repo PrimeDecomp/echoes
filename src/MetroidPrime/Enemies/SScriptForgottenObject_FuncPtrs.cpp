@@ -7,6 +7,6 @@ void SetSScriptForgottenObject_FuncPtrs(SScriptForgottenObject_FuncPtrs* callbac
 }
 
 // Guessed loader name.
-CEntity* LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadForgottenObject(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_ForgottenObject->mLoader(mgr, input, info);
 }

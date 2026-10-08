@@ -7,6 +7,6 @@ void SetSBacteriaSwarm_FuncPtrs(SBacteriaSwarm_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_BacteriaSwarm->mLoader(mgr, input, info);
 }

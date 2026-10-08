@@ -7,6 +7,6 @@ void SetSStreamedMovie_FuncPtrs(SStreamedMovie_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadStreamedMovie(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadStreamedMovie(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_ScriptStreamedMovie->mLoader(mgr, input, info);
 }

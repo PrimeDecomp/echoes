@@ -7,6 +7,6 @@ void SetSCommandoPirate_FuncPtrs(SCommandoPirate_FuncPtrs* callbacks) {
 }
 
 // Guessed compatibility loader name.
-CEntity* LoadCommandPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadCommandPirate(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_CommandoPirate->mLoader(mgr, input, info);
 }

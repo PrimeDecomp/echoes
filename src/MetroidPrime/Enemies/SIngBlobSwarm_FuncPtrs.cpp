@@ -7,6 +7,6 @@ void SetSIngBlobSwarm_FuncPtrs(SIngBlobSwarm_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadIngBlobSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadIngBlobSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_IngBlobSwarm->mLoader(mgr, input, info);
 }
