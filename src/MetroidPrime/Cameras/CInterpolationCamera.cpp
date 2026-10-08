@@ -170,11 +170,12 @@ bool CInterpolationCamera::InterpolatePosition(float dt, CTransform4f& xf, const
   CVector3f delta = GetTranslation() - target;
   const float distance = delta.Magnitude();
   const float limit = mInitialDistance * remaining;
-  if (limit < distance && delta.CanBeNormalized()) {
-    delta = limit * delta.AsNormalized();
+  if (distance > limit && delta.CanBeNormalized()) {
+    delta = delta.AsNormalized() * limit;
   }
+  const CVector3f position = target + delta;
   bool done = false;
-  xf = CalculateOrientation(dt, target + delta, done, mgr);
+  xf = CalculateOrientation(dt, position, done, mgr);
   return time >= mDuration && done;
 }
 
