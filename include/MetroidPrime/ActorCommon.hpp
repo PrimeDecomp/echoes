@@ -164,6 +164,8 @@ enum EUserEventType {
   kUE_SoundStop = 32,
   kUE_EffectOn = 33,
   kUE_EffectOff = 34,
+  kUE_Unknown37 = 37, // Guessed name
+  kUE_Unknown38 = 38, // Guessed name
 };
 
 #endif // _ACTORCOMMON

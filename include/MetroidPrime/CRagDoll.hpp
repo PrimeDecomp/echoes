@@ -34,6 +34,8 @@ public:
   CProjectileTouchResult ProjectileCollision(const CGameProjectile& projectile, TUniqueId actorId);
 
   bool IsPrimed() const { return mPrimed; }
+  bool IsRenderBoundsValid() const { return mRenderBoundsValid; } // Guessed name
+  const CAABox& GetCachedRenderBounds() const { return mRenderBounds; } // Guessed name
   bool IsOver() const { return mOver; }
   bool WillContinueSmallMovements() const { return mContinueSmallMovements; }
   void SetContinueSmallMovements(bool value) { mContinueSmallMovements = value; }

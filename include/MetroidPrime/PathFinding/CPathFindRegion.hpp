@@ -96,6 +96,7 @@ public:
   void SetCookie(int cookie) { mCookie = cookie; }
   int GetCookie() const { return mCookie; }
   uint GetAvoidanceFlags() const { return mAvoidanceFlags; }
+  void SetAvoidanceFlags(uint flags) { mAvoidanceFlags = flags; } // Guessed name
 
 private:
   float mBestPointDistSq;
