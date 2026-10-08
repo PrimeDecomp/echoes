@@ -1813,6 +1813,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptPlayerProxy",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlayerProxy.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

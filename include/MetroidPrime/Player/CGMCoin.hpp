@@ -33,6 +33,10 @@ public:
   int GetItemAmount(const CStateManager& mgr, uint playerIndex) const override;
   bool IsNearScoreLimit(const CStateManager& mgr, uint playerIndex) const override;
 
+  // Guessed name; inline accessor used by the player proxy.
+  void SetCanRespawn(uint playerIndex, bool canRespawn) {
+    mPlayers[playerIndex].mCanRespawn = canRespawn;
+  }
   bool IsNearTimeLimit() const;
   int GetCoinLimit() const;
 

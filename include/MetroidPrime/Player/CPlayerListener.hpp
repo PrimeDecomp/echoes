@@ -16,6 +16,7 @@ public:
   virtual void OnGameEvent(CStateManager& mgr, uint sourceIndex, uint targetIndex, uint event,
                            const void* value) = 0;
 
+  uint GetPlayerMask() const { return mPlayerMask; } // Guessed name.
   void KillListener(CStateManager& mgr);
   uint GetFirstPlayer(const CStateManager& mgr) const;
   uint GetNextPlayer(const CStateManager& mgr, uint playerIndex) const;

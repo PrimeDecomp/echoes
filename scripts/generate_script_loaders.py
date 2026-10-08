@@ -230,6 +230,11 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    # SLdrPlayerController, G2ME01 ScriptPlayerProxy 0x62_C74: same two actor re-stores.
+    "SLdrPlayerController": (
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
     "SLdrWorldTeleporter": ((0x255A4580, 0x5D298A43),),
     "SLdrControllerAction": ((0x4C6EEFAE, 0x94BA5737),),
     "SLdrTriggerEllipsoid": ((0x255A4580, 0x5D298A43),),
