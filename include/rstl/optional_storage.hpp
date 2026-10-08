@@ -33,9 +33,6 @@ public:
   bool valid() const { return m_valid; }
   operator bool() const { return m_valid; }
 
-  T& operator*() { return *get_ptr(); }
-  const T& operator*() const { return *get_ptr(); }
-
 private:
   ALIGNAS(T) uchar m_data[sizeof(T)];
   bool m_valid : 1;

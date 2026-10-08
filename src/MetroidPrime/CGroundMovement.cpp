@@ -124,8 +124,8 @@ void CGroundMovement::MoveGroundCollider(
           CGameCollision::SendMaterialMessage(mgr, info.GetMaterialLeft(), actor);
           mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Landed));
           if (!TCastToPtr< CScriptPlatform >(entity)) {
-            mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(),
-                                            static_cast< EScriptObjectMessage >('XLSG')));
+            mgr.DeliverScriptMsg(
+                CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_LandedOnStaticGround));
           }
         } else {
           CheckFalling(actor, mgr, dt);
@@ -686,8 +686,8 @@ void CGroundMovement::MoveGroundCollider_New(
         mgr.DeliverScriptMsg(
             CScriptMsg(actor.GetUniqueId(), entity->GetUniqueId(), kSM_AddPlatformRider));
       } else {
-        mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(),
-                                        static_cast< EScriptObjectMessage >('XLSG')));
+        mgr.DeliverScriptMsg(
+            CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_LandedOnStaticGround));
       }
       CGameCollision::SendMaterialMessage(mgr, info.GetMaterialLeft(), actor);
       actor.SetLastFloorPlaneNormal(info.GetNormalLeft());
@@ -726,7 +726,7 @@ void CGroundMovement::MoveGroundCollider_New(
   CGameCollision::CollisionFailsafe(mgr, cache, actor, *usePrimitive, nearList, 0.f, 1, 0.f);
   if (CCollisionCache* currentCache = actor.GetCollisionCache()) {
     if (localCache) {
-      *currentCache = *localCache;
+      *currentCache = cache;
     }
   }
 }
