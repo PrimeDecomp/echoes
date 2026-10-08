@@ -8,7 +8,7 @@
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 
-#include "MetaRender/IRenderer.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/CRandom16.hpp"
@@ -18,7 +18,6 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 
 extern CIOWinManager* gpIOWinManager;
-extern IRenderer* gpRender;
 
 // Guessed local class and phase names, based on framebuffer preservation behavior.
 class CRezbitEffectIOWin : public CIOWin {
