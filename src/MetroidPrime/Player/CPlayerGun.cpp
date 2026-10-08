@@ -96,6 +96,10 @@ static const TStateMachineState< CPlayerGun >::SStateFunction skGunStateFunction
     {"EventHandler", &CPlayerGun::EventHandler},
 };
 
+static const int skNormalAmmoCosts[] = {0, 1, 1, 1};
+static const int skChargedAmmoCosts[] = {0, 5, 5, 5};
+static const int skComboAmmoCosts[] = {0, 30, 30, 30};
+
 static const float kFactorMultiplierForBeamCombo =
     1.0f / CPlayerState::GetMissileComboChargeFactor();
 static const float kChargeDtFactor = 1.0f / CPlayerState::GetMissileComboChargeFactor();
@@ -747,28 +751,37 @@ void CPlayerGun::DamageRumble(const CVector3f& position, float damage, const CSt
 bool CPlayerGun::IsOutOfAmmoToShoot(CStateManager& mgr) const {
   const CPlayerState* state = GetPlayer(mgr)->GetPlayerState();
   switch (mCurrentBeamId) {
-  case CPlayerState::kBI_Dark:
-    return state->GetItemAmount(CPlayerState::kIT_DarkAmmo, true) < 1;
   case CPlayerState::kBI_Light:
-    return state->GetItemAmount(CPlayerState::kIT_LightAmmo, true) < 1;
+    if (state->GetItemAmount(CPlayerState::kIT_LightAmmo, true) <
+        skNormalAmmoCosts[mCurrentBeamId]) {
+      return true;
+    }
+    break;
+  case CPlayerState::kBI_Dark:
+    if (state->GetItemAmount(CPlayerState::kIT_DarkAmmo, true) <
+        skNormalAmmoCosts[mCurrentBeamId]) {
+      return true;
+    }
+    break;
   case CPlayerState::kBI_Annihilator:
-    return state->GetItemAmount(CPlayerState::kIT_LightAmmo, true) < 1 ||
-           state->GetItemAmount(CPlayerState::kIT_DarkAmmo, true) < 1;
-  default:
-    return false;
+    if (state->GetItemAmount(CPlayerState::kIT_LightAmmo, true) <
+            skNormalAmmoCosts[mCurrentBeamId] ||
+        state->GetItemAmount(CPlayerState::kIT_DarkAmmo, true) <
+            skNormalAmmoCosts[mCurrentBeamId]) {
+      return true;
+    }
+    break;
   }
+  return false;
 }
 
 bool CPlayerGun::GetBeamAmmoTypeAndCosts(bool combo, CStateManager& mgr,
                                          CPlayerState::EItemType& ammoA,
                                          CPlayerState::EItemType& ammoB, int& cost) const {
-  static const int normalCosts[] = {0, 1, 1, 1};
-  static const int chargedCosts[] = {0, 5, 5, 5};
-  static const int comboCosts[] = {0, 30, 30, 30};
   const CPlayerState* state = GetPlayer(mgr)->GetPlayerState();
   ammoA = CPlayerState::kIT_Invalid;
   ammoB = CPlayerState::kIT_Invalid;
-  cost = normalCosts[mCurrentBeamId];
+  cost = skNormalAmmoCosts[mCurrentBeamId];
   switch (mCurrentBeamId) {
   case CPlayerState::kBI_Dark:
     ammoA = CPlayerState::kIT_DarkAmmo;
@@ -784,9 +797,9 @@ bool CPlayerGun::GetBeamAmmoTypeAndCosts(bool combo, CStateManager& mgr,
     return true;
   }
   if (combo) {
-    cost = comboCosts[mCurrentBeamId];
+    cost = skComboAmmoCosts[mCurrentBeamId];
   } else if (mChargePhase >= kCP_Charging && mChargePhase <= kCP_Charged) {
-    cost = chargedCosts[mCurrentBeamId];
+    cost = skChargedAmmoCosts[mCurrentBeamId];
   }
   if (ammoA != CPlayerState::kIT_Invalid && state->GetItemAmount(ammoA, true) < cost) {
     return false;
@@ -903,40 +916,46 @@ CPlayerGun::CGunMorph::EWipeEvent CPlayerGun::CGunMorph::Update(float inY, float
                                                                 const CPlayer& player) {
   const bool cinematic = player.GetCameraManager()->IsInCinematicCamera();
   EWipeEvent event = kWE_None;
-  if (mGunState == kGS_InWipeDone) {
+  switch (mGunState) {
+  case kGS_InWipeDone:
     mRemHoldTime -= dt;
     if ((mRemHoldTime <= 0.f || cinematic) && mWeaponChanged) {
       StartWipe(kMD_Out);
       mWeaponChanged = false;
-      mRemHoldTime = 0.f;
       event = kWE_OutWipeStarted;
+      mRemHoldTime = 0.f;
     }
+    break;
+  case kGS_OutWipeDone:
+  case kGS_InWipe:
+    break;
   }
   if (mMorphing) {
     const float t = mRemTime * mSpeed;
+    const float invT = 1.f - t;
     if (mMorphDirection == kMD_In) {
-      mYLerp = inY * (1.f - t) + outY * t;
+      mYLerp = inY * invT + outY * t;
       mTransitionFactor = t;
     } else {
-      mYLerp = outY * (1.f - t) + inY * t;
-      mTransitionFactor = 1.f - t;
+      mYLerp = outY * invT + inY * t;
+      mTransitionFactor = invT;
     }
-    if (mRemTime > 0.f) {
-      mRemTime -= dt;
-      if (cinematic) {
-        mRemTime = 0.f;
-      }
-    } else {
+    if (mRemTime <= 0.f) {
       mMorphing = false;
       mRemTime = 0.f;
       if (mMorphDirection == kMD_In) {
         mGunState = kGS_InWipeDone;
         mTransitionFactor = 0.f;
       } else {
-        mGunState = kGS_OutWipeDone;
-        mTransitionFactor = 1.f;
-        mMorphDirection = kMD_Done;
         event = kWE_OutWipeFinished;
+        mTransitionFactor = 1.f;
+        mGunState = kGS_OutWipeDone;
+        mMorphDirection = kMD_Done;
+      }
+    } else {
+      mRemTime -= dt;
+      if (cinematic) {
+        mRemTime = 0.f;
       }
     }
   }
@@ -2251,21 +2270,27 @@ void CPlayerGun::DoUserAnimEvents(float dt, CStateManager& mgr) {
 }
 
 void CPlayerGun::SetGunLightActive(bool active, CStateManager& mgr) {
-  if (mLightId == kInvalidUniqueId) {
-    return;
-  }
-  CGameLight* light = TCastToPtr< CGameLight >(mgr.ObjectById(mLightId));
-  if (light != nullptr) {
-    light->SetActive(active);
-    if (active) {
-      CElementGen* generator =
-          mMissileAnimActive
-              ? (mSeekerMuzzleGenerators.empty() ? nullptr : mSeekerMuzzleGenerators[0].get())
-              : mCurrentBeam->GetMuzzleFx(1);
-      if (generator != nullptr && generator->SystemHasLight()) {
-        CLight muzzleLight = generator->GetLight();
-        muzzleLight.SetColor(CColor::Black());
-        light->SetLight(muzzleLight);
+  CElementGen* generator;
+  const TUniqueId& lightId = mLightId;
+  if (lightId != kInvalidUniqueId) {
+    CGameLight* light = TCastToPtr< CGameLight >(mgr.ObjectById(lightId));
+    if (light != nullptr) {
+      light->SetActive(active);
+      if (active) {
+        if (mMissileAnimActive) {
+          if (mSeekerMuzzleGenerators.empty()) {
+            generator = nullptr;
+          } else {
+            generator = mSeekerMuzzleGenerators[0].get();
+          }
+        } else {
+          generator = mCurrentBeam->GetMuzzleFx(1);
+        }
+        if (generator != nullptr && generator->SystemHasLight()) {
+          CLight muzzleLight(generator->GetLight());
+          muzzleLight.SetColor(CColor::Black());
+          light->SetLight(muzzleLight);
+        }
       }
     }
   }
@@ -2452,22 +2477,26 @@ bool CPlayerGun::ProcessGunMorph(float dt, CStateManager& mgr) {
 
 void CPlayerGun::UpdateBeamChange(float dt, CStateManager& mgr) {
   switch (mBeamChangeState) {
-  case kBCS_Close:
-    if (AnimOver(mgr, 0.f)) {
+  case kBCS_Close: {
+    float animTime = 0.f;
+    if (AnimOver(mgr, animTime)) {
       ChangeWeapon(mgr);
       mBeamChangeState = kBCS_Morph;
     }
     break;
+  }
   case kBCS_Morph:
     if (ProcessGunMorph(dt, mgr)) {
       mBeamChangeState = kBCS_Open;
     }
     break;
-  case kBCS_Open:
-    if (AnimOver(mgr, 0.f)) {
+  case kBCS_Open: {
+    float animTime = 0.f;
+    if (AnimOver(mgr, animTime)) {
       mBeamChangeState = kBCS_Idle;
     }
     break;
+  }
   default:
     break;
   }
