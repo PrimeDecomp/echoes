@@ -746,6 +746,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakAutoMapper.cpp"),
             Object(NonMatching, "MetroidPrime/Tweaks/CTweakPlayer.cpp"),
             Object(NonMatching, "MetroidPrime/CDamageInfoScriptLoader.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/TweakContents.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Tweaks/STweaks_FuncPtrs.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Enemies/SSandworm_FuncPtrs.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/SCommandoPirate_FuncPtrs.cpp"),
