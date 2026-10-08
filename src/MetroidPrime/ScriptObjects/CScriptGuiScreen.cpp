@@ -19,6 +19,7 @@
 #include "MetroidPrime/Player/CGameOptions.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CWorldState.hpp"
+#include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrGuiScreen.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGuiMenu.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGuiSlider.hpp"

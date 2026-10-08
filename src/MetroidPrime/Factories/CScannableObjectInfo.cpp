@@ -3,6 +3,7 @@
 #include "Kyoto/CFactoryMgr.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
+#include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CModelData.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrScannableObjectInfo.hpp"

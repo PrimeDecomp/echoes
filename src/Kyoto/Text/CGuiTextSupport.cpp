@@ -2,6 +2,7 @@
 
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
+#include "Kyoto/Text/CInstruction.hpp"
 #include "Kyoto/Text/CRasterFont.hpp"
 #include "Kyoto/Text/CTextParser.hpp"
 #include "Kyoto/Text/ScreenText.hpp"

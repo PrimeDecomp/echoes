@@ -9,6 +9,7 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CMoviePlayer.hpp"
 #include "Kyoto/Input/IController.hpp"
+#include "Kyoto/Text/CInstruction.hpp"
 #include "Kyoto/Text/CTextExecuteBuffer.hpp"
 #include "Kyoto/Text/CTextRenderBuffer.hpp"
 #include "MetaRender/CCubeRenderer.hpp"

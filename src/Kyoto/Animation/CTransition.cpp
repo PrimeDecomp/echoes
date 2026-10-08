@@ -1,6 +1,7 @@
 #include "Kyoto/Animation/CTransition.hpp"
 
 #include "Kyoto/Animation/CMetaTransFactory.hpp"
+#include "Kyoto/Animation/IMetaTrans.hpp"
 #include "Kyoto/Streams/CInputStream.hpp"
 
 CTransition::CTransition(CInputStream& in)
