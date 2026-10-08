@@ -1112,25 +1112,23 @@ bool CBallCamera::fn_801a36f0(float distance, float dt, CVector3f& position, CSt
   const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(mTooCloseActorId));
   position = CVector3f::Zero();
   bool found = false;
-  if (door == nullptr || !door->IsOpen() || door->IsHorizontal()) {
-    return false;
-  }
-  const CScriptDock* dock =
-      TCastToConstPtr< CScriptDock >(mgr.GetObjectById(door->GetConnectedDockID()));
-  if (dock == nullptr) {
-    return false;
-  }
-
-  const bool ballSide = dock->GetPlane(mgr).IsFacing(Player(mgr).GetBallPosition());
-  const bool cameraSide = dock->GetPlane(mgr).IsFacing(GetTranslation());
-  if ((ballSide && !cameraSide) || (!ballSide && cameraSide)) {
-    const CLine planeLine(dock->GetTranslation(), dock->GetPlane(mgr).GetNormal());
-    CVector3f fromCamera((planeLine.GetClosestPoint(GetTranslation()) - GetTranslation()).ToVec2f(),
-                         0.f);
-    if (fromCamera.CanBeNormalized()) {
-      const float strength = CMath::Clamp(0.f, fromCamera.Magnitude() / 5.f, 1.f);
-      position = strength * (40.f * (dt * fromCamera.AsNormalized()));
-      found = true;
+  if (door != nullptr && door->IsOpen() && !door->IsHorizontal()) {
+    const CScriptDock* dock =
+        TCastToConstPtr< CScriptDock >(mgr.GetObjectById(door->GetConnectedDockID()));
+    if (dock != nullptr) {
+      const bool ballSide = dock->GetPlane(mgr).IsFacing(Player(mgr).GetBallPosition());
+      const bool cameraSide = dock->GetPlane(mgr).IsFacing(GetTranslation());
+      if ((ballSide && !cameraSide) || (!ballSide && cameraSide)) {
+        const CLine planeLine(dock->GetTranslation(), dock->GetPlane(mgr).GetNormal());
+        CVector3f fromCamera(
+            CVector3f(planeLine.GetClosestPoint(GetTranslation()) - GetTranslation()).ToVec2f(),
+            0.f);
+        if (fromCamera.CanBeNormalized()) {
+          const float strength = CMath::Clamp(0.f, fromCamera.Magnitude() / 5.f, 1.f);
+          position = strength * (40.f * (dt * fromCamera.AsNormalized()));
+          found = true;
+        }
+      }
     }
   }
   return found;
