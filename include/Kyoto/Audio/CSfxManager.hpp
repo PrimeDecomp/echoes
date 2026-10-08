@@ -212,7 +212,7 @@ public:
                                bool useAcoustics = false, bool looped = false,
                                const short priority = kMedPriority);
   static CSfxHandle AddEmitter(ushort id, const CVector3f& position, uchar volume, int area,
-                               bool useAcoustics, bool looped, short priority);
+                               bool useAcoustics, bool looped, const short priority);
   static CSfxHandle AddEmitter(CAudioSys::C3DEmitterParmData& params, int area = kAllAreas,
                                bool useAcoustics = false, bool looped = false,
                                const short priority = kMedPriority);

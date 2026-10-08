@@ -28,7 +28,7 @@ CVector3f CCameraShakerManager::SShaker::GetTranslation(const CStateManager& mgr
 }
 
 float CCameraShakerManager::SShaker::GetDistanceAttenuation(const CStateManager& mgr) const {
-  const CVector3f delta = mData.GetPosition() - mgr.GetPlayer(mPlayerIndex)->GetTranslation();
+  const CVector3f& delta = mData.GetPosition() - mgr.GetPlayer(mPlayerIndex)->GetTranslation();
   return 1.f - CMath::Clamp(0.f, delta.Magnitude() / mData.GetAttenuationDistance(), 1.f);
 }
 
@@ -45,8 +45,10 @@ CCameraShakerManager::~CCameraShakerManager() {}
 
 void CCameraShakerManager::StartSound(SShaker& shaker) {
   const CCameraShakerData& data = shaker.mData;
-  if (!shaker.mPlaySound || !(data.GetDuration() > 0.f) ||
-      (shaker.mUseThresholdTimes && !(data.GetCachedMaxAmplitude() > 0.2f))) {
+  if (!shaker.mPlaySound || !(data.GetDuration() > 0.f)) {
+    return;
+  }
+  if (shaker.mUseThresholdTimes && !(data.GetCachedMaxAmplitude() > 0.2f)) {
     return;
   }
 
@@ -63,13 +65,12 @@ void CCameraShakerManager::StartSound(SShaker& shaker) {
   }
 
   CSfxHandle handle;
-  if (data.GetFlags() & CCameraShakerData::kF_NonPositionalSound) {
-    handle = CSfxManager::SfxStart(sfxId, static_cast< uchar >(volume), 64);
+  if ((data.GetFlags() & CCameraShakerData::kF_NonPositionalSound) == 0) {
+    handle = CSfxManager::AddEmitter(sfxId, data.GetPosition(), static_cast< uchar >(volume),
+                                     CSfxManager::kAllAreas, false, false,
+                                     CSfxManager::kMedPriority);
   } else {
-    const CVector3f position = data.GetPosition();
-    handle =
-        CSfxManager::AddEmitter(sfxId, position, static_cast< uchar >(volume),
-                                CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+    handle = CSfxManager::SfxStart(sfxId, static_cast< uchar >(volume), 64);
   }
   CSfxManager::SetDuration(handle, data.GetLastThresholdTime() - data.GetFirstThresholdTime());
 }
@@ -135,22 +136,22 @@ void CCameraShakerManager::Update(float dt, CStateManager& mgr) {
       StartSound(*it);
     }
     if (it->mTime >= it->mData.GetDuration()) {
-      it = mShakers.erase(it);
+      mShakers.erase(it);
     } else {
       mTranslation += it->GetTranslation(mgr);
-      rumbleIntensity += (it->mData.GetFlags() & CCameraShakerData::kF_RumbleDistanceAttenuation)
-                             ? it->GetDistanceAttenuation(mgr)
-                             : 1.f;
+      if (it->mData.GetFlags() & CCameraShakerData::kF_RumbleDistanceAttenuation) {
+        rumbleIntensity += it->GetDistanceAttenuation(mgr);
+      } else {
+        rumbleIntensity += 1.f;
+      }
       ++it;
     }
   }
 
-  const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
-  const CCameraManager& cameraManager = *mgr.GetCameraManager(mPlayerIndex);
-  if ((player.GetCameraState() != CPlayer::kCS_FirstPerson &&
-       !cameraManager.IsInCinematicCamera()) ||
-      cameraManager.ShouldBypassInterpolationCamera() ||
-      player.GetTurretState() != CPlayer::kTS_None) {
+  if ((mgr.GetPlayer(mPlayerIndex)->GetCameraState() != CPlayer::kCS_FirstPerson &&
+       !mgr.GetCameraManager(mPlayerIndex)->IsInCinematicCamera()) ||
+      mgr.GetCameraManager(mPlayerIndex)->ShouldBypassInterpolationCamera() ||
+      mgr.GetPlayer(mPlayerIndex)->GetTurretState() != CPlayer::kTS_None) {
     mTranslation = CVector3f::Zero();
   }
 
@@ -162,7 +163,7 @@ void CCameraShakerManager::Update(float dt, CStateManager& mgr) {
   if (mRumbleCooldown > 0.f) {
     mRumbleCooldown -= dt;
   } else if (mRumbling) {
-    mPendingRumble = mRumbling = false;
+    mRumbling = mPendingRumble = false;
   }
 }
 

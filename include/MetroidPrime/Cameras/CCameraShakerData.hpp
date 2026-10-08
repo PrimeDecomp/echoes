@@ -18,7 +18,7 @@ public:
     kF_RumbleDistanceAttenuation = 0x40
   };
 
-  CCameraShakerData(float attenuationDistance, float duration, uint flags,
+  CCameraShakerData(uint flags, float attenuationDistance, float duration,
                     const CVector3f& position, const CMayaSpline& horizontalMotion,
                     const CMayaSpline& verticalMotion, const CMayaSpline& forwardMotion,
                     int audioEffect);
@@ -35,7 +35,7 @@ public:
   uint GetFlags() const { return mFlags; }
   float GetDuration() const { return mDuration; }
   float GetAttenuationDistance() const { return mAttenuationDistance; }
-  const CVector3f& GetPosition() const { return mPosition; }
+  CVector3f GetPosition() const { return mPosition; }
   void SetPosition(const CVector3f& position) { mPosition = position; }
   int GetAudioEffect() const { return mAudioEffect; }
   float GetCachedMaxAmplitude() const { return mMaxAmplitude; }
