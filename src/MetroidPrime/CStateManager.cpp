@@ -1755,7 +1755,7 @@ void CStateManager::DeleteSaveGameScreen() {
 }
 
 void CStateManager::CreateSaveGameScreen() {
-  mSaveGameScreen = rs_new CSaveGameScreen(kSC_InGame, gpGameState->GetCardSerial());
+  mSaveGameScreen = rs_new CSaveGameScreen(kSC_FrontEnd, gpGameState->GetCardSerial());
 }
 
 void CStateManager::SetGameState(EGameState state) {
