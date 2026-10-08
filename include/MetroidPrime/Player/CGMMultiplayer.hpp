@@ -38,7 +38,6 @@ public:
   int GetMusicIndex() const { return mMusicIndex; } // Guessed name; multiplayer pause music choice.
   void UpdateTimer(float dt, CStateManager& mgr);
 
-protected:
   // Guessed names. FourCCs carried by the native listener callback.
   enum EGameEvent {
     kGE_Score = 'SCOR',
@@ -50,6 +49,7 @@ protected:
     kGE_Spawn = 'SPWN'
   };
 
+protected:
   void NotifyListeners(CStateManager& mgr, uint sourceIndex, uint targetIndex, EGameEvent event,
                        const void* value);
 

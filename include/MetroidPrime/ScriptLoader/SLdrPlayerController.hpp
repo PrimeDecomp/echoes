@@ -40,6 +40,8 @@ inline SLdrPlayerController::SLdrPlayerController()
 , stringParameter1() {
   editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
   unknown_0xe71de331 = 0;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
   proxyType = 0;
   playerOffset = CVector3f(0.0f, 0.0f, 1.5f);
   intParameter1 = 0;

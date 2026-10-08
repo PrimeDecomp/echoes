@@ -89,6 +89,7 @@
 #include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPointOfInterest.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPortalTransition.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlayerProxy.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRelay.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRepulsor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRiftPortal.hpp"
@@ -253,7 +254,7 @@ TYPES_MATCH_IMPL(CScriptPathCamera, CEntity, kET_ScriptPathCamera)
 TYPES_MATCH_IMPL(CScriptPickup, CActor, kET_ScriptPickup)
 TYPES_MATCH_IMPL(CScriptPickupGenerator, CEntity, kET_ScriptPickupGenerator)
 TYPES_MATCH_IMPL(CScriptPlayerHint, CGameHint, kET_ScriptPlayerHint)
-// kET_ScriptPlayerProxy (69): class not declared yet (ScriptPlayerProxy REL); parent CActor
+TYPES_MATCH_IMPL(CScriptPlayerProxy, CActor, kET_ScriptPlayerProxy)
 TYPES_MATCH_IMPL(CScriptPlatform, CPhysicsActor, kET_ScriptPlatform)
 TYPES_MATCH_IMPL(CScriptPointOfInterest, CActor, kET_ScriptPointOfInterest)
 TYPES_MATCH_IMPL(CScriptPortalTransition, CEntity, kET_ScriptPortalTransition)
@@ -477,7 +478,8 @@ CAST_TO_REF_IMPL(CScriptPickupGenerator, kET_ScriptPickupGenerator)
 CAST_TO_PTR_IMPL(CScriptPickupGenerator, kET_ScriptPickupGenerator)
 CAST_TO_REF_IMPL(CScriptPlayerHint, kET_ScriptPlayerHint)
 CAST_TO_PTR_IMPL(CScriptPlayerHint, kET_ScriptPlayerHint)
-// kET_ScriptPlayerProxy (69): class not declared yet (ScriptPlayerProxy REL)
+CAST_TO_REF_IMPL(CScriptPlayerProxy, kET_ScriptPlayerProxy)
+CAST_TO_PTR_IMPL(CScriptPlayerProxy, kET_ScriptPlayerProxy)
 CAST_TO_REF_IMPL(CScriptPlatform, kET_ScriptPlatform)
 CAST_TO_PTR_IMPL(CScriptPlatform, kET_ScriptPlatform)
 CAST_TO_REF_IMPL(CScriptPointOfInterest, kET_ScriptPointOfInterest)

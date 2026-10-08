@@ -176,6 +176,9 @@ enum EScriptObjectState {
   kSS_XDamage = 0x58444d47,
   kSS_DarkXDamage = 0x44524b58,
   kSS_IceXDamage = 0x49444d47, // Guessed DKCR HD name; native massive frozen death tag.
+  // Guessed names; coin-denomination tags (100 and 50) sent beside the DAMG/XDMG/IDMG family.
+  kSS_BIDG = 0x42494447,
+  kSS_BXDG = 0x42584447,
   kSS_Generate = 0x47454e52,
   kSS_GeneratorConnection = 0x47524e54, // Guessed name; generator-to-spawned-object connections.
   kSS_ReflectedDamage = 0x52454644,
