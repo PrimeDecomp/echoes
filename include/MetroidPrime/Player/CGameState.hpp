@@ -137,7 +137,7 @@ public:
   int GetGameModeType() const { return mPreviousGameResults.mGameMode; }       // name inferred
   CWorldState& StateForWorld(CAssetId worldId);
   CWorldState& CurrentWorldState();
-  rstl::rc_ptr< CWorldTransManager >& WorldTransitionManager();
+  rstl::ncrc_ptr< CWorldTransManager >& WorldTransitionManager();
   CAssetId CurrentWorldAssetId() const;
 
   CGameOptions& GameOptions() { return mGameOptions; }
@@ -161,7 +161,7 @@ public:
   double GetTotalPlayTime() const { return mTotalPlayTime; }
   rstl::rc_ptr< CPlayerState > GetPlayerState() const;
   rstl::rc_ptr< CPlayerState > GetPlayerState(int player) const;
-  rstl::rc_ptr< CPlayerState >& PlayerState(int player);
+  rstl::ncrc_ptr< CPlayerState >& PlayerState(int player);
 
 private:
   void InitializeMemoryWorlds();

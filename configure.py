@@ -708,7 +708,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/CRELFileManager.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CLightComboProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CBlackHole.cpp"),
-            Object(NonMatching, "MetroidPrime/CMFGameLoader.cpp"),
+            Object(Matching, "MetroidPrime/CMFGameLoader.cpp"),
             Object(NonMatching, "MetroidPrime/Weapons/CAnnihilatorProjectile.cpp"),
             Object(NonMatching, "MetroidPrime/CLineOfSightTracker.cpp"),
             Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/CRuleSetEvaluator.cpp"),

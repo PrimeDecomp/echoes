@@ -23,7 +23,6 @@ private:
   void UnloadGunPakSet(int set);
   void LoadGunPakSet(int set);
   void SelectGunPakSet();
-  void ApplyGunPakSelection(int selected);
   bool IsGunPakSetLoaded(int set) const;
   void ClearGunPakSetLoaded(int set);
   void MarkGunPakSetLoaded(int set);

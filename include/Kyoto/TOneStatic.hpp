@@ -12,10 +12,7 @@ public:
   void operator delete(void* ptr);
 
 private:
-  static void* GetAllocSpace() {
-    ALIGNAS(T) static uchar sAllocSpace[sizeof(T)];
-    return &sAllocSpace;
-  }
+  static void* GetAllocSpace();
   static uint& ReferenceCount();
 };
 
@@ -23,6 +20,12 @@ template < typename T >
 void* TOneStatic< T >::operator new(size_t sz, const char*, const char*) {
   ReferenceCount()++;
   return GetAllocSpace();
+}
+
+template < typename T >
+void* TOneStatic< T >::GetAllocSpace() {
+  ALIGNAS(T) static uchar sAllocSpace[sizeof(T)];
+  return &sAllocSpace;
 }
 
 template < typename T >
