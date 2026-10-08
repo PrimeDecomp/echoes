@@ -66,6 +66,12 @@ protected:
 
     float GetRadius() const { return mRadius; }
 
+    // Guessed names.
+    const CVector3f& GetPreviousPosition() const { return mPrevPos; }
+    bool IsImpactPending() const { return mImpactPending; }
+    float GetImpactFrameVelocity() const { return mImpactFrameVel; }
+    void ClearImpactFrameVelocity() { mImpactFrameVel = 0.f; }
+
   private:
     CSegId mId;
     CVector3f mCurPos;
