@@ -2049,6 +2049,9 @@ MetroidPrime/Enemies/SSporb_FuncPtrs.cpp:
 	.text       start:0x80213C08 end:0x80213CC0
 	.sbss       start:0x804193A8 end:0x804193B0
 
+MetroidPrime/Tweaks/TweakContents.cpp:
+	.sbss       start:0x804193B0 end:0x804193B8
+
 MetroidPrime/Tweaks/CTweakTargeting.cpp:
 	.text       start:0x80213CC0 end:0x802142A0
 	.data       start:0x803B8038 end:0x803B805C align:4
@@ -3946,6 +3949,7 @@ Kyoto/Audio/CStaticAudioPlayer.cpp:
 	.text       start:0x80326614 end:0x803274EC
 	.ctors      start:0x803A566C end:0x803A5670
 	.rodata     start:0x803B00F0 end:0x803B00F8
+	.data       start:0x803BB288 end:0x803BB2A8
 	.bss        start:0x803E04C0 end:0x803E04E0
 	.sbss       start:0x80419C38 end:0x80419C48
 
