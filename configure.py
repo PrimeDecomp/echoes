@@ -1736,6 +1736,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "RubiksPuzzle",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRubiksPuzzle.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
