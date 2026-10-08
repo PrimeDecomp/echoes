@@ -1743,6 +1743,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "MetareeSwarm",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CMetareeSwarm.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

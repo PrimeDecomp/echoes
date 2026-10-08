@@ -26,6 +26,7 @@
 #include "MetroidPrime/Enemies/CGunTurretTop.hpp"
 #include "MetroidPrime/Enemies/CKrocuss.hpp"
 #include "MetroidPrime/Enemies/CMetaree.hpp"
+#include "MetroidPrime/Enemies/CMetareeSwarm.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
@@ -283,7 +284,7 @@ TYPES_MATCH_IMPL(CSwarmBasics, CActor, kET_SwarmBasics)
 TYPES_MATCH_IMPL(CFlyerSwarm, CSwarmBasics, kET_FlyerSwarm)
 TYPES_MATCH_IMPL(CWallCrawler, CPatterned, kET_WallCrawler)
 // 105: class not declared yet (BacteriaSwarm REL); parent CActor
-// 106: class not declared yet (MetareeSwarm REL); parent CSwarmBasics
+TYPES_MATCH_IMPL(CMetareeSwarm, CSwarmBasics, kET_MetareeSwarm)
 // 107: class not declared yet (IngBlobSwarm REL); parent CSwarmBasics
 // 108: class not declared yet (PlantScarabSwarm REL); parent CSwarmBasics
 TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
@@ -541,7 +542,6 @@ CAST_TO_PTR_IMPL(CFlyerSwarm, kET_FlyerSwarm)
 CAST_TO_REF_IMPL(CWallCrawler, kET_WallCrawler)
 CAST_TO_PTR_IMPL(CWallCrawler, kET_WallCrawler)
 // 105: class not declared yet (BacteriaSwarm REL)
-// 106: class not declared yet (MetareeSwarm REL)
 // 107: class not declared yet (IngBlobSwarm REL)
 // 108: class not declared yet (PlantScarabSwarm REL)
 CAST_TO_REF_IMPL(CBeamProjectile, kET_BeamProjectile)

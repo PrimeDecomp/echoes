@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CMetareeSwarm.cpp:
+	.text       start:0x00000000 end:0x0000291C
+	.rodata     start:0x00000000 end:0x00000028
+	.data       start:0x00000000 end:0x000000D0
+	.bss        start:0x00000000 end:0x00000024
+
 REL/REL_Setup.cpp:
 	.text       start:0x0000291C end:0x00002AC0
 	.rodata     start:0x00000028 end:0x000000AC

@@ -108,6 +108,7 @@ enum EEntityType {
   kET_SwarmBasics = 102,   // Native TypesMatch tag, correlated with swarm consumers.
   kET_FlyerSwarm = 103,    // Native REL TypesMatch tag; parent is the SwarmBasics tag.
   kET_WallCrawler = 104,   // Target-derived class tag.
+  kET_MetareeSwarm = 106,  // Native REL TypesMatch tag; parent is the SwarmBasics tag.
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
