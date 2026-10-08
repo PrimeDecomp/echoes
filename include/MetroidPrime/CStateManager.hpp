@@ -500,6 +500,8 @@ public:
   }
   CCameraManager* CameraManager(int playerIndex) { return mCameraManagers[playerIndex]; }
   const CPlayerState* GetPlayerState() const { return mPlayerState; }
+  TUniqueId GetPlayerActorHead() const { return mPlayerActorHead; } // Prime-correlated name
+  void SetPlayerActorHead(TUniqueId id) { mPlayerActorHead = id; } // Prime-correlated name
   const CPlayer* GetCurrentRenderPlayer() const { return mCurrentRenderPlayer; } // Guessed name
   int GetCurrentRenderPlayerIndex() const { return mCurrentRenderPlayerIndex; }  // Guessed name
   const CCameraManager* GetCurrentRenderCameraManager() const {

@@ -225,7 +225,7 @@ public:
     float mXrayTarget;
     float mWeaponWorldLightingSpeed;
     float mWeaponWorldLightingTarget;
-    int x190_;
+    int mPlayerActorsLoading; // Guessed name; player actors in the area still loading.
     rstl::list< rstl::vector< uint > > x194_;
     rstl::list< SUnresolvedListEntry > x1ac_;
     rstl::list< TUniqueId > mDockIds;
