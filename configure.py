@@ -1841,6 +1841,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "IngPuddle",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIngPuddle.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

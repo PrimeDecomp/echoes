@@ -26,6 +26,7 @@
 #include "MetroidPrime/Enemies/CGunTurretBase.hpp"
 #include "MetroidPrime/Enemies/CGunTurretTop.hpp"
 #include "MetroidPrime/Enemies/CIngBlobSwarm.hpp"
+#include "MetroidPrime/Enemies/CIngPuddle.hpp"
 #include "MetroidPrime/Enemies/CKralee.hpp"
 #include "MetroidPrime/Enemies/CKrocuss.hpp"
 #include "MetroidPrime/Enemies/CMetaree.hpp"
@@ -215,7 +216,7 @@ TYPES_MATCH_IMPL(CFishCloud, CActor, kET_FishCloud)
 TYPES_MATCH_IMPL(CGameLight, CActor, kET_GameLight)
 TYPES_MATCH_IMPL(CHomingBlob, CWeapon, kET_HomingBlob)
 TYPES_MATCH_IMPL(CHUDBillboardEffect, CEffect, kET_HUDBillboardEffect)
-// 29: class not declared yet (IngPuddle REL); parent CPhysicsActor
+TYPES_MATCH_IMPL(CIngPuddle, CPhysicsActor, kET_IngPuddle)
 // 30: class not declared yet (IngSnatchingSwarm REL); parent CActor
 TYPES_MATCH_IMPL(CPathCamera, CGameCamera, kET_PathCamera)
 TYPES_MATCH_IMPL(CPlayer, CPhysicsActor, kET_Player)
