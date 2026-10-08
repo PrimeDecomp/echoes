@@ -36,7 +36,7 @@
 #include "Kyoto/Streams/CInputStream.hpp"
 #include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CKnockBackInfo.hpp"
-#include "MetroidPrime/Enemies/CGeomBlobEffect.hpp"
+#include "MetroidPrime/Enemies/CCollisionTracker.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrIngSpaceJumpGuardian.hpp"
 
 namespace {
@@ -1041,19 +1041,20 @@ rstl::vector< TUniqueId > CIngSpaceJumpGuardian::FindJumpPoints(CStateManager& m
 }
 
 void CIngSpaceJumpGuardian::SpawnBlobEffect(CStateManager& mgr,
-                                            const TToken< CGenDescription >& desc) {
+                                            const TLockedToken< CGenDescription >& desc) {
   mBlobId = mgr.AllocateUniqueId();
-  CGeomBlobEffect* effect = rs_new CGeomBlobEffect(
+  CCollisionTracker* effect = rs_new CCollisionTracker(
       desc, mBlobId, GetCurrentAreaId(), true, rstl::string_l("IngBlobEffect"),
-      CTransform4f::Translate(GetTranslation()), GetUniqueId(), 10.f, 0);
+      CTransform4f::Translate(GetTranslation()), GetUniqueId(), 0,
+      CCollisionTracker::skDefaultExtents);
   if (effect != nullptr) {
-    effect->SetBlobIntensity(0.f);
+    effect->SetParticleEmissionRateScalar(0.f);
     mgr.AddObject(effect);
   }
 }
 
 void CIngSpaceJumpGuardian::UpdateBlob(CStateManager& mgr, float dt) {
-  if (CGeomBlobEffect* effect = static_cast< CGeomBlobEffect* >(mgr.ObjectById(mBlobId))) {
+  if (CCollisionTracker* effect = static_cast< CCollisionTracker* >(mgr.ObjectById(mBlobId))) {
     const float intensity = mBlobActive ? 1.f : 0.f;
     if (intensity > 0.f) {
       const CVector3f position = GetTranslation();
@@ -1061,7 +1062,7 @@ void CIngSpaceJumpGuardian::UpdateBlob(CStateManager& mgr, float dt) {
           CMath::AbsF(CVector3f::Up().GetZ() < 0.95f) != 0.f ? CVector3f::Up() : CVector3f::Right();
       effect->SetTransform(CTransform4f::LookAt(position, position + CVector3f::Up(), up));
     }
-    effect->SetBlobIntensity(intensity);
+    effect->SetParticleEmissionRateScalar(intensity);
   }
 }
 

@@ -53,9 +53,10 @@ private:
   void UpdateTouchBounds();                                                        // Guessed name
   void MoveAlongSurface(const CVector3f& direction, float speed, float dt);        // Guessed name
   void UpdateBlobEffect(CStateManager& mgr, float dt);                             // Guessed name
-  void SpawnBlobEffect(CStateManager& mgr, const TToken< CGenDescription >& desc); // Guessed name
-  void InitializeStateMachine(CStateManager& mgr);                                 // Guessed name
-  const CGenericFSM2* GetStateMachine() const;                                     // Guessed name
+  void SpawnBlobEffect(CStateManager& mgr,
+                       const TLockedToken< CGenDescription >& desc); // Guessed name
+  void InitializeStateMachine(CStateManager& mgr);                   // Guessed name
+  const CGenericFSM2* GetStateMachine() const;                       // Guessed name
 
   SLdrIngPuddleData mProperties;                                             // Guessed name
   CHealthInfo mHealthInfo;                                                   // Guessed name

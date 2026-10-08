@@ -6,6 +6,18 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CCollisionTracker.cpp:
+	.text       start:0x00000000 end:0x000048A8
+	.rodata     start:0x00000000 end:0x00000090
+	.data       start:0x00000000 end:0x00000090
+	.bss        start:0x00000000 end:0x00000008
+
+MetroidPrime/Enemies/CSurfaceParticleEffect.cpp:
+	.text       start:0x000048A8 end:0x0000694C
+	.rodata     start:0x00000090 end:0x000000E8
+	.data       start:0x00000090 end:0x00000124
+	.bss        start:0x00000008 end:0x0000000C
+
 REL/REL_Setup.cpp:
 	.text       start:0x0000694C end:0x00006AF0
 	.rodata     start:0x000000E8 end:0x0000016C

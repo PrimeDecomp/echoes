@@ -6,7 +6,7 @@
 #include "Kyoto/Particles/CGenDescription.hpp"
 #include "MetroidPrime/CExplosion.hpp"
 #include "MetroidPrime/CStateManager.hpp"
-#include "MetroidPrime/Enemies/CGeomBlobEffect.hpp"
+#include "MetroidPrime/Enemies/CCollisionTracker.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrIngPuddle.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
@@ -123,9 +123,9 @@ void CIngPuddle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   case kSM_Deactivate:
     if (wasActive) {
-      if (CGeomBlobEffect* effect =
-              static_cast< CGeomBlobEffect* >(mgr.ObjectById(mBlobEffectId))) {
-        effect->SetBlobIntensity(0.f);
+      if (CCollisionTracker* effect =
+              static_cast< CCollisionTracker* >(mgr.ObjectById(mBlobEffectId))) {
+        effect->SetParticleEmissionRateScalar(0.f);
       }
       if (mSfxHandle) {
         CSfxManager::RemoveEmitter(mSfxHandle);
@@ -277,29 +277,31 @@ void CIngPuddle::InitializeStateMachine(CStateManager& mgr) {
   }
 }
 
-void CIngPuddle::SpawnBlobEffect(CStateManager& mgr, const TToken< CGenDescription >& desc) {
+void CIngPuddle::SpawnBlobEffect(CStateManager& mgr, const TLockedToken< CGenDescription >& desc) {
   const TUniqueId id = mgr.AllocateUniqueId();
-  CGeomBlobEffect* effect =
-      rs_new CGeomBlobEffect(desc, id, GetCurrentAreaId(), true, rstl::string_l("IngBlobEffect"),
-                             CTransform4f::Translate(GetTranslation()), GetUniqueId(), 10.f, 0);
+  CCollisionTracker* effect =
+      rs_new CCollisionTracker(desc, id, GetCurrentAreaId(), true, rstl::string_l("IngBlobEffect"),
+                               CTransform4f::Translate(GetTranslation()), GetUniqueId(), 0,
+                               CCollisionTracker::skDefaultExtents);
   if (effect != nullptr) {
     mBlobEffectId = id;
-    effect->SetBlobIntensity(0.f);
+    effect->SetParticleEmissionRateScalar(0.f);
     mgr.AddObject(effect);
   }
 }
 
 void CIngPuddle::UpdateBlobEffect(CStateManager& mgr, float dt) {
-  if (CGeomBlobEffect* effect = static_cast< CGeomBlobEffect* >(mgr.ObjectById(mBlobEffectId))) {
+  if (CCollisionTracker* effect =
+          static_cast< CCollisionTracker* >(mgr.ObjectById(mBlobEffectId))) {
     if (mHealthInfo.GetHP() > 0.f) {
       const CVector3f normal = mSurfaceAlignment.GetSurface().GetNormal();
       const CVector3f position = GetTranslation();
       const CVector3f& up =
           CMath::AbsF(normal.GetZ() < 0.95f) != 0.f ? CVector3f::Up() : CVector3f::Right();
       effect->SetTransform(CTransform4f::LookAt(position, position + normal, up));
-      effect->SetBlobIntensity(1.f);
+      effect->SetParticleEmissionRateScalar(1.f);
     } else {
-      effect->SetBlobIntensity(0.f);
+      effect->SetParticleEmissionRateScalar(0.f);
     }
   }
 }
