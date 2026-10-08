@@ -188,7 +188,7 @@ void CBouncyGrenade::AddToRenderer(const CStateManager& mgr) const {
   if (mExploded && mgr.GetPlayerState()->GetActiveVisor(mgr) != CPlayerState::kPV_Echo) {
     gpRender->AddParticleGen(*mElementGenExplodeCombat);
   }
-  if (mHasRenderBounds && mgr.fn_800366e4(this)) {
+  if (mHasRenderBounds && mgr.IsActorVisible(*this)) {
     EnsureRendered(mgr);
   }
 }

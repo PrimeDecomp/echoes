@@ -315,7 +315,7 @@ CPlayer* CPlayerGunBase::GetPlayer(CStateManager& mgr) const {
 }
 
 CPlayer* CPlayerGunBase::GetPlayerFromAll(CStateManager& mgr) const {
-  return TCastToPtr< CPlayer >(mgr.GetObjectByIdFromListAll(mPlayerUniqueId));
+  return TCastToPtr< CPlayer >(mgr.ObjectById(mPlayerUniqueId));
 }
 
 void CPlayerGunBase::AddGunDrawBlock() { ++mGunDrawBlockCount; }

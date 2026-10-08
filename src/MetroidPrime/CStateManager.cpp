@@ -1179,6 +1179,8 @@ void CStateManager::SetupViewForDraw(const CViewport& viewport) {
   gpRender->SetDebugOption(IRenderer::kDO_PVSState, 1);
 }
 
+void CStateManager::DrawDebugStuff() const {}
+
 void CStateManager::DrawWorld(const CInGameGuiManagerSet& gui) {
   CScopedProfiler profile(rstl::string_l("*TotalDrawWorld"), true);
   SetRendererWorkspace(alloca(GetRendererWorkspaceSize()));

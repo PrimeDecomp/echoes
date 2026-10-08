@@ -23,8 +23,8 @@ CLightComboProjectile::CLightComboProjectile(const TToken< CWeaponDescription >&
                                              TUniqueId homingTarget, bool underwater, uint attribs,
                                              float radius)
 : CEnergyProjectile(true, description, type, xf, material, damage, uid, areaId, owner, homingTarget,
-                    attribs, underwater, CVector3f::One(), CImpactVisorEffect(), false, true, false,
-                    1.f, 4.f, 4.f)
+                    attribs, underwater, CVector3f::One(), CImpactVisorEffect::None(), false, true,
+                    false, 1.f, 4.f, 4.f)
 , mRadius(radius)
 , mRaySpawnTimer(0.2f)
 , mRayProjectile(NWeaponTypes::get_asset_id_from_name("LightPlasmaWeapon"),

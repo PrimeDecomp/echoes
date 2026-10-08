@@ -13,7 +13,7 @@ class CAnimationManager {
 public:
   CAnimationManager(TToken< CAnimationDatabase > animDB, const CAnimSysContext& sysCtx)
   : mAnimDB(animDB), mSysCtx(sysCtx) {}
-  ~CAnimationManager();
+  ~CAnimationManager() {}
 
   rstl::ncrc_ptr< CAnimTreeNode > GetAnimationTree(uint animIdx,
                                                    const CMetaAnimTreeBuildOrders& orders) const;

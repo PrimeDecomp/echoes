@@ -249,7 +249,7 @@ void CScriptActor::FireProjectile(CStateManager& mgr, const rstl::string& locato
   CEnergyProjectile* projectile = rs_new CEnergyProjectile(
       true, mProjectileInfo->Token(), kWT_AI, xf, kMT_Character, mProjectileInfo->GetDamage(),
       mgr.AllocateUniqueId(), GetCurrentAreaId(), GetUniqueId(), kInvalidUniqueId, kPA_None, false,
-      CVector3f(1.f, 1.f, 1.f), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
+      CVector3f(1.f, 1.f, 1.f), CImpactVisorEffect::None(), false, true, false, 1.f, 4.f, 4.f);
   if (projectile != nullptr) {
     mgr.AddObject(projectile);
   }

@@ -385,7 +385,7 @@ void CGunWeapon::Fire(const TCachedToken< CWeaponDescription >& projectile, bool
   CEnergyProjectile* proj = rs_new CEnergyProjectile(
       true, projectile, mWeaponType, xf, kMT_NoPlatformCollision, damage, mgr.AllocateUniqueId(),
       player->GetCurrentAreaId(), mPlayerId, homingTarget, chargeAttributes, underwater, scale,
-      CImpactVisorEffect(), false, true, false, chargeFactor1, 4.f, 4.f);
+      CImpactVisorEffect::None(), false, true, false, chargeFactor1, 4.f, 4.f);
   if (proj) {
     mgr.AddObject(proj);
     if (chargeState != CPlayerState::kCS_Normal && chargeFactor1 == 1.f) {

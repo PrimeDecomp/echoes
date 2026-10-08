@@ -61,7 +61,7 @@ public:
   };
 
   CCompoundTargetReticle(const CStateManager& mgr, int playerIndex);
-  ~CCompoundTargetReticle();
+  ~CCompoundTargetReticle() {}
   void SetLeadingOrientation(const CQuaternion& orientation) { mLeadingOrientation = orientation; }
 
   void Touch() const;
@@ -185,7 +185,7 @@ private:
 class CTargetingManager {
 public:
   CTargetingManager(const CStateManager& mgr, int playerIndex);
-  ~CTargetingManager();
+  ~CTargetingManager() {}
   CCompoundTargetReticle& CompoundTargetReticle() { return mTargetReticle; }
   bool CheckLoadComplete();
   void Update(float dt, const CStateManager& mgr);

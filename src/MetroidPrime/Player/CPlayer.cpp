@@ -126,6 +126,12 @@ static TSuitTransitionModelNames skSuitTransitionModelNames[6] = {
 
 const float CPlayer::skDefaultHudFadeOutSpeed = 0.5f;
 const float CPlayer::skDefaultHudFadeInSpeed = 2.5f;
+const float CPlayer::skTransitionFilterStartTime = 0.95f;
+const float CPlayer::skTransitionFilterFadeInTime = 0.1f;
+const float CPlayer::skTransitionFilterFadeOutTime = 0.15f;
+const float CPlayer::skTransitionFilterHoldTime = 0.15f;
+const float CPlayer::skTransitionFilterEndTime = 1.25f;
+const float CPlayer::skTransitionFilterMaxAlpha = 0.3f;
 
 typedef rstl::pair< CPlayerState::EItemType, CControlMapper::ECommands > TVisorToItemMapping;
 static TVisorToItemMapping skVisorToItemMapping[4] = {

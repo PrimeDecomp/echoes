@@ -66,7 +66,7 @@ bool CTargetableProjectile::Explode(const CVector3f& position, const CVector3f& 
             true, mDeflectedWeaponDescription, GetType(),
             CTransform4f::LookAt(mProjectile.GetTranslation(), aimPosition, CVector3f::Up()),
             kMT_Player, mDeflectedDamage, uid, GetCurrentAreaId(), projectileOwner, GetOwnerId(), 0,
-            false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f, 4.f, 4.f);
+            false, CVector3f::One(), CImpactVisorEffect::None(), false, true, false, 1.f, 4.f, 4.f);
         mgr.AddObject(*projectile);
         projectile->AddMaterial(kMT_Orbit, mgr);
         player->SetAimTarget(uid);

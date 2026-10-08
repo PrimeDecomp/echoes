@@ -11,6 +11,7 @@
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/Cameras/CBallCamera.hpp"
 #include "MetroidPrime/Cameras/CCinematicCamera.hpp"
+#include "MetroidPrime/CCameraManager.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Cameras/CFixedCamera.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
@@ -97,6 +98,11 @@
 #include "MetroidPrime/Weapons/CPowerBomb.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 
+#include "Collision/CCollidableAABox.hpp"
+#include "Collision/CCollidableSphere.hpp"
+#include "WorldFormat/CCollidableOBBTreeGroup.hpp"
+#include "WorldFormat/COBBTreeGroup.hpp"
+
 #define TYPES_MATCH_IMPL(cls, parent, id)                                                          \
   CEntity* cls::TypesMatch(int typeId) const {                                                     \
     if (typeId == id) {                                                                            \
@@ -143,6 +149,8 @@ CScriptCoverPoint::~CScriptCoverPoint() {}
 CScriptAiJumpPoint::~CScriptAiJumpPoint() {}
 
 CEnergyProjectile::~CEnergyProjectile() {}
+
+CCollisionActor::~CCollisionActor() {}
 
 CScriptPortalTransition::~CScriptPortalTransition() {}
 
@@ -394,6 +402,11 @@ CAST_TO_REF_IMPL(CScriptCamera, kET_ScriptCamera)
 CAST_TO_PTR_IMPL(CBallCamera, kET_BallCamera)
 CAST_TO_REF_IMPL(CBallCamera, kET_BallCamera)
 CAST_TO_PTR_IMPL(CFirstPersonCamera, kET_FirstPersonCamera)
+
+const CGameCamera* CCameraManager::CastGameCameratoFirstPersonCamera(const CGameCamera* camera) {
+  return static_cast< const CFirstPersonCamera* >(camera->TypesMatch(kET_FirstPersonCamera));
+}
+
 CAST_TO_PTR_IMPL(CFixedCamera, kET_FixedCamera)
 CAST_TO_REF_IMPL(CFixedCamera, kET_FixedCamera)
 CAST_TO_PTR_IMPL(CSpindleCamera, kET_SpindleCamera)

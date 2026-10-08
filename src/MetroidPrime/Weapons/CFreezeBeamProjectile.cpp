@@ -21,8 +21,8 @@ CFreezeBeamProjectile::CFreezeBeamProjectile(const TToken< CWeaponDescription >&
                                              float iceImpactBoundScale, ushort impactSfx,
                                              CAssetId iceImpactParticleId, CAssetId steamTextureId)
 : CEnergyProjectile(true, description, type, xf, excludeMaterial, damage, uid, areaId, owner,
-                    kInvalidUniqueId, 0, false, CVector3f::One(), CImpactVisorEffect(), false, true,
-                    false, 1.f, 4.f, 4.f)
+                    kInvalidUniqueId, 0, false, CVector3f::One(), CImpactVisorEffect::None(), false,
+                    true, false, 1.f, 4.f, 4.f)
 , mFreezeDuration(freezeDuration)
 , mImpactSfx(impactSfx)
 , mIceImpactParticleId(iceImpactParticleId)
@@ -53,7 +53,7 @@ bool CFreezeBeamProjectile::Explode(const CVector3f& position, const CVector3f& 
 void CFreezeBeamProjectile::ApplyDamageToOneActor(CStateManager& mgr, const CDamageInfo& damage,
                                                   TUniqueId id, const CVector3f& direction) {
   CGameProjectile::ApplyDamageToOneActor(mgr, damage, id, direction);
-  if (CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(id))) {
+  if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id))) {
     if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
       player->Freeze(mFreezeDuration, mgr, mSteamTextureId, CSfxManager::kInternalInvalidSfxId,
                      kInvalidAssetId);

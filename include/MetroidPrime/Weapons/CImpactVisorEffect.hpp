@@ -32,7 +32,6 @@ public:
     float mFadeOutTime;
   };
 
-  CImpactVisorEffect();
   CImpactVisorEffect(const rstl::optional_object< SParticleEffect >& particleEffect,
                      const rstl::optional_object< SBlurEffect >& blurEffect,
                      const rstl::optional_object< rstl::pair< int, float > >& lowPassFilter)
@@ -52,7 +51,7 @@ public:
                               rstl::optional_object< rstl::pair< int, float > >());
   }
 
-  // Guessed name; same code as the DOL function named __ct__18CImpactVisorEffectFv.
+  // Guessed name
   static CImpactVisorEffect None() {
     return CImpactVisorEffect(rstl::optional_object_null(), rstl::optional_object_null(),
                               rstl::optional_object_null());

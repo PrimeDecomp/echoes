@@ -90,7 +90,7 @@ CPatterned::CPatterned(EPatternedAI character, TUniqueId uid, const rstl::string
 , mIngPossessionTarget(0.f)
 , mIngPossessionDelay(0.f)
 , mIngPossessionDuration(0.5f)
-, mIngVulnerability(pinfo.mIngPossessionData.ingVulnerability)
+, mIngVulnerability(LdrToDamageVulnerability(pinfo.mIngPossessionData.ingVulnerability))
 , mMoveVec(CVector3f::Zero())
 , mFaceVec(CVector3f::Zero())
 , mInitialAnimation(pinfo.mAnimationParameters.GetInitialAnimation())
@@ -1020,10 +1020,10 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
 
     if (CVector3f::Dot(forward, (aimPos - lctrXf.GetTranslation()).AsNormalized()) > 0.f) {
       const CTransform4f lookAtXf = CTransform4f::LookAt(lctrXf.GetTranslation(), aimPos);
-      LaunchProjectile(lookAtXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect(),
+      LaunchProjectile(lookAtXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect::None(),
                        CVector3f(1.f, 1.f, 1.f));
     } else {
-      LaunchProjectile(lctrXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect(),
+      LaunchProjectile(lctrXf, mgr, 1, CWeapon::kPA_None, false, CImpactVisorEffect::None(),
                        CVector3f(1.f, 1.f, 1.f));
     }
     break;

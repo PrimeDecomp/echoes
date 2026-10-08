@@ -964,7 +964,7 @@ void CEnvFxManager::UpdateVisorSplash(CStateManager& mgr, float dt, const CTrans
       continue;
     }
     CHUDBillboardEffect* effect =
-        TCastToPtr< CHUDBillboardEffect >(mgr.GetObjectByIdFromListAll(mEnvRainSplashIds[i]));
+        TCastToPtr< CHUDBillboardEffect >(mgr.ObjectById(mEnvRainSplashIds[i]));
     if (effect != nullptr) {
       mgr.SetActorAreaId(*effect, mgr.GetNextAreaId());
     }
@@ -991,7 +991,7 @@ void CEnvFxManager::UpdateVisorSplash(CStateManager& mgr, float dt, const CTrans
 void CEnvFxManager::SetSplashEffectRate(float rate, CStateManager& mgr) {
   for (int i = 0; i < mEnvRainSplashIds.size(); ++i) {
     CHUDBillboardEffect* effect =
-        TCastToPtr< CHUDBillboardEffect >(mgr.GetObjectByIdFromListAll(mEnvRainSplashIds[i]));
+        TCastToPtr< CHUDBillboardEffect >(mgr.ObjectById(mEnvRainSplashIds[i]));
     if (effect != nullptr && effect->IsElementGen()) {
       effect->GetParticleGen()->SetGeneratorRate(rate);
     }

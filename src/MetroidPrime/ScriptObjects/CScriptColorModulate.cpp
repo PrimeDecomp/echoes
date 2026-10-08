@@ -95,13 +95,13 @@ void CScriptColorModulate::SetTargetFlags(CStateManager& mgr, const CModelFlags&
     }
     const CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
     for (CStateManager::TIdList::const_iterator id = ids.first; id != ids.second; ++id) {
-      if (CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(id->second))) {
+      if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(id->second))) {
         actor->SetModelFlags(flags);
       }
     }
   }
   if (mParent != kInvalidUniqueId) {
-    if (CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(mParent))) {
+    if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mParent))) {
       actor->SetModelFlags(flags);
     }
   }

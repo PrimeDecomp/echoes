@@ -164,8 +164,9 @@ void CAuxWeapon::FireProjectile(float dt, EWeaponType type, bool underwater, boo
       true, description, isCombo ? type : kWT_Missile, spawnTransform, kMT_NoPlatformCollision,
       damage.ApplyDoubleDamage(*FindPlayer(mgr)->GetPlayerState()), mgr.AllocateUniqueId(),
       kInvalidAreaId, mPlayerId, description->mHOMG ? homingId : kInvalidUniqueId, attributes,
-      underwater, CVector3f::One(), CImpactVisorEffect(), false, true, type == kWT_Annihilator, 1.f,
-      type == kWT_Annihilator ? 20.f : 4.f, type == kWT_Annihilator ? 20.f : 4.f);
+      underwater, CVector3f::One(), CImpactVisorEffect::None(), false, true,
+      type == kWT_Annihilator, 1.f, type == kWT_Annihilator ? 20.f : 4.f,
+      type == kWT_Annihilator ? 20.f : 4.f);
   if (projectile) {
     mgr.AddObject(projectile);
     projectile->InitializeMuzzleOffset(0.5f, mgr);
