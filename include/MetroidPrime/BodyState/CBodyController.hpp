@@ -89,6 +89,7 @@ public:
   bool HasBeenFrozen() const { return mHasBeenFrozen; }
 
   bool ShouldPlayDeathAnims() const { return mPlayDeathAnims; }
+  void SetPlayDeathAnims(bool play) { mPlayDeathAnims = play; } // Guessed name
 
   bool IsOnFire() const { return mFireDur > 0.f; }
 
