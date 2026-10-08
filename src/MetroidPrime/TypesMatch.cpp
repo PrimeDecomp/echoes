@@ -21,6 +21,7 @@
 #include "MetroidPrime/Cameras/CSurfaceCamera.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CSandworm.hpp"
+#include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptAIHint.hpp"
@@ -141,7 +142,8 @@ CAST_TO_PTR_IMPL(CMetroid, kET_Metroid)
 CAST_TO_REF_IMPL(CMetroid, kET_Metroid)
 CAST_TO_REF_IMPL(CFirstPersonCamera, kET_FirstPersonCamera)
 
-CEntity* CastToSnakeWeedSwarm(CEntity* entity) { return TryCast(entity, kET_SnakeWeedSwarm); }
+CAST_TO_PTR_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
+CAST_TO_REF_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CPlasmaProjectile::~CPlasmaProjectile() {}

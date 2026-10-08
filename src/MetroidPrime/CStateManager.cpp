@@ -48,6 +48,7 @@
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/GameObjectLists.hpp"
 #include "MetroidPrime/HUD/CHUDMemoParms.hpp"
@@ -3242,7 +3243,7 @@ void CStateManager::ApplyDamageToWorld(TUniqueId owner, CActor& projectile,
        it != nearList.end(); ++it) {
     CActor* const actor = static_cast< CActor* >(ObjectById(*it));
     CPlayer* const player = TCastToPtr< CPlayer >(actor);
-    CEntity* const snakeWeed = CastToSnakeWeedSwarm(actor);
+    CSnakeWeedSwarm* const snakeWeed = TCastToPtr< CSnakeWeedSwarm >(actor);
     CSwarmBasics* const swarm = TCastToPtr< CSwarmBasics >(actor);
 
     if (bomb && player != nullptr && actor->GetUniqueId() == weapon->GetOwnerId()) {
