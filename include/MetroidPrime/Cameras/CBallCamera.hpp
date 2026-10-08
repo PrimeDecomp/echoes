@@ -79,6 +79,7 @@ public:
   bool TransitionFromMorphBallState(CStateManager& mgr);
   // Reconstructed accessors; see CPlayerDynamics research.
   void SetLookAtPosition(const CVector3f& position) { mLookPos = position; }
+  void SetLookAtOffset(CVector3f offset) { mLookAtOffset = offset; }
   void ResetLookAtPosition() {
     mLookPos = mFixedLookPos;
     mLookPosAhead = mFixedLookPos;

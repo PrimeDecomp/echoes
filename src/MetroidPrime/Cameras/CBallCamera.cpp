@@ -206,7 +206,7 @@ void CBallCamera::ResetToTweaks(CStateManager& mgr) {
       CCameraSpring(gpTweakBall->GetBallCameraCentroidDistanceSpringConstant(),
                     gpTweakBall->GetBallCameraCentroidDistanceSpringMax(),
                     gpTweakBall->GetBallCameraCentroidDistanceSpringTardis());
-  mLookAtOffset = gpTweakBall->GetBallCameraOffset();
+  SetLookAtOffset(gpTweakBall->GetBallCameraOffset());
   mElevation = 2.736f;
   mAttitudeRange = M_PIF / 2.f;
   mAzimuthRange = M_PIF / 2.f;
