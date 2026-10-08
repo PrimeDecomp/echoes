@@ -313,7 +313,6 @@ public:
 
   CEntity* ObjectById(TUniqueId uid);
   const CEntity* GetObjectById(TUniqueId uid) const;
-  CEntity* GetObjectByIdFromListAll(TUniqueId uid);
   bool RayCollideWorld(const CVector3f& start, const CVector3f& end, const CMaterialFilter& filter,
                        const CActor* damagee);
   bool RayCollideWorld(const CVector3f& start, const CVector3f& end,
@@ -514,7 +513,6 @@ public:
   bool GetInSaveUI() const { return mInSaveUI; }
   void SetIsFullThreat(bool value) { mIsFullThreat = value; }
 
-  bool fn_800366e4(const CActor*) const;
   // Name and signature from the Wii MP2 SEL export.
   void AddDarkWorldSphereToRenderer(const CVector3f& pos, const CVector3f& scale, uchar alpha,
                                     uchar insideAlpha, bool inside, float spotSize,

@@ -1668,7 +1668,7 @@ bool CFlyingPirate::FireProjectile(CStateManager& mgr, float dt) {
   bool fired = false;
   const CTransform4f xf = GetLctrTransform(mGunSegId);
   if (!mAlive) {
-    LaunchProjectile(xf, mgr, 8, CWeapon::kPA_None, false, CImpactVisorEffect(),
+    LaunchProjectile(xf, mgr, 8, CWeapon::kPA_None, false, CImpactVisorEffect::None(),
                      CVector3f(1.f, 1.f, 1.f));
     fired = true;
   } else {
@@ -1689,7 +1689,7 @@ bool CFlyingPirate::FireProjectile(CStateManager& mgr, float dt) {
           origin += GetTransform().Rotate(mBurstFire.GetDistanceCompensatedError(distance, 6.f));
           const CTransform4f aimXf =
               CTransform4f::LookAt(xf.GetTranslation(), origin, CVector3f::Up());
-          LaunchProjectile(aimXf, mgr, 8, CWeapon::kPA_None, false, CImpactVisorEffect(),
+          LaunchProjectile(aimXf, mgr, 8, CWeapon::kPA_None, false, CImpactVisorEffect::None(),
                            CVector3f(1.f, 1.f, 1.f));
           fired = true;
         }
@@ -1722,8 +1722,8 @@ void CFlyingPirate::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& nod
           true, info.Token(), kWT_AI, xf, kMT_Character, info.GetDamage(), mgr.AllocateUniqueId(),
           GetCurrentAreaId(), GetUniqueId(),
           mIsAttackingObject ? TUniqueId(mAttackObjectId) : mgr.GetPlayer(0)->GetUniqueId(),
-          CWeapon::kPA_None, false, CVector3f::One(), CImpactVisorEffect(), false, true, false, 1.f,
-          4.f, 4.f);
+          CWeapon::kPA_None, false, CVector3f::One(), CImpactVisorEffect::None(), false, true,
+          false, 1.f, 4.f, 4.f);
       if (projectile != nullptr) {
         mgr.AddObject(projectile);
         if (!mIsAttackingObject && mIsAquaPirate) {

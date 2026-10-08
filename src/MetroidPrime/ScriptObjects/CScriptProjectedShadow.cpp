@@ -50,8 +50,7 @@ void CScriptShadowProjector::AcceptScriptMsg(CStateManager& mgr, const CScriptMs
       if (it->state != kSS_Play) {
         continue;
       }
-      if (CActor* actor =
-              TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(mgr.GetIdForScript(it->objId)))) {
+      if (CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mgr.GetIdForScript(it->objId)))) {
         if (actor->HasModelData()) {
           mTarget = actor->GetUniqueId();
           break;
@@ -89,7 +88,7 @@ void CScriptShadowProjector::PreRender(CStateManager& mgr) {
     return;
   }
 
-  CActor* actor = TCastToPtr< CActor >(mgr.GetObjectByIdFromListAll(mTarget));
+  CActor* actor = TCastToPtr< CActor >(mgr.ObjectById(mTarget));
   if (actor == nullptr || !actor->HasModelData()) {
     mTarget = kInvalidUniqueId;
     return;

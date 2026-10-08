@@ -84,7 +84,7 @@ void CHomingBlob::PreRenderAllViewports(CStateManager& mgr) {
 }
 
 void CHomingBlob::PreRender(CStateManager& mgr) {
-  SetPreRenderClipped(!mHasRenderBounds || !mgr.fn_800366e4(this));
+  SetPreRenderClipped(!mHasRenderBounds || !mgr.IsActorVisible(*this));
   if (!GetPreRenderClipped() && mPlayerIndex == mgr.GetCurrentRenderPlayerIndex()) {
     SetPreRenderClipped(true);
   }

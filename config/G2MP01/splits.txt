@@ -32,7 +32,7 @@ MetroidPrime/CObjectList.cpp:
 MetroidPrime/Player/CPlayer.cpp:
 	.text       start:0x8000B92C end:0x8001D168
 	.ctors      start:0x803A586C end:0x803A5870
-	.sdata2     start:0x8041B750 end:0x8041B758
+	.sdata2     start:0x8041B750 end:0x8041B770
 
 MetroidPrime/CAxisAngle.cpp:
 	.text       start:0x8001D168 end:0x8001D4CC

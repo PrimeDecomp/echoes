@@ -1,12 +1,14 @@
 #include "MetroidPrime/Weapons/GunController/CGunMotion.hpp"
 
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
+#include "Kyoto/Animation/CPASAnimState.hpp"
 #include "Kyoto/Animation/CPASDatabase.hpp"
 #include "Kyoto/Graphics/CModelFlags.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CAnimPlaybackParms.hpp"
 #include "MetroidPrime/CAnimRes.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/Weapons/WeaponCommon.hpp"
 
 CGunMotion::CGunMotion(CAssetId ancsId, const CVector3f& scale)
 : mModelData(CAnimRes(ancsId, 0, scale, 0, false))
@@ -16,6 +18,18 @@ CGunMotion::CGunMotion(CAssetId ancsId, const CVector3f& scale)
 }
 
 CGunMotion::~CGunMotion() {}
+
+void CGunMotion::LoadAnimations() {
+  CAnimData& animData = *mModelData.AnimationData();
+  const CPASAnimState state = *animData.GetPASDatabase().GetAnimState(pas::kAS_LoopReaction);
+  const int numAnims = state.GetNumAnims();
+  rstl::vector< int > animIds;
+  animIds.reserve(numAnims);
+  for (int i = 0; i < numAnims; ++i) {
+    animIds.push_back_unsafe(state.GetAnimInfoByIndex(i)->GetAnimId());
+  }
+  NWeaponTypes::get_token_vector(animData, animIds, mAnims, true);
+}
 
 const bool CGunMotion::PlayPasAnim(SamusGun::EAnimationState state, CStateManager& mgr, float angle,
                                    bool bigStrike) {

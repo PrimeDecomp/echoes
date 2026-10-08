@@ -1927,7 +1927,7 @@ void CBallCamera::Think(float dt, CStateManager& mgr) {
   UpdatePlayerMovement(dt, mgr);
 
   CCollisionActor* collisionActor =
-      TCastToPtr< CCollisionActor >(mgr.GetObjectByIdFromListAll(mCollisionActorId));
+      TCastToPtr< CCollisionActor >(mgr.ObjectById(mCollisionActorId));
   if (collisionActor != nullptr) {
     mgr.SetActorAreaId(*collisionActor, areaId);
   }

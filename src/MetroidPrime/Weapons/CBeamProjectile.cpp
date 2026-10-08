@@ -9,7 +9,8 @@ CBeamProjectile::CBeamProjectile(const TToken< CWeaponDescription >& description
                                  EMaterialTypes material, const CDamageInfo& damage, TUniqueId uid,
                                  TAreaId areaId, TUniqueId owner, uint attribs, bool growingBeam)
 : CGameProjectile(false, description, name, type, xf, material, damage, uid, areaId, owner,
-                  kInvalidUniqueId, attribs, false, CVector3f(1.f, 1.f, 1.f), CImpactVisorEffect())
+                  kInvalidUniqueId, attribs, false, CVector3f(1.f, 1.f, 1.f),
+                  CImpactVisorEffect::None())
 , mMaxLength(maxLength)
 , mInvMaxLength(1.f / mMaxLength)
 , mBeamRadius(beamRadius)

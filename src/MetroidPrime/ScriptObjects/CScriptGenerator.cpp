@@ -88,7 +88,7 @@ void CScriptGenerator::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg
       }
 
       const TEditorId activationId = activations[activationIndex];
-      CEntity* follower = mgr.GetObjectByIdFromListAll(followers[followerIndex]);
+      CEntity* follower = mgr.ObjectById(followers[followerIndex]);
       if (!follower) {
         break;
       }

@@ -1584,7 +1584,7 @@ void CPlayerGun::DropBomb(EBWeapon type, CStateManager& mgr) {
     mgr.AddObject(bomb);
     mBombReloadTimer += gpTweakPlayerGun->GetBombDropDelayTime();
     --mBombCount;
-    if (CEntity* entity = mgr.GetObjectByIdFromListAll(GetPlayer(mgr)->GetRidingPlatform())) {
+    if (CEntity* entity = mgr.ObjectById(GetPlayer(mgr)->GetRidingPlatform())) {
       if (CScriptPlatform* platform = TCastToPtr< CScriptPlatform >(entity)) {
         platform->AddSlave(bomb->GetUniqueId(), mgr, rstl::optional_object_null());
       }

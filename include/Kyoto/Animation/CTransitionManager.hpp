@@ -8,7 +8,7 @@ class IMetaTrans;
 class CTransitionManager {
 public:
   CTransitionManager(const CAnimSysContext& context);
-  ~CTransitionManager();
+  ~CTransitionManager() {}
   // Guessed name, corresponding to CTreeUtils::GetMetaTrans.
   rstl::rc_ptr< IMetaTrans > GetMetaTrans(const rstl::ncrc_ptr< CAnimTreeNode >& a,
                                           const rstl::ncrc_ptr< CAnimTreeNode >& b) const;

@@ -18,8 +18,8 @@ CAnnihilatorProjectile::CAnnihilatorProjectile(
     TUniqueId owner, TUniqueId homingTarget, uint attributes, bool underwater,
     const CVector3f& scale, float projectileSpeed, float projectileTurnRate)
 : CEnergyProjectile(true, description, type, xf, excludeMaterial, damage, uid, areaId, owner,
-                    homingTarget, attributes, underwater, scale, CImpactVisorEffect(), false, true,
-                    false, 1.f, 4.f, 4.f)
+                    homingTarget, attributes, underwater, scale, CImpactVisorEffect::None(), false,
+                    true, false, 1.f, 4.f, 4.f)
 , mTargetSeekTimer(sNextTargetSeekOffset)
 , mProjectileSpeed(projectileSpeed)
 , mProjectileTurnRate(projectileTurnRate) {
