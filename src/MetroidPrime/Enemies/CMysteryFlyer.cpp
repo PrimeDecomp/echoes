@@ -59,8 +59,8 @@ CMysteryFlyer::CMysteryFlyer(TUniqueId uid, const rstl::string& name, const CEnt
                              const CTransform4f& xf, const CModelData& modelData,
                              const CActorParameters& actorParams,
                              const CPatternedInfo& patternedInfo, const SLdrMysteryFlyerData& data)
-: CPatterned(static_cast< EPatternedAI >(0x25), uid, name, static_cast< EFlavorType >(0), info, xf,
-             modelData, patternedInfo, kMT_Flyer, kCT_One, static_cast< EBodyType >(7), actorParams)
+: CPatterned(kPAI_MysteryFlyer, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_One, kBT_AiMovedFlyer, actorParams)
 , mData(data)
 , mGenerateAnimId(patternedInfo.GetAnimationParameters().GetInitialAnimation())
 , mPatrolWaypointId(kInvalidUniqueId)
@@ -216,8 +216,7 @@ void CMysteryFlyer::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
 void CMysteryFlyer::FollowAttackPath(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate: {
-    const TUniqueId attackPath = FindConnectedObject(mgr, static_cast< EScriptObjectState >('ATTK'),
-                                                     kSM_Follow); // Guessed state
+    const TUniqueId attackPath = FindConnectedObject(mgr, kSS_Attack, kSM_Follow);
     mHasAttackPath = false;
     if (attackPath != kInvalidUniqueId) {
       mHasAttackPath = true;
