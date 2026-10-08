@@ -6,14 +6,12 @@
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Graphics/CTexture.hpp"
 #include "Kyoto/Text/ScreenText.hpp"
-#include "MetaRender/IRenderer.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "rstl/math.hpp"
 
 #include <dolphin/gx.h>
 #include <math.h>
 #include <stdlib.h>
-
-extern IRenderer* gpRender;
 
 static const CColor& skIdentityColorMultiply = CColor::White();
 

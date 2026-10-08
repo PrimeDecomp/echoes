@@ -3,7 +3,7 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "Kyoto/Particles/CGenDescription.hpp"
-#include "MetaRender/IRenderer.hpp"
+#include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
@@ -11,8 +11,6 @@
 #include "rstl/math.hpp"
 
 #include <float.h>
-
-extern IRenderer* gpRender;
 
 CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >& particle,
                        TUniqueId uid, TAreaId areaId, TUniqueId owner, const CTransform4f& xf,
