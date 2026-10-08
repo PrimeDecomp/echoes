@@ -126,7 +126,7 @@ CVector3f CCameraColliderGroup::CalculateCollidersCentroid() const {
     previous = i;
   }
 
-  if (static_cast< float >(obscuredEdges) / static_cast< float >(colliderCount) <=
+  if (static_cast< float >(obscuredEdges) / static_cast< float >(mColliders.size()) <=
       mClearColliderThreshold) {
     return CVector3f(0.f, 1.f, 0.f);
   }
@@ -153,12 +153,13 @@ void CCameraColliderGroup::SetupColliders(float xMag, float zMag, float radius, 
                                           float startAngle) {
   mColliders.reserve(count);
   for (int i = 0; i < count; ++i) {
-    float z = zMag * static_cast< float >(cos(startAngle));
-    if (startAngle > M_PIF / 2.f) {
+    const float angle = startAngle;
+    float z = zMag * static_cast< float >(cos(angle));
+    if (angle > M_PIF / 2.f) {
       z *= 0.25f;
     }
 
-    const CVector3f position(xMag * static_cast< float >(sin(startAngle)), 0.f, z);
+    const CVector3f position(xMag * static_cast< float >(sin(angle)), 0.f, z);
     mColliders.push_back_unsafe(CCameraCollider(radius, position, 1.f));
     startAngle += 2.f * M_PIF / float(count);
   }
