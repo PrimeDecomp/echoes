@@ -884,18 +884,26 @@ const bool CBallCamera::ShouldResetSpline(CStateManager& mgr) const {
 
 void CBallCamera::BuildSpline(CStateManager& mgr) {
   const CVector3f ballPos = Player(mgr).GetBallPosition();
-  TUniqueId intersectId = kInvalidUniqueId;
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
+  TUniqueId intersectId = kInvalidUniqueId;
   const CVector3f down(0.f, 0.f, -1.f);
+
   mgr.BuildNearList(nearList, ballPos, down, 20.f, skLineOfSightFilter, nullptr);
   CRayCastResult hit =
       mgr.RayWorldIntersection(intersectId, ballPos, down, 20.f, skLineOfSightFilter, nearList);
-  const float downFactor = hit.IsValid() ? CMath::Clamp(0.f, hit.GetTime() / 20.f, 1.f) : 1.f;
+  float downFactor;
+  if (hit.IsValid()) {
+    downFactor = CMath::Clamp(0.f, hit.GetTime() / 20.f, 1.f);
+  } else {
+    downFactor = 1.f;
+  }
 
   mSplineState = kBSS_One;
   mReevalSplineEnd = true;
   mCamBehindFloorOrWall = false;
-  mCamSpline.Reset(4);
+  mCamSpline.ResetKnots(4);
+  mCamSpline.ResetControlPoints(4);
+
   mCamSpline.AddKnotAndControlPoint(GetTranslation());
 
   float distance = mCurMinDistance;
@@ -906,7 +914,9 @@ void CBallCamera::BuildSpline(CStateManager& mgr) {
   knot1.SetZ(GetTranslation().GetZ());
   mCamSpline.AddKnotAndControlPoint(knot1);
 
-  const CVector3f delta = (0.5f + downFactor) * (mSplineIntermediatePos - GetTranslation());
+  CVector3f delta = mSplineIntermediatePos - GetTranslation();
+  delta *= 0.5f + downFactor;
+
   CVector3f knot2 = knot1 + delta;
   mgr.BuildNearList(nearList, knot1, delta.AsNormalized(), delta.Magnitude(), skLineOfSightFilter,
                     nullptr);
@@ -917,10 +927,10 @@ void CBallCamera::BuildSpline(CStateManager& mgr) {
     if (intersectId != kInvalidUniqueId) {
       const CActor* hitActor = TCastToConstPtr< CActor >(mgr.ObjectById(intersectId));
       if (hitActor != nullptr && hitActor->GetMaterialList().HasMaterial(kMT_Floor)) {
-        knot2.SetZ(knot2.GetZ() + elevation);
+        knot2[kDZ] += elevation;
       }
     } else if (hit.GetMaterial().HasMaterial(kMT_Floor)) {
-      knot2.SetZ(knot2.GetZ() + elevation);
+      knot2[kDZ] += elevation;
     }
   }
   mCamSpline.AddKnotAndControlPoint(knot2);
@@ -933,9 +943,10 @@ void CBallCamera::BuildSpline(CStateManager& mgr) {
     toBall = Player(mgr).GetMovementDirection();
   }
 
-  CVector3f knot3(knot2.GetX() - downFactor * delta.GetX(),
-                  knot2.GetY() - downFactor * delta.GetY(),
-                  knot2.GetZ() + (0.25f + downFactor) * delta.GetZ());
+  CVector3f knot3 = knot2;
+  knot3 -= downFactor * delta;
+  knot3.SetZ(knot2.GetZ() + (0.25f + downFactor) * delta.GetZ());
+
   const CVector3f secondDelta = knot3 - knot2;
 
   mgr.BuildNearList(nearList, knot2, secondDelta.AsNormalized(), secondDelta.Magnitude(),
@@ -947,10 +958,10 @@ void CBallCamera::BuildSpline(CStateManager& mgr) {
     if (intersectId != kInvalidUniqueId) {
       const CActor* hitActor = TCastToConstPtr< CActor >(mgr.ObjectById(intersectId));
       if (hitActor != nullptr && hitActor->GetMaterialList().HasMaterial(kMT_Floor)) {
-        knot3.SetZ(knot3.GetZ() + elevation);
+        knot3[kDZ] += elevation;
       }
     } else if (hit.GetMaterial().HasMaterial(kMT_Floor)) {
-      knot3.SetZ(knot3.GetZ() + elevation);
+      knot3[kDZ] += elevation;
     }
   }
   mCamSpline.AddKnotAndControlPoint(knot3);
