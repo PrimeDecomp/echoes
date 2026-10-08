@@ -1848,6 +1848,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "PillBug",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CPillBug.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

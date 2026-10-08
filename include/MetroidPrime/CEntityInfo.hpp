@@ -120,6 +120,7 @@ enum EEntityType {
   kET_Metroid = 122,                   // Target-derived class tag.
   kET_BabyMetroid = 123,               // Target-derived class tag.
   kET_Parasite = 124,                  // Target-derived class tag.
+  kET_PillBug = 125,                   // Target-derived class tag.
   kET_Puffer = 126,                    // Target-derived class tag.
   kET_Ripper = 128,                    // Target-derived class tag.
   kET_Sandworm = 130,                  // Target-derived class tag.

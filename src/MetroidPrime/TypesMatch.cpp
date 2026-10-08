@@ -34,6 +34,7 @@
 #include "MetroidPrime/Enemies/CMetroid.hpp"
 #include "MetroidPrime/Enemies/CParasite.hpp"
 #include "MetroidPrime/Enemies/CPatterned.hpp"
+#include "MetroidPrime/Enemies/CPillBug.hpp"
 #include "MetroidPrime/Enemies/CPlantScarabSwarm.hpp"
 #include "MetroidPrime/Enemies/CPuddleSpore.hpp"
 #include "MetroidPrime/Enemies/CPuffer.hpp"
@@ -313,7 +314,7 @@ TYPES_MATCH_IMPL(CMetaree, CPatterned, kET_Metaree)
 TYPES_MATCH_IMPL(CMetroid, CPatterned, kET_Metroid)
 TYPES_MATCH_IMPL(CBabyMetroid, CMetroid, kET_BabyMetroid)
 TYPES_MATCH_IMPL(CParasite, CWallCrawler, kET_Parasite)
-// 125: class not declared yet (PillBug REL); parent CWallCrawler
+TYPES_MATCH_IMPL(CPillBug, CWallCrawler, kET_PillBug)
 TYPES_MATCH_IMPL(CPuffer, CPatterned, kET_Puffer)
 // 127: class not declared yet (Rezbit REL); parent CPatterned
 TYPES_MATCH_IMPL(CRipper, CPatterned, kET_Ripper)
@@ -577,7 +578,8 @@ CAST_TO_REF_IMPL(CBabyMetroid, kET_BabyMetroid)
 CAST_TO_PTR_IMPL(CBabyMetroid, kET_BabyMetroid)
 CAST_TO_REF_IMPL(CParasite, kET_Parasite)
 CAST_TO_PTR_IMPL(CParasite, kET_Parasite)
-// 125: class not declared yet (PillBug REL)
+CAST_TO_REF_IMPL(CPillBug, kET_PillBug)
+CAST_TO_PTR_IMPL(CPillBug, kET_PillBug)
 CAST_TO_REF_IMPL(CPuffer, kET_Puffer)
 CAST_TO_PTR_IMPL(CPuffer, kET_Puffer)
 // 127: class not declared yet (Rezbit REL)
