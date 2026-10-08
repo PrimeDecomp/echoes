@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CIngBlobSwarm.cpp:
+	.text       start:0x00000000 end:0x00002D34
+	.rodata     start:0x00000000 end:0x00000030
+	.data       start:0x00000000 end:0x000000D0
+	.bss        start:0x00000000 end:0x00000024
+
 REL/REL_Setup.cpp:
 	.text       start:0x00002D34 end:0x00002ED8
 	.rodata     start:0x00000030 end:0x000000B4

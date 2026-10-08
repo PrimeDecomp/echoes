@@ -24,6 +24,7 @@
 #include "MetroidPrime/Enemies/CFlyerSwarm.hpp"
 #include "MetroidPrime/Enemies/CGunTurretBase.hpp"
 #include "MetroidPrime/Enemies/CGunTurretTop.hpp"
+#include "MetroidPrime/Enemies/CIngBlobSwarm.hpp"
 #include "MetroidPrime/Enemies/CKrocuss.hpp"
 #include "MetroidPrime/Enemies/CMetaree.hpp"
 #include "MetroidPrime/Enemies/CMetareeSwarm.hpp"
@@ -287,7 +288,7 @@ TYPES_MATCH_IMPL(CFlyerSwarm, CSwarmBasics, kET_FlyerSwarm)
 TYPES_MATCH_IMPL(CWallCrawler, CPatterned, kET_WallCrawler)
 // 105: class not declared yet (BacteriaSwarm REL); parent CActor
 TYPES_MATCH_IMPL(CMetareeSwarm, CSwarmBasics, kET_MetareeSwarm)
-// 107: class not declared yet (IngBlobSwarm REL); parent CSwarmBasics
+TYPES_MATCH_IMPL(CIngBlobSwarm, CSwarmBasics, kET_IngBlobSwarm)
 // 108: class not declared yet (PlantScarabSwarm REL); parent CSwarmBasics
 TYPES_MATCH_IMPL(CBeamProjectile, CGameProjectile, kET_BeamProjectile)
 TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)

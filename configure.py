@@ -1764,6 +1764,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "IngBlobSwarm",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CIngBlobSwarm.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
