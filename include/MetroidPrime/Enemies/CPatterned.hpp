@@ -41,6 +41,7 @@ enum EPatternedAI {
   kPAI_EmperorIngStage2Tentacle = 0xe, // Guessed name; EmperorIngStage2Tentacle REL constructor.
   kPAI_EyeBall = 0x10,                 // Guessed name; EyeBall REL constructor.
   kPAI_FlyingPirate = 0x15,            // Guessed name; FlyingPirate REL constructor.
+  kPAI_IngSpiderballGuardian = 0x1b,   // Guessed name; IngSpiderballGuardian REL constructor.
   kPAI_Metaree = 0x20,                 // Guessed name; Metaree REL constructor.
   kPAI_Metroid = 0x21,                 // Guessed name; Metroid REL constructor.
   kPAI_MysteryFlyer = 0x25,            // Guessed name; MysteryFlyer REL constructor.
