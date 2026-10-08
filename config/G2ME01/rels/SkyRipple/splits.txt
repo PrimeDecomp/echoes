@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/ScriptObjects/CScriptSkyRipple.cpp:
+	.text       start:0x00000000 end:0x000008CC
+	.rodata     start:0x00000000 end:0x00000018
+	.data       start:0x00000000 end:0x00000084
+	.bss        start:0x00000000 end:0x00000004
+
 REL/REL_Setup.cpp:
 	.text       start:0x000008CC end:0x00000A70
 	.rodata     start:0x00000018 end:0x0000009C

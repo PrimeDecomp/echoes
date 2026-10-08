@@ -1594,6 +1594,13 @@ config.libs = [
         extra_cflags=["-pool off"],
     ),
     Rel(
+        "SkyRipple",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSkyRipple.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
+    Rel(
         "ScriptFrontEndDataNetwork",
         [
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptFrontEndDataNetwork.cpp"),
