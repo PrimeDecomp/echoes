@@ -132,6 +132,8 @@ public:
   CScopedProfiler(const rstl::string& name, bool enabled);
 };
 
+CTweakPlayerGun* gpTweakPlayerGun;
+
 static s64 sPreRenderStepTime;
 
 // Prime-correlated lazy initialization; Echoes schedules rumble rather than camera shakes.
