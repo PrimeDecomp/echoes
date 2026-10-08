@@ -20,6 +20,7 @@
 #include "WorldFormat/CCollisionCache.hpp"
 #include "WorldFormat/CMetroidAreaCollider.hpp"
 #include "rstl/math.hpp"
+#include "rstl/optional_storage.hpp"
 
 #include <float.h>
 #include <math.h>
@@ -434,7 +435,7 @@ void CGroundMovement::MoveGroundCollider_New(
     mgr.BuildColliderList(nearList, actor, motionVolume);
   }
   CCollisionCache* cachePtr = actor.GetCollisionCache();
-  rstl::optional_object< CCollisionCache > localCache;
+  rstl::optional_storage< CCollisionCache > localCache;
   if (cachePtr == nullptr || !motionVolume.Inside(cachePtr->GetBounds())) {
     const float padding = cachePtr != nullptr ? 0.5f : 0.f;
     const CVector3f paddingVector(padding, padding, padding);
