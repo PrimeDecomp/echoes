@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CMysteryFlyer.cpp:
+	.text       start:0x00000000 end:0x00002F4C
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000118
+	.data       start:0x00000000 end:0x00000400
+	.bss        start:0x00000000 end:0x00000004
+
 REL/REL_Setup.cpp:
 	.text       start:0x00002F4C end:0x000030F0
 	.rodata     start:0x00000118 end:0x0000019C
