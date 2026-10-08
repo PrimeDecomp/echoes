@@ -48,6 +48,7 @@ public:
   void AlignToPlane(const CUnitVector3f& normal, float dt);
   const CPlane& GetConstraintPlane() const;
   void GetNextWaypoint(CStateManager& mgr, const CScriptWaypoint* waypoint, bool reverse);
+  static CVector3f ProjectVectorToPlane(const CVector3f& vec, const CVector3f& planeDir);
 
 protected:
   CCollisionSurface mAlignSurface;
