@@ -15,10 +15,11 @@
 #include "MetroidPrime/TCastTo.hpp"
 
 namespace {
-const CMaterialList skTransitionInclude(kMT_Solid);
-const CMaterialFilter skTransitionFilter = CMaterialFilter::MakeIncludeExclude(
-    skTransitionInclude,
-    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough));
+CMaterialList skTransitionInclude = CMaterialList(kMT_Solid);
+CMaterialList skTransitionExclude =
+    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+CMaterialFilter skTransitionFilter =
+    CMaterialFilter::MakeIncludeExclude(skTransitionInclude, skTransitionExclude);
 } // namespace
 
 bool CBallCamera::CheckFailsafeFromMorphBallState(CStateManager& mgr) {
@@ -252,23 +253,24 @@ bool CBallCamera::UpdateTransitionToBallCamera(float dt, CStateManager& mgr) {
 bool CBallCamera::UpdateTransitionToBallCamera(CStateManager& mgr) {
   mLookAtBall = false;
   CPlayer& player = Player(mgr);
+  CVector3f lookDirection = player.GetTransform().GetForward();
+  lookDirection = mLookPos - GetTranslation();
   const CVector3f position = GetTranslation();
-  CVector3f lookDirection = mLookPos - position;
   if (lookDirection.IsMagnitudeSafe()) {
     lookDirection.Normalize();
     CVector3f currentForward = GetTransform().GetForward();
     currentForward.SetZ(0.f);
     currentForward.Normalize();
-    float dot = CMath::Limit(CVector3f::Dot(currentForward, lookDirection), 1.f);
-    if (fabsf(dot) < 0.99999f) {
-      float morphFactor = player.GetMorphBallTransitionFactor();
-      const float rotationFactor = CMath::Limit(1.5f * morphFactor, 1.f);
+    const float absDot =
+        CMath::AbsF(CMath::Limit(CVector3f::Dot(currentForward, lookDirection), 1.f));
+    if (absDot < 0.99999f) {
+      float rotationFactor = 1.5f * player.GetMorphBallTransitionFactor();
+      rotationFactor = CMath::Limit(rotationFactor, 1.f);
       const CQuaternion rotation =
           CQuaternion::LookAt(CUnitVector3f(currentForward), CUnitVector3f(lookDirection),
-                              CRelAngle::FromRadians(rotationFactor * acosf(fabsf(dot))));
-      const CTransform4f lookXf =
-          CTransform4f::LookAt(position, position + currentForward, CVector3f::Up());
-      SetTransform(rotation.BuildTransform4f() * lookXf);
+                              CRelAngle::FromRadians(rotationFactor * acosf(absDot)));
+      SetTransform(rotation.BuildTransform4f() *
+                   CTransform4f::LookAt(position, position + currentForward, CVector3f::Up()));
     } else {
       SetTransform(CTransform4f::LookAt(position, position + lookDirection, CVector3f::Up()));
     }
