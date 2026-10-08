@@ -915,7 +915,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCylinderCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSplineCylinderCameraSurface.cpp"),
-            Object(MatchingFor("G2ME01"), "MetroidPrime/Cameras/CSplinePlaneCameraSurface.cpp"),
+            Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/Cameras/CSplinePlaneCameraSurface.cpp"),
         ],
     },
     {
