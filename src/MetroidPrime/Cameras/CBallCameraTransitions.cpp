@@ -76,16 +76,13 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
   CPlayer& player = Player(mgr);
   const float factor = player.GetMorphBallTransitionFactor();
   const CVector3f eyePos = player.GetEyePosition();
-  const CVector3f& playerPosition = player.GetTranslation();
-  const CTransform4f& previousPlayerXf = mFromBallTransition->mPlayerXf;
-  const CVector3f translationDelta(playerPosition.GetX() - previousPlayerXf.Get03(),
-                                   playerPosition.GetY() - previousPlayerXf.Get13(),
-                                   playerPosition.GetZ() - previousPlayerXf.Get23());
+  const CVector3f translationDelta =
+      player.GetTranslation() - mFromBallTransition->mPlayerXf.GetTranslation();
   mFromBallTransition->mSpline.Translate(translationDelta);
 
   if (player.GetRidingPlatform() != kInvalidUniqueId) {
-    if (fabsf(CVector3f::Dot(player.GetTransform().GetForward(),
-                             mFromBallTransition->mPlayerXf.GetForward())) < 0.9999f) {
+    if (fabsf(CVector3f::Dot(mFromBallTransition->mPlayerXf.GetForward(),
+                             player.GetTransform().GetForward())) < 0.9999f) {
       const CQuaternion rotation = CQuaternion::LookAt(
           CUnitVector3f(mFromBallTransition->mPlayerXf.GetForward()),
           CUnitVector3f(player.GetTransform().GetForward()), CRelAngle::FromRadians(6.2831855f));
@@ -95,15 +92,17 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
 
   CVector3f position = mFromBallTransition->mSpline.GetPositionByTime(
       factor * mFromBallTransition->mSpline.GetDuration());
-  const float heightFactor = CMath::Clamp(0.f, 1.f - 1.5f * factor, 1.f);
-  position.SetZ(eyePos.GetZ() + heightFactor * (position.GetZ() - eyePos.GetZ()));
+  float zDelta = position.GetZ() - eyePos.GetZ();
+  zDelta *= CMath::Clamp(0.f, 1.f - 1.5f * factor, 1.f);
+  position.SetZ(zDelta + eyePos.GetZ());
   CVector3f horizontalDelta = eyePos - position;
   horizontalDelta.SetZ(0.f);
   const float horizontalDistance = horizontalDelta.Magnitude();
   CCameraManager& cameraManager = const_cast< CCameraManager& >(GetCameraManager(mgr));
   if (horizontalDistance > 0.0011920929f) {
+    const CVector3f lookDelta = mFromBallTransition->mLookPos - eyePos;
     const float lookFactor = CMath::Clamp(0.f, 1.f - 2.f * factor, 1.f);
-    const CVector3f lookPos = eyePos + lookFactor * (mFromBallTransition->mLookPos - eyePos);
+    const CVector3f lookPos = eyePos + lookFactor * lookDelta;
     SetTransform(CTransform4f::LookAt(position, lookPos, CVector3f::Up()));
   } else {
     SetTransform(cameraManager.FirstPersonCamera()->GetTransform());
@@ -112,7 +111,7 @@ bool CBallCamera::UpdateTransitionFromBallCamera(CStateManager& mgr) {
   cameraManager.FirstPersonCamera()->Reset(GetTransform(), mgr);
   mFromBallTransition->mPlayerXf = player.GetTransform();
 
-  if ((eyePos - GetTranslation()).Magnitude() > 0.5f) {
+  if (CVector3f(eyePos - GetTranslation()).Magnitude() > 0.5f) {
     CVector3f direction = GetTranslation() - oldPosition;
     if (direction.CanBeNormalized()) {
       direction = direction.AsNormalized();
