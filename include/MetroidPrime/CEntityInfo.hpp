@@ -127,6 +127,7 @@ enum EEntityType {
   kET_TargetableProjectile = 152,      // Target-derived class tag.
   kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
+  kET_Krocuss = 157, // Target-derived class tag.
   kET_ScriptForgottenObject = 160,
 };
 
