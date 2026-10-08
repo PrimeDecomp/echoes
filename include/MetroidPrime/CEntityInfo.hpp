@@ -282,6 +282,7 @@ enum EScriptObjectMessage {
 
   kSM_Increment = 0x494e4352,
   kSM_Decrement = 0x44454352,
+  kSM_Left = 0x4c454654, // Guessed name; shows the grapple on a player actor.
   kSM_Kill = 0x4b494c4c,
   kSM_InternalMessage00 = 0x494d3030,
   kSM_InternalMessage01 = 0x494d3031,

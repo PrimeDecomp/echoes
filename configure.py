@@ -1834,6 +1834,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptPlayerActor",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlayerActor.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

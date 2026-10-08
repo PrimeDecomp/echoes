@@ -527,7 +527,7 @@ void CScriptDoor::Think(float dt, CStateManager& mgr) {
       mgr.SendScriptMsg(dock, GetUniqueId(), kSM_SetToMax);
       break;
     }
-    if (area->GetPostConstructed()->x190_ != 0 || !mgr.World()->IsAreaValid(dock->GetAreaId()) ||
+    if (area->GetPostConstructed()->mPlayerActorsLoading != 0 || !mgr.World()->IsAreaValid(dock->GetAreaId()) ||
         !mgr.World()->AreSkyNeedsMet()) {
       break;
     }

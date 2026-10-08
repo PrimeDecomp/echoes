@@ -393,6 +393,7 @@ public:
   CControlMapper& GetControlMapper() { return mControlMapper; }
   const CControlMapper& GetControlMapper() const { return mControlMapper; }
   CPlayerGun* GetPlayerGun();
+  CModelData* BallTransitionBeamModel() { return mBallTransitionBeamModel.get(); } // Guessed name
   const CPlayerGun* GetPlayerGun() const;
   // Guessed name: inline gun access used by REL code (the out-of-line accessors above are
   // DOL-only).
