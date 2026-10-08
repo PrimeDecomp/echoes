@@ -13,6 +13,11 @@
 
 bool CGameOptions::sFrontEndActive;
 
+const bool CGameOptions::kDefaultHUDLag = true;
+const bool CGameOptions::kDefaultInvertYAxis = false;
+const bool CGameOptions::kDefaultRumble = true;
+const bool CGameOptions::kDefaultHintSystem = true;
+
 // Guessed names; the original stored these as individual small-data words.
 static CAssetId skControlTXTR0A = 0x2A13C23E;
 static CAssetId skControlTXTR0B = 0xF13452F8;
