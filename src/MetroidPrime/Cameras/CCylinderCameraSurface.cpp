@@ -35,5 +35,6 @@ bool CCylinderCameraSurface::IsPointInside(const CVector3f& point) {
 
   const CVector3f axisPoint =
       mCylinder.GetAxis().GetRefPoint() + axialDistance * mCylinder.GetAxis().GetNormal();
-  return !(CVector3f(point - axisPoint).Magnitude() > mCylinder.GetRadius());
+  const float radius = mCylinder.GetRadius();
+  return !(CVector3f(point - axisPoint).Magnitude() > radius);
 }
