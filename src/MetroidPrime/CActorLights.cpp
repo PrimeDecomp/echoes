@@ -463,9 +463,9 @@ void CActorLights::MoveAmbienceToLights(const CVector3f& color) {
 
 // Guessed name.
 bool CActorLights::IsLightExcluded(const CStateManager& mgr, TUniqueId id) const {
-  if (id != kInvalidUniqueId) {
+  if (id.value != kInvalidUniqueId.value) {
     if (const CScriptDynamicLight* light =
-            TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(TUniqueId(id)))) {
+            TCastToConstPtr< CScriptDynamicLight >(mgr.GetObjectById(id))) {
       if (!((mLayer2 && light->UsesLayerTwo()) || (!mLayer2 && light->UsesLayerOne()))) {
         return true;
       }

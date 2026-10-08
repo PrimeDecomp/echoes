@@ -1167,5 +1167,5 @@ float CActor::GetDistanceToCamera(CStateManager& mgr) const {
   return distanceSquared;
 }
 
-CActor::SSound::SSound(const CSfxHandle& handle, const CSegId& locator, bool useEchoVolume)
+CActor::SSound::SSound(const CSfxHandle& handle, const CSegId& locator, const bool useEchoVolume)
 : mHandle(handle), mLocator(locator), mUseEchoVolume(useEchoVolume) {}
