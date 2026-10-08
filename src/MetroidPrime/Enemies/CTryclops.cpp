@@ -27,7 +27,7 @@
 
 #include <math.h>
 
-static EMaterialTypes SolidMaterial = kMT_Unknown59;
+static EMaterialTypes SolidMaterial = kMT_Solid;
 
 static const CDamageVulnerability::TWeaponVulnerability skPowerBombVulnerability =
     CDamageVulnerability::MakeWeaponVulnerability(kWT_PowerBomb,
@@ -290,8 +290,8 @@ bool CTryclops::ObjectInVortexArea(const CVector3f& pos, const CVector3f& center
     if (projection > 0.f && angleProjection > mMinSuckAngleProj) {
       if (distance > 2.f) {
         static const CMaterialFilter kSolidFilter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Unknown59),
-            CMaterialList(kMT_Character, kMT_Player, kMT_NoPlatformCollision));
+            CMaterialList(kMT_Solid),
+            CMaterialList(kMT_Character, kMT_Player, kMT_ProjectilePassthrough));
         if (!CGameCollision::RayStaticLineOfSightTest(
                 mgr, xf.GetTranslation(), (1.f / distance) * delta,
                 distance - gpTweakPlayerA->GetBallRadius(), kSolidFilter)) {
@@ -603,7 +603,7 @@ void CTryclops::ShootPlayer(CPlayer& player, CStateManager& mgr, const CTransfor
     player.Teleport(playerXf, mgr, false);
     player.ApplyImpulseWR(speed * (player.GetMass() * direction), CAxisAngle::Identity());
     player.SetMoveState(NPlayer::kMS_ApplyJump, mgr);
-    player.AddMaterial(kMT_Unknown59, mgr);
+    player.AddMaterial(kMT_Solid, mgr);
     mgr.ApplyDamage(
         GetUniqueId(), player.GetUniqueId(), GetUniqueId(), GetContactDamage(),
         CMaterialFilter::MakeIncludeExclude(CMaterialList(SolidMaterial), CMaterialList()),
@@ -905,10 +905,10 @@ bool CTryclops::BallCloseToCollision(const CPlayer& player, const CStateManager&
   }
   const float radius = player.GetMorphBall()->GetBallRadius();
   const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+      CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
   const CCollidableSphere sphere(
       CSphere(player.GetTranslation() + CVector3f(0.f, 0.f, radius), radius),
-      CMaterialList(kMT_Player, kMT_Unknown59));
+      CMaterialList(kMT_Player, kMT_Solid));
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
   mgr.BuildColliderList(nearList, player, sphere.CalculateLocalAABox());
   if (CGameCollision::DetectStaticCollisionBoolean(mgr, sphere, CTransform4f::Identity(), filter)) {
@@ -943,13 +943,13 @@ void CTryclops::SetupStateMachine(CStateManager& mgr) {
 void CTryclops::ReleasePlayer(CPlayer& player, CStateManager& mgr) {
   mCollisionActorManager->SetActive(mgr, false);
   player.EnableLeaveMorphBall(true);
-  player.AddMaterial(kMT_Unknown59, mgr);
+  player.AddMaterial(kMT_Solid, mgr);
 }
 
 void CTryclops::GrabPlayer(CPlayer& player, CStateManager& mgr) {
   mCollisionActorManager->SetActive(mgr, true);
   player.Stop();
-  player.RemoveMaterial(kMT_Unknown59, mgr);
+  player.RemoveMaterial(kMT_Solid, mgr);
 }
 
 void CTryclops::SetupCollisionManager(CStateManager& mgr) {
@@ -966,7 +966,7 @@ void CTryclops::SetupCollisionManager(CStateManager& mgr) {
   mCollisionActorManager =
       rs_new CCollisionActorManager(mgr, GetUniqueId(), GetCurrentAreaId(), joints, false);
   mCollisionActorManager->SetActive(mgr, false);
-  SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59),
+  SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid),
                                                         CMaterialList(kMT_CollisionActor)));
 }
 

@@ -111,8 +111,8 @@ void CScriptAreaDamage::Think(float dt, CStateManager& mgr) {
       }
       timer->second += pulseTime;
       if (timer->second > mGraceTime) {
-        const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Unknown59), CMaterialList());
+        const CMaterialFilter filter =
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList());
         mgr.ApplyDamage(GetUniqueId(), uid, GetUniqueId(),
                         continuous ? CDamageInfo(mDamage, dt) : mDamage, filter,
                         CVector3f::Zero());

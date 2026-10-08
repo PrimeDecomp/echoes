@@ -380,7 +380,7 @@ void CPuddleSpore::SetState(CStateManager& mgr, EPuddleState state) {
 
 void CPuddleSpore::UpdateEffects(CStateManager& mgr) {}
 
-static EMaterialTypes skFilterMaterial0 = kMT_Unknown59;      // Guessed name
+static EMaterialTypes skFilterMaterial0 = kMT_Solid;          // Guessed name
 static EMaterialTypes skFilterMaterial1 = kMT_CollisionActor; // Guessed name
 static EMaterialTypes skFilterMaterial2 = kMT_AIPassthrough;  // Guessed name
 static EMaterialTypes skFilterMaterial3 = kMT_Player;         // Guessed name
@@ -420,7 +420,7 @@ void CPuddleSpore::SetupCollisionManager(CStateManager& mgr) {
       CMaterialFilter filter = actor->GetMaterialFilter();
       filter.ExcludeList().Add(kMT_Platform);
       actor->SetMaterialFilter(filter);
-      actor->AddMaterial(kMT_NoPlatformCollision, mgr);
+      actor->AddMaterial(kMT_ProjectilePassthrough, mgr);
       actor->SetResponseType(kWCR_PuddleSporeWeakSpot);
     }
   }

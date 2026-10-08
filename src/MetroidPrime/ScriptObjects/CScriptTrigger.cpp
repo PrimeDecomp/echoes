@@ -179,7 +179,7 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
     mgr.DeliverScriptMsg(CScriptMsg(GetUniqueId(), GetUniqueId(), kSM_Deactivate));
     if (actor->HealthInfo() && mDamageInfo.GetDamage() > 0.f) {
       const CMaterialFilter filter =
-          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList());
       mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), mDamageInfo, filter, CVector3f::Zero());
     }
   }
@@ -188,7 +188,7 @@ void CScriptTrigger::AddInhabitant(CStateManager& mgr, int playerIndex, TUniqueI
       static CWeaponMode killWeaponMode(kWT_Power, false, false, true);
       const CDamageInfo damage(killWeaponMode, 10.f * health->GetHP(), 0.f, 0.f);
       const CMaterialFilter filter =
-          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList());
       mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), damage, filter, CVector3f::Zero());
     }
   }
@@ -415,7 +415,7 @@ void CScriptTrigger::UpdateInhabitants(float dt, CStateManager& mgr) {
             damage = CDamageInfo(trigger->mDamageInfo, dt);
           }
           const CMaterialFilter filter =
-              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList());
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList());
           mgr.ApplyDamage(trigger->GetUniqueId(), id, GetUniqueId(), *damage, filter,
                           CVector3f::Zero());
         }

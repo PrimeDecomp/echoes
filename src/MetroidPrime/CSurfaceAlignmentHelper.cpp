@@ -11,7 +11,7 @@
 CSurfaceAlignmentHelper::CSurfaceAlignmentHelper()
 : mSurface(CVector3f::Zero(), CVector3f::Right(), CVector3f::Forward(), static_cast< u64 >(-1))
 , mFilter(CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59, kMT_Floor, kMT_Wall, kMT_Ceiling),
+      CMaterialList(kMT_Solid, kMT_Floor, kMT_Wall, kMT_Ceiling),
       CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor)))
 , mAngularRate(180.f)
 , mMode(kM_None)

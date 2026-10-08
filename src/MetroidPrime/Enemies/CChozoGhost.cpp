@@ -26,7 +26,7 @@
 const float CChozoGhost::skGravityConstant = 60.f;
 const rstl::string CChozoGhost::skSpeedSwooshName = rstl::string_l("SpeedSwoosh");
 
-static EMaterialTypes SolidMaterial = kMT_Unknown59;
+static EMaterialTypes SolidMaterial = kMT_Solid;
 
 static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"ShouldAttack",
@@ -474,7 +474,7 @@ const CChozoGhost::CBehaveChance& CChozoGhost::ChooseBehaveChanceRange(CStateMan
   return mBehaveChance3;
 }
 
-static EMaterialTypes WarpSolidMaterial = kMT_Unknown59;
+static EMaterialTypes WarpSolidMaterial = kMT_Solid;
 
 void CChozoGhost::SetWarpPosition(CStateManager& mgr, const CVector3f& dir) {
   const CVector3f center = GetBoundingBox().GetCenterPoint();
@@ -503,7 +503,7 @@ void CChozoGhost::InActive(CStateManager& mgr, EStateMsg msg, float arg) {
       mBodyController->SetLocomotionType(pas::kLT_Relaxed);
       mColor.SetAlpha(0.f);
     }
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     SetMomentumWR(CVector3f::Zero());
     x665_24_ = true;
   } break;
@@ -693,7 +693,7 @@ bool CChozoGhost::ShouldAttack(CStateManager& mgr, const CTriggerData& data) con
   return mBehaveType == kBT_Attack;
 }
 
-static EMaterialTypes AttackSolidMaterial = kMT_Unknown59;
+static EMaterialTypes AttackSolidMaterial = kMT_Solid;
 
 void CChozoGhost::Attack(CStateManager& mgr, EStateMsg msg, float arg) {
   switch (msg) {

@@ -317,7 +317,7 @@ void CSwarmBasics::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
           CAABox(-mBoidRadius, -mBoidRadius, -mBoidRadius, mBoidRadius, mBoidRadius, mBoidRadius),
           SMoverData(1.f), CActorParameters::None(), CPhysicsActor::skDefaultStepData);
       act->AddMaterial(kMT_SeekerTarget, mgr);
-      act->RemoveMaterial(kMT_Unknown59, mgr);
+      act->RemoveMaterial(kMT_Solid, mgr);
       if (act) {
         mgr.AddObject(*act);
         mSeekerTargets.push_back_unsafe(uid);
@@ -1395,7 +1395,7 @@ void CSwarmBasics::Touch(CActor& actor, CStateManager& mgr) {
           if (!ballDamage) {
             mgr.ApplyDamage(
                 GetUniqueId(), player->GetUniqueId(), GetUniqueId(), mDamage,
-                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+                CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
                 CVector3f::Zero());
             mDamageCooldownTimer = mDamageCooldown;
           }
@@ -1437,7 +1437,7 @@ bool CSwarmBasics::IsBoidVisibleForLockOn(const CStateManager& mgr, const CBoid&
   const float inv = 1.f / distance;
   const CVector3f dir = inv * delta;
   if (CVector3f::Dot(cameraForward, dir) > 0.9238795f) {
-    const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59));
+    const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
     const CRayCastResult result = mgr.RayStaticIntersection(cameraPos, dir, distance, filter);
     if (!result.IsValid()) {
       return true;

@@ -43,13 +43,13 @@ enum EOrbitValidationResult {
   kOVR_TargetingThroughDoor = 7,
 };
 
-const CMaterialList kLineOfSightIncludeList = CMaterialList(kMT_Unknown59);
+const CMaterialList kLineOfSightIncludeList = CMaterialList(kMT_Solid);
 const CMaterialList kLineOfSightExcludeList =
-    CMaterialList(kMT_NoPlatformCollision, kMT_ScanPassthrough, kMT_Character);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_ScanPassthrough, kMT_Character);
 const CMaterialFilter kLineOfSightFilter =
     CMaterialFilter::MakeIncludeExclude(kLineOfSightIncludeList, kLineOfSightExcludeList);
 const CMaterialList kPlayerLineOfSightExcludeList =
-    CMaterialList(kMT_NoPlatformCollision, kMT_ScanPassthrough, kMT_Character, kMT_Player);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_ScanPassthrough, kMT_Character, kMT_Player);
 const CMaterialFilter kPlayerLineOfSightFilter =
     CMaterialFilter::MakeIncludeExclude(kLineOfSightIncludeList, kPlayerLineOfSightExcludeList);
 CAABox staticBox(CVector3f(0.f, 0.f, 0.f), CVector3f(1.f, 1.f, 1.f));
@@ -1595,7 +1595,7 @@ void CPlayer::UpdateGrappleState(const CFinalInput& input, CStateManager& mgr) {
 
 bool CPlayer::ValidateFPPosition(CVector3f position, CStateManager& mgr) {
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
-  const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59));
+  const CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
   const CVector3f margin(1.f, 1.f, 1.f);
   mgr.BuildColliderList(nearList, *this,
                         CAABox(mFpBounds.GetMinPoint() - margin + position,

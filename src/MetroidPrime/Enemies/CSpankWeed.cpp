@@ -98,7 +98,7 @@ void CSpankWeedCollisionActor::Touch(CActor& actor, CStateManager& mgr) {
     if (player != nullptr && owner->mCurDamageRemTime <= 0.f && !owner->mHitByPlayerProjectile) {
       mgr.ApplyDamage(
           mOwnerId, player->GetUniqueId(), GetUniqueId(), owner->GetContactDamage(),
-          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
           CVector3f::Zero());
       owner->mCurDamageRemTime = owner->mDamageWaitTime;
     }
@@ -262,7 +262,7 @@ void CSpankWeed::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       if (player != nullptr && mCurDamageRemTime <= 0.f && mState != 4 && mState != 6) {
         mgr.ApplyDamage(
             GetUniqueId(), player->GetUniqueId(), GetUniqueId(), GetContactDamage(),
-            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
             CVector3f::Zero());
         mCurDamageRemTime = mDamageWaitTime;
       }
@@ -328,7 +328,7 @@ void CSpankWeed::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Activate:
     mKnockBackController.EnableFreeze(false);
     mBodyController->SetLocomotionType(pas::kLT_Relaxed);
-    RemoveMaterial(kMT_Unknown59, kMT_Scannable, mgr);
+    RemoveMaterial(kMT_Solid, kMT_Scannable, mgr);
     RemoveMaterial(kMT_Orbit, kMT_Target, mgr);
     mCollisionMgr->SetActive(mgr, false);
     mIsHiding = true;
@@ -409,7 +409,7 @@ void CSpankWeed::Lurk(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Activate:
     mKnockBackController.EnableFreeze(true);
     mBodyController->SetLocomotionType(pas::kLT_Lurk);
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     mState = 1;
     break;
   case kStateMsg_Deactivate:
@@ -422,7 +422,7 @@ void CSpankWeed::TargetPatrol(CStateManager& mgr, EStateMsg msg, float dt) {
   switch (msg) {
   case kStateMsg_Activate:
     mBodyController->SetLocomotionType(pas::kLT_Combat);
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     mState = 2;
     break;
   case kStateMsg_Deactivate:

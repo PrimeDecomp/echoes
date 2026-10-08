@@ -18,7 +18,7 @@ CBlackHole::CBlackHole(const rstl::optional_object< TToken< CGenDescription > >&
                        float duration, uint flags)
 : CWeapon(uid, areaId, true, owner, kWT_Dark, name, xf,
           CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Trigger, kMT_Immovable, kMT_Unknown59, kMT_NonSolidDamageable),
+              CMaterialList(kMT_Trigger, kMT_Immovable, kMT_Solid, kMT_NonSolidDamageable),
               CMaterialList(kMT_Projectile, kMT_PowerBomb)),
           CMaterialList(kMT_Projectile, kMT_PowerBomb), damage, kPA_Light,
           CModelData::CModelDataNull())

@@ -87,7 +87,7 @@ void CPlantScarabSwarm::Think(float dt, CStateManager& mgr) {
   CSwarmBasics::Think(dt, mgr);
   if (mAttackerCount != 0) {
     const CVector3f playerPos = mgr.GetPlayer(0)->GetTranslation();
-    static CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59));
+    static CMaterialFilter filter = CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid));
     uint attackers = 0;
     for (rstl::vector< CBoid >::const_iterator it = mBoids.begin(); it != mBoids.end(); ++it) {
       if (it->mActive && it->mAttacking) {
@@ -315,7 +315,7 @@ bool CPlantScarabSwarm::IsSpaceAboveBoidClear(const CStateManager& mgr, const CB
   const CVector3f top = GetBoidTopPosition(boid);
   const CAABox grenadeBounds = GetGrenadeBounds();
   const CAABox bounds = grenadeBounds.GetTransformedAABox(CTransform4f::Translate(top));
-  const CMaterialList materials(kMT_Unknown59);
+  const CMaterialList materials(kMT_Solid);
   const CMaterialFilter filter = CMaterialFilter::MakeInclude(materials);
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
   mgr.BuildNearList(nearList, bounds, filter, this);

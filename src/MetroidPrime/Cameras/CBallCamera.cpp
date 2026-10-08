@@ -33,9 +33,9 @@
 #include "WorldFormat/CMetroidAreaCollider.hpp"
 
 namespace {
-const CMaterialList skLineOfSightInclude = CMaterialList(kMT_Unknown59);
+const CMaterialList skLineOfSightInclude = CMaterialList(kMT_Solid);
 const CMaterialList skLineOfSightExclude =
-    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough);
 const CMaterialFilter skLineOfSightFilter =
     CMaterialFilter::MakeIncludeExclude(skLineOfSightInclude, skLineOfSightExclude);
 const CRelAngle skAvoidStepAngle = CRelAngle::FromDegrees(60.f);
@@ -378,11 +378,11 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
     }
     if (CGameCollision::DetectCollisionBoolean_Cached(
             mgr, cache,
-            CCollidableSphere(CSphere(CVector3f::Zero(), radius), CMaterialList(kMT_Unknown59)),
+            CCollidableSphere(CSphere(CVector3f::Zero(), radius), CMaterialList(kMT_Solid)),
             CTransform4f::Translate(from),
             CMaterialFilter::MakeIncludeExclude(
-                CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision, kMT_Player,
-                                                            kMT_Character, kMT_CameraPassthrough)),
+                CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough, kMT_Player,
+                                                        kMT_Character, kMT_CameraPassthrough)),
             nearList)) {
       distance = -1.f;
       return true;
@@ -390,11 +390,10 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
 
     TUniqueId hitId = kInvalidUniqueId;
     if (clear) {
-      const CCollidableSphere sphere(CSphere(CVector3f::Zero(), radius),
-                                     CMaterialList(kMT_Unknown59));
+      const CCollidableSphere sphere(CSphere(CVector3f::Zero(), radius), CMaterialList(kMT_Solid));
       const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59),
-          CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough));
+          CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough, kMT_Player,
+                                                  kMT_Character, kMT_CameraPassthrough));
       CTransform4f startTransform = CTransform4f::Translate(from);
       CTransform4f testTransform = startTransform;
       const int stepCount = static_cast< uint >(length / 0.5f);
@@ -1657,7 +1656,7 @@ CVector3f CBallCamera::MoveCollisionActor(const CVector3f& position, float dt, C
   CVector3f velocity = ComputeVelocity(oldVelocity, delta / dt, dt);
   actor->SetVelocityWR(velocity);
   actor->SetMovable(true);
-  actor->AddMaterial(kMT_Unknown59, mgr);
+  actor->AddMaterial(kMT_Solid, mgr);
   CGameCollision::Move(mgr, *actor, dt, nullptr);
 
   CVector3f remaining = actor->GetTranslation() - position;
@@ -1677,7 +1676,7 @@ CVector3f CBallCamera::MoveCollisionActor(const CVector3f& position, float dt, C
   }
 
   actor->SetMovable(false);
-  actor->RemoveMaterial(kMT_Unknown59, mgr);
+  actor->RemoveMaterial(kMT_Solid, mgr);
   return actor->GetTranslation();
 }
 
@@ -2102,8 +2101,8 @@ void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
                                                     kInvalidUniqueId, true, 0.3f, 1.f);
     if (actor != nullptr) {
       actor->SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59), CMaterialList(kMT_Player, kMT_CameraPassthrough)));
-      actor->MaterialList() = CMaterialList(kMT_NoPlatformCollision, kMT_ScanPassthrough,
+          CMaterialList(kMT_Solid), CMaterialList(kMT_Player, kMT_CameraPassthrough)));
+      actor->MaterialList() = CMaterialList(kMT_ProjectilePassthrough, kMT_ScanPassthrough,
                                             kMT_SeeThrough, kMT_CameraPassthrough);
       actor->SetTranslation(GetTranslation());
       mgr.AddObject(actor);
@@ -2114,9 +2113,9 @@ void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       actor->SetDrawEnabled(false);
     }
     SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(), CMaterialList(kMT_Unknown59, kMT_NoPlatformCollision, kMT_Player,
+        CMaterialList(), CMaterialList(kMT_Solid, kMT_ProjectilePassthrough, kMT_Player,
                                        kMT_Character, kMT_CameraPassthrough)));
-    RemoveMaterial(kMT_Unknown59, mgr);
+    RemoveMaterial(kMT_Solid, mgr);
     break;
   }
   case kSM_Delete:
@@ -2312,8 +2311,8 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
 
 bool CBallCamera::SplineIntersectTest(CMaterialList& intersectMaterial, CStateManager& mgr) const {
   rstl::reserved_vector< TUniqueId, 1024 > nearList;
-  const CMaterialList include(kMT_Unknown59, kMT_Floor, kMT_Wall);
-  const CMaterialList exclude(kMT_NoPlatformCollision, kMT_Player, kMT_Character,
+  const CMaterialList include(kMT_Solid, kMT_Floor, kMT_Wall);
+  const CMaterialList exclude(kMT_ProjectilePassthrough, kMT_Player, kMT_Character,
                               kMT_CameraPassthrough);
   const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(include, exclude);
   return GetCameraManager(mgr).CheckSplineCollision(mCamSpline, 0, filter, mgr, intersectMaterial,

@@ -169,7 +169,7 @@ void CGlowbug::Think(float dt, CStateManager& mgr) {
       if (!mDamageApplied) {
         mgr.ApplyDamage(
             GetUniqueId(), mBeamTargetId, GetUniqueId(), mAttackDamage,
-            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
             CVector3f::Zero());
         mDamageApplied = true;
         ProcessSoundEvent(mAttackSound, 1.f, 0, 0.1f, 100.f, CSegId(0), 0, 0, 0.f, 20, 127,
@@ -214,7 +214,7 @@ void CGlowbug::Death(CStateManager& mgr, const CVector3f& direction, EScriptObje
   if (mIsInDarkWorld) {
     AnimationData()->SetEffectState(rstl::string_l(skDeathGlowEffect), true, mgr);
   }
-  AddMaterial(kMT_NoPlatformCollision, mgr);
+  AddMaterial(kMT_ProjectilePassthrough, mgr);
   CPatterned::Death(mgr, direction, state);
 }
 
@@ -241,7 +241,7 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Activate:
     StopLoopedSounds();
     if (!mIsInDarkWorld) {
-      RemoveMaterial(kMT_Character, kMT_Unknown59, kMT_Target, kMT_Orbit, mgr);
+      RemoveMaterial(kMT_Character, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
     } else {
       RemoveMaterial(kMT_Character, kMT_Target, kMT_Orbit, mgr);
     }
@@ -261,7 +261,7 @@ void CGlowbug::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
     if (mIsInDarkWorld) {
       if (IsOnGround() && !mHasBrokenApart) {
         mHasBrokenApart = true;
-        RemoveMaterial(kMT_Unknown59, mgr);
+        RemoveMaterial(kMT_Solid, mgr);
         AnimationData()->SetEffectState(rstl::string_l(skDeathGlowEffect), false, mgr);
         char name[100];
         sprintf(name, "GLOWBUG_EFFECT%d-%d", mDeathBreakApartEffect, mEffectIndex++);

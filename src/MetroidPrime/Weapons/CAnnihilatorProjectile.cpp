@@ -7,9 +7,9 @@
 #include "MetroidPrime/TCastTo.hpp"
 
 const CMaterialFilter CAnnihilatorProjectile::kTargetFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_NoPlatformCollision, kMT_Trigger));
+    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_ProjectilePassthrough, kMT_Trigger));
 const CMaterialFilter CAnnihilatorProjectile::kRayFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
 float CAnnihilatorProjectile::sNextTargetSeekOffset = 0.f;
 
 CAnnihilatorProjectile::CAnnihilatorProjectile(

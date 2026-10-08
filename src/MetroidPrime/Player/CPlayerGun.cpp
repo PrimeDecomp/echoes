@@ -111,9 +111,9 @@ static const ushort skEmptyBeamSfx[] = {
 static const ushort skEmptyMissileSfx[] = {0xBF, 0x25B0};
 
 static const CMaterialFilter skWeaponCollisionFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
 static const CMaterialFilter skSeekerTargetFilter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_ProjectilePassthrough));
 
 static inline bool just_froze(bool frozen, bool playerFrozen) {
   return (frozen ^ playerFrozen) & playerFrozen;

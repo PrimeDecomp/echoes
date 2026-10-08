@@ -23,8 +23,8 @@
 #include <math.h>
 
 // Guessed names.
-static const CMaterialList kPathLineOfSightIncludeList = CMaterialList(kMT_Unknown59);
-static const CMaterialList kPathLineOfSightExcludeList = CMaterialList(kMT_NoPlatformCollision);
+static const CMaterialList kPathLineOfSightIncludeList = CMaterialList(kMT_Solid);
+static const CMaterialList kPathLineOfSightExcludeList = CMaterialList(kMT_ProjectilePassthrough);
 static const CMaterialFilter kPathLineOfSightFilter =
     CMaterialFilter::MakeIncludeExclude(kPathLineOfSightIncludeList, kPathLineOfSightExcludeList);
 

@@ -13,8 +13,8 @@ CLineOfSightTracker::CLineOfSightTracker(TUniqueId owner, CSegId segment,
 : mOwner(owner)
 , mSegment(segment)
 , mRayFilter(CMaterialFilter::MakeIncludeExclude(
-      CMaterialList(kMT_Unknown59),
-      CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor, kMT_NoPlatformCollision,
+      CMaterialList(kMT_Solid),
+      CMaterialList(kMT_Character, kMT_Player, kMT_CollisionActor, kMT_ProjectilePassthrough,
                     kMT_ExcludeFromLineOfSightTest)))
 , mTarget(kInvalidUniqueId)
 , mMinimumCheckInterval(minimumCheckInterval)

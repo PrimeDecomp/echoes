@@ -67,7 +67,7 @@ void CLightComboProjectile::Think(float dt, CStateManager& mgr) {
       const CMaterialFilter targetFilter =
           CMaterialFilter::MakeInclude(CMaterialList(kMT_Target, kMT_Player));
       const CMaterialFilter occluderFilter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision, kMT_CollisionActor));
+          CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough, kMT_CollisionActor));
 
       rstl::reserved_vector< TUniqueId, 1024 > nearList;
       rstl::reserved_vector< TUniqueId, 1024 > occluderList;
@@ -217,7 +217,7 @@ TUniqueId CLightComboProjectile::CreateRay(float resetDelay, CStateManager& mgr,
 
   CPlasmaProjectile* ray = rs_new CPlasmaProjectile(
       mRayProjectile.Token(), rstl::string_l("LightComboRay"), kWT_Light, mRayBeamInfo,
-      CTransform4f::Identity(), kMT_NoPlatformCollision, mRayProjectile.GetDamage(),
+      CTransform4f::Identity(), kMT_ProjectilePassthrough, mRayProjectile.GetDamage(),
       mgr.AllocateUniqueId(), GetCurrentAreaId(), GetOwnerId(), CWeaponAssetInfo(), false, 0x20000);
   if (!ray) {
     return kInvalidUniqueId;

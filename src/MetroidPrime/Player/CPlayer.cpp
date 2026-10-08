@@ -595,10 +595,10 @@ void CPlayer::ResetPlayerState(CStateManager& mgr, int state) {
     CSamusHud::RefreshBeamMenu(mgr, GetPlayerIndex());
   }
   mKnockBackManager.ResetEffects(mgr, *this);
-  AddMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
+  AddMaterial(kMT_Orbit, kMT_Target, kMT_Solid, mgr);
   RemoveMaterial(kMT_Unknown54, mgr);
   if (mgr.IsMultiplayer()) {
-    RemoveMaterial(kMT_NoPlatformCollision, mgr);
+    RemoveMaterial(kMT_ProjectilePassthrough, mgr);
   }
   CSamusHud::DisplayHudMemo(rstl::wstring_l(L""),
                             CHUDMemoParms(FLT_EPSILON, true, false, false, 1 << playerIndex, true));
@@ -846,7 +846,7 @@ void CPlayer::Update(float dt, CStateManager& mgr) {
       mDamageWeaponType = kWT_None;
       AddMaterial(kMT_Unknown54, mgr);
       if (mgr.IsMultiplayer()) {
-        AddMaterial(kMT_NoPlatformCollision, mgr);
+        AddMaterial(kMT_ProjectilePassthrough, mgr);
       }
       ApplySubmergedPitchBend(CSfxManager::SfxStart(
           mgr.ReturnFirstIfSingleElseSecond(0xb7, 0x2579), 127, GetSoundPan(kMSP_Player),
@@ -3917,7 +3917,7 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
       Stop();
       SetVelocityWR(CVector3f::Zero());
       mGun->Holster(mgr);
-      RemoveMaterial(kMT_Unknown59, mgr);
+      RemoveMaterial(kMT_Solid, mgr);
       SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
       mBodyController->CommandMgr().DeliverCmd(CPBCMorphToBallCmd(0, 2));
     } else {
@@ -3935,7 +3935,7 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
           displacement.SetZ(0.f);
           if (displacement.Magnitude() < 4.f && CMath::AbsF(verticalOffset) < 5.f) {
             mgr.ApplyDamage(GetUniqueId(), mgr.GetPlayer(i)->GetUniqueId(), GetUniqueId(),
-                            crushDamage, CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)),
+                            crushDamage, CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid)),
                             CVector3f::Zero());
           }
         }
@@ -3986,7 +3986,7 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
     CVector3f velocity = 30.f * -PlayerTurret_GetCameraTransform(*turret, mgr).GetForward();
     velocity.SetZ(30.f);
     SetVelocityWR(velocity);
-    AddMaterial(kMT_Unknown59, mgr);
+    AddMaterial(kMT_Solid, mgr);
     mBodyController->CommandMgr().DeliverCmd(CPBCMorphToPlayerCmd(1, 0));
     mTurretGunDrawBlocks.RemovePlayer(mgr, mPlayerIndex);
     break;
@@ -4224,7 +4224,7 @@ void CPlayer::UpdateDarkAetherDamage(float dt, CStateManager& mgr) {
           mgr.ApplyDamage(
               kInvalidUniqueId, GetUniqueId(), kInvalidUniqueId,
               CDamageInfo(GetTweakPlayer()->GetDarkWorldDamageInfo(), dt),
-              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+              CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
               CVector3f::Zero());
         }
         mDarkWorldDamageExposureTime = gracePeriod;

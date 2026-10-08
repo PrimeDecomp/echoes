@@ -226,7 +226,7 @@ void CAnnihilatorBeam::FireProjectile(const TCachedToken< CWeaponDescription >& 
       (partialCharge ? CWeapon::kPA_ParticleOPTS : CWeapon::kPA_None);
   chargeAttributes |= projectileAttributes;
   CEnergyProjectile* proj = rs_new CAnnihilatorProjectile(
-      projectile, mWeaponType, xf, kMT_NoPlatformCollision, damage, mgr.AllocateUniqueId(),
+      projectile, mWeaponType, xf, kMT_ProjectilePassthrough, damage, mgr.AllocateUniqueId(),
       kInvalidAreaId, GetPlayerId(), homingTarget, projectileAttributes, underwater, scale,
       mProjectileSpeed, mProjectileTurnRate);
   if (proj) {

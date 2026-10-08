@@ -26,7 +26,7 @@ CBomb::CBomb(TToken< CGenDescription > particle1, TToken< CGenDescription > part
              float triggerRadius, const CTransform4f& xf, const CDamageInfo& damageInfo)
 : CWeapon(uid, areaId, true, ownerId, type, rstl::string_l("Bomb"), xf,
           CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Unknown59, kMT_Trigger, kMT_NonSolidDamageable),
+              CMaterialList(kMT_Solid, kMT_Trigger, kMT_NonSolidDamageable),
               CMaterialList(kMT_Projectile, kMT_Bomb)),
           CMaterialList(kMT_Projectile, kMT_Bomb), damageInfo, attribs | kPA_Bombs,
           CModelData::CModelDataNull())
@@ -151,8 +151,8 @@ void CBomb::Think(float dt, CStateManager& mgr) {
         Explode(mgr, rstl::optional_object_null());
       } else {
         static const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Unknown59, kMT_NonSolidDamageable),
-            CMaterialList(kMT_Character, kMT_Player, kMT_NoPlatformCollision));
+            CMaterialList(kMT_Solid, kMT_NonSolidDamageable),
+            CMaterialList(kMT_Character, kMT_Player, kMT_ProjectilePassthrough));
         const CRayCastResult result =
             mgr.RayStaticIntersection(mPrevLocation, (1.f / distance) * delta, distance, filter);
         if (result.IsValid()) {

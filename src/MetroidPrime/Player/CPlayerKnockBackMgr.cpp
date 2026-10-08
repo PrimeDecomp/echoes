@@ -29,7 +29,7 @@
 #include <float.h>
 
 const int CPlayerKnockBackMgr::skAnimationStates[5] = {-1, 6, 8, 5, 5};
-EMaterialTypes CPlayerKnockBackMgr::sDamageMaterial = kMT_Unknown59;
+EMaterialTypes CPlayerKnockBackMgr::sDamageMaterial = kMT_Solid;
 
 CPlayerKnockBackMgr::CPlayerKnockBackMgr()
 : CKnockBackMgr(gpResourceFactory->GetResourceIdByName("RULE_Player")->GetId())
@@ -166,7 +166,7 @@ void CPlayerKnockBackMgr::DoKnockBackAnimation(const CVector3f& direction, CStat
   case kAR_Fall:
     if (!player->GetPlayerRagDoll() && biped &&
         player->GetPlayerMovementState() == NPlayer::kMS_OnGround) {
-      player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
+      player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Solid, mgr);
       player->SetDeathFadeEnabled(true);
       player->SetDeathFadeDuration(1.f);
       player->SetDeathFadeDelay(1.5f);
@@ -183,7 +183,7 @@ void CPlayerKnockBackMgr::DoKnockBackAnimation(const CVector3f& direction, CStat
     // Fall through to the hurled handling.
   case kAR_Hurled:
     if (!mRagDollPending && !player->GetPlayerRagDoll() && biped) {
-      player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
+      player->RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Solid, mgr);
       player->SetDeathFadeEnabled(true);
       player->SetDeathFadeDuration(1.f);
       player->SetDeathFadeDelay(1.5f);
@@ -294,7 +294,7 @@ void CPlayerKnockBackMgr::ExplodeDeath(CStateManager& mgr, CPlayer& player,
   if (!player.GetPlayerState()->IsPlayerAlive() &&
       CMath::IsEpsilon(player.GetDeathTime(), 0.f, 0.00001f)) {
     player.SetDeathRenderingSuppressed(true);
-    player.RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Unknown59, mgr);
+    player.RemoveMaterial(kMT_Orbit, kMT_Target, kMT_Solid, mgr);
     const bool ball = player.GetMorphballTransitionState() != CPlayer::kMS_Unmorphed;
     if (mgr.IsMultiplayer()) {
       uint event = uint(-1);

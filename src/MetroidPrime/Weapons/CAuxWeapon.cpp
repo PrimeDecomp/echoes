@@ -130,7 +130,7 @@ void CAuxWeapon::FireProjectile(float dt, EWeaponType type, bool underwater, boo
     const CVector3f direction = spawnTransform.GetForward();
     TUniqueId hitId = kInvalidUniqueId;
     const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+        CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
     rstl::reserved_vector< TUniqueId, 1024 > nearList;
     mgr.BuildNearList(nearList, position, direction, 100.f, filter,
                       TCastToPtr< CActor >(mgr.ObjectById(mPlayerId)));
@@ -161,7 +161,7 @@ void CAuxWeapon::FireProjectile(float dt, EWeaponType type, bool underwater, boo
   }
 
   CEnergyProjectile* projectile = rs_new CEnergyProjectile(
-      true, description, isCombo ? type : kWT_Missile, spawnTransform, kMT_NoPlatformCollision,
+      true, description, isCombo ? type : kWT_Missile, spawnTransform, kMT_ProjectilePassthrough,
       damage.ApplyDoubleDamage(*FindPlayer(mgr)->GetPlayerState()), mgr.AllocateUniqueId(),
       kInvalidAreaId, mPlayerId, description->mHOMG ? homingId : kInvalidUniqueId, attributes,
       underwater, CVector3f::One(), CImpactVisorEffect::None(), false, true,
@@ -195,7 +195,7 @@ void CAuxWeapon::FireLightCombo(float dt, bool underwater, int comboId, uint att
   const ushort sfx = skComboSoundIds[mgr.IsMultiplayer() ? 1 : 0][comboId];
   CPlayer* player = GetPlayerFromAll(mgr);
   CLightComboProjectile* projectile = rs_new CLightComboProjectile(
-      description, kWT_Light, xf, kMT_NoPlatformCollision,
+      description, kWT_Light, xf, kMT_ProjectilePassthrough,
       damage.ApplyDoubleDamage(*FindPlayer(mgr)->GetPlayerState()), mgr.AllocateUniqueId(),
       kInvalidAreaId, mPlayerId, description.GetObject()->mHOMG ? homingId : kInvalidUniqueId,
       underwater, attributes, 10.f);

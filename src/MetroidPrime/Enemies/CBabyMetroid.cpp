@@ -139,10 +139,9 @@ void CBabyMetroid::Generate(CStateManager& mgr, EStateMsg msg, float dt) {
 
 void CBabyMetroid::ApplyContactDamage(CStateManager& mgr, CActor& target, const CDamageInfo& info) {
   if (mCurDamageRemTime <= 0.f) {
-    mgr.ApplyDamage(
-        GetUniqueId(), target.GetUniqueId(), GetUniqueId(), info,
-        CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-        CVector3f::Zero());
+    mgr.ApplyDamage(GetUniqueId(), target.GetUniqueId(), GetUniqueId(), info,
+                    CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+                    CVector3f::Zero());
     mCurDamageRemTime = mDamageWaitTime;
   }
 }

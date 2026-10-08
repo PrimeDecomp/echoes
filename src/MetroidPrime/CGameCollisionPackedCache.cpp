@@ -22,7 +22,7 @@
 #include <string.h>
 
 namespace {
-const CMaterialList kImplicitGeometryMaterials(kMT_Unknown59, kMT_Unknown60);
+const CMaterialList kImplicitGeometryMaterials(kMT_Solid, kMT_NoPlatformCollision);
 
 // Guessed helper names and source-local placement.
 TUniqueId FirstCollisionObjectId(const CCollisionInfoList& collisions) {
@@ -394,7 +394,7 @@ bool CGameCollision::DetectStaticCollision_Cached_Moving(
     CCollisionInfo result;
     double resultDistance = distance;
     if (CMetroidAreaCollider::MovingAABoxCollisionCheck_Cached(
-            cache, bounds, geometryFilter, CMaterialList(kMT_Unknown59), direction,
+            cache, bounds, geometryFilter, CMaterialList(kMT_Solid), direction,
             static_cast< float >(distance), result, resultDistance) &&
         resultDistance < distance) {
       collision = result;

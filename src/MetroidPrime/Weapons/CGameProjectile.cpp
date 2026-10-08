@@ -48,8 +48,8 @@ CGameProjectile::CGameProjectile(bool active, const TToken< CWeaponDescription >
                                  const CImpactVisorEffect& visorEffect)
 : CWeapon(uid, areaId, active, owner, weaponType, name, xf,
           CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Unknown59, kMT_NonSolidDamageable),
-              CMaterialList(kMT_Projectile, kMT_NoPlatformCollision, excludeMaterial)),
+              CMaterialList(kMT_Solid, kMT_NonSolidDamageable),
+              CMaterialList(kMT_Projectile, kMT_ProjectilePassthrough, excludeMaterial)),
           CMaterialList(kMT_Projectile), damageInfo, attribs | GetBeamAttribType(weaponType),
           CModelData())
 , mInitialTransform(xf)
@@ -142,11 +142,11 @@ CProjectileTouchResult CGameProjectile::CanCollideWithGameObject(CActor& actor,
       return patterned->GetRagDoll()->ProjectileCollision(*this, actor.GetUniqueId());
     }
     if (CSwarmBasics* swarm = TCastToPtr< CSwarmBasics >(actor)) {
-      if (!swarm->GetMaterialList().HasMaterial(kMT_Unknown59)) {
+      if (!swarm->GetMaterialList().HasMaterial(kMT_Solid)) {
         return CProjectileTouchResult(kInvalidUniqueId, rstl::optional_object_null());
       }
     }
-    if (!actor.GetMaterialList().HasMaterial(kMT_Unknown59) && !actor.GetHealthInfo()) {
+    if (!actor.GetMaterialList().HasMaterial(kMT_Solid) && !actor.GetHealthInfo()) {
       return CProjectileTouchResult(kInvalidUniqueId, rstl::optional_object_null());
     }
     if (actor.GetUniqueId() == GetOwnerId()) {
@@ -191,7 +191,7 @@ CProjectileTouchResult CGameProjectile::CanCollideWithComplexCollision(CActor& a
     const CVector3f direction = delta.AsNormalized();
     const float magnitude = delta.Magnitude();
     const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+        CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
     const CRayCastResult result =
         primitive->CastRay(mPreviousPos, direction, magnitude, filter, xf);
     if (result.IsValid()) {
@@ -199,7 +199,7 @@ CProjectileTouchResult CGameProjectile::CanCollideWithComplexCollision(CActor& a
     }
     if (primitive->GetPrimType() != 'SPHR') {
       const CMaterialFilter secondFilter = CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+          CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
       const CRayCastResult second =
           primitive->CastRay(mPreviousPos - 1.f * (magnitude * direction), direction,
                              2.f * magnitude, secondFilter, xf);
@@ -409,7 +409,7 @@ CRayCastResult CGameProjectile::DoCollisionCheck(TUniqueId& idOut, CStateManager
     const CVector3f delta = GetTranslation() - mPreviousPos;
     rstl::reserved_vector< TUniqueId, 1024 > nearList;
     mgr.BuildNearList(nearList, GetProjectileBounds(),
-                      CMaterialFilter::MakeExclude(CMaterialList(kMT_NoPlatformCollision)), this);
+                      CMaterialFilter::MakeExclude(CMaterialList(kMT_ProjectilePassthrough)), this);
     const EStaticGeometryTest staticTest =
         mgr.IsMultiplayer() ? kSGT_CollisionGeometry : kSGT_RenderGeometry;
     result = RayCollisionCheckWithWorld(idOut, mPreviousPos, GetTranslation(), delta.Magnitude(),

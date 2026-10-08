@@ -7,9 +7,9 @@
 
 #include "math.h"
 
-static CMaterialList kLineOfSightIncludeList = CMaterialList(kMT_Unknown59);
+static CMaterialList kLineOfSightIncludeList = CMaterialList(kMT_Solid);
 static CMaterialList kLineOfSightExcludeList =
-    CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Character, kMT_CameraPassthrough);
+    CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Character, kMT_CameraPassthrough);
 static CMaterialFilter kLineOfSightFilter =
     CMaterialFilter::MakeIncludeExclude(kLineOfSightIncludeList, kLineOfSightExcludeList);
 

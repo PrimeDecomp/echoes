@@ -717,8 +717,8 @@ void CEnvFxManager::UpdateBlockedGrids(CStateManager& mgr, EEnvFxType type,
         grid.SetVisibility(rstl::pair< bool, float >(true, -skMaximumBlockingHeight));
       } else {
         const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-            CMaterialList(kMT_Unknown59, kMT_Trigger),
-            CMaterialList(kMT_NoPlatformCollision, kMT_SeeThrough));
+            CMaterialList(kMT_Solid, kMT_Trigger),
+            CMaterialList(kMT_ProjectilePassthrough, kMT_SeeThrough));
         const CVector2i& gridPos = CVector2i(grid.GetStart() + grid.GetSize() * 0);
         const CVector3f localGrid(fixed8_8_to_real(gridPos.GetX()),
                                   fixed8_8_to_real(gridPos.GetY()), 0.f);

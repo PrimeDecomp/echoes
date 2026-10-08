@@ -1393,9 +1393,9 @@ void CStateManager::TouchPlayerActor() {
 }
 
 // Guessed local names. The target excludes these materials when testing dock visibility.
-static EMaterialTypes VisAreaExcludeMaterial1 = kMT_NoPlatformCollision;
+static EMaterialTypes VisAreaExcludeMaterial1 = kMT_ProjectilePassthrough;
 static EMaterialTypes VisAreaExcludeMaterial2 = kMT_CameraPassthrough;
-static EMaterialTypes VisAreaIncludeMaterial = kMT_Unknown59;
+static EMaterialTypes VisAreaIncludeMaterial = kMT_Solid;
 
 TAreaId CStateManager::GetVisAreaId() const {
   const TAreaId currentArea = GetWorld()->GetCurrentAreaId();
@@ -1742,7 +1742,7 @@ void CStateManager::UpdatePlayerLineOfSight(float dt) {
     const float length = direction.Magnitude();
     direction *= 1.f / length;
     const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(kMT_Unknown59), CMaterialList(kMT_SeeThrough));
+        CMaterialList(kMT_Solid), CMaterialList(kMT_SeeThrough));
     if (CGameCollision::RayStaticLineOfSightTest(*this, start, direction, length, filter)) {
       visible = true;
     }
@@ -2289,13 +2289,12 @@ void CStateManager::CreateStandardGameObjects() {
     if (IsMultiplayer()) {
       characterIndex = 0;
     }
-    mPlayers[i] =
-        rs_new CPlayer(uid, transform, bounds, gpTweakPlayerRes->GetBallTransitionANCSId(),
-                       stateMachine, 200.f, stepUp, stepDown, ballRadius,
-                       CMaterialList(kMT_Player, kMT_Unknown59, kMT_GroundCollider, kMT_Target,
-                                     kMT_NoPlayerCollision),
-                       mPlayerStates[i], mCameraManagers[i], mNumPlayers > 1u, i,
-                       mPlayerStateOwners[i]->GetControlScheme(), characterIndex);
+    mPlayers[i] = rs_new CPlayer(
+        uid, transform, bounds, gpTweakPlayerRes->GetBallTransitionANCSId(), stateMachine, 200.f,
+        stepUp, stepDown, ballRadius,
+        CMaterialList(kMT_Player, kMT_Solid, kMT_GroundCollider, kMT_Target, kMT_NoPlayerCollision),
+        mPlayerStates[i], mCameraManagers[i], mNumPlayers > 1u, i,
+        mPlayerStateOwners[i]->GetControlScheme(), characterIndex);
   }
 
   for (uint i = 0; i < mNumPlayers; ++i) {
@@ -3105,11 +3104,9 @@ CStateManager::TestRayDamage(const CVector3f& position, const CActor& damagee,
     return false;
   }
 
-  // Material 59's semantic name remains unresolved; the native filter uses it,
-  // rather than Prime's Solid material, and excludes NoPlatformCollision.
-  static const CMaterialList include = CMaterialList(kMT_Unknown59);
+  static const CMaterialList include = CMaterialList(kMT_Solid);
   static const CMaterialList exclude =
-      CMaterialList(kMT_NoPlatformCollision, kMT_Player, kMT_Occluder, kMT_Character);
+      CMaterialList(kMT_ProjectilePassthrough, kMT_Player, kMT_Occluder, kMT_Character);
   static const CMaterialFilter filter =
       CMaterialFilter(include, exclude, CMaterialFilter::kFT_IncludeExclude);
 
@@ -3303,9 +3300,8 @@ void CStateManager::ApplyKnockBack(CActor& actor, TUniqueId source, TUniqueId ow
     if (power > resistance) {
       if (CPhysicsActor* const physics = TCastToPtr< CPhysicsActor >(actor)) {
         const CVector3f impulse = direction * (1.5f * ((power - resistance) * physics->GetMass()));
-        // The native impulse gate uses material 59; its semantic name is unresolved.
         if (!physics->GetMaterialList().HasMaterial(kMT_Immovable) &&
-            physics->GetMaterialList().HasMaterial(kMT_Unknown59)) {
+            physics->GetMaterialList().HasMaterial(kMT_Solid)) {
           physics->ApplyImpulseWR(impulse, CAxisAngle::Identity());
         }
       }

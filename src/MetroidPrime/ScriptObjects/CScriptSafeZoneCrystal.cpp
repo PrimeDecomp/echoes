@@ -80,7 +80,7 @@ CScriptSafeZoneCrystal::CScriptSafeZoneCrystal(
     const CMayaSpline& fadeSpline)
 : CActor(uid, name, info, 0, xf, normalModel,
          CMaterialList(kMT_Immovable, kMT_ExcludeFromLineOfSightTest,
-                       isLight ? kMT_NonSolidDamageable : kMT_Unknown59),
+                       isLight ? kMT_NonSolidDamageable : kMT_Solid),
          actorParms, kInvalidUniqueId)
 , mScanCollapsed(LoadScannableInfo(scanCollapsed).release())
 , mScanEntangled(LoadScannableInfo(scanEntangled).release())

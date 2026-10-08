@@ -9,9 +9,9 @@
 
 // Provisional TU placement; filter names are reconstructed.
 static const CMaterialFilter sInclude63Filter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_SeekerTarget), CMaterialList(kMT_ProjectilePassthrough));
 static const CMaterialFilter sInclude59Filter = CMaterialFilter::MakeIncludeExclude(
-    CMaterialList(kMT_Unknown59), CMaterialList(kMT_NoPlatformCollision));
+    CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough));
 
 CFreezeBeamProjectile::CFreezeBeamProjectile(const TToken< CWeaponDescription >& description,
                                              EWeaponType type, const CTransform4f& xf,

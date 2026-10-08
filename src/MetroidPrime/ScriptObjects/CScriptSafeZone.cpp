@@ -758,10 +758,9 @@ static inline CDamageInfo ScaleDamage(const CDamageInfo& info, float dt) {
 void CScriptSafeZone::DamageActor(CStateManager& mgr, TUniqueId id, float dt) {
   CDamageInfo damage =
       mZoneType == kZT_Normal ? ScaleDamage(mNormalDamage, dt) : ScaleDamage(mHurtfulDamage, dt);
-  mgr.ApplyDamage(
-      GetUniqueId(), id, GetUniqueId(), damage,
-      CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
-      CVector3f::Zero());
+  mgr.ApplyDamage(GetUniqueId(), id, GetUniqueId(), damage,
+                  CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
+                  CVector3f::Zero());
 }
 
 void CScriptSafeZone::UpdateObstruction(CStateManager& mgr, bool enable) {

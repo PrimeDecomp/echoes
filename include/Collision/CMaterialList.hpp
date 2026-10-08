@@ -25,14 +25,14 @@ enum EMaterialTypes {
   kMT_Glass = 15,
   kMT_Shield = 16,
   kMT_Sand = 17,
-  kMT_ProjectilePassthrough = 18,
-  kMT_Solid = 19,
-  kMT_NoPlatformCollision = 20,
+  kMT_Unknown18 = 18, // Surface type with a CRagDoll material response.
+  kMT_Unknown19 = 19, // Surface type with a CRagDoll material response.
+  kMT_ProjectilePassthrough = 20,
   kMT_CameraPassthrough = 21,
   kMT_Wood = 22,
   kMT_Organic = 23,
   kMT_NoEdgeCollision = 24,
-  kMT_RedundantEdgeOrFlippedTri = 25,
+  kMT_Unknown25 = 25, // Surface type; CRagDoll gives it a restitution of 5.
   kMT_SeeThrough = 26,
   kMT_ScanPassthrough = 27,
   kMT_AIPassthrough = 28,
@@ -66,8 +66,9 @@ enum EMaterialTypes {
   kMT_ExcludeFromLineOfSightTest = 56,
   kMT_ExcludeFromRadar = 57,
   kMT_NoPlayerCollision = 58,
-  kMT_Unknown59 = 59,   // Used by the Echoes Morph Ball collision sphere.
-  kMT_Unknown60 = 60,   // Included in the implicit world-render geometry mask.
+  kMT_Solid = 59,
+  kMT_NoPlatformCollision = 60,
+  kMT_Unknown61 = 61,   // Included by the spider ball surface filter.
   kMT_SeekerTarget = 63 // Target-derived name: seeker lock-on eligibility.
 };
 

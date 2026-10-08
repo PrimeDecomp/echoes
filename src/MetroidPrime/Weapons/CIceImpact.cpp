@@ -278,7 +278,7 @@ void CIceImpact::Touch(CActor& actor, CStateManager& mgr) {
       if (mGrid.AABoxTouchesData(*touchBounds, 1)) {
         mgr.ApplyDamage(
             GetUniqueId(), actor.GetUniqueId(), kInvalidUniqueId, damageInfo,
-            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Unknown59), CMaterialList()),
+            CMaterialFilter::MakeIncludeExclude(CMaterialList(kMT_Solid), CMaterialList()),
             CVector3f::Zero());
       }
     }
@@ -321,7 +321,7 @@ bool CIceImpact::GenerateParticlesAgainstWorld(CStateManager& mgr,
                                                const CSphere& outer, const CSphere& inner) {
   CMetroidAreaCollider::ResetInternalCounters();
   const CMaterialFilter filter =
-      CMaterialFilter::MakeExclude(CMaterialList(kMT_NoPlatformCollision));
+      CMaterialFilter::MakeExclude(CMaterialList(kMT_ProjectilePassthrough));
   for (int n = 0; n < cache.GetNumLeaves(); ++n) {
     const CAreaOctTree::Node& leaf = cache.GetLeaf(n);
     const CAreaOctTree::TriListReference triangles = leaf.GetTriangleArray();
@@ -353,7 +353,7 @@ bool CIceImpact::GenerateParticlesAgainstActors(CStateManager& mgr, const CAABox
   mgr.BuildNearList(
       nearList, bounds,
       CMaterialFilter::MakeExclude(CMaterialList(kMT_Character, kMT_Player, kMT_Projectile,
-                                                 kMT_NoPlatformCollision, kMT_AIJoint)),
+                                                 kMT_ProjectilePassthrough, kMT_AIJoint)),
       this);
   for (rstl::reserved_vector< TUniqueId, 1024 >::const_iterator it = nearList.begin();
        it != nearList.end(); ++it) {
@@ -367,7 +367,7 @@ bool CIceImpact::GenerateParticlesAgainstActors(CStateManager& mgr, const CAABox
                                         physActor->GetPrimitiveTransform(), outer, inner);
       }
     } else if (actor != nullptr) {
-      if (actor->GetMaterialList().HasMaterial(kMT_Unknown59) ||
+      if (actor->GetMaterialList().HasMaterial(kMT_Solid) ||
           TCastToPtr< CScriptWater >(actor) != nullptr) {
         const rstl::optional_object< CAABox > touchBounds = actor->GetTouchBounds();
         if (touchBounds) {
@@ -395,7 +395,7 @@ bool CIceImpact::GenerateParticlesAgainstOBBTree(CStateManager& mgr, const COBBT
                                                  const CTransform4f& xf, const CSphere& outer,
                                                  const CSphere& inner) {
   const CMaterialFilter filter =
-      CMaterialFilter::MakeExclude(CMaterialList(kMT_NoPlatformCollision));
+      CMaterialFilter::MakeExclude(CMaterialList(kMT_ProjectilePassthrough));
   const int triangleCount = tree.GetTriangleCount();
   for (short i = 0; i < triangleCount; ++i) {
     const CCollisionSurface surface(tree.GetTriangle(i, &xf));

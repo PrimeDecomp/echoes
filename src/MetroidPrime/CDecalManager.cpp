@@ -28,7 +28,7 @@ CAssetId CDecalManager::mLastDecalCreatedAssetId;
 // The target places this out-of-line constructor in this translation unit.
 
 namespace {
-const CMaterialList skImplicitWorldMaterials(kMT_Unknown59, kMT_Unknown60);
+const CMaterialList skImplicitWorldMaterials(kMT_Solid, kMT_NoPlatformCollision);
 
 // Guessed name for the world-triangle collection callback.
 class CDecalTriangleCollector : public IDisplayListTriangleCallback {
@@ -195,7 +195,7 @@ void CDecalManager::AddDecal(const TToken< CDecalDescription >& desc, const CTra
     const float halfSize = rstl::max_val(0.5f * size1, 0.5f * size2);
     const CVector3f halfExtent(halfSize, halfSize, halfSize);
     const CAABox bounds(xf.GetTranslation() - halfExtent, xf.GetTranslation() + halfExtent);
-    GatherWorldSurfaces(mgr, bounds, CMaterialFilter::MakeInclude(CMaterialList(kMT_Unknown59)),
+    GatherWorldSurfaces(mgr, bounds, CMaterialFilter::MakeInclude(CMaterialList(kMT_Solid)),
                         surfaces);
   }
 

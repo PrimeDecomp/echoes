@@ -17,7 +17,7 @@ CPowerBomb::CPowerBomb(TToken< CGenDescription > particle, TUniqueId uid, TAreaI
                        const CDamageInfo& damageInfo)
 : CWeapon(uid, areaId, true, ownerId, type, rstl::string_l("PowerBomb"), xf,
           CMaterialFilter::MakeIncludeExclude(
-              CMaterialList(kMT_Trigger, kMT_Immovable, kMT_Unknown59, kMT_NonSolidDamageable),
+              CMaterialList(kMT_Trigger, kMT_Immovable, kMT_Solid, kMT_NonSolidDamageable),
               CMaterialList(kMT_Projectile, kMT_PowerBomb)),
           CMaterialList(kMT_Projectile, kMT_PowerBomb), damageInfo, kPA_PowerBombs,
           CModelData::CModelDataNull())

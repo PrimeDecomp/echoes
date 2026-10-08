@@ -15,7 +15,7 @@
 #include "MetroidPrime/Weapons/CGameProjectile.hpp"
 #include "REL/REL_Setup.h"
 
-static EMaterialTypes SolidMaterial = kMT_Unknown59;
+static EMaterialTypes SolidMaterial = kMT_Solid;
 
 static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"InRange", static_cast< CPatterned::StateMachine::TriggerFunc >(&CMetaree::InRange)},

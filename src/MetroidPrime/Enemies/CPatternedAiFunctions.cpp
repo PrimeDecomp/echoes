@@ -29,8 +29,8 @@ void CPatterned::Dead(CStateManager& mgr, EStateMsg msg, float) {
     if (!mFadeToDeath && mBodyController->GetBodyStateInfo().GetCurrentState()->IsDead()) {
       mFadeToDeath = true;
       mAlphaDelta = -1.f / GetFadeOnDeathTime();
-      RemoveMaterial(kMT_Character, kMT_Unknown59, kMT_Target, kMT_Orbit, mgr);
-      AddMaterial(kMT_NoPlatformCollision, mgr);
+      RemoveMaterial(kMT_Character, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
+      AddMaterial(kMT_ProjectilePassthrough, mgr);
     }
     break;
   }
