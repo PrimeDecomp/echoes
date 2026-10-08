@@ -2517,7 +2517,7 @@ void CPlayer::ComputeFreeLook(const CFinalInput& input, CStateManager& mgr) {
     lookDown = mControlMapper.GetAnalogInput(CControlMapper::kC_LookUp, input);
   }
 
-  if (!GetTweakPlayerControls()->GetStayInFreeLookWhileFiring() &&
+  if (!GetTweakPlayerControls()->GetAimDuringFreeLook() &&
       (FireBeamHeld(input) || mOrbitState != kOS_NoOrbit)) {
     mHorizFreeLookAngleVel = 0.f;
     mVertFreeLookAngleVel = 0.f;

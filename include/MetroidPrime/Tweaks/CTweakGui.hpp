@@ -30,14 +30,14 @@ public:
 
   // Guessed names; native lock-on, damage-ring, face-light and logbook consumers.
   const CColor& GetLogBookScanlineColor() const;
-  const CColor& GetLockOnIndicatorColor() const;
-  float GetLockOnIndicatorScale() const;
-  float GetLockOnIndicatorVerticalOffset() const;
+  const CColor& GetLockedOnIndicatorEnemyColor() const;
+  float GetLockedOnIndicatorScale() const;
+  float GetLockedOnIndicatorRadius() const;
   float GetFaceReflectionLightFalloffMultQuadratic() const;
   float GetFaceReflectionLightFalloffMultLinear() const;
   float GetFaceReflectionLightFalloffMultConstant() const;
   float GetHUDDamageIndicatorRadius() const;
-  const CColor& GetPlayerLockOnIndicatorColor(int playerSelection) const;
+  const CColor& GetLockedOnIndicatorSlotColor(int slot) const;
   float GetEchoPulseRadiusScale() const;
   float GetBallViewportYReduction() const;
 
@@ -74,11 +74,11 @@ public:
   float GetLogBookModelRotationClampUpperLimit() const;
   float GetLogBookSliderTextWidthScale() const;
   float GetLogBookSliderTextHeightScale() const;
-  float GetLogBookModelXOffset() const;
-  float GetLogBookModelZOffset() const;
-  float GetLogBookCameraXOffset() const;
-  float GetLogBookCameraZOffset() const;
-  float GetLogBookCameraDistance() const;
+  float GetLogBookScanObjectHorizontalTranslation() const;
+  float GetLogBookScanObjectVerticalTranslation() const;
+  float GetLogBookTreeHorizontalTranslation() const;
+  float GetLogBookTreeVerticalTranslation() const;
+  float GetLogBookTreeCameraDistance() const;
 
   // Guessed names; native energy-bar and free-look sound consumers corroborate Prime.
   float GetEnergyBarFilledDrainSpeed() const;

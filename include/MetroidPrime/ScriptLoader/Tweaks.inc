@@ -670,27 +670,27 @@ void LoadTypedefTweakGui_ScannableObjectDownloadTimes(
 }
 
 SLdrTweakPlayerControls_Booleans::SLdrTweakPlayerControls_Booleans() {
-  unknown_0xff1b0413 = true;
-  unknown_0xe0c1d958 = true;
+  freeLookTurnsPlayer = true;
+  holdButtonForAim = true;
   toggleAimPosition = false;
-  unknown_0x1f99c6ba = false;
-  unknown_0x18eb3ab5 = true;
-  unknown_0xbdc01c71 = false;
+  moveDuringFreeLook = false;
+  holdButtonsForFreeLook = true;
+  twoButtonsForFreeLook = false;
   fixedVerticalAim = false;
-  unknown_0xda97bbcd = false;
+  autoAimRequiresOrbit = false;
   orbitAroundEnemies = true;
-  unknown_0xc224d966 = true;
-  addGrenadeAlert = true;
-  unknown_0x3fb16819 = true;
-  unknown_0x4fcf4b70 = false;
-  unknown_0x07bb06a6 = false;
-  unknown_0x04d8d57b = false;
-  unknown_0x5282c47e = true;
+  aimWhenOrbitingPoint = true;
+  aimDuringFreeLook = true;
+  aimAtOrbitPoint = true;
+  freeLookFadesGun = false;
+  orbitPointFixedOffset = false;
+  gunButtonTogglesHolster = false;
+  gunNotFiringHolstersGun = true;
   fallingDoubleJump = false;
   impulseDoubleJump = true;
-  unknown_0xa796a8b9 = true;
-  unknown_0x7c0599c8 = true;
-  unknown_0x522ab1ac = true;
+  firingCancelsCameraPitch = true;
+  assistedAimingIgnoreHorizontal = true;
+  assistedAimingIgnoreVertical = true;
 }
 
 SLdrTweakPlayerControls_Booleans::~SLdrTweakPlayerControls_Booleans() {}
@@ -703,11 +703,11 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
     const u16 propertySize = input.ReadUint16();
     switch (propertyId) {
     case 0xff1b0413: {
-      sldrThis.unknown_0xff1b0413 = input.ReadBool();
+      sldrThis.freeLookTurnsPlayer = input.ReadBool();
       break;
     }
     case 0xe0c1d958: {
-      sldrThis.unknown_0xe0c1d958 = input.ReadBool();
+      sldrThis.holdButtonForAim = input.ReadBool();
       break;
     }
     case 0x55c20d58: {
@@ -715,15 +715,15 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
       break;
     }
     case 0x1f99c6ba: {
-      sldrThis.unknown_0x1f99c6ba = input.ReadBool();
+      sldrThis.moveDuringFreeLook = input.ReadBool();
       break;
     }
     case 0x18eb3ab5: {
-      sldrThis.unknown_0x18eb3ab5 = input.ReadBool();
+      sldrThis.holdButtonsForFreeLook = input.ReadBool();
       break;
     }
     case 0xbdc01c71: {
-      sldrThis.unknown_0xbdc01c71 = input.ReadBool();
+      sldrThis.twoButtonsForFreeLook = input.ReadBool();
       break;
     }
     case 0x1c30f1a6: {
@@ -731,7 +731,7 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
       break;
     }
     case 0xda97bbcd: {
-      sldrThis.unknown_0xda97bbcd = input.ReadBool();
+      sldrThis.autoAimRequiresOrbit = input.ReadBool();
       break;
     }
     case 0x83583abd: {
@@ -739,31 +739,31 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
       break;
     }
     case 0xc224d966: {
-      sldrThis.unknown_0xc224d966 = input.ReadBool();
+      sldrThis.aimWhenOrbitingPoint = input.ReadBool();
       break;
     }
     case 0x1fcfaf3f: {
-      sldrThis.addGrenadeAlert = input.ReadBool();
+      sldrThis.aimDuringFreeLook = input.ReadBool();
       break;
     }
     case 0x3fb16819: {
-      sldrThis.unknown_0x3fb16819 = input.ReadBool();
+      sldrThis.aimAtOrbitPoint = input.ReadBool();
       break;
     }
     case 0x4fcf4b70: {
-      sldrThis.unknown_0x4fcf4b70 = input.ReadBool();
+      sldrThis.freeLookFadesGun = input.ReadBool();
       break;
     }
     case 0x07bb06a6: {
-      sldrThis.unknown_0x07bb06a6 = input.ReadBool();
+      sldrThis.orbitPointFixedOffset = input.ReadBool();
       break;
     }
     case 0x04d8d57b: {
-      sldrThis.unknown_0x04d8d57b = input.ReadBool();
+      sldrThis.gunButtonTogglesHolster = input.ReadBool();
       break;
     }
     case 0x5282c47e: {
-      sldrThis.unknown_0x5282c47e = input.ReadBool();
+      sldrThis.gunNotFiringHolstersGun = input.ReadBool();
       break;
     }
     case 0x7304dafa: {
@@ -775,15 +775,15 @@ void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& s
       break;
     }
     case 0xa796a8b9: {
-      sldrThis.unknown_0xa796a8b9 = input.ReadBool();
+      sldrThis.firingCancelsCameraPitch = input.ReadBool();
       break;
     }
     case 0x7c0599c8: {
-      sldrThis.unknown_0x7c0599c8 = input.ReadBool();
+      sldrThis.assistedAimingIgnoreHorizontal = input.ReadBool();
       break;
     }
     case 0x522ab1ac: {
-      sldrThis.unknown_0x522ab1ac = input.ReadBool();
+      sldrThis.assistedAimingIgnoreVertical = input.ReadBool();
       break;
     }
     default:
@@ -1392,10 +1392,10 @@ SLdrTweakPlayerRes_AutoMapperIcons::SLdrTweakPlayerRes_AutoMapperIcons()
 , missileStationIcon()
 , elevatorIconIcon()
 , portalIcon()
-, unknown_0xfbf479ec()
-, unknown_0x5566b6e4()
-, unknown_0x51fe3f1f()
-, unknown_0xa4127a5a()
+, minesFirstBreakTopIcon()
+, minesFirstBreakBottomIcon()
+, minesSecondBreakTopIcon()
+, minesSecondBreakBottomIcon()
 , translatorDoorIcon()
 #if VERSION != VERSION_G2ME01
 , mapIconG()
@@ -1438,22 +1438,22 @@ void LoadTypedefTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcon
     }
     case 0xfbf479ec: {
       const rstl::string value(input);
-      sldrThis.unknown_0xfbf479ec = value;
+      sldrThis.minesFirstBreakTopIcon = value;
       break;
     }
     case 0x5566b6e4: {
       const rstl::string value(input);
-      sldrThis.unknown_0x5566b6e4 = value;
+      sldrThis.minesFirstBreakBottomIcon = value;
       break;
     }
     case 0x51fe3f1f: {
       const rstl::string value(input);
-      sldrThis.unknown_0x51fe3f1f = value;
+      sldrThis.minesSecondBreakTopIcon = value;
       break;
     }
     case 0xa4127a5a: {
       const rstl::string value(input);
-      sldrThis.unknown_0xa4127a5a = value;
+      sldrThis.minesSecondBreakBottomIcon = value;
       break;
     }
     case 0xf8403d18: {
@@ -5734,11 +5734,11 @@ SLdrTweakGui_LogBook::SLdrTweakGui_LogBook()
   fogNear = 11.0f;
   fogFar = 18.0f;
   fogColor = CColor(0.0f, 0.0f, 0.0f, 1.0f);
-  unknown_0xeef15783 = 12.0f;
-  unknown_0x78055ab2 = 0.0f;
-  unknown_0x09e3197f = 0.0f;
-  unknown_0xfaffce1f = 0.0f;
-  unknown_0xe5280e7c = 0.0f;
+  treeCameraDistance = 12.0f;
+  treeVerticalTranslation = 0.0f;
+  treeHorizontalTranslation = 0.0f;
+  scanObjectVerticalTranslation = 0.0f;
+  scanObjectHorizontalTranslation = 0.0f;
   backgroundSweepColor = CColor(0.0500000007f, 0.200000003f, 0.200000003f, 0.0f);
   backgroundSweepRadius = 0.60000002f;
   backgroundSweepTime = 1.0f;
@@ -5906,23 +5906,23 @@ void LoadTypedefTweakGui_LogBook(SLdrTweakGui_LogBook& sldrThis, CInputStream& i
       break;
     }
     case 0xeef15783: {
-      sldrThis.unknown_0xeef15783 = input.ReadFloat();
+      sldrThis.treeCameraDistance = input.ReadFloat();
       break;
     }
     case 0x78055ab2: {
-      sldrThis.unknown_0x78055ab2 = input.ReadFloat();
+      sldrThis.treeVerticalTranslation = input.ReadFloat();
       break;
     }
     case 0x09e3197f: {
-      sldrThis.unknown_0x09e3197f = input.ReadFloat();
+      sldrThis.treeHorizontalTranslation = input.ReadFloat();
       break;
     }
     case 0xfaffce1f: {
-      sldrThis.unknown_0xfaffce1f = input.ReadFloat();
+      sldrThis.scanObjectVerticalTranslation = input.ReadFloat();
       break;
     }
     case 0xe5280e7c: {
-      sldrThis.unknown_0xe5280e7c = input.ReadFloat();
+      sldrThis.scanObjectHorizontalTranslation = input.ReadFloat();
       break;
     }
     case 0x647d9f91: {
@@ -6178,11 +6178,11 @@ SLdrTweakGui_Misc::SLdrTweakGui_Misc()
 , helmetLightAmbientModScanDarkWorld(CColor::Green())
 , helmetLightAmbientModDarkDarkWorld(CColor::Green())
 , unknown_0x70638eaa(CColor::Green())
-, unknown_0x19c5f88b(CColor::Green())
-, unknown_0xd84b274b(CColor::Green())
-, unknown_0x41a9414a(CColor::Green())
-, unknown_0x80279e8a(CColor::Green())
-, unknown_0x98d8e1ba(CColor::Green()) {
+, lockedOnIndicatorSlot0Color(CColor::Green())
+, lockedOnIndicatorSlot1Color(CColor::Green())
+, lockedOnIndicatorSlot2Color(CColor::Green())
+, lockedOnIndicatorSlot3Color(CColor::Green())
+, lockedOnIndicatorEnemyColor(CColor::Green()) {
   skipFrontEnd = false;
   minHUDAlpha = 0.30000001f;
   unknown_0x744165c4 = 4.0f;
@@ -6328,9 +6328,9 @@ SLdrTweakGui_Misc::SLdrTweakGui_Misc()
   unknown_0x5b888032 = 1.0f;
   unknown_0xb7322d26 = 0.69999999f;
   unknown_0x79275f22 = 0.69999999f;
-  unknown_0xf405af55 = 6.0f;
-  unknown_0x3f85eb28 = 4.6999998f;
-  unknown_0x98d8e1ba = CColor(1.0f, 0.0f, 0.0f, 1.0f);
+  lockedOnIndicatorRadius = 6.0f;
+  lockedOnIndicatorScale = 4.6999998f;
+  lockedOnIndicatorEnemyColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 SLdrTweakGui_Misc::~SLdrTweakGui_Misc() {}
@@ -6959,31 +6959,31 @@ void LoadTypedefTweakGui_Misc(SLdrTweakGui_Misc& sldrThis, CInputStream& input) 
       break;
     }
     case 0xf405af55: {
-      sldrThis.unknown_0xf405af55 = input.ReadFloat();
+      sldrThis.lockedOnIndicatorRadius = input.ReadFloat();
       break;
     }
     case 0x3f85eb28: {
-      sldrThis.unknown_0x3f85eb28 = input.ReadFloat();
+      sldrThis.lockedOnIndicatorScale = input.ReadFloat();
       break;
     }
     case 0x19c5f88b: {
-      sldrThis.unknown_0x19c5f88b = CColor(input);
+      sldrThis.lockedOnIndicatorSlot0Color = CColor(input);
       break;
     }
     case 0xd84b274b: {
-      sldrThis.unknown_0xd84b274b = CColor(input);
+      sldrThis.lockedOnIndicatorSlot1Color = CColor(input);
       break;
     }
     case 0x41a9414a: {
-      sldrThis.unknown_0x41a9414a = CColor(input);
+      sldrThis.lockedOnIndicatorSlot2Color = CColor(input);
       break;
     }
     case 0x80279e8a: {
-      sldrThis.unknown_0x80279e8a = CColor(input);
+      sldrThis.lockedOnIndicatorSlot3Color = CColor(input);
       break;
     }
     case 0x98d8e1ba: {
-      sldrThis.unknown_0x98d8e1ba = CColor(input);
+      sldrThis.lockedOnIndicatorEnemyColor = CColor(input);
       break;
     }
     default:
@@ -7961,15 +7961,15 @@ SLdrTweakTargeting::SLdrTweakTargeting()
   jumpTargetInterpolateInTime = 0.40000001f;
   jumpTargetInterpolateOutTime = 0.30000001f;
   jumpTargetColorAnimatePeriod = 0.30000001f;
-  unknown_0x165f0fa8 = 2.0f;
-  unknown_0x6bd6b11f = 0.0f;
+  jumpTargetZRotateSpeed = 2.0f;
+  orbitPointZRotateSpeed = 0.0f;
   unknown_0x42420f6e = CColor(0.403921992f, 0.68235302f, 0.882353008f, 1.0f);
   flowerReticleScale = 1.0f;
   flowerReticleColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.470587999f);
-  unknown_0xb090e147 = 0.5f;
+  missileBracketOpenHolsterTime = 0.5f;
   unknown_0x4c73a43d = 1.0f;
   unknown_0x6543d31b = 0.89999998f;
-  unknown_0x8cd2d1ce = 0.15000001f;
+  missileBracketMissileFireAnimTime = 0.15000001f;
   missileBracketColor = CColor(1.0f, 0.407842994f, 0.0196080003f, 1.0f);
   innerBeamIconOpenTime = 0.5f;
   innerBeamIconScale = 1.0f;
@@ -8238,11 +8238,11 @@ void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
       break;
     }
     case 0x165f0fa8: {
-      data.unknown_0x165f0fa8 = input.ReadFloat();
+      data.jumpTargetZRotateSpeed = input.ReadFloat();
       break;
     }
     case 0x6bd6b11f: {
-      data.unknown_0x6bd6b11f = input.ReadFloat();
+      data.orbitPointZRotateSpeed = input.ReadFloat();
       break;
     }
     case 0x42420f6e: {
@@ -8258,7 +8258,7 @@ void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
       break;
     }
     case 0xb090e147: {
-      data.unknown_0xb090e147 = input.ReadFloat();
+      data.missileBracketOpenHolsterTime = input.ReadFloat();
       break;
     }
     case 0x4c73a43d: {
@@ -8270,7 +8270,7 @@ void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
       break;
     }
     case 0x8cd2d1ce: {
-      data.unknown_0x8cd2d1ce = input.ReadFloat();
+      data.missileBracketMissileFireAnimTime = input.ReadFloat();
       break;
     }
     case 0xe42f6be0: {

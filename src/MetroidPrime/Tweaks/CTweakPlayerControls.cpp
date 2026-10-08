@@ -2,39 +2,39 @@
 #include "MetroidPrime/ScriptLoader/SLdrTweakPlayerControls.hpp"
 
 bool CTweakPlayerControls::GetFreeLookTurnsPlayer() const {
-  return mData->booleans.unknown_0xff1b0413;
+  return mData->booleans.freeLookTurnsPlayer;
 }
 
 bool CTweakPlayerControls::GetMoveDuringFreeLook() const {
-  return mData->booleans.unknown_0x1f99c6ba;
+  return mData->booleans.moveDuringFreeLook;
 }
 
 bool CTweakPlayerControls::GetHoldButtonsForFreeLook() const {
-  return mData->booleans.unknown_0x18eb3ab5;
+  return mData->booleans.holdButtonsForFreeLook;
 }
 
 bool CTweakPlayerControls::GetTwoButtonsForFreeLook() const {
-  return mData->booleans.unknown_0xbdc01c71;
+  return mData->booleans.twoButtonsForFreeLook;
 }
 
 bool CTweakPlayerControls::GetAimWhenOrbitingPoint() const {
-  return mData->booleans.unknown_0xc224d966;
+  return mData->booleans.aimWhenOrbitingPoint;
 }
 
-bool CTweakPlayerControls::GetStayInFreeLookWhileFiring() const {
-  return mData->booleans.addGrenadeAlert;
+bool CTweakPlayerControls::GetAimDuringFreeLook() const {
+  return mData->booleans.aimDuringFreeLook;
 }
 
-bool CTweakPlayerControls::GetOrbitFixedOffset() const {
-  return mData->booleans.unknown_0x07bb06a6;
+bool CTweakPlayerControls::GetOrbitPointFixedOffset() const {
+  return mData->booleans.orbitPointFixedOffset;
 }
 
 bool CTweakPlayerControls::GetGunButtonTogglesHolster() const {
-  return mData->booleans.unknown_0x04d8d57b;
+  return mData->booleans.gunButtonTogglesHolster;
 }
 
 bool CTweakPlayerControls::GetGunNotFiringHolstersGun() const {
-  return mData->booleans.unknown_0x5282c47e;
+  return mData->booleans.gunNotFiringHolstersGun;
 }
 
 bool CTweakPlayerControls::GetFallingDoubleJump() const {
@@ -46,15 +46,15 @@ bool CTweakPlayerControls::GetImpulseDoubleJump() const {
 }
 
 bool CTweakPlayerControls::GetFiringCancelsCameraPitch() const {
-  return mData->booleans.unknown_0xa796a8b9;
+  return mData->booleans.firingCancelsCameraPitch;
 }
 
 bool CTweakPlayerControls::GetAssistedAimingIgnoreHorizontal() const {
-  return mData->booleans.unknown_0x7c0599c8;
+  return mData->booleans.assistedAimingIgnoreHorizontal;
 }
 
 bool CTweakPlayerControls::GetAssistedAimingIgnoreVertical() const {
-  return mData->booleans.unknown_0x522ab1ac;
+  return mData->booleans.assistedAimingIgnoreVertical;
 }
 
 CControlMapper::EFunctionList

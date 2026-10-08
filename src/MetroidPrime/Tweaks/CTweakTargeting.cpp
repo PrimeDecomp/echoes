@@ -43,13 +43,17 @@ float CTweakTargeting::GetFlowerReticleScale() const { return mData->flowerRetic
 
 CColor CTweakTargeting::GetFlowerReticleColor() const { return mData->flowerReticleColor; }
 
-float CTweakTargeting::GetMissileBracketDuration() const { return mData->unknown_0xb090e147; }
+float CTweakTargeting::GetMissileBracketOpenHolsterTime() const {
+  return mData->missileBracketOpenHolsterTime;
+}
 
 float CTweakTargeting::GetMissileBracketScaleStart() const { return mData->unknown_0x4c73a43d; }
 
 float CTweakTargeting::GetMissileBracketScaleEnd() const { return mData->unknown_0x6543d31b; }
 
-float CTweakTargeting::GetMissileBracketScaleDuration() const { return mData->unknown_0x8cd2d1ce; }
+float CTweakTargeting::GetMissileBracketMissileFireAnimTime() const {
+  return mData->missileBracketMissileFireAnimTime;
+}
 
 CColor CTweakTargeting::GetMissileBracketColor() const { return mData->missileBracketColor; }
 

@@ -935,7 +935,7 @@ CEntity* LoadPlatform(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       static_cast< CMotionSpline::ESplineType >(motion.motionSplineType.type), duration,
       (motion.motionFlagsPlatformMotion & 1) != 0);
   CMaterialList materials(kMT_Unknown59, kMT_Immovable, kMT_Platform, kMT_Occluder);
-  if (sldrThis.unknown_0xf203bc81) {
+  if (sldrThis.excludeFromLineOfSightTest) {
     materials.Add(kMT_ExcludeFromLineOfSightTest);
   }
 

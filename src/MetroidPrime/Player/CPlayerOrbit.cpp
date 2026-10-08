@@ -256,7 +256,7 @@ void CPlayer::UpdateOrbitTarget(CStateManager& mgr) {
     break;
   }
   case kOS_OrbitPoint: {
-    if (GetTweakPlayerControls()->GetOrbitFixedOffset() &&
+    if (GetTweakPlayerControls()->GetOrbitPointFixedOffset() &&
         CMath::AbsF(mOrbitVector.GetZ()) > GetTweakPlayer()->GetOrbitFixedOffsetZDiff()) {
       UpdateOrbitFixedPosition();
       return;

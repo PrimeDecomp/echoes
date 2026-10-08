@@ -220,7 +220,7 @@ CEntity* LoadRoomAcoustics(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.flangerDelay, sldrThis.flangerDelayPhase, sldrThis.flangerDry,
       sldrThis.flangerFeedback, sldrThis.flangerLFODepth, sldrThis.flangerLFOFrequency,
       sldrThis.flangerLFOWave, sldrThis.flangerOut, sldrThis.bitcrusherEnabled,
-      CCast::LtoF(sldrThis.unknown_0xf51a1d6a), sldrThis.bitcrusherGain / 24.5f,
+      CCast::LtoF(sldrThis.bitcrusherDistortionType), sldrThis.bitcrusherGain / 24.5f,
       CCast::LtoF(sldrThis.bitcrusherBitDepth) / 24.f,
       sldrThis.bitcrusherSampleRateReduction / 40.f, sldrThis.phaserEnabled,
       sldrThis.phaserFrequency / 4.f, sldrThis.phaserFeedback / 0.99f,

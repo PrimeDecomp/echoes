@@ -93,27 +93,27 @@ struct SLdrTweakPlayerControls_Booleans {
   SLdrTweakPlayerControls_Booleans();
   ~SLdrTweakPlayerControls_Booleans();
 
-  bool unknown_0xff1b0413; // 0xff1b0413
-  bool unknown_0xe0c1d958; // 0xe0c1d958
-  bool toggleAimPosition;  // 0x55c20d58
-  bool unknown_0x1f99c6ba; // 0x1f99c6ba
-  bool unknown_0x18eb3ab5; // 0x18eb3ab5
-  bool unknown_0xbdc01c71; // 0xbdc01c71
-  bool fixedVerticalAim;   // 0x1c30f1a6
-  bool unknown_0xda97bbcd; // 0xda97bbcd
-  bool orbitAroundEnemies; // non-matching name, 0x83583abd
-  bool unknown_0xc224d966; // 0xc224d966
-  bool addGrenadeAlert;    // non-matching name, 0x1fcfaf3f
-  bool unknown_0x3fb16819; // 0x3fb16819
-  bool unknown_0x4fcf4b70; // 0x4fcf4b70
-  bool unknown_0x07bb06a6; // 0x07bb06a6
-  bool unknown_0x04d8d57b; // 0x04d8d57b
-  bool unknown_0x5282c47e; // 0x5282c47e
-  bool fallingDoubleJump;  // 0x7304dafa
-  bool impulseDoubleJump;  // 0x7a49267d
-  bool unknown_0xa796a8b9; // 0xa796a8b9
-  bool unknown_0x7c0599c8; // 0x7c0599c8
-  bool unknown_0x522ab1ac; // 0x522ab1ac
+  bool freeLookTurnsPlayer;            // 0xff1b0413
+  bool holdButtonForAim;               // 0xe0c1d958
+  bool toggleAimPosition;              // 0x55c20d58
+  bool moveDuringFreeLook;             // 0x1f99c6ba
+  bool holdButtonsForFreeLook;         // 0x18eb3ab5
+  bool twoButtonsForFreeLook;          // 0xbdc01c71
+  bool fixedVerticalAim;               // 0x1c30f1a6
+  bool autoAimRequiresOrbit;           // 0xda97bbcd
+  bool orbitAroundEnemies;             // 0x83583abd
+  bool aimWhenOrbitingPoint;           // 0xc224d966
+  bool aimDuringFreeLook;              // 0x1fcfaf3f
+  bool aimAtOrbitPoint;                // 0x3fb16819
+  bool freeLookFadesGun;               // 0x4fcf4b70
+  bool orbitPointFixedOffset;          // 0x07bb06a6
+  bool gunButtonTogglesHolster;        // 0x04d8d57b
+  bool gunNotFiringHolstersGun;        // 0x5282c47e
+  bool fallingDoubleJump;              // 0x7304dafa
+  bool impulseDoubleJump;              // 0x7a49267d
+  bool firingCancelsCameraPitch;       // 0xa796a8b9
+  bool assistedAimingIgnoreHorizontal; // 0x7c0599c8
+  bool assistedAimingIgnoreVertical;   // 0x522ab1ac
 };
 
 void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& data,

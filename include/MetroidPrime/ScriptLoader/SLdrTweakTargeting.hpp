@@ -159,15 +159,15 @@ struct SLdrTweakTargeting {
   float jumpTargetInterpolateInTime;                                           // 0x4a996997
   float jumpTargetInterpolateOutTime;                                          // 0x9f9fa6f3
   float jumpTargetColorAnimatePeriod;                                          // 0x932fea01
-  float unknown_0x165f0fa8;                                                    // 0x165f0fa8
-  float unknown_0x6bd6b11f;                                                    // 0x6bd6b11f
+  float jumpTargetZRotateSpeed;                                                // 0x165f0fa8
+  float orbitPointZRotateSpeed;                                                // 0x6bd6b11f
   CColor unknown_0x42420f6e;                                                   // 0x42420f6e
   float flowerReticleScale;                                                    // 0xa63229f1
   CColor flowerReticleColor;                                                   // 0xbda45f1a
-  float unknown_0xb090e147;                                                    // 0xb090e147
+  float missileBracketOpenHolsterTime;                                         // 0xb090e147
   float unknown_0x4c73a43d;                                                    // 0x4c73a43d
   float unknown_0x6543d31b;                                                    // 0x6543d31b
-  float unknown_0x8cd2d1ce;                                                    // 0x8cd2d1ce
+  float missileBracketMissileFireAnimTime;                                     // 0x8cd2d1ce
   CColor missileBracketColor;                                                  // 0xe42f6be0
   float innerBeamIconOpenTime;                                                 // 0x45910e5d
   float innerBeamIconScale;                                                    // 0x07b30fa0

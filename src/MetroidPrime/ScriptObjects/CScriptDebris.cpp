@@ -61,7 +61,7 @@ CEntity* LoadDebrisExtended(CStateManager& mgr, CInputStream& input, CEntityInfo
       sldrThis.maximumSpinSpeed, sldrThis.maximumSpinSpeed, sldrThis.minimumLifeTime,
       sldrThis.maximumLifeTime, sldrThis.disableCollisionTime, sldrThis.fadeInEndPercentage,
       sldrThis.fadeOutStartPercentage, sldrThis.startColor, sldrThis.endColor,
-      sldrThis.scaleStartPercentage, scale, sldrThis.finalScale, sldrThis.unknown_0x417f4a91,
+      sldrThis.scaleStartPercentage, scale, sldrThis.finalScale, sldrThis.bounciness,
       sldrThis.gravity, sldrThis.positionOffset, sldrThis.bounceSound, sldrThis.maxBounceSounds,
       sldrThis.bounceSoundSpeedThreshold, sldrThis.bounceSoundVolumeDecay, sldrThis.particle1,
       sldrThis.particleSystem1Scale, sldrThis.particleSystem1UsesGlobalTranslation,
@@ -74,7 +74,7 @@ CEntity* LoadDebrisExtended(CStateManager& mgr, CInputStream& input, CEntityInfo
       static_cast< CScriptDebris::EOrientationType >(sldrThis.deathParticleSystemOrientation),
       sldrThis.isCollider, sldrThis.isShootable, sldrThis.dieOnCollision,
       sldrThis.unknown_0xdcaa0f22, sldrThis.flickerOnFadeOut, sldrThis.disablePhysicsThreshold,
-      sldrThis.unknown_0x4edb1d0e, sldrThis.unknown_0x723d42d6);
+      sldrThis.doNotDeleteAttachedObject, sldrThis.unknown_0x723d42d6);
 }
 
 CEntity* LoadDebris(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
@@ -94,9 +94,9 @@ CEntity* LoadDebris(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
                                         : CModelData(CStaticRes(sldrThis.model, scale)),
       LdrToActorParameters(sldrThis.actorInformation), sldrThis.particle,
       sldrThis.particleSystemScale, sldrThis.impulse, sldrThis.impulseVariance,
-      sldrThis.fadeOutColor, sldrThis.mass, sldrThis.unknown_0x417f4a91, sldrThis.lifeTime,
+      sldrThis.fadeOutColor, sldrThis.mass, sldrThis.bounciness, sldrThis.lifeTime,
       static_cast< CScriptDebris::EScaleType >(sldrThis.scaleType), sldrThis.isCollider,
-      sldrThis.unknown_0x4edb1d0e, sldrThis.randomSpin);
+      sldrThis.doNotDeleteAttachedObject, sldrThis.randomSpin);
 }
 
 CScriptDebris::CScriptDebris(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,

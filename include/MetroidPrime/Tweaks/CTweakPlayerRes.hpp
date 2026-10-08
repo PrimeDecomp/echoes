@@ -20,8 +20,10 @@ public:
   CAssetId GetElevatorIcon() const { return mElevatorIcon; }
   CAssetId GetPortalIcon() const { return mPortalIcon; }
   CAssetId GetTranslatorDoorIcon() const { return mTranslatorDoorIcon; }
-  CAssetId GetDownArrowIcon() const { return mDownArrowIcon; } // Guessed name
-  CAssetId GetUpArrowIcon() const { return mUpArrowIcon; }     // Guessed name
+  CAssetId GetMinesFirstBreakTopIcon() const { return mMinesFirstBreakTopIcon; } // Guessed name
+  CAssetId GetMinesFirstBreakBottomIcon() const {
+    return mMinesFirstBreakBottomIcon;
+  } // Guessed name
 
   CAssetId GetBallTransitionBeamResId(CPlayerState::EBeamId beam) const;
   // Guessed name
@@ -43,10 +45,10 @@ private:
   CAssetId mElevatorIcon;
   CAssetId mPortalIcon;
   CAssetId mTranslatorDoorIcon;
-  CAssetId mDownArrowIcon;       // Guessed name
-  CAssetId mUpArrowIcon;         // Guessed name
-  CAssetId mSecondDownArrowIcon; // Guessed names; duplicate arrow resources.
-  CAssetId mSecondUpArrowIcon;
+  CAssetId mMinesFirstBreakTopIcon;
+  CAssetId mMinesFirstBreakBottomIcon;
+  CAssetId mMinesSecondBreakTopIcon;
+  CAssetId mMinesSecondBreakBottomIcon;
 
 public:
   rstl::reserved_vector< CAssetId, 9 > mLStick;

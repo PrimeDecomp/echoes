@@ -36,13 +36,13 @@ public:
   float GetFlowerReticleScale() const;
   CColor GetFlowerReticleColor() const;
   // Guessed name, correlated with Prime.
-  float GetMissileBracketDuration() const;
+  float GetMissileBracketOpenHolsterTime() const;
   // Guessed name, correlated with Prime.
   float GetMissileBracketScaleStart() const;
   // Guessed name, correlated with Prime.
   float GetMissileBracketScaleEnd() const;
   // Guessed name, correlated with Prime.
-  float GetMissileBracketScaleDuration() const;
+  float GetMissileBracketMissileFireAnimTime() const;
   CColor GetMissileBracketColor() const;
   float GetInnerBeamIconOpenTime() const;
   float GetInnerBeamIconScale() const;
