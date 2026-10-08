@@ -175,6 +175,9 @@ public:
   float GetPlaybackRate() const { return mSpeedScale; }
   const CCharacterInfo& GetCharacterInfo() const { return mCharInfo; }
   const CPASDatabase& GetPASDatabase() const { return mCharInfo.GetPASDatabase(); }
+  const rstl::optional_object< TLockedToken< CSpatialPrimitive > >& GetSpatialPrimitive() const {
+    return mSpatialPrimitive;
+  }
   CParticleDatabase& GetParticleDB() { return mParticleDB; }
   // Guessed names; gun turrets drive a joint rotation directly and rebuild the pose.
   CJointData_LinearStorage& JointData() const { return *mJointData; }

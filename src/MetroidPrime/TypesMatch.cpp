@@ -40,6 +40,7 @@
 #include "MetroidPrime/Enemies/CShredder.hpp"
 #include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
+#include "MetroidPrime/Enemies/CStoneToad.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/Enemies/CWallCrawler.hpp"
 #include "MetroidPrime/Enemies/CWallWalker.hpp"
@@ -339,7 +340,7 @@ TYPES_MATCH_IMPL(CWallWalker, CWallCrawler, kET_WallWalker)
 TYPES_MATCH_IMPL(CShredder, CPatterned, kET_Shredder)
 TYPES_MATCH_IMPL(CTargetableProjectile, CEnergyProjectile, kET_TargetableProjectile)
 // 153: class not declared yet (AIMannedTurret REL); parent CAi
-// 154: class not declared yet (StoneToad REL); parent CPatterned
+TYPES_MATCH_IMPL(CStoneToad, CPatterned, kET_StoneToad)
 TYPES_MATCH_IMPL(CScriptFrontEndDataNetwork, CActor, kET_ScriptFrontEndDataNetwork)
 TYPES_MATCH_IMPL(CPowerBomb, CWeapon, kET_PowerBomb)
 TYPES_MATCH_IMPL(CKrocuss, CPatterned, kET_Krocuss)
@@ -613,7 +614,8 @@ CAST_TO_PTR_IMPL(CWallWalker, kET_WallWalker)
 CAST_TO_REF_IMPL(CTargetableProjectile, kET_TargetableProjectile)
 CAST_TO_PTR_IMPL(CTargetableProjectile, kET_TargetableProjectile)
 // 153: class not declared yet (AIMannedTurret REL)
-// 154: class not declared yet (StoneToad REL)
+CAST_TO_REF_IMPL(CStoneToad, kET_StoneToad)
+CAST_TO_PTR_IMPL(CStoneToad, kET_StoneToad)
 CAST_TO_REF_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)
 CAST_TO_PTR_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)
 CAST_TO_REF_IMPL(CPowerBomb, kET_PowerBomb)

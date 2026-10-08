@@ -132,6 +132,7 @@ enum EEntityType {
   kET_WallWalker = 150,                // Target-derived class tag.
   kET_Shredder = 151, // Target-derived class tag.
   kET_TargetableProjectile = 152,      // Target-derived class tag.
+  kET_StoneToad = 154, // Target-derived class tag.
   kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
   kET_Krocuss = 157, // Target-derived class tag.
