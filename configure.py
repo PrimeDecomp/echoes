@@ -1715,6 +1715,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "EmperorIngStage2Tentacle",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CEmperorIngStage2Tentacle.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
