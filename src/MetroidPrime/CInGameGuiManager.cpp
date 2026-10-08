@@ -582,8 +582,8 @@ bool CInGameGuiManager::IsTransitionReady() const {
   if (!mPauseScreenBlur->IsNotTransitioning()) {
     return false;
   }
-  if (!mAutoMapper.null()) {
-    return mAutoMapper->GetCurrentState() == mAutoMapper->GetNextState();
+  if (const CAutoMapper* autoMapper = mAutoMapper.get()) {
+    return autoMapper->GetCurrentState() == autoMapper->GetNextState();
   }
   return true;
 }

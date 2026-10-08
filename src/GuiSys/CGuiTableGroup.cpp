@@ -187,7 +187,7 @@ void CGuiTableGroup::SetMenuSelectionChangeCallback(
 
 void CGuiTableGroup::OnActivate() {
   CGuiWidget::OnActivate();
-  CGuiWidget* worker = GetWorkerWidget(mUserSelection);
+  CGuiWidget* const& worker = GetWorkerWidget(mUserSelection);
   worker->SetIsActive(GetIsActive());
 }
 
