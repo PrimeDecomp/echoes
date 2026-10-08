@@ -12,34 +12,41 @@ struct SLdrIngSnatchingSwarm {
   SLdrIngSnatchingSwarm();
   ~SLdrIngSnatchingSwarm();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId stateMachine; // 0x55744160
-  CAssetId swarmParticleSystem; // 0x83cf6509
-  float unknown_0x7cae2ed5; // 0x7cae2ed5
-  CAssetId secondarySwarmParticleSystem; // 0x35a88fa1
-  float unknown_0xf65e7ec5; // 0xf65e7ec5
-  float lifetime; // 0x32dc67f6
-  float maxLinearSpeed; // 0x563d6d13
-  float maxLinearAcceleration; // 0xf549e733
-  float maxTurnSpeed; // 0x0b5c3c1a
-  bool useSteeringForMovement; // 0xdffdf5a2
-  bool ignorePlayer; // 0x7755f349
-  float unknown_0xe6b57a25; // 0xe6b57a25
-  float exitPortalDistance; // 0x830966d5
-  float unknown_0x2de5a19a; // 0x2de5a19a
-  float unknown_0x4e79f717; // 0x4e79f717
-  float unknown_0xe8e0b5a6; // 0xe8e0b5a6
-  float beginSnatchingRange; // 0xfcd8057b
-  CAssetId pART; // non-matching name, 0x2d2afc26
-  SLdrDamageInfo impactDamage; // 0xb16d553e
-  int sound_Impact; // 0x1bb16ea5
-  int sound_Idle; // 0xaf38968e
-  int sound_Move; // 0x6c101854
-  float health; // 0xf0668919
+  SLdrEditorProperties editorProperties;      // 0x255a4580
+  CAssetId stateMachine;                      // 0x55744160
+  CAssetId swarmParticleSystem;               // 0x83cf6509
+  float unknown_0x7cae2ed5;                   // 0x7cae2ed5
+  CAssetId secondarySwarmParticleSystem;      // 0x35a88fa1
+  float unknown_0xf65e7ec5;                   // 0xf65e7ec5
+  float lifetime;                             // 0x32dc67f6
+  float maxLinearSpeed;                       // 0x563d6d13
+  float maxLinearAcceleration;                // 0xf549e733
+  float maxTurnSpeed;                         // 0x0b5c3c1a
+  bool useSteeringForMovement;                // 0xdffdf5a2
+  bool ignorePlayer;                          // 0x7755f349
+  float unknown_0xe6b57a25;                   // 0xe6b57a25
+  float exitPortalDistance;                   // 0x830966d5
+  float unknown_0x2de5a19a;                   // 0x2de5a19a
+  float unknown_0x4e79f717;                   // 0x4e79f717
+  float unknown_0xe8e0b5a6;                   // 0xe8e0b5a6
+  float beginSnatchingRange;                  // 0xfcd8057b
+  CAssetId pART;                              // non-matching name, 0x2d2afc26
+  SLdrDamageInfo impactDamage;                // 0xb16d553e
+  int sound_Impact;                           // 0x1bb16ea5
+  int sound_Idle;                             // 0xaf38968e
+  int sound_Move;                             // 0x6c101854
+  float health;                               // 0xf0668919
   SLdrDamageVulnerability swarmVulnerability; // 0x8792a2b0
 };
 
-inline SLdrIngSnatchingSwarm::SLdrIngSnatchingSwarm() : editorProperties(), stateMachine(kInvalidAssetId), swarmParticleSystem(kInvalidAssetId), secondarySwarmParticleSystem(kInvalidAssetId), pART(kInvalidAssetId), impactDamage(), swarmVulnerability() {
+inline SLdrIngSnatchingSwarm::SLdrIngSnatchingSwarm()
+: editorProperties()
+, stateMachine(kInvalidAssetId)
+, swarmParticleSystem(kInvalidAssetId)
+, secondarySwarmParticleSystem(kInvalidAssetId)
+, pART(kInvalidAssetId)
+, impactDamage()
+, swarmVulnerability() {
   unknown_0x7cae2ed5 = 0.5f;
   unknown_0xf65e7ec5 = 0.34999999f;
   lifetime = 15.0f;

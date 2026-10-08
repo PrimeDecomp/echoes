@@ -13,13 +13,13 @@ struct SLdrGhostBehave {
   SLdrGhostBehave();
   ~SLdrGhostBehave();
 
-  float lurk; // 0xd3a313a5
-  float heckle; // 0x3cfa69f1
-  float attack; // 0x1af89f4b
-  float move; // 0xe7e66f66
-  float lurkTime; // 0xb9d9c2d2
+  float lurk;         // 0xd3a313a5
+  float heckle;       // 0x3cfa69f1
+  float attack;       // 0x1af89f4b
+  float move;         // 0xe7e66f66
+  float lurkTime;     // 0xb9d9c2d2
   float chargeAttack; // 0xcfabdd5f
-  int numBolts; // 0x5ab228b6
+  int numBolts;       // 0x5ab228b6
 };
 
 inline SLdrGhostBehave::SLdrGhostBehave() {
@@ -80,36 +80,47 @@ struct SLdrChozoGhost {
   ~SLdrChozoGhost();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float hearingRadius; // 0xed69488f
-  float fadeOutDelay; // 0xfb12f672
-  float attackDelay; // 0x1b67981a
-  float freezeTime; // 0x1e8722c7
-  CAssetId unknown_0x54151870; // 0x54151870
-  SLdrDamageInfo damageInfo; // non-matching name, 0xffcda1f8
-  CAssetId unknown_0x3a58089c; // 0x3a58089c
-  SLdrDamageInfo damageInfo_0x1ff047a9; // non-matching name, 0x1ff047a9
-  SLdrGhostBehave far; // 0xe832241f
-  SLdrGhostBehave mid; // 0x1e2c8483
-  SLdrGhostBehave near; // 0x78d76034
-  int sound_Impact; // 0x1bb16ea5
-  float disablePlayerGunTime; // 0xc87d7ec7
-  int sound_PhazeIn; // 0x2adcbb2e
-  int sound_PhazeOut; // 0x58b8ec5d
-  int unknown_0xec76940c; // 0xec76940c
-  float projectileStopHomingRange; // 0x723542bb
-  int unknown_0xfe9eac26; // 0xfe9eac26
-  float hurlRecoverTime; // 0x96feb75d
-  CAssetId projectileVisorEffect; // 0x8f8c64a0
-  int sound_ProjectileVisor; // 0xe15b4f4a
-  float nearToMidDistance; // 0x61e511b3
-  float midToFarDistance; // 0x2369607a
-  int nearChance; // 0xa6a3879b
-  int midChance; // 0x1b272781
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float hearingRadius;                   // 0xed69488f
+  float fadeOutDelay;                    // 0xfb12f672
+  float attackDelay;                     // 0x1b67981a
+  float freezeTime;                      // 0x1e8722c7
+  CAssetId unknown_0x54151870;           // 0x54151870
+  SLdrDamageInfo damageInfo;             // non-matching name, 0xffcda1f8
+  CAssetId unknown_0x3a58089c;           // 0x3a58089c
+  SLdrDamageInfo damageInfo_0x1ff047a9;  // non-matching name, 0x1ff047a9
+  SLdrGhostBehave far;                   // 0xe832241f
+  SLdrGhostBehave mid;                   // 0x1e2c8483
+  SLdrGhostBehave near;                  // 0x78d76034
+  int sound_Impact;                      // 0x1bb16ea5
+  float disablePlayerGunTime;            // 0xc87d7ec7
+  int sound_PhazeIn;                     // 0x2adcbb2e
+  int sound_PhazeOut;                    // 0x58b8ec5d
+  int unknown_0xec76940c;                // 0xec76940c
+  float projectileStopHomingRange;       // 0x723542bb
+  int unknown_0xfe9eac26;                // 0xfe9eac26
+  float hurlRecoverTime;                 // 0x96feb75d
+  CAssetId projectileVisorEffect;        // 0x8f8c64a0
+  int sound_ProjectileVisor;             // 0xe15b4f4a
+  float nearToMidDistance;               // 0x61e511b3
+  float midToFarDistance;                // 0x2369607a
+  int nearChance;                        // 0xa6a3879b
+  int midChance;                         // 0x1b272781
 };
 
-inline SLdrChozoGhost::SLdrChozoGhost() : editorProperties(), patterned(), actorInformation(), unknown_0x54151870(kInvalidAssetId), damageInfo(), unknown_0x3a58089c(kInvalidAssetId), damageInfo_0x1ff047a9(), far(), mid(), near(), projectileVisorEffect(kInvalidAssetId) {
+inline SLdrChozoGhost::SLdrChozoGhost()
+: editorProperties()
+, patterned()
+, actorInformation()
+, unknown_0x54151870(kInvalidAssetId)
+, damageInfo()
+, unknown_0x3a58089c(kInvalidAssetId)
+, damageInfo_0x1ff047a9()
+, far()
+, mid()
+, near()
+, projectileVisorEffect(kInvalidAssetId) {
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 25.0f;
   patterned.minAttackRange = 8.0f;

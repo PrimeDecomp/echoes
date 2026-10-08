@@ -10,8 +10,8 @@ struct SLdrEnvFxDensityController {
   ~SLdrEnvFxDensityController();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float density; // 0x64e5fe9f
-  int fadeSpeed; // 0x65a823b4
+  float density;                         // 0x64e5fe9f
+  int fadeSpeed;                         // 0x65a823b4
 };
 
 inline SLdrEnvFxDensityController::SLdrEnvFxDensityController() : editorProperties() {

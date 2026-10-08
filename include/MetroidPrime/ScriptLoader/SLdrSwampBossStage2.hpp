@@ -19,19 +19,19 @@ struct SLdrSwampBossStage2Phase {
 
   float minTimeBetweenAttacks; // 0x95e7a2c2
   float maxTimeBetweenAttacks; // 0x76ba1c18
-  float unknown_0x29e6ead6; // 0x29e6ead6
-  float unknown_0x1753225e; // 0x1753225e
-  float dashChance; // 0xbe1afbf8
-  float tauntChance; // 0xa77f6212
-  int firstAttack; // 0x9cfa9acb
-  int secondAttack; // 0x180f81dd
-  int thirdAttack; // 0x42617cfd
-  int fourthAttack; // 0xc39f864e
-  int fifthAttack; // 0x1994d506
-  float health; // 0xf0668919
-  int unknown_0x2e7e55f2; // 0x2e7e55f2
-  int unknown_0xef3efec0; // 0xef3efec0
-  int unknown_0x2b0bfd51; // 0x2b0bfd51
+  float unknown_0x29e6ead6;    // 0x29e6ead6
+  float unknown_0x1753225e;    // 0x1753225e
+  float dashChance;            // 0xbe1afbf8
+  float tauntChance;           // 0xa77f6212
+  int firstAttack;             // 0x9cfa9acb
+  int secondAttack;            // 0x180f81dd
+  int thirdAttack;             // 0x42617cfd
+  int fourthAttack;            // 0xc39f864e
+  int fifthAttack;             // 0x1994d506
+  float health;                // 0xf0668919
+  int unknown_0x2e7e55f2;      // 0x2e7e55f2
+  int unknown_0xef3efec0;      // 0xef3efec0
+  int unknown_0x2b0bfd51;      // 0x2b0bfd51
 };
 
 inline SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
@@ -54,7 +54,8 @@ inline SLdrSwampBossStage2Phase::SLdrSwampBossStage2Phase() {
 
 inline SLdrSwampBossStage2Phase::~SLdrSwampBossStage2Phase() {}
 
-inline void LoadTypedefSwampBossStage2Phase(SLdrSwampBossStage2Phase& sldrThis, CInputStream& input) {
+inline void LoadTypedefSwampBossStage2Phase(SLdrSwampBossStage2Phase& sldrThis,
+                                            CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -131,10 +132,10 @@ struct SLdrUnknownStruct38 {
   SLdrUnknownStruct38();
   ~SLdrUnknownStruct38();
 
-  float range; // 0x3642a398
-  float turnRate; // 0xe34dc703
-  int soundEffect; // 0x8d3ba8ae
-  float warpScale; // 0xb99098d9
+  float range;           // 0x3642a398
+  float turnRate;        // 0xe34dc703
+  int soundEffect;       // 0x8d3ba8ae
+  float warpScale;       // 0xb99098d9
   CVector3f repelOffset; // 0xb3252324
 };
 
@@ -185,64 +186,94 @@ struct SLdrSwampBossStage2Data {
   SLdrSwampBossStage2Data();
   ~SLdrSwampBossStage2Data();
 
-  float hoverSpeed; // 0x845ef489
-  CAssetId wingGrowthLF; // 0x11a273cb
-  CAssetId wingGrowthLB; // 0x8a3331dd
-  CAssetId wingGrowthRF; // 0x26439458
-  CAssetId wingGrowthRB; // 0xbdd2d64e
-  float wingGrowthHealth; // 0xcabe6b96
-  SLdrSwampBossStage2Phase lightFlyer1; // 0x7fa9256a
-  SLdrSwampBossStage2Phase darkFlyer1; // 0x8b884b8e
-  SLdrSwampBossStage2Phase lightFlyer2; // 0x04b7a789
-  SLdrSwampBossStage2Phase darkFlyer2; // 0xf096c96d
-  float stunTime; // 0x7e192395
-  int unknown_0x96ce7897; // 0x96ce7897
-  CAssetId spitProjectile; // 0xcfe37ebf
-  SLdrDamageInfo spitDamage; // 0xda3c9b32
-  CAssetId spitVisorEffect; // 0x008becab
-  int sound_SpitVisor; // 0xf3af8417
-  float spitProjectileRadius; // 0xdadc5bc9
-  SLdrDamageInfo swoopDamage; // 0x294e9516
-  float swoopPush; // 0x7d483636
-  float swoopDamageTime; // 0x7b61a42b
-  CAssetId splash; // 0xd8d148fb
-  float unknown_0x7fc50ac2; // 0x7fc50ac2
-  float unknown_0x13448a4a; // 0x13448a4a
-  float unknown_0xf55924da; // 0xf55924da
-  float unknown_0x83bc1de7; // 0x83bc1de7
-  float unknown_0x5a844633; // 0x5a844633
-  float unknown_0x78e22d1b; // 0x78e22d1b
-  float unknown_0x9e116385; // 0x9e116385
-  float radarRange; // 0xee258868
-  float unknown_0xfe97e835; // 0xfe97e835
-  SLdrShockWaveInfo splashShockWave; // 0x6c0f7aa3
-  float splashShockWaveMaxTime; // 0x9807497c
-  float unknown_0xe57ca27c; // 0xe57ca27c
-  CAssetId scanInfoLight; // 0xa3e1608c
-  CAssetId scanInfoDark; // 0xa21792bf
-  CAssetId bubbleTelegraphEffect; // 0x515268e5
-  CAssetId wingDamageEffect; // 0xb1b55340
-  SLdrUnknownStruct38 unknown_0x9347820e; // 0x9347820e
-  CAssetId blowEffect; // 0xb7dc6c65
-  SLdrDamageInfo blowDamage; // 0xf1f0c73d
-  float blowTelegraphPush; // 0x6d89649b
-  float blowPush; // 0x77f97080
-  float breakStunDamage; // 0x6d67c284
-  SLdrAudioPlaybackParms stunnedSound; // 0x87b30e02
-  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x427a116a
+  float hoverSpeed;                                     // 0x845ef489
+  CAssetId wingGrowthLF;                                // 0x11a273cb
+  CAssetId wingGrowthLB;                                // 0x8a3331dd
+  CAssetId wingGrowthRF;                                // 0x26439458
+  CAssetId wingGrowthRB;                                // 0xbdd2d64e
+  float wingGrowthHealth;                               // 0xcabe6b96
+  SLdrSwampBossStage2Phase lightFlyer1;                 // 0x7fa9256a
+  SLdrSwampBossStage2Phase darkFlyer1;                  // 0x8b884b8e
+  SLdrSwampBossStage2Phase lightFlyer2;                 // 0x04b7a789
+  SLdrSwampBossStage2Phase darkFlyer2;                  // 0xf096c96d
+  float stunTime;                                       // 0x7e192395
+  int unknown_0x96ce7897;                               // 0x96ce7897
+  CAssetId spitProjectile;                              // 0xcfe37ebf
+  SLdrDamageInfo spitDamage;                            // 0xda3c9b32
+  CAssetId spitVisorEffect;                             // 0x008becab
+  int sound_SpitVisor;                                  // 0xf3af8417
+  float spitProjectileRadius;                           // 0xdadc5bc9
+  SLdrDamageInfo swoopDamage;                           // 0x294e9516
+  float swoopPush;                                      // 0x7d483636
+  float swoopDamageTime;                                // 0x7b61a42b
+  CAssetId splash;                                      // 0xd8d148fb
+  float unknown_0x7fc50ac2;                             // 0x7fc50ac2
+  float unknown_0x13448a4a;                             // 0x13448a4a
+  float unknown_0xf55924da;                             // 0xf55924da
+  float unknown_0x83bc1de7;                             // 0x83bc1de7
+  float unknown_0x5a844633;                             // 0x5a844633
+  float unknown_0x78e22d1b;                             // 0x78e22d1b
+  float unknown_0x9e116385;                             // 0x9e116385
+  float radarRange;                                     // 0xee258868
+  float unknown_0xfe97e835;                             // 0xfe97e835
+  SLdrShockWaveInfo splashShockWave;                    // 0x6c0f7aa3
+  float splashShockWaveMaxTime;                         // 0x9807497c
+  float unknown_0xe57ca27c;                             // 0xe57ca27c
+  CAssetId scanInfoLight;                               // 0xa3e1608c
+  CAssetId scanInfoDark;                                // 0xa21792bf
+  CAssetId bubbleTelegraphEffect;                       // 0x515268e5
+  CAssetId wingDamageEffect;                            // 0xb1b55340
+  SLdrUnknownStruct38 unknown_0x9347820e;               // 0x9347820e
+  CAssetId blowEffect;                                  // 0xb7dc6c65
+  SLdrDamageInfo blowDamage;                            // 0xf1f0c73d
+  float blowTelegraphPush;                              // 0x6d89649b
+  float blowPush;                                       // 0x77f97080
+  float breakStunDamage;                                // 0x6d67c284
+  SLdrAudioPlaybackParms stunnedSound;                  // 0x87b30e02
+  SLdrAudioPlaybackParms audioPlaybackParms;            // non-matching name, 0x427a116a
   SLdrAudioPlaybackParms audioPlaybackParms_0xc05d5c7a; // non-matching name, 0xc05d5c7a
   SLdrAudioPlaybackParms audioPlaybackParms_0x2b3c923a; // non-matching name, 0x2b3c923a
-  float unknown_0x8fe0bf01; // 0x8fe0bf01
-  SLdrAudioPlaybackParms flinchSound; // 0x23087520
-  float flinchSoundChance; // 0xa3131519
-  SLdrAudioPlaybackParms stunnedFlinchSound; // 0xb53087cc
-  SLdrAudioPlaybackParms stunnedReelSound; // 0x878a6522
-  float stunnedFlinchSoundDamageThreshold; // 0x19849710
+  float unknown_0x8fe0bf01;                             // 0x8fe0bf01
+  SLdrAudioPlaybackParms flinchSound;                   // 0x23087520
+  float flinchSoundChance;                              // 0xa3131519
+  SLdrAudioPlaybackParms stunnedFlinchSound;            // 0xb53087cc
+  SLdrAudioPlaybackParms stunnedReelSound;              // 0x878a6522
+  float stunnedFlinchSoundDamageThreshold;              // 0x19849710
   SLdrAudioPlaybackParms audioPlaybackParms_0x692fa63c; // non-matching name, 0x692fa63c
   SLdrAudioPlaybackParms audioPlaybackParms_0xbe3d39aa; // non-matching name, 0xbe3d39aa
 };
 
-inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data() : wingGrowthLF(kInvalidAssetId), wingGrowthLB(kInvalidAssetId), wingGrowthRF(kInvalidAssetId), wingGrowthRB(kInvalidAssetId), lightFlyer1(), darkFlyer1(), lightFlyer2(), darkFlyer2(), spitProjectile(kInvalidAssetId), spitDamage(), spitVisorEffect(kInvalidAssetId), swoopDamage(), splash(kInvalidAssetId), splashShockWave(), scanInfoLight(kInvalidAssetId), scanInfoDark(kInvalidAssetId), bubbleTelegraphEffect(kInvalidAssetId), wingDamageEffect(kInvalidAssetId), unknown_0x9347820e(), blowEffect(kInvalidAssetId), blowDamage(), stunnedSound(), audioPlaybackParms(), audioPlaybackParms_0xc05d5c7a(), audioPlaybackParms_0x2b3c923a(), flinchSound(), stunnedFlinchSound(), stunnedReelSound(), audioPlaybackParms_0x692fa63c(), audioPlaybackParms_0xbe3d39aa() {
+inline SLdrSwampBossStage2Data::SLdrSwampBossStage2Data()
+: wingGrowthLF(kInvalidAssetId)
+, wingGrowthLB(kInvalidAssetId)
+, wingGrowthRF(kInvalidAssetId)
+, wingGrowthRB(kInvalidAssetId)
+, lightFlyer1()
+, darkFlyer1()
+, lightFlyer2()
+, darkFlyer2()
+, spitProjectile(kInvalidAssetId)
+, spitDamage()
+, spitVisorEffect(kInvalidAssetId)
+, swoopDamage()
+, splash(kInvalidAssetId)
+, splashShockWave()
+, scanInfoLight(kInvalidAssetId)
+, scanInfoDark(kInvalidAssetId)
+, bubbleTelegraphEffect(kInvalidAssetId)
+, wingDamageEffect(kInvalidAssetId)
+, unknown_0x9347820e()
+, blowEffect(kInvalidAssetId)
+, blowDamage()
+, stunnedSound()
+, audioPlaybackParms()
+, audioPlaybackParms_0xc05d5c7a()
+, audioPlaybackParms_0x2b3c923a()
+, flinchSound()
+, stunnedFlinchSound()
+, stunnedReelSound()
+, audioPlaybackParms_0x692fa63c()
+, audioPlaybackParms_0xbe3d39aa() {
   hoverSpeed = 10.0f;
   wingGrowthHealth = 1.0f;
   stunTime = 30.0f;
@@ -515,14 +546,19 @@ struct SLdrSwampBossStage2 {
   SLdrSwampBossStage2();
   ~SLdrSwampBossStage2();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  SLdrEditorProperties editorProperties;             // 0x255a4580
+  SLdrPatternedAITypedef patterned;                  // 0xb3774750
+  SLdrActorParameters actorInformation;              // 0x7e397fed
+  SLdrIngPossessionData ingPossessionData;           // 0xe61748ed
   SLdrSwampBossStage2Data swampBossStage2Properties; // 0xb31b771d
 };
 
-inline SLdrSwampBossStage2::SLdrSwampBossStage2() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), swampBossStage2Properties() {
+inline SLdrSwampBossStage2::SLdrSwampBossStage2()
+: editorProperties()
+, patterned()
+, actorInformation()
+, ingPossessionData()
+, swampBossStage2Properties() {
   patterned.mass = 25.0f;
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 5.0f;

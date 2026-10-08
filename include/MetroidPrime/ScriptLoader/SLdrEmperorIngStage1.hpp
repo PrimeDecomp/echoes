@@ -19,23 +19,29 @@ struct SLdrEmperorIngStage1TentacleData {
   SLdrEmperorIngStage1TentacleData();
   ~SLdrEmperorIngStage1TentacleData();
 
-  SLdrHealthInfo health; // 0xcf90d15e
-  SLdrDamageVulnerability normalVulnerability; // 0x29df61e1
-  SLdrDamageVulnerability warpAttackVulnerability; // 0x8d7378a4
-  SLdrDamageVulnerability meleeAttackVulnerability; // 0x6c79054f
+  SLdrHealthInfo health;                                 // 0xcf90d15e
+  SLdrDamageVulnerability normalVulnerability;           // 0x29df61e1
+  SLdrDamageVulnerability warpAttackVulnerability;       // 0x8d7378a4
+  SLdrDamageVulnerability meleeAttackVulnerability;      // 0x6c79054f
   SLdrDamageVulnerability projectileAttackVulnerability; // 0x3c2d2492
-  float stayRetractedTime; // 0x491c2657
-  int tentacleDamagedSound; // 0xe19f4608
+  float stayRetractedTime;                               // 0x491c2657
+  int tentacleDamagedSound;                              // 0xe19f4608
 };
 
-inline SLdrEmperorIngStage1TentacleData::SLdrEmperorIngStage1TentacleData() : health(), normalVulnerability(), warpAttackVulnerability(), meleeAttackVulnerability(), projectileAttackVulnerability() {
+inline SLdrEmperorIngStage1TentacleData::SLdrEmperorIngStage1TentacleData()
+: health()
+, normalVulnerability()
+, warpAttackVulnerability()
+, meleeAttackVulnerability()
+, projectileAttackVulnerability() {
   stayRetractedTime = 0.0f;
   tentacleDamagedSound = 0;
 }
 
 inline SLdrEmperorIngStage1TentacleData::~SLdrEmperorIngStage1TentacleData() {}
 
-inline void LoadTypedefEmperorIngStage1TentacleData(SLdrEmperorIngStage1TentacleData& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage1TentacleData(SLdrEmperorIngStage1TentacleData& sldrThis,
+                                                    CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -83,12 +89,12 @@ struct SLdrEmperorIngStage1MeleeData {
   SLdrDamageInfo damage; // 0x337f9524
 };
 
-inline SLdrEmperorIngStage1MeleeData::SLdrEmperorIngStage1MeleeData() : damage() {
-}
+inline SLdrEmperorIngStage1MeleeData::SLdrEmperorIngStage1MeleeData() : damage() {}
 
 inline SLdrEmperorIngStage1MeleeData::~SLdrEmperorIngStage1MeleeData() {}
 
-inline void LoadTypedefEmperorIngStage1MeleeData(SLdrEmperorIngStage1MeleeData& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage1MeleeData(SLdrEmperorIngStage1MeleeData& sldrThis,
+                                                 CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -109,17 +115,19 @@ struct SLdrEmperorIngStage1ProjectileAttackData {
   SLdrEmperorIngStage1ProjectileAttackData();
   ~SLdrEmperorIngStage1ProjectileAttackData();
 
-  CAssetId projectile; // 0xef485db9
+  CAssetId projectile;             // 0xef485db9
   SLdrDamageInfo projectileDamage; // 0x553b1339
-  CAssetId projectileVisorEffect; // 0x8f8c64a0
+  CAssetId projectileVisorEffect;  // 0x8f8c64a0
 };
 
-inline SLdrEmperorIngStage1ProjectileAttackData::SLdrEmperorIngStage1ProjectileAttackData() : projectile(kInvalidAssetId), projectileDamage(), projectileVisorEffect(kInvalidAssetId) {
-}
+inline SLdrEmperorIngStage1ProjectileAttackData::SLdrEmperorIngStage1ProjectileAttackData()
+: projectile(kInvalidAssetId), projectileDamage(), projectileVisorEffect(kInvalidAssetId) {}
 
 inline SLdrEmperorIngStage1ProjectileAttackData::~SLdrEmperorIngStage1ProjectileAttackData() {}
 
-inline void LoadTypedefEmperorIngStage1ProjectileAttackData(SLdrEmperorIngStage1ProjectileAttackData& sldrThis, CInputStream& input) {
+inline void
+LoadTypedefEmperorIngStage1ProjectileAttackData(SLdrEmperorIngStage1ProjectileAttackData& sldrThis,
+                                                CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -148,16 +156,17 @@ struct SLdrEmperorIngStage1WarpAttackData {
   SLdrEmperorIngStage1WarpAttackData();
   ~SLdrEmperorIngStage1WarpAttackData();
 
-  CAssetId portalEffect; // 0x4a7c4ec2
+  CAssetId portalEffect;      // 0x4a7c4ec2
   SLdrAnimationSet attackTip; // 0xf10b6ef6
-  SLdrDamageInfo stabDamage; // 0x946016a9
-  int unknown_0xecfab026; // 0xecfab026
-  int unknown_0x94880277; // 0x94880277
-  int sound; // non-matching name, 0x1c3e84b6
-  int sound_0xa93f0198; // non-matching name, 0xa93f0198
+  SLdrDamageInfo stabDamage;  // 0x946016a9
+  int unknown_0xecfab026;     // 0xecfab026
+  int unknown_0x94880277;     // 0x94880277
+  int sound;                  // non-matching name, 0x1c3e84b6
+  int sound_0xa93f0198;       // non-matching name, 0xa93f0198
 };
 
-inline SLdrEmperorIngStage1WarpAttackData::SLdrEmperorIngStage1WarpAttackData() : portalEffect(kInvalidAssetId), attackTip(), stabDamage() {
+inline SLdrEmperorIngStage1WarpAttackData::SLdrEmperorIngStage1WarpAttackData()
+: portalEffect(kInvalidAssetId), attackTip(), stabDamage() {
   unknown_0xecfab026 = -1;
   unknown_0x94880277 = -1;
   sound = 0;
@@ -166,7 +175,8 @@ inline SLdrEmperorIngStage1WarpAttackData::SLdrEmperorIngStage1WarpAttackData() 
 
 inline SLdrEmperorIngStage1WarpAttackData::~SLdrEmperorIngStage1WarpAttackData() {}
 
-inline void LoadTypedefEmperorIngStage1WarpAttackData(SLdrEmperorIngStage1WarpAttackData& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage1WarpAttackData(SLdrEmperorIngStage1WarpAttackData& sldrThis,
+                                                      CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -211,13 +221,14 @@ struct SLdrEmperorIngStage1TauntAttackData {
   SLdrEmperorIngStage1TauntAttackData();
   ~SLdrEmperorIngStage1TauntAttackData();
 
-  float loopDuration; // 0xcee68723
-  int destroyPercentage; // 0x01274d6e
+  float loopDuration;              // 0xcee68723
+  int destroyPercentage;           // 0x01274d6e
   SLdrShockWaveInfo shockWaveInfo; // 0x8f4787cb
-  int shockWaveTravelSound; // 0x25af490e
+  int shockWaveTravelSound;        // 0x25af490e
 };
 
-inline SLdrEmperorIngStage1TauntAttackData::SLdrEmperorIngStage1TauntAttackData() : shockWaveInfo() {
+inline SLdrEmperorIngStage1TauntAttackData::SLdrEmperorIngStage1TauntAttackData()
+: shockWaveInfo() {
   loopDuration = 0.0f;
   destroyPercentage = 0;
   shockWaveTravelSound = 0;
@@ -225,7 +236,9 @@ inline SLdrEmperorIngStage1TauntAttackData::SLdrEmperorIngStage1TauntAttackData(
 
 inline SLdrEmperorIngStage1TauntAttackData::~SLdrEmperorIngStage1TauntAttackData() {}
 
-inline void LoadTypedefEmperorIngStage1TauntAttackData(SLdrEmperorIngStage1TauntAttackData& sldrThis, CInputStream& input) {
+inline void
+LoadTypedefEmperorIngStage1TauntAttackData(SLdrEmperorIngStage1TauntAttackData& sldrThis,
+                                           CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -259,11 +272,12 @@ struct SLdrEmperorIngStage1BeamAttackData {
   ~SLdrEmperorIngStage1BeamAttackData();
 
   SLdrPlasmaBeamInfo beamInfo; // 0x1598012a
-  SLdrDamageInfo damage; // 0x337f9524
-  int sound; // 0x5f7c352e
+  SLdrDamageInfo damage;       // 0x337f9524
+  int sound;                   // 0x5f7c352e
 };
 
-inline SLdrEmperorIngStage1BeamAttackData::SLdrEmperorIngStage1BeamAttackData() : beamInfo(), damage() {
+inline SLdrEmperorIngStage1BeamAttackData::SLdrEmperorIngStage1BeamAttackData()
+: beamInfo(), damage() {
   beamInfo.length = 500.0f;
   beamInfo.expansionSpeed = 4.0f;
   beamInfo.lifeTime = 1.0f;
@@ -277,7 +291,8 @@ inline SLdrEmperorIngStage1BeamAttackData::SLdrEmperorIngStage1BeamAttackData() 
 
 inline SLdrEmperorIngStage1BeamAttackData::~SLdrEmperorIngStage1BeamAttackData() {}
 
-inline void LoadTypedefEmperorIngStage1BeamAttackData(SLdrEmperorIngStage1BeamAttackData& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage1BeamAttackData(SLdrEmperorIngStage1BeamAttackData& sldrThis,
+                                                      CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -306,27 +321,35 @@ struct SLdrEmperorIngStage1Data {
   SLdrEmperorIngStage1Data();
   ~SLdrEmperorIngStage1Data();
 
-  SLdrEmperorIngStage1TentacleData tentacle; // 0xb3c6398f
-  SLdrEmperorIngStage1MeleeData melee; // 0xf59f9a60
+  SLdrEmperorIngStage1TentacleData tentacle;           // 0xb3c6398f
+  SLdrEmperorIngStage1MeleeData melee;                 // 0xf59f9a60
   SLdrEmperorIngStage1ProjectileAttackData projectile; // 0xa1cda0b6
-  SLdrEmperorIngStage1WarpAttackData warp; // 0x85f36473
-  SLdrEmperorIngStage1TauntAttackData tauntAttack; // 0xb4bc04c4
-  SLdrEmperorIngStage1BeamAttackData beamAttack; // 0x8e6d20ec
-  float heartExposedTime; // 0xa588afd1
-  float unknown_0x905938b8; // 0x905938b8
-  float unknown_0xb826317a; // 0xb826317a
-  SLdrAudioPlaybackParms heartDamageSound; // 0x88232388
-  float turnSpeedAccel; // 0xc36ae5ca
-  float maxTurnSpeedNormal; // 0xd30d9bb9
-  float maxTurnSpeedMelee; // 0xb02cd31f
-  float unknown_0xe5a7c358; // 0xe5a7c358
-  int vulnerabilityChangeSound; // 0x93357240
-  float tauntFrequency; // 0x293a0c19
-  float attackIntervalMin; // 0x31ebf869
-  float attackIntervalMax; // 0xd78b5788
+  SLdrEmperorIngStage1WarpAttackData warp;             // 0x85f36473
+  SLdrEmperorIngStage1TauntAttackData tauntAttack;     // 0xb4bc04c4
+  SLdrEmperorIngStage1BeamAttackData beamAttack;       // 0x8e6d20ec
+  float heartExposedTime;                              // 0xa588afd1
+  float unknown_0x905938b8;                            // 0x905938b8
+  float unknown_0xb826317a;                            // 0xb826317a
+  SLdrAudioPlaybackParms heartDamageSound;             // 0x88232388
+  float turnSpeedAccel;                                // 0xc36ae5ca
+  float maxTurnSpeedNormal;                            // 0xd30d9bb9
+  float maxTurnSpeedMelee;                             // 0xb02cd31f
+  float unknown_0xe5a7c358;                            // 0xe5a7c358
+  int vulnerabilityChangeSound;                        // 0x93357240
+  float tauntFrequency;                                // 0x293a0c19
+  float attackIntervalMin;                             // 0x31ebf869
+  float attackIntervalMax;                             // 0xd78b5788
 };
 
-inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(), projectile(), warp(), tauntAttack(), beamAttack(), heartDamageSound(), vulnerabilityChangeSound(-1) {
+inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data()
+: tentacle()
+, melee()
+, projectile()
+, warp()
+, tauntAttack()
+, beamAttack()
+, heartDamageSound()
+, vulnerabilityChangeSound(-1) {
   heartExposedTime = 0.0f;
   unknown_0x905938b8 = 0.0f;
   unknown_0xb826317a = 0.0f;
@@ -341,7 +364,8 @@ inline SLdrEmperorIngStage1Data::SLdrEmperorIngStage1Data() : tentacle(), melee(
 
 inline SLdrEmperorIngStage1Data::~SLdrEmperorIngStage1Data() {}
 
-inline void LoadTypedefEmperorIngStage1Data(SLdrEmperorIngStage1Data& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage1Data(SLdrEmperorIngStage1Data& sldrThis,
+                                            CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -431,12 +455,13 @@ struct SLdrEmperorIngStage1 {
   ~SLdrEmperorIngStage1();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrEmperorIngStage1Data data; // 0x4a1e493b
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrEmperorIngStage1Data data;         // 0x4a1e493b
 };
 
-inline SLdrEmperorIngStage1::SLdrEmperorIngStage1() : editorProperties(), patterned(), actorInformation(), data() {
+inline SLdrEmperorIngStage1::SLdrEmperorIngStage1()
+: editorProperties(), patterned(), actorInformation(), data() {
   patterned.creatureSize = 2;
 }
 

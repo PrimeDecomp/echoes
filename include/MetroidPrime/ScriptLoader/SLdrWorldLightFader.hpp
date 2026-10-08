@@ -10,8 +10,8 @@ struct SLdrWorldLightFader {
   ~SLdrWorldLightFader();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float targetLight; // 0xfb67a26b
-  float targetLightRate; // 0x234dce52
+  float targetLight;                     // 0xfb67a26b
+  float targetLightRate;                 // 0x234dce52
 };
 
 inline SLdrWorldLightFader::SLdrWorldLightFader() : editorProperties() {

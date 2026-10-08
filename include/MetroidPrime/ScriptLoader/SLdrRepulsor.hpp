@@ -10,10 +10,10 @@ struct SLdrRepulsor {
   ~SLdrRepulsor();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int shape; // 0xf9bb2db6
-  float radius; // 0x78c507eb
-  float value; // 0x8dcd8978
-  uint flagsRepulsor; // 0x8aef6bd2
+  int shape;                             // 0xf9bb2db6
+  float radius;                          // 0x78c507eb
+  float value;                           // 0x8dcd8978
+  uint flagsRepulsor;                    // 0x8aef6bd2
 };
 
 inline SLdrRepulsor::SLdrRepulsor() : editorProperties() {

@@ -13,13 +13,14 @@ struct SLdrScanTreeInventory {
   ~SLdrScanTreeInventory();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId nodeName; // 0x46219bac
-  rstl::string stringName; // 0x32698bd6
-  int inventoryItem; // 0x3d326f90
+  CAssetId nodeName;                     // 0x46219bac
+  rstl::string stringName;               // 0x32698bd6
+  int inventoryItem;                     // 0x3d326f90
   SLdrScannableParameters scannableInfo; // 0x2da1ec33
 };
 
-inline SLdrScanTreeInventory::SLdrScanTreeInventory() : editorProperties(), nodeName(kInvalidAssetId), stringName(), scannableInfo() {
+inline SLdrScanTreeInventory::SLdrScanTreeInventory()
+: editorProperties(), nodeName(kInvalidAssetId), stringName(), scannableInfo() {
   inventoryItem = 10;
 }
 

@@ -10,11 +10,11 @@ struct SLdrCameraBlurKeyframe {
   ~SLdrCameraBlurKeyframe();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int blurType; // 0xe9359148
-  float blurRadius; // 0x6f6eb1f4
-  int whichFilterGroup; // 0x3fdc4b2e
-  float interpolateInTime; // 0xabd41a36
-  float interpolateOutTime; // 0x3eaf78fe
+  int blurType;                          // 0xe9359148
+  float blurRadius;                      // 0x6f6eb1f4
+  int whichFilterGroup;                  // 0x3fdc4b2e
+  float interpolateInTime;               // 0xabd41a36
+  float interpolateOutTime;              // 0x3eaf78fe
 };
 
 inline SLdrCameraBlurKeyframe::SLdrCameraBlurKeyframe() : editorProperties() {

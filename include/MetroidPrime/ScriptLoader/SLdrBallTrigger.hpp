@@ -12,16 +12,17 @@ struct SLdrBallTrigger {
   ~SLdrBallTrigger();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrTriggerInfo trigger; // 0x77a27411
-  float attractionForce; // 0xb61b1149
-  float attractionAngle; // 0x81af51d5
-  float attractionDistance; // 0xbb38d077
-  CVector3f attractionDirection; // 0xea511d83
-  bool noBallMovement; // 0xb613f4e4
-  float boundsSizeMultiplier; // 0x2766636a
+  SLdrTriggerInfo trigger;               // 0x77a27411
+  float attractionForce;                 // 0xb61b1149
+  float attractionAngle;                 // 0x81af51d5
+  float attractionDistance;              // 0xbb38d077
+  CVector3f attractionDirection;         // 0xea511d83
+  bool noBallMovement;                   // 0xb613f4e4
+  float boundsSizeMultiplier;            // 0x2766636a
 };
 
-inline SLdrBallTrigger::SLdrBallTrigger() : editorProperties(), trigger(), attractionDirection(CVector3f::Zero()) {
+inline SLdrBallTrigger::SLdrBallTrigger()
+: editorProperties(), trigger(), attractionDirection(CVector3f::Zero()) {
   editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
   attractionForce = 20.0f;
   attractionAngle = 60.0f;

@@ -13,22 +13,29 @@ struct SLdrIngPuddleData {
   SLdrIngPuddleData();
   ~SLdrIngPuddleData();
 
-  CAssetId stateMachine; // 0x55744160
-  SLdrHealthInfo health; // 0xcf90d15e
-  float puddleSpeed; // 0xc6c16427
-  CAssetId blobEffect; // 0x2367f689
-  CAssetId puddleHitNormalDamage; // 0xe8a6e174
-  CAssetId puddleHitHeavyDamage; // 0x1ab2b090
-  CAssetId puddleDeath; // 0x1ccfa4ba
-  int sound_IngSpotIdle; // 0x4cab30a9
-  int sound_IngSpotMove; // 0x8f83be73
-  int sound_HitNormalDamage; // 0xb392943a
-  int sound_HitHeavyDamage; // 0x24ecc1e9
-  int sound_IngSpotDeath; // 0x4489935e
+  CAssetId stateMachine;                 // 0x55744160
+  SLdrHealthInfo health;                 // 0xcf90d15e
+  float puddleSpeed;                     // 0xc6c16427
+  CAssetId blobEffect;                   // 0x2367f689
+  CAssetId puddleHitNormalDamage;        // 0xe8a6e174
+  CAssetId puddleHitHeavyDamage;         // 0x1ab2b090
+  CAssetId puddleDeath;                  // 0x1ccfa4ba
+  int sound_IngSpotIdle;                 // 0x4cab30a9
+  int sound_IngSpotMove;                 // 0x8f83be73
+  int sound_HitNormalDamage;             // 0xb392943a
+  int sound_HitHeavyDamage;              // 0x24ecc1e9
+  int sound_IngSpotDeath;                // 0x4489935e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
 };
 
-inline SLdrIngPuddleData::SLdrIngPuddleData() : stateMachine(kInvalidAssetId), health(), blobEffect(kInvalidAssetId), puddleHitNormalDamage(kInvalidAssetId), puddleHitHeavyDamage(kInvalidAssetId), puddleDeath(kInvalidAssetId), vulnerability() {
+inline SLdrIngPuddleData::SLdrIngPuddleData()
+: stateMachine(kInvalidAssetId)
+, health()
+, blobEffect(kInvalidAssetId)
+, puddleHitNormalDamage(kInvalidAssetId)
+, puddleHitHeavyDamage(kInvalidAssetId)
+, puddleDeath(kInvalidAssetId)
+, vulnerability() {
   health.hI_KnockBackResistance = 2.0f;
   puddleSpeed = 20.0f;
   sound_IngSpotIdle = 0;
@@ -110,12 +117,12 @@ struct SLdrIngPuddle {
   ~SLdrIngPuddle();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrActorParameters actorInformation;  // 0x7e397fed
   SLdrIngPuddleData ingPuddleProperties; // 0xd520975d
 };
 
-inline SLdrIngPuddle::SLdrIngPuddle() : editorProperties(), actorInformation(), ingPuddleProperties() {
-}
+inline SLdrIngPuddle::SLdrIngPuddle()
+: editorProperties(), actorInformation(), ingPuddleProperties() {}
 
 inline SLdrIngPuddle::~SLdrIngPuddle() {}
 

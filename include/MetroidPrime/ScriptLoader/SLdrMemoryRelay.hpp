@@ -10,8 +10,8 @@ struct SLdrMemoryRelay {
   ~SLdrMemoryRelay();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool oneShot; // 0xead7b7bb
-  bool delayedAction; // 0xa905ccf0
+  bool oneShot;                          // 0xead7b7bb
+  bool delayedAction;                    // 0xa905ccf0
 };
 
 inline SLdrMemoryRelay::SLdrMemoryRelay() : editorProperties() {

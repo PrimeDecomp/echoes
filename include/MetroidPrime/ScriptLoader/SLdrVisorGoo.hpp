@@ -12,20 +12,25 @@ struct SLdrVisorGoo {
   ~SLdrVisorGoo();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId particle; // 0x6d1ce525
-  CAssetId electric; // 0x71dbe2f2
-  float minRange; // 0x9744971e
-  float maxRange; // 0xd70bef68
-  float chanceAtMinRange; // 0x4538fdc7
-  float chanceAtMaxRange; // 0x057785b1
-  CColor color; // 0x37c7d09d
-  int sound_HitSound; // 0xa6dc9a92
-  bool noViewCheck; // 0xd5b78bc9
-  bool persistent; // 0xea03e258
-  bool unknown_0xcb9a3009; // 0xcb9a3009
+  CAssetId particle;                     // 0x6d1ce525
+  CAssetId electric;                     // 0x71dbe2f2
+  float minRange;                        // 0x9744971e
+  float maxRange;                        // 0xd70bef68
+  float chanceAtMinRange;                // 0x4538fdc7
+  float chanceAtMaxRange;                // 0x057785b1
+  CColor color;                          // 0x37c7d09d
+  int sound_HitSound;                    // 0xa6dc9a92
+  bool noViewCheck;                      // 0xd5b78bc9
+  bool persistent;                       // 0xea03e258
+  bool unknown_0xcb9a3009;               // 0xcb9a3009
 };
 
-inline SLdrVisorGoo::SLdrVisorGoo() : editorProperties(), particle(kInvalidAssetId), electric(kInvalidAssetId), color(CColor::Green()), sound_HitSound(-1) {
+inline SLdrVisorGoo::SLdrVisorGoo()
+: editorProperties()
+, particle(kInvalidAssetId)
+, electric(kInvalidAssetId)
+, color(CColor::Green())
+, sound_HitSound(-1) {
   minRange = 1.0f;
   maxRange = 8.0f;
   chanceAtMinRange = 40.0f;

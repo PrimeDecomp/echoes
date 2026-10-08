@@ -11,14 +11,14 @@ struct SLdrStreamedMovie {
   ~SLdrStreamedMovie();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::string movieFile; // 0x582b84a8
-  bool loop; // 0xeda47ff6
-  bool videoFilterEnabled; // 0x36963bcc
-  int whenToDraw; // 0xa78ac0c0
-  int volume; // 0x80c66c37
-  int volumeType; // 0xe1ff4f04
-  float cacheLength; // 0xad9eb77f
-  float fadeOutTime; // 0x7c269ebc
+  rstl::string movieFile;                // 0x582b84a8
+  bool loop;                             // 0xeda47ff6
+  bool videoFilterEnabled;               // 0x36963bcc
+  int whenToDraw;                        // 0xa78ac0c0
+  int volume;                            // 0x80c66c37
+  int volumeType;                        // 0xe1ff4f04
+  float cacheLength;                     // 0xad9eb77f
+  float fadeOutTime;                     // 0x7c269ebc
 };
 
 inline SLdrStreamedMovie::SLdrStreamedMovie() : editorProperties(), movieFile() {

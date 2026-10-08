@@ -10,12 +10,12 @@ struct SLdrAIKeyframe {
   ~SLdrAIKeyframe();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int animation; // 0x1ccd0586
-  bool loop; // 0xeda47ff6
-  float loopDuration; // 0xcee68723
-  int unknown_0x58810503; // 0x58810503
-  int unknown_0x6d62ef74; // 0x6d62ef74
-  float playbackRate; // 0x6f8d34ca
+  int animation;                         // 0x1ccd0586
+  bool loop;                             // 0xeda47ff6
+  float loopDuration;                    // 0xcee68723
+  int unknown_0x58810503;                // 0x58810503
+  int unknown_0x6d62ef74;                // 0x6d62ef74
+  float playbackRate;                    // 0x6f8d34ca
 };
 
 inline SLdrAIKeyframe::SLdrAIKeyframe() : editorProperties() {

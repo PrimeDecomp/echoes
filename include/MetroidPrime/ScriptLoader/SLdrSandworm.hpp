@@ -14,13 +14,13 @@ struct SLdrSandwormStruct {
   SLdrSandwormStruct();
   ~SLdrSandwormStruct();
 
-  float unknown_0x98106ee2; // 0x98106ee2
+  float unknown_0x98106ee2;      // 0x98106ee2
   float minTimeBetweenSequences; // 0x95081226
   float maxTimeBetweenSequences; // 0xc2064265
-  float moveSpeedMultiplier; // 0xfe9133cd
-  int unknown_0x59f14d7c; // 0x59f14d7c
-  int unknown_0x9606b4b0; // 0x9606b4b0
-  int unknown_0xfc2697dd; // 0xfc2697dd
+  float moveSpeedMultiplier;     // 0xfe9133cd
+  int unknown_0x59f14d7c;        // 0x59f14d7c
+  int unknown_0x9606b4b0;        // 0x9606b4b0
+  int unknown_0xfc2697dd;        // 0xfc2697dd
 };
 
 inline SLdrSandwormStruct::SLdrSandwormStruct() {
@@ -80,59 +80,81 @@ struct SLdrSandworm {
   SLdrSandworm();
   ~SLdrSandworm();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  int unknown_0x06dee4c5; // 0x06dee4c5
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float pincerScale; // 0x3db583ae
-  int walkSound; // 0xa24376ec
-  int walkVocalSound; // 0xd35eb69d
-  int meleeAttackSound; // 0xaadaabb8
-  int eyeKilledSound; // 0x8128ce4a
-  CAssetId pincerL; // 0x66e34a08
-  CAssetId pincerR; // 0x5f3f29e3
-  float spitAttackMinRange; // 0x63dcbbb6
-  float spitAttackMaxRange; // 0x2393c3c0
-  CAssetId spitAttackVisorEffect; // 0xf9469e49
-  float unknown_0x61f75902; // 0x61f75902
-  float chargeRangeMin; // 0x2a7446ee
-  float chargeRangeMax; // 0xcc14e90f
-  CAssetId projectile; // 0xef485db9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  float chargeImpulseHorizontal; // 0x12090da8
-  float chargeImpulseVertical; // 0xc07bbe9a
-  float morphballTossImpulseHorizontal; // 0x2b053901
-  float morphballTossImpulseVertical; // 0x47e969d3
-  float meleeImpulseHorizontal; // 0xb8eecc95
-  float meleeImpulseVertical; // 0xf59af01a
-  SLdrDamageInfo morphballTossDamage; // 0xf8fd6885
-  SLdrDamageInfo pincerSwipeDamage; // 0x449233bc
-  float unknown_0xe593f1c6; // 0xe593f1c6
-  float lurkUndergroundTimeMin; // 0x3c5d53a4
-  float lurkUndergroundTimeMax; // 0xda3dfc45
-  float pursuitFrustrationTimer; // 0xdfa46e80
-  float pursuitFrustrationRadius; // 0x49f36a3f
-  bool canLinkTransfer; // 0xb47dd18f
-  CAssetId eyeGlow; // 0x0ca82d3c
-  CAssetId pART; // non-matching name, 0x3221407e
-  CAssetId pART_0x8b2a15ee; // non-matching name, 0x8b2a15ee
-  CAssetId ingBossBombFX; // 0x526c6956
-  CAssetId ingBossBombExplosionFX; // 0xd24a1751
-  SLdrDamageInfo ingBossBombDamage; // 0x4461a8ad
-  float ingBossBombDropRate; // 0x3d58f51f
-  int bombBounceSound; // 0x8c41066c
-  int bombExplodeSound; // 0x8649fe53
-  float unknown_0x547f9400; // 0x547f9400
-  float unknown_0xefef7b45; // 0xefef7b45
-  SLdrSandwormStruct sandwormStruct; // non-matching name, 0xb8c15f15
+  SLdrEditorProperties editorProperties;        // 0x255a4580
+  int unknown_0x06dee4c5;                       // 0x06dee4c5
+  SLdrPatternedAITypedef patterned;             // 0xb3774750
+  SLdrActorParameters actorInformation;         // 0x7e397fed
+  float pincerScale;                            // 0x3db583ae
+  int walkSound;                                // 0xa24376ec
+  int walkVocalSound;                           // 0xd35eb69d
+  int meleeAttackSound;                         // 0xaadaabb8
+  int eyeKilledSound;                           // 0x8128ce4a
+  CAssetId pincerL;                             // 0x66e34a08
+  CAssetId pincerR;                             // 0x5f3f29e3
+  float spitAttackMinRange;                     // 0x63dcbbb6
+  float spitAttackMaxRange;                     // 0x2393c3c0
+  CAssetId spitAttackVisorEffect;               // 0xf9469e49
+  float unknown_0x61f75902;                     // 0x61f75902
+  float chargeRangeMin;                         // 0x2a7446ee
+  float chargeRangeMax;                         // 0xcc14e90f
+  CAssetId projectile;                          // 0xef485db9
+  SLdrDamageInfo projectileDamage;              // 0x553b1339
+  float chargeImpulseHorizontal;                // 0x12090da8
+  float chargeImpulseVertical;                  // 0xc07bbe9a
+  float morphballTossImpulseHorizontal;         // 0x2b053901
+  float morphballTossImpulseVertical;           // 0x47e969d3
+  float meleeImpulseHorizontal;                 // 0xb8eecc95
+  float meleeImpulseVertical;                   // 0xf59af01a
+  SLdrDamageInfo morphballTossDamage;           // 0xf8fd6885
+  SLdrDamageInfo pincerSwipeDamage;             // 0x449233bc
+  float unknown_0xe593f1c6;                     // 0xe593f1c6
+  float lurkUndergroundTimeMin;                 // 0x3c5d53a4
+  float lurkUndergroundTimeMax;                 // 0xda3dfc45
+  float pursuitFrustrationTimer;                // 0xdfa46e80
+  float pursuitFrustrationRadius;               // 0x49f36a3f
+  bool canLinkTransfer;                         // 0xb47dd18f
+  CAssetId eyeGlow;                             // 0x0ca82d3c
+  CAssetId pART;                                // non-matching name, 0x3221407e
+  CAssetId pART_0x8b2a15ee;                     // non-matching name, 0x8b2a15ee
+  CAssetId ingBossBombFX;                       // 0x526c6956
+  CAssetId ingBossBombExplosionFX;              // 0xd24a1751
+  SLdrDamageInfo ingBossBombDamage;             // 0x4461a8ad
+  float ingBossBombDropRate;                    // 0x3d58f51f
+  int bombBounceSound;                          // 0x8c41066c
+  int bombExplodeSound;                         // 0x8649fe53
+  float unknown_0x547f9400;                     // 0x547f9400
+  float unknown_0xefef7b45;                     // 0xefef7b45
+  SLdrSandwormStruct sandwormStruct;            // non-matching name, 0xb8c15f15
   SLdrSandwormStruct sandwormStruct_0xce246628; // non-matching name, 0xce246628
   SLdrSandwormStruct sandwormStruct_0x55578cfc; // non-matching name, 0x55578cfc
   SLdrSandwormStruct sandwormStruct_0x23ee1452; // non-matching name, 0x23ee1452
   SLdrSandwormStruct sandwormStruct_0xb89dfe86; // non-matching name, 0xb89dfe86
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  SLdrIngPossessionData ingPossessionData;      // 0xe61748ed
 };
 
-inline SLdrSandworm::SLdrSandworm() : editorProperties(), patterned(), actorInformation(), pincerL(kInvalidAssetId), pincerR(kInvalidAssetId), spitAttackVisorEffect(kInvalidAssetId), projectile(kInvalidAssetId), projectileDamage(), morphballTossDamage(), pincerSwipeDamage(), eyeGlow(kInvalidAssetId), pART(kInvalidAssetId), pART_0x8b2a15ee(kInvalidAssetId), ingBossBombFX(kInvalidAssetId), ingBossBombExplosionFX(kInvalidAssetId), ingBossBombDamage(), sandwormStruct(), sandwormStruct_0xce246628(), sandwormStruct_0x55578cfc(), sandwormStruct_0x23ee1452(), sandwormStruct_0xb89dfe86(), ingPossessionData() {
+inline SLdrSandworm::SLdrSandworm()
+: editorProperties()
+, patterned()
+, actorInformation()
+, pincerL(kInvalidAssetId)
+, pincerR(kInvalidAssetId)
+, spitAttackVisorEffect(kInvalidAssetId)
+, projectile(kInvalidAssetId)
+, projectileDamage()
+, morphballTossDamage()
+, pincerSwipeDamage()
+, eyeGlow(kInvalidAssetId)
+, pART(kInvalidAssetId)
+, pART_0x8b2a15ee(kInvalidAssetId)
+, ingBossBombFX(kInvalidAssetId)
+, ingBossBombExplosionFX(kInvalidAssetId)
+, ingBossBombDamage()
+, sandwormStruct()
+, sandwormStruct_0xce246628()
+, sandwormStruct_0x55578cfc()
+, sandwormStruct_0x23ee1452()
+, sandwormStruct_0xb89dfe86()
+, ingPossessionData() {
   unknown_0x06dee4c5 = 0;
   patterned.detectionRange = 32.0f;
   patterned.minAttackRange = 6.0f;

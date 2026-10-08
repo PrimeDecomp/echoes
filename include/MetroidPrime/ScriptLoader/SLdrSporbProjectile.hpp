@@ -13,14 +13,18 @@ struct SLdrSporbProjectile {
   ~SLdrSporbProjectile();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId ballSpitParticleEffect; // 0x677d4fc2
-  CAssetId ballEscapeParticleEffect; // 0xaaff1884
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CAssetId ballSpitParticleEffect;       // 0x677d4fc2
+  CAssetId ballEscapeParticleEffect;     // 0xaaff1884
 };
 
-inline SLdrSporbProjectile::SLdrSporbProjectile() : editorProperties(), patterned(), actorInformation(), ballSpitParticleEffect(kInvalidAssetId), ballEscapeParticleEffect(kInvalidAssetId) {
-}
+inline SLdrSporbProjectile::SLdrSporbProjectile()
+: editorProperties()
+, patterned()
+, actorInformation()
+, ballSpitParticleEffect(kInvalidAssetId)
+, ballEscapeParticleEffect(kInvalidAssetId) {}
 
 inline SLdrSporbProjectile::~SLdrSporbProjectile() {}
 

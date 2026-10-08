@@ -16,25 +16,35 @@ struct SLdrSwampBossStage1Sounds {
   SLdrSwampBossStage1Sounds();
   ~SLdrSwampBossStage1Sounds();
 
-  SLdrAudioPlaybackParms tongueOut_OneShot; // 0x4f904909
-  SLdrAudioPlaybackParms tongueRetract_Loop; // 0x82e108de
-  SLdrAudioPlaybackParms tongueHitPlayer_OneShot; // 0xdf090545
-  SLdrAudioPlaybackParms tonguePullPlayer_Loop; // 0x3dd5b3cf
+  SLdrAudioPlaybackParms tongueOut_OneShot;        // 0x4f904909
+  SLdrAudioPlaybackParms tongueRetract_Loop;       // 0x82e108de
+  SLdrAudioPlaybackParms tongueHitPlayer_OneShot;  // 0xdf090545
+  SLdrAudioPlaybackParms tonguePullPlayer_Loop;    // 0x3dd5b3cf
   SLdrAudioPlaybackParms weakSpotHitSmall_OneShot; // 0xf82231bb
   SLdrAudioPlaybackParms weakSpotHitLarge_OneShot; // 0x009e3658
-  SLdrAudioPlaybackParms painSound_OneShot; // 0x62bd75b1
-  float painSoundDamageThreshold; // 0x7714baec
-  SLdrAudioPlaybackParms telegraph_Loop; // 0x32969cba
+  SLdrAudioPlaybackParms painSound_OneShot;        // 0x62bd75b1
+  float painSoundDamageThreshold;                  // 0x7714baec
+  SLdrAudioPlaybackParms telegraph_Loop;           // 0x32969cba
   SLdrAudioPlaybackParms shockWaveVolumetric_Loop; // 0x597d2ac9
 };
 
-inline SLdrSwampBossStage1Sounds::SLdrSwampBossStage1Sounds() : tongueOut_OneShot(), tongueRetract_Loop(), tongueHitPlayer_OneShot(), tonguePullPlayer_Loop(), weakSpotHitSmall_OneShot(), weakSpotHitLarge_OneShot(), painSound_OneShot(), telegraph_Loop(), shockWaveVolumetric_Loop() {
+inline SLdrSwampBossStage1Sounds::SLdrSwampBossStage1Sounds()
+: tongueOut_OneShot()
+, tongueRetract_Loop()
+, tongueHitPlayer_OneShot()
+, tonguePullPlayer_Loop()
+, weakSpotHitSmall_OneShot()
+, weakSpotHitLarge_OneShot()
+, painSound_OneShot()
+, telegraph_Loop()
+, shockWaveVolumetric_Loop() {
   painSoundDamageThreshold = 10.0f;
 }
 
 inline SLdrSwampBossStage1Sounds::~SLdrSwampBossStage1Sounds() {}
 
-inline void LoadTypedefSwampBossStage1Sounds(SLdrSwampBossStage1Sounds& sldrThis, CInputStream& input) {
+inline void LoadTypedefSwampBossStage1Sounds(SLdrSwampBossStage1Sounds& sldrThis,
+                                             CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -91,15 +101,15 @@ struct SLdrSwampBossStage1Struct {
   SLdrSwampBossStage1Struct();
   ~SLdrSwampBossStage1Struct();
 
-  float unknown_0x98106ee2; // 0x98106ee2
+  float unknown_0x98106ee2;    // 0x98106ee2
   float minTimeBetweenAttacks; // 0x95e7a2c2
   float maxTimeBetweenAttacks; // 0x76ba1c18
-  int unknown_0xbb0ffdd6; // 0xbb0ffdd6
-  int unknown_0x60b0ae31; // 0x60b0ae31
-  int firstAttack; // 0x9cfa9acb
-  int secondAttack; // 0x180f81dd
-  int thirdAttack; // 0x42617cfd
-  int fourthAttack; // 0xc39f864e
+  int unknown_0xbb0ffdd6;      // 0xbb0ffdd6
+  int unknown_0x60b0ae31;      // 0x60b0ae31
+  int firstAttack;             // 0x9cfa9acb
+  int secondAttack;            // 0x180f81dd
+  int thirdAttack;             // 0x42617cfd
+  int fourthAttack;            // 0xc39f864e
 };
 
 inline SLdrSwampBossStage1Struct::SLdrSwampBossStage1Struct() {
@@ -116,7 +126,8 @@ inline SLdrSwampBossStage1Struct::SLdrSwampBossStage1Struct() {
 
 inline SLdrSwampBossStage1Struct::~SLdrSwampBossStage1Struct() {}
 
-inline void LoadTypedefSwampBossStage1Struct(SLdrSwampBossStage1Struct& sldrThis, CInputStream& input) {
+inline void LoadTypedefSwampBossStage1Struct(SLdrSwampBossStage1Struct& sldrThis,
+                                             CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -169,35 +180,51 @@ struct SLdrSwampBossStage1Data {
   SLdrSwampBossStage1Data();
   ~SLdrSwampBossStage1Data();
 
-  CAssetId darkWaterRingEffect; // 0x6cedf364
-  float unknown_0x27a06f6a; // 0x27a06f6a
-  float unknown_0x233a5e40; // 0x233a5e40
-  CAssetId preJumpTelegraphEffect; // 0xef7c65ac
-  SLdrShockWaveInfo splashShockWave; // 0x6c0f7aa3
-  CAssetId tongueParticleEffect; // 0x762cd5b7
-  CAssetId tongueParticleModel; // 0xd8ab76f0
-  CAssetId tongueTipModel; // 0x145debea
-  SLdrDamageInfo damageInfo; // non-matching name, 0xd0b0f21f
-  CAssetId pART; // non-matching name, 0x0a078586
-  float unknown_0x78755da3; // 0x78755da3
-  float unknown_0x74e1a041; // 0x74e1a041
-  float unknown_0x1f4e7c2c; // 0x1f4e7c2c
-  float unknown_0xee6b6f47; // 0xee6b6f47
-  float unknown_0x3ce96c9d; // 0x3ce96c9d
-  SLdrDamageVulnerability weakSpotVulnerability; // 0x950318f0
-  float weakSpotDamageMultiplier; // 0xba694941
-  CAssetId spitProjectile; // 0xcfe37ebf
-  SLdrDamageInfo spitDamage; // 0xda3c9b32
-  CAssetId spitVisorEffect; // 0x008becab
-  int sound_SpitVisor; // 0xf3af8417
-  float spitProjectileRadius; // 0xdadc5bc9
-  SLdrSwampBossStage1Sounds sounds; // 0xd402095f
-  SLdrSwampBossStage1Struct swampBossStage1Struct; // non-matching name, 0x4500f774
+  CAssetId darkWaterRingEffect;                               // 0x6cedf364
+  float unknown_0x27a06f6a;                                   // 0x27a06f6a
+  float unknown_0x233a5e40;                                   // 0x233a5e40
+  CAssetId preJumpTelegraphEffect;                            // 0xef7c65ac
+  SLdrShockWaveInfo splashShockWave;                          // 0x6c0f7aa3
+  CAssetId tongueParticleEffect;                              // 0x762cd5b7
+  CAssetId tongueParticleModel;                               // 0xd8ab76f0
+  CAssetId tongueTipModel;                                    // 0x145debea
+  SLdrDamageInfo damageInfo;                                  // non-matching name, 0xd0b0f21f
+  CAssetId pART;                                              // non-matching name, 0x0a078586
+  float unknown_0x78755da3;                                   // 0x78755da3
+  float unknown_0x74e1a041;                                   // 0x74e1a041
+  float unknown_0x1f4e7c2c;                                   // 0x1f4e7c2c
+  float unknown_0xee6b6f47;                                   // 0xee6b6f47
+  float unknown_0x3ce96c9d;                                   // 0x3ce96c9d
+  SLdrDamageVulnerability weakSpotVulnerability;              // 0x950318f0
+  float weakSpotDamageMultiplier;                             // 0xba694941
+  CAssetId spitProjectile;                                    // 0xcfe37ebf
+  SLdrDamageInfo spitDamage;                                  // 0xda3c9b32
+  CAssetId spitVisorEffect;                                   // 0x008becab
+  int sound_SpitVisor;                                        // 0xf3af8417
+  float spitProjectileRadius;                                 // 0xdadc5bc9
+  SLdrSwampBossStage1Sounds sounds;                           // 0xd402095f
+  SLdrSwampBossStage1Struct swampBossStage1Struct;            // non-matching name, 0x4500f774
   SLdrSwampBossStage1Struct swampBossStage1Struct_0x3e1e7597; // non-matching name, 0x3e1e7597
   SLdrSwampBossStage1Struct swampBossStage1Struct_0xa1c4f609; // non-matching name, 0xa1c4f609
 };
 
-inline SLdrSwampBossStage1Data::SLdrSwampBossStage1Data() : darkWaterRingEffect(kInvalidAssetId), preJumpTelegraphEffect(kInvalidAssetId), splashShockWave(), tongueParticleEffect(kInvalidAssetId), tongueParticleModel(kInvalidAssetId), tongueTipModel(kInvalidAssetId), damageInfo(), pART(kInvalidAssetId), weakSpotVulnerability(), spitProjectile(kInvalidAssetId), spitDamage(), spitVisorEffect(kInvalidAssetId), sounds(), swampBossStage1Struct(), swampBossStage1Struct_0x3e1e7597(), swampBossStage1Struct_0xa1c4f609() {
+inline SLdrSwampBossStage1Data::SLdrSwampBossStage1Data()
+: darkWaterRingEffect(kInvalidAssetId)
+, preJumpTelegraphEffect(kInvalidAssetId)
+, splashShockWave()
+, tongueParticleEffect(kInvalidAssetId)
+, tongueParticleModel(kInvalidAssetId)
+, tongueTipModel(kInvalidAssetId)
+, damageInfo()
+, pART(kInvalidAssetId)
+, weakSpotVulnerability()
+, spitProjectile(kInvalidAssetId)
+, spitDamage()
+, spitVisorEffect(kInvalidAssetId)
+, sounds()
+, swampBossStage1Struct()
+, swampBossStage1Struct_0x3e1e7597()
+, swampBossStage1Struct_0xa1c4f609() {
   unknown_0x27a06f6a = 3.0f;
   unknown_0x233a5e40 = 6.0f;
   unknown_0x78755da3 = 50.0f;
@@ -335,13 +362,14 @@ struct SLdrSwampBossStage1 {
   SLdrSwampBossStage1();
   ~SLdrSwampBossStage1();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;             // 0x255a4580
+  SLdrPatternedAITypedef patterned;                  // 0xb3774750
+  SLdrActorParameters actorInformation;              // 0x7e397fed
   SLdrSwampBossStage1Data swampBossStage1Properties; // 0xb01a28d5
 };
 
-inline SLdrSwampBossStage1::SLdrSwampBossStage1() : editorProperties(), patterned(), actorInformation(), swampBossStage1Properties() {
+inline SLdrSwampBossStage1::SLdrSwampBossStage1()
+: editorProperties(), patterned(), actorInformation(), swampBossStage1Properties() {
   patterned.minAttackRange = 6.0f;
   patterned.maxAttackRange = 11.0f;
   patterned.averageAttackTime = 2.0f;

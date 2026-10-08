@@ -13,13 +13,14 @@ struct SLdrRipper {
   ~SLdrRipper();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int flavor; // 0xbe73724a
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrGrappleParameters grappleInfo; // 0x6a2872d8
+  int flavor;                            // 0xbe73724a
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrGrappleParameters grappleInfo;     // 0x6a2872d8
 };
 
-inline SLdrRipper::SLdrRipper() : editorProperties(), patterned(), actorInformation(), grappleInfo() {
+inline SLdrRipper::SLdrRipper()
+: editorProperties(), patterned(), actorInformation(), grappleInfo() {
   flavor = 0;
   patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.unknown_0xf0790c1b = 10.0f;

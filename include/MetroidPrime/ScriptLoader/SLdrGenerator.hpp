@@ -11,13 +11,13 @@ struct SLdrGenerator {
   ~SLdrGenerator();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int randomCount; // 0x3fa67145
-  bool uniqueLocations; // 0x88978e49
-  bool keepOrientation; // 0x1eb8e254
-  bool useOriginatorTransform; // 0x035a5e10
-  CVector3f offset; // 0x46477064
-  float randomScaleMin; // 0xc3861b64
-  float randomScaleMax; // 0x25e6b485
+  int randomCount;                       // 0x3fa67145
+  bool uniqueLocations;                  // 0x88978e49
+  bool keepOrientation;                  // 0x1eb8e254
+  bool useOriginatorTransform;           // 0x035a5e10
+  CVector3f offset;                      // 0x46477064
+  float randomScaleMin;                  // 0xc3861b64
+  float randomScaleMax;                  // 0x25e6b485
 };
 
 inline SLdrGenerator::SLdrGenerator() : editorProperties(), offset(CVector3f::Zero()) {

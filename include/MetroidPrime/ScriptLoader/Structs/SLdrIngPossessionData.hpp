@@ -11,14 +11,14 @@ struct SLdrIngPossessionData {
   SLdrIngPossessionData();
   ~SLdrIngPossessionData();
 
-  bool isAnEncounter; // 0x888fa435
-  bool unknown_0xb68c0aa3; // 0xb68c0aa3
-  CAssetId ingPossessedModel; // 0xad54da11
-  CAssetId ingPossessedSkinRules; // 0xf5c66384
-  CAssetId darkScanInfo; // 0x35a9792e
-  SLdrHealthInfo ingPossessedHealth; // 0x1d852d4b
-  float ingPossessedDamageMultiplier; // 0x487e4f9a
-  int unknown_0x2befc1bf; // 0x2befc1bf
+  bool isAnEncounter;                       // 0x888fa435
+  bool unknown_0xb68c0aa3;                  // 0xb68c0aa3
+  CAssetId ingPossessedModel;               // 0xad54da11
+  CAssetId ingPossessedSkinRules;           // 0xf5c66384
+  CAssetId darkScanInfo;                    // 0x35a9792e
+  SLdrHealthInfo ingPossessedHealth;        // 0x1d852d4b
+  float ingPossessedDamageMultiplier;       // 0x487e4f9a
+  int unknown_0x2befc1bf;                   // 0x2befc1bf
   SLdrDamageVulnerability ingVulnerability; // 0x4aeec093
 };
 

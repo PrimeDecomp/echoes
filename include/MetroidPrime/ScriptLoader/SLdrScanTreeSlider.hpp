@@ -12,13 +12,13 @@ struct SLdrScanTreeSlider {
   ~SLdrScanTreeSlider();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId nodeName; // 0x46219bac
-  rstl::string stringName; // 0x32698bd6
-  int unknown_0x0261a4e0; // 0x0261a4e0
+  CAssetId nodeName;                     // 0x46219bac
+  rstl::string stringName;               // 0x32698bd6
+  int unknown_0x0261a4e0;                // 0x0261a4e0
 };
 
-inline SLdrScanTreeSlider::SLdrScanTreeSlider() : editorProperties(), nodeName(kInvalidAssetId), stringName(), unknown_0x0261a4e0() {
-}
+inline SLdrScanTreeSlider::SLdrScanTreeSlider()
+: editorProperties(), nodeName(kInvalidAssetId), stringName(), unknown_0x0261a4e0() {}
 
 inline SLdrScanTreeSlider::~SLdrScanTreeSlider() {}
 

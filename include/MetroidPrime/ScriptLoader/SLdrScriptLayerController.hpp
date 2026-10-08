@@ -13,9 +13,7 @@ struct SLdrMasterLayer {
   int layer;
 };
 
-inline SLdrMasterLayer::SLdrMasterLayer() : areaID() {
-  layer = 0;
-}
+inline SLdrMasterLayer::SLdrMasterLayer() : areaID() { layer = 0; }
 
 inline SLdrMasterLayer::~SLdrMasterLayer() {}
 
@@ -29,8 +27,8 @@ struct SLdrScriptLayerController {
   ~SLdrScriptLayerController();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrMasterLayer masterLayer; // 0x8249f6c7
-  bool isDynamic; // 0x12a7d8b2
+  SLdrMasterLayer masterLayer;           // 0x8249f6c7
+  bool isDynamic;                        // 0x12a7d8b2
 };
 
 inline SLdrScriptLayerController::SLdrScriptLayerController() : editorProperties(), masterLayer() {

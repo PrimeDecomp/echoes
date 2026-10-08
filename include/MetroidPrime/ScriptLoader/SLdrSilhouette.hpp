@@ -11,10 +11,10 @@ struct SLdrSilhouette {
   ~SLdrSilhouette();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float unknown_0x82bad3ee; // 0x82bad3ee
-  CColor silhouetteColor; // 0x8c8b3289
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
+  float unknown_0x82bad3ee;              // 0x82bad3ee
+  CColor silhouetteColor;                // 0x8c8b3289
+  float fadeInTime;                      // 0x90aa341f
+  float fadeOutTime;                     // 0x7c269ebc
 };
 
 inline SLdrSilhouette::SLdrSilhouette() : editorProperties(), silhouetteColor(CColor::Green()) {

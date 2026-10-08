@@ -10,11 +10,11 @@ struct SLdrAIHint {
   ~SLdrAIHint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int hintType; // 0xb3127b71
-  float radius; // 0x78c507eb
-  float valueParm; // 0x19028099
-  float valueParm2; // 0x2c93aaf5
-  float valueParm3; // 0xe7cf7950
+  int hintType;                          // 0xb3127b71
+  float radius;                          // 0x78c507eb
+  float valueParm;                       // 0x19028099
+  float valueParm2;                      // 0x2c93aaf5
+  float valueParm3;                      // 0xe7cf7950
 };
 
 inline SLdrAIHint::SLdrAIHint() : editorProperties() {

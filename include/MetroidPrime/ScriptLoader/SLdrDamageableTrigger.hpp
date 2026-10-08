@@ -13,15 +13,16 @@ struct SLdrDamageableTrigger {
   ~SLdrDamageableTrigger();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrHealthInfo health; // 0xcf90d15e
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  bool orbitable; // 0x704b5369
-  bool enableSeekerLockOn; // non-matching name, 0x5dfd7820
-  bool invulnerable; // 0x6652bdd7
-  SLdrVisorParameters visor; // 0x05ad250e
+  bool orbitable;                        // 0x704b5369
+  bool enableSeekerLockOn;               // non-matching name, 0x5dfd7820
+  bool invulnerable;                     // 0x6652bdd7
+  SLdrVisorParameters visor;             // 0x05ad250e
 };
 
-inline SLdrDamageableTrigger::SLdrDamageableTrigger() : editorProperties(), health(), vulnerability(), visor() {
+inline SLdrDamageableTrigger::SLdrDamageableTrigger()
+: editorProperties(), health(), vulnerability(), visor() {
   orbitable = false;
   enableSeekerLockOn = false;
   invulnerable = false;

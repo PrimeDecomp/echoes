@@ -15,20 +15,27 @@ struct SLdrAmbientAI {
   ~SLdrAmbientAI();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionBox; // 0xf344c0b0
-  CVector3f collisionOffset; // 0x2e686c2a
-  float mass; // 0x75dbb375
-  SLdrHealthInfo health; // 0xcf90d15e
+  CVector3f collisionBox;                // 0xf344c0b0
+  CVector3f collisionOffset;             // 0x2e686c2a
+  float mass;                            // 0x75dbb375
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float detectRadius; // 0xa7d00780
-  float explodeRadius; // 0xd4d52631
-  int animation_React; // 0xbfe017de
-  int animation_Damaged; // 0xed5f16ac
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float detectRadius;                    // 0xa7d00780
+  float explodeRadius;                   // 0xd4d52631
+  int animation_React;                   // 0xbfe017de
+  int animation_Damaged;                 // 0xed5f16ac
 };
 
-inline SLdrAmbientAI::SLdrAmbientAI() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), animationInformation(), actorInformation() {
+inline SLdrAmbientAI::SLdrAmbientAI()
+: editorProperties()
+, collisionBox(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, health()
+, vulnerability()
+, animationInformation()
+, actorInformation() {
   mass = 1.0f;
   vulnerability.power.effect = 0;
   vulnerability.boostBall.effect = 0;

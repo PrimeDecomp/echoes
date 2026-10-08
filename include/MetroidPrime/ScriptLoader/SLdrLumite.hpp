@@ -14,25 +14,34 @@ struct SLdrLumite {
   ~SLdrLumite();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float smallShotMinRange; // 0x2d9ebd7f
-  float smallShotMaxRange; // 0x6dd1c509
-  CAssetId smallShotProjectile; // 0x48157453
-  SLdrDamageInfo smallShotDamage; // 0x7307c36b
-  float bigShotMinRange; // 0x6d5356bb
-  float bigShotMaxRange; // 0x2d1c2ecd
-  CAssetId bigShotProjectile; // 0xd05b1d24
-  SLdrDamageInfo bigShotDamage; // 0xbdfe699d
-  CAssetId trailEffect; // 0x36eee791
-  CAssetId sunlightEnterExitEffect; // 0xd2879ebb
-  float minHopDistance; // 0xe05d93ef
-  float maxHopDistance; // 0x47691396
-  int phaseInSound; // 0xa4231323
-  int phaseOutSound; // 0x3aaf7871
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float smallShotMinRange;               // 0x2d9ebd7f
+  float smallShotMaxRange;               // 0x6dd1c509
+  CAssetId smallShotProjectile;          // 0x48157453
+  SLdrDamageInfo smallShotDamage;        // 0x7307c36b
+  float bigShotMinRange;                 // 0x6d5356bb
+  float bigShotMaxRange;                 // 0x2d1c2ecd
+  CAssetId bigShotProjectile;            // 0xd05b1d24
+  SLdrDamageInfo bigShotDamage;          // 0xbdfe699d
+  CAssetId trailEffect;                  // 0x36eee791
+  CAssetId sunlightEnterExitEffect;      // 0xd2879ebb
+  float minHopDistance;                  // 0xe05d93ef
+  float maxHopDistance;                  // 0x47691396
+  int phaseInSound;                      // 0xa4231323
+  int phaseOutSound;                     // 0x3aaf7871
 };
 
-inline SLdrLumite::SLdrLumite() : editorProperties(), patterned(), actorInformation(), smallShotProjectile(kInvalidAssetId), smallShotDamage(), bigShotProjectile(kInvalidAssetId), bigShotDamage(), trailEffect(kInvalidAssetId), sunlightEnterExitEffect(kInvalidAssetId) {
+inline SLdrLumite::SLdrLumite()
+: editorProperties()
+, patterned()
+, actorInformation()
+, smallShotProjectile(kInvalidAssetId)
+, smallShotDamage()
+, bigShotProjectile(kInvalidAssetId)
+, bigShotDamage()
+, trailEffect(kInvalidAssetId)
+, sunlightEnterExitEffect(kInvalidAssetId) {
   patterned.leashRadius = 100.0f;
   patterned.collisionRadius = 0.1f;
   patterned.collisionHeight = 0.1f;

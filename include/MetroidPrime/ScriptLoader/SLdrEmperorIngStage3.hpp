@@ -20,11 +20,12 @@ struct SLdrEmperorIngStage3DarkBeamAttackData {
   ~SLdrEmperorIngStage3DarkBeamAttackData();
 
   SLdrPlasmaBeamInfo beamInfo; // 0x1598012a
-  SLdrDamageInfo damage; // 0x337f9524
-  int beamSound; // 0xf6f185d6
+  SLdrDamageInfo damage;       // 0x337f9524
+  int beamSound;               // 0xf6f185d6
 };
 
-inline SLdrEmperorIngStage3DarkBeamAttackData::SLdrEmperorIngStage3DarkBeamAttackData() : beamInfo(), damage() {
+inline SLdrEmperorIngStage3DarkBeamAttackData::SLdrEmperorIngStage3DarkBeamAttackData()
+: beamInfo(), damage() {
   beamInfo.length = 500.0f;
   beamInfo.expansionSpeed = 4.0f;
   beamInfo.lifeTime = 1.0f;
@@ -38,7 +39,9 @@ inline SLdrEmperorIngStage3DarkBeamAttackData::SLdrEmperorIngStage3DarkBeamAttac
 
 inline SLdrEmperorIngStage3DarkBeamAttackData::~SLdrEmperorIngStage3DarkBeamAttackData() {}
 
-inline void LoadTypedefEmperorIngStage3DarkBeamAttackData(SLdrEmperorIngStage3DarkBeamAttackData& sldrThis, CInputStream& input) {
+inline void
+LoadTypedefEmperorIngStage3DarkBeamAttackData(SLdrEmperorIngStage3DarkBeamAttackData& sldrThis,
+                                              CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -67,13 +70,14 @@ struct SLdrEmperorIngStage3PortalAttackData {
   SLdrEmperorIngStage3PortalAttackData();
   ~SLdrEmperorIngStage3PortalAttackData();
 
-  CAssetId effect; // 0xb68c6d96
-  int portalOpenSound; // 0x1a66bed7
+  CAssetId effect;                 // 0xb68c6d96
+  int portalOpenSound;             // 0x1a66bed7
   SLdrDamageInfo projectileDamage; // 0x553b1339
-  SLdrPlasmaBeamInfo beamInfo; // 0x1598012a
+  SLdrPlasmaBeamInfo beamInfo;     // 0x1598012a
 };
 
-inline SLdrEmperorIngStage3PortalAttackData::SLdrEmperorIngStage3PortalAttackData() : effect(kInvalidAssetId), projectileDamage(), beamInfo() {
+inline SLdrEmperorIngStage3PortalAttackData::SLdrEmperorIngStage3PortalAttackData()
+: effect(kInvalidAssetId), projectileDamage(), beamInfo() {
   portalOpenSound = 0;
   projectileDamage.dI_WeaponType = 11;
   projectileDamage.dI_Damage = 20.0f;
@@ -90,7 +94,9 @@ inline SLdrEmperorIngStage3PortalAttackData::SLdrEmperorIngStage3PortalAttackDat
 
 inline SLdrEmperorIngStage3PortalAttackData::~SLdrEmperorIngStage3PortalAttackData() {}
 
-inline void LoadTypedefEmperorIngStage3PortalAttackData(SLdrEmperorIngStage3PortalAttackData& sldrThis, CInputStream& input) {
+inline void
+LoadTypedefEmperorIngStage3PortalAttackData(SLdrEmperorIngStage3PortalAttackData& sldrThis,
+                                            CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -123,8 +129,8 @@ struct SLdrEmperorIngStage3Action {
   SLdrEmperorIngStage3Action();
   ~SLdrEmperorIngStage3Action();
 
-  bool enabled; // 0x29c77d27
-  float chance; // 0x7a7b330e
+  bool enabled;   // 0x29c77d27
+  float chance;   // 0x7a7b330e
   float modifier; // 0xed2d546f
 };
 
@@ -136,7 +142,8 @@ inline SLdrEmperorIngStage3Action::SLdrEmperorIngStage3Action() {
 
 inline SLdrEmperorIngStage3Action::~SLdrEmperorIngStage3Action() {}
 
-inline void LoadTypedefEmperorIngStage3Action(SLdrEmperorIngStage3Action& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage3Action(SLdrEmperorIngStage3Action& sldrThis,
+                                              CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -165,20 +172,28 @@ struct SLdrEmperorIngStage3Stage {
   SLdrEmperorIngStage3Stage();
   ~SLdrEmperorIngStage3Stage();
 
-  float minHealthPercentage; // 0xdfea46b3
-  float minTimeBetweenAttacks; // 0x95e7a2c2
-  float maxTimeBetweenAttacks; // 0x76ba1c18
-  SLdrEmperorIngStage3Action stampede; // 0x3826ec75
-  SLdrEmperorIngStage3Action jumpSlide; // 0x93bf1106
-  SLdrEmperorIngStage3Action lightSwarm; // 0xc4b88b80
-  SLdrEmperorIngStage3Action darkBeam; // 0x32c6dc77
-  SLdrEmperorIngStage3Action lightBeam; // 0xc6e7b293
+  float minHealthPercentage;               // 0xdfea46b3
+  float minTimeBetweenAttacks;             // 0x95e7a2c2
+  float maxTimeBetweenAttacks;             // 0x76ba1c18
+  SLdrEmperorIngStage3Action stampede;     // 0x3826ec75
+  SLdrEmperorIngStage3Action jumpSlide;    // 0x93bf1106
+  SLdrEmperorIngStage3Action lightSwarm;   // 0xc4b88b80
+  SLdrEmperorIngStage3Action darkBeam;     // 0x32c6dc77
+  SLdrEmperorIngStage3Action lightBeam;    // 0xc6e7b293
   SLdrEmperorIngStage3Action portalAttack; // 0x20746b56
-  SLdrEmperorIngStage3Action darkFlier; // 0x2ab44adb
-  SLdrEmperorIngStage3Action jumpAttack; // 0xe2e78a78
+  SLdrEmperorIngStage3Action darkFlier;    // 0x2ab44adb
+  SLdrEmperorIngStage3Action jumpAttack;   // 0xe2e78a78
 };
 
-inline SLdrEmperorIngStage3Stage::SLdrEmperorIngStage3Stage() : stampede(), jumpSlide(), lightSwarm(), darkBeam(), lightBeam(), portalAttack(), darkFlier(), jumpAttack() {
+inline SLdrEmperorIngStage3Stage::SLdrEmperorIngStage3Stage()
+: stampede()
+, jumpSlide()
+, lightSwarm()
+, darkBeam()
+, lightBeam()
+, portalAttack()
+, darkFlier()
+, jumpAttack() {
   minHealthPercentage = 0.0f;
   minTimeBetweenAttacks = 0.0f;
   maxTimeBetweenAttacks = 0.0f;
@@ -186,7 +201,8 @@ inline SLdrEmperorIngStage3Stage::SLdrEmperorIngStage3Stage() : stampede(), jump
 
 inline SLdrEmperorIngStage3Stage::~SLdrEmperorIngStage3Stage() {}
 
-inline void LoadTypedefEmperorIngStage3Stage(SLdrEmperorIngStage3Stage& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage3Stage(SLdrEmperorIngStage3Stage& sldrThis,
+                                             CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -247,34 +263,55 @@ struct SLdrEmperorIngStage3Data {
   SLdrEmperorIngStage3Data();
   ~SLdrEmperorIngStage3Data();
 
-  float tauntFrequency; // 0x293a0c19
-  SLdrHealthInfo yellowHealth; // 0x8a3f760c
-  SLdrHealthInfo health; // 0xcf90d15e
-  float vulnerableTime; // 0x69bc5cd4
-  float vulnerableDamageThreshold; // 0xb110e539
-  SLdrDamageVulnerability redVulnerability; // 0x8d70d67a
-  SLdrDamageVulnerability lightVulnerability; // 0x89c142f7
-  SLdrDamageVulnerability darkVulnerability; // 0x8855c118
-  SLdrDamageInfo meleeDamage; // 0xc9416034
-  SLdrDamageInfo stampedeDamage; // 0x1440d152
-  SLdrDamageInfo jumpSlideDamage; // 0xef582bd6
-  SLdrDamageInfo groundPoundDamage; // 0x4738c321
-  SLdrEmperorIngStage3DarkBeamAttackData darkBeamAttack; // 0x98e311c1
+  float tauntFrequency;                                   // 0x293a0c19
+  SLdrHealthInfo yellowHealth;                            // 0x8a3f760c
+  SLdrHealthInfo health;                                  // 0xcf90d15e
+  float vulnerableTime;                                   // 0x69bc5cd4
+  float vulnerableDamageThreshold;                        // 0xb110e539
+  SLdrDamageVulnerability redVulnerability;               // 0x8d70d67a
+  SLdrDamageVulnerability lightVulnerability;             // 0x89c142f7
+  SLdrDamageVulnerability darkVulnerability;              // 0x8855c118
+  SLdrDamageInfo meleeDamage;                             // 0xc9416034
+  SLdrDamageInfo stampedeDamage;                          // 0x1440d152
+  SLdrDamageInfo jumpSlideDamage;                         // 0xef582bd6
+  SLdrDamageInfo groundPoundDamage;                       // 0x4738c321
+  SLdrEmperorIngStage3DarkBeamAttackData darkBeamAttack;  // 0x98e311c1
   SLdrEmperorIngStage3DarkBeamAttackData lightBeamAttack; // 0x93dae216
-  CAssetId lightSwarmEffect; // 0x4f82b9e5
-  SLdrBasicSwarmProperties lightSwarmProperties; // 0x043e9c2e
-  SLdrAudioPlaybackParms lightSwarmDeathSound; // 0x91001508
-  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x03552953
-  SLdrEmperorIngStage3PortalAttackData portalAttack; // 0xaf7e3033
-  SLdrShockWaveInfo jumpAttackShockWaveInfo; // 0xab4ed456
-  int sound; // non-matching name, 0x985f72fd
-  SLdrEmperorIngStage3Stage stage1; // 0xe843417f
-  SLdrEmperorIngStage3Stage stage2; // 0xd13bec3f
-  SLdrEmperorIngStage3Stage stage3; // 0xc61388ff
-  SLdrEmperorIngStage3Stage stage4; // 0xa3cab6bf
+  CAssetId lightSwarmEffect;                              // 0x4f82b9e5
+  SLdrBasicSwarmProperties lightSwarmProperties;          // 0x043e9c2e
+  SLdrAudioPlaybackParms lightSwarmDeathSound;            // 0x91001508
+  SLdrAudioPlaybackParms audioPlaybackParms;              // non-matching name, 0x03552953
+  SLdrEmperorIngStage3PortalAttackData portalAttack;      // 0xaf7e3033
+  SLdrShockWaveInfo jumpAttackShockWaveInfo;              // 0xab4ed456
+  int sound;                                              // non-matching name, 0x985f72fd
+  SLdrEmperorIngStage3Stage stage1;                       // 0xe843417f
+  SLdrEmperorIngStage3Stage stage2;                       // 0xd13bec3f
+  SLdrEmperorIngStage3Stage stage3;                       // 0xc61388ff
+  SLdrEmperorIngStage3Stage stage4;                       // 0xa3cab6bf
 };
 
-inline SLdrEmperorIngStage3Data::SLdrEmperorIngStage3Data() : yellowHealth(), health(), redVulnerability(), lightVulnerability(), darkVulnerability(), meleeDamage(), stampedeDamage(), jumpSlideDamage(), groundPoundDamage(), darkBeamAttack(), lightBeamAttack(), lightSwarmEffect(kInvalidAssetId), lightSwarmProperties(), lightSwarmDeathSound(), audioPlaybackParms(), portalAttack(), jumpAttackShockWaveInfo(), stage1(), stage2(), stage3(), stage4() {
+inline SLdrEmperorIngStage3Data::SLdrEmperorIngStage3Data()
+: yellowHealth()
+, health()
+, redVulnerability()
+, lightVulnerability()
+, darkVulnerability()
+, meleeDamage()
+, stampedeDamage()
+, jumpSlideDamage()
+, groundPoundDamage()
+, darkBeamAttack()
+, lightBeamAttack()
+, lightSwarmEffect(kInvalidAssetId)
+, lightSwarmProperties()
+, lightSwarmDeathSound()
+, audioPlaybackParms()
+, portalAttack()
+, jumpAttackShockWaveInfo()
+, stage1()
+, stage2()
+, stage3()
+, stage4() {
   tauntFrequency = 0.0f;
   vulnerableTime = 0.0f;
   vulnerableDamageThreshold = 0.0f;
@@ -283,7 +320,8 @@ inline SLdrEmperorIngStage3Data::SLdrEmperorIngStage3Data() : yellowHealth(), he
 
 inline SLdrEmperorIngStage3Data::~SLdrEmperorIngStage3Data() {}
 
-inline void LoadTypedefEmperorIngStage3Data(SLdrEmperorIngStage3Data& sldrThis, CInputStream& input) {
+inline void LoadTypedefEmperorIngStage3Data(SLdrEmperorIngStage3Data& sldrThis,
+                                            CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -401,12 +439,13 @@ struct SLdrEmperorIngStage3 {
   ~SLdrEmperorIngStage3();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrEmperorIngStage3Data data; // 0x30de1a5b
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrEmperorIngStage3Data data;         // 0x30de1a5b
 };
 
-inline SLdrEmperorIngStage3::SLdrEmperorIngStage3() : editorProperties(), patterned(), actorInformation(), data() {
+inline SLdrEmperorIngStage3::SLdrEmperorIngStage3()
+: editorProperties(), patterned(), actorInformation(), data() {
   patterned.creatureSize = 2;
 }
 

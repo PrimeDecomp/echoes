@@ -14,37 +14,57 @@ struct SLdrSafeZoneCrystal {
   ~SLdrSafeZoneCrystal();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrActorParameters actorParameters; // 0xd29c031d
-  CAssetId scannableInfoCollapsed; // 0x9b8b3323
-  CAssetId scannableInfoEntangled; // 0xe36e20a7
-  CAssetId scannableInfoLight; // 0xac794da8
-  CAssetId scannableInfoAnnihilator; // 0xc21f264f
-  int safezoneType; // 0x1115fb68
-  bool initiallyEntangled; // 0xa0d9e87f
-  CAssetId collapsedEffect; // 0x42a046c2
-  CAssetId expandedEffect; // 0x5b91ff38
-  CAssetId entangledEffect; // 0x5b8275bc
-  CAssetId hurtfulEffect; // 0xadacec90
-  CAssetId echoEffect; // 0x0d2e4ad3
-  CAssetId normalCrystal; // 0x71efffc4
-  CAssetId entangledCrystal; // 0xc3dd9b75
-  CAssetId hurtfulCrystal; // 0xf1f3d90f
-  CAssetId echoCrystal; // 0x1e864b83
-  float maxTimeExpanded; // 0xbd30f7a3
-  float maxTimeEntangled; // 0xa7bdc4f8
-  float unknown_0xf0a45c32; // 0xf0a45c32
-  float unknown_0xd8116003; // 0xd8116003
-  float unknown_0x415046ed; // 0x415046ed
-  float unknown_0xec9c01b2; // 0xec9c01b2
-  float powerBeamHP; // 0x545540e5
-  CAssetId powerBeamRefreshEffect; // 0x5490e214
-  CVector3f hitRadius; // 0x887e8a8b
-  CVector3f hitOffset; // 0xb7f5646d
-  CVector3f effectOffset; // 0x41b72b2c
-  SLdrSpline unknown_0xbbbee60b; // 0xbbbee60b
+  SLdrActorParameters actorParameters;   // 0xd29c031d
+  CAssetId scannableInfoCollapsed;       // 0x9b8b3323
+  CAssetId scannableInfoEntangled;       // 0xe36e20a7
+  CAssetId scannableInfoLight;           // 0xac794da8
+  CAssetId scannableInfoAnnihilator;     // 0xc21f264f
+  int safezoneType;                      // 0x1115fb68
+  bool initiallyEntangled;               // 0xa0d9e87f
+  CAssetId collapsedEffect;              // 0x42a046c2
+  CAssetId expandedEffect;               // 0x5b91ff38
+  CAssetId entangledEffect;              // 0x5b8275bc
+  CAssetId hurtfulEffect;                // 0xadacec90
+  CAssetId echoEffect;                   // 0x0d2e4ad3
+  CAssetId normalCrystal;                // 0x71efffc4
+  CAssetId entangledCrystal;             // 0xc3dd9b75
+  CAssetId hurtfulCrystal;               // 0xf1f3d90f
+  CAssetId echoCrystal;                  // 0x1e864b83
+  float maxTimeExpanded;                 // 0xbd30f7a3
+  float maxTimeEntangled;                // 0xa7bdc4f8
+  float unknown_0xf0a45c32;              // 0xf0a45c32
+  float unknown_0xd8116003;              // 0xd8116003
+  float unknown_0x415046ed;              // 0x415046ed
+  float unknown_0xec9c01b2;              // 0xec9c01b2
+  float powerBeamHP;                     // 0x545540e5
+  CAssetId powerBeamRefreshEffect;       // 0x5490e214
+  CVector3f hitRadius;                   // 0x887e8a8b
+  CVector3f hitOffset;                   // 0xb7f5646d
+  CVector3f effectOffset;                // 0x41b72b2c
+  SLdrSpline unknown_0xbbbee60b;         // 0xbbbee60b
 };
 
-inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal() : editorProperties(), actorParameters(), scannableInfoCollapsed(kInvalidAssetId), scannableInfoEntangled(kInvalidAssetId), scannableInfoLight(kInvalidAssetId), scannableInfoAnnihilator(kInvalidAssetId), collapsedEffect(kInvalidAssetId), expandedEffect(kInvalidAssetId), entangledEffect(kInvalidAssetId), hurtfulEffect(kInvalidAssetId), echoEffect(kInvalidAssetId), normalCrystal(kInvalidAssetId), entangledCrystal(kInvalidAssetId), hurtfulCrystal(kInvalidAssetId), echoCrystal(kInvalidAssetId), powerBeamRefreshEffect(kInvalidAssetId), hitRadius(CVector3f::Zero()), hitOffset(CVector3f::Zero()), effectOffset(CVector3f::Zero()), unknown_0xbbbee60b() {
+inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal()
+: editorProperties()
+, actorParameters()
+, scannableInfoCollapsed(kInvalidAssetId)
+, scannableInfoEntangled(kInvalidAssetId)
+, scannableInfoLight(kInvalidAssetId)
+, scannableInfoAnnihilator(kInvalidAssetId)
+, collapsedEffect(kInvalidAssetId)
+, expandedEffect(kInvalidAssetId)
+, entangledEffect(kInvalidAssetId)
+, hurtfulEffect(kInvalidAssetId)
+, echoEffect(kInvalidAssetId)
+, normalCrystal(kInvalidAssetId)
+, entangledCrystal(kInvalidAssetId)
+, hurtfulCrystal(kInvalidAssetId)
+, echoCrystal(kInvalidAssetId)
+, powerBeamRefreshEffect(kInvalidAssetId)
+, hitRadius(CVector3f::Zero())
+, hitOffset(CVector3f::Zero())
+, effectOffset(CVector3f::Zero())
+, unknown_0xbbbee60b() {
   safezoneType = 0;
   initiallyEntangled = false;
   maxTimeExpanded = 5.0f;

@@ -122,7 +122,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x417f4a91: {
-    sldrThis.unknown_0x417f4a91 = input.ReadFloat();
+    sldrThis.bounciness = input.ReadFloat();
     break;
   }
   case 0xdeff74ea: {

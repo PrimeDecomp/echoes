@@ -26,7 +26,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x417f4a91: {
-    sldrThis.unknown_0x417f4a91 = input.ReadFloat();
+    sldrThis.bounciness = input.ReadFloat();
     break;
   }
   case 0xb02de555: {
@@ -62,7 +62,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x4edb1d0e: {
-    sldrThis.unknown_0x4edb1d0e = input.ReadBool();
+    sldrThis.doNotDeleteAttachedObject = input.ReadBool();
     break;
   }
   default:

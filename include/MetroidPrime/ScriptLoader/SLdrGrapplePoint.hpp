@@ -11,11 +11,10 @@ struct SLdrGrapplePoint {
   ~SLdrGrapplePoint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrGrappleParameters grappleInfo; // 0x6a2872d8
+  SLdrGrappleParameters grappleInfo;     // 0x6a2872d8
 };
 
-inline SLdrGrapplePoint::SLdrGrapplePoint() : editorProperties(), grappleInfo() {
-}
+inline SLdrGrapplePoint::SLdrGrapplePoint() : editorProperties(), grappleInfo() {}
 
 inline SLdrGrapplePoint::~SLdrGrapplePoint() {}
 

@@ -14,56 +14,63 @@ struct SLdrGunTurretBase {
   ~SLdrGunTurretBase();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrDamageInfo attackDamage; // 0x66dcaacb
-  float hurtSleepDelay; // 0x9b5a4744
-  float gunAimTurnSpeed; // 0x30967020
-  float gunLockOnTurnSpeed; // 0xc80bc7c5
-  float minTimeBetweenAttacks; // 0x95e7a2c2
-  float maxTimeBetweenAttacks; // 0x76ba1c18
-  float minTimeBetweenShots; // 0x3eb2de35
-  float maxTimeBetweenShots; // 0xe50d8dd2
-  int minShotsInABurst; // 0x64d482d5
-  int maxShotsInABurst; // 0xc3e002ac
-  float maxPitchAngleUp; // 0x5ade66a9
-  float maxPitchAngleDown; // 0x8dd2c329
-  float unknown_0xfc036e93; // 0xfc036e93
-  float shotAngleVariance; // 0xd75f9cf2
-  float patrolDelay; // 0x013184c7
-  float withdrawDelay; // 0x5aea7978
-  float unknown_0x8a35b1ea; // 0x8a35b1ea
-  float unknown_0xd49bec5a; // 0xd49bec5a
-  float unknown_0x80ce481a; // 0x80ce481a
-  float attackDelay; // 0x1b67981a
-  float detectionHeightUp; // 0xa115a5d6
-  float detectionHeightDown; // 0x2718ced1
-  float attackLeashTime; // 0xb881b8b3
-  bool gunRespawns; // 0x32d6d325
-  bool unknown_0x5cf12e9a; // 0x5cf12e9a
-  bool unknown_0x479d8dc4; // 0x479d8dc4
-  bool isPirateTurret; // 0x701d65cd
-  CAssetId cRSC; // non-matching name, 0xa33d1c6d
-  CAssetId pirateProjectileEffect; // 0x2d1c5515
-  int alwaysFF; // non-matching name, 0x45b71390
-  int gFFireShotSound; // 0x23316032
-  int pirateFireShotSound; // 0xa3b39766
-  int lockOnSound; // 0x9674eff1
-  int gunPanSound; // 0x49880c24
-  int gFGunChargeSound; // 0xf57880ec
-  int pirateGunChargeSound; // 0x99fe97f6
-  int gunLowerLoopedSound; // 0xa2714856
-  int gunLowerOffSound; // 0xd58a2fa7
-  int gunRaiseLoopedSound; // 0xb381355a
-  int gunRaiseOffSound; // 0x00628c84
-  int pirateGunDeathLowerLoopedSound; // 0x40533b8d
-  int gFGunDeathLowerLoopedSound; // 0x613cafd8
-  int poleSparksSound; // 0x20c03692
-  float maxAudibleDistance; // 0x214e48a0
-  float soundFallOff; // 0xd2986c43
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrDamageInfo attackDamage;           // 0x66dcaacb
+  float hurtSleepDelay;                  // 0x9b5a4744
+  float gunAimTurnSpeed;                 // 0x30967020
+  float gunLockOnTurnSpeed;              // 0xc80bc7c5
+  float minTimeBetweenAttacks;           // 0x95e7a2c2
+  float maxTimeBetweenAttacks;           // 0x76ba1c18
+  float minTimeBetweenShots;             // 0x3eb2de35
+  float maxTimeBetweenShots;             // 0xe50d8dd2
+  int minShotsInABurst;                  // 0x64d482d5
+  int maxShotsInABurst;                  // 0xc3e002ac
+  float maxPitchAngleUp;                 // 0x5ade66a9
+  float maxPitchAngleDown;               // 0x8dd2c329
+  float unknown_0xfc036e93;              // 0xfc036e93
+  float shotAngleVariance;               // 0xd75f9cf2
+  float patrolDelay;                     // 0x013184c7
+  float withdrawDelay;                   // 0x5aea7978
+  float unknown_0x8a35b1ea;              // 0x8a35b1ea
+  float unknown_0xd49bec5a;              // 0xd49bec5a
+  float unknown_0x80ce481a;              // 0x80ce481a
+  float attackDelay;                     // 0x1b67981a
+  float detectionHeightUp;               // 0xa115a5d6
+  float detectionHeightDown;             // 0x2718ced1
+  float attackLeashTime;                 // 0xb881b8b3
+  bool gunRespawns;                      // 0x32d6d325
+  bool unknown_0x5cf12e9a;               // 0x5cf12e9a
+  bool unknown_0x479d8dc4;               // 0x479d8dc4
+  bool isPirateTurret;                   // 0x701d65cd
+  CAssetId cRSC;                         // non-matching name, 0xa33d1c6d
+  CAssetId pirateProjectileEffect;       // 0x2d1c5515
+  int alwaysFF;                          // non-matching name, 0x45b71390
+  int gFFireShotSound;                   // 0x23316032
+  int pirateFireShotSound;               // 0xa3b39766
+  int lockOnSound;                       // 0x9674eff1
+  int gunPanSound;                       // 0x49880c24
+  int gFGunChargeSound;                  // 0xf57880ec
+  int pirateGunChargeSound;              // 0x99fe97f6
+  int gunLowerLoopedSound;               // 0xa2714856
+  int gunLowerOffSound;                  // 0xd58a2fa7
+  int gunRaiseLoopedSound;               // 0xb381355a
+  int gunRaiseOffSound;                  // 0x00628c84
+  int pirateGunDeathLowerLoopedSound;    // 0x40533b8d
+  int gFGunDeathLowerLoopedSound;        // 0x613cafd8
+  int poleSparksSound;                   // 0x20c03692
+  float maxAudibleDistance;              // 0x214e48a0
+  float soundFallOff;                    // 0xd2986c43
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
 };
 
-inline SLdrGunTurretBase::SLdrGunTurretBase() : editorProperties(), attackDamage(), cRSC(kInvalidAssetId), pirateProjectileEffect(kInvalidAssetId), alwaysFF(-1), patterned(), actorInformation() {
+inline SLdrGunTurretBase::SLdrGunTurretBase()
+: editorProperties()
+, attackDamage()
+, cRSC(kInvalidAssetId)
+, pirateProjectileEffect(kInvalidAssetId)
+, alwaysFF(-1)
+, patterned()
+, actorInformation() {
   attackDamage.dI_WeaponType = 11;
   attackDamage.dI_Damage = 5.0f;
   hurtSleepDelay = 2.0f;

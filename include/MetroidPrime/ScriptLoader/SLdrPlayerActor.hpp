@@ -16,23 +16,31 @@ struct SLdrPlayerActor {
   ~SLdrPlayerActor();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionBox; // 0xf344c0b0
-  CVector3f collisionOffset; // 0x2e686c2a
-  float mass; // 0x75dbb375
-  float gravity; // 0x2f2ae3e5
-  SLdrHealthInfo health; // 0xcf90d15e
+  CVector3f collisionBox;                // 0xf344c0b0
+  CVector3f collisionOffset;             // 0x2e686c2a
+  float mass;                            // 0x75dbb375
+  float gravity;                         // 0x2f2ae3e5
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  CAssetId noModel; // 0x405e5286
+  CAssetId noModel;                      // 0x405e5286
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  bool isLoop; // 0xc08d1b93
-  bool immovable; // 0x1e32523e
-  bool isSolid; // 0x1d8dd846
-  uint flagsPlayerActor; // 0x33507998
-  int renderGunOverride; // 0xb6832840
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  bool isLoop;                           // 0xc08d1b93
+  bool immovable;                        // 0x1e32523e
+  bool isSolid;                          // 0x1d8dd846
+  uint flagsPlayerActor;                 // 0x33507998
+  int renderGunOverride;                 // 0xb6832840
 };
 
-inline SLdrPlayerActor::SLdrPlayerActor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), noModel(kInvalidAssetId), animationInformation(), actorInformation() {
+inline SLdrPlayerActor::SLdrPlayerActor()
+: editorProperties()
+, collisionBox(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, health()
+, vulnerability()
+, noModel(kInvalidAssetId)
+, animationInformation()
+, actorInformation() {
   mass = 1.0f;
   gravity = 0.0f;
   isLoop = true;

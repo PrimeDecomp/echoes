@@ -10,12 +10,10 @@ struct SLdrSpiderBallWaypoint {
   ~SLdrSpiderBallWaypoint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int flags; // 0x5d817483
+  int flags;                             // 0x5d817483
 };
 
-inline SLdrSpiderBallWaypoint::SLdrSpiderBallWaypoint() : editorProperties() {
-  flags = 0;
-}
+inline SLdrSpiderBallWaypoint::SLdrSpiderBallWaypoint() : editorProperties() { flags = 0; }
 
 inline SLdrSpiderBallWaypoint::~SLdrSpiderBallWaypoint() {}
 

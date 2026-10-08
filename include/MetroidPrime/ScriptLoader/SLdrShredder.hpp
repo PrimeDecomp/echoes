@@ -12,20 +12,20 @@ struct SLdrShredderData {
   SLdrShredderData();
   ~SLdrShredderData();
 
-  int startState; // 0x46d866d1
+  int startState;                 // 0x46d866d1
   SLdrDamageInfo explosionDamage; // 0xdeff74ea
-  float minHeight; // 0xc6c4232c
-  float maxHeight; // 0x7fe2b85d
-  float minDownHeight; // 0x10be8ad3
-  float maxDownHeight; // 0x43189237
-  float separationDistance; // 0x01559f27
-  float minLifeTime; // 0x07dcd404
-  float maxLifeTime; // 0x56256f59
-  float normalKnockback; // 0x3061976c
-  float heavyKnockback; // 0x93a80aa2
-  float knockbackDecline; // 0x4c6b2421
-  bool isDarkShredder; // 0xcff9971b
-  float desiredDistance; // 0x60be35a1
+  float minHeight;                // 0xc6c4232c
+  float maxHeight;                // 0x7fe2b85d
+  float minDownHeight;            // 0x10be8ad3
+  float maxDownHeight;            // 0x43189237
+  float separationDistance;       // 0x01559f27
+  float minLifeTime;              // 0x07dcd404
+  float maxLifeTime;              // 0x56256f59
+  float normalKnockback;          // 0x3061976c
+  float heavyKnockback;           // 0x93a80aa2
+  float knockbackDecline;         // 0x4c6b2421
+  bool isDarkShredder;            // 0xcff9971b
+  float desiredDistance;          // 0x60be35a1
 };
 
 inline SLdrShredderData::SLdrShredderData() : explosionDamage() {
@@ -120,9 +120,9 @@ struct SLdrShredder {
   ~SLdrShredder();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrShredderData data; // 0xab24a926
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrShredderData data;                 // 0xab24a926
 };
 
 inline SLdrShredder::SLdrShredder() : editorProperties(), patterned(), actorInformation(), data() {

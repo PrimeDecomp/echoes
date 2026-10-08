@@ -14,18 +14,23 @@ struct SLdrPortalTransition {
 
   SLdrEditorProperties editorProperties; // 0x255a4580
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  CVector3f playerScale; // 0xe56ba365
-  int volume; // 0x80c66c37
-  int pan; // 0xd6088bc5
-  CAssetId portalSoundGroupCommon; // 0xe08e2172
-  CAssetId portalSoundGroupDirectional; // 0xb3e6c4e3
-  int startPortal; // 0x508520e1
-  int inPortal1; // 0x34c7c1cc
-  int inPortal2; // 0xb253b362
-  int direction; // 0x4406dc02
+  CVector3f playerScale;                 // 0xe56ba365
+  int volume;                            // 0x80c66c37
+  int pan;                               // 0xd6088bc5
+  CAssetId portalSoundGroupCommon;       // 0xe08e2172
+  CAssetId portalSoundGroupDirectional;  // 0xb3e6c4e3
+  int startPortal;                       // 0x508520e1
+  int inPortal1;                         // 0x34c7c1cc
+  int inPortal2;                         // 0xb253b362
+  int direction;                         // 0x4406dc02
 };
 
-inline SLdrPortalTransition::SLdrPortalTransition() : editorProperties(), animationInformation(), playerScale(CVector3f::Zero()), portalSoundGroupCommon(kInvalidAssetId), portalSoundGroupDirectional(kInvalidAssetId) {
+inline SLdrPortalTransition::SLdrPortalTransition()
+: editorProperties()
+, animationInformation()
+, playerScale(CVector3f::Zero())
+, portalSoundGroupCommon(kInvalidAssetId)
+, portalSoundGroupDirectional(kInvalidAssetId) {
   playerScale = CVector3f(1.0f, 1.0f, 1.0f);
   volume = 127;
   pan = 64;

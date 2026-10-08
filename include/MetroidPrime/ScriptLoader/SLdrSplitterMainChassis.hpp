@@ -14,36 +14,37 @@ struct SLdrSplitterMainChassisData {
   SLdrSplitterMainChassisData();
   ~SLdrSplitterMainChassisData();
 
-  int unknown_0xcef5c2fe; // 0xcef5c2fe
-  float legStabAttackInterval; // 0xa8fddba0
-  float legStabMinAttackRange; // 0xf6047d40
-  float legStabMaxAttackRange; // 0x5130fd39
-  SLdrDamageInfo legStabDamage; // 0xefacfa50
-  float minDodgeInterval; // 0x99a55939
-  float dodgeChance; // 0x47be3298
-  float deploymentSpeed; // 0xeead6b4d
-  float scanDuration; // 0xf84d8fda
-  float laserSweepInterval; // 0x0fba492b
-  float laserSweepMinAttackRange; // 0xb3ea58f8
-  float laserSweepMaxAttackRange; // 0x14ded881
-  float spinAttackLinearVelocity; // 0x35eedd1c
-  float spinAttackLinearAcceleration; // 0x2dde6bfb
-  float spinAttackLinearDeceleration; // 0x8ae1ee93
-  float spinAttackTurnSpeed; // 0x5027d1aa
-  float spinAttackInterval; // 0xd8940662
-  float spinAttackIntervalPenalty; // 0xf65e430f
-  float spinAttackTelegraphTime; // 0x43722555
-  float spinAttackMinAttackRange; // 0x8935377c
-  float spinAttackMaxAttackRange; // 0x2e01b705
-  int unknown_0xd5f34476; // 0xd5f34476
-  float spinAttackMaxTime; // 0x21296bdc
-  SLdrDamageInfo spinAttackDamage; // 0xcfacff53
-  int sound_Alerted; // 0xa61c2a66
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  int unknown_0xcef5c2fe;                          // 0xcef5c2fe
+  float legStabAttackInterval;                     // 0xa8fddba0
+  float legStabMinAttackRange;                     // 0xf6047d40
+  float legStabMaxAttackRange;                     // 0x5130fd39
+  SLdrDamageInfo legStabDamage;                    // 0xefacfa50
+  float minDodgeInterval;                          // 0x99a55939
+  float dodgeChance;                               // 0x47be3298
+  float deploymentSpeed;                           // 0xeead6b4d
+  float scanDuration;                              // 0xf84d8fda
+  float laserSweepInterval;                        // 0x0fba492b
+  float laserSweepMinAttackRange;                  // 0xb3ea58f8
+  float laserSweepMaxAttackRange;                  // 0x14ded881
+  float spinAttackLinearVelocity;                  // 0x35eedd1c
+  float spinAttackLinearAcceleration;              // 0x2dde6bfb
+  float spinAttackLinearDeceleration;              // 0x8ae1ee93
+  float spinAttackTurnSpeed;                       // 0x5027d1aa
+  float spinAttackInterval;                        // 0xd8940662
+  float spinAttackIntervalPenalty;                 // 0xf65e430f
+  float spinAttackTelegraphTime;                   // 0x43722555
+  float spinAttackMinAttackRange;                  // 0x8935377c
+  float spinAttackMaxAttackRange;                  // 0x2e01b705
+  int unknown_0xd5f34476;                          // 0xd5f34476
+  float spinAttackMaxTime;                         // 0x21296bdc
+  SLdrDamageInfo spinAttackDamage;                 // 0xcfacff53
+  int sound_Alerted;                               // 0xa61c2a66
+  SLdrIngPossessionData ingPossessionData;         // 0xe61748ed
   SLdrDamageVulnerability spinAttackVulnerability; // 0x24e23cc5
 };
 
-inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData() : legStabDamage(), spinAttackDamage(), ingPossessionData(), spinAttackVulnerability() {
+inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData()
+: legStabDamage(), spinAttackDamage(), ingPossessionData(), spinAttackVulnerability() {
   unknown_0xcef5c2fe = 124;
   legStabAttackInterval = 2.0f;
   legStabMinAttackRange = 2.5f;
@@ -77,7 +78,8 @@ inline SLdrSplitterMainChassisData::SLdrSplitterMainChassisData() : legStabDamag
 
 inline SLdrSplitterMainChassisData::~SLdrSplitterMainChassisData() {}
 
-inline void LoadTypedefSplitterMainChassisData(SLdrSplitterMainChassisData& sldrThis, CInputStream& input) {
+inline void LoadTypedefSplitterMainChassisData(SLdrSplitterMainChassisData& sldrThis,
+                                               CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -202,13 +204,14 @@ struct SLdrSplitterMainChassis {
   SLdrSplitterMainChassis();
   ~SLdrSplitterMainChassis();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;               // 0x255a4580
+  SLdrPatternedAITypedef patterned;                    // 0xb3774750
+  SLdrActorParameters actorInformation;                // 0x7e397fed
   SLdrSplitterMainChassisData splitterMainChassisData; // non-matching name, 0x15e03a2f
 };
 
-inline SLdrSplitterMainChassis::SLdrSplitterMainChassis() : editorProperties(), patterned(), actorInformation(), splitterMainChassisData() {
+inline SLdrSplitterMainChassis::SLdrSplitterMainChassis()
+: editorProperties(), patterned(), actorInformation(), splitterMainChassisData() {
   patterned.turnSpeed = 60.0f;
   patterned.minAttackRange = 12.0f;
   patterned.maxAttackRange = 37.0f;

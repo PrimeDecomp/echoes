@@ -12,12 +12,12 @@ struct SLdrTryclops {
   ~SLdrTryclops();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float attractForce; // 0xb13fc578
-  float attractAngle; // 0x868b85e4
-  float attractDistance; // 0x47c6bb1d
-  float shotForce; // 0x26087d23
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float attractForce;                    // 0xb13fc578
+  float attractAngle;                    // 0x868b85e4
+  float attractDistance;                 // 0x47c6bb1d
+  float shotForce;                       // 0x26087d23
 };
 
 inline SLdrTryclops::SLdrTryclops() : editorProperties(), patterned(), actorInformation() {

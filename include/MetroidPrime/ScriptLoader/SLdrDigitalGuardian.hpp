@@ -17,61 +17,92 @@ struct SLdrDigitalGuardianData {
   SLdrDigitalGuardianData();
   ~SLdrDigitalGuardianData();
 
-  CAssetId scannableInfoCrippled; // 0x2aa63fc4
-  float nearLegStabRange; // 0x0faf6a8e
-  float farLegStabRange; // 0xd3056808
-  float minLegStabAttackTime; // 0x304b47ee
-  SLdrDamageInfo legStabDamage; // 0xefacfa50
-  float toeTargetHP; // 0xb4561f28
-  CAssetId toeTargetModel; // 0xbb06dd83
-  CAssetId toeTargetExplosion; // 0x783635a6
-  SLdrAudioPlaybackParms sound_ToeTarget; // 0x13845a66
-  SLdrAudioPlaybackParms sound_ToeTargetAttack; // 0xa305dcba
-  SLdrAudioPlaybackParms sound_ToeTargetExplosion; // 0xc6ec1630
-  SLdrAudioPlaybackParms sound_ToeTargetHit; // 0x98419eac
-  SLdrAudioPlaybackParms sound_ShockWave; // 0x4691c9ab
-  SLdrShockWaveInfo shockWaveInfo; // 0x8f4787cb
-  float vortexAttackDuration; // 0x76527e01
-  float vortexAttractionForce; // 0xd210dfdb
-  float maxVortexAttractionDistance; // 0x348bff02
-  float vortexLinearVelocity; // 0x84fef16f
-  float vortexLinearAcceleration; // 0x93a74a46
-  SLdrDamageInfo vortexDamage; // 0x5ca612aa
-  int unknown_0xfb5263e8; // 0xfb5263e8
-  int unknown_0x6aaf33e3; // 0x6aaf33e3
-  float unknown_0x4f5d725c; // 0x4f5d725c
-  SLdrAudioPlaybackParms sound_VortexFlash; // 0x7bfab420
-  CAssetId legModel; // 0xc0a86488
-  CAssetId shinArmor; // 0x8ddd85ca
-  float kneeArmorHP; // 0xe3dd61e6
-  SLdrAudioPlaybackParms sound_KneeArmorHit; // 0x91d2a042
-  SLdrAudioPlaybackParms sound_KneeVulnerable; // 0x9386d22b
-  CAssetId kneeArmor; // 0x5ef8b288
-  SLdrEchoParameters kneeEchoParameters; // 0x7b5b7312
-  float unknown_0xa324e26c; // 0xa324e26c
-  float unknown_0x6a754ebd; // 0x6a754ebd
-  float jumpTimer; // 0xc9fc9977
-  float unknown_0x8106cda9; // 0x8106cda9
-  float unknown_0x9e1b8105; // 0x9e1b8105
-  float unknown_0xa08fcc70; // 0xa08fcc70
-  float unknown_0x3254a16b; // 0x3254a16b
-  CAssetId transmissionBeacon; // 0x5796a143
-  CAssetId transmissionBeaconFx; // 0x3fa7df1c
+  CAssetId scannableInfoCrippled;                      // 0x2aa63fc4
+  float nearLegStabRange;                              // 0x0faf6a8e
+  float farLegStabRange;                               // 0xd3056808
+  float minLegStabAttackTime;                          // 0x304b47ee
+  SLdrDamageInfo legStabDamage;                        // 0xefacfa50
+  float toeTargetHP;                                   // 0xb4561f28
+  CAssetId toeTargetModel;                             // 0xbb06dd83
+  CAssetId toeTargetExplosion;                         // 0x783635a6
+  SLdrAudioPlaybackParms sound_ToeTarget;              // 0x13845a66
+  SLdrAudioPlaybackParms sound_ToeTargetAttack;        // 0xa305dcba
+  SLdrAudioPlaybackParms sound_ToeTargetExplosion;     // 0xc6ec1630
+  SLdrAudioPlaybackParms sound_ToeTargetHit;           // 0x98419eac
+  SLdrAudioPlaybackParms sound_ShockWave;              // 0x4691c9ab
+  SLdrShockWaveInfo shockWaveInfo;                     // 0x8f4787cb
+  float vortexAttackDuration;                          // 0x76527e01
+  float vortexAttractionForce;                         // 0xd210dfdb
+  float maxVortexAttractionDistance;                   // 0x348bff02
+  float vortexLinearVelocity;                          // 0x84fef16f
+  float vortexLinearAcceleration;                      // 0x93a74a46
+  SLdrDamageInfo vortexDamage;                         // 0x5ca612aa
+  int unknown_0xfb5263e8;                              // 0xfb5263e8
+  int unknown_0x6aaf33e3;                              // 0x6aaf33e3
+  float unknown_0x4f5d725c;                            // 0x4f5d725c
+  SLdrAudioPlaybackParms sound_VortexFlash;            // 0x7bfab420
+  CAssetId legModel;                                   // 0xc0a86488
+  CAssetId shinArmor;                                  // 0x8ddd85ca
+  float kneeArmorHP;                                   // 0xe3dd61e6
+  SLdrAudioPlaybackParms sound_KneeArmorHit;           // 0x91d2a042
+  SLdrAudioPlaybackParms sound_KneeVulnerable;         // 0x9386d22b
+  CAssetId kneeArmor;                                  // 0x5ef8b288
+  SLdrEchoParameters kneeEchoParameters;               // 0x7b5b7312
+  float unknown_0xa324e26c;                            // 0xa324e26c
+  float unknown_0x6a754ebd;                            // 0x6a754ebd
+  float jumpTimer;                                     // 0xc9fc9977
+  float unknown_0x8106cda9;                            // 0x8106cda9
+  float unknown_0x9e1b8105;                            // 0x9e1b8105
+  float unknown_0xa08fcc70;                            // 0xa08fcc70
+  float unknown_0x3254a16b;                            // 0x3254a16b
+  CAssetId transmissionBeacon;                         // 0x5796a143
+  CAssetId transmissionBeaconFx;                       // 0x3fa7df1c
   SLdrEchoParameters transmissionBeaconEchoParameters; // 0x021b6f9d
-  SLdrAudioPlaybackParms sound_TransmissionBeacon; // 0x55a8011c
-  SLdrAudioPlaybackParms sound_BeaconExtract; // 0x7ae73fb3
-  SLdrAudioPlaybackParms sound_BeaconRetract; // 0xa9e55c8e
-  float transmissionBeaconHP; // 0x4f6d27d3
-  CAssetId transmissionBeaconExplosion; // 0x71f0c674
-  CAssetId transmissionBeaconEchoHit; // 0xc8ec315b
-  SLdrAudioPlaybackParms sound_BeaconExplode; // 0xeed5b990
-  SLdrAudioPlaybackParms sound_BeaconHit; // 0x535f6fec
-  SLdrDamageVulnerability kneeVulnerability; // 0x6dbad233
-  SLdrDamageVulnerability vortexVulnerability; // 0xf1259e3a
-  SLdrDamageVulnerability toeTargetVulnerability; // 0xf14f3237
+  SLdrAudioPlaybackParms sound_TransmissionBeacon;     // 0x55a8011c
+  SLdrAudioPlaybackParms sound_BeaconExtract;          // 0x7ae73fb3
+  SLdrAudioPlaybackParms sound_BeaconRetract;          // 0xa9e55c8e
+  float transmissionBeaconHP;                          // 0x4f6d27d3
+  CAssetId transmissionBeaconExplosion;                // 0x71f0c674
+  CAssetId transmissionBeaconEchoHit;                  // 0xc8ec315b
+  SLdrAudioPlaybackParms sound_BeaconExplode;          // 0xeed5b990
+  SLdrAudioPlaybackParms sound_BeaconHit;              // 0x535f6fec
+  SLdrDamageVulnerability kneeVulnerability;           // 0x6dbad233
+  SLdrDamageVulnerability vortexVulnerability;         // 0xf1259e3a
+  SLdrDamageVulnerability toeTargetVulnerability;      // 0xf14f3237
 };
 
-inline SLdrDigitalGuardianData::SLdrDigitalGuardianData() : scannableInfoCrippled(kInvalidAssetId), legStabDamage(), toeTargetModel(kInvalidAssetId), toeTargetExplosion(kInvalidAssetId), sound_ToeTarget(), sound_ToeTargetAttack(), sound_ToeTargetExplosion(), sound_ToeTargetHit(), sound_ShockWave(), shockWaveInfo(), vortexDamage(), sound_VortexFlash(), legModel(kInvalidAssetId), shinArmor(kInvalidAssetId), sound_KneeArmorHit(), sound_KneeVulnerable(), kneeArmor(kInvalidAssetId), kneeEchoParameters(), transmissionBeacon(kInvalidAssetId), transmissionBeaconFx(kInvalidAssetId), transmissionBeaconEchoParameters(), sound_TransmissionBeacon(), sound_BeaconExtract(), sound_BeaconRetract(), transmissionBeaconExplosion(kInvalidAssetId), transmissionBeaconEchoHit(kInvalidAssetId), sound_BeaconExplode(), sound_BeaconHit(), kneeVulnerability(), vortexVulnerability(), toeTargetVulnerability() {
+inline SLdrDigitalGuardianData::SLdrDigitalGuardianData()
+: scannableInfoCrippled(kInvalidAssetId)
+, legStabDamage()
+, toeTargetModel(kInvalidAssetId)
+, toeTargetExplosion(kInvalidAssetId)
+, sound_ToeTarget()
+, sound_ToeTargetAttack()
+, sound_ToeTargetExplosion()
+, sound_ToeTargetHit()
+, sound_ShockWave()
+, shockWaveInfo()
+, vortexDamage()
+, sound_VortexFlash()
+, legModel(kInvalidAssetId)
+, shinArmor(kInvalidAssetId)
+, sound_KneeArmorHit()
+, sound_KneeVulnerable()
+, kneeArmor(kInvalidAssetId)
+, kneeEchoParameters()
+, transmissionBeacon(kInvalidAssetId)
+, transmissionBeaconFx(kInvalidAssetId)
+, transmissionBeaconEchoParameters()
+, sound_TransmissionBeacon()
+, sound_BeaconExtract()
+, sound_BeaconRetract()
+, transmissionBeaconExplosion(kInvalidAssetId)
+, transmissionBeaconEchoHit(kInvalidAssetId)
+, sound_BeaconExplode()
+, sound_BeaconHit()
+, kneeVulnerability()
+, vortexVulnerability()
+, toeTargetVulnerability() {
   nearLegStabRange = 10.0f;
   farLegStabRange = 17.0f;
   minLegStabAttackTime = 5.0f;
@@ -328,13 +359,14 @@ struct SLdrDigitalGuardian {
   SLdrDigitalGuardian();
   ~SLdrDigitalGuardian();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;             // 0x255a4580
+  SLdrPatternedAITypedef patterned;                  // 0xb3774750
+  SLdrActorParameters actorInformation;              // 0x7e397fed
   SLdrDigitalGuardianData digitalGuardianProperties; // 0xc55918cc
 };
 
-inline SLdrDigitalGuardian::SLdrDigitalGuardian() : editorProperties(), patterned(), actorInformation(), digitalGuardianProperties() {
+inline SLdrDigitalGuardian::SLdrDigitalGuardian()
+: editorProperties(), patterned(), actorInformation(), digitalGuardianProperties() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

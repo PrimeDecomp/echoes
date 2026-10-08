@@ -11,23 +11,32 @@ struct SLdrRiftPortal {
   SLdrRiftPortal();
   ~SLdrRiftPortal();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId model; // 0xc27ffa8f
-  SLdrAnimationSet animationInformation; // 0xe25fb08c
-  CAssetId backgroundModel; // 0x90c42387
-  SLdrAnimationSet backgroundAnimation; // 0x80c6a38d
-  CAssetId incandescentModel; // 0xa71696b0
+  SLdrEditorProperties editorProperties;  // 0x255a4580
+  CAssetId model;                         // 0xc27ffa8f
+  SLdrAnimationSet animationInformation;  // 0xe25fb08c
+  CAssetId backgroundModel;               // 0x90c42387
+  SLdrAnimationSet backgroundAnimation;   // 0x80c6a38d
+  CAssetId incandescentModel;             // 0xa71696b0
   SLdrAnimationSet incandescentAnimation; // 0x5cb18eb4
-  CAssetId lineModel; // 0xf284d838
-  SLdrAnimationSet lineAnimation; // 0xe845fa67
-  bool ripPortal; // 0xf5b73af8
-  int projectileAttraction; // 0x87d5a35f
-  float projectileBoxWidth; // 0x709c1413
-  float projectileAngle; // 0x3b692a03
-  float projectileDestructionRadius; // 0xe1e5551f
+  CAssetId lineModel;                     // 0xf284d838
+  SLdrAnimationSet lineAnimation;         // 0xe845fa67
+  bool ripPortal;                         // 0xf5b73af8
+  int projectileAttraction;               // 0x87d5a35f
+  float projectileBoxWidth;               // 0x709c1413
+  float projectileAngle;                  // 0x3b692a03
+  float projectileDestructionRadius;      // 0xe1e5551f
 };
 
-inline SLdrRiftPortal::SLdrRiftPortal() : editorProperties(), model(kInvalidAssetId), animationInformation(), backgroundModel(kInvalidAssetId), backgroundAnimation(), incandescentModel(kInvalidAssetId), incandescentAnimation(), lineModel(kInvalidAssetId), lineAnimation() {
+inline SLdrRiftPortal::SLdrRiftPortal()
+: editorProperties()
+, model(kInvalidAssetId)
+, animationInformation()
+, backgroundModel(kInvalidAssetId)
+, backgroundAnimation()
+, incandescentModel(kInvalidAssetId)
+, incandescentAnimation()
+, lineModel(kInvalidAssetId)
+, lineAnimation() {
   ripPortal = false;
   projectileAttraction = 0;
   projectileBoxWidth = 10.0f;

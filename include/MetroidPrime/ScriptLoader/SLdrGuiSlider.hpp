@@ -10,14 +10,14 @@ struct SLdrGuiSlider {
   SLdrGuiSlider();
   ~SLdrGuiSlider();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
+  SLdrEditorProperties editorProperties;    // 0x255a4580
   SLdrGuiWidgetProperties widgetProperties; // 0x91cefa1e
-  float minValue; // 0x2ccbbdfe
-  float maxValue; // 0x6c84c588
-  float increment; // 0x8a68db52
-  float slideSpeed; // 0xedb6062b
-  int slideSound; // 0xd158734b
-  int slideSoundVolume; // 0x20ddb661
+  float minValue;                           // 0x2ccbbdfe
+  float maxValue;                           // 0x6c84c588
+  float increment;                          // 0x8a68db52
+  float slideSpeed;                         // 0xedb6062b
+  int slideSound;                           // 0xd158734b
+  int slideSoundVolume;                     // 0x20ddb661
 };
 
 inline SLdrGuiSlider::SLdrGuiSlider() : editorProperties(), widgetProperties() {

@@ -16,52 +16,71 @@ struct SLdrElitePirate {
   SLdrElitePirate();
   ~SLdrElitePirate();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrDamageInfo meleeDamage; // 0xc9416034
-  float maxMeleeRange; // 0x9873a1c1
-  float minShockwaveRange; // 0x28095ce6
-  float maxShockwaveRange; // 0x691e6360
-  float minRocketRange; // 0xe6299fac
-  float maxRocketRange; // 0x411d1fd5
-  float unknown_0x5236c2b6; // 0x5236c2b6
-  float unknown_0x01eaab17; // 0x01eaab17
-  CAssetId shieldedModel; // 0x00ae9c61
-  CAssetId shieldedSkinRules; // 0xacdae408
-  CAssetId darkShield; // 0xaa482d8d
-  int darkShieldSound; // 0xeeaf03c4
-  CAssetId darkShieldPop; // 0xaf4fae74
-  CAssetId lightShield; // 0x64a1f558
-  int lightShieldSound; // 0xbf107374
-  CAssetId lightShieldPop; // 0xb43a4caa
-  float tauntInterval; // 0x61c4c0ea
-  float tauntVariance; // 0xf82d1272
-  SLdrShockWaveInfo singleShockWaveInfo; // 0xb2ebbfc6
-  SLdrShockWaveInfo doubleShockWaveInfo; // 0x09250db2
-  float unknown_0x28b39197; // 0x28b39197
-  float unknown_0xe27de71b; // 0xe27de71b
-  float unknown_0x665e7ace; // 0x665e7ace
-  float unknown_0xacd4d06d; // 0xacd4d06d
-  CAssetId rocket; // 0xf199f553
-  SLdrDamageInfo rocketDamage; // 0x4063d45c
-  int unknown_0x624222f8; // 0x624222f8
-  int unknown_0x31e43a1c; // 0x31e43a1c
-  float repeatedAttackChance; // 0xd6469119
-  float energyAbsorbDuration; // 0x6d1425d8
-  float energyAbsorbVariance; // 0xe47334ae
-  float energyAttractionForce; // 0x3dad897b
-  int alwaysFF; // non-matching name, 0x06cf4324
-  int alwaysFF_0x23f5e1ee; // non-matching name, 0x23f5e1ee
+  SLdrEditorProperties editorProperties;       // 0x255a4580
+  SLdrPatternedAITypedef patterned;            // 0xb3774750
+  SLdrActorParameters actorInformation;        // 0x7e397fed
+  SLdrDamageInfo meleeDamage;                  // 0xc9416034
+  float maxMeleeRange;                         // 0x9873a1c1
+  float minShockwaveRange;                     // 0x28095ce6
+  float maxShockwaveRange;                     // 0x691e6360
+  float minRocketRange;                        // 0xe6299fac
+  float maxRocketRange;                        // 0x411d1fd5
+  float unknown_0x5236c2b6;                    // 0x5236c2b6
+  float unknown_0x01eaab17;                    // 0x01eaab17
+  CAssetId shieldedModel;                      // 0x00ae9c61
+  CAssetId shieldedSkinRules;                  // 0xacdae408
+  CAssetId darkShield;                         // 0xaa482d8d
+  int darkShieldSound;                         // 0xeeaf03c4
+  CAssetId darkShieldPop;                      // 0xaf4fae74
+  CAssetId lightShield;                        // 0x64a1f558
+  int lightShieldSound;                        // 0xbf107374
+  CAssetId lightShieldPop;                     // 0xb43a4caa
+  float tauntInterval;                         // 0x61c4c0ea
+  float tauntVariance;                         // 0xf82d1272
+  SLdrShockWaveInfo singleShockWaveInfo;       // 0xb2ebbfc6
+  SLdrShockWaveInfo doubleShockWaveInfo;       // 0x09250db2
+  float unknown_0x28b39197;                    // 0x28b39197
+  float unknown_0xe27de71b;                    // 0xe27de71b
+  float unknown_0x665e7ace;                    // 0x665e7ace
+  float unknown_0xacd4d06d;                    // 0xacd4d06d
+  CAssetId rocket;                             // 0xf199f553
+  SLdrDamageInfo rocketDamage;                 // 0x4063d45c
+  int unknown_0x624222f8;                      // 0x624222f8
+  int unknown_0x31e43a1c;                      // 0x31e43a1c
+  float repeatedAttackChance;                  // 0xd6469119
+  float energyAbsorbDuration;                  // 0x6d1425d8
+  float energyAbsorbVariance;                  // 0xe47334ae
+  float energyAttractionForce;                 // 0x3dad897b
+  int alwaysFF;                                // non-matching name, 0x06cf4324
+  int alwaysFF_0x23f5e1ee;                     // non-matching name, 0x23f5e1ee
   SLdrActorParameters rocketLauncherActorInfo; // 0x62c744cd
-  SLdrAnimationSet rocketLauncherAnimInfo; // 0xb92b481d
-  SLdrAnimationSet unknown_0x7e6e0d38; // 0x7e6e0d38
-  CAssetId visorElectricEffect; // 0xbd321538
-  int sound_VisorElectric; // 0x58a492ef
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  SLdrAnimationSet rocketLauncherAnimInfo;     // 0xb92b481d
+  SLdrAnimationSet unknown_0x7e6e0d38;         // 0x7e6e0d38
+  CAssetId visorElectricEffect;                // 0xbd321538
+  int sound_VisorElectric;                     // 0x58a492ef
+  SLdrIngPossessionData ingPossessionData;     // 0xe61748ed
 };
 
-inline SLdrElitePirate::SLdrElitePirate() : editorProperties(), patterned(), actorInformation(), meleeDamage(), shieldedModel(kInvalidAssetId), shieldedSkinRules(kInvalidAssetId), darkShield(kInvalidAssetId), darkShieldPop(kInvalidAssetId), lightShield(kInvalidAssetId), lightShieldPop(kInvalidAssetId), singleShockWaveInfo(), doubleShockWaveInfo(), rocket(kInvalidAssetId), rocketDamage(), rocketLauncherActorInfo(), rocketLauncherAnimInfo(), unknown_0x7e6e0d38(), visorElectricEffect(kInvalidAssetId), ingPossessionData() {
+inline SLdrElitePirate::SLdrElitePirate()
+: editorProperties()
+, patterned()
+, actorInformation()
+, meleeDamage()
+, shieldedModel(kInvalidAssetId)
+, shieldedSkinRules(kInvalidAssetId)
+, darkShield(kInvalidAssetId)
+, darkShieldPop(kInvalidAssetId)
+, lightShield(kInvalidAssetId)
+, lightShieldPop(kInvalidAssetId)
+, singleShockWaveInfo()
+, doubleShockWaveInfo()
+, rocket(kInvalidAssetId)
+, rocketDamage()
+, rocketLauncherActorInfo()
+, rocketLauncherAnimInfo()
+, unknown_0x7e6e0d38()
+, visorElectricEffect(kInvalidAssetId)
+, ingPossessionData() {
   patterned.minAttackRange = 6.0f;
   patterned.maxAttackRange = 11.0f;
   patterned.averageAttackTime = 3.5f;

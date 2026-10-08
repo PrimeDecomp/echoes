@@ -18,32 +18,44 @@ struct SLdrActor {
   ~SLdrActor();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionBox; // 0xf344c0b0
-  CVector3f collisionOffset; // 0x2e686c2a
-  float mass; // 0x75dbb375
-  float gravity; // 0x2f2ae3e5
-  SLdrHealthInfo health; // 0xcf90d15e
+  CVector3f collisionBox;                // 0xf344c0b0
+  CVector3f collisionOffset;             // 0x2e686c2a
+  float mass;                            // 0x75dbb375
+  float gravity;                         // 0x2f2ae3e5
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  CAssetId model; // 0xc27ffa8f
-  CAssetId collisionModel; // 0x0fc966dc
+  CAssetId model;                        // 0xc27ffa8f
+  CAssetId collisionModel;               // 0x0fc966dc
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrEchoParameters echoInformation; // 0x192b0e70
-  bool isLoop; // 0xc08d1b93
-  bool immovable; // 0x1e32523e
-  bool isSolid; // 0x1d8dd846
-  bool isCameraThrough; // 0x7859b520
-  bool isScanThrough; // 0x2affd6fe
-  int renderTextureSet; // 0x32fab97e
-  bool drawsShadow; // 0x97687446
-  bool scaleAnimation; // 0x261e92a4
-  bool aiShootThrough; // 0xcc27f827
-  float randomAnimationOffset; // 0xbf69c03e
-  CAssetId projectile; // 0xef485db9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrEchoParameters echoInformation;    // 0x192b0e70
+  bool isLoop;                           // 0xc08d1b93
+  bool immovable;                        // 0x1e32523e
+  bool isSolid;                          // 0x1d8dd846
+  bool isCameraThrough;                  // 0x7859b520
+  bool isScanThrough;                    // 0x2affd6fe
+  int renderTextureSet;                  // 0x32fab97e
+  bool drawsShadow;                      // 0x97687446
+  bool scaleAnimation;                   // 0x261e92a4
+  bool aiShootThrough;                   // 0xcc27f827
+  float randomAnimationOffset;           // 0xbf69c03e
+  CAssetId projectile;                   // 0xef485db9
+  SLdrDamageInfo projectileDamage;       // 0x553b1339
 };
 
-inline SLdrActor::SLdrActor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), model(kInvalidAssetId), collisionModel(kInvalidAssetId), animationInformation(), actorInformation(), echoInformation(), projectile(kInvalidAssetId), projectileDamage() {
+inline SLdrActor::SLdrActor()
+: editorProperties()
+, collisionBox(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, health()
+, vulnerability()
+, model(kInvalidAssetId)
+, collisionModel(kInvalidAssetId)
+, animationInformation()
+, actorInformation()
+, echoInformation()
+, projectile(kInvalidAssetId)
+, projectileDamage() {
   mass = 1.0f;
   gravity = 0.0f;
   isLoop = true;

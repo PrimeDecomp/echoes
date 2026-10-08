@@ -15,72 +15,115 @@ struct SLdrDarkSamus {
   SLdrDarkSamus();
   ~SLdrDarkSamus();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float unknown_0x72edeb7d; // 0x72edeb7d
-  float unknown_0x74fa22f0; // 0x74fa22f0
-  int glideSound; // 0x1f468967
-  int missileRicochetSound; // 0x1a08aadc
-  bool startsInTheAir; // 0x6689925b
-  CAssetId tXTR; // non-matching name, 0x3863160b
-  float unknown_0x2c6a3344; // 0x2c6a3344
-  SLdrDamageInfo meleeAttackDamage; // 0x4d790ee9
-  CAssetId meleeAttackFX; // 0x6d40aa56
-  CAssetId pART; // non-matching name, 0x9603a544
-  SLdrDamageInfo diveAttackDamage; // 0x8688f535
-  float diveAttackImpulseVertical; // 0x4aa5dd62
-  float diveAttackImpulseHorizontal; // 0x1ad7dc21
-  CAssetId diveAttackEffect; // 0xed30b0ef
-  CAssetId scatterShotProjectile; // 0x855f0749
-  CAssetId scatterShotProjectile2; // 0x83a5517f
-  SLdrDamageInfo scatterShotDamage; // 0x8ea87062
-  float unknown_0x378285b9; // 0x378285b9
-  float scatterShotProjectilesPerSecond; // 0xd242e25f
-  CAssetId normalMissileProjectile; // 0xe00db62d
-  SLdrDamageInfo normalMissileDamage; // 0xc4128792
-  int unknown_0x1f1ef7a9; // 0x1f1ef7a9
-  int unknown_0xc4a1a44e; // 0xc4a1a44e
-  CAssetId superMissileProjectile; // 0x29db4ee4
-  SLdrDamageInfo superMissileDamage; // 0x26632b7e
-  CAssetId freezeBeamProjectile; // 0xf9104a69
-  SLdrDamageInfo freezeBeamDamage; // 0xb5ba1fe7
-  CAssetId freezeBeamVisorTexture; // 0x7ffeb33d
-  float damageInterruptThreshold; // 0x8f70d3f2
-  float unknown_0xf317f4d5; // 0xf317f4d5
-  CAssetId sweepSwoosh; // 0xd2122711
-  SLdrDamageInfo sweepBeamDamage; // 0x08c2bfe0
-  CAssetId sweepBeamCollisionEffect; // 0x68b658f2
-  int sweepBeamSound; // 0xea17cb66
-  int unknown_0x0ef8dc15; // 0x0ef8dc15
-  CAssetId invulnerableModel; // 0x072df331
-  CAssetId invulnerableSkinRules; // 0xaa96399c
-  SLdrAnimationSet boostBallModel; // 0xf148f728
-  SLdrDamageInfo boostBallDamage; // 0xe18dc6fc
-  CAssetId boostBallGlow; // 0xac43ba34
-  CAssetId boostBallTrailSwoosh; // 0x449aa4aa
-  CAssetId sWHC; // non-matching name, 0x0345fa17
-  int boostBallRollSound; // 0x2c72576b
-  int boostBallHitPlayerSound; // 0x9e02691c
-  CAssetId boostBallCollision; // 0x3433bc8b
+  SLdrEditorProperties editorProperties;                  // 0x255a4580
+  SLdrPatternedAITypedef patterned;                       // 0xb3774750
+  SLdrActorParameters actorInformation;                   // 0x7e397fed
+  float unknown_0x72edeb7d;                               // 0x72edeb7d
+  float unknown_0x74fa22f0;                               // 0x74fa22f0
+  int glideSound;                                         // 0x1f468967
+  int missileRicochetSound;                               // 0x1a08aadc
+  bool startsInTheAir;                                    // 0x6689925b
+  CAssetId tXTR;                                          // non-matching name, 0x3863160b
+  float unknown_0x2c6a3344;                               // 0x2c6a3344
+  SLdrDamageInfo meleeAttackDamage;                       // 0x4d790ee9
+  CAssetId meleeAttackFX;                                 // 0x6d40aa56
+  CAssetId pART;                                          // non-matching name, 0x9603a544
+  SLdrDamageInfo diveAttackDamage;                        // 0x8688f535
+  float diveAttackImpulseVertical;                        // 0x4aa5dd62
+  float diveAttackImpulseHorizontal;                      // 0x1ad7dc21
+  CAssetId diveAttackEffect;                              // 0xed30b0ef
+  CAssetId scatterShotProjectile;                         // 0x855f0749
+  CAssetId scatterShotProjectile2;                        // 0x83a5517f
+  SLdrDamageInfo scatterShotDamage;                       // 0x8ea87062
+  float unknown_0x378285b9;                               // 0x378285b9
+  float scatterShotProjectilesPerSecond;                  // 0xd242e25f
+  CAssetId normalMissileProjectile;                       // 0xe00db62d
+  SLdrDamageInfo normalMissileDamage;                     // 0xc4128792
+  int unknown_0x1f1ef7a9;                                 // 0x1f1ef7a9
+  int unknown_0xc4a1a44e;                                 // 0xc4a1a44e
+  CAssetId superMissileProjectile;                        // 0x29db4ee4
+  SLdrDamageInfo superMissileDamage;                      // 0x26632b7e
+  CAssetId freezeBeamProjectile;                          // 0xf9104a69
+  SLdrDamageInfo freezeBeamDamage;                        // 0xb5ba1fe7
+  CAssetId freezeBeamVisorTexture;                        // 0x7ffeb33d
+  float damageInterruptThreshold;                         // 0x8f70d3f2
+  float unknown_0xf317f4d5;                               // 0xf317f4d5
+  CAssetId sweepSwoosh;                                   // 0xd2122711
+  SLdrDamageInfo sweepBeamDamage;                         // 0x08c2bfe0
+  CAssetId sweepBeamCollisionEffect;                      // 0x68b658f2
+  int sweepBeamSound;                                     // 0xea17cb66
+  int unknown_0x0ef8dc15;                                 // 0x0ef8dc15
+  CAssetId invulnerableModel;                             // 0x072df331
+  CAssetId invulnerableSkinRules;                         // 0xaa96399c
+  SLdrAnimationSet boostBallModel;                        // 0xf148f728
+  SLdrDamageInfo boostBallDamage;                         // 0xe18dc6fc
+  CAssetId boostBallGlow;                                 // 0xac43ba34
+  CAssetId boostBallTrailSwoosh;                          // 0x449aa4aa
+  CAssetId sWHC;                                          // non-matching name, 0x0345fa17
+  int boostBallRollSound;                                 // 0x2c72576b
+  int boostBallHitPlayerSound;                            // 0x9e02691c
+  CAssetId boostBallCollision;                            // 0x3433bc8b
   SLdrAudioPlaybackParms boostBallCollisionSound_OneShot; // 0x4841182b
-  CAssetId iceSpreadFX; // 0xa6c42023
-  int iceSpreadSound; // 0xd3593630
-  CAssetId pART_0x908b06e9; // non-matching name, 0x908b06e9
-  CAssetId pART_0x494de4a4; // non-matching name, 0x494de4a4
-  int sound; // non-matching name, 0xa861649f
-  SLdrDamageInfo damageInfo; // non-matching name, 0x18402aa9
-  CAssetId pART_0xe701daea; // non-matching name, 0xe701daea
-  CAssetId phazonProjectile; // 0xbf62b633
-  CAssetId phazonSuperMissileProjectile; // 0x8d123fe9
-  SLdrDamageInfo phazonSuperMissileDamage; // 0x58769eb2
-  SLdrDamageInfo phazonProjectileDamage; // 0x4d8e735f
-  CAssetId phazonEnrageSphere; // 0x83106405
-  SLdrDamageInfo phazonEnrageSphereContactDamage; // 0x8f3af226
-  CAssetId alternateScannableInfo; // 0xf60ac5cc
+  CAssetId iceSpreadFX;                                   // 0xa6c42023
+  int iceSpreadSound;                                     // 0xd3593630
+  CAssetId pART_0x908b06e9;                               // non-matching name, 0x908b06e9
+  CAssetId pART_0x494de4a4;                               // non-matching name, 0x494de4a4
+  int sound;                                              // non-matching name, 0xa861649f
+  SLdrDamageInfo damageInfo;                              // non-matching name, 0x18402aa9
+  CAssetId pART_0xe701daea;                               // non-matching name, 0xe701daea
+  CAssetId phazonProjectile;                              // 0xbf62b633
+  CAssetId phazonSuperMissileProjectile;                  // 0x8d123fe9
+  SLdrDamageInfo phazonSuperMissileDamage;                // 0x58769eb2
+  SLdrDamageInfo phazonProjectileDamage;                  // 0x4d8e735f
+  CAssetId phazonEnrageSphere;                            // 0x83106405
+  SLdrDamageInfo phazonEnrageSphereContactDamage;         // 0x8f3af226
+  CAssetId alternateScannableInfo;                        // 0xf60ac5cc
 };
 
-inline SLdrDarkSamus::SLdrDarkSamus() : editorProperties(), patterned(), actorInformation(), tXTR(kInvalidAssetId), meleeAttackDamage(), meleeAttackFX(kInvalidAssetId), pART(kInvalidAssetId), diveAttackDamage(), diveAttackEffect(kInvalidAssetId), scatterShotProjectile(kInvalidAssetId), scatterShotProjectile2(kInvalidAssetId), scatterShotDamage(), normalMissileProjectile(kInvalidAssetId), normalMissileDamage(), superMissileProjectile(kInvalidAssetId), superMissileDamage(), freezeBeamProjectile(kInvalidAssetId), freezeBeamDamage(), freezeBeamVisorTexture(kInvalidAssetId), sweepSwoosh(kInvalidAssetId), sweepBeamDamage(), sweepBeamCollisionEffect(kInvalidAssetId), invulnerableModel(kInvalidAssetId), invulnerableSkinRules(kInvalidAssetId), boostBallModel(), boostBallDamage(), boostBallGlow(kInvalidAssetId), boostBallTrailSwoosh(kInvalidAssetId), sWHC(kInvalidAssetId), boostBallCollision(kInvalidAssetId), boostBallCollisionSound_OneShot(), iceSpreadFX(kInvalidAssetId), pART_0x908b06e9(kInvalidAssetId), pART_0x494de4a4(kInvalidAssetId), damageInfo(), pART_0xe701daea(kInvalidAssetId), phazonProjectile(kInvalidAssetId), phazonSuperMissileProjectile(kInvalidAssetId), phazonSuperMissileDamage(), phazonProjectileDamage(), phazonEnrageSphere(kInvalidAssetId), phazonEnrageSphereContactDamage(), alternateScannableInfo(kInvalidAssetId) {
+inline SLdrDarkSamus::SLdrDarkSamus()
+: editorProperties()
+, patterned()
+, actorInformation()
+, tXTR(kInvalidAssetId)
+, meleeAttackDamage()
+, meleeAttackFX(kInvalidAssetId)
+, pART(kInvalidAssetId)
+, diveAttackDamage()
+, diveAttackEffect(kInvalidAssetId)
+, scatterShotProjectile(kInvalidAssetId)
+, scatterShotProjectile2(kInvalidAssetId)
+, scatterShotDamage()
+, normalMissileProjectile(kInvalidAssetId)
+, normalMissileDamage()
+, superMissileProjectile(kInvalidAssetId)
+, superMissileDamage()
+, freezeBeamProjectile(kInvalidAssetId)
+, freezeBeamDamage()
+, freezeBeamVisorTexture(kInvalidAssetId)
+, sweepSwoosh(kInvalidAssetId)
+, sweepBeamDamage()
+, sweepBeamCollisionEffect(kInvalidAssetId)
+, invulnerableModel(kInvalidAssetId)
+, invulnerableSkinRules(kInvalidAssetId)
+, boostBallModel()
+, boostBallDamage()
+, boostBallGlow(kInvalidAssetId)
+, boostBallTrailSwoosh(kInvalidAssetId)
+, sWHC(kInvalidAssetId)
+, boostBallCollision(kInvalidAssetId)
+, boostBallCollisionSound_OneShot()
+, iceSpreadFX(kInvalidAssetId)
+, pART_0x908b06e9(kInvalidAssetId)
+, pART_0x494de4a4(kInvalidAssetId)
+, damageInfo()
+, pART_0xe701daea(kInvalidAssetId)
+, phazonProjectile(kInvalidAssetId)
+, phazonSuperMissileProjectile(kInvalidAssetId)
+, phazonSuperMissileDamage()
+, phazonProjectileDamage()
+, phazonEnrageSphere(kInvalidAssetId)
+, phazonEnrageSphereContactDamage()
+, alternateScannableInfo(kInvalidAssetId) {
   patterned.detectionRange = 32.0f;
   patterned.collisionRadius = 0.5f;
   patterned.collisionHeight = 1.0f;

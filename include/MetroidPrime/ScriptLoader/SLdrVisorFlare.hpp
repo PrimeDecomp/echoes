@@ -12,9 +12,9 @@ struct SLdrFlareDef {
   ~SLdrFlareDef();
 
   CAssetId texture; // 0xd1f65872
-  float position; // 0xcb99b4da
-  float scale; // 0x2c51a676
-  CColor color; // 0x37c7d09d
+  float position;   // 0xcb99b4da
+  float scale;      // 0x2c51a676
+  CColor color;     // 0x37c7d09d
 };
 
 inline SLdrFlareDef::SLdrFlareDef() : texture(kInvalidAssetId), color(CColor::Green()) {
@@ -59,22 +59,23 @@ struct SLdrVisorFlare {
   ~SLdrVisorFlare();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int blendMode; // 0xcb13ef46
-  bool constantScale; // 0xe0c5fc06
-  float fadeTime; // 0xd4124c4c
-  float fadeFactor; // 0xd6fb31bf
-  float rotateFactor; // 0x3161f38c
-  int combatVisorMode; // 0x43b503a6
-  bool unknown_0xa51f243e; // 0xa51f243e
-  bool noOcclusionTest; // 0x050881a9
-  SLdrFlareDef flare1; // 0x3c257223
-  SLdrFlareDef flare2; // 0x05a84ee6
-  SLdrFlareDef flare3; // 0x12d35aa5
-  SLdrFlareDef flare4; // 0x76b2376c
-  SLdrFlareDef flare5; // 0x61c9232f
+  int blendMode;                         // 0xcb13ef46
+  bool constantScale;                    // 0xe0c5fc06
+  float fadeTime;                        // 0xd4124c4c
+  float fadeFactor;                      // 0xd6fb31bf
+  float rotateFactor;                    // 0x3161f38c
+  int combatVisorMode;                   // 0x43b503a6
+  bool unknown_0xa51f243e;               // 0xa51f243e
+  bool noOcclusionTest;                  // 0x050881a9
+  SLdrFlareDef flare1;                   // 0x3c257223
+  SLdrFlareDef flare2;                   // 0x05a84ee6
+  SLdrFlareDef flare3;                   // 0x12d35aa5
+  SLdrFlareDef flare4;                   // 0x76b2376c
+  SLdrFlareDef flare5;                   // 0x61c9232f
 };
 
-inline SLdrVisorFlare::SLdrVisorFlare() : editorProperties(), flare1(), flare2(), flare3(), flare4(), flare5() {
+inline SLdrVisorFlare::SLdrVisorFlare()
+: editorProperties(), flare1(), flare2(), flare3(), flare4(), flare5() {
   blendMode = 0;
   constantScale = true;
   fadeTime = 0.1f;

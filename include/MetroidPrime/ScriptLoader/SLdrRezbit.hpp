@@ -16,54 +16,71 @@ struct SLdrRezbitData {
   SLdrRezbitData();
   ~SLdrRezbitData();
 
-  float hearingRadius; // 0xed69488f
-  float unknown_0x4a6c4b40; // 0x4a6c4b40
-  float derezTime; // 0x30d11671
-  CAssetId derezModel; // 0xc80bb6e4
-  CAssetId derezSkinRules; // 0x05486319
-  float shieldDownTime; // 0x8980a469
-  float shieldDownTimeVariance; // 0xffb37b81
-  float shieldUpTime; // 0x448579cd
-  float shieldHitPoints; // 0x0d1d1648
-  CAssetId shieldExplodeEffect; // 0xa41f75ef
-  SLdrAudioPlaybackParms sound_ShieldExplode; // 0xa34e2d84
-  SLdrAudioPlaybackParms sound_ShieldOn; // 0x8c598e41
-  SLdrAudioPlaybackParms sound_ShieldOff; // 0xf4491ed5
-  SLdrAudioPlaybackParms sound_Flinch; // 0x7d832158
-  float missileDeflectRadius; // 0xad120ad7
-  float missileDeflectRate; // 0xe70ef8a3
+  float hearingRadius;                         // 0xed69488f
+  float unknown_0x4a6c4b40;                    // 0x4a6c4b40
+  float derezTime;                             // 0x30d11671
+  CAssetId derezModel;                         // 0xc80bb6e4
+  CAssetId derezSkinRules;                     // 0x05486319
+  float shieldDownTime;                        // 0x8980a469
+  float shieldDownTimeVariance;                // 0xffb37b81
+  float shieldUpTime;                          // 0x448579cd
+  float shieldHitPoints;                       // 0x0d1d1648
+  CAssetId shieldExplodeEffect;                // 0xa41f75ef
+  SLdrAudioPlaybackParms sound_ShieldExplode;  // 0xa34e2d84
+  SLdrAudioPlaybackParms sound_ShieldOn;       // 0x8c598e41
+  SLdrAudioPlaybackParms sound_ShieldOff;      // 0xf4491ed5
+  SLdrAudioPlaybackParms sound_Flinch;         // 0x7d832158
+  float missileDeflectRadius;                  // 0xad120ad7
+  float missileDeflectRate;                    // 0xe70ef8a3
   SLdrAudioPlaybackParms sound_DeflectMissile; // 0x6bf2ff60
-  float unknown_0x70e597d4; // 0x70e597d4
-  float unknown_0x94980a67; // 0x94980a67
-  float strafeDerezInterval; // 0xd02f08b0
-  float strafeDerezChance; // 0x53e84718
-  float normalRezAttackTime; // 0x6fbc1bf9
-  float energyBoltChance; // 0xdc276015
-  float cuttingLaserChance; // 0x2ca3e9cd
-  float energyBoltMinAttackDist; // 0x075491ca
-  float energyBoltMaxAttackDist; // 0x54f2892e
-  SLdrDamageInfo energyBoltDamage; // 0x600c5f40
-  CAssetId energyBoltProjectile; // 0x2f11094b
-  float energyBoltAttackDuration; // 0xa1f350f5
-  float energyBoltAttackVariance; // 0x28944183
-  float energyBoltBurstTime; // 0xc7a69a59
-  SLdrAudioPlaybackParms sound_EnergyBolt; // 0xbd3eb001
-  float virusMinAttackDist; // 0x9ede657f
-  float virusMaxAttackDist; // 0xcd787d9b
-  float virusAttackTime; // 0x4a7d3b04
-  SLdrDamageInfo virusDamage; // 0x16869b57
-  CAssetId virusMorphballFx; // 0x973d7cc3
-  int sound_VirusHUD; // 0xbb3f8a7b
-  int sound_HUDReboot; // 0x601f846d
-  float cuttingLaserMinAttackDist; // 0x64c7990d
-  float cuttingLaserMaxAttackDist; // 0x376181e9
-  SLdrDamageInfo cuttingLaserDamage; // 0xbb58c088
-  SLdrAudioPlaybackParms sound_CuttingLaser; // 0x7864ca32
-  SLdrPlasmaBeamInfo cuttingLaserBeamInfo; // 0x59764dbb
+  float unknown_0x70e597d4;                    // 0x70e597d4
+  float unknown_0x94980a67;                    // 0x94980a67
+  float strafeDerezInterval;                   // 0xd02f08b0
+  float strafeDerezChance;                     // 0x53e84718
+  float normalRezAttackTime;                   // 0x6fbc1bf9
+  float energyBoltChance;                      // 0xdc276015
+  float cuttingLaserChance;                    // 0x2ca3e9cd
+  float energyBoltMinAttackDist;               // 0x075491ca
+  float energyBoltMaxAttackDist;               // 0x54f2892e
+  SLdrDamageInfo energyBoltDamage;             // 0x600c5f40
+  CAssetId energyBoltProjectile;               // 0x2f11094b
+  float energyBoltAttackDuration;              // 0xa1f350f5
+  float energyBoltAttackVariance;              // 0x28944183
+  float energyBoltBurstTime;                   // 0xc7a69a59
+  SLdrAudioPlaybackParms sound_EnergyBolt;     // 0xbd3eb001
+  float virusMinAttackDist;                    // 0x9ede657f
+  float virusMaxAttackDist;                    // 0xcd787d9b
+  float virusAttackTime;                       // 0x4a7d3b04
+  SLdrDamageInfo virusDamage;                  // 0x16869b57
+  CAssetId virusMorphballFx;                   // 0x973d7cc3
+  int sound_VirusHUD;                          // 0xbb3f8a7b
+  int sound_HUDReboot;                         // 0x601f846d
+  float cuttingLaserMinAttackDist;             // 0x64c7990d
+  float cuttingLaserMaxAttackDist;             // 0x376181e9
+  SLdrDamageInfo cuttingLaserDamage;           // 0xbb58c088
+  SLdrAudioPlaybackParms sound_CuttingLaser;   // 0x7864ca32
+  SLdrPlasmaBeamInfo cuttingLaserBeamInfo;     // 0x59764dbb
   SLdrDamageVulnerability shieldVulnerability; // 0xd34f1323
 };
 
-inline SLdrRezbitData::SLdrRezbitData() : derezModel(kInvalidAssetId), derezSkinRules(kInvalidAssetId), shieldExplodeEffect(kInvalidAssetId), sound_ShieldExplode(), sound_ShieldOn(), sound_ShieldOff(), sound_Flinch(), sound_DeflectMissile(), energyBoltDamage(), energyBoltProjectile(kInvalidAssetId), sound_EnergyBolt(), virusDamage(), virusMorphballFx(kInvalidAssetId), cuttingLaserDamage(), sound_CuttingLaser(), cuttingLaserBeamInfo(), shieldVulnerability() {
+inline SLdrRezbitData::SLdrRezbitData()
+: derezModel(kInvalidAssetId)
+, derezSkinRules(kInvalidAssetId)
+, shieldExplodeEffect(kInvalidAssetId)
+, sound_ShieldExplode()
+, sound_ShieldOn()
+, sound_ShieldOff()
+, sound_Flinch()
+, sound_DeflectMissile()
+, energyBoltDamage()
+, energyBoltProjectile(kInvalidAssetId)
+, sound_EnergyBolt()
+, virusDamage()
+, virusMorphballFx(kInvalidAssetId)
+, cuttingLaserDamage()
+, sound_CuttingLaser()
+, cuttingLaserBeamInfo()
+, shieldVulnerability() {
   hearingRadius = 20.0f;
   unknown_0x4a6c4b40 = 20.0f;
   derezTime = 10.0f;
@@ -311,12 +328,13 @@ struct SLdrRezbit {
   ~SLdrRezbit();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrRezbitData rezbitProperties; // 0x8716d656
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrRezbitData rezbitProperties;       // 0x8716d656
 };
 
-inline SLdrRezbit::SLdrRezbit() : editorProperties(), patterned(), actorInformation(), rezbitProperties() {
+inline SLdrRezbit::SLdrRezbit()
+: editorProperties(), patterned(), actorInformation(), rezbitProperties() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

@@ -12,20 +12,21 @@ struct SLdrFlyerSwarm {
   SLdrFlyerSwarm();
   ~SLdrFlyerSwarm();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationSet animationInformation; // 0xe25fb08c
-  bool active; // 0xc6bb2f45
+  SLdrEditorProperties editorProperties;         // 0x255a4580
+  SLdrActorParameters actorInformation;          // 0x7e397fed
+  SLdrAnimationSet animationInformation;         // 0xe25fb08c
+  bool active;                                   // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
-  float unknown_0x4a85a2da; // 0x4a85a2da
-  float initialMoveSpeedModifier; // 0x10cccd3c
-  float initialMoveSpeedModifierTime; // 0x1e8e90a4
-  float unknown_0x262e586d; // 0x262e586d
-  float rollUprightSpeed; // 0x479a5727
-  float rollUprightMinAngle; // 0xd572d1da
+  float unknown_0x4a85a2da;                      // 0x4a85a2da
+  float initialMoveSpeedModifier;                // 0x10cccd3c
+  float initialMoveSpeedModifierTime;            // 0x1e8e90a4
+  float unknown_0x262e586d;                      // 0x262e586d
+  float rollUprightSpeed;                        // 0x479a5727
+  float rollUprightMinAngle;                     // 0xd572d1da
 };
 
-inline SLdrFlyerSwarm::SLdrFlyerSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties() {
+inline SLdrFlyerSwarm::SLdrFlyerSwarm()
+: editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties() {
   active = true;
   unknown_0x4a85a2da = 1.0f;
   initialMoveSpeedModifier = 1.0f;

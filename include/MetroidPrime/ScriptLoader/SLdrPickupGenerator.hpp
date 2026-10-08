@@ -12,12 +12,13 @@ struct SLdrPickupGenerator {
   ~SLdrPickupGenerator();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f offset; // 0x46477064
-  bool offsetIsLocalSpace; // 0x72bbe7a6
-  CAssetId rules; // 0x0c5143fe
+  CVector3f offset;                      // 0x46477064
+  bool offsetIsLocalSpace;               // 0x72bbe7a6
+  CAssetId rules;                        // 0x0c5143fe
 };
 
-inline SLdrPickupGenerator::SLdrPickupGenerator() : editorProperties(), offset(CVector3f::Zero()), rules(kInvalidAssetId) {
+inline SLdrPickupGenerator::SLdrPickupGenerator()
+: editorProperties(), offset(CVector3f::Zero()), rules(kInvalidAssetId) {
   offsetIsLocalSpace = false;
 }
 

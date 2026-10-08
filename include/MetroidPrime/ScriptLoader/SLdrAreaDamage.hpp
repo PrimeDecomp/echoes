@@ -11,9 +11,9 @@ struct SLdrAreaDamage {
   ~SLdrAreaDamage();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrDamageInfo damage; // 0x337f9524
-  float pulseTime; // 0x8e07e9d3
-  float graceTime; // 0xc052bc02
+  SLdrDamageInfo damage;                 // 0x337f9524
+  float pulseTime;                       // 0x8e07e9d3
+  float graceTime;                       // 0xc052bc02
 };
 
 inline SLdrAreaDamage::SLdrAreaDamage() : editorProperties(), damage() {

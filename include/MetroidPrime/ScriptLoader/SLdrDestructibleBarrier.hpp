@@ -15,39 +15,54 @@ struct SLdrDestructibleBarrier {
   ~SLdrDestructibleBarrier();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int numChunksWidth; // 0xcd4f7e71
-  int numChunksHeight; // 0xa7f551f7
-  int numChunksDepth; // 0x609c6240
-  CVector3f chunkSize; // 0xb29e159e
-  CAssetId leftModel; // 0x014a0c36
-  CAssetId centerModel; // 0x90f55c5d
-  CAssetId rightModel; // 0xe1975355
-  CAssetId unknown_0x396660b4; // 0x396660b4
-  CAssetId unknown_0x48e25884; // 0x48e25884
-  CAssetId baseModel; // 0xf1abb2c7
-  CAssetId unknown_0x1eb90d06; // 0x1eb90d06
-  int unknown_0x9d852dfe; // 0x9d852dfe
-  CAssetId unknown_0x982d7fa8; // 0x982d7fa8
-  int unknown_0x2e11003d; // 0x2e11003d
-  CAssetId unknown_0x5371ac0d; // 0x5371ac0d
-  int unknown_0x409d1b7c; // 0x409d1b7c
-  CAssetId unknown_0x4e749cb5; // 0x4e749cb5
-  int unknown_0x92485dfa; // 0x92485dfa
-  int soundEffectOnChunkGenerated; // 0x6e4a9d27
-  int soundEffectOnChunkDestroyed; // 0xbc2381a6
-  int soundEffectOnMoveDown; // 0x6575a3d5
-  int soundEffectOnMoveUp; // 0xc91b0946
-  int soundEffectOnStop; // 0x4b2d5a37
-  float unknown_0x605847b9; // 0x605847b9
-  float unknown_0xcd9c67fe; // 0xcd9c67fe
-  float unknown_0x0af428b4; // 0x0af428b4
-  bool unknown_0x4d3109e3; // 0x4d3109e3
-  SLdrHealthInfo health; // 0xcf90d15e
+  int numChunksWidth;                    // 0xcd4f7e71
+  int numChunksHeight;                   // 0xa7f551f7
+  int numChunksDepth;                    // 0x609c6240
+  CVector3f chunkSize;                   // 0xb29e159e
+  CAssetId leftModel;                    // 0x014a0c36
+  CAssetId centerModel;                  // 0x90f55c5d
+  CAssetId rightModel;                   // 0xe1975355
+  CAssetId unknown_0x396660b4;           // 0x396660b4
+  CAssetId unknown_0x48e25884;           // 0x48e25884
+  CAssetId baseModel;                    // 0xf1abb2c7
+  CAssetId unknown_0x1eb90d06;           // 0x1eb90d06
+  int unknown_0x9d852dfe;                // 0x9d852dfe
+  CAssetId unknown_0x982d7fa8;           // 0x982d7fa8
+  int unknown_0x2e11003d;                // 0x2e11003d
+  CAssetId unknown_0x5371ac0d;           // 0x5371ac0d
+  int unknown_0x409d1b7c;                // 0x409d1b7c
+  CAssetId unknown_0x4e749cb5;           // 0x4e749cb5
+  int unknown_0x92485dfa;                // 0x92485dfa
+  int soundEffectOnChunkGenerated;       // 0x6e4a9d27
+  int soundEffectOnChunkDestroyed;       // 0xbc2381a6
+  int soundEffectOnMoveDown;             // 0x6575a3d5
+  int soundEffectOnMoveUp;               // 0xc91b0946
+  int soundEffectOnStop;                 // 0x4b2d5a37
+  float unknown_0x605847b9;              // 0x605847b9
+  float unknown_0xcd9c67fe;              // 0xcd9c67fe
+  float unknown_0x0af428b4;              // 0x0af428b4
+  bool unknown_0x4d3109e3;               // 0x4d3109e3
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrActorParameters actorInformation;  // 0x7e397fed
 };
 
-inline SLdrDestructibleBarrier::SLdrDestructibleBarrier() : editorProperties(), chunkSize(CVector3f::Zero()), leftModel(kInvalidAssetId), centerModel(kInvalidAssetId), rightModel(kInvalidAssetId), unknown_0x396660b4(kInvalidAssetId), unknown_0x48e25884(kInvalidAssetId), baseModel(kInvalidAssetId), unknown_0x1eb90d06(kInvalidAssetId), unknown_0x982d7fa8(kInvalidAssetId), unknown_0x5371ac0d(kInvalidAssetId), unknown_0x4e749cb5(kInvalidAssetId), health(), vulnerability(), actorInformation() {
+inline SLdrDestructibleBarrier::SLdrDestructibleBarrier()
+: editorProperties()
+, chunkSize(CVector3f::Zero())
+, leftModel(kInvalidAssetId)
+, centerModel(kInvalidAssetId)
+, rightModel(kInvalidAssetId)
+, unknown_0x396660b4(kInvalidAssetId)
+, unknown_0x48e25884(kInvalidAssetId)
+, baseModel(kInvalidAssetId)
+, unknown_0x1eb90d06(kInvalidAssetId)
+, unknown_0x982d7fa8(kInvalidAssetId)
+, unknown_0x5371ac0d(kInvalidAssetId)
+, unknown_0x4e749cb5(kInvalidAssetId)
+, health()
+, vulnerability()
+, actorInformation() {
   numChunksWidth = 2;
   numChunksHeight = 5;
   numChunksDepth = 1;

@@ -182,7 +182,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xf51a1d6a: {
-    sldrThis.unknown_0xf51a1d6a = input.ReadInt32();
+    sldrThis.bitcrusherDistortionType = input.ReadInt32();
     break;
   }
   case 0xbb1a0f34: {

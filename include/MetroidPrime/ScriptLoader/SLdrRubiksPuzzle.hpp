@@ -10,7 +10,7 @@ struct SLdrRubiksPuzzleData {
   SLdrRubiksPuzzleData();
   ~SLdrRubiksPuzzleData();
 
-  float rotationSpeed; // 0x11cd076f
+  float rotationSpeed;   // 0x11cd076f
   CAssetId stateMachine; // 0x55744160
 };
 
@@ -45,12 +45,11 @@ struct SLdrRubiksPuzzle {
   SLdrRubiksPuzzle();
   ~SLdrRubiksPuzzle();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
+  SLdrEditorProperties editorProperties;       // 0x255a4580
   SLdrRubiksPuzzleData rubiksPuzzleProperties; // 0x9fcd4e38
 };
 
-inline SLdrRubiksPuzzle::SLdrRubiksPuzzle() : editorProperties(), rubiksPuzzleProperties() {
-}
+inline SLdrRubiksPuzzle::SLdrRubiksPuzzle() : editorProperties(), rubiksPuzzleProperties() {}
 
 inline SLdrRubiksPuzzle::~SLdrRubiksPuzzle() {}
 

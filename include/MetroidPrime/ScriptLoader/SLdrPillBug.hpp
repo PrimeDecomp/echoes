@@ -12,28 +12,33 @@ struct SLdrPillBug {
   SLdrPillBug();
   ~SLdrPillBug();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  int planarConstraint; // 0xde7e9f94
-  float floorTurnSpeed; // 0x8e4f7b29
-  float stickRadius; // 0x5a3a30f4
-  float waypointApproachDistance; // 0x733bd27c
-  float visibleDistance; // 0xa72530e8
+  SLdrEditorProperties editorProperties;       // 0x255a4580
+  SLdrPatternedAITypedef patterned;            // 0xb3774750
+  SLdrActorParameters actorInformation;        // 0x7e397fed
+  int planarConstraint;                        // 0xde7e9f94
+  float floorTurnSpeed;                        // 0x8e4f7b29
+  float stickRadius;                           // 0x5a3a30f4
+  float waypointApproachDistance;              // 0x733bd27c
+  float visibleDistance;                       // 0xa72530e8
   SLdrDamageVulnerability damageVulnerability; // non-matching name, 0x5d84ed71
   SLdrDamageVulnerability wanderVulnerability; // 0xf382dff7
-  float crawlRadius; // 0xad98e16d
-  float rollRadius; // 0x81d699b0
-  float unknown_0x519c7197; // 0x519c7197
-  float collisionLookAheadTime; // 0xa265383c
-  float forwardPriority; // 0xad08e189
-  float unknown_0x558c0692; // 0x558c0692
-  float unknown_0x0f991bf1; // 0x0f991bf1
-  float unknown_0x385a1bed; // 0x385a1bed
-  float unknown_0xcf4ea141; // 0xcf4ea141
+  float crawlRadius;                           // 0xad98e16d
+  float rollRadius;                            // 0x81d699b0
+  float unknown_0x519c7197;                    // 0x519c7197
+  float collisionLookAheadTime;                // 0xa265383c
+  float forwardPriority;                       // 0xad08e189
+  float unknown_0x558c0692;                    // 0x558c0692
+  float unknown_0x0f991bf1;                    // 0x0f991bf1
+  float unknown_0x385a1bed;                    // 0x385a1bed
+  float unknown_0xcf4ea141;                    // 0xcf4ea141
 };
 
-inline SLdrPillBug::SLdrPillBug() : editorProperties(), patterned(), actorInformation(), damageVulnerability(), wanderVulnerability() {
+inline SLdrPillBug::SLdrPillBug()
+: editorProperties()
+, patterned()
+, actorInformation()
+, damageVulnerability()
+, wanderVulnerability() {
   planarConstraint = 0;
   floorTurnSpeed = 120.0f;
   stickRadius = 0.2f;

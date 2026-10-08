@@ -14,25 +14,30 @@ struct SLdrSpacePirateWeaponData {
   SLdrSpacePirateWeaponData();
   ~SLdrSpacePirateWeaponData();
 
-  int equippedWeapon; // 0x647670ac
-  CAssetId grenadeLauncher; // 0xa79bb82e
-  int unknown_0xa95a025b; // 0xa95a025b
-  float grenadeMinAttackDist; // 0x25f822c4
-  float grenadeMaxAttackDist; // 0x765e3a20
+  int equippedWeapon;           // 0x647670ac
+  CAssetId grenadeLauncher;     // 0xa79bb82e
+  int unknown_0xa95a025b;       // 0xa95a025b
+  float grenadeMinAttackDist;   // 0x25f822c4
+  float grenadeMaxAttackDist;   // 0x765e3a20
   SLdrDamageInfo grenadeDamage; // 0x14d1a3a8
-  CAssetId grenadeExplosion; // 0x1319e077
-  CAssetId grenadeEffect; // 0xd207ff0f
-  CAssetId grenadeTrail; // 0x2b31c882
-  float grenadeMass; // 0x9a6bb47f
-  float unknown_0xed086ce0; // 0xed086ce0
-  float grenadeMinLaunchSpeed; // 0x00fc6646
-  float grenadeMaxLaunchSpeed; // 0xa7c8e63f
-  int unknown_0x454f16b1; // 0x454f16b1
-  int sound_GrenadeBounce; // 0x258c3e1b
-  int sound_GrenadeExplode; // 0xaf6aad88
+  CAssetId grenadeExplosion;    // 0x1319e077
+  CAssetId grenadeEffect;       // 0xd207ff0f
+  CAssetId grenadeTrail;        // 0x2b31c882
+  float grenadeMass;            // 0x9a6bb47f
+  float unknown_0xed086ce0;     // 0xed086ce0
+  float grenadeMinLaunchSpeed;  // 0x00fc6646
+  float grenadeMaxLaunchSpeed;  // 0xa7c8e63f
+  int unknown_0x454f16b1;       // 0x454f16b1
+  int sound_GrenadeBounce;      // 0x258c3e1b
+  int sound_GrenadeExplode;     // 0xaf6aad88
 };
 
-inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData() : grenadeLauncher(kInvalidAssetId), grenadeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId) {
+inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData()
+: grenadeLauncher(kInvalidAssetId)
+, grenadeDamage()
+, grenadeExplosion(kInvalidAssetId)
+, grenadeEffect(kInvalidAssetId)
+, grenadeTrail(kInvalidAssetId) {
   equippedWeapon = 0;
   unknown_0xa95a025b = 3;
   grenadeMinAttackDist = 15.0f;
@@ -52,7 +57,8 @@ inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData() : grenadeLauncher(
 
 inline SLdrSpacePirateWeaponData::~SLdrSpacePirateWeaponData() {}
 
-inline void LoadTypedefSpacePirateWeaponData(SLdrSpacePirateWeaponData& sldrThis, CInputStream& input) {
+inline void LoadTypedefSpacePirateWeaponData(SLdrSpacePirateWeaponData& sldrThis,
+                                             CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -133,46 +139,56 @@ struct SLdrSpacePirate {
   SLdrSpacePirate();
   ~SLdrSpacePirate();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;   // 0x255a4580
+  SLdrPatternedAITypedef patterned;        // 0xb3774750
+  SLdrActorParameters actorInformation;    // 0x7e397fed
   SLdrIngPossessionData ingPossessionData; // 0xe61748ed
-  float aggressiveness; // 0x9579b1f2
-  float coverCheck; // 0xf89ab419
-  float searchRadius; // 0xed9bf5a3
-  float fallBackCheck; // 0xc3a27cf8
-  float fallBackRadius; // 0xf0cf5dd7
-  float hearingRadius; // 0xed69488f
-  uint flags; // non-matching name, 0xa64ab9b8
-  bool unknown_0xce670970; // 0xce670970
-  CAssetId projectile; // 0xef485db9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  int sound_Projectile; // 0xeac27605
-  SLdrDamageInfo bladeDamage; // 0xa5912430
-  float kneelAttackChance; // 0x4f4087ed
-  CAssetId kneelAttackShot; // 0xda1122eb
-  SLdrDamageInfo kneelAttackDamage; // 0x44143921
-  float dodgeCheck; // 0xdc36e745
-  int sound_Impact; // 0x1bb16ea5
-  float intraBurstShotTime; // 0x71587b45
-  float intraBurstShotVariation; // 0x7903312e
-  float unknown_0x5080162a; // 0x5080162a
-  float unknown_0xc78b40e0; // 0xc78b40e0
-  int sound_Alert; // 0x386431ac
-  float gunTrackDelay; // 0xb2ac2d96
-  int unknown_0x1b454a27; // 0x1b454a27
-  float cloakOpacity; // 0x5bc6f1d5
-  float maxCloakOpacity; // 0x7c021d7e
-  float breakDodgeMinTime; // 0x61e801d4
-  float breakDodgeMaxTime; // 0xf19b113e
-  int sound_Hurled; // 0x3bb37a8f
-  int sound_Death; // 0xe160b593
-  float unknown_0x8708b7d3; // 0x8708b7d3
-  float avoidDistance; // 0x2b19cd88
-  SLdrSpacePirateWeaponData weaponData; // 0xdc89cc3c
+  float aggressiveness;                    // 0x9579b1f2
+  float coverCheck;                        // 0xf89ab419
+  float searchRadius;                      // 0xed9bf5a3
+  float fallBackCheck;                     // 0xc3a27cf8
+  float fallBackRadius;                    // 0xf0cf5dd7
+  float hearingRadius;                     // 0xed69488f
+  uint flags;                              // non-matching name, 0xa64ab9b8
+  bool unknown_0xce670970;                 // 0xce670970
+  CAssetId projectile;                     // 0xef485db9
+  SLdrDamageInfo projectileDamage;         // 0x553b1339
+  int sound_Projectile;                    // 0xeac27605
+  SLdrDamageInfo bladeDamage;              // 0xa5912430
+  float kneelAttackChance;                 // 0x4f4087ed
+  CAssetId kneelAttackShot;                // 0xda1122eb
+  SLdrDamageInfo kneelAttackDamage;        // 0x44143921
+  float dodgeCheck;                        // 0xdc36e745
+  int sound_Impact;                        // 0x1bb16ea5
+  float intraBurstShotTime;                // 0x71587b45
+  float intraBurstShotVariation;           // 0x7903312e
+  float unknown_0x5080162a;                // 0x5080162a
+  float unknown_0xc78b40e0;                // 0xc78b40e0
+  int sound_Alert;                         // 0x386431ac
+  float gunTrackDelay;                     // 0xb2ac2d96
+  int unknown_0x1b454a27;                  // 0x1b454a27
+  float cloakOpacity;                      // 0x5bc6f1d5
+  float maxCloakOpacity;                   // 0x7c021d7e
+  float breakDodgeMinTime;                 // 0x61e801d4
+  float breakDodgeMaxTime;                 // 0xf19b113e
+  int sound_Hurled;                        // 0x3bb37a8f
+  int sound_Death;                         // 0xe160b593
+  float unknown_0x8708b7d3;                // 0x8708b7d3
+  float avoidDistance;                     // 0x2b19cd88
+  SLdrSpacePirateWeaponData weaponData;    // 0xdc89cc3c
 };
 
-inline SLdrSpacePirate::SLdrSpacePirate() : editorProperties(), patterned(), actorInformation(), ingPossessionData(), projectile(kInvalidAssetId), projectileDamage(), bladeDamage(), kneelAttackShot(kInvalidAssetId), kneelAttackDamage(), weaponData() {
+inline SLdrSpacePirate::SLdrSpacePirate()
+: editorProperties()
+, patterned()
+, actorInformation()
+, ingPossessionData()
+, projectile(kInvalidAssetId)
+, projectileDamage()
+, bladeDamage()
+, kneelAttackShot(kInvalidAssetId)
+, kneelAttackDamage()
+, weaponData() {
   patterned.turnSpeed = 360.0f;
   patterned.detectionAngle = 90.0f;
   patterned.minAttackRange = 4.0f;

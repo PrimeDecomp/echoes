@@ -15,19 +15,25 @@ struct SLdrMetaree {
   ~SLdrMetaree();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrDamageInfo radiusDamage; // 0x086d58dd
-  float dropHeight; // 0x38a5566f
-  CVector3f collisionOffset0; // 0xa287077d
-  float attackSpeed; // 0x6c0a2bc8
-  float dropDelay; // 0x0097f282
-  float haltDelay; // 0xe4e808c9
-  float launchSpeed; // 0x31381a17
-  SLdrAudioPlaybackParms turnSound; // 0xea11d1fa
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrDamageInfo radiusDamage;           // 0x086d58dd
+  float dropHeight;                      // 0x38a5566f
+  CVector3f collisionOffset0;            // 0xa287077d
+  float attackSpeed;                     // 0x6c0a2bc8
+  float dropDelay;                       // 0x0097f282
+  float haltDelay;                       // 0xe4e808c9
+  float launchSpeed;                     // 0x31381a17
+  SLdrAudioPlaybackParms turnSound;      // 0xea11d1fa
 };
 
-inline SLdrMetaree::SLdrMetaree() : editorProperties(), patterned(), actorInformation(), radiusDamage(), collisionOffset0(CVector3f::Zero()), turnSound() {
+inline SLdrMetaree::SLdrMetaree()
+: editorProperties()
+, patterned()
+, actorInformation()
+, radiusDamage()
+, collisionOffset0(CVector3f::Zero())
+, turnSound() {
   patterned.detectionRange = 10.0f;
   patterned.maxAttackRange = 30.0f;
   patterned.contactDamage.dI_WeaponType = 11;

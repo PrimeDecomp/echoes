@@ -18,30 +18,43 @@ struct SLdrDoor {
   ~SLdrDoor();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionBox; // 0xf344c0b0
-  CVector3f collisionOffset; // 0x2e686c2a
-  SLdrHealthInfo health; // 0xcf90d15e
+  CVector3f collisionBox;                // 0xf344c0b0
+  CVector3f collisionOffset;             // 0x2e686c2a
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  CAssetId shellModel; // 0xb20cc271
-  CAssetId blueShellModel; // 0xae5b2114
-  CColor shellColor; // 0x47b4e863
-  CAssetId burnTexture; // 0x2589c3f0
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CVector3f orbitOffset; // 0x850115e4
-  bool isOpen; // 0xa1dffad2
-  bool isLocked; // 0xdee730f5
-  float openAnimationTime; // 0x2007b71d
-  float closeAnimationTime; // 0xf1a50d29
-  float closeDelay; // 0x06dcf118
-  float shieldFadeOutTime; // 0x5dcf0a64
-  float shieldFadeInTime; // 0xcdca592b
-  bool morphBallTunnel; // 0xcc009f35
-  bool horizontal; // 0xc29765ea
-  SLdrScannableParameters altScannable; // 0x9ec62712
+  CAssetId shellModel;                   // 0xb20cc271
+  CAssetId blueShellModel;               // 0xae5b2114
+  CColor shellColor;                     // 0x47b4e863
+  CAssetId burnTexture;                  // 0x2589c3f0
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CVector3f orbitOffset;                 // 0x850115e4
+  bool isOpen;                           // 0xa1dffad2
+  bool isLocked;                         // 0xdee730f5
+  float openAnimationTime;               // 0x2007b71d
+  float closeAnimationTime;              // 0xf1a50d29
+  float closeDelay;                      // 0x06dcf118
+  float shieldFadeOutTime;               // 0x5dcf0a64
+  float shieldFadeInTime;                // 0xcdca592b
+  bool morphBallTunnel;                  // 0xcc009f35
+  bool horizontal;                       // 0xc29765ea
+  SLdrScannableParameters altScannable;  // 0x9ec62712
 };
 
-inline SLdrDoor::SLdrDoor() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), health(), vulnerability(), animationInformation(), shellModel(kInvalidAssetId), blueShellModel(kInvalidAssetId), shellColor(CColor::Green()), burnTexture(kInvalidAssetId), actorInformation(), orbitOffset(CVector3f::Zero()), altScannable() {
+inline SLdrDoor::SLdrDoor()
+: editorProperties()
+, collisionBox(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, health()
+, vulnerability()
+, animationInformation()
+, shellModel(kInvalidAssetId)
+, blueShellModel(kInvalidAssetId)
+, shellColor(CColor::Green())
+, burnTexture(kInvalidAssetId)
+, actorInformation()
+, orbitOffset(CVector3f::Zero())
+, altScannable() {
   shellColor = CColor(0.0f, 1.0f, 1.0f, 1.0f);
   isOpen = true;
   isLocked = false;

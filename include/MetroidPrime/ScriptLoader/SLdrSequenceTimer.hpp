@@ -10,14 +10,14 @@ struct SLdrSequenceTimer {
   SLdrSequenceTimer();
   ~SLdrSequenceTimer();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
+  SLdrEditorProperties editorProperties;       // 0x255a4580
   SLdrSequenceConnections sequenceConnections; // non-matching name, 0xef5c94e9
-  float startTime; // 0xb8bd2175
-  float maxTime; // 0x03e7b2b4
-  float loopStartTime; // 0xacf9ca5f
-  bool isAutostart; // 0x42c6e2b2
-  bool isLoop; // 0xc08d1b93
-  bool takeExternalTime; // 0x27b3b082
+  float startTime;                             // 0xb8bd2175
+  float maxTime;                               // 0x03e7b2b4
+  float loopStartTime;                         // 0xacf9ca5f
+  bool isAutostart;                            // 0x42c6e2b2
+  bool isLoop;                                 // 0xc08d1b93
+  bool takeExternalTime;                       // 0x27b3b082
 };
 
 inline SLdrSequenceTimer::SLdrSequenceTimer() : editorProperties(), sequenceConnections() {

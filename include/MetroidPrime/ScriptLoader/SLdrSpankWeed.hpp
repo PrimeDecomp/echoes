@@ -12,13 +12,13 @@ struct SLdrSpankWeed {
   ~SLdrSpankWeed();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  bool unknown_0x5cdc877d; // 0x5cdc877d
-  float wakeUpRadius; // 0x835adca1
-  float searchRadius; // 0xed9bf5a3
-  float attackRadius; // 0x7c11b995
-  float hurtSleepDelay; // 0x9b5a4744
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  bool unknown_0x5cdc877d;               // 0x5cdc877d
+  float wakeUpRadius;                    // 0x835adca1
+  float searchRadius;                    // 0xed9bf5a3
+  float attackRadius;                    // 0x7c11b995
+  float hurtSleepDelay;                  // 0x9b5a4744
 };
 
 inline SLdrSpankWeed::SLdrSpankWeed() : editorProperties(), patterned(), actorInformation() {

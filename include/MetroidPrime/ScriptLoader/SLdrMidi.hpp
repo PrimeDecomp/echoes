@@ -11,10 +11,10 @@ struct SLdrMidi {
   ~SLdrMidi();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId songFile; // 0x9d1a67a8
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  int volume; // 0x80c66c37
+  CAssetId songFile;                     // 0x9d1a67a8
+  float fadeInTime;                      // 0x90aa341f
+  float fadeOutTime;                     // 0x7c269ebc
+  int volume;                            // 0x80c66c37
 };
 
 inline SLdrMidi::SLdrMidi() : editorProperties(), songFile(kInvalidAssetId) {

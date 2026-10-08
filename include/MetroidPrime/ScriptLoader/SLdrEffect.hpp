@@ -14,34 +14,39 @@ struct SLdrEffect {
   ~SLdrEffect();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId particleEffect; // 0x0a479d6f
-  bool unknown_0x3df5a489; // 0x3df5a489
-  bool restartOnActivate; // 0xa4b9984f
-  bool unknown_0xee538174; // 0xee538174
-  float unknown_0xa94b0efd; // 0xa94b0efd
-  float unknown_0x93756968; // 0x93756968
-  float unknown_0x0b94597d; // 0x0b94597d
-  float unknown_0xd0e8a496; // 0xd0e8a496
-  bool unknown_0xa8bb6c61; // 0xa8bb6c61
-  float unknown_0x7589d549; // 0x7589d549
-  float unknown_0xa7d7d767; // 0xa7d7d767
-  float unknown_0xfe69615c; // 0xfe69615c
-  bool visibleInScanOrNormal; // 0x88d914a6
-  bool visibleInDark; // 0xc2028cc2
-  bool visibleInEcho; // 0xcefa1a48
-  bool deleteWhenDone; // 0x6714021c
-  bool unknown_0xbe931927; // 0xbe931927
-  int renderOrder; // 0x2fa4e5d7
-  SLdrLightParameters lighting; // 0xb028db0e
-  bool motionSplinePathLoops; // 0x3d7406af
-  SLdrSplineType motionSplineType; // 0x493d6a2d
-  SLdrSpline motionControlSpline; // 0x27e5f874
-  float motionSplineDuration; // 0xfd1e2f56
-  bool unknown_0x73e63382; // 0x73e63382
-  bool unknown_0x608ecac5; // 0x608ecac5
+  CAssetId particleEffect;               // 0x0a479d6f
+  bool unknown_0x3df5a489;               // 0x3df5a489
+  bool restartOnActivate;                // 0xa4b9984f
+  bool unknown_0xee538174;               // 0xee538174
+  float unknown_0xa94b0efd;              // 0xa94b0efd
+  float unknown_0x93756968;              // 0x93756968
+  float unknown_0x0b94597d;              // 0x0b94597d
+  float unknown_0xd0e8a496;              // 0xd0e8a496
+  bool unknown_0xa8bb6c61;               // 0xa8bb6c61
+  float unknown_0x7589d549;              // 0x7589d549
+  float unknown_0xa7d7d767;              // 0xa7d7d767
+  float unknown_0xfe69615c;              // 0xfe69615c
+  bool visibleInScanOrNormal;            // 0x88d914a6
+  bool visibleInDark;                    // 0xc2028cc2
+  bool visibleInEcho;                    // 0xcefa1a48
+  bool deleteWhenDone;                   // 0x6714021c
+  bool destroyParticlesOnDeactivate;     // 0xbe931927
+  int renderOrder;                       // 0x2fa4e5d7
+  SLdrLightParameters lighting;          // 0xb028db0e
+  bool motionSplinePathLoops;            // 0x3d7406af
+  SLdrSplineType motionSplineType;       // 0x493d6a2d
+  SLdrSpline motionControlSpline;        // 0x27e5f874
+  float motionSplineDuration;            // 0xfd1e2f56
+  bool splineMovesParticleEmitterOnly;   // 0x73e63382
+  bool adoptSplineOrientation;           // 0x608ecac5
 };
 
-inline SLdrEffect::SLdrEffect() : editorProperties(), particleEffect(kInvalidAssetId), lighting(), motionSplineType(), motionControlSpline() {
+inline SLdrEffect::SLdrEffect()
+: editorProperties()
+, particleEffect(kInvalidAssetId)
+, lighting()
+, motionSplineType()
+, motionControlSpline() {
   unknown_0x3df5a489 = false;
   restartOnActivate = false;
   unknown_0xee538174 = false;
@@ -57,12 +62,12 @@ inline SLdrEffect::SLdrEffect() : editorProperties(), particleEffect(kInvalidAss
   visibleInDark = true;
   visibleInEcho = true;
   deleteWhenDone = false;
-  unknown_0xbe931927 = false;
+  destroyParticlesOnDeactivate = false;
   renderOrder = 0;
   motionSplinePathLoops = false;
   motionSplineDuration = 10.0f;
-  unknown_0x73e63382 = false;
-  unknown_0x608ecac5 = false;
+  splineMovesParticleEmitterOnly = false;
+  adoptSplineOrientation = false;
 }
 
 inline SLdrEffect::~SLdrEffect() {}

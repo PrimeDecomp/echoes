@@ -13,35 +13,47 @@ struct SLdrFrontEndDataNetwork {
   ~SLdrFrontEndDataNetwork();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool isRoot; // 0x5c3c9e4a
-  bool unknown_0x77f59f4a; // 0x77f59f4a
-  bool unknown_0x29c0cb7f; // 0x29c0cb7f
-  bool canBeSelected; // 0x02e74cba
-  bool isProxy; // 0xa2ac58e9
-  bool isLocked; // 0xdee730f5
-  bool unknown_0x8b8fa0fe; // 0x8b8fa0fe
-  bool unknown_0xd0f2d612; // 0xd0f2d612
-  float connectionRadius; // 0x5ebc97fd
-  CAssetId hotDotTexture; // 0x3e5727aa
-  CAssetId hotDotHaloTexture; // 0x547fffc3
-  CAssetId hotDotAButtonTexture; // 0xcdaaba00
-  CColor selectedColor; // 0x7f62da5b
-  CColor unselectedMinColor; // 0xed286ce4
-  CColor unselectedMaxColor; // 0xad671492
-  CColor disabledColor; // 0xb44d4c70
-  int rotationSound; // 0x2d23720f
-  SLdrSpline transitionShrinkSpline; // 0xec45879e
-  float transitionShrinkTime; // 0xfa20775d
-  SLdrSpline transitionMoveSpline; // 0x5e30354a
-  float transitionMoveTime; // 0x3c1fa2ca
-  SLdrSpline transitionExpandSpline; // 0xb492c2af
-  float transitionExpandTime; // 0x6d5198b4
-  SLdrSpline transitionMoveInSpline; // 0xdf1b312c
-  float transitionMoveInTime; // 0xbac12ca0
-  int rotationSoundVolume; // 0x4da90d36
+  bool isRoot;                           // 0x5c3c9e4a
+  bool unknown_0x77f59f4a;               // 0x77f59f4a
+  bool unknown_0x29c0cb7f;               // 0x29c0cb7f
+  bool canBeSelected;                    // 0x02e74cba
+  bool isProxy;                          // 0xa2ac58e9
+  bool isLocked;                         // 0xdee730f5
+  bool unknown_0x8b8fa0fe;               // 0x8b8fa0fe
+  bool unknown_0xd0f2d612;               // 0xd0f2d612
+  float connectionRadius;                // 0x5ebc97fd
+  CAssetId hotDotTexture;                // 0x3e5727aa
+  CAssetId hotDotHaloTexture;            // 0x547fffc3
+  CAssetId hotDotAButtonTexture;         // 0xcdaaba00
+  CColor selectedColor;                  // 0x7f62da5b
+  CColor unselectedMinColor;             // 0xed286ce4
+  CColor unselectedMaxColor;             // 0xad671492
+  CColor disabledColor;                  // 0xb44d4c70
+  int rotationSound;                     // 0x2d23720f
+  SLdrSpline transitionShrinkSpline;     // 0xec45879e
+  float transitionShrinkTime;            // 0xfa20775d
+  SLdrSpline transitionMoveSpline;       // 0x5e30354a
+  float transitionMoveTime;              // 0x3c1fa2ca
+  SLdrSpline transitionExpandSpline;     // 0xb492c2af
+  float transitionExpandTime;            // 0x6d5198b4
+  SLdrSpline transitionMoveInSpline;     // 0xdf1b312c
+  float transitionMoveInTime;            // 0xbac12ca0
+  int rotationSoundVolume;               // 0x4da90d36
 };
 
-inline SLdrFrontEndDataNetwork::SLdrFrontEndDataNetwork() : editorProperties(), hotDotTexture(kInvalidAssetId), hotDotHaloTexture(kInvalidAssetId), hotDotAButtonTexture(kInvalidAssetId), selectedColor(CColor::Green()), unselectedMinColor(CColor::Green()), unselectedMaxColor(CColor::Green()), disabledColor(CColor::Green()), transitionShrinkSpline(), transitionMoveSpline(), transitionExpandSpline(), transitionMoveInSpline() {
+inline SLdrFrontEndDataNetwork::SLdrFrontEndDataNetwork()
+: editorProperties()
+, hotDotTexture(kInvalidAssetId)
+, hotDotHaloTexture(kInvalidAssetId)
+, hotDotAButtonTexture(kInvalidAssetId)
+, selectedColor(CColor::Green())
+, unselectedMinColor(CColor::Green())
+, unselectedMaxColor(CColor::Green())
+, disabledColor(CColor::Green())
+, transitionShrinkSpline()
+, transitionMoveSpline()
+, transitionExpandSpline()
+, transitionMoveInSpline() {
   isRoot = false;
   unknown_0x77f59f4a = false;
   unknown_0x29c0cb7f = true;

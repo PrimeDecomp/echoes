@@ -12,25 +12,26 @@ struct SLdrColorModulate {
   ~SLdrColorModulate();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CColor color_A; // 0xd6a3d26f
-  CColor color_B; // 0x5037a0c1
-  int blend_Mode; // 0x94f0365c
-  float time_A2B; // 0x1afa5c48
-  float time_B2A; // 0x12e12905
-  bool do_Reverse; // 0xcec5244b
-  bool reset_Target_When_Done; // 0x81fc979c
-  bool depth_Compare; // 0x94c01b0c
-  bool depth_Update; // 0xaed25a51
-  bool depth_Backwards; // 0x35dc43d0
-  bool autoStart; // 0x3217dff8
-  bool updateTime; // 0x3a7f59f7
-  bool loopForever; // 0x08bb73c5
-  bool externalTime; // 0x7e379ae8
-  bool copyModelColorToColorA; // 0x74081e94
-  SLdrSpline controlSpline; // 0x15567fe7
+  CColor color_A;                        // 0xd6a3d26f
+  CColor color_B;                        // 0x5037a0c1
+  int blend_Mode;                        // 0x94f0365c
+  float time_A2B;                        // 0x1afa5c48
+  float time_B2A;                        // 0x12e12905
+  bool do_Reverse;                       // 0xcec5244b
+  bool reset_Target_When_Done;           // 0x81fc979c
+  bool depth_Compare;                    // 0x94c01b0c
+  bool depth_Update;                     // 0xaed25a51
+  bool depth_Backwards;                  // 0x35dc43d0
+  bool autoStart;                        // 0x3217dff8
+  bool updateTime;                       // 0x3a7f59f7
+  bool loopForever;                      // 0x08bb73c5
+  bool externalTime;                     // 0x7e379ae8
+  bool copyModelColorToColorA;           // 0x74081e94
+  SLdrSpline controlSpline;              // 0x15567fe7
 };
 
-inline SLdrColorModulate::SLdrColorModulate() : editorProperties(), color_A(CColor::Green()), color_B(CColor::Green()), controlSpline() {
+inline SLdrColorModulate::SLdrColorModulate()
+: editorProperties(), color_A(CColor::Green()), color_B(CColor::Green()), controlSpline() {
   color_A = CColor(1.0f, 1.0f, 1.0f, 0.0f);
   color_B = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   blend_Mode = 0;

@@ -11,14 +11,14 @@ struct SLdrEMPulse {
   ~SLdrEMPulse();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float initialSize; // 0x636df2db
-  float finalSize; // 0x1e6686fe
-  float duration; // 0x8b51e23f
-  float minHudDisableTime; // 0x96bd6426
-  float maxHudDisableTime; // 0xd7aa5ba0
-  float minHudDisableAmount; // 0x15ebb6e9
-  float maxHudDisableAmount; // 0xce54e50e
-  CAssetId explosion; // 0xd8c6d15c
+  float initialSize;                     // 0x636df2db
+  float finalSize;                       // 0x1e6686fe
+  float duration;                        // 0x8b51e23f
+  float minHudDisableTime;               // 0x96bd6426
+  float maxHudDisableTime;               // 0xd7aa5ba0
+  float minHudDisableAmount;             // 0x15ebb6e9
+  float maxHudDisableAmount;             // 0xce54e50e
+  CAssetId explosion;                    // 0xd8c6d15c
 };
 
 inline SLdrEMPulse::SLdrEMPulse() : editorProperties(), explosion(kInvalidAssetId) {

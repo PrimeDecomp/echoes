@@ -13,53 +13,66 @@ struct SLdrCoin {
   SLdrCoin();
   ~SLdrCoin();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  float coneSpread; // 0x8d6fc391
-  float minimumSpeed; // 0x0185263e
-  float maximumSpeed; // 0x140ef2cc
-  float minimumSpinSpeed; // 0x863ebb76
-  float maximumSpinSpeed; // 0x957b5ddd
-  float minimumLifeTime; // 0x54a8c481
-  float maximumLifeTime; // 0x7dd63999
-  float disableCollisionTime; // 0x6b571ba5
-  float fadeInEndPercentage; // 0x50051a17
-  float fadeOutStartPercentage; // 0x6353c409
-  CColor startColor; // 0x3a5634d8
-  CColor endColor; // 0x5af5867d
-  float scaleStartPercentage; // 0x886e7c9f
-  CVector3f finalScale; // 0x80c22a0a
-  float unknown_0x417f4a91; // 0x417f4a91
-  float gravity; // 0x2f2ae3e5
-  CVector3f positionOffset; // 0xef90f09d
-  CAssetId model; // 0xc27ffa8f
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId particle1; // 0x41dd4d40
-  int bounceSound; // 0x0bb3ccae
-  int maxBounceSounds; // 0x991202c3
-  float bounceSoundVolumeDecay; // 0x76c79503
-  float bounceSoundSpeedThreshold; // 0x310dfac8
-  CVector3f particleSystem1Scale; // 0x19a6f71f
+  SLdrEditorProperties editorProperties;     // 0x255a4580
+  float coneSpread;                          // 0x8d6fc391
+  float minimumSpeed;                        // 0x0185263e
+  float maximumSpeed;                        // 0x140ef2cc
+  float minimumSpinSpeed;                    // 0x863ebb76
+  float maximumSpinSpeed;                    // 0x957b5ddd
+  float minimumLifeTime;                     // 0x54a8c481
+  float maximumLifeTime;                     // 0x7dd63999
+  float disableCollisionTime;                // 0x6b571ba5
+  float fadeInEndPercentage;                 // 0x50051a17
+  float fadeOutStartPercentage;              // 0x6353c409
+  CColor startColor;                         // 0x3a5634d8
+  CColor endColor;                           // 0x5af5867d
+  float scaleStartPercentage;                // 0x886e7c9f
+  CVector3f finalScale;                      // 0x80c22a0a
+  float bounciness;                          // 0x417f4a91
+  float gravity;                             // 0x2f2ae3e5
+  CVector3f positionOffset;                  // 0xef90f09d
+  CAssetId model;                            // 0xc27ffa8f
+  SLdrActorParameters actorInformation;      // 0x7e397fed
+  CAssetId particle1;                        // 0x41dd4d40
+  int bounceSound;                           // 0x0bb3ccae
+  int maxBounceSounds;                       // 0x991202c3
+  float bounceSoundVolumeDecay;              // 0x76c79503
+  float bounceSoundSpeedThreshold;           // 0x310dfac8
+  CVector3f particleSystem1Scale;            // 0x19a6f71f
   bool particleSystem1UsesGlobalTranslation; // 0x3b03a01e
   bool particleSystem1WaitForParticlesToDie; // 0x3bdd2fed
-  int particleSystem1Orientation; // 0x334a34bb
-  CAssetId particle2; // 0xc7493fee
-  CVector3f particleSystem2Scale; // 0x6e3825ef
+  int particleSystem1Orientation;            // 0x334a34bb
+  CAssetId particle2;                        // 0xc7493fee
+  CVector3f particleSystem2Scale;            // 0x6e3825ef
   bool particleSystem2UsesGlobalTranslation; // 0xc9544de6
   bool particleSystem2WaitForParticlesToDie; // 0xc98ac215
-  int particleSystem2Orientation; // 0xd9cce9d9
-  CAssetId deathParticle; // 0x979042c8
-  CVector3f deathParticleSystemScale; // 0xe9214cd8
-  int deathParticleSystemOrientation; // 0x9dfadee0
-  bool isCollider; // 0x2c7b18dd
-  bool isShootable; // 0x8c73cb7c
-  bool dieOnCollision; // 0x0d7fad55
-  bool unknown_0xdcaa0f22; // 0xdcaa0f22
-  bool flickerOnFadeOut; // 0xbfd82a19
-  bool unknown_0x723d42d6; // 0x723d42d6
-  float disablePhysicsThreshold; // 0x295f05b7
+  int particleSystem2Orientation;            // 0xd9cce9d9
+  CAssetId deathParticle;                    // 0x979042c8
+  CVector3f deathParticleSystemScale;        // 0xe9214cd8
+  int deathParticleSystemOrientation;        // 0x9dfadee0
+  bool isCollider;                           // 0x2c7b18dd
+  bool isShootable;                          // 0x8c73cb7c
+  bool dieOnCollision;                       // 0x0d7fad55
+  bool unknown_0xdcaa0f22;                   // 0xdcaa0f22
+  bool flickerOnFadeOut;                     // 0xbfd82a19
+  bool unknown_0x723d42d6;                   // 0x723d42d6
+  float disablePhysicsThreshold;             // 0x295f05b7
 };
 
-inline SLdrCoin::SLdrCoin() : editorProperties(), startColor(CColor::Green()), endColor(CColor::Green()), finalScale(CVector3f::Zero()), positionOffset(CVector3f::Zero()), model(kInvalidAssetId), actorInformation(), particle1(kInvalidAssetId), particleSystem1Scale(CVector3f::Zero()), particle2(kInvalidAssetId), particleSystem2Scale(CVector3f::Zero()), deathParticle(kInvalidAssetId), deathParticleSystemScale(CVector3f::Zero()) {
+inline SLdrCoin::SLdrCoin()
+: editorProperties()
+, startColor(CColor::Green())
+, endColor(CColor::Green())
+, finalScale(CVector3f::Zero())
+, positionOffset(CVector3f::Zero())
+, model(kInvalidAssetId)
+, actorInformation()
+, particle1(kInvalidAssetId)
+, particleSystem1Scale(CVector3f::Zero())
+, particle2(kInvalidAssetId)
+, particleSystem2Scale(CVector3f::Zero())
+, deathParticle(kInvalidAssetId)
+, deathParticleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
   coneSpread = 180.0f;
   minimumSpeed = 5.0f;
@@ -75,7 +88,7 @@ inline SLdrCoin::SLdrCoin() : editorProperties(), startColor(CColor::Green()), e
   endColor = CColor(1.0f, 1.0f, 1.0f, 0.0f);
   scaleStartPercentage = 80.0f;
   finalScale = CVector3f(1.0f, 1.0f, 1.0f);
-  unknown_0x417f4a91 = 0.375f;
+  bounciness = 0.375f;
   gravity = 25.0f;
   bounceSound = 0;
   maxBounceSounds = 1;

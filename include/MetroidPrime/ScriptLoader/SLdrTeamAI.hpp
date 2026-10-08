@@ -10,15 +10,15 @@ struct SLdrTeamAI {
   ~SLdrTeamAI();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int maxTeamSize; // 0xbf37e518
-  int maxMeleeAttackers; // 0xcebee4ab
-  int maxRangedAttackers; // 0x7555c1ea
-  int unknown_0x9fa9c457; // 0x9fa9c457
-  int maxSimultaneousMeleeAttacks; // 0x54cd2755
-  int maxSimultaneousRangedAttacks; // 0xc36ed15c
-  int teamFormation; // 0x37a20376
-  float minTimeBetweenMeleeAttacks; // 0xd3ad55b6
-  float minTimeBetweenRangedAttacks; // 0x8d00b839
+  int maxTeamSize;                       // 0xbf37e518
+  int maxMeleeAttackers;                 // 0xcebee4ab
+  int maxRangedAttackers;                // 0x7555c1ea
+  int unknown_0x9fa9c457;                // 0x9fa9c457
+  int maxSimultaneousMeleeAttacks;       // 0x54cd2755
+  int maxSimultaneousRangedAttacks;      // 0xc36ed15c
+  int teamFormation;                     // 0x37a20376
+  float minTimeBetweenMeleeAttacks;      // 0xd3ad55b6
+  float minTimeBetweenRangedAttacks;     // 0x8d00b839
 };
 
 inline SLdrTeamAI::SLdrTeamAI() : editorProperties() {

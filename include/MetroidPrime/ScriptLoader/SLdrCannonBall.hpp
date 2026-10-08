@@ -11,11 +11,10 @@ struct SLdrCannonBall {
   ~SLdrCannonBall();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId effect; // 0xb68c6d96
+  CAssetId effect;                       // 0xb68c6d96
 };
 
-inline SLdrCannonBall::SLdrCannonBall() : editorProperties(), effect(kInvalidAssetId) {
-}
+inline SLdrCannonBall::SLdrCannonBall() : editorProperties(), effect(kInvalidAssetId) {}
 
 inline SLdrCannonBall::~SLdrCannonBall() {}
 

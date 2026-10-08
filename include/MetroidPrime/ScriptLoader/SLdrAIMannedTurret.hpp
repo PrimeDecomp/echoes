@@ -14,28 +14,34 @@ struct SLdrAIMannedTurretData {
   SLdrAIMannedTurretData();
   ~SLdrAIMannedTurretData();
 
-  float maxHorizRotationLeft; // 0x17cd8b2a
-  float maxHorizRotationRight; // 0x1473dad2
-  float maxVertElevationUp; // 0x3650ce75
-  float maxVertElevationDown; // 0x78520e6e
-  float damageAngle; // 0xa39a5d72
-  float horizSpeed; // 0xfb2e32db
-  float vertSpeed; // 0x1b3c8683
-  float fireRate; // 0xc6e48f18
-  float fireRateRandomFactor; // 0xf9bd253e
-  float maxAttackAngle; // 0xf11f7384
-  float maxAttackRange; // 0xff77c96f
-  float startAttackRange; // 0xb63f274c
-  float attackLeashTimer; // 0xf8d1ea77
-  SLdrDamageInfo weaponDamage; // 0x8e5f7e96
-  CAssetId weaponEffect; // 0xc43360a7
-  SLdrHealthInfo health; // 0xcf90d15e
+  float maxHorizRotationLeft;            // 0x17cd8b2a
+  float maxHorizRotationRight;           // 0x1473dad2
+  float maxVertElevationUp;              // 0x3650ce75
+  float maxVertElevationDown;            // 0x78520e6e
+  float damageAngle;                     // 0xa39a5d72
+  float horizSpeed;                      // 0xfb2e32db
+  float vertSpeed;                       // 0x1b3c8683
+  float fireRate;                        // 0xc6e48f18
+  float fireRateRandomFactor;            // 0xf9bd253e
+  float maxAttackAngle;                  // 0xf11f7384
+  float maxAttackRange;                  // 0xff77c96f
+  float startAttackRange;                // 0xb63f274c
+  float attackLeashTimer;                // 0xf8d1ea77
+  SLdrDamageInfo weaponDamage;           // 0x8e5f7e96
+  CAssetId weaponEffect;                 // 0xc43360a7
+  SLdrHealthInfo health;                 // 0xcf90d15e
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  CAssetId stateMachine; // 0x55744160
-  CAssetId telegraphEffect; // 0x8f68ac21
+  CAssetId stateMachine;                 // 0x55744160
+  CAssetId telegraphEffect;              // 0x8f68ac21
 };
 
-inline SLdrAIMannedTurretData::SLdrAIMannedTurretData() : weaponDamage(), weaponEffect(kInvalidAssetId), health(), vulnerability(), stateMachine(kInvalidAssetId), telegraphEffect(kInvalidAssetId) {
+inline SLdrAIMannedTurretData::SLdrAIMannedTurretData()
+: weaponDamage()
+, weaponEffect(kInvalidAssetId)
+, health()
+, vulnerability()
+, stateMachine(kInvalidAssetId)
+, telegraphEffect(kInvalidAssetId) {
   maxHorizRotationLeft = 90.0f;
   maxHorizRotationRight = 90.0f;
   maxVertElevationUp = 60.0f;
@@ -147,12 +153,13 @@ struct SLdrAIMannedTurret {
   ~SLdrAIMannedTurret();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrAIMannedTurretData data; // 0xb15dec6f
-  SLdrSpline patrolHorizSpline; // 0x260792cf
-  SLdrSpline patrolVerticalSpline; // 0x84284b1c
+  SLdrAIMannedTurretData data;           // 0xb15dec6f
+  SLdrSpline patrolHorizSpline;          // 0x260792cf
+  SLdrSpline patrolVerticalSpline;       // 0x84284b1c
 };
 
-inline SLdrAIMannedTurret::SLdrAIMannedTurret() : editorProperties(), data(), patrolHorizSpline(), patrolVerticalSpline() {
+inline SLdrAIMannedTurret::SLdrAIMannedTurret()
+: editorProperties(), data(), patrolHorizSpline(), patrolVerticalSpline() {
   editorProperties.active = false;
 }
 

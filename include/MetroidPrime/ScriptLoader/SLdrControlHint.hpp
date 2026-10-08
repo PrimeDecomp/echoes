@@ -11,7 +11,7 @@ struct SLdrCommandData {
   ~SLdrCommandData();
 
   SLdrCommand command; // 0x359c7aaf
-  int state; // 0x4063422a
+  int state;           // 0x4063422a
 };
 
 inline SLdrCommandData::SLdrCommandData() : command() {
@@ -47,24 +47,33 @@ struct SLdrControlHint {
   ~SLdrControlHint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int priority; // 0x42087650
-  float timer; // 0x8747552e
-  int cancelMethod; // 0x7b167c40
-  int cancelPressCount; // 0xaa8d1afe
-  float cancelPressTime; // 0x26765b82
-  float cancelTimer; // 0x6a45d9d0
-  uint disableControlFlagsControlHint; // 0x9a78a8bb
-  SLdrCommandData command1; // 0xa0840dd7
-  SLdrCommandData command2; // 0xd71adf27
-  SLdrCommandData command3; // 0x4cbf9348
-  SLdrCommandData command4; // 0x38277ac7
-  SLdrCommandData command5; // 0xa38236a8
-  SLdrCommandData command6; // 0xd41ce458
-  SLdrCommandData command7; // 0x4fb9a837
-  SLdrCommandData command8; // 0x3d2d3746
+  int priority;                          // 0x42087650
+  float timer;                           // 0x8747552e
+  int cancelMethod;                      // 0x7b167c40
+  int cancelPressCount;                  // 0xaa8d1afe
+  float cancelPressTime;                 // 0x26765b82
+  float cancelTimer;                     // 0x6a45d9d0
+  uint disableControlFlagsControlHint;   // 0x9a78a8bb
+  SLdrCommandData command1;              // 0xa0840dd7
+  SLdrCommandData command2;              // 0xd71adf27
+  SLdrCommandData command3;              // 0x4cbf9348
+  SLdrCommandData command4;              // 0x38277ac7
+  SLdrCommandData command5;              // 0xa38236a8
+  SLdrCommandData command6;              // 0xd41ce458
+  SLdrCommandData command7;              // 0x4fb9a837
+  SLdrCommandData command8;              // 0x3d2d3746
 };
 
-inline SLdrControlHint::SLdrControlHint() : editorProperties(), command1(), command2(), command3(), command4(), command5(), command6(), command7(), command8() {
+inline SLdrControlHint::SLdrControlHint()
+: editorProperties()
+, command1()
+, command2()
+, command3()
+, command4()
+, command5()
+, command6()
+, command7()
+, command8() {
   priority = 10;
   timer = 0.0f;
   cancelMethod = 0;

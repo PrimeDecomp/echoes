@@ -12,22 +12,34 @@ struct SLdrScanTreeMenu {
   ~SLdrScanTreeMenu();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId nodeName; // 0x46219bac
-  rstl::string stringName; // 0x32698bd6
-  int unknown_0x0261a4e0; // 0x0261a4e0
-  CAssetId menuStringTable; // 0xa6a874e9
-  rstl::string stringTableOption1; // 0x30531924
-  int menuValue1; // 0x50bce632
-  rstl::string stringTableOption2; // 0x01bb03b9
-  int menuValue2; // 0x420949dc
-  rstl::string stringTableOption3; // 0xa7cc080d
-  int menuValue3; // 0xfab52eb9
-  rstl::string stringTableOption4; // 0x626b3683
-  int menuValue4; // 0x67621600
+  CAssetId nodeName;                     // 0x46219bac
+  rstl::string stringName;               // 0x32698bd6
+  int unknown_0x0261a4e0;                // 0x0261a4e0
+  CAssetId menuStringTable;              // 0xa6a874e9
+  rstl::string stringTableOption1;       // 0x30531924
+  int menuValue1;                        // 0x50bce632
+  rstl::string stringTableOption2;       // 0x01bb03b9
+  int menuValue2;                        // 0x420949dc
+  rstl::string stringTableOption3;       // 0xa7cc080d
+  int menuValue3;                        // 0xfab52eb9
+  rstl::string stringTableOption4;       // 0x626b3683
+  int menuValue4;                        // 0x67621600
 };
 
-inline SLdrScanTreeMenu::SLdrScanTreeMenu() : editorProperties(), nodeName(kInvalidAssetId), stringName(), unknown_0x0261a4e0(), menuStringTable(kInvalidAssetId), stringTableOption1(), menuValue1(), stringTableOption2(), menuValue2(), stringTableOption3(), menuValue3(), stringTableOption4(), menuValue4() {
-}
+inline SLdrScanTreeMenu::SLdrScanTreeMenu()
+: editorProperties()
+, nodeName(kInvalidAssetId)
+, stringName()
+, unknown_0x0261a4e0()
+, menuStringTable(kInvalidAssetId)
+, stringTableOption1()
+, menuValue1()
+, stringTableOption2()
+, menuValue2()
+, stringTableOption3()
+, menuValue3()
+, stringTableOption4()
+, menuValue4() {}
 
 inline SLdrScanTreeMenu::~SLdrScanTreeMenu() {}
 

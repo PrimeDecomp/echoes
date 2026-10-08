@@ -17,72 +17,107 @@ struct SLdrGrenchler {
   SLdrGrenchler();
   ~SLdrGrenchler();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float tailDestroyedHealth; // 0x04d51e3a
-  bool isGrappleGuardian; // 0x33408e7f
-  bool hasHealthBar; // 0x67b6ea0b
-  SLdrDamageVulnerability damageVulnerability; // non-matching name, 0x0a7326a3
-  SLdrAnimationSet tail; // 0xa18f626b
-  SLdrAnimationSet tailWhenUnderwater; // 0x0abef809
-  CAssetId taillessModel; // 0x4f3a4566
-  CAssetId taillessSkinRules; // 0x401bc111
-  SLdrAnimationSet tail_Dark; // 0x9b193ae8
-  SLdrAnimationSet tailWhenUnderwater_Dark; // 0xc24cf580
-  CAssetId taillessModel_Dark; // 0x72258fe7
-  CAssetId taillessSkinRules_Dark; // 0xe5fba24c
-  int tailHitSound; // 0x55c51213
-  int tailDestroyedSound; // 0x385e4738
-  float minTimeBetweenCharges; // 0x5d8f2bee
-  float unknown_0x7bd1a35f; // 0x7bd1a35f
-  float chargeAttackMinRange; // 0xea4b88c8
-  float chargeAttackMaxRange; // 0xaa04f0be
-  float biteAttackMinRange; // 0x98d5d373
-  float biteAttackMaxRange; // 0xd89aab05
-  float biteAttackMinPause; // 0x2e6096ee
-  float biteAttackMaxPause; // 0x6e2fee98
-  float biteAttackDamageRadius; // 0x49632b31
-  SLdrDamageInfo biteDamage; // 0xdf636c4b
-  float beamAttackMinRange; // 0x262b2508
-  float beamAttackMaxRange; // 0x66645d7e
-  float beamAttackMinPause; // 0x909e6095
-  float beamAttackMaxPause; // 0xd0d118e3
-  CAssetId electricEffect; // 0x49fae143
-  SLdrDamageInfo beamDamage; // 0x13e30e4d
-  float beamAttackMaxAngle; // 0x680ce795
+  SLdrEditorProperties editorProperties;          // 0x255a4580
+  SLdrPatternedAITypedef patterned;               // 0xb3774750
+  SLdrActorParameters actorInformation;           // 0x7e397fed
+  float tailDestroyedHealth;                      // 0x04d51e3a
+  bool isGrappleGuardian;                         // 0x33408e7f
+  bool hasHealthBar;                              // 0x67b6ea0b
+  SLdrDamageVulnerability damageVulnerability;    // non-matching name, 0x0a7326a3
+  SLdrAnimationSet tail;                          // 0xa18f626b
+  SLdrAnimationSet tailWhenUnderwater;            // 0x0abef809
+  CAssetId taillessModel;                         // 0x4f3a4566
+  CAssetId taillessSkinRules;                     // 0x401bc111
+  SLdrAnimationSet tail_Dark;                     // 0x9b193ae8
+  SLdrAnimationSet tailWhenUnderwater_Dark;       // 0xc24cf580
+  CAssetId taillessModel_Dark;                    // 0x72258fe7
+  CAssetId taillessSkinRules_Dark;                // 0xe5fba24c
+  int tailHitSound;                               // 0x55c51213
+  int tailDestroyedSound;                         // 0x385e4738
+  float minTimeBetweenCharges;                    // 0x5d8f2bee
+  float unknown_0x7bd1a35f;                       // 0x7bd1a35f
+  float chargeAttackMinRange;                     // 0xea4b88c8
+  float chargeAttackMaxRange;                     // 0xaa04f0be
+  float biteAttackMinRange;                       // 0x98d5d373
+  float biteAttackMaxRange;                       // 0xd89aab05
+  float biteAttackMinPause;                       // 0x2e6096ee
+  float biteAttackMaxPause;                       // 0x6e2fee98
+  float biteAttackDamageRadius;                   // 0x49632b31
+  SLdrDamageInfo biteDamage;                      // 0xdf636c4b
+  float beamAttackMinRange;                       // 0x262b2508
+  float beamAttackMaxRange;                       // 0x66645d7e
+  float beamAttackMinPause;                       // 0x909e6095
+  float beamAttackMaxPause;                       // 0xd0d118e3
+  CAssetId electricEffect;                        // 0x49fae143
+  SLdrDamageInfo beamDamage;                      // 0x13e30e4d
+  float beamAttackMaxAngle;                       // 0x680ce795
   SLdrAudioPlaybackParms beamAttackSound_OneShot; // 0xad47febe
-  float burstAttackMinRange; // 0x06f7ceed
-  float burstAttackMaxRange; // 0x46b8b69b
-  float burstAttackMinPause; // 0xb0428b70
-  float burstAttackMaxPause; // 0xf00df306
-  float burstAttackDamageRadius; // 0xb00775e6
-  CAssetId burstProjectile; // 0x7ef9aa67
-  SLdrDamageInfo burstDamage; // 0x5285db00
-  CAssetId surfaceRingsEffect; // 0x30b81a7e
-  CAssetId shallowWaterRing; // 0xbf4daae6
-  CAssetId shallowWaterSplash; // 0x70247a6e
-  CAssetId pART; // non-matching name, 0xffcee1a9
-  CAssetId grappleSwoosh; // 0xae1f2a26
-  CAssetId grappleBeamPart; // 0x0dabf0af
-  CAssetId grappleHitFx; // 0xe51746d1
-  SLdrDamageInfo grappleDamage; // 0x2ce7520f
-  SLdrAudioPlaybackParms grappleBeamSound_Loop; // 0xb6b9074b
-  CAssetId beamEffect; // 0x05439a08
-  int unknown_0xd4753ff4; // 0xd4753ff4
-  float unknown_0x05fc6001; // 0x05fc6001
-  float unknown_0x13e5b580; // 0x13e5b580
-  float unknown_0xfc6f199d; // 0xfc6f199d
-  CAssetId grappleVisorEffect; // 0xf6502596
-  SLdrDamageInfo damageInfo; // non-matching name, 0x6ec26414
-  CAssetId pART_0x54b6bfa1; // non-matching name, 0x54b6bfa1
-  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0x5cf705f2
-  CAssetId grappleGuardianEyeGlow; // 0xb9f9f4f2
-  CAssetId alternateScannableInfo; // 0xf60ac5cc
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  float burstAttackMinRange;                      // 0x06f7ceed
+  float burstAttackMaxRange;                      // 0x46b8b69b
+  float burstAttackMinPause;                      // 0xb0428b70
+  float burstAttackMaxPause;                      // 0xf00df306
+  float burstAttackDamageRadius;                  // 0xb00775e6
+  CAssetId burstProjectile;                       // 0x7ef9aa67
+  SLdrDamageInfo burstDamage;                     // 0x5285db00
+  CAssetId surfaceRingsEffect;                    // 0x30b81a7e
+  CAssetId shallowWaterRing;                      // 0xbf4daae6
+  CAssetId shallowWaterSplash;                    // 0x70247a6e
+  CAssetId pART;                                  // non-matching name, 0xffcee1a9
+  CAssetId grappleSwoosh;                         // 0xae1f2a26
+  CAssetId grappleBeamPart;                       // 0x0dabf0af
+  CAssetId grappleHitFx;                          // 0xe51746d1
+  SLdrDamageInfo grappleDamage;                   // 0x2ce7520f
+  SLdrAudioPlaybackParms grappleBeamSound_Loop;   // 0xb6b9074b
+  CAssetId beamEffect;                            // 0x05439a08
+  int unknown_0xd4753ff4;                         // 0xd4753ff4
+  float unknown_0x05fc6001;                       // 0x05fc6001
+  float unknown_0x13e5b580;                       // 0x13e5b580
+  float unknown_0xfc6f199d;                       // 0xfc6f199d
+  CAssetId grappleVisorEffect;                    // 0xf6502596
+  SLdrDamageInfo damageInfo;                      // non-matching name, 0x6ec26414
+  CAssetId pART_0x54b6bfa1;                       // non-matching name, 0x54b6bfa1
+  SLdrAudioPlaybackParms audioPlaybackParms;      // non-matching name, 0x5cf705f2
+  CAssetId grappleGuardianEyeGlow;                // 0xb9f9f4f2
+  CAssetId alternateScannableInfo;                // 0xf60ac5cc
+  SLdrIngPossessionData ingPossessionData;        // 0xe61748ed
 };
 
-inline SLdrGrenchler::SLdrGrenchler() : editorProperties(), patterned(), actorInformation(), damageVulnerability(), tail(), tailWhenUnderwater(), taillessModel(kInvalidAssetId), taillessSkinRules(kInvalidAssetId), tail_Dark(), tailWhenUnderwater_Dark(), taillessModel_Dark(kInvalidAssetId), taillessSkinRules_Dark(kInvalidAssetId), biteDamage(), electricEffect(kInvalidAssetId), beamDamage(), beamAttackSound_OneShot(), burstProjectile(kInvalidAssetId), burstDamage(), surfaceRingsEffect(kInvalidAssetId), shallowWaterRing(kInvalidAssetId), shallowWaterSplash(kInvalidAssetId), pART(kInvalidAssetId), grappleSwoosh(kInvalidAssetId), grappleBeamPart(kInvalidAssetId), grappleHitFx(kInvalidAssetId), grappleDamage(), grappleBeamSound_Loop(), beamEffect(kInvalidAssetId), grappleVisorEffect(kInvalidAssetId), damageInfo(), pART_0x54b6bfa1(kInvalidAssetId), audioPlaybackParms(), grappleGuardianEyeGlow(kInvalidAssetId), alternateScannableInfo(kInvalidAssetId), ingPossessionData() {
+inline SLdrGrenchler::SLdrGrenchler()
+: editorProperties()
+, patterned()
+, actorInformation()
+, damageVulnerability()
+, tail()
+, tailWhenUnderwater()
+, taillessModel(kInvalidAssetId)
+, taillessSkinRules(kInvalidAssetId)
+, tail_Dark()
+, tailWhenUnderwater_Dark()
+, taillessModel_Dark(kInvalidAssetId)
+, taillessSkinRules_Dark(kInvalidAssetId)
+, biteDamage()
+, electricEffect(kInvalidAssetId)
+, beamDamage()
+, beamAttackSound_OneShot()
+, burstProjectile(kInvalidAssetId)
+, burstDamage()
+, surfaceRingsEffect(kInvalidAssetId)
+, shallowWaterRing(kInvalidAssetId)
+, shallowWaterSplash(kInvalidAssetId)
+, pART(kInvalidAssetId)
+, grappleSwoosh(kInvalidAssetId)
+, grappleBeamPart(kInvalidAssetId)
+, grappleHitFx(kInvalidAssetId)
+, grappleDamage()
+, grappleBeamSound_Loop()
+, beamEffect(kInvalidAssetId)
+, grappleVisorEffect(kInvalidAssetId)
+, damageInfo()
+, pART_0x54b6bfa1(kInvalidAssetId)
+, audioPlaybackParms()
+, grappleGuardianEyeGlow(kInvalidAssetId)
+, alternateScannableInfo(kInvalidAssetId)
+, ingPossessionData() {
   patterned.minAttackRange = 6.0f;
   patterned.maxAttackRange = 11.0f;
   patterned.averageAttackTime = 2.0f;

@@ -12,8 +12,7 @@ struct SLdrSkyRipple {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-inline SLdrSkyRipple::SLdrSkyRipple() : editorProperties() {
-}
+inline SLdrSkyRipple::SLdrSkyRipple() : editorProperties() {}
 
 inline SLdrSkyRipple::~SLdrSkyRipple() {}
 

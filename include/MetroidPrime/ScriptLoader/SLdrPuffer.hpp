@@ -14,21 +14,28 @@ struct SLdrPuffer {
   ~SLdrPuffer();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float hoverSpeed; // 0x845ef489
-  CAssetId cloudEffect; // 0x670b9a1f
-  SLdrDamageInfo cloudDamage; // 0xe8619082
-  CAssetId cloudSteam; // 0x1aa418f4
-  float cloudSteamAlpha; // 0xc9a55479
-  bool cloudInCombatOrScan; // 0x98647f20
-  bool cloudInDark; // 0x8a30112f
-  bool cloudInEcho; // 0x86c887a5
-  SLdrDamageInfo explosionDamage; // 0xdeff74ea
-  int sound_Turn; // 0x1f80154d
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float hoverSpeed;                      // 0x845ef489
+  CAssetId cloudEffect;                  // 0x670b9a1f
+  SLdrDamageInfo cloudDamage;            // 0xe8619082
+  CAssetId cloudSteam;                   // 0x1aa418f4
+  float cloudSteamAlpha;                 // 0xc9a55479
+  bool cloudInCombatOrScan;              // 0x98647f20
+  bool cloudInDark;                      // 0x8a30112f
+  bool cloudInEcho;                      // 0x86c887a5
+  SLdrDamageInfo explosionDamage;        // 0xdeff74ea
+  int sound_Turn;                        // 0x1f80154d
 };
 
-inline SLdrPuffer::SLdrPuffer() : editorProperties(), patterned(), actorInformation(), cloudEffect(kInvalidAssetId), cloudDamage(), cloudSteam(kInvalidAssetId), explosionDamage() {
+inline SLdrPuffer::SLdrPuffer()
+: editorProperties()
+, patterned()
+, actorInformation()
+, cloudEffect(kInvalidAssetId)
+, cloudDamage()
+, cloudSteam(kInvalidAssetId)
+, explosionDamage() {
   patterned.mass = 25.0f;
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 5.0f;

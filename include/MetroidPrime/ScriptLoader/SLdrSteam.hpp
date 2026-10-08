@@ -12,13 +12,13 @@ struct SLdrSteam {
   ~SLdrSteam();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrTriggerInfo trigger; // 0x77a27411
-  CAssetId steam; // 0x26346050
-  float strength; // 0x4f8f5f5c
-  float fadeInRate; // 0xc2138f3d
-  float fadeOutRate; // 0x2e9f259e
-  float radius; // 0x78c507eb
-  bool unknown_0xa366c949; // 0xa366c949
+  SLdrTriggerInfo trigger;               // 0x77a27411
+  CAssetId steam;                        // 0x26346050
+  float strength;                        // 0x4f8f5f5c
+  float fadeInRate;                      // 0xc2138f3d
+  float fadeOutRate;                     // 0x2e9f259e
+  float radius;                          // 0x78c507eb
+  bool unknown_0xa366c949;               // 0xa366c949
 };
 
 inline SLdrSteam::SLdrSteam() : editorProperties(), trigger(), steam(kInvalidAssetId) {

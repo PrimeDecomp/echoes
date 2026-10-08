@@ -10,11 +10,11 @@ struct SLdrAIWaypoint {
   ~SLdrAIWaypoint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float speed; // 0x6392404e
-  float pause; // 0x80f7e605
-  int unknown_0xc6705a00; // 0xc6705a00
-  int locatorIndex; // 0xa790c6a9
-  int unknown_0x166979d4; // 0x166979d4
+  float speed;                           // 0x6392404e
+  float pause;                           // 0x80f7e605
+  int unknown_0xc6705a00;                // 0xc6705a00
+  int locatorIndex;                      // 0xa790c6a9
+  int unknown_0x166979d4;                // 0x166979d4
 };
 
 inline SLdrAIWaypoint::SLdrAIWaypoint() : editorProperties() {

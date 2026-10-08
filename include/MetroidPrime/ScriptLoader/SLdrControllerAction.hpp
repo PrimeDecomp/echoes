@@ -11,8 +11,8 @@ struct SLdrControllerAction {
   ~SLdrControllerAction();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrCommand cmd; // 0x4c6eefae
-  bool oneShot; // 0xead7b7bb
+  SLdrCommand cmd;                       // 0x4c6eefae
+  bool oneShot;                          // 0xead7b7bb
 };
 
 inline SLdrControllerAction::SLdrControllerAction() : editorProperties(), cmd() {

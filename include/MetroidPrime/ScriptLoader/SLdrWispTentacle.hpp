@@ -13,19 +13,20 @@ struct SLdrWispTentacle {
   ~SLdrWispTentacle();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float wakeUpDistance; // 0xd82814f2
-  float searchDistance; // 0xa8ac80dd
-  float attackDistance; // 0x5eda8d99
-  float detectionHeight; // 0x9bb6cbc7
-  SLdrDamageInfo attackDamage; // 0x66dcaacb
-  bool spawnFromPortal; // 0xed7421ff
-  float hurtSleepDelay; // 0x9b5a4744
-  float grabBlendTime; // 0x0d5a1f1d
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  float wakeUpDistance;                  // 0xd82814f2
+  float searchDistance;                  // 0xa8ac80dd
+  float attackDistance;                  // 0x5eda8d99
+  float detectionHeight;                 // 0x9bb6cbc7
+  SLdrDamageInfo attackDamage;           // 0x66dcaacb
+  bool spawnFromPortal;                  // 0xed7421ff
+  float hurtSleepDelay;                  // 0x9b5a4744
+  float grabBlendTime;                   // 0x0d5a1f1d
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
 };
 
-inline SLdrWispTentacle::SLdrWispTentacle() : editorProperties(), attackDamage(), patterned(), actorInformation() {
+inline SLdrWispTentacle::SLdrWispTentacle()
+: editorProperties(), attackDamage(), patterned(), actorInformation() {
   wakeUpDistance = 30.0f;
   searchDistance = 20.0f;
   attackDistance = 10.0f;

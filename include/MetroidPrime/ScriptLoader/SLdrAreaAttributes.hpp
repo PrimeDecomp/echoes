@@ -11,14 +11,14 @@ struct SLdrAreaAttributes {
   ~SLdrAreaAttributes();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool needSky; // 0x95d4bee7
-  bool darkWorld; // 0xb24fde1a
-  int environmentEffects; // 0x9d0006ab
-  int environmentGroupSound; // 0x56263e35
-  float density; // 0x64e5fe9f
-  float normalLighting; // 0xba5f801e
-  CAssetId overrideSky; // 0xd208c9fa
-  int phazonDamage; // 0xffeebc46
+  bool needSky;                          // 0x95d4bee7
+  bool darkWorld;                        // 0xb24fde1a
+  int environmentEffects;                // 0x9d0006ab
+  int environmentGroupSound;             // 0x56263e35
+  float density;                         // 0x64e5fe9f
+  float normalLighting;                  // 0xba5f801e
+  CAssetId overrideSky;                  // 0xd208c9fa
+  int phazonDamage;                      // 0xffeebc46
 };
 
 inline SLdrAreaAttributes::SLdrAreaAttributes() : editorProperties(), overrideSky(kInvalidAssetId) {

@@ -12,15 +12,16 @@ struct SLdrDistanceFog {
   ~SLdrDistanceFog();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int mode; // 0x09ad63de
-  CColor color; // 0x37c7d09d
-  SLdrVector2f nearFarPlane; // 0x652008da
-  float colorRate; // 0x29ab4727
-  SLdrVector2f distanceRate; // 0xcc8e0f98
-  bool forceSettings; // 0xc5935b67
+  int mode;                              // 0x09ad63de
+  CColor color;                          // 0x37c7d09d
+  SLdrVector2f nearFarPlane;             // 0x652008da
+  float colorRate;                       // 0x29ab4727
+  SLdrVector2f distanceRate;             // 0xcc8e0f98
+  bool forceSettings;                    // 0xc5935b67
 };
 
-inline SLdrDistanceFog::SLdrDistanceFog() : editorProperties(), color(CColor::Green()), nearFarPlane(), distanceRate() {
+inline SLdrDistanceFog::SLdrDistanceFog()
+: editorProperties(), color(CColor::Green()), nearFarPlane(), distanceRate() {
   editorProperties.active = false;
   mode = 0;
   colorRate = 0.0f;

@@ -10,9 +10,9 @@ struct SLdrRumbleEffect {
   ~SLdrRumbleEffect();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float radius; // 0x78c507eb
-  int effect; // 0x68acbd86
-  uint flagsRumble; // 0x4f7fec39
+  float radius;                          // 0x78c507eb
+  int effect;                            // 0x68acbd86
+  uint flagsRumble;                      // 0x4f7fec39
 };
 
 inline SLdrRumbleEffect::SLdrRumbleEffect() : editorProperties() {

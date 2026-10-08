@@ -12,15 +12,15 @@ struct SLdrCrystallite {
   ~SLdrCrystallite();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float waypointApproachDistance; // 0x733bd27c
-  float wallTurnSpeed; // 0xac47c628
-  float floorTurnSpeed; // 0x8e4f7b29
-  float downTurnSpeed; // 0x3d3c1b76
-  float visibleDistance; // 0xa72530e8
-  float forwardMovingPriority; // 0x5e6a54b8
-  float stunTime; // 0x7e192395
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  float waypointApproachDistance;        // 0x733bd27c
+  float wallTurnSpeed;                   // 0xac47c628
+  float floorTurnSpeed;                  // 0x8e4f7b29
+  float downTurnSpeed;                   // 0x3d3c1b76
+  float visibleDistance;                 // 0xa72530e8
+  float forwardMovingPriority;           // 0x5e6a54b8
+  float stunTime;                        // 0x7e192395
 };
 
 inline SLdrCrystallite::SLdrCrystallite() : editorProperties(), patterned(), actorInformation() {

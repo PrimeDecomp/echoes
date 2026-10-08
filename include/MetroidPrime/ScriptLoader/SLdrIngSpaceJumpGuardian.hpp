@@ -16,10 +16,10 @@ struct SLdrIngSpaceJumpGuardianStruct {
   SLdrIngSpaceJumpGuardianStruct();
   ~SLdrIngSpaceJumpGuardianStruct();
 
-  float tauntChance; // 0xa77f6212
-  float attackChance; // 0x7eaf8d70
+  float tauntChance;        // 0xa77f6212
+  float attackChance;       // 0x7eaf8d70
   float unknown_0x03698c10; // 0x03698c10
-  float locomotionSpeed; // 0xfd46b85c
+  float locomotionSpeed;    // 0xfd46b85c
   float unknown_0x3e370622; // 0x3e370622
 };
 
@@ -33,7 +33,8 @@ inline SLdrIngSpaceJumpGuardianStruct::SLdrIngSpaceJumpGuardianStruct() {
 
 inline SLdrIngSpaceJumpGuardianStruct::~SLdrIngSpaceJumpGuardianStruct() {}
 
-inline void LoadTypedefIngSpaceJumpGuardianStruct(SLdrIngSpaceJumpGuardianStruct& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngSpaceJumpGuardianStruct(SLdrIngSpaceJumpGuardianStruct& sldrThis,
+                                                  CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -70,22 +71,35 @@ struct SLdrIngSpaceJumpGuardianData {
   SLdrIngSpaceJumpGuardianData();
   ~SLdrIngSpaceJumpGuardianData();
 
-  CAssetId ingSpotBlobEffect; // 0xcc5a4918
-  int sound; // non-matching name, 0x46e902e8
+  CAssetId ingSpotBlobEffect;                                // 0xcc5a4918
+  int sound;                                                 // non-matching name, 0x46e902e8
   SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct; // non-matching name, 0x5e1d1931
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0x6b08e2e5; // non-matching name, 0x6b08e2e5
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xf223aa76; // non-matching name, 0xf223aa76
-  SLdrIngSpaceJumpGuardianStruct ingSpaceJumpGuardianStruct_0xd0db5f7a; // non-matching name, 0xd0db5f7a
-  CColor lightColor; // 0xbd3efe7d
-  float lightAttenuation; // 0xd24b888f
-  CAssetId miniPortalEffect; // 0xa926f8a8
-  int sound_MiniPortal; // 0x4051fd1a
+  SLdrIngSpaceJumpGuardianStruct
+      ingSpaceJumpGuardianStruct_0x6b08e2e5; // non-matching name, 0x6b08e2e5
+  SLdrIngSpaceJumpGuardianStruct
+      ingSpaceJumpGuardianStruct_0xf223aa76; // non-matching name, 0xf223aa76
+  SLdrIngSpaceJumpGuardianStruct
+      ingSpaceJumpGuardianStruct_0xd0db5f7a; // non-matching name, 0xd0db5f7a
+  CColor lightColor;                         // 0xbd3efe7d
+  float lightAttenuation;                    // 0xd24b888f
+  CAssetId miniPortalEffect;                 // 0xa926f8a8
+  int sound_MiniPortal;                      // 0x4051fd1a
   SLdrDamageInfo miniPortalProjectileDamage; // 0x424a6d37
-  SLdrPlasmaBeamInfo miniPortalBeamInfo; // 0x9c170968
-  SLdrShockWaveInfo shockWaveInfo; // 0x8f4787cb
+  SLdrPlasmaBeamInfo miniPortalBeamInfo;     // 0x9c170968
+  SLdrShockWaveInfo shockWaveInfo;           // 0x8f4787cb
 };
 
-inline SLdrIngSpaceJumpGuardianData::SLdrIngSpaceJumpGuardianData() : ingSpotBlobEffect(kInvalidAssetId), ingSpaceJumpGuardianStruct(), ingSpaceJumpGuardianStruct_0x6b08e2e5(), ingSpaceJumpGuardianStruct_0xf223aa76(), ingSpaceJumpGuardianStruct_0xd0db5f7a(), lightColor(CColor::Green()), miniPortalEffect(kInvalidAssetId), miniPortalProjectileDamage(), miniPortalBeamInfo(), shockWaveInfo() {
+inline SLdrIngSpaceJumpGuardianData::SLdrIngSpaceJumpGuardianData()
+: ingSpotBlobEffect(kInvalidAssetId)
+, ingSpaceJumpGuardianStruct()
+, ingSpaceJumpGuardianStruct_0x6b08e2e5()
+, ingSpaceJumpGuardianStruct_0xf223aa76()
+, ingSpaceJumpGuardianStruct_0xd0db5f7a()
+, lightColor(CColor::Green())
+, miniPortalEffect(kInvalidAssetId)
+, miniPortalProjectileDamage()
+, miniPortalBeamInfo()
+, shockWaveInfo() {
   sound = 0;
   lightColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   lightAttenuation = 5.0f;
@@ -105,7 +119,8 @@ inline SLdrIngSpaceJumpGuardianData::SLdrIngSpaceJumpGuardianData() : ingSpotBlo
 
 inline SLdrIngSpaceJumpGuardianData::~SLdrIngSpaceJumpGuardianData() {}
 
-inline void LoadTypedefIngSpaceJumpGuardianData(SLdrIngSpaceJumpGuardianData& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngSpaceJumpGuardianData(SLdrIngSpaceJumpGuardianData& sldrThis,
+                                                CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -174,13 +189,14 @@ struct SLdrIngSpaceJumpGuardian {
   SLdrIngSpaceJumpGuardian();
   ~SLdrIngSpaceJumpGuardian();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;                       // 0x255a4580
+  SLdrPatternedAITypedef patterned;                            // 0xb3774750
+  SLdrActorParameters actorInformation;                        // 0x7e397fed
   SLdrIngSpaceJumpGuardianData ingSpaceJumpGuardianProperties; // 0xf9837ab3
 };
 
-inline SLdrIngSpaceJumpGuardian::SLdrIngSpaceJumpGuardian() : editorProperties(), patterned(), actorInformation(), ingSpaceJumpGuardianProperties() {
+inline SLdrIngSpaceJumpGuardian::SLdrIngSpaceJumpGuardian()
+: editorProperties(), patterned(), actorInformation(), ingSpaceJumpGuardianProperties() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

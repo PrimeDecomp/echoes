@@ -12,12 +12,11 @@ struct SLdrSporbTop {
   ~SLdrSporbTop();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
 };
 
-inline SLdrSporbTop::SLdrSporbTop() : editorProperties(), patterned(), actorInformation() {
-}
+inline SLdrSporbTop::SLdrSporbTop() : editorProperties(), patterned(), actorInformation() {}
 
 inline SLdrSporbTop::~SLdrSporbTop() {}
 

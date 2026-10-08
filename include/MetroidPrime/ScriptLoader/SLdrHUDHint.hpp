@@ -11,13 +11,13 @@ struct SLdrHUDHint {
   ~SLdrHUDHint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId hudTexture; // 0xd80447e0
-  float unknown_0x6078a651; // 0x6078a651
-  float unknown_0xf00bb6bb; // 0xf00bb6bb
-  float iconScale; // 0x1ad247a1
-  float animationTime; // 0x2a53245a
-  int animationFrames; // 0x6e88d6ad
-  int unknown_0xd993f97b; // 0xd993f97b
+  CAssetId hudTexture;                   // 0xd80447e0
+  float unknown_0x6078a651;              // 0x6078a651
+  float unknown_0xf00bb6bb;              // 0xf00bb6bb
+  float iconScale;                       // 0x1ad247a1
+  float animationTime;                   // 0x2a53245a
+  int animationFrames;                   // 0x6e88d6ad
+  int unknown_0xd993f97b;                // 0xd993f97b
 };
 
 inline SLdrHUDHint::SLdrHUDHint() : editorProperties(), hudTexture(kInvalidAssetId) {

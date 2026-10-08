@@ -13,43 +13,51 @@ struct SLdrFishCloud {
   ~SLdrFishCloud();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool active; // 0xc6bb2f45
-  CAssetId fishModel; // 0x7990a3b6
+  bool active;                           // 0xc6bb2f45
+  CAssetId fishModel;                    // 0x7990a3b6
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  float fishCount; // 0xf1c07275
-  float speed; // 0x6392404e
-  float influenceDistance; // 0x7864ad0e
-  float cohesionPriority; // 0x61959f0d
-  float alignmentPriority; // 0x4841f1de
-  float separationPriority; // 0xd293ebc4
-  float projectilePriority; // 0x5f362a14
-  float playerPriority; // 0xec9b73c2
-  float containmentPriority; // 0x7ff1469e
-  float wanderPriority; // 0x7ce17870
-  float wanderAmount; // 0x3a25f09d
-  float playerBallPriority; // 0x23a160f3
-  float playerBallDistance; // 0xf0671410
-  float projectileDecayRate; // 0xa1747268
-  float playerDecayRate; // 0xce77a8d0
-  float lookAheadTime; // 0x8cb20c53
-  int updateFrame; // 0x21b3d07c
-  CColor materialColor; // 0x1f83d350
-  bool canBeKilled; // 0xf630b89f
-  float collisionRadius; // 0x8a6ab139
-  CAssetId deathEffect0; // 0x5ba86245
-  int deathEffect0Count; // 0xa8232fb1
-  CAssetId deathEffect1; // 0x90f4b1e0
-  int deathEffect1Count; // 0xbf583bf2
-  CAssetId deathEffect2; // 0x1660c34e
-  int deathEffect2Count; // 0x86d50737
-  CAssetId deathEffect3; // 0xdd3c10eb
-  int deathEffect3Count; // 0x91ae1374
-  int deathSound; // 0x3de26fc8
-  bool unknown_0xc320a050; // 0xc320a050
-  bool isHighlightedInDarkVisor; // 0xcd4c81a1
+  float fishCount;                       // 0xf1c07275
+  float speed;                           // 0x6392404e
+  float influenceDistance;               // 0x7864ad0e
+  float cohesionPriority;                // 0x61959f0d
+  float alignmentPriority;               // 0x4841f1de
+  float separationPriority;              // 0xd293ebc4
+  float projectilePriority;              // 0x5f362a14
+  float playerPriority;                  // 0xec9b73c2
+  float containmentPriority;             // 0x7ff1469e
+  float wanderPriority;                  // 0x7ce17870
+  float wanderAmount;                    // 0x3a25f09d
+  float playerBallPriority;              // 0x23a160f3
+  float playerBallDistance;              // 0xf0671410
+  float projectileDecayRate;             // 0xa1747268
+  float playerDecayRate;                 // 0xce77a8d0
+  float lookAheadTime;                   // 0x8cb20c53
+  int updateFrame;                       // 0x21b3d07c
+  CColor materialColor;                  // 0x1f83d350
+  bool canBeKilled;                      // 0xf630b89f
+  float collisionRadius;                 // 0x8a6ab139
+  CAssetId deathEffect0;                 // 0x5ba86245
+  int deathEffect0Count;                 // 0xa8232fb1
+  CAssetId deathEffect1;                 // 0x90f4b1e0
+  int deathEffect1Count;                 // 0xbf583bf2
+  CAssetId deathEffect2;                 // 0x1660c34e
+  int deathEffect2Count;                 // 0x86d50737
+  CAssetId deathEffect3;                 // 0xdd3c10eb
+  int deathEffect3Count;                 // 0x91ae1374
+  int deathSound;                        // 0x3de26fc8
+  bool unknown_0xc320a050;               // 0xc320a050
+  bool isHighlightedInDarkVisor;         // 0xcd4c81a1
 };
 
-inline SLdrFishCloud::SLdrFishCloud() : editorProperties(), fishModel(kInvalidAssetId), animationInformation(), materialColor(CColor::Green()), deathEffect0(kInvalidAssetId), deathEffect1(kInvalidAssetId), deathEffect2(kInvalidAssetId), deathEffect3(kInvalidAssetId) {
+inline SLdrFishCloud::SLdrFishCloud()
+: editorProperties()
+, fishModel(kInvalidAssetId)
+, animationInformation()
+, materialColor(CColor::Green())
+, deathEffect0(kInvalidAssetId)
+, deathEffect1(kInvalidAssetId)
+, deathEffect2(kInvalidAssetId)
+, deathEffect3(kInvalidAssetId) {
   active = true;
   fishCount = 20.0f;
   speed = 3.0f;

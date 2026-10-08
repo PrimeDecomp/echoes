@@ -12,17 +12,18 @@ struct SLdrCameraFilterKeyframe {
   ~SLdrCameraFilterKeyframe();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int filterType; // 0x7975db5b
-  int filterShape; // 0x6a3e9a3d
-  int filterStage; // 0x58bdbd7b
-  int whichFilterGroup; // 0x3fdc4b2e
-  CColor color; // 0x37c7d09d
-  float interpolateInTime; // 0xabd41a36
-  float interpolateOutTime; // 0x3eaf78fe
-  CAssetId texture; // 0xd1f65872
+  int filterType;                        // 0x7975db5b
+  int filterShape;                       // 0x6a3e9a3d
+  int filterStage;                       // 0x58bdbd7b
+  int whichFilterGroup;                  // 0x3fdc4b2e
+  CColor color;                          // 0x37c7d09d
+  float interpolateInTime;               // 0xabd41a36
+  float interpolateOutTime;              // 0x3eaf78fe
+  CAssetId texture;                      // 0xd1f65872
 };
 
-inline SLdrCameraFilterKeyframe::SLdrCameraFilterKeyframe() : editorProperties(), color(CColor::Green()), texture(kInvalidAssetId) {
+inline SLdrCameraFilterKeyframe::SLdrCameraFilterKeyframe()
+: editorProperties(), color(CColor::Green()), texture(kInvalidAssetId) {
   filterType = 0;
   filterShape = 0;
   filterStage = 0;

@@ -10,10 +10,10 @@ struct SLdrTimer {
   ~SLdrTimer();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float time; // 0x44335aff
-  float randomAdjust; // 0x3ad39b31
-  bool autoReset; // 0x7bef45ca
-  bool autoStart; // 0x3217dff8
+  float time;                            // 0x44335aff
+  float randomAdjust;                    // 0x3ad39b31
+  bool autoReset;                        // 0x7bef45ca
+  bool autoStart;                        // 0x3217dff8
 };
 
 inline SLdrTimer::SLdrTimer() : editorProperties() {

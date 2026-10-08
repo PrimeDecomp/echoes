@@ -13,22 +13,28 @@ struct SLdrSporbNeedle {
   ~SLdrSporbNeedle();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId model; // 0xc27ffa8f
-  float initialSpeed; // 0xcb14d97c
-  float mass; // 0x75dbb375
-  SLdrDamageInfo attackDamage; // 0x66dcaacb
-  float fuseTime; // 0x5cc14b87
-  CAssetId trailEffect; // 0x36eee791
-  CAssetId explosionEffect; // 0xf8b7ba26
-  int launchSound; // 0x0dd66f77
-  int flightSound; // 0x1bc7f2fc
-  int hitPlayerSound; // 0xdfbd90e1
-  int collisionSound; // 0x92caa97d
-  int explosionSound; // 0x6028d1cc
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CAssetId model;                        // 0xc27ffa8f
+  float initialSpeed;                    // 0xcb14d97c
+  float mass;                            // 0x75dbb375
+  SLdrDamageInfo attackDamage;           // 0x66dcaacb
+  float fuseTime;                        // 0x5cc14b87
+  CAssetId trailEffect;                  // 0x36eee791
+  CAssetId explosionEffect;              // 0xf8b7ba26
+  int launchSound;                       // 0x0dd66f77
+  int flightSound;                       // 0x1bc7f2fc
+  int hitPlayerSound;                    // 0xdfbd90e1
+  int collisionSound;                    // 0x92caa97d
+  int explosionSound;                    // 0x6028d1cc
 };
 
-inline SLdrSporbNeedle::SLdrSporbNeedle() : editorProperties(), actorInformation(), model(kInvalidAssetId), attackDamage(), trailEffect(kInvalidAssetId), explosionEffect(kInvalidAssetId) {
+inline SLdrSporbNeedle::SLdrSporbNeedle()
+: editorProperties()
+, actorInformation()
+, model(kInvalidAssetId)
+, attackDamage()
+, trailEffect(kInvalidAssetId)
+, explosionEffect(kInvalidAssetId) {
   initialSpeed = 60.0f;
   mass = 1.0f;
   attackDamage.dI_WeaponType = 9;

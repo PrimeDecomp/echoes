@@ -74,7 +74,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xbe931927: {
-    sldrThis.unknown_0xbe931927 = input.ReadBool();
+    sldrThis.destroyParticlesOnDeactivate = input.ReadBool();
     break;
   }
   case 0x2fa4e5d7: {
@@ -102,11 +102,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x73e63382: {
-    sldrThis.unknown_0x73e63382 = input.ReadBool();
+    sldrThis.splineMovesParticleEmitterOnly = input.ReadBool();
     break;
   }
   case 0x608ecac5: {
-    sldrThis.unknown_0x608ecac5 = input.ReadBool();
+    sldrThis.adoptSplineOrientation = input.ReadBool();
     break;
   }
   default:

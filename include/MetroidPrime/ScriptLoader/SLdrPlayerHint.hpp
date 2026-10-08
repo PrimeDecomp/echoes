@@ -10,10 +10,10 @@ struct SLdrPlayerHint {
   ~SLdrPlayerHint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int priority; // 0x42087650
-  float timer; // 0x8747552e
-  float interpolateControlTime; // 0xc91ef813
-  uint flagsPlayerHint; // 0x1bce57e1
+  int priority;                          // 0x42087650
+  float timer;                           // 0x8747552e
+  float interpolateControlTime;          // 0xc91ef813
+  uint flagsPlayerHint;                  // 0x1bce57e1
 };
 
 inline SLdrPlayerHint::SLdrPlayerHint() : editorProperties() {

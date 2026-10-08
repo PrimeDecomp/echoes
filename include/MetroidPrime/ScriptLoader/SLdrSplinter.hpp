@@ -15,32 +15,44 @@ struct SLdrSplinter {
   SLdrSplinter();
   ~SLdrSplinter();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float unknown_0x72edeb7d; // 0x72edeb7d
-  float unknown_0xb8ed9ffa; // 0xb8ed9ffa
-  float unknown_0x5e8d301b; // 0x5e8d301b
-  float unknown_0xb98bb88f; // 0xb98bb88f
-  float unknown_0x5feb176e; // 0x5feb176e
-  int unknown_0x726cd31d; // 0x726cd31d
-  int unknown_0x376e909f; // 0x376e909f
-  SLdrDamageInfo attackDamage; // 0x66dcaacb
-  int unknown_0xb63b810c; // 0xb63b810c
-  SLdrAnimationSet unknown_0x6d752efc; // 0x6d752efc
-  SLdrAnimationSet unknown_0x0d6ab7b5; // 0x0d6ab7b5
-  CAssetId pART; // non-matching name, 0x630d93a1
-  SLdrDamageInfo damageInfo; // non-matching name, 0x4436a388
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
-  bool isMegaSplinter; // 0x7dc82f46
-  CAssetId megaSplinterSpitProjectile; // 0x42518359
+  SLdrEditorProperties editorProperties;           // 0x255a4580
+  SLdrPatternedAITypedef patterned;                // 0xb3774750
+  SLdrActorParameters actorInformation;            // 0x7e397fed
+  float unknown_0x72edeb7d;                        // 0x72edeb7d
+  float unknown_0xb8ed9ffa;                        // 0xb8ed9ffa
+  float unknown_0x5e8d301b;                        // 0x5e8d301b
+  float unknown_0xb98bb88f;                        // 0xb98bb88f
+  float unknown_0x5feb176e;                        // 0x5feb176e
+  int unknown_0x726cd31d;                          // 0x726cd31d
+  int unknown_0x376e909f;                          // 0x376e909f
+  SLdrDamageInfo attackDamage;                     // 0x66dcaacb
+  int unknown_0xb63b810c;                          // 0xb63b810c
+  SLdrAnimationSet unknown_0x6d752efc;             // 0x6d752efc
+  SLdrAnimationSet unknown_0x0d6ab7b5;             // 0x0d6ab7b5
+  CAssetId pART;                                   // non-matching name, 0x630d93a1
+  SLdrDamageInfo damageInfo;                       // non-matching name, 0x4436a388
+  SLdrIngPossessionData ingPossessionData;         // 0xe61748ed
+  bool isMegaSplinter;                             // 0x7dc82f46
+  CAssetId megaSplinterSpitProjectile;             // 0x42518359
   SLdrDamageInfo megaSplinterSpitProjectileDamage; // 0x02fd0913
-  CAssetId megaSplinterSpitVisorEffect; // 0x496f191b
-  float unknown_0x51be00d3; // 0x51be00d3
-  float unknown_0xb7deaf32; // 0xb7deaf32
+  CAssetId megaSplinterSpitVisorEffect;            // 0x496f191b
+  float unknown_0x51be00d3;                        // 0x51be00d3
+  float unknown_0xb7deaf32;                        // 0xb7deaf32
 };
 
-inline SLdrSplinter::SLdrSplinter() : editorProperties(), patterned(), actorInformation(), attackDamage(), unknown_0x6d752efc(), unknown_0x0d6ab7b5(), pART(kInvalidAssetId), damageInfo(), ingPossessionData(), megaSplinterSpitProjectile(kInvalidAssetId), megaSplinterSpitProjectileDamage(), megaSplinterSpitVisorEffect(kInvalidAssetId) {
+inline SLdrSplinter::SLdrSplinter()
+: editorProperties()
+, patterned()
+, actorInformation()
+, attackDamage()
+, unknown_0x6d752efc()
+, unknown_0x0d6ab7b5()
+, pART(kInvalidAssetId)
+, damageInfo()
+, ingPossessionData()
+, megaSplinterSpitProjectile(kInvalidAssetId)
+, megaSplinterSpitProjectileDamage()
+, megaSplinterSpitVisorEffect(kInvalidAssetId) {
   patterned.detectionRange = 32.0f;
   patterned.minAttackRange = 7.0f;
   patterned.maxAttackRange = 17.0f;

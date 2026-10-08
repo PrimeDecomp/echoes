@@ -11,16 +11,17 @@ struct SLdrShadowProjector {
   ~SLdrShadowProjector();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float shadowScale; // 0x1d011a39
-  CVector3f shadowOffset; // 0xf371ed59
-  float shadowHeight; // 0x24ec0fb0
-  float shadowAlpha; // 0x3e2cd38d
-  float shadowFadeTime; // 0x8ccf36c0
-  bool unknown_0xbca8b742; // 0xbca8b742
-  int unknown_0x606e341c; // 0x606e341c
+  float shadowScale;                     // 0x1d011a39
+  CVector3f shadowOffset;                // 0xf371ed59
+  float shadowHeight;                    // 0x24ec0fb0
+  float shadowAlpha;                     // 0x3e2cd38d
+  float shadowFadeTime;                  // 0x8ccf36c0
+  bool unknown_0xbca8b742;               // 0xbca8b742
+  int unknown_0x606e341c;                // 0x606e341c
 };
 
-inline SLdrShadowProjector::SLdrShadowProjector() : editorProperties(), shadowOffset(CVector3f::Zero()) {
+inline SLdrShadowProjector::SLdrShadowProjector()
+: editorProperties(), shadowOffset(CVector3f::Zero()) {
   shadowScale = 1.0f;
   shadowHeight = 100.0f;
   shadowAlpha = 0.5f;

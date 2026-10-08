@@ -11,11 +11,11 @@ struct SLdrPlayerStateChange {
   ~SLdrPlayerStateChange();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPlayerItem itemToChange; // 0x4a3491bd
-  int capacityIncrease; // 0x28c71b54
-  int amount; // 0x94af1445
-  int command; // 0x94ba5737
-  int commandAction; // 0x363d98a4
+  SLdrPlayerItem itemToChange;           // 0x4a3491bd
+  int capacityIncrease;                  // 0x28c71b54
+  int amount;                            // 0x94af1445
+  int command;                           // 0x94ba5737
+  int commandAction;                     // 0x363d98a4
 };
 
 inline SLdrPlayerStateChange::SLdrPlayerStateChange() : editorProperties(), itemToChange() {

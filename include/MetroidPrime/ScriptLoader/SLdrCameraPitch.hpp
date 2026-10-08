@@ -12,13 +12,14 @@ struct SLdrCameraPitch {
   ~SLdrCameraPitch();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrSpline forwardsPitch; // 0x81d093b3
-  SLdrSpline backwardsPitch; // 0xad9f8e3e
-  SLdrSplineType playerSplineType; // 0x33e4685b
-  bool playerSplineLoops; // 0x431769c6
+  SLdrSpline forwardsPitch;              // 0x81d093b3
+  SLdrSpline backwardsPitch;             // 0xad9f8e3e
+  SLdrSplineType playerSplineType;       // 0x33e4685b
+  bool playerSplineLoops;                // 0x431769c6
 };
 
-inline SLdrCameraPitch::SLdrCameraPitch() : editorProperties(), forwardsPitch(), backwardsPitch(), playerSplineType() {
+inline SLdrCameraPitch::SLdrCameraPitch()
+: editorProperties(), forwardsPitch(), backwardsPitch(), playerSplineType() {
   playerSplineLoops = false;
 }
 

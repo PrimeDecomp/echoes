@@ -13,14 +13,14 @@ struct SLdrIngSpiderballGuardianStruct {
   SLdrIngSpiderballGuardianStruct();
   ~SLdrIngSpiderballGuardianStruct();
 
-  float minPatrolSpeed; // 0x17c5b61d
-  float maxPatrolSpeed; // 0xb0f13664
+  float minPatrolSpeed;     // 0x17c5b61d
+  float maxPatrolSpeed;     // 0xb0f13664
   float linearAcceleration; // 0xaf9b05f4
-  float angularSpeed; // 0xbcd7333f
-  float stunnedHitPoints; // 0xd1d9d8bd
-  float stunnedSpeed; // 0x8d5917d4
-  float stunnedTime; // 0x8105ecfd
-  float maxChargeTime; // 0xe5065ea8
+  float angularSpeed;       // 0xbcd7333f
+  float stunnedHitPoints;   // 0xd1d9d8bd
+  float stunnedSpeed;       // 0x8d5917d4
+  float stunnedTime;        // 0x8105ecfd
+  float maxChargeTime;      // 0xe5065ea8
 };
 
 inline SLdrIngSpiderballGuardianStruct::SLdrIngSpiderballGuardianStruct() {
@@ -36,7 +36,8 @@ inline SLdrIngSpiderballGuardianStruct::SLdrIngSpiderballGuardianStruct() {
 
 inline SLdrIngSpiderballGuardianStruct::~SLdrIngSpiderballGuardianStruct() {}
 
-inline void LoadTypedefIngSpiderballGuardianStruct(SLdrIngSpiderballGuardianStruct& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngSpiderballGuardianStruct(SLdrIngSpiderballGuardianStruct& sldrThis,
+                                                   CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -86,23 +87,41 @@ struct SLdrIngSpiderballGuardianData {
   ~SLdrIngSpiderballGuardianData();
 
   SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct; // non-matching name, 0x152db484
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x2d163ff7; // non-matching name, 0x2d163ff7
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x8c2fbb19; // non-matching name, 0x8c2fbb19
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0x5d612911; // non-matching name, 0x5d612911
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xfc58adff; // non-matching name, 0xfc58adff
-  SLdrIngSpiderballGuardianStruct ingSpiderballGuardianStruct_0xc463268c; // non-matching name, 0xc463268c
-  float damageRadius; // 0x0f598739
-  SLdrDamageInfo proximityDamage; // 0xba78d281
-  float unknown_0x32133b39; // 0x32133b39
-  SLdrAudioPlaybackParms audioPlaybackParms; // non-matching name, 0xaed23abc
-  SLdrAudioPlaybackParms sound_SpiderballRolling; // 0x3a5e2f52
-  SLdrAudioPlaybackParms sound_SpiderballSlowRolling; // 0xcee38f10
-  SLdrAudioPlaybackParms sound_SpiderballFastRolling; // 0x796fa303
-  SLdrAudioPlaybackParms sound_EnterStunned; // 0xd5f3e9c4
+  SLdrIngSpiderballGuardianStruct
+      ingSpiderballGuardianStruct_0x2d163ff7; // non-matching name, 0x2d163ff7
+  SLdrIngSpiderballGuardianStruct
+      ingSpiderballGuardianStruct_0x8c2fbb19; // non-matching name, 0x8c2fbb19
+  SLdrIngSpiderballGuardianStruct
+      ingSpiderballGuardianStruct_0x5d612911; // non-matching name, 0x5d612911
+  SLdrIngSpiderballGuardianStruct
+      ingSpiderballGuardianStruct_0xfc58adff; // non-matching name, 0xfc58adff
+  SLdrIngSpiderballGuardianStruct
+      ingSpiderballGuardianStruct_0xc463268c;           // non-matching name, 0xc463268c
+  float damageRadius;                                   // 0x0f598739
+  SLdrDamageInfo proximityDamage;                       // 0xba78d281
+  float unknown_0x32133b39;                             // 0x32133b39
+  SLdrAudioPlaybackParms audioPlaybackParms;            // non-matching name, 0xaed23abc
+  SLdrAudioPlaybackParms sound_SpiderballRolling;       // 0x3a5e2f52
+  SLdrAudioPlaybackParms sound_SpiderballSlowRolling;   // 0xcee38f10
+  SLdrAudioPlaybackParms sound_SpiderballFastRolling;   // 0x796fa303
+  SLdrAudioPlaybackParms sound_EnterStunned;            // 0xd5f3e9c4
   SLdrAudioPlaybackParms audioPlaybackParms_0x44c1f241; // non-matching name, 0x44c1f241
 };
 
-inline SLdrIngSpiderballGuardianData::SLdrIngSpiderballGuardianData() : ingSpiderballGuardianStruct(), ingSpiderballGuardianStruct_0x2d163ff7(), ingSpiderballGuardianStruct_0x8c2fbb19(), ingSpiderballGuardianStruct_0x5d612911(), ingSpiderballGuardianStruct_0xfc58adff(), ingSpiderballGuardianStruct_0xc463268c(), proximityDamage(), audioPlaybackParms(), sound_SpiderballRolling(), sound_SpiderballSlowRolling(), sound_SpiderballFastRolling(), sound_EnterStunned(), audioPlaybackParms_0x44c1f241() {
+inline SLdrIngSpiderballGuardianData::SLdrIngSpiderballGuardianData()
+: ingSpiderballGuardianStruct()
+, ingSpiderballGuardianStruct_0x2d163ff7()
+, ingSpiderballGuardianStruct_0x8c2fbb19()
+, ingSpiderballGuardianStruct_0x5d612911()
+, ingSpiderballGuardianStruct_0xfc58adff()
+, ingSpiderballGuardianStruct_0xc463268c()
+, proximityDamage()
+, audioPlaybackParms()
+, sound_SpiderballRolling()
+, sound_SpiderballSlowRolling()
+, sound_SpiderballFastRolling()
+, sound_EnterStunned()
+, audioPlaybackParms_0x44c1f241() {
   damageRadius = 2.0f;
   proximityDamage.dI_WeaponType = 11;
   proximityDamage.dI_Damage = 40.0f;
@@ -112,7 +131,8 @@ inline SLdrIngSpiderballGuardianData::SLdrIngSpiderballGuardianData() : ingSpide
 
 inline SLdrIngSpiderballGuardianData::~SLdrIngSpiderballGuardianData() {}
 
-inline void LoadTypedefIngSpiderballGuardianData(SLdrIngSpiderballGuardianData& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngSpiderballGuardianData(SLdrIngSpiderballGuardianData& sldrThis,
+                                                 CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -123,23 +143,28 @@ inline void LoadTypedefIngSpiderballGuardianData(SLdrIngSpiderballGuardianData& 
       break;
     }
     case 0x2d163ff7: {
-      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x2d163ff7, input);
+      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x2d163ff7,
+                                             input);
       break;
     }
     case 0x8c2fbb19: {
-      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x8c2fbb19, input);
+      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x8c2fbb19,
+                                             input);
       break;
     }
     case 0x5d612911: {
-      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x5d612911, input);
+      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0x5d612911,
+                                             input);
       break;
     }
     case 0xfc58adff: {
-      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0xfc58adff, input);
+      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0xfc58adff,
+                                             input);
       break;
     }
     case 0xc463268c: {
-      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0xc463268c, input);
+      LoadTypedefIngSpiderballGuardianStruct(sldrThis.ingSpiderballGuardianStruct_0xc463268c,
+                                             input);
       break;
     }
     case 0x0f598739: {
@@ -189,13 +214,14 @@ struct SLdrIngSpiderballGuardian {
   SLdrIngSpiderballGuardian();
   ~SLdrIngSpiderballGuardian();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;                         // 0x255a4580
+  SLdrPatternedAITypedef patterned;                              // 0xb3774750
+  SLdrActorParameters actorInformation;                          // 0x7e397fed
   SLdrIngSpiderballGuardianData ingSpiderballGuardianProperties; // 0xa1389799
 };
 
-inline SLdrIngSpiderballGuardian::SLdrIngSpiderballGuardian() : editorProperties(), patterned(), actorInformation(), ingSpiderballGuardianProperties() {
+inline SLdrIngSpiderballGuardian::SLdrIngSpiderballGuardian()
+: editorProperties(), patterned(), actorInformation(), ingSpiderballGuardianProperties() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

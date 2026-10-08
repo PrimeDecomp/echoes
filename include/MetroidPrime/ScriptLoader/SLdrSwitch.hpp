@@ -10,8 +10,8 @@ struct SLdrSwitch {
   ~SLdrSwitch();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool isOpen; // 0xa1dffad2
-  bool isAutoClose; // 0x054a1e34
+  bool isOpen;                           // 0xa1dffad2
+  bool isAutoClose;                      // 0x054a1e34
 };
 
 inline SLdrSwitch::SLdrSwitch() : editorProperties() {

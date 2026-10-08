@@ -12,12 +12,12 @@ struct SLdrScanTreeCategory {
   ~SLdrScanTreeCategory();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId nodeName; // 0x46219bac
-  rstl::string stringName; // 0x32698bd6
+  CAssetId nodeName;                     // 0x46219bac
+  rstl::string stringName;               // 0x32698bd6
 };
 
-inline SLdrScanTreeCategory::SLdrScanTreeCategory() : editorProperties(), nodeName(kInvalidAssetId), stringName() {
-}
+inline SLdrScanTreeCategory::SLdrScanTreeCategory()
+: editorProperties(), nodeName(kInvalidAssetId), stringName() {}
 
 inline SLdrScanTreeCategory::~SLdrScanTreeCategory() {}
 

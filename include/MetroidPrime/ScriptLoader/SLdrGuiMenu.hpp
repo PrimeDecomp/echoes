@@ -10,14 +10,15 @@ struct SLdrGuiMenu {
   SLdrGuiMenu();
   ~SLdrGuiMenu();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
+  SLdrEditorProperties editorProperties;    // 0x255a4580
   SLdrGuiWidgetProperties widgetProperties; // 0x91cefa1e
-  int controlDirection; // 0xa714d574
-  bool wrapSelection; // 0x84f708c8
-  int selectionChangedSound; // 0xbe50269e
+  int controlDirection;                     // 0xa714d574
+  bool wrapSelection;                       // 0x84f708c8
+  int selectionChangedSound;                // 0xbe50269e
 };
 
-inline SLdrGuiMenu::SLdrGuiMenu() : editorProperties(), widgetProperties(), selectionChangedSound(-1) {
+inline SLdrGuiMenu::SLdrGuiMenu()
+: editorProperties(), widgetProperties(), selectionChangedSound(-1) {
   editorProperties.active = false;
   controlDirection = 0;
   wrapSelection = true;

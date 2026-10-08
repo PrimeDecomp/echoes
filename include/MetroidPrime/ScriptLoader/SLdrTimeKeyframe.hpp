@@ -10,12 +10,10 @@ struct SLdrTimeKeyframe {
   ~SLdrTimeKeyframe();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float time; // 0x44335aff
+  float time;                            // 0x44335aff
 };
 
-inline SLdrTimeKeyframe::SLdrTimeKeyframe() : editorProperties() {
-  time = 1.0f;
-}
+inline SLdrTimeKeyframe::SLdrTimeKeyframe() : editorProperties() { time = 1.0f; }
 
 inline SLdrTimeKeyframe::~SLdrTimeKeyframe() {}
 

@@ -10,20 +10,21 @@ struct SLdrSpinner {
   ~SLdrSpinner();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float forwardSpeed; // 0xde4f6a76
-  float backwardSpeed; // 0x54e15a3c
-  float unknown_0x449dd059; // 0x449dd059
-  float unknown_0xfc849759; // 0xfc849759
-  bool shotSpinner; // 0x50501e17
-  bool allowWrap; // 0x3983cba7
-  bool noBackward; // 0xf1c8a0ae
-  bool splineControl; // 0xe8f0a1ce
-  int loopSound; // 0x8b66eca2
-  int startSound; // 0x52edd16b
-  int stopSound; // 0xe88e7d41
+  float forwardSpeed;                    // 0xde4f6a76
+  float backwardSpeed;                   // 0x54e15a3c
+  float unknown_0x449dd059;              // 0x449dd059
+  float unknown_0xfc849759;              // 0xfc849759
+  bool shotSpinner;                      // 0x50501e17
+  bool allowWrap;                        // 0x3983cba7
+  bool noBackward;                       // 0xf1c8a0ae
+  bool splineControl;                    // 0xe8f0a1ce
+  int loopSound;                         // 0x8b66eca2
+  int startSound;                        // 0x52edd16b
+  int stopSound;                         // 0xe88e7d41
 };
 
-inline SLdrSpinner::SLdrSpinner() : editorProperties(), loopSound(-1), startSound(-1), stopSound(-1) {
+inline SLdrSpinner::SLdrSpinner()
+: editorProperties(), loopSound(-1), startSound(-1), stopSound(-1) {
   forwardSpeed = 0.0f;
   backwardSpeed = 0.0f;
   unknown_0x449dd059 = 0.0f;

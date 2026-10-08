@@ -14,23 +14,33 @@ struct SLdrGlowbug {
   ~SLdrGlowbug();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId deathFlashEffect; // 0xd75426f9
-  CAssetId deathBreakApartEffect; // 0x8985b339
-  CAssetId attackEffect; // 0xb258d3e8
-  CAssetId attackTelegraphEffect; // 0xb06815b3
-  CAssetId attackEchoEffect; // 0xab378a64
-  float attackDuration; // 0x16342c18
-  float attackTelegraphDuration; // 0x3d7ccd32
-  CVector3f attackAimOffset; // 0x540c1f87
-  int attackTelegraphSound; // 0x0db10f6b
-  int attackSound; // 0x50e45ea8
-  CAssetId scanModel; // 0xa9482eb1
-  bool isInLightWorld; // 0x1917a180
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CAssetId deathFlashEffect;             // 0xd75426f9
+  CAssetId deathBreakApartEffect;        // 0x8985b339
+  CAssetId attackEffect;                 // 0xb258d3e8
+  CAssetId attackTelegraphEffect;        // 0xb06815b3
+  CAssetId attackEchoEffect;             // 0xab378a64
+  float attackDuration;                  // 0x16342c18
+  float attackTelegraphDuration;         // 0x3d7ccd32
+  CVector3f attackAimOffset;             // 0x540c1f87
+  int attackTelegraphSound;              // 0x0db10f6b
+  int attackSound;                       // 0x50e45ea8
+  CAssetId scanModel;                    // 0xa9482eb1
+  bool isInLightWorld;                   // 0x1917a180
 };
 
-inline SLdrGlowbug::SLdrGlowbug() : editorProperties(), patterned(), actorInformation(), deathFlashEffect(kInvalidAssetId), deathBreakApartEffect(kInvalidAssetId), attackEffect(kInvalidAssetId), attackTelegraphEffect(kInvalidAssetId), attackEchoEffect(kInvalidAssetId), attackAimOffset(CVector3f::Zero()), scanModel(kInvalidAssetId) {
+inline SLdrGlowbug::SLdrGlowbug()
+: editorProperties()
+, patterned()
+, actorInformation()
+, deathFlashEffect(kInvalidAssetId)
+, deathBreakApartEffect(kInvalidAssetId)
+, attackEffect(kInvalidAssetId)
+, attackTelegraphEffect(kInvalidAssetId)
+, attackEchoEffect(kInvalidAssetId)
+, attackAimOffset(CVector3f::Zero())
+, scanModel(kInvalidAssetId) {
   attackDuration = 1.0f;
   attackTelegraphDuration = 1.0f;
   attackTelegraphSound = 0;

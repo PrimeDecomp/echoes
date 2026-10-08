@@ -10,11 +10,11 @@ struct SLdrDock {
   ~SLdrDock();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int dockNumber; // 0x1101e91b
-  int areaNumber; // 0x610eec90
-  bool isVirtual; // 0x870e6d6f
-  bool loadConnectedImmediate; // 0xf3839d6f
-  bool showSoftTransition; // 0x222d9daf
+  int dockNumber;                        // 0x1101e91b
+  int areaNumber;                        // 0x610eec90
+  bool isVirtual;                        // 0x870e6d6f
+  bool loadConnectedImmediate;           // 0xf3839d6f
+  bool showSoftTransition;               // 0x222d9daf
 };
 
 inline SLdrDock::SLdrDock() : editorProperties() {

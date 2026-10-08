@@ -11,11 +11,10 @@ struct SLdrDamageActor {
   ~SLdrDamageActor();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrDamageInfo damage; // 0x337f9524
+  SLdrDamageInfo damage;                 // 0x337f9524
 };
 
-inline SLdrDamageActor::SLdrDamageActor() : editorProperties(), damage() {
-}
+inline SLdrDamageActor::SLdrDamageActor() : editorProperties(), damage() {}
 
 inline SLdrDamageActor::~SLdrDamageActor() {}
 

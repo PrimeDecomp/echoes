@@ -11,9 +11,9 @@ struct SLdrFogVolume {
   ~SLdrFogVolume();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float fogBobHeight; // 0xb90dff44
-  float fogBobFreq; // 0xf608d35c
-  CColor fogColor; // 0xe578c0dd
+  float fogBobHeight;                    // 0xb90dff44
+  float fogBobFreq;                      // 0xf608d35c
+  CColor fogColor;                       // 0xe578c0dd
 };
 
 inline SLdrFogVolume::SLdrFogVolume() : editorProperties(), fogColor(CColor::Green()) {

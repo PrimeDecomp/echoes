@@ -12,26 +12,30 @@ struct SLdrPlayerTurret {
   ~SLdrPlayerTurret();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  uint flagsPlayerTurret; // 0xeeadefa6
-  float maxHorizRotationLeft; // 0x17cd8b2a
-  float maxHorizRotationRight; // 0x1473dad2
-  float maxVertElevationUp; // 0x3650ce75
-  float maxVertElevationDown; // 0x78520e6e
-  float damageAngle; // 0xa39a5d72
-  float horizSpeed; // 0xfb2e32db
-  float vertSpeed; // 0x1b3c8683
-  float fireRate; // 0xc6e48f18
-  SLdrDamageInfo weaponDamage; // 0x8e5f7e96
-  CAssetId weaponEffect; // 0xc43360a7
-  CAssetId weaponEffectMultiPlayer; // 0xa99d3dbe
-  int sFXTurretRotation; // 0xe7234f72
-  int sFXSinglePlayerImpact; // 0x3e2f7afb
-  int sFXMultiPlayerImpact; // 0x7cabd1f1
-  int sFXSinglePlayerProjectile; // 0x7ef976eb
-  int sFXMultiPlayerProjectile; // 0x035459fd
+  uint flagsPlayerTurret;                // 0xeeadefa6
+  float maxHorizRotationLeft;            // 0x17cd8b2a
+  float maxHorizRotationRight;           // 0x1473dad2
+  float maxVertElevationUp;              // 0x3650ce75
+  float maxVertElevationDown;            // 0x78520e6e
+  float damageAngle;                     // 0xa39a5d72
+  float horizSpeed;                      // 0xfb2e32db
+  float vertSpeed;                       // 0x1b3c8683
+  float fireRate;                        // 0xc6e48f18
+  SLdrDamageInfo weaponDamage;           // 0x8e5f7e96
+  CAssetId weaponEffect;                 // 0xc43360a7
+  CAssetId weaponEffectMultiPlayer;      // 0xa99d3dbe
+  int sFXTurretRotation;                 // 0xe7234f72
+  int sFXSinglePlayerImpact;             // 0x3e2f7afb
+  int sFXMultiPlayerImpact;              // 0x7cabd1f1
+  int sFXSinglePlayerProjectile;         // 0x7ef976eb
+  int sFXMultiPlayerProjectile;          // 0x035459fd
 };
 
-inline SLdrPlayerTurret::SLdrPlayerTurret() : editorProperties(), weaponDamage(), weaponEffect(kInvalidAssetId), weaponEffectMultiPlayer(kInvalidAssetId) {
+inline SLdrPlayerTurret::SLdrPlayerTurret()
+: editorProperties()
+, weaponDamage()
+, weaponEffect(kInvalidAssetId)
+, weaponEffectMultiPlayer(kInvalidAssetId) {
   flagsPlayerTurret = 0x00000001u;
   maxHorizRotationLeft = 90.0f;
   maxHorizRotationRight = 90.0f;

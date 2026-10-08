@@ -11,9 +11,9 @@ struct SLdrTriggerOrientated {
   ~SLdrTriggerOrientated();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrTriggerInfo trigger; // 0x77a27411
-  bool deactivateOnEnter; // 0x8d33465f
-  bool deactivateOnExit; // 0x1c453986
+  SLdrTriggerInfo trigger;               // 0x77a27411
+  bool deactivateOnEnter;                // 0x8d33465f
+  bool deactivateOnExit;                 // 0x1c453986
 };
 
 inline SLdrTriggerOrientated::SLdrTriggerOrientated() : editorProperties(), trigger() {

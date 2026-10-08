@@ -11,17 +11,18 @@ struct SLdrScanInfoSecondaryModel {
   SLdrScanInfoSecondaryModel();
   ~SLdrScanInfoSecondaryModel();
 
-  CAssetId secondaryStaticModel; // 0x1f7921bc
+  CAssetId secondaryStaticModel;           // 0x1f7921bc
   SLdrAnimationSet secondaryAnimatedModel; // 0xcdd202d1
-  rstl::string secondaryModelLocator; // 0x3ea2bed8
+  rstl::string secondaryModelLocator;      // 0x3ea2bed8
 };
 
-inline SLdrScanInfoSecondaryModel::SLdrScanInfoSecondaryModel() : secondaryStaticModel(kInvalidAssetId), secondaryAnimatedModel(), secondaryModelLocator() {
-}
+inline SLdrScanInfoSecondaryModel::SLdrScanInfoSecondaryModel()
+: secondaryStaticModel(kInvalidAssetId), secondaryAnimatedModel(), secondaryModelLocator() {}
 
 inline SLdrScanInfoSecondaryModel::~SLdrScanInfoSecondaryModel() {}
 
-inline void LoadTypedefScanInfoSecondaryModel(SLdrScanInfoSecondaryModel& sldrThis, CInputStream& input) {
+inline void LoadTypedefScanInfoSecondaryModel(SLdrScanInfoSecondaryModel& sldrThis,
+                                              CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -51,29 +52,43 @@ struct SLdrScannableObjectInfo {
   SLdrScannableObjectInfo();
   ~SLdrScannableObjectInfo();
 
-  CAssetId scanInfoTextStringTable; // 0x2f5b6423
-  int scanSpeed; // 0xc308a322
-  bool critical; // 0x7b714814
-  bool unknown_0x1733b1ec; // 0x1733b1ec
-  CAssetId scanTextureInHud; // 0x53336141
-  float modelInitialPitch; // 0x3de0ba64
-  float modelInitialYaw; // 0x2add6628
-  float modelScale; // 0xd0c15066
-  CAssetId staticModel; // 0xb7adc418
-  SLdrAnimationSet animatedModel; // 0x15694ee1
+  CAssetId scanInfoTextStringTable;            // 0x2f5b6423
+  int scanSpeed;                               // 0xc308a322
+  bool critical;                               // 0x7b714814
+  bool unknown_0x1733b1ec;                     // 0x1733b1ec
+  CAssetId scanTextureInHud;                   // 0x53336141
+  float modelInitialPitch;                     // 0x3de0ba64
+  float modelInitialYaw;                       // 0x2add6628
+  float modelScale;                            // 0xd0c15066
+  CAssetId staticModel;                        // 0xb7adc418
+  SLdrAnimationSet animatedModel;              // 0x15694ee1
   SLdrAnimationSet primarySecondAnimatedModel; // 0x58f9fe99
-  SLdrScanInfoSecondaryModel secondaryModel0; // 0x1c5b4a3a
-  SLdrScanInfoSecondaryModel secondaryModel1; // 0x8728a0ee
-  SLdrScanInfoSecondaryModel secondaryModel2; // 0xf1cd99d3
-  SLdrScanInfoSecondaryModel secondaryModel3; // 0x6abe7307
-  SLdrScanInfoSecondaryModel secondaryModel4; // 0x1c07eba9
-  SLdrScanInfoSecondaryModel secondaryModel5; // 0x8774017d
-  SLdrScanInfoSecondaryModel secondaryModel6; // 0xf1913840
-  SLdrScanInfoSecondaryModel secondaryModel7; // 0x6ae2d294
-  SLdrScanInfoSecondaryModel secondaryModel8; // 0x1ce2091c
+  SLdrScanInfoSecondaryModel secondaryModel0;  // 0x1c5b4a3a
+  SLdrScanInfoSecondaryModel secondaryModel1;  // 0x8728a0ee
+  SLdrScanInfoSecondaryModel secondaryModel2;  // 0xf1cd99d3
+  SLdrScanInfoSecondaryModel secondaryModel3;  // 0x6abe7307
+  SLdrScanInfoSecondaryModel secondaryModel4;  // 0x1c07eba9
+  SLdrScanInfoSecondaryModel secondaryModel5;  // 0x8774017d
+  SLdrScanInfoSecondaryModel secondaryModel6;  // 0xf1913840
+  SLdrScanInfoSecondaryModel secondaryModel7;  // 0x6ae2d294
+  SLdrScanInfoSecondaryModel secondaryModel8;  // 0x1ce2091c
 };
 
-inline SLdrScannableObjectInfo::SLdrScannableObjectInfo() : scanInfoTextStringTable(kInvalidAssetId), scanTextureInHud(kInvalidAssetId), staticModel(kInvalidAssetId), animatedModel(), primarySecondAnimatedModel(), secondaryModel0(), secondaryModel1(), secondaryModel2(), secondaryModel3(), secondaryModel4(), secondaryModel5(), secondaryModel6(), secondaryModel7(), secondaryModel8() {
+inline SLdrScannableObjectInfo::SLdrScannableObjectInfo()
+: scanInfoTextStringTable(kInvalidAssetId)
+, scanTextureInHud(kInvalidAssetId)
+, staticModel(kInvalidAssetId)
+, animatedModel()
+, primarySecondAnimatedModel()
+, secondaryModel0()
+, secondaryModel1()
+, secondaryModel2()
+, secondaryModel3()
+, secondaryModel4()
+, secondaryModel5()
+, secondaryModel6()
+, secondaryModel7()
+, secondaryModel8() {
   scanSpeed = 0;
   critical = false;
   unknown_0x1733b1ec = false;

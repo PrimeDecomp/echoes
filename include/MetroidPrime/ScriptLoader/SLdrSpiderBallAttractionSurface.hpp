@@ -12,8 +12,7 @@ struct SLdrSpiderBallAttractionSurface {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-inline SLdrSpiderBallAttractionSurface::SLdrSpiderBallAttractionSurface() : editorProperties() {
-}
+inline SLdrSpiderBallAttractionSurface::SLdrSpiderBallAttractionSurface() : editorProperties() {}
 
 inline SLdrSpiderBallAttractionSurface::~SLdrSpiderBallAttractionSurface() {}
 

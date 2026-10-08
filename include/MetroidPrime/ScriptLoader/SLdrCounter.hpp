@@ -10,10 +10,10 @@ struct SLdrCounter {
   ~SLdrCounter();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int initial_Count; // 0xfd179a6f
-  int max_Count; // 0x5b851589
-  bool autoReset; // 0x7bef45ca
-  bool wrap; // 0xf076cef5
+  int initial_Count;                     // 0xfd179a6f
+  int max_Count;                         // 0x5b851589
+  bool autoReset;                        // 0x7bef45ca
+  bool wrap;                             // 0xf076cef5
 };
 
 inline SLdrCounter::SLdrCounter() : editorProperties() {

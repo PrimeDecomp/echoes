@@ -10,9 +10,9 @@ struct SLdrGuiWidget {
   SLdrGuiWidget();
   ~SLdrGuiWidget();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
+  SLdrEditorProperties editorProperties;    // 0x255a4580
   SLdrGuiWidgetProperties widgetProperties; // 0x91cefa1e
-  int controllerNumber; // 0xdb7f4aa2
+  int controllerNumber;                     // 0xdb7f4aa2
 };
 
 inline SLdrGuiWidget::SLdrGuiWidget() : editorProperties(), widgetProperties() {

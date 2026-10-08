@@ -15,18 +15,21 @@ struct SLdrSandBossStampedeData {
   SLdrSandBossStampedeData();
   ~SLdrSandBossStampedeData();
 
-  float unknown_0xbed8a4ba; // 0xbed8a4ba
-  float unknown_0xc2b98161; // 0xc2b98161
-  float unknown_0x5fb66017; // 0x5fb66017
-  float breakStampedeHP; // 0xbab42316
-  CAssetId stampedeArmorExplosion; // 0x8f06342a
-  int sound_StampedeArmorExplode; // 0xd8b11129
+  float unknown_0xbed8a4ba;           // 0xbed8a4ba
+  float unknown_0xc2b98161;           // 0xc2b98161
+  float unknown_0x5fb66017;           // 0x5fb66017
+  float breakStampedeHP;              // 0xbab42316
+  CAssetId stampedeArmorExplosion;    // 0x8f06342a
+  int sound_StampedeArmorExplode;     // 0xd8b11129
   int sound_StampedeArmorExplodePain; // 0xe99e5316
-  SLdrDamageInfo stampedeDamage; // 0x1440d152
-  CAssetId stampedeSandFountainFx; // 0x686489fd
+  SLdrDamageInfo stampedeDamage;      // 0x1440d152
+  CAssetId stampedeSandFountainFx;    // 0x686489fd
 };
 
-inline SLdrSandBossStampedeData::SLdrSandBossStampedeData() : stampedeArmorExplosion(kInvalidAssetId), stampedeDamage(), stampedeSandFountainFx(kInvalidAssetId) {
+inline SLdrSandBossStampedeData::SLdrSandBossStampedeData()
+: stampedeArmorExplosion(kInvalidAssetId)
+, stampedeDamage()
+, stampedeSandFountainFx(kInvalidAssetId) {
   unknown_0xbed8a4ba = 1.5f;
   unknown_0xc2b98161 = 2.5f;
   unknown_0x5fb66017 = 3.0f;
@@ -41,7 +44,8 @@ inline SLdrSandBossStampedeData::SLdrSandBossStampedeData() : stampedeArmorExplo
 
 inline SLdrSandBossStampedeData::~SLdrSandBossStampedeData() {}
 
-inline void LoadTypedefSandBossStampedeData(SLdrSandBossStampedeData& sldrThis, CInputStream& input) {
+inline void LoadTypedefSandBossStampedeData(SLdrSandBossStampedeData& sldrThis,
+                                            CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -94,21 +98,21 @@ struct SLdrSandBossChargeBeamData {
   SLdrSandBossChargeBeamData();
   ~SLdrSandBossChargeBeamData();
 
-  SLdrDamageInfo damage; // 0x337f9524
-  float duration; // 0x8b51e23f
-  float changeDirectionInterval; // 0x82be06ba
-  float changeDirectionVariance; // 0x1b57d422
-  float changeDirectionChance; // 0x060b9b84
-  float innerRadius; // 0x3f5af46f
-  float outerRadius; // 0x42d842cd
-  float minChargeBeamAttackTime; // 0x52642b7e
+  SLdrDamageInfo damage;              // 0x337f9524
+  float duration;                     // 0x8b51e23f
+  float changeDirectionInterval;      // 0x82be06ba
+  float changeDirectionVariance;      // 0x1b57d422
+  float changeDirectionChance;        // 0x060b9b84
+  float innerRadius;                  // 0x3f5af46f
+  float outerRadius;                  // 0x42d842cd
+  float minChargeBeamAttackTime;      // 0x52642b7e
   float chargeBeamAttackTimeVariance; // 0xfda3eb4b
-  float turnSpeed; // 0x020c78bb
-  float unknown_0x47cde539; // 0x47cde539
-  int sound_ChargeBeam; // 0x29d8744a
-  int unknown_0x8d4f3b88; // 0x8d4f3b88
-  float minDarkBeamAttackTime; // 0xbf88fe4f
-  float darkBeamAttackTimeVariance; // 0x74c702b3
+  float turnSpeed;                    // 0x020c78bb
+  float unknown_0x47cde539;           // 0x47cde539
+  int sound_ChargeBeam;               // 0x29d8744a
+  int unknown_0x8d4f3b88;             // 0x8d4f3b88
+  float minDarkBeamAttackTime;        // 0xbf88fe4f
+  float darkBeamAttackTimeVariance;   // 0x74c702b3
 };
 
 inline SLdrSandBossChargeBeamData::SLdrSandBossChargeBeamData() : damage() {
@@ -133,7 +137,8 @@ inline SLdrSandBossChargeBeamData::SLdrSandBossChargeBeamData() : damage() {
 
 inline SLdrSandBossChargeBeamData::~SLdrSandBossChargeBeamData() {}
 
-inline void LoadTypedefSandBossChargeBeamData(SLdrSandBossChargeBeamData& sldrThis, CInputStream& input) {
+inline void LoadTypedefSandBossChargeBeamData(SLdrSandBossChargeBeamData& sldrThis,
+                                              CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -212,10 +217,11 @@ struct SLdrUnknownStruct41 {
 
   SLdrSandBossChargeBeamData doubleCharge; // 0xb9784f0e
   SLdrSandBossChargeBeamData tripleCharge; // 0xb8ae1bdc
-  SLdrPlasmaBeamInfo chargeBeamInfo; // 0x94da6435
+  SLdrPlasmaBeamInfo chargeBeamInfo;       // 0x94da6435
 };
 
-inline SLdrUnknownStruct41::SLdrUnknownStruct41() : doubleCharge(), tripleCharge(), chargeBeamInfo() {
+inline SLdrUnknownStruct41::SLdrUnknownStruct41()
+: doubleCharge(), tripleCharge(), chargeBeamInfo() {
   chargeBeamInfo.length = 500.0f;
   chargeBeamInfo.radius = 1.0f;
   chargeBeamInfo.expansionSpeed = 4.0f;
@@ -258,18 +264,26 @@ struct SLdrSandBossArmorData {
   SLdrSandBossArmorData();
   ~SLdrSandBossArmorData();
 
-  CAssetId headArmor; // 0x07d8cc4f
-  CAssetId armorPiece2; // 0xae30ae06
-  CAssetId armorPiece3; // 0x656c7da3
-  CAssetId armorPiece4; // 0x78694d1b
-  CAssetId armorPiece5; // 0xb3359ebe
-  CAssetId armorPiece6; // 0x35a1ec10
-  CAssetId armorPiece7; // 0xfefd3fb5
-  CAssetId tailArmor; // 0x37e99c23
+  CAssetId headArmor;    // 0x07d8cc4f
+  CAssetId armorPiece2;  // 0xae30ae06
+  CAssetId armorPiece3;  // 0x656c7da3
+  CAssetId armorPiece4;  // 0x78694d1b
+  CAssetId armorPiece5;  // 0xb3359ebe
+  CAssetId armorPiece6;  // 0x35a1ec10
+  CAssetId armorPiece7;  // 0xfefd3fb5
+  CAssetId tailArmor;    // 0x37e99c23
   int sound_ArmorImpact; // 0xdcc2bf11
 };
 
-inline SLdrSandBossArmorData::SLdrSandBossArmorData() : headArmor(kInvalidAssetId), armorPiece2(kInvalidAssetId), armorPiece3(kInvalidAssetId), armorPiece4(kInvalidAssetId), armorPiece5(kInvalidAssetId), armorPiece6(kInvalidAssetId), armorPiece7(kInvalidAssetId), tailArmor(kInvalidAssetId) {
+inline SLdrSandBossArmorData::SLdrSandBossArmorData()
+: headArmor(kInvalidAssetId)
+, armorPiece2(kInvalidAssetId)
+, armorPiece3(kInvalidAssetId)
+, armorPiece4(kInvalidAssetId)
+, armorPiece5(kInvalidAssetId)
+, armorPiece6(kInvalidAssetId)
+, armorPiece7(kInvalidAssetId)
+, tailArmor(kInvalidAssetId) {
   sound_ArmorImpact = 0;
 }
 
@@ -328,36 +342,54 @@ struct SLdrSandBossData {
   SLdrSandBossData();
   ~SLdrSandBossData();
 
-  CAssetId scannableInfo1; // 0x72124842
-  int commandIndex; // 0xe34d7c49
-  CAssetId crackedSphere1; // 0xe47262f5
-  CAssetId crackedSphere2; // 0x62e6105b
-  CAssetId crackedSphere3; // 0xa9bac3fe
-  SLdrDamageInfo snapJawDamage; // 0x19c91aaa
-  SLdrDamageInfo spitOutDamage; // 0x58889364
-  float minDarkBeamAttackTime; // 0xbf88fe4f
-  float darkBeamAttackTimeVariance; // 0x74c702b3
-  CAssetId darkBeamProjectile; // 0x35ee175d
-  SLdrDamageInfo darkBeamDamage; // 0x94c2150f
-  float unknown_0x2b42dddf; // 0x2b42dddf
-  float unknown_0x1562e0d6; // 0x1562e0d6
-  float headArmorHP; // 0xd0db2574
-  float suckAirTime; // 0xf1aed43d
-  float suckMorphballRange; // 0x3055dd0e
-  float spitMorphballTime; // 0x6f135965
-  CAssetId headArmorExplosion; // 0xc49086d9
-  SLdrSandBossStampedeData stampedeProperties; // 0x95371a32
-  SLdrUnknownStruct41 unknown_0x7619e561; // 0x7619e561
-  SLdrSandBossArmorData attachedArmor; // 0x8b452a19
-  SLdrSandBossArmorData stampedeArmor; // 0x0cf8c54c
-  CAssetId withTailArmorModel; // 0xbbd84681
-  CAssetId withTailArmorSkinRules; // 0xdf6da1a2
-  SLdrDamageVulnerability damageVulnerability; // non-matching name, 0xb7ecdcf9
+  CAssetId scannableInfo1;                       // 0x72124842
+  int commandIndex;                              // 0xe34d7c49
+  CAssetId crackedSphere1;                       // 0xe47262f5
+  CAssetId crackedSphere2;                       // 0x62e6105b
+  CAssetId crackedSphere3;                       // 0xa9bac3fe
+  SLdrDamageInfo snapJawDamage;                  // 0x19c91aaa
+  SLdrDamageInfo spitOutDamage;                  // 0x58889364
+  float minDarkBeamAttackTime;                   // 0xbf88fe4f
+  float darkBeamAttackTimeVariance;              // 0x74c702b3
+  CAssetId darkBeamProjectile;                   // 0x35ee175d
+  SLdrDamageInfo darkBeamDamage;                 // 0x94c2150f
+  float unknown_0x2b42dddf;                      // 0x2b42dddf
+  float unknown_0x1562e0d6;                      // 0x1562e0d6
+  float headArmorHP;                             // 0xd0db2574
+  float suckAirTime;                             // 0xf1aed43d
+  float suckMorphballRange;                      // 0x3055dd0e
+  float spitMorphballTime;                       // 0x6f135965
+  CAssetId headArmorExplosion;                   // 0xc49086d9
+  SLdrSandBossStampedeData stampedeProperties;   // 0x95371a32
+  SLdrUnknownStruct41 unknown_0x7619e561;        // 0x7619e561
+  SLdrSandBossArmorData attachedArmor;           // 0x8b452a19
+  SLdrSandBossArmorData stampedeArmor;           // 0x0cf8c54c
+  CAssetId withTailArmorModel;                   // 0xbbd84681
+  CAssetId withTailArmorSkinRules;               // 0xdf6da1a2
+  SLdrDamageVulnerability damageVulnerability;   // non-matching name, 0xb7ecdcf9
   SLdrDamageVulnerability stampedeVulnerability; // 0x844ed79c
-  SLdrDamageVulnerability suckAirVulnerability; // 0x77210167
+  SLdrDamageVulnerability suckAirVulnerability;  // 0x77210167
 };
 
-inline SLdrSandBossData::SLdrSandBossData() : scannableInfo1(kInvalidAssetId), crackedSphere1(kInvalidAssetId), crackedSphere2(kInvalidAssetId), crackedSphere3(kInvalidAssetId), snapJawDamage(), spitOutDamage(), darkBeamProjectile(kInvalidAssetId), darkBeamDamage(), headArmorExplosion(kInvalidAssetId), stampedeProperties(), unknown_0x7619e561(), attachedArmor(), stampedeArmor(), withTailArmorModel(kInvalidAssetId), withTailArmorSkinRules(kInvalidAssetId), damageVulnerability(), stampedeVulnerability(), suckAirVulnerability() {
+inline SLdrSandBossData::SLdrSandBossData()
+: scannableInfo1(kInvalidAssetId)
+, crackedSphere1(kInvalidAssetId)
+, crackedSphere2(kInvalidAssetId)
+, crackedSphere3(kInvalidAssetId)
+, snapJawDamage()
+, spitOutDamage()
+, darkBeamProjectile(kInvalidAssetId)
+, darkBeamDamage()
+, headArmorExplosion(kInvalidAssetId)
+, stampedeProperties()
+, unknown_0x7619e561()
+, attachedArmor()
+, stampedeArmor()
+, withTailArmorModel(kInvalidAssetId)
+, withTailArmorSkinRules(kInvalidAssetId)
+, damageVulnerability()
+, stampedeVulnerability()
+, suckAirVulnerability() {
   commandIndex = 0;
   snapJawDamage.dI_WeaponType = 11;
   snapJawDamage.dI_Damage = 20.0f;
@@ -506,12 +538,13 @@ struct SLdrSandBoss {
   ~SLdrSandBoss();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrSandBossData sandBossProperties; // 0x91e88d81
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrSandBossData sandBossProperties;   // 0x91e88d81
 };
 
-inline SLdrSandBoss::SLdrSandBoss() : editorProperties(), patterned(), actorInformation(), sandBossProperties() {
+inline SLdrSandBoss::SLdrSandBoss()
+: editorProperties(), patterned(), actorInformation(), sandBossProperties() {
   patterned.turnSpeed = 60.0f;
   patterned.minAttackRange = 12.0f;
   patterned.maxAttackRange = 37.0f;

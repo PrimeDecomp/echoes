@@ -10,11 +10,11 @@ struct SLdrFishCloudModifier {
   ~SLdrFishCloudModifier();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool active; // 0xc6bb2f45
-  bool unknown_0xea2d4ca8; // 0xea2d4ca8
-  bool rotate; // 0x923109d6
-  float influenceDistance; // 0x7864ad0e
-  float influencePriority; // 0xaba2d9ed
+  bool active;                           // 0xc6bb2f45
+  bool unknown_0xea2d4ca8;               // 0xea2d4ca8
+  bool rotate;                           // 0x923109d6
+  float influenceDistance;               // 0x7864ad0e
+  float influencePriority;               // 0xaba2d9ed
 };
 
 inline SLdrFishCloudModifier::SLdrFishCloudModifier() : editorProperties() {

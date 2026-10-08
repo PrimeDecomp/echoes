@@ -17,9 +17,9 @@ struct SLdrBloggStruct {
 
   int min_________________________; // non-matching name, 0x3e505ddb
   int max_________________________; // non-matching name, 0x118f1e46
-  float unknown_0x6e603df2; // 0x6e603df2
-  float unknown_0x1e74f1ec; // 0x1e74f1ec
-  float unknown_0xecba9fb2; // 0xecba9fb2
+  float unknown_0x6e603df2;         // 0x6e603df2
+  float unknown_0x1e74f1ec;         // 0x1e74f1ec
+  float unknown_0xecba9fb2;         // 0xecba9fb2
 };
 
 inline SLdrBloggStruct::SLdrBloggStruct() {
@@ -69,50 +69,61 @@ struct SLdrBlogg {
   SLdrBlogg();
   ~SLdrBlogg();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float minAttackAngle; // 0x562bf3fd
-  float maxAttackAngle; // 0xf11f7384
-  float minDelayBetweenProjectileAttacks; // 0x32455774
-  float maxDelayBetweenProjectileAttacks; // 0xc1c8d862
-  int unknown_0xa19d5f62; // 0xa19d5f62
-  CAssetId projectileParticleEffect; // 0x02d1176e
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  float bodyDamageMultiplier; // 0x7f8c4c69
-  float mouthDamageMultiplier; // 0x6c36a6dd
-  float mouthDamageAngle; // 0x10ffe760
-  SLdrDamageVulnerability armorVulnerability; // 0x896d5bd9
-  float chargeDamageRadius; // 0xe7d79b0a
-  float chargeDamage; // 0xb15d8af8
-  float biteDamage; // 0x5210cd68
-  float ballSpitDamage; // 0x479b1224
-  float chargeTurnSpeed; // 0x290e5e0b
-  float fishAttractionRadius; // 0x3ffcd8ae
-  float fishAttractionPriority; // 0x8b1b0461
-  float aggressiveness; // 0x9579b1f2
-  float unknown_0x479ccc37; // 0x479ccc37
-  float unknown_0x689a803f; // 0x689a803f
-  float unknown_0x800a2b0d; // 0x800a2b0d
-  float chargeSpeedMultiplier; // 0x82df77a1
-  float maxMeleeRange; // 0x9873a1c1
-  float maxBallDetectionRange; // 0x6a78c607
-  float maxPlayerPursuitTime; // 0x2c8d9fc4
-  float maxBallPursuitTime; // 0xd1f82f92
-  float minDelayBetweenMeleeAttacks; // 0x5109fb4e
-  float maxCollisionTime; // 0x648a2486
-  int mouthOpenSound; // 0x041949b8
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  SLdrEditorProperties editorProperties;                  // 0x255a4580
+  SLdrPatternedAITypedef patterned;                       // 0xb3774750
+  SLdrActorParameters actorInformation;                   // 0x7e397fed
+  float minAttackAngle;                                   // 0x562bf3fd
+  float maxAttackAngle;                                   // 0xf11f7384
+  float minDelayBetweenProjectileAttacks;                 // 0x32455774
+  float maxDelayBetweenProjectileAttacks;                 // 0xc1c8d862
+  int unknown_0xa19d5f62;                                 // 0xa19d5f62
+  CAssetId projectileParticleEffect;                      // 0x02d1176e
+  SLdrDamageInfo projectileDamage;                        // 0x553b1339
+  float bodyDamageMultiplier;                             // 0x7f8c4c69
+  float mouthDamageMultiplier;                            // 0x6c36a6dd
+  float mouthDamageAngle;                                 // 0x10ffe760
+  SLdrDamageVulnerability armorVulnerability;             // 0x896d5bd9
+  float chargeDamageRadius;                               // 0xe7d79b0a
+  float chargeDamage;                                     // 0xb15d8af8
+  float biteDamage;                                       // 0x5210cd68
+  float ballSpitDamage;                                   // 0x479b1224
+  float chargeTurnSpeed;                                  // 0x290e5e0b
+  float fishAttractionRadius;                             // 0x3ffcd8ae
+  float fishAttractionPriority;                           // 0x8b1b0461
+  float aggressiveness;                                   // 0x9579b1f2
+  float unknown_0x479ccc37;                               // 0x479ccc37
+  float unknown_0x689a803f;                               // 0x689a803f
+  float unknown_0x800a2b0d;                               // 0x800a2b0d
+  float chargeSpeedMultiplier;                            // 0x82df77a1
+  float maxMeleeRange;                                    // 0x9873a1c1
+  float maxBallDetectionRange;                            // 0x6a78c607
+  float maxPlayerPursuitTime;                             // 0x2c8d9fc4
+  float maxBallPursuitTime;                               // 0xd1f82f92
+  float minDelayBetweenMeleeAttacks;                      // 0x5109fb4e
+  float maxCollisionTime;                                 // 0x648a2486
+  int mouthOpenSound;                                     // 0x041949b8
+  SLdrIngPossessionData ingPossessionData;                // 0xe61748ed
   SLdrDamageVulnerability ingPossessedArmorVulnerability; // 0x2af6ff25
-  bool isMegaBlogg; // 0x4fc9dfe4
-  float projectileBlurRadius; // 0x2dd3662e
-  float projectileBlurTime; // 0x6f41bbe7
-  SLdrBloggStruct bloggStruct; // non-matching name, 0x3874576d
-  SLdrBloggStruct bloggStruct_0x97dd1aa7; // non-matching name, 0x97dd1aa7
-  SLdrBloggStruct bloggStruct_0xf2ba21e1; // non-matching name, 0xf2ba21e1
+  bool isMegaBlogg;                                       // 0x4fc9dfe4
+  float projectileBlurRadius;                             // 0x2dd3662e
+  float projectileBlurTime;                               // 0x6f41bbe7
+  SLdrBloggStruct bloggStruct;                            // non-matching name, 0x3874576d
+  SLdrBloggStruct bloggStruct_0x97dd1aa7;                 // non-matching name, 0x97dd1aa7
+  SLdrBloggStruct bloggStruct_0xf2ba21e1;                 // non-matching name, 0xf2ba21e1
 };
 
-inline SLdrBlogg::SLdrBlogg() : editorProperties(), patterned(), actorInformation(), projectileParticleEffect(kInvalidAssetId), projectileDamage(), armorVulnerability(), ingPossessionData(), ingPossessedArmorVulnerability(), bloggStruct(), bloggStruct_0x97dd1aa7(), bloggStruct_0xf2ba21e1() {
+inline SLdrBlogg::SLdrBlogg()
+: editorProperties()
+, patterned()
+, actorInformation()
+, projectileParticleEffect(kInvalidAssetId)
+, projectileDamage()
+, armorVulnerability()
+, ingPossessionData()
+, ingPossessedArmorVulnerability()
+, bloggStruct()
+, bloggStruct_0x97dd1aa7()
+, bloggStruct_0xf2ba21e1() {
   patterned.creatureSize = 1;
   minAttackAngle = 30.0f;
   maxAttackAngle = 30.0f;

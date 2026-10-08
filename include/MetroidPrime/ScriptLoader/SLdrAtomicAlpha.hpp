@@ -14,19 +14,25 @@ struct SLdrAtomicAlpha {
   ~SLdrAtomicAlpha();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId bombWeapon; // 0x1720b91f
-  CAssetId bombModel; // 0xc75f9516
-  SLdrDamageInfo bombDamage; // 0xb48d5fe6
-  float bombDropDelay; // 0x66ba009c
-  float bombReappearDelay; // 0x79dd66a9
-  float bombReappearTime; // 0xbb4284ea
-  bool invisible; // 0x7017edfc
-  bool homeWhileCharging; // 0x2639f0b9
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CAssetId bombWeapon;                   // 0x1720b91f
+  CAssetId bombModel;                    // 0xc75f9516
+  SLdrDamageInfo bombDamage;             // 0xb48d5fe6
+  float bombDropDelay;                   // 0x66ba009c
+  float bombReappearDelay;               // 0x79dd66a9
+  float bombReappearTime;                // 0xbb4284ea
+  bool invisible;                        // 0x7017edfc
+  bool homeWhileCharging;                // 0x2639f0b9
 };
 
-inline SLdrAtomicAlpha::SLdrAtomicAlpha() : editorProperties(), patterned(), actorInformation(), bombWeapon(kInvalidAssetId), bombModel(kInvalidAssetId), bombDamage() {
+inline SLdrAtomicAlpha::SLdrAtomicAlpha()
+: editorProperties()
+, patterned()
+, actorInformation()
+, bombWeapon(kInvalidAssetId)
+, bombModel(kInvalidAssetId)
+, bombDamage() {
   patterned.mass = 25.0f;
   patterned.turnSpeed = 720.0f;
   patterned.detectionRange = 5.0f;

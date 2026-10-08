@@ -13,22 +13,27 @@ struct SLdrIngBlobSwarm {
   SLdrIngBlobSwarm();
   ~SLdrIngBlobSwarm();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrAnimationSet animationInformation; // 0xe25fb08c
-  bool active; // 0xc6bb2f45
+  SLdrEditorProperties editorProperties;         // 0x255a4580
+  SLdrActorParameters actorInformation;          // 0x7e397fed
+  SLdrAnimationSet animationInformation;         // 0xe25fb08c
+  bool active;                                   // 0xc6bb2f45
   SLdrBasicSwarmProperties basicSwarmProperties; // 0xe1ec7346
-  int intoAttackAnimation; // 0x7399abbb
-  int attackAnimation; // 0x734d923b
-  float maxAttackAngle; // 0xf11f7384
-  float intoAttackSpeed; // 0xca761dcd
-  float attackSpeed; // 0x6c0a2bc8
-  float mass; // 0x75dbb375
-  float maxAttackHeight; // 0xe1ae51d8
-  CVector3f attackAimOffset; // 0x540c1f87
+  int intoAttackAnimation;                       // 0x7399abbb
+  int attackAnimation;                           // 0x734d923b
+  float maxAttackAngle;                          // 0xf11f7384
+  float intoAttackSpeed;                         // 0xca761dcd
+  float attackSpeed;                             // 0x6c0a2bc8
+  float mass;                                    // 0x75dbb375
+  float maxAttackHeight;                         // 0xe1ae51d8
+  CVector3f attackAimOffset;                     // 0x540c1f87
 };
 
-inline SLdrIngBlobSwarm::SLdrIngBlobSwarm() : editorProperties(), actorInformation(), animationInformation(), basicSwarmProperties(), attackAimOffset(CVector3f::Zero()) {
+inline SLdrIngBlobSwarm::SLdrIngBlobSwarm()
+: editorProperties()
+, actorInformation()
+, animationInformation()
+, basicSwarmProperties()
+, attackAimOffset(CVector3f::Zero()) {
   active = true;
   intoAttackAnimation = -1;
   attackAnimation = -1;

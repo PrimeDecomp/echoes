@@ -11,8 +11,8 @@ struct SLdrGuiScreen {
   ~SLdrGuiScreen();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int whichScreen; // 0xd3b7e6d8
-  CAssetId stringTable; // 0xfd95ed2a
+  int whichScreen;                       // 0xd3b7e6d8
+  CAssetId stringTable;                  // 0xfd95ed2a
 };
 
 inline SLdrGuiScreen::SLdrGuiScreen() : editorProperties(), stringTable(kInvalidAssetId) {

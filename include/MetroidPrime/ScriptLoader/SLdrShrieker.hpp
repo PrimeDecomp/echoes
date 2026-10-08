@@ -15,37 +15,48 @@ struct SLdrShrieker {
   SLdrShrieker();
   ~SLdrShrieker();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;       // 0x255a4580
+  SLdrPatternedAITypedef patterned;            // 0xb3774750
+  SLdrActorParameters actorInformation;        // 0x7e397fed
   SLdrDamageVulnerability buriedVulnerability; // 0xd7732923
-  float hostileAccumulatePriority; // 0x281ce55d
-  SLdrDamageInfo damageInfo; // non-matching name, 0x5c072fd0
-  CAssetId pART; // non-matching name, 0x0f676bd9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  CAssetId projectile; // 0xef485db9
-  int combatVisorMaxVolume; // 0x6d465cc2
-  int echoVisorMaxVolume; // 0x69ec9107
-  SLdrDamageInfo meleeDamage; // 0xc9416034
-  CAssetId meleeEffect; // 0x6238b4b5
-  float meleeAverageAttackTime; // 0x9b6a4437
-  float meleeAttackTimeVariation; // 0xbe0738ef
-  float meleeRange; // 0x39ab62fb
-  float hoverHeight; // 0xc75998aa
-  CVector3f missileDeflectionOffset; // 0x7ab4ab98
-  float missileDeflectionRadius; // 0x88fa2acf
-  float missileDeflectRate; // 0xe70ef8a3
-  int sound_MissileDeflection; // 0x8527b396
-  float dodgeTime; // 0x67625bef
-  float dodgePercentage; // 0x1aaf4c43
-  float detectionHeight; // 0x9bb6cbc7
-  float rustleDetectionRadius; // 0x4753beb1
-  float popDetectionRadius; // 0xee863c15
-  float morphballDetectionRadius; // 0xae21d21d
-  float visibilityChangeTime; // 0x3d689edd
+  float hostileAccumulatePriority;             // 0x281ce55d
+  SLdrDamageInfo damageInfo;                   // non-matching name, 0x5c072fd0
+  CAssetId pART;                               // non-matching name, 0x0f676bd9
+  SLdrDamageInfo projectileDamage;             // 0x553b1339
+  CAssetId projectile;                         // 0xef485db9
+  int combatVisorMaxVolume;                    // 0x6d465cc2
+  int echoVisorMaxVolume;                      // 0x69ec9107
+  SLdrDamageInfo meleeDamage;                  // 0xc9416034
+  CAssetId meleeEffect;                        // 0x6238b4b5
+  float meleeAverageAttackTime;                // 0x9b6a4437
+  float meleeAttackTimeVariation;              // 0xbe0738ef
+  float meleeRange;                            // 0x39ab62fb
+  float hoverHeight;                           // 0xc75998aa
+  CVector3f missileDeflectionOffset;           // 0x7ab4ab98
+  float missileDeflectionRadius;               // 0x88fa2acf
+  float missileDeflectRate;                    // 0xe70ef8a3
+  int sound_MissileDeflection;                 // 0x8527b396
+  float dodgeTime;                             // 0x67625bef
+  float dodgePercentage;                       // 0x1aaf4c43
+  float detectionHeight;                       // 0x9bb6cbc7
+  float rustleDetectionRadius;                 // 0x4753beb1
+  float popDetectionRadius;                    // 0xee863c15
+  float morphballDetectionRadius;              // 0xae21d21d
+  float visibilityChangeTime;                  // 0x3d689edd
 };
 
-inline SLdrShrieker::SLdrShrieker() : editorProperties(), patterned(), actorInformation(), buriedVulnerability(), damageInfo(), pART(kInvalidAssetId), projectileDamage(), projectile(kInvalidAssetId), meleeDamage(), meleeEffect(kInvalidAssetId), missileDeflectionOffset(CVector3f::Zero()) {
+inline SLdrShrieker::SLdrShrieker()
+: editorProperties()
+, patterned()
+, actorInformation()
+, buriedVulnerability()
+, damageInfo()
+, pART(kInvalidAssetId)
+, projectileDamage()
+, projectile(kInvalidAssetId)
+, meleeDamage()
+, meleeEffect(kInvalidAssetId)
+, missileDeflectionOffset(CVector3f::Zero()) {
   patterned.minAttackRange = 4.5f;
   patterned.maxAttackRange = 30.0f;
   patterned.averageAttackTime = 3.0f;

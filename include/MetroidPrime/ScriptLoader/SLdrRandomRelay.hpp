@@ -10,10 +10,10 @@ struct SLdrRandomRelay {
   ~SLdrRandomRelay();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int count; // 0x3291b8a2
-  int randomAdjust; // 0x7fcb33e8
-  bool percentCount; // 0x458076e8
-  bool isRandomChance; // 0xef7b9826
+  int count;                             // 0x3291b8a2
+  int randomAdjust;                      // 0x7fcb33e8
+  bool percentCount;                     // 0x458076e8
+  bool isRandomChance;                   // 0xef7b9826
 };
 
 inline SLdrRandomRelay::SLdrRandomRelay() : editorProperties() {

@@ -11,16 +11,17 @@ struct SLdrSoundModifier {
   ~SLdrSoundModifier();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float time; // 0x44335aff
-  bool autoReset; // 0x7bef45ca
-  bool autoStart; // 0x3217dff8
-  SLdrSpline volume; // 0xf3fbe484
-  SLdrSpline pan; // 0x2858c9f0
-  SLdrSpline surroundPan; // 0x5113198f
-  SLdrSpline pitch; // 0x0e727fc4
+  float time;                            // 0x44335aff
+  bool autoReset;                        // 0x7bef45ca
+  bool autoStart;                        // 0x3217dff8
+  SLdrSpline volume;                     // 0xf3fbe484
+  SLdrSpline pan;                        // 0x2858c9f0
+  SLdrSpline surroundPan;                // 0x5113198f
+  SLdrSpline pitch;                      // 0x0e727fc4
 };
 
-inline SLdrSoundModifier::SLdrSoundModifier() : editorProperties(), volume(), pan(), surroundPan(), pitch() {
+inline SLdrSoundModifier::SLdrSoundModifier()
+: editorProperties(), volume(), pan(), surroundPan(), pitch() {
   time = 5.0f;
   autoReset = false;
   autoStart = false;

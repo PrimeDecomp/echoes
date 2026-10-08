@@ -14,35 +14,42 @@ struct SLdrDebris {
   ~SLdrDebris();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float impulse; // 0xf3a724ef
-  CVector3f impulseVariance; // 0x32fbb512
-  CColor fadeOutColor; // 0xd82ad573
-  float mass; // 0x75dbb375
-  float unknown_0x417f4a91; // 0x417f4a91
-  float lifeTime; // 0xb02de555
-  int scaleType; // 0x71829ad6
-  bool randomSpin; // 0xdd17b34f
-  CAssetId model; // 0xc27ffa8f
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId particle; // 0x6d1ce525
-  CVector3f particleSystemScale; // 0x18bc419e
-  bool isCollider; // 0x2c7b18dd
-  bool unknown_0x4edb1d0e; // 0x4edb1d0e
+  float impulse;                         // 0xf3a724ef
+  CVector3f impulseVariance;             // 0x32fbb512
+  CColor fadeOutColor;                   // 0xd82ad573
+  float mass;                            // 0x75dbb375
+  float bounciness;                      // 0x417f4a91
+  float lifeTime;                        // 0xb02de555
+  int scaleType;                         // 0x71829ad6
+  bool randomSpin;                       // 0xdd17b34f
+  CAssetId model;                        // 0xc27ffa8f
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  CAssetId particle;                     // 0x6d1ce525
+  CVector3f particleSystemScale;         // 0x18bc419e
+  bool isCollider;                       // 0x2c7b18dd
+  bool doNotDeleteAttachedObject;        // 0x4edb1d0e
 };
 
-inline SLdrDebris::SLdrDebris() : editorProperties(), impulseVariance(CVector3f::Zero()), fadeOutColor(CColor::Green()), model(kInvalidAssetId), actorInformation(), particle(kInvalidAssetId), particleSystemScale(CVector3f::Zero()) {
+inline SLdrDebris::SLdrDebris()
+: editorProperties()
+, impulseVariance(CVector3f::Zero())
+, fadeOutColor(CColor::Green())
+, model(kInvalidAssetId)
+, actorInformation()
+, particle(kInvalidAssetId)
+, particleSystemScale(CVector3f::Zero()) {
   editorProperties.active = false;
   impulse = 20.0f;
   impulseVariance = CVector3f(20.0f, 20.0f, 25.0f);
   fadeOutColor = CColor(1.0f, 0.0f, 0.0f, 0.0f);
   mass = 12.0f;
-  unknown_0x417f4a91 = 0.375f;
+  bounciness = 0.375f;
   lifeTime = 1.0f;
   scaleType = 0;
   randomSpin = true;
   particleSystemScale = CVector3f(1.0f, 1.0f, 1.0f);
   isCollider = true;
-  unknown_0x4edb1d0e = false;
+  doNotDeleteAttachedObject = false;
 }
 
 inline SLdrDebris::~SLdrDebris() {}

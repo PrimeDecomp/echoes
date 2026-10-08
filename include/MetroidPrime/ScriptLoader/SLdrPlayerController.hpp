@@ -15,22 +15,29 @@ struct SLdrPlayerController {
   ~SLdrPlayerController();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int unknown_0xe71de331; // 0xe71de331
-  CAssetId model; // 0xc27ffa8f
+  int unknown_0xe71de331;                // 0xe71de331
+  CAssetId model;                        // 0xc27ffa8f
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  int proxyType; // 0xca56a18a
-  CVector3f playerOffset; // 0x1d8b933f
-  int intParameter1; // 0xcb753319
-  int intParameter2; // 0xd9c09cf7
-  float floatParameter1; // 0xf09c2b4b
-  float floatParameter2; // 0x760859e5
-  float floatParameter3; // 0xbd548a40
-  CVector3f vectorParameter1; // 0xc012f196
-  rstl::string stringParameter1; // 0x70bc90a6
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  int proxyType;                         // 0xca56a18a
+  CVector3f playerOffset;                // 0x1d8b933f
+  int intParameter1;                     // 0xcb753319
+  int intParameter2;                     // 0xd9c09cf7
+  float floatParameter1;                 // 0xf09c2b4b
+  float floatParameter2;                 // 0x760859e5
+  float floatParameter3;                 // 0xbd548a40
+  CVector3f vectorParameter1;            // 0xc012f196
+  rstl::string stringParameter1;         // 0x70bc90a6
 };
 
-inline SLdrPlayerController::SLdrPlayerController() : editorProperties(), model(kInvalidAssetId), animationInformation(), actorInformation(), playerOffset(CVector3f::Zero()), vectorParameter1(CVector3f::Zero()), stringParameter1() {
+inline SLdrPlayerController::SLdrPlayerController()
+: editorProperties()
+, model(kInvalidAssetId)
+, animationInformation()
+, actorInformation()
+, playerOffset(CVector3f::Zero())
+, vectorParameter1(CVector3f::Zero())
+, stringParameter1() {
   editorProperties.transform.scale = CVector3f(2.0f, 2.0f, 2.0f);
   unknown_0xe71de331 = 0;
   proxyType = 0;

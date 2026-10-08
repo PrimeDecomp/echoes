@@ -14,20 +14,26 @@ struct SLdrGunTurretTop {
   ~SLdrGunTurretTop();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float powerUpTime; // 0x3bc1d043
-  float powerDownTime; // 0x838a75a4
-  CAssetId pART; // non-matching name, 0xbf87e353
-  CAssetId pART_0xaf6e671a; // non-matching name, 0xaf6e671a
-  int alwaysFF; // non-matching name, 0x67c8a8f4
-  int alwaysFF_0x68d8b844; // non-matching name, 0x68d8b844
-  CColor lightColor; // 0xbd3efe7d
-  int sound; // non-matching name, 0xe4aeeba4
-  int sound_0x5d9ed447; // non-matching name, 0x5d9ed447
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  float powerUpTime;                     // 0x3bc1d043
+  float powerDownTime;                   // 0x838a75a4
+  CAssetId pART;                         // non-matching name, 0xbf87e353
+  CAssetId pART_0xaf6e671a;              // non-matching name, 0xaf6e671a
+  int alwaysFF;                          // non-matching name, 0x67c8a8f4
+  int alwaysFF_0x68d8b844;               // non-matching name, 0x68d8b844
+  CColor lightColor;                     // 0xbd3efe7d
+  int sound;                             // non-matching name, 0xe4aeeba4
+  int sound_0x5d9ed447;                  // non-matching name, 0x5d9ed447
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
 };
 
-inline SLdrGunTurretTop::SLdrGunTurretTop() : editorProperties(), pART(kInvalidAssetId), pART_0xaf6e671a(kInvalidAssetId), lightColor(CColor::Green()), patterned(), actorInformation() {
+inline SLdrGunTurretTop::SLdrGunTurretTop()
+: editorProperties()
+, pART(kInvalidAssetId)
+, pART_0xaf6e671a(kInvalidAssetId)
+, lightColor(CColor::Green())
+, patterned()
+, actorInformation() {
   powerUpTime = 0.5f;
   powerDownTime = 0.5f;
   alwaysFF = -1;

@@ -14,35 +14,49 @@ struct SLdrWorldTeleporter {
   ~SLdrWorldTeleporter();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CAssetId world; // 0x31ec14bc
-  CAssetId area; // 0xe0c17804
+  CAssetId world;                        // 0x31ec14bc
+  CAssetId area;                         // 0xe0c17804
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  CVector3f playerScale; // 0xe56ba365
-  CAssetId platform; // 0x9703f961
-  CVector3f platformScale; // 0xca1d9615
-  CAssetId shaft; // 0x09f4b212
-  CVector3f shaftScale; // 0x84b43bc6
-  bool unknown_0x2e997e0b; // 0x2e997e0b
-  CAssetId soundGroup; // 0x3133c626
-  int elevator; // 0xc11fdb3b
-  int volume; // 0x80c66c37
-  int pan; // 0xd6088bc5
-  bool isTeleport; // 0xea974b08
-  CAssetId displayFont; // 0x6c176dd6
-  CAssetId string; // 0x9182250c
-  bool isFadeWhite; // 0xc54082e8
-  float characterFadeTime; // 0xd9b2394f
-  float charactersPerSecond; // 0x353582bd
-  float startDelay; // 0x196e17d9
-  rstl::string audioStream; // 0xb28f37b1
-  bool displaySubtitles; // 0xa1c4e7f8
-  float endDelay; // 0x79cda57c
-  float subtitleFadeInDelay; // 0x0b5240e3
-  float subtitleFadeTime; // 0x71786711
-  bool unknown_0x5657ca1c; // 0x5657ca1c
+  CVector3f playerScale;                 // 0xe56ba365
+  CAssetId platform;                     // 0x9703f961
+  CVector3f platformScale;               // 0xca1d9615
+  CAssetId shaft;                        // 0x09f4b212
+  CVector3f shaftScale;                  // 0x84b43bc6
+  bool unknown_0x2e997e0b;               // 0x2e997e0b
+  CAssetId soundGroup;                   // 0x3133c626
+  int elevator;                          // 0xc11fdb3b
+  int volume;                            // 0x80c66c37
+  int pan;                               // 0xd6088bc5
+  bool isTeleport;                       // 0xea974b08
+  CAssetId displayFont;                  // 0x6c176dd6
+  CAssetId string;                       // 0x9182250c
+  bool isFadeWhite;                      // 0xc54082e8
+  float characterFadeTime;               // 0xd9b2394f
+  float charactersPerSecond;             // 0x353582bd
+  float startDelay;                      // 0x196e17d9
+  rstl::string audioStream;              // 0xb28f37b1
+  bool displaySubtitles;                 // 0xa1c4e7f8
+  float endDelay;                        // 0x79cda57c
+  float subtitleFadeInDelay;             // 0x0b5240e3
+  float subtitleFadeTime;                // 0x71786711
+  bool unknown_0x5657ca1c;               // 0x5657ca1c
 };
 
-inline SLdrWorldTeleporter::SLdrWorldTeleporter() : editorProperties(), world(kInvalidAssetId), area(kInvalidAssetId), animationInformation(), playerScale(CVector3f::Zero()), platform(kInvalidAssetId), platformScale(CVector3f::Zero()), shaft(kInvalidAssetId), shaftScale(CVector3f::Zero()), soundGroup(kInvalidAssetId), elevator(-1), displayFont(kInvalidAssetId), string(kInvalidAssetId), audioStream() {
+inline SLdrWorldTeleporter::SLdrWorldTeleporter()
+: editorProperties()
+, world(kInvalidAssetId)
+, area(kInvalidAssetId)
+, animationInformation()
+, playerScale(CVector3f::Zero())
+, platform(kInvalidAssetId)
+, platformScale(CVector3f::Zero())
+, shaft(kInvalidAssetId)
+, shaftScale(CVector3f::Zero())
+, soundGroup(kInvalidAssetId)
+, elevator(-1)
+, displayFont(kInvalidAssetId)
+, string(kInvalidAssetId)
+, audioStream() {
   editorProperties.unknown_0x5d298a43 = 0x00000003u;
   playerScale = CVector3f(1.0f, 1.0f, 1.0f);
   platformScale = CVector3f(1.0f, 1.0f, 1.0f);

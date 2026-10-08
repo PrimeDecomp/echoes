@@ -18,43 +18,58 @@ struct SLdrMediumIng {
   SLdrMediumIng();
   ~SLdrMediumIng();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  int spawnMode; // 0xc96ae3df
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float aggressiveness; // 0x9579b1f2
-  float noMistDamageThreshold; // 0x4d1d840d
-  float minMeleeAttackInterval; // 0xd189a7aa
-  float maxMeleeAttackRange; // 0xf3ea2def
-  SLdrDamageInfo meleeDamage; // 0xc9416034
-  float maxMistAttackRange; // 0x636f11e5
-  SLdrDamageInfo mistDamage; // 0xd2254430
-  float minMistAttackInterval; // 0xb787f412
-  SLdrDamageVulnerability mistingVulnerability; // 0x49c8d0c7
-  float minArmAttackInterval; // 0x15294900
-  float minArmAttackRange; // 0x9d3cfeb0
-  float maxArmAttackRange; // 0xdc2bc136
-  float minTentacleLength; // 0x74ffed99
-  float maxTentacleLength; // 0x35e8d21f
-  float armAttackTime; // 0xb93573f7
-  float unknown_0x8f1d597c; // 0x8f1d597c
-  SLdrAnimationSet attackTentacle; // 0x7a9f8249
+  SLdrEditorProperties editorProperties;              // 0x255a4580
+  SLdrPatternedAITypedef patterned;                   // 0xb3774750
+  int spawnMode;                                      // 0xc96ae3df
+  SLdrActorParameters actorInformation;               // 0x7e397fed
+  float aggressiveness;                               // 0x9579b1f2
+  float noMistDamageThreshold;                        // 0x4d1d840d
+  float minMeleeAttackInterval;                       // 0xd189a7aa
+  float maxMeleeAttackRange;                          // 0xf3ea2def
+  SLdrDamageInfo meleeDamage;                         // 0xc9416034
+  float maxMistAttackRange;                           // 0x636f11e5
+  SLdrDamageInfo mistDamage;                          // 0xd2254430
+  float minMistAttackInterval;                        // 0xb787f412
+  SLdrDamageVulnerability mistingVulnerability;       // 0x49c8d0c7
+  float minArmAttackInterval;                         // 0x15294900
+  float minArmAttackRange;                            // 0x9d3cfeb0
+  float maxArmAttackRange;                            // 0xdc2bc136
+  float minTentacleLength;                            // 0x74ffed99
+  float maxTentacleLength;                            // 0x35e8d21f
+  float armAttackTime;                                // 0xb93573f7
+  float unknown_0x8f1d597c;                           // 0x8f1d597c
+  SLdrAnimationSet attackTentacle;                    // 0x7a9f8249
   SLdrActorParameters attackTentacleActorInformation; // 0x38cf133b
-  SLdrSpline attackMotion; // 0x0767060d
-  SLdrCameraShakerData attackTentacleImpact; // 0x0e6b1e70
-  SLdrDamageInfo attackTentacleDamage; // 0xf683fe08
-  float tauntChance; // 0xa77f6212
-  float doubleDashChance; // 0x9cf01473
-  CColor lightColor; // 0xbd3efe7d
-  float lightAttenuation; // 0xd24b888f
-  SLdrSpline unknown_0xb459c3e9; // 0xb459c3e9
-  SLdrSpline dashSpeed; // 0x323e4ed0
-  CAssetId ingSpotBlobFx; // 0x079bc576
-  int ingSpotSound; // 0x7cb63cd3
-  float unknown_0x0e3d3708; // 0x0e3d3708
+  SLdrSpline attackMotion;                            // 0x0767060d
+  SLdrCameraShakerData attackTentacleImpact;          // 0x0e6b1e70
+  SLdrDamageInfo attackTentacleDamage;                // 0xf683fe08
+  float tauntChance;                                  // 0xa77f6212
+  float doubleDashChance;                             // 0x9cf01473
+  CColor lightColor;                                  // 0xbd3efe7d
+  float lightAttenuation;                             // 0xd24b888f
+  SLdrSpline unknown_0xb459c3e9;                      // 0xb459c3e9
+  SLdrSpline dashSpeed;                               // 0x323e4ed0
+  CAssetId ingSpotBlobFx;                             // 0x079bc576
+  int ingSpotSound;                                   // 0x7cb63cd3
+  float unknown_0x0e3d3708;                           // 0x0e3d3708
 };
 
-inline SLdrMediumIng::SLdrMediumIng() : editorProperties(), patterned(), actorInformation(), meleeDamage(), mistDamage(), mistingVulnerability(), attackTentacle(), attackTentacleActorInformation(), attackMotion(), attackTentacleImpact(), attackTentacleDamage(), lightColor(CColor::Green()), unknown_0xb459c3e9(), dashSpeed(), ingSpotBlobFx(kInvalidAssetId) {
+inline SLdrMediumIng::SLdrMediumIng()
+: editorProperties()
+, patterned()
+, actorInformation()
+, meleeDamage()
+, mistDamage()
+, mistingVulnerability()
+, attackTentacle()
+, attackTentacleActorInformation()
+, attackMotion()
+, attackTentacleImpact()
+, attackTentacleDamage()
+, lightColor(CColor::Green())
+, unknown_0xb459c3e9()
+, dashSpeed()
+, ingSpotBlobFx(kInvalidAssetId) {
   patterned.turnSpeed = 360.0f;
   patterned.health.health = 150.0f;
   patterned.health.hI_KnockBackResistance = 2.0f;

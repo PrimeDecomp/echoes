@@ -12,24 +12,25 @@ struct SLdrFogOverlay {
   ~SLdrFogOverlay();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float fullAlpha; // 0x547b28d5
-  float fadeDownTime; // 0xf977cb35
-  float fadeUpTime; // 0x0d21d348
-  bool startFadedOut; // 0xeb250a0b
-  CColor color; // 0x37c7d09d
-  float ambientRadiusX; // 0x1b9046d6
-  float ambientRadiusY; // 0xd0cc9573
-  float ambientSpeed; // 0xf76bcbdd
-  float ambientSpeedTarget; // 0x2c4c6785
-  float unknown_0x6a111b96; // 0x6a111b96
-  float unknown_0xff226ea3; // 0xff226ea3
-  CVector3f unknown_0x2190ab0a; // 0x2190ab0a
-  float unknown_0x9f19f0af; // 0x9f19f0af
-  float unknown_0x90c10fe7; // 0x90c10fe7
-  float unknown_0xd8daff1d; // 0xd8daff1d
+  float fullAlpha;                       // 0x547b28d5
+  float fadeDownTime;                    // 0xf977cb35
+  float fadeUpTime;                      // 0x0d21d348
+  bool startFadedOut;                    // 0xeb250a0b
+  CColor color;                          // 0x37c7d09d
+  float ambientRadiusX;                  // 0x1b9046d6
+  float ambientRadiusY;                  // 0xd0cc9573
+  float ambientSpeed;                    // 0xf76bcbdd
+  float ambientSpeedTarget;              // 0x2c4c6785
+  float unknown_0x6a111b96;              // 0x6a111b96
+  float unknown_0xff226ea3;              // 0xff226ea3
+  CVector3f unknown_0x2190ab0a;          // 0x2190ab0a
+  float unknown_0x9f19f0af;              // 0x9f19f0af
+  float unknown_0x90c10fe7;              // 0x90c10fe7
+  float unknown_0xd8daff1d;              // 0xd8daff1d
 };
 
-inline SLdrFogOverlay::SLdrFogOverlay() : editorProperties(), color(CColor::Green()), unknown_0x2190ab0a(CVector3f::Zero()) {
+inline SLdrFogOverlay::SLdrFogOverlay()
+: editorProperties(), color(CColor::Green()), unknown_0x2190ab0a(CVector3f::Zero()) {
   fullAlpha = 1.0f;
   fadeDownTime = 1.0f;
   fadeUpTime = 1.0f;

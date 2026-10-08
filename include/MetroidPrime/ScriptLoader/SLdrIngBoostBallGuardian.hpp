@@ -18,64 +18,80 @@ struct SLdrIngBoostBallGuardianData {
   SLdrIngBoostBallGuardianData();
   ~SLdrIngBoostBallGuardianData();
 
-  int unknown_0x01789abd; // 0x01789abd
-  float hearingRadius; // 0xed69488f
-  float ingSpotMaxSpeed; // 0x95b47cf9
-  float ingSpotMaxWallSpeed; // 0x8d42a8d5
-  float ingSpotBallPursuitSpeed; // 0x84586bfd
-  float unknown_0x50398a06; // 0x50398a06
-  float ingSpotTurnSpeed; // 0xeaa3c3f8
-  CAssetId ingSpotBlobEffect; // 0xcc5a4918
-  CAssetId ingSpotHitNormalDamage; // 0x8851dc01
-  CAssetId ingSpotHitHeavyDamage; // 0x5d01100f
-  CAssetId ingSpotDeath; // 0x9a56892e
-  int sound_IngSpotIdle; // 0x4cab30a9
-  int sound_IngSpotMove; // 0x8f83be73
-  int sound_HitNormalDamage; // 0xb392943a
-  int sound_HitHeavyDamage; // 0x24ecc1e9
-  int sound_IngSpotDeath; // 0x4489935e
-  CAssetId pART; // non-matching name, 0x3c2d681e
-  CAssetId sRSC; // non-matching name, 0xd576f379
-  CAssetId pART_0x3da219c7; // non-matching name, 0x3da219c7
-  float unknown_0x23271976; // 0x23271976
-  CAssetId pART_0x081e9e6c; // non-matching name, 0x081e9e6c
-  float unknown_0xcb39eccb; // 0xcb39eccb
-  float unknown_0x587ca175; // 0x587ca175
-  float unknown_0x0bd7d5a9; // 0x0bd7d5a9
-  int sound_SwarmMove; // 0xe8ea5bc8
-  int sound_InsideHost; // 0x5650366a
-  int sound_ExitHost; // 0xb09af706
-  int sound_ExitHostSafeZone; // 0x0c13c5a8
-  int sound; // non-matching name, 0x148b81e4
-  float unknown_0x5d0d2c40; // 0x5d0d2c40
-  float unknown_0xc620183a; // 0xc620183a
-  float frustrationTime; // 0x7d19c3ca
-  float tauntChance; // 0xa77f6212
-  float aggressiveness; // 0x9579b1f2
-  SLdrDamageInfo armSwipeDamage; // 0x915da374
-  SLdrDamageInfo bodyProjectileContactDamage; // 0xab258f6b
-  float unknown_0xa0d63374; // 0xa0d63374
-  float bodyProjectileSuckTime; // 0xdfea60a2
-  CAssetId bodyProjectileSplatEffect; // 0x601cc5b4
-  float bodyProjectileSpeed; // 0xce980820
-  float bodyProjectileDropTime; // 0xb752c177
-  float bodyProjectileMinAttackDist; // 0xe6ddb662
-  float bodyProjectileMaxAttackDist; // 0xb57bae86
-  int sound_BodyProjectile; // 0x2025858b
-  int sound_BodyProjectileSplatWall; // 0x19f8fee6
-  float bodyProjectileOdds; // 0xdc741fbd
-  float miniPortalMinAttackDist; // 0xfa6edeb5
-  float miniPortalMaxAttackDist; // 0xa9c8c651
-  CAssetId miniPortalEffect; // 0xa926f8a8
-  int sound_MiniPortal; // 0x4051fd1a
-  SLdrDamageInfo miniPortalProjectileDamage; // 0x424a6d37
-  SLdrPlasmaBeamInfo miniPortalBeamInfo; // 0x9c170968
-  CColor lightColor; // 0xbd3efe7d
-  float lightAttenuation; // 0xd24b888f
+  int unknown_0x01789abd;                       // 0x01789abd
+  float hearingRadius;                          // 0xed69488f
+  float ingSpotMaxSpeed;                        // 0x95b47cf9
+  float ingSpotMaxWallSpeed;                    // 0x8d42a8d5
+  float ingSpotBallPursuitSpeed;                // 0x84586bfd
+  float unknown_0x50398a06;                     // 0x50398a06
+  float ingSpotTurnSpeed;                       // 0xeaa3c3f8
+  CAssetId ingSpotBlobEffect;                   // 0xcc5a4918
+  CAssetId ingSpotHitNormalDamage;              // 0x8851dc01
+  CAssetId ingSpotHitHeavyDamage;               // 0x5d01100f
+  CAssetId ingSpotDeath;                        // 0x9a56892e
+  int sound_IngSpotIdle;                        // 0x4cab30a9
+  int sound_IngSpotMove;                        // 0x8f83be73
+  int sound_HitNormalDamage;                    // 0xb392943a
+  int sound_HitHeavyDamage;                     // 0x24ecc1e9
+  int sound_IngSpotDeath;                       // 0x4489935e
+  CAssetId pART;                                // non-matching name, 0x3c2d681e
+  CAssetId sRSC;                                // non-matching name, 0xd576f379
+  CAssetId pART_0x3da219c7;                     // non-matching name, 0x3da219c7
+  float unknown_0x23271976;                     // 0x23271976
+  CAssetId pART_0x081e9e6c;                     // non-matching name, 0x081e9e6c
+  float unknown_0xcb39eccb;                     // 0xcb39eccb
+  float unknown_0x587ca175;                     // 0x587ca175
+  float unknown_0x0bd7d5a9;                     // 0x0bd7d5a9
+  int sound_SwarmMove;                          // 0xe8ea5bc8
+  int sound_InsideHost;                         // 0x5650366a
+  int sound_ExitHost;                           // 0xb09af706
+  int sound_ExitHostSafeZone;                   // 0x0c13c5a8
+  int sound;                                    // non-matching name, 0x148b81e4
+  float unknown_0x5d0d2c40;                     // 0x5d0d2c40
+  float unknown_0xc620183a;                     // 0xc620183a
+  float frustrationTime;                        // 0x7d19c3ca
+  float tauntChance;                            // 0xa77f6212
+  float aggressiveness;                         // 0x9579b1f2
+  SLdrDamageInfo armSwipeDamage;                // 0x915da374
+  SLdrDamageInfo bodyProjectileContactDamage;   // 0xab258f6b
+  float unknown_0xa0d63374;                     // 0xa0d63374
+  float bodyProjectileSuckTime;                 // 0xdfea60a2
+  CAssetId bodyProjectileSplatEffect;           // 0x601cc5b4
+  float bodyProjectileSpeed;                    // 0xce980820
+  float bodyProjectileDropTime;                 // 0xb752c177
+  float bodyProjectileMinAttackDist;            // 0xe6ddb662
+  float bodyProjectileMaxAttackDist;            // 0xb57bae86
+  int sound_BodyProjectile;                     // 0x2025858b
+  int sound_BodyProjectileSplatWall;            // 0x19f8fee6
+  float bodyProjectileOdds;                     // 0xdc741fbd
+  float miniPortalMinAttackDist;                // 0xfa6edeb5
+  float miniPortalMaxAttackDist;                // 0xa9c8c651
+  CAssetId miniPortalEffect;                    // 0xa926f8a8
+  int sound_MiniPortal;                         // 0x4051fd1a
+  SLdrDamageInfo miniPortalProjectileDamage;    // 0x424a6d37
+  SLdrPlasmaBeamInfo miniPortalBeamInfo;        // 0x9c170968
+  CColor lightColor;                            // 0xbd3efe7d
+  float lightAttenuation;                       // 0xd24b888f
   SLdrDamageVulnerability ingSpotVulnerability; // 0x1b96ff8b
 };
 
-inline SLdrIngBoostBallGuardianData::SLdrIngBoostBallGuardianData() : ingSpotBlobEffect(kInvalidAssetId), ingSpotHitNormalDamage(kInvalidAssetId), ingSpotHitHeavyDamage(kInvalidAssetId), ingSpotDeath(kInvalidAssetId), pART(kInvalidAssetId), sRSC(kInvalidAssetId), pART_0x3da219c7(kInvalidAssetId), pART_0x081e9e6c(kInvalidAssetId), armSwipeDamage(), bodyProjectileContactDamage(), bodyProjectileSplatEffect(kInvalidAssetId), miniPortalEffect(kInvalidAssetId), miniPortalProjectileDamage(), miniPortalBeamInfo(), lightColor(CColor::Green()), ingSpotVulnerability() {
+inline SLdrIngBoostBallGuardianData::SLdrIngBoostBallGuardianData()
+: ingSpotBlobEffect(kInvalidAssetId)
+, ingSpotHitNormalDamage(kInvalidAssetId)
+, ingSpotHitHeavyDamage(kInvalidAssetId)
+, ingSpotDeath(kInvalidAssetId)
+, pART(kInvalidAssetId)
+, sRSC(kInvalidAssetId)
+, pART_0x3da219c7(kInvalidAssetId)
+, pART_0x081e9e6c(kInvalidAssetId)
+, armSwipeDamage()
+, bodyProjectileContactDamage()
+, bodyProjectileSplatEffect(kInvalidAssetId)
+, miniPortalEffect(kInvalidAssetId)
+, miniPortalProjectileDamage()
+, miniPortalBeamInfo()
+, lightColor(CColor::Green())
+, ingSpotVulnerability() {
   unknown_0x01789abd = 0;
   hearingRadius = 50.0f;
   ingSpotMaxSpeed = 15.0f;
@@ -137,7 +153,8 @@ inline SLdrIngBoostBallGuardianData::SLdrIngBoostBallGuardianData() : ingSpotBlo
 
 inline SLdrIngBoostBallGuardianData::~SLdrIngBoostBallGuardianData() {}
 
-inline void LoadTypedefIngBoostBallGuardianData(SLdrIngBoostBallGuardianData& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngBoostBallGuardianData(SLdrIngBoostBallGuardianData& sldrThis,
+                                                CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -374,20 +391,20 @@ struct SLdrIngBoostBallGuardianStruct {
   SLdrIngBoostBallGuardianStruct();
   ~SLdrIngBoostBallGuardianStruct();
 
-  float boostPuddleModeTime; // 0x25d02bc5
-  float unknown_0xabe99de0; // 0xabe99de0
+  float boostPuddleModeTime;        // 0x25d02bc5
+  float unknown_0xabe99de0;         // 0xabe99de0
   float breakBoostPuddleModeDamage; // 0xe2b23f03
-  float breakBoostModeDamage; // 0x2f845006
-  float nextBoostTimeMin; // 0x5d1626fb
-  float nextBoostTimeMax; // 0xbb76891a
-  int unknown_0x285d67ad; // 0x285d67ad
-  int unknown_0x6d5f242f; // 0x6d5f242f
-  int unknown_0xe3ff2ed6; // 0xe3ff2ed6
-  int unknown_0xa6fd6d54; // 0xa6fd6d54
-  int unknown_0xecb314b6; // 0xecb314b6
-  int unknown_0xa9b15734; // 0xa9b15734
-  float locomotionSpeedScale; // 0x1213a7d4
-  float ingSpotSpeedScale; // 0xc19ed897
+  float breakBoostModeDamage;       // 0x2f845006
+  float nextBoostTimeMin;           // 0x5d1626fb
+  float nextBoostTimeMax;           // 0xbb76891a
+  int unknown_0x285d67ad;           // 0x285d67ad
+  int unknown_0x6d5f242f;           // 0x6d5f242f
+  int unknown_0xe3ff2ed6;           // 0xe3ff2ed6
+  int unknown_0xa6fd6d54;           // 0xa6fd6d54
+  int unknown_0xecb314b6;           // 0xecb314b6
+  int unknown_0xa9b15734;           // 0xa9b15734
+  float locomotionSpeedScale;       // 0x1213a7d4
+  float ingSpotSpeedScale;          // 0xc19ed897
 };
 
 inline SLdrIngBoostBallGuardianStruct::SLdrIngBoostBallGuardianStruct() {
@@ -409,7 +426,8 @@ inline SLdrIngBoostBallGuardianStruct::SLdrIngBoostBallGuardianStruct() {
 
 inline SLdrIngBoostBallGuardianStruct::~SLdrIngBoostBallGuardianStruct() {}
 
-inline void LoadTypedefIngBoostBallGuardianStruct(SLdrIngBoostBallGuardianStruct& sldrThis, CInputStream& input) {
+inline void LoadTypedefIngBoostBallGuardianStruct(SLdrIngBoostBallGuardianStruct& sldrThis,
+                                                  CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -482,40 +500,59 @@ struct SLdrBoostBallGuardianData {
   SLdrBoostBallGuardianData();
   ~SLdrBoostBallGuardianData();
 
-  CVector3f boostBallScale; // 0xa322f51d
-  float boostBallMass; // 0x528d951e
-  float unknown_0xbea96fb7; // 0xbea96fb7
-  SLdrSpline boostBallSpeed; // 0xa25b96e1
-  SLdrDamageInfo boostBallDamageToMorphBall; // 0x0e1a78bd
-  SLdrDamageInfo boostBallDamageToFirstPerson; // 0x19c3d263
-  float boostBallMinDamageSpeed; // 0xd8047cba
-  float unknown_0x7b21e31a; // 0x7b21e31a
-  CAssetId boostBallModel; // 0x18381479
-  CAssetId boostBallChargeUpEffect; // 0x15534429
-  CAssetId boostBallShieldEffect; // 0x4cceb7ad
-  CAssetId boostBallTrailEffect; // 0xe41cb449
-  int sound_Bounce; // 0x6758bf01
-  int sound_IntoBall; // 0x8d9e014f
-  int sound_OutofBall; // 0xe35ae4be
-  int sound; // non-matching name, 0x9f7372b3
-  int sound_Boost; // 0xdd69a116
-  int sound_Rolling; // 0xbf42c3ec
-  SLdrDamageVulnerability boostBallVulnerability; // 0x42eca523
-  int unknown_0xee69b993; // 0xee69b993
-  int unknown_0x4b2de673; // 0x4b2de673
-  float searchConeAngle; // 0x2a7073ce
-  float unknown_0xb0e85d53; // 0xb0e85d53
-  SLdrDamageInfo ingSpotDamageToMorphBall; // 0x5616d5f1
-  SLdrDamageInfo ingSpotDamageToFirstPerson; // 0xed685533
-  CAssetId boostIngSpotBlobEffect; // 0xd771ec43
-  CAssetId boostIngSpotHitNormalDamage; // 0x2009a977
-  CAssetId boostIngSpotHitHeavyDamage; // 0x62ab33a2
+  CVector3f boostBallScale;                                  // 0xa322f51d
+  float boostBallMass;                                       // 0x528d951e
+  float unknown_0xbea96fb7;                                  // 0xbea96fb7
+  SLdrSpline boostBallSpeed;                                 // 0xa25b96e1
+  SLdrDamageInfo boostBallDamageToMorphBall;                 // 0x0e1a78bd
+  SLdrDamageInfo boostBallDamageToFirstPerson;               // 0x19c3d263
+  float boostBallMinDamageSpeed;                             // 0xd8047cba
+  float unknown_0x7b21e31a;                                  // 0x7b21e31a
+  CAssetId boostBallModel;                                   // 0x18381479
+  CAssetId boostBallChargeUpEffect;                          // 0x15534429
+  CAssetId boostBallShieldEffect;                            // 0x4cceb7ad
+  CAssetId boostBallTrailEffect;                             // 0xe41cb449
+  int sound_Bounce;                                          // 0x6758bf01
+  int sound_IntoBall;                                        // 0x8d9e014f
+  int sound_OutofBall;                                       // 0xe35ae4be
+  int sound;                                                 // non-matching name, 0x9f7372b3
+  int sound_Boost;                                           // 0xdd69a116
+  int sound_Rolling;                                         // 0xbf42c3ec
+  SLdrDamageVulnerability boostBallVulnerability;            // 0x42eca523
+  int unknown_0xee69b993;                                    // 0xee69b993
+  int unknown_0x4b2de673;                                    // 0x4b2de673
+  float searchConeAngle;                                     // 0x2a7073ce
+  float unknown_0xb0e85d53;                                  // 0xb0e85d53
+  SLdrDamageInfo ingSpotDamageToMorphBall;                   // 0x5616d5f1
+  SLdrDamageInfo ingSpotDamageToFirstPerson;                 // 0xed685533
+  CAssetId boostIngSpotBlobEffect;                           // 0xd771ec43
+  CAssetId boostIngSpotHitNormalDamage;                      // 0x2009a977
+  CAssetId boostIngSpotHitHeavyDamage;                       // 0x62ab33a2
   SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct; // non-matching name, 0xbab98497
-  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xfe18a18f; // non-matching name, 0xfe18a18f
-  SLdrIngBoostBallGuardianStruct ingBoostBallGuardianStruct_0xc2784287; // non-matching name, 0xc2784287
+  SLdrIngBoostBallGuardianStruct
+      ingBoostBallGuardianStruct_0xfe18a18f; // non-matching name, 0xfe18a18f
+  SLdrIngBoostBallGuardianStruct
+      ingBoostBallGuardianStruct_0xc2784287; // non-matching name, 0xc2784287
 };
 
-inline SLdrBoostBallGuardianData::SLdrBoostBallGuardianData() : boostBallScale(CVector3f::Zero()), boostBallSpeed(), boostBallDamageToMorphBall(), boostBallDamageToFirstPerson(), boostBallModel(kInvalidAssetId), boostBallChargeUpEffect(kInvalidAssetId), boostBallShieldEffect(kInvalidAssetId), boostBallTrailEffect(kInvalidAssetId), boostBallVulnerability(), ingSpotDamageToMorphBall(), ingSpotDamageToFirstPerson(), boostIngSpotBlobEffect(kInvalidAssetId), boostIngSpotHitNormalDamage(kInvalidAssetId), boostIngSpotHitHeavyDamage(kInvalidAssetId), ingBoostBallGuardianStruct(), ingBoostBallGuardianStruct_0xfe18a18f(), ingBoostBallGuardianStruct_0xc2784287() {
+inline SLdrBoostBallGuardianData::SLdrBoostBallGuardianData()
+: boostBallScale(CVector3f::Zero())
+, boostBallSpeed()
+, boostBallDamageToMorphBall()
+, boostBallDamageToFirstPerson()
+, boostBallModel(kInvalidAssetId)
+, boostBallChargeUpEffect(kInvalidAssetId)
+, boostBallShieldEffect(kInvalidAssetId)
+, boostBallTrailEffect(kInvalidAssetId)
+, boostBallVulnerability()
+, ingSpotDamageToMorphBall()
+, ingSpotDamageToFirstPerson()
+, boostIngSpotBlobEffect(kInvalidAssetId)
+, boostIngSpotHitNormalDamage(kInvalidAssetId)
+, boostIngSpotHitHeavyDamage(kInvalidAssetId)
+, ingBoostBallGuardianStruct()
+, ingBoostBallGuardianStruct_0xfe18a18f()
+, ingBoostBallGuardianStruct_0xc2784287() {
   boostBallScale = CVector3f(1.8f, 1.8f, 1.8f);
   boostBallMass = 150.0f;
   unknown_0xbea96fb7 = 0.5f;
@@ -591,7 +628,8 @@ inline SLdrBoostBallGuardianData::SLdrBoostBallGuardianData() : boostBallScale(C
 
 inline SLdrBoostBallGuardianData::~SLdrBoostBallGuardianData() {}
 
-inline void LoadTypedefBoostBallGuardianData(SLdrBoostBallGuardianData& sldrThis, CInputStream& input) {
+inline void LoadTypedefBoostBallGuardianData(SLdrBoostBallGuardianData& sldrThis,
+                                             CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -732,14 +770,15 @@ struct SLdrIngBoostBallGuardian {
   SLdrIngBoostBallGuardian();
   ~SLdrIngBoostBallGuardian();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;           // 0x255a4580
+  SLdrPatternedAITypedef patterned;                // 0xb3774750
+  SLdrActorParameters actorInformation;            // 0x7e397fed
   SLdrIngBoostBallGuardianData guardianProperties; // 0x22e574aa
-  SLdrBoostBallGuardianData boostBallGuardian; // 0x78656d1e
+  SLdrBoostBallGuardianData boostBallGuardian;     // 0x78656d1e
 };
 
-inline SLdrIngBoostBallGuardian::SLdrIngBoostBallGuardian() : editorProperties(), patterned(), actorInformation(), guardianProperties(), boostBallGuardian() {
+inline SLdrIngBoostBallGuardian::SLdrIngBoostBallGuardian()
+: editorProperties(), patterned(), actorInformation(), guardianProperties(), boostBallGuardian() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

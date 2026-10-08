@@ -14,29 +14,37 @@ struct SLdrBrizgee {
   SLdrBrizgee();
   ~SLdrBrizgee();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float waypointApproachDistance; // 0x733bd27c
-  float wallTurnSpeed; // 0xac47c628
-  float floorTurnSpeed; // 0x8e4f7b29
-  float downTurnSpeed; // 0x3d3c1b76
-  float visibleDistance; // 0xa72530e8
-  float forwardMovingPriority; // 0x5e6a54b8
-  CAssetId noShellModel; // 0x07f947f4
-  CAssetId noShellSkin; // 0x0b7325ea
+  SLdrEditorProperties editorProperties;      // 0x255a4580
+  SLdrPatternedAITypedef patterned;           // 0xb3774750
+  SLdrActorParameters actorInformation;       // 0x7e397fed
+  float waypointApproachDistance;             // 0x733bd27c
+  float wallTurnSpeed;                        // 0xac47c628
+  float floorTurnSpeed;                       // 0x8e4f7b29
+  float downTurnSpeed;                        // 0x3d3c1b76
+  float visibleDistance;                      // 0xa72530e8
+  float forwardMovingPriority;                // 0x5e6a54b8
+  CAssetId noShellModel;                      // 0x07f947f4
+  CAssetId noShellSkin;                       // 0x0b7325ea
   SLdrDamageVulnerability shellVulnerability; // 0xf573e11c
-  float shellHealth; // 0xaa13253a
-  SLdrDamageInfo shellContactDamage; // 0xb482e5dd
-  float shellOffSpeedMultiplier; // 0x80da8053
-  SLdrDamageInfo poisonDamage; // 0x143d18c6
-  float poisonTime; // 0xf78947d4
-  int shellBreakSound; // 0x6a942a60
-  int poisonHitSound; // 0x808392ec
-  int playerPoisonSound; // 0xdf2d8017
+  float shellHealth;                          // 0xaa13253a
+  SLdrDamageInfo shellContactDamage;          // 0xb482e5dd
+  float shellOffSpeedMultiplier;              // 0x80da8053
+  SLdrDamageInfo poisonDamage;                // 0x143d18c6
+  float poisonTime;                           // 0xf78947d4
+  int shellBreakSound;                        // 0x6a942a60
+  int poisonHitSound;                         // 0x808392ec
+  int playerPoisonSound;                      // 0xdf2d8017
 };
 
-inline SLdrBrizgee::SLdrBrizgee() : editorProperties(), patterned(), actorInformation(), noShellModel(kInvalidAssetId), noShellSkin(kInvalidAssetId), shellVulnerability(), shellContactDamage(), poisonDamage() {
+inline SLdrBrizgee::SLdrBrizgee()
+: editorProperties()
+, patterned()
+, actorInformation()
+, noShellModel(kInvalidAssetId)
+, noShellSkin(kInvalidAssetId)
+, shellVulnerability()
+, shellContactDamage()
+, poisonDamage() {
   waypointApproachDistance = 2.5f;
   wallTurnSpeed = 360.0f;
   floorTurnSpeed = 720.0f;

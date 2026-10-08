@@ -10,12 +10,10 @@ struct SLdrRelay {
   ~SLdrRelay();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  bool oneShot; // 0xead7b7bb
+  bool oneShot;                          // 0xead7b7bb
 };
 
-inline SLdrRelay::SLdrRelay() : editorProperties() {
-  oneShot = false;
-}
+inline SLdrRelay::SLdrRelay() : editorProperties() { oneShot = false; }
 
 inline SLdrRelay::~SLdrRelay() {}
 

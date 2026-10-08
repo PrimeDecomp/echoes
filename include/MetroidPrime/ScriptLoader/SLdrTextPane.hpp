@@ -14,20 +14,20 @@ struct SLdrTextPane {
   ~SLdrTextPane();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::string guiLabel; // 0x73939407
-  SLdrTextProperties textProperties; // 0xe0543e66
+  rstl::string guiLabel;                 // 0x73939407
+  SLdrTextProperties textProperties;     // 0xe0543e66
 #if VERSION != VERSION_G2ME01
   SLdrTextProperties japanTextProperties; // 0xc8e441fa
 #endif
-  CVector3f pivotOffset; // 0xdef21bf5
-  CAssetId defaultString; // 0xe7ac3927
+  CVector3f pivotOffset;          // 0xdef21bf5
+  CAssetId defaultString;         // 0xe7ac3927
   rstl::string defaultStringName; // 0xd501c87e
-  int blend_Mode; // 0x94f0365c
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  bool depth_Compare; // 0x94c01b0c
-  bool depth_Update; // 0xaed25a51
-  bool depth_Backwards; // 0x35dc43d0
+  int blend_Mode;                 // 0x94f0365c
+  float fadeInTime;               // 0x90aa341f
+  float fadeOutTime;              // 0x7c269ebc
+  bool depth_Compare;             // 0x94c01b0c
+  bool depth_Update;              // 0xaed25a51
+  bool depth_Backwards;           // 0x35dc43d0
 };
 
 inline SLdrTextPane::SLdrTextPane()
@@ -39,8 +39,7 @@ inline SLdrTextPane::SLdrTextPane()
 #endif
 , pivotOffset(CVector3f::Zero())
 , defaultString(kInvalidAssetId)
-, defaultStringName()
-{
+, defaultStringName() {
   textProperties.textBoundingWidth = 80;
   textProperties.textBoundingHeight = 10;
 #if VERSION != VERSION_G2ME01

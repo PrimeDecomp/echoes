@@ -10,8 +10,8 @@ struct SLdrPathMeshCtrl {
   ~SLdrPathMeshCtrl();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int type; // 0xf53dcdd6
-  int initialCount; // 0x7a6e0de9
+  int type;                              // 0xf53dcdd6
+  int initialCount;                      // 0x7a6e0de9
 };
 
 inline SLdrPathMeshCtrl::SLdrPathMeshCtrl() : editorProperties() {

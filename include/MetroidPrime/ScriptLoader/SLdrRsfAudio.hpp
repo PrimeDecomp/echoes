@@ -11,12 +11,12 @@ struct SLdrRsfAudio {
   ~SLdrRsfAudio();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::string unknown_0xfe97e5b3; // 0xfe97e5b3
-  int loopStart; // 0x2e596612
-  int loopEnd; // 0xd8496dea
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  int volume; // 0x80c66c37
+  rstl::string unknown_0xfe97e5b3;       // 0xfe97e5b3
+  int loopStart;                         // 0x2e596612
+  int loopEnd;                           // 0xd8496dea
+  float fadeInTime;                      // 0x90aa341f
+  float fadeOutTime;                     // 0x7c269ebc
+  int volume;                            // 0x80c66c37
 };
 
 inline SLdrRsfAudio::SLdrRsfAudio() : editorProperties(), unknown_0xfe97e5b3() {

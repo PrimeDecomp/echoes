@@ -15,29 +15,35 @@ struct SLdrMinorIngIngSpot {
   SLdrMinorIngIngSpot();
   ~SLdrMinorIngIngSpot();
 
-  SLdrDamageInfo damage; // 0x337f9524
-  float bombStunDuration; // 0x5860e24b
-  float morphballPursuitDistance; // 0x46aaced3
-  float maxSpeed; // 0x82db0cbe
-  float maxWallSpeed; // 0xbec652ae
-  float ballPursuitSpeed; // 0x600a863f
-  float speedModifier; // 0x388e4902
-  float turnSpeed; // 0x020c78bb
-  CAssetId blobEffect; // 0x2367f689
-  CAssetId hitNormalDamage; // 0xd473158d
-  CAssetId hitHeavyDamage; // 0xcca298b4
-  CAssetId death; // 0xb99c80d3
-  int sound_Idle; // 0xaf38968e
-  int sound_Move; // 0x6c101854
-  int sound_HitNormalDamage; // 0xb392943a
-  int sound_HitHeavyDamage; // 0x24ecc1e9
-  int sound_Death; // 0xe160b593
-  float unknown_0x7569fdba; // 0x7569fdba
-  float sfxFallOff; // 0xd55938d2
+  SLdrDamageInfo damage;                 // 0x337f9524
+  float bombStunDuration;                // 0x5860e24b
+  float morphballPursuitDistance;        // 0x46aaced3
+  float maxSpeed;                        // 0x82db0cbe
+  float maxWallSpeed;                    // 0xbec652ae
+  float ballPursuitSpeed;                // 0x600a863f
+  float speedModifier;                   // 0x388e4902
+  float turnSpeed;                       // 0x020c78bb
+  CAssetId blobEffect;                   // 0x2367f689
+  CAssetId hitNormalDamage;              // 0xd473158d
+  CAssetId hitHeavyDamage;               // 0xcca298b4
+  CAssetId death;                        // 0xb99c80d3
+  int sound_Idle;                        // 0xaf38968e
+  int sound_Move;                        // 0x6c101854
+  int sound_HitNormalDamage;             // 0xb392943a
+  int sound_HitHeavyDamage;              // 0x24ecc1e9
+  int sound_Death;                       // 0xe160b593
+  float unknown_0x7569fdba;              // 0x7569fdba
+  float sfxFallOff;                      // 0xd55938d2
   SLdrDamageVulnerability vulnerability; // 0x7b71ae90
 };
 
-inline SLdrMinorIngIngSpot::SLdrMinorIngIngSpot() : damage(), blobEffect(kInvalidAssetId), hitNormalDamage(kInvalidAssetId), hitHeavyDamage(kInvalidAssetId), death(kInvalidAssetId), vulnerability() {
+inline SLdrMinorIngIngSpot::SLdrMinorIngIngSpot()
+: damage()
+, blobEffect(kInvalidAssetId)
+, hitNormalDamage(kInvalidAssetId)
+, hitHeavyDamage(kInvalidAssetId)
+, death(kInvalidAssetId)
+, vulnerability() {
   damage.dI_WeaponType = 11;
   damage.dI_Damage = 10.0f;
   damage.dI_Radius = 4.5f;
@@ -157,32 +163,33 @@ struct SLdrUnknownStruct34 {
   SLdrUnknownStruct34();
   ~SLdrUnknownStruct34();
 
-  SLdrHealthInfo health; // 0xcf90d15e
-  SLdrDamageInfo damage; // 0x337f9524
-  CAssetId explosion; // 0xd8c6d15c
-  CAssetId effect; // 0xb68c6d96
-  CAssetId trail; // 0xcb0b919b
-  float mass; // 0x75dbb375
-  float unknown_0x417f4a91; // 0x417f4a91
-  float minLaunchSpeed; // 0x50a19b1f
-  float maxLaunchSpeed; // 0xf7951b66
-  int numBounces; // 0xfbcdb101
-  int sound_Bounce; // 0x6758bf01
-  int sound_Explode; // 0x524a8073
-  float maxTurnAngle; // 0x50e46527
+  SLdrHealthInfo health;    // 0xcf90d15e
+  SLdrDamageInfo damage;    // 0x337f9524
+  CAssetId explosion;       // 0xd8c6d15c
+  CAssetId effect;          // 0xb68c6d96
+  CAssetId trail;           // 0xcb0b919b
+  float mass;               // 0x75dbb375
+  float bounciness;         // 0x417f4a91
+  float minLaunchSpeed;     // 0x50a19b1f
+  float maxLaunchSpeed;     // 0xf7951b66
+  int numBounces;           // 0xfbcdb101
+  int sound_Bounce;         // 0x6758bf01
+  int sound_Explode;        // 0x524a8073
+  float maxTurnAngle;       // 0x50e46527
   float unknown_0x47f99fbc; // 0x47f99fbc
-  int minGeneration; // 0xdc5af41e
-  int maxGeneration; // 0x8da34f43
+  int minGeneration;        // 0xdc5af41e
+  int maxGeneration;        // 0x8da34f43
   float unknown_0xfbf8ea0a; // 0xfbf8ea0a
-  bool allowLockOn; // 0x98d21b22
+  bool allowLockOn;         // 0x98d21b22
 };
 
-inline SLdrUnknownStruct34::SLdrUnknownStruct34() : health(), damage(), explosion(kInvalidAssetId), effect(kInvalidAssetId), trail(kInvalidAssetId) {
+inline SLdrUnknownStruct34::SLdrUnknownStruct34()
+: health(), damage(), explosion(kInvalidAssetId), effect(kInvalidAssetId), trail(kInvalidAssetId) {
   damage.dI_WeaponType = 9;
   damage.dI_Damage = 5.0f;
   damage.dI_KnockBackPower = 1.0f;
   mass = 4.0f;
-  unknown_0x417f4a91 = 0.5f;
+  bounciness = 0.5f;
   minLaunchSpeed = 15.0f;
   maxLaunchSpeed = 20.0f;
   numBounces = 5;
@@ -229,7 +236,7 @@ inline void LoadTypedefUnknownStruct34(SLdrUnknownStruct34& sldrThis, CInputStre
       break;
     }
     case 0x417f4a91: {
-      sldrThis.unknown_0x417f4a91 = input.ReadFloat();
+      sldrThis.bounciness = input.ReadFloat();
       break;
     }
     case 0x50a19b1f: {
@@ -287,29 +294,36 @@ struct SLdrMinorIng {
   SLdrMinorIng();
   ~SLdrMinorIng();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  CAssetId projectile; // 0xef485db9
-  float unknown_0xa03e450c; // 0xa03e450c
-  float attackAngleLimit; // 0x7b9a0bb4
-  float lineOfSightHeightOffset; // 0x99bb2559
-  float unknown_0xd6c8eac2; // 0xd6c8eac2
-  float unknown_0x2a5449ba; // 0x2a5449ba
-  float hearingRadius; // 0xed69488f
-  bool allowProjectileDuringAttackPattern; // 0x399d1eaa
-  bool unknown_0xbce16644; // 0xbce16644
-  bool unknown_0x142433d3; // 0x142433d3
-  bool stayOnPointPathFinding; // 0xb6cc0063
+  SLdrEditorProperties editorProperties;            // 0x255a4580
+  SLdrPatternedAITypedef patterned;                 // 0xb3774750
+  SLdrActorParameters actorInformation;             // 0x7e397fed
+  SLdrDamageInfo projectileDamage;                  // 0x553b1339
+  CAssetId projectile;                              // 0xef485db9
+  float unknown_0xa03e450c;                         // 0xa03e450c
+  float attackAngleLimit;                           // 0x7b9a0bb4
+  float lineOfSightHeightOffset;                    // 0x99bb2559
+  float unknown_0xd6c8eac2;                         // 0xd6c8eac2
+  float unknown_0x2a5449ba;                         // 0x2a5449ba
+  float hearingRadius;                              // 0xed69488f
+  bool allowProjectileDuringAttackPattern;          // 0x399d1eaa
+  bool unknown_0xbce16644;                          // 0xbce16644
+  bool unknown_0x142433d3;                          // 0x142433d3
+  bool stayOnPointPathFinding;                      // 0xb6cc0063
   bool allowProjectileDuringStayOnPointPathFinding; // 0xe601f7bd
-  bool unknown_0x09207f51; // 0x09207f51
-  bool allowPuddleLockOn; // 0x2107e4fb
-  SLdrMinorIngIngSpot ingSpot; // 0x07e9d446
-  SLdrUnknownStruct34 unknown_0x3da35851; // 0x3da35851
+  bool unknown_0x09207f51;                          // 0x09207f51
+  bool allowPuddleLockOn;                           // 0x2107e4fb
+  SLdrMinorIngIngSpot ingSpot;                      // 0x07e9d446
+  SLdrUnknownStruct34 unknown_0x3da35851;           // 0x3da35851
 };
 
-inline SLdrMinorIng::SLdrMinorIng() : editorProperties(), patterned(), actorInformation(), projectileDamage(), projectile(kInvalidAssetId), ingSpot(), unknown_0x3da35851() {
+inline SLdrMinorIng::SLdrMinorIng()
+: editorProperties()
+, patterned()
+, actorInformation()
+, projectileDamage()
+, projectile(kInvalidAssetId)
+, ingSpot()
+, unknown_0x3da35851() {
   patterned.minAttackRange = 4.5f;
   patterned.maxAttackRange = 30.0f;
   patterned.averageAttackTime = 3.0f;

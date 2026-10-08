@@ -13,19 +13,26 @@ struct SLdrSurfaceCamera {
   ~SLdrSurfaceCamera();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  uint flagsSurfaceCamera; // 0x1ffc65d8
-  int surfaceType; // 0x1405b5e4
-  SLdrSpline spline; // 0x922d151f
-  CVector3f playerOffset; // 0x1d8b933f
-  SLdrSplineType playerSplineType; // 0x33e4685b
-  bool playerSplineLoops; // 0x431769c6
-  SLdrSplineType targetSplineType; // 0x5604d304
-  bool targetSplineLoops; // 0x33b4f106
-  SLdrSpline targetControlSpline; // 0xc4dfbfa7
-  SLdrSpline fOVSpline; // 0x6868d4b3
+  uint flagsSurfaceCamera;               // 0x1ffc65d8
+  int surfaceType;                       // 0x1405b5e4
+  SLdrSpline spline;                     // 0x922d151f
+  CVector3f playerOffset;                // 0x1d8b933f
+  SLdrSplineType playerSplineType;       // 0x33e4685b
+  bool playerSplineLoops;                // 0x431769c6
+  SLdrSplineType targetSplineType;       // 0x5604d304
+  bool targetSplineLoops;                // 0x33b4f106
+  SLdrSpline targetControlSpline;        // 0xc4dfbfa7
+  SLdrSpline fOVSpline;                  // 0x6868d4b3
 };
 
-inline SLdrSurfaceCamera::SLdrSurfaceCamera() : editorProperties(), spline(), playerOffset(CVector3f::Zero()), playerSplineType(), targetSplineType(), targetControlSpline(), fOVSpline() {
+inline SLdrSurfaceCamera::SLdrSurfaceCamera()
+: editorProperties()
+, spline()
+, playerOffset(CVector3f::Zero())
+, playerSplineType()
+, targetSplineType()
+, targetControlSpline()
+, fOVSpline() {
   flagsSurfaceCamera = 0x00000002u;
   surfaceType = 1;
   playerSplineLoops = false;

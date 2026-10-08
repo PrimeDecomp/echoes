@@ -13,22 +13,23 @@ struct SLdrPuddleSpore {
   ~SLdrPuddleSpore();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int flavor; // 0xbe73724a
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  bool unknown_0x5cdc877d; // 0x5cdc877d
-  float chargeTime; // 0x44de9d92
-  float timeOpen; // 0x69415fae
-  float platformTime; // 0xc1202d77
-  float unknown_0xf1c2d224; // 0xf1c2d224
-  float knockOffForce; // 0x3c6af2ac
-  float hitDetectionAngle; // 0xdaddebe7
-  float shockWaveHeight; // 0x42ad1392
-  int sound_ShockWaveTravelSound; // 0xfe20b4f5
-  SLdrShockWaveInfo shockWaveInfo; // 0x8f4787cb
+  int flavor;                            // 0xbe73724a
+  SLdrPatternedAITypedef patterned;      // 0xb3774750
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  bool unknown_0x5cdc877d;               // 0x5cdc877d
+  float chargeTime;                      // 0x44de9d92
+  float timeOpen;                        // 0x69415fae
+  float platformTime;                    // 0xc1202d77
+  float unknown_0xf1c2d224;              // 0xf1c2d224
+  float knockOffForce;                   // 0x3c6af2ac
+  float hitDetectionAngle;               // 0xdaddebe7
+  float shockWaveHeight;                 // 0x42ad1392
+  int sound_ShockWaveTravelSound;        // 0xfe20b4f5
+  SLdrShockWaveInfo shockWaveInfo;       // 0x8f4787cb
 };
 
-inline SLdrPuddleSpore::SLdrPuddleSpore() : editorProperties(), patterned(), actorInformation(), shockWaveInfo() {
+inline SLdrPuddleSpore::SLdrPuddleSpore()
+: editorProperties(), patterned(), actorInformation(), shockWaveInfo() {
   flavor = 0;
   patterned.detectionRange = 35.0f;
   patterned.detectionHeightRange = 3.0f;

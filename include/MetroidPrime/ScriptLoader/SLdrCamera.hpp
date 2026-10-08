@@ -12,19 +12,27 @@ struct SLdrCamera {
   ~SLdrCamera();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float animationTime; // 0x2a53245a
-  uint flagsCinematicCamera; // 0x05c5fc6e
-  int unknown_0xd4b29446; // 0xd4b29446
-  SLdrSplineType motionSplineType; // 0x493d6a2d
-  SLdrSplineType targetSplineType; // 0x5604d304
-  SLdrSpline motionControlSpline; // 0x27e5f874
-  SLdrSpline targetControlSpline; // 0xc4dfbfa7
-  SLdrSpline fOVSpline; // 0x6868d4b3
-  SLdrSpline rollSpline; // 0x6e6d8efd
-  SLdrSpline slowmoControlSpline; // 0xf4f4798e
+  float animationTime;                   // 0x2a53245a
+  uint flagsCinematicCamera;             // 0x05c5fc6e
+  int unknown_0xd4b29446;                // 0xd4b29446
+  SLdrSplineType motionSplineType;       // 0x493d6a2d
+  SLdrSplineType targetSplineType;       // 0x5604d304
+  SLdrSpline motionControlSpline;        // 0x27e5f874
+  SLdrSpline targetControlSpline;        // 0xc4dfbfa7
+  SLdrSpline fOVSpline;                  // 0x6868d4b3
+  SLdrSpline rollSpline;                 // 0x6e6d8efd
+  SLdrSpline slowmoControlSpline;        // 0xf4f4798e
 };
 
-inline SLdrCamera::SLdrCamera() : editorProperties(), motionSplineType(), targetSplineType(), motionControlSpline(), targetControlSpline(), fOVSpline(), rollSpline(), slowmoControlSpline() {
+inline SLdrCamera::SLdrCamera()
+: editorProperties()
+, motionSplineType()
+, targetSplineType()
+, motionControlSpline()
+, targetControlSpline()
+, fOVSpline()
+, rollSpline()
+, slowmoControlSpline() {
   editorProperties.active = false;
   animationTime = 10.0f;
   flagsCinematicCamera = 0x000000a8u;

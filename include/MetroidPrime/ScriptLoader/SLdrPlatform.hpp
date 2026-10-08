@@ -18,16 +18,21 @@ struct SLdrPlatformMotionProperties {
   ~SLdrPlatformMotionProperties();
 
   SLdrSplineType motionSplineType; // 0x493d6a2d
-  SLdrSpline motionControlSpline; // 0x27e5f874
-  float motionSplineDuration; // 0xfd1e2f56
-  float initialTime; // 0xa5753d52
-  uint motionFlagsPlatformMotion; // 0xae80628f
-  SLdrSpline rollControlSpline; // 0x628bdf0f
-  SLdrSpline yawControlSpline; // 0x78d03a32
-  SLdrSpline pitchControlSpline; // 0xb4a2e15a
+  SLdrSpline motionControlSpline;  // 0x27e5f874
+  float motionSplineDuration;      // 0xfd1e2f56
+  float initialTime;               // 0xa5753d52
+  uint motionFlagsPlatformMotion;  // 0xae80628f
+  SLdrSpline rollControlSpline;    // 0x628bdf0f
+  SLdrSpline yawControlSpline;     // 0x78d03a32
+  SLdrSpline pitchControlSpline;   // 0xb4a2e15a
 };
 
-inline SLdrPlatformMotionProperties::SLdrPlatformMotionProperties() : motionSplineType(), motionControlSpline(), rollControlSpline(), yawControlSpline(), pitchControlSpline() {
+inline SLdrPlatformMotionProperties::SLdrPlatformMotionProperties()
+: motionSplineType()
+, motionControlSpline()
+, rollControlSpline()
+, yawControlSpline()
+, pitchControlSpline() {
   motionSplineDuration = 10.0f;
   initialTime = 0.0f;
   motionFlagsPlatformMotion = 0x00000120u;
@@ -35,7 +40,8 @@ inline SLdrPlatformMotionProperties::SLdrPlatformMotionProperties() : motionSpli
 
 inline SLdrPlatformMotionProperties::~SLdrPlatformMotionProperties() {}
 
-inline void LoadTypedefPlatformMotionProperties(SLdrPlatformMotionProperties& sldrThis, CInputStream& input) {
+inline void LoadTypedefPlatformMotionProperties(SLdrPlatformMotionProperties& sldrThis,
+                                                CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -84,26 +90,37 @@ struct SLdrPlatform {
   SLdrPlatform();
   ~SLdrPlatform();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionBox; // 0xf344c0b0
-  CVector3f collisionOffset; // 0x2e686c2a
-  CAssetId model; // 0xc27ffa8f
-  SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  CAssetId collisionModel; // 0x0fc966dc
-  SLdrHealthInfo health; // 0xcf90d15e
-  SLdrDamageVulnerability vulnerability; // 0x7b71ae90
-  float xRayTransparency; // 0x6150d687
-  int maximumSplashes; // 0xdcd56fe8
-  int splashGenerationRate; // 0x682de15c
-  bool renderRainSplashes; // 0xac3adda6
-  bool unknown_0xf203bc81; // 0xf203bc81
+  SLdrEditorProperties editorProperties;         // 0x255a4580
+  CVector3f collisionBox;                        // 0xf344c0b0
+  CVector3f collisionOffset;                     // 0x2e686c2a
+  CAssetId model;                                // 0xc27ffa8f
+  SLdrAnimationSet animationInformation;         // 0xe25fb08c
+  SLdrActorParameters actorInformation;          // 0x7e397fed
+  CAssetId collisionModel;                       // 0x0fc966dc
+  SLdrHealthInfo health;                         // 0xcf90d15e
+  SLdrDamageVulnerability vulnerability;         // 0x7b71ae90
+  float xRayTransparency;                        // 0x6150d687
+  int maximumSplashes;                           // 0xdcd56fe8
+  int splashGenerationRate;                      // 0x682de15c
+  bool renderRainSplashes;                       // 0xac3adda6
+  bool excludeFromLineOfSightTest;               // 0xf203bc81
   SLdrPlatformMotionProperties motionProperties; // 0x0a9dbf91
-  CVector3f conveyorBeltVelocity; // 0x24fdeea1
-  float randomAnimationOffset; // 0xbf69c03e
+  CVector3f conveyorBeltVelocity;                // 0x24fdeea1
+  float randomAnimationOffset;                   // 0xbf69c03e
 };
 
-inline SLdrPlatform::SLdrPlatform() : editorProperties(), collisionBox(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), model(kInvalidAssetId), animationInformation(), actorInformation(), collisionModel(kInvalidAssetId), health(), vulnerability(), motionProperties(), conveyorBeltVelocity(CVector3f::Zero()) {
+inline SLdrPlatform::SLdrPlatform()
+: editorProperties()
+, collisionBox(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, model(kInvalidAssetId)
+, animationInformation()
+, actorInformation()
+, collisionModel(kInvalidAssetId)
+, health()
+, vulnerability()
+, motionProperties()
+, conveyorBeltVelocity(CVector3f::Zero()) {
   editorProperties.unknown_0x5d298a43 = 0x00000003u;
   actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   actorInformation.visor.visorFlags = 0x0000000fu;
@@ -111,7 +128,7 @@ inline SLdrPlatform::SLdrPlatform() : editorProperties(), collisionBox(CVector3f
   maximumSplashes = 200;
   splashGenerationRate = 20;
   renderRainSplashes = false;
-  unknown_0xf203bc81 = false;
+  excludeFromLineOfSightTest = false;
   conveyorBeltVelocity = CVector3f(0.0f, 0.15000001f, 0.0f);
   randomAnimationOffset = 0.0f;
 }

@@ -17,17 +17,21 @@ struct SLdrUnknownStruct42 {
   SLdrUnknownStruct42();
   ~SLdrUnknownStruct42();
 
-  float angle; // 0x382a1973
+  float angle;        // 0x382a1973
   CColor cloudColor1; // 0x4c41dcd4
   CColor cloudColor2; // 0xcad5ae7a
-  CColor addColor1; // 0x1e52124e
-  CColor addColor2; // 0x98c660e0
-  float cloudScale; // 0x10c1ded2
-  float fadeOffSize; // 0xae71a22a
-  float openSpeed; // 0x4e29c85a
+  CColor addColor1;   // 0x1e52124e
+  CColor addColor2;   // 0x98c660e0
+  float cloudScale;   // 0x10c1ded2
+  float fadeOffSize;  // 0xae71a22a
+  float openSpeed;    // 0x4e29c85a
 };
 
-inline SLdrUnknownStruct42::SLdrUnknownStruct42() : cloudColor1(CColor::Green()), cloudColor2(CColor::Green()), addColor1(CColor::Green()), addColor2(CColor::Green()) {
+inline SLdrUnknownStruct42::SLdrUnknownStruct42()
+: cloudColor1(CColor::Green())
+, cloudColor2(CColor::Green())
+, addColor1(CColor::Green())
+, addColor2(CColor::Green()) {
   angle = 20.0f;
   cloudColor1 = CColor(0.247059f, 0.0f, 0.0f, 0.0f);
   cloudColor2 = CColor(0.49803901f, 0.098039001f, 0.098039001f, 0.0f);
@@ -89,38 +93,46 @@ struct SLdrSplitterCommandModuleData {
   SLdrSplitterCommandModuleData();
   ~SLdrSplitterCommandModuleData();
 
-  int unknown_0xbd80fd94; // 0xbd80fd94
-  float maxLinearVelocity; // 0x00d74fc3
-  float maxTurnSpeed; // 0x0b5c3c1a
-  float scanningTurnSpeed; // 0xa0b3e1be
-  float minLaserPulseAttackTime; // 0xe32fcae9
-  float minLaserPulseRange; // 0xc5e0b92c
-  float maxLaserPulseRange; // 0xc17a8806
-  int maxLaserPulseShots; // 0xe75bae9e
-  CAssetId laserPulseProjectile; // 0x4d77b7aa
-  SLdrDamageInfo laserPulseDamage; // 0xb763eb10
-  int minDodges; // 0xeda45014
-  int maxDodges; // 0x7dd740fe
-  float dodgeChance; // 0x47be3298
-  float resetShieldTime; // 0xd3dec6dc
-  float shieldHP; // 0xecd9d92d
-  float laserSweepTurnSpeed; // 0x5ff006d1
-  SLdrDamageInfo laserSweepDamage; // 0x1bd017ce
-  SLdrPlasmaBeamInfo laserSweepBeamInfo; // 0x4a37c437
-  SLdrUnknownStruct42 unknown_0x9ec51fe4; // 0x9ec51fe4
-  int sound_LaserSweep; // 0xea307548
-  int sound_LaserChargeUp; // 0x3779bd93
-  int sound_Docking; // 0xc90dbdb4
-  int sound_Scanning; // 0xe7724802
-  int sound_LightShield; // 0xd4a06273
-  int sound_DarkShield; // 0xafc20631
-  int sound_ShieldOn; // 0x2ff5a809
-  SLdrIngPossessionData ingPossessionData; // 0xe61748ed
+  int unknown_0xbd80fd94;                           // 0xbd80fd94
+  float maxLinearVelocity;                          // 0x00d74fc3
+  float maxTurnSpeed;                               // 0x0b5c3c1a
+  float scanningTurnSpeed;                          // 0xa0b3e1be
+  float minLaserPulseAttackTime;                    // 0xe32fcae9
+  float minLaserPulseRange;                         // 0xc5e0b92c
+  float maxLaserPulseRange;                         // 0xc17a8806
+  int maxLaserPulseShots;                           // 0xe75bae9e
+  CAssetId laserPulseProjectile;                    // 0x4d77b7aa
+  SLdrDamageInfo laserPulseDamage;                  // 0xb763eb10
+  int minDodges;                                    // 0xeda45014
+  int maxDodges;                                    // 0x7dd740fe
+  float dodgeChance;                                // 0x47be3298
+  float resetShieldTime;                            // 0xd3dec6dc
+  float shieldHP;                                   // 0xecd9d92d
+  float laserSweepTurnSpeed;                        // 0x5ff006d1
+  SLdrDamageInfo laserSweepDamage;                  // 0x1bd017ce
+  SLdrPlasmaBeamInfo laserSweepBeamInfo;            // 0x4a37c437
+  SLdrUnknownStruct42 unknown_0x9ec51fe4;           // 0x9ec51fe4
+  int sound_LaserSweep;                             // 0xea307548
+  int sound_LaserChargeUp;                          // 0x3779bd93
+  int sound_Docking;                                // 0xc90dbdb4
+  int sound_Scanning;                               // 0xe7724802
+  int sound_LightShield;                            // 0xd4a06273
+  int sound_DarkShield;                             // 0xafc20631
+  int sound_ShieldOn;                               // 0x2ff5a809
+  SLdrIngPossessionData ingPossessionData;          // 0xe61748ed
   SLdrDamageVulnerability lightShieldVulnerability; // 0x80a8ef3b
-  SLdrDamageVulnerability darkShieldVulnerability; // 0xa21c90ea
+  SLdrDamageVulnerability darkShieldVulnerability;  // 0xa21c90ea
 };
 
-inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData() : laserPulseProjectile(kInvalidAssetId), laserPulseDamage(), laserSweepDamage(), laserSweepBeamInfo(), unknown_0x9ec51fe4(), ingPossessionData(), lightShieldVulnerability(), darkShieldVulnerability() {
+inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData()
+: laserPulseProjectile(kInvalidAssetId)
+, laserPulseDamage()
+, laserSweepDamage()
+, laserSweepBeamInfo()
+, unknown_0x9ec51fe4()
+, ingPossessionData()
+, lightShieldVulnerability()
+, darkShieldVulnerability() {
   unknown_0xbd80fd94 = 10;
   maxLinearVelocity = 20.0f;
   maxTurnSpeed = 720.0f;
@@ -158,7 +170,8 @@ inline SLdrSplitterCommandModuleData::SLdrSplitterCommandModuleData() : laserPul
 
 inline SLdrSplitterCommandModuleData::~SLdrSplitterCommandModuleData() {}
 
-inline void LoadTypedefSplitterCommandModuleData(SLdrSplitterCommandModuleData& sldrThis, CInputStream& input) {
+inline void LoadTypedefSplitterCommandModuleData(SLdrSplitterCommandModuleData& sldrThis,
+                                                 CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -291,13 +304,14 @@ struct SLdrSplitterCommandModule {
   SLdrSplitterCommandModule();
   ~SLdrSplitterCommandModule();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;                 // 0x255a4580
+  SLdrPatternedAITypedef patterned;                      // 0xb3774750
+  SLdrActorParameters actorInformation;                  // 0x7e397fed
   SLdrSplitterCommandModuleData commandModuleProperties; // 0x560cf813
 };
 
-inline SLdrSplitterCommandModule::SLdrSplitterCommandModule() : editorProperties(), patterned(), actorInformation(), commandModuleProperties() {
+inline SLdrSplitterCommandModule::SLdrSplitterCommandModule()
+: editorProperties(), patterned(), actorInformation(), commandModuleProperties() {
   patterned.turnSpeed = 60.0f;
   patterned.minAttackRange = 12.0f;
   patterned.maxAttackRange = 37.0f;

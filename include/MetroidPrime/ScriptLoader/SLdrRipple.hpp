@@ -10,12 +10,10 @@ struct SLdrRipple {
   ~SLdrRipple();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  float energy; // 0x69731a91
+  float energy;                          // 0x69731a91
 };
 
-inline SLdrRipple::SLdrRipple() : editorProperties() {
-  energy = -0.1f;
-}
+inline SLdrRipple::SLdrRipple() : editorProperties() { energy = -0.1f; }
 
 inline SLdrRipple::~SLdrRipple() {}
 

@@ -15,32 +15,44 @@ struct SLdrWallWalker {
   SLdrWallWalker();
   ~SLdrWallWalker();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrDamageVulnerability legVulnerability; // 0x9f0ff852
-  float waypointApproachDistance; // 0x733bd27c
-  float floorTurnSpeed; // 0x8e4f7b29
-  float stickyReach; // 0xd5c25506
-  float visibleDistance; // 0xa72530e8
-  SLdrDamageInfo explodeDamage; // 0xf6206a12
-  CAssetId grenadeExplosion; // 0x1319e077
-  CAssetId grenadeEffect; // 0xd207ff0f
-  CAssetId grenadeTrail; // 0x2b31c882
-  float grenadeMass; // 0x9a6bb47f
-  float unknown_0xed086ce0; // 0xed086ce0
-  int unknown_0x454f16b1; // 0x454f16b1
-  int grenadeSoundBounce; // 0x7f1613b7
-  int grenadeSoundExplode; // 0x7050d866
-  float projectileInterval; // 0xd4903c98
-  float projectileStopHomingRange; // 0x723542bb
-  CAssetId projectile; // 0xef485db9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  CAssetId pART; // non-matching name, 0x68dc4d11
+  SLdrEditorProperties editorProperties;          // 0x255a4580
+  SLdrPatternedAITypedef patterned;               // 0xb3774750
+  SLdrActorParameters actorInformation;           // 0x7e397fed
+  SLdrDamageVulnerability legVulnerability;       // 0x9f0ff852
+  float waypointApproachDistance;                 // 0x733bd27c
+  float floorTurnSpeed;                           // 0x8e4f7b29
+  float stickyReach;                              // 0xd5c25506
+  float visibleDistance;                          // 0xa72530e8
+  SLdrDamageInfo explodeDamage;                   // 0xf6206a12
+  CAssetId grenadeExplosion;                      // 0x1319e077
+  CAssetId grenadeEffect;                         // 0xd207ff0f
+  CAssetId grenadeTrail;                          // 0x2b31c882
+  float grenadeMass;                              // 0x9a6bb47f
+  float unknown_0xed086ce0;                       // 0xed086ce0
+  int unknown_0x454f16b1;                         // 0x454f16b1
+  int grenadeSoundBounce;                         // 0x7f1613b7
+  int grenadeSoundExplode;                        // 0x7050d866
+  float projectileInterval;                       // 0xd4903c98
+  float projectileStopHomingRange;                // 0x723542bb
+  CAssetId projectile;                            // 0xef485db9
+  SLdrDamageInfo projectileDamage;                // 0x553b1339
+  CAssetId pART;                                  // non-matching name, 0x68dc4d11
   SLdrCameraShakerData projectileExplosionShaker; // 0x22bbdd0a
 };
 
-inline SLdrWallWalker::SLdrWallWalker() : editorProperties(), patterned(), actorInformation(), legVulnerability(), explodeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId), projectile(kInvalidAssetId), projectileDamage(), pART(kInvalidAssetId), projectileExplosionShaker() {
+inline SLdrWallWalker::SLdrWallWalker()
+: editorProperties()
+, patterned()
+, actorInformation()
+, legVulnerability()
+, explodeDamage()
+, grenadeExplosion(kInvalidAssetId)
+, grenadeEffect(kInvalidAssetId)
+, grenadeTrail(kInvalidAssetId)
+, projectile(kInvalidAssetId)
+, projectileDamage()
+, pART(kInvalidAssetId)
+, projectileExplosionShaker() {
   patterned.creatureSize = 1;
   waypointApproachDistance = 2.5f;
   floorTurnSpeed = 1080.0f;

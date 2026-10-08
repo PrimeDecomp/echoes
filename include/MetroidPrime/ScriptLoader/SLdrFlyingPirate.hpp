@@ -13,46 +13,59 @@ struct SLdrFlyingPirate {
   SLdrFlyingPirate();
   ~SLdrFlyingPirate();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  float searchRadius; // 0xed9bf5a3
-  float hearingRadius; // 0xed69488f
-  int unknown_0x20daf45e; // 0x20daf45e
-  CAssetId projectile; // 0xef485db9
-  SLdrDamageInfo projectileDamage; // 0x553b1339
-  int sound_Projectile; // 0xeac27605
-  CAssetId missile; // 0xca294811
-  SLdrDamageInfo missileDamage; // 0x258cfb4d
-  CAssetId wPSC; // non-matching name, 0x1d510c6c
-  float hurlRecoverTime; // 0x96feb75d
-  float hoverHeight; // 0xc75998aa
-  CAssetId rocketPackExplosion; // 0x6475fc6f
+  SLdrEditorProperties editorProperties;    // 0x255a4580
+  SLdrPatternedAITypedef patterned;         // 0xb3774750
+  SLdrActorParameters actorInformation;     // 0x7e397fed
+  float searchRadius;                       // 0xed9bf5a3
+  float hearingRadius;                      // 0xed69488f
+  int unknown_0x20daf45e;                   // 0x20daf45e
+  CAssetId projectile;                      // 0xef485db9
+  SLdrDamageInfo projectileDamage;          // 0x553b1339
+  int sound_Projectile;                     // 0xeac27605
+  CAssetId missile;                         // 0xca294811
+  SLdrDamageInfo missileDamage;             // 0x258cfb4d
+  CAssetId wPSC;                            // non-matching name, 0x1d510c6c
+  float hurlRecoverTime;                    // 0x96feb75d
+  float hoverHeight;                        // 0xc75998aa
+  CAssetId rocketPackExplosion;             // 0x6475fc6f
   SLdrDamageInfo rocketPackExplosionDamage; // 0x2564ee27
-  float spiralChance; // 0xdf88607d
-  float minimumMissileTime; // 0x8fff07e9
-  float missileTimeVariation; // 0xb9bb2f64
-  float flightThrust; // 0x8ee7f440
-  int sound_Impact; // 0x1bb16ea5
-  int sound_Spiral; // 0x0ff5ab8f
-  float landChance; // 0x87b2bc5a
-  float intraBurstShotTime; // 0x71587b45
-  float intraBurstShotVariation; // 0x7903312e
-  CAssetId landingCloudDirt; // 0x317212ab
-  CAssetId landingCloudDust; // 0xbc113d7b
-  CAssetId landingCloudSnow; // 0x738bbbaa
-  int sound_Hurled; // 0x3bb37a8f
-  int sound_Death; // 0xe160b593
-  float doubleAttackChance; // 0x966d11f3
-  float unknown_0x3427d27f; // 0x3427d27f
-  float stopHomingRange; // 0x053ae4a7
-  float unknown_0xccf05648; // 0xccf05648
-  float unknown_0x2a90f9a9; // 0x2a90f9a9
-  float unknown_0x9ca8f357; // 0x9ca8f357
-  float unknown_0x7ac85cb6; // 0x7ac85cb6
+  float spiralChance;                       // 0xdf88607d
+  float minimumMissileTime;                 // 0x8fff07e9
+  float missileTimeVariation;               // 0xb9bb2f64
+  float flightThrust;                       // 0x8ee7f440
+  int sound_Impact;                         // 0x1bb16ea5
+  int sound_Spiral;                         // 0x0ff5ab8f
+  float landChance;                         // 0x87b2bc5a
+  float intraBurstShotTime;                 // 0x71587b45
+  float intraBurstShotVariation;            // 0x7903312e
+  CAssetId landingCloudDirt;                // 0x317212ab
+  CAssetId landingCloudDust;                // 0xbc113d7b
+  CAssetId landingCloudSnow;                // 0x738bbbaa
+  int sound_Hurled;                         // 0x3bb37a8f
+  int sound_Death;                          // 0xe160b593
+  float doubleAttackChance;                 // 0x966d11f3
+  float unknown_0x3427d27f;                 // 0x3427d27f
+  float stopHomingRange;                    // 0x053ae4a7
+  float unknown_0xccf05648;                 // 0xccf05648
+  float unknown_0x2a90f9a9;                 // 0x2a90f9a9
+  float unknown_0x9ca8f357;                 // 0x9ca8f357
+  float unknown_0x7ac85cb6;                 // 0x7ac85cb6
 };
 
-inline SLdrFlyingPirate::SLdrFlyingPirate() : editorProperties(), patterned(), actorInformation(), projectile(kInvalidAssetId), projectileDamage(), missile(kInvalidAssetId), missileDamage(), wPSC(kInvalidAssetId), rocketPackExplosion(kInvalidAssetId), rocketPackExplosionDamage(), landingCloudDirt(kInvalidAssetId), landingCloudDust(kInvalidAssetId), landingCloudSnow(kInvalidAssetId) {
+inline SLdrFlyingPirate::SLdrFlyingPirate()
+: editorProperties()
+, patterned()
+, actorInformation()
+, projectile(kInvalidAssetId)
+, projectileDamage()
+, missile(kInvalidAssetId)
+, missileDamage()
+, wPSC(kInvalidAssetId)
+, rocketPackExplosion(kInvalidAssetId)
+, rocketPackExplosionDamage()
+, landingCloudDirt(kInvalidAssetId)
+, landingCloudDust(kInvalidAssetId)
+, landingCloudSnow(kInvalidAssetId) {
   patterned.turnSpeed = 360.0f;
   patterned.detectionAngle = 90.0f;
   patterned.minAttackRange = 15.0f;

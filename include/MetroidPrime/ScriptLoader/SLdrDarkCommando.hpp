@@ -15,24 +15,28 @@ struct SLdrDarkCommandoEMPData {
   SLdrDarkCommandoEMPData();
   ~SLdrDarkCommandoEMPData();
 
-  float preFireIdleTime; // 0xb33a0cbc
-  float minAttackRange; // 0x58434916
-  float maxAttackRange; // 0xff77c96f
+  float preFireIdleTime;        // 0xb33a0cbc
+  float minAttackRange;         // 0x58434916
+  float maxAttackRange;         // 0xff77c96f
   SLdrDamageInfo grenadeDamage; // 0x14d1a3a8
-  CAssetId grenadeExplosion; // 0x1319e077
-  CAssetId grenadeEffect; // 0xd207ff0f
-  CAssetId grenadeTrail; // 0x2b31c882
-  float grenadeMass; // 0x9a6bb47f
-  float unknown_0xed086ce0; // 0xed086ce0
-  float grenadeMinLaunchSpeed; // 0x00fc6646
-  float grenadeMaxLaunchSpeed; // 0xa7c8e63f
-  int unknown_0x454f16b1; // 0x454f16b1
-  float eMPDuration; // 0x2d4706e8
-  int sound_GrenadeBounce; // 0x258c3e1b
-  int sound_GrenadeExplode; // 0xaf6aad88
+  CAssetId grenadeExplosion;    // 0x1319e077
+  CAssetId grenadeEffect;       // 0xd207ff0f
+  CAssetId grenadeTrail;        // 0x2b31c882
+  float grenadeMass;            // 0x9a6bb47f
+  float unknown_0xed086ce0;     // 0xed086ce0
+  float grenadeMinLaunchSpeed;  // 0x00fc6646
+  float grenadeMaxLaunchSpeed;  // 0xa7c8e63f
+  int unknown_0x454f16b1;       // 0x454f16b1
+  float eMPDuration;            // 0x2d4706e8
+  int sound_GrenadeBounce;      // 0x258c3e1b
+  int sound_GrenadeExplode;     // 0xaf6aad88
 };
 
-inline SLdrDarkCommandoEMPData::SLdrDarkCommandoEMPData() : grenadeDamage(), grenadeExplosion(kInvalidAssetId), grenadeEffect(kInvalidAssetId), grenadeTrail(kInvalidAssetId) {
+inline SLdrDarkCommandoEMPData::SLdrDarkCommandoEMPData()
+: grenadeDamage()
+, grenadeExplosion(kInvalidAssetId)
+, grenadeEffect(kInvalidAssetId)
+, grenadeTrail(kInvalidAssetId) {
   preFireIdleTime = 2.0f;
   minAttackRange = 35.0f;
   maxAttackRange = 100.0f;
@@ -128,17 +132,18 @@ struct SLdrDarkCommandoChargeBeamData {
   SLdrDarkCommandoChargeBeamData();
   ~SLdrDarkCommandoChargeBeamData();
 
-  float postFireIdleTime; // 0xd258ec09
-  float minAttackRange; // 0x58434916
-  float maxAttackRange; // 0xff77c96f
-  SLdrDamageInfo damage; // 0x337f9524
-  CAssetId projectile; // 0xef485db9
-  CAssetId moldEffect; // 0x5979d9e1
-  SLdrDamageInfo moldDamage; // 0x80742e2e
+  float postFireIdleTime;            // 0xd258ec09
+  float minAttackRange;              // 0x58434916
+  float maxAttackRange;              // 0xff77c96f
+  SLdrDamageInfo damage;             // 0x337f9524
+  CAssetId projectile;               // 0xef485db9
+  CAssetId moldEffect;               // 0x5979d9e1
+  SLdrDamageInfo moldDamage;         // 0x80742e2e
   SLdrAudioPlaybackParms sound_Mold; // 0xf5cfb8af
 };
 
-inline SLdrDarkCommandoChargeBeamData::SLdrDarkCommandoChargeBeamData() : damage(), projectile(kInvalidAssetId), moldEffect(kInvalidAssetId), moldDamage(), sound_Mold() {
+inline SLdrDarkCommandoChargeBeamData::SLdrDarkCommandoChargeBeamData()
+: damage(), projectile(kInvalidAssetId), moldEffect(kInvalidAssetId), moldDamage(), sound_Mold() {
   postFireIdleTime = 2.0f;
   minAttackRange = 10.0f;
   maxAttackRange = 35.0f;
@@ -151,7 +156,8 @@ inline SLdrDarkCommandoChargeBeamData::SLdrDarkCommandoChargeBeamData() : damage
 
 inline SLdrDarkCommandoChargeBeamData::~SLdrDarkCommandoChargeBeamData() {}
 
-inline void LoadTypedefDarkCommandoChargeBeamData(SLdrDarkCommandoChargeBeamData& sldrThis, CInputStream& input) {
+inline void LoadTypedefDarkCommandoChargeBeamData(SLdrDarkCommandoChargeBeamData& sldrThis,
+                                                  CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -200,19 +206,25 @@ struct SLdrDarkCommandoShadowDashData {
   SLdrDarkCommandoShadowDashData();
   ~SLdrDarkCommandoShadowDashData();
 
-  float unknown_0xa0d037ee; // 0xa0d037ee
-  float unknown_0x4f522994; // 0x4f522994
-  float shadowDashSpeed; // 0x87461cc6
-  float shadowDecoyHP; // 0x5d02f384
-  CAssetId shadowDecoyFx; // 0x2dc80b4b
-  SLdrAudioPlaybackParms sound_ShadowDecoy; // 0x03392283
-  SLdrAudioPlaybackParms sound_Cloak; // 0x9dedcff1
-  SLdrAudioPlaybackParms sound_DeCloak; // 0xf740e01d
+  float unknown_0xa0d037ee;                         // 0xa0d037ee
+  float unknown_0x4f522994;                         // 0x4f522994
+  float shadowDashSpeed;                            // 0x87461cc6
+  float shadowDecoyHP;                              // 0x5d02f384
+  CAssetId shadowDecoyFx;                           // 0x2dc80b4b
+  SLdrAudioPlaybackParms sound_ShadowDecoy;         // 0x03392283
+  SLdrAudioPlaybackParms sound_Cloak;               // 0x9dedcff1
+  SLdrAudioPlaybackParms sound_DeCloak;             // 0xf740e01d
   SLdrDamageVulnerability shadowDecoyVulnerability; // 0xb2f64bb4
-  SLdrDamageVulnerability shadowDashVulnerability; // 0xed067447
+  SLdrDamageVulnerability shadowDashVulnerability;  // 0xed067447
 };
 
-inline SLdrDarkCommandoShadowDashData::SLdrDarkCommandoShadowDashData() : shadowDecoyFx(kInvalidAssetId), sound_ShadowDecoy(), sound_Cloak(), sound_DeCloak(), shadowDecoyVulnerability(), shadowDashVulnerability() {
+inline SLdrDarkCommandoShadowDashData::SLdrDarkCommandoShadowDashData()
+: shadowDecoyFx(kInvalidAssetId)
+, sound_ShadowDecoy()
+, sound_Cloak()
+, sound_DeCloak()
+, shadowDecoyVulnerability()
+, shadowDashVulnerability() {
   unknown_0xa0d037ee = 25.0f;
   unknown_0x4f522994 = 40.0f;
   shadowDashSpeed = 25.0f;
@@ -221,7 +233,8 @@ inline SLdrDarkCommandoShadowDashData::SLdrDarkCommandoShadowDashData() : shadow
 
 inline SLdrDarkCommandoShadowDashData::~SLdrDarkCommandoShadowDashData() {}
 
-inline void LoadTypedefDarkCommandoShadowDashData(SLdrDarkCommandoShadowDashData& sldrThis, CInputStream& input) {
+inline void LoadTypedefDarkCommandoShadowDashData(SLdrDarkCommandoShadowDashData& sldrThis,
+                                                  CInputStream& input) {
   const int propertyCount = input.ReadUint16();
   for (int i = 0; i < propertyCount; ++i) {
     const uint propertyId = input.Get< uint >();
@@ -278,19 +291,25 @@ struct SLdrDarkCommandoData {
   SLdrDarkCommandoData();
   ~SLdrDarkCommandoData();
 
-  float lurkChance; // 0xa4858f7d
-  float tauntChance; // 0xa77f6212
-  float eMPAttackChance; // 0x48eac726
-  float chargeBeamAttackChance; // 0xb6921ac3
-  SLdrDamageInfo bladeDamage; // 0xa5912430
-  SLdrAudioPlaybackParms sound_ImpactRagDoll; // 0xa269ea39
-  SLdrAudioPlaybackParms sound_HurledDeath; // 0x4eb673be
-  SLdrDarkCommandoEMPData eMPGrenadeAttackInfo; // 0x5ec7f2ba
+  float lurkChance;                                    // 0xa4858f7d
+  float tauntChance;                                   // 0xa77f6212
+  float eMPAttackChance;                               // 0x48eac726
+  float chargeBeamAttackChance;                        // 0xb6921ac3
+  SLdrDamageInfo bladeDamage;                          // 0xa5912430
+  SLdrAudioPlaybackParms sound_ImpactRagDoll;          // 0xa269ea39
+  SLdrAudioPlaybackParms sound_HurledDeath;            // 0x4eb673be
+  SLdrDarkCommandoEMPData eMPGrenadeAttackInfo;        // 0x5ec7f2ba
   SLdrDarkCommandoChargeBeamData chargeBeamAttackInfo; // 0xe6c64015
-  SLdrDarkCommandoShadowDashData shadowDashInfo; // 0x18247aec
+  SLdrDarkCommandoShadowDashData shadowDashInfo;       // 0x18247aec
 };
 
-inline SLdrDarkCommandoData::SLdrDarkCommandoData() : bladeDamage(), sound_ImpactRagDoll(), sound_HurledDeath(), eMPGrenadeAttackInfo(), chargeBeamAttackInfo(), shadowDashInfo() {
+inline SLdrDarkCommandoData::SLdrDarkCommandoData()
+: bladeDamage()
+, sound_ImpactRagDoll()
+, sound_HurledDeath()
+, eMPGrenadeAttackInfo()
+, chargeBeamAttackInfo()
+, shadowDashInfo() {
   lurkChance = 12.5f;
   tauntChance = 12.5f;
   eMPAttackChance = 25.0f;
@@ -359,13 +378,14 @@ struct SLdrDarkCommando {
   SLdrDarkCommando();
   ~SLdrDarkCommando();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;       // 0x255a4580
+  SLdrPatternedAITypedef patterned;            // 0xb3774750
+  SLdrActorParameters actorInformation;        // 0x7e397fed
   SLdrDarkCommandoData darkCommandoProperties; // 0x89400baa
 };
 
-inline SLdrDarkCommando::SLdrDarkCommando() : editorProperties(), patterned(), actorInformation(), darkCommandoProperties() {
+inline SLdrDarkCommando::SLdrDarkCommando()
+: editorProperties(), patterned(), actorInformation(), darkCommandoProperties() {
   patterned.turnSpeed = 360.0f;
   patterned.minAttackRange = 0.0f;
   patterned.health.health = 150.0f;

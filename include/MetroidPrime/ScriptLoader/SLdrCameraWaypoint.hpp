@@ -12,8 +12,7 @@ struct SLdrCameraWaypoint {
   SLdrEditorProperties editorProperties; // 0x255a4580
 };
 
-inline SLdrCameraWaypoint::SLdrCameraWaypoint() : editorProperties() {
-}
+inline SLdrCameraWaypoint::SLdrCameraWaypoint() : editorProperties() {}
 
 inline SLdrCameraWaypoint::~SLdrCameraWaypoint() {}
 

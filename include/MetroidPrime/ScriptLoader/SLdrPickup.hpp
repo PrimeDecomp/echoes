@@ -16,34 +16,44 @@ struct SLdrPickup {
   ~SLdrPickup();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  CVector3f collisionSize; // 0x3a3e03ba
-  CVector3f collisionOffset; // 0x2e686c2a
-  SLdrPlayerItem itemToGive; // 0xa02ef0c4
-  int capacityIncrease; // 0x28c71b54
-  int itemPercentageIncrease; // 0x165ab069
-  int amount; // 0x94af1445
-  float respawnTime; // 0xf7fbaaa5
-  float pickupEffectLifetime; // 0xc80fc827
-  float lifetime; // 0x32dc67f6
-  float fadetime; // 0x56e3ceef
-  CAssetId model; // 0xc27ffa8f
+  CVector3f collisionSize;               // 0x3a3e03ba
+  CVector3f collisionOffset;             // 0x2e686c2a
+  SLdrPlayerItem itemToGive;             // 0xa02ef0c4
+  int capacityIncrease;                  // 0x28c71b54
+  int itemPercentageIncrease;            // 0x165ab069
+  int amount;                            // 0x94af1445
+  float respawnTime;                     // 0xf7fbaaa5
+  float pickupEffectLifetime;            // 0xc80fc827
+  float lifetime;                        // 0x32dc67f6
+  float fadetime;                        // 0x56e3ceef
+  CAssetId model;                        // 0xc27ffa8f
   SLdrAnimationSet animationInformation; // 0xe25fb08c
-  SLdrActorParameters actorInformation; // 0x7e397fed
-  SLdrEchoParameters echoInformation; // 0x192b0e70
-  float activationDelay; // 0xe585f166
-  CAssetId pickupEffect; // 0xa9fe872a
-  bool absoluteValue; // 0xe10bcb96
-  bool calculateVisibility; // 0xce33239f
-  bool canHomeByDefault; // 0x2de4a294
-  float autoHomeRange; // 0xa6ea280d
-  float delayUntilHome; // 0xc2b11cfd
-  float homingSpeed; // 0x2db59fcf
-  bool autoSpin; // 0x961c0d17
-  bool blinkOut; // 0xa755eb02
-  CVector3f orbitOffset; // 0x850115e4
+  SLdrActorParameters actorInformation;  // 0x7e397fed
+  SLdrEchoParameters echoInformation;    // 0x192b0e70
+  float activationDelay;                 // 0xe585f166
+  CAssetId pickupEffect;                 // 0xa9fe872a
+  bool absoluteValue;                    // 0xe10bcb96
+  bool calculateVisibility;              // 0xce33239f
+  bool canHomeByDefault;                 // 0x2de4a294
+  float autoHomeRange;                   // 0xa6ea280d
+  float delayUntilHome;                  // 0xc2b11cfd
+  float homingSpeed;                     // 0x2db59fcf
+  bool autoSpin;                         // 0x961c0d17
+  bool blinkOut;                         // 0xa755eb02
+  CVector3f orbitOffset;                 // 0x850115e4
 };
 
-inline SLdrPickup::SLdrPickup() : editorProperties(), collisionSize(CVector3f::Zero()), collisionOffset(CVector3f::Zero()), itemToGive(), model(kInvalidAssetId), animationInformation(), actorInformation(), echoInformation(), pickupEffect(kInvalidAssetId), orbitOffset(CVector3f::Zero()) {
+inline SLdrPickup::SLdrPickup()
+: editorProperties()
+, collisionSize(CVector3f::Zero())
+, collisionOffset(CVector3f::Zero())
+, itemToGive()
+, model(kInvalidAssetId)
+, animationInformation()
+, actorInformation()
+, echoInformation()
+, pickupEffect(kInvalidAssetId)
+, orbitOffset(CVector3f::Zero()) {
   editorProperties.unknown_0x5d298a43 = 0x00000003u;
   capacityIncrease = 1;
   itemPercentageIncrease = 0;

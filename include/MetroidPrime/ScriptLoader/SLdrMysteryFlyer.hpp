@@ -13,15 +13,16 @@ struct SLdrMysteryFlyerData {
   SLdrMysteryFlyerData();
   ~SLdrMysteryFlyerData();
 
-  CAssetId shotProjectile; // 0x51253ba3
+  CAssetId shotProjectile;   // 0x51253ba3
   SLdrDamageInfo shotDamage; // 0xcea30138
-  float hoverSpeed; // 0x845ef489
-  float hoverHeight; // 0xc75998aa
-  float separationDistance; // 0x01559f27
-  bool needsToGenerate; // 0x5f3fffd6
+  float hoverSpeed;          // 0x845ef489
+  float hoverHeight;         // 0xc75998aa
+  float separationDistance;  // 0x01559f27
+  bool needsToGenerate;      // 0x5f3fffd6
 };
 
-inline SLdrMysteryFlyerData::SLdrMysteryFlyerData() : shotProjectile(kInvalidAssetId), shotDamage() {
+inline SLdrMysteryFlyerData::SLdrMysteryFlyerData()
+: shotProjectile(kInvalidAssetId), shotDamage() {
   shotDamage.dI_WeaponType = 11;
   shotDamage.dI_Damage = 5.0f;
   hoverSpeed = 10.0f;
@@ -73,14 +74,14 @@ struct SLdrMysteryFlyer {
   SLdrMysteryFlyer();
   ~SLdrMysteryFlyer();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrPatternedAITypedef patterned; // 0xb3774750
-  SLdrActorParameters actorInformation; // 0x7e397fed
+  SLdrEditorProperties editorProperties;       // 0x255a4580
+  SLdrPatternedAITypedef patterned;            // 0xb3774750
+  SLdrActorParameters actorInformation;        // 0x7e397fed
   SLdrMysteryFlyerData mysteryFlyerProperties; // 0x44080565
 };
 
-inline SLdrMysteryFlyer::SLdrMysteryFlyer() : editorProperties(), patterned(), actorInformation(), mysteryFlyerProperties() {
-}
+inline SLdrMysteryFlyer::SLdrMysteryFlyer()
+: editorProperties(), patterned(), actorInformation(), mysteryFlyerProperties() {}
 
 inline SLdrMysteryFlyer::~SLdrMysteryFlyer() {}
 

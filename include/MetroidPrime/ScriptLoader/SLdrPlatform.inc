@@ -58,7 +58,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xf203bc81: {
-    sldrThis.unknown_0xf203bc81 = input.ReadBool();
+    sldrThis.excludeFromLineOfSightTest = input.ReadBool();
     break;
   }
   case 0x0a9dbf91: {

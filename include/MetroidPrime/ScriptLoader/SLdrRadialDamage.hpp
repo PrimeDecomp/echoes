@@ -11,11 +11,11 @@ struct SLdrRadialDamage {
   ~SLdrRadialDamage();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrDamageInfo damage; // 0x337f9524
-  float radius; // 0x78c507eb
-  bool autoAction; // 0x388e5dd3
-  bool autoDelete; // 0xdb826cbe
-  bool originator; // 0x9c951fed
+  SLdrDamageInfo damage;                 // 0x337f9524
+  float radius;                          // 0x78c507eb
+  bool autoAction;                       // 0x388e5dd3
+  bool autoDelete;                       // 0xdb826cbe
+  bool originator;                       // 0x9c951fed
 };
 
 inline SLdrRadialDamage::SLdrRadialDamage() : editorProperties(), damage() {

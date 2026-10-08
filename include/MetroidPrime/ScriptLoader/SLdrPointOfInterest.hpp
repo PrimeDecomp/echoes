@@ -11,9 +11,9 @@ struct SLdrPointOfInterest {
   ~SLdrPointOfInterest();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  SLdrScannableParameters scanInfo; // 0xbdbec295
-  float scanOffset; // 0x87271632
-  bool lookAtPOI; // non-matching name, 0x01f9c5bb
+  SLdrScannableParameters scanInfo;      // 0xbdbec295
+  float scanOffset;                      // 0x87271632
+  bool lookAtPOI;                        // non-matching name, 0x01f9c5bb
 };
 
 inline SLdrPointOfInterest::SLdrPointOfInterest() : editorProperties(), scanInfo() {

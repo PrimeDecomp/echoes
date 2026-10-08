@@ -36,6 +36,7 @@ struct SLdrSequenceConnections {
 CHECK_SIZEOF(SLdrSequenceConnections, 0x10)
 
 // Guessed name.
-rstl::pair< float, float > FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >& connections);
+rstl::pair< float, float >
+FindMinMaxConnectionTimes(const rstl::vector< SLdrConnection >& connections);
 
 #endif

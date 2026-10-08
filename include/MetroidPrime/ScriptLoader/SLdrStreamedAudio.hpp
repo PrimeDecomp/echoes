@@ -11,13 +11,13 @@ struct SLdrStreamedAudio {
   ~SLdrStreamedAudio();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  rstl::string songFile; // 0xf6f3de1c
-  bool defaultAudio; // 0x34b152c4
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  int volume; // 0x80c66c37
-  int softwareChannel; // 0x28f82261
-  bool softwareIsMusic; // 0xd3356fe7
+  rstl::string songFile;                 // 0xf6f3de1c
+  bool defaultAudio;                     // 0x34b152c4
+  float fadeInTime;                      // 0x90aa341f
+  float fadeOutTime;                     // 0x7c269ebc
+  int volume;                            // 0x80c66c37
+  int softwareChannel;                   // 0x28f82261
+  bool softwareIsMusic;                  // 0xd3356fe7
 };
 
 inline SLdrStreamedAudio::SLdrStreamedAudio() : editorProperties(), songFile() {

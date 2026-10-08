@@ -10,11 +10,11 @@ struct SLdrCoverPoint {
   ~SLdrCoverPoint();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  int unknown_0x969de5ff; // 0x969de5ff
-  bool shouldCrouch; // 0x8001c3be
-  float horizontalSafeAngle; // 0x46774985
-  float verticalSafeAngle; // 0xd9d7afa6
-  float lockTime; // 0x308edc44
+  int unknown_0x969de5ff;                // 0x969de5ff
+  bool shouldCrouch;                     // 0x8001c3be
+  float horizontalSafeAngle;             // 0x46774985
+  float verticalSafeAngle;               // 0xd9d7afa6
+  float lockTime;                        // 0x308edc44
 };
 
 inline SLdrCoverPoint::SLdrCoverPoint() : editorProperties() {
