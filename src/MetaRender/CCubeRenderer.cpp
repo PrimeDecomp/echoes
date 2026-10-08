@@ -140,7 +140,7 @@ uint Buckets::GetWorkspaceSize() {
 }
 
 void Buckets::Init(void* workspace) {
-  uchar* data = reinterpret_cast< uchar* >((reinterpret_cast< uint >(workspace) + 3) & ~3);
+  uchar* data = reinterpret_cast< uchar* >((reinterpret_cast< size_t >(workspace) + 3) & ~3);
   sData = new (data) DrawableList;
   data += sizeof(DrawableList);
   sBuckets = new (data) BucketList;
