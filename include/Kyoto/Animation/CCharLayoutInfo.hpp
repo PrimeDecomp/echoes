@@ -44,6 +44,7 @@ class CCharLayoutInfo {
 public:
   explicit CCharLayoutInfo(CInputStream& in);
   CSegId GetSegIdFromString(const rstl::string& bone) const;
+  const rstl::map< rstl::string, CSegId >& GetNameMap() const { return mNameMap; }
 
   const CCharLayoutNode& GetSegmentData(const CSegId& seg) const { return (*mNodes)[seg]; }
 

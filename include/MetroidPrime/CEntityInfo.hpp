@@ -126,6 +126,7 @@ enum EEntityType {
   kET_Sandworm = 130,                  // Target-derived class tag.
   kET_SandwormEye = 131,               // Target-derived class tag.
   kET_SpacePirate = 132,               // Target-derived class tag.
+  kET_SpankWeed = 133,                 // Target-derived class tag.
   kET_ScriptPlayerTurret = 138,        // Target-derived class tag; turret-HUD REL dispatch target.
   kET_GunTurretBase = 139,             // Target-derived class tag.
   kET_GunTurretTop = 140,              // Target-derived class tag.
@@ -322,6 +323,7 @@ enum EScriptObjectMessage {
   kSM_Damage = 0x58444d47, // Guessed DKCR HD name; damage notification.
   kSM_ResistedDamage = 0x58524447, // Guessed DKCR HD name; native resisted-damage branch.
   kSM_XHIT = 0x58484954,
+  kSM_XCRT = 0x58435254, // Guessed name; creates the collision actors.
   kSM_XAOV = 0x58414f56,             // Native projectile visor-impact tag.
   kSM_AIUpdateDisabled = 0x58415544, // Guessed DKCR HD name; patterned update disabled.
   kSM_XXDG = 0x58584447,
