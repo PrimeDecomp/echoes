@@ -1680,6 +1680,13 @@ config.libs = [
         # Native generated constructors address each float constant separately.
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptRsfAudio",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRsfAudio.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
