@@ -55,6 +55,8 @@ public:
                        EWeaponCollisionResponseTypes type);        // Guessed name
   void InitializeMuzzleOffset(float duration, CStateManager& mgr); // Guessed name
   void SetExplodePending(bool pending) { mExplodePending = pending; }
+  // Guessed name
+  void AddCollisionCooldown(TUniqueId id, float duration) { mCollisionCooldowns.Add(id, duration); }
 
 private:
   // Guessed name; the original owns a sorted list of IDs and expiry times.
