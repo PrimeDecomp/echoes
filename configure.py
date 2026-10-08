@@ -1806,6 +1806,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "PirateRagDoll",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CPirateRagDoll.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
