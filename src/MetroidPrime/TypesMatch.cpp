@@ -48,6 +48,7 @@
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/Enemies/CWallCrawler.hpp"
 #include "MetroidPrime/Enemies/CWallWalker.hpp"
+#include "MetroidPrime/Enemies/CWispTentacle.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptObjects/CFishCloud.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
@@ -326,7 +327,7 @@ TYPES_MATCH_IMPL(CSpacePirate, CPatterned, kET_SpacePirate)
 TYPES_MATCH_IMPL(CSpankWeed, CPatterned, kET_SpankWeed)
 // 134: class not declared yet (Splitter REL); parent CPatterned
 // 135: class not declared yet (Splitter REL); parent CPatterned
-// 136: class not declared yet (WispTentacle REL); parent CPatterned
+TYPES_MATCH_IMPL(CWispTentacle, CPatterned, kET_WispTentacle)
 // 137: class not declared yet (no vtable found); parent CActor
 TYPES_MATCH_IMPL(CScriptPlayerTurret, CActor, kET_ScriptPlayerTurret)
 TYPES_MATCH_IMPL(CGunTurretBase, CPatterned, kET_GunTurretBase)
