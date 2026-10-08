@@ -1799,6 +1799,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptCoin",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCoin.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

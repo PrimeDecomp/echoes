@@ -6,6 +6,12 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/ScriptObjects/CScriptCoin.cpp:
+	.text       start:0x00000000 end:0x000036A4
+	.rodata     start:0x00000000 end:0x00000068
+	.data       start:0x00000000 end:0x000000D8
+	.bss        start:0x00000000 end:0x00000004
+
 REL/REL_Setup.cpp:
 	.text       start:0x000036A4 end:0x00003848
 	.rodata     start:0x00000068 end:0x000000EC

@@ -42,7 +42,8 @@ public:
   : mBlendMode(blendMode), mMatSetIdx(shadIdx), mFlags(flags), mColor(col) {}
 
   CModelFlags(const CModelFlags& flags, uint otherFlags)
-  : mBlendMode(flags.mBlendMode)
+  : x0_(flags.x0_)
+  , mBlendMode(flags.mBlendMode)
   , mMatSetIdx(flags.mMatSetIdx)
   , mFlags(otherFlags)
   , mColor(flags.mColor) {}
