@@ -505,7 +505,7 @@ void CMysteryFlyer::UpdateSteering(CStateManager& mgr, float dt) {
   BodyController()->FaceDirection(direction, dt);
 }
 
-CEntity* REL_LoadMysteryFlyer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadMysteryFlyer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrMysteryFlyer sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrMysteryFlyer.inc"
 
@@ -523,12 +523,14 @@ CEntity* REL_LoadMysteryFlyer(CStateManager& mgr, CInputStream& input, CEntityIn
       LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.mysteryFlyerProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SMysteryFlyer_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadMysteryFlyer;
+  funcPtrs.mLoader = &LoadMysteryFlyer;
   SetSMysteryFlyer_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSMysteryFlyer_FuncPtrs(nullptr); }
+#endif

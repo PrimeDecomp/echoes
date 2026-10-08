@@ -576,7 +576,7 @@ void CSpankWeed::Render(const CStateManager& mgr) const {
 
 CSpankWeed::~CSpankWeed() {}
 
-CEntity* REL_LoadSpankWeed(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSpankWeed(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSpankWeed sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSpankWeed.inc"
 
@@ -595,12 +595,14 @@ CEntity* REL_LoadSpankWeed(CStateManager& mgr, CInputStream& input, CEntityInfo&
                            sldrThis.searchRadius, sldrThis.attackRadius, sldrThis.hurtSleepDelay);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SSpankWeed_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadSpankWeed;
+  funcPtrs.mLoader = &LoadSpankWeed;
   SetSSpankWeed_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSSpankWeed_FuncPtrs(nullptr); }
+#endif

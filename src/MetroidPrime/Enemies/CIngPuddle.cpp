@@ -357,7 +357,7 @@ void CIngPuddle::HandleDamage(CStateManager& mgr, TUniqueId weaponId) {
   }
 }
 
-CEntity* REL_LoadIngPuddle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadIngPuddle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrIngPuddle sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrIngPuddle.inc"
 
@@ -368,12 +368,14 @@ CEntity* REL_LoadIngPuddle(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.ingPuddleProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SIngPuddle_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadIngPuddle;
+  funcPtrs.mLoader = &LoadIngPuddle;
   SetSIngPuddle_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngPuddle_FuncPtrs(nullptr); }
+#endif

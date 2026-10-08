@@ -562,7 +562,7 @@ void CScriptPlayerActor::SetIntoStateManager(CStateManager& mgr, bool set) {
   }
 }
 
-CEntity* REL_LoadPlayerActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadPlayerActor(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPlayerActor sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrPlayerActor.inc"
 
@@ -616,9 +616,10 @@ CEntity* REL_LoadPlayerActor(CStateManager& mgr, CInputStream& input, CEntityInf
       beam, usePlayerBeamModel);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPlayerActor_FuncPtrs funcPtrs;
-  funcPtrs.mLoadPlayerActor = &REL_LoadPlayerActor;
+  funcPtrs.mLoadPlayerActor = &LoadPlayerActor;
   funcPtrs.mTouchModels =
       static_cast< void (CEntity::*)(CStateManager&) >(&CScriptPlayerActor::TouchModels);
   SetSPlayerActor_FuncPtrs(&funcPtrs);
@@ -627,3 +628,4 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPlayerActor_FuncPtrs(nullptr); }
+#endif

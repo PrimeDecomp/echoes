@@ -205,7 +205,7 @@ bool CFlyerSwarm::ShouldBuildAreaCollisionCacheForPartition(int partitionIndex) 
 
 void CFlyerSwarm::Render(const CStateManager& mgr) const { CSwarmBasics::Render(mgr); }
 
-CEntity* REL_LoadFlyerSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFlyerSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFlyerSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFlyerSwarm.inc"
 
@@ -223,12 +223,14 @@ CEntity* REL_LoadFlyerSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo
                             sldrThis.rollUprightSpeed, sldrThis.rollUprightMinAngle);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SFlyerSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadFlyerSwarm;
+  funcPtrs.mLoader = &LoadFlyerSwarm;
   SetSFlyerSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSFlyerSwarm_FuncPtrs(nullptr); }
+#endif

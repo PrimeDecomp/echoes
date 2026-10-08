@@ -177,7 +177,7 @@ void CScriptFogOverlay::PreRender(CStateManager& mgr) {}
 
 void CScriptFogOverlay::Render(const CStateManager& mgr) const {}
 
-CEntity* REL_LoadFogOverlay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFogOverlay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFogOverlay sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFogOverlay.inc"
 
@@ -191,12 +191,14 @@ CEntity* REL_LoadFogOverlay(CStateManager& mgr, CInputStream& input, CEntityInfo
       sldrThis.unknown_0x2190ab0a);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptFogOverlay_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadFogOverlay;
+  funcPtrs.mLoader = &LoadFogOverlay;
   SetSScriptFogOverlay_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSScriptFogOverlay_FuncPtrs(nullptr); }
+#endif

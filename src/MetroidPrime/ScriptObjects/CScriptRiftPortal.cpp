@@ -449,7 +449,7 @@ void CScriptRiftPortal::SetActive(bool active) {
   SetDrawEnabled(true);
 }
 
-CEntity* REL_LoadRiftPortal(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadRiftPortal(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrRiftPortal sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrRiftPortal.inc"
 
@@ -476,12 +476,14 @@ CEntity* REL_LoadRiftPortal(CStateManager& mgr, CInputStream& input, CEntityInfo
       sldrThis.projectileDestructionRadius);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SRiftPortal_FuncPtrs funcPtrs;
-  funcPtrs.mLoadRiftPortal = &REL_LoadRiftPortal;
+  funcPtrs.mLoadRiftPortal = &LoadRiftPortal;
   SetSRiftPortal_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSRiftPortal_FuncPtrs(nullptr); }
+#endif

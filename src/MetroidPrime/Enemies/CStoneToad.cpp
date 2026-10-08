@@ -545,7 +545,7 @@ EWeaponCollisionResponseTypes CStoneToad::GetCollisionResponseType(const CVector
   return kWCR_EnemyShielded;
 }
 
-CEntity* REL_LoadStoneToad(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadStoneToad(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrStoneToad sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrStoneToad.inc"
 
@@ -563,12 +563,14 @@ CEntity* REL_LoadStoneToad(CStateManager& mgr, CInputStream& input, CEntityInfo&
                            LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SStoneToad_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadStoneToad;
+  funcPtrs.mLoader = &LoadStoneToad;
   SetSStoneToad_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSStoneToad_FuncPtrs(nullptr); }
+#endif

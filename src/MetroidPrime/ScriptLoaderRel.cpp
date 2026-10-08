@@ -1,5 +1,6 @@
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 
+#include "MetroidPrime/ScriptObjects/CScriptPlayerActor.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptSafeZone.hpp"
 
 // Guessed global names; records remain borrowed from the currently loaded REL.
@@ -114,7 +115,11 @@ CEntity* RelProxy_LoadPlayerActor(CStateManager& mgr, CInputStream& input, CEnti
 }
 
 void PlayerActor_TouchModels(CEntity& ent, CStateManager& mgr) {
+#ifdef MONOLITHIC
+  static_cast< CScriptPlayerActor& >(ent).TouchModels(mgr);
+#else
   (ent.*(gLoader_PlayerActor->mTouchModels))(mgr);
+#endif
 }
 
 void SetSMetaree_FuncPtrs(SMetaree_FuncPtrs* callbacks) { gLoader_Metaree = callbacks; }

@@ -324,7 +324,7 @@ bool CPlantScarabSwarm::IsSpaceAboveBoidClear(const CStateManager& mgr, const CB
                                                  nearList);
 }
 
-CEntity* REL_LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPlantScarabSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrPlantScarabSwarm.inc"
 
@@ -349,12 +349,14 @@ CEntity* REL_LoadPlantScarabSwarm(CStateManager& mgr, CInputStream& input, CEnti
       sldrThis.grenadeExplosionMaxAudibleDistance);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPlantScarabSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadPlantScarabSwarm;
+  funcPtrs.mLoader = &LoadPlantScarabSwarm;
   SetSPlantScarabSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPlantScarabSwarm_FuncPtrs(nullptr); }
+#endif

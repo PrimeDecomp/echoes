@@ -408,6 +408,7 @@ CEntity* LoadRubiksPuzzle(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrThis.editorProperties.name, sldrThis.rubiksPuzzleProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptRubiksPuzzle_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadRubiksPuzzle;
@@ -417,5 +418,6 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSScriptRubiksPuzzle_FuncPtrs(nullptr); }
+#endif
 
 CScriptRubiksPuzzle::~CScriptRubiksPuzzle() {}

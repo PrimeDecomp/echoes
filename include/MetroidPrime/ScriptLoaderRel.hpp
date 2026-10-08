@@ -68,7 +68,7 @@ CEntity* REL_ENTRY(LoadFogOverlay)(CStateManager& mgr, CInputStream& input, CEnt
 CEntity* REL_ENTRY(LoadForgottenObject)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadFrontEndDataNetwork)(CStateManager& mgr, CInputStream& input,
                                             CEntityInfo& info);
-CEntity* REL_ENTRY(LoadGlowBug)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGlowbug)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadGrenchler)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadGuiMenu)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadGuiPlayerJoinManager)(CStateManager& mgr, CInputStream& input,
@@ -90,7 +90,7 @@ CEntity* REL_ENTRY(LoadIngSpiderBallGuardian)(CStateManager& mgr, CInputStream& 
                                               CEntityInfo& info);
 CEntity* REL_ENTRY(LoadIngs)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadKralee)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* REL_ENTRY(LoadKrocus)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadKrocuss)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadLumite)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadMediumIng)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* REL_ENTRY(LoadMetaree)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);

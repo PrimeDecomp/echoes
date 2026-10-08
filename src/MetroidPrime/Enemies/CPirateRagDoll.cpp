@@ -404,6 +404,7 @@ static CRagDoll* CreatePirateRagDoll(CStateManager& mgr, CPatterned* actor, usho
   return rs_new CPirateRagDoll(mgr, actor, soundId, flags, gravity, floatingGravity, radii);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPirateRagDoll_FuncPtrs funcPtrs;
   funcPtrs.mFactory = &CreatePirateRagDoll;
@@ -413,3 +414,4 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPirateRagDoll_FuncPtrs(nullptr); }
+#endif

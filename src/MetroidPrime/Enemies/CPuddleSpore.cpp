@@ -589,7 +589,7 @@ void CPuddleSpore::Attack(CStateManager& mgr, EStateMsg msg, float dt) {
   }
 }
 
-CEntity* REL_LoadPuddleSpore(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadPuddleSpore(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPuddleSpore sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrPuddleSpore.inc"
 
@@ -614,12 +614,14 @@ CEntity* REL_LoadPuddleSpore(CStateManager& mgr, CInputStream& input, CEntityInf
       LdrToActorParameters(sldrThis.actorInformation), data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPuddleSpore_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadPuddleSpore;
+  funcPtrs.mLoader = &LoadPuddleSpore;
   SetSPuddleSpore_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPuddleSpore_FuncPtrs(nullptr); }
+#endif

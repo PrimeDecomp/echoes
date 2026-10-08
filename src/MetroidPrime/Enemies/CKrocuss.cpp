@@ -289,6 +289,7 @@ CEntity* LoadKrocuss(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
       sldrThis.timeToCloseShell, sldrThis.unknown_0xbbebed9e, sldrThis.maxAudibleDistance);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SKrocuss_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadKrocuss;
@@ -298,3 +299,4 @@ static void SetFuncPtrs() {
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSKrocuss_FuncPtrs(nullptr); }
+#endif

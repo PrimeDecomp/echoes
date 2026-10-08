@@ -220,7 +220,7 @@ void CScriptStreamedMovie::UpdateVolume(CStateManager& mgr) {
   CMoviePlayer::SetSfxVolume(volume);
 }
 
-CEntity* REL_LoadStreamedMovie(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadStreamedMovie(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrStreamedMovie sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrStreamedMovie.inc"
 
@@ -231,12 +231,14 @@ CEntity* REL_LoadStreamedMovie(CStateManager& mgr, CInputStream& input, CEntityI
       sldrThis.fadeOutTime, sldrThis.whenToDraw, sldrThis.volume, sldrThis.volumeType);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SStreamedMovie_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadStreamedMovie;
+  funcPtrs.mLoader = &LoadStreamedMovie;
   SetSStreamedMovie_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSStreamedMovie_FuncPtrs(nullptr); }
+#endif
