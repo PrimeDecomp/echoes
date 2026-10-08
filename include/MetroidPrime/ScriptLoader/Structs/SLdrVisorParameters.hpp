@@ -9,7 +9,7 @@ struct SLdrVisorParameters {
   ~SLdrVisorParameters();
 
   bool scanThrough; // 0xfe9dc266
-  uint visorFlags; // non-matching name, 0xca19e8c6
+  uint visorFlags;  // non-matching name, 0xca19e8c6
 };
 
 void LoadTypedefVisorParameters(SLdrVisorParameters& data, CInputStream& input);

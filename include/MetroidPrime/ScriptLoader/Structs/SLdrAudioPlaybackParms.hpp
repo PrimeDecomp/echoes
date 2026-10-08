@@ -9,10 +9,10 @@ struct SLdrAudioPlaybackParms {
   ~SLdrAudioPlaybackParms();
 
   float maximumDistance; // 0x0e449f72
-  float fallOff; // 0x72531867
-  int sound_Id; // 0xaf85a374
-  int maxVolume; // 0xc712847c
-  int minVolume; // 0x57619496
+  float fallOff;         // 0x72531867
+  int sound_Id;          // 0xaf85a374
+  int maxVolume;         // 0xc712847c
+  int minVolume;         // 0x57619496
   bool useRoomAcoustics; // 0x85707354
 };
 

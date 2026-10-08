@@ -12,18 +12,18 @@ struct SLdrTweakPlayerGun_Misc {
   SLdrTweakPlayerGun_Misc();
   ~SLdrTweakPlayerGun_Misc();
 
-  float upLookAngle; // 0xe8bb7e3c
-  float downLookAngle; // 0x5ed7e0bd
-  float verticalSpread; // 0x842ae0b4
-  float horizontalSpread; // 0x8c29e91c
-  float highVerticalSpread; // 0x7d5a6c93
+  float upLookAngle;          // 0xe8bb7e3c
+  float downLookAngle;        // 0x5ed7e0bd
+  float verticalSpread;       // 0x842ae0b4
+  float horizontalSpread;     // 0x8c29e91c
+  float highVerticalSpread;   // 0x7d5a6c93
   float highHorizontalSpread; // 0xb2e26d02
-  float lowVerticalSpread; // 0xd81d1450
-  float lowHorizontalSpread; // 0x0cebb5c6
-  float aimVerticalSpeed; // 0x904cd49d
-  float aimHorizontalSpeed; // 0xfccddb00
-  float hologramDisplayTime; // 0xf355d075
-  float gunTransformTime; // 0x9262a722
+  float lowVerticalSpread;    // 0xd81d1450
+  float lowHorizontalSpread;  // 0x0cebb5c6
+  float aimVerticalSpeed;     // 0x904cd49d
+  float aimHorizontalSpeed;   // 0xfccddb00
+  float hologramDisplayTime;  // 0xf355d075
+  float gunTransformTime;     // 0x9262a722
 };
 
 void LoadTypedefTweakPlayerGun_Misc(SLdrTweakPlayerGun_Misc& data, CInputStream& input);
@@ -32,8 +32,8 @@ struct SLdrTweakPlayerGun_Holstering {
   SLdrTweakPlayerGun_Holstering();
   ~SLdrTweakPlayerGun_Holstering();
 
-  float gunHolsterTime; // 0x7ee98ebb
-  float gunNotFiringTime; // 0xec515cd5
+  float gunHolsterTime;    // 0x7ee98ebb
+  float gunNotFiringTime;  // 0xec515cd5
   float gunHolsteredAngle; // 0x0448573f
 };
 
@@ -44,9 +44,9 @@ struct SLdrTweakPlayerGun_Position {
   ~SLdrTweakPlayerGun_Position();
 
   float unknown_0x1547d77b; // 0x1547d77b
-  float x; // 0xa1677d4e
-  float y; // 0x6a3baeeb
-  float z; // 0xecafdc45
+  float x;                  // 0xa1677d4e
+  float y;                  // 0x6a3baeeb
+  float z;                  // 0xecafdc45
 };
 
 void LoadTypedefTweakPlayerGun_Position(SLdrTweakPlayerGun_Position& data, CInputStream& input);
@@ -55,17 +55,18 @@ struct SLdrTweakPlayerGun_Arm_Position {
   SLdrTweakPlayerGun_Arm_Position();
   ~SLdrTweakPlayerGun_Arm_Position();
 
-  CVector3f normal; // 0x3c9366ac
+  CVector3f normal;    // 0x3c9366ac
   CVector3f grappling; // 0x66b1d066
 };
 
-void LoadTypedefTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_Arm_Position(SLdrTweakPlayerGun_Arm_Position& data,
+                                            CInputStream& input);
 
 struct SLdrTWeaponDamage {
   SLdrTWeaponDamage();
   ~SLdrTWeaponDamage();
 
-  SLdrTDamageInfo normal; // 0x8ac4278a
+  SLdrTDamageInfo normal;  // 0x8ac4278a
   SLdrTDamageInfo charged; // 0xc9ac01d2
 };
 
@@ -75,7 +76,7 @@ struct SLdrTBeamInfo {
   SLdrTBeamInfo();
   ~SLdrTBeamInfo();
 
-  float delayBetweenShots; // 0x102e085f
+  float delayBetweenShots;      // 0x102e085f
   SLdrTWeaponDamage damageInfo; // 0xfaa71e25
 };
 
@@ -85,17 +86,17 @@ struct SLdrTweakPlayerGun_Weapons {
   SLdrTweakPlayerGun_Weapons();
   ~SLdrTweakPlayerGun_Weapons();
 
-  SLdrTDamageInfo bomb; // 0x6173ad96
-  float unknown_0xe8907530; // 0xe8907530
-  float bombDropDelayTime; // 0x0a9186cb
-  SLdrTDamageInfo power_Bomb; // 0xdcc0c6fb
-  SLdrTDamageInfo missile; // 0x58f00b0a
-  SLdrTBeamInfo power_Beam; // 0x1f6c1a6b
-  SLdrTBeamInfo dark_Beam; // 0xc50f608b
+  SLdrTDamageInfo bomb;           // 0x6173ad96
+  float unknown_0xe8907530;       // 0xe8907530
+  float bombDropDelayTime;        // 0x0a9186cb
+  SLdrTDamageInfo power_Bomb;     // 0xdcc0c6fb
+  SLdrTDamageInfo missile;        // 0x58f00b0a
+  SLdrTBeamInfo power_Beam;       // 0x1f6c1a6b
+  SLdrTBeamInfo dark_Beam;        // 0xc50f608b
   SLdrTDamageInfo dark_Beam_Blob; // 0x059dce11
-  SLdrTBeamInfo light_Beam; // 0xde7a8255
+  SLdrTBeamInfo light_Beam;       // 0xde7a8255
   SLdrTBeamInfo annihilator_Beam; // 0x74b9b983
-  SLdrTBeamInfo phazon_Beam; // 0xdd5f2e3d
+  SLdrTBeamInfo phazon_Beam;      // 0xdd5f2e3d
 };
 
 void LoadTypedefTweakPlayerGun_Weapons(SLdrTweakPlayerGun_Weapons& data, CInputStream& input);
@@ -104,11 +105,11 @@ struct SLdrTweakPlayerGun_Beam_Combo {
   SLdrTweakPlayerGun_Beam_Combo();
   ~SLdrTweakPlayerGun_Beam_Combo();
 
-  SLdrTDamageInfo superMissile_Power; // 0xc713acf9
-  SLdrTDamageInfo darkCombo_Dark; // 0x19468f2a
-  SLdrTDamageInfo lightCombo_Light; // 0x48ac6dd8
+  SLdrTDamageInfo superMissile_Power;           // 0xc713acf9
+  SLdrTDamageInfo darkCombo_Dark;               // 0x19468f2a
+  SLdrTDamageInfo lightCombo_Light;             // 0x48ac6dd8
   SLdrTDamageInfo annihilatorCombo_Annihilator; // 0xc1c315ff
-  SLdrTDamageInfo unknown_0x42885c6c; // 0x42885c6c
+  SLdrTDamageInfo unknown_0x42885c6c;           // 0x42885c6c
 };
 
 void LoadTypedefTweakPlayerGun_Beam_Combo(SLdrTweakPlayerGun_Beam_Combo& data, CInputStream& input);
@@ -117,13 +118,13 @@ struct SLdrTweakPlayerGun_Beam_Misc {
   SLdrTweakPlayerGun_Beam_Misc();
   ~SLdrTweakPlayerGun_Beam_Misc();
 
-  SLdrTDamageInfo blackhole_Dark; // 0x8aacfc27
-  SLdrTDamageInfo sunBurstRays_Light; // 0xa054ff1c
+  SLdrTDamageInfo blackhole_Dark;       // 0x8aacfc27
+  SLdrTDamageInfo sunBurstRays_Light;   // 0xa054ff1c
   SLdrTDamageInfo imploder_Annihilator; // 0xabfa93e9
-  float aIBurnDamage; // 0xf8f9bf33
-  float playerBurnDamage; // 0x4848f444
-  int maxAbsorbedPhazonShots; // 0x1e710222
-  float phazonShotAbsorbRadius; // 0x3ae5d1fa
+  float aIBurnDamage;                   // 0xf8f9bf33
+  float playerBurnDamage;               // 0x4848f444
+  int maxAbsorbedPhazonShots;           // 0x1e710222
+  float phazonShotAbsorbRadius;         // 0x3ae5d1fa
 };
 
 void LoadTypedefTweakPlayerGun_Beam_Misc(SLdrTweakPlayerGun_Beam_Misc& data, CInputStream& input);
@@ -132,35 +133,36 @@ struct SLdrTweakPlayerGun_RicochetDamage_Factor {
   SLdrTweakPlayerGun_RicochetDamage_Factor();
   ~SLdrTweakPlayerGun_RicochetDamage_Factor();
 
-  float powerBeam; // 0x5d623269
-  float darkBeam; // 0x4f420191
-  float lightBeam; // 0x7b529049
+  float powerBeam;       // 0x5d623269
+  float darkBeam;        // 0x4f420191
+  float lightBeam;       // 0x7b529049
   float annihilatorBeam; // 0x503dddca
-  float phazonBeam; // 0xf668c245
-  float missile; // 0x01234cd8
+  float phazonBeam;      // 0xf668c245
+  float missile;         // 0x01234cd8
 };
 
-void LoadTypedefTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& data, CInputStream& input);
+void LoadTypedefTweakPlayerGun_RicochetDamage_Factor(SLdrTweakPlayerGun_RicochetDamage_Factor& data,
+                                                     CInputStream& input);
 
 struct SLdrTweakPlayerGun {
   SLdrTweakPlayerGun();
   ~SLdrTweakPlayerGun();
 
-  rstl::string instanceName; // 0x7fda1466
-  SLdrTweakPlayerGun_Misc misc; // 0xb82ed424
-  SLdrTweakPlayerGun_Holstering holstering; // 0x6b6bdc47
-  SLdrTweakPlayerGun_Position position; // 0x87882cb0
-  SLdrTweakPlayerGun_Arm_Position arm_Position; // 0x255007ad
-  SLdrTweakPlayerGun_Weapons weapons; // 0x83d758ab
-  SLdrTweakPlayerGun_Beam_Combo beam_Combo; // 0x888c8775
-  SLdrTweakPlayerGun_Beam_Misc beam_Misc; // 0xaaebb73e
+  rstl::string instanceName;                                      // 0x7fda1466
+  SLdrTweakPlayerGun_Misc misc;                                   // 0xb82ed424
+  SLdrTweakPlayerGun_Holstering holstering;                       // 0x6b6bdc47
+  SLdrTweakPlayerGun_Position position;                           // 0x87882cb0
+  SLdrTweakPlayerGun_Arm_Position arm_Position;                   // 0x255007ad
+  SLdrTweakPlayerGun_Weapons weapons;                             // 0x83d758ab
+  SLdrTweakPlayerGun_Beam_Combo beam_Combo;                       // 0x888c8775
+  SLdrTweakPlayerGun_Beam_Misc beam_Misc;                         // 0xaaebb73e
   SLdrTweakPlayerGun_RicochetDamage_Factor ricochetDamage_Factor; // 0x8da058fe
-  SLdrCameraShakerData recoil; // 0xffdb4bb7
-  SLdrCameraShakerData comboRecoil; // 0x937a35bd
-  SLdrCameraShakerData projectileRecoil; // 0x26196738
-  SLdrCameraShakerData flameThrower; // 0xf40808c9
-  SLdrCameraShakerData waveBuster; // 0x9a6d7a31
-  SLdrCameraShakerData projectileImpact; // 0x12f14c5a
+  SLdrCameraShakerData recoil;                                    // 0xffdb4bb7
+  SLdrCameraShakerData comboRecoil;                               // 0x937a35bd
+  SLdrCameraShakerData projectileRecoil;                          // 0x26196738
+  SLdrCameraShakerData flameThrower;                              // 0xf40808c9
+  SLdrCameraShakerData waveBuster;                                // 0x9a6d7a31
+  SLdrCameraShakerData projectileImpact;                          // 0x12f14c5a
 };
 
 void LoadTypedefTweakPlayerGun(SLdrTweakPlayerGun& data, CInputStream& input);
@@ -169,21 +171,21 @@ struct SLdrTweakPlayerGun2 {
   SLdrTweakPlayerGun2();
   ~SLdrTweakPlayerGun2();
 
-  rstl::string instanceName; // 0x7fda1466
-  SLdrTweakPlayerGun_Misc misc; // 0xb82ed424
-  SLdrTweakPlayerGun_Holstering holstering; // 0x6b6bdc47
-  SLdrTweakPlayerGun_Position position; // 0x87882cb0
-  SLdrTweakPlayerGun_Arm_Position arm_Position; // 0x255007ad
-  SLdrTweakPlayerGun_Weapons weapons; // 0x83d758ab
-  SLdrTweakPlayerGun_Beam_Combo beam_Combo; // 0x888c8775
-  SLdrTweakPlayerGun_Beam_Misc beam_Misc; // 0xaaebb73e
+  rstl::string instanceName;                                      // 0x7fda1466
+  SLdrTweakPlayerGun_Misc misc;                                   // 0xb82ed424
+  SLdrTweakPlayerGun_Holstering holstering;                       // 0x6b6bdc47
+  SLdrTweakPlayerGun_Position position;                           // 0x87882cb0
+  SLdrTweakPlayerGun_Arm_Position arm_Position;                   // 0x255007ad
+  SLdrTweakPlayerGun_Weapons weapons;                             // 0x83d758ab
+  SLdrTweakPlayerGun_Beam_Combo beam_Combo;                       // 0x888c8775
+  SLdrTweakPlayerGun_Beam_Misc beam_Misc;                         // 0xaaebb73e
   SLdrTweakPlayerGun_RicochetDamage_Factor ricochetDamage_Factor; // 0x8da058fe
-  SLdrCameraShakerData recoil; // 0xffdb4bb7
-  SLdrCameraShakerData comboRecoil; // 0x937a35bd
-  SLdrCameraShakerData projectileRecoil; // 0x26196738
-  SLdrCameraShakerData flameThrower; // 0xf40808c9
-  SLdrCameraShakerData waveBuster; // 0x9a6d7a31
-  SLdrCameraShakerData projectileImpact; // 0x12f14c5a
+  SLdrCameraShakerData recoil;                                    // 0xffdb4bb7
+  SLdrCameraShakerData comboRecoil;                               // 0x937a35bd
+  SLdrCameraShakerData projectileRecoil;                          // 0x26196738
+  SLdrCameraShakerData flameThrower;                              // 0xf40808c9
+  SLdrCameraShakerData waveBuster;                                // 0x9a6d7a31
+  SLdrCameraShakerData projectileImpact;                          // 0x12f14c5a
 };
 
 void LoadTypedefTweakPlayerGun2(SLdrTweakPlayerGun2& data, CInputStream& input);

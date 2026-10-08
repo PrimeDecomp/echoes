@@ -8,7 +8,7 @@ struct SLdrHealthInfo {
   SLdrHealthInfo();
   ~SLdrHealthInfo();
 
-  float health; // 0xf0668919
+  float health;                 // 0xf0668919
   float hI_KnockBackResistance; // 0x3a2d17e4
 };
 

@@ -9,84 +9,85 @@ struct SLdrTweakPlayerControls_Controls {
   SLdrTweakPlayerControls_Controls();
   ~SLdrTweakPlayerControls_Controls();
 
-  int forward; // 0xaf03e16c
-  int backward; // 0xcfa71717
-  int turnLeft; // 0x91532a8c
-  int turnRight; // 0x07acc58d
-  int strafeLeft; // 0xacc575a2
-  int strafeRight; // 0xdb475e1d
-  int lookLeft; // 0xa900887a
-  int lookRight; // 0x534ac106
-  int lookUp; // 0x0d723723
-  int lookDown; // 0x5c46b025
-  int jump; // 0xf836180a
-  int jump2; // 0xfe16f98d
-  int fireBeam; // 0xfd59aa9f
-  int fireBeam2; // 0x7e76f1f4
-  int autoFireBeam; // 0x93dd818b
-  int chargeBeam; // 0x258402ec
-  int chargeBeam2; // 0xb7a20cda
-  int useItem; // 0x5b9a9219
-  int aimUp; // 0x82a717cd
-  int aimDown; // 0xa7d5c15a
-  int cycleBeamUp; // 0x33731936
-  int cycleBeamDown; // 0xb72565ff
-  int cycleItem; // 0xc592ca02
-  int selectPowerBeam; // 0x5228272c
-  int selectIceBeam; // 0x901ac820
-  int selectWaveBeam; // 0x4ecea0c0
-  int selectPlasmaBeam; // 0xa4f35804
-  int gunToggleHolster; // 0x919d7de0
-  int orbitClose; // 0x5200b48b
-  int orbitFar; // 0x49c493a3
-  int orbitObject; // 0xeb38a36b
-  int orbitSelect; // 0xc60f66d2
-  int orbitConfirm; // 0x1d97cc2b
-  int orbitLeft; // 0xc449ae1d
-  int orbitRight; // 0x80f17cdb
-  int orbitUp; // 0xabc5a6aa
-  int orbitDown; // 0x310f9642
-  int holdLook1; // 0xc4923775
-  int holdLook2; // 0xf57a2de8
-  int lookZoomIn; // 0xba4fb516
-  int lookZoomOut; // 0x9f45c8db
-  int holdAim; // 0x5344d2f7
-  int mapCircleUp; // 0x018c157d
-  int mapCircleDown; // 0xad1e8de5
-  int mapCircleLeft; // 0x5858b5ba
-  int mapCircleRight; // 0xc8df5b8b
-  int mapMoveForward; // 0x8d86d7b5
-  int mapMoveBack; // 0xab429ebd
-  int mapMoveLeft; // 0x31111d41
-  int mapMoveRight; // 0xe2d939b7
-  int mapZoomIn; // 0xb06d1b60
-  int mapZoomOut; // 0x26293e7c
-  int spiderBall; // 0x649b0835
-  int chaseCamera; // 0x5b1e0e7c
-  int xRayVisor; // 0xb35d2cca
-  int thermoVisor; // 0x5a7e4dfc
-  int enviroVisor; // 0x76faf77e
-  int noVisor; // 0x9ba498f6
-  int visorMenu; // 0x2b9a4a7f
-  int cycleVisorUp; // 0xd6fb0bf9
-  int cycleVisorDown; // 0x08fe3abe
-  int darkVisorToggle; // 0xc3f4f3ef
-  int crosshairs; // 0x53e56da8
-  int unknown_0x29293fb1; // 0x29293fb1
-  int useShield; // 0x02c06b91
-  int scanItem; // 0xbaa185cf
-  int inventoryScreen; // 0x6cdd19a4
-  int mapScreen; // 0xe08f6c6f
-  int optionsScreen; // 0x1230759b
-  int logScreen; // 0x5b9b4285
-  int pauseScreenCycleLeft; // 0xbf218f4f
+  int forward;               // 0xaf03e16c
+  int backward;              // 0xcfa71717
+  int turnLeft;              // 0x91532a8c
+  int turnRight;             // 0x07acc58d
+  int strafeLeft;            // 0xacc575a2
+  int strafeRight;           // 0xdb475e1d
+  int lookLeft;              // 0xa900887a
+  int lookRight;             // 0x534ac106
+  int lookUp;                // 0x0d723723
+  int lookDown;              // 0x5c46b025
+  int jump;                  // 0xf836180a
+  int jump2;                 // 0xfe16f98d
+  int fireBeam;              // 0xfd59aa9f
+  int fireBeam2;             // 0x7e76f1f4
+  int autoFireBeam;          // 0x93dd818b
+  int chargeBeam;            // 0x258402ec
+  int chargeBeam2;           // 0xb7a20cda
+  int useItem;               // 0x5b9a9219
+  int aimUp;                 // 0x82a717cd
+  int aimDown;               // 0xa7d5c15a
+  int cycleBeamUp;           // 0x33731936
+  int cycleBeamDown;         // 0xb72565ff
+  int cycleItem;             // 0xc592ca02
+  int selectPowerBeam;       // 0x5228272c
+  int selectIceBeam;         // 0x901ac820
+  int selectWaveBeam;        // 0x4ecea0c0
+  int selectPlasmaBeam;      // 0xa4f35804
+  int gunToggleHolster;      // 0x919d7de0
+  int orbitClose;            // 0x5200b48b
+  int orbitFar;              // 0x49c493a3
+  int orbitObject;           // 0xeb38a36b
+  int orbitSelect;           // 0xc60f66d2
+  int orbitConfirm;          // 0x1d97cc2b
+  int orbitLeft;             // 0xc449ae1d
+  int orbitRight;            // 0x80f17cdb
+  int orbitUp;               // 0xabc5a6aa
+  int orbitDown;             // 0x310f9642
+  int holdLook1;             // 0xc4923775
+  int holdLook2;             // 0xf57a2de8
+  int lookZoomIn;            // 0xba4fb516
+  int lookZoomOut;           // 0x9f45c8db
+  int holdAim;               // 0x5344d2f7
+  int mapCircleUp;           // 0x018c157d
+  int mapCircleDown;         // 0xad1e8de5
+  int mapCircleLeft;         // 0x5858b5ba
+  int mapCircleRight;        // 0xc8df5b8b
+  int mapMoveForward;        // 0x8d86d7b5
+  int mapMoveBack;           // 0xab429ebd
+  int mapMoveLeft;           // 0x31111d41
+  int mapMoveRight;          // 0xe2d939b7
+  int mapZoomIn;             // 0xb06d1b60
+  int mapZoomOut;            // 0x26293e7c
+  int spiderBall;            // 0x649b0835
+  int chaseCamera;           // 0x5b1e0e7c
+  int xRayVisor;             // 0xb35d2cca
+  int thermoVisor;           // 0x5a7e4dfc
+  int enviroVisor;           // 0x76faf77e
+  int noVisor;               // 0x9ba498f6
+  int visorMenu;             // 0x2b9a4a7f
+  int cycleVisorUp;          // 0xd6fb0bf9
+  int cycleVisorDown;        // 0x08fe3abe
+  int darkVisorToggle;       // 0xc3f4f3ef
+  int crosshairs;            // 0x53e56da8
+  int unknown_0x29293fb1;    // 0x29293fb1
+  int useShield;             // 0x02c06b91
+  int scanItem;              // 0xbaa185cf
+  int inventoryScreen;       // 0x6cdd19a4
+  int mapScreen;             // 0xe08f6c6f
+  int optionsScreen;         // 0x1230759b
+  int logScreen;             // 0x5b9b4285
+  int pauseScreenCycleLeft;  // 0xbf218f4f
   int pauseScreenCycleRight; // 0x05ef2422
-  int boostBall; // 0xced85a1b
-  int morphIntoBall; // 0x39cf6e72
-  int morphFromBall; // 0x64003596
+  int boostBall;             // 0xced85a1b
+  int morphIntoBall;         // 0x39cf6e72
+  int morphFromBall;         // 0x64003596
 };
 
-void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls_Controls(SLdrTweakPlayerControls_Controls& data,
+                                             CInputStream& input);
 
 struct SLdrTweakPlayerControls_Booleans {
   SLdrTweakPlayerControls_Booleans();
@@ -94,34 +95,35 @@ struct SLdrTweakPlayerControls_Booleans {
 
   bool unknown_0xff1b0413; // 0xff1b0413
   bool unknown_0xe0c1d958; // 0xe0c1d958
-  bool toggleAimPosition; // 0x55c20d58
+  bool toggleAimPosition;  // 0x55c20d58
   bool unknown_0x1f99c6ba; // 0x1f99c6ba
   bool unknown_0x18eb3ab5; // 0x18eb3ab5
   bool unknown_0xbdc01c71; // 0xbdc01c71
-  bool fixedVerticalAim; // 0x1c30f1a6
+  bool fixedVerticalAim;   // 0x1c30f1a6
   bool unknown_0xda97bbcd; // 0xda97bbcd
   bool orbitAroundEnemies; // non-matching name, 0x83583abd
   bool unknown_0xc224d966; // 0xc224d966
-  bool addGrenadeAlert; // non-matching name, 0x1fcfaf3f
+  bool addGrenadeAlert;    // non-matching name, 0x1fcfaf3f
   bool unknown_0x3fb16819; // 0x3fb16819
   bool unknown_0x4fcf4b70; // 0x4fcf4b70
   bool unknown_0x07bb06a6; // 0x07bb06a6
   bool unknown_0x04d8d57b; // 0x04d8d57b
   bool unknown_0x5282c47e; // 0x5282c47e
-  bool fallingDoubleJump; // 0x7304dafa
-  bool impulseDoubleJump; // 0x7a49267d
+  bool fallingDoubleJump;  // 0x7304dafa
+  bool impulseDoubleJump;  // 0x7a49267d
   bool unknown_0xa796a8b9; // 0xa796a8b9
   bool unknown_0x7c0599c8; // 0x7c0599c8
   bool unknown_0x522ab1ac; // 0x522ab1ac
 };
 
-void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& data, CInputStream& input);
+void LoadTypedefTweakPlayerControls_Booleans(SLdrTweakPlayerControls_Booleans& data,
+                                             CInputStream& input);
 
 struct SLdrTweakPlayerControls {
   SLdrTweakPlayerControls();
   ~SLdrTweakPlayerControls();
 
-  rstl::string instanceName; // 0x7fda1466
+  rstl::string instanceName;                 // 0x7fda1466
   SLdrTweakPlayerControls_Controls controls; // 0x3c34dfed
   SLdrTweakPlayerControls_Booleans booleans; // 0x168a79f1
 };
@@ -132,7 +134,7 @@ struct SLdrTweakPlayerControls2 {
   SLdrTweakPlayerControls2();
   ~SLdrTweakPlayerControls2();
 
-  rstl::string instanceName; // 0x7fda1466
+  rstl::string instanceName;                 // 0x7fda1466
   SLdrTweakPlayerControls_Controls controls; // 0x3c34dfed
   SLdrTweakPlayerControls_Booleans booleans; // 0x168a79f1
 };

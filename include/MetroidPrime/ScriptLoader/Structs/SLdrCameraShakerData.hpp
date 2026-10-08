@@ -9,13 +9,13 @@ struct SLdrCameraShakerData {
   SLdrCameraShakerData();
   ~SLdrCameraShakerData();
 
-  uint flagsCameraShaker; // 0xc3e75c5f
-  float attenuationDistance; // 0x4d283ac5
+  uint flagsCameraShaker;      // 0xc3e75c5f
+  float attenuationDistance;   // 0x4d283ac5
   SLdrSpline horizontalMotion; // 0xf122cd97
-  SLdrSpline verticalMotion; // 0x2927e544
-  SLdrSpline forwardMotion; // 0x7cfa4678
-  float duration; // 0x8b51e23f
-  int audioEffect; // 0x388d2e46
+  SLdrSpline verticalMotion;   // 0x2927e544
+  SLdrSpline forwardMotion;    // 0x7cfa4678
+  float duration;              // 0x8b51e23f
+  int audioEffect;             // 0x388d2e46
 };
 
 void LoadTypedefCameraShakerData(SLdrCameraShakerData& data, CInputStream& input);

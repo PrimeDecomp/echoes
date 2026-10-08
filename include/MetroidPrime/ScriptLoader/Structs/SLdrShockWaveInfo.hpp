@@ -10,15 +10,15 @@ struct SLdrShockWaveInfo {
   SLdrShockWaveInfo();
   ~SLdrShockWaveInfo();
 
-  CAssetId shockWaveEffect; // 0x369f7d09
-  SLdrDamageInfo damage; // 0x337f9524
-  float radius; // 0x78c507eb
-  float height; // 0xc2be030d
-  float innerRadiusRatio; // 0xcf6c1de9
-  float radialVelocity; // 0x4cd1459b
+  CAssetId shockWaveEffect;         // 0x369f7d09
+  SLdrDamageInfo damage;            // 0x337f9524
+  float radius;                     // 0x78c507eb
+  float height;                     // 0xc2be030d
+  float innerRadiusRatio;           // 0xcf6c1de9
+  float radialVelocity;             // 0x4cd1459b
   float radialVelocityAcceleration; // 0x0a57b09b
-  CAssetId visorElectricEffect; // 0xbd321538
-  int sound_VisorElectric; // 0x58a492ef
+  CAssetId visorElectricEffect;     // 0xbd321538
+  int sound_VisorElectric;          // 0x58a492ef
 };
 
 void LoadTypedefShockWaveInfo(SLdrShockWaveInfo& data, CInputStream& input);

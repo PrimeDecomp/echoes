@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = []
+# dependencies = ["clang-format"]
 # ///
 """Generate Echoes SLdr headers and readers from XML templates.
 
@@ -31,6 +31,8 @@ import io
 import json
 import math
 import re
+import shutil
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -1441,6 +1443,34 @@ def profile_files(
     return selected
 
 
+def format_files(files: dict[str, str], output: Path) -> dict[str, str]:
+    """Run clang-format so output is compared and written in the repository style.
+
+    The style file is found from where each file will be written; a .inc fragment
+    holds statements and is formatted as C++ source.
+    """
+    executable = shutil.which("clang-format")
+    if executable is None:
+        raise TemplateError("clang-format not found on PATH")
+    result: dict[str, str] = {}
+    for name, content in files.items():
+        target = (output / name).resolve()
+        if target.suffix == ".inc":
+            target = target.with_suffix(".cpp")
+        completed = subprocess.run(
+            [executable, "--assume-filename=" + str(target)],
+            input=content.encode("utf-8"),
+            capture_output=True,
+        )
+        if completed.returncode != 0:
+            raise TemplateError(
+                f"clang-format failed on {name}: "
+                + completed.stderr.decode("utf-8", "replace").strip()
+            )
+        result[name] = completed.stdout.decode("utf-8").replace("\r\n", "\n")
+    return result
+
+
 def output_differences(files: dict[str, str], output: Path) -> list[str]:
     """List missing or stale generated files without modifying the destination."""
     return [
@@ -1564,6 +1594,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     {n: c for n, c in files.items() if n.endswith(".cpp")},
                 )
             )
+        outputs = [(path, format_files(output, path)) for path, output in outputs]
         if args.check:
             stale = [
                 str(path / name)

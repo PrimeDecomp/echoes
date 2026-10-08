@@ -20,7 +20,7 @@ struct SLdrCameraDistance {
   ~SLdrCameraDistance();
 
   bool field_override; // 0x7ff86ee2
-  float distance; // 0xc3bf43be
+  float distance;      // 0xc3bf43be
 };
 
 void LoadTypedefCameraDistance(SLdrCameraDistance& data, CInputStream& input);
@@ -30,7 +30,7 @@ struct SLdrCameraOffset {
   ~SLdrCameraOffset();
 
   bool field_override; // 0x7ff86ee2
-  CVector3f offset; // 0x46477064
+  CVector3f offset;    // 0x46477064
 };
 
 void LoadTypedefCameraOffset(SLdrCameraOffset& data, CInputStream& input);
@@ -40,7 +40,7 @@ struct SLdrCameraFOV {
   ~SLdrCameraFOV();
 
   bool field_override; // 0x7ff86ee2
-  float fOV; // 0x123cac0e
+  float fOV;           // 0x123cac0e
 };
 
 void LoadTypedefCameraFOV(SLdrCameraFOV& data, CInputStream& input);
@@ -50,7 +50,7 @@ struct SLdrCameraAngleRange {
   ~SLdrCameraAngleRange();
 
   bool field_override; // 0x7ff86ee2
-  float angle; // 0x382a1973
+  float angle;         // 0x382a1973
 };
 
 void LoadTypedefCameraAngleRange(SLdrCameraAngleRange& data, CInputStream& input);
@@ -60,7 +60,7 @@ struct SLdrCameraSpeed {
   ~SLdrCameraSpeed();
 
   bool field_override; // 0x7ff86ee2
-  float speed; // 0x6392404e
+  float speed;         // 0x6392404e
 };
 
 void LoadTypedefCameraSpeed(SLdrCameraSpeed& data, CInputStream& input);
@@ -70,7 +70,7 @@ struct SLdrCameraZOffset {
   ~SLdrCameraZOffset();
 
   bool field_override; // 0x7ff86ee2
-  float zOffset; // 0x8033f9a3
+  float zOffset;       // 0x8033f9a3
 };
 
 void LoadTypedefCameraZOffset(SLdrCameraZOffset& data, CInputStream& input);
@@ -82,7 +82,8 @@ struct SLdrCameraPositionInterpolation {
   int type; // 0xf53dcdd6
 };
 
-void LoadTypedefCameraPositionInterpolation(SLdrCameraPositionInterpolation& data, CInputStream& input);
+void LoadTypedefCameraPositionInterpolation(SLdrCameraPositionInterpolation& data,
+                                            CInputStream& input);
 
 struct SLdrCameraRotationInterpolation {
   SLdrCameraRotationInterpolation();
@@ -91,36 +92,52 @@ struct SLdrCameraRotationInterpolation {
   int type; // 0xf53dcdd6
 };
 
-void LoadTypedefCameraRotationInterpolation(SLdrCameraRotationInterpolation& data, CInputStream& input);
+void LoadTypedefCameraRotationInterpolation(SLdrCameraRotationInterpolation& data,
+                                            CInputStream& input);
 
 struct SLdrCameraHint {
   SLdrCameraHint();
   ~SLdrCameraHint();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  int priority; // 0x42087650
-  float timer; // 0x8747552e
-  SLdrCameraBehaviour behaviour; // 0x380585ec
-  uint flagsCameraHint; // 0x21d720a9
-  SLdrCameraDistance minSpeedDistance; // 0x456d05c6
-  SLdrCameraDistance maxSpeedDistance; // 0xf5521ffa
-  SLdrCameraDistance backwardsDistance; // 0x89658a06
-  SLdrCameraOffset lookAtOffset; // 0x8d0a9113
-  CVector3f worldOffset; // 0xefebe838
-  SLdrCameraFOV fieldOfView; // 0xf71c36f2
-  SLdrCameraAngleRange attitudeRange; // non-matching name, 0x664c450a
-  SLdrCameraAngleRange azimuthRange; // non-matching name, 0xc82395fa
-  SLdrCameraSpeed angularSpeed; // 0x645eb009
-  SLdrCameraZOffset zOffset; // 0x80cfbb54
-  float interpolateOffTime; // 0x2ae08be1
-  float interpolateOnTime; // 0x4361d075
-  float interpolateControlTime; // 0xc91ef813
-  SLdrCameraPositionInterpolation positionInterpolationOn; // non-matching name, 0x934e392c
-  SLdrCameraRotationInterpolation rotationInterpolation; // non-matching name, 0x9e8631f1
+  SLdrEditorProperties editorProperties;                    // 0x255a4580
+  int priority;                                             // 0x42087650
+  float timer;                                              // 0x8747552e
+  SLdrCameraBehaviour behaviour;                            // 0x380585ec
+  uint flagsCameraHint;                                     // 0x21d720a9
+  SLdrCameraDistance minSpeedDistance;                      // 0x456d05c6
+  SLdrCameraDistance maxSpeedDistance;                      // 0xf5521ffa
+  SLdrCameraDistance backwardsDistance;                     // 0x89658a06
+  SLdrCameraOffset lookAtOffset;                            // 0x8d0a9113
+  CVector3f worldOffset;                                    // 0xefebe838
+  SLdrCameraFOV fieldOfView;                                // 0xf71c36f2
+  SLdrCameraAngleRange attitudeRange;                       // non-matching name, 0x664c450a
+  SLdrCameraAngleRange azimuthRange;                        // non-matching name, 0xc82395fa
+  SLdrCameraSpeed angularSpeed;                             // 0x645eb009
+  SLdrCameraZOffset zOffset;                                // 0x80cfbb54
+  float interpolateOffTime;                                 // 0x2ae08be1
+  float interpolateOnTime;                                  // 0x4361d075
+  float interpolateControlTime;                             // 0xc91ef813
+  SLdrCameraPositionInterpolation positionInterpolationOn;  // non-matching name, 0x934e392c
+  SLdrCameraRotationInterpolation rotationInterpolation;    // non-matching name, 0x9e8631f1
   SLdrCameraPositionInterpolation positionInterpolationOff; // non-matching name, 0x138729a7
 };
 
-inline SLdrCameraHint::SLdrCameraHint() : editorProperties(), behaviour(), minSpeedDistance(), maxSpeedDistance(), backwardsDistance(), lookAtOffset(), worldOffset(CVector3f::Zero()), fieldOfView(), attitudeRange(), azimuthRange(), angularSpeed(), zOffset(), positionInterpolationOn(), rotationInterpolation(), positionInterpolationOff() {
+inline SLdrCameraHint::SLdrCameraHint()
+: editorProperties()
+, behaviour()
+, minSpeedDistance()
+, maxSpeedDistance()
+, backwardsDistance()
+, lookAtOffset()
+, worldOffset(CVector3f::Zero())
+, fieldOfView()
+, attitudeRange()
+, azimuthRange()
+, angularSpeed()
+, zOffset()
+, positionInterpolationOn()
+, rotationInterpolation()
+, positionInterpolationOff() {
   priority = 50;
   timer = 0.0f;
   flagsCameraHint = 0x0000011eu;

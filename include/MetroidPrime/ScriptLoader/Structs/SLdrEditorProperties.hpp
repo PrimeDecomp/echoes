@@ -21,9 +21,9 @@ struct SLdrEditorProperties {
   SLdrEditorProperties();
   ~SLdrEditorProperties();
 
-  rstl::string name; // 0x494e414d
+  rstl::string name;       // 0x494e414d
   SLdrTransform transform; // 0x5846524d
-  bool active; // 0x41435456
+  bool active;             // 0x41435456
   uint unknown_0x5d298a43; // 0x5d298a43
 };
 

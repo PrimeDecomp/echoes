@@ -10,8 +10,8 @@ struct SLdrGuiWidgetProperties {
   ~SLdrGuiWidgetProperties();
 
   rstl::string guiLabel; // 0x73939407
-  int controllerNumber; // 0xdb7f4aa2
-  bool isLocked; // 0xdee730f5
+  int controllerNumber;  // 0xdb7f4aa2
+  bool isLocked;         // 0xdee730f5
 };
 
 void LoadTypedefGuiWidgetProperties(SLdrGuiWidgetProperties& data, CInputStream& input);

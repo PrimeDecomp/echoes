@@ -33,13 +33,14 @@ struct SLdrActorRotate {
   ~SLdrActorRotate();
 
   SLdrEditorProperties editorProperties; // 0x255a4580
-  uint flagsActorRotate; // 0xf11c6c2b
-  float duration; // 0x8b51e23f
-  SLdrRotationSplines rotationControls; // 0xefe4ea57
-  SLdrScaleSplines scaleControls; // 0x2f7ec0a2
+  uint flagsActorRotate;                 // 0xf11c6c2b
+  float duration;                        // 0x8b51e23f
+  SLdrRotationSplines rotationControls;  // 0xefe4ea57
+  SLdrScaleSplines scaleControls;        // 0x2f7ec0a2
 };
 
-inline SLdrActorRotate::SLdrActorRotate() : editorProperties(), rotationControls(), scaleControls() {
+inline SLdrActorRotate::SLdrActorRotate()
+: editorProperties(), rotationControls(), scaleControls() {
   flagsActorRotate = 0x00000014u;
   duration = 10.0f;
 }
