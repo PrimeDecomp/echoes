@@ -102,6 +102,7 @@ enum EEntityType {
   kET_SpindleCamera = 100,
   kET_SurfaceCamera = 101, // Guessed name; runtime surface camera.
   kET_SwarmBasics = 102,   // Native TypesMatch tag, correlated with swarm consumers.
+  kET_FlyerSwarm = 103,    // Native REL TypesMatch tag; parent is the SwarmBasics tag.
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,

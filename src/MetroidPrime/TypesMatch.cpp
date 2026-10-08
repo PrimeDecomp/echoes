@@ -1,4 +1,5 @@
 #include "MetroidPrime/Enemies/CDarkSamusBattleStage.hpp"
+#include "MetroidPrime/Enemies/CFlyerSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTextPane.hpp"
@@ -515,6 +516,7 @@ TYPES_MATCH_IMPL(CScriptSpiderBallWaypoint, CScriptWaypoint, kET_ScriptSpiderBal
 
 // REL-resident classes whose TypesMatch and casts the DOL owns.
 TYPES_MATCH_IMPL(CDarkSamusBattleStage, CEntity, kET_DarkSamusBattleStage)
+TYPES_MATCH_IMPL(CFlyerSwarm, CSwarmBasics, kET_FlyerSwarm)
 
 #undef TYPES_MATCH_IMPL
 #undef CAST_TO_PTR_IMPL

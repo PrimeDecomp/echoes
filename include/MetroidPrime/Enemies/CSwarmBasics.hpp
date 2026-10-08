@@ -19,6 +19,7 @@ class CAreaCollisionCache;
 class CBasicSwarmData;
 class CElementGen;
 class CGenDescription;
+class CFlyerSwarm;
 
 namespace SwarmRenderHelpers {
 class CSwarmDisplayList;
@@ -29,6 +30,7 @@ class CSwarmBasics : public CActor {
 public:
   class CBoid {
     friend class CSwarmBasics;
+    friend class CFlyerSwarm;
 
   public:
     CBoid(const CTransform4f& xf, uint index);
@@ -52,7 +54,7 @@ public:
     float mHealth;
     int x9c_;
     float mDistanceSquaredToSoundListener;
-    float xa4_;
+    float mSpeedScale; // Guessed name; scales distance moved per frame, starts at 1
     TUniqueId xa8_;
     TUniqueId xaa_;
     uint mFramesNotOnSurface : 8;
@@ -64,7 +66,7 @@ public:
     bool mActive : 1;
     bool mInFrustum : 1;
     bool mLaunched : 1;
-    bool xb2_3 : 1;
+    bool mExplodeTimerEnabled : 1; // Prime: mScarabExplodeTimerEnabled
     bool xb2_4 : 1;
     bool mHasLoopedSound : 1;
     bool mNearPlayer : 1;
@@ -118,8 +120,10 @@ public:
                                       const rstl::reserved_vector< CBoid*, 50 >& nearList);
   virtual void KillBoid(CBoid& boid, CStateManager& mgr, const CWeaponMode& weapon);
   // Guessed names; these are virtual in Echoes, unlike Prime's swarm queries.
-  virtual bool GetLockOnLocationValid(int index) const;
-  virtual CVector3f GetLockOnLocation(int index) const;
+  virtual bool GetLockOnLocationValid(int index) const {
+    return index > -1 && index < mBoids.size() && mBoids[index].mActive;
+  }
+  virtual CVector3f GetLockOnLocation(int index) const { return mBoids[index].GetTranslation(); }
   virtual void FreezeBoids(const CVector3f& position, float radius);
   virtual TUniqueId GetSeekerTargetLockedOn() const;
   virtual void RenderBoid(CBoid* boid) const;
@@ -208,7 +212,7 @@ public:
   const CVector3f& GetLastKilledOffset() const { return mLastKilledOffset; }
   int GetCurrentLockOnId() const { return mLockOnIndex; }
 
-private:
+protected:
   // Opaque owned allocation: cleanup is established, but its element type is unresolved.
   class CUnknownBuffer; // Guessed name
 
@@ -259,17 +263,18 @@ private:
   int mNumBoids;
   int mMaxCreatedBoids;
   int mCreatedBoids;
-  bool x4f0_24_ : 1;
-  bool x4f0_25_ : 1;
+  bool mEnableLighting : 1;   // Prime name
+  bool mUseSoftwareLight : 1; // Prime name
   bool x4f0_26_ : 1;
-  bool x4f0_27_ : 1;
-  bool x4f0_28_ : 1;
+  bool mAnimated : 1;             // Guessed name; ctor argument "animated"
+  bool mVulnerableToSafeZone : 1; // Guessed name; from CBasicSwarmData
   bool x4f0_29_ : 1;
   bool x4f0_30_ : 1;
-  bool x4f0_31_ : 1;
+  bool mBoidUpdatedThisFrame
+      : 1; // Guessed name; cleared in Think, set by UpdateBoid, gates animation
   bool x4f1_24_ : 1;
   bool x4f1_25_ : 1;
-  float x4f4_;
+  float mSurfaceProbeScale; // Guessed name; look-ahead scale for surface probes
   ushort mLocomotionLoopedSound;
   ushort mAttackLoopedSound;
   rstl::vector< TLoopedSound > mLocomotionSounds;
