@@ -7,11 +7,11 @@
 namespace rstl {
 class CRefData {
 public:
-  CRefData() : mRefCount(0) {}
   int AddRef() { return ++mRefCount; }
   int DelRef() { return --mRefCount; }
 
   int mRefCount;
+  int mReserved; // Guessed; the retail shared null instance occupies 8 bytes
 
   static CRefData sNull;
 };
