@@ -47,6 +47,7 @@ enum EPatternedAI {
   kPAI_Parasite = 0x27,                // Guessed name; Parasite REL constructor.
   kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
   kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
+  kPAI_StoneToad = 0x3a,               // Guessed name; StoneToad REL constructor.
   kPAI_Tryclops = 0x3f,                // Guessed name; Tryclops REL constructor.
   kPAI_GunTurretBase = 0x43,           // Guessed name; GunTurretBase REL constructor.
   kPAI_GunTurretTop = 0x44,            // Guessed name; GunTurretTop REL constructor.

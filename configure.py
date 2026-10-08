@@ -1820,6 +1820,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "StoneToad",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CStoneToad.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
