@@ -30,8 +30,8 @@ public:
   const CMaterialList& GetMaterialRight() const { return mMaterialRight; }
   const CVector3f& GetNormalLeft() const { return mNormalLeft; }
   const CVector3f& GetNormalRight() const { return mNormalRight; }
-  TUniqueId GetObjectId() const { return mObjectId; }
-  void SetObjectId(const TUniqueId& id) { mObjectId = id; }
+  TUniqueId GetObjectId() const { return TUniqueId(mObjectId); }
+  void SetObjectId(const TUniqueId& id) { mObjectId = id.value; }
   void Swap();
 
 private:
@@ -43,7 +43,7 @@ private:
   CMaterialList mMaterialRight;
   CVector3f mNormalLeft;
   CVector3f mNormalRight;
-  TUniqueId mObjectId;
+  ushort mObjectId; // Packed TUniqueId storage; constructor API remains ushort.
   bool mValid : 1;
   bool mHasExtents : 1;
 };
