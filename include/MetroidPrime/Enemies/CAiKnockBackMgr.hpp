@@ -29,6 +29,7 @@ public:
 
   void SetPhysicsKnockBackType(EPhysicsKnockBackType type);
   void EnableKnockBackPhysics(bool enabled);
+  void SetHurlVelocityEnabled(bool enabled) { mHurlVelocityEnabled = enabled; } // Guessed name
   void SetAdditiveFlinchWeight(float weight);
   float GetAdditiveFlinchWeight() const;
   float GetFlinchRemainingTime() const { return mFlinchRemainingTime; } // Guessed name

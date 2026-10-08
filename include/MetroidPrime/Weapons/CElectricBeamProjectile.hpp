@@ -14,6 +14,17 @@ class CParticleElectric;
 
 class CElectricBeamInfo {
 public:
+  CElectricBeamInfo(const TToken< CElectricDescription >& electricDescription, float length,
+                    float radius, float travelSpeed, CAssetId particleId, float fadeSpeed,
+                    float damageInterval)
+  : mElectricDescription(electricDescription)
+  , mLength(length)
+  , mRadius(radius)
+  , mTravelSpeed(travelSpeed)
+  , mParticleId(particleId)
+  , mFadeSpeed(fadeSpeed)
+  , mDamageInterval(damageInterval) {}
+
   const TToken< CElectricDescription >& GetElectricDescription() const {
     return mElectricDescription;
   }

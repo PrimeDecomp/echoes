@@ -255,6 +255,11 @@ NATIVE_INSTANCE_DEFAULTS: dict[str, tuple[tuple[int, ...], ...]] = {
         (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
         (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
     ),
+    # LoadAtomicBeta, AtomicBeta.rel .text 0x13C: ambient color and visor.
+    "SLdrAtomicBeta": (
+        (0x7E397FED, 0xB028DB0E, 0xA33E5B0E),
+        (0x7E397FED, 0x05AD250E, 0xCA19E8C6),
+    ),
     # LoadRipper, Ripper.rel .text 0x178: knockback resistance, ambient color and visor.
     "SLdrRipper": (
         (0xB3774750, 0xCF90D15E, 0x3A2D17E4),

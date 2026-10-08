@@ -35,6 +35,7 @@ class CCharAnimTime;
 
 enum EPatternedAI {
   kPAI_AtomicAlpha = 0, // Guessed name; AtomicAlpha REL constructor.
+  kPAI_AtomicBeta = 1,  // Guessed name; AtomicBeta REL constructor.
   kPAI_DarkSamus = 7,
   kPAI_EyeBall = 0x10,    // Guessed name; EyeBall REL constructor.
   kPAI_Metroid = 0x21,    // Guessed name; Metroid REL constructor.
