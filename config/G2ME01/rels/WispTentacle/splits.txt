@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CWispTentacle.cpp:
+	.text       start:0x00000000 end:0x00004370
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000118
+	.data       start:0x00000000 end:0x00000384
+	.bss        start:0x00000000 end:0x00000004
+
 REL/REL_Setup.cpp:
 	.text       start:0x00004370 end:0x00004514
 	.rodata     start:0x00000118 end:0x0000019C
