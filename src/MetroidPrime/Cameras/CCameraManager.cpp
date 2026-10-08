@@ -422,7 +422,7 @@ void CCameraManager::StopCinematics(CStateManager& mgr) {
   }
 }
 
-void CCameraManager::SetCinematicPaused(bool paused) {
+void CCameraManager::SetCinematicPaused(const bool paused) {
   if (mCinematicCamera) {
     mCinematicCamera->SetPaused(paused);
   }
