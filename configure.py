@@ -1694,6 +1694,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "FogOverlay",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptFogOverlay.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

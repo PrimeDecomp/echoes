@@ -114,7 +114,8 @@ class CStateManager : public TOneStatic< CStateManager > {
     bool empty() const { return mWriteIndex == mReadIndex; }
   };
 
-  // Guessed name; reset together during area transitions. The transform has no identified consumer.
+public:
+  // Guessed name; reset together during area transitions. The transform is the camera transform that CScriptFogOverlay last stored.
   struct SDarkWorldCloud {
     CTransform4f mTransform;
     CVector3f mScale;
