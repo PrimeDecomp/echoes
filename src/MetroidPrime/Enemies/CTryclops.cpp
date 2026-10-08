@@ -86,8 +86,8 @@ CTryclops::CTryclops(TUniqueId uid, const rstl::string& name, const CEntityInfo&
                      const CTransform4f& xf, const CModelData& mData, const CPatternedInfo& pInfo,
                      const CActorParameters& actParms, float suckForceMultiplier, float suckAngle,
                      float suckRange, float launchSpeed)
-: CPatterned(static_cast< EPatternedAI >(0x3f), uid, name, kFT_Zero, info, xf, mData, pInfo,
-             kMT_Ground, kCT_One, kBT_BiPedal, actParms)
+: CPatterned(kPAI_Tryclops, uid, name, kFT_Zero, info, xf, mData, pInfo, kMT_Ground, kCT_One,
+             kBT_BiPedal, actParms)
 , mCollisionActorManager(nullptr)
 , mPathFindSearch(nullptr, 1, pInfo.GetPathfindingIndex(), 1.f, 1.f, 0, CPFRegion::kRP_Center)
 , mPlayerRotation(CTransform4f::Identity())

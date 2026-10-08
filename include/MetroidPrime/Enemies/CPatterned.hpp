@@ -36,11 +36,22 @@ class CCharAnimTime;
 enum EPatternedAI {
   kPAI_AtomicAlpha = 0, // Guessed name; AtomicAlpha REL constructor.
   kPAI_AtomicBeta = 1,  // Guessed name; AtomicBeta REL constructor.
+  kPAI_ChozoGhost = 4,  // Guessed name; ChozoGhost REL constructor.
   kPAI_DarkSamus = 7,
-  kPAI_EyeBall = 0x10,    // Guessed name; EyeBall REL constructor.
-  kPAI_Metroid = 0x21,    // Guessed name; Metroid REL constructor.
-  kPAI_Ripper = 0x30,     // Guessed name; Ripper REL constructor.
-  kPAI_WallWalker = 0x4d, // Guessed name; WallWalker REL constructor.
+  kPAI_EmperorIngStage2Tentacle = 0xe, // Guessed name; EmperorIngStage2Tentacle REL constructor.
+  kPAI_EyeBall = 0x10,                 // Guessed name; EyeBall REL constructor.
+  kPAI_FlyingPirate = 0x15,            // Guessed name; FlyingPirate REL constructor.
+  kPAI_Metaree = 0x20,                 // Guessed name; Metaree REL constructor.
+  kPAI_Metroid = 0x21,                 // Guessed name; Metroid REL constructor.
+  kPAI_Parasite = 0x27,                // Guessed name; Parasite REL constructor.
+  kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
+  kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
+  kPAI_Tryclops = 0x3f,                // Guessed name; Tryclops REL constructor.
+  kPAI_GunTurretBase = 0x43,           // Guessed name; GunTurretBase REL constructor.
+  kPAI_GunTurretTop = 0x44,            // Guessed name; GunTurretTop REL constructor.
+  kPAI_WallWalker = 0x4d,              // Guessed name; WallWalker REL constructor.
+  kPAI_Shredder = 0x4e,                // Guessed name; Shredder REL constructor.
+  kPAI_Krocuss = 0x4f,                 // Guessed name; Krocuss REL constructor.
 };
 
 template <>

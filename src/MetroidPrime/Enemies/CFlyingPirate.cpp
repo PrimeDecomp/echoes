@@ -207,8 +207,8 @@ CFlyingPirate::CFlyingPirate(TUniqueId uid, const rstl::string& name, const CEnt
                              const CTransform4f& xf, const CModelData& modelData,
                              const CActorParameters& actParms, const CPatternedInfo& pInfo,
                              const CFlyingPirateData& data)
-: CPatterned(static_cast< EPatternedAI >(21), uid, name, kFT_Zero, info, xf, modelData, pInfo,
-             kMT_Flyer, kCT_One, kBT_AiMovedFlyer, actParms)
+: CPatterned(kPAI_FlyingPirate, uid, name, kFT_Zero, info, xf, modelData, pInfo, kMT_Flyer, kCT_One,
+             kBT_AiMovedFlyer, actParms)
 , mData(data)
 , mGunProjectileInfo(data.mProjectile, data.mProjectileDamage)
 , mAltProjectileInfo1(data.mMissile, data.mMissileDamage)

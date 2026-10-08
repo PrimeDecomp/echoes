@@ -56,8 +56,8 @@ CEmperorIngStage2Tentacle::CEmperorIngStage2Tentacle(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
     const CModelData& modelData, const CActorParameters& actorParams,
     const CPatternedInfo& patternedInfo, const SLdrEmperorIngStage2TentacleData& data)
-: CPatterned(static_cast< EPatternedAI >(0xe), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Flyer, kCT_One, kBT_Restricted, actorParams)
+: CPatterned(kPAI_EmperorIngStage2Tentacle, uid, name, kFT_Zero, info, xf, modelData, patternedInfo,
+             kMT_Flyer, kCT_One, kBT_Restricted, actorParams)
 , mSpotTime(0.f)
 , mLostTime(0.f)
 , mActiveTime(0.f)

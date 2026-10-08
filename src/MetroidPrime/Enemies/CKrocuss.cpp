@@ -39,8 +39,8 @@ CKrocuss::CKrocuss(TUniqueId uid, const rstl::string& name, const CEntityInfo& i
                    float animSpeedScalar, float timeShellClosed, float timeToOpenShell,
                    float timeShellOpen, float timeToCloseShell, float timeToCloseShellDamaged,
                    float maxAudibleDistance)
-: CPatterned(static_cast< EPatternedAI >(0x4f), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Ground, kCT_Zero, kBT_BiPedal, actorParams)
+: CPatterned(kPAI_Krocuss, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Ground,
+             kCT_Zero, kBT_BiPedal, actorParams)
 , mWingState(kWS_Closed)
 , mTimeShellClosed(timeShellClosed)
 , mTimeToOpenShell(timeToOpenShell)

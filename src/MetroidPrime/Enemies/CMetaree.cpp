@@ -42,8 +42,8 @@ CMetaree::CMetaree(TUniqueId uid, const rstl::string& name, const CEntityInfo& i
                    const CDamageInfo& damageInfo, float dropHeight, const CVector3f& offset,
                    float attackSpeed, float delay, float haltDelay, float launchSpeed,
                    const SLdrAudioPlaybackParms& attackSound)
-: CPatterned(static_cast< EPatternedAI >(0x20), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Flyer, kCT_Zero, kBT_Flyer, actorParams)
+: CPatterned(kPAI_Metaree, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_Zero, kBT_Flyer, actorParams)
 , mDelay(delay)
 , mHaltDelay(haltDelay)
 , mDropHeight(dropHeight)

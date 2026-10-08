@@ -25,8 +25,8 @@ CGunTurretTop::CGunTurretTop(TUniqueId uid, const rstl::string& name, const CEnt
                              float powerDownTime, CAssetId gfChargeEffect,
                              CAssetId pirateChargeEffect, const CColor& lightColor,
                              ushort powerUpSfx, ushort powerDownSfx)
-: CPatterned(static_cast< EPatternedAI >(0x44), uid, name, kFT_Zero, info, xf, modelData,
-             patternedInfo, kMT_Flyer, kCT_One, static_cast< EBodyType >(5), actorParameters)
+: CPatterned(kPAI_GunTurretTop, uid, name, kFT_Zero, info, xf, modelData, patternedInfo, kMT_Flyer,
+             kCT_One, kBT_Floater, actorParameters)
 , mBaseId(kInvalidUniqueId)
 , mState(kS_Sleep)
 , mHealthInfo(patternedInfo.GetHealthInfo())
