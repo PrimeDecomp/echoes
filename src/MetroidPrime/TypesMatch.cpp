@@ -1,3 +1,4 @@
+#include "MetroidPrime/Enemies/CDarkSamusBattleStage.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTextPane.hpp"
@@ -511,6 +512,9 @@ TYPES_MATCH_IMPL(CTargetableProjectile, CEnergyProjectile, kET_TargetableProject
 CAST_TO_PTR_IMPL(CTargetableProjectile, kET_TargetableProjectile)
 CAST_TO_REF_IMPL(CTargetableProjectile, kET_TargetableProjectile)
 TYPES_MATCH_IMPL(CScriptSpiderBallWaypoint, CScriptWaypoint, kET_ScriptSpiderBallWaypoint)
+
+// REL-resident classes whose TypesMatch and casts the DOL owns.
+TYPES_MATCH_IMPL(CDarkSamusBattleStage, CEntity, kET_DarkSamusBattleStage)
 
 #undef TYPES_MATCH_IMPL
 #undef CAST_TO_PTR_IMPL
