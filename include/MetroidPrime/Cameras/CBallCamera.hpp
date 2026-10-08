@@ -65,7 +65,7 @@ public:
   void DoorClosing(TUniqueId uid);
   bool CheckDoorProximity(const CVector3f& position, const CStateManager& mgr) const;
 
-  const CVector3f& GetFixedLookPos() const { return mFixedLookPos; }
+  CVector3f GetFixedLookPos() const { return mFixedLookPos; }
   const CVector3f& GetLookAtPosition() const { return mLookPos; }
   const CVector3f& GetLookPosAhead() const { return mLookPosAhead; }
   float GetDistance() const { return mCurMinDistance; }
