@@ -35,6 +35,7 @@ enum EEntityType {
   kET_GameLight = 26,
   kET_HomingBlob = 27, // Guessed name; Dark impact's multi-target particle weapon.
   kET_HUDBillboardEffect = 28,
+  kET_IngPuddle = 29, // Target-derived class tag.
   kET_PathCamera = 31,
   kET_Player = 32,
   kET_GameHint = 33, // Guessed name.
@@ -256,6 +257,7 @@ enum EScriptObjectState {
 
 enum EScriptObjectMessage {
   kSM_Action = 0x4143544e,
+  kSM_Arrived = 0x41525256, // Guessed name; sent to a waypoint when its follower reaches it.
   kSM_Next = 0x4e455854,
   kSM_Start = 0x53545254,
   kSM_Stop = 0x53544f50,
