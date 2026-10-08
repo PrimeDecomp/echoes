@@ -39,8 +39,7 @@ CVector3f CSphereCameraSurface::GetSurfacePoint(CVector3f point) {
 }
 
 bool CSphereCameraSurface::IsPointInside(const CVector3f& point) {
-  const CVector3f relative = point - mSphere.GetCenter();
-  const float distance = relative.Magnitude();
+  const float distance = CVector3f(point - mSphere.GetCenter()).Magnitude();
   return distance <= mSphere.GetRadius();
 }
 
