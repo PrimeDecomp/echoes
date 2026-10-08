@@ -137,7 +137,7 @@ CSwarmBasics::CBoid::CBoid(const CTransform4f& xf, uint index)
 , mFreezeTimer(0.f)
 , mTimeToExplode(0.f)
 , mSurface(CVector3f(1.f, 0.f, 0.f), CVector3f(0.f, 1.f, 0.f), CVector3f(0.f, 0.f, 1.f), ~0)
-, x9c_(-1)
+, mAttackSlot(-1)
 , mDistanceSquaredToSoundListener(0.f)
 , mSpeedScale(1.f)
 , xa8_(kInvalidUniqueId)
@@ -150,7 +150,7 @@ CSwarmBasics::CBoid::CBoid(const CTransform4f& xf, uint index)
 , mInFrustum(false)
 , mLaunched(false)
 , mExplodeTimerEnabled(false)
-, xb2_4(false)
+, mAttacking(false)
 , mHasLoopedSound(false) {}
 
 static CModelData GetModelDataForAnimRes(const CAnimRes& animRes) {
@@ -176,7 +176,7 @@ CSwarmBasics::CSwarmBasics(TUniqueId uid, const rstl::string& name, const CEntit
 , mMoveToWaypointWeight(data.mPathFollowingPriority)
 , mAttractionMagnitude(data.mPlayerAttractPriority)
 , mAttractionRadius(data.mPlayerAttractDistance)
-, x1c8_(0.f)
+, mTimeSinceLastAttack(0.f)
 , mAnimPlaybackSpeed(data.mSpeed)
 , mWaypointGoalRadius(3.f)
 , mPartitionedBoidLists(125, nullptr)
@@ -1584,7 +1584,7 @@ void CSwarmBasics::KillBoid(CBoid& boid, CStateManager& mgr, const CWeaponMode& 
   mLastKilledOffset = boid.GetTranslation();
   AddParticle(boid.GetTransform());
   boid.mActive = false;
-  if (boid.mHasLoopedSound && boid.xb2_4) {
+  if (boid.mHasLoopedSound && boid.mAttacking) {
     StopLoopedSound(boid, mAttackSounds);
   } else if (boid.mHasLoopedSound) {
     StopLoopedSound(boid, mLocomotionSounds);
@@ -1803,9 +1803,9 @@ void CSwarmBasics::UpdateLoopedSoundPositions(const rstl::vector< TLoopedSound >
 bool CSwarmBasics::CanStartLoopedSound(const CBoid& boid, ELoopedSoundType type) const {
   switch (type) {
   case kLST_Locomotion:
-    return !boid.mHasLoopedSound && !boid.xb2_4 && boid.mActive;
+    return !boid.mHasLoopedSound && !boid.mAttacking && boid.mActive;
   case kLST_Attack:
-    return !boid.mHasLoopedSound && boid.xb2_4 && boid.mActive;
+    return !boid.mHasLoopedSound && boid.mAttacking && boid.mActive;
   default:
     return false;
   }

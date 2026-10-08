@@ -20,6 +20,7 @@ class CBasicSwarmData;
 class CElementGen;
 class CGenDescription;
 class CFlyerSwarm;
+class CMetareeSwarm;
 
 namespace SwarmRenderHelpers {
 class CSwarmDisplayList;
@@ -31,6 +32,7 @@ public:
   class CBoid {
     friend class CSwarmBasics;
     friend class CFlyerSwarm;
+    friend class CMetareeSwarm;
 
   public:
     CBoid(const CTransform4f& xf, uint index);
@@ -52,7 +54,7 @@ public:
     float mLifeTime;
     CCollisionSurface mSurface;
     float mHealth;
-    int x9c_;
+    int mAttackSlot; // Guessed name; index of the attack model slot, -1 for none
     float mDistanceSquaredToSoundListener;
     float mSpeedScale; // Guessed name; scales distance moved per frame, starts at 1
     TUniqueId xa8_;
@@ -67,7 +69,7 @@ public:
     bool mInFrustum : 1;
     bool mLaunched : 1;
     bool mExplodeTimerEnabled : 1; // Prime: mScarabExplodeTimerEnabled
-    bool xb2_4 : 1;
+    bool mAttacking : 1;           // Guessed name; selects the attack looped sound
     bool mHasLoopedSound : 1;
     bool mNearPlayer : 1;
     bool xb2_7 : 1;
@@ -231,7 +233,7 @@ protected:
   float mMoveToWaypointWeight;
   float mAttractionMagnitude;
   float mAttractionRadius;
-  float x1c8_;
+  float mTimeSinceLastAttack; // Guessed name; clamped to the attack timer
   float mAnimPlaybackSpeed;
   float mWaypointGoalRadius;
   rstl::reserved_vector< CBoid*, 125 > mPartitionedBoidLists;
