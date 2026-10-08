@@ -11,7 +11,7 @@
 class CValidActiveEntityPredicate : public CValidEntityPredicate {
 public:
   // CValidEntityPredicate
-  ~CValidActiveEntityPredicate() override;
+  ~CValidActiveEntityPredicate() override {}
   bool IsValid(const CStateManager& mgr, TUniqueId id) const override;
 };
 CHECK_SIZEOF(CValidActiveEntityPredicate, 4)
@@ -20,8 +20,6 @@ bool CValidActiveEntityPredicate::IsValid(const CStateManager& mgr, TUniqueId id
   const CEntity* entity = mgr.GetObjectById(id);
   return entity != nullptr && entity->GetActive();
 }
-
-CValidActiveEntityPredicate::~CValidActiveEntityPredicate() {}
 
 void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectState state,
                                           EScriptObjectMessage message,
@@ -35,22 +33,30 @@ void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectSt
   const CScriptWaypoint* waypoint = TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(
       entity.FindConnectedObject_if(mgr, state, message, CValidActiveEntityPredicate())));
   rstl::vector< TUniqueId > visited;
+  uint count = 0;
+
+  visited.clear();
   visited.reserve(4);
   if (waypoint != nullptr) {
     while (waypoint != nullptr) {
-      const TUniqueId id = waypoint->GetUniqueId();
-      if (rstl::find(visited.begin(), visited.end(), id) != visited.end()) {
+      if (rstl::find(visited.begin(), visited.end(), waypoint->GetUniqueId()) != visited.end()) {
         break;
       }
-      visited.push_back(id);
+
+      if (visited.size() == visited.capacity()) {
+        visited.reserve(visited.size() * 2);
+      }
+      visited.push_back_unsafe(waypoint->GetUniqueId());
+      ++count;
+
       waypoint = TCastToPtr< CScriptWaypoint >(mgr.ObjectById(waypoint->NextWaypoint(mgr)));
     }
 
     positions.clear();
-    positions.reserve(visited.size());
+    positions.reserve(count);
     orientations.clear();
-    orientations.reserve(visited.size());
-    for (int i = 0; i < visited.size(); ++i) {
+    orientations.reserve(count);
+    for (uint i = 0; i < count; ++i) {
       const CScriptWaypoint* point = TCastToPtr< CScriptWaypoint >(mgr.ObjectById(visited[i]));
       positions.push_back_unsafe(point->GetTranslation());
       orientations.push_back_unsafe(CQuaternion::FromMatrix(point->GetTransform()));

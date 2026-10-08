@@ -131,8 +131,7 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
         }
         break;
       default:
-        position += camera->GetTransform().Rotate(camera->GetPlayerOffset());
-        position = surface->GetSurfacePoint(position);
+        position = surface->GetSurfacePoint(position + camera->GetTransform().Rotate(camera->GetPlayerOffset()));
         break;
       }
     }
@@ -173,7 +172,7 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
   }
 
   if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
-    const CGameHint* hint = GetCameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
+    const CGameHint* hint = CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
     if (hint) {
       const CVector3f position = xf.GetTranslation();
       xf = CTransform4f::LookAt(position, position + hint->GetTransform().GetForward(),
@@ -220,9 +219,8 @@ CVector3f CSurfaceCamera::GetScanObjectIndicatorPosition(const CStateManager& mg
       const CGameHint* hint = CameraManager(stateMgr).GetHintManager()->GetCurrentHint(mgr);
       if (hint) {
         const CVector3f direction = hint->GetTransform().GetForward();
-        target = GetTranslation() +
-                 CVector3f::Dot(direction, Player(stateMgr).GetBallPosition() - GetTranslation()) *
-                     direction;
+        const CVector3f delta = Player(stateMgr).GetBallPosition() - GetTranslation();
+        target = GetTranslation() + CVector3f::Dot(direction, delta) * direction;
       }
     }
   }
