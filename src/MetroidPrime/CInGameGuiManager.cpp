@@ -386,8 +386,8 @@ void CInGameGuiManager::Update(const CStateManager& mgr, float dt, CRandom16& ra
   if (cameraActive) {
     const float visorStaticAlpha = mgr.GetPlayer(mPlayerIndex)->GetVisorStaticAlpha();
     if (visorStaticAlpha != mVisorStaticAlpha) {
-      if (TCastToConstPtr< CFirstPersonCamera >(
-              *mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true))) {
+      if (CCameraManager::CastGameCameratoFirstPersonCamera(
+              mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true))) {
         if (CMath::AbsF(visorStaticAlpha - mVisorStaticAlpha) < 0.5f) {
           if (mVisorStaticAlpha == 0.f) {
             CSfxManager::SfxStart(0x274, 127, 64, CSfxManager::kAllAreas, false, false,
@@ -417,8 +417,8 @@ void CInGameGuiManager::Update(const CStateManager& mgr, float dt, CRandom16& ra
   }
 
   if (mIsSinglePlayer) {
-    if (!TCastToConstPtr< CFirstPersonCamera >(
-            *mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true))) {
+    if (!CCameraManager::CastGameCameratoFirstPersonCamera(
+            mgr.GetCameraManager(mPlayerIndex)->GetCurrentCamera(mgr, true))) {
       mSamusReflection = nullptr;
     } else if (mSamusReflection.null()) {
       mSamusReflection = rs_new CSamusFaceReflection(mgr, mPlayerIndex);
