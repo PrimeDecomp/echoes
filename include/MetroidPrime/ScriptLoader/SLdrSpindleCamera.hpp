@@ -11,7 +11,7 @@ struct SLdrSpindleCameraInterpolant {
   SLdrSpindleCameraInterpolant();
   ~SLdrSpindleCameraInterpolant();
 
-  int interpolantType; // 0x3e9cf140
+  int interpolantType;          // 0x3e9cf140
   SLdrSpline interpolantSpline; // 0x9a598fa5
 };
 
@@ -21,32 +21,52 @@ struct SLdrSpindleCamera {
   SLdrSpindleCamera();
   ~SLdrSpindleCamera();
 
-  SLdrEditorProperties editorProperties; // 0x255a4580
-  uint flagsSpindleCamera; // 0x3bf4eba8
-  SLdrSpindleCameraInterpolant angularSpeed; // 0xe56495fb
-  SLdrSpindleCameraInterpolant linearSpeed; // 0x239debfc
-  SLdrSpindleCameraInterpolant motionRadius; // 0x27e8d703
-  SLdrSpindleCameraInterpolant radialOffset; // 0x2f914525
+  SLdrEditorProperties editorProperties;             // 0x255a4580
+  uint flagsSpindleCamera;                           // 0x3bf4eba8
+  SLdrSpindleCameraInterpolant angularSpeed;         // 0xe56495fb
+  SLdrSpindleCameraInterpolant linearSpeed;          // 0x239debfc
+  SLdrSpindleCameraInterpolant motionRadius;         // 0x27e8d703
+  SLdrSpindleCameraInterpolant radialOffset;         // 0x2f914525
   SLdrSpindleCameraInterpolant desiredAngularOffset; // 0x23aa31b7
-  SLdrSpindleCameraInterpolant minAngularOffset; // 0xe9e388af
-  SLdrSpindleCameraInterpolant maxAngularOffset; // 0xde5a2c87
-  SLdrSpindleCameraInterpolant lookAtAngularOffset; // 0x1b3b2394
-  SLdrSpindleCameraInterpolant lookAtZOffset; // 0xf5666b6e
-  SLdrSpindleCameraInterpolant zOffset; // 0x66c618aa
-  SLdrSpindleCameraInterpolant angularConstraint; // 0xb36d0fb6
-  SLdrSpindleCameraInterpolant angularDampening; // 0xcbb013cb
-  SLdrSpindleCameraInterpolant desiredAngularSpeed; // 0x4abfb789
-  SLdrSpindleCameraInterpolant deactivateRadius; // 0xfb6a407a
-  SLdrSpindleCameraInterpolant constraintFlipAngle; // 0x3ae66f80
-  SLdrSpindleCameraInterpolant fOV; // 0x6654ae92
-  SLdrSplineType targetSplineType; // 0x5604d304
-  bool targetSplineLoops; // 0x33b4f106
-  SLdrSpline targetControlSpline; // 0xc4dfbfa7
-  SLdrSplineType playerSplineType; // 0x33e4685b
-  bool playerSplineLoops; // 0x431769c6
+  SLdrSpindleCameraInterpolant minAngularOffset;     // 0xe9e388af
+  SLdrSpindleCameraInterpolant maxAngularOffset;     // 0xde5a2c87
+  SLdrSpindleCameraInterpolant lookAtAngularOffset;  // 0x1b3b2394
+  SLdrSpindleCameraInterpolant lookAtZOffset;        // 0xf5666b6e
+  SLdrSpindleCameraInterpolant zOffset;              // 0x66c618aa
+  SLdrSpindleCameraInterpolant angularConstraint;    // 0xb36d0fb6
+  SLdrSpindleCameraInterpolant angularDampening;     // 0xcbb013cb
+  SLdrSpindleCameraInterpolant desiredAngularSpeed;  // 0x4abfb789
+  SLdrSpindleCameraInterpolant deactivateRadius;     // 0xfb6a407a
+  SLdrSpindleCameraInterpolant constraintFlipAngle;  // 0x3ae66f80
+  SLdrSpindleCameraInterpolant fOV;                  // 0x6654ae92
+  SLdrSplineType targetSplineType;                   // 0x5604d304
+  bool targetSplineLoops;                            // 0x33b4f106
+  SLdrSpline targetControlSpline;                    // 0xc4dfbfa7
+  SLdrSplineType playerSplineType;                   // 0x33e4685b
+  bool playerSplineLoops;                            // 0x431769c6
 };
 
-inline SLdrSpindleCamera::SLdrSpindleCamera() : editorProperties(), angularSpeed(), linearSpeed(), motionRadius(), radialOffset(), desiredAngularOffset(), minAngularOffset(), maxAngularOffset(), lookAtAngularOffset(), lookAtZOffset(), zOffset(), angularConstraint(), angularDampening(), desiredAngularSpeed(), deactivateRadius(), constraintFlipAngle(), fOV(), targetSplineType(), targetControlSpline(), playerSplineType() {
+inline SLdrSpindleCamera::SLdrSpindleCamera()
+: editorProperties()
+, angularSpeed()
+, linearSpeed()
+, motionRadius()
+, radialOffset()
+, desiredAngularOffset()
+, minAngularOffset()
+, maxAngularOffset()
+, lookAtAngularOffset()
+, lookAtZOffset()
+, zOffset()
+, angularConstraint()
+, angularDampening()
+, desiredAngularSpeed()
+, deactivateRadius()
+, constraintFlipAngle()
+, fOV()
+, targetSplineType()
+, targetControlSpline()
+, playerSplineType() {
   flagsSpindleCamera = 0x00001900u;
   targetSplineLoops = false;
   playerSplineLoops = false;

@@ -11,8 +11,8 @@ struct SLdrTriggerInfo {
   ~SLdrTriggerInfo();
 
   SLdrDamageInfo damage; // 0x337f9524
-  CVector3f forceField; // 0x20927e9b
-  uint flagsTrigger; // 0x82859f46
+  CVector3f forceField;  // 0x20927e9b
+  uint flagsTrigger;     // 0x82859f46
 };
 
 void LoadTypedefTriggerInfo(SLdrTriggerInfo& data, CInputStream& input);

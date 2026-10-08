@@ -13,7 +13,8 @@ struct SLdrTweakGame_FragLimitChoices {
   int fragLimits[5]; // Guessed member name.
 };
 
-void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_FragLimitChoices(SLdrTweakGame_FragLimitChoices& data,
+                                           CInputStream& input);
 
 struct SLdrTweakGame_TimeLimitChoices {
   SLdrTweakGame_TimeLimitChoices();
@@ -22,7 +23,8 @@ struct SLdrTweakGame_TimeLimitChoices {
   float timeLimits[5]; // Guessed member name.
 };
 
-void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_TimeLimitChoices(SLdrTweakGame_TimeLimitChoices& data,
+                                           CInputStream& input);
 
 struct SLdrTweakGame_CoinLimitChoices {
   SLdrTweakGame_CoinLimitChoices();
@@ -31,36 +33,37 @@ struct SLdrTweakGame_CoinLimitChoices {
   int coinLimits[5]; // Guessed member name.
 };
 
-void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& data, CInputStream& input);
+void LoadTypedefTweakGame_CoinLimitChoices(SLdrTweakGame_CoinLimitChoices& data,
+                                           CInputStream& input);
 
 struct SLdrTweakGame {
   SLdrTweakGame();
   ~SLdrTweakGame();
 
-  rstl::string instanceName; // 0x7fda1466
-  rstl::string pakFile; // 0x2bd13ab3
-  rstl::string asset; // 0xf8be005a
-  float fieldofView; // 0xfc93ceb8
-  float fieldofView2Player; // 0x9fb2faa6
-  bool disableDebugMenu; // 0xa9096914
-  bool musicOnByDefault; // 0x7262d27b
-  bool developmentMode; // 0xe943ba12
-  float frontEndAudioVolume; // 0xa3dcf42a
-  float unknown_0xb35c72be; // 0xb35c72be
-  float unknown_0x4a02103c; // 0x4a02103c
-  float unknown_0xe1fca71b; // 0xe1fca71b
-  float unknown_0xfbce966a; // 0xfbce966a
-  float unknown_0x09c6ca10; // 0x09c6ca10
-  float hardModeDamageMultiplier; // 0x4dfcd432
-  float hardModeWeaponMultiplier; // 0xae1831d9
-  float safeZoneActivationTime; // 0x5ab5812c
-  float safeZoneDeactivationTime; // 0x53401390
-  int maxPercentageInventoryItems; // 0xd09f373b
+  rstl::string instanceName;                         // 0x7fda1466
+  rstl::string pakFile;                              // 0x2bd13ab3
+  rstl::string asset;                                // 0xf8be005a
+  float fieldofView;                                 // 0xfc93ceb8
+  float fieldofView2Player;                          // 0x9fb2faa6
+  bool disableDebugMenu;                             // 0xa9096914
+  bool musicOnByDefault;                             // 0x7262d27b
+  bool developmentMode;                              // 0xe943ba12
+  float frontEndAudioVolume;                         // 0xa3dcf42a
+  float unknown_0xb35c72be;                          // 0xb35c72be
+  float unknown_0x4a02103c;                          // 0x4a02103c
+  float unknown_0xe1fca71b;                          // 0xe1fca71b
+  float unknown_0xfbce966a;                          // 0xfbce966a
+  float unknown_0x09c6ca10;                          // 0x09c6ca10
+  float hardModeDamageMultiplier;                    // 0x4dfcd432
+  float hardModeWeaponMultiplier;                    // 0xae1831d9
+  float safeZoneActivationTime;                      // 0x5ab5812c
+  float safeZoneDeactivationTime;                    // 0x53401390
+  int maxPercentageInventoryItems;                   // 0xd09f373b
   SLdrTweakGame_FragLimitChoices unknown_0x1d627808; // 0x1d627808
   SLdrTweakGame_TimeLimitChoices unknown_0xb2e8828d; // 0xb2e8828d
   SLdrTweakGame_CoinLimitChoices unknown_0x06af87bd; // 0x06af87bd
   SLdrTweakGame_TimeLimitChoices unknown_0x1533ea4e; // 0x1533ea4e
-  SLdrSpline unknown_0x40818220; // 0x40818220
+  SLdrSpline unknown_0x40818220;                     // 0x40818220
 };
 
 void LoadTypedefTweakGame(SLdrTweakGame& data, CInputStream& input);

@@ -9,9 +9,9 @@ struct SLdrTweakParticle {
   SLdrTweakParticle();
   ~SLdrTweakParticle();
 
-  rstl::string instanceName; // 0x7fda1466
-  rstl::string pakFile; // 0x2bd13ab3
-  rstl::string primary_Weapon; // 0x5e15868a
+  rstl::string instanceName;     // 0x7fda1466
+  rstl::string pakFile;          // 0x2bd13ab3
+  rstl::string primary_Weapon;   // 0x5e15868a
   rstl::string secondary_Weapon; // 0xbc401445
 };
 

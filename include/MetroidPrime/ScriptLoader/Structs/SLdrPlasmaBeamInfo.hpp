@@ -10,24 +10,24 @@ struct SLdrPlasmaBeamInfo {
   SLdrPlasmaBeamInfo();
   ~SLdrPlasmaBeamInfo();
 
-  int unknown_0xff713aad; // 0xff713aad
-  CAssetId weaponSystem; // 0x459ae4a8
-  CAssetId contactEffect; // 0x4f387c49
-  CAssetId pulseEffect; // 0xddd52e3a
-  CAssetId beamTexture; // 0xc6f229c6
-  CAssetId glowTexture; // 0x8f1a76c3
-  float length; // 0xc26c291c
-  float radius; // 0x78c507eb
-  float expansionSpeed; // 0xec773d1d
-  float lifeTime; // 0xb02de555
-  float pulseSpeed; // 0x5180181e
-  float shutdownTime; // 0x72a96252
+  int unknown_0xff713aad;   // 0xff713aad
+  CAssetId weaponSystem;    // 0x459ae4a8
+  CAssetId contactEffect;   // 0x4f387c49
+  CAssetId pulseEffect;     // 0xddd52e3a
+  CAssetId beamTexture;     // 0xc6f229c6
+  CAssetId glowTexture;     // 0x8f1a76c3
+  float length;             // 0xc26c291c
+  float radius;             // 0x78c507eb
+  float expansionSpeed;     // 0xec773d1d
+  float lifeTime;           // 0xb02de555
+  float pulseSpeed;         // 0x5180181e
+  float shutdownTime;       // 0x72a96252
   float contactEffectScale; // 0x855ed9b9
-  float pulseEffectScale; // 0xb8652fe4
-  float travelSpeed; // 0x3fed5e52
-  CColor innerColor; // 0x1afb2b73
-  CColor outerColor; // 0x9fd338fc
-  CAssetId beamStreaks; // 0xaeb31af3
+  float pulseEffectScale;   // 0xb8652fe4
+  float travelSpeed;        // 0x3fed5e52
+  CColor innerColor;        // 0x1afb2b73
+  CColor outerColor;        // 0x9fd338fc
+  CAssetId beamStreaks;     // 0xaeb31af3
 };
 
 void LoadTypedefPlasmaBeamInfo(SLdrPlasmaBeamInfo& data, CInputStream& input);

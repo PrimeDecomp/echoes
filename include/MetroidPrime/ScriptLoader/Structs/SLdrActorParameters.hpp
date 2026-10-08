@@ -12,23 +12,23 @@ struct SLdrActorParameters {
   SLdrActorParameters();
   ~SLdrActorParameters();
 
-  SLdrLightParameters lighting; // 0xb028db0e
+  SLdrLightParameters lighting;      // 0xb028db0e
   SLdrScannableParameters scannable; // 0x375bfd7c
-  CAssetId darkModel; // 0xc0ba9e18
-  CAssetId darkSkin; // 0x9f027d91
-  CAssetId echoModel; // 0x6b1fbc3a
-  CAssetId echoSkin; // 0xeb1d06be
-  bool useGlobalRenderTime; // 0x1499803c
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  SLdrVisorParameters visor; // 0x05ad250e
-  bool isHighlightedInDarkVisor; // 0xcd4c81a1
-  bool forceRenderUnsorted; // 0x799263f1
-  bool takesProjectedShadow; // 0xed3a6e87
-  bool unknown_0xf07981e8; // 0xf07981e8
-  bool unknown_0x6df33845; // 0x6df33845
-  int maxVolume; // 0xc712847c
-  int maxEchoVolume; // 0xba2600d7
+  CAssetId darkModel;                // 0xc0ba9e18
+  CAssetId darkSkin;                 // 0x9f027d91
+  CAssetId echoModel;                // 0x6b1fbc3a
+  CAssetId echoSkin;                 // 0xeb1d06be
+  bool useGlobalRenderTime;          // 0x1499803c
+  float fadeInTime;                  // 0x90aa341f
+  float fadeOutTime;                 // 0x7c269ebc
+  SLdrVisorParameters visor;         // 0x05ad250e
+  bool isHighlightedInDarkVisor;     // 0xcd4c81a1
+  bool forceRenderUnsorted;          // 0x799263f1
+  bool takesProjectedShadow;         // 0xed3a6e87
+  bool unknown_0xf07981e8;           // 0xf07981e8
+  bool unknown_0x6df33845;           // 0x6df33845
+  int maxVolume;                     // 0xc712847c
+  int maxEchoVolume;                 // 0xba2600d7
 };
 
 void LoadTypedefActorParameters(SLdrActorParameters& data, CInputStream& input);

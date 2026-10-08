@@ -8,12 +8,12 @@ struct SLdrEchoParameters {
   SLdrEchoParameters();
   ~SLdrEchoParameters();
 
-  bool isEchoEmitter; // 0x17addfc6
-  bool onlyEmitDamage; // 0xf5df62ad
-  int numSoundWaves; // 0xd0073a0c
+  bool isEchoEmitter;      // 0x17addfc6
+  bool onlyEmitDamage;     // 0xf5df62ad
+  int numSoundWaves;       // 0xd0073a0c
   float spaceBetweenWaves; // 0xed6d6782
-  float waveLineSize; // 0xdb190f68
-  float forcedMinimumVis; // 0xf87a15e7
+  float waveLineSize;      // 0xdb190f68
+  float forcedMinimumVis;  // 0xf87a15e7
 };
 
 void LoadTypedefEchoParameters(SLdrEchoParameters& data, CInputStream& input);

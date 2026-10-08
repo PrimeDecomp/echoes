@@ -10,10 +10,10 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
   SLdrTweakPlayerRes_AutoMapperIcons();
   ~SLdrTweakPlayerRes_AutoMapperIcons();
 
-  rstl::string saveStationIcon; // 0xe7014cda
+  rstl::string saveStationIcon;    // 0xe7014cda
   rstl::string missileStationIcon; // 0x33c94749
-  rstl::string elevatorIconIcon; // 0x9b36949e
-  rstl::string portalIcon; // 0xafa1b87c
+  rstl::string elevatorIconIcon;   // 0x9b36949e
+  rstl::string portalIcon;         // 0xafa1b87c
   rstl::string unknown_0xfbf479ec; // 0xfbf479ec
   rstl::string unknown_0x5566b6e4; // 0x5566b6e4
   rstl::string unknown_0x51fe3f1f; // 0x51fe3f1f
@@ -28,55 +28,57 @@ struct SLdrTweakPlayerRes_AutoMapperIcons {
 #endif
 };
 
-void LoadTypedefTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& data, CInputStream& input);
+void LoadTypedefTweakPlayerRes_AutoMapperIcons(SLdrTweakPlayerRes_AutoMapperIcons& data,
+                                               CInputStream& input);
 
 struct SLdrTweakPlayerRes_MapScreenIcons {
   SLdrTweakPlayerRes_MapScreenIcons();
   ~SLdrTweakPlayerRes_MapScreenIcons();
 
-  rstl::string lStickN; // 0x2c770bb8
-  rstl::string lStickU; // 0x49aec38c
-  rstl::string lStickUL; // 0xa86af8c2
-  rstl::string lStickL; // 0xbbe81a91
-  rstl::string lStickDL; // 0x187bc977
-  rstl::string lStickD; // 0x880754f6
-  rstl::string lStickDR; // 0x2f9a2ee4
-  rstl::string lStickR; // 0x8c09fd02
-  rstl::string lStickUR; // 0x9f8b1f51
-  rstl::string cStickN; // 0x0b07de8d
-  rstl::string cStickU; // 0x6ede16b9
-  rstl::string cStickUL; // 0xfefe4c34
-  rstl::string cStickL; // 0x9c98cfa4
-  rstl::string cStickDL; // 0x4eef7d81
-  rstl::string cStickD; // 0xaf7781c3
-  rstl::string cStickDR; // 0x790e9a12
-  rstl::string cStickR; // 0xab792837
-  rstl::string cStickUR; // 0xc91faba7
-  rstl::string lTriggerOut; // 0x40c21e1e
-  rstl::string lTriggerIn; // 0x120368b8
-  rstl::string rTriggerOut; // 0x16b77ff5
-  rstl::string rTriggerIn; // 0xd4a6a08d
+  rstl::string lStickN;        // 0x2c770bb8
+  rstl::string lStickU;        // 0x49aec38c
+  rstl::string lStickUL;       // 0xa86af8c2
+  rstl::string lStickL;        // 0xbbe81a91
+  rstl::string lStickDL;       // 0x187bc977
+  rstl::string lStickD;        // 0x880754f6
+  rstl::string lStickDR;       // 0x2f9a2ee4
+  rstl::string lStickR;        // 0x8c09fd02
+  rstl::string lStickUR;       // 0x9f8b1f51
+  rstl::string cStickN;        // 0x0b07de8d
+  rstl::string cStickU;        // 0x6ede16b9
+  rstl::string cStickUL;       // 0xfefe4c34
+  rstl::string cStickL;        // 0x9c98cfa4
+  rstl::string cStickDL;       // 0x4eef7d81
+  rstl::string cStickD;        // 0xaf7781c3
+  rstl::string cStickDR;       // 0x790e9a12
+  rstl::string cStickR;        // 0xab792837
+  rstl::string cStickUR;       // 0xc91faba7
+  rstl::string lTriggerOut;    // 0x40c21e1e
+  rstl::string lTriggerIn;     // 0x120368b8
+  rstl::string rTriggerOut;    // 0x16b77ff5
+  rstl::string rTriggerIn;     // 0xd4a6a08d
   rstl::string startButtonOut; // 0x272f08b4
-  rstl::string startButtonIn; // 0x225f0e23
-  rstl::string aButtonOut; // 0x1c208ab1
-  rstl::string aButtonIn; // 0x43fdc303
-  rstl::string bButtonOut; // 0x35e83e43
-  rstl::string bButtonIn; // 0x5280a97a
-  rstl::string xButtonOut; // 0x277cbaf1
-  rstl::string xButtonIn; // 0x71ed4b23
-  rstl::string yButtonOut; // 0x89142b60
-  rstl::string yButtonIn; // 0xc81690cb
+  rstl::string startButtonIn;  // 0x225f0e23
+  rstl::string aButtonOut;     // 0x1c208ab1
+  rstl::string aButtonIn;      // 0x43fdc303
+  rstl::string bButtonOut;     // 0x35e83e43
+  rstl::string bButtonIn;      // 0x5280a97a
+  rstl::string xButtonOut;     // 0x277cbaf1
+  rstl::string xButtonIn;      // 0x71ed4b23
+  rstl::string yButtonOut;     // 0x89142b60
+  rstl::string yButtonIn;      // 0xc81690cb
 };
 
-void LoadTypedefTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& data, CInputStream& input);
+void LoadTypedefTweakPlayerRes_MapScreenIcons(SLdrTweakPlayerRes_MapScreenIcons& data,
+                                              CInputStream& input);
 
 struct SLdrTGunResources {
   SLdrTGunResources();
   ~SLdrTGunResources();
 
-  rstl::string power_Beam; // 0x2705318d
-  rstl::string ice_Beam; // 0x7cc2879f
-  rstl::string wave_Beam; // 0x382765b0
+  rstl::string power_Beam;  // 0x2705318d
+  rstl::string ice_Beam;    // 0x7cc2879f
+  rstl::string wave_Beam;   // 0x382765b0
   rstl::string plasma_Beam; // 0xcb269ac8
   rstl::string phazon_Beam; // 0xa3890335
 };
@@ -87,14 +89,14 @@ struct SLdrTBallTransitionResources {
   SLdrTBallTransitionResources();
   ~SLdrTBallTransitionResources();
 
-  rstl::string suitANCS; // 0xd48e4124
-  SLdrTGunResources gunResources; // 0x01e12c84
+  rstl::string suitANCS;                     // 0xd48e4124
+  SLdrTGunResources gunResources;            // 0x01e12c84
   SLdrTGunResources multiPlayerGunResources; // 0xf24b055d
-  SLdrSpline unknown_0xa342c3a6; // 0xa342c3a6
-  SLdrSpline unknown_0x15b6840d; // 0x15b6840d
-  SLdrSpline unknown_0x23fb0e93; // 0x23fb0e93
-  SLdrSpline unknown_0x564262f0; // 0x564262f0
-  SLdrSpline movementControl; // 0x9183a262
+  SLdrSpline unknown_0xa342c3a6;             // 0xa342c3a6
+  SLdrSpline unknown_0x15b6840d;             // 0x15b6840d
+  SLdrSpline unknown_0x23fb0e93;             // 0x23fb0e93
+  SLdrSpline unknown_0x564262f0;             // 0x564262f0
+  SLdrSpline movementControl;                // 0x9183a262
 };
 
 void LoadTypedefTBallTransitionResources(SLdrTBallTransitionResources& data, CInputStream& input);
@@ -103,12 +105,12 @@ struct SLdrTweakPlayerRes {
   SLdrTweakPlayerRes();
   ~SLdrTweakPlayerRes();
 
-  rstl::string instanceName; // 0x7fda1466
-  SLdrTweakPlayerRes_AutoMapperIcons autoMapperIcons; // 0x357741e0
-  SLdrTweakPlayerRes_MapScreenIcons mapScreenIcons; // 0x0d5e02a0
+  rstl::string instanceName;                            // 0x7fda1466
+  SLdrTweakPlayerRes_AutoMapperIcons autoMapperIcons;   // 0x357741e0
+  SLdrTweakPlayerRes_MapScreenIcons mapScreenIcons;     // 0x0d5e02a0
   SLdrTBallTransitionResources ballTransitionResources; // 0x279852ba
-  SLdrTGunResources cinematicResources; // 0x5e630608
-  float unknown_0x36ad9d19; // 0x36ad9d19
+  SLdrTGunResources cinematicResources;                 // 0x5e630608
+  float unknown_0x36ad9d19;                             // 0x36ad9d19
 };
 
 void LoadTypedefTweakPlayerRes(SLdrTweakPlayerRes& data, CInputStream& input);

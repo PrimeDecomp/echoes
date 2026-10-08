@@ -10,24 +10,24 @@ struct SLdrTweakSlideShow {
   SLdrTweakSlideShow();
   ~SLdrTweakSlideShow();
 
-  rstl::string instanceName; // 0x7fda1466
-  rstl::string pakFile; // 0x2bd13ab3
-  rstl::string font; // 0xfe31fba0
-  CColor fontColor; // 0x1a96ec67
-  CColor fontOutlineColor; // 0x844ab6b0
-  float unknown_0xd398dac2; // 0xd398dac2
-  float unknown_0x03757d08; // 0x03757d08
-  float translationMultiplier; // 0x59276e14
-  float scaleMultiplier; // 0x3ce7a013
-  float slideShowDelay; // 0x278c0893
-  CColor helpFrameColor; // 0xd75d29f8
-  float helpTransitionTime; // 0x27515c7b
-  float slideBlendTime; // 0xae47dc81
-  float slideNumberHideDelay; // 0x029d2082
+  rstl::string instanceName;       // 0x7fda1466
+  rstl::string pakFile;            // 0x2bd13ab3
+  rstl::string font;               // 0xfe31fba0
+  CColor fontColor;                // 0x1a96ec67
+  CColor fontOutlineColor;         // 0x844ab6b0
+  float unknown_0xd398dac2;        // 0xd398dac2
+  float unknown_0x03757d08;        // 0x03757d08
+  float translationMultiplier;     // 0x59276e14
+  float scaleMultiplier;           // 0x3ce7a013
+  float slideShowDelay;            // 0x278c0893
+  CColor helpFrameColor;           // 0xd75d29f8
+  float helpTransitionTime;        // 0x27515c7b
+  float slideBlendTime;            // 0xae47dc81
+  float slideNumberHideDelay;      // 0x029d2082
   float slideNumberTransitionTime; // 0xb187cd9b
-  float fadeInTime; // 0x90aa341f
-  float fadeOutTime; // 0x7c269ebc
-  rstl::string stringResName; // 0xc0544bc1
+  float fadeInTime;                // 0x90aa341f
+  float fadeOutTime;               // 0x7c269ebc
+  rstl::string stringResName;      // 0xc0544bc1
 };
 
 void LoadTypedefTweakSlideShow(SLdrTweakSlideShow& data, CInputStream& input);
