@@ -80,8 +80,7 @@ void CExplosion::PreRender(CStateManager& mgr) {
     const CGameCamera* camera =
         mgr.CameraManager(mgr.GetCurrentRenderPlayerIndex())->CurrentCamera(mgr, true);
     const float distance = (GetTranslation() - camera->GetTranslation()).Magnitude();
-    float scale = rstl::min_val(4.f, rstl::max_val(0.2f, distance));
-    scale *= 0.25f;
+    const float scale = rstl::min_val(4.f, rstl::max_val(0.2f, distance)) / 4.f;
     mParticleGen->SetGlobalScale(mScale * scale);
   }
 }

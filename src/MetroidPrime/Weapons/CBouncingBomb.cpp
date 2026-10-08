@@ -88,7 +88,7 @@ void CBouncingBomb::HandleStaticCollision(CStateManager& mgr, const CRayCastResu
 }
 
 void CBouncingBomb::ApplyGravity() {
-  mAcceleration = mGravityScale * (24.525f * CVector3f::Down());
+  mAcceleration = mGravityScale * (kDefaultGravityAccel * CVector3f::Down());
 }
 
 void CBouncingBomb::Explode(CStateManager& mgr) {
