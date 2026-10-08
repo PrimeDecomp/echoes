@@ -18,7 +18,7 @@ SWallWalker_FuncPtrs* gLoader_WallWalker;
 
 void SetSWallWalker_FuncPtrs(SWallWalker_FuncPtrs* callbacks) { gLoader_WallWalker = callbacks; }
 
-CEntity* Load_WallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadWallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_WallWalker->mLoadWallWalker(mgr, input, info);
 }
 

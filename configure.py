@@ -438,6 +438,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/TypesMatch.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptSound.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptPlatform.cpp"),
+            Object(NonMatching, "MetroidPrime/UserNames.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptGenerator.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptCameraWaypoint.cpp"),
             Object(NonMatching, "MetroidPrime/CGameLight.cpp"),
@@ -1449,7 +1450,17 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "musyx/runtime/synth.c"),
             Object(MatchingFor("G2ME01", "G2MP01"), "musyx/runtime/seq_api.c"),
             Object(MatchingFor("G2ME01"), "musyx/runtime/snd_synthapi.c"),
+        ],
+    ),
+    # The original stream and DSP control code predate MusyX 2.0.3.
+    MusyX(
+        [
             Object(NonMatching, "musyx/runtime/stream.c"),
+        ],
+        patch=2,
+    ),
+    MusyX(
+        [
             Object(MatchingFor("G2ME01"), "musyx/runtime/synthdata.c"),
             Object(MatchingFor("G2ME01"), "musyx/runtime/synthmacros.c"),
             Object(MatchingFor("G2ME01"), "musyx/runtime/synthvoice.c"),
@@ -1458,7 +1469,16 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "musyx/runtime/synth_adsr.c"),
             Object(MatchingFor("G2ME01"), "musyx/runtime/synth_vsamples.c"),
             Object(MatchingFor("G2ME01"), "musyx/runtime/s_data.c"),
+        ],
+    ),
+    MusyX(
+        [
             Object(NonMatching, "musyx/runtime/hw_dspctrl.c"),
+        ],
+        patch=2,
+    ),
+    MusyX(
+        [
             Object(MatchingFor("G2ME01"), "musyx/runtime/hw_volconv.c"),
             Object(NonMatching, "musyx/runtime/snd3d.c"),
             Object(MatchingFor("G2ME01", "G2MP01"), "musyx/runtime/snd_init.c"),

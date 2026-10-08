@@ -16,9 +16,6 @@
 #include "WorldFormat/CMetroidAreaCollider.hpp"
 #include "rstl/math.hpp"
 
-// Integer floor-log2 helper; its original owner/name is unresolved.
-extern "C" int fn_802CC120(uint value);
-
 namespace {
 // Guessed names for the material response settings.
 struct SMaterialResponse {
@@ -50,7 +47,7 @@ SMaterialResponse sMaterialResponses[] = {
 bool sMaterialsInitialized;
 
 int GetMaterialIndex(const CMaterialList& material) {
-  return fn_802CC120(static_cast< uint >(material.GetValue() & sResponseMaterials.GetValue()));
+  return CMath::FloorLog2(static_cast< uint >(material.GetValue() & sResponseMaterials.GetValue()));
 }
 
 void InitializeMaterialResponses() {

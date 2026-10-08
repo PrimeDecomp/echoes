@@ -57,10 +57,10 @@
 #include "MetroidPrime/Player/CPlayerTargeting.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
-#include "MetroidPrime/ScriptObjects/CPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGrapplePoint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerHint.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakBall.hpp"
@@ -3904,7 +3904,8 @@ CVector3f CPlayer::GetOrbitPosition(const CStateManager& mgr) const {
 void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
   switch (state) {
   case kTS_Entering: {
-    CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
+    CEntity* turret =
+        TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
     if (turret != nullptr) {
       mTurretTimer = 0.f;
       Stop();
@@ -3961,14 +3962,15 @@ void CPlayer::SetTurretState(ETurretState state, CStateManager& mgr) {
     break;
   }
   case kTS_Active: {
-    CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
+    CEntity* turret =
+        TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
     if (turret != nullptr) {
       SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
     }
     break;
   }
   case kTS_Exiting: {
-    CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId));
+    CEntity* turret = TCastToPtr< CScriptPlayerTurret >(mgr.ObjectById(mTurretId));
     if (turret != nullptr) {
       PlayerTurret_ExitTurret(*turret, mgr);
       CVector3f position = GetTurretTransform(mgr).GetTranslation();
@@ -4025,7 +4027,7 @@ void CPlayer::EjectFromTurret(TUniqueId turret, CStateManager& mgr) {
 }
 
 void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
-  if (CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId))) {
+  if (CEntity* turret = TCastToPtr< CScriptPlayerTurret >(mgr.ObjectById(mTurretId))) {
     switch (mTurretState) {
     case kTS_Entering:
       SetTransform(PlayerTurret_GetCameraTransform(*turret, mgr));
@@ -4046,7 +4048,7 @@ void CPlayer::ProcessTurretInput(const CFinalInput& input, CStateManager& mgr) {
 }
 
 void CPlayer::ProcessTurretActions(const CFinalInput& input, CStateManager& mgr) {
-  if (CEntity* turret = CastToPlayerTurret(mgr.ObjectById(mTurretId))) {
+  if (CEntity* turret = TCastToPtr< CScriptPlayerTurret >(mgr.ObjectById(mTurretId))) {
     if (JumpPressed(input)) {
       ExitTurret(mgr);
     } else {
@@ -4056,8 +4058,8 @@ void CPlayer::ProcessTurretActions(const CFinalInput& input, CStateManager& mgr)
 }
 
 bool CPlayer::fn_8000d40c(const CVector3f& direction, CStateManager& mgr) {
-  CPlayerTurret* turret = static_cast< CPlayerTurret* >(
-      CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId))));
+  CScriptPlayerTurret* turret =
+      TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
   if (turret != nullptr) {
     CVector3f flatDirection(direction.ToVec2f(), 0.f);
     if (!flatDirection.CanBeNormalized()) {
@@ -4072,15 +4074,15 @@ bool CPlayer::fn_8000d40c(const CVector3f& direction, CStateManager& mgr) {
 }
 
 void CPlayer::fn_8000d3ac(const CVector3f& direction, CStateManager& mgr) {
-  CPlayerTurret* turret =
-      static_cast< CPlayerTurret* >(CastToPlayerTurret(mgr.ObjectById(mTurretId)));
+  CScriptPlayerTurret* turret = TCastToPtr< CScriptPlayerTurret >(mgr.ObjectById(mTurretId));
   if (turret != nullptr) {
     turret->SetTargetPosition(direction);
   }
 }
 
 CTransform4f CPlayer::GetTurretTransform(CStateManager& mgr) const {
-  CEntity* turret = CastToPlayerTurret(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
+  CEntity* turret =
+      TCastToPtr< CScriptPlayerTurret >(const_cast< CEntity* >(mgr.GetObjectById(mTurretId)));
   if (turret) {
     CTransform4f transform = PlayerTurret_GetTurretTransform(*turret, mgr);
     if (mTurretState == kTS_Entering) {

@@ -89,9 +89,9 @@ public:
   }
   static float InvSqrtF(float x);
   static float FastArcCosR(float x);
-  static float SlowCosineR(float x);
-  static float SlowSineR(float x);
-  static float SlowTangentR(float x);
+  static float SlowCosineR(float x) { return cos(x); }
+  static float SlowSineR(float x) { return sin(x); }
+  static float SlowTangentR(float x) { return tan(x); }
   static float FastSinR(float x);
   static float FastCosR(float x);
   static float ClampRadians(float rad) {
@@ -108,7 +108,7 @@ public:
   static float ArcCosineR(float v) { return acosf(v); }
   static float ArcTangentR(float v);
   static float PowF(float x, float y);
-  static const float FloorF(float x);
+  static const float FloorF(float x) { return floor(x); }
   static float CeilingF(float x);
   static CVector3f GetCatmullRomSplinePoint(const CVector3f& a, const CVector3f& b,
                                             const CVector3f& c, const CVector3f& d, float t);
@@ -161,7 +161,6 @@ public:
   static float FastMax(float a, float b) { return FastFSel(a - b, a, b); }
   // PowF__5CMathFff global
   // Rev2Deg__5CMathFf weak
-  // SlowTangentR__5CMathFf global
   static float Rad2Deg(float rad) { return rad * (180.f / M_PIF); }
   static float Rad2Rev(float rad) { return rad * (1.f / M_2PIF); }
   // CeilingF__5CMathFf global

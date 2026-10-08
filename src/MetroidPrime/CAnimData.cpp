@@ -645,6 +645,8 @@ CTransform4f CAnimData::GetLocatorTransform(CSegId id, const CCharAnimTime* time
   return CTransform4f::Identity();
 }
 
+CQuaternion CQuaternion::BuildInverted() const { return CQuaternion(w, -imaginary); }
+
 CMatrix3f CMatrix3f::Inverse() const {
   const float detScale = 1.f / Determinant();
   return CMatrix3f((m11 * m22 - m12 * m21) * detScale, (-(m01 * m22 - m02 * m21)) * detScale,

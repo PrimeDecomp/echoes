@@ -105,8 +105,11 @@ enum EEntityType {
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
+  kET_Metroid = 122,              // Target-derived class tag.
+  kET_Sandworm = 130,             // Target-derived class tag.
+  kET_SandwormEye = 131,          // Target-derived class tag.
   kET_SpacePirate = 132,          // Target-derived class tag.
-  kET_PlayerTurret = 138,         // Guessed name; turret-HUD REL dispatch target.
+  kET_ScriptPlayerTurret = 138,   // Target-derived class tag; turret-HUD REL dispatch target.
   kET_TargetableProjectile = 152, // Target-derived class tag.
   kET_PowerBomb = 156,
   kET_ScriptForgottenObject = 160,

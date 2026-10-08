@@ -72,7 +72,7 @@ NamedScriptLoader g_LoaderFuncs[] = {
     MakeNamedScriptLoader('AIMT', &LoadAIMannedTurret),
     MakeNamedScriptLoader('AIWP', &LoadAIWaypoint),
     MakeNamedScriptLoader('AMIA', &LoadAmbientAI),
-    MakeNamedScriptLoader('REAA', &LoadAreaAttributes),
+    MakeNamedScriptLoader('REAA', &LoadAreaProperties),
     MakeNamedScriptLoader('ATMA', &LoadAtomicAlpha),
     MakeNamedScriptLoader('ATMB', &LoadAtomicBeta),
     MakeNamedScriptLoader('BSWM', &LoadBacteriaSwarm),

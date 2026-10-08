@@ -209,11 +209,11 @@ public:
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
-  bool RenderLast(TUniqueId uid);                          // Guessed name.
-  bool RenderLastOverlay(const TUniqueId& uid);            // Guessed name.
-  bool RenderLastHUD(const TUniqueId& uid);                // Guessed name.
-  bool RenderFirstSorted(const TUniqueId& uid);            // Guessed name.
-  bool RenderLastAfterCameraFilters(const TUniqueId& uid); // Guessed name.
+  bool RenderLast(TUniqueId uid);                   // Guessed name.
+  bool RenderLastOverlay(const TUniqueId& uid);     // Guessed name.
+  bool RenderLastHUD(const TUniqueId& uid);         // Guessed name.
+  bool RenderFirstSorted(const TUniqueId& uid);     // Guessed name.
+  bool RenderLastAfterCameraFilters(TUniqueId uid); // Guessed name.
   void DeleteObjectRequest(TUniqueId);
   void UpdateObjectInLists(CEntity&);
   void AddWeaponId(TUniqueId owner, EWeaponType type);

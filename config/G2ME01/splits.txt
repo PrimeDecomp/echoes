@@ -357,11 +357,14 @@ MetroidPrime/ScriptObjects/CScriptSound.cpp:
 	.sdata2     start:0x8041AFE0 end:0x8041B01C
 
 MetroidPrime/ScriptObjects/CScriptPlatform.cpp:
-	.text       start:0x8009F4E4 end:0x800A4850
+	.text       start:0x8009F4E4 end:0x800A4840
 	.rodata     start:0x803A7BE8 end:0x803A7BF0
 	.data       start:0x803B3210 end:0x803B32C0
 	.sdata      start:0x80417FE8 end:0x80418010
 	.sdata2     start:0x8041B01C end:0x8041B058 align:4
+
+MetroidPrime/UserNames.cpp:
+	.text       start:0x800A4840 end:0x800A4850
 
 MetroidPrime/ScriptObjects/CScriptGenerator.cpp:
 	.text       start:0x800A4850 end:0x800A5474
@@ -1861,7 +1864,7 @@ MetroidPrime/Player/CPlayerTargeting.cpp:
 	.bss        start:0x803DB6C8 end:0x803DB6E0
 	.sdata      start:0x80418730 end:0x80418738
 	.sbss       start:0x804192E0 end:0x804192F0
-	.sdata2     start:0x8041D520 end:0x8041D55C
+	.sdata2     start:0x8041D520 end:0x8041D550
 
 MetroidPrime/CStaticGeometryMap.cpp:
 	.text       start:0x801EF598 end:0x801EFB00
@@ -1873,6 +1876,7 @@ MetroidPrime/Startup.cpp:
 	.rodata     start:0x803AB1C0 end:0x803AC430
 	.data       start:0x803B78E0 end:0x803B78F0
 	.sbss       start:0x804192F0 end:0x80419308
+	.sdata2     start:0x8041D550 end:0x8041D558
 
 MetroidPrime/CRELFileToken.cpp:
 	.text       start:0x801F0254 end:0x801F0518
@@ -1891,7 +1895,7 @@ MetroidPrime/Weapons/CLightComboProjectile.cpp:
 	.data       start:0x803B78F0 end:0x803B7990
 	.sdata      start:0x80418740 end:0x80418758
 	.sbss       start:0x80419310 end:0x80419318
-	.sdata2     start:0x8041D55C end:0x8041D5A4 align:4
+	.sdata2     start:0x8041D558 end:0x8041D5A4
 
 MetroidPrime/Weapons/CBlackHole.cpp:
 	.text       start:0x801F2E80 end:0x801F3AE0

@@ -31,7 +31,6 @@
 
 // Reconstructed against the G2ME01 renderer; remaining compiler differences keep this NonMatching.
 CCubeRenderer* CCubeRenderer::sRenderer = nullptr;
-IWeaponRenderer* IWeaponRenderer::sWeaponRenderer = nullptr;
 
 static CModelFlags skNormalFlag = CModelFlags::Normal();
 static CModelFlags skNormalFlagNoUpdate = CModelFlags::Normal().DepthCompareUpdate(true, false);

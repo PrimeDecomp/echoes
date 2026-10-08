@@ -98,7 +98,4 @@ CStateMachine::CStateMachine(CInputStream& in) {
   }
 }
 
-template < typename T >
-TStateMachineStateBase< T >::~TStateMachineStateBase() {}
-
 template class TStateMachineState< CPatterned >;
