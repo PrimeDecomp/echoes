@@ -1530,13 +1530,13 @@ MetroidPrime/Cameras/CBallCameraTransitions.cpp:
 	.bss        start:0x803DB4A0 end:0x803DB4B8
 	.sdata      start:0x80418620 end:0x80418638
 	.sbss       start:0x80419280 end:0x80419290
-	.sdata2     start:0x8041CCD8 end:0x8041CD1C
+	.sdata2     start:0x8041CCD8 end:0x8041CD18
 
 MetroidPrime/Cameras/CCameraManager.cpp:
 	.text       start:0x801AA4C4 end:0x801AD944
 	.rodata     start:0x803AA570 end:0x803AA590
 	.sdata      start:0x80418638 end:0x80418648
-	.sdata2     start:0x8041CD1C end:0x8041CD80 align:4
+	.sdata2     start:0x8041CD18 end:0x8041CD80
 
 MetroidPrime/Cameras/CCinematicCamera.cpp:
 	.text       start:0x801AD944 end:0x801AE584

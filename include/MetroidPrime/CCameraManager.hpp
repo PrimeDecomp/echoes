@@ -58,6 +58,7 @@ public:
   static float sThirdPersonFOV;
   static float sNearPlane;
   static float sFarPlane;
+  static const float sAspectRatio; // Guessed name; Prime's equivalent is mutable
 
   void SetAspectRatio(float aspect, CStateManager& mgr);
   void CreateCameras(CStateManager& mgr);
