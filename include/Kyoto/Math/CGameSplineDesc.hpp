@@ -7,8 +7,8 @@
 // Class name corroborated by the Echoes Wii CScriptEffect constructor export.
 class CGameSplineDesc {
 public:
-  CGameSplineDesc(const SLdrSpline& spline, CMotionSpline::ESplineType type, float duration,
-                  bool closedLoop)
+  CGameSplineDesc(const SLdrSpline& spline, CMotionSpline::ESplineType type, const float duration,
+                  const bool closedLoop)
   : mSpline(spline), mType(type), mDuration(duration), mClosedLoop(closedLoop) {}
   ~CGameSplineDesc() {}
 

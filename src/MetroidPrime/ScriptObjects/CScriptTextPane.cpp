@@ -5,6 +5,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrTextPane.hpp"
+#include "rstl/math.hpp"
 
 CScriptTextPane::CScriptTextPane(
     TUniqueId uid, const rstl::string& name, const CEntityInfo& info, const CTransform4f& xf,
@@ -76,23 +77,22 @@ void CScriptTextPane::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
 }
 
 void CScriptTextPane::Think(float dt, CStateManager& mgr) {
-  if (mFadeOpacity < 0.f) {
-    const float opacity = mFadeOpacity + 1.f / mFadeOutTime * dt;
-    mFadeOpacity = opacity >= 0.f ? 0.f : opacity;
-    if (mFadeOpacity == 0.f) {
+  const float fadeOpacity = mFadeOpacity;
+  if (fadeOpacity < 0.f) {
+    mFadeOpacity = rstl::min_val(0.f, 1.f / mFadeOutTime * dt + fadeOpacity);
+    if (0.f == mFadeOpacity) {
       mgr.SendScriptMsg(this, GetUniqueId(), kSM_Deactivate, kInvalidUniqueId);
     }
-  } else if (mFadeOpacity < 1.f) {
-    const float opacity = mFadeOpacity + 1.f / mFadeInTime * dt;
-    mFadeOpacity = opacity >= 1.f ? 1.f : opacity;
+  } else if (fadeOpacity < 1.f) {
+    mFadeOpacity = rstl::min_val(1.f, 1.f / mFadeInTime * dt + fadeOpacity);
   }
 
-  if (mRenderScale < mTargetRenderScale) {
-    const float scale = mRenderScale + 8.f * dt;
-    mRenderScale = scale >= mTargetRenderScale ? mTargetRenderScale : scale;
-  } else if (mRenderScale > mTargetRenderScale) {
-    const float scale = mRenderScale - 8.f * dt;
-    mRenderScale = mTargetRenderScale >= scale ? mTargetRenderScale : scale;
+  const float renderScale = mRenderScale;
+  const float targetRenderScale = mTargetRenderScale;
+  if (renderScale < targetRenderScale) {
+    mRenderScale = rstl::min_val(targetRenderScale, 8.f * dt + renderScale);
+  } else if (renderScale > targetRenderScale) {
+    mRenderScale = rstl::max_val(targetRenderScale, renderScale - 8.f * dt);
   }
 }
 
