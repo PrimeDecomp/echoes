@@ -249,6 +249,7 @@ MetroidPrime/ScriptObjects/CScriptTrigger.cpp:
 	.rodata     start:0x803A7108 end:0x803A7110
 	.data       start:0x803B2018 end:0x803B20B0
 	.sdata      start:0x80417EE0 end:0x80417EF0
+	.sbss       start:0x80418FE0 end:0x80418FE8
 	.sdata2     start:0x8041AA90 end:0x8041AAA8
 
 MetroidPrime/ScriptObjects/CScriptWaypoint.cpp:
@@ -264,7 +265,7 @@ MetroidPrime/Enemies/CPatterned.cpp:
 	.rodata     start:0x803A7118 end:0x803A7240
 	.data       start:0x803B2148 end:0x803B2698
 	.sdata      start:0x80417EF8 end:0x80417F50
-	.sbss       start:0x80418FE0 end:0x80419020
+	.sbss       start:0x80418FE8 end:0x80419020
 	.sdata2     start:0x8041AAB8 end:0x8041AB28
 
 MetroidPrime/ScriptObjects/CScriptDoor.cpp:
