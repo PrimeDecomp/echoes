@@ -214,6 +214,7 @@ public:
   void SetShadowDirty(bool b) { mShadowDirty = b; }
   void SetMuted(bool b);
   void SetRenderParticleDatabaseInside(bool b) { mRenderParticleDBInside = b; }
+  void SetEnableRender(bool b) { mEnableRender = b; } // Guessed name
   void SetDrawEnabled(bool enabled) { mDrawEnabled = enabled; }
 
   void SetDamageHighlight(bool enabled) { mDamageHighlight = enabled; } // Guessed accessor name.

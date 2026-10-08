@@ -56,7 +56,10 @@ struct SLdrEmperorIngStage2Tentacle {
 
 inline SLdrEmperorIngStage2Tentacle::SLdrEmperorIngStage2Tentacle()
 : editorProperties(), patterned(), actorInformation(), data() {
+  patterned.health.hI_KnockBackResistance = 2.0f;
   patterned.creatureSize = 2;
+  actorInformation.lighting.ambientColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
+  actorInformation.visor.visorFlags = 0x0000000fu;
 }
 
 inline SLdrEmperorIngStage2Tentacle::~SLdrEmperorIngStage2Tentacle() {}
