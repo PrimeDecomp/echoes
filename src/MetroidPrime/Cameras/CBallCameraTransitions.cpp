@@ -140,21 +140,23 @@ bool CBallCamera::TransitionToMorphBallState(CStateManager& mgr) {
   TeleportCamera(firstPersonXf, mgr);
   TeleportLookAtStuff(mgr);
 
-  mToBallTransition->mLookPos =
+  const CVector3f lookPos =
       CameraManager(mgr).FirstPersonCamera()->GetScanObjectIndicatorPosition(mgr);
+  mToBallTransition->mLookPos = lookPos;
   mToBallTransition->mPlayerXf = playerXf;
   CVector3f eyePos = Player(mgr).GetEyePosition();
   float distance = mTargetMinDistance;
   float elevation = mElevation;
   ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
   distance = mTargetMinDistance;
-  const CVector3f ballPos =
-      FindDesiredPosition(distance, elevation, Player(mgr).GetTranslation(), mgr, false);
+  const CVector3f forward = Player(mgr).GetTransform().GetForward();
 
-  CVector3f desiredPoint = eyePos + (0.6f * -distance) * playerXf.GetForward();
+  const CVector3f ballPos = FindDesiredPosition(distance, elevation, forward, mgr, false);
+  const float backDistance = -distance;
+  CVector3f desiredPoint = (0.6f * backDistance) * playerXf.GetForward() + eyePos;
   float hitDistance;
   if (DetectCollision(eyePos, desiredPoint, 0.3f, hitDistance, mgr, GetControllerNumber())) {
-    desiredPoint = eyePos + -hitDistance * playerXf.GetForward();
+    desiredPoint = -hitDistance * playerXf.GetForward() + eyePos;
   }
 
   rstl::vector< CVector3f > points;
