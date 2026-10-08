@@ -47,7 +47,9 @@ inline SLdrKrocuss::SLdrKrocuss()
 , actorInformation()
 , shellClosedVulnerability()
 , wingLightColor(CColor::Green())
-, dPSC(kInvalidAssetId) {
+, dPSC(kInvalidAssetId)
+, shellOpenSound(-1)
+, shellCloseSound(-1) {
   flavor = 0;
   patterned.mass = 25.0f;
   patterned.speed = 3.0f;
@@ -80,8 +82,6 @@ inline SLdrKrocuss::SLdrKrocuss()
   timeToCloseShell = 1.0f;
   unknown_0xbbebed9e = 1.0f;
   wingLightColor = CColor(1.0f, 0.0f, 0.0f, 1.0f);
-  shellOpenSound = 0;
-  shellCloseSound = 0;
   maxAudibleDistance = 50.0f;
 }
 

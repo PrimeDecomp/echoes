@@ -1722,6 +1722,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Krocuss",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CKrocuss.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
