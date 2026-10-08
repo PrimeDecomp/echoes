@@ -17,6 +17,7 @@ enum EEntityType {
   kET_Effect = 7,
   kET_GameProjectile = 8,
   kET_ScriptWaypoint = 9,
+  kET_ScriptGuiWidget = 11,    // Guessed name; REL ScriptGui base, derives CEntity.
   kET_ScriptPathMeshCtrl = 10, // Guessed class name; native path-mesh obstruction controller.
   kET_ScriptSequenceTimer = 12,
   kET_BallCamera = 13,
@@ -63,7 +64,10 @@ enum EEntityType {
   kET_ScriptDynamicLight = 57,
   kET_ScriptEffect = 58,
   kET_ScriptGrapplePoint = 59,
-  kET_ScriptHUDHint = 63, // Guessed name; HUD texture marker.
+  kET_ScriptGuiMenu = 60,   // Guessed name.
+  kET_ScriptGuiScreen = 61, // Guessed name.
+  kET_ScriptGuiSlider = 62, // Guessed name.
+  kET_ScriptHUDHint = 63,   // Guessed name; HUD texture marker.
   kET_ScriptLayerController = 64,
   kET_ScriptPathCamera = 65,
   kET_ScriptPickup = 66,
@@ -106,12 +110,14 @@ enum EEntityType {
   kET_BeamProjectile = 109,
   kET_PlasmaProjectile = 110,
   kET_DarkSamus = 111,
-  kET_Metroid = 122,              // Target-derived class tag.
-  kET_Sandworm = 130,             // Target-derived class tag.
-  kET_SandwormEye = 131,          // Target-derived class tag.
-  kET_SpacePirate = 132,          // Target-derived class tag.
-  kET_ScriptPlayerTurret = 138,   // Target-derived class tag; turret-HUD REL dispatch target.
-  kET_TargetableProjectile = 152, // Target-derived class tag.
+  kET_Metroid = 122,                   // Target-derived class tag.
+  kET_Ripper = 128,                    // Target-derived class tag.
+  kET_Sandworm = 130,                  // Target-derived class tag.
+  kET_SandwormEye = 131,               // Target-derived class tag.
+  kET_SpacePirate = 132,               // Target-derived class tag.
+  kET_ScriptPlayerTurret = 138,        // Target-derived class tag; turret-HUD REL dispatch target.
+  kET_TargetableProjectile = 152,      // Target-derived class tag.
+  kET_ScriptFrontEndDataNetwork = 155, // Target-derived class tag.
   kET_PowerBomb = 156,
   kET_ScriptForgottenObject = 160,
 };

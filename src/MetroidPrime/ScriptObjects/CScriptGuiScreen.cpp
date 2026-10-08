@@ -21,6 +21,7 @@
 #include "MetroidPrime/Player/CWorldState.hpp"
 #include "MetroidPrime/Player/CWorldTransManager.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrGuiScreen.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptFrontEndDataNetwork.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGuiMenu.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptGuiSlider.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptRelay.hpp"
@@ -39,9 +40,6 @@
 // Guessed names; IOWin priorities passed by reference to the slide show message.
 static int sSlideShowMsgPriority = 16;
 static int sSlideShowDrawPriority = 1001;
-
-// Unresolved native cast for entity type 155.
-extern "C" CEntity* fn_800977A4(CEntity* entity);
 
 static inline float RoundToNearest(float value) {
   const float lower = floor(value);
@@ -124,13 +122,13 @@ void CScriptGuiFrontEndScreen::CollectWidgets(CStateManager& mgr) {
   {
     rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_AIS1, kSM_None);
     mDeathMatchSwitch = TCastToPtr< CScriptSwitch >(mgr.ObjectById(ids[0]));
-    mDeathMatchEntity = fn_800977A4(mgr.ObjectById(ids[1]));
+    mDeathMatchEntity = TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(ids[1]));
   }
 
   {
     rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_AIS2, kSM_None);
     mCoinSwitch = TCastToPtr< CScriptSwitch >(mgr.ObjectById(ids[0]));
-    mCoinEntity = fn_800977A4(mgr.ObjectById(ids[1]));
+    mCoinEntity = TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(ids[1]));
   }
 
   {
@@ -158,7 +156,7 @@ void CScriptGuiFrontEndScreen::CollectWidgets(CStateManager& mgr) {
       slot.mTitle = TCastToPtr< CScriptTextPane >(mgr.ObjectById(textIds[i * 3]));
       slot.mWorldName = TCastToPtr< CScriptTextPane >(mgr.ObjectById(textIds[i * 3 + 1]));
       slot.mPlayTime = TCastToPtr< CScriptTextPane >(mgr.ObjectById(textIds[i * 3 + 2]));
-      slot.mSlotEntity = fn_800977A4(mgr.ObjectById(slotIds[i]));
+      slot.mSlotEntity = TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(slotIds[i]));
       slot.mUsedSwitch = TCastToPtr< CScriptSwitch >(mgr.ObjectById(usedIds[i]));
       slot.mNewGameSwitch = TCastToPtr< CScriptSwitch >(mgr.ObjectById(newIds[i]));
       slot.mDifficultyMenu = TCastToPtr< CScriptGuiMenu >(mgr.ObjectById(difficultyIds[i]));
@@ -273,14 +271,14 @@ void CScriptGuiFrontEndScreen::CollectWidgets(CStateManager& mgr) {
   {
     rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_PowerDamage, kSM_None);
     for (int i = 0; i < ids.size(); ++i) {
-      mOptionsPages.push_back(fn_800977A4(mgr.ObjectById(ids[i])));
+      mOptionsPages.push_back(TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(ids[i])));
     }
   }
 
   {
     rstl::vector< TUniqueId > ids = FindConnectedObjects(mgr, kSS_DarkDamage, kSM_None);
     for (int i = 0; i < ids.size(); ++i) {
-      mResetPages.push_back(fn_800977A4(mgr.ObjectById(ids[i])));
+      mResetPages.push_back(TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(ids[i])));
     }
   }
 
@@ -321,7 +319,7 @@ void CScriptGuiFrontEndScreen::CollectWidgets(CStateManager& mgr) {
   UpdateSoundVolumes();
 
   id = FindConnectedObject(mgr, kSS_BoostBallDamage, kSM_None);
-  mGalleryEntity = fn_800977A4(mgr.ObjectById(id));
+  mGalleryEntity = TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(id));
 
   CGameState* gameState = gpGameState;
   const uint gameMode = gameState->PreviousGameResults().mGameMode;
@@ -946,7 +944,7 @@ void CScriptGuiFrontEndScreen::ApplyOptionWidget(CStateManager& mgr, CEntity* wi
 }
 
 void CScriptGuiFrontEndScreen::ResetOptionPage(CStateManager& mgr, CEntity* widget) {
-  if (CEntity* page = fn_800977A4(widget)) {
+  if (CEntity* page = TCastToPtr< CScriptFrontEndDataNetwork >(widget)) {
     for (int i = 0; i < mResetPages.size(); ++i) {
       if (page == mResetPages[i]) {
         mOptionsPage = i;

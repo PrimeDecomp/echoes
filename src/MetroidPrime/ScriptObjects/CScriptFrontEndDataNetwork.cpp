@@ -17,19 +17,13 @@
 #include "MetroidPrime/ScriptLoader/SLdrFrontEndDataNetwork.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptColorModulate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGuiWidget.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlatform.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTextPane.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "REL/REL_Setup.h"
 #include "rstl/algorithm.hpp"
-
-// The ScriptGui REL entity (native type 11) that forwards a controller index.
-struct SGuiControllerSource {
-  uchar x0_pad[0x38];
-  int mController;
-};
-extern "C" SGuiControllerSource* fn_8009A6E4(CEntity* entity);
 
 // Guessed name. One billboard queued by RenderNode, sorted back to front.
 struct SRenderItem {
@@ -205,9 +199,9 @@ void CScriptFrontEndDataNetwork::AcceptScriptMsg(CStateManager& mgr, const CScri
     break;
   case kSM_Follow:
     if (mIsRoot) {
-      if (SGuiControllerSource* source =
-              fn_8009A6E4(const_cast< CEntity* >(mgr.GetObjectById(msg.GetSenderId())))) {
-        AddController(source->mController);
+      if (CScriptGuiWidget* source = TCastToPtr< CScriptGuiWidget >(
+              const_cast< CEntity* >(mgr.GetObjectById(msg.GetSenderId())))) {
+        AddController(source->GetControllerNumber());
       }
     }
     break;

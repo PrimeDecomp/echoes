@@ -1,6 +1,12 @@
 #include "MetroidPrime/Enemies/CDarkSamusBattleStage.hpp"
 #include "MetroidPrime/Enemies/CFlyerSwarm.hpp"
+#include "MetroidPrime/Enemies/CRipper.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptFrontEndDataNetwork.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGuiMenu.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGuiScreen.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGuiSlider.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptGuiWidget.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptPlayerTurret.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTextPane.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTimeKeyframe.hpp"
@@ -146,6 +152,8 @@ CAST_TO_REF_IMPL(CFirstPersonCamera, kET_FirstPersonCamera)
 
 CAST_TO_PTR_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
 CAST_TO_REF_IMPL(CSnakeWeedSwarm, kET_SnakeWeedSwarm)
+
+CEntity* CastToSandwormEye(CEntity& entity) { return entity.TypesMatch(kET_SandwormEye); }
 
 // The remaining cast and class overrides in the original TU are still unimplemented.
 CPlasmaProjectile::~CPlasmaProjectile() {}
@@ -516,7 +524,20 @@ TYPES_MATCH_IMPL(CScriptSpiderBallWaypoint, CScriptWaypoint, kET_ScriptSpiderBal
 
 // REL-resident classes whose TypesMatch and casts the DOL owns.
 TYPES_MATCH_IMPL(CDarkSamusBattleStage, CEntity, kET_DarkSamusBattleStage)
+TYPES_MATCH_IMPL(CSwarmBasics, CActor, kET_SwarmBasics)
 TYPES_MATCH_IMPL(CFlyerSwarm, CSwarmBasics, kET_FlyerSwarm)
+TYPES_MATCH_IMPL(CScriptFrontEndDataNetwork, CActor, kET_ScriptFrontEndDataNetwork)
+CAST_TO_PTR_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)
+CAST_TO_REF_IMPL(CScriptFrontEndDataNetwork, kET_ScriptFrontEndDataNetwork)
+TYPES_MATCH_IMPL(CRipper, CPatterned, kET_Ripper)
+TYPES_MATCH_IMPL(CMetroid, CPatterned, kET_Metroid)
+TYPES_MATCH_IMPL(CScriptGuiWidget, CEntity, kET_ScriptGuiWidget)
+CAST_TO_PTR_IMPL(CScriptGuiWidget, kET_ScriptGuiWidget)
+TYPES_MATCH_IMPL(CScriptGuiScreen, CActor, kET_ScriptGuiScreen)
+TYPES_MATCH_IMPL(CScriptGuiSlider, CScriptGuiWidget, kET_ScriptGuiSlider)
+CAST_TO_PTR_IMPL(CScriptGuiSlider, kET_ScriptGuiSlider)
+TYPES_MATCH_IMPL(CScriptGuiMenu, CScriptGuiWidget, kET_ScriptGuiMenu)
+CAST_TO_PTR_IMPL(CScriptGuiMenu, kET_ScriptGuiMenu)
 
 #undef TYPES_MATCH_IMPL
 #undef CAST_TO_PTR_IMPL
