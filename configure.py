@@ -1757,6 +1757,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "ScriptRiftPortal",
+        [
+            Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptRiftPortal.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 

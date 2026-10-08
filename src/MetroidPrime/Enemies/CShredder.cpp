@@ -339,9 +339,9 @@ void CShredder::Render(const CStateManager& mgr) const {
     const float blink =
         0.5f * progress *
         (1.f + sin(2.f * M_PIF * (3.f * progress * progress + 0.01f) * mStateMachine->GetTime()));
-    gpRender->SetAmbientColor(CColor(blink, blink, blink, 1.f));
+    gpRender->SetGXRegister1Color(CColor(blink, blink, blink, 1.f));
   } else {
-    gpRender->SetAmbientColor(CColor::Black());
+    gpRender->SetGXRegister1Color(CColor::Black());
   }
   CPatterned::Render(mgr);
 }

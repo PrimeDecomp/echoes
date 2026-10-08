@@ -79,6 +79,7 @@ enum EEntityType {
   kET_ScriptPortalTransition = 72,
   kET_ScriptRelay = 73,
   kET_ScriptRepulsor = 74,
+  kET_ScriptRiftPortal = 75, // Target-derived class tag.
   kET_ScriptRoomAcoustics = 76,
   kET_ScriptSound = 77,
   kET_ScriptSoundModifier = 78, // Guessed name.
