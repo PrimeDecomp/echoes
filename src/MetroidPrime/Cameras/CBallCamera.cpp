@@ -360,6 +360,8 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
   CVector3f delta = to - from;
   float length = delta.Magnitude();
   CVector3f direction = delta * (1.f / length);
+
+
   bool clear = true;
 
   if (length > 1.1920929e-6f) {
@@ -371,6 +373,8 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
                     bounds.GetMaxPoint() + CVector3f(margin, margin, margin));
     rstl::reserved_vector< TUniqueId, 1024 > nearList;
     mgr.BuildColliderList(nearList, *mgr.GetPlayer(controllerIdx), bounds);
+
+
     CAreaCollisionCache cache(bounds);
     CGameCollision::BuildAreaCollisionCache(mgr, cache);
     if (cache.HasCacheOverflowed()) {
@@ -394,8 +398,7 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
       const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
           CMaterialList(kMT_Solid), CMaterialList(kMT_ProjectilePassthrough, kMT_Player,
                                                   kMT_Character, kMT_CameraPassthrough));
-      CTransform4f startTransform = CTransform4f::Translate(from);
-      CTransform4f testTransform = startTransform;
+      CTransform4f testTransform = CTransform4f::Translate(from);
       const int stepCount = static_cast< uint >(length / 0.5f);
       const CVector3f step = (1.f / stepCount) * delta;
       for (int i = 0; i < stepCount; ++i) {
@@ -404,8 +407,8 @@ bool CBallCamera::DetectCollision(const CVector3f& from, const CVector3f& to, fl
         if (CGameCollision::DetectCollision_Cached_Moving(mgr, cache, sphere, testTransform, filter,
                                                           nearList, direction, hitId, hitInfo,
                                                           hitDistance)) {
-          distance = float(hitDistance + i * step.Magnitude());
           clear = false;
+          distance = float(hitDistance + i * step.Magnitude());
           break;
         }
         testTransform.SetTranslation(testTransform.GetTranslation() + step);
@@ -500,7 +503,7 @@ CVector3f CBallCamera::FindDesiredPosition(float distance, float elevation, CVec
   CVector3f eyePos = Player(mgr).GetEyePosition();
   if (watchedPlayer != nullptr &&
       watchedPlayer->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
-    eyePos = mLookPosAhead;
+    eyePos = mFixedLookPos;
   }
   if (!mgr.RayCollideWorld(ballPos, eyePos, skLineOfSightFilter, nullptr)) {
     eyePos = ballPos;
@@ -511,11 +514,12 @@ CVector3f CBallCamera::FindDesiredPosition(float distance, float elevation, CVec
   desiredOffset = lookRotation.GetRotation() * desiredOffset;
   CVector3f resultOffset(0.f, distance, constrainedElevation);
   resultOffset[kDZ] -= eyePos.GetZ() - ballPos.GetZ();
+  const float minSeekDistance = constrainedDistance;
   float collisionDistance = desiredOffset.Magnitude();
   const bool clear = !DetectCollision(eyePos, eyePos + desiredOffset, 0.3f, collisionDistance, mgr,
                                       GetControllerNumber());
   bool found = false;
-  const float minSeekDistance = constrainedDistance;
+
 
   if (!clear && collisionDistance <= 0.f) {
     const CAABox bounds(ballPos.GetX() - distance, ballPos.GetY() - distance,
@@ -535,6 +539,7 @@ CVector3f CBallCamera::FindDesiredPosition(float distance, float elevation, CVec
       found = fn_801a67a4(minSeekDistance, eyePos, reflectedOffset, nearList, resultOffset, mgr);
     }
   } else {
+    const float clearDistance = 0.95f * distance;
     bool movingForward = false;
     if (mBallVelFlat > 1.25f && mBallDeltaFlat.IsMagnitudeSafe() && watchedPlayer != nullptr &&
         (watchedPlayer->GetMorphballTransitionState() == CPlayer::kMS_Unmorphed ||
@@ -542,7 +547,8 @@ CVector3f CBallCamera::FindDesiredPosition(float distance, float elevation, CVec
       movingForward =
           CVector3f::Dot(mBallDeltaFlat.AsNormalized(), watched->GetTransform().GetForward()) > 0.f;
     }
-    if (clear || (!fullTest && (collisionDistance > 0.95f * distance || movingForward))) {
+    if (clear || (!fullTest && (collisionDistance > clearDistance || movingForward))) {
+
       if (movingForward) {
         resultOffset = desiredOffset;
       } else {
@@ -842,11 +848,12 @@ CVector3f CBallCamera::InterpolateCameraElevation(CVector3f position, float dt) 
   if (!mClearLOS && mObscuringMaterial.HasMaterial(kMT_Floor)) {
     mElevInterpTimer = 1.f;
     pos.SetZ(GetTranslation().GetZ());
-    mElevInterpStart = pos.GetZ();
+    mElevInterpStart = GetTranslation().GetZ();
   } else if (mElevInterpTimer > 0.f) {
     mElevInterpTimer -= dt;
-    float t = 1.f - CMath::Clamp(0.f, mElevInterpTimer, 1.f);
-    pos.SetZ((pos.GetZ() - mElevInterpStart) * t + mElevInterpStart);
+    float timer = CMath::Clamp(0.f, mElevInterpTimer, 1.f);
+    float delta = pos.GetZ() - mElevInterpStart;
+    pos.SetZ(delta * (1.f - timer) + mElevInterpStart);
   }
   return pos;
 }
@@ -2100,8 +2107,10 @@ void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     CCollisionActor* actor = rs_new CCollisionActor(mCollisionActorId, GetAreaIdForPersistence(),
                                                     kInvalidUniqueId, true, 0.3f, 1.f);
     if (actor != nullptr) {
-      actor->SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-          CMaterialList(kMT_Solid), CMaterialList(kMT_Player, kMT_CameraPassthrough)));
+      CMaterialList include(kMT_Solid);
+      CMaterialList exclude(kMT_Player, kMT_CameraPassthrough);
+      CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(include, exclude);
+      actor->SetMaterialFilter(filter);
       actor->MaterialList() = CMaterialList(kMT_ProjectilePassthrough, kMT_ScanPassthrough,
                                             kMT_SeeThrough, kMT_CameraPassthrough);
       actor->SetTranslation(GetTranslation());
@@ -2110,11 +2119,15 @@ void CBallCamera::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       actor->SetLastNonCollidingState(CMotionState(
           GetTranslation(), CNUQuaternion::BuildFromAxisAngle(CVector3f::Forward(), 0.f),
           CVector3f::Zero(), CAxisAngle::Identity()));
-      actor->SetDrawEnabled(false);
+      actor->SetEnableRender(false);
     }
-    SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
-        CMaterialList(), CMaterialList(kMT_Solid, kMT_ProjectilePassthrough, kMT_Player,
-                                       kMT_Character, kMT_CameraPassthrough)));
+
+    CMaterialList include;
+    CMaterialList exclude(kMT_Solid, kMT_ProjectilePassthrough, kMT_Player, kMT_Character,
+                          kMT_CameraPassthrough);
+    CMaterialFilter selfFilter = CMaterialFilter::MakeIncludeExclude(include, exclude);
+    SetMaterialFilter(selfFilter);
+
     RemoveMaterial(kMT_Solid, mgr);
     break;
   }
