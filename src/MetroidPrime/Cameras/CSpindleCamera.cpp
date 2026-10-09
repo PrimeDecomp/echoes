@@ -162,6 +162,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   const CVector3f ballPos = Player(mgr).GetBallPosition();
   CVector3f hintToBallDir = ballPos - hintLine.GetClosestPoint(ballPos);
 
+  float hintBallToCamAzimuth;
   float hintToBallDist = 0.f;
   CVector3f hintDir = script->GetTransform().GetForward();
   const CVector3f up = script->GetTransform().GetUp();
@@ -325,7 +326,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
     newHintToCamDir = targetHintToCam;
   }
 
-  const float hintBallToCamAzimuth =
+  hintBallToCamAzimuth =
       acos(CMath::Limit(CVector3f::Dot(hintToBallDir, newHintToCamDir), 1.f));
   const float minHintBallToCamAzimuth = 0.017453292f * GetInterpolant(params.GetMinAngularOffset());
   if (CMath::AbsF(hintBallToCamAzimuth) < minHintBallToCamAzimuth) {
