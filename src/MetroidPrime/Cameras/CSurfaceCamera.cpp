@@ -141,13 +141,13 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
   const CVector3f ballPosition = Player(mgr).GetBallPosition();
   camera = TCastToConstPtr< CScriptSurfaceCamera >(mgr.GetObjectById(mScriptCameraId));
   if (camera) {
-    if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
-      mPlayerSplineDistance =
-          camera->GetPlayerSpline().FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
+    const CMotionSpline& playerSpline = camera->GetPlayerSpline();
+    if (playerSpline.GetControlPointCount() != 0) {
+      mPlayerSplineDistance = playerSpline.FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
     }
-    if (camera->GetTargetSpline().GetControlPointCount() != 0) {
-      mTargetSplineDistance =
-          camera->GetTargetSpline().FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
+    const CMotionSpline& targetSpline = camera->GetTargetSpline();
+    if (targetSpline.GetControlPointCount() != 0) {
+      mTargetSplineDistance = targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
     }
   }
 
