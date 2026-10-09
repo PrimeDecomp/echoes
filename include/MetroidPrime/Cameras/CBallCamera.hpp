@@ -3,6 +3,7 @@
 
 #include "Collision/CMaterialList.hpp"
 #include "Kyoto/Math/CMotionSpline.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/Cameras/CCameraColliderGroup.hpp"
 #include "MetroidPrime/Cameras/CCameraSpring.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
@@ -65,7 +66,7 @@ public:
   void DoorClosing(TUniqueId uid);
   bool CheckDoorProximity(const CVector3f& position, const CStateManager& mgr) const;
 
-  const CVector3f& GetFixedLookPos() const { return mFixedLookPos; }
+  CVector3f GetFixedLookPos() const { return mFixedLookPos; }
   const CVector3f& GetLookAtPosition() const { return mLookPos; }
   const CVector3f& GetLookPosAhead() const { return mLookPosAhead; }
   float GetDistance() const { return mCurMinDistance; }
@@ -79,6 +80,8 @@ public:
   bool TransitionFromMorphBallState(CStateManager& mgr);
   // Reconstructed accessors; see CPlayerDynamics research.
   void SetLookAtPosition(const CVector3f& position) { mLookPos = position; }
+  void SetLookAtOffset(CVector3f offset) { mLookAtOffset = offset; }
+  void SetWorldOffset(CVector3f offset) { mOverrideBallToCam = offset; }
   void ResetLookAtPosition() {
     mLookPos = mFixedLookPos;
     mLookPosAhead = mFixedLookPos;
@@ -233,11 +236,11 @@ private:
   float mTooCloseActorDist;
   bool mPendingFailsafe;
   float x4b0_;
-  float mFreeLookYawDelta;
-  float mFreeLookPitchDelta;
+  CRelAngle mFreeLookYawDelta;
+  CRelAngle mFreeLookPitchDelta;
   float mFreeLookDistance;
-  float mFreeLookZoomOutInput;
   float mFreeLookZoomInInput;
+  float mFreeLookZoomOutInput;
   EBallCameraState mState;
   float mChaseDistance;
   float mChaseYawSpeed;
