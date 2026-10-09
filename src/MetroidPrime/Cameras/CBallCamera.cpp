@@ -1873,13 +1873,10 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
   const CRayCastResult hit = mgr.RayWorldIntersection(
       mObscuringObjectId, GetTranslation(), cameraToBall, rayLength, skLineOfSightFilter, nearList);
   const CPlayer& player = *mgr.GetPlayer(GetControllerNumber());
-  if (!hit.IsValid()) {
-    mClearLOS = true;
-    mObscuringMaterial = CMaterialList(kMT_NoStepLogic);
-  } else {
+  if (hit.IsValid()) {
     mObscuringMaterial = hit.GetMaterial();
     CVector3f upperBallPos = ballPos;
-    upperBallPos.SetZ(upperBallPos.GetZ() + player.GetTweakPlayer()->GetBallRadius());
+    upperBallPos[kDZ] += player.GetTweakPlayer()->GetBallRadius();
     const CVector3f lowerBallPos = player.GetTranslation();
     const bool clearAbove =
         mgr.RayCollideWorld(GetTranslation(), upperBallPos, nearList, skLineOfSightFilter, &player);
@@ -1896,13 +1893,16 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
         }
       }
     }
+  } else {
+    mClearLOS = true;
+    mObscuringMaterial = CMaterialList(kMT_NoStepLogic);
   }
 
-  if (mClearLOS) {
-    mObscuredTime = 0.f;
-  } else {
+  if (!mClearLOS) {
     mObscuredTime += dt;
     ShouldResetSpline(mgr);
+  } else {
+    mObscuredTime = 0.f;
   }
   mUnobscureMag = CMath::Clamp(0.f, 0.5f * mObscuredTime, 1.f);
   if (mObscureAvoidance &&
@@ -1913,7 +1913,8 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
     mPendingFailsafe = false;
   }
   bool useFailsafe = mPendingFailsafe;
-  if ((GetTranslation() - ballPos).Magnitude() < 0.3f + player.GetTweakPlayer()->GetBallRadius()) {
+  const float ballDistance = CVector3f(GetTranslation() - ballPos).Magnitude();
+  if (ballDistance < 0.3f + player.GetTweakPlayer()->GetBallRadius()) {
     useFailsafe = true;
   }
   if (mNearbyDoorClosed) {
