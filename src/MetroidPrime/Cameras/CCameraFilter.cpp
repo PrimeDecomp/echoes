@@ -314,16 +314,18 @@ void CCameraFilterPass::DrawRandomStatic(const CColor& color, float alpha, bool 
 void CCameraFilterPass::DrawDialogBox(const CColor& color, const CTexture* texture, float alpha) {
   const rstl::pair< CVector2f, CVector2f > viewport =
       gpRender->SetViewportOrtho(true, -4096.f, 4096.f);
-  const float scaleX = (viewport.second.GetX() - viewport.first.GetX()) / 640.f;
-  const float scaleY = (viewport.second.GetY() - viewport.first.GetY()) / 448.f;
+  const CVector2f& min = viewport.first;
+  const CVector2f& max = viewport.second;
+  const float scaleX = (max.GetX() - min.GetX()) / 640.f;
+  const float scaleY = (max.GetY() - min.GetY()) / 448.f;
   const float halfWidth = 0.5f * sDialogBoxWidth;
-  const float halfHeight = 0.5f * sDialogBoxHeight;
   const float innerWidth = halfWidth - sDialogBoxBorder;
+  const float halfHeight = 0.5f * sDialogBoxHeight;
   const float innerHeight = halfHeight - sDialogBoxBorder;
 
   gpRender->SetDepthReadWrite(false, false);
   CTransform4f transform = CTransform4f::Translate(0.f, 0.f, sDialogBoxOffsetY);
-  transform = transform * CTransform4f::Scale(scaleX, 1.f, scaleY);
+  transform *= CTransform4f::Scale(scaleX, 1.f, scaleY);
   gpRender->SetModelMatrix(transform);
   if (texture != nullptr) {
     texture->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
@@ -331,25 +333,53 @@ void CCameraFilterPass::DrawDialogBox(const CColor& color, const CTexture* textu
   CGraphics::SetTevOp(kTS_Stage0, CGraphics::kEnvModulate);
   CGraphics::SetTevOp(kTS_Stage1, CGraphics::kEnvPassthru);
 
-  const float x[] = {-halfWidth, -innerWidth, innerWidth, halfWidth};
-  const float y[] = {halfHeight, innerHeight, -innerHeight, -halfHeight};
-  const float u[] = {0.f, 1.f / 3.f, 1.f - 1.f / 3.f, 1.f};
-  const float v[] = {1.f, 1.f - 1.f / 3.f, 1.f / 3.f, 0.f};
-  CColor fadedColor = color;
-  fadedColor.SetAlpha(static_cast< uchar >(alpha * static_cast< float >(color.GetAlphau8())));
+  // Nine-slice quads: x, z, u, v per vertex.
+  const float oneThird = 1.f / 3.f;
+  const float twoThirds = 1.f - oneThird;
+  const float vertices[36][4] = {
+      {-halfWidth, halfHeight, 0.f, 1.f},
+      {-halfWidth, innerHeight, 0.f, twoThirds},
+      {-innerWidth, innerHeight, oneThird, twoThirds},
+      {-innerWidth, halfHeight, oneThird, 1.f},
+      {-halfWidth, innerHeight, 0.f, twoThirds},
+      {-halfWidth, -innerHeight, 0.f, oneThird},
+      {-innerWidth, -innerHeight, oneThird, oneThird},
+      {-innerWidth, innerHeight, oneThird, twoThirds},
+      {-halfWidth, -innerHeight, 0.f, oneThird},
+      {-halfWidth, -halfHeight, 0.f, 0.f},
+      {-innerWidth, -halfHeight, oneThird, 0.f},
+      {-innerWidth, -innerHeight, oneThird, oneThird},
+      {-innerWidth, halfHeight, oneThird, 1.f},
+      {-innerWidth, innerHeight, oneThird, twoThirds},
+      {innerWidth, innerHeight, twoThirds, twoThirds},
+      {innerWidth, halfHeight, twoThirds, 1.f},
+      {-innerWidth, innerHeight, oneThird, twoThirds},
+      {-innerWidth, -innerHeight, oneThird, oneThird},
+      {innerWidth, -innerHeight, twoThirds, oneThird},
+      {innerWidth, innerHeight, twoThirds, twoThirds},
+      {-innerWidth, -innerHeight, oneThird, oneThird},
+      {-innerWidth, -halfHeight, oneThird, 0.f},
+      {innerWidth, -halfHeight, twoThirds, 0.f},
+      {innerWidth, -innerHeight, twoThirds, oneThird},
+      {innerWidth, halfHeight, twoThirds, 1.f},
+      {innerWidth, innerHeight, twoThirds, twoThirds},
+      {halfWidth, innerHeight, 1.f, twoThirds},
+      {halfWidth, halfHeight, 1.f, 1.f},
+      {innerWidth, innerHeight, twoThirds, twoThirds},
+      {innerWidth, -innerHeight, twoThirds, oneThird},
+      {halfWidth, -innerHeight, 1.f, oneThird},
+      {halfWidth, innerHeight, 1.f, twoThirds},
+      {innerWidth, -innerHeight, twoThirds, oneThird},
+      {innerWidth, -halfHeight, twoThirds, 0.f},
+      {halfWidth, -halfHeight, 1.f, 0.f},
+      {halfWidth, -innerHeight, 1.f, oneThird},
+  };
+
   CGraphics::StreamBegin(kP_Quads);
-  CGraphics::StreamColor(fadedColor);
-  for (uint column = 0; column < 3; ++column) {
-    for (uint row = 0; row < 3; ++row) {
-      CGraphics::StreamTexcoord(u[column], v[row]);
-      CGraphics::StreamVertex(x[column], 0.f, y[row]);
-      CGraphics::StreamTexcoord(u[column], v[row + 1]);
-      CGraphics::StreamVertex(x[column], 0.f, y[row + 1]);
-      CGraphics::StreamTexcoord(u[column + 1], v[row + 1]);
-      CGraphics::StreamVertex(x[column + 1], 0.f, y[row + 1]);
-      CGraphics::StreamTexcoord(u[column + 1], v[row]);
-      CGraphics::StreamVertex(x[column + 1], 0.f, y[row]);
-    }
+  CGraphics::StreamColor(color.WithAlphaModulatedBy(alpha));
+  for (uint i = 0; i < 36; ++i) {
+    CGraphics::StreamTexcoord(vertices[i][2], vertices[i][3]);
+    CGraphics::StreamVertex(vertices[i][0], 0.f, vertices[i][1]);
   }
   CGraphics::StreamEnd();
 }
