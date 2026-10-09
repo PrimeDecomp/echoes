@@ -1084,11 +1084,11 @@ bool CBallCamera::fn_801a39d0(float distance, float dt, CVector3f& position, CSt
       continue;
     }
 
-    CVector3f repulsorDirection(
-        CVector2f(repulsor->GetTranslation().GetX() - GetTranslation().GetX(),
-                  repulsor->GetTranslation().GetY() - GetTranslation().GetY()),
-        0.f);
-    CVector3f ballDirection(CVector3f(ballPos - GetTranslation()).ToVec2f(), 0.f);
+    const CVector2f repulsorOffset(repulsor->GetTranslation().GetX() - GetTranslation().GetX(),
+                                   repulsor->GetTranslation().GetY() - GetTranslation().GetY());
+    CVector3f repulsorDirection(repulsorOffset.GetX(), repulsorOffset.GetY(), 0.f);
+    const CVector2f ballOffset = CVector3f(ballPos - GetTranslation()).ToVec2f();
+    CVector3f ballDirection(ballOffset.GetX(), ballOffset.GetY(), 0.f);
     const float radius = repulsor->GetRadius();
     found = true;
     if (ballDirection.CanBeNormalized() && repulsorDirection.Magnitude() < radius &&
@@ -1099,8 +1099,9 @@ bool CBallCamera::fn_801a39d0(float distance, float dt, CVector3f& position, CSt
         const float strength = repulsor->GetStrength();
         const float falloff =
             1.f - CMath::Clamp(0.f, repulsorDirection.Magnitude() / radius, 1.f);
-        CVector3f pushDirection(CVector3f(closestPoint - repulsor->GetTranslation()).ToVec2f(),
-                                0.f);
+        const CVector2f pushOffset =
+            CVector3f(closestPoint - repulsor->GetTranslation()).ToVec2f();
+        CVector3f pushDirection(pushOffset.GetX(), pushOffset.GetY(), 0.f);
         if (CMath::AbsF(CVector3f::Dot(pushDirection, ballDirection)) > 0.999f) {
           pushDirection = CVector3f(pushDirection.GetY(), -pushDirection.GetX(), 0.f);
         }
