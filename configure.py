@@ -647,7 +647,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CInterpolationCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),
-            Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),
+            Object(Matching, "MetroidPrime/Cameras/CBallCameraTransitionState.cpp"),
             Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/Enemies/CAnimationState.cpp"),
             Object(NonMatching, "MetroidPrime/Enemies/CWaypointNavigation.cpp"),
             Object(NonMatching, "MetroidPrime/ScriptObjects/CScriptTriggerOrientated.cpp"),
@@ -917,7 +917,7 @@ config.libs = [
             Object(NonMatching, "MetroidPrime/Cameras/CPlaneCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CCylinderCameraSurface.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSplineCylinderCameraSurface.cpp"),
-            Object(MatchingFor("G2ME01", "G2MP01"), "MetroidPrime/Cameras/CSplinePlaneCameraSurface.cpp"),
+            Object(Matching, "MetroidPrime/Cameras/CSplinePlaneCameraSurface.cpp"),
         ],
     },
     {
