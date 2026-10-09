@@ -60,7 +60,10 @@ private:
   };
   enum ETransitionState { kTS_Loading, kTS_FadeIn, kTS_Active, kTS_FadeOut };
   struct SNodeDraw {
-    rstl::rc_ptr< CScanTreeNode > mNode;
+    SNodeDraw(rstl::rc_ptr< CScanTreeNode > node, CVector3f position, int style, float alpha)
+    : mNode(node), mPosition(position), mDepth(0.f), mStyle(style), mAlpha(alpha) {}
+
+    rstl::ncrc_ptr< CScanTreeNode > mNode;
     CVector3f mPosition;
     float mDepth;
     int mStyle;
@@ -94,16 +97,17 @@ private:
   void DrawNodeIcon(const CTransform4f& view, const CVector3f& position, const CColor& color,
                     float scale, bool additive) const;
   void DrawNodeLabel(const CTransform4f& view, const CVector3f& position,
-                     const rstl::rc_ptr< CScanTreeNode >& node, const CColor& color,
-                     float iconScale, float textScale) const;
-  void DrawOptionBackground(const CTransform4f& view, const CVector3f& position, float alpha) const;
+                     rstl::rc_ptr< CScanTreeNode > node, const CColor& color, float iconScale,
+                     float textScale) const;
+  void DrawOptionBackground(const CTransform4f& view, const CVector3f& position, int style,
+                            float alpha) const;
   void DrawSliderNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
                       float alpha) const;
   void DrawSlider(const CTransform4f& view, const CVector3f& position, float scale, float width,
                   float value, float previousValue, float textOffset, float alpha) const;
   void DrawMenuNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
                     float alpha) const;
-  void DrawModels(float alpha) const;
+  void DrawModels(int nodeId, float alpha) const;
   void InitializeStripedTexture();
   void RenderModels(const CTransform4f& xf, const CModelFlags& flags, bool particles) const;
   void DrawModelView(const CTransform4f& xf, float alpha) const;
@@ -112,8 +116,8 @@ private:
   static CVector3f GetDefaultModelPosition();
   CVector3f GetModelPosition() const;
 
-  rstl::reserved_vector< TToken< CTexture >, 9 > mLeftStickIcons;
-  rstl::reserved_vector< TToken< CTexture >, 9 > mRightStickIcons;
+  rstl::reserved_vector< CToken, 9 > mLeftStickIcons;
+  rstl::reserved_vector< CToken, 9 > mRightStickIcons;
   TCachedToken< CTexture > mSelectedNodeTexture;
   TCachedToken< CTexture > mUnselectedNodeTexture;
   TCachedToken< CTexture > mParentNodeTexture;
@@ -133,7 +137,7 @@ private:
   CQuaternion mViewRotation;
   CScanTree mScanTree;
   int x1f8_;
-  rstl::vector< CAssetId > x1fc_;
+  rstl::vector< int > x1fc_;
   rstl::auto_ptr< CGuiFrameLoader > mFrameLoader;
   rstl::auto_ptr< CGuiFrame > mFrame;
   CGuiTextPane* mMessage;

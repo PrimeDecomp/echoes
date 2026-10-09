@@ -576,13 +576,13 @@ void CScanTree::LoadAsync() {
 void CScanTree::ReserveNodes(int count) { mNodes.reserve(count); }
 
 void CScanTree::AddNode(CScanTreeNode* node) {
-  mNodes.push_back_unsafe(rstl::rc_ptr< CScanTreeNode >(node));
+  mNodes.push_back_unsafe(rstl::ncrc_ptr< CScanTreeNode >(node));
 }
 
 void CScanTree::SetRootNode(int node) { mRootNode = node; }
 
 void CScanTree::UpdateDescendantCounts() {
-  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+  for (rstl::vector< rstl::ncrc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
        it != mNodes.end(); ++it) {
     const rstl::rc_ptr< CScanTreeNode > node = *it;
     if (node->GetNodeType() != CScanTreeNode::kNT_Category) {
@@ -603,7 +603,7 @@ void CScanTree::UpdateDescendantCounts() {
 }
 
 void CScanTree::InitializeHierarchy() {
-  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+  for (rstl::vector< rstl::ncrc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
        it != mNodes.end(); ++it) {
     if ((*it)->GetNodeType() == CScanTreeNode::kNT_Category) {
       const rstl::rc_ptr< CScanTreeCategory > category(*it);
@@ -776,7 +776,7 @@ void CScanTree::SelectNode(int node, float duration) {
 
 void CScanTree::SelectScan(CAssetId scannableInfo, float duration) {
   int index = 0;
-  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+  for (rstl::vector< rstl::ncrc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
        it != mNodes.end(); ++it, ++index) {
     if ((*it)->GetNodeType() == CScanTreeNode::kNT_Scan ||
         (*it)->GetNodeType() == CScanTreeNode::kNT_Inventory) {
@@ -927,7 +927,7 @@ void CScanTree::Update(float dt) {
 void CScanTree::RefreshViewed(CStateManager& mgr) {
   const rstl::vector< CPlayerState::SPersistentState::SScanState >& scanStates =
       mgr.PlayerState(0)->ScanStates();
-  for (rstl::vector< rstl::rc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
+  for (rstl::vector< rstl::ncrc_ptr< CScanTreeNode > >::const_iterator it = mNodes.begin();
        it != mNodes.end(); ++it) {
     if ((*it)->GetNodeType() == CScanTreeNode::kNT_Scan ||
         (*it)->GetNodeType() == CScanTreeNode::kNT_Inventory) {
