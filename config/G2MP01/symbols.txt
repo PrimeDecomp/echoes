@@ -8412,7 +8412,7 @@ DrawMenuNode__12CPauseScreenCFRC12CTransform4fRC9CVector3fif = .text:0x80203AAC;
 DrawSlider__12CPauseScreenCFRC12CTransform4fRC9CVector3fffffff = .text:0x80204170; // type:function size:0x5D4
 DrawSliderNode__12CPauseScreenCFRC12CTransform4fRC9CVector3fif = .text:0x80204744; // type:function size:0x2E8
 DrawOptionBackground__12CPauseScreenCFRC12CTransform4fRC9CVector3ff = .text:0x80204A2C; // type:function size:0x17C
-DrawNodeLabel__12CPauseScreenCFRC12CTransform4fRC9CVector3fRCQ24rstl23rc_ptr<13CScanTreeNode>RC6CColorff = .text:0x80204BA8; // type:function size:0x1AC
+DrawNodeLabel__12CPauseScreenCFRC12CTransform4fRC9CVector3fQ24rstl23rc_ptr<13CScanTreeNode>RC6CColorff = .text:0x80204BA8; // type:function size:0x1AC
 DrawNodeIcon__12CPauseScreenCFRC12CTransform4fRC9CVector3fRC6CColorfb = .text:0x80204D54; // type:function size:0x320
 DrawConnection__12CPauseScreenCFRC12CTransform4fRC9CVector3fRC9CVector3fRC6CColorf = .text:0x80205074; // type:function size:0x31C
 DrawNodes__12CPauseScreenCFRC12CTransform4fRQ24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator> = .text:0x80205390; // type:function size:0x700
@@ -8421,7 +8421,7 @@ push_back_unsafe__Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_al
 construct<Q212CPauseScreen9SNodeDraw>__4rstlFPvRCQ212CPauseScreen9SNodeDraw = .text:0x80205EC4; // type:function size:0x20
 construct__Q24rstl49construction_policy<Q212CPauseScreen9SNodeDraw,0>FPvRCQ212CPauseScreen9SNodeDraw = .text:0x80205EE4; // type:function size:0x28
 __ct__Q212CPauseScreen9SNodeDrawFRCQ212CPauseScreen9SNodeDraw = .text:0x80205F0C; // type:function size:0x54
-fn_80205F60 = .text:0x80205F60; // type:function size:0x4C align:4
+__ct__Q212CPauseScreen9SNodeDrawFQ24rstl23rc_ptr<13CScanTreeNode>9CVector3fif = .text:0x80205F60; // type:function size:0x4C align:4
 Draw__12CPauseScreenCFv = .text:0x80205FAC; // type:function size:0x5E8
 fn_80206594 = .text:0x80206594; // type:function size:0x84
 destroy<Q24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>>__4rstlFQ24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator> = .text:0x80206618; // type:function size:0x38

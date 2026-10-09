@@ -60,7 +60,10 @@ private:
   };
   enum ETransitionState { kTS_Loading, kTS_FadeIn, kTS_Active, kTS_FadeOut };
   struct SNodeDraw {
-    rstl::rc_ptr< CScanTreeNode > mNode;
+    SNodeDraw(rstl::rc_ptr< CScanTreeNode > node, CVector3f position, int style, float alpha)
+    : mNode(node), mPosition(position), mDepth(0.f), mStyle(style), mAlpha(alpha) {}
+
+    rstl::ncrc_ptr< CScanTreeNode > mNode;
     CVector3f mPosition;
     float mDepth;
     int mStyle;
@@ -94,8 +97,8 @@ private:
   void DrawNodeIcon(const CTransform4f& view, const CVector3f& position, const CColor& color,
                     float scale, bool additive) const;
   void DrawNodeLabel(const CTransform4f& view, const CVector3f& position,
-                     const rstl::rc_ptr< CScanTreeNode >& node, const CColor& color,
-                     float iconScale, float textScale) const;
+                     rstl::rc_ptr< CScanTreeNode > node, const CColor& color, float iconScale,
+                     float textScale) const;
   void DrawOptionBackground(const CTransform4f& view, const CVector3f& position, float alpha) const;
   void DrawSliderNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
                       float alpha) const;

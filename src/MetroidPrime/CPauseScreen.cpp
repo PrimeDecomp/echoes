@@ -1165,7 +1165,7 @@ void CPauseScreen::ProcessRotationInput(const CFinalInput& input) {
         delta += 0.01f;
       }
     }
-    const float value = rstl::min_val(1.f, rstl::max_val(0.f, current + delta));
+    const float value = CMath::Clamp(0.f, current + delta, 1.f);
     if (close_enough(value, current)) {
       if (mRotateSfx != CSfxHandle()) {
         CSfxManager::SfxStop(mRotateSfx);
@@ -1406,13 +1406,7 @@ void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origi
   gpRender->SetBlendMode_AdditiveAlpha();
   gpRender->SetModelMatrix(CTransform4f::Identity());
   if (!skipParent) {
-    SNodeDraw draw;
-    draw.mNode = node;
-    draw.mPosition = position;
-    draw.mDepth = 0.f;
-    draw.mStyle = 1;
-    draw.mAlpha = mScanTree.GetLayoutProgress();
-    nodes.push_back_unsafe(draw);
+    nodes.push_back_unsafe(SNodeDraw(node, position, 1, mScanTree.GetLayoutProgress()));
   }
   if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
     const rstl::rc_ptr< CScanTreeCategory > category(node);
@@ -1425,23 +1419,25 @@ void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origi
         continue;
       }
       const bool selected = category->GetSelectedChild() == childId;
+      bool activeOption = false;
       const bool option = child->GetNodeType() == CScanTreeNode::kNT_Menu ||
                           child->GetNodeType() == CScanTreeNode::kNT_Slider;
-      const bool activeOption = option && childId == mScanTree.GetSelectedNode();
-      int style = 2;
-      if (selected) {
-        style = activeOption ? 4 : 3;
+      if (option && childId == mScanTree.GetSelectedNode()) {
+        activeOption = true;
       }
-      const float alpha = rstl::min_val(1.f, rstl::max_val(0.f, child->GetOpacity()));
+      int style;
+      if (selected) {
+        style = 3;
+        if (activeOption) {
+          style = 4;
+        }
+      } else {
+        style = 2;
+      }
+      const float alpha = CMath::Clamp(0.f, child->GetOpacity(), 1.f);
       const CColor brightness(alpha, alpha, alpha, 1.f);
       const CVector3f childPosition = child->GetDisplayPosition() - origin;
-      SNodeDraw draw;
-      draw.mNode = child;
-      draw.mPosition = childPosition;
-      draw.mDepth = 0.f;
-      draw.mStyle = style;
-      draw.mAlpha = alpha;
-      nodes.push_back_unsafe(draw);
+      nodes.push_back_unsafe(SNodeDraw(child, childPosition, style, alpha));
       DrawConnection(view, position, childPosition,
                      CColor::Modulate(gpTweakGui->GetLogBookNodeColor(), brightness), 1.f);
     }
@@ -1450,10 +1446,19 @@ void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origi
 
 void CPauseScreen::DrawNodes(const CTransform4f& view, rstl::vector< SNodeDraw >& nodes) const {
   CTexture* parent = mParentNodeTexture.GetObject();
+  if (parent == nullptr) {
+    return;
+  }
   CTexture* unselected = mUnselectedNodeTexture.GetObject();
+  if (unselected == nullptr) {
+    return;
+  }
   CTexture* selected = mSelectedNodeTexture.GetObject();
+  if (selected == nullptr) {
+    return;
+  }
   CTexture* highlight = mHighlightTexture.GetObject();
-  if (parent == nullptr || unselected == nullptr || selected == nullptr || highlight == nullptr) {
+  if (highlight == nullptr) {
     return;
   }
   gpRender->SetDepthReadWrite(false, false);
@@ -1466,71 +1471,69 @@ void CPauseScreen::DrawNodes(const CTransform4f& view, rstl::vector< SNodeDraw >
   rstl::sort(nodes.begin(), nodes.end(), SDepthCompare());
 
   for (rstl::vector< SNodeDraw >::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-    const float alpha = rstl::min_val(1.f, rstl::max_val(0.f, it->mAlpha));
+    const SNodeDraw& draw = *it;
+    const float alpha = CMath::Clamp(0.f, draw.mAlpha, 1.f);
     const CColor brightness(alpha, alpha, alpha, 1.f);
     const CColor faded = brightness.WithAlphaOf(alpha);
-    const CColor* textColor;
-    const CColor* selectedTextColor;
-    if (it->mNode->IsViewed()) {
-      textColor = &gpTweakGui->GetLogBookMainWindowTextColor();
-      selectedTextColor = &gpTweakGui->GetLogBookMainWindowSelectedTextColor();
-    } else {
-      textColor = &gpTweakGui->GetLogBookMainWindowUnviewedColor();
-      selectedTextColor = &gpTweakGui->GetLogBookMainWindowUnviewedSelectedColor();
-    }
-    switch (it->mStyle) {
+    const bool viewed = draw.mNode->IsViewed();
+    const CColor& textColor = viewed ? gpTweakGui->GetLogBookMainWindowTextColor()
+                                     : gpTweakGui->GetLogBookMainWindowUnviewedColor();
+    const CColor& selectedTextColor = viewed
+                                          ? gpTweakGui->GetLogBookMainWindowSelectedTextColor()
+                                          : gpTweakGui->GetLogBookMainWindowUnviewedSelectedColor();
+    switch (draw.mStyle) {
     case 0:
       unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookNodeBackgroundColor(), brightness),
                    gpTweakGui->GetLogBookNodeScale(), true);
-      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*textColor, brightness),
+      DrawNodeLabel(view, draw.mPosition, draw.mNode, CColor::Modulate(textColor, brightness),
                     gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookTextScale());
       break;
     case 1:
       parent->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition, CColor::White().WithAlphaOf(alpha),
+      DrawNodeIcon(view, draw.mPosition, CColor::White().WithAlphaOf(alpha),
                    gpTweakGui->GetLogBookNodeScale(), false);
       break;
     case 2:
       unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookNodeColor(), brightness),
                    gpTweakGui->GetLogBookNodeScale(), true);
-      DrawNodeLabel(view, it->mPosition, it->mNode, CColor::Modulate(*textColor, brightness),
+      DrawNodeLabel(view, draw.mPosition, draw.mNode, CColor::Modulate(textColor, brightness),
                     gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookTextScale());
       break;
     case 3:
       unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
                    gpTweakGui->GetLogBookSelectedNodeScale(), true);
       selected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
                    gpTweakGui->GetLogBookSelectedNodeScale(), false);
       if (mSelectionHighlight > 0.f) {
         highlight->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-        DrawNodeIcon(view, it->mPosition,
+        DrawNodeIcon(view, draw.mPosition,
                      CColor::Lerp(CColor(0.f, 0.f, 0.f, 0.f), CColor::White(), mSelectionHighlight),
                      gpTweakGui->GetLogBookSelectedNodeScale(), true);
       }
       DrawNodeLabel(
-          view, it->mPosition, it->mNode, CColor::Modulate(*selectedTextColor, brightness),
+          view, draw.mPosition, draw.mNode, CColor::Modulate(selectedTextColor, brightness),
           gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookSelectedTextScale());
       break;
     case 4:
       unselected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
                    gpTweakGui->GetLogBookSelectedNodeScale(), true);
       selected->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
-      DrawNodeIcon(view, it->mPosition,
+      DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
                    gpTweakGui->GetLogBookSelectedNodeScale(), false);
-      DrawOptionBackground(view, it->mPosition, alpha);
+      DrawOptionBackground(view, draw.mPosition, alpha);
       DrawNodeLabel(
-          view, it->mPosition, it->mNode, CColor::Modulate(*selectedTextColor, brightness),
+          view, draw.mPosition, draw.mNode, CColor::Modulate(selectedTextColor, brightness),
           gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookSelectedTextScale());
       break;
     }
@@ -1591,7 +1594,7 @@ void CPauseScreen::DrawNodeIcon(const CTransform4f& view, const CVector3f& posit
 }
 
 void CPauseScreen::DrawNodeLabel(const CTransform4f& view, const CVector3f& position,
-                                 const rstl::rc_ptr< CScanTreeNode >& node, const CColor& color,
+                                 rstl::rc_ptr< CScanTreeNode > node, const CColor& color,
                                  float iconScale, float textScale) const {
   if (node->AreResourcesLoaded()) {
     gpRender->SetBlendMode_AdditiveAlpha();
@@ -1610,13 +1613,14 @@ void CPauseScreen::DrawNodeLabel(const CTransform4f& view, const CVector3f& posi
 void CPauseScreen::DrawOptionBackground(const CTransform4f& view, const CVector3f& position,
                                         float alpha) const {
   const float scale = gpTweakGui->GetLogBookSelectedNodeScale();
-  if (mOptionBackgroundModel.GetObject() != nullptr) {
+  CModel* model = mOptionBackgroundModel.GetObject();
+  if (model != nullptr) {
     const CVector3f offset(0.f, 0.01f, -(-0.05f + ((0.2f * scale) / 2.f + 0.62136f)));
     const CTransform4f background =
         view.GetRotation() * CTransform4f::Translate(offset) * CTransform4f::Scale(0.18f);
-    CGraphics::SetModelMatrix(CTransform4f::Translate(position) * background);
-    mOptionBackgroundModel.GetObject()->Draw(
-        CModelFlags(CModelFlags::kT_Blend, CColor::White().WithAlphaOf(alpha)));
+    const CTransform4f xf = CTransform4f::Translate(position) * background;
+    CGraphics::SetModelMatrix(xf);
+    model->Draw(CModelFlags(CModelFlags::kT_Blend, CColor::White().WithAlphaOf(alpha)));
   }
 }
 
