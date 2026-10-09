@@ -908,7 +908,7 @@ void CPauseScreen::AdvancePage() {
 }
 
 void CPauseScreen::FinishOptionEdit(bool accept) {
-  const int selectedId = mScanTree.GetSelectedNode();
+  int selectedId = mScanTree.GetSelectedNode();
   rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(selectedId);
   if (node->GetNodeType() == CScanTreeNode::kNT_Slider) {
     rstl::rc_ptr< CScanTreeSlider > slider(node);
@@ -916,43 +916,57 @@ void CPauseScreen::FinishOptionEdit(bool accept) {
       if (!close_enough(slider->GetSavedNormalizedValue(), slider->GetNormalizedValue())) {
         CSfxManager::SfxStart(0xbfd, 0x7f, 0x3f);
       }
-    } else {
+    }
+    if (!accept) {
       slider->RestoreSavedValue();
     }
   } else {
     rstl::rc_ptr< CScanTreeMenu > menu(node);
-    if (!accept) {
-      menu->ApplySelectedOption();
-    } else {
+    if (accept) {
       if (menu->GetCurrentOptionIndex() == 1) {
         CGameOptions& options = gpGameState->GameOptions();
         switch (menu->GetSetting()) {
-        case 8:
-          options.ResetSoundToDefaults();
+        case 10:
+          options.ResetExtraFlagsToDefaults();
           break;
         case 9:
           options.ResetScreenToDefaults();
           break;
-        case 10:
-          options.ResetExtraFlagsToDefaults();
+        case 8:
+          options.ResetSoundToDefaults();
           break;
         case 11:
           options.ResetVisorToDefaults();
           break;
         }
-        if (menu->GetSetting() >= 8 && menu->GetSetting() < 12) {
+        switch (menu->GetSetting()) {
+        case 8:
+        case 9:
+        case 10:
+        case 11:
           menu->ApplyOption(0);
           CSfxManager::SfxStart(0x5e0, 0x3c, 0x3f);
+          break;
         }
       }
-      if (menu->GetSetting() < 8 || menu->GetSetting() > 11) {
-        if (menu->GetSelectedOption() != menu->GetCurrentOptionIndex()) {
+      switch (menu->GetSetting()) {
+      case 8:
+      case 9:
+      case 10:
+      case 11:
+        break;
+      default:
+        if (menu->GetCurrentOptionIndex() != menu->GetSelectedOption()) {
           CSfxManager::SfxStart(0xbfd, 0x7f, 0x3f);
         }
+        break;
       }
+    } else {
+      menu->ApplySelectedOption();
     }
   }
-  mScanTree.SelectNode(node->GetParentNode());
+  const int parentId = node->GetParentNode();
+  mScanTree.SelectNode(parentId);
   UpdateHistoryText();
   CSfxManager::SfxStart(599, 0x7f, 0x3f);
 }
