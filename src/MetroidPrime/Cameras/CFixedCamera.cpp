@@ -56,7 +56,7 @@ void CFixedCamera::UpdateTargetPosition(float dt, CStateManager& mgr) {
   case CBallCamera::kBCB_Unknown5: {
     const CTransform4f xf = hint->GetTransform();
     const CVector3f ballTarget =
-        CameraManager(mgr).BallCamera()->GetScanObjectIndicatorPosition(mgr);
+        GetCameraManager(mgr).BallCamera()->GetScanObjectIndicatorPosition(mgr);
     const float distance = CMath::FastMax(
         CMath::AbsF(CVector3f::Dot(ballTarget - GetTranslation(), xf.GetForward())), 1.f);
     mTargetPosition = xf.GetTranslation() + distance * xf.GetForward();
@@ -138,12 +138,11 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
               const float angle = CMath::ArcCosineR(dot);
               const float fraction = CMath::Clamp(0.f, angle / (1.0471976f * dt), 1.f);
               CRelAngle step = CRelAngle::FromRadians(
-                  dt *
-                  (fraction * GetCameraManager(mgr).GetBallCamera()->GetTargetAnglePerSecond()));
+                  dt * (fraction * CameraManager(mgr).GetBallCamera()->GetTargetAnglePerSecond()));
               const float vertical =
                   CMath::AbsF(CMath::Limit(CVector3f::Dot(lookDir, CVector3f::Up()), 1.f));
               const float verticalStep = (12.566371f * dt) * (1.f - vertical);
-              if (step.AsRadians() > verticalStep && !Player(mgr).IsMorphBallTransitioning() &&
+              if (step.AsRadians() > verticalStep && !GetPlayer(mgr).IsMorphBallTransitioning() &&
                   vertical > 0.999f) {
                 step = CRelAngle::FromRadians(verticalStep);
               }

@@ -194,18 +194,18 @@ CTransform4f CGameCamera::ValidateCameraTransform(const CTransform4f& newXf,
   return xf;
 }
 
-CPlayer& CGameCamera::Player(CStateManager& mgr) const { return *mgr.GetPlayer(mControllerIdx); }
-
 const CPlayer& CGameCamera::GetPlayer(const CStateManager& mgr) const {
   return *mgr.GetPlayer(mControllerIdx);
 }
 
-CCameraManager& CGameCamera::CameraManager(CStateManager& mgr) const {
-  return *mgr.CameraManager(mControllerIdx);
-}
+CPlayer& CGameCamera::Player(CStateManager& mgr) const { return *mgr.GetPlayer(mControllerIdx); }
 
 const CCameraManager& CGameCamera::GetCameraManager(const CStateManager& mgr) const {
   return *mgr.GetCameraManager(mControllerIdx);
+}
+
+CCameraManager& CGameCamera::CameraManager(CStateManager& mgr) const {
+  return *mgr.CameraManager(mControllerIdx);
 }
 
 void CGameCamera::SetTargetFov(float fov) {
@@ -281,15 +281,11 @@ void CGameCamera::UpdatePerspective(float dt, CStateManager& mgr) {
 
 CVector3f CGameCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
   if (TCastToConstPtr< CPlayer >(mgr.GetObjectById(mWatchedObject))) {
-    return CameraManager(const_cast< CStateManager& >(mgr))
-        .BallCamera()
-        ->GetScanObjectIndicatorPosition(mgr);
+    return GetCameraManager(mgr).BallCamera()->GetScanObjectIndicatorPosition(mgr);
   }
   const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mWatchedObject));
   if (actor == nullptr) {
-    return CameraManager(const_cast< CStateManager& >(mgr))
-        .BallCamera()
-        ->GetScanObjectIndicatorPosition(mgr);
+    return GetCameraManager(mgr).BallCamera()->GetScanObjectIndicatorPosition(mgr);
   }
   return actor->GetScanObjectIndicatorPosition(mgr);
 }

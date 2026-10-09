@@ -631,7 +631,7 @@ void CScriptSafeZone::InhabitantExited(CActor& actor, CStateManager& mgr) {
 
 void CScriptSafeZone::UpdatePlayerInside(CActor& actor, bool inside, CStateManager& mgr) {
   if (TCastToPtr< CGameCamera >(actor) &&
-      TCastToPtr< CGameCamera >(actor)->CameraManager(mgr).GetCurrentCameraId(true) ==
+      TCastToPtr< CGameCamera >(actor)->GetCameraManager(mgr).GetCurrentCameraId(true) ==
           actor.GetUniqueId()) {
     mCameraInside = inside;
     if (!mIgnoreCinematicCamera || !TCastToPtr< CCinematicCamera >(actor)) {
