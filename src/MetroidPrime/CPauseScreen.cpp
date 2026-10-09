@@ -2054,7 +2054,8 @@ void CPauseScreen::UpdateHistoryColors() {
   int depth = 0;
   int nodeId = mScanTree.GetSelectedNode();
   rstl::rc_ptr< CScanTreeNode > selected = mScanTree.GetNode(nodeId);
-  const bool fromParent = mScanTree.GetPreviousNode() == selected->GetParentNode();
+  const int parent = selected->GetParentNode();
+  const bool fromParent = parent == mScanTree.GetPreviousNode();
   while (nodeId != -1) {
     rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
     if (node.IsNull()) {
@@ -2064,11 +2065,11 @@ void CPauseScreen::UpdateHistoryColors() {
     nodeId = node->GetParentNode();
   }
 
-  int count = depth - 1;
+  --depth;
   if (!close_enough(transition, 0.f) && !fromParent) {
-    ++count;
+    ++depth;
   }
-  count = CMath::Clamp(0, count, mHistoryBackgrounds.size());
+  const int count = CMath::Clamp(0, depth, mHistoryBackgrounds.size());
   int i = 0;
   for (; i < count; ++i) {
     mHistoryLabels[rows[i]]->SetVisibility(true, kTM_Children);
