@@ -38,7 +38,8 @@ CVector3f CSplineCylinderCameraSurface::GetSurfacePoint(CVector3f point) {
 
 bool CSplineCylinderCameraSurface::IsPointInside(const CVector3f& point) {
   const CVector3f surfacePoint = GetSurfacePoint(point);
-  const CVector3f relative = surfacePoint - CCylinder(GetCylinder()).GetAxis().GetRefPoint();
+  const CVector3f relative =
+      CVector3f(surfacePoint) - CCylinder(GetCylinder()).GetAxis().GetRefPoint();
   const float distance = relative.Magnitude();
   const float axialDistance =
       distance *
