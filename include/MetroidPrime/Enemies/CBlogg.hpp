@@ -154,6 +154,7 @@ public:
   } // Guessed name
   bool IsHitInMouthDirection(const CVector3f& direction) const; // Guessed name
   bool IsMouthClosed() const { return mMouthClosed != 0; }      // Guessed name
+  void ComputeAttackPositions(CStateManager& mgr, float dt);
   void ComputeTauntProbability(CStateManager& mgr, float dt);
   void EndMeleePursuit(CStateManager& mgr, float dt);
 
@@ -233,6 +234,9 @@ private:
   void AttachPlayerToMouth(CStateManager& mgr);               // Guessed name
   uchar GetNextPositionIndex() const;                         // Guessed name
   void PathToAttackPosition(CStateManager& mgr, float dt);    // Guessed name
+  void FindAttackPositions(CStateManager& mgr, const CVector3f& playerPosition,
+                           const CVector3f& bloggPosition, const CVector3f& direction,
+                           float distance); // Guessed name
 
   EBloggState mState; // Guessed name
   int mAimAnimLeft;   // Guessed name

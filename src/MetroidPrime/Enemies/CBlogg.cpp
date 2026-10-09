@@ -4,6 +4,8 @@
 #include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Math/CMath.hpp"
+#include "Kyoto/Math/CMatrix3f.hpp"
+#include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CCollisionActorManager.hpp"
@@ -77,7 +79,31 @@ static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldAbortBallGrab)},
 };
 
+static CPatterned::StateMachine::SStateFunction skStates[] = {
+    {"Patrol", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::Patrol)},
+    {"MoveToAttackPosition",
+     static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::MoveToAttackPosition)},
+    {"MoveToValidPosition",
+     static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::MoveToValidPosition)},
+    {"FacePlayer", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::FacePlayer)},
+    {"ProjectileAttack",
+     static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::ProjectileAttack)},
+    {"ChargeTelegraph",
+     static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::ChargeTelegraph)},
+    {"ChargeAttack", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::ChargeAttack)},
+    {"MeleeAttack", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::MeleeAttack)},
+    {"Stunned", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::Stunned)},
+    {"Taunt", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::Taunt)},
+    {"MoveToPlayer", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::MoveToPlayer)},
+    {"GrabBall", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::GrabBall)},
+    {"Thrash", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::Thrash)},
+    {"SpitBall", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::SpitBall)},
+    {"Dead", static_cast< CPatterned::StateMachine::StateFunc >(&CBlogg::Dead)},
+};
+
 static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
+    {"ComputeAttackPositions",
+     static_cast< CPatterned::StateMachine::CodeFunc >(&CBlogg::ComputeAttackPositions)},
     {"ComputeTauntProbability",
      static_cast< CPatterned::StateMachine::CodeFunc >(&CBlogg::ComputeTauntProbability)},
     {"EndMeleePursuit",
@@ -94,13 +120,15 @@ static EMaterialTypes skHintRayExclude2 = kMT_CollisionActor;             // Gue
 static EMaterialTypes skHintRayExclude3 = kMT_AIPassthrough;              // Guessed name
 static EMaterialTypes skHintRayExclude4 = kMT_ExcludeFromLineOfSightTest; // Guessed name
 
-static EMaterialTypes skGrabBallMaterial = kMT_Player;      // Guessed name
-static EMaterialTypes skSpitBallMaterial = kMT_Player;      // Guessed name
-static EMaterialTypes skContactDamageSolid = kMT_Solid;     // Guessed name
-static EMaterialTypes skCollisionCeiling = kMT_Ceiling;     // Guessed name
-static EMaterialTypes skCollisionWall = kMT_Wall;           // Guessed name
-static EMaterialTypes skCollisionFloor = kMT_Floor;         // Guessed name
-static EMaterialTypes skCollisionCharacter = kMT_Character; // Guessed name
+static float skAttackAngleStep = 0.5235988f;                   // Guessed name
+static CVector3f skWaterTestOffset = CVector3f(0.f, 0.f, 5.f); // Guessed name
+static EMaterialTypes skGrabBallMaterial = kMT_Player;         // Guessed name
+static EMaterialTypes skSpitBallMaterial = kMT_Player;         // Guessed name
+static EMaterialTypes skContactDamageSolid = kMT_Solid;        // Guessed name
+static EMaterialTypes skCollisionCeiling = kMT_Ceiling;        // Guessed name
+static EMaterialTypes skCollisionWall = kMT_Wall;              // Guessed name
+static EMaterialTypes skCollisionFloor = kMT_Floor;            // Guessed name
+static EMaterialTypes skCollisionCharacter = kMT_Character;    // Guessed name
 
 static inline bool RollChance(CStateManager& mgr, float chance) { // Guessed name
   if (chance == 1.f) {
@@ -481,6 +509,7 @@ void CBlogg::SetupStateMachine(CStateManager& mgr) {
   StateMachine* stateMachine = mStateMachine.get();
   CPatterned::SetupStateMachine(mgr);
   stateMachine->SetTriggerFunctions(skTriggers, ARRAY_SIZE(skTriggers));
+  stateMachine->SetStateFunctions(skStates, ARRAY_SIZE(skStates));
   stateMachine->SetCodeFunctions(skCodeFuncs, ARRAY_SIZE(skCodeFuncs));
 }
 
@@ -1568,6 +1597,153 @@ void CBlogg::Patrol(CStateManager& mgr, EStateMsg msg, float dt) {
   case kStateMsg_Deactivate:
     CPatterned::Patrol(mgr, msg, dt);
     break;
+  }
+}
+
+void CBlogg::FindAttackPositions(CStateManager& mgr, const CVector3f& playerPosition,
+                                 const CVector3f& bloggPosition, const CVector3f& direction,
+                                 float distance) {
+  TUniqueId waterId = kInvalidUniqueId;
+  CAABox waterBounds = CAABox::MakeNullBox();
+  FindFluid(mgr, waterBounds, waterId);
+  CVector3f position = playerPosition + direction * distance;
+  if (mPathFindSearch.OnPath(position) == CPathFindSearch::kR_Success) {
+    if (waterId == kInvalidUniqueId || waterBounds.PointInside(position + skWaterTestOffset)) {
+      mPositionHistory.push_back(position);
+    }
+  }
+  float angle = skAttackAngleStep;
+  const float angleStep = angle;
+  for (; angle < 6.2831855f; angle += angleStep) {
+    const CVector3f rotated = CMatrix3f::RotateZ(CRelAngle::FromRadians(angle)) * direction;
+    position = playerPosition + rotated * distance;
+    if (mPathFindSearch.OnPath(position) == CPathFindSearch::kR_Success) {
+      if (waterId == kInvalidUniqueId || waterBounds.PointInside(position + skWaterTestOffset)) {
+        mPositionHistory.push_back(position);
+      }
+    }
+  }
+
+  rstl::vector< CTeamAiRole > roles;
+  const CScriptTeamAiMgr* team =
+      TCastToConstPtr< CScriptTeamAiMgr >(mgr.GetObjectById(mTeamManagerId));
+  if (team != nullptr) {
+    roles = team->GetRoles();
+  }
+  const uint positionCount = mPositionHistory.size();
+  if (positionCount != 0u) {
+    float closestDistanceSquared = 1000000.f;
+    for (uint i = 0; i < positionCount; ++i) {
+      const CVector3f& candidate = mPositionHistory[i];
+      bool blocked = false;
+      uint roleIndex;
+      const uint roleCount = roles.size();
+      for (roleIndex = 0; roleIndex < roleCount; ++roleIndex) {
+        const TUniqueId memberId = roles[roleIndex].GetOwnerId();
+        const CBlogg* other = TCastToConstPtr< CBlogg >(mgr.GetObjectById(memberId));
+        if (other != nullptr && memberId != GetUniqueId()) {
+          if (!(other->mAttackPosition == CVector3f::Zero())) {
+            const CVector3f offset = candidate - other->mAttackPosition;
+            if (offset.MagSquared() < 25.f) {
+              blocked = true;
+              break;
+            }
+          }
+        }
+      }
+      if (!blocked) {
+        const CVector3f offset = candidate - bloggPosition;
+        const float distanceSquared = offset.MagSquared();
+        if (distanceSquared < closestDistanceSquared) {
+          mAttackPosition = candidate;
+          closestDistanceSquared = distanceSquared;
+          mHintId = kInvalidUniqueId;
+          xb18_ = roleIndex;
+          bool flag;
+          if (mgr.Random()->Float() < 0.5f) {
+            flag = false;
+          } else {
+            flag = true;
+          }
+          xb14_ = flag;
+        }
+      }
+    }
+  }
+}
+
+void CBlogg::ComputeAttackPositions(CStateManager& mgr, float dt) {
+  if (mHintIds.size() != 0u) {
+    const TUniqueId hintId = FindNearestHint(mgr, GetTranslation(), false);
+    if (hintId != kInvalidUniqueId) {
+      CEntity* hint = mgr.ObjectById(hintId);
+      if (hint != nullptr) {
+        ReleaseHints(mgr);
+        static_cast< CScriptAIHint* >(hint)->SetInUse(true);
+        mAttackPosition = static_cast< CActor* >(hint)->GetTranslation();
+        mHintId = hintId;
+        mPathFindNavigation.SetDestination(static_cast< CActor* >(hint)->GetTranslation());
+        mPathFindNavigation.PathFind(mgr, kStateMsg_Activate, dt, *this);
+      }
+    }
+  } else {
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      mCurrentAttackAngle =
+          CMath::Max(mMaxAttackAngle - mMinAttackAngle, 0.f) * mgr.Random()->Float() +
+          mMinAttackAngle;
+      mCurrentAttackRange =
+          CMath::Max(mMaxAttackRange - mMinAttackRange, 0.f) * mgr.Random()->Float() +
+          mMinAttackRange;
+      const CVector3f playerPosition = player->GetAimPosition(mgr, 0.f);
+      const CVector3f bloggPosition = GetTranslation();
+      const CVector3f unit = (bloggPosition - playerPosition).AsNormalized();
+      const CVector3f toBlogg = unit;
+      CVector3f flat = unit;
+      flat.SetZ(playerPosition.GetZ());
+      flat.Normalize();
+      const float flatAngle = CVector3f::GetAngleDiff(toBlogg, flat);
+      CVector3f directionA = flat;
+      const float headingAngle = CVector3f::GetAngleDiff(flat, CVector3f::Forward());
+      const CVector3f rotated =
+          CMatrix3f::RotateZ(CRelAngle::FromRadians(headingAngle)) *
+          (CMatrix3f::RotateX(CRelAngle::FromRadians(mCurrentAttackAngle)) * CVector3f::Forward());
+      CVector3f directionB = flat;
+      if (flatAngle >= 0.f) {
+        directionA = rotated;
+      } else if (flatAngle > mCurrentAttackAngle) {
+        directionB = rotated;
+      }
+      mPositionHistory.clear();
+      mAttackPosition = CVector3f::Zero();
+      float distance = mCurrentAttackRange;
+      while (mPositionHistory.size() == 0 && distance > 0.f) {
+        FindAttackPositions(mgr, playerPosition, bloggPosition, directionA, distance);
+        distance = CMath::Max(distance - 5.f, 0.f);
+      }
+      if (distance <= 0.f) {
+        distance = mCurrentAttackRange;
+        while (mPositionHistory.size() == 0 && distance > 0.f) {
+          FindAttackPositions(mgr, playerPosition, bloggPosition, directionB, distance);
+          distance = CMath::Max(distance - 5.f, 0.f);
+        }
+      }
+      if (distance <= 0.f) {
+        distance = mCurrentAttackRange;
+        const CVector3f mirrored =
+            CMatrix3f::RotateZ(CRelAngle::FromRadians(headingAngle)) *
+            (CMatrix3f::RotateX(CRelAngle::FromRadians(-mCurrentAttackAngle)) *
+             CVector3f::Forward());
+        while (mPositionHistory.size() == 0 && distance > 0.f) {
+          FindAttackPositions(mgr, playerPosition, bloggPosition, mirrored, distance);
+          distance = CMath::Max(distance - 5.f, 0.f);
+        }
+      }
+      if (distance > 0.f) {
+        mPathFindNavigation.SetDestination(mAttackPosition);
+        mPathFindNavigation.PathFind(mgr, kStateMsg_Activate, dt, *this);
+      }
+    }
   }
 }
 
