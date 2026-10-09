@@ -15,6 +15,7 @@ public:
   void SetDestination(const CVector3f& position);
   void SetFaceTarget(const TUniqueId& id) { mFaceTarget = id; }
   const CVector3f& GetDestinationPosition() const { return mDestinationPosition; } // Guessed name
+  void SetUseLocomotionFacing(bool use) { mUseLocomotionFacing = use; } // Guessed name
 
 private:
   // Guessed names, recovered from the path-search and steering callers.

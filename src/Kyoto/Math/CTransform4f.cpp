@@ -70,6 +70,13 @@ CTransform4f CTransform4f::RotateX(const CRelAngle& x) {
   );
 }
 
+CTransform4f CTransform4f::Shear(float xy, float xz, float yx, float yz, float zx, float zy) {
+  return CTransform4f(1.f, xy, xz, 0.f, //
+                      yx, 1.f, yz, 0.f, //
+                      zx, zy, 1.f, 0.f  //
+  );
+}
+
 CTransform4f CTransform4f::RotateY(const CRelAngle& y) {
   const float sinAngle = sin(y.AsRadians());
   const float cosAngle = cos(y.AsRadians());

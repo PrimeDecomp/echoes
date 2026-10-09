@@ -52,6 +52,7 @@ enum EPatternedAI {
   kPAI_PillBug = 0x27,                 // Guessed name; PillBug REL constructor, same value.
   kPAI_PuddleSpore = 0x2b,             // Guessed name; PuddleSpore REL constructor.
   kPAI_Puffer = 0x2d,                  // Guessed name; Puffer REL constructor.
+  kPAI_Rezbit = 0x2e,                  // Guessed name; Rezbit REL constructor.
   kPAI_Ripper = 0x30,                  // Guessed name; Ripper REL constructor.
   kPAI_SpankWeed = 0x36,               // Guessed name; SpankWeed REL constructor.
   kPAI_StoneToad = 0x3a,               // Guessed name; StoneToad REL constructor.
