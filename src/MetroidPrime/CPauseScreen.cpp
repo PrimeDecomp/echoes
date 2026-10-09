@@ -1155,17 +1155,17 @@ void CPauseScreen::ProcessRotationInput(const CFinalInput& input) {
   } else if (node->GetNodeType() == CScanTreeNode::kNT_Menu) {
     rstl::rc_ptr< CScanTreeMenu > menu(node);
     const int oldOption = menu->GetCurrentOptionIndex();
-    const int count = menu->GetOptionCount();
-    const bool left = input.DLALeft();
-    const bool right = input.DLARight();
     int option = oldOption;
+    const int count = menu->GetOptionCount();
+    bool left = input.DLALeft();
+    bool right = input.DLARight();
     if (mLeftRepeat.Update(input.DeltaTime(), left) && left && oldOption - 1 >= 0) {
       option = oldOption - 1;
     }
     if (mRightRepeat.Update(input.DeltaTime(), right) && right && oldOption + 1 < count) {
       option = oldOption + 1;
     }
-    if (option != oldOption) {
+    if (oldOption != option) {
       menu->ApplyOption(option);
       CSfxManager::SfxStart(0x5a8, 0x5f, 0x3f);
     }
@@ -1182,17 +1182,15 @@ void CPauseScreen::ProcessRotationInput(const CFinalInput& input) {
       }
     }
     const float value = CMath::Clamp(0.f, current + delta, 1.f);
-    if (close_enough(value, current)) {
-      if (mRotateSfx != CSfxHandle()) {
-        CSfxManager::SfxStop(mRotateSfx);
-        mRotateSfx = CSfxHandle();
-      }
-    } else {
+    if (!close_enough(value, current)) {
       slider->SetNormalizedValue(value);
       slider->ApplyNormalizedValue();
       if (mRotateSfx == CSfxHandle()) {
         mRotateSfx = CSfxManager::SfxStart(0x256, 0x7f, 0x3f, CSfxManager::kAllAreas, false, true);
       }
+    } else if (mRotateSfx != CSfxHandle()) {
+      CSfxManager::SfxStop(mRotateSfx);
+      mRotateSfx = CSfxHandle();
     }
   } else {
     mRotationInput = CVector2f(x, y) * 120.f;
