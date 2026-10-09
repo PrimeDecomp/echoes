@@ -643,7 +643,7 @@ config.libs = [
             Object(MatchingFor("G2ME01"), "MetroidPrime/Cameras/CCameraManager.cpp"),
             Object(MatchingFor("G2ME01"), "MetroidPrime/Cameras/CCinematicCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CFirstPersonCamera.cpp"),
-            Object(NonMatching, "MetroidPrime/Cameras/CGameCamera.cpp"),
+            Object(MatchingFor("G2ME01"), "MetroidPrime/Cameras/CGameCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CInterpolationCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CPathCamera.cpp"),
             Object(NonMatching, "MetroidPrime/Cameras/CSpindleCamera.cpp"),

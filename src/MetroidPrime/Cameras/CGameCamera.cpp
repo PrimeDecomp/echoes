@@ -14,10 +14,29 @@
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "Kyoto/Math/CloseEnough.hpp"
 
+CGameCamera::SFovInterpolation::SFovInterpolation(float delay, float remaining, float duration,
+                                                  float current, float target, TUniqueId cameraId)
+: mDelay(delay)
+, mRemaining(remaining)
+, mDuration(duration)
+, mCurrent(current)
+, mTarget(target)
+, mCameraId(cameraId) {}
+
+void CGameCamera::SFovInterpolation::Set(float delay, float remaining, float duration,
+                                         float current, float target, TUniqueId cameraId) {
+  mDelay = delay;
+  mRemaining = remaining;
+  mDuration = duration;
+  mCurrent = current;
+  mTarget = target;
+  mCameraId = cameraId;
+}
+
 CGameCamera::CGameCamera(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                          const CTransform4f& xf, float fov, float nearZ, float farZ, float aspect,
                          TUniqueId watchedId, int index, int controllerIdx)
-: CActor(uid, name, info, 0, xf, CModelData(), CMaterialList(kMT_NoStepLogic),
+: CActor(uid, name, info, 0, xf, CModelData::CModelDataNull(), CMaterialList(kMT_NoStepLogic),
          CActorParameters::None(), kInvalidUniqueId)
 , mWatchedObject(watchedId)
 , mPerspectiveMatrix(CMatrix4f::Identity())
@@ -56,47 +75,56 @@ CVector3f CGameCamera::ConvertToScreenSpace(const CVector3f& position) const {
 }
 
 float CMatrix4f::Determinant() const {
-  const float a = m20 * m31 - m21 * m30;
-  const float b = m20 * m32 - m22 * m30;
-  const float c = m20 * m33 - m23 * m30;
-  const float d = m21 * m32 - m22 * m31;
-  const float e = m21 * m33 - m23 * m31;
-  const float f = m22 * m33 - m23 * m32;
-
-  return m00 * (m11 * f - m12 * e + m13 * d) - m01 * (m10 * f - m12 * c + m13 * b) +
-         m02 * (m10 * e - m11 * c + m13 * a) - m03 * (m10 * d - m11 * b + m12 * a);
+  return m00 * (m13 * (m21 * m32 - m22 * m31) - m11 * (m23 * m32 - m22 * m33) +
+                m12 * (m23 * m31 - m21 * m33)) -
+         m01 * (m10 * (m22 * m33 - m23 * m32) - m12 * (m20 * m33 - m23 * m30) +
+                m13 * (m20 * m32 - m22 * m30)) +
+         m02 * (m10 * (m21 * m33 - m23 * m31) - m11 * (m20 * m33 - m23 * m30) +
+                m13 * (m20 * m31 - m21 * m30)) -
+         m03 * (m10 * (m21 * m32 - m22 * m31) - m11 * (m20 * m32 - m22 * m30) +
+                m12 * (m20 * m31 - m21 * m30));
 }
 
 CMatrix4f CMatrix4f::GetInverse() const {
-  // Two-by-two minors for the adjugate matrix.
-  const float a = m20 * m31 - m21 * m30;
-  const float b = m20 * m32 - m22 * m30;
-  const float c = m20 * m33 - m23 * m30;
-  const float d = m21 * m32 - m22 * m31;
-  const float e = m21 * m33 - m23 * m31;
-  const float f = m22 * m33 - m23 * m32;
-  const float g = m10 * m31 - m11 * m30;
-  const float h = m10 * m32 - m12 * m30;
-  const float i = m10 * m33 - m13 * m30;
-  const float j = m11 * m32 - m12 * m31;
-  const float k = m11 * m33 - m13 * m31;
-  const float l = m12 * m33 - m13 * m32;
-  const float m = m10 * m21 - m11 * m20;
-  const float n = m10 * m22 - m12 * m20;
-  const float o = m10 * m23 - m13 * m20;
-  const float p = m11 * m22 - m12 * m21;
-  const float q = m11 * m23 - m13 * m21;
-  const float r = m12 * m23 - m13 * m22;
   const float invDet = 1.f / Determinant();
+  // minorRC is the determinant of this matrix without row R and column C.
+  const float minor00 =
+      m13 * (m21 * m32 - m22 * m31) - m11 * (m23 * m32 - m22 * m33) + m12 * (m23 * m31 - m21 * m33);
+  const float minor10 =
+      m01 * (m22 * m33 - m23 * m32) - m02 * (m21 * m33 - m23 * m31) + m03 * (m21 * m32 - m22 * m31);
+  const float minor20 =
+      m01 * (m12 * m33 - m13 * m32) - m02 * (m11 * m33 - m13 * m31) + m03 * (m11 * m32 - m12 * m31);
+  const float minor30 =
+      m01 * (m12 * m23 - m13 * m22) - m02 * (m11 * m23 - m13 * m21) + m03 * (m11 * m22 - m12 * m21);
+  const float minor01 =
+      m10 * (m22 * m33 - m23 * m32) - m12 * (m20 * m33 - m23 * m30) + m13 * (m20 * m32 - m22 * m30);
+  const float minor11 =
+      m00 * (m22 * m33 - m23 * m32) - m02 * (m20 * m33 - m23 * m30) + m03 * (m20 * m32 - m22 * m30);
+  const float minor21 =
+      m00 * (m12 * m33 - m13 * m32) - m02 * (m10 * m33 - m13 * m30) + m03 * (m10 * m32 - m12 * m30);
+  const float minor31 =
+      m00 * (m12 * m23 - m13 * m22) - m02 * (m10 * m23 - m13 * m20) + m03 * (m10 * m22 - m12 * m20);
+  const float minor02 =
+      m10 * (m21 * m33 - m23 * m31) - m11 * (m20 * m33 - m23 * m30) + m13 * (m20 * m31 - m21 * m30);
+  const float minor12 =
+      m00 * (m21 * m33 - m23 * m31) - m01 * (m20 * m33 - m23 * m30) + m03 * (m20 * m31 - m21 * m30);
+  const float minor22 =
+      m00 * (m11 * m33 - m13 * m31) - m01 * (m10 * m33 - m13 * m30) + m03 * (m10 * m31 - m11 * m30);
+  const float minor32 =
+      m00 * (m11 * m23 - m13 * m21) - m01 * (m10 * m23 - m13 * m20) + m03 * (m10 * m21 - m11 * m20);
+  const float minor03 =
+      m10 * (m21 * m32 - m22 * m31) - m11 * (m20 * m32 - m22 * m30) + m12 * (m20 * m31 - m21 * m30);
+  const float minor13 =
+      m00 * (m21 * m32 - m22 * m31) - m01 * (m20 * m32 - m22 * m30) + m02 * (m20 * m31 - m21 * m30);
+  const float minor23 =
+      m00 * (m11 * m32 - m12 * m31) - m01 * (m10 * m32 - m12 * m30) + m02 * (m10 * m31 - m11 * m30);
+  const float minor33 =
+      m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20);
 
-  return CMatrix4f(invDet * (m11 * f - m12 * e + m13 * d), -invDet * (m01 * f - m02 * e + m03 * d),
-                   invDet * (m01 * l - m02 * k + m03 * j), -invDet * (m01 * r - m02 * q + m03 * p),
-                   -invDet * (m10 * f - m12 * c + m13 * b), invDet * (m00 * f - m02 * c + m03 * b),
-                   -invDet * (m00 * l - m02 * i + m03 * h), invDet * (m00 * r - m02 * o + m03 * n),
-                   invDet * (m10 * e - m11 * c + m13 * a), -invDet * (m00 * e - m01 * c + m03 * a),
-                   invDet * (m00 * k - m01 * i + m03 * g), -invDet * (m00 * q - m01 * o + m03 * m),
-                   -invDet * (m10 * d - m11 * b + m12 * a), invDet * (m00 * d - m01 * b + m02 * a),
-                   -invDet * (m00 * j - m01 * h + m02 * g), invDet * (m00 * p - m01 * n + m02 * m));
+  return CMatrix4f(invDet * minor00, invDet * -minor10, invDet * minor20, invDet * -minor30,
+                   invDet * -minor01, invDet * minor11, invDet * -minor21, invDet * minor31,
+                   invDet * minor02, invDet * -minor12, invDet * minor22, invDet * -minor32,
+                   invDet * -minor03, invDet * minor13, invDet * -minor23, invDet * minor33);
 }
 
 CVector3f CGameCamera::ConvertToWorldSpace(const CVector3f& position) const {
@@ -136,9 +164,9 @@ void CGameCamera::SetActive(const bool active) {
 CTransform4f CGameCamera::ValidateCameraTransform(const CTransform4f& newXf,
                                                   const CTransform4f& oldXf, float dt) {
   CTransform4f xf(newXf);
-  if (!close_enough(newXf.GetColumn(kDX).Magnitude(), 1.f) ||
-      !close_enough(newXf.GetColumn(kDY).Magnitude(), 1.f) ||
-      !close_enough(newXf.GetColumn(kDZ).Magnitude(), 1.f)) {
+  if (!close_enough(newXf.GetColumn(kDX).Magnitude(), 1.f, FLT_EPSILON * 1000.f) ||
+      !close_enough(newXf.GetColumn(kDY).Magnitude(), 1.f, FLT_EPSILON * 1000.f) ||
+      !close_enough(newXf.GetColumn(kDZ).Magnitude(), 1.f, FLT_EPSILON * 1000.f)) {
     xf.Orthonormalize();
   }
   const float dot = CMath::Limit(CVector3f::Dot(newXf.GetColumn(kDY), CVector3f::Up()), 1.f);
@@ -282,23 +310,4 @@ void CGameCamera::ClearFluidList(CStateManager& mgr) {
     }
   }
   CActor::ClearFluidList(mgr);
-}
-
-CGameCamera::SFovInterpolation::SFovInterpolation(float delay, float remaining, float duration,
-                                                  float current, float target, TUniqueId cameraId)
-: mDelay(delay)
-, mRemaining(remaining)
-, mDuration(duration)
-, mCurrent(current)
-, mTarget(target)
-, mCameraId(cameraId) {}
-
-void CGameCamera::SFovInterpolation::Set(float delay, float remaining, float duration,
-                                         float current, float target, TUniqueId cameraId) {
-  mDelay = delay;
-  mRemaining = remaining;
-  mDuration = duration;
-  mCurrent = current;
-  mTarget = target;
-  mCameraId = cameraId;
 }
