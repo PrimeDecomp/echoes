@@ -1928,6 +1928,13 @@ config.libs = [
         ],
         extra_cflags=["-pool off"],
     ),
+    Rel(
+        "Shrieker",
+        [
+            Object(NonMatching, "MetroidPrime/Enemies/CShrieker.cpp"),
+        ],
+        extra_cflags=["-pool off"],
+    ),
 ]
 
 
