@@ -1691,43 +1691,44 @@ CVector3f CBallCamera::ClampElevationToWater(CVector3f position, CStateManager& 
 }
 
 CVector3f CBallCamera::MoveCollisionActor(const CVector3f& position, float dt, CStateManager& mgr) {
-  CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId));
-  if (actor == nullptr) {
-    return position;
-  }
-  CVector3f delta = position - actor->GetTranslation();
-  if (!delta.IsMagnitudeSafe() || delta.Magnitude() < 0.01f) {
-    actor->Stop();
-    return actor->GetTranslation();
-  }
+  if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId))) {
+    CVector3f delta = position - actor->GetTranslation();
+    if (!delta.IsMagnitudeSafe() || delta.Magnitude() < 0.01f) {
+      actor->Stop();
+      return actor->GetTranslation();
+    }
 
-  CVector3f oldVelocity = actor->GetVelocityWR();
-  CVector3f oldPosition = actor->GetTranslation();
-  CVector3f velocity = ComputeVelocity(oldVelocity, delta / dt, dt);
-  actor->SetVelocityWR(velocity);
-  actor->SetMovable(true);
-  actor->AddMaterial(kMT_Solid, mgr);
-  CGameCollision::Move(mgr, *actor, dt, nullptr);
-
-  CVector3f remaining = actor->GetTranslation() - position;
-  if (remaining.IsMagnitudeSafe() && remaining.Magnitude() > 0.1f) {
-    actor->SetTranslation(oldPosition);
-    actor->SetVelocityWR(TweenVelocity(oldVelocity, velocity, 50.f, dt));
+    const CVector3f oldVelocity = actor->GetVelocityWR();
+    const CVector3f oldPosition = actor->GetTranslation();
+    CVector3f velocity = (1.f / dt) * delta;
+    velocity = ComputeVelocity(oldVelocity, velocity, dt);
+    actor->SetVelocityWR(velocity);
+    actor->SetMovable(true);
+    actor->AddMaterial(kMT_Solid, mgr);
     CGameCollision::Move(mgr, *actor, dt, nullptr);
-    remaining = actor->GetTranslation() - position;
-    if (remaining.Magnitude() > 0.1f) {
-      ++mShortMoveCount;
+
+    CVector3f remaining = actor->GetTranslation() - position;
+    if (remaining.IsMagnitudeSafe() && remaining.Magnitude() > 0.1f) {
+      actor->SetTranslation(oldPosition);
+      CVector3f tweenedVelocity = TweenVelocity(oldVelocity, velocity, 50.f, dt);
+      actor->SetVelocityWR(tweenedVelocity);
+      CGameCollision::Move(mgr, *actor, dt, nullptr);
+      remaining = actor->GetTranslation() - position;
+      if (remaining.Magnitude() > 0.1f) {
+        ++mShortMoveCount;
+      } else {
+        mShortMoveCount = 0;
+      }
     } else {
+      actor->Stop();
       mShortMoveCount = 0;
     }
-  } else {
-    actor->Stop();
-    mShortMoveCount = 0;
-  }
 
-  actor->SetMovable(false);
-  actor->RemoveMaterial(kMT_Solid, mgr);
-  return actor->GetTranslation();
+    actor->SetMovable(false);
+    actor->RemoveMaterial(kMT_Solid, mgr);
+    return actor->GetTranslation();
+  }
+  return position;
 }
 
 void CBallCamera::UpdateLookAtPosition(float dt, CStateManager& mgr, bool teleport) {
