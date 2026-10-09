@@ -1113,7 +1113,8 @@ bool CBallCamera::fn_801a39d0(float distance, float dt, CVector3f& position, CSt
     }
   }
   position = result;
-  return found;
+  const bool hasRepulsor = found;
+  return hasRepulsor;
 }
 
 bool CBallCamera::fn_801a36f0(float distance, float dt, CVector3f& position, CStateManager& mgr) {
