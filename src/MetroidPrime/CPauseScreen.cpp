@@ -538,21 +538,16 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
     CAABox bounds = CAABox::MakeMaxInvertedBox();
     for (rstl::reserved_vector< rstl::auto_ptr< CModelData >, 11 >::iterator it = mModels.begin();
          it != mModels.end(); ++it) {
-      CModelData* model = it->get();
-      if (model != nullptr && !model->IsNull()) {
+      if (it->get() != nullptr && !(*it)->IsNull()) {
         mModelFade = 0.f;
-        model->Touch(CModelData::kWM_Normal, 0);
-        model->EnableLooping(true);
-        if (model->HasAnimation()) {
+        (*it)->Touch(CModelData::kWM_Normal, 0);
+        (*it)->EnableLooping(true);
+        if ((*it)->HasAnimation()) {
           CRandom16 random(0);
-          model->AdvanceAnimation(0.02f, random, true);
-          const CAABox modelBounds = model->AnimationData()->CalcBoundingBoxFromModelVerts();
-          bounds.AccumulateBounds(modelBounds.GetMinPoint());
-          bounds.AccumulateBounds(modelBounds.GetMaxPoint());
+          (*it)->AdvanceAnimation(0.02f, random, true);
+          bounds.Include((*it)->AnimationData()->CalcBoundingBoxFromModelVerts());
         } else {
-          const CAABox modelBounds = model->GetBounds();
-          bounds.AccumulateBounds(modelBounds.GetMinPoint());
-          bounds.AccumulateBounds(modelBounds.GetMaxPoint());
+          bounds.Include((*it)->GetBounds());
         }
         mModelCenterOffset = -bounds.GetCenterPoint();
         const CVector3f extent = bounds.GetMaxPoint() - bounds.GetMinPoint();
