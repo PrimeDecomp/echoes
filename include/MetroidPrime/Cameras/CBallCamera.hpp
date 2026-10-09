@@ -80,6 +80,7 @@ public:
   // Reconstructed accessors; see CPlayerDynamics research.
   void SetLookAtPosition(const CVector3f& position) { mLookPos = position; }
   void SetLookAtOffset(CVector3f offset) { mLookAtOffset = offset; }
+  void SetWorldOffset(CVector3f offset) { mOverrideBallToCam = offset; }
   void ResetLookAtPosition() {
     mLookPos = mFixedLookPos;
     mLookPosAhead = mFixedLookPos;

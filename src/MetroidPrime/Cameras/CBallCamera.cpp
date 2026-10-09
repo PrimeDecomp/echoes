@@ -2278,7 +2278,7 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
     mElevation = info.GetElevation();
   }
   if (info.GetOverrideFlags() & 0x8) {
-    mLookAtOffset = info.GetLookAtOffset();
+    SetLookAtOffset(info.GetLookAtOffset());
   }
   if ((info.GetOverrideFlags() & 0x20) != 0) {
     mClampAttitude = true;
@@ -2313,30 +2313,39 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
     }
   }
 
-  switch (mBehaviour) {
+  switch (info.GetBehaviourType()) {
   case kBCB_HintBallToCam: {
     const CVector3f ballToCam = info.GetWorldOffset();
-    mOverrideBallToCam = ballToCam;
+    SetWorldOffset(ballToCam);
     const CVector3f ballPos = Player(mgr).GetBallPosition();
     CVector3f cameraPos = ballPos + ballToCam;
     if (info.GetFlags() & 0x1) {
-      const float distance = ballToCam.ToVec2f().Magnitude();
-      const CVector3f direction = -CVector3f(ballToCam.ToVec2f(), 0.f).AsNormalized();
-      cameraPos = FindDesiredPosition(distance, ballToCam.GetZ(), direction, mgr, false);
+      const CVector2f ballToCamXY(ballToCam.GetX(), ballToCam.GetY());
+      const float distance = ballToCamXY.Magnitude();
+      const float elevation = ballToCam.GetZ();
+      const CVector2f camToBallXY(ballToCam.GetX(), ballToCam.GetY());
+      const CVector3f camToBall =
+          -CVector3f(camToBallXY.GetX(), camToBallXY.GetY(), 0.f).AsNormalized();
+      cameraPos = FindDesiredPosition(distance, elevation, camToBall, mgr, false);
     }
     const CTransform4f cameraXf = CTransform4f::LookAt(cameraPos, mLookPos, CVector3f::Up());
     TeleportCamera(cameraXf, mgr);
     break;
   }
   case kBCB_HintLocalOffset: {
-    mHintLocalOffset = info.GetWorldOffset();
-    const CVector3f ballToCam = hint->GetTransform().Rotate(mHintLocalOffset);
-    mOverrideBallToCam = ballToCam;
+    CVector3f ballToCam = info.GetWorldOffset();
+    mHintLocalOffset = ballToCam;
+    ballToCam = hint->GetTransform().Rotate(ballToCam);
+    SetWorldOffset(ballToCam);
     CVector3f cameraPos = Player(mgr).GetBallPosition() + ballToCam;
     if (info.GetFlags() & 0x1) {
-      const float distance = ballToCam.ToVec2f().Magnitude();
-      const CVector3f direction = -CVector3f(ballToCam.ToVec2f(), 0.f).AsNormalized();
-      cameraPos = FindDesiredPosition(distance, ballToCam.GetZ(), direction, mgr, false);
+      const CVector2f ballToCamXY(ballToCam.GetX(), ballToCam.GetY());
+      const float distance = ballToCamXY.Magnitude();
+      const float elevation = ballToCam.GetZ();
+      const CVector2f camToBallXY(ballToCam.GetX(), ballToCam.GetY());
+      const CVector3f camToBall =
+          -CVector3f(camToBallXY.GetX(), camToBallXY.GetY(), 0.f).AsNormalized();
+      cameraPos = FindDesiredPosition(distance, elevation, camToBall, mgr, false);
     }
     const CTransform4f cameraXf = CTransform4f::LookAt(cameraPos, mLookPos, CVector3f::Up());
     TeleportCamera(cameraXf, mgr);
@@ -2345,7 +2354,7 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
   case kBCB_Default:
     if (info.GetFlags() & 0x20) {
       if (info.GetFlags() & 0x40000) {
-        const CTransform4f current = CameraManager(mgr).GetCurrentCameraTransform(mgr, false);
+        const CTransform4f& current = CameraManager(mgr).GetCurrentCameraTransform(mgr, false);
         CVector3f direction = Player(mgr).GetTranslation() - current.GetTranslation();
         direction.SetZ(0.f);
         if (direction.IsMagnitudeSafe()) {
@@ -2355,8 +2364,8 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
         }
         TeleportCamera(FindDesiredTransform(direction, mgr), mgr);
       } else {
-        const CTransform4f cameraXf =
-            CTransform4f::LookAt(hint->GetTranslation(), mLookPos, CVector3f::Up());
+        const CVector3f hintPos = hint->GetTranslation();
+        const CTransform4f cameraXf = CTransform4f::LookAt(hintPos, mLookPos, CVector3f::Up());
         TeleportCamera(cameraXf, mgr);
       }
     }
@@ -2369,10 +2378,18 @@ void CBallCamera::OverrideCameraInfo(CStateManager& mgr) {
       ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
       const CVector3f desiredPos =
           FindDesiredPosition(distance, elevation, Player(mgr).GetMovementDirection(), mgr, false);
-      const CTransform4f cameraXf = CTransform4f::LookAt(desiredPos, mLookPos, CVector3f::Up());
+      const CTransform4f cameraXf =
+          CTransform4f::LookAt(desiredPos, GetFixedLookPos(), CVector3f::Up());
       TeleportCamera(cameraXf, mgr);
     }
     break;
+  case kBCB_Unknown4:
+  case kBCB_Unknown5:
+  case kBCB_Unknown6:
+  case kBCB_Unknown7:
+  case kBCB_Unknown8:
+  case kBCB_Unknown9:
+  case kBCB_FixedTransform:
   default:
     break;
   }
