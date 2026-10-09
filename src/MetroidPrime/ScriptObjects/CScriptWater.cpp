@@ -463,6 +463,9 @@ void CScriptWater::PreRender(CStateManager& mgr) {
           ActorLights()->BuildAreaLightList(mgr, mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()),
                                             GetTriggerBoundsWR());
           SetPreRenderHasMoved(false);
+#if VERSION == VERSION_G2MP01
+          SetPreRenderLightsDirty(false);
+#endif
         }
       }
       ActorLights()->BuildDynamicLightList(mgr, GetTriggerBoundsWR());
