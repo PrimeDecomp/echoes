@@ -9,7 +9,7 @@
 #include "rstl/math.hpp"
 
 CCameraShakerManager::SShaker::SShaker(int id, int playerIndex, const CCameraShakerData& data,
-                                       bool playSound, bool useThresholdTimes)
+                                       bool playSound, const bool useThresholdTimes)
 : mTime(0.f)
 , mId(id)
 , mPlayerIndex(playerIndex)
@@ -28,8 +28,9 @@ CVector3f CCameraShakerManager::SShaker::GetTranslation(const CStateManager& mgr
 }
 
 float CCameraShakerManager::SShaker::GetDistanceAttenuation(const CStateManager& mgr) const {
-  const CVector3f delta = mData.GetPosition() - mgr.GetPlayer(mPlayerIndex)->GetTranslation();
-  return 1.f - CMath::Clamp(0.f, delta.Magnitude() / mData.GetAttenuationDistance(), 1.f);
+  const CVector3f playerPos = mgr.GetPlayer(mPlayerIndex)->GetTranslation();
+  const float distance = CVector3f(mData.GetPosition() - playerPos).Magnitude();
+  return 1.f - CMath::Clamp(0.f, distance / mData.GetAttenuationDistance(), 1.f);
 }
 
 CCameraShakerManager::CCameraShakerManager(int playerIndex)
@@ -45,37 +46,34 @@ CCameraShakerManager::~CCameraShakerManager() {}
 
 void CCameraShakerManager::StartSound(SShaker& shaker) {
   const CCameraShakerData& data = shaker.mData;
-  if (!shaker.mPlaySound || !(data.GetDuration() > 0.f) ||
-      (shaker.mUseThresholdTimes && !(data.GetCachedMaxAmplitude() > 0.2f))) {
-    return;
-  }
+  if (shaker.mPlaySound && data.GetDuration() > 0.f &&
+      (!shaker.mUseThresholdTimes ||
+       (shaker.mUseThresholdTimes && data.GetCachedMaxAmplitude() > 0.2f))) {
+    shaker.mSoundStarted = true;
+    ushort volume = 100;
+    if (data.GetFlags() & CCameraShakerData::kF_AmplitudeScaledVolume) {
+      const float amplitude = data.GetCachedMaxAmplitude();
+      volume = static_cast< ushort >(CMath::Clamp(64.f, 63.f * (amplitude / 2.f) + 64.f, 127.f));
+    }
 
-  shaker.mSoundStarted = true;
-  ushort volume = 100;
-  if (data.GetFlags() & CCameraShakerData::kF_AmplitudeScaledVolume) {
-    volume = static_cast< ushort >(
-        CMath::Clamp(64.f, 63.f * (data.GetCachedMaxAmplitude() * 0.5f) + 64.f, 127.f));
+    const ushort sfxId = static_cast< ushort >(data.GetAudioEffect());
+    if (sfxId != CSfxManager::kInternalInvalidSfxId) {
+      CSfxHandle handle;
+      if ((data.GetFlags() & CCameraShakerData::kF_NonPositionalSound) == 0) {
+        handle = CSfxManager::AddEmitter(sfxId, data.GetPosition(), static_cast< uchar >(volume),
+                                         CSfxManager::kAllAreas, false, false,
+                                         CSfxManager::kMedPriority);
+      } else {
+        handle = CSfxManager::SfxStart(sfxId, static_cast< uchar >(volume), 64);
+      }
+      CSfxManager::SetDuration(handle,
+                               data.GetLastThresholdTime() - data.GetFirstThresholdTime());
+    }
   }
-
-  const ushort sfxId = static_cast< ushort >(data.GetAudioEffect());
-  if (sfxId == CSfxManager::kInternalInvalidSfxId) {
-    return;
-  }
-
-  CSfxHandle handle;
-  if (data.GetFlags() & CCameraShakerData::kF_NonPositionalSound) {
-    handle = CSfxManager::SfxStart(sfxId, static_cast< uchar >(volume), 64);
-  } else {
-    const CVector3f position = data.GetPosition();
-    handle =
-        CSfxManager::AddEmitter(sfxId, position, static_cast< uchar >(volume),
-                                CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
-  }
-  CSfxManager::SetDuration(handle, data.GetLastThresholdTime() - data.GetFirstThresholdTime());
 }
 
 int CCameraShakerManager::AddCameraShaker(const CCameraShakerData& data, CStateManager& mgr,
-                                          bool playSound, bool useThresholdTimes) {
+                                          bool playSound, const bool useThresholdTimes) {
   if (mShakers.size() == mShakers.capacity()) {
     return -1;
   }
@@ -135,22 +133,22 @@ void CCameraShakerManager::Update(float dt, CStateManager& mgr) {
       StartSound(*it);
     }
     if (it->mTime >= it->mData.GetDuration()) {
-      it = mShakers.erase(it);
+      mShakers.erase(it);
     } else {
       mTranslation += it->GetTranslation(mgr);
-      rumbleIntensity += (it->mData.GetFlags() & CCameraShakerData::kF_RumbleDistanceAttenuation)
-                             ? it->GetDistanceAttenuation(mgr)
-                             : 1.f;
+      if (it->mData.GetFlags() & CCameraShakerData::kF_RumbleDistanceAttenuation) {
+        rumbleIntensity += it->GetDistanceAttenuation(mgr);
+      } else {
+        rumbleIntensity += 1.f;
+      }
       ++it;
     }
   }
 
-  const CPlayer& player = *mgr.GetPlayer(mPlayerIndex);
-  const CCameraManager& cameraManager = *mgr.GetCameraManager(mPlayerIndex);
-  if ((player.GetCameraState() != CPlayer::kCS_FirstPerson &&
-       !cameraManager.IsInCinematicCamera()) ||
-      cameraManager.ShouldBypassInterpolationCamera() ||
-      player.GetTurretState() != CPlayer::kTS_None) {
+  if ((mgr.GetPlayer(mPlayerIndex)->GetCameraState() != CPlayer::kCS_FirstPerson &&
+       !mgr.GetCameraManager(mPlayerIndex)->IsInCinematicCamera()) ||
+      mgr.GetCameraManager(mPlayerIndex)->ShouldBypassInterpolationCamera() ||
+      mgr.GetPlayer(mPlayerIndex)->GetTurretState() != CPlayer::kTS_None) {
     mTranslation = CVector3f::Zero();
   }
 
@@ -162,7 +160,7 @@ void CCameraShakerManager::Update(float dt, CStateManager& mgr) {
   if (mRumbleCooldown > 0.f) {
     mRumbleCooldown -= dt;
   } else if (mRumbling) {
-    mPendingRumble = mRumbling = false;
+    mRumbling = mPendingRumble = false;
   }
 }
 

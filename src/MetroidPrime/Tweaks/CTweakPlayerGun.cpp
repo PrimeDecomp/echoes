@@ -116,7 +116,7 @@ CDamageInfo CTweakPlayerGun::GetComboDamage(CPlayerState::EBeamId beam) const {
 CCameraShakerData CTweakPlayerGun::GetRecoilCameraShakerData() const {
   const SLdrCameraShakerData& shaker = mData->recoil;
   // All three native presets use the recoil record's audio effect.
-  return CCameraShakerData(shaker.attenuationDistance, shaker.duration, shaker.flagsCameraShaker,
+  return CCameraShakerData(shaker.flagsCameraShaker, shaker.attenuationDistance, shaker.duration,
                            CVector3f::Zero(), shaker.horizontalMotion, shaker.verticalMotion,
                            shaker.forwardMotion, mData->recoil.audioEffect);
 }
@@ -124,7 +124,7 @@ CCameraShakerData CTweakPlayerGun::GetRecoilCameraShakerData() const {
 CCameraShakerData CTweakPlayerGun::GetProjectileRecoilCameraShakerData() const {
   const SLdrCameraShakerData& shaker = mData->projectileRecoil;
   // All three native presets use the recoil record's audio effect.
-  return CCameraShakerData(shaker.attenuationDistance, shaker.duration, shaker.flagsCameraShaker,
+  return CCameraShakerData(shaker.flagsCameraShaker, shaker.attenuationDistance, shaker.duration,
                            CVector3f::Zero(), shaker.horizontalMotion, shaker.verticalMotion,
                            shaker.forwardMotion, mData->recoil.audioEffect);
 }
@@ -132,7 +132,7 @@ CCameraShakerData CTweakPlayerGun::GetProjectileRecoilCameraShakerData() const {
 CCameraShakerData CTweakPlayerGun::GetProjectileImpactCameraShakerData() const {
   const SLdrCameraShakerData& shaker = mData->projectileImpact;
   // All three native presets use the recoil record's audio effect.
-  return CCameraShakerData(shaker.attenuationDistance, shaker.duration, shaker.flagsCameraShaker,
+  return CCameraShakerData(shaker.flagsCameraShaker, shaker.attenuationDistance, shaker.duration,
                            CVector3f::Zero(), shaker.horizontalMotion, shaker.verticalMotion,
                            shaker.forwardMotion, mData->recoil.audioEffect);
 }

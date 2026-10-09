@@ -5,8 +5,9 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
+#include "rstl/reserved_vector.hpp"
 
-CCameraShakerData::CCameraShakerData(float attenuationDistance, float duration, uint flags,
+CCameraShakerData::CCameraShakerData(uint flags, float attenuationDistance, float duration,
                                      const CVector3f& position, const CMayaSpline& horizontalMotion,
                                      const CMayaSpline& verticalMotion,
                                      const CMayaSpline& forwardMotion, int audioEffect)
@@ -46,7 +47,7 @@ CVector3f CCameraShakerData::GetPoint(float time) {
 }
 
 CCameraShakerData CCameraShakerData::NewTranslation(const CVector3f& position) const {
-  return CCameraShakerData(mAttenuationDistance, mDuration, mFlags, position, mHorizontalMotion,
+  return CCameraShakerData(mFlags, mAttenuationDistance, mDuration, position, mHorizontalMotion,
                            mVerticalMotion, mForwardMotion, mAudioEffect);
 }
 
@@ -59,12 +60,12 @@ float CCameraShakerData::GetMaxAmplitude() {
 
 // Guessed name
 float CCameraShakerData::FindLastIntersection(float amplitude) {
-  const float h0 = mHorizontalMotion.FindLastIntersection(-amplitude);
-  const float horizontal = rstl::max_val(h0, mHorizontalMotion.FindLastIntersection(amplitude));
-  const float v0 = mVerticalMotion.FindLastIntersection(-amplitude);
-  const float vertical = rstl::max_val(v0, mVerticalMotion.FindLastIntersection(amplitude));
-  const float f0 = mForwardMotion.FindLastIntersection(-amplitude);
-  const float forward = rstl::max_val(f0, mForwardMotion.FindLastIntersection(amplitude));
+  const float horizontal = CMath::Max(mHorizontalMotion.FindLastIntersection(amplitude),
+                                      mHorizontalMotion.FindLastIntersection(-amplitude));
+  const float vertical = CMath::Max(mVerticalMotion.FindLastIntersection(amplitude),
+                                    mVerticalMotion.FindLastIntersection(-amplitude));
+  const float forward = CMath::Max(mForwardMotion.FindLastIntersection(amplitude),
+                                   mForwardMotion.FindLastIntersection(-amplitude));
   float time = rstl::max_val(forward, rstl::max_val(vertical, horizontal));
   if (time < 0.f) {
     time = mDuration;
@@ -74,14 +75,16 @@ float CCameraShakerData::FindLastIntersection(float amplitude) {
 
 // Guessed name
 float CCameraShakerData::FindFirstIntersection(float amplitude) {
-  float times[] = {mHorizontalMotion.FindFirstIntersection(amplitude),
-                   mHorizontalMotion.FindFirstIntersection(-amplitude),
-                   mVerticalMotion.FindFirstIntersection(amplitude),
-                   mVerticalMotion.FindFirstIntersection(-amplitude),
-                   mForwardMotion.FindFirstIntersection(amplitude),
-                   mForwardMotion.FindFirstIntersection(-amplitude)};
-  rstl::sort(times, times + 6);
-  for (int i = 0; i < 6; ++i) {
+  rstl::reserved_vector< float, 6 > times;
+  times.push_back(mHorizontalMotion.FindFirstIntersection(amplitude));
+  times.push_back(mHorizontalMotion.FindFirstIntersection(-amplitude));
+  times.push_back(mVerticalMotion.FindFirstIntersection(amplitude));
+  times.push_back(mVerticalMotion.FindFirstIntersection(-amplitude));
+  times.push_back(mForwardMotion.FindFirstIntersection(amplitude));
+  times.push_back(mForwardMotion.FindFirstIntersection(-amplitude));
+  rstl::sort(times.begin(), times.end());
+
+  for (int i = 0; i < times.size(); ++i) {
     if (times[i] >= 0.f) {
       return times[i];
     }
@@ -91,7 +94,7 @@ float CCameraShakerData::FindFirstIntersection(float amplitude) {
 
 CCameraShakerData LdrToCameraShakerData(const SLdrCameraShakerData& data,
                                         const CVector3f& position) {
-  return CCameraShakerData(data.attenuationDistance, data.duration, data.flagsCameraShaker,
+  return CCameraShakerData(data.flagsCameraShaker, data.attenuationDistance, data.duration,
                            position, data.horizontalMotion, data.verticalMotion, data.forwardMotion,
                            data.audioEffect);
 }
