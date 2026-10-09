@@ -123,6 +123,9 @@ public:
   ~CBlogg() override;
   CEntity* TypesMatch(int typeId) const override;
 
+  // CEntity
+  void Think(float dt, CStateManager& mgr) override;
+
   // CActor
   void PreRender(CStateManager& mgr) override;
   void AddToRenderer(const CStateManager& mgr) const override;
@@ -232,6 +235,7 @@ private:
                                      EMaterialAction action); // Guessed name
   void StopPlayer(CStateManager& mgr);                        // Guessed name
   void AttachPlayerToMouth(CStateManager& mgr);               // Guessed name
+  void UpdateAimWeights();                                    // Guessed name
   uchar GetNextPositionIndex() const;                         // Guessed name
   void PathToAttackPosition(CStateManager& mgr, float dt);    // Guessed name
   void FindAttackPositions(CStateManager& mgr, const CVector3f& playerPosition,

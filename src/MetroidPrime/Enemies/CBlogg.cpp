@@ -1747,6 +1747,147 @@ void CBlogg::ComputeAttackPositions(CStateManager& mgr, float dt) {
   }
 }
 
+void CBlogg::UpdateAimWeights() {
+  const CTransform4f& xf = GetTransform();
+  const CTransform4f inverse(xf.GetQuickInverse());
+  const CVector3f local = inverse.BuildMatrix3f() * mLastForward;
+  const float step = M_PIF * (BodyController()->GetTurnSpeed() / 60.f / 180.f);
+  const float up = CVector3f::Dot(local, CVector3f::Up());
+  const float left = CVector3f::Dot(local, CVector3f::Left());
+  const float threshold = 0.75f * step;
+  if (up >= 0.f) {
+    if (up > threshold) {
+      mAimWeightDown = CMath::Min(mAimWeightDown + CMath::Min(up / (M_PIF / 2.f), step), 1.f);
+    } else {
+      mAimWeightDown = CMath::Max(mAimWeightDown - step, 0.f);
+    }
+    mAimWeightUp = CMath::Max(mAimWeightUp - step, 0.f);
+  } else {
+    const float absUp = CMath::AbsF(up);
+    if (absUp > threshold) {
+      mAimWeightUp = CMath::Min(mAimWeightUp + CMath::Min(absUp / (M_PIF / 2.f), step), 1.f);
+    } else {
+      mAimWeightUp = CMath::Max(mAimWeightUp - step, 0.f);
+    }
+    mAimWeightDown = CMath::Max(mAimWeightDown - step, 0.f);
+  }
+  if (left >= 0.f) {
+    if (left > threshold) {
+      mAimWeightLeft = CMath::Min(mAimWeightLeft + CMath::Min(left / (M_PIF / 2.f), step), 1.f);
+    } else {
+      mAimWeightLeft = CMath::Max(mAimWeightLeft - step, 0.f);
+    }
+    mAimWeightRight = CMath::Max(mAimWeightRight - step, 0.f);
+  } else {
+    const float absLeft = CMath::AbsF(left);
+    if (absLeft > threshold) {
+      mAimWeightRight =
+          CMath::Min(mAimWeightRight + CMath::Min(absLeft / (M_PIF / 2.f), step), 1.f);
+    } else {
+      mAimWeightRight = CMath::Max(mAimWeightRight - step, 0.f);
+    }
+    mAimWeightLeft = CMath::Max(mAimWeightLeft - step, 0.f);
+  }
+  mLastForward = xf.GetForward();
+}
+
+void CBlogg::Think(float dt, CStateManager& mgr) {
+  if (!GetActive()) {
+    return;
+  }
+  if (mTeamManagerId != kInvalidUniqueId) {
+    TCastToConstPtr< CScriptTeamAiMgr >(mgr.GetObjectById(mTeamManagerId));
+  }
+  if (mState == kBS_ChargeAttack || mState == kBS_MoveToValidPosition) {
+    mLineOfSightTracker.Update(dt, mgr);
+  }
+  if (mState == kBS_MoveToAttackPosition || mState == kBS_MoveToPlayer ||
+      mState == kBS_FacePlayer) {
+    BodyController()->SetTurnSpeed(3.f * mBaseTurnSpeed);
+  } else if (mState == kBS_ChargeAttack) {
+    BodyController()->SetTurnSpeed(mChargeTurnSpeed);
+  } else {
+    BodyController()->SetTurnSpeed(mBaseTurnSpeed);
+  }
+  if (mState == kBS_ChargeAttack) {
+    mSpeed = mBaseSpeed * mChargeSpeedMultiplier;
+  } else if (mState == kBS_ProjectileAttack) {
+    mSpeed = mBaseSpeed;
+  } else if (mState == kBS_Dying) {
+    mSpeed = 0.f;
+  } else {
+    mSpeed = mBaseSpeed;
+  }
+  CPatterned::Think(dt, mgr);
+  mCollisionActorManager->Update(dt, mgr, CCollisionActorManager::kUO_WorldSpace);
+  UpdateAimWeights();
+  AnimationData()->AddAdditiveAnimation(mAimAnimUp, mAimWeightUp, false, false);
+  AnimationData()->AddAdditiveAnimation(mAimAnimDown, mAimWeightDown, false, false);
+  AnimationData()->AddAdditiveAnimation(mAimAnimLeft, mAimWeightLeft, false, false);
+  AnimationData()->AddAdditiveAnimation(mAimAnimRight, mAimWeightRight, false, false);
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    const bool inRange = IsPlayerWithinChargeRange(mgr, player);
+    if (mState == kBS_ChargeAttack && inRange && mMouthClosed != 0 && xbc5_28_) {
+      AnimationData()->AddAdditiveAnimation(mUnknown26Anim, 1.f, false, false);
+      mMouthClosed = 0;
+      const ushort mouthOpenSound = mMouthOpenSound;
+      ProcessSoundEvent(mouthOpenSound, 1.f, 0, 0.1f, 1000.f, CSegId(0), 0, 0, 0.f, 20, 127,
+                        GetDistanceToCamera(mgr), GetTranslation(), mgr.GetNextAreaId().Value(),
+                        mgr, true);
+    } else if (mState == kBS_MoveToPlayer &&
+               (player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+                    ? player->GetMorphballTransitionState()
+                    : CPlayer::kMS_Unmorphed) == CPlayer::kMS_Morphed) {
+      AnimationData()->AddAdditiveAnimation(mUnknown26Anim, 1.f, false, false);
+      mMouthClosed = 0;
+    } else if (mState == kBS_GrabBall || mState == kBS_Thrash) {
+      mMouthClosed = 0;
+    } else if (mMouthClosed == 0 && mState != kBS_ChargeAttack) {
+      AnimationData()->DelAdditiveAnimation(mUnknown26Anim);
+      mMouthClosed = 1;
+    }
+  }
+  if (mBallGrabbed) {
+    AttachPlayerToMouth(mgr);
+  }
+  if (!mCanBite) {
+    mMeleeDelayTimer += dt;
+    if (mMeleeDelayTimer >= mMinDelayBetweenMeleeAttacks) {
+      mCanBite = true;
+    }
+  }
+  xb68_ = CMath::Max(xb68_ - dt, 0.f);
+  if (xb68_ > 0.f) {
+    const float t = xb68_ / skDamageHitTime;
+    const CColor& color = CColor::Lerp(CColor::Black(), skHitsWithoutDamageColor, t);
+    const uchar blue = color.GetBlueu8();
+    const uchar green = color.GetGreenu8();
+    mColor.SetRed(color.GetRedu8());
+    mColor.SetGreen(green);
+    mColor.SetBlue(blue);
+  }
+  if (mIsMegaBlogg) {
+    const uchar healthPhase = GetHealthPhase();
+    if (healthPhase != xbb2_) {
+      ChoosePhaseValue(mgr);
+    }
+    if (!xbc5_30_) {
+      if (mPhaseValue != 0 && xbb1_ >= mPhaseValue) {
+        xbc5_30_ = true;
+        xbb1_ = 0;
+      }
+    } else if (xbb1_ >= 3) {
+      xbc5_30_ = false;
+      const uchar newPhase = GetHealthPhase();
+      if (newPhase < mPhases.size()) {
+        ChoosePhaseValue(mgr);
+        xbb1_ = 0;
+      }
+    }
+  }
+}
+
 CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrBlogg sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.inc"
