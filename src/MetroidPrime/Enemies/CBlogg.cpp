@@ -175,16 +175,17 @@ CBloggBodyVulnerability::CBloggBodyVulnerability(const CDamageVulnerability& vul
 
 const CDamageVulnerability* CBloggBodyVulnerability::GetDamageVulnerability(
     const CDamageVulnerability* defaultVuln, const CVector3f& position, const CVector3f& direction,
-    const CDamageInfo& damage) const {
+    const CDamageInfo& damage) {
   if (mOwner != nullptr && mOwner->IsIngPossessed()) {
     return mOwner->GetIngPossessedArmorVulnerability();
   }
   return &mVulnerability;
 }
 
-bool CBloggBodyVulnerability::GetCollisionResponseType(
-    const CVector3f& position, const CVector3f& direction, const CWeaponMode& mode, int attributes,
-    EWeaponCollisionResponseTypes& response) const {
+bool CBloggBodyVulnerability::GetCollisionResponseType(const CVector3f& position,
+                                                       const CVector3f& direction,
+                                                       const CWeaponMode& mode, int attributes,
+                                                       EWeaponCollisionResponseTypes& response) {
   switch (mVulnerability.GetEffect(mode)) {
   case CWeaponTypeVulnerability::kE_Reflect:
     response = kWCR_EnemyShielded;
@@ -204,7 +205,7 @@ CBloggMouthVulnerability::CBloggMouthVulnerability(const CDamageVulnerability& v
 
 const CDamageVulnerability* CBloggMouthVulnerability::GetDamageVulnerability(
     const CDamageVulnerability* defaultVuln, const CVector3f& position, const CVector3f& direction,
-    const CDamageInfo& damage) const {
+    const CDamageInfo& damage) {
   switch (mVulnerability.GetEffect(damage.GetWeaponMode())) {
   case CWeaponTypeVulnerability::kE_Reflect:
     mResponseType = kWCR_EnemyShielded;
@@ -225,9 +226,10 @@ const CDamageVulnerability* CBloggMouthVulnerability::GetDamageVulnerability(
   return &mVulnerability;
 }
 
-bool CBloggMouthVulnerability::GetCollisionResponseType(
-    const CVector3f& position, const CVector3f& direction, const CWeaponMode& mode, int attributes,
-    EWeaponCollisionResponseTypes& response) const {
+bool CBloggMouthVulnerability::GetCollisionResponseType(const CVector3f& position,
+                                                        const CVector3f& direction,
+                                                        const CWeaponMode& mode, int attributes,
+                                                        EWeaponCollisionResponseTypes& response) {
   response = mResponseType;
   return true;
 }

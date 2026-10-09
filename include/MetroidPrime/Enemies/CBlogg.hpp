@@ -32,10 +32,10 @@ public:
   const CDamageVulnerability* GetDamageVulnerability(const CDamageVulnerability* defaultVuln,
                                                      const CVector3f& position,
                                                      const CVector3f& direction,
-                                                     const CDamageInfo& damage) const override;
+                                                     const CDamageInfo& damage) override;
   bool GetCollisionResponseType(const CVector3f& position, const CVector3f& direction,
                                 const CWeaponMode& mode, int attributes,
-                                EWeaponCollisionResponseTypes& response) const override;
+                                EWeaponCollisionResponseTypes& response) override;
 
   void SetOwner(CBlogg* owner) { mOwner = owner; }
 
@@ -57,10 +57,10 @@ public:
   const CDamageVulnerability* GetDamageVulnerability(const CDamageVulnerability* defaultVuln,
                                                      const CVector3f& position,
                                                      const CVector3f& direction,
-                                                     const CDamageInfo& damage) const override;
+                                                     const CDamageInfo& damage) override;
   bool GetCollisionResponseType(const CVector3f& position, const CVector3f& direction,
                                 const CWeaponMode& mode, int attributes,
-                                EWeaponCollisionResponseTypes& response) const override;
+                                EWeaponCollisionResponseTypes& response) override;
 
 private:
   mutable EWeaponCollisionResponseTypes mResponseType; // Guessed name
