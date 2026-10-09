@@ -17,6 +17,8 @@ public:
   void ConfigureWobbleSteering(bool clockwise, float strength);
   TUniqueId GetDestination() const { return mDestination; }       // Guessed name.
   bool IsInPosition() const { return mInPosition; }               // Guessed name.
+  void SetInPosition(bool v) { mInPosition = v; }                 // Guessed name.
+  TUniqueId GetLastDestination() const { return mLastDestination; } // Guessed name.
   void SetHorizontalMovement(bool v) { mHorizontalMovement = v; } // Guessed name.
   const CVector3f& GetDestinationPosition() const { return mDestinationPosition; }
   // Guessed name; Patrol resumes from this waypoint.
