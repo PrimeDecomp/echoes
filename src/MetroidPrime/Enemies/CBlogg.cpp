@@ -1,20 +1,31 @@
 #include "MetroidPrime/Enemies/CBlogg.hpp"
 
+#include "Collision/CCollisionInfoList.hpp"
+#include "Collision/CMaterialFilter.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CAnimData.hpp"
 #include "MetroidPrime/CCollisionActorManager.hpp"
+#include "MetroidPrime/CGameCollision.hpp"
+#include "MetroidPrime/CHealthInfo.hpp"
+#include "MetroidPrime/CKnockBackInfo.hpp"
+#include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Enemies/CPatternedInfo.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/ScriptObjects/CFishCloud.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptAIHint.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CBomb.hpp"
+#include "MetroidPrime/Weapons/CPowerBomb.hpp"
+#include "MetroidPrime/Weapons/CWeapon.hpp"
 #include "REL/REL_Setup.h"
 
 #include <math.h>
@@ -74,6 +85,19 @@ static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
 
 static const char* const skMouthLocatorName = "mouth_LCTR";            // Guessed name
 static const char* const skBallAttachLocatorName = "ball_attach_LCTR"; // Guessed name
+
+static EMaterialTypes skHintRayInclude = kMT_Solid;                       // Guessed name
+static EMaterialTypes skHintRayExclude0 = kMT_Character;                  // Guessed name
+static EMaterialTypes skHintRayExclude1 = kMT_Player;                     // Guessed name
+static EMaterialTypes skHintRayExclude2 = kMT_CollisionActor;             // Guessed name
+static EMaterialTypes skHintRayExclude3 = kMT_AIPassthrough;              // Guessed name
+static EMaterialTypes skHintRayExclude4 = kMT_ExcludeFromLineOfSightTest; // Guessed name
+
+static EMaterialTypes skContactDamageSolid = kMT_Solid;     // Guessed name
+static EMaterialTypes skCollisionCeiling = kMT_Ceiling;     // Guessed name
+static EMaterialTypes skCollisionWall = kMT_Wall;           // Guessed name
+static EMaterialTypes skCollisionFloor = kMT_Floor;         // Guessed name
+static EMaterialTypes skCollisionCharacter = kMT_Character; // Guessed name
 
 static float sLocomotionSpeedA; // Guessed name
 static float sLocomotionSpeedB; // Guessed name
@@ -684,6 +708,314 @@ bool CBlogg::CanGrabBall(CStateManager& mgr, const CTriggerData& data) const {
 bool CBlogg::IsPlayerReachable(CStateManager& mgr, const CTriggerData& data) const {
   CPlayer* player = GetPlayer(mgr);
   return player != nullptr ? CanReachPlayer(mgr, player) : false;
+}
+
+void CBlogg::ReleaseHints(CStateManager& mgr) {
+  const uint count = mHintIds.size();
+  for (uint i = 0; i < count; ++i) {
+    const TUniqueId id = mHintIds[i];
+    CScriptAIHint* hint = static_cast< CScriptAIHint* >(mgr.ObjectById(id));
+    if (hint != nullptr) {
+      hint->SetInUse(false);
+      hint->SetTimeRemaining(0.f);
+    }
+  }
+}
+
+TUniqueId CBlogg::FindNearestHint(CStateManager& mgr, const CVector3f& position,
+                                  bool checkLineOfSight) const {
+  TUniqueId nearest = kInvalidUniqueId;
+  const uint count = mHintIds.size();
+  float nearestDistance = 1000000000.f;
+  float bestDot = -1000000000.f;
+  TUniqueId facing = nearest;
+  const CVector3f forward = GetTransform().GetForward();
+  const CMaterialFilter filter = CMaterialFilter::MakeIncludeExclude(
+      CMaterialList(skHintRayInclude),
+      CMaterialList(skHintRayExclude0, skHintRayExclude1, skHintRayExclude2, skHintRayExclude3,
+                    skHintRayExclude4));
+  for (uint i = 0; i < count; ++i) {
+    const TUniqueId id = mHintIds[i];
+    const CScriptAIHint* hint = static_cast< const CScriptAIHint* >(mgr.GetObjectById(id));
+    if (hint != nullptr && hint->GetActive() && !hint->GetInUse(kInvalidUniqueId)) {
+      const CVector3f offset(hint->GetTranslation() - position);
+      const float distance = offset.MagSquared();
+      if (distance < nearestDistance) {
+        if (checkLineOfSight) {
+          const CRayCastResult result = CGameCollision::RayStaticIntersection(
+              mgr, position, offset.AsNormalized(), offset.Magnitude(), filter);
+          if (!result.IsValid()) {
+            nearestDistance = distance;
+            nearest = id;
+          }
+        } else {
+          nearestDistance = distance;
+          nearest = id;
+        }
+      }
+      const CVector3f direction = offset.AsNormalized();
+      const float dot = CVector3f::Dot(direction, forward);
+      if (dot > bestDot) {
+        facing = id;
+        bestDot = dot;
+      }
+    }
+  }
+  if (facing != kInvalidUniqueId) {
+    return facing;
+  }
+  return nearest;
+}
+
+void CBlogg::CollectHints(CStateManager& mgr) {
+  CObjectList& list = mgr.ObjectListById(kOL_AiWaypoint);
+  mHintIds.reserve(32);
+  for (int i = list.GetFirstObjectIndex(); i != -1; i = list.GetNextObjectIndex(i)) {
+    CScriptAIHint* hint = TCastToPtr< CScriptAIHint >(list[i]);
+    if (hint != nullptr && hint->GetHintType() == CScriptAIHint::kHT_BloggHint &&
+        hint->GetActive() && hint->GetCurrentAreaId() == GetCurrentAreaId() &&
+        !hint->GetInUse(kInvalidUniqueId) && mHintIds.size() < 32u) {
+      mHintIds.push_back_unsafe(hint->GetUniqueId());
+    }
+  }
+}
+
+void CBlogg::UpdateCollisionActorMaterials(CStateManager& mgr, const CMaterialList& materials,
+                                           EMaterialAction action) {
+  for (uint i = 0; i < mCollisionActorManager->GetNumCollisionActors(); ++i) {
+    const TUniqueId id = mCollisionActorManager->GetCollisionDescFromIndex(i).GetCollisionActorId();
+    CCollisionActor* actor = static_cast< CCollisionActor* >(mgr.ObjectById(id));
+    if (actor != nullptr) {
+      switch (action) {
+      case kMA_Add:
+        actor->MaterialList().Add(materials);
+        break;
+      case kMA_Remove:
+        actor->MaterialList().Remove(materials);
+        break;
+      }
+    }
+  }
+}
+
+void CBlogg::StopPlayer(CStateManager& mgr) {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    player->Stop();
+    player->SetAngularVelocityWR(CAxisAngle::Identity());
+    player->SetVelocityWR(CVector3f::Zero());
+    player->EnableLeaveMorphBall(false);
+  }
+}
+
+void CBlogg::AttachPlayerToMouth(CStateManager& mgr) {
+  StopPlayer(mgr);
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    const CTransform4f locator = GetScaledLocatorTransform(rstl::string_l(skBallAttachLocatorName));
+    const CTransform4f xf = GetTransform() * locator;
+    const CVector3f attach = xf.GetTranslation();
+    const CVector3f offset = player->GetAimPosition(mgr, 0.f) - player->GetTranslation();
+    player->SetTranslation(attach - offset);
+  }
+}
+
+uchar CBlogg::GetNextPositionIndex() const {
+  const int count = mPositionHistory.size();
+  if (count > 0) {
+    switch (xb14_) {
+    case 1:
+      if (xb18_ - 1 < 0) {
+        return count - 1;
+      }
+      return 0;
+    case 0:
+      if (xb18_ + 1 >= count) {
+        return 0;
+      }
+      return 0;
+    default:
+      return 0;
+    }
+  }
+  return 0;
+}
+
+void CBlogg::PathToAttackPosition(CStateManager& mgr, float dt) {
+  CVector3f destination = GetTranslation();
+  if (mHintIds.size() != 0u) {
+    const TUniqueId id = FindNearestHint(mgr, GetTranslation(), false);
+    if (id != kInvalidUniqueId) {
+      CScriptAIHint* hint = static_cast< CScriptAIHint* >(mgr.ObjectById(id));
+      if (hint != nullptr) {
+        ReleaseHints(mgr);
+        hint->SetInUse(true);
+        destination = hint->GetTranslation();
+        mAttackPosition = destination;
+        mHintId = id;
+      }
+    }
+  } else {
+    xb18_ = GetNextPositionIndex();
+    mHintId = kInvalidUniqueId;
+    if (xb18_ < mPositionHistory.size()) {
+      destination = mPositionHistory[xb18_];
+      mAttackPosition = destination;
+    }
+  }
+  mPathFindNavigation.SetDestination(destination);
+  mPathFindNavigation.PathFind(mgr, kStateMsg_Activate, dt, *this);
+}
+
+void CBlogg::LeaveTeam(CStateManager& mgr) {
+  if (mTeamManagerId != kInvalidUniqueId) {
+    CScriptTeamAiMgr* team = TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(mTeamManagerId));
+    if (team != nullptr) {
+      if (team->IsPartOfTeam(GetUniqueId())) {
+        team->QuitTeam(GetUniqueId());
+        mTeamManagerId = kInvalidUniqueId;
+      }
+    }
+  }
+}
+
+void CBlogg::JoinTeam(CStateManager& mgr) {
+  if (mTeamManagerId == kInvalidUniqueId) {
+    mTeamManagerId = CScriptTeamAiMgr::GetAssociatedTeamId(*this, mgr);
+    if (mTeamManagerId != kInvalidUniqueId) {
+      CScriptTeamAiMgr* team = TCastToPtr< CScriptTeamAiMgr >(mgr.ObjectById(mTeamManagerId));
+      if (team != nullptr) {
+        team->JoinTeam(*this, CTeamAiRole::kTAR_Melee, CTeamAiRole::kTAR_Projectile,
+                       CTeamAiRole::kTAR_Invalid);
+      }
+    }
+  }
+}
+
+void CBlogg::ApplyContactDamage(CStateManager& mgr, CPlayer& player, const CDamageInfo& damage) {
+  if (mCurDamageRemTime <= 0.f) {
+    CVector3f direction = CVector3f::Forward();
+    direction = GetTransform().BuildMatrix3f() * direction;
+    mgr.ApplyDamage(
+        GetUniqueId(), player.GetUniqueId(), GetUniqueId(), damage,
+        CMaterialFilter::MakeIncludeExclude(CMaterialList(skContactDamageSolid), CMaterialList()),
+        CVector3f::Zero());
+    mCurDamageRemTime = mDamageWaitTime;
+    if (mState == kBS_ChargeAttack && player.GetFrozenState()) {
+      player.BreakFrozenState(mgr, CPlayer::kBFS_BreakWithEffects, false);
+    }
+  }
+}
+
+bool CBlogg::IsPlayerInMouthRange(CStateManager& mgr) const {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    const CVector3f playerPosition = player->GetTranslation();
+    const CTransform4f xf =
+        GetTransform() * GetScaledLocatorTransform(rstl::string_l(skMouthLocatorName));
+    const CVector3f offset = playerPosition - xf.GetTranslation();
+    if (offset.MagSquared() < mChargeDamageRadius * mChargeDamageRadius) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void CBlogg::CollidedWith(const TUniqueId& id, const CCollisionInfoList& list, CStateManager& mgr) {
+  if (mState == kBS_ChargeAttack || mState == kBS_MoveToPlayer || mState == kBS_Patrol ||
+      mState == kBS_MoveToAttackPosition || mState == kBS_MoveToValidPosition) {
+    static const CMaterialList testList(skCollisionCeiling, skCollisionWall, skCollisionFloor,
+                                        skCollisionCharacter);
+    for (int i = 0; i < list.GetCount(); ++i) {
+      if (list[i].GetMaterialLeft().SharesMaterials(testList)) {
+        mCollisionTime += mPreThinkDt;
+        break;
+      }
+    }
+  }
+  CPatterned::CollidedWith(id, list, mgr);
+}
+
+void CBlogg::Touch(CActor& actor, CStateManager& mgr) {
+  CFishCloud* fishCloud = TCastToPtr< CFishCloud >(actor);
+  if (fishCloud != nullptr) {
+    if (mState == kBS_ChargeAttack) {
+      fishCloud->AddRepulsor(GetUniqueId(), false, 20.f, 0.5f);
+    } else {
+      fishCloud->AddAttractor(GetUniqueId(), false, 20.f, 0.5f);
+    }
+  }
+}
+
+void CBlogg::Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    if ((player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+             ? player->GetMorphballTransitionState()
+             : CPlayer::kMS_Unmorphed) == CPlayer::kMS_Morphed) {
+      player->SetMoveState(NPlayer::kMS_ApplyJump, mgr);
+      player->EnableLeaveMorphBall(true);
+    }
+  }
+  if (mBallGrabbed) {
+    mBallGrabbed = false;
+    mPendingMassiveDeath = true;
+    RemoveMaterial(kMT_Solid, mgr);
+    RemoveMaterial(kMT_Target, mgr);
+    RemoveMaterial(kMT_Orbit, mgr);
+    mCollisionActorManager->SetActive(mgr, false);
+  }
+  if (mTeamManagerId != kInvalidUniqueId) {
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
+                                GetUniqueId(), false);
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId, GetUniqueId(),
+                                false);
+    LeaveTeam(mgr);
+  }
+  CPatterned::Death(mgr, direction, state);
+  mVerticalMovement = true;
+}
+
+void CBlogg::ApplyCollisionActorDamage(CStateManager& mgr, const TUniqueId& senderId,
+                                       float multiplier) {
+  if (mAlive) {
+    CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId));
+    if (collisionActor != nullptr) {
+      const TUniqueId touchedId = collisionActor->GetLastTouchedObject();
+      CHealthInfo* collisionHealth = collisionActor->HealthInfo();
+      CHealthInfo* health = HealthInfo();
+      const float initialHealth = health->GetInitialHP();
+      const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(touchedId));
+      const CBomb* bomb = TCastToConstPtr< CBomb >(mgr.GetObjectById(touchedId));
+      const CPowerBomb* powerBomb = TCastToConstPtr< CPowerBomb >(mgr.GetObjectById(touchedId));
+      if (weapon != nullptr || bomb != nullptr || powerBomb != nullptr) {
+        CVector3f direction = CVector3f::Forward();
+        TUniqueId ownerId = kInvalidUniqueId;
+        CDamageInfo damage;
+        if (weapon != nullptr) {
+          damage = weapon->GetCurrentDamageInfo();
+        } else if (bomb != nullptr) {
+          ownerId = bomb->GetOwnerId();
+          damage = bomb->GetCurrentDamageInfo();
+        } else if (powerBomb != nullptr) {
+          ownerId = powerBomb->GetOwnerId();
+          damage = powerBomb->GetCurrentDamageInfo();
+        }
+        const float currentHealth = health->GetHP();
+        const float amount = multiplier * (initialHealth - collisionHealth->GetHP());
+        health->SetHP(currentHealth - amount);
+        TakeDamage(direction, amount);
+        if (currentHealth <= amount) {
+          Death(mgr, direction, kSS_DeathRattle);
+        }
+        if (damage.GetWeaponMode1() != -1) {
+          const CKnockBackInfo knockBack(direction, touchedId, ownerId, damage, true);
+          KnockBack(mgr, knockBack);
+        }
+      }
+      collisionHealth->SetHP(initialHealth);
+    }
+  }
 }
 
 CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {

@@ -81,6 +81,8 @@ struct SBloggPhaseData {
 class CBlogg : public CPatterned {
 public:
   // Guessed names; the value written to the state tag by each state function.
+  enum EMaterialAction { kMA_Add, kMA_Remove }; // Guessed names
+
   enum EBloggState {
     kBS_Patrol,
     kBS_MoveToAttackPosition,
@@ -125,6 +127,16 @@ public:
   void PreRender(CStateManager& mgr) override;
   void AddToRenderer(const CStateManager& mgr) const override;
   void Render(const CStateManager& mgr) const override;
+
+  // CActor
+  void Touch(CActor& actor, CStateManager& mgr) override;
+
+  // CPhysicsActor
+  void CollidedWith(const TUniqueId& id, const CCollisionInfoList& list,
+                    CStateManager& mgr) override;
+
+  // CAi
+  void Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) override;
 
   // CPatterned
   CProjectileInfo* ProjectileInfo() override { return &mProjectileInfo; }
@@ -187,6 +199,23 @@ private:
   int GetHealthPhase() const;                                     // Guessed name
   void ChoosePhaseValue(CStateManager& mgr);                      // Guessed name
   void SyncCollisionActorHealth(CStateManager& mgr);              // Guessed name
+  void LeaveTeam(CStateManager& mgr);                             // Guessed name
+  void JoinTeam(CStateManager& mgr);                              // Guessed name
+  void ApplyContactDamage(CStateManager& mgr, CPlayer& player,
+                          const CDamageInfo& damage);  // Guessed name
+  bool IsPlayerInMouthRange(CStateManager& mgr) const; // Guessed name
+  void ApplyCollisionActorDamage(CStateManager& mgr, const TUniqueId& senderId,
+                                 float multiplier); // Guessed name
+  void ReleaseHints(CStateManager& mgr);            // Guessed name
+  TUniqueId FindNearestHint(CStateManager& mgr, const CVector3f& position,
+                            bool checkLineOfSight) const; // Guessed name
+  void CollectHints(CStateManager& mgr);                  // Guessed name
+  void UpdateCollisionActorMaterials(CStateManager& mgr, const CMaterialList& materials,
+                                     EMaterialAction action); // Guessed name
+  void StopPlayer(CStateManager& mgr);                        // Guessed name
+  void AttachPlayerToMouth(CStateManager& mgr);               // Guessed name
+  uchar GetNextPositionIndex() const;                         // Guessed name
+  void PathToAttackPosition(CStateManager& mgr, float dt);    // Guessed name
 
   EBloggState mState; // Guessed name
   int mAimAnimLeft;   // Guessed name
@@ -250,8 +279,8 @@ private:
   float mUnknown_0x479ccc37;     // Guessed name
   float mUnknown_0x689a803f;     // Guessed name
   float mUnknown_0x800a2b0d;     // Guessed name
-  float xb14_;
-  float xb18_;
+  int xb14_;
+  uchar xb18_;
   float mCollisionTime;    // Guessed name
   float mMaxCollisionTime; // Guessed name
   float xb24_;
