@@ -64,18 +64,21 @@ public:
     CRepulsor(CVector3f center, float magnitude) : mCenter(center), mMagnitude(magnitude) {}
   };
 
-  CBacteriaSwarm(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+  CBacteriaSwarm(const TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                  const CVector3f& boundingBoxExtent, const CTransform4f& xf,
                  CActorParameters actorParameters, const CBasicSwarmData& data,
-                 float surfaceStickPriority, float containmentPriority, float patrolTurnSpeed,
-                 float avoidSafeZoneTurnSpeed, float patrolSpeed, float safeZoneEscapeSpeed,
-                 float playerPursuitSpeed, float acceleration, float deceleration,
-                 CAssetId particleEffect, const CColor& patrolColor, const CColor& pursuitColor,
-                 float colorChangeTime, float minPatrolSoundTime, float maxPatrolSoundTime,
-                 float patrolSoundWeight, float minPursuitSoundTime, float maxPursuitSoundTime,
-                 float pursuitSoundWeight, ushort patrolSound, ushort pursuitSound,
-                 float soundFallOff, float maxAudibleDistance, uchar minVolume, uchar maxVolume,
-                 const CStaticRes& scanModel, bool spawnInstantly, bool unknownFlag);
+                 const float surfaceStickPriority, const float containmentPriority,
+                 const float patrolTurnSpeed, const float avoidSafeZoneTurnSpeed,
+                 const float patrolSpeed, const float safeZoneEscapeSpeed,
+                 const float playerPursuitSpeed, const float acceleration, const float deceleration,
+                 const CAssetId particleEffect, const CColor& patrolColor,
+                 const CColor& pursuitColor, const float colorChangeTime,
+                 const float minPatrolSoundTime, const float maxPatrolSoundTime,
+                 const float patrolSoundWeight, const float minPursuitSoundTime,
+                 const float maxPursuitSoundTime, const float pursuitSoundWeight,
+                 const ushort patrolSound, const ushort pursuitSound, const float soundFallOff,
+                 const float maxAudibleDistance, const uchar minVolume, const uchar maxVolume,
+                 const CStaticRes& scanModel, const bool spawnInstantly, const bool unknownFlag);
 
   // CEntity
   ~CBacteriaSwarm() override;

@@ -66,7 +66,7 @@ CBacteriaSwarm::CBoid::CBoid(const CTransform4f& xf, uint index)
 , mAmbientLighting(0.3f, 0.3f, 0.3f, 1.f)
 , mNext(nullptr)
 , mSurface(CVector3f(1.f, 0.f, 0.f), CVector3f(0.f, 1.f, 0.f), CVector3f(0.f, 0.f, 1.f), ~0)
-, mSpeed(0.f)
+//, mSpeed(0.f)
 , mColorBlend(0.f)
 , mIndex(index)
 , mActive(false)
@@ -75,17 +75,18 @@ CBacteriaSwarm::CBoid::CBoid(const CTransform4f& xf, uint index)
 , mPursuingPlayer(false) {}
 
 CBacteriaSwarm::CBacteriaSwarm(
-    TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
+    const TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
     const CVector3f& boundingBoxExtent, const CTransform4f& xf, CActorParameters actorParameters,
-    const CBasicSwarmData& data, float surfaceStickPriority, float containmentPriority,
-    float patrolTurnSpeed, float avoidSafeZoneTurnSpeed, float patrolSpeed,
-    float safeZoneEscapeSpeed, float playerPursuitSpeed, float acceleration, float deceleration,
-    CAssetId particleEffect, const CColor& patrolColor, const CColor& pursuitColor,
-    float colorChangeTime, float minPatrolSoundTime, float maxPatrolSoundTime,
-    float patrolSoundWeight, float minPursuitSoundTime, float maxPursuitSoundTime,
-    float pursuitSoundWeight, ushort patrolSound, ushort pursuitSound, float soundFallOff,
-    float maxAudibleDistance, uchar minVolume, uchar maxVolume, const CStaticRes& scanModel,
-    bool spawnInstantly, bool unknownFlag)
+    const CBasicSwarmData& data, const float surfaceStickPriority, const float containmentPriority,
+    const float patrolTurnSpeed, const float avoidSafeZoneTurnSpeed, const float patrolSpeed,
+    const float safeZoneEscapeSpeed, const float playerPursuitSpeed, const float acceleration,
+    const float deceleration, const CAssetId particleEffect, const CColor& patrolColor,
+    const CColor& pursuitColor, const float colorChangeTime, const float minPatrolSoundTime,
+    const float maxPatrolSoundTime, const float patrolSoundWeight, const float minPursuitSoundTime,
+    const float maxPursuitSoundTime, const float pursuitSoundWeight, const ushort patrolSound,
+    const ushort pursuitSound, const float soundFallOff, const float maxAudibleDistance,
+    const uchar minVolume, const uchar maxVolume, const CStaticRes& scanModel,
+    const bool spawnInstantly, const bool unknownFlag)
 : CActor(uid, name, info, 0, xf,
          scanModel.GetId() == kInvalidAssetId ? CModelData(CModelData::None())
                                               : CModelData(scanModel),
@@ -1154,11 +1155,10 @@ CEntity* LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.bacteriaDeceleration, sldrThis.bacteriaParticleEffect, sldrThis.bacteriaPatrolColor,
       sldrThis.bacteriaPlayerPursuitColor, sldrThis.colorChangeTime, sldrThis.minPatrolSoundTime,
       sldrThis.maxPursuitSoundTime, sldrThis.patrolSoundWeight, sldrThis.minPursuitSoundTime,
-      sldrThis.maxPursuitSoundTime, sldrThis.pursuitSoundWeight, sldrThis.patrolSound & 0xffff,
-      sldrThis.pursuitSound & 0xffff, sldrThis.soundFallOff, sldrThis.maxAudibleDistance,
-      sldrThis.minVolume & 0xff, sldrThis.maxVolume & 0xff,
-      CStaticRes(sldrThis.bacteriaScanModel, CVector3f(0.f, 0.f, 0.f)), sldrThis.spawnInstantly,
-      false);
+      sldrThis.maxPursuitSoundTime, sldrThis.pursuitSoundWeight, sldrThis.patrolSound,
+      sldrThis.pursuitSound, sldrThis.soundFallOff, sldrThis.maxAudibleDistance, sldrThis.minVolume,
+      sldrThis.maxVolume, CStaticRes(sldrThis.bacteriaScanModel, CVector3f(0.f, 0.f, 0.f)),
+      sldrThis.spawnInstantly, false);
 }
 
 #ifndef MONOLITHIC
