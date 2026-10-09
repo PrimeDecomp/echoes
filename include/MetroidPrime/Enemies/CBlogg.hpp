@@ -209,6 +209,11 @@ public:
   bool IsPlayerReachable(CStateManager& mgr, const CTriggerData& data) const;
 
 private:
+  float GetLocomotionSpeed(const CPASAnimParmData& parms) const { // Guessed name
+    const float distance = GetAnimationDistance(parms);
+    const float duration = GetAnimationDuration(parms);
+    return distance / duration;
+  }
   CPlayer* GetPlayer(CStateManager& mgr) const;                              // Guessed name
   bool IsPlayerWithin(CStateManager& mgr, float distance) const;             // Guessed name
   uchar HasCollisionTimeElapsed() const;                                     // Guessed name

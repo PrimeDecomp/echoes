@@ -147,6 +147,14 @@ static inline bool RollChance(CStateManager& mgr, float chance) { // Guessed nam
   return mgr.Random()->Float() <= chance;
 }
 
+static inline void FindAnimation(const CPASDatabase& pasDatabase, const CPASAnimParmData& parms,
+                                 int& anim) { // Guessed name
+  const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
+  if (best.first > 0.0000001192f) {
+    anim = best.second;
+  }
+}
+
 static float sLocomotionSpeedA; // Guessed name
 static float sLocomotionSpeedB; // Guessed name
 
@@ -338,60 +346,28 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
   mProjectileInfo.Token().Lock();
 
   const CPASDatabase& pasDatabase = AnimationData()->GetPASDatabase();
-  {
-    const CPASAnimParmData parms(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(0),
-                                 CPASAnimParm::FromEnum(0));
-    const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
-    if (best.first > 0.0000001192f) {
-      mAimAnimLeft = best.second;
-    }
-  }
-  {
-    const CPASAnimParmData parms(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(1),
-                                 CPASAnimParm::FromEnum(0));
-    const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
-    if (best.first > 0.0000001192f) {
-      mAimAnimRight = best.second;
-    }
-  }
-  {
-    const CPASAnimParmData parms(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(2),
-                                 CPASAnimParm::FromEnum(0));
-    const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
-    if (best.first > 0.0000001192f) {
-      mAimAnimUp = best.second;
-    }
-  }
-  {
-    const CPASAnimParmData parms(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(3),
-                                 CPASAnimParm::FromEnum(0));
-    const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
-    if (best.first > 0.0000001192f) {
-      mAimAnimDown = best.second;
-    }
-  }
-  {
-    const CPASAnimParmData parms(pas::kAS_Unknown26);
-    const rstl::pair< float, int > best = pasDatabase.FindBestAnimation(parms, -1);
-    if (best.first > 0.0000001192f) {
-      mUnknown26Anim = best.second;
-    }
-  }
+  FindAnimation(
+      pasDatabase,
+      CPASAnimParmData(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(0), CPASAnimParm::FromEnum(0)),
+      mAimAnimLeft);
+  FindAnimation(
+      pasDatabase,
+      CPASAnimParmData(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(1), CPASAnimParm::FromEnum(0)),
+      mAimAnimRight);
+  FindAnimation(
+      pasDatabase,
+      CPASAnimParmData(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(2), CPASAnimParm::FromEnum(0)),
+      mAimAnimUp);
+  FindAnimation(
+      pasDatabase,
+      CPASAnimParmData(pas::kAS_AdditiveAim, CPASAnimParm::FromEnum(3), CPASAnimParm::FromEnum(0)),
+      mAimAnimDown);
+  FindAnimation(pasDatabase, CPASAnimParmData(pas::kAS_Unknown26), mUnknown26Anim);
 
-  {
-    const CPASAnimParmData parms(pas::kAS_Locomotion, CPASAnimParm::FromEnum(2),
-                                 CPASAnimParm::FromEnum(3));
-    const float distance = GetAnimationDistance(parms);
-    const float duration = GetAnimationDuration(parms);
-    sLocomotionSpeedA = distance / duration;
-  }
-  {
-    const CPASAnimParmData parms(pas::kAS_Locomotion, CPASAnimParm::FromEnum(2),
-                                 CPASAnimParm::FromEnum(2));
-    const float distance = GetAnimationDistance(parms);
-    const float duration = GetAnimationDuration(parms);
-    sLocomotionSpeedB = distance / duration;
-  }
+  sLocomotionSpeedA = GetLocomotionSpeed(
+      CPASAnimParmData(pas::kAS_Locomotion, CPASAnimParm::FromEnum(2), CPASAnimParm::FromEnum(3)));
+  sLocomotionSpeedB = GetLocomotionSpeed(
+      CPASAnimParmData(pas::kAS_Locomotion, CPASAnimParm::FromEnum(2), CPASAnimParm::FromEnum(2)));
 
   SetDrawShadow(false);
   SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
