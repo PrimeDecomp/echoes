@@ -110,11 +110,11 @@ void sort(It first, It last, Cmp cmp) {
   It end = last - 1;
   __sort3(*first, *mid, *end, cmp);
 
-  const typename iterator_traits< It >::value_type pivot = *mid;
+  typename iterator_traits< It >::value_type pivot = *mid;
   It it = first + 1;
   --end;
 
-  while (true) {
+  for (;;) {
     while (cmp(*it, pivot)) {
       ++it;
     }
