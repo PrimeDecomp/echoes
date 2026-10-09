@@ -27,13 +27,15 @@ CScriptCameraSpline::~CScriptCameraSpline() {}
 
 CVector3f CScriptCameraSpline::GetPositionByTime(float time, const CTransform4f& xf,
                                                  const CStateManager& mgr) {
+  CVector3f position;
   if (GetPositionKnotCount() != 0) {
-    return CGameSpline::GetPositionByTime(time);
+    position = CGameSpline::GetPositionByTime(time);
+  } else if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
+    position = actor->GetTranslation();
+  } else {
+    position = xf.GetTranslation();
   }
-  if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
-    return actor->GetTranslation();
-  }
-  return xf.GetTranslation();
+  return position;
 }
 
 CQuaternion CScriptCameraSpline::GetOrientationByTime(float time, const CTransform4f& xf,
@@ -66,13 +68,15 @@ CQuaternion CScriptCameraSpline::GetOrientationByTime(float time, const CTransfo
 
 CVector3f CScriptCameraSpline::GetPositionByLength(float distance, const CTransform4f& xf,
                                                    const CStateManager& mgr) {
+  CVector3f position;
   if (GetPositionKnotCount() != 0) {
-    return CGameSpline::GetPositionByLength(distance);
+    position = CGameSpline::GetPositionByLength(distance);
+  } else if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
+    position = actor->GetTranslation();
+  } else {
+    position = xf.GetTranslation();
   }
-  if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
-    return actor->GetTranslation();
-  }
-  return xf.GetTranslation();
+  return position;
 }
 
 CQuaternion CScriptCameraSpline::GetOrientationByLength(float positionDistance,
@@ -115,7 +119,7 @@ CScriptPathCamera::CScriptPathCamera(
     const CMayaSpline& perpendicularDistanceSpline, const CMayaSpline& perpendicularInterpSpline)
 : CEntity(uid, info, name, 0)
 , mSpline(1.f, splineFlags, positionTimeSpline, lookAtTimeSpline, fovSpline,
-          CMayaSpline(SLdrSpline::CreateFor(0.f, 0.f, 1.f, 1.f)), positionType, lookAtType)
+          SLdrSpline::CreateFor(0.f, 0.f, 1.f, 1.f), positionType, lookAtType)
 , mPlayerSpline(playerLoops, 1.f, playerType)
 , mSpeedControlSpline(speedControlSpline)
 , mDistance(distance)

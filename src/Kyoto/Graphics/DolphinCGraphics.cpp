@@ -700,25 +700,27 @@ CMatrix4f CGraphics::GetPerspectiveProjectionMatrix() {
 
 CMatrix4f CGraphics::CalculatePerspectiveMatrix(float fovy, float aspect, float znear, float zfar) {
   float t = tan(CRelAngle::FromDegrees(fovy).AsRadians() / 2.f);
+  float depth = zfar - znear;
+  float twoNear = 2.f * znear;
   float right = aspect * 2.f * znear * t * 0.5f;
+  float top = twoNear * t * 0.5f;
   float left = -right;
-  float top = znear * 2.f * t * 0.5f;
   float bottom = -top;
   // construct in place
   return CMatrix4f(
       // clang-format off
-    (2.f * znear) / (right - left),
+    twoNear / (right - left),
     -(right + left) / (right - left),
     0.f,
     0.f,
     0.f,
     -(top + bottom) / (top - bottom),
-    (2.f * znear) / (top - bottom),
+    twoNear / (top - bottom),
     0.f,
     0.f,
-    (zfar + znear) / (zfar - znear),
+    (zfar + znear) / depth,
     0.f,
-    -(2.f * zfar * znear) / (zfar - znear),
+    -(2.f * zfar * znear) / depth,
     0.f,
     1.f,
     0.f,
