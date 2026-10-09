@@ -1700,7 +1700,8 @@ CVector3f CBallCamera::MoveCollisionActor(const CVector3f& position, float dt, C
 
     const CVector3f oldVelocity = actor->GetVelocityWR();
     const CVector3f oldPosition = actor->GetTranslation();
-    CVector3f velocity = (1.f / dt) * delta;
+    const float invDt = 1.f / dt;
+    CVector3f velocity = invDt * delta;
     velocity = ComputeVelocity(oldVelocity, velocity, dt);
     actor->SetVelocityWR(velocity);
     actor->SetMovable(true);
