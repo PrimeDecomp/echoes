@@ -367,7 +367,7 @@ public:
   const CEnvFxManager* GetEnvFxManager() const { return mEnvFxManager; }
   const CSafeZoneManager* GetSafeZoneManager() const { return mSafeZoneManager; }
   CRandom16* Random() { return &mRandom; }
-  int GetUpdateFrameIdx() const { return mUpdateFrameIdx; }
+  uint GetUpdateFrameIdx() const { return mUpdateFrameIdx; }
   int GetRenderFrameIndex() const { return mRenderFrameIndex; } // Guessed name
 
   TAreaId GetNextAreaId() const { return mNextAreaId; }
