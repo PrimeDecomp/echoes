@@ -51,6 +51,10 @@
 #include "MetroidPrime/Enemies/CSnakeWeedSwarm.hpp"
 #include "MetroidPrime/Enemies/CSpacePirate.hpp"
 #include "MetroidPrime/Enemies/CSpankWeed.hpp"
+#include "MetroidPrime/Enemies/CSporbBase.hpp"
+#include "MetroidPrime/Enemies/CSporbNeedle.hpp"
+#include "MetroidPrime/Enemies/CSporbProjectile.hpp"
+#include "MetroidPrime/Enemies/CSporbTop.hpp"
 #include "MetroidPrime/Enemies/CStoneToad.hpp"
 #include "MetroidPrime/Enemies/CSwarmBasics.hpp"
 #include "MetroidPrime/Enemies/CWallCrawler.hpp"
@@ -341,10 +345,10 @@ TYPES_MATCH_IMPL(CGunTurretBase, CPatterned, kET_GunTurretBase)
 TYPES_MATCH_IMPL(CGunTurretTop, CPatterned, kET_GunTurretTop)
 TYPES_MATCH_IMPL(CKralee, CWallCrawler, kET_Kralee)
 TYPES_MATCH_IMPL(CGlowbug, CPatterned, kET_Glowbug)
-// 143: class not declared yet (Sporb REL); parent CPatterned
-// 144: class not declared yet (Sporb REL); parent CPhysicsActor
-// 145: class not declared yet (Sporb REL); parent CPatterned
-// 146: class not declared yet (Sporb REL); parent CPatterned
+TYPES_MATCH_IMPL(CSporbBase, CPatterned, kET_SporbBase)
+TYPES_MATCH_IMPL(CSporbNeedle, CPhysicsActor, kET_SporbNeedle)
+TYPES_MATCH_IMPL(CSporbTop, CPatterned, kET_SporbTop)
+TYPES_MATCH_IMPL(CSporbProjectile, CPatterned, kET_SporbProjectile)
 // 147: class not declared yet (MinorIng REL); parent CPatterned
 // 148: class not declared yet (IngBoostBallGuardian REL); parent CPhysicsActor
 // 149: class not declared yet (Blogg REL); parent CPatterned
@@ -620,10 +624,14 @@ CAST_TO_REF_IMPL(CGunTurretTop, kET_GunTurretTop)
 CAST_TO_PTR_IMPL(CGunTurretTop, kET_GunTurretTop)
 // 141: class not declared yet (Kralee REL)
 // 142: class not declared yet (Glowbug REL)
-// 143: class not declared yet (Sporb REL)
-// 144: class not declared yet (Sporb REL)
-// 145: class not declared yet (Sporb REL)
-// 146: class not declared yet (Sporb REL)
+CAST_TO_REF_IMPL(CSporbBase, kET_SporbBase)
+CAST_TO_PTR_IMPL(CSporbBase, kET_SporbBase)
+CAST_TO_REF_IMPL(CSporbNeedle, kET_SporbNeedle)
+CAST_TO_PTR_IMPL(CSporbNeedle, kET_SporbNeedle)
+CAST_TO_REF_IMPL(CSporbTop, kET_SporbTop)
+CAST_TO_PTR_IMPL(CSporbTop, kET_SporbTop)
+CAST_TO_REF_IMPL(CSporbProjectile, kET_SporbProjectile)
+CAST_TO_PTR_IMPL(CSporbProjectile, kET_SporbProjectile)
 // 147: class not declared yet (MinorIng REL)
 // 148: class not declared yet (IngBoostBallGuardian REL)
 // 149: class not declared yet (Blogg REL)

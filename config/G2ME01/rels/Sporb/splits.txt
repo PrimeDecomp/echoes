@@ -6,6 +6,33 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CSporbTop.cpp:
+	.text       start:0x00000000 end:0x000026A8
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x000000B8
+	.data       start:0x00000000 end:0x00000358
+
+MetroidPrime/Enemies/CSporbBase.cpp:
+	.text       start:0x000026A8 end:0x0000DDE0
+	.ctors      start:0x00000004 end:0x00000008
+	.rodata     start:0x000000B8 end:0x00000290
+	.data       start:0x00000358 end:0x00000818
+	.bss        start:0x00000000 end:0x00000038
+	.bss        start:0x00000058 end:0x0000005A align:2 common
+
+MetroidPrime/Enemies/CSporbProjectile.cpp:
+	.text       start:0x0000DDE0 end:0x0000FE64
+	.ctors      start:0x00000008 end:0x0000000C
+	.rodata     start:0x00000290 end:0x00000380
+	.data       start:0x00000818 end:0x00000BB0
+	.bss        start:0x00000038 end:0x00000048
+
+MetroidPrime/Enemies/CSporbNeedle.cpp:
+	.text       start:0x0000FE64 end:0x00012434
+	.rodata     start:0x00000380 end:0x000003C8
+	.data       start:0x00000BB0 end:0x00000D14
+	.bss        start:0x00000048 end:0x00000058
+
 REL/REL_Setup.cpp:
 	.text       start:0x00012434 end:0x000125D8
 	.rodata     start:0x000003C8 end:0x0000044C
