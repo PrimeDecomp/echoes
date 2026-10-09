@@ -158,14 +158,35 @@ public:
   bool BallGrabbed(CStateManager& mgr, const CTriggerData& data) const;
   bool CanGrabBall(CStateManager& mgr, const CTriggerData& data) const;
   bool ShouldAbortBallGrab(CStateManager& mgr, const CTriggerData& data) const;
+  bool InAttackPosition(CStateManager& mgr, const CTriggerData& data) const;
+  bool InValidPosition(CStateManager& mgr, const CTriggerData& data) const;
+  bool IsFacingPlayer(CStateManager& mgr, const CTriggerData& data) const;
+  bool ProjectileAttackDelay(CStateManager& mgr, const CTriggerData& data) const;
+  bool ShouldCharge(CStateManager& mgr, const CTriggerData& data) const;
+  bool IsChargeOver(CStateManager& mgr, const CTriggerData& data) const;
+  bool CanMeleeAttack(CStateManager& mgr, const CTriggerData& data) const;
+  bool CanRangedAttack(CStateManager& mgr, const CTriggerData& data) const;
+  bool CanTaunt(CStateManager& mgr, const CTriggerData& data) const;
+  bool ShouldEndPursuit(CStateManager& mgr, const CTriggerData& data) const;
+  bool ShouldEndBallPursuit(CStateManager& mgr, const CTriggerData& data) const;
+  bool PlayerInBallMode(CStateManager& mgr, const CTriggerData& data) const;
+  bool DetectBall(CStateManager& mgr, const CTriggerData& data) const;
+  bool IsPlayerReachable(CStateManager& mgr, const CTriggerData& data) const;
 
 private:
   CPlayer* GetPlayer(CStateManager& mgr) const;                  // Guessed name
   bool IsPlayerWithin(CStateManager& mgr, float distance) const; // Guessed name
   uchar HasCollisionTimeElapsed() const;                         // Guessed name
-  int GetHealthPhase() const;                                    // Guessed name
-  void ChoosePhaseValue(CStateManager& mgr);                     // Guessed name
-  void SyncCollisionActorHealth(CStateManager& mgr);             // Guessed name
+  bool IsAtAttackPosition() const;                               // Guessed name
+
+  CVector3f GetDirectionToPlayer(CStateManager& mgr) const;                     // Guessed name
+  void FindFluid(CStateManager& mgr, CAABox& bounds, TUniqueId& waterId) const; // Guessed name
+  bool IsInhabitingFluid(CStateManager& mgr, TUniqueId waterId,
+                         TUniqueId uid) const;                    // Guessed name
+  bool CanReachPlayer(CStateManager& mgr, CPlayer* player) const; // Guessed name
+  int GetHealthPhase() const;                                     // Guessed name
+  void ChoosePhaseValue(CStateManager& mgr);                      // Guessed name
+  void SyncCollisionActorHealth(CStateManager& mgr);              // Guessed name
 
   EBloggState mState; // Guessed name
   int mAimAnimLeft;   // Guessed name
@@ -221,8 +242,8 @@ private:
   float mMaxBallDetectionRange;  // Guessed name
   float mMaxPlayerPursuitTime;   // Guessed name
   float mMaxBallPursuitTime;     // Guessed name
-  float mPlayerPursuitTime;      // Guessed name
   float mBallPursuitTime;        // Guessed name
+  float mPlayerPursuitTime;      // Guessed name
   float mFishAttractionRadius;   // Guessed name
   float mFishAttractionPriority; // Guessed name
   float mAggressiveness;         // Guessed name

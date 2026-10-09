@@ -11,6 +11,9 @@
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTeamAiMgr.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
+#include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 #include "REL/REL_Setup.h"
 
@@ -21,8 +24,23 @@ static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"AnimOver", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::AnimOver)},
     {"ShouldPrepareToAttack",
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldPrepareToAttack)},
+    {"InAttackPosition",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::InAttackPosition)},
+    {"InValidPosition",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::InValidPosition)},
+    {"IsFacingPlayer",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::IsFacingPlayer)},
     {"IsPlayerStunned",
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::IsPlayerStunned)},
+    {"ProjectileAttackDelay",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ProjectileAttackDelay)},
+    {"ShouldCharge", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldCharge)},
+    {"IsChargeOver", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::IsChargeOver)},
+    {"CanMeleeAttack",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::CanMeleeAttack)},
+    {"CanRangedAttack",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::CanRangedAttack)},
+    {"CanTaunt", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::CanTaunt)},
     {"InProjectileRange",
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::InProjectileRange)},
     {"CollidedWithWall",
@@ -32,7 +50,17 @@ static CPatterned::StateMachine::STriggerFunction skTriggers[] = {
     {"InBiteRange", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::InBiteRange)},
     {"CantMoveToPlayer",
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::CantMoveToPlayer)},
+    {"ShouldEndPursuit",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldEndPursuit)},
+    {"ShouldEndBallPursuit",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldEndBallPursuit)},
+    {"PlayerInBallMode",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::PlayerInBallMode)},
+    {"DetectBall", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::DetectBall)},
+    {"CanGrabBall", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::CanGrabBall)},
     {"BallGrabbed", static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::BallGrabbed)},
+    {"IsPlayerReachable",
+     static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::IsPlayerReachable)},
     {"ShouldAbortBallGrab",
      static_cast< CPatterned::StateMachine::TriggerFunc >(&CBlogg::ShouldAbortBallGrab)},
 };
@@ -44,7 +72,8 @@ static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
      static_cast< CPatterned::StateMachine::CodeFunc >(&CBlogg::EndMeleePursuit)},
 };
 
-static const char* const skMouthLocatorName = "mouth_LCTR"; // Guessed name
+static const char* const skMouthLocatorName = "mouth_LCTR";            // Guessed name
+static const char* const skBallAttachLocatorName = "ball_attach_LCTR"; // Guessed name
 
 static float sLocomotionSpeedA; // Guessed name
 static float sLocomotionSpeedB; // Guessed name
@@ -193,8 +222,8 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mMaxBallDetectionRange(maxBallDetectionRange)
 , mMaxPlayerPursuitTime(maxPlayerPursuitTime)
 , mMaxBallPursuitTime(maxBallPursuitTime)
-, mPlayerPursuitTime(0.f)
 , mBallPursuitTime(0.f)
+, mPlayerPursuitTime(0.f)
 , mFishAttractionRadius(fishAttractionRadius)
 , mFishAttractionPriority(fishAttractionPriority)
 , mAggressiveness(aggressiveness)
@@ -404,6 +433,10 @@ bool CBlogg::IsHitInMouthDirection(const CVector3f& direction) const {
 
 uchar CBlogg::HasCollisionTimeElapsed() const { return mCollisionTime >= mMaxCollisionTime; }
 
+bool CBlogg::IsAtAttackPosition() const {
+  return CPatterned::GetSearchPath()->IsOver() && mState == kBS_MoveToAttackPosition;
+}
+
 void CBlogg::PreRender(CStateManager& mgr) { CPatterned::PreRender(mgr); }
 
 void CBlogg::AddToRenderer(const CStateManager& mgr) const { CPatterned::AddToRenderer(mgr); }
@@ -463,6 +496,194 @@ bool CBlogg::BallGrabbed(CStateManager& mgr, const CTriggerData& data) const {
 
 bool CBlogg::ShouldAbortBallGrab(CStateManager& mgr, const CTriggerData& data) const {
   return mAbortBallGrab;
+}
+
+CVector3f CBlogg::GetDirectionToPlayer(CStateManager& mgr) const {
+  const CVector3f position = GetTransform().GetTranslation();
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    return (player->GetAimPosition(mgr, 0.f) - position).AsNormalized();
+  }
+  return CVector3f::Forward();
+}
+
+void CBlogg::FindFluid(CStateManager& mgr, CAABox& bounds, TUniqueId& waterId) const {
+  if (GetFluidCount() != 0) {
+    waterId = InFluidId();
+    if (const CScriptWater* water = TCastToConstPtr< CScriptWater >(mgr.GetObjectById(waterId))) {
+      bounds = water->GetTriggerBoundsWR();
+    } else {
+      waterId = kInvalidUniqueId;
+    }
+  }
+}
+
+bool CBlogg::IsInhabitingFluid(CStateManager& mgr, TUniqueId waterId, TUniqueId uid) const {
+  const CScriptWater* water = TCastToConstPtr< CScriptWater >(mgr.GetObjectById(waterId));
+  if (water != nullptr && water->HasInhabitant(uid)) {
+    return true;
+  }
+  return false;
+}
+
+bool CBlogg::CanReachPlayer(CStateManager& mgr, CPlayer* player) const {
+  TUniqueId waterId = kInvalidUniqueId;
+  CAABox waterBounds = CAABox::MakeNullBox();
+  FindFluid(mgr, waterBounds, waterId);
+  const CVector3f position = player->GetAimPosition(mgr, 0.f);
+  if (IsInhabitingFluid(mgr, waterId, player->GetUniqueId()) &&
+      mPathFindSearch.OnPath(position) == CPathFindSearch::kR_Success) {
+    return true;
+  }
+  return false;
+}
+
+bool CBlogg::InAttackPosition(CStateManager& mgr, const CTriggerData& data) const {
+  return IsAtAttackPosition() || xbc5_26_ || xbc5_30_;
+}
+
+bool CBlogg::InValidPosition(CStateManager& mgr, const CTriggerData& data) const {
+  bool result = true;
+  const bool valid = mStateMachine->GetTime() > 1.f && !HasCollisionTimeElapsed();
+  if (!valid && !CPatterned::GetSearchPath()->IsOver()) {
+    result = false;
+  }
+  return result;
+}
+
+bool CBlogg::IsFacingPlayer(CStateManager& mgr, const CTriggerData& data) const {
+  const CVector3f direction(GetDirectionToPlayer(mgr));
+  const CVector3f forward = GetTransform().GetForward();
+  return CVector3f::GetAngleDiff(direction, forward) < 0.17453292f;
+}
+
+bool CBlogg::ProjectileAttackDelay(CStateManager& mgr, const CTriggerData& data) const {
+  return mStateMachine->GetTime() > mProjectileDelay;
+}
+
+bool CBlogg::ShouldCharge(CStateManager& mgr, const CTriggerData& data) const {
+  if (mIsMegaBlogg && xbc5_29_ && !xbc5_27_ && !xbc5_26_ && !xbc5_30_) {
+    return false;
+  }
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr && player->GetFrozenState()) {
+    return true;
+  }
+  bool result = false;
+  if (x951_ >= mUnknown_0xa19d5f62 || xbc4_25_ || mAggressiveness == 1.f || xbc5_26_ || xbc5_30_) {
+    result = true;
+  }
+  return result;
+}
+
+bool CBlogg::IsChargeOver(CStateManager& mgr, const CTriggerData& data) const {
+  return mChargeOver != 0;
+}
+
+bool CBlogg::CanMeleeAttack(CStateManager& mgr, const CTriggerData& data) const {
+  if (mMeleePursuitEnded || mChargeOver) {
+    return false;
+  }
+  if (mIsMegaBlogg && !xbc5_27_ && !xbc5_26_ && !xbc5_30_) {
+    return false;
+  }
+  bool teamAllows = true;
+  if (mTeamManagerId != kInvalidUniqueId) {
+    bool canStart = false;
+    if (CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
+                                         GetUniqueId())) {
+      if (CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
+                                           GetUniqueId())) {
+        canStart = true;
+      }
+    }
+    if (!canStart) {
+      teamAllows = false;
+    }
+  }
+  return teamAllows || xbc5_26_ || xbc5_30_;
+}
+
+bool CBlogg::CanRangedAttack(CStateManager& mgr, const CTriggerData& data) const {
+  bool result = false;
+  bool teamAllows = true;
+  if (mTeamManagerId != kInvalidUniqueId) {
+    bool canStart = false;
+    if (CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
+                                         GetUniqueId())) {
+      if (CScriptTeamAiMgr::CanStartAttack(CScriptTeamAiMgr::kAT_Projectile, mgr, mTeamManagerId,
+                                           GetUniqueId())) {
+        canStart = true;
+      }
+    }
+    if (!canStart) {
+      teamAllows = false;
+    }
+  }
+  if (teamAllows) {
+    bool underLimit = false;
+    if (x951_ < mUnknown_0xa19d5f62 && !xbc4_25_) {
+      underLimit = true;
+    }
+    if (underLimit) {
+      result = true;
+    }
+  }
+  return result;
+}
+
+bool CBlogg::CanTaunt(CStateManager& mgr, const CTriggerData& data) const {
+  return !CanMeleeAttack(mgr, data) && !CanRangedAttack(mgr, data) && mTauntReady;
+}
+
+bool CBlogg::ShouldEndPursuit(CStateManager& mgr, const CTriggerData& data) const {
+  return !CanMeleeAttack(mgr, data) || mPlayerPursuitTime >= mMaxPlayerPursuitTime;
+}
+
+bool CBlogg::ShouldEndBallPursuit(CStateManager& mgr, const CTriggerData& data) const {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    const CPlayer::EPlayerMorphBallState state =
+        player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+            ? player->GetMorphballTransitionState()
+            : CPlayer::kMS_Unmorphed;
+    if (state != CPlayer::kMS_Morphed) {
+      return true;
+    }
+  }
+  return !CanMeleeAttack(mgr, data) || mBallPursuitTime >= mMaxBallPursuitTime;
+}
+
+bool CBlogg::PlayerInBallMode(CStateManager& mgr, const CTriggerData& data) const {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    return (player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+                ? player->GetMorphballTransitionState()
+                : CPlayer::kMS_Unmorphed) == CPlayer::kMS_Morphed;
+  }
+  return false;
+}
+
+bool CBlogg::DetectBall(CStateManager& mgr, const CTriggerData& data) const {
+  return mIsMegaBlogg ? false : mCanBite && IsPlayerWithin(mgr, mMaxBallDetectionRange);
+}
+
+bool CBlogg::CanGrabBall(CStateManager& mgr, const CTriggerData& data) const {
+  CPlayer* player = GetPlayer(mgr);
+  if (player != nullptr) {
+    const CTransform4f locator = GetScaledLocatorTransform(rstl::string_l(skBallAttachLocatorName));
+    const CTransform4f xf = GetTransform() * locator;
+    const CVector3f offset = player->GetAimPosition(mgr, 0.f) - xf.GetTranslation();
+    if (offset.MagSquared() < 4.f) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CBlogg::IsPlayerReachable(CStateManager& mgr, const CTriggerData& data) const {
+  CPlayer* player = GetPlayer(mgr);
+  return player != nullptr ? CanReachPlayer(mgr, player) : false;
 }
 
 CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
