@@ -210,28 +210,28 @@ void CInterpolationCamera::SetInterpolation(const CTransform4f& xf, TUniqueId fr
 
   CGameCamera* source =
       const_cast< CGameCamera* >(TCastToConstPtr< CGameCamera >(mgr.GetObjectById(from)));
-  const CGameCamera* target = TCastToConstPtr< CGameCamera >(mgr.GetObjectById(to));
+  CGameCamera* target =
+      const_cast< CGameCamera* >(TCastToConstPtr< CGameCamera >(mgr.GetObjectById(to)));
   SetTransform(mStartTransform);
-  if (!target) {
+  if (target) {
+    mAngularSpeed = M_PIF;
+    mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
+    mInitialDistance = CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude();
+    if (source) {
+      const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
+      SetTransform(xf);
+      SetFov(source->GetFov());
+      InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
+      mInitialAngle = acosf(
+          CMath::Limit(CVector3f::Dot(xf.GetForward(), target->GetTransform().GetForward()), 1.f));
+    } else {
+      SetFovAndTarget(target->GetFov());
+    }
+  } else {
     if (source) {
       SetFov(source->GetFov());
     }
     InterpolateFOV(fov, duration, 0.f);
-    return;
-  }
-
-  mAngularSpeed = M_PIF;
-  mLookPosition = target->GetScanObjectIndicatorPosition(mgr);
-  mInitialDistance = (target->GetTranslation() - xf.GetTranslation()).Magnitude();
-  if (source) {
-    const_cast< CCameraManager& >(GetCameraManager(mgr)).TransferCameraState(*source, *this, mgr);
-    SetTransform(xf);
-    SetFov(source->GetFov());
-    InterpolateFOV(source->GetFov(), duration, 0.f, to, mgr);
-    mInitialAngle = acosf(
-        CMath::Limit(CVector3f::Dot(xf.GetForward(), target->GetTransform().GetForward()), 1.f));
-  } else {
-    SetFovAndTarget(target->GetFov());
   }
 }
 
