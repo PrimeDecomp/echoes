@@ -63,7 +63,6 @@ private:
   void SetKnot(uint index, CVector3f point, bool recalculateLength);
   void AddKnot(const CVector3f& point);
   void AddControlPoint(const CVector3f& point);
-
   void GetSurroundingPoints(int index, rstl::reserved_vector< CVector3f, 4 >& points) const;
   float CalculateCatmullRomLength(int index) const;
   float CalculateRoundedCatmullRomLength(int index) const;
