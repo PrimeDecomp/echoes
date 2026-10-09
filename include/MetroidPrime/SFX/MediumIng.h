@@ -3,8 +3,8 @@
 
 #define GRPMediumIng 0x00EF
 
-#define SFXdgd_b_headspin_lp_00_looped 0x00D2
-#define SFXdgd_r_headhit_00_oneshot 0x00D3
-#define SFXdgd_b_shieldon_00_oneshot 0x00D5
+#define SFXin3_b_voxidle_00_oneshot 0x20DD
+#define SFXin3_b_voxidle_01_oneshot 0x20DE
+#define SFXin3_r_voxflinch_00_oneshot 0x20E0
 
 #endif

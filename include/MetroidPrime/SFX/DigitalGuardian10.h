@@ -3,9 +3,9 @@
 
 #define GRPDigitalGuardian10 0x001D
 
-#define SFXint_c_shiprmble_00_loop 0x12F9
-#define SFXmap_c_holoup_01_oneshot 0x134E
-#define SFXmap_c_butpress_00_oneshot 0x134F
-#define SFXmap_c_affirm_00_oneshot 0x1350
+#define SFXdgd_c_hitgrnd_00_oneshot 0x03AD
+#define SFXdgd_c_nrgdistort_lp_00_looped 0x03B1
+#define SFXdgd_c_shake_lp_00_looped 0x03B2
+#define SFXdgd_c_nrgdistort_lp_01_looped 0x044A
 
 #endif

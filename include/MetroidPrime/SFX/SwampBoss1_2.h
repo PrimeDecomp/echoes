@@ -3,8 +3,8 @@
 
 #define GRPSwampBoss1_2 0x0022
 
-#define SFXsa2_b_landdirt_02_oneshot 0x148E
-#define SFXsa2_b_landgras_00_oneshot 0x148F
-#define SFXsa2_b_landgrat_02_oneshot 0x1492
+#define SFXsb1_b_dive_00_oneshot 0x02AE
+#define SFXsb1_b_jumpvox_00_oneshot 0x02AF
+#define SFXsb1_b_voxgrowl_00_oneshot 0x02B1
 
 #endif

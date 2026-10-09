@@ -3,8 +3,8 @@
 
 #define GRPDigitalGuardianDeath 0x005F
 
-#define SFXcin_c_arpegg_lp_00_looped 0x1358
-#define SFXcin_c_arpegg_lp_01_looped 0x135B
-#define SFXgba_c_gravglow_00_oneshot 0x135C
+#define SFXdgd_c_headbounce_00_oneshot 0x02AD
+#define SFXdgd_c_samland_00_oneshot 0x0447
+#define SFXdgd_c_samscrewout_00_oneshot 0x0448
 
 #endif

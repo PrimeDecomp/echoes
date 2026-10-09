@@ -3,9 +3,9 @@
 
 #define GRPMetaree 0x00CD
 
-#define SFXin2_r_voxdeath_00_oneshot 0x03D7
-#define SFXibg_r_gib_00_oneshot 0x03DB
-#define SFXibg_b_voxangry_01_oneshot 0x03DD
-#define SFXin2_r_voxpainpud_00_oneshot 0x03DE
+#define SFXmtr_a_scream_00_oneshot 0x01C9
+#define SFXmtr_a_scream_01_oneshot 0x01CA
+#define SFXmtr_b_spin_lp_06_looped 0x01CB
+#define SFXmtr_b_spin_lp_07_looped 0x0BB6
 
 #endif

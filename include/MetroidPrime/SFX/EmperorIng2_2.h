@@ -3,7 +3,7 @@
 
 #define GRPEmperorIng2_2 0x0034
 
-#define SFXmph_c_mpsweet_L_oneshot 0x129B
-#define SFXmph_c_elec_lp_00_looped 0x129C
+#define SFXei2_b_acid_lp_00L_looped 0x00A3
+#define SFXei2_b_acid_lp_00R_looped 0x00A6
 
 #endif

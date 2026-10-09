@@ -3,6 +3,6 @@
 
 #define GRPElevators 0x02C0
 
-#define SFXspl_c_voxattack_03_oneshot 0x061E
+#define SFXele_x_elevator_lp_00_looped 0x258B
 
 #endif

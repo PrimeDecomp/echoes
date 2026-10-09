@@ -3,13 +3,13 @@
 
 #define GRPDigitalGuardian1 0x0056
 
-#define SFXtls_c_explode_03a_oneshot 0x12FD
-#define SFXvis_c_butpress_00_oneshot 0x131E
-#define SFXmph_c_samjump_01_onshot 0x1320
-#define SFXcin_c_flash_mellow_00_oneshot 0x1330
-#define SFXele_c_activate_00_oneshot 0x1331
-#define SFXele_c_latch_00_oneshot 0x133A
-#define SFXele_c_swoosh_00_oneshot 0x133B
-#define SFXmap_c_holoup_00_oneshot 0x134D
+#define SFXdgd_a_chrgin_00_oneshot 0x24FF
+#define SFXdgd_a_chrgout_00_oneshot 0x2500
+#define SFXdgd_a_vortexout_00_oneshot 0x24DD
+#define SFXdgd_r_death_00_oneshot 0x24F9
+#define SFXdgd_r_gib_00_oneshot 0x24FA
+#define SFXdgd_b_emittrout_00_oneshot 0x0318
+#define SFXdgd_c_spotdry_00_oneshot 0x034B
+#define SFXdgd_b_detach_00_oneshot 0x03BA
 
 #endif

@@ -3,22 +3,22 @@
 
 #define GRPEmperorIng3_7 0x0025
 
-#define SFXpi2_x_cloak_00_oneshot 0x1431
-#define SFXpi2_x_invuln_00_oneshot 0x1432
-#define SFXpi2_x_powerup_00_oneshot 0x1433
-#define SFXpi2_x_weapon_00_oneshot 0x1434
-#define SFXpi2_x_litammo_00_oneshot 0x143F
-#define SFXpi2_x_drkammo_00_oneshot 0x1440
-#define SFXpi2_x_healthbig_00_oneshot 0x1441
-#define SFXpi2_x_healthmed_00_oneshot 0x1442
-#define SFXpi2_x_missile_00_oneshot 0x1443
-#define SFXpi2_x_healthsm_00_oneshot 0x1444
-#define SFXpi2_x_smissile_00_oneshot 0x1445
-#define SFXsa2_b_drkswitch_00_oneshot 0x1446
-#define SFXsa2_b_drkswitch_01_oneshot 0x1447
-#define SFXsa2_b_misswitch_00_oneshot 0x145D
-#define SFXsa2_b_misswitch_01_oneshot 0x145E
-#define SFXsa2_b_misswitch_02_oneshot 0x145F
-#define SFXsa2_b_misswitch_10_oneshot 0x1460
+#define SFXei3_b_land_00_oneshot 0x021F
+#define SFXei3_b_walk_00_oneshot 0x0236
+#define SFXei3_b_walk_01_oneshot 0x0266
+#define SFXei3_b_walk_02_oneshot 0x0267
+#define SFXei3_b_landsm_00_oneshot 0x0268
+#define SFXei3_b_walksm_00_oneshot 0x0269
+#define SFXei3_b_walksm_01_oneshot 0x026A
+#define SFXei3_b_walksm_02_oneshot 0x026B
+#define SFXei3_a_litswarm_lp_00_looped 0x00FE
+#define SFXei3_b_walkbig_00_oneshot 0x02B8
+#define SFXei3_b_walkbig_01_oneshot 0x02B9
+#define SFXei3_b_walkbig_02_oneshot 0x02BA
+#define SFXei3_b_hitwall_00_oneshot 0x02BB
+#define SFXei3_c_walk_00_oneshot 0x048D
+#define SFXei3_c_walk_01_oneshot 0x048E
+#define SFXei3_c_walk_02_oneshot 0x048F
+#define SFXei3_c_land_00_oneshot 0x0490
 
 #endif

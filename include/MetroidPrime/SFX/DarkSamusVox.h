@@ -3,9 +3,9 @@
 
 #define GRPDarkSamusVox 0x0047
 
-#define SFXdce_c_samturn_00_oneshot 0x13D2
-#define SFXlum_c_samdraw_00_oneshot 0x13D3
-#define SFXmp1_x_timer_00_oneshot 0x1411
-#define SFXrec_x_chargefail_lp_00_looped 0x1412
+#define SFXdks_b_voxidle_00_oneshot 0x2888
+#define SFXdks_b_voxidle_01_oneshot 0x2889
+#define SFXdks_c_voxidle_00_oneshot 0x288A
+#define SFXdks_c_voxidle_01_oneshot 0x288B
 
 #endif

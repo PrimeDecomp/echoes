@@ -3,6 +3,6 @@
 
 #define GRPTempleRings 0x0175
 
-#define SFXlth_x_redholo_lp_00_looped 0x120F
+#define SFXtem_x_rings_lp_00_looped 0x1F71
 
 #endif

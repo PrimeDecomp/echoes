@@ -3,7 +3,7 @@
 
 #define GRPElevatorShared 0x02D1
 
-#define SFXspl_r_voxsnatch_00_oneshot 0x061F
-#define SFXfn2_x_updown_00_oneshot 0x15A3
+#define SFXele_c_elevstp_00_oneshot 0x285C
+#define SFXele_x_elevstp_00_oneshot 0x285D
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPCineAttainWeapon2 0x024C
 
-#define SFXsa2_b_landweb_00_oneshot 0x14F0
-#define SFXsa2_b_landweb_02_oneshot 0x14F1
-#define SFXsa2_b_mlandmoth_00_oneshot 0x14F2
-#define SFXsa2_b_mlandweb_00_oneshot 0x14F3
+#define SFXwpn_c_swinggun_00_oneshot 0x03A4
+#define SFXwpn_c_swinggun_01_oneshot 0x03A5
+#define SFXwpn_c_wpnswitch_04a_oneshot 0x03A6
+#define SFXwpn_c_wpnswitch_04b_oneshot 0x03A7
 
 #endif

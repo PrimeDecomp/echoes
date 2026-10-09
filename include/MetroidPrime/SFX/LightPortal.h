@@ -3,7 +3,7 @@
 
 #define GRPLightPortal 0x02D2
 
-#define SFXsd2_r_voxdeath_02_oneshot 0x0719
-#define SFXsd2_r_voxpain_00_oneshot 0x071B
+#define SFXprt_x_riftlight_lp_00_looped 0x2789
+#define SFXprt_x_riftlight_lp_01_looped 0x278A
 
 #endif

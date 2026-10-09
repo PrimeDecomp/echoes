@@ -3,13 +3,13 @@
 
 #define GRPSandwormIng 0x00F2
 
-#define SFXsdb_b_armor_00_oneshot 0x018C
-#define SFXsdb_b_helmetform_00_oneshot 0x018D
-#define SFXsdb_r_helmetbrk_00_oneshot 0x018E
-#define SFXsdb_r_armorbrkstamp_00_oneshot 0x018F
-#define SFXsdb_b_dig_00_oneshot 0x0190
-#define SFXsdb_b_erupt_00_oneshot 0x0191
-#define SFXdks_r_voxpain_00_oneshot 0x01B1
-#define SFXdks_r_voxpainsm_01_oneshot 0x01B3
+#define SFXsd2_a_boost_00_oneshot 0x20EC
+#define SFXsd2_a_boost_01_oneshot 0x20ED
+#define SFXsd2_a_grabball_00_oneshot 0x20EE
+#define SFXsd2_a_grabball_01_oneshot 0x20EF
+#define SFXsd2_a_spit_00_oneshot 0x20F0
+#define SFXsd2_a_spit_01_oneshot 0x20F1
+#define SFXsd2_a_voxbomb_lp_00_looped 0x2100
+#define SFXsd2_a_bombspit_01_oneshot 0x2147
 
 #endif

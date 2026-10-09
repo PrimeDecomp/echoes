@@ -3,7 +3,7 @@
 
 #define GRPTemplePump 0x017B
 
-#define SFXlth_x_redhologet_00_oneshot 0x1210
-#define SFXswp_x_0iplat_lp_00_looped 0x1211
+#define SFXtem_x_pump_00_oneshot 0x1FEA
+#define SFXtem_x_pump_01_oneshot 0x1FEB
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPSwampBoss1_7 0x0012
 
-#define SFXui2_x_visor_lp_01_looped 0x1485
+#define SFXsb1_b_voxgrowl_01_oneshot 0x0410
 
 #endif

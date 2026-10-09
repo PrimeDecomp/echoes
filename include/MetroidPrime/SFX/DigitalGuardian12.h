@@ -3,8 +3,8 @@
 
 #define GRPDigitalGuardian12 0x001A
 
-#define SFXtls_c_passby_00_oneshot 0x12FE
-#define SFXtls_c_passby_01_oneshot 0x12FF
-#define SFXtls_c_explode_03b_oneshot 0x1302
+#define SFXdgd_c_eye_00_oneshot 0x0343
+#define SFXdgd_c_ingblob_lp_looped 0x0352
+#define SFXdgd_c_spotclimb_00_looped 0x0353
 
 #endif

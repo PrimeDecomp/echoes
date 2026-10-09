@@ -3,8 +3,8 @@
 
 #define GRPDarkSamus3_5 0x0032
 
-#define SFXtls_c_samstand_01_oneshot 0x1279
-#define SFXtls_c_samtouch_00_oneshot 0x127A
-#define SFXdk2_c_voxdeathfall_00_oneshot 0x13EB
+#define SFXdk3_b_voxrage_00_oneshot 0x01D5
+#define SFXdk3_b_voxrage_01_oneshot 0x01D6
+#define SFXdk3_r_voxpainbig_00_oneshot 0x024F
 
 #endif

@@ -3,22 +3,22 @@
 
 #define GRPTurretGalactic 0x00DC
 
-#define SFXei2_r_crack_01_oneshot 0x01C1
-#define SFXei2_r_tentdie_01_oneshot 0x01C3
-#define SFXei3_a_jump_00_oneshot 0x01C4
-#define SFXei3_a_jump_01_oneshot 0x01C5
-#define SFXein_a_darkfire_00_oneshot 0x01C6
-#define SFXein_a_darktele_00_oneshot 0x01C8
-#define SFXein_a_darktele_01_oneshot 0x01C9
-#define SFXein_a_darktele_02_oneshot 0x01CA
-#define SFXein_a_darktele_03_oneshot 0x01CB
-#define SFXein_a_darkhit_00_oneshot 0x01CD
-#define SFXein_a_darkfire_lp_00_looped 0x01CE
-#define SFXdk2_a_boost_lp_00_looped 0x01D0
-#define SFXdk2_a_boost_00_oneshot 0x01D1
-#define SFXdk2_a_boostchg_00_oneshot 0x01D2
-#define SFXdk2_a_boostout_00_oneshot 0x01D3
-#define SFXdk2_a_divehit_00_oneshot 0x01D4
-#define SFXdk2_a_boost_lp_01_looped 0x01D5
+#define SFXtu2_a_fire_00_oneshot 0x1E6E
+#define SFXtu2_b_lockon_00_oneshot 0x1E71
+#define SFXtu2_b_panels_00_oneshot 0x1EEF
+#define SFXtu2_b_retract_00_oneshot 0x1E73
+#define SFXtu2_b_servo_lp_00_looped 0x1E74
+#define SFXtu2_b_servooff_00_oneshot 0x1E75
+#define SFXtu2_b_pan_lp_00_looped 0x1E76
+#define SFXtu2_a_charge_00_oneshot 0x1EA2
+#define SFXtu2_a_rico_00_oneshot 0x1EA3
+#define SFXtu2_a_rico_01_oneshot 0x1EA4
+#define SFXtu2_r_deathlower_lp_00_looped 0x1EB6
+#define SFXtu2_b_raise_01_oneshot 0x1EE1
+#define SFXtu2_b_lower_lp_00_looped 0x1EE2
+#define SFXtu2_b_loweroff_00_oneshot 0x1EE3
+#define SFXtu2_b_raise_lp_00_looped 0x1EE4
+#define SFXtu2_b_raiseoff_00_oneshot 0x1EE5
+#define SFXtu2_a_rico_02_oneshot 0x1EE6
 
 #endif

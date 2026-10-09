@@ -3,18 +3,18 @@
 
 #define GRPSafezone 0x02C7
 
-#define SFXsp3_b_voxsniff_00_oneshot 0x0628
-#define SFXsp3_b_voxsniff_01_oneshot 0x0629
-#define SFXspl_r_voxsnatch_lp_00_looped 0x062A
-#define SFXdce_c_splvoxtaunt_01_oneshot 0x062D
-#define SFXdce_c_splvoxtaunt_02_oneshot 0x062E
-#define SFXdce_c_snatchlong_00_oneshot 0x062F
-#define SFXdce_c_sploutcocoon_00_oneshot 0x0630
-#define SFXdce_c_sploutcocoon_01_oneshot 0x0631
-#define SFXwst_a_voxattack_00_oneshot 0x0632
-#define SFXwst_b_voxidle_00_oneshot 0x0633
-#define SFXwst_b_voxidle_01_oneshot 0x0634
-#define SFXwst_b_voxspawn_00_oneshot 0x0635
-#define SFXwst_b_voxspawn_01_oneshot 0x0636
+#define SFXsaf_x_zone_lp_00_looped 0x27D5
+#define SFXsaf_x_zoneon_00_oneshot 0x27D6
+#define SFXglo_x_zone_lp_00_looped 0x27D7
+#define SFXglo_x_zoneoff_00_oneshot 0x27D8
+#define SFXglo_x_zoneon_00_oneshot 0x27D9
+#define SFXglo_x_zone_00_oneshot 0x27DA
+#define SFXglo_x_zone_01_oneshot 0x27DB
+#define SFXsaf_x_zoneexit_00_oneshot 0x27DC
+#define SFXsaf_x_zoneenter_00_oneshot 0x27DD
+#define SFXsaf_x_zoneoff_00_oneshot 0x27DE
+#define SFXsaf_x_deact_00_oneshot 0x0148
+#define SFXsaf_c_zoneoff_00_oneshot 0x0412
+#define SFXsaf_c_deact_00_oneshot 0x0413
 
 #endif

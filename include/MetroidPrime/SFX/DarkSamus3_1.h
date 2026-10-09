@@ -3,9 +3,9 @@
 
 #define GRPDarkSamus3_1 0x005B
 
-#define SFXtls_c_samarm_00_oneshot 0x127C
-#define SFXspt_b_voxidleholo_02_looped 0x1282
-#define SFXlum_c_ingvoxidle_01_oneshot 0x1284
-#define SFXlum_c_ingvoxidle_02_oneshot 0x1285
+#define SFXdk3_a_enragefire_00_oneshot 0x0170
+#define SFXdk3_a_enragecharge_00_oneshot 0x017A
+#define SFXdk3_a_enrage_lp_00_looped 0x01AE
+#define SFXdk3_a_enragefade_lp_00_looped 0x03C8
 
 #endif

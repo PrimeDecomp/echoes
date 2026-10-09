@@ -3,7 +3,7 @@
 
 #define GRPSandlandLift 0x01A5
 
-#define SFXsnd_x_skiffintro_00_oneshot 0x11D3
-#define SFXsnd_x_sandfall_lp_00_looped 0x11D4
+#define SFXsnd_x_lift_lp_00_looped 0x261E
+#define SFXsnd_x_liftstop_00_oneshot 0x261F
 
 #endif

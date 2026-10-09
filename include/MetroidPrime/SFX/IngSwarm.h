@@ -3,20 +3,20 @@
 
 #define GRPIngSwarm 0x00EE
 
-#define SFXdk3_a_phazhit_lp_00_looped 0x0108
-#define SFXdk3_b_enrageland_00_oneshot 0x0109
-#define SFXdk2_b_invisin_00_oneshot 0x010A
-#define SFXdk2_b_invisout_00_oneshot 0x010B
-#define SFXdk2_a_icechg_00_oneshot 0x010C
-#define SFXdk3_b_invisin_00_oneshot 0x010D
-#define SFXdk2_a_sweep_00_oneshot 0x010E
-#define SFXdk2_a_sweepchg_00_oneshot 0x010F
-#define SFXein_b_voxidle_01_oneshot 0x011B
-#define SFXein_b_hitground_00_oneshot 0x011C
-#define SFXein_a_tentwarp_00_oneshot 0x0128
-#define SFXein_a_tentwarptele_00_oneshot 0x0129
-#define SFXsdb_a_darkspithit_00_oneshot 0x014D
-#define SFXsdb_a_jawattack_00_oneshot 0x014E
-#define SFXsdb_x_sphereslam_00_oneshot 0x0150
+#define SFXing_b_swarmidle_lp_00_looped 0x20BA
+#define SFXing_b_swarmmove_lp_00_looped 0x20BB
+#define SFXing_b_voxswarm_00_oneshot 0x20D0
+#define SFXing_b_voxswarm_01_oneshot 0x20D1
+#define SFXing_b_voxswarm_lp_00_looped 0x20D2
+#define SFXing_a_offsamus_00_oneshot 0x1F52
+#define SFXing_a_offsamus_01_oneshot 0x1F53
+#define SFXing_b_swarmmini_lp_00_looped 0x0314
+#define SFXing_b_voxswarmmini_00_oneshot 0x0315
+#define SFXing_b_swarmmini_01_oneshot 0x0316
+#define SFXing_b_voxswarmmini_lp_00_looped 0x0317
+#define SFXing_c_swarmmove_lp_00_looped 0x0356
+#define SFXing_c_voxswarm_00_oneshot 0x0357
+#define SFXing_c_voxswarm_01_oneshot 0x0358
+#define SFXing_c_voxswarm_lp_00_looped 0x0359
 
 #endif

@@ -3,13 +3,13 @@
 
 #define GRPPlantScarab 0x0113
 
-#define SFXsb2_b_spin_00_oneshot 0x0030
-#define SFXsb2_b_voxidle_00_oneshot 0x0031
-#define SFXsb2_b_voxidle_01_oneshot 0x0032
-#define SFXsb2_b_voxrecover_00_oneshot 0x0033
-#define SFXsb2_r_painbig_00_oneshot 0x0034
-#define SFXsb2_r_thrash_lp_00_looped 0x0035
-#define SFXsb2_r_voxflinch_00_oneshot 0x0036
-#define SFXsb2_b_darksuck_lp_00_looped 0x0038
+#define SFXpls_a_grenade_lp_00 0x00F6
+#define SFXpls_a_launch_00_oneshot 0x014E
+#define SFXpls_b_move_00_oneshot 0x014F
+#define SFXpls_move_lp_00_looped 0x0150
+#define SFXpls_b_voxidle_00_oneshot 0x0151
+#define SFXpls_b_voxidle_01_oneshot 0x0155
+#define SFXpls_r_death_00_oneshot 0x0156
+#define SFXpls_r_death_01_oneshot 0x0157
 
 #endif

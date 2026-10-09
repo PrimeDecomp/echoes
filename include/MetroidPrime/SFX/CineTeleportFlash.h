@@ -3,6 +3,6 @@
 
 #define GRPCineTeleportFlash 0x01D6
 
-#define SFXef2_x_fire_lp_01_looped 0x1509
+#define SFXtel_c_flash_00_oneshot 0x0176
 
 #endif

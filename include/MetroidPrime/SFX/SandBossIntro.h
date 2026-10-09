@@ -3,10 +3,10 @@
 
 #define GRPSandBossIntro 0x0052
 
-#define SFXdks_c_samdrawgun_00_oneshot 0x1386
-#define SFXdks_c_samdrawgun_01_oneshot 0x1387
-#define SFXgft_c_fall_01_oneshot 0x1389
-#define SFXgft_c_fall_02_oneshot 0x138A
-#define SFXsa2_a_nilcharge_lp_00_looped 0x157B
+#define SFXsdb_c_detach_00_oneshot 0x2129
+#define SFXsdb_c_samfall_00_oneshot 0x212A
+#define SFXsdb_c_samslide_00_oneshot 0x212C
+#define SFXsdb_c_voxalert_00_oneshot 0x212D
+#define SFXsdb_c_swoosh_00_oneshot 0x2130
 
 #endif

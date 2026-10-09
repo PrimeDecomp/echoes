@@ -3,13 +3,13 @@
 
 #define GRPIngJump 0x009D
 
-#define SFXdk2_a_sweephit_lp_00_looped 0x0112
-#define SFXein_b_tentmovesm_lp_00_looped 0x0119
-#define SFXein_b_voxidle_00_oneshot 0x011A
-#define SFXsdb_c_sphereslam_00_oneshot 0x0151
-#define SFXsdb_a_darkspitfast_00_oneshot 0x0152
-#define SFXsdb_c_move_lp_00_looped 0x0153
-#define SFXsdb_c_body_lp_00_looped 0x0154
-#define SFXsdw_r_voxdeath_02_oneshot 0x1659
+#define SFXijg_a_jump_00_oneshot 0x22EC
+#define SFXijg_a_landshok_00_oneshot 0x22ED
+#define SFXijg_a_jumpbig_00_oneshot 0x248E
+#define SFXijg_a_landconc_00_oneshot 0x248F
+#define SFXijg_a_voxjumpbig_00_oneshot 0x24C4
+#define SFXijg_a_preland_00_oneshot 0x24C8
+#define SFXijg_a_jumpchrg_00_oneshot 0x0143
+#define SFXdsi_c_ingfall_00_oneshot 0x02A3
 
 #endif

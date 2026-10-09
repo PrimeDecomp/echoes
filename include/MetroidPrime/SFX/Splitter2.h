@@ -3,14 +3,14 @@
 
 #define GRPSplitter2 0x00FC
 
-#define SFXsb1_b_splash_00_oneshot 0x007B
-#define SFXsb1_b_splash_01_oneshot 0x007C
-#define SFXsb1_b_swim_00_oneshot 0x007D
-#define SFXsb1_c_splash_00_oneshot 0x0080
-#define SFXei3_b_walksm_01_oneshot 0x009A
-#define SFXei3_b_walksm_02_oneshot 0x009B
-#define SFXei3_a_litswarm_lp_00_looped 0x009C
-#define SFXei3_b_walkbig_00_oneshot 0x009D
-#define SFXei3_c_walk_01_oneshot 0x00A2
+#define SFXspt_a_laserchg_00_oneshot 0x21B9
+#define SFXspt_a_stab_00_oneshot 0x21D6
+#define SFXspt_a_stab_01_oneshot 0x21D7
+#define SFXspt_a_headlaser_00_oneshot 0x2325
+#define SFXspt_b_flydodge_00_oneshot 0x2452
+#define SFXspt_a_headlaser_lp_00_looped 0x2451
+#define SFXspt_b_activate_00_oneshot 0x21D8
+#define SFXspt_b_deactivate_00_oneshot 0x21D9
+#define SFXspt_r_headpop_00_oneshot 0x2339
 
 #endif

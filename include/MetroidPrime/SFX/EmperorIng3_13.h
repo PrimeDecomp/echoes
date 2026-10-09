@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng3_13 0x000D
 
-#define SFXpi2_x_absorb_00_oneshot 0x1436
+#define SFXei3_c_twinkle_lp_00R_looped 0x0466
 
 #endif

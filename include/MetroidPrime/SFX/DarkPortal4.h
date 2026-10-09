@@ -3,6 +3,6 @@
 
 #define GRPDarkPortal4 0x02A9
 
-#define SFXsd2_a_voxbomb_lp_00_looped 0x0708
+#define SFXprt_x_static_lp_00_looped 0x27D4
 
 #endif

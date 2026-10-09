@@ -3,7 +3,7 @@
 
 #define GRPIngPortalFire 0x00BA
 
-#define SFXein_b_portclose_00_oneshot 0x012A
-#define SFXein_b_portopen_00_oneshot 0x012D
+#define SFXing_a_portfire_00_oneshot 0x1F58
+#define SFXing_a_portopen_00_oneshot 0x1F5B
 
 #endif

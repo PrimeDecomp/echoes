@@ -3,19 +3,19 @@
 
 #define GRPMetroid 0x00CC
 
-#define SFXisg_r_voxpain_00_oneshot 0x0334
-#define SFXpds_r_voxpain_00_oneshot 0x033E
-#define SFXpds_r_voxpainsm_00_oneshot 0x033F
-#define SFXpds_b_voxcomp_01_oneshot 0x0347
-#define SFXpds_b_open_00_oneshot 0x0348
-#define SFXsp3_a_spit_00_oneshot 0x0349
-#define SFXsp3_r_hivegib_00_oneshot 0x034A
-#define SFXsp3_b_land_00_oneshot 0x034D
-#define SFXmt3_b_gest_00_oneshot 0x0351
-#define SFXrez_b_derez_lp_00_looped 0x0357
-#define SFXrez_b_rezbit_lp_00_looped 0x0358
-#define SFXrez_b_rezzz_lp_00_looped 0x035E
-#define SFXsdf_b_voxdeath_01_oneshot 0x0361
-#define SFXsdf_b_voxidle_00_oneshot 0x0362
+#define SFXmtd_a_swoosh_00 0x024E
+#define SFXmtd_a_swoosh_01_oneshot 0x0262
+#define SFXmtd_a_thunk_00_oneshot 0x023A
+#define SFXmtd_b_float_lp_00_looped 0x023D
+#define SFXmtd_b_float_lp_01_looped 0x023E
+#define SFXmtd_b_pincer_00_oneshot 0x0241
+#define SFXmtd_b_pincer_01_oneshot 0x0242
+#define SFXmtd_b_float_lp_02_looped 0x0B53
+#define SFXmtd_b_grow_lp_00_looped 0x0B54
+#define SFXmtd_b_grow_00_oneshot 0x031F
+#define SFXmtd_b_suck_lp_00_looped 0x0B55
+#define SFXmtd_b_glass_lp_01_looped 0x23FE
+#define SFXmtd_b_glass_lp_00_looped 0x23FF
+#define SFXmt3_b_swoosh_00_oneshot 0x0107
 
 #endif

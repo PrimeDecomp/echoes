@@ -3,12 +3,12 @@
 
 #define GRPSandBoss6 0x0045
 
-#define SFXint_c_scream_00R_oneshot 0x136A
-#define SFXscw_c_screw_lp_00_looped 0x139C
-#define SFXscw_c_electric_00_oneshot 0x139D
-#define SFXsav_c_shipglow_lp_00_looped 0x139E
-#define SFXsav_c_shipglow_00_oneshot 0x13A1
-#define SFXdks_c_dieboom_00_oneshot 0x13AD
-#define SFXdks_c_samfall_01_oneshot 0x13B0
+#define SFXsdb_a_darkspit_01_oneshot 0x2168
+#define SFXsdb_a_darkspit_00_oneshot 0x2169
+#define SFXsdb_a_darkspithit_00_oneshot 0x2167
+#define SFXsdb_a_jawattack_00_oneshot 0x216C
+#define SFXsdb_x_sphereslam_00_oneshot 0x217B
+#define SFXsdb_c_sphereslam_00_oneshot 0x219F
+#define SFXsdb_a_darkspitfast_00_oneshot 0x0105
 
 #endif

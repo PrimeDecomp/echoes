@@ -3,14 +3,14 @@
 
 #define GRPSamusJump 0x0141
 
-#define SFXsam_b_landphaz_00_oneshot 0x100C
-#define SFXsam_b_landphaz_02_oneshot 0x100E
-#define SFXsam_b_mlandphz_00_oneshot 0x100F
-#define SFXsam_b_wlkphaz_00_oneshot 0x1010
-#define SFXsam_b_wlkphaz_01_oneshot 0x1011
-#define SFXsam_b_landdgras_00_oneshot 0x1012
-#define SFXsam_b_landdgras_02_oneshot 0x1013
-#define SFXsam_b_landdwal_00_oneshot 0x1014
-#define SFXsam_b_landdwal_02_oneshot 0x1016
+#define SFXsam_b_jump_00_oneshot 0x0089
+#define SFXsam_b_jump_01_oneshot 0x008A
+#define SFXsam_b_jump_02_oneshot 0x04F2
+#define SFXsam_c_jump_00_oneshot 0x1D88
+#define SFXsam_b_sidejump_00_oneshot 0x05C6
+#define SFXsam_b_gravboost_lp_00_looped 0x0123
+#define SFXsam_b_screwjump_00_oneshot 0x01DC
+#define SFXsam_b_gravfall_00_oneshot 0x0360
+#define SFXsam_c_jump_01_oneshot 0x05CE
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPDigitalGuardian8 0x002C
 
-#define SFXgft_c_voxbreath_00_oneshot 0x130D
-#define SFXgft_c_voxbreath_01_oneshot 0x130E
-#define SFXgft_c_voxdeath_00_oneshot 0x130F
-#define SFXgae_c_samjump_01_oneshot 0x1323
-#define SFXgrp_c_nrgzing_00_oneshot 0x1324
+#define SFXdgd_b_step_00_oneshot 0x01B8
+#define SFXdgd_b_step_01_oneshot 0x01B9
+#define SFXdgd_b_step_02_oneshot 0x01BB
+#define SFXdgd_b_walk_00_oneshot 0x24F7
+#define SFXdgd_b_walk_01_oneshot 0x24F8
 
 #endif

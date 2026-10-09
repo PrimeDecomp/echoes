@@ -3,6 +3,6 @@
 
 #define GRPDarkPortalRip 0x02E3
 
-#define SFXsp3_b_scrape_00_oneshot 0x05F6
+#define SFXprt_x_darkripopen_00_oneshot 0x0322
 
 #endif

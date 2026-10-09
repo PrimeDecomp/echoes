@@ -3,10 +3,10 @@
 
 #define GRPSamusGunMovement_MP 0x0271
 
-#define SFXsam_r_mcollide_00_oneshot 0x10B2
-#define SFXsam_r_mhitheavy_00_oneshot 0x10B3
-#define SFXsam_r_mhitlight_00_oneshot 0x10B4
-#define SFXsam_r_mhitmed_00_oneshot 0x10B5
-#define SFXsam_b_jump_00_oneshot 0x10B6
+#define SFXsa2_b_butpress_00_oneshot 0x2849
+#define SFXsa2_b_butpress_01_oneshot 0x284A
+#define SFXsa2_b_gunnozz_00_oneshot 0x284B
+#define SFXsa2_b_panlclos_00_oneshot 0x284C
+#define SFXsa2_b_panlopen_00_oneshot 0x284D
 
 #endif

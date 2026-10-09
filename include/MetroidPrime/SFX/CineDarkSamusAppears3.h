@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusAppears3 0x0203
 
-#define SFXsam_a_phazfire_00_oneshot 0x165C
-#define SFXsam_a_phazsuck_00_oneshot 0x165E
+#define SFXdsi_c_samstand_01_oneshot 0x01EF
+#define SFXdsi_c_wind_00R_looped 0x01ED
 
 #endif

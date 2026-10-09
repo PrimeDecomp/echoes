@@ -3,6 +3,6 @@
 
 #define GRPCliffside05Radar 0x0167
 
-#define SFXdk3_c_lastbreath_00_oneshot 0x1256
+#define SFXclf_x_05radar_00_oneshot 0x0502
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPLuminothLift 0x01C0
 
-#define SFXdk3_c_walk_01_oneshot 0x125A
-#define SFXamo_c_samarmcock_00_oneshot 0x1275
+#define SFXlth_x_lift_lp_00_looped 0x03E6
+#define SFXlth_x_liftstop_00_oneshot 0x042E
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPDarkPortal6 0x02A2
 
-#define SFXsd2_b_voxhypno_00_oneshot 0x0715
+#define SFXprt_x_zap_00_oneshot 0x0069
 
 #endif

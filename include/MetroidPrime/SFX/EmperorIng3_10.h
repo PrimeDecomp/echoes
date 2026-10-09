@@ -3,8 +3,8 @@
 
 #define GRPEmperorIng3_10 0x0010
 
-#define SFXpi2_x_unlimammo_00_oneshot 0x1439
-#define SFXpi2_x_unlimmissile_00_oneshot 0x143A
-#define SFXint_c_shipfall_lp_00_looped 0x167F
+#define SFXei3_c_crumble_lp_00_looped 0x0461
+#define SFXei3_c_samsuck_00_oneshot 0x0462
+#define SFXgae_c_crumble_lp_00_looped 0x05D3
 
 #endif

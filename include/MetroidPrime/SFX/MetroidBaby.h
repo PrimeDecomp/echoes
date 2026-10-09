@@ -3,11 +3,11 @@
 
 #define GRPMetroidBaby 0x009A
 
-#define SFXisg_b_voxangry_02_oneshot 0x0337
-#define SFXisg_b_voxinroll_00_oneshot 0x0339
-#define SFXisg_r_voxdeath_00_oneshot 0x033B
-#define SFXijg_a_jump_00_oneshot 0x0367
-#define SFXijg_a_landshok_00_oneshot 0x0368
-#define SFXijg_a_voxjumpbig_00_oneshot 0x036B
+#define SFXmt3_b_gest_00_oneshot 0x00F7
+#define SFXmt3_b_float_lp_00_looped 0x00ED
+#define SFXmt3_b_floatfast_lp_00_looped 0x0101
+#define SFXmt3_r_gib_00_oneshot 0x00F4
+#define SFXmt3_b_grow_lp_00_looped 0x00FF
+#define SFXmt3_b_grow_00_oneshot 0x0106
 
 #endif

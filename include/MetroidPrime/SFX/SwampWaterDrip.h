@@ -3,7 +3,7 @@
 
 #define GRPSwampWaterDrip 0x01B8
 
-#define SFXtem_x_wind_lp_looped 0x1195
-#define SFXtem_x_ripple_lp_00L_looped 0x1196
+#define SFXswp_x_waterdrip_00_oneshot 0x0336
+#define SFXswp_x_waterdrip_01_oneshot 0x0337
 
 #endif

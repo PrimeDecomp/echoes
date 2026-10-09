@@ -3,10 +3,10 @@
 
 #define GRPCineSpaceJump 0x0239
 
-#define SFXsa2_r_hitmed_00_oneshot 0x151C
-#define SFXsa2_r_hitheavy_00_oneshot 0x151D
-#define SFXsa2_r_hitmed_01_oneshot 0x1520
-#define SFXsa2_b_gravboost_lp_looped 0x1525
-#define SFXsa2_b_bombjump_00_oneshot 0x1527
+#define SFXsja_c_samjump_00_oneshot 0x00DB
+#define SFXsja_c_samspin_00_oneshot 0x00DC
+#define SFXsja_c_electric_lp_00_looped 0x00DD
+#define SFXsja_c_samstand_00_oneshot 0x00E6
+#define SFXsja_c_swoosh_01_oneshot 0x00E7
 
 #endif

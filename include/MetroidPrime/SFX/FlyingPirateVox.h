@@ -3,14 +3,14 @@
 
 #define GRPFlyingPirateVox 0x00D8
 
-#define SFXswp_x_10platover_00_oneshot 0x0258
-#define SFXspt_r_voxsnatch_00_oneshot 0x025E
-#define SFXspt_r_gibbig_00_oneshot 0x025F
-#define SFXspt_r_gibbig_02_oneshot 0x0263
-#define SFXbl3_a_melee_00_oneshot 0x0264
-#define SFXrez_a_boltin_lp_00_looped 0x026E
-#define SFXrez_a_virusin_00_oneshot 0x026F
-#define SFXspt_b_movefast_00_oneshot 0x0270
-#define SFXspt_b_movefast_01_oneshot 0x0271
+#define SFXfpr_b_dievox_00_oneshot 0x0473
+#define SFXfpr_b_intruder_00_oneshot 0x0474
+#define SFXfpr_b_voxalert_00_oneshot 0x0477
+#define SFXfpr_b_voxalert_01_oneshot 0x1DA7
+#define SFXfpr_b_voxangry_00_oneshot 0x04BF
+#define SFXfpr_b_voxangry_01_oneshot 0x04C0
+#define SFXfpr_b_voxangry_02_oneshot 0x0B5F
+#define SFXfpr_r_impact_00_oneshot 0x047C
+#define SFXfpr_r_impact_01_oneshot 0x047D
 
 #endif

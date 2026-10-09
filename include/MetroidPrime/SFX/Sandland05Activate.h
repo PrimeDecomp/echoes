@@ -3,7 +3,7 @@
 
 #define GRPSandland05Activate 0x0190
 
-#define SFXsnd_x_forceoff_00_oneshot 0x11A6
-#define SFXsnd_x_skiffnrg_lp_00_looped 0x11CE
+#define SFXsnd_x_lasermech_00_oneshot 0x27E3
+#define SFXlbm_x_powerup_00_oneshot 0x0367
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPGlowbug 0x00E7
 
-#define SFXdks_c_voxidle_01_oneshot 0x0163
-#define SFXdks_a_dive_00_oneshot 0x0164
-#define SFXdks_a_divehitwall_00_oneshot 0x0165
-#define SFXdks_b_pissexp_00_oneshot 0x0166
-#define SFXdk2_a_dive_00_oneshot 0x0167
+#define SFXglo_a_arc_00_oneshot 0x1F11
+#define SFXglo_a_arctele_00_oneshot 0x1F3E
+#define SFXglo_b_fly_lp_00_looped 0x1F3F
+#define SFXglo_r_pop_00_oneshot 0x1F40
+#define SFXglo_r_pop_01_oneshot 0x1F5E
 
 #endif

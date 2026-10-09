@@ -3,7 +3,7 @@
 
 #define GRPSamusElectricHit_MP 0x026E
 
-#define SFXsam_b_wlksnow_00_oneshot 0x1041
-#define SFXsam_b_wlksnow_01_oneshot 0x1042
+#define SFXsa2_r_elechit_00_oneshot 0x2583
+#define SFXsa2_r_elechit_01_oneshot 0x2584
 
 #endif

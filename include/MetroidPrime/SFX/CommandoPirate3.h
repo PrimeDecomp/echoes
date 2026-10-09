@@ -3,7 +3,7 @@
 
 #define GRPCommandoPirate3 0x00DE
 
-#define SFXshk_r_voxpain_01_oneshot 0x045A
-#define SFXshk_b_popexp_00_oneshot 0x0463
+#define SFXcpr_a_bayonet_00_oneshot 0x1EB1
+#define SFXcpr_b_shieldon_lp_00_looped 0x1EB3
 
 #endif

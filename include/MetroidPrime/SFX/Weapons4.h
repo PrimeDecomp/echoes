@@ -3,23 +3,23 @@
 
 #define GRPWeapons4 0x012D
 
-#define SFXshr_r_drkexplode_01_oneshot 0x0DEB
-#define SFXshr_b_voxangry_00_oneshot 0x0DF0
-#define SFXshr_b_voxangry_01_oneshot 0x0DF1
-#define SFXoct_b_voxidle_00_oneshot 0x0DFF
-#define SFXoct_b_voxidle_01_oneshot 0x0E00
-#define SFXoct_b_walk_lp_00_looped 0x0E01
-#define SFXrez_r_shieldexp_00_oneshot 0x0E2D
-#define SFXswf_b_move_00_oneshot 0x0E33
-#define SFXisg_b_rollelec_lp_00_looped 0x0E3C
-#define SFXisg_b_rollzap_lp_00_looped 0x0E3D
-#define SFXisg_b_rollelecslow_00_oneshot 0x0E3E
-#define SFXisg_b_rollelecslow_01_oneshot 0x0E3F
-#define SFXisg_b_spidrollfast_lp_00_looped 0x0E48
-#define SFXswb_b_death_00_oneshot 0x0E5B
-#define SFXswb_b_death_01_oneshot 0x0E5C
-#define SFXgrn_r_armorbrk_01_oneshot 0x0E94
-#define SFXmis_c_armclank_00_oneshot 0x1347
-#define SFXmis_c_mislget_00_oneshot 0x1349
+#define SFXsam_a_nilfire_00_oneshot 0x1FCC
+#define SFXsam_a_nilhit_00_oneshot 0x1FCD
+#define SFXsam_a_nilchric_00_oneshot 0x1FCF
+#define SFXsam_a_nilrico_00_oneshot 0x1FD1
+#define SFXsam_a_nilcharge_lp_00_looped 0x1FDB
+#define SFXsam_a_nilchfire_00_oneshot 0x1FDC
+#define SFXsam_a_nilchhit_00_oneshot 0x1FDD
+#define SFXsam_a_nilcofire_00_oneshot 0x1FDE
+#define SFXsam_a_nilcohit_00_oneshot 0x1FDF
+#define SFXsam_a_nilcharge_00_oneshot 0x00AA
+#define SFXsam_a_nilcharge_01_oneshot 0x00AB
+#define SFXsam_a_nilcharge_02_oneshot 0x00AF
+#define SFXdgd_a_nilfire_00_oneshot 0x01E8
+#define SFXdgd_a_nilchfire_00_oneshot 0x01EB
+#define SFXsam_c_nilchfire_00_oneshot 0x0573
+#define SFXsam_c_nilcharge_lp_00_looped 0x057A
+#define SFXsam_c_nilcofire_00_oneshot 0x057C
+#define SFXsam_c_nilfire_00_oneshot 0x057D
 
 #endif

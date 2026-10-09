@@ -3,6 +3,6 @@
 
 #define GRPCliffsidePiston 0x015E
 
-#define SFXtel_c_travel_lp_00_looped 0x1247
+#define SFXclf_x_piston_lp_00_looped 0x0406
 
 #endif

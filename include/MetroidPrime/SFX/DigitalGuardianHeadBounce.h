@@ -3,6 +3,6 @@
 
 #define GRPDigitalGuardianHeadBounce 0x0003
 
-#define SFXgrv_c_arpegg_lp_00_looped 0x1359
+#define SFXdgd_c_headbounce_01_oneshot 0x05C7
 
 #endif

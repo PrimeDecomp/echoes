@@ -3,13 +3,13 @@
 
 #define GRPSamusShip 0x02B1
 
-#define SFXkra_r_voxpain_00_oneshot 0x068D
-#define SFXfnt_x_back_01_oneshot 0x15BC
-#define SFXfnt_x_back_02_oneshot 0x15BD
-#define SFXgib_x_wetmed_01_oneshot 0x1603
-#define SFXgib_x_wetbig_00_oneshot 0x1604
-#define SFXgib_x_rocksmall_01_oneshot 0x1607
-#define SFXgib_x_rockmed_00_oneshot 0x1608
-#define SFXgib_x_metalmed_01_oneshot 0x1615
+#define SFXint_c_shipopen_01_oneshot 0x2843
+#define SFXint_c_shipelev_lp_00_looped 0x2844
+#define SFXint_c_shiphover_lp_00_looped 0x2845
+#define SFXint_c_shiphover_lp_01_looped 0x2846
+#define SFXint_c_shipopen_lp_00_looped 0x2847
+#define SFXint_c_shiprear_lp_00_looped 0x2848
+#define SFXsav_c_shipdoor_00_oneshot 0x291E
+#define SFXsav_c_shipplat_lp_00_looped 0x291F
 
 #endif

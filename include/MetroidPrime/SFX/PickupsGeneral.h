@@ -3,12 +3,12 @@
 
 #define GRPPickupsGeneral 0x0132
 
-#define SFXing_b_run_01_oneshot 0x06B8
-#define SFXing_b_stomp_00_oneshot 0x06BB
-#define SFXing_c_swipe_00_oneshot 0x06BC
-#define SFXing_b_land_00_oneshot 0x06BE
-#define SFXing_c_land_00_oneshot 0x06BF
-#define SFXing_c_swipe_01_oneshot 0x06C0
-#define SFXing_b_shadowin_00_oneshot 0x06C1
+#define SFXpik_x_healthsm_00_oneshot 0x22D5
+#define SFXpik_x_healthbig_00_oneshot 0x22D6
+#define SFXpik_x_missile_00_oneshot 0x1F6E
+#define SFXpik_x_pbomb_00_oneshot 0x22D7
+#define SFXpik_x_drkammo_00_oneshot 0x22D8
+#define SFXpik_x_litammo_00_oneshot 0x22D9
+#define SFXpik_x_healthmed_00_oneshot 0x22DA
 
 #endif

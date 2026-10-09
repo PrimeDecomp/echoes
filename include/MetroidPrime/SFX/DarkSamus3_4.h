@@ -3,9 +3,9 @@
 
 #define GRPDarkSamus3_4 0x0035
 
-#define SFXtls_c_gfcomp_lp_looped 0x127B
-#define SFXlum_c_generatorkey_lp_00_looped 0x1286
-#define SFXlum_c_athrshift_00_oneshot 0x1287
-#define SFXlum_c_meteor_00_oneshot 0x1288
+#define SFXdk3_b_voxphazein_00_oneshot 0x01AB
+#define SFXdk3_a_phazmislchg_00_oneshot 0x03C9
+#define SFXdk3_a_phazmislfire_00_oneshot 0x03CA
+#define SFXdk3_a_phazmislhit_00_oneshot 0x03CB
 
 #endif

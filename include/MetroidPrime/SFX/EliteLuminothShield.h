@@ -3,7 +3,7 @@
 
 #define GRPEliteLuminothShield 0x0075
 
-#define SFXibg_a_morphboo_00_oneshot 0x03CB
-#define SFXmok_b_spawn_00_oneshot 0x0587
+#define SFXelu_b_litshield_lp_00_looped 0x0533
+#define SFXrez_b_elulitshield_lp_00_looped 0x0516
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPCineGeneratorKey1 0x01FC
 
-#define SFXsa2_b_morphchg_lp_00_looped 0x1529
-#define SFXsa2_b_morphin_00_oneshot 0x152A
+#define SFXsp2_r_voxdeath_00_oneshot 0x010E
+#define SFXsp2_r_collapse_00_oneshot 0x0113
 
 #endif

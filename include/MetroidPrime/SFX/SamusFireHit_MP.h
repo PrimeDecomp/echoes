@@ -3,8 +3,8 @@
 
 #define GRPSamusFireHit_MP 0x026F
 
-#define SFXing_c_voxswarm_01_oneshot 0x06EB
-#define SFXing_c_voxswarm_lp_00_looped 0x06EC
-#define SFXsam_b_landrubb_00_oneshot 0x1043
+#define SFXsa2_r_firehit_lp_00_looped 0x2688
+#define SFXef2_x_fire_lp_00_looped 0x2689
+#define SFXef2_x_fire_lp_01_looped 0x268A
 
 #endif

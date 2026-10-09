@@ -3,6 +3,6 @@
 
 #define GRPSandBossDeath4 0x0041
 
-#define SFXint_c_shipexp_00_oneshot 0x136F
+#define SFXsdb_c_voxdeath_00_oneshot 0x2871
 
 #endif

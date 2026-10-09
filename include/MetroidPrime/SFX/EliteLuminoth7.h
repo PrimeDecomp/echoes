@@ -3,6 +3,6 @@
 
 #define GRPEliteLuminoth7 0x008A
 
-#define SFXin2_b_voxangry_01_oneshot 0x03D2
+#define SFXelu_r_voxdeath_01_oneshot 0x24C3
 
 #endif

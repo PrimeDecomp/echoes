@@ -3,9 +3,9 @@
 
 #define GRPCliffsideGyroscope2 0x015D
 
-#define SFXlth_x_mtlscrapebig_lp_00_looped 0x1231
-#define SFXlth_x_mtlscrapebigratch_lp_00_looped 0x1233
-#define SFXlth_x_elev_lp_00_looped 0x1243
-#define SFXtel_c_travel_lp_01_looped 0x1244
+#define SFXclf_x_gryo2_lp_looped 0x040B
+#define SFXclf_x_gryo2stop_00_oneshot 0x040C
+#define SFXclf_x_07puzzlerotate_00_oneshot 0x048A
+#define SFXclf_x_07nrg_lp_00_looped 0x0510
 
 #endif

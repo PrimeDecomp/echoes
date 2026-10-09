@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamusDeath3_5 0x01DC
 
-#define SFXprt_x_riftdark_lp_01_looped 0x1678
+#define SFXdk3_c_land_00_oneshot 0x0556
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPMetalServoBig 0x029C
 
-#define SFXspl_c_voxonback_00_oneshot 0x05F1
+#define SFXmtl_x_servobig_lp_00_looped 0x036C
 
 #endif

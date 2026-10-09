@@ -3,7 +3,7 @@
 
 #define GRPGibDryMed 0x028C
 
-#define SFXsdw_b_voxidle_00_oneshot 0x0656
-#define SFXsdw_b_voxidle_01_oneshot 0x0657
+#define SFXgib_x_drymed_00_oneshot 0x04C9
+#define SFXgib_x_drymed_01_oneshot 0x04CC
 
 #endif

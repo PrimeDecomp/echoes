@@ -3,6 +3,6 @@
 
 #define GRPSandBossDeath3 0x0042
 
-#define SFXint_c_samland_00_oneshot 0x1366
+#define SFXsdb_c_sphere_lp_00_looped 0x231B
 
 #endif

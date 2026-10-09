@@ -3,7 +3,7 @@
 
 #define GRPCineGameEnd1 0x025D
 
-#define SFXsa2_b_landdgras_00_oneshot 0x14C5
-#define SFXsa2_b_landdgras_02_oneshot 0x14C6
+#define SFXfin_x_splode_00_L_oneshot 0x05F9
+#define SFXfin_x_splode_00_R_oneshot 0x05FA
 
 #endif

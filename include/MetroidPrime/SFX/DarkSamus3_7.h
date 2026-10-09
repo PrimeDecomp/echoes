@@ -3,7 +3,7 @@
 
 #define GRPDarkSamus3_7 0x0000
 
-#define SFXtls_c_static_lp_00_looped 0x127E
-#define SFXma2_a_mislfire_lp_00_looped 0x1683
+#define SFXdk3_a_enragehit_00_oneshot 0x0172
+#define SFXgae_c_phazexplode_05_oneshot 0x05DF
 
 #endif

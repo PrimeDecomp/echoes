@@ -3,21 +3,21 @@
 
 #define GRPSamusImpact 0x0140
 
-#define SFXui_c_scanon_00_oneshot 0x0FC1
-#define SFXui_c_scanon_01_oneshot 0x0FC2
-#define SFXsam_b_wlkstone_00_oneshot 0x0FC3
-#define SFXsam_b_wlkstone_01_oneshot 0x0FC4
-#define SFXsam_b_mlandsnd_00_oneshot 0x0FC5
-#define SFXsam_b_mlandstn_00_oneshot 0x0FC6
-#define SFXsam_b_wlkwatr_00_oneshot 0x0FC7
-#define SFXsam_b_wlkwatr_01_oneshot 0x0FC8
-#define SFXsam_b_landmetl_00_oneshot 0x0FC9
-#define SFXsam_b_wlkgrate_00_oneshot 0x0FCA
-#define SFXsam_b_wlkgrate_01_oneshot 0x0FCD
-#define SFXsam_b_wlkmetal_00_oneshot 0x0FCE
-#define SFXsam_b_wlkmetal_01_oneshot 0x0FCF
-#define SFXsam_b_wlkdirt_00_oneshot 0x0FD0
-#define SFXsam_b_mlandgrt_00_oneshot 0x0FD1
-#define SFXsam_b_wlkdirt_01_oneshot 0x0FD2
+#define SFXsam_r_hit_00_oneshot 0x1439
+#define SFXsam_r_hitacid_00_oneshot 0x10BE
+#define SFXsam_r_hitacid_01_oneshot 0x10BF
+#define SFXsam_r_hitbase_00_oneshot 0x09B1
+#define SFXsam_r_hitheavy_00_oneshot 0x00B2
+#define SFXsam_r_hitheavy_02_oneshot 0x10FE
+#define SFXsam_r_hitlight_00_oneshot 0x009C
+#define SFXsam_r_hitlight_02_oneshot 0x10FF
+#define SFXsam_r_hitmed_00_oneshot 0x00B1
+#define SFXsam_r_hitmed_02_oneshot 0x10B1
+#define SFXsam_r_hitphaz_00_oneshot 0x10C2
+#define SFXsam_r_hitphaz_01_oneshot 0x10C3
+#define SFXsam_r_mcollide_00_oneshot 0x1D87
+#define SFXsam_r_mhitheavy_00_oneshot 0x1D31
+#define SFXsam_r_mhitlight_00_oneshot 0x1D2F
+#define SFXsam_r_mhitmed_00_oneshot 0x1D30
 
 #endif

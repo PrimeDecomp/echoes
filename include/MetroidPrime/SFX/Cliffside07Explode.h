@@ -3,7 +3,7 @@
 
 #define GRPCliffside07Explode 0x0154
 
-#define SFXsw2_x_10spinstop_00_oneshot 0x122E
-#define SFXpi2_x_randomoff_00_oneshot 0x142E
+#define SFXclf_x_07ballexp_00_oneshot 0x0511
+#define SFXei3_r_explode_00_oneshot 0x0589
 
 #endif

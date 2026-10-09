@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusDeath1_2 0x023C
 
-#define SFXgas_x_alarm_00_oneshot 0x1420
-#define SFXti2_x_wpntimer_00_oneshot 0x1425
+#define SFXdks_c_diebuildup_00_oneshot 0x2404
+#define SFXdks_c_diesuck_00_oneshot 0x2408
 
 #endif

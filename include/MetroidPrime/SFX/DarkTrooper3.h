@@ -3,9 +3,9 @@
 
 #define GRPDarkTrooper3 0x0104
 
-#define SFXfpr_a_misl_lp_00_looped 0x0549
-#define SFXfpr_a_mislhit_00_oneshot 0x0551
-#define SFXfpr_b_blastoff_lp_00_looped 0x0552
-#define SFXfif_b_idle_lp_00_looped 0x0555
+#define SFXgf2_b_voxidle_00_oneshot 0x22AF
+#define SFXgf2_b_voxidle_01_oneshot 0x22B0
+#define SFXgf2_r_voxdeath_00_oneshot 0x22A8
+#define SFXgf2_r_voxdeath_01_oneshot 0x0144
 
 #endif

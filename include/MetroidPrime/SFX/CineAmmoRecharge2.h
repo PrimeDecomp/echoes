@@ -3,7 +3,7 @@
 
 #define GRPCineAmmoRecharge2 0x01E7
 
-#define SFXsaf_x_nihilon_lp_00_looped 0x1666
-#define SFXcan_x_hitrock_00_oneshot 0x1669
+#define SFXamo_c_recharge_00_oneshot 0x03C5
+#define SFXamo_c_redglow_lp_00_looped 0x03C6
 
 #endif

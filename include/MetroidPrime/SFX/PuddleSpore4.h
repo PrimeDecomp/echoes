@@ -3,7 +3,7 @@
 
 #define GRPPuddleSpore4 0x007F
 
-#define SFXspt_r_spinbnce_00_oneshot 0x027A
-#define SFXelu_r_voxgib_00_oneshot 0x028B
+#define SFXpds_b_turnover_00_oneshot 0x28D5
+#define SFXswp_x_10platover_00_oneshot 0x03F7
 
 #endif

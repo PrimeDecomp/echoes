@@ -3,7 +3,7 @@
 
 #define GRPSamusPhazonHit_MP 0x0277
 
-#define SFXvis_c_visor_lp_01_looped 0x10EF
-#define SFXui_x_visor_lp_02_looped 0x10F0
+#define SFXsa2_r_phazhit_lp_00_looped 0x2864
+#define SFXsa2_r_hackhit_lp_00_looped 0x0458
 
 #endif

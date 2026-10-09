@@ -3,6 +3,6 @@
 
 #define GRPTemplePowerOut 0x0182
 
-#define SFXdob_x_moveup_lp_00_looped 0x121E
+#define SFXtem_x_powerdown_00_oneshot 0x0126
 
 #endif

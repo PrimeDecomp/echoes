@@ -3,9 +3,9 @@
 
 #define GRPDarkSamus2_3 0x0038
 
-#define SFXgrp_c_nrgbuild_00_oneshot 0x12A0
-#define SFXkey_c_nrg_00_lp_looped 0x12A7
-#define SFXdsa_c_samnrg_00_oneshot 0x12AC
-#define SFXdsa_c_samrise_00_oneshot 0x12AD
+#define SFXdk2_b_invisin_00_oneshot 0x001E
+#define SFXdk2_b_invisout_00_oneshot 0x001F
+#define SFXdk2_a_icechg_00_oneshot 0x001C
+#define SFXdk3_b_invisin_00_oneshot 0x016E
 
 #endif

@@ -3,8 +3,8 @@
 
 #define GRPEmperorIng1_11 0x0066
 
-#define SFXint_c_samspin_lp_00_looped 0x12F2
-#define SFXint_c_hud_00_oneshot 0x12F3
-#define SFXint_c_hud_02_oneshot 0x12F5
+#define SFXein_c_voxangry_01_oneshot 0x03EA
+#define SFXein_c_generatoropen_00_oneshot 0x0444
+#define SFXein_c_teleportation_00_oneshot 0x0445
 
 #endif

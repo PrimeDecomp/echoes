@@ -3,15 +3,15 @@
 
 #define GRPKralee 0x00E6
 
-#define SFXdks_a_missilehit_00_oneshot 0x0168
-#define SFXdks_a_missile_00_oneshot 0x0169
-#define SFXdks_a_mpulse_00_oneshot 0x016A
-#define SFXdks_a_missile_01_oneshot 0x016B
-#define SFXdk2_a_mpulse_00_oneshot 0x016C
-#define SFXdks_b_boost_00_oneshot 0x016D
-#define SFXdks_b_boost_01_oneshot 0x016E
-#define SFXdks_b_land_00_oneshot 0x016F
-#define SFXdks_b_land_01_oneshot 0x0170
-#define SFXdks_b_jump_00_oneshot 0x0171
+#define SFXkra_r_voxdeath_00_oneshot 0x1F06
+#define SFXkra_r_voxpain_00_oneshot 0x1F07
+#define SFXkra_b_voxidle_00_oneshot 0x1F08
+#define SFXkra_b_voxidle_01_oneshot 0x1F09
+#define SFXkra_b_walk_00_oneshot 0x1F0A
+#define SFXkra_b_walk_01_oneshot 0x1F0B
+#define SFXkra_b_warpin_00_oneshot 0x1F0C
+#define SFXkra_b_warpout_00_oneshot 0x1F0D
+#define SFXkra_r_explode_00_oneshot 0x1F05
+#define SFXkra_b_warpout_01_oneshot 0x1F10
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPDarkSamusChanceMeeting 0x006C
 
-#define SFXdk2_c_glassbrk_03_oneshot 0x13EC
-#define SFXdk2_c_footstepsmall_00_oneshot 0x13ED
+#define SFXdks_c_08suckin_00_oneshot 0x031A
+#define SFXdks_c_bluedeth_lp_00_looped 0x04A8
 
 #endif

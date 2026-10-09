@@ -3,7 +3,7 @@
 
 #define GRPSandland04Fan2 0x01AE
 
-#define SFXsnd_x_thunder_00a_oneshot 0x11EA
-#define SFXsnd_x_0bconveyor_lp_00_looped 0x11ED
+#define SFXsnd_x_04malfxn_00_oneshot 0x0400
+#define SFXsnd_x_04fanstop_00_oneshot 0x02BF
 
 #endif

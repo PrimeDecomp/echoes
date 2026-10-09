@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng3_15 0x0005
 
-#define SFXpi2_x_nrgtank_00_oneshot 0x1430
+#define SFXei3_a_jumpnew_00_oneshot 0x056E
 
 #endif

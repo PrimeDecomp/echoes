@@ -3,15 +3,15 @@
 
 #define GRPIngPuddle 0x00B7
 
-#define SFXdk2_b_voxinvisin_00_oneshot 0x0113
-#define SFXein_r_tentpain_00_oneshot 0x0114
-#define SFXein_b_voxtaunt_lp_01_looped 0x0115
-#define SFXein_b_voxtaunt_01_oneshot 0x0116
-#define SFXein_b_tentmove_00_oneshot 0x0121
-#define SFXein_a_melee_00_oneshot 0x0130
-#define SFXsdb_b_voxidlesq_00_oneshot 0x0140
-#define SFXsdb_b_voxbreaksphere_00_oneshot 0x014A
-#define SFXsdb_c_land_00_oneshot 0x015D
-#define SFXsdb_b_land_00_oneshot 0x015E
+#define SFXing_b_spotmove_lp_00_looped 0x1F37
+#define SFXing_b_spotidle_lp_00_looped 0x1F38
+#define SFXing_b_spotmove_lp_01_looped 0x1F8D
+#define SFXing_b_spotidle_lp_01_looped 0x1FE4
+#define SFXin3_b_spotidle_lp_00_looped 0x2302
+#define SFXin3_b_spotidle_lp_01_looped 0x2303
+#define SFXin3_b_spotmove_lp_00_looped 0x2304
+#define SFXin3_b_spotmove_lp_01_looped 0x2305
+#define SFXei3_b_puddle_lp_00_looped 0x02F1
+#define SFXei3_b_puddle_lp_01_looped 0x02F2
 
 #endif

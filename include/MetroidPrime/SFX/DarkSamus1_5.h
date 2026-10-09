@@ -3,8 +3,8 @@
 
 #define GRPDarkSamus1_5 0x006E
 
-#define SFXdk2_c_dienrg_lp_00_looped 0x13BB
-#define SFXgen_c_samrelease_00_oneshot 0x13FA
-#define SFXsa2_b_mlandsnw_00_oneshot 0x14E3
+#define SFXdks_c_sshot_01_oneshot 0x23C0
+#define SFXdks_a_sshot_01_oneshot 0x2086
+#define SFXdk2_c_sshot_01_oneshot 0x0559
 
 #endif

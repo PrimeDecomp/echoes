@@ -3,10 +3,10 @@
 
 #define GRPEmperorIng3_2 0x002A
 
-#define SFXsa2_a_mislload_00_oneshot 0x1456
-#define SFXsa2_a_pbmfire_00_oneshot 0x1457
-#define SFXsa2_a_pbmhit_00_oneshot 0x1458
-#define SFXsa2_a_pbmrico_00_oneshot 0x1459
-#define SFXsa2_b_misswitch_11_oneshot 0x1461
+#define SFXei3_a_drkfire_00_oneshot 0x027F
+#define SFXei3_a_drkfire_lp_00_looped 0x0280
+#define SFXei3_a_drkflier_00_oneshot 0x0281
+#define SFXei3_a_land_lp_00_looped 0x0282
+#define SFXei3_r_litswarmdie_00_oneshot 0x02D8
 
 #endif

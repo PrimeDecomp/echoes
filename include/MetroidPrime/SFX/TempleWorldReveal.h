@@ -3,7 +3,7 @@
 
 #define GRPTempleWorldReveal 0x0179
 
-#define SFXswp_x_waterdrip_01_oneshot 0x1206
-#define SFXswp_x_waterpipe_lp_00_looped 0x1207
+#define SFXtem_c_rumble_lp_00_looped 0x1EF1
+#define SFXtem_c_passby_00_oneshot 0x1EF3
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPSwampBoss2_4 0x0014
 
-#define SFXsa2_b_wlkgrate_01_oneshot 0x14AF
-#define SFXsa2_b_wlkmetal_00_oneshot 0x14B0
-#define SFXsa2_b_wlksand_01_oneshot 0x14B5
-#define SFXsa2_b_wlkstone_00_oneshot 0x14B6
+#define SFXsb2_b_spin_00_oneshot 0x038B
+#define SFXsb2_b_voxidle_00_oneshot 0x038C
+#define SFXsb2_b_voxidle_01_oneshot 0x038D
+#define SFXsb2_b_voxrecover_00_oneshot 0x038E
 
 #endif

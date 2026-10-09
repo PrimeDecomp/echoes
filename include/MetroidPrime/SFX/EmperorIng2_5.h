@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng2_5 0x0004
 
-#define SFXgba_c_sweetn_00_oneshot 0x128F
+#define SFXei2_c_explode_00_oneshot 0x041F
 
 #endif

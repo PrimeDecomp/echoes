@@ -3,11 +3,11 @@
 
 #define GRPMapStation 0x0221
 
-#define SFXsa2_a_mishit_00_oneshot 0x1588
-#define SFXsa2_a_mislfire_00_oneshot 0x1589
-#define SFXsa2_a_mislrico_00_oneshot 0x158A
-#define SFXsa2_a_skrfire_lp_00_looped 0x158B
-#define SFXsa2_a_skrcharge_lp_00_looped 0x158C
-#define SFXsa2_a_skrfire_00_oneshot 0x158F
+#define SFXmap_c_download_lp_00_looped 0x27F0
+#define SFXmap_c_holoclose_00_oneshot 0x27F1
+#define SFXmap_c_holoup_00_oneshot 0x27F2
+#define SFXmap_c_holoup_01_oneshot 0x27F3
+#define SFXmap_c_butpress_00_oneshot 0x27F4
+#define SFXmap_c_affirm_00_oneshot 0x27F5
 
 #endif

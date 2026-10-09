@@ -3,13 +3,13 @@
 
 #define GRPOctopede 0x010A
 
-#define SFXsb1_b_splashbig_00_oneshot 0x0065
-#define SFXsb1_b_beachoff_00_oneshot 0x0066
-#define SFXdgd_c_hitgrnd_00_oneshot 0x0067
-#define SFXdgd_c_nrgdistort_lp_00_looped 0x0068
-#define SFXdgd_c_shake_lp_00_looped 0x0069
-#define SFXdgd_c_nrgdistort_lp_01_looped 0x006A
-#define SFXei3_b_growheart_00_oneshot 0x006B
-#define SFXei3_b_metalhit_00_oneshot 0x006C
+#define SFXoct_b_voxidle_00_oneshot 0x2504
+#define SFXoct_b_voxidle_01_oneshot 0x2505
+#define SFXoct_b_walk_lp_00_looped 0x2506
+#define SFXoct_r_bounce_00_oneshot 0x2507
+#define SFXoct_r_bounce_01_oneshot 0x2508
+#define SFXoct_r_split_00_oneshot 0x2509
+#define SFXoct_b_run_00_oneshot 0x28CC
+#define SFXoct_r_boom_oneshot 0x28CD
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPCinePixieBuild 0x01F7
 
-#define SFXsa2_r_hackhit_lp_00_looped 0x1552
+#define SFXgrp_c_nrgbuild_00_oneshot 0x28DD
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPCineEnergyShared2 0x0255
 
-#define SFXsa2_b_wlkdwal_00_oneshot 0x14D6
+#define SFXgen_c_zapweak_lp_01_looped 0x05A3
 
 #endif

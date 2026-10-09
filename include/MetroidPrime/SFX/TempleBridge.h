@@ -3,8 +3,8 @@
 
 #define GRPTempleBridge 0x0173
 
-#define SFXsnd_x_0dfan_lp_01_looped 0x11F1
-#define SFXswp_x_uwaterfan_lp_00_looped 0x1200
-#define SFXswp_x_watrcannon_00_oneshot 0x1201
+#define SFXtem_x_bridgedwn_00_oneshot 0x200E
+#define SFXtem_x_bridgehit_00_oneshot 0x200F
+#define SFXtem_x_02gondolastuck_00_oneshot 0x0348
 
 #endif

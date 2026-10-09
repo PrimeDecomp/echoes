@@ -3,11 +3,11 @@
 
 #define GRPSandworm4 0x00DF
 
-#define SFXsdb_c_land_01_oneshot 0x0195
-#define SFXsdb_c_twitch_00_oneshot 0x0196
-#define SFXsdb_c_samslide_00_oneshot 0x019D
-#define SFXdks_c_sshothit_00_oneshot 0x01A4
-#define SFXdk2_c_sshothit_00_oneshot 0x01A5
-#define SFXdks_b_voxlaugh_00_oneshot 0x01A7
+#define SFXsdw_b_voxangry_00_oneshot 0x1EDB
+#define SFXsdw_b_voxangry_01_oneshot 0x1EBB
+#define SFXsdw_b_voxidle_00_oneshot 0x1EBC
+#define SFXsdw_b_voxidle_01_oneshot 0x1EBD
+#define SFXsdw_b_voxdig_00_oneshot 0x1EDC
+#define SFXsdw_b_voxerupt_00_oneshot 0x1EDD
 
 #endif

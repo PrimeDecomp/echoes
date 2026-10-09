@@ -3,6 +3,6 @@
 
 #define GRPMetalDoorLockBreak 0x0296
 
-#define SFXtu2_b_panels_00_oneshot 0x063B
+#define SFXmtl_x_doorlockbreak_00_oneshot 0x03B4
 
 #endif

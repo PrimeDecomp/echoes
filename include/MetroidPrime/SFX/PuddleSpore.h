@@ -3,9 +3,9 @@
 
 #define GRPPuddleSpore 0x00CB
 
-#define SFXkcs_r_voxdeath_00_oneshot 0x0281
-#define SFXkcs_r_voxpain_00_oneshot 0x0283
-#define SFXcry_b_stunin_00_oneshot 0x0284
-#define SFXelu_b_voxtaunt_00_oneshot 0x0289
+#define SFXpds_a_slam_00_oneshot 0x28BC
+#define SFXpds_b_close_00_oneshot 0x28BE
+#define SFXpds_b_voxidle_00_oneshot 0x28BF
+#define SFXpds_a_spray_00_oneshot 0x28D2
 
 #endif

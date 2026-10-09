@@ -3,9 +3,9 @@
 
 #define GRPPillbugIng3 0x0095
 
-#define SFXin2_a_firehit_00_oneshot 0x03F4
-#define SFXbl3_b_bubbles_01_oneshot 0x040B
-#define SFXbl3_b_swim_00_oneshot 0x040C
-#define SFXbl3_b_swimfast_00_oneshot 0x040E
+#define SFXisg_r_voxonback_00_oneshot 0x005B
+#define SFXisg_r_voxpain_00_oneshot 0x005C
+#define SFXisg_b_scrape_00_oneshot 0x010F
+#define SFXisg_r_voxelectro_00_oneshot 0x0112
 
 #endif

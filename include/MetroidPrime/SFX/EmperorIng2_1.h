@@ -3,13 +3,13 @@
 
 #define GRPEmperorIng2_1 0x0057
 
-#define SFXgba_c_grav_lp_00_looped 0x1290
-#define SFXgba_c_gravbrst_00_oneshot 0x1291
-#define SFXgba_c_camera_00_oneshot 0x1294
-#define SFXgba_c_water_lp_00_looped 0x1295
-#define SFXgba_c_water_lp_01_looped 0x1296
-#define SFXmph_c_mpsweet_R_oneshot 0x1298
-#define SFXmph_c_swoosh_01_oneshot 0x1299
-#define SFXlsa_c_samglow_00_oneshot 0x129D
+#define SFXei2_b_tentin_00_oneshot 0x002F
+#define SFXei2_b_tentout_00_oneshot 0x0030
+#define SFXei2_r_crack_00_oneshot 0x0031
+#define SFXei2_a_whip_00_oneshot 0x0033
+#define SFXei2_b_chrysinto_00_oneshot 0x0034
+#define SFXei2_r_crack_01_oneshot 0x0142
+#define SFXei2_r_tentdie_00_oneshot 0x055E
+#define SFXei2_r_tentdie_01_oneshot 0x055F
 
 #endif

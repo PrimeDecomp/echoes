@@ -3,6 +3,6 @@
 
 #define GRPSandland04Belt 0x018E
 
-#define SFXsnd_x_plantexp_01_oneshot 0x11A4
+#define SFXsnd_x_04belt_lp_00_looped 0x03BE
 
 #endif

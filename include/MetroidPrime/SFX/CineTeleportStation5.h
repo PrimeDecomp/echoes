@@ -3,7 +3,7 @@
 
 #define GRPCineTeleportStation5 0x0244
 
-#define SFXsa2_r_elechit_01_oneshot 0x1506
-#define SFXsa2_b_panlclos_00_oneshot 0x150F
+#define SFXtel_c_telesamus_alt_00_oneshot 0x0178
+#define SFXtel_c_arrive_00_oneshot 0x0499
 
 #endif

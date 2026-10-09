@@ -3,8 +3,8 @@
 
 #define GRPCannonImpacts 0x02A5
 
-#define SFXbrz_b_walk_00_oneshot 0x0724
-#define SFXbrz_b_walk_01_oneshot 0x0725
-#define SFXui_x_visorblur_00_oneshot 0x0726
+#define SFXcan_x_hitmetal_00_oneshot 0x0149
+#define SFXcan_x_hitrock_00_oneshot 0x014A
+#define SFXcan_x_hitwood_00_oneshot 0x014B
 
 #endif

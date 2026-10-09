@@ -3,8 +3,8 @@
 
 #define GRPScrubber 0x0121
 
-#define SFXdk2_a_icefire_00_oneshot 0x0005
-#define SFXdks_a_dive_01_oneshot 0x0006
-#define SFXdk2_a_dive_01_oneshot 0x0007
+#define SFXstw_b_move_lp_00_looped 0x0485
+#define SFXstw_b_voxidle_00_oneshot 0x0486
+#define SFXstw_b_voxidle_01_oneshot 0x0487
 
 #endif

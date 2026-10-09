@@ -3,6 +3,6 @@
 
 #define GRPExplosionUnderwater 0x02E4
 
-#define SFXsd2_b_moveslow_lp_00_looped 0x067F
+#define SFXexp_x_uwater_00_oneshot 0x033A
 
 #endif

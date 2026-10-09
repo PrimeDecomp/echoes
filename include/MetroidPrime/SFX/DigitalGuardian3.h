@@ -3,11 +3,11 @@
 
 #define GRPDigitalGuardian3 0x0030
 
-#define SFXgft_c_move_00_oneshot 0x130A
-#define SFXgrp_c_armcock_00_oneshot 0x1325
-#define SFXgrp_c_pixiedust_00_oneshot 0x1329
-#define SFXcin_c_pickup_00_oneshot 0x132C
-#define SFXele_c_latch_01_oneshot 0x133C
-#define SFXgba_c_samfeet_00_oneshot 0x135D
+#define SFXdgd_a_jump_00_oneshot 0x24E7
+#define SFXdgd_a_spin_lp_00_looped 0x2501
+#define SFXdgd_a_spinfast_lp_00_looped 0x24EC
+#define SFXdgd_b_toeloop_lp_00_looped 0x01E2
+#define SFXdgd_a_stab_01_oneshot 0x24A1
+#define SFXdgd_a_samdef_00_oneshot 0x0509
 
 #endif

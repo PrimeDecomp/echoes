@@ -3,26 +3,26 @@
 
 #define GRPWeapons4_MP 0x027B
 
-#define SFXmt3_a_voxattack_lp_00_looped 0x0332
-#define SFXui_x_download_lp_00_looped 0x10F2
-#define SFXlog_x_modfade_00_oneshot 0x10F3
-#define SFXui_x_static_lp_00_looped 0x10F4
-#define SFXui_x_static_lp_01_looped 0x10F5
-#define SFXui_x_static_lp_00a_looped 0x10F6
-#define SFXui_c_download_lp_00_looped 0x10F7
-#define SFXui_x_invzoom_00_oneshot 0x1110
-#define SFXui_x_invzoom_01_oneshot 0x1111
-#define SFXgft_x_mtlhitbigring_01_oneshot 0x1126
-#define SFXgft_x_mtlscrapemedratch_lp_00_looped 0x1127
-#define SFXtem_x_gfelev_lp_looped 0x1128
-#define SFXgft_x_mtlscrapesmrattle_lp_00_looped 0x1129
-#define SFXtem_x_02gondola_lp_00_looped 0x112A
-#define SFXclf_x_0gspindoor_lp_00_looped 0x112B
-#define SFXtem_x_10car_lp_00_looped 0x112C
-#define SFXgft_x_mtlservomed_lp_00_looped 0x112D
-#define SFXclf_x_07ballexp_00_oneshot 0x1133
-#define SFXclf_x_rotator_lp_00_looped 0x1135
-#define SFXclf_x_wind_lp_00_looped 0x1138
-#define SFXclf_x_gryo2stop_00_oneshot 0x114C
+#define SFXsa2_a_nilchhit_00_oneshot 0x25A2
+#define SFXsa2_a_nilhit_00_oneshot 0x25A3
+#define SFXsa2_a_nilcharge_lp_00_looped 0x25B9
+#define SFXsa2_a_nilchfire_00_oneshot 0x25BA
+#define SFXsa2_a_nilchric_00_oneshot 0x25BB
+#define SFXsa2_a_nilchric_01_oneshot 0x25BC
+#define SFXsa2_a_nilcofire_00_oneshot 0x25BD
+#define SFXsa2_a_nilcohit_00_oneshot 0x25BE
+#define SFXsa2_a_nilfire_00_oneshot 0x25BF
+#define SFXsa2_a_nilrico_00_oneshot 0x25C0
+#define SFXsa2_a_mishit_00_oneshot 0x25AF
+#define SFXsa2_a_mislfire_00_oneshot 0x25B2
+#define SFXsa2_a_mislrico_00_oneshot 0x25B4
+#define SFXsa2_a_skrfire_lp_00_looped 0x2904
+#define SFXsa2_a_skrcharge_lp_00_looped 0x0187
+#define SFXsa2_a_skrfire_00_oneshot 0x0188
+#define SFXsa2_a_skrfire_01_oneshot 0x0189
+#define SFXsa2_a_skrfire_02_oneshot 0x018A
+#define SFXsa2_a_skrhit_00_oneshot 0x018B
+#define SFXsa2_a_skrrico_00_oneshot 0x018C
+#define SFXsa2_a_combochg_00_oneshot 0x25A1
 
 #endif

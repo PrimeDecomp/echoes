@@ -3,7 +3,7 @@
 
 #define GRPDoorsSmall 0x02A6
 
-#define SFXkra_b_voxidle_01_oneshot 0x069B
-#define SFXkra_b_walk_00_oneshot 0x069C
+#define SFXdor_x_smclose_00_oneshot 0x2822
+#define SFXdor_x_smopen_00_oneshot 0x2823
 
 #endif

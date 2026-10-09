@@ -3,6 +3,6 @@
 
 #define GRPRockDebris2 0x02AD
 
-#define SFXsd2_a_spithit_00_oneshot 0x0678
+#define SFXrok_x_meddebris_00_oneshot 0x2647
 
 #endif

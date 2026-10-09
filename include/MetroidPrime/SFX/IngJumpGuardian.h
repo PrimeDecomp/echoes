@@ -3,6 +3,6 @@
 
 #define GRPIngJumpGuardian 0x011E
 
-#define SFXsdb_b_body_00_oneshot 0x015B
+#define SFXing_r_jumpguard_death_00_oneshot 0x02DA
 
 #endif

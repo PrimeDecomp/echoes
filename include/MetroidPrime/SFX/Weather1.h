@@ -3,8 +3,8 @@
 
 #define GRPWeather1 0x02DE
 
-#define SFXsp3_b_voxalert_00_oneshot 0x05F7
-#define SFXsp3_b_voxidle_00_oneshot 0x05F9
-#define SFXsp3_b_walk_00_oneshot 0x05FC
+#define SFXwth_x_lightng_00_oneshot 0x01A8
+#define SFXwth_x_lightng_01_oneshot 0x01A9
+#define SFXwth_x_lightng_02_oneshot 0x01AA
 
 #endif

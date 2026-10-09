@@ -3,7 +3,7 @@
 
 #define GRPCineGravityBoost3 0x01EF
 
-#define SFXsa2_a_drkcofire_lp_00_looped 0x1561
-#define SFXsa2_r_icecrack_02_oneshot 0x1564
+#define SFXgba_c_sweetn_00_oneshot 0x00BD
+#define SFXgba_c_grav_lp_00_looped 0x00D5
 
 #endif

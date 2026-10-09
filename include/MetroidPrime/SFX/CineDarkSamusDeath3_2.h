@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusDeath3_2 0x01DF
 
-#define SFXprt_c_close_00_oneshot 0x1674
-#define SFXprt_x_close_00_oneshot 0x1675
+#define SFXdk3_c_getup_00_oneshot 0x0539
+#define SFXdk3_c_gone_00_oneshot 0x053A
 
 #endif

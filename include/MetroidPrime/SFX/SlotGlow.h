@@ -3,7 +3,7 @@
 
 #define GRPSlotGlow 0x02B4
 
-#define SFXing_r_spothit_00_oneshot 0x06C8
-#define SFXing_r_spothit_01_oneshot 0x06C9
+#define SFXslt_x_slowglow_00_oneshot 0x27C2
+#define SFXslt_x_slotglowloud_00_oneshot 0x012D
 
 #endif

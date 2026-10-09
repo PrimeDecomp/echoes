@@ -3,8 +3,8 @@
 
 #define GRPTempleGondola 0x0180
 
-#define SFXsn2_x_03keyappear_00_oneshot 0x11F2
-#define SFXswp_x_sacgib_00_oneshot 0x11FF
-#define SFXdob_x_movedown_lp_00_looped 0x121C
+#define SFXtem_x_02gondolafall_00_oneshot 0x010B
+#define SFXtem_x_02gondolastop_00_oneshot 0x0347
+#define SFXtem_x_02cablesnap_00_oneshot 0x010C
 
 #endif

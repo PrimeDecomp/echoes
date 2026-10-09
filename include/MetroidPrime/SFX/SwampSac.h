@@ -3,6 +3,6 @@
 
 #define GRPSwampSac 0x01B4
 
-#define SFXtem_x_floorglow_00_oneshot 0x118C
+#define SFXswp_x_sacgib_00_oneshot 0x03FA
 
 #endif

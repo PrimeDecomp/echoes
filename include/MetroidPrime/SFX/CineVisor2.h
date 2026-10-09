@@ -3,6 +3,6 @@
 
 #define GRPCineVisor2 0x0212
 
-#define SFXsa2_a_combochg_00_oneshot 0x1595
+#define SFXvis_c_twinkle_00_oneshot 0x25F1
 
 #endif

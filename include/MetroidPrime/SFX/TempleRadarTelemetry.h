@@ -3,7 +3,7 @@
 
 #define GRPTempleRadarTelemetry 0x016B
 
-#define SFXsnd_x_07doorstop_00_oneshot 0x11EE
-#define SFXsnd_x_07doormove_00_looped 0x11EF
+#define SFXgft_x_gfcomp_lp_looped 0x05D4
+#define SFXgft_x_gfcompfail_00_oneshot 0x05D5
 
 #endif

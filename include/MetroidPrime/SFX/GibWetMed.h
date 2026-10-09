@@ -3,7 +3,7 @@
 
 #define GRPGibWetMed 0x0283
 
-#define SFXsdw_a_boost_00_oneshot 0x065C
-#define SFXsdw_a_grabball_00_oneshot 0x065D
+#define SFXgib_x_wetmed_00_oneshot 0x04AA
+#define SFXgib_x_wetmed_01_oneshot 0x04AB
 
 #endif

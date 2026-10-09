@@ -3,15 +3,15 @@
 
 #define GRPGrenchlerIng3 0x009E
 
-#define SFXijg_a_voxjump_00_oneshot 0x0490
-#define SFXijg_a_voxjump_01_oneshot 0x0491
-#define SFXing_c_voxalert_00_oneshot 0x0492
-#define SFXing_c_voxidle_00_oneshot 0x0493
-#define SFXing_c_voxangry_00_oneshot 0x0494
-#define SFXing_c_dsi_voxalert_00_oneshot 0x0495
-#define SFXtur_r_explode_00_oneshot 0x049F
-#define SFXtur_r_explode_01_oneshot 0x04A0
-#define SFXtur_r_explmetl_01_oneshot 0x04A1
-#define SFXtur_r_explmetl_00_oneshot 0x04A2
+#define SFXigg_b_voxalert_00_oneshot 0x247A
+#define SFXigg_b_voxangry_00_oneshot 0x247B
+#define SFXigg_b_voxangry_01_oneshot 0x247C
+#define SFXigg_b_voxangry_02_oneshot 0x247D
+#define SFXigg_b_run_00_oneshot 0x2486
+#define SFXigg_b_run_01_oneshot 0x2487
+#define SFXigg_b_walk_00_oneshot 0x2488
+#define SFXigg_b_walk_01_oneshot 0x2489
+#define SFXigg_b_walksm_00_oneshot 0x248A
+#define SFXigg_b_walksm_01_oneshot 0x248B
 
 #endif

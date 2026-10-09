@@ -3,7 +3,7 @@
 
 #define GRPSandlandPlant 0x018C
 
-#define SFXtem_x_laststandmusic_00L_oneshot 0x119F
-#define SFXtem_x_laststandmusic_00R_oneshot 0x11A0
+#define SFXsnd_x_plantexp_00_oneshot 0x0535
+#define SFXsnd_x_plantexp_01_oneshot 0x0536
 
 #endif

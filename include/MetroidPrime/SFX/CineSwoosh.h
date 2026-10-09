@@ -3,10 +3,10 @@
 
 #define GRPCineSwoosh 0x021E
 
-#define SFXsa2_b_gunnozz_00_oneshot 0x150E
-#define SFXsa2_a_drkchfire_00_oneshot 0x1556
-#define SFXsa2_a_litcorico_00_oneshot 0x1570
-#define SFXsa2_a_nilchfire_00_oneshot 0x157C
-#define SFXfn2_x_playerout_00_oneshot 0x15AC
+#define SFXsav_x_swoosh_00_oneshot 0x25FC
+#define SFXmph_c_swoosh_00_oneshot 0x25FD
+#define SFXmis_c_swoosh_01_oneshot 0x25FE
+#define SFXgrv_c_swoosh_01_oneshot 0x25FF
+#define SFXtel_c_swoosh_00_oneshot 0x028C
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPCineNRG 0x0223
 
-#define SFXsa2_a_drkchric_00_oneshot 0x1558
-#define SFXsa2_a_litchric_00_oneshot 0x156A
-#define SFXsa2_a_skrfire_01_oneshot 0x1590
-#define SFXfn2_x_mapzoomout_00_oneshot 0x15C5
-#define SFXfnt_x_copy_00_oneshot 0x15C6
+#define SFXmph_c_arpegg_lp_00_looped 0x2585
+#define SFXcin_c_arpegg_lp_00_looped 0x2586
+#define SFXgrv_c_arpegg_lp_00_looped 0x2587
+#define SFXvis_c_arpegg_lp_00_looped 0x2588
+#define SFXcin_c_arpegg_lp_01_looped 0x007D
 
 #endif

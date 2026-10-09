@@ -3,14 +3,14 @@
 
 #define GRPGrenchler 0x00B1
 
-#define SFXcpr_a_gunfire_00_oneshot 0x04A7
-#define SFXcpr_a_grenfire_lp_00_looped 0x04A8
-#define SFXcpr_a_voxattack_00_oneshot 0x04A9
-#define SFXwst_b_ready_01_oneshot 0x04C4
-#define SFXwst_b_spawn_00_oneshot 0x04C5
-#define SFXpil_b_land_00_oneshot 0x04C6
-#define SFXpil_b_scrape_00_oneshot 0x04C8
-#define SFXpil_b_voxangry_00_oneshot 0x04C9
-#define SFXpil_b_voxidle_00_oneshot 0x04CC
+#define SFXgrn_a_beam_00_oneshot 0x2043
+#define SFXgrn_a_beam_01_oneshot 0x2044
+#define SFXgrn_a_bite_00_oneshot 0x2045
+#define SFXgrn_a_elecbubble_01_oneshot 0x2087
+#define SFXgrn_b_bubbles_00_oneshot 0x2048
+#define SFXgrn_a_bitewtr_00_oneshot 0x206A
+#define SFXgrn_a_elecbubble_00_oneshot 0x2047
+#define SFXgrn_r_voxshelloff_00_oneshot 0x20BD
+#define SFXgrn_r_voxshelloffwtr_00_oneshot 0x20BE
 
 #endif

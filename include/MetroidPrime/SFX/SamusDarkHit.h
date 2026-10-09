@@ -3,8 +3,8 @@
 
 #define GRPSamusDarkHit 0x0143
 
-#define SFXsam_a_drkcharge_lp_00_looped 0x0F1D
-#define SFXsam_a_drkchric_00_oneshot 0x0F1E
-#define SFXsam_a_drkchfire_00_oneshot 0x0F1F
+#define SFXsam_r_darkhit_lp_00_looped 0x2193
+#define SFXprt_c_darkhit_lp_00_looped 0x21B0
+#define SFXsam_r_darkhit_lp_01_looped 0x0437
 
 #endif

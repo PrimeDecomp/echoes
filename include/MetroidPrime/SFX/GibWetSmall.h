@@ -3,7 +3,7 @@
 
 #define GRPGibWetSmall 0x0282
 
-#define SFXsdw_b_voxdig_00_oneshot 0x065A
-#define SFXsdw_b_voxerupt_00_oneshot 0x065B
+#define SFXgib_x_wetsmall_00_oneshot 0x04A7
+#define SFXgib_x_wetsmall_01_oneshot 0x04A9
 
 #endif

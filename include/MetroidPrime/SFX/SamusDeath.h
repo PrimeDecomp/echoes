@@ -3,10 +3,10 @@
 
 #define GRPSamusDeath 0x013B
 
-#define SFXsam_b_wlkdgrass_01_oneshot 0x101A
-#define SFXsam_b_wlkdwal_00_oneshot 0x101B
-#define SFXsam_b_wlkdwal_01_oneshot 0x101C
-#define SFXsam_b_landfabr_00_oneshot 0x101E
-#define SFXsam_b_landfabr_02_oneshot 0x101F
+#define SFXsam_r_die_00_oneshot 0x00B7
+#define SFXsam_r_neardeth_00_oneshot 0x10A1
+#define SFXsam_r_neardeth_01_oneshot 0x10A6
+#define SFXsam_r_neardeth_02_oneshot 0x10A7
+#define SFXsam_r_diemorph_00_oneshot 0x245C
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamus3Intro 0x01E2
 
-#define SFXgba_c_nrgzing_01_oneshot 0x128B
-#define SFXsja_c_nrgzing_01_oneshot 0x128C
+#define SFXdk3_c_grow_00_oneshot 0x0520
+#define SFXdk3_c_zoom_oneshot 0x0528
 
 #endif

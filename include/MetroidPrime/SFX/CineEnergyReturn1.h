@@ -3,7 +3,7 @@
 
 #define GRPCineEnergyReturn1 0x0257
 
-#define SFXsa2_b_landdwal_00_oneshot 0x14C7
-#define SFXsa2_b_landfabr_02_oneshot 0x14C9
+#define SFXgen_c_antenna_00_oneshot 0x059E
+#define SFXgen_c_litbeamzoom_00_oneshot 0x05A0
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPTurretShared 0x00BC
 
-#define SFXdgd_c_spotdry_00_oneshot 0x01BA
-#define SFXdgd_b_detach_00_oneshot 0x01BB
-#define SFXei2_b_tentin_00_oneshot 0x01BC
-#define SFXei2_b_tentout_00_oneshot 0x01BD
+#define SFXtur_r_explode_00_oneshot 0x1D18
+#define SFXtur_r_explode_01_oneshot 0x1D25
+#define SFXtur_r_explmetl_01_oneshot 0x1F3D
+#define SFXtur_r_explmetl_00_oneshot 0x1F3B
 
 #endif

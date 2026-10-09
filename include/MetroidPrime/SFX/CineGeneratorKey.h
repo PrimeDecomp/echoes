@@ -3,7 +3,7 @@
 
 #define GRPCineGeneratorKey 0x0238
 
-#define SFXsa2_b_rolldgras_lp_00_looped 0x152C
-#define SFXsa2_b_rolldirt_lp_00_looped 0x152D
+#define SFXkey_c_emerge_00_oneshot 0x00D6
+#define SFXkey_c_flash_00_oneshot 0x00D8
 
 #endif

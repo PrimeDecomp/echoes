@@ -3,9 +3,9 @@
 
 #define GRPMediumIng2 0x00F0
 
-#define SFXdgd_c_elbow_01_oneshot 0x00C7
-#define SFXdgd_b_step_02_oneshot 0x00CC
-#define SFXdgd_r_headsmoke_lp_00_looped 0x00D8
-#define SFXdgd_r_beaconhit_01_oneshot 0x00DA
+#define SFXin3_a_swing_00_oneshot 0x20D4
+#define SFXin3_a_melee_lp_00_looped 0x2103
+#define SFXin3_a_swingtele_00_oneshot 0x2113
+#define SFXin3_a_charge_00_oneshot 0x2166
 
 #endif

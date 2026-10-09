@@ -3,7 +3,7 @@
 
 #define GRPCineGameEnd2 0x025E
 
-#define SFXsa2_b_wlkphaz_00_oneshot 0x14C3
-#define SFXsa2_b_wlkphaz_01_oneshot 0x14C4
+#define SFXfin_x_bluewoosh_00_L_oneshot 0x05F7
+#define SFXfin_x_bluewoosh_00_R_oneshot 0x05F8
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPCineLuminothEncounter2 0x01EC
 
-#define SFXmtl_x_bigdebris_short_00_oneshot 0x1646
-#define SFXmtl_x_bigdebris_short_01_oneshot 0x1647
-#define SFXdob_x_breakbig_00_oneshot 0x1648
-#define SFXmtl_x_doorlockbreak_00_oneshot 0x1649
+#define SFXlum_c_ingvoxidle_00_oneshot 0x02DC
+#define SFXlum_c_ingvoxidle_01_oneshot 0x02DD
+#define SFXlum_c_ingvoxidle_02_oneshot 0x02EB
+#define SFXlum_c_generatorkey_lp_00_looped 0x02E5
 
 #endif

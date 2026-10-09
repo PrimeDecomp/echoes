@@ -3,10 +3,10 @@
 
 #define GRPEliteLuminoth3 0x0100
 
-#define SFXmtd_b_suckglas_00_oneshot 0x03A3
-#define SFXgf2_a_mislcharge_00_oneshot 0x03BF
-#define SFXgf2_b_voxattack_00_oneshot 0x03C0
-#define SFXibg_b_roll_lp_00_looped 0x03CC
-#define SFXin2_r_gib_01_oneshot 0x03CD
+#define SFXelu_a_shokwave_00_oneshot 0x22E6
+#define SFXelu_a_shokwavebig_00_oneshot 0x22E7
+#define SFXelu_a_shokwave_01_oneshot 0x2430
+#define SFXelu_a_shokwavebig_01_oneshot 0x2431
+#define SFXelu_b_powerup_02_oneshot 0x0489
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPEchoPuzzle2 0x0293
 
-#define SFXlum_a_bigshothit_00_oneshot 0x0730
-#define SFXlum_a_shothit_00_oneshot 0x0734
+#define SFXeko_x_transmit_00_oneshot 0x03EB
+#define SFXeko_x_mlfxn_00_oneshot 0x03EC
 
 #endif

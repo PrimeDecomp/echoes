@@ -3,7 +3,7 @@
 
 #define GRPTimer1 0x02B8
 
-#define SFXspr_r_grab_03_oneshot 0x06AE
-#define SFXspr_r_grab_04_oneshot 0x06AF
+#define SFXtim_x_timer_00_oneshot 0x2593
+#define SFXtim_x_timer_01_oneshot 0x2594
 
 #endif

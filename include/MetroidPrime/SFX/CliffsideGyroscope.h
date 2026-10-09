@@ -3,9 +3,9 @@
 
 #define GRPCliffsideGyroscope 0x015A
 
-#define SFXtem_x_floormove_lp_00_looped 0x123B
-#define SFXclf_x_05spin_lp_00_looped 0x123C
-#define SFXlth_x_mtlservomed_lp_00_looped 0x123D
-#define SFXsw2_x_10spinner_lp_00_looped 0x123E
+#define SFXclf_x_gyro_lp_00_looped 0x02CD
+#define SFXclf_x_gyrostop_00_oneshot 0x02E7
+#define SFXclf_x_gryo_lp_01_looped 0x03B5
+#define SFXclf_x_gyrostart_00_oneshot 0x03B6
 
 #endif

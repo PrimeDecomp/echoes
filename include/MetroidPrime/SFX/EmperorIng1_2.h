@@ -3,10 +3,10 @@
 
 #define GRPEmperorIng1_2 0x003F
 
-#define SFXlum_c_holooff_00_oneshot 0x12C6
-#define SFXprt_c_dissolve_00_oneshot 0x12D4
-#define SFXdsa_c_glowfade_00_oneshot 0x12E5
-#define SFXdks_c_skid_00_oneshot 0x12E8
-#define SFXdks_c_voxgrunt_00_oneshot 0x12E9
+#define SFXein_a_shock_00_oneshot 0x2921
+#define SFXein_a_melee_00_oneshot 0x0067
+#define SFXein_a_melee_01_oneshot 0x0068
+#define SFXein_a_melee_lp_00_looped 0x2941
+#define SFXein_a_voxmelee_00_oneshot 0x295A
 
 #endif

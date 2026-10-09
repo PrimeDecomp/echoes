@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusDeath3_1 0x01E0
 
-#define SFXprt_x_riftdark_00_oneshot 0x1676
-#define SFXprt_x_riftdark_lp_00_looped 0x1677
+#define SFXdk3_c_dethsuck_00_oneshot 0x0529
+#define SFXdk3_c_flame_lp_00_looped 0x0538
 
 #endif

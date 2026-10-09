@@ -3,7 +3,7 @@
 
 #define GRPTempleFloorPuzzle 0x017F
 
-#define SFXlth_x_transdust_00_R_oneshot 0x1216
-#define SFXlth_x_transstart_00_oneshot 0x1217
+#define SFXtem_x_floorglow_00_oneshot 0x005D
+#define SFXtem_x_floormove_00_oneshot 0x005E
 
 #endif

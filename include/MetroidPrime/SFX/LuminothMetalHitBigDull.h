@@ -3,7 +3,7 @@
 
 #define GRPLuminothMetalHitBigDull 0x01C7
 
-#define SFXele_c_elev_lp_00L_looped 0x1268
-#define SFXui2_x_hudon_00_oneshot 0x1475
+#define SFXlth_x_mtlhitbigdull_00_oneshot 0x0373
+#define SFXsb1_c_mtlhitbigdull_00_oneshot 0x04FC
 
 #endif

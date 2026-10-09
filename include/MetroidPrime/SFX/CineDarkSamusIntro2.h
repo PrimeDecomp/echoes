@@ -3,11 +3,11 @@
 
 #define GRPCineDarkSamusIntro2 0x020C
 
-#define SFXfin_x_splode_00_L_oneshot 0x1401
-#define SFXfin_x_splode_00_R_oneshot 0x1402
-#define SFXrec_x_stop_00_oneshot 0x1417
-#define SFXrec_x_charge_00_oneshot 0x1418
-#define SFXsa2_b_landsnow_02_oneshot 0x14E1
-#define SFXsa2_b_mlandice_00_oneshot 0x14E2
+#define SFXdks_c_footstep_00_oneshot 0x2791
+#define SFXdks_c_footstep_01_oneshot 0x2792
+#define SFXdk2_c_footstep_00_oneshot 0x04D6
+#define SFXdk2_c_footstep_01_oneshot 0x04D8
+#define SFXdk2_c_footstep_deth_00_oneshot 0x0554
+#define SFXdk2_c_footstep_deth_01_oneshot 0x0555
 
 #endif

@@ -3,25 +3,25 @@
 
 #define GRPWeapons3 0x012E
 
-#define SFXshr_b_spinwtr_lp_00_looped 0x0DEA
-#define SFXshr_r_explode_00_oneshot 0x0DEC
-#define SFXshr_b_popup_02_oneshot 0x0DEE
-#define SFXshr_b_voxalert_00_oneshot 0x0DEF
-#define SFXsts_b_voxidle_00_oneshot 0x0DF5
-#define SFXoct_r_bounce_01_oneshot 0x0E03
-#define SFXoct_r_split_00_oneshot 0x0E04
-#define SFXspu_b_close_oneshot 0x0E07
-#define SFXrez_b_sphere_01_oneshot 0x0E31
-#define SFXswf_r_voxdeath_00_oneshot 0x0E32
-#define SFXisg_b_rollelecslow_lp_00_looped 0x0E41
-#define SFXisg_b_rollzapslow_lp_00_looped 0x0E42
-#define SFXisg_b_spidrollslow_lp_00_looped 0x0E43
-#define SFXswi_b_move_lp_00_looped 0x0E49
-#define SFXswb_b_bactanrgry_00_oneshot 0x0E5D
-#define SFXswb_b_bactangry_01_oneshot 0x0E5E
-#define SFXgrn_r_tailbrk_00_oneshot 0x0E8B
-#define SFXigg_r_electric_lp_00_looped 0x0E8C
-#define SFXigg_r_tailbrk_01_oneshot 0x0E95
-#define SFXsam_b_mland_00_oneshot 0x0FF5
+#define SFXsam_a_litfire_00_oneshot 0x1FCA
+#define SFXsam_a_lithit_00_oneshot 0x1FCB
+#define SFXsam_a_litchric_00_oneshot 0x1FA1
+#define SFXsam_a_litrico_00_oneshot 0x1FA3
+#define SFXsam_a_litcharge_lp_00_looped 0x1FE0
+#define SFXsam_a_litchfire_00_oneshot 0x1FE1
+#define SFXsam_a_litchhit_00_oneshot 0x1FA5
+#define SFXsam_a_litcofire_00_oneshot 0x1FE2
+#define SFXsam_a_litcofire_lp_00_looped 0x2371
+#define SFXsam_a_litcorico_00_oneshot 0x2903
+#define SFXsam_c_litcofire_00_oneshot 0x0571
+#define SFXsam_c_litchfire_00_oneshot 0x0577
+#define SFXsam_c_litfire_00_oneshot 0x0579
+#define SFXsam_a_screw_lp_00_looped 0x2203
+#define SFXsam_a_screwhit_00_oneshot 0x2204
+#define SFXsam_a_screwhit_01_oneshot 0x032D
+#define SFXsam_b_screwin_00_oneshot 0x019E
+#define SFXsam_a_screw_lp_01_looped 0x04A1
+#define SFXsam_a_litcohit_00_oneshot 0x1FE9
+#define SFXsam_c_litcharge_lp_00_looped 0x0576
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPDarkSamusBlueBits 0x0013
 
-#define SFXdk2_c_slump_00_oneshot 0x13B5
+#define SFXdks_x_bluebits_lp_00_looped 0x03F6
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPAtomicExplode 0x0129
 
-#define SFXgrn_b_shake_00_oneshot 0x0230
+#define SFXatm_r_explode_00_oneshot 0x052E
 
 #endif

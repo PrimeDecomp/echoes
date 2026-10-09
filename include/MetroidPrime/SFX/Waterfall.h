@@ -3,9 +3,9 @@
 
 #define GRPWaterfall 0x02E1
 
-#define SFXsdw_b_rumble_lp_00_looped 0x0687
-#define SFXsdw_a_melee_00_oneshot 0x0688
-#define SFXkra_r_voxdeath_00_oneshot 0x068C
-#define SFXui2_x_scanoff_00_oneshot 0x1479
+#define SFXwtr_x_waterfal_lp_00_looped 0x26BB
+#define SFXwtr_x_waterup_lp_00_looped 0x26BE
+#define SFXwtr_x_underfall_lp_00_looped 0x021D
+#define SFXsb1_c_underfall_lp_00_looped 0x0501
 
 #endif

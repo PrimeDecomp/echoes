@@ -3,6 +3,6 @@
 
 #define GRPLuminothMetalHitMedRatchet 0x01CA
 
-#define SFXdk2_c_glassbrk_00_oneshot 0x126D
+#define SFXlth_x_mtlhitmedratch_00_oneshot 0x0385
 
 #endif

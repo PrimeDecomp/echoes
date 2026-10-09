@@ -3,10 +3,10 @@
 
 #define GRPCommandoPirateLight4 0x0127
 
-#define SFXshk_r_voxdeath_00_oneshot 0x045D
-#define SFXshk_a_shriek_00_oneshot 0x045E
-#define SFXspb_a_needltele_00_oneshot 0x0468
-#define SFXspb_a_gripfire_00_oneshot 0x0469
-#define SFXspb_a_gripsuck_02_oneshot 0x0470
+#define SFXcpr_b_flicker_00_oneshot 0x1EF8
+#define SFXcpr_b_cloak_00_oneshot 0x1ECB
+#define SFXcpr_b_decloak_00_oneshot 0x1ECC
+#define SFXcpr_b_voxcloak_00_oneshot 0x1ECF
+#define SFXcpr_b_voxdecloak_00_oneshot 0x1ED0
 
 #endif

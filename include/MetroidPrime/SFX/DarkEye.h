@@ -3,9 +3,9 @@
 
 #define GRPDarkEye 0x0080
 
-#define SFXspl_c_walk_00_oneshot 0x05ED
-#define SFXspl_c_walk_01_oneshot 0x05EE
-#define SFXspl_c_voxattack_02_oneshot 0x05EF
-#define SFXspl_c_voxalertclose_00_oneshot 0x05F0
+#define SFXeye_x_activate_00_oneshot 0x01E1
+#define SFXeye_x_laser_lp_looped 0x02F8
+#define SFXeye_x_stunned_00_oneshot 0x0363
+#define SFXeye_x_activate_01_oneshot 0x0427
 
 #endif

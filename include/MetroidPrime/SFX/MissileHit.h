@@ -3,7 +3,7 @@
 
 #define GRPMissileHit 0x02E0
 
-#define SFXgf2_b_voxattack_01_oneshot 0x03C1
-#define SFXmis_c_armcock_00_oneshot 0x1348
+#define SFXelu_a_rockethit_00_oneshot 0x242F
+#define SFXdgd_a_misslhit_00_oneshot 0x01E7
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPDigitalGuardian14 0x0060
 
-#define SFXmph_c_arpegg_lp_00_looped 0x1357
+#define SFXdgd_c_voxdistort_00_oneshot 0x03E7
 
 #endif

@@ -3,19 +3,19 @@
 
 #define GRPMetroidVox 0x00D4
 
-#define SFXpds_b_voxopen_lp_00_looped 0x0340
-#define SFXsp3_b_land_01_oneshot 0x034E
-#define SFXsp3_a_spit_lp_00_looped 0x034F
-#define SFXsp3_a_spithti_00_oneshot 0x0350
-#define SFXmt3_b_float_lp_00_looped 0x0352
-#define SFXmt3_b_floatfast_lp_00_looped 0x0353
-#define SFXmt3_r_gib_00_oneshot 0x0354
-#define SFXmt3_b_grow_lp_00_looped 0x0355
-#define SFXmt3_b_grow_00_oneshot 0x0356
-#define SFXrez_b_rezbit_lp_01_looped 0x0359
-#define SFXrez_b_rezbit_lp_02_looped 0x035A
-#define SFXsdf_b_swarm_lp_00_looped 0x035F
-#define SFXsdf_b_voxdeath_00_oneshot 0x0360
-#define SFXei3_a_drkswarm_lp_00_looped 0x0364
+#define SFXmtd_a_facehug_00_oneshot 0x024B
+#define SFXmtd_a_facehug_01_oneshot 0x024C
+#define SFXmtd_a_facehug_02_oneshot 0x024D
+#define SFXmtd_b_idle_00_oneshot 0x023F
+#define SFXmtd_b_idle_01_oneshot 0x0240
+#define SFXmtd_b_idle_02_oneshot 0x0248
+#define SFXmtd_b_idle_03_oneshot 0x0249
+#define SFXmtd_b_idle_04_oneshot 0x024A
+#define SFXmtd_b_voxangry_00_oneshot 0x0244
+#define SFXmtd_b_voxangry_01_oneshot 0x0245
+#define SFXmtd_r_death_00_oneshot 0x0246
+#define SFXmtd_r_impact_00_oneshot 0x0247
+#define SFXmtd_b_voxglass_00_oneshot 0x23FC
+#define SFXmtd_b_voxglass_01_oneshot 0x23FD
 
 #endif

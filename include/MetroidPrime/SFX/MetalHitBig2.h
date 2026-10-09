@@ -3,7 +3,7 @@
 
 #define GRPMetalHitBig2 0x02E7
 
-#define SFXsnd_x_skiffnrg_lp_01_looped 0x11D1
-#define SFXsnd_x_tubelock_00_oneshot 0x11E8
+#define SFXmtl_x_hitbig_01_oneshot 0x0377
+#define SFXsnd_x_roomstop_00_oneshot 0x2788
 
 #endif

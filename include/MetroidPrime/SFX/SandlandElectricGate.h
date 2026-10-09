@@ -3,6 +3,6 @@
 
 #define GRPSandlandElectricGate 0x019C
 
-#define SFXsnd_x_02damopen_00_oneshot 0x11BF
+#define SFXsnd_x_arc_lp_00_looped 0x27EE
 
 #endif

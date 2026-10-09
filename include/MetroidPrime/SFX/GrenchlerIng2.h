@@ -3,9 +3,9 @@
 
 #define GRPGrenchlerIng2 0x009F
 
-#define SFXcpr_a_grenbnce_00_oneshot 0x04A3
-#define SFXcpr_a_grenchrg_00_oneshot 0x04A4
-#define SFXcpr_a_grenexpl_00_oneshot 0x04A5
-#define SFXspr_a_grenade_00_oneshot 0x04D6
+#define SFXigg_a_pullball_00_oneshot 0x2477
+#define SFXigg_a_voxpull_00_oneshot 0x2478
+#define SFXigg_a_voxstruggle_00_oneshot 0x2479
+#define SFXigg_a_voxstruggle_01_oneshot 0x24A4
 
 #endif

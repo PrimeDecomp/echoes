@@ -3,15 +3,15 @@
 
 #define GRPSamusPowerups_MP 0x0276
 
-#define SFXsam_b_wlkplas_00_oneshot 0x102A
-#define SFXsam_b_wlkplas_01_oneshot 0x102B
-#define SFXsam_b_wlkwire_00_oneshot 0x102C
-#define SFXsam_b_wlkwire_01_oneshot 0x102D
-#define SFXsam_b_landmoth_00_oneshot 0x102E
-#define SFXsam_b_landmoth_02_oneshot 0x102F
-#define SFXsam_b_landweb_00_oneshot 0x1030
-#define SFXsam_b_landweb_02_oneshot 0x1031
-#define SFXsam_b_mlandmoth_00_oneshot 0x1032
-#define SFXsam_b_mlandweb_00_oneshot 0x1033
+#define SFXsa2_a_deathball_lp_00_looped 0x2611
+#define SFXsa2_a_massdam_00_oneshot 0x2612
+#define SFXsa2_a_virus_lp_00_looped 0x2613
+#define SFXsa2_a_virusaff_00_oneshot 0x2614
+#define SFXsa2_b_cloak_lp_00_looped 0x2615
+#define SFXsa2_b_drkshield_lp_00_looped 0x2616
+#define SFXsa2_b_invuln_lp_00_looped 0x2617
+#define SFXsa2_b_litshield_lp_00_looped 0x2618
+#define SFXsa2_r_absorb_00_oneshot 0x2619
+#define SFXsa2_r_virusmalfxn_lp_00_looped 0x261A
 
 #endif

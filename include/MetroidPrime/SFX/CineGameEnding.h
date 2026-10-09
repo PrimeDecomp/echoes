@@ -3,7 +3,7 @@
 
 #define GRPCineGameEnding 0x01D7
 
-#define SFXprt_c_inportal_lp_00_looped 0x1679
-#define SFXprt_c_riftdark_lp_00_looped 0x167A
+#define SFXgae_c_ingland_00_oneshot 0x05CC
+#define SFXgae_c_ingland_01_oneshot 0x05CD
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPPuffer 0x00CA
 
-#define SFXigg_b_voxsniff_00_oneshot 0x022E
+#define SFXpuf_b_fly_lp_00_looped 0x0B1F
 
 #endif

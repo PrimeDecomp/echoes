@@ -3,8 +3,8 @@
 
 #define GRPSandlandForcefield 0x018D
 
-#define SFXsnd_x_gearsmall_lp_00_looped 0x11A1
-#define SFXsnd_x_gearsmall_lp_01_looped 0x11A2
-#define SFXef2_x_ashbig_00_oneshot 0x1503
+#define SFXsnd_x_force_lp_00_looped 0x04E2
+#define SFXsnd_x_forceoff_00_oneshot 0x04E3
+#define SFXdce_c_force_lp_00_looped 0x04E4
 
 #endif

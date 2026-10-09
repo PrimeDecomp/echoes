@@ -3,9 +3,9 @@
 
 #define GRPSandlandSkiff 0x019E
 
-#define SFXsnd_x_webburn_00_oneshot 0x11C4
-#define SFXsnd_x_webburn_01_oneshot 0x11C5
-#define SFXsnd_x_fanbig_lp_00_looped 0x11C6
-#define SFXsnd_x_spinner_lp_00_looped 0x11DE
+#define SFXsnd_x_skiffnrg_lp_00_looped 0x27D0
+#define SFXsnd_x_skiffnrg_lp_01_looped 0x27D1
+#define SFXsnd_x_skiffthrust_lp_00_looped 0x27D2
+#define SFXsnd_x_skiffintro_00_oneshot 0x27D3
 
 #endif

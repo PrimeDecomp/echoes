@@ -3,10 +3,8 @@
 
 #define GRPCineTeleportInside 0x01D4
 
-#define SFXman_r_explode_00_oneshot 0x1685
-#define SFXman_r_impact_00_oneshot 0x1686
-#define SFXma2_r_explode_00_oneshot 0x1687
-#define SFXma2_a_mislfire_00_oneshot 0x1688
-#define SFXma2_a_mislhit_00_oneshot 0x1689
+#define SFXtel_c_travel_lp_01_looped 0x05DC
+#define SFXtel_c_travel_lp_02_looped 0x05DD
+#define SFXtel_c_samusbycontrol_00_oneshot 0x05E4
 
 #endif

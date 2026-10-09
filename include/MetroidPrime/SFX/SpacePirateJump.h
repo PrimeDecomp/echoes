@@ -3,8 +3,8 @@
 
 #define GRPSpacePirateJump 0x0125
 
-#define SFXelu_a_swing_00_oneshot 0x029C
-#define SFXelu_a_swing_01_oneshot 0x029D
-#define SFXelu_a_swing_02_oneshot 0x02B2
+#define SFXspr_b_jump_01_oneshot 0x156D
+#define SFXspr_b_jump_00_oneshot 0x0304
+#define SFXspr_b_cling_00_oneshot 0x1ED3
 
 #endif

@@ -3,17 +3,17 @@
 
 #define GRPBlogg 0x00AE
 
-#define SFXzom_r_death_00_oneshot 0x04F2
-#define SFXtur_a_charge_00_oneshot 0x04F3
-#define SFXtur_a_fire_00_oneshot 0x04F4
-#define SFXtur_a_lockon_00_oneshot 0x04F5
-#define SFXtur_b_retract_00_oneshot 0x04F6
-#define SFXtur_r_deathlower_lp_00_looped 0x04F8
-#define SFXtri_b_walk_00_oneshot 0x04FF
-#define SFXspr_b_run_00_oneshot 0x0508
-#define SFXspr_b_walk_03_oneshot 0x050D
-#define SFXcpr_b_walk_00_oneshot 0x050E
-#define SFXcpr_b_walk_01_oneshot 0x050F
-#define SFXcpr_b_walk_02_oneshot 0x0510
+#define SFXblg_b_voxalert_00_oneshot 0x215C
+#define SFXblg_b_voxangry_00_oneshot 0x215D
+#define SFXblg_b_voxidle_00_oneshot 0x215F
+#define SFXblg_b_voxidle_01_oneshot 0x2160
+#define SFXblg_b_voxangry_01_oneshot 0x21A4
+#define SFXblg_a_melee_00_oneshot 0x2154
+#define SFXblg_a_throwball_00_oneshot 0x21A5
+#define SFXbl3_a_throwball_00_oneshot 0x020A
+#define SFXbl3_b_voxangry_00_oneshot 0x020B
+#define SFXbl3_b_voxangry_01_oneshot 0x020C
+#define SFXbl3_b_voxidle_00_oneshot 0x020D
+#define SFXbl3_b_voxidle_01_oneshot 0x020E
 
 #endif

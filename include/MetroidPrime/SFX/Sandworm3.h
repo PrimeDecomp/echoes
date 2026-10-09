@@ -3,10 +3,10 @@
 
 #define GRPSandworm3 0x00E5
 
-#define SFXdks_r_impactsm_00_oneshot 0x0173
-#define SFXsdb_r_voxpainhuge_00_oneshot 0x017F
-#define SFXsdb_c_dig_00_oneshot 0x0192
-#define SFXdks_c_voxpissed_00_oneshot 0x01AC
-#define SFXdks_r_voxpainsm_00_oneshot 0x01B2
+#define SFXsdw_b_rumble_lp_00_looped 0x1F03
+#define SFXsdw_a_melee_00_oneshot 0x1F02
+#define SFXsd2_b_rumble_lp_00_looped 0x20E4
+#define SFXsdw_r_jawbrk_00_oneshot 0x2126
+#define SFXsd2_r_jawbrk_00_oneshot 0x2128
 
 #endif

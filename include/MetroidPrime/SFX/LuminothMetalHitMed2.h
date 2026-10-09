@@ -3,6 +3,6 @@
 
 #define GRPLuminothMetalHitMed2 0x01D1
 
-#define SFXdks_c_glassbrk_01_oneshot 0x126B
+#define SFXlth_x_mtlhitmed_01_oneshot 0x03E1
 
 #endif

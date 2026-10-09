@@ -3,7 +3,7 @@
 
 #define GRPCommandoPirate5 0x0077
 
-#define SFXelu_b_voxalert_01_oneshot 0x028F
-#define SFXgrn_b_swim_00_oneshot 0x043A
+#define SFXcp2_b_warpin_00_oneshot 0x0513
+#define SFXspl_b_warpin_00_oneshot 0x0514
 
 #endif

@@ -3,18 +3,18 @@
 
 #define GRPIngSnatch 0x008F
 
-#define SFXspr_r_snatch_02_oneshot 0x05AB
-#define SFXspr_r_dieshort_00_oneshot 0x05AC
-#define SFXfpr_b_dievox_00_oneshot 0x05AD
-#define SFXfpr_b_intruder_00_oneshot 0x05AE
-#define SFXfpr_b_voxalert_00_oneshot 0x05AF
-#define SFXfpr_b_voxalert_01_oneshot 0x05B0
-#define SFXfpr_b_voxangry_00_oneshot 0x05B1
-#define SFXfpr_b_voxangry_01_oneshot 0x05B2
-#define SFXfpr_b_voxangry_02_oneshot 0x05B3
-#define SFXfpr_r_impact_00_oneshot 0x05B4
-#define SFXfpr_r_impact_01_oneshot 0x05B5
-#define SFXspl_b_walk_00_oneshot 0x05B6
-#define SFXsa2_r_gibsamus_00_oneshot 0x1500
+#define SFXing_a_snatch_lp_00_looped 0x0061
+#define SFXgrn_r_snatch_lp_00_looped 0x0005
+#define SFXsdw_r_snatch_lp_00_looped 0x016D
+#define SFXsp3_r_snatch_lp_00_looped 0x01D7
+#define SFXspr_r_snatch_lp_00_looped 0x01D8
+#define SFXspl_r_snatch_lp_00_looped 0x02A5
+#define SFXelu_r_snatch_lp_00_looped 0x0310
+#define SFXgf2_r_snatch_lp_00_looped 0x0311
+#define SFXmtr_r_snatch_lp_00_looped 0x0312
+#define SFXspt_r_snatch_lp_00_looped 0x0313
+#define SFXblg_r_snatch_lp_00_looped 0x033F
+#define SFXdce_c_snatch_lp_00_looped 0x030A
+#define SFXsb2_r_snatch_lp_00_looped 0x03E3
 
 #endif

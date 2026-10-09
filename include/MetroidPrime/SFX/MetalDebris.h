@@ -3,11 +3,11 @@
 
 #define GRPMetalDebris 0x02BE
 
-#define SFXmt3_b_swoosh_lp_00_looped 0x0331
-#define SFXgft_c_walk_01_oneshot 0x03C7
-#define SFXibg_a_morphchg_00_oneshot 0x03CA
-#define SFXtu2_b_servooff_00_oneshot 0x063E
-#define SFXtu2_r_deathlower_lp_00_looped 0x0643
-#define SFXtu2_b_raise_01_oneshot 0x0644
+#define SFXmtl_x_smdebris_00_oneshot 0x27C3
+#define SFXmtl_x_smdebris_01_oneshot 0x27C4
+#define SFXdrn_r_explmetl_00_oneshot 0x27C5
+#define SFXepr_r_grenmetl_00_oneshot 0x27C6
+#define SFXepr_b_explmetl_00_oneshot 0x27C7
+#define SFXmtl_x_spdebris_00_oneshot 0x27C8
 
 #endif

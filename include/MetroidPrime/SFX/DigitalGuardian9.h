@@ -3,12 +3,12 @@
 
 #define GRPDigitalGuardian9 0x005C
 
-#define SFXtls_c_passby_00c_oneshot 0x1303
-#define SFXtls_c_passby_00b_oneshot 0x1304
-#define SFXtrp_c_voxfallback_00_oneshot 0x1310
-#define SFXsav_c_powrdown_00_oneshot 0x1317
-#define SFXmis_c_armswoosh_00_oneshot 0x132D
-#define SFXmis_c_armswoosh_01_oneshot 0x132E
-#define SFXcin_c_samjump_00_oneshot 0x1355
+#define SFXdgd_b_shoulder_02_oneshot 0x01B7
+#define SFXdgd_b_voxidle_00_oneshot 0x24F5
+#define SFXdgd_a_shockwave_00_oneshot 0x28F0
+#define SFXdgd_b_voxhead_00_oneshot 0x033C
+#define SFXdgd_b_voxhead_01_oneshot 0x033D
+#define SFXdgd_b_voxidle_01_oneshot 0x24F6
+#define SFXdgd_c_shoulder_02_oneshot 0x03B8
 
 #endif

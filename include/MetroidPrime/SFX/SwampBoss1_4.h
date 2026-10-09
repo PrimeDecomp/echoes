@@ -3,13 +3,13 @@
 
 #define GRPSwampBoss1_4 0x0020
 
-#define SFXsa2_a_screwhit_01_oneshot 0x146E
-#define SFXsa2_r_damage_lp_00_looped 0x146F
-#define SFXui2_x_visorblur_00_oneshot 0x1488
-#define SFXsa2_b_spawn_00_oneshot 0x1489
-#define SFXvi2_x_echo_00_oneshot 0x148A
-#define SFXsa2_b_landorg_02_oneshot 0x1496
-#define SFXsa2_b_landsand_02_oneshot 0x1498
-#define SFXsa2_b_mlandmtl_00_oneshot 0x14A0
+#define SFXsb1_r_voxflinch_00_oneshot 0x0287
+#define SFXsb1_r_voxflinch_01_oneshot 0x028E
+#define SFXsb1_r_voxidle_00_oneshot 0x02A6
+#define SFXsb1_r_voxidle_01_oneshot 0x02A7
+#define SFXsb1_a_tongue_00_oneshot 0x02B3
+#define SFXsb1_a_tonguemiss_00_oneshot 0x03E8
+#define SFXsb1_c_voxflinch_000_oneshot 0x0547
+#define SFXsb1_c_voxflinch_001_oneshot 0x0548
 
 #endif

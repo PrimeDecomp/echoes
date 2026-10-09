@@ -3,7 +3,7 @@
 
 #define GRPCliffsideRoll 0x015B
 
-#define SFXsam_c_wlkmetal_01_oneshot 0x0FEE
-#define SFXsam_b_wlkgrass_00_oneshot 0x0FF0
+#define SFXsam_b_rolldgras_lp_00_looped 0x1D8F
+#define SFXsam_b_rolldwal_lp_00_looped 0x1D90
 
 #endif

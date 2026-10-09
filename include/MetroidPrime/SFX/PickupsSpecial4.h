@@ -3,6 +3,6 @@
 
 #define GRPPickupsSpecial4 0x02EC
 
-#define SFXing_b_shadowout_00_oneshot 0x06C2
+#define SFXpik_x_key_lp_00_looped 0x0457
 
 #endif

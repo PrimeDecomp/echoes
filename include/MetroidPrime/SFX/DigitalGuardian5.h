@@ -3,10 +3,10 @@
 
 #define GRPDigitalGuardian5 0x002E
 
-#define SFXgft_c_move_01_oneshot 0x130C
-#define SFXvis_c_wipe_00_oneshot 0x131D
-#define SFXele_c_chargeup_00_oneshot 0x1335
-#define SFXmis_c_swoosh_01_oneshot 0x1341
-#define SFXgrv_c_swoosh_01_oneshot 0x1342
+#define SFXdgd_r_headsmoke_lp_00_looped 0x28FA
+#define SFXdgd_r_beaconhit_01_oneshot 0x28FB
+#define SFXdgd_a_spawn_00_oneshot 0x24EA
+#define SFXdgd_a_missloop_lp_00_looped 0x01E3
+#define SFXdgd_a_spinin_00_oneshot 0x01E0
 
 #endif

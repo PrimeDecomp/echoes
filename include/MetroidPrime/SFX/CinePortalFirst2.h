@@ -3,6 +3,6 @@
 
 #define GRPCinePortalFirst2 0x0226
 
-#define SFXsd2_b_voxidle_01_oneshot 0x0714
+#define SFXprt_x_close_01_oneshot 0x27B9
 
 #endif

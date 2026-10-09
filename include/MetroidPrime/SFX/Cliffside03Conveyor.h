@@ -3,7 +3,7 @@
 
 #define GRPCliffside03Conveyor 0x0163
 
-#define SFXtel_c_beamstart_lp_00_looped 0x124D
-#define SFXgen_c_litbeamon_00_oneshot 0x124E
+#define SFXclf_x_03cnvyr_00_lp_looped 0x0434
+#define SFXclf_x_03cnvyrstop_00_oneshot 0x0435
 
 #endif

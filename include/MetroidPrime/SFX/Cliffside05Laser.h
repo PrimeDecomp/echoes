@@ -3,6 +3,6 @@
 
 #define GRPCliffside05Laser 0x0169
 
-#define SFXswp_x_piston_00_oneshot 0x119B
+#define SFXclf_x_05laser_lp_00_looped 0x045C
 
 #endif

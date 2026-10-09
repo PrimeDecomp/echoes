@@ -3,11 +3,11 @@
 
 #define GRPSwampBoss2_5 0x0061
 
-#define SFXsa2_b_mlandwoo_00_oneshot 0x14A4
-#define SFXsa2_b_mland_00_oneshot 0x14A5
-#define SFXsa2_b_voxland_00_oneshot 0x14A6
-#define SFXsa2_b_wlkgrate_00_oneshot 0x14AE
-#define SFXsa2_b_landphaz_02_oneshot 0x14C1
-#define SFXsa2_b_mlandphz_00_oneshot 0x14C2
+#define SFXsb2_a_spit_lp_01_looped 0x03F3
+#define SFXsb2_a_flapattack_00_oneshot 0x03F4
+#define SFXsb2_a_spit_00_oneshot 0x03F5
+#define SFXsb2_b_flierdeath_00_oneshot 0x0508
+#define SFXsb2_a_dive_00_oneshot 0x050A
+#define SFXsb2_b_voxstun_00_oneshot 0x050C
 
 #endif

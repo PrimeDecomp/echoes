@@ -3,12 +3,12 @@
 
 #define GRPEliteLuminoth2 0x00FF
 
-#define SFXmtd_b_suckglas_01_oneshot 0x03A6
-#define SFXgf2_a_melee_00_oneshot 0x03C2
-#define SFXgf2_b_land_00_oneshot 0x03C3
-#define SFXgf2_b_walk_00_oneshot 0x03C4
-#define SFXgf2_b_walk_01_oneshot 0x03C5
-#define SFXgft_c_walk_00_oneshot 0x03C6
-#define SFXibg_r_voxdeath_00_oneshot 0x03D5
+#define SFXelu_a_hitgrnd_00_oneshot 0x242A
+#define SFXelu_a_hitgrnd_01_oneshot 0x242B
+#define SFXelu_a_hitgrnd_02_oneshot 0x250A
+#define SFXelu_a_rocket_00_oneshot 0x242C
+#define SFXelu_a_rocket_01_oneshot 0x242D
+#define SFXelu_a_rocket_lp_00_looped 0x242E
+#define SFXelu_a_rocket_02_oneshot 0x24C5
 
 #endif

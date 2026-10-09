@@ -3,7 +3,7 @@
 
 #define GRPCliffsideRings 0x0159
 
-#define SFXlth_x_skrdoor_lp_00_looped 0x1239
-#define SFXlth_x_mtlscrapemed_lp_00_looped 0x123A
+#define SFXclf_x_lumrings_lp_00_looped 0x0407
+#define SFXclf_x_rings_lp_00_looped 0x0418
 
 #endif

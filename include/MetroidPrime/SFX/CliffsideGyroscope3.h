@@ -3,6 +3,6 @@
 
 #define GRPCliffsideGyroscope3 0x0152
 
-#define SFXswp_x_0iplatstop_00_oneshot 0x122B
+#define SFXclf_x_gyrostopping_lp_00_looped 0x05FC
 
 #endif

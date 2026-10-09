@@ -3,11 +3,11 @@
 
 #define GRPDarkPortal 0x02AC
 
-#define SFXsd2_a_grabball_00_oneshot 0x0704
-#define SFXsd2_a_spit_00_oneshot 0x0706
-#define SFXsd2_a_spit_01_oneshot 0x0707
-#define SFXsd2_a_bombspit_01_oneshot 0x0709
-#define SFXsd2_a_bombspittemp_00_oneshot 0x070D
-#define SFXsd2_b_voxidle_00_oneshot 0x0713
+#define SFXprt_x_riftdark_lp_00_looped 0x2867
+#define SFXprt_x_riftdark_lp_01_looped 0x2868
+#define SFXprt_c_inportal_lp_00_looped 0x2869
+#define SFXprt_c_riftdark_lp_00_looped 0x286A
+#define SFXprt_c_riftdark_lp_01_looped 0x286B
+#define SFXprt_x_indarkportal_lp_00_looped 0x286C
 
 #endif

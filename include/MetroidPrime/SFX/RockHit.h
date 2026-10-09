@@ -3,10 +3,10 @@
 
 #define GRPRockHit 0x02CC
 
-#define SFXsp3_b_voxtaunt_00_oneshot 0x0621
-#define SFXsp3_b_voxtaunt_01_oneshot 0x0622
-#define SFXsp3_b_voxtaunt_02_oneshot 0x0623
-#define SFXsp3_r_voxpain_00_oneshot 0x0624
-#define SFXspt_a_stab_00_oneshot 0x074F
+#define SFXrok_x_rockbig_00_oneshot 0x2744
+#define SFXrok_x_rockmed_00_oneshot 0x2745
+#define SFXrok_x_planstp_00_oneshot 0x2746
+#define SFXrok_x_rockbigloud_00_oneshot 0x0330
+#define SFXrok_x_rockmedloud_00_oneshot 0x035B
 
 #endif

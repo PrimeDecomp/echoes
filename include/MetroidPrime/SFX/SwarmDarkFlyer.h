@@ -3,13 +3,13 @@
 
 #define GRPSwarmDarkFlyer 0x009C
 
-#define SFXmtd_b_idle_02_oneshot 0x057A
-#define SFXmtd_b_idle_03_oneshot 0x057B
-#define SFXmtd_b_idle_04_oneshot 0x057C
-#define SFXmtd_b_voxangry_00_oneshot 0x057D
-#define SFXmtd_b_voxangry_01_oneshot 0x057F
-#define SFXmtd_r_death_00_oneshot 0x0581
-#define SFXmtd_r_impact_00_oneshot 0x0582
-#define SFXmtd_b_voxglass_00_oneshot 0x0583
+#define SFXsdf_b_swarm_lp_00_looped 0x0001
+#define SFXsdf_b_voxdeath_00_oneshot 0x0006
+#define SFXsdf_b_voxdeath_01_oneshot 0x0007
+#define SFXsdf_b_voxidle_00_oneshot 0x0008
+#define SFXsdf_b_voxidle_01_oneshot 0x0009
+#define SFXei3_a_drkswarm_lp_00_looped 0x0120
+#define SFXei3_r_drkswarmdie_00_oneshot 0x0124
+#define SFXei3_r_drkswarmdie_01_oneshot 0x0125
 
 #endif

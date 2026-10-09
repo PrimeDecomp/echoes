@@ -3,10 +3,10 @@
 
 #define GRPSwampBoss1_5 0x001F
 
-#define SFXsa2_a_screwhit_00_oneshot 0x146D
-#define SFXui2_x_warning_02_oneshot 0x1487
-#define SFXsa2_b_landston_00_oneshot 0x1499
-#define SFXsa2_b_landston_02_oneshot 0x149A
-#define SFXsa2_b_landwood_00_oneshot 0x149B
+#define SFXsb1_r_voxpain_00_oneshot 0x0218
+#define SFXsb1_r_blubber_00_oneshot 0x0332
+#define SFXsb1_r_blubber_01_oneshot 0x0333
+#define SFXsb1_a_barf_00_oneshot 0x02B2
+#define SFXsb1_c_voxpain_00_oneshot 0x0546
 
 #endif

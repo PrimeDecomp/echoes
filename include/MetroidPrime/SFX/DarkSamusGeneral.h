@@ -3,18 +3,18 @@
 
 #define GRPDarkSamusGeneral 0x004A
 
-#define SFXdks_c_voxdeathtemp_00_oneshot 0x13BF
-#define SFXtel_c_beam_00_oneshot 0x13C0
-#define SFXtel_c_telesamus_alt_00_oneshot 0x13C5
-#define SFXtel_c_arrive_00_oneshot 0x13C6
-#define SFXscw_c_screwout_00_oneshot 0x13C8
-#define SFXscw_c_zing_00_oneshot 0x13C9
-#define SFXscw_c_screw_00_oneshot 0x13CA
-#define SFXskr_c_charge_00_oneshot 0x13CB
-#define SFXwpn_c_powerup_01_oneshot 0x13D4
-#define SFXdk2_c_voxdeath_00_oneshot 0x13E9
-#define SFXgen_c_drkshrink_00_oneshot 0x13F6
-#define SFXgen_c_nrgdispurse_00_oneshot 0x13FB
-#define SFXfin_x_bluewoosh_00_L_oneshot 0x1403
+#define SFXdks_b_boost_00_oneshot 0x2012
+#define SFXdks_b_boost_01_oneshot 0x2013
+#define SFXdks_b_land_00_oneshot 0x2014
+#define SFXdks_b_land_01_oneshot 0x2015
+#define SFXdks_b_jump_00_oneshot 0x2017
+#define SFXdks_b_jump_01_oneshot 0x2026
+#define SFXdks_r_impactsm_00_oneshot 0x2038
+#define SFXdks_r_impact_00_oneshot 0x2039
+#define SFXdks_b_hitwall_00_oneshot 0x2042
+#define SFXdks_c_jump_00_oneshot 0x238E
+#define SFXdks_c_boost_00_oneshot 0x23C1
+#define SFXdks_c_fall_00_oneshot 0x23CA
+#define SFXdks_c_handdown_00_oneshot 0x2410
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPUnseenShrieker 0x00B6
 
-#define SFXin3_b_spotidle_lp_01_looped 0x047D
-#define SFXin3_b_spotmove_lp_01_looped 0x047F
-#define SFXei3_b_puddle_lp_01_looped 0x0481
-#define SFXing_r_spotdeath_00_oneshot 0x0486
-#define SFXing_r_spotdeath_01_oneshot 0x0487
+#define SFXshk_a_popup_00_oneshot 0x1FED
+#define SFXshk_b_idle_lp_01_looped 0x1FF3
+#define SFXshk_b_land_00_oneshot 0x1FF4
+#define SFXshk_b_idle_00_oneshot 0x1FFC
+#define SFXshk_b_fly_00_oneshot 0x1FFD
 
 #endif

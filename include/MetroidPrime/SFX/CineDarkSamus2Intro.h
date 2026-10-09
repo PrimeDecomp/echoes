@@ -3,8 +3,8 @@
 
 #define GRPCineDarkSamus2Intro 0x024E
 
-#define SFXsa2_b_landrubb_00_oneshot 0x14E8
-#define SFXsa2_b_landrubb_02_oneshot 0x14E9
-#define SFXsa2_b_wlkrubb_00_oneshot 0x14EB
+#define SFXdk2_c_elevon_00_oneshot 0x04EE
+#define SFXdk2_c_voxgrunt_00_oneshot 0x01C6
+#define SFXdk2_c_samroll_00_oneshot 0x0503
 
 #endif

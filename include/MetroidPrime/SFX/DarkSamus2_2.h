@@ -3,11 +3,11 @@
 
 #define GRPDarkSamus2_2 0x0039
 
-#define SFXdsa_c_nrgzoom_00_oneshot 0x12AF
-#define SFXsja_c_nrgzoom_00_oneshot 0x12B0
-#define SFXdsa_c_nrgzing_00_oneshot 0x12B1
-#define SFXdsi_c_crysplode_00_oneshot 0x12B6
-#define SFXdsi_c_samstand_01_oneshot 0x12B7
-#define SFXdsi_c_samroll_00_oneshot 0x12B9
+#define SFXdk2_a_sweep_00_oneshot 0x0011
+#define SFXdk2_a_sweepchg_00_oneshot 0x0012
+#define SFXdk2_a_sweephit_00_oneshot 0x0013
+#define SFXdk2_a_sweep_01_oneshot 0x0081
+#define SFXdk2_a_sweephit_lp_00_looped 0x0082
+#define SFXdk2_b_voxinvisin_00_oneshot 0x0086
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPPlantScarabGrenade 0x0122
 
-#define SFXsb2_r_voxflinch_01_oneshot 0x0037
-#define SFXcp2_a_drkhit_00_oneshot 0x023F
+#define SFXpls_a_grenbnce_00_oneshot 0x0534
+#define SFXat2_r_gibbounce_00_oneshot 0x0045
 
 #endif

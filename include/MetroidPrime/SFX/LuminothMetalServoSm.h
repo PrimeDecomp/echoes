@@ -3,6 +3,6 @@
 
 #define GRPLuminothMetalServoSm 0x01BE
 
-#define SFXtem_x_02cablesnap_00_oneshot 0x1190
+#define SFXswp_x_0iplat_lp_00_looped 0x02CF
 
 #endif

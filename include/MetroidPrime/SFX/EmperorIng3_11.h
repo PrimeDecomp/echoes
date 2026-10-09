@@ -3,7 +3,7 @@
 
 #define GRPEmperorIng3_11 0x000F
 
-#define SFXpi2_x_deathball_00_oneshot 0x1435
-#define SFXpi2_x_litshield_00_oneshot 0x1438
+#define SFXei3_c_samthrust_00_oneshot 0x0463
+#define SFXei3_c_voxdeath_00_oneshot 0x0464
 
 #endif

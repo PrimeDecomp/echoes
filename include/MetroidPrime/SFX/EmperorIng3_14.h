@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng3_14 0x006A
 
-#define SFXsa2_b_litswitch_01_oneshot 0x146A
+#define SFXei3_c_sphere_lp_00_looped 0x046B
 
 #endif

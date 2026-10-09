@@ -3,9 +3,9 @@
 
 #define GRPSandBoss1 0x004C
 
-#define SFXsdb_c_samland_01_oneshot 0x1363
-#define SFXprt_c_samland_00_oneshot 0x1364
-#define SFXlsa_c_globe_lp_00_looped 0x13AA
-#define SFXlsa_c_rings_00_oneshot 0x13AC
+#define SFXsdb_r_voxflinch_00_oneshot 0x2872
+#define SFXsdb_r_voxpain_00_oneshot 0x2873
+#define SFXsdb_r_voxpainhuge_00_oneshot 0x2874
+#define SFXsdb_r_voxflinch_01_oneshot 0x2875
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPEmperorIng1_13 0x0068
 
-#define SFXdsi_c_samhead_00_oneshot 0x12BD
-#define SFXdks_c_samfall_00_oneshot 0x12E7
+#define SFXein_b_hitground_01_oneshot 0x0025
+#define SFXein_c_hitground_01_oneshot 0x04A2
 
 #endif

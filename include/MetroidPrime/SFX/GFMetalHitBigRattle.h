@@ -3,6 +3,6 @@
 
 #define GRPGFMetalHitBigRattle 0x0149
 
-#define SFXtem_x_smrings_lp_00_looped 0x1179
+#define SFXgft_x_mtlhitbigrattle_00_oneshot 0x0364
 
 #endif

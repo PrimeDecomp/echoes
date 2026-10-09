@@ -3,6 +3,6 @@
 
 #define GRPEmperorIng1_12 0x0067
 
-#define SFXsa2_b_litswitch_00_oneshot 0x1469
+#define SFXein_c_telestop_lp_00_looped 0x044C
 
 #endif

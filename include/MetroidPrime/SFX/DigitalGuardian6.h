@@ -3,13 +3,13 @@
 
 #define GRPDigitalGuardian6 0x002B
 
-#define SFXvis_c_twinkle_00_oneshot 0x1311
-#define SFXsav_x_savestn_lp_00_looped 0x1312
-#define SFXsav_c_armstop_00_oneshot 0x1313
-#define SFXsav_c_download_lp_00_looped 0x1314
-#define SFXsav_c_turnon_00_oneshot 0x1315
-#define SFXint_c_samjump_00_oneshot 0x1352
-#define SFXdks_c_samjump_00_oneshot 0x1354
-#define SFXdk2_c_samjump_00_oneshot 0x1356
+#define SFXdgd_b_elbow_00_oneshot 0x01AF
+#define SFXdgd_b_elbow_01_oneshot 0x01B0
+#define SFXdgd_b_elbow_02_oneshot 0x01B4
+#define SFXdgd_b_shoulder_00_oneshot 0x01B5
+#define SFXdgd_b_shoulder_01_oneshot 0x01B6
+#define SFXdgd_c_elbow_00_oneshot 0x03BB
+#define SFXdgd_c_shoulder_00_oneshot 0x03BC
+#define SFXdgd_c_elbow_01_oneshot 0x03BD
 
 #endif

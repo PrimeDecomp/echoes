@@ -3,6 +3,6 @@
 
 #define GRPCineTeleportTravel 0x01D5
 
-#define SFXef2_x_fire_lp_00_looped 0x1508
+#define SFXtel_c_travel_lp_00_looped 0x015F
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPGFMetalHitBigRing2 0x014D
 
-#define SFXtem_x_02gondolastuck_00_oneshot 0x1178
-#define SFXswp_x_10laser_lp_00_looped 0x11FD
+#define SFXtem_x_gfelevstop_00_oneshot 0x0116
+#define SFXgft_x_mtlhitbigring_01_oneshot 0x036E
 
 #endif

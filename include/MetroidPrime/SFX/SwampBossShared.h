@@ -3,9 +3,9 @@
 
 #define GRPSwampBossShared 0x0017
 
-#define SFXsa2_b_landwood_02_oneshot 0x149C
-#define SFXsa2_b_mlandgrs_00_oneshot 0x149E
-#define SFXsa2_b_mlandgrt_00_oneshot 0x149F
-#define SFXsa2_b_wlkwood_00_oneshot 0x14BA
+#define SFXsb1_a_spithit_00_oneshot 0x035C
+#define SFXsb1_b_wtrboil_lp_looped 0x0335
+#define SFXsb1_a_spit_lp_00_looped 0x035D
+#define SFXsb2_a_spithit_00_oneshot 0x0399
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPSandlandPlatforms 0x018F
 
-#define SFXsnd_x_force_lp_00_looped 0x11A5
+#define SFXsnd_x_plat_lp_00_looped 0x03B7
 
 #endif

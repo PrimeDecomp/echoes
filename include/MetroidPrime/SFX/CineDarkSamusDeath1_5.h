@@ -3,6 +3,6 @@
 
 #define GRPCineDarkSamusDeath1_5 0x023F
 
-#define SFXcan_x_activate_00_oneshot 0x1419
+#define SFXdks_c_voxdeathtemp_00_oneshot 0x241A
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPCineTeleportStation1 0x0240
 
-#define SFXsa2_b_butpress_00_oneshot 0x150C
+#define SFXtel_c_beam_00_oneshot 0x0108
 
 #endif

@@ -3,9 +3,9 @@
 
 #define GRPCineGameIntro7 0x022D
 
-#define SFXgib_x_rockmed_01_oneshot 0x1609
-#define SFXgib_x_drymed_01_oneshot 0x1625
-#define SFXgib_x_drybig_00_oneshot 0x1626
-#define SFXgib_x_drybig_01_oneshot 0x1627
+#define SFXint_c_stonebrk_00_oneshot 0x27BE
+#define SFXint_c_stonehit_00_oneshot 0x27BF
+#define SFXint_c_stonehit_01_oneshot 0x27C0
+#define SFXint_c_stonehit_02_oneshot 0x27C1
 
 #endif

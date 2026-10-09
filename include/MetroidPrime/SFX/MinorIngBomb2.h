@@ -3,8 +3,8 @@
 
 #define GRPMinorIngBomb2 0x0105
 
-#define SFXspr_b_swordout_00_oneshot 0x0519
-#define SFXpuf_b_fly_lp_00_looped 0x0520
-#define SFXpds_b_close_00_oneshot 0x0522
+#define SFXibg_r_voxpainbig_00_oneshot 0x229D
+#define SFXibg_r_voxpain_00_oneshot 0x2285
+#define SFXibg_b_tauntchg_00_oneshot 0x057E
 
 #endif

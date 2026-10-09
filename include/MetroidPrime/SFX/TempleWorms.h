@@ -3,6 +3,6 @@
 
 #define GRPTempleWorms 0x016C
 
-#define SFXsnd_x_0dfan_lp_02_looped 0x11F0
+#define SFXte2_x_worms_lp_00_looped 0x0527
 
 #endif

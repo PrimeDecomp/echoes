@@ -3,8 +3,8 @@
 
 #define GRPEmperorIng1_10 0x0065
 
-#define SFXsav_c_powerup_00_oneshot 0x12F0
-#define SFXmph_c_samspin_lp_00_looped 0x12F1
-#define SFXint_c_hud_01_oneshot 0x12F4
+#define SFXein_c_tentswoosh_00_oneshot 0x043A
+#define SFXein_c_tentup_00_oneshot 0x043B
+#define SFXein_c_voxangry_00_oneshot 0x044B
 
 #endif

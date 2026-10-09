@@ -3,7 +3,7 @@
 
 #define GRPDarkPortal5 0x02A3
 
-#define SFXsd2_a_bombspit_00_oneshot 0x070C
-#define SFXsd2_r_snatch_00_oneshot 0x070E
+#define SFXprt_x_riftdark_02_oneshot 0x27CC
+#define SFXprt_x_riftdark_03_oneshot 0x27CD
 
 #endif

@@ -3,10 +3,10 @@
 
 #define GRPIngVox2 0x00B8
 
-#define SFXein_b_tentmove_01_oneshot 0x0122
-#define SFXdk2_b_phase2_lp_00L_looped 0x0136
-#define SFXdk2_b_phase2_lp_00R_looped 0x0137
-#define SFXsdb_a_darkspit_01_oneshot 0x014B
-#define SFXsdb_a_darkspit_00_oneshot 0x014C
+#define SFXing_r_voxpain_00_oneshot 0x1F2C
+#define SFXing_r_voxpain_01_oneshot 0x1F2D
+#define SFXing_r_spotdeath_00_oneshot 0x1F51
+#define SFXing_r_spotdeath_01_oneshot 0x1F90
+#define SFXing_r_voxpain_02_oneshot 0x2010
 
 #endif

@@ -3,6 +3,6 @@
 
 #define GRPGFMetalServoSmall 0x0151
 
-#define SFXtem_x_gfgateup_lp_00_looped 0x117F
+#define SFXgft_x_mtlservosm_lp_00_looped 0x0372
 
 #endif

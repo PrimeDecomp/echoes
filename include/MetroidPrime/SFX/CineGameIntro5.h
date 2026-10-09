@@ -3,9 +3,9 @@
 
 #define GRPCineGameIntro5 0x022B
 
-#define SFXdkc_r_voxflinch_00_oneshot 0x15F7
-#define SFXgib_x_wetbig_01_oneshot 0x1605
-#define SFXgib_x_rockbig_00_oneshot 0x160B
-#define SFXgib_x_metalbig_01_oneshot 0x1620
+#define SFXint_c_shipfall_00_oneshot 0x2850
+#define SFXint_c_shipland_00_oneshot 0x2851
+#define SFXint_c_shipflinch_00_oneshot 0x2852
+#define SFXint_c_shipgear_00_oneshot 0x2853
 
 #endif

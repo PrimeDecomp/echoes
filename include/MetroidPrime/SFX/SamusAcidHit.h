@@ -3,10 +3,10 @@
 
 #define GRPSamusAcidHit 0x013A
 
-#define SFXsam_b_landplas_00_oneshot 0x1020
-#define SFXsam_b_landplas_02_oneshot 0x1021
-#define SFXsam_b_landwire_00_oneshot 0x1022
-#define SFXsam_b_landwire_02_oneshot 0x1023
-#define SFXsam_b_mlandfabr_00_oneshot 0x1024
+#define SFXsam_r_acidhit_00_oneshot 0x0646
+#define SFXsam_r_acidhit_lp_00_looped 0x0099
+#define SFXsam_r_drnhit_00_oneshot 0x0C18
+#define SFXsdw_a_acidhit_00_oneshot 0x1EB9
+#define SFXsam_r_darkmisthit_lp_00_looped 0x05C8
 
 #endif

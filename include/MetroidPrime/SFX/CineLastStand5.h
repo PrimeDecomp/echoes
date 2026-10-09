@@ -3,9 +3,9 @@
 
 #define GRPCineLastStand5 0x01E9
 
-#define SFXfnt_x_legon_00_oneshot 0x15CA
-#define SFXfnt_x_pan_lp_00_looped 0x15CB
-#define SFXfnt_x_zoom_lp_00_looped 0x15CC
-#define SFXfnt_x_imagenext_00_oneshot 0x15CD
+#define SFXtls_c_samkneel_00_oneshot 0x0323
+#define SFXtls_c_samstand_00_oneshot 0x0324
+#define SFXtls_c_samstand_01_oneshot 0x0325
+#define SFXtls_c_samtouch_00_oneshot 0x0326
 
 #endif

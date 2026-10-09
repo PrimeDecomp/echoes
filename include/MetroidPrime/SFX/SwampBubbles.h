@@ -3,7 +3,7 @@
 
 #define GRPSwampBubbles 0x01B2
 
-#define SFXtem_c_passby_00_oneshot 0x1185
-#define SFXui2_x_scanoff_01_oneshot 0x147A
+#define SFXswp_x_bubbles_lp_00_looped 0x0467
+#define SFXsb1_c_bubbles_lp_00_looped 0x04F9
 
 #endif

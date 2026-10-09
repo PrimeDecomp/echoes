@@ -3,7 +3,8 @@
 
 #define GRPCineLand2 0x0250
 
-#define SFXsa2_b_jump_00_oneshot 0x1522
-#define SFXswp_x_eyemove_00_oneshot 0x163A
+#define SFXdsa_c_samland_00_oneshot 0x0235
+#define SFXsja_c_samland_01_oneshot 0x00E5
+#define SFXsja_c_samland_00_oneshot 0x00E4
 
 #endif

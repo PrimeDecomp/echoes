@@ -3,16 +3,16 @@
 
 #define GRPCinePortalTransition 0x0209
 
-#define SFXsd2_a_boost_01_oneshot 0x0703
-#define SFXsd2_b_voxangry_01_oneshot 0x0710
-#define SFXsd2_b_voxdig_00_oneshot 0x0711
-#define SFXsd2_b_voxerupt_00_oneshot 0x0712
-#define SFXsa2_b_rollice_lp_00_looped 0x1532
-#define SFXsa2_b_rollorg_lp_00_looped 0x1536
-#define SFXsa2_b_rollphaz_lp_00_looped 0x1537
-#define SFXsa2_b_rollrubb_lp_00_looped 0x1539
-#define SFXsa2_b_rollsand_lp_00_looped 0x153A
-#define SFXsa2_b_rollwatr_lp_00_looped 0x153D
-#define SFXsa2_b_rollweb_lp_00_looped 0x153E
+#define SFXprt_c_dissolve_00_oneshot 0x26C3
+#define SFXprt_c_thunder_00_oneshot 0x26C5
+#define SFXprt_c_thunder_01_oneshot 0x26C6
+#define SFXprt_c_inportal_lp_01_looped 0x27B8
+#define SFXptx_c_darklight_00_oneshot 0x00B3
+#define SFXptx_c_dissolve_00_oneshot 0x00B4
+#define SFXptx_c_whiteflash_00_oneshot 0x00D3
+#define SFXptx_c_inportal_lp_01_looped 0x00C1
+#define SFXptx_c_lightdark_00_oneshot 0x00C8
+#define SFXptx_c_thunder_00_oneshot 0x00CC
+#define SFXptx_c_thunder_01_oneshot 0x00CD
 
 #endif

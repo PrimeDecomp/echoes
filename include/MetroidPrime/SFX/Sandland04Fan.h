@@ -3,6 +3,6 @@
 
 #define GRPSandland04Fan 0x01AD
 
-#define SFXsnd_x_tubengage_00_oneshot 0x11E9
+#define SFXsnd_x_04fan_lp_00_looped 0x0401
 
 #endif

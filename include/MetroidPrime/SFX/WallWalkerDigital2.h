@@ -3,9 +3,9 @@
 
 #define GRPWallWalkerDigital2 0x0079
 
-#define SFXsb1_c_ccnfall_01_oneshot 0x0019
-#define SFXsb1_c_ccnfall_02_oneshot 0x001A
-#define SFXsb1_c_ccnsplit_00_oneshot 0x001B
-#define SFXsb1_c_swimby_00_oneshot 0x001C
+#define SFXwa2_r_legmove_00_oneshot 0x0469
+#define SFXwa2_r_voxdeath_00_onseshot 0x04E5
+#define SFXwa2_r_voxpain_00_oneshot 0x04E6
+#define SFXwa2_r_voxpain_01_oneshot 0x04E7
 
 #endif

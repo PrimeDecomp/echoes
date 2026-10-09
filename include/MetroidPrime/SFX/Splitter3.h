@@ -3,11 +3,11 @@
 
 #define GRPSplitter3 0x00FD
 
-#define SFXsb1_c_splash_01_oneshot 0x0081
-#define SFXdks_c_moveup_lp_00_looped 0x0091
-#define SFXdsi_c_move_lp_00_looped 0x0092
-#define SFXei3_b_land_00_oneshot 0x0093
-#define SFXei3_b_walk_00_oneshot 0x0094
-#define SFXei3_c_land_00_oneshot 0x00A4
+#define SFXspt_b_voxidle_00_oneshot 0x21E4
+#define SFXspt_b_voxidle_01_oneshot 0x21E5
+#define SFXspt_b_walk_00_oneshot 0x21E6
+#define SFXspt_b_walk_01_oneshot 0x21E7
+#define SFXspt_r_death_00_oneshot 0x2324
+#define SFXspt_b_connect_00_oneshot 0x21BA
 
 #endif

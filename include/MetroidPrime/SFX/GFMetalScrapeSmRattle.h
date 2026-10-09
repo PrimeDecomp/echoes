@@ -3,8 +3,8 @@
 
 #define GRPGFMetalScrapeSmRattle 0x014F
 
-#define SFXsam_b_rollweb_lp_00_looped 0x117D
-#define SFXsb1_c_bubbles_lp_00_looped 0x11FC
-#define SFXswp_x_03bridge_lp_00_looped 0x1236
+#define SFXgft_x_mtlscrapesmrattle_lp_00_looped 0x0370
+#define SFXtem_x_02gondola_lp_00_looped 0x0127
+#define SFXclf_x_0gspindoor_lp_00_looped 0x0443
 
 #endif

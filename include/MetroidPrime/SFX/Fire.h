@@ -3,12 +3,12 @@
 
 #define GRPFire 0x02BD
 
-#define SFXspt_b_scan_lp_00_looped 0x0261
-#define SFXmt3_r_hivegib_00_oneshot 0x0325
-#define SFXsdw_b_land_00_oneshot 0x0671
-#define SFXsdw_b_movefast_lp_00_looped 0x0673
-#define SFXsdw_b_landlight_00_oneshot 0x0674
-#define SFXsdw_a_spithit_00_oneshot 0x0676
-#define SFXkra_b_voxidle_00_oneshot 0x069A
+#define SFXfir_x_bigflame_lp_00_looped 0x2804
+#define SFXfir_x_flamejet_lp_00_looped 0x2805
+#define SFXfpr_b_smoke_lp_00_looped 0x2806
+#define SFXsas_x_flame_lp_00_looped 0x2807
+#define SFXdrn_b_smoke_lp_00_looped 0x2808
+#define SFXspr_a_grenflam_lp_00_looped 0x2809
+#define SFXtls_c_smoke_lp_00_looped 0x280A
 
 #endif

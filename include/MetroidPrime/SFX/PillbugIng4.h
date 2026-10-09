@@ -3,7 +3,7 @@
 
 #define GRPPillbugIng4 0x011F
 
-#define SFXin2_r_pudhit_00_oneshot 0x03F2
-#define SFXin2_a_fire_00_oneshot 0x03F3
+#define SFXisg_r_voxhyper_00_oneshot 0x03DA
+#define SFXisg_r_voxstun_00_oneshot 0x03DB
 
 #endif

@@ -3,7 +3,7 @@
 
 #define GRPCineDarkSamusIntro5 0x01DA
 
-#define SFXcoi_x_coinland_00_oneshot 0x140C
-#define SFXdor_x_smopen_00_oneshot 0x166C
+#define SFXdks_c_touchdown_00_oneshot 0x267C
+#define SFXdk3_c_land_01_oneshot 0x02C0
 
 #endif

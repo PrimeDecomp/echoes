@@ -3,11 +3,11 @@
 
 #define GRPCommandoPirateVox 0x00BE
 
-#define SFXgrn_b_voxangrywtr_01_oneshot 0x044A
-#define SFXgrn_b_bubbles_00_oneshot 0x0452
-#define SFXgrn_a_bitewtr_00_oneshot 0x0453
-#define SFXgrn_r_voxshelloffwtr_00_oneshot 0x0456
-#define SFXshk_b_voxidle_01_oneshot 0x0458
-#define SFXspb_a_gripsuck_00_oneshot 0x046F
+#define SFXcpr_a_voxattack_00_oneshot 0x1E77
+#define SFXcpr_b_voxalert_00_oneshot 0x1E78
+#define SFXcpr_b_voxidle_00_oneshot 0x1E7B
+#define SFXcpr_b_voxidle_01_oneshot 0x1E7C
+#define SFXcpr_a_voxattack_01_oneshot 0x1ECA
+#define SFXcpr_a_voxattack_02_oneshot 0x1EEE
 
 #endif

@@ -3,23 +3,23 @@
 
 #define GRPBlogg2 0x00AD
 
-#define SFXupr_r_die_00_oneshot 0x04E9
-#define SFXupr_r_impact_00_oneshot 0x04EA
-#define SFXzom_b_idle_01_oneshot 0x04EC
-#define SFXgem_b_spikein_00_oneshot 0x04ED
-#define SFXgem_b_spikeout_00_oneshot 0x04EE
-#define SFXgem_r_impact_00_oneshot 0x04EF
-#define SFXgem_b_idle_00_oneshot 0x04F0
-#define SFXgem_b_idle_01_oneshot 0x04F1
-#define SFXtur_b_raise_00_oneshot 0x04F9
-#define SFXtri_r_voxgib_00_oneshot 0x0505
-#define SFXfpr_b_walk_00_oneshot 0x0506
-#define SFXfpr_b_walk_01_oneshot 0x0507
-#define SFXspr_b_run_01_oneshot 0x0509
-#define SFXspr_b_walk_00_oneshot 0x050A
-#define SFXspr_b_walk_01_oneshot 0x050B
-#define SFXspr_b_walk_02_oneshot 0x050C
-#define SFXcpr_b_walk_03_oneshot 0x0511
-#define SFXspr_b_movement_00_oneshot 0x0516
+#define SFXblg_a_charge_00_oneshot 0x2150
+#define SFXblg_a_charge_01_oneshot 0x2151
+#define SFXblg_a_grabball_00_oneshot 0x2152
+#define SFXblg_a_grabball_01_oneshot 0x2153
+#define SFXblg_a_sonic_00_oneshot 0x2155
+#define SFXblg_a_sonic_lp_00_looped 0x2157
+#define SFXblg_a_charge_lp_00_looped 0x2184
+#define SFXblg_a_sonichit_00_oneshot 0x21A3
+#define SFXblg_a_grabball_lp_00_looped 0x21A6
+#define SFXbl3_a_charge_00_oneshot 0x01FE
+#define SFXbl3_a_charge_01_oneshot 0x01FF
+#define SFXbl3_a_charge_lp_00_looped 0x0200
+#define SFXbl3_a_grabball_01_oneshot 0x0203
+#define SFXbl3_a_grabball_lp_00_looped 0x0204
+#define SFXbl3_a_sonic_00_oneshot 0x0205
+#define SFXbl3_a_sonic_lp_00_looped 0x0207
+#define SFXbl3_a_sonichit_00_oneshot 0x0208
+#define SFXblg_a_sonic_01_oneshot 0x2156
 
 #endif

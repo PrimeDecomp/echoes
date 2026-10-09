@@ -3,11 +3,11 @@
 
 #define GRPIngPuddle2 0x00EA
 
-#define SFXein_b_headin_00_oneshot 0x011F
-#define SFXein_b_retract_00_oneshot 0x0120
-#define SFXein_a_voxtentwarp_00_oneshot 0x012E
-#define SFXein_a_shock_00_oneshot 0x012F
-#define SFXsdb_b_voxidlesq_01_oneshot 0x0141
-#define SFXsdb_c_voxidlesq_00_oneshot 0x0142
+#define SFXing_b_shadowin_00_oneshot 0x1F22
+#define SFXing_b_shadowout_00_oneshot 0x1F23
+#define SFXing_r_spothit_00_oneshot 0x1F39
+#define SFXing_r_spothit_01_oneshot 0x1F3A
+#define SFXing_b_spotform_00_oneshot 0x1FE5
+#define SFXing_b_spitout_00_oneshot 0x1FE6
 
 #endif

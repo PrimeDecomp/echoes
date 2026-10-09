@@ -3,6 +3,6 @@
 
 #define GRPScanPanel 0x02C1
 
-#define SFXcpr_b_voxangry_00_oneshot 0x0680
+#define SFXscn_x_ctlpanel_lp_00_looped 0x2595
 
 #endif

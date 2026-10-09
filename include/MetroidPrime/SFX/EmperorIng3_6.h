@@ -3,10 +3,10 @@
 
 #define GRPEmperorIng3_6 0x0026
 
-#define SFXpi2_x_random_lp_00_looped 0x142D
-#define SFXsa2_a_cbmcharge_lp_00_looped 0x144A
-#define SFXsa2_b_wpnswitch_00_oneshot 0x145A
-#define SFXsa2_b_nilswitch_00_oneshot 0x1466
-#define SFXsa2_b_nilswitch_01_oneshot 0x1467
+#define SFXei3_b_voxtaunt_00_oneshot 0x01EA
+#define SFXei3_b_voxtaunt_01_oneshot 0x026D
+#define SFXei3_b_voxrecharge_00_oneshot 0x0381
+#define SFXei3_b_voxrecharge_01_oneshot 0x0382
+#define SFXei3_c_voxtaunt_01_oneshot 0x05C4
 
 #endif

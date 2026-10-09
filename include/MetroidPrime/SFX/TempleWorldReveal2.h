@@ -3,6 +3,6 @@
 
 #define GRPTempleWorldReveal2 0x017A
 
-#define SFXsb1_c_waterpipe_lp_00_looped 0x1208
+#define SFXtem_c_wind_lp_00l_looped 0x1EF6
 
 #endif

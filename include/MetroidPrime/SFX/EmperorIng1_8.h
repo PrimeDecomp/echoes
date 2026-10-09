@@ -3,8 +3,8 @@
 
 #define GRPEmperorIng1_8 0x0063
 
-#define SFXdks_c_footstep_00_oneshot 0x12EA
-#define SFXdks_c_footstep_01_oneshot 0x12EB
-#define SFXdk2_c_footstep_deth_01_oneshot 0x12EF
+#define SFXein_c_appear_00_oneshot 0x043E
+#define SFXein_c_bodymove_lp_00_looped 0x043F
+#define SFXein_c_tentdown_00_oneshot 0x0440
 
 #endif

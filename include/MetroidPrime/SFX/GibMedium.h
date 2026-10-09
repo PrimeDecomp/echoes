@@ -3,7 +3,7 @@
 
 #define GRPGibMedium 0x02EA
 
-#define SFXcp2_b_voxidle_01_oneshot 0x024A
-#define SFXsdw_b_dig_00_oneshot 0x066A
+#define SFXgib_r_medium_00_oenshot 0x04D7
+#define SFXtri_r_gib_00_oneshot 0x2755
 
 #endif

@@ -3,14 +3,14 @@
 
 #define GRPRezbit 0x010D
 
-#define SFXspr_b_voxidle_02_oneshot 0x0594
-#define SFXspr_b_voxangry_00_oneshot 0x0595
-#define SFXspr_b_voxidle_03_oneshot 0x0596
-#define SFXspr_b_voxalert_00_oneshot 0x0597
-#define SFXspr_b_voxattack_00_oneshot 0x059A
-#define SFXspr_r_die_00_oneshot 0x059D
-#define SFXspr_r_himpact_00_oneshot 0x059E
-#define SFXspr_r_snatch_00_oneshot 0x05A9
-#define SFXspr_r_snatch_01_oneshot 0x05AA
+#define SFXrez_a_boltfire_00_oneshot 0x003A
+#define SFXrez_b_shieldout_00_oneshot 0x0046
+#define SFXrez_b_strafe_00_oneshot 0x0047
+#define SFXrez_r_death_00_oneshot 0x0026
+#define SFXrez_r_shieldexp_00_oneshot 0x004B
+#define SFXrez_r_voxalert_00_oneshot 0x004C
+#define SFXrez_r_voxpain_00_oneshot 0x0027
+#define SFXrez_b_sphere_00_oneshot 0x00FD
+#define SFXrez_b_sphere_01_oneshot 0x0100
 
 #endif

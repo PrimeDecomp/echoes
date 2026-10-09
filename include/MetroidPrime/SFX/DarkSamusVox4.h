@@ -3,11 +3,11 @@
 
 #define GRPDarkSamusVox4 0x006F
 
-#define SFXtel_c_beamstart_00_oneshot 0x13C2
-#define SFXtel_c_flash_rev_00_oneshot 0x13C3
-#define SFXgen_c_zapstrong_lp_00_looped 0x13F2
-#define SFXgen_c_litbeamzoom_00_oneshot 0x13F8
-#define SFXgen_c_litgenform_00_oneshot 0x13F9
-#define SFXsa2_b_wlksnow_01_oneshot 0x14E7
+#define SFXdks_b_voxbreath_00_oneshot 0x288F
+#define SFXdks_b_voxbreath_01_oneshot 0x2890
+#define SFXdks_c_voxbreath_00_oneshot 0x2891
+#define SFXdks_c_voxbreath_01_oneshot 0x2892
+#define SFXdks_c_voxbreathsm_00_oneshot 0x2893
+#define SFXdk2_c_voxbreath_01_oneshot 0x0558
 
 #endif
