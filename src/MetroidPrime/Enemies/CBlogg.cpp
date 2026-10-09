@@ -2,18 +2,23 @@
 
 #include "Collision/CCollisionInfoList.hpp"
 #include "Collision/CMaterialFilter.hpp"
+#include "Collision/CSpatialPrimitive.hpp"
+#include "Kyoto/Animation/CCharLayoutInfo.hpp"
 #include "Kyoto/Animation/CPASAnimParmData.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CMatrix3f.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
 #include "MetroidPrime/BodyState/CBodyController.hpp"
 #include "MetroidPrime/CAnimData.hpp"
+#include "MetroidPrime/CCollisionActor.hpp"
 #include "MetroidPrime/CCollisionActorManager.hpp"
 #include "MetroidPrime/CGameCollision.hpp"
 #include "MetroidPrime/CHealthInfo.hpp"
 #include "MetroidPrime/CKnockBackInfo.hpp"
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/CWorld.hpp"
+#include "MetroidPrime/Collision/CJointCollisionDescription.hpp"
 #include "MetroidPrime/Enemies/CPatternedInfo.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
@@ -33,6 +38,7 @@
 #include "MetroidPrime/Weapons/CPowerBomb.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 #include "REL/REL_Setup.h"
+#include "rstl/StringExtras.hpp"
 
 #include <math.h>
 
@@ -113,6 +119,7 @@ static CPatterned::StateMachine::SCodeFunction skCodeFuncs[] = {
      static_cast< CPatterned::StateMachine::CodeFunc >(&CBlogg::EndMeleePursuit)},
 };
 
+static const char* const skPivotLocatorName = "Skeleton_Root";         // Guessed name
 static const char* const skMouthLocatorName = "mouth_LCTR";            // Guessed name
 static const char* const skBallAttachLocatorName = "ball_attach_LCTR"; // Guessed name
 
@@ -392,13 +399,11 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
       CMaterialList()));
   BodyController()->BodyStateInfo().SetMaximumPitch(1.3962634f);
 
-  rstl::rc_ptr< CBloggMouthVulnerability > mouthVulnerability =
-      rstl::ncrc_ptr< CBloggMouthVulnerability >(mMouthVulnerability);
+  rstl::rc_ptr< CBloggMouthVulnerability > mouthVulnerability(mMouthVulnerability);
   if (mouthVulnerability) {
     mouthVulnerability->SetOwner(this);
   }
-  rstl::rc_ptr< CBloggBodyVulnerability > bodyVulnerability =
-      rstl::ncrc_ptr< CBloggBodyVulnerability >(mBodyVulnerability);
+  rstl::rc_ptr< CBloggBodyVulnerability > bodyVulnerability(mBodyVulnerability);
   if (bodyVulnerability) {
     bodyVulnerability->SetOwner(this);
   }
@@ -1018,8 +1023,7 @@ void CBlogg::Death(CStateManager& mgr, const CVector3f& direction, EScriptObject
   mVerticalMovement = true;
 }
 
-void CBlogg::ApplyCollisionActorDamage(CStateManager& mgr, const TUniqueId& senderId,
-                                       float multiplier) {
+void CBlogg::ApplyCollisionActorDamage(CStateManager& mgr, TUniqueId senderId, float multiplier) {
   if (mAlive) {
     CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId));
     if (collisionActor != nullptr) {
@@ -1959,6 +1963,187 @@ void CBlogg::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUse
   default:
     CPatterned::DoUserAnimEvent(mgr, node, type, dt);
     break;
+  }
+}
+
+void CBlogg::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
+  const bool wasActive = GetActive();
+  const TUniqueId senderId = msg.GetSenderId();
+  switch (msg.GetMessage()) {
+  case kSM_AreaLoaded: {
+    rstl::vector< SConnection >::const_iterator it = GetConnectionList().begin();
+    for (; it != GetConnectionList().end(); ++it) {
+      mgr.GetIdForScript(it->objId);
+    }
+    mPathFindSearch.SetArea(
+        mgr.GetWorld()->GetAreaAlways(GetCurrentAreaId()).GetPostConstructed()->mPathArea);
+    mPlayerId = mgr.GetPlayer(0)->GetUniqueId();
+    CollectHints(mgr);
+    break;
+  }
+  case kSM_Create: {
+    if (!BodyController()->GetIsActive()) {
+      BodyController()->SetLocomotionType(pas::kLT_Relaxed);
+      BodyController()->Activate(mgr, pas::kAS_Invalid);
+    }
+    {
+      rstl::vector< CJointCollisionDescription > joints;
+      if (HasAnimation() && GetAnimationData()->GetSpatialPrimitive()) {
+        const CSpatialPrimitive* primitive = **GetAnimationData()->GetSpatialPrimitive();
+        const rstl::vector< CSpatialPrimitive::SSphere >& spheres = primitive->GetSpheres();
+        const uint sphereCount = spheres.size();
+        joints.reserve(sphereCount);
+        for (uint i = 0; i < sphereCount; ++i) {
+          const CSpatialPrimitive::SSphere& sphere = spheres[i];
+          const CSegId segId = sphere.mFirstSegment;
+          const CSphere& bounds = sphere.mSphere;
+          const CJointCollisionDescription desc = CJointCollisionDescription::SphereCollision(
+              segId, bounds.GetCenter(), bounds.GetRadius(),
+              rstl::string_l("sphere") + CStringExtras::CreateFromInteger(i), 0.001f);
+          joints.push_back_unsafe(desc);
+        }
+
+        mCollisionActorManager = rs_new CCollisionActorManager(
+            mgr, GetUniqueId(), GetCurrentAreaId(), joints, GetActive());
+        mCollisionActorManager->AddMaterialList(
+            mgr, CMaterialList(kMT_CameraPassthrough, kMT_Immovable));
+        const CSegId pivotId = GetAnimationData()->GetCharLayoutInfo()->GetSegIdFromString(
+            rstl::string_l(skPivotLocatorName));
+        for (uint i = 0; i < mCollisionActorManager->GetNumCollisionActors(); ++i) {
+          const CJointCollisionDescription& desc =
+              mCollisionActorManager->GetCollisionDescFromIndex(i);
+          const TUniqueId id = desc.GetCollisionActorId();
+          if (CCollisionActor* colAct = static_cast< CCollisionActor* >(mgr.ObjectById(id))) {
+            colAct->AddMaterial(spheres[i].x8_);
+            colAct->MaterialList().Add(kMT_Player);
+            colAct->MaterialList().Add(kMT_AIPassthrough);
+            colAct->MaterialList().Remove(kMT_Orbit);
+            colAct->MaterialList().Remove(kMT_Target);
+            const u64 ownInclude = GetMaterialFilter().GetIncludeList().GetValue();
+            const u64 ownExclude = GetMaterialFilter().GetExcludeList().GetValue();
+            const u64 actorInclude = colAct->GetMaterialFilter().GetIncludeList().GetValue();
+            const u64 actorExclude = colAct->GetMaterialFilter().GetExcludeList().GetValue();
+            colAct->SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(
+                CMaterialList(ownInclude | actorInclude),
+                CMaterialList(ownExclude | (u64(1) << kMT_Character) | actorExclude)));
+            const CHealthInfo health = *GetHealthInfo();
+            colAct->SetDamageVulnerability(*CPatterned::GetDamageVulnerability());
+            if (desc.GetPivotId() == pivotId) {
+              xac4_ = id;
+              colAct->SetNonUniformVulnerability(mMouthVulnerability);
+            } else {
+              colAct->SetNonUniformVulnerability(mBodyVulnerability);
+            }
+            *colAct->HealthInfo() = health;
+          }
+        }
+      }
+    }
+    AddMaterial(kMT_ProjectilePassthrough, mgr);
+    if (mIsMegaBlogg && mPhases.size() > 0) {
+      ChoosePhaseValue(mgr);
+    }
+    mLineOfSightTracker.SetTarget(mgr.GetPlayer(0)->GetUniqueId());
+    break;
+  }
+  case kSM_AIUpdateDisabled:
+    if (mCollisionActorManager.get() != nullptr) {
+      mCollisionActorManager->SetPhysicsActive(mgr, false);
+    }
+    break;
+  case kSM_Delete:
+    mCollisionActorManager->Destroy(mgr);
+    LeaveTeam(mgr);
+    // Fallthrough
+  case kSM_Deactivate:
+    mCollisionActorManager->SetActive(mgr, false);
+    LeaveTeam(mgr);
+    break;
+  case kSM_Alert:
+    xbc4_24_ = true;
+    // Fallthrough
+  case kSM_XHIT: {
+    if (CCollisionActor* colAct = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId))) {
+      if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(colAct->GetLastTouchedObject()))) {
+        CDamageInfo damage(mContactDamage);
+        if (senderId == xac4_) {
+          if (mState == kBS_ChargeAttack) {
+            damage.SetDamage(mChargeDamage);
+            xbc4_25_ = true;
+          } else if (mState == kBS_MeleeAttack) {
+            damage.SetDamage(mBiteDamage);
+          }
+        }
+        ApplyContactDamage(mgr, *player, damage);
+      }
+    }
+    break;
+  }
+  case kSM_Damage: {
+    if (CCollisionActor* colAct = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId))) {
+      const TUniqueId touchedId = colAct->GetLastTouchedObject();
+      CHealthInfo* colHealth = colAct->HealthInfo();
+      const float initialHP = HealthInfo()->GetInitialHP();
+      if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(touchedId))) {
+        const CVector3f position = weapon->GetTransform().GetForward();
+        if (senderId == xac4_ && IsHitInMouthDirection(position) && mMouthClosed == 0) {
+          ApplyCollisionActorDamage(mgr, senderId, mMouthDamageMultiplier);
+          mHitByPlayerProjectile = true;
+          mDamageCooldownTimer = skDamageHitTime;
+          xbc4_24_ = true;
+        } else {
+          const CVector3f forward = GetTransform().GetForward();
+          if (CVector3f::Dot(position.AsNormalized(), forward) > 0.f) {
+            ApplyCollisionActorDamage(mgr, senderId, mBodyDamageMultiplier);
+            mHitByPlayerProjectile = true;
+            xbc4_24_ = true;
+          }
+        }
+      } else if (mMouthClosed == 0) {
+        const CBomb* bomb = TCastToConstPtr< CBomb >(mgr.GetObjectById(touchedId));
+        const CPowerBomb* powerBomb = TCastToConstPtr< CPowerBomb >(mgr.GetObjectById(touchedId));
+        if (bomb != nullptr || powerBomb != nullptr) {
+          ApplyCollisionActorDamage(mgr, senderId, mMouthDamageMultiplier);
+          mHitByPlayerProjectile = true;
+          mDamageCooldownTimer = skDamageHitTime;
+          xbc4_24_ = true;
+        }
+      }
+      colHealth->SetHP(initialHP);
+    }
+    break;
+  }
+  case kSM_ResistedDamage: {
+    if (CCollisionActor* colAct = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId))) {
+      if (const CWeapon* weapon =
+              TCastToConstPtr< CWeapon >(mgr.GetObjectById(colAct->GetLastTouchedObject()))) {
+        const CDamageInfo& weaponDamage = weapon->GetCurrentDamageInfo();
+        const CDamageVulnerability* vulnerability =
+            colAct->GetDamageVulnerability(CVector3f::Zero(), CVector3f::Forward(), weaponDamage);
+        if (weaponDamage.GetVulnerableDamage(*vulnerability) > 0.f) {
+          xb68_ = skDamageHitTime;
+          xbc5_26_ = true;
+          BodyController()->CommandMgr().DeliverCmd(CBCAdditiveFlinchCmd(1.f));
+        }
+      }
+    }
+    break;
+  }
+  case kSM_InternalMessage00:
+    HealthInfo()->SetHP(-1.f);
+    Death(mgr, GetTransform().GetForward(), kSS_InvalidState);
+    break;
+  case kSM_InternalMessage01:
+    xbc4_24_ = false;
+    break;
+  case kSM_Decrement:
+  case kSM_Increment:
+    break;
+  }
+
+  CPatterned::AcceptScriptMsg(mgr, msg);
+  if (wasActive != GetActive() && mCollisionActorManager.get() != nullptr) {
+    mCollisionActorManager->SetActive(mgr, GetActive());
   }
 }
 

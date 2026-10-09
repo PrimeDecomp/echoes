@@ -124,6 +124,7 @@ public:
   CEntity* TypesMatch(int typeId) const override;
 
   // CEntity
+  void AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) override;
   void Think(float dt, CStateManager& mgr) override;
 
   // CActor
@@ -227,7 +228,7 @@ private:
   void ApplyContactDamage(CStateManager& mgr, CPlayer& player,
                           const CDamageInfo& damage);  // Guessed name
   bool IsPlayerInMouthRange(CStateManager& mgr) const; // Guessed name
-  void ApplyCollisionActorDamage(CStateManager& mgr, const TUniqueId& senderId,
+  void ApplyCollisionActorDamage(CStateManager& mgr, TUniqueId senderId,
                                  float multiplier); // Guessed name
   void ReleaseHints(CStateManager& mgr);            // Guessed name
   TUniqueId FindNearestHint(CStateManager& mgr, const CVector3f& position,
@@ -321,8 +322,8 @@ private:
   rstl::vector< TUniqueId > mHintIds;                             // Guessed name
   float mMeleeDelayTimer;                                         // Guessed name
   float mMinDelayBetweenMeleeAttacks;                             // Guessed name
-  rstl::ncrc_ptr< CBloggMouthVulnerability > mMouthVulnerability; // Guessed name
-  rstl::ncrc_ptr< CBloggBodyVulnerability > mBodyVulnerability;   // Guessed name
+  rstl::ncrc_ptr< CNonUniformVulnerability > mMouthVulnerability; // Guessed name
+  rstl::ncrc_ptr< CNonUniformVulnerability > mBodyVulnerability;  // Guessed name
   float mProjectileBlurRadius;                                    // Guessed name
   float mProjectileBlurTime;                                      // Guessed name
   float xb68_;

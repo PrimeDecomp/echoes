@@ -78,7 +78,7 @@ LaunchBloggProjectile__6CBloggFRC12CTransform4fR13CStateManageriUibRC18CImpactVi
 ProjectileInfo__6CBloggFv = .text:0x000045D8; // type:function size:0x8
 GetPlayer__6CBloggCFR13CStateManager = .text:0x000045E0; // type:function size:0x4C
 GetDirectionToPlayer__6CBloggCFR13CStateManager = .text:0x0000462C; // type:function size:0xFC
-ApplyCollisionActorDamage__6CBloggFR13CStateManagerRC9TUniqueIdf = .text:0x00004728; // type:function size:0x338
+ApplyCollisionActorDamage__6CBloggFR13CStateManager9TUniqueIdf = .text:0x00004728; // type:function size:0x338
 TakeDamage__10CPatternedFRC9CVector3ff = .text:0x00004A60; // type:function size:0x10
 __ct__11CDamageInfoFv = .text:0x00004A70; // type:function size:0x90
 GetContactDamage__6CBloggCFv = .text:0x00004B00; // type:function size:0x4C
@@ -150,7 +150,7 @@ Think__6CBloggFfR13CStateManager = .text:0x000087C8; // type:function size:0x530
 IsPlayerWithinChargeRange__6CBloggCFR13CStateManagerP7CPlayer = .text:0x00008CF8; // type:function size:0x12C
 IsInhabitingFluid__6CBloggCFR13CStateManager9TUniqueId9TUniqueId = .text:0x00008E24; // type:function size:0x6C
 IsHitInMouthDirection__6CBloggCFRC9CVector3f = .text:0x00008E90; // type:function size:0xEC
-fn_7_8F7C = .text:0x00008F7C; // type:function size:0xC60
+AcceptScriptMsg__6CBloggFR13CStateManagerRC10CScriptMsg = .text:0x00008F7C; // type:function size:0xC60
 fn_7_9BDC = .text:0x00009BDC; // type:function size:0x5C
 fn_7_9C38 = .text:0x00009C38; // type:function size:0x54
 fn_7_9C8C = .text:0x00009C8C; // type:function size:0x38
