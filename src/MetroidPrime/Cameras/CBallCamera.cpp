@@ -1017,15 +1017,25 @@ void CBallCamera::UpdateUsingSpline(float dt, CStateManager& mgr) {
     mSplineState = kBSS_Invalid;
     return;
   }
-  if (mSplineState == kBSS_One && ((mBehaviour >= kBCB_Unknown4 && mBehaviour <= kBCB_Unknown9) ||
-                                   mBehaviour == kBCB_FixedTransform)) {
-    mSplineState = kBSS_Invalid;
-    return;
+
+  if (mSplineState == kBSS_One) {
+    switch (mBehaviour) {
+    case kBCB_Unknown4:
+    case kBCB_Unknown5:
+    case kBCB_Unknown6:
+    case kBCB_Unknown7:
+    case kBCB_Unknown8:
+    case kBCB_Unknown9:
+    case kBCB_FixedTransform:
+      InvalidateSpline();
+      return;
+    }
   }
 
   float distance = mCurMinDistance;
   float elevation = mElevation;
   ConstrainElevationAndDistance(elevation, distance, 0.f, mgr);
+
   const CVector3f ballPos = Player(mgr).GetBallPosition();
   CVector3f direction = ballPos - GetTranslation();
   direction.SetZ(0.f);
@@ -1035,50 +1045,50 @@ void CBallCamera::UpdateUsingSpline(float dt, CStateManager& mgr) {
     direction = Player(mgr).GetMovementDirection();
   }
 
-  const CVector3f endPosition = mCamSpline.GetKnot(mCamSpline.GetKnotCount() - 1);
-  CVector3f desiredPosition = FindDesiredPosition(distance, elevation, direction, mgr, false);
+  const CVector3f endPosition = mCamSpline.GetKnot(mCamSpline.GetControlPointCount() - 1);
+  CVector3f desiredPos = FindDesiredPosition(distance, elevation, direction, mgr, false);
+
   mSplineCtrl -= dt;
-  const float remaining = CMath::Clamp(0.f, mSplineCtrl / mSplineCtrlRange, 1.f);
-  const float progress = 1.f - remaining;
-  if (mCamBehindFloorOrWall && !close_enough(desiredPosition, GetTranslation(), 0.1f)) {
-    desiredPosition += remaining * (GetTranslation() - desiredPosition);
+  const float splineT = 1.f - CMath::Clamp(0.f, mSplineCtrl / mSplineCtrlRange, 1.f);
+  if (mReevalSplineEnd && !close_enough(desiredPos, GetTranslation(), 0.1f)) {
+    desiredPos += (1.f - splineT) * (GetTranslation() - desiredPos);
   }
 
-  if (mSplineCtrl <= 0.f || (progress > 0.95f && mClearLOS)) {
+  if (mSplineCtrl <= 0.f || (splineT > 0.95f && mClearLOS)) {
     mSplineState = kBSS_Invalid;
     const CTransform4f previous = GetTransform();
-    const CTransform4f desired = FindDesiredTransform(direction, mgr);
-    TeleportCamera(desired, mgr);
+    TeleportCamera(FindDesiredTransform(direction, mgr), mgr);
     CameraManager(mgr).SetupInterpolation(
         previous, GetUniqueId(), GetUniqueId(), false, CInterpolationCamera::kPM_Direct,
-        CInterpolationCamera::kRM_LinearSlerp, mgr, true, 0.5f, GetFov());
+        CInterpolationCamera::kRM_LinearSlerp, mgr, true, 0.5f, GetTargetFov());
     return;
   }
 
-  const float splineLength = progress * mCamSpline.GetLength();
-  CVector3f cameraPos = mCamSpline.GetPositionByLength(splineLength);
-  const CCollisionActor* collisionActor =
-      TCastToConstPtr< CCollisionActor >(mgr.GetObjectById(mCollisionActorId));
-  if (collisionActor != nullptr) {
-    const CMaterialFilter previousFilter = collisionActor->GetMaterialFilter();
-    CMaterialList include = previousFilter.GetIncludeList();
+  x498_ = splineT * mCamSpline.GetLength();
+  const CVector3f pos = mCamSpline.GetPositionByLength(x498_);
+  if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId))) {
+    const CMaterialFilter filter = actor->GetMaterialFilter();
+    CMaterialList include = filter.GetIncludeList();
     include.Add(kMT_Wall);
-    CMaterialList exclude = previousFilter.GetExcludeList();
+    CMaterialList exclude = filter.GetExcludeList();
     exclude.Add(mCollisionExcludeList);
-    CCollisionActor* mutableCollisionActor =
-        static_cast< CCollisionActor* >(mgr.ObjectById(mCollisionActorId));
-    mutableCollisionActor->SetMaterialFilter(CMaterialFilter::MakeIncludeExclude(include, exclude));
-    cameraPos = MoveCollisionActor(cameraPos, dt, mgr);
-    mutableCollisionActor->SetMaterialFilter(previousFilter);
+    const CMaterialFilter tmpFilter = CMaterialFilter::MakeIncludeExclude(include, exclude);
+    actor->SetMaterialFilter(tmpFilter);
+    desiredPos = MoveCollisionActor(pos, dt, mgr);
+    actor->SetMaterialFilter(filter);
   }
 
-  const CVector3f lookAt = mLookAtBall ? ballPos : mLookPos;
-  CVector3f lookDir = lookAt - cameraPos;
+  CVector3f lookDir = mLookPos - desiredPos;
+  if (mLookAtBall) {
+    lookDir = ballPos - desiredPos;
+  }
   if (lookDir.IsMagnitudeSafe()) {
     lookDir.Normalize();
-    UpdateTransform(lookDir, cameraPos, dt, mgr);
+    UpdateTransform(lookDir, desiredPos, dt, mgr);
   }
-  TeleportCamera(cameraPos, mgr);
+
+  TeleportCamera(desiredPos, mgr);
+
   if (mCamBehindFloorOrWall && mSplineCtrl / mSplineCtrlRange < 0.5f) {
     mSplineState = kBSS_Invalid;
   }
