@@ -1579,12 +1579,13 @@ void CPauseScreen::DrawConnection(const CTransform4f& view, const CVector3f& fro
   const CVector3f delta = to - from;
   if (delta.CanBeNormalized()) {
     const float length = delta.Magnitude();
-    const CVector3f direction = (1.f / length) * delta;
-    const CVector3f forward = view.GetColumn(kDY);
-    const CVector3f projected = delta - (length * CVector3f::Dot(direction, forward)) * forward;
+    const float invLength = 1.f / length;
+    const CVector3f projected =
+        delta -
+        (length * CVector3f::Dot(invLength * delta, view.GetColumn(kDY))) * view.GetColumn(kDY);
     const float projectedLength = projected.Magnitude();
     if (projectedLength > 0.34f) {
-      const CVector3f trim = ((0.17f * length) / projectedLength) * direction;
+      const CVector3f trim = ((0.17f * length) / projectedLength) * (invLength * delta);
       for (int i = 2; i != 0; --i) {
         CGraphics::SetLineWidth(i + 1, kTO_Zero);
         CGraphics::StreamBegin(kP_Lines);
