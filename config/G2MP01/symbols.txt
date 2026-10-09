@@ -1355,8 +1355,8 @@ __ct__7CEntityF9TUniqueIdRC11CEntityInfoRCQ24rstl66basic_string<c,Q24rstl14char_
 __ct__Q24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>FRCQ24rstl48vector<11SConnection,Q24rstl17rmemory_allocator> = .text:0x80048514; // type:function size:0x130
 __ct__11CEntityInfoF7TAreaIdRCQ24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>b9TEditorId = .text:0x80048644; // type:function size:0x88
 __distance<Q34rstl175red_black_tree<9TEditorId,Q24rstl27pair<9TEditorId,9TUniqueId>,1,Q24rstl47select1st<Q24rstl27pair<9TEditorId,9TUniqueId>>,Q24rstl16less<9TEditorId>,Q24rstl17rmemory_allocator>14const_iterator>__4rstlFQ34rstl175red_black_tree<9TEditorId,Q24rstl27pair<9TEditorId,9TUniqueId>,1,Q24rstl47select1st<Q24rstl27pair<9TEditorId,9TUniqueId>>,Q24rstl16less<9TEditorId>,Q24rstl17rmemory_allocator>14const_iteratorQ34rstl175red_black_tree<9TEditorId,Q24rstl27pair<9TEditorId,9TUniqueId>,1,Q24rstl47select1st<Q24rstl27pair<9TEditorId,9TUniqueId>>,Q24rstl16less<9TEditorId>,Q24rstl17rmemory_allocator>14const_iteratorQ24rstl20forward_iterator_tag = .text:0x800486CC; // type:function size:0x88 align:4
-fn_80048754 = .text:0x80048754; // type:function size:0x98
-fn_800487EC = .text:0x800487EC; // type:function size:0x3C
+reserve__Q24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>Fi = .text:0x80048754; // type:function size:0x98
+uninitialized_copy<Q24rstl116pointer_iterator<11SConnection,Q24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>,P11SConnection>__4rstlFQ24rstl116pointer_iterator<11SConnection,Q24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl116pointer_iterator<11SConnection,Q24rstl48vector<11SConnection,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>P11SConnection = .text:0x800487EC; // type:function size:0x3C
 __sinit_CEntity_cpp = .text:0x80048828; // type:function size:0xA4 align:4
 __ct__11CEntityInfoFRC11CEntityInfo = .text:0x800488CC; // type:function size:0x5C
 __dt__17CArchMsgParmInt32Fv = .text:0x80048928; // type:function size:0x5C align:4

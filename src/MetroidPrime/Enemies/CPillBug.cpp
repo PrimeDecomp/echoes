@@ -102,13 +102,13 @@ void CPillBug::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mOnGround = true;
     handled = true;
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     mOnGround = false;
     mOnStaticGround = false;
     handled = true;
     break;
   case kSM_ResistedDamage:
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     if (const CWeapon* weapon = TCastToConstPtr< CWeapon >(mgr.GetObjectById(uid))) {
       if (const CPlayer* player =
               TCastToConstPtr< CPlayer >(mgr.GetObjectById(weapon->GetOwnerId()))) {
@@ -343,7 +343,7 @@ TUniqueId CPillBug::FindReturnWaypoint(CStateManager& mgr) const {
   float bestDistSq = FLT_MAX;
   const CVector3f position = GetTranslation();
   const rstl::vector< TUniqueId > connected =
-      FindConnectedObjects(mgr, kSS_InternalState00, kSM_None);
+      FindConnectedObjects(mgr, kSS_InternalState0, kSM_None);
   for (rstl::vector< TUniqueId >::const_iterator it = connected.begin(); it != connected.end();
        ++it) {
     TUniqueId id = *it;
@@ -399,7 +399,7 @@ bool CPillBug::Bombed(CStateManager& mgr, const CTriggerData& data) const { retu
 
 bool CPillBug::HasReturnPath(CStateManager& mgr, const CTriggerData& data) const {
   bool result = false;
-  const TUniqueId connected = FindConnectedObject(mgr, kSS_InternalState00, kSM_None);
+  const TUniqueId connected = FindConnectedObject(mgr, kSS_InternalState0, kSM_None);
   if (connected != kInvalidUniqueId) {
     if (FindReturnWaypoint(mgr) != kInvalidUniqueId) {
       result = true;

@@ -90,7 +90,7 @@ void CScriptConditionalRelay::Think(float dt, CStateManager& mgr) {
 void CScriptConditionalRelay::OnSetToZero(CStateManager& mgr, TUniqueId originator) {
   if (GetActive()) {
     if (VerifyConditions(mgr, originator)) {
-      SendScriptMsgs(kSS_Opened, mgr, originator, kSM_None);
+      SendScriptMsgs(kSS_Open, mgr, originator, kSM_None);
     } else {
       SendScriptMsgs(kSS_Closed, mgr, originator, kSM_None);
     }

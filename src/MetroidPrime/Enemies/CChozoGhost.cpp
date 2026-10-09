@@ -235,7 +235,7 @@ void CChozoGhost::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Delete:
     RemoveFromTeam(mgr);
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
   case kSM_Launching:
     if (!mVerticalMovement) {
       SetMomentumWR(CVector3f(0.f, 0.f, -GetGravityConstant() * GetMass()));

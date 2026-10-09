@@ -703,7 +703,7 @@ void CScriptWater::InhabitantAdded(CActor& actor, CStateManager& mgr) {
   const bool wasInFluid = actor.GetFluidCount() != 0;
   actor.SetInFluid(mgr, true, GetUniqueId());
   if (!wasInFluid && ShouldSendScriptMsgs(actor, mgr)) {
-    mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_XENF);
+    mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_EnteredFluid);
     if (CGameCamera* camera = TCastToPtr< CGameCamera >(actor)) {
       camera->UnkVtable84(GetUniqueId(), mgr);
     }
@@ -714,7 +714,7 @@ void CScriptWater::InhabitantExited(CActor& actor, CStateManager& mgr) {
   CScriptTrigger::InhabitantExited(actor, mgr);
   actor.SetInFluid(mgr, false, GetUniqueId());
   if (actor.GetFluidCount() == 0 && ShouldSendScriptMsgs(actor, mgr)) {
-    mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_XEXF);
+    mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_ExitedFluid);
     if (CGameCamera* camera = TCastToPtr< CGameCamera >(actor)) {
       camera->UnkVtable88(GetUniqueId(), mgr);
     }
@@ -723,7 +723,7 @@ void CScriptWater::InhabitantExited(CActor& actor, CStateManager& mgr) {
 
 void CScriptWater::InhabitantIdle(CActor& actor, CStateManager& mgr, float dt) {
   CScriptTrigger::InhabitantIdle(actor, mgr, dt);
-  mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_XINF);
+  mgr.SendScriptMsg(&actor, GetUniqueId(), kSM_InsideFluid);
 }
 
 CFluidUVMotion::SFluidLayerMotion LdrToFluidLayerMotion(const SLdrLayerInfo& data) {

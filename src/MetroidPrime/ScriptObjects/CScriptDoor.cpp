@@ -409,7 +409,7 @@ void CScriptDoor::SetDoorState(CStateManager& mgr, EDoorState state) {
     mIsOpen = true;
     mgr.MapWorldInfo()->SetDoorVisited(mgr.GetEditorIdForUniqueId(GetUniqueId()), true);
     mWasOpen = true;
-    SendScriptMsgs(kSS_Opened, mgr);
+    SendScriptMsgs(kSS_Open, mgr);
     mPartnerDoorId = kInvalidUniqueId;
     if (mOpeningSenderDoorId != kInvalidUniqueId && mgr.GetNextAreaId() != GetCurrentAreaId()) {
       SetDoorAnimation(kDAT_Open);

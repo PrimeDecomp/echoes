@@ -546,7 +546,7 @@ void CLumite::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Landed:
   case kSM_LandedOnStaticGround:
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (!mVerticalMovement && BodyController()->GetPercentageFrozen() == 0.f) {
       SetMomentumWR(CVector3f(0.f, 0.f, -GetWeight()));
       RemoveMaterial(kMT_GroundCollider, mgr);
@@ -567,7 +567,7 @@ void CLumite::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   }
   case kSM_Damage:
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     mHitByPlayerProjectile = true;
     CPatterned::AcceptScriptMsg(mgr, msg);
     break;

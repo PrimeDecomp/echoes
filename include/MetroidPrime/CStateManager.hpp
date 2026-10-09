@@ -216,7 +216,7 @@ public:
 
   void AddObject(CEntity*);
   void AddObject(CEntity&);
-  bool RenderLast(TUniqueId uid);                   // Guessed name.
+  bool RenderLast(TUniqueId uid); // Corruption prototype: "RenderLast failed, likely overflow".
   bool RenderLastOverlay(const TUniqueId& uid);     // Guessed name.
   bool RenderLastHUD(const TUniqueId& uid);         // Guessed name.
   bool RenderFirstSorted(const TUniqueId& uid);     // Guessed name.

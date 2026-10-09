@@ -269,7 +269,7 @@ void CShrieker::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Damage:
     ReactToDamage(mgr, senderId);
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (!mAlive && mDying) {
       SetMomentumWR(CVector3f::Zero());
     }

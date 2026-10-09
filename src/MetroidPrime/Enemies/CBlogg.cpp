@@ -1214,7 +1214,7 @@ void CBlogg::Stunned(CStateManager& mgr, EStateMsg msg, float dt) {
     mState = kBS_Stunned;
     mCollisionTime = 0.f;
     if (IsIngPossessed()) {
-      SendScriptMsgs(kSS_InternalState00, mgr);
+      SendScriptMsgs(kSS_InternalState0, mgr);
     } else {
       SendScriptMsgs(kSS_Zero, mgr);
     }
@@ -2040,7 +2040,7 @@ void CBlogg::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Alert:
     xbc4_24_ = true;
     // Fallthrough
-  case kSM_XHIT: {
+  case kSM_HitObject: {
     if (CCollisionActor* colAct = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId))) {
       if (CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(colAct->GetLastTouchedObject()))) {
         CDamageInfo damage(mContactDamage);
@@ -2107,11 +2107,11 @@ void CBlogg::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     HealthInfo()->SetHP(-1.f);
     Death(mgr, GetTransform().GetForward(), kSS_InvalidState);
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     xbc4_24_ = false;
     break;
   case kSM_Decrement:

@@ -113,7 +113,7 @@ void CWorld::PropogateAreaChain(CGameArea::EOcclusionState state, CGameArea* are
   }
 }
 
-void CGameArea::AddDock(TUniqueId uid) { mPostConstructed->mDockIds.push_back(uid); }
+void CGameArea::AddDock(TUniqueId uid) { mPostConst->mDockIds.push_back(uid); }
 
 void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const EScriptObjectMessage message = msg.GetMessage();
@@ -160,7 +160,7 @@ void CScriptDock::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     break;
   }
-  case kSM_InternalMessage00: {
+  case kSM_InternalMessage0: {
     IGameArea::Dock& dock = mgr.World()->Area(mArea)->DockNC(mDock);
     dock.SetLoadOtherBlocked(dock.GetReferenceCount(), true);
     break;

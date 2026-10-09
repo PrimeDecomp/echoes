@@ -3,7 +3,8 @@
 
 #include "MetroidPrime/CEntity.hpp"
 
-class CScriptTimeKeyframe : public CEntity { // Guessed name
+// Class name from the Corruption prototype's (G2MEAB) CScriptTimeKeyframe.cpp asserts.
+class CScriptTimeKeyframe : public CEntity {
 public:
   CScriptTimeKeyframe(TUniqueId uid, const rstl::string& name, const CEntityInfo& info, float time);
 

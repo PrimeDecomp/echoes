@@ -68,9 +68,9 @@ void CScriptGuiMenu::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) 
   case kSM_SetToMax:
     SelectLast(mgr);
     break;
-  case kSM_InternalMessage00:
-  case kSM_InternalMessage01:
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage0:
+  case kSM_InternalMessage1:
+  case kSM_InternalMessage2:
     UpdateItemStates(mgr, msg.GetMessage());
     break;
   default:
@@ -214,14 +214,14 @@ void CScriptGuiMenu::UpdateItemStates(CStateManager& mgr, EScriptObjectMessage m
     TUniqueId id = mItems[i];
     CEntity* item = mgr.ObjectById(id);
     switch (msg) {
-    case kSM_InternalMessage00:
-      item->SendScriptMsgs(i == mSelection ? kSS_InternalState00 : kSS_InternalState10, mgr);
+    case kSM_InternalMessage0:
+      item->SendScriptMsgs(i == mSelection ? kSS_InternalState0 : kSS_InternalState10, mgr);
       break;
-    case kSM_InternalMessage01:
-      item->SendScriptMsgs(i == mSelection ? kSS_InternalState01 : kSS_InternalState11, mgr);
+    case kSM_InternalMessage1:
+      item->SendScriptMsgs(i == mSelection ? kSS_InternalState1 : kSS_InternalState11, mgr);
       break;
-    case kSM_InternalMessage02:
-      item->SendScriptMsgs(i == mSelection ? kSS_InternalState02 : kSS_InternalState12, mgr);
+    case kSM_InternalMessage2:
+      item->SendScriptMsgs(i == mSelection ? kSS_InternalState2 : kSS_InternalState12, mgr);
       break;
     default:
       break;

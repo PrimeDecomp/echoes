@@ -1073,7 +1073,7 @@ void CPlayerGun::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       }
     }
     break;
-  case kSM_XINF:
+  case kSM_InsideFluid:
     if (mUnderwater && mAuxWeapon->IsComboFxActive(mgr)) {
       StopContinuousBeam(mgr, false);
     }

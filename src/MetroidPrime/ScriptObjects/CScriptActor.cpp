@@ -164,7 +164,7 @@ void CScriptActor::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       SendScriptMsgs(kSS_Dead, mgr, GetUniqueId(), kSM_None);
     }
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     if (EchoEmitter() != nullptr) {
       EchoEmitter()->TriggerDamageEcho();
     }

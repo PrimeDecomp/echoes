@@ -254,10 +254,10 @@ void CScriptPlayerProxy::DropCoins(CStateManager& mgr, int amount, uint playerIn
 
   UpdateTransform(mgr, playerIndex);
   for (int i = 0; i < count100; ++i) {
-    SendScriptMsgs(kSS_BIDG, mgr, GetUniqueId());
+    SendScriptMsgs(kSS_BallIceXDamage, mgr, GetUniqueId());
   }
   for (int i = 0; i < count50; ++i) {
-    SendScriptMsgs(kSS_BXDG, mgr, GetUniqueId());
+    SendScriptMsgs(kSS_BallXDamage, mgr, GetUniqueId());
   }
   for (int i = 0; i < count10; ++i) {
     SendScriptMsgs(kSS_IceXDamage, mgr, GetUniqueId());
@@ -651,7 +651,7 @@ void CScriptPlayerProxy::OnGameEvent(CStateManager& mgr, uint sourceIndex, uint 
   case kPT_PlayerMessageRelay:
     switch (event) {
     case CGMMultiplayer::kGE_Spawn:
-      NotifyProxies(mgr, *player, kSS_AboutToMassivelyDie);
+      NotifyProxies(mgr, *player, kSS_SpawnResidue);
       break;
     case CGMMultiplayer::kGE_Generic:
       NotifyProxies(mgr, *player, EScriptObjectState(*static_cast< const uint* >(value)));

@@ -233,7 +233,7 @@ void CStoneToad::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     break;
   }
   case kSM_Alert:
-  case kSM_XHIT:
+  case kSM_HitObject:
     break;
   }
 

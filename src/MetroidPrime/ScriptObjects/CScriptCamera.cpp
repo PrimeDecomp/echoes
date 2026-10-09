@@ -11,7 +11,7 @@
 #include "MetroidPrime/ScriptLoader/SLdrCamera.hpp"
 #include "MetroidPrime/TCastTo.hpp"
 
-class CScriptTimeKeyframe; // Guessed name; shared with the path-camera connection code.
+class CScriptTimeKeyframe; // Shared with the path-camera connection code.
 
 CScriptCamera::CScriptCamera(TUniqueId uid, const rstl::string& name, const CEntityInfo& info,
                              const CTransform4f& xf, float duration, uint flags, uint splineFlags,

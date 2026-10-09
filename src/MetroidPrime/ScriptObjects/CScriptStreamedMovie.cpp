@@ -152,7 +152,7 @@ void CScriptStreamedMovie::SendExternalTime(float time, CStateManager& mgr) {
   const rstl::vector< SConnection >& connections = GetConnectionList();
   for (rstl::vector< SConnection >::const_iterator it = connections.begin();
        it != connections.end(); ++it) {
-    if (it->state != kSS_InternalState00) {
+    if (it->state != kSS_InternalState0) {
       continue;
     }
     CEntity* entity = mgr.ObjectById(mgr.GetIdForScript(it->objId));

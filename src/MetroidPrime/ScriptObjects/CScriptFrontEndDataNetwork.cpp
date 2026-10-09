@@ -211,13 +211,13 @@ void CScriptFrontEndDataNetwork::AcceptScriptMsg(CStateManager& mgr, const CScri
   case kSM_Reset:
     ResetTransition(mgr);
     break;
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage2:
     if (CScriptFrontEndDataNetwork* root =
             TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(mRootId))) {
       root->FaceNode(GetUniqueId(), mgr, false);
     }
     break;
-  case kSM_InternalMessage03:
+  case kSM_InternalMessage3:
     if (CScriptFrontEndDataNetwork* root =
             TCastToPtr< CScriptFrontEndDataNetwork >(mgr.ObjectById(mRootId))) {
       root->FaceNode(GetUniqueId(), mgr, true);

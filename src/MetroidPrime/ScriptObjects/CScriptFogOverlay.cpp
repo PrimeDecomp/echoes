@@ -60,16 +60,16 @@ void CScriptFogOverlay::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& ms
   case kSM_SetToMax:
     mAlphaCommand = kFC_SnapHigh;
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     mSpeedCommand = kFC_FadeDown;
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     mSpeedCommand = kFC_FadeUp;
     break;
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage2:
     mScaleCommand = kFC_FadeDown;
     break;
-  case kSM_InternalMessage03:
+  case kSM_InternalMessage3:
     mScaleCommand = kFC_FadeUp;
     break;
   default:

@@ -88,7 +88,7 @@ void CBSJump::PlayJumpLoop(CStateManager& mgr, CBodyController& bc) {
   }
 
   if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(&bc.GetOwner())) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor->GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor->GetUniqueId(), kSM_OffGround));
     mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor->GetUniqueId(), kSM_Launching));
     const CVector3f velocity = actor->GetVelocityWR();
     mApplyLaunchVel = false;
@@ -199,7 +199,7 @@ pas::EAnimationState CBSJump::UpdateBody(float dt, CBodyController& bc, CStateMa
         actor->SetMomentumWR(CVector3f::Zero());
       }
       if (bc.IsAnimationOver()) {
-        mgr.SendScriptMsg(&bc.GetOwner(), kInvalidUniqueId, kSM_Falling);
+        mgr.SendScriptMsg(&bc.GetOwner(), kInvalidUniqueId, kSM_OffGround);
         mState = pas::kJS_Loop;
         bc.LoopBestAnimation(CPASAnimParmData(pas::kAS_Jump, CPASAnimParm::FromEnum(mState),
                                               CPASAnimParm::FromEnum(mJumpType),

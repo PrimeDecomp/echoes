@@ -240,7 +240,7 @@ void CDarkTrooper::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       mLineOfSightTracker.SetTarget(mgr.GetPlayer(0)->GetUniqueId());
     }
     break;
-  case kSM_XXDG:
+  case kSM_ReflectedDamage:
     mHitByPlayerProjectile = true;
     break;
   case kSM_Damage:
@@ -259,7 +259,7 @@ void CDarkTrooper::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_AIUpdateDisabled:
   case kSM_Landed:
   case kSM_Launching:
-  case kSM_Falling:
+  case kSM_OffGround:
     break;
   }
 

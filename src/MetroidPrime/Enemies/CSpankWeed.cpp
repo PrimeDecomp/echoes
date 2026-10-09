@@ -207,7 +207,7 @@ void CSpankWeed::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   const bool oldActive = GetActive();
   const TUniqueId senderId = msg.GetSenderId();
   switch (msg.GetMessage()) {
-  case kSM_XCRT:
+  case kSM_Create:
     if (!BodyController()->GetIsActive()) {
       BodyController()->Activate(mgr, pas::kAS_Invalid);
       const CAABox box = GetBoundingBox();
@@ -254,7 +254,7 @@ void CSpankWeed::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
       ActorLights()->SetLightingPositionOffset(bias);
     }
     break;
-  case kSM_XHIT: {
+  case kSM_HitObject: {
     CCollisionActor* collisionActor = TCastToPtr< CCollisionActor >(mgr.ObjectById(senderId));
     if (collisionActor != nullptr) {
       CPlayer* player =

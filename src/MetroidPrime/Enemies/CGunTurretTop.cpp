@@ -75,7 +75,7 @@ CGunTurretTop::CGunTurretTop(TUniqueId uid, const rstl::string& name, const CEnt
 void CGunTurretTop::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   switch (msg.GetMessage()) {
   case kSM_AIUpdateDisabled:
-  case kSM_XHIT:
+  case kSM_HitObject:
   case kSM_Decrement:
   case kSM_Alert:
   case kSM_Activate:

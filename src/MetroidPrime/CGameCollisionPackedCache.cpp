@@ -716,7 +716,7 @@ void CGameCollision::MoveAndCollide(CStateManager& mgr, CPhysicsActor& actor, fl
 
   const float remainingFraction = remainingDt / dt;
   if (!hadCollision && !actor.GetMaterialList().HasMaterial(kMT_GroundCollider)) {
-    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_Falling));
+    mgr.DeliverScriptMsg(CScriptMsg(kInvalidUniqueId, actor.GetUniqueId(), kSM_OffGround));
   }
   if (isPlayer) {
     CollisionFailsafe(mgr, cache, actor, *actor.GetCollisionPrimitive(), nearbyActors,

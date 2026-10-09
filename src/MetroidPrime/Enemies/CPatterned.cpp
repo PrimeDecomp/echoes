@@ -283,7 +283,7 @@ void CPatterned::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     }
     mOnGround = true;
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (!mVerticalMovement && mBodyController->GetPercentageFrozen() == 0.f) {
       SetMomentumWR(CVector3f(0.f, 0.f, -GetWeight()));
       RemoveMaterial(kMT_GroundCollider, mgr);
@@ -765,10 +765,10 @@ void CPatterned::Think(float dt, CStateManager& mgr) {
   if (!mAlive) {
     if ((mPendingMassiveDeath || mPendingMassiveFrozenDeath) && mXDamageDelay <= 0.f) {
       if (mPendingMassiveFrozenDeath) {
-        SendScriptMsgs(kSS_AboutToMassivelyDie, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_SpawnResidue, mgr, kInvalidUniqueId, kSM_None);
         MassiveFrozenDeath(mgr);
       } else {
-        SendScriptMsgs(kSS_AboutToMassivelyDie, mgr, kInvalidUniqueId, kSM_None);
+        SendScriptMsgs(kSS_SpawnResidue, mgr, kInvalidUniqueId, kSM_None);
         MassiveDeath(mgr);
       }
       return;

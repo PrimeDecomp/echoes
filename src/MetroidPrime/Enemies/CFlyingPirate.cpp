@@ -348,7 +348,7 @@ void CFlyingPirate::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
     mMissileTimer = range * mgr.Random()->Float() + delay;
     break;
   }
-  case kSM_Falling:
+  case kSM_OffGround:
     if (GetBodyController()->GetPercentageFrozen() == 0.f && !mFadeToDeath && !mSpinToDeath) {
       SetMomentumWR(CVector3f(0.f, 0.f, -GetGravityConstant() * GetMass()));
     }

@@ -425,7 +425,7 @@ void SelectInitialWorld() {
     gpGameState->SetCurrentWorldId(gpResourceFactory->GetResourceIdByName("FrontEnd")->id);
     gpGameState->SetGameMode(rs_new CFrontEndGameMode());
     rstl::rc_ptr< CWorldLayerState > layers = gpGameState->CurrentWorldState().GetLayerState();
-    layers->GetAreaLayerCount(TAreaId(0));
+    layers->GetLayerCount(TAreaId(0));
     const CGameState::SPreviousGameResults& results = gpGameState->PreviousGameResults();
     const uint mode = results.mGameMode;
     const int playerCount = results.mPlayerCount;
@@ -449,7 +449,7 @@ void ConfigureGameModeLayers() {
        ++area) {
     rstl::rc_ptr< CWorldLayerState > layers = gpGameState->CurrentWorldState().GetLayerState();
     CWorldLayerState& state = *layers;
-    int layerCount = state.GetAreaLayerCount(TAreaId(area));
+    int layerCount = state.GetLayerCount(TAreaId(area));
     for (int layer = 0; layer < layerCount; ++layer) {
       for (int i = 0; i < 3; ++i) {
         bool active = sGameModeLayers[i].second - gpGameState->GetGameMode().GetGameModeType() == 0;

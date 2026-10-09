@@ -403,7 +403,7 @@ void CDarkCommando::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   CPatterned::AcceptScriptMsg(mgr, msg);
 
   switch (message) {
-  case kSM_XCRT:
+  case kSM_Create:
     mBodyController->Activate(mgr, pas::kAS_Invalid);
     mBodyController->SetLocomotionType(pas::kLT_Combat);
     SetCloakTarget(0.f, 0.f);
@@ -422,7 +422,7 @@ void CDarkCommando::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   case kSM_Escape:
     mWarpOutRequested = true;
     break;
-  case kSM_Falling:
+  case kSM_OffGround:
     if (!mBodyController->IsFrozen()) {
       const float mass = GetMass();
       SetMomentumWR(CVector3f(0.f, 0.f, -GetGravityConstant() * mass));

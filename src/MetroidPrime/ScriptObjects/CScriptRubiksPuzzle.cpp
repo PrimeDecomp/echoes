@@ -131,22 +131,22 @@ void CScriptRubiksPuzzle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& 
       mStateMachineState->Reset(mgr, reinterpret_cast< CPatterned& >(*this));
     }
     break;
-  case kSM_InternalMessage00:
+  case kSM_InternalMessage0:
     if (!mTopRowLocked && mPressQueue.size() < kMaxQueuedPresses) {
       mPressQueue.push_back(SButtonPress(msg.GetSenderId(), 0));
     }
     break;
-  case kSM_InternalMessage01:
+  case kSM_InternalMessage1:
     if (!mTopRowLocked && mPressQueue.size() < kMaxQueuedPresses) {
       mPressQueue.push_back(SButtonPress(msg.GetSenderId(), 1));
     }
     break;
-  case kSM_InternalMessage02:
+  case kSM_InternalMessage2:
     if (!mBottomRowLocked && mPressQueue.size() < kMaxQueuedPresses) {
       mPressQueue.push_back(SButtonPress(msg.GetSenderId(), 2));
     }
     break;
-  case kSM_InternalMessage03:
+  case kSM_InternalMessage3:
     if (!mBottomRowLocked && mPressQueue.size() < kMaxQueuedPresses) {
       mPressQueue.push_back(SButtonPress(msg.GetSenderId(), 3));
     }
@@ -167,14 +167,14 @@ void CScriptRubiksPuzzle::Think(float dt, CStateManager& mgr) {
     mStateMachineState->SetTriggerFunctions(skTriggers, 2);
     mStateMachineState->SetState(mgr, reinterpret_cast< CPatterned& >(*this),
                                  rstl::string_l("Start"));
-    SendToConnected(mgr, kSS_InternalState00, kSM_Increment);
-    SendToConnected(mgr, kSS_InternalState01, kSM_Increment);
-    SendToConnected(mgr, kSS_InternalState02, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState0, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState1, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState2, kSM_Increment);
     SendToConnected(mgr, kSS_InternalState16, kSM_Increment);
     SendToConnected(mgr, kSS_InternalState17, kSM_Increment);
-    SendToConnected(mgr, kSS_InternalState03, kSM_Increment);
-    SendToConnected(mgr, kSS_InternalState04, kSM_Increment);
-    SendToConnected(mgr, kSS_InternalState05, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState3, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState4, kSM_Increment);
+    SendToConnected(mgr, kSS_InternalState5, kSM_Increment);
   }
   mStateMachineState->Update(mgr, reinterpret_cast< CPatterned& >(*this), dt);
 }
@@ -187,8 +187,8 @@ void CScriptRubiksPuzzle::Start(CStateManager& mgr, int msg, float dt) {
   for (rstl::vector< SConnection >::const_iterator it = connections.begin();
        it != connections.end(); ++it) {
     const EScriptObjectState state = it->state;
-    if (state != kSS_InternalState00 && state != kSS_InternalState01 &&
-        state != kSS_InternalState02) {
+    if (state != kSS_InternalState0 && state != kSS_InternalState1 &&
+        state != kSS_InternalState2) {
       continue;
     }
     CStateManager::TIdListResult ids = mgr.GetIdListForScript(it->objId);
@@ -196,13 +196,13 @@ void CScriptRubiksPuzzle::Start(CStateManager& mgr, int msg, float dt) {
     while (current != ids.second) {
       const TUniqueId id = current->second;
       switch (state) {
-      case kSS_InternalState00:
+      case kSS_InternalState0:
         mPieces.push_back(SPiece(id, 0));
         break;
-      case kSS_InternalState01:
+      case kSS_InternalState1:
         mPieces.push_back(SPiece(id, 1));
         break;
-      case kSS_InternalState02:
+      case kSS_InternalState2:
         mPieces.push_back(SPiece(id, 2));
         break;
       default:
@@ -360,10 +360,10 @@ void CScriptRubiksPuzzle::UpdateIndicators(CStateManager& mgr) {
   if (mRotating && !topRowTurning) {
     bottomRowTurning = true;
   }
-  const bool topRow = UpdateRow(mgr, topRowTurning, 0, kSS_InternalState06, kSS_InternalState07,
+  const bool topRow = UpdateRow(mgr, topRowTurning, 0, kSS_InternalState6, kSS_InternalState7,
                                 kSS_InternalState12);
   const bool middleRow =
-      UpdateRow(mgr, mRotating, 1, kSS_InternalState08, kSS_InternalState09, kSS_InternalState13);
+      UpdateRow(mgr, mRotating, 1, kSS_InternalState8, kSS_InternalState9, kSS_InternalState13);
   const bool bottomRow = UpdateRow(mgr, bottomRowTurning, 2, kSS_InternalState10,
                                    kSS_InternalState11, kSS_InternalState14);
   mSolved = topRow && middleRow && bottomRow;
@@ -379,21 +379,21 @@ void CScriptRubiksPuzzle::UpdateIndicators(CStateManager& mgr) {
   }
   if (mSolved) {
     SendScriptMsgs(kSS_InternalState18, mgr, kInvalidUniqueId, kSM_None);
-    SendToConnected(mgr, kSS_InternalState00, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState01, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState02, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState0, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState1, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState2, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState16, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState17, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState03, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState04, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState05, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState3, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState4, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState5, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState12, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState13, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState14, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState06, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState07, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState08, kSM_Decrement);
-    SendToConnected(mgr, kSS_InternalState09, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState6, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState7, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState8, kSM_Decrement);
+    SendToConnected(mgr, kSS_InternalState9, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState10, kSM_Decrement);
     SendToConnected(mgr, kSS_InternalState11, kSM_Decrement);
   }
