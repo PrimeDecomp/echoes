@@ -26,6 +26,7 @@ public:
   const CDamageInfo& GetContactDamage() const { return mContactDamageInfo; }
   const float& GetHalfExtent() const { return mHalfExtent; }
   uint GetPathfindingIndex() const { return mPathfindingIndex; }
+  bool IsAnEncounter() const { return mIngPossessionData.isAnEncounter; } // Guessed name
   float GetHeight() const { return mHeight; }
   float GetDetectionRange() const { return mDetectionRange; }
   float GetDetectionHeightRange() const { return mDetectionHeightRange; }

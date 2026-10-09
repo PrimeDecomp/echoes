@@ -30,7 +30,8 @@ public:
   bool FindNearestSurface(CStateManager& mgr, const CVector3f& position, float radius,
                           CCollisionSurface& surface);
   void Update(CPhysicsActor& actor, CStateManager& mgr, float dt);
-  void SetMode(EMode mode) { mMode = mode; } // Guessed name
+  void SetMode(EMode mode) { mMode = mode; }                       // Guessed name
+  EMode GetMode() const { return mMode; }                          // Guessed name
   const CCollisionSurface& GetSurface() const { return mSurface; } // Guessed name
 
 private:

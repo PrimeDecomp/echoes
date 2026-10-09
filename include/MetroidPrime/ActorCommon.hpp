@@ -166,6 +166,7 @@ enum EUserEventType {
   kUE_EffectOff = 34,
   kUE_Unknown37 = 37, // Guessed name
   kUE_Unknown38 = 38, // Guessed name
+  kUE_Unknown39 = 39, // Guessed name
 };
 
 #endif // _ACTORCOMMON

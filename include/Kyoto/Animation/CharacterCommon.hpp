@@ -129,7 +129,10 @@ enum ESeverity {
   kS_Five = 5,
   kS_Six = 6,
   kS_Seven = 7,
-  kS_Eight = 8
+  kS_Eight = 8,
+  kS_Nine = 9,
+  kS_Ten = 10,
+  kS_Eleven = 11
 };
 
 enum EGetupType { kGetup_Invalid = -1, kGetup_Zero = 0, kGetup_One = 1, kGetup_Two = 2 };
@@ -190,10 +193,10 @@ enum EBodyType {
   kBT_Restricted,
   kBT_Flyer,
   kBT_PitchableFlyer, // Cross-game name (DKCR HD); Echoes factory corroborated.
-  kBT_Floater, // Cross-game name (DKCR HD); Echoes factory corroborated.
+  kBT_Floater,        // Cross-game name (DKCR HD); Echoes factory corroborated.
   kBT_WallWalker,
   kBT_AiMovedFlyer, // Cross-game name (DKCR HD); Echoes factory corroborated.
-  kBT_4WayBlended // Guessed name from DKCR HD; Echoes blends four movement directions.
+  kBT_4WayBlended   // Guessed name from DKCR HD; Echoes blends four movement directions.
 };
 
 enum EBodyStateCmd {
@@ -229,7 +232,7 @@ enum EBodyStateCmd {
   kBSC_AdditiveReaction,
   kBSC_StopReaction,
   kBSC_AdditiveLoopReaction, // Guessed name
-  kBSC_AdditiveWeight, // Guessed name
+  kBSC_AdditiveWeight,       // Guessed name
   kBSC_Unknown33
 };
 
