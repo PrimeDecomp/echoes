@@ -553,7 +553,7 @@ void CPatterned::MassiveFrozenDeath(CStateManager& mgr) {
   SendScriptMsgs(kSS_IceXDamage, mgr, kInvalidUniqueId, kSM_None);
   GenerateIceDeathExplosion(mgr);
 
-  for (uint player = 0; player < mgr.GetNumPlayers(); ++player) {
+  for (int player = 0; player < mgr.GetNumPlayers(); ++player) {
     const CVector3f playerDelta = mgr.GetPlayer(player)->GetTranslation() - GetTranslation();
     const float toPlayerDist = playerDelta.Magnitude();
   }
@@ -564,9 +564,10 @@ void CPatterned::MassiveFrozenDeath(CStateManager& mgr) {
 
 void CPatterned::KnockBack(CStateManager& mgr, const CKnockBackInfo& info) {
   const CHealthInfo* health = GetHealthInfo();
-  if (!mBurning && health != nullptr && !mSuppressKnockBack) {
-    mKnockBackController.KnockBack(mgr, *this, info);
+  if (mBurning || health == nullptr || mSuppressKnockBack) {
+    return;
   }
+  mKnockBackController.KnockBack(mgr, *this, info);
 }
 
 void CPatterned::ApplyKnockBackFollowUp(CStateManager& mgr, const CVector3f& direction,
@@ -1036,7 +1037,7 @@ void CPatterned::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, 
     const CVector3f margin = CVector3f::ByElementMultiply(scale, CVector3f(1.f, 1.f, 0.5f));
     const CAABox touchBounds(xfOrigin - margin, xfOrigin + margin);
 
-    for (uint i = 0; i < mgr.GetNumPlayers(); ++i) {
+    for (int i = 0; i < mgr.GetNumPlayers(); ++i) {
       CPlayer* player = mgr.GetPlayer(i);
       if (touchBounds.DoBoundsOverlap(player->GetBoundingBox())) {
         mgr.ApplyDamage(
@@ -1144,7 +1145,8 @@ CTransform4f CPatterned::GetLctrTransform(const rstl::string& name) const {
 }
 
 CTransform4f CPatterned::GetLctrTransform(const CSegId& id) const {
-  CTransform4f locator = GetAnimationData()->GetLocatorTransform(id, nullptr);
+  const CAnimData* animData = GetAnimationData();
+  CTransform4f locator = animData->GetLocatorTransform(id, nullptr);
   CVector3f scaled =
       CVector3f::ByElementMultiply(GetModelData()->GetScale(), locator.GetTranslation());
   return GetTransform() * CTransform4f(locator.BuildMatrix3f(), scaled);
@@ -1383,7 +1385,7 @@ void CPatterned::SetIngPossessed(bool possessed, CStateManager&) {
     mIngPossessionDelay = 0.f;
     mIngPossessionDuration = 1.f;
 
-    const int animation = mIngPossessionData.unknown_0x2befc1bf;
+    int animation = mIngPossessionData.unknown_0x2befc1bf;
     if (animation != -1) {
       const CCharAnimTime start =
           GetAnimationData()->GetTimeOfUserEventForAnimation(animation, kUE_EventStart);
