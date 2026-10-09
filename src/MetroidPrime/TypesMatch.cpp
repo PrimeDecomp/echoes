@@ -32,6 +32,7 @@
 #include "MetroidPrime/Enemies/CIngPuddle.hpp"
 #include "MetroidPrime/Enemies/CIngSpaceJumpGuardian.hpp"
 #include "MetroidPrime/Enemies/CIngSpiderballGuardian.hpp"
+#include "MetroidPrime/Enemies/CBlogg.hpp"
 #include "MetroidPrime/Enemies/CKralee.hpp"
 #include "MetroidPrime/Enemies/CKrocuss.hpp"
 #include "MetroidPrime/Enemies/CLumite.hpp"
@@ -351,7 +352,7 @@ TYPES_MATCH_IMPL(CSporbTop, CPatterned, kET_SporbTop)
 TYPES_MATCH_IMPL(CSporbProjectile, CPatterned, kET_SporbProjectile)
 // 147: class not declared yet (MinorIng REL); parent CPatterned
 // 148: class not declared yet (IngBoostBallGuardian REL); parent CPhysicsActor
-// 149: class not declared yet (Blogg REL); parent CPatterned
+TYPES_MATCH_IMPL(CBlogg, CPatterned, kET_Blogg)
 TYPES_MATCH_IMPL(CWallWalker, CWallCrawler, kET_WallWalker)
 TYPES_MATCH_IMPL(CShredder, CPatterned, kET_Shredder)
 TYPES_MATCH_IMPL(CTargetableProjectile, CEnergyProjectile, kET_TargetableProjectile)

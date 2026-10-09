@@ -31,6 +31,7 @@ public:
   float GetHeight() const { return mHeight; }
   float GetDetectionRange() const { return mDetectionRange; }
   float GetDetectionHeightRange() const { return mDetectionHeightRange; }
+  float GetSpeed() const { return mSpeed; }
   float GetMinAttackRange() const { return mMinAttackRange; }
   float GetMaxAttackRange() const { return mMaxAttackRange; }
 
