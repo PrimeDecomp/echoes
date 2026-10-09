@@ -60,12 +60,12 @@ float CCameraShakerData::GetMaxAmplitude() {
 
 // Guessed name
 float CCameraShakerData::FindLastIntersection(float amplitude) {
-  const float h0 = mHorizontalMotion.FindLastIntersection(-amplitude);
-  const float horizontal = rstl::max_val(h0, mHorizontalMotion.FindLastIntersection(amplitude));
-  const float v0 = mVerticalMotion.FindLastIntersection(-amplitude);
-  const float vertical = rstl::max_val(v0, mVerticalMotion.FindLastIntersection(amplitude));
-  const float f0 = mForwardMotion.FindLastIntersection(-amplitude);
-  const float forward = rstl::max_val(f0, mForwardMotion.FindLastIntersection(amplitude));
+  const float horizontal = CMath::Max(mHorizontalMotion.FindLastIntersection(amplitude),
+                                      mHorizontalMotion.FindLastIntersection(-amplitude));
+  const float vertical = CMath::Max(mVerticalMotion.FindLastIntersection(amplitude),
+                                    mVerticalMotion.FindLastIntersection(-amplitude));
+  const float forward = CMath::Max(mForwardMotion.FindLastIntersection(amplitude),
+                                   mForwardMotion.FindLastIntersection(-amplitude));
   float time = rstl::max_val(forward, rstl::max_val(vertical, horizontal));
   if (time < 0.f) {
     time = mDuration;

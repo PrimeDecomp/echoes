@@ -85,7 +85,7 @@ public:
   }
   template < typename T >
   static T Max(T a, T b) {
-    return a > b ? a : b;
+    return b < a ? a : b;
   }
   static float InvSqrtF(float x);
   static float FastArcCosR(float x);
