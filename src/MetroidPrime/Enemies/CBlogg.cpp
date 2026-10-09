@@ -1308,6 +1308,119 @@ void CBlogg::GrabBall(CStateManager& mgr, EStateMsg msg, float dt) {
   }
 }
 
+bool CBlogg::IsPlayerWithinChargeRange(CStateManager& mgr, CPlayer* player) const {
+  const CVector3f offset = GetTranslation() - player->GetAimPosition(mgr, 0.f);
+  const float health = GetHealthInfo()->GetHP();
+  const float fraction = health / GetHealthInfo()->GetInitialHP();
+  const float range = mCurrentAttackRange *
+                      (mUnknown_0x689a803f * fraction + (1.f - fraction) * mUnknown_0x479ccc37);
+  return offset.MagSquared() < range * range;
+}
+
+void CBlogg::Taunt(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mAnimationState.SetState(CAnimationState::kAS_Ready);
+    BodyController()->CommandMgr().DeliverCmd(
+        CBCGenerateCmd(pas::kGType_Two, CVector3f::Zero(), false, false));
+    mState = kBS_Taunt;
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
+      BodyController()->CommandMgr().DeliverCmd(
+          CBCGenerateCmd(pas::kGType_Two, CVector3f::Zero(), false, false));
+    }
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    mTauntReady = false;
+    break;
+  }
+}
+
+void CBlogg::ChargeAttack(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    if (mTeamManagerId == kInvalidUniqueId ||
+        CScriptTeamAiMgr::StartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
+                                      GetUniqueId())) {
+      mState = kBS_ChargeAttack;
+      BodyController()->CommandMgr().SetSteeringBlendMode(kSBM_FullSpeed);
+      BodyController()->CommandMgr().SetSteeringSpeedRange(1.f, 1.f);
+      CPlayer* player = GetPlayer(mgr);
+      if (player != nullptr) {
+        x97c_ = player->GetAimPosition(mgr, 0.f);
+      }
+      mPathFindNavigation.SetDestination(x97c_);
+      mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+      BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_MaintainVelocity));
+      mChargeOver = false;
+      if (mIsMegaBlogg) {
+        const uchar phase = GetHealthPhase();
+        if (phase < mPhases.size()) {
+          const float chance = mPhases[phase].mUnknownC;
+          xbc5_28_ = xbc5_29_ || mgr.Random()->Float() <= chance;
+        }
+      }
+      if (mIsMegaBlogg) {
+        ++xbb1_;
+      }
+      mLineOfSightTracker.SetTarget(mgr.GetPlayer(0)->GetUniqueId());
+    } else {
+      mChargeOver = true;
+    }
+    break;
+  case kStateMsg_Update: {
+    CPlayer* statePlayer = mgr.GetPlayer(0);
+    const CVector3f aim = statePlayer->GetAimPosition(mgr, 0.f);
+    const bool lostSight = !mLineOfSightTracker.HasLineOfSight();
+    const bool inRange = IsPlayerWithinChargeRange(mgr, statePlayer);
+    if (lostSight) {
+      CPlayer* player = GetPlayer(mgr);
+      if (player != nullptr && !inRange) {
+        x97c_ = player->GetAimPosition(mgr, 0.f);
+        mPathFindNavigation.SetDestination(x97c_);
+        mPathFindNavigation.PathFind(mgr, kStateMsg_Activate, dt, *this);
+      } else {
+        mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+      }
+      if (GetSearchPath()->OnPath(GetTranslation()) != CPathFindSearch::kR_Success) {
+        mChargeOver = true;
+      }
+    } else {
+      if (!inRange) {
+        x97c_ = aim;
+        mTargetForward = BodyController()->CommandMgr().GetPreviousMoveVector();
+      }
+      const CVector3f toTarget = x97c_ - GetTranslation();
+      const CTransform4f& xf = GetTransform();
+      if (toTarget.GetZ() * xf.Get21() +
+              (toTarget.GetX() * xf.Get01() + toTarget.GetY() * xf.Get11()) >
+          0.f) {
+        BodyController()->CommandMgr().DeliverCmd(
+            CBCLocomotionCmd(toTarget, CVector3f::Zero(), 1.f));
+      } else {
+        BodyController()->CommandMgr().DeliverCmd(
+            CBCLocomotionCmd(mTargetForward, CVector3f::Zero(), 1.f));
+      }
+    }
+    BodyController()->CommandMgr().DeliverCmd(CBodyStateCmd(kBSC_MaintainVelocity));
+    break;
+  }
+  case kStateMsg_Deactivate:
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId, GetUniqueId(),
+                                false);
+    xbc4_25_ = false;
+    xbc5_28_ = true;
+    x951_ = 0;
+    mCanBite = false;
+    mMeleeDelayTimer = 0.f;
+    mMeleePursuitEnded = false;
+    xbc5_26_ = false;
+    break;
+  }
+}
+
 CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrBlogg sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.inc"

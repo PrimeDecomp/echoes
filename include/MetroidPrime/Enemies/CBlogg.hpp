@@ -165,6 +165,8 @@ public:
   void Stunned(CStateManager& mgr, EStateMsg msg, float dt);
   void MoveToPlayer(CStateManager& mgr, EStateMsg msg, float dt);
   void GrabBall(CStateManager& mgr, EStateMsg msg, float dt);
+  void Taunt(CStateManager& mgr, EStateMsg msg, float dt);
+  void ChargeAttack(CStateManager& mgr, EStateMsg msg, float dt);
 
   bool ShouldPatrol(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;
@@ -195,10 +197,11 @@ public:
   bool IsPlayerReachable(CStateManager& mgr, const CTriggerData& data) const;
 
 private:
-  CPlayer* GetPlayer(CStateManager& mgr) const;                  // Guessed name
-  bool IsPlayerWithin(CStateManager& mgr, float distance) const; // Guessed name
-  uchar HasCollisionTimeElapsed() const;                         // Guessed name
-  bool IsAtAttackPosition() const;                               // Guessed name
+  CPlayer* GetPlayer(CStateManager& mgr) const;                              // Guessed name
+  bool IsPlayerWithin(CStateManager& mgr, float distance) const;             // Guessed name
+  uchar HasCollisionTimeElapsed() const;                                     // Guessed name
+  bool IsAtAttackPosition() const;                                           // Guessed name
+  bool IsPlayerWithinChargeRange(CStateManager& mgr, CPlayer* player) const; // Guessed name
 
   CVector3f GetDirectionToPlayer(CStateManager& mgr) const;                     // Guessed name
   void FindFluid(CStateManager& mgr, CAABox& bounds, TUniqueId& waterId) const; // Guessed name
