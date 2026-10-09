@@ -1363,8 +1363,14 @@ void CPlayer::SetMorphBallState(EPlayerMorphBallState state, EPlayerMorphBallSta
   mMorphBallState = state;
   mSpawnedMorphBallState = spawnedState;
   SetStandardCollider(state == kMS_Morphed);
-  if (state == kMS_Morphed || state == kMS_Morphing) {
+  switch (state) {
+  case kMS_Morphed:
+  case kMS_Morphing:
     mMorphBall->LoadMorphBallModel();
+    break;
+  case kMS_Unmorphed:
+  case kMS_Unmorphing:
+    break;
   }
 }
 
@@ -2410,9 +2416,10 @@ void CPlayer::ResolveUnmorphCollision(CStateManager& mgr) {
 }
 
 float CPlayer::GetMaximumPlayerPositiveVerticalVelocity(const CStateManager& mgr) const {
-  const bool spaceJump = mPlayerState->GetItemAmount(CPlayerState::kIT_SpaceJumpBoots, true) != 0;
+  const CPlayerState* playerState = mPlayerState;
+  const bool spaceJump = playerState->GetItemAmount(CPlayerState::kIT_SpaceJumpBoots, true) != 0;
   if (GetSurfaceRestraint() == kSR_Phazon &&
-      mPlayerState->GetItemAmount(CPlayerState::kIT_GravityBoost, true) == 0) {
+      playerState->GetItemAmount(CPlayerState::kIT_GravityBoost, true) == 0) {
     return spaceJump ? 5.25f : 4.75f;
   }
   return spaceJump ? 14.f : 11.66666f;
@@ -3162,8 +3169,10 @@ bool CPlayer::ValidateScanning(const CFinalInput& input, CStateManager& mgr) con
         actor->GetMaterialList().HasMaterial(kMT_Scannable) && actor->GetScannableObjectInfo() &&
         actor->GetCurrentAreaId() == GetCurrentAreaId()) {
       if (CPlayer* player = TCastToPtr< CPlayer >(actor)) {
-        if (mPlayerState->GetItemAmount(CPlayerState::kIT_ScanVirus, true) == 0 ||
-            player->GetTurretState() == kTS_Active) {
+        if (mPlayerState->GetItemAmount(CPlayerState::kIT_ScanVirus, true) == 0) {
+          return false;
+        }
+        if (player->GetTurretState() == kTS_Active) {
           return false;
         }
         if (player->GetPlayerState()->GetItemAmount(CPlayerState::kIT_HackedEffect, true) &
@@ -3862,30 +3871,22 @@ void CPlayer::GetDamageSfx(float damage, TUniqueId source, TUniqueId owner, EWea
 float CPlayer::GetAttachedActorStruggle() const { return mAttachedActorStruggle; }
 
 void CPlayer::FinishNewScan(CStateManager& mgr) {
-  if (mgr.IsMultiplayer()) {
-    return;
-  }
-
-  const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOrbitTargetId()));
-  if (!actor || !actor->GetMaterialList().HasMaterial(kMT_Scannable)) {
-    return;
-  }
-
-  const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo();
-  if (!scanInfo) {
-    return;
-  }
-
-  if (mPlayerState->GetScanTime(scanInfo->GetScannableObjectId()) >= 1.f &&
-      IsDataLoreResearchScan(scanInfo->GetScannableObjectId())) {
-    rstl::pair< int, int > scanCompletion = mgr.CalculateScanCompletionRate();
-    CAssetId message = UpdatePersistentScanPercent(mPlayerState->GetLogScans(),
-                                                   scanCompletion.first, scanCompletion.second);
-    if (message != kInvalidAssetId) {
-      mgr.ShowPausedHUDMemo(message, 0.f);
+  if (!mgr.IsMultiplayer()) {
+    const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(GetOrbitTargetId()));
+    if (actor && actor->GetMaterialList().HasMaterial(kMT_Scannable)) {
+      const CScannableObjectInfo* scanInfo = actor->GetScannableObjectInfo();
+      if (scanInfo && mPlayerState->GetScanTime(scanInfo->GetScannableObjectId()) >= 1.f &&
+          IsDataLoreResearchScan(scanInfo->GetScannableObjectId())) {
+        rstl::pair< int, int > scanCompletion = mgr.CalculateScanCompletionRate();
+        CAssetId message = UpdatePersistentScanPercent(mPlayerState->GetLogScans(),
+                                                       scanCompletion.first, scanCompletion.second);
+        if (message != kInvalidAssetId) {
+          mgr.ShowPausedHUDMemo(message, 0.f);
+        }
+        mPlayerState->SetScanCompletionRateFirst(scanCompletion.first);
+        mPlayerState->SetScanCompletionRateSecond(scanCompletion.second);
+      }
     }
-    mPlayerState->SetScanCompletionRateFirst(scanCompletion.first);
-    mPlayerState->SetScanCompletionRateSecond(scanCompletion.second);
   }
 }
 
@@ -4168,8 +4169,8 @@ void CPlayer::UpdateEchoVisorEffects(float dt, CStateManager& mgr) {
     params.mOutputPercent[0] = 70;
     params.mOutputPercent[1] = 70;
     params.mOutputPercent[2] = 0;
-    params.mLowPassFrequency = 6000;
     params.mHighPassFrequency = 3000;
+    params.mLowPassFrequency = 6000;
     mEchoVisorAuxEffectId = CSfxManager::AddAuxEffect(CSfxManager::kAllAreas, params, 127, 5);
   } else if (mEchoVisorAuxEffectId != 0 && !echoVisor) {
     CSfxManager::RemoveAuxEffect(mEchoVisorAuxEffectId);
