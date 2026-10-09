@@ -1236,11 +1236,14 @@ void CPauseScreen::ProcessModelInput(const CFinalInput& input, bool allowTransla
 }
 
 void CPauseScreen::UpdateStickIcons(const CFinalInput& input) {
-  const CControlMapper& mapper = gpGameState->ControlMapper();
-  const float up = mapper.GetAnalogInput(CControlMapper::kC_MapCircleUp, input);
-  const float down = mapper.GetAnalogInput(CControlMapper::kC_MapCircleDown, input);
-  const float left = mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
-  const float right = mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
+  const float up =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleUp, input);
+  const float down =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleDown, input);
+  const float left =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
+  const float right =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
   int direction = 0;
   if (up > 0.f)
     direction += 2;
@@ -1279,11 +1282,17 @@ void CPauseScreen::UpdateStickIcons(const CFinalInput& input) {
     mLeftStickIcon = 0;
     break;
   }
-  const float forward = mapper.GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
-  const float back = mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
-  const float moveLeft = mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
-  const float moveRight = mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
-  uchar move = forward > 0.f;
+  const float forward =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
+  const float back =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
+  const float moveLeft =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
+  const float moveRight =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
+  int move = 0;
+  if (forward > 0.f)
+    move += 1;
   if (back > 0.f)
     move += 2;
   if (moveLeft > 0.f)
