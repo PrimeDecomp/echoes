@@ -602,7 +602,7 @@ void CPauseScreen::UpdatePulse(float dt) {
   int index = 0;
   for (rstl::vector< CGuiWidget* >::const_iterator it = mHexWidgets.begin();
        it != mHexWidgets.end(); ++it, ++index) {
-    const float brightness = 1.f - rstl::min_val(1.f, CMath::AbsF(pulse - index / count) / width);
+    const float brightness = 1.f - CMath::Min(1.f, CMath::AbsF(pulse - index / count) / width);
     (*it)->SetColor(CColor::Modulate(gpTweakGui->GetMapBackgroundColor(),
                                      CColor(brightness, brightness, brightness, 1.f)));
   }
