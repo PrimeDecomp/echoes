@@ -885,10 +885,10 @@ void CPlayerGun::HandleWeaponChange(const CFinalInput& input, CStateManager& mgr
 
 CPlayerGun::CGunMorph::CGunMorph(float transformTime, float holdTime)
 : mYLerp(1.f)
-, mGunTransformTime(transformTime > 0.f ? transformTime : 1.f)
+, mGunTransformTime(CMath::FastFSel(-transformTime, 1.f, transformTime))
 , mRemTime(0.f)
 , mSpeed(0.1f)
-, mHoloHoldTime(fabsf(holdTime))
+, mHoloHoldTime(CMath::AbsD(holdTime))
 , mRemHoldTime(2.f)
 , mTransitionFactor(1.f)
 , mMorphDirection(kMD_Done)
@@ -2677,29 +2677,35 @@ void CPlayerGun::EnterFidget(CStateManager& mgr) {
 }
 
 void CPlayerGun::UpdateGunIdle(float dt, CStateManager& mgr) {
+  bool moving;
   CPlayer* player = GetPlayer(mgr);
-  if (!player->IsInFreeLook() && player->GetOrbitState() == CPlayer::kOS_NoOrbit &&
-      mBeamChangeState == kBCS_Idle && !mInBigStrike) {
-    const bool moving = player->GetVelocityWR().Magnitude() > 0.01f ||
-                        player->GetAngularVelocityOR().GetVector().GetZ() != 0.f;
+  if (player->IsInFreeLook() || player->GetOrbitState() != CPlayer::kOS_NoOrbit ||
+      mBeamChangeState != kBCS_Idle || mInBigStrike) {
+    mFidget.ResetAll();
+  } else {
+    moving = true;
+    if (!(player->GetVelocityWR().Magnitude() > 0.01f) &&
+        player->GetAngularVelocityOR().GetVector().GetZ() == 0.f) {
+      moving = false;
+    }
     mFidget.Update(mInputFlags, moving, mGunStrikeCooldownTimer > 0.f, dt, mgr, *player);
-    if (mFidget.GetState() == CFidget::kS_NoFidget) {
-      if (!moving || mInputFlags != 0) {
-        if (mGunMotionState != SamusGun::kAS_Idle) {
-          mGunMotion->PlayPasAnim(SamusGun::kAS_Idle, mgr, 0.f, false);
-          mGunMotionState = SamusGun::kAS_Idle;
-        }
-      } else {
+    switch (mFidget.GetState()) {
+    case CFidget::kS_NoFidget:
+      if (moving && static_cast< int >(mInputFlags) == 0) {
         if (mGunStrikeCooldownTimer <= 0.f && mIdleWanderDelayTimer <= 0.f) {
           mIdleWanderDelayTimer = 8.f;
           mGunMotion->PlayPasAnim(SamusGun::kAS_Wander, mgr, 0.f, false);
           mGunMotionState = SamusGun::kAS_Wander;
         }
         mIdleWanderDelayTimer -= dt;
+      } else if (mGunMotionState != SamusGun::kAS_Idle) {
+        mGunMotion->PlayPasAnim(SamusGun::kAS_Idle, mgr, 0.f, false);
+        mGunMotionState = SamusGun::kAS_Idle;
       }
+      break;
+    default:
+      break;
     }
-  } else {
-    mFidget.ResetAll();
   }
 }
 
