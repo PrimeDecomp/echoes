@@ -125,12 +125,13 @@ CMapWorld::CMapWorld(CInputStream& in)
 , mWorldSphereHalfDepth(0.f) {
   in.ReadInt32();
   in.ReadInt32();
-  int areaCount = in.Get< int >();
+  const int areaCount = in.ReadInt32();
   mAreas.reserve(areaCount);
   mTraversed = rstl::vector< bool >(areaCount, false);
   for (int i = 0; i < areaCount; ++i) {
     CAssetId areaRes = in.ReadInt32();
-    mAreas.push_back(CMapAreaData(areaRes, kMAL_Unloaded, i == 0 ? nullptr : &mAreas[i - 1]));
+    mAreas.push_back_unsafe(
+        CMapAreaData(areaRes, kMAL_Unloaded, i == 0 ? nullptr : &mAreas[i - 1]));
   }
   mListHeads[kMAL_Unloaded] = &mAreas.back();
   CMemoryDrawEnum::AddWorldMemory(mAreas.capacity() * sizeof(CMapAreaData) + sizeof(*this));
@@ -142,9 +143,12 @@ CMapWorld::~CMapWorld() {
 
 CMapArea* CMapWorld::GetMapArea(int aid) const { return mAreas[aid].GetMapArea(); }
 
-bool CMapWorld::IsMapAreaInBFSInfoVector(const CMapAreaData* area,
-                                         const rstl::vector< CMapAreaBFSInfo >& vec) const {
-  for (rstl::vector< CMapAreaBFSInfo >::const_iterator it = vec.begin(); it != vec.end(); ++it) {
+bool CMapWorld::IsMapAreaInBFSInfoVector(
+    const CMapAreaData* area,
+    const rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator >& vec) const {
+  for (rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator >::const_iterator it =
+           vec.begin();
+       it != vec.end(); ++it) {
     if (area == &mAreas[it->GetAreaIndex()]) {
       return true;
     }
@@ -154,7 +158,8 @@ bool CMapWorld::IsMapAreaInBFSInfoVector(const CMapAreaData* area,
 
 void CMapWorld::SetWhichMapAreasLoaded(const IWorld& wld, int start, int count) {
   ClearTraversedFlags();
-  rstl::vector< CMapAreaBFSInfo > bfsInfos;
+  rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator > bfsInfos(
+      rstl::locked_cache_allocator(1));
   bfsInfos.reserve(mAreas.size());
   DoBFS(wld, start, count, 9999.f, 9999.f, false, bfsInfos);
   for (int i = 0; i < 2; ++i) {
@@ -168,8 +173,9 @@ void CMapWorld::SetWhichMapAreasLoaded(const IWorld& wld, int start, int count) 
       data = next;
     }
   }
-  for (rstl::vector< CMapAreaBFSInfo >::const_iterator it = bfsInfos.begin(); it != bfsInfos.end();
-       ++it) {
+  for (rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator >::const_iterator it =
+           bfsInfos.begin();
+       it != bfsInfos.end(); ++it) {
     CMapAreaData& data = mAreas[it->GetAreaIndex()];
     data.Lock();
     if (data.GetContainingList() == kMAL_Unloaded) {
@@ -214,7 +220,8 @@ void CMapWorld::MoveMapAreaToList(CMapAreaData* data, EMapAreaList list) {
 
 int CMapWorld::GetCurrentMapAreaDepth(const IWorld& wld, int aid) const {
   ClearTraversedFlags();
-  rstl::vector< CMapAreaBFSInfo > bfsInfos;
+  rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator > bfsInfos(
+      rstl::locked_cache_allocator(1));
   bfsInfos.reserve(mAreas.size());
   DoBFS(wld, aid, 9999, 9999.f, 9999.f, false, bfsInfos);
   if (bfsInfos.empty()) {
@@ -232,8 +239,8 @@ rstl::vector< int > CMapWorld::GetVisibleAreas(const IWorld& wld,
       continue;
     }
     const CMapArea* area = GetMapArea(i);
-    if (area->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, GetMapArea(i)->IsInDarkWorld()),
-                                       mwInfo.IsAreaVisible(i))) {
+    if (GetMapArea(i)->GetIsVisibleToAutoMapper(mwInfo.IsWorldVisible(i, area->IsInDarkWorld()),
+                                                mwInfo.IsAreaVisible(i))) {
       areas.push_back_unsafe(i);
     }
   }
@@ -248,7 +255,8 @@ void CMapWorld::Draw(const CMapWorldDrawParms& parms, int curArea, int otherArea
   ClearTraversedFlags();
   const IWorld& wld = parms.GetWorld();
   int areaDepth = CMath::CeilingF(rstl::max_val(depth1, depth2));
-  rstl::vector< CMapAreaBFSInfo > bfsInfos;
+  rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator > bfsInfos(
+      rstl::locked_cache_allocator(1));
   bfsInfos.reserve(mAreas.size());
   if (curArea != otherArea) {
     mTraversed[otherArea] = true;
@@ -272,12 +280,12 @@ void CMapWorld::Draw(const CMapWorldDrawParms& parms, int curArea, int otherArea
   DrawAreas(parms, curArea, bfsInfos, darkWorldBlend, inMapScreen);
 }
 
-void CMapWorld::DoBFS(const IWorld& wld, int startArea, int areaCount, float surfDepth,
-                      float outlineDepth, bool checkLoad,
-                      rstl::vector< CMapAreaBFSInfo >& bfsInfos) const {
+void CMapWorld::DoBFS(
+    const IWorld& wld, int startArea, int areaCount, float surfDepth, float outlineDepth,
+    bool checkLoad, rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator >& bfsInfos) const {
   if (areaCount > 0 && IsMapAreaValid(wld, startArea, checkLoad)) {
     int idx = bfsInfos.size();
-    bfsInfos.push_back(CMapAreaBFSInfo(startArea, 1, surfDepth, outlineDepth));
+    bfsInfos.push_back_unsafe(CMapAreaBFSInfo(startArea, 1, surfDepth, outlineDepth));
     mTraversed[startArea] = true;
     for (;; ++idx) {
       if (idx == bfsInfos.size()) {
@@ -294,7 +302,8 @@ void CMapWorld::DoBFS(const IWorld& wld, int startArea, int areaCount, float sur
       for (int i = 0; i < static_cast< int >(area->IGetNumAttachedAreas()); ++i) {
         int attached = area->IGetAttachedAreaId(i).Value();
         if (IsMapAreaValid(wld, attached, checkLoad) && !mTraversed[attached]) {
-          bfsInfos.push_back(CMapAreaBFSInfo(attached, depth + 1, surfaceDepth, outlineDepth));
+          bfsInfos.push_back_unsafe(
+              CMapAreaBFSInfo(attached, depth + 1, surfaceDepth, outlineDepth));
           mTraversed[attached] = true;
         }
       }
@@ -313,9 +322,10 @@ bool CMapWorld::IsMapAreaValid(const IWorld& wld, const int areaIdx, bool checkL
   return true;
 }
 
-void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
-                          const rstl::vector< CMapAreaBFSInfo >& bfsInfos, float darkWorldBlend,
-                          bool inMapScreen) const {
+void CMapWorld::DrawAreas(
+    const CMapWorldDrawParms& parms, int selArea,
+    const rstl::vector< CMapAreaBFSInfo, rstl::locked_cache_allocator >& bfsInfos,
+    float darkWorldBlend, bool inMapScreen) const {
   gpRender->SetBlendMode_AlphaBlended();
   CGraphics::SetLineWidth(1.f, kTO_One);
   rstl::vector< CMapObjectSortInfo > sortInfos;
@@ -326,8 +336,11 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
     surfaceCount += area->GetNumSurfaces();
     objectCount += area->GetNumMappableObjects();
   }
-  sortInfos.reserve(parms.GetIsSortDoorSurfaces() ? surfaceCount + objectCount * 7
-                                                  : bfsInfos.size() + objectCount);
+  if (parms.GetIsSortDoorSurfaces()) {
+    sortInfos.reserve(surfaceCount + objectCount + objectCount * 6);
+  } else {
+    sortInfos.reserve(bfsInfos.size() + objectCount);
+  }
   const CStateManager& mgr = parms.GetStateManager();
   const CMapWorldInfo& mwInfo = parms.GetMapWorldInfo();
   int playerArea = mgr.GetNextAreaId().Value();
@@ -357,25 +370,34 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
     bool visited = mwInfo.IsAreaVisited(areaIdx);
     float alphaSurf = visited ? alphaSurfVisited : alphaSurfUnvisited;
     float alphaOutline = visited ? alphaOutlineVisited : alphaOutlineUnvisited;
-    const bool dark = area->IsInDarkWorld();
-    const CColor surfaceColor = visited ? (dark ? gpTweakAutoMapper->GetSurfaceDarkVisitedColor()
-                                                : gpTweakAutoMapper->GetSurfaceVisitedColor())
-                                        : (dark ? gpTweakAutoMapper->GetSurfaceDarkUnvisitedColor()
-                                                : gpTweakAutoMapper->GetSurfaceUnvisitedColor());
-    const CColor outlineColor = visited ? (dark ? gpTweakAutoMapper->GetOutlineDarkVisitedColor()
-                                                : gpTweakAutoMapper->GetOutlineVisitedColor())
-                                        : (dark ? gpTweakAutoMapper->GetOutlineDarkUnvisitedColor()
-                                                : gpTweakAutoMapper->GetOutlineUnvisitedColor());
-    const CColor surfaceSelect =
-        visited ? (dark ? gpTweakAutoMapper->GetSurfaceDarkVisitedSelectColor()
-                        : gpTweakAutoMapper->GetSurfaceVisitedSelectColor())
-                : (dark ? gpTweakAutoMapper->GetSurfaceDarkUnvisitedSelectColor()
-                        : gpTweakAutoMapper->GetSurfaceUnvisitedSelectColor());
-    const CColor outlineSelect =
-        visited ? (dark ? gpTweakAutoMapper->GetOutlineDarkVisitedSelectColor()
-                        : gpTweakAutoMapper->GetOutlineVisitedSelectColor())
-                : (dark ? gpTweakAutoMapper->GetOutlineDarkUnvisitedSelectColor()
-                        : gpTweakAutoMapper->GetOutlineUnvisitedSelectColor());
+    const CColor& surfaceVisitedColor = area->IsInDarkWorld()
+                                            ? gpTweakAutoMapper->GetSurfaceDarkVisitedColor()
+                                            : gpTweakAutoMapper->GetSurfaceVisitedColor();
+    const CColor& surfaceUnvisitedColor = area->IsInDarkWorld()
+                                              ? gpTweakAutoMapper->GetSurfaceDarkUnvisitedColor()
+                                              : gpTweakAutoMapper->GetSurfaceUnvisitedColor();
+    const CColor& outlineVisitedColor = area->IsInDarkWorld()
+                                            ? gpTweakAutoMapper->GetOutlineDarkVisitedColor()
+                                            : gpTweakAutoMapper->GetOutlineVisitedColor();
+    const CColor& outlineUnvisitedColor = area->IsInDarkWorld()
+                                              ? gpTweakAutoMapper->GetOutlineDarkUnvisitedColor()
+                                              : gpTweakAutoMapper->GetOutlineUnvisitedColor();
+    const CColor& surfaceVisitedSelect = area->IsInDarkWorld()
+                                             ? gpTweakAutoMapper->GetSurfaceDarkVisitedSelectColor()
+                                             : gpTweakAutoMapper->GetSurfaceVisitedSelectColor();
+    const CColor& surfaceUnvisitedSelect =
+        area->IsInDarkWorld() ? gpTweakAutoMapper->GetSurfaceDarkUnvisitedSelectColor()
+                              : gpTweakAutoMapper->GetSurfaceUnvisitedSelectColor();
+    const CColor& outlineVisitedSelect = area->IsInDarkWorld()
+                                             ? gpTweakAutoMapper->GetOutlineDarkVisitedSelectColor()
+                                             : gpTweakAutoMapper->GetOutlineVisitedSelectColor();
+    const CColor& outlineUnvisitedSelect =
+        area->IsInDarkWorld() ? gpTweakAutoMapper->GetOutlineDarkUnvisitedSelectColor()
+                              : gpTweakAutoMapper->GetOutlineUnvisitedSelectColor();
+    const CColor& surfaceColor = visited ? surfaceVisitedColor : surfaceUnvisitedColor;
+    const CColor& outlineColor = visited ? outlineVisitedColor : outlineUnvisitedColor;
+    const CColor& surfaceSelect = visited ? surfaceVisitedSelect : surfaceUnvisitedSelect;
+    const CColor& outlineSelect = visited ? outlineVisitedSelect : outlineUnvisitedSelect;
     CColor hintFlash =
         CColor::Lerp(CColor(0u), CColor(uchar(255), uchar(255), uchar(255), uchar(0)),
                      parms.GetHintAreaFlashIntensity());
@@ -398,18 +420,18 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
         cameraXf.GetQuickInverse() * area->GetAreaPostTransform(parms.GetWorld(), areaIdx);
     int j;
     int count = area->GetNumSurfaces();
-    if (!parms.GetIsSortDoorSurfaces()) {
-      sortInfos.push_back(CMapObjectSortInfo(modelView.GetTranslation().GetY(), areaIdx,
-                                             CMapObjectSortInfo::kOC_Area, 0, finalSurface,
-                                             finalOutline));
-    } else {
+    if (parms.GetIsSortDoorSurfaces()) {
       for (j = 0; j < count; ++j) {
         const CMapArea::CMapAreaSurface& surface = area->GetSurface(j);
         const CVector3f center = surface.GetCenterPosition();
         const CVector3f pos = modelView * center;
-        sortInfos.push_back(CMapObjectSortInfo(pos.GetY(), areaIdx, CMapObjectSortInfo::kOC_Surface,
-                                               j, finalSurface, finalOutline));
+        sortInfos.push_back_unsafe(CMapObjectSortInfo(
+            pos.GetY(), areaIdx, CMapObjectSortInfo::kOC_Surface, j, finalSurface, finalOutline));
       }
+    } else {
+      sortInfos.push_back_unsafe(CMapObjectSortInfo(modelView.GetTranslation().GetY(), areaIdx,
+                                                    CMapObjectSortInfo::kOC_Area, 0, finalSurface,
+                                                    finalOutline));
     }
     int surfaceBase = 0;
     for (j = 0; j < area->GetNumMappableObjects(); surfaceBase += 6, ++j) {
@@ -427,20 +449,22 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
           int objectFace, face;
           for (face = 0, objectFace = surfaceBase; face < 6; ++face, ++objectFace) {
             const CVector3f& center = object.BuildSurfaceCenterPoint(face);
-            const CVector3f translated = area->GetMapAdjustment() + center;
+            const CVector3f translated = area->GetAreaPostTranslate(parms.GetWorld()) + center;
             const CVector3f pos = modelView * translated;
-            sortInfos.push_back(CMapObjectSortInfo(pos.GetY(), areaIdx,
-                                                   CMapObjectSortInfo::kOC_DoorSurface, objectFace,
-                                                   CColor(), CColor()));
+            sortInfos.push_back_unsafe(CMapObjectSortInfo(pos.GetY(), areaIdx,
+                                                          CMapObjectSortInfo::kOC_DoorSurface,
+                                                          objectFace, CColor(), CColor()));
           }
         }
         continue;
       }
       const CVector3f origin = object.GetTransform().GetTranslation();
-      const CVector3f translated = area->GetMapAdjustment() + origin;
+      const CVector3f translated = area->GetAreaPostTranslate(parms.GetWorld()) + origin;
       const CVector3f pos = modelView * translated;
-      CMapObjectSortInfo::EObjectCode code = CMapObjectSortInfo::kOC_Object;
-      sortInfos.push_back(CMapObjectSortInfo(pos.GetY(), areaIdx, code, j, CColor(), CColor()));
+      CMapObjectSortInfo::EObjectCode code =
+          door ? CMapObjectSortInfo::kOC_Door : CMapObjectSortInfo::kOC_Object;
+      sortInfos.push_back_unsafe(
+          CMapObjectSortInfo(pos.GetY(), areaIdx, code, j, CColor(), CColor()));
     }
   }
 
@@ -465,8 +489,8 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
       const CColor& surfaceColor = info.GetSurfaceColor();
       const CColor& outlineColor = info.GetOutlineColor();
       CMapArea* area = GetMapArea(areaIdx);
-      const CTransform4f& areaXf = area->GetAreaPostTransform(parms.GetWorld(), areaIdx);
       const float worldAlpha = area->IsInDarkWorld() ? darkWorldBlend : 1.f - darkWorldBlend;
+      const CTransform4f& areaXf = area->GetAreaPostTransform(parms.GetWorld(), areaIdx);
       if (type == CMapObjectSortInfo::kOC_Area) {
         area->Draw(surfaceColor, outlineColor, areaXf, modelXf, selArea, mwInfo, parms.GetAlpha());
       } else if (type == CMapObjectSortInfo::kOC_Surface) {
@@ -491,7 +515,8 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
         const CMappableObject& object = area->GetMappableObject(idx);
         bool needsVertices = lastMode != mode;
         const CTransform4f objXf =
-            CTransform4f::Translate(area->GetMapAdjustment()) * object.GetTransform();
+            CTransform4f::Translate(area->GetAreaPostTranslate(parms.GetWorld())) *
+            object.GetTransform();
         gpRender->SetModelMatrix(
             type == CMapObjectSortInfo::kOC_Door
                 ? modelXf * objXf
@@ -503,8 +528,9 @@ void CMapWorld::DrawAreas(const CMapWorldDrawParms& parms, int selArea,
         lastMode = mode;
       } else if (type == CMapObjectSortInfo::kOC_DoorSurface) {
         const CMappableObject& object = area->GetMappableObject(idx / 6);
-        gpRender->SetModelMatrix(modelXf * CTransform4f::Translate(area->GetMapAdjustment()) *
-                                 object.GetTransform());
+        gpRender->SetModelMatrix(
+            modelXf * CTransform4f::Translate(area->GetAreaPostTranslate(parms.GetWorld())) *
+            object.GetTransform());
         object.DrawDoorSurface(selArea, mwInfo, worldAlpha * parms.GetAlpha(), idx % 6,
                                lastMode != kDM_DoorSurface);
         lastMode = kDM_DoorSurface;
