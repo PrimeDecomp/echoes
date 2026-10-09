@@ -460,27 +460,30 @@ bool CBallCamera::fn_801a67a4(float radius, const CVector3f& from, const CVector
           .BuildTransform4f();
   const CTransform4f positiveRotation = CQuaternion::ZRotation(skAvoidStepAngle).BuildTransform4f();
   float distance = direction.Magnitude();
-  while (distance >= radius) {
-    const CVector3f sought = distance * direction.AsNormalized();
-    CVector3f negativeDirection = negativeRotation * sought;
-    CVector3f positiveDirection = positiveRotation * sought;
-    for (int i = 0; i < 6; ++i) {
+  bool found = false;
+  while (!found && distance >= radius) {
+    CVector3f negativeDirection = negativeRotation.Rotate(distance * direction.AsNormalized());
+    CVector3f positiveDirection = positiveRotation.Rotate(distance * direction.AsNormalized());
+    for (int i = 0; i < 180.f / skAvoidStepAngle.AsDegrees(); ++i) {
       if (mgr.RayCollideWorld(from, from + negativeDirection, nearList, skLineOfSightFilter,
                               nullptr)) {
         result = negativeDirection;
-        return true;
+        found = true;
+        break;
       }
       if (mgr.RayCollideWorld(from, from + positiveDirection, nearList, skLineOfSightFilter,
                               nullptr)) {
         result = positiveDirection;
-        return true;
+        found = true;
+        break;
       }
       negativeDirection = negativeRotation * negativeDirection;
       positiveDirection = positiveRotation * positiveDirection;
     }
     distance -= 0.3f;
   }
-  return false;
+  const bool hit = found;
+  return hit;
 }
 
 CVector3f CBallCamera::FindDesiredPosition(float distance, float elevation, CVector3f direction,
