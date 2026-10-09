@@ -622,7 +622,9 @@ MetroidPrime/CAABoxFilter.cpp:
 
 MetroidPrime/CGroundMovement.cpp:
 	.text       start:0x801289C0 end:0x8012CC60
-	.sdata2     start:0x8041D190 end:0x8041D1C0
+	.sdata      start:0x80419618 end:0x80419628
+	.sbss       start:0x8041A478 end:0x8041A490
+	.sdata2     start:0x8041D130 end:0x8041D1C0
 
 MetroidPrime/ScriptObjects/CScriptTargetingPoint.cpp:
 	.text       start:0x8012CC60 end:0x8012CF4C
