@@ -368,7 +368,7 @@ struct SConnection {
   : state(state), msg(msg), objId(id) {}
 };
 namespace rstl {
-RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(SConnection)
+RSTL_DECLARE_TRIVIALLY_CONSTRUCTIBLE(SConnection)
 } // namespace rstl
 
 class CEntityInfo {

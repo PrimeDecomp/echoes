@@ -12,6 +12,7 @@
 class CWeaponMgr {
 public:
   typedef rstl::reserved_vector< int, kWT_Max > Vec;
+  typedef rstl::pair< TUniqueId, Vec > Entry;
 
   CWeaponMgr();
   void Remove(TUniqueId uid);
@@ -26,5 +27,11 @@ private:
   rstl::map< TUniqueId, Vec > mWeapons;
 };
 CHECK_SIZEOF(CWeaponMgr, 0x14);
+
+// The map's nodes copy their entries bitwise (bitwise_copy<11> in CWeaponMgr's insert_into).
+namespace rstl {
+RSTL_DECLARE_TRIVIALLY_DESTRUCTIBLE(CWeaponMgr::Entry)
+RSTL_DECLARE_BITWISE_CONSTRUCTION(CWeaponMgr::Entry)
+} // namespace rstl
 
 #endif // _CWEAPONMGR
