@@ -1044,6 +1044,9 @@ MetroidPrime/Cameras/CPathCamera.cpp:
 
 MetroidPrime/Cameras/CSpindleCamera.cpp:
 	.text       start:0x801B52A4 end:0x801B7648
+	.rodata     start:0x803AB960 end:0x803AB970
+	.data       start:0x803B7AC0 end:0x803B7B58
+	.sdata2     start:0x8041E170 end:0x8041E1B8
 
 MetroidPrime/Cameras/CBallCameraTransitionState.cpp:
 	.text       start:0x801B7648 end:0x801B7720

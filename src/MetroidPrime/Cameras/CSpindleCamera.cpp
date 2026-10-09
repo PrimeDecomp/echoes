@@ -155,23 +155,24 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   const CTransform4f scriptXf = script->GetTransform();
-  const CLine hintLine(scriptXf.GetTranslation(), CUnitVector3f(scriptXf.GetUp()));
-  const CVector3f hintPos = hintLine.GetRefPoint();
+  const CVector3f hintPos = scriptXf.GetTranslation();
+  const CLine hintLine(hintPos, CUnitVector3f(scriptXf.GetUp()));
 
   CVector3f hintToCamDir = GetTranslation() - hintLine.GetClosestPoint(GetTranslation());
   const CVector3f ballPos = Player(mgr).GetBallPosition();
   CVector3f hintToBallDir = ballPos - hintLine.GetClosestPoint(ballPos);
 
+  float hintBallToCamAzimuth;
   float hintToBallDist = 0.f;
   CVector3f hintDir = script->GetTransform().GetForward();
   const CVector3f up = script->GetTransform().GetUp();
-  if (hintDir.CanBeNormalized()) {
+  if (hintDir.IsMagnitudeSafe()) {
     hintDir.Normalize();
   } else {
     hintDir = CVector3f(0.f, 1.f, 0.f);
   }
 
-  if (hintToBallDir.CanBeNormalized()) {
+  if (hintToBallDir.IsMagnitudeSafe()) {
     hintToBallDist = hintToBallDir.Magnitude();
     hintToBallDir.Normalize();
   } else {
@@ -181,20 +182,19 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   mInVars.clear();
   mInVars.push_back(hintToBallDist);
 
-  const CVector3f hintToBallVOff = hintLine.GetClosestPoint(ballPos) - hintPos;
-  mInVars.push_back(hintToBallVOff.Magnitude());
+  mInVars.push_back(CVector3f(hintLine.GetClosestPoint(ballPos) - hintPos).Magnitude());
 
   const float hintBallAngle =
       CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(hintToBallDir, hintDir), 1.f)));
-  const float hintBallAngleDegrees = 57.29578f * hintBallAngle;
+  const float hintBallAngleDegrees = hintBallAngle * (180.f / M_PIF);
   mInVars.push_back(hintBallAngleDegrees);
 
   const float hintBallCross = CVector3f::Dot(CVector3f::Cross(hintToBallDir, hintDir), up);
   if (hintBallCross >= 0.f) {
     mInVars.push_back(hintBallAngleDegrees);
-    mInVars.push_back(57.29578f * (2.f * M_PIF - hintBallAngle));
+    mInVars.push_back((2.f * M_PIF - hintBallAngle) * (180.f / M_PIF));
   } else {
-    mInVars.push_back(57.29578f * (2.f * M_PIF - hintBallAngle));
+    mInVars.push_back((2.f * M_PIF - hintBallAngle) * (180.f / M_PIF));
     mInVars.push_back(hintBallAngleDegrees);
   }
 
@@ -206,7 +206,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   CVector3f hintDelta =
       script->GetTranslation() - origLine.GetClosestPoint(script->GetTranslation());
   float hintDeltaDist = 0.f;
-  if (hintDelta.CanBeNormalized()) {
+  if (hintDelta.IsMagnitudeSafe()) {
     hintDeltaDist = hintDelta.Magnitude();
   }
   mInVars.push_back(hintDeltaDist);
@@ -225,7 +225,9 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   if ((params.GetFlags() & 0x2000) != 0 &&
       hintToBallDist > GetInterpolant(params.GetDeactivateRadius())) {
     if (hint->GetDelegatedCameraId() == GetUniqueId()) {
-      CameraManager(mgr).HintManager()->ForceRemoveHint(hint->GetUniqueId(), mgr, kInvalidUniqueId);
+      const_cast< CCameraManager& >(GetCameraManager(mgr))
+          .HintManager()
+          ->ForceRemoveHint(hint->GetUniqueId(), mgr, kInvalidUniqueId);
     }
     return;
   }
@@ -241,7 +243,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
 
   CVector3f newCamPos = GetTranslation();
   float hintToCamDist = hintToCamDir.Magnitude();
-  if (hintToCamDir.CanBeNormalized()) {
+  if (hintToCamDir.IsMagnitudeSafe()) {
     hintToCamDir.Normalize();
   } else {
     hintToCamDir = hintDir;
@@ -274,7 +276,7 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   }
 
   CQuaternion azimuthQuat = CQuaternion::AxisAngle(
-      hintLine.GetNormal(), CRelAngle::FromRadians(hintBallToCamTargetAzimuth));
+      CUnitVector3f(hintLine.GetNormal()), CRelAngle::FromRadians(hintBallToCamTargetAzimuth));
   const CVector3f targetHintToCam = azimuthQuat.Transform(hintToBallDir);
   CVector3f newHintToCamDir = hintToCamDir;
 
@@ -306,19 +308,18 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   camToBall[kDZ] = 0.f;
 
   float camToBallDist = 0.f;
-  if (camToBall.CanBeNormalized()) {
+  if (camToBall.IsMagnitudeSafe()) {
     camToBallDist = camToBall.Magnitude();
   }
 
   targetHintToCamDeltaAngle *=
-      (1.f - CMath::Clamp(0.f, (camToBallDist - 2.f) * 0.5f, 1.f)) * 10.f + 1.f;
+      (1.f - CMath::Clamp(0.f, (camToBallDist - 2.f) / 2.f, 1.f)) * 10.f + 1.f;
   targetHintToCamDeltaAngle = CMath::Limit(targetHintToCamDeltaAngle, hintToCamDeltaAngleRange);
 
   if (CMath::AbsF(CMath::Limit(CVector3f::Dot(hintToCamDir, targetHintToCam), 1.f)) < 0.9999999f) {
-    newHintToCamDir =
-        CQuaternion::ShortestRotationArcClamped(hintToCamDir, targetHintToCam,
-                                                CRelAngle::FromRadians(targetHintToCamDeltaAngle))
-            .Transform(hintToCamDir);
+    azimuthQuat = CQuaternion::ShortestRotationArcClamped(
+        hintToCamDir, targetHintToCam, CRelAngle::FromRadians(targetHintToCamDeltaAngle));
+    newHintToCamDir = azimuthQuat.Transform(hintToCamDir);
   } else {
     newHintToCamDir = targetHintToCam;
   }
@@ -327,14 +328,14 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
     newHintToCamDir = targetHintToCam;
   }
 
-  const float hintBallToCamAzimuth =
-      acos(CMath::Limit(CVector3f::Dot(hintToBallDir, newHintToCamDir), 1.f));
+  hintBallToCamAzimuth = acos(CMath::Limit(CVector3f::Dot(hintToBallDir, newHintToCamDir), 1.f));
   const float minHintBallToCamAzimuth = 0.017453292f * GetInterpolant(params.GetMinAngularOffset());
   if (CMath::AbsF(hintBallToCamAzimuth) < minHintBallToCamAzimuth) {
-    azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+    azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                          CRelAngle::FromRadians(minHintBallToCamAzimuth));
-    if (CVector3f::Dot(CVector3f::Cross(hintToBallDir, newHintToCamDir), up) < 0.f) {
-      azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+    if (CVector3f::Dot(CVector3f::Cross(hintToBallDir, newHintToCamDir), hintLine.GetNormal()) <
+        0.f) {
+      azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                            CRelAngle::FromRadians(-minHintBallToCamAzimuth));
     }
     newHintToCamDir = azimuthQuat.Transform(hintToBallDir);
@@ -346,18 +347,19 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
     if (mMaxAzimuthInterpTimer < 3.f) {
       const float azimuthInterp = CMath::Limit(mMaxAzimuthInterpTimer / 3.f, 1.f);
       float azimuthDelta = CMath::AbsF(maxHintBallToCamAzimuth - hintBallToCamAzimuth);
-      if (CVector3f::Dot(CVector3f::Cross(hintToBallDir, newHintToCamDir), up) > 0.f) {
+      if (CVector3f::Dot(CVector3f::Cross(hintToBallDir, newHintToCamDir), hintLine.GetNormal()) >
+          0.f) {
         azimuthDelta = -azimuthDelta;
       }
-      azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+      azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                            CRelAngle::FromRadians(azimuthDelta * azimuthInterp));
       newHintToCamDir = azimuthQuat.Transform(newHintToCamDir);
     } else {
       if (hintBallToCamTargetAzimuth > 0.f) {
-        azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+        azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                              CRelAngle::FromRadians(maxHintBallToCamAzimuth));
       } else {
-        azimuthQuat = CQuaternion::AxisAngle(hintLine.GetNormal(),
+        azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
                                              CRelAngle::FromRadians(-maxHintBallToCamAzimuth));
       }
       newHintToCamDir = azimuthQuat.Transform(hintToBallDir);
@@ -369,16 +371,18 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   if ((params.GetFlags() & 0x20) != 0) {
     CVector3f flatHintDir = script->GetTransform().GetForward();
     flatHintDir[kDZ] = 0.f;
-    if (flatHintDir.CanBeNormalized()) {
+    if (flatHintDir.IsMagnitudeSafe()) {
       flatHintDir.Normalize();
+      const float hintCamAzimuth =
+          CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(flatHintDir, newHintToCamDir), 1.f)));
       float clampedAzimuth = CMath::Limit(
-          CMath::AbsF(acos(CMath::Limit(CVector3f::Dot(flatHintDir, newHintToCamDir), 1.f))),
-          0.017453292f * GetInterpolant(params.GetAngularConstraint()));
-      if (CVector3f::Dot(CVector3f::Cross(flatHintDir, newHintToCamDir), up) < 0.f) {
+          hintCamAzimuth, 0.017453292f * GetInterpolant(params.GetAngularConstraint()));
+      if (CVector3f::Dot(CVector3f::Cross(flatHintDir, newHintToCamDir), hintLine.GetNormal()) <
+          0.f) {
         clampedAzimuth = -clampedAzimuth;
       }
-      azimuthQuat =
-          CQuaternion::AxisAngle(hintLine.GetNormal(), CRelAngle::FromRadians(clampedAzimuth));
+      azimuthQuat = CQuaternion::AxisAngle(CUnitVector3f(hintLine.GetNormal()),
+                                           CRelAngle::FromRadians(clampedAzimuth));
       newHintToCamDir = azimuthQuat.Transform(flatHintDir);
     }
   }
@@ -398,16 +402,17 @@ void CSpindleCamera::Think(float dt, CStateManager& mgr) {
   mLookPosition = GetScanObjectIndicatorPosition(mgr);
 
   CVector3f lookDelta = mLookPosition - newCamPos;
-  if (lookDelta.CanBeNormalized()) {
+  if (lookDelta.IsMagnitudeSafe()) {
     SetTransform(CTransform4f::LookAt(newCamPos, newCamPos + lookDelta));
   }
 
   SetTargetFov(GetInterpolant(params.GetFov()));
-  if ((params.GetFlags() & 0x8000) != 0) {
+  if ((params.GetFlags() & 0x10000) != 0) {
     mFixedPositionInitialized = true;
   }
 
-  SetTransform(ValidateCameraTransform(GetTransform(), oldXf, dt));
+  const CTransform4f validXf = ValidateCameraTransform(GetTransform(), oldXf, dt);
+  SetTransform(validXf);
   CActor::Think(dt, mgr);
 }
 
@@ -418,85 +423,89 @@ void CSpindleCamera::Render(const CStateManager& mgr) const {}
 CVector3f CSpindleCamera::GetScanObjectIndicatorPosition(const CStateManager& mgr) const {
   const CScriptSpindleCamera* script =
       TCastToConstPtr< CScriptSpindleCamera >(mgr.GetObjectById(mSpindleCameraId));
-  CVector3f lookPos = GetCameraManager(mgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
-  if (script == nullptr) {
-    return lookPos;
-  }
-
-  const CSpindleCameraParameters& params = script->GetParameters();
-  if ((params.GetFlags() & 0x10000) != 0 && mFixedPositionInitialized) {
-    return mLookPosition;
-  }
-
-  const CTransform4f scriptXf = script->GetTransform();
-  const CLine hintLine(scriptXf.GetTranslation(), CUnitVector3f(scriptXf.GetUp()));
-  const CVector3f ballPos = GetPlayer(mgr).GetBallPosition();
-  hintLine.GetClosestPoint(ballPos);
-
-  if ((params.GetFlags() & 0x8000) != 0) {
-    lookPos = ballPos;
-  } else if (script->GetTargetSpline().GetControlPointCount() != 0) {
-    lookPos = script->GetTargetSpline().GetPositionByLength(mTargetSplineDistance);
-  } else {
-    CVector3f zOffset = CVector3f::Zero();
-    if (mInVars.size() != 0) {
-      zOffset = scriptXf.Rotate(CVector3f(0.f, 0.f, GetInterpolant(params.GetLookAtZOffset())));
+  CStateManager& stateMgr = const_cast< CStateManager& >(mgr);
+  CVector3f lookPos = CameraManager(stateMgr).GetBallCamera()->GetScanObjectIndicatorPosition(mgr);
+  if (script != nullptr) {
+    const CSpindleCameraParameters& params = script->GetParameters();
+    if ((params.GetFlags() & 0x10000) != 0 && mFixedPositionInitialized) {
+      return mLookPosition;
     }
 
-    if ((params.GetFlags() & 0x200) != 0) {
-      lookPos += zOffset;
+    const CTransform4f scriptXf = script->GetTransform();
+    const CVector3f hintPos = scriptXf.GetTranslation();
+    const CLine hintLine(hintPos, CUnitVector3f(scriptXf.GetUp()));
+    const CVector3f ballPos = Player(stateMgr).GetBallPosition();
+    hintLine.GetClosestPoint(ballPos);
+
+    if ((params.GetFlags() & 0x8000) != 0) {
+      lookPos = ballPos;
+    } else if (script->GetTargetSpline().GetControlPointCount() != 0) {
+      lookPos = script->GetTargetSpline().GetPositionByLength(mTargetSplineDistance);
     } else {
-      lookPos = script->GetTranslation() + (lookPos - hintLine.GetClosestPoint(lookPos)) + zOffset;
-    }
-  }
-
-  hintLine.GetClosestPoint(GetTranslation());
-  const CVector3f camPos = GetTranslation();
-  CVector3f hintToBallDir = ballPos - hintLine.GetClosestPoint(ballPos);
-  CVector3f lookDelta = lookPos - camPos;
-
-  if ((params.GetFlags() & 0x1) != 0) {
-    lookPos = hintLine.GetClosestPoint(lookPos);
-    lookDelta = lookPos - camPos;
-  }
-
-  if ((params.GetFlags() & 0x2) != 0) {
-    lookDelta = lookPos - hintLine.GetClosestPoint(camPos);
-    lookPos = camPos + lookDelta;
-  }
-
-  CVector3f flatLookDelta(lookDelta.GetX(), lookDelta.GetY(), 0.f);
-  if (flatLookDelta.CanBeNormalized()) {
-    const float lookDist = flatLookDelta.Magnitude();
-    flatLookDelta.Normalize();
-
-    float camLookRelAzimuth = 0.017453292f * -GetInterpolant(params.GetLookAtAngularOffset());
-    CVector3f hintToCamDir = camPos - hintLine.GetClosestPoint(camPos);
-    if (hintToCamDir.IsMagnitudeSafe()) {
-      hintToCamDir.Normalize();
-    } else {
-      hintToCamDir = hintToBallDir;
-    }
-
-    if (CMath::AbsF(CVector3f::Dot(hintToBallDir.AsNormalized(), hintToCamDir.AsNormalized()) <
-                    0.99999f) != 0.f) {
-      if (CVector3f::Dot(CVector3f::Cross(hintToCamDir, hintToBallDir), hintLine.GetNormal()) >=
-          0.f) {
-        camLookRelAzimuth = -camLookRelAzimuth;
+      CVector3f zOffset = CVector3f::Zero();
+      if (mInVars.size() != 0) {
+        zOffset = scriptXf.Rotate(CVector3f(0.f, 0.f, GetInterpolant(params.GetLookAtZOffset())));
       }
 
-      if ((params.GetFlags() & 0x1000) != 0) {
-        camLookRelAzimuth *= CMath::Limit(
-            acos(CMath::AbsF(CMath::Limit(CVector3f::Dot(hintToBallDir, hintToCamDir), 1.f))) /
-                0.17453292f,
-            1.f);
+      if ((params.GetFlags() & 0x200) != 0) {
+        lookPos += zOffset;
+      } else {
+        lookPos =
+            script->GetTranslation() + (lookPos - hintLine.GetClosestPoint(lookPos)) + zOffset;
+      }
+    }
+
+    hintLine.GetClosestPoint(GetTranslation());
+    CVector3f hintToBallDir = ballPos - hintLine.GetClosestPoint(ballPos);
+    const CVector3f camPos = GetTranslation();
+    CVector3f lookDelta = lookPos - camPos;
+
+    if ((params.GetFlags() & 0x1) != 0) {
+      lookPos = hintLine.GetClosestPoint(lookPos);
+      lookDelta = lookPos - camPos;
+    }
+
+    if ((params.GetFlags() & 0x2) != 0) {
+      lookDelta = lookPos - hintLine.GetClosestPoint(camPos);
+      lookPos = camPos + lookDelta;
+    }
+
+    CVector3f flatLookDelta = lookDelta;
+    flatLookDelta.SetZ(0.f);
+    if (flatLookDelta.IsMagnitudeSafe()) {
+      const float lookDist = flatLookDelta.Magnitude();
+      flatLookDelta.Normalize();
+
+      float camLookRelAzimuth = 0.017453292f * -GetInterpolant(params.GetLookAtAngularOffset());
+      CVector3f hintToCamDir = camPos - hintLine.GetClosestPoint(camPos);
+      if (hintToCamDir.IsMagnitudeSafe()) {
+        hintToCamDir.Normalize();
+      } else {
+        hintToCamDir = hintToBallDir;
       }
 
-      const CQuaternion azimuthQuat =
-          CQuaternion::AxisAngle(hintLine.GetNormal(), CRelAngle::FromRadians(camLookRelAzimuth));
-      const float lookZ = lookPos.GetZ();
-      lookPos = camPos + azimuthQuat.Transform(flatLookDelta) * cos(camLookRelAzimuth) * lookDist;
-      lookPos[kDZ] = lookZ;
+      // The target takes the absolute value of the comparison result, not of the dot product.
+      if (CMath::AbsF(CVector3f::Dot(hintToCamDir.AsNormalized(), hintToBallDir.AsNormalized()) <
+                      0.99999f)) {
+        if (CVector3f::Dot(CVector3f::Cross(hintToCamDir, hintToBallDir), hintLine.GetNormal()) >=
+            0.f) {
+          camLookRelAzimuth = -camLookRelAzimuth;
+        }
+
+        if ((params.GetFlags() & 0x1000) != 0) {
+          camLookRelAzimuth *= CMath::Limit(
+              acosf(CMath::AbsF(CMath::Limit(CVector3f::Dot(hintToBallDir, hintToCamDir), 1.f))) /
+                  0.17453292f,
+              1.f);
+        }
+
+        const CQuaternion azimuthQuat = CQuaternion::AxisAngle(
+            CUnitVector3f(hintLine.GetNormal()), CRelAngle::FromRadians(camLookRelAzimuth));
+        const CVector3f rotated = azimuthQuat.Transform(flatLookDelta);
+        const float lookZ = lookPos.GetZ();
+        lookPos = camPos + rotated * cos(camLookRelAzimuth) * lookDist;
+        lookPos[kDZ] = lookZ;
+      }
     }
   }
 

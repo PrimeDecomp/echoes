@@ -7,6 +7,14 @@ class CScriptPathCamera;
 
 class CPathCamera : public CGameCamera {
 public:
+  // Names from Prime; the Echoes script camera stores this as an int.
+  enum EInitialSplinePosition {
+    kISP_BallCamBasis,
+    kISP_Negative,
+    kISP_Positive,
+    kISP_ClampBasis,
+  };
+
   CPathCamera(TUniqueId uid, const CTransform4f& xf, bool active, int index, int controllerIdx);
 
   // CEntity
