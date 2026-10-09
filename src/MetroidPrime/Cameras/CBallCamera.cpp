@@ -130,8 +130,8 @@ CBallCamera::CBallCamera(TUniqueId uid, TUniqueId watchedId, const CTransform4f&
 , mTooCloseActorDist(10000.f)
 , mPendingFailsafe(false)
 , x4b0_(0.f)
-, mFreeLookYawDelta(0.f)
-, mFreeLookPitchDelta(0.f)
+, mFreeLookYawDelta(CRelAngle::FromRadians(0.f))
+, mFreeLookPitchDelta(CRelAngle::FromRadians(0.f))
 , mFreeLookDistance(2.f)
 , mFreeLookZoomInInput(0.f)
 , mFreeLookZoomOutInput(0.f)
@@ -1566,44 +1566,52 @@ void CBallCamera::UpdateUsingColliders(float dt, CStateManager& mgr) {
 }
 
 void CBallCamera::UpdateUsingFreeLook(float dt, CStateManager& mgr) {
-  CVector3f ballPos = Player(mgr).GetBallPosition();
+  const CPlayer& player = Player(mgr);
+  const CVector3f ballPos = player.GetBallPosition();
   mLookPos = ballPos;
   mLookPos.SetZ(mLookPos.GetZ() + mLookAtOffset.GetZ());
+  const CQuaternion yawRotation = CQuaternion::ZRotation(mFreeLookYawDelta);
   CVector3f ballToCam = GetTranslation() - mLookPos;
-  float distance = ballToCam.Magnitude();
+  const float distance = ballToCam.Magnitude();
   if (ballToCam.IsMagnitudeSafe()) {
     ballToCam.Normalize();
   }
 
-  float zoom = CMath::Limit((mFreeLookDistance - distance) /
-                                (gpTweakBall->GetBallCameraFreeLookMaxDistance() -
-                                 gpTweakBall->GetBallCameraFreeLookMinDistance()),
-                            1.f);
+  const float distanceDelta = mFreeLookDistance - distance;
+  const float zoom = CMath::Limit(distanceDelta / (gpTweakBall->GetBallCameraFreeLookMaxDistance() -
+                                                   gpTweakBall->GetBallCameraFreeLookMinDistance()),
+                                  1.f);
   ballToCam *= distance + zoom * (dt * gpTweakBall->GetBallCameraFreeLookZoomSpeed());
-  ballToCam =
-      CQuaternion::ZRotation(CRelAngle::FromRadians(mFreeLookYawDelta)).Transform(ballToCam);
-  CVector3f flatDirection(ballToCam.GetX(), ballToCam.GetY(), 0.f);
+  ballToCam = yawRotation.Transform(ballToCam);
+  CVector3f flatDirection = ballToCam;
+  flatDirection.SetZ(0.f);
   if (flatDirection.IsMagnitudeSafe()) {
     flatDirection.Normalize();
   }
-  CUnitVector3f right(flatDirection.GetY(), -flatDirection.GetX(), 0.f, CUnitVector3f::kN_Yes);
-  ballToCam = CQuaternion::AxisAngle(right, CRelAngle::FromRadians(-mFreeLookPitchDelta))
-                  .Transform(ballToCam);
+  const CUnitVector3f right(flatDirection.GetY(), -flatDirection.GetX(), 0.f,
+                            CUnitVector3f::kN_Yes);
+  const CQuaternion pitchRotation =
+      CQuaternion::AxisAngle(right, CRelAngle::FromRadians(-mFreeLookPitchDelta.AsRadians()));
+  ballToCam = pitchRotation.Transform(ballToCam);
 
-  float upDot = CMath::Limit(CVector3f::Dot(ballToCam.AsNormalized(), CVector3f::Up()), 1.f);
-  float angle = CMath::ArcCosineR(CMath::AbsF(upDot));
-  if (angle > M_PIF / 2.f - gpTweakBall->GetBallCameraFreeLookMaxVertAngle()) {
-    CVector3f desiredPos = mLookPos + ballToCam;
-    CVector3f position = MoveCollisionActor(desiredPos, dt, mgr);
-    if ((position - desiredPos).IsMagnitudeSafe()) {
-      if (CPhysicsActor* actor = TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId))) {
-        actor->SetTranslation(GetTranslation());
-        actor->Stop();
-      }
-    } else if (mgr.RayCollideWorld(position, ballPos, skLineOfSightFilter, nullptr)) {
+  const float upDot = CMath::Limit(CVector3f::Dot(ballToCam.AsNormalized(), CVector3f::Up()), 1.f);
+  const float angle = CMath::ArcCosineR(CMath::AbsF(upDot));
+  if (angle <= M_PIF / 2.f - gpTweakBall->GetBallCameraFreeLookMaxVertAngle()) {
+    return;
+  }
+
+  const CVector3f desiredPos = mLookPos + ballToCam;
+  const CVector3f position = MoveCollisionActor(desiredPos, dt, mgr);
+  const CVector3f correction = position - desiredPos;
+  if (!correction.IsMagnitudeSafe()) {
+    if (mgr.RayCollideWorld(position, ballPos, skLineOfSightFilter, nullptr)) {
       mDampedPos = position;
       SetTransform(CTransform4f::LookAt(position, mLookPos));
     }
+  } else if (CPhysicsActor* actor =
+                 TCastToPtr< CPhysicsActor >(mgr.ObjectById(mCollisionActorId))) {
+    actor->SetTranslation(GetTranslation());
+    actor->Stop();
   }
 }
 
@@ -2136,8 +2144,10 @@ void CBallCamera::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
           mFreeLookDistance =
               CMath::Clamp(gpTweakBall->GetBallCameraFreeLookMinDistance(), mFreeLookDistance,
                            gpTweakBall->GetBallCameraFreeLookMaxDistance());
-          mFreeLookYawDelta = dt * ((left - right) * gpTweakBall->GetBallCameraFreeLookSpeed());
-          mFreeLookPitchDelta = dt * ((up - down) * gpTweakBall->GetBallCameraFreeLookSpeed());
+          mFreeLookYawDelta = CRelAngle::FromRadians(
+              dt * ((left - right) * gpTweakBall->GetBallCameraFreeLookSpeed()));
+          mFreeLookPitchDelta = CRelAngle::FromRadians(
+              dt * ((up - down) * gpTweakBall->GetBallCameraFreeLookSpeed()));
         }
         break;
       case kBCS_Boost:
