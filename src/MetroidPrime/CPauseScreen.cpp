@@ -1552,15 +1552,12 @@ void CPauseScreen::DrawConnection(const CTransform4f& view, const CVector3f& fro
     const float projectedLength = projected.Magnitude();
     if (projectedLength > 0.34f) {
       const CVector3f trim = ((0.17f * length) / projectedLength) * direction;
-      const CVector3f start = from + trim;
-      const CVector3f end = to - trim;
-      const CVector3f current = CVector3f::Lerp(start, end, progress);
       for (int i = 2; i != 0; --i) {
         CGraphics::SetLineWidth(i + 1, kTO_Zero);
         CGraphics::StreamBegin(kP_Lines);
         CGraphics::StreamColor(color.WithAlphaModulatedBy(1.f / 3.f));
-        CGraphics::StreamVertex(start);
-        CGraphics::StreamVertex(current);
+        CGraphics::StreamVertex(from + trim);
+        CGraphics::StreamVertex(CVector3f::Lerp(from + trim, to - trim, progress));
         CGraphics::StreamEnd();
       }
     }
