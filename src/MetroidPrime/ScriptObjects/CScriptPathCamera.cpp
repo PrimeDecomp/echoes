@@ -182,7 +182,7 @@ CEntity* LoadPathCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), sldrThis.distance, sldrThis.speed,
       sldrThis.angularSpeed * (M_PIF / 180.f), sldrThis.dampenDistance, sldrThis.flagsPathCamera,
-      sldrThis.unknown_0xd4b29446, sldrThis.initialPosition,
+      sldrThis.splineFlagsCameraSpline, sldrThis.initialPosition,
       static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),
       static_cast< CMotionSpline::ESplineType >(sldrThis.targetSplineType.type),
       sldrThis.motionControlSpline, sldrThis.targetControlSpline, sldrThis.fOVSpline,

@@ -546,8 +546,8 @@ CEntity* LoadSafeZoneCrystal(CStateManager& mgr, CInputStream& input, CEntityInf
       sldrThis.scannableInfoAnnihilator, normalModel, entangledModel, hurtfulModel, echoModel,
       sldrThis.collapsedEffect, sldrThis.expandedEffect, sldrThis.entangledEffect,
       sldrThis.hurtfulEffect, sldrThis.echoEffect, sldrThis.powerBeamRefreshEffect,
-      sldrThis.maxTimeExpanded, sldrThis.maxTimeEntangled, sldrThis.unknown_0xf0a45c32,
-      sldrThis.unknown_0xd8116003, sldrThis.powerBeamHP, sldrThis.unknown_0x415046ed,
+      sldrThis.maxTimeExpanded, sldrThis.maxTimeEntangled, sldrThis.maxTimeAsHurtful,
+      sldrThis.maxTimeAsEcho, sldrThis.powerBeamHP, sldrThis.unknown_0x415046ed,
       sldrThis.unknown_0xec9c01b2, sldrThis.safezoneType == 1, sldrThis.initiallyEntangled,
       sldrThis.hitRadius, sldrThis.hitOffset, sldrThis.effectOffset, sldrThis.unknown_0xbbbee60b);
 }

@@ -13,7 +13,7 @@ struct SLdrPathCamera {
 
   SLdrEditorProperties editorProperties;         // 0x255a4580
   uint flagsPathCamera;                          // 0x5cbd5bae
-  int unknown_0xd4b29446;                        // 0xd4b29446
+  uint splineFlagsCameraSpline;                  // 0xd4b29446
   SLdrSplineType motionSplineType;               // 0x493d6a2d
   SLdrSpline motionControlSpline;                // 0x27e5f874
   SLdrSplineType targetSplineType;               // 0x5604d304
@@ -43,7 +43,7 @@ inline SLdrPathCamera::SLdrPathCamera()
 , perpendicularDistanceControlSpline()
 , perpendicularInterpControlSpline() {
   flagsPathCamera = 0x00000020u;
-  unknown_0xd4b29446 = 0;
+  splineFlagsCameraSpline = 0x00000000u;
   playerSplineLoops = false;
   distance = 4.0f;
   speed = 10.0f;

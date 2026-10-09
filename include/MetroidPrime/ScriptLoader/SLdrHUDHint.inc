@@ -14,11 +14,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x6078a651: {
-    sldrThis.unknown_0x6078a651 = input.ReadFloat();
+    sldrThis.hUDIconMinSize = input.ReadFloat();
     break;
   }
   case 0xf00bb6bb: {
-    sldrThis.unknown_0xf00bb6bb = input.ReadFloat();
+    sldrThis.hUDIconMaxSize = input.ReadFloat();
     break;
   }
   case 0x1ad247a1: {

@@ -114,7 +114,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x4d3109e3: {
-    sldrThis.unknown_0x4d3109e3 = input.ReadBool();
+    sldrThis.barrierStartsDown = input.ReadBool();
     break;
   }
   case 0xcf90d15e: {

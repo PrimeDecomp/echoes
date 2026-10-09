@@ -1564,12 +1564,12 @@ CEntity* LoadMetroidAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& 
   const CMetroidData metroidData(
       LdrToDamageVulnerability(sldrThis.frozenVulnerability),
       LdrToDamageVulnerability(sldrThis.energyDrainVulnerability),
-      LdrToDamageVulnerability(sldrThis.babyMetroidGrowthVulnerability),
-      sldrThis.unknown_0x72439b39, sldrThis.unknown_0x3af75fcc, sldrThis.telegraphAttackTime,
-      sldrThis.babyMetroidScale, sldrThis.unknown_0x03362858, sldrThis.unknown_0x1c783744,
-      sldrThis.unknown_0x852d3bb0, sldrThis.babyMetroidTransformationParticleEffect,
-      sldrThis.stage2GrowthScale, sldrThis.stage2GrowthEnergy, sldrThis.unknown_0x5f3f294c,
-      sldrThis.dodgeCheckTimeInterval, sldrThis.chanceToDodge, sldrThis.metroidFlagsMetroid);
+      LdrToDamageVulnerability(sldrThis.babyMetroidGrowthVulnerability), sldrThis.energyDrainPerSec,
+      sldrThis.maxEnergyDrainAllowed, sldrThis.telegraphAttackTime, sldrThis.babyMetroidScale,
+      sldrThis.unknown_0x03362858, sldrThis.unknown_0x1c783744, sldrThis.unknown_0x852d3bb0,
+      sldrThis.babyMetroidTransformationParticleEffect, sldrThis.stage2GrowthScale,
+      sldrThis.stage2GrowthEnergy, sldrThis.explosionGrowthEnergy, sldrThis.dodgeCheckTimeInterval,
+      sldrThis.chanceToDodge, sldrThis.metroidFlagsMetroid);
 
   if (metroidData.xc4_24_) {
     return rs_new CBabyMetroid(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,

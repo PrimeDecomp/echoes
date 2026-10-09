@@ -27,7 +27,7 @@ struct SLdrSpacePirateWeaponData {
   float unknown_0xed086ce0;     // 0xed086ce0
   float grenadeMinLaunchSpeed;  // 0x00fc6646
   float grenadeMaxLaunchSpeed;  // 0xa7c8e63f
-  int unknown_0x454f16b1;       // 0x454f16b1
+  int grenadeNumBounces;        // 0x454f16b1
   int sound_GrenadeBounce;      // 0x258c3e1b
   int sound_GrenadeExplode;     // 0xaf6aad88
 };
@@ -50,7 +50,7 @@ inline SLdrSpacePirateWeaponData::SLdrSpacePirateWeaponData()
   unknown_0xed086ce0 = 0.40000001f;
   grenadeMinLaunchSpeed = 20.0f;
   grenadeMaxLaunchSpeed = 50.0f;
-  unknown_0x454f16b1 = 2;
+  grenadeNumBounces = 2;
   sound_GrenadeBounce = 0;
   sound_GrenadeExplode = 0;
 }
@@ -117,7 +117,7 @@ inline void LoadTypedefSpacePirateWeaponData(SLdrSpacePirateWeaponData& sldrThis
       break;
     }
     case 0x454f16b1: {
-      sldrThis.unknown_0x454f16b1 = input.ReadInt32();
+      sldrThis.grenadeNumBounces = input.ReadInt32();
       break;
     }
     case 0x258c3e1b: {

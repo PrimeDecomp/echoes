@@ -250,7 +250,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0x414379ea: {
-    sldrThis.unknown_0x414379ea = input.ReadInt32();
+    sldrThis.filterCutoffFrequency = input.ReadInt32();
     break;
   }
   default:

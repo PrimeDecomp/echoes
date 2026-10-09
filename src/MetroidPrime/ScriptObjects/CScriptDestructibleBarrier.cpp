@@ -912,7 +912,7 @@ CEntity* LoadDestructibleBarrier(CStateManager& mgr, CInputStream& input, CEntit
       sldrThis.unknown_0x409d1b7c, sldrThis.unknown_0x4e749cb5, sldrThis.unknown_0x92485dfa,
       sldrThis.soundEffectOnChunkGenerated, sldrThis.soundEffectOnChunkDestroyed,
       sldrThis.soundEffectOnMoveDown, sldrThis.soundEffectOnMoveUp, sldrThis.soundEffectOnStop,
-      sldrThis.unknown_0x4d3109e3, sldrThis.unknown_0x605847b9, sldrThis.unknown_0xcd9c67fe,
+      sldrThis.barrierStartsDown, sldrThis.unknown_0x605847b9, sldrThis.unknown_0xcd9c67fe,
       sldrThis.unknown_0x0af428b4);
 }
 

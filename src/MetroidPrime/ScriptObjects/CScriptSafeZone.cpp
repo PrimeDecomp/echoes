@@ -810,7 +810,7 @@ bool CScriptSafeZone::IsHurtful() const {
 }
 
 // Guessed name.
-CSafeZoneFog LdrToSafeZoneFog(const SLdrSafeZoneStructA& data) {
+CSafeZoneFog LdrToSafeZoneFog(const SLdrSafeZoneFog& data) {
   return CSafeZoneFog(data.enabled, FogSelectionToFogMode(data.mode), data.color,
                       LdrToVector2f(data.nearFarPlane), data.colorRate,
                       LdrToVector2f(data.distanceRate));
@@ -855,10 +855,9 @@ CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       sldrThis.flashTime, sldrThis.trigger.flagsTrigger, sldrThis.deactivateOnEnter,
       sldrThis.deactivateOnExit, sldrThis.impactEffect, infos[0], infos[1], infos[2],
       LdrToDamageInfo(sldrThis.normalDamage), LdrToDamageInfo(sldrThis.hurtfulDamage),
-      sldrThis.filterSoundEffects, sldrThis.unknown_0x414379ea, sldrThis.ignoreCinematicCamera,
+      sldrThis.filterSoundEffects, sldrThis.filterCutoffFrequency, sldrThis.ignoreCinematicCamera,
       sldrThis.mobile, sldrThis.generateMobileLight, sldrThis.mobileLightOffset, shape,
-      LdrToSafeZoneFog(sldrThis.safeZoneStructA),
-      LdrToSafeZoneFog(sldrThis.safeZoneStructA_0xafb855b8),
+      LdrToSafeZoneFog(sldrThis.fogEntering), LdrToSafeZoneFog(sldrThis.fogLeaving),
       LdrToEchoParameters(sldrThis.echoParameters), sldrThis.flashBrightness, sldrThis.flashSound,
       sldrThis.unknown_0xe71b43e1, sldrThis.unknown_0x9f638987);
 }

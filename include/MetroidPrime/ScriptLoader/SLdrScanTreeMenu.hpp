@@ -14,7 +14,7 @@ struct SLdrScanTreeMenu {
   SLdrEditorProperties editorProperties; // 0x255a4580
   CAssetId nodeName;                     // 0x46219bac
   rstl::string stringName;               // 0x32698bd6
-  int unknown_0x0261a4e0;                // 0x0261a4e0
+  int gameOption;                        // 0x0261a4e0
   CAssetId menuStringTable;              // 0xa6a874e9
   rstl::string stringTableOption1;       // 0x30531924
   int menuValue1;                        // 0x50bce632
@@ -30,7 +30,6 @@ inline SLdrScanTreeMenu::SLdrScanTreeMenu()
 : editorProperties()
 , nodeName(kInvalidAssetId)
 , stringName()
-, unknown_0x0261a4e0()
 , menuStringTable(kInvalidAssetId)
 , stringTableOption1()
 , menuValue1()
@@ -39,7 +38,9 @@ inline SLdrScanTreeMenu::SLdrScanTreeMenu()
 , stringTableOption3()
 , menuValue3()
 , stringTableOption4()
-, menuValue4() {}
+, menuValue4() {
+  gameOption = 0;
+}
 
 inline SLdrScanTreeMenu::~SLdrScanTreeMenu() {}
 

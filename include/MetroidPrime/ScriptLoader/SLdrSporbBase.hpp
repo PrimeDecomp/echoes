@@ -21,7 +21,7 @@ struct SLdrPowerBombGuardianStageProperties {
   int minShotsInABurst;                       // 0x64d482d5
   int maxShotsInABurst;                       // 0xc3e002ac
   float powerBombProjectileGravityMultiplier; // 0xbb4b6680
-  float waypointTargetSpreadRadius;           // non-matching name, 0xd356c997
+  float targetPointRandomVariance;            // 0xd356c997
   float doubleShotChance;                     // 0xca6ac43a
   int minAttacksPerDoubleShot;                // 0x87cc8ba4
   int maxAttacksPerDoubleShot;                // 0x6491357e

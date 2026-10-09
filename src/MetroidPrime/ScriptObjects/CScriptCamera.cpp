@@ -135,7 +135,7 @@ CEntity* LoadCamera(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
   return rs_new CScriptCamera(
       mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
       LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
-      sldrThis.animationTime, sldrThis.flagsCinematicCamera, sldrThis.unknown_0xd4b29446,
+      sldrThis.animationTime, sldrThis.flagsCinematicCamera, sldrThis.splineFlagsCameraSpline,
       sldrThis.motionControlSpline, sldrThis.targetControlSpline, sldrThis.fOVSpline,
       sldrThis.rollSpline,
       static_cast< CMotionSpline::ESplineType >(sldrThis.motionSplineType.type),

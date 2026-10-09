@@ -32,8 +32,8 @@ struct SLdrSafeZoneCrystal {
   CAssetId echoCrystal;                  // 0x1e864b83
   float maxTimeExpanded;                 // 0xbd30f7a3
   float maxTimeEntangled;                // 0xa7bdc4f8
-  float unknown_0xf0a45c32;              // 0xf0a45c32
-  float unknown_0xd8116003;              // 0xd8116003
+  float maxTimeAsHurtful;                // 0xf0a45c32
+  float maxTimeAsEcho;                   // 0xd8116003
   float unknown_0x415046ed;              // 0x415046ed
   float unknown_0xec9c01b2;              // 0xec9c01b2
   float powerBeamHP;                     // 0x545540e5
@@ -69,8 +69,8 @@ inline SLdrSafeZoneCrystal::SLdrSafeZoneCrystal()
   initiallyEntangled = false;
   maxTimeExpanded = 5.0f;
   maxTimeEntangled = 5.0f;
-  unknown_0xf0a45c32 = 5.0f;
-  unknown_0xd8116003 = 5.0f;
+  maxTimeAsHurtful = 5.0f;
+  maxTimeAsEcho = 5.0f;
   unknown_0x415046ed = 3.0f;
   unknown_0xec9c01b2 = 1.0f;
   powerBeamHP = 5.0f;

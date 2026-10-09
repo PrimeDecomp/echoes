@@ -86,7 +86,7 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xfe9eac26: {
-    sldrThis.unknown_0xfe9eac26 = input.ReadInt32();
+    sldrThis.startStyle = input.ReadInt32();
     break;
   }
   case 0x96feb75d: {

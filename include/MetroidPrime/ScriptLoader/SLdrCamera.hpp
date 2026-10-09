@@ -14,7 +14,7 @@ struct SLdrCamera {
   SLdrEditorProperties editorProperties; // 0x255a4580
   float animationTime;                   // 0x2a53245a
   uint flagsCinematicCamera;             // 0x05c5fc6e
-  int unknown_0xd4b29446;                // 0xd4b29446
+  uint splineFlagsCameraSpline;          // 0xd4b29446
   SLdrSplineType motionSplineType;       // 0x493d6a2d
   SLdrSplineType targetSplineType;       // 0x5604d304
   SLdrSpline motionControlSpline;        // 0x27e5f874
@@ -36,7 +36,7 @@ inline SLdrCamera::SLdrCamera()
   editorProperties.active = false;
   animationTime = 10.0f;
   flagsCinematicCamera = 0x000000a8u;
-  unknown_0xd4b29446 = 0;
+  splineFlagsCameraSpline = 0x00000000u;
 }
 
 inline SLdrCamera::~SLdrCamera() {}

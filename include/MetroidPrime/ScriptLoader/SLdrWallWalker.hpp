@@ -29,14 +29,14 @@ struct SLdrWallWalker {
   CAssetId grenadeTrail;                          // 0x2b31c882
   float grenadeMass;                              // 0x9a6bb47f
   float unknown_0xed086ce0;                       // 0xed086ce0
-  int unknown_0x454f16b1;                         // 0x454f16b1
+  int grenadeNumBounces;                          // 0x454f16b1
   int grenadeSoundBounce;                         // 0x7f1613b7
   int grenadeSoundExplode;                        // 0x7050d866
   float projectileInterval;                       // 0xd4903c98
   float projectileStopHomingRange;                // 0x723542bb
   CAssetId projectile;                            // 0xef485db9
   SLdrDamageInfo projectileDamage;                // 0x553b1339
-  CAssetId pART;                                  // non-matching name, 0x68dc4d11
+  CAssetId projectileExplosionSpash;              // 0x68dc4d11
   SLdrCameraShakerData projectileExplosionShaker; // 0x22bbdd0a
 };
 
@@ -51,7 +51,7 @@ inline SLdrWallWalker::SLdrWallWalker()
 , grenadeTrail(kInvalidAssetId)
 , projectile(kInvalidAssetId)
 , projectileDamage()
-, pART(kInvalidAssetId)
+, projectileExplosionSpash(kInvalidAssetId)
 , projectileExplosionShaker() {
   patterned.creatureSize = 1;
   waypointApproachDistance = 2.5f;
@@ -60,7 +60,7 @@ inline SLdrWallWalker::SLdrWallWalker()
   visibleDistance = 40.0f;
   grenadeMass = 4.0f;
   unknown_0xed086ce0 = 0.5f;
-  unknown_0x454f16b1 = 5;
+  grenadeNumBounces = 5;
   grenadeSoundBounce = 0;
   grenadeSoundExplode = 0;
   projectileInterval = 2.0f;

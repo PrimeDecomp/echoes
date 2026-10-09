@@ -168,10 +168,9 @@ CScriptHUDHint::TTextureCoordinates CScriptHUDHint::GetTextureCoordinates() cons
 CEntity* LoadHUDHint(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrHUDHint sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrHUDHint.inc"
-  return rs_new CScriptHUDHint(mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
-                               LdrToEntityInfo(info, sldrThis.editorProperties),
-                               LdrToTransform4f(sldrThis.editorProperties), sldrThis.hudTexture,
-                               sldrThis.unknown_0x6078a651, sldrThis.unknown_0xf00bb6bb,
-                               sldrThis.iconScale, sldrThis.animationTime, sldrThis.animationFrames,
-                               sldrThis.unknown_0xd993f97b);
+  return rs_new CScriptHUDHint(
+      mgr.AllocateUniqueId(), sldrThis.editorProperties.name,
+      LdrToEntityInfo(info, sldrThis.editorProperties), LdrToTransform4f(sldrThis.editorProperties),
+      sldrThis.hudTexture, sldrThis.hUDIconMinSize, sldrThis.hUDIconMaxSize, sldrThis.iconScale,
+      sldrThis.animationTime, sldrThis.animationFrames, sldrThis.unknown_0xd993f97b);
 }

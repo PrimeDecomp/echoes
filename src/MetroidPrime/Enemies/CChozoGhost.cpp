@@ -1064,7 +1064,7 @@ CEntity* LoadChozoGhost(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       LdrToDamageInfo(sldrThis.damageInfo_0x1ff047a9), nearChance, midChance, farChance,
       sldrThis.sound_Impact, sldrThis.disablePlayerGunTime, sldrThis.sound_PhazeIn,
       sldrThis.sound_PhazeOut, sldrThis.unknown_0xec76940c, sldrThis.projectileStopHomingRange,
-      sldrThis.unknown_0xfe9eac26, sldrThis.hurlRecoverTime, sldrThis.projectileVisorEffect,
+      sldrThis.startStyle, sldrThis.hurlRecoverTime, sldrThis.projectileVisorEffect,
       sldrThis.sound_ProjectileVisor, sldrThis.nearToMidDistance, sldrThis.midToFarDistance,
       sldrThis.nearChance, sldrThis.midChance);
 }

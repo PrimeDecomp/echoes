@@ -27,10 +27,10 @@ struct SLdrEyeBall {
   CAssetId plasmaGlow;                   // 0xb7aa958e
   CColor laserInnerColor;                // 0x643e5052
   CColor laserOuterColor;                // 0xe11643dd
-  int unknown_0x81d14be8;                // 0x81d14be8
-  int unknown_0x6e1320d6;                // 0x6e1320d6
-  int unknown_0x85249bd5;                // 0x85249bd5
-  int unknown_0x6ae6f0eb;                // 0x6ae6f0eb
+  int animation_Anim0;                   // non-matching name, 0x81d14be8
+  int animation_Anim1;                   // non-matching name, 0x6e1320d6
+  int animation_Anim2;                   // non-matching name, 0x85249bd5
+  int animation_Anim3;                   // non-matching name, 0x6ae6f0eb
   int laserSound;                        // 0xe4780219
   bool shouldBeTriggered;                // 0x2e603ded
   float maxAudibleDistance;              // 0x214e48a0
@@ -53,10 +53,10 @@ inline SLdrEyeBall::SLdrEyeBall()
   fireWaitTime = 3.0f;
   laserInnerColor = CColor(1.0f, 1.0f, 1.0f, 1.0f);
   laserOuterColor = CColor(0.0f, 1.0f, 0.0f, 1.0f);
-  unknown_0x81d14be8 = -1;
-  unknown_0x6e1320d6 = -1;
-  unknown_0x85249bd5 = -1;
-  unknown_0x6ae6f0eb = -1;
+  animation_Anim0 = -1;
+  animation_Anim1 = -1;
+  animation_Anim2 = -1;
+  animation_Anim3 = -1;
   laserSound = 0;
   shouldBeTriggered = false;
   maxAudibleDistance = 50.0f;

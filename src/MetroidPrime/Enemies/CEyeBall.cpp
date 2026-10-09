@@ -401,11 +401,10 @@ CEntity* LoadEyeBall(CStateManager& mgr, CInputStream& input, CEntityInfo& info)
       *modelData, LdrToPatternedInfo(sldrThis.patterned, nullptr),
       LdrToActorParameters(sldrThis.actorInformation), sldrThis.closeTime, sldrThis.fireWaitTime,
       sldrThis.projectile, LdrToDamageInfo(sldrThis.rayDamage), sldrThis.plasmaBurn,
-      sldrThis.plasmaPulse, sldrThis.plasmaTexture, sldrThis.plasmaGlow,
-      sldrThis.unknown_0x81d14be8, sldrThis.unknown_0x6e1320d6, sldrThis.unknown_0x85249bd5,
-      sldrThis.unknown_0x6ae6f0eb, sldrThis.laserSound, sldrThis.shouldBeTriggered,
-      sldrThis.laserInnerColor, sldrThis.laserOuterColor, sldrThis.maxAudibleDistance,
-      sldrThis.dropOff);
+      sldrThis.plasmaPulse, sldrThis.plasmaTexture, sldrThis.plasmaGlow, sldrThis.animation_Anim0,
+      sldrThis.animation_Anim1, sldrThis.animation_Anim2, sldrThis.animation_Anim3,
+      sldrThis.laserSound, sldrThis.shouldBeTriggered, sldrThis.laserInnerColor,
+      sldrThis.laserOuterColor, sldrThis.maxAudibleDistance, sldrThis.dropOff);
 }
 
 #ifndef MONOLITHIC

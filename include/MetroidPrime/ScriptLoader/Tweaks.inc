@@ -8008,7 +8008,7 @@ SLdrTweakTargeting::SLdrTweakTargeting()
   orbitPointModelColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.49019599f);
   crosshairsColor = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.196078002f);
   crosshairsFadeInOutTime = 0.30000001f;
-  unknown_0x8a548cc9 = true;
+  isDrawOrbitPointDefault = true;
   chargeGaugeGlowColorB = CColor(0.294117987f, 0.494118005f, 0.639216006f, 0.49019599f);
   unknown_0x42c7fbe4 = 0.80000001f;
   xRaySeekerMinRadiusViewport = 80.0f;
@@ -8426,7 +8426,7 @@ void LoadTypedefTweakTargeting(SLdrTweakTargeting& data, CInputStream& input) {
       break;
     }
     case 0x8a548cc9: {
-      data.unknown_0x8a548cc9 = input.ReadBool();
+      data.isDrawOrbitPointDefault = input.ReadBool();
       break;
     }
     case 0x65d449e1: {

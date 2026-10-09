@@ -82,11 +82,11 @@ for (int i = 0; i < propertyCount; ++i) {
     break;
   }
   case 0xf0a45c32: {
-    sldrThis.unknown_0xf0a45c32 = input.ReadFloat();
+    sldrThis.maxTimeAsHurtful = input.ReadFloat();
     break;
   }
   case 0xd8116003: {
-    sldrThis.unknown_0xd8116003 = input.ReadFloat();
+    sldrThis.maxTimeAsEcho = input.ReadFloat();
     break;
   }
   case 0x415046ed: {

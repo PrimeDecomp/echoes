@@ -1172,17 +1172,18 @@ CEntity* LoadGunTurretBase(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.minTimeBetweenShots, sldrThis.maxTimeBetweenShots, sldrThis.maxPitchAngleUp,
       LdrToActorParameters(sldrThis.actorInformation), sldrThis.gunRespawns,
       sldrThis.minShotsInABurst, sldrThis.maxShotsInABurst, sldrThis.isPirateTurret, sldrThis.cRSC,
-      sldrThis.pirateProjectileEffect, sldrThis.alwaysFF, sldrThis.unknown_0x5cf12e9a,
-      sldrThis.unknown_0x479d8dc4, sldrThis.maxPitchAngleDown, sldrThis.unknown_0xfc036e93,
-      sldrThis.unknown_0x8a35b1ea, sldrThis.unknown_0xd49bec5a, sldrThis.attackDelay,
-      sldrThis.patrolDelay, sldrThis.withdrawDelay, sldrThis.detectionHeightUp,
-      sldrThis.detectionHeightDown, sldrThis.shotAngleVariance, sldrThis.attackLeashTime,
-      sldrThis.gFFireShotSound, sldrThis.pirateFireShotSound, sldrThis.lockOnSound,
-      sldrThis.gunPanSound, sldrThis.gFGunChargeSound, sldrThis.pirateGunChargeSound,
-      sldrThis.gunLowerLoopedSound, sldrThis.gunLowerOffSound, sldrThis.gunRaiseLoopedSound,
-      sldrThis.gunRaiseOffSound, sldrThis.pirateGunDeathLowerLoopedSound,
-      sldrThis.gFGunDeathLowerLoopedSound, sldrThis.poleSparksSound, sldrThis.unknown_0x80ce481a,
-      sldrThis.soundFallOff, sldrThis.maxAudibleDistance);
+      sldrThis.pirateProjectileEffect, sldrThis.pirateProjectileVisorEffect,
+      sldrThis.unknown_0x5cf12e9a, sldrThis.unknown_0x479d8dc4, sldrThis.maxPitchAngleDown,
+      sldrThis.unknown_0xfc036e93, sldrThis.unknown_0x8a35b1ea, sldrThis.unknown_0xd49bec5a,
+      sldrThis.attackDelay, sldrThis.patrolDelay, sldrThis.withdrawDelay,
+      sldrThis.detectionHeightUp, sldrThis.detectionHeightDown, sldrThis.shotAngleVariance,
+      sldrThis.attackLeashTime, sldrThis.gFFireShotSound, sldrThis.pirateFireShotSound,
+      sldrThis.lockOnSound, sldrThis.gunPanSound, sldrThis.gFGunChargeSound,
+      sldrThis.pirateGunChargeSound, sldrThis.gunLowerLoopedSound, sldrThis.gunLowerOffSound,
+      sldrThis.gunRaiseLoopedSound, sldrThis.gunRaiseOffSound,
+      sldrThis.pirateGunDeathLowerLoopedSound, sldrThis.gFGunDeathLowerLoopedSound,
+      sldrThis.poleSparksSound, sldrThis.maxPoleExtensionLength, sldrThis.soundFallOff,
+      sldrThis.maxAudibleDistance);
 }
 
 #ifndef MONOLITHIC
