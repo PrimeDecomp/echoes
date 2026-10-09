@@ -1198,33 +1198,43 @@ void CPauseScreen::ProcessRotationInput(const CFinalInput& input) {
 }
 
 void CPauseScreen::ProcessModelInput(const CFinalInput& input, bool allowTranslation) {
-  const CControlMapper& mapper = gpGameState->ControlMapper();
   const float motionAmt = 6.f * input.DeltaTime();
-  const float circleUp = mapper.GetAnalogInput(CControlMapper::kC_MapCircleUp, input);
-  const float circleDown = mapper.GetAnalogInput(CControlMapper::kC_MapCircleDown, input);
-  const float circleLeft = mapper.GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
-  const float circleRight = mapper.GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
-  const float moveForward = mapper.GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
-  const float moveBack = mapper.GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
-  const float moveLeft = mapper.GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
-  const float moveRight = mapper.GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
-  const float zoomIn = mapper.GetAnalogInput(CControlMapper::kC_MapZoomIn, input);
-  const float zoomOut = mapper.GetAnalogInput(CControlMapper::kC_MapZoomOut, input);
+  const float circleUp =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleUp, input);
+  const float circleDown =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleDown, input);
+  const float circleLeft =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleLeft, input);
+  const float circleRight =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapCircleRight, input);
+  const float moveForward =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveForward, input);
+  const float moveBack =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveBack, input);
+  const float moveLeft =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveLeft, input);
+  const float moveRight =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapMoveRight, input);
+  const float zoomIn =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapZoomIn, input);
+  const float zoomOut =
+      gpGameState->ControlMapper().GetAnalogInput(CControlMapper::kC_MapZoomOut, input);
   const CVector3f oldPan = mModelPan;
+  const CVector3f pan(0.25f * motionAmt * (moveRight - moveLeft),
+                      0.5f * motionAmt * (zoomOut - zoomIn),
+                      0.25f * motionAmt * (moveForward - moveBack));
   const float yaw = 0.5f * motionAmt * (circleLeft - circleRight);
   const float pitch = 0.5f * motionAmt * (circleUp - circleDown);
   if (allowTranslation) {
-    mModelPan +=
-        CVector3f(0.25f * motionAmt * (moveRight - moveLeft), 0.5f * motionAmt * (zoomOut - zoomIn),
-                  0.25f * motionAmt * (moveForward - moveBack));
+    mModelPan += pan;
     if (mModelPan.MagSquared() > 9.f) {
       mModelPan = 3.f * mModelPan.AsNormalized();
     }
   }
-  mModelPitch = CRelAngle::FromDegrees(
-      CMath::Clamp(gpTweakGui->GetLogBookModelRotationClampLowerLimit(),
-                   CRelAngle::FromRadians(pitch).AsDegrees() + mModelPitch.AsDegrees(),
-                   gpTweakGui->GetLogBookModelRotationClampUpperLimit()));
+  const float lower = gpTweakGui->GetLogBookModelRotationClampLowerLimit();
+  const float upper = gpTweakGui->GetLogBookModelRotationClampUpperLimit();
+  mModelPitch = CRelAngle::FromDegrees(CMath::Clamp(
+      lower, CRelAngle::FromRadians(pitch).AsDegrees() + mModelPitch.AsDegrees(), upper));
   mModelYaw += CRelAngle::FromRadians(yaw);
   const CVector3f movement = mModelPan - oldPan;
   const bool zoomInput = !close_enough(zoomIn, 0.f) || !close_enough(zoomOut, 0.f);
