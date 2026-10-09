@@ -106,7 +106,7 @@ private:
                   float value, float previousValue, float textOffset, float alpha) const;
   void DrawMenuNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
                     float alpha) const;
-  void DrawModels(float alpha) const;
+  void DrawModels(int nodeId, float alpha) const;
   void InitializeStripedTexture();
   void RenderModels(const CTransform4f& xf, const CModelFlags& flags, bool particles) const;
   void DrawModelView(const CTransform4f& xf, float alpha) const;

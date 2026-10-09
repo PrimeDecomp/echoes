@@ -1318,85 +1318,85 @@ void CPauseScreen::SetFog(bool enabled) const {
 }
 
 void CPauseScreen::Draw() const {
-  if (mDone || !mScanTree.IsLoaded() || !mFont.IsLoaded() || mFrame.null()) {
-    return;
-  }
-  if (!mQuitScreen.null()) {
-    mQuitScreen->Draw();
-    return;
-  }
-  float frameAlpha = mAlpha;
-  if (!close_enough(mModelZoomAmount, 0.f)) {
-    frameAlpha = 1.f - mModelZoomAmount;
-  }
-  if (!close_enough(frameAlpha, 0.f)) {
-    CGraphics::SetDepthRange(0.f, 0.f);
-    mFrame->Draw(CGuiWidgetDrawParms(frameAlpha, CVector3f::Zero()));
-  }
-  CGraphics::SetDepthRange(0.125f, 1.f);
-  const CViewport& viewport = CGraphics::GetViewport();
-  gpRender->SetPerspective(30.f, viewport.mWidth, viewport.mHeight, 0.2f, 4096.f);
-  CGraphics::SetModelMatrix(CTransform4f::Identity());
-  const CTransform4f view = mViewRotation.BuildTransform4f();
-  const CVector3f camera(gpTweakGui->GetLogBookTreeHorizontalTranslation(),
-                         -gpTweakGui->GetLogBookTreeCameraDistance(),
-                         gpTweakGui->GetLogBookTreeVerticalTranslation());
-  const CVector3f zoomCamera(0.f, -gpTweakGui->GetLogBookTreeCameraDistance(), 0.f);
-  const CVector3f cameraPosition =
-      (1.f - mModelZoomAmount) * camera + mModelZoomAmount * zoomCamera;
-  CGraphics::SetViewPointMatrix(view * CTransform4f::Translate(cameraPosition));
-  CGraphics::SetDepthRange(0.125f, 1.f);
-  CGraphics::SetCullMode(kCM_None);
-  CGraphics::SetLineWidth(2.f, kTO_One);
-  SetFog(true);
+  if (!mDone && mScanTree.IsLoaded() && mFont.IsLoaded() && !mFrame.null()) {
+    if (!mQuitScreen.null()) {
+      mQuitScreen->Draw();
+      return;
+    }
+    float frameAlpha = mAlpha;
+    if (!close_enough(mModelZoomAmount, 0.f)) {
+      frameAlpha = 1.f - mModelZoomAmount;
+    }
+    if (!close_enough(frameAlpha, 0.f)) {
+      CGraphics::SetDepthRange(0.f, 0.f);
+      mFrame->Draw(CGuiWidgetDrawParms(frameAlpha, CVector3f::Zero()));
+    }
+    CGraphics::SetDepthRange(0.125f, 1.f);
+    const CViewport& viewport = CGraphics::GetViewport();
+    gpRender->SetPerspective(30.f, viewport.mWidth, viewport.mHeight, 0.2f, 4096.f);
+    CGraphics::SetModelMatrix(CTransform4f::Identity());
+    const CTransform4f view = mViewRotation.BuildTransform4f();
+    const CVector3f camera(gpTweakGui->GetLogBookTreeHorizontalTranslation(),
+                           -gpTweakGui->GetLogBookTreeCameraDistance(),
+                           gpTweakGui->GetLogBookTreeVerticalTranslation());
+    const CVector3f zoomCamera(0.f, -gpTweakGui->GetLogBookTreeCameraDistance(), 0.f);
+    CGraphics::SetViewPointMatrix(
+        view * CTransform4f::Translate(CVector3f::Lerp(camera, zoomCamera, mModelZoomAmount)));
+    CGraphics::SetDepthRange(0.125f, 1.f);
+    CGraphics::SetCullMode(kCM_None);
+    CGraphics::SetLineWidth(2.f, kTO_One);
+    SetFog(true);
 
-  const float transition = mScanTree.GetTransition();
-  const int selectedId = mScanTree.GetSelectedNode();
-  rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(selectedId);
-  CVector3f origin = node->GetDisplayPosition();
-  const bool option = node->GetNodeType() == CScanTreeNode::kNT_Slider ||
-                      node->GetNodeType() == CScanTreeNode::kNT_Menu;
-  rstl::vector< SNodeDraw > nodes;
-  if (!close_enough(transition, 0.f) || option) {
-    const int previousId = mScanTree.GetPreviousNode();
-    rstl::rc_ptr< CScanTreeNode > previous = mScanTree.GetNode(previousId);
-    const bool previousOption = previous->GetNodeType() == CScanTreeNode::kNT_Slider ||
-                                previous->GetNodeType() == CScanTreeNode::kNT_Menu;
-    origin = previous->GetDisplayPosition();
-    const float previousAlpha = mAlpha * (option || previousOption ? 1.f : transition);
-    switch (previous->GetNodeType()) {
+    const float transition = mScanTree.GetTransition();
+    int selectedId = mScanTree.GetSelectedNode();
+    rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(selectedId);
+    CVector3f origin = node->GetDisplayPosition();
+    const bool option = node->GetNodeType() == CScanTreeNode::kNT_Slider ||
+                        node->GetNodeType() == CScanTreeNode::kNT_Menu;
+    rstl::vector< SNodeDraw > nodes;
+    if (!close_enough(transition, 0.f) || option) {
+      int previousId = mScanTree.GetPreviousNode();
+      rstl::rc_ptr< CScanTreeNode > previous = mScanTree.GetNode(previousId);
+      const bool previousOption = previous->GetNodeType() == CScanTreeNode::kNT_Slider ||
+                                  previous->GetNodeType() == CScanTreeNode::kNT_Menu;
+      origin = previous->GetDisplayPosition();
+      const float previousAlpha = mAlpha * (option || previousOption ? 1.f : transition);
+      switch (previous->GetNodeType()) {
+      case CScanTreeNode::kNT_Category:
+        DrawScanTree(view, origin, previousId, !option, nodes);
+        break;
+      case CScanTreeNode::kNT_Scan:
+      case CScanTreeNode::kNT_Inventory:
+        DrawModels(previousId, previousAlpha);
+        break;
+      }
+      if (!option) {
+        origin = node->GetDisplayPosition();
+      }
+    }
+    switch (node->GetNodeType()) {
     case CScanTreeNode::kNT_Category:
-      DrawScanTree(view, origin, previousId, !option, nodes);
+      DrawScanTree(view, origin, selectedId, false, nodes);
       break;
+    }
+    DrawNodes(view, nodes);
+    const float alpha = (1.f - transition) * mAlpha;
+    switch (node->GetNodeType()) {
     case CScanTreeNode::kNT_Scan:
     case CScanTreeNode::kNT_Inventory:
-      DrawModels(previousAlpha);
+      DrawModels(selectedId, alpha);
+      break;
+    case CScanTreeNode::kNT_Slider:
+      DrawSliderNode(view, origin, selectedId, alpha);
+      break;
+    case CScanTreeNode::kNT_Menu:
+      DrawMenuNode(view, origin, selectedId, alpha);
       break;
     }
-    if (!option) {
-      origin = node->GetDisplayPosition();
-    }
+    CGraphics::SetCullMode(kCM_Front);
+    CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
+    SetFog(false);
   }
-  if (node->GetNodeType() == CScanTreeNode::kNT_Category) {
-    DrawScanTree(view, origin, selectedId, false, nodes);
-  }
-  DrawNodes(view, nodes);
-  const float alpha = (1.f - transition) * mAlpha;
-  switch (node->GetNodeType()) {
-  case CScanTreeNode::kNT_Menu:
-    DrawMenuNode(view, origin, selectedId, alpha);
-    break;
-  case CScanTreeNode::kNT_Scan:
-  case CScanTreeNode::kNT_Inventory:
-    DrawModels(alpha);
-    break;
-  case CScanTreeNode::kNT_Slider:
-    DrawSliderNode(view, origin, selectedId, alpha);
-    break;
-  }
-  CGraphics::SetCullMode(kCM_Front);
-  CGraphics::SetDepthWriteMode(true, kE_LEqual, true);
-  SetFog(false);
 }
 
 void CPauseScreen::DrawScanTree(const CTransform4f& view, const CVector3f& origin, int nodeId,
@@ -1755,7 +1755,7 @@ void CPauseScreen::DrawMenuNode(const CTransform4f& view, const CVector3f& origi
 
 bool CPauseScreen::IsDone() const { return mDone; }
 
-void CPauseScreen::DrawModels(float alpha) const {
+void CPauseScreen::DrawModels(int nodeId, float alpha) const {
   if (mModels.empty() || !mModelsReady) {
     return;
   }
