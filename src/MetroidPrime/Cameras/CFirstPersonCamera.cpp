@@ -50,9 +50,11 @@ void CFirstPersonCamera::UpdateElevation(CStateManager& mgr) {
   if (CameraManager(mgr).IsInCinematicCamera()) {
     return;
   }
-  CPlayer* player = TCastToPtr< CPlayer >(mgr.ObjectById(GetWatchedObject()));
+  CPlayer* player =
+      TCastToPtr< CPlayer >(const_cast< CEntity* >(mgr.GetObjectById(GetWatchedObject())));
   if (player && mPitchId != kInvalidUniqueId) {
-    if (CScriptCameraPitch* pitch = TCastToPtr< CScriptCameraPitch >(mgr.ObjectById(mPitchId))) {
+    if (CScriptCameraPitch* pitch =
+            TCastToPtr< CScriptCameraPitch >(const_cast< CEntity* >(mgr.GetObjectById(mPitchId)))) {
       mPitch = CRelAngle::FromDegrees(pitch->GetPitch(player->GetTransform())).AsRadians();
     }
   }
@@ -79,18 +81,18 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     const float freeLookPitch = player->GetFreeLookAngleX();
     float angle = mPitch + freeLookPitch;
     if (!CMath::IsEpsilon(freeLookPitch, 0.f, 0.00001f)) {
-      if (freeLookPitch <= 0.f) {
-        angle = (mPitch + tweak->GetVerticalFreeLookAngleVel()) *
+      if (freeLookPitch > 0.f) {
+        angle = (tweak->GetVerticalFreeLookAngleVel() - mPitch) *
                     (freeLookPitch / tweak->GetVerticalFreeLookAngleVel()) +
                 mPitch;
       } else {
-        angle = (tweak->GetVerticalFreeLookAngleVel() - mPitch) *
+        angle = (mPitch + tweak->GetVerticalFreeLookAngleVel()) *
                     (freeLookPitch / tweak->GetVerticalFreeLookAngleVel()) +
                 mPitch;
       }
     }
     const float maxAngle = tweak->GetVerticalFreeLookAngleVel();
-    if (fabs(angle) > maxAngle) {
+    if (CMath::AbsF(angle) > maxAngle) {
       angle = maxAngle * CMath::Sign(angle);
     }
     CVector3f freeLookDir(sinf(-player->GetFreeLookAngleZ()) * cosf(angle),
@@ -118,7 +120,7 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(player->GetOrbitTargetId()));
     if (actor != nullptr && actor->GetMaterialList().HasMaterial(kMT_Orbit)) {
       CVector3f orbitDir = player->GetOrbitPoint() - eyePos;
-      if (orbitDir.CanBeNormalized()) {
+      if (orbitDir.IsMagnitudeSafe()) {
         orbitDir.Normalize();
       }
       lookDir = orbitDir;
@@ -159,10 +161,9 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     break;
   }
 
-  if (lookDir.CanBeNormalized()) {
+  if (lookDir.IsMagnitudeSafe()) {
     lookDir.Normalize();
   }
-  float angularStep = dt;
   CQuaternion gunRotation = CQuaternion::NoRotation();
   CTransform4f gunXf = mGunFollowXf;
   if (!player->IsInFreeLook()) {
@@ -170,53 +171,51 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     default: {
       CVector3f gunFront = mGunFollowXf.GetForward();
       gunFront[kDZ] = 0.f;
-      if (gunFront.CanBeNormalized()) {
+      if (gunFront.IsMagnitudeSafe()) {
         gunFront.Normalize();
       }
       CVector3f flatLookDir = lookDir;
       flatLookDir[kDZ] = 0.f;
-      if (flatLookDir.CanBeNormalized()) {
+      if (flatLookDir.IsMagnitudeSafe()) {
         flatLookDir.Normalize();
       }
       const CQuaternion yawRotation =
           CQuaternion::LookAt(gunFront, flatLookDir, CRelAngle::FromRadians(M_2PIF));
       gunXf = yawRotation.BuildTransform4f() * mGunFollowXf.GetRotation();
       CVector3f newFront = gunXf.GetForward();
-      if (newFront.CanBeNormalized()) {
+      if (newFront.IsMagnitudeSafe()) {
         newFront.Normalize();
       }
-      angularStep *= tweak->GetFirstPersonCameraSpeed();
+      float angularStep = dt * tweak->GetFirstPersonCameraSpeed();
       if (mPitchTransitionTimer > 0.f) {
         angularStep *= 0.2f;
       }
       float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
-      float t = acosf(angle) / angularStep;
-      t = CMath::Clamp(0.f, t, 1.f);
+      const float t = CMath::Clamp(0.f, acosf(angle) / angularStep, 1.f);
       gunRotation = CQuaternion::LookAt(newFront, lookDir, CRelAngle::FromRadians(angularStep * t));
       break;
     }
     case CPlayer::kOS_Grapple: {
       CVector3f gunFront = mGunFollowXf.GetForward();
       gunFront[kDZ] = 0.f;
-      if (gunFront.CanBeNormalized()) {
+      if (gunFront.IsMagnitudeSafe()) {
         gunFront.Normalize();
       }
       CVector3f flatLookDir = lookDir;
       flatLookDir[kDZ] = 0.f;
-      if (flatLookDir.CanBeNormalized()) {
+      if (flatLookDir.IsMagnitudeSafe()) {
         flatLookDir.Normalize();
       }
       const CQuaternion yawRotation =
           CQuaternion::LookAt(gunFront, flatLookDir, CRelAngle::FromRadians(M_2PIF));
       gunXf = yawRotation.BuildTransform4f() * mGunFollowXf.GetRotation();
       CVector3f newFront = gunXf.GetForward();
-      if (newFront.CanBeNormalized()) {
+      if (newFront.IsMagnitudeSafe()) {
         newFront.Normalize();
       }
-      angularStep *= tweak->GetGrappleCameraSpeed();
+      const float angularStep = dt * tweak->GetGrappleCameraSpeed();
       float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
-      float t = acosf(angle) / angularStep;
-      t = CMath::Clamp(0.f, t, 1.f);
+      const float t = CMath::Clamp(0.f, acosf(angle) / angularStep, 1.f);
       gunRotation = CQuaternion::LookAt(newFront, lookDir, CRelAngle::FromRadians(angularStep * t));
       break;
     }
@@ -224,44 +223,42 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
     case CPlayer::kOS_OrbitCarcass: {
       CVector3f gunFront = mGunFollowXf.GetForward();
       gunFront[kDZ] = 0.f;
-      if (gunFront.CanBeNormalized()) {
+      if (gunFront.IsMagnitudeSafe()) {
         gunFront.Normalize();
       }
       CVector3f flatLookDir = lookDir;
       flatLookDir[kDZ] = 0.f;
-      if (flatLookDir.CanBeNormalized()) {
+      if (flatLookDir.IsMagnitudeSafe()) {
         flatLookDir.Normalize();
       }
       const CQuaternion yawRotation =
           CQuaternion::LookAt(gunFront, flatLookDir, CRelAngle::FromRadians(M_2PIF));
       gunXf = yawRotation.BuildTransform4f() * mGunFollowXf.GetRotation();
       CVector3f newFront = gunXf.GetForward();
-      if (newFront.CanBeNormalized()) {
+      if (newFront.IsMagnitudeSafe()) {
         newFront.Normalize();
       }
-      const CRelAngle scaledAngle = CRelAngle::FromRadians(
-          player->GetPlayerState()->GetCurrentVisor() == CPlayerState::kPV_Scan
-              ? angularStep * tweak->GetScanCameraSpeed()
-              : angularStep * tweak->GetOrbitCameraSpeed() * 0.25f);
+      float angularStep = dt * tweak->GetOrbitCameraSpeed() * 0.25f;
+      if (player->GetPlayerState()->GetCurrentVisor() == CPlayerState::kPV_Scan) {
+        angularStep = dt * tweak->GetScanCameraSpeed();
+      }
       float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
-      float t = acosf(angle) / scaledAngle.AsRadians();
-      t = CMath::Clamp(0.f, t, 1.f);
-      gunRotation = CQuaternion::LookAt(newFront, lookDir,
-                                        CRelAngle::FromRadians(scaledAngle.AsRadians() * t));
+      const float t = CMath::Clamp(0.f, acosf(angle) / angularStep, 1.f);
+      gunRotation = CQuaternion::LookAt(newFront, lookDir, CRelAngle::FromRadians(angularStep * t));
       break;
     }
     case CPlayer::kOS_ForcedOrbitObject:
     case CPlayer::kOS_OrbitObject: {
       CVector3f gunFront = mGunFollowXf.GetForward();
-      if (gunFront.CanBeNormalized()) {
+      if (gunFront.IsMagnitudeSafe()) {
         gunFront.Normalize();
       }
-      angularStep *= player->GetPlayerState()->GetCurrentVisor() == CPlayerState::kPV_Scan
-                         ? tweak->GetScanCameraSpeed()
-                         : tweak->GetOrbitCameraSpeed();
+      float angularStep = dt * tweak->GetOrbitCameraSpeed();
+      if (player->GetPlayerState()->GetCurrentVisor() == CPlayerState::kPV_Scan) {
+        angularStep = dt * tweak->GetScanCameraSpeed();
+      }
       float angle = CMath::Limit(CVector3f::Dot(gunFront, lookDir), 1.f);
-      float t = acosf(angle) / angularStep;
-      t = CMath::Clamp(0.f, t, 1.f);
+      float t = CMath::Clamp(0.f, acosf(angle) / angularStep, 1.f);
       if (angle > 0.9999f || mLockCamera || player->GetOrbitLockAcquired()) {
         gunRotation = CQuaternion::LookAt(gunFront, lookDir, CRelAngle::FromRadians(M_2PIF));
       } else {
@@ -274,19 +271,19 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
       if (grapple != nullptr && player->GetFallCameraTimer() > 0.f) {
         CVector3f flatGunFront = mGunFollowXf.GetForward();
         flatGunFront[kDZ] = 0.f;
-        if (flatGunFront.CanBeNormalized()) {
+        if (flatGunFront.IsMagnitudeSafe()) {
           flatGunFront.Normalize();
         }
         CVector3f flatLookDir = lookDir;
         flatLookDir[kDZ] = 0.f;
-        if (flatLookDir.CanBeNormalized()) {
+        if (flatLookDir.IsMagnitudeSafe()) {
           flatLookDir.Normalize();
         }
         const CQuaternion yawRotation =
             CQuaternion::LookAt(flatGunFront, flatLookDir, CRelAngle::FromRadians(M_2PIF));
         gunXf = yawRotation.BuildTransform4f() * mGunFollowXf.GetRotation();
         CVector3f newFront = gunXf.GetForward();
-        if (newFront.CanBeNormalized()) {
+        if (newFront.IsMagnitudeSafe()) {
           newFront.Normalize();
         }
         // Retail evaluates this interpolation even though it uses a full rotation below.
@@ -302,22 +299,22 @@ void CFirstPersonCamera::UpdateTransform(CStateManager& mgr, float dt) {
   } else {
     CVector3f gunFront = mGunFollowXf.GetForward();
     gunFront[kDZ] = 0.f;
-    if (gunFront.CanBeNormalized()) {
+    if (gunFront.IsMagnitudeSafe()) {
       gunFront.Normalize();
     }
     CVector3f flatLookDir = lookDir;
     flatLookDir[kDZ] = 0.f;
-    if (flatLookDir.CanBeNormalized()) {
+    if (flatLookDir.IsMagnitudeSafe()) {
       flatLookDir.Normalize();
     }
     const CQuaternion yawRotation =
         CQuaternion::LookAt(gunFront, flatLookDir, CRelAngle::FromRadians(M_2PIF));
     gunXf = yawRotation.BuildTransform4f() * mGunFollowXf.GetRotation();
     CVector3f newFront = gunXf.GetForward();
-    if (newFront.CanBeNormalized()) {
+    if (newFront.IsMagnitudeSafe()) {
       newFront.Normalize();
     }
-    angularStep *= tweak->GetFreeLookSpeed();
+    const float angularStep = dt * tweak->GetFreeLookSpeed();
     float angle = CMath::Limit(CVector3f::Dot(newFront, lookDir), 1.f);
     if (CMath::AbsF(angle) < 0.999999f) {
       const float damping =

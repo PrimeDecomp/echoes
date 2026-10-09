@@ -239,7 +239,7 @@ public:
   static void AddListener(ESfxChannels channel, const CVector3f& position,
                           const CVector3f& direction, const CVector3f& heading, const CVector3f& up,
                           float frontSur, float backSur, float soundSpeed, uint flags,
-                          uchar maxVolume, int listener);
+                          const uchar maxVolume, int listener);
   static void UpdateListener(const CVector3f& position, const CVector3f& direction,
                              const CVector3f& heading, const CVector3f& up, uchar maxVolume,
                              int listener);

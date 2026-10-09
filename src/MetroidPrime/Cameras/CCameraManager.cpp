@@ -42,6 +42,10 @@ float CCameraManager::sFirstPersonFOV = 55.f;
 float CCameraManager::sThirdPersonFOV = 60.f;
 float CCameraManager::sNearPlane = 0.2f;
 float CCameraManager::sFarPlane = 750.f;
+const float CCameraManager::sAspectRatio = 1.42f;
+
+CCameraManager::SCameraHistory::SCameraHistory(const CTransform4f& initial)
+: mTransforms(80, initial), mBegin(mTransforms.begin()), mEnd(mBegin + 1) {}
 
 CCameraManager::CCameraManager(TUniqueId curCamera, int playerIndex)
 : mPlayerIndex(playerIndex)
@@ -82,7 +86,7 @@ float CCameraManager::GetDefaultFirstPersonNearClipDistance() { return sNearPlan
 
 float CCameraManager::GetDefaultFirstPersonFarClipDistance() { return sFarPlane; }
 
-float CCameraManager::GetDefaultAspectRatio() { return 1.42f; }
+float CCameraManager::GetDefaultAspectRatio() { return sAspectRatio; }
 
 void CCameraManager::SetAspectRatio(float aspect, CStateManager& mgr) {
   for (int i = 0; i < mCameras.size(); ++i) {
@@ -641,7 +645,7 @@ void CCameraManager::Reset(TUniqueId uid, CStateManager& mgr) {
   mCameraShakeManager->Reset();
   SetCinematicCameraId(mgr, kInvalidUniqueId);
   mFirstPersonFov = sFirstPersonFOV;
-  SetAspectRatio(1.42f, mgr);
+  SetAspectRatio(sAspectRatio, mgr);
   if (TCastToConstPtr< CGameCamera >(mgr.GetObjectById(uid))) {
     SetCurrentCameraId(uid, mgr);
   } else {
@@ -670,8 +674,10 @@ rstl::optional_object< CTransform4f > CCameraManager::SCameraHistory::Last() con
   if (Size() == 0) {
     return rstl::optional_object< CTransform4f >();
   }
-  const CTransform4f* last = mEnd == mTransforms.begin() ? mTransforms.end() : mEnd;
-  return rstl::optional_object< CTransform4f >(*--last);
+  if (mEnd == mTransforms.begin()) {
+    return rstl::optional_object< CTransform4f >(mTransforms.back());
+  }
+  return rstl::optional_object< CTransform4f >(*(mEnd - 1));
 }
 
 const CTransform4f& CCameraManager::GetLastCameraTransform() const {
@@ -773,6 +779,3 @@ bool CCameraManager::CheckSplineCollision(const CMotionSpline& spline, int mode,
   }
   return true;
 }
-
-CCameraManager::SCameraHistory::SCameraHistory(const CTransform4f& initial)
-: mTransforms(80, initial), mBegin(mTransforms.begin()), mEnd(mBegin + 1) {}
