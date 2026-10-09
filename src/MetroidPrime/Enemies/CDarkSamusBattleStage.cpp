@@ -13,7 +13,7 @@ CDarkSamusBattleStage::~CDarkSamusBattleStage() {}
 
 const SLdrDSStageInfo& CDarkSamusBattleStage::GetStageInfo() const { return mStageInfo; }
 
-CEntity* REL_LoadDarkSamusBattleStage(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadDarkSamusBattleStage(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrDarkSamusBattleStage sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrDarkSamusBattleStage.inc"
 
@@ -22,12 +22,14 @@ CEntity* REL_LoadDarkSamusBattleStage(CStateManager& mgr, CInputStream& input, C
                                       sldrThis.stage);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptDarkSamusBattleStage_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadDarkSamusBattleStage;
+  funcPtrs.mLoader = &LoadDarkSamusBattleStage;
   SetSScriptDarkSamusBattleStage_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSScriptDarkSamusBattleStage_FuncPtrs(nullptr); }
+#endif

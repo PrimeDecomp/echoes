@@ -1550,7 +1550,7 @@ void CMetroid::SetupStateMachine(CStateManager& mgr) {
   stateMachine->SetCodeFunctions(skCodeFuncs, ARRAY_SIZE(skCodeFuncs));
 }
 
-CEntity* REL_LoadMetroid(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadMetroidAlpha(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrMetroidAlpha sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrMetroidAlpha.inc"
 
@@ -1585,10 +1585,11 @@ CEntity* REL_LoadMetroid(CStateManager& mgr, CInputStream& input, CEntityInfo& i
                          LdrToActorParameters(sldrThis.actorInformation), metroidData);
 }
 
+#ifndef MONOLITHIC
 SMetroid_FuncPtrs REL_loader_Metroid;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_Metroid.mLoadMetroid = REL_LoadMetroid;
+  REL_loader_Metroid.mLoadMetroid = LoadMetroidAlpha;
   REL_loader_Metroid.mOnDockTouch = &CMetroid::OnDockTouch;
   SetSMetroid_FuncPtrs(&REL_loader_Metroid);
 }
@@ -1596,3 +1597,4 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSMetroid_FuncPtrs(nullptr); }
+#endif

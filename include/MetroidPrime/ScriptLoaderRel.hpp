@@ -21,6 +21,126 @@ class CGenDescription;
 class CPatterned;
 class CRagDoll;
 
+// DOL stand-ins for loaders that live in RELs: each forwards to the callback record the
+// loaded REL registered. A monolithic build links the REL sources into the DOL instead, so
+// REL_ENTRY binds straight to the real loader.
+#ifdef MONOLITHIC
+#define REL_ENTRY(name) name
+#else
+#define REL_ENTRY(name) RelProxy_##name
+#endif
+
+CEntity* REL_ENTRY(LoadAIMannedTurret)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadAtomicAlpha)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadAtomicBeta)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadBacteriaSwarm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadBlogg)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadBrizgee)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadCannonBall)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadChozoGhost)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadCoin)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadCommandPirate)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadCrystallite)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDarkCommando)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDarkSamus)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDarkSamusBattleStage)(CStateManager& mgr, CInputStream& input,
+                                             CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDarkTrooper)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDestructibleBarrier)(CStateManager& mgr, CInputStream& input,
+                                            CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDigitalGuardian)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadDigitalGuardianHead)(CStateManager& mgr, CInputStream& input,
+                                            CEntityInfo& info);
+CEntity* REL_ENTRY(LoadElitePirate)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadEmperorIngStage1)(CStateManager& mgr, CInputStream& input,
+                                         CEntityInfo& info);
+CEntity* REL_ENTRY(LoadEmperorIngStage2Tentacle)(CStateManager& mgr, CInputStream& input,
+                                                 CEntityInfo& info);
+CEntity* REL_ENTRY(LoadEmperorIngStage3)(CStateManager& mgr, CInputStream& input,
+                                         CEntityInfo& info);
+CEntity* REL_ENTRY(LoadEyeBall)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFishCloud)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFishCloudModifier)(CStateManager& mgr, CInputStream& input,
+                                          CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFlyerSwarm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFlyingPirate)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFogOverlay)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadForgottenObject)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadFrontEndDataNetwork)(CStateManager& mgr, CInputStream& input,
+                                            CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGlowbug)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGrenchler)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGuiMenu)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGuiPlayerJoinManager)(CStateManager& mgr, CInputStream& input,
+                                             CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGuiScreen)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGuiSlider)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGuiWidget)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGunTurretBase)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadGunTurretTop)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngBlobSwarm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngBoostBallGuardian)(CStateManager& mgr, CInputStream& input,
+                                             CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngPuddle)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngSnatchingSwarm)(CStateManager& mgr, CInputStream& input,
+                                          CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngSpaceJumpGuardian)(CStateManager& mgr, CInputStream& input,
+                                             CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngSpiderballGuardian)(CStateManager& mgr, CInputStream& input,
+                                              CEntityInfo& info);
+CEntity* REL_ENTRY(LoadIngs)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadKralee)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadKrocuss)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadLumite)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMediumIng)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMetaree)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMetareeSwarm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMetroidAlpha)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMinorIng)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadMysteryFlyer)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadOctapedeSegment)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadParasite)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPillBug)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPlantScarabSwarm)(CStateManager& mgr, CInputStream& input,
+                                         CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPlayerActor)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPlayerController)(CStateManager& mgr, CInputStream& input,
+                                         CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPlayerTurret)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPuddleSpore)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadPuffer)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadRezbit)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadRiftPortal)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadRipper)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadRsfAudio)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadRubiksPuzzle)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSafeZone)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSafeZoneCrystal)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSandBoss)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSandworm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadShredder)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadShrieker)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSkyRipple)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSnakeWeedSwarm)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSpacePirate)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSpankWeed)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSplinter)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSplitterCommandModule)(CStateManager& mgr, CInputStream& input,
+                                              CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSplitterMainChassis)(CStateManager& mgr, CInputStream& input,
+                                            CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSporbBase)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSporbNeedle)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSporbProjectile)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSporbTop)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadStoneToad)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadStreamedMovie)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSwampBossStage1)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadSwampBossStage2)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadTryclops)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadWallWalker)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* REL_ENTRY(LoadWispTentacle)(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+
 struct SGeomBlobV2_FuncPtrs {
   // Guessed member name; compatible base return type.
   CEffect* (*mFactory)(const TLockedToken< CGenDescription >& token, TUniqueId uid, TAreaId area,
@@ -350,10 +470,11 @@ struct STweaks_FuncPtrs {
 CHECK_SIZEOF(STweaks_FuncPtrs, 0xc)
 void SetSTweaks_FuncPtrs(STweaks_FuncPtrs*);
 
-// Guessed names; dispatch through the currently loaded Tweaks REL's function table.
-void LoadTweaks(CInputStream&);
-void CreateTweakGlobals();
-void FreeTweaks();
+// Guessed names; the Tweaks REL implements them and the proxies dispatch through its
+// function table.
+void REL_ENTRY(LoadTweaks)(CInputStream& input);
+void REL_ENTRY(CreateTweakGlobals)();
+void REL_ENTRY(FreeTweaks)();
 
 struct SScriptRubiksPuzzle_FuncPtrs {
   FScriptLoader mLoader; // Guessed member name.

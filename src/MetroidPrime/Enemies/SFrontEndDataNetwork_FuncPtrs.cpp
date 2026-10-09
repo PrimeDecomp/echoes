@@ -7,6 +7,7 @@ void SetSFrontEndDataNetwork_FuncPtrs(SFrontEndDataNetwork_FuncPtrs* callbacks) 
 }
 
 // Guessed loader name.
-CEntity* LoadFrontEndDataNetwork(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadFrontEndDataNetwork(CStateManager& mgr, CInputStream& input,
+                                          CEntityInfo& info) {
   return gLoader_FrontEndDataNetwork->mLoader(mgr, input, info);
 }

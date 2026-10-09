@@ -193,6 +193,7 @@ CEntity* LoadRipper(CStateManager& mgr, CInputStream& input, CEntityInfo& info) 
                         LdrToGrappleParameters(sldrThis.grappleInfo));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SRipper_FuncPtrs funcPtrs;
   funcPtrs.mLoadRipper = &LoadRipper;
@@ -202,3 +203,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSRipper_FuncPtrs(nullptr); }
+#endif

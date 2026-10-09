@@ -346,7 +346,7 @@ void CShredder::Render(const CStateManager& mgr) const {
   CPatterned::Render(mgr);
 }
 
-CEntity* REL_LoadShredder(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadShredder(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrShredder sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrShredder.inc"
 
@@ -364,12 +364,14 @@ CEntity* REL_LoadShredder(CStateManager& mgr, CInputStream& input, CEntityInfo& 
                           LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SShredder_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadShredder;
+  funcPtrs.mLoader = &LoadShredder;
   SetSShredder_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSShredder_FuncPtrs(nullptr); }
+#endif

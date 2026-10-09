@@ -21,7 +21,9 @@
 #include "MetroidPrime/ScriptLoader/Tweaks.inc"
 
 const char* gkTweakContainer = "Standard.NTWK";
+#ifndef MONOLITHIC
 STweaks_FuncPtrs REL_loader_Tweaks;
+#endif
 
 CTweakContents::CTweakContents() {}
 
@@ -83,7 +85,7 @@ void DecodeAnyTweak(uint instanceId, CInputStream& input) {
   }
 }
 
-void REL_LoadTweaks(CInputStream& input) {
+void LoadTweaks(CInputStream& input) {
   if (static_cast< uint >(input.ReadInt32()) == 0x4e54574b && input.ReadUint8() == 1) {
     gpTweakContents = rs_new CTweakContents();
     int instanceCount = input.ReadInt32();
@@ -116,7 +118,7 @@ void REL_LoadTweaks(CInputStream& input) {
   }
 }
 
-void REL_CreateTweakGlobals() {
+void CreateTweakGlobals() {
   gpTweakAutoMapper = rs_new CTweakAutoMapper(gpTweakContents->TweakAutoMapper);
   gpTweakBall = rs_new CTweakBall(gpTweakContents->TweakBall);
   gpTweakGame = rs_new CTweakGame(gpTweakContents->TweakGame);
@@ -138,7 +140,7 @@ void REL_CreateTweakGlobals() {
   CMappableObject::ReadAutomapperTweaks();
 }
 
-void REL_FreeTweaks() {
+void FreeTweaks() {
   delete gpTweakContents;
   gpTweakContents = nullptr;
   gpTweakAutoMapper = nullptr;
@@ -158,13 +160,15 @@ void REL_FreeTweaks() {
   gpTweakTargeting = nullptr;
 }
 
+#ifndef MONOLITHIC
 void TweaksInit() {
-  REL_loader_Tweaks.mLoadTweaks = REL_LoadTweaks;
-  REL_loader_Tweaks.mCreateGlobals = REL_CreateTweakGlobals;
-  REL_loader_Tweaks.mFreeTweaks = REL_FreeTweaks;
+  REL_loader_Tweaks.mLoadTweaks = LoadTweaks;
+  REL_loader_Tweaks.mCreateGlobals = CreateTweakGlobals;
+  REL_loader_Tweaks.mFreeTweaks = FreeTweaks;
   SetSTweaks_FuncPtrs(&REL_loader_Tweaks);
 }
 
 extern "C" void RELMain() { TweaksInit(); }
 
 extern "C" void RELExit() { SetSTweaks_FuncPtrs(nullptr); }
+#endif

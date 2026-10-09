@@ -7,6 +7,7 @@ void SetSIngSpaceJumpGuardian_FuncPtrs(SIngSpaceJumpGuardian_FuncPtrs* callbacks
 }
 
 // Guessed loader name.
-CEntity* LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input,
+                                           CEntityInfo& info) {
   return gLoader_IngSpaceJumpGuardian->mLoader(mgr, input, info);
 }

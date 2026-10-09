@@ -2125,7 +2125,7 @@ void CBlogg::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
   }
 }
 
-CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrBlogg sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.inc"
 
@@ -2158,12 +2158,14 @@ CEntity* REL_LoadBlogg(CStateManager& mgr, CInputStream& input, CEntityInfo& inf
       SBloggPhaseData(sldrThis.bloggStruct_0xf2ba21e1));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SBlogg_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadBlogg;
+  funcPtrs.mLoader = &LoadBlogg;
   SetSBlogg_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSBlogg_FuncPtrs(nullptr); }
+#endif

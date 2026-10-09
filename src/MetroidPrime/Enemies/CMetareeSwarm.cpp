@@ -276,7 +276,7 @@ void CMetareeSwarm::KillBoid(CBoid& boid, CStateManager& mgr, const CWeaponMode&
   }
 }
 
-CEntity* REL_LoadMetareeSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadMetareeSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrMetareeSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrMetareeSwarm.inc"
 
@@ -294,12 +294,14 @@ CEntity* REL_LoadMetareeSwarm(CStateManager& mgr, CInputStream& input, CEntityIn
       sldrThis.attackSpeed);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SMetareeSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadMetareeSwarm;
+  funcPtrs.mLoader = &LoadMetareeSwarm;
   SetSMetareeSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSMetareeSwarm_FuncPtrs(nullptr); }
+#endif

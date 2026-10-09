@@ -375,7 +375,7 @@ bool CGlowbug::IsInRange(const CActor& other, float range) const {
   return (other.GetTranslation() - GetTranslation()).MagSquared() < range * range;
 }
 
-CEntity* REL_LoadGlowbug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadGlowbug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrGlowbug sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrGlowbug.inc"
 
@@ -397,12 +397,14 @@ CEntity* REL_LoadGlowbug(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       sldrThis.attackDuration, sldrThis.attackTelegraphDuration);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SGlowbug_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadGlowbug;
+  funcPtrs.mLoader = &LoadGlowbug;
   SetSGlowbug_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSGlowbug_FuncPtrs(nullptr); }
+#endif

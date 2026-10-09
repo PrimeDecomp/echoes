@@ -7,6 +7,6 @@ void SetSDarkCommando_FuncPtrs(SDarkCommando_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadDarkCommando(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_DarkCommando->mLoader(mgr, input, info);
 }

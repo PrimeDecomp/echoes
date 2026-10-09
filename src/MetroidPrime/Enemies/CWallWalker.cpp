@@ -429,7 +429,7 @@ void CWallWalker::LaunchProjectiles(const CTransform4f& xf, CStateManager& mgr) 
   mNumShots = 0;
 }
 
-CEntity* REL_LoadWallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadWallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrWallWalker sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrWallWalker.inc"
 
@@ -463,13 +463,15 @@ CEntity* REL_LoadWallWalker(CStateManager& mgr, CInputStream& input, CEntityInfo
                             LdrToPatternedInfo(sldrThis.patterned, nullptr), data);
 }
 
+#ifndef MONOLITHIC
 SWallWalker_FuncPtrs REL_loader_WallWalker;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_WallWalker.mLoadWallWalker = REL_LoadWallWalker;
+  REL_loader_WallWalker.mLoadWallWalker = LoadWallWalker;
   SetSWallWalker_FuncPtrs(&REL_loader_WallWalker);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSWallWalker_FuncPtrs(nullptr); }
+#endif

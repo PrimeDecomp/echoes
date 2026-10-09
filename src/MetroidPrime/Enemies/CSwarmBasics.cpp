@@ -1987,6 +1987,7 @@ void CSwarmBasics::FinishConstruction() {}
 
 static void* NullSwarmBasicsFactory() { return nullptr; }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SSwarmBasics_FuncPtrs funcPtrs;
   funcPtrs.mFactory = &NullSwarmBasicsFactory;
@@ -1996,3 +1997,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSSwarmBasics_FuncPtrs(nullptr); }
+#endif

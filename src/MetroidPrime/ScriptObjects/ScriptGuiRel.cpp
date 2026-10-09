@@ -7,6 +7,7 @@ CEntity* LoadGuiSlider(CStateManager& mgr, CInputStream& input, CEntityInfo& inf
 CEntity* LoadGuiMenu(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 CEntity* LoadGuiPlayerJoinManager(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
+#ifndef MONOLITHIC
 SGuiWidget_FuncPtrs REL_loader_GuiWidget;
 
 void SetRelLoaderFunctionToLoader() {
@@ -21,3 +22,4 @@ void SetRelLoaderFunctionToLoader() {
 void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 void RELExit() { SetSGuiWidget_FuncPtrs(nullptr); }
+#endif

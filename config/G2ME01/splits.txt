@@ -2573,9 +2573,9 @@ MetroidPrime/Enemies/SScriptRubiksPuzzle_FuncPtrs.cpp:
 MetroidPrime/ScriptLoader.cpp:
 	.text       start:0x802399FC end:0x80243ED4
 	.ctors      start:0x803A55A4 end:0x803A55A8
-	.bss        start:0x803DE138 end:0x803DE7F8
+	.bss        start:0x803DE138 end:0x803DE6F8
 	.sdata      start:0x80418930 end:0x80418948
-	.sbss       start:0x804196C8 end:0x804196D8
+	.sbss       start:0x804196C8 end:0x804196D0
 	.sdata2     start:0x8041DC88 end:0x8041DD00
 
 MetroidPrime/CInGameQuitScreen.cpp:
@@ -2593,6 +2593,8 @@ MetroidPrime/CPirateEchoEmitter.cpp:
 WorldFormat/CAreaOctTree_Tests.cpp:
 	.text       start:0x8024569C end:0x802471B0
 	.rodata     start:0x803AD708 end:0x803AD830
+	.bss        start:0x803DE6F8 end:0x803DE7F8
+	.sbss       start:0x804196D0 end:0x804196D8
 	.sdata2     start:0x8041DD28 end:0x8041DD44
 
 WorldFormat/CCollisionSurface.cpp:

@@ -773,7 +773,7 @@ CParticleGen* CIngSnatchingSwarm::CreateParticle(const CVector3f& scale,
       CVector3f::One());
 }
 
-CEntity* REL_LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrIngSnatchingSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrIngSnatchingSwarm.inc"
 
@@ -793,12 +793,14 @@ CEntity* REL_LoadIngSnatchingSwarm(CStateManager& mgr, CInputStream& input, CEnt
                                    sldrThis.editorProperties.transform.scale, data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SIngSnatchingSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoadIngSnatchingSwarm = &REL_LoadIngSnatchingSwarm;
+  funcPtrs.mLoadIngSnatchingSwarm = &LoadIngSnatchingSwarm;
   SetSIngSnatchingSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngSnatchingSwarm_FuncPtrs(nullptr); }
+#endif

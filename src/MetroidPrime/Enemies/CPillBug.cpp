@@ -767,7 +767,7 @@ void CPillBug::Pause(CStateManager& mgr, EStateMsg msg, float dt) {
   }
 }
 
-CEntity* REL_LoadPillBug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadPillBug(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPillBug sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrPillBug.inc"
 
@@ -791,12 +791,14 @@ CEntity* REL_LoadPillBug(CStateManager& mgr, CInputStream& input, CEntityInfo& i
       sldrThis.unknown_0x0f991bf1, sldrThis.unknown_0x385a1bed, sldrThis.unknown_0xcf4ea141);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPillBug_FuncPtrs funcPtrs;
-  funcPtrs.mLoadPillBug = &REL_LoadPillBug;
+  funcPtrs.mLoadPillBug = &LoadPillBug;
   SetSPillBug_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPillBug_FuncPtrs(nullptr); }
+#endif

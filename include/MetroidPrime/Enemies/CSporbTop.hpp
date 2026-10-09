@@ -101,6 +101,6 @@ private:
 };
 CHECK_SIZEOF(CSporbTop, 0x808)
 
-CEntity* REL_LoadSporbTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSporbTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
 #endif // _CSPORBTOP

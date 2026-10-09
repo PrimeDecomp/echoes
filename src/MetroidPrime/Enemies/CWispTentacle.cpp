@@ -636,7 +636,7 @@ void CWispTentacle::KnockBack(CStateManager&, const CKnockBackInfo& info) {
   }
 }
 
-CEntity* REL_LoadWispTentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadWispTentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrWispTentacle sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrWispTentacle.inc"
 
@@ -657,12 +657,14 @@ CEntity* REL_LoadWispTentacle(CStateManager& mgr, CInputStream& input, CEntityIn
       sldrThis.grabBlendTime);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SWispTentacle_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadWispTentacle;
+  funcPtrs.mLoader = &LoadWispTentacle;
   SetSWispTentacle_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSWispTentacle_FuncPtrs(nullptr); }
+#endif

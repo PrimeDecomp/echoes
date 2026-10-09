@@ -1298,7 +1298,7 @@ void CRezbit::BuildDerezModel(CAssetId model, CAssetId skinRules) {
   }
 }
 
-CEntity* REL_LoadRezbit(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadRezbit(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrRezbit sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrRezbit.inc"
 
@@ -1316,12 +1316,14 @@ CEntity* REL_LoadRezbit(CStateManager& mgr, CInputStream& input, CEntityInfo& in
                         LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.rezbitProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SRezbit_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadRezbit;
+  funcPtrs.mLoader = &LoadRezbit;
   SetSRezbit_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSRezbit_FuncPtrs(nullptr); }
+#endif

@@ -7,6 +7,6 @@ void SetSMysteryFlyer_FuncPtrs(SMysteryFlyer_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadMysteryFlyer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadMysteryFlyer(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_MysteryFlyer->mLoader(mgr, input, info);
 }

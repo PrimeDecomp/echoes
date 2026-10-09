@@ -1232,7 +1232,7 @@ void CLumite::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
   }
 }
 
-CEntity* REL_LoadLumite(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadLumite(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrLumite sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrLumite.inc"
 
@@ -1267,15 +1267,17 @@ CEntity* REL_LoadLumite(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SLumite_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadLumite;
+  funcPtrs.mLoader = &LoadLumite;
   SetSLumite_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSLumite_FuncPtrs(nullptr); }
+#endif
 
 template < typename T >
 void CLumite::DeliverCommand(EStateMsg msg, pas::EAnimationState state, const T& cmd) {

@@ -5,8 +5,8 @@ STweaks_FuncPtrs* gLoader_Tweaks;
 
 void SetSTweaks_FuncPtrs(STweaks_FuncPtrs* callbacks) { gLoader_Tweaks = callbacks; }
 
-void LoadTweaks(CInputStream& input) { gLoader_Tweaks->mLoadTweaks(input); }
+void RelProxy_LoadTweaks(CInputStream& input) { gLoader_Tweaks->mLoadTweaks(input); }
 
-void CreateTweakGlobals() { gLoader_Tweaks->mCreateGlobals(); }
+void RelProxy_CreateTweakGlobals() { gLoader_Tweaks->mCreateGlobals(); }
 
-void FreeTweaks() { gLoader_Tweaks->mFreeTweaks(); }
+void RelProxy_FreeTweaks() { gLoader_Tweaks->mFreeTweaks(); }

@@ -391,7 +391,7 @@ void CSporbTop::Death(CStateManager& mgr, const CVector3f& direction, EScriptObj
   }
 }
 
-CEntity* REL_LoadSporbTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSporbTop(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSporbTop sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSporbTop.inc"
 

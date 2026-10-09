@@ -1020,7 +1020,7 @@ CRagDoll* CDarkTrooper::GetRagDoll() const {
   return nullptr;
 }
 
-CEntity* REL_LoadDarkTrooper(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadDarkTrooper(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrDarkTrooper sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrDarkTrooper.inc"
 
@@ -1046,15 +1046,17 @@ CEntity* REL_LoadDarkTrooper(CStateManager& mgr, CInputStream& input, CEntityInf
       LdrToActorParameters(sldrThis.actorInformation));
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SDarkTrooper_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadDarkTrooper;
+  funcPtrs.mLoader = &LoadDarkTrooper;
   SetSDarkTrooper_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSDarkTrooper_FuncPtrs(nullptr); }
+#endif
 
 template < typename T >
 void CDarkTrooper::DeliverCommand(EStateMsg msg, pas::EAnimationState state, const T& cmd) {

@@ -125,7 +125,7 @@ void CScriptSkyRipple::Think(float dt, CStateManager& mgr) {
   CActor::Think(dt, mgr);
 }
 
-CEntity* REL_LoadSkyRipple(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSkyRipple(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSkyRipple sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSkyRipple.inc"
 
@@ -134,12 +134,14 @@ CEntity* REL_LoadSkyRipple(CStateManager& mgr, CInputStream& input, CEntityInfo&
                                  sldrThis.editorProperties.name);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptSkyRipple_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadSkyRipple;
+  funcPtrs.mLoader = &LoadSkyRipple;
   SetSScriptSkyRipple_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSScriptSkyRipple_FuncPtrs(nullptr); }
+#endif

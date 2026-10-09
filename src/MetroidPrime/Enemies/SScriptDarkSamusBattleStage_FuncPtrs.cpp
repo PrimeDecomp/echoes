@@ -7,6 +7,7 @@ void SetSScriptDarkSamusBattleStage_FuncPtrs(SScriptDarkSamusBattleStage_FuncPtr
 }
 
 // Guessed loader name.
-CEntity* LoadDarkSamusBattleStage(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadDarkSamusBattleStage(CStateManager& mgr, CInputStream& input,
+                                           CEntityInfo& info) {
   return gLoader_DarkSamusBattleStage->mLoader(mgr, input, info);
 }

@@ -970,7 +970,7 @@ void CTryclops::SetupCollisionManager(CStateManager& mgr) {
                                                         CMaterialList(kMT_CollisionActor)));
 }
 
-CEntity* REL_LoadTryclops(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadTryclops(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrTryclops sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrTryclops.inc"
 
@@ -989,12 +989,14 @@ CEntity* REL_LoadTryclops(CStateManager& mgr, CInputStream& input, CEntityInfo& 
                           sldrThis.attractAngle, sldrThis.attractDistance, sldrThis.shotForce);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static STryclops_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadTryclops;
+  funcPtrs.mLoader = &LoadTryclops;
   SetSTryclops_FuncPtrs(&funcPtrs);
 }
 
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSTryclops_FuncPtrs(nullptr); }
+#endif

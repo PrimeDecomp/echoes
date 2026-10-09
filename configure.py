@@ -137,6 +137,11 @@ parser.add_argument(
     action="store_false",
     help="disable progress calculation",
 )
+parser.add_argument(
+    "--monolithic",
+    action="store_true",
+    help="link REL objects into the DOL instead of building RELs (implies --non-matching)",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -150,7 +155,7 @@ config.objdiff_path = args.objdiff
 config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.generate_map = args.map
-config.non_matching = args.non_matching
+config.non_matching = args.non_matching or args.monolithic
 config.sjiswrap_path = args.sjiswrap
 config.ninja_path = args.ninja
 config.progress = args.progress
@@ -301,6 +306,14 @@ if version_num > 0:
     # RELs not yet set up for non-USA versions
     config.build_rels = False
 
+# Monolithic builds link REL objects into the DOL, the way Corruption links every
+# script loader: no RELs are built and nothing registers at runtime.
+if args.monolithic:
+    config.build_rels = False
+
+# Units of the RELs linked into a monolithic DOL.
+monolithic_units: List[str] = []
+
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
@@ -317,6 +330,8 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
 def Rel(
     lib_name: str, objects: List[Object], extra_cflags: Optional[List[str]] = None
 ) -> Dict[str, Any]:
+    if args.monolithic:
+        monolithic_units.extend(obj.name for obj in objects)
     return {
         "lib": lib_name,
         "mw_version": retro_mw_version,
@@ -1998,23 +2013,16 @@ config.libs = [
     ),
 ]
 
+if args.monolithic:
+    for lib in config.libs:
+        lib["cflags"] = lib["cflags"] + ["-DMONOLITHIC"]
 
-# Optional callback to adjust link order. This can be used to add, remove, or reorder objects.
-# This is called once per module, with the module ID and the current link order.
-#
-# For example, this adds "dummy.c" to the end of the DOL link order if configured with --non-matching.
-# "dummy.c" *must* be configured as a Matching (or Equivalent) object in order to be linked.
-def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
-    # Don't modify the link order for matching builds
-    if not config.non_matching:
+    def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
+        if module_id == 0:  # DOL
+            return objects + monolithic_units
         return objects
-    if module_id == 0:  # DOL
-        return objects + ["dummy.c"]
-    return objects
 
-
-# Uncomment to enable the link order callback.
-# config.link_order_callback = link_order_callback
+    config.link_order_callback = link_order_callback
 
 
 # Optional extra categories for progress tracking

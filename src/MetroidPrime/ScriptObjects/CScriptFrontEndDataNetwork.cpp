@@ -1278,7 +1278,7 @@ CVector3f CScriptFrontEndDataNetwork::GetAttraction(const SDataNetworkNode& node
   return CVector3f::Zero();
 }
 
-CEntity* REL_LoadFrontEndDataNetwork(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFrontEndDataNetwork(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFrontEndDataNetwork sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFrontEndDataNetwork.inc"
 
@@ -1302,14 +1302,16 @@ CEntity* REL_LoadFrontEndDataNetwork(CStateManager& mgr, CInputStream& input, CE
       sldrThis.transitionMoveInTime, sldrThis.connectionRadius);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SFrontEndDataNetwork_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadFrontEndDataNetwork;
+  funcPtrs.mLoader = &LoadFrontEndDataNetwork;
   SetSFrontEndDataNetwork_FuncPtrs(&funcPtrs);
 }
 
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSFrontEndDataNetwork_FuncPtrs(nullptr); }
+#endif
 
 CScriptFrontEndDataNetwork::~CScriptFrontEndDataNetwork() {}

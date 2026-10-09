@@ -452,7 +452,7 @@ void CScriptCoin::SetSolid(bool solid) {
   }
 }
 
-CEntity* REL_LoadCoin(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadCoin(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrCoin sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrCoin.inc"
 
@@ -487,12 +487,14 @@ CEntity* REL_LoadCoin(CStateManager& mgr, CInputStream& input, CEntityInfo& info
       sldrThis.unknown_0x723d42d6);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SCoin_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadCoin;
+  funcPtrs.mLoader = &LoadCoin;
   SetSCoin_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSCoin_FuncPtrs(nullptr); }
+#endif

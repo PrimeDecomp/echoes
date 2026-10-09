@@ -7,6 +7,7 @@ void SetSIngBoostBallGuardian_FuncPtrs(SIngBoostBallGuardian_FuncPtrs* callbacks
 }
 
 // Guessed loader name.
-CEntity* LoadIngBoostBallGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadIngBoostBallGuardian(CStateManager& mgr, CInputStream& input,
+                                           CEntityInfo& info) {
   return gLoader_IngBoostBallGuardian->mLoader(mgr, input, info);
 }

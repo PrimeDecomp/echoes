@@ -7,6 +7,6 @@ void SetSOctapedeSegment_FuncPtrs(SOctapedeSegment_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadOctopedeSegment(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadOctapedeSegment(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_OctapedeSegment->mLoader(mgr, input, info);
 }

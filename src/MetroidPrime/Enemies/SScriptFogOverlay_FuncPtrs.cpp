@@ -7,6 +7,6 @@ void SetSScriptFogOverlay_FuncPtrs(SScriptFogOverlay_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadFogOverlay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadFogOverlay(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_FogOverlay->mLoader(mgr, input, info);
 }

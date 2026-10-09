@@ -280,7 +280,7 @@ void CMediumIng::SetupStateMachine(CStateManager& mgr) {
   stateMachine->SetCodeFunctions(skCodeFuncs, ARRAY_SIZE(skCodeFuncs));
 }
 
-CEntity* REL_LoadMediumIng(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadMediumIng(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrMediumIng sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrMediumIng.inc"
 
@@ -314,15 +314,17 @@ CEntity* REL_LoadMediumIng(CStateManager& mgr, CInputStream& input, CEntityInfo&
                            LdrToPatternedInfo(sldrThis.patterned, nullptr), data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SMediumIng_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadMediumIng;
+  funcPtrs.mLoader = &LoadMediumIng;
   SetSMediumIng_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSMediumIng_FuncPtrs(nullptr); }
+#endif
 
 void CMediumIng::QuitTeam(CStateManager& mgr) {
   if (mTeamAiMgrId != kInvalidUniqueId) {

@@ -1138,7 +1138,7 @@ void CBacteriaSwarm::UpdateLockOnBlend(int prevIndex, int newIndex, float dt) {
   }
 }
 
-CEntity* REL_LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrBacteriaSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrBacteriaSwarm.inc"
 
@@ -1161,12 +1161,14 @@ CEntity* REL_LoadBacteriaSwarm(CStateManager& mgr, CInputStream& input, CEntityI
       false);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SBacteriaSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadBacteriaSwarm;
+  funcPtrs.mLoader = &LoadBacteriaSwarm;
   SetSBacteriaSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSBacteriaSwarm_FuncPtrs(nullptr); }
+#endif

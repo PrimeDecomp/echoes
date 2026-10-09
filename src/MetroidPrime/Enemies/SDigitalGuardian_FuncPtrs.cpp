@@ -7,11 +7,12 @@ void SetSDigitalGuardian_FuncPtrs(SDigitalGuardian_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadDigitalGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadDigitalGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_DigitalGuardian->mLoadDigitalGuardian(mgr, input, info);
 }
 
 // Guessed loader name.
-CEntity* LoadDigitalGuardianHead(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadDigitalGuardianHead(CStateManager& mgr, CInputStream& input,
+                                          CEntityInfo& info) {
   return gLoader_DigitalGuardian->mLoadDigitalGuardianHead(mgr, input, info);
 }

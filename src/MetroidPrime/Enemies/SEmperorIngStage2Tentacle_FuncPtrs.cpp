@@ -7,6 +7,7 @@ void SetSEmperorIngStage2Tentacle_FuncPtrs(SEmperorIngStage2Tentacle_FuncPtrs* c
 }
 
 // Guessed loader name.
-CEntity* LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input,
+                                               CEntityInfo& info) {
   return gLoader_EmperorIngStage2Tentacle->mLoader(mgr, input, info);
 }

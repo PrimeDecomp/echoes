@@ -887,6 +887,7 @@ CEffect* LoadGeomBlobV2(const TLockedToken< CGenDescription >& desc, TUniqueId u
                                   CCollisionTracker::skDefaultExtents);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SGeomBlobV2_FuncPtrs funcPtrs;
   funcPtrs.mFactory = &LoadGeomBlobV2;
@@ -902,3 +903,4 @@ extern "C" void RELExit() {
   SetSGeomBlobV2_FuncPtrs(nullptr);
   ClearSurfaceParticleEffectFuncPtrs();
 }
+#endif

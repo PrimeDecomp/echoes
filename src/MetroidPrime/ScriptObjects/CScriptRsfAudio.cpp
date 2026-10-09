@@ -179,7 +179,7 @@ void CScriptRsfAudio::Stop(CStateManager& mgr) {
   }
 }
 
-CEntity* REL_LoadRsfAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadRsfAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrRsfAudio sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrRsfAudio.inc"
 
@@ -189,12 +189,14 @@ CEntity* REL_LoadRsfAudio(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrThis.loopEnd, sldrThis.fadeInTime, sldrThis.fadeOutTime, sldrThis.volume);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SScriptRsfAudio_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadRsfAudio;
+  funcPtrs.mLoader = &LoadRsfAudio;
   SetSScriptRsfAudio_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSScriptRsfAudio_FuncPtrs(nullptr); }
+#endif

@@ -1006,7 +1006,7 @@ void CFishCloud::RenderParticles() const {
   }
 }
 
-CEntity* REL_LoadFishCloud(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFishCloud(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFishCloud sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFishCloud.inc"
 
@@ -1031,7 +1031,7 @@ CEntity* REL_LoadFishCloud(CStateManager& mgr, CInputStream& input, CEntityInfo&
       sldrThis.deathSound, sldrThis.unknown_0xc320a050, actParms);
 }
 
-CEntity* REL_LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrFishCloudModifier sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrFishCloudModifier.inc"
 
@@ -1042,14 +1042,16 @@ CEntity* REL_LoadFishCloudModifier(CStateManager& mgr, CInputStream& input, CEnt
                                 sldrThis.influenceDistance, sldrThis.influencePriority);
 }
 
+#ifndef MONOLITHIC
 SFishCloud_FuncPtrs REL_loader_FishCloud;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_FishCloud.mLoadFishCloud = REL_LoadFishCloud;
-  REL_loader_FishCloud.mLoadFishCloudModifier = REL_LoadFishCloudModifier;
+  REL_loader_FishCloud.mLoadFishCloud = LoadFishCloud;
+  REL_loader_FishCloud.mLoadFishCloudModifier = LoadFishCloudModifier;
   SetSFishCloud_FuncPtrs(&REL_loader_FishCloud);
 }
 
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSFishCloud_FuncPtrs(nullptr); }
+#endif

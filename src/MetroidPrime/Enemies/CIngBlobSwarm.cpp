@@ -305,7 +305,7 @@ void CIngBlobSwarm::KillBoid(CBoid& boid, CStateManager& mgr, const CWeaponMode&
   }
 }
 
-CEntity* REL_LoadIngBlobSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadIngBlobSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrIngBlobSwarm sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrIngBlobSwarm.inc"
 
@@ -323,12 +323,14 @@ CEntity* REL_LoadIngBlobSwarm(CStateManager& mgr, CInputStream& input, CEntityIn
       sldrThis.attackSpeed, sldrThis.mass, sldrThis.maxAttackHeight, sldrThis.attackAimOffset);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SIngBlobSwarm_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadIngBlobSwarm;
+  funcPtrs.mLoader = &LoadIngBlobSwarm;
   SetSIngBlobSwarm_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngBlobSwarm_FuncPtrs(nullptr); }
+#endif

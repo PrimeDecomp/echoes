@@ -7,6 +7,7 @@ void SetSDestructibleBarrier_FuncPtrs(SDestructibleBarrier_FuncPtrs* callbacks) 
 }
 
 // Guessed loader name.
-CEntity* LoadDestructableBarrier(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadDestructibleBarrier(CStateManager& mgr, CInputStream& input,
+                                          CEntityInfo& info) {
   return gLoader_DestructibleBarrier->mLoader(mgr, input, info);
 }

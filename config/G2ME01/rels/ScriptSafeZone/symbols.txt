@@ -2,7 +2,7 @@ GetHealthInfo__6CActorCFv = .text:0x00000000; // type:function size:0x2C scope:w
 RELExit = .text:0x0000002C; // type:function size:0x24
 RELMain = .text:0x00000050; // type:function size:0x20
 SetRelLoaderFunctionToLoader__Fv = .text:0x00000070; // type:function size:0x5C
-REL_LoadSafeZone__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x000000CC; // type:function size:0x9A4
+LoadSafeZone__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x000000CC; // type:function size:0x9A4
 push_back__Q24rstl35reserved_vector<14CDarkWorldInfo,3>FRC14CDarkWorldInfo = .text:0x00000A70; // type:function size:0x48
 construct<14CDarkWorldInfo>__4rstlFPvRC14CDarkWorldInfo = .text:0x00000AB8; // type:function size:0x20
 construct__Q24rstl39construction_policy<14CDarkWorldInfo,0>FPvRC14CDarkWorldInfo = .text:0x00000AD8; // type:function size:0x28
@@ -76,7 +76,7 @@ do_erase__Q24rstl43list<9TUniqueId,Q24rstl17rmemory_allocator>FPQ34rstl43list<9T
 __dt__Q24rstl43list<9TUniqueId,Q24rstl17rmemory_allocator>Fv = .text:0x00005554; // type:function size:0x74
 do_erase__Q24rstl65list<Q24rstl23auto_ptr<11CElementGen>,Q24rstl17rmemory_allocator>FPQ34rstl65list<Q24rstl23auto_ptr<11CElementGen>,Q24rstl17rmemory_allocator>4node = .text:0x000055C8; // type:function size:0xB4
 __dt__Q24rstl65list<Q24rstl23auto_ptr<11CElementGen>,Q24rstl17rmemory_allocator>Fv = .text:0x0000567C; // type:function size:0xB4
-REL_LoadSafeZoneCrystal__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x00005730; // type:function size:0x938
+LoadSafeZoneCrystal__FR13CStateManagerR12CInputStreamR11CEntityInfo = .text:0x00005730; // type:function size:0x938
 __ct__10CModelDataFRC10CModelData = .text:0x00006068; // type:function size:0x13C
 CModelDataNull__10CModelDataFv = .text:0x000061A4; // type:function size:0x20
 __as__11CMayaSplineFRC11CMayaSpline = .text:0x000061C4; // type:function size:0xAC

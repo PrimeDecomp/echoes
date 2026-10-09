@@ -261,8 +261,7 @@ void CEmperorIngStage2Tentacle::UpdateCollisionActors(float dt, CStateManager& m
   HealthInfo()->SetHP(minHP);
 }
 
-CEntity* REL_LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input,
-                                          CEntityInfo& info) {
+CEntity* LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrEmperorIngStage2Tentacle sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrEmperorIngStage2Tentacle.inc"
 
@@ -280,12 +279,14 @@ CEntity* REL_LoadEmperorIngStage2Tentacle(CStateManager& mgr, CInputStream& inpu
       LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.data);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SEmperorIngStage2Tentacle_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadEmperorIngStage2Tentacle;
+  funcPtrs.mLoader = &LoadEmperorIngStage2Tentacle;
   SetSEmperorIngStage2Tentacle_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSEmperorIngStage2Tentacle_FuncPtrs(nullptr); }
+#endif

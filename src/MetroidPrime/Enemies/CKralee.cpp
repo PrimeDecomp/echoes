@@ -384,7 +384,7 @@ bool CKralee::AnimOver(CStateManager& mgr, const CTriggerData& data) const {
   return CPatterned::AnimOver(mgr, data);
 }
 
-CEntity* REL_LoadKralee(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadKralee(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrKralee sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrKralee.inc"
 
@@ -410,12 +410,14 @@ CEntity* REL_LoadKralee(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       sldrThis.invisibleTimeRandomOffset);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SKralee_FuncPtrs funcPtrs;
-  funcPtrs.mLoadKralee = &REL_LoadKralee;
+  funcPtrs.mLoadKralee = &LoadKralee;
   SetSKralee_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSKralee_FuncPtrs(nullptr); }
+#endif

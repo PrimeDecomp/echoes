@@ -718,7 +718,7 @@ CScriptPlayerProxy::CScriptPlayerProxy(
 , mDamageActive(false)
 , mFollowing(false) {}
 
-CEntity* REL_LoadPlayerController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadPlayerController(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrPlayerController sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrPlayerController.inc"
 
@@ -741,12 +741,14 @@ CEntity* REL_LoadPlayerController(CStateManager& mgr, CInputStream& input, CEnti
       sldrThis.vectorParameter1, sldrThis.stringParameter1);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SPlayerController_FuncPtrs funcPtrs;
-  funcPtrs.mLoadPlayerController = &REL_LoadPlayerController;
+  funcPtrs.mLoadPlayerController = &LoadPlayerController;
   SetSPlayerController_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSPlayerController_FuncPtrs(nullptr); }
+#endif

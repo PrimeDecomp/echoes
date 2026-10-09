@@ -302,6 +302,7 @@ CEntity* LoadAtomicBeta(CStateManager& mgr, CInputStream& input, CEntityInfo& in
       sldrThis.sound_FlyLoopActivated, sldrThis.sound_ElectricityLoop, sldrThis.speedChangeRate);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SAtomicBeta_FuncPtrs funcPtrs;
   funcPtrs.mLoader = &LoadAtomicBeta;
@@ -311,3 +312,4 @@ static void SetFuncPtrs() {
 void RELMain() { SetFuncPtrs(); }
 
 void RELExit() { SetSAtomicBeta_FuncPtrs(nullptr); }
+#endif

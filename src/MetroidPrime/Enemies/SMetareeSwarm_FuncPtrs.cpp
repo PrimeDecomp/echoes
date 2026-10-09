@@ -7,6 +7,6 @@ void SetSMetareeSwarm_FuncPtrs(SMetareeSwarm_FuncPtrs* callbacks) {
 }
 
 // Guessed loader name.
-CEntity* LoadMetareeSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* RelProxy_LoadMetareeSwarm(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   return gLoader_MetareeSwarm->mLoader(mgr, input, info);
 }

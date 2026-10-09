@@ -1066,7 +1066,7 @@ void CIngSpaceJumpGuardian::UpdateBlob(CStateManager& mgr, float dt) {
   }
 }
 
-CEntity* REL_LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrIngSpaceJumpGuardian sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrIngSpaceJumpGuardian.inc"
 
@@ -1084,12 +1084,14 @@ CEntity* REL_LoadIngSpaceJumpGuardian(CStateManager& mgr, CInputStream& input, C
       LdrToPatternedInfo(sldrThis.patterned, nullptr), sldrThis.ingSpaceJumpGuardianProperties);
 }
 
+#ifndef MONOLITHIC
 static void SetFuncPtrs() {
   static SIngSpaceJumpGuardian_FuncPtrs funcPtrs;
-  funcPtrs.mLoader = &REL_LoadIngSpaceJumpGuardian;
+  funcPtrs.mLoader = &LoadIngSpaceJumpGuardian;
   SetSIngSpaceJumpGuardian_FuncPtrs(&funcPtrs);
 }
 
 extern "C" void RELMain() { SetFuncPtrs(); }
 
 extern "C" void RELExit() { SetSIngSpaceJumpGuardian_FuncPtrs(nullptr); }
+#endif

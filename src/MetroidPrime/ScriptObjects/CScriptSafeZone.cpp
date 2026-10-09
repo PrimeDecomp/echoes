@@ -33,8 +33,8 @@
 #include "rstl/algorithm.hpp"
 #include "rstl/math.hpp"
 
-CEntity* REL_LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
-CEntity* REL_LoadSafeZoneCrystal(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
+CEntity* LoadSafeZoneCrystal(CStateManager& mgr, CInputStream& input, CEntityInfo& info);
 
 CScriptSafeZone::CScriptSafeZone(
     TUniqueId uid, const rstl::string& name, CEntityInfo& info, const CVector3f& scale,
@@ -816,7 +816,7 @@ CSafeZoneFog LdrToSafeZoneFog(const SLdrSafeZoneStructA& data) {
                       LdrToVector2f(data.distanceRate));
 }
 
-CEntity* REL_LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
+CEntity* LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& info) {
   SLdrSafeZone sldrThis;
 #include "MetroidPrime/ScriptLoader/SLdrSafeZone.inc"
 
@@ -863,11 +863,12 @@ CEntity* REL_LoadSafeZone(CStateManager& mgr, CInputStream& input, CEntityInfo& 
       sldrThis.unknown_0xe71b43e1, sldrThis.unknown_0x9f638987);
 }
 
+#ifndef MONOLITHIC
 SSafeZone_FuncPtrs REL_loader_SafeZone;
 
 void SetRelLoaderFunctionToLoader() {
-  REL_loader_SafeZone.mLoadSafeZone = REL_LoadSafeZone;
-  REL_loader_SafeZone.mLoadSafeZoneCrystal = REL_LoadSafeZoneCrystal;
+  REL_loader_SafeZone.mLoadSafeZone = LoadSafeZone;
+  REL_loader_SafeZone.mLoadSafeZoneCrystal = LoadSafeZoneCrystal;
   REL_loader_SafeZone.mApplyRenderEffect =
       static_cast< void (CEntity::*)(CStateManager&) >(&CScriptSafeZone::ApplyRenderEffect);
   SetSSafeZone_FuncPtrs(&REL_loader_SafeZone);
@@ -876,3 +877,4 @@ void SetRelLoaderFunctionToLoader() {
 extern "C" void RELMain() { SetRelLoaderFunctionToLoader(); }
 
 extern "C" void RELExit() { SetSSafeZone_FuncPtrs(nullptr); }
+#endif
