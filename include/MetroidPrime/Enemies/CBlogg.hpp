@@ -167,6 +167,9 @@ public:
   void GrabBall(CStateManager& mgr, EStateMsg msg, float dt);
   void Taunt(CStateManager& mgr, EStateMsg msg, float dt);
   void ChargeAttack(CStateManager& mgr, EStateMsg msg, float dt);
+  void Thrash(CStateManager& mgr, EStateMsg msg, float dt);
+  void SpitBall(CStateManager& mgr, EStateMsg msg, float dt);
+  void Dead(CStateManager& mgr, EStateMsg msg, float dt);
 
   bool ShouldPatrol(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;

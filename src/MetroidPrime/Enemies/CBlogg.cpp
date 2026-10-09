@@ -94,6 +94,7 @@ static EMaterialTypes skHintRayExclude3 = kMT_AIPassthrough;              // Gue
 static EMaterialTypes skHintRayExclude4 = kMT_ExcludeFromLineOfSightTest; // Guessed name
 
 static EMaterialTypes skGrabBallMaterial = kMT_Player;      // Guessed name
+static EMaterialTypes skSpitBallMaterial = kMT_Player;      // Guessed name
 static EMaterialTypes skContactDamageSolid = kMT_Solid;     // Guessed name
 static EMaterialTypes skCollisionCeiling = kMT_Ceiling;     // Guessed name
 static EMaterialTypes skCollisionWall = kMT_Wall;           // Guessed name
@@ -1417,6 +1418,69 @@ void CBlogg::ChargeAttack(CStateManager& mgr, EStateMsg msg, float dt) {
     mMeleeDelayTimer = 0.f;
     mMeleePursuitEnded = false;
     xbc5_26_ = false;
+    break;
+  }
+}
+
+void CBlogg::Thrash(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mAnimationState.SetState(CAnimationState::kAS_Ready);
+    BodyController()->CommandMgr().DeliverCmd(
+        CBCGenerateCmd(pas::kGType_Seven, CVector3f::Zero(), false, false));
+    mState = kBS_Thrash;
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
+      BodyController()->CommandMgr().DeliverCmd(
+          CBCGenerateCmd(pas::kGType_Seven, CVector3f::Zero(), false, false));
+    }
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    break;
+  }
+}
+
+void CBlogg::SpitBall(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mAnimationState.SetState(CAnimationState::kAS_Ready);
+    BodyController()->CommandMgr().DeliverCmd(
+        CBCGenerateCmd(pas::kGType_Three, CVector3f::Zero(), false, false));
+    mState = kBS_SpitBall;
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
+      BodyController()->CommandMgr().DeliverCmd(
+          CBCGenerateCmd(pas::kGType_Three, CVector3f::Zero(), false, false));
+    }
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    CScriptTeamAiMgr::EndAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId, GetUniqueId(),
+                                false);
+    UpdateCollisionActorMaterials(mgr, CMaterialList(skSpitBallMaterial), kMA_Add);
+    break;
+  }
+}
+
+void CBlogg::Dead(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    mState = kBS_Dead;
+    BodyController()->SetLocomotionType(pas::kLT_Internal9);
+    break;
+  case kStateMsg_Update:
+    if (GetFluidCount() == 0 && !mFadeToDeath) {
+      mFadeToDeath = true;
+      mAlphaDelta = -1.f / GetFadeOnDeathTime();
+      RemoveMaterial(kMT_Character, kMT_Solid, kMT_Target, kMT_Orbit, mgr);
+      AddMaterial(kMT_ProjectilePassthrough, mgr);
+      mState = kBS_Dying;
+    }
+    break;
+  case kStateMsg_Deactivate:
     break;
   }
 }
