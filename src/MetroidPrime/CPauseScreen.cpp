@@ -1939,8 +1939,9 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
                           GX_PTIDENTITY);
       CGX::SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
       CGX::SetTevDirect(GX_TEVSTAGE0);
-      const CColor color = CColor::Modulate(gpTweakGui->GetLogBookScanObjectFadeInFlashColor(),
-                                            CColor(flash, flash, flash, 1.f));
+      const CColor flashColor(flash, flash, flash, 1.f);
+      const CColor color =
+          CColor::Modulate(gpTweakGui->GetLogBookScanObjectFadeInFlashColor(), flashColor);
       CGX::SetTevKColor(GX_KCOLOR0, color.GetGXColor());
       CGX::SetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
       static const GXVtxDescList descriptors[] = {
@@ -1953,19 +1954,17 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
       gpRender->SetDepthReadWrite(false, false);
       CGX::SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
       CGraphics::SetBlendMode(kBM_Blend, kBF_DstAlpha, kBF_One, kLO_Clear);
-      const float left = viewport.first.GetX();
-      const float bottom = viewport.first.GetY();
-      const float right = viewport.second.GetX();
-      const float top = viewport.second.GetY();
-      const float texCoord = (top - bottom) / mStripedTexture.GetHeight();
+      const CVector2f& lt = viewport.first;
+      const CVector2f& rb = viewport.second;
+      const float texCoord = (rb.GetY() - lt.GetY()) / mStripedTexture.GetHeight();
       CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
-      GXPosition3f32(left, 0.f, bottom);
+      GXPosition3f32(lt.GetX(), 0.f, lt.GetY());
       GXTexCoord2f32(0.f, texCoord);
-      GXPosition3f32(right, 0.f, bottom);
+      GXPosition3f32(rb.GetX(), 0.f, lt.GetY());
       GXTexCoord2f32(texCoord, texCoord);
-      GXPosition3f32(left, 0.f, top);
+      GXPosition3f32(lt.GetX(), 0.f, rb.GetY());
       GXTexCoord2f32(0.f, 0.f);
-      GXPosition3f32(right, 0.f, top);
+      GXPosition3f32(rb.GetX(), 0.f, rb.GetY());
       GXTexCoord2f32(texCoord, 0.f);
       CGX::End();
       sweep->Load(GX_TEXMAP0, CTexture::kCM_Repeat);
@@ -1973,9 +1972,10 @@ void CPauseScreen::DrawModelView(const CTransform4f& xf, float alpha) const {
       static const float scales[] = {1.f, 0.41f, 0.21f, 0.13f, 0.21f};
       for (int i = 0; i < 5; ++i) {
         const float phase = mModelFade * speeds[i];
-        const float position = (phase - CMath::FloorF(phase)) * (top - bottom);
-        const CVector2f low(left - 1.f, top - position);
-        const CVector2f high(right + 1.f, top - (position - scales[i] * sweep->GetHeight()));
+        const float position = (phase - CMath::FloorF(phase)) * (rb.GetY() - lt.GetY());
+        const CVector2f low(lt.GetX() - 1.f, rb.GetY() - position);
+        const CVector2f high(rb.GetX() + 1.f,
+                             rb.GetY() - (position - scales[i] * sweep->GetHeight()));
         CGX::Begin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
         GXPosition3f32(low.GetX(), 0.f, low.GetY());
         GXTexCoord2f32(0.f, 0.f);
