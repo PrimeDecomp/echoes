@@ -99,7 +99,8 @@ private:
   void DrawNodeLabel(const CTransform4f& view, const CVector3f& position,
                      rstl::rc_ptr< CScanTreeNode > node, const CColor& color, float iconScale,
                      float textScale) const;
-  void DrawOptionBackground(const CTransform4f& view, const CVector3f& position, float alpha) const;
+  void DrawOptionBackground(const CTransform4f& view, const CVector3f& position, int style,
+                            float alpha) const;
   void DrawSliderNode(const CTransform4f& view, const CVector3f& origin, int nodeId,
                       float alpha) const;
   void DrawSlider(const CTransform4f& view, const CVector3f& position, float scale, float width,

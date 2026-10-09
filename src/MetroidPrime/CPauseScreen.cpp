@@ -1532,7 +1532,7 @@ void CPauseScreen::DrawNodes(const CTransform4f& view, rstl::vector< SNodeDraw >
       DrawNodeIcon(view, draw.mPosition,
                    CColor::Modulate(gpTweakGui->GetLogBookSelectedNodeColor(), faded),
                    gpTweakGui->GetLogBookSelectedNodeScale(), false);
-      DrawOptionBackground(view, draw.mPosition, alpha);
+      DrawOptionBackground(view, draw.mPosition, 0, alpha);
       DrawNodeLabel(
           view, draw.mPosition, draw.mNode, CColor::Modulate(selectedTextColor, brightness),
           gpTweakGui->GetLogBookSelectedNodeScale(), gpTweakGui->GetLogBookSelectedTextScale());
@@ -1609,14 +1609,15 @@ void CPauseScreen::DrawNodeLabel(const CTransform4f& view, const CVector3f& posi
 }
 
 void CPauseScreen::DrawOptionBackground(const CTransform4f& view, const CVector3f& position,
-                                        float alpha) const {
+                                        int style, float alpha) const {
+  const CVector3f center = position;
   const float scale = gpTweakGui->GetLogBookSelectedNodeScale();
   CModel* model = mOptionBackgroundModel.GetObject();
   if (model != nullptr) {
     const CVector3f offset(0.f, 0.01f, -(-0.05f + ((0.2f * scale) / 2.f + 0.62136f)));
     const CTransform4f background =
         view.GetRotation() * CTransform4f::Translate(offset) * CTransform4f::Scale(0.18f);
-    const CTransform4f xf = CTransform4f::Translate(position) * background;
+    const CTransform4f xf = CTransform4f::Translate(center) * background;
     CGraphics::SetModelMatrix(xf);
     model->Draw(CModelFlags(CModelFlags::kT_Blend, CColor::White().WithAlphaOf(alpha)));
   }
