@@ -1122,8 +1122,8 @@ bool CBallCamera::fn_801a36f0(float distance, float dt, CVector3f& position, CSt
   position = CVector3f::Zero();
   bool found = false;
   if (door != nullptr && door->IsOpen() && !door->IsHorizontal()) {
-    const CScriptDock* dock =
-        TCastToConstPtr< CScriptDock >(mgr.GetObjectById(door->GetConnectedDockID()));
+    const TUniqueId dockId = door->GetConnectedDockID();
+    const CScriptDock* const dock = TCastToConstPtr< CScriptDock >(mgr.GetObjectById(dockId));
     if (dock != nullptr) {
       const bool ballSide = dock->GetPlane(mgr).IsFacing(Player(mgr).GetBallPosition());
       const bool cameraSide = dock->GetPlane(mgr).IsFacing(GetTranslation());
@@ -1924,20 +1924,29 @@ void CBallCamera::CheckFailSafe(float dt, CStateManager& mgr) {
 }
 
 bool CBallCamera::CheckDoorProximity(const CVector3f& position, const CStateManager& mgr) const {
-  const CScriptDoor* door = TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(mTooCloseActorId));
+  const CScriptDoor* door =
+      TCastToConstPtr< CScriptDoor >(mgr.GetObjectById(GetTooCloseActorId()));
   if (door == nullptr || door->IsOpen()) {
     return false;
   }
 
   const rstl::optional_object< CAABox > bounds = door->GetTouchBounds();
-  const CVector3f extent(0.3f, 0.3f, 0.3f);
-  if (!bounds || !bounds->DoBoundsOverlap(CAABox(position - extent, position + extent))) {
+  const CVector3f boxMin = position - CVector3f(0.3f, 0.3f, 0.3f);
+  const CVector3f boxMax = position + CVector3f(0.3f, 0.3f, 0.3f);
+  const CAABox testBox(boxMin, boxMax);
+  if (!bounds || !bounds->DoBoundsOverlap(testBox)) {
     return false;
   }
 
   const CScriptDock* dock =
       TCastToConstPtr< CScriptDock >(mgr.GetObjectById(door->GetConnectedDockID()));
-  return dock != nullptr && CMath::AbsF(dock->GetPlane(mgr).GetHeight(position)) < 1.15f;
+  if (dock == nullptr) {
+    return false;
+  }
+  if (CMath::AbsF(dock->GetPlane(mgr).GetHeight(position)) < 1.15f) {
+    return true;
+  }
+  return false;
 }
 
 void CBallCamera::DoorClosing(TUniqueId uid) {
