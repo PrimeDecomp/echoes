@@ -131,7 +131,8 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
         }
         break;
       default:
-        position = surface->GetSurfacePoint(position + camera->GetTransform().Rotate(camera->GetPlayerOffset()));
+        position = surface->GetSurfacePoint(
+            position + camera->GetTransform().Rotate(camera->GetPlayerOffset()));
         break;
       }
     }
@@ -143,11 +144,13 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
   if (camera) {
     const CMotionSpline& playerSpline = camera->GetPlayerSpline();
     if (playerSpline.GetControlPointCount() != 0) {
-      mPlayerSplineDistance = playerSpline.FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
+      mPlayerSplineDistance =
+          playerSpline.FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
     }
     const CMotionSpline& targetSpline = camera->GetTargetSpline();
     if (targetSpline.GetControlPointCount() != 0) {
-      mTargetSplineDistance = targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
+      mTargetSplineDistance =
+          targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
     }
   }
 

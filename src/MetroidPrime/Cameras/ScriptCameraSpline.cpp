@@ -26,7 +26,7 @@ void ScriptCameraSpline::CollectWaypoints(const CEntity& entity, EScriptObjectSt
                                           rstl::vector< CVector3f >& positions,
                                           rstl::vector< CQuaternion >& orientations,
                                           CStateManager& mgr) {
-  if (state == static_cast< EScriptObjectState >(-1)) {
+  if (state == kSS_InvalidState) {
     return;
   }
 
