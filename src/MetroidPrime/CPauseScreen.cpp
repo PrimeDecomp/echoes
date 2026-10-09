@@ -1664,21 +1664,24 @@ void CPauseScreen::DrawSlider(const CTransform4f& view, const CVector3f& positio
       gpTweakGui->GetLogBookSliderBackgroundColor().WithAlphaModulatedBy(alpha);
   static const CTransform4f flip = CTransform4f::Scale(CVector3f(-1.f, 1.f, 1.f));
   const CVector3f endPosition(-(halfWidth - 0.5f), 0.f, 0.f);
-  if (mSliderEndModel.GetObject() != nullptr) {
+  CModel* endModel = mSliderEndModel.GetObject();
+  if (endModel != nullptr) {
     CGraphics::SetModelMatrix(world * CTransform4f::Translate(endPosition));
-    mSliderEndModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Additive, backgroundColor));
+    endModel->Draw(CModelFlags(CModelFlags::kT_Additive, backgroundColor));
     CGraphics::SetModelMatrix(world * flip * CTransform4f::Translate(endPosition));
-    mSliderEndModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
+    endModel->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
   }
   CGraphics::SetModelMatrix(world * CTransform4f::Scale(CVector3f(centerWidth, 1.f, 1.f)));
-  if (mSliderCenterModel.GetObject() != nullptr) {
-    mSliderCenterModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
+  CModel* centerModel = mSliderCenterModel.GetObject();
+  if (centerModel != nullptr) {
+    centerModel->Draw(CModelFlags(CModelFlags::kT_Blend, backgroundColor));
   }
   CGraphics::SetModelMatrix(
       world * CTransform4f::Translate(CVector3f((defaultValue - 0.5f) * (width - 2.f), 0.f, 0.f)));
-  if (mSliderModel.GetObject() != nullptr) {
+  CModel* sliderModel = mSliderModel.GetObject();
+  if (sliderModel != nullptr) {
     const CColor dim = CColor::Modulate(selectionColor, CColor(0.5f, 0.5f, 0.5f, 0.5f));
-    mSliderModel.GetObject()->Draw(CModelFlags(CModelFlags::kT_Additive, dim));
+    sliderModel->Draw(CModelFlags(CModelFlags::kT_Additive, dim));
   }
   CGraphics::SetModelMatrix(
       world * CTransform4f::Translate(CVector3f((value - 0.5f) * (width - 2.f), 0.f, 0.f)));
