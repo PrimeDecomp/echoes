@@ -2346,7 +2346,7 @@ MetroidPrime/BodyState/CABSLoopReaction.cpp:
 	.data       start:0x803B8578 end:0x803B85B8
 	.sdata2     start:0x8041DAD8 end:0x8041DAE8
 
-Kyoto/Graphics/CThreeSegmentModel.cpp:
+Kyoto/Graphics/CFoldySurface.cpp:
 	.text       start:0x802280E8 end:0x80228910
 	.rodata     start:0x803AD320 end:0x803AD328
 
@@ -2975,7 +2975,7 @@ Kyoto/Animation/CAnimation.cpp:
 Kyoto/Animation/CAnimationManager.cpp:
 	.text       start:0x8028CA3C end:0x8028CB88
 
-Kyoto/Animation/CAnimationSet.cpp:
+Kyoto/Animation/CCEAnimationSet.cpp:
 	.text       start:0x8028CB88 end:0x8028E7BC
 	.sbss       start:0x80419828 end:0x80419840
 	.sdata2     start:0x8041E278 end:0x8041E280
@@ -2998,7 +2998,7 @@ Kyoto/Animation/CAnimTreeSequence.cpp:
 	.sdata      start:0x804189E0 end:0x804189E8
 	.sdata2     start:0x8041E288 end:0x8041E290
 
-Kyoto/Animation/CCharacterInfo.cpp:
+Kyoto/Animation/CCECharacterInfo.cpp:
 	.text       start:0x802925C4 end:0x80293C98
 	.sbss       start:0x80419840 end:0x80419860
 
@@ -3956,7 +3956,7 @@ Kyoto/Audio/g721.cpp:
 	.text       start:0x80325C98 end:0x80326614
 	.data       start:0x803BB208 end:0x803BB288
 
-Kyoto/Audio/CStaticAudioPlayer.cpp:
+Kyoto/Audio/DolphinCRSFAudio.cpp:
 	.text       start:0x80326614 end:0x803274EC
 	.ctors      start:0x803A566C end:0x803A5670
 	.rodata     start:0x803B00F0 end:0x803B00F8
@@ -4012,7 +4012,7 @@ Kyoto/Particles/CSortedParticleSystem.cpp:
 	.sdata      start:0x80418C70 end:0x80418C78
 	.sdata2     start:0x8041EC68 end:0x8041EC90
 
-Kyoto/Particles/CSortedParticleSystemDataFactory.cpp:
+Kyoto/Particles/CParticleSortedSystemDataFactory.cpp:
 	.text       start:0x8032EE68 end:0x8032F2B8
 	.rodata     start:0x803B0100 end:0x803B0108
 	.data       start:0x803BB3F8 end:0x803BB408
@@ -4020,7 +4020,7 @@ Kyoto/Particles/CSortedParticleSystemDataFactory.cpp:
 Kyoto/Particles/CSortedParticleSystemDescription.cpp:
 	.text       start:0x8032F2B8 end:0x8032F31C
 
-Kyoto/Graphics/CGXTransientBuffer.cpp:
+Kyoto/Graphics/DolphinGPUMemory.cpp:
 	.text       start:0x8032F31C end:0x8032FA60
 	.ctors      start:0x803A567C end:0x803A5680
 	.bss        start:0x803E0540 end:0x803E0590
@@ -4032,7 +4032,7 @@ Kyoto/Math/CGameCameraSpline.cpp:
 	.data       start:0x803BB408 end:0x803BB418
 	.sdata2     start:0x8041EC90 end:0x8041EC98
 
-Kyoto/Math/CGameSpline.cpp:
+Kyoto/Math/CSpline.cpp:
 	.text       start:0x8032FC64 end:0x803307D8
 	.data       start:0x803BB418 end:0x803BB428
 	.sdata2     start:0x8041EC98 end:0x8041ECA8
@@ -4131,7 +4131,7 @@ Kyoto/Animation/CPoseAsTransforms_Linear.cpp:
 	.text       start:0x8033D69C end:0x8033E3E8
 	.sdata2     start:0x8041EE10 end:0x8041EE18
 
-Kyoto/Particles/CDeferredParticleEffect.cpp:
+Kyoto/Particles/CManagedParticleGen.cpp:
 	.text       start:0x8033E3E8 end:0x8033ED24
 	.rodata     start:0x803B0238 end:0x803B0240
 	.sdata2     start:0x8041EE18 end:0x8041EE20
@@ -4172,12 +4172,12 @@ Kyoto/Streams/CBitStreamWriter.cpp:
 Kyoto/Streams/CBitStreamReader.cpp:
 	.text       start:0x80342D98 end:0x80342F6C
 
-Kyoto/Streams/CInputStream.cpp:
+Kyoto/Streams/DolphinCInputStream.cpp:
 	.text       start:0x80342F6C end:0x8034317C
 	.data       start:0x803BBF88 end:0x803BBF98
 	.sbss       start:0x80419CB0 end:0x80419CB8
 
-Kyoto/Streams/CBufferedDvdRequest.cpp:
+Kyoto/Streams/CLookaheadRes.cpp:
 	.text       start:0x8034317C end:0x8034370C
 	.rodata     start:0x803B0340 end:0x803B0348
 	.data       start:0x803BBF98 end:0x803BBFB8
@@ -4203,7 +4203,7 @@ Kyoto/Streams/DolphinCLZOInputStream.cpp:
 	.rodata     start:0x803B0358 end:0x803B0360
 	.data       start:0x803BBFB8 end:0x803BBFC8
 
-Kyoto/Streams/CFilePreload.cpp:
+Kyoto/Streams/CStreamPreloadedToken.cpp:
 	.text       start:0x803442B4 end:0x80344D10
 	.ctors      start:0x803A5688 end:0x803A568C
 	.rodata     start:0x803B0360 end:0x803B0368

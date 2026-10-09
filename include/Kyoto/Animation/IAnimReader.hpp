@@ -103,9 +103,10 @@ public:
   virtual void VGetSegStatementSet(const CSegIdList& list, CSegStatementSet& setOut,
                                    const CCharAnimTime& time) const = 0;
   // Guessed names.
-  virtual void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
-                           const CCharAnimTime& time) const;
-  virtual void VGetSegData(const CCharLayoutInfo& layout, CJointData_LinearStorage& data) const;
+  virtual void VGetJointData_Linear(const CCharLayoutInfo& layout, CJointData_LinearStorage& data,
+                                    const CCharAnimTime& time) const;
+  virtual void VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                    CJointData_LinearStorage& data) const;
   virtual rstl::ownership_transfer< IAnimReader > VClone() const = 0;
   virtual rstl::optional_object< rstl::ownership_transfer< IAnimReader > > VSimplified();
   virtual void VSetPhase(float phase) = 0;

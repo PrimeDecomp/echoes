@@ -2,7 +2,7 @@
 #include "Kyoto/Basics/CInterruptGuard.hpp"
 #include "rstl/algorithm.hpp"
 #include <Kyoto/Alloc/CMemory.hpp>
-#include <Kyoto/Audio/CStaticAudioPlayer.hpp>
+#include <Kyoto/Audio/DolphinCRSFAudio.hpp>
 
 #include <Kyoto/CDvdFile.hpp>
 #include <Kyoto/CDvdRequest.hpp>
@@ -13,19 +13,19 @@
 #include <dolphin/os.h>
 #include <stdint.h>
 
-static CStaticAudioPlayer* sCurrentPlayer = nullptr;
-static rstl::reserved_vector< FAudioCallback, 4 > sAICallbacks;
+static CRSFAudio* sPlayingAudio = nullptr;
+static rstl::reserved_vector< FAudioCallback, 4 > sCallbacks;
 static bool sDMACallbackInstalled ATTRIBUTE_ALIGN(8) = false;
 static FAudioCallback sOldDMACallback = nullptr;
 
-void CStaticAudioPlayer::InstallAICallback() {
+void CRSFAudio::InstallAICallback() {
   bool old = CAudioSys::IsAICallbackEnabled();
   CAudioSys::EnableAICallback(true);
 
-  if (!sDMACallbackInstalled && sAICallbacks.size() != 0) {
+  if (!sDMACallbackInstalled && sCallbacks.size() != 0) {
     sOldDMACallback = AIRegisterDMACallback(AICallback);
     sDMACallbackInstalled = true;
-  } else if (sDMACallbackInstalled && sAICallbacks.size() == 0) {
+  } else if (sDMACallbackInstalled && sCallbacks.size() == 0) {
     AIRegisterDMACallback(sOldDMACallback);
     sOldDMACallback = 0;
     sDMACallbackInstalled = false;
@@ -34,37 +34,36 @@ void CStaticAudioPlayer::InstallAICallback() {
   CAudioSys::EnableAICallback(old);
 }
 
-void CStaticAudioPlayer::AICallback() {
+void CRSFAudio::AICallback() {
   sOldDMACallback();
 
-  for (int i = 0; i < sAICallbacks.size(); ++i) {
-    sAICallbacks[i]();
+  for (int i = 0; i < sCallbacks.size(); ++i) {
+    sCallbacks[i]();
   }
 }
 
-void CStaticAudioPlayer::RunDMACallback(const FAudioCallback callback) {
+void CRSFAudio::RunDMACallback(const FAudioCallback callback) {
   CInterruptGuard interrupts;
-  if (rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback) == sAICallbacks.end()) {
-    sAICallbacks.push_back(callback);
+  if (rstl::find(sCallbacks.begin(), sCallbacks.end(), callback) == sCallbacks.end()) {
+    sCallbacks.push_back(callback);
   }
 
   InstallAICallback();
 }
 
-void CStaticAudioPlayer::CancelDMACallback(FAudioCallback callback) {
+void CRSFAudio::CancelDMACallback(FAudioCallback callback) {
   CInterruptGuard interrupts;
 
   const rstl::reserved_vector< FAudioCallback, 4 >::iterator it =
-      rstl::find(sAICallbacks.begin(), sAICallbacks.end(), callback);
-  if (it != sAICallbacks.end()) {
-    sAICallbacks.erase(it);
+      rstl::find(sCallbacks.begin(), sCallbacks.end(), callback);
+  if (it != sCallbacks.end()) {
+    sCallbacks.erase(it);
   }
 
   InstallAICallback();
 }
 
-CStaticAudioPlayer::CStaticAudioPlayer(const rstl::string& filepath, const int loopStart,
-                                       const int loopEnd)
+CRSFAudio::CRSFAudio(const rstl::string& filepath, const int loopStart, const int loopEnd)
 : mFilepath(filepath)
 , mRsfRem(-1)
 , mCurSamp(0)
@@ -94,14 +93,14 @@ CStaticAudioPlayer::CStaticAudioPlayer(const rstl::string& filepath, const int l
   }
 }
 
-CStaticAudioPlayer::~CStaticAudioPlayer() { StopMixOut(); }
+CRSFAudio::~CRSFAudio() { StopMixOut(); }
 
-const bool CStaticAudioPlayer::IsReady() const {
+const bool CRSFAudio::IsFullyLoaded() const {
   return !mDvdRequests.empty() ? mDvdRequests.back()->IsComplete() : true;
 }
 
-void CStaticAudioPlayer::StartMixOut() {
-  if (sCurrentPlayer == this) {
+void CRSFAudio::StartMixOut() {
+  if (sPlayingAudio == this) {
     return;
   }
 
@@ -109,20 +108,20 @@ void CStaticAudioPlayer::StartMixOut() {
   mCurSamp = 0;
   g72x_init_state(&mLeftState);
   g72x_init_state(&mRightState);
-  sCurrentPlayer = this;
+  sPlayingAudio = this;
   RunDMACallback(MixCallback);
 }
 
-void CStaticAudioPlayer::StopMixOut() {
-  if (sCurrentPlayer == this) {
+void CRSFAudio::StopMixOut() {
+  if (sPlayingAudio == this) {
     CancelDMACallback(MixCallback);
-    sCurrentPlayer = nullptr;
+    sPlayingAudio = nullptr;
   }
 }
 
-void CStaticAudioPlayer::MixCallback() { sCurrentPlayer->DoMix(); }
+void CRSFAudio::MixCallback() { sPlayingAudio->DoMix(); }
 
-void CStaticAudioPlayer::DoMix() {
+void CRSFAudio::DoMix() {
   const ushort* aiStart = static_cast< const ushort* >(OSPhysicalToCached(AIGetDMAStartAddr()));
   mCurBuf ^= 1;
   uintptr_t buf =
@@ -157,7 +156,7 @@ static void MixToMono(ushort* data, int numSamples) {
   }
 }
 
-void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
+void CRSFAudio::Decode(ushort* out, const ushort* in, int numSamples) {
   int curSamp = mCurSamp / 2;
   int loopEndSamp = mLoopEndSamp / 2;
   int loopStartSamp = mLoopStartSamp / 2;
@@ -184,9 +183,8 @@ void CStaticAudioPlayer::Decode(ushort* out, const ushort* in, int numSamples) {
   }
 }
 
-void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int numSamples,
-                                          int startSample, int sampleEnd, const int sampleStart,
-                                          int vol, g72x_state& state) {
+void CRSFAudio::DecodeMonoAndMix(ushort* out, const ushort* in, int numSamples, int startSample,
+                                 int sampleEnd, const int sampleStart, int vol, g72x_state& state) {
   ushort* outCursor = out;
   const ushort* inCursor = in;
   int curSample = startSample;
@@ -241,7 +239,7 @@ void CStaticAudioPlayer::DecodeMonoAndMix(ushort* out, const ushort* in, int num
   }
 }
 
-void CStaticAudioPlayer::SetVolume(uchar vol) {
+void CRSFAudio::SetVolume(uchar vol) {
   if (static_cast< uchar >(vol) > 127) {
     vol = 127;
   }

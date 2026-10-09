@@ -62,9 +62,9 @@ int CDSPStreamManager::StartStreaming(const rstl::string& fileName, int volume, 
     if (strncmp("mem:", fileName.data(), strlen("mem:")) == 0) {
       path = fileName.substr(4, -1);
       if (CDvdFile::FileExists(path.data())) {
-        stream.mPreload = CFilePreload(path);
+        stream.mPreload = CStreamPreloadedToken(path);
         if (!stream.mPreload->IsReady()) {
-          stream.mPreload = rstl::optional_object< CFilePreload >();
+          stream.mPreload = rstl::optional_object< CStreamPreloadedToken >();
         }
       }
     }
@@ -390,7 +390,7 @@ void CDSPStreamManager::Deallocate() {
     DVDClose(&mFiles[i]);
   }
   mVoices.clear();
-  mPreload = rstl::optional_object< CFilePreload >();
+  mPreload = rstl::optional_object< CStreamPreloadedToken >();
   mState = kSS_Idle;
 }
 

@@ -1,5 +1,5 @@
-#ifndef _CDEFERREDPARTICLEEFFECT
-#define _CDEFERREDPARTICLEEFFECT
+#ifndef _CMANAGEDPARTICLEGEN
+#define _CMANAGEDPARTICLEGEN
 #include "Kyoto/CDependencyGroupToken.hpp"
 #include "Kyoto/Particles/CParticleGen.hpp"
 #include "Kyoto/SObjectTag.hpp"
@@ -8,10 +8,10 @@
 
 // Guessed name. Owns an effect token, optional dependency group and a generator that is
 // created once the dependencies have loaded. Method names are also hypotheses.
-class CDeferredParticleEffect {
+class CManagedParticleGen {
 public:
-  CDeferredParticleEffect(const CToken& effect, const CDependencyGroupToken& group);
-  ~CDeferredParticleEffect();
+  CManagedParticleGen(const CToken& effect, const CDependencyGroupToken& group);
+  ~CManagedParticleGen();
 
   bool Update(double dt);
   void Render() const;
@@ -35,5 +35,5 @@ private:
   bool mCreatePending : 1;
   bool x40_26_ : 1;
 };
-CHECK_SIZEOF(CDeferredParticleEffect, 0x44)
-#endif // _CDEFERREDPARTICLEEFFECT
+CHECK_SIZEOF(CManagedParticleGen, 0x44)
+#endif // _CMANAGEDPARTICLEGEN

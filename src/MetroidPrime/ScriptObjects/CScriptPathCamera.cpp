@@ -29,7 +29,7 @@ CVector3f CScriptCameraSpline::GetPositionByTime(float time, const CTransform4f&
                                                  const CStateManager& mgr) {
   CVector3f position;
   if (GetPositionKnotCount() != 0) {
-    position = CGameSpline::GetPositionByTime(time);
+    position = CSpline::GetPositionByTime(time);
   } else if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
     position = actor->GetTranslation();
   } else {
@@ -53,10 +53,10 @@ CQuaternion CScriptCameraSpline::GetOrientationByTime(float time, const CTransfo
       orientation =
           CQuaternion::FromMatrix(CTransform4f::LookAt(position, target->GetTranslation()));
     } else if (GetPositionKnotCount() != 0) {
-      orientation = CGameSpline::GetOrientationByTime(time);
+      orientation = CSpline::GetOrientationByTime(time);
     }
   } else {
-    const CVector3f target = CGameSpline::GetLookAtByTime(time);
+    const CVector3f target = CSpline::GetLookAtByTime(time);
     if ((target - position).IsMagnitudeSafe()) {
       orientation = CQuaternion::FromMatrix(CTransform4f::LookAt(position, target));
     } else {
@@ -70,7 +70,7 @@ CVector3f CScriptCameraSpline::GetPositionByLength(float distance, const CTransf
                                                    const CStateManager& mgr) {
   CVector3f position;
   if (GetPositionKnotCount() != 0) {
-    position = CGameSpline::GetPositionByLength(distance);
+    position = CSpline::GetPositionByLength(distance);
   } else if (const CActor* actor = TCastToConstPtr< CActor >(mgr.GetObjectById(mPositionId))) {
     position = actor->GetTranslation();
   } else {
@@ -96,10 +96,10 @@ CQuaternion CScriptCameraSpline::GetOrientationByLength(float positionDistance,
       orientation =
           CQuaternion::FromMatrix(CTransform4f::LookAt(position, target->GetTranslation()));
     } else if (GetPositionKnotCount() != 0) {
-      orientation = CGameSpline::GetOrientationByLength(positionDistance);
+      orientation = CSpline::GetOrientationByLength(positionDistance);
     }
   } else {
-    const CVector3f target = CGameSpline::GetLookAtByLength(targetDistance);
+    const CVector3f target = CSpline::GetLookAtByLength(targetDistance);
     if ((target - position).IsMagnitudeSafe()) {
       orientation = CQuaternion::FromMatrix(CTransform4f::LookAt(position, target));
     } else {

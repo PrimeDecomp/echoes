@@ -2,35 +2,36 @@
 
 #include "Kyoto/Alloc/CMemory.hpp"
 
-// Echoes-only TU; its file name and class names are guesses.
+// Echoes-only TU. CLookaheadRes is named by a Corruption diagnostic; CBufferedDvdRequest is still a
+// guess.
 
-CGroupReadCache::CGroupReadCache(uchar* buffer, CDvdFile* file, uint offset, uint size,
-                                 const rstl::auto_ptr< CDvdRequest >& request, CResLoader* owner)
+CLookaheadRes::CLookaheadRes(uchar* buffer, CDvdFile* file, uint offset, uint size,
+                             const rstl::auto_ptr< CDvdRequest >& request, CResLoader* owner)
 : mBuffer(buffer)
 , mFile(file)
 , mOffset(offset)
 , mSize(size)
-, mRefCount(0)
+, mReferenceCount(0)
 , mInvalid(false)
 , mRequest(request)
 , mOwner(owner) {}
 
-CGroupReadCache::~CGroupReadCache() {}
+CLookaheadRes::~CLookaheadRes() {}
 
-void CGroupReadCache::Release() {
-  --mRefCount;
-  if (mRefCount == 0) {
-    mOwner->ReleaseGroupCache(this);
+void CLookaheadRes::RequestHasDied() {
+  --mReferenceCount;
+  if (mReferenceCount == 0) {
+    mOwner->KillLookahead(this);
   }
 }
 
-rstl::auto_ptr< CBufferedDvdRequest > CGroupReadCache::MakeRequest(uint offset) {
-  ++mRefCount;
+rstl::auto_ptr< CBufferedDvdRequest > CLookaheadRes::MakeRequest(uint offset) {
+  ++mReferenceCount;
   return rstl::auto_ptr< CBufferedDvdRequest >(
       rs_new CBufferedDvdRequest(this, mRequest.get(), mBuffer.get() + (offset - mOffset)));
 }
 
-bool CGroupReadCache::Contains(const CDvdFile* file, uint offset, uint size) const {
+bool CLookaheadRes::Contains(const CDvdFile* file, uint offset, uint size) const {
   if (file != mFile) {
     return false;
   }
@@ -40,8 +41,8 @@ bool CGroupReadCache::Contains(const CDvdFile* file, uint offset, uint size) con
   return false;
 }
 
-bool CGroupReadCache::Cancel() {
-  if (mRefCount > 1) {
+bool CLookaheadRes::Cancel() {
+  if (mReferenceCount > 1) {
     return true;
   }
   mInvalid = true;
@@ -49,8 +50,7 @@ bool CGroupReadCache::Cancel() {
   return mRequest->IsComplete();
 }
 
-CBufferedDvdRequest::CBufferedDvdRequest(CGroupReadCache* cache, CDvdRequest* request,
-                                         uchar* buffer)
+CBufferedDvdRequest::CBufferedDvdRequest(CLookaheadRes* cache, CDvdRequest* request, uchar* buffer)
 : mCache(cache), mRequest(request), mBuffer(buffer), mMediaType(request->GetMediaType()) {
   if (mCache != nullptr) {
     mRequest.release();
@@ -60,7 +60,7 @@ CBufferedDvdRequest::CBufferedDvdRequest(CGroupReadCache* cache, CDvdRequest* re
 
 CBufferedDvdRequest::~CBufferedDvdRequest() {
   if (mCache != nullptr) {
-    mCache->Release();
+    mCache->RequestHasDied();
     mCache = nullptr;
   }
 }
@@ -86,7 +86,7 @@ void CBufferedDvdRequest::PostCancelRequest() {
   }
   if (mCache != nullptr) {
     if (mCache->Cancel()) {
-      mCache->Release();
+      mCache->RequestHasDied();
       mCache = nullptr;
       mRequest = rstl::auto_ptr< CDvdRequest >();
     }

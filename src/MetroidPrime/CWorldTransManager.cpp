@@ -215,7 +215,7 @@ void CWorldTransManager::EnableTransition(const CAnimRes& samusRes, bool renderG
   }
   mCharacterFactory =
       TLockedToken< CCharacterFactory >(gpCharacterFactoryBuilder->GetFactory(samusRes));
-  const CCharacterInfo& character =
+  const CCECharacterInfo& character =
       (*mCharacterFactory)->GetCharInfo(mModelData->mSamusRes.GetCharacterNodeId());
   mModelData->mSuitModel = gpSimplePool->GetObj(SObjectTag('CMDL', character.GetModelId()));
   mModelData->mSuitModel->Lock();

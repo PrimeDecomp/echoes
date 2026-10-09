@@ -1,7 +1,7 @@
 #ifndef _CPARTICLEDATABASE
 #define _CPARTICLEDATABASE
 
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/TToken.hpp"
 #include "MetroidPrime/TGameTypes.hpp"
@@ -57,7 +57,7 @@ public:
   void AddParticleEffect(uint name, int flags, const CParticleData& data, const CVector3f& scale,
                          CStateManager* mgr, TAreaId areaId, bool oneShot, uint lightId);
   void CacheParticleDesc(const SObjectTag& tag);
-  void CacheParticleDesc(const CCharacterInfo::CParticleResData& data);
+  void CacheParticleDesc(const CCECharacterInfo::CParticleResData& data);
   void SetUpdatesEnabled(bool enabled) { mUpdatesEnabled = enabled; }
   bool AreAnySystemsDrawnWithModel() const { return mAnySystemsDrawnWithModel; }
 
@@ -85,7 +85,8 @@ private:
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSwooshDescription > > > mSwooshDescs;
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CElectricDescription > > > mElectricDescs;
   rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSpawnSystemDescription > > > mSpscDescs;
-  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSortedParticleSystemDescription > > > mSrscDescs;
+  rstl::map< CAssetId, rstl::rc_ptr< TLockedToken< CSortedParticleSystemDescription > > >
+      mSrscDescs;
   DrawMap mRendererDrawLoop;
   DrawMap mFirstDrawLoop;
   DrawMap mLastDrawLoop;

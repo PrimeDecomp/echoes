@@ -3,8 +3,8 @@
 
 #include "MetroidPrime/CActor.hpp"
 
-#include "Kyoto/Math/CGameSpline.hpp"
 #include "Kyoto/Math/CGameSplineDesc.hpp"
+#include "Kyoto/Math/CSpline.hpp"
 
 class CParticleGen;
 
@@ -74,7 +74,7 @@ private:
   rstl::single_ptr< CActorLights > mEffectLights;
   TUniqueId mTriggerId;
   float mDestroyDelayTimer;
-  CGameSpline mSpline;
+  CSpline mSpline;
   float mSplineTime;
   uint mEmitting : 1;
   uint mEnable : 1;

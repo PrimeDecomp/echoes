@@ -2,7 +2,7 @@
 #define _CSCRIPTDYNAMICLIGHT
 
 #include "Kyoto/Animation/CSegId.hpp"
-#include "Kyoto/Math/CGameSpline.hpp"
+#include "Kyoto/Math/CSpline.hpp"
 #include "MetroidPrime/CGameLight.hpp"
 
 class CGameSplineDesc;
@@ -87,7 +87,7 @@ private:
   float mFalloffTime;
   float mSpotlightTime;
   float mSplineTime;
-  CGameSpline mSpline;
+  CSpline mSpline;
   TUniqueId mParentId;
   CSegId mParentLocator;
   CTransform4f mParentTransform;

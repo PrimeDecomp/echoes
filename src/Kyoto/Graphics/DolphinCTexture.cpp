@@ -319,7 +319,7 @@ bool CTexture::LoadToMRAM() const {
   }
 
   mCanLoadObj = true;
-  if (mARAMToken.GetStatus() == CARAMToken::kS_Six) {
+  if (mARAMToken.GetStatus() == CARAMToken::kStatus_Unowned) {
     return false;
   }
 
@@ -330,7 +330,7 @@ bool CTexture::LoadToMRAM() const {
 
 bool CTexture::LoadToARAM() const {
   mCanLoadObj = true;
-  if (mARAMToken.GetStatus() == CARAMToken::kS_Six) {
+  if (mARAMToken.GetStatus() == CARAMToken::kStatus_Unowned) {
     return false;
   }
 
@@ -436,7 +436,7 @@ void CTexture::UnLock() {
 }
 
 CFactoryFnReturn FTextureFactory(const SObjectTag& tag, CInputStream& in,
-                                       const CVParamTransfer& xfer) {
+                                 const CVParamTransfer& xfer) {
   return rs_new CTexture(in, CTexture::kAM_Zero, CTexture::kBK_Zero);
 }
 
@@ -546,7 +546,7 @@ void CTexture::UncountMemory() const {
 void CTexture::InvalidateTexmap(GXTexMapID texmap) { sLoadedTextures[texmap] = 0; }
 
 void CTexture::ScheduleDeletion() {
-  if (mARAMToken.GetStatus() != CARAMToken::kS_Six) {
+  if (mARAMToken.GetStatus() != CARAMToken::kStatus_Unowned) {
     CFrameDelayedKiller::ScheduleDeletion(CFrameDelayedKiller::kWhichFrame_NextFrame,
                                           mARAMToken.ForceSyncMRAM());
   }

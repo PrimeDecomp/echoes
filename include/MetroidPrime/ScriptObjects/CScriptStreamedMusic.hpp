@@ -2,7 +2,7 @@
 #define _CSCRIPTSTREAMEDMUSIC
 
 #include "Kyoto/Audio/CStreamAudioManager.hpp"
-#include "Kyoto/Streams/CFilePreload.hpp"
+#include "Kyoto/Streams/CStreamPreloadedToken.hpp"
 #include "MetroidPrime/CEntity.hpp"
 
 #include "rstl/optional_object.hpp"
@@ -41,7 +41,7 @@ private:
   float mFadeIn;
   float mFadeOut;
   uint mVolume;
-  rstl::optional_object< CFilePreload > mPreload;
+  rstl::optional_object< CStreamPreloadedToken > mPreload;
 };
 CHECK_SIZEOF(CScriptStreamedMusic, 0x4C)
 

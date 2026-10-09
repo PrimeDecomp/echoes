@@ -162,7 +162,7 @@ CPortalTransition::CPortalTransition(
   }
   mCharacterFactory =
       TLockedToken< CCharacterFactory >(gpCharacterFactoryBuilder->GetFactory(mSamusRes));
-  const CCharacterInfo& character = (*mCharacterFactory)->GetCharInfo(mSuitCharIdx);
+  const CCECharacterInfo& character = (*mCharacterFactory)->GetCharInfo(mSuitCharIdx);
   mSuitModel = gpSimplePool->GetObj(SObjectTag('CMDL', character.GetModelId()));
   mSuitModel->Lock();
   mSuitSkin = gpSimplePool->GetObj(SObjectTag('CSKR', character.GetSkinRulesId()));

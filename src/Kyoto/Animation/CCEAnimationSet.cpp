@@ -1,8 +1,8 @@
-#include "Kyoto/Animation/CAnimationSet.hpp"
+#include "Kyoto/Animation/CCEAnimationSet.hpp"
 
 #include "Kyoto/Animation/CMetaTransFactory.hpp"
 
-CAnimationSet::CAnimationSet(CInputStream& in)
+CCEAnimationSet::CCEAnimationSet(CInputStream& in)
 : mTableCount(in.Get< ushort >())
 , mAnimations(in)
 , mTransitions(in)
@@ -12,8 +12,8 @@ CAnimationSet::CAnimationSet(CInputStream& in)
 , mHalfTransitions(StreamHalfTransitions(mTableCount, in))
 , mEventSets(StreamEventSetList(mTableCount, in)) {}
 
-CAnimationSet::AdditiveAnimationList CAnimationSet::StreamAdditiveAnimInfoList(ushort tableCount,
-                                                                               CInputStream& in) {
+CCEAnimationSet::AdditiveAnimationList
+CCEAnimationSet::StreamAdditiveAnimInfoList(ushort tableCount, CInputStream& in) {
   if (tableCount > 1) {
     return AdditiveAnimationList(in);
   }
@@ -21,8 +21,8 @@ CAnimationSet::AdditiveAnimationList CAnimationSet::StreamAdditiveAnimInfoList(u
   return AdditiveAnimationList();
 }
 
-CAdditiveAnimationInfo CAnimationSet::StreamDefaultAdditiveAnimInfo(ushort tableCount,
-                                                                    CInputStream& in) {
+CAdditiveAnimationInfo CCEAnimationSet::StreamDefaultAdditiveAnimInfo(ushort tableCount,
+                                                                      CInputStream& in) {
   if (tableCount > 1) {
     return CAdditiveAnimationInfo(in);
   }
@@ -30,8 +30,8 @@ CAdditiveAnimationInfo CAnimationSet::StreamDefaultAdditiveAnimInfo(ushort table
   return CAdditiveAnimationInfo(0.f, 0.f);
 }
 
-CAnimationSet::HalfTransitionList CAnimationSet::StreamHalfTransitions(ushort tableCount,
-                                                                       CInputStream& in) {
+CCEAnimationSet::HalfTransitionList CCEAnimationSet::StreamHalfTransitions(ushort tableCount,
+                                                                           CInputStream& in) {
   if (tableCount > 2) {
     return HalfTransitionList(in);
   }
@@ -40,7 +40,8 @@ CAnimationSet::HalfTransitionList CAnimationSet::StreamHalfTransitions(ushort ta
 }
 
 // Guessed name.
-CAnimationSet::EventSetList CAnimationSet::StreamEventSetList(ushort tableCount, CInputStream& in) {
+CCEAnimationSet::EventSetList CCEAnimationSet::StreamEventSetList(ushort tableCount,
+                                                                  CInputStream& in) {
   if (tableCount > 3) {
     return EventSetList(in);
   }

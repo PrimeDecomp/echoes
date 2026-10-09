@@ -33,7 +33,7 @@ rstl::auto_ptr< uint > CFBStreamedCompression::GetRotationsAndOffsets(uint words
 
 CFBStreamedCompression::CFBStreamedCompression(CInputStream& in, IObjectStore&)
 : mScratchSize(in.Get< uint >())
-, x4_(in.ReadInt8())
+, mVersionNumber(in.ReadInt8())
 , mRotsAndOffs(GetRotationsAndOffsets(mScratchSize / 4 + 1, in).release())
 , mRootOffset(0.f, 0.f, 0.f) {
   {

@@ -9,7 +9,7 @@
 
 CARAMToken* CARAMToken::sLists[7];
 CARAMToken::CARAMToken() {
-  mStatus = kS_Six;
+  mStatus = kStatus_Unowned;
   mMramPtr = nullptr;
   mAramPtr = CARAMManager::GetInvalidAlloc();
   mDataLen = 0;
@@ -33,9 +33,9 @@ CARAMToken::CARAMToken(void* ptr, uint len, int unk) {
   InitiallyMoveToList();
   if (x1c_24_) {
     mAramPtr = CARAMManager::Alloc(mDataLen);
-    CARAMManager::IsAllocValid(mAramPtr);
-    mDmaHandle = CARAMManager::DMAToARAM(mMramPtr, (void*)mAramPtr, mDataLen,
-                                            CARAMManager::kDMAPrio_One);
+    CARAMManager::IsValidAlloc(mAramPtr);
+    mDmaHandle =
+        CARAMManager::DMAToARAM(mMramPtr, (void*)mAramPtr, mDataLen, CARAMManager::kDMAPrio_One);
     CARAMManager::WaitForDMACompletion(mDmaHandle);
     mDmaHandle = CARAMManager::GetInvalidDMAHandle();
   }
@@ -55,8 +55,7 @@ CARAMToken::CARAMToken(const CARAMToken& other)
 }
 
 CARAMToken::~CARAMToken() {
-  if (mDmaHandle != CARAMManager::GetInvalidDMAHandle() &&
-      !CARAMManager::CancelDMA(mDmaHandle)) {
+  if (mDmaHandle != CARAMManager::GetInvalidDMAHandle() && !CARAMManager::CancelDMA(mDmaHandle)) {
     CARAMManager::WaitForDMACompletion(mDmaHandle);
   }
 
@@ -105,8 +104,8 @@ bool CARAMToken::LoadToMRAM() {
   case kS_Zero: {
     mMramPtr = CMemory::Alloc(mDataLen, IAllocator::kHI_RoundUpLen);
     DCInvalidateRange(mMramPtr, mDataLen);
-    mDmaHandle = CARAMManager::DMAToMRAM((void*)mAramPtr, mMramPtr, mDataLen,
-                                            CARAMManager::kDMAPrio_One);
+    mDmaHandle =
+        CARAMManager::DMAToMRAM((void*)mAramPtr, mMramPtr, mDataLen, CARAMManager::kDMAPrio_One);
     MoveToList(kS_Three);
     break;
   }
@@ -136,12 +135,12 @@ bool CARAMToken::LoadToARAM() {
   case kS_One: {
     if (!x1c_24_) {
       mAramPtr = CARAMManager::Alloc(mDataLen);
-      if (!CARAMManager::IsAllocValid(mAramPtr)) {
+      if (!CARAMManager::IsValidAlloc(mAramPtr)) {
         return false;
       }
 
-      mDmaHandle = CARAMManager::DMAToARAM(mMramPtr, (void*)mAramPtr, mDataLen,
-                                              CARAMManager::kDMAPrio_One);
+      mDmaHandle =
+          CARAMManager::DMAToARAM(mMramPtr, (void*)mAramPtr, mDataLen, CARAMManager::kDMAPrio_One);
     }
     MoveToList(kS_Two);
     break;
@@ -230,7 +229,7 @@ void CARAMToken::RemoveFromList() {
 }
 
 void CARAMToken::MakeInvalid() {
-  MoveToList(kS_Six);
+  MoveToList(kStatus_Unowned);
   mMramPtr = nullptr;
   mAramPtr = CARAMManager::GetInvalidAlloc();
   mDataLen = 0;

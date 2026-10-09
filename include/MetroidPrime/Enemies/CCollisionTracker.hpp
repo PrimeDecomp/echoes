@@ -4,7 +4,7 @@
 #include "types.h"
 
 #include "Kyoto/CRandom16.hpp"
-#include "Kyoto/Graphics/CThreeSegmentModel.hpp"
+#include "Kyoto/Graphics/CFoldySurface.hpp"
 #include "Kyoto/Math/CAABox.hpp"
 #include "Kyoto/Math/CMatrix3f.hpp"
 #include "Kyoto/Math/CQuaternion.hpp"
@@ -171,7 +171,7 @@ private:
 
   CRandom16 mRandom;
   rstl::single_ptr< CElementGen > mParticleSystem;
-  CThreeSegmentModel mModel;
+  CFoldySurface mModel;
   rstl::single_ptr< CCollisionCache > mCollisionCache;
   TUniqueId mLightId;
   CAssetId mParticleAssetId;

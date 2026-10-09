@@ -6,7 +6,7 @@
 #include <Kyoto/Graphics/CMoviePlayer.hpp>
 
 #include "Kyoto/Audio/CAudioSys.hpp"
-#include "Kyoto/Audio/CStaticAudioPlayer.hpp"
+#include "Kyoto/Audio/DolphinCRSFAudio.hpp"
 #include "Kyoto/Graphics/CGraphics.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "dolphin/PPCArch.h"
@@ -713,9 +713,9 @@ void CMoviePlayer::MixAudio(short* out, const short* in, unsigned long samples) 
 
 void CMoviePlayer::VerifyCallbackStatus() {
   if (sNumReferences > 0) {
-    CStaticAudioPlayer::RunDMACallback(StaticMyAudioCallback);
+    CRSFAudio::RunDMACallback(StaticMyAudioCallback);
   } else {
-    CStaticAudioPlayer::CancelDMACallback(StaticMyAudioCallback);
+    CRSFAudio::CancelDMACallback(StaticMyAudioCallback);
   }
 }
 

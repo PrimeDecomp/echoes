@@ -15,7 +15,7 @@
 class CDependencyGroup;
 class CFinalInput;
 class CGuiTextSupport;
-class CStaticAudioPlayer;
+class CRSFAudio;
 class CStringTable;
 class CTexture;
 
@@ -121,7 +121,7 @@ private:
   rstl::single_ptr< CGuiTextSupport > mControlsText;
   rstl::single_ptr< CGuiTextSupport > mGalleryNameText;
   rstl::single_ptr< CGuiTextSupport > mSlideNumberText;
-  rstl::single_ptr< CStaticAudioPlayer > mAudio;
+  rstl::single_ptr< CRSFAudio > mAudio;
   rstl::single_ptr< TToken< CStringTable > > mGalleryNames;
   rstl::vector< rstl::wstring > mGalleryLabels;
   CSfxHandle mPanSfx;

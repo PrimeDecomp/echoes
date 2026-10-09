@@ -1,7 +1,7 @@
 #include "MetroidPrime/CSlideShow.hpp"
 
 #include "Kyoto/Audio/CSfxManager.hpp"
-#include "Kyoto/Audio/CStaticAudioPlayer.hpp"
+#include "Kyoto/Audio/DolphinCRSFAudio.hpp"
 #include "Kyoto/Basics/CBasics.hpp"
 #include "Kyoto/CDependencyGroup.hpp"
 #include "Kyoto/CDvdFile.hpp"
@@ -377,12 +377,12 @@ CIOWin::EMessageReturn CSlideShow::OnMessage(const CArchitectureMessage& msg,
   if (mPhase == 4) {
     if (mLoadMusic && mAudio.null()) {
       if (sSlideShowMusic.size() != 0 && CDvdFile::FileExists(sSlideShowMusic.data())) {
-        mAudio = rs_new CStaticAudioPlayer(sSlideShowMusic, 0, 0);
+        mAudio = rs_new CRSFAudio(sSlideShowMusic, 0, 0);
       }
       mLoadMusic = false;
     }
     if (!mAudio.null()) {
-      if (!mAudio->IsReady()) {
+      if (!mAudio->IsFullyLoaded()) {
         return kMR_Exit;
       }
       UpdateMusicVolume(mFadeTimer, gpTweakSlideShow->GetFadeInTime());

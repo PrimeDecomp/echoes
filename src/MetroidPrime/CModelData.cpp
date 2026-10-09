@@ -6,7 +6,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
 
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CSegId.hpp"
 #include "Kyoto/Animation/CSkinnedModel.hpp"
 #include "Kyoto/CResFactory.hpp"

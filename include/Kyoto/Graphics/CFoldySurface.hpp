@@ -1,5 +1,5 @@
-#ifndef _CTHREESEGMENTMODEL
-#define _CTHREESEGMENTMODEL
+#ifndef _CFOLDYSURFACE
+#define _CFOLDYSURFACE
 
 #include "types.h"
 
@@ -13,12 +13,12 @@ class CModelFlags;
 class CTransform4f;
 
 // Guessed name for the model owner that supplies three independently transformed X segments.
-class CThreeSegmentModel {
+class CFoldySurface {
 public:
-  CThreeSegmentModel(const TToken< CModel >& model, float lowerX, float upperX,
-                     const CVector3f& lowerOffset, const CVector3f& middleOffset,
-                     const CVector3f& upperOffset);
-  ~CThreeSegmentModel();
+  CFoldySurface(const TToken< CModel >& model, float lowerX, float upperX,
+                const CVector3f& lowerOffset, const CVector3f& middleOffset,
+                const CVector3f& upperOffset);
+  ~CFoldySurface();
 
   void ResetRenderState() const;
   void SetMaterialCurrent(const CModelFlags& flags) const;
@@ -41,6 +41,6 @@ private:
   rstl::single_ptr< uchar > mDisplayLists[kS_Count];
   uint mDisplayListSize;
 };
-CHECK_SIZEOF(CThreeSegmentModel, 0x24)
+CHECK_SIZEOF(CFoldySurface, 0x24)
 
-#endif // _CTHREESEGMENTMODEL
+#endif // _CFOLDYSURFACE

@@ -549,9 +549,9 @@ inline void CFBStreamedAnimReader::GetSegStatement(CSegStatement& statement,
   }
 }
 
-void CFBStreamedAnimReader::VGetSegData(const CCharLayoutInfo& layout,
-                                        CJointData_LinearStorage& data,
-                                        const CCharAnimTime& time) const {
+void CFBStreamedAnimReader::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                 CJointData_LinearStorage& data,
+                                                 const CCharAnimTime& time) const {
   SetReadTime(time);
   if (!mTotals.Prior().AmCalculatedDown()) {
     mTotals.Prior().CalculateDown();
@@ -681,7 +681,7 @@ void CFBStreamedAnimReader::VGetSegData(const CCharLayoutInfo& layout,
   }
 }
 
-void CFBStreamedAnimReader::VGetSegData(const CCharLayoutInfo& layout,
-                                        CJointData_LinearStorage& data) const {
-  VGetSegData(layout, data, mCurTime);
+void CFBStreamedAnimReader::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                 CJointData_LinearStorage& data) const {
+  VGetJointData_Linear(layout, data, mCurTime);
 }

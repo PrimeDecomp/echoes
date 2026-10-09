@@ -24,9 +24,9 @@
 
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
-#include "Kyoto/Math/CGameSpline.hpp"
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Math/CRelAngle.hpp"
+#include "Kyoto/Math/CSpline.hpp"
 #include "Kyoto/Math/CUnitVector3f.hpp"
 #include "WorldFormat/CCollidableOBBTreeGroup.hpp"
 #include "rstl/algorithm.hpp"
@@ -574,7 +574,7 @@ void CScriptPlatform::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
     }
     const TUniqueId waypoint = FindConnectedObject(mgr, kSS_Connect, kSM_Attach);
     if (TCastToConstPtr< CScriptWaypoint >(mgr.GetObjectById(waypoint))) {
-      mSplineController = rs_new CGameSpline(
+      mSplineController = rs_new CSpline(
           mMotionSpline->GetDuration(), mMotionSpline->IsClosedLoop(), mMotionSpline->GetSpline(),
           CMayaSpline(), mMotionSpline->GetType(), mMotionSpline->GetType());
       ScriptCameraSpline::Initialise(*this, kSS_Connect, kSM_Attach, kSS_CameraTarget, kSM_Follow,

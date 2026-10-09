@@ -17,7 +17,7 @@ class IObjectStore;
 class CStandardMultiFormatHeader {
 public:
   explicit CStandardMultiFormatHeader(CInputStream& in)
-  : x0_(in.ReadInt8())
+  : mVersionNumber(in.ReadInt8())
   , mMaxTime(in.ReadFloat())
   , mStandardInterval(in.ReadFloat())
   , mRootBoneId(in.ReadInt32())
@@ -37,7 +37,7 @@ public:
   float GetScaleResolution() const { return mScaleResolution; }
 
 private:
-  uchar x0_;
+  uchar mVersionNumber;
   float mMaxTime;
   float mStandardInterval;
   uint mRootBoneId;
@@ -362,7 +362,7 @@ private:
   static rstl::auto_ptr< uint > GetRotationsAndOffsets(uint words, CInputStream& in);
 
   uint mScratchSize;
-  uchar x4_;
+  uchar mVersionNumber;
   rstl::single_ptr< uint > mRotsAndOffs;
   float mAverageVelocity;
   CVector3f mRootOffset;

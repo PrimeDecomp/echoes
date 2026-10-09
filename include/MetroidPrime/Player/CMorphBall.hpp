@@ -36,7 +36,7 @@ class CSwooshDescription;
 class CSkinnedModel;
 struct SSkinningWorkspace;
 class CWorldShadow;
-class CDeferredParticleEffect; // Guessed name: dependency-backed wake effect, target size 0x44.
+class CManagedParticleGen; // Guessed name: dependency-backed wake effect, target size 0x44.
 
 struct SMorphBallModelInfo {
   const char* mName;
@@ -315,7 +315,7 @@ private:
   rstl::single_ptr< CParticleElectric > mDeathBallSpikesGen;
   rstl::single_ptr< CElementGen > mScrewAttackJumpFlashGen;
   rstl::single_ptr< CElementGen > mScrewAttackWallJumpFlashGen;
-  rstl::reserved_vector< rstl::auto_ptr< CDeferredParticleEffect >, 6 > mWakeEffects;
+  rstl::reserved_vector< rstl::auto_ptr< CManagedParticleGen >, 6 > mWakeEffects;
   int mWakeEffectIndex;
   TUniqueId mBallInnerGlowLight;
   bool mBallLightActive;

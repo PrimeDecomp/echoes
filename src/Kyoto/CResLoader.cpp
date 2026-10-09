@@ -32,7 +32,7 @@ void CResLoader::MoveToCorrectLoadedList(const rstl::auto_ptr< CPakFile >& pak) 
 }
 
 bool CResLoader::CacheFromPak(const CPakFile& pak, const CAssetId asset) const {
-  const CPakFile::SResInfo* resInfo = pak.GetResInfo(asset);
+  const CPakFile::CResInfo* resInfo = pak.GetResInfo(asset);
   if (!resInfo) {
     return false;
   }
@@ -44,7 +44,7 @@ bool CResLoader::CacheFromPak(const CPakFile& pak, const CAssetId asset) const {
 }
 
 bool CResLoader::CacheFromPakForLoad(CPakFile& pak, const CAssetId asset) {
-  const CPakFile::SResInfo* resInfo = nullptr;
+  const CPakFile::CResInfo* resInfo = nullptr;
   if (mForwardSeek) {
     resInfo = pak.GetResInfoForLoadPreferForward(asset);
     mForwardSeek = false;
@@ -186,18 +186,18 @@ CResLoader::ECompressionType CResLoader::GetResourceCompression(const SObjectTag
 
 CDvdRequest* CResLoader::LoadResourceAsync(const SObjectTag& tag, char* extBuf) {
   CPakFile* curPak = FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   return curPak->DvdFile().AsyncSeekRead(extBuf, align_size(info->GetSize()), kSO_Set,
                                          info->GetOffset());
 }
 
 CBufferedDvdRequest* CResLoader::LoadResourceAsync(const SObjectTag& tag) {
   CPakFile* curPak = FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   GroupCacheList::iterator it =
       FindGroupCache(&curPak->DvdFile(), info->GetOffset(), info->GetSize());
   if (it == mGroupCaches.end()) {
-    const uint groupedSize = info->GetGroupedSize();
+    const uint groupedSize = info->GetLookaheadAfterResourceSize();
     if (groupedSize == 0) {
       const int size = align_size(info->GetSize());
       rstl::auto_ptr< uchar > buffer(
@@ -214,13 +214,13 @@ CBufferedDvdRequest* CResLoader::LoadResourceAsync(const SObjectTag& tag) {
 CDvdRequest* CResLoader::LoadResourcePartAsync(const SObjectTag& tag, const int offset,
                                                const int length, char* extBuf) {
   CPakFile* curPak = FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   return curPak->DvdFile().AsyncSeekRead(extBuf, length, kSO_Set, info->GetOffset() + offset);
 }
 
 CInputStream* CResLoader::LoadNewResourceSync(const SObjectTag& tag, char* extBuf) {
   CPakFile* curPak = FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   uint len = align_size(info->GetSize());
   void* dest = extBuf ? extBuf : CMemory::Alloc(len, IAllocator::kHI_RoundUpLen);
 
@@ -239,7 +239,7 @@ CInputStream* CResLoader::LoadNewResourceSync(const SObjectTag& tag, char* extBu
 
 CInputStream* CResLoader::LoadResourceFromMemorySync(const SObjectTag& tag, const void* extBuf) {
   FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   rstl::auto_ptr< CInputStream > input(rs_new CMemoryInStream(extBuf, info->GetSize()));
 
   if (info->IsCompressed()) {
@@ -252,7 +252,7 @@ CInputStream* CResLoader::LoadResourceFromMemorySync(const SObjectTag& tag, cons
 
 void CResLoader::LoadMemResourceSync(const SObjectTag& tag, char** bufOut, int* lenOut) {
   CPakFile* curPak = FindResourceForLoad(tag);
-  const CPakFile::SResInfo* info = mCachedResInfo;
+  const CPakFile::CResInfo* info = mCachedResInfo;
   uint len = align_size(info->GetSize());
   char* buf = static_cast< char* >(CMemory::Alloc(len, IAllocator::kHI_RoundUpLen));
   curPak->DvdFile().SyncSeekRead(buf, len, kSO_Set, info->GetOffset());
@@ -360,7 +360,7 @@ CPakFile* CResLoader::GetPakFile(const int idx) const {
   return it->get();
 }
 
-void CResLoader::ReleaseGroupCache(const CGroupReadCache* cache) {
+void CResLoader::KillLookahead(const CLookaheadRes* cache) {
   for (GroupCacheList::iterator it = mGroupCaches.begin(); it != mGroupCaches.end(); ++it) {
     if (&*it == cache) {
       mGroupCaches.erase(it);
@@ -374,7 +374,7 @@ CResLoader::GroupCacheList::iterator CResLoader::FindGroupCache(const CDvdFile* 
   GroupCacheList::iterator it = mGroupCaches.end();
   while (it != mGroupCaches.begin()) {
     --it;
-    const CGroupReadCache& cache = *it;
+    const CLookaheadRes& cache = *it;
     if (!cache.IsInvalid() && cache.Contains(file, offset, size)) {
       return it;
     }
@@ -388,5 +388,5 @@ CResLoader::GroupCacheList::iterator CResLoader::AddGroupCache(CDvdFile* file, u
       static_cast< uchar* >(CMemory::Alloc(size, IAllocator::kHI_RoundUpLen)));
   rstl::auto_ptr< CDvdRequest > request(file->AsyncSeekRead(buffer.get(), size, kSO_Set, offset));
   return mGroupCaches.insert(mGroupCaches.end(),
-                             CGroupReadCache(buffer.release(), file, offset, size, request, this));
+                             CLookaheadRes(buffer.release(), file, offset, size, request, this));
 }

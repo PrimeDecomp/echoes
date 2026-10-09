@@ -6,7 +6,7 @@ CGameCameraSpline::CGameCameraSpline(float duration, uint flags,
                                      const CMayaSpline& fovSpline, const CMayaSpline& rollSpline,
                                      CMotionSpline::ESplineType positionType,
                                      CMotionSpline::ESplineType lookAtType)
-: CGameSpline(duration, flags, positionTimeSpline, lookAtTimeSpline, positionType, lookAtType)
+: CSpline(duration, flags, positionTimeSpline, lookAtTimeSpline, positionType, lookAtType)
 , mFovSpline(fovSpline)
 , mRollSpline(rollSpline) {}
 

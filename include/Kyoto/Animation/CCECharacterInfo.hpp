@@ -1,5 +1,5 @@
-#ifndef _CCHARACTERINFO
-#define _CCHARACTERINFO
+#ifndef _CCECHARACTERINFO
+#define _CCECHARACTERINFO
 
 #include "types.h"
 
@@ -13,7 +13,7 @@
 #include "rstl/string.hpp"
 #include "rstl/vector.hpp"
 
-class CCharacterInfo {
+class CCECharacterInfo {
 public:
   typedef rstl::vector< rstl::pair< rstl::string, rstl::vector< CEffectComponent > > > TEffectList;
   class CParticleResData {
@@ -38,7 +38,7 @@ public:
     rstl::vector< CAssetId > mElscB;
   };
 
-  explicit CCharacterInfo(CInputStream& in);
+  explicit CCECharacterInfo(CInputStream& in);
 
   CAssetId GetModelId() const { return mCmdl; }
   CAssetId GetSkinRulesId() const { return mCksr; }
@@ -78,7 +78,7 @@ private:
   bool mAnimatedScale;          // Guessed name.
   rstl::vector< rstl::pair< uint, CAABox > > mAnimBoundsById;
 };
-CHECK_SIZEOF(CCharacterInfo, 0xf8)
-NESTED_CHECK_SIZEOF(CCharacterInfo, CParticleResData, 0x60)
+CHECK_SIZEOF(CCECharacterInfo, 0xf8)
+NESTED_CHECK_SIZEOF(CCECharacterInfo, CParticleResData, 0x60)
 
-#endif // _CCHARACTERINFO
+#endif // _CCECHARACTERINFO

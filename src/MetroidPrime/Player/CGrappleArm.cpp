@@ -286,7 +286,7 @@ void CGrappleArm::Update(float dt, CStateManager& mgr) {
       CAssetId modelId;
       CAssetId skinId;
       if (mCurrentSuit == CPlayerState::kPS_Varia) {
-        const CCharacterInfo& info = mArmModel->AnimationData()->GetCharacterInfo();
+        const CCECharacterInfo& info = mArmModel->AnimationData()->GetCharacterInfo();
         modelId = info.GetModelId();
         skinId = info.GetSkinRulesId();
       } else {

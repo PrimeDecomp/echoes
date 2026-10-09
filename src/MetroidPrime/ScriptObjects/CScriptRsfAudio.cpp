@@ -45,7 +45,7 @@ void CScriptRsfAudio::Think(float dt, CStateManager& mgr) {
   }
   CEntity::Think(dt, mgr);
 
-  if (mLoadRequested && mPlayer->IsReady()) {
+  if (mLoadRequested && mPlayer->IsFullyLoaded()) {
     mLoadRequested = false;
     mLoaded = true;
     SendScriptMsgs(kSS_Arrived, mgr, kInvalidUniqueId, kSM_None);
@@ -152,7 +152,7 @@ void CScriptRsfAudio::StartFade(bool fadeIn) {
 
 void CScriptRsfAudio::Load(CStateManager& mgr) {
   if (mPlayer.get() == nullptr && static_cast< int >(mFileName.size()) != 0) {
-    mPlayer = rs_new CStaticAudioPlayer(mFileName, mLoopStart, mLoopEnd);
+    mPlayer = rs_new CRSFAudio(mFileName, mLoopStart, mLoopEnd);
     mLoadRequested = true;
   }
 }

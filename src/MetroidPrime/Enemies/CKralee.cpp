@@ -1,6 +1,6 @@
 #include "MetroidPrime/Enemies/CKralee.hpp"
 
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CPOINode.hpp"
 #include "Kyoto/Audio/CAudioSys.hpp"
 #include "Kyoto/Math/CMath.hpp"
@@ -90,7 +90,7 @@ CKralee::CKralee(TUniqueId uid, const rstl::string& name, CEntityInfo& info, con
   if (mWarpOutParticleEffect != kInvalidAssetId) {
     particles.push_back_unsafe(mWarpOutParticleEffect);
   }
-  AnimationData()->GetParticleDB().CacheParticleDesc(CCharacterInfo::CParticleResData(
+  AnimationData()->GetParticleDB().CacheParticleDesc(CCECharacterInfo::CParticleResData(
       particles, rstl::vector< CAssetId >(), rstl::vector< CAssetId >(), rstl::vector< CAssetId >(),
       rstl::vector< CAssetId >(), rstl::vector< CAssetId >()));
   mSpeed = mAnimSpeedScalar;

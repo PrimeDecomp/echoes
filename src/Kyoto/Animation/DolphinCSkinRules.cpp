@@ -8,16 +8,16 @@
 #include "dolphin/gx.h"
 
 CSkinRules::CSkinRules(CInputStream& in)
-: mVirtualBones(in), mMatrixIndices(in), mVertexCount(in.ReadInt32()), mVertexToBone(nullptr) {
+: mBones(in), mMatrixIndices(in), mVertexCount(in.ReadInt32()), mVertexToBone(nullptr) {
   if (mVertexCount > 0) {
     mVertexToBone = rs_new uchar[mVertexCount];
     in.Get(mVertexToBone.get(), mVertexCount);
   }
-  CModel::AddToTotal(sizeof(CSkinRules) + mVirtualBones.size() * sizeof(CVirtualBone));
+  CModel::AddToTotal(sizeof(CSkinRules) + mBones.size() * sizeof(CVirtualBone));
 }
 
 CSkinRules::~CSkinRules() {
-  CModel::RemoveFromTotal(sizeof(CSkinRules) + mVirtualBones.size() * sizeof(CVirtualBone));
+  CModel::RemoveFromTotal(sizeof(CSkinRules) + mBones.size() * sizeof(CVirtualBone));
 }
 
 void CSkinRules::BuildAccumulatedTransforms(const CPoseAsTransforms_Linear& pose,
@@ -32,9 +32,9 @@ void CSkinRules::BuildAccumulatedTransforms(const CPoseAsTransforms_Linear& pose
     points[i] = elements[i].mOffset - elements[i].mRotation * offsets[i];
   }
 
-  const int boneCount = mVirtualBones.size();
+  const int boneCount = mBones.size();
   for (int i = 0; i < boneCount; ++i) {
-    mVirtualBones[i].BuildAccumulatedTransform(pose, points, out[i]);
+    mBones[i].BuildAccumulatedTransform(pose, points, out[i]);
   }
 }
 

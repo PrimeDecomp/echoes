@@ -28,15 +28,15 @@ void CAnimTreeSingleChild::VGetSegStatementSet(const CSegIdList& list, CSegState
   mChild->VGetSegStatementSet(list, setOut, time);
 }
 
-void CAnimTreeSingleChild::VGetSegData(const CCharLayoutInfo& layout,
-                                       CJointData_LinearStorage& data,
-                                       const CCharAnimTime& time) const {
-  mChild->VGetSegData(layout, data, time);
+void CAnimTreeSingleChild::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                CJointData_LinearStorage& data,
+                                                const CCharAnimTime& time) const {
+  mChild->VGetJointData_Linear(layout, data, time);
 }
 
-void CAnimTreeSingleChild::VGetSegData(const CCharLayoutInfo& layout,
-                                       CJointData_LinearStorage& data) const {
-  mChild->VGetSegData(layout, data);
+void CAnimTreeSingleChild::VGetJointData_Linear(const CCharLayoutInfo& layout,
+                                                CJointData_LinearStorage& data) const {
+  mChild->VGetJointData_Linear(layout, data);
 }
 
 uint CAnimTreeSingleChild::VGetBoolPOIList(const CCharAnimTime& time, CBoolPOINode* listOut,

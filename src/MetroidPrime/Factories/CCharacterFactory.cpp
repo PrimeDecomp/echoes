@@ -19,8 +19,8 @@ rstl::auto_ptr< IObj > CCharacterFactory::CDummyFactory::Build(const SObjectTag&
                                                                const CVParamTransfer& params) {
   const FourCC type = tag.GetType();
   const CVParamTransfer paramCopy(params);
-  const CCharacterInfo& charInfo =
-      *static_cast< const TObjOwnerParam< const CCharacterInfo* >& >(*paramCopy).GetData();
+  const CCECharacterInfo& charInfo =
+      *static_cast< const TObjOwnerParam< const CCECharacterInfo* >& >(*paramCopy).GetData();
   switch (type) {
   case 0:
     return CFactoryFnReturn(
@@ -56,10 +56,10 @@ CCharacterFactory::CCharacterFactory(CSimplePool& store,
 , mSelfId(selfId)
 , mCacheResPool(mDummyFactory)
 , mAnimCharacterSet(ancs) {
-  const CAnimationSet& animSet = ancs->GetAnimationSet();
-  const CAnimationSet::AnimationList& animations = animSet.GetAnimations();
-  const CAnimationSet::TransitionList& transitions = animSet.GetTransitions();
-  const CAnimationSet::HalfTransitionList& halfTransitions = animSet.GetHalfTransitions();
+  const CCEAnimationSet& animSet = ancs->GetAnimationSet();
+  const CCEAnimationSet::AnimationList& animations = animSet.GetAnimations();
+  const CCEAnimationSet::TransitionList& transitions = animSet.GetTransitions();
+  const CCEAnimationSet::HalfTransitionList& halfTransitions = animSet.GetHalfTransitions();
   const rstl::rc_ptr< IMetaTrans > defaultTrans = animSet.GetDefaultTransition();
   const TToken< CAnimationDatabaseGame > animDB(rs_new CAnimationDatabaseGame(animations));
   const TToken< CTransitionDatabaseGame > transDB(
@@ -78,10 +78,10 @@ rstl::auto_ptr< CAnimData >
 CCharacterFactory::CreateCharacter(int charIdx, bool loop,
                                    const TLockedToken< CCharacterFactory >& factory,
                                    int defaultAnim) const {
-  const CCharacterInfo& charInfo = mCharInfoDB[charIdx];
+  const CCECharacterInfo& charInfo = mCharInfoDB[charIdx];
   const SObjectTag modelTag(0, charInfo.GetModelId());
   TToken< CSkinnedModel > skinnedModel = mCacheResPool.GetObj(
-      modelTag, CVParamTransfer(rs_new TObjOwnerParam< const CCharacterInfo* >(&charInfo)));
+      modelTag, CVParamTransfer(rs_new TObjOwnerParam< const CCECharacterInfo* >(&charInfo)));
 
   const CAssetId iceModelId = charInfo.GetIceModelId();
   const CAssetId iceSkinId = charInfo.GetIceSkinRulesId();
@@ -90,7 +90,7 @@ CCharacterFactory::CreateCharacter(int charIdx, bool loop,
   if (iceModelId != kInvalidAssetId && iceSkinId != kInvalidAssetId && iceModelId != 0 &&
       iceSkinId != 0) {
     iceModel = TLockedToken< CSkinnedModel >(mCacheResPool.GetObj(
-        iceTag, CVParamTransfer(rs_new TObjOwnerParam< const CCharacterInfo* >(&charInfo))));
+        iceTag, CVParamTransfer(rs_new TObjOwnerParam< const CCECharacterInfo* >(&charInfo))));
   }
 
   const CAssetId spatialId = charInfo.GetSpatialPrimitiveId();
@@ -106,17 +106,17 @@ CCharacterFactory::CreateCharacter(int charIdx, bool loop,
   return animData;
 }
 
-const CCharacterInfo& CCharacterFactory::GetCharInfo(int charIdx) const {
+const CCECharacterInfo& CCharacterFactory::GetCharInfo(int charIdx) const {
   return mCharInfoDB[charIdx];
 }
 
-rstl::vector< CCharacterInfo >
+rstl::vector< CCECharacterInfo >
 CCharacterFactory::GetCharacterInfoDB(const CAnimCharacterSet& ancs) {
-  const rstl::vector< rstl::pair< int, CCharacterInfo > >& chars =
+  const rstl::vector< rstl::pair< int, CCECharacterInfo > >& chars =
       ancs.GetCharacterSet().GetCharacterList();
-  rstl::vector< rstl::pair< int, CCharacterInfo > >::const_iterator it = chars.begin();
-  rstl::vector< rstl::pair< int, CCharacterInfo > >::const_iterator end = chars.end();
-  rstl::vector< CCharacterInfo > result;
+  rstl::vector< rstl::pair< int, CCECharacterInfo > >::const_iterator it = chars.begin();
+  rstl::vector< rstl::pair< int, CCECharacterInfo > >::const_iterator end = chars.end();
+  rstl::vector< CCECharacterInfo > result;
   result.reserve(chars.size());
   for (; it != end; ++it) {
     result.push_back_unsafe(it->second);
@@ -126,7 +126,7 @@ CCharacterFactory::GetCharacterInfoDB(const CAnimCharacterSet& ancs) {
 
 rstl::vector< TToken< CCharLayoutInfo > >
 CCharacterFactory::GetCharLayoutInfoDB(CSimplePool& store,
-                                       const rstl::vector< CCharacterInfo >& chars) {
+                                       const rstl::vector< CCECharacterInfo >& chars) {
   rstl::vector< TToken< CCharLayoutInfo > > result;
   const uint count = chars.size();
   result.reserve(count);

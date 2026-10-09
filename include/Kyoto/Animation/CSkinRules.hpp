@@ -21,12 +21,12 @@ public:
   void LoadMatrixBank(int bank) const; // Guessed name.
 
   int GetNumPoints() const { return mVertexCount; }
-  int GetNumVirtualBones() const { return mVirtualBones.size(); }
-  const rstl::vector< CVirtualBone >& GetVirtualBones() const { return mVirtualBones; }
+  int GetNumVirtualBones() const { return mBones.size(); }
+  const rstl::vector< CVirtualBone >& GetVirtualBones() const { return mBones; }
   const uchar* GetVertexToBoneMap() const { return mVertexToBone.get(); }
 
 private:
-  rstl::vector< CVirtualBone > mVirtualBones;
+  rstl::vector< CVirtualBone > mBones;
   rstl::vector< short > mMatrixIndices;
   int mVertexCount;
   rstl::single_ptr< uchar > mVertexToBone;

@@ -6,7 +6,7 @@
 #include "Kyoto/Animation/CAdditiveAnimationInfo.hpp"
 #include "Kyoto/Animation/CAnimSysContext.hpp"
 #include "Kyoto/Animation/CAnimationManager.hpp"
-#include "Kyoto/Animation/CCharacterInfo.hpp"
+#include "Kyoto/Animation/CCECharacterInfo.hpp"
 #include "Kyoto/Animation/CTransitionManager.hpp"
 #include "Kyoto/CResFactory.hpp"
 #include "Kyoto/CSimplePool.hpp"
@@ -39,7 +39,7 @@ public:
   rstl::auto_ptr< CAnimData > CreateCharacter(int charIdx, bool loop,
                                               const TLockedToken< CCharacterFactory >& factory,
                                               int defaultAnim) const;
-  const CCharacterInfo& GetCharInfo(int charIdx) const;
+  const CCECharacterInfo& GetCharInfo(int charIdx) const;
   int GetCharacterCount() const { return mCharInfoDB.size(); }
   const rstl::vector< rstl::pair< uint, CAdditiveAnimationInfo > >&
   GetAdditiveAnimInfoList() const {
@@ -47,12 +47,12 @@ public:
   }
   const CAdditiveAnimationInfo& GetDefaultAdditiveAnimInfo() const { return mDefaultAdditiveInfo; }
 
-  static rstl::vector< CCharacterInfo > GetCharacterInfoDB(const CAnimCharacterSet& ancs);
+  static rstl::vector< CCECharacterInfo > GetCharacterInfoDB(const CAnimCharacterSet& ancs);
   static rstl::vector< TToken< CCharLayoutInfo > >
-  GetCharLayoutInfoDB(CSimplePool& store, const rstl::vector< CCharacterInfo >& chars);
+  GetCharLayoutInfoDB(CSimplePool& store, const rstl::vector< CCECharacterInfo >& chars);
 
 private:
-  rstl::vector< CCharacterInfo > mCharInfoDB;
+  rstl::vector< CCECharacterInfo > mCharInfoDB;
   rstl::vector< TToken< CCharLayoutInfo > > mCharLayoutInfoDB;
   rstl::ncrc_ptr< CAnimSysContext > mSysContext;
   rstl::rc_ptr< CAnimationManager > mAnimMgr;

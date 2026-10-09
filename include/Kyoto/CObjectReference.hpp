@@ -24,7 +24,7 @@ public:
   void Unload();
   void CancelLoad();
   bool IsLoading() const;
-  const SObjectTag& GetTag() const { return mObjTag; }
+  const SObjectTag& GetObjectTag() const { return mObjTag; }
 
 private:
   int mRefCount;
