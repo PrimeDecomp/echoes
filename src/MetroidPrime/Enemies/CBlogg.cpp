@@ -93,6 +93,7 @@ static EMaterialTypes skHintRayExclude2 = kMT_CollisionActor;             // Gue
 static EMaterialTypes skHintRayExclude3 = kMT_AIPassthrough;              // Guessed name
 static EMaterialTypes skHintRayExclude4 = kMT_ExcludeFromLineOfSightTest; // Guessed name
 
+static EMaterialTypes skGrabBallMaterial = kMT_Player;      // Guessed name
 static EMaterialTypes skContactDamageSolid = kMT_Solid;     // Guessed name
 static EMaterialTypes skCollisionCeiling = kMT_Ceiling;     // Guessed name
 static EMaterialTypes skCollisionWall = kMT_Wall;           // Guessed name
@@ -263,7 +264,7 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mUnknown_0x800a2b0d(unknown_0x800a2b0d)
 , mCollisionTime(0.f)
 , mMaxCollisionTime(maxCollisionTime)
-, xb24_(0.f)
+, mBallGrabTime(0.f)
 , xb28_(0.f)
 , xb2c_(10.f)
 , mMouthOpenSound(mouthOpenSound)
@@ -1184,6 +1185,126 @@ void CBlogg::ProjectileAttack(CStateManager& mgr, EStateMsg msg, float dt) {
     xbc5_29_ = true;
     break;
   }
+  }
+}
+
+void CBlogg::Stunned(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    BodyController()->SetLocomotionType(pas::kLT_Lurk);
+    mAnimationState.SetState(CAnimationState::kAS_Ready);
+    BodyController()->CommandMgr().DeliverCmd(
+        CBCGenerateCmd(pas::kGType_Five, CVector3f::Zero(), false, false));
+    mState = kBS_Stunned;
+    mCollisionTime = 0.f;
+    if (IsIngPossessed()) {
+      SendScriptMsgs(kSS_InternalState00, mgr);
+    } else {
+      SendScriptMsgs(kSS_Zero, mgr);
+    }
+    break;
+  case kStateMsg_Update:
+    if (mAnimationState.CanIssueCommand(*BodyController(), pas::kAS_Generate)) {
+      BodyController()->CommandMgr().DeliverCmd(
+          CBCGenerateCmd(pas::kGType_Five, CVector3f::Zero(), false, false));
+    }
+    break;
+  case kStateMsg_Deactivate:
+    mAnimationState.SetState(CAnimationState::kAS_NotReady);
+    break;
+  }
+}
+
+void CBlogg::MoveToPlayer(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate: {
+    mState = kBS_MoveToPlayer;
+    BodyController()->SetLocomotionType(pas::kLT_Lurk);
+    JoinTeam(mgr);
+    BodyController()->CommandMgr().SetSteeringBlendMode(kSBM_FullSpeed);
+    BodyController()->CommandMgr().SetSteeringSpeedRange(1.f, 1.f);
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      x97c_ = player->GetAimPosition(mgr, 0.f);
+    }
+    mPathFindNavigation.SetDestination(x97c_);
+    mPathFindNavigation.PathFind(mgr, msg, dt, *this);
+    BodyController()->CommandMgr().SetTargetVector(GetDirectionToPlayer(mgr));
+    mBallPursuitTime = 0.f;
+    mPlayerPursuitTime = 0.f;
+    break;
+  }
+  case kStateMsg_Update: {
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      x97c_ = player->GetAimPosition(mgr, 0.f);
+      mPathFindNavigation.SetDestination(x97c_);
+      mPathFindNavigation.PathFind(mgr, kStateMsg_Activate, dt, *this);
+      BodyController()->CommandMgr().SetTargetVector(GetDirectionToPlayer(mgr));
+      const CPlayer::EPlayerMorphBallState state =
+          player->GetSpawnedMorphballState() == CPlayer::kMS_Unmorphed
+              ? player->GetMorphballTransitionState()
+              : CPlayer::kMS_Unmorphed;
+      if (state == CPlayer::kMS_Morphed) {
+        mBallPursuitTime = CMath::Min(mMaxBallPursuitTime, mBallPursuitTime + dt);
+      } else {
+        mPlayerPursuitTime = CMath::Min(mMaxPlayerPursuitTime, mPlayerPursuitTime + dt);
+      }
+    }
+    if (HasCollisionTimeElapsed()) {
+      PathToAttackPosition(mgr, dt);
+      mCollisionTime = 0.f;
+    }
+    break;
+  }
+  case kStateMsg_Deactivate:
+    break;
+  }
+}
+
+void CBlogg::GrabBall(CStateManager& mgr, EStateMsg msg, float dt) {
+  switch (msg) {
+  case kStateMsg_Activate:
+    if (mTeamManagerId == kInvalidUniqueId ||
+        CScriptTeamAiMgr::StartAttack(CScriptTeamAiMgr::kAT_Melee, mgr, mTeamManagerId,
+                                      GetUniqueId())) {
+      mState = kBS_GrabBall;
+      if (GetPlayer(mgr) != nullptr) {
+        StopPlayer(mgr);
+      }
+      UpdateCollisionActorMaterials(mgr, CMaterialList(skGrabBallMaterial), kMA_Remove);
+    } else {
+      mAbortBallGrab = true;
+    }
+    break;
+  case kStateMsg_Update: {
+    StopPlayer(mgr);
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      mBallGrabTime = CMath::Min(mBallGrabTime + dt, 0.2f);
+      const float t = CMath::Min(1.f, mBallGrabTime / 0.2f);
+      const CTransform4f locator =
+          GetScaledLocatorTransform(rstl::string_l(skBallAttachLocatorName));
+      const CTransform4f xf = GetTransform() * locator;
+      const CVector3f attach = xf.GetTranslation();
+      const CVector3f aim = player->GetAimPosition(mgr, 0.f);
+      const CVector3f playerOffset = aim - player->GetTranslation();
+      const CVector3f blended = CVector3f::Lerp(aim - attach, CVector3f::Zero(), t);
+      AnimationData()->AddAdditiveAnimation(mUnknown26Anim, 0.2f * t + (1.f - t), false, false);
+      player->SetTranslation(attach + blended - playerOffset);
+      if (t == 1.f) {
+        mBallGrabbed = true;
+      }
+    }
+    break;
+  }
+  case kStateMsg_Deactivate:
+    AttachPlayerToMouth(mgr);
+    x951_ = 0;
+    mCanBite = false;
+    mMeleeDelayTimer = 0.f;
+    mAbortBallGrab = false;
+    break;
   }
 }
 

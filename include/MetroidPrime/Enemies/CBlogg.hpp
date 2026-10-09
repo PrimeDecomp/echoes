@@ -162,6 +162,9 @@ public:
   void FacePlayer(CStateManager& mgr, EStateMsg msg, float dt);
   void ChargeTelegraph(CStateManager& mgr, EStateMsg msg, float dt);
   void ProjectileAttack(CStateManager& mgr, EStateMsg msg, float dt);
+  void Stunned(CStateManager& mgr, EStateMsg msg, float dt);
+  void MoveToPlayer(CStateManager& mgr, EStateMsg msg, float dt);
+  void GrabBall(CStateManager& mgr, EStateMsg msg, float dt);
 
   bool ShouldPatrol(CStateManager& mgr, const CTriggerData& data) const;
   bool AnimOver(CStateManager& mgr, const CTriggerData& data) const;
@@ -289,7 +292,7 @@ private:
   uchar xb18_;
   float mCollisionTime;    // Guessed name
   float mMaxCollisionTime; // Guessed name
-  float xb24_;
+  float mBallGrabTime;     // Guessed name
   float xb28_;
   float xb2c_;
   ushort mMouthOpenSound;                                         // Guessed name
