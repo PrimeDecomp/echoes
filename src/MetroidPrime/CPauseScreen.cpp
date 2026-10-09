@@ -446,13 +446,13 @@ bool CPauseScreen::CheckLoadComplete(const CStateManager& mgr) {
         }
       }
       for (int i = 0; i < 11; ++i) {
-        if (scan.GetAnimatedModelId(i) != kInvalidAssetId) {
-          mModelTokens.push_back(
-              gpSimplePool->GetObj(SObjectTag('ANCS', scan.GetAnimatedModelId(i))));
+        const CAssetId staticId = scan.GetStaticModelId(i);
+        const CAssetId animatedId = scan.GetAnimatedModelId(i);
+        if (animatedId != kInvalidAssetId) {
+          mModelTokens.push_back(gpSimplePool->GetObj(SObjectTag('ANCS', animatedId)));
           mModelTokens[i]->Lock();
-        } else if (scan.GetStaticModelId(i) != kInvalidAssetId) {
-          mModelTokens.push_back(
-              gpSimplePool->GetObj(SObjectTag('CMDL', scan.GetStaticModelId(i))));
+        } else if (staticId != kInvalidAssetId) {
+          mModelTokens.push_back(gpSimplePool->GetObj(SObjectTag('CMDL', staticId)));
           mModelTokens[i]->Lock();
         } else {
           mModelTokens.push_back(rstl::optional_object< CToken >());
