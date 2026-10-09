@@ -2038,10 +2038,10 @@ void CPauseScreen::UpdateHistoryColors() {
     }
   }
 
-  float transition = mScanTree.GetTransition();
+  const float transition = mScanTree.GetTransition();
   const CColor& unselectedTitle = gpTweakGui->GetLogBookHistoryUnselectedTitle();
   const CColor& selectedTitle = gpTweakGui->GetLogBookHistorySelectedTitle();
-  const CColor clear(0.f, 0.f, 0.f, 0.f);
+  const CColor& clear = CColor(0.f, 0.f, 0.f, 0.f);
   const CColor& selectedFrame = gpTweakGui->GetLogBookHistorySelectedFrame();
   const CColor& unselectedFrame = gpTweakGui->GetLogBookHistoryUnselectedFrame();
   const CColor& cursor = gpTweakGui->GetLogBookHistoryCursorColor();
@@ -2054,7 +2054,7 @@ void CPauseScreen::UpdateHistoryColors() {
   int depth = 0;
   int nodeId = mScanTree.GetSelectedNode();
   rstl::rc_ptr< CScanTreeNode > selected = mScanTree.GetNode(nodeId);
-  const bool fromParent = selected->GetParentNode() == mScanTree.GetPreviousNode();
+  const bool fromParent = mScanTree.GetPreviousNode() == selected->GetParentNode();
   while (nodeId != -1) {
     rstl::rc_ptr< CScanTreeNode > node = mScanTree.GetNode(nodeId);
     if (node.IsNull()) {
@@ -2066,60 +2066,55 @@ void CPauseScreen::UpdateHistoryColors() {
 
   int count = depth - 1;
   if (!close_enough(transition, 0.f) && !fromParent) {
-    count = depth;
+    ++count;
   }
   count = CMath::Clamp(0, count, mHistoryBackgrounds.size());
   int i = 0;
   for (; i < count; ++i) {
-    const int row = rows[i];
-    mHistoryLabels[row]->SetVisibility(true, kTM_Children);
-    mHistoryBackgrounds[row]->SetVisibility(true, kTM_Children);
-    mHistoryHighlights[row]->SetVisibility(true, kTM_Children);
-    mHistoryMeters[row]->SetVisibility(true, kTM_Children);
-    mHistoryMeterBackgrounds[row]->SetVisibility(true, kTM_Children);
-    mHistoryHighlights[row]->SetColor(clear);
+    mHistoryLabels[rows[i]]->SetVisibility(true, kTM_Children);
+    mHistoryBackgrounds[rows[i]]->SetVisibility(true, kTM_Children);
+    mHistoryHighlights[rows[i]]->SetVisibility(true, kTM_Children);
+    mHistoryMeters[rows[i]]->SetVisibility(true, kTM_Children);
+    mHistoryMeterBackgrounds[rows[i]]->SetVisibility(true, kTM_Children);
+    mHistoryHighlights[rows[i]]->SetColor(clear);
   }
   for (; i < rows.size(); ++i) {
-    const int row = rows[i];
-    mHistoryLabels[row]->SetVisibility(false, kTM_Children);
-    mHistoryBackgrounds[row]->SetVisibility(false, kTM_Children);
-    mHistoryMeters[row]->SetVisibility(false, kTM_Children);
-    mHistoryMeterBackgrounds[row]->SetVisibility(false, kTM_Children);
-    mHistoryHighlights[row]->SetVisibility(false, kTM_Children);
+    mHistoryLabels[rows[i]]->SetVisibility(false, kTM_Children);
+    mHistoryBackgrounds[rows[i]]->SetVisibility(false, kTM_Children);
+    mHistoryMeters[rows[i]]->SetVisibility(false, kTM_Children);
+    mHistoryMeterBackgrounds[rows[i]]->SetVisibility(false, kTM_Children);
+    mHistoryHighlights[rows[i]]->SetVisibility(false, kTM_Children);
   }
 
-  if (close_enough(transition, 0.f)) {
-    if (count > 0) {
-      const int row = rows[count - 1];
-      mHistoryLabels[row]->TextSupport().SetFontColor(selectedTitle);
-      mHistoryBackgrounds[row]->SetColor(unselectedFrame);
-      mHistoryHighlights[row]->SetColor(cursor);
-      mHistoryMeters[row]->SetColor(selectedBar);
-      mHistoryMeterBackgrounds[row]->SetColor(selectedBackground);
-    }
-  } else {
-    if (fromParent) {
-      transition = 1.f - transition;
-    }
+  if (!close_enough(transition, 0.f)) {
+    const float t = fromParent ? 1.f - transition : transition;
     if (count > 1) {
-      const int row = rows[count - 2];
-      mHistoryLabels[row]->TextSupport().SetFontColor(
-          CColor::Lerp(selectedTitle, unselectedTitle, transition));
-      mHistoryBackgrounds[row]->SetColor(CColor::Lerp(unselectedFrame, selectedFrame, transition));
-      mHistoryHighlights[row]->SetColor(CColor::Lerp(cursor, clear, transition));
-      mHistoryMeters[row]->SetColor(CColor::Lerp(selectedBar, unselectedBar, transition));
-      mHistoryMeterBackgrounds[row]->SetColor(
-          CColor::Lerp(selectedBackground, unselectedBackground, transition));
+      const int row = count - 2;
+      mHistoryLabels[rows[row]]->TextSupport().SetFontColor(
+          CColor::Lerp(selectedTitle, unselectedTitle, t));
+      mHistoryBackgrounds[rows[row]]->SetColor(CColor::Lerp(unselectedFrame, selectedFrame, t));
+      mHistoryHighlights[rows[row]]->SetColor(CColor::Lerp(cursor, clear, t));
+      mHistoryMeters[rows[row]]->SetColor(CColor::Lerp(selectedBar, unselectedBar, t));
+      mHistoryMeterBackgrounds[rows[row]]->SetColor(
+          CColor::Lerp(selectedBackground, unselectedBackground, t));
     }
     if (count > 0) {
-      const int row = rows[count - 1];
-      const float fade = 1.f - transition;
-      mHistoryLabels[row]->TextSupport().SetFontColor(CColor::Lerp(selectedTitle, clear, fade));
-      mHistoryBackgrounds[row]->SetColor(CColor::Lerp(unselectedFrame, clear, fade));
-      mHistoryHighlights[row]->SetColor(CColor::Lerp(cursor, clear, fade));
-      mHistoryMeters[row]->SetColor(CColor::Lerp(selectedBar, clear, fade));
-      mHistoryMeterBackgrounds[row]->SetColor(CColor::Lerp(selectedBackground, clear, fade));
+      const int row = count - 1;
+      const float fade = 1.f - t;
+      mHistoryLabels[rows[row]]->TextSupport().SetFontColor(
+          CColor::Lerp(selectedTitle, clear, fade));
+      mHistoryBackgrounds[rows[row]]->SetColor(CColor::Lerp(unselectedFrame, clear, fade));
+      mHistoryHighlights[rows[row]]->SetColor(CColor::Lerp(cursor, clear, fade));
+      mHistoryMeters[rows[row]]->SetColor(CColor::Lerp(selectedBar, clear, fade));
+      mHistoryMeterBackgrounds[rows[row]]->SetColor(CColor::Lerp(selectedBackground, clear, fade));
     }
+  } else if (count > 0) {
+    const int row = count - 1;
+    mHistoryLabels[rows[row]]->TextSupport().SetFontColor(selectedTitle);
+    mHistoryBackgrounds[rows[row]]->SetColor(unselectedFrame);
+    mHistoryHighlights[rows[row]]->SetColor(cursor);
+    mHistoryMeters[rows[row]]->SetColor(selectedBar);
+    mHistoryMeterBackgrounds[rows[row]]->SetColor(selectedBackground);
   }
 }
 
