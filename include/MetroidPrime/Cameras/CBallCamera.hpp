@@ -238,8 +238,8 @@ private:
   float mFreeLookYawDelta;
   float mFreeLookPitchDelta;
   float mFreeLookDistance;
-  float mFreeLookZoomOutInput;
   float mFreeLookZoomInInput;
+  float mFreeLookZoomOutInput;
   EBallCameraState mState;
   float mChaseDistance;
   float mChaseYawSpeed;

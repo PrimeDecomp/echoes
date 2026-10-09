@@ -133,8 +133,8 @@ CBallCamera::CBallCamera(TUniqueId uid, TUniqueId watchedId, const CTransform4f&
 , mFreeLookYawDelta(0.f)
 , mFreeLookPitchDelta(0.f)
 , mFreeLookDistance(2.f)
-, mFreeLookZoomOutInput(0.f)
 , mFreeLookZoomInInput(0.f)
+, mFreeLookZoomOutInput(0.f)
 , mState(kBCS_Default)
 , mChaseDistance(gpTweakBall->GetBallCameraChaseDistance())
 , mChaseYawSpeed(gpTweakBall->GetBallCameraChaseYawSpeed())
@@ -2096,68 +2096,74 @@ void CBallCamera::SetState(EBallCameraState state, CStateManager& mgr) {
 }
 
 void CBallCamera::ProcessInput(const CFinalInput& input, CStateManager& mgr) {
-  const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetWatchedObject()));
-  if (player == nullptr) {
-    return;
-  }
+  if (const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetWatchedObject()))) {
+    bool preventFreeLook = false;
+    const CScriptPlayerHint* hint =
+        TCastToConstPtr< CScriptPlayerHint >(player->GetPlayerHintManager()->GetCurrentHint(mgr));
+    if (hint != nullptr && (hint->GetOverrideFlags() & 0x80000) != 0) {
+      preventFreeLook = true;
+    }
+    if (player->GetMorphballTransitionState() == CPlayer::kMS_Morphed) {
+      switch (mState) {
+      case kBCS_Chase:
+        if (!player->GetControlMapper().GetDigitalInput(CControlMapper::kC_ChaseCamera, input) ||
+            player->IsInFreeLook()) {
+          SetState(kBCS_Default, mgr);
+        }
+        break;
+      case kBCS_FreeLook:
+        if ((!player->GetControlMapper().GetDigitalInput(CControlMapper::kC_LookHold1, input) &&
+             !player->GetControlMapper().GetDigitalInput(CControlMapper::kC_LookHold2, input)) ||
+            CMath::AbsF(player->GetMoveSpeed()) >= 0.1f ||
+            player->GetMorphBall()->GetBallState() == CMorphBall::kBS_Spider || preventFreeLook) {
+          SetState(kBCS_Default, mgr);
+        } else {
+          const float left =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookLeft, input);
+          const float right =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookRight, input);
+          const float up =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookUp, input);
+          const float down =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookDown, input);
+          mFreeLookZoomInInput =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookZoomIn, input);
+          mFreeLookZoomOutInput =
+              player->GetControlMapper().GetAnalogInput(CControlMapper::kC_LookZoomOut, input);
+          const float dt = input.DeltaTime();
+          mFreeLookDistance += dt * ((mFreeLookZoomInInput - mFreeLookZoomOutInput) *
+                                     gpTweakBall->GetBallCameraFreeLookZoomSpeed());
+          mFreeLookDistance =
+              CMath::Clamp(gpTweakBall->GetBallCameraFreeLookMinDistance(), mFreeLookDistance,
+                           gpTweakBall->GetBallCameraFreeLookMaxDistance());
+          mFreeLookYawDelta = dt * ((left - right) * gpTweakBall->GetBallCameraFreeLookSpeed());
+          mFreeLookPitchDelta = dt * ((up - down) * gpTweakBall->GetBallCameraFreeLookSpeed());
+        }
+        break;
+      case kBCS_Boost:
+        if (!player->GetMorphBall()->IsBoosting() &&
+            player->GetMorphBall()->GetBallAnimationIndex() != 1) {
+          SetState(kBCS_Default, mgr);
+        }
+        break;
+      case kBCS_Default:
+        if (mChaseAllowed &&
+            player->GetControlMapper().GetPressInput(CControlMapper::kC_ChaseCamera, input)) {
+          SetState(kBCS_Chase, mgr);
+        }
+        break;
+      case kBCS_ToBall:
+      case kBCS_FromBall:
+      default:
+        break;
+      }
 
-  const CScriptPlayerHint* hint =
-      TCastToConstPtr< CScriptPlayerHint >(player->GetPlayerHintManager()->GetCurrentHint(mgr));
-  const bool preventFreeLook = hint != nullptr && (hint->GetOverrideFlags() & 0x80000) != 0;
-  if (player->GetMorphballTransitionState() != CPlayer::kMS_Morphed) {
-    return;
-  }
-
-  const CControlMapper& controls = player->GetControlMapper();
-  const CMorphBall& ball = *player->GetMorphBall();
-  switch (mState) {
-  case kBCS_Chase:
-    if (!controls.GetDigitalInput(CControlMapper::kC_ChaseCamera, input) ||
-        player->IsInFreeLook()) {
-      SetState(kBCS_Default, mgr);
+      if (mBoostAllowed && mState != kBCS_Boost &&
+          (player->GetMorphBall()->IsBoosting() ||
+           player->GetMorphBall()->GetBoostChargeTimer() > 0.f)) {
+        SetState(kBCS_Boost, mgr);
+      }
     }
-    break;
-  case kBCS_Default:
-    if (mChaseAllowed && controls.GetPressInput(CControlMapper::kC_ChaseCamera, input)) {
-      SetState(kBCS_Chase, mgr);
-    }
-    break;
-  case kBCS_FreeLook:
-    if ((!controls.GetDigitalInput(CControlMapper::kC_LookHold1, input) &&
-         !controls.GetDigitalInput(CControlMapper::kC_LookHold2, input)) ||
-        CMath::AbsF(player->GetMoveSpeed()) >= 0.1f ||
-        ball.GetBallState() == CMorphBall::kBS_Spider || preventFreeLook) {
-      SetState(kBCS_Default, mgr);
-    } else {
-      const float left = controls.GetAnalogInput(CControlMapper::kC_LookLeft, input);
-      const float right = controls.GetAnalogInput(CControlMapper::kC_LookRight, input);
-      const float up = controls.GetAnalogInput(CControlMapper::kC_LookUp, input);
-      const float down = controls.GetAnalogInput(CControlMapper::kC_LookDown, input);
-      mFreeLookZoomOutInput = controls.GetAnalogInput(CControlMapper::kC_LookZoomOut, input);
-      mFreeLookZoomInInput = controls.GetAnalogInput(CControlMapper::kC_LookZoomIn, input);
-      mFreeLookDistance += input.DeltaTime() * ((mFreeLookZoomOutInput - mFreeLookZoomInInput) *
-                                                gpTweakBall->GetBallCameraFreeLookZoomSpeed());
-      mFreeLookDistance =
-          CMath::Clamp(gpTweakBall->GetBallCameraFreeLookMinDistance(), mFreeLookDistance,
-                       gpTweakBall->GetBallCameraFreeLookMaxDistance());
-      mFreeLookYawDelta =
-          input.DeltaTime() * ((left - right) * gpTweakBall->GetBallCameraFreeLookSpeed());
-      mFreeLookPitchDelta =
-          input.DeltaTime() * ((up - down) * gpTweakBall->GetBallCameraFreeLookSpeed());
-    }
-    break;
-  case kBCS_Boost:
-    if (!ball.IsBoosting() && ball.GetBallAnimationIndex() != 1) {
-      SetState(kBCS_Default, mgr);
-    }
-    break;
-  default:
-    break;
-  }
-
-  if (mBoostAllowed && mState != kBCS_Boost &&
-      (ball.IsBoosting() || ball.GetBoostChargeTimer() > 0.f)) {
-    SetState(kBCS_Boost, mgr);
   }
 }
 
