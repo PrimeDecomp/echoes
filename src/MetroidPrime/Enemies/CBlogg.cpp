@@ -216,7 +216,7 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
 , mProjectileBlurTime(projectileBlurTime)
 , xb68_(0.f)
 , mLineOfSightTracker(GetUniqueId(), CSegId(1), 0.3f, 0.f)
-, xbb0_(0)
+, mPhaseValue(0)
 , xbb1_(0)
 , xbb2_(0)
 , xbc4_24_(false)
@@ -322,6 +322,58 @@ CBlogg::CBlogg(TUniqueId uid, const rstl::string& name, CEntityInfo& info, const
     mPhases.push_back_unsafe(phase2);
   }
 }
+
+int CBlogg::GetHealthPhase() const {
+  const float health = GetHealthInfo()->GetHP();
+  const float fraction = health / GetHealthInfo()->GetInitialHP();
+  if (fraction < 0.33f) {
+    return 2;
+  }
+  return fraction < 0.66f;
+}
+
+void CBlogg::ChoosePhaseValue(CStateManager& mgr) {
+  const uchar phaseIndex = GetHealthPhase();
+  if (phaseIndex < mPhases.size()) {
+    const SBloggPhaseData& phase = mPhases[phaseIndex];
+    uint value = phase.mMin;
+    const uchar range = phase.mMax - phase.mMin;
+    if (range != 0) {
+      value = phase.mMin + mgr.Random()->Next() % (range + 1);
+    }
+    mPhaseValue = value;
+  }
+}
+
+void CBlogg::SyncCollisionActorHealth(CStateManager& mgr) {
+  for (uint i = 0; i < mCollisionActorManager->GetNumCollisionActors(); ++i) {
+    const TUniqueId id = mCollisionActorManager->GetCollisionDescFromIndex(i).GetCollisionActorId();
+    if (CActor* actor = static_cast< CActor* >(mgr.ObjectById(id))) {
+      *actor->HealthInfo() = *GetHealthInfo();
+    }
+  }
+}
+
+void CBlogg::SetIngPossessed(bool possessed, float duration, CStateManager& mgr) {
+  CPatterned::SetIngPossessed(possessed, duration, mgr);
+  SyncCollisionActorHealth(mgr);
+}
+
+void CBlogg::SetIngPossessed(bool possessed, CStateManager& mgr) {
+  CPatterned::SetIngPossessed(possessed, mgr);
+  SyncCollisionActorHealth(mgr);
+}
+
+CVector3f CBlogg::GetIngSnatchingPoint(float t) const {
+  const CAABox localBounds = GetModelData()->GetBounds();
+  CAABox bounds = GetModelData()->GetBounds(GetTransform());
+  const CVector3f normal = GetIngSnatchingNormal(t);
+  const CVector3f center = bounds.GetCenterPoint();
+  const float height = localBounds.GetMaxPoint().GetY() - localBounds.GetMinPoint().GetY();
+  return center + (0.5f - t) * height * normal;
+}
+
+CVector3f CBlogg::GetIngSnatchingNormal(float) const { return -GetTransform().GetForward(); }
 
 CBlogg::~CBlogg() {}
 

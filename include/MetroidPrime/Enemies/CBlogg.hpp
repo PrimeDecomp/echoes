@@ -131,6 +131,10 @@ public:
   CPathFindSearch* GetSearchPath() override { return &mPathFindSearch; }
   CDamageInfo GetContactDamage() const override { return mContactDamage; }
   void SetupStateMachine(CStateManager& mgr) override;
+  void SetIngPossessed(bool possessed, CStateManager& mgr) override;
+  void SetIngPossessed(bool possessed, float duration, CStateManager& mgr) override;
+  CVector3f GetIngSnatchingNormal(float t) const override;
+  CVector3f GetIngSnatchingPoint(float t) const override;
 
   // CBlogg
   const CDamageVulnerability* GetIngPossessedArmorVulnerability() const {
@@ -152,12 +156,16 @@ public:
   bool InProjectileRange(CStateManager& mgr, const CTriggerData& data) const;
   bool CantMoveToPlayer(CStateManager& mgr, const CTriggerData& data) const;
   bool BallGrabbed(CStateManager& mgr, const CTriggerData& data) const;
+  bool CanGrabBall(CStateManager& mgr, const CTriggerData& data) const;
   bool ShouldAbortBallGrab(CStateManager& mgr, const CTriggerData& data) const;
 
 private:
   CPlayer* GetPlayer(CStateManager& mgr) const;                  // Guessed name
   bool IsPlayerWithin(CStateManager& mgr, float distance) const; // Guessed name
   uchar HasCollisionTimeElapsed() const;                         // Guessed name
+  int GetHealthPhase() const;                                    // Guessed name
+  void ChoosePhaseValue(CStateManager& mgr);                     // Guessed name
+  void SyncCollisionActorHealth(CStateManager& mgr);             // Guessed name
 
   EBloggState mState; // Guessed name
   int mAimAnimLeft;   // Guessed name
@@ -240,7 +248,7 @@ private:
   float xb68_;
   float xb6c_;
   CLineOfSightTracker mLineOfSightTracker; // Guessed name
-  uchar xbb0_;
+  uchar mPhaseValue;                       // Guessed name
   uchar xbb1_;
   uchar xbb2_;
   rstl::vector< SBloggPhaseData > mPhases; // Guessed name
