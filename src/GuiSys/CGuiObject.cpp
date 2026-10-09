@@ -110,7 +110,7 @@ const CGuiObject* CGuiObject::GetParent() const { return mParent; }
 
 CGuiObject* CGuiObject::Parent() { return mParent; }
 
-void CGuiObject::SetO2PTransform(const CTransform4f& xf) {
+void CGuiObject::SetLocalTransform(const CTransform4f& xf) {
   mLocalXF = xf;
   RecalculateTransforms();
 }
@@ -118,7 +118,7 @@ void CGuiObject::SetO2PTransform(const CTransform4f& xf) {
 void CGuiObject::SetO2WTransform(const CTransform4f& xf) {
   const CTransform4f inverse = mParent->GetWorldTransform().GetQuickInverse();
   const CTransform4f local = inverse * xf;
-  SetO2PTransform(local);
+  SetLocalTransform(local);
 }
 
 inline const CTransform4f& CGuiObject::GetWorldTransform() const {

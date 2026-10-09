@@ -85,6 +85,12 @@ class CDamageVulnerability;
 
 typedef rstl::bit_vector<> MapWorldInfoAreas;
 
+// The dynamic actor light records are copied bitwise (bitwise_copy<10> + trailing word).
+typedef rstl::pair< TUniqueId, CLight > TDynamicActorLight; // Guessed name
+namespace rstl {
+RSTL_DECLARE_BITWISE_CONSTRUCTION(TDynamicActorLight)
+}
+
 enum EStateManagerTransition {
   kSMT_InGame,
   kSMT_MapScreen,

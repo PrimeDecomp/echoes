@@ -622,10 +622,10 @@ void CPauseScreen::Update(float dt, const CStateManager& mgr, CArchitectureQueue
   if (!mHistoryTextReady) {
     UpdateHistoryText();
   }
-  if (!mLegendVisible) {
-    mLegendHiddenAmount += dt / gpTweakGui->GetLogBookLegendHideTime();
-  } else {
+  if (mLegendVisible) {
     mLegendHiddenAmount -= dt / gpTweakGui->GetLogBookLegendHideTime();
+  } else {
+    mLegendHiddenAmount += dt / gpTweakGui->GetLogBookLegendHideTime();
   }
   mLegendHiddenAmount = CMath::Clamp(0.f, mLegendHiddenAmount, 1.f);
   if (mBottomPane != nullptr) {
@@ -633,8 +633,9 @@ void CPauseScreen::Update(float dt, const CStateManager& mgr, CArchitectureQueue
     mBottomPane->SetVisibility(!close_enough(mLegendHiddenAmount, 1.f), kTM_Children);
   }
   if (mScanInfoGroup != nullptr) {
-    mScanInfoGroup->SetO2PTransform(mScanInfoGroup->GetIdleXform() *
-                                    CTransform4f::Translate(0.f, 0.f, -4.3f * mLegendHiddenAmount));
+    mScanInfoGroup->SetO2PTransform(
+        mScanInfoGroup->GetIdleXform() *
+        CTransform4f::Translate(CVector3f(0.f, 0.f, -4.3f * mLegendHiddenAmount)));
   }
   if (mModelZoomed) {
     mModelZoomAmount = 2.f * dt + mModelZoomAmount;
@@ -646,15 +647,19 @@ void CPauseScreen::Update(float dt, const CStateManager& mgr, CArchitectureQueue
   mSelectionHighlight = rstl::max_val(-(3.f * dt - mSelectionHighlight), 0.f);
   mModelFade = rstl::min_val(mModelFade + dt / gpTweakGui->GetLogBookScanObjectFadeInTime(), 1.f);
   mFrame->Update(dt);
-  if (mQuitScreen.get() == nullptr) {
-    mScanTree.Update(dt);
-  } else {
-    const EQuitAction action = mQuitScreen->Update(dt);
-    if (action == kQA_No) {
+  if (!mQuitScreen.null()) {
+    switch (mQuitScreen->Update(dt)) {
+    case kQA_No:
       mQuitScreen = rstl::auto_ptr< CQuitGameScreen >(nullptr);
-    } else if (action == kQA_Yes) {
+      break;
+    case kQA_Yes:
       queue.Push(MakeMsg::CreateQuitGameplay(kAMT_Game));
+      break;
+    default:
+      break;
     }
+  } else {
+    mScanTree.Update(dt);
   }
   UpdateHistoryColors();
   UpdatePulse(dt);
