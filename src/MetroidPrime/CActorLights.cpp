@@ -427,17 +427,18 @@ void CActorLights::MultiplyLightingLevels(float level) {
 }
 
 void CActorLights::AddOverflowToLights(const CLight& light, const CVector3f& color, float mag) {
-  if (mag >= 0.001f && mMaxAreaLights > 0) {
-    mag = 1.f / mag;
-    const CVector3f scaledColor = color * mag;
-    const CColor useColor(scaledColor.GetX(), scaledColor.GetY(), scaledColor.GetZ(), 1.f);
-    const CLight overflowLight = CLight::BuildCustom(
-        light.GetPosition() * mag, light.GetDirection() * mag, useColor,
-        light.GetAttenuationConstant() * mag, light.GetAttenuationLinear() * mag,
-        light.GetAttenuationQuadratic() * mag, light.GetAngleAttenuationConstant() * mag,
-        light.GetAngleAttenuationLinear() * mag, light.GetAngleAttenuationQuadratic() * mag);
-    mAreaLights.push_back(overflowLight);
+  if (mag < 0.001f || mMaxAreaLights < 1) {
+    return;
   }
+  mag = 1.f / mag;
+  const CVector3f scaledColor = color * mag;
+  const CColor useColor(scaledColor.GetX(), scaledColor.GetY(), scaledColor.GetZ(), 1.f);
+  const CLight overflowLight = CLight::BuildCustom(
+      light.GetPosition() * mag, light.GetDirection() * mag, useColor,
+      light.GetAttenuationConstant() * mag, light.GetAttenuationLinear() * mag,
+      light.GetAttenuationQuadratic() * mag, light.GetAngleAttenuationConstant() * mag,
+      light.GetAngleAttenuationLinear() * mag, light.GetAngleAttenuationQuadratic() * mag);
+  mAreaLights.push_back(overflowLight);
 }
 
 void CActorLights::MoveAmbienceToLights(const CVector3f& color) {
