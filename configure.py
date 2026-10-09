@@ -281,7 +281,6 @@ cflags_retro = [
 
 if config.version in ("G2ME01", "G2MP01"):
     cflags_retro.append('-pragma "inline_max_size(125)"')
-    cflags_retro.append('-pragma "inline_max_total_size(10000)"')
 
 # Relocatable code cannot use the DOL's small-data bases.
 cflags_rel = [
