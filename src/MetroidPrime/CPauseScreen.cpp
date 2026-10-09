@@ -1977,8 +1977,9 @@ void CPauseScreen::UpdateHistoryText() {
       return;
     }
     names.push_back(node->GetName());
-    completion.push_back(float(node->GetVisibleDescendantCount()) /
-                         float(node->GetDescendantCount()));
+    const CScanTreeNode& treeNode = *node;
+    const int visible = treeNode.GetVisibleDescendantCount();
+    completion.push_back(float(visible) / float(treeNode.GetDescendantCount()));
     nodeId = node->GetParentNode();
   }
   if (!names.empty()) {
