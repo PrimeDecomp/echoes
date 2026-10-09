@@ -138,49 +138,49 @@ void CSurfaceCamera::Think(float dt, CStateManager& mgr) {
       }
     }
     xf.SetTranslation(position);
-  }
 
-  const CVector3f ballPosition = Player(mgr).GetBallPosition();
-  camera = TCastToConstPtr< CScriptSurfaceCamera >(mgr.GetObjectById(mScriptCameraId));
-  if (camera) {
-    const CMotionSpline& playerSpline = camera->GetPlayerSpline();
-    if (playerSpline.GetControlPointCount() != 0) {
-      mPlayerSplineDistance =
-          playerSpline.FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
+    const CVector3f ballPosition = Player(mgr).GetBallPosition();
+    camera = TCastToConstPtr< CScriptSurfaceCamera >(mgr.GetObjectById(mScriptCameraId));
+    if (camera) {
+      const CMotionSpline& playerSpline = camera->GetPlayerSpline();
+      if (playerSpline.GetControlPointCount() != 0) {
+        mPlayerSplineDistance =
+            playerSpline.FindClosestLengthOnSpline(mPlayerSplineDistance, ballPosition);
+      }
+      const CMotionSpline& targetSpline = camera->GetTargetSpline();
+      if (targetSpline.GetControlPointCount() != 0) {
+        mTargetSplineDistance =
+            targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
+      }
     }
-    const CMotionSpline& targetSpline = camera->GetTargetSpline();
-    if (targetSpline.GetControlPointCount() != 0) {
-      mTargetSplineDistance =
-          targetSpline.FindClosestLengthOnSpline(mTargetSplineDistance, ballPosition);
+
+    const CVector3f lookTarget = GetScanObjectIndicatorPosition(mgr);
+    CVector3f lookDirection = lookTarget - GetTranslation();
+    lookDirection.SetZ(0.f);
+    if (lookDirection.IsMagnitudeSafe()) {
+      xf = CTransform4f::LookAt(xf.GetTranslation(), lookTarget, CVector3f::Up());
     }
-  }
 
-  const CVector3f lookTarget = GetScanObjectIndicatorPosition(mgr);
-  CVector3f lookDirection = lookTarget - GetTranslation();
-  lookDirection.SetZ(0.f);
-  if (lookDirection.IsMagnitudeSafe()) {
-    xf = CTransform4f::LookAt(xf.GetTranslation(), lookTarget, CVector3f::Up());
-  }
-
-  const CMayaSpline& fovSpline = camera->GetFovSpline();
-  if (fovSpline.GetKnotCount() != 0) {
-    if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
-      float progress = mPlayerSplineDistance / camera->GetPlayerSpline().GetLength();
-      SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
-    } else if (camera->GetTargetSpline().GetControlPointCount() != 0) {
-      float progress = mTargetSplineDistance / camera->GetTargetSpline().GetLength();
-      SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
-    } else {
-      SetTargetFov(fovSpline.EvaluateAt(0.f));
+    const CMayaSpline& fovSpline = camera->GetFovSpline();
+    if (fovSpline.GetKnotCount() != 0) {
+      if (camera->GetPlayerSpline().GetControlPointCount() != 0) {
+        float progress = mPlayerSplineDistance / camera->GetPlayerSpline().GetLength();
+        SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
+      } else if (camera->GetTargetSpline().GetControlPointCount() != 0) {
+        float progress = mTargetSplineDistance / camera->GetTargetSpline().GetLength();
+        SetTargetFov(fovSpline.EvaluateAt(CMath::Clamp(0.f, progress, 1.f)));
+      } else {
+        SetTargetFov(fovSpline.EvaluateAt(0.f));
+      }
     }
-  }
 
-  if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
-    const CGameHint* hint = CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
-    if (hint) {
-      const CVector3f forward = hint->GetTransform().GetForward();
-      xf = CTransform4f::LookAt(xf.GetTranslation(), xf.GetTranslation() + forward,
-                                CVector3f::Up());
+    if (camera->GetFlags() & CScriptSurfaceCamera::kSF_ProjectTargetAlongHintForward) {
+      const CGameHint* hint = CameraManager(mgr).GetHintManager()->GetCurrentHint(mgr);
+      if (hint) {
+        const CVector3f forward = hint->GetTransform().GetForward();
+        xf = CTransform4f::LookAt(xf.GetTranslation(), xf.GetTranslation() + forward,
+                                  CVector3f::Up());
+      }
     }
   }
 
