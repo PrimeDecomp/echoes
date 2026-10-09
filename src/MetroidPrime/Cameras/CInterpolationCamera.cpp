@@ -303,7 +303,7 @@ void CInterpolationCamera::Think(float dt, CStateManager& mgr) {
     EndInterpolation(kER_Completed, mgr);
   } else if (mPositionMode == kPM_Direct ||
              target->GetUniqueId() == GetCameraManager(mgr).GetBallCamera()->GetUniqueId()) {
-    if ((target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
+    if (CVector3f(target->GetTranslation() - xf.GetTranslation()).Magnitude() > 3.f) {
       CVector3f direction = xf.GetTranslation() - oldXf.GetTranslation();
       if (direction.CanBeNormalized()) {
         direction = direction.AsNormalized();
