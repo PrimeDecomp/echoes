@@ -188,7 +188,7 @@ void CWispTentacle::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg) {
             materials.Add(spheres[i].x8_);
             materials.Add(kMT_NoStepLogic);
             materials.Add(kMT_NoPlatformCollision);
-            materials.Remove(kMT_Lava);
+            materials.Remove(kMT_Unknown9);
             materials.Remove(kMT_Dirt);
             colAct->SetMaterialFilter(
                 CMaterialFilter(GetMaterialFilter().GetIncludeList().Union(

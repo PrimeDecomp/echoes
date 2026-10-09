@@ -31,12 +31,12 @@ float sRestitution[32];
 float sDamping[32];
 CMaterialList sResponseMaterials;
 SMaterialResponse sMaterialResponses[] = {
-    SMaterialResponse(kMT_Stone, 0.9f, 0.8f),     SMaterialResponse(kMT_Metal, 1.f, 0.7f),
-    SMaterialResponse(kMT_Grass, 0.2f, 0.3f),     SMaterialResponse(kMT_Phazon, 0.1f, 0.2f),
-    SMaterialResponse(kMT_Dirt, 0.3f, 0.3f),      SMaterialResponse(kMT_MudSlow, 0.2f, 0.6f),
-    SMaterialResponse(kMT_Sand, 0.1f, 0.2f),      SMaterialResponse(kMT_Unknown18, 0.1f, 0.1f),
-    SMaterialResponse(kMT_Unknown19, 0.1f, 0.1f), SMaterialResponse(kMT_Wood, 0.8f, 0.8f),
-    SMaterialResponse(kMT_Organic, 0.3f, 0.8f),   SMaterialResponse(kMT_Unknown25, 5.f, 0.2f),
+    SMaterialResponse(kMT_Stone, 0.9f, 0.8f),   SMaterialResponse(kMT_Metal, 1.f, 0.7f),
+    SMaterialResponse(kMT_Grass, 0.2f, 0.3f),   SMaterialResponse(kMT_Phazon, 0.1f, 0.2f),
+    SMaterialResponse(kMT_Dirt, 0.3f, 0.3f),    SMaterialResponse(kMT_Fabric, 0.2f, 0.6f),
+    SMaterialResponse(kMT_Sand, 0.1f, 0.2f),    SMaterialResponse(kMT_Unknown18, 0.1f, 0.1f),
+    SMaterialResponse(kMT_Web, 0.1f, 0.1f),     SMaterialResponse(kMT_Wood, 0.8f, 0.8f),
+    SMaterialResponse(kMT_Organic, 0.3f, 0.8f), SMaterialResponse(kMT_Rubber, 5.f, 0.2f),
 };
 bool sMaterialsInitialized;
 
