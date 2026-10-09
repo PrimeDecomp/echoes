@@ -672,7 +672,7 @@ bool CBallCamera::ConstrainElevationAndDistance(float& elevation, float& distanc
   float baseElevation = elevation;
   float springScale = 1.f;
   if (door != nullptr && !door->IsBallDoor()) {
-    float doorRange = 3.f * distance;
+    const float doorRange = 3.f * distance;
     stretch = CMath::Limit(CMath::AbsF(mTooCloseActorDist / doorRange), 1.f);
     if (mTooCloseActorDist < doorRange) {
       nearDoor = true;
