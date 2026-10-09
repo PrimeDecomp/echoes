@@ -142,6 +142,8 @@ public:
   void Death(CStateManager& mgr, const CVector3f& direction, EScriptObjectState state) override;
 
   // CPatterned
+  void DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
+                       float dt) override;
   CProjectileInfo* ProjectileInfo() override { return &mProjectileInfo; }
   CPathFindSearch* GetSearchPath() override { return &mPathFindSearch; }
   CDamageInfo GetContactDamage() const override { return mContactDamage; }
@@ -236,8 +238,11 @@ private:
   void StopPlayer(CStateManager& mgr);                        // Guessed name
   void AttachPlayerToMouth(CStateManager& mgr);               // Guessed name
   void UpdateAimWeights();                                    // Guessed name
-  uchar GetNextPositionIndex() const;                         // Guessed name
-  void PathToAttackPosition(CStateManager& mgr, float dt);    // Guessed name
+  void LaunchBloggProjectile(const CTransform4f& xf, CStateManager& mgr, int maxProjectiles,
+                             uint attributes, bool homing, const CImpactVisorEffect& visorEffect,
+                             const CVector3f& scale);      // Guessed name
+  uchar GetNextPositionIndex() const;                      // Guessed name
+  void PathToAttackPosition(CStateManager& mgr, float dt); // Guessed name
   void FindAttackPositions(CStateManager& mgr, const CVector3f& playerPosition,
                            const CVector3f& bloggPosition, const CVector3f& direction,
                            float distance); // Guessed name

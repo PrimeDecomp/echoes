@@ -15,6 +15,7 @@
 #include "MetroidPrime/CObjectList.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Enemies/CPatternedInfo.hpp"
+#include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrBlogg.hpp"
@@ -26,7 +27,9 @@
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWaypoint.hpp"
 #include "MetroidPrime/TCastTo.hpp"
+#include "MetroidPrime/Weapons/CBloggProjectile.hpp"
 #include "MetroidPrime/Weapons/CBomb.hpp"
+#include "MetroidPrime/Weapons/CImpactVisorEffect.hpp"
 #include "MetroidPrime/Weapons/CPowerBomb.hpp"
 #include "MetroidPrime/Weapons/CWeapon.hpp"
 #include "REL/REL_Setup.h"
@@ -1885,6 +1888,77 @@ void CBlogg::Think(float dt, CStateManager& mgr) {
         xbb1_ = 0;
       }
     }
+  }
+}
+
+void CBlogg::LaunchBloggProjectile(const CTransform4f& xf, CStateManager& mgr, int maxProjectiles,
+                                   uint attributes, bool homing,
+                                   const CImpactVisorEffect& visorEffect, const CVector3f& scale) {
+  if (ProjectileInfo()->Token().TryCache()) {
+    if (mgr.CanCreateProjectile(GetUniqueId(), kWT_AI, maxProjectiles)) {
+      CBloggProjectile* projectile = rs_new CBloggProjectile(
+          true, ProjectileInfo()->Token(), kWT_AI, xf, kMT_Character, ProjectileInfo()->GetDamage(),
+          mgr.AllocateUniqueId(), GetCurrentAreaId(), GetUniqueId(),
+          homing ? mgr.GetPlayer(0)->GetUniqueId() : kInvalidUniqueId, attributes, true, scale,
+          visorEffect, false, true, mProjectileScale);
+      if (projectile != nullptr) {
+        projectile->SetDamageDuration(mProjectileBlurTime);
+        mgr.AddObject(projectile);
+      }
+    }
+  }
+}
+
+void CBlogg::DoUserAnimEvent(CStateManager& mgr, const CInt32POINode& node, EUserEventType type,
+                             float dt) {
+  switch (type) {
+  case kUE_Projectile: {
+    const CTransform4f xf =
+        GetTransform() * GetScaledLocatorTransform(rstl::string_l("mouth_LCTR"));
+    const CImpactVisorEffect visorEffect = CImpactVisorEffect::BlurEffect(
+        CImpactVisorEffect::SBlurEffect(1, mProjectileBlurRadius, mProjectileBlurTime));
+    const CVector3f scale(1.f, 1.f, 1.f);
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      const CVector3f position = xf.GetTranslation();
+      const CVector3f aim = player->GetAimPosition(mgr, 0.f);
+      const CVector3f offset = position - aim;
+      const float travelTime = offset.Magnitude() / ProjectileInfo()->GetProjectileSpeed();
+      const CVector3f predicted = aim + 1.f * (travelTime * player->GetDampedClampedVelocityWR());
+      LaunchBloggProjectile(CTransform4f::LookAt(position, predicted), mgr, 10, 0, false,
+                            visorEffect, scale);
+    } else {
+      LaunchBloggProjectile(CTransform4f::LookAt(xf.GetTranslation(), x97c_), mgr, 10, 0, false,
+                            visorEffect, scale);
+    }
+    break;
+  }
+  case kUE_ObjectDrop: {
+    CPlayer* player = GetPlayer(mgr);
+    if (player != nullptr) {
+      const CTransform4f locator =
+          GetScaledLocatorTransform(rstl::string_l(skBallAttachLocatorName));
+      const CTransform4f xf = GetTransform() * locator;
+      const CVector3f forward = xf.GetForward();
+      player->Stop();
+      player->SetVelocityWR(CVector3f::Zero());
+      const CVector3f direction = forward.AsNormalized();
+      player->ApplyImpulseWR(direction * player->GetMass() * 30.f, CAxisAngle::Identity());
+      player->SetMoveState(NPlayer::kMS_ApplyJump, mgr);
+      player->EnableLeaveMorphBall(true);
+      CDamageInfo damage(mContactDamage);
+      damage.SetDamage(mBallSpitDamage);
+      mgr.ApplyDamage(
+          GetUniqueId(), player->GetUniqueId(), GetUniqueId(), damage,
+          CMaterialFilter::MakeIncludeExclude(CMaterialList(skContactDamageSolid), CMaterialList()),
+          CVector3f::Zero());
+      player->GetMorphBall()->SetAsProjectile(true);
+    }
+    mBallGrabbed = false;
+  }
+  default:
+    CPatterned::DoUserAnimEvent(mgr, node, type, dt);
+    break;
   }
 }
 
