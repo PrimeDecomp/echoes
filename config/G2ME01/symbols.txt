@@ -8455,8 +8455,8 @@ __pl__4rstlFPCwRCQ24rstl66basic_string<w,Q24rstl14char_traits<w>,Q24rstl17rmemor
 InitializeFrameGlue__12CPauseScreenFv = .text:0x8020B384; // type:function size:0xB7C
 __dt__12CPauseScreenFv = .text:0x8020BF00; // type:function size:0x3FC
 __dt__9CScanTreeFv = .text:0x8020C2FC; // type:function size:0xA8
-__dt__Q24rstl67vector<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>Fv = .text:0x8020C3A4; // type:function size:0x84
-fn_8020C428 = .text:0x8020C428; // type:function size:0x60
+__dt__Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>Fv = .text:0x8020C3A4; // type:function size:0x84
+destroy<Q24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>>__4rstlFQ24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator> = .text:0x8020C428; // type:function size:0x60 scope:local
 __ct__12CPauseScreenFv = .text:0x8020C488; // type:function size:0xA00
 sort<Q24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>,Q212CPauseScreen34SDepthCompare$2735CPauseScreen_cpp>__4rstlFQ24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl142pointer_iterator<Q212CPauseScreen9SNodeDraw,Q24rstl61vector<Q212CPauseScreen9SNodeDraw,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q212CPauseScreen34SDepthCompare$2735CPauseScreen_cpp = .text:0x8020CE88; // type:function size:0x1CC scope:weak align:4
 fn_8020D054 = .text:0x8020D054; // type:function size:0x60
@@ -8599,8 +8599,8 @@ __ct__13CScanTreeNodeFiRC13SLdrTransformUiRCQ24rstl66basic_string<c,Q24rstl14cha
 ReadScanTree__FR12CInputStreamR9CScanTree = .text:0x80212EB0; // type:function size:0x310
 LoadScanTreeNode__FUiPiRCQ24rstl36vector<i,Q24rstl17rmemory_allocator>R12CInputStream = .text:0x802131C0; // type:function size:0x100
 __dt__18CScanTreeInventoryFv = .text:0x802132C0; // type:function size:0x60 align:4
-reserve__Q24rstl67vector<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>Fi = .text:0x80213320; // type:function size:0xBC
-uninitialized_copy<Q24rstl154pointer_iterator<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl67vector<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>,PQ24rstl23rc_ptr<13CScanTreeNode>>__4rstlFQ24rstl154pointer_iterator<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl67vector<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl154pointer_iterator<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl67vector<Q24rstl23rc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>PQ24rstl23rc_ptr<13CScanTreeNode> = .text:0x802133DC; // type:function size:0x4C
+reserve__Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>Fi = .text:0x80213320; // type:function size:0xBC
+uninitialized_copy<Q24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>,PQ24rstl25ncrc_ptr<13CScanTreeNode>>__4rstlFQ24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>Q24rstl158pointer_iterator<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl69vector<Q24rstl25ncrc_ptr<13CScanTreeNode>,Q24rstl17rmemory_allocator>,Q24rstl17rmemory_allocator>PQ24rstl25ncrc_ptr<13CScanTreeNode> = .text:0x802133DC; // type:function size:0x4C
 ReleaseData__Q24rstl28rc_ptr<18CScanTreeInventory>Fv = .text:0x80213428; // type:function size:0x64
 __sinit_CScanTree_cpp = .text:0x8021348C; // type:function size:0x1C scope:local align:4
 __dt__16CBloggProjectileFv = .text:0x802134A8; // type:function size:0x60 align:4

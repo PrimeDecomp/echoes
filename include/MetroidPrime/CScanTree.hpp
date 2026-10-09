@@ -67,7 +67,7 @@ private:
   rstl::auto_ptr< uchar > mBuffer;
   uint mBufferLength;
   rstl::auto_ptr< CDvdRequest > mLoadRequest;
-  rstl::vector< rstl::rc_ptr< CScanTreeNode > > mNodes;
+  rstl::vector< rstl::ncrc_ptr< CScanTreeNode > > mNodes;
   int mRootNode;
   CRandom16 mRandom;
 };
