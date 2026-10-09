@@ -117,36 +117,41 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
           SetTransform(CTransform4f::LookAt(position, position + direction));
         } else {
           const CTransform4f xf = GetTransform();
-          if (!direction.DropZ().IsMagnitudeSafe()) {
+          const CVector3f lookPos = position;
+          const CVector3f lookDir = direction;
+          CVector3f flatDir = lookDir;
+          flatDir.SetZ(0.f);
+          if (!flatDir.IsMagnitudeSafe()) {
             SetTranslation(position);
           } else {
             CVector3f forward = GetTransform().GetForward();
-            if (!forward.IsMagnitudeSafe()) {
-              SetTransform(CTransform4f::LookAt(position, position + direction));
-            } else {
+            if (forward.IsMagnitudeSafe()) {
               forward.Normalize();
-              const float dot = CMath::Limit(CVector3f::Dot(forward, direction), 1.f);
-              if (CMath::AbsF(dot) >= 0.9999999f) {
-                SetTransform(CTransform4f::LookAt(position, position + direction));
-              } else {
-                const float angle = CMath::ArcCosineR(dot);
-                const float fraction = CMath::Clamp(0.f, angle / (1.0471976f * dt), 1.f);
-                CRelAngle step = CRelAngle::FromRadians(
-                    dt *
-                    (fraction * GetCameraManager(mgr).GetBallCamera()->GetTargetAnglePerSecond()));
-                const float vertical =
-                    CMath::AbsF(CMath::Limit(CVector3f::Dot(direction, CVector3f::Up()), 1.f));
-                const float verticalStep = (12.566371f * dt) * (1.f - vertical);
-                if (step.AsRadians() > verticalStep && !Player(mgr).IsMorphBallTransitioning() &&
-                    vertical > 0.999f) {
-                  step = CRelAngle::FromRadians(verticalStep);
-                }
-                const CQuaternion rotation =
-                    CQuaternion::LookAt(CUnitVector3f(forward), CUnitVector3f(direction), step);
-                SetTransform(rotation.BuildTransform4f() * GetTransform().GetRotation());
-              }
-              SetTranslation(position);
+            } else {
+              SetTransform(CTransform4f::LookAt(lookPos, lookPos + lookDir));
+              return;
             }
+            const float dot = CMath::Limit(CVector3f::Dot(forward, lookDir), 1.f);
+            if (CMath::AbsF(dot) >= 0.9999999f) {
+              SetTransform(CTransform4f::LookAt(lookPos, lookPos + lookDir));
+            } else {
+              const float angle = CMath::ArcCosineR(dot);
+              const float fraction = CMath::Clamp(0.f, angle / (1.0471976f * dt), 1.f);
+              CRelAngle step = CRelAngle::FromRadians(
+                  dt *
+                  (fraction * GetCameraManager(mgr).GetBallCamera()->GetTargetAnglePerSecond()));
+              const float vertical =
+                  CMath::AbsF(CMath::Limit(CVector3f::Dot(lookDir, CVector3f::Up()), 1.f));
+              const float verticalStep = (12.566371f * dt) * (1.f - vertical);
+              if (step.AsRadians() > verticalStep && !Player(mgr).IsMorphBallTransitioning() &&
+                  vertical > 0.999f) {
+                step = CRelAngle::FromRadians(verticalStep);
+              }
+              const CQuaternion rotation =
+                  CQuaternion::LookAt(CUnitVector3f(forward), CUnitVector3f(lookDir), step);
+              SetTransform(rotation.BuildTransform4f() * GetTransform().GetRotation());
+            }
+            SetTranslation(position);
           }
         }
       }
@@ -162,7 +167,8 @@ void CFixedCamera::Think(float dt, CStateManager& mgr) {
       SetFovAndTarget(info.GetFov());
     }
   }
-  SetTransform(ValidateCameraTransform(GetTransform(), oldXf, dt));
+  const CTransform4f validXf = ValidateCameraTransform(GetTransform(), oldXf, dt);
+  SetTransform(validXf);
   CActor::Think(dt, mgr);
 }
 
