@@ -8,8 +8,12 @@
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "MetaRender/CCubeRenderer.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/SFX/Weapons.h"
+#include "MetroidPrime/SFX/Weapons_MP.h"
 
-static const ushort kFireSounds[2][2] = {{0xc6, 0xc3}, {0x25b5, 0x259b}};
+static const ushort kFireSounds[2][2] = {
+    {SFXsam_a_pbmfire_00_oneshot, SFXsam_a_cbmfire_00_oneshot},
+    {SFXsa2_a_pbmfire_00_oneshot, SFXsa2_a_cbmfire_00_oneshot}};
 
 CPowerBeam::CPowerBeam(TUniqueId playerId, const CVector3f& scale, int unk)
 : CGunWeapon(kWT_Power, playerId, scale, unk)

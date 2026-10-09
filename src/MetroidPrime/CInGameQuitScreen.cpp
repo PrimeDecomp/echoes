@@ -14,6 +14,7 @@
 #include "MetroidPrime/Player/CFrontEndGameMode.hpp"
 #include "MetroidPrime/Player/CGMMultiplayer.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/SFX/UIMemory.h"
 #include "MetroidPrime/ScriptObjects/CScriptSpecialFunction.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptStreamedMusic.hpp"
 #include "MetroidPrime/TCastTo.hpp"
@@ -48,11 +49,11 @@ void CInGameQuitScreen::ProcessUserInput(const CFinalInput& input) {
     if (mChoices[0].mSelection == 1 && mChoiceTable->GetUserSelection() == 0) {
       mQuitConfirmation = rs_new CQuitGameScreen(kQT_QuitMultiplayer, mViewportLayout);
     } else {
-      CSfxManager::SfxStart(0x5e1, 127, 64);
+      CSfxManager::SfxStart(SFXui_x_quitaff_00_oneshot, 127, 64);
       mAction = kQA_No;
     }
   } else if (input.PB()) {
-    CSfxManager::SfxStart(0x5e1, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_quitaff_00_oneshot, 127, 64);
     mAction = kQA_No;
   } else {
     bool left = input.DLALeft() || input.DDPLeft();
@@ -107,7 +108,7 @@ void CInGameQuitScreen::Draw() const {
 
 void CInGameQuitScreen::DoSelectionChange(CGuiTableGroup*, int) {
   SetColors();
-  CSfxManager::SfxStart(0x5e1, 127, 64);
+  CSfxManager::SfxStart(SFXui_x_quitaff_00_oneshot, 127, 64);
 }
 
 void CInGameQuitScreen::FinishedLoading() {
@@ -197,7 +198,7 @@ void CInGameQuitScreen::ChangeChoice(int direction) {
   choice.mSelection = CMath::Clamp(0, direction + choice.mSelection, choice.mOptions.size() - 1);
   UpdateChoiceText();
   if (previous != choice.mSelection) {
-    CSfxManager::SfxStart(0x5e3, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_quitsel_00_oneshot, 127, 64);
   }
 }
 

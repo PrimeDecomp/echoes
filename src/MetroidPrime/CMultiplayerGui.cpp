@@ -12,6 +12,7 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CGameMode.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/SFX/TimersMultiplayer.h"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 #include "rstl/StringExtras.hpp"
 #include "rstl/math.hpp"
@@ -120,13 +121,13 @@ void CMultiplayerGui::Update(float dt, const CStateManager& mgr) {
     }
     mTimeWarningSfxCooldown = rstl::max_val(0.f, mTimeWarningSfxCooldown - dt);
     if (((!justStarted && periodicWarning) || minuteWarning) && mTimeWarningSfxCooldown <= 0.f) {
-      CSfxManager::SfxStart(0x2564, 127, 63, CSfxManager::kAllAreas, false, false,
-                            CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXti2_x_oneminute_00_oneshot, 127, 63, CSfxManager::kAllAreas, false,
+                            false, CSfxManager::kMedPriority);
       mTimeWarningSfxCooldown = 2.5f;
     }
     if (secondsRemaining < 11 && mTimeWarningSfxCooldown <= 0.f) {
-      CSfxManager::SfxStart(0x2563, 127, 63, CSfxManager::kAllAreas, false, false,
-                            CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXti2_x_countdown_00_oneshot, 127, 63, CSfxManager::kAllAreas, false,
+                            false, CSfxManager::kMedPriority);
       mTimeWarningSfxCooldown = 1.f;
     }
     if ((!justStarted && periodicWarning) || minuteWarning || secondsRemaining < 11) {

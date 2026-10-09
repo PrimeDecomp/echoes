@@ -9,6 +9,14 @@
 #include "MetroidPrime/Cameras/CCameraShakerManager.hpp"
 #include "MetroidPrime/Cameras/CFirstPersonCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/Weapons.h"
+#include "MetroidPrime/SFX/Weapons2.h"
+#include "MetroidPrime/SFX/Weapons2_MP.h"
+#include "MetroidPrime/SFX/Weapons3.h"
+#include "MetroidPrime/SFX/Weapons3_MP.h"
+#include "MetroidPrime/SFX/Weapons4_MP.h"
+#include "MetroidPrime/SFX/Weapons5.h"
+#include "MetroidPrime/SFX/Weapons_MP.h"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerGun.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
@@ -21,8 +29,13 @@
 #include "Kyoto/Particles/CVectorElement.hpp"
 #include "Weapons/CWeaponDescription.hpp"
 
-static const ushort skComboSoundIds[2][4] = {{238, 8163, 8162, 65535}, {9630, 9641, 9672, 9661}};
-static const ushort skMissileSoundIds[2] = {196, 9650};
+static const ushort skComboSoundIds[2][4] = {
+    {SFXsam_a_co1fire_00_oneshot, SFXsam_a_drkcofire_00_oneshot, SFXsam_a_litcofire_00_oneshot,
+     65535},
+    {SFXsa2_a_co1fire_00_oneshot, SFXsa2_a_drkcofire_00_oneshot, SFXsa2_a_litcofire_00_oneshot,
+     SFXsa2_a_nilcofire_00_oneshot}};
+static const ushort skMissileSoundIds[2] = {SFXsam_a_mislfire_00_oneshot,
+                                            SFXsa2_a_mislfire_00_oneshot};
 static const float skAnnihilatorDamageBases[3] = {150.f, 200.f, 300.f};
 static const float skAnnihilatorDamageWeights[3] = {60.f, 30.f, 10.f};
 static float skAnnihilatorDamageRanges[3][2] = {{0.f, 10.f}, {-10.f, 10.f}, {-10.f, 0.f}};

@@ -18,6 +18,7 @@
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/SamusPhazonHit_MP.h"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrPlayerController.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
@@ -63,7 +64,7 @@ void CScriptPlayerProxy::UpdateDamageOverTime(float dt, CStateManager& mgr) {
       it->mTimeRemaining -= dt;
       CDamageInfo info(CWeaponMode(EWeaponType(mCurrentWeaponType)), it->mDamagePerSecond * dt, 0.f,
                        0.f, true);
-      info.SetDamageLoopSfxId(0x458);
+      info.SetDamageLoopSfxId(SFXsa2_r_hackhit_lp_00_looped);
       mgr.ApplyDamage(
           GetUniqueId(), player->GetUniqueId(), it->mAttacker, info,
           CMaterialFilter::MakeIncludeExclude(CMaterialList(sDamageMaterial), CMaterialList()),

@@ -3,6 +3,9 @@
 #include "MetroidPrime/CAutoMapper.hpp"
 #include "MetroidPrime/CInGameGuiManager.hpp"
 #include "MetroidPrime/Cameras/CCameraFilterPass.hpp"
+#include "MetroidPrime/SFX/PickupsSpecial.h"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI3.h"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 
@@ -109,13 +112,13 @@ void CPauseScreenBlur::SetState(EState state, const CInGameGuiManager& guiMgr) {
     if (state != kS_InGame) {
       CSfxManager::SetChannel(CSfxManager::kSC_PauseScreen);
       if (state == kS_HUDMessage) {
-        CSfxManager::SfxStart(0x3fb, 0x7f, 0x40);
+        CSfxManager::SfxStart(SFXui_x_override_00_oneshot, 0x7f, 0x40);
       } else if (state == kS_MapScreen) {
         const CAutoMapper* mapper = guiMgr.GetAutoMapper();
         if (mapper != nullptr && mapper->GetMapMode() == CAutoMapper::kMM_Teleport) {
-          CSfxManager::SfxStart(0x274a, 0x7f, 0x40);
+          CSfxManager::SfxStart(SFXpik_x_map_00_oneshot, 0x7f, 0x40);
         }
-        CSfxManager::SfxStart(0x7a, 0x7f, 0x40);
+        CSfxManager::SfxStart(SFXui_x_pause_00_oneshot, 0x7f, 0x40);
       }
       mBlurAmt = FLT_EPSILON;
     }
@@ -137,9 +140,9 @@ void CPauseScreenBlur::SetState(EState state, const CInGameGuiManager& guiMgr) {
       CSfxManager::SetChannel(CSfxManager::kSC_Game);
 
       if (mPrevState == kS_HUDMessage) {
-        CSfxManager::SfxStart(0x3fd, 0x7f, 0x40);
+        CSfxManager::SfxStart(SFXui_x_override_01_oneshot, 0x7f, 0x40);
       } else if (mPrevState == kS_MapScreen) {
-        CSfxManager::SfxStart(0x7c, 0x7f, 0x40);
+        CSfxManager::SfxStart(SFXui_x_pause_01_oneshot, 0x7f, 0x40);
       }
 
       mBlurAmt = -1.f;

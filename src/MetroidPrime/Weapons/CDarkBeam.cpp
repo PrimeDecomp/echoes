@@ -5,12 +5,16 @@
 #include "Kyoto/Audio/CSfxManager.hpp"
 #include "Kyoto/Particles/CElementGen.hpp"
 #include "MetroidPrime/CStateManager.hpp"
+#include "MetroidPrime/SFX/Weapons2.h"
+#include "MetroidPrime/SFX/Weapons2_MP.h"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/CEnergyProjectile.hpp"
 
 // Asset-name pointers defined in another TU (unsplit .sdata2).
 
-static const ushort kFireSounds[2][2] = {{0x1fc9, 0x1fc8}, {0x25ac, 0x25a6}};
+static const ushort kFireSounds[2][2] = {
+    {SFXsam_a_drkfire_00_oneshot, SFXsam_a_drkchfire_00_oneshot},
+    {SFXsa2_a_drkfire_00_oneshot, SFXsa2_a_drkchfire_00_oneshot}};
 
 CDarkBeam::CDarkBeam(TUniqueId playerId, const CVector3f& scale, int flags)
 : CGunWeapon(kWT_Dark, playerId, scale, flags)

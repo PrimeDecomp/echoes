@@ -13,6 +13,7 @@
 #include "MetroidPrime/CGameArea.hpp"
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/MannedTurret2.h"
 #include "MetroidPrime/ScriptLoader.hpp"
 #include "MetroidPrime/ScriptLoader/SLdrAIMannedTurret.hpp"
 #include "MetroidPrime/ScriptLoaderRel.hpp"
@@ -194,8 +195,8 @@ void CAIMannedTurret::AcceptScriptMsg(CStateManager& mgr, const CScriptMsg& msg)
       break;
     case kSM_Damage:
       mDamageFlashTimer = 0.33f;
-      CSfxManager::AddEmitter(0x2570, mInitialPosition, GetCurrentAreaId().Value(), true, false,
-                              CSfxManager::kMedPriority);
+      CSfxManager::AddEmitter(SFXman_r_impact_00_oneshot, mInitialPosition,
+                              GetCurrentAreaId().Value(), true, false, CSfxManager::kMedPriority);
       mTookDamage = true;
       break;
     }
@@ -531,11 +532,11 @@ void CAIMannedTurret::SpawnTelegraph(CStateManager& mgr) {
     mTelegraphGen4->SetGlobalTranslation(xf.GetTranslation());
     mTelegraphGen4->SetOrientation(xf.GetRotation());
     if (mgr.IsMultiplayer()) {
-      CSfxManager::AddEmitter(0x2574, xf.GetTranslation(), GetCurrentAreaId().Value(), false, false,
-                              CSfxManager::kMedPriority);
+      CSfxManager::AddEmitter(SFXma2_a_mislcharge_00_oneshot, xf.GetTranslation(),
+                              GetCurrentAreaId().Value(), false, false, CSfxManager::kMedPriority);
     } else {
-      CSfxManager::AddEmitter(0x2575, xf.GetTranslation(), GetCurrentAreaId().Value(), false, false,
-                              CSfxManager::kMedPriority);
+      CSfxManager::AddEmitter(SFXman_a_mislcharge_00_oneshot, xf.GetTranslation(),
+                              GetCurrentAreaId().Value(), false, false, CSfxManager::kMedPriority);
     }
   }
 }
@@ -568,8 +569,8 @@ void CAIMannedTurret::Fire(CStateManager& mgr) {
                                                 false);
         }
       }
-      CSfxManager::AddEmitter(0x2572, xf.GetTranslation(), GetCurrentAreaId().Value(), false, false,
-                              CSfxManager::kMedPriority);
+      CSfxManager::AddEmitter(SFXma2_a_mislfire_00_oneshot, xf.GetTranslation(),
+                              GetCurrentAreaId().Value(), false, false, CSfxManager::kMedPriority);
     }
   }
 }

@@ -17,6 +17,8 @@
 #include "MetroidPrime/Player/CPlayerEnergyDrain.hpp"
 #include "MetroidPrime/Player/CPlayerKnockBackMgr.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/Weapons2.h"
+#include "MetroidPrime/SFX/Weapons2_MP.h"
 #include "MetroidPrime/TGameTypes.hpp"
 
 class CMorphBall;
@@ -155,8 +157,8 @@ public:
     SFrozenResources()
     : mSteamTexture(0x6fc03d46)
     , mIceTexture(0x2b757945)
-    , mSinglePlayerFreezeSfx(0x1aeb)
-    , mMultiplayerFreezeSfx(0x281b) {}
+    , mSinglePlayerFreezeSfx(SFXsam_r_frozen_00_oneshot)
+    , mMultiplayerFreezeSfx(SFXsa2_r_frozen_00_oneshot) {}
 
     CAssetId mSteamTexture;
     CAssetId mIceTexture;

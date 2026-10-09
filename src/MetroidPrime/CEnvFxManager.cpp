@@ -20,6 +20,7 @@
 #include "MetroidPrime/CWorld.hpp"
 #include "MetroidPrime/Cameras/CGameCamera.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/Rain.h"
 #include "MetroidPrime/ScriptObjects/CHUDBillboardEffect.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptTrigger.hpp"
 #include "MetroidPrime/ScriptObjects/CScriptWater.hpp"
@@ -1310,10 +1311,12 @@ void CEnvFxManager::UpdateRainSounds(float dt, CStateManager& mgr) {
     const CTransform4f camXf = mgr.GetCameraManager(0)->GetCurrentCameraTransform(mgr, true);
     const uchar volume = static_cast< uchar >(mRainSoundFade * CalcRainVolume(mFxDensity));
     if (!mRainSoundActive) {
-      mLeftRainSound = CSfxManager::AddEmitter(0x2841, CVector3f::Zero(), CSfxManager::kAllAreas,
-                                               true, true, CSfxManager::kMaxPriority);
-      mRightRainSound = CSfxManager::AddEmitter(0x2842, CVector3f::Zero(), CSfxManager::kAllAreas,
-                                                true, true, CSfxManager::kMaxPriority);
+      mLeftRainSound =
+          CSfxManager::AddEmitter(SFXswp_x_rain_lp_00l_looped, CVector3f::Zero(),
+                                  CSfxManager::kAllAreas, true, true, CSfxManager::kMaxPriority);
+      mRightRainSound =
+          CSfxManager::AddEmitter(SFXswp_x_rain_lp_00r_looped, CVector3f::Zero(),
+                                  CSfxManager::kAllAreas, true, true, CSfxManager::kMaxPriority);
       mRainSoundActive = true;
     }
     CSfxManager::UpdateEmitter(mLeftRainSound, camXf.GetTranslation() - camXf.GetRight(),

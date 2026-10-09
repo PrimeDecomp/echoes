@@ -7,6 +7,7 @@
 #include "Kyoto/Math/CMath.hpp"
 #include "Kyoto/Text/CStringTable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
+#include "MetroidPrime/SFX/UI.h"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 #include "rstl/math.hpp"
@@ -26,7 +27,7 @@ static const char* const skIconSuffix = "icon";
 static const char* const skGhostSuffix = "ghost";
 static const char skVisorWidgetIndices[] = "2310";
 static const char skBeamWidgetIndices[] = "2103";
-static const ushort skSelectionSounds[] = {0x193, 0x194};
+static const ushort skSelectionSounds[] = {SFXui_x_visorsel_00_oneshot, SFXui_x_weapsel_00_oneshot};
 static const char* const skMenuStringNames[2][4] = {
     {"CombatVisor", "EchoVisor", "ScanVisor", "DarkVisor"},
     {"PowerBeam", "DarkBeam", "LightBeam", "AnnihilatorBeam"}};

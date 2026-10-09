@@ -2,6 +2,10 @@
 
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/SamusPowerups_MP.h"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI2.h"
+#include "MetroidPrime/SFX/UI_MP.h"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 #include "MetroidPrime/Tweaks/CTweakGuiColors.hpp"
 
@@ -91,8 +95,9 @@ void CPlayerVisor::BeginTransitionOut(const CStateManager& mgr) {
   case CPlayerState::kPV_Combat:
     break;
   case CPlayerState::kPV_Echo:
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7e, 0x2660), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoroff_00_oneshot,
+                                                            SFXui2_x_visoroff_00_oneshot),
+                          mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
                           CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     break;
   case CPlayerState::kPV_Scan:
@@ -100,13 +105,15 @@ void CPlayerVisor::BeginTransitionOut(const CStateManager& mgr) {
       CSfxManager::SfxStop(mScanningLoopSfx);
       mScanningLoopSfx.Clear();
     }
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7e, 0x2660), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoroff_00_oneshot,
+                                                            SFXui2_x_visoroff_00_oneshot),
+                          mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
                           CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     break;
   case CPlayerState::kPV_Dark:
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7e, 0x2660), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoroff_00_oneshot,
+                                                            SFXui2_x_visoroff_00_oneshot),
+                          mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
                           CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     break;
   default:
@@ -139,23 +146,26 @@ void CPlayerVisor::BeginTransitionIn(const CStateManager& mgr) {
   case CPlayerState::kPV_Combat:
     break;
   case CPlayerState::kPV_Scan:
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7f, 0x2661), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
-                          CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+    CSfxManager::SfxStart(
+        mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoron_00_oneshot, SFXui2_x_visoron_00_oneshot),
+        mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+        CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     mScanDim.SetFilter(CCameraFilterPass::kFT_Multiply, CCameraFilterPass::kFS_Fullscreen, 0.f,
                        CColor::White(), kInvalidAssetId);
     break;
   case CPlayerState::kPV_Echo:
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7f, 0x2661), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
-                          CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+    CSfxManager::SfxStart(
+        mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoron_00_oneshot, SFXui2_x_visoron_00_oneshot),
+        mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+        CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
     break;
   case CPlayerState::kPV_Dark:
-    CSfxManager::SfxStart(mgr.ReturnFirstIfSingleElseSecond(0x7f, 0x2661), mVisorSfxVol,
-                          mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
-                          CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
-    loopSingle = 0x160;
-    loopMulti = 0x2663;
+    CSfxManager::SfxStart(
+        mgr.ReturnFirstIfSingleElseSecond(SFXui_x_visoron_00_oneshot, SFXui2_x_visoron_00_oneshot),
+        mVisorSfxVol, mgr.GetPlayer(mPlayerIndex)->GetSoundPan(CPlayer::kMSP_4),
+        CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+    loopSingle = SFXui_x_visor_lp_01_looped;
+    loopMulti = SFXui2_x_visor_lp_01_looped;
     break;
   default:
     break;
@@ -482,13 +492,13 @@ void CPlayerVisor::UpdateScanWindow(float dt, const CStateManager& mgr) {
   if (scanState == CPlayer::kSS_Scanning) {
     if (!mScanningLoopSfx) {
       if (mgr.IsMultiplayer()) {
-        mScanningLoopSfx =
-            CSfxManager::SfxStart(0x2613, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
-                                  CSfxManager::kAllAreas, false, true, CSfxManager::kMedPriority);
+        mScanningLoopSfx = CSfxManager::SfxStart(
+            SFXsa2_a_virus_lp_00_looped, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
+            CSfxManager::kAllAreas, false, true, CSfxManager::kMedPriority);
       } else {
-        mScanningLoopSfx =
-            CSfxManager::SfxStart(0x3ae, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
-                                  CSfxManager::kAllAreas, false, true, CSfxManager::kMedPriority);
+        mScanningLoopSfx = CSfxManager::SfxStart(
+            SFXui_x_download_lp_00_looped, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
+            CSfxManager::kAllAreas, false, true, CSfxManager::kMedPriority);
       }
     }
   } else {
@@ -523,8 +533,9 @@ void CPlayerVisor::UpdateScanWindow(float dt, const CStateManager& mgr) {
           desiredState == kSWS_Scan ? gpTweakGui->GetScanSidesEndTime() - mWindowInterpTimer : 0.f;
       mWindowInterpTimer = mWindowInterpDuration;
       if (desiredState == kSWS_Scan)
-        CSfxManager::SfxStart(0x3b0, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
-                              CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+        CSfxManager::SfxStart(SFXui_x_scanon_00_oneshot, mVisorSfxVol,
+                              player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, false,
+                              false, CSfxManager::kMedPriority);
     }
     break;
   case kSWS_Scan:
@@ -539,13 +550,15 @@ void CPlayerVisor::UpdateScanWindow(float dt, const CStateManager& mgr) {
       mWindowInterpTimer = mWindowInterpDuration;
       if (mgr.GetPlayerState(mPlayerIndex)->GetVisorTransitionFactor() == 1.f &&
           !mgr.IsMultiplayer())
-        CSfxManager::SfxStart(0x3af, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
-                              CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+        CSfxManager::SfxStart(SFXui_x_scanoff_00_oneshot, mVisorSfxVol,
+                              player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, false,
+                              false, CSfxManager::kMedPriority);
     }
     if (scanTimerChanged && mgr.IsMultiplayer() &&
         player->GetPlayerScanState() == CPlayer::kSS_ScanComplete)
-      CSfxManager::SfxStart(0x2614, mVisorSfxVol, player->GetSoundPan(CPlayer::kMSP_4),
-                            CSfxManager::kAllAreas, false, false, CSfxManager::kMedPriority);
+      CSfxManager::SfxStart(SFXsa2_a_virusaff_00_oneshot, mVisorSfxVol,
+                            player->GetSoundPan(CPlayer::kMSP_4), CSfxManager::kAllAreas, false,
+                            false, CSfxManager::kMedPriority);
     break;
   default:
     break;

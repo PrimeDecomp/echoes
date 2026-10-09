@@ -13,12 +13,15 @@
 #include "MetroidPrime/CStateManager.hpp"
 #include "MetroidPrime/Player/CMorphBall.hpp"
 #include "MetroidPrime/Player/CPlayer.hpp"
+#include "MetroidPrime/SFX/SamusPowerups_MP.h"
+#include "MetroidPrime/SFX/Weapons.h"
+#include "MetroidPrime/SFX/Weapons_MP.h"
 #include "MetroidPrime/TCastTo.hpp"
 #include "MetroidPrime/Weapons/WeaponSound.hpp"
 #include "rstl/math.hpp"
 
-static const ushort skPlacementSfx[] = {0xb8, 0x2599};
-static const ushort skExplosionSfx[] = {0x1b50, 0x2598};
+static const ushort skPlacementSfx[] = {SFXsam_a_bombset_00_oneshot, SFXsa2_a_bombset_00_oneshot};
+static const ushort skExplosionSfx[] = {SFXsam_a_bombexp_00_oneshot, SFXsa2_a_bombexp_00_oneshot};
 
 CBomb::CBomb(TToken< CGenDescription > particle1, TToken< CGenDescription > particle2,
              TUniqueId uid, TAreaId areaId, TUniqueId ownerId,
@@ -65,7 +68,7 @@ void CBomb::Explode(CStateManager& mgr, const rstl::optional_object< CVector3f >
 
   if (const CPlayer* player = TCastToConstPtr< CPlayer >(mgr.GetObjectById(GetOwnerId()))) {
     if (player->GetPlayerState()->GetItemAmount(CPlayerState::kIT_DoubleDamage, true)) {
-      PlaySfxForPlayer(nullptr, 0x2612, player->GetSoundPan(CPlayer::kMSP_4),
+      PlaySfxForPlayer(nullptr, SFXsa2_a_massdam_00_oneshot, player->GetSoundPan(CPlayer::kMSP_4),
                        mgr.GetNextAreaId().Value(), GetFluidCount() != 0, false);
     }
   }

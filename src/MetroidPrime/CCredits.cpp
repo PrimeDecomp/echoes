@@ -13,6 +13,8 @@
 #include "MetroidPrime/Decode.hpp"
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/UI.h"
+#include "MetroidPrime/SFX/UI3.h"
 #include "MetroidPrime/Tweaks/CTweakGui.hpp"
 
 #include "Kyoto/Audio/CAudioGroupSet.hpp"
@@ -461,7 +463,7 @@ void CPlayMovie::UpdateText(float dt) {
       mResultsText->Update(dt);
       if (mResultsText->GetNumCharactersPrinted() >= mPrintedCharacters + 0.3f) {
         mPrintedCharacters += 0.3f;
-        CSfxManager::SfxStart(0x618, 127, 64);
+        CSfxManager::SfxStart(SFXui_x_type_01_oneshot, 127, 64);
       }
     }
     if (!mUnlockText.null()) {
@@ -501,7 +503,7 @@ void CPlayMovie::UpdateText(float dt) {
 CIOWin::EMessageReturn CPlayMovie::ProcessUserInput(const CFinalInput& input) {
   if (mMovieIndex == 1 && input.PA() && !mContinuePressed) {
     mMoviePlayer->DisableLoop();
-    CSfxManager::SfxStart(0x522, 127, 64);
+    CSfxManager::SfxStart(SFXui_x_override_02_oneshot, 127, 64);
     mContinuePressed = true;
   }
   return kMR_Exit;

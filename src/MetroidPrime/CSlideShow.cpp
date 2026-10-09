@@ -21,6 +21,7 @@
 #include "MetroidPrime/Player/CEnvironmentVariable.hpp"
 #include "MetroidPrime/Player/CGameState.hpp"
 #include "MetroidPrime/Player/CPlayerState.hpp"
+#include "MetroidPrime/SFX/FrontEnd.h"
 #include "MetroidPrime/Tweaks/CTweakContents.hpp"
 #include "MetroidPrime/Tweaks/CTweakPlayerRes.hpp"
 #include "MetroidPrime/Tweaks/CTweakSlideShow.hpp"
@@ -562,7 +563,7 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
     if (input.PB()) {
       SetPanSfx(false);
       SetZoomSfx(false);
-      CSfxManager::SfxStart(0x5b7, 127, 64);
+      CSfxManager::SfxStart(SFXfnt_x_imageout_00_oneshot, 127, 64);
       mDisableInput = true;
       mOutroFade = true;
       return kMR_Exit;
@@ -571,9 +572,9 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
       SetShowControls(!mShowControls);
       if (mShowControls) {
         mGalleryChanged = true;
-        CSfxManager::SfxStart(0x5b3, 127, 64);
+        CSfxManager::SfxStart(SFXfnt_x_legon_00_oneshot, 127, 64);
       } else {
-        CSfxManager::SfxStart(0x5b2, 127, 64);
+        CSfxManager::SfxStart(SFXfnt_x_legoff_00_oneshot, 127, 64);
       }
     }
     bool changed = false;
@@ -626,7 +627,7 @@ CIOWin::EMessageReturn CSlideShow::ProcessUserInput(const CFinalInput& input) {
 
 CIOWin::EMessageReturn CSlideShow::AdvanceSlide(bool forward) {
   if (!mGalleries.empty()) {
-    CSfxManager::SfxStart(0x5b6, 127, 64);
+    CSfxManager::SfxStart(SFXfnt_x_imagenext_00_oneshot, 127, 64);
     if (forward) {
       ++mSlide;
     } else {
@@ -740,7 +741,8 @@ void CSlideShow::UpdateControlsText(const CFinalInput& input) {
 void CSlideShow::SetPanSfx(bool active) {
   if (active) {
     if (!mPanSfx) {
-      mPanSfx = CSfxManager::SfxStart(0x5b4, 127, 64, CSfxManager::kAllAreas, false, true);
+      mPanSfx = CSfxManager::SfxStart(SFXfnt_x_pan_lp_00_looped, 127, 64, CSfxManager::kAllAreas,
+                                      false, true);
     }
   } else {
     CSfxManager::SfxStop(mPanSfx);
@@ -751,7 +753,8 @@ void CSlideShow::SetPanSfx(bool active) {
 void CSlideShow::SetZoomSfx(bool active) {
   if (active) {
     if (!mZoomSfx) {
-      mZoomSfx = CSfxManager::SfxStart(0x5b5, 127, 64, CSfxManager::kAllAreas, false, true);
+      mZoomSfx = CSfxManager::SfxStart(SFXfnt_x_zoom_lp_00_looped, 127, 64, CSfxManager::kAllAreas,
+                                       false, true);
     }
   } else {
     CSfxManager::SfxStop(mZoomSfx);
