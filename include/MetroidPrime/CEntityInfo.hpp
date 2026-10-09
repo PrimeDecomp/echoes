@@ -120,6 +120,7 @@ enum EEntityType {
   kET_DarkSamus = 111,
   kET_IngSpaceJumpGuardian = 118, // Target-derived class tag.
   kET_IngSpiderballGuardian = 119, // Target-derived class tag.
+  kET_Lumite = 120, // Target-derived class tag.
   kET_Metaree = 121,                   // Target-derived class tag.
   kET_Metroid = 122,                   // Target-derived class tag.
   kET_BabyMetroid = 123,               // Target-derived class tag.

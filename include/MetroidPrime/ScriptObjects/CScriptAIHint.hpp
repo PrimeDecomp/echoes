@@ -8,6 +8,8 @@ public:
   // Guessed domain names; other serialized values remain unidentified.
   enum EHintType {
     kHT_Unknown0 = 0,
+    kHT_Hop = 1,         // Guessed name
+    kHT_SunlightHop = 2, // Guessed name
     kHT_GrenadeLauncherRaisedAim = 23,
   };
 
@@ -33,6 +35,7 @@ public:
   void SetInUse(bool inUse);
   bool GetInUse(TUniqueId uid) const;
   bool GetInUseIgnoreLock(TUniqueId uid) const;
+  void SetTimeRemaining(float time) { mTimeRemaining = time; } // Guessed name
 
 private:
   EHintType mHintType;

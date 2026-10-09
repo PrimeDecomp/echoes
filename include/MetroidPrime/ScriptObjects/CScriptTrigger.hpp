@@ -19,6 +19,7 @@ enum ETriggerFlags {
   kTFL_DetectProjectiles = 0x200000,
   kTFL_DetectBombs = 0x400000,
   kTFL_DetectPowerBombs = 0x800000,
+  kTFL_LumiteSunlight = 0x2000000, // Guessed name
   kTFL_DetectScrewAttack = 0x10000000,
 };
 

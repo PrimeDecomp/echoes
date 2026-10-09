@@ -6,6 +6,13 @@ Sections:
 	.data       type:data align:8
 	.bss        type:bss align:8
 
+MetroidPrime/Enemies/CLumite.cpp:
+	.text       start:0x00000000 end:0x000075E0
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000220
+	.data       start:0x00000000 end:0x00000440
+	.bss        start:0x00000000 end:0x00000044
+
 REL/REL_Setup.cpp:
 	.text       start:0x000075E0 end:0x00007784
 	.rodata     start:0x00000220 end:0x000002A4

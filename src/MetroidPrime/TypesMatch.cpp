@@ -34,6 +34,7 @@
 #include "MetroidPrime/Enemies/CIngSpiderballGuardian.hpp"
 #include "MetroidPrime/Enemies/CKralee.hpp"
 #include "MetroidPrime/Enemies/CKrocuss.hpp"
+#include "MetroidPrime/Enemies/CLumite.hpp"
 #include "MetroidPrime/Enemies/CMetaree.hpp"
 #include "MetroidPrime/Enemies/CMetareeSwarm.hpp"
 #include "MetroidPrime/Enemies/CMetroid.hpp"
@@ -316,7 +317,7 @@ TYPES_MATCH_IMPL(CPlasmaProjectile, CBeamProjectile, kET_PlasmaProjectile)
 // 117: class not declared yet (IngBoostBallGuardian REL); parent CPatterned
 TYPES_MATCH_IMPL(CIngSpaceJumpGuardian, CPatterned, kET_IngSpaceJumpGuardian)
 TYPES_MATCH_IMPL(CIngSpiderballGuardian, CPatterned, kET_IngSpiderballGuardian)
-// 120: class not declared yet (Lumite REL); parent CPatterned
+TYPES_MATCH_IMPL(CLumite, CPatterned, kET_Lumite)
 TYPES_MATCH_IMPL(CMetaree, CPatterned, kET_Metaree)
 TYPES_MATCH_IMPL(CMetroid, CPatterned, kET_Metroid)
 TYPES_MATCH_IMPL(CBabyMetroid, CMetroid, kET_BabyMetroid)
@@ -579,7 +580,8 @@ CAST_TO_REF_IMPL(CIngSpaceJumpGuardian, kET_IngSpaceJumpGuardian)
 CAST_TO_PTR_IMPL(CIngSpaceJumpGuardian, kET_IngSpaceJumpGuardian)
 CAST_TO_REF_IMPL(CIngSpiderballGuardian, kET_IngSpiderballGuardian)
 CAST_TO_PTR_IMPL(CIngSpiderballGuardian, kET_IngSpiderballGuardian)
-// 120: class not declared yet (Lumite REL)
+CAST_TO_REF_IMPL(CLumite, kET_Lumite)
+CAST_TO_PTR_IMPL(CLumite, kET_Lumite)
 CAST_TO_REF_IMPL(CMetaree, kET_Metaree)
 CAST_TO_PTR_IMPL(CMetaree, kET_Metaree)
 CAST_TO_REF_IMPL(CMetroid, kET_Metroid)
